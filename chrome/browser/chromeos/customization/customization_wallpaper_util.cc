@@ -10,10 +10,10 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_loader.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
-#include "chrome/browser/chromeos/login/users/avatar/user_image_loader.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_image/user_image.h"
@@ -82,7 +82,7 @@ void OnCustomizedDefaultWallpaperResizedAndSaved(
 
   g_browser_process->local_state()->SetString(
       prefs::kCustomizationDefaultWallpaperURL, wallpaper_url.spec());
-  WallpaperControllerClient::Get()->SetCustomizedDefaultWallpaperPaths(
+  WallpaperControllerClientImpl::Get()->SetCustomizedDefaultWallpaperPaths(
       resized_small_path, resized_large_path);
   VLOG(1) << "Customized default wallpaper applied.";
 }
@@ -126,7 +126,7 @@ void SetCustomizedDefaultWallpaperAfterCheck(
   const std::string current_url = g_browser_process->local_state()->GetString(
       prefs::kCustomizationDefaultWallpaperURL);
   if (both_sizes_exist && current_url == wallpaper_url.spec()) {
-    WallpaperControllerClient::Get()->SetCustomizedDefaultWallpaperPaths(
+    WallpaperControllerClientImpl::Get()->SetCustomizedDefaultWallpaperPaths(
         resized_small_path, resized_small_path);
   } else {
     // Either resized images do not exist or cached version is incorrect.

@@ -10,12 +10,12 @@
 
 namespace blink {
 
+class MediaStreamVideoSource;
 class PushableMediaStreamVideoSource;
 
 class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
     : public UnderlyingSinkBase {
  public:
-  // |source| must outlive this MediaStreamVideoTrackUnderlyingSink.
   explicit MediaStreamVideoTrackUnderlyingSink(
       PushableMediaStreamVideoSource* source);
 
@@ -34,7 +34,7 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
                       ExceptionState& exception_state) override;
 
  private:
-  PushableMediaStreamVideoSource* source_;
+  base::WeakPtr<MediaStreamVideoSource> source_;
 };
 
 }  // namespace blink

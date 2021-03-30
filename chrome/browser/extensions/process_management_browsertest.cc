@@ -337,14 +337,18 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, MAYBE_ExtensionProcessBalancing) {
   // chrome-extension:// URIs below (not to HTTP URIs) to make sure the 1/3rd
   // of process limit also applies to normal tabs (not just to background pages
   // and scripts).
-  content::RenderProcessHost* first_renderer = ui_test_utils::NavigateToURL(
-      browser(), base_url.Resolve("isolated_apps/app1/main.html"));
+  content::RenderProcessHost* first_renderer =
+      ui_test_utils::NavigateToURL(
+          browser(), base_url.Resolve("isolated_apps/app1/main.html"))
+          ->GetProcess();
   content::RenderProcessHostWatcher first_renderer_watcher(
       first_renderer,
       content::RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
 
-  content::RenderProcessHost* second_renderer = ui_test_utils::NavigateToURL(
-      browser(), base_url.Resolve("api_test/management/test/basics.html"));
+  content::RenderProcessHost* second_renderer =
+      ui_test_utils::NavigateToURL(
+          browser(), base_url.Resolve("api_test/management/test/basics.html"))
+          ->GetProcess();
 
   std::set<int> process_ids;
   Profile* profile = browser()->profile();

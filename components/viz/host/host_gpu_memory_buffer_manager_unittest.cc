@@ -162,6 +162,12 @@ class TestGpuService : public mojom::GpuService {
     destruction_requests_.push_back({id, client_id});
   }
 
+  void CopyGpuMemoryBuffer(::gfx::GpuMemoryBufferHandle buffer_handle,
+                           ::base::UnsafeSharedMemoryRegion shared_memory,
+                           CopyGpuMemoryBufferCallback callback) override {
+    std::move(callback).Run(false);
+  }
+
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override {}
 

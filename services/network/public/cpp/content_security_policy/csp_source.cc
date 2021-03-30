@@ -22,7 +22,7 @@ bool HasHost(const mojom::CSPSource& source) {
 }
 
 bool DecodePath(const base::StringPiece& path, std::string* output) {
-  url::RawCanonOutputT<base::char16> unescaped;
+  url::RawCanonOutputT<char16_t> unescaped;
   url::DecodeURLEscapeSequences(path.data(), path.size(),
                                 url::DecodeURLMode::kUTF8OrIsomorphic,
                                 &unescaped);

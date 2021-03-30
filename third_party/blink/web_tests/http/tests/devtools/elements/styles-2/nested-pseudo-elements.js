@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that nested pseudo elements and their styles are handled properly.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

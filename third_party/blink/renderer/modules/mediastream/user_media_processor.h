@@ -285,8 +285,7 @@ class MODULES_EXPORT UserMediaProcessor
   LocalStreamSources local_sources_;
   LocalStreamSources pending_local_sources_;
 
-  HeapMojoRemote<blink::mojom::blink::MediaStreamDispatcherHost,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<blink::mojom::blink::MediaStreamDispatcherHost>
       dispatcher_host_;
 
   // UserMedia requests are processed sequentially. |current_request_info_|

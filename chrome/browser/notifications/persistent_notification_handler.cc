@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_event_dispatcher.h"
 #include "content/public/browser/permission_controller.h"
@@ -26,6 +26,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif
@@ -83,7 +85,7 @@ void PersistentNotificationHandler::OnClick(
     const GURL& origin,
     const std::string& notification_id,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(origin.is_valid());
@@ -92,12 +94,17 @@ void PersistentNotificationHandler::OnClick(
       NotificationMetricsLoggerFactory::GetForBrowserContext(profile);
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-  // Ensure the browser stays alive while the event is processed. The keep alive
-  // will be reset when all click events have been acknowledged.
+  // Ensure the browser and Profile stay alive while the event is processed. The
+  // keep alives will be reset when all click events have been acknowledged.
   if (pending_click_dispatch_events_++ == 0) {
     click_dispatch_keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT,
         KeepAliveRestartOption::DISABLED);
+  }
+  if (profile_pending_click_dispatch_events_[profile]++ == 0) {
+    click_dispatch_profile_keep_alives_[profile] =
+        std::make_unique<ScopedProfileKeepAlive>(
+            profile, ProfileKeepAliveOrigin::kPendingNotificationClickEvent);
   }
 #endif
 
@@ -165,6 +172,8 @@ void PersistentNotificationHandler::OnClickCompleted(
   // Reset the keep alive if all in-flight events have been processed.
   if (--pending_click_dispatch_events_ == 0)
     click_dispatch_keep_alive_.reset();
+  if (--profile_pending_click_dispatch_events_[profile] == 0)
+    click_dispatch_profile_keep_alives_[profile].reset();
 #endif
 
   std::move(completed_closure).Run();

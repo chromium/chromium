@@ -43,6 +43,73 @@
       Section
     </message>
 
+    <message name="IDS_PDF_PROPERTIES_DIALOG_TITLE" desc="Title of the dialog that displays the PDF document properties.">
+      Document properties
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FILE_NAME" desc="Name of the property describing the file name of the PDF document.">
+      File name:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FILE_SIZE" desc="Name of the property describing the size of the PDF document.">
+      File size:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_TITLE" desc="Name of the property describing the title of the PDF document.">
+      Title:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_AUTHOR" desc="Name of the property describing the author of the PDF document.">
+      Author:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_SUBJECT" desc="Name of the property describing the subject of the PDF document.">
+      Subject:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_KEYWORDS" desc="Name of the property describing the keywords associated with the PDF document.">
+      Keywords:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_CREATED" desc="Name of the property describing the date and time when the PDF document was created.">
+      Created:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_MODIFIED" desc="Name of the property describing the date and time when the PDF document was most recently modified.">
+      Modified:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_APPLICATION" desc="Name of the property describing the application that created the original document from which the PDF document was made.">
+      Application:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PDF_PRODUCER" desc="Name of the property describing the name of the application that converted the original document to a PDF document.">
+      PDF producer:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PDF_VERSION" desc="Name of the property describing the version of the PDF document.">
+      PDF version:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_COUNT" desc="Name of the property describing the number of pages in the PDF document.">
+      Page count:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE" desc="Name of the property describing the size of the pages of the PDF document.">
+      Page size:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VALUE_INCH" desc="Value for the page size of a PDF in inches.">
+      <ph name="WIDTH">$1<ex>8.5</ex></ph> × <ph name="HEIGHT">$2<ex>11.00</ex></ph> in (<ph name="ORIENTATION">$3<ex>portrait</ex></ph>)
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VALUE_MM" desc="Value for the page size of a PDF in millimeters.">
+      <ph name="WIDTH">$1<ex>210</ex></ph> × <ph name="HEIGHT">$2<ex>297</ex></ph> mm (<ph name="ORIENTATION">$3<ex>portrait</ex></ph>)
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_PORTRAIT" desc="Label for a portrait page orientation.">
+      portrait
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE" desc="Label for a landscape page orientation.">
+      landscape
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VARIABLE" desc="Value for the page size of a PDF that lacks a uniform page size.">
+      Varies
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW" desc="Name of the property describing whether the PDF document is organized to be viewed efficiently in network environments.">
+      Fast web view:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW_NO" desc="Label indicating that the PDF document is not organized to be viewed efficiently in network environments.">
+      No
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW_YES" desc="Label indicating that the PDF document is organized to be viewed efficiently in network environments.">
+      Yes
+    </message>
+
     <message name="IDS_PDF_TOOLTIP_ROTATE_CW" desc="Button tooltip for the button which rotates a PDF document clockwise">
       Rotate clockwise
     </message>

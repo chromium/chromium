@@ -27,6 +27,8 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/value_builder.h"
 
@@ -61,7 +63,7 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
   // Request an injection for the given |extension|.
   void RequestInjection(const Extension* extension);
   void RequestInjection(const Extension* extension,
-                        UserScript::RunLocation run_location);
+                        mojom::RunLocation run_location);
 
   // Returns the number of times a given extension has had a script execute.
   size_t GetExecutionCountForExtension(const std::string& extension_id) const;
@@ -70,11 +72,11 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
 
  private:
   // Returns a closure to use as a script execution for a given extension.
-  base::RepeatingClosure GetExecutionCallbackForExtension(
-      const std::string& extension_id);
+  ExtensionActionRunner::ScriptInjectionCallback
+  GetExecutionCallbackForExtension(const std::string& extension_id);
 
   // Increment the number of executions for the given |extension_id|.
-  void IncrementExecutionCount(const std::string& extension_id);
+  void IncrementExecutionCount(const std::string& extension_id, bool granted);
 
   void SetUp() override;
 
@@ -105,7 +107,7 @@ const Extension* ExtensionActionRunnerUnitTest::AddExtension() {
                   .Set("permissions",
                        ListBuilder().Append(kAllHostsPermission).Build())
                   .Build())
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(kId)
           .Build();
 
@@ -126,7 +128,7 @@ bool ExtensionActionRunnerUnitTest::RequiresUserConsent(
     const Extension* extension) const {
   PermissionsData::PageAccess access_type =
       runner()->RequiresUserConsentForScriptInjectionForTesting(
-          extension, UserScript::PROGRAMMATIC_SCRIPT);
+          extension, mojom::InjectionType::kProgrammaticScript);
   // We should never downright refuse access in these tests.
   DCHECK_NE(PermissionsData::PageAccess::kDenied, access_type);
   return access_type == PermissionsData::PageAccess::kWithheld;
@@ -134,12 +136,12 @@ bool ExtensionActionRunnerUnitTest::RequiresUserConsent(
 
 void ExtensionActionRunnerUnitTest::RequestInjection(
     const Extension* extension) {
-  RequestInjection(extension, UserScript::DOCUMENT_IDLE);
+  RequestInjection(extension, mojom::RunLocation::kDocumentIdle);
 }
 
 void ExtensionActionRunnerUnitTest::RequestInjection(
     const Extension* extension,
-    UserScript::RunLocation run_location) {
+    mojom::RunLocation run_location) {
   runner()->RequestScriptInjectionForTesting(
       extension, run_location,
       GetExecutionCallbackForExtension(extension->id()));
@@ -153,18 +155,20 @@ size_t ExtensionActionRunnerUnitTest::GetExecutionCountForExtension(
   return 0u;
 }
 
-base::RepeatingClosure
+ExtensionActionRunner::ScriptInjectionCallback
 ExtensionActionRunnerUnitTest::GetExecutionCallbackForExtension(
     const std::string& extension_id) {
   // We use base unretained here, but if this ever gets executed outside of
   // this test's lifetime, we have a major problem anyway.
-  return base::BindRepeating(
-      &ExtensionActionRunnerUnitTest::IncrementExecutionCount,
-      base::Unretained(this), extension_id);
+  return base::BindOnce(&ExtensionActionRunnerUnitTest::IncrementExecutionCount,
+                        base::Unretained(this), extension_id);
 }
 
 void ExtensionActionRunnerUnitTest::IncrementExecutionCount(
-    const std::string& extension_id) {
+    const std::string& extension_id,
+    bool granted) {
+  if (!granted)
+    return;
   ++extension_executions_[extension_id];
 }
 
@@ -427,13 +431,13 @@ TEST_F(ExtensionActionRunnerUnitTest, TestDifferentScriptRunLocations) {
 
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension));
 
-  RequestInjection(extension, UserScript::DOCUMENT_END);
+  RequestInjection(extension, mojom::RunLocation::kDocumentEnd);
   EXPECT_EQ(BLOCKED_ACTION_SCRIPT_OTHER,
             runner()->GetBlockedActions(extension));
-  RequestInjection(extension, UserScript::DOCUMENT_IDLE);
+  RequestInjection(extension, mojom::RunLocation::kDocumentIdle);
   EXPECT_EQ(BLOCKED_ACTION_SCRIPT_OTHER,
             runner()->GetBlockedActions(extension));
-  RequestInjection(extension, UserScript::DOCUMENT_START);
+  RequestInjection(extension, mojom::RunLocation::kDocumentStart);
   EXPECT_EQ(BLOCKED_ACTION_SCRIPT_AT_START | BLOCKED_ACTION_SCRIPT_OTHER,
             runner()->GetBlockedActions(extension));
 

@@ -31,8 +31,8 @@ test(() => {
   assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
 
   style.transition = "none";
-  assert_not_equals(Object.keys(style).indexOf('transition'), -1);
-  assert_not_equals(Object.keys(style).indexOf('webkitTransition'), -1);
+  assert_true('transition' in style);
+  assert_true('webkitTransition' in style);
   assert_equals(style.transition, 'none 0s ease 0s');
   assert_equals(computedStyle.transition, 'none 0s ease 0s');
   assert_equals(style.webkitTransition, 'none 0s ease 0s');

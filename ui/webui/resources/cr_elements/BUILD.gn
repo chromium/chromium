@@ -39,7 +39,11 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [ "cr_splitter/cr_splitter.js" ]
+  in_files = [
+    "cr_search_field/cr_search_field_behavior.js",
+    "cr_splitter/cr_splitter.js",
+    "find_shortcut_behavior.js",
+  ]
 }
 
 preprocess_if_expr("preprocess_polymer2") {
@@ -48,6 +52,7 @@ preprocess_if_expr("preprocess_polymer2") {
   out_manifest = "$target_gen_dir/$preprocess_polymer2_manifest"
   in_files = [
     "action_link_css.html",
+    "cr_actionable_row_style.html",
     "cr_action_menu/cr_action_menu.html",
     "cr_action_menu/cr_action_menu.js",
     "cr_button/cr_button.html",
@@ -58,8 +63,6 @@ preprocess_if_expr("preprocess_polymer2") {
     "cr_container_shadow_behavior.js",
     "cr_dialog/cr_dialog.html",
     "cr_dialog/cr_dialog.js",
-    "cr_drawer/cr_drawer.html",
-    "cr_drawer/cr_drawer.js",
     "cr_expand_button/cr_expand_button.html",
     "cr_expand_button/cr_expand_button.js",
     "cr_fingerprint/cr_fingerprint_icon.html",
@@ -73,8 +76,6 @@ preprocess_if_expr("preprocess_polymer2") {
     "cr_input/cr_input_style_css.html",
     "cr_lazy_render/cr_lazy_render.html",
     "cr_lazy_render/cr_lazy_render.js",
-    "cr_link_row/cr_link_row.html",
-    "cr_link_row/cr_link_row.js",
     "cr_lottie/cr_lottie.html",
     "cr_lottie/cr_lottie.js",
     "cr_page_host_style_css.html",
@@ -93,30 +94,16 @@ preprocess_if_expr("preprocess_polymer2") {
     "cr_radio_group/cr_radio_group.js",
     "cr_scrollable_behavior.html",
     "cr_scrollable_behavior.js",
-    "cr_search_field/cr_search_field_behavior.html",
-    "cr_search_field/cr_search_field_behavior.js",
-    "cr_search_field/cr_search_field.html",
-    "cr_search_field/cr_search_field.js",
     "cr_slider/cr_slider.html",
     "cr_slider/cr_slider.js",
-    "cr_tabs/cr_tabs.html",
-    "cr_tabs/cr_tabs.js",
     "cr_toast/cr_toast.html",
     "cr_toast/cr_toast.js",
     "cr_toast/cr_toast_manager.html",
     "cr_toast/cr_toast_manager.js",
     "cr_toggle/cr_toggle.html",
     "cr_toggle/cr_toggle.js",
-    "cr_toolbar/cr_toolbar.html",
-    "cr_toolbar/cr_toolbar.js",
-    "cr_toolbar/cr_toolbar_search_field.html",
-    "cr_toolbar/cr_toolbar_search_field.js",
-    "cr_toolbar/cr_toolbar_selection_overlay.html",
-    "cr_toolbar/cr_toolbar_selection_overlay.js",
     "cr_view_manager/cr_view_manager.html",
     "cr_view_manager/cr_view_manager.js",
-    "find_shortcut_behavior.html",
-    "find_shortcut_behavior.js",
     "hidden_style_css.html",
     "icons.html",
     "md_select_css.html",
@@ -162,12 +149,13 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "action_link_css.m.js",
+    "cr_actionable_row_style.m.js",
     "cr_action_menu/cr_action_menu.m.js",
     "cr_button/cr_button.m.js",
     "cr_checkbox/cr_checkbox.m.js",
     "cr_container_shadow_behavior.m.js",
     "cr_dialog/cr_dialog.m.js",
-    "cr_drawer/cr_drawer.m.js",
+    "cr_drawer/cr_drawer.js",
     "cr_expand_button/cr_expand_button.m.js",
     "cr_fingerprint/cr_fingerprint_icon.m.js",
     "cr_fingerprint/cr_fingerprint_progress_arc.m.js",
@@ -177,7 +165,7 @@ preprocess_if_expr("preprocess_generated") {
     "cr_input/cr_input.m.js",
     "cr_input/cr_input_style_css.m.js",
     "cr_lazy_render/cr_lazy_render.m.js",
-    "cr_link_row/cr_link_row.m.js",
+    "cr_link_row/cr_link_row.js",
     "cr_lottie/cr_lottie.m.js",
     "cr_menu_selector/cr_menu_selector.js",
     "cr_page_host_style_css.m.js",
@@ -189,18 +177,16 @@ preprocess_if_expr("preprocess_generated") {
     "cr_radio_button/cr_radio_button_style_css.m.js",
     "cr_radio_group/cr_radio_group.m.js",
     "cr_scrollable_behavior.m.js",
-    "cr_search_field/cr_search_field_behavior.m.js",
-    "cr_search_field/cr_search_field.m.js",
+    "cr_search_field/cr_search_field.js",
     "cr_slider/cr_slider.m.js",
-    "cr_tabs/cr_tabs.m.js",
+    "cr_tabs/cr_tabs.js",
     "cr_toast/cr_toast_manager.m.js",
     "cr_toast/cr_toast.m.js",
     "cr_toggle/cr_toggle.m.js",
-    "cr_toolbar/cr_toolbar.m.js",
-    "cr_toolbar/cr_toolbar_search_field.m.js",
-    "cr_toolbar/cr_toolbar_selection_overlay.m.js",
+    "cr_toolbar/cr_toolbar.js",
+    "cr_toolbar/cr_toolbar_search_field.js",
+    "cr_toolbar/cr_toolbar_selection_overlay.js",
     "cr_view_manager/cr_view_manager.m.js",
-    "find_shortcut_behavior.m.js",
     "hidden_style_css.m.js",
     "icons.m.js",
     "md_select_css.m.js",
@@ -238,22 +224,18 @@ group("closure_compile") {
     "cr_button:closure_compile",
     "cr_checkbox:closure_compile",
     "cr_dialog:closure_compile",
-    "cr_drawer:closure_compile",
     "cr_expand_button:closure_compile",
     "cr_fingerprint:closure_compile",
     "cr_grid:closure_compile",
     "cr_icon_button:closure_compile",
     "cr_input:closure_compile",
-    "cr_link_row:closure_compile",
     "cr_lottie:closure_compile",
     "cr_menu_selector:closure_compile",
     "cr_profile_avatar_selector:closure_compile",
     "cr_radio_button:closure_compile",
     "cr_radio_group:closure_compile",
-    "cr_search_field:closure_compile",
     "cr_slider:closure_compile",
     "cr_splitter:closure_compile",
-    "cr_tabs:closure_compile",
     "cr_toast:closure_compile",
     "cr_toggle:closure_compile",
     "cr_view_manager:closure_compile",
@@ -299,10 +281,10 @@ group("closure_compile") {
 }
 
 js_type_check("cr_elements_resources") {
+  uses_legacy_modules = true
   deps = [
     ":cr_container_shadow_behavior",
     ":cr_scrollable_behavior",
-    ":find_shortcut_behavior",
   ]
 }
 
@@ -314,20 +296,17 @@ js_library("cr_container_shadow_behavior") {
   deps = [ "//ui/webui/resources/js:assert" ]
 }
 
-js_library("find_shortcut_behavior") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list",
-  ]
-}
-
 # Targets for auto-generating Polymer 3 JS Modules.
 
 polymer_modulizer("action_link_css") {
   js_file = "action_link_css.m.js"
   html_file = "action_link_css.html"
+  html_type = "style-module"
+}
+
+polymer_modulizer("cr_actionable_row_style") {
+  js_file = "cr_actionable_row_style.m.js"
+  html_file = "cr_actionable_row_style.html"
   html_type = "style-module"
 }
 
@@ -383,13 +362,13 @@ js_modulizer("modulize") {
   input_files = [
     "cr_container_shadow_behavior.js",
     "cr_scrollable_behavior.js",
-    "find_shortcut_behavior.js",
   ]
 }
 
 group("polymer3_elements") {
   public_deps = [
     ":action_link_css_module",
+    ":cr_actionable_row_style_module",
     ":cr_icons_css_module",
     ":cr_page_host_style_css_module",
     ":hidden_style_css_module",
@@ -404,7 +383,7 @@ group("polymer3_elements") {
     "cr_button:cr_button_module",
     "cr_checkbox:cr_checkbox_module",
     "cr_dialog:cr_dialog_module",
-    "cr_drawer:cr_drawer_module",
+    "cr_drawer:web_components",
     "cr_expand_button:cr_expand_button_module",
     "cr_fingerprint:polymer3_elements",
     "cr_grid:web_components",
@@ -417,12 +396,12 @@ group("polymer3_elements") {
     "cr_profile_avatar_selector:polymer3_elements",
     "cr_radio_button:polymer3_elements",
     "cr_radio_group:cr_radio_group_module",
-    "cr_search_field:polymer3_elements",
+    "cr_search_field:web_components",
     "cr_slider:cr_slider_module",
-    "cr_tabs:cr_tabs_module",
+    "cr_tabs:web_components",
     "cr_toast:polymer3_elements",
     "cr_toggle:cr_toggle_module",
-    "cr_toolbar:polymer3_elements",
+    "cr_toolbar:web_components",
     "cr_view_manager:cr_view_manager_module",
     "policy:polymer3_elements",
   ]
@@ -443,7 +422,7 @@ js_type_check("cr_elements_module_resources") {
   deps = [
     ":cr_container_shadow_behavior.m",
     ":cr_scrollable_behavior.m",
-    ":find_shortcut_behavior.m",
+    ":find_shortcut_behavior",
   ]
 }
 
@@ -464,17 +443,13 @@ js_library("cr_scrollable_behavior.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("find_shortcut_behavior.m") {
-  sources = [
-    "$root_gen_dir/ui/webui/resources/cr_elements/find_shortcut_behavior.m.js",
-  ]
+js_library("find_shortcut_behavior") {
   deps = [
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 html_to_js("web_components") {

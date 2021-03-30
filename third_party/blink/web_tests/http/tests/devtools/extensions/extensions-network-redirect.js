@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests WebInspector extension API returns valid data for redirected resources\n`);
-  await TestRunner.loadModule('extensions_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
   await TestRunner.navigatePromise('resources/extensions-network-redirect.html');
   ExtensionsTestRunner.runExtensionTests([
       function extension_doRequest(force, callback)

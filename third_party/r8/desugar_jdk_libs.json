@@ -2,9 +2,10 @@
   "configuration_format_version": 3,
   "group_id" : "com.tools.android",
   "artifact_id" : "desugar_jdk_libs",
-  "version": "1.0.10",
+  "version": "1.1.1",
   "required_compilation_api_level": 26,
   "synthesized_library_classes_package_prefix": "j$.",
+  "support_all_callbacks_from_library": true,
   "common_flags": [
     {
       "api_level_below_or_equal": 25,
@@ -236,10 +237,13 @@
     }
   ],
   "shrinker_config": [
-    "-keepclassmembers enum * { public static **[] values(); public static ** valueOf(java.lang.String); }",
+    "-keepclassmembers enum * { public static **[] values(); public static ** valueOf(java.lang.String); public static final !synthetic <fields>; }",
     "-keeppackagenames j$",
     "-keepclassmembers class j$.util.IntSummaryStatistics { long count; long sum; int min; int max; }",
     "-keepclassmembers class j$.util.LongSummaryStatistics { long count; long sum; long min; long max; }",
-    "-keepclassmembers class j$.util.DoubleSummaryStatistics { long count; double sum; double min; double max; }"
+    "-keepclassmembers class j$.util.DoubleSummaryStatistics { long count; double sum; double min; double max; }",
+    "-keepattributes Signature",
+    "-keepattributes EnclosingMethod",
+    "-keepattributes InnerClasses"
   ]
 }

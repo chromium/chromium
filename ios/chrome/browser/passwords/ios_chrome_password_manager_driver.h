@@ -38,11 +38,11 @@ class IOSChromePasswordManagerDriver
       bool should_show_popup_without_passwords) override;
   void FormEligibleForGenerationFound(
       const autofill::PasswordFormGenerationData& form) override;
-  void GeneratedPasswordAccepted(const base::string16& password) override;
-  void FillSuggestion(const base::string16& username,
-                      const base::string16& password) override;
-  void PreviewSuggestion(const base::string16& username,
-                         const base::string16& password) override;
+  void GeneratedPasswordAccepted(const std::u16string& password) override;
+  void FillSuggestion(const std::u16string& username,
+                      const std::u16string& password) override;
+  void PreviewSuggestion(const std::u16string& username,
+                         const std::u16string& password) override;
   void ClearPreviewedForm() override;
   password_manager::PasswordGenerationFrameHelper* GetPasswordGenerationHelper()
       override;

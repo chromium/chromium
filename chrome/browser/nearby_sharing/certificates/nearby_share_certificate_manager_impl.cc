@@ -56,6 +56,37 @@ size_t NumExpectedPrivateCertificates() {
   return kVisibilities.size() * kNearbyShareNumPrivateCertificates;
 }
 
+base::Optional<std::string> GetBluetoothMacAddress(
+    device::BluetoothAdapter* bluetooth_adapter) {
+  if (!bluetooth_adapter) {
+    NS_LOG(WARNING)
+        << __func__
+        << ": Failed to get Bluetooth MAC address; Bluetooth adapter is null.";
+    return base::nullopt;
+  }
+
+  if (!bluetooth_adapter->IsPresent()) {
+    // Note: The sophisticated solution would be to listen for
+    // device::BluetoothAdapter::Observer::AdapterPresentChanged() before trying
+    // to generate private certificates. We take the simple but unsophisticated
+    // approach by failing and retrying.
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to get Bluetooth MAC address; Bluetooth "
+                    << "adapter is not present.";
+    return base::nullopt;
+  }
+
+  std::array<uint8_t, 6> bytes;
+  if (!device::ParseBluetoothAddress(bluetooth_adapter->GetAddress(), bytes)) {
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to get Bluetooth MAC address; cannot parse "
+                    << "address: " << bluetooth_adapter->GetAddress();
+    return base::nullopt;
+  }
+
+  return std::string(bytes.begin(), bytes.end());
+}
+
 base::Optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
     std::string device_name,
     base::Optional<std::string> full_name,
@@ -63,9 +94,9 @@ base::Optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
     device::BluetoothAdapter* bluetooth_adapter) {
   nearbyshare::proto::EncryptedMetadata metadata;
   if (device_name.empty()) {
-    NS_LOG(WARNING)
-        << __func__
-        << ": Cannot create private certificate metadata; missing device name.";
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to create private certificate metadata; "
+                    << "missing device name.";
     return base::nullopt;
   }
 
@@ -76,23 +107,17 @@ base::Optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
   if (icon_url) {
     metadata.set_icon_url(*icon_url);
   }
-  std::array<uint8_t, 6> bytes;
-  bool has_address =
-      bluetooth_adapter &&
-      device::ParseBluetoothAddress(bluetooth_adapter->GetAddress(), bytes);
-  if (has_address) {
-    metadata.set_bluetooth_mac_address(std::string(bytes.begin(), bytes.end()));
-  } else {
-    NS_LOG(WARNING) << __func__
-                    << ": No valid Bluetooth MAC available for private "
-                    << "certificate metadata.";
-    // TODO(https://crbug.com/1122641): Decide the best way to handle
-    // missing/invalid Bluetooth MAC addresses.
-  }
+
+  base::Optional<std::string> bluetooth_mac_address =
+      GetBluetoothMacAddress(bluetooth_adapter);
   base::UmaHistogramBoolean(
       "Nearby.Share.Certificates.Manager."
-      "BluetoothMacAddressSetInPrivateCertificate",
-      has_address);
+      "BluetoothMacAddressPresentForPrivateCertificateCreation",
+      bluetooth_mac_address.has_value());
+  if (!bluetooth_mac_address)
+    return base::nullopt;
+
+  metadata.set_bluetooth_mac_address(*bluetooth_mac_address);
 
   return metadata;
 }
@@ -439,6 +464,9 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
                     local_device_data_manager_->GetIconUrl(),
                     bluetooth_adapter.get());
   if (!metadata) {
+    NS_LOG(WARNING)
+        << __func__
+        << "Failed to create private certificates; cannot create metadata";
     private_certificate_expiration_scheduler_->HandleResult(/*success=*/false);
     return;
   }

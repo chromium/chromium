@@ -58,10 +58,8 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
   explicit TestTabModalConfirmDialogDelegate(content::WebContents* contents)
       : TabModalConfirmDialogDelegate(contents) {}
-  base::string16 GetTitle() override {
-    return base::ASCIIToUTF16("Dialog Title");
-  }
-  base::string16 GetDialogMessage() override { return base::string16(); }
+  std::u16string GetTitle() override { return u"Dialog Title"; }
+  std::u16string GetDialogMessage() override { return std::u16string(); }
 
   DISALLOW_COPY_AND_ASSIGN(TestTabModalConfirmDialogDelegate);
 };

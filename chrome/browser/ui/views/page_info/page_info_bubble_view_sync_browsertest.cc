@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/safe_browsing/content/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -113,7 +114,7 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
 
     CoreAccountInfo current_info =
         IdentityManagerFactory::GetForProfile(browser()->profile())
-            ->GetPrimaryAccountInfo();
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     // Need to update hosted domain since it is not populated.
     AccountInfo account_info;
     account_info.account_id = current_info.account_id;
@@ -127,7 +128,7 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
     ASSERT_TRUE(harness->SetupSync());
   }
 
-  const base::string16 GetPageInfoBubbleViewDetailText() {
+  const std::u16string GetPageInfoBubbleViewDetailText() {
     PageInfoBubbleView* page_info_bubble_view =
         static_cast<PageInfoBubbleView*>(
             PageInfoBubbleView::GetPageInfoBubbleForTesting());
@@ -163,8 +164,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
   account_type.set_is_account_syncing(true);
   service->set_reused_password_account_type_for_last_shown_warning(
       account_type);
+  scoped_refptr<safe_browsing::PasswordProtectionRequest> request =
+      safe_browsing::CreateDummyRequest(contents);
   service->ShowModalWarning(
-      contents, safe_browsing::RequestOutcome::UNKNOWN,
+      request.get(),
       safe_browsing::LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
       "unused_token", account_type);
 

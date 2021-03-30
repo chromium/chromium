@@ -49,13 +49,13 @@ std::unique_ptr<ui::GbmDevice> CreateX11GbmDevice() {
   if (!reply)
     return nullptr;
 
-  int fd = reply->device_fd.release();
-  if (fd < 0)
+  base::ScopedFD fd(HANDLE_EINTR(dup(reply->device_fd.get())));
+  if (!fd.is_valid())
     return nullptr;
-  if (HANDLE_EINTR(fcntl(fd, F_SETFD, FD_CLOEXEC)) == -1)
+  if (HANDLE_EINTR(fcntl(fd.get(), F_SETFD, FD_CLOEXEC)) == -1)
     return nullptr;
 
-  return ui::CreateGbmDevice(fd);
+  return ui::CreateGbmDevice(fd.release());
 }
 
 std::vector<gfx::BufferUsageAndFormat> CreateSupportedConfigList(

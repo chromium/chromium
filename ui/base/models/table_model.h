@@ -5,10 +5,10 @@
 #ifndef UI_BASE_MODELS_TABLE_MODEL_H_
 #define UI_BASE_MODELS_TABLE_MODEL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace gfx {
@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
   virtual int RowCount() = 0;
 
   // Returns the value at a particular location in text.
-  virtual base::string16 GetText(int row, int column_id) = 0;
+  virtual std::u16string GetText(int row, int column_id) = 0;
 
   // Returns the small icon (|kIconSize| x |kIconSize|) that should be displayed
   // in the first column before the text. This is only used when the TableView
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
   // Returns the tooltip, if any, to show for a particular row.  If there are
   // multiple columns in the row, this will only be shown when hovering over
   // column zero.
-  virtual base::string16 GetTooltip(int row);
+  virtual std::u16string GetTooltip(int row);
 
   // Sets the observer for the model. The TableView should NOT take ownership
   // of the observer.
@@ -78,7 +78,7 @@ struct COMPONENT_EXPORT(UI_BASE) TableColumn {
   int id;
 
   // The title for the column.
-  base::string16 title;
+  std::u16string title;
 
   // Alignment for the content.
   Alignment alignment;

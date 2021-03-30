@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -16,6 +17,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/launch_services_util.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -122,14 +124,14 @@ void AppShimController::OnAppFinishedLaunching() {
 void AppShimController::FindOrLaunchChrome() {
   DCHECK(!chrome_to_connect_to_);
   DCHECK(!chrome_launched_by_app_);
+  const base::CommandLine* app_command_line =
+      base::CommandLine::ForCurrentProcess();
 
   // If this shim was launched by Chrome, only connect to that that specific
   // process.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          app_mode::kLaunchedByChromeProcessId)) {
-    std::string chrome_pid_string =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            app_mode::kLaunchedByChromeProcessId);
+  if (app_command_line->HasSwitch(app_mode::kLaunchedByChromeProcessId)) {
+    std::string chrome_pid_string = app_command_line->GetSwitchValueASCII(
+        app_mode::kLaunchedByChromeProcessId);
     int chrome_pid;
     if (!base::StringToInt(chrome_pid_string, &chrome_pid))
       LOG(FATAL) << "Invalid PID: " << chrome_pid_string;
@@ -151,21 +153,30 @@ void AppShimController::FindOrLaunchChrome() {
     return;
 
   // In tests, launching Chrome does nothing.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          app_mode::kLaunchedForTest)) {
+  if (app_command_line->HasSwitch(app_mode::kLaunchedForTest)) {
     return;
   }
 
   // Otherwise, launch Chrome.
   base::FilePath chrome_bundle_path = base::mac::OuterBundlePath();
   LOG(INFO) << "Launching " << chrome_bundle_path.value();
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitch(switches::kSilentLaunch);
-  command_line.AppendSwitchPath(switches::kUserDataDir, params_.user_data_dir);
-  chrome_launched_by_app_.reset(
-      base::mac::OpenApplicationWithPath(chrome_bundle_path, command_line,
-                                         NSWorkspaceLaunchNewInstance),
-      base::scoped_policy::RETAIN);
+  base::CommandLine browser_command_line(base::CommandLine::NO_PROGRAM);
+  browser_command_line.AppendSwitchPath(switches::kUserDataDir,
+                                        params_.user_data_dir);
+  if (app_command_line->HasSwitch(switches::kEnableFeatures)) {
+    browser_command_line.AppendSwitchASCII(
+        switches::kEnableFeatures,
+        app_command_line->GetSwitchValueASCII(switches::kEnableFeatures));
+  }
+  if (app_command_line->HasSwitch(switches::kDisableFeatures)) {
+    browser_command_line.AppendSwitchASCII(
+        switches::kDisableFeatures,
+        app_command_line->GetSwitchValueASCII(switches::kDisableFeatures));
+  }
+  chrome_launched_by_app_.reset(base::mac::OpenApplicationWithPath(
+                                    chrome_bundle_path, browser_command_line,
+                                    NSWorkspaceLaunchNewInstance),
+                                base::scoped_policy::RETAIN);
   if (!chrome_launched_by_app_)
     LOG(FATAL) << "Failed to launch Chrome.";
 }
@@ -326,6 +337,17 @@ void AppShimController::SendBootstrapOnShimConnected(
           ? chrome::mojom::AppShimLaunchType::kRegisterOnly
           : chrome::mojom::AppShimLaunchType::kNormal;
   app_shim_info->files = launch_files_;
+
+  if (base::mac::WasLaunchedAsHiddenLoginItem()) {
+    app_shim_info->login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kHidden;
+  } else if (base::mac::WasLaunchedAsLoginOrResumeItem()) {
+    app_shim_info->login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kWindowed;
+  } else {
+    app_shim_info->login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kNone;
+  }
 
   host_bootstrap_->OnShimConnected(
       std::move(host_receiver_), std::move(app_shim_info),

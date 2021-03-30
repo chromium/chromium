@@ -8,11 +8,9 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -135,41 +133,8 @@ public class StartSurfaceNoTabsTest {
                 .check(matches(isDisplayed()));
         onView(withId(org.chromium.chrome.tab_ui.R.id.trendy_terms_recycler_view))
                 .check(matches(withEffectiveVisibility(GONE)));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true" +
-        "/show_last_active_tab_only/true/show_stack_tab_switcher/true" +
-        "/open_ntp_instead_of_start/true"})
-    public void testShow_SingleAsHomepage_V2_NoTabs() {
-        // clang-format on
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> mActivityTestRule.getActivity().getLayoutManager() != null
-                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
-
-        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
+        onView(withId(R.id.start_tab_switcher_button))
                 .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_title))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.single_tab_view))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body))
-                .check(matches(isDisplayed()));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.trendy_terms_recycler_view))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_switch))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.more_tabs))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.start_tab_switcher_button)).check(matches(not(isEnabled())));
     }
 
     @Test

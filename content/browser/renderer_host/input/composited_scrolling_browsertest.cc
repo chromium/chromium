@@ -79,8 +79,11 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
   }
 
   RenderWidgetHostImpl* GetWidgetHost() {
-    return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    return RenderWidgetHostImpl::From(shell()
+                                          ->web_contents()
+                                          ->GetMainFrame()
+                                          ->GetRenderViewHost()
+                                          ->GetWidget());
   }
 
   void OnSyntheticGestureCompleted(SyntheticGesture::Result result) {
@@ -97,7 +100,7 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
     HitTestRegionObserver observer(GetWidgetHost()->GetFrameSinkId());
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 
@@ -128,7 +131,7 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
 
   // Generate touch events for a synthetic scroll from |point| for |distance|.
   // Returns the distance scrolled.
-  double DoScroll(SyntheticGestureParams::GestureSourceType type,
+  double DoScroll(content::mojom::GestureSourceType type,
                   const gfx::Point& point,
                   const gfx::Vector2d& distance) {
     SyntheticSmoothScrollGestureParams params;
@@ -154,11 +157,13 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
   }
 
   double DoTouchScroll(const gfx::Point& point, const gfx::Vector2d& distance) {
-    return DoScroll(SyntheticGestureParams::TOUCH_INPUT, point, distance);
+    return DoScroll(content::mojom::GestureSourceType::kTouchInput, point,
+                    distance);
   }
 
   double DoWheelScroll(const gfx::Point& point, const gfx::Vector2d& distance) {
-    return DoScroll(SyntheticGestureParams::MOUSE_INPUT, point, distance);
+    return DoScroll(content::mojom::GestureSourceType::kMouseInput, point,
+                    distance);
   }
 
  private:

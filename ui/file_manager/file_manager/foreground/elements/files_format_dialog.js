@@ -30,6 +30,10 @@ Polymer({
     }
   },
 
+  ready: function() {
+    this.$.dialog.consumeKeydownEvent = true;
+  },
+
   /** @private */
   cancel_: function() {
     this.$.dialog.cancel();

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
+
 namespace content {
 
 SecurityStyleExplanation::SecurityStyleExplanation() {}
@@ -29,7 +31,7 @@ SecurityStyleExplanation::SecurityStyleExplanation(
     std::string summary,
     std::string description,
     scoped_refptr<net::X509Certificate> certificate,
-    blink::WebMixedContentContextType mixed_content_type)
+    blink::mojom::MixedContentContextType mixed_content_type)
     : title(std::move(title)),
       summary(std::move(summary)),
       description(std::move(description)),
@@ -44,7 +46,8 @@ SecurityStyleExplanation::SecurityStyleExplanation(
     : title(std::move(title)),
       summary(std::move(summary)),
       description(std::move(description)),
-      mixed_content_type(blink::WebMixedContentContextType::kNotMixedContent),
+      mixed_content_type(
+          blink::mojom::MixedContentContextType::kNotMixedContent),
       recommendations(std::move(recommendations)) {}
 
 SecurityStyleExplanation::SecurityStyleExplanation(

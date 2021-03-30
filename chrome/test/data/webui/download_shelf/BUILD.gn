@@ -1,0 +1,39 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://download-shelf.top-chrome/=./\"",
+                    "js_module_root=" +
+                        rebase_path("//chrome/browser/resources/download_shelf",
+                                    root_build_dir),
+                    "js_module_root=" +
+                        rebase_path("//chrome/test/data/webui", root_build_dir),
+                    "js_module_root=" +
+                        rebase_path("$root_gen_dir/chrome/test/data/webui",
+                                    root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/download_shelf",
+                            root_build_dir),
+                  ]
+  deps = [ ":download_list_test" ]
+}
+
+js_library("download_list_test") {
+  deps = [
+    ":test_download_shelf_api_proxy",
+    "..:chai_assert",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("test_download_shelf_api_proxy") {
+  deps = [
+    "..:test_browser_proxy.m",
+    "//chrome/browser/resources/download_shelf:app",
+    "//chrome/browser/ui/webui/download_shelf:mojo_bindings_js_library_for_compile",
+  ]
+}

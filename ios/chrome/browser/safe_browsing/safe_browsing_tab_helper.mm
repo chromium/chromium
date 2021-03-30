@@ -32,7 +32,6 @@
 #error "This file requires ARC support."
 #endif
 
-using safe_browsing::ResourceType;
 using security_interstitials::UnsafeResource;
 
 namespace {

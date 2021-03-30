@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -84,8 +83,6 @@ class OfflineContentAggregator : public OfflineContentProvider,
                   RenameCallback callback) override;
   void ChangeSchedule(const ContentId& id,
                       base::Optional<OfflineItemSchedule> schedule) override;
-  void AddObserver(OfflineContentProvider::Observer* observer) override;
-  void RemoveObserver(OfflineContentProvider::Observer* observer) override;
 
  private:
   // OfflineContentProvider::Observer implementation.
@@ -93,12 +90,12 @@ class OfflineContentAggregator : public OfflineContentProvider,
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
                      const base::Optional<UpdateDelta>& update_delta) override;
+  void OnContentProviderGoingDown() override;
 
   void OnGetAllItemsDone(OfflineContentProvider* provider,
                          const OfflineItemList& items);
   void OnGetItemByIdDone(SingleItemCallback callback,
                          const base::Optional<OfflineItem>& item);
-  void NotifyItemsAdded(const OfflineItemList& items);
 
   // Stores a map of name_space -> OfflineContentProvider.  These
   // OfflineContentProviders are all aggregated by this class and exposed to the
@@ -110,9 +107,6 @@ class OfflineContentAggregator : public OfflineContentProvider,
   std::vector<MultipleItemCallback> multiple_item_get_callbacks_;
   OfflineItemList aggregated_items_;
   std::set<OfflineContentProvider*> pending_providers_;
-
-  // A list of all currently registered observers.
-  base::ObserverList<OfflineContentProvider::Observer>::Unchecked observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -1246,32 +1246,46 @@ TEST_F(SpdyStreamTestWithMockClock, InformationalHeaders) {
             load_timing_info.receive_non_informational_headers_start);
 }
 
-// 103 Early Hints hasn't been implemented yet, but we collect timing
-// information for the experiment (https://crbug.com/1093693). This tests it.
+// Tests that timing information of 103 Eary Hints responses are collected and
+// callbacks are called as expected.
 TEST_F(SpdyStreamTestWithMockClock, EarlyHints) {
   // Set up the request.
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
   AddWrite(req);
 
-  // Set up the early hints response headers.
-  spdy::Http2HeaderBlock informational_headers;
-  informational_headers[":status"] = "103";
-  spdy::SpdySerializedFrame informational_response(
+  // Set up two early hints response headers.
+  const char kLinkHeaderValue1[] = "</image.jpg>; rel=preload; as=image";
+  spdy::Http2HeaderBlock informational_headers1;
+  informational_headers1[":status"] = "103";
+  informational_headers1["link"] = kLinkHeaderValue1;
+  spdy::SpdySerializedFrame informational_response1(
       spdy_util_.ConstructSpdyResponseHeaders(
-          1, std::move(informational_headers), false));
-  // Add the headers twice to make sure that multiple informational responses
-  // don't confuse the timing information.
+          1, std::move(informational_headers1), false));
+
+  const char kLinkHeaderValue2[] = "</style.css>; rel=preload; as=stylesheet";
+  spdy::Http2HeaderBlock informational_headers2;
+  informational_headers2[":status"] = "103";
+  informational_headers2["link"] = kLinkHeaderValue2;
+  spdy::SpdySerializedFrame informational_response2(
+      spdy_util_.ConstructSpdyResponseHeaders(
+          1, std::move(informational_headers2), false));
+
+  // Add the headers to make sure that multiple informational responses don't
+  // confuse the timing information.
   const int kNumberOfInformationalResponses = 2;
-  for (int i = 0; i < kNumberOfInformationalResponses; ++i) {
-    // Separate the headers into 2 fragments and add pauses between the
-    // fragments so that the test runner can advance the mock clock to test
-    // timing information.
-    AddMockRead(ReadFrameExceptForLastByte(informational_response));
-    AddReadPause();
-    AddMockRead(LastByteOfReadFrame(informational_response));
-    AddReadPause();
-  }
+  // Separate the headers into 2 fragments and add pauses between the
+  // fragments so that the test runner can advance the mock clock to test
+  // timing information.
+  AddMockRead(ReadFrameExceptForLastByte(informational_response1));
+  AddReadPause();
+  AddMockRead(LastByteOfReadFrame(informational_response1));
+  AddReadPause();
+
+  AddMockRead(ReadFrameExceptForLastByte(informational_response2));
+  AddReadPause();
+  AddMockRead(LastByteOfReadFrame(informational_response2));
+  AddReadPause();
 
   // Set up the non-informational response headers and body.
   spdy::SpdySerializedFrame reply(
@@ -1303,8 +1317,36 @@ TEST_F(SpdyStreamTestWithMockClock, EarlyHints) {
     RunUntilNextPause();
     AdvanceClock(base::TimeDelta::FromSeconds(1));
   }
-  // We don't check the status code of the informational headers here because
-  // SpdyStream doesn't propagate it to the delegate.
+
+  // Check the callback was called twice with 103 status code.
+  const std::vector<spdy::Http2HeaderBlock>& early_hints =
+      delegate().early_hints();
+  EXPECT_EQ(early_hints.size(),
+            static_cast<size_t>(kNumberOfInformationalResponses));
+  {
+    const spdy::Http2HeaderBlock& hint = delegate().early_hints()[0];
+    spdy::Http2HeaderBlock::const_iterator status_iterator =
+        hint.find(spdy::kHttp2StatusHeader);
+    ASSERT_TRUE(status_iterator != hint.end());
+    EXPECT_EQ(status_iterator->second, "103");
+
+    spdy::Http2HeaderBlock::const_iterator link_header_iterator =
+        hint.find("link");
+    ASSERT_TRUE(link_header_iterator != hint.end());
+    EXPECT_EQ(link_header_iterator->second, kLinkHeaderValue1);
+  }
+  {
+    const spdy::Http2HeaderBlock& hint = delegate().early_hints()[1];
+    spdy::Http2HeaderBlock::const_iterator status_iterator =
+        hint.find(spdy::kHttp2StatusHeader);
+    ASSERT_TRUE(status_iterator != hint.end());
+    EXPECT_EQ(status_iterator->second, "103");
+
+    spdy::Http2HeaderBlock::const_iterator link_header_iterator =
+        hint.find("link");
+    ASSERT_TRUE(link_header_iterator != hint.end());
+    EXPECT_EQ(link_header_iterator->second, kLinkHeaderValue2);
+  }
 
   // The receive non-informational headers start time should be captured at this
   // time.
@@ -1851,6 +1893,57 @@ TEST_F(SpdyStreamTest, DataOnHalfClosedRemoveStream) {
   EXPECT_THAT(delegate.WaitForClose(), IsError(ERR_HTTP2_STREAM_CLOSED));
 
   base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(data.AllReadDataConsumed());
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+}
+
+TEST_F(SpdyStreamTest, DelegateIsInformedOfEOF) {
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
+      kDefaultUrl, 1, kPostBodyLength, LOWEST, nullptr, 0));
+  AddWrite(req);
+
+  spdy::Http2HeaderBlock response_headers;
+  response_headers[spdy::kHttp2StatusHeader] = "200";
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyResponseHeaders(
+      1, std::move(response_headers), /* fin = */ true));
+  AddRead(resp);
+
+  spdy::SpdySerializedFrame data_frame(
+      spdy_util_.ConstructSpdyDataFrame(1, kPostBodyStringPiece, true));
+  AddRead(data_frame);
+
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_STREAM_CLOSED));
+  AddWrite(rst);
+
+  AddReadEOF();
+
+  SequencedSocketData data(GetReads(), GetWrites());
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  base::WeakPtr<SpdySession> session(CreateDefaultSpdySession());
+
+  base::WeakPtr<SpdyStream> stream = CreateStreamSynchronously(
+      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST, NetLogWithSource());
+  ASSERT_TRUE(stream);
+  EXPECT_EQ(kDefaultUrl, stream->url().spec());
+
+  StreamDelegateDetectEOF delegate(stream);
+  stream->SetDelegate(&delegate);
+
+  spdy::Http2HeaderBlock headers(
+      spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, kPostBodyLength));
+  EXPECT_THAT(stream->SendRequestHeaders(std::move(headers), MORE_DATA_TO_SEND),
+              IsError(ERR_IO_PENDING));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(delegate.eof_detected());
 
   EXPECT_TRUE(data.AllReadDataConsumed());
   EXPECT_TRUE(data.AllWriteDataConsumed());

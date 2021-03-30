@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/component_export.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
 #include "ui/base/ime/composition_text.h"
@@ -33,7 +35,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
   MockIMEInputContextHandler();
   virtual ~MockIMEInputContextHandler();
 
-  void CommitText(const std::string& text) override;
+  void CommitText(
+      const std::u16string& text,
+      TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
   void UpdateCompositionText(const CompositionText& text,
                              uint32_t cursor_pos,
                              bool visible) override;
@@ -71,7 +75,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
 
   int send_key_event_call_count() const { return sent_key_events_.size(); }
 
-  const std::string& last_commit_text() const { return last_commit_text_; }
+  const std::u16string& last_commit_text() const { return last_commit_text_; }
 
   const UpdateCompositionTextArg& last_update_composition_arg() const {
     return last_update_composition_arg_;
@@ -93,7 +97,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
   int set_selection_range_call_count_;
   int update_preedit_text_call_count_;
   int delete_surrounding_text_call_count_;
-  std::string last_commit_text_;
+  std::u16string last_commit_text_;
   std::vector<ui::KeyEvent> sent_key_events_;
   UpdateCompositionTextArg last_update_composition_arg_;
   DeleteSurroundingTextArg last_delete_surrounding_text_arg_;

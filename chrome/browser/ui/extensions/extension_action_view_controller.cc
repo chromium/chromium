@@ -26,14 +26,12 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -97,17 +95,17 @@ gfx::Image ExtensionActionViewController::GetIcon(
       gfx::ImageSkia(GetIconImageSource(web_contents, size), size));
 }
 
-base::string16 ExtensionActionViewController::GetActionName() const {
+std::u16string ExtensionActionViewController::GetActionName() const {
   if (!ExtensionIsValid())
-    return base::string16();
+    return std::u16string();
 
   return base::UTF8ToUTF16(extension_->name());
 }
 
-base::string16 ExtensionActionViewController::GetAccessibleName(
+std::u16string ExtensionActionViewController::GetAccessibleName(
     content::WebContents* web_contents) const {
   if (!ExtensionIsValid())
-    return base::string16();
+    return std::u16string();
 
   // GetAccessibleName() can (surprisingly) be called during browser
   // teardown. Handle this gracefully.
@@ -117,7 +115,7 @@ base::string16 ExtensionActionViewController::GetAccessibleName(
   std::string title = extension_action()->GetTitle(
       sessions::SessionTabHelper::IdForTab(web_contents).id());
 
-  base::string16 title_utf16 =
+  std::u16string title_utf16 =
       base::UTF8ToUTF16(title.empty() ? extension()->name() : title);
 
   // Include a "host access" portion of the tooltip if the extension has or
@@ -146,7 +144,7 @@ base::string16 ExtensionActionViewController::GetAccessibleName(
   return title_utf16;
 }
 
-base::string16 ExtensionActionViewController::GetTooltip(
+std::u16string ExtensionActionViewController::GetTooltip(
     content::WebContents* web_contents) const {
   return GetAccessibleName(web_contents);
 }
@@ -212,13 +210,7 @@ void ExtensionActionViewController::OnContextMenuShown() {
 }
 
 void ExtensionActionViewController::OnContextMenuClosed() {
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    extensions_container_->OnContextMenuClosed(this);
-    return;
-  }
-
-  if (extensions_container_->GetPoppedOutAction() == this && !IsShowingPopup())
-    extensions_container_->UndoPopOut();
+  extensions_container_->OnContextMenuClosed(this);
 }
 
 bool ExtensionActionViewController::ExecuteAction(bool by_user,
@@ -254,8 +246,7 @@ bool ExtensionActionViewController::ExecuteAction(PopupShowAction show_action,
   if (!action_runner)
     return false;
 
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
-    extensions_container_->CloseOverflowMenuIfOpen();
+  extensions_container_->CloseOverflowMenuIfOpen();
 
   if (action_runner->RunAction(extension(), grant_tab_permissions) ==
       extensions::ExtensionAction::ACTION_SHOW_POPUP) {
@@ -411,17 +402,12 @@ bool ExtensionActionViewController::TriggerPopupWithUrl(
   popup_host_observer_.Add(popup_host_);
   extensions_container_->SetPopupOwner(this);
 
-  if (!extensions_container_->IsActionVisibleOnToolbar(this) ||
-      base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    extensions_container_->CloseOverflowMenuIfOpen();
-    extensions_container_->PopOutAction(
-        this, show_action == SHOW_POPUP_AND_INSPECT,
-        base::Bind(&ExtensionActionViewController::ShowPopup,
-                   weak_factory_.GetWeakPtr(), base::Passed(std::move(host)),
-                   grant_tab_permissions, show_action));
-  } else {
-    ShowPopup(std::move(host), grant_tab_permissions, show_action);
-  }
+  extensions_container_->CloseOverflowMenuIfOpen();
+  extensions_container_->PopOutAction(
+      this, show_action == SHOW_POPUP_AND_INSPECT,
+      base::BindOnce(&ExtensionActionViewController::ShowPopup,
+                     weak_factory_.GetWeakPtr(), std::move(host),
+                     grant_tab_permissions, show_action));
 
   return true;
 }
@@ -443,11 +429,8 @@ void ExtensionActionViewController::OnPopupClosed() {
   popup_host_observer_.Remove(popup_host_);
   popup_host_ = nullptr;
   extensions_container_->SetPopupOwner(nullptr);
-  if (extensions_container_->GetPoppedOutAction() == this &&
-      (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu) ||
-       !view_delegate_->IsMenuRunning())) {
+  if (extensions_container_->GetPoppedOutAction() == this)
     extensions_container_->UndoPopOut();
-  }
   view_delegate_->OnPopupClosed();
 }
 

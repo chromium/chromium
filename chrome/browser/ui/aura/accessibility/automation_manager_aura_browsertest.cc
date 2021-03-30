@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -16,9 +17,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "extensions/common/extension_messages.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_event_bundle_sink.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/accessibility/ax_tree_source_views.h"
@@ -60,24 +61,27 @@ void FindAllHostsOfWebContentsWithAXTreeID(
 
 // A helper to retrieve an ax tree id given a RenderFrameHost.
 ui::AXTreeID GetAXTreeIDFromRenderFrameHost(content::RenderFrameHost* rfh) {
-  auto* registry = ui::AXTreeIDRegistry::GetInstance();
-  return registry->GetAXTreeID(ui::AXTreeIDRegistry::FrameID(
+  auto* registry = ui::AXActionHandlerRegistry::GetInstance();
+  return registry->GetAXTreeID(ui::AXActionHandlerRegistry::FrameID(
       rfh->GetProcess()->GetID(), rfh->GetRoutingID()));
 }
 
 // A class that installs itself as the sink to handle automation event bundles
 // from AutomationManagerAura, then waits until an automation event indicates
 // that a given node ID is focused.
-class AutomationEventWaiter : public ui::AXEventBundleSink {
+class AutomationEventWaiter
+    : public extensions::AutomationEventRouterInterface {
  public:
   AutomationEventWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {
-    AutomationManagerAura::GetInstance()->set_event_bundle_sink(this);
+    AutomationManagerAura::GetInstance()->set_automation_event_router_interface(
+        this);
   }
 
-  ~AutomationEventWaiter() override {
+  virtual ~AutomationEventWaiter() {
     // Don't bother to reconnect to AutomationEventRouter because it's not
     // relevant to the tests.
-    AutomationManagerAura::GetInstance()->set_event_bundle_sink(nullptr);
+    AutomationManagerAura::GetInstance()->set_automation_event_router_interface(
+        nullptr);
   }
 
   // Returns immediately if the node with AXAuraObjCache ID |node_id|
@@ -107,7 +111,7 @@ class AutomationEventWaiter : public ui::AXEventBundleSink {
   }
 
  private:
-  // ui::AXEventBundleSink:
+  // extensions::AutomationEventRouterInterface:
   void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
                                    std::vector<ui::AXTreeUpdate> updates,
                                    const gfx::Point& mouse_location,
@@ -134,6 +138,18 @@ class AutomationEventWaiter : public ui::AXEventBundleSink {
       }
     }
   }
+  void DispatchAccessibilityLocationChange(
+      const ExtensionMsg_AccessibilityLocationChangeParams& params) override {}
+  void DispatchTreeDestroyedEvent(
+      ui::AXTreeID tree_id,
+      content::BrowserContext* browser_context) override {}
+  void DispatchActionResult(
+      const ui::AXActionData& data,
+      bool result,
+      content::BrowserContext* browser_context = nullptr) override {}
+  void DispatchGetTextLocationDataResult(
+      const ui::AXActionData& data,
+      const base::Optional<gfx::Rect>& rect) override {}
 
   std::unique_ptr<base::RunLoop> run_loop_;
   int node_id_to_wait_for_ = -1;
@@ -370,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   // accessibility event that shows this view is focused.
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kFocus;
-  action_data.target_tree_id = manager->tree_.get()->tree_id_for_test();
+  action_data.target_tree_id = manager->tree_.get()->tree_id();
   action_data.target_node_id = wrapper2->GetUniqueId();
 
   manager->PerformAction(action_data);
@@ -381,4 +397,47 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   cache_ptr->set_focused_widget_for_testing(nullptr);
 
   AddFailureOnWidgetAccessibilityError(widget);
+}
+
+// Verify that re-enabling AutomationManagerAura after disable will not cause
+// crash.  See https://crbug.com/1177042.
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
+                       ReenableDoesNotCauseCrash) {
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  manager->Enable();
+
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Activate();
+
+  manager->Disable();
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+
+  manager->Enable();
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
+                       AXActionHandlerRegistryUpdates) {
+  ui::AXActionHandlerRegistry* registry =
+      ui::AXActionHandlerRegistry::GetInstance();
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  ui::AXTreeID tree_id = manager->ax_tree_id();
+
+  // TODO: after Lacros, this should be EQ.
+  EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
+  manager->Enable();
+  EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
+  manager->Disable();
+
+  // TODO: after Lacros, this should be EQ.
+  EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
+  manager->Enable();
+  EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
 }

@@ -69,19 +69,14 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
     dawn_desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPUBindGroup>(
+  GPUBindGroup* bind_group = MakeGarbageCollected<GPUBindGroup>(
       device, device->GetProcs().deviceCreateBindGroup(device->GetHandle(),
                                                        &dawn_desc));
+  bind_group->setLabel(webgpu_desc->label());
+  return bind_group;
 }
 
 GPUBindGroup::GPUBindGroup(GPUDevice* device, WGPUBindGroup bind_group)
     : DawnObject<WGPUBindGroup>(device, bind_group) {}
-
-GPUBindGroup::~GPUBindGroup() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
-  GetProcs().bindGroupRelease(GetHandle());
-}
 
 }  // namespace blink

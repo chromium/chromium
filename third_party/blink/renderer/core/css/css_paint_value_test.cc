@@ -133,7 +133,7 @@ TEST_P(CSSPaintValueTest, ReportingNonCompositedUMA) {
 
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  auto style = ComputedStyle::Create();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   StyleGeneratedImage* style_image =

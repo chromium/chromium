@@ -51,7 +51,8 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
   void AddMigratorProvider() {
     service()->AddProviderForTesting(std::make_unique<ExternalProviderImpl>(
         service(), new ExtensionMigrator(profile(), kOldId, kNewId), profile(),
-        Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
+        mojom::ManifestLocation::kExternalPref,
+        mojom::ManifestLocation::kExternalPrefDownload,
         Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
   }
 

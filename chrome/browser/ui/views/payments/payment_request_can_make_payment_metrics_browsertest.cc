@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
   CheckPaymentSupportAndThenShow();
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -201,19 +201,16 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
 
   // Add a test credit card.
   OpenCreditCardEditorScreen();
-  SetEditorTextfieldValue(base::UTF8ToUTF16("Bob Simpson"),
-                          autofill::CREDIT_CARD_NAME_FULL);
-  SetEditorTextfieldValue(base::UTF8ToUTF16("4111111111111111"),
-                          autofill::CREDIT_CARD_NUMBER);
-  SetComboboxValue(base::UTF8ToUTF16("05"), autofill::CREDIT_CARD_EXP_MONTH);
-  SetComboboxValue(base::UTF8ToUTF16("2026"),
-                   autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR);
+  SetEditorTextfieldValue(u"Bob Simpson", autofill::CREDIT_CARD_NAME_FULL);
+  SetEditorTextfieldValue(u"4111111111111111", autofill::CREDIT_CARD_NUMBER);
+  SetComboboxValue(u"05", autofill::CREDIT_CARD_EXP_MONTH);
+  SetComboboxValue(u"2026", autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR);
   SelectBillingAddress(billing_address.guid());
   ResetEventWaiter(DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION);
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -436,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
   WaitForObservedEvent();
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure that no canMakePayment events were logged.
   std::vector<base::Bucket> buckets =

@@ -56,6 +56,19 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
 
   // If true, the database can only be opened by one process at a time.
   //
+  // SQLite supports a locking protocol that allows multiple processes to safely
+  // operate on the same database at the same time. The locking protocol is used
+  // on every transaction, and comes with a small performance penalty.
+  //
+  // Setting this to true causes the locking protocol to be used once, when the
+  // database is opened. No other process will be able to access the database at
+  // the same time.
+  //
+  // More details at https://www.sqlite.org/pragma.html#pragma_locking_mode
+  //
+  // SQLite's locking protocol is summarized at
+  // https://www.sqlite.org/c3ref/io_methods.html
+  //
   // Exclusive mode is strongly recommended. It reduces the I/O cost of setting
   // up a transaction. It also removes the need of handling transaction failures
   // due to lock contention.
@@ -67,6 +80,13 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // Chrome features yet. In particular, our custom database recovery code does
   // not support the WAL log file.
   //
+  // WAL mode is currently not fully supported on FuchsiaOS. It will only be
+  // turned on if the database is also using exclusive locking mode.
+  // (https://crbug.com/1082059)
+  //
+  // Note: Changing page size is not supported when in WAL mode. So running
+  // 'PRAGMA page_size = <new-size>' will result in no-ops.
+  //
   // More details at https://www.sqlite.org/wal.html
   bool wal_mode =
       base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault);
@@ -76,6 +96,8 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // Larger page sizes result in shallower B-trees, because they allow an inner
   // page to hold more keys. On the flip side, larger page sizes may result in
   // more I/O when making small changes to existing records.
+  //
+  // Must be a power of two between 512 and 65536 inclusive.
   int page_size = kDefaultPageSize;
 
   // The size of in-memory cache, in pages.
@@ -116,69 +138,11 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Pre-init configuration ----------------------------------------------------
 
-  // Sets the page size that will be used when creating a new database. This
-  // must be called before Init(), and will only have an effect on new
-  // databases.
-  //
-  // The page size must be a power of two between 512 and 65536 inclusive.
-  void set_page_size(int page_size) {
-    DCHECK_GE(page_size, 512);
-    DCHECK_LE(page_size, 65536);
-    DCHECK(!(page_size & (page_size - 1)))
-        << "page_size must be a power of two";
-
-    options_.page_size = page_size;
-  }
-
   // The page size that will be used when creating a new database.
   int page_size() const { return options_.page_size; }
 
-  // Sets the number of pages that will be cached in memory by sqlite. The
-  // total cache size in bytes will be page_size * cache_size. This must be
-  // called before Open() to have an effect.
-  void set_cache_size(int cache_size) {
-    DCHECK_GE(cache_size, 0);
-
-    options_.cache_size = cache_size;
-  }
-
   // Returns whether a database will be opened in WAL mode.
   bool UseWALMode() const;
-
-  // Enables/disables WAL mode (https://www.sqlite.org/wal.html) when
-  // opening a new database.
-  //
-  // WAL mode is currently not fully supported on FuchsiaOS. It will only be
-  // turned on if the database is also using exclusive locking mode.
-  // (https://crbug.com/1082059)
-  //
-  // Note: Changing page size is not supported when in WAL mode. So running
-  // 'PRAGMA page_size = <new-size>' or using set_page_size will result in
-  // no-ops.
-  //
-  // This must be called before Open() to have an effect.
-  void want_wal_mode(bool enabled) { options_.wal_mode = enabled; }
-
-  // Makes database accessible by only one process at a time.
-  //
-  // TODO(https://crbug.com/1120969): This should be the default mode. The
-  //                                  "NORMAL" mode should be opt-in.
-  //
-  // SQLite supports a locking protocol that allows multiple processes to safely
-  // operate on the same database at the same time. The locking protocol is used
-  // on every transaction, and comes with a small performance penalty.
-  //
-  // Calling this method causes the locking protocol to be used once, when the
-  // database is opened. No other process will be able to access the database at
-  // the same time.
-  //
-  // This method must be called before Open() to have an effect.
-  //
-  // More details at https://www.sqlite.org/pragma.html#pragma_locking_mode
-  //
-  // SQLite's locking protocol is summarized at
-  // https://www.sqlite.org/c3ref/io_methods.html
-  void set_exclusive_locking() { options_.exclusive_locking = true; }
 
   // Call to use alternative status-tracking for mmap.  Usually this is tracked
   // in the meta table, but some databases have no meta table.

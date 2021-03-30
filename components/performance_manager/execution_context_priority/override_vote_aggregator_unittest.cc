@@ -10,7 +10,6 @@
 namespace performance_manager {
 namespace execution_context_priority {
 
-using DummyVoter = voting::test::DummyVoter<Vote>;
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
 // Some dummy execution contexts.
@@ -51,7 +50,7 @@ class OverrideVoteAggregatorTest : public testing::Test {
 
   OverrideVoteAggregator* aggregator() { return &aggregator_; }
 
-  void TestSingleVoter(VotingChannelWrapper* voter) {
+  void TestSingleVoter(VotingChannel* voter) {
     EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
 
     voter->SubmitVote(kExecutionContext0, kLowPriorityVote0);
@@ -108,20 +107,16 @@ class OverrideVoteAggregatorTest : public testing::Test {
 // Tests that in the case of a single voter, the vote is simply propagated
 // upwards.
 TEST_F(OverrideVoteAggregatorTest, SingleVoter) {
-  VotingChannelWrapper default_voter;
-  default_voter.SetVotingChannel(aggregator()->GetDefaultVotingChannel());
-  VotingChannelWrapper override_voter;
-  override_voter.SetVotingChannel(aggregator()->GetOverrideVotingChannel());
+  VotingChannel default_voter = aggregator()->GetDefaultVotingChannel();
+  VotingChannel override_voter = aggregator()->GetOverrideVotingChannel();
 
   TestSingleVoter(&default_voter);
   TestSingleVoter(&override_voter);
 }
 
 TEST_F(OverrideVoteAggregatorTest, OneContext) {
-  VotingChannelWrapper default_voter;
-  default_voter.SetVotingChannel(aggregator()->GetDefaultVotingChannel());
-  VotingChannelWrapper override_voter;
-  override_voter.SetVotingChannel(aggregator()->GetOverrideVotingChannel());
+  VotingChannel default_voter = aggregator()->GetDefaultVotingChannel();
+  VotingChannel override_voter = aggregator()->GetOverrideVotingChannel();
 
   EXPECT_FALSE(observer().HasVote(aggregator_voter_id(), kExecutionContext0));
 
@@ -166,10 +161,8 @@ TEST_F(OverrideVoteAggregatorTest, OneContext) {
 // A less extensive test than OneContext that sanity checks that votes for
 // different contexts are aggregated independently.
 TEST_F(OverrideVoteAggregatorTest, MultipleContexts) {
-  VotingChannelWrapper default_voter;
-  default_voter.SetVotingChannel(aggregator()->GetDefaultVotingChannel());
-  VotingChannelWrapper override_voter;
-  override_voter.SetVotingChannel(aggregator()->GetOverrideVotingChannel());
+  VotingChannel default_voter = aggregator()->GetDefaultVotingChannel();
+  VotingChannel override_voter = aggregator()->GetOverrideVotingChannel();
 
   // Vote for execution context 1. The override vote lowers the priority of the
   // upstreamed vote.

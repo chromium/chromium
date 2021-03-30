@@ -60,6 +60,9 @@ class BaseSearchPrefetchRequest {
   BaseSearchPrefetchRequest& operator=(const BaseSearchPrefetchRequest&) =
       delete;
 
+  // The NTA for any search prefetch request.
+  static net::NetworkTrafficAnnotationTag NetworkAnnotationForPrefetch();
+
   // Starts the network request to prefetch |prefetch_url_|. Sets various fields
   // on a resource request and calls |StartPrefetchRequestInternal()|. Returns
   // |false| if the request is not started (i.e., it would be deferred by
@@ -80,6 +83,9 @@ class BaseSearchPrefetchRequest {
 
   // Update the status when the relevant search item is clicked in omnibox.
   void MarkPrefetchAsClicked();
+
+  // The URL for the prefetch request.
+  const GURL& prefetch_url() { return prefetch_url_; }
 
   // Whether the prefetch should be served based on |headers|.
   bool CanServePrefetchRequest(

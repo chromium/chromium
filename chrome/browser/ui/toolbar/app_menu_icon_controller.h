@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
@@ -92,8 +92,8 @@ class AppMenuIconController : public GlobalErrorObserver,
   UpgradeDetector* const upgrade_detector_;
   Profile* const profile_;
   Delegate* const delegate_;
-  ScopedObserver<GlobalErrorService, GlobalErrorObserver>
-      global_error_observer_{this};
+  base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
+      global_error_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppMenuIconController);
 };

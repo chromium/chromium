@@ -3,21 +3,21 @@ Tests that console logging large messages will be truncated.
 Setting max length to: 40
 Setting long string visible length to: 20
 Message: 0, length: 14, "a".repeat(80)
-Message: 1, length: 22, "aaaaaaaaaaaaaaaaaaaa"
+Message: 1, length: 20, "aaaaaaaaaaaaaaaaaaa
 Message: 2, length: 20, aaaaaaaaaaaaaaaaaaaa
 Message: 3, length: 41, aaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbb
 Message: 4, length: 20, aaaaaaaaaaaaaaaaaaaa
-Message: 5, length: 22, "aaaaaaaaaaaaaaaaaaaa"
+Message: 5, length: 20, "aaaaaaaaaaaaaaaaaaa
 Message: 6, length: 20, aaaaaaaaaaaaaaaaaaaa
 Message: 7, length: 56, foo aaaaaaaaaaaaaaaaaaaa {a: 1}a: 1__proto__: Object bar
-Message: 8, length: 78, {a: 1}a: 1__proto__: Object "aaaaaaaaaaaaaaaaaaaa" {b: 1}b: 1__proto__: Object
+Message: 8, length: 76, {a: 1}a: 1__proto__: Object "aaaaaaaaaaaaaaaaaaa {b: 1}b: 1__proto__: Object
 Link: https://chromium.org
 Message: 9, length: 41, aaaaaaaaaaaaaaaaaaaa https://chromium.org
 Link: https://chromium.org
 Message: 10, length: 41, https://chromium.org aaaaaaaaaaaaaaaaaaaa
 Message: 11, length: 20, /aaaaaaaaaaaaaaaaaaa
 Message: 12, length: 20, Symbol(aaaaaaaaaaaaa
-Message: 13, length: 167, ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]0: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"length: 1__proto__: Array(0)
+Message: 13, length: 165, ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]0: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalength: 1__proto__: Array(0)
 
 Expanding hidden texts
 Message: 0, length: 14, "a".repeat(80)
@@ -35,5 +35,5 @@ Link: https://chromium.org
 Message: 10, length: 101, https://chromium.org aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 Message: 11, length: 82, /aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/
 Message: 12, length: 88, Symbol(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)
-Message: 13, length: 167, ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]0: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"length: 1__proto__: Array(0)
+Message: 13, length: 165, ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]0: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalength: 1__proto__: Array(0)
 

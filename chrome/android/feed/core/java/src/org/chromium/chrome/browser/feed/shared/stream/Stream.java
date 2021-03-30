@@ -9,6 +9,8 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.ntp.ScrollListener;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
@@ -85,6 +87,12 @@ public interface Stream {
     void setStreamContentVisibility(boolean visible);
 
     /**
+     * Visibility of the feed was toggled through the header menu. Note that
+     * setStreamContentVisibility() is also called when this happens.
+     */
+    default void toggledArticlesListVisible(boolean visible) {}
+
+    /**
      * Notifies the Stream to purge unnecessary memory. This just purges recycling pools for now.
      * Can expand out as needed.
      */
@@ -145,7 +153,15 @@ public interface Stream {
      */
     default int getFirstCardDensity() {
         return FeedFirstCardDensity.UNKNOWN;
-    };
+    }
+
+    /**
+     * Functions which report UMA / actions in Feed v2 only.
+     */
+    default void recordActionManageInterests() {}
+    default void recordActionManageActivity() {}
+    default void recordActionManageReactions() {}
+    default void recordActionLearnMore() {}
 
     /**
      * Interface users can implement to know when content in the Stream has changed content on
@@ -163,52 +179,5 @@ public interface Stream {
          * {@link androidx.recyclerview.widget.SimpleItemAnimator#onAddFinished} event is received.
          */
         default void onAddFinished(){};
-
-        /**
-         * Called by Stream when an
-         * {@link androidx.recyclerview.widget.SimpleItemAnimator#onAddStarting} event is received.
-         */
-        default void onAddStarting(){};
-    }
-
-    /** Interface users can implement to be told about changes to scrolling in the Stream. */
-    interface ScrollListener {
-        /**
-         * Constant used to denote that a scroll was performed but scroll delta could not be
-         * calculated. This normally maps to a programmatic scroll.
-         */
-        int UNKNOWN_SCROLL_DELTA = Integer.MIN_VALUE;
-
-        void onScrollStateChanged(@ScrollState int state);
-
-        /**
-         * Called when a scroll happens and provides the amount of pixels scrolled. {@link
-         * #UNKNOWN_SCROLL_DELTA} will be specified if scroll delta would not be determined. An
-         * example of this would be a scroll initiated programmatically.
-         */
-        void onScrolled(int dx, int dy);
-
-        /**
-         * Possible scroll states.
-         *
-         * <p>When adding new values, the value of {@link ScrollState#NEXT_VALUE} should be used and
-         * incremented. When removing values, {@link ScrollState#NEXT_VALUE} should not be changed,
-         * and those values should not be reused.
-         */
-        @IntDef({ScrollState.IDLE, ScrollState.DRAGGING, ScrollState.SETTLING,
-                ScrollState.NEXT_VALUE})
-        @interface ScrollState {
-            /** Stream is not scrolling */
-            int IDLE = 0;
-
-            /** Stream is currently scrolling through external means such as user input. */
-            int DRAGGING = 1;
-
-            /** Stream is animating to a final position. */
-            int SETTLING = 2;
-
-            /** The next value that should be used when adding additional values to the IntDef. */
-            int NEXT_VALUE = 3;
-        }
     }
 }

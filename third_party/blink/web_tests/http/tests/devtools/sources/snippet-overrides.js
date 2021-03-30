@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       'Verifies that snippets still map when local overrides is on.\n');
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
 
   await BindingsTestRunner.createOverrideProject('file:///tmp');

@@ -292,6 +292,12 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, LocationInWebView) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionSubtest("automation/tests/desktop", "iframenav.html"))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
   ASSERT_TRUE(RunExtensionSubtest("automation/tests/tabs",
                                   "desktop_not_requested.html")) << message_;
@@ -469,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, AccessibilityFocus) {
       << message_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(http://crbug.com/1162238): flaky on ChromeOS.
 #define MAYBE_TextareaAppendPerf DISABLED_TextareaAppendPerf
 #else

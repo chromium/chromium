@@ -47,7 +47,7 @@ template <typename T, size_t N>
 struct ExtentImpl<base::span<T, N>> : size_constant<N> {};
 
 template <typename T>
-using Extent = ExtentImpl<std::remove_cv_t<std::remove_reference_t<T>>>;
+using Extent = ExtentImpl<remove_cvref_t<T>>;
 
 template <typename T>
 struct IsSpanImpl : std::false_type {};

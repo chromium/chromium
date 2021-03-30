@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
+#include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_device_discovery.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -57,7 +58,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
           qr_generator_key,
       std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings);
 
-  void set_usb_device_manager(mojo::Remote<device::mojom::UsbDeviceManager>);
+  // set_android_accessory_params configures values necessary for discovering
+  // Android AOA devices. The |aoa_request_description| is a string that is sent
+  // to the device to describe the type of request and may appears in
+  // permissions UI on the device.
+  void set_android_accessory_params(
+      mojo::Remote<device::mojom::UsbDeviceManager>,
+      std::string aoa_request_description);
 
   void set_network_context(network::mojom::NetworkContext*);
 
@@ -90,8 +97,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Records the callback to generates request_id.
+  // Sets a callback to generate an identifier when making DBUS requests to
+  // u2fd.
   void set_generate_request_id_callback(base::RepeatingCallback<uint32_t()>);
+
+  // Configures the ChromeOS platform authenticator discovery to instantiate an
+  // authenticator if the legacy U2F authenticator is enabled by policy.
+  void set_require_legacy_cros_authenticator(bool value);
+
+  // Sets a CtapGetAssertionRequest on the instance for checking if a credential
+  // exists on the enterprise policy controlled legacy U2F authenticator. If one
+  // exists and the enterprise policy is active, an authenticator may be
+  // instantiated even if IsUVPAA() is false (because no PIN has been set).
+  void set_get_assertion_request_for_legacy_credential_check(
+      CtapGetAssertionRequest request);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
@@ -108,6 +127,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #endif  // defined(OS_MAC)
   base::Optional<mojo::Remote<device::mojom::UsbDeviceManager>>
       usb_device_manager_;
+  std::string aoa_request_description_;
   network::mojom::NetworkContext* network_context_ = nullptr;
   base::Optional<std::vector<CableDiscoveryData>> cable_data_;
   base::Optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
@@ -119,6 +139,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #endif  // defined(OS_WIN)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
+  bool require_legacy_cros_authenticator_ = false;
+  base::Optional<CtapGetAssertionRequest>
+      get_assertion_request_for_legacy_credential_check_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   base::flat_set<VidPid> hid_ignore_list_;
 };

@@ -6,13 +6,13 @@
 #define ASH_SYSTEM_NETWORK_ACTIVE_NETWORK_ICON_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -52,15 +52,17 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   // Provides the a11y and tooltip strings for |type|. Output parameters can
   // be null.
   void GetConnectionStatusStrings(Type type,
-                                  base::string16* a11y_name,
-                                  base::string16* a11y_desc,
-                                  base::string16* tooltip);
+                                  std::u16string* a11y_name,
+                                  std::u16string* a11y_desc,
+                                  std::u16string* tooltip);
 
   // Returns a network icon (which may be empty) and sets |animating| if
   // provided.
   gfx::ImageSkia GetImage(Type type,
                           network_icon::IconType icon_type,
                           bool* animating);
+
+  void PurgeNetworkIconCache();
 
  private:
   gfx::ImageSkia GetSingleImage(network_icon::IconType icon_type,
@@ -86,7 +88,6 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   void ActiveNetworkStateChanged() override;
   void NetworkListChanged() override;
 
-  void PurgeNetworkIconCache();
   const chromeos::network_config::mojom::NetworkStateProperties*
   GetNetworkForType(Type type);
 

@@ -84,6 +84,9 @@ class Adapter : public mojom::Adapter,
       const device::BluetoothUUID& service_uuid,
       ConnectToServiceInsecurelyCallback callback,
       device::BluetoothDevice* device);
+  void ProcessPendingInsecureServiceConnectionRequest(
+      const std::string& address,
+      device::BluetoothDevice* device);
 
   void OnGattConnected(
       ConnectToDeviceCallback callback,

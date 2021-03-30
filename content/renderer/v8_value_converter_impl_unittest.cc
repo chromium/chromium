@@ -1216,7 +1216,7 @@ TEST_F(V8ValueConverterImplTest, StrategyBypass) {
   const char kExampleData[] = {1, 2, 3, 4, 5};
   v8::Local<v8::ArrayBuffer> array_buffer(
       v8::ArrayBuffer::New(isolate_, sizeof(kExampleData)));
-  memcpy(array_buffer->GetContents().Data(), kExampleData,
+  memcpy(array_buffer->GetBackingStore()->Data(), kExampleData,
          sizeof(kExampleData));
   std::unique_ptr<base::Value> binary_value(
       converter.FromV8Value(array_buffer, context));

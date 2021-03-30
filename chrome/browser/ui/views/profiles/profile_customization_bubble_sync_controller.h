@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -66,7 +67,7 @@ class ProfileCustomizationBubbleSyncController
   void OnStateChanged(syncer::SyncService* sync) override;
 
   // ThemeSyncableService::Observer:
-  void OnThemeSyncStarted() override;
+  void OnThemeSyncStarted(ThemeSyncableService::ThemeSyncState state) override;
 
   // This function may delete the object.
   void Init();
@@ -80,6 +81,7 @@ class ProfileCustomizationBubbleSyncController
   ThemeService* const theme_service_;
   base::OnceCallback<void(bool)> show_bubble_callback_;
   SkColor const suggested_profile_color_;
+  base::TimeTicks observation_start_time_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};

@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /> キーを押す</translation>
 <translation id="1733525068429116555">アドレスバーに入力した語句に www. と .com を追加してページを開く</translation>
+<translation id="1768987374400973299">スクリーンショットを撮影する / 録画する</translation>
 <translation id="1872219238824176091">現在のデスクを削除する</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> キーを押した状態で <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> キーまたは <ph name="LEFT" /> キーを押す</translation>
 <translation id="1996162290124031907">次のタブに移動する</translation>
 <translation id="2010818616644390445">ウィンドウ内の最後のタブに移動する</translation>
 <translation id="2040706009561734834">ランチャーを開く / 閉じる</translation>
+<translation id="2086334242442703436">絵文字選択ツールを開く</translation>
 <translation id="2088054208777350526">キーボード ショートカットを検索</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> または <ph name="F" /></translation>
 <translation id="2145908266289632567">テキスト編集</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Google アシスタントを開く</translation>
 <translation id="2488661730534396940">左のデスクを有効にする</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">診断アプリを開く</translation>
 <translation id="2530339807289914946">ウェブページを下にスクロールする</translation>
 <translation id="2530896289327917474">カーソル ブラウジングをオンまたはオフにする</translation>
 <translation id="2574014812750545982">ページのズームレベルをリセット</translation>
@@ -111,6 +114,7 @@
 <translation id="4801989101741319327">次の単語の末尾に移動する</translation>
 <translation id="4866066940972151697">右のデスクを有効にする</translation>
 <translation id="4916163929714267752">新しいウィンドウでリンクを開く</translation>
+<translation id="492453977506755176">キャプチャ モード キー</translation>
 <translation id="5030659775136592441">ブックマーク マネージャを表示する</translation>
 <translation id="5034421018520995080">ページの一番上に移動する</translation>
 <translation id="5042305953558921026">概要モード キー</translation>
@@ -133,6 +137,7 @@
 <translation id="5899919361772749550">デベロッパー ツール コンソールの表示と非表示を切り替える</translation>
 <translation id="5919628958418675842">プライバシー スクリーンをオンまたはオフにします</translation>
 <translation id="5921745308587794300">ウィンドウを回転</translation>
+<translation id="5926306472221400972">全画面のスクリーンショットを撮影する</translation>
 <translation id="6022924867608035986">検索ボックスのテキストを消去</translation>
 <translation id="6045998054441862242">ハイ コントラスト モードを有効にする</translation>
 <translation id="6052614013050385269">リンクを右クリックする</translation>
@@ -150,6 +155,7 @@
 <translation id="6445033640292336367">タブを元の位置に戻す</translation>
 <translation id="6474744297082284761">ズームアウト（ドッキングまたは全画面の拡大鏡が有効な場合）</translation>
 <translation id="649811797655257835">ファイルを選択して <ph name="SPACE" /> キーを押す</translation>
+<translation id="6551886416582667425">画面の一部のスクリーンショットを撮影する / 録画する</translation>
 <translation id="6556040137485212400">最も長く使われていないウィンドウを開く</translation>
 <translation id="666343722268997814">ハイライト表示されたアイテムで右クリックメニューを開く</translation>
 <translation id="6671538777808758331">検索に一致する次の文字列に移動する</translation>
@@ -176,6 +182,7 @@
 <translation id="7611271430932669992">ポップアップとダイアログにフォーカスを移動する</translation>
 <translation id="7635348532214572995">アプリグリッド内でアプリアイコンを移動します</translation>
 <translation id="766326951329901120">クリップボードの内容をプレーン テキストとして貼り付ける</translation>
+<translation id="7673453620027697230">ウィンドウのスクリーンショットを撮影する / 録画する</translation>
 <translation id="7703010453515335249">左角かっこ</translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> キーを押した状態で <ph name="SPACE" /> キーまたは <ph name="ENTER" /> キーを押す</translation>

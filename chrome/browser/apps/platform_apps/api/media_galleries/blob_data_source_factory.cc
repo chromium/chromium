@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/platform_apps/api/media_galleries/blob_data_source_factory.h"
+
+#include <utility>
+
 #include "base/bind.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/blob_reader.h"
@@ -25,6 +28,8 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
         blob_uuid_(blob_uuid),
         callback_(callback) {}
 
+  BlobMediaDataSource(const BlobMediaDataSource&) = delete;
+  BlobMediaDataSource& operator=(const BlobMediaDataSource&) = delete;
   ~BlobMediaDataSource() override = default;
 
  private:
@@ -41,7 +46,7 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
     BlobReader::Read(
         browser_context_, blob_uuid_,
         base::BindOnce(&BlobMediaDataSource::OnBlobReaderDone,
-                       weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+                       weak_factory_.GetWeakPtr(), std::move(callback)),
         position, length);
   }
 
@@ -59,8 +64,6 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
   BlobDataSourceFactory::MediaDataCallback callback_;
 
   base::WeakPtrFactory<BlobMediaDataSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlobMediaDataSource);
 };
 
 }  // namespace

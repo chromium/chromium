@@ -167,11 +167,11 @@ class NTPTileSaverControllerTest : public BlockCleanupTest {
 
 TEST_F(NTPTileSaverControllerTest, SaveMostVisitedToDisk) {
   ntp_tiles::NTPTile image_tile = ntp_tiles::NTPTile();
-  image_tile.title = base::ASCIIToUTF16("Title");
+  image_tile.title = u"Title";
   image_tile.url = GURL("http://image.com");
 
   ntp_tiles::NTPTile fallback_tile = ntp_tiles::NTPTile();
-  fallback_tile.title = base::ASCIIToUTF16("Title");
+  fallback_tile.title = u"Title";
   fallback_tile.url = GURL("http://fallback.com");
 
   id mock_favicon_fetcher = OCMClassMock([FaviconAttributesProvider class]);
@@ -208,15 +208,15 @@ TEST_F(NTPTileSaverControllerTest, SaveMostVisitedToDisk) {
 TEST_F(NTPTileSaverControllerTest, UpdateSingleFaviconFallback) {
   // Set up test with 3 saved sites, 2 of which have a favicon.
   ntp_tiles::NTPTile image_tile1 = ntp_tiles::NTPTile();
-  image_tile1.title = base::ASCIIToUTF16("Title1");
+  image_tile1.title = u"Title1";
   image_tile1.url = GURL("http://image1.com");
 
   ntp_tiles::NTPTile image_tile2 = ntp_tiles::NTPTile();
-  image_tile2.title = base::ASCIIToUTF16("Title2");
+  image_tile2.title = u"Title2";
   image_tile2.url = GURL("http://image2.com");
 
   ntp_tiles::NTPTile fallback_tile = ntp_tiles::NTPTile();
-  fallback_tile.title = base::ASCIIToUTF16("Title");
+  fallback_tile.title = u"Title";
   fallback_tile.url = GURL("http://fallback.com");
 
   id mock_favicon_fetcher = OCMClassMock([FaviconAttributesProvider class]);
@@ -280,11 +280,11 @@ TEST_F(NTPTileSaverControllerTest, UpdateSingleFaviconFallback) {
 // Checks that the image saved for an item is deleted when the item is deleted.
 TEST_F(NTPTileSaverControllerTest, DeleteOutdatedImage) {
   ntp_tiles::NTPTile image_tile1 = ntp_tiles::NTPTile();
-  image_tile1.title = base::ASCIIToUTF16("Title");
+  image_tile1.title = u"Title";
   image_tile1.url = GURL("http://image1.com");
 
   ntp_tiles::NTPTile image_tile2 = ntp_tiles::NTPTile();
-  image_tile2.title = base::ASCIIToUTF16("Title");
+  image_tile2.title = u"Title";
   image_tile2.url = GURL("http://image2.com");
 
   id mock_favicon_fetcher = OCMClassMock([FaviconAttributesProvider class]);
@@ -336,7 +336,7 @@ TEST_F(NTPTileSaverControllerTest, UpdateEntry) {
   ntp_tiles::NTPTile tile = ntp_tiles::NTPTile();
 
   // Set up a red favicon.
-  tile.title = base::ASCIIToUTF16("Title");
+  tile.title = u"Title";
   tile.url = GURL("http://url.com");
   NSString* ns_title = base::SysUTF16ToNSString(tile.title);
   NSURL* ns_url = net::NSURLWithGURL(tile.url);

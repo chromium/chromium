@@ -98,7 +98,7 @@ SendTabToSelfBridge::SendTabToSelfBridge(
   DCHECK(clock_);
   DCHECK(device_info_tracker_);
   if (history_service) {
-    history_service->AddObserver(this);
+    history_service_observation_.Observe(history_service);
   }
 
   std::move(create_store_callback)
@@ -109,7 +109,7 @@ SendTabToSelfBridge::SendTabToSelfBridge(
 
 SendTabToSelfBridge::~SendTabToSelfBridge() {
   if (history_service_) {
-    history_service_->RemoveObserver(this);
+    history_service_observation_.Reset();
   }
 }
 

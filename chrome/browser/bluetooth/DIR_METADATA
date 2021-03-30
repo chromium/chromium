@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Blink>Bluetooth"
+monorail: {
+  component: "Blink>Bluetooth"
 }
-team_email:  "web-bluetooth@chromium.org"
+team_email: "web-bluetooth@chromium.org"

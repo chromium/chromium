@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_H_
 #define CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -33,11 +33,11 @@ class COMPONENT_EXPORT(CHROMEOS_SETTINGS) TimezoneSettings {
 
   // Returns the current timezone as an icu::Timezone object.
   virtual const icu::TimeZone& GetTimezone() = 0;
-  virtual base::string16 GetCurrentTimezoneID() = 0;
+  virtual std::u16string GetCurrentTimezoneID() = 0;
 
   // Sets the current timezone and notifies all Observers.
   virtual void SetTimezone(const icu::TimeZone& timezone) = 0;
-  virtual void SetTimezoneFromID(const base::string16& timezone_id) = 0;
+  virtual void SetTimezoneFromID(const std::u16string& timezone_id) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_SETTINGS) TimezoneSettings {
       const = 0;
 
   // Gets timezone ID which is also used as timezone pref value.
-  static base::string16 GetTimezoneID(const icu::TimeZone& timezone);
+  static std::u16string GetTimezoneID(const icu::TimeZone& timezone);
 
  protected:
   virtual ~TimezoneSettings() {}
@@ -54,5 +54,12 @@ class COMPONENT_EXPORT(CHROMEOS_SETTINGS) TimezoneSettings {
 
 }  // namespace system
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace system {
+using ::chromeos::system::TimezoneSettings;
+}  // namespace system
+}  // namespace ash
 
 #endif  // CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_H_

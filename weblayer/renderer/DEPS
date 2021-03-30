@@ -2,6 +2,8 @@ include_rules = [
   "+components/android_system_error_page",
   "+components/autofill/content/renderer",
   "+components/cdm/renderer",
+  "+components/content_capture/common",
+  "+components/content_capture/renderer",
   "+components/content_settings/renderer",
   "+components/error_page/common",
   "+components/grit",
@@ -19,6 +21,7 @@ include_rules = [
   "+components/subresource_filter/core/common",
   "+components/translate/content/renderer",
   "+components/translate/core/common",
+  "+components/webapps/renderer",
   "+content/public/common",
   "+content/public/renderer",
   # needed for safebrowsing

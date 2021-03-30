@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_NOTIFICATIONS_PREFETCH_NOTIFICATION_SERVICE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace notifications {
@@ -27,8 +27,8 @@ class PrefetchNotificationService : public KeyedService {
       base::OnceCallback<void(std::unique_ptr<notifications::ThrottleConfig>)>;
 
   // Schedules an prefetch notification.
-  virtual void Schedule(const base::string16& title,
-                        const base::string16& body) = 0;
+  virtual void Schedule(const std::u16string& title,
+                        const std::u16string& body) = 0;
 
   // Called when the notification is clicked by the user.
   virtual void OnClick() = 0;

@@ -10,7 +10,6 @@ include_rules = [
   "+components/discardable_memory/service",
   "+components/download/database",
   "+components/download/public/common",
-  "+components/download/quarantine/quarantine.h",
   "+components/filename_generation",
   "+components/services/font",
   "+components/services/filesystem",
@@ -28,8 +27,8 @@ include_rules = [
   "+components/offline_pages/buildflags/buildflags.h",
   "+components/offline_pages/core/request_header",
   "+components/payments",
-  "+components/rappor/public",
   "+components/services/heap_profiling/public",
+  "+components/services/quarantine/public/mojom/quarantine.mojom.h",
   "+components/system_media_controls",
   "+components/tracing",
   "+components/ukm",
@@ -92,6 +91,7 @@ include_rules = [
   "+third_party/zlib",
 
   # Allow non-browser Chrome OS code to be used.
+  "+ash/constants",
   "+chromeos",
   "+third_party/cros_system_api",
 
@@ -106,7 +106,6 @@ include_rules = [
   "+third_party/blink/public/platform/web_content_security_policy.h",
   "+third_party/blink/public/common/page/drag_operation.h",
   "+third_party/blink/public/platform/web_fullscreen_video_status.h",
-  "+third_party/blink/public/platform/web_mixed_content_context_type.h",
   "+third_party/blink/public/common/widget/screen_info.h",
   "+third_party/blink/public/platform/web_text_input_type.h",
   "+third_party/blink/public/platform/mac/web_scrollbar_theme.h",
@@ -116,7 +115,7 @@ include_rules = [
   "+third_party/blink/public/strings/grit/blink_strings.h",
   "+third_party/blink/public/web/web_ax_enums.h",
   "+third_party/blink/public/web/web_console_message.h",
-  "+third_party/blink/public/web/web_context_menu_data.h",
+  "+third_party/blink/public/common/context_menu_data/context_menu_data.h",
   "+third_party/blink/public/common/widget/device_emulation_params.h",
   "+third_party/blink/public/web/web_drag_status.h",
   "+third_party/blink/public/web/web_serialized_script_value_version.h",

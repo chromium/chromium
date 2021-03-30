@@ -19,9 +19,7 @@ class ServiceDirectory;
 
 namespace base {
 
-namespace fuchsia {
 class FilteredServiceDirectory;
-}  // namespace fuchsia
 
 // Replaces the process-global sys::ComponentContext (as returned by the
 // base::ComponentContextForProcess() function) with an empty instance which the
@@ -106,7 +104,7 @@ class BASE_EXPORT TestComponentContextForProcess {
  private:
   std::unique_ptr<sys::ComponentContext> old_context_;
 
-  std::unique_ptr<fuchsia::FilteredServiceDirectory> context_services_;
+  std::unique_ptr<FilteredServiceDirectory> context_services_;
   std::unique_ptr<sys::ServiceDirectory> published_services_;
 };
 

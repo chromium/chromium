@@ -5,4 +5,5 @@
 include_rules = [
   '+base',
   '+testing',
+  '+third_party/icu/source/common/unicode',
 ]

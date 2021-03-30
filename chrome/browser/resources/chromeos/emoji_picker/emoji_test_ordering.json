@@ -1,0 +1,1947 @@
+[
+  {
+    "group": "Group 1",
+    "emoji": [
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          129503
+        ],
+        "alternates": [
+          [
+            129503
+          ],
+          [
+            129503,
+            8205,
+            9792,
+            65039
+          ],
+          [
+            129503,
+            8205,
+            9794,
+            65039
+          ]
+        ],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128079
+        ],
+        "alternates": [
+          [
+            128079
+          ],
+          [
+            128079,
+            127995
+          ],
+          [
+            128079,
+            127996
+          ],
+          [
+            128079,
+            127997
+          ],
+          [
+            128079,
+            127998
+          ],
+          [
+            128079,
+            127999
+          ]
+        ],
+        "emoticons": []
+      },
+      {
+        "base": [
+          129489
+        ],
+        "alternates": [
+          [
+            129489
+          ],
+          [
+            129489,
+            127995
+          ],
+          [
+            129489,
+            127996
+          ],
+          [
+            129489,
+            127997
+          ],
+          [
+            129489,
+            127998
+          ],
+          [
+            129489,
+            127999
+          ],
+          [
+            128105
+          ],
+          [
+            128105,
+            127995
+          ],
+          [
+            128105,
+            127996
+          ],
+          [
+            128105,
+            127997
+          ],
+          [
+            128105,
+            127998
+          ],
+          [
+            128105,
+            127999
+          ],
+          [
+            128104
+          ],
+          [
+            128104,
+            127995
+          ],
+          [
+            128104,
+            127996
+          ],
+          [
+            128104,
+            127997
+          ],
+          [
+            128104,
+            127998
+          ],
+          [
+            128104,
+            127999
+          ]
+        ],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128107
+        ],
+        "alternates": [
+          [
+            128107
+          ],
+          [
+            128107,
+            127995
+          ],
+          [
+            128105,
+            127995,
+            8205,
+            129309,
+            8205,
+            128104,
+            127996
+          ],
+          [
+            128105,
+            127995,
+            8205,
+            129309,
+            8205,
+            128104,
+            127997
+          ],
+          [
+            128105,
+            127995,
+            8205,
+            129309,
+            8205,
+            128104,
+            127998
+          ],
+          [
+            128105,
+            127995,
+            8205,
+            129309,
+            8205,
+            128104,
+            127999
+          ],
+          [
+            128105,
+            127996,
+            8205,
+            129309,
+            8205,
+            128104,
+            127995
+          ],
+          [
+            128107,
+            127996
+          ],
+          [
+            128105,
+            127996,
+            8205,
+            129309,
+            8205,
+            128104,
+            127997
+          ],
+          [
+            128105,
+            127996,
+            8205,
+            129309,
+            8205,
+            128104,
+            127998
+          ],
+          [
+            128105,
+            127996,
+            8205,
+            129309,
+            8205,
+            128104,
+            127999
+          ],
+          [
+            128105,
+            127997,
+            8205,
+            129309,
+            8205,
+            128104,
+            127995
+          ],
+          [
+            128105,
+            127997,
+            8205,
+            129309,
+            8205,
+            128104,
+            127996
+          ],
+          [
+            128107,
+            127997
+          ],
+          [
+            128105,
+            127997,
+            8205,
+            129309,
+            8205,
+            128104,
+            127998
+          ],
+          [
+            128105,
+            127997,
+            8205,
+            129309,
+            8205,
+            128104,
+            127999
+          ],
+          [
+            128105,
+            127998,
+            8205,
+            129309,
+            8205,
+            128104,
+            127995
+          ],
+          [
+            128105,
+            127998,
+            8205,
+            129309,
+            8205,
+            128104,
+            127996
+          ],
+          [
+            128105,
+            127998,
+            8205,
+            129309,
+            8205,
+            128104,
+            127997
+          ],
+          [
+            128107,
+            127998
+          ],
+          [
+            128105,
+            127998,
+            8205,
+            129309,
+            8205,
+            128104,
+            127999
+          ],
+          [
+            128105,
+            127999,
+            8205,
+            129309,
+            8205,
+            128104,
+            127995
+          ],
+          [
+            128105,
+            127999,
+            8205,
+            129309,
+            8205,
+            128104,
+            127996
+          ],
+          [
+            128105,
+            127999,
+            8205,
+            129309,
+            8205,
+            128104,
+            127997
+          ],
+          [
+            128105,
+            127999,
+            8205,
+            129309,
+            8205,
+            128104,
+            127998
+          ],
+          [
+            128107,
+            127999
+          ]
+        ],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128106
+        ],
+        "alternates": [
+          [
+            128106
+          ],
+          [
+            128104,
+            8205,
+            128105,
+            8205,
+            128102
+          ],
+          [
+            128104,
+            8205,
+            128105,
+            8205,
+            128103
+          ],
+          [
+            128104,
+            8205,
+            128105,
+            8205,
+            128103,
+            8205,
+            128102
+          ],
+          [
+            128104,
+            8205,
+            128105,
+            8205,
+            128102,
+            8205,
+            128102
+          ],
+          [
+            128104,
+            8205,
+            128105,
+            8205,
+            128103,
+            8205,
+            128103
+          ],
+          [
+            128104,
+            8205,
+            128104,
+            8205,
+            128102
+          ],
+          [
+            128104,
+            8205,
+            128104,
+            8205,
+            128103
+          ],
+          [
+            128104,
+            8205,
+            128104,
+            8205,
+            128103,
+            8205,
+            128102
+          ],
+          [
+            128104,
+            8205,
+            128104,
+            8205,
+            128102,
+            8205,
+            128102
+          ],
+          [
+            128104,
+            8205,
+            128104,
+            8205,
+            128103,
+            8205,
+            128103
+          ],
+          [
+            128104,
+            8205,
+            128102
+          ],
+          [
+            128104,
+            8205,
+            128103
+          ],
+          [
+            128104,
+            8205,
+            128103,
+            8205,
+            128102
+          ],
+          [
+            128104,
+            8205,
+            128102,
+            8205,
+            128102
+          ],
+          [
+            128104,
+            8205,
+            128103,
+            8205,
+            128103
+          ],
+          [
+            128105,
+            8205,
+            128105,
+            8205,
+            128102
+          ],
+          [
+            128105,
+            8205,
+            128105,
+            8205,
+            128103
+          ],
+          [
+            128105,
+            8205,
+            128105,
+            8205,
+            128103,
+            8205,
+            128102
+          ],
+          [
+            128105,
+            8205,
+            128105,
+            8205,
+            128102,
+            8205,
+            128102
+          ],
+          [
+            128105,
+            8205,
+            128105,
+            8205,
+            128103,
+            8205,
+            128103
+          ],
+          [
+            128105,
+            8205,
+            128102
+          ],
+          [
+            128105,
+            8205,
+            128103
+          ],
+          [
+            128105,
+            8205,
+            128103,
+            8205,
+            128102
+          ],
+          [
+            128105,
+            8205,
+            128102,
+            8205,
+            128102
+          ],
+          [
+            128105,
+            8205,
+            128103,
+            8205,
+            128103
+          ]
+        ],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      }
+    ]
+  },
+  {
+    "group": "Group 2",
+    "emoji": [
+      {
+        "base": [
+          128075
+        ],
+        "alternates": [
+          [
+            128075
+          ],
+          [
+            128075,
+            127995
+          ]
+        ],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      }
+    ]
+  },
+  {
+    "group": "Group 3",
+    "emoji": [
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      }
+    ]
+  },
+  {
+    "group": "Group 4",
+    "emoji": [
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      }
+    ]
+  },
+  {
+    "group": "Group 5",
+    "emoji": [
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      }
+    ]
+  },
+  {
+    "group": "Group 6",
+    "emoji": [
+      {
+        "base": [
+          128075
+        ],
+        "alternates": [
+          [
+            128075
+          ],
+          [
+            128075,
+            127995
+          ]
+        ],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      }
+    ]
+  },
+  {
+    "group": "Group 7",
+    "emoji": [
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      }
+    ]
+  },
+  {
+    "group": "Group 8",
+    "emoji": [
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      },
+      {
+        "base": [
+          128512
+        ],
+        "alternates": [],
+        "emoticons": []
+      }
+    ]
+  }
+]

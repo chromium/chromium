@@ -10,7 +10,7 @@ import android.os.Bundle;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.password_check.PasswordCheckBridge.PasswordCheckObserver;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * This class is responsible for managing the saved passwords check for signed-in users.

@@ -1,8 +1,12 @@
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
 
 declare_args() {
   # Enable encoding and decoding AV1 video files.
-  enable_libaom = false
+  enable_libaom =
+      !is_chromeos_lacros && !is_chromeos_ash && !is_android && !is_chromecast
+
   # To be deprecated soon.
   enable_libaom_decoder = false
 }

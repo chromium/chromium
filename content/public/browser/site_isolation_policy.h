@@ -39,8 +39,8 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   static bool IsErrorPageIsolationEnabled(bool in_main_frame);
 
   // Returns true if isolated origins may be added at runtime in response
-  // to hints such as users typing in a password or (in the future) an origin
-  // opting itself into isolation via a header.
+  // to hints such as users typing in a password or sites serving headers like
+  // Cross-Origin-Opener-Policy.
   static bool AreDynamicIsolatedOriginsEnabled();
 
   // Returns true if isolated origins preloaded with the browser should be
@@ -48,10 +48,13 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // isolated origins on Android.
   static bool ArePreloadedIsolatedOriginsEnabled();
 
-  // Returns true if opt-in origin isolation (e.g., via the "Origin-Isolation"
-  // header) should be enabled.  This is used to turn off opt-in origin
-  // isolation on low-memory Android devices.
-  static bool IsOptInOriginIsolationEnabled();
+  // Returns true if the "Origin-Agent-Cluster" header should result in a
+  // separate process for isolated origins.  This is used to turn off opt-in
+  // origin isolation on low-memory Android devices.
+  static bool IsProcessIsolationForOriginAgentClusterEnabled();
+
+  // Returns true if the OriginAgentCluster header will be respected.
+  static bool IsOriginAgentClusterEnabled();
 
   // Applies isolated origins from all available sources, including the
   // command-line switch, field trials, enterprise policy, and the embedder.

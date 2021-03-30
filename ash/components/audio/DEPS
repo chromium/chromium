@@ -1,0 +1,12 @@
+noparent = True
+
+include_rules = [
+  "+ash/constants",
+  "+base",
+  "+chromeos/dbus",
+  "+components/prefs",
+  "+media",
+  "+mojo/public/cpp/bindings",
+  "+services/media_session/public",
+  "+testing",
+]

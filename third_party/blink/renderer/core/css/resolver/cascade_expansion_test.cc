@@ -421,6 +421,22 @@ TEST_F(CascadeExpansionTest, FilterFirstLetter) {
   EXPECT_TRUE(e.AtEnd());
 }
 
+TEST_F(CascadeExpansionTest, FilterFirstLine) {
+  MatchResult result;
+  result.FinishAddingUARules();
+  result.FinishAddingUserRules();
+  result.AddMatchedProperties(
+      ParseDeclarationBlock("display:none;font-size:1px"),
+      CSSSelector::kMatchAll, ValidPropertyFilter::kFirstLine);
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
+
+  auto e = ExpansionAt(result, 0);
+  ASSERT_FALSE(e.AtEnd());
+  EXPECT_EQ(CSSPropertyID::kFontSize, e.Id());
+  e.Next();
+  EXPECT_TRUE(e.AtEnd());
+}
+
 TEST_F(CascadeExpansionTest, FilterCue) {
   MatchResult result;
   result.FinishAddingUARules();

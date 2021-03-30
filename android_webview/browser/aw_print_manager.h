@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "components/printing/browser/print_manager.h"
 #include "components/printing/common/print.mojom-forward.h"
-#include "components/printing/common/print_messages.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "printing/print_settings.h"
 
@@ -20,12 +19,6 @@ class AwPrintManager : public printing::PrintManager,
     public content::WebContentsUserData<AwPrintManager> {
  public:
   ~AwPrintManager() override;
-
-  // mojom::PrintManagerHost:
-  void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,
-                        DidPrintDocumentCallback callback) override;
-  void GetDefaultPrintSettings(
-      GetDefaultPrintSettingsCallback callback) override;
 
   // printing::PrintManager:
   void PdfWritingDone(int page_count) override;
@@ -42,10 +35,13 @@ class AwPrintManager : public printing::PrintManager,
 
   explicit AwPrintManager(content::WebContents* contents);
 
-  // printing::PrintManager:
-  void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
-                       const printing::mojom::ScriptedPrintParams& params,
-                       IPC::Message* reply_msg) override;
+  // mojom::PrintManagerHost:
+  void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,
+                        DidPrintDocumentCallback callback) override;
+  void GetDefaultPrintSettings(
+      GetDefaultPrintSettingsCallback callback) override;
+  void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
+                     ScriptedPrintCallback callback) override;
 
   static void OnDidPrintDocumentWritingDone(
       const PdfWritingDoneCallback& callback,

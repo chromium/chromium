@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Privacy>Fingerprinting"
+monorail: {
+  component: "Privacy>Fingerprinting"
 }
-team_email:  "privacy-sandbox-dev@chromium.org"
+team_email: "privacy-sandbox-dev@chromium.org"

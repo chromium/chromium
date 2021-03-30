@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test the frames are correctly built based on trace events\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -138,7 +138,8 @@
       {
         'name': 'Layout',
         'ts': 1021000,
-        args: {'beginData': {'frame': 0x12345678}, 'endData': {'rootNode': 1}},
+        args: {'beginData': {'frame': 0x12345678},
+       'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': []}]}},
         'dur': 5999,
         'ph': 'X',
         'tid': mainThread,
@@ -510,7 +511,8 @@
       {
         'name': 'Layout',
         'ts': 1021000,
-        args: {'beginData': {'frame': 0x12345678}, 'endData': {'rootNode': 1}},
+        args: {'beginData': {'frame': 0x12345678},
+       'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': []}]}},
         'dur': 11999,
         'ph': 'X',
         'tid': mainThread,
@@ -1123,7 +1125,8 @@
       {
         'name': 'Layout',
         'ts': 1065002,
-        args: {'beginData': {'frame': 0x12345678}, 'endData': {'rootNode': 1}},
+        args: {'beginData': {'frame': 0x12345678},
+       'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': []}]}},
         'dur': 2998,
         'ph': 'X',
         'tid': mainThread,

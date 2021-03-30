@@ -5,7 +5,7 @@
 #define CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_NEARBY_INTERNALS_LOGS_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/logging/log_buffer.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
@@ -42,7 +42,7 @@ class NearbyInternalsLogsHandler : public content::WebUIMessageHandler,
   // Message handler callback that clears the Log Buffer.
   void ClearLogBuffer(const base::ListValue* args);
 
-  ScopedObserver<LogBuffer, LogBuffer::Observer> observer_{this};
+  base::ScopedObservation<LogBuffer, LogBuffer::Observer> observation_{this};
   base::WeakPtrFactory<NearbyInternalsLogsHandler> weak_ptr_factory_{this};
 };
 

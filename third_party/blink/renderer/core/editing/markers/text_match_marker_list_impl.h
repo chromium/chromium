@@ -11,6 +11,7 @@
 namespace blink {
 
 class IntRect;
+class Node;
 
 // Implementation of TextMarkerBaseListImpl for TextMatch markers.
 // Markers are kept sorted by start offset, under the assumption that

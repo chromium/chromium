@@ -4,8 +4,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -60,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   FindBarController* find_bar_controller = browser()->GetFindBarController();
   ASSERT_NE(nullptr, find_bar_controller);
 
-  const base::string16 empty_string;
+  const std::u16string empty_string;
   find_bar_controller->SetText(empty_string);
 
   chrome::Find(browser());
@@ -76,10 +77,10 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F, false,
                                               false, false, false));
 
-  base::string16 find_bar_string =
+  std::u16string find_bar_string =
       find_bar_controller->find_bar()->GetFindText();
 
-  ASSERT_EQ(base::ASCIIToUTF16("asdf"), find_bar_string);
+  ASSERT_EQ(u"asdf", find_bar_string);
   EXPECT_EQ(find_bar_string, base::SysNSStringToUTF16(
                                  [[FindPasteboard sharedInstance] findText]));
 }
@@ -92,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
       browser_incognito->GetFindBarController();
   ASSERT_NE(nullptr, find_bar_controller);
 
-  const base::string16 empty_string;
+  const std::u16string empty_string;
   find_bar_controller->SetText(empty_string);
 
   chrome::Find(browser_incognito);
@@ -112,10 +113,10 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_T, false,
                                               false, false, false));
 
-  base::string16 find_bar_string =
+  std::u16string find_bar_string =
       find_bar_controller->find_bar()->GetFindText();
 
-  ASSERT_EQ(base::ASCIIToUTF16("secret"), find_bar_string);
+  ASSERT_EQ(u"secret", find_bar_string);
   EXPECT_NE(find_bar_string, base::SysNSStringToUTF16(
                                  [[FindPasteboard sharedInstance] findText]));
 }
@@ -132,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   GURL url = GetURL(kSimple);
   ui_test_utils::NavigateToURL(browser(), url);
 
-  const base::string16 empty_string;
+  const std::u16string empty_string;
   find_bar_controller->SetText(empty_string);
 
   chrome::Find(browser());
@@ -148,9 +149,9 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_E, false,
                                               false, false, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16("1/1"), find_bar_controller->find_bar()
-                                           ->GetFindBarTesting()
-                                           ->GetMatchCountText());
+  EXPECT_EQ(u"1/1", find_bar_controller->find_bar()
+                        ->GetFindBarTesting()
+                        ->GetMatchCountText());
 
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
   ui_test_utils::NavigateToURL(browser(), url);
@@ -165,15 +166,15 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_T, false,
                                               false, false, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16("1/1"), find_bar_controller->find_bar()
-                                           ->GetFindBarTesting()
-                                           ->GetMatchCountText());
+  EXPECT_EQ(u"1/1", find_bar_controller->find_bar()
+                        ->GetFindBarTesting()
+                        ->GetMatchCountText());
 
   // Go back to the first tab and verify that the match text is cleared.
   browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(base::ASCIIToUTF16(""), find_bar_controller->find_bar()
-                                        ->GetFindBarTesting()
-                                        ->GetMatchCountText());
+  EXPECT_EQ(u"", find_bar_controller->find_bar()
+                     ->GetFindBarTesting()
+                     ->GetMatchCountText());
 }
 
 // Equivalent to browser_tests
@@ -203,8 +204,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   FindBarController* find_bar_controller =
       browser_incognito->GetFindBarController();
   ASSERT_NE(nullptr, find_bar_controller);
-  EXPECT_EQ(base::ASCIIToUTF16("bar"),
-            find_bar_controller->find_bar()->GetFindText());
+  EXPECT_EQ(u"bar", find_bar_controller->find_bar()->GetFindText());
 }
 
 // Equivalent to browser_tests
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   content::WebContents* first_active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  const base::string16 empty_string;
+  const std::u16string empty_string;
   find_bar_controller->SetText(empty_string);
 
   chrome::Find(browser());
@@ -260,8 +260,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                                       find_in_page::ResultAction::kKeep);
   // Simulate F3.
   browser()->GetFindBarController()->Show(true /*find_next*/);
-  EXPECT_EQ(
-      base::ASCIIToUTF16("given"),
-      find_in_page::FindTabHelper::FromWebContents(first_active_web_contents)
-          ->find_text());
+  EXPECT_EQ(u"given", find_in_page::FindTabHelper::FromWebContents(
+                          first_active_web_contents)
+                          ->find_text());
 }

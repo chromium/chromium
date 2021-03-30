@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult('Tests that sampling heap profiling works.\n');
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   HeapProfilerTestRunner.runHeapSnapshotTestSuite([async function testProfiling(next) {

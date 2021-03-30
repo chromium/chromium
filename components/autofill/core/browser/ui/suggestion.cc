@@ -14,7 +14,7 @@ Suggestion::Suggestion() = default;
 Suggestion::Suggestion(const Suggestion& other) = default;
 Suggestion::Suggestion(Suggestion&& other) = default;
 
-Suggestion::Suggestion(base::string16 value) : value(std::move(value)) {}
+Suggestion::Suggestion(std::u16string value) : value(std::move(value)) {}
 
 Suggestion::Suggestion(base::StringPiece value,
                        base::StringPiece label,

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the console works correctly with portals`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.navigatePromise('resources/append-predecessor-host.html');

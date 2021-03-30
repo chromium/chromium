@@ -10,6 +10,14 @@ const char kUrlKey[] = "url";
 const char kDefaultLaunchContainerKey[] = "default_launch_container";
 const char kDefaultLaunchContainerWindowValue[] = "window";
 const char kDefaultLaunchContainerTabValue[] = "tab";
-const char kCreateDesktopShorcutKey[] = "create_desktop_shortcut";
+const char kCreateDesktopShortcutKey[] = "create_desktop_shortcut";
+const char kFallbackAppNameKey[] = "fallback_app_name";
+
+const char kWildcard[] = "*";
+
+const char kRunOnOsLogin[] = "run_on_os_login";
+const char kAllowed[] = "allowed";
+const char kBlocked[] = "blocked";
+const char kRunWindowed[] = "run_windowed";
 
 }  // namespace web_app

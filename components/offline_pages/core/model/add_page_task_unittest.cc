@@ -32,7 +32,7 @@ const ClientId kTestClientId1(kTestNamespace, "1234");
 const base::FilePath kTestFilePath(FILE_PATH_LITERAL("/test/path/file"));
 const int64_t kTestFileSize = 876543LL;
 const std::string kTestOrigin("abc.xyz");
-const base::string16 kTestTitle = base::UTF8ToUTF16("a title");
+const std::u16string kTestTitle = u"a title";
 const int64_t kTestDownloadId = 767574LL;
 const std::string kTestDigest("TesTIngDigEst==");
 const std::string kTestAttribution = "attribution";

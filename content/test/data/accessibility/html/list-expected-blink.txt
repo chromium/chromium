@@ -3,21 +3,21 @@ rootWebArea
 ++++genericContainer ignored
 ++++++list
 ++++++++listItem hierarchicalLevel=1
-++++++++++listMarker name='• '
-++++++++++++staticText name='• '
-++++++++++++++inlineTextBox name='• '
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='tic'
 ++++++++++++inlineTextBox name='tic'
 ++++++++listItem hierarchicalLevel=1
-++++++++++listMarker name='• '
-++++++++++++staticText name='• '
-++++++++++++++inlineTextBox name='• '
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='tac'
 ++++++++++++inlineTextBox name='tac'
 ++++++++listItem hierarchicalLevel=1
-++++++++++listMarker name='• '
-++++++++++++staticText name='• '
-++++++++++++++inlineTextBox name='• '
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='toe'
 ++++++++++++inlineTextBox name='toe'
 ++++++list

@@ -479,7 +479,7 @@ HRESULT OSProcessManager::CreateRunningProcess(
   // code.  However this function is called to execute rundll32 which parses
   // command lines in a special way and fails when the first arg is double
   // quoted.  Therefore the command line is built manually here.
-  base::string16 unquoted_cmdline;
+  std::wstring unquoted_cmdline;
   base::StringAppendF(&unquoted_cmdline, L"\"%ls\"",
                       command_line.GetProgram().value().c_str());
   for (const auto& arg : command_line.GetArgs()) {

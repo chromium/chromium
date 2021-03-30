@@ -59,7 +59,7 @@ FilterOperation::FilterOperation(FilterType type, float amount)
 
 FilterOperation::FilterOperation(FilterType type,
                                  float amount,
-                                 SkBlurImageFilter::TileMode tile_mode)
+                                 SkTileMode tile_mode)
     : type_(type),
       amount_(amount),
       outer_threshold_(0),

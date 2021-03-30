@@ -78,7 +78,7 @@ void NightLightClient::OnScheduleTypeChanged(
 }
 
 void NightLightClient::TimezoneChanged(const icu::TimeZone& timezone) {
-  const base::string16 timezone_id =
+  const std::u16string timezone_id =
       chromeos::system::TimezoneSettings::GetTimezoneID(timezone);
   if (current_timezone_id_ == timezone_id)
     return;
@@ -107,7 +107,7 @@ void NightLightClient::SetClockForTesting(base::Clock* clock) {
 }
 
 void NightLightClient::SetCurrentTimezoneIdForTesting(
-    const base::string16& timezone_id) {
+    const std::u16string& timezone_id) {
   current_timezone_id_ = timezone_id;
 }
 

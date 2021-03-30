@@ -158,6 +158,9 @@ interface DriveFsDelegate {
       pending_receiver<NativeMessagingPort> port,
       pending_remote<NativeMessagingHost> host) => (
           ExtensionConnectionStatus error);
+
+  // Invoked when Drive wants to display a confirmation dialog.
+  DisplayConfirmDialog(DialogReason reason) => (DialogResult result);
 };
 
 // Next MinVersion: 6
@@ -194,6 +197,17 @@ enum AccessTokenStatus {
   kAuthError,
 };
 
+enum DialogResult {
+  // The dialog was not displayed to the user.
+  kNotDisplayed,
+  // The user accepted the action proposed by the dialog.
+  kAccept,
+  // The user rejected the action proposed by the dialog.
+  kReject,
+  // The user closed the dialog without selecting an option.
+  kDismiss,
+};
+
 enum FileError {
   // These match the values of drive::FileError in
   // //components/drive/file_errors.h
@@ -228,6 +242,17 @@ struct DriveError {
   Type type;
 
   // The path to the file where an error was encountered, if there was one.
+  mojo_base.mojom.FilePath path;
+};
+
+struct DialogReason {
+  [Extensible] enum Type {
+    kEnableDocsOffline,
+  };
+
+  Type type;
+
+  // The path to the file associated with this dialog, if there was one.
   mojo_base.mojom.FilePath path;
 };
 

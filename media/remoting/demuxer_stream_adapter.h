@@ -44,6 +44,9 @@ class DemuxerStreamAdapter {
  public:
   using ErrorCallback = base::OnceCallback<void(StopTrigger)>;
 
+  // The capacity in bytes for the Mojo data pipes used with this class.
+  static constexpr uint32_t kMojoDataPipeCapacityInBytes = 512 * 1024;
+
   // |main_task_runner|: Task runner to post RPC message on main thread
   // |media_task_runner|: Task runner to run whole class on media thread.
   // |name|: Demuxer stream name. For troubleshooting purposes.
@@ -95,10 +98,6 @@ class DemuxerStreamAdapter {
   // Indicates whether there is data waiting to be written to the mojo data
   // pipe.
   bool is_data_pending() const { return !pending_frame_.empty(); }
-
-  // Creates a Mojo data pipe configured appropriately for use with a
-  // DemuxerStreamAdapter.
-  static mojo::DataPipe* CreateDataPipe();
 
  private:
   friend class MockDemuxerStreamAdapter;

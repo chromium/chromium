@@ -27,9 +27,9 @@ class VR_UI_EXPORT Keyboard : public UiElement {
   void OnTouchStateUpdated(bool is_touching, const gfx::PointF& touch_position);
   void HitTest(const HitTestRequest& request,
                HitTestResult* result) const final;
-  void NotifyClientFloatAnimated(float value,
-                                 int target_property_id,
-                                 cc::KeyframeModel* keyframe_model) override;
+  void OnFloatAnimated(const float& value,
+                       int target_property_id,
+                       gfx::KeyframeModel* keyframe_model) override;
 
   void OnHoverEnter(const gfx::PointF& position,
                     base::TimeTicks timestamp) override;

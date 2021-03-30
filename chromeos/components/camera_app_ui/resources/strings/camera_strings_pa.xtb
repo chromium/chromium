@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">ਟਾਈਮਰ ਦੀ ਮਿਆਦ</translation>
 <translation id="2050339315714019657">ਪੋਰਟਰੇਟ</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ਕਿਰਿਆਸ਼ੀਲ</translation>
+<translation id="2144806332417375165">ਵਿਉਂਤਬੱਧ ਵੀਡੀਓ ਮਾਪਦੰਡ</translation>
 <translation id="229579744168541441">ਡਿਸਕ ਵਿੱਚ ਨਿਰਯਾਤ ਕਰੋ</translation>
 <translation id="2501278716633472235">ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="2501853267655415902">ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਹੋਈ</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">ਕੈਮਰਾ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="3517926952904427380">ਪੋਰਟਰੇਟ ਫ਼ੋਟੋ ਖਿੱਚੀ ਨਹੀਂ ਜਾ ਸਕੀ</translation>
 <translation id="3569311554794739032">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="FILE" /> ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
-<translation id="3750315947605636967">ਤੁਹਾਡਾ ਕੈਮਰਾ ਕਿਸੇ ਹੋਰ ਐਪ ਵੱਲੋਂ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3810838688059735925">ਵੀਡਿਓ</translation>
 <translation id="3838931309141338733">ਬਾਰਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="3892148308691398805">ਲਿਖਤ ਕਾਪੀ ਕਰੋ</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">ਫ਼ਾਈਲ ਸਿਸਟਮ ਗੜਬੜੀਆਂ।</translation>
 <translation id="7450541714075000668">ਲਿਖਤ ਕਾਪੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="7557677699350329807">ਅਗਲੇ ਕੈਮਰੇ 'ਤੇ ਜਾਓ</translation>
+<translation id="7607002721634913082">ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="7608223098072244877">4 ਗੁਣਾ 4</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">ਪੈਨ, ਟੇਢਾ ਅਤੇ ਜ਼ੂਮ ਕਰਨ ਦੇ ਵਿਕਲਪ ਦਿਖਾਓ</translation>
 <translation id="7983668134180549431">ਲਿਖਤ ਦਾ ਪਤਾ ਲੱਗਾ।</translation>
 <translation id="8067883171444229417">ਵੀਡੀਓ ਚਲਾਓ</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>

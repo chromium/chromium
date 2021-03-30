@@ -72,6 +72,7 @@ js_library("invitation_store") {
 if (is_chromeos_ash) {
   js_library("print_server_store") {
     deps = [
+      ":destination_store",
       "..:native_layer_cros",
       "//ui/webui/resources/js/cr:event_target.m",
     ]

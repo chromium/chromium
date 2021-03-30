@@ -38,7 +38,7 @@ namespace {
 //
 class DeviceCatcher : HidService::Observer {
  public:
-  DeviceCatcher(HidService* hid_service, const base::string16& serial_number)
+  DeviceCatcher(HidService* hid_service, const std::u16string& serial_number)
       : serial_number_(base::UTF16ToUTF8(serial_number)), observer_(this) {
     hid_service->GetDevices(
         base::BindOnce(&DeviceCatcher::OnEnumerationComplete,

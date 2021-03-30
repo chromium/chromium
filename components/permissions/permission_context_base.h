@@ -16,7 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 class GURL;
 
@@ -61,7 +61,7 @@ class PermissionContextBase : public KeyedService {
   PermissionContextBase(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
-      blink::mojom::FeaturePolicyFeature feature_policy_feature);
+      blink::mojom::PermissionsPolicyFeature permissions_policy_feature);
   ~PermissionContextBase() override;
 
   // A field trial used to enable the global permissions kill switch.
@@ -171,7 +171,8 @@ class PermissionContextBase : public KeyedService {
  private:
   friend class PermissionContextBaseTests;
 
-  bool PermissionAllowedByFeaturePolicy(content::RenderFrameHost* rfh) const;
+  bool PermissionAllowedByPermissionsPolicy(
+      content::RenderFrameHost* rfh) const;
 
   // Called when a request is no longer used so it can be cleaned up.
   void CleanUpRequest(const PermissionRequestID& id);
@@ -187,7 +188,7 @@ class PermissionContextBase : public KeyedService {
 
   content::BrowserContext* browser_context_;
   const ContentSettingsType content_settings_type_;
-  const blink::mojom::FeaturePolicyFeature feature_policy_feature_;
+  const blink::mojom::PermissionsPolicyFeature permissions_policy_feature_;
   std::unordered_map<std::string, std::unique_ptr<PermissionRequest>>
       pending_requests_;
 

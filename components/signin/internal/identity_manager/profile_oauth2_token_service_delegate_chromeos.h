@@ -11,11 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -24,16 +25,20 @@ class AccountTrackerService;
 namespace signin {
 class ProfileOAuth2TokenServiceDelegateChromeOS
     : public ProfileOAuth2TokenServiceDelegate,
-      public chromeos::AccountManager::Observer,
+      public ash::AccountManager::Observer,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // Accepts non-owning pointers to |AccountTrackerService|,
-  // |NetworkConnectorTracker|, and |chromeos::AccountManager|. These objects
-  // must all outlive |this| delegate.
+  // |NetworkConnectorTracker|, |ash::AccountManager| and
+  // |account_manager::AccountManagerFacade|. These objects must all outlive
+  // |this| delegate.
+  // TODO(https://crbug.com/1117472): Remove AccountManager after migrating this
+  //                                  class to AccountManagerFacade.
   ProfileOAuth2TokenServiceDelegateChromeOS(
       AccountTrackerService* account_tracker_service,
       network::NetworkConnectionTracker* network_connection_tracker,
-      chromeos::AccountManager* account_manager,
+      ash::AccountManager* account_manager,
+      account_manager::AccountManagerFacade* account_manager_facade,
       bool is_regular_profile);
   ~ProfileOAuth2TokenServiceDelegateChromeOS() override;
 
@@ -60,7 +65,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   void RevokeAllCredentials() override;
   const net::BackoffEntry* BackoffEntry() const override;
 
-  // |chromeos::AccountManager::Observer| overrides.
+  // |ash::AccountManager::Observer| overrides.
   void OnTokenUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
 
@@ -79,17 +84,18 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
     GoogleServiceAuthError last_auth_error;
   };
 
-  // Callback handler for |chromeos::AccountManager::GetAccounts|.
+  // Callback handler for |ash::AccountManager::GetAccounts|.
   void OnGetAccounts(const std::vector<account_manager::Account>& accounts);
 
-  // Callback handler for |chromeos::AccountManager::HasDummyGaiaToken|.
+  // Callback handler for |ash::AccountManager::HasDummyGaiaToken|.
   void ContinueTokenUpsertProcessing(const CoreAccountId& account_id,
                                      bool has_dummy_token);
 
   // Non-owning pointers.
   AccountTrackerService* const account_tracker_service_;
   network::NetworkConnectionTracker* const network_connection_tracker_;
-  chromeos::AccountManager* const account_manager_;
+  ash::AccountManager* const account_manager_;
+  account_manager::AccountManagerFacade* const account_manager_facade_;
 
   // A cache of AccountKeys.
   std::set<account_manager::AccountKey> account_keys_;

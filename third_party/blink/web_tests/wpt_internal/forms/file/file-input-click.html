@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<title>INPUT TYPE=FILE and click events</title>
+<input type="file">
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+promise_test(async _ => {
+  const file = document.querySelector('input');
+  const x = file.offsetLeft + file.offsetWidth / 2;
+  const y = file.offsetTop + file.offsetHeight / 2;
+
+  const promise = new Promise(
+      resolve => mockFileChooserFactory.addEventListener('open', resolve));
+
+  eventSender.mouseMoveTo(x, y);
+  eventSender.mouseDown();
+  eventSender.mouseMoveTo(x, y);
+  eventSender.mouseUp();
+
+  const openEvent = await promise;
+  assert_equals(openEvent.detail, 'kOpen');
+}, 'clicking on a file input element launches a file chooser');
+</script>

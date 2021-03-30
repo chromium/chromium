@@ -6,55 +6,52 @@ package org.chromium.chrome.browser.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.ProviderInfo;
 import android.test.IsolatedContext;
 import android.test.mock.MockContentResolver;
 
 import org.junit.Assert;
+import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.base.ContextUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Base class for Chrome's ContentProvider tests.
  * Sets up a local ChromeBrowserProvider associated to a mock resolver in an isolated context.
  */
-public class ProviderTestRule extends ChromeTabbedActivityTestRule {
+public class ProviderTestRule implements TestRule {
     private IsolatedContext mContext;
 
     public ProviderTestRule() {}
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        return super.apply(new Statement() {
+        return new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 setUp();
-                base.evaluate();
             }
-        }, description);
+        };
     }
 
     private void setUp() throws Exception {
-        startMainActivityOnBlankPage();
-
-        final ChromeActivity activity = getActivity();
-        Assert.assertNotNull(activity);
+        Context context = ContextUtils.getApplicationContext();
 
         final ContentProvider provider = new ChromeBrowserProvider();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ProviderInfo providerInfo = new ProviderInfo();
-            providerInfo.authority = ChromeBrowserProviderImpl.getApiAuthority(activity);
-            provider.attachInfo(activity, providerInfo);
+            providerInfo.authority = ChromeBrowserProviderImpl.getApiAuthority(context);
+            provider.attachInfo(context, providerInfo);
         });
 
         MockContentResolver resolver = new MockContentResolver();
-        resolver.addProvider(ChromeBrowserProviderImpl.getApiAuthority(activity), provider);
+        resolver.addProvider(ChromeBrowserProviderImpl.getApiAuthority(context), provider);
 
-        mContext = new IsolatedContext(resolver, activity);
+        mContext = new IsolatedContext(resolver, context);
         Assert.assertTrue(getContentResolver() instanceof MockContentResolver);
     }
 

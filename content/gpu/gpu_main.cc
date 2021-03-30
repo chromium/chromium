@@ -27,6 +27,7 @@
 #include "components/viz/service/main/viz_main_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/partition_alloc_support.h"
 #include "content/common/skia_utils.h"
 #include "content/gpu/gpu_child_thread.h"
 #include "content/gpu/gpu_process.h"
@@ -47,6 +48,7 @@
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "media/gpu/buildflags.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"
 #include "ui/base/ui_base_features.h"
@@ -60,8 +62,8 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
 #include <dwmapi.h>
+#include <windows.h>
 #endif
 
 #if defined(OS_ANDROID)
@@ -95,10 +97,8 @@
 #include "base/message_loop/message_pump_mac.h"
 #include "components/metal_util/device_removal.h"
 #include "components/metal_util/test_shader.h"
-#include "content/public/common/content_features.h"
 #include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #include "sandbox/mac/seatbelt.h"
-#include "sandbox/policy/mac/sandbox_mac.h"
 #endif
 
 #if BUILDFLAG(USE_VAAPI)
@@ -140,10 +140,9 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
     }
 
 #if BUILDFLAG(USE_VAAPI)
-// TODO(andrescj) Make this work on LaCrOS, not just ASH.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     media::VaapiWrapper::PreSandboxInitialization();
-#else  // For any non-ash chrome (ie: linux or lacros) that can support vaapi.
+#else  // For Linux with VA-API support.
     if (!gpu_prefs.disable_accelerated_video_decode)
       media::VaapiWrapper::PreSandboxInitialization();
 #endif
@@ -154,7 +153,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #endif
 
 #if defined(OS_MAC)
-    if (base::FeatureList::IsEnabled(features::kMacV2GPUSandbox)) {
+    {
       TRACE_EVENT0("gpu", "Initialize VideoToolbox");
       media::InitializeVideoToolbox();
     }
@@ -232,6 +231,13 @@ int GpuMain(const MainFunctionParams& parameters) {
     CHECK(success);
   }
 
+  // Disallow sending sync IPCs from the GPU process, in particular CrGpuMain
+  // and VizCompositorThreads. Incoming sync IPCs can be received out of order
+  // when waiting on response to an outgoing sync IPC. Both viz and gpu
+  // interfaces rely on receiving messages in order so this message reordering
+  // would break things.
+  mojo::SyncCallRestrictions::DisallowSyncCall();
+
   if (gpu_preferences.gpu_startup_dialog)
     WaitForDebugger("Gpu");
 
@@ -242,10 +248,8 @@ int GpuMain(const MainFunctionParams& parameters) {
 
   // Prevent Windows from displaying a modal dialog on failures like not being
   // able to load a DLL.
-  SetErrorMode(
-      SEM_FAILCRITICALERRORS |
-      SEM_NOGPFAULTERRORBOX |
-      SEM_NOOPENFILEERRORBOX);
+  SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX |
+               SEM_NOOPENFILEERRORBOX);
 
   // COM is used by some Windows Media Foundation calls made on this thread and
   // must be MTA so we don't have to worry about pumping messages to handle
@@ -446,6 +450,9 @@ int GpuMain(const MainFunctionParams& parameters) {
       tracing::GraphicsMemoryDumpProvider::GetInstance(), "AndroidGraphics",
       nullptr);
 #endif
+
+  internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+      switches::kGpuProcess);
 
   base::HighResolutionTimerManager hi_res_timer_manager;
 

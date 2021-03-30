@@ -19,7 +19,7 @@
 #include "base/synchronization/lock.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine_impl/net/server_connection_manager.h"
+#include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
@@ -47,10 +47,6 @@ class MockConnectionManager : public ServerConnectionManager {
   // NOTE: Commit callback is invoked only once then reset.
   void SetMidCommitCallback(base::OnceClosure callback);
   void SetMidCommitObserver(MidCommitObserver* observer);
-
-  // Set this if you want commit to perform commit time rename. Will request
-  // that the client renames all commited entries, prepending this string.
-  void SetCommitTimeRename(const std::string& prepend);
 
   // Generic versions of AddUpdate functions. Tests using these function should
   // compile for both the int64_t and string id based versions of the server.
@@ -308,7 +304,6 @@ class MockConnectionManager : public ServerConnectionManager {
   base::Lock store_birthday_lock_;
   bool store_birthday_sent_;
   bool client_stuck_;
-  std::string commit_time_rename_prepended_string_;
 
   // On each PostBufferToPath() call, we decrement this counter.  The call fails
   // iff we hit zero at that call.

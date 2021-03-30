@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <windows.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
 #include "remoting/base/util.h"
@@ -421,9 +421,9 @@ void InputInjectorWin::Core::HandleText(const TextEvent& event) {
   // HostEventDispatcher should filter events missing the pressed field.
   DCHECK(event.has_text());
 
-  base::string16 text = base::UTF8ToUTF16(event.text());
-  for (base::string16::const_iterator it = text.begin();
-       it != text.end(); ++it)  {
+  std::u16string text = base::UTF8ToUTF16(event.text());
+  for (std::u16string::const_iterator it = text.begin(); it != text.end();
+       ++it) {
     if (*it == '\n') {
       // The WM_CHAR event generated for carriage return is '\r', not '\n', and
       // some applications may check for VK_RETURN explicitly, so handle

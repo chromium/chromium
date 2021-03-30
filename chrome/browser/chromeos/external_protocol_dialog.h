@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -30,7 +29,7 @@ class ExternalProtocolNoHandlersDialog : public views::DialogDelegate {
   ~ExternalProtocolNoHandlersDialog() override;
 
   // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   views::View* GetContentsView() override;
   const views::Widget* GetWidget() const override;
   views::Widget* GetWidget() override;

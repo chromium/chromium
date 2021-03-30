@@ -9,17 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace content {
-
-using AccessibilityEventCallback =
-    base::RepeatingCallback<void(const std::string&)>;
 
 using ui::AXTreeSelector;
 
@@ -40,55 +36,21 @@ class BrowserAccessibilityManager;
 // each platform does most of the work.
 //
 // As currently designed, there should only be one instance of this class.
-class CONTENT_EXPORT AccessibilityEventRecorder {
+class CONTENT_EXPORT AccessibilityEventRecorder : public ui::AXEventRecorder {
  public:
-  // Construct the right platform-specific subclass.
-  static std::unique_ptr<AccessibilityEventRecorder> Create(
-      BrowserAccessibilityManager* manager = nullptr,
-      base::ProcessId pid = 0,
-      const AXTreeSelector& selector = {});
-
   // Get a set of factory methods to create event-recorders, one for each test
   // pass; see |DumpAccessibilityTestBase|.
   using EventRecorderFactory = std::unique_ptr<AccessibilityEventRecorder> (*)(
       BrowserAccessibilityManager* manager,
       base::ProcessId pid,
       const AXTreeSelector& selector);
-  struct TestPass {
-    const char* name;
-    EventRecorderFactory create_recorder;
-  };
-  static std::vector<TestPass> GetTestPasses();
 
   AccessibilityEventRecorder(BrowserAccessibilityManager* manager);
-  virtual ~AccessibilityEventRecorder();
-
-  void set_only_web_events(bool only_web_events) {
-    only_web_events_ = only_web_events;
-  }
-
-  void ListenToEvents(AccessibilityEventCallback callback) {
-    callback_ = std::move(callback);
-  }
-
-  void StopListeningToEvents() { callback_ = base::NullCallback(); }
-
-  // Called to ensure the event recorder has finished recording async events.
-  virtual void FlushAsyncEvents() {}
-
-  // Access the vector of human-readable event logs, one string per event.
-  const std::vector<std::string>& event_logs() { return event_logs_; }
 
  protected:
-  void OnEvent(const std::string& event);
-
   BrowserAccessibilityManager* const manager_;
-  bool only_web_events_ = false;
 
  private:
-  std::vector<std::string> event_logs_;
-  AccessibilityEventCallback callback_;
-
   DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorder);
 };
 

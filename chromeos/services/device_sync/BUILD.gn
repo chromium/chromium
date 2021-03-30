@@ -154,11 +154,11 @@ static_library("device_sync") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//base/util/values:values_util",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/constants",
     "//chromeos/network",
     "//chromeos/services/device_sync/proto:util",
     "//chromeos/services/device_sync/public/cpp",
@@ -304,11 +304,11 @@ source_set("unit_tests") {
     ":device_sync",
     ":feature_status_change",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
-    "//chromeos/constants",
     "//chromeos/dbus:test_support",
     "//chromeos/network",
     "//chromeos/network:test_support",

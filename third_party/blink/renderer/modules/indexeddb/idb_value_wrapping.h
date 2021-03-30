@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_VALUE_WRAPPING_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_VALUE_WRAPPING_H_
 
+#include <memory>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
@@ -154,14 +157,14 @@ class MODULES_EXPORT IDBValueWrapper {
     return std::move(blob_info_);
   }
 
-  Vector<mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>>
-  TakeNativeFileSystemTransferTokens() {
+  Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>
+  TakeFileSystemAccessTransferTokens() {
 #if DCHECK_IS_ON()
     DCHECK(done_cloning_) << __func__ << " called before DoneCloning()";
     DCHECK(owns_file_system_handles_) << __func__ << " called twice";
     owns_file_system_handles_ = false;
 #endif  // DCHECK_IS_ON()
-    return std::move(serialized_value_->NativeFileSystemTokens());
+    return std::move(serialized_value_->FileSystemAccessTokens());
   }
 
   size_t DataLengthBeforeWrapInBytes() { return original_data_length_; }

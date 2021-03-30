@@ -17,7 +17,7 @@ class SurfaceManager;
 
 namespace exo {
 class WMHelper;
-class Buffer;
+class ShellSurfaceBase;
 
 namespace test {
 class ExoTestHelper;
@@ -34,33 +34,13 @@ class ExoTestBase : public ash::AshTestBase {
 
   ~ExoTestBase() override;
 
-  // TODO(oshima): Convert unit tests to use this.
-  class ShellSurfaceHolder {
-   public:
-    ShellSurfaceHolder(std::unique_ptr<Buffer> buffer,
-                       std::unique_ptr<Surface> surface,
-                       std::unique_ptr<ShellSurface> shell_surface);
-    ~ShellSurfaceHolder();
-    ShellSurfaceHolder(const ShellSurfaceHolder&) = delete;
-    ShellSurfaceHolder& operator=(const ShellSurfaceHolder&) = delete;
-
-    ShellSurface* shell_surface() { return shell_surface_.get(); }
-
-   private:
-    std::unique_ptr<Buffer> buffer_;
-    std::unique_ptr<Surface> surface_;
-    std::unique_ptr<ShellSurface> shell_surface_;
-  };
-
   // ash::AshTestBase:
   void SetUp() override;
   void TearDown() override;
 
   viz::SurfaceManager* GetSurfaceManager();
 
-  std::unique_ptr<ShellSurfaceHolder> CreateShellSurfaceHolder(
-      const gfx::Size& buffer_size,
-      ShellSurface* parent);
+  gfx::Point GetOriginOfShellSurface(const ShellSurfaceBase* shell_surface);
 
   ExoTestHelper* exo_test_helper() { return &exo_test_helper_; }
   WMHelper* wm_helper() { return wm_helper_.get(); }

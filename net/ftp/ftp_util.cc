@@ -139,10 +139,10 @@ class AbbreviatedMonthsMap {
 
   // Converts abbreviated month name |text| to its number (in range 1-12).
   // On success returns true and puts the number in |number|.
-  bool GetMonthNumber(const base::string16& text, int* number) {
+  bool GetMonthNumber(const std::u16string& text, int* number) {
     // Ignore the case of the month names. The simplest way to handle that
     // is to make everything lowercase.
-    base::string16 text_lower(base::i18n::ToLower(text));
+    std::u16string text_lower(base::i18n::ToLower(text));
 
     if (map_.find(text_lower) == map_.end())
       return false;
@@ -176,7 +176,7 @@ class AbbreviatedMonthsMap {
           format_symbols.getShortMonths(months_count);
 
       for (int32_t month = 0; month < months_count; month++) {
-        base::string16 month_name(
+        std::u16string month_name(
             base::i18n::UnicodeStringToString16(months[month]));
 
         // Ignore the case of the month names. The simplest way to handle that
@@ -197,22 +197,22 @@ class AbbreviatedMonthsMap {
     // much earlier. Note that the issue above turned out to be non-trivial
     // to reproduce - crash data is much better indicator of a problem
     // than incomplete bug reports.
-    CHECK_EQ(1, map_[ASCIIToUTF16("jan")]);
-    CHECK_EQ(2, map_[ASCIIToUTF16("feb")]);
-    CHECK_EQ(3, map_[ASCIIToUTF16("mar")]);
-    CHECK_EQ(4, map_[ASCIIToUTF16("apr")]);
-    CHECK_EQ(5, map_[ASCIIToUTF16("may")]);
-    CHECK_EQ(6, map_[ASCIIToUTF16("jun")]);
-    CHECK_EQ(7, map_[ASCIIToUTF16("jul")]);
-    CHECK_EQ(8, map_[ASCIIToUTF16("aug")]);
-    CHECK_EQ(9, map_[ASCIIToUTF16("sep")]);
-    CHECK_EQ(10, map_[ASCIIToUTF16("oct")]);
-    CHECK_EQ(11, map_[ASCIIToUTF16("nov")]);
-    CHECK_EQ(12, map_[ASCIIToUTF16("dec")]);
+    CHECK_EQ(1, map_[u"jan"]);
+    CHECK_EQ(2, map_[u"feb"]);
+    CHECK_EQ(3, map_[u"mar"]);
+    CHECK_EQ(4, map_[u"apr"]);
+    CHECK_EQ(5, map_[u"may"]);
+    CHECK_EQ(6, map_[u"jun"]);
+    CHECK_EQ(7, map_[u"jul"]);
+    CHECK_EQ(8, map_[u"aug"]);
+    CHECK_EQ(9, map_[u"sep"]);
+    CHECK_EQ(10, map_[u"oct"]);
+    CHECK_EQ(11, map_[u"nov"]);
+    CHECK_EQ(12, map_[u"dec"]);
   }
 
   // Maps lowercase month names to numbers in range 1-12.
-  std::map<base::string16, int> map_;
+  std::map<std::u16string, int> map_;
 
   DISALLOW_COPY_AND_ASSIGN(AbbreviatedMonthsMap);
 };
@@ -220,15 +220,15 @@ class AbbreviatedMonthsMap {
 }  // namespace
 
 // static
-bool FtpUtil::AbbreviatedMonthToNumber(const base::string16& text,
+bool FtpUtil::AbbreviatedMonthToNumber(const std::u16string& text,
                                        int* number) {
   return AbbreviatedMonthsMap::GetInstance()->GetMonthNumber(text, number);
 }
 
 // static
-bool FtpUtil::LsDateListingToTime(const base::string16& month,
-                                  const base::string16& day,
-                                  const base::string16& rest,
+bool FtpUtil::LsDateListingToTime(const std::u16string& month,
+                                  const std::u16string& day,
+                                  const std::u16string& rest,
                                   const base::Time& current_time,
                                   base::Time* result) {
   base::Time::Exploded time_exploded = { 0 };
@@ -255,18 +255,18 @@ bool FtpUtil::LsDateListingToTime(const base::string16& month,
       return false;
 
     size_t colon_pos = rest.find(':');
-    if (colon_pos == base::string16::npos)
+    if (colon_pos == std::u16string::npos)
       return false;
     if (colon_pos > 2)
       return false;
 
     if (!base::StringToInt(
-            StringPiece16(rest.begin(), rest.begin() + colon_pos),
+            base::MakeStringPiece16(rest.begin(), rest.begin() + colon_pos),
             &time_exploded.hour)) {
       return false;
     }
     if (!base::StringToInt(
-            StringPiece16(rest.begin() + colon_pos + 1, rest.end()),
+            base::MakeStringPiece16(rest.begin() + colon_pos + 1, rest.end()),
             &time_exploded.minute)) {
       return false;
     }
@@ -291,15 +291,14 @@ bool FtpUtil::LsDateListingToTime(const base::string16& month,
 }
 
 // static
-bool FtpUtil::WindowsDateListingToTime(const base::string16& date,
-                                       const base::string16& time,
+bool FtpUtil::WindowsDateListingToTime(const std::u16string& date,
+                                       const std::u16string& time,
                                        base::Time* result) {
   base::Time::Exploded time_exploded = { 0 };
 
   // Date should be in format MM-DD-YY[YY].
-  std::vector<base::StringPiece16> date_parts =
-      base::SplitStringPiece(date, base::ASCIIToUTF16("-"),
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<base::StringPiece16> date_parts = base::SplitStringPiece(
+      date, u"-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (date_parts.size() != 3)
     return false;
   if (!base::StringToInt(date_parts[0], &time_exploded.month))
@@ -321,9 +320,9 @@ bool FtpUtil::WindowsDateListingToTime(const base::string16& date,
   if (time.length() < 5)
     return false;
 
-  std::vector<base::StringPiece16> time_parts = base::SplitStringPiece(
-      base::StringPiece16(time).substr(0, 5), base::ASCIIToUTF16(":"),
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<base::StringPiece16> time_parts =
+      base::SplitStringPiece(base::StringPiece16(time).substr(0, 5), u":",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (time_parts.size() != 2)
     return false;
   if (!base::StringToInt(time_parts[0], &time_exploded.hour))
@@ -336,7 +335,7 @@ bool FtpUtil::WindowsDateListingToTime(const base::string16& date,
   if (time.length() > 5) {
     if (time.length() != 7)
       return false;
-    base::string16 am_or_pm(time.substr(5, 2));
+    std::u16string am_or_pm(time.substr(5, 2));
     if (base::EqualsASCII(am_or_pm, "PM")) {
       if (time_exploded.hour < 12)
         time_exploded.hour += 12;
@@ -353,7 +352,7 @@ bool FtpUtil::WindowsDateListingToTime(const base::string16& date,
 }
 
 // static
-base::string16 FtpUtil::GetStringPartAfterColumns(const base::string16& text,
+std::u16string FtpUtil::GetStringPartAfterColumns(const std::u16string& text,
                                                   int columns) {
   base::i18n::UTF16CharIterator iter(text);
 
@@ -367,7 +366,7 @@ base::string16 FtpUtil::GetStringPartAfterColumns(const base::string16& text,
       iter.Advance();
   }
 
-  base::string16 result(text.substr(iter.array_pos()));
+  std::u16string result(text.substr(iter.array_pos()));
   base::TrimWhitespace(result, base::TRIM_ALL, &result);
   return result;
 }

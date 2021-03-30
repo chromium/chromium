@@ -35,7 +35,7 @@ class ConfiguratorImpl {
   ~ConfiguratorImpl();
 
   // Delay in seconds from calling Start() to the first update check.
-  int InitialDelay() const;
+  double InitialDelay() const;
 
   // Delay in seconds to every subsequent update check. 0 means don't check.
   int NextCheckDelay() const;
@@ -100,7 +100,7 @@ class ConfiguratorImpl {
   const bool pings_enabled_;
   const bool require_encryption_;
   const GURL url_source_override_;
-  const int initial_delay_;
+  const double initial_delay_;
 
   DISALLOW_COPY_AND_ASSIGN(ConfiguratorImpl);
 };

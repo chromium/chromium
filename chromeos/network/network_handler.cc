@@ -4,8 +4,13 @@
 
 #include "chromeos/network/network_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/network/auto_connect_handler.h"
+#include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/network/cellular_esim_uninstall_handler.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/geolocation_handler.h"
@@ -34,20 +39,29 @@ NetworkHandler::NetworkHandler()
     : task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   network_state_handler_.reset(new NetworkStateHandler());
   network_device_handler_.reset(new NetworkDeviceHandlerImpl());
+  if (features::IsCellularActivationUiEnabled()) {
+    cellular_inhibitor_.reset(new CellularInhibitor());
+    cellular_esim_profile_handler_.reset(new CellularESimProfileHandlerImpl());
+    cellular_esim_connection_handler_.reset(
+        new CellularESimConnectionHandler());
+  }
   network_profile_handler_.reset(new NetworkProfileHandler());
   network_configuration_handler_.reset(new NetworkConfigurationHandler());
   managed_network_configuration_handler_.reset(
       new ManagedNetworkConfigurationHandlerImpl());
-  prohibited_technologies_handler_.reset(new ProhibitedTechnologiesHandler());
+  network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
+  if (features::IsCellularActivationUiEnabled()) {
+    cellular_esim_uninstall_handler_.reset(new CellularESimUninstallHandler());
+  }
+  cellular_metrics_logger_.reset(new CellularMetricsLogger());
   if (NetworkCertLoader::IsInitialized()) {
-    auto_connect_handler_.reset(new AutoConnectHandler());
     network_cert_migrator_.reset(new NetworkCertMigrator());
-    network_certificate_handler_.reset(new NetworkCertificateHandler());
     client_cert_resolver_.reset(new ClientCertResolver());
+    auto_connect_handler_.reset(new AutoConnectHandler());
+    network_certificate_handler_.reset(new NetworkCertificateHandler());
   }
   network_activation_handler_.reset(new NetworkActivationHandlerImpl());
-  network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
-  cellular_metrics_logger_.reset(new CellularMetricsLogger());
+  prohibited_technologies_handler_.reset(new ProhibitedTechnologiesHandler());
   network_sms_handler_.reset(new NetworkSmsHandler());
   geolocation_handler_.reset(new GeolocationHandler());
 }
@@ -59,6 +73,13 @@ NetworkHandler::~NetworkHandler() {
 void NetworkHandler::Init() {
   network_state_handler_->InitShillPropertyHandler();
   network_device_handler_->Init(network_state_handler_.get());
+  if (features::IsCellularActivationUiEnabled()) {
+    cellular_inhibitor_->Init(network_state_handler_.get(),
+                              network_device_handler_.get());
+    cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
+    cellular_esim_connection_handler_->Init(network_state_handler_.get(),
+                                            cellular_inhibitor_.get());
+  }
   network_profile_handler_->Init();
   network_configuration_handler_->Init(network_state_handler_.get(),
                                        network_device_handler_.get());
@@ -68,9 +89,18 @@ void NetworkHandler::Init() {
       prohibited_technologies_handler_.get());
   network_connection_handler_->Init(
       network_state_handler_.get(), network_configuration_handler_.get(),
-      managed_network_configuration_handler_.get());
+      managed_network_configuration_handler_.get(),
+      cellular_esim_connection_handler_.get());
+  if (features::IsCellularActivationUiEnabled()) {
+    cellular_esim_uninstall_handler_->Init(
+        cellular_inhibitor_.get(), network_configuration_handler_.get(),
+        network_connection_handler_.get(), network_state_handler_.get());
+  }
   cellular_metrics_logger_->Init(network_state_handler_.get(),
-                                 network_connection_handler_.get());
+                                 network_connection_handler_.get(),
+                                 features::IsCellularActivationUiEnabled()
+                                     ? cellular_esim_profile_handler_.get()
+                                     : nullptr);
   if (network_cert_migrator_)
     network_cert_migrator_->Init(network_state_handler_.get());
   if (client_cert_resolver_) {
@@ -119,6 +149,8 @@ bool NetworkHandler::IsInitialized() {
 void NetworkHandler::InitializePrefServices(
     PrefService* logged_in_profile_prefs,
     PrefService* device_prefs) {
+  if (features::IsCellularActivationUiEnabled())
+    cellular_esim_profile_handler_->SetDevicePrefs(device_prefs);
   ui_proxy_config_service_.reset(new UIProxyConfigService(
       logged_in_profile_prefs, device_prefs, network_state_handler_.get(),
       network_profile_handler_.get()));
@@ -131,6 +163,8 @@ void NetworkHandler::InitializePrefServices(
 }
 
 void NetworkHandler::ShutdownPrefServices() {
+  if (features::IsCellularActivationUiEnabled())
+    cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
   network_metadata_store_.reset();
 }
@@ -150,6 +184,24 @@ NetworkStateHandler* NetworkHandler::network_state_handler() {
 
 AutoConnectHandler* NetworkHandler::auto_connect_handler() {
   return auto_connect_handler_.get();
+}
+
+CellularESimConnectionHandler*
+NetworkHandler::cellular_esim_connection_handler() {
+  return cellular_esim_connection_handler_.get();
+}
+
+CellularESimProfileHandler* NetworkHandler::cellular_esim_profile_handler() {
+  return cellular_esim_profile_handler_.get();
+}
+
+CellularESimUninstallHandler*
+NetworkHandler::cellular_esim_uninstall_handler() {
+  return cellular_esim_uninstall_handler_.get();
+}
+
+CellularInhibitor* NetworkHandler::cellular_inhibitor() {
+  return cellular_inhibitor_.get();
 }
 
 NetworkDeviceHandler* NetworkHandler::network_device_handler() {

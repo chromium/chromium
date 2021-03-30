@@ -24,7 +24,7 @@ namespace {
 
 class EdgeDatabaseReaderTest : public ::testing::Test {
  protected:
-  bool CopyTestDatabase(const base::string16& database_name,
+  bool CopyTestDatabase(const std::wstring& database_name,
                         base::FilePath* copied_path) {
     base::FilePath input_path;
     input_path = test_data_path_.AppendASCII("edge_database_reader")
@@ -39,7 +39,7 @@ class EdgeDatabaseReaderTest : public ::testing::Test {
     return false;
   }
 
-  bool WriteFile(const base::string16& name,
+  bool WriteFile(const std::wstring& name,
                  const std::string& contents,
                  base::FilePath* output_path) {
     *output_path = temp_dir_.GetPath().Append(name);
@@ -75,19 +75,20 @@ TEST_F(EdgeDatabaseReaderTest, OpenFileTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
 }
 
 TEST_F(EdgeDatabaseReaderTest, NoFileTest) {
+  base::FilePath database_path(L"ThisIsntARealFileName.edb");
   EdgeDatabaseReader reader;
-  EXPECT_FALSE(reader.OpenDatabase(L"ThisIsntARealFileName.edb"));
+  EXPECT_FALSE(reader.OpenDatabase(database_path));
 }
 
 TEST_F(EdgeDatabaseReaderTest, RandomGarbageDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"random.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_FALSE(reader.OpenDatabase(database_path.value()));
+  EXPECT_FALSE(reader.OpenDatabase(database_path));
 }
 
 TEST_F(EdgeDatabaseReaderTest, ZerosDatabaseTest) {
@@ -95,21 +96,21 @@ TEST_F(EdgeDatabaseReaderTest, ZerosDatabaseTest) {
   std::string zeros(0x10000, '\0');
   ASSERT_TRUE(WriteFile(L"zeros.edb", zeros, &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_FALSE(reader.OpenDatabase(database_path.value()));
+  EXPECT_FALSE(reader.OpenDatabase(database_path));
 }
 
 TEST_F(EdgeDatabaseReaderTest, EmptyDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(WriteFile(L"empty.edb", "", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_FALSE(reader.OpenDatabase(database_path.value()));
+  EXPECT_FALSE(reader.OpenDatabase(database_path));
 }
 
 TEST_F(EdgeDatabaseReaderTest, OpenTableDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"TestTable");
   EXPECT_NE(nullptr, table_enum);
@@ -119,7 +120,7 @@ TEST_F(EdgeDatabaseReaderTest, InvalidTableDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"NotARealTableName");
   EXPECT_EQ(nullptr, table_enum);
@@ -137,8 +138,8 @@ TEST_F(EdgeDatabaseReaderTest, AlreadyOpenDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
-  EXPECT_FALSE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
+  EXPECT_FALSE(reader.OpenDatabase(database_path));
   EXPECT_EQ(JET_errOneDatabasePerSession, reader.last_error());
 }
 
@@ -146,7 +147,7 @@ TEST_F(EdgeDatabaseReaderTest, OpenTableAndReadDataDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"TestTable");
   EXPECT_NE(nullptr, table_enum);
@@ -187,8 +188,9 @@ TEST_F(EdgeDatabaseReaderTest, OpenTableAndReadDataDatabaseTest) {
     EXPECT_EQ(expected_filetime_col_value.dwHighDateTime,
               filetime_col_value.dwHighDateTime);
 
-    std::wstring row_string = base::StringPrintf(L"String: %d", row_count);
-    base::string16 str_col_value;
+    std::u16string row_string =
+        base::AsString16(base::StringPrintf(L"String: %d", row_count));
+    std::u16string str_col_value;
     EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
     EXPECT_EQ(row_string, str_col_value);
 
@@ -205,7 +207,7 @@ TEST_F(EdgeDatabaseReaderTest, CheckEnumResetDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"TestTable");
   EXPECT_NE(nullptr, table_enum);
@@ -225,7 +227,7 @@ TEST_F(EdgeDatabaseReaderTest, InvalidColumnDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"TestTable");
   EXPECT_NE(nullptr, table_enum);
@@ -238,7 +240,7 @@ TEST_F(EdgeDatabaseReaderTest, NoColumnDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"NoColsTable");
   EXPECT_NE(nullptr, table_enum);
@@ -251,7 +253,7 @@ TEST_F(EdgeDatabaseReaderTest, EmptyTableDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"EmptyTable");
   EXPECT_NE(nullptr, table_enum);
@@ -275,14 +277,14 @@ TEST_F(EdgeDatabaseReaderTest, UnicodeStringsDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"UnicodeTable");
   EXPECT_NE(nullptr, table_enum);
   size_t utf8_strings_count = base::size(utf8_strings);
   for (size_t row_count = 0; row_count < utf8_strings_count; ++row_count) {
-    std::wstring row_string = base::UTF8ToWide(utf8_strings[row_count]);
-    base::string16 str_col_value;
+    std::u16string row_string = base::UTF8ToUTF16(utf8_strings[row_count]);
+    std::u16string str_col_value;
     EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
     EXPECT_EQ(row_string, str_col_value);
     if (row_count < utf8_strings_count - 1)
@@ -296,11 +298,11 @@ TEST_F(EdgeDatabaseReaderTest, NonUnicodeStringsDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"NonUnicodeTable");
   EXPECT_NE(nullptr, table_enum);
-  base::string16 str_col_value;
+  std::u16string str_col_value;
   EXPECT_FALSE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
   EXPECT_EQ(JET_errInvalidColumnType, table_enum->last_error());
 }
@@ -309,7 +311,7 @@ TEST_F(EdgeDatabaseReaderTest, CheckNullColumnDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"NullTable");
   EXPECT_NE(nullptr, table_enum);
@@ -343,7 +345,7 @@ TEST_F(EdgeDatabaseReaderTest, CheckNullColumnDatabaseTest) {
   EXPECT_EQ(expected_filetime_col_value.dwHighDateTime,
             filetime_col_value.dwHighDateTime);
 
-  base::string16 str_col_value;
+  std::u16string str_col_value;
   EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
   EXPECT_TRUE(str_col_value.empty());
 
@@ -356,7 +358,7 @@ TEST_F(EdgeDatabaseReaderTest, CheckInvalidColumnTypeDatabaseTest) {
   base::FilePath database_path;
   ASSERT_TRUE(CopyTestDatabase(L"testdata.edb", &database_path));
   EdgeDatabaseReader reader;
-  EXPECT_TRUE(reader.OpenDatabase(database_path.value()));
+  EXPECT_TRUE(reader.OpenDatabase(database_path));
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"TestTable");
   EXPECT_NE(nullptr, table_enum);

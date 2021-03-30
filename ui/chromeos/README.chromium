@@ -1,3 +1,3 @@
 This directory contains things that are simultaneously UI-specific (i.e. can't
 be in chromeos/), Chrome-OS-specific (i.e. shouldn't be in ui/wm/), and used
-outside of (and not dependent on) Ash (i.e. can't be in ash/).
+outside of Ash (i.e. can't be in ash/).

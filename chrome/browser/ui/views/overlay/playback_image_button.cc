@@ -10,6 +10,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -26,7 +27,7 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
   // Accessibility.
-  const base::string16 playback_accessible_button_label(
+  const std::u16string playback_accessible_button_label(
       l10n_util::GetStringUTF16(
           IDS_PICTURE_IN_PICTURE_PLAY_PAUSE_CONTROL_ACCESSIBLE_TEXT));
   SetAccessibleName(playback_accessible_button_label);
@@ -73,5 +74,8 @@ void PlaybackImageButton::UpdateImageAndTooltipText() {
   }
   SchedulePaint();
 }
+
+BEGIN_METADATA(PlaybackImageButton, views::ImageButton)
+END_METADATA
 
 }  // namespace views

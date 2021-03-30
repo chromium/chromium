@@ -22,7 +22,6 @@ class OutgoingDirectory;
 }  // namespace sys
 
 namespace base {
-namespace fuchsia {
 
 // Implementation of the legacy sys.ServiceProvider interface which delegates
 // requests to an underlying fuchsia.io.Directory of services.
@@ -63,7 +62,6 @@ class BASE_EXPORT ServiceProviderImpl : public ::fuchsia::sys::ServiceProvider {
   DISALLOW_COPY_AND_ASSIGN(ServiceProviderImpl);
 };
 
-}  // namespace fuchsia
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_SERVICE_PROVIDER_IMPL_H_

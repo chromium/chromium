@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/loader_factory_for_worker.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
@@ -199,6 +200,7 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
       v8_cache_options_(v8_cache_options),
       reporting_proxy_(reporting_proxy) {
   GetSecurityContext().SetSecurityOrigin(std::move(origin));
+  SetPolicyContainer(PolicyContainer::CreateEmpty());
   if (worker_clients_)
     worker_clients_->ReattachThread();
 }
@@ -219,6 +221,13 @@ v8::Local<v8::Value> WorkerOrWorkletGlobalScope::Wrap(
                 "method. The global object of ECMAScript environment is used "
                 "as the wrapper.";
   return v8::Local<v8::Object>();
+}
+
+v8::MaybeLocal<v8::Value> WorkerOrWorkletGlobalScope::WrapV2(ScriptState*) {
+  LOG(FATAL) << "WorkerOrWorkletGlobalScope must never be wrapped with wrap "
+                "method. The global object of ECMAScript environment is used "
+                "as the wrapper.";
+  return v8::MaybeLocal<v8::Value>();
 }
 
 v8::Local<v8::Object> WorkerOrWorkletGlobalScope::AssociateWithWrapper(
@@ -314,12 +323,12 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
     auto* worker_fetch_context = MakeGarbageCollected<WorkerFetchContext>(
         properties, *this, web_worker_fetch_context_, subresource_filter_,
         content_security_policy, resource_timing_notifier);
-    ResourceFetcherInit init(properties, worker_fetch_context,
-                             GetTaskRunner(TaskType::kNetworking),
-                             GetTaskRunner(TaskType::kNetworkingUnfreezable),
-                             MakeGarbageCollected<LoaderFactoryForWorker>(
-                                 *this, web_worker_fetch_context_),
-                             this);
+    ResourceFetcherInit init(
+        properties, worker_fetch_context, GetTaskRunner(TaskType::kNetworking),
+        GetTaskRunner(TaskType::kNetworkingUnfreezable),
+        MakeGarbageCollected<LoaderFactoryForWorker>(*this,
+                                                     web_worker_fetch_context_),
+        this, nullptr /* back_forward_cache_loader_helper */);
     init.use_counter = MakeGarbageCollected<DetachableUseCounter>(this);
     init.console_logger = MakeGarbageCollected<DetachableConsoleLogger>(this);
 
@@ -351,7 +360,8 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
         ResourceFetcherInit(properties, &FetchContext::NullInstance(),
                             GetTaskRunner(TaskType::kNetworking),
                             GetTaskRunner(TaskType::kNetworkingUnfreezable),
-                            nullptr /* loader_factory */, this));
+                            nullptr /* loader_factory */, this,
+                            nullptr /* back_forward_cache_loader_helper */));
   }
   if (IsContextPaused())
     fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
@@ -376,11 +386,8 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateOutsideSettingsFetcher(
   content_security_policy->SetSupportsWasmEval(
       SchemeRegistry::SchemeSupportsWasmEvalCSP(
           outside_settings_object.GetSecurityOrigin()->Protocol()));
-  for (const auto& policy_and_type : outside_content_security_policy_headers_) {
-    content_security_policy->DidReceiveHeader(
-        policy_and_type.first, policy_and_type.second,
-        network::mojom::ContentSecurityPolicySource::kHTTP);
-  }
+  content_security_policy->AddPolicies(
+      mojo::Clone(outside_content_security_policies_));
 
   OutsideSettingsCSPDelegate* csp_delegate =
       MakeGarbageCollected<OutsideSettingsCSPDelegate>(outside_settings_object,
@@ -439,24 +446,20 @@ void WorkerOrWorkletGlobalScope::SetSandboxFlags(
   }
 }
 
-void WorkerOrWorkletGlobalScope::SetOutsideContentSecurityPolicyHeaders(
-    const Vector<CSPHeaderAndType>& headers) {
-  outside_content_security_policy_headers_ = headers;
+void WorkerOrWorkletGlobalScope::SetOutsideContentSecurityPolicies(
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies) {
+  outside_content_security_policies_ = std::move(policies);
 }
 
 void WorkerOrWorkletGlobalScope::InitContentSecurityPolicyFromVector(
-    const Vector<CSPHeaderAndType>& headers) {
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies) {
   if (!GetContentSecurityPolicy()) {
     auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
     csp->SetSupportsWasmEval(SchemeRegistry::SchemeSupportsWasmEvalCSP(
         GetSecurityOrigin()->Protocol()));
-    GetSecurityContext().SetContentSecurityPolicy(csp);
+    SetContentSecurityPolicy(csp);
   }
-  for (const auto& policy_and_type : headers) {
-    GetContentSecurityPolicy()->DidReceiveHeader(
-        policy_and_type.first, policy_and_type.second,
-        network::mojom::ContentSecurityPolicySource::kHTTP);
-  }
+  GetContentSecurityPolicy()->AddPolicies(std::move(policies));
 }
 
 void WorkerOrWorkletGlobalScope::BindContentSecurityPolicyToExecutionContext() {
@@ -502,12 +505,13 @@ void WorkerOrWorkletGlobalScope::FetchModuleScript(
   ScriptFetchOptions options(
       nonce, IntegrityMetadataSet(), integrity_attribute, parser_state,
       credentials_mode, network::mojom::ReferrerPolicy::kDefault,
-      mojom::FetchImportanceMode::kImportanceAuto, reject_coep_unsafe_none);
+      mojom::blink::FetchImportanceMode::kImportanceAuto,
+      RenderBlockingBehavior::kNonBlocking, reject_coep_unsafe_none);
 
   Modulator* modulator = Modulator::From(ScriptController()->GetScriptState());
   // Step 3. "Perform the internal module script graph fetching procedure ..."
   modulator->FetchTree(
-      module_url_record,
+      module_url_record, ModuleType::kJavaScript,
       CreateOutsideSettingsFetcher(fetch_client_settings_object,
                                    resource_timing_notifier),
       context_type, destination, options, custom_fetch_type, client);

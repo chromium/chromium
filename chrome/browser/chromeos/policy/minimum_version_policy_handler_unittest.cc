@@ -4,19 +4,19 @@
 
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/policy/minimum_version_policy_test_helpers.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -93,7 +93,7 @@ class MinimumVersionPolicyHandlerTest
   bool user_managed_ = true;
   ScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList feature_list_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
   std::unique_ptr<base::Version> current_version_;
@@ -136,7 +136,7 @@ void MinimumVersionPolicyHandlerTest::TearDown() {
 
 void MinimumVersionPolicyHandlerTest::CreateMinimumVersionHandler() {
   minimum_version_policy_handler_.reset(
-      new MinimumVersionPolicyHandler(this, chromeos::CrosSettings::Get()));
+      new MinimumVersionPolicyHandler(this, ash::CrosSettings::Get()));
 }
 
 const MinimumVersionRequirement* MinimumVersionPolicyHandlerTest::GetState()

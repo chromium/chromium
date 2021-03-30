@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(
-      `Tests that callFrames on pause contains function name taking into account displayName and Function.name.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+      `Tests that callFrames on pause contains function name taking into account Function.name (and ignoring displayName).\n`);
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var foo = function ()

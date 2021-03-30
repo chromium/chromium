@@ -23,24 +23,23 @@ namespace {
 
 TEST(TextUtilsTest, GetStringWidth) {
   FontList font_list;
-  EXPECT_EQ(GetStringWidth(base::string16(), font_list), 0);
-  EXPECT_GT(GetStringWidth(base::ASCIIToUTF16("a"), font_list),
-            GetStringWidth(base::string16(), font_list));
-  EXPECT_GT(GetStringWidth(base::ASCIIToUTF16("ab"), font_list),
-            GetStringWidth(base::ASCIIToUTF16("a"), font_list));
-  EXPECT_GT(GetStringWidth(base::ASCIIToUTF16("abc"), font_list),
-            GetStringWidth(base::ASCIIToUTF16("ab"), font_list));
+  EXPECT_EQ(GetStringWidth(std::u16string(), font_list), 0);
+  EXPECT_GT(GetStringWidth(u"a", font_list),
+            GetStringWidth(std::u16string(), font_list));
+  EXPECT_GT(GetStringWidth(u"ab", font_list), GetStringWidth(u"a", font_list));
+  EXPECT_GT(GetStringWidth(u"abc", font_list),
+            GetStringWidth(u"ab", font_list));
 }
 
 TEST(TextUtilsTest, GetStringSize) {
-  std::vector<base::string16> strings{
-      base::string16(),
-      base::ASCIIToUTF16("a"),
-      base::ASCIIToUTF16("abc"),
+  std::vector<std::u16string> strings{
+      std::u16string(),
+      u"a",
+      u"abc",
   };
 
   FontList font_list;
-  for (base::string16 string : strings) {
+  for (std::u16string string : strings) {
     gfx::Size size = GetStringSize(string, font_list);
     EXPECT_EQ(GetStringWidth(string, font_list), size.width())
         << " input string is \"" << string << "\"";
@@ -193,10 +192,10 @@ TEST_P(RemoveAcceleratorCharTest, RemoveAcceleratorChar) {
   RemoveAcceleratorCharData data = GetParam();
   int accelerated_char_pos;
   int accelerated_char_span;
-  base::string16 result_locate_and_strip = LocateAndRemoveAcceleratorChar(
+  std::u16string result_locate_and_strip = LocateAndRemoveAcceleratorChar(
       base::UTF8ToUTF16(data.input), &accelerated_char_pos,
       &accelerated_char_span);
-  base::string16 result_full_strip =
+  std::u16string result_full_strip =
       RemoveAccelerator(base::UTF8ToUTF16(data.input));
   EXPECT_EQ(result_locate_and_strip,
             base::UTF8ToUTF16(data.output_locate_and_strip));
@@ -276,8 +275,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(FindValidBoundaryBeforeTest, FindValidBoundaryBefore) {
   FindValidBoundaryData data = GetParam();
-  const base::string16::const_pointer input =
-      reinterpret_cast<base::string16::const_pointer>(data.input);
+  const std::u16string::const_pointer input =
+      reinterpret_cast<std::u16string::const_pointer>(data.input);
   DLOG(INFO) << input;
   size_t result =
       FindValidBoundaryBefore(input, data.index_in, data.trim_whitespace);
@@ -349,8 +348,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(FindValidBoundaryAfterTest, FindValidBoundaryAfter) {
   FindValidBoundaryData data = GetParam();
-  const base::string16::const_pointer input =
-      reinterpret_cast<base::string16::const_pointer>(data.input);
+  const std::u16string::const_pointer input =
+      reinterpret_cast<std::u16string::const_pointer>(data.input);
   size_t result =
       FindValidBoundaryAfter(input, data.index_in, data.trim_whitespace);
   EXPECT_EQ(data.index_out, result);

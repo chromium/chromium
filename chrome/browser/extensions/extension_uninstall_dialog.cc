@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -76,6 +77,7 @@ ExtensionUninstallDialog::ExtensionUninstallDialog(
   DCHECK(delegate_);
   if (parent)
     parent_window_tracker_ = NativeWindowTracker::Create(parent);
+  profile_observation_.Observe(profile_);
 }
 
 ExtensionUninstallDialog::~ExtensionUninstallDialog() = default;
@@ -101,14 +103,23 @@ void ExtensionUninstallDialog::ConfirmUninstall(
   extension_ = extension;
   uninstall_reason_ = reason;
 
+  if (!profile_)
+    return;
+
   if (parent() && parent_window_tracker_->WasNativeWindowClosed()) {
     OnDialogClosed(CLOSE_ACTION_CANCELED);
     return;
   }
 
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  show_report_abuse_checkbox_ =
+      extension_management->UpdatesFromWebstore(*extension_);
+
+  show_remove_data_checkbox_ = extension_->from_bookmark();
+
   // Track that extension uninstalled externally.
-  DCHECK(!observer_.IsObserving(ExtensionRegistry::Get(profile_)));
-  observer_.Add(ExtensionRegistry::Get(profile_));
+  registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 
   // Dialog will be shown once icon is loaded.
   DCHECK(!dialog_shown_);
@@ -162,6 +173,13 @@ void ExtensionUninstallDialog::OnExtensionUninstalled(
       false, base::ASCIIToUTF16(kExtensionRemovedError));
 }
 
+void ExtensionUninstallDialog::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_EQ(profile_, profile);
+  profile_ = nullptr;
+  profile_observation_.Reset();
+  OnDialogClosed(CLOSE_ACTION_CANCELED);
+}
+
 std::string ExtensionUninstallDialog::GetHeadingText() {
   if (triggering_extension_) {
     return l10n_util::GetStringFUTF8(
@@ -178,13 +196,13 @@ GURL ExtensionUninstallDialog::GetLaunchURL() const {
 }
 
 bool ExtensionUninstallDialog::ShouldShowCheckbox() const {
-  return ShouldShowReportAbuseCheckbox() || ShouldShowRemoveDataCheckbox();
+  return show_report_abuse_checkbox_ || show_remove_data_checkbox_;
 }
 
-base::string16 ExtensionUninstallDialog::GetCheckboxLabel() const {
+std::u16string ExtensionUninstallDialog::GetCheckboxLabel() const {
   DCHECK(ShouldShowCheckbox());
 
-  if (ShouldShowReportAbuseCheckbox()) {
+  if (show_report_abuse_checkbox_) {
     return triggering_extension_.get()
                ? l10n_util::GetStringFUTF16(
                      IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE_FROM_EXTENSION,
@@ -193,7 +211,7 @@ base::string16 ExtensionUninstallDialog::GetCheckboxLabel() const {
                      IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE);
   }
 
-  DCHECK(ShouldShowRemoveDataCheckbox());
+  DCHECK(show_remove_data_checkbox_);
   return l10n_util::GetStringFUTF16(
       IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
       url_formatter::FormatUrlForSecurityDisplay(
@@ -203,25 +221,26 @@ base::string16 ExtensionUninstallDialog::GetCheckboxLabel() const {
 void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
   // We don't want to artificially weight any of the options, so only record if
   // a checkbox was shown.
-  if (ShouldShowReportAbuseCheckbox()) {
+  if (show_report_abuse_checkbox_) {
     UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallDialogAction", action,
                               CLOSE_ACTION_LAST);
-  } else if (ShouldShowRemoveDataCheckbox()) {
+  } else if (show_remove_data_checkbox_) {
     // TODO(crbug.com/1065748): Delete Webapp recording in extensions dialog.
     UMA_HISTOGRAM_ENUMERATION("Webapp.UninstallDialogAction", action,
                               CLOSE_ACTION_LAST);
   }
 
   bool success = false;
-  base::string16 error;
+  std::u16string error;
   switch (action) {
     case CLOSE_ACTION_UNINSTALL_AND_CHECKBOX_CHECKED:
+      DCHECK(profile_);
       success = Uninstall(&error);
       base::RecordAction(base::UserMetricsAction(
           "Extensions.UninstallDialogReportAbuseChecked"));
       base::RecordAction(
           base::UserMetricsAction("Extensions.UninstallDialogRemoveClick"));
-      if (ShouldShowRemoveDataCheckbox()) {
+      if (show_remove_data_checkbox_) {
         content::ClearSiteData(
             base::BindRepeating(
                 [](content::BrowserContext* browser_context) {
@@ -248,7 +267,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
     case CLOSE_ACTION_CANCELED:
       base::RecordAction(
           base::UserMetricsAction("Extensions.UninstallDialogCancelClick"));
-      error = base::ASCIIToUTF16("User canceled uninstall dialog");
+      error = u"User canceled uninstall dialog";
       break;
     case CLOSE_ACTION_LAST:
       NOTREACHED();
@@ -256,7 +275,8 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
   delegate_->OnExtensionUninstallDialogClosed(success, error);
 }
 
-bool ExtensionUninstallDialog::Uninstall(base::string16* error) {
+bool ExtensionUninstallDialog::Uninstall(std::u16string* error) {
+  DCHECK(profile_);
   const Extension* current_extension =
       ExtensionRegistry::Get(profile_)->GetExtensionById(
           extension_->id(), ExtensionRegistry::EVERYTHING);
@@ -267,7 +287,7 @@ bool ExtensionUninstallDialog::Uninstall(base::string16* error) {
     }
 
     // Prevent notifications triggered by our request.
-    observer_.RemoveAll();
+    registry_observation_.Reset();
     return ExtensionSystem::Get(profile_)
         ->extension_service()
         ->UninstallExtension(extension_->id(), uninstall_reason_, error);
@@ -277,20 +297,13 @@ bool ExtensionUninstallDialog::Uninstall(base::string16* error) {
 }
 
 void ExtensionUninstallDialog::HandleReportAbuse() {
+  DCHECK(profile_);
   NavigateParams params(
       profile_,
       extension_urls::GetWebstoreReportAbuseUrl(extension_->id(), kReferrerId),
       ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
-}
-
-bool ExtensionUninstallDialog::ShouldShowReportAbuseCheckbox() const {
-  return ManifestURL::UpdatesFromGallery(extension_.get());
-}
-
-bool ExtensionUninstallDialog::ShouldShowRemoveDataCheckbox() const {
-  return extension_->from_bookmark();
 }
 
 }  // namespace extensions

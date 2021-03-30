@@ -4,7 +4,7 @@
 
 #include "ui/events/devices/device_data_manager.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/devices/device_hotplug_event_observer.h"
@@ -83,9 +83,9 @@ TEST_F(DeviceDataManagerTest, AreTouchscreenTargetDisplaysValid) {
   DeviceDataManager* device_data_manager = DeviceDataManager::GetInstance();
   EXPECT_FALSE(device_data_manager->AreTouchscreenTargetDisplaysValid());
   TestInputDeviceEventObserver observer;
-  ScopedObserver<DeviceDataManager, InputDeviceEventObserver> scoped_observer(
-      &observer);
-  scoped_observer.Add(device_data_manager);
+  base::ScopedObservation<DeviceDataManager, InputDeviceEventObserver>
+      scoped_obaservation(&observer);
+  scoped_obaservation.Observe(device_data_manager);
   CallOnDeviceListsComplete();
   EXPECT_FALSE(device_data_manager->AreTouchscreenTargetDisplaysValid());
   EXPECT_EQ(0, observer.on_touch_device_associations_changed_call_count());

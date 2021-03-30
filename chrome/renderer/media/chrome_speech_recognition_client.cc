@@ -55,30 +55,13 @@ ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
       std::move(speech_recognition_client_browser_interface_receiver));
 }
 
-void ChromeSpeechRecognitionClient::OnRecognizerBound(
-    bool is_multichannel_supported) {
-  is_multichannel_supported_ = is_multichannel_supported;
-  is_recognizer_bound_ = true;
-
-  if (on_ready_callback_)
-    std::move(on_ready_callback_).Run();
-}
-
-void ChromeSpeechRecognitionClient::OnRecognizerDisconnected() {
-  is_recognizer_bound_ = false;
-  caption_host_->OnError();
-}
-
-void ChromeSpeechRecognitionClient::OnCaptionHostDisconnected() {
-  is_browser_requesting_transcription_ = false;
-}
-
 ChromeSpeechRecognitionClient::~ChromeSpeechRecognitionClient() = default;
 
 void ChromeSpeechRecognitionClient::AddAudio(
     scoped_refptr<media::AudioBuffer> buffer) {
   DCHECK(buffer);
-  send_audio_callback_.Run(ConvertToAudioDataS16(std::move(buffer)));
+  send_audio_callback_.Run(
+      ConvertToAudioDataS16(std::move(buffer), is_multichannel_supported_));
 }
 
 void ChromeSpeechRecognitionClient::AddAudio(
@@ -86,12 +69,12 @@ void ChromeSpeechRecognitionClient::AddAudio(
     int sample_rate,
     media::ChannelLayout channel_layout) {
   DCHECK(audio_bus);
-  send_audio_callback_.Run(
-      ConvertToAudioDataS16(std::move(audio_bus), sample_rate, channel_layout));
+  send_audio_callback_.Run(ConvertToAudioDataS16(std::move(audio_bus),
+                                                 sample_rate, channel_layout,
+                                                 is_multichannel_supported_));
 }
 
 bool ChromeSpeechRecognitionClient::IsSpeechRecognitionAvailable() {
-  // TODO(evliu): Check if SODA is available.
   return !is_website_blocked_ && is_browser_requesting_transcription_ &&
          is_recognizer_bound_;
 }
@@ -108,8 +91,19 @@ void ChromeSpeechRecognitionClient::SetOnReadyCallback(
     std::move(on_ready_callback_).Run();
 }
 
+void ChromeSpeechRecognitionClient::OnRecognizerBound(
+    bool is_multichannel_supported) {
+  is_multichannel_supported_ = is_multichannel_supported;
+  is_recognizer_bound_ = true;
+
+  if (on_ready_callback_)
+    std::move(on_ready_callback_).Run();
+}
+
 void ChromeSpeechRecognitionClient::OnSpeechRecognitionRecognitionEvent(
     media::mojom::SpeechRecognitionResultPtr result) {
+  if (!caption_host_.is_bound())
+    return;
   caption_host_->OnTranscription(
       chrome::mojom::TranscriptionResult::New(result->transcription,
                                               result->is_final),
@@ -117,49 +111,22 @@ void ChromeSpeechRecognitionClient::OnSpeechRecognitionRecognitionEvent(
                      base::Unretained(this)));
 }
 
+void ChromeSpeechRecognitionClient::OnSpeechRecognitionError() {
+  if (caption_host_.is_bound())
+    caption_host_->OnError();
+}
+
+void ChromeSpeechRecognitionClient::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
+  caption_host_->OnLanguageIdentificationEvent(std::move(event));
+}
+
 void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
     bool is_speech_recognition_available) {
   if (is_speech_recognition_available) {
     initialize_callback_.Run();
-  } else {
-    Reset();
-  }
-}
-
-void ChromeSpeechRecognitionClient::OnTranscriptionCallback(bool success) {
-  if (!success && is_browser_requesting_transcription_) {
-    speech_recognition_recognizer_->OnCaptionBubbleClosed();
-  }
-
-  is_browser_requesting_transcription_ = success;
-}
-
-void ChromeSpeechRecognitionClient::CopyBufferToTempAudioBus(
-    const media::AudioBuffer& buffer) {
-  if (!temp_audio_bus_ ||
-      buffer.channel_count() != temp_audio_bus_->channels() ||
-      buffer.frame_count() != temp_audio_bus_->frames()) {
-    temp_audio_bus_ =
-        media::AudioBus::Create(buffer.channel_count(), buffer.frame_count());
-  }
-
-  buffer.ReadFrames(buffer.frame_count(),
-                    /* source_frame_offset */ 0, /* dest_frame_offset */ 0,
-                    temp_audio_bus_.get());
-}
-
-void ChromeSpeechRecognitionClient::ResetChannelMixer(
-    int frame_count,
-    media::ChannelLayout channel_layout) {
-  if (!monaural_audio_bus_ || frame_count != monaural_audio_bus_->frames()) {
-    monaural_audio_bus_ =
-        media::AudioBus::Create(1 /* channels */, frame_count);
-  }
-
-  if (channel_layout != channel_layout_) {
-    channel_layout_ = channel_layout;
-    channel_mixer_ = std::make_unique<media::ChannelMixer>(
-        channel_layout, media::CHANNEL_LAYOUT_MONO);
+  } else if (reset_callback_) {
+    reset_callback_.Run();
   }
 }
 
@@ -191,6 +158,10 @@ void ChromeSpeechRecognitionClient::Initialize() {
                               is_website_blocked_);
   }
 
+  // Bind the call to Reset() to the Media thread.
+  reset_callback_ = media::BindToCurrentLoop(base::BindRepeating(
+      &ChromeSpeechRecognitionClient::Reset, weak_factory_.GetWeakPtr()));
+
   speech_recognition_context_.set_disconnect_handler(media::BindToCurrentLoop(
       base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerDisconnected,
                      weak_factory_.GetWeakPtr())));
@@ -203,6 +174,7 @@ void ChromeSpeechRecognitionClient::Initialize() {
 
 void ChromeSpeechRecognitionClient::Reset() {
   is_recognizer_bound_ = false;
+  is_browser_requesting_transcription_ = true;
   speech_recognition_context_.reset();
   speech_recognition_recognizer_.reset();
   speech_recognition_client_receiver_.reset();
@@ -212,6 +184,8 @@ void ChromeSpeechRecognitionClient::Reset() {
 void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr audio_data) {
   DCHECK(audio_data);
+  if (!speech_recognition_recognizer_.is_bound())
+    return;
   if (IsSpeechRecognitionAvailable()) {
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
         std::move(audio_data));
@@ -222,84 +196,25 @@ void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(
   }
 }
 
-media::mojom::AudioDataS16Ptr
-ChromeSpeechRecognitionClient::ConvertToAudioDataS16(
-    scoped_refptr<media::AudioBuffer> buffer) {
-  DCHECK_GT(buffer->frame_count(), 0);
-  DCHECK_GT(buffer->channel_count(), 0);
-  DCHECK_GT(buffer->sample_rate(), 0);
-
-  auto signed_buffer = media::mojom::AudioDataS16::New();
-  signed_buffer->channel_count = buffer->channel_count();
-  signed_buffer->frame_count = buffer->frame_count();
-  signed_buffer->sample_rate = buffer->sample_rate();
-
-  // If multichannel audio is not supported by the speech recognition service,
-  // mix the channels into a monaural channel before converting it.
-  if (buffer->channel_count() > 1 && !is_multichannel_supported_) {
-    signed_buffer->channel_count = 1;
-    CopyBufferToTempAudioBus(*buffer);
-    ResetChannelMixer(buffer->frame_count(), buffer->channel_layout());
-    signed_buffer->data.resize(buffer->frame_count());
-    channel_mixer_->Transform(temp_audio_bus_.get(), monaural_audio_bus_.get());
-    monaural_audio_bus_->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-        monaural_audio_bus_->frames(), &signed_buffer->data[0]);
-    return signed_buffer;
+void ChromeSpeechRecognitionClient::OnTranscriptionCallback(bool success) {
+  if (!success && is_browser_requesting_transcription_ &&
+      speech_recognition_recognizer_.is_bound()) {
+    speech_recognition_recognizer_->OnCaptionBubbleClosed();
   }
 
-  // If the audio is already in the interleaved signed int 16 format, directly
-  // assign it to the buffer.
-  if (buffer->sample_format() == media::SampleFormat::kSampleFormatS16) {
-    int16_t* audio_data = reinterpret_cast<int16_t*>(buffer->channel_data()[0]);
-    signed_buffer->data.assign(
-        audio_data,
-        audio_data + buffer->frame_count() * buffer->channel_count());
-    return signed_buffer;
-  }
-
-  // Convert the raw audio to the interleaved signed int 16 sample type.
-  CopyBufferToTempAudioBus(*buffer);
-  signed_buffer->data.resize(buffer->frame_count() * buffer->channel_count());
-  temp_audio_bus_->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      temp_audio_bus_->frames(), &signed_buffer->data[0]);
-
-  return signed_buffer;
-}
-
-media::mojom::AudioDataS16Ptr
-ChromeSpeechRecognitionClient::ConvertToAudioDataS16(
-    std::unique_ptr<media::AudioBus> audio_bus,
-    int sample_rate,
-    media::ChannelLayout channel_layout) {
-  DCHECK_GT(audio_bus->frames(), 0);
-  DCHECK_GT(audio_bus->channels(), 0);
-
-  auto signed_buffer = media::mojom::AudioDataS16::New();
-  signed_buffer->channel_count = audio_bus->channels();
-  signed_buffer->frame_count = audio_bus->frames();
-  signed_buffer->sample_rate = sample_rate;
-
-  // If multichannel audio is not supported by the speech recognition service,
-  // mix the channels into a monaural channel before converting it.
-  if (audio_bus->channels() > 1 && !is_multichannel_supported_) {
-    signed_buffer->channel_count = 1;
-    ResetChannelMixer(audio_bus->frames(), channel_layout);
-    signed_buffer->data.resize(audio_bus->frames());
-
-    channel_mixer_->Transform(audio_bus.get(), monaural_audio_bus_.get());
-    monaural_audio_bus_->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-        monaural_audio_bus_->frames(), &signed_buffer->data[0]);
-
-    return signed_buffer;
-  }
-
-  signed_buffer->data.resize(audio_bus->frames() * audio_bus->channels());
-  audio_bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      audio_bus->frames(), &signed_buffer->data[0]);
-
-  return signed_buffer;
+  is_browser_requesting_transcription_ = success;
 }
 
 bool ChromeSpeechRecognitionClient::IsUrlBlocked(const std::string& url) const {
   return blocked_urls_.find(url) != blocked_urls_.end();
+}
+
+void ChromeSpeechRecognitionClient::OnRecognizerDisconnected() {
+  is_recognizer_bound_ = false;
+  if (caption_host_.is_bound())
+    caption_host_->OnError();
+}
+
+void ChromeSpeechRecognitionClient::OnCaptionHostDisconnected() {
+  is_browser_requesting_transcription_ = false;
 }

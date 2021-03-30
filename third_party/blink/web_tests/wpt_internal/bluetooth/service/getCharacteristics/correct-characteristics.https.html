@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  return setBluetoothFakeAdapter('HeartRateAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{services: ['heart_rate']}]}))
+    .then(device => device.gatt.connect())
+    .then(gattServer => gattServer.getPrimaryService('heart_rate'))
+    .then(service => service.getCharacteristics('body_sensor_location'))
+    .then(characteristics => {
+      let body_sensor_location_chest = characteristics[0];
+      let body_sensor_location_wrist = characteristics[1];
+      return body_sensor_location_chest.readValue()
+        .then(value => {
+          assert_equals(value.byteLength, 1);
+          assert_equals(value.getUint8(0), 1 /* chest */);
+        })
+        .then(() => body_sensor_location_wrist.readValue())
+        .then(value => {
+          assert_equals(value.byteLength, 1);
+          assert_equals(value.getUint8(0), 2 /* wrist */);
+        });
+    });
+}, 'Find characteristics with UUID in service.');
+</script>

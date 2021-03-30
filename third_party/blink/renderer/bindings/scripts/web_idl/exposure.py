@@ -8,8 +8,11 @@ from .runtime_enabled_features import RuntimeEnabledFeatures
 class _Feature(str):
     """Represents a runtime-enabled feature."""
 
+    def __new__(cls, value):
+        return str.__new__(cls, value)
+
     def __init__(self, value):
-        str.__init__(self, value)
+        str.__init__(self)
         self._is_context_dependent = (
             RuntimeEnabledFeatures.is_context_dependent(self))
 

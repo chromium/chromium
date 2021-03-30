@@ -25,7 +25,8 @@ sk_sp<SkImage> CreateRasterImage() {
 
 DecodedDrawImage CreateDecode() {
   return DecodedDrawImage(CreateRasterImage(), nullptr, SkSize::MakeEmpty(),
-                          SkSize::Make(1.0f, 1.0f), kMedium_SkFilterQuality);
+                          SkSize::Make(1.0f, 1.0f), kMedium_SkFilterQuality,
+                          true);
 }
 
 class MockDecodeCache : public StubDecodeCache {

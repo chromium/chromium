@@ -166,7 +166,7 @@ emitted.
 
 In order to record UKM events, your code needs a UkmRecorder object, defined by [//services/metrics/public/cpp/ukm_recorder.h](https://cs.chromium.org/chromium/src/services/metrics/public/cpp/ukm_recorder.h)
 
-There are two main ways of getting a UkmRecorder instance.
+There are three main ways of getting a UkmRecorder instance.
 
 1) Use `ukm::UkmRecorder::Get()`.  This currently only works from the Browser process.
 
@@ -179,6 +179,8 @@ ukm::builders::MyEvent(source_id)
     .SetMyMetric(metric_value)
     .Record(ukm_recorder.get());
 ```
+
+3) Within blink/renderer, use `blink::Document::UkmRecorder()`.
 
 ### Get A ukm::SourceId
 
@@ -238,7 +240,7 @@ void OnGoatTeleported() {
   ...
   ukm::builders::Goat_Teleported(source_id)
       .SetDuration(duration.InMilliseconds())
-      .SetType(goat_type)
+      .SetGoatType(goat_type)
       .Record(ukm_recorder);
 }
 ```
@@ -252,3 +254,46 @@ Build Chromium and run it with '--force-enable-metrics-reporting --metrics-uploa
 ## Unit Testing
 
 You can pass your code a TestUkmRecorder (see [//components/ukm/test_ukm_recorder.h](https://cs.chromium.org/chromium/src/components/ukm/test_ukm_recorder.h)) and then use the methods it provides to test that your data records correctly.
+
+## Recording Information about Subframes URLs via Categorization
+
+The UKM infrastructure primarily supports recording metrics tied with navigation URLs as that is the basis of the consent model. As there is desire for information related to URLs loaded within a page itself (i.e. subframe URLs), here we describe an approach for how to record this via categorization.
+
+We are able to emit information related to subframe URLs within an UKM event as long as we don't capture the exact URL, but instead emit some categorical label, such as 'ad', or 'uses WebFramework1'. It may be possible for specific sites to be added as a category but this requires privacy review. In general, we prefer to avoid being specific about a site and suggest more general categorization instead.
+
+The full metrics will not be keyed off the subframe URL. Rather, the subframe URL data will be tied with the main frame URL, and it will be emitted as a custom metric. It is possible to emit these events multiple times if there are several subframe URLs with the properties we want to observe on the same page.
+
+### Example
+
+
+```xml
+<event name="WebFrameworkPerformance">
+  <owner>owner@chromium.org</owner>
+  <summary>
+    Recorded when a page uses on of a list of known web frameworks. This records various performance measurements.
+  </summary>
+ <metric name="WebFramework" enum=WebFrameworkName>
+    <summary>
+      Web Framework used.
+   </summary>
+ </metric>
+ <metric name="FrameworkLoadInMs">
+    <summary>
+      Time to load the framework in milliseconds.
+   </summary>
+ </metric>
+</event>
+```
+
+And in the UKM enum.xml:
+
+```xml
+<enum name="WebFrameworkName">
+ <int value="0" label="Unknown"/>
+ <int value="1" label="WebFramework1"/>
+ <int value="1" label="WebFramework2"/>
+…
+</enum>
+```
+
+In this example, if a known framework was loaded with a time of 150ms, we could record the framework name and the load time, tied together with the main frame URL. Note that there will need to be custom logic to map the provider to the enum. It’s possible this logic may be reusable across UKM clients, please verify if some similar recording is being done elsewhere.

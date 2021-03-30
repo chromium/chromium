@@ -107,7 +107,7 @@ void CrossProcessFrameConnector::SetView(RenderWidgetHostViewChildFrame* view) {
     if (visibility_ != blink::mojom::FrameVisibility::kRenderedInViewport)
       OnVisibilityChanged(visibility_);
     if (frame_proxy_in_parent_renderer_) {
-      frame_proxy_in_parent_renderer_->GetAssociatedRenderFrameProxy()
+      frame_proxy_in_parent_renderer_->GetAssociatedRemoteFrame()
           ->SetFrameSinkId(view_->GetFrameSinkId());
     }
   }
@@ -150,7 +150,10 @@ void CrossProcessFrameConnector::SendIntrinsicSizingInfoToParent(
 }
 
 void CrossProcessFrameConnector::SynchronizeVisualProperties(
-    const blink::FrameVisualProperties& visual_properties) {
+    const blink::FrameVisualProperties& visual_properties,
+    bool propagate) {
+  last_received_zoom_level_ = visual_properties.zoom_level;
+  last_received_local_frame_size_ = visual_properties.local_frame_size;
   screen_info_ = visual_properties.screen_info;
   local_surface_id_ = visual_properties.local_surface_id;
 
@@ -176,7 +179,7 @@ void CrossProcessFrameConnector::SynchronizeVisualProperties(
       visual_properties.compositor_viewport,
       visual_properties.root_widget_window_segments);
 
-  render_widget_host->SynchronizeVisualProperties();
+  render_widget_host->UpdateVisualProperties(propagate);
 }
 
 void CrossProcessFrameConnector::UpdateCursor(const WebCursor& cursor) {
@@ -320,16 +323,24 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
     return;
   }
 
-  last_received_zoom_level_ = visual_properties.zoom_level;
-  last_received_local_frame_size_ = visual_properties.local_frame_size;
   SynchronizeVisualProperties(visual_properties);
 }
 
 void CrossProcessFrameConnector::UpdateViewportIntersection(
+    const blink::mojom::ViewportIntersectionState& intersection_state,
+    const base::Optional<blink::FrameVisualProperties>& visual_properties) {
+  if (visual_properties.has_value())
+    SynchronizeVisualProperties(visual_properties.value(), false);
+  UpdateViewportIntersectionInternal(intersection_state);
+}
+
+void CrossProcessFrameConnector::UpdateViewportIntersectionInternal(
     const blink::mojom::ViewportIntersectionState& intersection_state) {
   intersection_state_ = intersection_state;
-  if (view_)
-    view_->UpdateViewportIntersection(intersection_state_);
+  if (view_) {
+    view_->UpdateViewportIntersection(
+        intersection_state_, view_->host()->LastComputedVisualProperties());
+  }
 
   if (IsVisible()) {
     // Record metrics if a crashed subframe became visible as a result of this

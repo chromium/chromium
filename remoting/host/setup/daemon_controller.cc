@@ -68,7 +68,7 @@ void DaemonController::SetConfigAndStart(
                      this, std::move(done));
   base::OnceClosure request =
       base::BindOnce(&DaemonController::DoSetConfigAndStart, this,
-                     base::Passed(&config), consent, std::move(wrapped_done));
+                     std::move(config), consent, std::move(wrapped_done));
   ServiceOrQueueRequest(std::move(request));
 }
 
@@ -81,8 +81,8 @@ void DaemonController::UpdateConfig(
       base::BindOnce(&DaemonController::InvokeCompletionCallbackAndScheduleNext,
                      this, std::move(done));
   base::OnceClosure request =
-      base::BindOnce(&DaemonController::DoUpdateConfig, this,
-                     base::Passed(&config), std::move(wrapped_done));
+      base::BindOnce(&DaemonController::DoUpdateConfig, this, std::move(config),
+                     std::move(wrapped_done));
   ServiceOrQueueRequest(std::move(request));
 }
 

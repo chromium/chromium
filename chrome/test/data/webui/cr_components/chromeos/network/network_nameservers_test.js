@@ -38,4 +38,13 @@ suite('NetworkNameserversTest', function() {
     assertFalse(nameservers.$$('cr-radio-button[name=google]').checked);
     assertTrue(nameservers.$$('cr-radio-button[name=custom]').checked);
   });
+
+  test('Disabled UI state', function() {
+    const radioGroup = nameservers.$.nameserverType;
+    assertFalse(radioGroup.disabled);
+
+    nameservers.disabled = true;
+
+    assertTrue(radioGroup.disabled);
+  });
 });

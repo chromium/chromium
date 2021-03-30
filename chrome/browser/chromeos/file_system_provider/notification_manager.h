@@ -50,7 +50,7 @@ class NotificationManager : public NotificationManagerInterface,
 
   // message_center::NotificationObserver overrides:
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
   void Close(bool by_user) override;
 
  private:

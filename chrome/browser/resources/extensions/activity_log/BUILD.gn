@@ -46,7 +46,7 @@ js_library("activity_log_history") {
   deps = [
     ":activity_log_history_item",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field.m",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
   ]
   externs_list = [ "$externs_path/activity_log_private.js" ]
 }
@@ -60,7 +60,7 @@ js_library("activity_log_stream") {
   deps = [
     ":activity_log_stream_item",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field.m",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
   ]
   externs_list = [ "$externs_path/activity_log_private.js" ]
 }

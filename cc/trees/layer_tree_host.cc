@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -143,6 +144,8 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       debug_state_(settings_.initial_debug_state),
       id_(s_layer_tree_host_sequence_number.GetNext() + 1),
       task_graph_runner_(params.task_graph_runner),
+      main_thread_pipeline_(params.main_thread_pipeline),
+      compositor_thread_pipeline_(params.compositor_thread_pipeline),
       event_listener_properties_(),
       mutator_host_(params.mutator_host),
       dark_mode_filter_(params.dark_mode_filter) {
@@ -199,8 +202,6 @@ void LayerTreeHost::InitializeProxy(std::unique_ptr<Proxy> proxy) {
   proxy_->Start();
 
   UpdateDeferMainFrameUpdateInternal();
-
-  mutator_host_->SetSupportsScrollAnimations(proxy_->SupportsImplScrolling());
 }
 
 LayerTreeHost::~LayerTreeHost() {
@@ -494,6 +495,19 @@ void LayerTreeHost::CommitComplete() {
   }
 }
 
+void LayerTreeHost::NotifyTransitionRequestsFinished(
+    const std::vector<uint32_t>& sequence_ids) {
+  // TODO(vmpstr): This might also be a good spot to expire long standing
+  // requests if they were not finished.
+  for (auto& sequence_id : sequence_ids) {
+    auto it = document_transition_callbacks_.find(sequence_id);
+    if (it == document_transition_callbacks_.end())
+      continue;
+    std::move(it->second).Run();
+    document_transition_callbacks_.erase(it);
+  }
+}
+
 void LayerTreeHost::SetLayerTreeFrameSink(
     std::unique_ptr<LayerTreeFrameSink> surface) {
   TRACE_EVENT0("cc", "LayerTreeHost::SetLayerTreeFrameSink");
@@ -536,9 +550,8 @@ std::unique_ptr<LayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
     LayerTreeHostImplClient* client) {
   DCHECK(task_runner_provider_->IsImplThread());
 
-  const bool supports_impl_scrolling = task_runner_provider_->HasImplThread();
   std::unique_ptr<MutatorHost> mutator_host_impl =
-      mutator_host_->CreateImplInstance(supports_impl_scrolling);
+      mutator_host_->CreateImplInstance();
 
   if (!settings_.scroll_animation_duration_for_testing.is_zero()) {
     mutator_host_->SetScrollAnimationDurationForTesting(
@@ -651,13 +664,13 @@ void LayerTreeHost::SetNextCommitWaitsForActivation() {
 
 void LayerTreeHost::SetNeedsCommitWithForcedRedraw() {
   next_commit_forces_redraw_ = true;
+  // This method is used by tests to ensure a commit before grabbing a screen
+  // shot or processing input, so do not defer the commit.
+  StopDeferringCommits(PaintHoldingCommitTrigger::kFeatureDisabled);
   proxy_->SetNeedsCommit();
 }
 
-void LayerTreeHost::SetDebugState(const LayerTreeDebugState& debug_state) {
-  LayerTreeDebugState new_debug_state =
-      LayerTreeDebugState::Unite(settings_.initial_debug_state, debug_state);
-
+void LayerTreeHost::SetDebugState(const LayerTreeDebugState& new_debug_state) {
   if (LayerTreeDebugState::Equal(debug_state_, new_debug_state))
     return;
 
@@ -804,8 +817,8 @@ void LayerTreeHost::DidObserveFirstScrollDelay(
 
 void LayerTreeHost::AddDocumentTransitionRequest(
     std::unique_ptr<DocumentTransitionRequest> request) {
-  // TODO(vmpstr): Propagate this to viz after activation.
-  request->TakeCommitCallback().Run();
+  document_transition_requests_.push_back(std::move(request));
+  SetNeedsCommit();
 }
 
 bool LayerTreeHost::DoUpdateLayers() {
@@ -1228,6 +1241,13 @@ void LayerTreeHost::SetViewportRectAndScale(
       local_surface_id_from_parent_;
   SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "LayerTreeHostSize",
+                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("cc", "LayerTreeHostSize",
+                                    TRACE_ID_LOCAL(this), "size",
+                                    device_viewport_rect.ToString(), "lsid",
+                                    local_surface_id_from_parent.ToString());
+
   bool device_viewport_rect_changed = false;
   if (device_viewport_rect_ != device_viewport_rect) {
     device_viewport_rect_ = device_viewport_rect;
@@ -1351,6 +1371,14 @@ void LayerTreeHost::SetDisplayColorSpaces(
   display_color_spaces_ = display_color_spaces;
   for (auto* layer : *this)
     layer->SetNeedsDisplay();
+}
+
+void LayerTreeHost::UpdateViewportIsMobileOptimized(
+    bool is_viewport_mobile_optimized) {
+  if (is_viewport_mobile_optimized_ == is_viewport_mobile_optimized)
+    return;
+  is_viewport_mobile_optimized_ = is_viewport_mobile_optimized;
+  SetNeedsCommit();
 }
 
 void LayerTreeHost::SetExternalPageScaleFactor(
@@ -1619,6 +1647,19 @@ void LayerTreeHost::PushLayerTreePropertiesTo(LayerTreeImpl* tree_impl) {
 
   if (delegated_ink_metadata_)
     tree_impl->set_delegated_ink_metadata(std::move(delegated_ink_metadata_));
+
+  // Transfer page transition directives.
+  for (auto& request : document_transition_requests_) {
+    // Store the commit callback on LayerTreeHost, so that we can invoke them
+    // when the request is finished.
+    DCHECK(!base::Contains(document_transition_callbacks_,
+                           request->sequence_id()));
+    document_transition_callbacks_[request->sequence_id()] =
+        request->TakeFinishedCallback();
+
+    tree_impl->AddDocumentTransitionRequest(std::move(request));
+  }
+  document_transition_requests_.clear();
 }
 
 void LayerTreeHost::PushSurfaceRangesTo(LayerTreeImpl* tree_impl) {
@@ -1640,6 +1681,7 @@ void LayerTreeHost::PushLayerTreeHostPropertiesTo(
 
   host_impl->SetDebugState(debug_state_);
   host_impl->SetVisualDeviceViewportSize(visual_device_viewport_size_);
+  host_impl->set_viewport_mobile_optimized(is_viewport_mobile_optimized_);
 }
 
 Layer* LayerTreeHost::LayerByElementId(ElementId element_id) const {
@@ -1798,13 +1840,11 @@ void LayerTreeHost::ElementIsAnimatingChanged(
                                               true);
 }
 
-void LayerTreeHost::AnimationScalesChanged(ElementId element_id,
-                                           ElementListType list_type,
-                                           float maximum_scale,
-                                           float starting_scale) {
+void LayerTreeHost::MaximumScaleChanged(ElementId element_id,
+                                        ElementListType list_type,
+                                        float maximum_scale) {
   DCHECK_EQ(ElementListType::ACTIVE, list_type);
-  property_trees()->AnimationScalesChanged(element_id, maximum_scale,
-                                           starting_scale);
+  property_trees()->MaximumAnimationScaleChanged(element_id, maximum_scale);
 }
 
 gfx::ScrollOffset LayerTreeHost::GetScrollOffsetForAnimation(
@@ -1858,6 +1898,9 @@ void LayerTreeHost::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
   // produced by this host so far.
   clear_caches_on_next_commit_ = true;
   proxy_->SetSourceURL(source_id, url);
+  // If this is not used as a common web page, don't show HUD.
+  if (!url.SchemeIsHTTPOrHTTPS())
+    debug_state_.TurnOffHudInfoDisplay();
 }
 
 base::ReadOnlySharedMemoryRegion
@@ -1888,9 +1931,25 @@ void LayerTreeHost::SetEnableFrameRateThrottling(
 }
 
 void LayerTreeHost::SetDelegatedInkMetadata(
-    std::unique_ptr<viz::DelegatedInkMetadata> metadata) {
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   delegated_ink_metadata_ = std::move(metadata);
   SetNeedsCommit();
 }
 
+gfx::RenderingPipeline* LayerTreeHost::TakeMainPipeline() {
+  auto* pipeline = main_thread_pipeline_;
+  main_thread_pipeline_ = nullptr;
+  return pipeline;
+}
+
+gfx::RenderingPipeline* LayerTreeHost::TakeCompositorPipeline() {
+  auto* pipeline = compositor_thread_pipeline_;
+  compositor_thread_pipeline_ = nullptr;
+  return pipeline;
+}
+
+std::vector<std::unique_ptr<DocumentTransitionRequest>>
+LayerTreeHost::TakeDocumentTransitionRequestsForTesting() {
+  return std::move(document_transition_requests_);
+}
 }  // namespace cc

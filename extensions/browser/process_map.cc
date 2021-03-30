@@ -140,7 +140,7 @@ Feature::Context ProcessMap::GetMostLikelyContextType(
   }
 
   if (extension->is_hosted_app() &&
-      extension->location() != Manifest::COMPONENT) {
+      extension->location() != mojom::ManifestLocation::kComponent) {
     return Feature::BLESSED_WEB_PAGE_CONTEXT;
   }
 

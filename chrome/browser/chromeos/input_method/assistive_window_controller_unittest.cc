@@ -70,8 +70,8 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
         ->set_layout_provider(ChromeLayoutProvider::CreateLayoutProvider());
   }
 
-  std::vector<base::string16> Candidates() {
-    std::vector<base::string16> candidates;
+  std::vector<std::u16string> Candidates() {
+    std::vector<std::u16string> candidates;
     for (int i = 0; i < 3; i++) {
       std::string candidate = base::NumberToString(i);
       candidates.push_back(base::UTF8ToUTF16(candidate));
@@ -93,7 +93,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   std::unique_ptr<AssistiveWindowController> controller_;
   std::unique_ptr<MockDelegate> delegate_ = std::make_unique<MockDelegate>();
   std::unique_ptr<TestingProfile> profile_;
-  const base::string16 suggestion_ = base::UTF8ToUTF16("test");
+  const std::u16string suggestion_ = u"test";
   ui::ime::AssistiveWindowButton emoji_button_;
   chromeos::AssistiveWindowProperties emoji_window_;
   TestTtsHandler* tts_handler_;
@@ -166,8 +166,7 @@ TEST_F(AssistiveWindowControllerTest,
   AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
   properties.visible = true;
-  properties.candidates =
-      std::vector<base::string16>({base::UTF8ToUTF16("candidate")});
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
   ui::IMEBridge::Get()
       ->GetAssistiveWindowHandler()
       ->SetAssistiveWindowProperties(properties);

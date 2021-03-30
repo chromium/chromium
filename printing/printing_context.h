@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -99,7 +98,7 @@ class PRINTING_EXPORT PrintingContext {
   // like IPC message processing! Some printers have side-effects on this call
   // like virtual printers that ask the user for the path of the saved document;
   // for example a PDF printer.
-  virtual Result NewDocument(const base::string16& document_name) = 0;
+  virtual Result NewDocument(const std::u16string& document_name) = 0;
 
   // Starts a new page.
   virtual Result NewPage() = 0;

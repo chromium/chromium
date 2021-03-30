@@ -14,6 +14,8 @@ import android.view.textclassifier.TextSelection;
 import org.chromium.content.browser.selection.SmartSelectionClient;
 import org.chromium.ui.touch_selection.SelectionEventType;
 
+import java.util.List;
+
 /**
  * Interface to a content layer client that can process and modify selection text.
  */
@@ -63,6 +65,11 @@ public interface SelectionClient {
          * TextSelection for logging.
          */
         public TextSelection textSelection;
+
+        /**
+         * Icons for additional menu items.
+         */
+        public List<Drawable> additionalIcons;
 
         /**
          * A helper method that returns true if the result has both visual info

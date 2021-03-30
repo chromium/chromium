@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_H_
 
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_set.h"
@@ -44,8 +45,8 @@ class WarningBadgeService : public KeyedService,
 
   Profile* profile_;
 
-  ScopedObserver<WarningService, WarningService::Observer>
-      warning_service_observer_;
+  base::ScopedObservation<WarningService, WarningService::Observer>
+      warning_service_observation_{this};
 
   // Warnings that do not trigger a badge on the wrench menu.
   WarningSet suppressed_warnings_;

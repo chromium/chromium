@@ -13,6 +13,7 @@
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
@@ -39,13 +40,9 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
 
   void DidGetNSSUtilInfoOnUIThread(bool is_tpm_token_ready);
 
-  // Returns a callback to handle Cryptohome property values.
-  DBusMethodCallback<bool> GetCryptohomeBoolCallback(
-      const std::string& destination_id);
-
-  // This method is called when Cryptohome D-Bus method call completes.
-  void OnCryptohomeBoolProperty(const std::string& destination_id,
-                                base::Optional<bool> result);
+  void OnIsMounted(base::Optional<user_data_auth::IsMountedReply> reply);
+  void OnPkcs11IsTpmTokenReady(
+      base::Optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply);
 
   // This method is called when TpmManager D-Bus GetTpmNonsensitiveStatus call
   // completes.

@@ -12,14 +12,17 @@
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/permission_type.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/permissions/geolocation_permission_context_delegate.h"
+#include "weblayer/browser/permissions/weblayer_nfc_permission_context_delegate.h"
 
 #if defined(OS_ANDROID)
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
+#include "components/permissions/contexts/nfc_permission_context_android.h"
 #else
 #include "components/permissions/contexts/geolocation_permission_context.h"
+#include "components/permissions/contexts/nfc_permission_context.h"
 #endif
 
 namespace weblayer {
@@ -75,17 +78,28 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
       std::make_unique<SafePermissionContext>(
           browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-          blink::mojom::FeaturePolicyFeature::kEncryptedMedia);
+          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia);
+#endif
+
+  auto nfc_delegate = std::make_unique<WebLayerNfcPermissionContextDelegate>();
+#if defined(OS_ANDROID)
+  permission_contexts[ContentSettingsType::NFC] =
+      std::make_unique<permissions::NfcPermissionContextAndroid>(
+          browser_context, std::move(nfc_delegate));
+#else
+  permission_contexts[ContentSettingsType::NFC] =
+      std::make_unique<permissions::NfcPermissionContext>(
+          browser_context, std::move(nfc_delegate));
 #endif
 
   permission_contexts[ContentSettingsType::MEDIASTREAM_MIC] =
       std::make_unique<SafePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_MIC,
-          blink::mojom::FeaturePolicyFeature::kMicrophone);
+          blink::mojom::PermissionsPolicyFeature::kMicrophone);
   permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
       std::make_unique<SafePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_CAMERA,
-          blink::mojom::FeaturePolicyFeature::kCamera);
+          blink::mojom::PermissionsPolicyFeature::kCamera);
   permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
       std::make_unique<BackgroundSyncPermissionContext>(browser_context);
 
@@ -104,7 +118,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       permission_contexts[content_settings_type] =
           std::make_unique<DeniedPermissionContext>(
               browser_context, content_settings_type,
-              blink::mojom::FeaturePolicyFeature::kNotFound);
+              blink::mojom::PermissionsPolicyFeature::kNotFound);
     }
   }
   return permission_contexts;

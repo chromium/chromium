@@ -60,4 +60,12 @@ TEST_P(ElementInnerTest, OverflowingListItemWithFloatFirstLetter) {
   EXPECT_EQ("foo", target.innerText());
 }
 
+// https://crbug.com/1164747
+TEST_P(ElementInnerTest, GetInnerTextWithoutUpdate) {
+  SetBodyContent("<div id=target>ab<span>c</span></div>");
+  Element& target = *GetDocument().getElementById("target");
+  EXPECT_EQ("abc", target.innerText());
+  EXPECT_EQ("abc", target.GetInnerTextWithoutUpdate());
+}
+
 }  // namespace blink

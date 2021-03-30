@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">তালিকা আইটেম</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">দুই আঙ্গুল দিয়ে ডানদিকে সোয়াইপ করুন</translation>
-<translation id="1016393160682012902">'লার্ন' মোডের ক্রিয়াকলাপের ব্যাপারে জানতে, একটি কোয়ার্টি কী (qwerty), রিফ্রেশ করা যায় এমন ব্রেইল কী প্রেস করুন অথবা 'টাচ জেসচার' ফিচার ব্যবহার করুন। মোড থেকে বাইরে বেরিয়ে আসার জন্য, Control কীয়ের সাথে একসঙ্গে w বা Escape কী প্রেস করুন।</translation>
 <translation id="1022586497894531524">আপনি কি ChromeVox-এর পড়ে কথ্য প্রতিবার্তার সুবিধাটি প্রথমবারের জন্য ব্যবহার করছেন? কিভাবে ChromeVox ব্যবহার করা শুরু করতে হয় এই সংক্ষিপ্ত টিউটোরিয়ালটি সে বিষয়ে প্রয়োজনীয় বিষয়গুলি ব্যাখ্যা করে।</translation>
 <translation id="1025074108959230262">স্টিকি মোড অক্ষম</translation>
 <translation id="1031961866430398710">তারপর</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">কোনও পূর্ববর্তী নিয়ন্ত্রণ নেই</translation>
 <translation id="2045606329038304310">ফিল্ড নিয়ন্ত্রণ করা তৈরি করুন</translation>
 <translation id="2063539687800151747">এপিগ্রাফ</translation>
+<translation id="2074531330963286860">অ্যাকশন উপলভ্য আছে। দেখার জন্য Search+Period প্রেস করুন</translation>
 <translation id="2086961585857038472">পরবর্তী শব্দ</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">bn</translation>
@@ -782,6 +782,7 @@
 <translation id="6837853484260746864">একটি ভয়েস বেছে নিন:</translation>
 <translation id="6858047746862060282">ভূমিকা</translation>
 <translation id="6859876496651143278">এক আঙ্গুল দিয়ে বাঁ দিকে সোয়াইপ করুন</translation>
+<translation id="6861391673272648730">এটি স্ক্রিন বন্ধ করে দেয়। সার্চ ও উজ্জ্বলতা বাড়ানোর বোতাম একসাথে প্রেস করে আপনি আবার স্ক্রিন চালু করতে পারবেন। আপনি কি এটি বন্ধ করতে চান?</translation>
 <translation id="6865519907510167493">বানান ভুল</translation>
 <translation id="6873188295213080042">ইঙ্গিত: নেভিগেট করতে Search ও Arrow কী প্রেস করে ধরে রাখুন।</translation>
 <translation id="6894148351896207544">বর্তমান সময় ও তারিখ বলে</translation>
@@ -807,7 +808,7 @@
 <translation id="7039555289296502784">ধূসর জলপাই</translation>
 <translation id="7041173719775863268">নির্বাচন সমাপ্ত করুন</translation>
 <translation id="7043850226734279132">গাঢ় খাকি</translation>
-<translation id="7051308646573997571">প্রবাল</translation>
+<translation id="7051308646573997571">প্রবাল রঙ</translation>
 <translation id="7062635574500127092">নীলচে সবুজ</translation>
 <translation id="7086377898680121060">উজ্জ্বলতা বাড়ান</translation>
 <translation id="7088743565397416204">ফোকাস করা কোনও আইটেম অ্যাক্টিভেট করতে ডবল ট্যাপ করুন</translation>
@@ -976,6 +977,7 @@
 <translation id="827266600368092403">শুরু বা শেষ বেছে নেওয়া</translation>
 <translation id="827422111966801947">নীল</translation>
 <translation id="8276439074553447000">পূর্ববর্তী ফোকাসযোগ্য আইটেমে জাম্প করুন</translation>
+<translation id="8279039817939141096">'লার্ন মোড'-এর ক্রিয়াকলাপের ব্যাপারে জানতে, একটি কোয়ার্টি কী (qwerty), রিফ্রেশ করা যায় এমন ব্রেইল কী প্রেস করুন অথবা 'টাচ জেসচার' ফিচার ব্যবহার করুন। Control কীয়ের সাথে w প্রেস করুন, Space কীয়ের সাথে Z প্রেস করুন, দুটি আঙুল দিয়ে বাঁদিকে সোয়াইপ করুন বা বেরিয়ে আসতে Escape কী প্রেস করুন।</translation>
 <translation id="8283603667300770666">পরবর্তী ফর্ম ক্ষেত্র</translation>
 <translation id="8310185481635255431">কোনও পরবর্তী লিঙ্ক নেই</translation>
 <translation id="831207808878314375">সংজ্ঞা</translation>

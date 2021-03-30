@@ -192,7 +192,7 @@ TEST_F(MainThreadScrollingReasonsTest,
 }
 
 // Upon resizing the content size, the main thread scrolling reason
-// kHasNonLayerViewportConstrainedObject should be updated on all frames
+// kHasBackgroundAttachmentFixedObjects should be updated on all frames
 TEST_F(MainThreadScrollingReasonsTest,
        RecalculateMainThreadScrollingReasonsUponResize) {
   GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(false);

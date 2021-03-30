@@ -4,7 +4,7 @@
 // TODO(sandersd): Move metadata into a helper library.
 // TODO(sandersd): Add H.264 decode test once there is an API to query for
 // supported codecs.
-let h264 = {
+const h264 = {
   async buffer() { return (await fetch('h264.mp4')).arrayBuffer(); },
   codec: "avc1.64000c",
   description: {offset: 7229, size: 46},
@@ -20,7 +20,7 @@ let h264 = {
            {offset: 6429, size: 281}]
 };
 
-let vp9 = {
+const vp9 = {
   async buffer() { return (await fetch('vp9.mp4')).arrayBuffer(); },
   // TODO(sandersd): Verify that the file is actually level 1.
   codec: "vp09.00.10.08",
@@ -36,6 +36,88 @@ let vp9 = {
            {offset: 5193, size: 159}]
 };
 
+const badCodecsList = [
+    '',                         // Empty codec
+    'bogus',                    // Non exsitent codec
+    'vorbis',                   // Audio codec
+    'vp9',                      // Ambiguous codec
+    'video/webm; codecs="vp9"'  // Codec with mime type
+  ]
+
+const invalidConfigs = [
+  {
+    comment: 'Emtpy codec',
+    config: {codec: ''},
+  },
+  {
+    comment: 'Unrecognized codec',
+    config: {codec: 'bogus'},
+  },
+  {
+    comment: 'Audio codec',
+    config: {codec: 'vorbis'},
+  },
+  {
+    comment: 'Ambiguous codec',
+    config: {codec: 'vp9'},
+  },
+  {
+    comment: 'Codec with MIME type',
+    config: {codec: 'video/webm; codecs="vp8"'},
+  },
+  {
+    comment: 'Zero coded size',
+    config: {
+      codec: h264.codec,
+      codedWidth: 0,
+      codedHeight: 0,
+    },
+  },
+  {
+    comment: 'Out of bounds crop size caused by left/top offset',
+    config: {
+      codec: h264.codec,
+      codedWidth: 1920,
+      codedHeight: 1088,
+      cropLeft: 10,
+      cropTop: 10,
+      // When unspecified, these default to coded dimensions
+      // cropWidth: 1920,
+      // cropHeight: 1088
+    },
+  },
+  {
+    comment: 'Out of bounds crop size',
+    config: {
+      codec: h264.codec,
+      codedWidth: 1920,
+      codedHeight: 1088,
+      cropLeft: 10,
+      cropTop: 10,
+      cropWidth: 1920,
+      cropHeight: 1088,
+    },
+  },
+  {
+    comment: 'Way out of bounds crop size',
+    config: {
+      codec: h264.codec,
+      codedWidth: 1920,
+      codedHeight: 1088,
+      cropWidth: 4000,
+      cropHeight: 5000,
+    },
+  },
+  {
+    comment: 'Invalid display size',
+    config: {
+      codec: h264.codec,
+      displayWidth: 0,
+      displayHeight: 0,
+    },
+  },
+] //  invalidConfigs
+
 function view(buffer, {offset, size}) {
   return new Uint8Array(buffer, offset, size);
 }
@@ -47,6 +129,88 @@ function getFakeChunk() {
     data:Uint8Array.of(0)
   });
 }
+
+invalidConfigs.forEach(entry => {
+  promise_test(t => {
+    return promise_rejects_js(t, TypeError, VideoDecoder.isConfigSupported(entry.config));
+  }, 'Test that VideoDecoder.isConfigSupported() rejects invalid config:' + entry.comment);
+});
+
+invalidConfigs.forEach(entry => {
+  async_test(t => {
+    let codec = new VideoDecoder(getDefaultCodecInit(t));
+    assert_throws_js(TypeError, () => { codec.configure(entry.config); });
+    t.done();
+  }, 'Test that VideoDecoder.configure() rejects invalid config:' + entry.comment);
+});
+
+promise_test(t => {
+  return VideoDecoder.isConfigSupported({codec: vp9.codec});
+}, 'Test VideoDecoder.isConfigSupported() with minimal valid config');
+
+promise_test(t => {
+  // This config specifies a slight crop. H264 1080p content always crops
+  // because H264 coded dimensions are a multiple of 16 (e.g. 1088).
+  return VideoDecoder.isConfigSupported({
+    codec: h264.codec,
+    codedWidth: 1920,
+    codedHeight: 1088,
+    cropLeft: 0,
+    cropTop: 0,
+    cropWidth: 1920,
+    cropHeight: 1080,
+    displayWidth: 1920,
+    displayHeight: 1080
+  });
+}, 'Test VideoDecoder.isConfigSupported() with valid expanded config');
+
+promise_test(t => {
+  // Define a valid config that includes a hypothetical 'futureConfigFeature',
+  // which is not yet recognized by the User Agent.
+  const validConfig = {
+    codec: h264.codec,
+    codedWidth: 1920,
+    codedHeight: 1088,
+    cropLeft: 0,
+    cropTop: 0,
+    cropWidth: 1920,
+    cropHeight: 1080,
+    displayWidth: 1920,
+    displayHeight: 1080,
+    description: new Uint8Array([1, 2, 3]),
+    futureConfigFeature: 'foo',
+  };
+
+  // The UA will evaluate validConfig as being "valid", ignoring the
+  // `futureConfigFeature` it  doesn't recognize.
+  return VideoDecoder.isConfigSupported(validConfig).then((decoderSupport) => {
+    // VideoDecoderSupport must contain the following properites.
+    assert_true(decoderSupport.hasOwnProperty('supported'));
+    assert_true(decoderSupport.hasOwnProperty('config'));
+
+    // VideoDecoderSupport.config must not contain unrecognized properties.
+    assert_false(decoderSupport.config.hasOwnProperty('futureConfigFeature'));
+
+    // VideoDecoderSupport.config must contiain the recognized properties.
+    assert_equals(decoderSupport.config.codec, validConfig.codec);
+    assert_equals(decoderSupport.config.codedWidth, validConfig.codedWidth);
+    assert_equals(decoderSupport.config.codedHeight, validConfig.codedHeight);
+    assert_equals(decoderSupport.config.cropLeft, validConfig.cropLeft);
+    assert_equals(decoderSupport.config.cropTop, validConfig.cropTop);
+    assert_equals(decoderSupport.config.cropWidth, validConfig.cropWidth);
+    assert_equals(decoderSupport.config.displayWidth, validConfig.displayWidth);
+    assert_equals(decoderSupport.config.displayHeight, validConfig.displayHeight);
+
+    // The description BufferSource must copy the input config description.
+    assert_not_equals(decoderSupport.config.description, validConfig.description);
+    let parsedDescription = new Uint8Array(decoderSupport.config.description);
+    assert_equals(parsedDescription.length, validConfig.description.length);
+    for (let i = 0; i < parsedDescription.length; ++i) {
+      assert_equals(parsedDescription[i], validConfig.description[i]);
+    }
+  });
+}, 'Test that VideoDecoder.isConfigSupported() returns a parsed configuration');
+
 
 promise_test(t => {
   // VideoDecoderInit lacks required fields.
@@ -65,18 +229,12 @@ promise_test(t => {
 promise_test(t => {
   let decoder = new VideoDecoder(getDefaultCodecInit(t));
 
-  let badCodecsList = [
-    '',                         // Empty codec
-    'bogus',                    // Non exsitent codec
-    'vorbis',                   // Audio codec
-    'vp9',                      // Ambiguous codec
-    'video/webm; codecs="vp9"'  // Codec with mime type
-  ]
-
+  // TODO(chcunningham): Remove badCodecsList testing. It's now covered more
+  // extensively by other tests.
   testConfigurations(decoder, { codec: vp9.codec }, badCodecsList);
 
   return endAfterEventLoopTurn();
-}, 'Test VideoDecoder.configure()');
+}, 'Test VideoDecoder.configure() with various codec strings');
 
 promise_test(async t => {
   let buffer = await vp9.buffer();
@@ -89,7 +247,7 @@ promise_test(async t => {
         assert_equals(frame.cropWidth, 320, "cropWidth");
         assert_equals(frame.cropHeight, 240, "cropHeight");
         assert_equals(frame.timestamp, 0, "timestamp");
-        frame.destroy();
+        frame.close();
       });
     },
     error(e) {

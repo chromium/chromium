@@ -7,9 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/public/common/content_features.h"
+#include "services/network/test/test_url_loader_client.h"
 
 namespace content {
 
@@ -43,6 +47,40 @@ class FakeServiceWorkerInstalledScriptsManager
   blink::mojom::ServiceWorkerScriptInfoPtr script_info_;
 
   mojo::Receiver<blink::mojom::ServiceWorkerInstalledScriptsManager> receiver_;
+};
+
+// URLLoaderClient lives until OnComplete() is called.
+class FakeEmbeddedWorkerInstanceClient::LoaderClient final
+    : public network::mojom::URLLoaderClient {
+ public:
+  LoaderClient(mojo::PendingReceiver<network::mojom::URLLoaderClient> receiver,
+               base::OnceClosure callback)
+      : receiver_(this, std::move(receiver)), callback_(std::move(callback)) {}
+  ~LoaderClient() override = default;
+
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+  }
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head) override {}
+  void OnReceiveRedirect(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr response_head) override {}
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
+  void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
+  void OnUploadProgress(int64_t current_position,
+                        int64_t total_size,
+                        OnUploadProgressCallback ack_callback) override {}
+  void OnStartLoadingResponseBody(
+      mojo::ScopedDataPipeConsumerHandle body) override {}
+  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
+    auto callback = std::move(callback_);
+    std::move(callback).Run();
+    // Do not add code after that, the object is deleted.
+  }
+
+ private:
+  mojo::Receiver<network::mojom::URLLoaderClient> receiver_;
+  base::OnceClosure callback_;
 };
 
 FakeEmbeddedWorkerInstanceClient::FakeEmbeddedWorkerInstanceClient(
@@ -119,25 +157,38 @@ void FakeEmbeddedWorkerInstanceClient::StartWorker(
   // In production, new service workers would request their main script here,
   // which causes the browser to write the script response in service worker
   // storage. We do that manually here.
-  //
-  // TODO(falken): For new workers, this should use
-  // |script_loader_factory_remote| from |start_params_->provider_info|
-  // to request the script and the browser process should be able to mock it.
-  // For installed workers, the map should already be populated.
-  ServiceWorkerVersion* version = helper_->context()->GetLiveVersion(
-      start_params_->service_worker_version_id);
-  if (version && version->status() == ServiceWorkerVersion::REDUNDANT) {
-    // This can happen if ForceDelete() was called on the registration. Early
-    // return because otherwise PopulateScriptCacheMap will DCHECK. If we mocked
-    // things as per the TODO, the script load would fail and we don't need to
-    // special case this.
-    return;
+  if (start_params_->main_script_load_params) {
+    DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
+    // Wait until OnComplete() is called so that the script is stored in the
+    // storage and the script cache map is populated by
+    // ServiceWorkerNewScriptLoader.
+    main_script_loader_client_ = std::make_unique<LoaderClient>(
+        std::move(start_params_->main_script_load_params
+                      ->url_loader_client_endpoints->url_loader_client),
+        base::BindOnce(
+            &FakeEmbeddedWorkerInstanceClient::DidPopulateScriptCacheMap,
+            GetWeakPtr()));
+  } else {
+    // For installed workers, the map should already be populated.
+    //
+    // TODO(falken): For new workers, this should use
+    // |script_loader_factory_remote| from |start_params_->provider_info|
+    // to request the script and the browser process should be able to mock it.
+    ServiceWorkerVersion* version = helper_->context()->GetLiveVersion(
+        start_params_->service_worker_version_id);
+    if (version && version->status() == ServiceWorkerVersion::REDUNDANT) {
+      // This can happen if ForceDelete() was called on the registration. Early
+      // return because otherwise PopulateScriptCacheMap will DCHECK. If we
+      // mocked things as per the TODO, the script load would fail and we don't
+      // need to special case this.
+      return;
+    }
+    helper_->PopulateScriptCacheMap(
+        start_params_->service_worker_version_id,
+        base::BindOnce(
+            &FakeEmbeddedWorkerInstanceClient::DidPopulateScriptCacheMap,
+            GetWeakPtr()));
   }
-  helper_->PopulateScriptCacheMap(
-      start_params_->service_worker_version_id,
-      base::BindOnce(
-          &FakeEmbeddedWorkerInstanceClient::DidPopulateScriptCacheMap,
-          GetWeakPtr()));
 }
 
 void FakeEmbeddedWorkerInstanceClient::StopWorker() {
@@ -150,6 +201,7 @@ void FakeEmbeddedWorkerInstanceClient::StopWorker() {
 }
 
 void FakeEmbeddedWorkerInstanceClient::DidPopulateScriptCacheMap() {
+  main_script_loader_client_.reset();
   host_->OnScriptLoaded();
   EvaluateScript();
 }

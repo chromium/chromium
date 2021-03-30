@@ -33,8 +33,8 @@ AlternateNavInfoBarView::AlternateNavInfoBarView(
     : InfoBarView(std::move(delegate)) {
   auto* delegate_ptr = GetDelegate();
   size_t offset;
-  base::string16 message_text = delegate_ptr->GetMessageTextWithOffset(&offset);
-  DCHECK_NE(base::string16::npos, offset);
+  std::u16string message_text = delegate_ptr->GetMessageTextWithOffset(&offset);
+  DCHECK_NE(std::u16string::npos, offset);
   label_1_text_ = message_text.substr(0, offset);
   label_1_ = CreateLabel(label_1_text_);
   AddChildView(label_1_);
@@ -80,14 +80,14 @@ void AlternateNavInfoBarView::Layout() {
   labels.push_back(label_1_);
   labels.push_back(link_);
   labels.push_back(label_2_);
-  ElideLabels(&labels, EndX() - StartX());
+  ElideLabels(&labels, GetEndX() - GetStartX());
 
-  label_1_->SetPosition(gfx::Point(StartX(), OffsetY(label_1_)));
+  label_1_->SetPosition(gfx::Point(GetStartX(), OffsetY(label_1_)));
   link_->SetPosition(gfx::Point(label_1_->bounds().right(), OffsetY(link_)));
   label_2_->SetPosition(gfx::Point(link_->bounds().right(), OffsetY(label_2_)));
 }
 
-int AlternateNavInfoBarView::ContentMinimumWidth() const {
+int AlternateNavInfoBarView::GetContentMinimumWidth() const {
   int label_1_width = label_1_->GetMinimumSize().width();
   return label_1_width ? label_1_width : link_->GetMinimumSize().width();
 }

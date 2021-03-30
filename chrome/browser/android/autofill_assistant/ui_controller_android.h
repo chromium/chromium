@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -86,6 +87,10 @@ class UiControllerAndroid : public ControllerObserver {
   void CloseOrCancel(int action_index,
                      std::unique_ptr<TriggerContext> trigger_context,
                      Metrics::DropOutReason dropout_reason);
+  // Returns the size of the window.
+  base::Optional<std::pair<int, int>> GetWindowSize() const;
+  // Returns the screen's orientation.
+  ClientContextProto::ScreenOrientation GetScreenOrientation() const;
 
   // Overrides ControllerObserver:
   void OnStateChanged(AutofillAssistantState new_state) override;
@@ -97,7 +102,7 @@ class UiControllerAndroid : public ControllerObserver {
       const CollectUserDataOptions* collect_user_data_options) override;
   void OnUserDataChanged(const UserData* state,
                          UserData::FieldChange field_change) override;
-  void OnDetailsChanged(const Details* details) override;
+  void OnDetailsChanged(const std::vector<Details>& details) override;
   void OnInfoBoxChanged(const InfoBox* info_box) override;
   void OnProgressChanged(int progress) override;
   void OnProgressActiveStepChanged(int active_step) override;
@@ -128,7 +133,7 @@ class UiControllerAndroid : public ControllerObserver {
   void OnUserInteractionInsideTouchableArea();
 
   // Called by AssistantHeaderDelegate:
-  void OnFeedbackButtonClicked();
+  void OnHeaderFeedbackButtonClicked();
 
   // Called by AssistantGenericUiDelegate:
   void OnViewEvent(const EventHandler::EventKey& key);
@@ -194,6 +199,10 @@ class UiControllerAndroid : public ControllerObserver {
   void OnCloseButtonClicked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller);
+  void OnFeedbackButtonClicked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      jint actionIndex);
   void OnKeyboardVisibilityChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,

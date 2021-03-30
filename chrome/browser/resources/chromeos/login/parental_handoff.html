@@ -2,38 +2,41 @@
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 
-<link rel="import" href="chrome://oobe/custom_elements.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
 
 <dom-module id="parental-handoff-element">
   <template>
     <style include="oobe-dialog-host"></style>
-    <oobe-dialog id="parentalHandoffDialog" role="dialog" has-buttons
-        aria-label$="[[title_]]">
-      <hd-iron-icon icon1x="oobe-32:googleg" icon2x="oobe-64:googleg"
-          slot="oobe-icon">
-      </hd-iron-icon>
+    <oobe-adaptive-dialog id="parentalHandoffDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'parentalHandoffDialogTitle', username_)]]">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
-        [[title_]]
+        [[i18nDynamic(locale, 'parentalHandoffDialogTitle', username_)]]
       </h1>
-      <div slot="subtitle">
-        [[subtitle_]]
-      </div>
-      <div slot="footer" class="flex layout vertical center center-justified">
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'parentalHandoffDialogSubtitle', username_)]]
+      </p>
+      <div slot="content" class="flex layout vertical center center-justified">
         <img srcset="images/1x/kids_turn.svg 1x,
             images/2x/kids_turn.svg 2x" class="oobe-illustration"
-            alt$="[[title_]]">
+            alt$="[[i18nDynamic(locale, 'parentalHandoffDialogTitle', username_)]]">
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-next-button id="nextButton"
             text-key="parentalHandoffDialogNextButton" class="focus-on-show"
             inverse on-click="onNextButtonPressed_"></oobe-next-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

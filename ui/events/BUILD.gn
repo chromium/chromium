@@ -229,6 +229,8 @@ component("events") {
   if (is_win) {
     public += [
       "win/events_win_utils.h",
+      "win/keyboard_hook_monitor.h",
+      "win/keyboard_hook_observer.h",
       "win/system_event_state_lookup.h",
     ]
 
@@ -237,6 +239,8 @@ component("events") {
       "keycodes/platform_key_map_win.h",
       "win/events_win.cc",
       "win/events_win_utils.cc",
+      "win/keyboard_hook_monitor_impl.cc",
+      "win/keyboard_hook_monitor_impl.h",
       "win/keyboard_hook_win_base.cc",
       "win/keyboard_hook_win_base.h",
       "win/media_keyboard_hook_win.cc",
@@ -387,7 +391,7 @@ component("events") {
   if (is_fuchsia) {
     public += [
       "fuchsia/input_event_dispatcher.h",
-      "fuchsia/input_event_dispatcher_delegate.h",
+      "fuchsia/input_event_sink.h",
     ]
     sources += [ "fuchsia/input_event_dispatcher.cc" ]
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input" ]
@@ -487,7 +491,11 @@ static_library("test_support") {
   ]
 
   if (is_win) {
-    sources += [ "test/keyboard_layout_win.cc" ]
+    sources += [
+      "test/keyboard_hook_monitor_utils.cc",
+      "test/keyboard_hook_monitor_utils.h",
+      "test/keyboard_layout_win.cc",
+    ]
   }
 
   if (is_mac) {

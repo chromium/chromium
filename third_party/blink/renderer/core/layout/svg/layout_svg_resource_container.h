@@ -27,8 +27,6 @@
 
 namespace blink {
 
-class SVGResourcesCycleSolver;
-
 enum LayoutSVGResourceType {
   kMaskerResourceType,
   kMarkerResourceType,
@@ -73,7 +71,7 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
                                        SubtreeLayoutScope* = nullptr);
   void InvalidateCacheAndMarkForLayout(SubtreeLayoutScope* = nullptr);
 
-  bool FindCycle(SVGResourcesCycleSolver&) const;
+  bool FindCycle() const;
 
   static void MarkForLayoutAndParentResourceInvalidation(
       LayoutObject&,
@@ -86,19 +84,37 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   }
 
  protected:
+  typedef unsigned InvalidationModeMask;
+
+  // When adding modes, make sure we don't overflow
+  // |completed_invalidation_mask_|.
+  enum InvalidationMode {
+    kLayoutInvalidation = 1 << 0,
+    kBoundariesInvalidation = 1 << 1,
+    kPaintInvalidation = 1 << 2,
+    kPaintPropertiesInvalidation = 1 << 3,
+    kClipCacheInvalidation = 1 << 4,
+    kFilterCacheInvalidation = 1 << 5,
+    kInvalidateAll = kLayoutInvalidation | kBoundariesInvalidation |
+                     kPaintInvalidation | kPaintPropertiesInvalidation |
+                     kClipCacheInvalidation | kFilterCacheInvalidation,
+  };
+
   // Used from RemoveAllClientsFromCache methods.
   void MarkAllClientsForInvalidation(InvalidationModeMask);
 
-  virtual bool FindCycleFromSelf(SVGResourcesCycleSolver&) const;
-  static bool FindCycleInDescendants(SVGResourcesCycleSolver&,
-                                     const LayoutObject& root);
-  static bool FindCycleInResources(SVGResourcesCycleSolver&,
-                                   const LayoutObject& object);
-  static bool FindCycleInSubtree(SVGResourcesCycleSolver&,
-                                 const LayoutObject& root);
+  virtual bool FindCycleFromSelf() const;
+  static bool FindCycleInDescendants(const LayoutObject& root);
+  static bool FindCycleInResources(const LayoutObject& object);
+  static bool FindCycleInSubtree(const LayoutObject& root);
+
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void WillBeDestroyed() override;
 
  private:
-  // Track global (markAllClientsForInvalidation) invalidations to avoid
+  void InvalidateClientsIfActiveResource();
+
+  // Track global (MarkAllClientsForInvalidation) invalidations to avoid
   // redundant crawls.
   unsigned completed_invalidations_mask_ : 8;
 

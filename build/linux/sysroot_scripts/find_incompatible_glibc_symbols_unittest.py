@@ -3,8 +3,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cStringIO
 import find_incompatible_glibc_symbols
+import sys
+
+if sys.version_info.major == 2:
+  from cStringIO import StringIO
+else:
+  from io import StringIO
 
 NM_DATA = """\
 0000000000000001 W expf@GLIBC_2.2.5
@@ -27,7 +32,7 @@ EXPECTED_REPLACEMENTS = [
     '__asm__(".symver foo2, foo2@GLIBC_2.3");',
 ]
 
-nm_file = cStringIO.StringIO()
+nm_file = StringIO()
 nm_file.write(NM_DATA)
 nm_file.seek(0)
 

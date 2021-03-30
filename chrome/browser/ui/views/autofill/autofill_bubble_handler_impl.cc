@@ -7,19 +7,21 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/autofill/payments/local_card_migration_bubble.h"
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_view.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_failure_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/save_card_sign_in_promo_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_upi_offer_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -27,6 +29,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace autofill {
@@ -50,7 +53,7 @@ AutofillBubbleHandlerImpl::~AutofillBubbleHandlerImpl() = default;
 
 // TODO(crbug.com/1061633): Clean up this two functions and add helper for
 // shared code.
-SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
     content::WebContents* web_contents,
     SaveCardBubbleController* controller,
     bool is_user_gesture) {
@@ -68,12 +71,6 @@ SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
       bubble =
           new SaveCardOfferBubbleViews(anchor_view, web_contents, controller);
       break;
-    case BubbleType::SIGN_IN_PROMO:
-      DCHECK(!base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardUploadFeedback));
-      bubble = new SaveCardSignInPromoBubbleViews(anchor_view, web_contents,
-                                                  controller);
-      break;
     case BubbleType::MANAGE_CARDS:
       bubble = new SaveCardManageCardsBubbleViews(anchor_view, web_contents,
                                                   controller);
@@ -88,35 +85,16 @@ SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
   }
   DCHECK(bubble);
 
-  if (icon_view)
-    bubble->SetHighlightedButton(icon_view);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(is_user_gesture ? SaveCardBubbleViews::USER_GESTURE
-                               : SaveCardBubbleViews::AUTOMATIC);
+  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                               : LocationBarBubbleDelegateView::AUTOMATIC);
   return bubble;
 }
 
-SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCardSignInPromoBubble(
-    content::WebContents* web_contents,
-    SaveCardBubbleController* controller) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutofillCreditCardUploadFeedback));
-  views::Button* avatar_button =
-      toolbar_button_provider_->GetAvatarToolbarButton();
-  DCHECK(avatar_button);
-
-  SaveCardBubbleViews* bubble = new SaveCardSignInPromoBubbleViews(
-      avatar_button, web_contents, controller);
-  bubble->SetHighlightedButton(avatar_button);
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(SaveCardBubbleViews::AUTOMATIC);
-  return bubble;
-}
-
-LocalCardMigrationBubble*
-AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(
     content::WebContents* web_contents,
     LocalCardMigrationBubbleController* controller,
     bool is_user_gesture) {
@@ -128,12 +106,34 @@ AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kLocalCardMigration);
-  if (icon_view)
-    bubble->SetHighlightedButton(icon_view);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(is_user_gesture ? LocalCardMigrationBubbleViews::USER_GESTURE
-                               : LocalCardMigrationBubbleViews::AUTOMATIC);
+  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                               : LocationBarBubbleDelegateView::AUTOMATIC);
+  return bubble;
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowOfferNotificationBubble(
+    content::WebContents* web_contents,
+    OfferNotificationBubbleController* controller,
+    bool is_user_gesture) {
+  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
+      PageActionIconType::kPaymentsOfferNotification);
+  OfferNotificationBubbleViews* bubble =
+      new OfferNotificationBubbleViews(anchor_view, web_contents, controller);
+
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kPaymentsOfferNotification);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
+
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ShowForReason(is_user_gesture
+                            ? OfferNotificationBubbleViews::USER_GESTURE
+                            : OfferNotificationBubbleViews::AUTOMATIC);
   return bubble;
 }
 
@@ -144,9 +144,45 @@ SaveUPIBubble* AutofillBubbleHandlerImpl::ShowSaveUPIBubble(
       toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveCard);
   SaveUPIOfferBubbleViews* bubble =
       new SaveUPIOfferBubbleViews(anchor_view, web_contents, controller);
+
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kSaveCard);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
+
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show();
   return bubble;
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
+    content::WebContents* web_contents,
+    SaveAddressProfileBubbleController* controller,
+    bool is_user_gesture) {
+  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
+      PageActionIconType::kSaveAutofillAddress);
+  SaveAddressProfileView* bubble =
+      new SaveAddressProfileView(anchor_view, web_contents, controller);
+  DCHECK(bubble);
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kSaveAutofillAddress);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                               : LocationBarBubbleDelegateView::AUTOMATIC);
+  return bubble;
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowEditAddressProfileDialog(
+    content::WebContents* web_contents,
+    EditAddressProfileDialogController* controller) {
+  EditAddressProfileView* dialog = new EditAddressProfileView(controller);
+  dialog->ShowForWebContents(web_contents);
+  constrained_window::ShowWebModalDialogViews(dialog, web_contents);
+  return dialog;
 }
 
 void AutofillBubbleHandlerImpl::OnPasswordSaved() {
@@ -154,10 +190,6 @@ void AutofillBubbleHandlerImpl::OnPasswordSaved() {
           features::kAutofillCreditCardUploadFeedback)) {
     ShowAvatarHighlightAnimation();
   }
-}
-
-void AutofillBubbleHandlerImpl::HideSignInPromo() {
-  chrome::ExecuteCommand(browser_, IDC_CLOSE_SIGN_IN_PROMO);
 }
 
 void AutofillBubbleHandlerImpl::OnCreditCardSaved(

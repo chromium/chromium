@@ -307,21 +307,35 @@ class FilterFile {
     return it != file_lines_.end();
   }
 
-  // Returns true if any of the filter file lines is a substring of
-  // |string_to_match|.
+  // Returns true if |string_to_match| matches based on the filter file lines.
+  // Filter file lines can contain both inclusions and exclusions in the filter.
+  // Only returns true if |string_to_match| both matches an inclusion filter and
+  // is *not* matched by an exclusion filter.
   bool ContainsSubstringOf(llvm::StringRef string_to_match) const {
-    if (!substring_regex_.hasValue()) {
-      std::vector<std::string> regex_escaped_file_lines;
-      regex_escaped_file_lines.reserve(file_lines_.size());
-      for (const llvm::StringRef& file_line : file_lines_.keys())
-        regex_escaped_file_lines.push_back(llvm::Regex::escape(file_line));
-      std::string substring_regex_pattern =
-          llvm::join(regex_escaped_file_lines.begin(),
-                     regex_escaped_file_lines.end(), "|");
-      substring_regex_.emplace(substring_regex_pattern);
+    if (!inclusion_substring_regex_.hasValue()) {
+      std::vector<std::string> regex_escaped_inclusion_file_lines;
+      std::vector<std::string> regex_escaped_exclusion_file_lines;
+      regex_escaped_inclusion_file_lines.reserve(file_lines_.size());
+      for (const llvm::StringRef& file_line : file_lines_.keys()) {
+        if (file_line.startswith("!")) {
+          regex_escaped_exclusion_file_lines.push_back(
+              llvm::Regex::escape(file_line.substr(1)));
+        } else {
+          regex_escaped_inclusion_file_lines.push_back(
+              llvm::Regex::escape(file_line));
+        }
+      }
+      std::string inclusion_substring_regex_pattern =
+          llvm::join(regex_escaped_inclusion_file_lines.begin(),
+                     regex_escaped_inclusion_file_lines.end(), "|");
+      inclusion_substring_regex_.emplace(inclusion_substring_regex_pattern);
+      std::string exclusion_substring_regex_pattern =
+          llvm::join(regex_escaped_exclusion_file_lines.begin(),
+                     regex_escaped_exclusion_file_lines.end(), "|");
+      exclusion_substring_regex_.emplace(exclusion_substring_regex_pattern);
     }
-
-    return substring_regex_->match(string_to_match);
+    return inclusion_substring_regex_->match(string_to_match) &&
+           !exclusion_substring_regex_->match(string_to_match);
   }
 
  private:
@@ -368,9 +382,16 @@ class FilterFile {
   // Stores all file lines (after stripping comments and blank lines).
   llvm::StringSet<> file_lines_;
 
+  // |file_lines_| is partitioned based on whether the line starts with a !
+  // (exclusion line) or not (inclusion line). Inclusion lines specify things to
+  // be matched by the filter. The exclusion lines specify what to force exclude
+  // from the filter. Lazily-constructed regex that matches strings that contain
+  // any of the inclusion lines in |file_lines_|.
+  mutable llvm::Optional<llvm::Regex> inclusion_substring_regex_;
+
   // Lazily-constructed regex that matches strings that contain any of the
-  // |file_lines_|.
-  mutable llvm::Optional<llvm::Regex> substring_regex_;
+  // exclusion lines in |file_lines_|.
+  mutable llvm::Optional<llvm::Regex> exclusion_substring_regex_;
 };
 
 AST_MATCHER_P(clang::FieldDecl,
@@ -443,6 +464,10 @@ AST_MATCHER(clang::FunctionDecl, isImplicitFunctionTemplateSpecialization) {
     case clang::TSK_ExplicitInstantiationDefinition:
       return false;
   }
+}
+
+AST_MATCHER(clang::Type, anyCharType) {
+  return Node.isAnyCharacterType();
 }
 
 AST_POLYMORPHIC_MATCHER(isInMacroLocation,
@@ -937,9 +962,11 @@ int main(int argc, const char* argv[]) {
   llvm::cl::opt<std::string> exclude_paths_param(
       kExcludePathsParamName, llvm::cl::value_desc("filepath"),
       llvm::cl::desc("file listing paths to be blocked (not rewritten)"));
-  clang::tooling::CommonOptionsParser options(argc, argv, category);
-  clang::tooling::ClangTool tool(options.getCompilations(),
-                                 options.getSourcePathList());
+  llvm::Expected<clang::tooling::CommonOptionsParser> options =
+      clang::tooling::CommonOptionsParser::create(argc, argv, category);
+  assert(static_cast<bool>(options));  // Should not return an error.
+  clang::tooling::ClangTool tool(options->getCompilations(),
+                                 options->getSourcePathList());
 
   MatchFinder match_finder;
   OutputHelper output_helper;
@@ -1086,7 +1113,7 @@ int main(int argc, const char* argv[]) {
   // TODO(lukasza): It is unclear why |traverse| below is needed.  Maybe it can
   // be removed if https://bugs.llvm.org/show_bug.cgi?id=46287 is fixed.
   match_finder.addMatcher(
-      traverse(clang::ast_type_traits::TK_AsIs,
+      traverse(clang::TraversalKind::TK_AsIs,
                cxxConstructExpr(templated_function_arg_matcher)),
       &affected_expr_rewriter);
 
@@ -1204,6 +1231,16 @@ int main(int argc, const char* argv[]) {
   FilteredExprWriter macro_field_decl_writer(&output_helper, "macro");
   match_finder.addMatcher(macro_field_decl_matcher, &macro_field_decl_writer);
 
+  // See the doc comment for the anyCharType matcher
+  // and the testcases in tests/gen-char-test.cc.
+  auto char_ptr_field_decl_matcher = fieldDecl(allOf(
+      field_decl_matcher,
+      hasType(pointerType(pointee(qualType(allOf(
+          isConstQualified(), hasUnqualifiedDesugaredType(anyCharType()))))))));
+  FilteredExprWriter char_ptr_field_decl_writer(&output_helper, "const-char");
+  match_finder.addMatcher(char_ptr_field_decl_matcher,
+                          &char_ptr_field_decl_writer);
+
   // See the testcases in tests/gen-global-destructor-test.cc.
   auto global_destructor_matcher =
       varDecl(allOf(hasGlobalStorage(),
@@ -1251,6 +1288,17 @@ int main(int argc, const char* argv[]) {
                                              field_decl_matcher)))))));
   FilteredExprWriter union_field_decl_writer(&output_helper, "union");
   match_finder.addMatcher(union_field_decl_matcher, &union_field_decl_writer);
+
+  // Matches rewritable fields of struct `SomeStruct` if that struct happens to
+  // be a destination type of a `reinterpret_cast<SomeStruct*>` cast.
+  auto reinterpret_cast_struct_matcher =
+      cxxReinterpretCastExpr(hasDestinationType(
+          pointerType(pointee(hasUnqualifiedDesugaredType(recordType(
+              hasDeclaration(recordDecl(forEach(field_decl_matcher)))))))));
+  FilteredExprWriter reinterpret_cast_struct_writer(&output_helper,
+                                                    "reinterpret-cast-struct");
+  match_finder.addMatcher(reinterpret_cast_struct_matcher,
+                          &reinterpret_cast_struct_writer);
 
   // Prepare and run the tool.
   std::unique_ptr<clang::tooling::FrontendActionFactory> factory =

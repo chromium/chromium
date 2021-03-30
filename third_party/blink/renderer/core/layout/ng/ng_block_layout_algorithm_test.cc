@@ -41,13 +41,10 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(), LayoutUnit()));
     NGFragmentGeometry fragment_geometry =
-        CalculateInitialMinMaxFragmentGeometry(space, node);
+        CalculateInitialFragmentGeometry(space, node, /* is_intrinsic */ true);
 
     NGBlockLayoutAlgorithm algorithm({node, fragment_geometry, space});
-    MinMaxSizesInput input(
-        /* percentage_resolution_block_size */ LayoutUnit(),
-        MinMaxSizesType::kContent);
-    return algorithm.ComputeMinMaxSizes(input).sizes;
+    return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   }
 
   scoped_refptr<const NGLayoutResult> RunCachedLayoutResult(
@@ -2495,16 +2492,6 @@ TEST_F(NGBlockLayoutAlgorithmTest,
   scoped_refptr<const NGPhysicalBoxFragment> after =
       To<NGPhysicalBoxFragment>(target_block_flow->GetPhysicalFragment(0));
   EXPECT_EQ(*after->LastBaseline(), LayoutUnit(400));
-}
-
-// TODO(dgrogan): Move this to ng_flex_layout_algorithm_test.cc if there ever is
-// one.
-TEST_F(NGBlockLayoutAlgorithmTest, DetailsFlexDoesntCrash) {
-  SetBodyInnerHTML(R"HTML(
-    <details style="display:flex"></details>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  // No crash is good.
 }
 
 TEST_F(NGBlockLayoutAlgorithmTest, LayoutRubyTextCrash) {

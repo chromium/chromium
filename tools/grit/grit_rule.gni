@@ -423,7 +423,7 @@ if (is_android) {
                                "resource_overlay",
                                "visibility",
                              ])
-      generating_target_name = ":$_zip_target_name"
+      generating_target = ":$_zip_target_name"
       generated_resources_zip = _resources_zip
     }
   }
@@ -465,7 +465,7 @@ if (is_android) {
                                "resource_overlay",
                                "visibility",
                              ])
-      generating_target_name = ":$_zip_target_name"
+      generating_target = ":$_zip_target_name"
       generated_resources_zip = _resources_zip
     }
   }

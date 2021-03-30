@@ -29,10 +29,10 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -54,6 +54,8 @@
 #include "ash/public/cpp/ash_pref_names.h"  // nogncheck
 #endif
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace {
@@ -66,14 +68,14 @@ struct PrefMappingEntry {
   const char* browser_pref;
 
   // Permission required to read and observe this preference.
-  // Use APIPermission::kInvalid for |read_permission| to express that the read
-  // permission should not be granted.
-  APIPermission::ID read_permission;
+  // Use APIPermissionID::kInvalid for |read_permission| to express that
+  // the read permission should not be granted.
+  APIPermissionID read_permission;
 
   // Permission required to write this preference.
-  // Use APIPermission::kInvalid for |write_permission| to express that the
-  // write permission should not be granted.
-  APIPermission::ID write_permission;
+  // Use APIPermissionID::kInvalid for |write_permission| to express that
+  // the write permission should not be granted.
+  APIPermissionID write_permission;
 };
 
 const char kOnPrefChangeFormat[] = "types.ChromeSetting.%s.onChange";
@@ -82,107 +84,101 @@ const char kConversionErrorMessage[] =
     "properly.";
 
 const PrefMappingEntry kPrefMapping[] = {
-    {"spdy_proxy.enabled", data_reduction_proxy::prefs::kDataSaverEnabled,
-     APIPermission::kDataReductionProxy, APIPermission::kDataReductionProxy},
-    {"data_reduction.daily_original_length",
-     data_reduction_proxy::prefs::kDailyHttpOriginalContentLength,
-     APIPermission::kDataReductionProxy, APIPermission::kDataReductionProxy},
-    {"data_reduction.daily_received_length",
-     data_reduction_proxy::prefs::kDailyHttpReceivedContentLength,
-     APIPermission::kDataReductionProxy, APIPermission::kDataReductionProxy},
-    {"data_usage_reporting.enabled",
-     data_reduction_proxy::prefs::kDataUsageReportingEnabled,
-     APIPermission::kDataReductionProxy, APIPermission::kDataReductionProxy},
     {"alternateErrorPagesEnabled",
-     embedder_support::kAlternateErrorPagesEnabled, APIPermission::kPrivacy,
-     APIPermission::kPrivacy},
+     embedder_support::kAlternateErrorPagesEnabled, APIPermissionID::kPrivacy,
+     APIPermissionID::kPrivacy},
     {"autofillEnabled", autofill::prefs::kAutofillEnabledDeprecated,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"autofillAddressEnabled", autofill::prefs::kAutofillProfileEnabled,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"autofillCreditCardEnabled", autofill::prefs::kAutofillCreditCardEnabled,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"hyperlinkAuditingEnabled", prefs::kEnableHyperlinkAuditing,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"networkPredictionEnabled", prefs::kNetworkPredictionOptions,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"passwordSavingEnabled",
      password_manager::prefs::kCredentialsEnableService,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
-    {"protectedContentEnabled", prefs::kEnableDRM, APIPermission::kPrivacy,
-     APIPermission::kPrivacy},
-    {"proxy", proxy_config::prefs::kProxy, APIPermission::kProxy,
-     APIPermission::kProxy},
-    {"referrersEnabled", prefs::kEnableReferrers, APIPermission::kPrivacy,
-     APIPermission::kPrivacy},
-    {"doNotTrackEnabled", prefs::kEnableDoNotTrack, APIPermission::kPrivacy,
-     APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
+    {"protectedContentEnabled", prefs::kEnableDRM, APIPermissionID::kPrivacy,
+     APIPermissionID::kPrivacy},
+    {"proxy", proxy_config::prefs::kProxy, APIPermissionID::kProxy,
+     APIPermissionID::kProxy},
+    {"referrersEnabled", prefs::kEnableReferrers, APIPermissionID::kPrivacy,
+     APIPermissionID::kPrivacy},
+    {"doNotTrackEnabled", prefs::kEnableDoNotTrack, APIPermissionID::kPrivacy,
+     APIPermissionID::kPrivacy},
     {"safeBrowsingEnabled", prefs::kSafeBrowsingEnabled,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"safeBrowsingExtendedReportingEnabled",
-     prefs::kSafeBrowsingScoutReportingEnabled, APIPermission::kPrivacy,
-     APIPermission::kPrivacy},
+     prefs::kSafeBrowsingScoutReportingEnabled, APIPermissionID::kPrivacy,
+     APIPermissionID::kPrivacy},
     {"searchSuggestEnabled", prefs::kSearchSuggestEnabled,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"spellingServiceEnabled", spellcheck::prefs::kSpellCheckUseSpellingService,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"thirdPartyCookiesAllowed", prefs::kCookieControlsMode,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
+    {"privacySandboxEnabled", prefs::kPrivacySandboxApisEnabled,
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"translationServiceEnabled", prefs::kOfferTranslateEnabled,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"webRTCIPHandlingPolicy", prefs::kWebRTCIPHandlingPolicy,
-     APIPermission::kPrivacy, APIPermission::kPrivacy},
-    {"webRTCUDPPortRange", prefs::kWebRTCUDPPortRange, APIPermission::kPrivacy,
-     APIPermission::kPrivacy},
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
+    {"webRTCUDPPortRange", prefs::kWebRTCUDPPortRange,
+     APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     // accessibilityFeatures.animationPolicy is available for
     // all platforms but the others from accessibilityFeatures
     // is only available for OS_CHROMEOS.
     {"animationPolicy", prefs::kAnimationPolicy,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"autoclick", ash::prefs::kAccessibilityAutoclickEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"caretHighlight", ash::prefs::kAccessibilityCaretHighlightEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"cursorColor", ash::prefs::kAccessibilityCursorColorEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"cursorHighlight", ash::prefs::kAccessibilityCursorHighlightEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
+    {"dictation", ash::prefs::kAccessibilityDictationEnabled,
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"dockedMagnifier", ash::prefs::kDockedMagnifierEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"focusHighlight", ash::prefs::kAccessibilityFocusHighlightEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"highContrast", ash::prefs::kAccessibilityHighContrastEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"largeCursor", ash::prefs::kAccessibilityLargeCursorEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"screenMagnifier", ash::prefs::kAccessibilityScreenMagnifierEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"selectToSpeak", ash::prefs::kAccessibilitySelectToSpeakEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"spokenFeedback", ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"stickyKeys", ash::prefs::kAccessibilityStickyKeysEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"switchAccess", ash::prefs::kAccessibilitySwitchAccessEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
     {"virtualKeyboard", ash::prefs::kAccessibilityVirtualKeyboardEnabled,
-     APIPermission::kAccessibilityFeaturesRead,
-     APIPermission::kAccessibilityFeaturesModify},
+     APIPermissionID::kAccessibilityFeaturesRead,
+     APIPermissionID::kAccessibilityFeaturesModify},
 #endif
 };
 
@@ -269,8 +265,8 @@ class PrefMapping {
 
   bool FindBrowserPrefForExtensionPref(const std::string& extension_pref,
                                        std::string* browser_pref,
-                                       APIPermission::ID* read_permission,
-                                       APIPermission::ID* write_permission) {
+                                       APIPermissionID* read_permission,
+                                       APIPermissionID* write_permission) {
     auto it = mapping_.find(extension_pref);
     if (it != mapping_.end()) {
       *browser_pref = it->second.pref_name;
@@ -283,7 +279,7 @@ class PrefMapping {
 
   bool FindEventForBrowserPref(const std::string& browser_pref,
                                std::string* event_name,
-                               APIPermission::ID* permission) {
+                               APIPermissionID* permission) {
     auto it = event_mapping_.find(browser_pref);
     if (it != event_mapping_.end()) {
       *event_name = it->second.pref_name;
@@ -337,12 +333,12 @@ class PrefMapping {
 
   struct PrefMapData {
     PrefMapData()
-        : read_permission(APIPermission::kInvalid),
-          write_permission(APIPermission::kInvalid) {}
+        : read_permission(APIPermissionID::kInvalid),
+          write_permission(APIPermissionID::kInvalid) {}
 
     PrefMapData(const std::string& pref_name,
-                APIPermission::ID read,
-                APIPermission::ID write)
+                APIPermissionID read,
+                APIPermissionID write)
         : pref_name(pref_name),
           read_permission(read),
           write_permission(write) {}
@@ -351,10 +347,10 @@ class PrefMapping {
     std::string pref_name;
 
     // Permission needed to read the preference.
-    APIPermission::ID read_permission;
+    APIPermissionID read_permission;
 
     // Permission needed to write the preference.
-    APIPermission::ID write_permission;
+    APIPermissionID write_permission;
   };
 
   using PrefMap = std::map<std::string, PrefMapData>;
@@ -380,12 +376,13 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
     : profile_(profile) {
   registrar_.Init(profile_->GetPrefs());
   for (const auto& pref : kPrefMapping) {
-    registrar_.Add(pref.browser_pref,
-                   base::Bind(&PreferenceEventRouter::OnPrefChanged,
-                              base::Unretained(this), registrar_.prefs()));
+    registrar_.Add(
+        pref.browser_pref,
+        base::BindRepeating(&PreferenceEventRouter::OnPrefChanged,
+                            base::Unretained(this), registrar_.prefs()));
   }
   DCHECK(!profile_->IsOffTheRecord());
-  observed_profiles_.Add(profile_);
+  observed_profiles_.AddObservation(profile_);
   if (profile->HasPrimaryOTRProfile())
     OnOffTheRecordProfileCreated(profile->GetPrimaryOTRProfile());
   else
@@ -399,7 +396,7 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
   bool incognito = (pref_service != profile_->GetPrefs());
 
   std::string event_name;
-  APIPermission::ID permission = APIPermission::kInvalid;
+  APIPermissionID permission = APIPermissionID::kInvalid;
   bool rv = PrefMapping::GetInstance()->FindEventForBrowserPref(
       browser_pref, &event_name, &permission);
   DCHECK(rv);
@@ -446,12 +443,12 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
 
 void PreferenceEventRouter::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
-  observed_profiles_.Add(off_the_record);
+  observed_profiles_.AddObservation(off_the_record);
   ObserveOffTheRecordPrefs(off_the_record->GetPrefs());
 }
 
 void PreferenceEventRouter::OnProfileWillBeDestroyed(Profile* profile) {
-  observed_profiles_.Remove(profile);
+  observed_profiles_.RemoveObservation(profile);
   if (profile->IsOffTheRecord()) {
     // The real PrefService is about to be destroyed so we must make sure we
     // get the "dummy" one.
@@ -465,8 +462,9 @@ void PreferenceEventRouter::ObserveOffTheRecordPrefs(PrefService* prefs) {
   for (const auto& pref : kPrefMapping) {
     incognito_registrar_->Add(
         pref.browser_pref,
-        base::Bind(&PreferenceEventRouter::OnPrefChanged,
-                   base::Unretained(this), incognito_registrar_->prefs()));
+        base::BindRepeating(&PreferenceEventRouter::OnPrefChanged,
+                            base::Unretained(this),
+                            incognito_registrar_->prefs()));
   }
 }
 
@@ -548,7 +546,7 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
   for (const auto& pref : kPrefMapping) {
     std::string event_name;
-    APIPermission::ID permission = APIPermission::kInvalid;
+    APIPermissionID permission = APIPermissionID::kInvalid;
     bool rv = PrefMapping::GetInstance()->FindEventForBrowserPref(
         pref.browser_pref, &event_name, &permission);
     DCHECK(rv);
@@ -663,12 +661,13 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
 
   // Obtain pref.
   std::string browser_pref;
-  APIPermission::ID read_permission = APIPermission::kInvalid;
-  APIPermission::ID write_permission = APIPermission::kInvalid;
+  APIPermissionID read_permission = APIPermissionID::kInvalid;
+  APIPermissionID write_permission = APIPermissionID::kInvalid;
   EXTENSION_FUNCTION_VALIDATE(
       PrefMapping::GetInstance()->FindBrowserPrefForExtensionPref(
       pref_key, &browser_pref, &read_permission, &write_permission));
-  if (!extension()->permissions_data()->HasAPIPermission(read_permission))
+  if (!extension()->permissions_data()->HasAPIPermission(
+          static_cast<APIPermission::ID>(read_permission)))
     return RespondNow(
         Error(extensions::preference_api_constants::kPermissionErrorMessage,
               pref_key));
@@ -766,12 +765,13 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
 
   // Obtain pref.
   std::string browser_pref;
-  APIPermission::ID read_permission = APIPermission::kInvalid;
-  APIPermission::ID write_permission = APIPermission::kInvalid;
+  APIPermissionID read_permission = APIPermissionID::kInvalid;
+  APIPermissionID write_permission = APIPermissionID::kInvalid;
   EXTENSION_FUNCTION_VALIDATE(
       PrefMapping::GetInstance()->FindBrowserPrefForExtensionPref(
       pref_key, &browser_pref, &read_permission, &write_permission));
-  if (!extension()->permissions_data()->HasAPIPermission(write_permission))
+  if (!extension()->permissions_data()->HasAPIPermission(
+          static_cast<APIPermission::ID>(write_permission)))
     return RespondNow(
         Error(extensions::preference_api_constants::kPermissionErrorMessage,
               pref_key));
@@ -867,12 +867,13 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   }
 
   std::string browser_pref;
-  APIPermission::ID read_permission = APIPermission::kInvalid;
-  APIPermission::ID write_permission = APIPermission::kInvalid;
+  APIPermissionID read_permission = APIPermissionID::kInvalid;
+  APIPermissionID write_permission = APIPermissionID::kInvalid;
   EXTENSION_FUNCTION_VALIDATE(
       PrefMapping::GetInstance()->FindBrowserPrefForExtensionPref(
       pref_key, &browser_pref, &read_permission, &write_permission));
-  if (!extension()->permissions_data()->HasAPIPermission(write_permission))
+  if (!extension()->permissions_data()->HasAPIPermission(
+          static_cast<APIPermission::ID>(write_permission)))
     return RespondNow(
         Error(extensions::preference_api_constants::kPermissionErrorMessage,
               pref_key));

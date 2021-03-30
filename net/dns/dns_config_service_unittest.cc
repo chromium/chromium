@@ -187,7 +187,7 @@ TEST_F(DnsConfigServiceTest, WatchFailure) {
   EXPECT_TRUE(last_config_.Equals(config1));
 
   // Simulate watch failure.
-  service_->set_watch_failed(true);
+  service_->set_watch_failed_for_testing(true);
   service_->InvalidateConfig();
   WaitForConfig(TestTimeouts::action_timeout());
   EXPECT_FALSE(last_config_.Equals(config1));

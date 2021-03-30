@@ -13,7 +13,7 @@
 namespace extensions {
 
 MockExternalProvider::MockExternalProvider(VisitorInterface* visitor,
-                                           Manifest::Location location)
+                                           mojom::ManifestLocation location)
     : location_(location), visitor_(visitor), visit_count_(0) {}
 
 MockExternalProvider::~MockExternalProvider() {}
@@ -63,7 +63,7 @@ bool MockExternalProvider::HasExtension(const std::string& id) const {
 
 bool MockExternalProvider::GetExtensionDetails(
     const std::string& id,
-    Manifest::Location* location,
+    mojom::ManifestLocation* location,
     std::unique_ptr<base::Version>* version) const {
   auto it1 = file_extension_map_.find(id);
   auto it2 = url_extension_map_.find(id);

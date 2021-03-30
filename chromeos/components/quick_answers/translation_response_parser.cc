@@ -63,8 +63,6 @@ void TranslationResponseParser::OnJsonParsed(
 
   auto quick_answer = std::make_unique<QuickAnswer>();
   quick_answer->result_type = ResultType::kTranslationResult;
-  quick_answer->primary_answer = translated_text;
-  quick_answer->secondary_answer = title_text;
   quick_answer->title.push_back(std::make_unique<QuickAnswerText>(title_text));
   quick_answer->first_answer_row.push_back(
       std::make_unique<QuickAnswerResultText>(translated_text));

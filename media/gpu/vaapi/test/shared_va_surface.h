@@ -33,6 +33,10 @@ class SharedVASurface : public base::RefCounted<SharedVASurface> {
   // NB: vaDeriveImage may succeed but fetch garbage output in AMD.
   void SaveAsPNG(const std::string& path);
 
+  // Computes the MD5 sum of this surface and returns it as a human-readable hex
+  // string.
+  std::string GetMD5Sum() const;
+
   VASurfaceID id() const { return id_; }
   const gfx::Size& size() const { return size_; }
   unsigned int va_rt_format() const { return va_rt_format_; }

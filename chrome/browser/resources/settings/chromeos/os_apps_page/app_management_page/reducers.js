@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+
 /**
  * @fileoverview Module of functions which produce a new page state in response
  * to an action. Reducers (in the same sense as Array.prototype.reduce) must be
@@ -10,7 +12,7 @@
  */
 
 cr.define('app_management', function() {
-  const AppState = {};
+  /* #export */ const AppState = {};
 
   /**
    * @param {AppMap} apps
@@ -18,7 +20,16 @@ cr.define('app_management', function() {
    * @return {AppMap}
    */
   AppState.addApp = function(apps, action) {
-    assert(!apps[action.app.id]);
+    if (apps[action.app.id]) {
+      const stringifyApp = (app) => {
+        return `id: ${app.id}, type: ${app.type}, install source: ${
+            app.installSource} title: ${app.title}`;
+      };
+      const errorMessage = `Attempted to add an app that already exists.
+                            New app: ${stringifyApp(action.app)}.
+                            Old app: ${stringifyApp(apps[action.app.id])}.`;
+      assertNotReached(errorMessage);
+    }
 
     const newAppEntry = {};
     newAppEntry[action.app.id] = action.app;
@@ -118,7 +129,7 @@ cr.define('app_management', function() {
    * @param {Object} action
    * @return {!AppManagementPageState}
    */
-  function reduceAction(state, action) {
+  /* #export */ function reduceAction(state, action) {
     return {
       apps: AppState.updateApps(state.apps, action),
       arcSupported: ArcSupported.updateArcSupported(state.arcSupported, action),

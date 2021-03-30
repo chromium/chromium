@@ -129,7 +129,7 @@ const char* const kEditCommands[] = {
 // The WebFrame is in the Chrome glue layer and forwards the message to WebCore.
 void EditCommandImp(id self, SEL _cmd, id sender) {
   // Make sure |self| is the right type.
-  DCHECK([self conformsToProtocol:@protocol(RenderWidgetHostNSViewHostOwner)]);
+  DCHECK([self respondsToSelector:@selector(renderWidgetHostNSViewHost)]);
 
   // SEL -> command name string.
   NSString* command_name_ns =
@@ -138,7 +138,7 @@ void EditCommandImp(id self, SEL _cmd, id sender) {
 
   // Forward the edit command string down the pipeline.
   remote_cocoa::mojom::RenderWidgetHostNSViewHost* host =
-      [(id<RenderWidgetHostNSViewHostOwner>)self renderWidgetHostNSViewHost];
+      [self renderWidgetHostNSViewHost];
   DCHECK(host);
   host->ExecuteEditCommand(command);
 }
@@ -188,22 +188,6 @@ RenderWidgetHostViewMacEditCommandHelper::
 RenderWidgetHostViewMacEditCommandHelper::
     ~RenderWidgetHostViewMacEditCommandHelper() {}
 
-// Dynamically adds Selectors to the aformentioned class.
-void RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
-    Class klass) {
-  for (size_t i = 0; i < base::size(kEditCommands); ++i) {
-    // Append trailing ':' to command name to get selector name.
-    NSString* sel_str = [NSString stringWithFormat: @"%s:", kEditCommands[i]];
-
-    SEL edit_selector = NSSelectorFromString(sel_str);
-    // May want to use @encode() for the last parameter to this method.
-    // If class_addMethod fails we assume that all the editing selectors where
-    // added to the class.
-    // If a certain class already implements a method then class_addMethod
-    // returns NO, which we can safely ignore.
-    class_addMethod(klass, edit_selector, (IMP)EditCommandImp, "v@:@");
-  }
-}
 
 bool RenderWidgetHostViewMacEditCommandHelper::IsMenuItemEnabled(
     SEL item_action,
@@ -226,7 +210,26 @@ bool RenderWidgetHostViewMacEditCommandHelper::IsMenuItemEnabled(
   return ret;
 }
 
-NSArray* RenderWidgetHostViewMacEditCommandHelper::GetEditSelectorNames() {
+// static
+void RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
+    Class klass) {
+  for (size_t i = 0; i < base::size(kEditCommands); ++i) {
+    // Append trailing ':' to command name to get selector name.
+    NSString* sel_str = [NSString stringWithFormat:@"%s:", kEditCommands[i]];
+
+    SEL edit_selector = NSSelectorFromString(sel_str);
+    // May want to use @encode() for the last parameter to this method.
+    // If class_addMethod fails we assume that all the editing selectors where
+    // added to the class.
+    // If a certain class already implements a method then class_addMethod
+    // returns NO, which we can safely ignore.
+    class_addMethod(klass, edit_selector, (IMP)EditCommandImp, "v@:@");
+  }
+}
+
+// static
+NSArray*
+RenderWidgetHostViewMacEditCommandHelper::GetEditSelectorNamesForTesting() {
   size_t num_edit_commands = base::size(kEditCommands);
   NSMutableArray* ret = [NSMutableArray arrayWithCapacity:num_edit_commands];
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "content/public/test/xr_test_utils.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
 // TODO(https://crbug.com/891832): Remove these conversion functions as part of
 // the switch to only mojom types.

@@ -7,11 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/media_controller.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -19,17 +21,15 @@ namespace {
 using Type = CameraMicTrayItemView::Type;
 }  // namespace
 
-class CameraMicTrayItemViewTest : public AshTestBase,
-                                  public testing::WithParamInterface<Type> {
+class BaseCameraMicTrayItemViewTest : public AshTestBase {
  public:
-  // AshTestBase:
-  void SetUp() override {
+  void SetUpWithType(Type type) {
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kVmCameraMicIndicatorsAndNotifications);
     AshTestBase::SetUp();
 
     camera_mic_tray_item_view_ =
-        std::make_unique<CameraMicTrayItemView>(GetPrimaryShelf(), GetParam());
+        std::make_unique<CameraMicTrayItemView>(GetPrimaryShelf(), type);
 
     // Relogin to make sure `OnActiveUserSessionChanged` is triggered.
     ClearLogin();
@@ -46,30 +46,59 @@ class CameraMicTrayItemViewTest : public AshTestBase,
   std::unique_ptr<CameraMicTrayItemView> camera_mic_tray_item_view_;
 };
 
-TEST_P(CameraMicTrayItemViewTest, OnVmMediaNotificationChanged) {
+class CameraMicTrayItemViewTest : public BaseCameraMicTrayItemViewTest,
+                                  public testing::WithParamInterface<Type> {
+ public:
+  // AshTestBase:
+  void SetUp() override { SetUpWithType(GetParam()); }
+};
+
+TEST_P(CameraMicTrayItemViewTest, GetVisible) {
   Type type = GetParam();
   EXPECT_FALSE(camera_mic_tray_item_view_->GetVisible());
 
-  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/true,
-                                                           /*mic=*/false);
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/true,
+      /*mic=*/false,
+      /*camera_and_mic=*/false);
   EXPECT_EQ(camera_mic_tray_item_view_->GetVisible(), type == Type::kCamera);
 
-  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/false,
-                                                           /*mic=*/true);
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/false,
+      /*mic=*/false,
+      /*camera_and_mic=*/true);
+  EXPECT_EQ(camera_mic_tray_item_view_->GetVisible(), type == Type::kCamera);
+
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/false,
+      /*mic=*/true,
+      /*camera_and_mic=*/false);
   EXPECT_EQ(camera_mic_tray_item_view_->GetVisible(), type == Type::kMic);
 
-  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/true,
-                                                           /*mic=*/true);
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/true,
+      /*mic=*/true,
+      /*camera_and_mic=*/false);
   EXPECT_TRUE(camera_mic_tray_item_view_->GetVisible());
 
-  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/false,
-                                                           /*mic=*/false);
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/true,
+      /*mic=*/true,
+      /*camera_and_mic=*/true);
+  EXPECT_TRUE(camera_mic_tray_item_view_->GetVisible());
+
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/false,
+      /*mic=*/false,
+      /*camera_and_mic=*/false);
   EXPECT_FALSE(camera_mic_tray_item_view_->GetVisible());
 }
 
 TEST_P(CameraMicTrayItemViewTest, HideForNonPrimaryUser) {
-  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/true,
-                                                           /*mic=*/true);
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/true,
+      /*mic=*/true,
+      /*camera_and_mic=*/true);
   EXPECT_TRUE(camera_mic_tray_item_view_->GetVisible());
 
   SimulateUserLogin("user2@test.com");
@@ -79,5 +108,37 @@ TEST_P(CameraMicTrayItemViewTest, HideForNonPrimaryUser) {
 INSTANTIATE_TEST_SUITE_P(All,
                          CameraMicTrayItemViewTest,
                          testing::Values(Type::kCamera, Type::kMic));
+
+// For testing that the camera tray item switch the message depending on whether
+// the "camera and mic" notification is active.
+class CameraMicTrayItemViewMessageTest : public BaseCameraMicTrayItemViewTest {
+  // AshTestBase:
+  void SetUp() override { SetUpWithType(Type::kCamera); }
+};
+
+TEST_F(CameraMicTrayItemViewMessageTest, Message) {
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/true,
+      /*mic=*/false,
+      /*camera_and_mic=*/false);
+  EXPECT_EQ(camera_mic_tray_item_view_->GetAccessibleNameString(),
+            l10n_util::GetStringUTF16(IDS_ASH_CAMERA_MIC_VM_USING_CAMERA));
+
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/false,
+      /*mic=*/false,
+      /*camera_and_mic=*/true);
+  EXPECT_EQ(
+      camera_mic_tray_item_view_->GetAccessibleNameString(),
+      l10n_util::GetStringUTF16(IDS_ASH_CAMERA_MIC_VM_USING_CAMERA_AND_MIC));
+
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(
+      /*camera=*/true,
+      /*mic=*/false,
+      /*camera_and_mic=*/true);
+  EXPECT_EQ(
+      camera_mic_tray_item_view_->GetAccessibleNameString(),
+      l10n_util::GetStringUTF16(IDS_ASH_CAMERA_MIC_VM_USING_CAMERA_AND_MIC));
+}
 
 }  // namespace ash

@@ -4,69 +4,42 @@
 
 #include "components/sync/trusted_vault/download_keys_response_handler.h"
 
-#include <algorithm>
+#include <map>
 #include <utility>
 
 #include "components/sync/protocol/vault.pb.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 
 namespace syncer {
 
 namespace {
 
-const char kSecurityDomainName[] = "chromesync";
-
 struct ExtractedSharedKey {
   int version;
   std::vector<uint8_t> trusted_vault_key;
-  std::vector<uint8_t> key_proof;
+  std::vector<uint8_t> rotation_proof;
 };
 
-// Returns pointer to sync security domain in |response|. Returns nullptr if
-// there is no sync security domain.
-const sync_pb::SecurityDomain* FindSyncSecurityDomain(
-    const sync_pb::ListSecurityDomainsResponse& response) {
-  for (const sync_pb::SecurityDomain& security_domain :
-       response.security_domains()) {
-    if (security_domain.name() == kSecurityDomainName) {
-      return &security_domain;
-    }
-  }
-  return nullptr;
-}
-
-// Returns pointer to the member in |response| corresponding to
-// |member_public_key|. Returns nullptr if sync security domain doesn't exist
-// in |response| or there is no such member in sync security domain.
-const sync_pb::SecurityDomain::Member* FindMember(
-    const sync_pb::ListSecurityDomainsResponse& response,
-    const std::vector<uint8_t>& member_public_key_bytes) {
-  const sync_pb::SecurityDomain* sync_security_domain =
-      FindSyncSecurityDomain(response);
-  if (!sync_security_domain) {
-    return nullptr;
-  }
-
-  const std::string member_public_key_string(member_public_key_bytes.begin(),
-                                             member_public_key_bytes.end());
-  for (const sync_pb::SecurityDomain::Member& member :
-       sync_security_domain->members()) {
-    if (member.public_key() == member_public_key_string) {
-      return &member;
+const sync_pb::SecurityDomainMember::SecurityDomainMembership*
+FindSyncMembership(const sync_pb::SecurityDomainMember& member) {
+  for (const auto& membership : member.memberships()) {
+    if (membership.security_domain() == kSyncSecurityDomainName) {
+      return &membership;
     }
   }
   return nullptr;
 }
 
 // Extracts (decrypts |wrapped_key| and converts to ExtractedSharedKey) shared
-// keys from |member| and sorts them by version.
+// keys from |membership| and sorts them by version.
 std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
-    const sync_pb::SecurityDomain::Member& member,
+    const sync_pb::SecurityDomainMember::SecurityDomainMembership& membership,
     const SecureBoxPrivateKey& member_private_key) {
-  std::vector<ExtractedSharedKey> result;
-  for (const sync_pb::SharedKey& shared_key : member.keys()) {
+  std::map<int, ExtractedSharedKey> epoch_to_extracted_key;
+  for (const sync_pb::SharedMemberKey& shared_key : membership.keys()) {
     base::Optional<std::vector<uint8_t>> decrypted_key =
         DecryptTrustedVaultWrappedKey(
             member_private_key, ProtoStringToBytes(shared_key.wrapped_key()));
@@ -74,19 +47,29 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
       // Decryption failed.
       return std::vector<ExtractedSharedKey>();
     }
-    result.push_back(ExtractedSharedKey{
-        /*version=*/shared_key.epoch(), *decrypted_key,
-        /*key_proof=*/ProtoStringToBytes(shared_key.key_proof())});
+    epoch_to_extracted_key[shared_key.epoch()].version = shared_key.epoch();
+    epoch_to_extracted_key[shared_key.epoch()].trusted_vault_key =
+        *decrypted_key;
+  }
+  for (const sync_pb::RotationProof& rotation_proof :
+       membership.rotation_proofs()) {
+    if (epoch_to_extracted_key.count(rotation_proof.new_epoch()) == 0) {
+      // There is no shared key corresponding to rotation proof. In theory it
+      // shouldn't happen, but it's safe to ignore.
+      continue;
+    }
+    epoch_to_extracted_key[rotation_proof.new_epoch()].rotation_proof =
+        ProtoStringToBytes(rotation_proof.rotation_proof());
   }
 
-  std::sort(result.begin(), result.end(),
-            [](const ExtractedSharedKey& a, const ExtractedSharedKey& b) {
-              return a.version < b.version;
-            });
+  std::vector<ExtractedSharedKey> result;
+  for (const auto& epoch_and_extracted_key : epoch_to_extracted_key) {
+    result.push_back(epoch_and_extracted_key.second);
+  }
   return result;
 }
 
-// Validates |key_proof| starting from the key next to
+// Validates |rotation_proof| starting from the key next to
 // last known trusted vault key, returns false if validation fails or |keys|
 // doesn't have a key next to last known trusted vault key.
 bool IsValidKeyChain(
@@ -112,8 +95,8 @@ bool IsValidKeyChain(
     }
 
     if (!VerifyTrustedVaultHMAC(last_valid_key, next_key.trusted_vault_key,
-                                next_key.key_proof)) {
-      // |key_proof| isn't valid.
+                                next_key.rotation_proof)) {
+      // |rotation_proof| isn't valid.
       return false;
     }
 
@@ -132,9 +115,9 @@ DownloadKeysResponseHandler::ProcessedResponse::ProcessedResponse(
 
 DownloadKeysResponseHandler::ProcessedResponse::ProcessedResponse(
     TrustedVaultRequestStatus status,
-    std::vector<std::vector<uint8_t>> keys,
+    std::vector<std::vector<uint8_t>> new_keys,
     int last_key_version)
-    : status(status), keys(keys), last_key_version(last_key_version) {}
+    : status(status), new_keys(new_keys), last_key_version(last_key_version) {}
 
 DownloadKeysResponseHandler::ProcessedResponse::ProcessedResponse(
     const ProcessedResponse& other) = default;
@@ -146,7 +129,8 @@ DownloadKeysResponseHandler::ProcessedResponse::operator=(
 DownloadKeysResponseHandler::ProcessedResponse::~ProcessedResponse() = default;
 
 DownloadKeysResponseHandler::DownloadKeysResponseHandler(
-    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+    const base::Optional<TrustedVaultKeyAndVersion>&
+        last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair)
     : last_trusted_vault_key_and_version_(last_trusted_vault_key_and_version),
       device_key_pair_(std::move(device_key_pair)) {
@@ -162,39 +146,51 @@ DownloadKeysResponseHandler::ProcessResponse(
   switch (http_status) {
     case TrustedVaultRequest::HttpStatus::kSuccess:
       break;
+    case TrustedVaultRequest::HttpStatus::kNotFound:
+    case TrustedVaultRequest::HttpStatus::kFailedPrecondition:
+      // TODO(crbug.com/1113598): expose more detailed status.
+      return ProcessedResponse(
+          /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
     case TrustedVaultRequest::HttpStatus::kOtherError:
-    case TrustedVaultRequest::HttpStatus::kBadRequest:
-      // Don't distinguish kBadRequest here, because request content doesn't
-      // depend on the local state.
       return ProcessedResponse(
           /*status=*/TrustedVaultRequestStatus::kOtherError);
   }
 
-  sync_pb::ListSecurityDomainsResponse deserialized_response;
-  if (!deserialized_response.ParseFromString(response_body)) {
+  sync_pb::SecurityDomainMember member;
+  if (!member.ParseFromString(response_body)) {
     return ProcessedResponse(/*status=*/TrustedVaultRequestStatus::kOtherError);
   }
 
-  const sync_pb::SecurityDomain::Member* current_member = FindMember(
-      deserialized_response, device_key_pair_->public_key().ExportToBytes());
-  if (!current_member) {
-    // |device_key_pair_| isn't registered server-side, while client assumes
-    // it's registered when downloading keys.
+  // TODO(crbug.com/1113598): consider validation of member public key.
+  const sync_pb::SecurityDomainMember::SecurityDomainMembership* membership =
+      FindSyncMembership(member);
+  if (!membership) {
+    // Member is not in sync security domain.
     return ProcessedResponse(
         /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
   }
 
-  std::vector<ExtractedSharedKey> extracted_keys = ExtractAndSortSharedKeys(
-      *current_member, device_key_pair_->private_key());
-  if (extracted_keys.empty() ||
-      !IsValidKeyChain(extracted_keys, last_trusted_vault_key_and_version_)) {
+  std::vector<ExtractedSharedKey> extracted_keys =
+      ExtractAndSortSharedKeys(*membership, device_key_pair_->private_key());
+  if (extracted_keys.empty()) {
+    // |current_member| doesn't have any keys, should be treated as not
+    // registered member.
+    return ProcessedResponse(
+        /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
+  }
+
+  if (last_trusted_vault_key_and_version_.has_value() &&
+      !IsValidKeyChain(extracted_keys, *last_trusted_vault_key_and_version_)) {
+    // Data corresponding to |current_member| is corrupted or
+    // |last_trusted_vault_key_and_version_| is too old.
     return ProcessedResponse(
         /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
   }
 
   std::vector<std::vector<uint8_t>> new_keys;
   for (const ExtractedSharedKey& key : extracted_keys) {
-    if (key.version >= last_trusted_vault_key_and_version_.version) {
+    if (!last_trusted_vault_key_and_version_.has_value() ||
+        key.version > last_trusted_vault_key_and_version_->version) {
       // Don't include previous keys into the result, because they weren't
       // validated using |last_trusted_vault_key_and_version| and client should
       // be already aware of them.

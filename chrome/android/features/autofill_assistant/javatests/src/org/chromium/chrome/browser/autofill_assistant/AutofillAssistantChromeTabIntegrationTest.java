@@ -641,6 +641,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1171149")
     public void interactingWithLocationBarHidesOnboarding() {
         // Onboarding has not been accepted.
         AutofillAssistantPreferencesUtil.setInitialPreferences(false);

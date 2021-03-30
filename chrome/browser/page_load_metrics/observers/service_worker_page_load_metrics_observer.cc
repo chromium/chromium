@@ -57,21 +57,6 @@ const char kHistogramServiceWorkerLargestContentfulPaint[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming."
     "NavigationToLargestContentfulPaint2";
 
-const char kHistogramServiceWorkerParseStartInbox[] =
-    "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart.inbox";
-const char kHistogramServiceWorkerFirstContentfulPaintInbox[] =
-    "PageLoad.Clients.ServiceWorker2.PaintTiming."
-    "NavigationToFirstContentfulPaint.inbox";
-const char kHistogramServiceWorkerParseStartToFirstContentfulPaintInbox[] =
-    "PageLoad.Clients.ServiceWorker2.PaintTiming."
-    "ParseStartToFirstContentfulPaint.inbox";
-const char kHistogramServiceWorkerDomContentLoadedInbox[] =
-    "PageLoad.Clients.ServiceWorker2.DocumentTiming."
-    "NavigationToDOMContentLoadedEventFired.inbox";
-const char kHistogramServiceWorkerLoadInbox[] =
-    "PageLoad.Clients.ServiceWorker2.DocumentTiming.NavigationToLoadEventFired."
-    "inbox";
-
 const char kHistogramServiceWorkerParseStartSearch[] =
     "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart.search";
 const char kHistogramServiceWorkerFirstContentfulPaintSearch[] =
@@ -110,10 +95,6 @@ const char kHistogramNoServiceWorkerFirstContentfulPaintDocs[] =
 }  // namespace internal
 
 namespace {
-
-bool IsInboxSite(const GURL& url) {
-  return url.host_piece() == "inbox.google.com";
-}
 
 bool IsDocsSite(const GURL& url) {
   return url.host_piece() == "docs.google.com";
@@ -202,16 +183,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     }
   }
 
-  if (IsInboxSite(GetDelegate().GetUrl())) {
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramServiceWorkerFirstContentfulPaintInbox,
-        timing.paint_timing->first_contentful_paint.value());
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramServiceWorkerParseStartToFirstContentfulPaintInbox,
-        timing.paint_timing->first_contentful_paint.value() -
-            timing.parse_timing->parse_start.value());
-  } else if (page_load_metrics::IsGoogleSearchResultUrl(
-                 GetDelegate().GetUrl())) {
+  if (page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl())) {
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramServiceWorkerFirstContentfulPaintSearch,
         timing.paint_timing->first_contentful_paint.value());
@@ -244,12 +216,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnDomContentLoadedEventStart(
   PAGE_LOAD_HISTOGRAM(
       internal::kHistogramServiceWorkerDomContentLoaded,
       timing.document_timing->dom_content_loaded_event_start.value());
-  if (IsInboxSite(GetDelegate().GetUrl())) {
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramServiceWorkerDomContentLoadedInbox,
-        timing.document_timing->dom_content_loaded_event_start.value());
-  } else if (page_load_metrics::IsGoogleSearchResultUrl(
-                 GetDelegate().GetUrl())) {
+  if (page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl())) {
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramServiceWorkerDomContentLoadedSearch,
         timing.document_timing->dom_content_loaded_event_start.value());
@@ -270,11 +237,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnLoadEventStart(
   }
   PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerLoad,
                       timing.document_timing->load_event_start.value());
-  if (IsInboxSite(GetDelegate().GetUrl())) {
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerLoadInbox,
-                        timing.document_timing->load_event_start.value());
-  } else if (page_load_metrics::IsGoogleSearchResultUrl(
-                 GetDelegate().GetUrl())) {
+  if (page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerLoadSearch,
                         timing.document_timing->load_event_start.value());
   }
@@ -317,11 +280,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnParseStart(
     PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerParseStart,
                         timing.parse_timing->parse_start.value());
 
-    if (IsInboxSite(GetDelegate().GetUrl())) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerParseStartInbox,
-                          timing.parse_timing->parse_start.value());
-    } else if (page_load_metrics::IsGoogleSearchResultUrl(
-                   GetDelegate().GetUrl())) {
+    if (page_load_metrics::IsGoogleSearchResultUrl(GetDelegate().GetUrl())) {
       PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerParseStartSearch,
                           timing.parse_timing->parse_start.value());
     }

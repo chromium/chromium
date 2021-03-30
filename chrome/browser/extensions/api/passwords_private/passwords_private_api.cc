@@ -128,7 +128,7 @@ ResponseAction PasswordsPrivateRequestPlaintextPasswordFunction::Run() {
 }
 
 void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
-    base::Optional<base::string16> password) {
+    base::Optional<std::u16string> password) {
   if (password) {
     Respond(OneArgument(base::Value(std::move(*password))));
     return;

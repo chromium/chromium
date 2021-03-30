@@ -4,7 +4,8 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge_lacros.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
@@ -46,7 +47,7 @@ class TestPlatformBridgeDelegate : public NotificationPlatformBridgeDelegate {
   void HandleNotificationButtonClicked(
       const std::string& id,
       int button_index,
-      const base::Optional<base::string16>& reply) override {
+      const base::Optional<std::u16string>& reply) override {
     ++button_clicked_count_;
     last_button_index_ = button_index;
   }
@@ -129,7 +130,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
   base::Time now = base::Time::Now();
   rich_data.timestamp = now;
   rich_data.renotify = true;
-  rich_data.accessible_name = ASCIIToUTF16("accessible_name");
+  rich_data.accessible_name = u"accessible_name";
   rich_data.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
 
@@ -143,15 +144,14 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
       gfx::ImageSkiaRep(gfx::test::CreateBitmap(6, 8), /*scale=*/2.0f));
 
   message_center::ButtonInfo button1;
-  button1.title = ASCIIToUTF16("button1");
+  button1.title = u"button1";
   message_center::ButtonInfo button2;
-  button2.title = ASCIIToUTF16("button2");
+  button2.title = u"button2";
   rich_data.buttons = {button1, button2};
 
   message_center::Notification ui_notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, "test_id",
-      ASCIIToUTF16("title"), ASCIIToUTF16("message"), icon,
-      ASCIIToUTF16("display_source"), GURL("http://example.com/"),
+      message_center::NOTIFICATION_TYPE_SIMPLE, "test_id", u"title", u"message",
+      icon, u"display_source", GURL("http://example.com/"),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -164,19 +164,19 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
   crosapi::mojom::Notification* last_notification =
       test_message_center_.last_notification_.get();
   EXPECT_EQ("test_id", last_notification->id);
-  EXPECT_EQ(ASCIIToUTF16("title"), last_notification->title);
-  EXPECT_EQ(ASCIIToUTF16("message"), last_notification->message);
-  EXPECT_EQ(ASCIIToUTF16("display_source"), last_notification->display_source);
+  EXPECT_EQ(u"title", last_notification->title);
+  EXPECT_EQ(u"message", last_notification->message);
+  EXPECT_EQ(u"display_source", last_notification->display_source);
   EXPECT_EQ("http://example.com/", last_notification->origin_url->spec());
   EXPECT_EQ(2, last_notification->priority);
   EXPECT_TRUE(last_notification->require_interaction);
   EXPECT_EQ(now, last_notification->timestamp);
-  EXPECT_EQ(ASCIIToUTF16("accessible_name"),
-            last_notification->accessible_name);
+  EXPECT_EQ(u"accessible_name", last_notification->accessible_name);
   EXPECT_EQ(crosapi::mojom::FullscreenVisibility::kOverUser,
             last_notification->fullscreen_visibility);
 
   ASSERT_FALSE(last_notification->badge.isNull());
+  EXPECT_TRUE(last_notification->badge_needs_additional_masking_has_value);
   EXPECT_TRUE(last_notification->badge.HasRepresentation(1.0f));
   EXPECT_TRUE(last_notification->badge.HasRepresentation(2.0f));
   EXPECT_TRUE(AreImagesEqual(badge, gfx::Image(last_notification->badge)));
@@ -187,8 +187,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
   EXPECT_TRUE(AreImagesEqual(icon, gfx::Image(last_notification->icon)));
 
   ASSERT_EQ(2u, last_notification->buttons.size());
-  EXPECT_EQ(ASCIIToUTF16("button1"), last_notification->buttons[0]->title);
-  EXPECT_EQ(ASCIIToUTF16("button2"), last_notification->buttons[1]->title);
+  EXPECT_EQ(u"button1", last_notification->buttons[0]->title);
+  EXPECT_EQ(u"button2", last_notification->buttons[1]->title);
 }
 
 TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
@@ -197,8 +197,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
   message_center::RichNotificationData rich_data;
   rich_data.image = image;
   message_center::Notification ui_notification(
-      message_center::NOTIFICATION_TYPE_IMAGE, "test_id", base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_IMAGE, "test_id", std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -217,16 +217,16 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
 TEST_F(NotificationPlatformBridgeLacrosTest, SerializationList) {
   // Create a message_center notification.
   message_center::NotificationItem item1;
-  item1.title = ASCIIToUTF16("title1");
-  item1.message = ASCIIToUTF16("message1");
+  item1.title = u"title1";
+  item1.message = u"message1";
   message_center::NotificationItem item2;
-  item2.title = ASCIIToUTF16("title2");
-  item2.message = ASCIIToUTF16("message2");
+  item2.title = u"title2";
+  item2.message = u"message2";
   message_center::RichNotificationData rich_data;
   rich_data.items = {item1, item2};
   message_center::Notification ui_notification(
-      message_center::NOTIFICATION_TYPE_MULTIPLE, "test_id", base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_MULTIPLE, "test_id", std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -239,20 +239,20 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationList) {
       test_message_center_.last_notification_.get();
   ASSERT_TRUE(last_notification);
   ASSERT_EQ(2u, last_notification->items.size());
-  EXPECT_EQ(ASCIIToUTF16("title1"), last_notification->items[0]->title);
-  EXPECT_EQ(ASCIIToUTF16("message1"), last_notification->items[0]->message);
-  EXPECT_EQ(ASCIIToUTF16("title2"), last_notification->items[1]->title);
-  EXPECT_EQ(ASCIIToUTF16("message2"), last_notification->items[1]->message);
+  EXPECT_EQ(u"title1", last_notification->items[0]->title);
+  EXPECT_EQ(u"message1", last_notification->items[0]->message);
+  EXPECT_EQ(u"title2", last_notification->items[1]->title);
+  EXPECT_EQ(u"message2", last_notification->items[1]->message);
 }
 
 TEST_F(NotificationPlatformBridgeLacrosTest, SerializationProgress) {
   // Create a message_center notification.
   message_center::RichNotificationData rich_data;
   rich_data.progress = 55;
-  rich_data.progress_status = ASCIIToUTF16("status");
+  rich_data.progress_status = u"status";
   message_center::Notification ui_notification(
-      message_center::NOTIFICATION_TYPE_PROGRESS, "test_id", base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_PROGRESS, "test_id", std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -265,14 +265,14 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationProgress) {
       test_message_center_.last_notification_.get();
   ASSERT_TRUE(last_notification);
   EXPECT_EQ(55, last_notification->progress);
-  EXPECT_EQ(ASCIIToUTF16("status"), last_notification->progress_status);
+  EXPECT_EQ(u"status", last_notification->progress_status);
 }
 
 TEST_F(NotificationPlatformBridgeLacrosTest, UserActions) {
   // Create a test notification.
   message_center::Notification ui_notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, "test_id", base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_SIMPLE, "test_id", std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), {}, nullptr);
 
   // Show the notification.

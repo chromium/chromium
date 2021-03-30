@@ -138,8 +138,8 @@ class ASH_EXPORT PowerButtonController
   // TODO(minch): Remove this if/when all applicable devices expose a tablet
   // mode switch: https://crbug.com/798646.
   // AccelerometerReader::Observer:
-  void OnAccelerometerUpdated(
-      scoped_refptr<const AccelerometerUpdate> update) override;
+  void OnECLidAngleDriverStatusChanged(bool is_supported) override {}
+  void OnAccelerometerUpdated(const AccelerometerUpdate& update) override;
 
   // BacklightsForcedOffSetter::Observer:
   void OnBacklightsForcedOffChanged(bool forced_off) override;
@@ -272,8 +272,8 @@ class ASH_EXPORT PowerButtonController
   // display's height or width, respectively.
   double power_button_offset_percentage_ = 0.f;
 
-  ScopedObserver<BacklightsForcedOffSetter, ScreenBacklightObserver>
-      backlights_forced_off_observer_;
+  base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
+      backlights_forced_off_observation_{this};
 
   // Used to maintain active state of the active window that exists before
   // showing menu.

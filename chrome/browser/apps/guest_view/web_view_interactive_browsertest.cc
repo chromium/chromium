@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -44,12 +43,14 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -77,6 +78,8 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
   explicit NewSubViewAddedObserver(content::WebContents* web_contents)
       : content::RenderWidgetHostViewCocoaObserver(web_contents) {}
 
+  NewSubViewAddedObserver(const NewSubViewAddedObserver&) = delete;
+  NewSubViewAddedObserver& operator=(const NewSubViewAddedObserver&) = delete;
   ~NewSubViewAddedObserver() override {}
 
   void WaitForNextSubView() {
@@ -101,8 +104,6 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
   bool did_receive_rect_ = false;
   gfx::Rect bounds_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewSubViewAddedObserver);
 };
 #endif  // OS_MAC
 
@@ -115,6 +116,13 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
         mouse_click_result_(false),
         first_click_(true) {
     GuestViewManager::set_factory_for_testing(&factory_);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
+    // Some bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   TestGuestViewManager* GetGuestViewManager() {
@@ -355,12 +363,17 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
   class PopupCreatedObserver {
    public:
-    PopupCreatedObserver()
-        : initial_widget_count_(0), last_render_widget_host_(nullptr) {}
+    PopupCreatedObserver() = default;
+    PopupCreatedObserver(const PopupCreatedObserver&) = delete;
+    PopupCreatedObserver& operator=(const PopupCreatedObserver&) = delete;
 
-    ~PopupCreatedObserver() {}
+    ~PopupCreatedObserver() = default;
 
-    void Wait() {
+    void Wait(int wait_retry_left = 10) {
+      if (wait_retry_left <= 0) {
+        LOG(ERROR) << "Wait failed";
+        return;
+      }
       if (CountWidgets() == initial_widget_count_ + 1 &&
           last_render_widget_host_->GetView()->GetNativeView()) {
         gfx::Rect popup_bounds =
@@ -374,7 +387,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
       // If we haven't seen any new widget or we get 0 size widget, we need to
       // schedule waiting.
-      ScheduleWait();
+      ScheduleWait(wait_retry_left - 1);
 
       if (!message_loop_.get()) {
         message_loop_ = new content::MessageLoopRunner;
@@ -390,10 +403,11 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     }
 
    private:
-    void ScheduleWait() {
+    void ScheduleWait(int wait_retry_left) {
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&PopupCreatedObserver::Wait, base::Unretained(this)),
+          base::BindOnce(&PopupCreatedObserver::Wait, base::Unretained(this),
+                         wait_retry_left),
           base::TimeDelta::FromMilliseconds(200));
     }
 
@@ -410,11 +424,9 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
       return num_widgets;
     }
 
-    size_t initial_widget_count_;
-    content::RenderWidgetHost* last_render_widget_host_;
+    size_t initial_widget_count_ = 0;
+    content::RenderWidgetHost* last_render_widget_host_ = nullptr;
     scoped_refptr<content::MessageLoopRunner> message_loop_;
-
-    DISALLOW_COPY_AND_ASSIGN(PopupCreatedObserver);
   };
 
   void PopupTestHelper(const gfx::Point& padding) {
@@ -494,7 +506,11 @@ class WebViewImeInteractiveTest : public WebViewInteractiveTest {
           &CompositionRangeUpdateObserver::OnCompositionRangeUpdated,
           base::Unretained(this)));
     }
-    ~CompositionRangeUpdateObserver() {}
+    CompositionRangeUpdateObserver(const CompositionRangeUpdateObserver&) =
+        delete;
+    CompositionRangeUpdateObserver& operator=(
+        const CompositionRangeUpdateObserver&) = delete;
+    ~CompositionRangeUpdateObserver() = default;
 
     // Wait until a composition range update with a range length equal to
     // |length| is received.
@@ -521,8 +537,6 @@ class WebViewImeInteractiveTest : public WebViewInteractiveTest {
     std::unique_ptr<base::RunLoop> run_loop_;
     base::Optional<uint32_t> last_composition_range_length_;
     uint32_t expected_length_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(CompositionRangeUpdateObserver);
   };
 };
 
@@ -860,147 +874,18 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_EditCommandsNoMenu) {
   ASSERT_TRUE(start_of_line_listener.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_AttachAfterOpenerDestroyed) {
-  TestHelper("testNewWindowAttachAfterOpenerDestroyed",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_NewWindowNameTakesPrecedence) {
-  TestHelper("testNewWindowNameTakesPrecedence",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_WebViewNameTakesPrecedence) {
-  TestHelper("testNewWindowWebViewNameTakesPrecedence", "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest, NewWindow_NoName) {
-  TestHelper("testNewWindowNoName",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest, NewWindow_Redirect) {
-  TestHelper("testNewWindowRedirect",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest, NewWindow_Close) {
-  TestHelper("testNewWindowClose",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_DeferredAttachment) {
-  TestHelper("testNewWindowDeferredAttachment",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_ExecuteScript) {
-  TestHelper("testNewWindowExecuteScript",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_DeclarativeWebRequest) {
-  TestHelper("testNewWindowDeclarativeWebRequest",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_DiscardAfterOpenerDestroyed) {
-  TestHelper("testNewWindowDiscardAfterOpenerDestroyed",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest, NewWindow_WebRequest) {
-  TestHelper("testNewWindowWebRequest",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-// A custom elements bug needs to be addressed to enable this test:
-// See http://crbug.com/282477 for more information.
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
-                       DISABLED_NewWindow_WebRequestCloseWindow) {
-  TestHelper("testNewWindowWebRequestCloseWindow",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_WebRequestRemoveElement) {
-  TestHelper("testNewWindowWebRequestRemoveElement",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-}
-
-// Ensure that when one <webview> makes a window.open() call that references
-// another <webview> by name, the opener is updated without a crash. Regression
-// test for https://crbug.com/1013553.
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_UpdateOpener) {
-  TestHelper("testNewWindowAndUpdateOpener", "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-
-  // The first <webview> tag in the test will run window.open(), which the
-  // embedder will translate into an injected second <webview> tag, after which
-  // test control will return here.  Wait until there are two guests; i.e.,
-  // until the second <webview>'s guest is also created.
-  GetGuestViewManager()->WaitForNumGuestsCreated(2);
-
-  std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
-  ASSERT_EQ(2u, guest_contents_list.size());
-  content::WebContents* guest1 = guest_contents_list[0];
-  content::WebContents* guest2 = guest_contents_list[1];
-  EXPECT_TRUE(content::WaitForLoadStop(guest1));
-  EXPECT_TRUE(content::WaitForLoadStop(guest2));
-  ASSERT_NE(guest1, guest2);
-
-  // Change first guest's window.name to "foo" and check that it does not
-  // have an opener to start with.
-  EXPECT_TRUE(content::ExecJs(guest1, "window.name = 'foo'"));
-  EXPECT_EQ("foo", content::EvalJs(guest1, "window.name"));
-  EXPECT_EQ(true, content::EvalJs(guest1, "window.opener == null"));
-
-  // Create a subframe in the second guest.  This is needed because the crash
-  // in crbug.com/1013553 only happened when trying to incorrectly create
-  // proxies for a subframe.
-  EXPECT_TRUE(content::ExecuteScript(
-      guest2, "document.body.appendChild(document.createElement('iframe'));"));
-
-  // Update the opener of |guest1| to point to |guest2|.  This triggers
-  // creation of proxies on the new opener chain, which should not crash.
-  EXPECT_TRUE(content::ExecuteScript(guest2, "window.open('', 'foo');"));
-
-  // Ensure both guests have the proper opener relationship set up.  Namely,
-  // each guest's opener should point to the other guest, creating a cycle.
-  EXPECT_EQ(true, content::EvalJs(guest1, "window.opener.opener === window"));
-  EXPECT_EQ(true, content::EvalJs(guest2, "window.opener.opener === window"));
-}
-
 // There is a problem of missing keyup events with the command key after
 // the NSEvent is sent to NSApplication in ui/base/test/ui_controls_mac.mm .
 // This test is disabled on only the Mac until the problem is resolved.
 // See http://crbug.com/425859 for more information.
-#if !defined(OS_MAC)
+#if defined(OS_MAC)
+#define MAYBE_NewWindow_OpenInNewTab DISABLED_NewWindow_OpenInNewTab
+#else
+#define MAYBE_NewWindow_OpenInNewTab NewWindow_OpenInNewTab
+#endif
 // Tests that Ctrl+Click/Cmd+Click on a link fires up the newwindow API.
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, NewWindow_OpenInNewTab) {
-  content::WebContents* embedder_web_contents = NULL;
+IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_NewWindow_OpenInNewTab) {
+  content::WebContents* embedder_web_contents = nullptr;
 
   ExtensionTestMessageListener loaded_listener("Loaded", false);
   std::unique_ptr<ExtensionTestMessageListener> done_listener(
@@ -1020,26 +905,6 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, NewWindow_OpenInNewTab) {
 
   // Wait for the embedder to receive a 'newwindow' event.
   ASSERT_TRUE(done_listener->WaitUntilSatisfied());
-}
-#endif
-
-IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
-                       NewWindow_OpenerDestroyedWhileUnattached) {
-  TestHelper("testNewWindowOpenerDestroyedWhileUnattached",
-             "web_view/newwindow",
-             NEEDS_TEST_SERVER);
-  ASSERT_EQ(2u, GetGuestViewManager()->num_guests_created());
-
-  // We have two guests in this test, one is the intial one, the other
-  // is the newwindow one.
-  // Before the embedder goes away, both the guests should go away.
-  // This ensures that unattached guests are gone if opener is gone.
-  GetGuestViewManager()->WaitForAllGuestsDeleted();
-}
-
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, ExecuteCode) {
-  ASSERT_TRUE(RunPlatformAppTestWithArg(
-      "platform_apps/web_view/common", "execute_code")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(DISABLED_WebViewPopupInteractiveTest,
@@ -1274,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
   // user input via IME.
   {
     ui::CompositionText composition;
-    composition.text = base::UTF8ToUTF16("InputTest123");
+    composition.text = u"InputTest123";
     text_input_client->SetCompositionText(composition);
     EXPECT_TRUE(content::ExecuteScript(
                     embedder_web_contents,
@@ -1289,7 +1154,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
     next_step_listener.Reset();
 
     ui::CompositionText composition;
-    composition.text = base::UTF8ToUTF16("InputTest456");
+    composition.text = u"InputTest456";
     text_input_client->SetCompositionText(composition);
     text_input_client->ConfirmCompositionText(/* keep_selection */ false);
     EXPECT_TRUE(content::ExecuteScript(
@@ -1647,6 +1512,7 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest,
   ExtensionTestMessageListener focus_listener("WebViewImeTest.InputFocused",
                                               false);
   content::WebContents* target_web_contents = guest_web_contents;
+  WaitForHitTestData(guest_web_contents);
 
   // The guest page has a large input box and (50, 50) lies inside the box.
   content::SimulateMouseClickAt(target_web_contents, 0,
@@ -1670,9 +1536,9 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest,
                                               false);
   content::RenderWidgetHost* target_rwh_for_input =
       target_web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
-  content::SendImeCommitTextToWidget(
-      target_rwh_for_input, base::UTF8ToUTF16("C"),
-      std::vector<ui::ImeTextSpan>(), gfx::Range(4, 5), 0);
+  content::SendImeCommitTextToWidget(target_rwh_for_input, u"C",
+                                     std::vector<ui::ImeTextSpan>(),
+                                     gfx::Range(4, 5), 0);
   EXPECT_TRUE(input_listener.WaitUntilSatisfied());
 
   // Get the input value from the guest.
@@ -1713,6 +1579,7 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
   // mode where input is always sent to the embedder process first (then hops
   // back to the browser and then to the guest).
   content::WebContents* target_web_contents = guest_web_contents;
+  WaitForHitTestData(guest_web_contents);
 
   // The guest page has a large input box and (50, 50) lies inside the box.
   content::SimulateMouseClickAt(target_web_contents, 0,
@@ -1737,8 +1604,7 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
   CompositionRangeUpdateObserver observer(embedder_web_contents);
   content::SendImeSetCompositionTextToWidget(
       target_web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost(),
-      base::UTF8ToUTF16("ABC"), std::vector<ui::ImeTextSpan>(),
-      gfx::Range::InvalidRange(), 0, 3);
+      u"ABC", std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0, 3);
   observer.WaitForCompositionRangeLength(3U);
 }
 

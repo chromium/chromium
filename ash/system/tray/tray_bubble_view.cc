@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <numeric>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
@@ -16,7 +18,6 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/env.h"
@@ -34,7 +35,6 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/views_delegate.h"
-#include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 
@@ -133,8 +133,8 @@ void TrayBubbleView::Delegate::OnMouseEnteredView() {}
 
 void TrayBubbleView::Delegate::OnMouseExitedView() {}
 
-base::string16 TrayBubbleView::Delegate::GetAccessibleNameForBubble() {
-  return base::string16();
+std::u16string TrayBubbleView::Delegate::GetAccessibleNameForBubble() {
+  return std::u16string();
 }
 
 bool TrayBubbleView::Delegate::ShouldEnableExtraKeyboardAccessibility() {
@@ -218,7 +218,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
       preferred_width_(init_params.preferred_width),
       bubble_border_(new BubbleBorder(
           arrow(),
-          BubbleBorder::NO_ASSETS,
+          BubbleBorder::NO_SHADOW,
           init_params.bg_color.value_or(gfx::kPlaceholderColor))),
       owned_bubble_border_(bubble_border_),
       is_gesture_dragging_(false),
@@ -237,7 +237,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     bubble_border_->SetCornerRadius(init_params.corner_radius.value());
   bubble_border_->set_avoid_shadow_overlap(true);
   set_parent_window(params_.parent_window);
-  SetCanActivate(false);
+  SetCanActivate(
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
   SetNotifyEnterExitOnChild(true);
   set_close_on_deactivate(init_params.close_on_deactivate);
   set_margins(init_params.margin.has_value() ? init_params.margin.value()
@@ -290,10 +291,9 @@ void TrayBubbleView::InitializeAndShowBubble() {
         StatusAreaWidget::ForWindow(GetWidget()->GetNativeView()));
   }
 
-  // If TrayBubbleView cannot be activated and is shown by clicking on the
-  // corresponding tray view, register pre target event handler to reroute key
+  // Register pre target event handler to reroute key
   // events to the widget for activating the view or closing it.
-  if (!CanActivate() && params_.show_by_click)
+  if (!CanActivate() && params_.reroute_event_handler)
     reroute_event_handler_ = std::make_unique<RerouteEventHandler>(this);
 }
 
@@ -412,11 +412,11 @@ void TrayBubbleView::GetWidgetHitTestMask(SkPath* mask) const {
   mask->addRect(gfx::RectToSkRect(GetBubbleFrameView()->GetContentsBounds()));
 }
 
-base::string16 TrayBubbleView::GetAccessibleWindowTitle() const {
+std::u16string TrayBubbleView::GetAccessibleWindowTitle() const {
   if (delegate_)
     return delegate_->GetAccessibleNameForBubble();
   else
-    return base::string16();
+    return std::u16string();
 }
 
 gfx::Size TrayBubbleView::CalculatePreferredSize() const {

@@ -8,11 +8,11 @@
 
 #include <algorithm>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,7 +71,7 @@ struct FieldDataDescription {
       FieldPropertiesFlags::kNoFlags;
   const char* autocomplete_attribute = nullptr;
   const char* value = kNonimportantValue;
-  const char* typed_value = nullptr;
+  const char* user_input = nullptr;
   const char* name = kNonimportantValue;
   const char* form_control_type = "text";
   PasswordFieldPrediction prediction = {.type = autofill::MAX_VALID_FIELD_TYPE};
@@ -112,8 +112,8 @@ autofill::FieldRendererId GetUniqueId() {
 }
 
 // Use to add a number suffix which is unique in the scope of the test.
-base::string16 StampUniqueSuffix(const char* base_str) {
-  return ASCIIToUTF16(base_str) + ASCIIToUTF16("_") +
+std::u16string StampUniqueSuffix(const char* base_str) {
+  return ASCIIToUTF16(base_str) + u"_" +
          base::NumberToString16(GetUniqueId().value());
 }
 
@@ -197,8 +197,8 @@ FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
     }
     if (field_description.autocomplete_attribute)
       field.autocomplete_attribute = field_description.autocomplete_attribute;
-    if (field_description.typed_value)
-      field.typed_value = ASCIIToUTF16(field_description.typed_value);
+    if (field_description.user_input)
+      field.user_input = ASCIIToUTF16(field_description.user_input);
     form_data.fields.push_back(field);
     if (field_description.role == ElementRole::NONE) {
       UpdateResultWithIdByRole(fill_result, renderer_id,
@@ -244,16 +244,16 @@ FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
 // the confirmation password value, which is not represented in PasswordForm).
 void CheckField(const std::vector<FormFieldData>& fields,
                 autofill::FieldRendererId renderer_id,
-                const base::string16& element_name,
-                const base::string16* element_value,
+                const std::u16string& element_name,
+                const std::u16string* element_value,
                 const char* element_kind) {
   SCOPED_TRACE(testing::Message("Looking for element of kind ")
                << element_kind);
 
   if (renderer_id.is_null()) {
-    EXPECT_EQ(base::string16(), element_name);
+    EXPECT_EQ(std::u16string(), element_name);
     if (element_value)
-      EXPECT_EQ(base::string16(), *element_value);
+      EXPECT_EQ(std::u16string(), *element_value);
     return;
   }
 
@@ -272,8 +272,8 @@ void CheckField(const std::vector<FormFieldData>& fields,
   EXPECT_EQ(element_name, field_it->name);
 #endif
 
-  base::string16 expected_value =
-      field_it->typed_value.empty() ? field_it->value : field_it->typed_value;
+  std::u16string expected_value =
+      field_it->user_input.empty() ? field_it->value : field_it->user_input;
 
   if (element_value)
     EXPECT_EQ(expected_value, *element_value);
@@ -322,7 +322,7 @@ void CheckPasswordFormFields(const PasswordForm& password_form,
 // Checks that in a vector of pairs of string16s, all the first parts of the
 // pairs (which represent element values) are unique.
 void CheckAllValuesUnique(const ValueElementVector& v) {
-  std::set<base::string16> all_values;
+  std::set<std::u16string> all_values;
   for (const auto& pair : v) {
     auto insertion = all_values.insert(pair.first);
     EXPECT_TRUE(insertion.second) << pair.first << " is duplicated";
@@ -1227,6 +1227,92 @@ TEST(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
   });
 }
 
+TEST(FormParserTest, InferConfirmationPasswordField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kInferConfirmationPasswordField);
+  CheckTestData({
+      {
+          .description_for_logging = "Infer confirmation password during "
+                                     "saving with server prediction.",
+          .fields =
+              {
+                  {
+                      .role = ElementRole::NEW_PASSWORD,
+                      .value = "pw",
+                      .form_control_type = "password",
+                      .prediction = {.type =
+                                         autofill::ACCOUNT_CREATION_PASSWORD},
+                  },
+                  {
+                      .role_saving = ElementRole::CONFIRMATION_PASSWORD,
+                      .value = "pw",
+                      .form_control_type = "password",
+                  },
+              },
+      },
+      {
+          .description_for_logging = "Infer confirmation password during "
+                                     "saving with auto-complete attribute.",
+          .fields =
+              {
+                  {
+                      .role = ElementRole::NEW_PASSWORD,
+                      .autocomplete_attribute = "new-password",
+                      .value = "pw",
+                      .form_control_type = "password",
+                  },
+                  {
+                      .role_filling = ElementRole::NONE,
+                      .role_saving = ElementRole::CONFIRMATION_PASSWORD,
+                      .autocomplete_attribute = "off",
+                      .value = "pw",
+                      .form_control_type = "password",
+                  },
+              },
+      },
+      {
+          .description_for_logging =
+              "Don't infer confirmation password during saving with "
+              "predictions and different passwords.",
+          .fields =
+              {
+                  {
+                      .role_filling = ElementRole::NEW_PASSWORD,
+                      .role_saving = ElementRole::CURRENT_PASSWORD,
+                      .value = "pw1",
+                      .form_control_type = "password",
+                      .prediction = {.type =
+                                         autofill::ACCOUNT_CREATION_PASSWORD},
+                  },
+                  {
+                      .role_saving = ElementRole::NEW_PASSWORD,
+                      .value = "pw2",
+                      .form_control_type = "password",
+                  },
+              },
+      },
+      {
+          .description_for_logging =
+              "Don't infer confirmation password during saving with "
+              "autocomplete attribute and different passwords.",
+          .fields =
+              {
+                  {
+                      .role = ElementRole::NEW_PASSWORD,
+                      .autocomplete_attribute = "new-password",
+                      .value = "pw1",
+                      .form_control_type = "password",
+                  },
+                  {
+                      .role = ElementRole::NONE,
+                      .value = "pw2",
+                      .form_control_type = "password",
+                  },
+              },
+      },
+  });
+}
+
 TEST(FormParserTest, ServerHints) {
   CheckTestData({
       {
@@ -1430,12 +1516,12 @@ TEST(FormParserTest, Interactability) {
 
 TEST(FormParserTest, AllPossiblePasswords) {
   const ValueElementVector kPasswords = {
-      {ASCIIToUTF16("a"), ASCIIToUTF16("p1")},
-      {ASCIIToUTF16("b"), ASCIIToUTF16("p3")},
+      {u"a", u"p1"},
+      {u"b", u"p3"},
   };
   const ValueElementVector kUsernames = {
-      {ASCIIToUTF16("b"), ASCIIToUTF16("chosen")},
-      {ASCIIToUTF16("a"), ASCIIToUTF16("first")},
+      {u"b", u"chosen"},
+      {u"a", u"first"},
   };
   CheckTestData({
       {
@@ -2413,17 +2499,17 @@ TEST(FormParserTest, TypedValues) {
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
                    .value = "js_username",
-                   .typed_value = "typed_username",
+                   .user_input = "typed_username",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
                    .value = "js_password",
-                   .typed_value = "typed_password",
+                   .user_input = "typed_password",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
                    .autocomplete_attribute = "new-password",
                    .value = "js_new_password",
-                   .typed_value = "typed_new_password",
+                   .user_input = "typed_new_password",
                    .form_control_type = "password"},
               },
       },
@@ -2436,17 +2522,17 @@ TEST(FormParserTest, TypedValues) {
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
                    .value = "",
-                   .typed_value = "typed_username",
+                   .user_input = "typed_username",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
                    .value = "",
-                   .typed_value = "typed_password",
+                   .user_input = "typed_password",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
                    .autocomplete_attribute = "new-password",
                    .value = "",
-                   .typed_value = "typed_new_password",
+                   .user_input = "typed_new_password",
                    .form_control_type = "password"},
               },
       },
@@ -2562,7 +2648,7 @@ TEST(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
   const autofill::FormFieldData* field_data = FindUsernameInPredictions(
       predictions, processed_fields, Interactability::kCertain);
   ASSERT_TRUE(field_data);
-  EXPECT_EQ(base::UTF8ToUTF16("id"), field_data->name);
+  EXPECT_EQ(u"id", field_data->name);
 }
 
 }  // namespace

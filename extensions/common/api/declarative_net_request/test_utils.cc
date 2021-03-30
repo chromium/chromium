@@ -205,6 +205,13 @@ TestRule CreateGenericRule(int id) {
   return rule;
 }
 
+TestRule CreateRegexRule(int id) {
+  TestRule rule = CreateGenericRule(id);
+  rule.condition->url_filter.reset();
+  rule.condition->regex_filter = std::string("filter");
+  return rule;
+}
+
 TestRulesetInfo::TestRulesetInfo(const std::string& manifest_id_and_path,
                                  const base::Value& rules_value,
                                  bool enabled)
@@ -243,7 +250,9 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
     unsigned flags,
     const std::string& extension_name) {
   std::vector<std::string> permissions = hosts;
-  permissions.push_back(kAPIPermission);
+
+  if (!(flags & kConfig_OmitDeclarativeNetRequestPermission))
+    permissions.push_back(kAPIPermission);
 
   // These permissions are needed for some tests. TODO(karandeepb): Add a
   // ConfigFlag for these.

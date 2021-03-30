@@ -502,6 +502,7 @@ bool Notification::HasPendingActivity() const {
 
 void Notification::Trace(Visitor* visitor) const {
   visitor->Trace(show_trigger_);
+  visitor->Trace(prepare_show_timer_);
   visitor->Trace(loader_);
   visitor->Trace(listener_receiver_);
   EventTargetWithInlineData::Trace(visitor);

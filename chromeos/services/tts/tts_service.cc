@@ -22,7 +22,9 @@ constexpr int kDefaultBufferSize = 512;
 }  // namespace
 
 TtsService::TtsService(mojo::PendingReceiver<mojom::TtsService> receiver)
-    : service_receiver_(this, std::move(receiver)), tts_stream_factory_(this) {
+    : service_receiver_(this, std::move(receiver)),
+      tts_stream_factory_(this),
+      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   if (setpriority(PRIO_PROCESS, 0, -10 /* real time audio */) != 0) {
     PLOG(ERROR) << "Unable to request real time priority; performance will be "
                    "impacted.";
@@ -33,7 +35,7 @@ TtsService::~TtsService() = default;
 
 void TtsService::BindTtsStreamFactory(
     mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
-    mojo::PendingRemote<audio::mojom::StreamFactory> factory) {
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> factory) {
   pending_tts_stream_factory_receivers_.push(std::move(receiver));
   ProcessPendingTtsStreamFactories();
 
@@ -122,41 +124,12 @@ int TtsService::Render(base::TimeDelta delay,
                        int prior_frames_skipped,
                        media::AudioBus* dest) {
   size_t frames_in_buf = 0;
-  int32_t status = -1;
   {
     base::AutoLock al(state_lock_);
     if (buffers_.empty())
       return 0;
 
     const AudioBuffer& buf = buffers_.front();
-
-    status = buf.status;
-    // Done, 0, or error, -1.
-    if (status <= 0) {
-      if (status == -1)
-        tts_event_observer_->OnError();
-      else
-        tts_event_observer_->OnEnd();
-
-      StopLocked();
-      return 0;
-    }
-
-    if (buf.is_first_buffer) {
-      start_playback_time_ = base::Time::Now();
-      tts_event_observer_->OnStart();
-    }
-
-    // Implicit timepoint.
-    if (buf.char_index != -1)
-      tts_event_observer_->OnTimepoint(buf.char_index);
-
-    // Explicit timepoint(s).
-    base::TimeDelta start_to_now = base::Time::Now() - start_playback_time_;
-    while (!timepoints_.empty() && timepoints_.front().second <= start_to_now) {
-      tts_event_observer_->OnTimepoint(timepoints_.front().first);
-      timepoints_.pop();
-    }
 
     frames_in_buf = buf.frames.size();
     const float* frames = nullptr;
@@ -165,7 +138,16 @@ int TtsService::Render(base::TimeDelta delay,
     float* channel = dest->channel(0);
     for (size_t i = 0; i < frames_in_buf; i++)
       channel[i] = frames[i];
+
+    rendered_buffers_.push(std::move(buffers_.front()));
     buffers_.pop();
+
+    if (!process_rendered_buffers_posted_) {
+      process_rendered_buffers_posted_ = true;
+      task_runner_->PostTask(FROM_HERE,
+                             base::BindOnce(&TtsService::ProcessRenderedBuffers,
+                                            weak_factory_.GetWeakPtr()));
+    }
   }
 
   return frames_in_buf;
@@ -175,6 +157,7 @@ void TtsService::OnRenderError() {}
 
 void TtsService::StopLocked(bool clear_buffers) {
   output_device_->Pause();
+  rendered_buffers_ = std::queue<AudioBuffer>();
   if (clear_buffers) {
     buffers_ = std::queue<AudioBuffer>();
     timepoints_ = std::queue<Timepoint>();
@@ -189,6 +172,41 @@ void TtsService::ProcessPendingTtsStreamFactories() {
   auto factory = std::move(pending_tts_stream_factory_receivers_.front());
   pending_tts_stream_factory_receivers_.pop();
   tts_stream_factory_.Bind(std::move(factory));
+}
+
+void TtsService::ProcessRenderedBuffers() {
+  base::AutoLock al(state_lock_);
+  process_rendered_buffers_posted_ = false;
+  for (; !rendered_buffers_.empty(); rendered_buffers_.pop()) {
+    const auto& buf = rendered_buffers_.front();
+    int status = buf.status;
+    // Done, 0, or error, -1.
+    if (status <= 0) {
+      if (status == -1)
+        tts_event_observer_->OnError();
+      else
+        tts_event_observer_->OnEnd();
+
+      StopLocked();
+      return;
+    }
+
+    if (buf.is_first_buffer) {
+      start_playback_time_ = base::Time::Now();
+      tts_event_observer_->OnStart();
+    }
+
+    // Implicit timepoint.
+    if (buf.char_index != -1)
+      tts_event_observer_->OnTimepoint(buf.char_index);
+  }
+
+  // Explicit timepoint(s).
+  base::TimeDelta start_to_now = base::Time::Now() - start_playback_time_;
+  while (!timepoints_.empty() && timepoints_.front().second <= start_to_now) {
+    tts_event_observer_->OnTimepoint(timepoints_.front().first);
+    timepoints_.pop();
+  }
 }
 
 TtsService::AudioBuffer::AudioBuffer() = default;

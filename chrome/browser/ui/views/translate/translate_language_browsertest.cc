@@ -157,7 +157,7 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
     return UrlLanguageHistogramFactory::GetForBrowserContext(browser_context);
   }
 
-  void SetTargetLanguageByDisplayName(const base::string16& name) {
+  void SetTargetLanguageByDisplayName(const std::u16string& name) {
     test_utils::SelectTargetLanguageByDisplayName(browser_, name);
   }
 
@@ -307,8 +307,7 @@ IN_PROC_BROWSER_TEST_F(TranslateLanguageBrowserTestWithTranslateRecentTarget,
   // be our recent target language.
   ASSERT_NO_FATAL_FAILURE(CheckForTranslateUI(kItalianTestPath, true));
   EXPECT_EQ("it", GetLanguageState().current_language());
-  ASSERT_NO_FATAL_FAILURE(
-      SetTargetLanguageByDisplayName(base::ASCIIToUTF16("Spanish")));
+  ASSERT_NO_FATAL_FAILURE(SetTargetLanguageByDisplayName(u"Spanish"));
   ASSERT_NO_FATAL_FAILURE(Translate(true));
   EXPECT_EQ("es", GetLanguageState().current_language());
   EXPECT_EQ("es", GetTranslatePrefs()->GetRecentTargetLanguage());

@@ -110,7 +110,7 @@ ContinueBrowsingChip::ContinueBrowsingChip(
   title_label->SetFontList(
       title_label->font_list().DeriveWithWeight(gfx::Font::Weight::BOLD));
 
-  const base::string16 card_label = l10n_util::GetStringFUTF16(
+  const std::u16string card_label = l10n_util::GetStringFUTF16(
       IDS_ASH_PHONE_HUB_CONTINUE_BROWSING_TAB_LABEL,
       base::NumberToString16(index_ + 1), base::NumberToString16(total_count_),
       metadata.title, base::UTF8ToUTF16(url_.spec()));

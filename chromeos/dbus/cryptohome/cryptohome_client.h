@@ -21,16 +21,16 @@ namespace cryptohome {
 
 class AccountIdentifier;
 class AddKeyRequest;
+class AuthenticateAuthSessionRequest;
 class AuthorizationRequest;
 class BaseReply;
 class CheckHealthRequest;
 class CheckKeyRequest;
 class EndFingerprintAuthSessionRequest;
-class FlushAndSignBootAttributesRequest;
-class GetBootAttributeRequest;
 class GetKeyDataRequest;
 class GetLoginStatusRequest;
 class GetSupportedKeyPoliciesRequest;
+class ListKeysRequest;
 class LockToSingleUserMountUntilRebootRequest;
 class MassRemoveKeysRequest;
 class MigrateKeyRequest;
@@ -39,8 +39,8 @@ class MountGuestRequest;
 class MountRequest;
 class RemoveFirmwareManagementParametersRequest;
 class RemoveKeyRequest;
-class SetBootAttributeRequest;
 class SetFirmwareManagementParametersRequest;
+class StartAuthSessionRequest;
 class StartFingerprintAuthSessionRequest;
 class UnmountRequest;
 
@@ -59,19 +59,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
  public:
   class Observer {
    public:
-    // Called when AsyncCallStatus signal is received, when results for
-    // AsyncXXX methods are returned. Cryptohome service will process the
-    // calls in a first-in-first-out manner when they are made in parallel.
-    virtual void AsyncCallStatus(int async_id,
-                                 bool return_status,
-                                 int return_code) {}
-
-    // Called when AsyncCallStatusWithData signal is received,
-    // similar to AsyncCallStatus, but with |data|.
-    virtual void AsyncCallStatusWithData(int async_id,
-                                         bool return_status,
-                                         const std::string& data) {}
-
     // Called when LowDiskSpace signal is received, when the cryptohome
     // partition is running out of disk space.
     virtual void LowDiskSpace(uint64_t disk_free_bytes) {}
@@ -87,12 +74,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
    protected:
     virtual ~Observer() = default;
   };
-
-  // Callback for the methods initiate asynchronous operations.
-  // On success (i.e. the asynchronous operation is started), an |async_id|
-  // is returned, so the user code can identify the corresponding signal
-  // handler invocation later.
-  using AsyncMethodCallback = DBusMethodCallback<int /* async_id */>;
 
   // Represents the result to obtain the data related to TPM attestation.
   struct TpmAttestationDataResult {
@@ -207,6 +188,19 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
       const cryptohome::MountGuestRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
+  // Starts AuthSession for a user identified by |account|.
+  // |callback| is called after the method call succeeds.
+  virtual void StartAuthSession(
+      const cryptohome::AccountIdentifier& account,
+      const cryptohome::StartAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
+
+  // Attempts to authenticate AuthSession.
+  // |callback| is called after the method call succeeds.
+  virtual void AuthenticateAuthSessionRequest(
+      const cryptohome::AuthenticateAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
+
   // Calls GetRsuDeviceId method. |callback| is called after the method call
   // succeeds.
   virtual void GetRsuDeviceId(
@@ -284,6 +278,16 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
       const cryptohome::CheckKeyRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
+  // Asynchronously calls ListKeysEx method. |callback| is called after method
+  // call, and with reply protobuf.
+  // ListKeysEx can be used to check if user mount exists and which
+  // key labels are associated with it. |auth| is not required and can be empty.
+  virtual void ListKeysEx(
+      const cryptohome::AccountIdentifier& id,
+      const cryptohome::AuthorizationRequest& auth,
+      const cryptohome::ListKeysRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
+
   // Asynchronously calls MountEx method. Afterward, |callback| is called with
   // the reply.
   // MountEx attempts to mount home dir using given authorization,
@@ -353,30 +357,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // If there is a reply, it is always an empty reply with no errors.
   virtual void EndFingerprintAuthSession(
       const cryptohome::EndFingerprintAuthSessionRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
-
-  // Asynchronously calls GetBootAttribute method. |callback| is called after
-  // method call, and with reply protobuf.
-  // GetBootAttribute gets the value of the specified boot attribute.
-  virtual void GetBootAttribute(
-      const cryptohome::GetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
-
-  // Asynchronously calls SetBootAttribute method. |callback| is called after
-  // method call, and with reply protobuf.
-  // SetBootAttribute sets the value of the specified boot attribute. The value
-  // won't be available unitl FlushAndSignBootAttributes() is called.
-  virtual void SetBootAttribute(
-      const cryptohome::SetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
-
-  // Asynchronously calls FlushAndSignBootAttributes method. |callback| is
-  // called after method call, and with reply protobuf.
-  // FlushAndSignBootAttributes makes all pending boot attribute settings
-  // available, and have them signed by a special TPM key. This method always
-  // fails after any user, publuc, or guest session starts.
-  virtual void FlushAndSignBootAttributes(
-      const cryptohome::FlushAndSignBootAttributesRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
   // Asynchronously calls MigrateToDircrypto method. It tells cryptohomed to

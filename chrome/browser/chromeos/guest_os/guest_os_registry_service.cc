@@ -19,15 +19,15 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/dip_px_util.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/borealis/borealis_features.h"
-#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
@@ -1088,7 +1088,8 @@ void GuestOsRegistryService::RequestContainerAppIcon(
   crostini::CrostiniManager::GetForProfile(profile_)->GetContainerAppIcons(
       crostini::ContainerId(registration->VmName(),
                             registration->ContainerName()),
-      desktop_file_ids, ash::AppListConfig::instance().grid_icon_dimension(),
+      desktop_file_ids,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       icon_scale,
       base::BindOnce(&GuestOsRegistryService::OnContainerAppIcon,
                      weak_ptr_factory_.GetWeakPtr(), app_id, scale_factor));

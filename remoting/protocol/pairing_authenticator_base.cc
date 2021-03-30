@@ -63,7 +63,7 @@ void PairingAuthenticatorBase::ProcessMessage(
         base::BindOnce(&PairingAuthenticatorBase::ProcessMessage,
                        weak_factory_.GetWeakPtr(),
                        base::Owned(new jingle_xmpp::XmlElement(*message)),
-                       base::Passed(std::move(resume_callback))));
+                       std::move(resume_callback)));
     return;
   }
 
@@ -74,8 +74,7 @@ void PairingAuthenticatorBase::ProcessMessage(
   spake2_authenticator_->ProcessMessage(
       message,
       base::BindOnce(&PairingAuthenticatorBase::CheckForFailedSpakeExchange,
-                     weak_factory_.GetWeakPtr(),
-                     base::Passed(std::move(resume_callback))));
+                     weak_factory_.GetWeakPtr(), std::move(resume_callback)));
 }
 
 std::unique_ptr<jingle_xmpp::XmlElement> PairingAuthenticatorBase::GetNextMessage() {

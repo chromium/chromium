@@ -12,6 +12,13 @@
 // re-created.
 - (void)recreateDiscoverFeedViewController;
 
+// Returns current safe area insets for the window owning this discover feed.
+- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed;
+
+// Informs the DiscoverFeedDelegate that the ContentSuggestionsViewController
+// has been updated.
+- (void)contentSuggestionsWasUpdated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_DELEGATE_H_

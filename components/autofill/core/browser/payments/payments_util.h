@@ -29,7 +29,7 @@ bool HasGooglePaymentsAccount(PersonalDataManager* personal_data_manager);
 // For example, if the range consists of std::pair<34, 36>, then all cards
 // with first two digits of 34, 35 and 36 are supported.
 bool IsCreditCardNumberSupported(
-    const base::string16& card_number,
+    const std::u16string& card_number,
     const std::vector<std::pair<int, int>>& supported_card_bin_ranges);
 
 }  // namespace payments

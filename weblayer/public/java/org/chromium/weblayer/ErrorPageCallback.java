@@ -26,8 +26,6 @@ public abstract class ErrorPageCallback {
      * @param navigation The navigation that encountered the error.
      *
      * @return The error page.
-     *
-     * @since 86
      */
     public @Nullable ErrorPage getErrorPage(@NonNull Navigation navigation) {
         return null;

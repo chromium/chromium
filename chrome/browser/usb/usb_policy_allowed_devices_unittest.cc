@@ -22,8 +22,8 @@ namespace {
 
 class UsbPolicyAllowedDevicesTest : public testing::Test {
  public:
-  UsbPolicyAllowedDevicesTest() {}
-  ~UsbPolicyAllowedDevicesTest() override {}
+  UsbPolicyAllowedDevicesTest() = default;
+  ~UsbPolicyAllowedDevicesTest() override = default;
 
   void SetWebUsbAllowDevicesForUrlsPrefValue(const base::Value& value) {
     profile_.GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls, value);
@@ -37,6 +37,13 @@ class UsbPolicyAllowedDevicesTest : public testing::Test {
   }
 
   device::FakeUsbDeviceManager device_manager_;
+
+  const url::Origin kGoogleOrigin =
+      url::Origin::Create(GURL("https://google.com"));
+  const url::Origin kCrbugOrigin =
+      url::Origin::Create(GURL("https://crbug.com"));
+  const url::Origin kYoutubeOrigin =
+      url::Origin::Create(GURL("https://www.youtube.com"));
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -86,19 +93,6 @@ constexpr char kPolicySetting[] = R"(
       }
     ])";
 
-std::pair<url::Origin, base::Optional<url::Origin>> MakeOriginPair(
-    std::string requesting_url) {
-  return std::make_pair(url::Origin::Create(GURL(requesting_url)),
-                        base::nullopt);
-}
-
-std::pair<url::Origin, base::Optional<url::Origin>> MakeOriginPair(
-    std::string requesting_url,
-    std::string embedding_url) {
-  return std::make_pair(url::Origin::Create(GURL(requesting_url)),
-                        url::Origin::Create(GURL(embedding_url)));
-}
-
 }  // namespace
 
 TEST_F(UsbPolicyAllowedDevicesTest, InitializeWithExistingPrefValue) {
@@ -116,24 +110,21 @@ TEST_F(UsbPolicyAllowedDevicesTest, InitializeWithExistingPrefValue) {
   ASSERT_TRUE(base::Contains(map, device_key));
 
   const auto& first_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(
-      first_urls, MakeOriginPair("https://google.com", "https://google.com")));
-  EXPECT_TRUE(base::Contains(first_urls, MakeOriginPair("https://crbug.com")));
+  EXPECT_TRUE(base::Contains(first_urls, kGoogleOrigin));
+  EXPECT_TRUE(base::Contains(first_urls, kCrbugOrigin));
 
   device_key = std::make_pair(4321, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
   const auto& second_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(
-      second_urls, MakeOriginPair("https://google.com", "https://google.com")));
-  EXPECT_TRUE(base::Contains(second_urls, MakeOriginPair("https://crbug.com")));
+  EXPECT_TRUE(base::Contains(second_urls, kGoogleOrigin));
+  EXPECT_TRUE(base::Contains(second_urls, kCrbugOrigin));
 
   device_key = std::make_pair(-1, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
   const auto& third_urls = map.at(device_key);
-  EXPECT_TRUE(
-      base::Contains(third_urls, MakeOriginPair("https://www.youtube.com")));
+  EXPECT_TRUE(base::Contains(third_urls, kYoutubeOrigin));
 }
 
 TEST_F(UsbPolicyAllowedDevicesTest,
@@ -154,24 +145,21 @@ TEST_F(UsbPolicyAllowedDevicesTest,
   ASSERT_TRUE(base::Contains(map, device_key));
 
   const auto& first_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(
-      first_urls, MakeOriginPair("https://google.com", "https://google.com")));
-  EXPECT_TRUE(base::Contains(first_urls, MakeOriginPair("https://crbug.com")));
+  EXPECT_TRUE(base::Contains(first_urls, kGoogleOrigin));
+  EXPECT_TRUE(base::Contains(first_urls, kCrbugOrigin));
 
   device_key = std::make_pair(4321, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
   const auto& second_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(
-      second_urls, MakeOriginPair("https://google.com", "https://google.com")));
-  EXPECT_TRUE(base::Contains(second_urls, MakeOriginPair("https://crbug.com")));
+  EXPECT_TRUE(base::Contains(second_urls, kGoogleOrigin));
+  EXPECT_TRUE(base::Contains(second_urls, kCrbugOrigin));
 
   device_key = std::make_pair(-1, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
   const auto& third_urls = map.at(device_key);
-  EXPECT_TRUE(
-      base::Contains(third_urls, MakeOriginPair("https://www.youtube.com")));
+  EXPECT_TRUE(base::Contains(third_urls, kYoutubeOrigin));
 }
 
 TEST_F(UsbPolicyAllowedDevicesTest,
@@ -190,24 +178,21 @@ TEST_F(UsbPolicyAllowedDevicesTest,
   ASSERT_TRUE(base::Contains(map, device_key));
 
   const auto& first_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(
-      first_urls, MakeOriginPair("https://google.com", "https://google.com")));
-  EXPECT_TRUE(base::Contains(first_urls, MakeOriginPair("https://crbug.com")));
+  EXPECT_TRUE(base::Contains(first_urls, kGoogleOrigin));
+  EXPECT_TRUE(base::Contains(first_urls, kCrbugOrigin));
 
   device_key = std::make_pair(4321, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
   const auto& second_urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(
-      second_urls, MakeOriginPair("https://google.com", "https://google.com")));
-  EXPECT_TRUE(base::Contains(second_urls, MakeOriginPair("https://crbug.com")));
+  EXPECT_TRUE(base::Contains(second_urls, kGoogleOrigin));
+  EXPECT_TRUE(base::Contains(second_urls, kCrbugOrigin));
 
   device_key = std::make_pair(-1, -1);
   ASSERT_TRUE(base::Contains(map, device_key));
 
   const auto& third_urls = map.at(device_key);
-  EXPECT_TRUE(
-      base::Contains(third_urls, MakeOriginPair("https://www.youtube.com")));
+  EXPECT_TRUE(base::Contains(third_urls, kYoutubeOrigin));
 
   // Ensure that the allowed devices can be removed dynamically.
   pref_value.reset(new base::Value(base::Value::Type::LIST));
@@ -252,9 +237,9 @@ TEST_F(UsbPolicyAllowedDevicesTest,
 
   // Ensure a device has all of the URL patterns allowed to access it.
   const auto& urls = map.at(device_key);
-  EXPECT_TRUE(base::Contains(urls, MakeOriginPair("https://google.com")));
-  EXPECT_TRUE(base::Contains(urls, MakeOriginPair("https://crbug.com")));
-  EXPECT_TRUE(base::Contains(urls, MakeOriginPair("https://www.youtube.com")));
+  EXPECT_TRUE(base::Contains(urls, kGoogleOrigin));
+  EXPECT_TRUE(base::Contains(urls, kCrbugOrigin));
+  EXPECT_TRUE(base::Contains(urls, kYoutubeOrigin));
 }
 
 namespace {
@@ -288,7 +273,6 @@ TEST_F(UsbPolicyAllowedDevicesTest, IsDeviceAllowed) {
       url::Origin::Create(GURL("https://www.youtube.com"));
   const auto kChromiumOrigin =
       url::Origin::Create(GURL("https://chromium.org"));
-  const auto kAndroidOrigin = url::Origin::Create(GURL("https://android.com"));
 
   auto specific_device_info = device_manager_.CreateAndAddDevice(
       1234, 5678, "Google", "Gizmo", "123ABC");
@@ -297,51 +281,31 @@ TEST_F(UsbPolicyAllowedDevicesTest, IsDeviceAllowed) {
   auto unrelated_device_info = device_manager_.CreateAndAddDevice(
       4321, 8765, "Chrome", "Gizmo", "987ZYX");
 
-  // Check that the specific device is allowed for https://google.com embedded
-  // in any origin, but not any other device.
+  // Check that the specific device is allowed for https://google.com but not
+  // any other device.
   EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kGoogleOrigin, kGoogleOrigin, *specific_device_info));
-  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kGoogleOrigin, kAndroidOrigin, *specific_device_info));
+      kGoogleOrigin, *specific_device_info));
   EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kGoogleOrigin, kGoogleOrigin, *vendor_device_info));
+      kGoogleOrigin, *vendor_device_info));
   EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kGoogleOrigin, kAndroidOrigin, *vendor_device_info));
-  EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kGoogleOrigin, kGoogleOrigin, *unrelated_device_info));
-  EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kGoogleOrigin, kAndroidOrigin, *unrelated_device_info));
+      kGoogleOrigin, *unrelated_device_info));
 
   // Check that devices with a vendor ID of 1234 are allowed for
-  // https://www.youtube.com embedded in any origin, but not an unrelated
-  // device.
+  // https://www.youtube.com, but not an unrelated device.
   EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kYoutubeOrigin, kYoutubeOrigin, *specific_device_info));
-  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kYoutubeOrigin, kAndroidOrigin, *specific_device_info));
-  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kYoutubeOrigin, kYoutubeOrigin, *vendor_device_info));
-  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kYoutubeOrigin, kAndroidOrigin, *vendor_device_info));
+      kYoutubeOrigin, *specific_device_info));
+  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(kYoutubeOrigin,
+                                                          *vendor_device_info));
   EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kYoutubeOrigin, kYoutubeOrigin, *unrelated_device_info));
-  EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kYoutubeOrigin, kAndroidOrigin, *unrelated_device_info));
+      kYoutubeOrigin, *unrelated_device_info));
 
-  // Check that any device is allowed for https://chromium.org embedded in any
-  // origin.
+  // Check that any device is allowed for https://chromium.org.
   EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kChromiumOrigin, kChromiumOrigin, *specific_device_info));
+      kChromiumOrigin, *specific_device_info));
+  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(kChromiumOrigin,
+                                                          *vendor_device_info));
   EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kChromiumOrigin, kAndroidOrigin, *specific_device_info));
-  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kChromiumOrigin, kChromiumOrigin, *vendor_device_info));
-  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kChromiumOrigin, kAndroidOrigin, *vendor_device_info));
-  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kChromiumOrigin, kChromiumOrigin, *unrelated_device_info));
-  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      kChromiumOrigin, kAndroidOrigin, *unrelated_device_info));
+      kChromiumOrigin, *unrelated_device_info));
 }
 
 TEST_F(UsbPolicyAllowedDevicesTest, IsDeviceAllowedForUrlsNotInPref) {
@@ -359,11 +323,9 @@ TEST_F(UsbPolicyAllowedDevicesTest, IsDeviceAllowedForUrlsNotInPref) {
 
   auto device_info = device_manager_.CreateAndAddDevice(1234, 5678, "Google",
                                                         "Gizmo", "123ABC");
-  for (const url::Origin& requesting_origin : origins) {
-    for (const url::Origin& embedding_origin : origins) {
-      EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-          requesting_origin, embedding_origin, *device_info));
-    }
+  for (const url::Origin& origin : origins) {
+    EXPECT_FALSE(
+        usb_policy_allowed_devices->IsDeviceAllowed(origin, *device_info));
   }
 }
 
@@ -381,11 +343,9 @@ TEST_F(UsbPolicyAllowedDevicesTest, IsDeviceAllowedForDeviceNotInPref) {
 
   auto device_info = device_manager_.CreateAndAddDevice(4321, 8765, "Google",
                                                         "Gizmo", "123ABC");
-  for (const url::Origin& requesting_origin : origins) {
-    for (const url::Origin& embedding_origin : origins) {
-      EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-          requesting_origin, embedding_origin, *device_info));
-    }
+  for (const url::Origin& origin : origins) {
+    EXPECT_FALSE(
+        usb_policy_allowed_devices->IsDeviceAllowed(origin, *device_info));
   }
 }
 
@@ -419,12 +379,8 @@ TEST_F(UsbPolicyAllowedDevicesTest,
 
   auto device_info = device_manager_.CreateAndAddDevice(1234, 5678, "Google",
                                                         "Gizmo", "123ABC");
-  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(
-      requesting_origin, embedding_origin, *device_info));
-  EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-      embedding_origin, requesting_origin, *device_info));
-  EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-      requesting_origin, requesting_origin, *device_info));
-  EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(
-      embedding_origin, embedding_origin, *device_info));
+  EXPECT_TRUE(usb_policy_allowed_devices->IsDeviceAllowed(embedding_origin,
+                                                          *device_info));
+  EXPECT_FALSE(usb_policy_allowed_devices->IsDeviceAllowed(requesting_origin,
+                                                           *device_info));
 }

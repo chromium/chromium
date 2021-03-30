@@ -43,7 +43,7 @@ class URLDatabase;
 //   -----------                --------------
 //   AutocompleteController::Start
 //     -> HistoryURLProvider::Start
-//       -> SuggestExactInput
+//       -> VerbatimMatchForInput
 //       [params_ allocated]
 //       -> DoAutocomplete (for inline autocomplete)
 //         -> URLDatabase::AutocompleteForPrefix (on in-memory DB)
@@ -208,18 +208,6 @@ class HistoryURLProvider : public HistoryProvider {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const override;
 
-  // Returns a match representing a navigation to |destination_url|, highlighted
-  // appropriately against |input|.  |trim_http| controls whether the match's
-  // |fill_into_edit| and |contents| should have any HTTP stripped off, and
-  // should not be set to true if the user's original input contains an http
-  // prefix.
-  // NOTES: This does not set the relevance of the returned match, as different
-  //        callers want different behavior. Callers must set this manually.
-  //        This function should only be called on the UI thread.
-  AutocompleteMatch SuggestExactInput(const AutocompleteInput& input,
-                                      const GURL& destination_url,
-                                      bool trim_http);
-
   // Runs the history query on the history thread, called by the history
   // system. The history database MAY BE NULL in which case it is not
   // available and we should return no data. Also schedules returning the
@@ -259,8 +247,8 @@ class HistoryURLProvider : public HistoryProvider {
   // Returns a set of classifications that highlight all the occurrences of
   // |input_text| at word breaks in |description|.
   static ACMatchClassifications ClassifyDescription(
-      const base::string16& input_text,
-      const base::string16& description);
+      const std::u16string& input_text,
+      const std::u16string& description);
 
   // Actually runs the autocomplete job on the given database, which is
   // guaranteed not to be NULL.  Used by both autocomplete passes, and therefore

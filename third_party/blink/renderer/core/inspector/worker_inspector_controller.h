@@ -109,7 +109,7 @@ class WorkerInspectorController final
   base::UnguessableToken worker_devtools_token_;
   base::UnguessableToken parent_devtools_token_;
   KURL url_;
-  PlatformThreadId worker_thread_id_;
+  const PlatformThreadId worker_thread_id_;
 
   DISALLOW_COPY_AND_ASSIGN(WorkerInspectorController);
 };

@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -711,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow) {
 // Mac10.13 Tests (dbg) and PASS/FAIL flakiness on Linux Chromium OS ASan LSan
 // Tests (1) bot.
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(OS_WIN) || (defined(OS_MAC) && !defined(NDEBUG))
+    !defined(NDEBUG)
 #define MAYBE_RestoreTabWithSpecialURL DISABLED_RestoreTabWithSpecialURL
 #else
 #define MAYBE_RestoreTabWithSpecialURL RestoreTabWithSpecialURL
@@ -735,17 +737,16 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURL) {
   EnsureTabFinishedRestoring(tab);
 
   // See if content is as expected.
-  EXPECT_GT(
-      ui_test_utils::FindInPage(tab, base::ASCIIToUTF16("webkit"), true, false,
-                                NULL, NULL),
-      0);
+  EXPECT_GT(ui_test_utils::FindInPage(tab, u"webkit", true, false, NULL, NULL),
+            0);
 }
 
 // https://crbug.com/667932: Flakiness on linux_chromium_asan_rel_ng bot.
 // https://crbug.com/825305: Timeout flakiness on Win7 Tests (dbg)(1) and
 // Mac10.13 Tests (dbg) bots.
+// Also fails on Linux Tests (dbg).
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    ((defined(OS_WIN) || defined(OS_MAC)) && !defined(NDEBUG))
+    !defined(NDEBUG)
 #define MAYBE_RestoreTabWithSpecialURLOnBack DISABLED_RestoreTabWithSpecialURLOnBack
 #else
 #define MAYBE_RestoreTabWithSpecialURLOnBack RestoreTabWithSpecialURLOnBack
@@ -778,10 +779,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURLOnBack) {
 
   // Go back, and see if content is as expected.
   GoBack(browser());
-  EXPECT_GT(
-      ui_test_utils::FindInPage(tab, base::ASCIIToUTF16("webkit"), true, false,
-                                NULL, NULL),
-      0);
+  EXPECT_GT(ui_test_utils::FindInPage(tab, u"webkit", true, false, NULL, NULL),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_RestoreOnStartup) {
@@ -803,9 +802,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreOnStartup) {
 // same thing.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                        RestoreFirstBrowserWhenSessionServiceEnabled) {
-  // Do not exit from test when last browser is closed.
+  // Do not exit from test or delete the Profile* when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
                              KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      browser()->profile(), ProfileKeepAliveOrigin::kSessionRestore);
 
   // Enable session service.
   SessionStartupPref pref(SessionStartupPref::LAST);
@@ -957,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreSingleGroupedTab) {
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({grouped_tab_index});
   const tab_groups::TabGroupVisualData visual_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kCyan);
+      u"Foo", tab_groups::TabGroupColorId::kCyan);
 
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
@@ -989,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab_ExpandsGroup) {
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({grouped_tab_index});
   const tab_groups::TabGroupVisualData visual_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kCyan, true);
+      u"Foo", tab_groups::TabGroupColorId::kCyan, true);
 
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
@@ -1028,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
   const tab_groups::TabGroupVisualData visual_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kCyan, true);
+      u"Foo", tab_groups::TabGroupColorId::kCyan, true);
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
   group->SetVisualData(visual_data);
@@ -1063,9 +1064,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
   const tab_groups::TabGroupVisualData visual_data_1(
-      base::ASCIIToUTF16("Foo1"), tab_groups::TabGroupColorId::kCyan);
+      u"Foo1", tab_groups::TabGroupColorId::kCyan);
   const tab_groups::TabGroupVisualData visual_data_2(
-      base::ASCIIToUTF16("Foo2"), tab_groups::TabGroupColorId::kCyan);
+      u"Foo2", tab_groups::TabGroupColorId::kCyan);
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
 
@@ -1121,14 +1122,14 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
   TabGroupModel* group_model = browser()->tab_strip_model()->group_model();
   tab_groups::TabGroupId group1 = browser()->tab_strip_model()->AddToNewGroup(
       {tab_count - 3, tab_count - 2});
-  tab_groups::TabGroupVisualData group1_data(base::ASCIIToUTF16("Foo"),
+  tab_groups::TabGroupVisualData group1_data(u"Foo",
                                              tab_groups::TabGroupColorId::kRed);
   group_model->GetTabGroup(group1)->SetVisualData(group1_data);
 
   tab_groups::TabGroupId group2 =
       browser()->tab_strip_model()->AddToNewGroup({tab_count - 1});
   tab_groups::TabGroupVisualData group2_data(
-      base::ASCIIToUTF16("Bar"), tab_groups::TabGroupColorId::kBlue);
+      u"Bar", tab_groups::TabGroupColorId::kBlue);
   group_model->GetTabGroup(group2)->SetVisualData(group2_data);
 
   CloseBrowserSynchronously(browser());
@@ -1501,8 +1502,6 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
   GoBack(browser());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             new_popup->GetMainFrame()->GetLastCommittedURL());
-  // TODO(lukasza): https://crbug.com/888079: The browser process should tell
-  // the renderer which (initiator-based) origin to commit.  Right now, Blink
-  // just falls back to an opaque origin.
-  EXPECT_TRUE(new_popup->GetMainFrame()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(initial_origin,
+            new_popup->GetMainFrame()->GetLastCommittedOrigin());
 }

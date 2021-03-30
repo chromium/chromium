@@ -174,8 +174,6 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   void SetRefreshTokenRevokedFromSourceCallback(
       RefreshTokenRevokedFromSourceCallback callback);
 
-  void Shutdown();
-
   // Loads credentials from a backing persistent store to make them available
   // after service is used between profile restarts.
   //

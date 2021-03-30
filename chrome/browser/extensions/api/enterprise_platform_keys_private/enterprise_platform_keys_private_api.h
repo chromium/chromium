@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/attestation/tpm_challenge_key.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
@@ -33,13 +33,11 @@ class EPKPChallengeKey {
   EPKPChallengeKey& operator=(const EPKPChallengeKey&) = delete;
   ~EPKPChallengeKey();
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
   // Asynchronously run the flow to challenge a key in the |caller|
   // context.
   void Run(chromeos::attestation::AttestationKeyType type,
            scoped_refptr<ExtensionFunction> caller,
-           chromeos::attestation::TpmChallengeKeyCallback callback,
+           ash::attestation::TpmChallengeKeyCallback callback,
            const std::string& challenge,
            bool register_key);
 
@@ -48,7 +46,7 @@ class EPKPChallengeKey {
   bool IsExtensionAllowed(Profile* profile,
                           scoped_refptr<const Extension> extension);
 
-  std::unique_ptr<chromeos::attestation::TpmChallengeKey> impl_;
+  std::unique_ptr<ash::attestation::TpmChallengeKey> impl_;
 };
 
 class EnterprisePlatformKeysPrivateChallengeMachineKeyFunction
@@ -61,8 +59,7 @@ class EnterprisePlatformKeysPrivateChallengeMachineKeyFunction
   ResponseAction Run() override;
 
   // Called when the challenge operation is complete.
-  void OnChallengedKey(
-      const chromeos::attestation::TpmChallengeKeyResult& result);
+  void OnChallengedKey(const ash::attestation::TpmChallengeKeyResult& result);
 
   EPKPChallengeKey impl_;
 
@@ -81,8 +78,7 @@ class EnterprisePlatformKeysPrivateChallengeUserKeyFunction
   ResponseAction Run() override;
 
   // Called when the challenge operation is complete.
-  void OnChallengedKey(
-      const chromeos::attestation::TpmChallengeKeyResult& result);
+  void OnChallengedKey(const ash::attestation::TpmChallengeKeyResult& result);
 
   EPKPChallengeKey impl_;
 

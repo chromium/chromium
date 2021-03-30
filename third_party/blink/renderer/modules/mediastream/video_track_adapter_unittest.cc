@@ -273,8 +273,10 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
                                base::TimeTicks estimated_capture_time) {
     auto deliver_frame = [&]() {
       platform_support_->GetIOTaskRunner()->PostTask(
-          FROM_HERE, base::BindOnce(&VideoTrackAdapter::DeliverFrameOnIO,
-                                    adapter_, frame, estimated_capture_time));
+          FROM_HERE,
+          base::BindOnce(&VideoTrackAdapter::DeliverFrameOnIO, adapter_, frame,
+                         std::vector<scoped_refptr<media::VideoFrame>>(),
+                         estimated_capture_time));
     };
 
     frame_received_.Reset();
@@ -286,10 +288,12 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     frame_received_.Wait();
   }
 
-  void OnFrameDelivered(scoped_refptr<media::VideoFrame> frame,
-                        base::TimeTicks estimated_capture_time) {
+  void OnFrameDelivered(
+      scoped_refptr<media::VideoFrame> frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
+      base::TimeTicks estimated_capture_time) {
     if (frame_validation_callback_) {
-      frame_validation_callback_.Run(frame, estimated_capture_time);
+      frame_validation_callback_.Run(frame, {}, estimated_capture_time);
     }
     frame_received_.Signal();
   }
@@ -331,16 +335,18 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
   // Keep the desired size the same as the natural size of the original frame.
   VideoTrackAdapterSettings settings_nonscaled(kNaturalSize, kFrameRate);
   ConfigureTrack(settings_nonscaled);
-  auto check_nonscaled = [&](scoped_refptr<media::VideoFrame> frame,
-                             base::TimeTicks estimated_capture_time) {
-    // We should get the original frame as-is here.
-    EXPECT_EQ(frame->storage_type(),
-              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-    EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_frame->GetGpuMemoryBuffer());
-    EXPECT_EQ(frame->coded_size(), kCodedSize);
-    EXPECT_EQ(frame->visible_rect(), kVisibleRect);
-    EXPECT_EQ(frame->natural_size(), kNaturalSize);
-  };
+  auto check_nonscaled =
+      [&](scoped_refptr<media::VideoFrame> frame,
+          std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
+          base::TimeTicks estimated_capture_time) {
+        // We should get the original frame as-is here.
+        EXPECT_EQ(frame->storage_type(),
+                  media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+        EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_frame->GetGpuMemoryBuffer());
+        EXPECT_EQ(frame->coded_size(), kCodedSize);
+        EXPECT_EQ(frame->visible_rect(), kVisibleRect);
+        EXPECT_EQ(frame->natural_size(), kNaturalSize);
+      };
   SetFrameValidationCallback(base::BindLambdaForTesting(check_nonscaled));
   DeliverAndValidateFrame(gmb_frame, base::TimeTicks());
 
@@ -348,17 +354,19 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
   const gfx::Size kDesiredSize(640, 360);
   VideoTrackAdapterSettings settings_scaled(kDesiredSize, kFrameRate);
   ConfigureTrack(settings_scaled);
-  auto check_scaled = [&](scoped_refptr<media::VideoFrame> frame,
-                          base::TimeTicks estimated_capture_time) {
-    // The original frame should be wrapped in a new frame, with |kDesiredSize|
-    // exposed as natural size of the wrapped frame.
-    EXPECT_EQ(frame->storage_type(),
-              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-    EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_frame->GetGpuMemoryBuffer());
-    EXPECT_EQ(frame->coded_size(), kCodedSize);
-    EXPECT_EQ(frame->visible_rect(), kVisibleRect);
-    EXPECT_EQ(frame->natural_size(), kDesiredSize);
-  };
+  auto check_scaled =
+      [&](scoped_refptr<media::VideoFrame> frame,
+          std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
+          base::TimeTicks estimated_capture_time) {
+        // The original frame should be wrapped in a new frame, with
+        // |kDesiredSize| exposed as natural size of the wrapped frame.
+        EXPECT_EQ(frame->storage_type(),
+                  media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+        EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_frame->GetGpuMemoryBuffer());
+        EXPECT_EQ(frame->coded_size(), kCodedSize);
+        EXPECT_EQ(frame->visible_rect(), kVisibleRect);
+        EXPECT_EQ(frame->natural_size(), kDesiredSize);
+      };
   SetFrameValidationCallback(base::BindLambdaForTesting(check_scaled));
   DeliverAndValidateFrame(gmb_frame, base::TimeTicks());
 }
@@ -417,8 +425,9 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
     run_loop.Run();
   }
 
-  MOCK_METHOD2(OnFrameDelivered,
+  MOCK_METHOD3(OnFrameDelivered,
                void(scoped_refptr<media::VideoFrame> frame,
+                    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
                     base::TimeTicks estimated_capture_time));
   MOCK_METHOD2(OnEncodedVideoFrameDelivered,
                void(scoped_refptr<EncodedVideoFrame>,

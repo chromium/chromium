@@ -2,8 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iterator>
+
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "base/json/json_reader.h"
+
+#if defined(USE_OFFICIAL_ENTERPRISE_CONNECTORS_API_KEYS)
+#include "google_apis/internal/enterprise_connectors_api_keys.h"
+#endif
+
+// Used to indicate an unset key/id/secret.  This works better with
+// various unit tests than leaving the token empty.
+#define DUMMY_API_TOKEN "dummytoken"
+
+#if !defined(CLIENT_ID_CONNECTOR_PARTNER_BOX)
+#define CLIENT_ID_CONNECTOR_PARTNER_BOX DUMMY_API_TOKEN
+#endif
+
+#if !defined(CLIENT_SECRET_CONNECTOR_PARTNER_BOX)
+#define CLIENT_SECRET_CONNECTOR_PARTNER_BOX DUMMY_API_TOKEN
+#endif
 
 namespace enterprise_connectors {
 
@@ -14,11 +32,20 @@ constexpr char kKeyVersion[] = "version";
 constexpr char kKeyServiceProviders[] = "service_providers";
 constexpr char kKeyName[] = "name";
 constexpr char kKeyAnalysis[] = "analysis";
+constexpr char kKeyFileSystem[] = "file_system";
 constexpr char kKeyReporting[] = "reporting";
 constexpr char kKeyUrl[] = "url";
 constexpr char kKeySupportedTags[] = "supported_tags";
 constexpr char kKeyMimeTypes[] = "mime_types";
 constexpr char kKeyMaxFileSize[] = "max_file_size";
+
+// Specific key names of file system connectors.
+constexpr char kKeyFsHome[] = "home";
+constexpr char kKeyFsAuthorizationEndpoint[] = "authorization_endpoint";
+constexpr char kKeyFsTokenEndpoint[] = "token_endpoint";
+constexpr char kKeyFsMaxDirectZize[] = "max_direct_size";
+constexpr char kKeyFsScopes[] = "home";
+constexpr char kKeyFsDisable[] = "disable";
 
 // There is currently only 1 version of this config, so we can just treat it as
 // any other value in the JSON with its own key. Once that is no longer the
@@ -45,6 +72,15 @@ ServiceProviderConfig::ServiceProviderConfig(const std::string& config) {
   }
 }
 
+std::vector<std::string> ServiceProviderConfig::GetServiceProviderNames()
+    const {
+  std::vector<std::string> names;
+  names.reserve(service_providers_.size());
+  for (const auto& name_and_config : service_providers_)
+    names.push_back(name_and_config.first);
+  return names;
+}
+
 const ServiceProviderConfig::ServiceProvider*
 ServiceProviderConfig::GetServiceProvider(
     const std::string& service_provider) const {
@@ -59,6 +95,10 @@ ServiceProviderConfig::~ServiceProviderConfig() = default;
 ServiceProviderConfig::ServiceProvider::ServiceProvider(
     const base::Value& config) {
   if (!config.is_dict())
+    return;
+
+  const std::string* name = config.FindStringKey(kKeyName);
+  if (!name)
     return;
 
   const base::Value* versions = config.FindDictKey(kKeyVersion);
@@ -94,6 +134,58 @@ ServiceProviderConfig::ServiceProvider::ServiceProvider(
     const std::string* reporting_url = reporting->FindStringKey(kKeyUrl);
     if (reporting_url)
       reporting_url_ = *reporting_url;
+  }
+
+  const base::Value* file_system = version_1->FindDictKey(kKeyFileSystem);
+  if (file_system) {
+    const std::string* home_url = file_system->FindStringKey(kKeyFsHome);
+    if (home_url)
+      fs_home_url_ = *home_url;
+
+    const std::string* auth_endpoint_url =
+        file_system->FindStringKey(kKeyFsAuthorizationEndpoint);
+    if (auth_endpoint_url)
+      fs_authorization_endpoint_ = *auth_endpoint_url;
+
+    const std::string* token_endpoint =
+        file_system->FindStringKey(kKeyFsTokenEndpoint);
+    if (token_endpoint)
+      fs_token_endpoint_ = *token_endpoint;
+
+    auto max_direct_size = file_system->FindIntKey(kKeyFsMaxDirectZize);
+    if (max_direct_size)
+      fs_max_direct_size_ = max_direct_size.value();
+
+    // Client ID and secret, per partner, are not stored in the
+    // kServiceProviderConfig string to keep them out of the open source
+    // repo.
+    if (*name == "box") {
+      fs_client_id_ = CLIENT_ID_CONNECTOR_PARTNER_BOX;
+      fs_client_secret_ = CLIENT_SECRET_CONNECTOR_PARTNER_BOX;
+    } else {
+      fs_client_id_ = DUMMY_API_TOKEN;
+      fs_client_secret_ = DUMMY_API_TOKEN;
+    }
+
+    const base::Value* scopes = file_system->FindListKey(kKeyFsScopes);
+    if (scopes) {
+      for (const base::Value& scope : scopes->GetList()) {
+        if (!scope.is_string())
+          continue;
+
+        fs_scopes_.push_back(scope.GetString());
+      }
+    }
+
+    const base::Value* disbles = file_system->FindListKey(kKeyFsDisable);
+    if (disbles) {
+      for (const base::Value& disable : disbles->GetList()) {
+        if (!disable.is_string())
+          continue;
+
+        fs_disable_.push_back(disable.GetString());
+      }
+    }
   }
 }
 

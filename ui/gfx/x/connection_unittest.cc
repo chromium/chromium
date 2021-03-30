@@ -48,7 +48,7 @@ TEST(X11ConnectionTest, Request) {
   EXPECT_EQ(attributes->map_state, MapState::Unmapped);
   EXPECT_TRUE(attributes->override_redirect);
 
-  auto geometry = connection.GetGeometry({window}).Sync();
+  auto geometry = connection.GetGeometry(window).Sync();
   ASSERT_TRUE(geometry);
   EXPECT_EQ(geometry->x, 0);
   EXPECT_EQ(geometry->y, 0);
@@ -93,7 +93,7 @@ TEST(X11ConnectionTest, Error) {
 
   Window invalid_window = connection.GenerateId<Window>();
 
-  auto geometry = connection.GetGeometry({invalid_window}).Sync();
+  auto geometry = connection.GetGeometry(invalid_window).Sync();
   ASSERT_FALSE(geometry);
   auto* error = geometry.error.get();
   ASSERT_TRUE(error);

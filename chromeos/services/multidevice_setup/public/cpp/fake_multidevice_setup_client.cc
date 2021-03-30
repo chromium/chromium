@@ -95,6 +95,11 @@ void FakeMultiDeviceSetupClient::InvokePendingTriggerEventForDebuggingCallback(
   trigger_event_for_debugging_type_and_callback_queue_.pop();
 }
 
+size_t FakeMultiDeviceSetupClient::NumPendingSetFeatureEnabledStateCalls()
+    const {
+  return set_feature_enabled_state_args_queue_.size();
+}
+
 void FakeMultiDeviceSetupClient::GetEligibleHostDevices(
     GetEligibleHostDevicesCallback callback) {
   get_eligible_host_devices_callback_queue_.push(std::move(callback));

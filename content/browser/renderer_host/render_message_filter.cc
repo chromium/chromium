@@ -34,14 +34,12 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
-#include "content/browser/resource_context_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -55,6 +53,7 @@
 #include "net/base/mime_util.h"
 #include "net/base/request_priority.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -75,21 +74,13 @@
 #endif
 
 namespace content {
-namespace {
-
-const uint32_t kRenderFilteredMessageClasses[] = {FrameMsgStart};
-
-}  // namespace
 
 RenderMessageFilter::RenderMessageFilter(
     int render_process_id,
     BrowserContext* browser_context,
     RenderWidgetHelper* render_widget_helper,
     MediaInternals* media_internals)
-    : BrowserMessageFilter(kRenderFilteredMessageClasses,
-                           base::size(kRenderFilteredMessageClasses)),
-      BrowserAssociatedInterface<mojom::RenderMessageFilter>(this, this),
-      resource_context_(browser_context->GetResourceContext()),
+    : BrowserAssociatedInterface<mojom::RenderMessageFilter>(this),
       render_widget_helper_(render_widget_helper),
       render_process_id_(render_process_id),
       media_internals_(media_internals) {
@@ -107,7 +98,6 @@ bool RenderMessageFilter::OnMessageReceived(const IPC::Message& message) {
 }
 
 void RenderMessageFilter::OnDestruct() const {
-  const_cast<RenderMessageFilter*>(this)->resource_context_ = nullptr;
   BrowserThread::DeleteOnIOThread::Destruct(this);
 }
 
@@ -119,7 +109,7 @@ void RenderMessageFilter::GenerateRoutingID(
 void RenderMessageFilter::GenerateFrameRoutingID(
     GenerateFrameRoutingIDCallback callback) {
   int32_t routing_id = render_widget_helper_->GetNextRoutingID();
-  auto frame_token = base::UnguessableToken::Create();
+  auto frame_token = blink::LocalFrameToken();
   auto devtools_frame_token = base::UnguessableToken::Create();
   render_widget_helper_->StoreNextFrameRoutingID(routing_id, frame_token,
                                                  devtools_frame_token);

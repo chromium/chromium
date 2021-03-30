@@ -258,6 +258,7 @@ void AttestationFlow::StartCertificateRequest(
     request.set_certificate_profile(*attestation_profile);
     request.set_request_origin(request_origin);
     request.set_key_type(crypto_key_type_);
+    request.set_aca_type(ToAcaType(server_proxy_->GetType()));
 
     attestation_client_->CreateCertificateRequest(
         request, base::BindOnce(&AttestationFlow::SendCertificateRequestToPCA,

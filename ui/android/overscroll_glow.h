@@ -95,7 +95,7 @@ class UI_ANDROID_EXPORT OverscrollGlow {
 
   EdgeEffect* GetOppositeEdge(int edge_index);
 
-  OverscrollGlowClient* const client_;
+  OverscrollGlowClient* client_;
   std::unique_ptr<EdgeEffect> edge_effects_[EDGE_COUNT];
 
   gfx::SizeF viewport_size_;

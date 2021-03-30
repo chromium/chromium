@@ -36,6 +36,15 @@ class PrefetchProxyPrefetchMetricsCollector
                                       size_t prediction_position,
                                       PrefetchProxyPrefetchStatus status);
 
+  // Called when a mainframe resource is not eligible for prefetching, but was
+  // sent as a privacy decoy. Note that if a mainframe is given here,
+  // |OnSubresourceNotEligible| is not expected to be called.
+  void OnDecoyPrefetchComplete(
+      const GURL& url,
+      size_t prediction_position,
+      network::mojom::URLResponseHeadPtr head,
+      const network::URLLoaderCompletionStatus& status);
+
   // Called when a subresource is not eligible to be prefetched.
   void OnSubresourceNotEligible(const GURL& mainframe_url,
                                 const GURL& subresource_url,

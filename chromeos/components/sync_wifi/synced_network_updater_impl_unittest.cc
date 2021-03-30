@@ -134,6 +134,7 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_OneNetwork) {
   base::RunLoop().RunUntilIdle();
   const chromeos::NetworkState* network = FindLocalNetworkById(id);
   EXPECT_TRUE(network);
+  EXPECT_FALSE(network->hidden_ssid());
   EXPECT_FALSE(tracker()->GetPendingUpdateById(id));
   EXPECT_TRUE(
       NetworkHandler::Get()->network_metadata_store()->GetIsConfiguredBySync(

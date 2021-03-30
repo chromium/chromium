@@ -1,0 +1,29 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_select.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
+
+<dom-module id="network-select-login">
+  <template>
+    <style>
+      :host {
+        display: inline-flex;
+      }
+
+      #networkSelect {
+        flex: 1;
+      }
+    </style>
+    <network-select id="networkSelect" class="focus-on-show"
+        show-scan-progress
+        enable-wifi-scans="[[enableWifiScans]]"
+        custom-items="[[getNetworkCustomItems_(isNetworkConnected)]]"
+        on-default-network-changed="onDefaultNetworkChanged_"
+        on-network-connect-changed="onNetworkConnectChanged_"
+        on-network-list-changed="onNetworkListChanged_"
+        on-network-item-selected="onNetworkListNetworkItemSelected_"
+        on-custom-item-selected="onNetworkListCustomItemSelected_"
+        no-bottom-scroll-border="[[noBottomScrollBorder]]"
+        show-technology-badge="[[showTechnologyBadge_]]">
+    </network-select>
+  </template>
+</dom-module>

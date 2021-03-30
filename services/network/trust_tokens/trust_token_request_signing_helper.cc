@@ -521,7 +521,10 @@ base::Optional<std::string> TrustTokenRequestSigningHelper::
 
   header_items[kSignatureHeaderAlgorithmKey] =
       net::structured_headers::ParameterizedMember(
-          net::structured_headers::Item(signer_->GetAlgorithmIdentifier()), {});
+          net::structured_headers::Item(
+              signer_->GetAlgorithmIdentifier(),
+              net::structured_headers::Item::ItemType::kStringType),
+              {});
 
   std::vector<net::structured_headers::ParameterizedItem> keys_and_signatures;
   for (const auto& kv : signatures_per_issuer) {

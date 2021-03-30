@@ -639,7 +639,6 @@ void OverviewItem::Restack() {
 }
 
 void OverviewItem::UpdatePhantomsForDragging(bool is_touch_dragging) {
-  DCHECK(AreMultiDisplayOverviewAndSplitViewEnabled());
   DCHECK_GT(Shell::GetAllRootWindows().size(), 1u);
   if (!phantoms_for_dragging_) {
     phantoms_for_dragging_ =
@@ -654,7 +653,6 @@ void OverviewItem::UpdatePhantomsForDragging(bool is_touch_dragging) {
 }
 
 void OverviewItem::DestroyPhantomsForDragging() {
-  DCHECK(AreMultiDisplayOverviewAndSplitViewEnabled());
   phantoms_for_dragging_.reset();
 }
 
@@ -924,8 +922,14 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
   if (!prepared_for_overview_)
     return;
 
-  // Do not keep the overview bounds if we're shutting down.
+  // Do not update the overview bounds if we're shutting down.
   if (!Shell::Get()->overview_controller()->InOverviewSession())
+    return;
+
+  // Do not update the overview item if the window is to be snapped into split
+  // view. It will be removed from overview soon and will update overview grid
+  // at that moment.
+  if (SplitViewController::Get(window)->IsWindowInTransitionalState(window))
     return;
 
   // The drop target will get its bounds set as opposed to its transform
@@ -982,6 +986,12 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
   // During preparation, window state can change, e.g. updating shelf
   // visibility may show the temporarily hidden (minimized) panels.
   if (!prepared_for_overview_)
+    return;
+
+  // Minimizing an originally active window will activate and unminimize the
+  // window upon exiting, and the item window will be "moved" to fade out in
+  // 'RestoreWindow'.
+  if (!item_widget_)
     return;
 
   WindowStateType new_type = window_state->GetStateType();
@@ -1142,9 +1152,21 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   const gfx::Transform transform =
       gfx::TransformBetweenRects(screen_rect, overview_item_bounds);
 
+  // Determine the amount of clipping we should put on the window. Note that the
+  // clipping goes after setting a transform, as layer transform affects layer
+  // clip.
+  using ClippingType = ScopedOverviewTransformWindow::ClippingType;
+  ScopedOverviewTransformWindow::ClippingData clipping_data{
+      ClippingType::kCustom, gfx::SizeF()};
+  if (unclipped_size_)
+    clipping_data.second = GetWindowTargetBoundsWithInsets().size();
+  else if (is_first_update)
+    clipping_data.first = ClippingType::kEnter;
+
   if (is_first_update &&
       animation_type == OVERVIEW_ANIMATION_SPAWN_ITEM_IN_OVERVIEW) {
     PerformItemSpawnedAnimation(window, transform);
+    transform_window_.SetClipping(clipping_data);
     return;
   }
 
@@ -1159,14 +1181,6 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
                        weak_ptr_factory_.GetWeakPtr())});
   }
   SetTransform(window, transform);
-
-  using ClippingType = ScopedOverviewTransformWindow::ClippingType;
-  ScopedOverviewTransformWindow::ClippingData clipping_data{
-      ClippingType::kCustom, gfx::SizeF()};
-  if (unclipped_size_)
-    clipping_data.second = GetWindowTargetBoundsWithInsets().size();
-  else if (is_first_update)
-    clipping_data.first = ClippingType::kEnter;
   transform_window_.SetClipping(clipping_data);
 }
 

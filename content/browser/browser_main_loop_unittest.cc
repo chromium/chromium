@@ -65,8 +65,8 @@ TEST_F(BrowserMainLoopTest, CreateThreadsInSingleProcess) {
   BrowserMainLoop browser_main_loop(
       main_function_params,
       std::make_unique<base::ThreadPoolInstance::ScopedExecutionFence>());
-  browser_main_loop.MainMessageLoopStart();
   browser_main_loop.Init();
+  browser_main_loop.MainMessageLoopStart();
   browser_main_loop.CreateThreads();
   EXPECT_GE(base::ThreadPoolInstance::Get()
                 ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
@@ -87,8 +87,8 @@ TEST_F(BrowserMainLoopTest,
   BrowserMainLoop browser_main_loop(
       main_function_params,
       std::make_unique<base::ThreadPoolInstance::ScopedExecutionFence>());
-  browser_main_loop.MainMessageLoopStart();
   browser_main_loop.Init();
+  browser_main_loop.MainMessageLoopStart();
 
   StrickMockTask task;
 

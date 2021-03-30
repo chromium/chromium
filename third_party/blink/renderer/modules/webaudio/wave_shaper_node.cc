@@ -39,7 +39,10 @@ WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
           kNodeTypeWaveShaper,
           node,
           sample_rate,
-          std::make_unique<WaveShaperProcessor>(sample_rate, 1)) {
+          std::make_unique<WaveShaperProcessor>(
+              sample_rate,
+              1,
+              node.context()->GetDeferredTaskHandler().RenderQuantumFrames())) {
   Initialize();
 }
 
@@ -117,7 +120,7 @@ void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
   DCHECK(IsMainThread());
 
   if (curve) {
-    SetCurveImpl(curve.View()->Data(), curve.View()->length(), exception_state);
+    SetCurveImpl(curve->Data(), curve->length(), exception_state);
   } else {
     SetCurveImpl(nullptr, 0, exception_state);
   }
@@ -138,7 +141,7 @@ NotShared<DOMFloat32Array> WaveShaperNode::curve() {
   unsigned size = curve->size();
 
   NotShared<DOMFloat32Array> result(DOMFloat32Array::Create(size));
-  memcpy(result.View()->Data(), curve->data(), sizeof(float) * size);
+  memcpy(result->Data(), curve->data(), sizeof(float) * size);
 
   return result;
 }

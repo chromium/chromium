@@ -214,7 +214,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAccessDoesNetworkRequest) {
               LookupSingleLeak(
                   _, kAccessToken,
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
-                              ElementsAre(0xBD, 0x74, 0xA9, 0x20)),
+                              ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
                               testing::Ne(""))),
                   _));
@@ -263,11 +263,11 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsDecryptionError) {
   std::string key_server;
   // Append trash bytes to force a decryption error.
   response->reencrypted_lookup_hash =
-      CipherReEncrypt(payload_and_callback.payload, &key_server) +
+      *CipherReEncrypt(payload_and_callback.payload, &key_server) +
       "trash_bytes";
   response->encrypted_leak_match_prefixes.push_back(
-      crypto::SHA256HashString(CipherEncryptWithKey(
-          ScryptHashUsernameAndPassword("another_username", kTestPassword),
+      crypto::SHA256HashString(*CipherEncryptWithKey(
+          *ScryptHashUsernameAndPassword("another_username", kTestPassword),
           key_server)));
 
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kHashingFailure));
@@ -292,10 +292,10 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsNotLeaked) {
   auto response = std::make_unique<SingleLookupResponse>();
   std::string key_server;
   response->reencrypted_lookup_hash =
-      CipherReEncrypt(payload_and_callback.payload, &key_server);
+      *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
-      crypto::SHA256HashString(CipherEncryptWithKey(
-          ScryptHashUsernameAndPassword("another_username", kTestPassword),
+      crypto::SHA256HashString(*CipherEncryptWithKey(
+          *ScryptHashUsernameAndPassword("another_username", kTestPassword),
           key_server)));
 
   EXPECT_EQ(1u, bulk_check().GetPendingChecksCount());
@@ -325,10 +325,10 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsLeaked) {
   auto response = std::make_unique<SingleLookupResponse>();
   std::string key_server;
   response->reencrypted_lookup_hash =
-      CipherReEncrypt(payload_and_callback.payload, &key_server);
+      *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
-      crypto::SHA256HashString(CipherEncryptWithKey(
-          ScryptHashUsernameAndPassword("abc", kTestPassword), key_server)));
+      crypto::SHA256HashString(*CipherEncryptWithKey(
+          *ScryptHashUsernameAndPassword("abc", kTestPassword), key_server)));
 
   EXPECT_EQ(1u, bulk_check().GetPendingChecksCount());
   leaked_credential = TestCredential("abc");

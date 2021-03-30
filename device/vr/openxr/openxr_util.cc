@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/transform.h"
 #include "ui/gfx/transform_util.h"
 
@@ -22,6 +23,17 @@ XrPosef PoseIdentity() {
   XrPosef pose{};
   pose.orientation.w = 1;
   return pose;
+}
+
+gfx::Transform XrPoseToGfxTransform(const XrPosef& pose) {
+  gfx::DecomposedTransform decomp;
+  decomp.quaternion = gfx::Quaternion(pose.orientation.x, pose.orientation.y,
+                                      pose.orientation.z, pose.orientation.w);
+  decomp.translate[0] = pose.position.x;
+  decomp.translate[1] = pose.position.y;
+  decomp.translate[2] = pose.position.z;
+
+  return gfx::ComposeTransform(decomp);
 }
 
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
@@ -148,6 +160,13 @@ XrResult CreateInstance(
           kMSFTHandInteractionExtensionName);
   if (handInteractionExtensionSupported) {
     extensions.push_back(kMSFTHandInteractionExtensionName);
+  }
+
+  const bool handTrackingExtensionSupported =
+      extension_enumeration.ExtensionSupported(
+          XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+  if (handTrackingExtensionSupported) {
+    extensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
   }
 
   const bool anchorsExtensionSupported =

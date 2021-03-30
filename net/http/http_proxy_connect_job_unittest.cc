@@ -605,8 +605,7 @@ TEST_P(HttpProxyConnectJobTest, NeedAuth) {
     ASSERT_TRUE(test_delegate.auth_controller());
     EXPECT_FALSE(test_delegate.has_result());
 
-    test_delegate.auth_controller()->ResetAuth(
-        AuthCredentials(base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar")));
+    test_delegate.auth_controller()->ResetAuth(AuthCredentials(u"foo", u"bar"));
     test_delegate.RunAuthCallback();
     // Per API contract, the request can not complete synchronously.
     EXPECT_FALSE(test_delegate.has_result());
@@ -734,8 +733,7 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
     EXPECT_EQ(proxy_authenticate, "Basic realm=\"MyRealm1\"");
     EXPECT_FALSE(test_delegate.has_result());
 
-    test_delegate.auth_controller()->ResetAuth(
-        AuthCredentials(base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar")));
+    test_delegate.auth_controller()->ResetAuth(AuthCredentials(u"foo", u"bar"));
     test_delegate.RunAuthCallback();
     // Per API contract, the auth callback can't be invoked synchronously.
     EXPECT_FALSE(test_delegate.auth_controller());
@@ -749,8 +747,7 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
     EXPECT_EQ(proxy_authenticate, "Basic realm=\"MyRealm1\"");
     EXPECT_FALSE(test_delegate.has_result());
 
-    test_delegate.auth_controller()->ResetAuth(
-        AuthCredentials(base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar")));
+    test_delegate.auth_controller()->ResetAuth(AuthCredentials(u"foo", u"bar"));
     test_delegate.RunAuthCallback();
     // Per API contract, the request can't complete synchronously.
     EXPECT_FALSE(test_delegate.has_result());
@@ -769,8 +766,8 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
 // Test the case where auth credentials are cached.
 TEST_P(HttpProxyConnectJobTest, HaveAuth) {
   // Prepopulate auth cache.
-  const base::string16 kFoo(base::ASCIIToUTF16("foo"));
-  const base::string16 kBar(base::ASCIIToUTF16("bar"));
+  const std::u16string kFoo(u"foo");
+  const std::u16string kBar(u"bar");
   GURL proxy_url(GetParam() == HTTP
                      ? (std::string("http://") + kHttpProxyHost)
                      : (std::string("https://") + kHttpsProxyHost));
@@ -1441,8 +1438,7 @@ TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallenge) {
     EXPECT_FALSE(test_delegate.has_result());
 
     // Send credentials
-    test_delegate.auth_controller()->ResetAuth(
-        AuthCredentials(base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar")));
+    test_delegate.auth_controller()->ResetAuth(AuthCredentials(u"foo", u"bar"));
     test_delegate.RunAuthCallback();
     EXPECT_FALSE(test_delegate.has_result());
 
@@ -1579,8 +1575,7 @@ TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallengeNewConnection) {
     EXPECT_FALSE(test_delegate.has_result());
 
     // Send credentials
-    test_delegate.auth_controller()->ResetAuth(
-        AuthCredentials(base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar")));
+    test_delegate.auth_controller()->ResetAuth(AuthCredentials(u"foo", u"bar"));
     test_delegate.RunAuthCallback();
     EXPECT_FALSE(test_delegate.has_result());
 

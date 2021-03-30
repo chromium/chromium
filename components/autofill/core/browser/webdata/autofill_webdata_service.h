@@ -59,16 +59,16 @@ class AutofillWebDataService : public WebDataServiceBase {
   // |consumer| gets called back when the request is finished, with the vector
   // included in the argument |result|.
   virtual WebDataServiceBase::Handle GetFormValuesForElementName(
-      const base::string16& name,
-      const base::string16& prefix,
+      const std::u16string& name,
+      const std::u16string& prefix,
       int limit,
       WebDataServiceConsumer* consumer);
 
   // Removes form elements recorded for Autocomplete from the database.
   void RemoveFormElementsAddedBetween(const base::Time& delete_begin,
                                       const base::Time& delete_end);
-  void RemoveFormValueForElementName(const base::string16& name,
-                                     const base::string16& value);
+  void RemoveFormValueForElementName(const std::u16string& name,
+                                     const std::u16string& value);
 
   // Schedules a task to add an Autofill profile to the web database.
   void AddAutofillProfile(const AutofillProfile& profile);
@@ -136,7 +136,7 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Toggles the record for a server credit card between masked (only last 4
   // digits) and full (all digits).
   void UnmaskServerCreditCard(const CreditCard& card,
-                              const base::string16& full_number);
+                              const std::u16string& full_number);
   void MaskServerCreditCard(const std::string& id);
 
   // Store a UPI ID.

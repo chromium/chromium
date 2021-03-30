@@ -163,6 +163,29 @@ WebViewImpl::WebViewImpl(const std::string& id,
                          const bool w3c_compliant,
                          const WebViewImpl* parent,
                          const BrowserInfo* browser_info,
+                         std::unique_ptr<DevToolsClient> client)
+    : id_(id),
+      w3c_compliant_(w3c_compliant),
+      browser_info_(browser_info),
+      is_locked_(false),
+      is_detached_(false),
+      parent_(parent),
+      client_(std::move(client)),
+      dom_tracker_(nullptr),
+      frame_tracker_(nullptr),
+      dialog_manager_(nullptr),
+      mobile_emulation_override_manager_(nullptr),
+      geolocation_override_manager_(nullptr),
+      network_conditions_override_manager_(nullptr),
+      heap_snapshot_taker_(nullptr),
+      is_service_worker_(true) {
+  client_->SetOwner(this);
+}
+
+WebViewImpl::WebViewImpl(const std::string& id,
+                         const bool w3c_compliant,
+                         const WebViewImpl* parent,
+                         const BrowserInfo* browser_info,
                          std::unique_ptr<DevToolsClient> client,
                          const DeviceMetrics* device_metrics,
                          std::string page_load_strategy)
@@ -182,7 +205,8 @@ WebViewImpl::WebViewImpl(const std::string& id,
           new GeolocationOverrideManager(client_.get())),
       network_conditions_override_manager_(
           new NetworkConditionsOverrideManager(client_.get())),
-      heap_snapshot_taker_(new HeapSnapshotTaker(client_.get())) {
+      heap_snapshot_taker_(new HeapSnapshotTaker(client_.get())),
+      is_service_worker_(false) {
   // Downloading in headless mode requires the setting of
   // Browser.setDownloadBehavior. This is handled by the
   // DownloadDirectoryOverrideManager, which is only instantiated
@@ -201,6 +225,10 @@ WebViewImpl::WebViewImpl(const std::string& id,
 }
 
 WebViewImpl::~WebViewImpl() {}
+
+bool WebViewImpl::IsServiceWorker() const {
+  return is_service_worker_;
+}
 
 WebViewImpl* WebViewImpl::CreateChild(const std::string& session_id,
                                       const std::string& target_id) const {
@@ -825,6 +853,8 @@ Status WebViewImpl::AddCookie(const std::string& name,
   std::unique_ptr<base::DictionaryValue> result;
   Status status =
       client_->SendCommandAndGetResult("Network.setCookie", params, &result);
+  if (status.IsError())
+    return Status(kUnableToSetCookie);
   bool success;
   if (!result->GetBoolean("success", &success) || !success)
     return Status(kUnableToSetCookie);
@@ -1054,7 +1084,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
       return Status(kUnknownError,
                     "path is not canonical: " + files[i].AsUTF8Unsafe());
     }
-    file_list.AppendString(files[i].value());
+    file_list.AppendString(files[i].AsUTF8Unsafe());
   }
 
   base::DictionaryValue setFilesParams;
@@ -1217,7 +1247,8 @@ Status WebViewImpl::CallAsyncFunctionInternal(
 }
 
 void WebViewImpl::SetFrame(const std::string& new_frame_id) {
-  navigation_tracker_->SetFrame(new_frame_id);
+  if (!is_service_worker_)
+    navigation_tracker_->SetFrame(new_frame_id);
 }
 
 Status WebViewImpl::IsNotPendingNavigation(const std::string& frame_id,

@@ -45,6 +45,7 @@ CaptivePortalBlockingPage::CaptivePortalBlockingPage(
     const GURL& request_url,
     const GURL& login_url,
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
+    bool can_show_enhanced_protection_message,
     const net::SSLInfo& ssl_info,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
@@ -57,6 +58,7 @@ CaptivePortalBlockingPage::CaptivePortalBlockingPage(
                           std::move(ssl_cert_reporter),
                           false /* overridable */,
                           base::Time::Now(),
+                          can_show_enhanced_protection_message,
                           std::move(controller_client)),
       open_login_callback_(open_login_callback),
       login_url_(login_url),
@@ -133,13 +135,13 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_BUTTON_OPEN_LOGIN_PAGE));
 
-  base::string16 tab_title =
+  std::u16string tab_title =
       l10n_util::GetStringUTF16(is_wifi ? IDS_CAPTIVE_PORTAL_HEADING_WIFI
                                         : IDS_CAPTIVE_PORTAL_HEADING_WIRED);
   load_time_data->SetString("tabTitle", tab_title);
   load_time_data->SetString("heading", tab_title);
 
-  base::string16 paragraph;
+  std::u16string paragraph;
   if (login_url_.is_empty() ||
       login_url_.spec() == captive_portal::CaptivePortalDetector::kDefaultURL) {
     // Don't show the login url when it's empty or is the portal detection URL.
@@ -161,7 +163,7 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
   } else {
     // Portal redirection was done with HTTP redirects, so show the login URL.
     // If |languages| is empty, punycode in |login_host| will always be decoded.
-    base::string16 login_host = url_formatter::IDNToUnicode(login_url_.host());
+    std::u16string login_host = url_formatter::IDNToUnicode(login_url_.host());
     if (base::i18n::IsRTL())
       base::i18n::WrapStringWithLTRFormatting(&login_host);
 

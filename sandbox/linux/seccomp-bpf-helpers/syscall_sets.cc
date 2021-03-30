@@ -34,12 +34,23 @@ bool SyscallSets::IsAllowedGettime(int sysno) {
 #endif
       return true;
     case __NR_adjtimex:         // Privileged.
+    case __NR_clock_gettime:    // Parameters filtered by RestrictClockID().
+    case __NR_clock_settime:    // Privileged.
     case __NR_clock_adjtime:    // Privileged.
     case __NR_clock_getres:     // Allowed only on Android with parameters
-                                // filtered by RestrictClokID().
-    case __NR_clock_gettime:    // Parameters filtered by RestrictClockID().
+                                // filtered by RestrictClockID().
     case __NR_clock_nanosleep:  // Parameters filtered by RestrictClockID().
-    case __NR_clock_settime:    // Privileged.
+
+      // time64 versions are available on 32-bit systems.
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_clock_gettime64:      // Parameters filtered by RestrictClockID().
+    case __NR_clock_settime64:      // Privileged.
+    case __NR_clock_adjtime64:      // Privileged.
+    case __NR_clock_getres_time64:  // Allowed only on Android with parameters
+                                    // filtered by RestrictClockID().
+    case __NR_clock_nanosleep_time64:  // Parameters filtered by RestrictClockID().
+#endif
 #if defined(__i386__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
     case __NR_ftime:  // Obsolete.
@@ -159,6 +170,10 @@ bool SyscallSets::IsFileSystem(int sysno) {
     case __NR_utime:
 #endif
     case __NR_utimensat:  // New.
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_utimensat_time64:
+#endif
       return true;
     default:
       return false;
@@ -168,9 +183,11 @@ bool SyscallSets::IsFileSystem(int sysno) {
 bool SyscallSets::IsAllowedFileSystemAccessViaFd(int sysno) {
   switch (sysno) {
     case __NR_fstat:
+    case __NR_ftruncate:
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
     case __NR_fstat64:
+    case __NR_ftruncate64:
 #endif
       return true;
 // TODO(jln): these should be denied gracefully as well (moved below).
@@ -211,13 +228,8 @@ bool SyscallSets::IsDeniedFileSystemAccessViaFd(int sysno) {
     case __NR_fallocate:
     case __NR_fchmod:
     case __NR_fchown:
-    case __NR_ftruncate:
 #if defined(__i386__) || defined(__arm__)
     case __NR_fchown32:
-#endif
-#if defined(__i386__) || defined(__arm__) || \
-    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
-    case __NR_ftruncate64:
 #endif
 #if !defined(__aarch64__)
     case __NR_getdents:    // EPERM not a valid errno.
@@ -317,6 +329,7 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
     case __NR_rt_sigtimedwait:
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_rt_sigtimedwait_time64:
     case __NR_sigaction:
     case __NR_sigprocmask:
     case __NR_sigreturn:
@@ -420,6 +433,10 @@ bool SyscallSets::IsAllowedFutex(int sysno) {
     case __NR_get_robust_list:
     case __NR_set_robust_list:
     case __NR_futex:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_futex_time64:
+#endif
     default:
       return false;
   }
@@ -556,7 +573,15 @@ bool SyscallSets::IsAllowedGeneralIo(int sysno) {
     case __NR_poll:
 #endif
     case __NR_ppoll:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_ppoll_time64:
+#endif
     case __NR_pselect6:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_pselect6_time64:
+#endif
     case __NR_read:
     case __NR_readv:
     case __NR_pread64:
@@ -592,6 +617,10 @@ bool SyscallSets::IsAllowedGeneralIo(int sysno) {
     case __NR_pwrite64:
     case __NR_pwritev:
     case __NR_recvmmsg:  // Could specify source.
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_recvmmsg_time64:  // Could specify source.
+#endif
     case __NR_sendfile:
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
@@ -733,6 +762,12 @@ bool SyscallSets::IsMessageQueue(int sysno) {
     case __NR_mq_timedreceive:
     case __NR_mq_timedsend:
     case __NR_mq_unlink:
+      // time64 versions available on 32-bit systems.
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_mq_timedreceive_time64:
+    case __NR_mq_timedsend_time64:
+#endif
       return true;
     default:
       return false;
@@ -839,6 +874,10 @@ bool SyscallSets::IsSystemVSemaphores(int sysno) {
     case __NR_semget:
     case __NR_semop:
     case __NR_semtimedop:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_semtimedop_time64:
+#endif
       return true;
     default:
       return false;
@@ -915,6 +954,10 @@ bool SyscallSets::IsAdvancedScheduler(int sysno) {
     case __NR_sched_getparam:
     case __NR_sched_getscheduler:
     case __NR_sched_rr_get_interval:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_sched_rr_get_interval_time64:
+#endif
     case __NR_sched_setaffinity:
     case __NR_sched_setattr:
     case __NR_sched_setparam:
@@ -972,6 +1015,29 @@ bool SyscallSets::IsAdvancedTimer(int sysno) {
     case __NR_timerfd_create:
     case __NR_timerfd_gettime:
     case __NR_timerfd_settime:
+// time64 versions are available on 32-bit systems.
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_timer_gettime64:
+    case __NR_timer_settime64:
+    case __NR_timerfd_gettime64:
+    case __NR_timerfd_settime64:
+#endif
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool SyscallSets::IsClockApi(int sysno) {
+  switch (sysno) {
+    case __NR_clock_gettime:
+    case __NR_clock_nanosleep:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_clock_gettime64:
+    case __NR_clock_nanosleep_time64:
+#endif
       return true;
     default:
       return false;

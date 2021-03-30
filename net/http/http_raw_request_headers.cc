@@ -4,6 +4,8 @@
 
 #include "net/http/http_raw_request_headers.h"
 
+#include "base/strings/string_piece.h"
+
 namespace net {
 
 HttpRawRequestHeaders::HttpRawRequestHeaders() = default;
@@ -14,7 +16,7 @@ HttpRawRequestHeaders::~HttpRawRequestHeaders() = default;
 
 void HttpRawRequestHeaders::Add(base::StringPiece key,
                                 base::StringPiece value) {
-  headers_.emplace_back(key.as_string(), value.as_string());
+  headers_.emplace_back(std::string(key), std::string(value));
 }
 
 bool HttpRawRequestHeaders::FindHeaderForTest(base::StringPiece key,

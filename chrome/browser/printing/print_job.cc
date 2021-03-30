@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -85,7 +84,7 @@ PrintJob::~PrintJob() {
 }
 
 void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
-                          const base::string16& name,
+                          const std::u16string& name,
                           uint32_t page_count) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!worker_);
@@ -600,8 +599,8 @@ void PrintJob::ControlledWorkerShutdown() {
 
 bool PrintJob::PostTask(const base::Location& from_here,
                         base::OnceClosure task) {
-  return base::PostTask(from_here, {content::BrowserThread::UI},
-                        std::move(task));
+  return content::GetUIThreadTaskRunner({})->PostTask(from_here,
+                                                      std::move(task));
 }
 
 void PrintJob::HoldUntilStopIsCalled() {

@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted_memory.h"
@@ -33,12 +32,10 @@
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print.mojom.h"
-#include "components/printing/common/print_messages.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -66,6 +63,10 @@
 #include "chrome/browser/printing/print_view_manager.h"
 #endif
 
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/win/conflicts/module_database.h"
+#endif
+
 namespace printing {
 
 namespace {
@@ -73,7 +74,7 @@ namespace {
 using PrintSettingsCallback =
     base::OnceCallback<void(std::unique_ptr<PrinterQuery>)>;
 
-void ShowWarningMessageBox(const base::string16& message) {
+void ShowWarningMessageBox(const std::u16string& message) {
   // Runs always on the UI thread.
   static bool is_dialog_shown = false;
   if (is_dialog_shown)
@@ -81,7 +82,7 @@ void ShowWarningMessageBox(const base::string16& message) {
   // Block opening dialog from nested task.
   base::AutoReset<bool> auto_reset(&is_dialog_shown, true);
 
-  chrome::ShowWarningMessageBox(nullptr, base::string16(), message);
+  chrome::ShowWarningMessageBox(nullptr, std::u16string(), message);
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -266,6 +267,78 @@ void UpdatePrintSettingsOnIO(
                      routing_id));
 }
 
+// Runs |callback| with |params| to reply to
+// mojom::PrintManagerHost::ScriptedPrint.
+void ScriptedPrintReply(mojom::PrintManagerHost::ScriptedPrintCallback callback,
+                        mojom::PrintPagesParamsPtr params,
+                        int process_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!content::RenderProcessHost::FromID(process_id)) {
+    // Early return if the renderer is not alive.
+    return;
+  }
+
+  if (!params) {
+    // Fills |params| with initial values.
+    params = mojom::PrintPagesParams::New();
+    params->params = mojom::PrintParams::New();
+  }
+  std::move(callback).Run(std::move(params));
+}
+
+void ScriptedPrintReplyOnIO(
+    scoped_refptr<PrintQueriesQueue> queue,
+    std::unique_ptr<PrinterQuery> printer_query,
+    mojom::PrintManagerHost::ScriptedPrintCallback callback,
+    int process_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  auto params = mojom::PrintPagesParams::New();
+  params->params = mojom::PrintParams::New();
+  if (printer_query->last_status() == PrintingContext::OK &&
+      printer_query->settings().dpi()) {
+    RenderParamsFromPrintSettings(printer_query->settings(),
+                                  params->params.get());
+    params->params->document_cookie = printer_query->cookie();
+    params->pages = PageRange::GetPages(printer_query->settings().ranges());
+  }
+  bool has_valid_cookie = params->params->document_cookie;
+  bool has_dpi = !params->params->dpi.IsEmpty();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ScriptedPrintReply, std::move(callback),
+                                std::move(params), process_id));
+
+  if (has_dpi && has_valid_cookie) {
+    queue->QueuePrinterQuery(std::move(printer_query));
+  } else {
+    printer_query->StopWorker();
+  }
+}
+
+void ScriptedPrintOnIO(mojom::ScriptedPrintParamsPtr params,
+                       mojom::PrintManagerHost::ScriptedPrintCallback callback,
+                       scoped_refptr<PrintQueriesQueue> queue,
+                       int process_id,
+                       int routing_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  ModuleDatabase::GetInstance()->DisableThirdPartyBlocking();
+#endif
+
+  std::unique_ptr<PrinterQuery> printer_query =
+      queue->PopPrinterQuery(params->cookie);
+  if (!printer_query) {
+    printer_query = queue->CreatePrinterQuery(process_id, routing_id);
+  }
+  auto* printer_query_ptr = printer_query.get();
+  printer_query_ptr->GetSettings(
+      PrinterQuery::GetSettingsAskParam::ASK_USER, params->expected_pages_count,
+      params->has_selection, params->margin_type, params->is_scripted,
+      params->is_modifiable,
+      base::BindOnce(&ScriptedPrintReplyOnIO, queue, std::move(printer_query),
+                     std::move(callback), process_id));
+}
+
 }  // namespace
 
 PrintViewManagerBase::PrintViewManagerBase(content::WebContents* web_contents)
@@ -424,8 +497,8 @@ void PrintViewManagerBase::NavigationStopped() {
   TerminatePrintJob(true);
 }
 
-base::string16 PrintViewManagerBase::RenderSourceName() {
-  base::string16 name(web_contents()->GetTitle());
+std::u16string PrintViewManagerBase::RenderSourceName() {
+  std::u16string name(web_contents()->GetTitle());
   if (name.empty())
     name = l10n_util::GetStringUTF16(IDS_DEFAULT_PRINT_DOCUMENT_TITLE);
   return name;
@@ -575,6 +648,19 @@ void PrintViewManagerBase::UpdatePrintSettings(
                      render_frame_host->GetRoutingID()));
 }
 
+void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
+                                         ScriptedPrintCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::RenderFrameHost* render_frame_host =
+      print_manager_host_receivers_.GetCurrentTargetFrame();
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ScriptedPrintOnIO, std::move(params), std::move(callback),
+                     queue_, render_frame_host->GetProcess()->GetID(),
+                     render_frame_host->GetRoutingID()));
+}
+
 void PrintViewManagerBase::PrintingFailed(int32_t cookie) {
   PrintManager::PrintingFailed(cookie);
 
@@ -588,13 +674,6 @@ void PrintViewManagerBase::PrintingFailed(int32_t cookie) {
       chrome::NOTIFICATION_PRINT_JOB_RELEASED,
       content::Source<content::WebContents>(web_contents()),
       content::NotificationService::NoDetails());
-}
-
-void PrintViewManagerBase::OnScriptedPrint(
-    content::RenderFrameHost* render_frame_host,
-    const mojom::ScriptedPrintParams& params,
-    IPC::Message* reply_msg) {
-  NOTREACHED() << "should be handled by printing:: PrintingMessageFilter";
 }
 
 void PrintViewManagerBase::ShowInvalidPrinterSettingsError() {
@@ -783,13 +862,10 @@ bool PrintViewManagerBase::CreateNewPrintJob(
   print_job_ = base::MakeRefCounted<PrintJob>();
   print_job_->Initialize(std::move(query), RenderSourceName(), number_pages_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  PrintJob::Source source = PrintJob::Source::PRINT_PREVIEW;
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kPrintJobManagementApp) &&
-      web_contents()->GetBrowserContext()->IsOffTheRecord()) {
-    source = PrintJob::Source::PRINT_PREVIEW_INCOGNITO;
-  }
-  print_job_->SetSource(source, /*source_id=*/"");
+  print_job_->SetSource(web_contents()->GetBrowserContext()->IsOffTheRecord()
+                            ? PrintJob::Source::PRINT_PREVIEW_INCOGNITO
+                            : PrintJob::Source::PRINT_PREVIEW,
+                        /*source_id=*/"");
 #endif
 
   registrar_.Add(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,

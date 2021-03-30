@@ -15,6 +15,7 @@
 
 using content::SocketPermissionRequest;
 using extensions::SocketPermissionData;
+using extensions::mojom::APIPermissionID;
 
 namespace chrome_apps {
 
@@ -33,7 +34,7 @@ void CheckFromValue(extensions::APIPermission* permission,
 TEST(MediaGalleriesPermissionTest, GoodValues) {
   const extensions::APIPermissionInfo* permission_info =
       extensions::PermissionsInfo::GetInstance()->GetByID(
-          extensions::APIPermission::kMediaGalleries);
+          APIPermissionID::kMediaGalleries);
 
   std::unique_ptr<extensions::APIPermission> permission(
       permission_info->CreateAPIPermission());
@@ -91,7 +92,7 @@ TEST(MediaGalleriesPermissionTest, GoodValues) {
 TEST(MediaGalleriesPermissionTest, BadValues) {
   const extensions::APIPermissionInfo* permission_info =
       extensions::PermissionsInfo::GetInstance()->GetByID(
-          extensions::APIPermission::kMediaGalleries);
+          APIPermissionID::kMediaGalleries);
 
   std::unique_ptr<extensions::APIPermission> permission(
       permission_info->CreateAPIPermission());
@@ -138,7 +139,7 @@ TEST(MediaGalleriesPermissionTest, UnknownValues) {
   std::vector<std::string> unhandled;
   const extensions::APIPermissionInfo* permission_info =
       extensions::PermissionsInfo::GetInstance()->GetByID(
-          extensions::APIPermission::kMediaGalleries);
+          APIPermissionID::kMediaGalleries);
 
   std::unique_ptr<extensions::APIPermission> permission(
       permission_info->CreateAPIPermission());
@@ -174,7 +175,7 @@ TEST(MediaGalleriesPermissionTest, UnknownValues) {
 TEST(MediaGalleriesPermissionTest, Equal) {
   const extensions::APIPermissionInfo* permission_info =
       extensions::PermissionsInfo::GetInstance()->GetByID(
-          extensions::APIPermission::kMediaGalleries);
+          APIPermissionID::kMediaGalleries);
 
   std::unique_ptr<extensions::APIPermission> permission1(
       permission_info->CreateAPIPermission());
@@ -227,7 +228,7 @@ TEST(MediaGalleriesPermissionTest, Equal) {
 TEST(MediaGalleriesPermissionTest, NotEqual) {
   const extensions::APIPermissionInfo* permission_info =
       extensions::PermissionsInfo::GetInstance()->GetByID(
-          extensions::APIPermission::kMediaGalleries);
+          APIPermissionID::kMediaGalleries);
 
   std::unique_ptr<extensions::APIPermission> permission1(
       permission_info->CreateAPIPermission());
@@ -251,7 +252,7 @@ TEST(MediaGalleriesPermissionTest, NotEqual) {
 TEST(MediaGalleriesPermissionTest, ToFromValue) {
   const extensions::APIPermissionInfo* permission_info =
       extensions::PermissionsInfo::GetInstance()->GetByID(
-          extensions::APIPermission::kMediaGalleries);
+          APIPermissionID::kMediaGalleries);
 
   std::unique_ptr<extensions::APIPermission> permission1(
       permission_info->CreateAPIPermission());

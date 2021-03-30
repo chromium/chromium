@@ -21,8 +21,6 @@ source_set("renderer") {
     "api/automation/automation_internal_custom_bindings.h",
     "api/automation/automation_position.cc",
     "api/automation/automation_position.h",
-    "api/display_source/display_source_session.cc",
-    "api/display_source/display_source_session.h",
     "api_activity_logger.cc",
     "api_activity_logger.h",
     "api_definitions_natives.cc",
@@ -96,8 +94,6 @@ source_set("renderer") {
     "dispatcher.h",
     "dispatcher_delegate.cc",
     "dispatcher_delegate.h",
-    "display_source_custom_bindings.cc",
-    "display_source_custom_bindings.h",
     "dom_activity_logger.cc",
     "dom_activity_logger.h",
     "dom_hooks_delegate.cc",
@@ -130,14 +126,10 @@ source_set("renderer") {
     "get_script_context.h",
     "gin_port.cc",
     "gin_port.h",
-    "guest_view/extensions_guest_view_container.cc",
-    "guest_view/extensions_guest_view_container.h",
     "guest_view/extensions_guest_view_container_dispatcher.cc",
     "guest_view/extensions_guest_view_container_dispatcher.h",
     "guest_view/guest_view_internal_custom_bindings.cc",
     "guest_view/guest_view_internal_custom_bindings.h",
-    "guest_view/mime_handler_view/mime_handler_view_container.cc",
-    "guest_view/mime_handler_view/mime_handler_view_container.h",
     "guest_view/mime_handler_view/mime_handler_view_container_manager.cc",
     "guest_view/mime_handler_view/mime_handler_view_container_manager.h",
     "guest_view/mime_handler_view/mime_handler_view_frame_container.cc",
@@ -272,6 +264,7 @@ source_set("renderer") {
     "//skia",
     "//storage/common",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/common",
     "//third_party/blink/public/strings:strings",
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/zlib/google:compression_utils",
@@ -279,42 +272,6 @@ source_set("renderer") {
 
   # Temporarily allow crash_key; see https://crbug.com/1034755
   deps += [ "//components/crash/core/common:crash_key" ]
-
-  if (proprietary_codecs && enable_wifi_display) {
-    sources += [
-      "api/display_source/wifi_display/wifi_display_audio_encoder.cc",
-      "api/display_source/wifi_display/wifi_display_audio_encoder.h",
-      "api/display_source/wifi_display/wifi_display_audio_encoder_lpcm.cc",
-      "api/display_source/wifi_display/wifi_display_elementary_stream_descriptor.cc",
-      "api/display_source/wifi_display/wifi_display_elementary_stream_descriptor.h",
-      "api/display_source/wifi_display/wifi_display_elementary_stream_info.cc",
-      "api/display_source/wifi_display/wifi_display_elementary_stream_info.h",
-      "api/display_source/wifi_display/wifi_display_elementary_stream_packetizer.cc",
-      "api/display_source/wifi_display/wifi_display_elementary_stream_packetizer.h",
-      "api/display_source/wifi_display/wifi_display_media_encoder.cc",
-      "api/display_source/wifi_display/wifi_display_media_encoder.h",
-      "api/display_source/wifi_display/wifi_display_media_manager.cc",
-      "api/display_source/wifi_display/wifi_display_media_manager.h",
-      "api/display_source/wifi_display/wifi_display_media_packetizer.cc",
-      "api/display_source/wifi_display/wifi_display_media_packetizer.h",
-      "api/display_source/wifi_display/wifi_display_media_pipeline.cc",
-      "api/display_source/wifi_display/wifi_display_media_pipeline.h",
-      "api/display_source/wifi_display/wifi_display_session.cc",
-      "api/display_source/wifi_display/wifi_display_session.h",
-      "api/display_source/wifi_display/wifi_display_stream_packet_part.h",
-      "api/display_source/wifi_display/wifi_display_transport_stream_packetizer.cc",
-      "api/display_source/wifi_display/wifi_display_transport_stream_packetizer.h",
-      "api/display_source/wifi_display/wifi_display_video_encoder.cc",
-      "api/display_source/wifi_display/wifi_display_video_encoder.h",
-      "api/display_source/wifi_display/wifi_display_video_encoder_svc.cc",
-      "api/display_source/wifi_display/wifi_display_video_encoder_vea.cc",
-    ]
-
-    deps += [
-      "//third_party/openh264:encoder",
-      "//third_party/wds:libwds",
-    ]
-  }
 }
 
 static_library("unit_test_support") {
@@ -426,11 +383,4 @@ source_set("unit_tests") {
     "//third_party/blink/public:blink",
     "//ui/base",
   ]
-
-  if (enable_wifi_display && proprietary_codecs) {
-    sources += [
-      "api/display_source/wifi_display/wifi_display_elementary_stream_descriptor_unittest.cc",
-      "api/display_source/wifi_display/wifi_display_media_packetizer_unittest.cc",
-    ]
-  }
 }

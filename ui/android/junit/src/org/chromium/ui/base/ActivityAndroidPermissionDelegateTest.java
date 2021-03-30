@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.pm.PackageManager;
+import android.os.Build;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -170,19 +171,59 @@ public class ActivityAndroidPermissionDelegateTest {
     }
 
     @Test
-    public void testCanRequestPermissionAfterRequestDenied() {
+    public void
+    testCanRequestPermissionRequestDenied_shouldNotShowRationale_prevShouldShowRationale() {
         mActivityScenarios.getScenario().onActivity(activity -> {
             AndroidPermissionDelegate permissionDelegate =
                     new ActivityAndroidPermissionDelegate(new WeakReference(activity));
+            Shadows.shadowOf(activity.getPackageManager())
+                    .setShouldShowRequestPermissionRationale(
+                            android.Manifest.permission.INTERNET, true);
             performRequestPermission(permissionDelegate, Shadows.shadowOf(activity),
                     android.Manifest.permission.INTERNET, PackageManager.PERMISSION_DENIED);
-
+            Shadows.shadowOf(activity.getPackageManager())
+                    .setShouldShowRequestPermissionRationale(
+                            android.Manifest.permission.INTERNET, false);
             boolean canRequest =
                     permissionDelegate.canRequestPermission(android.Manifest.permission.INTERNET);
 
             assertFalse(
-                    "After a denied permission request canRequestPermission should return false",
+                    "After a denied permission request canRequestPermission should return false "
+                            + "if shouldShowRequestPermissionRationale returns false after "
+                            + "previously returning true",
                     canRequest);
+        });
+    }
+
+    @Test
+    public void
+    testCanRequestPermissionRequestDenied_shouldNotShowRationale_prevShouldNotShowRationale() {
+        mActivityScenarios.getScenario().onActivity(activity -> {
+            AndroidPermissionDelegate permissionDelegate =
+                    new ActivityAndroidPermissionDelegate(new WeakReference(activity));
+            Shadows.shadowOf(activity.getPackageManager())
+                    .setShouldShowRequestPermissionRationale(
+                            android.Manifest.permission.INTERNET, false);
+            performRequestPermission(permissionDelegate, Shadows.shadowOf(activity),
+                    android.Manifest.permission.INTERNET, PackageManager.PERMISSION_DENIED);
+            Shadows.shadowOf(activity.getPackageManager())
+                    .setShouldShowRequestPermissionRationale(
+                            android.Manifest.permission.INTERNET, false);
+            boolean canRequest =
+                    permissionDelegate.canRequestPermission(android.Manifest.permission.INTERNET);
+
+            if (Build.VERSION.SDK_INT < 30 /*Build.VERSION_CODES.R*/) {
+                assertFalse("After a denied permission request canRequestPermission should return "
+                                + "false if shouldShowRequestPermissionRationale returns false",
+                        canRequest);
+            } else {
+                // This can happen in Android.R>= when a user dismissed permission dialog before
+                // taking any action.
+                assertTrue("After a denied permission request canRequestPermission should return "
+                                + "true if shouldShowRequestPermissionRationale returns false "
+                                + "after previously returning false",
+                        canRequest);
+            }
         });
     }
 

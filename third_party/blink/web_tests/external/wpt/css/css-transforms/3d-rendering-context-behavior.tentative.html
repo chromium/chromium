@@ -35,12 +35,12 @@
 </div>
 
 <div class="parent rotateNeg45">
-  <div id=fixedChildOfPreserve3D class="child rotate45" style="position: absolute"></div>
+  <div id=fixedChildOfPreserve3D class="child rotate45" style="position: fixed"></div>
 </div>
 
 <div class="parent rotateNeg45">
   <div>
-    <div id=childWithIntermediate class="child rotate45" style="position: absolute"></div>
+    <div id=childWithIntermediate class="child rotate45"></div>
   </div>
 </div>
 
@@ -57,7 +57,7 @@
 </div>
 
 <div class="perspective">
-  <div id=childWithPerspectiveParent class="child rotate45" style="position: absolute"></div>
+  <div id=childWithPerspectiveParent class="child rotate45"></div>
   <div id=absWithPerspectiveParent class="child rotate45" style="position: absolute"></div>
   <div id=fixedWithPerspectiveParent class="child rotate45" style="position: fixed"></div>
 </div>
@@ -78,10 +78,14 @@
   }, "Direct DOM parent is root of rendering context");
 
   test(function() {
-    assert_equals(childWithIntermediate.getBoundingClientRect().width, 200);
-    assert_equals(absWithIntermediate.getBoundingClientRect().width, 200);
-    assert_equals(fixedWithIntermediate.getBoundingClientRect().width, 200);
-  }, "Intermediate DOM nodes cause rendering context to end");
+    assert_equals(childWithIntermediate.getBoundingClientRect().width, 100);
+  }, "Intermediate DOM nodes cause rendering context to end (normal flow)");
+  test(function() {
+    assert_equals(absWithIntermediate.getBoundingClientRect().width, 100);
+  }, "Intermediate DOM nodes cause rendering context to end (absolute)");
+  test(function() {
+    assert_equals(fixedWithIntermediate.getBoundingClientRect().width, 100);
+  }, "Intermediate DOM nodes cause rendering context to end (fixed)");
 
   test(function() {
     assert_approx_equals(

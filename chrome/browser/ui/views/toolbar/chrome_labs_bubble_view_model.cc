@@ -3,12 +3,93 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/flag_descriptions.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
-ChromeLabsBubbleViewModel::ChromeLabsBubbleViewModel() {
-  SetUpLabs();
+namespace {
+
+base::Optional<std::vector<LabInfo>>& GetTestData() {
+  static base::NoDestructor<base::Optional<std::vector<LabInfo>>> test_lab_data;
+  return *test_lab_data;
 }
+
+void SetLabInfoForTesting(const std::vector<LabInfo>& test_feature_info) {
+  if (test_feature_info.empty())
+    GetTestData().reset();
+  else
+    GetTestData() = test_feature_info;
+}
+
+// TODO(elainechien): Explore better ways to allow developers to add their
+// experiments.
+// Experiments featured in labs must have feature entries of type FEATURE_VALUE
+// (Default, Enabled, Disabled states) or FEATURE_WITH_PARAMS_VALUE
+const std::vector<LabInfo>& GetData() {
+  if (GetTestData())
+    return GetTestData().value();
+
+  static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
+    std::vector<LabInfo> lab_info;
+
+    // Read Later.
+    lab_info.emplace_back(LabInfo(
+        flag_descriptions::kReadLaterFlagId,
+        l10n_util::GetStringUTF16(IDS_READ_LATER_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(IDS_READ_LATER_EXPERIMENT_DESCRIPTION),
+        "chrome-labs-read-later", version_info::Channel::BETA));
+
+    // Tab Scrolling.
+    std::vector<std::u16string> tab_scrolling_variation_descriptions = {
+        l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_PINNED_TAB_WIDTH),
+        l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_MEDIUM_WIDTH),
+        l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_LARGE_WIDTH),
+        l10n_util::GetStringUTF16(IDS_TABS_DO_NOT_SHRINK)};
+
+    lab_info.emplace_back(LabInfo(
+        flag_descriptions::kScrollableTabStripFlagId,
+        l10n_util::GetStringUTF16(IDS_TAB_SCROLLING_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(IDS_TAB_SCROLLING_EXPERIMENT_DESCRIPTION),
+        "chrome-labs-tab-scrolling", version_info::Channel::BETA,
+        tab_scrolling_variation_descriptions));
+
+    // Tab Search.
+    lab_info.emplace_back(LabInfo(
+        flag_descriptions::kEnableTabSearchFlagId,
+        l10n_util::GetStringUTF16(IDS_TAB_SEARCH_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(IDS_TAB_SEARCH_EXPERIMENT_DESCRIPTION),
+        "chrome-labs-tab-search", version_info::Channel::BETA));
+
+    return lab_info;
+  }());
+
+  return *lab_info_;
+}
+}  // namespace
+
+LabInfo::LabInfo(
+    const std::string& internal_name,
+    const std::u16string& visible_name,
+    const std::u16string& visible_description,
+    const std::string& feedback_category_name,
+    version_info::Channel allowed_channel,
+    std::vector<std::u16string> translated_feature_variation_descriptions)
+    : internal_name(internal_name),
+      visible_name(visible_name),
+      visible_description(visible_description),
+      feedback_category_name(feedback_category_name),
+      allowed_channel(allowed_channel),
+      translated_feature_variation_descriptions(
+          translated_feature_variation_descriptions) {}
+
+LabInfo::LabInfo(const LabInfo& other) = default;
+
+LabInfo::~LabInfo() = default;
+
+ChromeLabsBubbleViewModel::ChromeLabsBubbleViewModel() : lab_info_(GetData()) {}
 
 ChromeLabsBubbleViewModel::~ChromeLabsBubbleViewModel() = default;
 
@@ -16,28 +97,15 @@ const std::vector<LabInfo>& ChromeLabsBubbleViewModel::GetLabInfo() const {
   return lab_info_;
 }
 
-// TODO(elainechien): Explore better ways to allow developers to add their
-// experiments.
-// Experiments featured in labs must have feature entries of type FEATURE_VALUE
-// (Default, Enabled, Disabled states). Experiments with multiple parameters may
-// be considered in the future.
-void ChromeLabsBubbleViewModel::SetUpLabs() {
-  // Read Later.
-  lab_info_.emplace_back(LabInfo(
-      flag_descriptions::kReadLaterFlagId, base::ASCIIToUTF16("Reading List"),
-      base::ASCIIToUTF16(
-          "Right click on a tab or click the star to add tabs to a reading "
-          "list. Access from the Bookmarks bar.")));
+ScopedChromeLabsModelDataForTesting::ScopedChromeLabsModelDataForTesting() =
+    default;
 
-  // Tab Search.
-  lab_info_.emplace_back(
-      LabInfo(flag_descriptions::kEnableTabSearchFlagId,
-              base::ASCIIToUTF16("Tab Search"),
-              base::ASCIIToUTF16("Enable a popup bubble in Top Chrome UI to "
-                                 "search over currently open tabs.")));
+ScopedChromeLabsModelDataForTesting::~ScopedChromeLabsModelDataForTesting() {
+  // Remove test data.
+  SetLabInfoForTesting(std::vector<LabInfo>());  // IN-TEST
 }
 
-void ChromeLabsBubbleViewModel::SetLabInfoForTesting(
+void ScopedChromeLabsModelDataForTesting::SetModelDataForTesting(
     const std::vector<LabInfo>& test_feature_info) {
-  lab_info_ = test_feature_info;
+  SetLabInfoForTesting(test_feature_info);  // IN-TEST
 }

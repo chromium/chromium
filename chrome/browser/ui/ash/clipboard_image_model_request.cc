@@ -9,6 +9,8 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/scoped_clipboard_history_pause.h"
 #include "base/base64.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_view_host.h"
@@ -24,6 +26,14 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+namespace {
+
+// The maximum size that the web contents can be. It caps the memory consumption
+// incurred by web contents rendering.
+constexpr gfx::Size kMaxWebContentsSize(2000, 2000);
+
+}  // namespace
 
 ClipboardImageModelRequest::Params::Params(const base::UnguessableToken& id,
                                            const std::string& html_markup,
@@ -75,7 +85,8 @@ ClipboardImageModelRequest::ClipboardImageModelRequest(
     base::RepeatingClosure on_request_finished_callback)
     : widget_(std::make_unique<views::Widget>()),
       web_view_(new views::WebView(profile)),
-      on_request_finished_callback_(std::move(on_request_finished_callback)) {
+      on_request_finished_callback_(std::move(on_request_finished_callback)),
+      request_creation_time_(base::TimeTicks::Now()) {
   views::Widget::InitParams widget_params;
   widget_params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   widget_params.ownership =
@@ -88,7 +99,10 @@ ClipboardImageModelRequest::ClipboardImageModelRequest(
   web_contents()->SetDelegate(this);
 }
 
-ClipboardImageModelRequest::~ClipboardImageModelRequest() = default;
+ClipboardImageModelRequest::~ClipboardImageModelRequest() {
+  UMA_HISTOGRAM_TIMES("Ash.ClipboardHistory.ImageModelRequest.Lifetime",
+                      base::TimeTicks::Now() - request_creation_time_);
+}
 
 void ClipboardImageModelRequest::Start(Params&& params) {
   DCHECK(!deliver_image_model_callback_);
@@ -101,6 +115,7 @@ void ClipboardImageModelRequest::Start(Params&& params) {
 
   timeout_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(10), this,
                        &ClipboardImageModelRequest::OnTimeout);
+  request_start_time_ = base::TimeTicks::Now();
 
   // Begin the document with the proper charset, this should prevent strange
   // looking characters from showing up in the render in some cases.
@@ -130,7 +145,13 @@ void ClipboardImageModelRequest::Start(Params&& params) {
   web_contents()->GetNativeView()->SetBounds(gfx::Rect(0, 0, 1, 1));
 }
 
-void ClipboardImageModelRequest::Stop() {
+void ClipboardImageModelRequest::Stop(RequestStopReason stop_reason) {
+  UMA_HISTOGRAM_ENUMERATION("Ash.ClipboardHistory.ImageModelRequest.StopReason",
+                            stop_reason);
+  DCHECK(!request_start_time_.is_null());
+  UMA_HISTOGRAM_TIMES("Ash.ClipboardHistory.ImageModelRequest.Runtime",
+                      base::TimeTicks::Now() - request_start_time_);
+  request_start_time_ = base::TimeTicks();
   scoped_clipboard_modifier_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
   copy_surface_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -148,7 +169,7 @@ ClipboardImageModelRequest::StopAndGetParams() {
   DCHECK(IsRunningRequest());
   Params params(request_id_, html_markup_,
                 std::move(deliver_image_model_callback_));
-  Stop();
+  Stop(RequestStopReason::kRequestCanceled);
   return params;
 }
 
@@ -201,7 +222,7 @@ void ClipboardImageModelRequest::RenderViewHostChanged(
     return;
 
   web_contents()->GetRenderWidgetHostView()->EnableAutoResize(
-      gfx::Size(1, 1), gfx::Size(INT_MAX, INT_MAX));
+      gfx::Size(1, 1), kMaxWebContentsSize);
 }
 
 void ClipboardImageModelRequest::OnVisualStateChangeFinished(bool done) {
@@ -231,7 +252,7 @@ void ClipboardImageModelRequest::CopySurface() {
   content::RenderWidgetHostView* source_view =
       web_contents()->GetRenderViewHost()->GetWidget()->GetView();
   if (source_view->GetViewBounds().size().IsEmpty()) {
-    Stop();
+    Stop(RequestStopReason::kEmptyResult);
     return;
   }
 
@@ -240,22 +261,24 @@ void ClipboardImageModelRequest::CopySurface() {
   source_view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
       base::BindOnce(&ClipboardImageModelRequest::OnCopyComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     source_view->GetDeviceScaleFactor()));
 }
 
-void ClipboardImageModelRequest::OnCopyComplete(const SkBitmap& bitmap) {
+void ClipboardImageModelRequest::OnCopyComplete(float device_scale_factor,
+                                                const SkBitmap& bitmap) {
   if (!deliver_image_model_callback_) {
-    Stop();
+    Stop(RequestStopReason::kMultipleCopyCompletion);
     return;
   }
 
   std::move(deliver_image_model_callback_)
       .Run(ui::ImageModel::FromImageSkia(
-          gfx::ImageSkia::CreateFrom1xBitmap(bitmap)));
-  Stop();
+          gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, device_scale_factor))));
+  Stop(RequestStopReason::kFulfilled);
 }
 
 void ClipboardImageModelRequest::OnTimeout() {
   DCHECK(deliver_image_model_callback_);
-  Stop();
+  Stop(RequestStopReason::kTimeout);
 }

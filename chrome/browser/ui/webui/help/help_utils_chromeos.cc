@@ -8,10 +8,10 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_switches.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/settings/cros_settings_names.h"
 
 namespace help_utils_chromeos {
@@ -23,7 +23,7 @@ bool IsUpdateOverCellularAllowed(bool interactive) {
       interactive ? true : chromeos::switches::IsCellularFirstDevice();
 
   // Device Policy overrides the defaults.
-  chromeos::CrosSettings* settings = chromeos::CrosSettings::Get();
+  ash::CrosSettings* settings = ash::CrosSettings::Get();
   if (!settings)
     return default_update_over_cellular_allowed;
 

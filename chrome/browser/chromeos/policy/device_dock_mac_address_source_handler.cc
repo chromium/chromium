@@ -17,7 +17,7 @@ namespace em = enterprise_management;
 namespace policy {
 
 DeviceDockMacAddressHandler::DeviceDockMacAddressHandler(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     chromeos::NetworkDeviceHandler* network_device_handler)
     : cros_settings_(cros_settings),
       network_device_handler_(network_device_handler) {

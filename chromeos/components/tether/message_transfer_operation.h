@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+#include "chromeos/components/tether/message_wrapper.h"
 #include "chromeos/components/tether/proto/tether.pb.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/client_channel.h"
@@ -24,7 +25,6 @@ namespace chromeos {
 
 namespace tether {
 
-class MessageWrapper;
 class TimerFactory;
 
 // Abstract base class used for operations which send and/or receive messages

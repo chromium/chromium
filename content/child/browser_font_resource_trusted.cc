@@ -21,7 +21,6 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/platform/web_font.h"
 #include "third_party/blink/public/platform/web_font_description.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_run.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -32,7 +31,6 @@ using ppapi::thunk::EnterResourceNoLock;
 using ppapi::thunk::PPB_ImageData_API;
 using blink::WebFont;
 using blink::WebFontDescription;
-using blink::WebRect;
 using blink::WebTextRun;
 
 namespace content {
@@ -43,12 +41,12 @@ namespace {
 // undefined reference linker error.
 const char kCommonScript[] = "Zyyy";
 
-base::string16 GetFontFromMap(const blink::web_pref::ScriptFontFamilyMap& map,
+std::u16string GetFontFromMap(const blink::web_pref::ScriptFontFamilyMap& map,
                               const std::string& script) {
   blink::web_pref::ScriptFontFamilyMap::const_iterator it = map.find(script);
   if (it != map.end())
     return it->second;
-  return base::string16();
+  return std::u16string();
 }
 
 // Splits a PP_BrowserFont_Trusted_TextRun into a sequence or LTR and RTL
@@ -84,7 +82,7 @@ class TextRunCollection {
       ubidi_close(bidi_);
   }
 
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
   int num_runs() const { return num_runs_; }
 
   // Returns a WebTextRun with the info for the run at the given index.
@@ -94,7 +92,7 @@ class TextRunCollection {
     if (bidi_) {
       bool run_rtl = !!ubidi_getVisualRun(bidi_, index, run_start, run_len);
       return WebTextRun(blink::WebString::FromUTF16(
-                            base::string16(&text_[*run_start], *run_len)),
+                            std::u16string(&text_[*run_start], *run_len)),
                         run_rtl, true);
     }
 
@@ -110,7 +108,7 @@ class TextRunCollection {
   UBiDi* bidi_;
 
   // Text of all the runs.
-  base::string16 text_;
+  std::u16string text_;
 
   int num_runs_;
 
@@ -170,7 +168,7 @@ WebFontDescription PPFontDescToWebFontDesc(
   StringVar* face_name = StringVar::FromPPVar(font.face);  // Possibly null.
 
   WebFontDescription result;
-  base::string16 resolved_family;
+  std::u16string resolved_family;
   if (!face_name || face_name->value().empty()) {
     // Resolve the generic family.
     switch (font.family) {

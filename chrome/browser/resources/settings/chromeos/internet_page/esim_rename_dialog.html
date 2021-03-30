@@ -1,7 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
@@ -13,6 +13,18 @@
         --cr-dialog-width: 324px;
       }
 
+      #warningMessage {
+        --iron-icon-fill-color: #5F6368;
+        --iron-icon-height: 16px;
+        --iron-icon-width: 16px;
+        font-size: smaller;
+        margin-bottom: 24px;
+      }
+
+      #warningMessage iron-icon {
+        padding-inline-end: 4px;
+      }
+
       #cancel {
         margin-inline-end: 8px;
       }
@@ -20,6 +32,10 @@
     <cr-dialog id="profileRenameDialog" show-on-attach>
       <div slot="title">$i18n{eSimRenameProfileDialogLabel}</div>
       <div slot="body">
+        <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
+          <iron-icon icon="cellular-setup:warning"></iron-icon>
+          $i18n{eSimDialogConnectionWarning}
+        </div>
         <template is="dom-if" if="[[!errorMessage_]]" restamp>
           <cr-input id="eSimprofileName"
               value="{{esimProfileName_}}"

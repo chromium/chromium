@@ -182,9 +182,6 @@ class NET_EXPORT NetworkIsolationKey {
   // created with |CreateOpaqueAndNonTransient|.
   bool opaque_and_non_transient_ = false;
 
-  // Whether or not to use the |frame_site_| as part of the key.
-  bool use_frame_site_;
-
   // The origin/etld+1 of the top frame of the page making the request.
   base::Optional<SchemefulSite> top_frame_site_;
 

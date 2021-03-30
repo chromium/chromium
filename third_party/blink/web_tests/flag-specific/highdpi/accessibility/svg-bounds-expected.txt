@@ -1,0 +1,44 @@
+Test
+
+This test ensures the accessibility bounds of embedded SVG objects are correct.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+container location: (911, 160.5)
+Face role: AXRole: AXButton
+Face label: face
+FaceX: 0
+FaceY: 1
+
+
+Eye role: AXRole: AXButton
+Eye label: left-eye
+EyeX: 154
+EyeY: 222
+
+
+Nose role: AXRole: AXButton
+Nose label: nose
+NoseX: 289
+NoseY: 309
+
+
+Mouth role: AXRole: AXButton
+Mouth label: smile
+MouthX: 150
+MouthY: 391
+
+
+Text role: AXRole: AXStaticText
+TextX/10: 22
+TextY/10: 17
+
+
+Image role: AXRole: AXImage
+Image label: Test Image
+ImageX: 31
+ImageY: 31.5
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

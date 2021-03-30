@@ -49,17 +49,17 @@ class AndroidPaymentApp : public PaymentApp {
   AndroidPaymentApp& operator=(const AndroidPaymentApp& other) = delete;
 
   // PaymentApp implementation.
-  void InvokePaymentApp(Delegate* delegate) override;
+  void InvokePaymentApp(base::WeakPtr<Delegate> delegate) override;
   bool IsCompleteForPayment() const override;
   uint32_t GetCompletenessScore() const override;
   bool CanPreselect() const override;
-  base::string16 GetMissingInfoLabel() const override;
+  std::u16string GetMissingInfoLabel() const override;
   bool HasEnrolledInstrument() const override;
   void RecordUse() override;
   bool NeedsInstallation() const override;
   std::string GetId() const override;
-  base::string16 GetLabel() const override;
-  base::string16 GetSublabel() const override;
+  std::u16string GetLabel() const override;
+  std::u16string GetSublabel() const override;
   const SkBitmap* icon_bitmap() const override;
   bool IsValidForModifier(
       const std::string& method,
@@ -77,7 +77,7 @@ class AndroidPaymentApp : public PaymentApp {
   bool IsPreferred() const override;
 
  private:
-  void OnPaymentAppResponse(Delegate* delegate,
+  void OnPaymentAppResponse(base::WeakPtr<Delegate> delegate,
                             const base::Optional<std::string>& error_message,
                             bool is_activity_result_ok,
                             const std::string& payment_method_identifier,

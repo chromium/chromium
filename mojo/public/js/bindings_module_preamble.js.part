@@ -1,1 +1,1 @@
-const preservedGlobalMojo = window && window.mojo;
+const preservedGlobalMojo = self && self.mojo;

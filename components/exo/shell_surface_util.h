@@ -10,6 +10,10 @@
 
 #include "base/optional.h"
 
+namespace ui {
+class PropertyHandler;
+}
+
 namespace aura {
 class Window;
 }
@@ -25,25 +29,18 @@ class KeyEvent;
 
 namespace exo {
 
-class Permission;
 class Surface;
 class ShellSurfaceBase;
 
-// Sets the application ID for the window. The application ID identifies the
-// general class of applications to which the window belongs.
-void SetShellApplicationId(aura::Window* window,
+// Sets the application ID to the property_handler. The application ID
+// identifies the general class of applications to which the window belongs.
+void SetShellApplicationId(ui::PropertyHandler* property_handler,
                            const base::Optional<std::string>& id);
 const std::string* GetShellApplicationId(const aura::Window* window);
 
-// Sets ARC app type for the provided |window|.
-void SetArcAppType(aura::Window* window);
-
-// Sets Lacros app type for the provided |window|.
-void SetLacrosAppType(aura::Window* window);
-
-// Sets the startup ID for the window. The startup ID identifies the
+// Sets the startup ID to the property handler. The startup ID identifies the
 // application using startup notification protocol.
-void SetShellStartupId(aura::Window* window,
+void SetShellStartupId(ui::PropertyHandler* property_handler,
                        const base::Optional<std::string>& id);
 const std::string* GetShellStartupId(aura::Window* window);
 
@@ -59,15 +56,13 @@ void SetShellClientAccessibilityId(aura::Window* window,
 const base::Optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window);
 
-// Returns true if the given key is the shell main surface key
-bool IsShellMainSurfaceKey(const void* key);
-
-// Sets the main surface for the window.
-void SetShellMainSurface(aura::Window* window, Surface* surface);
+// Sets the root surface to the property handler.
+void SetShellRootSurface(ui::PropertyHandler* property_handler,
+                         Surface* surface);
 
 // Returns the main Surface instance or nullptr if it is not set.
 // |window| must not be nullptr.
-Surface* GetShellMainSurface(const aura::Window* window);
+Surface* GetShellRootSurface(const aura::Window* window);
 
 // Returns the ShellSurfaceBase for the given |window|, or nullptr if no such
 // surface exists.
@@ -79,12 +74,18 @@ ShellSurfaceBase* GetShellSurfaceBaseForWindow(aura::Window* window);
 // requested grab.
 Surface* GetTargetSurfaceForLocatedEvent(const ui::LocatedEvent* event);
 
-// Allow the |window| to activate itself for the diration of |timeout|. Returns
-// the permission object, where deleting the object ammounts to Revoke()ing the
-// permission.
-std::unique_ptr<exo::Permission> GrantPermissionToActivate(
-    aura::Window* window,
-    base::TimeDelta timeout);
+// Returns the focused surface for given 'focused_window'.  If a surface is
+// attached to the window, this will return that surface.  If the window is
+// either the shell surface's window, or host window, it will return the root
+// surface, otherwise returns nullptr.
+Surface* GetTargetSurfaceForKeyboardFocus(aura::Window* focused_window);
+
+// Allows the |window| to activate itself for the duration of |timeout|. Revokes
+// any existing permission.
+void GrantPermissionToActivate(aura::Window* window, base::TimeDelta timeout);
+
+// Revokes the permission for |window| to activate itself.
+void RevokePermissionToActivate(aura::Window* window);
 
 // Returns true if the |window| has permission to activate itself.
 bool HasPermissionToActivate(aura::Window* window);

@@ -28,7 +28,6 @@ struct TestPreferences {
   bool tabs_to_links;
   bool hyperlink_auditing_enabled;
   bool caret_browsing_enabled;
-  bool should_respect_image_orientation;
   bool asynchronous_spell_checking_enabled;
   bool web_security_enabled;
   bool disable_reading_from_canvas;

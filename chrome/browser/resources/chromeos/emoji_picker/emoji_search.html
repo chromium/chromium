@@ -1,0 +1,97 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    width: 100%;
+  }
+  cr-search-field {
+    --cr-search-field-clear-icon-margin-end: 14px;
+    --cr-search-field-clear-icon-margin-end:14px;
+    --cr-search-field-clear-icon-size:20px;
+    --cr-search-field-input-border-bottom: none;
+    --cr-search-field-input-padding-bottom: 0;
+    --cr-search-field-clear-icon-size:20px;
+    --cr-search-field-input-border-bottom: none;
+    --cr-search-field-input-padding-bottom: 0;
+    --cr-search-field-input-padding-top: 0;
+    --cr-search-field-input-padding-top: 0;
+    --cr-search-field-input-width: calc(100% - 24px);
+    --cr-search-field-search-icon-padding: 0px 8px 0px 14px;
+    --cr-search-field-search-icon-size: 20px;
+    --cr-search-field-underline-display: none;
+    align-items: center;
+    background-color: var(--cr-separator-color);
+    border-radius: 41px;
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 8px;
+  }
+
+  cr-search-field::part(searchIcon) {
+    height: 20px;
+    padding: 0 8px 0 14px;
+    width: 20px;
+  }
+
+  #container {
+    flex-grow: 1;
+    overflow-y: scroll;
+  }
+
+  .result {
+    display: flex;
+  }
+  .result:focus,
+  .result:active {
+    border-color: var(--cr-toggle-color);
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 2px;
+    outline-style: none;
+  }
+
+  emoji-button {
+    margin-inline-end: 12px;
+  }
+
+  .name {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    line-height: var(--emoji-size);
+  }
+
+  .sr-only {
+    color: transparent;
+    position: absolute;
+    z-index: -2;
+  }
+</style>
+
+<cr-search-field id="search" label="Search" autofocus="true"></cr-search-field>
+
+<div id="container">
+
+  <template is="dom-if" if="[[search]]">
+
+    <div class="sr-only" role="heading" aria-level="1">
+      Emoji Search Results
+    </div>
+    <template is="dom-repeat" items="[[results]]">
+      <div class="result" tabindex="0" on-click="onResultClick">
+        <emoji-button tabindex="-1"
+            emoji="[[item.item.base.string]]"
+            variants="[[item.item.alternates]]">
+        </emoji-button>
+        <div class="name">[[item.item.base.name]]</div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[!results.length]]">
+      <div class="no-result">
+        No results
+      </div>
+    </template>
+
+  </template>
+
+</div>

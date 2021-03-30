@@ -51,9 +51,9 @@ bool WebTestShellPlatformDelegate::HandleRequestToLockMouse(
 
 bool WebTestShellPlatformDelegate::ShouldAllowRunningInsecureContent(
     Shell* shell) {
-  const base::DictionaryValue& flags =
-      WebTestControlHost::Get()->accumulated_web_test_runtime_flags_changes();
-  return flags.FindBoolPath("running_insecure_content_allowed").value_or(false);
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  return control_host->web_test_runtime_flags()
+      .running_insecure_content_allowed();
 }
 
 }  // namespace content

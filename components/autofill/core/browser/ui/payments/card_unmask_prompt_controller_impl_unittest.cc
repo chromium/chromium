@@ -61,7 +61,7 @@ class TestCardUnmaskPromptView : public CardUnmaskPromptView {
   void Show() override {}
   void ControllerGone() override {}
   void DisableAndWaitForVerification() override {}
-  void GotVerificationResult(const base::string16& error_message,
+  void GotVerificationResult(const std::u16string& error_message,
                              bool allow_retry) override {}
 };
 
@@ -111,9 +111,8 @@ class CardUnmaskPromptControllerImplGenericTest {
   void ShowPromptAndSimulateResponse(bool should_store_pan,
                                      bool enable_fido_auth) {
     ShowPrompt();
-    controller_->OnUnmaskPromptAccepted(ASCIIToUTF16("444"), ASCIIToUTF16("01"),
-                                        ASCIIToUTF16("2050"), should_store_pan,
-                                        enable_fido_auth);
+    controller_->OnUnmaskPromptAccepted(u"444", u"01", u"2050",
+                                        should_store_pan, enable_fido_auth);
     EXPECT_EQ(should_store_pan,
               pref_service_->GetBoolean(
                   prefs::kAutofillWalletImportStorageCheckboxState));
@@ -437,8 +436,7 @@ TEST_P(LoggingValidationTestForNickname, LogUnmaskedCardAfterFailure) {
   ShowPromptAndSimulateResponse(/*should_store_pan=*/false,
                                 /*enable_fido_auth=*/false);
   controller_->OnVerificationResult(AutofillClient::TRY_AGAIN_FAILURE);
-  controller_->OnUnmaskPromptAccepted(ASCIIToUTF16("444"), ASCIIToUTF16("01"),
-                                      ASCIIToUTF16("2050"),
+  controller_->OnUnmaskPromptAccepted(u"444", u"01", u"2050",
                                       /*should_store_pan=*/false,
                                       /*enable_fido_auth=*/false);
   base::HistogramTester histogram_tester;
@@ -584,10 +582,9 @@ TEST_P(LoggingValidationTestForNickname, LogDurationUnmaskedCardAfterFailure) {
   ShowPromptAndSimulateResponse(/*should_store_pan=*/false,
                                 /*enable_fido_auth=*/false);
   controller_->OnVerificationResult(AutofillClient::TRY_AGAIN_FAILURE);
-  controller_->OnUnmaskPromptAccepted(
-      base::ASCIIToUTF16("444"), base::ASCIIToUTF16("01"),
-      base::ASCIIToUTF16("2050"), /*should_store_pan=*/false,
-      /*enable_fido_auth=*/false);
+  controller_->OnUnmaskPromptAccepted(u"444", u"01", u"2050",
+                                      /*should_store_pan=*/false,
+                                      /*enable_fido_auth=*/false);
   base::HistogramTester histogram_tester;
 
   controller_->OnVerificationResult(AutofillClient::SUCCESS);
@@ -658,7 +655,7 @@ TEST_P(CvcInputValidationTest, CvcInputValidation) {
     return;
 
   controller_->OnUnmaskPromptAccepted(
-      ASCIIToUTF16(cvc_case.input), ASCIIToUTF16("1"), ASCIIToUTF16("2050"),
+      ASCIIToUTF16(cvc_case.input), u"1", u"2050",
       /*should_store_pan=*/false, /*enable_fido_auth=*/false);
   EXPECT_EQ(ASCIIToUTF16(cvc_case.canonicalized_input),
             delegate_->details().cvc);
@@ -702,7 +699,7 @@ TEST_P(CvcInputAmexValidationTest, CvcInputValidation) {
     return;
 
   controller_->OnUnmaskPromptAccepted(
-      ASCIIToUTF16(cvc_case_amex.input), base::string16(), base::string16(),
+      ASCIIToUTF16(cvc_case_amex.input), std::u16string(), std::u16string(),
       /*should_store_pan=*/false, /*enable_fido_auth=*/false);
   EXPECT_EQ(ASCIIToUTF16(cvc_case_amex.canonicalized_input),
             delegate_->details().cvc);

@@ -14,12 +14,13 @@ function isInView(element) {
 
 function checkScroll(resolve) {
   let position = 'unknown';
-  if (window.scrollY == 0)
-    position = 'top';
-  else if (isInView(document.getElementById('text')))
-    position = 'text';
-
-  resolve(position);
+  requestAnimationFrame(() => {
+    if (window.scrollY == 0)
+      position = 'top';
+    else if (isInView(document.getElementById('text')))
+      position = 'text';
+    resolve(position);
+  });
 }
 
 function runTest() {

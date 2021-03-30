@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantActionsC
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantCarouselModel;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetails;
-import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsModel;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBox;
 import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxModel;
@@ -180,13 +179,11 @@ public class AutofillAssistantUiTest {
         String descriptionLine3 = "This is a fancy line3";
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> assistantCoordinator.getModel().getDetailsModel().set(
-                                AssistantDetailsModel.DETAILS,
-                                new AssistantDetails(movieTitle, /* titleMaxLines = */ 1,
+                        -> assistantCoordinator.getModel().getDetailsModel().setDetailsList(
+                                Arrays.asList(new AssistantDetails(movieTitle,
                                         /* imageUrl = */ "",
                                         /* imageAccessibilityHint = */ "",
                                         /* imageClickthroughData = */ null,
-                                        /* showImage = */ false,
                                         /* totalPriceLabel = */ "",
                                         /* totalPrice = */ "", descriptionLine1, descriptionLine2,
                                         descriptionLine3,
@@ -195,7 +192,7 @@ public class AutofillAssistantUiTest {
                                         /* highlightTitle= */ false, /* highlightLine1= */
                                         false, /* highlightLine2 = */ false,
                                         /* highlightLine3 = */ false,
-                                        /* animatePlaceholders= */ false)));
+                                        AutofillAssistantDetailsUiTest.NO_PLACEHOLDERS))));
         onView(withId(R.id.details_title))
                 .check(matches(allOf(withText(movieTitle), withEffectiveVisibility(VISIBLE))));
         onView(withId(R.id.details_line1))

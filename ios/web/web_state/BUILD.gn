@@ -6,18 +6,19 @@ import("//ios/build/config.gni")
 
 source_set("web_state") {
   deps = [
-    ":context_menu",
     ":policy_decision_state_tracker",
     ":web_state_impl_header",
     "//base",
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/js_messaging",
+    "//ios/web/js_messaging:java_script_feature",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/session",
     "//ios/web/public/webui",
     "//ios/web/security",
@@ -51,10 +52,9 @@ source_set("web_state") {
 source_set("web_state_impl_header") {
   deps = [
     "//base",
-    "//ios/web/js_messaging",
+    "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation:core",
     "//ios/web/public",
-    "//ios/web/public/js_messaging",
   ]
 
   sources = [ "web_state_impl.h" ]
@@ -79,6 +79,7 @@ source_set("page_viewport_state") {
 source_set("web_view_internal_creation_util") {
   deps = [
     "//base",
+    "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ios/web/web_state/ui:crw_context_menu_controller",
@@ -86,27 +87,10 @@ source_set("web_view_internal_creation_util") {
   ]
 
   sources = [
+    "crw_web_view.h",
+    "crw_web_view.mm",
     "web_view_internal_creation_util.h",
     "web_view_internal_creation_util.mm",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("context_menu") {
-  deps = [
-    "//base",
-    "//components/url_formatter",
-    "//ios/web/common",
-    "//ios/web/public",
-  ]
-
-  sources = [
-    "context_menu_constants.h",
-    "context_menu_constants.mm",
-    "context_menu_params.mm",
-    "context_menu_params_utils.h",
-    "context_menu_params_utils.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

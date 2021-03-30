@@ -50,6 +50,8 @@ namespace {
 
 using GuidToPolicyMap = ManagedNetworkConfigurationHandler::GuidToPolicyMap;
 
+const char kEmptyServicePath[] = "/";
+
 // These are error strings used for error callbacks. None of these error
 // messages are user-facing: they should only appear in logs.
 const char kInvalidUserSettings[] = "InvalidUserSettings";
@@ -1005,23 +1007,25 @@ void ManagedNetworkConfigurationHandlerImpl::GetPropertiesCallback(
 
   // Only request additional Device properties for Cellular networks with a
   // valid device.
-  std::string* device_path =
-      shill_properties->FindStringKey(shill::kDeviceProperty);
-  if (!network_device_handler_ || *type != shill::kTypeCellular ||
-      !device_path || device_path->empty()) {
-    SendProperties(properties_type, userhash, service_path, std::move(callback),
-                   std::move(shill_properties));
-    return;
+  if (network_device_handler_ && *type == shill::kTypeCellular) {
+    std::string* device_path =
+        shill_properties->FindStringKey(shill::kDeviceProperty);
+    if (device_path && !device_path->empty() &&
+        *device_path != kEmptyServicePath) {
+      // Request the device properties. On success or failure pass (a possibly
+      // modified) |shill_properties| to |send_callback|.
+      network_device_handler_->GetDeviceProperties(
+          *device_path,
+          base::BindOnce(
+              &ManagedNetworkConfigurationHandlerImpl::OnGetDeviceProperties,
+              weak_ptr_factory_.GetWeakPtr(), properties_type, userhash,
+              service_path, std::move(callback), std::move(shill_properties)));
+      return;
+    }
   }
 
-  // Request the device properties. On success or failure pass (a possibly
-  // modified) |shill_properties| to |send_callback|.
-  network_device_handler_->GetDeviceProperties(
-      *device_path,
-      base::BindOnce(
-          &ManagedNetworkConfigurationHandlerImpl::OnGetDeviceProperties,
-          weak_ptr_factory_.GetWeakPtr(), properties_type, userhash,
-          service_path, std::move(callback), std::move(shill_properties)));
+  SendProperties(properties_type, userhash, service_path, std::move(callback),
+                 std::move(shill_properties));
 }
 
 void ManagedNetworkConfigurationHandlerImpl::OnGetDeviceProperties(

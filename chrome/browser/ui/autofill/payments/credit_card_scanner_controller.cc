@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_view_delegate.h"

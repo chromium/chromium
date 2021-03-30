@@ -323,7 +323,8 @@ void HTMLSlotElement::RecalcFlatTreeChildren() {
 }
 
 void HTMLSlotElement::DispatchSlotChangeEvent() {
-  DCHECK(!IsInUserAgentShadowRoot());
+  DCHECK(!IsInUserAgentShadowRoot() ||
+         ContainingShadowRoot()->SupportsNameBasedSlotAssignment());
   Event* event = Event::CreateBubble(event_type_names::kSlotchange);
   event->SetTarget(this);
   DispatchScopedEvent(*event);
@@ -357,9 +358,20 @@ void HTMLSlotElement::AttachLayoutTree(AttachContext& context) {
 
 void HTMLSlotElement::DetachLayoutTree(bool performing_reattach) {
   if (SupportsAssignment()) {
+    auto* host = OwnerShadowHost();
     const HeapVector<Member<Node>>& flat_tree_children = assigned_nodes_;
     for (auto& node : flat_tree_children) {
-      if (node->GetDocument() == GetDocument())
+      // Don't detach the assigned node if the node is no longer a child of the
+      // host.
+      //
+      // 1. It's no long a direct flat-tree child of this slot.
+      // 2. It was already detached when removed from the host.
+      // 3. It might already have been inserted in a different part of the DOM,
+      //    or a new document tree and been attached.
+      // 4. It might have been marked style-dirty in its new location and
+      //    calling DetachLayoutTree here would have incorrectly cleared those
+      //    dirty bits.
+      if (host == node->parentNode())
         node->DetachLayoutTree(performing_reattach);
     }
   }
@@ -470,12 +482,13 @@ void HTMLSlotElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLSlotElement::RecalcStyleForSlotChildren(
-    const StyleRecalcChange change) {
+    const StyleRecalcChange change,
+    const StyleRecalcContext& style_recalc_context) {
   for (auto& node : flat_tree_children_) {
     if (!change.TraverseChild(*node))
       continue;
     if (auto* element = DynamicTo<Element>(node.Get()))
-      element->RecalcStyle(change);
+      element->RecalcStyle(change, style_recalc_context);
     else if (auto* text_node = DynamicTo<Text>(node.Get()))
       text_node->RecalcTextStyle(change);
   }
@@ -725,11 +738,13 @@ bool HTMLSlotElement::HasSlotableChild() const {
 }
 
 void HTMLSlotElement::EnqueueSlotChangeEvent() {
-  // TODO(kochi): This suppresses slotchange event on user-agent shadows,
-  // but could be improved further by not running change detection logic
-  // in SlotAssignment::Did{Add,Remove}SlotInternal etc., although naive
-  // skipping turned out breaking fallback content handling.
-  if (IsInUserAgentShadowRoot())
+  // TODO(kochi): This suppresses slotchange event on user-agent shadows that
+  // don't support name based slot assignment, but could be improved further by
+  // not running change detection logic in
+  // SlotAssignment::Did{Add,Remove}SlotInternal etc., although naive skipping
+  // turned out breaking fallback content handling.
+  if (IsInUserAgentShadowRoot() &&
+      !ContainingShadowRoot()->SupportsNameBasedSlotAssignment())
     return;
   if (slotchange_event_enqueued_)
     return;
@@ -744,6 +759,12 @@ bool HTMLSlotElement::HasAssignedNodesSlow() const {
   if (assignment.FindSlotByName(GetName()) != this)
     return false;
   return assignment.FindHostChildBySlotName(GetName());
+}
+
+void HTMLSlotElement::ChildrenChanged(const ChildrenChange& change) {
+  HTMLElement::ChildrenChanged(change);
+  if (SupportsAssignment())
+    SetShadowRootNeedsAssignmentRecalc();
 }
 
 void HTMLSlotElement::Trace(Visitor* visitor) const {

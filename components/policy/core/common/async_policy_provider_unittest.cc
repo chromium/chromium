@@ -59,7 +59,7 @@ class MockPolicyLoader : public AsyncPolicyLoader {
 
 MockPolicyLoader::MockPolicyLoader(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : AsyncPolicyLoader(task_runner) {}
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true) {}
 
 MockPolicyLoader::~MockPolicyLoader() {}
 

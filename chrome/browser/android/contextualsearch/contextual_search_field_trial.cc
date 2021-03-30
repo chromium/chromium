@@ -109,14 +109,6 @@ int ContextualSearchFieldTrial::GetIntParamValueOrDefault(
     std::string param_string = GetSwitch(name);
     if (param_string.empty())
       param_string = GetParam(name);
-    // If we still didn't get a param, try getting a Feature param.
-    if (param_string.empty()) {
-      // First check the Contextual Search Definitions feature.
-      param_string = base::GetFieldTrialParamValueByFeature(
-          chrome::android::kContextualSearchDefinitions, name);
-    }
-    // TODO(donnd): check for a Translation feature once that's been added.
-
     int param_int;
     if (!param_string.empty() && base::StringToInt(param_string, &param_int))
       *cached_value = param_int;

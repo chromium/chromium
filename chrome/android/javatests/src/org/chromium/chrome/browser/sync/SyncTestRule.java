@@ -25,6 +25,7 @@ import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
@@ -32,9 +33,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
-import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
-import org.chromium.chrome.browser.uid.UuidBasedUniqueIdentificationGenerator;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
@@ -60,8 +58,6 @@ import java.util.concurrent.Callable;
  */
 public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private static final String TAG = "SyncTestBase";
-
-    private static final String CLIENT_ID = "Client_ID";
 
     private static final Set<Integer> USER_SELECTABLE_TYPES =
             new HashSet<Integer>(Arrays.asList(new Integer[] {
@@ -116,8 +112,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         public Promise<PendingIntent> createKeyRetrievalIntent(CoreAccountInfo accountInfo) {
             Context context = InstrumentationRegistry.getContext();
             Intent intent = new Intent(context, DummyKeyRetrievalActivity.class);
-            return Promise.fulfilled(
-                    PendingIntent.getActivity(context, 0 /* requestCode */, intent, 0 /* flags */));
+            return Promise.fulfilled(PendingIntent.getActivity(context, 0 /* requestCode */, intent,
+                    IntentUtils.getPendingIntentMutabilityFlag(false)));
         }
 
         @Override
@@ -205,8 +201,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     public CoreAccountInfo setUpAccountAndEnableSyncForTesting() {
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mProfileSyncService);
+        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
         return accountInfo;
     }
@@ -216,9 +213,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * @return the test accountInfo that is signed in.
      */
     public CoreAccountInfo setUpAccountAndSignInForTesting() {
-        CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSignin();
-        enableUKM();
-        return accountInfo;
+        return mAccountManagerTestRule.addTestAccountThenSignin();
     }
 
     /**
@@ -228,6 +223,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     public CoreAccountInfo setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
         CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
                 /* profileSyncService= */ null);
+        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
         SyncTestUtil.waitForSyncTransportActive();
         return accountInfo;
@@ -240,7 +236,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public void startSyncAndWait() {
         startSync();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
     }
 
     public void stopSync() {
@@ -251,8 +247,9 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public void signinAndEnableSync(final CoreAccountInfo accountInfo) {
         SigninTestUtil.signinAndEnableSync(accountInfo, mProfileSyncService);
+        // Enable UKM when enabling sync as it is done by the sync confirmation UI.
         enableUKM();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
     }
 
@@ -346,16 +343,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     FakeServerHelper.useFakeServer(mContext);
                     mFakeServerHelper = FakeServerHelper.get();
                 });
-
-                UniqueIdentificationGeneratorFactory.registerGenerator(
-                        UuidBasedUniqueIdentificationGenerator.GENERATOR_ID,
-                        new UniqueIdentificationGenerator() {
-                            @Override
-                            public String getUniqueId(String salt) {
-                                return CLIENT_ID;
-                            }
-                        },
-                        true);
 
                 startMainActivityForSyncTest();
 

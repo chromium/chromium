@@ -13,9 +13,9 @@
 // handled by the caller.
 // See notification_platform_bridge_mac_unittest.mm for an example.
 @interface StubNotificationCenter : NSUserNotificationCenter
-- (instancetype)init;
-- (void)setDelegate:(id<NSUserNotificationCenterDelegate>)delegate;
-
+- (instancetype _Nullable)init;
+- (void)setDelegate:(id<NSUserNotificationCenterDelegate> _Nullable)delegate;
+- (id<NSUserNotificationCenterDelegate> _Nullable)delegate;
 @end
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_CENTER_MAC_H_

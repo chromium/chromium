@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/process/process_metrics.h"
 #include "base/rand_util.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"

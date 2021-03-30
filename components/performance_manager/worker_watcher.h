@@ -118,16 +118,21 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
  private:
   friend class WorkerWatcherTest;
 
-  // Posts a task to the PM graph to connect/disconnect |worker_node| with the
-  // frame node associated to |client_render_frame_host_id|.
-  void ConnectFrameClient(
+  // Adds a connection between |worker_node| and the frame node represented by
+  // |client_render_frame_host_id|. Connects them in the graph when the first
+  // connection is added.
+  void AddFrameClientConnection(
       WorkerNodeImpl* worker_node,
       content::GlobalFrameRoutingId client_render_frame_host_id);
-  void DisconnectFrameClient(
+  // Removes a connection between |worker_node| and the frame node represented
+  // by |client_render_frame_host_id|. Disconnects them in the graph when the
+  // last connection is removed.
+  void RemoveFrameClientConnection(
       WorkerNodeImpl* worker_node,
       content::GlobalFrameRoutingId client_render_frame_host_id);
 
-  // Posts a task to the PM graph to connect/disconnect |worker_node| with the
+  // If a node with |client_dedicated_worker_token| exists, posts a task to
+  // the PM graph to connect/disconnect |worker_node| with the
   // dedicated worker node associated to |client_dedicated_worker_token|.
   void ConnectDedicatedWorkerClient(
       WorkerNodeImpl* worker_node,
@@ -136,8 +141,9 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
       WorkerNodeImpl* worker_node,
       blink::DedicatedWorkerToken client_dedicated_worker_token);
 
-  // Posts a task to the PM graph to connect/disconnect |worker_node| with the
-  // shared worker node associated to |client_shared_worker_id|.
+  // If a node with |client_shared_worker_token| exists, posts a task to
+  // the PM graph to connect/disconnect |worker_node| with the
+  // dedicated worker node associated to |client_shared_worker_token|.
   void ConnectSharedWorkerClient(
       WorkerNodeImpl* worker_node,
       blink::SharedWorkerToken client_shared_worker_token);
@@ -157,19 +163,36 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
       content::GlobalFrameRoutingId render_frame_host_id,
       FrameNodeImpl* frame_node);
 
-  // Inserts/removes |child_worker_node| into the set of child workers of a
-  // frame. Returns true if this is the first child added to that frame.
-  bool AddChildWorker(content::GlobalFrameRoutingId render_frame_host_id,
-                      WorkerNodeImpl* child_worker_node);
-  bool RemoveChildWorker(content::GlobalFrameRoutingId render_frame_host_id,
-                         WorkerNodeImpl* child_worker_node);
+  // Adds/removes a connection to |child_worker_node| in the set of child
+  // workers of a frame.
+  // On exit |is_first_child_worker| is true if this is the first child worker
+  // added to the frame and |is_first_child_worker_connection| is true if
+  // this was the first connection from the frame and |child_worker_node|.
+  // Conversely |was_last_child_worker| is true if this was the last client
+  // worker removed, and |was_last_child_worker_connection| is true if this
+  // removed the last connection between the frame and |child_worker_node|.
+  void AddChildWorkerConnection(
+      content::GlobalFrameRoutingId render_frame_host_id,
+      WorkerNodeImpl* child_worker_node,
+      bool* is_first_child_worker,
+      bool* is_first_child_worker_connection);
+  void RemoveChildWorkerConnection(
+      content::GlobalFrameRoutingId render_frame_host_id,
+      WorkerNodeImpl* child_worker_node,
+      bool* was_last_child_worker,
+      bool* was_last_child_worker_connection);
 
   // Helper functions to retrieve an existing worker node.
+  // Return the requested node, or nullptr if no such node registered.
   WorkerNodeImpl* GetDedicatedWorkerNode(
       const blink::DedicatedWorkerToken& dedicated_worker_token);
   WorkerNodeImpl* GetSharedWorkerNode(
       const blink::SharedWorkerToken& shared_worker_token);
   WorkerNodeImpl* GetServiceWorkerNode(int64_t version_id);
+
+#if DCHECK_IS_ON()
+  bool IsServiceWorkerNode(WorkerNodeImpl* worker_node);
+#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -221,19 +244,22 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
       base::flat_map<std::string /*client_uuid*/, ServiceWorkerClient>>
       service_worker_clients_;
 
-  // Maps each frame to the workers that this frame is a client of in the graph.
-  // This is used when a frame is torn down before the
-  // OnBeforeWorkerTerminated() is received, to ensure the deletion of the
-  // worker nodes in the right order (workers before frames).
-  base::flat_map<content::GlobalFrameRoutingId, base::flat_set<WorkerNodeImpl*>>
-      frame_node_child_workers_;
+  // Maps each frame to the number of connections to each worker that this frame
+  // is a client of in the graph. Note that normally there's a single connection
+  // from a frame to a worker, except in rare circumstances where it appears
+  // that a single frame can have multiple "controllee" relationships to the
+  // same service worker. This is represented as a single edge in the PM graph.
+  using WorkerNodeConnections = base::flat_map<WorkerNodeImpl*, size_t>;
+  base::flat_map<content::GlobalFrameRoutingId, WorkerNodeConnections>
+      frame_node_child_worker_connections_;
 
   // Maps each dedicated worker to all its child workers.
-  base::flat_map<blink::DedicatedWorkerToken, base::flat_set<WorkerNodeImpl*>>
+  using WorkerNodeSet = base::flat_set<WorkerNodeImpl*>;
+  base::flat_map<blink::DedicatedWorkerToken, WorkerNodeSet>
       dedicated_worker_child_workers_;
 
   // Maps each shared worker to all its child workers.
-  base::flat_map<blink::SharedWorkerToken, base::flat_set<WorkerNodeImpl*>>
+  base::flat_map<blink::SharedWorkerToken, WorkerNodeSet>
       shared_worker_child_workers_;
 
 #if DCHECK_IS_ON()
@@ -242,6 +268,11 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   // before OnClientRemoved(), or when it wasn't possible to initially attach
   // a client frame node to a worker.
   base::flat_map<WorkerNodeImpl*, int> detached_frame_count_per_worker_;
+
+  // Keeps track of shared and dedicated workers that were not present when
+  // a service worker tried to add a client relationship for them.
+  base::flat_map<WorkerNodeImpl*, base::flat_set<ServiceWorkerClient>>
+      missing_service_worker_clients_;
 #endif  // DCHECK_IS_ON()
 
   DISALLOW_COPY_AND_ASSIGN(WorkerWatcher);

@@ -31,53 +31,14 @@ const arrowRightEvent = new KeyboardEvent(
     'keydown', {cancelable: true, key: 'ArrowRight', keyCode: 39});
 
 /**
- * @param {!HTMLElement} printerEntry
+ * @param {!HTMLElement} button
  * @private
  */
-function clickThreeDotMenu(printerEntry) {
-  // Click on three dot menu on an item entry.
-  const threeDot = printerEntry.$$('.icon-more-vert');
-  threeDot.click();
+function clickButton(button) {
+  assertTrue(!!button);
+  assertTrue(!button.disabled);
 
-  Polymer.dom.flush();
-}
-
-/**
- * @param {!HTMLElement} printerEntry
- * @private
- */
-function clickAddAutomaticButton(printerEntry) {
-  // Click on add button on an item entry.
-  const addButton = printerEntry.$$('.save-printer-button');
-  assertTrue(!!addButton);
-  addButton.click();
-  Polymer.dom.flush();
-}
-
-/**
- * @param {!HTMLElement} printerEntry
- * @private
- */
-function clickSetupButton(printerEntry) {
-  // Click on setup button on an item entry.
-  const setupButton = printerEntry.$$('#setupPrinterButton');
-  assertTrue(!!setupButton);
-  setupButton.click();
-  Polymer.dom.flush();
-}
-
-/**
- * @param {!HTMLElement} dialog
- * @private
- */
-function clickSaveButton(dialog) {
-  const saveButton = dialog.$$('.action-button');
-
-  assertTrue(!!saveButton);
-  assertTrue(!saveButton.disabled);
-
-  saveButton.click();
-
+  button.click();
   Polymer.dom.flush();
 }
 
@@ -212,8 +173,8 @@ function removePrinter(cupsPrintersBrowserProxy, savedPrintersElement, index) {
   const savedPrinterEntries =
       cups_printer_test_util.getPrinterEntries(savedPrintersElement);
 
-  clickThreeDotMenu(savedPrinterEntries[index]);
-  savedPrintersElement.$$('#removeButton').click();
+  clickButton(savedPrinterEntries[index].$$('.icon-more-vert'));
+  clickButton(savedPrintersElement.$$('#removeButton'));
 
   return cupsPrintersBrowserProxy.whenCalled('removeCupsPrinter')
       .then(function() {
@@ -419,8 +380,8 @@ suite('CupsSavedPrintersTests', function() {
               cups_printer_test_util.getPrinterEntries(savedPrintersElement);
 
           // Update the printer name of the first entry.
-          clickThreeDotMenu(savedPrinterEntries[0]);
-          savedPrintersElement.$$('#editButton').click();
+          clickButton(savedPrinterEntries[0].$$('.icon-more-vert'));
+          clickButton(savedPrintersElement.$$('#editButton'));
 
           Polymer.dom.flush();
 
@@ -434,7 +395,7 @@ suite('CupsSavedPrintersTests', function() {
 
           Polymer.dom.flush();
 
-          clickSaveButton(editDialog);
+          clickButton(editDialog.$$('.action-button'));
 
           return cupsPrintersBrowserProxy.whenCalled('updateCupsPrinter');
         })
@@ -472,8 +433,8 @@ suite('CupsSavedPrintersTests', function() {
               cups_printer_test_util.getPrinterEntries(savedPrintersElement);
 
           // Edit the first entry.
-          clickThreeDotMenu(savedPrinterEntries[0]);
-          savedPrintersElement.$$('#editButton').click();
+          clickButton(savedPrinterEntries[0].$$('.icon-more-vert'));
+          clickButton(savedPrintersElement.$$('#editButton'));
 
           Polymer.dom.flush();
 
@@ -491,7 +452,7 @@ suite('CupsSavedPrintersTests', function() {
 
           Polymer.dom.flush();
 
-          clickSaveButton(editDialog);
+          clickButton(editDialog.$$('.action-button'));
 
           return cupsPrintersBrowserProxy.whenCalled('reconfigureCupsPrinter');
         })
@@ -772,8 +733,7 @@ suite('CupsSavedPrintersTests', function() {
           assertTrue(!!savedPrintersElement.$$('#show-more-container'));
 
           // Click on the Show more button.
-          savedPrintersElement.$$('#show-more-icon').click();
-          Polymer.dom.flush();
+          clickButton(savedPrintersElement.$$('#show-more-icon'));
           assertFalse(!!savedPrintersElement.$$('#show-more-container'));
           // Clicking on the Show more button reveals all hidden printers.
           verifyVisiblePrinters(printerEntryListTestElement, [
@@ -1210,6 +1170,8 @@ suite('CupsNearbyPrintersTests', function() {
         [cups_printer_test_util.createCupsPrinterInfo('test1', '1', 'id1')];
     const discoveredPrinterList = [];
 
+    let addButton = null;
+
     return test_util.flushTasks()
         .then(() => {
           nearbyPrintersElement = page.$$('settings-cups-nearby-printers');
@@ -1231,13 +1193,15 @@ suite('CupsNearbyPrintersTests', function() {
 
           // Add an automatic printer and assert that that the toast
           // notification is shown.
-          clickAddAutomaticButton(nearbyPrinterEntries[0]);
-
-          Polymer.dom.flush();
+          addButton = nearbyPrinterEntries[0].$$('.save-printer-button');
+          clickButton(addButton);
+          // Add button should be disabled during setup.
+          assertTrue(addButton.disabled);
 
           return cupsPrintersBrowserProxy.whenCalled('addDiscoveredPrinter');
         })
         .then(() => {
+          assertFalse(addButton.disabled);
           const expectedToastMessage =
               'Added ' + automaticPrinterList[0].printerName;
           verifyErrorToastMessage(expectedToastMessage, page.$$('#errorToast'));
@@ -1303,6 +1267,7 @@ suite('CupsNearbyPrintersTests', function() {
         [cups_printer_test_util.createCupsPrinterInfo('test3', '3', 'id3')];
 
     let manufacturerDialog = null;
+    let setupButton = null;
 
     return test_util.flushTasks()
         .then(() => {
@@ -1329,13 +1294,16 @@ suite('CupsNearbyPrintersTests', function() {
 
           // Assert that clicking on the setup button shows the advanced
           // configuration dialog.
-          clickSetupButton(nearbyPrinterEntries[0]);
-
-          Polymer.dom.flush();
+          setupButton = nearbyPrinterEntries[0].$$('#setupPrinterButton');
+          clickButton(setupButton);
+          // Setup button should be disabled during setup.
+          assertTrue(setupButton.disabled);
 
           return cupsPrintersBrowserProxy.whenCalled('addDiscoveredPrinter');
         })
         .then(() => {
+          assertFalse(setupButton.disabled);
+
           Polymer.dom.flush();
           const addDialog = page.$$('#addPrinterDialog');
           manufacturerDialog =
@@ -1355,9 +1323,7 @@ suite('CupsNearbyPrintersTests', function() {
           const modelDropdown = manufacturerDialog.$$('#modelDropdown');
           modelDropdown.value = 'model';
 
-          assertTrue(!addButton.disabled);
-
-          addButton.click();
+          clickButton(addButton);
           return cupsPrintersBrowserProxy.whenCalled('addCupsPrinter');
         })
         .then(() => {

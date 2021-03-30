@@ -32,7 +32,7 @@ class IncognitoMenuView : public ProfileMenuViewBase {
 
  private:
   // views::BubbleDialogDelegateView:
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
   // Button actions.
 #if defined(OS_WIN)

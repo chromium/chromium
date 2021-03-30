@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_blocker.h"
@@ -27,6 +26,10 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#endif
 
 namespace {
 
@@ -80,9 +83,9 @@ class TestNotificationPlatformBridgeDelegator
 
 message_center::Notification CreateNotification(const std::string& id) {
   return message_center::Notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, id, /*title=*/base::string16(),
-      /*message=*/base::string16(), /*icon=*/gfx::Image(),
-      /*display_source=*/base::string16(),
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, /*title=*/std::u16string(),
+      /*message=*/std::u16string(), /*icon=*/gfx::Image(),
+      /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(), /*delegate=*/nullptr);
 }
@@ -118,6 +121,8 @@ class NotificationDisplayServiceImplTest : public testing::Test {
     blockers.push_back(std::move(blocker));
     service_->SetBlockersForTesting(std::move(blockers));
   }
+
+  Profile* profile() { return &profile_; }
 
   NotificationDisplayServiceImpl& service() { return *service_; }
 
@@ -229,3 +234,23 @@ TEST_F(NotificationDisplayServiceImplTest, CloseQueuedNotification) {
   EXPECT_TRUE(GetDisplayedServiceSync().empty());
   EXPECT_TRUE(GetDisplayedPlatformSync().empty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(NotificationDisplayServiceImplTest, NearbyNotificationHandler) {
+  // Add the Nearby Share handler if and only if Nearby Share is supported.
+  {
+    NearbySharingServiceFactory::
+        SetIsNearbyShareSupportedForBrowserContextForTesting(false);
+    NotificationDisplayServiceImpl service(profile());
+    EXPECT_FALSE(service.GetNotificationHandler(
+        NotificationHandler::Type::NEARBY_SHARE));
+  }
+  {
+    NearbySharingServiceFactory::
+        SetIsNearbyShareSupportedForBrowserContextForTesting(true);
+    NotificationDisplayServiceImpl service(profile());
+    EXPECT_TRUE(service.GetNotificationHandler(
+        NotificationHandler::Type::NEARBY_SHARE));
+  }
+}
+#endif

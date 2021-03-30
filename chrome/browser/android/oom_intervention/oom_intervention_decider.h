@@ -25,7 +25,7 @@ class PrefService;
 //   the same site.
 // - If user declined intervention again even after OOM is observed on the site,
 //   never trigger intervention on the site.
-// - If len(blacklist) > kMaxBlacklistSize, the user is permanently opted out.
+// - If len(blocklist) > kMaxBlocklistSize, the user is permanently opted out.
 //
 // An instance of this class is associated with BrowserContext when the
 // BrowserContext isn't incognito. You can obtain it via GetForBrowserContext().
@@ -64,7 +64,7 @@ class OomInterventionDecider : public base::SupportsUserData::Data {
 
   // These constants are declared here for testing.
   static const size_t kMaxListSize;
-  static const size_t kMaxBlacklistSize;
+  static const size_t kMaxBlocklistSize;
 
   // Called when |prefs_| is ready to use. When the last shutdown wasn't clean,
   // this method adds the last entry of the declined list to the OOM detected

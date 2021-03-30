@@ -162,6 +162,7 @@ gfx::ColorSpace GetDefaultColorSpace(VideoPixelFormat format) {
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_BGRA:
+    case PIXEL_FORMAT_RGBAF16:
       return gfx::ColorSpace::CreateSRGB();
     case PIXEL_FORMAT_UNKNOWN:
       return gfx::ColorSpace();
@@ -337,9 +338,10 @@ PacmanFramePainter::PacmanFramePainter(Format pixel_format,
     : pixel_format_(pixel_format), fake_device_state_(fake_device_state) {}
 
 void PacmanFramePainter::PaintFrame(base::TimeDelta elapsed_time,
-                                    uint8_t* target_buffer) {
-  DrawPacman(elapsed_time, target_buffer);
-  DrawGradientSquares(elapsed_time, target_buffer);
+                                    uint8_t* target_buffer,
+                                    int bytes_per_row) {
+  DrawPacman(elapsed_time, target_buffer, bytes_per_row);
+  DrawGradientSquares(elapsed_time, target_buffer, bytes_per_row);
 }
 
 // Starting from top left, -45 deg gradient.  Value at point (row, column) is
@@ -348,9 +350,11 @@ void PacmanFramePainter::PaintFrame(base::TimeDelta elapsed_time,
 // component) or 65535 for Y16.
 // This is handy for pixel tests where we use the squares to verify rendering.
 void PacmanFramePainter::DrawGradientSquares(base::TimeDelta elapsed_time,
-                                             uint8_t* target_buffer) {
+                                             uint8_t* target_buffer,
+                                             int bytes_per_row) {
   const int width = fake_device_state_->format.frame_size.width();
   const int height = fake_device_state_->format.frame_size.height();
+  const int stride = (bytes_per_row == 0) ? width : bytes_per_row;
 
   const int side = width / 16;  // square side length.
   DCHECK(side);
@@ -366,7 +370,7 @@ void PacmanFramePainter::DrawGradientSquares(base::TimeDelta elapsed_time,
       for (int x = corner.x(); x < corner.x() + side; ++x) {
         const unsigned int value =
             static_cast<unsigned int>(start + (x + y) * color_step) & 0xFFFF;
-        size_t offset = (y * width) + x;
+        size_t offset = (y * stride) + x;
         switch (pixel_format_) {
           case Format::Y16:
             target_buffer[offset * sizeof(uint16_t)] = value & 0xFF;
@@ -389,7 +393,8 @@ void PacmanFramePainter::DrawGradientSquares(base::TimeDelta elapsed_time,
 }
 
 void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
-                                    uint8_t* target_buffer) {
+                                    uint8_t* target_buffer,
+                                    int bytes_per_row) {
   const int width = fake_device_state_->format.frame_size.width();
   const int height = fake_device_state_->format.frame_size.height();
 
@@ -424,7 +429,7 @@ void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
   const SkImageInfo info =
       SkImageInfo::Make(width, height, colorspace, kOpaque_SkAlphaType);
   SkBitmap bitmap;
-  bitmap.setInfo(info);
+  bitmap.setInfo(info, bytes_per_row);
   bitmap.setPixels(target_buffer);
   SkPaint paint;
   paint.setStyle(SkPaint::kFill_Style);
@@ -724,7 +729,9 @@ void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(
     base::TimeDelta timestamp_to_paint) {
   if (!client())
     return;
-  const size_t frame_size = device_state()->format.ImageAllocationSize();
+  const auto& frame_format = device_state()->format;
+  const size_t frame_size = VideoFrame::AllocationSize(
+      frame_format.pixel_format, frame_format.frame_size);
   memset(buffer_.get(), 0, frame_size);
   frame_painter()->PaintFrame(timestamp_to_paint, buffer_.get());
   base::TimeTicks now = base::TimeTicks::Now();
@@ -836,7 +843,8 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
          scoped_mapping.y_stride() * buffer_size.height());
   memset(scoped_mapping.uv_plane(), 0,
          scoped_mapping.uv_stride() * (buffer_size.height() / 2));
-  frame_painter()->PaintFrame(timestamp_to_paint, scoped_mapping.y_plane());
+  frame_painter()->PaintFrame(timestamp_to_paint, scoped_mapping.y_plane(),
+                              scoped_mapping.y_stride());
 
   base::TimeTicks now = base::TimeTicks::Now();
   VideoCaptureFormat modified_format = device_state()->format;

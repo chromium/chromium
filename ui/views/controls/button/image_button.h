@@ -141,22 +141,22 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   // Like Views::SetBackground(), but to set the background color used for the
   // "has been toggled" state.
   void SetToggledBackground(std::unique_ptr<Background> b);
-  Background* toggled_background() { return toggled_background_.get(); }
+  Background* GetToggledBackground() const { return toggled_background_.get(); }
 
   // Get/Set the tooltip text displayed when the button is toggled.
-  base::string16 GetToggledTooltipText() const;
-  void SetToggledTooltipText(const base::string16& tooltip);
+  std::u16string GetToggledTooltipText() const;
+  void SetToggledTooltipText(const std::u16string& tooltip);
 
   // Get/Set the accessible text used when the button is toggled.
-  base::string16 GetToggledAccessibleName() const;
-  void SetToggledAccessibleName(const base::string16& name);
+  std::u16string GetToggledAccessibleName() const;
+  void SetToggledAccessibleName(const std::u16string& name);
 
   // Overridden from ImageButton:
   const gfx::ImageSkia& GetImage(ButtonState state) const override;
   void SetImage(ButtonState state, const gfx::ImageSkia& image) override;
 
   // Overridden from View:
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
@@ -173,19 +173,20 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
 
   // The parent class's tooltip_text_ is displayed when not toggled, and
   // this one is shown when toggled.
-  base::string16 toggled_tooltip_text_;
+  std::u16string toggled_tooltip_text_;
 
   // The parent class's accessibility data is used when not toggled, and this
   // one is used when toggled.
-  base::string16 toggled_accessible_name_;
+  std::u16string toggled_accessible_name_;
 
   DISALLOW_COPY_AND_ASSIGN(ToggleImageButton);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ToggleImageButton, ImageButton)
 VIEW_BUILDER_PROPERTY(bool, Toggled)
-VIEW_BUILDER_PROPERTY(base::string16, ToggledTooltipText)
-VIEW_BUILDER_PROPERTY(base::string16, ToggledAccessibleName)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, ToggledBackground)
+VIEW_BUILDER_PROPERTY(std::u16string, ToggledTooltipText)
+VIEW_BUILDER_PROPERTY(std::u16string, ToggledAccessibleName)
 END_VIEW_BUILDER
 
 }  // namespace views

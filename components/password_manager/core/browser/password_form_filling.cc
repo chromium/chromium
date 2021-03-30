@@ -36,6 +36,12 @@ const base::Feature kSuppressAccountStoragePromosForBlockedWebsite{
     "SuppressAccountStoragePromosForBlockedWebsite",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether we should suppress the account storage promos for when the
+// credentials service is disabled.
+const base::Feature kSuppressAccountStoragePromosWhenCredentialServiceDisabled{
+    "SuppressAccountStoragePromosWhenCredentialServiceDisabled",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 bool PreferredRealmIsFromAndroid(const PasswordFormFillData& fill_data) {
   return FacetURI::FromPotentiallyInvalidSpec(fill_data.preferred_realm)
       .IsValidAndroidFacetURI();
@@ -124,6 +130,12 @@ void Autofill(PasswordManagerClient* client,
                                 &federated_matches);
 }
 
+std::string GetPreferredRealm(const PasswordForm& form) {
+  DCHECK(IsPublicSuffixMatchOrAffiliationBasedMatch(form));
+  return form.app_display_name.empty() ? form.signon_realm
+                                       : form.app_display_name;
+}
+
 }  // namespace
 
 LikelyFormFilling SendFillInformationToRenderer(
@@ -149,11 +161,18 @@ LikelyFormFilling SendFillInformationToRenderer(
   }
 
   if (best_matches.empty()) {
-    bool should_suppres_popup =
+    bool should_suppres_popup_due_to_blocked_website =
         blocked_by_user && base::FeatureList::IsEnabled(
                                kSuppressAccountStoragePromosForBlockedWebsite);
+
+    bool should_suppres_popup_due_to_disabled_saving_and_filling =
+        base::FeatureList::IsEnabled(
+            kSuppressAccountStoragePromosWhenCredentialServiceDisabled) &&
+        !client->IsSavingAndFillingEnabled(observed_form.url);
+
     bool should_show_popup_without_passwords =
-        !should_suppres_popup &&
+        !should_suppres_popup_due_to_blocked_website &&
+        !should_suppres_popup_due_to_disabled_saving_and_filling &&
         (client->GetPasswordFeatureManager()->ShouldShowAccountStorageOptIn() ||
          client->GetPasswordFeatureManager()->ShouldShowAccountStorageReSignin(
              client->GetLastCommittedURL()));
@@ -186,6 +205,9 @@ LikelyFormFilling SendFillInformationToRenderer(
     wait_for_username_reason = WaitForUsernameReason::kReauthRequired;
   } else if (client->IsIncognito()) {
     wait_for_username_reason = WaitForUsernameReason::kIncognitoMode;
+  } else if (preferred_match->is_affiliation_based_match &&
+             !IsValidAndroidFacetURI(preferred_match->signon_realm)) {
+    wait_for_username_reason = WaitForUsernameReason::kAffiliatedWebsite;
   } else if (preferred_match->is_public_suffix_match) {
     wait_for_username_reason = WaitForUsernameReason::kPublicSuffixMatch;
   } else if (no_sign_in_form) {
@@ -254,6 +276,10 @@ PasswordFormFillData CreatePasswordFormFillData(
   // Note that many of the |FormFieldData| members are not initialized for
   // |username_field| and |password_field| because they are currently not used
   // by the password autocomplete code.
+  // Although the |host_frame| is currently not used by Password Manager, it
+  // must be set because serializing an empty LocalFrameToken is illegal.
+  result.username_field.host_frame = form_on_page.form_data.host_frame;
+  result.password_field.host_frame = form_on_page.form_data.host_frame;
   result.username_field.value = preferred_match.username_value;
   result.password_field.value = preferred_match.password_value;
   if (!form_on_page.only_for_fallback &&
@@ -279,8 +305,9 @@ PasswordFormFillData CreatePasswordFormFillData(
 #endif
   }
 
-  if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match))
-    result.preferred_realm = preferred_match.signon_realm;
+  if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match)) {
+    result.preferred_realm = GetPreferredRealm(preferred_match);
+  }
 
   // Copy additional username/value pairs.
   for (const PasswordForm* match : matches) {
@@ -302,8 +329,9 @@ PasswordFormFillData CreatePasswordFormFillData(
     value.username = match->username_value;
     value.password = match->password_value;
     value.uses_account_store = match->IsUsingAccountStore();
-    if (IsPublicSuffixMatchOrAffiliationBasedMatch(*match))
-      value.realm = match->signon_realm;
+    if (IsPublicSuffixMatchOrAffiliationBasedMatch(*match)) {
+      value.realm = GetPreferredRealm(*match);
+    }
     result.additional_logins.push_back(std::move(value));
   }
 

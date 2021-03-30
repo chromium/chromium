@@ -83,6 +83,8 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     default_actions_.insert(media_session::mojom::MediaSessionAction::kPlay);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kPause);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kStop);
+    default_actions_.insert(media_session::mojom::MediaSessionAction::kSeekTo);
+    default_actions_.insert(media_session::mojom::MediaSessionAction::kScrubTo);
   }
 
   void SetUp() override {

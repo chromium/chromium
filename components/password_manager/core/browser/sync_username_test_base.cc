@@ -20,14 +20,14 @@ FormData CreateSigninFormData(const GURL& url, const char* username) {
   FormData form;
   form.url = url;
   FormFieldData field;
-  field.name = ASCIIToUTF16("username_element");
+  field.name = u"username_element";
   field.form_control_type = "text";
   field.value = ASCIIToUTF16(username);
   form.fields.push_back(field);
 
-  field.name = ASCIIToUTF16("password_element");
+  field.name = u"password_element";
   field.form_control_type = "password";
-  field.value = ASCIIToUTF16("strong_pw");
+  field.value = u"strong_pw";
   form.fields.push_back(field);
   return form;
 }
@@ -45,8 +45,11 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email) {
   // of FakeSigninAs calls roll.
   signin::IdentityManager* identity_manager =
       identity_test_env_.identity_manager();
-  if (identity_manager->HasPrimaryAccount()) {
-    DCHECK_EQ(identity_manager->GetPrimaryAccountInfo().email, email);
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    DCHECK_EQ(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email,
+        email);
   } else {
     identity_test_env_.MakePrimaryAccountAvailable(email);
   }

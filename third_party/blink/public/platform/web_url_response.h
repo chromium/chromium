@@ -264,6 +264,12 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void SetType(network::mojom::FetchResponseType);
   BLINK_PLATFORM_EXPORT network::mojom::FetchResponseType GetType() const;
 
+  // Pre-computed padding.  This should only be non-zero if the type is
+  // kOpaque.  In addition, it is only set for responses provided by a
+  // service worker FetchEvent handler.
+  BLINK_PLATFORM_EXPORT void SetPadding(int64_t);
+  BLINK_PLATFORM_EXPORT int64_t GetPadding() const;
+
   // The URL list of the Response object the ServiceWorker passed to
   // respondWith(). See
   // network::ResourceResponseInfo::url_list_via_service_worker for details.
@@ -331,6 +337,14 @@ class WebURLResponse {
   // expected to be in reverse, from canonical name (i.e. address record name)
   // through to query name.
   BLINK_PLATFORM_EXPORT void SetDnsAliases(const WebVector<WebString>&);
+
+  BLINK_PLATFORM_EXPORT WebURL WebBundleURL() const;
+  BLINK_PLATFORM_EXPORT void SetWebBundleURL(const WebURL&);
+
+  BLINK_PLATFORM_EXPORT void SetAuthChallengeInfo(
+      const base::Optional<net::AuthChallengeInfo>&);
+  BLINK_PLATFORM_EXPORT const base::Optional<net::AuthChallengeInfo>&
+  AuthChallengeInfo() const;
 
 #if INSIDE_BLINK
  protected:

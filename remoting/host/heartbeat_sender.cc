@@ -122,8 +122,8 @@ std::string GetHostname() {
     return std::string();
   }
   std::string hostname;
-  if (!base::UTF16ToUTF8(buffer, size, &hostname)) {
-    LOG(ERROR) << "Failed to convert from UTF16 to UTF8";
+  if (!base::WideToUTF8(buffer, size, &hostname)) {
+    LOG(ERROR) << "Failed to convert from Wide to UTF8";
     return std::string();
   }
   return hostname;

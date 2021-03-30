@@ -129,7 +129,7 @@ const GURL& NavigationItemImpl::GetVirtualURL() const {
   return virtual_url_.is_empty() ? url_ : virtual_url_;
 }
 
-void NavigationItemImpl::SetTitle(const base::string16& title) {
+void NavigationItemImpl::SetTitle(const std::u16string& title) {
   if (title_ == title)
     return;
 
@@ -141,7 +141,7 @@ void NavigationItemImpl::SetTitle(const base::string16& title) {
   cached_display_title_.clear();
 }
 
-const base::string16& NavigationItemImpl::GetTitle() const {
+const std::u16string& NavigationItemImpl::GetTitle() const {
   return title_;
 }
 
@@ -154,7 +154,7 @@ const PageDisplayState& NavigationItemImpl::GetPageDisplayState() const {
   return page_display_state_;
 }
 
-const base::string16& NavigationItemImpl::GetTitleForDisplay() const {
+const std::u16string& NavigationItemImpl::GetTitleForDisplay() const {
   // Most pages have real titles. Don't even bother caching anything if this is
   // the case.
   if (!title_.empty())
@@ -344,16 +344,16 @@ ErrorRetryStateMachine& NavigationItemImpl::error_retry_state_machine() {
 }
 
 // static
-base::string16 NavigationItemImpl::GetDisplayTitleForURL(const GURL& url) {
+std::u16string NavigationItemImpl::GetDisplayTitleForURL(const GURL& url) {
   if (url.is_empty())
-    return base::string16();
+    return std::u16string();
 
-  base::string16 title = url_formatter::FormatUrl(url);
+  std::u16string title = url_formatter::FormatUrl(url);
 
   // For file:// URLs use the filename as the title, not the full path.
   if (url.SchemeIsFile()) {
-    base::string16::size_type slashpos = title.rfind('/');
-    if (slashpos != base::string16::npos && slashpos != (title.size() - 1))
+    std::u16string::size_type slashpos = title.rfind('/');
+    if (slashpos != std::u16string::npos && slashpos != (title.size() - 1))
       title = title.substr(slashpos + 1);
   }
 

@@ -64,19 +64,21 @@ void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
 
   callback_ = std::move(callback);
 
-  const base::string16 title = l10n_util::GetPluralStringFUTF16(
+  const std::u16string title = l10n_util::GetPluralStringFUTF16(
       kNotificationTitles[notify_type_], extension_ids_.size());
-  const base::string16 body = l10n_util::GetPluralStringFUTF16(
+  const std::u16string body = l10n_util::GetPluralStringFUTF16(
       kNotificationBodies[notify_type_], extension_ids_.size());
   GURL original_url("https://chrome.google.com/webstore");
-  gfx::Image icon(gfx::CreateVectorIcon(
-      vector_icons::kBusinessIcon, message_center::kSmallImageSize,
-      ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
-          ui::NativeTheme::kColorId_DefaultIconColor)));
+  // TODO(crbug.com/1187930): Eliminate the use of `gfx::kChromeIconGrey` and
+  // instead retrieve the icon color via a ui::ColorProvider once message center
+  // has been updated to use the ColorProvider infrastructure.
+  gfx::Image icon(gfx::CreateVectorIcon(vector_icons::kBusinessIcon,
+                                        message_center::kSmallImageSize,
+                                        gfx::kChromeIconGrey));
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationIds[notify_type_],
-      title, body, icon, /*source=*/base::string16(), original_url,
+      title, body, icon, /*source=*/std::u16string(), original_url,
       message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                  kExtensionRequestNotifierId),
       message_center::RichNotificationData(),
@@ -96,7 +98,7 @@ void ExtensionRequestNotification::CloseNotification() {
 
 void ExtensionRequestNotification::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   for (const std::string& extension_id : extension_ids_) {
     NavigateParams params(profile_, GURL(kChromeWebstoreUrl + extension_id),
                           ui::PAGE_TRANSITION_LINK);

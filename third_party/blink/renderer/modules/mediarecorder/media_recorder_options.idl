@@ -4,6 +4,8 @@
 
 // https://w3c.github.io/mediacapture-record/#mediarecorderoptions-section
 
+enum BitrateMode { "constant", "variable" };
+
 dictionary MediaRecorderOptions {
     DOMString mimeType = "";  // Encoding mimeType.
 
@@ -11,4 +13,5 @@ dictionary MediaRecorderOptions {
     unsigned long audioBitsPerSecond;
     unsigned long videoBitsPerSecond;
     unsigned long bitsPerSecond;
+    BitrateMode audioBitrateMode = "variable";
 };

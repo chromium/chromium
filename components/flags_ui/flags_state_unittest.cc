@@ -68,9 +68,6 @@ const char kEnableDisableValue2[] = "value2";
 const char kEnableFeatures[] = "dummy-enable-features";
 const char kDisableFeatures[] = "dummy-disable-features";
 
-const char kDummySentinelBeginSwitch[] = "dummy-begin";
-const char kDummySentinelEndSwitch[] = "dummy-end";
-
 const char kTestTrial[] = "TestTrial";
 const char kTestParam1[] = "param1";
 const char kTestParam2[] = "param2";
@@ -424,128 +421,10 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersWithDefaultTrials) {
 
 base::CommandLine::StringType CreateSwitch(const std::string& value) {
 #if defined(OS_WIN)
-  return base::ASCIIToUTF16(value);
+  return base::ASCIIToWide(value);
 #else
   return value;
 #endif
-}
-
-TEST_F(FlagsStateTest, CompareSwitchesToCurrentCommandLine) {
-  // Start with the active command line containing no flags, and the new command
-  // line having the |kFlags1| flag.
-
-  flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
-
-  const std::string kDoubleDash("--");
-
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitch("foo");
-
-  base::CommandLine new_command_line(base::CommandLine::NO_PROGRAM);
-  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &new_command_line,
-                                       kAddSentinels, kEnableFeatures,
-                                       kDisableFeatures);
-
-  EXPECT_FALSE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-      new_command_line, command_line, nullptr, nullptr, nullptr));
-  {
-    std::set<base::CommandLine::StringType> difference;
-    EXPECT_FALSE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-        new_command_line, command_line, &difference, nullptr, nullptr));
-    EXPECT_EQ(1U, difference.size());
-    EXPECT_EQ(1U, difference.count(CreateSwitch(kDoubleDash + kSwitch1)));
-  }
-
-  // Now both command lines have the |kFlags1| flag.
-
-  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &command_line,
-                                       kAddSentinels, kEnableFeatures,
-                                       kDisableFeatures);
-
-  EXPECT_TRUE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-      new_command_line, command_line, nullptr, nullptr, nullptr));
-  {
-    std::set<base::CommandLine::StringType> difference;
-    EXPECT_TRUE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-        new_command_line, command_line, &difference, nullptr, nullptr));
-    EXPECT_TRUE(difference.empty());
-  }
-
-  // Now the active command line has the |kFlags2| flag, and the new command
-  // line has the |kFlags1| flag.
-
-  flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, false);
-  flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
-
-  base::CommandLine another_command_line(base::CommandLine::NO_PROGRAM);
-  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &another_command_line,
-                                       kAddSentinels, kEnableFeatures,
-                                       kDisableFeatures);
-
-  EXPECT_FALSE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-      new_command_line, another_command_line, nullptr, nullptr, nullptr));
-  {
-    std::set<base::CommandLine::StringType> difference;
-    EXPECT_FALSE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-        new_command_line, another_command_line, &difference, nullptr, nullptr));
-    EXPECT_EQ(2U, difference.size());
-    EXPECT_EQ(1U, difference.count(CreateSwitch(kDoubleDash + kSwitch1)));
-    EXPECT_EQ(1U, difference.count(CreateSwitch(kDoubleDash + kSwitch2 + "=" +
-                                                kValueForSwitch2)));
-  }
-
-  // Now both command lines have both flags |kFlags1| and |kFlags2|, but each
-  // flag is surrounded by dummy sentinels in one of the command lines.
-
-  new_command_line.AppendSwitch(kDummySentinelBeginSwitch);
-  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &new_command_line,
-                                       kNoSentinels, kEnableFeatures,
-                                       kDisableFeatures);
-  new_command_line.AppendSwitch(kDummySentinelEndSwitch);
-
-  flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
-  flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, false);
-
-  another_command_line.AppendSwitch(kDummySentinelBeginSwitch);
-  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &another_command_line,
-                                       kNoSentinels, kEnableFeatures,
-                                       kDisableFeatures);
-  another_command_line.AppendSwitch(kDummySentinelEndSwitch);
-
-  EXPECT_FALSE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-      new_command_line, another_command_line, nullptr, nullptr, nullptr));
-  EXPECT_TRUE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-      new_command_line, another_command_line, nullptr,
-      kDummySentinelBeginSwitch, kDummySentinelEndSwitch));
-
-  // Now the new command line additionally contains |kFlags3|, which is
-  // followed by another dummy end sentinel.
-
-  flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, false);
-  flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags3, true);
-
-  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &new_command_line,
-                                       kNoSentinels, kEnableFeatures,
-                                       kDisableFeatures);
-  new_command_line.AppendSwitch(kDummySentinelEndSwitch);
-
-  EXPECT_FALSE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-      new_command_line, another_command_line, nullptr,
-      kDummySentinelBeginSwitch, kDummySentinelEndSwitch));
-
-  // Now both command lines contain the |kFlags3| flag followed by the second
-  // dummy end sentinel.
-
-  flags_state_->ConvertFlagsToSwitches(&flags_storage_, &another_command_line,
-                                       kNoSentinels, kEnableFeatures,
-                                       kDisableFeatures);
-  another_command_line.AppendSwitch(kDummySentinelEndSwitch);
-
-  EXPECT_FALSE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-      new_command_line, another_command_line, nullptr, nullptr, nullptr));
-  EXPECT_TRUE(FlagsState::AreSwitchesIdenticalToCurrentCommandLine(
-      new_command_line, another_command_line, nullptr,
-      kDummySentinelBeginSwitch, kDummySentinelEndSwitch));
 }
 
 TEST_F(FlagsStateTest, RemoveFlagSwitches) {
@@ -708,8 +587,8 @@ TEST_F(FlagsStateTest, CheckValues) {
   std::string switch1_with_equals =
       std::string("--") + std::string(kSwitch1) + std::string("=");
 #if defined(OS_WIN)
-  EXPECT_EQ(base::string16::npos, command_line.GetCommandLineString().find(
-                                      base::ASCIIToUTF16(switch1_with_equals)));
+  EXPECT_EQ(std::wstring::npos, command_line.GetCommandLineString().find(
+                                    base::ASCIIToWide(switch1_with_equals)));
 #else
   EXPECT_EQ(std::string::npos,
             command_line.GetCommandLineString().find(switch1_with_equals));
@@ -719,8 +598,8 @@ TEST_F(FlagsStateTest, CheckValues) {
   std::string switch2_with_equals =
       std::string("--") + std::string(kSwitch2) + std::string("=");
 #if defined(OS_WIN)
-  EXPECT_NE(base::string16::npos, command_line.GetCommandLineString().find(
-                                      base::ASCIIToUTF16(switch2_with_equals)));
+  EXPECT_NE(std::wstring::npos, command_line.GetCommandLineString().find(
+                                    base::ASCIIToWide(switch2_with_equals)));
 #else
   EXPECT_NE(std::string::npos,
             command_line.GetCommandLineString().find(switch2_with_equals));

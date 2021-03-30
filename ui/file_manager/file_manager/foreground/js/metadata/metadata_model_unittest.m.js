@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertEquals, assertThrows} from 'chrome://test/chai_assert.js';
-import {reportPromise} from '../../../../base/js/test_error_reporting.m.js';
+import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
 import {MetadataModel} from './metadata_model.m.js';
 import {MetadataProvider} from './metadata_provider.m.js';
 

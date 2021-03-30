@@ -27,14 +27,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/border_value.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
-
-class ComputedStyle;
 
 enum EBorderPrecedence {
   kBorderPrecedenceOff,
@@ -61,7 +58,7 @@ class CORE_EXPORT CollapsedBorderValue {
                        const Color&,
                        EBorderPrecedence);
   CollapsedBorderValue(EBorderStyle style,
-                       const float width,
+                       const LayoutUnit width,
                        const Color&,
                        EBorderPrecedence);
 

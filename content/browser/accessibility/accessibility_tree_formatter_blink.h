@@ -5,14 +5,15 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_BLINK_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_BLINK_H_
 
-#include <stdint.h>
 #include <string>
 #include <vector>
 
-#include "content/browser/accessibility/browser_accessibility.h"
+#include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 namespace content {
+
+class BrowserAccessibility;
 
 class CONTENT_EXPORT AccessibilityTreeFormatterBlink
     : public ui::AXTreeFormatterBase {
@@ -38,6 +39,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
                           base::Value* dict) const;
 
   void RecursiveBuildTree(const ui::AXNode& node, base::Value* dict) const;
+
+  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
   uint32_t ChildCount(const BrowserAccessibility& node) const;
   BrowserAccessibility* GetChild(const BrowserAccessibility& node,

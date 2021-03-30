@@ -110,7 +110,7 @@ void ProxyConfigServiceImpl::UpdateProxyConfig(
   pref_config_state_ = config_state;
   pref_config_ = config;
 
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
   // Evaluate the proxy configuration. If GetLatestProxyConfig returns

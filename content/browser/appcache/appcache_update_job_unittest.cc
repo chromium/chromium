@@ -52,7 +52,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
-#include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
@@ -61,14 +60,16 @@
 namespace {
 // tools/origin_trials/generate_token.py http://mockhost AppCache
 // --expire-days=2000
+//
+// tools/origin_trials/check_token.py extracts token expiry: 1761166418.
 #define APPCACHE_ORIGIN_TRIAL_TOKEN                                            \
   "AhiiB7vi3JiEO1/"                                                            \
   "RQIytQslLSN3WYVu3Xd32abYhTia+91ladjnXSClfU981x+"                            \
   "aoPimEqYVy6tWoeMZZYTpqlggAAABNeyJvcmlnaW4iOiAiaHR0cDovL21vY2tob3N0OjgwIiwg" \
   "ImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE2NjQxOH0="
 
-const char* kTestAppCacheOriginTrialToken = APPCACHE_ORIGIN_TRIAL_TOKEN;
-
+const base::Time kTestOriginTrialTokenExpiry =
+    base::Time::FromDoubleT(1761166418);
 }  // namespace
 
 namespace content {
@@ -713,6 +714,8 @@ class AppCacheUpdateJobTest : public testing::Test,
         process_id_(123) {
     appcache_require_origin_trial_feature_.InitAndDisableFeature(
         blink::features::kAppCacheRequireOriginTrial);
+    appcache_disable_corruption_feature_.InitAndDisableFeature(
+        kAppCacheCorruptionRecoveryFeature);
   }
 
   // TODO(ananta/michaeln): Remove dependencies on URLRequest based
@@ -767,7 +770,7 @@ class AppCacheUpdateJobTest : public testing::Test,
 
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
-    mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+    mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
 
     uint32_t bytes_written = body.size();
     producer_handle->WriteData(body.data(), &bytes_written,
@@ -1247,18 +1250,7 @@ class AppCacheUpdateJobTest : public testing::Test,
     expect_group_has_cache_ = true;
     tested_manifest_path_override_ = "files/notmodified";
     tested_manifest_ = MANIFEST1;
-
-    // Get the expected expiration date of the test token.
-    {
-      blink::TrialTokenValidator validator;
-      blink::TrialTokenResult result = validator.ValidateToken(
-          kTestAppCacheOriginTrialToken, MockHttpServer::GetOrigin(),
-          base::Time::Now());
-      expect_token_expires_ = result.expiry_time;
-      ASSERT_EQ(result.status, blink::OriginTrialTokenStatus::kSuccess);
-      EXPECT_EQ(GetAppCacheOriginTrialNameForTesting(), result.feature_name);
-      EXPECT_NE(base::Time(), expect_token_expires_);
-    }
+    expect_token_expires_ = kTestOriginTrialTokenExpiry;
 
     frontend->AddExpectedEvent(
         blink::mojom::AppCacheEventID::APPCACHE_CHECKING_EVENT);
@@ -4304,18 +4296,7 @@ class AppCacheUpdateJobTest : public testing::Test,
   }
 
   void OriginTrialUpdateTest() {
-    // Get the expected expiration date of the test token.
-    {
-      blink::TrialTokenValidator validator;
-      blink::TrialTokenResult result = validator.ValidateToken(
-          kTestAppCacheOriginTrialToken, MockHttpServer::GetOrigin(),
-          base::Time::Now());
-      expect_token_expires_ = result.expiry_time;
-      ASSERT_EQ(result.status, blink::OriginTrialTokenStatus::kSuccess);
-      EXPECT_EQ(GetAppCacheOriginTrialNameForTesting(), result.feature_name);
-      EXPECT_NE(base::Time(), expect_token_expires_);
-    }
-
+    expect_token_expires_ = kTestOriginTrialTokenExpiry;
     MakeService();
     tested_manifest_path_override_ = "files/manifest2-origin-trial";
     group_ = base::MakeRefCounted<AppCacheGroup>(
@@ -5351,6 +5332,7 @@ class AppCacheUpdateJobTest : public testing::Test,
       http_headers_request_test_jobs_;
 
   base::test::ScopedFeatureList appcache_require_origin_trial_feature_;
+  base::test::ScopedFeatureList appcache_disable_corruption_feature_;
 
   // Lazily create these to avoid data races in the FeatureList between
   // service workers (reading) and appcache tests (writing).

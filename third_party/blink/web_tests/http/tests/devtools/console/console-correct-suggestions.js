@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console correctly finds suggestions in complicated cases.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

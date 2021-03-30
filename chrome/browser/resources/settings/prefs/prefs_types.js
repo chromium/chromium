@@ -9,7 +9,7 @@
 /**
  * Global state for prefs status.
  */
-/* #export */ const CrSettingsPrefs = (function() {
+export const CrSettingsPrefs = (function() {
   const CrSettingsPrefsInternal = {
     /**
      * Resolves the CrSettingsPrefs.initialized promise.

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 using base::sequence_manager::TaskQueue;
@@ -119,7 +120,7 @@ class OnHeapTimerOwner final : public GarbageCollected<OnHeapTimerOwner> {
     timer_.StartOneShot(interval, caller);
   }
 
-  void Trace(Visitor* visitor) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(timer_); }
 
  private:
   void Fired(TimerBase*) {
@@ -127,7 +128,7 @@ class OnHeapTimerOwner final : public GarbageCollected<OnHeapTimerOwner> {
     record_->SetTimerHasFired();
   }
 
-  TaskRunnerTimer<OnHeapTimerOwner> timer_;
+  HeapTaskRunnerTimer<OnHeapTimerOwner> timer_;
   scoped_refptr<Record> record_;
 };
 
@@ -642,6 +643,8 @@ TEST_F(TimerTest, DestructOnHeapTimer) {
   EXPECT_FALSE(record->TimerHasFired());
 }
 
+// TODO(1056170): Re-enable test.
+#if !BUILDFLAG(USE_V8_OILPAN)
 TEST_F(TimerTest, MarkOnHeapTimerAsUnreachable) {
   scoped_refptr<OnHeapTimerOwner::Record> record =
       OnHeapTimerOwner::Record::Create();
@@ -669,6 +672,7 @@ TEST_F(TimerTest, MarkOnHeapTimerAsUnreachable) {
     ThreadState::Current()->CompleteSweep();
   }
 }
+#endif  // !USE_V8_OILPAN
 
 namespace {
 

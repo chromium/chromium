@@ -21,10 +21,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
-#include "chrome/browser/component_updater/tls_deprecation_config_component_installer.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
@@ -35,6 +33,7 @@
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/pref_names.h"
 #include "components/certificate_transparency/ct_known_logs.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_log_proxy_source.h"
 #include "components/network_session_configurator/common/network_features.h"
@@ -213,7 +212,6 @@ class SystemNetworkContextManager::URLLoaderFactoryForSystem
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
@@ -224,7 +222,7 @@ class SystemNetworkContextManager::URLLoaderFactoryForSystem
     if (!manager_)
       return;
     manager_->GetURLLoaderFactory()->CreateLoaderAndStart(
-        std::move(receiver), routing_id, request_id, options, url_request,
+        std::move(receiver), request_id, options, url_request,
         std::move(client), traffic_annotation);
   }
 
@@ -539,10 +537,6 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // Asynchronously reapply the most recently received CRLSet (if any).
   component_updater::CRLSetPolicy::ReconfigureAfterNetworkRestart();
 
-  // Asynchronously reapply the most recently received TLS deprecation config.
-  component_updater::TLSDeprecationConfigComponentInstallerPolicy::
-      ReconfigureAfterNetworkRestart();
-
   // Configure SCT Auditing in the NetworkService.
   SCTReportingService::ReconfigureAfterNetworkRestart();
 
@@ -578,13 +572,14 @@ void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
 
 void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   variations::UpdateCorsExemptHeaderForVariations(network_context_params);
   GoogleURLLoaderThrottle::UpdateCorsExemptHeader(network_context_params);
 
   network_context_params->enable_brotli = true;
 
-  network_context_params->user_agent = GetUserAgent();
+  network_context_params->user_agent = embedder_support::GetUserAgent();
 
   // Disable referrers by default. Any consumer that enables referrers should
   // respect prefs::kEnableReferrers from the appropriate pref store.
@@ -598,7 +593,10 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   if (base::FeatureList::IsEnabled(blink::features::kFreezeUserAgent)) {
     quic_user_agent_id = "";
   } else {
-    quic_user_agent_id = chrome::GetChannelName();
+    // Extended stable reports as regular stable due to the similarity, and to
+    // avoid adding more signal to the user agent string.
+    quic_user_agent_id =
+        chrome::GetChannelName(chrome::WithExtendedStable(false));
     if (!quic_user_agent_id.empty())
       quic_user_agent_id.push_back(' ');
     quic_user_agent_id.append(
@@ -672,9 +670,9 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
   cert_verifier_creation_params->use_builtin_cert_verifier =
       ShouldUseBuiltinCertVerifier(local_state_)
-          ? network::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          ? cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
                 kBuiltin
-          : network::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          : cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
                 kSystem;
 #endif
 }
@@ -683,8 +681,9 @@ network::mojom::NetworkContextParamsPtr
 SystemNetworkContextManager::CreateDefaultNetworkContextParams() {
   network::mojom::NetworkContextParamsPtr network_context_params =
       network::mojom::NetworkContextParams::New();
-  network::mojom::CertVerifierCreationParamsPtr cert_verifier_creation_params =
-      network::mojom::CertVerifierCreationParams::New();
+  cert_verifier::mojom::CertVerifierCreationParamsPtr
+      cert_verifier_creation_params =
+          cert_verifier::mojom::CertVerifierCreationParams::New();
   ConfigureDefaultNetworkContextParams(network_context_params.get(),
                                        cert_verifier_creation_params.get());
   network_context_params->cert_verifier_params =

@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #include <stdint.h>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
 #include "base/rand_util.h"
-#include "base/strings/string16.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
@@ -203,6 +203,10 @@ bool IOSChromeMetricsServiceClient::GetBrand(std::string* brand_code) {
 metrics::SystemProfileProto::Channel
 IOSChromeMetricsServiceClient::GetChannel() {
   return metrics::AsProtobufChannel(::GetChannel());
+}
+
+bool IOSChromeMetricsServiceClient::IsExtendedStableChannel() {
+  return false;  // Not supported on iOS.
 }
 
 std::string IOSChromeMetricsServiceClient::GetVersionString() {

@@ -6,9 +6,11 @@
 
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #import "components/handoff/handoff_manager.h"
@@ -37,7 +39,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
-#include "components/rappor/rappor_service_impl.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sessions/core/session_id_generator.h"
@@ -56,10 +57,10 @@
 #include "components/web_resource/web_resource_pref_names.h"
 #include "ios/chrome/browser/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/first_run/first_run.h"
-#import "ios/chrome/browser/geolocation/omnibox_geolocation_local_state.h"
 #import "ios/chrome/browser/memory/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
 #include "ios/chrome/browser/notification_promo.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -70,7 +71,7 @@
 #import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #include "ios/chrome/browser/voice/voice_search_prefs_registration.h"
-#import "ios/chrome/browser/web/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/web/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -103,6 +104,12 @@ const char kPasswordManagerOnboardingState[] =
 
 const char kWasOnboardingFeatureCheckedBefore[] =
     "profile.was_pwm_onboarding_feature_checked_before";
+
+// Deprecated 03/2021
+const char kOmniboxGeolocationAuthorizationState[] =
+    "ios.omnibox.geolocation_authorization_state";
+const char kOmniboxGeolocationLastAuthorizationAlertVersion[] =
+    "ios.omnibox.geolocation_last_authorization_alert_version";
 }
 
 // Deprecated 12/2020
@@ -118,18 +125,18 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   policy::BrowserPolicyConnector::RegisterPrefs(registry);
   policy::PolicyStatisticsCollector::RegisterPrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterPrefs(registry);
-  rappor::RapporServiceImpl::RegisterPrefs(registry);
   sessions::SessionIdGenerator::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
   location_permissions_field_trial::RegisterLocalStatePrefs(registry);
+  component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
+      registry);
 
   // Preferences related to the browser state manager.
   registry->RegisterStringPref(prefs::kBrowserStateLastUsed, std::string());
   registry->RegisterIntegerPref(prefs::kBrowserStatesNumCreated, 1);
   registry->RegisterListPref(prefs::kBrowserStatesLastActive);
 
-  [OmniboxGeolocationLocalState registerLocalState:registry];
   [MemoryDebuggerManager registerLocalState:registry];
   [IncognitoReauthSceneAgent registerLocalState:registry];
 
@@ -159,15 +166,22 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterTimePref(enterprise_reporting::kLastUploadTimestamp,
                              base::Time());
+
+  registry->RegisterIntegerPref(kOmniboxGeolocationAuthorizationState, 0);
+  registry->RegisterStringPref(kOmniboxGeolocationLastAuthorizationAlertVersion,
+                               "");
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   autofill::prefs::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   feed::prefs::RegisterFeedSharedProfilePrefs(registry);
+  feed::RegisterProfilePrefs(registry);
   FirstRun::RegisterProfilePrefs(registry);
   FontSizeTabHelper::RegisterBrowserStatePrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);
+  invalidation::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
+  invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
   ios::NotificationPromo::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);
@@ -188,8 +202,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   safe_browsing::RegisterProfilePrefs(registry);
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);
   syncer::DeviceInfoPrefs::RegisterProfilePrefs(registry);
-  syncer::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
-  syncer::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
   syncer::SyncPrefs::RegisterProfilePrefs(registry);
   TemplateURLPrepopulateData::RegisterProfilePrefs(registry);
   translate::TranslatePrefs::RegisterProfilePrefs(registry);
@@ -261,6 +273,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   prefs->ClearPref(kInvalidatorSavedInvalidations);
   prefs->ClearPref(kInvalidatorInvalidationState);
   prefs->ClearPref(kInvalidatorClientId);
+
+  // Added 2021/03.
+  prefs->ClearPref(kOmniboxGeolocationAuthorizationState);
+  prefs->ClearPref(kOmniboxGeolocationLastAuthorizationAlertVersion);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -270,12 +286,6 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 07/2019.
   syncer::MigrateSyncSuppressedPref(prefs);
-  syncer::MigrateSessionsToProxyTabsPrefs(prefs);
-  syncer::ClearObsoleteUserTypePrefs(prefs);
-  syncer::ClearObsoleteClearServerDataPrefs(prefs);
-  syncer::ClearObsoleteAuthErrorPrefs(prefs);
-  syncer::ClearObsoleteFirstSyncTime(prefs);
-  syncer::ClearObsoleteSyncLongPollIntervalSeconds(prefs);
   prefs->ClearPref(kLastKnownGoogleURL);
   prefs->ClearPref(kLastPromptedGoogleURL);
 
@@ -300,4 +310,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 12/2020.
   prefs->ClearPref(kDomainsWithCookiePref);
+
+  // Added 2/2021.
+  syncer::ClearObsoletePassphrasePromptPrefs(prefs);
 }

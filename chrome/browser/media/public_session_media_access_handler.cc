@@ -54,19 +54,22 @@ void PublicSessionMediaAccessHandler::HandleRequest(
 
   // This Unretained is safe because the lifetime of this object is until
   // process exit (living inside a base::Singleton object).
-  auto prompt_resolved_callback = base::AdaptCallbackForRepeating(
+  auto prompt_resolved_callback =
       base::BindOnce(&PublicSessionMediaAccessHandler::ChainHandleRequest,
                      base::Unretained(this), web_contents, request,
-                     std::move(callback), base::RetainedRef(extension)));
+                     std::move(callback), base::RetainedRef(extension));
 
   extensions::PermissionIDSet requested_permissions;
   if (request.audio_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE)
-    requested_permissions.insert(extensions::APIPermission::kAudioCapture);
+    requested_permissions.insert(
+        extensions::mojom::APIPermissionID::kAudioCapture);
   if (request.video_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
-    requested_permissions.insert(extensions::APIPermission::kVideoCapture);
+    requested_permissions.insert(
+        extensions::mojom::APIPermissionID::kVideoCapture);
 
   extensions::permission_helper::HandlePermissionRequest(
-      *extension, requested_permissions, web_contents, prompt_resolved_callback,
+      *extension, requested_permissions, web_contents,
+      std::move(prompt_resolved_callback),
       extensions::permission_helper::PromptFactory());
 }
 
@@ -80,10 +83,14 @@ void PublicSessionMediaAccessHandler::ChainHandleRequest(
 
   // If the user denies audio or video capture, here it gets filtered out from
   // the request before being passed on to the actual implementation.
-  if (!allowed_permissions.ContainsID(extensions::APIPermission::kAudioCapture))
+  if (!allowed_permissions.ContainsID(
+          extensions::mojom::APIPermissionID::kAudioCapture)) {
     request_copy.audio_type = blink::mojom::MediaStreamType::NO_SERVICE;
-  if (!allowed_permissions.ContainsID(extensions::APIPermission::kVideoCapture))
+  }
+  if (!allowed_permissions.ContainsID(
+          extensions::mojom::APIPermissionID::kVideoCapture)) {
     request_copy.video_type = blink::mojom::MediaStreamType::NO_SERVICE;
+  }
 
   // Pass the request through to the original class.
   extension_media_access_handler_.HandleRequest(web_contents, request_copy,

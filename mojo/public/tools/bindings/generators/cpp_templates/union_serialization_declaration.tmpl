@@ -9,25 +9,22 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
   using Traits = UnionTraits<{{data_view}}, UserType>;
 
   static void Serialize(MaybeConstUserType& input,
-                        Buffer* buffer,
-                        {{data_type}}::BufferWriter* writer,
-                        bool inlined,
-                        SerializationContext* context) {
+                        MessageFragment<{{data_type}}>& fragment,
+                        bool inlined) {
     if (CallIsNullIfExists<Traits>(input)) {
        if (inlined)
-         writer->data()->set_null();
+        fragment->set_null();
       return;
     }
-    if (!inlined)
-      writer->Allocate(buffer);
 
-    {{data_type}}::BufferWriter& result = *writer;
-    ALLOW_UNUSED_LOCAL(result);
+    if (!inlined)
+      fragment.Allocate();
+
     // TODO(azani): Handle unknown and objects.
     // Set the not-null flag.
-    result->size = kUnionDataSize;
-    result->tag = Traits::GetTag(input);
-    switch (result->tag) {
+    fragment->size = kUnionDataSize;
+    fragment->tag = Traits::GetTag(input);
+    switch (fragment->tag) {
 {%- for field in union.fields %}
 {%-   set name = field.name %}
 {%-   set kind = field.kind %}
@@ -36,36 +33,36 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
         decltype(Traits::{{name}}(input))
             in_{{name}} = Traits::{{name}}(input);
 {%-   if kind|is_object_kind %}
-        typename decltype(result->data.f_{{name}})::BaseType::BufferWriter
-            value_writer;
+        mojo::internal::MessageFragment<
+            typename decltype(fragment->data.f_{{name}})::BaseType>
+            value_fragment(fragment.message());
 {%-     if kind|is_union_kind %}
         mojo::internal::Serialize<{{serializer_type}}>(
-            in_{{name}}, buffer, &value_writer, false, context);
+            in_{{name}}, value_fragment, false);
 {%-     elif kind|is_array_kind or kind|is_map_kind %}
         const ContainerValidateParams {{name}}_validate_params(
             {{kind|get_container_validate_params_ctor_args|indent(16)}});
         mojo::internal::Serialize<{{serializer_type}}>(
-            in_{{name}}, buffer, &value_writer, &{{name}}_validate_params,
-            context);
+            in_{{name}}, value_fragment, &{{name}}_validate_params);
  {%-     else %}
         mojo::internal::Serialize<{{serializer_type}}>(
-            in_{{name}}, buffer, &value_writer, context);
+            in_{{name}}, value_fragment);
 {%-     endif %}
 {%-     if not kind|is_nullable_kind %}
         MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-            value_writer.is_null(),
+            value_fragment.is_null(),
             mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
             "null {{name}} in {{union.name}} union");
 {%-     endif %}
-        result->data.f_{{name}}.Set(
-            value_writer.is_null() ? nullptr : value_writer.data());
+        fragment->data.f_{{name}}.Set(
+            value_fragment.is_null() ? nullptr : value_fragment.data());
 
 {%-   elif kind|is_any_handle_or_interface_kind %}
         mojo::internal::Serialize<{{serializer_type}}>(
-            in_{{name}}, &result->data.f_{{name}}, context);
+            in_{{name}}, &fragment->data.f_{{name}}, &fragment.message());
 {%-     if not kind|is_nullable_kind %}
         MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
-            !mojo::internal::IsHandleOrInterfaceValid(result->data.f_{{name}}),
+            !mojo::internal::IsHandleOrInterfaceValid(fragment->data.f_{{name}}),
 {%-       if kind|is_associated_kind %}
             mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_INTERFACE_ID,
 {%-       else %}
@@ -76,10 +73,10 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
 
 {%-   elif kind|is_enum_kind %}
         mojo::internal::Serialize<{{serializer_type}}>(
-            in_{{name}}, &result->data.f_{{name}});
+            in_{{name}}, &fragment->data.f_{{name}});
 
 {%-   else %}
-        result->data.f_{{name}} = in_{{name}};
+        fragment->data.f_{{name}} = in_{{name}};
 {%-   endif %}
         break;
       }
@@ -89,11 +86,11 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
 
   static bool Deserialize({{data_type}}* input,
                           UserType* output,
-                          SerializationContext* context) {
+                          Message* message) {
     if (!input || input->is_null())
       return CallSetToNullIfExists<Traits>(output);
 
-    {{data_view}} data_view(input, context);
+    {{data_view}} data_view(input, message);
     return Traits::Read(data_view, output);
   }
 };

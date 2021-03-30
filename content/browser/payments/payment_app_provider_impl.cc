@@ -183,7 +183,7 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
         base::BindOnce(
             std::move(callback),
             PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
-                PaymentEventResponseType::PAYMENT_EVENT_BROWSER_ERROR)));
+                PaymentEventResponseType::PAYMENT_HANDLER_INSTALL_FAILED)));
     return;
   }
 
@@ -339,7 +339,7 @@ scoped_refptr<DevToolsBackgroundServicesContextImpl>
 PaymentAppProviderImpl::GetDevTools(const url::Origin& sw_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(payment_request_web_contents_);
-  auto* storage_partition = BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = BrowserContext::GetStoragePartitionForUrl(
       payment_request_web_contents_->GetBrowserContext(), sw_origin.GetURL(),
       /*can_create=*/true);
   if (!storage_partition)
@@ -390,7 +390,7 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
   } else {
     std::move(callback).Run(
         PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
-            PaymentEventResponseType::PAYMENT_EVENT_BROWSER_ERROR));
+            PaymentEventResponseType::PAYMENT_HANDLER_INSTALL_FAILED));
   }
 }
 

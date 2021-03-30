@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/profiles/profile.h"
@@ -211,6 +211,9 @@ class SiteSettingsHandler
   void HandleResetCategoryPermissionForPattern(const base::ListValue* args);
   void HandleSetCategoryPermissionForPattern(const base::ListValue* args);
 
+  // TODO(andypaicu, crbug.com/880684): Update to only expect a list of three
+  // arguments, replacing the current (requesting,embedding) arguments with
+  // simply (origin) and update all call sites.
   // Handles resetting a chooser exception for the given site.
   void HandleResetChooserExceptionForSite(const base::ListValue* args);
 
@@ -262,7 +265,8 @@ class SiteSettingsHandler
   Profile* profile_;
   web_app::AppRegistrar& app_registrar_;
 
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 
   // Keeps track of events related to zooming.
   base::CallbackListSubscription host_zoom_map_subscription_;
@@ -274,13 +278,15 @@ class SiteSettingsHandler
   std::string clearing_origin_;
 
   // Change observer for content settings.
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer> observer_{
-      this};
+  base::ScopedMultiSourceObservation<HostContentSettingsMap,
+                                     content_settings::Observer>
+      observations_{this};
 
   // Change observer for chooser permissions.
-  ScopedObserver<permissions::ChooserContextBase,
-                 permissions::ChooserContextBase::PermissionObserver>
-      chooser_observer_{this};
+  base::ScopedMultiSourceObservation<
+      permissions::ChooserContextBase,
+      permissions::ChooserContextBase::PermissionObserver>
+      chooser_observations_{this};
 
   // Change observer for prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

@@ -26,4 +26,27 @@ const base::Feature kSyncUseSessionsUnregisterDelay{
     "SyncUseSessionsUnregisterDelay", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_ANDROID)
 
+// Enables filtering out inactive devices which haven't sent DeviceInfo update
+// recently (depending on the device's pulse_interval and an additional margin).
+const base::Feature kSyncFilterOutInactiveDevicesForSingleClient{
+    "SyncFilterOutInactiveDevicesForSingleClient",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// An additional threshold to consider devices as active. It extends device's
+// pulse interval to mitigate possible latency after DeviceInfo commit.
+const base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
+    &kSyncFilterOutInactiveDevicesForSingleClient, "SyncActiveDeviceMargin",
+    base::TimeDelta::FromMinutes(30)};
+
+// Enables providing the list of FCM registration tokens in the commit request.
+const base::Feature kSyncUseFCMRegistrationTokensList{
+    "SyncUseFCMRegistrationTokensList", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Max size of FCM registration tokens list. If the number of active devices
+// having FCM registration tokens is higher, then the resulting list will be
+// empty meaning unknown FCM registration tokens.
+const base::FeatureParam<int> kSyncFCMRegistrationTokensListMaxSize{
+    &kSyncUseFCMRegistrationTokensList, "SyncFCMRegistrationTokensListMaxSize",
+    5};
+
 }  // namespace switches

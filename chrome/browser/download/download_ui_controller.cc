@@ -13,6 +13,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_shelf.h"
+#include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/download/public/common/download_item.h"
 #include "components/security_state/core/security_state.h"
@@ -158,11 +159,13 @@ void DownloadUIController::OnDownloadCreated(content::DownloadManager* manager,
           "Security.SafetyTips.DownloadStarted",
           security_state_tab_helper->GetVisibleSecurityState()
               ->safety_tip_info.status);
-      UMA_HISTOGRAM_BOOLEAN(
-          "Security.LegacyTLS.DownloadStarted",
-          security_state::GetLegacyTLSWarningStatus(
-              *security_state_tab_helper->GetVisibleSecurityState()));
     }
+  }
+
+  if (web_contents) {
+    // TODO(crbug.com/1179196): Add test for this metric.
+    RecordDownloadStartPerProfileType(
+        Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   }
 
   // SavePackage downloads are created in a state where they can be shown in the

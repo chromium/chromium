@@ -15,11 +15,11 @@ static_library("debug_webui") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//base:i18n",
     "//chromeos/components/multidevice/logging",
     "//chromeos/components/proximity_auth",
-    "//chromeos/constants",
     "//chromeos/resources",
     "//chromeos/services/device_sync/proto",
     "//chromeos/services/device_sync/proto:util",

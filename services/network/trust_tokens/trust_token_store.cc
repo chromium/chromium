@@ -311,4 +311,21 @@ bool TrustTokenStore::ClearDataForFilter(mojom::ClearDataFilterPtr filter) {
   return persister_->DeleteForOrigins(std::move(matcher));
 }
 
+bool TrustTokenStore::DeleteStoredTrustTokens(
+    const SuitableTrustTokenOrigin& issuer) {
+  auto issuer_config = persister_->GetIssuerConfig(issuer);
+  if (!issuer_config)
+    return false;
+
+  const bool had_stored_tokens = issuer_config->tokens_size() > 0;
+  issuer_config->mutable_tokens()->Clear();
+  persister_->SetIssuerConfig(issuer, std::move(issuer_config));
+  return had_stored_tokens;
+}
+
+base::flat_map<SuitableTrustTokenOrigin, int>
+TrustTokenStore::GetStoredTrustTokenCounts() {
+  return persister_->GetStoredTrustTokenCounts();
+}
+
 }  // namespace network

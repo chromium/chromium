@@ -4,8 +4,9 @@
 
 #include "components/bookmarks/browser/titled_url_match.h"
 
+#include <string>
+
 #include "base/check_op.h"
-#include "base/strings/string16.h"
 
 namespace bookmarks {
 
@@ -38,7 +39,7 @@ TitledUrlMatch::MatchPositions TitledUrlMatch::ReplaceOffsetsInMatchPositions(
     const size_t begin = *offset_iter;
     ++offset_iter;
     const size_t end = *offset_iter;
-    if ((begin != base::string16::npos) && (end != base::string16::npos)) {
+    if ((begin != std::u16string::npos) && (end != std::u16string::npos)) {
       const MatchPosition new_match_position(begin, end);
       new_match_positions.push_back(new_match_position);
     }

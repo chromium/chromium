@@ -6,28 +6,26 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "base/values.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/structured_events.h"
-#include "components/prefs/json_pref_store.h"
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
 
 namespace metrics {
 namespace structured {
-namespace internal {
 namespace {
 
 // The expected size of a key, in bytes.
 constexpr size_t kKeySize = 32;
 
 // The default maximum number of days before rotating keys.
-constexpr size_t kDefaultRotationPeriod = 90;
+constexpr int kDefaultRotationPeriod = 90;
 
 // Generates a key, which is the string representation of
 // base::UnguessableToken, and is of size |kKeySize| bytes.
@@ -41,132 +39,114 @@ std::string HashToHex(const uint64_t hash) {
   return base::HexEncode(&hash, sizeof(uint64_t));
 }
 
-std::string KeyPath(const uint64_t project) {
-  return base::StrCat({"keys.", base::NumberToString(project), ".key"});
-}
-
-std::string LastRotationPath(const uint64_t project) {
-  return base::StrCat(
-      {"keys.", base::NumberToString(project), ".last_rotation"});
-}
-
-std::string RotationPeriodPath(const uint64_t project) {
-  return base::StrCat(
-      {"keys.", base::NumberToString(project), ".rotation_period"});
-}
-
 }  // namespace
 
-KeyData::KeyData(JsonPrefStore* key_store) : key_store_(key_store) {
-  DCHECK(key_store_);
-  ValidateKeys();
+KeyData::KeyData(const base::FilePath& path,
+                 const base::TimeDelta& save_delay,
+                 base::OnceCallback<void()> on_initialized)
+    : on_initialized_(std::move(on_initialized)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  proto_ = std::make_unique<PersistentProto<KeyDataProto>>(
+      path, save_delay,
+      base::BindOnce(&KeyData::OnRead, weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&KeyData::OnWrite, weak_factory_.GetWeakPtr()));
 }
 
 KeyData::~KeyData() = default;
 
+void KeyData::OnRead(const ReadStatus status) {
+  is_initialized_ = true;
+  switch (status) {
+    case ReadStatus::kOk:
+    case ReadStatus::kMissing:
+      break;
+    case ReadStatus::kReadError:
+      LogInternalError(StructuredMetricsError::kKeyReadError);
+      break;
+    case ReadStatus::kParseError:
+      LogInternalError(StructuredMetricsError::kKeyParseError);
+      break;
+  }
+
+  std::move(on_initialized_).Run();
+}
+
+void KeyData::OnWrite(const WriteStatus status) {
+  switch (status) {
+    case WriteStatus::kOk:
+      break;
+    case WriteStatus::kWriteError:
+      LogInternalError(StructuredMetricsError::kKeyWriteError);
+      break;
+    case WriteStatus::kSerializationError:
+      LogInternalError(StructuredMetricsError::kKeySerializationError);
+      break;
+  }
+}
+
+void KeyData::WriteNowForTest() {
+  proto_.get()->StartWrite();
+}
+
+//---------------
+// Key management
+//---------------
+
 base::Optional<std::string> KeyData::ValidateAndGetKey(
     const uint64_t project_name_hash) {
-  DCHECK(key_store_);
+  if (!is_initialized_) {
+    NOTREACHED();
+    return base::nullopt;
+  }
+
   const int now = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-  bool key_is_valid = true;
+  KeyProto& key = (*(proto_.get()->get()->mutable_keys()))[project_name_hash];
 
-  // If the key for |project_name_hash| doesn't exist, initialize new key data.
-  // Set the last rotation to a uniformly selected day between today and
-  // |kDefaultRotationPeriod| days ago, to uniformly distribute users amongst
-  // rotation cohorts.
-  if (!key_store_->GetValue(KeyPath(project_name_hash), nullptr)) {
-    const int rotation_seed = base::RandInt(0, kDefaultRotationPeriod - 1);
-    SetRotationPeriod(project_name_hash, kDefaultRotationPeriod);
-    SetLastRotation(project_name_hash, now - rotation_seed);
-    SetKey(project_name_hash, GenerateKey());
-
+  // Generate or rotate key.
+  const int last_rotation = key.last_rotation();
+  if (key.key().empty() || last_rotation == 0) {
     LogKeyValidation(KeyValidationState::kCreated);
-    key_is_valid = false;
-  }
-
-  // If the key for |project_name_hash| is outdated, generate a new key and
-  // write it to the |keys| pref store along with updated rotation data. Update
-  // the last rotation such that the user stays in the same cohort.
-  const int rotation_period = GetRotationPeriod(project_name_hash);
-  const int last_rotation = GetLastRotation(project_name_hash);
-  if (now - last_rotation > rotation_period) {
-    const int new_last_rotation = now - (now - last_rotation) % rotation_period;
-    SetLastRotation(project_name_hash, new_last_rotation);
-    SetKey(project_name_hash, GenerateKey());
-
+    // If the key is empty, generate a new one. Set the last rotation to a
+    // uniformly selected day between today and |kDefaultRotationPeriod| days
+    // ago, to uniformly distribute users amongst rotation cohorts.
+    const int rotation_seed = base::RandInt(0, kDefaultRotationPeriod - 1);
+    UpdateKey(&key, now - rotation_seed, kDefaultRotationPeriod);
+  } else if (now - last_rotation > kDefaultRotationPeriod) {
     LogKeyValidation(KeyValidationState::kRotated);
-    key_is_valid = false;
-  }
-
-  if (key_is_valid) {
+    // If the key is outdated, generate a new one. Update the last rotation such
+    // that the user stays in the same cohort.
+    const int new_last_rotation =
+        now - (now - last_rotation) % kDefaultRotationPeriod;
+    UpdateKey(&key, new_last_rotation, kDefaultRotationPeriod);
+  } else {
     LogKeyValidation(KeyValidationState::kValid);
   }
 
-  const base::Value* key_json;
-  if (!(key_store_->GetValue(KeyPath(project_name_hash), &key_json) &&
-        key_json->is_string())) {
-    LogInternalError(StructuredMetricsError::kMissingKey);
-    return base::nullopt;
-  }
-
-  const std::string key = key_json->GetString();
-  if (key.size() != kKeySize) {
+  // Return the key unless it's the wrong size, in which case return nullopt.
+  const std::string key_string = key.key();
+  if (key_string.size() != kKeySize) {
     LogInternalError(StructuredMetricsError::kWrongKeyLength);
     return base::nullopt;
   }
-
-  return key;
+  return key_string;
 }
 
-void KeyData::ValidateKeys() {
-  for (const uint64_t project_name_hash :
-       metrics::structured::events::kProjectNameHashes) {
-    ValidateAndGetKey(project_name_hash);
-  }
+void KeyData::UpdateKey(KeyProto* key,
+                        const int last_rotation,
+                        const int rotation_period) {
+  key->set_key(GenerateKey());
+  key->set_last_rotation(last_rotation);
+  key->set_rotation_period(rotation_period);
+  proto_->QueueWrite();
 }
 
-void KeyData::SetLastRotation(const uint64_t project, const int last_rotation) {
-  return key_store_->SetValue(LastRotationPath(project),
-                              std::make_unique<base::Value>(last_rotation),
-                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-}
+//----------------
+// IDs and hashing
+//----------------
 
-void KeyData::SetRotationPeriod(const uint64_t project,
-                                const int rotation_period) {
-  return key_store_->SetValue(RotationPeriodPath(project),
-                              std::make_unique<base::Value>(rotation_period),
-                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-}
+uint64_t KeyData::Id(const uint64_t project_name_hash) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-void KeyData::SetKey(const uint64_t project_name_hash, const std::string& key) {
-  return key_store_->SetValue(KeyPath(project_name_hash),
-                              std::make_unique<base::Value>(key),
-                              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-}
-
-int KeyData::GetLastRotation(const uint64_t project) {
-  const base::Value* value;
-  if (!(key_store_->GetValue(LastRotationPath(project), &value) &&
-        value->is_int())) {
-    LogInternalError(StructuredMetricsError::kMissingLastRotation);
-    NOTREACHED();
-    return 0u;
-  }
-  return value->GetInt();
-}
-
-int KeyData::GetRotationPeriod(const uint64_t project) {
-  const base::Value* value;
-  if (!(key_store_->GetValue(RotationPeriodPath(project), &value) &&
-        value->is_int())) {
-    LogInternalError(StructuredMetricsError::kMissingRotationPeriod);
-    NOTREACHED();
-    return 0u;
-  }
-  return value->GetInt();
-}
-
-uint64_t KeyData::UserProjectId(const uint64_t project_name_hash) {
   // Retrieve the key for |project_name_hash|.
   const base::Optional<std::string> key = ValidateAndGetKey(project_name_hash);
   if (!key) {
@@ -183,6 +163,8 @@ uint64_t KeyData::UserProjectId(const uint64_t project_name_hash) {
 uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
                              const uint64_t metric_name_hash,
                              const std::string& value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Retrieve the key for |project_name_hash|.
   const base::Optional<std::string> key = ValidateAndGetKey(project_name_hash);
   if (!key) {
@@ -203,6 +185,5 @@ uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
   return digest;
 }
 
-}  // namespace internal
 }  // namespace structured
 }  // namespace metrics

@@ -48,6 +48,7 @@ class BadSignatureError(Error):
 
 
 class SubprocessError(Error):
+
   def __init__(self, message, error_code):
     Error.__init__(self)
     self.message = message
@@ -152,12 +153,9 @@ STUB_HEADER_PREAMBLE = """// This is generated file. Do not modify directly.
 #ifndef %(guard_name)s
 #define %(guard_name)s
 
-#include <stdarg.h>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "%(logging_include)s"
 
 namespace %(namespace)s {
 """
@@ -175,15 +173,14 @@ STUB_HEADER_CLOSER = """}  // namespace %(namespace)s
 # string substitution with the path to the associated stub header file.
 IMPLEMENTATION_PREAMBLE = """// This is generated file. Do not modify directly.
 
-#include "%s"
+#include "%(header_path)s"
 
-#include <stdlib.h>  // For NULL.
-#include <dlfcn.h>   // For dlsym, dlopen.
+#include <dlfcn.h>   // For dlsym, dlopen, RTLD_LAZY.
 
-#include <map>
-#include <vector>
+#include <cstdarg>
 
 #include "base/compiler_specific.h"
+#include "%(logging_include)s"
 """
 
 # The start and end templates for the enum definitions used by the Umbrella
@@ -228,11 +225,7 @@ FUNCTION_POINTER_SECTION_COMMENT = (
 MODULE_INITIALIZATION_CHECK_FUNCTION = (
     """// Returns true if all stubs have been properly initialized.
 bool %s() {
-  if (%s) {
-    return true;
-  } else {
-    return false;
-  }
+  return %s;
 }
 
 """)
@@ -243,13 +236,18 @@ bool %s() {
 #   return_type: The return type.
 #   params: The parameters to the function.
 #   logging_function: Function call for error logging.
-STUB_POINTER_INITIALIZER = """  %(name)s_ptr =
+STUB_POINTER_INITIALIZER = """  const char %(name)s_name[] = "%(name)s";
+  %(name)s_ptr =
     reinterpret_cast<%(return_type)s (*)(%(parameters)s)>(
-      dlsym(module, "%(name)s"));
-  if (!%(name)s_ptr) {
-    %(logging_function)s << "Couldn't load %(name)s, dlerror() says:\\n"
-      << dlerror();
-  }
+      dlsym(module, %(name)s_name));
+  if (!%(name)s_ptr)
+    LogDlerror(%(name)s_name);
+"""
+
+LOG_DLERROR = """void LogDlerror(const char* symbol) {
+  %s << "Couldn't load " << symbol << ", dlerror() says:\\n" << dlerror();
+}
+
 """
 
 # Template for module initializer function start and end.  This template takes
@@ -264,13 +262,12 @@ MODULE_INITIALIZE_END = """}
 # Template for module uninitializer function start and end.  This template
 # takes one parameter which is the initializer function name.
 MODULE_UNINITIALIZE_START = (
-    """// Uninitialize the module stubs.  Reset pointers to NULL.
+    """// Uninitialize the module stubs.  Reset pointers to nullptr.
 void %s() {
 """)
 MODULE_UNINITIALIZE_END = """}
 
 """
-
 
 # Open namespace and add typedef for internal data structures used by the
 # umbrella initializer.
@@ -312,7 +309,7 @@ UMBRELLA_INITIALIZER_INITIALIZE_FUNCTION_START = (
          !module_opened && dso_path != paths.end();
          ++dso_path) {
       void* handle = dlopen(dso_path->c_str(), RTLD_LAZY);
-      if (handle != NULL) {
+      if (handle) {
         module_opened = true;
         opened_libraries[cur_module] = handle;
       } else {
@@ -359,7 +356,7 @@ void %(uninitialize)s();
 
 # Template for umbrella initializer declaration and associated datatypes.
 UMBRELLA_INITIALIZER_PROTOTYPE = (
-    """typedef std::map<StubModules, std::vector<std::string> > StubPathMap;
+    """typedef std::map<StubModules, std::vector<std::string>> StubPathMap;
 
 // Umbrella initializer for all the modules in this stub file.
 bool InitializeStubs(const StubPathMap& path_map);
@@ -429,10 +426,13 @@ def ParseSignatures(infile):
       m = SIGNATURE_REGEX.match(line)
       if m is None:
         raise BadSignatureError('Unparsable line: %s' % line)
-      signatures.append(
-          {'return_type': m.group('return_type').strip(),
-           'name': m.group('name').strip(),
-           'params': [arg.strip() for arg in m.group('params').split(',')]})
+      signatures.append({
+          'return_type':
+          m.group('return_type').strip(),
+          'name':
+          m.group('name').strip(),
+          'params': [arg.strip() for arg in m.group('params').split(',')]
+      })
   return signatures
 
 
@@ -487,10 +487,8 @@ def CreateWindowsLib(module_name, signatures, intermediate_dir, outdir_path,
     SubprocessError: If invoking the Windows "lib" tool fails, this is raised
                      with the error code.
   """
-  def_file_path = os.path.join(intermediate_dir,
-                               module_name + '.def')
-  lib_file_path = os.path.join(outdir_path,
-                               module_name + '.lib')
+  def_file_path = os.path.join(intermediate_dir, module_name + '.def')
+  lib_file_path = os.path.join(outdir_path, module_name + '.lib')
   outfile = open(def_file_path, 'w')
   try:
     WriteWindowsDefFile(module_name, signatures, outfile)
@@ -500,15 +498,14 @@ def CreateWindowsLib(module_name, signatures, intermediate_dir, outdir_path,
   # Invoke the "lib" program on Windows to create stub .lib files for the
   # generated definitions.  These .lib files can then be used during
   # delay loading of the dynamic libraries.
-  ret = QuietRun(['lib', '/nologo',
-                  '/machine:' + machine,
-                  '/def:' + def_file_path,
-                  '/out:' + lib_file_path],
+  ret = QuietRun([
+      'lib', '/nologo', '/machine:' + machine, '/def:' + def_file_path,
+      '/out:' + lib_file_path
+  ],
                  filter='   Creating library')
   if ret != 0:
     raise SubprocessError(
-        'Failed creating %s for %s' % (lib_file_path, def_file_path),
-        ret)
+        'Failed creating %s for %s' % (lib_file_path, def_file_path), ret)
 
 
 class PosixStubWriter(object):
@@ -638,9 +635,9 @@ class PosixStubWriter(object):
     Returns:
       A string with the declaration of the function pointer for the signature.
     """
-    return 'static %s (*%s_ptr)(%s) = NULL;' % (signature['return_type'],
-                                                signature['name'],
-                                                ', '.join(signature['params']))
+    return 'static %s (*%s_ptr)(%s) = nullptr;' % (signature['return_type'],
+                                                   signature['name'], ', '.join(
+                                                       signature['params']))
 
   @classmethod
   def StubFunction(cls, signature):
@@ -662,8 +659,9 @@ class PosixStubWriter(object):
       return_prefix = 'return '
 
     # Generate the argument list.
-    arguments = [re.split('[\*& ]', arg)[-1].strip() for arg in
-                 signature['params']]
+    arguments = [
+        re.split('[\*& ]', arg)[-1].strip() for arg in signature['params']
+    ]
     # Remove square brackets from arrays, otherwise we will end with a
     # compilation failure.
     for i in range(0, len(arguments)):
@@ -683,14 +681,16 @@ class PosixStubWriter(object):
             'params': ', '.join(signature['params']),
             'arg_list': ', '.join(arguments[0:-1]),
             'last_named_arg': arguments[-2],
-            'export': signature.get('export', '')}
+            'export': signature.get('export', '')
+        }
       else:
         return VOID_VARIADIC_STUB_FUNCTION_DEFINITION % {
             'name': signature['name'],
             'params': ', '.join(signature['params']),
             'arg_list': ', '.join(arguments[0:-1]),
             'last_named_arg': arguments[-2],
-            'export': signature.get('export', '')}
+            'export': signature.get('export', '')
+        }
     else:
       # This is a regular function.
       return STUB_FUNCTION_DEFINITION % {
@@ -699,17 +699,21 @@ class PosixStubWriter(object):
           'params': ', '.join(signature['params']),
           'return_prefix': return_prefix,
           'arg_list': arg_list,
-          'export': signature.get('export', '')}
+          'export': signature.get('export', '')
+      }
 
   @classmethod
-  def WriteImplementationPreamble(cls, header_path, outfile):
+  def WriteImplementationPreamble(cls, header_path, outfile, logging_include):
     """Write the necessary includes for the implementation file.
 
     Args:
       header_path: The path to the header file.
       outfile: The file handle to populate.
     """
-    outfile.write(IMPLEMENTATION_PREAMBLE % header_path)
+    outfile.write(IMPLEMENTATION_PREAMBLE % {
+        'header_path': header_path,
+        'logging_include': logging_include
+    })
 
   @classmethod
   def WriteUmbrellaInitializer(cls, module_names, namespace, outfile,
@@ -735,8 +739,8 @@ class PosixStubWriter(object):
 
     # Create the initialization function that calls all module initializers,
     # checks if they succeeded, and backs out module loads on an error.
-    outfile.write(UMBRELLA_INITIALIZER_INITIALIZE_FUNCTION_START % {
-        'logging_function': logging_function})
+    outfile.write(UMBRELLA_INITIALIZER_INITIALIZE_FUNCTION_START %
+                  {'logging_function': logging_function})
     outfile.write(
         '\n  // Initialize each module if we have not already failed.\n')
     for module in module_names:
@@ -746,18 +750,23 @@ class PosixStubWriter(object):
     outfile.write('\n')
 
     # Output code to check the initialization status, clean up on error.
-    initializer_checks = ['!%s()' % PosixStubWriter.IsInitializedName(name)
-                          for name in module_names]
-    uninitializers = ['%s()' % PosixStubWriter.UninitializeModuleName(name)
-                      for name in module_names]
-    outfile.write(UMBRELLA_INITIALIZER_CHECK_AND_CLEANUP % {
-        'conditional': ' ||\n      '.join(initializer_checks),
-        'uninitializers': ';\n    '.join(uninitializers)})
+    initializer_checks = [
+        '!%s()' % PosixStubWriter.IsInitializedName(name)
+        for name in module_names
+    ]
+    uninitializers = [
+        '%s()' % PosixStubWriter.UninitializeModuleName(name)
+        for name in module_names
+    ]
+    outfile.write(
+        UMBRELLA_INITIALIZER_CHECK_AND_CLEANUP % {
+            'conditional': ' ||\n      '.join(initializer_checks),
+            'uninitializers': ';\n    '.join(uninitializers)
+        })
     outfile.write('\n}  // namespace %s\n' % namespace)
 
   @classmethod
-  def WriteHeaderContents(cls, module_names, namespace, header_guard, outfile,
-                          logging_include):
+  def WriteHeaderContents(cls, module_names, namespace, header_guard, outfile):
     """Writes a header file for the stub file generated for module_names.
 
     The header file exposes the following:
@@ -774,17 +783,20 @@ class PosixStubWriter(object):
       outfile: The output handle to populate.
       logging_include: Header file where the logging function is defined.
     """
-    outfile.write(STUB_HEADER_PREAMBLE %
-                  {'guard_name': header_guard, 'namespace': namespace,
-                   'logging_include': logging_include})
+    outfile.write(STUB_HEADER_PREAMBLE % {
+        'guard_name': header_guard,
+        'namespace': namespace
+    })
 
     # Generate the Initializer prototypes for each module.
     outfile.write('// Individual module initializer functions.\n')
     for name in module_names:
-      outfile.write(MODULE_FUNCTION_PROTOTYPES % {
-          'is_initialized': PosixStubWriter.IsInitializedName(name),
-          'initialize': PosixStubWriter.InitializeModuleName(name),
-          'uninitialize': PosixStubWriter.UninitializeModuleName(name)})
+      outfile.write(
+          MODULE_FUNCTION_PROTOTYPES % {
+              'is_initialized': PosixStubWriter.IsInitializedName(name),
+              'initialize': PosixStubWriter.InitializeModuleName(name),
+              'uninitialize': PosixStubWriter.UninitializeModuleName(name)
+          })
 
     # Generate the enum for umbrella initializer.
     outfile.write(UMBRELLA_ENUM_START)
@@ -795,8 +807,9 @@ class PosixStubWriter(object):
 
     outfile.write(UMBRELLA_INITIALIZER_PROTOTYPE)
     outfile.write(STUB_HEADER_CLOSER % {
-        'namespace': namespace, 'guard_name':
-        header_guard})
+        'namespace': namespace,
+        'guard_name': header_guard
+    })
 
   def WriteImplementationContents(self, namespace, outfile):
     """Given a file handle, write out the stub definitions for this module.
@@ -865,7 +878,7 @@ class PosixStubWriter(object):
     and attempts to assign each function pointer above via dlsym.
 
     The IsModuleInitialized returns true if none of the required functions
-    pointers are NULL.
+    pointers are nullptr.
 
     Args:
       outfile: The file handle to populate.
@@ -876,29 +889,31 @@ class PosixStubWriter(object):
     # all the function pointers above.  It should generate a conjunction
     # with each pointer on its own line, indented by six spaces to match
     # the indentation level of MODULE_INITIALIZATION_CHECK_FUNCTION.
-    initialization_conditional = ' &&\n      '.join(ptr_names)
+    initialization_conditional = ' &&\n         '.join(ptr_names)
 
-    outfile.write(MODULE_INITIALIZATION_CHECK_FUNCTION % (
-        PosixStubWriter.IsInitializedName(self.module_name),
-        initialization_conditional))
+    outfile.write(MODULE_INITIALIZATION_CHECK_FUNCTION %
+                  (PosixStubWriter.IsInitializedName(
+                      self.module_name), initialization_conditional))
 
     # Create function that initializes the module.
     outfile.write(MODULE_INITIALIZE_START %
                   PosixStubWriter.InitializeModuleName(self.module_name))
     for sig in self.signatures:
-      outfile.write(STUB_POINTER_INITIALIZER % {
-          'name': sig['name'],
-          'return_type': sig['return_type'],
-          'parameters': ', '.join(sig['params']),
-          'logging_function': self.logging_function})
+      outfile.write(
+          STUB_POINTER_INITIALIZER % {
+              'name': sig['name'],
+              'return_type': sig['return_type'],
+              'parameters': ', '.join(sig['params']),
+              'logging_function': self.logging_function
+          })
     outfile.write(MODULE_INITIALIZE_END)
 
     # Create function that uninitializes the module (sets all pointers to
-    # NULL).
+    # nullptr).
     outfile.write(MODULE_UNINITIALIZE_START %
                   PosixStubWriter.UninitializeModuleName(self.module_name))
     for sig in self.signatures:
-      outfile.write('  %s_ptr = NULL;\n' % sig['name'])
+      outfile.write('  %s_ptr = nullptr;\n' % sig['name'])
     outfile.write(MODULE_UNINITIALIZE_END)
 
 
@@ -914,20 +929,20 @@ def CreateOptionParser():
                     dest='out_dir',
                     default=None,
                     help='Output location.')
-  parser.add_option('-i',
-                    '--intermediate_dir',
-                    dest='intermediate_dir',
-                    default=None,
-                    help=('Location of intermediate files. Ignored for %s type'
-                          % FILE_TYPE_WIN_DEF))
+  parser.add_option(
+      '-i',
+      '--intermediate_dir',
+      dest='intermediate_dir',
+      default=None,
+      help=('Location of intermediate files. Ignored for %s type' %
+            FILE_TYPE_WIN_DEF))
   parser.add_option('-t',
                     '--type',
                     dest='type',
                     default=None,
                     help=('Type of file. Valid types are "%s" or "%s" or "%s" '
-                          'or "%s"' %
-                          (FILE_TYPE_POSIX_STUB, FILE_TYPE_WIN_X86,
-                           FILE_TYPE_WIN_X64, FILE_TYPE_WIN_DEF)))
+                          'or "%s"' % (FILE_TYPE_POSIX_STUB, FILE_TYPE_WIN_X86,
+                                       FILE_TYPE_WIN_X64, FILE_TYPE_WIN_DEF)))
   parser.add_option('-s',
                     '--stubfile_name',
                     dest='stubfile_name',
@@ -997,9 +1012,10 @@ def ParseOptions():
   if options.out_dir is None:
     parser.error('Output location not specified')
 
-  if (options.type not in
-      [FILE_TYPE_WIN_X86, FILE_TYPE_WIN_X64, FILE_TYPE_POSIX_STUB,
-       FILE_TYPE_WIN_DEF]):
+  if (options.type not in [
+      FILE_TYPE_WIN_X86, FILE_TYPE_WIN_X64, FILE_TYPE_POSIX_STUB,
+      FILE_TYPE_WIN_DEF
+  ]):
     parser.error('Invalid output file type: %s' % options.type)
 
   if options.type == FILE_TYPE_POSIX_STUB:
@@ -1094,7 +1110,8 @@ def CreateWindowsDefForSigFiles(sig_files, out_dir, module_name):
       infile.close()
 
   def_file_path = os.path.join(
-      out_dir, os.path.splitext(os.path.basename(module_name))[0] + '.def')
+      out_dir,
+      os.path.splitext(os.path.basename(module_name))[0] + '.def')
   outfile = open(def_file_path, 'w')
 
   try:
@@ -1103,10 +1120,10 @@ def CreateWindowsDefForSigFiles(sig_files, out_dir, module_name):
     outfile.close()
 
 
-def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir,
-                                intermediate_dir, path_from_source,
-                                extra_stub_header, export_macro,
-                                logging_function, logging_include):
+def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir, intermediate_dir,
+                                path_from_source, extra_stub_header,
+                                export_macro, logging_function,
+                                logging_include):
   """Create a POSIX stub library with a module for each signature file.
 
   Args:
@@ -1129,7 +1146,7 @@ def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir,
 
   module_names = [ExtractModuleName(path) for path in sig_files]
   namespace = path_from_source.replace('/', '_').lower()
-  header_guard = '%s_' % namespace.upper()
+  header_guard = 'GEN_%s_%s_H_' % (namespace.upper(), stub_name.upper())
   header_include_path = os.path.join(path_from_source, header_base_name)
 
   # First create the implementation file.
@@ -1137,8 +1154,8 @@ def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir,
   try:
     # Open the file, and create the preamble which consists of a file
     # header plus any necessary includes.
-    PosixStubWriter.WriteImplementationPreamble(header_include_path,
-                                                impl_file)
+    PosixStubWriter.WriteImplementationPreamble(header_include_path, impl_file,
+                                                logging_include)
     if extra_stub_header is not None:
       extra_header_file = open(extra_stub_header, 'r')
       try:
@@ -1148,6 +1165,10 @@ def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir,
         impl_file.write('\n')
       finally:
         extra_header_file.close()
+
+    impl_file.write(NAMESPACE_START % '')
+    impl_file.write(LOG_DLERROR % logging_function)
+    impl_file.write(NAMESPACE_END % '')
 
     # For each signature file, generate the stub population functions
     # for that file.  Each file represents one module.
@@ -1163,17 +1184,16 @@ def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir,
       writer.WriteImplementationContents(namespace, impl_file)
 
     # Lastly, output the umbrella function for the file.
-    PosixStubWriter.WriteUmbrellaInitializer(module_names, namespace,
-                                             impl_file, logging_function)
+    PosixStubWriter.WriteUmbrellaInitializer(module_names, namespace, impl_file,
+                                             logging_function)
   finally:
     impl_file.close()
 
   # Then create the associated header file.
   header_file = open(header_path, 'w')
   try:
-    PosixStubWriter.WriteHeaderContents(module_names, namespace,
-                                        header_guard, header_file,
-                                        logging_include)
+    PosixStubWriter.WriteHeaderContents(module_names, namespace, header_guard,
+                                        header_file)
   finally:
     header_file.close()
 

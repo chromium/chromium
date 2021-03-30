@@ -21,12 +21,11 @@ std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
     int prepopulate_id,
     const std::string& keyword) {
   return std::make_unique<TemplateURLData>(
-      base::ASCIIToUTF16("Search engine name"), base::ASCIIToUTF16(keyword),
-      "https://search.url", "" /* suggest_url */, "" /* image_url */,
-      "" /* new_tab_url */, "" /* contextual_search_url */, "" /* logo_url */,
-      "" /* doodle_url */, "" /* search_url_post_params */,
-      "" /* suggest_url_post_params */, "" /* image_url_post_params */,
-      "" /* favicon_url */, "UTF-8",
+      u"Search engine name", base::ASCIIToUTF16(keyword), "https://search.url",
+      "" /* suggest_url */, "" /* image_url */, "" /* new_tab_url */,
+      "" /* contextual_search_url */, "" /* logo_url */, "" /* doodle_url */,
+      "" /* search_url_post_params */, "" /* suggest_url_post_params */,
+      "" /* image_url_post_params */, "" /* favicon_url */, "UTF-8",
       base::ListValue() /* alternate_urls_list */, prepopulate_id);
 }
 
@@ -91,7 +90,7 @@ TEST(TemplateURLServiceUtilTest, RemoveDuplicatePrepopulateIDs) {
   EXPECT_EQ(local_turls.size(),
             prepopulated_turls.size() + num_non_prepopulated_urls);
   for (const auto& turl : local_turls) {
-    EXPECT_TRUE(base::StartsWith(turl->keyword(), base::ASCIIToUTF16("winner"),
+    EXPECT_TRUE(base::StartsWith(turl->keyword(), u"winner",
                                  base::CompareCase::SENSITIVE));
   }
 }
@@ -127,7 +126,7 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
                                   nullptr, nullptr);
   ASSERT_EQ(local_turls.size(), 1U);
   EXPECT_TRUE(local_turls[0]->created_from_play_api());
-  EXPECT_EQ(local_turls[0]->keyword(), base::ASCIIToUTF16("play"));
+  EXPECT_EQ(local_turls[0]->keyword(), u"play");
 
   // Test that removing search engine from prepopulated list doesn't delete Play
   // API search engine record.

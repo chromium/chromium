@@ -114,7 +114,7 @@ class InspectorRevalidateDOMTask final
 
  private:
   Member<InspectorDOMAgent> dom_agent_;
-  TaskRunnerTimer<InspectorRevalidateDOMTask> timer_;
+  HeapTaskRunnerTimer<InspectorRevalidateDOMTask> timer_;
   HeapHashSet<Member<Element>> style_attr_invalidated_elements_;
 };
 
@@ -146,6 +146,7 @@ void InspectorRevalidateDOMTask::OnTimer(TimerBase*) {
 void InspectorRevalidateDOMTask::Trace(Visitor* visitor) const {
   visitor->Trace(dom_agent_);
   visitor->Trace(style_attr_invalidated_elements_);
+  visitor->Trace(timer_);
 }
 
 Response InspectorDOMAgent::ToResponse(ExceptionState& exception_state) {
@@ -180,6 +181,10 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::Selection;
     case kPseudoIdTargetText:
       return protocol::DOM::PseudoTypeEnum::TargetText;
+    case kPseudoIdSpellingError:
+      return protocol::DOM::PseudoTypeEnum::SpellingError;
+    case kPseudoIdGrammarError:
+      return protocol::DOM::PseudoTypeEnum::GrammarError;
     case kPseudoIdFirstLineInherited:
       return protocol::DOM::PseudoTypeEnum::FirstLineInherited;
     case kPseudoIdScrollbar:
@@ -1929,6 +1934,19 @@ void InspectorDOMAgent::DidCommitLoad(LocalFrame*, DocumentLoader* loader) {
   }
 
   SetDocument(inspected_frame->GetDocument());
+}
+
+void InspectorDOMAgent::DidRestoreFromBackForwardCache(LocalFrame* frame) {
+  if (!enabled_.Get())
+    return;
+  DCHECK_EQ(frame, inspected_frames_->Root());
+  Document* document = frame->GetDocument();
+  DCHECK_EQ(document_, document);
+  // We don't load a new document for BFCache navigations, so |document_|
+  // doesn't actually update (the agent is initialized with the restored main
+  // document), but the frontend doesn't know this yet, and we need to notify
+  // it.
+  GetFrontend()->documentUpdated();
 }
 
 void InspectorDOMAgent::DidInsertDOMNode(Node* node) {

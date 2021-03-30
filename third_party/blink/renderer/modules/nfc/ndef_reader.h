@@ -78,7 +78,7 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
   void ReadAbort();
   void ReadOnRequestCompleted(device::mojom::blink::NDEFErrorPtr error);
 
-  void WriteAbort(ScriptPromiseResolver* resolver);
+  void WriteAbort();
   void WriteOnRequestCompleted(ScriptPromiseResolver* resolver,
                                device::mojom::blink::NDEFErrorPtr error);
 
@@ -97,12 +97,8 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
   // that case the callback passed to Watch() won't be called and
   // mojo::WrapCallbackWithDefaultInvokeIfNotRun() is forbidden in Blink.
   Member<ScriptPromiseResolver> scan_resolver_;
-  // To reject if there is already an ongoing scan.
-  bool has_pending_scan_request_ = false;
 
-  HeapMojoRemote<mojom::blink::PermissionService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      permission_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
   mojom::blink::PermissionService* GetPermissionService();
 
   // |write_requests_| are kept here to handle Mojo connection failures because

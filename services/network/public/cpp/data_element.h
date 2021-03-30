@@ -10,151 +10,188 @@
 
 #include <limits>
 #include <memory>
-#include <ostream>
-#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/gtest_prod_util.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/enum_traits.h"
+#include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-forward.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
-#include "url/gurl.h"
-
-namespace blink {
-namespace mojom {
-class FetchAPIDataElementDataView;
-}  // namespace mojom
-}  // namespace blink
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace network {
 
-// Represents part of an upload body. This could be one of raw bytes, file data,
-// or a mojo pipe that streams data.
-class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
+// Represents a part of a request body consisting of bytes.
+class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElementBytes final {
  public:
-  static const uint64_t kUnknownSize = std::numeric_limits<uint64_t>::max();
+  // Do NOT use this constructor outside of mojo deserialization context.
+  DataElementBytes();
 
-  DataElement();
-  ~DataElement();
+  explicit DataElementBytes(std::vector<uint8_t> bytes);
+  DataElementBytes(const DataElementBytes&) = delete;
+  DataElementBytes(DataElementBytes&& other);
+  DataElementBytes& operator=(const DataElementBytes&) = delete;
+  DataElementBytes& operator=(DataElementBytes&& other);
+  ~DataElementBytes();
 
-  DataElement(const DataElement&) = delete;
-  void operator=(const DataElement&) = delete;
-  DataElement(DataElement&& other);
-  DataElement& operator=(DataElement&& other);
+  const std::vector<uint8_t>& bytes() const { return bytes_; }
 
-  mojom::DataElementType type() const { return type_; }
-  const char* bytes() const {
-    return reinterpret_cast<const char*>(buf_.data());
-  }
-  const base::FilePath& path() const { return path_; }
-  uint64_t offset() const { return offset_; }
-  uint64_t length() const { return length_; }
-  const base::Time& expected_modification_time() const {
-    return expected_modification_time_;
+  base::StringPiece AsStringPiece() const {
+    return base::StringPiece(reinterpret_cast<const char*>(bytes_.data()),
+                             bytes_.size());
   }
 
-  // Sets TYPE_BYTES data. This copies the given data into the element.
-  void SetToBytes(const char* bytes, int bytes_len) {
-    type_ = mojom::DataElementType::kBytes;
-    buf_.assign(reinterpret_cast<const uint8_t*>(bytes),
-                reinterpret_cast<const uint8_t*>(bytes + bytes_len));
-    length_ = buf_.size();
-  }
+ private:
+  std::vector<uint8_t> bytes_;
+};
 
-  // Sets TYPE_BYTES data. This moves the given data vector into the element.
-  void SetToBytes(std::vector<uint8_t> bytes) {
-    type_ = mojom::DataElementType::kBytes;
-    buf_ = std::move(bytes);
-    length_ = buf_.size();
-  }
+// Represents a part of a request body consisting of a data pipe. This is
+// typically used for blobs.
+class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElementDataPipe final {
+ public:
+  // Do NOT use this constructor outside of mojo deserialization context.
+  DataElementDataPipe();
 
-  // Sets TYPE_BYTES data, and clears the internal bytes buffer.
-  // For use with AppendBytes.
-  void SetToEmptyBytes() {
-    type_ = mojom::DataElementType::kBytes;
-    buf_.clear();
-    length_ = 0;
-  }
-
-  // Copies and appends the given data into the element. SetToEmptyBytes or
-  // SetToBytes must be called before this method.
-  void AppendBytes(const char* bytes, int bytes_len) {
-    DCHECK_EQ(type_, mojom::DataElementType::kBytes);
-    DCHECK_NE(length_, std::numeric_limits<uint64_t>::max());
-    buf_.insert(buf_.end(), reinterpret_cast<const uint8_t*>(bytes),
-                reinterpret_cast<const uint8_t*>(bytes + bytes_len));
-    length_ = buf_.size();
-  }
-
-  // Sets TYPE_FILE data with range.
-  void SetToFilePathRange(const base::FilePath& path,
-                          uint64_t offset,
-                          uint64_t length,
-                          const base::Time& expected_modification_time);
-
-  // Sets TYPE_DATA_PIPE data. The data pipe consumer can safely wait for the
-  // callback passed to Read() to be invoked before reading the request body.
-  void SetToDataPipe(
+  explicit DataElementDataPipe(
       mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter);
+  DataElementDataPipe(const DataElementDataPipe&) = delete;
+  DataElementDataPipe(DataElementDataPipe&& other);
+  DataElementDataPipe& operator=(const DataElementDataPipe&) = delete;
+  DataElementDataPipe& operator=(DataElementDataPipe&& other);
+  ~DataElementDataPipe();
 
-  // Sets TYPE_CHUNKED_DATA_PIPE data. The data pipe consumer must not wait
-  // for the callback passed to GetSize() to be invoked before reading the
-  // request body, as the length may not be known until the entire body has been
-  // sent. This method triggers a chunked upload, which not all servers may
-  // support, so SetToDataPipe should be used instead, unless talking with a
-  // server known to support chunked uploads.
-  void SetToChunkedDataPipe(mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
-                                chunked_data_pipe_getter);
-  // Almost same as above except |chunked_data_pipe_getter| is read only once
-  // and you must talk with a server supporting chunked upload.
-  void SetToReadOnceStream(mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
-                               chunked_data_pipe_getter);
-
-  // Takes ownership of the DataPipeGetter, if this is of TYPE_DATA_PIPE.
   mojo::PendingRemote<mojom::DataPipeGetter> ReleaseDataPipeGetter();
   mojo::PendingRemote<mojom::DataPipeGetter> CloneDataPipeGetter() const;
 
-  // Can be called only when this is of type kChunkedDataPipe or
-  // kReadOnceStream.
+ private:
+  mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter_;
+};
+
+// Represents a part of a request body consisting of a data pipe without a
+// known size.
+class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElementChunkedDataPipe final {
+ public:
+  using ReadOnlyOnce = base::StrongAlias<class ReadOnlyOnceTag, bool>;
+
+  // Do NOT use this constructor outside of mojo deserialization context.
+  DataElementChunkedDataPipe();
+
+  DataElementChunkedDataPipe(
+      mojo::PendingRemote<mojom::ChunkedDataPipeGetter> data_pipe_getter,
+      ReadOnlyOnce read_only_once);
+  DataElementChunkedDataPipe(const DataElementChunkedDataPipe&) = delete;
+  DataElementChunkedDataPipe(DataElementChunkedDataPipe&& other);
+  DataElementChunkedDataPipe& operator=(const DataElementChunkedDataPipe&) =
+      delete;
+  DataElementChunkedDataPipe& operator=(DataElementChunkedDataPipe&& other);
+  ~DataElementChunkedDataPipe();
+
   const mojo::PendingRemote<mojom::ChunkedDataPipeGetter>&
-  chunked_data_pipe_getter() const;
-  // Takes ownership of the DataPipeGetter, if this is of
-  // kChunkedDataPipe or kReadOnceStream.
+  chunked_data_pipe_getter() const {
+    return chunked_data_pipe_getter_;
+  }
   mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
   ReleaseChunkedDataPipeGetter();
 
+  ReadOnlyOnce read_only_once() const { return read_only_once_; }
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(BlobAsyncTransportStrategyTest, TestInvalidParams);
-  friend void PrintTo(const DataElement& x, ::std::ostream* os);
-  friend struct mojo::StructTraits<network::mojom::DataElementDataView,
-                                   network::DataElement>;
-  friend struct mojo::StructTraits<blink::mojom::FetchAPIDataElementDataView,
-                                   network::DataElement>;
-  mojom::DataElementType type_;
-  // For TYPE_BYTES.
-  std::vector<uint8_t> buf_;
-  // For TYPE_FILE.
-  base::FilePath path_;
-  // For TYPE_DATA_PIPE.
-  mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter_;
-  // For TYPE_CHUNKED_DATA_PIPE.
   mojo::PendingRemote<mojom::ChunkedDataPipeGetter> chunked_data_pipe_getter_;
-  uint64_t offset_;
-  uint64_t length_;
+  ReadOnlyOnce read_only_once_;
+};
+
+// Represents a part of a request body consisting of (part of) a file.
+class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElementFile final {
+ public:
+  // Do NOT use this constructor outside of mojo deserialization context.
+  DataElementFile();
+
+  DataElementFile(const base::FilePath& path,
+                  uint64_t offset,
+                  uint64_t length,
+                  base::Time expected_modification_time);
+  DataElementFile(const DataElementFile&);
+  DataElementFile& operator=(const DataElementFile&);
+  DataElementFile(DataElementFile&&);
+  DataElementFile& operator=(DataElementFile&&);
+  ~DataElementFile();
+
+  const base::FilePath& path() const { return path_; }
+  uint64_t offset() const { return offset_; }
+  uint64_t length() const { return length_; }
+  base::Time expected_modification_time() const {
+    return expected_modification_time_;
+  }
+
+ private:
+  base::FilePath path_;
+  uint64_t offset_ = 0;
+  uint64_t length_ = 0;
   base::Time expected_modification_time_;
 };
 
-COMPONENT_EXPORT(NETWORK_CPP_BASE)
-bool operator==(const DataElement& a, const DataElement& b);
-COMPONENT_EXPORT(NETWORK_CPP_BASE)
-bool operator!=(const DataElement& a, const DataElement& b);
+// Represents part of an upload body. This is a union of various types defined
+// above. See them for details.
+class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
+ public:
+  using Tag = mojom::DataElementDataView::Tag;
+
+  // Do NOT use this constructor outside of mojo deserialization context. A
+  // DataElement created by this constructor should be considered as invalid,
+  // and replaced with a valid value as soon as possible.
+  DataElement();
+
+  template <typename T>
+  explicit DataElement(T&& t) : variant_(std::forward<T>(t)) {}
+  DataElement(const DataElement&) = delete;
+  DataElement& operator=(const DataElement&) = delete;
+  DataElement(DataElement&& other);
+  DataElement& operator=(DataElement&& other);
+  ~DataElement();
+
+  Tag type() const {
+    switch (variant_.index()) {
+      case 0:
+        NOTREACHED();
+        return Tag::kBytes;
+      case 1:
+        return Tag::kBytes;
+      case 2:
+        return Tag::kDataPipe;
+      case 3:
+        return Tag::kChunkedDataPipe;
+      case 4:
+        return Tag::kFile;
+      default:
+        NOTREACHED();
+        return Tag::kBytes;
+    }
+  }
+
+  template <typename T>
+  const T& As() const {
+    return absl::get<T>(variant_);
+  }
+
+  template <typename T>
+  T& As() {
+    return absl::get<T>(variant_);
+  }
+
+ private:
+  absl::variant<absl::monostate,
+                DataElementBytes,
+                DataElementDataPipe,
+                DataElementChunkedDataPipe,
+                DataElementFile>
+      variant_;
+};
 
 }  // namespace network
 

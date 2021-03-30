@@ -29,7 +29,7 @@ CastRedirectHandler::CastRedirectHandler() {}
 CastRedirectHandler::~CastRedirectHandler() {}
 
 bool CastRedirectHandler::Parse(extensions::Extension* extension,
-                                base::string16* error) {
+                                std::u16string* error) {
   std::unique_ptr<Data> info(new Data);
   const base::DictionaryValue* dict;
   if (extension->manifest()->GetDictionary(kCastRedirect, &dict)) {

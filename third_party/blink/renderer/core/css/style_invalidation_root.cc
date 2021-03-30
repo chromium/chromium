@@ -23,13 +23,19 @@ Element* StyleInvalidationRoot::RootElement() const {
 ContainerNode* StyleInvalidationRoot::Parent(const Node& node) const {
   return node.ParentOrShadowHostNode();
 }
+
+bool StyleInvalidationRoot::IsChildDirty(const Node& node) const {
+  return node.ChildNeedsStyleInvalidation();
+}
 #endif  // DCHECK_IS_ON()
 
 bool StyleInvalidationRoot::IsDirty(const Node& node) const {
   return node.NeedsStyleInvalidation();
 }
 
-void StyleInvalidationRoot::RootRemoved(ContainerNode& parent) {
+void StyleInvalidationRoot::SubtreeModified(ContainerNode& parent) {
+  if (!GetRootNode() || GetRootNode()->isConnected())
+    return;
   for (Node* ancestor = &parent; ancestor;
        ancestor = ancestor->ParentOrShadowHostNode()) {
     DCHECK(ancestor->ChildNeedsStyleInvalidation());

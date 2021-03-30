@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "components/country_codes/country_codes.h"
 #include "components/embedder_support/pref_names.h"
@@ -67,16 +68,25 @@ void RegisterProbesSettingBackupPref(PrefRegistrySimple* registry) {
 }
 
 void MigrateProbesSettingToOrFromBackup(PrefService* prefs) {
-  // If the privacy settings redesign is enabled and the user value of the
+// TODO(crbug.com/1177778): Allow this to run on Android when there is a flag
+// controlling a settings ui redesign for Android as was done on Desktop. A
+// model for this new flag has been left commented in the code, in the interim
+// this code will continue to migrate any Desktop users who have not yet been
+// migrated.
+#if !defined(OS_ANDROID)
+  // If the "android settings redesign" is enabled and the user value of the
   // preference hasn't been backed up yet, back it up, and clear it. That way,
   // the preference will revert to using the hardcoded default value (unless
   // it's managed by a policy or an extension). This is necessary, as the
-  // privacy settings redesign removed the user-facing toggle, and so the
+  // "android settings redesign" removed the user-facing toggle, and so the
   // user value of the preference is no longer modifiable.
-  if (base::FeatureList::IsEnabled(features::kPrivacySettingsRedesign) &&
-      !prefs->HasPrefPath(kAlternateErrorPagesBackup)) {
-    // If the user never changed the value of the preference and still uses the
-    // hardcoded default value, we'll consider it to be the user value for
+  if (!prefs->HasPrefPath(kAlternateErrorPagesBackup)) {
+#if defined(OS_ANDROID)
+// if(base::FeatureList::IsEnabled("kAndroidSettingsRedesign")) {
+#endif  // defined(OS_ANDROID)
+
+    // If the user never changed the value of the preference and still uses
+    // the hardcoded default value, we'll consider it to be the user value for
     // the purposes of this migration.
     const base::Value* user_value =
         prefs->FindPreference(embedder_support::kAlternateErrorPagesEnabled)
@@ -89,17 +99,24 @@ void MigrateProbesSettingToOrFromBackup(PrefService* prefs) {
     DCHECK(user_value->is_bool());
     prefs->SetBoolean(kAlternateErrorPagesBackup, user_value->GetBool());
     prefs->ClearPref(embedder_support::kAlternateErrorPagesEnabled);
+#if defined(OS_ANDROID)
+// }
+#endif  // defined(OS_ANDROID)
   }
-
-  // If the privacy settings redesign is rolled back and there is a backed up
+// The reverse migration should only occur on Android, so this guard should
+// remain after the "android settings redesign" begins.
+#if defined(OS_ANDROID)
+  // If the "android settings redesign" is rolled back and there is a backed up
   // value of the preference, restore it to the original preference, and clear
   // the backup.
-  if (!base::FeatureList::IsEnabled(features::kPrivacySettingsRedesign) &&
-      prefs->HasPrefPath(kAlternateErrorPagesBackup)) {
+  if (prefs->HasPrefPath(kAlternateErrorPagesBackup)
+      /* && !base::FeatureList::IsEnabled("kAndroidSettingsRedesign") */) {
     prefs->SetBoolean(embedder_support::kAlternateErrorPagesEnabled,
                       prefs->GetBoolean(kAlternateErrorPagesBackup));
     prefs->ClearPref(kAlternateErrorPagesBackup);
   }
+#endif  // defined(OS_ANDROID)
+#endif  // !defined(OS_ANDROID)
 }
 
 net::DohProviderEntry::List ProvidersForCountry(

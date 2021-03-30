@@ -49,6 +49,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
 @synthesize shiftTileStartTime = _shiftTileStartTime;
 @synthesize tapGestureRecognizer = _tapGestureRecognizer;
 @synthesize collectionShiftingOffset = _collectionShiftingOffset;
+// Synthesized for ContentSuggestionsSynchronizing protocol.
+@synthesize additionalOffset = _additionalOffset;
 
 - (instancetype)
 initWithCollectionController:
@@ -72,6 +74,7 @@ initWithCollectionController:
     _collectionController.headerSynchronizer = self;
 
     _collectionShiftingOffset = 0;
+    _additionalOffset = 0;
   }
   return self;
 }
@@ -91,7 +94,7 @@ initWithCollectionController:
 
   if (self.collectionShiftingOffset == 0 || self.collectionView.dragging) {
     self.collectionShiftingOffset = 0;
-    [self updateFakeOmniboxOnCollectionScroll];
+    [self updateFakeOmniboxForScrollPosition];
     return;
   }
 
@@ -135,7 +138,7 @@ initWithCollectionController:
 
   CGFloat pinnedOffsetY = [self.headerController pinnedOffsetY];
   self.collectionShiftingOffset =
-      MAX(0, pinnedOffsetY - self.collectionView.contentOffset.y);
+      MAX(-self.additionalOffset, pinnedOffsetY - [self adjustedOffset].y);
 
   self.collectionController.scrolledToTop = YES;
   self.shouldAnimateHeader = YES;
@@ -150,13 +153,14 @@ initWithCollectionController:
                 return;
 
               __typeof(weakSelf) strongSelf = weakSelf;
-              if (strongSelf.collectionView.contentOffset.y < pinnedOffsetY) {
+              if (strongSelf.collectionView.contentOffset.y <
+                  [self pinnedOffsetY]) {
                 if (animations)
                   animations();
                 // Changing the contentOffset of the collection results in a
                 // scroll and a change in the constraints of the header.
                 strongSelf.collectionView.contentOffset =
-                    CGPointMake(0, pinnedOffsetY);
+                    CGPointMake(0, [self pinnedOffsetY]);
                 // Layout the header for the constraints to be animated.
                 [strongSelf.headerController layoutHeader];
                 [strongSelf.collectionView
@@ -198,7 +202,7 @@ initWithCollectionController:
 
 #pragma mark - ContentSuggestionsHeaderSynchronizing
 
-- (void)updateFakeOmniboxOnCollectionScroll {
+- (void)updateFakeOmniboxForScrollPosition {
   // Unfocus the omnibox when the scroll view is scrolled by the user (but not
   // when a scroll is triggered by layout/UIKit).
   if ([self.headerController isOmniboxFocused] && !self.shouldAnimateHeader &&
@@ -209,7 +213,7 @@ initWithCollectionController:
   if (self.shouldAnimateHeader) {
     UIEdgeInsets insets = self.collectionView.safeAreaInsets;
     [self.headerController
-        updateFakeOmniboxForOffset:self.collectionView.contentOffset.y
+        updateFakeOmniboxForOffset:[self adjustedOffset].y
                        screenWidth:self.collectionView.frame.size.width
                     safeAreaInsets:insets];
   }
@@ -224,10 +228,9 @@ initWithCollectionController:
     // -viewDidLayoutSubviews.  Since self.collectionView and it's superview
     // should always have the same safeArea, this should be safe.
     UIEdgeInsets insets = self.collectionView.superview.safeAreaInsets;
-    [self.headerController
-        updateFakeOmniboxForOffset:self.collectionView.contentOffset.y
-                       screenWidth:width
-                    safeAreaInsets:insets];
+    [self.headerController updateFakeOmniboxForOffset:[self adjustedOffset].y
+                                          screenWidth:width
+                                       safeAreaInsets:insets];
   } else {
     [self.headerController updateFakeOmniboxForWidth:width];
   }
@@ -246,7 +249,7 @@ initWithCollectionController:
 }
 
 - (CGFloat)pinnedOffsetY {
-  return [self.headerController pinnedOffsetY];
+  return [self.headerController pinnedOffsetY] - self.additionalOffset;
 }
 
 - (CGFloat)headerHeight {
@@ -259,45 +262,6 @@ initWithCollectionController:
 
 - (BOOL)isShowing {
   return self.headerController.isShowing;
-}
-
-#pragma mark - Private
-
-// Convenience method to get the collection view of the suggestions.
-- (UICollectionView*)collectionView {
-  return [self.collectionController collectionView];
-}
-
-// Updates the collection view's scroll view offset for the next frame of the
-// shiftTilesDown animation.
-- (void)shiftTilesDownAnimationDidFire:(CADisplayLink*)link {
-  // If this is the first frame of the animation, store the starting timestamp
-  // and do nothing.
-  if (self.shiftTileStartTime == -1) {
-    self.shiftTileStartTime = link.timestamp;
-    return;
-  }
-
-  CFTimeInterval timeElapsed = link.timestamp - self.shiftTileStartTime;
-  double percentComplete = timeElapsed / kShiftTilesDownAnimationDuration;
-  // Ensure that the percentage cannot be above 1.0.
-  if (percentComplete > 1.0)
-    percentComplete = 1.0;
-
-  // Find how much the collection view should be scrolled up in the next frame.
-  CGFloat yOffset =
-      (1.0 - percentComplete) * [self.headerController pinnedOffsetY] +
-      percentComplete * MAX([self.headerController pinnedOffsetY] -
-                                self.collectionShiftingOffset,
-                            0);
-  self.collectionView.contentOffset = CGPointMake(0, yOffset);
-
-  if (percentComplete == 1.0) {
-    [link invalidate];
-    self.collectionShiftingOffset = 0;
-    // Reset |shiftTileStartTime| to its sentinel value.
-    self.shiftTileStartTime = -1;
-  }
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -324,6 +288,51 @@ initWithCollectionController:
     return view;
   }
   return [self nearestAncestorOfView:[view superview] withClass:aClass];
+}
+
+#pragma mark - Private
+
+// Convenience method to get the collection view of the suggestions.
+- (UICollectionView*)collectionView {
+  return [self.collectionController collectionView];
+}
+
+// Updates the collection view's scroll view offset for the next frame of the
+// shiftTilesDown animation.
+- (void)shiftTilesDownAnimationDidFire:(CADisplayLink*)link {
+  // If this is the first frame of the animation, store the starting timestamp
+  // and do nothing.
+  if (self.shiftTileStartTime == -1) {
+    self.shiftTileStartTime = link.timestamp;
+    return;
+  }
+
+  CFTimeInterval timeElapsed = link.timestamp - self.shiftTileStartTime;
+  double percentComplete = timeElapsed / kShiftTilesDownAnimationDuration;
+  // Ensure that the percentage cannot be above 1.0.
+  if (percentComplete > 1.0)
+    percentComplete = 1.0;
+
+  // Find how much the collection view should be scrolled up in the next frame.
+  CGFloat yOffset = (1.0 - percentComplete) * [self pinnedOffsetY] +
+                    percentComplete * MAX([self pinnedOffsetY] -
+                                              self.collectionShiftingOffset,
+                                          -self.additionalOffset);
+  self.collectionView.contentOffset = CGPointMake(0, yOffset);
+
+  if (percentComplete == 1.0) {
+    [link invalidate];
+    self.collectionShiftingOffset = 0;
+    // Reset |shiftTileStartTime| to its sentinel value.
+    self.shiftTileStartTime = -1;
+  }
+}
+
+// Returns y-offset compensated for any additionalOffset that might be set.
+- (CGPoint)adjustedOffset {
+  CGPoint adjustedOffset = self.collectionView.contentOffset;
+  adjustedOffset.y += self.additionalOffset;
+  return adjustedOffset;
 }
 
 @end

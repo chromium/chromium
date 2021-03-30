@@ -15,7 +15,7 @@ from string import Template
 from subprocess import call
 
 vulkan_reg_path = path.join(path.dirname(__file__), "..", "..", "third_party",
-                            "vulkan_headers", "registry")
+                            "vulkan-deps", "vulkan-headers", "src", "registry")
 sys.path.append(vulkan_reg_path)
 from reg import Registry
 
@@ -129,6 +129,7 @@ VULKAN_DEVICE_FUNCTIONS = [
       'vkCreateDescriptorSetLayout',
       'vkCreateFence',
       'vkCreateFramebuffer',
+      'vkCreateGraphicsPipelines',
       'vkCreateImage',
       'vkCreateImageView',
       'vkCreateRenderPass',

@@ -2,7 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class GearMenuController {
+// clang-format off
+// #import {ProvidersModel} from './providers_model.m.js';
+// #import {CommandHandler} from './file_manager_commands.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {ProvidersMenu} from './ui/providers_menu.m.js';
+// #import {GearMenu} from './ui/gear_menu.m.js';
+// #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {DirectoryChangeEvent} from '../../externs/directory_change_event.m.js';
+// #import {str, util} from '../../common/js/util.m.js';
+// clang-format on
+
+
+/* #export */ class GearMenuController {
   /**
    * @param {!cr.ui.MultiMenuButton} gearButton
    * @param {!FilesToggleRippleElement} toggleRipple
@@ -51,34 +64,14 @@ class GearMenuController {
   onShowGearMenu_() {
     this.toggleRipple_.activated = true;
     this.refreshRemainingSpace_(false); /* Without loading caption. */
-    this.updateNewServiceItem();
-  }
 
-  /**
-   * Update "New service" menu item to either directly show the Webstore dialog
-   * when there isn't any service/FSP extension installed, or display the
-   * providers menu with the currently installed extensions and also install new
-   * service.
-   *
-   * @private
-   */
-  updateNewServiceItem() {
     this.providersModel_.getMountableProviders().then(providers => {
-      // Go straight to webstore to install the first provider.
-      let desiredMenu = '#install-new-extension';
-      let label = str('INSTALL_NEW_EXTENSION_LABEL');
-
-      const shouldDisplayProvidersMenu = providers.length > 0;
-      if (shouldDisplayProvidersMenu) {
-        // Open the providers menu with an installed provider and an install new
-        // provider option.
-        desiredMenu = '#new-service';
-        label = str('ADD_NEW_SERVICES_BUTTON_LABEL');
+      const shouldHide = providers.length == 0;
+      if (!shouldHide) {
         // Trigger an update of the providers submenu.
         this.providersMenu_.updateSubMenu();
       }
-
-      this.gearMenu_.setNewServiceCommand(desiredMenu, label);
+      this.gearMenu_.updateShowProviders(shouldHide);
     });
   }
 
@@ -123,16 +116,19 @@ class GearMenuController {
 
     // TODO(mtomasz): Add support for remaining space indication for provided
     // file systems.
-    // TODO(fukino): Add support for remaining space indication for documents
-    // provider roots. crbug.com/953657.
     if (currentVolumeInfo.volumeType ==
             VolumeManagerCommon.VolumeType.PROVIDED ||
         currentVolumeInfo.volumeType ==
             VolumeManagerCommon.VolumeType.MEDIA_VIEW ||
         currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER ||
-        currentVolumeInfo.volumeType ==
             VolumeManagerCommon.VolumeType.ARCHIVE) {
+      this.gearMenu_.setSpaceInfo(null, false);
+      return;
+    }
+
+    // TODO(crbug.com/1177203): Remove once Drive sends proper quota info to
+    // Chrome.
+    if (currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.DRIVE) {
       this.gearMenu_.setSpaceInfo(null, false);
       return;
     }

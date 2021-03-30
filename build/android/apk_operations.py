@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -620,7 +620,7 @@ class _LogcatProcessor(object):
 
   # Logcat tags for messages that are generally relevant but are not from PIDs
   # associated with the apk.
-  _WHITELISTED_TAGS = {
+  _ALLOWLISTED_TAGS = {
       'ActivityManager',  # Shows activity lifecycle messages.
       'ActivityTaskManager',  # More activity lifecycle messages.
       'AndroidRuntime',  # Java crash dumps
@@ -811,7 +811,7 @@ class _LogcatProcessor(object):
         return
 
     if owned_pid or self._verbose or (log.priority == 'F' or  # Java crash dump
-                                      log.tag in self._WHITELISTED_TAGS):
+                                      log.tag in self._ALLOWLISTED_TAGS):
       if nonce_found:
         self._native_stack_symbolizer.AddLine(log, not owned_pid)
       else:
@@ -1631,7 +1631,11 @@ class _PrintCertsCommand(_Command):
           '--verbose', self.apk_helper.path
       ]
       logging.warning('Running: %s', ' '.join(cmd))
-      stdout = subprocess.check_output(cmd)
+      env = os.environ.copy()
+      env['PATH'] = os.path.pathsep.join(
+          [os.path.join(_JAVA_HOME, 'bin'),
+           env.get('PATH')])
+      stdout = subprocess.check_output(cmd, env=env)
       print(stdout)
       if self.args.full_cert:
         if 'v1 scheme (JAR signing): true' not in stdout:

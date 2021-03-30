@@ -10,17 +10,17 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
-#include "chrome/browser/chromeos/login/existing_user_controller.h"
-#include "chrome/browser/chromeos/login/lock/screen_locker.h"
-#include "chrome/browser/chromeos/login/lock/screen_locker_tester.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
-#include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
@@ -401,11 +401,7 @@ class LoginApitestWithEnterpriseUser : public LoginApitest {
 
   ~LoginApitestWithEnterpriseUser() override = default;
 
-  void LoginUser() {
-    logged_in_user_mixin_.LogInUser(/*issue_any_scope_token=*/false,
-                                    /*wait_for_active_session=*/true,
-                                    /*request_policy_update=*/true);
-  }
+  void LoginUser() { logged_in_user_mixin_.LogInUser(); }
 
   void SetUpInSessionExtension() override {
     AccountId account_id = logged_in_user_mixin_.GetAccountId();

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/metrics/histogram_macros.h"
@@ -99,10 +100,10 @@ class LegacyMetricsClientTest : public testing::Test {
     GetLegacyMetricsDeltas();
   }
 
-  std::unique_ptr<base::fuchsia::ScopedSingleClientServiceBinding<
+  std::unique_ptr<base::ScopedSingleClientServiceBinding<
       fuchsia::legacymetrics::MetricsRecorder>>
   MakeServiceBinding() {
-    return std::make_unique<base::fuchsia::ScopedSingleClientServiceBinding<
+    return std::make_unique<base::ScopedSingleClientServiceBinding<
         fuchsia::legacymetrics::MetricsRecorder>>(
         test_context_.additional_services(), &test_recorder_);
   }
@@ -136,7 +137,7 @@ class LegacyMetricsClientTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::TestComponentContextForProcess test_context_;
   TestMetricsRecorder test_recorder_;
-  std::unique_ptr<base::fuchsia::ScopedSingleClientServiceBinding<
+  std::unique_ptr<base::ScopedSingleClientServiceBinding<
       fuchsia::legacymetrics::MetricsRecorder>>
       service_binding_;
   LegacyMetricsClient client_;
@@ -510,6 +511,39 @@ TEST_F(LegacyMetricsClientTest, ExplicitFlushMultipleBatches) {
   EXPECT_EQ(kSizeForMultipleBatches, events.size());
   for (size_t i = 0; i < kSizeForMultipleBatches; ++i)
     EXPECT_EQ("bar", events[i].user_action_event().name());
+}
+
+TEST_F(LegacyMetricsClientTest, UseInjectedMetricsRecorder) {
+  // Disable auto connect and then connect |client_| to |test_recorder_|
+  // explicitly.
+  client_.DisableAutoConnect();
+  fidl::Binding<fuchsia::legacymetrics::MetricsRecorder> binding(
+      &test_recorder_);
+  fidl::InterfaceHandle<fuchsia::legacymetrics::MetricsRecorder>
+      metrics_recorder;
+  binding.Bind(metrics_recorder.NewRequest());
+  client_.SetMetricsRecorder(std::move(metrics_recorder));
+
+  client_.Start(kReportInterval);
+
+  base::RecordComputedAction("bar");
+
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+
+  auto events = test_recorder_.WaitForEvents();
+  EXPECT_EQ(1u, events.size());
+  EXPECT_EQ("bar", events[0].user_action_event().name());
+
+  // Verify that /svc wasn't used.
+  EXPECT_FALSE(service_binding_->has_clients());
+
+  // Verify that LegacyMetricsClient doesn't try to reconnect after
+  // MetricsRecorder has been disconnected.
+  binding.Unbind();
+  task_environment_.FastForwardBy(LegacyMetricsClient::kInitialReconnectDelay *
+                                  2);
+  EXPECT_FALSE(service_binding_->has_clients());
 }
 
 }  // namespace

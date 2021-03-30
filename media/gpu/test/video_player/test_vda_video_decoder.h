@@ -45,7 +45,7 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
   ~TestVDAVideoDecoder() override;
 
   // media::VideoDecoder implementation
-  std::string GetDisplayName() const override;
+  VideoDecoderType GetDecoderType() const override;
   bool IsPlatformDecoder() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,

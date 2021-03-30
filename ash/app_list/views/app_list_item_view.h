@@ -10,11 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_item_observer.h"
-#include "base/macros.h"
+#include "ash/ash_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/context_menu_controller.h"
@@ -36,18 +34,19 @@ class AppListMenuModelAdapter;
 class AppListViewDelegate;
 class AppsGridView;
 
-class APP_LIST_EXPORT AppListItemView : public views::Button,
-                                        public views::ContextMenuController,
-                                        public AppListItemObserver,
-                                        public ui::ImplicitAnimationObserver {
+class ASH_EXPORT AppListItemView : public views::Button,
+                                   public views::ContextMenuController,
+                                   public AppListItemObserver,
+                                   public ui::ImplicitAnimationObserver {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(AppListItemView);
 
   AppListItemView(AppsGridView* apps_grid_view,
                   AppListItem* item,
                   AppListViewDelegate* delegate,
                   bool is_in_folder);
+  AppListItemView(const AppListItemView&) = delete;
+  AppListItemView& operator=(const AppListItemView&) = delete;
   ~AppListItemView() override;
 
   // Sets the icon of this image.
@@ -57,8 +56,8 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   // config state.
   void RefreshIcon();
 
-  void SetItemName(const base::string16& display_name,
-                   const base::string16& full_name);
+  void SetItemName(const std::u16string& display_name,
+                   const std::u16string& full_name);
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
@@ -98,10 +97,12 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
 
   // Sets UI state to dragging state.
   void SetDragUIState();
-  // Sets UI state to cardify state.
-  void SetCardifyUIState();
   // Sets UI state to normal state.
   void SetNormalUIState();
+
+  // Handles the icon's scaling and animation for a cardified grid.
+  void EnterCardifyState();
+  void ExitCardifyState();
 
   // Returns the icon bounds for with |target_bounds| as the bounds of this view
   // and given |icon_size| and the |icon_scale| if the icon was scaled from the
@@ -123,9 +124,10 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
 
   // views::Button overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnThemeChanged() override;
 
   // views::View overrides:
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // When a dragged view enters this view, a preview circle is shown for
   // non-folder item while the icon is enlarged for folder item. When a
@@ -149,8 +151,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
 
   bool IsNotificationIndicatorShownForTest() const;
 
-  SkColor GetNotificationIndicatorColorForTest() const;
-
  private:
   class IconImageView;
   class AppNotificationIndicatorView;
@@ -159,7 +159,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
     UI_STATE_NORMAL,              // Normal UI (icon + label)
     UI_STATE_DRAGGING,            // Dragging UI (scaled icon only)
     UI_STATE_DROPPING_IN_FOLDER,  // Folder dropping preview UI
-    UI_STATE_CARDIFY,             // Cardify UI (scaled icon + label)
   };
 
   // gfx::AnimationDelegate:
@@ -213,7 +212,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // views::View overrides:
-  const char* GetClassName() const override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -229,6 +227,7 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   void ItemIconChanged(AppListConfigType config_type) override;
   void ItemNameChanged() override;
   void ItemBadgeVisibilityChanged() override;
+  void ItemBadgeColorChanged() override;
   void ItemBeingDestroyed() override;
 
   // ui::ImplicitAnimationObserver:
@@ -274,6 +273,9 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   // A11y alerts and a focus ring.
   bool focus_silently_ = false;
 
+  // Whether AppsGridView is in cardified state.
+  bool in_cardified_grid_ = false;
+
   // The animation that runs when dragged view enters or exits this view.
   std::unique_ptr<gfx::SlideAnimation> dragged_view_hover_animation_;
 
@@ -287,7 +289,7 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   // Whether |context_menu_| was shown via key event.
   bool menu_show_initiated_from_key_ = false;
 
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
   // A timer to defer showing drag UI when mouse is pressed.
   base::OneShotTimer mouse_drag_timer_;
@@ -311,8 +313,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   const bool is_notification_indicator_enabled_;
 
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppListItemView);
 };
 
 }  // namespace ash

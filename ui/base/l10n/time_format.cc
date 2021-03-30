@@ -28,13 +28,13 @@ base::LazyInstance<FormatterContainer>::Leaky g_container =
     LAZY_INSTANCE_INITIALIZER;
 
 // static
-base::string16 TimeFormat::Simple(TimeFormat::Format format,
+std::u16string TimeFormat::Simple(TimeFormat::Format format,
                                   TimeFormat::Length length,
                                   const base::TimeDelta& delta) {
   return Detailed(format, length, 0, delta);
 }
 
-base::string16 TimeFormat::SimpleWithMonthAndYear(TimeFormat::Format format,
+std::u16string TimeFormat::SimpleWithMonthAndYear(TimeFormat::Format format,
                                                   TimeFormat::Length length,
                                                   const base::TimeDelta& delta,
                                                   bool with_month_and_year) {
@@ -43,14 +43,14 @@ base::string16 TimeFormat::SimpleWithMonthAndYear(TimeFormat::Format format,
 }
 
 // static
-base::string16 TimeFormat::Detailed(TimeFormat::Format format,
+std::u16string TimeFormat::Detailed(TimeFormat::Format format,
                                     TimeFormat::Length length,
                                     int cutoff,
                                     const base::TimeDelta& delta) {
   return DetailedWithMonthAndYear(format, length, cutoff, delta, false);
 }
 
-base::string16 TimeFormat::DetailedWithMonthAndYear(
+std::u16string TimeFormat::DetailedWithMonthAndYear(
     TimeFormat::Format format,
     TimeFormat::Length length,
     int cutoff,
@@ -142,16 +142,15 @@ base::string16 TimeFormat::DetailedWithMonthAndYear(
 
   const int capacity = time_string.length() + 1;
   DCHECK_GT(capacity, 1);
-  base::string16 result;
+  std::u16string result;
   UErrorCode error = U_ZERO_ERROR;
-  time_string.extract(static_cast<UChar*>(base::WriteInto(&result, capacity)),
-                      capacity, error);
+  time_string.extract(base::WriteInto(&result, capacity), capacity, error);
   DCHECK(U_SUCCESS(error));
   return result;
 }
 
 // static
-base::string16 TimeFormat::RelativeDate(
+std::u16string TimeFormat::RelativeDate(
     const base::Time& time,
     const base::Time* optional_midnight_today) {
   const base::Time midnight_today = optional_midnight_today
@@ -161,12 +160,12 @@ base::string16 TimeFormat::RelativeDate(
   const base::Time tomorrow = midnight_today + kDay;
   const base::Time yesterday = midnight_today - kDay;
   if (time >= tomorrow)
-    return base::string16();
+    return std::u16string();
   if (time >= midnight_today)
     return l10n_util::GetStringUTF16(IDS_PAST_TIME_TODAY);
   return (time >= yesterday)
              ? l10n_util::GetStringUTF16(IDS_PAST_TIME_YESTERDAY)
-             : base::string16();
+             : std::u16string();
 }
 
 }  // namespace ui

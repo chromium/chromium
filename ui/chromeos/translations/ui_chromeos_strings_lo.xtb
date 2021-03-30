@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">ໄຟລ໌ ຫຼືບັນຊີລາຍຊື່ບໍ່ຄົງທີ່.</translation>
 <translation id="1363028406613469049">ແທຣັກ</translation>
 <translation id="1378727793141957596">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Google Drive!</translation>
+<translation id="1379911846207762492">ທ່ານສາມາດເຮັດໃຫ້ໄຟລ໌ນຳໃຊ້ແບບອອບລາຍໄດ້ເພື່ອເຂົ້າເຖິງເມື່ອທ່ານບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1395262318152388157">​ແຖບເລື່ອນ​ຊອກ​ຫາ</translation>
 <translation id="1404323374378969387">ພາສານໍເວກຽນ</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">ທຸກໄຟລ​໌​</translation>
 <translation id="1810764548349082891">ບໍ່ມີຕົວຢ່າງສະແດງ</translation>
 <translation id="1812302367230252929">ການແປທັບສັບພາສາອາມຮາຣິກ</translation>
+<translation id="1813278315230285598">ການ​ບໍ​ລິ​ການ</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ລະວັງ:<ph name="END_BOLD" />  ໄຟລ໌ເຫຼົ່ານີ​ແມ່ນ​ໄຟລ໌ຊົ່ວຄາວ ແລະອາດຈະຖືກລຶບໄປໂດຍອັດຕະໂນມັດ ເພື່ອໃຫ້ມີບ່ອນ​ວ່າງດິສກ໌.  <ph name="BEGIN_LINK" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ນົກເພັນກວິນ</translation>
 <translation id="183183971458492120">ກຳລັງໂຫຼດຂໍ້ມູນ...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Linux</translation>
 <translation id="1864756863218646478">ບໍ່​ສາ​ມາດພົບໄຟລ​໌ໄດ້​.</translation>
 <translation id="1920670151694390848">ການແປທັບສັບພາສາມາລາຢາລຳ</translation>
+<translation id="1920798810075583923">ໝາກ​ໂມ</translation>
 <translation id="1924372192547904021">ຟໍແມັດ <ph name="DRIVE_NAME" /> ແລ້ວ</translation>
 <translation id="1931134289871235022">ພາສາ​ສະ​ໂລ​ວັກ</translation>
 <translation id="1933345018156373194">ຍ້າຍບໍ່ສຳເລັດ, ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ພາສາແຟງລັງ</translation>
 <translation id="1942765061641586207">ຄວາມລະອຽດຂອງຮູບ</translation>
-<translation id="1943097386230153518">ຕິດຕັ້ງການບໍລິການໃໝ່</translation>
 <translation id="1972984168337863910">ຂະຫຍາຍແຜງຄຳຕິຊົມໄຟລ໌</translation>
+<translation id="1984456723671657197">ບໍ່ຮອງຮັບໄຟລ໌ປະເພດນີ້. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="1995337122023280937">ໄປຫາສະຖານທີ່ຂອງໄຟລ໌</translation>
 <translation id="2001796770603320721">ຈັດການໃນ Drive</translation>
 <translation id="2009067268969781306">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">ເຄື່ອງຫຼິ້ນ​ບັນ​ທຶກ</translation>
 <translation id="2291538123825441971">ກຳລັງເປີດ <ph name="NUMBER_OF_FILES" /> ໄຟລ໌.</translation>
 <translation id="2303301624314357662">ກຳລັງເປີດໄຟລ໌ <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">ດາວເຄາະ</translation>
 <translation id="2305020378527873881">ຖອດ <ph name="VOLUME_NAME" /> ອອກແລ້ວ.</translation>
 <translation id="2325650632570794183">ປະເພດໄຟລ໌ນີ້ບໍ່ຖືກຮອງຮັບ. ກະລຸນາເຂົ້າໄປເບິ່ງ Chrome Web Store ເພື່ອຊອກຫາແອັບທີ່ສາມາດເປີດໄຟລ໌ປະເພດນີ້ໄດ້.</translation>
 <translation id="2326539130272988168">ບັງກາຣຽນ</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">US ສາ​ກົນ</translation>
 <translation id="2562685439590298522">ເອກະສານ</translation>
 <translation id="2563185590376525700">ກົບ</translation>
-<translation id="2572501073504669105">ທ່ານສາມາດເຮັດໃຫ້ໄຟລ໌ນຳໃຊ້ແບບອອບລາຍໄດ້ເພື່ອເຂົ້າເຖິງເມື່ອທ່ານບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="2578394532502990878">ພາສາທາມິລ (ຕາມການອອກສຽງ)</translation>
 <translation id="2579959351793446050">ພາສາໂອເດຍ</translation>
 <translation id="2614589611416690597">ວິດີໂອ <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">ພາສາຝຣັ່ງ (ຄານາດາ)</translation>
 <translation id="3003633581067744647">ປ່ຽນເປັນມຸມມອງຮູບຫຍໍ້</translation>
 <translation id="3007214526293698309">ແກ້ໄຂອັດຕາສ່ວນ</translation>
+<translation id="3029114385395636667">ເປີດການນຳໃຊ້ Google Docs Offline ເພື່ອໃຫ້ Docs, Sheets ແລະ Slides ໃຊ້ໄດ້ແບບອອບລາຍ</translation>
 <translation id="303198083543495566">ພູມສາດ</translation>
 <translation id="3047197340186497470">ພາສາຈີນ (Dayi)</translation>
 <translation id="3057861065630527966">ສຳ​ຮອງ​ຮູບ ແລະ​ວິ​ດີ​ໂອ​ຂອງ​ທ່ານ</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">ປີທີ່ບັນທຶກ</translation>
 <translation id="3353984535370177728">ເລືອກໂຟລເດີທີ່ຈະອັບໂຫຼດ</translation>
 <translation id="3356580349448036450">ສຳ​ເລັດ</translation>
+<translation id="3358452157379365236">ກີຕ້າ</translation>
 <translation id="3382143449143186018">ພາສາເນປານທີ່ໃຊ້ແປ້ນພິມ InScript</translation>
 <translation id="3408236822532681288">ພາສາເຢຍລະມັນ (ເຢຍລະມັນ) ທີ່ໃຊ້ແປ້ນພິມ Neo 2</translation>
 <translation id="3414856743105198592">ການຟໍແມັດມີເດຍທີ່ສາມາດຖອດອອກໄ້ຈະລຶບທຸກຂໍ້ມູນ. ທ່ານ​ຕ້ອງ​ການ​​ຈະ​ສືບ​ຕໍ່ບໍ​?</translation>
 <translation id="3437801641691368414">ເວລາສ້າງ</translation>
+<translation id="343907260260897561">ກ້ອງຖ່າຍຮູບດ່ວນ</translation>
 <translation id="3455931012307786678">ພາສາເອສໂຕນຽນ</translation>
 <translation id="3466147780910026086">ກຳ​ລັງ​ສະ​ແກນອຸ​ປະ​ກອນ​ມີ​ເດຍ​ຂອງ​ທ່ານ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ຮູບຖືກສຳ​ຮອງ​​ໃສ່ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ແລ້ວ</translation>
 <translation id="3475447146579922140">Google spreadsheet</translation>
+<translation id="3479552764303398839">ບໍ່ແມ່ນດຽວນີ້</translation>
 <translation id="3486821258960016770">ພາສາມອງໂກລຽນ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ຄວາມ​ຜິດ​ພາດ​.</translation>
 <translation id="3522708245912499433">ພາສາປັອກຕຸຍການ</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">ເພື່ອເປີດໄຟລ໌ດ້ວຍ <ph name="APP_NAME" />, ກະລຸນາສຳເນົາພວກມັນໄປໃສ່ໂຟນເດີໄຟລ໌ຂອງ Windows ກ່ອນ.</translation>
 <translation id="3556731189587832921">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມຄອມພິວເຕີສາກົນ</translation>
 <translation id="357479282490346887">ພາສາລິດທົວນີ</translation>
+<translation id="3592251141500063301">ບໍ່ສາມາດເຮັດໃຫ້ <ph name="FILE_NAME" /> ມີໃຫ້ນຳໃຊ້ແບບອອບລາຍໄດ້</translation>
 <translation id="3603385196401704894">ພາສາຝຣັ່ງການາດາ</translation>
 <translation id="3606220979431771195">ພາ​ສາ​ຕວກ​ກີ-F</translation>
 <translation id="3616113530831147358">ສຽງ</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
 <translation id="4158739975813877944">ເປີດລາຍການຫຼິ້ນ</translation>
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
+<translation id="4186579485882418952">ເປີດການນຳໃຊ້ອອບລາຍ</translation>
 <translation id="4193154014135846272">ເອ​ກະ​ສານ​ Google</translation>
 <translation id="4197674956721858839">ການເລືອກຊິບໄຟລ໌</translation>
 <translation id="4202378258276439759">ພາສາສະແປນນິຊ (ອາເມລິກາລາຕິນ)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">ຂໍ້ມູນທົ່ວໄປ</translation>
 <translation id="432252891123397018">ພາສາໂຣມານຽນທີ່ໃຊ້ແປ້ນພິມມາດຕະຖານ</translation>
 <translation id="4325128273762811722">ພາສາສະໂລເວນຽນ</translation>
+<translation id="4326142238881453352">ນັກພຶກສາສາດ</translation>
 <translation id="4326192123064055915">ກາ​ເຟ</translation>
 <translation id="4336032328163998280">ກັອບປີ້ການດໍາເນີນການບໍ່ສໍາເລັດ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">ພາສາເຄີດໂຊຣານີທີ່ໃຊ້ແປ້ນພິມແບບອາຣັບ</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">ພາສາທາມິລທີ່ໃຊ້ແປ້ນພິມເຄື່ອງພິມດີດ</translation>
 <translation id="4711094779914110278">ພາສາຕວກກີ</translation>
 <translation id="4712283082407695269">ກຳລັງເປີດ "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">ໄຟລ໌ນີ້ອອກແບບສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ອັນນີ້ບໍ່ເຂົ້າກັບອຸປະກອນຂອງທ່ານທີ່ແລ່ນ Chrome OS. ກະລຸນາຄົ້ນຫາ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> ສໍາລັບແອັບການປ່ຽນແທນທີ່ເໝາະສົມ.<ph name="BEGIN_LINK_HELP" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">ສຳ​ຮອງ <ph name="FILE_COUNT" /> ຮູບ​ແລ້ວ</translation>
 <translation id="4725511304875193254">ໝາຄໍກິ</translation>
 <translation id="4732760563705710320">ຂໍອະໄພ, ວິດີໂອນີ້ບໍ່ຮອງຮັບໂດຍອຸປະກອນຄາສທ໌ຂອງທ່ານ.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />ແບ່ງປັນ, ສ້າງ ແລະ ເຮັດວຽກຮ່ວມກັນ<ph name="MARKUP_8" />
     ໃນໄຟລ໌ຕ່າງໆກັບຄົນອື່ນທັງໝົດຢູ່ບ່ອນດຽວ.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">ໄຟລ໌ທີ່ກູ້ຄືນຈາກ Google Drive</translation>
+<translation id="5288441970121584418">ເບີເກີ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318819489018851358">ແບ່ງປັນກັບ Linux</translation>
 <translation id="5323213332664049067">ອາເມຣິກາລາຕິນ</translation>
@@ -460,8 +470,6 @@
 <translation id="5833610766403489739">ໄຟລ໌ນີ້ໄດ້ທ່ຽວໄປບ່ອນໃດໜຶ່ງ. ກະລຸນາກວດເບິ່ງການຕັ້ງຄ່າທີ່ຕັ້ງການດາວໂຫຼດ ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="5838451609423551646">ລຶບລາຍການທັງໝົດອອກຈາກການເລືອກແລ້ວ.</translation>
 <translation id="5838825566232597749">US Workman ສາກົນ</translation>
-<translation id="5850516540536751549">ປະເພດໄຟລ໌ນີ້ບໍ່ຖືກຮອງຮັບ. ກະລຸນາເຂົ້າໄປເບິ່ງ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> ເພື່ອຊອກຫາແອັບທີ່ສາມາດເປີດໄຟລ໌ປະເພດນີ້ໄດ້.
-    <ph name="BEGIN_LINK_HELP" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ບໍ່​ມີ​ຫຍັງ​ທີ່​ຈະ​ເບິ່ງ​ຢູ່ທີ່​ນີ້...</translation>
 <translation id="5911887972742538906">ເກີດຜິດພາດໃນລະຫວ່າງການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux ຂອງທ່ານ.</translation>
 <translation id="5912396950572065471">ຮູບແບບ</translation>
@@ -499,10 +507,12 @@
 <translation id="6248400709929739064">ເປີດໃຊ້ຄຳແປບັນຍາຍພາບ</translation>
 <translation id="6269630227984243955">ມາເລ</translation>
 <translation id="6287852322318138013">ເລືອກແອັບທີ່ຈະເປີດຢູ່ໃນໄຟລ໌ນີ້</translation>
+<translation id="6321303798550928047">ໂບກມື</translation>
 <translation id="6339145975392024142">ສະຫະລັດສາກົນ (ຄອມພິວເຕີ)</translation>
 <translation id="6346310558342052870">ຈຳກັດການເຂົ້າເຖິງໄວ້ແລ້ວ</translation>
 <translation id="6356685157277930264">ໜ້າຈໍຄຳເຫັນຂອງ Files</translation>
 <translation id="6358884629796491903">ມັງກອນ</translation>
+<translation id="6367976544441405720">ລົດຕູ້</translation>
 <translation id="637062427944097960">ໄຟລ໌ນີ້ເປີດຢູ່ໃນເດັສທັອບອື່ນແລ້ວ. ຍ້າຍໄປຫາ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ເພື່ອເບິ່ງມັນ.</translation>
 <translation id="6394388407447716302">ອ່ານເທົ່ານັ້ນ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ລາຍການ</translation>
@@ -526,6 +536,7 @@
 <translation id="6650726141019353908">ແມງກະເບື້ອສີບົວ</translation>
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
 <translation id="6673674183150363784">ພາສາຝຣັ່ງ (ຝຣັ່ງ) ທີ່ໃຊ້ແປ້ນພິມ Bépo</translation>
+<translation id="6710022688720561421">ຫຸ່ນຍົນ</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
 <translation id="6751256176799620176">ເລືອກ 1 ໂຟນເດີແລ້ວ</translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
@@ -559,11 +570,12 @@
 <translation id="6965382102122355670">ຕົກລົງ</translation>
 <translation id="6970230597523682626">ພາສາບຸນກາຣີ</translation>
 <translation id="6973630695168034713">ໂຟ​ລ​ເດີ</translation>
+<translation id="6976795442547527108">ສິງ</translation>
 <translation id="6978611942794658017">ໄຟລ໌ນີ້ຖືກອອກແບບສໍາລັບ PC ດ້ວຍການໃຊ້ຊອບແວ Windows. ອັນນີ້ບໍ່ເຂົ້າກັບອຸປະກອນຂອງທ່ານ ເຊິ່ງໃຊ້ Chrome OS. ກະລຸນາຊອກຫາ Chrome Web Store ສໍາລັບແອັບປ່ຽນແທນທີ່ເໝາະສົມ.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ພາສາສະວີດິດ</translation>
 <translation id="6990081529015358884">ທ່ານໝົດບ່ອນ​ວ່າງ​ແລ້ວ</translation>
-<translation id="6998711733709403587">ເລືອກໂຟລເດີ <ph name="SELCTED_FOLDERS_COUNT" /> ແລ້ວ</translation>
+<translation id="6998711733709403587">ເລືອກໂຟນເດີ <ph name="SELCTED_FOLDERS_COUNT" /> ແລ້ວ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ການ​ຕິດ​ຕັ້ງ​ບໍ່ສໍາເລັດ.</translation>
 <translation id="7031639531908619281">ພາສາເທີກິສ</translation>
@@ -605,6 +617,7 @@
 <translation id="7532029025027028521">ການແປທັບສັບພາສາເປີຊຽນ</translation>
 <translation id="7544830582642184299">ອະນຸຍາດໃຫ້ແອັບ Linux ເຂົ້າເຖິງໄຟລ໌ຕ່າງໆໃນ Google Drive ຂອງທ່ານ. ການປ່ຽນແປງຈະຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນຂອງທ່ານ.</translation>
 <translation id="7544853251252956727">ສັບປ່ຽນ</translation>
+<translation id="7547009467130558110">ເກີບສະນີກເກີ</translation>
 <translation id="7547780573915868306">ພາສາລິທົວນຽນ</translation>
 <translation id="7547811415869834682">ພາສາດັຊ</translation>
 <translation id="7551643184018910560">ປັກໝຸດໃສ່ຖ້ານ</translation>
@@ -619,6 +632,7 @@
 <translation id="7628656427739290098">ສຳເລັດ <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7654209398114106148">ກຳລັງຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
+<translation id="7655441028674523381">ເຂົ້າເຖິງ Google ຮູບພາບໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7663224033570512922">ພາສາຮິນດິ</translation>
 <translation id="7693909743393669729">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ແລະ ລຶບຫ້ອງຂໍ້ມູນທີ່ມີຢູ່ທັງໝົດ, ຮວມທັງຫ້ອງຂໍ້ມູນທີ່ອາດຈະເບິ່ງບໍ່ເຫັນ. ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
@@ -650,7 +664,6 @@
 <translation id="7839804798877833423">ການໄປເອົາໄຟລ​໌​ເຫຼົ່າ​ນີ້​ຈະ​ໃຊ້​ຂໍ້ມູນມືຖືປະ​ມານ <ph name="FILE_SIZE" />.</translation>
 <translation id="7846076177841592234">ຍົກ​ເລີກ​ການ​ເລືອກ</translation>
 <translation id="7853966320808728790">BÉPO ພາ​ສາ​ຝ​ຣັ່ງ</translation>
-<translation id="7864662577698025113">ເພີ່ມການບໍລິການໃໝ່</translation>
 <translation id="7868774406711971383">ພາສາໂພລິຊ</translation>
 <translation id="7873831373602885875">ບໍ່ສາມາດບັນທຶກໄວ້ໃນ <ph name="FOLDER_NAME" /> ໄດ້. ການແກ້ໄຂທັງໝົດຈະຖືກບັນທຶກໄວ້ໃນ <ph name="DOWNLOADS_FOLDER" /> ຢູ່ໃນໂຟນເດີການດາວໂຫຼດ.</translation>
 <translation id="7874321682039004450">ພາສາຟິລິບປິໂນ</translation>
@@ -665,13 +678,13 @@
 <translation id="7972920761225148017">ພາສາຝຣັ່ງ (ສະວິດເຊີແລນ)</translation>
 <translation id="7980421588063892270">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Colemak</translation>
 <translation id="7982283708762922719">ລວງສູງ</translation>
+<translation id="79907182588096956">ໄຟລ໌ນີ້ຖືກອອກແບບມາສຳລັບຄອມພິວເຕີສ່ວນບຸກຄົນທີ່ໃຊ້ຊອບແວ Windows. ນີ້ເຂົ້າກັນບໍ່ໄດ້ກັບອຸປະກອນຂອງທ່ານທີ່ໃຊ້ Chrome OS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="8008366997883261463">ໝາ</translation>
 <translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
 <translation id="803771048473350947">ໄຟລ໌</translation>
 <translation id="8038111231936746805">(ມາດຕະຖານ)</translation>
 <translation id="8042602468072383151">ສຽງ <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">ພາສາໂຣມານີ</translation>
-<translation id="8052887694493382350">ໄຟລ໌ນີ້ຖືກອອກແບບມາສຳລັບຄອມພິວເຕີສ່ວນບຸກຄົນທີ່ໃຊ້ຊອບແວ Windows. ນີ້ເຂົ້າກັນບໍ່ໄດ້ກັບອຸປະກອນຂອງທ່ານທີ່ໃຊ້ Chrome OS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">ການແກ້ໄຂທັງໝົດຈະຖືກບັນທຶກໄວ້ໃນ <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">ຫຼິ້ນຊໍ້າ</translation>
 <translation id="8106045200081704138">ແຊຣ໌ກັບຂ້ອຍ</translation>
@@ -711,6 +724,7 @@
 <translation id="8466234950814670489">ຄັງເກັບຂໍ້ມູນທາ</translation>
 <translation id="8475647382427415476">Google Drive ບໍ່​ສາ​ມາດ​ຊິງ​ຄ໌ "<ph name="FILENAME" />" ໄດ້​ໃນ​ເວ​ລາ​ນີ້. Google Drive ຈະ​ລອງ​ໃໝ່​ພາຍ​ຫຼັງ.</translation>
 <translation id="8477649328507734757">ໝຸນ</translation>
+<translation id="8484284835977497781">ເລືອກຈາກຮູບຫຼ້າສຸດຂອງທ່ານ.</translation>
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
 <translation id="8521441079177373948">ສະຫະ​ລາຊະ​ອານາຈັກ</translation>
 <translation id="8525306231823319788">ເຕັມຫນ້າ​ຈໍ​</translation>
@@ -743,8 +757,10 @@
 <translation id="8860454412039442620">​ແຜ່ນ​ງານ Excel</translation>
 <translation id="8866284467018526531">ການແປທັບສັບພາສາອາຣັບ</translation>
 <translation id="8900820606136623064">ພາສາຮັງກາຣີ</translation>
+<translation id="8903931173357132290">ຈົບ​ການ​ສຶກ​ສາ</translation>
 <translation id="8919081441417203123">ພາສາເດັນມາກ</translation>
 <translation id="8965697826696209160">ບໍ່ມີເນື້ອທີ່ພຽງພໍ.</translation>
+<translation id="8970501467542182729">ໄຟລ໌ນີ້ຖືກອອກແບບມາສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ນີ້ເຂົ້າກັນບໍ່ໄດ້ກັບອຸປະກອນຂອງທ່ານທີ່ໃຊ້ Chrome OS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ໃນ Chrome OS.</translation>
 <translation id="8997962250644902079">ພາສາຈີນ (ຕົວຫຍໍ້) ພິນອິນ</translation>
 <translation id="9017798300203431059">ການ​ອອກສຽງພາ​ສາ​ລັດ​ເຊຍ</translation>
 <translation id="9034924485347205037">ໄຟລ໌ Linux</translation>

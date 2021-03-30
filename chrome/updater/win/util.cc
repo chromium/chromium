@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <wtsapi32.h>
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
@@ -17,15 +19,14 @@
 #include "base/process/process_iterator.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/user_info.h"
 
 namespace updater {
-
 namespace {
 
 // The number of iterations to poll if a process is stopped correctly.
@@ -169,14 +170,14 @@ HMODULE GetCurrentModuleHandle() {
 
 // The event name saved to the environment variable does not contain the
 // decoration added by GetNamedObjectAttributes.
-HRESULT CreateUniqueEventInEnvironment(const base::string16& var_name,
-                                       bool is_machine,
+HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
+                                       UpdaterScope scope,
                                        HANDLE* unique_event) {
   DCHECK(unique_event);
 
-  const base::string16 event_name = base::ASCIIToUTF16(base::GenerateGUID());
+  const std::wstring event_name = base::ASCIIToWide(base::GenerateGUID());
   NamedObjectAttributes attr;
-  GetNamedObjectAttributes(event_name.c_str(), is_machine, &attr);
+  GetNamedObjectAttributes(event_name.c_str(), scope, &attr);
 
   HRESULT hr = CreateEvent(&attr, unique_event);
   if (FAILED(hr))
@@ -190,12 +191,12 @@ HRESULT CreateUniqueEventInEnvironment(const base::string16& var_name,
   return S_OK;
 }
 
-HRESULT OpenUniqueEventFromEnvironment(const base::string16& var_name,
-                                       bool is_machine,
+HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
+                                       UpdaterScope scope,
                                        HANDLE* unique_event) {
   DCHECK(unique_event);
 
-  base::char16 event_name[MAX_PATH] = {0};
+  wchar_t event_name[MAX_PATH] = {0};
   if (!::GetEnvironmentVariable(var_name.c_str(), event_name,
                                 base::size(event_name))) {
     DWORD error = ::GetLastError();
@@ -203,7 +204,7 @@ HRESULT OpenUniqueEventFromEnvironment(const base::string16& var_name,
   }
 
   NamedObjectAttributes attr;
-  GetNamedObjectAttributes(event_name, is_machine, &attr);
+  GetNamedObjectAttributes(event_name, scope, &attr);
   *unique_event = ::OpenEvent(EVENT_ALL_ACCESS, false, attr.name.c_str());
 
   if (!*unique_event) {
@@ -231,22 +232,26 @@ HRESULT CreateEvent(NamedObjectAttributes* event_attr, HANDLE* event_handle) {
   return S_OK;
 }
 
-void GetNamedObjectAttributes(const base::char16* base_name,
-                              bool is_machine,
+void GetNamedObjectAttributes(const wchar_t* base_name,
+                              UpdaterScope scope,
                               NamedObjectAttributes* attr) {
   DCHECK(base_name);
   DCHECK(attr);
 
   attr->name = kGlobalPrefix;
 
-  if (!is_machine) {
-    base::string16 user_sid;
-    GetProcessUser(nullptr, nullptr, &user_sid);
-    attr->name += user_sid;
-    GetCurrentUserDefaultSecurityAttributes(&attr->sa);
-  } else {
-    // Grant access to administrators and system.
-    GetAdminDaclSecurityAttributes(&attr->sa, GENERIC_ALL);
+  switch (scope) {
+    case UpdaterScope::kUser: {
+      std::wstring user_sid;
+      GetProcessUser(nullptr, nullptr, &user_sid);
+      attr->name += user_sid;
+      GetCurrentUserDefaultSecurityAttributes(&attr->sa);
+      break;
+    }
+    case UpdaterScope::kSystem:
+      // Grant access to administrators and system.
+      GetAdminDaclSecurityAttributes(&attr->sa, GENERIC_ALL);
+      break;
   }
 
   attr->name += base_name;
@@ -308,12 +313,12 @@ void GetAdminDaclSecurityAttributes(CSecurityAttributes* sec_attr,
   sec_attr->Set(sd);
 }
 
-base::string16 GetRegistryKeyClientsUpdater() {
-  return base::ASCIIToUTF16(base::StrCat({CLIENTS_KEY, kUpdaterAppId}));
+std::wstring GetRegistryKeyClientsUpdater() {
+  return base::ASCIIToWide(base::StrCat({CLIENTS_KEY, kUpdaterAppId}));
 }
 
-base::string16 GetRegistryKeyClientStateUpdater() {
-  return base::ASCIIToUTF16(base::StrCat({CLIENT_STATE_KEY, kUpdaterAppId}));
+std::wstring GetRegistryKeyClientStateUpdater() {
+  return base::ASCIIToWide(base::StrCat({CLIENT_STATE_KEY, kUpdaterAppId}));
 }
 
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
@@ -322,42 +327,6 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
   DCHECK_LE(downloaded_bytes, total_bytes);
   return 100 *
          base::ClampToRange(double{downloaded_bytes} / total_bytes, 0.0, 1.0);
-}
-
-// Reads the installer progress from the registry value at:
-// {HKLM|HKCU}\Software\Google\Update\ClientState\<appid>\InstallerProgress.
-int GetInstallerProgress(const std::string& app_id) {
-  base::string16 subkey;
-  if (!base::UTF8ToUTF16(app_id.c_str(), app_id.size(), &subkey)) {
-    return -1;
-  }
-  constexpr REGSAM kRegSam = KEY_READ | KEY_WOW64_32KEY;
-  base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToUTF16(CLIENT_STATE_KEY).c_str(), kRegSam);
-  if (key.OpenKey(subkey.c_str(), kRegSam) != ERROR_SUCCESS) {
-    return -1;
-  }
-  DWORD progress = 0;
-  if (key.ReadValueDW(kRegistryValueInstallerProgress, &progress) !=
-      ERROR_SUCCESS) {
-    return -1;
-  }
-  return base::ClampToRange(progress, DWORD{0}, DWORD{100});
-}
-
-bool DeleteInstallerProgress(const std::string& app_id) {
-  base::string16 subkey;
-  if (!base::UTF8ToUTF16(app_id.c_str(), app_id.size(), &subkey)) {
-    return false;
-  }
-  constexpr REGSAM kRegSam = KEY_SET_VALUE | KEY_WOW64_32KEY;
-  base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToUTF16(CLIENT_STATE_KEY).c_str(), kRegSam);
-  if (key.OpenKey(subkey.c_str(), kRegSam) != ERROR_SUCCESS) {
-    return false;
-  }
-
-  return key.DeleteValue(kRegistryValueInstallerProgress) == ERROR_SUCCESS;
 }
 
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId() {

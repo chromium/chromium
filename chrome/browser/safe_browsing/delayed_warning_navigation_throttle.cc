@@ -5,9 +5,9 @@
 #include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/safe_browsing/core/features.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -28,9 +28,10 @@ DelayedWarningNavigationThrottle::~DelayedWarningNavigationThrottle() = default;
 std::unique_ptr<DelayedWarningNavigationThrottle>
 DelayedWarningNavigationThrottle::MaybeCreateNavigationThrottle(
     content::NavigationHandle* navigation_handle) {
-  // If the tab is being prerendered, stop here before it breaks metrics.
+  // If the tab is being no-state prefetched, stop here before it breaks
+  // metrics.
   content::WebContents* web_contents = navigation_handle->GetWebContents();
-  if (prerender::ChromePrerenderContentsDelegate::FromWebContents(
+  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents)) {
     return nullptr;
   }

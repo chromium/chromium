@@ -27,6 +27,8 @@ static_library("trusted_vault") {
     "trusted_vault_crypto.h",
     "trusted_vault_request.cc",
     "trusted_vault_request.h",
+    "trusted_vault_server_constants.cc",
+    "trusted_vault_server_constants.h",
   ]
   public_deps = [
     "//base",
@@ -41,5 +43,19 @@ static_library("trusted_vault") {
     "//net",
     "//services/network/public/cpp:cpp",
     "//third_party/boringssl",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "fake_security_domains_server.cc",
+    "fake_security_domains_server.h",
+  ]
+
+  deps = [
+    "//components/sync/protocol",
+    "//components/sync/trusted_vault",
+    "//net:test_support",
   ]
 }

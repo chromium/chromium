@@ -7,13 +7,13 @@
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ScriptState;
 class ScriptPromise;
-class Visitor;
 
 // Utility for writing unit tests involving promises.
 // Typical usage:

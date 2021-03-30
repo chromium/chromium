@@ -25,7 +25,9 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 
+#include <limits>
 #include <memory>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -550,7 +552,7 @@ IDBRequest* IDBObjectStore::DoPutAll(ScriptState* script_state,
 
     auto idb_value = std::make_unique<IDBValue>(
         value_wrappers[i].TakeWireBytes(), value_wrappers[i].TakeBlobInfo(),
-        value_wrappers[i].TakeNativeFileSystemTransferTokens());
+        value_wrappers[i].TakeFileSystemAccessTransferTokens());
     puts[i]->value = std::move(idb_value);
   }
 
@@ -797,7 +799,7 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
 
   auto idb_value = std::make_unique<IDBValue>(
       value_wrapper.TakeWireBytes(), value_wrapper.TakeBlobInfo(),
-      value_wrapper.TakeNativeFileSystemTransferTokens());
+      value_wrapper.TakeFileSystemAccessTransferTokens());
 
   request->transit_blob_handles() = value_wrapper.TakeBlobDataHandles();
   transaction_->transaction_backend()->Put(

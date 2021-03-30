@@ -12,6 +12,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.offline_items_collection.LaunchLocation;
@@ -81,10 +82,11 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
      * @param errorMessage     The message to show on the snackbar.
      * @param showAllDownloads Whether to show all downloads in case the failure is caused by
      *                         duplicated files.
+     * @param otrProfileID     The {@link OTRProfileID} of the download. Null if in regular mode.
      */
     public void onDownloadFailed(
-            String errorMessage, boolean showAllDownloads, boolean isOffTheRecord) {
-        if (isShowingDownloadInfoBar(isOffTheRecord)) return;
+            String errorMessage, boolean showAllDownloads, OTRProfileID otrProfileID) {
+        if (isShowingDownloadInfoBar(otrProfileID)) return;
         if (getSnackbarManager() == null) return;
         // TODO(qinmin): Coalesce snackbars if multiple downloads finish at the same time.
         Snackbar snackbar = Snackbar.make(errorMessage, this, Snackbar.TYPE_NOTIFICATION,
@@ -131,10 +133,10 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
         return null;
     }
 
-    private boolean isShowingDownloadInfoBar(boolean isOffTheRecord) {
+    private boolean isShowingDownloadInfoBar(OTRProfileID otrProfileID) {
         DownloadInfoBarController infoBarController =
                 DownloadManagerService.getDownloadManagerService().getInfoBarController(
-                        isOffTheRecord);
+                        otrProfileID);
         return infoBarController == null ? false : infoBarController.isShowing();
     }
 }

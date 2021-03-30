@@ -123,7 +123,7 @@ class OutputMailbox {
         coded_size, visible_rect, natural_size, timestamp);
 
     // Request a fence we'll wait on before reusing the buffer.
-    frame->metadata()->read_lock_fences_enabled = true;
+    frame->metadata().read_lock_fences_enabled = true;
 
     return frame;
   }
@@ -196,7 +196,7 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   // Decoder implementation.
   bool IsPlatformDecoder() const override;
   bool SupportsDecryption() const override;
-  std::string GetDisplayName() const override;
+  VideoDecoderType GetDecoderType() const override;
 
   // VideoDecoder implementation.
   void Initialize(const VideoDecoderConfig& config,
@@ -334,6 +334,7 @@ FuchsiaVideoDecoder::FuchsiaVideoDecoder(
       enable_sw_decoding_(enable_sw_decoding),
       use_overlays_for_video_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseOverlaysForVideo)),
+      sysmem_allocator_("CrFuchsiaVideoDecoder"),
       client_native_pixmap_factory_(ui::CreateClientNativePixmapFactoryOzone()),
       weak_factory_(this) {
   DCHECK(raster_context_provider_);
@@ -357,8 +358,8 @@ bool FuchsiaVideoDecoder::SupportsDecryption() const {
   return true;
 }
 
-std::string FuchsiaVideoDecoder::GetDisplayName() const {
-  return "FuchsiaVideoDecoder";
+VideoDecoderType FuchsiaVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kFuchsia;
 }
 
 void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -637,7 +638,6 @@ void FuchsiaVideoDecoder::OnInputBufferPoolCreated(
   settings.set_buffer_lifetime_ordinal(input_buffer_lifetime_ordinal_);
   settings.set_buffer_constraints_version_ordinal(
       decoder_input_constraints_->buffer_constraints_version_ordinal());
-  settings.set_single_buffer_mode(false);
   settings.set_sysmem_token(input_buffer_collection_->TakeToken());
   decoder_->SetInputBufferPartialSettings(std::move(settings));
 
@@ -949,11 +949,11 @@ void FuchsiaVideoDecoder::OnOutputPacket(fuchsia::media::Packet output_packet,
   // codec may still decode on hardware even when |enable_sw_decoding_| is set
   // (i.e. power_efficient flag would not be set correctly in that case). It
   // doesn't matter because software decoders can be enabled only for tests.
-  frame->metadata()->power_efficient = !enable_sw_decoding_;
+  frame->metadata().power_efficient = !enable_sw_decoding_;
 
   // Allow this video frame to be promoted as an overlay, because it was
   // registered with an ImagePipe.
-  frame->metadata()->allow_overlay = use_overlays_for_video_;
+  frame->metadata().allow_overlay = use_overlays_for_video_;
 
   output_cb_.Run(std::move(frame));
 }

@@ -77,12 +77,12 @@ void ProxyOverriddenBubbleDelegate::PerformAction(const ExtensionIdList& list) {
     service()->DisableExtension(list[i], disable_reason::DISABLE_USER_ACTION);
 }
 
-base::string16 ProxyOverriddenBubbleDelegate::GetTitle() const {
+std::u16string ProxyOverriddenBubbleDelegate::GetTitle() const {
   return l10n_util::GetStringUTF16(
       IDS_EXTENSIONS_PROXY_CONTROLLED_TITLE_HOME_PAGE_BUBBLE);
 }
 
-base::string16 ProxyOverriddenBubbleDelegate::GetMessageBody(
+std::u16string ProxyOverriddenBubbleDelegate::GetMessageBody(
     bool anchored_to_browser_action,
     int extension_count) const {
   if (anchored_to_browser_action) {
@@ -99,30 +99,26 @@ base::string16 ProxyOverriddenBubbleDelegate::GetMessageBody(
   }
 }
 
-base::string16 ProxyOverriddenBubbleDelegate::GetOverflowText(
-    const base::string16& overflow_count) const {
+std::u16string ProxyOverriddenBubbleDelegate::GetOverflowText(
+    const std::u16string& overflow_count) const {
   // Does not have more than one extension in the list at a time.
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 GURL ProxyOverriddenBubbleDelegate::GetLearnMoreUrl() const {
   return GURL(chrome::kExtensionControlledSettingLearnMoreURL);
 }
 
-base::string16 ProxyOverriddenBubbleDelegate::GetActionButtonLabel() const {
+std::u16string ProxyOverriddenBubbleDelegate::GetActionButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_RESTORE_SETTINGS);
 }
 
-base::string16 ProxyOverriddenBubbleDelegate::GetDismissButtonLabel() const {
+std::u16string ProxyOverriddenBubbleDelegate::GetDismissButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_KEEP_CHANGES);
 }
 
 bool ProxyOverriddenBubbleDelegate::ShouldCloseOnDeactivate() const {
-  return false;
-}
-
-bool ProxyOverriddenBubbleDelegate::ShouldAcknowledgeOnDeactivate() const {
   return false;
 }
 

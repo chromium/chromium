@@ -1,0 +1,107 @@
+<style>
+:host {
+  --item-width: 245px;
+  --pi: 3.14159265358979;
+  --google-green-700: 76, 175, 80;
+  --google-blue-600: 30, 136, 229;
+  --google-blue-700: 25, 118, 210;
+  --google-grey-500: 158, 158, 158;
+}
+
+.download-item {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  overflow: hidden;
+  padding: 6px 8px;
+  position: relative;
+  user-select: none;
+  width: var(--item-width);
+}
+
+.progress {
+  --width: 24px;
+  --radius: calc(var(--width) / 2);
+  --stroke-width: 2px;
+
+  --download-progress: 0;
+  --indicator-color: var(--google-blue-600);
+
+  align-items: center;
+  display: flex;
+  flex: 0 0 var(--width);
+  height: var(--width);
+  justify-content: center;
+  margin: 0 0 0 8px;
+  position: relative;
+  width: var(--width);
+}
+
+[data-state=complete] .progress {
+  --indicator-color: var(--google-green-700);
+}
+
+[data-paused] .progress,
+[data-state=interrupted] .progress {
+  --indicator-color: var(--google-grey-500);
+}
+
+.progress-indicator {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+.progress-circle,
+.progress-spinner {
+  cx: var(--radius);
+  cy: var(--radius);
+}
+
+.progress-circle {
+  fill: rgba(var(--indicator-color), 0.15);
+  r: var(--radius);
+}
+
+.progress-spinner {
+  --stroke-radius: calc(var(--radius) - var(--stroke-width) / 2.0);
+  --stroke-circumference: calc(var(--pi) * 2 * var(--stroke-radius));
+  --stroke-dash-size: calc(var(--stroke-circumference)
+      * var(--download-progress));
+
+  fill: none;
+  r: var(--stroke-radius);
+  stroke: rgb(var(--indicator-color));
+  stroke-dasharray: var(--stroke-dash-size), calc(var(--stroke-circumference)
+      - var(--stroke-dash-size));
+  stroke-dashoffset: calc(var(--stroke-circumference) * 0.25);
+  stroke-linecap: round;
+  stroke-width: var(--stroke-width);
+}
+
+#filename {
+  flex: 1 0 0;
+  margin-bottom: 1px;
+  overflow: hidden;
+  padding-inline-start: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#fileIcon {
+  height: 15px;
+  position: absolute;
+}
+</style>
+<div class="download-item">
+  <div class="progress">
+    <svg class="progress-indicator">
+      <circle class="progress-circle"></circle>
+      <circle class="progress-spinner"></circle>
+    </svg>
+    <img id="fileIcon">
+  </div>
+  <div id="filename"></div>
+</div>

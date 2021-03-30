@@ -143,10 +143,12 @@ void RemapRenamedPolicies(PolicyMap* policies) {
     if (old_policy &&
         (!new_policy || old_policy->has_higher_priority_than(*new_policy))) {
       PolicyMap::Entry policy_entry = old_policy->DeepCopy();
-      policy_entry.AddError(IDS_POLICY_MIGRATED_NEW_POLICY,
-                            {base::UTF8ToUTF16(policy_pair.first)});
-      old_policy->AddError(IDS_POLICY_MIGRATED_OLD_POLICY,
-                           {base::UTF8ToUTF16(policy_pair.second)});
+      policy_entry.AddMessage(PolicyMap::MessageType::kWarning,
+                              IDS_POLICY_MIGRATED_NEW_POLICY,
+                              {base::UTF8ToUTF16(policy_pair.first)});
+      old_policy->AddMessage(PolicyMap::MessageType::kError,
+                             IDS_POLICY_MIGRATED_OLD_POLICY,
+                             {base::UTF8ToUTF16(policy_pair.second)});
       policies->Set(policy_pair.second, std::move(policy_entry));
     }
     if (policy_lists_to_merge.contains(policy_pair.first) &&
@@ -159,12 +161,19 @@ void RemapRenamedPolicies(PolicyMap* policies) {
 // Metrics should not be enforced so if this policy is set as mandatory
 // downgrade it to a recommended level policy.
 void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
-  PolicyMap::Entry* policy =
-      policies->GetMutable(policy::key::kMetricsReportingEnabled);
-  if (policy && policy->level != POLICY_LEVEL_RECOMMENDED && policy->value() &&
-      policy->value()->is_bool() && policy->value()->GetBool()) {
-    policy->level = POLICY_LEVEL_RECOMMENDED;
-    policy->AddError(IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
+  // Capture both the Chrome-only and device-level policies on Chrome OS.
+  const std::vector<const char*> metrics_keys = {
+      policy::key::kMetricsReportingEnabled,
+      policy::key::kDeviceMetricsReportingEnabled};
+  for (const char* policy_key : metrics_keys) {
+    PolicyMap::Entry* policy = policies->GetMutable(policy_key);
+    if (policy && policy->level != POLICY_LEVEL_RECOMMENDED &&
+        policy->value() && policy->value()->is_bool() &&
+        policy->value()->GetBool()) {
+      policy->level = POLICY_LEVEL_RECOMMENDED;
+      policy->AddMessage(PolicyMap::MessageType::kInfo,
+                         IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
+    }
   }
 }
 
@@ -219,10 +228,7 @@ PolicyServiceImpl::~PolicyServiceImpl() {
 void PolicyServiceImpl::AddObserver(PolicyDomain domain,
                                     PolicyService::Observer* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  std::unique_ptr<Observers>& list = observers_[domain];
-  if (!list)
-    list = std::make_unique<Observers>();
-  list->AddObserver(observer);
+  observers_[domain].AddObserver(observer);
 }
 
 void PolicyServiceImpl::RemoveObserver(PolicyDomain domain,
@@ -231,8 +237,8 @@ void PolicyServiceImpl::RemoveObserver(PolicyDomain domain,
   auto it = observers_.find(domain);
   if (it == observers_.end())
     return;
-  it->second->RemoveObserver(observer);
-  if (!it->second->might_have_observers()) {
+  it->second.RemoveObserver(observer);
+  if (it->second.empty()) {
     observers_.erase(it);
   }
 }
@@ -343,7 +349,7 @@ void PolicyServiceImpl::NotifyNamespaceUpdated(
   DCHECK(thread_checker_.CalledOnValidThread());
   auto iterator = observers_.find(ns.domain);
   if (iterator != observers_.end()) {
-    for (auto& observer : *iterator->second)
+    for (auto& observer : iterator->second)
       observer.OnPolicyUpdated(ns, previous, current);
   }
 }
@@ -497,7 +503,7 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
   if (iter == observers_.end())
     return;
 
-  for (auto& observer : *iter->second) {
+  for (auto& observer : iter->second) {
     observer.OnPolicyServiceInitialized(policy_domain);
     if (policy_domain_status_[policy_domain] ==
         PolicyDomainStatus::kPolicyReady)

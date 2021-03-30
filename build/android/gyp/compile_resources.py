@@ -31,7 +31,6 @@ from xml.etree import ElementTree
 from util import build_utils
 from util import diff_utils
 from util import manifest_utils
-from util import md5_check
 from util import parallel
 from util import protoresources
 from util import resource_utils
@@ -460,9 +459,15 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
       options.android_manifest)
 
   if extra_manifest:
-    _, _, extra_app_nodes = manifest_utils.ParseManifest(extra_manifest)
-    for node in extra_app_nodes:
+    _, extra_manifest_node, extra_app_node = manifest_utils.ParseManifest(
+        extra_manifest)
+    for node in extra_app_node:
       app_node.append(node)
+    for node in extra_manifest_node:
+      # DFM manifests have a bunch of tags we don't care about inside
+      # <manifest>, so only take <queries>.
+      if node.tag == 'queries':
+        manifest_node.append(node)
 
   manifest_utils.AssertUsesSdk(manifest_node, options.min_sdk_version,
                                options.target_sdk_version)
@@ -489,6 +494,13 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
     uses_split = ElementTree.SubElement(manifest_node, 'uses-split')
     uses_split.set('{%s}name' % manifest_utils.ANDROID_NAMESPACE,
                    options.uses_split)
+
+  # Make sure the min-sdk condition is not less than the min-sdk of the bundle.
+  for min_sdk_node in manifest_node.iter('{%s}min-sdk' %
+                                         manifest_utils.DIST_NAMESPACE):
+    dist_value = '{%s}value' % manifest_utils.DIST_NAMESPACE
+    if int(min_sdk_node.get(dist_value)) < int(options.min_sdk_version):
+      min_sdk_node.set(dist_value, options.min_sdk_version)
 
   manifest_utils.SaveManifest(doc, debug_manifest_path)
   return debug_manifest_path, orig_package
@@ -1059,7 +1071,17 @@ def _CreateNormalizedManifestForVerification(options):
       return manifest_utils.NormalizeManifest(f.read())
 
 
-def _OnStaleMd5(options):
+def main(args):
+  build_utils.InitLogging('RESOURCE_DEBUG')
+  args = build_utils.ExpandFileArgs(args)
+  options = _ParseArgs(args)
+
+  if options.expected_file:
+    actual_data = _CreateNormalizedManifestForVerification(options)
+    diff_utils.CheckExpectations(actual_data, options)
+    if options.only_verify_expectations:
+      return
+
   path = options.arsc_path or options.proto_path
   debug_temp_resources_dir = os.environ.get('TEMP_RESOURCES_DIR')
   if debug_temp_resources_dir:
@@ -1146,89 +1168,11 @@ def _OnStaleMd5(options):
     logging.debug('Copying outputs')
     _WriteOutputs(options, build)
 
-
-def main(args):
-  build_utils.InitLogging('RESOURCE_DEBUG')
-  args = build_utils.ExpandFileArgs(args)
-  options = _ParseArgs(args)
-
-  if options.expected_file:
-    actual_data = _CreateNormalizedManifestForVerification(options)
-    diff_utils.CheckExpectations(actual_data, options)
-    if options.only_verify_expectations:
-      return
-
-  depfile_deps = (options.dependencies_res_zips +
-                  options.dependencies_res_zip_overlays +
-                  options.extra_main_r_text_files + options.include_resources)
-
-  possible_input_paths = depfile_deps + options.resources_config_paths + [
-      options.aapt2_path,
-      options.android_manifest,
-      options.expected_file,
-      options.expected_file_base,
-      options.shared_resources_allowlist,
-      options.use_resource_ids_path,
-      options.webp_binary,
-  ]
-  input_paths = [p for p in possible_input_paths if p]
-  input_strings = [
-      options.app_as_shared_lib,
-      options.arsc_package_name,
-      options.debuggable,
-      options.extra_res_packages,
-      options.failure_file,
-      options.include_resources,
-      options.locale_allowlist,
-      options.manifest_package,
-      options.max_sdk_version,
-      options.min_sdk_version,
-      options.no_xml_namespaces,
-      options.package_id,
-      options.package_name,
-      options.png_to_webp,
-      options.rename_manifest_package,
-      options.resource_exclusion_exceptions,
-      options.resource_exclusion_regex,
-      options.r_java_root_package_name,
-      options.shared_resources,
-      options.shared_resources_allowlist_locales,
-      options.short_resource_paths,
-      options.strip_resource_names,
-      options.support_zh_hk,
-      options.target_sdk_version,
-      options.values_filter_rules,
-      options.version_code,
-      options.version_name,
-      options.webp_cache_dir,
-  ]
-  output_paths = [options.srcjar_out]
-  possible_output_paths = [
-      options.actual_file,
-      options.arsc_path,
-      options.emit_ids_out,
-      options.info_path,
-      options.optimized_arsc_path,
-      options.optimized_proto_path,
-      options.proguard_file,
-      options.proguard_file_main_dex,
-      options.proto_path,
-      options.resources_path_map_out_path,
-      options.r_text_out,
-  ]
-  output_paths += [p for p in possible_output_paths if p]
-
-  # Since we overspecify deps, this target depends on java deps that are not
-  # going to change its output. This target is also slow (6-12 seconds) and
-  # blocking the critical path. We want changes to java_library targets to not
-  # trigger re-compilation of resources, thus we need to use md5_check.
-  md5_check.CallAndWriteDepfileIfStale(
-      lambda: _OnStaleMd5(options),
-      options,
-      input_paths=input_paths,
-      input_strings=input_strings,
-      output_paths=output_paths,
-      depfile_deps=depfile_deps)
+  if options.depfile:
+    depfile_deps = (options.dependencies_res_zips +
+                    options.dependencies_res_zip_overlays +
+                    options.extra_main_r_text_files + options.include_resources)
+    build_utils.WriteDepfile(options.depfile, options.srcjar_out, depfile_deps)
 
 
 if __name__ == '__main__':

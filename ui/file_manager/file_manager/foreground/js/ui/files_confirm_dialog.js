@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {util} from '../../../common/js/util.m.js';
+// #import {ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
 /**
  * Confirm dialog.
  */
-class FilesConfirmDialog extends cr.ui.dialogs.ConfirmDialog {
+/* #export */ class FilesConfirmDialog extends cr.ui.dialogs.ConfirmDialog {
   /**
    * @param {!Element} parentElement
    */
@@ -29,6 +32,14 @@ class FilesConfirmDialog extends cr.ui.dialogs.ConfirmDialog {
      * @public
      */
     this.doneCallback = null;
+
+    /**
+     * @type {boolean} focusCancelButton Set true if the cancel button
+     * should be focused when the dialog is first displayed. Otherwise
+     * (the default) the dialog will focus the confirm button.
+     * @public
+     */
+    this.focusCancelButton = false;
   }
 
   /**
@@ -37,7 +48,41 @@ class FilesConfirmDialog extends cr.ui.dialogs.ConfirmDialog {
    */
   initDom() {
     super.initDom();
+    super.hasModalContainer = true;
+
     this.frame.classList.add('files-confirm-dialog');
+  }
+
+  /**
+   * @override
+   * @suppress {accessControls}
+   */
+  show_(...args) {
+    if (!this.showModalElement) {
+      this.parentNode_ = util.getFilesAppModalDialogInstance();
+    }
+
+    if (this.focusCancelButton) {
+      this.frame.classList.add('files-confirm-dialog-cancel-default');
+      this.setInitialFocusOnCancel();
+    }
+
+    super.show_(...args);
+
+    if (!this.showModalElement) {
+      this.parentNode_.showModal();
+    }
+  }
+
+  /**
+   * @override
+   */
+  hide(...args) {
+    if (!this.showModalElement) {
+      this.parentNode_.close();
+    }
+
+    super.hide(...args);
   }
 
   /**

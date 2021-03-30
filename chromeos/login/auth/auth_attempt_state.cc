@@ -8,27 +8,13 @@
 
 namespace chromeos {
 
-AuthAttemptState::AuthAttemptState(const UserContext& user_context,
-                                   bool unlock,
-                                   bool online_complete,
-                                   bool user_is_new)
-    : user_context(user_context),
-      unlock(unlock),
-      online_complete_(online_complete),
-      online_outcome_(online_complete ? AuthFailure::UNLOCK_FAILED
-                                      : AuthFailure::NONE),
-      is_first_time_user_(user_is_new),
-      cryptohome_complete_(false),
-      cryptohome_code_(cryptohome::MOUNT_ERROR_NONE),
-      username_hash_obtained_(true),
-      username_hash_valid_(true) {
-}
+AuthAttemptState::AuthAttemptState(const UserContext& user_context, bool unlock)
+    : user_context(user_context), unlock(unlock) {}
 
 AuthAttemptState::~AuthAttemptState() = default;
 
-void AuthAttemptState::RecordOnlineLoginStatus(const AuthFailure& outcome) {
+void AuthAttemptState::RecordOnlineLoginComplete() {
   online_complete_ = true;
-  online_outcome_ = outcome;
 }
 
 void AuthAttemptState::RecordCryptohomeStatus(
@@ -59,14 +45,6 @@ void AuthAttemptState::ResetCryptohomeStatus() {
 
 bool AuthAttemptState::online_complete() {
   return online_complete_;
-}
-
-const AuthFailure& AuthAttemptState::online_outcome() {
-  return online_outcome_;
-}
-
-bool AuthAttemptState::is_first_time_user() {
-  return is_first_time_user_;
 }
 
 bool AuthAttemptState::cryptohome_complete() {

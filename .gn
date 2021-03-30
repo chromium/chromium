@@ -64,114 +64,32 @@ default_args = {
 # "gn check" or "gn gen --check".
 no_check_targets = [
   # //chrome/*, https://crbug.com/949535
-  "//chrome/browser/devtools:*",  # 114 errors
-  "//chrome/browser/media/router/discovery:*",  # 26 errors
-  "//chrome/browser/media/router:*",  # 225 errors
-  "//chrome/browser/paint_preview:*",  # 4 errors
-  "//chrome/browser/profiling_host:*",  # 13 errors
-  "//chrome/browser/resources/chromeos/zip_archiver/cpp:*",  # 2 errors
+  "//chrome/browser/media/router/discovery:*",  # 4 errors
   "//chrome/browser/safe_browsing/android:*",  # 3 errors
-  "//chrome/browser/safe_browsing:*",  # 85 errors
   "//chrome/browser/safety_check/android:*",  # 3 errors
   "//chrome/browser/storage_access_api:*",  # 2 errors
   "//chrome/browser/touch_to_fill/android:*",  # 8 errors
-  "//chrome/browser/updates/announcement_notification:*",  # 15 errors
-  "//chrome/browser/updates/internal:*",  # 8 errors
-  "//chrome/browser/updates:*",  # 21 errors
-  "//chrome/notification_helper:*",  # 4 errors
-  "//chrome/services/cups_proxy/public/cpp:*",  # 2 errors
-  "//chrome/services/cups_proxy:*",  # 6 errors
-  "//chrome/services/ipp_parser:*",  # 1 error
-  "//chrome/services/removable_storage_writer:*",  # 1 error
-  "//chrome/services/util_win:*",  # 1 error
-  "//chrome/test/media_router:*",  # 5 errors
   "//chrome/test:*",  # 2682 errors
-
-  "//clank/third_party/gvr_shim:*",  # 1 error
-  "//extensions/browser/api/alarms:*",  # 2 errors
-  "//extensions/browser/api/app_current_window_internal:*",  # 3 errors
-  "//extensions/browser/api/app_runtime:*",  # 3 errors
-  "//extensions/browser/api/app_window:*",  # 5 errors
-  "//extensions/browser/api/audio:*",  # 3 errors
-  "//extensions/browser/api/automation_internal:*",  # 37 errors
-  "//extensions/browser/api/bluetooth_low_energy:*",  # 22 errors
-  "//extensions/browser/api/bluetooth_socket:*",  # 12 errors
-  "//extensions/browser/api/cast_channel:*",  # 3 errors
-  "//extensions/browser/api/cec_private:*",  # 4 errors
-  "//extensions/browser/api/clipboard:*",  # 3 errors
-  "//extensions/browser/api/declarative:*",  # 20 errors
-  "//extensions/browser/api/declarative_content:*",  # 2 errors
   "//extensions/browser/api/declarative_net_request:*",  # 18 errors
-  "//extensions/browser/api/declarative_webrequest:*",  # 29 errors
-  "//extensions/browser/api/diagnostics:*",  # 2 errors
-  "//extensions/browser/api/display_source:*",  # 7 errors
-  "//extensions/browser/api/dns:*",  # 3 errors
-  "//extensions/browser/api/document_scan:*",  # 2 errors
-  "//extensions/browser/api/feedback_private:*",  # 2 errors
-  "//extensions/browser/api/file_handlers:*",  # 3 errors
-  "//extensions/browser/api/file_system:*",  # 1 error
-  "//extensions/browser/api/hid:*",  # 12 errors
-  "//extensions/browser/api/idle:*",  # 4 errors
-  "//extensions/browser/api/management:*",  # 19 errors
-  "//extensions/browser/api/messaging:*",  # 1 error
-  "//extensions/browser/api/metrics_private:*",  # 3 errors
-  "//extensions/browser/api/mime_handler_private:*",  # 1 error
-  "//extensions/browser/api/networking_private:*",  # 14 errors
-  "//extensions/browser/api/power:*",  # 3 errors
-  "//extensions/browser/api/printer_provider:*",  # 7 errors
-  "//extensions/browser/api/printer_provider_internal:*",  # 3 errors
-  "//extensions/browser/api/runtime:*",  # 6 errors
-  "//extensions/browser/api/serial:*",  # 10 errors
-  "//extensions/browser/api/socket:*",  # 11 errors
-  "//extensions/browser/api/sockets_tcp:*",  # 6 errors
-  "//extensions/browser/api/sockets_tcp_server:*",  # 8 errors
-  "//extensions/browser/api/sockets_udp:*",  # 9 errors
-  "//extensions/browser/api/storage:*",  # 9 errors
-  "//extensions/browser/api/system_cpu:*",  # 1 error
-  "//extensions/browser/api/system_display:*",  # 3 errors
-  "//extensions/browser/api/system_info:*",  # 8 errors
-  "//extensions/browser/api/system_memory:*",  # 1 error
-  "//extensions/browser/api/system_network:*",  # 2 errors
-  "//extensions/browser/api/system_storage:*",  # 6 errors
-  "//extensions/browser/api/test:*",  # 1 error
-  "//extensions/browser/api/usb:*",  # 12 errors
-  "//extensions/browser/api/virtual_keyboard:*",  # 1 error
-  "//extensions/browser/api/virtual_keyboard_private:*",  # 2 errors
-  "//extensions/browser/api/vpn_provider:*",  # 13 errors
-  "//extensions/browser/api/web_request:*",  # 37 errors
-  "//extensions/browser/api/webcam_private:*",  # 8 errors
   "//extensions/browser/api:*",  # 7 errors
-  "//extensions/browser/updater:*",  # 31 errors
-  "//extensions/browser/value_store:*",  # 5 errors
   "//extensions/browser:*",  # 20 errors
   "//extensions:*",  # 75 errors
   "//headless:*",  # 167 errors
-  "//jingle:*",  # 4 errors
   "//native_client/src/trusted/service_runtime:*",  # 2 errors
   "//ppapi/cpp/private:*",  # 1 error
   "//ppapi/host:*",  # 1 error
   "//ppapi/native_client/src/untrusted/pnacl_irt_shim:*",  # 197 errors
   "//ppapi/proxy:*",  # 31 errors
-  "//ppapi/shared_impl:*",  # 3 errors
   "//ppapi/thunk:*",  # 1071 errors
   "//ppapi:*",  # 3 errors
-  "//remoting/base/grpc_support:*",  # 14 errors
-  "//remoting/base/grpc_test_support:*",  # 1 error
-  "//remoting/base:*",  # 6 errors
-  "//remoting/client/display:*",  # 55 errors
-  "//remoting/client/jni:*",  # 8 errors
   "//remoting/codec:*",  # 32 errors
-  "//remoting/host/chromeos:*",  # 10 errors
   "//remoting/host/file_transfer:*",  # 43 errors
-  "//remoting/host/input_monitor:*",  # 3 errors
   "//remoting/host/installer/mac:*",  # 1 error
   "//remoting/host/it2me:*",  # 18 errors
   "//remoting/host/mac:*",  # 49 errors
-  "//remoting/host/native_messaging:*",  # 3 errors
   "//remoting/host/security_key:*",  # 68 errors
   "//remoting/host/setup:*",  # 9 errors
   "//remoting/host/win:*",  # 43 errors
-  "//remoting/host:*",  # 164 errors
   "//remoting/ios/app/settings:*",  # 6 errors
   "//remoting/ios/app:*",  # 9 errors
   "//remoting/ios/audio:*",  # 5 errors
@@ -180,37 +98,13 @@ no_check_targets = [
   "//remoting/ios/persistence:*",  # 10 errors
   "//remoting/ios/session:*",  # 7 errors
   "//remoting/ios:*",  # 2 errors
-  "//remoting/protocol:*",  # 142 errors
-  "//remoting/signaling:*",  # 30 errors
-  "//remoting/test:*",  # 20 errors
-  "//remoting:*",  # 27 errors
-  "//sandbox/linux:*",  # 13 errors
+  "//remoting/protocol:*",  # 3 errors
+  "//remoting/test:*",  # 2 error
   "//sandbox/win:*",  # 7 errors
 
-  "//third_party/breakpad:*",  # 34 errors
-  "//third_party/ced/*",
-  "//third_party/crashpad/crashpad/client:*",  # 1 error
-  "//third_party/crashpad/crashpad/compat:*",  # 2 errors
-  "//third_party/crashpad/crashpad/snapshot:*",  # 1 error
-  "//third_party/crashpad/crashpad/test:*",  # 2 errors
-  "//third_party/crashpad/crashpad/util:*",  # 2 errors
-  "//third_party/dav1d:*",  # 95 errors
-  "//third_party/ffmpeg:*",  # 1 error
   "//third_party/icu/*",
   "//third_party/libvpx:*",  # 164 errors
   "//third_party/libwebp:*",  # 80 errors, https://crbug.com/800762
-  "//third_party/openscreen/src/cast/common:*",  # 4 errors
-  "//third_party/openscreen/src/cast/receiver:*",  # 1 error
-  "//third_party/openscreen/src/cast/streaming:*",  # 66 errors
-  "//third_party/openscreen/src/discovery:*",  # 36 errors
-  "//third_party/openscreen/src/osp/impl/quic:*",  # 16 errors
-  "//third_party/openscreen/src/osp/msgs:*",  # 5 errors
-  "//third_party/openscreen/src/osp/public:*",  # 1 error
-  "//third_party/openscreen/src/osp:*",  # 13 errors
-  "//third_party/openscreen/src/util:*",  # 29 errors
-  "//third_party/pdfium/samples:*",  # 1 error
-  "//third_party/pdfium/third_party:*",  # 2 errors
-  "//third_party/pdfium:*",  # 1 error
 
   # //v8/*, https://crbug.com/v8/7330
   "//v8/src/inspector:*",  # 20 errors

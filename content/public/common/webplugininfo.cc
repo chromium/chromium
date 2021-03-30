@@ -41,21 +41,20 @@ WebPluginInfo::~WebPluginInfo() {}
 
 WebPluginInfo& WebPluginInfo::operator=(const WebPluginInfo& rhs) = default;
 
-WebPluginInfo::WebPluginInfo(const base::string16& fake_name,
+WebPluginInfo::WebPluginInfo(const std::u16string& fake_name,
                              const base::FilePath& fake_path,
-                             const base::string16& fake_version,
-                             const base::string16& fake_desc)
+                             const std::u16string& fake_version,
+                             const std::u16string& fake_desc)
     : name(fake_name),
       path(fake_path),
       version(fake_version),
       desc(fake_desc),
       mime_types(),
       type(PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS),
-      pepper_permissions(0) {
-}
+      pepper_permissions(0) {}
 
 void WebPluginInfo::CreateVersionFromString(
-    const base::string16& version_string,
+    const std::u16string& version_string,
     base::Version* parsed_version) {
   // Remove spaces and ')' from the version string,
   // Replace any instances of 'r', ',' or '(' with a dot.

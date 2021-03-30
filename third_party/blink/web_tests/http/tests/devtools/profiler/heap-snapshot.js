@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test checks HeapSnapshots module.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   function createTestEnvironmentInWorker() {

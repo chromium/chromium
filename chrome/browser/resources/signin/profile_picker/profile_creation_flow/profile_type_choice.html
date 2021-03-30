@@ -9,11 +9,49 @@
     background-image: url(profile_creation_flow/images/banner_light_image.svg);
   }
 
-  @media (prefers-color-scheme: dark) {
-    #signinPromoBanner {
-      background-image:
-          url(profile_creation_flow/images/banner_dark_image.svg);
-    }
+  #infoContainer {
+    bottom: 0;
+    box-sizing: border-box;
+    margin-bottom: 58px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+  }
+
+  .info-box {
+    align-items: center;
+    border: 1px solid var(--google-grey-200);
+    border-radius: 8px;
+    color: var(--google-grey-refresh-700);
+    display: inline-flex;
+    flex-direction: row;
+    margin-inline: auto;
+    max-width: 780px;
+    padding-block: 12px;
+    padding-inline-end: 18px;
+  }
+
+  .info-box > p {
+    flex-grow: 1;
+    margin-block: 0;
+    text-align: start;
+  }
+
+  .icon-container {
+    --icon-container-size: 28px;
+    --icon-container-margin: 16px;
+    background-color: var(--google-grey-refresh-100);
+    border-radius: 50%;
+    height: var(--icon-container-size);
+    margin-inline: var(--icon-container-margin);
+    width: var(--icon-container-size);
+  }
+
+  .icon-container iron-icon {
+    --icon-size: 16px;
+    height: var(--icon-size);
+    padding: calc((var(--icon-container-size) - var(--icon-size)) / 2);
+    width: var(--icon-size);
   }
 
   #bannerContainer {
@@ -22,28 +60,14 @@
     width: 100%;
   }
 
+  cr-button {
+    font-size: 1em;
+    font-weight: normal;
+    min-width: 210px;
+  }
+
   #notNowButton {
-    background: none;
-    border: none;
-    color: var(--cr-link-color);
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: normal;
-    line-height: 20px;
     margin-top: 18px;
-  }
-
-  /* The "not now" button is styled like a link, and uses FocusOutlineManager to
-   * only show outlines when focus was triggered by keyboard.
-   */
-  :host-context(html:not(.focus-outline-visible)) #notNowButton {
-      outline: none;
-  }
-
-  #signInButton {
-    font-size: 1em;
-    font-weight: normal;
-    width: 208px;
   }
 
   .title-container {
@@ -51,17 +75,35 @@
     margin-bottom: 48px;
     text-align: center;
   }
+
+  @media (prefers-color-scheme: dark) {
+    #signinPromoBanner {
+      background-image:
+          url(profile_creation_flow/images/banner_dark_image.svg);
+    }
+
+    .info-box {
+      border-color: var(--google-grey-600);
+      color: var(--google-grey-refresh-100);
+    }
+
+    .icon-container {
+      background-color: var(--google-grey-refresh-700);
+    }
+  }
 </style>
 
 <div id="headerContainer"
     style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
             --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
-  <cr-icon-button id="backButton" class="icon-arrow-back"
-      on-click="onClickBack_" aria-label="$i18n{backButtonLabel}"
+  <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
+      on-click="onClickBack_" aria-label$="[[getBackButtonAriaLabel_()]]"
       disabled="[[loadSigninInProgess_]]">
   </cr-icon-button>
   <div id="signinPromoBanner" class="banner"></div>
-  <img class="avatar" alt="" src="[[profileThemeInfo.themeGenericAvatar]]">
+  <div id="avatarContainer">
+    <img class="avatar" alt="" src="[[profileThemeInfo.themeGenericAvatar]]">
+  </div>
 </div>
 <div class="title-container">
   <h2>$i18n{profileTypeChoiceTitle}</h2>
@@ -72,8 +114,21 @@
       disabled="[[loadSigninInProgess_]]">
     $i18n{signInButtonLabel}
   </cr-button>
-  <button id="notNowButton" on-click="onNotNowClick_"
+  <cr-button id="notNowButton" on-click="onNotNowClick_"
       disabled="[[loadSigninInProgess_]]">
     $i18n{notNowButtonLabel}
-  </button>
+  </cr-button>
 </div>
+
+<template is="dom-if" if="[[managedDeviceDisclaimer_]]">
+  <div id="infoContainer">
+    <div class="info-box">
+      <div class="icon-container">
+        <iron-icon icon="cr:domain"></iron-icon>
+      </div>
+      <p>
+        $i18n{managedDeviceDisclaimer}
+      </p>
+    </div>
+  </div>
+</template>

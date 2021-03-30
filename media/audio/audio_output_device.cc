@@ -63,7 +63,12 @@ void AudioOutputDevice::InitializeOnIOThread(const AudioParameters& params,
   DCHECK(params.IsValid());
   DVLOG(1) << __func__ << ": " << params.AsHumanReadableString();
   audio_parameters_ = params;
-  callback_ = callback;
+
+  base::AutoLock auto_lock(audio_thread_lock_);
+  // If Stop() has already been called, RenderCallback has already been
+  // destroyed. So |callback| would be a dangling pointer.
+  if (!stopping_hack_)
+    callback_ = callback;
 }
 
 AudioOutputDevice::~AudioOutputDevice() {
@@ -206,7 +211,13 @@ void AudioOutputDevice::RequestDeviceAuthorizationOnIOThread() {
 void AudioOutputDevice::CreateStreamOnIOThread() {
   TRACE_EVENT0("audio", "AudioOutputDevice::Create");
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  DCHECK(callback_) << "Initialize hasn't been called";
+#if DCHECK_IS_ON()
+  {
+    base::AutoLock auto_lock(audio_thread_lock_);
+    if (!stopping_hack_)
+      DCHECK(callback_) << "Initialize hasn't been called";
+  }
+#endif
   DCHECK_NE(state_, STREAM_CREATION_REQUESTED);
 
   if (!ipc_) {
@@ -368,7 +379,7 @@ void AudioOutputDevice::OnStreamCreated(
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::SyncSocket::ScopedHandle socket_handle,
     bool playing_automatically) {
-  TRACE_EVENT0("audio", "AudioOutputDevice::OnStreamCreated")
+  TRACE_EVENT0("audio", "AudioOutputDevice::OnStreamCreated");
 
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   DCHECK(shared_memory_region.IsValid());

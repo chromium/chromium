@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowNotificationManager;
@@ -131,6 +132,15 @@ public class NotificationIntentInterceptorTest {
         return builder.buildNotificationWrapper();
     }
 
+    private void sendPendingIntent(PendingIntent pendingIntent) {
+        // Simulate to send a PendingIntent by manually starting the TrampolineActivity.
+        ShadowPendingIntent shadowPendingIntent = Shadows.shadowOf(pendingIntent);
+        Robolectric
+                .buildActivity(NotificationIntentInterceptor.TrampolineActivity.class,
+                        shadowPendingIntent.getSavedIntent())
+                .create();
+    }
+
     /**
      * Verifies {@link Notification#contentIntent} can be intercepted by {@link
      * NotificationIntentInterceptor}.
@@ -145,8 +155,7 @@ public class NotificationIntentInterceptorTest {
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
         Assert.assertEquals(TEST_NOTIFICATION_TITLE,
                 notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
-        notification.contentIntent.send();
-        Robolectric.flushForegroundThreadScheduler();
+        sendPendingIntent(notification.contentIntent);
 
         // Verify the intent and histograms recorded.
         Intent receivedIntent = mReceiver.intentReceived();
@@ -173,7 +182,6 @@ public class NotificationIntentInterceptorTest {
         Assert.assertEquals(TEST_NOTIFICATION_TITLE,
                 notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
         notification.deleteIntent.send();
-        Robolectric.flushForegroundThreadScheduler();
 
         // Verify the histogram.
         Assert.assertEquals(1,
@@ -200,9 +208,7 @@ public class NotificationIntentInterceptorTest {
         Assert.assertEquals(1, notification.actions.length);
         Notification.Action action = notification.actions[0];
         Assert.assertNotNull(action.actionIntent);
-        action.actionIntent.send();
-
-        Robolectric.flushForegroundThreadScheduler();
+        sendPendingIntent(action.actionIntent);
 
         // Verify the intent and histograms recorded.
         Intent receivedIntent = mReceiver.intentReceived();

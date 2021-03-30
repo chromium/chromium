@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
@@ -93,7 +94,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -951,8 +952,15 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // tabs joining the same group as the tab in the second position. Then dragging
 // the tabs over two to the right will result in the tabs joining the same group
 // as the last tab.
+// Flaky on windows. http://crbug.com/1164561
+#if defined(OS_WIN)
+#define MAYBE_DragMultipleTabsRightIntoGroup \
+  DISABLED_DragMultipleTabsRightIntoGroup
+#else
+#define MAYBE_DragMultipleTabsRightIntoGroup DragMultipleTabsRightIntoGroup
+#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DragMultipleTabsRightIntoGroup) {
+                       MAYBE_DragMultipleTabsRightIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
   TabGroupModel* group_model = model->group_model();
@@ -1083,7 +1091,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   tab_groups::TabGroupId group1 = model->AddToNewGroup({2, 3});
   tab_groups::TabGroupId group2 = model->AddToNewGroup({1});
   const tab_groups::TabGroupVisualData new_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kCyan);
+      u"Foo", tab_groups::TabGroupColorId::kCyan);
   group_model->GetTabGroup(group2)->SetVisualData(new_data);
   StopAnimating(tab_strip);
 
@@ -1380,7 +1388,8 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Flaky. https://crbug.com/1176998
+#if (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DragToSeparateWindow DISABLED_DragToSeparateWindow
 #else
@@ -2052,7 +2061,8 @@ void DragAllToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if defined(OS_MAC) /* && defined(ARCH_CPU_ARM64) */
+// Flaky. http://crbug.com/1128774 and http://crbug.com/1176998
+#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // These were flaking on all macs, so commented out ARCH_ above for
 // crbug.com/1160917 too.
@@ -2304,23 +2314,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             gfx::Range(0, 1));
 }
 
-class DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled
-    : public DetachToBrowserTabDragControllerTest {
- public:
-  DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled() {
-    scoped_feature_list_.InitWithFeatures({features::kTabGroupsCollapse}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Creates a browser with four tabs where the second and third tab is in a
 // collapsed group. Drag the fourth tab to the left past the group header. The
 // fourth tab should swap places with the collapsed group header.
-IN_PROC_BROWSER_TEST_P(
-    DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
-    DragTabLeftPastCollapsedGroupHeader) {
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DragTabLeftPastCollapsedGroupHeader) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
 
@@ -2353,9 +2351,8 @@ IN_PROC_BROWSER_TEST_P(
 // Creates a browser with four tabs where the second and third tab is in a
 // collapsed group. Drag the first tab to the right past the group header. The
 // first tab should swap places with the collapsed group header.
-IN_PROC_BROWSER_TEST_P(
-    DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
-    DragTabRightPastCollapsedGroupHeader) {
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DragTabRightPastCollapsedGroupHeader) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
 
@@ -2388,9 +2385,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Drags a tab group by the header and while detached presses escape to revert
 // the drag.
-IN_PROC_BROWSER_TEST_P(
-    DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
-    RevertCollapsedHeaderDragWhileDetached) {
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       RevertCollapsedHeaderDragWhileDetached) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
   AddTabsAndResetBrowser(browser(), 1);
@@ -2422,9 +2418,8 @@ IN_PROC_BROWSER_TEST_P(
 // Creates a browser with four tabs. The first two tabs belong in Tab Group 1.
 // Dragging the collapsed group header of Tab Group 1 will result in Tab Group 1
 // expanding.
-IN_PROC_BROWSER_TEST_P(
-    DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
-    DragCollapsedGroupHeaderExpandsGroup) {
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DragCollapsedGroupHeaderExpandsGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
   TabGroupModel* group_model = model->group_model();
@@ -2451,8 +2446,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(model->IsGroupCollapsed(group));
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_MAC) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
+// Test is flaky on Mac and Linux: https://crbug.com/1167249
 #define MAYBE_DragCollapsedGroupHeaderToSeparateWindow \
   DISABLED_DragCollapsedGroupHeaderToSeparateWindow
 #else
@@ -2461,9 +2459,8 @@ IN_PROC_BROWSER_TEST_P(
 #endif
 
 // Creates two browsers, then drags a collapsed group from one to the other.
-IN_PROC_BROWSER_TEST_P(
-    DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
-    MAYBE_DragCollapsedGroupHeaderToSeparateWindow) {
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_DragCollapsedGroupHeaderToSeparateWindow) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
   AddTabsAndResetBrowser(browser(), 2);
@@ -2511,7 +2508,9 @@ class DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Disabling on macOS due to DCHECK crashes; see https://crbug.com/1183043.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    (defined(OS_MAC) && DCHECK_IS_ON())
 #define MAYBE_DraggingRightExpandsTabStripSize \
   DISABLED_DraggingRightExpandsTabStripSize
 #else
@@ -2570,7 +2569,9 @@ void DragAllToSeparateWindowAndCancelStep2(
 #define MAYBE_DragAllToSeparateWindowAndCancel \
   DISABLED_DragAllToSeparateWindowAndCancel
 #else
-#define MAYBE_DragAllToSeparateWindowAndCancel DragAllToSeparateWindowAndCancel
+// TODO(https://crbug.com/1163775): Flaky on Windows and Linux.
+#define MAYBE_DragAllToSeparateWindowAndCancel \
+  DISABLED_DragAllToSeparateWindowAndCancel
 #endif
 
 // Creates two browsers, selects all tabs in first, drags into second, then hits
@@ -2683,7 +2684,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             browser2->window()->GetBounds().ToString());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Flaky. https://crbug.com/1176998
+#if (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DragSingleTabToSeparateWindow \
   DISABLED_DragSingleTabToSeparateWindow
@@ -3507,7 +3509,7 @@ class DetachToBrowserTabDragControllerTestWithTabbedSystemApp
   DetachToBrowserTabDragControllerTestWithTabbedSystemApp()
       : test_system_web_app_installation_(
             web_app::TestSystemWebAppInstallation::
-                SetUpTabbedMultiWindowApp(false)) {}
+                SetUpTabbedMultiWindowApp()) {}
 
   web_app::AppId InstallMockApp() {
     test_system_web_app_installation_->WaitForAppInstall();
@@ -3914,8 +3916,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
       displays.first.id(),
       screen->GetDisplayNearestWindow(browser()->window()->GetNativeWindow())
           .id());
-  EXPECT_EQ(2, tab_strip->tab_count());
-  EXPECT_EQ(1, tab_strip2->tab_count());
+  EXPECT_EQ(2, tab_strip->GetTabCount());
+  EXPECT_EQ(1, tab_strip2->GetTabCount());
 
   // Move to the first tab and drag it enough so that it detaches, but not
   // enough that it attaches to browser2.
@@ -3932,8 +3934,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ASSERT_TRUE(ReleaseInput());
 
   // tab should have moved
-  EXPECT_EQ(1, tab_strip->tab_count());
-  EXPECT_EQ(2, tab_strip2->tab_count());
+  EXPECT_EQ(1, tab_strip->GetTabCount());
+  EXPECT_EQ(2, tab_strip2->GetTabCount());
 
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -4485,10 +4487,6 @@ INSTANTIATE_TEST_SUITE_P(TabDragging,
                          ::testing::Values("mouse", "touch"));
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
-    DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
-    ::testing::Values("mouse", "touch"));
-INSTANTIATE_TEST_SUITE_P(
-    TabDragging,
     DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled,
     ::testing::Values("mouse", "touch"));
 INSTANTIATE_TEST_SUITE_P(TabDragging,
@@ -4512,10 +4510,6 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(TabDragging,
                          DetachToBrowserTabDragControllerTest,
                          ::testing::Values("mouse"));
-INSTANTIATE_TEST_SUITE_P(
-    TabDragging,
-    DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
-    ::testing::Values("mouse"));
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled,

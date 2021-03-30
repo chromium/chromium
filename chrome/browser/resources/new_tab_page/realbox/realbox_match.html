@@ -1,0 +1,104 @@
+<style include="cr-hidden-style cr-icons">
+  :host {
+    align-items: center;
+    cursor: default;
+    display: flex;
+    outline: none;
+    padding-bottom: 6px;
+    padding-inline-end: 16px;
+    padding-inline-start: 12px;
+    padding-top: 6px;
+  }
+
+  #container {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+    padding-inline-end: 8px;
+    padding-inline-start: 8px;
+    white-space: nowrap;
+  }
+
+  #contents,
+  #description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #separator {
+    white-space: pre;
+  }
+
+  :host([has-image]) #container {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  :host([has-image]) #separator {
+    display: none;
+  }
+
+  :host([has-image]) #contents {
+    width: 100%;
+  }
+
+  :host([has-image]) #description {
+    font-size: .875em;
+    width: 100%;
+  }
+
+  .match {
+    font-weight: 500;
+  }
+
+  :host([has-image]) #description,
+  .dim {
+    color: var(--search-box-results-dim, var(--google-grey-refresh-700));
+  }
+
+  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)):host([has-image]) #description,
+  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .dim {
+    color: var(--search-box-results-dim-selected, var(--google-grey-refresh-700));
+  }
+
+  .url {
+    color: var(--search-box-results-url, var(--google-blue-refresh-700));
+  }
+
+  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .url {
+    color: var(--search-box-results-url-selected, var(--google-blue-refresh-700));
+  }
+
+  #remove {
+    --cr-icon-button-active-background-color: rgba(var(--google-grey-900-rgb), .16);
+    --cr-icon-button-fill-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    --cr-icon-button-hover-background-color: rgba(var(--google-grey-900-rgb), .1);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-margin-end: 0;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-size: 24px;
+    opacity: 0; /* Hides the button while keeping it in tab order. */
+  }
+
+  :host-context(ntp-realbox-match:hover) #remove {
+    opacity: 1;
+  }
+
+  :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) #remove {
+    --cr-icon-button-fill-color: var(--search-box-icon-selected, var(--google-grey-refresh-700));
+    opacity: 1;
+  }
+
+</style>
+<ntp-realbox-icon id="icon" match="[[match]]"></ntp-realbox-icon>
+<div id="container">
+  <span id="contents" inner-h-t-m-l="[[contentsHtml_]]"></span>
+  <span id="separator" class="dim">[[separatorText_]]</span>
+  <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
+</div>
+<cr-icon-button id="remove" class="icon-clear"
+    aria-label="[[removeButtonAriaLabel_]]"
+    on-click="onRemoveButtonClick_" on-mousedown="onRemoveButtonMouseDown_"
+    title="[[removeButtonTitle_]]" hidden$="[[!removeButtonIsVisible_]]">
+</cr-icon-button>

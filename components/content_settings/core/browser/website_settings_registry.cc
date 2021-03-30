@@ -146,7 +146,7 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::USB_CHOOSER_DATA, "usb-chooser-data", nullptr,
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE,
+           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::IMPORTANT_SITE_INFO, "important-site-info",
@@ -193,24 +193,23 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::SERIAL_CHOOSER_DATA, "serial-chooser-data",
            nullptr, WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE,
-           DESKTOP, WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::HID_CHOOSER_DATA, "hid-chooser-data", nullptr,
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE,
-           DESKTOP, WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::INSTALLED_WEB_APP_METADATA,
            "installed-web-app-metadata", nullptr,
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
-  Register(ContentSettingsType::BLUETOOTH_CHOOSER_DATA,
-           "bluetooth-chooser-data",
-           /*initial_default_value=*/nullptr, WebsiteSettingsInfo::UNSYNCABLE,
-           WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE,
-           DESKTOP | PLATFORM_ANDROID,
-           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  Register(
+      ContentSettingsType::BLUETOOTH_CHOOSER_DATA, "bluetooth-chooser-data",
+      /*initial_default_value=*/nullptr, WebsiteSettingsInfo::UNSYNCABLE,
+      WebsiteSettingsInfo::NOT_LOSSY,
+      WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP | PLATFORM_ANDROID,
+      WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
            "safe-browsing-url-check-data", nullptr,
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,

@@ -38,8 +38,7 @@ namespace {
 
 constexpr base::FilePath::CharType kCertificatePath[] =
     FILE_PATH_LITERAL("CertificatePath");
-constexpr base::FilePath::CharType kCertificateSubject[] =
-    FILE_PATH_LITERAL("CertificateSubject");
+constexpr char16_t kCertificateSubject[] = u"CertificateSubject";
 
 constexpr base::FilePath::CharType kDllPath1[] =
     FILE_PATH_LITERAL("c:\\path\\to\\module.dll");
@@ -350,7 +349,7 @@ TEST_F(ModuleBlocklistCacheUpdaterTest, RegisteredModules) {
 
   third_party_dlls::PackedListModule expected;
   const std::string module_basename = base::UTF16ToUTF8(
-      base::i18n::ToLower(module_key2.module_path.BaseName().value()));
+      base::i18n::ToLower(module_key2.module_path.BaseName().AsUTF16Unsafe()));
   base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(module_basename.data()),
                       module_basename.length(), &expected.basename_hash[0]);
   const std::string module_code_id = GenerateCodeId(module_key2);

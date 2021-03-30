@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "minidump/minidump_extensions.h"
 #include "minidump/minidump_rva_list_writer.h"
 #include "minidump/minidump_writable.h"
@@ -35,7 +34,7 @@ namespace internal {
 //! \cond
 
 struct MinidumpStringWriterUTF16Traits {
-  using StringType = base::string16;
+  using StringType = std::u16string;
   using MinidumpStringType = MINIDUMP_STRING;
 };
 

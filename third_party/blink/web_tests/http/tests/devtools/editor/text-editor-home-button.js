@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test verifies that home button triggers selection between first symbol of the line and first non-blank symbol of the line.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   // clang-format off

@@ -7,14 +7,11 @@
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace app_list_features {
 
 const base::Feature kEnableAppDataSearch{"EnableAppDataSearch",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableSettingsShortcutSearch{
-    "EnableSettingsShortcutSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableAppListSearchAutocomplete{
     "EnableAppListSearchAutocomplete", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAppRanker{"EnableAppRanker",
@@ -58,10 +55,6 @@ const base::Feature kEnableLauncherSearchNormalization{
 
 bool IsAppDataSearchEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppDataSearch);
-}
-
-bool IsSettingsShortcutSearchEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSettingsShortcutSearch);
 }
 
 bool IsAppListSearchAutocompleteEnabled() {

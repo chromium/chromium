@@ -8,7 +8,7 @@
  */
 
 // #import {VolumeManagerImpl} from './volume_manager_impl.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 
 // eslint-disable-next-line no-var
 var volumeManagerFactory = (() => {

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/numerics/ranges.h"
@@ -105,7 +106,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
               "Can be controlled via Chrome sign-in."
           })");
 
-base::string16 GetTextNotificationTitle(const std::string& device_name) {
+std::u16string GetTextNotificationTitle(const std::string& device_name) {
   return device_name.empty()
              ? l10n_util::GetStringUTF16(
                    IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_TEXT_CONTENT_UNKNOWN_DEVICE)
@@ -114,7 +115,7 @@ base::string16 GetTextNotificationTitle(const std::string& device_name) {
                    base::UTF8ToUTF16(device_name));
 }
 
-base::string16 GetImageNotificationTitle(const std::string& device_name) {
+std::u16string GetImageNotificationTitle(const std::string& device_name) {
   return device_name.empty()
              ? l10n_util::GetStringUTF16(
                    IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_IMAGE_CONTENT_UNKNOWN_DEVICE)
@@ -123,11 +124,11 @@ base::string16 GetImageNotificationTitle(const std::string& device_name) {
                    base::UTF8ToUTF16(device_name));
 }
 
-base::string16 GetRemainingTimeString(int64_t current,
+std::u16string GetRemainingTimeString(int64_t current,
                                       int64_t total,
                                       base::TimeDelta elapsed) {
   if (total <= 0)
-    return base::string16();
+    return std::u16string();
 
   int64_t elapsed_ms = elapsed.InMilliseconds();
   int64_t bytes_per_second = elapsed_ms == 0 ? 0 : current * 1000 / elapsed_ms;
@@ -139,11 +140,11 @@ base::string16 GetRemainingTimeString(int64_t current,
                                 ui::TimeFormat::LENGTH_SHORT, remaining_time);
 }
 
-base::string16 GetProgressString(int64_t current, int64_t total) {
+std::u16string GetProgressString(int64_t current, int64_t total) {
   ui::DataUnits amount_units = ui::GetByteDisplayUnits(total);
-  base::string16 current_string =
+  std::u16string current_string =
       ui::FormatBytesWithUnits(current, amount_units, /*show_units=*/false);
-  base::string16 total_string =
+  std::u16string total_string =
       ui::FormatBytesWithUnits(total, amount_units, /*show_units=*/true);
 
   return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_SIZES, current_string,
@@ -152,10 +153,10 @@ base::string16 GetProgressString(int64_t current, int64_t total) {
 
 bool CanUpdateProgressNotification() {
 #if defined(OS_WIN)
-  // TODO(crbug.com/1064558): Windows native notifications don't support updates
+  // TODO(crbug.com/1064558): Windows system notifications don't support updates
   // so only show the initial progress notification and replace it with the
   // final image notification at the end.
-  if (NotificationPlatformBridgeWin::NativeNotificationEnabled())
+  if (NotificationPlatformBridgeWin::SystemNotificationEnabled())
     return false;
 #endif  // defined(OS_WIN)
   return true;
@@ -311,7 +312,7 @@ void RemoteCopyMessageHandler::OnImageDownloadProgress(uint64_t current) {
 }
 
 void RemoteCopyMessageHandler::UpdateProgressNotification(
-    const base::string16& context) {
+    const std::u16string& context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (notification_id_.empty()) {
     notification_id_ = base::GenerateGUID();
@@ -335,7 +336,7 @@ void RemoteCopyMessageHandler::UpdateProgressNotification(
       GetRemainingTimeString(image_content_progress_, image_content_length_,
                              timer_.Elapsed()),
       /*icon=*/gfx::Image(),
-      /*display_source=*/base::string16(),
+      /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), message_center::NotifierId(),
       rich_notification_data,
       /*delegate=*/nullptr);
@@ -361,7 +362,7 @@ void RemoteCopyMessageHandler::UpdateProgressNotification(
   } else {
     notification.set_progress(image_content_progress_ * 100 /
                               image_content_length_);
-    base::string16 progress =
+    std::u16string progress =
         GetProgressString(image_content_progress_, image_content_length_);
 #if defined(OS_MAC)
     // On macOS we only have the title and message available. The progress is
@@ -559,7 +560,7 @@ void RemoteCopyMessageHandler::WriteImageAndShowNotification(
   Finish(RemoteCopyHandleMessageResult::kSuccessHandledImage);
 }
 
-void RemoteCopyMessageHandler::ShowNotification(const base::string16& title,
+void RemoteCopyMessageHandler::ShowNotification(const std::u16string& title,
                                                 const SkBitmap& image) {
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::ShowNotification");
 
@@ -596,7 +597,7 @@ void RemoteCopyMessageHandler::ShowNotification(const base::string16& title,
           IDS_SHARING_REMOTE_COPY_NOTIFICATION_DESCRIPTION,
           paste_accelerator.GetShortcutText()),
       icon,
-      /*display_source=*/base::string16(),
+      /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), message_center::NotifierId(),
       rich_notification_data,
       /*delegate=*/nullptr);

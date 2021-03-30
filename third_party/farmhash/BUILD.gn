@@ -6,6 +6,14 @@ config("farmhash_include") {
   include_dirs = [ "src/src" ]
 }
 
+config("farmhash-warnings") {
+  cflags = []
+
+  # The reduction of farmhash files to a minimum triggers -Wunused-function
+  # warnings in farmhash.c
+  cflags += [ "-Wno-unused-function" ]
+}
+
 source_set("farmhash") {
   public = [ "src/src/farmhash.h" ]
 
@@ -13,6 +21,7 @@ source_set("farmhash") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":farmhash-warnings" ]
 
   public_configs = [ ":farmhash_include" ]
 }

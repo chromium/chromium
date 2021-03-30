@@ -99,9 +99,9 @@ class String16Printer(StringPrinter):
     return blink.ustring_to_string(self.val['_M_dataplus']['_M_p'])
 
 
-pp_set.add_printer(
-    'string16', '^string16|std::basic_string<(unsigned short|base::char16).*>$',
-    String16Printer)
+pp_set.add_printer('string16',
+                   '^string16|std::basic_string<(unsigned short|char16_t).*>$',
+                   String16Printer)
 
 
 class GURLPrinter(StringPrinter):

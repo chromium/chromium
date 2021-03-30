@@ -34,7 +34,7 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
   content::DevToolsManagerDelegate* GetDevToolsManagerDelegate() final;
   std::string GetProduct() final;
   std::string GetUserAgent() final;
-  void OverrideWebkitPrefs(content::RenderViewHost* rvh,
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* web_prefs) final;
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
@@ -50,9 +50,16 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldEnableStrictSiteIsolation() final;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) final;
+  std::string GetApplicationLocale() final;
+  std::string GetAcceptLangs(content::BrowserContext* context) final;
+  base::OnceClosure SelectClientCertificate(
+      content::WebContents* web_contents,
+      net::SSLCertRequestInfo* cert_request_info,
+      net::ClientCertIdentityList client_certs,
+      std::unique_ptr<content::ClientCertificateDelegate> delegate) final;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
-      content::NavigationHandle* navigation_handle) override;
+      content::NavigationHandle* navigation_handle) final;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const network::ResourceRequest& request,
@@ -65,8 +72,9 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
       bool in_memory,
       const base::FilePath& relative_partition_path,
       network::mojom::NetworkContextParams* network_context_params,
-      network::mojom::CertVerifierCreationParams* cert_verifier_creation_params)
-      override;
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) final;
+  std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() final;
 
  private:
   fidl::InterfaceRequest<fuchsia::web::Context> request_;

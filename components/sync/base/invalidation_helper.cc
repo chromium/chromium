@@ -10,10 +10,10 @@
 
 namespace syncer {
 
-TopicSet ModelTypeSetToTopicSet(ModelTypeSet model_types) {
-  TopicSet topics;
+invalidation::TopicSet ModelTypeSetToTopicSet(ModelTypeSet model_types) {
+  invalidation::TopicSet topics;
   for (ModelType type : model_types) {
-    Topic topic;
+    invalidation::Topic topic;
     if (!RealModelTypeToNotificationType(type, &topic)) {
       DLOG(WARNING) << "Invalid model type " << type;
       continue;

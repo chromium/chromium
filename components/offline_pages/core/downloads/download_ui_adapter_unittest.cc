@@ -66,7 +66,7 @@ static const base::FilePath kTestFilePath =
     base::FilePath(FILE_PATH_LITERAL("foo/bar.mhtml"));
 static const int kFileSize = 1000;
 static const base::Time kTestCreationTime = base::Time::Now();
-static const base::string16 kTestTitle = base::ASCIIToUTF16("test title");
+static const std::u16string kTestTitle = u"test title";
 
 void GetItemAndVerify(const base::Optional<OfflineItem>& expected,
                       const base::Optional<OfflineItem>& actual) {
@@ -240,6 +240,7 @@ class DownloadUIAdapterTest : public testing::Test,
   void OnItemUpdated(const OfflineItem& item,
                      const base::Optional<UpdateDelta>& update_delta) override;
   void OnItemRemoved(const ContentId& id) override;
+  void OnContentProviderGoingDown() override;
 
   // Runs until all of the tasks that are not delayed are gone from the task
   // queue.
@@ -313,6 +314,8 @@ void DownloadUIAdapterTest::OnItemUpdated(
 void DownloadUIAdapterTest::OnItemRemoved(const ContentId& id) {
   deleted_guids.push_back(id.id);
 }
+
+void DownloadUIAdapterTest::OnContentProviderGoingDown() {}
 
 void DownloadUIAdapterTest::PumpLoop() {
   task_runner_->RunUntilIdle();

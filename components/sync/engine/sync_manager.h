@@ -110,8 +110,6 @@ class SyncManager {
     // Must outlive SyncManager.
     ExtensionsActivity* extensions_activity;
 
-    CoreAccountId authenticated_account_id;
-
     // Unqiuely identifies this client to the invalidation notification server.
     std::string invalidator_client_id;
 
@@ -243,6 +241,10 @@ class SyncManager {
 
   // Notifies SyncManager that there are no other known active devices.
   virtual void UpdateSingleClientStatus(bool single_client) = 0;
+
+  // Updates the list of known active device FCM registration tokens.
+  virtual void UpdateActiveDeviceFCMRegistrationTokens(
+      std::vector<std::string> fcm_registration_tokens) = 0;
 };
 
 }  // namespace syncer

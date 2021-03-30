@@ -36,7 +36,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // LinuxInputMethodContext overrides:
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
-  void SetSurroundingText(const base::string16& text,
+  void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
   void Reset() override;
   void Focus() override;
@@ -51,7 +51,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnKeysym(uint32_t keysym, uint32_t state, uint32_t modifiers) override;
 
  private:
-  void UpdatePreeditText(const base::string16& preedit_text);
+  void UpdatePreeditText(const std::u16string& preedit_text);
 
   WaylandConnection* const connection_;  // TODO(jani) Handle this better
 

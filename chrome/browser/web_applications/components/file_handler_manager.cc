@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -100,13 +101,17 @@ void FileHandlerManager::EnableAndRegisterOsFileHandlers(const AppId& app_id) {
 }
 
 void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
-    const AppId& app_id) {
+    const AppId& app_id,
+    std::unique_ptr<ShortcutInfo> info,
+    base::OnceCallback<void()> callback) {
+  // Updating prefs must be done on the UI Thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   UpdateBoolWebAppPref(profile()->GetPrefs(), app_id, kFileHandlersEnabled,
                        /*value=*/false);
 
   // Temporarily allow file handlers unregistration only if an app has them.
   // TODO(crbug.com/1088434, crbug.com/1076688): Do not start async
-  // CreateShortcuts process in OnWebAppUninstalled / Unregistration.
+  // CreateShortcuts process in OnWebAppWillBeUninstalled / Unregistration.
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
 
   if (!ShouldRegisterFileHandlersWithOs() || !file_handlers ||
@@ -117,9 +122,10 @@ void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
   // File handler information is embedded in the shortcut, when
   // |DeleteSharedAppShims| is called in
   // |OsIntegrationManager::UninstallOsHooks|, file handlers are also
-  // unregistered./
+  // unregistered.
 #if !defined(OS_MAC)
-  UnregisterFileHandlersWithOs(app_id, profile());
+  UnregisterFileHandlersWithOs(app_id, profile(), std::move(info),
+                               std::move(callback));
 #endif
 }
 
@@ -218,7 +224,8 @@ void FileHandlerManager::UpdateFileHandlersForOriginTrialExpiryTime(
     if (!file_handlers_enabled)
       EnableAndRegisterOsFileHandlers(app_id);
   } else if (file_handlers_enabled) {
-    DisableAndUnregisterOsFileHandlers(app_id);
+    // TODO(crbug.com/1076688): Retrieve shortcuts before they're unregistered.
+    DisableAndUnregisterOsFileHandlers(app_id, nullptr, base::DoNothing());
   }
 }
 
@@ -236,7 +243,8 @@ int FileHandlerManager::CleanupAfterOriginTrials() {
       continue;
 
     // If the trial has expired, unregister handlers.
-    DisableAndUnregisterOsFileHandlers(app_id);
+    // TODO(crbug.com/1076688): Retrieve shortcuts before they're unregistered.
+    DisableAndUnregisterOsFileHandlers(app_id, nullptr, base::DoNothing());
     cleaned_up_count++;
   }
 
@@ -246,11 +254,11 @@ int FileHandlerManager::CleanupAfterOriginTrials() {
 const base::Optional<GURL> FileHandlerManager::GetMatchingFileHandlerURL(
     const AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
-  if (!IsFileHandlingAPIAvailable(app_id))
+  if (!IsFileHandlingAPIAvailable(app_id) || launch_files.empty())
     return base::nullopt;
 
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
-  if (!file_handlers || launch_files.empty())
+  if (!file_handlers)
     return base::nullopt;
 
   std::set<std::string> launch_file_extensions;
@@ -267,7 +275,7 @@ const base::Optional<GURL> FileHandlerManager::GetMatchingFileHandlerURL(
     std::set<std::string> supported_file_extensions =
         apps::GetFileExtensionsFromFileHandlers({file_handler});
     for (const auto& file_extension : launch_file_extensions) {
-      if (!supported_file_extensions.count(file_extension)) {
+      if (!base::Contains(supported_file_extensions, file_extension)) {
         all_launch_file_extensions_supported = false;
         break;
       }

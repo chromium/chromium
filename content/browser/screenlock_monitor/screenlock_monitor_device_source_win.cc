@@ -12,6 +12,49 @@
 #include "base/win/message_window.h"
 
 namespace content {
+namespace {
+bool RegisterForSessionNotifications(HWND hwnd, DWORD flag) {
+  base::OnceClosure wts_register = base::BindOnce(
+      base::IgnoreResult(&::WTSRegisterSessionNotification), hwnd, flag);
+
+  base::ThreadPool::CreateCOMSTATaskRunner({})->PostTask(
+      FROM_HERE, std::move(wts_register));
+
+  return true;
+}
+
+bool UnregisterFromSessionNotifications(HWND hwnd) {
+  return ::WTSUnRegisterSessionNotification(hwnd);
+}
+}  // namespace
+
+// Set static member function pointers with default (non-fake) APIs.
+ScreenlockMonitorDeviceSource::WTSRegisterSessionNotificationFunction
+    ScreenlockMonitorDeviceSource::SessionMessageWindow::
+        register_session_notification_function_ =
+            &RegisterForSessionNotifications;
+
+ScreenlockMonitorDeviceSource::WTSUnRegisterSessionNotificationFunction
+    ScreenlockMonitorDeviceSource::SessionMessageWindow::
+        unregister_session_notification_function_ =
+            &UnregisterFromSessionNotifications;
+
+// static
+void ScreenlockMonitorDeviceSource::SetFakeNotificationAPIsForTesting(
+    WTSRegisterSessionNotificationFunction register_function,
+    WTSUnRegisterSessionNotificationFunction unregister_function) {
+  SessionMessageWindow::SetFakeNotificationAPIsForTesting(register_function,
+                                                          unregister_function);
+}
+
+// static
+void ScreenlockMonitorDeviceSource::SessionMessageWindow::
+    SetFakeNotificationAPIsForTesting(
+        WTSRegisterSessionNotificationFunction register_function,
+        WTSUnRegisterSessionNotificationFunction unregister_function) {
+  register_session_notification_function_ = register_function;
+  unregister_session_notification_function_ = unregister_function;
+}
 
 ScreenlockMonitorDeviceSource::SessionMessageWindow::SessionMessageWindow() {
   // Create a window for receiving session change notifications.
@@ -23,21 +66,21 @@ ScreenlockMonitorDeviceSource::SessionMessageWindow::SessionMessageWindow() {
     return;
   }
 
-  base::OnceClosure wts_register =
-      base::BindOnce(base::IgnoreResult(&::WTSRegisterSessionNotification),
-                     window_->hwnd(), NOTIFY_FOR_ALL_SESSIONS);
-
-  base::ThreadPool::CreateCOMSTATaskRunner({})->PostTask(
-      FROM_HERE, std::move(wts_register));
+  // Use NOTIFY_FOR_THIS_SESSION so we only receive events from the current
+  // session, and not from other users connected to the same session host.
+  bool registered = register_session_notification_function_(
+      window_->hwnd(), NOTIFY_FOR_THIS_SESSION);
+  DCHECK(registered);
 }
 
 ScreenlockMonitorDeviceSource::SessionMessageWindow::~SessionMessageWindow() {
   // There should be no race condition between this code and the worker thread.
-  // WTSUnRegisterSessionNotification is only called from destruction as we are
-  // in shutdown, which means no other worker threads can be running.
+  // |unregister_session_notification_function_| is only called from destruction
+  // as we are in shutdown, which means no other worker threads can be running.
   if (window_) {
-    ::WTSUnRegisterSessionNotification(window_->hwnd());
-    window_.reset();
+    bool unregistered =
+        unregister_session_notification_function_(window_->hwnd());
+    DCHECK(unregistered);
   }
 }
 

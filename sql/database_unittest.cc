@@ -853,13 +853,6 @@ TEST_P(SQLDatabaseTest, Delete) {
   EXPECT_FALSE(GetPathExists(wal_path));
 }
 
-// WAL mode is currently not supported on Fuchsia
-#if !defined(OS_FUCHSIA)
-INSTANTIATE_TEST_SUITE_P(JournalMode, SQLDatabaseTest, testing::Bool());
-#else
-INSTANTIATE_TEST_SUITE_P(JournalMode, SQLDatabaseTest, testing::Values(false));
-#endif
-
 #if defined(OS_POSIX)  // This test operates on POSIX file permissions.
 TEST_P(SQLDatabaseTest, PosixFilePermissions) {
   db().Close();
@@ -1374,5 +1367,18 @@ TEST_P(SQLDatabaseTest, CompileError) {
   }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
 }
+
+// WAL mode is currently not supported on Fuchsia.
+#if !defined(OS_FUCHSIA)
+INSTANTIATE_TEST_SUITE_P(JournalMode, SQLDatabaseTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(JournalMode,
+                         SQLDatabaseTestExclusiveMode,
+                         testing::Bool());
+#else
+INSTANTIATE_TEST_SUITE_P(JournalMode, SQLDatabaseTest, testing::Values(false));
+INSTANTIATE_TEST_SUITE_P(JournalMode,
+                         SQLDatabaseTestExclusiveMode,
+                         testing::Values(false));
+#endif
 
 }  // namespace sql

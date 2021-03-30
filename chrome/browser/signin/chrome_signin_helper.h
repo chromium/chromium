@@ -14,7 +14,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 namespace content_settings {
 class CookieSettings;
@@ -49,7 +49,9 @@ class ChromeRequestAdapter : public RequestAdapter {
 
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
 
-  virtual blink::mojom::ResourceType GetResourceType() const = 0;
+  virtual network::mojom::RequestDestination GetRequestDestination() const = 0;
+
+  virtual bool IsFetchLikeAPI() const = 0;
 
   virtual GURL GetReferrerOrigin() const = 0;
 

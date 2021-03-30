@@ -16,14 +16,16 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
+class Profile;
 class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 class ChromeAppDelegate : public extensions::AppDelegate,
                           public content::NotificationObserver {
  public:
   // Params:
   //   keep_alive: Whether this object should keep the browser alive.
-  explicit ChromeAppDelegate(bool keep_alive);
+  explicit ChromeAppDelegate(Profile* profile, bool keep_alive);
   ~ChromeAppDelegate() override;
 
   static void DisableExternalOpenForTesting();
@@ -40,7 +42,7 @@ class ChromeAppDelegate : public extensions::AppDelegate,
 
   // extensions::AppDelegate:
   void InitWebContents(content::WebContents* web_contents) override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
   void ResizeWebContents(content::WebContents* web_contents,
                          const gfx::Size& size) override;
   content::WebContents* OpenURLFromTab(
@@ -90,7 +92,9 @@ class ChromeAppDelegate : public extensions::AppDelegate,
   bool has_been_shown_;
   bool is_hidden_;
   bool for_lock_screen_app_;
+  Profile* const profile_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   std::unique_ptr<NewWindowContentsDelegate> new_window_contents_delegate_;
   base::OnceClosure terminating_callback_;
   content::NotificationRegistrar registrar_;

@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +27,8 @@ const char kWebCallbackFunctionName[] = "cr.webUIListenerCallback";
 
 class TestAmbientModeHandler : public AmbientModeHandler {
  public:
-  TestAmbientModeHandler() = default;
+  explicit TestAmbientModeHandler(PrefService* pref_service)
+      : AmbientModeHandler(pref_service) {}
   ~TestAmbientModeHandler() override = default;
 
   // Make public for testing.
@@ -42,7 +46,13 @@ class AmbientModeHandlerTest : public testing::Test {
 
   void SetUp() override {
     web_ui_ = std::make_unique<content::TestWebUI>();
-    handler_ = std::make_unique<TestAmbientModeHandler>();
+    test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+
+    test_pref_service_->registry()->RegisterBooleanPref(
+        ash::ambient::prefs::kAmbientModeEnabled, true);
+
+    handler_ =
+        std::make_unique<TestAmbientModeHandler>(test_pref_service_.get());
     handler_->set_web_ui(web_ui_.get());
     handler_->RegisterMessages();
     handler_->AllowJavascript();
@@ -51,10 +61,21 @@ class AmbientModeHandlerTest : public testing::Test {
     image_downloader_ = std::make_unique<ash::TestImageDownloader>();
   }
 
+  void TearDown() override { handler_->DisallowJavascript(); }
+
   content::TestWebUI* web_ui() { return web_ui_.get(); }
 
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
+  }
+
+  base::Optional<ash::AmbientSettings>& settings() {
+    return handler_->settings_;
+  }
+
+  void SetEnabledPref(bool enabled) {
+    test_pref_service_->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled,
+                                   enabled);
   }
 
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) {
@@ -62,6 +83,13 @@ class AmbientModeHandlerTest : public testing::Test {
       handler_->settings_ = ash::AmbientSettings();
 
     handler_->settings_->topic_source = topic_source;
+  }
+
+  void SetTemperatureUnit(ash::AmbientModeTemperatureUnit temperature_unit) {
+    if (!handler_->settings_)
+      handler_->settings_ = ash::AmbientSettings();
+
+    handler_->settings_->temperature_unit = temperature_unit;
   }
 
   void RequestSettings() {
@@ -73,6 +101,10 @@ class AmbientModeHandlerTest : public testing::Test {
     base::ListValue args;
     args.Append(static_cast<int>(topic_source));
     handler_->HandleRequestAlbums(&args);
+  }
+
+  void HandleSetSelectedTemperatureUnit(const base::ListValue* args) {
+    handler_->HandleSetSelectedTemperatureUnit(args);
   }
 
   void HandleSetSelectedAlbums(const base::ListValue* args) {
@@ -118,8 +150,11 @@ class AmbientModeHandlerTest : public testing::Test {
     return fake_backend_controller_->IsFetchSettingsAndAlbumsPending();
   }
 
-  void ReplyFetchSettingsAndAlbums(bool success) {
-    fake_backend_controller_->ReplyFetchSettingsAndAlbums(success);
+  void ReplyFetchSettingsAndAlbums(
+      bool success,
+      base::Optional<ash::AmbientSettings> settings = base::nullopt) {
+    fake_backend_controller_->ReplyFetchSettingsAndAlbums(success,
+                                                          std::move(settings));
   }
 
   bool IsUpdateSettingsPendingAtBackend() const {
@@ -223,6 +258,7 @@ class AmbientModeHandlerTest : public testing::Test {
   std::unique_ptr<ash::TestImageDownloader> image_downloader_;
   std::unique_ptr<TestAmbientModeHandler> handler_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
 };
 
 TEST_F(AmbientModeHandlerTest, TestSendTemperatureUnitAndTopicSource) {
@@ -733,6 +769,85 @@ TEST_F(AmbientModeHandlerTest, TestAlbumNumbersAreRecorded) {
                                       /*count=*/1);
   histogram_tester().ExpectTotalCount("Ash.AmbientMode.SelectedNumberOfAlbums",
                                       /*count=*/1);
+}
+
+TEST_F(AmbientModeHandlerTest, TestTemperatureUnitChangeUpdatesSettings) {
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kCelsius);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  base::ListValue args;
+  args.Append("fahrenheit");
+
+  HandleSetSelectedTemperatureUnit(&args);
+
+  EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+
+  ReplyUpdateSettings(/*success=*/true);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+}
+
+TEST_F(AmbientModeHandlerTest, TestSameTemperatureUnitSkipsUpdate) {
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kCelsius);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  base::ListValue args;
+  args.Append("celsius");
+
+  HandleSetSelectedTemperatureUnit(&args);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+}
+
+TEST_F(AmbientModeHandlerTest, TestEnabledPrefChangeUpdatesSettings) {
+  // Simulate initial page request.
+  RequestSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  // Should not trigger |UpdateSettings|.
+  SetEnabledPref(/*enabled=*/false);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  // Settings this to true should trigger |UpdateSettings|.
+  SetEnabledPref(/*enabled=*/true);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+}
+
+TEST_F(AmbientModeHandlerTest, TestWeatherFalseTriggersUpdateSettings) {
+  ash::AmbientSettings weather_off_settings;
+  weather_off_settings.show_weather = false;
+
+  // Simulate initial page request with weather settings false. Because Ambient
+  // mode pref is enabled and |settings.show_weather| is false, this should
+  // trigger a call to |UpdateSettings| that sets |settings.show_weather| to
+  // true.
+  RequestSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true, weather_off_settings);
+
+  // A call to |UpdateSettings| should have happened.
+  EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+
+  ReplyUpdateSettings(/*success=*/true);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  // |settings.show_weather| should now be true after the successful settings
+  // update.
+  EXPECT_TRUE(settings()->show_weather);
 }
 
 }  // namespace settings

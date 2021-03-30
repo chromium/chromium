@@ -26,6 +26,10 @@ namespace app_list {
 class AppContextMenu;
 }  // namespace app_list
 
+namespace ui {
+class ImageModel;
+}
+
 // ChromeSearchResult consists of an icon, title text and details text. Title
 // and details text can have tagged ranges that are displayed differently from
 // default style.
@@ -39,19 +43,20 @@ class ChromeSearchResult {
   using Action = ash::SearchResultAction;
   using Actions = ash::SearchResultActions;
   using DisplayIndex = ash::SearchResultDisplayIndex;
+  using OmniboxType = ash::SearchResultOmniboxType;
 
   ChromeSearchResult();
   virtual ~ChromeSearchResult();
 
-  const base::string16& title() const { return metadata_->title; }
+  const std::u16string& title() const { return metadata_->title; }
   const Tags& title_tags() const { return metadata_->title_tags; }
-  const base::string16& details() const { return metadata_->details; }
+  const std::u16string& details() const { return metadata_->details; }
   const Tags& details_tags() const { return metadata_->details_tags; }
-  const base::string16& accessible_name() const {
+  const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
   }
   float rating() const { return metadata_->rating; }
-  const base::string16& formatted_price() const {
+  const std::u16string& formatted_price() const {
     return metadata_->formatted_price;
   }
   const std::string& id() const { return metadata_->id; }
@@ -61,19 +66,19 @@ class ChromeSearchResult {
   }
   MetricsType metrics_type() const { return metadata_->metrics_type; }
   DisplayIndex display_index() const { return metadata_->display_index; }
+  OmniboxType omnibox_type() const { return metadata_->omnibox_type; }
   float position_priority() const { return metadata_->position_priority; }
   const Actions& actions() const { return metadata_->actions; }
   double display_score() const { return metadata_->display_score; }
   bool is_installing() const { return metadata_->is_installing; }
   bool is_recommendation() const { return metadata_->is_recommendation; }
-  bool is_answer() const { return metadata_->is_answer; }
   const base::Optional<GURL>& query_url() const { return metadata_->query_url; }
   const base::Optional<std::string>& equivalent_result_id() const {
     return metadata_->equivalent_result_id;
   }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
-  const gfx::ImageSkia& badge_icon() const { return metadata_->badge_icon; }
+  const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
 
   bool notify_visibility_change() const {
     return metadata_->notify_visibility_change;
@@ -81,29 +86,30 @@ class ChromeSearchResult {
 
   // The following methods set Chrome side data here, and call model updater
   // interface to update Ash.
-  void SetTitle(const base::string16& title);
+  void SetTitle(const std::u16string& title);
   void SetTitleTags(const Tags& tags);
-  void SetDetails(const base::string16& details);
+  void SetDetails(const std::u16string& details);
   void SetDetailsTags(const Tags& tags);
-  void SetAccessibleName(const base::string16& name);
+  void SetAccessibleName(const std::u16string& name);
   void SetRating(float rating);
-  void SetFormattedPrice(const base::string16& formatted_price);
+  void SetFormattedPrice(const std::u16string& formatted_price);
   void SetDisplayType(DisplayType display_type);
   void SetResultType(ResultType result_type);
   void SetMetricsType(MetricsType metrics_type);
   void SetDisplayIndex(DisplayIndex display_index);
+  void SetOmniboxType(OmniboxType omnibox_type);
   void SetPositionPriority(float position_priority);
   void SetDisplayScore(double display_score);
   void SetActions(const Actions& actions);
   void SetIsOmniboxSearch(bool is_omnibox_search);
   void SetIsRecommendation(bool is_recommendation);
-  void SetIsAnswer(bool is_answer);
   void SetIsInstalling(bool is_installing);
   void SetQueryUrl(const GURL& url);
   void SetEquivalentResutlId(const std::string& equivlanet_result_id);
   void SetIcon(const gfx::ImageSkia& icon);
   void SetChipIcon(const gfx::ImageSkia& icon);
-  void SetBadgeIcon(const gfx::ImageSkia& badge_icon);
+  void SetBadgeIcon(const ui::ImageModel& badge_icon);
+  void SetUseBadgeIconBackground(bool use_badge_icon_background);
   void SetNotifyVisibilityChange(bool notify_visibility_change);
 
   void SetSearchResultMetadata();

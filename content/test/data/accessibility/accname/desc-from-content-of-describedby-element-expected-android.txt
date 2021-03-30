@@ -1,0 +1,1 @@
+android.widget.EditText hint='Important stuff My name is Eli the weird. (QED) Where are my marbles?' input_type=1

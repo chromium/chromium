@@ -100,8 +100,10 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void UpdateVulkanRequestStatus(bool request_continues);
   bool Dx12Requested() const;
   bool VulkanRequested() const;
-  // Called from BrowserMainLoop::BrowserThreadsStarted().
-  void OnBrowserThreadsStarted();
+  // Called from BrowserMainLoop::PostCreateThreads().
+  // TODO(content/browser/gpu/OWNERS): This should probably use a
+  // BrowserMainParts override instead.
+  void PostCreateThreads();
   void TerminateInfoCollectionGpuProcess();
 #endif
   // Update the GPU feature info. This updates the blocklist and enabled status

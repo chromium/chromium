@@ -79,48 +79,6 @@ std::string PermissionUtil::GetPermissionString(
   return std::string();
 }
 
-PermissionRequestType PermissionUtil::GetRequestType(ContentSettingsType type) {
-  switch (type) {
-    case ContentSettingsType::GEOLOCATION:
-      return PermissionRequestType::PERMISSION_GEOLOCATION;
-    case ContentSettingsType::NOTIFICATIONS:
-      return PermissionRequestType::PERMISSION_NOTIFICATIONS;
-    case ContentSettingsType::MIDI_SYSEX:
-      return PermissionRequestType::PERMISSION_MIDI_SYSEX;
-    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      return PermissionRequestType::PERMISSION_PROTECTED_MEDIA_IDENTIFIER;
-    case ContentSettingsType::MEDIASTREAM_MIC:
-      return PermissionRequestType::PERMISSION_MEDIASTREAM_MIC;
-    case ContentSettingsType::MEDIASTREAM_CAMERA:
-      return PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA;
-    case ContentSettingsType::ACCESSIBILITY_EVENTS:
-      return PermissionRequestType::PERMISSION_ACCESSIBILITY_EVENTS;
-    case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      return PermissionRequestType::PERMISSION_CLIPBOARD_READ_WRITE;
-    case ContentSettingsType::PAYMENT_HANDLER:
-      return PermissionRequestType::PERMISSION_PAYMENT_HANDLER;
-    case ContentSettingsType::NFC:
-      return PermissionRequestType::PERMISSION_NFC;
-    case ContentSettingsType::VR:
-      return PermissionRequestType::PERMISSION_VR;
-    case ContentSettingsType::AR:
-      return PermissionRequestType::PERMISSION_AR;
-    case ContentSettingsType::STORAGE_ACCESS:
-      return PermissionRequestType::PERMISSION_STORAGE_ACCESS;
-    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      return PermissionRequestType::PERMISSION_CAMERA_PAN_TILT_ZOOM;
-    case ContentSettingsType::WINDOW_PLACEMENT:
-      return PermissionRequestType::PERMISSION_WINDOW_PLACEMENT;
-    case ContentSettingsType::FONT_ACCESS:
-      return PermissionRequestType::PERMISSION_FONT_ACCESS;
-    case ContentSettingsType::IDLE_DETECTION:
-      return PermissionRequestType::PERMISSION_IDLE_DETECTION;
-    default:
-      NOTREACHED();
-      return PermissionRequestType::UNKNOWN;
-  }
-}
-
 PermissionRequestGestureType PermissionUtil::GetGestureType(bool user_gesture) {
   return user_gesture ? PermissionRequestGestureType::GESTURE
                       : PermissionRequestGestureType::NO_GESTURE;
@@ -192,6 +150,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
   switch (type) {
     case ContentSettingsType::GEOLOCATION:
     case ContentSettingsType::NOTIFICATIONS:
+    case ContentSettingsType::MIDI:
     case ContentSettingsType::MIDI_SYSEX:
     case ContentSettingsType::DURABLE_STORAGE:
     case ContentSettingsType::MEDIASTREAM_CAMERA:

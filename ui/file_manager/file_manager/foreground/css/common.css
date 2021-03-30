@@ -266,6 +266,14 @@ cr-menu.chrome-menu > [checked]::before {
   outline: 2px auto rgba(var(--google-blue-600-rgb), 40%);
 }
 
+/* Some files confirm dialogs need to focus their 'Cancel' button by default,
+   rather than the 'OK' button. The dialog buttons should have focus rings in
+   this case (regardless of mouse, pointer, keyboard interaction). */
+.cr-dialog-container.files-ng .cr-dialog-frame.files-confirm-dialog-cancel-default .cr-dialog-buttons > button:not(:active):focus {
+  box-shadow: 0 0 0 2px var(--google-blue-500-rgb);
+  outline: 2px auto rgba(var(--google-blue-600-rgb), 40%);
+}
+
 .buttonbar button {
   margin-inline-start: 12px;
 }
@@ -520,6 +528,20 @@ html[dir='rtl'] .cr-dialog-container:not(.files-ng) .cr-dialog-close {
 .cr-dialog-container:not(.files-ng) .files-alert-dialog .cr-dialog-text,
 .cr-dialog-container:not(.files-ng) .files-confirm-dialog .cr-dialog-text {
   font-size: 14px;
+}
+
+/* Modal <dialog> container for Pop-up dialogs. */
+#files-app-modal-dialog {
+  background-color: transparent;
+  border: none;
+  height: 100%;
+  margin: 0;
+  max-height: initial;
+  max-width: initial;
+  outline: none;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
 }
 
 /* Minor tweak of vertical position for texts which need to be vertically

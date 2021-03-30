@@ -166,6 +166,9 @@ class ServiceWorkerRegistrationTest : public testing::Test {
 
   void SetUp() override {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
+    // Reset the mock loader because this test creates a storage partition and
+    // it makes GetLoaderFactoryForUpdateCheck() work correctly.
+    helper_->context_wrapper()->SetLoaderFactoryForUpdateCheckForTest(nullptr);
 
     // Create a StoragePartition with the testing browser context so that the
     // ServiceWorkerUpdateChecker can find the BrowserContext through it.
@@ -318,7 +321,7 @@ TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
   // no need to pass |object_info_->receiver| through a message pipe endpoint.
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr object_info =
       registration_object_host->CreateObjectInfo();
-  mojo::AssociateWithDisconnectedPipe(object_info->receiver.PassHandle());
+  object_info->receiver.EnableUnassociatedUsage();
 
   registration->NotifyRegistrationFailed();
   // Don't crash when |registration_object_host| gets destructed.

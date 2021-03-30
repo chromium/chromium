@@ -31,7 +31,7 @@
     Clipboard
   </message>
   <message name="IDS_WEBSITE_SETTINGS_IDLE_DETECTION" desc="Title of the permission to detect user activity [CHAR-LIMIT=32]">
-    Your presence
+    Your device use
   </message>
   <message name="IDS_JAVASCRIPT_PERMISSION_TITLE" desc="Title of the permission to run javascript [CHAR-LIMIT=32]">
     JavaScript
@@ -349,10 +349,10 @@
 
   <!-- Idle Detection -->
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_IDLE_DETECTION_ASK" desc="The description for the option to allow sites to ask for permission to access your activity state">
-    Ask when a site wants to know when you're present
+    Ask when a site wants to know when you're actively using this device
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_IDLE_DETECTION_BLOCKED" desc="The description for the option to block sites from accessing your activity state">
-    Block sites from knowing when you're present
+    Block sites from knowing when you're actively using this device
   </message>
 
   <!-- JavaScript -->

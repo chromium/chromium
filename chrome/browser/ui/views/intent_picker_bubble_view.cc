@@ -26,6 +26,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -38,6 +39,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -75,7 +77,7 @@ std::unique_ptr<views::Separator> CreateHorizontalSeparator() {
 // different style as it is not shown as a title label.
 std::unique_ptr<views::View> CreateOriginView(const url::Origin& origin,
                                               int text_id) {
-  base::string16 origin_text = l10n_util::GetStringFUTF16(
+  std::u16string origin_text = l10n_util::GetStringFUTF16(
       text_id, url_formatter::FormatOriginForSecurityDisplay(origin));
   auto label = std::make_unique<views::Label>(
       origin_text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
@@ -93,22 +95,26 @@ std::unique_ptr<views::View> CreateOriginView(const url::Origin& origin,
 // A button that represents a candidate intent handler.
 class IntentPickerLabelButton : public views::LabelButton {
  public:
+  METADATA_HEADER(IntentPickerLabelButton);
+
   IntentPickerLabelButton(PressedCallback callback,
-                          const gfx::Image* icon,
+                          const ui::ImageModel& icon_model,
                           const std::string& display_name)
       : LabelButton(std::move(callback),
                     base::UTF8ToUTF16(base::StringPiece(display_name))) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
     SetMinSize(gfx::Size(kMaxIntentPickerLabelButtonWidth, kRowHeight));
     SetInkDropMode(InkDropMode::ON);
-    if (!icon->IsEmpty()) {
-      SetImageModel(views::ImageButton::STATE_NORMAL,
-                    ui::ImageModel::FromImage(*icon));
+    if (!icon_model.IsEmpty()) {
+      SetImageModel(views::ImageButton::STATE_NORMAL, icon_model);
     }
     SetBorder(views::CreateEmptyBorder(8, 16, 8, 0));
     SetInkDropBaseColor(SK_ColorGRAY);
     SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
   }
+  IntentPickerLabelButton(const IntentPickerLabelButton&) = delete;
+  IntentPickerLabelButton& operator=(const IntentPickerLabelButton&) = delete;
+  ~IntentPickerLabelButton() override = default;
 
   void MarkAsUnselected(const ui::Event* event) {
     AnimateInkDrop(views::InkDropState::HIDDEN,
@@ -123,10 +129,10 @@ class IntentPickerLabelButton : public views::LabelButton {
   views::InkDropState GetTargetInkDropState() {
     return GetInkDrop()->GetTargetInkDropState();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IntentPickerLabelButton);
 };
+
+BEGIN_METADATA(IntentPickerLabelButton, views::LabelButton)
+END_METADATA
 
 // static
 IntentPickerBubbleView* IntentPickerBubbleView::intent_picker_bubble_ = nullptr;
@@ -248,7 +254,7 @@ bool IntentPickerBubbleView::ShouldShowCloseButton() const {
   return true;
 }
 
-base::string16 IntentPickerBubbleView::GetWindowTitle() const {
+std::u16string IntentPickerBubbleView::GetWindowTitle() const {
   if (icon_type_ == PageActionIconType::kClickToCall) {
     return l10n_util::GetStringUTF16(
         IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_LABEL);
@@ -300,8 +306,8 @@ IntentPickerBubbleView::IntentPickerBubbleView(
   // origin changed. Other intent picker bubbles will be handled in
   // intent_picker_helpers, they will get closed on each navigation start and
   // should stay open until after navigation finishes.
-  set_close_on_main_frame_origin_navigation(icon_type ==
-                                            PageActionIconType::kClickToCall);
+  SetCloseOnMainFrameOriginNavigation(icon_type ==
+                                      PageActionIconType::kClickToCall);
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::INTENT_PICKER);
 }
@@ -322,6 +328,11 @@ void IntentPickerBubbleView::AppButtonPressed(size_t index,
                                               const ui::Event& event) {
   SetSelectedAppIndex(index, &event);
   RequestFocus();
+  if ((event.IsMouseEvent() && event.AsMouseEvent()->GetClickCount() == 2) ||
+      (event.IsGestureEvent() &&
+       event.AsGestureEvent()->details().tap_count() == 2)) {
+    AcceptDialog();
+  }
 }
 
 void IntentPickerBubbleView::ArrowButtonPressed(size_t index) {
@@ -379,7 +390,7 @@ void IntentPickerBubbleView::Initialize() {
     auto app_button = std::make_unique<IntentPickerLabelButton>(
         base::BindRepeating(&IntentPickerBubbleView::AppButtonPressed,
                             base::Unretained(this), i),
-        &app_info.icon, app_info.display_name);
+        app_info.icon_model, app_info.display_name);
     scrollable_view->AddChildViewAt(std::move(app_button), i++);
   }
 

@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">ତାଲିକା ଆଇଟମ୍</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">ଦୁଇ ଆଙ୍ଗୁଠିକୁ ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
-<translation id="1016393160682012902">ଏହାର ଫଙ୍କସନ୍ ବିଷୟରେ ଜାଣିବାକୁ କୌଣସି qwerty କୀ, ରିଫ୍ରେସ୍ କରାଯାଇପାରୁଥିବା ବ୍ରେଲି କୀ ଦବାନ୍ତୁ କିମ୍ବା ଜେଶ୍ଚରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ। ବାହାରି ଯିବାକୁ w ସହିତ Control କୀ କିମ୍ବା Escape କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="1022586497894531524">ଆପଣ କ'ଣ 'ChromeVoxର କୁହାଯାଉଥିବା ମତାମତ' ସୁବିଧା ପ୍ରଥମ ଥର ପାଇଁ ବ୍ୟବହାର କରୁଛନ୍ତି କି? ଏହି ଦ୍ରୁତ ଟ୍ୟୁଟୋରିଆଲ୍, ChromeVox ଆରମ୍ଭ କରି ଏହାକୁ କିପରି ବ୍ୟବହାର କରିବେ ତାହା ବିଷୟରେ ଆବଶ୍ୟକ ଜିନିଷଗୁଡ଼ିକୁ ବୁଝାଏ।</translation>
 <translation id="1025074108959230262">ଷ୍ଟିକି ମୋଡ୍ ଅକ୍ଷମ କରାଗଲା</translation>
 <translation id="1031961866430398710">ତା’ପରେ</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ନିୟନ୍ତ୍ରଣ ନାହିଁ</translation>
 <translation id="2045606329038304310">ଫର୍ମ ଫିଲ୍ଡ କଣ୍ଟ୍ରୋଲ୍</translation>
 <translation id="2063539687800151747">ଖୋଦିତ ଲେଖା</translation>
+<translation id="2074531330963286860">କାର୍ଯ୍ୟଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି। ଦେଖିବା ପାଇଁ Search+Period ଦବାନ୍ତୁ</translation>
 <translation id="2086961585857038472">ପରବର୍ତ୍ତୀ ଶବ୍ଦ</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">or</translation>
@@ -807,7 +807,7 @@
 <translation id="7039555289296502784">ଫିକା ଅଲିଭ୍</translation>
 <translation id="7041173719775863268">ଚୟନ ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="7043850226734279132">ଗାଢ଼ ଖାକି</translation>
-<translation id="7051308646573997571">କୋରାଲ୍</translation>
+<translation id="7051308646573997571">Coral</translation>
 <translation id="7062635574500127092">ଟିଲ୍</translation>
 <translation id="7086377898680121060">ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="7088743565397416204">ଯାହା ଫୋକସ୍‌ କରାଯାଇଛି ତାହାକୁ ସକ୍ରିୟ କରିବାକୁ ଦୁଇଥର-ଟାପ୍ କରନ୍ତୁ</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">ଚୟନ ଆରମ୍ଭ କିମ୍ବା ଶେଷ କରନ୍ତୁ</translation>
 <translation id="827422111966801947">ଘନନୀଳ</translation>
 <translation id="8276439074553447000">ପୂର୍ବବର୍ତ୍ତୀ ଫୋକସ୍‍‍ଯୋଗ୍ୟ ଆଇଟମ୍‍କୁ ଯାଆନ୍ତୁ</translation>
+<translation id="8279039817939141096">ଏହାର ଫଙ୍କସନ୍ ବିଷୟରେ ଜାଣିବାକୁ ଏକ qwerty କୀ, ରିଫ୍ରେସ୍ କରାଯାଇପାରୁଥିବା ବ୍ରେଲି କୀ'କୁ ଦବାନ୍ତୁ କିମ୍ବା ଜେଶ୍ଚରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ। ବାହାରିଯିବାକୁ w ସହିତ Control କୀ, Z ସହିତ Space କୀ'କୁ ଦବାନ୍ତୁ, ଦୁଇ ଆଙ୍ଗୁଠି ସାହାଯ୍ୟରେ ବାମକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ କିମ୍ବା Escape କୀ'କୁ ଦବାନ୍ତୁ।</translation>
 <translation id="8283603667300770666">ପରବର୍ତ୍ତୀ ଫର୍ମ କ୍ଷେତ୍ର</translation>
 <translation id="8310185481635255431">କୌଣସି ପରବର୍ତ୍ତୀ ଲିଙ୍କ୍ ନାହିଁ</translation>
 <translation id="831207808878314375">ପରିଭାଷା</translation>

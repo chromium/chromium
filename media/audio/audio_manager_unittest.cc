@@ -56,17 +56,20 @@
 #endif  // defined(USE_PULSEAUDIO)
 
 #if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/audio/audio_devices_pref_handler_stub.h"
-#include "chromeos/audio/cras_audio_handler.h"
+#include "ash/components/audio/audio_devices_pref_handler_stub.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "media/audio/cras/audio_manager_chromeos.h"
-#elif  defined(USE_CRAS) && defined(OS_LINUX)
+#elif defined(USE_CRAS) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "media/audio/cras/audio_manager_cras.h"
 #endif
 
 namespace media {
-
 namespace {
+
+#if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
+using ::ash::CrasAudioHandler;
+#endif
 
 template <typename T>
 struct TestAudioManagerFactory {
@@ -299,7 +302,7 @@ class AudioManagerTest : public ::testing::Test {
 
 #if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
   void TearDown() override {
-    chromeos::CrasAudioHandler::Shutdown();
+    CrasAudioHandler::Shutdown();
     audio_pref_handler_ = nullptr;
     chromeos::CrasAudioClient::Shutdown();
   }
@@ -307,17 +310,17 @@ class AudioManagerTest : public ::testing::Test {
   void SetUpCrasAudioHandlerWithTestingNodes(const AudioNodeList& audio_nodes) {
     chromeos::CrasAudioClient::InitializeFake();
     chromeos::FakeCrasAudioClient::Get()->SetAudioNodesForTesting(audio_nodes);
-    audio_pref_handler_ = new chromeos::AudioDevicesPrefHandlerStub();
-    chromeos::CrasAudioHandler::Initialize(
+    audio_pref_handler_ = new ash::AudioDevicesPrefHandlerStub();
+    CrasAudioHandler::Initialize(
         /*media_controller_manager*/ mojo::NullRemote(), audio_pref_handler_);
-    cras_audio_handler_ = chromeos::CrasAudioHandler::Get();
+    cras_audio_handler_ = CrasAudioHandler::Get();
     base::RunLoop().RunUntilIdle();
   }
 
   void SetActiveOutputNode(uint64_t node_id) {
     cras_audio_handler_->SwitchToDevice(
         *cras_audio_handler_->GetDeviceFromId(node_id), true /* notify */,
-        chromeos::CrasAudioHandler::ACTIVATE_BY_USER /* activate_by */);
+        CrasAudioHandler::ACTIVATE_BY_USER /* activate_by */);
   }
 
   AudioParameters GetPreferredOutputStreamParameters(
@@ -476,8 +479,8 @@ class AudioManagerTest : public ::testing::Test {
   std::unique_ptr<AudioDeviceInfoAccessorForTests> device_info_accessor_;
 
 #if defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::CrasAudioHandler* cras_audio_handler_ = nullptr;  // Not owned.
-  scoped_refptr<chromeos::AudioDevicesPrefHandlerStub> audio_pref_handler_;
+  CrasAudioHandler* cras_audio_handler_ = nullptr;  // Not owned.
+  scoped_refptr<ash::AudioDevicesPrefHandlerStub> audio_pref_handler_;
 #endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
@@ -646,9 +649,9 @@ TEST_F(AudioManagerTest, LookupDefaultInputDeviceWithProperGroupId) {
   CheckDeviceDescriptions(device_descriptions);
 
   // Set internal microphone as active.
-  chromeos::AudioDevice internal_microphone(kInternalMic);
-  cras_audio_handler_->SwitchToDevice(
-      internal_microphone, true, chromeos::CrasAudioHandler::ACTIVATE_BY_USER);
+  ash::AudioDevice internal_microphone(kInternalMic);
+  cras_audio_handler_->SwitchToDevice(internal_microphone, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
   auto new_default_device_id = device_info_accessor_->GetDefaultInputDeviceID();
   EXPECT_NE(previous_default_device_id, new_default_device_id);
 
@@ -691,9 +694,9 @@ TEST_F(AudioManagerTest, LookupDefaultOutputDeviceWithProperGroupId) {
   CheckDeviceDescriptions(device_descriptions);
 
   // Set internal speaker as active.
-  chromeos::AudioDevice internal_speaker(kInternalSpeaker);
-  cras_audio_handler_->SwitchToDevice(
-      internal_speaker, true, chromeos::CrasAudioHandler::ACTIVATE_BY_USER);
+  ash::AudioDevice internal_speaker(kInternalSpeaker);
+  cras_audio_handler_->SwitchToDevice(internal_speaker, true,
+                                      CrasAudioHandler::ACTIVATE_BY_USER);
   auto new_default_device_id =
       device_info_accessor_->GetDefaultOutputDeviceID();
   EXPECT_NE(previous_default_device_id, new_default_device_id);

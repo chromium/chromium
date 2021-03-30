@@ -239,6 +239,109 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
   EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
 }
 
+TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
+
+  auto* chunk = DOMUint8Array::Create(4);
+  chunk->Data()[0] = 0x43;
+  chunk->Data()[1] = 0x44;
+  chunk->Data()[2] = 0x45;
+  chunk->Data()[3] = 0x46;
+  underlying_source->Enqueue(
+      ScriptValue(script_state->GetIsolate(), ToV8(chunk, script_state)));
+  underlying_source->Close();
+
+  Persistent<BytesConsumer> consumer =
+      MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream);
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
+  consumer->SetClient(client);
+  Checkpoint checkpoint;
+
+  InSequence s;
+  EXPECT_CALL(checkpoint, Call(1));
+  EXPECT_CALL(checkpoint, Call(2));
+  EXPECT_CALL(checkpoint, Call(3));
+  EXPECT_CALL(*client, OnStateChange());
+  EXPECT_CALL(checkpoint, Call(4));
+
+  const char* buffer = nullptr;
+  size_t available = 0;
+  checkpoint.Call(1);
+  test::RunPendingTasks();
+  checkpoint.Call(2);
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  checkpoint.Call(3);
+  test::RunPendingTasks();
+  checkpoint.Call(4);
+  EXPECT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
+  ASSERT_EQ(4u, available);
+  EXPECT_EQ(0x43, buffer[0]);
+  EXPECT_EQ(0x44, buffer[1]);
+  EXPECT_EQ(0x45, buffer[2]);
+  EXPECT_EQ(0x46, buffer[3]);
+  chunk->DetachForTesting();
+  EXPECT_EQ(Result::kError, consumer->EndRead(4));
+  EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
+}
+
+TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
+
+  auto* chunk = DOMUint8Array::Create(4);
+  chunk->Data()[0] = 0x43;
+  chunk->Data()[1] = 0x44;
+  chunk->Data()[2] = 0x45;
+  chunk->Data()[3] = 0x46;
+  underlying_source->Enqueue(
+      ScriptValue(script_state->GetIsolate(), ToV8(chunk, script_state)));
+  underlying_source->Close();
+
+  Persistent<BytesConsumer> consumer =
+      MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream);
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
+  consumer->SetClient(client);
+  Checkpoint checkpoint;
+
+  InSequence s;
+  EXPECT_CALL(checkpoint, Call(1));
+  EXPECT_CALL(checkpoint, Call(2));
+  EXPECT_CALL(checkpoint, Call(3));
+  EXPECT_CALL(*client, OnStateChange());
+  EXPECT_CALL(checkpoint, Call(4));
+
+  const char* buffer = nullptr;
+  size_t available = 0;
+  checkpoint.Call(1);
+  test::RunPendingTasks();
+  checkpoint.Call(2);
+  EXPECT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  checkpoint.Call(3);
+  test::RunPendingTasks();
+  checkpoint.Call(4);
+  EXPECT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
+  ASSERT_EQ(4u, available);
+  EXPECT_EQ(0x43, buffer[0]);
+  EXPECT_EQ(0x44, buffer[1]);
+  EXPECT_EQ(0x45, buffer[2]);
+  EXPECT_EQ(0x46, buffer[3]);
+  EXPECT_EQ(Result::kOk, consumer->EndRead(1));
+  chunk->DetachForTesting();
+  EXPECT_EQ(Result::kError, consumer->BeginRead(&buffer, &available));
+  EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
+}
+
 TEST(ReadableStreamBytesConsumerTest, EnqueueUndefined) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();

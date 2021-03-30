@@ -92,7 +92,7 @@ void SessionLimitNotificationController::UpdateNotification() {
           ComposeNotificationTitle(),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_NOTIFICATION_SESSION_LENGTH_LIMIT_MESSAGE),
-          base::string16() /* display_source */, GURL(),
+          std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierSessionLengthTimeout),
@@ -108,7 +108,7 @@ void SessionLimitNotificationController::UpdateNotification() {
   has_notification_been_shown_ = true;
 }
 
-base::string16 SessionLimitNotificationController::ComposeNotificationTitle()
+std::u16string SessionLimitNotificationController::ComposeNotificationTitle()
     const {
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATION_SESSION_LENGTH_LIMIT_TITLE,

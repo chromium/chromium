@@ -15,7 +15,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -347,17 +345,9 @@ class SupervisedUserServiceExtensionTestBase
     return extension;
   }
 
-  void InitSupervisedUserInitiatedExtensionInstallFeature(bool enabled) {
-    if (enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          supervised_users::kSupervisedUserInitiatedExtensionInstall);
-    }
-  }
-
   bool is_supervised_;
   extensions::ScopedCurrentChannel channel_;
   SupervisedUserURLFilterObserver url_filter_observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class SupervisedUserServiceExtensionTestUnsupervised
@@ -376,8 +366,6 @@ class SupervisedUserServiceExtensionTest
 
 TEST_F(SupervisedUserServiceExtensionTest,
        ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls) {
-  InitSupervisedUserInitiatedExtensionInstallFeature(true);
-
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   supervised_user_service
@@ -391,11 +379,11 @@ TEST_F(SupervisedUserServiceExtensionTest,
   {
     scoped_refptr<const extensions::Extension> theme = MakeThemeExtension();
 
-    base::string16 error_1;
+    std::u16string error_1;
     EXPECT_TRUE(supervised_user_service->UserMayLoad(theme.get(), &error_1));
     EXPECT_TRUE(error_1.empty());
 
-    base::string16 error_2;
+    std::u16string error_2;
     EXPECT_FALSE(
         supervised_user_service->MustRemainInstalled(theme.get(), &error_2));
     EXPECT_TRUE(error_2.empty());
@@ -406,17 +394,17 @@ TEST_F(SupervisedUserServiceExtensionTest,
   {
     scoped_refptr<const extensions::Extension> extension = MakeExtension();
 
-    base::string16 error_1;
+    std::u16string error_1;
     EXPECT_FALSE(
         supervised_user_service->UserMayLoad(extension.get(), &error_1));
     EXPECT_FALSE(error_1.empty());
 
-    base::string16 error_2;
+    std::u16string error_2;
     EXPECT_FALSE(
         supervised_user_service->UserMayInstall(extension.get(), &error_2));
     EXPECT_FALSE(error_2.empty());
 
-    base::string16 error_3;
+    std::u16string error_3;
     EXPECT_FALSE(supervised_user_service->MustRemainInstalled(extension.get(),
                                                               &error_3));
     EXPECT_TRUE(error_3.empty());
@@ -429,12 +417,10 @@ TEST_F(SupervisedUserServiceExtensionTest,
 
 TEST_F(SupervisedUserServiceExtensionTest,
        ExtensionManagementPolicyProviderWithSUInitiatedInstalls) {
-  // Enable child users to initiate extension installs by simulating the
-  // toggling of "Permissions for sites and apps" to enabled.
-  InitSupervisedUserInitiatedExtensionInstallFeature(true);
-
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
+  // Enable child users to initiate extension installs by simulating the
+  // toggling of "Permissions for sites, apps and extensions" to enabled.
   supervised_user_service
       ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(true);
   EXPECT_TRUE(supervised_user_service
@@ -446,16 +432,16 @@ TEST_F(SupervisedUserServiceExtensionTest,
   {
     scoped_refptr<const extensions::Extension> extension = MakeExtension();
 
-    base::string16 error;
+    std::u16string error;
     EXPECT_TRUE(supervised_user_service->UserMayLoad(extension.get(), &error));
     EXPECT_TRUE(error.empty());
 
-    base::string16 error_2;
+    std::u16string error_2;
     EXPECT_FALSE(supervised_user_service->MustRemainInstalled(extension.get(),
                                                               &error_2));
     EXPECT_TRUE(error_2.empty());
 
-    base::string16 error_3;
+    std::u16string error_3;
     extensions::disable_reason::DisableReason reason =
         extensions::disable_reason::DISABLE_NONE;
     EXPECT_TRUE(supervised_user_service->MustRemainDisabled(extension.get(),
@@ -465,12 +451,12 @@ TEST_F(SupervisedUserServiceExtensionTest,
               reason);
     EXPECT_FALSE(error_3.empty());
 
-    base::string16 error_4;
+    std::u16string error_4;
     EXPECT_TRUE(supervised_user_service->UserMayModifySettings(extension.get(),
                                                                &error_4));
     EXPECT_TRUE(error_4.empty());
 
-    base::string16 error_5;
+    std::u16string error_5;
     EXPECT_TRUE(
         supervised_user_service->UserMayInstall(extension.get(), &error_5));
     EXPECT_TRUE(error_5.empty());

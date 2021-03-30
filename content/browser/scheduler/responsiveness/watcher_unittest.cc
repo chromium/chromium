@@ -5,6 +5,7 @@
 #include "content/browser/scheduler/responsiveness/watcher.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/pending_task.h"
 #include "base/run_loop.h"
@@ -321,12 +322,10 @@ class ResponsivenessWatcherRealIOThreadTest : public testing::Test {
 
 TEST_F(ResponsivenessWatcherRealIOThreadTest, MessageLoopObserver) {
   // Post a do-nothing task onto the UI thread.
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                               base::BindOnce([]() {}));
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
 
   // Post a do-nothing task onto the IO thread.
-  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
-                                               base::BindOnce([]() {}));
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
 
   // Post a task onto the IO thread that hops back to the UI thread. This
   // guarantees that both of the do-nothing tasks have already been processed.

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -15,15 +16,14 @@
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -232,14 +232,14 @@ class EnterprisePlatformKeysTest
         profile(), mock_policy_provider());
   }
 
-  void DidGetCertDatabase(const base::Closure& done_callback,
+  void DidGetCertDatabase(base::OnceClosure done_callback,
                           net::NSSCertDatabase* cert_db) {
     // In order to use a prepared certificate, import a private key to the
     // user's token for which the Javscript test will import the certificate.
     ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8User,
                                 base::size(privateKeyPkcs8User),
                                 cert_db->GetPrivateSlot().get());
-    done_callback.Run();
+    std::move(done_callback).Run();
   }
 
  protected:
@@ -277,8 +277,7 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, PRE_Basic) {
   RunPreTest();
 }
 
-// Flaky: https://crbug.com/1157137.
-IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, DISABLED_Basic) {
+IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
   {
     base::RunLoop loop;
     GetNSSCertDatabaseForProfile(
@@ -323,9 +322,9 @@ INSTANTIATE_TEST_SUITE_P(
 // chrome.enterprise.platformKeys namespace.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        EnterprisePlatformKeysIsRestrictedToPolicyExtension) {
-  ASSERT_TRUE(RunExtensionSubtest("enterprise_platform_keys",
-                                  "api_not_available.html",
-                                  kFlagIgnoreManifestWarnings, kFlagNone));
+  ASSERT_TRUE(RunExtensionTest({.name = "enterprise_platform_keys",
+                                .page_url = "api_not_available.html"},
+                               {.ignore_manifest_warnings = true}));
 
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("enterprise_platform_keys");

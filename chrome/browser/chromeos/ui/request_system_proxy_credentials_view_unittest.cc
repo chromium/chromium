@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
@@ -104,8 +103,7 @@ TEST_F(RequestSystemProxyCredentialsViewTest, GetProxyServer) {
 
 TEST_F(RequestSystemProxyCredentialsViewTest, GetWindowTitle) {
   CreateDialog(/*show_error=*/false);
-  EXPECT_EQ(system_proxy_dialog_->GetWindowTitle(),
-            base::ASCIIToUTF16("Sign in"));
+  EXPECT_EQ(system_proxy_dialog_->GetWindowTitle(), u"Sign in");
 }
 
 TEST_F(RequestSystemProxyCredentialsViewTest, ErrorLabelHidden) {

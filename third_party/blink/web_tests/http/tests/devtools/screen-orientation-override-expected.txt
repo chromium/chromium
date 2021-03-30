@@ -12,22 +12,22 @@ error: Request Emulation.setDeviceMetricsOverride failed. {"code":-32602,"messag
 Running: setWrongType
 error: Request Emulation.setDeviceMetricsOverride failed. {"code":-32602,"message":"Invalid screen orientation type value"}
 
-Running: setPortraitPrimary
-angle: 0; type: portrait-primary
-
 Running: setPortraitSecondary
 angle: 180; type: portrait-secondary
 
 Running: setLandscapePrimary
 angle: 90; type: landscape-primary
 
+Running: setPortraitPrimary
+angle: 0; type: portrait-primary
+
 Running: restoresAfterReload
 Page reloaded.
-angle: 90; type: landscape-primary
+angle: 0; type: portrait-primary
 
 Running: setLandscapeSecondary
 angle: 270; type: landscape-secondary
 
 Running: clearOverride
-Equals to initial: true
+Equals to initial: false. Expected: angle: 0; type: portrait-primary, actual: angle: 0; type: landscape-primary
 

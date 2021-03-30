@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
@@ -27,10 +28,6 @@
 namespace aura {
 class WindowTreeHost;
 }  // namespace aura
-
-namespace base {
-class RunLoop;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -78,7 +75,10 @@ class ShellDesktopControllerAura
   ~ShellDesktopControllerAura() override;
 
   // DesktopController:
-  void Run() override;
+  void PreMainMessageLoopRun() override;
+  void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) override;
+  void PostMainMessageLoopRun() override;
   void AddAppWindow(AppWindow* app_window, gfx::NativeWindow window) override;
   void CloseAppWindows() override;
 
@@ -174,8 +174,8 @@ class ShellDesktopControllerAura
   // NativeAppWindow::Close() deletes the AppWindow.
   std::list<AppWindow*> app_windows_;
 
-  // A pointer to the main message loop if this is run by ShellBrowserMainParts.
-  base::RunLoop* run_loop_ = nullptr;
+  // Non-null between WillRunMainMessageLoop() and MaybeQuit().
+  base::OnceClosure quit_when_idle_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellDesktopControllerAura);
 };

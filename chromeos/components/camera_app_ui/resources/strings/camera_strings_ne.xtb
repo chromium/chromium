@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">टाइमरको अवधि</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> सक्रिय भयो</translation>
+<translation id="2144806332417375165">भिडियोसम्बन्धी आफू अनुकूल प्यारामिटरहरू</translation>
 <translation id="229579744168541441">निर्यात गरी डिस्कमा पठाउनुहोस्</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2501853267655415902">रेकर्डिङ गर्न छाडियो</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">क्यामेराको रिजोल्युसन</translation>
 <translation id="3517926952904427380">पोर्ट्रेट तस्बिर खिच्न सकिएन</translation>
 <translation id="3569311554794739032">तपाईंले <ph name="FILE" /> हटाउन खोज्नुभएकै हो त?</translation>
-<translation id="3750315947605636967">अर्को एपले तपाईंको यन्त्रको क्यामेरा प्रयोग गरिरहेको छ</translation>
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3838931309141338733">बारकोड स्क्यान गर्नुहोस्</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">फाइल प्रणालीसम्बन्धी त्रुटिहरू।</translation>
 <translation id="7450541714075000668">टेक्स्ट कपी गरियो</translation>
 <translation id="7557677699350329807">अर्को क्यामेरा प्रयोग गर्नुहोस्</translation>
+<translation id="7607002721634913082">रोकिएको छ</translation>
 <translation id="7608223098072244877">४ गुणा ४</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7670511624014457267">६० FPS</translation>
+<translation id="7974782136796202581">प्यान गर्ने, ढल्काउने र जुम गर्ने विकल्पहरू देखाइयोस्</translation>
 <translation id="7983668134180549431">टेक्स्ट भेट्टियो।</translation>
 <translation id="8067883171444229417">भिडियो प्ले गर्नुहोस्</translation>
 <translation id="8131740175452115882">निश्चित</translation>

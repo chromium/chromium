@@ -37,6 +37,7 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"cy", "cy-GB"},
     {"da", "da-DK"},
     {"de", "de-DE"},
+    {"de-DE", "de-DE"},
     {"el", "el-GR"},
     {"en-AU", "en-AU"},
     {"en-CA", "en-CA"},
@@ -53,6 +54,7 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"fa", "fa-IR"},
     {"fo", "fo-FO"},
     {"fr", "fr-FR"},
+    {"fr-FR", "fr-FR"},
     {"he", "he-IL"},
     {"hi", "hi-IN"},
     {"hr", "hr-HR"},
@@ -60,12 +62,14 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"hy", "hy"},
     {"id", "id-ID"},
     {"it", "it-IT"},
+    {"it-IT", "it-IT"},
     {"ko", "ko"},
     {"lt", "lt-LT"},
     {"lv", "lv-LV"},
     {"nb", "nb-NO"},
     {"nl", "nl-NL"},
     {"pl", "pl-PL"},
+    {"pt", "pt-BR"}, // based on kAliasMap from ui/base/l10n/l10n_util.cc
     {"pt-BR", "pt-BR"},
     {"pt-PT", "pt-PT"},
     {"ro", "ro-RO"},
@@ -204,8 +208,8 @@ void GetISOLanguageCountryCodeFromLocale(const std::string& locale,
 }
 
 void FillSuggestions(
-    const std::vector<std::vector<base::string16>>& suggestions_list,
-    std::vector<base::string16>* optional_suggestions) {
+    const std::vector<std::vector<std::u16string>>& suggestions_list,
+    std::vector<std::u16string>* optional_suggestions) {
   DCHECK(optional_suggestions);
   size_t num_languages = suggestions_list.size();
 
@@ -221,7 +225,7 @@ void FillSuggestions(
     if (suggestions_list[language].size() <= index)
       continue;
 
-    const base::string16& suggestion = suggestions_list[language][index];
+    const std::u16string& suggestion = suggestions_list[language][index];
     // Only add the suggestion if it's unique.
     if (!base::Contains(*optional_suggestions, suggestion)) {
       optional_suggestions->push_back(suggestion);

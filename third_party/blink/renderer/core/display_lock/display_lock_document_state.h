@@ -128,6 +128,8 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   void NotifyPrintingOrPreviewChanged();
 
+  base::TimeTicks GetLockUpdateTimestamp();
+
  private:
   IntersectionObserver& EnsureIntersectionObserver();
 
@@ -154,6 +156,8 @@ class CORE_EXPORT DisplayLockDocumentState final
   HeapVector<ForcedNodeInfo> forced_node_info_;
 
   bool printing_ = false;
+
+  base::TimeTicks last_lock_update_timestamp_ = base::TimeTicks();
 };
 
 }  // namespace blink

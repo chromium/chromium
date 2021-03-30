@@ -59,11 +59,12 @@ public class AwContentsClientOnRendererUnresponsiveTest {
         @JavascriptInterface
         public void block() throws Exception {
             mThreadWasBlockedLatch.countDown();
-            mBlockingLatch.await(AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            mBlockingLatch.await(AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
 
         public void waitUntilBlocked() throws Exception {
-            mThreadWasBlockedLatch.await(AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            mThreadWasBlockedLatch.await(
+                    AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
     }
 

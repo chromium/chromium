@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -208,9 +207,10 @@ void BluetoothSocketEventDispatcher::ReceiveCallback(
 
   // Post a task to delay the read until the socket is available, as
   // calling StartReceive at this point would error with ERR_IO_PENDING.
-  base::PostTask(
-      FROM_HERE, {params.thread_id},
-      base::BindOnce(&BluetoothSocketEventDispatcher::StartReceive, params));
+  content::BrowserThread::GetTaskRunnerForThread(params.thread_id)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&BluetoothSocketEventDispatcher::StartReceive,
+                                params));
 }
 
 // static
@@ -303,9 +303,10 @@ void BluetoothSocketEventDispatcher::AcceptCallback(
 
   // Post a task to delay the accept until the socket is available, as
   // calling StartAccept at this point would error with ERR_IO_PENDING.
-  base::PostTask(
-      FROM_HERE, {params.thread_id},
-      base::BindOnce(&BluetoothSocketEventDispatcher::StartAccept, params));
+  content::BrowserThread::GetTaskRunnerForThread(params.thread_id)
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&BluetoothSocketEventDispatcher::StartAccept, params));
 }
 
 // static

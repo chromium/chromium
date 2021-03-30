@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+# To add a unit test to this target, make a "unit_test" source_set in your
+# component and add a reference here.
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    "//ash/components/account_manager:unit_tests",
+    "//ash/components/audio:unit_tests",
+    "//ash/components/pcie_peripheral:unit_tests",
+  ]
+
+  data_deps = [
+    "//chromeos/strings:chromeos_test_strings",
+    "//ui/resources:ui_test_pak_data",
+  ]
+}

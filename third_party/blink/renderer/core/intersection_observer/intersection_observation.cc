@@ -105,13 +105,15 @@ bool IntersectionObservation::ShouldCompute(unsigned flags) {
     return false;
 
   // If we're processing post-layout deliveries only and we don't have a
-  // post-layout delivery observer, then return early.
-  if (flags & kPostLayoutDeliveryOnly) {
-    if (Observer()->GetDeliveryBehavior() !=
-        IntersectionObserver::kDeliverDuringPostLayoutSteps) {
-      return false;
-    }
-  }
+  // post-layout delivery observer, then return early. Likewise, return if we
+  // need to compute non-post-layout-delivery observations but the observer
+  // behavior is post-layout.
+  bool post_layout_delivery_only = flags & kPostLayoutDeliveryOnly;
+  bool is_post_layout_delivery_observer =
+      Observer()->GetDeliveryBehavior() ==
+      IntersectionObserver::kDeliverDuringPostLayoutSteps;
+  if (post_layout_delivery_only != is_post_layout_delivery_observer)
+    return false;
 
   if (flags &
       (observer_->RootIsImplicit() ? kImplicitRootObserversNeedUpdate
@@ -198,6 +200,8 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
     geometry_flags |= IntersectionGeometry::kShouldTrackFractionOfRoot;
   if (CanUseCachedRects())
     geometry_flags |= IntersectionGeometry::kShouldUseCachedRects;
+  if (Observer()->UseOverflowClipEdge())
+    geometry_flags |= IntersectionGeometry::kUseOverflowClipEdge;
   return geometry_flags;
 }
 

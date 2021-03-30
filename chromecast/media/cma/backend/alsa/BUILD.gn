@@ -53,6 +53,7 @@ cast_source_set("volume_control") {
   deps = [
     "//base",
     "//chromecast/base:chromecast_switches",
+    "//chromecast/base/metrics",
     "//chromecast/media/cma/backend:public",
     "//media",
   ]

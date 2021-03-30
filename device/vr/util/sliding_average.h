@@ -7,14 +7,14 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "device/vr/util/sample_queue.h"
-#include "device/vr/vr_export.h"
 
 namespace device {
 
-class DEVICE_VR_EXPORT SlidingAverage {
+class COMPONENT_EXPORT(DEVICE_VR_UTIL) SlidingAverage {
  public:
   explicit SlidingAverage(size_t window_size);
   ~SlidingAverage();
@@ -29,7 +29,7 @@ class DEVICE_VR_EXPORT SlidingAverage {
   DISALLOW_COPY_AND_ASSIGN(SlidingAverage);
 };
 
-class DEVICE_VR_EXPORT SlidingTimeDeltaAverage {
+class COMPONENT_EXPORT(DEVICE_VR_UTIL) SlidingTimeDeltaAverage {
  public:
   explicit SlidingTimeDeltaAverage(size_t window_size);
   virtual ~SlidingTimeDeltaAverage();

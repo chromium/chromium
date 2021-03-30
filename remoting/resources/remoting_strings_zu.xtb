@@ -24,6 +24,7 @@ Ukuze unikeze le mvume, chofoza i-'<ph name="BUTTON_NAME" />' ngezansi ukuze uvu
 Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha bese uyayihlola futhi.</translation>
 <translation id="225614027745146050">Siyakwamukela</translation>
 <translation id="2320166752086256636">Fihla ikhibhodi</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Wonke Amalungelo Agodliwe.</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
 <translation id="2366718077645204424">Ayikwazi ukufinyelela kumsingathi. Lokhu kungenzeka kubangelwe ukulungiselelwa kwenethiwekhi oyisebenzisayo.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Ugcine ukubonwa ku-inthanethi ngo-<ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -71,6 +72,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="4405930547258349619">Ilabhulali yomongo</translation>
 <translation id="443560535555262820">Vula okuncanyelwayo kokufinyeleleka</translation>
 <translation id="4450893287417543264">Ungabonisi futhi</translation>
+<translation id="4512952200932940229">I-Copyright 2021 Ababhali be-Chromium. Wonke amalungelo agciniwe.</translation>
 <translation id="4513946894732546136">Impendulo</translation>
 <translation id="4563926062592110512">Iklayenti linqanyuliwe: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Amadivayisi yokulawula ukude</translation>
@@ -129,7 +131,6 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="7067321367069083429">Isikrini sisebenza njengesikrini sokuthinta</translation>
 <translation id="7116737094673640201">Siyakwamukela kudeskithophu yesilawuli kude ye-Chrome</translation>
 <translation id="7144878232160441200">Zama futhi</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. Wonke Amalungelo Agodliwe.</translation>
 <translation id="7312846573060934304">Umsingathi akaxhunyiwe ku-inthanethi.</translation>
 <translation id="7319983568955948908">Misa ukwabelana</translation>
 <translation id="7401733114166276557">Ideskithophu yesilawuli kude ye-Chrome</translation>
@@ -155,7 +156,6 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="8073845705237259513">Ukuze usebenzise i-Chrome yesilawuli kude sedeskithophu, kuzomele ungeze i-Akhawunti ye-Google kudivayisi yakho.</translation>
 <translation id="809687642899217504">Amakhompyutha wami</translation>
 <translation id="8116630183974937060">Kuvele iphutha lenethiwekhi. Sicela uhlole ukuthi idivayisi yakho ixhunyiwe ku-inthanethi uphinde uzame futhi.</translation>
-<translation id="8187079423890319756">Copyright 2014 Ababhali be-Chromium. Wonke amalungelo agciniwe.</translation>
 <translation id="8295077433896346116">Ukuze usebenzise i-<ph name="PRODUCT_NAME" />, kuzomele unikeze imvume 'Yokufinyelela' ukuze ukufakwa okusuka kumshini wesilawuli kude ufakwe kule-Mac.
 
 Ukuze unikeze le mvume, chofoza i-'<ph name="BUTTON_NAME" />' ngezansi. Ku-pane yokuncanyelwayo kokuthi 'Ukufinyeleleka' okuvulekayo, thikha ibhokisi eliseduze ne-'<ph name="SERVICE_SCRIPT_NAME" />'.
@@ -174,6 +174,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, susa ukuyithikha be
 <translation id="8743328882720071828">Ungathanda ukuvumela i-<ph name="CLIENT_USERNAME" /> ukuthi ibone iphinde ilawule ikhompuyutha yakho?</translation>
 <translation id="8747048596626351634">Iseshini ikhubazekile noma ihlulekile ukuqala. Uma i-~/.chrome-remote-desktop-session ikhona kukhompuyutha yesilawuli kude, yenza isiqiniseko sokuthi iqala inqubo ebeyidala isebenza ngaphambili efana nemvelo yedeskithophu noma isiphathi sewindi.</translation>
 <translation id="8804164990146287819">Inqubomgomo Yobumfihlo</translation>
+<translation id="8906511416443321782">Ukufinyelela kumakrofoni kuyadingeka ukuthatha umsindo nokuwusakaza kuklayenti yedeskithophu yesilawuli kude ye-Chrome.</translation>
 <translation id="9111855907838866522">Uxhumeke kudivayisi yakho yesilawuli kude. Ukuze uvule imenyu, sicela uthephe isikrini ngeminwe emine.</translation>
 <translation id="9126115402994542723">Ungabuzi iphinikhodi futhi uma uxhumeka kulo msingathi kusuka kule divayisi.</translation>
 <translation id="916856682307586697">Qalisa i-XSession ezenzakalelayo</translation>

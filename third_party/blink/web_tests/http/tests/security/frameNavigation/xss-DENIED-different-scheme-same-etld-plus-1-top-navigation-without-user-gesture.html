@@ -1,0 +1,22 @@
+<html>
+<head>
+    <script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.dumpChildFrames();
+        testRunner.setDumpConsoleMessages(false);
+        testRunner.waitUntilDone();
+    }
+
+    window.addEventListener("message", e => {
+      if (e.data == "PASS")
+        testRunner.notifyDone();
+      else
+        testRunner.testFailed("'top.location' didn't throw.");
+    });
+    </script>
+</head>
+<body>
+    <iframe src="http://sub1.example.test:8000/security/frameNavigation/resources/iframe-that-performs-different-scheme-same-etld-plus-one-top-navigation-without-user-gesture.html"></iframe>
+</body>
+</html>

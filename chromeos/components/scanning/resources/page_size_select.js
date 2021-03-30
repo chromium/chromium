@@ -6,6 +6,7 @@ import './scanning.mojom-lite.js';
 import './scan_settings_section.js';
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -26,21 +27,15 @@ Polymer({
 
   behaviors: [I18nBehavior, SelectBehavior],
 
-  properties: {
-    /** @type {!Array<chromeos.scanning.mojom.PageSize>} */
-    pageSizes: {
-      type: Array,
-      value: () => [],
-    },
+  /**
+   * @param {number} index
+   * @return {string}
+   */
+  getOptionAtIndex(index) {
+    assert(index < this.options.length);
 
-    /** @type {string} */
-    selectedPageSize: {
-      type: String,
-      notify: true,
-    },
+    return this.options[index].toString();
   },
-
-  observers: ['onPageSizesChange_(pageSizes.*)'],
 
   /**
    * @param {!chromeos.scanning.mojom.PageSize} pageSize
@@ -51,55 +46,28 @@ Polymer({
     return getPageSizeString(pageSize);
   },
 
-  /**
-   * Letter should be the default option if it exists. If not, use the first
-   * page size in the page sizes array.
-   * @return {string}
-   * @private
-   */
-  getDefaultSelectedPageSize_() {
-    let defaultPageSizeIndex = this.pageSizes.findIndex((pageSize) => {
-      return this.isDefaultPageSize_(pageSize);
+  sortOptions() {
+    this.options.sort((a, b) => {
+      return alphabeticalCompare(getPageSizeString(a), getPageSizeString(b));
     });
-    if (defaultPageSizeIndex === -1) {
-      defaultPageSizeIndex = 0;
-    }
 
-    return this.pageSizes[defaultPageSizeIndex].toString();
-  },
+    // If the fit to scan area option exists, move it to the end of the page
+    // sizes array.
+    const fitToScanAreaIndex = this.options.findIndex((pageSize) => {
+      return pageSize === chromeos.scanning.mojom.PageSize.kMax;
+    });
 
-  /**
-   * Sorts the page sizes and sets the selected page size when the page sizes
-   * array changes.
-   * @private
-   */
-  onPageSizesChange_() {
-    if (this.pageSizes.length > 1) {
-      this.pageSizes = this.customSort(
-          this.pageSizes, alphabeticalCompare,
-          (pageSize) => getPageSizeString(pageSize));
 
-      // If the fit to scan area option exists, move it to the end of the page
-      // sizes array.
-      const fitToScanAreaIndex = this.pageSizes.findIndex((pageSize) => {
-        return pageSize === chromeos.scanning.mojom.PageSize.kMax;
-      });
-      if (fitToScanAreaIndex !== -1) {
-        this.pageSizes.push(this.pageSizes.splice(fitToScanAreaIndex, 1)[0]);
-      }
-    }
-
-    if (this.pageSizes.length > 0) {
-      this.selectedPageSize = this.getDefaultSelectedPageSize_();
+    if (fitToScanAreaIndex !== -1) {
+      this.options.push(this.options.splice(fitToScanAreaIndex, 1)[0]);
     }
   },
 
   /**
-   * @param {!chromeos.scanning.mojom.PageSize} pageSize
+   * @param {!chromeos.scanning.mojom.PageSize} option
    * @return {boolean}
-   * @private
    */
-  isDefaultPageSize_(pageSize) {
-    return pageSize === DEFAULT_PAGE_SIZE;
+  isDefaultOption(option) {
+    return option === DEFAULT_PAGE_SIZE;
   },
 });

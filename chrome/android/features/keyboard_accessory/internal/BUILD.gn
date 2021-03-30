@@ -11,21 +11,22 @@ android_library("internal_java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//components/favicon/android:java",
 
     # TODO(crbug/951695): Cyclic dependency. Depend on public only when ready.
     "//chrome/android:chrome_java",
     "//chrome/android/features/keyboard_accessory/public:public_java",
+    "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/util:java",
     "//components/autofill/android:autofill_java",
-    "//components/browser_ui/android/bottomsheet:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
@@ -33,11 +34,11 @@ android_library("internal_java") {
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
-    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
-    "//third_party/android_deps:androidx_viewpager_viewpager_java",
     "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_viewpager_viewpager_java",
     "//ui/android:ui_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
@@ -140,6 +141,7 @@ android_resources("java_resources") {
   deps = [
     ":java_strings_grd",
     "//chrome/android:chrome_app_java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
   ]
 }
 

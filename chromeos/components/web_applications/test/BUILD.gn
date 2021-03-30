@@ -15,7 +15,6 @@ source_set("test_support") {
     "//base/test:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
-    "//chromeos/constants:constants",
     "//content/test:test_support",
     "//ui/webui:webui",
   ]

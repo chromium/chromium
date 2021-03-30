@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/nss_cert_database_chromeos.h"
@@ -165,6 +166,7 @@ class NetworkCertLoaderTest : public testing::Test,
     ASSERT_TRUE(primary_public_slot_db_.is_open());
     ASSERT_TRUE(primary_private_slot_db_.is_open());
 
+    SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
     cert_loader_ = NetworkCertLoader::Get();
     cert_loader_->AddObserver(this);
@@ -173,6 +175,7 @@ class NetworkCertLoaderTest : public testing::Test,
   void TearDown() override {
     cert_loader_->RemoveObserver(this);
     NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
   }
 
  protected:
@@ -303,6 +306,13 @@ class NetworkCertLoaderTest : public testing::Test,
 }  // namespace
 
 TEST_F(NetworkCertLoaderTest, BasicOnlyUserDB) {
+  EXPECT_FALSE(cert_loader_->can_have_client_certificates());
+  EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
+  EXPECT_FALSE(cert_loader_->initial_load_finished());
+  EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
+
+  cert_loader_->MarkUserNSSDBWillBeInitialized();
+  EXPECT_TRUE(cert_loader_->can_have_client_certificates());
   EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
@@ -336,6 +346,13 @@ TEST_F(NetworkCertLoaderTest, BasicOnlyUserDB) {
 }
 
 TEST_F(NetworkCertLoaderTest, BasicOnlySystemDB) {
+  EXPECT_FALSE(cert_loader_->can_have_client_certificates());
+  EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
+  EXPECT_FALSE(cert_loader_->initial_load_finished());
+  EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
+
+  cert_loader_->MarkSystemNSSDBWillBeInitialized();
+  EXPECT_TRUE(cert_loader_->can_have_client_certificates());
   EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
@@ -347,7 +364,7 @@ TEST_F(NetworkCertLoaderTest, BasicOnlySystemDB) {
   ImportCACert("root_ca_cert.pem", system_certdb_.get(), &certs);
   task_environment_.RunUntilIdle();
 
-  cert_loader_->SetSystemNSSDB(system_certdb_.get());
+  cert_loader_->SetSystemNssDbForTesting(system_certdb_.get());
 
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
@@ -391,7 +408,7 @@ TEST_F(NetworkCertLoaderTest, SystemAndUnaffiliatedUserDB) {
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
 
-  cert_loader_->SetSystemNSSDB(system_certdb_.get());
+  cert_loader_->SetSystemNssDbForTesting(system_certdb_.get());
 
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
@@ -458,7 +475,7 @@ TEST_F(NetworkCertLoaderTest, SystemAndAffiliatedUserDB) {
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
 
-  cert_loader_->SetSystemNSSDB(system_certdb_.get());
+  cert_loader_->SetSystemNssDbForTesting(system_certdb_.get());
 
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
@@ -546,8 +563,6 @@ TEST_F(NetworkCertLoaderTest, UpdateCertListOnNewCert) {
   // The certificate list should be updated now, as the message loop's been run.
   EXPECT_TRUE(IsCertInCertificateList(certs[0].get(), false /* device_wide */,
                                       cert_loader_->authority_certs()));
-
-  EXPECT_FALSE(cert_loader_->IsCertificateHardwareBacked(certs[0].get()));
 }
 
 TEST_F(NetworkCertLoaderTest, NoUpdateOnSecondaryDbChanges) {
@@ -584,13 +599,32 @@ TEST_F(NetworkCertLoaderTest, ClientLoaderUpdateOnNewClientCert) {
                                       cert_loader_->client_certs()));
 }
 
+// In tests, the client certs are provided by NSS softoken, so they are not
+// hardware-backed or available for network authentication.
+TEST_F(NetworkCertLoaderTest,
+       ClientCertNotHwBackedOrAvailableForNetworkAuthInTests) {
+  StartCertLoaderWithPrimaryDB();
+
+  net::ScopedCERTCertificate cert(
+      ImportClientCertAndKey(primary_certdb_.get()));
+  ASSERT_TRUE(cert);
+  task_environment_.RunUntilIdle();
+
+  const std::vector<NetworkCertLoader::NetworkCert>& client_certs =
+      cert_loader_->client_certs();
+  ASSERT_EQ(1U, client_certs.size());
+
+  EXPECT_FALSE(client_certs[0].IsHardwareBacked());
+  EXPECT_FALSE(client_certs[0].is_available_for_network_auth());
+}
+
 TEST_F(NetworkCertLoaderTest, ClientLoaderUpdateOnNewClientCertInSystemToken) {
   CreateCertDatabase(&system_db_ /* public_slot_db */,
                      nullptr /* private_slot_db */, &system_certdb_);
   AddSystemToken(system_certdb_.get());
   task_environment_.RunUntilIdle();
 
-  cert_loader_->SetSystemNSSDB(system_certdb_.get());
+  cert_loader_->SetSystemNssDbForTesting(system_certdb_.get());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1U, GetAndResetCertificatesLoadedEventsCount());
 

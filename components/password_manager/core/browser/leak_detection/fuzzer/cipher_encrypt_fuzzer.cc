@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/optional.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 
 namespace password_manager {
@@ -14,7 +15,8 @@ namespace password_manager {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string payload(reinterpret_cast<const char*>(data), size);
   std::string key;
-  std::string cipher = password_manager::CipherEncrypt(payload, &key);
+  base::Optional<std::string> cipher =
+      password_manager::CipherEncrypt(payload, &key);
   return 0;
 }
 

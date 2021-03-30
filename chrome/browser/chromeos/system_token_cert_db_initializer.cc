@@ -5,6 +5,8 @@
 #include "chrome/browser/chromeos/system_token_cert_db_initializer.h"
 
 #include <pk11pub.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -17,11 +19,13 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/network/network_cert_loader.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/tpm/buildflags.h"
 #include "chromeos/tpm/tpm_token_loader.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -98,9 +102,6 @@ base::TimeDelta GetNextRequestDelay(base::TimeDelta last_delay) {
   return std::min(last_delay * 2, kMaxRequestDelay);
 }
 
-// ChromeBrowserMainPartsChromeos owns this.
-SystemTokenCertDBInitializer* g_system_token_cert_db_initializer = nullptr;
-
 }  // namespace
 
 constexpr base::TimeDelta
@@ -112,24 +113,13 @@ SystemTokenCertDBInitializer::SystemTokenCertDBInitializer()
           kIsSystemSlotSoftwareFallbackAllowed) {
   // Only start loading the system token once cryptohome is available and only
   // if the TPM is ready (available && owned && not being owned).
-  CryptohomeClient::Get()->WaitForServiceToBeAvailable(
+  UserDataAuthClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&SystemTokenCertDBInitializer::OnCryptohomeAvailable,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  DCHECK_EQ(g_system_token_cert_db_initializer, nullptr);
-  g_system_token_cert_db_initializer = this;
 }
 
 SystemTokenCertDBInitializer::~SystemTokenCertDBInitializer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DCHECK_EQ(g_system_token_cert_db_initializer, this);
-  g_system_token_cert_db_initializer = nullptr;
-}
-
-// static
-SystemTokenCertDBInitializer* SystemTokenCertDBInitializer::Get() {
-  return g_system_token_cert_db_initializer;
 }
 
 void SystemTokenCertDBInitializer::ShutDown() {
@@ -141,53 +131,12 @@ void SystemTokenCertDBInitializer::ShutDown() {
 
   // Cancel any in-progress initialization sequence.
   weak_ptr_factory_.InvalidateWeakPtrs();
-
-  // Notify observers that the SystemTokenCertDBInitializer and the
-  // NSSCertDatabase it provides can not be used anymore.
-  for (auto& observer : observers_)
-    observer.OnSystemTokenCertDBDestroyed();
-
-  // Now it's safe to destroy the NSSCertDatabase.
-  system_token_cert_database_.reset();
 }
 
 void SystemTokenCertDBInitializer::OnOwnershipTaken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   MaybeStartInitializingDatabase();
-}
-
-void SystemTokenCertDBInitializer::GetSystemTokenCertDb(
-    GetSystemTokenCertDbCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DCHECK(callback);
-
-  if (system_token_cert_database_) {
-    std::move(callback).Run(system_token_cert_database_.get());
-  } else if (system_token_cert_db_retrieval_failed_) {
-    std::move(callback).Run(/*nss_cert_database=*/nullptr);
-  } else {
-    get_system_token_cert_db_callback_list_.AddUnsafe(std::move(callback));
-
-    if (!system_token_cert_db_retrieval_timer_.IsRunning()) {
-      system_token_cert_db_retrieval_timer_.Start(
-          FROM_HERE, kMaxCertDbRetrievalDelay, /*receiver=*/this,
-          &SystemTokenCertDBInitializer::OnSystemTokenDbRetrievalTimeout);
-    }
-  }
-}
-
-void SystemTokenCertDBInitializer::AddObserver(
-    SystemTokenCertDBObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.AddObserver(observer);
-}
-
-void SystemTokenCertDBInitializer::RemoveObserver(
-    SystemTokenCertDBObserver* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.RemoveObserver(observer);
 }
 
 void SystemTokenCertDBInitializer::OnCryptohomeAvailable(bool available) {
@@ -270,6 +219,7 @@ void SystemTokenCertDBInitializer::MaybeStartInitializingDatabase() {
   started_initializing_ = true;
   VLOG(1)
       << "SystemTokenCertDBInitializer: TPM is ready, loading system token.";
+  NetworkCertLoader::Get()->MarkSystemNSSDBWillBeInitialized();
   TPMTokenLoader::Get()->EnsureStarted();
   base::RepeatingCallback<void(crypto::ScopedPK11Slot)> callback =
       base::BindRepeating(&SystemTokenCertDBInitializer::InitializeDatabase,
@@ -294,22 +244,9 @@ void SystemTokenCertDBInitializer::InitializeDatabase(
       /*private_slot=*/crypto::ScopedPK11Slot());
   database->SetSystemSlot(std::move(system_slot_copy));
 
-  system_token_cert_database_ = std::move(database);
-  system_token_cert_db_retrieval_timer_.Stop();
-  get_system_token_cert_db_callback_list_.Notify(
-      system_token_cert_database_.get());
-
-  VLOG(1) << "SystemTokenCertDBInitializer: Passing system token NSS "
-             "database to NetworkCertLoader.";
-  NetworkCertLoader::Get()->SetSystemNSSDB(system_token_cert_database_.get());
-}
-
-void SystemTokenCertDBInitializer::OnSystemTokenDbRetrievalTimeout() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  system_token_cert_db_retrieval_failed_ = true;
-  get_system_token_cert_db_callback_list_.Notify(
-      /*nss_cert_database=*/nullptr);
+  auto* system_token_cert_db_storage = SystemTokenCertDbStorage::Get();
+  DCHECK(system_token_cert_db_storage);
+  system_token_cert_db_storage->SetDatabase(std::move(database));
 }
 
 }  // namespace chromeos

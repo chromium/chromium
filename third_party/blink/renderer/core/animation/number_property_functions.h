@@ -18,7 +18,9 @@ class NumberPropertyFunctions {
   STATIC_ONLY(NumberPropertyFunctions);
 
  public:
-  static base::Optional<double> GetInitialNumber(const CSSProperty&);
+  static base::Optional<double> GetInitialNumber(
+      const CSSProperty&,
+      const ComputedStyle& initial_style);
   static base::Optional<double> GetNumber(const CSSProperty&,
                                           const ComputedStyle&);
   static double ClampNumber(const CSSProperty&, double);

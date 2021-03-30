@@ -11,11 +11,9 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -23,21 +21,15 @@
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
+#include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 
 namespace {
 
 base::Optional<media_router::MediaRouter*> media_router_for_test_;
 
-// Returns the MediaRouter instance for the current primary profile, if there is
-// one.
-media_router::MediaRouter* GetMediaRouter() {
-  if (media_router_for_test_)
-    return *media_router_for_test_;
-
+Profile* GetProfile() {
   if (!user_manager::UserManager::IsInitialized())
     return nullptr;
 
@@ -45,8 +37,17 @@ media_router::MediaRouter* GetMediaRouter() {
   if (!user)
     return nullptr;
 
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
+  return chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+}
+
+// Returns the MediaRouter instance for the current primary profile, if there is
+// one.
+media_router::MediaRouter* GetMediaRouter() {
+  if (media_router_for_test_)
+    return *media_router_for_test_;
+
+  Profile* profile = GetProfile();
+  if (!profile || !media_router::MediaRouterEnabled(profile))
     return nullptr;
 
   auto* router =
@@ -144,19 +145,19 @@ void CastDeviceCache::OnRoutesUpdated(
 ////////////////////////////////////////////////////////////////////////////////
 // CastConfigControllerMediaRouter:
 
+CastConfigControllerMediaRouter::CastConfigControllerMediaRouter() {
+  // TODO(jdufault): This should use a callback interface once there is an
+  // equivalent. See crbug.com/666005.
+  session_observation_.Observe(session_manager::SessionManager::Get());
+}
+
+CastConfigControllerMediaRouter::~CastConfigControllerMediaRouter() = default;
+
+// static
 void CastConfigControllerMediaRouter::SetMediaRouterForTest(
     media_router::MediaRouter* media_router) {
   media_router_for_test_ = media_router;
 }
-
-CastConfigControllerMediaRouter::CastConfigControllerMediaRouter() {
-  // TODO(jdufault): This should use a callback interface once there is an
-  // equivalent. See crbug.com/666005.
-  registrar_.Add(this, chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-                 content::NotificationService::AllSources());
-}
-
-CastConfigControllerMediaRouter::~CastConfigControllerMediaRouter() = default;
 
 CastDeviceCache* CastConfigControllerMediaRouter::device_cache() {
   // The CastDeviceCache instance is lazily allocated because the MediaRouter
@@ -203,6 +204,13 @@ void CastConfigControllerMediaRouter::RequestDeviceRefresh() {
   devices_.clear();
 
   for (const media_router::MediaSink& sink : device_cache()->sinks()) {
+    // TODO(crbug.com/1154342): Remove this if-statement once the toolbar's Cast
+    // dialog no longer needs Meet sinks and they are disabled in the backend.
+    if (sink.IsMaybeCloudSink() &&
+        !base::FeatureList::IsEnabled(
+            media_router::kCastToMeetingFromCastDialog)) {
+      continue;
+    }
     ash::SinkAndRoute device;
     device.sink.id = sink.id();
     device.sink.name = sink.name();
@@ -243,28 +251,25 @@ CastConfigControllerMediaRouter::GetSinksAndRoutes() {
 }
 
 void CastConfigControllerMediaRouter::CastToSink(const std::string& sink_id) {
-  // TODO(imcheng): Pass in tab casting timeout.
-  GetMediaRouter()->CreateRoute(
-      media_router::MediaSource::ForUnchosenDesktop().id(), sink_id,
-      url::Origin::Create(GURL("http://cros-cast-origin/")), nullptr,
-      base::DoNothing(), base::TimeDelta(), false);
+  if (GetMediaRouter()) {
+    // TODO(imcheng): Pass in tab casting timeout.
+    GetMediaRouter()->CreateRoute(
+        media_router::MediaSource::ForUnchosenDesktop().id(), sink_id,
+        url::Origin::Create(GURL("http://cros-cast-origin/")), nullptr,
+        base::DoNothing(), base::TimeDelta(), false);
+  }
 }
 
 void CastConfigControllerMediaRouter::StopCasting(const std::string& route_id) {
-  GetMediaRouter()->TerminateRoute(route_id);
+  if (GetMediaRouter())
+    GetMediaRouter()->TerminateRoute(route_id);
 }
 
-void CastConfigControllerMediaRouter::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED:
-      // The active profile has changed, which means that the media router has
-      // as well. Reset the device cache to ensure we are using up-to-date
-      // object instances.
-      device_cache_.reset();
-      RequestDeviceRefresh();
-      break;
-  }
+void CastConfigControllerMediaRouter::OnUserProfileLoaded(
+    const AccountId& account_id) {
+  // The active profile has changed, which means that the media router has
+  // as well. Reset the device cache to ensure we are using up-to-date
+  // object instances.
+  device_cache_.reset();
+  RequestDeviceRefresh();
 }

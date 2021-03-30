@@ -84,11 +84,11 @@ class TestUpstartClient : public chromeos::FakeUpstartClient {
 };
 
 void RecordServiceErrorFromStateAndRunClosure(
-    base::Closure quit_run_loop,
+    base::OnceClosure quit_run_loop,
     media_perception::ServiceError* service_error,
     media_perception::State result_state) {
   *service_error = result_state.service_error;
-  quit_run_loop.Run();
+  std::move(quit_run_loop).Run();
 }
 
 void RecordServiceErrorFromProcessStateAndRunClosure(
@@ -100,11 +100,11 @@ void RecordServiceErrorFromProcessStateAndRunClosure(
 }
 
 void RecordServiceErrorFromDiagnosticsAndRunClosure(
-    base::Closure quit_run_loop,
+    base::OnceClosure quit_run_loop,
     media_perception::ServiceError* service_error,
     media_perception::Diagnostics result_diagnostics) {
   *service_error = result_diagnostics.service_error;
-  quit_run_loop.Run();
+  std::move(quit_run_loop).Run();
 }
 
 media_perception::ServiceError SetStateAndWaitForResponse(

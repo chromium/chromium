@@ -20,18 +20,18 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) FakeInputMethodDelegate
     : public InputMethodDelegate {
  public:
   using LanguageNameLocalizationCallback =
-      base::RepeatingCallback<base::string16(const std::string&)>;
+      base::RepeatingCallback<std::u16string(const std::string&)>;
   using GetLocalizedStringCallback =
-      base::RepeatingCallback<base::string16(int)>;
+      base::RepeatingCallback<std::u16string(int)>;
 
   FakeInputMethodDelegate();
   ~FakeInputMethodDelegate() override;
 
   // InputMethodDelegate implementation:
   std::string GetHardwareKeyboardLayouts() const override;
-  base::string16 GetLocalizedString(int resource_id) const override;
+  std::u16string GetLocalizedString(int resource_id) const override;
   void SetHardwareKeyboardLayoutForTesting(const std::string& layout) override;
-  base::string16 GetDisplayLanguageName(
+  std::u16string GetDisplayLanguageName(
       const std::string& language_code) const override;
 
   void set_hardware_keyboard_layout(const std::string& value) {

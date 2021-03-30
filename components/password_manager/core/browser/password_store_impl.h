@@ -33,7 +33,8 @@ class PasswordStoreImpl : public PasswordStore {
   ~PasswordStoreImpl() override;
 
   // Opens |login_db_| on the background sequence.
-  bool InitOnBackgroundSequence() override;
+  bool InitOnBackgroundSequence(
+      bool upload_phished_credentials_to_sync) override;
 
   // Implements PasswordStore interface.
   void ReportMetricsImpl(const std::string& sync_username,
@@ -60,7 +61,7 @@ class PasswordStoreImpl : public PasswordStore {
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const FormDigest& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
-      const base::string16& plain_text_password) override;
+      const std::u16string& plain_text_password) override;
   bool FillAutofillableLogins(
       std::vector<std::unique_ptr<PasswordForm>>* forms) override;
   bool FillBlocklistLogins(
@@ -71,20 +72,15 @@ class PasswordStoreImpl : public PasswordStore {
   std::vector<InteractionsStats> GetAllSiteStatsImpl() override;
   std::vector<InteractionsStats> GetSiteStatsImpl(
       const GURL& origin_domain) override;
-  bool AddCompromisedCredentialsImpl(
-      const CompromisedCredentials& compromised_credentials) override;
-  bool RemoveCompromisedCredentialsImpl(
+  PasswordStoreChangeList AddInsecureCredentialImpl(
+      const InsecureCredential& insecure_credential) override;
+  PasswordStoreChangeList RemoveInsecureCredentialsImpl(
       const std::string& signon_realm,
-      const base::string16& username,
-      RemoveCompromisedCredentialsReason reason) override;
-  std::vector<CompromisedCredentials> GetAllCompromisedCredentialsImpl()
-      override;
-  std::vector<CompromisedCredentials> GetMatchingCompromisedCredentialsImpl(
+      const std::u16string& username,
+      RemoveInsecureCredentialsReason reason) override;
+  std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
+  std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm) override;
-  bool RemoveCompromisedCredentialsByUrlAndTimeImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time remove_begin,
-      base::Time remove_end) override;
 
   void AddFieldInfoImpl(const FieldInfo& field_info) override;
   std::vector<FieldInfo> GetAllFieldInfoImpl() override;
@@ -99,7 +95,10 @@ class PasswordStoreImpl : public PasswordStore {
   bool CommitTransaction() override;
   FormRetrievalResult ReadAllLogins(
       PrimaryKeyToFormMap* key_to_form_map) override;
-  PasswordStoreChangeList RemoveLoginByPrimaryKeySync(int primary_key) override;
+  std::vector<InsecureCredential> ReadSecurityIssues(
+      FormPrimaryKey parent_key) override;
+  PasswordStoreChangeList RemoveLoginByPrimaryKeySync(
+      FormPrimaryKey primary_key) override;
   PasswordStoreSync::MetadataStore* GetMetadataStore() override;
   bool IsAccountStore() const override;
   bool DeleteAndRecreateDatabaseFile() override;

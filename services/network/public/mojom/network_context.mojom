@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
@@ -46,6 +47,7 @@ import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/udp_socket.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/websocket.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
@@ -57,9 +59,6 @@ import "services/network/public/mojom/dhcp_wpad_url_client.mojom";
 
 [EnableIf=is_ct_supported]
 import "services/network/public/mojom/ct_log_info.mojom";
-
-[EnableIf=is_trial_comparison_cert_verifier_supported]
-import "services/network/public/mojom/trial_comparison_cert_verifier.mojom";
 
 const uint32 kWebSocketOptionNone = 0;
 // Disallow the request from sending cookies. Disallow the response from writing
@@ -110,47 +109,12 @@ interface CustomProxyConnectionObserver {
       HttpResponseHeaders response_headers);
 };
 
-// Parameters to specify how the net::CertVerifier and net::CertVerifyProc
-// objects should be instantiated.
-struct CertVerifierCreationParams {
-  // Specifies the path to the directory where NSS will store its database.
-  [EnableIf=is_chromeos]
-  mojo_base.mojom.FilePath? nss_path;
-
-  // This is used in combination with nss_path, to ensure that the NSS database
-  // isn't opened multiple times for NetworkContexts in the same profie.
-  [EnableIf=is_chromeos]
-  string username_hash;
-
-  // Specifies which cert verifier implementation to use.
-  //   kDefault - Decided by base::Feature
-  //   kBuiltin - Use CertVerifyProcBuiltin
-  //   kSystem  - Use the system CertVerifyProc implementation
-  [EnableIf=is_builtin_cert_verifier_feature_supported]
-  enum CertVerifierImpl {kDefault, kBuiltin, kSystem};
-  [EnableIf=is_builtin_cert_verifier_feature_supported]
-  CertVerifierImpl use_builtin_cert_verifier = kDefault;
-
-  // Parameters for the cert verifier comparison trial. This is a temporary
-  // interface and embedders should not use it.
-  // See https://crbug.com/649026
-  [EnableIf=is_trial_comparison_cert_verifier_supported]
-  TrialComparisonCertVerifierParams? trial_comparison_cert_verifier_params;
-};
-
 // Includes a pipe to a CertVerifierService for usage by the
 // NetworkContext.
 struct CertVerifierServiceRemoteParams {
   // A pipe to the CertVerifierService.
   pending_remote<cert_verifier.mojom.CertVerifierService>?
       cert_verifier_service;
-};
-
-// Contains the parameters necessary to either connect to a CertVerifierService
-// or create a net::CertVerifier in the network service itself.
-union CertVerifierParams {
-  CertVerifierServiceRemoteParams remote_params;
-  CertVerifierCreationParams creation_params;
 };
 
 // Client to update the custom proxy config.
@@ -417,9 +381,8 @@ struct NetworkContextParams {
   [EnableIf=is_ct_supported]
   mojo_base.mojom.Time ct_log_update_time;
 
-  // Contains either a pipe to a CertVerifierService, or parameters used to
-  // instantiate a net::CertVerifier in-process.
-  CertVerifierParams? cert_verifier_params;
+  // Contains a pipe to a CertVerifierService.
+  CertVerifierServiceRemoteParams cert_verifier_params;
 
   // Initial additional certificates that will be used for certificate
   // validation.
@@ -530,23 +493,6 @@ struct ClearDataFilter {
   array<url.mojom.Origin> origins;
 };
 
-// Represents the accumulated network usage for a consumer.
-struct NetworkUsage {
-  // |process_id| is 0 for the browser process, otherwise it's the child process
-  // ID.
-  int32 process_id;
-
-  // The ID of the IPC route for the consumer, which identifies the RenderFrame
-  // or like-thing.
-  int32 routing_id;
-
-  // Raw bytes received from the network since the start/restart of the service.
-  int64 total_bytes_received;
-
-  // Raw bytes sent to the network since the start/restart of the service.
-  int64 total_bytes_sent;
-};
-
 // Represents a signed exchange report.
 // Spec: https://wicg.github.io/webpackage/loading.html#queue-report
 struct SignedExchangeReport {
@@ -649,11 +595,6 @@ struct URLLoaderFactoryParams {
   // impact because of the extra process hops, so use should be minimized.
   pending_remote<TrustedURLLoaderHeaderClient>? header_client;
 
-  // |factory_bound_access_patterns| are used for CORS checks in addition to
-  // the per-context allow patterns that is managed via NetworkContext
-  // interface. This still respects the per-context block lists.
-  CorsOriginAccessPatterns? factory_bound_access_patterns;
-
   // Information used restrict access to identity information (like SameSite
   // cookies) and to shard network resources, like the cache. If set, takes
   // precedence over ResourceRequest::TrustedParams::IsolationInfo field
@@ -675,6 +616,10 @@ struct URLLoaderFactoryParams {
   // take precedence over automatically assigning an IsolationInfo.
   bool automatically_assign_isolation_info = false;
 
+  // Whether URLLoaders created by this factory need to call
+  // URLLoaderNetworkServiceObserver::OnLoadingStateUpdate.
+  bool provide_loading_state_updates = false;
+
   // An identifier for toplevel frame. This is used for resource accounting
   // for keepalive requests. When this factory is for a dedicated worker,
   // the identifier for the toplevel frame of the ancestor's frame is given.
@@ -694,15 +639,22 @@ struct URLLoaderFactoryParams {
   // Used to notify clients about cookie reads or writes.
   pending_remote<CookieAccessObserver>? cookie_observer;
 
+  // Used to notify clients about authentication and certificate events.
+  pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer;
+
+  // Used to notify devtools about events.
+  pending_remote<DevToolsObserver>? devtools_observer;
+
   // If this equals kForbid, the context to which this loader is bound does not
   // allow any Trust Tokens (https://github.com/wicg/trust-token-api)
   // redemption or signing operations.
   //
   // This is set to kForbid for requests from subframes with the
-  // `trust-token-redemption` Feature Policy feature disabled by (1) policies
-  // inherited from their parents, or (2) the frames' iframe tag attributes.
+  // `trust-token-redemption` Permissions Policy feature disabled by (1)
+  // policies inherited from their parents, or (2) the frames' iframe tag
+  // attributes.
   //
-  // Note: Response headers can also disable this Feature Policy feature.
+  // Note: Response headers can also disable this Permissions Policy feature.
   // This will not necessarily be reflected in the the enum's value. The
   // response headers' value is only available from an untrusted source.
   // - If the renderer behaves correctly, renderer-side checks guarantee that
@@ -712,8 +664,8 @@ struct URLLoaderFactoryParams {
   // propagating the renderer's untrusted report about the response headers'
   // value.
   //
-  // TODO(crbug.com/1071848): Once Feature Policy headers are available from a
-  // trusted source, it would be good to set this depending on the headers'
+  // TODO(crbug.com/1071848): Once Permissions Policy headers are available from
+  // a trusted source, it would be good to set this depending on the headers'
   // values, too.
   TrustTokenRedemptionPolicy trust_token_redemption_policy = kPotentiallyPermit;
 
@@ -722,110 +674,12 @@ struct URLLoaderFactoryParams {
   string debug_tag = "";
 };
 
-// The |credentials| output parameter is given to URLRequest::SetAuth()
-// through this mojo interface. It is not set when URLRequest::CancelAuth()
-// needs to be called.
-interface AuthChallengeResponder {
-   OnAuthCredentials(AuthCredentials? credentials);
-};
-
-// This interface enables the UI to send client certificate selections back to
-// the network service.
-//
-// Defining an interface for this purpose, rather than using a union in the
-// response of OnCertificateRequested, enables the NetworkServiceClient to learn
-// of the URLLoader destruction via the connection error handler.
-interface ClientCertificateResponder {
-  // Use the selected certificate and continue the URLRequest.
-  //
-  // - |provider_name| corresponds to the return value of
-  //   net::SSLPrivateKey::GetProviderName().
-  // - |algorithm_preferences| corresponds to the return value of
-  //   net::SSLPrivateKey::GetAlgorithmPreferences().
-  ContinueWithCertificate(network.mojom.X509Certificate x509_certificate,
-                          string provider_name,
-                          array<uint16> algorithm_preferences,
-                          pending_remote<SSLPrivateKey> ssl_private_key);
-
-  // Affirmatively select no certificate (this is cached and can affect future
-  // URLRequests). Does not cancel the URLRequest.
-  //
-  // The connection is continued with no client cert.
-  // net::URLRequest::ContinueWithCertificate(nullptr, nullptr) needs to be
-  // called.
-  ContinueWithoutCertificate();
-
-  // Cancel the URLRequest. The request is aborted.
-  // net::URLRequest::CancelWithError() needs to be called.
-  CancelRequest();
-};
-
-// The content/browser implementation of this SSLPrivateKey interface wraps the
-// scoped_refptr<net::SSLPrivateKey> that is received from
-// SSLClientAuthDelegate::ContinueWithCertificate(), and this mojo interface is
-// sent from content/browser to services/network so that services/network can
-// have its own net::SSLPrivateKey implementation that internally uses this mojo
-// interface.
-// The |algorithm| and |input| parameters correspond to the |algorithm| and
-// |input| parameters in net::SSLPrivateKey::Sign().
-// The |net_error| and |signature| parameters correspond to the parameters in
-// net::SSLPrivateKey::SignCallback.
-interface SSLPrivateKey {
-  Sign(uint16 algorithm,
-       array<uint8> input) => (int32 net_error, array<uint8> signature);
-};
-
 // Callback interface for NetworkContext when routing identifiers aren't
 // available. Otherwise generally callbacks from the network service go on
 // NetworkServiceClient.
 //
 // Implemented by the browser process.
 interface NetworkContextClient {
-  // Called when we receive an authentication failure.
-  // The |auth_challenge_responder| will respond to auth challenge with
-  // credentials. |head| can provide response headers for the response
-  // which has elicited this auth request, if applicable.
-  //
-  // |window_id| or else |process_id| and |routing_id| indicates
-  // the frame making the request, see
-  // network::ResourceRequest::fetch_window_id.
-  OnAuthRequired(
-      mojo_base.mojom.UnguessableToken? window_id,
-      int32 process_id,
-      int32 routing_id,
-      uint32 request_id,
-      url.mojom.Url url,
-      bool first_auth_attempt,
-      AuthChallengeInfo auth_info,
-      URLResponseHead? head,
-      pending_remote<AuthChallengeResponder> auth_challenge_responder);
-
-  // Called when an SSL certificate requested message is received for client
-  // authentication.
-  //
-  // Rather than using one response for multiple purposes, the caller expects
-  // exactly one response (or disconnect) to be sent back via |cert_responder|.
-  //
-  // |window_id| or else |process_id| and |routing_id| indicates the frame
-  // making the request, see network::ResourceRequest::fetch_window_id.
-  OnCertificateRequested(
-      mojo_base.mojom.UnguessableToken? window_id,
-      int32 process_id,
-      int32 routing_id,
-      uint32 request_id,
-      network.mojom.SSLCertRequestInfo cert_info,
-      pending_remote<ClientCertificateResponder> cert_responder);
-
-  // Called when an SSL certificate is encountered.
-  // The callback argument is a net::ERROR value. If it's net::OK, then the
-  // request is resumed. Otherwise it's cancelled with the given error.
-  OnSSLCertificateError(int32 process_id,
-                        int32 routing_id,
-                        url.mojom.Url url,
-                        int32 net_error,
-                        SSLInfo ssl_info,
-                        bool fatal) => (int32 net_error);
-
   // Called when file uploading was requested.
   // If the process that requested the uploads has permission to read all of
   // the files referenced by |file_paths|, the callback arguments will be
@@ -846,17 +700,6 @@ interface NetworkContextClient {
 
   // Checks if a Domain Reliability report can be uploaded for the given origin.
   OnCanSendDomainReliabilityUpload(url.mojom.Url origin) => (bool allowed);
-
-  // Called when the Clear-Site-Data header has been received. The callback
-  // should be run after the data is deleted.
-  // https://www.w3.org/TR/clear-site-data/
-  // TODO(crbug.com/876931): We might want to move header parsing work to
-  // Network Service for security concerns (e.g. |header_value| => booleans).
-  OnClearSiteData(int32 process_id,
-                  int32 routing_id,
-                  url.mojom.Url url,
-                  string header_value,
-                  int32 load_flags) => ();
 
   // Called to generate an auth token for SPNEGO authentication on Android.
   [EnableIf=is_android]
@@ -907,12 +750,14 @@ interface NetworkContext {
   // Gets a RestrictedCookieManager scoped to a given origin, and applying
   // settings configured on the CookieManager associated with this domain.
   //
-  // |site_for_cookies| represents which domains (perhaps none) the cookie
-  // manager should consider to be first-party, for purposes of SameSite cookies
-  // and any third-party cookie blocking the embedder may implement.
+  // |origin| represents the domain for which the RestrictedCookieManager can
+  // access cookies. It could either be a frame origin when |role| is
+  // RestrictedCookieManagerRole::SCRIPT (a script scoped to a particular
+  // document's frame)), or a request origin when |role| is
+  // RestrictedCookieManagerRole::NETWORK (a network request).
   //
-  // |top_frame_origin| represents the domain for top-level frame, and can be
-  // used to look up preferences that are dependent on that.
+  // |isolation_info| contains info for SameSite and SameParty cookie queries.
+  // Must be fully populated.
   //
   // If |role| == SCRIPT, this interface can be safely handed out to a process
   // that is known to represent the given origin, such as a renderer process.
@@ -923,8 +768,7 @@ interface NetworkContext {
       pending_receiver<RestrictedCookieManager> restricted_cookie_manager,
       RestrictedCookieManagerRole role,
       url.mojom.Origin origin,
-      SiteForCookies site_for_cookies,
-      url.mojom.Origin top_frame_origin,
+      IsolationInfo isolation_info,
       pending_remote<CookieAccessObserver>? cookie_observer);
 
   // Provides a HasTrustTokensAnswerer scoped to the given top-frame origin
@@ -950,6 +794,17 @@ interface NetworkContext {
   //
   // A null |filter| indicates that all Trust Tokens data should be cleared.
   ClearTrustTokenData(ClearDataFilter? filter) => ();
+
+  // Returns the number of signed-but-not-spent Trust Tokens.
+  GetStoredTrustTokenCounts()
+      => (array<StoredTrustTokensForIssuer> tokens);
+
+  // Deletes all Trust Tokens issued by |issuer|.
+  //
+  // This method is narrower as ClearTrustTokenData. ClearTrustTokenData
+  // also clears out Redemption Records.
+  DeleteStoredTrustTokens(url.mojom.Origin issuer)
+      => (DeleteStoredTrustTokensStatus status);
 
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be
@@ -1242,19 +1097,19 @@ interface NetworkContext {
   // the connection is established, and due to message ordering uncertainty we
   // cannot know what happened.
   CreateWebSocket(
-        url.mojom.Url url,
-        array<string> requested_protocols,
-        SiteForCookies site_for_cookies,
-        IsolationInfo isolation_info,
-        array<HttpHeader> additional_headers,
-        int32 process_id,
-        int32 render_frame_id,
-        url.mojom.Origin origin,
-        uint32 options,
-        MutableNetworkTrafficAnnotationTag traffic_annotation,
-        pending_remote<WebSocketHandshakeClient> handshake_client,
-        pending_remote<AuthenticationHandler>? auth_handler,
-        pending_remote<TrustedHeaderClient>? header_client);
+      url.mojom.Url url,
+      array<string> requested_protocols,
+      SiteForCookies site_for_cookies,
+      IsolationInfo isolation_info,
+      array<HttpHeader> additional_headers,
+      int32 process_id,
+      url.mojom.Origin origin,
+      uint32 options,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
+      pending_remote<WebSocketHandshakeClient> handshake_client,
+      pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer,
+      pending_remote<WebSocketAuthenticationHandler>? auth_handler,
+      pending_remote<TrustedHeaderClient>? header_client);
 
   // Creates a QuicTransport connection to |url|. |origin| is used for the
   // client indication - see

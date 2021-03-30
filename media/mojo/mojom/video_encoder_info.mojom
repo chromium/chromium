@@ -6,11 +6,6 @@ module media.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-struct ScalingSettings {
-  uint8 min_qp;
-  uint8 max_qp;
-};
-
 struct ResolutionBitrateLimit {
   gfx.mojom.Size frame_size;
   int32 min_start_bitrate_bps;
@@ -26,7 +21,6 @@ struct VideoEncoderInfo {
   bool is_hardware_accelerated;
   bool supports_simulcast;
 
-  ScalingSettings? scaling_settings;
   // This array size is equal to media::VideoEncoderInfo::kMaxSpatialLayers.
   array<array<uint8>, 5> fps_allocation;
   array<ResolutionBitrateLimit> resolution_bitrate_limits;

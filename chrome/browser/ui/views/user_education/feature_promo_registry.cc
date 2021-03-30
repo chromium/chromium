@@ -8,11 +8,13 @@
 #include "base/optional.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/read_later/read_later_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -48,6 +50,19 @@ views::View* GetTabGroupsAnchorView(BrowserView* browser_view) {
 // kIPHLiveCaptionFeature:
 views::View* GetMediaButton(BrowserView* browser_view) {
   return browser_view->toolbar()->media_button();
+}
+
+// kIPHReadingListDiscoveryFeature:
+views::View* GetReadingListButton(BrowserView* browser_view) {
+  return browser_view->bookmark_bar()->read_later_button();
+}
+
+// kIPHReadingListEntryPointFeature:
+views::View* GetReadingListStarView(BrowserView* browser_view) {
+  return browser_view->toolbar()
+      ->location_bar()
+      ->page_action_icon_controller()
+      ->GetIconView(PageActionIconType::kBookmarkStar);
 }
 
 // kIPHReopenTabFeature:
@@ -167,6 +182,26 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
 
     RegisterFeature(feature_engagement::kIPHLiveCaptionFeature, params,
                     base::BindRepeating(GetMediaButton));
+  }
+
+  {
+    // kReadingListDiscoveryFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier = IDS_READING_LIST_DISCOVERY_PROMO;
+    params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
+
+    RegisterFeature(feature_engagement::kIPHReadingListDiscoveryFeature, params,
+                    base::BindRepeating(GetReadingListButton));
+  }
+
+  {
+    // kIPHReadingListEntryPointFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier = IDS_READING_LIST_ENTRY_POINT_PROMO;
+    params.arrow = views::BubbleBorder::TOP_RIGHT;
+
+    RegisterFeature(feature_engagement::kIPHReadingListEntryPointFeature,
+                    params, base::BindRepeating(GetReadingListStarView));
   }
 
   {

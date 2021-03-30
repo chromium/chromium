@@ -100,7 +100,7 @@ void WorkerTaskProvider::StopUpdating() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Stop observing profile creation and destruction.
-  if (g_browser_process->profile_manager())
+  if (g_browser_process && g_browser_process->profile_manager())
     g_browser_process->profile_manager()->RemoveObserver(this);
   observed_profiles_.RemoveAll();
 

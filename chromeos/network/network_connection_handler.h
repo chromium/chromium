@@ -39,6 +39,7 @@ namespace chromeos {
 
 enum class ConnectCallbackMode { ON_STARTED, ON_COMPLETED };
 
+class CellularESimConnectionHandler;
 class NetworkStateHandler;
 class NetworkConfigurationHandler;
 class ManagedNetworkConfigurationHandler;
@@ -108,6 +109,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // delegate present.
   static const char kErrorTetherAttemptWithNoDelegate[];
 
+  // Error occurred while trying to use inhibit/uninhibit logic for cellular
+  // operations.
+  static const char kErrorCellularInhibitFailure[];
+
+  // Error occurred when trying to connect to a cellular network that is out of
+  // credits.
+  static const char kErrorCellularOutOfCredits[];
+
+  // Error occurred while trying to perform an operation with an eSIM profile.
+  static const char kErrorESimProfileIssue[];
+
   class COMPONENT_EXPORT(CHROMEOS_NETWORK) TetherDelegate {
    public:
     using StringErrorCallback =
@@ -172,17 +184,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
       base::OnceClosure success_callback,
       network_handler::ErrorCallback error_callback) = 0;
 
-  virtual void Init(NetworkStateHandler* network_state_handler,
-                    NetworkConfigurationHandler* network_configuration_handler,
-                    ManagedNetworkConfigurationHandler*
-                        managed_network_configuration_handler) = 0;
+  // Note: |cellular_esim_connection_handler| is null when the associated flag
+  // is disabled.
+  virtual void Init(
+      NetworkStateHandler* network_state_handler,
+      NetworkConfigurationHandler* network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularESimConnectionHandler* cellular_esim_connection_handler) = 0;
 
   // Construct and initialize an instance for testing.
   static std::unique_ptr<NetworkConnectionHandler> InitializeForTesting(
       NetworkStateHandler* network_state_handler,
       NetworkConfigurationHandler* network_configuration_handler,
-      ManagedNetworkConfigurationHandler*
-          managed_network_configuration_handler);
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularESimConnectionHandler* cellular_esim_connection_handler);
 
  protected:
   NetworkConnectionHandler();
@@ -223,5 +238,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::ConnectCallbackMode;
+}
 
 #endif  // CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_H_

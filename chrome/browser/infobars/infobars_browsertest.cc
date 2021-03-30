@@ -21,13 +21,11 @@
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/infobars/infobar_observer.h"
 #include "chrome/browser/infobars/infobar_service.h"
-#include "chrome/browser/pepper_broker_infobar_delegate.h"
 #include "chrome/browser/plugins/hung_plugin_infobar_delegate.h"
 #include "chrome/browser/plugins/plugin_infobar_delegates.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_observer.h"
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
-#include "chrome/browser/previews/previews_lite_page_infobar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -65,8 +63,6 @@
 
 #if defined(OS_MAC)
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
-#include "chrome/browser/ui/cocoa/rosetta_required_infobar_delegate.h"
-#include "chrome/browser/ui/startup/mac_system_infobar_delegate.h"
 #endif
 
 #if !defined(USE_AURA)
@@ -188,13 +184,11 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
        IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
       {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
       {"nacl", IBD::NACL_INFOBAR_DELEGATE},
-      {"pepper_broker", IBD::PEPPER_BROKER_INFOBAR_DELEGATE},
       {"outdated_plugin", IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE},
       {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
       {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
       {"file_access_disabled", IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
       {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
-      {"mac_system", IBD::SYSTEM_INFOBAR_DELEGATE_MAC},
       {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
       {"installation_error", IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE},
       {"bad_flags", IBD::BAD_FLAGS_INFOBAR_DELEGATE},
@@ -204,9 +198,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
       {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
       {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
-      {"previews_lite_page", IBD::LITE_PAGE_PREVIEWS_INFOBAR},
       {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
-      {"rosetta_required", IBD::ROSETTA_REQUIRED_INFOBAR_DELEGATE},
   };
   auto id_entry = kIdentifiers.find(name);
   if (id_entry == kIdentifiers.end()) {
@@ -218,14 +210,13 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   switch (infobar_identifier) {
     case IBD::HUNG_PLUGIN_INFOBAR_DELEGATE:
       HungPluginInfoBarDelegate::Create(GetInfoBarService(), nullptr, 0,
-                                        base::ASCIIToUTF16("Test Plugin"));
+                                        u"Test Plugin");
       break;
 
     case IBD::DEV_TOOLS_INFOBAR_DELEGATE:
       DevToolsInfoBarDelegate::Create(
           l10n_util::GetStringFUTF16(
-              IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE,
-              base::ASCIIToUTF16("file_path")),
+              IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE, u"file_path"),
           base::DoNothing());
       break;
 
@@ -239,8 +230,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           GetInfoBarService(),
           l10n_util::GetStringFUTF16(
               IDS_EXTENSION_PROMPT_EXTENSION_CONNECT_FROM_INCOGNITO,
-              base::ASCIIToUTF16("http://example.com"),
-              base::ASCIIToUTF16("Test Extension")),
+              u"http://example.com", u"Test Extension"),
           base::DoNothing());
       break;
     }
@@ -262,31 +252,24 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 #endif
       break;
 
-    case IBD::PEPPER_BROKER_INFOBAR_DELEGATE:
-      PepperBrokerInfoBarDelegate::Create(GetInfoBarService(),
-                                          GURL("http://example.com/"),
-                                          base::ASCIIToUTF16("Test Plugin"),
-                                          nullptr, nullptr, base::DoNothing());
-      break;
-
     case IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE:
       OutdatedPluginInfoBarDelegate::Create(
           GetInfoBarService(), nullptr,
-          std::make_unique<PluginMetadata>(
-              "test-plugin", base::ASCIIToUTF16("Test Plugin"), true, GURL(),
-              GURL(), base::ASCIIToUTF16("Test"), std::string(), false));
+          std::make_unique<PluginMetadata>("test-plugin", u"Test Plugin", true,
+                                           GURL(), GURL(), u"Test",
+                                           std::string(), false));
       break;
 
     case IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE:
       ReloadPluginInfoBarDelegate::Create(
           GetInfoBarService(), nullptr,
           l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
-                                     base::ASCIIToUTF16("Test Plugin")));
+                                     u"Test Plugin"));
       break;
 
     case IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE:
-      PluginObserver::CreatePluginObserverInfoBar(
-          GetInfoBarService(), base::ASCIIToUTF16("Test Plugin"));
+      PluginObserver::CreatePluginObserverInfoBar(GetInfoBarService(),
+                                                  u"Test Plugin");
       break;
 
     case IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE:
@@ -301,20 +284,12 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 #endif
       break;
 
-    case IBD::SYSTEM_INFOBAR_DELEGATE_MAC:
-#if defined(OS_MAC)
-      MacSystemInfoBarDelegate::Create(GetInfoBarService());
-#else
-      ADD_FAILURE() << "This infobar is not supported on this OS.";
-#endif
-      break;
-
     case IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE:
       CollectedCookiesInfoBarDelegate::Create(GetInfoBarService());
       break;
 
     case IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE: {
-      const base::string16 msg =
+      const std::u16string msg =
           l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALL_DISALLOWED_ON_SITE);
       InstallationErrorInfoBarDelegate::Create(
           GetInfoBarService(),
@@ -378,22 +353,10 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       AutomationInfoBarDelegate::Create();
       break;
 
-    case IBD::LITE_PAGE_PREVIEWS_INFOBAR:
-      PreviewsLitePageInfoBarDelegate::Create(GetWebContents());
-      break;
-
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
-      TabSharingInfoBarDelegate::Create(
-          GetInfoBarService(), base::ASCIIToUTF16("example.com"),
-          base::ASCIIToUTF16("application.com"), false, true, nullptr);
-      break;
-
-    case IBD::ROSETTA_REQUIRED_INFOBAR_DELEGATE:
-#if defined(OS_MAC)
-      RosettaRequiredInfoBarDelegate::Create(GetWebContents());
-#else
-      ADD_FAILURE() << "This infobar is not supported on this OS.";
-#endif
+      TabSharingInfoBarDelegate::Create(GetInfoBarService(), u"example.com",
+                                        u"application.com", false, true,
+                                        nullptr);
       break;
 
     default:
@@ -427,10 +390,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_nacl) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_pepper_broker) {
-  ShowAndVerifyUi();
-}
-
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_outdated_plugin) {
   ShowAndVerifyUi();
 }
@@ -449,9 +408,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_file_access_disabled) {
 
 #if defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_keystone_promotion) {
-  ShowAndVerifyUi();
-}
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_mac_system) {
   ShowAndVerifyUi();
 }
 #endif
@@ -493,10 +449,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_translate) {
 #endif
 
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_automation) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_previews_lite_page) {
   ShowAndVerifyUi();
 }
 

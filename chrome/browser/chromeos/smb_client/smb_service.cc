@@ -16,11 +16,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_system_provider/mount_path_util.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/smb_client/discovery/mdns_host_locator.h"
 #include "chrome/browser/chromeos/smb_client/discovery/netbios_client.h"
 #include "chrome/browser/chromeos/smb_client/discovery/netbios_host_locator.h"
@@ -361,7 +361,10 @@ void SmbService::Mount(const file_system_provider::MountOptions& options,
     // workgroup if necessary.
     username = username_input;
     password = password_input;
-    ParseUserName(username_input, &username, &workgroup);
+    if (!ParseUserName(username_input, &username, &workgroup)) {
+      std::move(callback).Run(SmbMountResult::kInvalidUsername);
+      return;
+    }
   }
 
   // Construct the file system ID before calling mount so that numerous

@@ -32,7 +32,7 @@ class AdFrameVoter : public FrameNode::ObserverDefaultImpl {
   void OnIsAdFrameChanged(const FrameNode* frame_node) override;
 
  private:
-  VotingChannelWrapper voting_channel_;
+  VotingChannel voting_channel_;
 };
 
 }  // namespace execution_context_priority

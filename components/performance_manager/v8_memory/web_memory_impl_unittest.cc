@@ -45,10 +45,11 @@ class FakeSecurityChecker : public WebMeasureMemorySecurityChecker {
 
   void CheckMeasureMemoryIsAllowed(
       const FrameNode* frame_node,
-      base::OnceClosure measure_memory_closure,
+      MeasureMemoryCallback measure_memory_callback,
       mojo::ReportBadMessageCallback bad_message_callback) const override {
     if (allowed_) {
-      std::move(measure_memory_closure).Run();
+      std::move(measure_memory_callback)
+          .Run(FrameNodeImpl::FromNode(frame_node)->GetWeakPtr());
     } else {
       std::move(bad_message_callback).Run("disallowed");
     }
@@ -69,9 +70,13 @@ void WebMemoryImplTest::MeasureAndVerify(
         base::flat_map<std::string, Bytes> actual;
         for (const auto& entry : result->breakdown) {
           EXPECT_EQ(1u, entry->attribution.size());
-          EXPECT_EQ(mojom::WebMemoryAttribution::Scope::kWindow,
-                    entry->attribution[0]->scope);
-          actual[*entry->attribution[0]->url] = Bytes{entry->bytes};
+          std::string attribution_tag =
+              (mojom::WebMemoryAttribution::Scope::kWindow ==
+               entry->attribution[0]->scope)
+                  ? *entry->attribution[0]->url
+                  : *entry->attribution[0]->src;
+          actual[attribution_tag] =
+              entry->memory ? Bytes{entry->memory->bytes} : base::nullopt;
         }
         EXPECT_EQ(expected, actual);
         measurement_done = true;
@@ -92,15 +97,17 @@ TEST_F(WebMemoryImplTest, MeasurerIncludesSameOriginRelatedFrames) {
                          });
 }
 
-// TODO(b/1085129): Currently WebMemoryMeasurer only includes the results for a
-// single process. Once it invokes WebMemoryAggregator, update this test to
-// expect cross-origin frames to be included in the aggregation.
-TEST_F(WebMemoryImplTest, MeasurerSkipsCrossOriginFrames) {
+TEST_F(WebMemoryImplTest, MeasurerIncludesCrossOriginFrames) {
   auto* main = AddFrameNode("http://foo.com", Bytes{10u});
 
-  AddFrameNode("http://bar.com/iframe", Bytes{20}, main);
+  AddFrameNode("http://bar.com/iframe", Bytes{20}, main, "bar_id",
+               "http://bar.com/iframe_src");
 
-  MeasureAndVerify(main, {{"http://foo.com/", Bytes{10u}}});
+  MeasureAndVerify(main, {{"http://foo.com/", Bytes{10u}},
+                          {
+                              "http://bar.com/iframe_src",
+                              Bytes{20},
+                          }});
 }
 
 TEST_F(WebMemoryImplTest, MeasurerSkipsCrossBrowserContextGroupFrames) {
@@ -124,7 +131,8 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
         const auto& entry = result->breakdown[0];
         EXPECT_EQ(1u, entry->attribution.size());
         EXPECT_EQ(kMainFrameUrl, *(entry->attribution[0]->url));
-        EXPECT_EQ(1001u, entry->bytes);
+        ASSERT_TRUE(entry->memory);
+        EXPECT_EQ(1001u, entry->memory->bytes);
         run_loop.Quit();
       });
   auto bad_message_callback =

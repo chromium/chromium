@@ -44,6 +44,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::TextBoundary,
                           ax::mojom::TextBoundary::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::MoveDirection,
                           ax::mojom::MoveDirection::kMaxValue)
+IPC_ENUM_TRAITS_MAX_VALUE(ax::mojom::Action, ax::mojom::Action::kMaxValue)
 
 IPC_STRUCT_TRAITS_BEGIN(ui::AXRelativeBounds)
   IPC_STRUCT_TRAITS_MEMBER(offset_container_id)
@@ -55,6 +56,7 @@ IPC_STRUCT_TRAITS_BEGIN(ui::AXEvent)
   IPC_STRUCT_TRAITS_MEMBER(event_type)
   IPC_STRUCT_TRAITS_MEMBER(id)
   IPC_STRUCT_TRAITS_MEMBER(event_from)
+  IPC_STRUCT_TRAITS_MEMBER(event_from_action)
   IPC_STRUCT_TRAITS_MEMBER(event_intents)
   IPC_STRUCT_TRAITS_MEMBER(action_request_id)
 IPC_STRUCT_TRAITS_END()
@@ -109,6 +111,7 @@ IPC_STRUCT_TRAITS_BEGIN(ui::AXTreeUpdate)
   IPC_STRUCT_TRAITS_MEMBER(root_id)
   IPC_STRUCT_TRAITS_MEMBER(nodes)
   IPC_STRUCT_TRAITS_MEMBER(event_from)
+  IPC_STRUCT_TRAITS_MEMBER(event_from_action)
   IPC_STRUCT_TRAITS_MEMBER(event_intents)
 IPC_STRUCT_TRAITS_END()
 

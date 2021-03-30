@@ -138,20 +138,12 @@ sorted so that the things that make the biggest difference are first.
 
 Google developed the distributed compiler called
 [Goma](https://chromium.googlesource.com/infra/goma/client).
-Googlers and contributors who have
-[tryjob access](https://www.chromium.org/getting-involved/become-a-committer#TOC-Try-job-access)
-could use `Goma`.
 
-If you are not a Googler and would like to use `Goma`
-[sign up](https://docs.google.com/forms/d/1NKHcyqYqw3c4jftrLPwvyiPlolRm4Hf6ObrB83wHXy8/viewform).
+If you would like to use `Goma` provisioned by Google,
+please follow [Goma for Chromium contributors](https://chromium.googlesource.com/infra/goma/client/+/HEAD/doc/early-access-guide.md).
 
-Once you're allowed to use `Goma` and have installed the client,
-[set the following GN args](https://www.chromium.org/developers/gn-build-configuration#TOC-Goma):
-
-```
-use_goma=true
-goma_dir="/path/to/goma-client"
-```
+If you are a Google employee, see
+[go/building-chrome](https://goto.google.com/building-chrome) instead.
 
 #### Disable NaCl
 

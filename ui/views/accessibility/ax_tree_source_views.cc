@@ -101,7 +101,11 @@ AXAuraObjWrapper* AXTreeSourceViews::GetParent(AXAuraObjWrapper* node) const {
 }
 
 bool AXTreeSourceViews::IsIgnored(AXAuraObjWrapper* node) const {
-  return node && node->IsIgnored();
+  if (!node)
+    return false;
+  ui::AXNodeData out_data;
+  node->Serialize(&out_data);
+  return out_data.IsIgnored();
 }
 
 bool AXTreeSourceViews::IsValid(AXAuraObjWrapper* node) const {
@@ -118,7 +122,7 @@ AXAuraObjWrapper* AXTreeSourceViews::GetNull() const {
 }
 
 std::string AXTreeSourceViews::GetDebugString(AXAuraObjWrapper* node) const {
-  return node->ToString();
+  return node ? node->ToString() : "(null)";
 }
 
 void AXTreeSourceViews::SerializeNode(AXAuraObjWrapper* node,

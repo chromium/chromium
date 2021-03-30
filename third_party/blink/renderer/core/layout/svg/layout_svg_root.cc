@@ -519,14 +519,6 @@ void LayoutSVGRoot::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   LayoutReplaced::MapLocalToAncestor(ancestor, transform_state, mode);
 }
 
-const LayoutObject* LayoutSVGRoot::PushMappingToContainer(
-    const LayoutBoxModelObject* ancestor_to_stop_at,
-    LayoutGeometryMap& geometry_map) const {
-  NOT_DESTROYED();
-  return LayoutReplaced::PushMappingToContainer(ancestor_to_stop_at,
-                                                geometry_map);
-}
-
 void LayoutSVGRoot::UpdateCachedBoundaries() {
   NOT_DESTROYED();
   bool ignore;

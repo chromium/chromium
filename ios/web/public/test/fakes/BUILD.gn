@@ -9,7 +9,8 @@ source_set("fakes") {
   deps = [
     "//base",
     "//ios/web/common",
-    "//ios/web/js_messaging",
+    "//ios/web/common:uikit",
+    "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation:core",
     "//ios/web/public/deprecated",
     "//ios/web/public/deprecated:deprecated_navigation_util",
@@ -60,7 +61,6 @@ source_set("fakes") {
     "fake_navigation_manager.mm",
     "fake_web_client.h",
     "fake_web_client.mm",
-    "fake_web_frame.cc",
     "fake_web_frame.h",
     "fake_web_frames_manager.h",
     "fake_web_frames_manager.mm",

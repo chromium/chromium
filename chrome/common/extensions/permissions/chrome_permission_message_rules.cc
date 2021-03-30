@@ -15,6 +15,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace {
@@ -51,7 +53,7 @@ class SingleParameterFormatter : public ChromePermissionMessageFormatter {
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
     DCHECK(permissions.size() > 0);
-    std::vector<base::string16> parameters =
+    std::vector<std::u16string> parameters =
         permissions.GetAllPermissionParameters();
     DCHECK_EQ(1U, parameters.size())
         << "Only one message with each ID can be parameterized.";
@@ -103,10 +105,9 @@ class SpaceSeparatedListFormatter : public ChromePermissionMessageFormatter {
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
     DCHECK(permissions.size() > 0);
-    std::vector<base::string16> hostnames =
+    std::vector<std::u16string> hostnames =
         permissions.GetAllPermissionParameters();
-    base::string16 hosts_string =
-        base::JoinString(hostnames, base::ASCIIToUTF16(" "));
+    std::u16string hosts_string = base::JoinString(hostnames, u" ");
     return PermissionMessage(
         l10n_util::GetStringFUTF16(hostnames.size() == 1
                                        ? message_id_for_one_host_
@@ -140,7 +141,7 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
     DCHECK(!permissions.empty());
-    std::vector<base::string16> hostnames =
+    std::vector<std::u16string> hostnames =
         GetHostMessages(permissions.GetAllPermissionParameters());
     int message_id = message_id_for_hosts(hostnames.size());
     if (hostnames.size() <= kMaxHostsInMainMessage) {
@@ -166,13 +167,13 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
     }
   }
 
-  std::vector<base::string16> GetHostMessages(
-      const std::vector<base::string16>& hosts) const {
+  std::vector<std::u16string> GetHostMessages(
+      const std::vector<std::u16string>& hosts) const {
     int msg_id = hosts.size() <= kMaxHostsInMainMessage
                      ? IDS_EXTENSION_PROMPT_WARNING_HOST_AND_SUBDOMAIN
                      : IDS_EXTENSION_PROMPT_WARNING_HOST_AND_SUBDOMAIN_LIST;
-    std::vector<base::string16> messages;
-    for (const base::string16& host : hosts) {
+    std::vector<std::u16string> messages;
+    for (const std::u16string& host : hosts) {
       messages.push_back(
           host[0] == '*' && host[1] == '.'
               ? l10n_util::GetStringFUTF16(msg_id, host.substr(2))
@@ -207,7 +208,7 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
   PermissionMessage GetItemMessage(const PermissionIDSet& permissions) const {
     DCHECK(permissions.size() == 1);
     const PermissionID& permission = *permissions.begin();
-    base::string16 msg;
+    std::u16string msg;
     switch (permission.id()) {
       case APIPermission::kUsbDevice:
         msg = l10n_util::GetStringFUTF16(
@@ -232,19 +233,19 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
       const PermissionIDSet& permissions) const {
     DCHECK(permissions.size() > 1);
     // Put all the individual items into submessages.
-    std::vector<base::string16> submessages =
-        permissions.GetAllPermissionsWithID(APIPermission::kUsbDevice)
+    std::vector<std::u16string> submessages =
+        permissions.GetAllPermissionsWithID(APIPermissionID::kUsbDevice)
             .GetAllPermissionParameters();
-    std::vector<base::string16> vendors =
-        permissions.GetAllPermissionsWithID(
-                       APIPermission::kUsbDeviceUnknownProduct)
+    std::vector<std::u16string> vendors =
+        permissions
+            .GetAllPermissionsWithID(APIPermissionID::kUsbDeviceUnknownProduct)
             .GetAllPermissionParameters();
-    for (const base::string16& vendor : vendors) {
+    for (const std::u16string& vendor : vendors) {
       submessages.push_back(l10n_util::GetStringFUTF16(
           IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_LIST_ITEM_UNKNOWN_PRODUCT,
           vendor));
     }
-    if (permissions.ContainsID(APIPermission::kUsbDeviceUnknownVendor)) {
+    if (permissions.ContainsID(APIPermissionID::kUsbDeviceUnknownVendor)) {
       submessages.push_back(l10n_util::GetStringUTF16(
           IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_LIST_ITEM_UNKNOWN_VENDOR));
     }
@@ -261,8 +262,8 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
 
 ChromePermissionMessageRule::ChromePermissionMessageRule(
     int message_id,
-    const std::initializer_list<APIPermission::ID>& required,
-    const std::initializer_list<APIPermission::ID>& optional)
+    const std::initializer_list<APIPermissionID>& required,
+    const std::initializer_list<APIPermissionID>& optional)
     : ChromePermissionMessageRule(
           std::make_unique<DefaultPermissionMessageFormatter>(message_id),
           required,
@@ -270,8 +271,8 @@ ChromePermissionMessageRule::ChromePermissionMessageRule(
 
 ChromePermissionMessageRule::ChromePermissionMessageRule(
     std::unique_ptr<ChromePermissionMessageFormatter> formatter,
-    const std::initializer_list<APIPermission::ID>& required,
-    const std::initializer_list<APIPermission::ID>& optional)
+    const std::initializer_list<APIPermissionID>& required,
+    const std::initializer_list<APIPermissionID>& optional)
     : required_permissions_(required),
       optional_permissions_(optional),
       formatter_(std::move(formatter)) {
@@ -287,19 +288,18 @@ ChromePermissionMessageRule& ChromePermissionMessageRule::operator=(
 ChromePermissionMessageRule::~ChromePermissionMessageRule() {
 }
 
-std::set<APIPermission::ID> ChromePermissionMessageRule::required_permissions()
+std::set<APIPermissionID> ChromePermissionMessageRule::required_permissions()
     const {
   return required_permissions_;
 }
-std::set<APIPermission::ID> ChromePermissionMessageRule::optional_permissions()
+std::set<APIPermissionID> ChromePermissionMessageRule::optional_permissions()
     const {
   return optional_permissions_;
 }
 
-std::set<APIPermission::ID> ChromePermissionMessageRule::all_permissions()
-    const {
-  return base::STLSetUnion<std::set<APIPermission::ID>>(required_permissions(),
-                                                        optional_permissions());
+std::set<APIPermissionID> ChromePermissionMessageRule::all_permissions() const {
+  return base::STLSetUnion<std::set<APIPermissionID>>(required_permissions(),
+                                                      optional_permissions());
 }
 
 PermissionMessage ChromePermissionMessageRule::GetPermissionMessage(
@@ -337,15 +337,16 @@ ChromePermissionMessageRule::GetAllRules() {
   // yet powerful enough to encapsulate all the messages we want to display.
   ChromePermissionMessageRule rules_arr[] = {
       // Full access permission messages.
-      {IDS_EXTENSION_PROMPT_WARNING_DEBUGGER, {APIPermission::kDebugger}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_DEBUGGER, {APIPermissionID::kDebugger}, {}},
       {IDS_EXTENSION_PROMPT_WARNING_FULL_ACCESS,
-       {APIPermission::kFullAccess},
-       {APIPermission::kDeclarativeWebRequest,
-        APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
-        APIPermission::kHostsAll, APIPermission::kHostsAllReadOnly,
-        APIPermission::kProcesses, APIPermission::kTab,
-        APIPermission::kTopSites, APIPermission::kWebNavigation,
-        APIPermission::kDeclarativeNetRequest}},
+       {APIPermissionID::kFullAccess},
+       {APIPermissionID::kDeclarativeWebRequest,
+        APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kHostsAll,
+        APIPermissionID::kHostsAllReadOnly, APIPermissionID::kProcesses,
+        APIPermissionID::kTab, APIPermissionID::kTopSites,
+        APIPermissionID::kWebNavigation,
+        APIPermissionID::kDeclarativeNetRequest}},
 
       // Hosts permission messages.
       // Full host access already allows DeclarativeWebRequest, reading the list
@@ -355,121 +356,125 @@ ChromePermissionMessageRule::GetAllRules() {
       // access allows. Therefore we display only the "<all_urls>" warning
       // message if both permissions are required.
       {IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS,
-       {APIPermission::kHostsAll},
-       {APIPermission::kDeclarativeWebRequest,
-        APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
-        APIPermission::kHostsAllReadOnly, APIPermission::kHostReadOnly,
-        APIPermission::kHostReadWrite, APIPermission::kProcesses,
-        APIPermission::kTab, APIPermission::kTopSites,
-        APIPermission::kWebNavigation, APIPermission::kDeclarativeNetRequest}},
+       {APIPermissionID::kHostsAll},
+       {APIPermissionID::kDeclarativeWebRequest,
+        APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kHostsAllReadOnly,
+        APIPermissionID::kHostReadOnly, APIPermissionID::kHostReadWrite,
+        APIPermissionID::kProcesses, APIPermissionID::kTab,
+        APIPermissionID::kTopSites, APIPermissionID::kWebNavigation,
+        APIPermissionID::kDeclarativeNetRequest}},
       {IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS_READ_ONLY,
-       {APIPermission::kHostsAllReadOnly},
-       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
-        APIPermission::kHostReadOnly, APIPermission::kProcesses,
-        APIPermission::kTab, APIPermission::kTopSites,
-        APIPermission::kWebNavigation}},
+       {APIPermissionID::kHostsAllReadOnly},
+       {APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kHostReadOnly,
+        APIPermissionID::kProcesses, APIPermissionID::kTab,
+        APIPermissionID::kTopSites, APIPermissionID::kWebNavigation}},
 
       {std::make_unique<HostListFormatter>(
            IDS_EXTENSION_PROMPT_WARNING_1_HOST,
            IDS_EXTENSION_PROMPT_WARNING_2_HOSTS,
            IDS_EXTENSION_PROMPT_WARNING_3_HOSTS,
            IDS_EXTENSION_PROMPT_WARNING_HOSTS_LIST),
-       {APIPermission::kHostReadWrite},
+       {APIPermissionID::kHostReadWrite},
        {}},
       {std::make_unique<HostListFormatter>(
            IDS_EXTENSION_PROMPT_WARNING_1_HOST_READ_ONLY,
            IDS_EXTENSION_PROMPT_WARNING_2_HOSTS_READ_ONLY,
            IDS_EXTENSION_PROMPT_WARNING_3_HOSTS_READ_ONLY,
            IDS_EXTENSION_PROMPT_WARNING_HOSTS_LIST_READ_ONLY),
-       {APIPermission::kHostReadOnly},
+       {APIPermissionID::kHostReadOnly},
        {}},
 
       // New tab page permission is fairly highly used so rank it quite highly.
       // Nothing should subsume it.
       {IDS_EXTENSION_PROMPT_WARNING_NEW_TAB_PAGE_OVERRIDE,
-       {APIPermission::kNewTabPageOverride},
+       {APIPermissionID::kNewTabPageOverride},
        {}},
 
       // Video and audio capture.
       {IDS_EXTENSION_PROMPT_WARNING_AUDIO_AND_VIDEO_CAPTURE,
-       {APIPermission::kAudioCapture, APIPermission::kVideoCapture},
+       {APIPermissionID::kAudioCapture, APIPermissionID::kVideoCapture},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_AUDIO_CAPTURE,
-       {APIPermission::kAudioCapture},
+       {APIPermissionID::kAudioCapture},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_VIDEO_CAPTURE,
-       {APIPermission::kVideoCapture},
+       {APIPermissionID::kVideoCapture},
        {}},
 
       {IDS_EXTENSION_PROMPT_WARNING_GEOLOCATION,
-       {APIPermission::kGeolocation},
+       {APIPermissionID::kGeolocation},
        {}},
 
       // History-related permission messages.
       // History already allows reading favicons, tab access and accessing the
       // list of most frequently visited sites.
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_AND_SESSIONS,
-       {APIPermission::kHistory, APIPermission::kSessions},
-       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
-        APIPermission::kProcesses, APIPermission::kTab,
-        APIPermission::kTopSites, APIPermission::kWebNavigation}},
+       {APIPermissionID::kHistory, APIPermissionID::kSessions},
+       {APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kProcesses,
+        APIPermissionID::kTab, APIPermissionID::kTopSites,
+        APIPermissionID::kWebNavigation}},
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_AND_SESSIONS,
-       {APIPermission::kTab, APIPermission::kSessions},
-       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
-        APIPermission::kProcesses, APIPermission::kTopSites,
-        APIPermission::kWebNavigation}},
+       {APIPermissionID::kTab, APIPermissionID::kSessions},
+       {APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kProcesses,
+        APIPermissionID::kTopSites, APIPermissionID::kWebNavigation}},
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE,
-       {APIPermission::kHistory},
-       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
-        APIPermission::kProcesses, APIPermission::kTab,
-        APIPermission::kTopSites, APIPermission::kWebNavigation}},
+       {APIPermissionID::kHistory},
+       {APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kProcesses,
+        APIPermissionID::kTab, APIPermissionID::kTopSites,
+        APIPermissionID::kWebNavigation}},
       // Note: kSessions allows reading history from other devices only if kTab
       // is also present. Therefore, there are no _AND_SESSIONS versions of
       // the other rules that generate the HISTORY_READ warning.
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
-       {APIPermission::kTab},
-       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
-        APIPermission::kProcesses, APIPermission::kTopSites,
-        APIPermission::kWebNavigation}},
+       {APIPermissionID::kTab},
+       {APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kProcesses,
+        APIPermissionID::kTopSites, APIPermissionID::kWebNavigation}},
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
-       {APIPermission::kProcesses},
-       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
-        APIPermission::kTopSites, APIPermission::kWebNavigation}},
+       {APIPermissionID::kProcesses},
+       {APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kTopSites,
+        APIPermissionID::kWebNavigation}},
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
-       {APIPermission::kWebNavigation},
-       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
-        APIPermission::kTopSites}},
+       {APIPermissionID::kWebNavigation},
+       {APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kTopSites}},
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
-       {APIPermission::kDeclarativeNetRequestFeedback},
-       {APIPermission::kFavicon, APIPermission::kTopSites}},
-      {IDS_EXTENSION_PROMPT_WARNING_FAVICON, {APIPermission::kFavicon}, {}},
-      {IDS_EXTENSION_PROMPT_WARNING_TOPSITES, {APIPermission::kTopSites}, {}},
-      {IDS_EXTENSION_PROMPT_WARNING_PRINTING, {APIPermission::kPrinting}, {}},
+       {APIPermissionID::kDeclarativeNetRequestFeedback},
+       {APIPermissionID::kFavicon, APIPermissionID::kTopSites}},
+      {IDS_EXTENSION_PROMPT_WARNING_FAVICON, {APIPermissionID::kFavicon}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_TOPSITES, {APIPermissionID::kTopSites}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_PRINTING, {APIPermissionID::kPrinting}, {}},
       {IDS_EXTENSION_PROMPT_WARNING_PRINTING_METRICS,
-       {APIPermission::kPrintingMetrics},
+       {APIPermissionID::kPrintingMetrics},
        {}},
 
       {IDS_EXTENSION_PROMPT_WARNING_DECLARATIVE_WEB_REQUEST,
-       {APIPermission::kDeclarativeWebRequest},
+       {APIPermissionID::kDeclarativeWebRequest},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_DECLARATIVE_NET_REQUEST,
-       {APIPermission::kDeclarativeNetRequest},
+       {APIPermissionID::kDeclarativeNetRequest},
        {}},
 
       // Messages generated by the sockets permission.
       {IDS_EXTENSION_PROMPT_WARNING_SOCKET_ANY_HOST,
-       {APIPermission::kSocketAnyHost},
-       {APIPermission::kSocketDomainHosts,
-        APIPermission::kSocketSpecificHosts}},
+       {APIPermissionID::kSocketAnyHost},
+       {APIPermissionID::kSocketDomainHosts,
+        APIPermissionID::kSocketSpecificHosts}},
       {std::make_unique<SpaceSeparatedListFormatter>(
            IDS_EXTENSION_PROMPT_WARNING_SOCKET_HOSTS_IN_DOMAIN,
            IDS_EXTENSION_PROMPT_WARNING_SOCKET_HOSTS_IN_DOMAINS),
-       {APIPermission::kSocketDomainHosts},
+       {APIPermissionID::kSocketDomainHosts},
        {}},
       {std::make_unique<SpaceSeparatedListFormatter>(
            IDS_EXTENSION_PROMPT_WARNING_SOCKET_SPECIFIC_HOST,
            IDS_EXTENSION_PROMPT_WARNING_SOCKET_SPECIFIC_HOSTS),
-       {APIPermission::kSocketSpecificHosts},
+       {APIPermissionID::kSocketSpecificHosts},
        {}},
 
       // Devices-related messages.
@@ -477,66 +482,66 @@ ChromePermissionMessageRule::GetAllRules() {
       // that applies when any of the three kUsb* IDs is there, and pulls them
       // all into a single formatter.
       {std::make_unique<USBDevicesFormatter>(),
-       {APIPermission::kUsbDevice},
-       {APIPermission::kUsbDeviceUnknownProduct,
-        APIPermission::kUsbDeviceUnknownVendor}},
+       {APIPermissionID::kUsbDevice},
+       {APIPermissionID::kUsbDeviceUnknownProduct,
+        APIPermissionID::kUsbDeviceUnknownVendor}},
       {std::make_unique<USBDevicesFormatter>(),
-       {APIPermission::kUsbDeviceUnknownProduct},
-       {APIPermission::kUsbDeviceUnknownVendor}},
+       {APIPermissionID::kUsbDeviceUnknownProduct},
+       {APIPermissionID::kUsbDeviceUnknownVendor}},
       {std::make_unique<USBDevicesFormatter>(),
-       {APIPermission::kUsbDeviceUnknownVendor},
+       {APIPermissionID::kUsbDeviceUnknownVendor},
        {}},
       // Access to users' devices should provide a single warning message
       // specifying the transport method used; serial and/or Bluetooth.
       {IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_SERIAL,
-       {APIPermission::kBluetooth, APIPermission::kSerial},
-       {APIPermission::kBluetoothDevices}},
+       {APIPermissionID::kBluetooth, APIPermissionID::kSerial},
+       {APIPermissionID::kBluetoothDevices}},
       {IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH,
-       {APIPermission::kBluetooth},
-       {APIPermission::kBluetoothDevices}},
+       {APIPermissionID::kBluetooth},
+       {APIPermissionID::kBluetoothDevices}},
       {IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_DEVICES,
-       {APIPermission::kBluetoothDevices},
+       {APIPermissionID::kBluetoothDevices},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_PRIVATE,
-       {APIPermission::kBluetoothPrivate},
+       {APIPermissionID::kBluetoothPrivate},
        {}},
-      {IDS_EXTENSION_PROMPT_WARNING_SERIAL, {APIPermission::kSerial}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_SERIAL, {APIPermissionID::kSerial}, {}},
       // Universal 2nd Factor devices.
       {IDS_EXTENSION_PROMPT_WARNING_U2F_DEVICES,
-       {APIPermission::kU2fDevices},
+       {APIPermissionID::kU2fDevices},
        {}},
       // Notifications.
       {IDS_EXTENSION_PROMPT_WARNING_NOTIFICATIONS,
-       {APIPermission::kNotifications},
+       {APIPermissionID::kNotifications},
        {}},
 
       // Accessibility features.
       {IDS_EXTENSION_PROMPT_WARNING_ACCESSIBILITY_FEATURES_READ_MODIFY,
-       {APIPermission::kAccessibilityFeaturesModify,
-        APIPermission::kAccessibilityFeaturesRead},
+       {APIPermissionID::kAccessibilityFeaturesModify,
+        APIPermissionID::kAccessibilityFeaturesRead},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_ACCESSIBILITY_FEATURES_MODIFY,
-       {APIPermission::kAccessibilityFeaturesModify},
+       {APIPermissionID::kAccessibilityFeaturesModify},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_ACCESSIBILITY_FEATURES_READ,
-       {APIPermission::kAccessibilityFeaturesRead},
+       {APIPermissionID::kAccessibilityFeaturesRead},
        {}},
 
       // Media galleries permissions. We don't have strings for every possible
       // combination, e.g. we don't bother with a special string for "write, but
       // not read" - just show the "read and write" string instead, etc.
       {IDS_EXTENSION_PROMPT_WARNING_MEDIA_GALLERIES_READ_WRITE_DELETE,
-       {APIPermission::kMediaGalleriesAllGalleriesCopyTo,
-        APIPermission::kMediaGalleriesAllGalleriesDelete},
-       {APIPermission::kMediaGalleriesAllGalleriesRead}},
+       {APIPermissionID::kMediaGalleriesAllGalleriesCopyTo,
+        APIPermissionID::kMediaGalleriesAllGalleriesDelete},
+       {APIPermissionID::kMediaGalleriesAllGalleriesRead}},
       {IDS_EXTENSION_PROMPT_WARNING_MEDIA_GALLERIES_READ_WRITE,
-       {APIPermission::kMediaGalleriesAllGalleriesCopyTo},
-       {APIPermission::kMediaGalleriesAllGalleriesRead}},
+       {APIPermissionID::kMediaGalleriesAllGalleriesCopyTo},
+       {APIPermissionID::kMediaGalleriesAllGalleriesRead}},
       {IDS_EXTENSION_PROMPT_WARNING_MEDIA_GALLERIES_READ_DELETE,
-       {APIPermission::kMediaGalleriesAllGalleriesDelete},
-       {APIPermission::kMediaGalleriesAllGalleriesRead}},
+       {APIPermissionID::kMediaGalleriesAllGalleriesDelete},
+       {APIPermissionID::kMediaGalleriesAllGalleriesRead}},
       {IDS_EXTENSION_PROMPT_WARNING_MEDIA_GALLERIES_READ,
-       {APIPermission::kMediaGalleriesAllGalleriesRead},
+       {APIPermissionID::kMediaGalleriesAllGalleriesRead},
        {}},
 
       // File system permissions. We only have permission strings for directory
@@ -545,144 +550,148 @@ ChromePermissionMessageRule::GetAllRules() {
       // since the user must select the file and the chooser is considered
       // sufficient warning.
       {IDS_EXTENSION_PROMPT_WARNING_FILE_SYSTEM_WRITE_DIRECTORY,
-       {APIPermission::kFileSystemWrite, APIPermission::kFileSystemDirectory},
+       {APIPermissionID::kFileSystemWrite,
+        APIPermissionID::kFileSystemDirectory},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_FILE_SYSTEM_DIRECTORY,
-       {APIPermission::kFileSystemDirectory},
+       {APIPermissionID::kFileSystemDirectory},
        {}},
 
       // Network-related permissions.
       {IDS_EXTENSION_PROMPT_WARNING_NETWORKING_PRIVATE,
-       {APIPermission::kNetworkingOnc},
+       {APIPermissionID::kNetworkingOnc},
        // Adding networkingPrivate as an optional permission for this rule so
        // the permission is removed from the available permission set when the
        // next rule (for networkingPrivate permission) is considered - without
        // this, IDS_EXTENSION_PROMPT_WARNING_NETWORK_PRIVATE would be duplicated
        // for manifests that have both networking.onc and networkingPrivate
        // permission.
-       {APIPermission::kNetworkingPrivate}},
+       {APIPermissionID::kNetworkingPrivate}},
       {IDS_EXTENSION_PROMPT_WARNING_NETWORKING_PRIVATE,
-       {APIPermission::kNetworkingPrivate},
+       {APIPermissionID::kNetworkingPrivate},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_NETWORK_STATE,
-       {APIPermission::kNetworkState},
+       {APIPermissionID::kNetworkState},
        {}},
-      {IDS_EXTENSION_PROMPT_WARNING_VPN, {APIPermission::kVpnProvider}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_VPN, {APIPermissionID::kVpnProvider}, {}},
       {std::make_unique<SingleParameterFormatter>(
            IDS_EXTENSION_PROMPT_WARNING_HOME_PAGE_SETTING_OVERRIDE),
-       {APIPermission::kHomepage},
+       {APIPermissionID::kHomepage},
        {}},
       {std::make_unique<SingleParameterFormatter>(
            IDS_EXTENSION_PROMPT_WARNING_SEARCH_SETTINGS_OVERRIDE),
-       {APIPermission::kSearchProvider},
+       {APIPermissionID::kSearchProvider},
        {}},
       {std::make_unique<SingleParameterFormatter>(
            IDS_EXTENSION_PROMPT_WARNING_START_PAGE_SETTING_OVERRIDE),
-       {APIPermission::kStartupPages},
+       {APIPermissionID::kStartupPages},
        {}},
 
-      {IDS_EXTENSION_PROMPT_WARNING_BOOKMARKS, {APIPermission::kBookmark}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_BOOKMARKS,
+       {APIPermissionID::kBookmark},
+       {}},
       {IDS_EXTENSION_PROMPT_WARNING_CLIPBOARD_READWRITE,
-       {APIPermission::kClipboardRead, APIPermission::kClipboardWrite},
+       {APIPermissionID::kClipboardRead, APIPermissionID::kClipboardWrite},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_CLIPBOARD,
-       {APIPermission::kClipboardRead},
+       {APIPermissionID::kClipboardRead},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_CLIPBOARD_WRITE,
-       {APIPermission::kClipboardWrite},
+       {APIPermissionID::kClipboardWrite},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_DESKTOP_CAPTURE,
-       {APIPermission::kDesktopCapture},
+       {APIPermissionID::kDesktopCapture},
        {}},
-      {IDS_EXTENSION_PROMPT_WARNING_DOWNLOADS, {APIPermission::kDownloads}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_DOWNLOADS,
+       {APIPermissionID::kDownloads},
+       {}},
       {IDS_EXTENSION_PROMPT_WARNING_DOWNLOADS_OPEN,
-       {APIPermission::kDownloadsOpen},
+       {APIPermissionID::kDownloadsOpen},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_IDENTITY_EMAIL,
-       {APIPermission::kIdentityEmail},
+       {APIPermissionID::kIdentityEmail},
        {}},
 
       {IDS_EXTENSION_PROMPT_WARNING_SYSTEM_STORAGE,
-       {APIPermission::kSystemStorage},
+       {APIPermissionID::kSystemStorage},
        {}},
 
       {IDS_EXTENSION_PROMPT_WARNING_CONTENT_SETTINGS,
-       {APIPermission::kContentSettings},
+       {APIPermissionID::kContentSettings},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_DOCUMENT_SCAN,
-       {APIPermission::kDocumentScan},
+       {APIPermissionID::kDocumentScan},
        {}},
-      {IDS_EXTENSION_PROMPT_WARNING_INPUT, {APIPermission::kInput}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_INPUT, {APIPermissionID::kInput}, {}},
       {IDS_EXTENSION_PROMPT_WARNING_MANAGEMENT,
-       {APIPermission::kManagement},
+       {APIPermissionID::kManagement},
        {}},
-      {IDS_EXTENSION_PROMPT_WARNING_MDNS, {APIPermission::kMDns}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_MDNS, {APIPermissionID::kMDns}, {}},
       {IDS_EXTENSION_PROMPT_WARNING_NATIVE_MESSAGING,
-       {APIPermission::kNativeMessaging},
+       {APIPermissionID::kNativeMessaging},
        {}},
-      {IDS_EXTENSION_PROMPT_WARNING_PRIVACY, {APIPermission::kPrivacy}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_PRIVACY, {APIPermissionID::kPrivacy}, {}},
       {IDS_EXTENSION_PROMPT_WARNING_SIGNED_IN_DEVICES,
-       {APIPermission::kSignedInDevices},
+       {APIPermissionID::kSignedInDevices},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_SYNCFILESYSTEM,
-       {APIPermission::kSyncFileSystem},
+       {APIPermissionID::kSyncFileSystem},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_TAB_GROUPS,
-       {APIPermission::kTabGroups},
+       {APIPermissionID::kTabGroups},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_TTS_ENGINE,
-       {APIPermission::kTtsEngine},
+       {APIPermissionID::kTtsEngine},
        {}},
-      {IDS_EXTENSION_PROMPT_WARNING_WALLPAPER, {APIPermission::kWallpaper}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_WALLPAPER,
+       {APIPermissionID::kWallpaper},
+       {}},
       {IDS_EXTENSION_PROMPT_WARNING_PLATFORMKEYS,
-       {APIPermission::kPlatformKeys},
+       {APIPermissionID::kPlatformKeys},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_CERTIFICATEPROVIDER,
-       {APIPermission::kCertificateProvider},
+       {APIPermissionID::kCertificateProvider},
        {}},
 
       {IDS_EXTENSION_PROMPT_WARNING_ACTIVITY_LOG_PRIVATE,
-       {APIPermission::kActivityLogPrivate},
+       {APIPermissionID::kActivityLogPrivate},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_MUSIC_MANAGER_PRIVATE,
-       {APIPermission::kMusicManagerPrivate},
+       {APIPermissionID::kMusicManagerPrivate},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_SETTINGS_PRIVATE,
-       {APIPermission::kSettingsPrivate},
+       {APIPermissionID::kSettingsPrivate},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_AUTOFILL_PRIVATE,
-       {APIPermission::kAutofillPrivate},
+       {APIPermissionID::kAutofillPrivate},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_PASSWORDS_PRIVATE,
-       {APIPermission::kPasswordsPrivate},
+       {APIPermissionID::kPasswordsPrivate},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_USERS_PRIVATE,
-       {APIPermission::kUsersPrivate},
-       {}},
-      {IDS_EXTENSION_PROMPT_WARNING_DISPLAY_SOURCE,
-       {APIPermission::kDisplaySource},
+       {APIPermissionID::kUsersPrivate},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_HARDWARE_PLATFORM,
-       {APIPermission::kEnterpriseHardwarePlatform},
+       {APIPermissionID::kEnterpriseHardwarePlatform},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_DEVICE_ATTRIBUTES,
-       {APIPermission::kEnterpriseDeviceAttributes},
+       {APIPermissionID::kEnterpriseDeviceAttributes},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_NETWORKING_ATTRIBUTES,
-       {APIPermission::kEnterpriseNetworkingAttributes},
+       {APIPermissionID::kEnterpriseNetworkingAttributes},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_PLATFORMKEYS,
-       {APIPermission::kEnterprisePlatformKeys},
+       {APIPermissionID::kEnterprisePlatformKeys},
        {}},
-      {IDS_EXTENSION_PROMPT_WARNING_LOGIN, {APIPermission::kLogin}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_LOGIN, {APIPermissionID::kLogin}, {}},
       {IDS_EXTENSION_PROMPT_WARNING_LOGIN_SCREEN_UI,
-       {APIPermission::kLoginScreenUi},
+       {APIPermissionID::kLoginScreenUi},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_LOGIN_SCREEN_STORAGE,
-       {APIPermission::kLoginScreenStorage},
+       {APIPermissionID::kLoginScreenStorage},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_TRANSIENT_BACKGROUND,
-       {APIPermission::kTransientBackground},
+       {APIPermissionID::kTransientBackground},
        {}},
   };
 

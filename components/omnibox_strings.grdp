@@ -103,9 +103,6 @@
   <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT" desc="The button text contents to suggest pedal action, clear browsing data.">
     Clear browsing data
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, clear browsing data.">
-    Clear
-  </message>
   <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, clear browsing data.">
     Clear your browsing history, cookies, cache, and more in Chrome settings
   </message>
@@ -118,9 +115,6 @@
 
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT" desc="The button text contents to suggest pedal action, manage passwords.">
     Manage passwords
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, change language.">
-    Manage
   </message>
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, change language.">
     View and manage your passwords in Chrome settings
@@ -135,9 +129,6 @@
   <message name="IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT" desc="The button text contents to suggest pedal action, update credit card.">
     Manage payment methods
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, update credit card.">
-    Manage
-  </message>
   <message name="IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, update credit card.">
     Manage your payments and credit card info in Chrome settings
   </message>
@@ -150,9 +141,6 @@
 
   <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT" desc="The button text contents to suggest pedal action, launch incognito.">
     Open Incognito window
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, launch incognito.">
-    Open
   </message>
   <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, launch incognito.">
     Open a new Incognito window to browse privately
@@ -167,9 +155,6 @@
   <message name="IDS_OMNIBOX_PEDAL_TRANSLATE_HINT" desc="The button text contents to suggest pedal action, translate.">
     Translate page
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_TRANSLATE_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, translate.">
-    Translate
-  </message>
   <message name="IDS_OMNIBOX_PEDAL_TRANSLATE_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, translate.">
     Translate this page with Google Translate
   </message>
@@ -183,9 +168,6 @@
   <message name="IDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT" desc="The button text contents to suggest pedal action, update chrome.">
     Update Chrome
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, update chrome.">
-    Update
-  </message>
   <message name="IDS_OMNIBOX_PEDAL_UPDATE_CHROME_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, update chrome.">
     Update Chrome from your Chrome settings
   </message>
@@ -194,6 +176,97 @@
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME" desc="Announcement when update chrome pedal button is focused.">
     Update Chrome button, press Enter to update Chrome from your Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT" desc="The button text contents to suggest pedal action, run Chrome Safety Check.">
+    Run Chrome Safety Check
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, run Chrome Safety Check.">
+    Run a Safety Check in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX" desc="Suffix for spoken suggestion description with run Chrome Safety Check pedal action to explain keystroke used to run Chrome Safety Check.">
+    <ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to run Safety Check in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK" desc="Announcement when the Run Chrome Safety Check pedal button is focused.">
+    Run Chrome Safety Check button, press Enter to run Safety Check in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_HINT" desc="The button text contents to suggest pedal action, Manage security settings.">
+    Manage security settings
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, Manage security settings.">
+    Manage your Safe Browsing and more in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUFFIX" desc="Suffix for spoken suggestion description with Manage security settings pedal action to explain keystroke used to Manage security settings.">
+    <ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to Manage your Safe Browsing and more in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS" desc="Announcement when the Manage security settings pedal button is focused.">
+    Manage security settings button, press Enter to Manage your Safe Browsing and more in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_COOKIES_HINT" desc="The button text contents to suggest pedal action, Manage cookies.">
+    Manage cookies
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_COOKIES_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, Manage cookies.">
+    Manage your cookie preferences in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES_SUFFIX" desc="Suffix for spoken suggestion description with Manage cookies pedal action to explain keystroke used to Manage cookies.">
+    <ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to manage your cookie preferences in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES" desc="Announcement when the Manage cookies pedal button is focused.">
+    Manage cookies button, press Enter to manage your cookie preferences in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_ADDRESSES_HINT" desc="The button text contents to suggest pedal action, Manage addresses.">
+    Manage addresses
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, Manage addresses.">
+    Add and manage addresses in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUFFIX" desc="Suffix for spoken suggestion description with Manage addresses pedal action to explain keystroke used to Manage addresses.">
+    <ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to add and manage addresses in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES" desc="Announcement when the Manage addresses pedal button is focused.">
+    Manage addresses button, press Enter to add and manage addresses in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT" desc="The button text contents to suggest pedal action, Manage sync.">
+    Manage sync
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, Manage sync.">
+    Manage what info you sync in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX" desc="Suffix for spoken suggestion description with Manage sync pedal action to explain keystroke used to Manage sync.">
+    <ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to manage what info you sync in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC" desc="Announcement when the Manage sync pedal button is focused.">
+    Manage sync button, press Enter to manage what info you sync in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_HINT" desc="The button text contents to suggest pedal action, Manage site settings.">
+    Manage site settings
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, Manage site settings.">
+    Manage permissions and data stored across sites in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUFFIX" desc="Suffix for spoken suggestion description with Manage site settings pedal action to explain keystroke used to Manage site settings.">
+    <ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to manage permissions and data stored across sites in Chrome settings
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS" desc="Announcement when the Manage site settings pedal button is focused.">
+    Manage site settings button, press Enter to manage permissions and data stored across sites in Chrome settings
+  </message>
+
+  <message name="IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_HINT" desc="The button text contents to suggest pedal action, Create Google Doc.">
+    Create Google Doc
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, Create Google Doc.">
+    Create a new Google Doc quickly
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX" desc="Suffix for spoken suggestion description with Create Google Doc pedal action to explain keystroke used to Create Google Doc.">
+    <ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to Create Google Doc
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC" desc="Announcement when the Create Google Doc pedal button is focused.">
+    Create Google Doc button, press Enter to Create a new Google Doc quickly
   </message>
 
   <!-- Accessibility labels for autocomplete match types.

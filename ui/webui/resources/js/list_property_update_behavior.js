@@ -21,44 +21,62 @@
 /* #export */ const ListPropertyUpdateBehavior = {
   /**
    * @param {string} propertyPath
-   * @param {function(!Object): string} itemUidGetter
+   * @param {function(!Object): (!Object|string)} identityGetter
    * @param {!Array<!Object>} updatedList
-   * @param {boolean} uidBasedUpdate
+   * @param {boolean=} identityBasedUpdate
    * @returns {boolean} True if notifySplices was called.
    */
-  updateList(propertyPath, itemUidGetter, updatedList, uidBasedUpdate = false) {
-    const list = this.get(propertyPath);
-    const splices = Polymer.ArraySplice.calculateSplices(
-        updatedList.map(itemUidGetter), list.map(itemUidGetter));
-
-    splices.forEach(splice => {
-      const index = splice.index;
-      const deleteCount = splice.removed.length;
-      // Transform splices to the expected format of notifySplices().
-      // Convert !Array<string> to !Array<!Object>.
-      splice.removed = list.slice(index, index + deleteCount);
-      splice.object = list;
-      splice.type = 'splice';
-
-      const added = updatedList.slice(index, index + splice.addedCount);
-      const spliceParams = [index, deleteCount].concat(added);
-      list.splice.apply(list, spliceParams);
-    });
-
-    let updated = splices.length > 0;
-    if (!uidBasedUpdate) {
-      list.forEach((item, index) => {
-        const updatedItem = updatedList[index];
-        if (JSON.stringify(item) !== JSON.stringify(updatedItem)) {
-          this.set([propertyPath, index], updatedItem);
-          updated = true;
-        }
-      });
-    }
-
-    if (splices.length > 0) {
-      this.notifySplices(propertyPath, splices);
-    }
-    return updated;
+  updateList(
+      propertyPath, identityGetter, updatedList, identityBasedUpdate = false) {
+    return updateListProperty(
+        this, propertyPath, identityGetter, updatedList, identityBasedUpdate);
   },
 };
+
+/**
+ * @param {Object} instance
+ * @param {string} propertyPath
+ * @param {function(!Object): (!Object|string)} identityGetter
+ * @param {!Array<!Object>} updatedList
+ * @param {boolean=} identityBasedUpdate
+ * @returns {boolean} True if notifySplices was called.
+ */
+/* #export */ function updateListProperty(
+    instance, propertyPath, identityGetter, updatedList,
+    identityBasedUpdate = false) {
+  const list = instance.get(propertyPath);
+  const splices = Polymer.ArraySplice.calculateSplices(
+      updatedList.map(identityGetter), list.map(identityGetter));
+
+  splices.forEach(splice => {
+    const index = splice.index;
+    const deleteCount = splice.removed.length;
+    // Transform splices to the expected format of notifySplices().
+    // Convert !Array<string> to !Array<!Object>.
+    splice.removed = list.slice(index, index + deleteCount);
+    splice.object = list;
+    splice.type = 'splice';
+
+    const added = updatedList.slice(index, index + splice.addedCount);
+    const spliceParams = [index, deleteCount].concat(added);
+    list.splice.apply(list, spliceParams);
+  });
+
+  let updated = splices.length > 0;
+  if (!identityBasedUpdate) {
+    list.forEach((item, index) => {
+      const updatedItem = updatedList[index];
+      if (JSON.stringify(item) !== JSON.stringify(updatedItem)) {
+        instance.set([propertyPath, index], updatedItem);
+        updated = true;
+      }
+    });
+  }
+
+  if (splices.length > 0) {
+    instance.notifySplices(propertyPath, splices);
+  }
+  return updated;
+}
+
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

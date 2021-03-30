@@ -45,8 +45,6 @@
 
       #labelWrapper {
         --cr-radio-button-label-spacing: 0;
-        padding-bottom: 6px;
-        padding-top: 6px;
       }
 
       #radioCollapse {
@@ -66,6 +64,7 @@
           id="button"
           role="radio"
           tabindex$="[[buttonTabIndex_]]"
+          on-focus="onRadioFocus_"
           on-keydown="onInputKeydown_">
         <div class="disc-border"></div>
         <div class="disc"></div>
@@ -73,7 +72,7 @@
       <div id="borderWrapper">
         <iron-icon id="buttonIcon"
             icon="[[icon]]" hidden$="[[!icon]]"></iron-icon>
-        <div id="labelWrapper">
+        <div id="labelWrapper" class="cr-padded-text">
           <div id="label" aria-hidden="true">
             [[label]]
             <slot name="label"></slot>
@@ -84,13 +83,17 @@
           </div>
         </div>
         <template is="dom-if" if="[[pref]]">
-          <cr-policy-pref-indicator pref="[[pref]]" icon-aria-label="[[label]]"
-              associated-value="[[name]]">
+          <cr-policy-pref-indicator pref="[[pref]]"
+              icon-aria-label="[[indicatorAriaLabel]]"
+              associated-value="[[name]]" on-focus="onNonRadioFocus_">
           </cr-policy-pref-indicator>
         </template>
         <div hidden$="[[noCollapse]]" class="separator"></div>
-        <cr-expand-button hidden$="[[noCollapse]]" expanded="{{expanded}}"
-              on-click="onExpandClicked_">
+        <cr-expand-button no-hover
+              aria-label="[[expandAriaLabel]]"
+              hidden$="[[noCollapse]]" expanded="{{expanded}}"
+              on-click="onExpandClicked_"
+              on-focus="onNonRadioFocus_">
         </cr-expand-button>
       </div>
     </div>
@@ -99,4 +102,3 @@
       <slot name="collapse"></slot>
       <slot name="noSelectionCollapse"></slot>
     </iron-collapse>
-

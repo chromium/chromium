@@ -4,7 +4,7 @@
 
 module storage.mojom;
 
-import "components/services/storage/public/mojom/local_storage_control.mojom";
+import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/service_worker_database.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -81,10 +81,11 @@ interface ServiceWorkerResourceReader {
       (int32 status,
        network.mojom.URLResponseHead? response_head,
        mojo_base.mojom.BigBuffer? metadata);
-  // Reads the content of the resource associated with this reader.
+  // Reads the content of the resource associated with this reader. `pipe`
+  // can be empty when creating a data pipe fails.
   ReadData(int64 size,
            pending_remote<ServiceWorkerDataPipeStateNotifier> notifier) =>
-      (handle<data_pipe_consumer> pipe);
+      (handle<data_pipe_consumer>? pipe);
 };
 
 // An interface that writes a service worker script (resource) to storage.
@@ -171,15 +172,21 @@ interface ServiceWorkerStorageControl {
       (ServiceWorkerDatabaseStatus status,
        array<ServiceWorkerRegistrationData> registrations);
 
-  // Stores |registration_data| and |resources|.
+  // Stores |registration_data| and |resources|. If exists, the previous
+  // registration for `registration.registration_id` will be deleted when
+  // storing succeeds. `deleted_resources_size` carries the total size of
+  // deleted resources.
   StoreRegistration(ServiceWorkerRegistrationData registration,
                     array<ServiceWorkerResourceRecord> resources) =>
-      (ServiceWorkerDatabaseStatus status);
+      (ServiceWorkerDatabaseStatus status, uint64 deleted_resources_size);
 
-  // Deletes the registration specified by |registration_id|. |origin_state| is
-  // kDelete if there is no registration for |origin| after deletion.
+  // Deletes the registration specified by `registration_id`.
+  // `deleted_resources_size` carries the total size of deleted resources.
+  // `origin_state` is kDelete if there is no registration for |origin| after
+  // deletion.
   DeleteRegistration(int64 registration_id, url.mojom.Url origin) =>
       (ServiceWorkerDatabaseStatus status,
+       uint64 deleted_resources_size,
        ServiceWorkerStorageOriginState origin_state);
 
   // Updates the state of the registration's stored version to active.
@@ -234,7 +241,7 @@ interface ServiceWorkerStorageControl {
   // with any registration yet.
   // StoreRegistration() or DoomUncommittedResources() needs to be
   // called later to clear the |resource_id| from the uncommitted resource list.
-  StoreUncommittedResourceId(int64 resource_id, url.mojom.Url origin) =>
+  StoreUncommittedResourceId(int64 resource_id) =>
       (ServiceWorkerDatabaseStatus status);
 
   // Removes |resource_ids| from the uncommitted resource list.
@@ -288,7 +295,7 @@ interface ServiceWorkerStorageControl {
 
   // Applies changes to data retention policy which are relevant at shutdown.
   // This is analogous to LocalStorageControl::ApplyPolicyUpdates.
-  ApplyPolicyUpdates(array<LocalStoragePolicyUpdate> policy_updates) =>
+  ApplyPolicyUpdates(array<StoragePolicyUpdate> policy_updates) =>
       (ServiceWorkerDatabaseStatus status);
 
   // Get resource ids which are scheduled to purge.

@@ -186,6 +186,9 @@ void FakeAttestationClient::CreateEnrollRequest(
     CreateEnrollRequestCallback callback) {
   ::attestation::CreateEnrollRequestReply reply;
   reply.set_status(enroll_request_status_);
+  if (aca_type_for_legacy_mode_ != request.aca_type()) {
+    reply.set_status(::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
+  }
   if (reply.status() == ::attestation::STATUS_SUCCESS) {
     reply.set_pca_request(GetFakePcaEnrollRequest());
   }
@@ -199,6 +202,9 @@ void FakeAttestationClient::FinishEnroll(
   reply.set_status(request.pca_response() == GetFakePcaEnrollResponse()
                        ? ::attestation::STATUS_SUCCESS
                        : ::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
+  if (aca_type_for_legacy_mode_ != request.aca_type()) {
+    reply.set_status(::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
+  }
   PostProtoResponse(std::move(callback), reply);
 }
 
@@ -207,6 +213,9 @@ void FakeAttestationClient::CreateCertificateRequest(
     CreateCertificateRequestCallback callback) {
   ::attestation::CreateCertificateRequestReply reply;
   reply.set_status(cert_request_status_);
+  if (aca_type_for_legacy_mode_ != request.aca_type()) {
+    reply.set_status(::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
+  }
   if (reply.status() != ::attestation::STATUS_SUCCESS) {
     PostProtoResponse(std::move(callback), reply);
     return;
@@ -490,6 +499,11 @@ std::string FakeAttestationClient::GetEnterpriseChallengeFakeSignature(
 void FakeAttestationClient::set_sign_enterprise_challenge_delay(
     const base::TimeDelta& delay) {
   sign_enterprise_challenge_delay_ = delay;
+}
+
+void FakeAttestationClient::set_aca_type_for_legacy_flow(
+    ::attestation::ACAType aca_type) {
+  aca_type_for_legacy_mode_ = aca_type;
 }
 
 void FakeAttestationClient::set_enroll_request_status(

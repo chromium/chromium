@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">თქვენი <ph name="NUMBER_OF_TABS" /> ჩანართი ბოლო დროს არ გამოგიყენებიათ. გსურთ მათი დახურვა?</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="125153950246128346">შეეხეთ სხვა ჩანართის სანახავად</translation>
+<translation id="1302104331113804646">ფასებისთვის თვალის მიდევნების პარამეტრები</translation>
+<translation id="1378979118429748177">შეიტყვეთ ფასების დაწევის შესახებ</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="2277224997687551299">ჯგუფის სახელის რედაქტირება</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის ამოშლა ჯგუფიდან.}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის ამოშლა ჯგუფიდან.}}</translation>
+<translation id="2479148705183875116">პარამეტრებზე გადასვლა</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის ჩაკეცვა.}other{ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის ჩაკეცვა.}}</translation>
 <translation id="2569352796411618312">შემოთავაზება: თქვენი <ph name="NUMBER_OF_TABS" /> ჩანართი ბოლო დროს არ გამოგიყენებიათ. გსურთ მათი დახურვა?</translation>
 <translation id="257674075312929031">ჯგუფი</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">ჯგუფის გაზიარება</translation>
 <translation id="2759453070259087442">გააფართოეთ ჩანართების ჯგუფი „<ph name="TITLE_OF_GROUP" />“ <ph name="NUMBER_OF_TABS" /> ჩანართით.</translation>
 <translation id="2977480621796371840">ჯგუფიდან ამოშლა</translation>
+<translation id="3291470810748040983">თქვენ მიიღებთ გაფრთხილებას, როცა გახსნილ ჩანართში უფრო დაბალი ფასი იქნება</translation>
 <translation id="3328308545011660196">შემოთავაზება: როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის ჩაკეცვა.}other{<ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ ჩაკეცვა.}}</translation>
+<translation id="3882834874697329510">იმისთვის, რომ მიიღოთ გაფრთხილება, როცა გახსნილ ჩანართში უფრო დაბალი ფასი იქნება, ჩართეთ შეტყობინების ფუნქცია პარამეტრებიდან.</translation>
+<translation id="3940195383040445971">ფასებისთვის თვალის მიდევნება ჩანართებზე</translation>
+<translation id="3996880007329611795">შეტყობინებების მიღება</translation>
 <translation id="4133493477912226187">როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
 <translation id="4212246570487010370">დათვალიერების გაგრძელება</translation>
 <translation id="4450893287417543264">აღარ გამოჩნდეს</translation>
 <translation id="4648718555153979859">თქვენი ჩანართები აქ დაჯგუფებულია</translation>
-<translation id="4922064041913095674">იხილეთ, რომელ ერთეულს აქვს უკეთესი ფასი თქვენს გახსნილ ჩანართებში</translation>
 <translation id="492284538114688557">აღმოჩენილია ფასის დაწევა</translation>
 <translation id="5007392906805964215">გადახედვა</translation>
 <translation id="5073204694187207510">სრულეკრანიანი ბადის დამალვა</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">მოგვიანებით ჩვენება</translation>
 <translation id="5558362125926932819">ჩანართების <ph name="NUMBER_OF_TABS" />-ჩანართიანი ჯგუფის დახურვა</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ჩანართი დაჯგუფდა</translation>
+<translation id="575494663145460764">გსურთ, მიიღოთ გაფრთხილებები ფასის დაწევის შესახებ?</translation>
 <translation id="58326064309361797">ჩანართების დასაჯგუფებლად ჩავლებით გადაიტანეთ ისინი</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ დახურვა</translation>
 <translation id="6040143037577758943">დახურვა</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">რამდენიმეარჩევანიანი რეჟიმის დამალვა</translation>
 <translation id="7151209024774799310">ჩანართების წაშლა ჯგუფიდან</translation>
 <translation id="7204204600596740190">რამდენიმეარჩევანიანი რეჟიმი</translation>
+<translation id="7352298686197644113">იხილეთ, რომელ ერთეულს აქვს უფრო დაბალი ფასი თქვენს გახსნილ ჩანართებში</translation>
 <translation id="753732157349120914">ჩანართების გადამრთველი</translation>
 <translation id="7559245342362162951">ჯგუფის ჩანართების სრულეკრანიან ბადეში ჩვენება</translation>
 <translation id="7792771145871471484">შემოთავაზებების გადახედვა.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">აღარ გამოჩნდეს ჩანართების ზოლი?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დახურვა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დახურვა}}</translation>
 <translation id="8557923272772633250">ჩანართების <ph name="NUMBER_OF_TABS" />-ჩანართიანი ჯგუფის გაფართოება.</translation>
+<translation id="860282621117673749">გაფრთხილებები ფასის დაწევაზე</translation>
+<translation id="8714939927607906138">უფრო დაბალი ფასი</translation>
 <translation id="8749939518995770034">ჩანართების ზოლი დახურულია</translation>
+<translation id="8820741577754260431">იხილეთ ინფორმაცია ფასების დაწევის შესახებ თქვენს ჩანართებზე</translation>
 <translation id="9150694013019234766">გადაერთეთ ჩანართებს შორის თქვენს ჩანართების ჯგუფში, ეკრანის ქვედა ნაწილში</translation>
 <translation id="9169594135889675189">ჯგუფში ახალი ჩანართის დამატება</translation>
 <translation id="959682366969460160">იყავით ორგანიზებული</translation>

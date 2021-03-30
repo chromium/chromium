@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "ios/web/public/download/download_task.h"
 
 namespace web {
 
 class DownloadController;
-class DownloadTask;
 class WebState;
 
 // DownloadController delegate. All methods are called on UI thread.

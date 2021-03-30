@@ -14,6 +14,9 @@
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+using AXIntListAttribute = ax::mojom::blink::IntListAttribute;
+using AXMarkerType = ax::mojom::blink::MarkerType;
+
 namespace blink {
 namespace test {
 
@@ -84,64 +87,59 @@ TEST_P(ParameterizedAccessibilityTest, GetDocumentMarkers) {
   // kInlineTextBox: "<Misspelled >".
   AXObject* ax_inline_text_box = ax_text->ChildAtIncludingIgnored(0);
   ASSERT_NE(nullptr, ax_inline_text_box);
-  VectorOf<DocumentMarker::MarkerType> marker_types;
-  VectorOf<AXRange> marker_ranges;
-  ax_inline_text_box->GetDocumentMarkers(&marker_types, &marker_ranges);
-  EXPECT_EQ((VectorOf<DocumentMarker::MarkerType>{DocumentMarker::kSpelling}),
-            marker_types);
-  EXPECT_EQ(
-      (VectorOf<AXRange>{AXRange(
-          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 0),
-          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 11))}),
-      marker_ranges);
+  {
+    ui::AXNodeData node_data;
+    ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_EQ(std::vector<int32_t>{int32_t(AXMarkerType::kSpelling)},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerTypes));
+    EXPECT_EQ(std::vector<int32_t>{0},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerStarts));
+    EXPECT_EQ(std::vector<int32_t>{11},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerEnds));
+  }
 
   // kInlineTextBox: "<text> with <a >".
   ax_inline_text_box = ax_text->ChildAtIncludingIgnored(1);
   ASSERT_NE(nullptr, ax_inline_text_box);
-  marker_types.clear();
-  marker_ranges.clear();
-  ax_inline_text_box->GetDocumentMarkers(&marker_types, &marker_ranges);
-  EXPECT_EQ((VectorOf<DocumentMarker::MarkerType>{DocumentMarker::kSpelling,
-                                                  DocumentMarker::kGrammar}),
-            marker_types);
-  EXPECT_EQ(
-      (VectorOf<AXRange>{
-          AXRange(
-              AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 0),
-              AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 4)),
-          AXRange(
-              AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 10),
-              AXPosition::CreatePositionInTextObject(*ax_inline_text_box,
-                                                     12))}),
-      marker_ranges);
+  {
+    ui::AXNodeData node_data;
+    ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_EQ((std::vector<int32_t>{int32_t(AXMarkerType::kSpelling),
+                                    int32_t(AXMarkerType::kGrammar)}),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerTypes));
+    EXPECT_EQ((std::vector<int32_t>{0, 10}),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerStarts));
+    EXPECT_EQ((std::vector<int32_t>{4, 12}),
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerEnds));
+  }
 
   // kInlineTextBox: "<grammar >".
   ax_inline_text_box = ax_text->ChildAtIncludingIgnored(2);
   ASSERT_NE(nullptr, ax_inline_text_box);
-  marker_types.clear();
-  marker_ranges.clear();
-  ax_inline_text_box->GetDocumentMarkers(&marker_types, &marker_ranges);
-  EXPECT_EQ((VectorOf<DocumentMarker::MarkerType>{DocumentMarker::kGrammar}),
-            marker_types);
-  EXPECT_EQ(
-      (VectorOf<AXRange>{AXRange(
-          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 0),
-          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 8))}),
-      marker_ranges);
+  {
+    ui::AXNodeData node_data;
+    ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_EQ(std::vector<int32_t>{int32_t(AXMarkerType::kGrammar)},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerTypes));
+    EXPECT_EQ(std::vector<int32_t>{0},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerStarts));
+    EXPECT_EQ(std::vector<int32_t>{8},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerEnds));
+  }
 
   // kInlineTextBox: "<error>.".
   ax_inline_text_box = ax_text->ChildAtIncludingIgnored(3);
   ASSERT_NE(nullptr, ax_inline_text_box);
-  marker_types.clear();
-  marker_ranges.clear();
-  ax_inline_text_box->GetDocumentMarkers(&marker_types, &marker_ranges);
-  EXPECT_EQ((VectorOf<DocumentMarker::MarkerType>{DocumentMarker::kGrammar}),
-            marker_types);
-  EXPECT_EQ(
-      (VectorOf<AXRange>{AXRange(
-          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 0),
-          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 5))}),
-      marker_ranges);
+  {
+    ui::AXNodeData node_data;
+    ax_inline_text_box->Serialize(&node_data, ui::kAXModeComplete);
+    EXPECT_EQ(std::vector<int32_t>{int32_t(AXMarkerType::kGrammar)},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerTypes));
+    EXPECT_EQ(std::vector<int32_t>{0},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerStarts));
+    EXPECT_EQ(std::vector<int32_t>{5},
+              node_data.GetIntListAttribute(AXIntListAttribute::kMarkerEnds));
+  }
 }
 
 TEST_P(ParameterizedAccessibilityTest, TextOffsetInContainerWithASpan) {

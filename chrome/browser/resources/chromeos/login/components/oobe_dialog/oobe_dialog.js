@@ -5,7 +5,7 @@
 Polymer({
   is: 'oobe-dialog',
 
-  behaviors: [OobeI18nBehavior],
+  behaviors: [OobeI18nBehavior, OobeScrollableBehavior],
 
   properties: {
     /**
@@ -72,41 +72,6 @@ Polymer({
     },
   },
 
-  /**
-   * Creates a ResizeObserver and attaches it to the relevant containers
-   * to be observed on size changes and scroll position.
-   */
-  observeScrolling_() {
-    if (this.resizeObserver_) {  // Already observing
-      return;
-    }
-
-    var scrollContainer = this.$$('#topScrollContainer');
-    var footerContainer = this.$$('#footerContainer');
-    if (!scrollContainer || !footerContainer) {
-      return;
-    }
-
-    scrollContainer.addEventListener(
-        'scroll', this.applyScrollClassTags_.bind(this));
-    this.resizeObserver_ =
-        new ResizeObserver(this.applyScrollClassTags_.bind(this));
-    this.resizeObserver_.observe(scrollContainer);
-    this.resizeObserver_.observe(footerContainer);
-  },
-
-  /**
-   * Applies the class tags to topScrollContainer that control the shadows.
-   */
-  applyScrollClassTags_() {
-    var el = this.$$('#topScrollContainer');
-    el.classList.toggle('can-scroll', el.clientHeight < el.scrollHeight);
-    el.classList.toggle('is-scrolled', el.scrollTop > 0);
-    el.classList.toggle(
-        'scrolled-to-bottom',
-        el.scrollTop + el.clientHeight >= el.scrollHeight);
-  },
-
   focus() {
     /* When Network Selection Dialog is shown because user pressed "Back"
        button on EULA screen, display_manager does not inform this dialog that
@@ -120,7 +85,12 @@ Polymer({
   onBeforeShow() {
     document.documentElement.removeAttribute('new-layout');
     this.$$('#lazy').get();
-    this.observeScrolling_();
+    var footerContainer = this.$$('#footerContainer');
+    var scrollContainer = this.$$('#topScrollContainer');
+    if (!scrollContainer || !footerContainer) {
+      return;
+    }
+    this.initScrollableObservers(scrollContainer, footerContainer);
   },
 
   /**

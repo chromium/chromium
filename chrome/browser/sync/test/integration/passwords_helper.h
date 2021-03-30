@@ -13,6 +13,7 @@
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace syncer {
@@ -31,6 +32,10 @@ namespace passwords_helper {
 void AddLogin(password_manager::PasswordStore* store,
               const password_manager::PasswordForm& form);
 
+// Adds |issue| to the password store |store|.
+void AddInsecureCredential(password_manager::PasswordStore* store,
+                           const password_manager::InsecureCredential& issue);
+
 // Update the data held in password store |store| with a modified |form|.
 // This method blocks until the operation is complete.
 void UpdateLogin(password_manager::PasswordStore* store,
@@ -48,6 +53,10 @@ void UpdateLoginWithPrimaryKey(password_manager::PasswordStore* store,
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetLogins(
     password_manager::PasswordStore* store);
 
+// Returns all insecure credentials from |store|.
+std::vector<password_manager::InsecureCredential> GetAllInsecureCredentials(
+    password_manager::PasswordStore* store);
+
 // Returns all logins from |store| (including blocklisted ones)
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetAllLogins(
     password_manager::PasswordStore* store);
@@ -59,6 +68,11 @@ void RemoveLogin(password_manager::PasswordStore* store,
 
 // Removes all password forms from the password store |store|.
 void RemoveLogins(password_manager::PasswordStore* store);
+
+// Removes passed insecure credential from the |store|.
+void RemoveInsecureCredentials(
+    password_manager::PasswordStore* store,
+    const password_manager::InsecureCredential& credential);
 
 // Gets the password store of the profile with index |index|.
 // TODO(treib): Rename to GetProfilePasswordStore.
@@ -99,6 +113,13 @@ int GetVerifierPasswordCount();
 // |index|.
 password_manager::PasswordForm CreateTestPasswordForm(int index);
 
+// Creates a test insecure credentials with a well known fake signon realm
+// and username based on |index|. Implementation aligned with
+// CreateTestPasswordForm(int index);
+password_manager::InsecureCredential CreateInsecureCredential(
+    int index,
+    password_manager::InsecureType type);
+
 // Injects the password entity based on given |form| and encrypted with key
 // derived from |key_derivation_params| into |fake_server|.
 // For Keystore encryption, the |encryption_passphrase| is the base64 encoding
@@ -138,16 +159,22 @@ class PasswordSyncActiveChecker : public SingleClientStatusChangeChecker {
 // TODO(crbug.com/1010490): avoid re-entrance protection in checkers below or
 // factor it out to not duplicate in every checker.
 // Checker to block until all profiles contain the same password forms.
+// If |check_for_insecure_| is true, it checks that all profiles contains the
+// same insecure credentials too.
 class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {
  public:
-  SamePasswordFormsChecker();
+  using CheckForInsecure = base::StrongAlias<class CheckForInsecureTag, bool>;
 
+  SamePasswordFormsChecker();
+  explicit SamePasswordFormsChecker(CheckForInsecure check_for_insecure);
+  ~SamePasswordFormsChecker() override;
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  bool in_progress_;
-  bool needs_recheck_;
+  bool in_progress_ = false;
+  bool needs_recheck_ = false;
+  CheckForInsecure check_for_insecure_{false};
 };
 
 // Checker to block until specified profile contains the same password forms as

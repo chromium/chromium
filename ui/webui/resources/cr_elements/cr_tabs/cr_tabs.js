@@ -19,8 +19,15 @@
  *   - no horizontal scrolling, it is assumed that tabs always fit in the
  *     available space
  */
+import '../hidden_style_css.m.js';
+import '../shared_vars_css.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
   is: 'cr-tabs',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     /**

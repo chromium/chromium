@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Internals>Network"
+monorail: {
+  component: "Internals>Network"
 }
-team_email:  "net-dev@chromium.org"
+team_email: "net-dev@chromium.org"

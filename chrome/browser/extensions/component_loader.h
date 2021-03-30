@@ -190,6 +190,7 @@ class ComponentLoader {
   void AddAudioPlayerExtension();
   void AddGalleryExtension();
   void AddImageLoaderExtension();
+  void AddGuestModeTestExtension(const base::FilePath& path);
   void AddKeyboardApp();
   void AddChromeCameraApp();
   void AddZipArchiverExtension();
@@ -221,7 +222,7 @@ class ComponentLoader {
 
   ExtensionSystem* extension_system_;
 
-  // List of registered component extensions (see Manifest::Location).
+  // List of registered component extensions (see mojom::ManifestLocation).
   typedef std::vector<ComponentExtensionInfo> RegisteredComponentExtensions;
   RegisteredComponentExtensions component_extensions_;
 

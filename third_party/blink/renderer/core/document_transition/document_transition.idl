@@ -13,11 +13,9 @@
   // - Rejects any previous unresolved prepare() promises.
   // - Returns a promise that resolves after the transition has been
   //   prepared.
-  [CallWith=ScriptState] Promise<void> prepare(optional DocumentTransitionInit params = {});
+  [CallWith=ScriptState, RaisesException] Promise<void> prepare(optional DocumentTransitionPrepareOptions options = {});
 
   // Can only be called after prepare(), during the task during
   // which prepare() most recently resolved.
-  // TODO(vmpstr): This should return a promise that resolves when the
-  // transition completes.
-  void start();
+  [CallWith=ScriptState, RaisesException] Promise<void> start(optional DocumentTransitionStartOptions options = {});
 };

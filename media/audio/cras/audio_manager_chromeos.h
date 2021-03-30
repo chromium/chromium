@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/audio/audio_device.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/audio/audio_device.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 
@@ -62,13 +62,12 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
 
   void GetAudioDeviceNamesImpl(bool is_input, AudioDeviceNames* device_names);
 
-  std::string GetHardwareDeviceFromDeviceId(
-      const chromeos::AudioDeviceList& devices,
-      bool is_input,
-      const std::string& device_id);
+  std::string GetHardwareDeviceFromDeviceId(const ash::AudioDeviceList& devices,
+                                            bool is_input,
+                                            const std::string& device_id);
 
-  void GetAudioDevices(chromeos::AudioDeviceList* devices);
-  void GetAudioDevicesOnMainThread(chromeos::AudioDeviceList* devices,
+  void GetAudioDevices(ash::AudioDeviceList* devices);
+  void GetAudioDevicesOnMainThread(ash::AudioDeviceList* devices,
                                    base::WaitableEvent* event);
   uint64_t GetPrimaryActiveInputNode();
   uint64_t GetPrimaryActiveOutputNode();

@@ -39,6 +39,11 @@ component("idle") {
     sources += [ "idle_chromeos.cc" ]
   }
 
+  if (is_chromeos_lacros) {
+    sources += [ "idle_lacros.cc" ]
+    deps += [ "//chromeos/lacros" ]
+  }
+
   if (is_mac) {
     sources += [ "idle_mac.mm" ]
   }
@@ -51,7 +56,7 @@ component("idle") {
     sources += [ "idle_fuchsia.cc" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [ "idle_linux.cc" ]
   }
 

@@ -19,10 +19,8 @@ bool WebTestTtsPlatform::PlatformImplInitialized() {
   return true;
 }
 
-bool WebTestTtsPlatform::LoadBuiltInTtsEngine(
-    content::BrowserContext* browser_context) {
-  return false;
-}
+void WebTestTtsPlatform::LoadBuiltInTtsEngine(
+    content::BrowserContext* browser_context) {}
 
 void WebTestTtsPlatform::Speak(
     int utterance_id,

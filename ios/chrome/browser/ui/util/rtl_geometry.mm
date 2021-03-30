@@ -272,3 +272,11 @@ CGFloat UIEdgeInsetsGetLeading(UIEdgeInsets insets) {
 CGFloat UIEdgeInsetsGetTrailing(UIEdgeInsets insets) {
   return UseRTLLayout() ? insets.left : insets.right;
 }
+
+BOOL EdgeLeadsEdge(CGFloat a, CGFloat b, base::i18n::TextDirection direction) {
+  return direction == base::i18n::RIGHT_TO_LEFT ? a > b : a < b;
+}
+
+BOOL EdgeLeadsEdge(CGFloat a, CGFloat b) {
+  return EdgeLeadsEdge(a, b, LayoutDirection());
+}

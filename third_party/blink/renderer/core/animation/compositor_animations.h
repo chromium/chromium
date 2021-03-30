@@ -47,6 +47,7 @@ class Animation;
 class CompositorAnimation;
 class Element;
 class KeyframeEffectModelBase;
+class Node;
 class PaintArtifactCompositor;
 class SVGElement;
 

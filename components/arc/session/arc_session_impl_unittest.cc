@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -20,7 +21,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/session/arc_client_adapter.h"
@@ -85,6 +85,8 @@ class FakeArcClientAdapter : public ArcClientAdapter {
   void SetUserInfo(const cryptohome::Identification& cryptohome_id,
                    const std::string& hash,
                    const std::string& serial_number) override {}
+
+  void SetDemoModeDelegate(DemoModeDelegate* delegate) override {}
 
   // Notifies ArcSessionImpl of the ARC instance stop event.
   void NotifyArcInstanceStopped() {
@@ -965,9 +967,6 @@ bool GetSystemMemoryInfo(const std::string& file_name,
 TEST_P(ArcSessionImplDalvikMemoryProfileTest, DalvikMemoryProfiles) {
   const DalvikMemoryProfileVariant& variant = GetParam();
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kUseHighMemoryDalvikProfile,
-                                    true /* use */);
   auto arc_session = CreateArcSession();
   arc_session->SetSystemMemoryInfoCallbackForTesting(
       base::BindRepeating(&GetSystemMemoryInfo, variant.file_name));

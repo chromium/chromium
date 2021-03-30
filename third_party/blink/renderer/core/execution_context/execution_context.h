@@ -39,24 +39,25 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
-#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/dom_timer_coordinator.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
+#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -122,7 +123,6 @@ enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
 // by an extension developer, but these share an ExecutionContext (the window)
 // in common.
 class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
-                                     public ContextLifecycleNotifier,
                                      public MojoBindingContext,
                                      public ConsoleLogger,
                                      public UseCounter,
@@ -167,6 +167,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   SecurityOrigin* GetMutableSecurityOrigin();
 
   ContentSecurityPolicy* GetContentSecurityPolicy() const;
+  void SetContentSecurityPolicy(ContentSecurityPolicy* content_security_policy);
+  void SetRequireTrustedTypes();
+  void SetRequireTrustedTypesForTesting();
 
   network::mojom::blink::WebSandboxFlags GetSandboxFlags() const;
   bool IsSandboxed(network::mojom::blink::WebSandboxFlags mask) const;
@@ -291,9 +294,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   void ParseAndSetReferrerPolicy(const String& policy,
                                  ReferrerPolicySource source);
   void SetReferrerPolicy(network::mojom::ReferrerPolicy);
-  virtual network::mojom::ReferrerPolicy GetReferrerPolicy() const {
-    return referrer_policy_;
-  }
+  network::mojom::ReferrerPolicy GetReferrerPolicy() const;
+
+  PolicyContainer* GetPolicyContainer() { return policy_container_.get(); }
+  void SetPolicyContainer(std::unique_ptr<PolicyContainer> container);
+  std::unique_ptr<PolicyContainer> TakePolicyContainer();
 
   virtual CoreProbeSink* GetProbeSink() { return nullptr; }
 
@@ -316,11 +321,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   // Tests whether the policy-controlled feature is enabled in this frame.
   // Optionally sends a report to any registered reporting observers or
-  // Report-To endpoints, via ReportFeaturePolicyViolation(), if the feature is
-  // disabled. The optional ConsoleMessage will be sent to the console if
+  // Report-To endpoints, via ReportPermissionsPolicyViolation(), if the feature
+  // is disabled. The optional ConsoleMessage will be sent to the console if
   // present, or else a default message will be used instead.
   bool IsFeatureEnabled(
-      mojom::blink::FeaturePolicyFeature,
+      mojom::blink::PermissionsPolicyFeature,
       ReportOptions report_on_failure = ReportOptions::kDoNotReport,
       const String& message = g_empty_string) const;
   bool IsFeatureEnabled(
@@ -335,14 +340,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& message = g_empty_string,
       const String& source_file = g_empty_string) const;
 
-  virtual void CountPotentialFeaturePolicyViolation(
-      mojom::blink::FeaturePolicyFeature) const {}
-
   // Report policy violations is delegated to Document because in order
   // to both remain const qualified and output console message, needs
   // to call |frame_->Console().AddMessage()| directly.
-  virtual void ReportFeaturePolicyViolation(
-      mojom::blink::FeaturePolicyFeature,
+  virtual void ReportPermissionsPolicyViolation(
+      mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
       const String& message = g_empty_string) const {}
   virtual void ReportDocumentPolicyViolation(
@@ -352,15 +354,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& source_file = g_empty_string) const {}
 
   String addressSpaceForBindings() const;
-  void SetAddressSpace(network::mojom::IPAddressSpace space) {
-    address_space_ = space;
-  }
-  network::mojom::IPAddressSpace AddressSpace() const { return address_space_; }
+  network::mojom::IPAddressSpace AddressSpace() const;
+  void SetAddressSpace(network::mojom::blink::IPAddressSpace ip_address_space);
 
-  void AddContextLifecycleObserver(ContextLifecycleObserver*) override;
-  void RemoveContextLifecycleObserver(ContextLifecycleObserver*) override;
   HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet() {
-    return context_lifecycle_observer_set_;
+    return ContextLifecycleNotifier::observers();
   }
   unsigned ContextLifecycleStateObserverCountForTesting() const;
 
@@ -403,6 +401,36 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     return nullptr;
   }
 
+  bool has_filed_shared_array_buffer_creation_issue() const {
+    return has_filed_shared_array_buffer_creation_issue_;
+  }
+
+  void FileSharedArrayBufferCreationIssue();
+
+  bool IsInRequestAnimationFrame() const {
+    return is_in_request_animation_frame_;
+  }
+
+  // For use by FrameRequestCallbackCollection::ExecuteFrameCallbacks();
+  // IsInRequestAnimationFrame() for the corresponding ExecutionContext will
+  // return true while this instance exists.
+  class ScopedRequestAnimationFrameStatus {
+    STACK_ALLOCATED();
+
+   public:
+    explicit ScopedRequestAnimationFrameStatus(ExecutionContext* context)
+        : context_(context) {
+      DCHECK(!context_->is_in_request_animation_frame_);
+      context_->is_in_request_animation_frame_ = true;
+    }
+    ~ScopedRequestAnimationFrameStatus() {
+      context_->is_in_request_animation_frame_ = false;
+    }
+
+   private:
+    ExecutionContext* context_;
+  };
+
  protected:
   explicit ExecutionContext(v8::Isolate* isolate, Agent*);
   ExecutionContext(const ExecutionContext&) = delete;
@@ -441,6 +469,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   bool is_in_back_forward_cache_ = false;
 
   bool has_filed_shared_array_buffer_transfer_issue_ = false;
+  bool has_filed_shared_array_buffer_creation_issue_ = false;
+
+  bool is_in_request_animation_frame_ = false;
 
   Member<PublicURLManager> public_url_manager_;
 
@@ -448,19 +479,20 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   DOMTimerCoordinator timers_;
 
-  HeapObserverSet<ContextLifecycleObserver> context_lifecycle_observer_set_;
-
   // Counter that keeps track of how many window interaction calls are allowed
   // for this ExecutionContext. Callers are expected to call
   // |allowWindowInteraction()| and |consumeWindowInteraction()| in order to
   // increment and decrement the counter.
   int window_interaction_tokens_;
 
-  network::mojom::ReferrerPolicy referrer_policy_;
-
-  network::mojom::blink::IPAddressSpace address_space_;
+  // The |policy_container_| contains security policies for this
+  // ExecutionContext.
+  std::unique_ptr<PolicyContainer> policy_container_;
 
   Member<OriginTrialContext> origin_trial_context_;
+
+  Member<ContentSecurityPolicy> content_security_policy_;
+  bool require_safe_types_ = false;
 };
 
 }  // namespace blink

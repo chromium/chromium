@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -30,6 +31,8 @@ enum class AssistantButtonId;
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
     : public views::ImageButton {
  public:
+  METADATA_HEADER(AssistantButton);
+
   // Initialization parameters for customizing the Assistant button.
   struct InitParams {
     InitParams();
@@ -68,8 +71,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
 
   AssistantButtonId GetAssistantButtonId() const { return id_; }
 
-  // views::Button:
-  const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()

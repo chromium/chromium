@@ -4,19 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
-
-js_type_check("closure_compile") {
-  deps = [ ":search_engines_browser_proxy" ]
-}
-
-js_library("search_engines_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -25,7 +13,7 @@ js_type_check("closure_compile_module") {
     ":omnibox_extension_entry",
     ":search_engine_dialog",
     ":search_engine_entry",
-    ":search_engines_browser_proxy.m",
+    ":search_engines_browser_proxy",
     ":search_engines_list",
     ":search_engines_page",
   ]
@@ -33,8 +21,8 @@ js_type_check("closure_compile_module") {
 
 js_library("omnibox_extension_entry") {
   deps = [
-    ":search_engines_browser_proxy.m",
-    "..:extension_control_browser_proxy.m",
+    ":search_engines_browser_proxy",
+    "..:extension_control_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:assert.m",
@@ -44,7 +32,7 @@ js_library("omnibox_extension_entry") {
 
 js_library("search_engine_dialog") {
   deps = [
-    ":search_engines_browser_proxy.m",
+    ":search_engines_browser_proxy",
     "..:i18n_setup",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -54,7 +42,7 @@ js_library("search_engine_dialog") {
 
 js_library("search_engine_entry") {
   deps = [
-    ":search_engines_browser_proxy.m",
+    ":search_engines_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:assert.m",
@@ -62,23 +50,21 @@ js_library("search_engine_entry") {
   ]
 }
 
-js_library("search_engines_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/search_engines_page/search_engines_browser_proxy.m.js" ]
+js_library("search_engines_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("search_engines_list") {
   deps = [
-    ":search_engines_browser_proxy.m",
+    ":search_engines_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_library("search_engines_page") {
   deps = [
-    ":search_engines_browser_proxy.m",
-    "..:global_scroll_target_behavior.m",
+    ":search_engines_browser_proxy",
+    "..:global_scroll_target_behavior",
     "..:settings_routes",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -87,14 +73,7 @@ js_library("search_engines_page") {
   ]
 }
 
-group("web_components") {
-  public_deps = [
-    ":modulize",
-    ":web_components_local",
-  ]
-}
-
-html_to_js("web_components_local") {
+html_to_js("web_components") {
   js_files = [
     "omnibox_extension_entry.js",
     "search_engine_dialog.js",
@@ -103,9 +82,4 @@ html_to_js("web_components_local") {
     "search_engines_list.js",
     "search_engines_page.js",
   ]
-}
-
-js_modulizer("modulize") {
-  input_files = [ "search_engines_browser_proxy.js" ]
-  namespace_rewrites = settings_namespace_rewrites
 }

@@ -6,9 +6,9 @@
 #define MEDIA_MOJO_MOJOM_SUPPORTED_VIDEO_DECODER_CONFIG_MOJOM_TRAITS_H_
 
 #include "media/base/ipc/media_param_traits.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
-#include "media/video/supported_video_decoder_config.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {

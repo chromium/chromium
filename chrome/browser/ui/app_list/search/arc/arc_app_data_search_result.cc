@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "components/arc/arc_service_manager.h"
@@ -105,7 +105,7 @@ ArcAppDataSearchResult::ArcAppDataSearchResult(
 
     apps::ArcRawIconPngDataToImageSkia(
         std::move(data_->icon),
-        ash::AppListConfig::instance().search_tile_icon_dimension(),
+        ash::SharedAppListConfig::instance().search_tile_icon_dimension(),
         base::BindOnce(&ArcAppDataSearchResult::ApplyIcon,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -123,7 +123,7 @@ ArcAppDataSearchResult::ArcAppDataSearchResult(
   icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
       base::BindOnce(&ArcAppDataSearchResult::ApplyIcon,
                      weak_ptr_factory_.GetWeakPtr()),
-      ash::AppListConfig::instance().search_tile_icon_dimension());
+      ash::SharedAppListConfig::instance().search_tile_icon_dimension());
   icon_decode_request_->StartWithOptions(icon_png_data().value());
 }
 

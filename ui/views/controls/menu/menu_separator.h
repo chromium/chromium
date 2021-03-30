@@ -29,6 +29,8 @@ class VIEWS_EXPORT MenuSeparator : public View {
   ui::MenuSeparatorType GetType() const;
   void SetType(ui::MenuSeparatorType type);
 
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
  private:
   // The type of the separator.
   ui::MenuSeparatorType type_;

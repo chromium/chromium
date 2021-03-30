@@ -38,7 +38,7 @@ class OrderSummaryViewController : public PaymentRequestSheetController,
  private:
   // PaymentRequestSheetController:
   bool ShouldShowSecondaryButton() override;
-  base::string16 GetSheetTitle() override;
+  std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
 
   base::WeakPtrFactory<OrderSummaryViewController> weak_ptr_factory_{this};

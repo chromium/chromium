@@ -26,7 +26,7 @@ ChromeAppIconService::ChromeAppIconService(content::BrowserContext* context)
       this, context, false /* extensions_only */);
 #endif
 
-  observer_.Add(ExtensionRegistry::Get(context_));
+  observation_.Observe(ExtensionRegistry::Get(context_));
 }
 
 ChromeAppIconService::~ChromeAppIconService() = default;

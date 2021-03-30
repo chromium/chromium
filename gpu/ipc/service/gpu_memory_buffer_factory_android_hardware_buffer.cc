@@ -86,6 +86,14 @@ void GpuMemoryBufferFactoryAndroidHardwareBuffer::DestroyGpuMemoryBuffer(
   buffer_map_.erase(key);
 }
 
+bool GpuMemoryBufferFactoryAndroidHardwareBuffer::
+    FillSharedMemoryRegionWithBufferContents(
+        gfx::GpuMemoryBufferHandle buffer_handle,
+        base::UnsafeSharedMemoryRegion shared_memory) {
+  // Not implemented.
+  return false;
+}
+
 ImageFactory* GpuMemoryBufferFactoryAndroidHardwareBuffer::AsImageFactory() {
   return this;
 }

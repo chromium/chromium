@@ -79,14 +79,14 @@ int CountryComboboxModel::GetItemCount() const {
   return countries_.size();
 }
 
-base::string16 CountryComboboxModel::GetItemAt(int index) const {
+std::u16string CountryComboboxModel::GetItemAt(int index) const {
   AutofillCountry* country = countries_[index].get();
   if (country)
     return countries_[index]->name();
 
   // The separator item. Implemented for platforms that don't yet support
   // IsItemSeparatorAt().
-  return base::ASCIIToUTF16("---");
+  return u"---";
 }
 
 bool CountryComboboxModel::IsItemSeparatorAt(int index) const {

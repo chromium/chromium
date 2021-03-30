@@ -10,23 +10,23 @@ import androidx.preference.PreferenceFragmentCompat;
  * Preference fragment for showing the Site Settings UI.
  */
 public abstract class SiteSettingsPreferenceFragment extends PreferenceFragmentCompat {
-    private SiteSettingsClient mSiteSettingsClient;
+    private SiteSettingsDelegate mSiteSettingsDelegate;
 
     /**
-     * Sets the SiteSettingsClient instance this Fragment should use.
+     * Sets the SiteSettingsDelegate instance this Fragment should use.
      *
      * This should be called by the embedding Activity.
      */
-    public void setSiteSettingsClient(SiteSettingsClient client) {
-        assert mSiteSettingsClient == null;
-        mSiteSettingsClient = client;
+    public void setSiteSettingsDelegate(SiteSettingsDelegate client) {
+        assert mSiteSettingsDelegate == null;
+        mSiteSettingsDelegate = client;
     }
 
     /**
-     * @return the SiteSettingsClient instance to use when rendering the Site Settings UI.
+     * @return the SiteSettingsDelegate instance to use when rendering the Site Settings UI.
      */
-    protected SiteSettingsClient getSiteSettingsClient() {
-        assert mSiteSettingsClient != null : "SiteSettingsClient not set";
-        return mSiteSettingsClient;
+    public SiteSettingsDelegate getSiteSettingsDelegate() {
+        assert mSiteSettingsDelegate != null : "SiteSettingsDelegate not set";
+        return mSiteSettingsDelegate;
     }
 }

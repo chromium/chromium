@@ -78,7 +78,7 @@ const BomMapping kBomMappings[] = {
 // If |charset| is empty, then we don't know what it was and guess.
 void ConvertResponseToUTF16(const std::string& charset,
                             const std::string& bytes,
-                            base::string16* utf16) {
+                            std::u16string* utf16) {
   if (charset.empty()) {
     // Guess the charset by looking at the BOM.
     base::StringPiece bytes_str(bytes);
@@ -141,7 +141,7 @@ void PacFileFetcherImpl::OnResponseCompleted(URLRequest* request,
 
 int PacFileFetcherImpl::Fetch(
     const GURL& url,
-    base::string16* text,
+    std::u16string* text,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag traffic_annotation) {
   // It is invalid to call Fetch() while a request is already in progress.

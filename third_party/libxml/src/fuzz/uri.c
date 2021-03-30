@@ -13,6 +13,9 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     char *str[2] = { NULL, NULL };
     size_t numStrings;
 
+    if (size > 10000)
+        return(0);
+
     numStrings = xmlFuzzExtractStrings(data, size, str, 2);
 
     uri = xmlParseURI(str[0]);

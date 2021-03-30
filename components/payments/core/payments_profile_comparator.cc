@@ -208,25 +208,25 @@ void PaymentsProfileComparator::RecordMissingFieldsOfContactProfile(
   }
 }
 
-base::string16 PaymentsProfileComparator::GetStringForMissingContactFields(
+std::u16string PaymentsProfileComparator::GetStringForMissingContactFields(
     const autofill::AutofillProfile& profile) const {
   return GetStringForMissingFields(GetMissingProfileFields(&profile) &
                                    GetRequiredProfileFieldsForContact());
 }
 
-base::string16 PaymentsProfileComparator::GetTitleForMissingContactFields(
+std::u16string PaymentsProfileComparator::GetTitleForMissingContactFields(
     const autofill::AutofillProfile& profile) const {
   return GetTitleForMissingFields(GetMissingProfileFields(&profile) &
                                   GetRequiredProfileFieldsForContact());
 }
 
-base::string16 PaymentsProfileComparator::GetStringForMissingShippingFields(
+std::u16string PaymentsProfileComparator::GetStringForMissingShippingFields(
     const autofill::AutofillProfile& profile) const {
   return GetStringForMissingFields(GetMissingProfileFields(&profile) &
                                    GetRequiredProfileFieldsForShipping());
 }
 
-base::string16 PaymentsProfileComparator::GetTitleForMissingShippingFields(
+std::u16string PaymentsProfileComparator::GetTitleForMissingShippingFields(
     const autofill::AutofillProfile& profile) const {
   return GetTitleForMissingFields(GetMissingProfileFields(&profile) &
                                   GetRequiredProfileFieldsForShipping());
@@ -253,14 +253,14 @@ PaymentsProfileComparator::ComputeMissingFields(
   const std::string country =
       autofill::data_util::GetCountryCodeWithFallback(profile, app_locale());
 
-  base::string16 phone = profile.GetInfo(
+  std::u16string phone = profile.GetInfo(
       autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER), app_locale());
-  base::string16 intl_phone = base::UTF8ToUTF16("+" + base::UTF16ToUTF8(phone));
+  std::u16string intl_phone = base::UTF8ToUTF16("+" + base::UTF16ToUTF8(phone));
   if (!(autofill::IsPossiblePhoneNumber(phone, country) ||
         autofill::IsPossiblePhoneNumber(intl_phone, country)))
     missing |= kPhone;
 
-  base::string16 email = profile.GetInfo(
+  std::u16string email = profile.GetInfo(
       autofill::AutofillType(autofill::EMAIL_ADDRESS), app_locale());
   if (!autofill::IsValidEmailAddress(email))
     missing |= kEmail;
@@ -288,12 +288,12 @@ PaymentsProfileComparator::GetRequiredProfileFieldsForShipping() const {
   return options_.request_shipping() ? (kAddress | kName | kPhone) : kNone;
 }
 
-base::string16 PaymentsProfileComparator::GetStringForMissingFields(
+std::u16string PaymentsProfileComparator::GetStringForMissingFields(
     PaymentsProfileComparator::ProfileFields fields) const {
   switch (fields) {
     case kNone:
       // No bits are set, so no fields are missing.
-      return base::string16();
+      return std::u16string();
     case kName:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_NAME_REQUIRED);
     case kPhone:
@@ -310,12 +310,12 @@ base::string16 PaymentsProfileComparator::GetStringForMissingFields(
   }
 }
 
-base::string16 PaymentsProfileComparator::GetTitleForMissingFields(
+std::u16string PaymentsProfileComparator::GetTitleForMissingFields(
     PaymentsProfileComparator::ProfileFields fields) const {
   switch (fields) {
     case 0:
       NOTREACHED() << "Title should not be requested if no fields are missing";
-      return base::string16();
+      return std::u16string();
     case kName:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_NAME);
     case kPhone:

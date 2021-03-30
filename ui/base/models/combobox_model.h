@@ -5,8 +5,9 @@
 #ifndef UI_BASE_MODELS_COMBOBOX_MODEL_H_
 #define UI_BASE_MODELS_COMBOBOX_MODEL_H_
 
+#include <string>
+
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 namespace ui {
 
@@ -22,15 +23,15 @@ class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
   virtual int GetItemCount() const = 0;
 
   // Returns the string at the specified index.
-  virtual base::string16 GetItemAt(int index) const = 0;
+  virtual std::u16string GetItemAt(int index) const = 0;
 
   // Returns the string to be shown in the dropdown for the item at |index|. By
   // default, it returns GetItemAt(index).
-  virtual base::string16 GetDropDownTextAt(int index) const;
+  virtual std::u16string GetDropDownTextAt(int index) const;
 
   // Returns the secondary string at the specified index. Secondary strings are
   // displayed in a second line inside every menu item.
-  virtual base::string16 GetDropDownSecondaryTextAt(int index) const;
+  virtual std::u16string GetDropDownSecondaryTextAt(int index) const;
 
   // Gets the icon for the item at the specified index. ImageModel is empty if
   // there is no icon.

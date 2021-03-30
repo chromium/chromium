@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 namespace storage_monitor {
 
@@ -31,9 +32,9 @@ class StorageInfo {
   // Note: |device_id_in| should be constructed with MakeDeviceId.
   StorageInfo(const std::string& device_id_in,
               const base::FilePath::StringType& device_location,
-              const base::string16& label,
-              const base::string16& vendor,
-              const base::string16& model,
+              const std::u16string& label,
+              const std::u16string& vendor,
+              const std::u16string& model,
               uint64_t size_in_bytes);
   StorageInfo(const StorageInfo& other);
   ~StorageInfo();
@@ -64,17 +65,18 @@ class StorageInfo {
 
   // Get the display name for the removable device represented by this
   // StorageInfo. Include the size for removable devices if |with_size| is true.
-  base::string16 GetDisplayName(bool with_size) const;
+  std::u16string GetDisplayName(bool with_size) const;
 
   // Same as GetDisplayName(), but may be overridden by |override_display_name|.
-  base::string16 GetDisplayNameWithOverride(
-      const base::string16& override_display_name, bool with_size) const;
+  std::u16string GetDisplayNameWithOverride(
+      const std::u16string& override_display_name,
+      bool with_size) const;
 
   const std::string& device_id() const { return device_id_; }
   const base::FilePath::StringType& location() const { return location_; }
-  const base::string16& storage_label() const { return storage_label_; }
-  const base::string16& vendor_name() const { return vendor_name_; }
-  const base::string16& model_name() const { return model_name_; }
+  const std::u16string& storage_label() const { return storage_label_; }
+  const std::u16string& vendor_name() const { return vendor_name_; }
+  const std::u16string& model_name() const { return model_name_; }
   uint64_t total_size_in_bytes() const { return total_size_in_bytes_; }
 
   void set_device_id(const std::string& device_id) { device_id_ = device_id; }
@@ -94,15 +96,15 @@ class StorageInfo {
 
   // Label given to this storage device by the user.
   // May be empty if not found or the device is unlabeled.
-  base::string16 storage_label_;
+  std::u16string storage_label_;
 
   // Vendor name for the removable device. (Human readable)
   // May be empty if not collected.
-  base::string16 vendor_name_;
+  std::u16string vendor_name_;
 
   // Model name for the removable device. (Human readable)
   // May be empty if not collected.
-  base::string16 model_name_;
+  std::u16string model_name_;
 
   // Size of the removable device in bytes.
   // Zero if not collected or unknown.

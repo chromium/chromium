@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that log message and syntax errors from inline scripts with sourceURL are logged into console, contains correct link and doesn't cause browser crash.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function foo()

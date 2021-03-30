@@ -60,20 +60,21 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   };
 
   enum Shadow {
-    NO_SHADOW = 0,
-    BIG_SHADOW,
-    SMALL_SHADOW,
-    // NO_ASSETS borders don't draw a stroke or a shadow. This is used for
-    // platforms that provide their own shadows.
-    NO_ASSETS,
+    // NO_SHADOW_LEGACY is obsolete. Used only for Win7 where custom shadows are
+    // not supported.
+    NO_SHADOW_LEGACY = 0,
+    STANDARD_SHADOW,
+    // NO_SHADOW don't draw a stroke or a shadow. This is used for platforms
+    // that provide their own shadows or UIs that doesn't need shadows.
+    NO_SHADOW,
     SHADOW_COUNT,
 
 #if defined(OS_APPLE)
     // On Mac, the native window server should provide its own shadow for
     // windows that could overlap the browser window.
-    DIALOG_SHADOW = NO_ASSETS,
+    DIALOG_SHADOW = NO_SHADOW,
 #else
-    DIALOG_SHADOW = SMALL_SHADOW,
+    DIALOG_SHADOW = STANDARD_SHADOW,
 #endif
   };
 
@@ -237,12 +238,13 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // draw over the contents of the bubble.
   SkRRect GetClientRect(const View& view) const;
 
-  // Paint for the NO_ASSETS shadow type. This just paints transparent pixels
+  // Paint for the NO_SHADOW shadow type. This just paints transparent pixels
   // to make the window shape based on insets and GetBorderCornerRadius().
-  void PaintNoAssets(const View& view, gfx::Canvas* canvas);
-
-  // Paint for the NO_SHADOW shadow type. This paints a simple line border.
   void PaintNoShadow(const View& view, gfx::Canvas* canvas);
+
+  // Paint for the NO_SHADOW_LEGACY shadow type. This paints a simple line
+  // border.
+  void PaintNoShadowLegacy(const View& view, gfx::Canvas* canvas);
 
   Arrow arrow_;
   int arrow_offset_;

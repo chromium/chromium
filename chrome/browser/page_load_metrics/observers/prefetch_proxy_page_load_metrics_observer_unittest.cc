@@ -38,8 +38,7 @@ page_load_metrics::mojom::ResourceDataUpdatePtr CreateBaseResource(
 class TestPrefetchProxyPageLoadMetricsObserver
     : public PrefetchProxyPageLoadMetricsObserver {
  public:
-  void CallOnOriginLastVisitResult(
-      history::HistoryLastVisitToHostResult result) {
+  void CallOnOriginLastVisitResult(history::HistoryLastVisitResult result) {
     OnOriginLastVisitResult(base::Time::Now(), result);
   }
 };
@@ -489,8 +488,6 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_None) {
   tester()->NavigateToUntrackedUrl();
 
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 0);
-  tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", 0);
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0);
@@ -506,8 +503,6 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_Fail) {
   tester()->NavigateToUntrackedUrl();
 
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 1);
-  tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", 0);
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0);
@@ -522,8 +517,6 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_NullTime) {
       {true /* success */, base::Time()});
   tester()->NavigateToUntrackedUrl();
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 1);
   tester()->histogram_tester().ExpectUniqueSample(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", false, 1);
   tester()->histogram_tester().ExpectTotalCount(
@@ -540,8 +533,6 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_Today) {
 
   tester()->NavigateToUntrackedUrl();
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 1);
   tester()->histogram_tester().ExpectUniqueSample(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", true, 1);
   tester()->histogram_tester().ExpectUniqueSample(
@@ -558,8 +549,6 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_Yesterday) {
 
   tester()->NavigateToUntrackedUrl();
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 1);
   tester()->histogram_tester().ExpectUniqueSample(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", true, 1);
   tester()->histogram_tester().ExpectUniqueSample(
@@ -576,8 +565,6 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_MaxUKM) {
 
   tester()->NavigateToUntrackedUrl();
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 1);
   tester()->histogram_tester().ExpectUniqueSample(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", true, 1);
   tester()->histogram_tester().ExpectUniqueSample(
@@ -595,8 +582,6 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_NoUKM) {
 
   tester()->NavigateToUntrackedUrl();
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 1);
   tester()->histogram_tester().ExpectUniqueSample(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", true, 1);
   tester()->histogram_tester().ExpectUniqueSample(
@@ -613,8 +598,6 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, HadCookies_None) {
   tester()->NavigateToUntrackedUrl();
 
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.CookiesQueryTime", 0);
-  tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies", 0);
 
   using UkmEntry = ukm::builders::PrefetchProxy;
@@ -626,8 +609,6 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, HadCookies_NoUKM) {
 
   tester()->NavigateToUntrackedUrl();
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.CookiesQueryTime", 0);
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies", 0);
 

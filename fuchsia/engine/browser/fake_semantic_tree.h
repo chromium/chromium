@@ -36,6 +36,7 @@ class FakeSemanticTree
   void Disconnect();
 
   void RunUntilNodeCountAtLeast(size_t count);
+  void RunUntilNodeWithLabelIsInTree(base::StringPiece label);
   void RunUntilCommitCountIs(size_t count);
   void SetNodeUpdatedCallback(uint32_t node_id,
                               base::OnceClosure node_updated_callback);

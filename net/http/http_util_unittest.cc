@@ -1531,6 +1531,24 @@ TEST(HttpUtilTest, IsLWS) {
   EXPECT_TRUE(HttpUtil::IsLWS(' '));
 }
 
+TEST(HttpUtilTest, IsControlChar) {
+  EXPECT_FALSE(HttpUtil::IsControlChar('1'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('a'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('.'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('$'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('\x7E'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('\x80'));
+  EXPECT_FALSE(HttpUtil::IsControlChar('\xFF'));
+
+  EXPECT_TRUE(HttpUtil::IsControlChar('\0'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\v'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\n'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\r'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\t'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\x01'));
+  EXPECT_TRUE(HttpUtil::IsControlChar('\x7F'));
+}
+
 TEST(HttpUtilTest, ParseAcceptEncoding) {
   const struct {
     const char* const value;
@@ -1633,6 +1651,12 @@ TEST(HttpUtilTest, ExpandLanguageList) {
             HttpUtil::ExpandLanguageList("en-US,fr-CA,it,fr,es-AR,it-IT"));
   // Trims a whitespace.
   EXPECT_EQ("en-US,en,fr", HttpUtil::ExpandLanguageList("en-US, fr"));
+
+  // Do not expand the single character subtag 'x' as a language.
+  EXPECT_EQ("x-private-agreement-subtags",
+            HttpUtil::ExpandLanguageList("x-private-agreement-subtags"));
+  // Do not expand the single character subtag 'i' as a language.
+  EXPECT_EQ("i-klingon", HttpUtil::ExpandLanguageList("i-klingon"));
 }
 
 }  // namespace net

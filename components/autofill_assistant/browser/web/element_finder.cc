@@ -205,7 +205,6 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kPseudoType:
     case SelectorProto::Filter::kNthMatch:
-    case SelectorProto::Filter::kClosest:
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
   }
@@ -424,15 +423,6 @@ void ElementFinder::ExecuteNextTask() {
         next_filter_index_++;
       }
       ApplyJsFilters(js_filter, matches);
-      return;
-    }
-
-    case SelectorProto::Filter::kClosest: {
-      std::string array_object_id;
-      if (!ConsumeMatchArrayOrFail(array_object_id))
-        return;
-
-      ApplyProximityFilter(next_filter_index_++, array_object_id);
       return;
     }
 
@@ -800,163 +790,6 @@ void ElementFinder::OnResolveNode(
   }
   // Use the node as root for the rest of the evaluation.
   current_matches_.emplace_back(object_id);
-  ExecuteNextTask();
-}
-
-void ElementFinder::ApplyProximityFilter(int filter_index,
-                                         const std::string& array_object_id) {
-  Selector target_selector;
-  target_selector.proto.mutable_filters()->MergeFrom(
-      selector_.proto.filters(filter_index).closest().target());
-  proximity_target_filter_ =
-      std::make_unique<ElementFinder>(web_contents_, devtools_client_,
-                                      target_selector, ResultType::kMatchArray);
-  proximity_target_filter_->StartInternal(
-      base::BindOnce(&ElementFinder::OnProximityFilterTarget,
-                     weak_ptr_factory_.GetWeakPtr(), filter_index,
-                     array_object_id),
-      current_frame_, current_frame_id_, current_frame_root_);
-}
-
-void ElementFinder::OnProximityFilterTarget(int filter_index,
-                                            const std::string& array_object_id,
-                                            const ClientStatus& status,
-                                            std::unique_ptr<Result> result) {
-  if (!status.ok()) {
-    VLOG(1) << __func__
-            << " Could not find proximity filter target for resolving "
-            << selector_.proto.filters(filter_index);
-    SendResult(status);
-    return;
-  }
-  if (result->container_frame_host != current_frame_) {
-    VLOG(1) << __func__ << " Cannot compare elements on different frames.";
-    SendResult(ClientStatus(INVALID_SELECTOR));
-    return;
-  }
-
-  const auto& filter = selector_.proto.filters(filter_index).closest();
-
-  std::string function = R"(function(targets, maxPairs) {
-  const candidates = this;
-  const pairs = candidates.length * targets.length;
-  if (pairs > maxPairs) {
-    return pairs;
-  }
-  const candidateBoxes = candidates.map((e) => e.getBoundingClientRect());
-  let closest = null;
-  let shortestDistance = Number.POSITIVE_INFINITY;
-  for (target of targets) {
-    const targetBox = target.getBoundingClientRect();
-    for (let i = 0; i < candidates.length; i++) {
-      const box = candidateBoxes[i];
-)";
-
-  if (filter.in_alignment()) {
-    // Rejects candidates that are not on the same row or or the same column as
-    // the target.
-    function.append("if ((box.bottom <= targetBox.top || ");
-    function.append("     box.top >= targetBox.bottom) && ");
-    function.append("    (box.right <= targetBox.left || ");
-    function.append("     box.left >= targetBox.right)) continue;");
-  }
-  switch (filter.relative_position()) {
-    case SelectorProto::ProximityFilter::UNSPECIFIED_POSITION:
-      // No constraints.
-      break;
-
-    case SelectorProto::ProximityFilter::ABOVE:
-      // Candidate must be above target
-      function.append("if (box.bottom > targetBox.top) continue;");
-      break;
-
-    case SelectorProto::ProximityFilter::BELOW:
-      // Candidate must be below target
-      function.append("if (box.top < targetBox.bottom) continue;");
-      break;
-
-    case SelectorProto::ProximityFilter::LEFT:
-      // Candidate must be left of target
-      function.append("if (box.right > targetBox.left) continue;");
-      break;
-
-    case SelectorProto::ProximityFilter::RIGHT:
-      // Candidate must be right of target
-      function.append("if (box.left < targetBox.right) continue;");
-      break;
-  }
-
-  // The algorithm below computes distance to the closest border. If the
-  // distance is 0, then we have got our closest element and can stop there.
-  function.append(R"(
-      let w = 0;
-      if (targetBox.right < box.left) {
-        w = box.left - targetBox.right;
-      } else if (box.right < targetBox.left) {
-        w = targetBox.left - box.right;
-      }
-      let h = 0;
-      if (targetBox.bottom < box.top) {
-        h = box.top - targetBox.bottom;
-      } else if (box.bottom < targetBox.top) {
-        h = targetBox.top - box.bottom;
-      }
-      const dist = Math.sqrt(h * h + w * w);
-      if (dist == 0) return candidates[i];
-      if (dist < shortestDistance) {
-        closest = candidates[i];
-        shortestDistance = dist;
-      }
-    }
-  }
-  return closest;
-})");
-
-  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgumentObjectId(result->object_id(), &arguments);
-  AddRuntimeCallArgument(filter.max_pairs(), &arguments);
-
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(array_object_id)
-          .SetArguments(std::move(arguments))
-          .SetFunctionDeclaration(function)
-          .Build(),
-      current_frame_id_,
-      base::BindOnce(&ElementFinder::OnProximityFilterJs,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ElementFinder::OnProximityFilterJs(
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<runtime::CallFunctionOnResult> result) {
-  ClientStatus status =
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
-  if (!status.ok()) {
-    VLOG(1) << __func__ << ": Failed to execute proximity filter " << status;
-    SendResult(status);
-    return;
-  }
-
-  std::string object_id;
-  if (SafeGetObjectId(result->GetResult(), &object_id)) {
-    // Function found a match.
-    current_matches_.push_back(object_id);
-    ExecuteNextTask();
-    return;
-  }
-
-  int pair_count = 0;
-  if (SafeGetIntValue(result->GetResult(), &pair_count)) {
-    // Function got too many pairs to check.
-    VLOG(1) << __func__ << ": Too many pairs to consider for proximity checks: "
-            << pair_count;
-    SendResult(ClientStatus(TOO_MANY_CANDIDATES));
-    return;
-  }
-
-  // Function found nothing, which is possible if the relative position
-  // constraints forced the algorithm to discard all candidates.
   ExecuteNextTask();
 }
 

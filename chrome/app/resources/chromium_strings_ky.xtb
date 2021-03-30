@@ -4,14 +4,12 @@
 <translation id="1065672644894730302">Жеке жөндөлөөрүңүз окулбай жатат.
 
 Айрым мүмкүнчүлүктөр иштебегендиктен, жеке жөндөөлөрдөгү өзгөрүүлөр сакталбайт.</translation>
-<translation id="107513968719897256">Жеке жана <ph name="NEW_USER" /> аркылуу серептөөнү ажыратуу үчүн, Chromium'да жаңы профиль түзүңүз</translation>
 <translation id="1098170124587656448">Chromium сырсөздөрүңүздү коопсуз сактоого, кооптуу кеңейтүүлөрдөн жана башкалардан коргоого жардам берет</translation>
 <translation id="1104942323762546749">Chromium сырсөздөрүңүздү экспорттогону жатат. Ага уруксат берүү үчүн Windows аккаунтуңуздун сырсөзүн териңиз.</translation>
 <translation id="113122355610423240">Chromium демейки серепчи катары колдонулат</translation>
 <translation id="1131805035311359397">Сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chromium'га кириңиз<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Chromium жөнүндө</translation>
 <translation id="1315551408014407711">Жаңы Chromium профилин жөндөп алыңыз</translation>
-<translation id="1357932062193643861">Chromium'ду ачканда суралсын</translation>
 <translation id="1396446129537741364">Chromium сырсөздөрдү көрсөткөнгө аракет кылып жатат.</translation>
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
 <translation id="1414973082589232775">Корголгон медиа файлдарды Rosetta'да ойнотуу үчүн Chromium'ду өчүрүп күйгүзүү керек.</translation>
@@ -29,10 +27,7 @@
 <translation id="1966382378801805537">Chromium демейки серепчини аныктап же коё албай жатат</translation>
 <translation id="2008474315282236005">Ушуну менен түзмөктөгү 1 нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chromium'га <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="2020032459870799438">Башка сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chromium'га кириңиз<ph name="END_LINK" />.</translation>
-<translation id="2179192076895113433"><ph name="USER_NAME" /> үчүн кошулган ушул жана башка Google аккаунттарын <ph name="LINK_BEGIN" />Жөндөөлөрдөн<ph name="LINK_END" /> башкара аласыз.
-          Chromium серепчисиндеги вебсайттарга жана Google Play'ден жүктөлүп алынган колдонмолорго берилген уруксаттар бардык аккаунттарга карата колдонулушу мүмкүн.</translation>
 <translation id="2185166961232948079">Chromium – Тармакка кирүү – <ph name="PAGE_TITLE" /></translation>
-<translation id="2225696941839557119">Chromium OS сырсөздөрүңүздү шайкештештире албай койду.</translation>
 <translation id="2241627712206172106">Компьютерди бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chromium'ду өзүлөрү каалагандай орнотуп алышат.</translation>
 <translation id="2294245788148774212">Кошумча: Google'га мүчүлүштүктөрдү аныктоо жана колдонуу статистикасы жөнүндө автоматтык түрдө кабарлоо менен Chromium OS'тун функцияларын жана өндүрүмдүүлүгүн өркүндөтүүгө жардам бериңиз.</translation>
 <translation id="2343156876103232566">Номерди бул жерден Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chromium'га кириңиз.</translation>
@@ -40,21 +35,25 @@
 <translation id="2396765026452590966">"<ph name="EXTENSION_NAME" />" кеңейтүүсү Chromium иштеп баштаганда көрсөтүлө турган бетти өзгөрттү.</translation>
 <translation id="2483889755041906834">Chromium'да</translation>
 <translation id="2485422356828889247">Орнотуудан чыгаруу</translation>
-<translation id="2527042973354814951"><ph name="PLUGIN_NAME" /> плагинин иштетүү үчүн Chromium'ду өчүрүп-күйгүзүңүз</translation>
 <translation id="2535480412977113886">Аккаунтуңуздун кирүү чоо-жайлары эскирип калгандыктан, Chromium OS дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="2560420686485554789">Файлдарды жүктөп алуу үчүн Chromium сактагычка мүмкүнчүлүк алышы керек</translation>
 <translation id="2572494885440352020">Chromium Жардамчы</translation>
+<translation id="2577788541081224677">Chromium'дагы файлдарды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз.</translation>
 <translation id="2583187216237139145">Бул профилди колдонуп жатканда Chromium'да топтолгон бардык маалыматты (түзүлгөн кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр) жумуш профилинин администратору өчүрө алат. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Жаңыртууну колдонуу үчүн Chromium OS өчүрүлүп күйгүзүлүшү керек.</translation>
-<translation id="2615699638672665509">Бул компьютер жакында Chromium жаңыртууларын албай калат, себеби анын жабдыктары колдоого алынбай калган.</translation>
 <translation id="2648074677641340862">Орнотулуп жатканда иш тутумунда ката кетти. Chromium'ду кайра жүктөп алыңыз.</translation>
+<translation id="2661879430930417727">Түзмөктү бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chromium'ду өздөрү каалагандай жөндөп алышат</translation>
+<translation id="270245676623587882">Chromium бул кеңейтүүнү өчүрүп коюуну сунуштайт, анткени ал учурдагы Өркүндөтүлгөн коопсуз серептөөнүн стандарттарына жооп бербейт.</translation>
 <translation id="2711502716910134313">Chromium өтмөгү</translation>
 <translation id="2718390899429598676">Кошумча коопсуздук үчүн, Chromium дайын-даректериңизди шифрлейт.</translation>
 <translation id="2770231113462710648">Демейки серепчини төмөнкүгө өзгөртүү:</translation>
 <translation id="2799223571221894425">Кайра ишке киргизүү</translation>
+<translation id="2816712596130903444">Өзүнчө Chromium профили түзүлсүнбү?</translation>
+<translation id="2837693172913560447">Ушуну менен <ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы Chromium профили түзүлөт</translation>
 <translation id="2847479871509788944">Chromium'дан чыгарып салуу…</translation>
 <translation id="2885378588091291677">Тапшырмаларды башкаргыч</translation>
 <translation id="2910007522516064972">&amp;Chromium жөнүндө</translation>
+<translation id="2942419255987443909">Chromium OS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү (Бета)<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
 <translation id="2977470724722393594">Chromium жаңыртылган</translation>
 <translation id="2983934633046890458">Chromium cырсөздөрдү өзгөртүүгө аракет кылууда.</translation>
 <translation id="3032706164202344641">Chromium сырсөздөрүңүздү текшере албай жатат. Кийинчерээк кайталаңыз.</translation>
@@ -73,6 +72,9 @@
 <translation id="328888136576916638">Google API ачкычтары жок болуп жатат. Chromium'дун айрым функциялары өчүрүлөт.</translation>
 <translation id="3296368748942286671">Chromium жабылганда фондук колдонмолор иштей берсин</translation>
 <translation id="331951419404882060">Chromium OS кирүү катасынан улам дайын-даректериңизди шайкештештире албай койду.</translation>
+<translation id="3350761136195634146">Бул аккаунт менен Chromium профили мурунтан эле түзүлгөн</translation>
+<translation id="3406848076815591792">Учурдагы Chromium профилине өтөсүзбү?</translation>
+<translation id="3430503420100763906">Chromium профилдери менен Chromium'дагы маалыматты өзүнчө сактай аласыз. Досторуңуз менен үй-бүлөңүз үчүн профилдерди түзүңүз же жумуш менен эс алууну бири-бири менен аралаштырбаңыз.</translation>
 <translation id="347328004046849135">Chromium уурдалган сырсөз менен киргениңизде эскертет</translation>
 <translation id="3474745554856756813">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chromium'га <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="3509308970982693815">Бардык Chromium терезелерин жаап, дагы аракет кылып көрүңүз.</translation>
@@ -82,12 +84,14 @@
 <translation id="3651803019964686660">Номерди <ph name="ORIGIN" /> сайтынан Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chromium'га кириңиз.</translation>
 <translation id="3685209450716071127">Chromium сырсөздөрүңүздү текшере албай жатат. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Администраторуңуз жаңыртууну колдонуу үчүн Chromium'ду кайра иштетүүнү суранууда}=1{Администраторуңуз жаңыртууну колдонуу үчүн Chromium'ду кайра иштетүүнү суранууда. Жашыруун терезеңиз кайра ачылбайт.}other{Администраторуңуз жаңыртууну колдонуу үчүн Chromium'ду кайра иштетүүнү суранууда. # жашыруун терезеңиз кайра ачылбайт.}}</translation>
+<translation id="371088601698879021">Түзмөк өчүрүлүп күйгүзүлгөндөн кийин, Chromium OS колдонмолор менен барактарды, сизден уруксат сурабастан, ар дайым калыбына келтире алат.</translation>
 <translation id="3713809861844741608">Шилтемени жаңы Chromium &amp;өтмөгүндө ачуу</translation>
 <translation id="3728336900324680424">Дарек тилкесинде сунуштарды көрсөтүү үчүн Chromium кызматы Drive сактагычыңызды колдонот</translation>
 <translation id="378917192836375108">Chromium аркылуу желеден телефон номерин чыкылдатып, ага Skype менен чала аласыз!</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="388648406173476553">Chromium'ду ыңгайлаштыруу жана көзөмөлдөө. Сиздин аракетиңиз талап кылынат – чоо-жайын көрүү үчүн чыкылдатыңыз.</translation>
 <translation id="3889543394854987837">Chromium'ду ачып, серептеп баштоо үчүн ысымыңызды чыкылдатыңыз.</translation>
+<translation id="390528597099634151"><ph name="EXISTING_USER" /> ушул Chromium профилине мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу максатында Chromium сиз үчүн өзүнчө профиль түзүп бере алат.</translation>
 <translation id="3945058413678539331">Chromium сырсөздөрдү көчүрүүгө аракет кылууда. Уруксат берүү үчүн Windows сырсөзүңүздү жазыңыз.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Учурдагы жөндөөлөр<ph name="END_LINK" /> жөнүндө кабар берип, Chromium'ду өркүндөтүүгө кол кабыш кылыңыз</translation>
 <translation id="4050175100176540509">Эң акыркы версияда коопсуздукту бекемдөө каражаттары менен жаңы мүмкүнчүлүктөр камтылган.</translation>
@@ -101,7 +105,10 @@
 <translation id="4407044323746248786">Баары бир Chromium'дан чыгасызбы?</translation>
 <translation id="4415566066719264597">Chromium'га фондук режимде иштөөгө уруксат берүү</translation>
 <translation id="4423735387467980091">Chromium'ду өзгөчөлөштүрүү жана көзөмөлдөө</translation>
+<translation id="4491398312037323794">Бул барак тутумга кирген Google аккаунттарыңызды башкаруу мүмкүнчүлүгүн берет. Бул аккаунттар Chromium серепчисинде жана Play Store колдонмолорунда, ошондой эле Gmail, Drive жана YouTube сыяктуу кызматтарда жеткиликтүү болот. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
+<translation id="452711251841752011">Chromium'га кош келиңиз; серепчиде жаңы терезе ачылды</translation>
 <translation id="4544142686420020088">Chromium жаңырган жок. Бир жерден ката кетти. <ph name="BEGIN_LINK" />Chrome'догу жаңыртуу маселелерин оңдоңуз.<ph name="END_LINK" /></translation>
+<translation id="454579500955453258">Жаңы Chromium профилинде улантасызбы?</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> катары кирдиңиз. Эми кыстармаларды, таржымалды жана башка жөндөөлөрдү бардык катталган түзмөктөрүңүздөн колдоно аласыз.</translation>
 <translation id="459535195905078186">Chromium колдонмолору</translation>
 <translation id="4677944499843243528">Chromium процессинде бул профилди (<ph name="PROCESS_ID" />) башка компьютерде (<ph name="HOST_NAME" />) колдонуп жатат окшойт. Chromium профиль бузулбасын деп кулпулап койду. Бул профиль башка процесстерде колдонулбайт деп ишенсеңиз, профилдин кулпусун ачып, Chromium'ду өчүрүп күйгүзүңүз.</translation>
@@ -113,12 +120,11 @@
 <translation id="4788777615168560705">Chromium сырсөздөрүңүздү текшере албай жатат. 24 сааттан кийин кайра аракет кылыңыз же <ph name="BEGIN_LINK" />Google аккаунтуңуздагы сырсөздөрдү текшериңиз<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Ал Google Издөөдө колдонулган орфографияны текшерүүчү программаны колдонот. Серепчиде терилген текстти Google кызматтарына жөнөтүп турат. Бул параметрди каалаган убакта жөндөөлөргө өтүп, өзгөртүп койсоңуз болот.</translation>
 <translation id="4888717733111232871">mDNS трафигине уруксат берүү үчүн Chromium'дун кирүү эрежеси.</translation>
-<translation id="4893632094755846570">Ушуну менен бул түзмөктөн серептөө дайын-даректериңиз биротоло өчүрүлөт. Маалыматты калыбына келтирүү үчүн, Chromium'га төмөнкү аккаунт менен кириңиз:</translation>
 <translation id="4943838377383847465">Chromium фондук режимде.</translation>
 <translation id="4987820182225656817">Коноктор Chromium'ду артында эч нерсе калтырбай колдоно алышат.</translation>
 <translation id="4994636714258228724">Өзүңүздү Chromium'га кошуңуз</translation>
-<translation id="5080135079858647714">Chromium'да өзүңүздүн профилиңизди түзөсүзбү?</translation>
 <translation id="5224391634244552924">Сакталган сырсөздөр жок. Сырсөздөрүңүздү сактаганда Chromium аларды текшере алат.</translation>
+<translation id="5252179775517634216"><ph name="EXISTING_USER" /> ушул Chromium профилине мурунтан эле кирип турат. Ушуну менен <ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы Chromium профили түзүлөт</translation>
 <translation id="5277894862589591112">Өзгөртүүлөрдү киргизүү үчүн Chromium'ду кайра иштетиңиз</translation>
 <translation id="5358375970380395591">Башкарылган аккаунт менен кирип, анын администраторуна Chromiun профилиңизди көзөмөлдөө мүмкүнчүлүгүн берип жатасыз. Колдонмолоруңуз, кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр сыяктуу Chromium дайын-даректериңиз эми биротоло <ph name="USER_NAME" /> менен байланып калат. Бул дайындарды Google Каттоо эсептеринин Жеке кеңсеси аркылуу жок кылсаңыз болот, бирок башка аккаунтка байланыштыра албайсыз.<ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium жаңыртылууда (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -132,7 +138,6 @@
 <translation id="549669000822060376">Chromium эң акыркы тутум жаңыртууларын орнотуп бүткүчө күтө туруңуз.</translation>
 <translation id="5496810170689441661">Chromium сырсөздөрдү өзгөртүүгө аракет кылып жатат. Уруксат берүү үчүн Windows сырсөзүңүздү териңиз.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium'дун жаңы версиясы жеткиликтүү}=1{Chromium'дун жаңы версиясы жеткиликтүү}other{Chromium'дун жаңы версиясы # күндөн бери жеткиликтүү}}</translation>
-<translation id="5631814766731275228">Chromium'дагы профилдин аталышы жана сүрөтү</translation>
 <translation id="5634636535844844681">Chromium'га Windows 7 же жаңыраак версиясы талап кылынат.</translation>
 <translation id="5653831366781983928">Chromium'ду азыр өчүрүп күйгүзүңүз</translation>
 <translation id="5698481217667032250">Chromium ушул тилде көрсөтүлсүн</translation>
@@ -142,7 +147,6 @@
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Тармакка кирүү</translation>
 <translation id="5987687638152509985">Шайкештирип баштоо үчүн Chromium'ду жаңыртыңыз</translation>
-<translation id="6013050204643758987">Chromium OS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux (бета-версиясы)<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен, иштейт.</translation>
 <translation id="6039377483953237732">Chromium OS версиясы</translation>
 <translation id="6055895534982063517">Chromium'дун чагылгандай тездик менен иштеген жаңы версиясы бар.</translation>
 <translation id="6063093106622310249">&amp;Chromiumда ачуу</translation>
@@ -156,10 +160,11 @@
 <translation id="6183079672144801177">Chromium'га <ph name="TARGET_DEVICE_NAME" /> түзмөгүңүздөн кирип турганыңызды текшерип, кайра аракет кылыңыз.</translation>
 <translation id="6212496753309875659">Бул компьютерде Chromium'дун жаңыраак версиясы мурунтан эле орнотулган. Эгер программа иштебей жатса, Chromium'ду орнотуудан чыгарып, дагы бир жолу аракет кылып көрүңүз.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium азыр кайра иштетилет}=1{Chromium 1 секунддан кийин кайра иштетилет}other{Chromium # секунддан кийин кайра иштетилет}}</translation>
-<translation id="623836266260425961">Chromium OS маалыматыңызды шайкештештире албай койду.</translation>
 <translation id="6248213926982192922">Chromium'ду демейки серепчи кылуу</translation>
 <translation id="6266342355635466082">Chromium жаңыртууларды текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="6268381023930128611">Chromium'дан чыгасызбы?</translation>
+<translation id="6281746429495226318">Chromium профилимди ыңгайлаштыруу</translation>
+<translation id="6290827346642914212">Chromium профилиңиздин аталышын коюңуз</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> файлы кооптуу болушу мүмкүн, ошондуктан Chromium аны бөгөттөп койду.</translation>
 <translation id="6309712487085796862">Chromium камераңызды колдонууда.</translation>
 <translation id="6333502561965082103">Chromium'да башка операция жүрүп жатат. Бир аздан кийин кайталап көрүңүз.</translation>
@@ -167,34 +172,37 @@
 <translation id="6373523479360886564">Chromium'ду чын эле орнотуудан чыгарасызбы?</translation>
 <translation id="6403826409255603130">Chromium – веб-баракчалар жана колдонмолорду чагылгандай тездик менен иштеткен желе серепчиси. Ал оңой, тез жана туруктуу иштеген курал. Chromium кесепеттүү программалар менен фишингден коргоп тургандыктан, желени эч нерседен коркпостон серептей берсеңиз болот.</translation>
 <translation id="6434250628340475518">Chromium OS тутуму</translation>
+<translation id="6455857529632101747">Chromium профилдерине кош келиңиз</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 1 секунддан кийин өчүрүлүп-күйгүзүлөт}other{Chromium # секунддан кийин өчүрүлүп-күйгүзүлөт}}</translation>
 <translation id="6475912303565314141">Chromium иштеп баштаганда кайсы бет көрүнө тургандыгын белгилейт.</translation>
 <translation id="6510925080656968729">Chromium'ду орнотуудан чыгарып салуу</translation>
+<translation id="6542839706527980775">Ар бир профилде өзүнө таандык кыстармалар, таржымал, сырсөздөр жана башкалар сыяктуу Chromium маалыматы бар</translation>
 <translation id="6570579332384693436">Орфографиялык каталарды оңдоо максатында, Chromium сиз талааларда терген текстти Google'га жөнөтөт</translation>
 <translation id="6598877126913850652">Chromium'дун эскертмелеринин жөндөөлөрүнө өтүү</translation>
+<translation id="6613594504749178791">Өзгөртүүлөрүңүз Chromium кийинки жолу кайра ишке киргизилгенде күчүнө кирет.</translation>
 <translation id="6676384891291319759">Интернетке кирүү</translation>
 <translation id="6717134281241384636">Профилиңиз Chromium'дун жаңыраак версиясынан болгондуктан, аны колдонуу мүмкүн болбой жатат.
 
 Айрым мүмкүнчүлүктөр иштебей калышы ыктымал. Башка профиль каталогун көрсөтүңүз же Chromium'дун жаңыраак версиясын колдонуңуз.</translation>
 <translation id="6734080038664603509">Жаңыртуу &amp;Chromium</translation>
 <translation id="6734291798041940871">Chromium компьютериңиздин бардык колдонуучулары үчүн орнотулуп коюлган.</translation>
-<translation id="6762551859069255163">Жумуш боюнча, жеке же бул түзмөктү колдонгон адамдар серептеген нерселерди ажыратуу үчүн, Chromium'да ар башка профилдерди колдонуңуз</translation>
+<translation id="673636774878526923">Chromium'дагы файлдарды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз.</translation>
 <translation id="6774082503108938489">Ата-энеңиз Chromium үчүн "Сайттарга, колдонмолорго жана кеңейтүүлөргө уруксаттарды" өчүрүп койгон. Бул <ph name="EXTENSION_TYPE_PARAMETER" /> кеңейтүүсүн иштетүүгө болбойт.</translation>
 <translation id="6847869444787758381">Chromium сырсөздөрүңүздү башка бирөөлөр билип алса сизге кабарлайт</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'га көчүрүлдү)</translation>
 <translation id="6893813176749746474">Chromium жаңырды, бирок аны 30 күндөн бери колдоно элексиз.</translation>
 <translation id="6897548120660295439">Rosetta бул барактагы медиа файлдарды Chromium'да ойнотот.</translation>
+<translation id="691026815377248078">Жупташтырууну улантуу үчүн Chromium Bluetooth'ду 
+ пайдаланууга уруксат алышы керек. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Шилтемени Chromium'дун жашы&amp;руун терезесинде ачуу</translation>
 <translation id="6978145336957848883">Начар сырсөздөрдү билип алуу оңой. Chromium'га <ph name="BEGIN_LINK" />сиз үчүн татаал сырсөздөрдү түзүп, эстеп калууга<ph name="END_LINK" /> уруксат бериңиз.</translation>
 <translation id="6990124437352146030">Бул сайтта иштөө үчүн Chromium микрофонуңузду колдонушу керек</translation>
 <translation id="701244094609242530">Chromium кеңейтүүлөрүңүздү текшере албай жатат. Кийинчерээк кайталаңыз.</translation>
 <translation id="705851970750939768">Chromium'ду жаңыртуу</translation>
-<translation id="7066436765290594559">Chromium OS дайын-даректериңизди шайкештештире албай койду. Шайкештештирүүнүн купуя сөз айкашын жаңыртыңыз.</translation>
 <translation id="7067091210845072982">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chromium аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт.</translation>
 <translation id="7196312274710523067">Chromium иштетилбей койду. Кайталап көрүңүз.</translation>
 <translation id="7197677400338048821">Chromium сырсөздөрүңүздү текшере албай жатат. 24 сааттан кийин кайра аракет кылыңыз.</translation>
-<translation id="7205698830395646142">Chromium менюсунда жашыруу</translation>
 <translation id="7223968959479464213">Тапшырмаларды башкаргыч – Chromium</translation>
 <translation id="731644333568559921">Chromium OS &amp;жаңыртуу</translation>
 <translation id="731795002583552498">Chromium жаңыртылууда</translation>
@@ -224,13 +232,13 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="7773960292263897147">Эскертүү: Chromium кеңейтүүлөргө серептөө таржымалыңызды жазып алууга тыюу сала албайт. Бул колдонмону жашыруун режимде өчүрүү үчүн, бул параметрди тандоодон чыгарыңыз.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7827169012280634081">Chromium'дан чыкканда cookie файлдары жана сайттын дайындары тазалансын</translation>
+<translation id="7828947555739565424">Бул түзмөктөгү аккаунт менен Chromium профили мурунтан эле түзүлгөн</translation>
 <translation id="7857220146454061152">Chromium жаңыртууларын алып туруу үчүн OS X 10.11 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде OS X 10.10 версиясы колдонулууда.</translation>
 <translation id="7867198900892795913">Chromium акыркы версиясына жаңыртылбай койду, андыктан жаңы функциялар менен коопсуздук оңдоолорун пайдалана албай калдыңыз.</translation>
 <translation id="7898472181347242998">Түзмөгүңүздүн жаңыртылганын текшерүү үчүн <ph name="LINK_BEGIN" />Chromium OS Жөндөөлөрүнө<ph name="LINK_END" /> өтүңүз</translation>
 <translation id="7907774600618164274">Chromium OS туура эмес жабылып калды.</translation>
 <translation id="7937630085815544518">Chromium'га <ph name="USER_EMAIL_ADDRESS" /> катары кирдиңиз. Ушул аккаунт менен кайра кириңиз.</translation>
 <translation id="7975919845073681630">Бул Chromium'дун кошумча орнотулушу болгондуктан, аны демейки серепчиңиз катары тандай албайсыз.</translation>
-<translation id="7979877361127045932">Chromium менюсунда жашыруу</translation>
 <translation id="8013436988911883588">Chromium'га уруксат берилгенден кийин вебсайттар уруксат сурай алышат.</translation>
 <translation id="81770708095080097">Бул файл кооптуу, ошондуктан Chromium аны бөгөттөп койду.</translation>
 <translation id="8248265253516264921">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chromium аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт. Аны жөндөөлөрдөн каалаган убакта өчүрүп койсоңуз болот.</translation>
@@ -261,6 +269,7 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="8974095189086268230">Chromium OS кошумча <ph name="BEGIN_LINK_CROS_OSS" />ачык булак программасы<ph name="END_LINK_CROS_OSS" /> тарабынан мүмкүн болду.</translation>
 <translation id="8986207147630327271">Жумуш профилин ушул серепчиге кошуп, администраторго жумуш профилин гана көзөмөлдөөгө уруксат берип жатасыз.</translation>
 <translation id="9019929317751753759">Жеке маалыматыңызды коргоо үчүн, айрым Chromium кеңейтүүлөрүн өчүрүп койдук, себеби <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ичинде аларга байланыштуу маалымат жок. Демек, бул курамдык бөлүктөр тымызын орнотулган.</translation>
+<translation id="9047197236183657400">Аккаунт жаңы Chromium профилине жылдырылсынбы?</translation>
 <translation id="9089354809943900324">Chromium эскирип калган.</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium 1 сааттан кийин кайра иштетилет}other{Chromium # сааттан кийин кайра иштетилет}}</translation>
 <translation id="91086099826398415">Шилтемени жаңы Chromium &amp;өтмөгүндө ачуу</translation>

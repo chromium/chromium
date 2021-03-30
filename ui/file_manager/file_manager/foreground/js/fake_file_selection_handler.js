@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FileSelectionHandler, FileSelection} from './file_selection.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// clang-format on
+
 /**
  * Mock FileSelectionHandler.
  * @extends {FileSelectionHandler}
  */
-class FakeFileSelectionHandler {
+/* #export */ class FakeFileSelectionHandler {
   constructor() {
     this.selection = /** @type {!FileSelection} */ ({});
     this.updateSelection([], []);

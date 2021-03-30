@@ -33,29 +33,13 @@
 #include <memory>
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-#include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
-#include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
-#include "third_party/blink/renderer/core/workers/shared_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
-#include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
-#include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
-#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -310,35 +294,6 @@ void WorkerOrWorkletScriptController::DisableEvalInternal(
   script_state_->GetContext()->AllowCodeGenerationFromStrings(false);
   script_state_->GetContext()->SetErrorMessageForCodeGenerationFromStrings(
       V8String(isolate_, error_message));
-}
-
-// https://html.spec.whatwg.org/C/#run-a-classic-script
-ScriptEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
-    const ScriptSourceCode& source_code,
-    SanitizeScriptErrors sanitize_script_errors,
-    V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
-  DCHECK(IsContextInitialized());
-  DCHECK(is_ready_to_evaluate_);
-
-  // TODO(crbug/1114994): Plumb this from ClassicScript.
-  const KURL base_url = source_code.Url();
-
-  // Use default ReferrerScriptInfo here, as
-  // - A work{er,let} script doesn't have a nonce, and
-  // - a work{er,let} script is always "not parser inserted".
-  // TODO(crbug/1114989): Plumb ScriptFetchOptions from ClassicScript.
-  ScriptEvaluationResult result = V8ScriptRunner::CompileAndRunScript(
-      isolate_, script_state_, global_scope_, source_code, base_url,
-      sanitize_script_errors, ScriptFetchOptions(),
-      ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
-      std::move(rethrow_errors));
-
-  if (result.GetResultType() == ScriptEvaluationResult::ResultType::kAborted)
-    ForbidExecution();
-  else
-    CHECK(!IsExecutionForbidden());
-
-  return result;
 }
 
 void WorkerOrWorkletScriptController::ForbidExecution() {

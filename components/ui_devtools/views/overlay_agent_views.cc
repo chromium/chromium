@@ -28,7 +28,7 @@ namespace ui_devtools {
 
 namespace {
 
-void DrawRulerText(const base::string16& utf16_text,
+void DrawRulerText(const std::u16string& utf16_text,
                    const gfx::Point& p,
                    gfx::Canvas* canvas,
                    gfx::RenderText* render_text_) {
@@ -65,7 +65,7 @@ void DrawRulers(const gfx::Rect& screen_bounds,
       canvas->Draw1pxLine(gfx::PointF(x, 0.0f), gfx::PointF(x, long_stroke),
                           SK_ColorMAGENTA);
       // Draw ruler marks.
-      base::string16 utf16_text = base::UTF8ToUTF16(std::to_string(x));
+      std::u16string utf16_text = base::UTF8ToUTF16(std::to_string(x));
       DrawRulerText(utf16_text, gfx::Point(x + 2, long_stroke), canvas,
                     render_text_);
 
@@ -81,7 +81,7 @@ void DrawRulers(const gfx::Rect& screen_bounds,
       canvas->Draw1pxLine(gfx::PointF(0.0f, y), gfx::PointF(long_stroke, y),
                           SK_ColorMAGENTA);
       // Draw ruler marks.
-      base::string16 utf16_text = base::UTF8ToUTF16(std::to_string(y));
+      std::u16string utf16_text = base::UTF8ToUTF16(std::to_string(y));
       DrawRulerText(utf16_text, gfx::Point(short_stroke + 1, y + 2), canvas,
                     render_text_);
     } else {
@@ -97,7 +97,7 @@ void DrawSizeOfRectangle(const gfx::Rect& hovered_rect,
                          const RectSide drawing_side,
                          gfx::Canvas* canvas,
                          gfx::RenderText* render_text_) {
-  base::string16 utf16_text;
+  std::u16string utf16_text;
   const std::string unit = "dp";
 
   if (!hovered_rect.IsEmpty()) {

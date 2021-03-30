@@ -52,12 +52,11 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
   void RevertTranslation(int page_seq_no) override;
 
   // content::WebContentsObserver implementation.
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
   void OnPageLanguageDetermined(const LanguageDetectionDetails& details,
                                 bool page_level_translation_critiera_met);
@@ -84,6 +83,9 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
 
   void StartLanguageDetection();
 
+  void InitiateTranslationIfReload(
+      content::NavigationHandle* navigation_handle);
+
   void TranslateFrame(const std::string& translate_script,
                       const std::string& source_lang,
                       const std::string& target_lang,
@@ -103,7 +105,7 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
       bool has_no_translate_meta);
 
   void OnPageContents(base::TimeTicks capture_begin_time,
-                      const base::string16& contents);
+                      const std::u16string& contents);
 
   void OnPageContentsLanguage(
       mojo::Remote<language_detection::mojom::LanguageDetectionService>

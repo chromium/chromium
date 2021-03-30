@@ -28,12 +28,7 @@ suite('InternetDetailMenu', function() {
     mojoApi_.resetForTest();
 
     mojom = chromeos.networkConfig.mojom;
-    mojoApi_.resetForTest();
     mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
-    const cellular =
-        getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
-    cellular.typeProperties.cellular.iccid = '100000000';
-    mojoApi_.setManagedPropertiesForTest(cellular);
   });
 
   function getManagedProperties(type, name) {
@@ -56,6 +51,15 @@ suite('InternetDetailMenu', function() {
     await flushAsync();
   }
 
+  async function addEsimCellularNetwork(iccid, eid) {
+    const cellular =
+        getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+    cellular.typeProperties.cellular.iccid = iccid;
+    cellular.typeProperties.cellular.eid = eid;
+    mojoApi_.setManagedPropertiesForTest(cellular);
+    await flushAsync();
+  }
+
   function flushAsync() {
     Polymer.dom.flush();
     // Use setTimeout to wait for the next macrotask.
@@ -63,20 +67,32 @@ suite('InternetDetailMenu', function() {
   }
 
   test('Do not show tripple dot when no iccid is present', async function() {
-    const cellular =
-        getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
-    cellular.typeProperties.cellular.iccid = null;
-    mojoApi_.setManagedPropertiesForTest(cellular);
+    addEsimCellularNetwork(null, '11111111111111111111111111111111');
+    await init();
 
-    init();
-
-    await flushAsync();
     let trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
     assertFalse(!!trippleDot);
 
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
 
-    cellular.typeProperties.cellular.iccid = '100000';
-    mojoApi_.setManagedPropertiesForTest(cellular);
+    const params = new URLSearchParams;
+    params.append('guid', 'cellular_guid');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NETWORK_DETAIL, params);
+
+    await flushAsync();
+    trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!trippleDot);
+  });
+
+  test('Do not show tripple dot when no eid is present', async function() {
+    addEsimCellularNetwork('100000', null);
+    await init();
+
+    let trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertFalse(!!trippleDot);
+
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
 
     const params = new URLSearchParams;
     params.append('guid', 'cellular_guid');
@@ -89,7 +105,14 @@ suite('InternetDetailMenu', function() {
   });
 
   test('Rename menu click', async function() {
-    init();
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
+    await init();
+
+    const params = new URLSearchParams;
+    params.append('guid', 'cellular_guid');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NETWORK_DETAIL, params);
+
     await flushAsync();
     const trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
     assertTrue(!!trippleDot);
@@ -109,7 +132,14 @@ suite('InternetDetailMenu', function() {
   });
 
   test('Remove menu button click', async function() {
-    init();
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
+    await init();
+
+    const params = new URLSearchParams;
+    params.append('guid', 'cellular_guid');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NETWORK_DETAIL, params);
+
     await flushAsync();
     const trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
     assertTrue(!!trippleDot);

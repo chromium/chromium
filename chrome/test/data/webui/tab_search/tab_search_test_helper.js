@@ -6,13 +6,14 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertGE, assertLE} from '../../chai_assert.js';
 
 /**
- * Override the scrollIntoView function and parameters of the given class to
- * avoid smooth scroll animations that delay the scrollTop property updates.
+ * Override the specified function and parameters for the given class to avoid
+ * scroll animations that delay the scrollTop property updates.
  * @param {!Object} klass
+ * @param {string} functionName
  */
-export function disableScrollIntoViewAnimations(klass) {
-  const originalScrollFunc = klass.prototype.scrollIntoView;
-  klass.prototype.scrollIntoView = function(options) {
+export function disableAnimationBehavior(klass, functionName) {
+  const originalFunction = klass.prototype[functionName];
+  klass.prototype[functionName] = function(options) {
     const args = [];
     if (typeof options === 'object' && options !== null) {
       let noAnimationOptions = Object.assign({}, options);
@@ -20,7 +21,7 @@ export function disableScrollIntoViewAnimations(klass) {
 
       args.push(noAnimationOptions);
     }
-    originalScrollFunc.apply(this, args);
+    originalFunction.apply(this, args);
   };
 }
 

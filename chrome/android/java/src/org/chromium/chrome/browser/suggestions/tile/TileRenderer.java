@@ -20,6 +20,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
@@ -48,9 +49,9 @@ public class TileRenderer {
     private static final String TAG = "TileRenderer";
 
     private final Resources mResources;
-    private final ImageFetcher mImageFetcher;
     private final RoundedIconGenerator mIconGenerator;
     private final Resources.Theme mTheme;
+    private ImageFetcher mImageFetcher;
 
     @TileStyle
     private final int mStyle;
@@ -113,12 +114,18 @@ public class TileRenderer {
 
         for (Tile tile : sectionTiles) {
             SuggestionsTileView tileView = oldTileViews.get(tile.getData());
-            if (tileView == null) {
+            if (tileView == null || tileView.getIconView() == null
+                    || tileView.getIconView().getDrawable() == null
+                    || tile.getSource() == TileSource.EXPLORE) {
                 tileView = buildTileView(tile, parent, setupDelegate);
             }
 
             parent.addView(tileView);
         }
+    }
+
+    public void setImageFetcher(ImageFetcher imageFetcher) {
+        mImageFetcher = imageFetcher;
     }
 
     /**
@@ -149,14 +156,16 @@ public class TileRenderer {
                     VectorDrawableCompat.create(mResources, R.drawable.ic_apps_blue_24dp, mTheme));
             tile.setType(TileVisualType.ICON_DEFAULT);
 
-            // One task to load actual icon.
-            LargeIconBridge.LargeIconCallback bridgeCallback =
-                    setupDelegate.createIconLoadCallback(tile);
-            ExploreSitesBridge.getSummaryImage(Profile.getLastUsedRegularProfile(),
-                    mDesiredIconSize,
-                    (Bitmap img)
-                            -> bridgeCallback.onLargeIconAvailable(
-                                    img, Color.BLACK, false, IconType.FAVICON));
+            if (LibraryLoader.getInstance().isInitialized()) {
+                // One task to load actual icon.
+                LargeIconBridge.LargeIconCallback bridgeCallback =
+                        setupDelegate.createIconLoadCallback(tile);
+                ExploreSitesBridge.getSummaryImage(Profile.getLastUsedRegularProfile(),
+                        mDesiredIconSize,
+                        (Bitmap img)
+                                -> bridgeCallback.onLargeIconAvailable(
+                                        img, Color.BLACK, false, IconType.FAVICON));
+            }
         } else {
             tileView = (SuggestionsTileView) LayoutInflater.from(parentView.getContext())
                                .inflate(mLayout, parentView, false);
@@ -164,9 +173,13 @@ public class TileRenderer {
 
         tileView.initialize(tile, mTitleLinesCount);
 
+        if (!LibraryLoader.getInstance().isInitialized()) {
+            return tileView;
+        }
+
         // Note: It is important that the callbacks below don't keep a reference to the tile or
         // modify them as there is no guarantee that the same tile would be used to update the view.
-        if (tile.getSource() != TileSource.EXPLORE) {
+        if (mImageFetcher != null && tile.getSource() != TileSource.EXPLORE) {
             fetchIcon(tile.getData(), setupDelegate.createIconLoadCallback(tile));
         }
 

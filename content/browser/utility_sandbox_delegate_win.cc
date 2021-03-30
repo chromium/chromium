@@ -7,12 +7,17 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "media/mojo/mojom/cdm_service.mojom.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_types.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace content {
 namespace {
@@ -55,25 +60,81 @@ bool AudioPreSpawnTarget(sandbox::TargetPolicy* policy) {
   return true;
 }
 
-// Right now, this policy is essentially unsandboxed, but with default process
-// mitigations applied.
-// TODO(https://crbug.com/841001) This will be tighted up in future releases.
-bool NetworkPreSpawnTarget(sandbox::TargetPolicy* policy,
-                           const base::CommandLine& cmd_line) {
-  sandbox::ResultCode result = policy->SetTokenLevel(sandbox::USER_UNPROTECTED,
-                                                     sandbox::USER_UNPROTECTED);
-  if (result != sandbox::ResultCode::SBOX_ALL_OK)
+// Sets the sandbox policy for the network service process.
+bool NetworkPreSpawnTarget(sandbox::TargetPolicy* policy) {
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kNetworkServiceSandboxLPAC)) {
+    // LPAC sandbox is enabled, so do not use a restricted token.
+    if (sandbox::SBOX_ALL_OK !=
+        policy->SetTokenLevel(sandbox::USER_UNPROTECTED,
+                              sandbox::USER_UNPROTECTED)) {
+      return false;
+    }
+    // All other app container policies are set in
+    // SandboxWin::StartSandboxedProcess.
+    return true;
+  }
+
+  // USER_LIMITED is as tight as this sandbox can be, because
+  // DNS running in-process is blocked by USER_RESTRICTED and
+  // below as it can't connect to the service.
+  if (policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                            sandbox::USER_LIMITED) != sandbox::SBOX_ALL_OK)
     return false;
-  result = sandbox::policy::SandboxWin::SetJobLevel(
-      cmd_line, sandbox::JOB_UNPROTECTED, 0, policy);
-  if (result != sandbox::ResultCode::SBOX_ALL_OK)
+
+  auto permitted_paths =
+      GetContentClient()->browser()->GetNetworkContextsParentDirectory();
+
+  for (auto permitted_path : permitted_paths) {
+    permitted_path = permitted_path.Append(FILE_PATH_LITERAL("*"));
+    if (policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
+                        sandbox::TargetPolicy::FILES_ALLOW_ANY,
+                        permitted_path.value().c_str()) !=
+        sandbox::SBOX_ALL_OK) {
+      return false;
+    }
+  }
+
+  // DNS needs to read policies which are ACLed NT AUTHORITY\Authenticated Users
+  // Allow ReadKey unlike the rest of HKLM which is BUILTIN\Users Allow ReadKey.
+  if (policy->AddRule(
+          sandbox::TargetPolicy::SUBSYS_REGISTRY,
+          sandbox::TargetPolicy::REG_ALLOW_READONLY,
+          L"HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\*") !=
+      sandbox::SBOX_ALL_OK) {
     return false;
+  }
+
+  // Needed for ::GetAdaptersAddresses calls in //net.
+  if (policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
+                      sandbox::TargetPolicy::FILES_ALLOW_READONLY,
+                      L"\\DEVICE\\NETBT_TCPIP\\*") != sandbox::SBOX_ALL_OK) {
+    return false;
+  }
+  return true;
+}
+
+// Sets the sandbox policy for the print backend service process.
+bool PrintBackendPreSpawnTarget(sandbox::TargetPolicy* policy) {
+  // Print Backend policy lockdown level must be at least USER_LIMITED and
+  // delayed integrity level INTEGRITY_LEVEL_LOW, otherwise ::OpenPrinter()
+  // will fail with error code ERROR_ACCESS_DENIED (0x5).
+  policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                        sandbox::USER_LIMITED);
+  policy->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
   return true;
 }
 }  // namespace
 
 bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     std::string* appcontainer_id) {
+  if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork) {
+    DCHECK(base::FeatureList::IsEnabled(
+        sandbox::policy::features::kNetworkServiceSandboxLPAC));
+    *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
+    return true;
+  }
+
   if ((sandbox_type_ == sandbox::policy::SandboxType::kXrCompositing &&
        base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) ||
       sandbox_type_ == sandbox::policy::SandboxType::kMediaFoundationCdm) {
@@ -89,10 +150,6 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
       // Default policy is disabled for audio process to allow audio drivers
       // to read device properties (https://crbug.com/883326).
       return true;
-    case sandbox::policy::SandboxType::kNetwork:
-      // Default policy is disabled for network process to allow incremental
-      // sandbox mitigations to be applied via experiments.
-      return true;
     case sandbox::policy::SandboxType::kXrCompositing:
       return base::FeatureList::IsEnabled(
           sandbox::policy::features::kXRSandbox);
@@ -100,6 +157,11 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
       // Default policy is disabled for MF Cdm process to allow the application
       // of specific LPAC sandbox policies.
       return true;
+    case sandbox::policy::SandboxType::kNetwork:
+      // If LPAC is enabled for network sandbox then LPAC-specific policy is set
+      // elsewhere.
+      return base::FeatureList::IsEnabled(
+          sandbox::policy::features::kNetworkServiceSandboxLPAC);
     default:
       return false;
   }
@@ -113,17 +175,18 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
 bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
   if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork)
-    return NetworkPreSpawnTarget(policy, cmd_line_);
+    return NetworkPreSpawnTarget(policy);
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kAudio)
-    return AudioPreSpawnTarget(policy);
+  if (sandbox_type_ == sandbox::policy::SandboxType::kAudio) {
+    if (!AudioPreSpawnTarget(policy))
+      return false;
+  }
 
   if (sandbox_type_ == sandbox::policy::SandboxType::kProxyResolver) {
     sandbox::MitigationFlags flags = policy->GetDelayedProcessMitigations();
     flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
     if (sandbox::SBOX_ALL_OK != policy->SetDelayedProcessMitigations(flags))
       return false;
-    return true;
   }
 
   if (sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition) {
@@ -200,6 +263,30 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
       return false;
   }
 
+  if (sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend) {
+    if (!PrintBackendPreSpawnTarget(policy))
+      return false;
+  }
+
+  return GetContentClient()->browser()->PreSpawnChild(
+      policy, sandbox_type_, ContentBrowserClient::ChildSpawnFlags::NONE);
+}
+
+bool UtilitySandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
+  auto utility_sub_type =
+      cmd_line_.GetSwitchValueASCII(switches::kUtilitySubType);
+  if (utility_sub_type == network::mojom::NetworkService::Name_)
+    return true;
+  return false;
+}
+
+bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
+  auto utility_sub_type =
+      cmd_line_.GetSwitchValueASCII(switches::kUtilitySubType);
+  // TODO(crbug.com/1173700) CDM loads widevinecdm.dll
+  // which is not CET-compliant.
+  if (utility_sub_type == media::mojom::CdmService::Name_)
+    return false;
   return true;
 }
 

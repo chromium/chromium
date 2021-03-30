@@ -58,8 +58,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
-#include "chrome/browser/chromeos/login/users/supervised_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/supervised_user_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -180,7 +180,6 @@ SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() {
   return &url_filter_;
 }
 
-
 bool SupervisedUserService::AccessRequestsEnabled() {
   return FindEnabledPermissionRequestCreator(0) < permissions_creators_.size();
 }
@@ -210,7 +209,7 @@ std::string SupervisedUserService::GetCustodianEmailAddress() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |GetActiveUser()| can return null in unit tests.
   if (email.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
-    email = chromeos::ChromeUserManager::Get()
+    email = ash::ChromeUserManager::Get()
                 ->GetSupervisedUserManager()
                 ->GetManagerDisplayEmail(user_manager::UserManager::Get()
                                              ->GetActiveUser()
@@ -260,7 +259,7 @@ std::string SupervisedUserService::GetSecondCustodianName() const {
   return name.empty() ? GetSecondCustodianEmailAddress() : name;
 }
 
-base::string16 SupervisedUserService::GetExtensionsLockedMessage() const {
+std::u16string SupervisedUserService::GetExtensionsLockedMessage() const {
   return l10n_util::GetStringFUTF16(IDS_EXTENSIONS_LOCKED_SUPERVISED_USER,
                                     base::UTF8ToUTF16(GetCustodianName()));
 }
@@ -279,11 +278,6 @@ std::string SupervisedUserService::GetEduCoexistenceLoginUrl() {
 
 bool SupervisedUserService::IsChild() const {
   return profile_->IsChild();
-}
-
-bool SupervisedUserService::IsSupervisedUserExtensionInstallEnabled() const {
-  return base::FeatureList::IsEnabled(
-      supervised_users::kSupervisedUserInitiatedExtensionInstall);
 }
 
 bool SupervisedUserService::HasACustodian() const {
@@ -389,7 +383,7 @@ void SupervisedUserService::
 }
 
 bool SupervisedUserService::CanInstallExtensions() const {
-  return IsSupervisedUserExtensionInstallEnabled() && HasACustodian() &&
+  return HasACustodian() &&
          GetSupervisedUserExtensionsMayRequestPermissionsPref();
 }
 
@@ -410,6 +404,12 @@ void SupervisedUserService::RecordExtensionEnablementUmaMetrics(
   SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(state);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+bool SupervisedUserService::IsFilteringBehaviorPrefDefault() const {
+  return profile_->GetPrefs()
+      ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+      ->IsDefaultValue();
+}
 
 void SupervisedUserService::SetActive(bool active) {
   if (active_ == active)
@@ -791,12 +791,6 @@ SupervisedUserService::ExtensionState SupervisedUserService::GetExtensionState(
     return ExtensionState::ALLOWED;
   }
 
-  // Feature flag for gating new behavior.
-  if (!base::FeatureList::IsEnabled(
-          supervised_users::kSupervisedUserInitiatedExtensionInstall)) {
-    return ExtensionState::BLOCKED;
-  }
-
   if (ShouldBlockExtension(extension.id())) {
     return ExtensionState::BLOCKED;
   }
@@ -836,7 +830,7 @@ std::string SupervisedUserService::GetDebugPolicyProviderName() const {
 }
 
 bool SupervisedUserService::UserMayLoad(const Extension* extension,
-                                        base::string16* error) const {
+                                        std::u16string* error) const {
   DCHECK(IsChild());
   ExtensionState result = GetExtensionState(*extension);
   bool may_load = result != ExtensionState::BLOCKED;
@@ -848,7 +842,7 @@ bool SupervisedUserService::UserMayLoad(const Extension* extension,
 bool SupervisedUserService::MustRemainDisabled(
     const Extension* extension,
     extensions::disable_reason::DisableReason* reason,
-    base::string16* error) const {
+    std::u16string* error) const {
   DCHECK(IsChild());
   ExtensionState state = GetExtensionState(*extension);
   // Only extensions that require approval should be disabled.

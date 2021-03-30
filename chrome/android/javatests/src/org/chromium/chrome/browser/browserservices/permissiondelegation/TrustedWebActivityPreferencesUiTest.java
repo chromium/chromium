@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.site_settings.SiteSettingsTestUtils;
@@ -53,7 +53,7 @@ public class TrustedWebActivityPreferencesUiTest {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         mPackage = InstrumentationRegistry.getTargetContext().getPackageName();
-        mPermissionMananger = ChromeApplication.getComponent().resolveTwaPermissionManager();
+        mPermissionMananger = ChromeApplicationImpl.getComponent().resolveTwaPermissionManager();
     }
 
     /**

@@ -9,6 +9,7 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,18 +17,26 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /** Tests for the TabIdManager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class TabIdManagerTest {
     Context mContext;
 
     @Before
     public void setUp() {
         mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
+        TabIdManager.resetInstanceForTesting();
+    }
+
+    @After
+    public void tearDown() {
+        TabIdManager.resetInstanceForTesting();
     }
 
     /** Tests that IDs are stored and generated properly. */

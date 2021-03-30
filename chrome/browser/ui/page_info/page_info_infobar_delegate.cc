@@ -33,7 +33,7 @@ const gfx::VectorIcon& PageInfoInfoBarDelegate::GetVectorIcon() const {
   return vector_icons::kSettingsIcon;
 }
 
-base::string16 PageInfoInfoBarDelegate::GetMessageText() const {
+std::u16string PageInfoInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_PAGE_INFO_INFOBAR_TEXT);
 }
 
@@ -41,7 +41,7 @@ int PageInfoInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 PageInfoInfoBarDelegate::GetButtonLabel(
+std::u16string PageInfoInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
   return l10n_util::GetStringUTF16(IDS_PAGE_INFO_INFOBAR_BUTTON);

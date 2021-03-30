@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
@@ -525,18 +526,6 @@ bool SpellcheckService::IsSpellcheckEnabled() const {
 
   return prefs->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&
          (!hunspell_dictionaries_.empty() || enable_if_uninitialized);
-}
-
-bool SpellcheckService::LoadExternalDictionary(std::string language,
-                                               std::string locale,
-                                               std::string path,
-                                               DictionaryFormat format) {
-  return false;
-}
-
-bool SpellcheckService::UnloadExternalDictionary(
-    const std::string& /* path */) {
-  return false;
 }
 
 void SpellcheckService::Observe(int type,

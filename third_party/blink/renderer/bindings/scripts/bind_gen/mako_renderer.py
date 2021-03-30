@@ -105,7 +105,7 @@ class MakoRenderer(object):
             on_error = self._caller_stack_on_error
             if (len(current) <= len(on_error)
                     and all(current[i] == on_error[i]
-                            for i in xrange(len(current)))):
+                            for i in range(len(current)))):
                 pass  # Error happened in a deeper caller.
             else:
                 self._caller_stack_on_error = list(self._caller_stack)

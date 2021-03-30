@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {AnchorAlignment, ShowAtPositionConfig} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
-// #import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-//
-// #import {eventToPromise, flushTasks} from '../test_util.m.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
-// #import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
-// #import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+
+import {AnchorAlignment, ShowAtPositionConfig} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {eventToPromise, flushTasks} from '../test_util.m.js';
 // clang-format on
 
 /**
@@ -40,13 +41,10 @@ suite('CrActionMenu', function() {
 
   /** @override */
   suiteSetup(() => {
-    /* #ignore */ return PolymerTest.importHtml(
-        /* #ignore */ 'chrome://resources/cr_elements/cr_checkbox/' +
-        /* #ignore */ 'cr_checkbox.html');
   });
 
   setup(function() {
-    cr.ui.FocusOutlineManager.forDocument(document).visible = false;
+    FocusOutlineManager.forDocument(document).visible = false;
     document.body.innerHTML = `
       <button id="dots">...</button>
       <cr-action-menu>
@@ -76,24 +74,24 @@ suite('CrActionMenu', function() {
   });
 
   function down() {
-    MockInteractions.keyDownOn(menu, 0, [], 'ArrowDown');
+    keyDownOn(menu, 0, [], 'ArrowDown');
   }
 
   function up() {
-    MockInteractions.keyDownOn(menu, 0, [], 'ArrowUp');
+    keyDownOn(menu, 0, [], 'ArrowUp');
   }
 
   function enter() {
-    MockInteractions.keyDownOn(menu, 0, [], 'Enter');
+    keyDownOn(menu, 0, [], 'Enter');
   }
 
   test('open-changed event fires', async function() {
-    let whenFired = test_util.eventToPromise('open-changed', menu);
+    let whenFired = eventToPromise('open-changed', menu);
     menu.showAt(dots);
     let event = await whenFired;
     assertTrue(event.detail.value);
 
-    whenFired = test_util.eventToPromise('open-changed', menu);
+    whenFired = eventToPromise('open-changed', menu);
     menu.close();
     event = await whenFired;
     assertFalse(event.detail.value);
@@ -101,7 +99,7 @@ suite('CrActionMenu', function() {
 
   test('close event bubbles', function() {
     menu.showAt(dots);
-    const whenFired = test_util.eventToPromise('close', menu);
+    const whenFired = eventToPromise('close', menu);
     menu.close();
     return whenFired;
   });
@@ -194,7 +192,7 @@ suite('CrActionMenu', function() {
   });
 
   test('pressing enter when no focus', function() {
-    if (cr.isWindows || cr.isMac) {
+    if (isWindows || isMac) {
       return testFocusAfterClosing('Enter');
     }
 
@@ -218,7 +216,7 @@ suite('CrActionMenu', function() {
     item.classList.add('dropdown-item');
     menu.insertBefore(item, items[0]);
     menu.showAt(dots);
-    await test_util.flushTasks();
+    await flushTasks();
 
     down();
     assertEquals(item, getDeepActiveElement());
@@ -286,7 +284,7 @@ suite('CrActionMenu', function() {
         checkTestDone();
       });
 
-      MockInteractions.keyDownOn(menu, 0, [], key);
+      keyDownOn(menu, 0, [], key);
     });
   }
 
@@ -337,12 +335,12 @@ suite('CrActionMenu', function() {
     items[1].setAttribute('role', 'checkbox');
     menu.showAt(dots);
 
-    await test_util.flushTasks();
+    await flushTasks();
     assertEquals('menuitem', items[0].getAttribute('role'));
     assertEquals('checkbox', items[1].getAttribute('role'));
 
     menu.insertBefore(newItem, items[0]);
-    await test_util.flushTasks();
+    await flushTasks();
     assertEquals('menuitem', newItem.getAttribute('role'));
   });
 
@@ -612,7 +610,7 @@ suite('CrActionMenu', function() {
     });
 
     test('FocusFirstItemWhenOpenedWithKeyboard', async () => {
-      cr.ui.FocusOutlineManager.forDocument(document).visible = true;
+      FocusOutlineManager.forDocument(document).visible = true;
       menu.showAtPosition({top: 50, left: 50});
       await new Promise(resolve => requestAnimationFrame(resolve));
       assertEquals(

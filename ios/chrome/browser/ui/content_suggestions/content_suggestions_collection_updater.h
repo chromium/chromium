@@ -25,6 +25,7 @@ typedef NS_ENUM(NSInteger, ContentSuggestionType) {
   ContentSuggestionTypeArticle,
   ContentSuggestionTypeReadingList,
   ContentSuggestionTypeMostVisited,
+  ContentSuggestionTypeReturnToRecentTab,
   ContentSuggestionTypePromo,
   ContentSuggestionTypeLearnMore,
   ContentSuggestionTypeDiscover,
@@ -76,6 +77,9 @@ addSuggestionsToModel:
 // does not do any check about the number of elements in the section.
 // Returns nil if there is no empty item for this section.
 - (NSIndexPath*)addEmptyItemForSection:(NSInteger)section;
+
+// Returns whether |section| contains the Return to Recent Tab tile.
+- (BOOL)isReturnToRecentTabSection:(NSInteger)section;
 
 // Returns whether |section| contains the Most Visited tiles.
 - (BOOL)isMostVisitedSection:(NSInteger)section;

@@ -36,6 +36,46 @@
 
 namespace blink {
 
+namespace {
+
+// For generated Settings::SetFromStrings().
+template <typename T>
+struct FromString {
+  T operator()(const String& s) { return static_cast<T>(s.ToInt()); }
+};
+
+template <>
+struct FromString<String> {
+  const String& operator()(const String& s) { return s; }
+};
+
+template <>
+struct FromString<bool> {
+  bool operator()(const String& s) { return s.IsEmpty() || s == "true"; }
+};
+
+template <>
+struct FromString<float> {
+  float operator()(const String& s) { return s.ToFloat(); }
+};
+
+template <>
+struct FromString<double> {
+  double operator()(const String& s) { return s.ToDouble(); }
+};
+
+template <>
+struct FromString<IntSize> {
+  IntSize operator()(const String& s) {
+    Vector<String> fields;
+    s.Split(',', fields);
+    return IntSize(fields.size() > 0 ? fields[0].ToInt() : 0,
+                   fields.size() > 1 ? fields[1].ToInt() : 0);
+  }
+};
+
+}  // namespace
+
 // NOTEs
 //  1) EditingMacBehavior comprises builds on Mac;
 //  2) EditingWindowsBehavior comprises builds on Windows;
@@ -67,8 +107,7 @@ static const bool kDefaultSelectTrailingWhitespaceEnabled = true;
 static const bool kDefaultSelectTrailingWhitespaceEnabled = false;
 #endif
 
-Settings::Settings()
-    : text_autosizing_enabled_(false) SETTINGS_INITIALIZER_LIST {}
+Settings::Settings() : delegate_(nullptr) SETTINGS_INITIALIZER_LIST {}
 
 SETTINGS_SETTER_BODIES
 
@@ -79,25 +118,6 @@ void Settings::SetDelegate(SettingsDelegate* delegate) {
 void Settings::Invalidate(SettingsDelegate::ChangeType change_type) {
   if (delegate_)
     delegate_->SettingsChanged(change_type);
-}
-
-void Settings::SetTextAutosizingEnabled(bool text_autosizing_enabled) {
-  if (text_autosizing_enabled_ == text_autosizing_enabled)
-    return;
-
-  text_autosizing_enabled_ = text_autosizing_enabled;
-  Invalidate(SettingsDelegate::kTextAutosizingChange);
-}
-
-// TODO: Move to Settings.json5 once make_settings can understand IntSize.
-void Settings::SetTextAutosizingWindowSizeOverride(
-    const IntSize& text_autosizing_window_size_override) {
-  if (text_autosizing_window_size_override_ ==
-      text_autosizing_window_size_override)
-    return;
-
-  text_autosizing_window_size_override_ = text_autosizing_window_size_override;
-  Invalidate(SettingsDelegate::kTextAutosizingChange);
 }
 
 }  // namespace blink

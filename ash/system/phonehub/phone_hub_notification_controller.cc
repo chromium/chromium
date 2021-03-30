@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/phonehub/notification.h"
+#include "chromeos/components/phonehub/notification_interaction_handler.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/components/phonehub/phone_model.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,7 +59,7 @@ class PhoneHubNotificationView : public message_center::NotificationViewMD {
  public:
   explicit PhoneHubNotificationView(
       const message_center::Notification& notification,
-      const base::string16& phone_name)
+      const std::u16string& phone_name)
       : message_center::NotificationViewMD(notification) {
     // Add customized header.
     message_center::NotificationHeaderView* header_row =
@@ -95,7 +96,7 @@ class PhoneHubNotificationView : public message_center::NotificationViewMD {
 
   // message_center::NotificationViewMD:
   void OnNotificationInputSubmit(size_t index,
-                                 const base::string16& text) override {
+                                 const std::u16string& text) override {
     message_center::NotificationViewMD::OnNotificationInputSubmit(index, text);
 
     DCHECK(reply_button_);
@@ -104,7 +105,7 @@ class PhoneHubNotificationView : public message_center::NotificationViewMD {
     // text input.
     inline_reply_->SetVisible(false);
     action_buttons_row_->SetVisible(true);
-    inline_reply_->textfield()->SetText(base::string16());
+    inline_reply_->textfield()->SetText(std::u16string());
 
     // Briefly disable reply button.
     reply_button_->SetEnabled(false);
@@ -170,13 +171,15 @@ class PhoneHubNotificationController::NotificationDelegate
   }
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
-    if (!controller_ || !button_index.has_value())
+             const base::Optional<std::u16string>& reply) override {
+    if (!controller_)
       return;
 
-    if (button_index.value() == kReplyButtonIndex && reply.has_value()) {
-      controller_->SendInlineReply(phone_hub_id_, reply.value());
-      return;
+    if (button_index.has_value()) {
+      if (button_index.value() == kReplyButtonIndex && reply.has_value())
+        controller_->SendInlineReply(phone_hub_id_, reply.value());
+    } else {
+      controller_->HandleNotificationBodyClick(phone_hub_id_);
     }
   }
 
@@ -216,49 +219,58 @@ PhoneHubNotificationController::PhoneHubNotificationController() {
 PhoneHubNotificationController::~PhoneHubNotificationController() {
   if (manager_)
     manager_->RemoveObserver(this);
+  if (feature_status_provider_)
+    feature_status_provider_->RemoveObserver(this);
   if (tether_controller_)
     tether_controller_->RemoveObserver(this);
 }
 
 void PhoneHubNotificationController::SetManager(
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
-  chromeos::phonehub::NotificationManager* notification_manager =
-      phone_hub_manager->GetNotificationManager();
-  chromeos::phonehub::FeatureStatusProvider* feature_status_provider =
-      phone_hub_manager->GetFeatureStatusProvider();
-  chromeos::phonehub::TetherController* tether_controller =
-      phone_hub_manager->GetTetherController();
-  phone_model_ = phone_hub_manager->GetPhoneModel();
-
-  if (manager_ == notification_manager &&
-      tether_controller_ == tether_controller &&
-      feature_status_provider_ == feature_status_provider) {
-    return;
-  }
-
   if (manager_)
     manager_->RemoveObserver(this);
-
-  manager_ = notification_manager;
-  manager_->AddObserver(this);
+  if (phone_hub_manager) {
+    manager_ = phone_hub_manager->GetNotificationManager();
+    manager_->AddObserver(this);
+  } else {
+    manager_ = nullptr;
+  }
 
   if (feature_status_provider_)
     feature_status_provider_->RemoveObserver(this);
-
-  feature_status_provider_ = feature_status_provider;
-  feature_status_provider_->AddObserver(this);
+  if (phone_hub_manager) {
+    feature_status_provider_ = phone_hub_manager->GetFeatureStatusProvider();
+    feature_status_provider_->AddObserver(this);
+  } else {
+    feature_status_provider_ = nullptr;
+  }
 
   if (tether_controller_)
     tether_controller_->RemoveObserver(this);
+  if (phone_hub_manager) {
+    tether_controller_ = phone_hub_manager->GetTetherController();
+    tether_controller_->AddObserver(this);
+  } else {
+    tether_controller_ = nullptr;
+  }
 
-  tether_controller_ = tether_controller;
-  tether_controller_->AddObserver(this);
+  if (phone_hub_manager)
+    phone_model_ = phone_hub_manager->GetPhoneModel();
+  else
+    phone_model_ = nullptr;
+
+  if (phone_hub_manager) {
+    notification_interaction_handler_ =
+        phone_hub_manager->GetNotificationInteractionHandler();
+  } else {
+    notification_interaction_handler_ = nullptr;
+  }
 }
 
-const base::string16 PhoneHubNotificationController::GetPhoneName() const {
+const std::u16string PhoneHubNotificationController::GetPhoneName() const {
   if (!phone_model_)
-    return base::string16();
-  return phone_model_->phone_name().value_or(base::string16());
+    return std::u16string();
+  return phone_model_->phone_name().value_or(std::u16string());
 }
 
 void PhoneHubNotificationController::OnFeatureStatusChanged() {
@@ -339,7 +351,7 @@ void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
               IDS_ASH_PHONE_HUB_NOTIFICATION_HOTSPOT_FAILED_TITLE),
           l10n_util::GetStringUTF16(
               IDS_ASH_PHONE_HUB_NOTIFICATION_HOTSPOT_FAILED_MESSAGE),
-          base::string16() /*display_source */, GURL() /* origin_url */,
+          std::u16string() /*display_source */, GURL() /* origin_url */,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kPhoneHubInstantTetherNotificationId),
@@ -363,9 +375,25 @@ void PhoneHubNotificationController::DismissNotification(
       NotificationInteraction::kDismiss);
 }
 
+void PhoneHubNotificationController::HandleNotificationBodyClick(
+    int64_t notification_id) {
+  CHECK(manager_);
+  if (!notification_interaction_handler_)
+    return;
+  const chromeos::phonehub::Notification* notification =
+      manager_->GetNotification(notification_id);
+  if (!notification)
+    return;
+  if (notification->interaction_behavior() ==
+      chromeos::phonehub::Notification::InteractionBehavior::kOpenable) {
+    notification_interaction_handler_->HandleNotificationClicked(
+        notification_id);
+  }
+}
+
 void PhoneHubNotificationController::SendInlineReply(
     int64_t notification_id,
-    const base::string16& inline_reply_text) {
+    const std::u16string& inline_reply_text) {
   CHECK(manager_);
   manager_->SendInlineReply(notification_id, inline_reply_text);
   phone_hub_metrics::LogNotificationInteraction(
@@ -415,12 +443,12 @@ PhoneHubNotificationController::CreateNotification(
 
   auto notification_type = message_center::NOTIFICATION_TYPE_CUSTOM;
 
-  base::string16 title = notification->title().value_or(base::string16());
-  base::string16 message =
-      notification->text_content().value_or(base::string16());
+  std::u16string title = notification->title().value_or(std::u16string());
+  std::u16string message =
+      notification->text_content().value_or(std::u16string());
 
   auto app_metadata = notification->app_metadata();
-  base::string16 display_source = app_metadata.visible_app_name;
+  std::u16string display_source = app_metadata.visible_app_name;
 
   message_center::RichNotificationData optional_fields;
   optional_fields.small_image = app_metadata.icon;
@@ -445,7 +473,7 @@ PhoneHubNotificationController::CreateNotification(
   message_center::ButtonInfo reply_button;
   reply_button.title = l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON);
-  reply_button.placeholder = base::string16();
+  reply_button.placeholder = std::u16string();
   optional_fields.buttons.push_back(reply_button);
 
   if (TrayPopupUtils::CanOpenWebUISettings()) {
@@ -462,34 +490,20 @@ PhoneHubNotificationController::CreateNotification(
 int PhoneHubNotificationController::GetSystemPriorityForNotification(
     const chromeos::phonehub::Notification* notification,
     bool is_update) {
-  switch (notification->importance()) {
-    case chromeos::phonehub::Notification::Importance::kNone:
-      FALLTHROUGH;
-    case chromeos::phonehub::Notification::Importance::kMin:
-      return message_center::MIN_PRIORITY;
+  bool has_notification_been_shown =
+      base::Contains(shown_notification_ids_, notification->id());
 
-    case chromeos::phonehub::Notification::Importance::kUnspecified:
-      FALLTHROUGH;
-    case chromeos::phonehub::Notification::Importance::kLow:
-      FALLTHROUGH;
-    case chromeos::phonehub::Notification::Importance::kDefault:
-      FALLTHROUGH;
-    case chromeos::phonehub::Notification::Importance::kHigh:
-      bool has_notification_been_shown =
-          base::Contains(shown_notification_ids_, notification->id());
+  // If the same notification was already shown and has not been updated,
+  // use LOW_PRIORITY so that the notification is silently added to the
+  // notification shade. This ensures that we don't spam users with the same
+  // information multiple times.
+  if (has_notification_been_shown && !is_update)
+    return message_center::LOW_PRIORITY;
 
-      // If the same notification was already shown and has not been updated,
-      // use LOW_PRIORITY so that the notification is silently added to the
-      // notification shade. This ensures that we don't spam users with the same
-      // information multiple times.
-      if (has_notification_been_shown && !is_update)
-        return message_center::LOW_PRIORITY;
-
-      // Use MAX_PRIORITY, which causes the notification to be shown in a popup
-      // so that users can see new messages come in as they are chatting. See
-      // https://crbug.com/1159063.
-      return message_center::MAX_PRIORITY;
-  }
+  // Use MAX_PRIORITY, which causes the notification to be shown in a popup
+  // so that users can see new messages come in as they are chatting. See
+  // https://crbug.com/1159063.
+  return message_center::MAX_PRIORITY;
 }
 
 // static
@@ -499,7 +513,7 @@ PhoneHubNotificationController::CreateCustomNotificationView(
     const message_center::Notification& notification) {
   DCHECK_EQ(kNotificationCustomViewType, notification.custom_view_type());
 
-  base::string16 phone_name = base::string16();
+  std::u16string phone_name = std::u16string();
   if (notification_controller)
     phone_name = notification_controller->GetPhoneName();
 

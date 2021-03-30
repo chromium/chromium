@@ -18,16 +18,20 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_dialog_launcher.h"
+#include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/chromeos/network_logs_message_handler.h"
 #include "chrome/browser/ui/webui/chromeos/onc_import_message_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/network_ui_resources.h"
+#include "chrome/grit/network_ui_resources_map.h"
 #include "chromeos/components/network_ui/network_diagnostics_resource_provider.h"
-#include "chromeos/components/network_ui/network_health_localized_strings.h"
+#include "chromeos/components/network_ui/network_health_resource_provider.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
@@ -533,24 +537,17 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   html->DisableTrustedTypesCSP();
 
   html->AddLocalizedStrings(localized_strings);
-  network_health::AddLocalizedStrings(html);
+  network_health::AddResources(html);
   network_diagnostics::AddResources(html);
-
+  cellular_setup::AddLocalizedStrings(html);
+  cellular_setup::AddNonStringLoadTimeData(html);
   network_element::AddLocalizedStrings(html);
   network_element::AddOncLocalizedStrings(html);
   html->UseStringsJs();
 
-  html->AddResourcePath("network_ui_browser_proxy.html",
-                        IDR_NETWORK_UI_BROWSER_PROXY_HTML);
-  html->AddResourcePath("network_ui_browser_proxy.js",
-                        IDR_NETWORK_UI_BROWSER_PROXY_JS);
-  html->AddResourcePath("network_ui.html", IDR_NETWORK_UI_HTML);
-  html->AddResourcePath("network_ui.js", IDR_NETWORK_UI_JS);
-  html->AddResourcePath("network_state_ui.html", IDR_NETWORK_STATE_UI_HTML);
-  html->AddResourcePath("network_state_ui.js", IDR_NETWORK_STATE_UI_JS);
-  html->AddResourcePath("network_logs_ui.html", IDR_NETWORK_LOGS_UI_HTML);
-  html->AddResourcePath("network_logs_ui.js", IDR_NETWORK_LOGS_UI_JS);
-  html->SetDefaultResource(IDR_NETWORK_UI_PAGE_HTML);
+  webui::SetupWebUIDataSource(
+      html, base::make_span(kNetworkUiResources, kNetworkUiResourcesSize),
+      IDR_NETWORK_UI_NETWORK_HTML);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html);

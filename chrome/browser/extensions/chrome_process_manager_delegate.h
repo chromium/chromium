@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -49,7 +49,8 @@ class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
  private:
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeProcessManagerDelegate);
 };

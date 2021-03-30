@@ -10,7 +10,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
@@ -18,7 +18,7 @@
 SigninErrorHandler::SigninErrorHandler(Browser* browser, bool is_system_profile)
     : browser_(browser), is_system_profile_(is_system_profile) {
   // |browser_| must not be null when this dialog is presented from the
-  // user manager.
+  // profile picker.
   DCHECK(browser_ || is_system_profile_);
   BrowserList::AddObserver(this);
 }
@@ -93,7 +93,7 @@ void SigninErrorHandler::HandleInitializedWithSize(
 
 void SigninErrorHandler::CloseDialog() {
   if (is_system_profile_) {
-    CloseUserManagerProfileDialog();
+    CloseProfilePickerForceSigninDialog();
   } else if (browser_){
     CloseBrowserModalSigninDialog();
   }
@@ -103,6 +103,6 @@ void SigninErrorHandler::CloseBrowserModalSigninDialog() {
   browser_->signin_view_controller()->CloseModalSignin();
 }
 
-void SigninErrorHandler::CloseUserManagerProfileDialog() {
-  UserManagerProfileDialog::HideDialog();
+void SigninErrorHandler::CloseProfilePickerForceSigninDialog() {
+  ProfilePickerForceSigninDialog::HideDialog();
 }

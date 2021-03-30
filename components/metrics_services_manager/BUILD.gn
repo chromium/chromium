@@ -12,7 +12,6 @@ static_library("metrics_services_manager") {
   deps = [
     "//base",
     "//components/metrics",
-    "//components/rappor",
     "//components/ukm",
     "//components/variations",
     "//components/variations/service",

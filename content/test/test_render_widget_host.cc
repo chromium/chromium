@@ -12,20 +12,23 @@
 namespace content {
 
 std::unique_ptr<RenderWidgetHostImpl> TestRenderWidgetHost::Create(
+    FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id,
     bool hidden) {
   return base::WrapUnique(new TestRenderWidgetHost(
-      delegate, agent_scheduling_group, routing_id, hidden));
+      frame_tree, delegate, agent_scheduling_group, routing_id, hidden));
 }
 
 TestRenderWidgetHost::TestRenderWidgetHost(
+    FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id,
     bool hidden)
-    : RenderWidgetHostImpl(/*self_owned=*/false,
+    : RenderWidgetHostImpl(frame_tree,
+                           /*self_owned=*/false,
                            delegate,
                            agent_scheduling_group,
                            routing_id,

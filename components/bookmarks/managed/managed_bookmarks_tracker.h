@@ -9,10 +9,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class GURL;
@@ -61,14 +61,14 @@ class ManagedBookmarksTracker {
   void Init(BookmarkPermanentNode* managed_node);
 
  private:
-  base::string16 GetBookmarksFolderTitle() const;
+  std::u16string GetBookmarksFolderTitle() const;
 
   void ReloadManagedBookmarks();
 
   void UpdateBookmarks(const BookmarkNode* folder, const base::ListValue* list);
   static bool LoadBookmark(const base::ListValue* list,
                            size_t index,
-                           base::string16* title,
+                           std::u16string* title,
                            GURL* url,
                            const base::ListValue** children);
 

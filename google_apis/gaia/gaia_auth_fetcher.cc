@@ -983,12 +983,15 @@ void GaiaAuthFetcher::StartGetCheckConnectionInfo() {
 GoogleServiceAuthError GaiaAuthFetcher::GenerateAuthError(
     const std::string& data,
     net::Error net_error) {
+  VLOG(1) << "Got authentication error";
+  VLOG(1) << "net_error: " << net::ErrorToString(net_error);
+  VLOG(1) << "response body: " << data;
+
   if (net_error != net::OK) {
     if (net_error == net::ERR_ABORTED) {
       return GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
     }
-    DLOG(WARNING) << "Could not reach Google Accounts servers: errno "
-                  << net_error;
+    DVLOG(1) << "Could not reach Google Accounts servers: errno " << net_error;
     return GoogleServiceAuthError::FromConnectionError(net_error);
   }
 

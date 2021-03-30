@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Verify that text editor's mimeType gets changed as UISourceCode gets renamed.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
 
   var foo_js = {content: 'console.log(\'foo.js!\');', time: null};

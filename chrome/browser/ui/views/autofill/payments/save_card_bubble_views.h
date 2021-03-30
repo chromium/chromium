@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_view.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
@@ -23,10 +23,9 @@ namespace autofill {
 // This class serves as a base view to any of the bubble views that are part of
 // the flow for when the user submits a form with a credit card number that
 // Autofill has not previously saved. The base view establishes the button
-// handlers, the calculated size, the Super G logo, testing methods, the
-// SyncPromoDelegate and the window title (controller eventually handles the
-// title for each sub-class).
-class SaveCardBubbleViews : public SaveCardBubbleView,
+// handlers, the calculated size, the Super G logo, testing methods, and the
+// window title (controller eventually handles the title for each sub-class).
+class SaveCardBubbleViews : public AutofillBubbleBase,
                             public LocationBarBubbleDelegateView {
  public:
   // Bubble will be anchored to |anchor_view|.
@@ -36,12 +35,12 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
 
   void Show(DisplayReason reason);
 
-  // SaveCardBubbleView:
+  // AutofillBubbleBase:
   void Hide() override;
 
   // LocationBarBubbleDelegateView:
   void AddedToWidget() override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   void OnWidgetClosing(views::Widget* widget) override;
 
@@ -49,27 +48,9 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
   // Exists for testing (specifically, browsertests).
   views::View* GetFootnoteViewForTesting();
 
-  const base::string16 GetCardIdentifierString() const;
+  const std::u16string GetCardIdentifierString() const;
 
  protected:
-  // Delegate for the personalized sync promo view used when desktop identity
-  // consistency is enabled.
-  class SyncPromoDelegate : public BubbleSyncPromoDelegate {
-   public:
-    SyncPromoDelegate(SaveCardBubbleController* controller,
-                      signin_metrics::AccessPoint access_point);
-
-    // BubbleSyncPromoDelegate:
-    void OnEnableSync(const AccountInfo& account) override;
-
-   private:
-    SaveCardBubbleController* controller_;
-
-    signin_metrics::AccessPoint access_point_;
-
-    DISALLOW_COPY_AND_ASSIGN(SyncPromoDelegate);
-  };
-
   // Create the dialog's content view containing everything except for the
   // footnote.
   virtual std::unique_ptr<views::View> CreateMainContentView();
@@ -87,8 +68,6 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
 
   void OnDialogAccepted();
   void OnDialogCancelled();
-
-  std::unique_ptr<SyncPromoDelegate> sync_promo_delegate_;
 
   ~SaveCardBubbleViews() override;
 

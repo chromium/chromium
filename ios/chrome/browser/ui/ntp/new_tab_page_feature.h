@@ -11,6 +11,9 @@
 // Use IsRefactoredNTP() instead of this constant directly.
 extern const base::Feature kRefactoredNTP;
 
+// Parameter to enable/disable the logging of the refactoredNTP.
+extern const char kRefactoredNTPLoggingEnabled[];
+
 // Whether the refactored NTP is used instead of the legacy one.
 bool IsRefactoredNTP();
 

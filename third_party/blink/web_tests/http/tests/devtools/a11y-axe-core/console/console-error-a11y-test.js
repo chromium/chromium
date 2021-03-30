@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 (async function() {
-  await TestRunner.loadModule('axe_core_test_runner');
+  await TestRunner.loadTestModule('axe_core_test_runner');
   TestRunner.addResult(
       'Tests accessibility of console containing an error message using the axe-core linter.');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   const widget = await UI.viewManager.view('console').widget();
 

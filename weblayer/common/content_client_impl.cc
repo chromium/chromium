@@ -13,19 +13,23 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if defined(OS_ANDROID)
+#include "components/embedder_support/android/common/url_constants.h"
+#endif
+
 namespace weblayer {
 
 ContentClientImpl::ContentClientImpl() = default;
 
 ContentClientImpl::~ContentClientImpl() = default;
 
-base::string16 ContentClientImpl::GetLocalizedString(int message_id) {
+std::u16string ContentClientImpl::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
-base::string16 ContentClientImpl::GetLocalizedString(
+std::u16string ContentClientImpl::GetLocalizedString(
     int message_id,
-    const base::string16& replacement) {
+    const std::u16string& replacement) {
   return l10n_util::GetStringFUTF16(message_id, replacement);
 }
 
@@ -60,6 +64,13 @@ blink::OriginTrialPolicy* ContentClientImpl::GetOriginTrialPolicy() {
     origin_trial_policy_ =
         std::make_unique<embedder_support::OriginTrialPolicyImpl>();
   return origin_trial_policy_.get();
+}
+
+void ContentClientImpl::AddAdditionalSchemes(Schemes* schemes) {
+#if defined(OS_ANDROID)
+  schemes->standard_schemes.push_back(embedder_support::kAndroidAppScheme);
+  schemes->referrer_schemes.push_back(embedder_support::kAndroidAppScheme);
+#endif
 }
 
 }  // namespace weblayer

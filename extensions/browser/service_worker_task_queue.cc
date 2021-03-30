@@ -424,7 +424,7 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     const SequencedContextId& context_id,
     base::Time start_time,
-    bool success) {
+    blink::ServiceWorkerStatusCode status_code) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionId& extension_id = context_id.first.extension_id();
   DCHECK(registry);
@@ -438,12 +438,13 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
+  const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
   UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.RegistrationStatus",
                         success);
 
   if (!success) {
     auto error = std::make_unique<ManifestError>(
-        extension_id, base::UTF8ToUTF16("Service worker registration failed"),
+        extension_id, u"Service worker registration failed",
         base::UTF8ToUTF16(manifest_keys::kBackground),
         base::UTF8ToUTF16(
             BackgroundInfo::GetBackgroundServiceWorkerScript(extension)));

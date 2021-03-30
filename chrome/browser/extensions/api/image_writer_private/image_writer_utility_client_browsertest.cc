@@ -112,12 +112,12 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
     progress_ = 0;
 
     image_writer_utility_client_->Write(
-        base::Bind(&ImageWriterUtilityClientTest::Progress,
-                   base::Unretained(this)),
-        base::Bind(&ImageWriterUtilityClientTest::Success,
-                   base::Unretained(this)),
-        base::Bind(&ImageWriterUtilityClientTest::Failure,
-                   base::Unretained(this)),
+        base::BindRepeating(&ImageWriterUtilityClientTest::Progress,
+                            base::Unretained(this)),
+        base::BindOnce(&ImageWriterUtilityClientTest::Success,
+                       base::Unretained(this)),
+        base::BindOnce(&ImageWriterUtilityClientTest::Failure,
+                       base::Unretained(this)),
         image_, test_device_);
   }
 
@@ -128,7 +128,7 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
     if (!cancel_)
       return;
 
-    image_writer_utility_client_->Cancel(base::Bind(
+    image_writer_utility_client_->Cancel(base::BindOnce(
         &ImageWriterUtilityClientTest::Cancelled, base::Unretained(this)));
   }
 
@@ -160,12 +160,12 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
     progress_ = 0;
 
     image_writer_utility_client_->Verify(
-        base::Bind(&ImageWriterUtilityClientTest::Progress,
-                   base::Unretained(this)),
-        base::Bind(&ImageWriterUtilityClientTest::Verified,
-                   base::Unretained(this)),
-        base::Bind(&ImageWriterUtilityClientTest::Failure,
-                   base::Unretained(this)),
+        base::BindRepeating(&ImageWriterUtilityClientTest::Progress,
+                            base::Unretained(this)),
+        base::BindOnce(&ImageWriterUtilityClientTest::Verified,
+                       base::Unretained(this)),
+        base::BindOnce(&ImageWriterUtilityClientTest::Failure,
+                       base::Unretained(this)),
         image_, test_device_);
   }
 
@@ -239,7 +239,7 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
   base::FilePath device_;
   base::FilePath image_;
 
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
   bool quit_called_ = false;
 
   // Lives on |task_runner_|.

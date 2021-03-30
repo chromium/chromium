@@ -26,8 +26,8 @@ class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   InfoBarIdentifier GetIdentifier() const override { return TEST_INFOBAR; }
 
-  base::string16 GetMessageText() const override {
-    return base::ASCIIToUTF16("GlobalConfirmInfoBar browser tests delegate.");
+  std::u16string GetMessageText() const override {
+    return u"GlobalConfirmInfoBar browser tests delegate.";
   }
 
  private:

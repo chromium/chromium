@@ -91,7 +91,7 @@ opus_val32 celt_inner_prod_sse2(
     int               N);
 #endif
 
-#if defined(OPUS_X86_MAY_HAVE_SSE2) && !defined(FIXED_POINT)
+#if defined(OPUS_X86_MAY_HAVE_SSE) && !defined(FIXED_POINT)
 opus_val32 celt_inner_prod_sse(
     const opus_val16 *x,
     const opus_val16 *y,

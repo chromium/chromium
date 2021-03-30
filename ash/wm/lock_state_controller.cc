@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/shutdown_reason.h"
+#include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/session_state_animator.h"
@@ -246,6 +247,8 @@ void LockStateController::OnLockStateChanged(bool locked) {
 
   system_is_locked_ = locked;
 
+  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd();
+
   if (locked) {
     StartPostLockAnimation();
 
@@ -377,6 +380,9 @@ void LockStateController::StartUnlockAnimationBeforeUIDestroyed(
       SessionStateAnimator::LOCK_SCREEN_CONTAINERS,
       SessionStateAnimator::ANIMATION_LIFT,
       SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS, std::move(callback));
+  animator_->StartAnimation(SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
+                            SessionStateAnimator::ANIMATION_COPY_LAYER,
+                            SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE);
 }
 
 void LockStateController::StartUnlockAnimationAfterUIDestroyed() {
@@ -489,6 +495,9 @@ void LockStateController::AnimateWallpaperHidingIfNecessary(
 }
 
 void LockStateController::OnLockStateEvent(LockStateObserver::EventType event) {
+  if (shutting_down_)
+    return;
+
   for (auto& observer : observers_)
     observer.OnLockStateEvent(event);
 }

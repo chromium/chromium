@@ -18,12 +18,14 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.components.content_capture.PlatformContentCaptureController;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.BrowsingDataType;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
+import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IPrerenderController;
 import org.chromium.weblayer_private.interfaces.IProfile;
@@ -54,10 +56,10 @@ public final class ProfileImpl
     private boolean mBeingDeleted;
     private boolean mDownloadsInitialized;
     private DownloadCallbackProxy mDownloadCallbackProxy;
+    private GoogleAccountAccessTokenFetcherProxy mAccessTokenFetcherProxy;
     private IUserIdentityCallbackClient mUserIdentityCallbackClient;
     private List<Intent> mDownloadNotificationIntents = new ArrayList<>();
 
-    // This was added in 87, and is null in any version before that.
     private IProfileClient mClient;
 
     // If non-null, indicates when no browsers reference this Profile the Profile is destroyed. The
@@ -84,12 +86,18 @@ public final class ProfileImpl
                 ProfileImplJni.get().getPrerenderController(mNativeProfile));
         mOnDestroyCallback = onDestroyCallback;
         mDownloadCallbackProxy = new DownloadCallbackProxy(this);
+        mAccessTokenFetcherProxy = new GoogleAccountAccessTokenFetcherProxy(this);
     }
 
     private void destroyDependentJavaObjects() {
         if (mDownloadCallbackProxy != null) {
             mDownloadCallbackProxy.destroy();
             mDownloadCallbackProxy = null;
+        }
+
+        if (mAccessTokenFetcherProxy != null) {
+            mAccessTokenFetcherProxy.destroy();
+            mAccessTokenFetcherProxy = null;
         }
 
         if (mCookieManager != null) {
@@ -214,6 +222,13 @@ public final class ProfileImpl
     }
 
     @Override
+    public void setGoogleAccountAccessTokenFetcherClient(
+            IGoogleAccountAccessTokenFetcherClient client) {
+        StrictModeWorkaround.apply();
+        mAccessTokenFetcherProxy.setClient(client);
+    }
+
+    @Override
     public boolean isIncognito() {
         return mIsIncognito;
     }
@@ -248,6 +263,17 @@ public final class ProfileImpl
             long toMillis, @NonNull IObjectWrapper completionCallback) {
         StrictModeWorkaround.apply();
         checkNotDestroyed();
+        // Handle ContentCapture data clearing.
+        PlatformContentCaptureController controller =
+                PlatformContentCaptureController.getInstance();
+        if (controller != null) {
+            for (int type : dataTypes) {
+                if (type == BrowsingDataType.COOKIES_AND_SITE_DATA) {
+                    controller.clearAllContentCaptureData();
+                    break;
+                }
+            }
+        }
         Runnable callback = ObjectWrapper.unwrap(completionCallback, Runnable.class);
         ProfileImplJni.get().clearBrowsingData(
                 mNativeProfile, mapBrowsingDataTypes(dataTypes), fromMillis, toMillis, callback);
@@ -373,6 +399,12 @@ public final class ProfileImpl
     @Override
     public boolean getBooleanSetting(@SettingType int type) {
         return ProfileImplJni.get().getBooleanSetting(mNativeProfile, type);
+    }
+
+    public void fetchAccessTokenForTesting(IObjectWrapper scopesWrapper,
+            IObjectWrapper onTokenFetchedWrapper) throws RemoteException {
+        mAccessTokenFetcherProxy.fetchAccessToken(ObjectWrapper.unwrap(scopesWrapper, Set.class),
+                ObjectWrapper.unwrap(onTokenFetchedWrapper, ValueCallback.class));
     }
 
     @NativeMethods

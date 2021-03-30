@@ -28,13 +28,13 @@ class ProfileThemeUpdateServiceBrowserTest : public InProcessBrowserTest {
   }
 
   ProfileAttributesEntry* GetProfileAttributesEntry() {
-    ProfileAttributesEntry* entry;
     CHECK(browser());
     CHECK(browser()->profile());
-    CHECK(g_browser_process->profile_manager()
-              ->GetProfileAttributesStorage()
-              .GetProfileAttributesWithPath(browser()->profile()->GetPath(),
-                                            &entry));
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(browser()->profile()->GetPath());
+    CHECK(entry);
     return entry;
   }
 

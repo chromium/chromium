@@ -18,6 +18,11 @@ extern const char kLocalSyncBackendDir[];
 extern const base::Feature kSyncUseSessionsUnregisterDelay;
 #endif
 
+extern const base::Feature kSyncFilterOutInactiveDevicesForSingleClient;
+extern const base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin;
+extern const base::Feature kSyncUseFCMRegistrationTokensList;
+extern const base::FeatureParam<int> kSyncFCMRegistrationTokensListMaxSize;
+
 }  // namespace switches
 
 #endif  // COMPONENTS_BROWSER_SYNC_BROWSER_SYNC_SWITCHES_H_

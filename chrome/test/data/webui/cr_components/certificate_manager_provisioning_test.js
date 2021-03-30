@@ -45,15 +45,18 @@ class TestCertificateProvisioningBrowserProxy extends TestBrowserProxy {
   }
 }
 
-/** @return {!CertificateProvisioningProcess} */
-function createSampleCertificateProvisioningProcess() {
+/**
+ * @param {boolean} isUpdated
+ * @return {!CertificateProvisioningProcess}
+ */
+function createSampleCertificateProvisioningProcess(isUpdated) {
   return {
     certProfileId: 'dummyProfileId',
     certProfileName: 'Dummy Profile Name',
     isDeviceWide: true,
     publicKey: 'dummyPublicKey',
     stateId: 8,
-    status: 'dummyStateName',
+    status: isUpdated ? 'dummyStateName2' : 'dummyStateName',
     timeSinceLastUpdate: 'dummyTimeSinceLastUpdate',
   };
 }
@@ -88,7 +91,7 @@ suite('CertificateProvisioningEntryTests', function() {
     CertificateProvisioningBrowserProxyImpl.instance_ = browserProxy;
     entry = /** @type {!CertificateProvisioningEntryElement} */ (
         document.createElement('certificate-provisioning-entry'));
-    entry.model = createSampleCertificateProvisioningProcess();
+    entry.model = createSampleCertificateProvisioningProcess(false);
     document.body.appendChild(entry);
 
     // Bring up the popup menu for the following tests to use.
@@ -146,7 +149,7 @@ suite('CertificateManagerProvisioningTests', function() {
         .then(function() {
           webUIListenerCallback(
               'certificate-provisioning-processes-changed',
-              [createSampleCertificateProvisioningProcess()]);
+              [createSampleCertificateProvisioningProcess(false)]);
 
           flush();
 
@@ -165,7 +168,7 @@ suite('CertificateManagerProvisioningTests', function() {
     certProvisioningList.fire(
         CertificateProvisioningViewDetailsActionEvent,
         /** @type {!CertificateProvisioningActionEventDetail} */ ({
-          model: createSampleCertificateProvisioningProcess(),
+          model: createSampleCertificateProvisioningProcess(false),
           anchor: anchorForTest
         }));
 
@@ -187,37 +190,88 @@ suite('CertificateManagerProvisioningTests', function() {
 });
 
 suite('DetailsDialogTests', function() {
-  /** @type {?CertificateProvisioningDetailsDialogElement} */
-  let dialog = null;
-
   /** @type {?TestCertificateProvisioningBrowserProxy} */
   let browserProxy = null;
 
+  /** @type {?CertificateProvisioningListElement} */
+  let certProvisioningList = null;
+
+  let dialog = null;
+
   setup(async function() {
+    document.body.innerHTML = '';
+
     browserProxy = new TestCertificateProvisioningBrowserProxy();
-
     CertificateProvisioningBrowserProxyImpl.instance_ = browserProxy;
+
+    certProvisioningList =
+        /** @type {!CertificateProvisioningListElement} */ (
+            document.createElement('certificate-provisioning-list'));
+    document.body.appendChild(certProvisioningList);
+
+    const anchorForTest = document.createElement('a');
+    document.body.appendChild(anchorForTest);
+
+    // Open the details dialog for testing.
+    const dialogId = 'certificate-provisioning-details-dialog';
+    assertFalse(!!certProvisioningList.$$(dialogId));
+    const whenDialogOpen =
+        eventToPromise('cr-dialog-open', certProvisioningList);
+    certProvisioningList.fire(
+        CertificateProvisioningViewDetailsActionEvent,
+        /** @type {!CertificateProvisioningActionEventDetail} */ ({
+          model: createSampleCertificateProvisioningProcess(false),
+          anchor: anchorForTest
+        }));
+    await whenDialogOpen;
     dialog = /** @type {!CertificateProvisioningDetailsDialogElement} */ (
-        document.createElement('certificate-provisioning-details-dialog'));
+        certProvisioningList.$$(dialogId));
+    // Check if the dialog is initialized and opened.
+    assertTrue(!!dialog);
+    assertTrue(dialog.$$('#dialog').open);
   });
 
-  teardown(function() {
-    dialog.remove();
-  });
-
-  test('RefreshProcess', function() {
-    dialog.model = createSampleCertificateProvisioningProcess();
-    document.body.appendChild(dialog);
-
+  test('RefreshProcess', async function() {
     // Simulate clicking 'Refresh'.
     dialog.$.refresh.click();
 
-    browserProxy.whenCalled('triggerCertificateProvisioningProcessUpdate')
-        .then(function({certProfileId, isDeviceWide}) {
-          assertEquals(dialog.model.certProfileId, certProfileId);
-          assertEquals(dialog.model.isDeviceWide, isDeviceWide);
-          // Check that the dialog is still open.
-          assertTrue(dialog.$$('#dialog').open);
-        });
+    const {certProfileId, isDeviceWide} = await browserProxy.whenCalled(
+        'triggerCertificateProvisioningProcessUpdate');
+    // Check if the parameters received by function are correct.
+    assertEquals(dialog.model.certProfileId, certProfileId);
+    assertEquals(dialog.model.isDeviceWide, isDeviceWide);
+    // Check that the dialog is still open.
+    assertTrue(dialog.$$('#dialog').open);
+  });
+
+  /**
+   * Test that the details dialog gets updated correctly if the process is
+   * changed after refreshCertificateProvisioningProcesses.
+   */
+  test('UpdateDialogDetails', async function() {
+    // Start testing when dialog is open.
+    await browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
+
+    // Check the status of dialog.model.
+    assertEquals(dialog.model.status, 'dummyStateName');
+    webUIListenerCallback(
+        'certificate-provisioning-processes-changed',
+        [createSampleCertificateProvisioningProcess(true)]);
+    flush();
+    // Check if the status of dialog.model is updated accordingly.
+    assertEquals(dialog.model.status, 'dummyStateName2');
+  });
+
+  /**
+   * Test that the details dialog gets closed if the process doesn't exist in
+   * the list after refreshCertificateProvisioningProcesses.
+   */
+  test('CloseDialog', async function() {
+    await browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
+
+    webUIListenerCallback('certificate-provisioning-processes-changed', []);
+    flush();
+    // Check that the dialog closes if the process no longer exists.
+    assertFalse(dialog.$$('#dialog').open);
   });
 });

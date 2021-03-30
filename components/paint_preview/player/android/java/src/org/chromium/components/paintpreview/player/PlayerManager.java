@@ -21,7 +21,10 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
 import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
+import org.chromium.components.paintpreview.player.accessibility.PlayerAccessibilityDelegate;
 import org.chromium.components.paintpreview.player.frame.PlayerFrameCoordinator;
+import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -72,6 +75,11 @@ public class PlayerManager {
          * Called with a url to trigger a navigation.
          */
         void onLinkClick(GURL url);
+
+        /**
+         * @return Whether accessibility is currently enabled.
+         */
+        boolean isAccessibilityEnabled();
     }
 
     private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
@@ -86,6 +94,8 @@ public class PlayerManager {
     private PlayerGestureListener mPlayerGestureListener;
     private boolean mIgnoreInitialScrollOffset;
     private Listener mListener;
+    private PlayerAccessibilityDelegate mAccessibilityDelegate;
+    private WebContentsAccessibilityImpl mWebContentsAccessibility;
 
     /**
      * Creates a new {@link PlayerManager}.
@@ -141,7 +151,7 @@ public class PlayerManager {
      */
     private void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-            UnguessableToken[] subFrameGuids, int[] subFrameClipRects) {
+            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
         PaintPreviewFrame rootFrame = buildFrameTreeHierarchy(rootFrameGuid, frameGuids,
                 frameContentSize, scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects,
                 mIgnoreInitialScrollOffset);
@@ -149,13 +159,22 @@ public class PlayerManager {
         mRootFrameCoordinator = new PlayerFrameCoordinator(mContext, mDelegate, rootFrame.getGuid(),
                 rootFrame.getContentWidth(), rootFrame.getContentHeight(),
                 rootFrame.getInitialScrollX(), rootFrame.getInitialScrollY(), true,
-                mPlayerSwipeRefreshHandler, mPlayerGestureListener, mListener::onFirstPaint);
+                mPlayerSwipeRefreshHandler, mPlayerGestureListener, mListener::onFirstPaint,
+                mListener::isAccessibilityEnabled);
         buildSubFrameCoordinators(mRootFrameCoordinator, rootFrame);
         mHostView.addView(mRootFrameCoordinator.getView(),
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         if (mPlayerSwipeRefreshHandler != null) {
             mHostView.addView(mPlayerSwipeRefreshHandler.getView());
+        }
+
+        if (nativeAxTree != 0) {
+            mAccessibilityDelegate =
+                    new PlayerAccessibilityDelegate(mRootFrameCoordinator, nativeAxTree);
+            mWebContentsAccessibility =
+                    WebContentsAccessibilityImpl.fromDelegate(mAccessibilityDelegate);
+            mRootFrameCoordinator.getView().setWebContentsAccessibility(mWebContentsAccessibility);
         }
         TraceEvent.finishAsync(sInitEvent, hashCode());
         mListener.onViewReady();
@@ -215,10 +234,11 @@ public class PlayerManager {
 
         for (int i = 0; i < frame.getSubFrames().length; i++) {
             PaintPreviewFrame childFrame = frame.getSubFrames()[i];
-            PlayerFrameCoordinator childCoordinator = new PlayerFrameCoordinator(mContext,
-                    mDelegate, childFrame.getGuid(), childFrame.getContentWidth(),
-                    childFrame.getContentHeight(), childFrame.getInitialScrollX(),
-                    childFrame.getInitialScrollY(), false, null, mPlayerGestureListener, null);
+            PlayerFrameCoordinator childCoordinator =
+                    new PlayerFrameCoordinator(mContext, mDelegate, childFrame.getGuid(),
+                            childFrame.getContentWidth(), childFrame.getContentHeight(),
+                            childFrame.getInitialScrollX(), childFrame.getInitialScrollY(), false,
+                            null, mPlayerGestureListener, null, null);
             buildSubFrameCoordinators(childCoordinator, childFrame);
             frameCoordinator.addSubFrame(childCoordinator, frame.getSubFrameClips()[i]);
         }
@@ -231,6 +251,12 @@ public class PlayerManager {
     }
 
     public void destroy() {
+        if (mWebContentsAccessibility != null) {
+            mRootFrameCoordinator.getView().setWebContentsAccessibility(null);
+            mWebContentsAccessibility.destroy();
+            mWebContentsAccessibility = null;
+            mAccessibilityDelegate = null;
+        }
         if (mDelegate != null) {
             mDelegate.destroy();
             mDelegate = null;
@@ -273,6 +299,11 @@ public class PlayerManager {
     @VisibleForTesting
     public boolean checkRequiredBitmapsLoadedForTest() {
         return mRootFrameCoordinator.checkRequiredBitmapsLoadedForTest();
+    }
+
+    @VisibleForTesting
+    public WebContentsAccessibility getWebContentsAccessibilityForTesting() {
+        return mWebContentsAccessibility;
     }
 
     @VisibleForTesting

@@ -8,8 +8,10 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/common/content_export.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -18,15 +20,27 @@ class Origin;
 }  // namespace url
 
 namespace content {
-class ServiceWorkerContextWrapper;
+class ServiceWorkerContextCore;
 
-class ServiceWorkerQuotaClient : public storage::QuotaClient {
+class ServiceWorkerQuotaClient : public storage::mojom::QuotaClient {
  public:
+  // `context` must outlive this instance. This is true because `context` owns
+  // this instance.
   CONTENT_EXPORT explicit ServiceWorkerQuotaClient(
-      ServiceWorkerContextWrapper* context);
+      ServiceWorkerContextCore& context);
 
-  // QuotaClient method overrides
-  void OnQuotaManagerDestroyed() override {}
+  ServiceWorkerQuotaClient(const ServiceWorkerQuotaClient&) = delete;
+  ServiceWorkerQuotaClient& operator=(const ServiceWorkerQuotaClient&) = delete;
+
+  ~ServiceWorkerQuotaClient() override;
+
+  // Called when an error causes the ServiceWorkerContextCore to be rebuilt.
+  void ResetContext(ServiceWorkerContextCore& new_context) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    context_ = &new_context;
+  }
+
+  // storage::mojom::QuotaClient:
   void GetOriginUsage(const url::Origin& origin,
                       blink::mojom::StorageType type,
                       GetOriginUsageCallback callback) override;
@@ -41,18 +55,17 @@ class ServiceWorkerQuotaClient : public storage::QuotaClient {
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
-  static constexpr storage::QuotaClientType kType =
-      storage::QuotaClientType::kServiceWorker;
-
  private:
   friend class ServiceWorkerContextWrapper;
   friend class ServiceWorkerQuotaClientTest;
 
-  ~ServiceWorkerQuotaClient() override;
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  scoped_refptr<ServiceWorkerContextWrapper> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerQuotaClient);
+  // The raw pointer is safe because `context_` owns this instance.
+  //
+  // The pointer is guaranteed to be non-null. It is not a reference because
+  // ResetContext() changes the object it points to.
+  ServiceWorkerContextCore* context_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

@@ -34,8 +34,8 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
 
   // GLOzone:
   bool InitializeStaticGLBindings(
-      gl::GLImplementation implementation) override {
-    is_swiftshader_ = (implementation == gl::kGLImplementationSwiftShaderGL);
+      const gl::GLImplementationParts& implementation) override {
+    is_swiftshader_ = gl::IsSoftwareGLImplementation(implementation);
     return GLOzoneEGL::InitializeStaticGLBindings(implementation);
   }
 
@@ -45,16 +45,30 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
       return gl::InitializeGLSurface(
           base::MakeRefCounted<GLSurfaceEglReadbackX11>(window));
     } else {
-      return gl::InitializeGLSurface(
-          base::MakeRefCounted<gl::NativeViewGLSurfaceEGLX11GLES2>(
+      switch (gl::GetGLImplementation()) {
+        case gl::kGLImplementationEGLGLES2:
+          DCHECK(window != gfx::kNullAcceleratedWidget);
+          return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11GLES2(
               static_cast<x11::Window>(window)));
+        case gl::kGLImplementationEGLANGLE:
+          DCHECK(window != gfx::kNullAcceleratedWidget);
+          return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11(
+              static_cast<x11::Window>(window)));
+        default:
+          NOTREACHED();
+          return nullptr;
+      }
     }
   }
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       const gfx::Size& size) override {
-    return gl::InitializeGLSurface(
-        base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(size));
+    if (gl::GLSurfaceEGL::IsEGLSurfacelessContextSupported() &&
+        size.width() == 0 && size.height() == 0) {
+      return InitializeGLSurface(new gl::SurfacelessEGL(size));
+    } else {
+      return InitializeGLSurface(new gl::PbufferGLSurfaceEGL(size));
+    }
   }
 
  protected:
@@ -64,7 +78,8 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
         x11::Connection::Get()->GetXlibDisplay().display()));
   }
 
-  bool LoadGLES2Bindings(gl::GLImplementation implementation) override {
+  bool LoadGLES2Bindings(
+      const gl::GLImplementationParts& implementation) override {
     return LoadDefaultEGLGLES2Bindings(implementation);
   }
 
@@ -86,16 +101,18 @@ X11SurfaceFactory::~X11SurfaceFactory() = default;
 
 std::vector<gl::GLImplementation>
 X11SurfaceFactory::GetAllowedGLImplementations() {
-  return std::vector<gl::GLImplementation>{gl::kGLImplementationDesktopGL,
-                                           gl::kGLImplementationEGLGLES2,
-                                           gl::kGLImplementationSwiftShaderGL};
+  return std::vector<gl::GLImplementation>{
+      gl::kGLImplementationDesktopGL, gl::kGLImplementationEGLGLES2,
+      gl::kGLImplementationEGLANGLE, gl::kGLImplementationSwiftShaderGL};
 }
 
-GLOzone* X11SurfaceFactory::GetGLOzone(gl::GLImplementation implementation) {
-  switch (implementation) {
+GLOzone* X11SurfaceFactory::GetGLOzone(
+    const gl::GLImplementationParts& implementation) {
+  switch (implementation.gl) {
     case gl::kGLImplementationDesktopGL:
       return glx_implementation_.get();
     case gl::kGLImplementationEGLGLES2:
+    case gl::kGLImplementationEGLANGLE:
     case gl::kGLImplementationSwiftShaderGL:
       return egl_implementation_.get();
     default:
@@ -105,9 +122,10 @@ GLOzone* X11SurfaceFactory::GetGLOzone(gl::GLImplementation implementation) {
 
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
-X11SurfaceFactory::CreateVulkanImplementation(bool allow_protected_memory,
+X11SurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
+                                              bool allow_protected_memory,
                                               bool enforce_protected_memory) {
-  return std::make_unique<gpu::VulkanImplementationX11>();
+  return std::make_unique<gpu::VulkanImplementationX11>(use_swiftshader);
 }
 #endif
 

@@ -98,23 +98,6 @@ AV1Decoder::~AV1Decoder() {
   state_.reset();
 }
 
-bool AV1Decoder::HasNewSequenceHeader() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(parser_);
-  const auto& obu_headers = parser_->obu_headers();
-  const bool has_sequence_header =
-      std::find_if(obu_headers.begin(), obu_headers.end(),
-                   [](const auto& obu_header) {
-                     return obu_header.type == libgav1::kObuSequenceHeader;
-                   }) != obu_headers.end();
-  if (!has_sequence_header)
-    return false;
-  if (!current_sequence_header_)
-    return true;
-  return parser_->sequence_header().ParametersChanged(
-      *current_sequence_header_);
-}
-
 bool AV1Decoder::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "Decoder flush";
@@ -125,16 +108,12 @@ bool AV1Decoder::Flush() {
 void AV1Decoder::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearCurrentFrame();
-  // Resetting current sequence header might not be necessary. But this violates
-  // AcceleratedVideoDecoder interface spec, "Reset any current state that may
-  // be cached in the accelerator."
-  // TODO(hiroh): We may want to change this interface spec so that a caller
-  // doesn't have to allocate video frames buffers every seek operation.
+
+  // We must reset the |current_sequence_header_| to ensure we don't try to
+  // decode frames using an incorrect sequence header. If the first
+  // DecoderBuffer after the reset doesn't contain a sequence header, we'll just
+  // skip it and will keep skipping until we get a sequence header.
   current_sequence_header_.reset();
-  visible_rect_ = gfx::Rect();
-  frame_size_ = gfx::Size();
-  profile_ = VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
-  bit_depth_ = 0;
   stream_id_ = 0;
   stream_ = nullptr;
   stream_size_ = 0;
@@ -208,9 +187,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
 
       current_frame_header_ = parser_->frame_header();
       // Detects if a new coded video sequence is starting.
-      // TODO(b/171853869): Replace HasNewSequenceHeader() with whatever
-      // libgav1::ObuParser provides for more than one sequence headers case.
-      if (HasNewSequenceHeader()) {
+      if (parser_->sequence_header_changed()) {
         // TODO(b/171853869): Remove this check once libgav1::ObuParser does
         // this check.
         if (current_frame_header_->frame_type != libgav1::kFrameKey ||
@@ -238,12 +215,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           return kDecodeError;
         }
 
-        const gfx::Size new_frame_size(
-            base::strict_cast<int>(current_sequence_header_->max_frame_width),
-            base::strict_cast<int>(current_sequence_header_->max_frame_height));
-        gfx::Rect new_visible_rect(
-            base::strict_cast<int>(current_frame_header_->render_width),
-            base::strict_cast<int>(current_frame_header_->render_height));
         const VideoCodecProfile new_profile =
             AV1ProfileToVideoCodecProfile(current_sequence_header_->profile);
         const uint8_t new_bit_depth = base::checked_cast<uint8_t>(
@@ -255,6 +226,12 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           return kDecodeError;
         }
 
+        const gfx::Size new_frame_size(
+            base::strict_cast<int>(current_sequence_header_->max_frame_width),
+            base::strict_cast<int>(current_sequence_header_->max_frame_height));
+        gfx::Rect new_visible_rect(
+            base::strict_cast<int>(current_frame_header_->render_width),
+            base::strict_cast<int>(current_frame_header_->render_height));
         DCHECK(!new_frame_size.IsEmpty());
         if (!gfx::Rect(new_frame_size).Contains(new_visible_rect)) {
           DVLOG(1) << "Render size exceeds picture size. render size: "
@@ -295,8 +272,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       DCHECK_LE(0u, frame_to_show);
       DCHECK_LT(frame_to_show, ref_frames_.size());
       if (!CheckAndCleanUpReferenceFrames()) {
-        DLOG(ERROR) << "The states of reference frames are different between"
-                    << "|ref_frames_| and |state_->reference_frame|";
+        DLOG(ERROR) << "The states of reference frames are different between "
+                    << "|ref_frames_| and |state_|";
         return kDecodeError;
       }
 
@@ -357,6 +334,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       return kDecodeError;
     }
 
+    DCHECK(current_sequence_header_->film_grain_params_present ||
+           !frame_header.film_grain_params.apply_grain);
     auto pic = accelerator_->CreateAV1Picture(
         frame_header.film_grain_params.apply_grain);
     if (!pic) {
@@ -393,8 +372,6 @@ void AV1Decoder::UpdateReferenceFrames(scoped_refptr<AV1Picture> pic) {
   DCHECK(current_frame_header_);
   const uint8_t refresh_frame_flags =
       current_frame_header_->refresh_frame_flags;
-  DCHECK(current_frame_->frame_type() != libgav1::kFrameKey ||
-         current_frame_header_->refresh_frame_flags == 0xff);
   const std::bitset<libgav1::kNumReferenceFrameTypes> update_reference_frame(
       refresh_frame_flags);
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
@@ -418,13 +395,35 @@ void AV1Decoder::ClearReferenceFrames() {
 bool AV1Decoder::CheckAndCleanUpReferenceFrames() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_);
-  const auto& reference_valid = state_->reference_valid;
+  DCHECK(current_frame_header_);
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
-    if (reference_valid[i] && !ref_frames_[i])
+    if (state_->reference_frame[i] && !ref_frames_[i])
       return false;
-    if (!reference_valid[i] && ref_frames_[i])
+    if (!state_->reference_frame[i] && ref_frames_[i])
       ref_frames_[i].reset();
   }
+
+  // If we get here, we know |ref_frames_| includes all and only those frames
+  // that can be currently used as reference frames. Now we'll assert that for
+  // non-intra frames, all the necessary reference frames are in |ref_frames_|.
+  // For intra frames, we don't need this assertion because they shouldn't
+  // depend on reference frames.
+  if (!libgav1::IsIntraFrame(current_frame_header_->frame_type)) {
+    for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+      const auto ref_frame_index =
+          current_frame_header_->reference_frame_index[i];
+
+      // Unless an error occurred in libgav1, |ref_frame_index| should be valid,
+      // and since CheckAndCleanUpReferenceFrames() only gets called if parsing
+      // succeeded, we can assert that validity.
+      CHECK_GE(ref_frame_index, 0);
+      CHECK_LT(ref_frame_index, libgav1::kNumReferenceFrameTypes);
+      CHECK(ref_frames_[ref_frame_index]);
+    }
+  }
+
+  // If we get here, we know that all the reference frames needed by the current
+  // frame are in |ref_frames_|.
   return true;
 }
 
@@ -437,8 +436,8 @@ bool AV1Decoder::DecodeAndOutputPicture(
   DCHECK(stream_);
   DCHECK_GT(stream_size_, 0u);
   if (!CheckAndCleanUpReferenceFrames()) {
-    DLOG(ERROR) << "The states of reference frames are different between"
-                << "|ref_frames_| and |state_->reference_frame|";
+    DLOG(ERROR) << "The states of reference frames are different between "
+                << "|ref_frames_| and |state_|";
     return false;
   }
   if (!accelerator_->SubmitDecode(*pic, *current_sequence_header_, ref_frames_,
@@ -449,6 +448,13 @@ bool AV1Decoder::DecodeAndOutputPicture(
 
   if (pic->frame_header.show_frame && !accelerator_->OutputPicture(*pic))
     return false;
+
+  // |current_frame_header_->refresh_frame_flags| should be 0xff if the frame is
+  // either a SWITCH_FRAME or a visible KEY_FRAME (Spec 5.9.2).
+  DCHECK(!(current_frame_header_->frame_type == libgav1::kFrameSwitch ||
+           (current_frame_header_->frame_type == libgav1::kFrameKey &&
+            current_frame_header_->show_frame)) ||
+         current_frame_header_->refresh_frame_flags == 0xff);
   UpdateReferenceFrames(std::move(pic));
   return true;
 }
@@ -477,9 +483,10 @@ uint8_t AV1Decoder::GetBitDepth() const {
 
 size_t AV1Decoder::GetRequiredNumOfPictures() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(hiroh): Double this value in the case of film grain sequence.
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
-  return kPicsInPipeline + GetNumReferenceFrames();
+  DCHECK(current_sequence_header_);
+  return (kPicsInPipeline + GetNumReferenceFrames()) *
+         (1 + current_sequence_header_->film_grain_params_present);
 }
 
 size_t AV1Decoder::GetNumReferenceFrames() const {

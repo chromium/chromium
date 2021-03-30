@@ -4,14 +4,18 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_metrics.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,7 +35,7 @@ void DoProcessMacNotificationResponse(
     const GURL& origin,
     const std::string& notificationId,
     const base::Optional<int>& actionIndex,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     const base::Optional<bool>& byUser) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -47,28 +51,39 @@ void DoProcessMacNotificationResponse(
 
   profileManager->LoadProfile(
       profileId, incognito,
-      base::Bind(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                 operation, type, origin, notificationId, actionIndex, reply,
-                 byUser));
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     operation, type, origin, notificationId, actionIndex,
+                     reply, byUser));
+}
+
+// Implements the version check to determine if alerts are supported. Do not
+// call this method directly as SysInfo::OperatingSystemVersionNumbers might be
+// an expensive call. Instead use SupportsAlerts which caches this value.
+bool MacOSSupportsXPCAlertsImpl() {
+  int32_t major, minor, bugfix;
+  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+  // Allow alerts on all versions except 10.15.0, 10.15.1 & 10.15.2.
+  // See crbug.com/1007418 for details.
+  return major != 10 || minor != 15 || bugfix > 2;
 }
 
 }  // namespace
 
-base::string16 CreateMacNotificationTitle(
+std::u16string CreateMacNotificationTitle(
     const message_center::Notification& notification) {
-  base::string16 title;
+  std::u16string title;
   // Show progress percentage if available. We don't support indeterminate
   // states on macOS native notifications.
   if (notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS &&
       notification.progress() >= 0 && notification.progress() <= 100) {
     title += base::FormatPercent(notification.progress());
-    title += base::UTF8ToUTF16(" - ");
+    title += u" - ";
   }
   title += notification.title();
   return title;
 }
 
-base::string16 CreateMacNotificationContext(
+std::u16string CreateMacNotificationContext(
     bool isPersistent,
     const message_center::Notification& notification,
     bool requiresAttribution) {
@@ -90,7 +105,7 @@ base::string16 CreateMacNotificationContext(
   size_t maxCharacters =
       isPersistent ? kMaxDomainLengthAlert : kMaxDomainLengthBanner;
 
-  base::string16 origin = url_formatter::FormatOriginForSecurityDisplay(
+  std::u16string origin = url_formatter::FormatOriginForSecurityDisplay(
       url::Origin::Create(notification.origin_url()),
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 
@@ -98,7 +113,7 @@ base::string16 CreateMacNotificationContext(
     return origin;
 
   // Too long, use etld+1
-  base::string16 etldplusone =
+  std::u16string etldplusone =
       base::UTF8ToUTF16(net::registry_controlled_domains::GetDomainAndRegistry(
           notification.origin_url(),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
@@ -119,7 +134,8 @@ bool VerifyMacNotificationData(NSDictionary* response) {
       ![response objectForKey:notification_constants::kNotificationIncognito] ||
       ![response
           objectForKey:notification_constants::kNotificationCreatorPid] ||
-      ![response objectForKey:notification_constants::kNotificationType]) {
+      ![response objectForKey:notification_constants::kNotificationType] ||
+      ![response objectForKey:notification_constants::kNotificationIsAlert]) {
     LOG(ERROR) << "Missing required key";
     return false;
   }
@@ -186,7 +202,12 @@ bool VerifyMacNotificationData(NSDictionary* response) {
 }
 
 void ProcessMacNotificationResponse(NSDictionary* response) {
-  if (!VerifyMacNotificationData(response))
+  bool isAlert = [[response
+      objectForKey:notification_constants::kNotificationIsAlert] boolValue];
+  bool isValid = VerifyMacNotificationData(response);
+  LogMacNotificationActionReceived(isAlert, isValid);
+
+  if (!isValid)
     return;
 
   NSNumber* buttonIndex =
@@ -221,4 +242,22 @@ void ProcessMacNotificationResponse(NSDictionary* response) {
                      profileId, [isIncognito boolValue],
                      GURL(notificationOrigin), notificationId, actionIndex,
                      base::nullopt /* reply */, true /* byUser */));
+}
+
+bool MacOSSupportsXPCAlerts() {
+  // Cache result as SysInfo::OperatingSystemVersionNumbers might be expensive.
+  static bool supportsAlerts = MacOSSupportsXPCAlertsImpl();
+  return supportsAlerts;
+}
+
+bool IsAlertNotificationMac(const message_center::Notification& notification) {
+  // If we show alerts via an XPC service, check if that's possible.
+  bool should_use_xpc =
+      !base::FeatureList::IsEnabled(features::kNotificationsViaHelperApp);
+  if (should_use_xpc && !MacOSSupportsXPCAlerts())
+    return false;
+
+  // Check if the |notification| should be shown as alert.
+  return notification.never_timeout() ||
+         notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS;
 }

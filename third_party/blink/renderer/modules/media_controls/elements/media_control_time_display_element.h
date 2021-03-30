@@ -18,7 +18,7 @@ class MediaControlTimeDisplayElement : public MediaControlDivElement {
   MODULES_EXPORT void SetCurrentValue(double);
   MODULES_EXPORT double CurrentValue() const;
 
-  WebSize GetSizeOrDefault() const override;
+  gfx::Size GetSizeOrDefault() const override;
 
  protected:
   MediaControlTimeDisplayElement(MediaControlsImpl&, int resource_id);

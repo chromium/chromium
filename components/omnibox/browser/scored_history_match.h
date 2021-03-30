@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
@@ -61,7 +60,7 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   // qualify the raw score will be 0.
   ScoredHistoryMatch(const history::URLRow& row,
                      const VisitInfoVector& visits,
-                     const base::string16& lower_string,
+                     const std::u16string& lower_string,
                      const String16Vector& terms_vector,
                      const WordStarts& terms_to_word_starts_offsets,
                      const RowWordStarts& word_starts,

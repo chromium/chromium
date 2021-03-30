@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <string>
 
+#include "ppapi/c/dev/pp_cursor_type_dev.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -223,6 +225,8 @@ KeyboardInputEvent GetKeyboardInputEvent(const pp::KeyboardInputEvent& event);
 MouseInputEvent GetMouseInputEvent(const pp::MouseInputEvent& event);
 
 TouchInputEvent GetTouchInputEvent(const pp::TouchInputEvent& event);
+
+PP_CursorType_Dev PPCursorTypeFromCursorType(ui::mojom::CursorType cursor_type);
 
 }  // namespace chrome_pdf
 

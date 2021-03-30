@@ -134,11 +134,6 @@ SSLErrorAssistantComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string>
-SSLErrorAssistantComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterSSLErrorAssistantComponent(ComponentUpdateService* cus) {
   DVLOG(1) << "Registering SSL Error Assistant component.";
 

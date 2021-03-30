@@ -280,8 +280,7 @@ __gCrWeb.form.getFormElementFromUniqueFormId = function(identifier) {
   const forms = document.forms;
   for (let i = 0; i < forms.length; i++) {
     const form = forms[i];
-    const uniqueID = Symbol.for(__gCrWeb.fill.UNIQUE_ID_SYMBOL_NAME);
-    if (identifier === form[uniqueID]) {
+    if (identifier.toString() === __gCrWeb.fill.getUniqueID(form)) {
       return form;
     }
   }

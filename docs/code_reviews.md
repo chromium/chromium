@@ -1,7 +1,7 @@
 # Code Reviews
 
 Code reviews are a central part of developing high-quality code for Chromium.
-All changes must be reviewed.
+All change lists (CLs) must be reviewed.
 
 The general patch, upload, and land process is covered in more detail in the
 [contributing code](contributing.md) page. To learn about upcoming code review
@@ -12,10 +12,10 @@ and OWNERS policy changes, see
 
 Ideally the reviewer is someone who is familiar with the area of code you are
 touching. Any committer can review code, but an owner must provide a review
-for each directory you are touching. If you have doubts, look at the git blame
-for the file and the `OWNERS` files (see below).
+for each directory you are touching. If you have doubts, look at the `git blame`
+for the file and the `OWNERS` files ([more info](#owners-files)).
 
-To indicate a positive review, the reviewer provides a "Code-Review +1" in
+To indicate a positive review, the reviewer provides a `Code-Review +1` in
 Gerrit, also known as an LGTM ("Looks Good To Me"). A score of "-1" indicates
 the change should not be submitted as-is.
 
@@ -52,10 +52,10 @@ the reviewers in the `//chrome/browser/component_name/OWNERS` file will likely
 be more familiar with code in `//chrome/browser/component_name/sub_component`
 than reviewers in the higher-level `//chrome/OWNERS` file.
 
-More detail on the owners file format is provided in the "More information"
-section below.
+More detail on the owners file format is provided [here](#owners-file-details).
 
-*Tip:* The `git cl owners` command can help find owners.
+*Tip:* The `git cl owners` command can help find owners. Gerrit also provides
+this functionality via the `Find Owners` button on CLs.
 
 While owners must approve all patches, any committer can contribute to the
 review. In some directories the owners can be overloaded or there might be
@@ -166,108 +166,46 @@ per-file *_messages*.h=set noparent
 per-file *_messages*.h=file://ipc/SECURITY_OWNERS
 ```
 
-## TBR ("To Be Reviewed")
+### Owners-Override
 
-"TBR" is our mechanism for post-commit review. It should be used rarely and
-only in cases where a normal review is unnecessary, as described under
-"When to TBR", below.
+Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
+[sheriffs](sheriffs.md), [Large Scale Changes](#large-scale-changes) and
+[Global Approvers](#global-approvals) reviewers have this capability.
 
-TBR does not mean "no review." A reviewer TBR-ed on a change should still
-review the change. If there are comments after landing, the author is obligated
-to address them in a followup patch.
+## Mechanical changes
 
-Do not use TBR just because a change is urgent or the reviewer is being slow.
-Contact the reviewer directly or find somebody else to review your change.
+### Large Scale Changes
+You can use the [Large Scale Changes](process/lsc/large_scale_changes.md)
+process to get approval to bypass OWNERS enforcement for large changes like
+refactoring, architectural changes, or other repetitive code changes across the
+whole codebase. This is used for work that span many dozen CLs.
 
-### How to TBR
+### Global Approvals
+For one-off CLs, API owners of `base`, `build`, `content`, `third_party/blink`
+and `url` can `Owners-Override +1` a change to their APIs to avoid waiting for
+rubberstamp +1s from affected directories' owners. This should only be used for
+mechanical updates to the affected directories.
 
-To send a change TBR, annotate the description and send email like normal.
-Otherwise the reviewer won't know to review the patch.
+## Documentation updates
 
-  * Add the reviewer's email address in the code review tool's reviewer field
-    like normal.
+Documentation updates require code review. We may revisit this decision in the
+future.
 
-  * Add a line "Tbr: <reviewer's email>" to the bottom of the change list
-    description. e.g. `Tbr: reviewer1@chromium.org,reviewer2@chromium.org`
+## Automated code-review
 
-  * Type a message so that the owners in the TBR list can understand who is
-    responsible for reviewing what, as part of their post-commit review
-    responsibility. e.g.
-    ```
-    TBRing reviewers:
-    reviewer1: Please review changes to foo/
-    reviewer2: Please review changes to bar/
-    ```
+For verifiably safe changes like translation files, clean reverts, and clean
+cherry-picks, we have automation that will vote +1 on the `Bot-Commit` label
+allowing the CL to be submitted without human code-review. Add `Rubber Stamper`
+(rubber-stamper@appspot.gserviceaccount.com) to your CL as a reviewer to
+activate this automation. It will scan the CL after about 1 minute and reply
+with its verdict. `Bot-Commit` votes are not sticky between patchsets and so
+only add the bot once the CL is finalized.
 
-### When to TBR
+When combined with the [`Owners-Override`](#owners_override) power, sheriffs can
+effectively revert and reland on their own.
 
-#### Reverts and relands
+Rubber Stamper never provides OWNERS approval, by design. It's intended to be
+used by those who have owners in the directory modified or who are sheriffs.
 
-The most common use of TBR is to revert patches that broke the build. Clean
-reverts of recent patches may be submitted TBR. However, TBR should not be used
-if the revert required non-trivial conflict resolution, or if the patch being
-reverted is older than a few days.
-
-A developer relanding a patch can TBR the OWNERS for changes which are identical
-to the original (reverted) patch.  If the reland patch contains any new changes
-(such as bug fixes) on top of the original, those changes should go through the
-normal review process.
-
-When creating a reland patch, you should first upload an up-to-date patchset
-with the exact content of the original (reverted) patch, and then upload the
-patchset to be relanded. This is important for the reviewers to understand what
-the fix for relanding was.
-
-#### Mechanical changes
-
-You can use TBR with certain mechanical changes that affect many callers in
-different directories. For example, adding a parameter to a common function in
-`//base`, with callers in `//chrome/browser/foo`, `//net/bar`, and many other
-directories. If the updates to the callers is mechanical, you can:
-
-  1. Get a normal owner of the lower-level code you're changing (in this
-     example, the function in `//base`) to do a proper review of those changes.
-
-  2. Get _somebody_ to review the downstream changes made to the callers as a
-     result of the `//base` change. This is often the same person from the
-     previous step but could be somebody else.
-
-  3. TBR the owners of the calling code, after the API change is LGTM'ed.
-
-This process ensures that all code is reviewed prior to checkin and that the
-concept of the change is reviewed by a qualified person, without having to ping
-many owners with little say in the trivial side-effects they incur.
-
-**Note:** The above policy is only viable for strictly mechanical changes. For
-large-scale scripted changes you should:
-
-  1. Have an owner of the core change review the script.
-
-  2. Use `git cl split` to shard the large change into many small CLs with a
-     clear description of what each reviewer is expected to verify
-     ([example](https://chromium-review.googlesource.com/1191225)).
-
-#### Documentation updates
-
-You can TBR documentation updates. Documentation means markdown files, text
-documents, and high-level comments in code. At finer levels of detail, comments
-in source files become more like code and should be reviewed normally (not
-using TBR). Non-TBR-able stuff includes things like function contracts and most
-comments inside functions.
-
-  * Use good judgement. If you're changing something very important, tricky,
-    or something you may not be very familiar with, ask for the code review
-    up-front.
-
-  * Don't TBR changes to policy documents like the style guide or this document.
-
-  * Don't mix unrelated documentation updates with code changes.
-
-  * Be sure to actually send out the email for the code review. If you get one,
-    please actually read the changes.
-
-## Automated code-review workflows
-
-For verifiably safe changes like translation files, we have automation that
-will vote +1 on the `Bot-Commit` and `Owners-Override` labels, allowing the
-CL to be submitted without human code-review.
+Changes not supported by `Rubber Stamper` still need a +1 from another
+committer.

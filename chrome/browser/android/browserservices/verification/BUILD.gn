@@ -1,0 +1,59 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierFactory.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculator.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/Relationship.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/VerificationResultStore.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/digital_asset_links:java",
+    "//components/embedder_support/android:util_java",
+    "//components/externalauth/android:java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:dagger_java",
+    "//third_party/android_deps:javax_inject_javax_inject_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java" ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [
+    "./java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierTest.java",
+    "./java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculatorTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/embedder_support/android:util_java",
+    "//components/externalauth/android:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}

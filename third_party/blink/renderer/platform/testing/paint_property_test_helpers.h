@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ref_counted_property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 
@@ -22,6 +23,9 @@ inline const ClipPaintPropertyNode& c0() {
 }
 inline const EffectPaintPropertyNode& e0() {
   return EffectPaintPropertyNode::Root();
+}
+inline const ScrollPaintPropertyNode& s0() {
+  return ScrollPaintPropertyNode::Root();
 }
 
 constexpr int c0_id = 1;
@@ -217,6 +221,28 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
   return TransformPaintPropertyNode::Create(parent, std::move(state));
 }
 
+inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
+    const TransformPaintPropertyNodeOrAlias& parent,
+    float offset_x,
+    float offset_y,
+    const IntRect& container_rect,
+    const IntSize& contents_size,
+    CompositingReasons compositing_reasons = CompositingReason::kNone) {
+  const auto* parent_scroll_translation = &parent.Unalias();
+  while (!parent_scroll_translation->ScrollNode())
+    parent_scroll_translation = parent_scroll_translation->UnaliasedParent();
+  ScrollPaintPropertyNode::State scroll_state;
+  scroll_state.container_rect = container_rect;
+  scroll_state.contents_size = contents_size;
+  TransformPaintPropertyNode::State translation_state{
+      FloatSize(offset_x, offset_y)};
+  translation_state.direct_compositing_reasons = compositing_reasons;
+  translation_state.scroll = ScrollPaintPropertyNode::Create(
+      *parent_scroll_translation->ScrollNode(), std::move(scroll_state));
+  return TransformPaintPropertyNode::Create(parent,
+                                            std::move(translation_state));
+}
+
 inline scoped_refptr<TransformPaintPropertyNode>
 CreateCompositedScrollTranslation(
     const TransformPaintPropertyNodeOrAlias& parent,
@@ -225,6 +251,46 @@ CreateCompositedScrollTranslation(
     const ScrollPaintPropertyNode& scroll) {
   return CreateScrollTranslation(parent, offset_x, offset_y, scroll,
                                  CompositingReason::kOverflowScrolling);
+}
+
+inline scoped_refptr<TransformPaintPropertyNode>
+CreateCompositedScrollTranslation(
+    const TransformPaintPropertyNodeOrAlias& parent,
+    float offset_x,
+    float offset_y,
+    const IntRect& container_rect,
+    const IntSize& contents_size) {
+  return CreateScrollTranslation(parent, offset_x, offset_y, container_rect,
+                                 contents_size,
+                                 CompositingReason::kOverflowScrolling);
+}
+
+inline RefCountedPropertyTreeState CreateScrollTranslationState(
+    const PropertyTreeState& parent_state,
+    float offset_x,
+    float offset_y,
+    const IntRect& container_rect,
+    const IntSize& contents_size,
+    CompositingReasons compositing_reasons = CompositingReason::kNone) {
+  return RefCountedPropertyTreeState(PropertyTreeState(
+      *CreateScrollTranslation(parent_state.Transform(), offset_x, offset_y,
+                               container_rect, contents_size,
+                               compositing_reasons),
+      *CreateClip(parent_state.Clip(), parent_state.Transform(),
+                  FloatRoundedRect(container_rect)),
+      e0()));
+}
+
+inline RefCountedPropertyTreeState CreateCompositedScrollTranslationState(
+    const PropertyTreeState& parent_state,
+    float offset_x,
+    float offset_y,
+    const IntRect& container_rect,
+    const IntSize& contents_size,
+    CompositingReasons compositing_reasons = CompositingReason::kNone) {
+  return CreateScrollTranslationState(parent_state, offset_x, offset_y,
+                                      container_rect, contents_size,
+                                      CompositingReason::kOverflowScrolling);
 }
 
 inline PropertyTreeState DefaultPaintChunkProperties() {

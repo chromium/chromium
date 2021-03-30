@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/util/type_safety/token_type.h"
@@ -48,6 +49,8 @@ using execution_context_priority::PriorityAndReason;
 // or a service worker is registered to handle their network requests.
 class WorkerNode : public Node {
  public:
+  using WorkerNodeVisitor = base::RepeatingCallback<bool(const WorkerNode*)>;
+
   // The different possible worker types.
   enum class WorkerType {
     kDedicated,
@@ -97,6 +100,16 @@ class WorkerNode : public Node {
   //   it handles network requests.
   virtual const base::flat_set<const WorkerNode*> GetChildWorkers() const = 0;
 
+  // Visits the child dedicated workers of this frame. The iteration is halted
+  // if the visitor returns false. Returns true if every call to the visitor
+  // returned true, false otherwise.
+  //
+  // The reason why we don't have a generic VisitChildWorkers method is that
+  // a service/shared worker may appear as a child of multiple other nodes
+  // and thus may be visited multiple times.
+  virtual bool VisitChildDedicatedWorkers(
+      const WorkerNodeVisitor& visitor) const = 0;
+
   // Returns the current priority of the worker, and the reason for the worker
   // having that particular priority.
   virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
@@ -114,10 +127,14 @@ class WorkerNodeObserver {
 
   // Node lifetime notifications.
 
-  // Called when a |worker_node| is added to the graph.
+  // Called when a |worker_node| is added to the graph. Observers must not make
+  // any property changes or cause re-entrant notifications during the scope of
+  // this call. Instead, make property changes via a separate posted task.
   virtual void OnWorkerNodeAdded(const WorkerNode* worker_node) = 0;
 
-  // Called before a |worker_node| is removed from the graph.
+  // Called before a |worker_node| is removed from the graph. Observers must not
+  // make any property changes or cause re-entrant notifications during the
+  // scope of this call.
   virtual void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) = 0;
 
   // Notifications of property changes.

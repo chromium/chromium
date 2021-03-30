@@ -12,13 +12,13 @@ the `settings` struct in '//project.star', then the resource is not defined. The
 `branch_selector` argument can be one of the following constants referring to
 the category of the branch:
 * MAIN - The resource is defined only for main/master/trunk
-    [`settings.is_master`]
+    [`settings.is_main`]
 * STANDARD_BRANCHES - The resource is defined only for the beta and stable
     branches.
-    [`not settings.is_master and not settings.is_lts_branch`]
+    [`not settings.is_main and not settings.is_lts_branch`]
 * LTS_BRANCHES - The resource is defined only for the long-term support branches
     (LTC and LTR).
-    [`not settings.is_master and settings.is_lts_branch`]
+    [`not settings.is_main and settings.is_lts_branch`]
 
 The `branch_selector` argument can also be one of the following constants
 composing multiple categories:
@@ -60,10 +60,10 @@ def _matches(branch_selector):
         branch_selectors = branch_selector
     for b in branch_selectors:
         if b == MAIN:
-            if settings.is_master:
+            if settings.is_main:
                 return True
         elif b == STANDARD_BRANCHES:
-            if not settings.is_master and not settings.is_lts_branch:
+            if not settings.is_main and not settings.is_lts_branch:
                 return True
         elif b == LTS_BRANCHES:
             if settings.is_lts_branch:
@@ -80,7 +80,7 @@ def _value(*, for_main = None, for_branches = None):
     then `for_main` will be returned. Otherwise, `for_branches` will be
     returned.
     """
-    return for_main if settings.is_master else for_branches
+    return for_main if settings.is_main else for_branches
 
 def _exec(module, *, branch_selector = MAIN):
     """Execute `module` if `branch_selector` matches the project settings."""

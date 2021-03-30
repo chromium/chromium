@@ -9,14 +9,3 @@ declare_args() {
   # Controls the output name of the built framework.
   ios_web_view_output_name = "ChromeWebView"
 }
-
-declare_args() {
-  # If ios_web_view_output_name is overriden, e.g. to CronetChromeWebView, we
-  # need to generate an extra umbrella header to match the output name of the
-  # framework bundle.
-  #
-  # TODO(crbug.com/1084855): Remove this after all clients migrate to the
-  # umbrella header that matches the framework.
-  ios_web_view_generate_extra_umbrella_header =
-      ios_web_view_output_name != "ChromeWebView"
-}

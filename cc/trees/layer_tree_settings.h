@@ -197,10 +197,11 @@ class CC_EXPORT LayerTreeSettings {
   // See crbug.com/1008483.
   bool enable_transform_interop = false;
 
-  // When enabled, the compositor specifies a frame rate preference that would
-  // allow the display to run at a low refresh rate matching the playback rate
-  // for videos updating onscreen.
-  bool force_preferred_interval_for_video = false;
+  // Enables ThrottleDecider which produces a list of FrameSinkIds that are
+  // candidates for throttling.
+  // LayerTreeHostSingleThreadClient::FrameSinksToThrottleUpdated() will be
+  // called with candidates.
+  bool enable_compositing_based_throttling = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

@@ -1,0 +1,104 @@
+Test that mouse cursors are applied correctly.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Bug 99493
+
+
+
+Checking cursors with device pixel ratio of 1.5
+----------------------------------------------
+TEST CASE: 25x25 image at 1x
+Cursor Info: type=Custom hotSpot=0,0 image=25x25
+
+
+TEST CASE: 25x25 image at 2x
+Cursor Info: type=Custom hotSpot=0,0 image=25x25 scale=2
+
+
+TEST CASE: 25x25 image at 1x, 30x30 image at 2x
+Cursor Info: type=Custom hotSpot=0,0 image=30x30 scale=2
+
+
+TEST CASE: 25x25 image at 1.5x, 30x30 image at 5x
+Cursor Info: type=Custom hotSpot=0,0 image=25x25 scale=1.5
+
+
+TEST CASE: Invalid tiny scale with fallback to pointer
+Cursor Info: type=Hand
+
+
+TEST CASE: Over-large image with fallback to pointer
+Cursor Info: type=Hand
+
+
+TEST CASE: 200x200 image at 4x (not over-large in UI pixels)
+Cursor Info: type=Custom hotSpot=0,0 image=200x200 scale=4
+
+
+TEST CASE: Non-existent image in image-set with fallback to 25x25 image
+Cursor Info: type=Custom hotSpot=0,0 image=25x25
+
+
+TEST CASE: Explicit hotspot at (5,3) logical in 1x and 2x
+Cursor Info: type=Custom hotSpot=10,6 image=30x30 scale=2
+
+
+TEST CASE: Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer
+Cursor Info: type=Custom hotSpot=10,4 image=30x30 scale=1.4
+
+
+TEST CASE: Implicit hot-spot at (5,4) physical for 1x and (28,3) physical for 2x
+Cursor Info: type=Custom hotSpot=28,3 image=30x30 scale=2
+
+
+Checking cursors with device pixel ratio of 2
+----------------------------------------------
+TEST CASE: 25x25 image at 1x
+Cursor Info: type=Custom hotSpot=0,0 image=25x25
+
+
+TEST CASE: 25x25 image at 2x
+Cursor Info: type=Custom hotSpot=0,0 image=25x25 scale=2
+
+
+TEST CASE: 25x25 image at 1x, 30x30 image at 2x
+Cursor Info: type=Custom hotSpot=0,0 image=30x30 scale=2
+
+
+TEST CASE: 25x25 image at 1.5x, 30x30 image at 5x
+Cursor Info: type=Custom hotSpot=0,0 image=30x30 scale=5
+
+
+TEST CASE: Invalid tiny scale with fallback to pointer
+Cursor Info: type=Hand
+
+
+TEST CASE: Over-large image with fallback to pointer
+Cursor Info: type=Hand
+
+
+TEST CASE: 200x200 image at 4x (not over-large in UI pixels)
+Cursor Info: type=Custom hotSpot=0,0 image=200x200 scale=4
+
+
+TEST CASE: Non-existent image in image-set with fallback to 25x25 image
+Cursor Info: type=Custom hotSpot=0,0 image=25x25
+
+
+TEST CASE: Explicit hotspot at (5,3) logical in 1x and 2x
+Cursor Info: type=Custom hotSpot=10,6 image=30x30 scale=2
+
+
+TEST CASE: Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer
+Cursor Info: type=Custom hotSpot=10,4 image=30x30 scale=1.4
+
+
+TEST CASE: Implicit hot-spot at (5,4) physical for 1x and (28,3) physical for 2x
+Cursor Info: type=Custom hotSpot=28,3 image=30x30 scale=2
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

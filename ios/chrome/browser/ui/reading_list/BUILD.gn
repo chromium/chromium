@@ -10,6 +10,7 @@ source_set("reading_list") {
     "reading_list_list_item_custom_action_factory.mm",
     "reading_list_list_item_factory.h",
     "reading_list_list_item_factory.mm",
+    "reading_list_list_item_factory_delegate.h",
     "reading_list_list_item_util.h",
     "reading_list_list_item_util.mm",
     "reading_list_mediator.h",
@@ -39,6 +40,7 @@ source_set("reading_list") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui:feature_flags",
@@ -60,7 +62,6 @@ source_set("reading_list") {
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/window_activities",
@@ -202,6 +203,7 @@ source_set("eg2_tests") {
     "//net",
     "//net:test_support",
     "//ui/base",
+    "//ui/base:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
 }

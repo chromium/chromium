@@ -13,45 +13,41 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
-
-// Maintains and gives access to a static list of TabModel instances.
-TabModelList::TabModelVector& tab_models() {
-  static base::NoDestructor<TabModelList::TabModelVector> tab_model_vector;
-  return *tab_model_vector;
-}
-
+base::LazyInstance<TabModelList>::Leaky tab_model_list_ =
+    LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
-// static
-base::LazyInstance<base::ObserverList<TabModelListObserver>::Unchecked>::Leaky
-    TabModelList::observers_ = LAZY_INSTANCE_INITIALIZER;
+TabModelList::TabModelList() = default;
+TabModelList::~TabModelList() = default;
 
 void TabModelList::AddTabModel(TabModel* tab_model) {
   DCHECK(tab_model);
-  tab_models().push_back(tab_model);
+  tab_model_list_.Get().models_.push_back(tab_model);
 
-  for (TabModelListObserver& observer : observers_.Get())
+  for (TabModelListObserver& observer : tab_model_list_.Get().observers_)
     observer.OnTabModelAdded();
 }
 
 void TabModelList::RemoveTabModel(TabModel* tab_model) {
   DCHECK(tab_model);
+  auto& tab_models = tab_model_list_.Get().models_;
+
   TabModelList::iterator remove_tab_model =
-      std::find(tab_models().begin(), tab_models().end(), tab_model);
+      std::find(tab_models.begin(), tab_models.end(), tab_model);
 
-  if (remove_tab_model != tab_models().end())
-    tab_models().erase(remove_tab_model);
+  if (remove_tab_model != tab_models.end())
+    tab_models.erase(remove_tab_model);
 
-  for (TabModelListObserver& observer : observers_.Get())
+  for (TabModelListObserver& observer : tab_model_list_.Get().observers_)
     observer.OnTabModelRemoved();
 }
 
 void TabModelList::AddObserver(TabModelListObserver* observer) {
-  observers_.Get().AddObserver(observer);
+  tab_model_list_.Get().observers_.AddObserver(observer);
 }
 
 void TabModelList::RemoveObserver(TabModelListObserver* observer) {
-  observers_.Get().RemoveObserver(observer);
+  tab_model_list_.Get().observers_.RemoveObserver(observer);
 }
 
 void TabModelList::HandlePopupNavigation(NavigateParams* params) {
@@ -69,9 +65,7 @@ TabModel* TabModelList::GetTabModelForWebContents(
   if (!web_contents)
     return nullptr;
 
-  for (TabModelList::const_iterator i = TabModelList::begin();
-      i != TabModelList::end(); ++i) {
-    TabModel* model = *i;
+  for (TabModel* model : models()) {
     for (int index = 0; index < model->GetTabCount(); index++) {
       if (web_contents == model->GetWebContentsAt(index))
         return model;
@@ -85,9 +79,7 @@ TabModel* TabModelList::GetTabModelForTabAndroid(TabAndroid* tab_android) {
   if (!tab_android)
     return nullptr;
 
-  for (TabModelList::const_iterator i = TabModelList::begin();
-       i != TabModelList::end(); ++i) {
-    TabModel* model = *i;
+  for (TabModel* model : models()) {
     for (int index = 0; index < model->GetTabCount(); index++) {
       if (tab_android == model->GetTabAt(index))
         return model;
@@ -98,10 +90,9 @@ TabModel* TabModelList::GetTabModelForTabAndroid(TabAndroid* tab_android) {
 }
 
 TabModel* TabModelList::FindTabModelWithId(SessionID desired_id) {
-  for (TabModelList::const_iterator i = TabModelList::begin();
-      i != TabModelList::end(); i++) {
-    if ((*i)->GetSessionId() == desired_id)
-      return *i;
+  for (TabModel* model : models()) {
+    if (model->GetSessionId() == desired_id)
+      return model;
   }
 
   return nullptr;
@@ -110,32 +101,15 @@ TabModel* TabModelList::FindTabModelWithId(SessionID desired_id) {
 bool TabModelList::IsOffTheRecordSessionActive() {
   // TODO(https://crbug.com/1023759): This function should return true for
   // incognito CCTs.
-  for (TabModelList::const_iterator i = TabModelList::begin();
-      i != TabModelList::end(); i++) {
-    if ((*i)->IsOffTheRecord() && (*i)->GetTabCount() > 0)
+  for (TabModel* model : models()) {
+    if (model->IsOffTheRecord() && model->GetTabCount() > 0)
       return true;
   }
 
   return false;
 }
 
-TabModelList::const_iterator TabModelList::begin() {
-  return tab_models().begin();
-}
-
-TabModelList::const_iterator TabModelList::end() {
-  return tab_models().end();
-}
-
-bool TabModelList::empty() {
-  return tab_models().empty();
-}
-
-size_t TabModelList::size() {
-  return tab_models().size();
-}
-
-TabModel* TabModelList::get(size_t index) {
-  DCHECK_LT(index, size());
-  return tab_models()[index];
+// static
+const TabModelList::TabModelVector& TabModelList::models() {
+  return tab_model_list_.Get().models_;
 }

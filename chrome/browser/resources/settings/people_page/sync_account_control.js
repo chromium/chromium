@@ -6,12 +6,33 @@
  * 'settings-sync-account-section' is the settings page containing sign-in
  * settings.
  */
-cr.define('settings', function() {
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import {assert} from '//resources/js/assert.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './profile_info_browser_proxy.js';
+import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus, StatusAction, StoredAccount} from './sync_browser_proxy.js';
+import {loadTimeData} from '../i18n_setup.js';
+import '../icons.js';
+import '../prefs/prefs.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {Route, Router} from '../router.js';
+import '../settings_shared_css.js';
+
   /** @const {number} */
-  /* #export */ const MAX_SIGNIN_PROMO_IMPRESSION = 10;
+  export const MAX_SIGNIN_PROMO_IMPRESSION = 10;
 
   Polymer({
     is: 'settings-sync-account-control',
+
+    _template: html`{__html_template__}`,
 
     behaviors: [
       WebUIListenerBehavior,
@@ -29,7 +50,7 @@ cr.define('settings', function() {
 
       /**
        * The current sync status, supplied by parent element.
-       * @type {!settings.SyncStatus}
+       * @type {!SyncStatus}
        */
       syncStatus: Object,
 
@@ -56,10 +77,10 @@ cr.define('settings', function() {
         observer: 'onSignedInChanged_',
       },
 
-      /** @private {!Array<!settings.StoredAccount>} */
+      /** @private {!Array<!StoredAccount>} */
       storedAccounts_: Object,
 
-      /** @private {?settings.StoredAccount} */
+      /** @private {?StoredAccount} */
       shownAccount_: Object,
 
       showingPromo: {
@@ -111,11 +132,11 @@ cr.define('settings', function() {
       'onShownAccountShouldChange_(storedAccounts_, syncStatus)',
     ],
 
-    /** @private {?settings.SyncBrowserProxy} */
+    /** @private {?SyncBrowserProxy} */
     syncBrowserProxy_: null,
 
     created() {
-      this.syncBrowserProxy_ = settings.SyncBrowserProxyImpl.getInstance();
+      this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
     },
 
     /** @override */
@@ -249,7 +270,7 @@ cr.define('settings', function() {
         return 'sync-problem';
       }
       if (this.syncStatus.statusAction ===
-          settings.StatusAction.REAUTHENTICATE) {
+          StatusAction.REAUTHENTICATE) {
         return 'sync-paused';
       }
       return 'sync-problem';
@@ -294,7 +315,7 @@ cr.define('settings', function() {
         return syncErrorLabel;
       }
       if (this.syncStatus.statusAction ===
-          settings.StatusAction.REAUTHENTICATE) {
+          StatusAction.REAUTHENTICATE) {
         return authErrorLabel;
       }
       if (this.syncStatus.hasPasswordsOnlyError) {
@@ -341,17 +362,17 @@ cr.define('settings', function() {
     shouldShowErrorActionButton_() {
       if (this.embeddedInSubpage &&
           this.syncStatus.statusAction ===
-              settings.StatusAction.ENTER_PASSPHRASE) {
+              StatusAction.ENTER_PASSPHRASE) {
         // In a subpage the passphrase button is not required.
         return false;
       }
       return !this.hideButtons && !this.showSetupButtons_ &&
           !!this.syncStatus.signedIn && !!this.syncStatus.hasError &&
-          this.syncStatus.statusAction !== settings.StatusAction.NO_ACTION;
+          this.syncStatus.statusAction !== StatusAction.NO_ACTION;
     },
 
     /**
-     * @param {!Array<!settings.StoredAccount>} accounts
+     * @param {!Array<!StoredAccount>} accounts
      * @private
      */
     handleStoredAccounts_(accounts) {
@@ -372,14 +393,14 @@ cr.define('settings', function() {
 
     /** @private */
     onErrorButtonTap_() {
-      const router = settings.Router.getInstance();
+      const router = Router.getInstance();
       const routes =
-          /** @type {{ SIGN_OUT: !settings.Route }} */ (router.getRoutes());
+          /** @type {{ SIGN_OUT: !Route }} */ (router.getRoutes());
       switch (this.syncStatus.statusAction) {
-        case settings.StatusAction.REAUTHENTICATE:
+        case StatusAction.REAUTHENTICATE:
           this.syncBrowserProxy_.startSignIn();
           break;
-        case settings.StatusAction.SIGNOUT_AND_SIGNIN:
+        case StatusAction.SIGNOUT_AND_SIGNIN:
           if (this.syncStatus.domain) {
             router.navigateTo(routes.SIGN_OUT);
           } else {
@@ -389,16 +410,18 @@ cr.define('settings', function() {
             this.syncBrowserProxy_.startSignIn();
           }
           break;
-        case settings.StatusAction.UPGRADE_CLIENT:
+        case StatusAction.UPGRADE_CLIENT:
           router.navigateTo(router.getRoutes().ABOUT);
           break;
-        case settings.StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS:
+        case StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS:
           this.syncBrowserProxy_.startKeyRetrieval();
           break;
-        case settings.StatusAction.ENTER_PASSPHRASE:
-        case settings.StatusAction.CONFIRM_SYNC_SETTINGS:
+        case StatusAction.ENTER_PASSPHRASE:
+        case StatusAction.CONFIRM_SYNC_SETTINGS:
         default:
-          router.navigateTo(router.getRoutes().SYNC);
+          router.navigateTo(
+              /** @type {{ SYNC: !Route }} */ (router.getRoutes())
+                  .SYNC);
       }
     },
 
@@ -437,9 +460,9 @@ cr.define('settings', function() {
     /** @private */
     onTurnOffButtonTap_() {
       /* This will route to people_page's disconnect dialog. */
-      const router = settings.Router.getInstance();
+      const router = Router.getInstance();
       router.navigateTo(
-          /** @type {{ SIGN_OUT: !settings.Route }} */ (router.getRoutes())
+          /** @type {{ SIGN_OUT: !Route }} */ (router.getRoutes())
               .SIGN_OUT);
     },
 
@@ -462,7 +485,7 @@ cr.define('settings', function() {
 
     /**
      * @param {!{model:
-     *          !{item: !settings.StoredAccount},
+     *          !{item: !StoredAccount},
      *        }} e
      * @private
      */
@@ -526,6 +549,3 @@ cr.define('settings', function() {
     },
   });
 
-  // #cr_define_end
-  return {MAX_SIGNIN_PROMO_IMPRESSION};
-});

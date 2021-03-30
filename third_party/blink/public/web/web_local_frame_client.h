@@ -38,11 +38,10 @@
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "media/base/speech_recognition_client.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
@@ -93,6 +92,10 @@ namespace cc {
 class LayerTreeSettings;
 }  // namespace cc
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace blink {
 namespace mojom {
 enum class TreeScopeType;
@@ -124,9 +127,8 @@ class WebURLResponse;
 struct FramePolicy;
 struct MobileFriendliness;
 struct WebConsoleMessage;
-struct WebContextMenuData;
+struct ContextMenuData;
 struct WebPluginParams;
-struct WebRect;
 
 class BLINK_EXPORT WebLocalFrameClient {
  public:
@@ -224,18 +226,20 @@ class BLINK_EXPORT WebLocalFrameClient {
   // should create a new WebLocalFrame, insert it into the frame tree, and
   // return the created frame.
   virtual WebLocalFrame* CreateChildFrame(
-      WebLocalFrame* parent,
       mojom::TreeScopeType,
       const WebString& name,
       const WebString& fallback_name,
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       mojom::FrameOwnerElementType,
-      CrossVariantMojoAssociatedReceiver<
-          mojom::PolicyContainerHostInterfaceBase>
-          policy_container_host_receiver) {
+      WebPolicyContainerBindParams policy_container_bind_params) {
     return nullptr;
   }
+  // When CreateChildFrame() returns there is no core LocalFrame backing the
+  // WebFrame yet so using the WebLocalFrame is not entirely valid. This is
+  // called after finishing the initialization of WebLocalFrame so that the
+  // client can complete its initialization making use of it.
+  virtual void InitializeAsChildFrame(WebLocalFrame* parent) {}
 
   // Request the creation of a new portal.
   virtual std::pair<WebRemoteFrame*, PortalToken> CreatePortal(
@@ -335,6 +339,16 @@ class BLINK_EXPORT WebLocalFrameClient {
   // datasource will become the provisional datasource for the frame.
   virtual void DidCreateDocumentLoader(WebDocumentLoader*) {}
 
+  // A navigation is about to commit in a new frame that is still provisional
+  // (i.e. not swapped into the frame tree). Implementations should perform any
+  // bookkeeping work to sync the state of the previous frame and the new frame
+  // and use `WebFrame::Swap()` to swap in the new frame.
+  //
+  // The return value should be the return value of `WebFrame::Swap()`, which
+  // returns false if the navigation should not proceed due to the frame being
+  // removed from the frame tree by JS while swapping it in, or true otherwise.
+  virtual bool SwapIn(WebFrame* previous_frame) { return false; }
+
   // The navigation has been committed, as a result of
   // WebNavigationControl::CommitNavigation call. The newly created document
   // is committed to the frame, the encoding of the response body is known,
@@ -350,12 +364,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void DidCommitNavigation(
       WebHistoryCommitType commit_type,
       bool should_reset_browser_interface_broker,
-      network::mojom::WebSandboxFlags sandbox_flags,
-      const ParsedFeaturePolicy& feature_policy_header,
+      const ParsedPermissionsPolicy& permissions_policy_header,
       const DocumentPolicyFeatureState& document_policy_header) {}
-
-  // The frame's initial empty document has just been initialized.
-  virtual void DidCreateInitialEmptyDocument() {}
 
   // A new document has just been committed as a result of evaluating
   // javascript url or XSLT. This document inherited everything from the
@@ -404,8 +414,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   // named anchor or a PopState event may have been dispatched.
   virtual void DidFinishSameDocumentNavigation(WebHistoryCommitType,
                                                bool content_initiated,
-                                               bool is_history_api_navigation) {
-  }
+                                               bool is_history_api_navigation,
+                                               bool is_client_redirect) {}
 
   // Called when a RenderFrame's page lifecycle state gets updated.
   virtual void DidSetPageLifecycleState() {}
@@ -449,13 +459,10 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // UI ------------------------------------------------------------------
 
-  // Shows a context menu with commands relevant to a specific element on
-  // the given frame. Additional context data and location are supplied.
-  virtual void ShowContextMenu(const WebContextMenuData&,
-                               const base::Optional<gfx::Point>&) {}
-
-  // Called when the frame rects changed.
-  virtual void FrameRectsChanged(const WebRect&) {}
+  // Update a context menu data for testing.
+  virtual void UpdateContextMenuDataForTesting(
+      const ContextMenuData&,
+      const base::Optional<gfx::Point>&) {}
 
   // Called when a new element gets focused. |from_element| is the previously
   // focused element, |to_element| is the newly focused one. Either can be null.
@@ -463,7 +470,7 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Called when a frame's intersection with the main frame has changed.
   virtual void OnMainFrameIntersectionChanged(
-      const WebRect& intersection_rect) {}
+      const gfx::Rect& intersection_rect) {}
 
   // Called when an overlay interstitial pop up ad is detected.
   virtual void OnOverlayPopupAdDetected() {}
@@ -526,6 +533,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
   }
+
+  // Reports input timestamps for segmenting layout shifts by users inputs to
+  // create Session window.
+  virtual void DidObserveInputForLayoutShiftTracking(
+      base::TimeTicks timestamp) {}
 
   // Reports the number of LayoutBlock creation, and LayoutObject::UpdateLayout
   // calls. All values are deltas since the last calls of this function.
@@ -613,7 +625,10 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Notifies the embedder that a WebAXObject is dirty and its state needs
   // to be serialized again. If |subtree| is true, the entire subtree is
   // dirty.
-  virtual void MarkWebAXObjectDirty(const WebAXObject&, bool subtree) {}
+  virtual void MarkWebAXObjectDirty(
+      const WebAXObject&,
+      bool subtree,
+      ax::mojom::Action event_from_action = ax::mojom::Action::kNone) {}
 
   // Audio Output Devices API --------------------------------------------
 
@@ -641,10 +656,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   }
 
   virtual void OnStopLoading() {}
-
-  virtual void MaybeProxyURLLoaderFactory(
-      blink::CrossVariantMojoReceiver<
-          network::mojom::URLLoaderFactoryInterfaceBase>* factory_receiver) {}
 
   // Accessibility Object Model -------------------------------------------
 

@@ -33,8 +33,11 @@ class MediaPermission;
 class MEDIA_BLINK_EXPORT WebEncryptedMediaClientImpl
     : public blink::WebEncryptedMediaClient {
  public:
-  WebEncryptedMediaClientImpl(CdmFactory* cdm_factory,
-                              MediaPermission* media_permission);
+  WebEncryptedMediaClientImpl(
+      CdmFactory* cdm_factory,
+      MediaPermission* media_permission,
+      std::unique_ptr<KeySystemConfigSelector::WebLocalFrameDelegate>
+          web_frame_delegate);
   ~WebEncryptedMediaClientImpl() override;
 
   // WebEncryptedMediaClient implementation.

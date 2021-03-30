@@ -74,6 +74,10 @@ class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
 
+namespace ui {
+class NativeTheme;
+}
+
 namespace web_modal {
 class WebContentsModalDialogHost;
 }
@@ -172,6 +176,9 @@ class BrowserWindow : public ui::BaseWindow {
   // renderer-initiated animation of the top controls shown ratio).
   virtual bool DoBrowserControlsShrinkRendererSize(
       const content::WebContents* contents) const = 0;
+
+  // Returns the native theme associated with the frame.
+  virtual ui::NativeTheme* GetNativeTheme() = 0;
 
   // Returns the height of the browser's top controls. This height doesn't
   // change with the current shown ratio above. Renderers will call this to
@@ -397,7 +404,7 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the one-click sign in confirmation UI. |email| holds the full email
   // address of the account that has signed in.
   virtual void ShowOneClickSigninConfirmation(
-      const base::string16& email,
+      const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) = 0;
 #endif
 
@@ -465,14 +472,17 @@ class BrowserWindow : public ui::BaseWindow {
       signin_metrics::AccessPoint access_point,
       bool is_source_keyboard) = 0;
 
-  // Shows User Happiness Tracking Survey's invitation bubble when possible
-  // (such as having the proper anchor view).
-  // |site_id| is the site identification of the survey the bubble leads to.
-  // Note: |success_callback| and |failure_callback| are discarded for HaTS v1
-  // surveys, which are deprecated (crbug.com/1143176).
-  virtual void ShowHatsBubble(const std::string& site_id,
-                              base::OnceClosure success_callback,
-                              base::OnceClosure failure_callback) = 0;
+  // Shows User Happiness Tracking Survey's dialog after the survey associated
+  // with |site_id| has been successfully loaded. Failure to load the survey
+  // will result in the dialog not being shown. |product_specific_data| should
+  // contain key-value pairs where the keys match the field names set for
+  // the survey in hats_service.cc, and the values are those which will be
+  // associated with the survey response.
+  virtual void ShowHatsDialog(
+      const std::string& site_id,
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const std::map<std::string, bool>& product_specific_data) = 0;
 
   // Returns object implementing ExclusiveAccessContext interface.
   virtual ExclusiveAccessContext* GetExclusiveAccessContext() = 0;

@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/storage_monitor/storage_monitor.h"
 
 namespace base {
@@ -32,17 +31,17 @@ class TestPortableDeviceWatcherWin;
 // tasks it spins off to a SequencedTaskRunner.
 class PortableDeviceWatcherWin {
  public:
-  typedef std::vector<base::string16> StorageObjectIDs;
+  typedef std::vector<std::wstring> StorageObjectIDs;
 
   struct DeviceStorageObject {
-    DeviceStorageObject(const base::string16& temporary_id,
+    DeviceStorageObject(const std::wstring& temporary_id,
                         const std::string& persistent_id);
 
     // Storage object temporary identifier, e.g. "s10001". This string ID
     // uniquely identifies the object on the device. This ID need not be
     // persistent across sessions. This ID is obtained from WPD_OBJECT_ID
     // property.
-    base::string16 object_temporary_id;
+    std::wstring object_temporary_id;
 
     // Storage object persistent identifier,
     // e.g. "StorageSerial:<SID-{10001,D,31080448}>:<123456789>".
@@ -57,10 +56,10 @@ class PortableDeviceWatcherWin {
     ~DeviceDetails();
 
     // Device name.
-    base::string16 name;
+    std::wstring name;
 
     // Device interface path.
-    base::string16 location;
+    std::wstring location;
 
     // Device storage details. A device can have multiple data partitions.
     StorageObjects storage_objects;
@@ -86,11 +85,11 @@ class PortableDeviceWatcherWin {
   // identifier.
   virtual bool GetMTPStorageInfoFromDeviceId(
       const std::string& storage_device_id,
-      base::string16* device_location,
-      base::string16* storage_object_id) const;
+      std::wstring* device_location,
+      std::wstring* storage_object_id) const;
 
   // Constructs and returns a storage path from storage unique identifier.
-  static base::string16 GetStoragePathFromStorageId(
+  static std::wstring GetStoragePathFromStorageId(
       const std::string& storage_unique_id);
 
   // Set the volume notifications object to be used when new
@@ -110,7 +109,7 @@ class PortableDeviceWatcherWin {
 
   // Key: MTP device plug and play ID string.
   // Value: Vector of device storage objects.
-  typedef std::map<base::string16, StorageObjects> MTPDeviceMap;
+  typedef std::map<std::wstring, StorageObjects> MTPDeviceMap;
 
   // Helpers to enumerate existing MTP storage devices.
   virtual void EnumerateAttachedDevices();
@@ -118,12 +117,12 @@ class PortableDeviceWatcherWin {
                                      const bool result);
 
   // Helpers to handle device attach event.
-  virtual void HandleDeviceAttachEvent(const base::string16& pnp_device_id);
+  virtual void HandleDeviceAttachEvent(const std::wstring& pnp_device_id);
   void OnDidHandleDeviceAttachEvent(const DeviceDetails* device_details,
                                     const bool result);
 
   // Handles the detach event of the device specified by |pnp_device_id|.
-  void HandleDeviceDetachEvent(const base::string16& pnp_device_id);
+  void HandleDeviceDetachEvent(const std::wstring& pnp_device_id);
 
   // The portable device notifications handle.
   HDEVNOTIFY notifications_;

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/image/image_skia.h"
@@ -26,17 +27,17 @@ class ShellLinkItem : public base::RefCountedThreadSafe<ShellLinkItem> {
  public:
   ShellLinkItem();
 
-  const base::string16& title() const { return title_; }
-  const base::string16& icon_path() const { return icon_path_; }
+  const std::u16string& title() const { return title_; }
+  const base::FilePath& icon_path() const { return icon_path_; }
   const std::string& url() const { return url_; }
   int icon_index() const { return icon_index_; }
   const gfx::ImageSkia& icon_image() const { return icon_image_; }
 
-  base::string16 GetArguments() const;
+  std::wstring GetArguments() const;
   base::CommandLine* GetCommandLine();
 
-  void set_title(const base::string16& title) { title_ = title; }
-  void set_icon(const base::string16& path, int index) {
+  void set_title(const std::u16string& title) { title_ = title; }
+  void set_icon(const base::FilePath& path, int index) {
     icon_path_ = path;
     icon_index_ = index;
   }
@@ -54,10 +55,10 @@ class ShellLinkItem : public base::RefCountedThreadSafe<ShellLinkItem> {
   base::CommandLine command_line_;
 
   // The string to be displayed in a JumpList.
-  base::string16 title_;
+  std::u16string title_;
 
   // The absolute path to an icon to be displayed in a JumpList.
-  base::string16 icon_path_;
+  base::FilePath icon_path_;
 
   // The tab URL corresponding to this link's favicon.
   std::string url_;
@@ -96,7 +97,7 @@ typedef std::vector<scoped_refptr<ShellLinkItem> > ShellLinkItemList;
 //   not changed, all its items must be added in each update.
 class JumpListUpdater {
  public:
-  explicit JumpListUpdater(const base::string16& app_user_model_id);
+  explicit JumpListUpdater(const std::wstring& app_user_model_id);
   ~JumpListUpdater();
 
   // Returns true if JumpLists are enabled on this OS.
@@ -122,16 +123,16 @@ class JumpListUpdater {
   // because special steps are required for updating them.
   // |max_items| specifies the maximum number of items from |link_items| to add
   // to the JumpList.
-  bool AddCustomCategory(const base::string16& category_name,
+  bool AddCustomCategory(const std::u16string& category_name,
                          const ShellLinkItemList& link_items,
                          size_t max_items);
 
   // Removes the Windows JumpList for an app with given app_user_model_id.
-  static bool DeleteJumpList(const base::string16& app_user_model_id);
+  static bool DeleteJumpList(const std::wstring& app_user_model_id);
 
  private:
   // The app ID.
-  base::string16 app_user_model_id_;
+  std::wstring app_user_model_id_;
 
   // Windows API interface used to modify JumpLists.
   Microsoft::WRL::ComPtr<ICustomDestinationList> destination_list_;

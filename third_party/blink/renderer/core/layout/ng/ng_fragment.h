@@ -36,6 +36,9 @@ class CORE_EXPORT NGFragment {
     return physical_fragment_.Size().ConvertToLogical(
         writing_direction_.GetWritingMode());
   }
+  WritingDirectionMode GetWritingDirection() const {
+    return writing_direction_;
+  }
 
  protected:
   const NGPhysicalFragment& physical_fragment_;

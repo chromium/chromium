@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.JsReplyProxy;
-import org.chromium.android_webview.ScriptReference;
+import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -1194,13 +1194,13 @@ public class JsJavaInteractionTest {
     @Feature({"AndroidWebView", "JsJavaInteraction"})
     public void testDocumentStartJavaScript_removeScript() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
-        ScriptReference[] references = new ScriptReference[2];
+        ScriptHandler[] handlers = new ScriptHandler[2];
         for (int i = 0; i < 2; ++i) {
             final String script =
                     JS_OBJECT_NAME + ".postMessage('" + HELLO + Integer.toString(i) + "');";
             // Since we are matching both origins, the script will run in both iframe and main
             // frame, but it will send message in only iframe.
-            references[i] =
+            handlers[i] =
                     addDocumentStartJavaScriptOnUiThread(mAwContents, script, new String[] {"*"});
         }
 
@@ -1213,14 +1213,14 @@ public class JsJavaInteractionTest {
             Assert.assertEquals(HELLO + Integer.toString(i), data.mMessage);
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> references[0].remove());
+        TestThreadUtils.runOnUiThreadBlocking(() -> handlers[0].remove());
         // Load the page again.
         loadUrlFromPath(HELLO_WORLD_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
         Assert.assertEquals(HELLO + "1", data.mMessage);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> references[1].remove());
+        TestThreadUtils.runOnUiThreadBlocking(() -> handlers[1].remove());
         // Load the page again.
         loadUrlFromPath(HELLO_WORLD_HTML);
 
@@ -1234,7 +1234,7 @@ public class JsJavaInteractionTest {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
 
         final String script = JS_OBJECT_NAME + ".postMessage('" + HELLO + "');";
-        ScriptReference reference =
+        ScriptHandler handler =
                 addDocumentStartJavaScriptOnUiThread(mAwContents, script, new String[] {"*"});
 
         final String url = loadUrlFromPath(HELLO_WORLD_HTML);
@@ -1245,16 +1245,16 @@ public class JsJavaInteractionTest {
         Assert.assertEquals(HELLO, data.mMessage);
 
         // Remove twice, the second time should take no effect.
-        TestThreadUtils.runOnUiThreadBlocking(() -> reference.remove());
-        TestThreadUtils.runOnUiThreadBlocking(() -> reference.remove());
+        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
+        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
         // Load the page again.
         loadUrlFromPath(HELLO_WORLD_HTML);
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
 
         // Remove twice again, should have no effect.
-        TestThreadUtils.runOnUiThreadBlocking(() -> reference.remove());
-        TestThreadUtils.runOnUiThreadBlocking(() -> reference.remove());
+        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
+        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
         // Load the page again.
         loadUrlFromPath(HELLO_WORLD_HTML);
 
@@ -1317,7 +1317,7 @@ public class JsJavaInteractionTest {
                 + "</body></html>";
     }
 
-    private static ScriptReference addDocumentStartJavaScriptOnUiThread(
+    private static ScriptHandler addDocumentStartJavaScriptOnUiThread(
             final AwContents awContents, final String script, final String[] allowedOriginRules) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> awContents.addDocumentStartJavaScript(script, allowedOriginRules));

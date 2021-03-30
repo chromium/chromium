@@ -6,9 +6,9 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_INTERSTITIAL_PAGE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -64,7 +64,7 @@ class SecurityInterstitialPage {
   virtual int GetHTMLTemplateId();
 
   // Returns the formatted host name for the request url.
-  base::string16 GetFormattedHostName() const;
+  std::u16string GetFormattedHostName() const;
 
   content::WebContents* web_contents() const;
   GURL request_url() const;

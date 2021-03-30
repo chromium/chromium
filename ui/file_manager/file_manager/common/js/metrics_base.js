@@ -120,11 +120,24 @@ metricsBase.recordUserAction = name => {
 /**
  * Records an elapsed time of no more than 10 seconds.
  * @param {string} name Short metric name.
+ * @param {!chrome.metricsPrivate.MetricTypeType} type
+ * @param {number} min
+ * @param {number} max
+ * @param {number} buckets
  * @param {number} value Numeric value to be recorded in units
  *     that match the histogram definition (in histograms.xml).
  */
-metricsBase.recordValue = (name, value) => {
-  metricsBase.call_('recordValue', [metricsBase.convertName_(name), value]);
+metricsBase.recordValue = (name, type, min, max, buckets, value) => {
+  metricsBase.call_('recordValue', [
+    {
+      'metricName': metricsBase.convertName_(name),
+      'type': type,
+      'min': min,
+      'max': max,
+      'buckets': buckets
+    },
+    value
+  ]);
 };
 
 /**

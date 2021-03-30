@@ -9,11 +9,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 namespace {
@@ -34,8 +36,8 @@ SetFormFieldValueAction::FieldInput::FieldInput(std::string _value)
     : value(_value) {}
 
 SetFormFieldValueAction::FieldInput::FieldInput(
-    PasswordValueType _password_type)
-    : password_type(_password_type) {}
+    PasswordManagerValue _password_manager_value)
+    : password_manager_value(_password_manager_value) {}
 
 SetFormFieldValueAction::FieldInput::FieldInput(FieldInput&& other) = default;
 
@@ -91,54 +93,36 @@ void SetFormFieldValueAction::InternalProcessAction(
             /* keyboard_input = */ std::make_unique<std::vector<UChar32>>(
                 UTF8ToUnicode(keypress.keyboard_input())));
         break;
-      case SetFormFieldValueProto_KeyPress::kUseUsername:
-        FALLTHROUGH;
-      case SetFormFieldValueProto_KeyPress::kUsePassword:
-        // Login information must have been stored by a previous action.
-        if (!delegate_->GetUserData()->selected_login_.has_value()) {
-          VLOG(1) << "SetFormFieldValueAction: requested login details not "
-                     "available in client memory.";
-          FailAction(ClientStatus(PRECONDITION_FAILED), keypress_index);
-          return;
-        }
-        if (keypress.keypress_case() ==
-            SetFormFieldValueProto_KeyPress::kUseUsername) {
-          field_inputs_.emplace_back(/* value = */ delegate_->GetUserData()
-                                         ->selected_login_->username);
-        } else {
-          field_inputs_.emplace_back(
-              /* password_type = */ PasswordValueType::STORED_PASSWORD);
-        }
+      case SetFormFieldValueProto_KeyPress::kUseUsername: {
+        PasswordManagerValue password_manager_value;
+        password_manager_value.set_credential_type(
+            PasswordManagerValue::USERNAME);
+        field_inputs_.emplace_back(password_manager_value);
         break;
+      }
+      case SetFormFieldValueProto_KeyPress::kUsePassword: {
+        PasswordManagerValue password_manager_value;
+        password_manager_value.set_credential_type(
+            PasswordManagerValue::PASSWORD);
+        field_inputs_.emplace_back(password_manager_value);
+        break;
+      }
       case SetFormFieldValueProto_KeyPress::kText:
         // Currently no check required.
         field_inputs_.emplace_back(/* value = */ keypress.text());
         break;
-      case SetFormFieldValueProto_KeyPress::kClientMemoryKey:
-        if (keypress.client_memory_key().empty()) {
-          VLOG(1) << "SetFormFieldValueAction: empty |client_memory_key|";
-          FailAction(ClientStatus(INVALID_ACTION), keypress_index);
+      case SetFormFieldValueProto_KeyPress::kClientMemoryKey: {
+        std::string value;
+        ClientStatus client_memory_status = GetClientMemoryStringValue(
+            keypress.client_memory_key(), delegate_->GetUserData(), &value);
+        if (!client_memory_status.ok()) {
+          VLOG(1) << "SetFormFieldValueAction: bad |client_memory_key|";
+          FailAction(client_memory_status, keypress_index);
           return;
         }
-        if (!delegate_->GetUserData()->has_additional_value(
-                keypress.client_memory_key()) ||
-            delegate_->GetUserData()
-                    ->additional_value(keypress.client_memory_key())
-                    ->strings()
-                    .values()
-                    .size() != 1) {
-          VLOG(1) << "SetFormFieldValueAction: requested key '"
-                  << keypress.client_memory_key()
-                  << "' not available in client memory";
-          FailAction(ClientStatus(PRECONDITION_FAILED), keypress_index);
-          return;
-        }
-        field_inputs_.emplace_back(
-            /* value = */ delegate_->GetUserData()
-                ->additional_value(keypress.client_memory_key())
-                ->strings()
-                .values(0));
+        field_inputs_.emplace_back(/* value = */ value);
         break;
+      }
       case SetFormFieldValueProto_KeyPress::kAutofillValue: {
         std::string value;
         ClientStatus autofill_status = GetFormattedAutofillValue(
@@ -159,7 +143,7 @@ void SetFormFieldValueAction::InternalProcessAction(
     ++keypress_index;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector_,
       base::BindOnce(&SetFormFieldValueAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -210,52 +194,44 @@ void SetFormFieldValueAction::SetFieldValueSequentially(
         delegate_, *field_input.keyboard_input, delay_in_millisecond,
         fill_strategy == SIMULATE_KEY_PRESSES_FOCUS, *element_,
         std::move(next_field_callback));
-  } else if (field_input.password_type != PasswordValueType::NOT_SET) {
-    switch (field_input.password_type) {
-      case PasswordValueType::NOT_SET:
-        DCHECK(false);
-        break;
-      case PasswordValueType::STORED_PASSWORD:
-        delegate_->GetWebsiteLoginManager()->GetPasswordForLogin(
-            *delegate_->GetUserData()->selected_login_,
-            base::BindOnce(&SetFormFieldValueAction::OnGetStoredPassword,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(next_field_callback)));
-        break;
-    }
+  } else if (field_input.password_manager_value.credential_type() !=
+             PasswordManagerValue::NOT_SET) {
+    GetPasswordManagerValue(
+        field_input.password_manager_value, *element_, delegate_->GetUserData(),
+        delegate_->GetWebsiteLoginManager(),
+        base::BindOnce(&SetFormFieldValueAction::OnGetPasswordManagerValue,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(next_field_callback)));
   } else {
-    auto fill_strategy = proto_.set_form_value().fill_strategy();
-    action_delegate_util::PerformSetFieldValue(
-        delegate_, field_input.value, fill_strategy, delay_in_millisecond,
-        *element_,
-        IsSimulatingKeyPresses(fill_strategy)
-            ? std::move(next_field_callback)
-            : base::BindOnce(
-                  &SetFormFieldValueAction::OnSetFieldValueAndCheckFallback,
-                  weak_ptr_factory_.GetWeakPtr(),
-                  std::move(next_field_callback),
-                  /* requested_value = */ field_input.value));
+    SetFieldValueAndCheckFallback(field_input.value,
+                                  std::move(next_field_callback));
   }
 }
 
-void SetFormFieldValueAction::OnGetStoredPassword(
+void SetFormFieldValueAction::OnGetPasswordManagerValue(
     base::OnceCallback<void(const ClientStatus&)> next_field_callback,
-    bool success,
-    std::string password) {
-  if (!success) {
-    EndAction(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE));
+    const ClientStatus& status,
+    const std::string& value) {
+  if (!status.ok()) {
+    EndAction(status);
     return;
   }
+  SetFieldValueAndCheckFallback(value, std::move(next_field_callback));
+}
+
+void SetFormFieldValueAction::SetFieldValueAndCheckFallback(
+    const std::string& value,
+    base::OnceCallback<void(const ClientStatus&)> next_field_callback) {
   auto fill_strategy = proto_.set_form_value().fill_strategy();
   action_delegate_util::PerformSetFieldValue(
-      delegate_, password, fill_strategy,
+      delegate_, value, fill_strategy,
       proto_.set_form_value().delay_in_millisecond(), *element_,
       IsSimulatingKeyPresses(fill_strategy)
           ? std::move(next_field_callback)
           : base::BindOnce(
                 &SetFormFieldValueAction::OnSetFieldValueAndCheckFallback,
                 weak_ptr_factory_.GetWeakPtr(), std::move(next_field_callback),
-                /* requested_value = */ password));
+                /* requested_value = */ value));
 }
 
 void SetFormFieldValueAction::OnSetFieldValueAndCheckFallback(
@@ -266,7 +242,7 @@ void SetFormFieldValueAction::OnSetFieldValueAndCheckFallback(
     EndAction(status);
     return;
   }
-  delegate_->GetFieldValue(
+  delegate_->GetWebController()->GetFieldValue(
       *element_,
       base::BindOnce(&SetFormFieldValueAction::OnGetFieldValue,
                      weak_ptr_factory_.GetWeakPtr(),

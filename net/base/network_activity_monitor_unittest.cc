@@ -24,10 +24,7 @@ class NetworkActivityMonitorPeer {
   static void ResetMonitor() {
     NetworkActivityMonitor* monitor = NetworkActivityMonitor::GetInstance();
     base::AutoLock lock(monitor->lock_);
-    monitor->bytes_sent_ = 0;
     monitor->bytes_received_ = 0;
-    monitor->last_received_ticks_ = base::TimeTicks();
-    monitor->last_sent_ticks_ = base::TimeTicks();
   }
 };
 
@@ -50,27 +47,9 @@ TEST_F(NetworkActivityMontiorTest, BytesReceived) {
 
   EXPECT_EQ(0u, monitor->GetBytesReceived());
 
-  base::TimeTicks start = base::TimeTicks::Now();
   uint64_t bytes = 12345;
   monitor->IncrementBytesReceived(bytes);
   EXPECT_EQ(bytes, monitor->GetBytesReceived());
-  base::TimeDelta delta = monitor->GetTimeSinceLastReceived();
-  EXPECT_LE(base::TimeDelta(), delta);
-  EXPECT_GE(base::TimeTicks::Now() - start, delta);
-}
-
-TEST_F(NetworkActivityMontiorTest, BytesSent) {
-  NetworkActivityMonitor* monitor = NetworkActivityMonitor::GetInstance();
-
-  EXPECT_EQ(0u, monitor->GetBytesSent());
-
-  base::TimeTicks start = base::TimeTicks::Now();
-  uint64_t bytes = 12345;
-  monitor->IncrementBytesSent(bytes);
-  EXPECT_EQ(bytes, monitor->GetBytesSent());
-  base::TimeDelta delta = monitor->GetTimeSinceLastSent();
-  EXPECT_LE(base::TimeDelta(), delta);
-  EXPECT_GE(base::TimeTicks::Now() - start, delta);
 }
 
 namespace {
@@ -80,16 +59,8 @@ void VerifyBytesReceivedIsMultipleOf(uint64_t bytes) {
             NetworkActivityMonitor::GetInstance()->GetBytesReceived() % bytes);
 }
 
-void VerifyBytesSentIsMultipleOf(uint64_t bytes) {
-  EXPECT_EQ(0u, NetworkActivityMonitor::GetInstance()->GetBytesSent() % bytes);
-}
-
 void IncrementBytesReceived(uint64_t bytes) {
   NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(bytes);
-}
-
-void IncrementBytesSent(uint64_t bytes) {
-  NetworkActivityMonitor::GetInstance()->IncrementBytesSent(bytes);
 }
 
 }  // namespace
@@ -103,15 +74,10 @@ TEST_F(NetworkActivityMontiorTest, Threading) {
 
   size_t num_increments = 157;
   uint64_t bytes_received = UINT64_C(7294954321);
-  uint64_t bytes_sent = UINT64_C(91294998765);
   for (size_t i = 0; i < num_increments; ++i) {
     size_t thread_num = i % threads.size();
     threads[thread_num]->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&IncrementBytesReceived, bytes_received));
-    threads[thread_num]->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&IncrementBytesSent, bytes_sent));
-    threads[thread_num]->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&VerifyBytesSentIsMultipleOf, bytes_sent));
     threads[thread_num]->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&VerifyBytesReceivedIsMultipleOf, bytes_received));
@@ -121,7 +87,6 @@ TEST_F(NetworkActivityMontiorTest, Threading) {
 
   NetworkActivityMonitor* monitor = NetworkActivityMonitor::GetInstance();
   EXPECT_EQ(num_increments * bytes_received, monitor->GetBytesReceived());
-  EXPECT_EQ(num_increments * bytes_sent, monitor->GetBytesSent());
 }
 
 }  // namespace test

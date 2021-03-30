@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
@@ -26,8 +27,9 @@ class PublicCertificate;
 
 // Implements NearbyShareCertificateStorage using Prefs to store private
 // certificates and LevelDB Proto to store public certificates. Must be
-// initialized by calling Initialize before retrieving or storing
-// certificates.
+// initialized by calling Initialize before retrieving or storing certificates.
+// Callbacks are guaranteed to not be invoked after
+// NearbyShareCertificateStorageImpl is destroyed.
 class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
  public:
   class Factory {
@@ -119,17 +121,15 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
   void SavePublicCertificateExpirations();
 
   InitStatus init_status_ = InitStatus::kUninitialized;
-
   size_t num_initialize_attempts_ = 0;
-
   PrefService* pref_service_;
-
   std::unique_ptr<
       leveldb_proto::ProtoDatabase<nearbyshare::proto::PublicCertificate>>
       db_;
-
   ExpirationList public_certificate_expirations_;
   base::queue<base::OnceClosure> deferred_callbacks_;
+  base::WeakPtrFactory<NearbyShareCertificateStorageImpl> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_CERTIFICATE_STORAGE_IMPL_H_

@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_UNINSTALL_VIEW_H_
 
 #include <map>
+#include <string>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -26,16 +27,19 @@ class Label;
 class UninstallView : public views::DialogDelegateView,
                       public ui::ComboboxModel {
  public:
+  METADATA_HEADER(UninstallView);
   explicit UninstallView(int* user_selection,
                          const base::RepeatingClosure& quit_closure);
+  UninstallView(const UninstallView&) = delete;
+  UninstallView& operator=(const UninstallView&) = delete;
   ~UninstallView() override;
 
   // Overridden from ui::ComboboxModel:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) const override;
+  std::u16string GetItemAt(int index) const override;
 
  private:
-  typedef std::map<base::string16, base::string16> BrowsersMap;
+  typedef std::map<std::wstring, std::wstring> BrowsersMap;
 
   // Initializes the controls on the dialog.
   void SetupControls();
@@ -50,8 +54,6 @@ class UninstallView : public views::DialogDelegateView,
   std::unique_ptr<BrowsersMap> browsers_;
   int& user_selection_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(UninstallView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_UNINSTALL_VIEW_H_

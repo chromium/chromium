@@ -66,9 +66,7 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
 
   virtual void DidStartIfPossible();
 
-  HeapMojoRemote<device::mojom::blink::SensorProvider,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      sensor_provider_;
+  HeapMojoRemote<device::mojom::blink::SensorProvider> sensor_provider_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -76,7 +74,7 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
   virtual bool SensorsReadyOrErrored() const = 0;
 
   PumpState state_;
-  TaskRunnerTimer<DeviceSensorEventPump> timer_;
+  HeapTaskRunnerTimer<DeviceSensorEventPump> timer_;
 };
 
 }  // namespace blink

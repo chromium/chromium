@@ -45,6 +45,7 @@ preprocess_if_expr("preprocess_src") {
     "cr.js",
     "cr.m.js",
     "cr/ui.js",
+    "custom_element.js",
     "event_tracker.js",
     "i18n_template_no_process.js",
     "icon.js",
@@ -53,6 +54,7 @@ preprocess_if_expr("preprocess_src") {
     "plural_string_proxy.js",
     "promise_resolver.js",
     "test_loader.js",
+    "test_loader_util.js",
     "util.js",
     "webui_resource_test.js",
   ]
@@ -115,6 +117,7 @@ group("closure_compile") {
 }
 
 js_type_check("js_resources") {
+  uses_legacy_modules = true
   deps = [
     ":action_link",
     ":assert",
@@ -255,6 +258,7 @@ js_type_check("js_resources_modules") {
   deps = [
     ":assert.m",
     ":cr.m",
+    ":custom_element",
     ":event_tracker.m",
     ":i18n_behavior.m",
     ":icon.m",
@@ -280,6 +284,9 @@ js_library("cr.m") {
     ":promise_resolver.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("custom_element") {
 }
 
 js_library("event_tracker.m") {

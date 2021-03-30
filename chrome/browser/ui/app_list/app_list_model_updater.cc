@@ -37,7 +37,6 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
   // Find the first empty position in app list. If all pages are full, return
   // the next position after last item.
   int items_in_page = 0;
-  int page = 0;
   for (size_t i = 0; i < sorted_items.size(); ++i) {
     if (!sorted_items[i]->is_page_break()) {
       ++items_in_page;
@@ -47,7 +46,7 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
     // There may be multiple "page break" items at the end of page while empty
     // pages will not be shown in app list, so skip them.
     const int max_items_in_page =
-        ash::AppListConfig::instance().GetMaxNumOfItemsPerPage(page);
+        ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
     if (items_in_page > 0 && items_in_page < max_items_in_page) {
       // Sometimes two continuous items may have the same position, so skip to
       // the next available position.
@@ -59,12 +58,26 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
             sorted_items[i]->position());
       }
     }
-    if (items_in_page > 0)
-      ++page;
     items_in_page = 0;
   }
 
   if (sorted_items.empty())
     return syncer::StringOrdinal::CreateInitialOrdinal();
   return sorted_items.back()->position().CreateAfter();
+}
+
+// static
+syncer::StringOrdinal AppListModelUpdater::GetPositionBeforeFirstItemInternal(
+    const std::vector<ChromeAppListItem*>& top_level_items) {
+  auto iter =
+      std::min_element(top_level_items.begin(), top_level_items.end(),
+                       [](ChromeAppListItem* const& item1,
+                          ChromeAppListItem* const& item2) -> bool {
+                         return item1->position().LessThan(item2->position());
+                       });
+
+  if (iter == top_level_items.end())
+    return syncer::StringOrdinal::CreateInitialOrdinal();
+
+  return (*iter)->position().CreateBefore();
 }

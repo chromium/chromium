@@ -71,8 +71,7 @@ void PrimaryAccountMutatorImpl::SetUnconsentedPrimaryAccount(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS the UPA can only be set once and never removed or changed.
   DCHECK(!account_id.empty());
-  DCHECK(
-      !primary_account_manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  DCHECK(!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 #endif
   AccountInfo account_info;
   if (!account_id.empty()) {
@@ -126,7 +125,7 @@ void PrimaryAccountMutatorImpl::RevokeSyncConsent(
 bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
-  if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kNotRequired))
+  if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin))
     return false;
 
   primary_account_manager_->ClearPrimaryAccount(source_metric, delete_metric);

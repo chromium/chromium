@@ -128,8 +128,7 @@ crbug.com/411164 [ Win ] http/tests/security/powerfulFeatureRestrictions/service
 crbug.com/357427 http/tests/workers/terminate-during-sync-operation-file.html [ Slow ]
 crbug.com/357427 http/tests/workers/terminate-during-sync-operation-filesystem.html [ Slow ]
 crbug.com/402379 [ Debug ] storage/indexeddb/cursor-continue-validity.html [ Slow ]
-crbug.com/402379 [ Debug ] storage/indexeddb/mozilla/indexes.html [ Slow ]
-crbug.com/402379 [ Release Win ] storage/indexeddb/mozilla/indexes.html [ Slow ]
+crbug.com/402379 storage/indexeddb/mozilla/indexes.html [ Slow ]
 
 crbug.com/504703 inspector-protocol/debugger/debugger-step-into-dedicated-worker.js [ Slow ]
 
@@ -172,14 +171,6 @@ crbug.com/726075 [ Win ] virtual/gpu/fast/canvas/canvas-composite-shadow.html [ 
 crbug.com/726075 [ Linux ] virtual/gpu/fast/canvas/canvas-composite-shadow.html [ Slow ]
 crbug.com/726075 [ Mac ] virtual/gpu/fast/canvas/canvas-composite-shadow.html [ Slow ]
 
-# IDB Observer tests require multiple browsing contexts/workers interacting with
-# IndexedDB, which can be slow.
-crbug.com/660468 [ Linux ] storage/indexeddb/observer-frame.html [ Slow ]
-crbug.com/660468 [ Linux ] storage/indexeddb/observer-workers.html [ Slow ]
-
-# Foreign fetch tests make many requests, and create multiple browsing contexts,
-# which can be very slow.
-
 # Media controls tests have to wait for panel to fade out.
 crbug.com/722825 media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Slow ]
 
@@ -213,9 +204,6 @@ crbug.com/826957 fast/peerconnection/RTCPeerConnection-manyCandidates.html [ Slo
 # These tests take 90 seconds on MSAN due to a large amount of JS execution.
 crbug.com/853977 [ Linux ] http/tests/fetch/chromium/call-extra-crash-tee.html [ Slow ]
 crbug.com/853977 [ Linux ] http/tests/fetch/chromium/release-handle-crash.html [ Slow ]
-
-crbug.com/864887 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-vertical.html [ Slow ]
-crbug.com/864887 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-horizontal.html [ Slow ]
 
 crbug.com/865262 [ Mac ] media/controls/text-track-menu-pointer-selection.html [ Slow ]
 
@@ -271,11 +259,6 @@ crbug.com/869662 [ Mac10.13 ] virtual/threaded-prefer-compositing/fast/scrolling
 # Tests where |3s <= slowest_run < 10s| on flakiness dashboard for site_per_process_blink_web_tests
 crbug.com/874695 accessibility/is-ignored-change-sends-notification.html [ Slow ]
 crbug.com/874695 animations/svg/animated-filter-svg-element.html [ Slow ]
-crbug.com/874695 bluetooth/server/connect/garbage-collection-ran-during-error.html [ Slow ]
-crbug.com/874695 bluetooth/server/disconnect/disconnect-fires-event.html [ Slow ]
-crbug.com/874695 bluetooth/server/getPrimaryService/gen-device-goes-out-of-range.html [ Slow ]
-crbug.com/874695 bluetooth/server/getPrimaryService/gen-reconnect-during-error.html [ Slow ]
-crbug.com/874695 bluetooth/server/getPrimaryServices/gen-delayed-discovery-service-found-with-uuid.html [ Slow ]
 crbug.com/874695 compositing/animation/busy-indicator.html [ Slow ]
 crbug.com/874695 compositing/culling/filter-occlusion-blur.html [ Slow ]
 crbug.com/874695 compositing/lots-of-img-layers-with-opacity.html [ Slow ]
@@ -387,7 +370,7 @@ crbug.com/874695 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker
 crbug.com/874695 http/tests/xmlhttprequest/web-apps/013.html [ Slow ]
 crbug.com/874695 images/image-page-injected-script-crash.html [ Slow ]
 crbug.com/874695 images/yuv-decode-eligible/color-profile-layer-filter.html [ Slow ]
-crbug.com/874695 inspector-protocol/accessibility/accessibility-nameSources-input-buttons.js [ Slow ]
+crbug.com/874695 http/tests/inspector-protocol/accessibility/accessibility-nameSources-input-buttons.js [ Slow ]
 crbug.com/874695 inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Slow ]
 crbug.com/874695 media/audio-controls-do-not-fade-out.html [ Slow ]
 crbug.com/874695 media/autoplay-muted.html [ Slow ]
@@ -463,6 +446,11 @@ crbug.com/874695 virtual/threaded/http/tests/devtools/tracing/timeline-style/tim
 crbug.com/874695 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchpad-zoom-in-slow.html [ Slow ]
 crbug.com/874695 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow-desktop.html [ Slow ]
 crbug.com/874695 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/connect/garbage-collection-ran-during-error.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/disconnect/disconnect-fires-event.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/getPrimaryService/gen-device-goes-out-of-range.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/getPrimaryService/gen-reconnect-during-error.html [ Slow ]
+crbug.com/874695 wpt_internal/bluetooth/server/getPrimaryServices/gen-delayed-discovery-service-found-with-uuid.html [ Slow ]
 
 crbug.com/868956 virtual/gpu/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
 
@@ -528,10 +516,9 @@ crbug.com/1092121 fast/css/large-list-of-rules-crash.html [ Slow ]
 crbug.com/1042205 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-filter.https.html [ Slow ]
 crbug.com/1093849 external/wpt/dom/nodes/Element-classlist.html [ Slow ]
 crbug.com/1093853 external/wpt/dom/ranges/Range-surroundContents.html [ Slow ]
-crbug.com/1104091 [ Linux ] webcodecs/videoframe-imagebitmap.html [ Slow ]
 crbug.com/1093478 external/wpt/quirks/unitless-length/limited-quirks.html [ Slow ]
 crbug.com/1133836 external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
-crbug.com/1134580 virtual/eye-dropper/color-picker-show-eye-dropper.html [ Slow ]
+crbug.com/1134580 virtual/eye-dropper/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Slow ]
 crbug.com/1145716 fast/forms/calendar-picker/datetimelocal-picker-open-to-focused-field.html [ Slow ]
 
 # These began to hit timeouts when moving from Windows-10-15063 to Windows-10-18363
@@ -559,7 +546,6 @@ crbug.com/1073296 external/wpt/service-workers/service-worker/activation.https.h
 crbug.com/678346 [ Debug ] fast/dom/shadow/selections-in-shadow.html [ Slow ]
 crbug.com/678346 [ Mac Debug ] storage/indexeddb/index-cursor.html [ Slow ]
 crbug.com/678346 [ Win7 Debug ] storage/indexeddb/index-cursor.html [ Slow ]
-crbug.com/747751 http/tests/devtools/application-panel/storage-view-reports-quota.js [ Slow ]
 crbug.com/725542 [ Debug ] editing/selection/doubleclick-beside-cr-span.html [ Slow ]
 crbug.com/757955 [ Win7 Debug ] http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Slow ]
 crbug.com/799619 [ Debug ] http/tests/devtools/profiler/heap-snapshot-inspect-dom-wrapper.js [ Slow ]
@@ -608,7 +594,6 @@ crbug.com/989014 [ Linux Debug ] external/wpt/cookie-store/serviceworker_cookiec
 crbug.com/991243 [ Linux ] external/wpt/workers/semantics/multiple-workers/003.html [ Slow ]
 crbug.com/999799 [ Mac ] external/wpt/html/rendering/dimension-attributes.html [ Slow ]
 crbug.com/999799 [ Linux ] external/wpt/html/rendering/dimension-attributes.html [ Slow ]
-crbug.com/1013391 http/tests/devtools/a11y-axe-core/settings/shortcuts-a11y-test.js [ Slow ]
 crbug.com/990900 external/wpt/cookie-store/idlharness.tentative.https.any.serviceworker.html [ Slow ]
 crbug.com/1014327 [ Mac ] external/wpt/preload/onerror-event.html [ Slow ]
 crbug.com/1017626 [ Linux ] external/wpt/compat/idlharness.window.html [ Slow ]
@@ -617,7 +602,6 @@ crbug.com/1019662 external/wpt/html/dom/idlharness.worker.html [ Slow ]
 crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stability/animation-iteration-event-destroy-renderer.html [ Slow ]
 crbug.com/1026712 [ Mac ] fast/forms/time-multiple-fields/time-multiple-fields-stepup-stepdown-from-renderer-hour.html [ Slow ]
 crbug.com/1026712 [ Mac ] fast/forms/time-multiple-fields/time-multiple-fields-stepup-stepdown-from-renderer.html [ Slow ]
-crbug.com/1034789 [ Mac10.13 ] virtual/threaded/fast/scroll-snap/snap-to-area-with-fractional-offset.html [ Slow ]
 crbug.com/1040270 http/tests/devtools/elements/styles-1/disable-property-workingcopy-update.js [ Slow ]
 crbug.com/1044715 [ Win ] external/wpt/pointerevents/pointerevent_touch-action-pan-right-css_touch.html [ Slow ]
 crbug.com/1044715 [ Linux ] external/wpt/pointerevents/pointerevent_touch-action-pan-right-css_touch.html [ Slow ]
@@ -704,7 +688,6 @@ crbug.com/1046784 http/tests/devtools/elements/styles-4/styles-update-links-2.js
 crbug.com/1046784 http/tests/devtools/editor/text-editor-code-folding.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/coverage/coverage-suspended.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/network/network-search.js [ Slow ]
-crbug.com/1046784 http/tests/devtools/components/linkifier.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/editor/text-editor-block-indent.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/elements/edit/set-outer-html.js [ Slow ]
@@ -728,7 +711,7 @@ crbug.com/1066716 http/tests/cache/zero-length-xhr.html [ Slow ]
 crbug.com/1071909 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw.https.html [ Slow ]
 crbug.com/1042694 fast/forms/form-control-with-state-eager-tracing-crashTest.html [ Slow ]
 crbug.com/984467 fast/canvas/canvas-composite-stroke-alpha.html [ Slow ]
-crbug.com/1078863 [ Mac ] fast/speech/scripted/speechrecognition-restart-onend.html [ Slow ]
+crbug.com/1078863 [ Mac ] wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Slow ]
 crbug.com/1091948 [ Linux ] external/wpt/html/canvas/element/manual/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm [ Slow ]
 crbug.com/1092135 [ Linux ] virtual/threaded/external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Slow ]
 crbug.com/1092135 [ Linux ] virtual/threaded/external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Slow ]
@@ -737,12 +720,24 @@ crbug.com/1097094 external/wpt/window-segments/getWindowSegments-iframes.tentati
 crbug.com/1097810 [ Mac10.13 Debug ] external/wpt/editing/other/white-spaces-after-execCommand-delete.tentative.html [ Slow ]
 crbug.com/1105270 [ Mac10.15 ] fast/events/open-window-from-another-frame.html [ Slow ]
 crbug.com/1094436 http/tests/devtools/sources/debugger-ui/snippet-edit-breakpoint.js [ Slow ]
+crbug.com/1046784 http/tests/devtools/sources/source-frame-toolbar-items.js [ Slow ]
+crbug.com/1046784 http/tests/devtools/profiler/cpu-profiler-bottom-up-large-tree-search.js [ Slow ]
 crbug.com/1108423 external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Slow ]
-crbug.com/1112304 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html [ Slow ]
 crbug.com/1115091 [ Linux ] external/wpt/secure-payment-confirmation/secure-payment-confirmation.tenative.https.html [ Slow ]
 crbug.com/1135978 [ Linux Release ] fast/dom/css-delete-doc.html [ Slow ]
 crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Slow ]
 crbug.com/1145424 [ Win ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Slow ]
 crbug.com/1145641 external/wpt/requestidlecallback/callback-invoked.html [ Slow ]
 crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Slow ]
+crbug.com/1182691 external/wpt/webcodecs/audio-encoder.any.html [ Slow ]
+crbug.com/1182691 external/wpt/webcodecs/video-encoder.any.html [ Slow ]
+crbug.com/1176474 wpt_internal/webcodecs/temporal_svc.any.html [ Slow ]
+crbug.com/1176474 wpt_internal/webcodecs/temporal_svc.any.worker.html [ Slow ]
+
+# Composited scroll snap is not accelerated for testing.
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-arrow.html [ Slow ]
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Slow ]
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-thumb.html [ Slow ]
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-tap.html [ Slow ]
+crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Slow ]
 

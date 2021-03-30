@@ -20,7 +20,7 @@ namespace examples {
 class ColoredDialog : public views::DialogDelegateView,
                       public views::TextfieldController {
  public:
-  using AcceptCallback = base::OnceCallback<void(base::string16)>;
+  using AcceptCallback = base::OnceCallback<void(std::u16string)>;
 
   explicit ColoredDialog(AcceptCallback accept_callback);
   ColoredDialog(const ColoredDialog&) = delete;
@@ -33,7 +33,7 @@ class ColoredDialog : public views::DialogDelegateView,
 
   // views::TextfieldController
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
  private:
   views::Textfield* textfield_;
@@ -49,7 +49,7 @@ class ColoredDialogChooser : public views::View {
   void ButtonPressed();
 
  private:
-  void OnFeedbackSubmit(base::string16 text);
+  void OnFeedbackSubmit(std::u16string text);
 
   views::Label* confirmation_label_;
   base::OneShotTimer confirmation_timer_;

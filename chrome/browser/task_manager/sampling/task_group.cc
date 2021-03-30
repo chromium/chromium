@@ -183,8 +183,9 @@ void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
   for (Task* task : tasks_) {
     task->Refresh(update_interval, refresh_flags);
     if (network_usage_refresh_enabled) {
-      per_process_network_usage_rate_ += task->network_usage_rate();
-      cumulative_per_process_network_usage_ += task->cumulative_network_usage();
+      per_process_network_usage_rate_ += task->GetNetworkUsageRate();
+      cumulative_per_process_network_usage_ +=
+          task->GetCumulativeNetworkUsage();
     }
   }
 

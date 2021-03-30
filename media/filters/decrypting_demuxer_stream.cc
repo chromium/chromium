@@ -385,6 +385,15 @@ void DecryptingDemuxerStream::InitializeDecoderConfig() {
       NOTREACHED();
       return;
   }
+  LogMetadata();
+}
+
+void DecryptingDemuxerStream::LogMetadata() {
+  std::vector<AudioDecoderConfig> audio_metadata{audio_config_};
+  std::vector<VideoDecoderConfig> video_metadata{video_config_};
+  media_log_->SetProperty<MediaLogProperty::kAudioTracks>(audio_metadata);
+  media_log_->SetProperty<MediaLogProperty::kVideoTracks>(video_metadata);
+  // FFmpegDemuxer also provides a max diration, start time, and bitrate.
 }
 
 void DecryptingDemuxerStream::CompletePendingDecrypt(Decryptor::Status status) {

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace password_manager {
 
@@ -21,8 +20,8 @@ class HttpAuthObserver {
   // Called by the model when |credentials| has been identified as a match for
   // the pending login prompt. Checks that the realm matches, and passes
   // |credentials| to OnAutofillDataAvailableInternal.
-  virtual void OnAutofillDataAvailable(const base::string16& username,
-                                       const base::string16& password) = 0;
+  virtual void OnAutofillDataAvailable(const std::u16string& username,
+                                       const std::u16string& password) = 0;
 
   virtual void OnLoginModelDestroying() = 0;
 

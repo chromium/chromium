@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL empty URL: inline-unquoted assert_equals: expected "url(\"about:invalid\")" but got "url(\"http://web-platform.test:8001/css/css-values/urls/empty.html\")"
+FAIL empty URL: inline-quoted assert_equals: expected "url(\"about:invalid\")" but got "url(\"http://web-platform.test:8001/css/css-values/urls/empty.html\")"
+FAIL empty URL: external-unquoted assert_equals: expected "url(\"about:invalid\")" but got "url(\"http://web-platform.test:8001/css/css-values/urls/support/empty-urls.css\")"
+FAIL empty URL: external-quoted assert_equals: expected "url(\"about:invalid\")" but got "url(\"http://web-platform.test:8001/css/css-values/urls/support/empty-urls.css\")"
+Harness: the test ran to completion.
+

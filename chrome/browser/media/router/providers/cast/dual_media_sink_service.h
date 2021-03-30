@@ -41,8 +41,8 @@ class DualMediaSinkService {
       base::RepeatingCallback<void(const std::string&,
                                    const std::vector<MediaSinkInternal>&)>;
   using OnSinksDiscoveredProviderCallbackList =
-      base::CallbackList<void(const std::string&,
-                              const std::vector<MediaSinkInternal>&)>;
+      base::RepeatingCallbackList<void(const std::string&,
+                                       const std::vector<MediaSinkInternal>&)>;
 
   // Returns the lazily-created leaky singleton instance.
   static DualMediaSinkService* GetInstance();
@@ -84,6 +84,8 @@ class DualMediaSinkService {
   // started.
   virtual void StartMdnsDiscovery();
 
+  bool MdnsDiscoveryStarted();
+
  protected:
   // Used by tests.
   DualMediaSinkService(
@@ -97,7 +99,6 @@ class DualMediaSinkService {
   FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
                            AddSinksDiscoveredCallback);
   friend class MediaRouterDesktopTest;
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, ProvideSinks);
 
   static DualMediaSinkService* instance_for_test_;
 

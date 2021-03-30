@@ -5,8 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_SEARCH_RESULT_BASE_VIEW_H_
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_BASE_VIEW_H_
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/search/search_result_observer.h"
+#include "ash/ash_export.h"
 #include "base/optional.h"
 #include "ui/views/controls/button/button.h"
 
@@ -16,8 +16,8 @@ class SearchResult;
 class SearchResultActionsView;
 
 // Base class for views that observe and display a search result
-class APP_LIST_EXPORT SearchResultBaseView : public views::Button,
-                                             public SearchResultObserver {
+class ASH_EXPORT SearchResultBaseView : public views::Button,
+                                        public SearchResultObserver {
  public:
   SearchResultBaseView();
 
@@ -63,7 +63,7 @@ class APP_LIST_EXPORT SearchResultBaseView : public views::Button,
   void OnResultDestroying() override;
 
   // Computes the button's spoken feedback name.
-  virtual base::string16 ComputeAccessibleName() const;
+  virtual std::u16string ComputeAccessibleName() const;
 
   // Clears the result without calling |OnResultChanged| or |OnResultChanging|
   void ClearResult();

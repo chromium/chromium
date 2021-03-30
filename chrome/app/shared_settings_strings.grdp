@@ -19,8 +19,8 @@
   <message name="IDS_SETTINGS_CAPTIONS_PREFERENCES_SUBTITLE" desc="Section subtitle for Caption preferences. Disclaimer that not all apps and sites support the system caption style. Some apps and sites don't use the web captioning standard and have their own captioning platform.">
     Customize caption size and style for apps and sites that support this setting
   </message>
-  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SIZE" desc="Name of the caption text size preference. Text size will apply to captions and alo Live Caption when it's enabled.">
-    Text size (Also applies to Live Caption)
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SIZE" desc="Name of the caption text size preference.">
+    Text size
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_TEXT_FONT" desc="Name of the caption text font preference.">
     Text font
@@ -115,7 +115,7 @@
     Current device name is <ph name="DEVICE_NAME">$1<ex>Michael's Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_LABEL" desc="Label for the button that opens contacts management when configuring visibility of their device with their contacts for the Nearby Share feature.">
-    Manage Contacts
+    Manage contacts
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_ROW_TITLE" desc="Text for row in settings that allows user to manage contacts for the Nearby Share feature.">
     Contacts
@@ -124,7 +124,7 @@
     Edit
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_UPDATE_DATA_USAGE" desc="Label for the button that allows a user to confirm their choice of data usage setting for the Nearby Share feature.">
-    Update
+    Done
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DIALOG_TITLE" desc="Title for the dialog where a user can select the data usage setting for the Nearby Share feature.">
     Data usage
@@ -140,6 +140,9 @@
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_DESCRIPTION" desc="Description of the mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
     May incur mobile data charges
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_TOOLTIP" desc="Explanation of when the mobile data usage setting applies. When selected, Mobile data means that Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+    This option applies to Chromebooks with a data plan or mobile network dongle, or when tethering to a portable hotspot
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_LABEL" desc="Label for the data usage setting where transfers will only take place offline for the Nearby Share feature.">
     Without internet
@@ -172,13 +175,10 @@
     Visible to everyone
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_ON" desc="Subtitle shown indicating that the device is visible to all devices around it for the Nearby Share feature and the nearest number of whole minutes it is on until it is turned off.">
-    On, <ph name="MINUTES">$1<ex>5</ex></ph> min
+    Visibility is on for <ph name="MINUTES">$1<ex>5</ex></ph> minutes
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF" desc="Label for the switch that toggles whether the device is visible to all devices around it for the Nearby Share feature.">
-    Off. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_TOOLTIP" desc="Text for tooltip that explains that turning on high visibility mode will allow the device to visible to all devices around it for the Nearby Share feature for 5 minutes.">
-    Your Chromebook will be visible to everyone nearby for 5 min
+    You will be visible to everyone for <ph name="MINUTES">$1<ex>5</ex></ph> minutes. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
 
  <!-- Personalization Options SubPage (strings used by the <settings-personalization-options> element) -->
@@ -233,7 +233,7 @@
     Sync isn't working
   </message>
   <message name="IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING" desc="The label informing the user that password sync is currently not working.">
-    Error syncing passwords
+    Password sync isn't working
   </message>
   <message name="IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE" desc="Name of the settings page which manages data used by sync.">
     Manage sync
@@ -254,7 +254,7 @@
   </message>
   <!-- Sync Control Subpage (strings used by the <settings-sync-controls> element) -->
   <message name="IDS_SETTINGS_AUTOFILL_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing autofill settings between multiple browser instances.">
-    Addresses, phone numbers, and more
+    Addresses and more
   </message>
   <message name="IDS_SETTINGS_HISTORY_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing history between multiple browser instances.">
     History
@@ -263,7 +263,7 @@
     Extensions
   </message>
   <message name="IDS_SETTINGS_OPEN_TABS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing open tabs between multiple browser instances.">
-    Open Tabs
+    Open tabs
   </message>
   <message name="IDS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of Wi-Fi networks across devices.">
     Wi-Fi networks
@@ -298,13 +298,13 @@
     Submit
   </message>
   <message name="IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with the Google login for the current browser profile.">
-    Encrypt synced passwords with your Google username and password
+    Encrypt synced passwords with your Google Account
   </message>
   <message name="IDS_SETTINGS_BOOKMARKS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing bookmarks between multiple browser instances.">
     Bookmarks
   </message>
   <message name="IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing reading list between multiple browser instances.">
-    Reading List
+    Reading list
   </message>
   <message name="IDS_SETTINGS_ENCRYPTION_OPTIONS" desc="Title for the section which includes options for encrypting sync settings.">
     Encryption options

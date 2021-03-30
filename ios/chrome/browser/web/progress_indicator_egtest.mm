@@ -16,6 +16,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -172,6 +173,11 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   InfinitePendingResponseProvider* infinitePendingProvider =
       uniqueInfinitePendingProvider.get();
   web::test::SetUpHttpServer(std::move(uniqueInfinitePendingProvider));
+
+  // EG synchronizes with WKWebView. Disable synchronization for EG interation
+  // during when page is loading.
+  ScopedSynchronizationDisabler disabler;
+
   // The page being loaded never completes, so call the LoadUrl helper that
   // does not wait for the page to complete loading.
   [ChromeEarlGrey loadURL:infinitePendingURL waitForCompletion:NO];
@@ -210,6 +216,10 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   InfinitePendingResponseProvider* infinitePendingProvider =
       uniqueInfinitePendingProvider.get();
   web::test::AddResponseProvider(std::move(uniqueInfinitePendingProvider));
+
+  // EG synchronizes with WKWebView. Disable synchronization for EG interation
+  // during when page is loading.
+  ScopedSynchronizationDisabler disabler;
 
   // Load form first.
   [ChromeEarlGrey loadURL:formURL];

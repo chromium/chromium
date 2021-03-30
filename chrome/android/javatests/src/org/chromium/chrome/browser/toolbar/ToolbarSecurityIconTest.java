@@ -24,6 +24,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -55,6 +57,8 @@ public final class ToolbarSecurityIconTest {
 
     @Mock
     private LocationBarModel mLocationBarModel;
+    @Mock
+    private SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     @Before
     public void setUp() {
@@ -63,9 +67,12 @@ public final class ToolbarSecurityIconTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateMocks);
+        // clang-format off
         mLocationBarModel = spy(
                 new LocationBarModel(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
-                        url -> url, window -> null, ToolbarTestUtils.OFFLINE_STATUS));
+                        (url) -> url.getSpec(), (window) -> null, ToolbarTestUtils.OFFLINE_STATUS,
+                        mSearchEngineLogoUtils));
+        // clang-format on
         mLocationBarModel.initializeWithNative();
     }
 
@@ -111,74 +118,58 @@ public final class ToolbarSecurityIconTest {
         for (int securityLevel : SECURITY_LEVELS) {
             assertEquals("Wrong phone resource for security level " + securityLevel,
                     R.drawable.ic_offline_pin_24dp,
-                    mLocationBarModel.getSecurityIconResource(securityLevel, IS_SMALL_DEVICE,
-                            IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                    mLocationBarModel.getSecurityIconResource(
+                            securityLevel, IS_SMALL_DEVICE, IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
             assertEquals("Wrong tablet resource for security level " + securityLevel,
                     R.drawable.ic_offline_pin_24dp,
-                    mLocationBarModel.getSecurityIconResource(securityLevel, !IS_SMALL_DEVICE,
-                            IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
-            assertEquals("Wrong phone resource for security level " + securityLevel,
-                    R.drawable.preview_pin_round,
-                    mLocationBarModel.getSecurityIconResource(securityLevel, IS_SMALL_DEVICE,
-                            !IS_OFFLINE_PAGE, IS_PREVIEW, !IS_PAINT_PREVIEW));
-            assertEquals("Wrong tablet resource for security level " + securityLevel,
-                    R.drawable.preview_pin_round,
-                    mLocationBarModel.getSecurityIconResource(securityLevel, !IS_SMALL_DEVICE,
-                            !IS_OFFLINE_PAGE, IS_PREVIEW, !IS_PAINT_PREVIEW));
+                    mLocationBarModel.getSecurityIconResource(
+                            securityLevel, !IS_SMALL_DEVICE, IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
 
             assertEquals("Wrong phone resource for security level " + securityLevel,
                     R.drawable.omnibox_info,
-                    mLocationBarModel.getSecurityIconResource(securityLevel, IS_SMALL_DEVICE,
-                            IS_OFFLINE_PAGE, !IS_PREVIEW, IS_PAINT_PREVIEW));
+                    mLocationBarModel.getSecurityIconResource(
+                            securityLevel, IS_SMALL_DEVICE, IS_OFFLINE_PAGE, IS_PAINT_PREVIEW));
             assertEquals("Wrong tablet resource for security level " + securityLevel,
                     R.drawable.omnibox_info,
-                    mLocationBarModel.getSecurityIconResource(securityLevel, !IS_SMALL_DEVICE,
-                            IS_OFFLINE_PAGE, !IS_PREVIEW, IS_PAINT_PREVIEW));
-            assertEquals("Wrong phone resource for security level " + securityLevel,
-                    R.drawable.omnibox_info,
-                    mLocationBarModel.getSecurityIconResource(securityLevel, IS_SMALL_DEVICE,
-                            !IS_OFFLINE_PAGE, IS_PREVIEW, IS_PAINT_PREVIEW));
-            assertEquals("Wrong tablet resource for security level " + securityLevel,
-                    R.drawable.omnibox_info,
-                    mLocationBarModel.getSecurityIconResource(securityLevel, !IS_SMALL_DEVICE,
-                            !IS_OFFLINE_PAGE, IS_PREVIEW, IS_PAINT_PREVIEW));
+                    mLocationBarModel.getSecurityIconResource(
+                            securityLevel, !IS_SMALL_DEVICE, IS_OFFLINE_PAGE, IS_PAINT_PREVIEW));
         }
 
         assertEquals(0,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.NONE,
-                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
         assertEquals(R.drawable.omnibox_info,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.NONE,
-                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
 
         assertEquals(R.drawable.omnibox_not_secure_warning,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.WARNING,
-                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
         assertEquals(R.drawable.omnibox_not_secure_warning,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.WARNING,
-                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
 
         assertEquals(R.drawable.omnibox_not_secure_warning,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.DANGEROUS,
-                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
         assertEquals(R.drawable.omnibox_not_secure_warning,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.DANGEROUS,
-                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
 
         assertEquals(R.drawable.omnibox_https_valid,
                 mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT, IS_SMALL_DEVICE,
-                        !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
         assertEquals(R.drawable.omnibox_https_valid,
                 mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT, !IS_SMALL_DEVICE,
-                        !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
 
         assertEquals(R.drawable.omnibox_https_valid,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.SECURE,
-                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
         assertEquals(R.drawable.omnibox_https_valid,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.SECURE,
-                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
+                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
     }
 }

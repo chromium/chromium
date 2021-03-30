@@ -15,6 +15,8 @@
 #include "extensions/browser/disable_reason.h"
 #include "net/base/escape.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace {
@@ -55,7 +57,7 @@ ManifestFetchData::ExtensionData::ExtensionData(
     const base::Version& version,
     const std::string& update_url_data,
     const std::string& install_source,
-    Manifest::Location extension_location)
+    ManifestLocation extension_location)
     : version(version),
       update_url_data(update_url_data),
       install_source(install_source),
@@ -64,29 +66,28 @@ ManifestFetchData::ExtensionData::ExtensionData(
 ManifestFetchData::ExtensionData::~ExtensionData() = default;
 
 // static
-std::string ManifestFetchData::GetSimpleLocationString(Manifest::Location loc) {
+std::string ManifestFetchData::GetSimpleLocationString(ManifestLocation loc) {
   std::string result = kInvalidLocation;
   switch (loc) {
-    case Manifest::INTERNAL:
+    case ManifestLocation::kInternal:
       result = kInternalLocation;
       break;
-    case Manifest::EXTERNAL_PREF:
-    case Manifest::EXTERNAL_PREF_DOWNLOAD:
-    case Manifest::EXTERNAL_REGISTRY:
+    case ManifestLocation::kExternalPref:
+    case ManifestLocation::kExternalPrefDownload:
+    case ManifestLocation::kExternalRegistry:
       result = kExternalLocation;
       break;
-    case Manifest::COMPONENT:
-    case Manifest::EXTERNAL_COMPONENT:
-    case Manifest::UNPACKED:
-    case Manifest::COMMAND_LINE:
+    case ManifestLocation::kComponent:
+    case ManifestLocation::kExternalComponent:
+    case ManifestLocation::kUnpacked:
+    case ManifestLocation::kCommandLine:
       result = kOtherLocation;
       break;
-    case Manifest::EXTERNAL_POLICY_DOWNLOAD:
-    case Manifest::EXTERNAL_POLICY:
+    case ManifestLocation::kExternalPolicyDownload:
+    case ManifestLocation::kExternalPolicy:
       result = kPolicyLocation;
       break;
-    case Manifest::INVALID_LOCATION:
-    case Manifest::NUM_LOCATIONS:
+    case ManifestLocation::kInvalidLocation:
       NOTREACHED();
       break;
   }
@@ -139,10 +140,10 @@ bool ManifestFetchData::AddExtension(const std::string& id,
                                      const PingData* ping_data,
                                      const std::string& update_url_data,
                                      const std::string& install_source,
-                                     Manifest::Location extension_location,
+                                     ManifestLocation extension_location,
                                      FetchPriority fetch_priority) {
   DCHECK(!is_all_external_policy_download_ ||
-         extension_location == Manifest::Location::EXTERNAL_POLICY_DOWNLOAD);
+         extension_location == ManifestLocation::kExternalPolicyDownload);
   if (extensions_data_.find(id) != extensions_data_.end()) {
     NOTREACHED() << "Duplicate extension id " << id;
     return false;

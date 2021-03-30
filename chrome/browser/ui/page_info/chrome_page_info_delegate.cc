@@ -36,13 +36,17 @@
 #endif
 
 #if !defined(OS_ANDROID)
+#include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
+#include "chrome/browser/reputation/safety_tip_ui_helper.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
+#include "chrome/browser/ui/tab_dialogs.h"
+#include "ui/events/event.h"
 #else
 #include "chrome/grit/chromium_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -100,14 +104,13 @@ ChromePageInfoDelegate::GetPasswordProtectionService() const {
 }
 
 void ChromePageInfoDelegate::OnUserActionOnPasswordUi(
-    content::WebContents* web_contents,
     safe_browsing::WarningAction action) {
   auto* chrome_password_protection_service =
       GetChromePasswordProtectionService();
   DCHECK(chrome_password_protection_service);
 
   chrome_password_protection_service->OnUserAction(
-      web_contents,
+      web_contents_,
       chrome_password_protection_service
           ->reused_password_account_type_for_last_shown_warning(),
       safe_browsing::RequestOutcome::UNKNOWN,
@@ -115,7 +118,7 @@ void ChromePageInfoDelegate::OnUserActionOnPasswordUi(
       /*verdict_token=*/"", safe_browsing::WarningUIType::PAGE_INFO, action);
 }
 
-base::string16 ChromePageInfoDelegate::GetWarningDetailText() {
+std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
   std::vector<size_t> placeholder_offsets;
   auto* chrome_password_protection_service =
       GetChromePasswordProtectionService();
@@ -126,7 +129,7 @@ base::string16 ChromePageInfoDelegate::GetWarningDetailText() {
                    chrome_password_protection_service
                        ->reused_password_account_type_for_last_shown_warning(),
                    &placeholder_offsets)
-             : base::string16();
+             : std::u16string();
 }
 #endif
 
@@ -153,6 +156,32 @@ bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
   chrome::ShowSiteSettings(chrome::FindBrowserWithWebContents(web_contents_),
                            site_url);
+}
+
+void ChromePageInfoDelegate::OpenCookiesDialog() {
+  TabDialogs::FromWebContents(web_contents_)->ShowCollectedCookies();
+}
+
+void ChromePageInfoDelegate::OpenCertificateDialog(
+    net::X509Certificate* certificate) {
+  gfx::NativeWindow top_window = web_contents_->GetTopLevelNativeWindow();
+  DCHECK(certificate);
+  DCHECK(top_window);
+
+  ShowCertificateViewer(web_contents_, top_window, certificate);
+}
+
+void ChromePageInfoDelegate::OpenConnectionHelpCenterPage(
+    const ui::Event& event) {
+  web_contents_->OpenURL(content::OpenURLParams(
+      GURL(chrome::kPageInfoHelpCenterURL), content::Referrer(),
+      ui::DispositionFromEventFlags(event.flags(),
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB),
+      ui::PAGE_TRANSITION_LINK, false));
+}
+
+void ChromePageInfoDelegate::OpenSafetyTipHelpCenterPage() {
+  OpenHelpCenterFromSafetyTip(web_contents_);
 }
 #endif
 
@@ -219,7 +248,7 @@ ChromePageInfoDelegate::GetPageSpecificContentSettingsDelegate() {
 }
 
 #if defined(OS_ANDROID)
-const base::string16 ChromePageInfoDelegate::GetClientApplicationName() {
+const std::u16string ChromePageInfoDelegate::GetClientApplicationName() {
   return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
 }
 #endif

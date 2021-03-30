@@ -25,27 +25,85 @@
 
 namespace gl {
 
+ANGLEImplementation MakeANGLEImplementation(
+    const GLImplementation gl_impl,
+    const ANGLEImplementation angle_impl) {
+  if (gl_impl == kGLImplementationEGLANGLE) {
+    if (angle_impl == ANGLEImplementation::kNone) {
+      return ANGLEImplementation::kDefault;
+    } else {
+      return angle_impl;
+    }
+  } else {
+    return ANGLEImplementation::kNone;
+  }
+}
+
+GLImplementationParts::GLImplementationParts(
+    const ANGLEImplementation angle_impl)
+    : gl(kGLImplementationEGLANGLE),
+      angle(MakeANGLEImplementation(kGLImplementationEGLANGLE, angle_impl)) {}
+
+GLImplementationParts::GLImplementationParts(const GLImplementation gl_impl)
+    : gl(gl_impl),
+      angle(MakeANGLEImplementation(gl_impl, ANGLEImplementation::kNone)) {}
+
+bool GLImplementationParts::IsValid() const {
+  if (angle == ANGLEImplementation::kNone) {
+    return (gl != kGLImplementationEGLANGLE);
+  } else {
+    return (gl == kGLImplementationEGLANGLE);
+  }
+}
+
 namespace {
 
 const struct {
-  const char* name;
-  GLImplementation implementation;
+  const char* gl_name;
+  const char* angle_name;
+  GLImplementationParts implementation;
 } kGLImplementationNamePairs[] = {
-    {kGLImplementationDesktopName, kGLImplementationDesktopGL},
-    {kGLImplementationSwiftShaderName, kGLImplementationSwiftShaderGL},
+    {kGLImplementationDesktopName, kANGLEImplementationNoneName,
+     GLImplementationParts(kGLImplementationDesktopGL)},
+    {kGLImplementationSwiftShaderName, kANGLEImplementationNoneName,
+     GLImplementationParts(kGLImplementationSwiftShaderGL)},
 #if defined(OS_APPLE)
-    {kGLImplementationAppleName, kGLImplementationAppleGL},
+    {kGLImplementationAppleName, kANGLEImplementationNoneName,
+     GLImplementationParts(kGLImplementationAppleGL)},
 #endif
-    {kGLImplementationEGLName, kGLImplementationEGLGLES2},
-    {kGLImplementationANGLEName, kGLImplementationEGLANGLE},
-    {kGLImplementationMockName, kGLImplementationMockGL},
-    {kGLImplementationStubName, kGLImplementationStubGL},
-    {kGLImplementationDisabledName, kGLImplementationDisabled}};
+    {kGLImplementationEGLName, kANGLEImplementationNoneName,
+     GLImplementationParts(kGLImplementationEGLGLES2)},
+    {kGLImplementationANGLEName, kANGLEImplementationNoneName,
+     GLImplementationParts(ANGLEImplementation::kDefault)},
+    {kGLImplementationANGLEName, kANGLEImplementationD3D9Name,
+     GLImplementationParts(ANGLEImplementation::kD3D9)},
+    {kGLImplementationANGLEName, kANGLEImplementationD3D11Name,
+     GLImplementationParts(ANGLEImplementation::kD3D11)},
+    {kGLImplementationANGLEName, kANGLEImplementationOpenGLName,
+     GLImplementationParts(ANGLEImplementation::kOpenGL)},
+    {kGLImplementationANGLEName, kANGLEImplementationOpenGLESName,
+     GLImplementationParts(ANGLEImplementation::kOpenGLES)},
+    {kGLImplementationANGLEName, kANGLEImplementationVulkanName,
+     GLImplementationParts(ANGLEImplementation::kVulkan)},
+    {kGLImplementationANGLEName, kANGLEImplementationMetalName,
+     GLImplementationParts(ANGLEImplementation::kMetal)},
+    {kGLImplementationANGLEName, kANGLEImplementationDefaultName,
+     GLImplementationParts(ANGLEImplementation::kDefault)},
+    {kGLImplementationANGLEName, kANGLEImplementationSwiftShaderName,
+     GLImplementationParts(ANGLEImplementation::kSwiftShader)},
+    {kGLImplementationANGLEName, kANGLEImplementationNullName,
+     GLImplementationParts(ANGLEImplementation::kNull)},
+    {kGLImplementationMockName, kANGLEImplementationNoneName,
+     GLImplementationParts(kGLImplementationMockGL)},
+    {kGLImplementationStubName, kANGLEImplementationNoneName,
+     GLImplementationParts(kGLImplementationStubGL)},
+    {kGLImplementationDisabledName, kANGLEImplementationNoneName,
+     GLImplementationParts(kGLImplementationDisabled)}};
 
 typedef std::vector<base::NativeLibrary> LibraryArray;
 
-GLImplementation g_gl_implementation = kGLImplementationNone;
-ANGLEImplementation g_angle_implementation = ANGLEImplementation::kNone;
+GLImplementationParts g_gl_implementation =
+    GLImplementationParts(kGLImplementationNone);
 LibraryArray* g_libraries;
 GLGetProcAddressProc g_get_proc_address;
 
@@ -105,48 +163,99 @@ EGLApi* g_current_egl_context;
 GLXApi* g_current_glx_context;
 #endif
 
-GLImplementation GetNamedGLImplementation(const std::string& name) {
-  for (size_t i = 0; i < base::size(kGLImplementationNamePairs); ++i) {
-    if (name == kGLImplementationNamePairs[i].name)
-      return kGLImplementationNamePairs[i].implementation;
+GLImplementationParts GetNamedGLImplementation(const std::string& gl_name,
+                                               const std::string& angle_name) {
+  for (auto name_pair : kGLImplementationNamePairs) {
+    if (gl_name == name_pair.gl_name && angle_name == name_pair.angle_name)
+      return name_pair.implementation;
   }
 
-  return kGLImplementationNone;
+  return GLImplementationParts(kGLImplementationNone);
 }
 
-GLImplementation GetSoftwareGLImplementation() {
-  return kGLImplementationSwiftShaderGL;
+GLImplementationParts GetLegacySoftwareGLImplementation() {
+  return GLImplementationParts(kGLImplementationSwiftShaderGL);
 }
 
-const char* GetGLImplementationName(GLImplementation implementation) {
-  for (size_t i = 0; i < base::size(kGLImplementationNamePairs); ++i) {
-    if (implementation == kGLImplementationNamePairs[i].implementation)
-      return kGLImplementationNamePairs[i].name;
+GLImplementationParts GetSoftwareGLImplementation() {
+  return GLImplementationParts(ANGLEImplementation::kSwiftShader);
+}
+
+GLImplementationParts GetSoftwareGLForTestsImplementation() {
+  return GetLegacySoftwareGLImplementation();
+}
+
+bool IsSoftwareGLImplementation(GLImplementationParts implementation) {
+  return (implementation == GetLegacySoftwareGLImplementation()) ||
+         (implementation == GetSoftwareGLImplementation());
+}
+
+void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line,
+                                      bool legacy_software_gl) {
+  if (legacy_software_gl) {
+    command_line->AppendSwitchASCII(
+        switches::kUseGL,
+        gl::GetGLImplementationGLName(gl::GetLegacySoftwareGLImplementation()));
+  } else {
+    GLImplementationParts implementation = GetSoftwareGLImplementation();
+    command_line->AppendSwitchASCII(
+        switches::kUseGL, gl::GetGLImplementationGLName(implementation));
+    command_line->AppendSwitchASCII(
+        switches::kUseANGLE, gl::GetGLImplementationANGLEName(implementation));
+  }
+}
+
+const char* GetGLImplementationGLName(GLImplementationParts implementation) {
+  for (auto name_pair : kGLImplementationNamePairs) {
+    if (implementation.gl == name_pair.implementation.gl &&
+        implementation.angle == name_pair.implementation.angle)
+      return name_pair.gl_name;
   }
 
   return "unknown";
 }
 
-void SetGLImplementation(GLImplementation implementation) {
-  g_gl_implementation = implementation;
+const char* GetGLImplementationANGLEName(GLImplementationParts implementation) {
+  for (auto name_pair : kGLImplementationNamePairs) {
+    if (implementation.gl == name_pair.implementation.gl &&
+        implementation.angle == name_pair.implementation.angle)
+      return name_pair.angle_name;
+  }
+
+  return "";
 }
 
-GLImplementation GetGLImplementation() {
+void SetGLImplementationParts(const GLImplementationParts& implementation) {
+  DCHECK(implementation.IsValid());
+  g_gl_implementation = GLImplementationParts(implementation);
+}
+
+const GLImplementationParts& GetGLImplementationParts() {
   return g_gl_implementation;
 }
 
+void SetGLImplementation(GLImplementation implementation) {
+  g_gl_implementation = GLImplementationParts(implementation);
+  DCHECK(g_gl_implementation.IsValid());
+}
+
+GLImplementation GetGLImplementation() {
+  return g_gl_implementation.gl;
+}
+
 void SetANGLEImplementation(ANGLEImplementation implementation) {
-  g_angle_implementation = implementation;
+  g_gl_implementation = GLImplementationParts(implementation);
+  DCHECK(g_gl_implementation.IsValid());
 }
 
 ANGLEImplementation GetANGLEImplementation() {
-  return g_angle_implementation;
+  return g_gl_implementation.angle;
 }
 
 bool HasDesktopGLFeatures() {
-  return kGLImplementationDesktopGL == g_gl_implementation ||
-         kGLImplementationDesktopGLCoreProfile == g_gl_implementation ||
-         kGLImplementationAppleGL == g_gl_implementation;
+  return kGLImplementationDesktopGL == g_gl_implementation.gl ||
+         kGLImplementationDesktopGLCoreProfile == g_gl_implementation.gl ||
+         kGLImplementationAppleGL == g_gl_implementation.gl;
 }
 
 void AddGLNativeLibrary(base::NativeLibrary library) {
@@ -171,7 +280,7 @@ void SetGLGetProcAddressProc(GLGetProcAddressProc proc) {
 
 NO_SANITIZE("cfi-icall")
 GLFunctionPointerType GetGLProcAddress(const char* name) {
-  DCHECK(g_gl_implementation != kGLImplementationNone);
+  DCHECK(g_gl_implementation.gl != kGLImplementationNone);
 
   if (g_libraries) {
     for (size_t i = 0; i < g_libraries->size(); ++i) {
@@ -266,8 +375,10 @@ bool WillUseGLGetStringForExtensions() {
 bool WillUseGLGetStringForExtensions(GLApi* api) {
   const char* version_str =
       reinterpret_cast<const char*>(api->glGetStringFn(GL_VERSION));
+  const char* renderer_str =
+      reinterpret_cast<const char*>(api->glGetStringFn(GL_RENDERER));
   gfx::ExtensionSet extensions;
-  GLVersionInfo version_info(version_str, nullptr, extensions);
+  GLVersionInfo version_info(version_str, renderer_str, extensions);
   return version_info.is_es || version_info.major_version < 3;
 }
 
@@ -286,5 +397,11 @@ base::NativeLibrary LoadLibraryAndPrintError(const base::FilePath& filename) {
   }
   return library;
 }
+
+#if BUILDFLAG(USE_OPENGL_APITRACE)
+void TerminateFrame() {
+  GetGLProcAddress("glFrameTerminatorGREMEDY")();
+}
+#endif
 
 }  // namespace gl

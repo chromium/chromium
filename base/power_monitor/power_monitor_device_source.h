@@ -48,12 +48,14 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   static void SetPowerSource(bool on_battery);
   static void HandleSystemSuspending();
   static void HandleSystemResumed();
-  static void ThermalEventReceived(PowerObserver::DeviceThermalState state);
+  static void ThermalEventReceived(
+      PowerThermalObserver::DeviceThermalState state);
 
   // These two methods is used for handling thermal state update requests, such
   // as asking for initial state when starting lisitening to thermal change.
-  PowerObserver::DeviceThermalState GetCurrentThermalState() override;
-  void SetCurrentThermalState(PowerObserver::DeviceThermalState state) override;
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
+  void SetCurrentThermalState(
+      PowerThermalObserver::DeviceThermalState state) override;
 #endif
 
  private:
@@ -95,7 +97,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   // Platform-specific method to check whether the system is currently
   // running on battery power.  Returns true if running on batteries,
   // false otherwise.
-  bool IsOnBatteryPowerImpl() override;
+  bool IsOnBatteryPower() override;
 
 #if defined(OS_ANDROID)
   int GetRemainingBatteryCapacity() override;
@@ -103,7 +105,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
 
 #if defined(OS_MAC)
   // PowerMonitorSource:
-  PowerObserver::DeviceThermalState GetCurrentThermalState() override;
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
 
   // Reference to the system IOPMrootDomain port.
   io_connect_t power_manager_port_ = IO_OBJECT_NULL;
@@ -130,9 +132,9 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   PowerMessageWindow power_message_window_;
 #endif
 
-#if defined(OS_CHROMEOS)
-  PowerObserver::DeviceThermalState current_thermal_state_ =
-      PowerObserver::DeviceThermalState::kUnknown;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  PowerThermalObserver::DeviceThermalState current_thermal_state_ =
+      PowerThermalObserver::DeviceThermalState::kUnknown;
 #endif
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorDeviceSource);
 };

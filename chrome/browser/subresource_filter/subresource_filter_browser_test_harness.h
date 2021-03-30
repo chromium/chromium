@@ -100,6 +100,9 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
 
   void SetRulesetToDisallowURLsWithPathSuffix(const std::string& suffix);
 
+  void SetRulesetToDisallowURLsWithSubstrings(
+      std::vector<base::StringPiece> substrings);
+
   void SetRulesetWithRules(const std::vector<proto::UrlRule>& rules);
 
   // Re-initializes the ruleset_service by opening the ruleset file provided

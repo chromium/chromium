@@ -77,52 +77,6 @@ class ThreadState::AtomicPauseScope final {
   GCForbiddenScope gc_forbidden_scope;
 };
 
-class ThreadState::HeapPointersOnStackScope final {
-  STACK_ALLOCATED();
-
- public:
-  explicit HeapPointersOnStackScope(ThreadState* state) : state_(state) {
-    DCHECK(!state_->heap_pointers_on_stack_forced_);
-    state_->heap_pointers_on_stack_forced_ = true;
-  }
-  ~HeapPointersOnStackScope() {
-    DCHECK(state_->heap_pointers_on_stack_forced_);
-    state_->heap_pointers_on_stack_forced_ = false;
-  }
-
- private:
-  ThreadState* const state_;
-};
-
-#if defined(LEAK_SANITIZER)
-class ThreadState::LsanDisabledScope final {
-  STACK_ALLOCATED();
-  DISALLOW_COPY_AND_ASSIGN(LsanDisabledScope);
-
- public:
-  explicit LsanDisabledScope(ThreadState* thread_state)
-      : thread_state_(thread_state) {
-    __lsan_disable();
-    if (thread_state_)
-      thread_state_->EnterStaticReferenceRegistrationDisabledScope();
-  }
-
-  ~LsanDisabledScope() {
-    __lsan_enable();
-    if (thread_state_)
-      thread_state_->LeaveStaticReferenceRegistrationDisabledScope();
-  }
-
- private:
-  ThreadState* const thread_state_;
-};
-
-#define LEAK_SANITIZER_DISABLED_SCOPE \
-  ThreadState::LsanDisabledScope lsan_disabled_scope(ThreadState::Current())
-#else
-#define LEAK_SANITIZER_DISABLED_SCOPE
-#endif
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_THREAD_STATE_SCOPES_H_

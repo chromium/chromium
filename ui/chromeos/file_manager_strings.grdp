@@ -306,11 +306,8 @@
   <message name="IDS_FILE_BROWSER_SEND_FEEDBACK_BUTTON_LABEL" desc="Title for the action of sending user feedback.">
     Send feedback
   </message>
-  <message name="IDS_FILE_BROWSER_ADD_NEW_SERVICES_BUTTON_LABEL" desc="Title of the button in the left nav to add new services (file systems) to the Files app.">
-    Add new service
-  </message>
-  <message name="IDS_FILE_BROWSER_INSTALL_NEW_EXTENSION_LABEL" desc="Title of the menu item for installing new extensions from the web store.">
-    Install new service
+  <message name="IDS_FILE_BROWSER_SHOW_PROVIDERS_BUTTON_LABEL" desc="Title of the button in the left nav to display services (file systems) of the Files app.">
+    Services
   </message>
   <message name="IDS_FILE_BROWSER_TASK_VIEW" desc="Title of the action to view (no edit) a file.">
     View
@@ -544,8 +541,14 @@
   <message name="IDS_FILE_BROWSER_DELETE_BUTTON_LABEL" desc="Context menu item that deletes the currently-selected file(s).">
     Delete
   </message>
+  <message name="IDS_FILE_BROWSER_MOVE_TO_TRASH_BUTTON_LABEL" desc="Context menu item that moves the currently-selected file(s) to the trash / recycle bin.">
+    Move to Trash
+  </message>
   <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_BUTTON_LABEL" desc="Context menu item that restores the currently-selected file(s) from the trash / recycle bin.">
     Restore from trash
+  </message>
+  <message name="IDS_FILE_BROWSER_EMPTY_TRASH_BUTTON_LABEL" desc="Context menu item that empties (permanently deletes all items in) the trash / recycle bin.">
+    Empty Trash
   </message>
   <message name="IDS_FILE_BROWSER_PASTE_BUTTON_LABEL" desc="Context menu item that pastes the file(s) in the clipboard.">
     Paste
@@ -858,6 +861,9 @@
   <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ITEMS_REMAINING" desc="File Manager status message shown when restoring items from trash / recycle bin. 'Item' is used here as a generic term for file or directory.">
     Restoring <ph name="COUNT">$1<ex>10</ex></ph> items...
   </message>
+  <message name="IDS_FILE_BROWSER_TRASH_DELETED_FOREVER" desc="Message informing that items in the trash / recycle bin are deleted forever after 30 days.">
+    Items in the trash are deleted forever after 30 days.
+  </message>
   <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ERROR" desc="Message informing about error while restoring an item or items from the trash / recycle bin.">
     An error occurred. Some items may not have been restored.
   </message>
@@ -943,6 +949,9 @@
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_ACTION_LABEL" desc="Undo label shown on toast to undo delete operation">
    Undo
+ </message>
+ <message name="IDS_FILE_BROWSER_CONFIRM_EMPTY_TRASH" desc="Asks the user if they are sure they want to empty the trash / recylce bin.">
+   Are you sure you want to empty Trash?
  </message>
 
   <message name="IDS_FILE_BROWSER_UNKNOWN_FILESYSTEM_WARNING" desc="Displayed when device contents cannot be read because filesystem is unknown.">
@@ -1159,13 +1168,25 @@
     To save these files for offline use, get back online, right-click the files, and select the <ph name="OFFLINE_CHECKBOX_NAME">'$1'<ex>'Available offline'</ex></ph> option.
   </message>
   <message name="IDS_FILE_BROWSER_OFFLINE_BANNER_MESSAGE" desc="Message informing the user that they can make files available offline.">
-    You can make files available offline for access when you don't have internet connection.
+    You can make files available offline for access when you don't have an internet connection.
   </message>
   <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE" desc="Message informing the user a Google Drive file is being downloaded for offline use.">
     Making <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
   </message>
   <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL" desc="Message informing the user multiple Google Drive files are being downloaded for offline use.">
     Making <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> files available offline
+  </message>
+  <message name="IDS_FILE_BROWSER_OFFLINE_FAILURE_MESSAGE" desc="Message informing the user a Google Drive file failed to be downloaded for offline use.">
+    Could not make <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
+  </message>
+  <message name="IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE" desc="Message informing the user that in order to make Docs, Sheets and Slides files available offline, they must enable Google Docs Offline.">
+    Enable Google Docs Offline to make Docs, Sheets and Slides available offline.
+  </message>
+  <message name="IDS_FILE_BROWSER_OFFLINE_ENABLE_ACCEPT" desc="Button label to enable Google Docs Offline">
+    Enable Offline
+  </message>
+  <message name="IDS_FILE_BROWSER_OFFLINE_ENABLE_REJECT" desc="Button label to not enable Google Docs Offline">
+    Not now
   </message>
   <message name="IDS_FILE_BROWSER_QUICK_VIEW_NO_PLAYBACK_AVAILABLE" desc="Massage for user to notify no playback is available.">
     No playback available
@@ -1256,6 +1277,15 @@
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT" desc="In the Holding Space welcome banner, text of the welcome message.">
     Right-click a file, and select "Pin to shelf" for quick access to your files in shelf.
   </message>
+  <message name="IDS_FILE_BROWSER_PHOTOS_WELCOME_TITLE" desc="In the Google Photos welcome banner, title of banner.">
+    Easily access Google Photos
+  </message>
+  <message name="IDS_FILE_BROWSER_PHOTOS_WELCOME_TEXT" desc="In the Google Photos welcome banner, text of the welcome message.">
+    Choose from your recent photos.
+  </message>
+  <message name="IDS_FILE_BROWSER_PHOTOS_WELCOME_DISMISS" desc="In the Google Photos welcome banner, a text on the button to dismiss the banner.">
+    Got it
+  </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE" desc="In the Holding Space welcome banner, text of the welcome message in tablet mode.">
     Touch &amp; hold a file and tap <ph name="ICON">$1</ph>, and select "Pin to shelf" for quick access to your files in shelf.
   </message>
@@ -1263,14 +1293,13 @@
     Got it
   </message>
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_FILE" desc="Message shown when user tries to open file, which we can't handle.">
-    This file type is not supported. Please visit the <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;<ex>&lt;a target='_blank' href='$1'&gt;</ex></ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> to find an app that can open this type of file.
-    <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$2'&gt;<ex>&lt;a target='_blank' href='$2'&gt;</ex></ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    This file type is not supported. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;</ph> about opening files on Chrome OS.
   </message>
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_EXECUTABLE" desc="Message shown when user tries to open a windows executable file, which we can't handle.">
-    This file is designed for a PC using Windows software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$2'&gt;<ex>&lt;a target='_blank' href='$2'&gt;</ex></ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    This file is designed for a PC using Windows software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;</ph> about opening files on Chrome OS.
   </message>
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_DMG" desc="Message shown when user tries to open a windows executable file, which we can't handle.">
-    This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. Please search the <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;<ex>&lt;a target='_blank' href='$1'&gt;</ex></ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> for a suitable replacement app.<ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$2'&gt;<ex>&lt;a target='_blank' href='$2'&gt;</ex></ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;</ph> about opening files on Chrome OS.
   </message>
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_CRX_TITLE" desc="Message shown when a user tries to open a *.crx file, which we don't handle in the Files app.">
     Wait just a sec

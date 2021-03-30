@@ -26,6 +26,8 @@
 #include "ipc/ipc_mojo_bootstrap.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
 #include "ipc/native_handle_type_converters.h"
+#include "ipc/trace_ipc_message.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -269,9 +271,9 @@ void ChannelMojo::OnPeerPidReceived(int32_t peer_pid) {
 }
 
 void ChannelMojo::OnMessageReceived(const Message& message) {
-  TRACE_EVENT2("ipc,toplevel", "ChannelMojo::OnMessageReceived",
-               "class", IPC_MESSAGE_ID_CLASS(message.type()),
-               "line", IPC_MESSAGE_ID_LINE(message.type()));
+  const Message* message_ptr = &message;
+  TRACE_IPC_MESSAGE_SEND("ipc,toplevel", "ChannelMojo::OnMessageReceived",
+                         message_ptr);
   listener_->OnMessageReceived(message);
   if (message.dispatch_error())
     listener_->OnBadMessageReceived(message);

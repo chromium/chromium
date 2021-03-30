@@ -61,6 +61,8 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   // state of the runtime.
 
   XrSystemId GetSystemId();
+  XrSystemProperties GetSystemProperties();
+
   XrSwapchain GetSwapchain();
   XrInstance CreateInstance();
   XrResult GetActionStateFloat(XrAction action, XrActionStateFloat* data) const;
@@ -162,6 +164,9 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       "/reference_space/view";
   static constexpr const char* kUnboundedReferenceSpacePath =
       "/reference_space/unbounded";
+  static constexpr XrSystemProperties kSystemProperties = {
+      XR_TYPE_SYSTEM_PROPERTIES, nullptr,           0, 0xBADFACE, "Test System",
+      {2048, 2048, 1},           {XR_TRUE, XR_TRUE}};
 
   static constexpr uint32_t kNumExtensionsSupported = base::size(kExtensions);
   static constexpr uint32_t kNumViews = base::size(kViewConfigurationViews);

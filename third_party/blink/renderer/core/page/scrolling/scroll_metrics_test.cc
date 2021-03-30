@@ -90,12 +90,10 @@ class ScrollEndEventBuilder : public WebGestureEvent {
 
 int NonCompositedMainThreadScrollingReasonRecordTest::GetBucketIndex(
     uint32_t reason) {
-  int index = 1;
-  while (!(reason & 1)) {
-    reason >>= 1;
+  int index = 0;
+  while (reason >>= 1)
     ++index;
-  }
-  DCHECK_EQ(reason, 1u);
+  DCHECK_NE(index, 0);
   return index;
 }
 

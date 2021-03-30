@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/policy/bluetooth_policy_handler.h"
 
 #include "base/test/task_environment.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,11 +54,11 @@ class BluetoothPolicyHandlerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<TestingBluetoothAdapter> adapter_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 TEST_F(BluetoothPolicyHandlerTest, TestZeroOnOffOn) {
-  BluetoothPolicyHandler shutdown_policy_handler(chromeos::CrosSettings::Get());
+  BluetoothPolicyHandler shutdown_policy_handler(ash::CrosSettings::Get());
   EXPECT_TRUE(adapter_->IsPresent());
 
   SetAllowBluetooth(true);
@@ -75,14 +75,14 @@ TEST_F(BluetoothPolicyHandlerTest, TestZeroOnOffOn) {
 
 TEST_F(BluetoothPolicyHandlerTest, OffDuringStartup) {
   SetAllowBluetooth(false);
-  BluetoothPolicyHandler shutdown_policy_handler(chromeos::CrosSettings::Get());
+  BluetoothPolicyHandler shutdown_policy_handler(ash::CrosSettings::Get());
   EXPECT_FALSE(adapter_->IsPresent());
   EXPECT_FALSE(adapter_->IsPowered());
 }
 
 TEST_F(BluetoothPolicyHandlerTest, OnDuringStartup) {
   SetAllowBluetooth(true);
-  BluetoothPolicyHandler shutdown_policy_handler(chromeos::CrosSettings::Get());
+  BluetoothPolicyHandler shutdown_policy_handler(ash::CrosSettings::Get());
   EXPECT_TRUE(adapter_->IsPresent());
 }
 

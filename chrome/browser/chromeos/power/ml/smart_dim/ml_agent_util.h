@@ -14,6 +14,12 @@ namespace chromeos {
 namespace power {
 namespace ml {
 
+// Note: these names doesn't need to respect the real node names in TF graph.
+// But we must use the same input and output node names in loading model and
+// composing/extracting input/output tensors.
+extern const char kSmartDimInputNodeName[];
+extern const char kSmartDimOutputNodeName[];
+
 // Extract essential fields from parsed JSON dict.
 bool ParseMetaInfoFromJsonObject(const base::Value& root,
                                  std::string* metrics_model_name,

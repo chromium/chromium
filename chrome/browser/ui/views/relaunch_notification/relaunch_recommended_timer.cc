@@ -20,7 +20,7 @@ RelaunchRecommendedTimer::RelaunchRecommendedTimer(
 
 RelaunchRecommendedTimer::~RelaunchRecommendedTimer() {}
 
-base::string16 RelaunchRecommendedTimer::GetWindowTitle() const {
+std::u16string RelaunchRecommendedTimer::GetWindowTitle() const {
   const base::TimeDelta elapsed = base::Time::Now() - upgrade_detected_time_;
   return l10n_util::GetPluralStringFUTF16(IDS_RELAUNCH_RECOMMENDED_TITLE,
                                           elapsed.InDays());

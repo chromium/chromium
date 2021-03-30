@@ -23,11 +23,14 @@
 <meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,buffers,map_detach:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,basic:*'>
-<meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,compute,basic:*'>
-<meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,copies:*'>
-<meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,render,basic:*'>
-<meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,render,rendering:*'>
-<meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,render,storeop:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,command_buffer,copyBufferToBuffer:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,compute,basic:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,rendering,basic:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,render_pass,storeOp:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,operation,render_pass,storeop2:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,fences:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,validation,buffer,create:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,validation,buffer,destroy:*'>
+<meta name=variant content='?worker=1&q=webgpu:api,validation,buffer,mapping:*'>
 
 <!-- Variant list is auto-generated below this line: -->

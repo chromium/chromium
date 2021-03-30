@@ -55,8 +55,8 @@ TEST_F(FileSystemProviderOperationsUnmountTest, Execute) {
   Unmount unmount(NULL, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
   unmount.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(unmount.Execute(kRequestId));
 
@@ -84,8 +84,8 @@ TEST_F(FileSystemProviderOperationsUnmountTest, Execute_NoListener) {
   Unmount unmount(NULL, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
   unmount.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(unmount.Execute(kRequestId));
 }
@@ -100,8 +100,8 @@ TEST_F(FileSystemProviderOperationsUnmountTest, OnSuccess) {
   Unmount unmount(NULL, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
   unmount.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(unmount.Execute(kRequestId));
 
@@ -120,8 +120,8 @@ TEST_F(FileSystemProviderOperationsUnmountTest, OnError) {
   Unmount unmount(NULL, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
   unmount.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(unmount.Execute(kRequestId));
 

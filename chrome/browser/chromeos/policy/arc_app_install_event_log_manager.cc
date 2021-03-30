@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/arc_app_install_event_log_manager.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
@@ -74,6 +76,15 @@ void ArcAppInstallEventLogManager::Add(
   if (packages.empty()) {
     return;
   }
+  // If --arc-install-event-chrome-log-for-tests is present, write event logs to
+  // Chrome log (/var/log/chrome). LOG(ERROR) ensures that logs are written.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kArcInstallEventChromeLogForTests)) {
+    for (std::string package : packages)
+      LOG(ERROR) << "Add ARC install event: " << package << ", "
+                 << event.event_type();
+  }
+
   base::PostTaskAndReplyWithResult(
       log_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ArcLog::Add, base::Unretained(log_.get()), packages,

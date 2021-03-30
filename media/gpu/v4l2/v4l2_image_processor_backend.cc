@@ -28,6 +28,7 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 
 #define IOCTL_OR_ERROR_RETURN_VALUE(type, arg, value, type_str) \
   do {                                                          \
@@ -535,7 +536,7 @@ bool V4L2ImageProcessorBackend::TryOutputFormat(uint32_t input_pixelformat,
   if (device->Ioctl(VIDIOC_S_FMT, &format) != 0 ||
       format.fmt.pix_mp.pixelformat != input_pixelformat) {
     DVLOGF(4) << "Failed to set image processor input format: "
-              << V4L2Device::V4L2FormatToString(format);
+              << V4L2FormatToString(format);
     return false;
   }
 

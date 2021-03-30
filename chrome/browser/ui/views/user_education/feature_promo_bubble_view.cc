@@ -33,6 +33,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
@@ -46,6 +48,9 @@ constexpr base::TimeDelta kDelayDefault = base::TimeDelta::FromSeconds(10);
 // The amount of time the promo should stay onscreen after the
 // user stops hovering over it.
 constexpr base::TimeDelta kDelayShort = base::TimeDelta::FromSeconds(3);
+
+// Maximum width of the bubble. Longer strings will cause wrapping.
+constexpr int kBubbleMaxWidthDip = 340;
 
 // The insets from the bubble border to the text inside.
 constexpr gfx::Insets kBubbleContentsInsets(12, 16);
@@ -70,8 +75,10 @@ namespace views {
 
 class MdIPHBubbleButton : public MdTextButton {
  public:
+  METADATA_HEADER(MdIPHBubbleButton);
+
   MdIPHBubbleButton(PressedCallback callback,
-                    const base::string16& text,
+                    const std::u16string& text,
                     bool has_border)
       : MdTextButton(callback,
                      text,
@@ -90,6 +97,9 @@ class MdIPHBubbleButton : public MdTextButton {
     focus_ring()->SetColor(kBubbleButtonFocusRingColor);
     GetViewAccessibility().OverrideIsLeaf(true);
   }
+  MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;
+  MdIPHBubbleButton& operator=(const MdIPHBubbleButton&) = delete;
+  ~MdIPHBubbleButton() override = default;
 
   void UpdateBackgroundColor() override {
     // Prominent MD button does not have a border.
@@ -116,8 +126,10 @@ class MdIPHBubbleButton : public MdTextButton {
 
  private:
   bool has_border_;
-  DISALLOW_COPY_AND_ASSIGN(MdIPHBubbleButton);
 };
+
+BEGIN_METADATA(MdIPHBubbleButton, MdTextButton)
+END_METADATA
 
 }  // namespace views
 
@@ -130,7 +142,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     base::RepeatingClosure dismiss_callback)
     : BubbleDialogDelegateView(params.anchor_view,
                                params.arrow,
-                               views::BubbleBorder::SMALL_SHADOW),
+                               views::BubbleBorder::STANDARD_SHADOW),
       focusable_(params.focusable),
       persist_on_blur_(params.persist_on_blur),
       snoozable_(params.snoozable),
@@ -150,7 +162,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
         params.timeout_short ? *params.timeout_short : kDelayShort);
   }
 
-  const base::string16 body_text = std::move(params.body_text);
+  const std::u16string body_text = std::move(params.body_text);
 
   if (params.screenreader_text)
     accessible_name_ = std::move(*params.screenreader_text);
@@ -205,9 +217,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
   body_label->SetBackgroundColor(background_color);
   body_label->SetEnabledColor(text_color);
   body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  if (params.preferred_width.has_value())
-    body_label->SetMultiLine(true);
+  body_label->SetMultiLine(true);
 
   if (snoozable_) {
     auto* button_container = AddChildView(std::make_unique<views::View>());
@@ -220,9 +230,9 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     button_container->SetProperty(
         views::kMarginsKey, gfx::Insets(button_vertical_spacing, 0, 0, 0));
 
-    const base::string16 snooze_text =
+    const std::u16string snooze_text =
         l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
-    const base::string16 dismiss_text =
+    const std::u16string dismiss_text =
         l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
     bool dismiss_is_leading = views::PlatformStyle::kIsOkButtonLeading;
 
@@ -316,24 +326,13 @@ void FeaturePromoBubbleView::OnMouseExited(const ui::MouseEvent& event) {
     feature_promo_bubble_timeout_->OnMouseExited();
 }
 
-gfx::Rect FeaturePromoBubbleView::GetBubbleBounds() {
-  gfx::Rect bounds = BubbleDialogDelegateView::GetBubbleBounds();
-  if (!focusable_) {
-    if (base::i18n::IsRTL())
-      bounds.Offset(5, 0);
-    else
-      bounds.Offset(-5, 0);
-  }
-  return bounds;
-}
-
 ax::mojom::Role FeaturePromoBubbleView::GetAccessibleWindowRole() {
   // Since we don't have any controls for the user to interact with (we're just
   // an information bubble), override our role to kAlert.
   return ax::mojom::Role::kAlert;
 }
 
-base::string16 FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
+std::u16string FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
   return accessible_name_;
 }
 
@@ -341,9 +340,16 @@ gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {
   if (preferred_width_.has_value()) {
     return gfx::Size(preferred_width_.value(),
                      GetHeightForWidth(preferred_width_.value()));
-  } else {
-    return View::CalculatePreferredSize();
   }
+
+  gfx::Size layout_manager_preferred_size = View::CalculatePreferredSize();
+
+  // Wrap if the width is larger than |kBubbleMaxWidthDip|.
+  if (layout_manager_preferred_size.width() > kBubbleMaxWidthDip) {
+    return gfx::Size(kBubbleMaxWidthDip, GetHeightForWidth(kBubbleMaxWidthDip));
+  }
+
+  return layout_manager_preferred_size;
 }
 
 views::Button* FeaturePromoBubbleView::GetDismissButtonForTesting() const {
@@ -353,3 +359,6 @@ views::Button* FeaturePromoBubbleView::GetDismissButtonForTesting() const {
 views::Button* FeaturePromoBubbleView::GetSnoozeButtonForTesting() const {
   return snooze_button_;
 }
+
+BEGIN_METADATA(FeaturePromoBubbleView, views::BubbleDialogDelegateView)
+END_METADATA

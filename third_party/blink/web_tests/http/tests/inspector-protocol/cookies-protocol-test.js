@@ -133,6 +133,18 @@
 
     deleteAllCookies,
 
+    async function invalidCookieSourceScheme() {
+      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar10', sourceScheme: "SomeInvalidValue"});
+    },
+
+    deleteAllCookies,
+
+    async function invalidCookieSourcePort() {
+      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar10', sourcePort: -1234});
+    },
+
+    deleteAllCookies,
+
     async function secureCookieAdd() {
       await setCookie({url: 'http://127.0.0.1', secure: true, name: 'foo', value: 'bar'});
     },

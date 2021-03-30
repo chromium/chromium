@@ -892,7 +892,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
               {value: 'name', start: 0, end: 6},
               {value: new Output.EarconAction('SLIDER'), start: 0, end: 6},
               {value: 'role', start: 7, end: 13},
-              {value: 'valueForRange', start: 14, end: 15}
+              {value: 'value', start: 14, end: 15}
             ],
             o);
 
@@ -903,7 +903,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
             [
               {value: 'name', start: 0, end: 6},
               {value: 'role', start: 7, end: 25},
-              {value: 'valueForRange', start: 26, end: 27}
+              {value: 'value', start: 26, end: 27}
             ],
             o);
 
@@ -914,7 +914,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
             [
               {value: 'name', start: 0, end: 6},
               {value: 'role', start: 7, end: 12},
-              {value: 'valueForRange', start: 13, end: 14}
+              {value: 'value', start: 13, end: 14}
             ],
             o);
 
@@ -926,7 +926,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
               {value: 'name', start: 0, end: 6},
               {value: new Output.EarconAction('LISTBOX'), start: 0, end: 6},
               {value: 'role', start: 7, end: 18},
-              {value: 'valueForRange', start: 19, end: 20}
+              {value: 'value', start: 19, end: 20}
             ],
             o);
       });
@@ -1295,6 +1295,21 @@ TEST_F('ChromeVoxOutputE2ETest', 'NameOrTextContent', function() {
       });
 });
 
+TEST_F('ChromeVoxOutputE2ETest', 'AriaCurrentHint', function() {
+  const site = `
+      <div aria-current="page">Home</div>
+      <div aria-current="false">About</div>
+      `;
+  this.runWithLoadedTree(site, function(root) {
+    const currentDiv = root.firstChild;
+    assertEquals(
+        chrome.automation.AriaCurrentState.PAGE, currentDiv.ariaCurrentState);
+    const o = new Output().withSpeech(
+        cursors.Range.fromNode(currentDiv), null, 'navigate');
+    assertEquals('Home|Current page', o.speechOutputForTest.string_);
+  });
+});
+
 TEST_F('ChromeVoxOutputE2ETest', 'DelayHintVariants', function() {
   this.runWithLoadedTree(
       `
@@ -1365,9 +1380,10 @@ TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', function() {
 TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', function() {
   this.runWithLoadedTree('<input type="checkbox">', function(root) {
     const checkbox = root.firstChild.firstChild;
-    Object.defineProperty(checkbox, 'checkedStateDescription', {
-      value: 'checked state description',
-    });
+
+    Object.defineProperty(
+        checkbox, 'checkedStateDescription',
+        {get: () => 'checked state description'});
     const range = cursors.Range.fromNode(checkbox);
     const o = new Output().withoutHints().withSpeechAndBraille(
         range, null, 'navigate');
@@ -1377,6 +1393,24 @@ TEST_F('ChromeVoxOutputE2ETest', 'ARCCheckbox', function() {
           {value: new Output.EarconAction('CHECK_OFF'), start: 0, end: 0},
           {value: 'role', start: 1, end: 10},
           {value: 'checkedStateDescription', start: 11, end: 36}
+        ],
+        o);
+  });
+});
+
+TEST_F('ChromeVoxOutputE2ETest', 'ARCCustomAction', function() {
+  this.runWithLoadedTree('<p>test</p>', function(root) {
+    const actionable = root.firstChild.firstChild;
+    Object.defineProperty(actionable, 'customActions', {
+      get: () => [{id: 0, description: 'custom action description'}],
+    });
+    const range = cursors.Range.fromNode(actionable);
+    const o = new Output().withSpeechAndBraille(range, null, 'navigate');
+    checkSpeechOutput(
+        'test|Actions available. Press Search+Period to view',
+        [
+          {value: 'name', start: 0, end: 4},
+          {value: {delay: true}, start: 5, end: 51}
         ],
         o);
   });

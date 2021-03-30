@@ -26,7 +26,8 @@ BreakIterator::BreakIterator(const StringPiece16& str, BreakType break_type)
       prev_(npos),
       pos_(0) {}
 
-BreakIterator::BreakIterator(const StringPiece16& str, const string16& rules)
+BreakIterator::BreakIterator(const StringPiece16& str,
+                             const std::u16string& rules)
     : iter_(nullptr),
       string_(str),
       rules_(rules),
@@ -230,10 +231,9 @@ bool BreakIterator::Advance() {
   }
 }
 
-bool BreakIterator::SetText(const base::char16* text, const size_t length) {
+bool BreakIterator::SetText(const char16_t* text, const size_t length) {
   UErrorCode status = U_ZERO_ERROR;
-  ubrk_setText(static_cast<UBreakIterator*>(iter_),
-               text, length, &status);
+  ubrk_setText(static_cast<UBreakIterator*>(iter_), text, length, &status);
   pos_ = 0;  // implicit when ubrk_setText is done
   prev_ = npos;
   if (U_FAILURE(status)) {
@@ -296,8 +296,8 @@ bool BreakIterator::IsGraphemeBoundary(size_t position) const {
   return !!ubrk_isBoundary(iter, static_cast<int32_t>(position));
 }
 
-string16 BreakIterator::GetString() const {
-  return string16(GetStringPiece());
+std::u16string BreakIterator::GetString() const {
+  return std::u16string(GetStringPiece());
 }
 
 StringPiece16 BreakIterator::GetStringPiece() const {

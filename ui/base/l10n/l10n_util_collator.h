@@ -82,7 +82,7 @@ void SortStringsUsingMethod(const std::string& locale,
 // Compares two elements' string keys and returns true if the first element's
 // string key is less than the second element's string key. The Element must
 // have a method like the follow format to return the string key.
-// const base::string16& GetStringKey() const;
+// const std::u16string& GetStringKey() const;
 // This uses the locale specified in the constructor.
 template <class Element>
 class StringComparator {
@@ -92,10 +92,10 @@ class StringComparator {
 
   // Returns true if lhs precedes rhs.
   bool operator()(const Element& lhs, const Element& rhs) const {
-    const base::string16& lhs_string_key = lhs.GetStringKey();
-    const base::string16& rhs_string_key = rhs.GetStringKey();
+    const std::u16string& lhs_string_key = lhs.GetStringKey();
+    const std::u16string& rhs_string_key = rhs.GetStringKey();
 
-    return StringComparator<base::string16>(collator_)(lhs_string_key,
+    return StringComparator<std::u16string>(collator_)(lhs_string_key,
                                                        rhs_string_key);
   }
 
@@ -103,12 +103,12 @@ class StringComparator {
   icu::Collator* collator_;
 };
 
-// Specialization of operator() method for base::string16 version.
+// Specialization of operator() method for std::u16string version.
 template <>
 COMPONENT_EXPORT(UI_BASE)
-inline bool StringComparator<base::string16>::operator()(
-    const base::string16& lhs,
-    const base::string16& rhs) const {
+inline bool StringComparator<std::u16string>::operator()(
+    const std::u16string& lhs,
+    const std::u16string& rhs) const {
   // If we can not get collator instance for specified locale, just do simple
   // string compare.
   if (!collator_)

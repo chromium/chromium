@@ -20,14 +20,20 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
 class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(NetworkProfileBubbleView);
   NetworkProfileBubbleView(views::View* anchor,
                            content::PageNavigator* navigator,
                            Profile* profile);
+  NetworkProfileBubbleView(const NetworkProfileBubbleView&) = delete;
+  NetworkProfileBubbleView& operator=(const NetworkProfileBubbleView&) = delete;
+
  private:
   ~NetworkProfileBubbleView() override;
 
@@ -40,8 +46,6 @@ class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
   // Used for loading pages.
   content::PageNavigator* navigator_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkProfileBubbleView);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +109,9 @@ void NetworkProfileBubbleView::LinkClicked(const ui::Event& event) {
   prefs->SetInteger(prefs::kNetworkProfileWarningsLeft, ++left_warnings);
   GetWidget()->Close();
 }
+
+BEGIN_METADATA(NetworkProfileBubbleView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace
 

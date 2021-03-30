@@ -31,7 +31,6 @@
 #include "base/scoped_native_library.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/values.h"
@@ -101,7 +100,7 @@ void ParsePolicy(const RegistryDict* gpo_dict,
 // the name is longer than _MAX_PATH. So this helper function takes care of the
 // retry with the required size.
 bool GetName(const base::RepeatingCallback<BOOL(LPWSTR, LPDWORD)>& get_name,
-             base::string16* name) {
+             std::wstring* name) {
   DCHECK(name);
   DWORD size = _MAX_PATH;
   if (!get_name.Run(base::WriteInto(name, size), &size)) {
@@ -188,11 +187,11 @@ void CollectEnterpriseUMAs() {
   base::UmaHistogramBoolean("EnterpriseCheck.IsEnterpriseUser",
                             base::IsMachineExternallyManaged());
 
-  base::string16 machine_name;
+  std::wstring machine_name;
   if (GetName(
           base::BindRepeating(&::GetComputerNameEx, ::ComputerNameDnsHostname),
           &machine_name)) {
-    base::string16 user_name;
+    std::wstring user_name;
     if (GetName(base::BindRepeating(&GetUserNameExBool, ::NameSamCompatible),
                 &user_name)) {
       // A local user has the machine name in its sam compatible name, e.g.,
@@ -205,7 +204,7 @@ void CollectEnterpriseUMAs() {
               user_name[machine_name.size()] == L'\\');
     }
 
-    base::string16 full_machine_name;
+    std::wstring full_machine_name;
     if (GetName(base::BindRepeating(&::GetComputerNameEx,
                                     ::ComputerNameDnsFullyQualified),
                 &full_machine_name)) {
@@ -223,8 +222,8 @@ void CollectEnterpriseUMAs() {
 
 PolicyLoaderWin::PolicyLoaderWin(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const base::string16& chrome_policy_key)
-    : AsyncPolicyLoader(task_runner),
+    const std::wstring& chrome_policy_key)
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
       is_initialized_(false),
       chrome_policy_key_(chrome_policy_key),
       user_policy_changed_event_(
@@ -259,7 +258,7 @@ PolicyLoaderWin::~PolicyLoaderWin() {
 // static
 std::unique_ptr<PolicyLoaderWin> PolicyLoaderWin::Create(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const base::string16& chrome_policy_key) {
+    const std::wstring& chrome_policy_key) {
   return std::make_unique<PolicyLoaderWin>(task_runner, chrome_policy_key);
 }
 

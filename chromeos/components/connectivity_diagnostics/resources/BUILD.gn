@@ -20,8 +20,9 @@ js_library("connectivity_diagnostics") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics_mojo.m",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_health_summary.m",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_health_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_health_summary.m",
+    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 
@@ -34,7 +35,8 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
     "index.html",
-    "app_icon_128.png",
+    "app_icon_192.png",
+    "app_icon_256.png",
   ]
   grd_prefix = "connectivity_diagnostics"
   out_grd = "$target_gen_dir/connectivity_diagnostics_resources.grd"

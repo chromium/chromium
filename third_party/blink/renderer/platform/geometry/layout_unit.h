@@ -88,6 +88,17 @@ ALWAYS_INLINE int GetMinSaturatedSetResultForTesting() {
 class PLATFORM_EXPORT LayoutUnit;
 constexpr bool operator<(const LayoutUnit&, const LayoutUnit&);
 
+// kIndefiniteSize is a special value used within layout code. It is typical
+// within layout to have sizes which are only allowed to be non-negative or
+// "indefinite". We use the value of "-1" to represent these indefinite values.
+//
+// It is common to clamp these indefinite values to zero.
+// |LayoutUnit::ClampIndefiniteToZero| provides this functionality, and
+// additionally DCHECKs that it isn't some other negative value.
+//
+// TODO(wangxianzhu): Make it a constexpr when LayoutUnit allows it.
+#define kIndefiniteSize LayoutUnit(-1)
+
 class LayoutUnit {
   DISALLOW_NEW();
 
@@ -206,6 +217,15 @@ class LayoutUnit {
 
   LayoutUnit ClampPositiveToZero() const {
     return value_ > 0 ? LayoutUnit() : *this;
+  }
+
+  LayoutUnit ClampIndefiniteToZero() const {
+    // We compare to |kFixedPointDenominator| here instead of |kIndefiniteSize|
+    // as the operator== for LayoutUnit is inlined below.
+    if (value_ == -kFixedPointDenominator)
+      return LayoutUnit();
+    DCHECK_GE(value_, 0);
+    return *this;
   }
 
   constexpr bool HasFraction() const {
@@ -748,6 +768,10 @@ inline int RoundToInt(LayoutUnit value) {
 
 inline int FloorToInt(LayoutUnit value) {
   return value.Floor();
+}
+
+inline int CeilToInt(LayoutUnit value) {
+  return value.Ceil();
 }
 
 inline LayoutUnit AbsoluteValue(const LayoutUnit& value) {

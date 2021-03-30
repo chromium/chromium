@@ -1,0 +1,7 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+chromeos/dbus",
+  "+testing",
+]

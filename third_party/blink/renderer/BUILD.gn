@@ -48,7 +48,6 @@ config("inside_blink") {
       "-Wno-sign-conversion",
       "-Wno-implicit-float-conversion",
       "-Wno-implicit-int-conversion",
-      "-Wno-shorten-64-to-32",
     ]
 
     if (!is_chromeos_ash ||
@@ -83,6 +82,8 @@ config("blink_pch") {
       cflags = [ "/FI$precompiled_header" ]
     } else if (is_mac) {
       precompiled_source = "//third_party/blink/renderer/build/mac/prefix.h"
+    } else if (is_linux) {
+      precompiled_source = "//third_party/blink/renderer/build/linux/prefix.h"
     }
   }
 }

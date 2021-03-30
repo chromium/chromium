@@ -2,6 +2,65 @@
 
 [TOC]
 
+## 2021 Q1 Objectives
+
+* **performance.measureMemory**: ship the API.
+* **Single Page Apps**:
+  * Publish an explainer about SPA issues.
+  * Determine whether User Timing hints conventions are still useful.
+* **Abandonment**:
+  * Gather concrete feedback form analytics providers and other potential users of this API.
+  * Improve confidence on the abandonment rates computed by implementing a renderer-side flushing.
+  * Update analysis on rates when the above fix has reached Chrome Stable.
+* **Smoothness**:
+  * Continue refining the definition of dropped frames.
+  * Move proposal to WICG.
+* **Back-forward cache**:
+  * Expand scope to include FCP and FID in the values reported after back-forward navigations.
+  * Investigate backwards compatibility of adding new entries and propose an API shaped based on the outcome.
+* **Responsiveness**:
+  * Investigate correctness of existing internal metrics and implement fixes as needed.
+  * Further investigate scrolling performance and how it should be integrated with metric.
+  * Define user interactions that we care about for this API.
+  * Create a manual test corpus to test ideas about the 'end time' of a user interaction.
+* **First Contentful Paint**: improve implementation to pass more
+    [tests](https://wpt.fyi/results/paint-timing?label=master&label=experimental).
+* **Longtasks**: add system time, including garbage collection
+  ([bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1091754)).
+    * Present proposal to security team, and begin socializing the proposal externally.
+* **A/B testing**: organize workshop on client-side A/B testing.
+* **JS Sampling Profiler**:
+  * Complete the GC integration work.
+  * Ship the API.
+
+## 2020 Q4 Progress
+
+### New web performance APIs
+
+* **performance.measureMemory**: added support for cross-origin iframes in the same process and sent
+  [Intent to Ship](https://groups.google.com/a/chromium.org/g/blink-dev/c/RExJ9a3SmQw).
+* **Page abandonment**: made some data available publicly and socialized it in a
+  [blogpost](https://calendar.perfplanet.com/2020/abandonment/).
+* **JS Sampling Profiler**:
+  * Implemented the API so it requires COOP/COEP and gated it behind Document Policy.
+  * Finished a prototype of GC integration for the V8 sampling profiler (which will help reduce profiler startup time).
+  * Landed some initial support for code object refcounting.
+* **Smoothness**: published a proposal around dropped frames and presented it at TPAC.
+* **Back-forward cache**: determined that it is backwards compatible to expose a PerformanceNavigationTiming
+  entry for back-forward navigations.
+* **Responsiveness**:
+  * Investigated some internal metrics, but found some metric quality issues that need to be investigated.
+  * Started brainstorm on capturing asynchronous work as well as which user interactions to capture.
+  * Did investigation on scrolling and determined that in most cases pages do not seem to suffer from poor
+    scrolling performance.
+
+### Existing web performance API improvements
+
+* **Largest Contentful Paint**: include removed nodes ([bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1045640))
+  and ignored images occupying the full viewport ([bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1133883)).
+* **Cumulative Layout Shift**: implemented various fixes, see
+  [changelog](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/metrics_changelog/README.md).
+
 ## 2020 Q4 Objectives
 
 ### New web performance APIs

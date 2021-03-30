@@ -1,0 +1,17 @@
+Tests that elements tab updates after a bf-cache navigation.
+
+  <!DOCTYPE html>
+- <html>
+      <head></head>
+    - <body>
+          <div>Page 2</div>
+      </body>
+  </html>
+  <!DOCTYPE html>
+- <html>
+      <head></head>
+    - <body>
+          <div>Page 1</div>
+      </body>
+  </html>
+

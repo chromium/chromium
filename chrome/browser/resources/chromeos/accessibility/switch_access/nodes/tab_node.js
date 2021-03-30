@@ -54,7 +54,7 @@ export class TabNode extends BasicNode {
     if (action !== SwitchAccessMenuAction.SELECT) {
       return SAConstants.ActionResponse.NO_ACTION_TAKEN;
     }
-    Navigator.instance.enterGroup();
+    Navigator.byItem.enterGroup();
     return SAConstants.ActionResponse.CLOSE_MENU;
   }
 

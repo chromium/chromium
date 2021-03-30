@@ -36,6 +36,21 @@ public interface HelpAndFeedbackLauncher {
      * @param profile the current profile.
      * @param url the current URL. May be null.
      * @param categoryTag The category that this feedback report falls under.
+     * @param screenshotMode The kind of screenshot to include with the feedback.
+     * @param feedbackContext The context that describes the current feature being used.
+     */
+    void showFeedback(final Activity activity, Profile profile, @Nullable String url,
+            @Nullable final String categoryTag, int screenshotMode,
+            @Nullable final String feedbackContext);
+
+    /**
+     * Starts an activity prompting the user to enter feedback.
+     *
+     * @param activity The activity to use for starting the feedback activity and to take a
+     *                 screenshot of.
+     * @param profile the current profile.
+     * @param url the current URL. May be null.
+     * @param categoryTag The category that this feedback report falls under.
      */
     void showFeedback(final Activity activity, Profile profile, @Nullable String url,
             @Nullable final String categoryTag);
@@ -48,9 +63,7 @@ public interface HelpAndFeedbackLauncher {
      * @param profile the current profile.
      * @param categoryTag The category that this feedback report falls under.
      * @param feedContext Feed specific parameters (url, title, etc) to include with feedback.
-     * @param feedbackContext The context that describes the current feature being used.
      */
     void showFeedback(final Activity activity, Profile profile, @Nullable String url,
-            @Nullable final String categoryTag, @Nullable final Map<String, String> feedContext,
-            @Nullable final String feedbackContext);
+            @Nullable final String categoryTag, @Nullable final Map<String, String> feedContext);
 }

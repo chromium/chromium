@@ -8,6 +8,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/favicon/ios/web_favicon_driver.h"
 #include "components/ntp_snippets/category.h"
 #include "components/ntp_snippets/category_info.h"
 #include "components/ntp_snippets/content_suggestion.h"
@@ -21,13 +22,14 @@
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_learn_more_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_category_wrapper.h"
@@ -45,11 +47,15 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #include "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
+#include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #include "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -103,6 +109,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Section Info for the logo and omnibox section.
 @property(nonatomic, strong)
     ContentSuggestionsSectionInformation* logoSectionInfo;
+// Section Info for the "Return to Recent Tab" section.
+@property(nonatomic, strong)
+    ContentSuggestionsSectionInformation* returnToRecentTabSectionInfo;
+// Item for the "Return to Recent Tab" tile.
+@property(nonatomic, strong)
+    ContentSuggestionsReturnToRecentTabItem* returnToRecentTabItem;
 // Section Info for the What's New promo section.
 @property(nonatomic, strong)
     ContentSuggestionsSectionInformation* promoSectionInfo;
@@ -138,6 +150,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 @property(nonatomic, strong) ContentSuggestionsDiscoverItem* discoverItem;
 // Number of unread items in reading list model.
 @property(nonatomic, assign) NSInteger readingListUnreadCount;
+// YES if the Return to Recent Tab tile is being shown.
+@property(nonatomic, assign, getter=mostRecentTabStartSurfaceTileIsShowing)
+    BOOL showMostRecentTabStartSurfaceTile;
+// Whether the incognito mode is available.
+@property(nonatomic, assign) BOOL incognitoAvailable;
 
 @end
 
@@ -160,12 +177,13 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider {
   self = [super init];
   if (self) {
+    _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
     _contentSuggestionsEnabled =
         prefService->FindPreference(prefs::kArticlesForYouEnabled);
-    // TODO(crbug.com/1085419): Stop observing this Service once DiscoverFeed is
-    // launched.
-    _suggestionBridge =
-        std::make_unique<ContentSuggestionsServiceBridge>(self, contentService);
+    if (!IsDiscoverFeedEnabled()) {
+      _suggestionBridge = std::make_unique<ContentSuggestionsServiceBridge>(
+          self, contentService);
+    }
     _contentService = contentService;
     _sectionInformationByCategory = [[NSMutableDictionary alloc] init];
 
@@ -262,6 +280,60 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   return kMaxNumMostVisitedTiles;
 }
 
+- (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
+                                     timeLabel:(NSString*)timeLabel {
+  DCHECK(IsStartSurfaceEnabled());
+  self.returnToRecentTabSectionInfo = ReturnToRecentTabSectionInformation();
+  if (!self.returnToRecentTabItem) {
+    self.returnToRecentTabItem =
+        [[ContentSuggestionsReturnToRecentTabItem alloc] initWithType:0];
+  }
+
+  // Retrieve favicon associated with the page.
+  favicon::WebFaviconDriver* driver =
+      favicon::WebFaviconDriver::FromWebState(webState);
+  if (driver->FaviconIsValid()) {
+    gfx::Image favicon = driver->GetFavicon();
+    if (!favicon.IsEmpty()) {
+      self.returnToRecentTabItem.icon = favicon.ToUIImage();
+    }
+  }
+  if (!self.returnToRecentTabItem.icon) {
+    driver->FetchFavicon(webState->GetLastCommittedURL(), false);
+  }
+
+  self.returnToRecentTabItem.title =
+      l10n_util::GetNSString(IDS_IOS_RETURN_TO_RECENT_TAB_TITLE);
+  NSString* subtitle = [NSString
+      stringWithFormat:@"%@%@", base::SysUTF16ToNSString(webState->GetTitle()),
+                       timeLabel];
+  self.returnToRecentTabItem.subtitle = subtitle;
+  self.showMostRecentTabStartSurfaceTile = YES;
+
+  // TODO(crbug.com/1187303): Create insert section to add a section.
+  [self.dataSink reloadAllData];
+}
+
+- (void)hideRecentTabTile {
+  DCHECK(IsStartSurfaceEnabled());
+  self.showMostRecentTabStartSurfaceTile = NO;
+  [self.dataSink clearSection:self.returnToRecentTabSectionInfo];
+}
+
+#pragma mark - StartSurfaceRecentTabObserving
+
+- (void)mostRecentTabWasRemoved:(web::WebState*)web_state {
+  DCHECK(IsStartSurfaceEnabled());
+  [self hideRecentTabTile];
+}
+
+- (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image {
+  if (self.returnToRecentTabItem) {
+    self.returnToRecentTabItem.icon = image;
+    [self.dataSink itemHasChanged:self.returnToRecentTabItem];
+  }
+}
+
 #pragma mark - ContentSuggestionsDataSource
 
 - (NSArray<ContentSuggestionsSectionInformation*>*)sectionsInfo {
@@ -269,6 +341,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       [NSMutableArray array];
 
   [sectionsInfo addObject:self.logoSectionInfo];
+
+  if (self.showMostRecentTabStartSurfaceTile) {
+    DCHECK(IsStartSurfaceEnabled());
+    [sectionsInfo addObject:self.returnToRecentTabSectionInfo];
+  }
 
   if (_notificationPromo->CanShow()) {
     [sectionsInfo addObject:self.promoSectionInfo];
@@ -322,9 +399,14 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       item.text = base::SysUTF8ToNSString(_notificationPromo->promo_text());
       [convertedSuggestions addObject:item];
     }
+  } else if (sectionInfo == self.returnToRecentTabSectionInfo) {
+    DCHECK(IsStartSurfaceEnabled());
+    [convertedSuggestions addObject:self.returnToRecentTabItem];
   } else if (sectionInfo == self.mostVisitedSectionInfo) {
     [convertedSuggestions addObjectsFromArray:self.mostVisitedItems];
-    [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
+    if (!ShouldHideShortcutsForStartSurface()) {
+      [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
+    }
   } else if (sectionInfo == self.learnMoreSectionInfo) {
     [convertedSuggestions addObject:self.learnMoreItem];
   } else if (sectionInfo == self.discoverSectionInfo) {
@@ -426,7 +508,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (UIView*)headerViewForWidth:(CGFloat)width {
-  return [self.headerProvider headerForWidth:width];
+  return [self.headerProvider
+      headerForWidth:width
+      safeAreaInsets:[self.discoverFeedDelegate safeAreaInsetsForDiscoverFeed]];
 }
 
 - (void)toggleArticlesVisibility {
@@ -445,10 +529,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (void)contentSuggestionsService:
             (ntp_snippets::ContentSuggestionsService*)suggestionsService
          newSuggestionsInCategory:(ntp_snippets::Category)category {
-  // Ignore newSuggestionsInCategory if the DiscoverFeed is enabled, if not
-  // these might cause some unecessary section updates and crashes.
-  if (IsDiscoverFeedEnabled())
-    return;
+  DCHECK(!IsDiscoverFeedEnabled());
 
   ContentSuggestionsCategoryWrapper* wrapper =
       [ContentSuggestionsCategoryWrapper wrapperWithCategory:category];
@@ -472,10 +553,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
             (ntp_snippets::ContentSuggestionsService*)suggestionsService
                          category:(ntp_snippets::Category)category
                   statusChangedTo:(ntp_snippets::CategoryStatus)status {
-  // Ignore all ContentSuggestionsService if the DiscoverFeed is enabled, if not
-  // these might cause some unecessary section updates and crashes.
-  if (IsDiscoverFeedEnabled())
-    return;
+  DCHECK(!IsDiscoverFeedEnabled());
 
   ContentSuggestionsCategoryWrapper* wrapper =
       [[ContentSuggestionsCategoryWrapper alloc] initWithCategory:category];
@@ -508,6 +586,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
             (ntp_snippets::ContentSuggestionsService*)suggestionsService
             suggestionInvalidated:
                 (const ntp_snippets::ContentSuggestion::ID&)suggestion_id {
+  DCHECK(!IsDiscoverFeedEnabled());
   ContentSuggestionsCategoryWrapper* wrapper =
       [[ContentSuggestionsCategoryWrapper alloc]
           initWithCategory:suggestion_id.category()];
@@ -521,6 +600,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)contentSuggestionsServiceFullRefreshRequired:
     (ntp_snippets::ContentSuggestionsService*)suggestionsService {
+  DCHECK(!IsDiscoverFeedEnabled());
   // The UICollectionView -reloadData method is a no-op if it is called at the
   // same time as other collection updates. This full refresh command can come
   // at the same time as other collection update commands. To make sure that it
@@ -535,6 +615,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)contentSuggestionsServiceShutdown:
     (ntp_snippets::ContentSuggestionsService*)suggestionsService {
+  DCHECK(!IsDiscoverFeedEnabled());
   // Update dataSink.
 }
 
@@ -579,6 +660,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     ContentSuggestionsMostVisitedItem* item =
         ConvertNTPTile(tile, self.mostVisitedSectionInfo);
     item.commandHandler = self.commandHandler;
+    item.incognitoAvailable = self.incognitoAvailable;
     [self.faviconMediator fetchFaviconForMostVisited:item];
     [self.freshMostVisitedItems addObject:item];
   }
@@ -720,7 +802,17 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
   self.mostVisitedItems = self.freshMostVisitedItems;
-  [self.dataSink reloadSection:self.mostVisitedSectionInfo];
+  if (IsDiscoverFeedEnabled()) {
+    // All data needs to be reloaded in order to force a re-layout, this is
+    // cheaper since the Feed is not part of this ViewController when Discover
+    // is enabled.
+    [self reloadAllData];
+    // TODO(crbug.com/1170995): Potentially remove once ContentSuggestions can
+    // be added as part of a header.
+    [self.discoverFeedDelegate contentSuggestionsWasUpdated];
+  } else {
+    [self.dataSink reloadSection:self.mostVisitedSectionInfo];
+  }
 }
 
 // ntp_snippets doesn't differentiate between disabled vs collapsed, so if
@@ -799,7 +891,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)setDiscoverFeed:(UIViewController*)discoverFeed {
-  DCHECK(_discoverFeed != discoverFeed);
   _discoverFeed = discoverFeed;
   _discoverItem.discoverFeed = _discoverFeed;
   // The UICollectionView -reloadData method is a no-op if it is called at the
@@ -817,7 +908,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kArticlesForYouEnabled) {
+  if (preferenceName == prefs::kArticlesForYouEnabled && !IsRefactoredNTP()) {
     [self reloadAllData];
   }
 }

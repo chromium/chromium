@@ -2,6 +2,13 @@
 
 [TOC]
 
+## Upcoming Changes
+
+Chrome is planning to transition to a four week release cycle in Q3 2021; you
+can read more about the new release cycle [here](./release_cycle_new.md).  The
+information below is still relevant until the new cycle is live, at which point
+this page will be replaced by the content at the link above.
+
 ## Overview
 
 Chrome pushes a new stable version to the public every 6 weeks while
@@ -80,3 +87,4 @@ punting any detected production issues to the next release.
 ## More Info
 
 For more information, see these [guidelines for considering branch dates in project planning](../release_branch_guidance.md).
+

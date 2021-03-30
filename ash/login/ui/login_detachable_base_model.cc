@@ -12,7 +12,7 @@
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shell.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace ash {
 
@@ -24,7 +24,7 @@ class LoginDetachableBaseModelImpl : public LoginDetachableBaseModel,
   explicit LoginDetachableBaseModelImpl(
       DetachableBaseHandler* detachable_base_handler)
       : detachable_base_handler_(detachable_base_handler) {
-    detachable_base_observer_.Add(detachable_base_handler);
+    detachable_base_observation_.Observe(detachable_base_handler);
   }
 
   ~LoginDetachableBaseModelImpl() override = default;
@@ -52,8 +52,8 @@ class LoginDetachableBaseModelImpl : public LoginDetachableBaseModel,
 
  private:
   DetachableBaseHandler* detachable_base_handler_;
-  ScopedObserver<DetachableBaseHandler, DetachableBaseObserver>
-      detachable_base_observer_{this};
+  base::ScopedObservation<DetachableBaseHandler, DetachableBaseObserver>
+      detachable_base_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoginDetachableBaseModelImpl);
 };

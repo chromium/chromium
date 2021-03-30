@@ -18,10 +18,6 @@ AXValidationMessage::AXValidationMessage(AXObjectCacheImpl& ax_object_cache)
 
 AXValidationMessage::~AXValidationMessage() {}
 
-AXObject* AXValidationMessage::ComputeParent() const {
-  return AXObjectCache().Root();
-}
-
 bool AXValidationMessage::ComputeAccessibilityIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   return false;

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/dcheck_is_on.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -67,6 +68,10 @@ class BASE_EXPORT JavaHandlerThread {
   // Called from this thread.
   ScopedJavaLocalRef<jthrowable> GetUncaughtExceptionIfAny();
 
+  // Returns the thread ID.  Should not be called before the first Start*()
+  // call. This method is thread-safe.
+  PlatformThreadId GetThreadId() const;
+
  protected:
   // Struct exists so JavaHandlerThread destructor can intentionally leak in an
   // abort scenario.
@@ -99,7 +104,11 @@ class BASE_EXPORT JavaHandlerThread {
   void QuitThreadSafely();
 
   const char* name_;
+  base::PlatformThreadId thread_id_{};
   ScopedJavaGlobalRef<jobject> java_thread_;
+#if DCHECK_IS_ON()
+  bool initialized_ = false;
+#endif
 };
 
 }  // namespace android

@@ -57,21 +57,19 @@ typedef storage::FileSystemOperation::FileEntryList FileEntryList;
 namespace {
 
 template <typename T>
-void SetValueAndCallClosure(const base::Closure& closure,
-                            T* arg_out,
-                            T arg) {
+void SetValueAndCallClosure(base::OnceClosure closure, T* arg_out, T arg) {
   *arg_out = std::forward<T>(arg);
-  closure.Run();
+  std::move(closure).Run();
 }
 
-void SetSyncStatusAndUrl(const base::Closure& closure,
+void SetSyncStatusAndUrl(base::OnceClosure closure,
                          SyncStatusCode* status_out,
                          storage::FileSystemURL* url_out,
                          SyncStatusCode status,
                          const storage::FileSystemURL& url) {
   *status_out = status;
   *url_out = url;
-  closure.Run();
+  std::move(closure).Run();
 }
 
 }  // namespace
@@ -229,8 +227,8 @@ class DriveBackendSyncTest : public testing::Test,
       base::RunLoop run_loop;
       local_sync_service_->MaybeInitializeFileSystemContext(
           origin, file_system->file_system_context(),
-          base::Bind(&SetValueAndCallClosure<SyncStatusCode>,
-                     run_loop.QuitClosure(), &status));
+          base::BindOnce(&SetValueAndCallClosure<SyncStatusCode>,
+                         run_loop.QuitClosure(), &status));
       run_loop.Run();
       EXPECT_EQ(SYNC_STATUS_OK, status);
 
@@ -244,9 +242,8 @@ class DriveBackendSyncTest : public testing::Test,
     SyncStatusCode status = SYNC_STATUS_UNKNOWN;
     base::RunLoop run_loop;
     remote_sync_service_->RegisterOrigin(
-        origin,
-        base::Bind(&SetValueAndCallClosure<SyncStatusCode>,
-                   run_loop.QuitClosure(), &status));
+        origin, base::BindOnce(&SetValueAndCallClosure<SyncStatusCode>,
+                               run_loop.QuitClosure(), &status));
     run_loop.Run();
     return status;
   }
@@ -294,7 +291,7 @@ class DriveBackendSyncTest : public testing::Test,
     SyncStatusCode status = SYNC_STATUS_UNKNOWN;
     storage::FileSystemURL url;
     base::RunLoop run_loop;
-    local_sync_service_->ProcessLocalChange(base::Bind(
+    local_sync_service_->ProcessLocalChange(base::BindOnce(
         &SetSyncStatusAndUrl, run_loop.QuitClosure(), &status, &url));
     run_loop.Run();
     return status;
@@ -304,7 +301,7 @@ class DriveBackendSyncTest : public testing::Test,
     SyncStatusCode status = SYNC_STATUS_UNKNOWN;
     storage::FileSystemURL url;
     base::RunLoop run_loop;
-    remote_sync_service_->ProcessRemoteChange(base::Bind(
+    remote_sync_service_->ProcessRemoteChange(base::BindOnce(
         &SetSyncStatusAndUrl, run_loop.QuitClosure(), &status, &url));
     run_loop.Run();
     return status;

@@ -52,7 +52,7 @@
       </settings-checkbox>
     </div>
     <cr-expand-button
-        alt="[[showItemsLinkLabel_]]"
+        aria-label="[[showItemsLinkLabel_]]"
         class="cr-row"
         expanded="{{itemsToRemoveSectionExpanded_}}"
         hidden="[[!showItemsToRemove_]]"
@@ -74,13 +74,6 @@
           title="$i18n{chromeCleanupDetailsRegistryEntries}"
           items-to-show="[[
               getListEntriesFromStrings_(scannerResults_.registryKeys)]]">
-      </items-to-remove-list>
-      <items-to-remove-list
-          id="extensions-list"
-          hidden="[[!hasExtensionsToShow_]]"
-          title="$i18n{chromeCleanupDetailsExtensions}"
-          items-to-show="[[
-              getListEntriesFromStrings_(scannerResults_.extensions)]]">
       </items-to-remove-list>
       <div class="cr-row continuation">
         <div class="secondary">

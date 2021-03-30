@@ -64,7 +64,7 @@ class ProfileItem : public PaymentRequestItemList::Item {
  private:
   // PaymentRequestItemList::Item:
   std::unique_ptr<views::View> CreateContentView(
-      base::string16* accessible_content) override {
+      std::u16string* accessible_content) override {
     DCHECK(profile_);
     DCHECK(accessible_content);
 
@@ -77,7 +77,7 @@ class ProfileItem : public PaymentRequestItemList::Item {
     }
   }
 
-  base::string16 GetNameForDataType() override {
+  std::u16string GetNameForDataType() override {
     return controller_->GetSheetTitle();
   }
 
@@ -85,12 +85,12 @@ class ProfileItem : public PaymentRequestItemList::Item {
     // In order to be selectable, a profile entry needs to be enabled, and the
     // profile valid according to the controller. If either condition is false,
     // PerformSelectionFallback() is called.
-    return clickable() && controller_->IsValidProfile(*profile_);
+    return GetClickable() && controller_->IsValidProfile(*profile_);
   }
 
   void PerformSelectionFallback() override {
     // If enabled, the editor is opened to complete the invalid profile.
-    if (clickable())
+    if (GetClickable())
       controller_->ShowEditor(profile_);
   }
 
@@ -126,7 +126,7 @@ class ShippingProfileViewController : public ProfileListViewController,
   // ProfileListViewController:
   std::unique_ptr<views::View> GetLabel(
       autofill::AutofillProfile* profile,
-      base::string16* accessible_content) override {
+      std::u16string* accessible_content) override {
     return GetShippingAddressLabelWithMissingInfo(
         AddressStyleType::DETAILED, state()->GetApplicationLocale(), *profile,
         *(state()->profile_comparator()), accessible_content,
@@ -182,12 +182,12 @@ class ShippingProfileViewController : public ProfileListViewController,
         !spec()->selected_shipping_option_error().empty());
   }
 
-  base::string16 GetSheetTitle() override {
+  std::u16string GetSheetTitle() override {
     return spec() ? GetShippingAddressSectionString(spec()->shipping_type())
-                  : base::string16();
+                  : std::u16string();
   }
 
-  base::string16 GetSecondaryButtonLabel() override {
+  std::u16string GetSecondaryButtonLabel() override {
     return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_ADDRESS);
   }
 
@@ -245,7 +245,7 @@ class ContactProfileViewController : public ProfileListViewController {
   // ProfileListViewController:
   std::unique_ptr<views::View> GetLabel(
       autofill::AutofillProfile* profile,
-      base::string16* accessible_content) override {
+      std::u16string* accessible_content) override {
     DCHECK(profile);
     return GetContactInfoLabel(
         AddressStyleType::DETAILED, state()->GetApplicationLocale(), *profile,
@@ -288,12 +288,12 @@ class ContactProfileViewController : public ProfileListViewController {
     return DialogViewID::CONTACT_INFO_SHEET_LIST_VIEW;
   }
 
-  base::string16 GetSheetTitle() override {
+  std::u16string GetSheetTitle() override {
     return l10n_util::GetStringUTF16(
         IDS_PAYMENT_REQUEST_CONTACT_INFO_SECTION_NAME);
   }
 
-  base::string16 GetSecondaryButtonLabel() override {
+  std::u16string GetSecondaryButtonLabel() override {
     return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CONTACT);
   }
 
@@ -360,7 +360,7 @@ bool ProfileListViewController::ShouldShowPrimaryButton() {
   return false;
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 ProfileListViewController::GetSecondaryButtonCallback() {
   return base::BindRepeating(&ProfileListViewController::ShowEditor,
                              base::Unretained(this), nullptr);

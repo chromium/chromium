@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests NetworkResourcesData logic for XHR content replacement.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

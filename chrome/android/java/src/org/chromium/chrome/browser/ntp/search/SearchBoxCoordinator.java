@@ -13,7 +13,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -25,6 +28,8 @@ public class SearchBoxCoordinator {
     private final PropertyModel mModel;
     private final ViewGroup mView;
     private final SearchBoxMediator mMediator;
+    private boolean mIsIncognito;
+    private WindowAndroid mWindowAndroid;
 
     /** Constructor. */
     public SearchBoxCoordinator(Context context, ViewGroup parent) {
@@ -33,8 +38,11 @@ public class SearchBoxCoordinator {
         mMediator = new SearchBoxMediator(context, mModel, mView);
     }
 
-    public void initialize(ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+    public void initialize(ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            boolean isIncognito, WindowAndroid windowAndroid) {
         mMediator.initialize(activityLifecycleDispatcher);
+        mIsIncognito = isIncognito;
+        mWindowAndroid = windowAndroid;
     }
 
     public View getView() {
@@ -85,6 +93,14 @@ public class SearchBoxCoordinator {
         mMediator.addVoiceSearchButtonClickListener(listener);
     }
 
+    public void setLensButtonVisibility(boolean visible) {
+        mModel.set(SearchBoxProperties.LENS_VISIBILITY, visible);
+    }
+
+    public void addLensButtonClickListener(OnClickListener listener) {
+        mMediator.addLensButtonClickListener(listener);
+    }
+
     public void setChipText(String chipText) {
         mMediator.setChipText(chipText);
     }
@@ -96,5 +112,18 @@ public class SearchBoxCoordinator {
     public boolean isTextChangeFromTiles() {
         Pair<String, Boolean> searchText = mModel.get(SearchBoxProperties.SEARCH_TEXT);
         return searchText == null ? false : searchText.second;
+    }
+
+    public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {
+        return mMediator.isLensEnabled(
+                lensEntryPoint, mIsIncognito, DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
+    }
+
+    public void startLens(@LensEntryPoint int lensEntryPoint) {
+        mMediator.startLens(lensEntryPoint, mWindowAndroid, mIsIncognito);
+    }
+
+    public void setIncognitoMode(boolean isIncognito) {
+        mIsIncognito = isIncognito;
     }
 }

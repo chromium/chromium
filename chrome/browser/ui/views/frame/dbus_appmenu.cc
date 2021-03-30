@@ -33,8 +33,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/dbus_appmenu_registrar.h"
 #include "chrome/grit/generated_resources.h"
@@ -193,7 +193,7 @@ struct DbusAppmenu::HistoryItem {
   HistoryItem() : session_id(SessionID::InvalidValue()) {}
 
   // The title for the menu item.
-  base::string16 title;
+  std::u16string title;
   // The URL that will be navigated to if the user selects this item.
   GURL url;
 
@@ -344,7 +344,7 @@ std::unique_ptr<DbusAppmenu::HistoryItem> DbusAppmenu::HistoryItemForTab(
 void DbusAppmenu::AddHistoryItemToMenu(std::unique_ptr<HistoryItem> item,
                                        ui::SimpleMenuModel* menu,
                                        int index) {
-  base::string16 title = item->title;
+  std::u16string title = item->title;
   std::string url_string = item->url.possibly_invalid_spec();
 
   if (title.empty())
@@ -399,7 +399,7 @@ void DbusAppmenu::RebuildProfilesMenu() {
   active_profile_index_ = -1;
   for (size_t i = 0; i < avatar_menu_->GetNumberOfItems(); ++i) {
     const AvatarMenu::Item& item = avatar_menu_->GetItemAt(i);
-    base::string16 title = item.name;
+    std::u16string title = item.name;
     gfx::ElideString(title, kMaximumMenuWidthInChars, &title);
 
     if (item.active)
@@ -496,7 +496,7 @@ void DbusAppmenu::TabRestoreServiceChanged(
       auto item = std::make_unique<HistoryItem>();
       item->session_id = entry_win->id;
 
-      base::string16 title = l10n_util::GetPluralStringFUTF16(
+      std::u16string title = l10n_util::GetPluralStringFUTF16(
           IDS_RECENTLY_CLOSED_WINDOW, tabs.size());
 
       auto parent_menu = std::make_unique<ui::SimpleMenuModel>(this);
@@ -561,8 +561,7 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
   } else if (command_id == kTagProfileEdit) {
     avatar_menu_->EditProfile(active_profile_index_);
   } else if (command_id == kTagProfileCreate) {
-    UserManager::Show(/*profile_path_to_focus=*/base::FilePath(),
-                      profiles::USER_MANAGER_OPEN_CREATE_USER_PAGE);
+    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
   } else if (base::Contains(history_items_, command_id)) {
     HistoryItem* item = history_items_[command_id].get();
     // If this item can be restored using TabRestoreService, do so.

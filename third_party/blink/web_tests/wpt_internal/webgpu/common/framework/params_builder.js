@@ -1,8 +1,6 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ import { publicParamsEquals } from './params_utils.js';
-import { assert } from './util/util.js';
-/** Forces a type to resolve its type definitions, to make it readable/debuggable. */
+ **/ import { mergeParams, publicParamsEquals } from './params_utils.js';
 
 function typeAssert() {}
 {
@@ -113,13 +111,4 @@ export class ParamsBuilder {
 // one use. This just wraps a generator function in an object so it be iterated multiple times.
 function makeReusableIterable(generatorFn) {
   return { [Symbol.iterator]: generatorFn };
-}
-
-// (keyof A & keyof B) is not empty, so they overlapped
-
-function mergeParams(a, b) {
-  for (const key of Object.keys(a)) {
-    assert(!(key in b), 'Duplicate key: ' + key);
-  }
-  return { ...a, ...b };
 }

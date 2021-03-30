@@ -73,15 +73,16 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   // corresponding to this resource object and does not expect a reply.
   void Post(Destination dest, const IPC::Message& msg);
 
-  // Like Post() but expects a response. |callback| is a |base::Callback| that
-  // will be run when a reply message with a sequence number matching that of
-  // the call is received. |ReplyMsgClass| is the type of the reply message that
-  // is expected. An example of usage:
+  // Like Post() but expects a response. |callback| is a |base::OnceCallback|
+  // that will be run when a reply message with a sequence number matching that
+  // of the call is received. |ReplyMsgClass| is the type of the reply message
+  // that is expected. An example of usage:
   //
   // Call<PpapiPluginMsg_MyResourceType_MyReplyMessage>(
   //     BROWSER,
   //     PpapiHostMsg_MyResourceType_MyRequestMessage(),
-  //     base::Bind(&MyPluginResource::ReplyHandler, base::Unretained(this)));
+  //     base::BindOnce(&MyPluginResource::ReplyHandler,
+  //                    base::Unretained(this)));
   //
   // If a reply message to this call is received whose type does not match
   // |ReplyMsgClass| (for example, in the case of an error), the callback will
@@ -99,10 +100,10 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   //          live forever if we fail to clean up the callback. It is safe to
   //          use base::Unretained(this) or a weak pointer, because this object
   //          will outlive the callback.
-  template<typename ReplyMsgClass, typename CallbackType>
+  template <typename ReplyMsgClass, typename CallbackType>
   int32_t Call(Destination dest,
                const IPC::Message& msg,
-               const CallbackType& callback);
+               CallbackType callback);
 
   // Comparing with the previous Call() method, this method takes
   // |reply_thread_hint| as a hint to determine which thread to handle the reply
@@ -115,10 +116,10 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   // If handling a reply message will cause a TrackedCallback to be run, it is
   // recommended to use this version of Call(). It eliminates unnecessary
   // thread switching and therefore has better performance.
-  template<typename ReplyMsgClass, typename CallbackType>
+  template <typename ReplyMsgClass, typename CallbackType>
   int32_t Call(Destination dest,
                const IPC::Message& msg,
-               const CallbackType& callback,
+               CallbackType callback,
                scoped_refptr<TrackedCallback> reply_thread_hint);
 
   // Calls the browser/renderer with sync messages. Returns the pepper error
@@ -177,7 +178,7 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   bool sent_create_to_browser_;
   bool sent_create_to_renderer_;
 
-  typedef std::map<int32_t, scoped_refptr<PluginResourceCallbackBase> >
+  typedef std::map<int32_t, std::unique_ptr<PluginResourceCallbackBase>>
       CallbackMap;
   CallbackMap callbacks_;
 
@@ -186,28 +187,29 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   DISALLOW_COPY_AND_ASSIGN(PluginResource);
 };
 
-template<typename ReplyMsgClass, typename CallbackType>
+template <typename ReplyMsgClass, typename CallbackType>
 int32_t PluginResource::Call(Destination dest,
                              const IPC::Message& msg,
-                             const CallbackType& callback) {
-  return Call<ReplyMsgClass>(dest, msg, callback, nullptr);
+                             CallbackType callback) {
+  return Call<ReplyMsgClass>(dest, msg, std::move(callback), nullptr);
 }
 
-template<typename ReplyMsgClass, typename CallbackType>
-int32_t PluginResource::Call(
-    Destination dest,
-    const IPC::Message& msg,
-    const CallbackType& callback,
-    scoped_refptr<TrackedCallback> reply_thread_hint) {
-  TRACE_EVENT2("ppapi proxy", "PluginResource::Call",
-               "Class", IPC_MESSAGE_ID_CLASS(msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(msg.type()));
+template <typename ReplyMsgClass, typename CallbackType>
+int32_t PluginResource::Call(Destination dest,
+                             const IPC::Message& msg,
+                             CallbackType callback,
+                             scoped_refptr<TrackedCallback> reply_thread_hint) {
+  TRACE_EVENT2("ppapi_proxy", "PluginResource::Call", "Class",
+               IPC_MESSAGE_ID_CLASS(msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(msg.type()));
   ResourceMessageCallParams params(pp_resource(), next_sequence_number_++);
   // Stash the |callback| in |callbacks_| identified by the sequence number of
   // the call.
-  scoped_refptr<PluginResourceCallbackBase> plugin_callback(
-      new PluginResourceCallback<ReplyMsgClass, CallbackType>(callback));
-  callbacks_.insert(std::make_pair(params.sequence(), plugin_callback));
+  std::unique_ptr<PluginResourceCallbackBase> plugin_callback(
+      new PluginResourceCallback<ReplyMsgClass, CallbackType>(
+          std::move(callback)));
+  callbacks_.insert(
+      std::make_pair(params.sequence(), std::move(plugin_callback)));
   params.set_has_callback();
 
   if (resource_reply_thread_registrar_.get()) {

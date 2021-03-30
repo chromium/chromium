@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -23,15 +24,15 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/web_package/test_support/web_bundle_builder.h"
 #include "content/public/browser/javascript_dialog_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -42,7 +43,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/identifiability_metrics.h"
@@ -63,52 +63,6 @@ namespace {
 
 // A fake webstore domain.
 const char kWebstoreDomain[] = "cws.com";
-
-// Check whether or not style was injected, with |expected_injection| indicating
-// the expected result. Also ensure that no CSS was added to the
-// document.styleSheets array.
-testing::AssertionResult CheckStyleInjection(Browser* browser,
-                                             const GURL& url,
-                                             bool expected_injection) {
-  ui_test_utils::NavigateToURL(browser, url);
-
-  bool css_injected = false;
-  if (!content::ExecuteScriptAndExtractBool(
-          browser->tab_strip_model()->GetActiveWebContents(),
-          "window.domAutomationController.send("
-          "    document.defaultView.getComputedStyle(document.body, null)."
-          "        getPropertyValue('display') == 'none');",
-          &css_injected)) {
-    return testing::AssertionFailure()
-           << "Failed to execute script and extract bool for injection status.";
-  }
-
-  if (css_injected != expected_injection) {
-    std::string message;
-    if (css_injected)
-      message = "CSS injected when no injection was expected.";
-    else
-      message = "CSS not injected when injection was expected.";
-    return testing::AssertionFailure() << message;
-  }
-
-  bool css_doesnt_add_to_list = false;
-  if (!content::ExecuteScriptAndExtractBool(
-          browser->tab_strip_model()->GetActiveWebContents(),
-          "window.domAutomationController.send("
-          "    document.styleSheets.length == 0);",
-          &css_doesnt_add_to_list)) {
-    return testing::AssertionFailure()
-           << "Failed to execute script and extract bool for stylesheets "
-              "length.";
-  }
-  if (!css_doesnt_add_to_list) {
-    return testing::AssertionFailure()
-           << "CSS injection added to number of stylesheets.";
-  }
-
-  return testing::AssertionSuccess();
-}
 
 // Runs all pending tasks in the renderer associated with |web_contents|, and
 // then all pending tasks in the browser process.
@@ -431,19 +385,65 @@ class ContentScriptCssInjectionTest : public ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
                        ContentScriptInjectsStyles) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("content_scripts")
                                 .AppendASCII("css_injection")));
 
-  // CSS injection should be allowed on an aribitrary web page.
+  // Helper to get the active tab from the browser.
+  auto get_active_tab = [browser = browser()]() {
+    return browser->tab_strip_model()->GetActiveWebContents();
+  };
+  // Returns the background color for the element retrieved from the given
+  // `query_selector`.
+  auto get_element_color =
+      [&get_active_tab](const char* query_selector) -> std::string {
+    content::WebContents* web_contents = get_active_tab();
+    SCOPED_TRACE(base::StringPrintf(
+        "URL: %s; Selector: %s",
+        web_contents->GetLastCommittedURL().spec().c_str(), query_selector));
+    std::string color;
+    constexpr char kGetColor[] =
+        R"((function() {
+             let element = document.querySelector('%s');
+             style = window.getComputedStyle(element);
+             domAutomationController.send(style.backgroundColor);
+            })();)";
+    if (!content::ExecuteScriptAndExtractString(
+            get_active_tab(), base::StringPrintf(kGetColor, query_selector),
+            &color)) {
+      return "<Failed to execute>";
+    }
+
+    return color;
+  };
+  // Returns the number of stylesheets attached to the document.
+  auto get_style_sheet_count = [&get_active_tab]() {
+    int count = -1;
+    constexpr char kGetStyleSheetCount[] =
+        "domAutomationController.send(document.styleSheets.length);";
+    if (!content::ExecuteScriptAndExtractInt(get_active_tab(),
+                                             kGetStyleSheetCount, &count)) {
+      return -1;
+    }
+    return count;
+  };
+
+  // CSS injection should be allowed on an unprivileged web page that matches
+  // the patterns specified for the content script.
   GURL url =
       embedded_test_server()->GetURL("/extensions/test_file_with_body.html");
-  EXPECT_TRUE(CheckStyleInjection(browser(), url, true));
+  ui_test_utils::NavigateToURL(browser(), url);
+  constexpr char kInjectedBodyColor[] = "rgb(0, 0, 255)";  // Blue
+  EXPECT_EQ(kInjectedBodyColor, get_element_color("body"));
+  EXPECT_EQ(0, get_style_sheet_count())
+      << "Extension-injected content scripts should not be included in "
+      << "document.styleSheets.";
 
   // The loaded extension has an exclude match for "extensions/test_file.html",
   // so no CSS should be injected.
   url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  EXPECT_TRUE(CheckStyleInjection(browser(), url, false));
+  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_NE(kInjectedBodyColor, get_element_color("body"));
+  EXPECT_EQ(0, get_style_sheet_count());
 
   // We disallow all injection on the webstore.
   GURL::Replacements replacements;
@@ -451,7 +451,48 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   url = embedded_test_server()
             ->GetURL("/extensions/test_file_with_body.html")
             .ReplaceComponents(replacements);
-  EXPECT_TRUE(CheckStyleInjection(browser(), url, false));
+  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_NE(kInjectedBodyColor, get_element_color("body"));
+  EXPECT_EQ(0, get_style_sheet_count());
+
+  // Check extensions override page styles if they have more specific rules.
+  // Regression test for https://crbug.com/1175506.
+  // This page has four divs (with ids div1, div2, div3, and div4). The page
+  // specifies styles for them, but the extension has more specific styles for
+  // divs 1, 2, and 3.
+  // The extension styles should win by specificity, since they are in the same
+  // style origin ("author").
+  url = embedded_test_server()->GetURL("/extensions/test_file_with_style.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  constexpr char kInjectedDivColor[] = "rgb(0, 0, 255)";  // Blue
+  constexpr char kOriginalDivColor[] = "rgb(255, 0, 0)";  // Red
+  EXPECT_EQ(kInjectedDivColor, get_element_color("#div1"));
+  EXPECT_EQ(kInjectedDivColor, get_element_color("#div2"));
+  EXPECT_EQ(kInjectedDivColor, get_element_color("#div3"));
+  EXPECT_EQ(kOriginalDivColor, get_element_color("#div4"));
+  // There should be two style sheets on this website; one inline <style> tag
+  // and a second included as a <link>.
+  EXPECT_EQ(2, get_style_sheet_count());
+
+  // Load an additional stylesheet dynamically (ensuring it was added to the DOM
+  // later). div3 should still be styled by the extension (since that rule is
+  // more specific). This ensures that stylesheets that just happen to be added
+  // later don't override extension sheets of higher specificity.
+  constexpr char kLoadExtraStylesheet[] =
+      R"((function() {
+           let sheet = document.createElement('link');
+           sheet.type = 'text/css';
+           sheet.rel = 'stylesheet';
+           sheet.href = 'test_file_with_style2.css';
+           sheet.onload = () => { domAutomationController.send('success'); };
+           sheet.onerror = () => { domAutomationController.send('error'); };
+           document.head.appendChild(sheet);
+         })();)";
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      get_active_tab(), kLoadExtraStylesheet, &result));
+  EXPECT_EQ("success", result);
+  EXPECT_EQ(kInjectedDivColor, get_element_color("#div3"));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptCSSLocalization) {
@@ -461,15 +502,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptCSSLocalization) {
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptExtensionAPIs) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-
-  // TODO(https://crbug.com/898682): Waiting for content scripts to load should
-  // be done as part of the extension loading process.
-  content::WindowedNotificationObserver scripts_updated_observer(
-      extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-      content::NotificationService::AllSources());
   const extensions::Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("content_scripts/extension_api"));
-  scripts_updated_observer.Wait();
 
   ResultCatcher catcher;
   ui_test_utils::NavigateToURL(
@@ -575,8 +609,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
   EXPECT_FALSE(crx_path.empty());
 
   // Load first time to get extension id.
-  const Extension* extension =
-      LoadExtensionWithFlags(crx_path, kFlagEnableFileAccess);
+  const Extension* extension = LoadExtension(crx_path);
   ASSERT_TRUE(extension);
   auto extension_id = extension->id();
   UnloadExtension(extension_id);
@@ -592,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
   base::RunLoop().RunUntilIdle();
 
   extensions::ResultCatcher catcher;
-  EXPECT_TRUE(LoadExtensionWithFlags(crx_path, kFlagEnableFileAccess));
+  EXPECT_TRUE(LoadExtension(crx_path));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -734,13 +767,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ext_dir1.WriteManifest(
       base::StringPrintf(kManifest, "ext1", "document_idle"));
   ext_dir1.WriteFile(FILE_PATH_LITERAL("script.js"), kBlockingScript);
-  // TODO(https://crbug.com/898682): Waiting for content scripts to load should
-  // be done as part of the extension loading process.
-  content::WindowedNotificationObserver scripts_updated_observer(
-      extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-      content::NotificationService::AllSources());
   const Extension* ext1 = LoadExtension(ext_dir1.UnpackedPath());
-  scripts_updated_observer.Wait();
   ASSERT_TRUE(ext1);
 
   content::WebContents* web_contents =
@@ -839,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CannotScriptTheNewTabPage) {
   ResultCatcher catcher;
   test_listener.Reply(std::string());
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-  EXPECT_EQ(local_ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
+  EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
@@ -1623,7 +1650,7 @@ class NTPInterceptionTest : public ExtensionApiTest {
     ASSERT_TRUE(https_test_server_.Start());
 
     GURL ntp_url = https_test_server_.GetURL("/fake_ntp.html");
-    local_ntp_test_utils::SetUserSelectedDefaultSearchProvider(
+    ntp_test_utils::SetUserSelectedDefaultSearchProvider(
         profile(), https_test_server_.base_url().spec(), ntp_url.spec());
   }
 
@@ -1761,6 +1788,109 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
   EXPECT_FALSE(IdentifiabilityMetricsTestHelper::ContainsSurfaceOfType(
       merged_entries,
       blink::IdentifiableSurface::Type::kExtensionContentScript));
+}
+
+class SubresourceWebBundlesContentScriptApiTest : public ExtensionApiTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
+    ExtensionApiTest::SetUp();
+  }
+
+ protected:
+  // Registers a request handler for static content.
+  void RegisterRequestHandler(const std::string& relative_url,
+                              const std::string& content_type,
+                              const std::string& content,
+                              bool nosniff) {
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [relative_url, content_type, content,
+         nosniff](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url == relative_url) {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type(content_type);
+            response->set_content(content);
+            if (nosniff) {
+              response->AddCustomHeader("X-Content-Type-Options", "nosniff");
+            }
+            return std::move(response);
+          }
+          return nullptr;
+        }));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
+                       SubresourceWebBundleIframe) {
+  // Create an extension that injects a content script in "urn" scheme urls.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Web Request Subresource Web Bundles Test",
+        "manifest_version": 2,
+        "version": "0.1",
+        "permissions": ["urn:*"],
+        "content_scripts": [{
+          "matches":[
+            "urn:*"
+          ],
+          "all_frames": true,
+          "js":[
+            "content_script.js"
+          ]
+        }]
+      })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
+                     R"(
+      (() => {
+        const documentUrl = document.location.toString();
+        chrome.test.sendMessage(documentUrl);
+      })();
+      )");
+
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+
+  const std::string urn_uuid_html_url =
+      "urn:uuid:65c6f241-f6b5-4302-9f95-9a826c4dda1c";
+  // Currently the web bundle format requires a valid GURL for the fallback URL
+  // of a web bundle. So we use |urn_uuid_html_url| for the fallback URL.
+  // TODO(crbug.com/966753): Stop using |urn_uuid_html_url| when
+  // https://github.com/WICG/webpackage/issues/590 is resolved.
+  web_package::test::WebBundleBuilder builder(urn_uuid_html_url, "");
+  auto html_location =
+      builder.AddResponse({{":status", "200"}, {"content-type", "text/html"}},
+                          "<script>console.error('hoge');</script>");
+  builder.AddIndexEntry(urn_uuid_html_url, "", {html_location});
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  const std::string web_bundle = std::string(bundle.begin(), bundle.end());
+
+  // For serving web bundles, "Content-Type: application/webbundle" and
+  // "X-Content-Type-Options: nosniff" response headers are required.
+  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#name-serving-constraints
+  RegisterRequestHandler("/test.wbn", "application/webbundle", web_bundle,
+                         true /* nosniff */);
+
+  const std::string page_html = base::StringPrintf(R"(
+        <link rel="webbundle" href="./test.wbn" scopes="urn:uuid:">
+        <iframe src="%s"></iframe>
+      )",
+                                                   urn_uuid_html_url.c_str());
+  RegisterRequestHandler("/test.html", "text/html", page_html,
+                         false /* nosniff */);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ExtensionTestMessageListener listener(false /* will_reply */);
+
+  GURL page_url = embedded_test_server()->GetURL("/test.html");
+  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  EXPECT_EQ(urn_uuid_html_url, listener.message());
 }
 
 }  // namespace extensions

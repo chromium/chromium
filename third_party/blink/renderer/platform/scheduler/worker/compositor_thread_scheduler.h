@@ -61,10 +61,6 @@ class PLATFORM_EXPORT CompositorThreadScheduler
   void DidProcessIdleTask() override;
   base::TimeTicks NowTicks() override;
 
- protected:
-  // NonMainThreadScheduler:
-  void InitImpl() override;
-
  private:
   CompositorMetricsHelper compositor_metrics_helper_;
 

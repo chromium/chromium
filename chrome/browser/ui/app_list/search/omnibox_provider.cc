@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
@@ -27,6 +28,14 @@ bool IsDriveUrl(const GURL& url) {
   return host == "drive.google.com" || host == "docs.google.com";
 }
 
+int ProviderTypes() {
+  // We use all the default providers except for the document provider, which
+  // suggests Drive files on enterprise devices. This is disabled to avoid
+  // duplication with search results from DriveFS.
+  return AutocompleteClassifier::DefaultOmniboxProviders() &
+         ~AutocompleteProvider::TYPE_DOCUMENT;
+}
+
 }  //  namespace
 
 OmniboxProvider::OmniboxProvider(Profile* profile,
@@ -35,13 +44,17 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
       list_controller_(list_controller),
       controller_(std::make_unique<AutocompleteController>(
           std::make_unique<ChromeAutocompleteProviderClient>(profile),
-          AutocompleteClassifier::DefaultOmniboxProviders())) {
+          ProviderTypes())) {
   controller_->AddObserver(this);
+  if (base::FeatureList::IsEnabled(
+          app_list_features::kEnableLauncherSearchNormalization)) {
+    normalizer_.emplace("omnibox_provider", profile, 25);
+  }
 }
 
 OmniboxProvider::~OmniboxProvider() {}
 
-void OmniboxProvider::Start(const base::string16& query) {
+void OmniboxProvider::Start(const std::u16string& query) {
   controller_->Stop(false);
   // The new page classification value(CHROMEOS_APP_LIST) is introduced
   // to differentiate the suggest requests initiated by ChromeOS app_list from
@@ -85,6 +98,11 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
     new_results.emplace_back(std::make_unique<OmniboxResult>(
         profile_, list_controller_, controller_.get(), match,
         is_zero_state_input_));
+  }
+
+  if (normalizer_.has_value()) {
+    normalizer_->RecordResults(new_results);
+    normalizer_->NormalizeResults(&new_results);
   }
 
   SwapResults(&new_results);

@@ -4,3 +4,4 @@
 
 import './profile_creation_flow/profile_type_choice.js';
 import './profile_creation_flow/local_profile_customization.js';
+import './profile_switch.js';

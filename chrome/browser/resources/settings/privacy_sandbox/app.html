@@ -1,4 +1,15 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style settings-shared cr-page-host-style">
+  .banner {
+    display: block;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    width: 120px;
+  }
+
+  .box-last {
+    padding-bottom: 12px;
+  }
+
   .card {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
@@ -23,6 +34,10 @@
     padding-top: 8px;
   }
 
+  #overscroll {
+    padding-top: 64px;
+  }
+
   #page-container {
     box-sizing: border-box;
     display: block;
@@ -43,14 +58,14 @@
   }
 </style>
 
-<settings-prefs prefs="{{prefs}}"></settings-prefs>
+<settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
 <div id="page-container">
-  <h1 id="page-heading">$i18n{privacySandboxPageHeading}</h1>
+  <h1 id="page-heading">$i18n{privacySandboxTitle}</h1>
   <picture>
-    <source
+    <source class="banner"
         srcset="chrome://settings/images/privacy_sandbox_banner_dark.svg"
-        media="(prefers-color-scheme: dark">
-    <img id="banner" alt=""
+        media="(prefers-color-scheme: dark)">
+    <img class="banner" alt=""
         src="chrome://settings/images/privacy_sandbox_banner.svg">
   </picture>
   <div>
@@ -58,41 +73,33 @@
       $i18n{privacySandboxPageHeading}
     </h2>
   </div>
-  <div>$i18n{privacySandboxPageHeading}</div>
-  <div>
-    <h2 class="section-header" tabindex="-1">
-      $i18n{privacySandboxPageHeading}
-    </h2>
-  </div>
-  <div>$i18n{privacySandboxPageHeading}</div>
-  <div>
-    <ul>
-      <li><span>$i18n{privacySandboxPageHeading}</span></li>
-      <li><span>$i18n{privacySandboxPageHeading}</span></li>
-      <li><span>$i18n{privacySandboxPageHeading}</span></li>
-    </ul>
-  </div>
-  <div>
-    <h2 class="section-header" tabindex="-1">
-      $i18n{privacySandboxPageHeading}
-    </h2>
-  </div>
+  <p>$i18n{privacySandboxPageExplanation1}</p>
+  <p>$i18n{privacySandboxPageExplanation2}</p>
+  <p>$i18n{privacySandboxPageExplanation3}</p>
+  <p>$i18nRaw{privacySandboxPageExplanation4}</p>
   <div class="card">
-    <settings-toggle-button id="toggleButton"
+    <settings-toggle-button id="apiToggleButton" class="hr"
         pref="{{prefs.privacy_sandbox.apis_enabled}}"
-        class="hr" label="$i18n{privacySandboxPageHeading}">
+        label="$i18n{privacySandboxPageSettingTitle}"
+        on-change="onApiToggleButtonChange_">
     </settings-toggle-button>
     <div class="cr-row continuation">
-        <div class="secondary">$i18n{privacySandboxPageHeading}</div>
+      <div class="secondary">$i18n{privacySandboxPageSettingExplanation1}</div>
     </div>
     <div class="cr-row continuation">
-        <div class="secondary">$i18n{privacySandboxPageHeading}</div>
+      <div class="secondary">
+        <ul>
+          <li><span>$i18n{privacySandboxPageSettingExplanation2}</span></li>
+          <li><span>$i18n{privacySandboxPageSettingExplanation3}</span></li>
+        </ul>
+      </div>
     </div>
-    <div class="cr-row continuation">
+    <div class="cr-row continuation box-last">
       <cr-button class="cr-button" id="learnMoreButton" role="button"
           tabindex="0" on-click="onLearnMoreButtonClick_">
-        $i18n{passwordViewDetails}
+        $i18n{privacySandboxPageDetails}
       </cr-button>
     </div>
   </div>
 </div>
+<div id="overscroll"></div>

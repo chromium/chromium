@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace base {
@@ -101,7 +101,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
 
   // Notification of a change in the accessibility settings.
   void OnAccessibilityStatusChanged(
-      const AccessibilityStatusEventDetails& details);
+      const ash::AccessibilityStatusEventDetails& details);
 
   // Updates a11y menu state based on the current a11y features state(on/off).
   void UpdateA11yState();

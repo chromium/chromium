@@ -45,6 +45,6 @@ if (is_android) {
 
   android_library("volume_control_enums_java") {
     srcjar_deps = [ ":java_enums_volume_control" ]
-    deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }

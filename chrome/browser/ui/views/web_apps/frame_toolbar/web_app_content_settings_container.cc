@@ -7,6 +7,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/custom_frame_view.h"
 #include "ui/views/window/hit_test_utils.h"
 
@@ -81,6 +82,5 @@ void WebAppContentSettingsContainer::EnsureVisible() {
     layer()->SetOpacity(1);
 }
 
-const char* WebAppContentSettingsContainer::GetClassName() const {
-  return "WebAppContentSettingsContainer";
-}
+BEGIN_METADATA(WebAppContentSettingsContainer, views::View)
+END_METADATA

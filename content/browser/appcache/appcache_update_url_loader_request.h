@@ -103,6 +103,7 @@ class AppCacheUpdateJob::UpdateURLLoaderRequest
 
   // network::mojom::URLLoaderClient implementation.
   // These methods are called by the network loader.
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(

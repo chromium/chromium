@@ -11,16 +11,10 @@
 
 namespace blink {
 
-// `reason` is derived from `cc::MainThreadScrollingReason`. If recording
-// `kNotScrollingOnMain`, simply pass it as-is. Hoewver, if recording the
-// position of a set bit, the index of the set bit must be incremented by one.
-//
-// This stems from the fact that kNotScrollingOnMain is recorded in the
-// histograms as value 0. However, the 0th bit is not actually reserved and
-// has a separate, well-defined meaning. kNotScrollingOnMain is only
-// recorded when *no* bits are set.
-PLATFORM_EXPORT void RecordScrollReasonMetric(WebGestureDevice device,
-                                              uint32_t reason);
+// |reasons| is a combination of bits defined in
+// |cc::MainThreadScrollingReason|.
+PLATFORM_EXPORT void RecordScrollReasonsMetric(WebGestureDevice device,
+                                               uint32_t reasons);
 
 }  // namespace blink
 

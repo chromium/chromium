@@ -76,13 +76,13 @@ class LoaderBrowserTest : public ContentBrowserTest,
   }
 
   void CheckTitleTest(const GURL& url, const std::string& expected_title) {
-    base::string16 expected_title16(ASCIIToUTF16(expected_title));
+    std::u16string expected_title16(ASCIIToUTF16(expected_title));
     TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
   }
 
-  bool GetPopupTitle(const GURL& url, base::string16* title) {
+  bool GetPopupTitle(const GURL& url, std::u16string* title) {
     EXPECT_TRUE(NavigateToURL(shell(), url));
 
     ShellAddedObserver new_shell_observer;
@@ -119,10 +119,10 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, DynamicTitle1) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL("/dynamic1.html"));
-  base::string16 title;
+  std::u16string title;
   ASSERT_TRUE(GetPopupTitle(url, &title));
-  EXPECT_TRUE(base::StartsWith(title, ASCIIToUTF16("My Popup Title"),
-                               base::CompareCase::SENSITIVE))
+  EXPECT_TRUE(
+      base::StartsWith(title, u"My Popup Title", base::CompareCase::SENSITIVE))
       << "Actual title: " << title;
 }
 
@@ -132,9 +132,9 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, DynamicTitle2) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL("/dynamic2.html"));
-  base::string16 title;
+  std::u16string title;
   ASSERT_TRUE(GetPopupTitle(url, &title));
-  EXPECT_TRUE(base::StartsWith(title, ASCIIToUTF16("My Dynamic Title"),
+  EXPECT_TRUE(base::StartsWith(title, u"My Dynamic Title",
                                base::CompareCase::SENSITIVE))
       << "Actual title: " << title;
 }
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
 
   // Wait for the stale-while-revalidate tests to pass by observing the page's
   // title. If the renderer crashes, the test immediately fails.
-  base::string16 expected_title = base::ASCIIToUTF16("Pass");
+  std::u16string expected_title = u"Pass";
   TitleWatcher title_watcher(web_contents, expected_title);
 
   // The invocation of runTest() below starts a test written in JavaScript, that
@@ -466,8 +466,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
                                                    net::ERR_NAME_NOT_RESOLVED);
   EXPECT_FALSE(NavigateToURL(shell(), failed_url));
 
-  EXPECT_NE(ASCIIToUTF16("set cookie on unload"),
-            shell()->web_contents()->GetTitle());
+  EXPECT_NE(u"set cookie on unload", shell()->web_contents()->GetTitle());
 
   // Check that the cookie was set, meaning that the onunload handler ran.
   EXPECT_EQ("onunloadCookie=foo", GetCookies(url));
@@ -481,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
   // URLs are prohibited by policy from interacting with sensitive chrome
   // pages of which the error page is one.  Instead, use automation to kick
   // off the navigation, and wait to see that the tab loads.
-  base::string16 expected_title16(ASCIIToUTF16("Title Of Awesomeness"));
+  std::u16string expected_title16(u"Title Of Awesomeness");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
 
   bool success;
@@ -509,13 +508,11 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossSiteNavigationErrorPage2) {
                                                    net::ERR_NAME_NOT_RESOLVED);
 
   EXPECT_FALSE(NavigateToURL(shell(), failed_url));
-  EXPECT_NE(ASCIIToUTF16("Title Of Awesomeness"),
-            shell()->web_contents()->GetTitle());
+  EXPECT_NE(u"Title Of Awesomeness", shell()->web_contents()->GetTitle());
 
   // Repeat navigation.  We are testing that this completes.
   EXPECT_FALSE(NavigateToURL(shell(), failed_url));
-  EXPECT_NE(ASCIIToUTF16("Title Of Awesomeness"),
-            shell()->web_contents()->GetTitle());
+  EXPECT_NE(u"Title Of Awesomeness", shell()->web_contents()->GetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossOriginRedirectBlocked) {
@@ -580,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CookiePolicy) {
       "http://localhost:%u/set_cookie.html", embedded_test_server()->port()));
   GURL url(embedded_test_server()->GetURL("/redirect?" + set_cookie_url));
 
-  base::string16 expected_title16(ASCIIToUTF16("cookie set"));
+  std::u16string expected_title16(u"cookie set");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
   EXPECT_TRUE(NavigateToURL(shell(), url,
                             GURL(set_cookie_url) /* expected_commit_url */));

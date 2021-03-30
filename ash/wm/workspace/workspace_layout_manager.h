@@ -14,7 +14,6 @@
 #include "ash/shell_observer.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -153,7 +152,7 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
 
   // Notifies windows about a change in a system ui area. This could be
   // the keyboard or any window in the SettingsBubbleContainer or
-  // accessibility_bubble_container_. Windows will only be notified about
+  // |accessibility_bubble_container_|. Windows will only be notified about
   // changes to system ui areas on the display they are on.
   void NotifySystemUiAreaChanged();
 

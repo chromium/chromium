@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// clang-format on
+
 'use strict';
 
 suite('<app-management-dom-switch>', function() {

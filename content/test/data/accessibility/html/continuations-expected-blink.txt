@@ -1,6 +1,6 @@
 rootWebArea isLineBreakingObject=true
-++genericContainer ignored display='block' isLineBreakingObject=true
-++++genericContainer ignored display='block' isLineBreakingObject=true
+++genericContainer ignored isLineBreakingObject=true
+++++genericContainer ignored isLineBreakingObject=true
 ++++++group display='block' name='Group 1' isLineBreakingObject=true
 ++++++++genericContainer display='block' isLineBreakingObject=true
 ++++++++++button display='inline-block' name='Before' isLineBreakingObject=true
@@ -32,7 +32,7 @@ rootWebArea isLineBreakingObject=true
 ++++++++genericContainer display='block' isLineBreakingObject=true
 ++++++++++staticText display='block' name='Before'
 ++++++++++++inlineTextBox display='block' name='Before'
-++++++++genericContainer ignored display='block' isLineBreakingObject=true
+++++++++genericContainer ignored isLineBreakingObject=true
 ++++++++++paragraph display='block' isLineBreakingObject=true
 ++++++++++++staticText display='block' name='After'
 ++++++++++++++inlineTextBox display='block' name='After'

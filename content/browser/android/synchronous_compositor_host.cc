@@ -93,10 +93,10 @@ class SynchronousCompositorControlHost
       scoped_refptr<SynchronousCompositorSyncCallBridge> bridge,
       int process_id) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<SynchronousCompositorControlHost>(std::move(bridge),
-                                                           process_id),
+    auto host_control_receiver = mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SynchronousCompositorControlHost>(bridge, process_id),
         std::move(receiver));
+    bridge->SetHostControlReceiverOnIOThread(host_control_receiver);
   }
 
   // SynchronousCompositorControlHost overrides.
@@ -168,9 +168,6 @@ SynchronousCompositorHost::~SynchronousCompositorHost() {
   if (outstanding_begin_frame_requests_ && begin_frame_source_)
     begin_frame_source_->RemoveObserver(this);
   client_->DidDestroyCompositor(this, frame_sink_id_);
-  // TODO(crbug.com/1062576): We should shutdown the host_control as well since
-  // the Host was disconnected and we should signal all the waiters that we will
-  // never send a |BeginFrame| and expect any |BeginFrameResponse|.
   bridge_->HostDestroyedOnUIThread();
 }
 
@@ -211,7 +208,11 @@ SynchronousCompositorHost::DemandDrawHwAsync(
   blink::mojom::SyncCompositorDemandDrawHwParamsPtr params =
       blink::mojom::SyncCompositorDemandDrawHwParams::New(
           viewport_size, viewport_rect_for_tile_priority,
-          transform_for_tile_priority);
+          transform_for_tile_priority,
+          /*need_new_local_surface_id=*/was_evicted_);
+
+  was_evicted_ = false;
+
   blink::mojom::SynchronousCompositor* compositor = GetSynchronousCompositor();
   if (!bridge_->SetFrameFutureOnUIThread(frame_future)) {
     frame_future->SetFrame(nullptr);
@@ -229,7 +230,11 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
   blink::mojom::SyncCompositorDemandDrawHwParamsPtr params =
       blink::mojom::SyncCompositorDemandDrawHwParams::New(
           viewport_size, viewport_rect_for_tile_priority,
-          transform_for_tile_priority);
+          transform_for_tile_priority,
+          /*need_new_local_surface_id=*/was_evicted_);
+
+  was_evicted_ = false;
+
   uint32_t layer_tree_frame_sink_id;
   uint32_t metadata_version = 0u;
   base::Optional<viz::LocalSurfaceId> local_surface_id;
@@ -407,7 +412,7 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas) {
     TRACE_EVENT0("browser", "DrawBitmap");
     canvas->save();
     canvas->resetMatrix();
-    canvas->drawBitmap(bitmap, 0, 0);
+    canvas->drawImage(bitmap.asImage(), 0, 0);
     canvas->restore();
   }
 
@@ -730,6 +735,10 @@ void SynchronousCompositorHost::AddBeginFrameCompletionCallback(
 
 void SynchronousCompositorHost::DidInvalidate() {
   invalidate_needs_draw_ = true;
+}
+
+void SynchronousCompositorHost::WasEvicted() {
+  was_evicted_ = true;
 }
 
 }  // namespace content

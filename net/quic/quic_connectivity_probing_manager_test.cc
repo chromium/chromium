@@ -45,7 +45,7 @@ class MockQuicChromiumClientSession
   ~MockQuicChromiumClientSession() override {}
 
   // QuicChromiumPacketReader::Visitor interface.
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               OnReadError,
               (int result, const DatagramClientSocket* socket),
               (override));
@@ -124,11 +124,11 @@ class QuicConnectivityProbingManagerTest : public ::testing::Test {
     // Create packet writer and reader for probing.
     writer_.reset(
         new QuicChromiumPacketWriter(socket_.get(), test_task_runner_.get()));
-    reader_.reset(new QuicChromiumPacketReader(
+    reader_ = std::make_unique<QuicChromiumPacketReader>(
         socket_.get(), &clock_, &session_, kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
-        bound_test_net_log_.bound()));
+        bound_test_net_log_.bound());
   }
 
  protected:

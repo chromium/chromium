@@ -90,7 +90,11 @@ void JavaHandlerThread::InitializeThread(JNIEnv* env,
   if (name_)
     PlatformThread::SetName(name_);
 
+  thread_id_ = base::PlatformThread::CurrentId();
   state_ = std::make_unique<State>();
+#if DCHECK_IS_ON()
+  initialized_ = true;
+#endif
   Init();
   reinterpret_cast<base::WaitableEvent*>(event)->Signal();
 }
@@ -128,6 +132,13 @@ ScopedJavaLocalRef<jthrowable> JavaHandlerThread::GetUncaughtExceptionIfAny() {
   DCHECK(!task_runner()->BelongsToCurrentThread());
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_JavaHandlerThread_getUncaughtExceptionIfAny(env, java_thread_);
+}
+
+PlatformThreadId JavaHandlerThread::GetThreadId() const {
+#if DCHECK_IS_ON()
+  DCHECK(initialized_);
+#endif
+  return thread_id_;
 }
 
 void JavaHandlerThread::StopOnThread() {

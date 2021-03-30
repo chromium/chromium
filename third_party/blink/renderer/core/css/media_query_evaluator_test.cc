@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
-#include "third_party/blink/renderer/core/css/media_values_initial_viewport.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -279,72 +278,72 @@ MediaQueryEvaluatorTestCase g_screen_spanning_single_fold_horizontal_cases[] = {
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
-MediaQueryEvaluatorTestCase g_screen_fold_posture_none_cases[] = {
-    {"(screen-fold-posture)", 1},
-    {"(screen-fold-posture: laptop)", 0},
-    {"(screen-fold-posture: flat)", 0},
-    {"(screen-fold-posture: tent)", 0},
-    {"(screen-fold-posture: tablet)", 0},
-    {"(screen-fold-posture: book)", 0},
-    {"(screen-fold-posture: no-fold)", 1},
-    {"(screen-fold-posture: 15)", 0},
-    {"(screen-fold-posture: 2px)", 0},
-    {"(screen-fold-posture: 16/9)", 0},
+MediaQueryEvaluatorTestCase g_device_posture_none_cases[] = {
+    {"(device-posture)", 1},
+    {"(device-posture: laptop)", 0},
+    {"(device-posture: flat)", 0},
+    {"(device-posture: tent)", 0},
+    {"(device-posture: tablet)", 0},
+    {"(device-posture: book)", 0},
+    {"(device-posture: no-fold)", 1},
+    {"(device-posture: 15)", 0},
+    {"(device-posture: 2px)", 0},
+    {"(device-posture: 16/9)", 0},
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
-MediaQueryEvaluatorTestCase g_screen_fold_posture_laptop_cases[] = {
-    {"(screen-fold-posture)", 1},
-    {"(screen-fold-posture: laptop)", 1},
-    {"(screen-fold-posture: flat)", 0},
-    {"(screen-fold-posture: tent)", 0},
-    {"(screen-fold-posture: tablet)", 0},
-    {"(screen-fold-posture: book)", 0},
-    {"(screen-fold-posture: no-fold)", 0},
+MediaQueryEvaluatorTestCase g_device_posture_laptop_cases[] = {
+    {"(device-posture)", 1},
+    {"(device-posture: laptop)", 1},
+    {"(device-posture: flat)", 0},
+    {"(device-posture: tent)", 0},
+    {"(device-posture: tablet)", 0},
+    {"(device-posture: book)", 0},
+    {"(device-posture: no-fold)", 0},
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
-MediaQueryEvaluatorTestCase g_screen_fold_posture_flat_cases[] = {
-    {"(screen-fold-posture)", 1},
-    {"(screen-fold-posture: laptop)", 0},
-    {"(screen-fold-posture: flat)", 1},
-    {"(screen-fold-posture: tent)", 0},
-    {"(screen-fold-posture: tablet)", 0},
-    {"(screen-fold-posture: book)", 0},
-    {"(screen-fold-posture: no-fold)", 0},
+MediaQueryEvaluatorTestCase g_device_posture_flat_cases[] = {
+    {"(device-posture)", 1},
+    {"(device-posture: laptop)", 0},
+    {"(device-posture: flat)", 1},
+    {"(device-posture: tent)", 0},
+    {"(device-posture: tablet)", 0},
+    {"(device-posture: book)", 0},
+    {"(device-posture: no-fold)", 0},
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
-MediaQueryEvaluatorTestCase g_screen_fold_posture_tent_cases[] = {
-    {"(screen-fold-posture)", 1},
-    {"(screen-fold-posture: laptop)", 0},
-    {"(screen-fold-posture: flat)", 0},
-    {"(screen-fold-posture: tent)", 1},
-    {"(screen-fold-posture: tablet)", 0},
-    {"(screen-fold-posture: book)", 0},
-    {"(screen-fold-posture: no-fold)", 0},
+MediaQueryEvaluatorTestCase g_device_posture_tent_cases[] = {
+    {"(device-posture)", 1},
+    {"(device-posture: laptop)", 0},
+    {"(device-posture: flat)", 0},
+    {"(device-posture: tent)", 1},
+    {"(device-posture: tablet)", 0},
+    {"(device-posture: book)", 0},
+    {"(device-posture: no-fold)", 0},
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
-MediaQueryEvaluatorTestCase g_screen_fold_posture_tablet_cases[] = {
-    {"(screen-fold-posture)", 1},
-    {"(screen-fold-posture: laptop)", 0},
-    {"(screen-fold-posture: flat)", 0},
-    {"(screen-fold-posture: tent)", 0},
-    {"(screen-fold-posture: tablet)", 1},
-    {"(screen-fold-posture: book)", 0},
-    {"(screen-fold-posture: no-fold)", 0},
+MediaQueryEvaluatorTestCase g_device_posture_tablet_cases[] = {
+    {"(device-posture)", 1},
+    {"(device-posture: laptop)", 0},
+    {"(device-posture: flat)", 0},
+    {"(device-posture: tent)", 0},
+    {"(device-posture: tablet)", 1},
+    {"(device-posture: book)", 0},
+    {"(device-posture: no-fold)", 0},
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
-MediaQueryEvaluatorTestCase g_screen_fold_posture_book_cases[] = {
-    {"(screen-fold-posture)", 1},
-    {"(screen-fold-posture: laptop)", 0},
-    {"(screen-fold-posture: flat)", 0},
-    {"(screen-fold-posture: tent)", 0},
-    {"(screen-fold-posture: tablet)", 0},
-    {"(screen-fold-posture: book)", 1},
-    {"(screen-fold-posture: no-fold)", 0},
+MediaQueryEvaluatorTestCase g_device_posture_book_cases[] = {
+    {"(device-posture)", 1},
+    {"(device-posture: laptop)", 0},
+    {"(device-posture: flat)", 0},
+    {"(device-posture: tent)", 0},
+    {"(device-posture: tablet)", 0},
+    {"(device-posture: book)", 1},
+    {"(device-posture: no-fold)", 0},
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
@@ -474,20 +473,6 @@ TEST(MediaQueryEvaluatorTest, CachedFloatViewportNonFloatFriendly) {
                   media_query_evaluator);
 }
 
-TEST(MediaQueryEvaluatorTest, InitialViewport) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
-  page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
-  page_holder->GetFrameView().SetLayoutSizeFixedToFrameSize(false);
-  page_holder->GetFrameView().SetInitialViewportSize(IntSize(500, 500));
-  page_holder->GetFrameView().SetLayoutSize(IntSize(800, 800));
-  page_holder->GetFrameView().SetFrameRect(IntRect(0, 0, 800, 800));
-
-  MediaQueryEvaluator media_query_evaluator(
-      MakeGarbageCollected<MediaValuesInitialViewport>(
-          page_holder->GetFrame()));
-  TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
-}
-
 TEST(MediaQueryEvaluatorTest, DynamicImmersive) {
   auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
   page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
@@ -605,51 +590,51 @@ TEST(MediaQueryEvaluatorTest, CachedScreenSpanning) {
   }
 }
 
-TEST(MediaQueryEvaluatorTest, CachedScreenFoldPosture) {
-  ScopedScreenFoldForTest scoped_feature(true);
+TEST(MediaQueryEvaluatorTest, CachedDevicePosture) {
+  ScopedDevicePostureForTest scoped_feature(true);
 
   MediaValuesCached::MediaValuesCachedData data;
   {
-    data.screen_fold_posture = ScreenFoldPosture::kNoFold;
+    data.device_posture = DevicePosture::kNoFold;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
     MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_screen_fold_posture_none_cases, media_query_evaluator);
+    TestMQEvaluator(g_device_posture_none_cases, media_query_evaluator);
   }
 
   {
-    data.screen_fold_posture = ScreenFoldPosture::kLaptop;
+    data.device_posture = DevicePosture::kLaptop;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_screen_fold_posture_laptop_cases, media_query_evaluator);
+    TestMQEvaluator(g_device_posture_laptop_cases, media_query_evaluator);
   }
 
   {
-    data.screen_fold_posture = ScreenFoldPosture::kFlat;
+    data.device_posture = DevicePosture::kFlat;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_screen_fold_posture_flat_cases, media_query_evaluator);
+    TestMQEvaluator(g_device_posture_flat_cases, media_query_evaluator);
   }
 
   {
-    data.screen_fold_posture = ScreenFoldPosture::kTent;
+    data.device_posture = DevicePosture::kTent;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_screen_fold_posture_tent_cases, media_query_evaluator);
+    TestMQEvaluator(g_device_posture_tent_cases, media_query_evaluator);
   }
 
   {
-    data.screen_fold_posture = ScreenFoldPosture::kTablet;
+    data.device_posture = DevicePosture::kTablet;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_screen_fold_posture_tablet_cases, media_query_evaluator);
+    TestMQEvaluator(g_device_posture_tablet_cases, media_query_evaluator);
   }
 
   {
-    data.screen_fold_posture = ScreenFoldPosture::kBook;
+    data.device_posture = DevicePosture::kBook;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_screen_fold_posture_book_cases, media_query_evaluator);
+    TestMQEvaluator(g_device_posture_book_cases, media_query_evaluator);
   }
 }
 

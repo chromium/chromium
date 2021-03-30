@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Ro‘yxat obyekti</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Ikkita barmoq bilan o‘ngga suring</translation>
-<translation id="1016393160682012902">Oddiy klaviatura (Qwerty tartibidagi) tugmalarini yoki yangilanuvchan brayl tugmalarini yoki funksiyasini tushunish uchun imo-ishora ustiga bosing. Chiqish uchun Ctrl +w tugmalarini bosing.</translation>
 <translation id="1022586497894531524">ChromeVox ovozli ta’rif funksiyasidan birinchi marta foydalanyapsizmi? Ushbu qo‘llanma sizni ChromeVox asoslari bilan tanishtiradi.</translation>
 <translation id="1025074108959230262">Yopishqoq rejim yoqilmagan</translation>
 <translation id="1031961866430398710">keyin</translation>
@@ -23,7 +22,7 @@
 <translation id="1120938014254001895">Ikkita barmoq bilan tepaga suring</translation>
 <translation id="1126928665165112660">Qiya emas</translation>
 <translation id="113582498867142724">“<ph name="TAG" />” to‘plamidagi elementlar soni: <ph name="NUM" /></translation>
-<translation id="1161762950103988776">O‘tish</translation>
+<translation id="1161762950103988776">Borish</translation>
 <translation id="1164857107703583584">Oʻtish buyruqlaridan veb-sahifalarga oson oʻtishda foydalanish mumkin.</translation>
 <translation id="1175914831232945926">Raqamlar</translation>
 <translation id="1188858454923323853">qo‘shimcha</translation>
@@ -149,6 +148,7 @@
 <translation id="2045055672832940894">Avvalgi boshqaruv elementi mavjud emas</translation>
 <translation id="2045606329038304310">Navigatsiya uchun shakl maydonchasi elementlari ishlatiladi.</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2074531330963286860">Mavjud amallar. Koʻrish uchun Search+. (Nuqta) tugmalarini bosing</translation>
 <translation id="2086961585857038472">Keyingi so‘z</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">uz</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">Belgilashni boshlash yoki tugatish</translation>
 <translation id="827422111966801947">Toʻq siyohrang</translation>
 <translation id="8276439074553447000">Avvalgi faollashtiriladigan elementga o‘tish</translation>
+<translation id="8279039817939141096">Oddiy klaviatura (Qwerty tartibidagi) tugmalarini yoki yangilanuvchan brayl tugmalarini yoki funksiyasini tushunish uchun imo-ishora ustiga bosing. Chiqish uchun Ctrl+w, boʻshliq+Z tugmalarini bosing yoki ikki barmoq bilan chapga suring.</translation>
 <translation id="8283603667300770666">Keyingi to‘ldiriladigan matn</translation>
 <translation id="8310185481635255431">Bundan keyin havola mavjud emas</translation>
 <translation id="831207808878314375">Tavsif</translation>

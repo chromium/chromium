@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 
 namespace message_center {
@@ -30,7 +29,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT NotificationObserver {
   // |reply| is filled in if there was an input field associated with the
   // button.
   virtual void Click(const base::Optional<int>& button_index,
-                     const base::Optional<base::string16>& reply) {}
+                     const base::Optional<std::u16string>& reply) {}
 
   // Called when the user clicks the settings button in a notification which has
   // a DELEGATE settings button action.
@@ -64,7 +63,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT ThunkNotificationDelegate
   // NotificationDelegate:
   void Close(bool by_user) override;
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
   void SettingsClick() override;
   void DisableNotification() override;
 
@@ -105,7 +104,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT HandleNotificationClickDelegate
 
   // NotificationDelegate overrides:
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 
  protected:
   ~HandleNotificationClickDelegate() override;

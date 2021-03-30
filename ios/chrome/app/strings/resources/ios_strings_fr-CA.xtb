@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Créer un onglet.</translation>
 <translation id="1145536944570833626">Supprimer toutes les données existantes.</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
-<translation id="1154690515305205900">Impossible de créer un lien vers le texte mis en évidence.</translation>
 <translation id="1154984953698510061">Voir les autres onglets</translation>
 <translation id="1157749421655780457">Autoriser l'accès à la position…</translation>
 <translation id="1165039591588034296">Erreur</translation>
@@ -53,7 +52,6 @@
 <translation id="1400642268715879018">4 dernières semaines</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1430915738399379752">Imprimer</translation>
-<translation id="1436290164580597469">Entrez la phrase de passe pour démarrer la synchronisation.</translation>
 <translation id="1449835205994625556">Masquer le mot de passe</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> éléments</translation>
 <translation id="1491277525950327607">Touchez deux fois pour activer ou désactiver le paramètre</translation>
@@ -103,17 +101,16 @@
 <translation id="1952172573699511566">Les sites Web affichent du texte dans votre langue préférée lorsque cela est possible.</translation>
 <translation id="1952728750904661634">Se connecter avec un compte géré</translation>
 <translation id="1965935827552890526">Terminez ce que vous faisiez dans votre autre fenêtre de Chrome.</translation>
+<translation id="1973912524893600642">Garder les données</translation>
 <translation id="1974060860693918893">Options avancées</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
-<translation id="2047933465321076474">Votre organisation a désactivé la navigation privée. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="209018056901015185">Version bureau</translation>
 <translation id="2103075008456228677">Ouvrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments déplacés</translation>
-<translation id="2118594521750010466">Corriger maintenant</translation>
 <translation id="213900355088104901">Pour naviguer de manière anonyme, ouvrez un onglet de navigation privée</translation>
 <translation id="2139867232736819575">Rechercher le texte que vous avez copié</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
@@ -124,7 +121,6 @@
 <translation id="2239626343334228536">Effacement des données de navigation en cours…</translation>
 <translation id="2257567812274161158">La synchronisation ne fonctionne pas.</translation>
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Votre organisation vous demande de naviguer en mode privé. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Ajouter un compte</translation>
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
@@ -141,7 +137,6 @@
 Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="2381405137052800939">Paramètres de base</translation>
 <translation id="2386793615875593361">1 sélectionné</translation>
-<translation id="2419661687355878017">Votre organisation a désactivé le mode de navigation privée</translation>
 <translation id="2421004566762153674">Blocage des témoins tiers</translation>
 <translation id="2421044535038393232">Continuer à modifier</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
@@ -174,6 +169,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2780046210906776326">Courriel manquant</translation>
 <translation id="2781331604911854368">Activé</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">Impossible de créer un lien</translation>
 <translation id="2800683595868705743">Quitter le gestionnaire d’onglets</translation>
 <translation id="2815198996063984598">2. Touchez Navigateur par défaut</translation>
 <translation id="2830972654601096923">Gérer les adresses…</translation>
@@ -191,13 +187,13 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="291754862089661335">Placer le code QR ou le code à barres dans ce cadre</translation>
 <translation id="2921219216347069551">Partage page imposs.</translation>
 <translation id="2923448633003185837">Coller et rechercher</translation>
-<translation id="2923827943290349720">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
 <translation id="292639812446257861">Marquer comme non lu</translation>
 <translation id="2952581218264071393">1. Ouvrez les paramètres de Chrome</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
 <translation id="2964349545761222050">Bloquer les témoins tiers</translation>
 <translation id="2969979262385602596">Échec de connexion. Veuillez réessayer plus tard.</translation>
 <translation id="2975121486251958312">Seul le mode de navigation privée est proposé</translation>
+<translation id="2982481275546140226">Effacer les données</translation>
 <translation id="298306318844797842">Ajouter un mode de paiement…</translation>
 <translation id="2989805286512600854">Ouvrir dans un nouvel onglet</translation>
 <translation id="3037605927509011580">Aïe aïe aïe!</translation>
@@ -239,6 +235,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="3443810440409579745">Onglet reçu.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vue partagée</translation>
+<translation id="3454224729131972583">Titre</translation>
 <translation id="345565170154308620">Gérer les mots de passe…</translation>
 <translation id="3469166899695866866">Arrêter le téléchargement?</translation>
 <translation id="3470502288861289375">Copie en cours…</translation>
@@ -257,6 +254,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3581564640715911333">Proposer des traductions de pages dans d'autres langues</translation>
+<translation id="3588492282865875287">Se déconnecter?</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
 <translation id="359441731697487922">Vous pouvez ouvrir automatiquement les sites dans Chrome en le définissant comme application de navigation par défaut.
       
@@ -287,7 +285,6 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3968505803272650567">Gérer les centres d'intérêt</translation>
 <translation id="3989635538409502728">Déconnexion</translation>
-<translation id="399419089947468503">Une erreur s'est produite lors de la synchronisation des mots de passe</translation>
 <translation id="3995521777587992544">Barre de progression du chargement de la page, chargée à <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4004204301268239848">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil.</translation>
@@ -296,6 +293,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4038354071007134711">Auc. app. sur cet appareil ne peut ouv. le fichier</translation>
 <translation id="4042870976416480368">Rechercher dans la page</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
+<translation id="4079195788735381731">Votre organisation vous a déconnecté</translation>
 <translation id="4082688844002261427">Gérez la façon dont votre historique de navigation est utilisé pour personnaliser la recherche, les annonces et plus encore</translation>
 <translation id="408404951701638773">La barre de recherche est désormais plus facile à atteindre</translation>
 <translation id="411254640334432676">Échec du téléchargement.</translation>
@@ -304,7 +302,6 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4121993058175073134">Configurez votre compte de courriel dans l'application Paramètres pour envoyer des données d'exportation nette.</translation>
 <translation id="4124987746317609294">Intervalle de temps</translation>
 <translation id="4152011295694446843">Vous trouverez vos favoris ici</translation>
-<translation id="4152093603141133546">Votre organisation vous a déconnecté.</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="418156467088430727">Afficher la version hors ligne dans un nouvel onglet</translation>
 <translation id="4181841719683918333">Langues</translation>
@@ -312,7 +309,6 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4263576668337963058">Afficher les actions de page proposées</translation>
 <translation id="4267380167363222949">Onglet suivant</translation>
 <translation id="4272631900155121838">Pour numériser un code QR, activez la caméra dans les paramètres</translation>
-<translation id="4276041135170112053">Corriger maintenant.</translation>
 <translation id="4277990410970811858">Navigation sécurisée</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="430793432425771671">Tout synchroniser</translation>
@@ -337,6 +333,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4592368184551360546">Clavier</translation>
 <translation id="461440297010471931">Recherche avec Google</translation>
+<translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
 <translation id="4619615317237390068">Onglets ouverts sur d'autres appareils</translation>
 <translation id="4620246317052452550">Pages que vous avez lues</translation>
 <translation id="4630540211544979320">Traduire les pages</translation>
@@ -382,6 +379,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5010803260590204777">Ouvrez un onglet de navigation privée pour naviguer sur le Web en secret.</translation>
+<translation id="5017828934289857214">Me le rappeler plus tard</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5056446788882570708"><ph name="TIME" /> problèmes trouvés.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -408,16 +406,15 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
+<translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
-<translation id="5409365236829784218">Aucune application installée ne peut ouvrir ce fichier.</translation>
 <translation id="5416022985862681400">Sept derniers jours</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
 <translation id="54401264925851789">Information sur la sécurité de la page</translation>
 <translation id="5443952882982198570">Cartes de crédit</translation>
 <translation id="5457226814769348910">Ouvrir la version hors ligne</translation>
-<translation id="5457907402803865181">Une erreur s'est produite lors de la synchronisation des mots de passe.</translation>
 <translation id="5489208564673669003">Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les témoins (non recommandé)</translation>
 <translation id="5508435575041083207">Se déconnecter et effacer les données sur cet appareil</translation>
@@ -428,7 +425,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5551897871312988470">Proposer de traduire</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5592679540098330836">Activez la synchronisation pour <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Votre organisation vous demande de naviguer en mode privé. Les onglets ne sont pas enregistrés en mode de navigation privée. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="5631164295104953411">Ajouter un mode de paiement</translation>
@@ -463,6 +459,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5948291296578561264">Cela vous permet d'enregistrer vos photos dans votre bibliothèque de photos.</translation>
 <translation id="5955891643922670672">Affichage de la version hors ligne</translation>
 <translation id="5957613098218939406">Autres options</translation>
+<translation id="5963939892571022323">Impossible de créer un lien vers l'élément en surbrillance.</translation>
 <translation id="5964480694698977962">Créer un nouvel onglet de navigation privée.</translation>
 <translation id="5965679971710331625">Vous êtes connecté</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
@@ -494,6 +491,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6254066287920239840">Ouvrez les liens dans l'application plutôt que dans le navigateur.</translation>
 <translation id="6255097610484507482">Modif. carte crédit</translation>
 <translation id="6284652193729350524">Offrir de traduire du <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez le menu <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et touchez Navigation sécurisée.</translation>
 <translation id="6303969859164067831">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6308436439357671616">Ceci vous permet de prendre des photos et de les téléverser.</translation>
 <translation id="6324528485781869530">Passer au compte synchronisé</translation>
@@ -536,6 +534,8 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6524918542306337007">Le mode de navigation privée n'est pas offert</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6585618849026997638">Vous pouvez revenir à une page importante pour vous en ajoutant un favori</translation>
+<translation id="6603393121510733479">Votre organisation a désactivé la navigation privée.
+<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Options de traduction</translation>
 <translation id="6620279676667515405">Annuler</translation>
 <translation id="6624219055418309072">Bloquer en mode de navigation privée</translation>
@@ -548,6 +548,7 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6656103420185847513">Modifier le dossier</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6668619169535738264">Modifier le favori</translation>
+<translation id="6674571176963658787">Pour lancer la synchronisation, entrez votre phrase de passe</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6691331417640343772">Gérer les données synchronisées sur Google Tableau de bord</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent ne pas être accessibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -561,7 +562,6 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6831043979455480757">Traduire</translation>
-<translation id="6841409746189899007">Lien vers le texte</translation>
 <translation id="6851516051005285358">Voir la version pour ordinateur</translation>
 <translation id="6858855187367714033">Numérisé</translation>
 <translation id="6859944681507688231">Pour numériser un code QR ou une carte de crédit, activez l'appareil photo dans les paramètres.</translation>
@@ -580,6 +580,8 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6988572888918530647">Gérer votre compte Google</translation>
 <translation id="6995899638241819463">Vous envoyer un avertissement si des mots de passe sont exposés dans une violation de données</translation>
 <translation id="6998989275928107238">À</translation>
+<translation id="7004032350256606903">Votre organisation vous demande de naviguer en mode privé.
+<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Onglets récents</translation>
 <translation id="7006788746334555276">Paramètres de contenu</translation>
 <translation id="7015203776128479407">La configuration de la synchronisation initiale n'a pas été terminée. La synchronisation est désactivée.</translation>
@@ -604,13 +606,16 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="7272437679830969316">Impossible de vérifier votre identité. Le mot de passe n'a pas été copié.</translation>
 <translation id="7291368939935408496">Préparation des mots de passe en cours…</translation>
 <translation id="7293171162284876153">Pour démarrer la synchronisation, activez l'option « Synchroniser vos données Chrome ».</translation>
+<translation id="7299000566397147023">Ouvrir le plus récent onglet</translation>
 <translation id="7313347584264171202">Vous trouverez vos onglets de navigation privée ici</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> pour cent téléchargé(s)</translation>
 <translation id="7340958967809483333">Options pour Découvertes</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="734758817008927353">Options pour enregistrer la carte</translation>
 <translation id="7348502496356775519">Ajouter aux favoris</translation>
+<translation id="7353432112255316844">Confirmer que c'est bien vous</translation>
 <translation id="7383797227493018512">Liste de lecture</translation>
+<translation id="7398893703713203428">Créer un lien</translation>
 <translation id="739941347996872055">Onglet précédent</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articles non lus.</translation>
@@ -626,6 +631,7 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7483467499335917849">Utiliser votre position actuelle</translation>
 <translation id="750493650310597496">0 sélectionné</translation>
+<translation id="7508728395076009983">Pour verrouiller vos onglets de navigation privée, configurez Touch ID, Face ID ou un mot de passe.</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7537586195939242955">Imposs. d'install. votre pass. pour Passbook pour le moment.</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
@@ -635,12 +641,13 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="7603852183842204213">Fen context bloq (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Supprimer le mot de passe</translation>
 <translation id="7638584964844754484">Mot de passe multiterme incorrect</translation>
+<translation id="7646772052135772216">La synchronisation des mots de passe ne fonctionne pas</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="766891008101699113">Pour naviguer confidentiellement sur le Web, ajoutez un nouvel onglet.</translation>
 <translation id="7671141431838911305">INSTALLER</translation>
-<translation id="7690812411882623730">Impossible de créer un lien vers le texte</translation>
 <translation id="7701040980221191251">Aucun</translation>
+<translation id="7741325291586284254">Page du nouvel onglet de navigation privée</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7771470029643830783">Si vous vous déconnectez, vos favoris, votre historique, vos mots de passe et d'autres données de Chrome ne seront plus synchronisés avec votre compte Google.
 
@@ -648,6 +655,7 @@ Comme votre compte est géré par <ph name="HOSTED_DOMAIN" />, vos données Chro
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
 <translation id="7778472311864276518">Supprimer le compte de cet appareil</translation>
 <translation id="7781011649027948662">Traduire la page?</translation>
+<translation id="7781069478569868053">Page Nouvel onglet</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="778855399387580014">Lancez une recherche dans un nouvel onglet Chrome.</translation>
 <translation id="7791543448312431591">Ajouter</translation>
@@ -685,6 +693,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Le téléchargement du fichier est disponible. Options présentées vers le bas de l’écran.</translation>
 <translation id="8131740175452115882">Confirmer</translation>
+<translation id="8156478151976189188">La synchronisation de mots de passe ne fonctionne pas</translation>
 <translation id="8197543752516192074">Traduire la page</translation>
 <translation id="8205564605687841303">Annuler</translation>
 <translation id="8206354486702514201">Votre administrateur impose la valeur associée à ce paramètre.</translation>
@@ -738,7 +747,10 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8756969031206844760">Mettre à jour le mot de passe?</translation>
 <translation id="8775144690796719618">URL non valide</translation>
 <translation id="8803639129939845298">Sécuritaire</translation>
+<translation id="8806823403540278281">Votre organisation vous demande de naviguer en mode privé. Les onglets ne sont pas enregistrés en mode de navigation privée.
+<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Favoris</translation>
+<translation id="8823704566850948458">Suggérer un mot de passe…</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté(e) de votre compte Google.</translation>
 <translation id="8870413625673593573">Éléments récemment fermés</translation>
 <translation id="8881801611828450202">Rechercher cette image avec <ph name="SEARCH_ENGINE" /></translation>

@@ -27,7 +27,7 @@ namespace media_router {
 
 namespace {
 
-base::string16 GetFileName(const ui::SelectedFileInfo& file_info) {
+std::u16string GetFileName(const ui::SelectedFileInfo& file_info) {
   return file_info.file_path.BaseName().LossyDisplayName();
 }
 
@@ -120,7 +120,7 @@ void MediaRouterFileDialog::FileSystemDelegate::OpenFileDialog(
   gfx::NativeWindow parent_window = browser->window()->GetNativeWindow();
 
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
       default_directory, file_type_info, 0, base::FilePath::StringType(),
       parent_window, nullptr /* |params| passed to the listener */);
 }
@@ -148,9 +148,9 @@ GURL MediaRouterFileDialog::GetLastSelectedFileUrl() {
              : GURL();
 }
 
-base::string16 MediaRouterFileDialog::GetLastSelectedFileName() {
+std::u16string MediaRouterFileDialog::GetLastSelectedFileName() {
   return selected_file_.has_value() ? GetFileName(selected_file_.value())
-                                    : base::string16();
+                                    : std::u16string();
 }
 
 void MediaRouterFileDialog::MaybeReportLastSelectedFileInformation() {

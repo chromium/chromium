@@ -4,6 +4,8 @@
 
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 
+#include "ash/constants/ash_features.h"
+
 namespace chromeos {
 namespace phonehub {
 
@@ -29,6 +31,12 @@ FindMyDeviceController* FakePhoneHubManager::GetFindMyDeviceController() {
 
 NotificationAccessManager* FakePhoneHubManager::GetNotificationAccessManager() {
   return &fake_notification_access_manager_;
+}
+
+NotificationInteractionHandler*
+FakePhoneHubManager::GetNotificationInteractionHandler() {
+  return features::IsEcheSWAEnabled() ? &fake_notification_interaction_handler_
+                                      : nullptr;
 }
 
 NotificationManager* FakePhoneHubManager::GetNotificationManager() {

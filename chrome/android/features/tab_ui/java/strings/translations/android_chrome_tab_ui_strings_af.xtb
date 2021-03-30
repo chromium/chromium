@@ -4,10 +4,13 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
 <translation id="1181037720776840403">Verwyder</translation>
 <translation id="125153950246128346">Tik om nog 'n oortjie te sien</translation>
+<translation id="1302104331113804646">Prysnasporinginstellings</translation>
+<translation id="1378979118429748177">Word in kennis gestel wanneer pryse daal</translation>
 <translation id="1657719826150349398">Skuif oortjie ondertoe</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
 <translation id="2277224997687551299">Wysig groep se naam</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Verwyder <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie uit die groep.}other{Verwyder <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies uit die groep.}}</translation>
+<translation id="2479148705183875116">Gaan na Instellings</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="2569352796411618312">Voorstel: <ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
 <translation id="257674075312929031">Groep</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Deel groep</translation>
 <translation id="2759453070259087442">Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies uit.</translation>
 <translation id="2977480621796371840">Verwyder uit groep</translation>
+<translation id="3291470810748040983">Jy sal 'n opletberig kry wanneer daar 'n laer prys in 'n oop oortjie is</translation>
 <translation id="3328308545011660196">Voorstel: <ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
+<translation id="3882834874697329510">Skakel kennisgewings in Instellings aan om 'n kennisgewing te kry wanneer daar 'n laer prys in 'n oop oortjie is.</translation>
+<translation id="3940195383040445971">Spoor pryse na in oortjies</translation>
+<translation id="3996880007329611795">Word in kennis gestel</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
 <translation id="4212246570487010370">Hou aan blaai</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
 <translation id="4648718555153979859">Jou oortjies word hier saamgegroepeer</translation>
-<translation id="4922064041913095674">Sien watter item in jou oop oortjies 'n beter prys het</translation>
 <translation id="492284538114688557">Prysdaling is opgemerk</translation>
 <translation id="5007392906805964215">Gaan na</translation>
 <translation id="5073204694187207510">Versteek volskermrooster</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Wys later</translation>
 <translation id="5558362125926932819">Maak oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies toe</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> oortjies gegroepeer</translation>
+<translation id="575494663145460764">Kry opletberigte oor prysdalings?</translation>
 <translation id="58326064309361797">Sleep oortjies om hulle te groepeer</translation>
 <translation id="5846292395804797011">Maak <ph name="TITLE_OF_GROUP" />-groep met <ph name="NUMBER_OF_TABS" /> oortjies toe</translation>
 <translation id="6040143037577758943">Maak toe</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Versteek multikeusemodus</translation>
 <translation id="7151209024774799310">Verwyder oortjies uit groep</translation>
 <translation id="7204204600596740190">Multikeusemodus</translation>
+<translation id="7352298686197644113">Sien watter item in jou oop oortjies 'n laer prys het</translation>
 <translation id="753732157349120914">Oortjiewisselaar</translation>
 <translation id="7559245342362162951">Wys groep se oortjies in volskermrooster</translation>
 <translation id="7792771145871471484">Gaan die voorstelle na.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Moenie weer hierdie oortjiestrook wys nie?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Maak <ph name="TABS_COUNT_ONE" /> gekose oortjie toe}other{Maak <ph name="TABS_COUNT_MANY" /> gekose oortjies toe}}</translation>
 <translation id="8557923272772633250">Vou oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies uit.</translation>
+<translation id="860282621117673749">Opletberigte oor prysverlagings</translation>
+<translation id="8714939927607906138">Laer prys</translation>
 <translation id="8749939518995770034">Oortjiestrook is toegemaak</translation>
+<translation id="8820741577754260431">Sien prysdalings in jou oortjies</translation>
 <translation id="9150694013019234766">Wissel tussen oortjies in jou oortjiegroep naby die onderkant van die skerm</translation>
 <translation id="9169594135889675189">Voeg nuwe oortjie by groep</translation>
 <translation id="959682366969460160">Raak georganiseerd</translation>

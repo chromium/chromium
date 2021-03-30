@@ -138,8 +138,13 @@ public class AutofillProvider {
                 if (isQueryServerFieldTypesEnabled()) {
                     builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
                     builder.addAttribute("computed-autofill-hints", field.getComputedType());
+                    // Compose multiple predictions to a string separated by ','.
+                    String[] predictions = field.getServerPredictions();
+                    if (predictions != null && predictions.length > 0) {
+                        builder.addAttribute("crowdsourcing-predictions-autofill-hints",
+                                String.join(",", predictions));
+                    }
                 }
-
                 switch (field.getControlType()) {
                     case FormFieldData.ControlType.LIST:
                         child.setAutofillType(View.AUTOFILL_TYPE_LIST);
@@ -281,8 +286,8 @@ public class AutofillProvider {
             if (success) {
                 ArrayList<ViewType> viewTypes = new ArrayList<ViewType>();
                 for (FormFieldData field : mFormData.mFields) {
-                    viewTypes.add(new ViewType(
-                            field.getAutofillId(), field.getServerType(), field.getComputedType()));
+                    viewTypes.add(new ViewType(field.getAutofillId(), field.getServerType(),
+                            field.getComputedType(), field.getServerPredictions()));
                 }
                 mAutofillHintsService.onViewTypeAvailable(viewTypes);
             } else {
@@ -319,7 +324,7 @@ public class AutofillProvider {
             assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
             mAutofillManager = manager;
             mContainerView = containerView;
-            mAutofillUMA = new AutofillProviderUMA(context);
+            mAutofillUMA = new AutofillProviderUMA(context, manager.isAwGCurrentAutofillService());
             mInputUIObserver = new AutofillManagerWrapper.InputUIObserver() {
                 @Override
                 public void onInputUIShown() {
@@ -440,9 +445,12 @@ public class AutofillProvider {
         int virtualId = mRequest.getVirtualId((short) focus);
         notifyVirtualViewEntered(mContainerView, virtualId, absBound);
         mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
+        if (hasServerPrediction) {
+            mAutofillUMA.onServerTypeAvailable(formData, /*afterSessionStarted=*/false);
+        }
         mAutofillTriggeredTimeMillis = System.currentTimeMillis();
 
-        mAutofillManager.notifyNewSessionStarted();
+        mAutofillManager.notifyNewSessionStarted(hasServerPrediction);
     }
 
     /**
@@ -756,10 +764,12 @@ public class AutofillProvider {
     @CalledByNative
     private void onQueryDone(boolean success) {
         mRequest.onQueryDone(success);
+        mAutofillUMA.onServerTypeAvailable(
+                success ? mRequest.mFormData : null, /*afterSessionStarted*/ true);
         mAutofillManager.onQueryDone(success);
     }
 
-    private static boolean isQueryServerFieldTypesEnabled() {
+    public static boolean isQueryServerFieldTypesEnabled() {
         if (sIsQueryServerFieldTypesEnabled == null) {
             sIsQueryServerFieldTypesEnabled =
                     AutofillProviderJni.get().isQueryServerFieldTypesEnabled();

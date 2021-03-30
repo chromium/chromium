@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,6 +24,7 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/filter.h"
 #include "device/fido/get_assertion_task.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
@@ -112,10 +114,6 @@ bool ValidateResponseExtensions(const CtapGetAssertionRequest& request,
     }
     const std::string& ext_name = it.first.GetString();
 
-    if (ext_name == kExtensionLargeBlobKey && !request.large_blob_key) {
-      return false;
-    }
-
     if (ext_name == kExtensionHmacSecret) {
       // This extension is checked by |GetAssertionTask| because it needs to be
       // decrypted there.
@@ -137,12 +135,13 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
                    const AuthenticatorGetAssertionResponse& response) {
   // The underlying code must take care of filling in the credential from the
   // allow list as needed.
-  CHECK(response.credential());
+  CHECK(response.credential);
 
-  if (response.GetRpIdHash() !=
-          fido_parsing_utils::CreateSHA256Hash(request.rp_id) &&
+  const std::array<uint8_t, kRpIdHashLength>& rp_id_hash =
+      response.authenticator_data.application_parameter();
+  if (rp_id_hash != fido_parsing_utils::CreateSHA256Hash(request.rp_id) &&
       (!request.app_id ||
-       response.GetRpIdHash() != request.alternative_application_parameter)) {
+       rp_id_hash != request.alternative_application_parameter)) {
     return false;
   }
 
@@ -155,11 +154,11 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
   //   mandatory.
   // TODO(hongjunchoi) : Add link to section of the CTAP spec once it is
   // published.
-  const auto& user_entity = response.user_entity();
+  const auto& user_entity = response.user_entity;
   const bool has_user_identifying_info =
       user_entity &&
       (user_entity->display_name || user_entity->name || user_entity->icon_url);
-  if (!response.auth_data().obtained_user_verification() &&
+  if (!response.authenticator_data.obtained_user_verification() &&
       has_user_identifying_info) {
     return false;
   }
@@ -168,34 +167,22 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
     return false;
   }
 
-  if (response.num_credentials().value_or(0u) > 1 && !user_entity) {
+  if (response.num_credentials.value_or(0u) > 1 && !user_entity) {
     return false;
   }
 
   // The authenticatorData on an GetAssertionResponse must not have
   // attestedCredentialData set.
-  if (response.auth_data().attested_data().has_value()) {
+  if (response.authenticator_data.attested_data().has_value()) {
     return false;
   }
 
   const base::Optional<cbor::Value>& extensions =
-      response.auth_data().extensions();
+      response.authenticator_data.extensions();
   if (extensions &&
       !ValidateResponseExtensions(request, options, *extensions)) {
     FIDO_LOG(ERROR) << "assertion response invalid due to extensions block: "
                     << cbor::DiagnosticWriter::Write(*extensions);
-    return false;
-  }
-
-  if (response.android_client_data_ext() &&
-      (!request.android_client_data_ext || !authenticator.Options() ||
-       !authenticator.Options()->supports_android_client_data_ext ||
-       !IsValidAndroidClientDataJSON(
-           *request.android_client_data_ext,
-           base::StringPiece(reinterpret_cast<const char*>(
-                                 response.android_client_data_ext()->data()),
-                             response.android_client_data_ext()->size())))) {
-    FIDO_LOG(ERROR) << "Invalid androidClientData extension";
     return false;
   }
 
@@ -227,7 +214,8 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
                       credential.transports().end());
   }
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
+      base::FeatureList::IsEnabled(device::kWebAuthCableServerLink)) {
     transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
   }
 
@@ -254,12 +242,6 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     const CtapGetAssertionRequest& request,
     const FidoAuthenticator& authenticator) {
   CtapGetAssertionRequest specialized_request(request);
-  if (!authenticator.Options() ||
-      !authenticator.Options()->supports_android_client_data_ext) {
-    // Only send the googleAndroidClientData extension to authenticators that
-    // support it.
-    specialized_request.android_client_data_ext.reset();
-  }
 
   if (!authenticator.Options() ||
       !authenticator.Options()->supports_large_blobs) {
@@ -298,6 +280,8 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
       FidoRequestHandlerBase::RequestType::kGetAssertion;
   transport_availability_info().has_empty_allow_list =
       request_.allow_list.empty();
+  transport_availability_info().is_off_the_record_context =
+      request_.is_off_the_record_context;
 
   if (request_.allow_list.empty()) {
     // Resident credential requests always involve user verification.
@@ -339,6 +323,28 @@ void GetAssertionRequestHandler::DispatchRequest(
     return;
   }
 
+  const std::string authenticator_name = authenticator->GetDisplayName();
+
+  if (fido_filter::Evaluate(fido_filter::Operation::GET_ASSERTION,
+                            request_.rp_id, authenticator_name,
+                            base::nullopt) == fido_filter::Action::BLOCK) {
+    FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name;
+    return;
+  }
+
+  for (const auto& cred : request_.allow_list) {
+    if (fido_filter::Evaluate(
+            fido_filter::Operation::GET_ASSERTION, request_.rp_id,
+            authenticator_name,
+            std::pair<fido_filter::IDType, base::span<const uint8_t>>(
+                fido_filter::IDType::CREDENTIAL_ID, cred.id())) ==
+        fido_filter::Action::BLOCK) {
+      FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name
+                      << " for credential ID " << base::HexEncode(cred.id());
+      return;
+    }
+  }
+
   CtapGetAssertionRequest request =
       SpecializeRequestForAuthenticator(request_, *authenticator);
   PINUVDisposition uv_disposition =
@@ -375,35 +381,6 @@ void GetAssertionRequestHandler::DispatchRequest(
                      std::move(request), base::ElapsedTimer()));
 }
 
-void GetAssertionRequestHandler::AuthenticatorAdded(
-    FidoDiscoveryBase* discovery,
-    FidoAuthenticator* authenticator) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-
-#if defined(OS_MAC)
-  // Indicate to the UI whether a GetAssertion call to Touch ID would succeed
-  // or not. This needs to happen before the base AuthenticatorAdded()
-  // implementation runs |notify_observer_callback_| for this callback.
-  if (authenticator->IsTouchIdAuthenticator()) {
-    transport_availability_info().has_recognized_mac_touch_id_credential =
-        static_cast<fido::mac::TouchIdAuthenticator*>(authenticator)
-            ->HasCredentialForGetAssertionRequest(request_);
-  }
-#endif  // defined(OS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(martinkr): Put this boolean in a ChromeOS equivalent of
-  // "has_recognized_mac_touch_id_credential".
-  if (authenticator->IsChromeOSAuthenticator()) {
-    transport_availability_info().has_recognized_mac_touch_id_credential =
-        static_cast<ChromeOSAuthenticator*>(authenticator)
-            ->HasCredentialForGetAssertionRequest(request_);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  FidoRequestHandlerBase::AuthenticatorAdded(discovery, authenticator);
-}
-
 void GetAssertionRequestHandler::AuthenticatorRemoved(
     FidoDiscoveryBase* discovery,
     FidoAuthenticator* authenticator) {
@@ -424,6 +401,42 @@ void GetAssertionRequestHandler::AuthenticatorRemoved(
                base::nullopt, nullptr);
     }
   }
+}
+
+void GetAssertionRequestHandler::FillHasRecognizedPlatformCredential(
+    base::OnceCallback<void()> done_callback) {
+  DCHECK(!transport_availability_info()
+              .has_recognized_platform_authenticator_credential.has_value());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+#if defined(OS_MAC)
+  fido::mac::TouchIdAuthenticator* touch_id_authenticator = nullptr;
+  for (auto& authenticator_it : active_authenticators()) {
+    if (authenticator_it.second->IsTouchIdAuthenticator()) {
+      touch_id_authenticator = static_cast<fido::mac::TouchIdAuthenticator*>(
+          authenticator_it.second);
+      break;
+    }
+  }
+  bool has_credential =
+      touch_id_authenticator &&
+      touch_id_authenticator->HasCredentialForGetAssertionRequest(request_);
+  std::vector<PublicKeyCredentialUserEntity> credential_users;
+  if (has_credential) {
+    credential_users =
+        touch_id_authenticator->GetResidentCredentialUsersForRequest(request_);
+  }
+  OnHasPlatformCredential(std::move(done_callback), std::move(credential_users),
+                          has_credential);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
+      request_,
+      base::BindOnce(&GetAssertionRequestHandler::OnHasPlatformCredential,
+                     weak_factory_.GetWeakPtr(), std::move(done_callback),
+                     std::vector<PublicKeyCredentialUserEntity>()));
+#else
+  std::move(done_callback).Run();
+#endif
 }
 
 void GetAssertionRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
@@ -627,7 +640,7 @@ void GetAssertionRequestHandler::HandleResponse(
     return;
   }
 
-  const size_t num_responses = response->num_credentials().value_or(1);
+  const size_t num_responses = response->num_credentials.value_or(1);
   if (num_responses == 0 ||
       (num_responses > 1 && !request.allow_list.empty())) {
     std::move(completion_callback_)
@@ -740,8 +753,8 @@ void GetAssertionRequestHandler::OnGetAssertionSuccess(
     DCHECK(authenticator->Options()->supports_large_blobs);
     std::vector<LargeBlobKey> keys;
     for (const auto& response : responses_) {
-      if (response.large_blob_key()) {
-        keys.emplace_back(*response.large_blob_key());
+      if (response.large_blob_key) {
+        keys.emplace_back(*response.large_blob_key);
       }
     }
     if (!keys.empty()) {
@@ -775,10 +788,10 @@ void GetAssertionRequestHandler::OnReadLargeBlobs(
     for (auto& response : responses_) {
       const auto blob =
           base::ranges::find_if(*blobs, [&response](const auto& pair) {
-            return pair.first == response.large_blob_key();
+            return pair.first == response.large_blob_key;
           });
       if (blob != blobs->end()) {
-        response.set_large_blob(std::move(blob->second));
+        response.large_blob = std::move(blob->second);
       }
     }
   } else {
@@ -796,10 +809,22 @@ void GetAssertionRequestHandler::OnWriteLargeBlob(
     FIDO_LOG(ERROR) << "Writing large blob failed with code "
                     << static_cast<int>(status);
   }
-  responses_.at(0).set_large_blob_written(status ==
-                                          CtapDeviceResponseCode::kSuccess);
+  responses_.at(0).large_blob_written =
+      (status == CtapDeviceResponseCode::kSuccess);
   std::move(completion_callback_)
       .Run(GetAssertionStatus::kSuccess, std::move(responses_), authenticator);
+}
+
+void GetAssertionRequestHandler::OnHasPlatformCredential(
+    base::OnceCallback<void()> done_callback,
+    std::vector<PublicKeyCredentialUserEntity> user_entities,
+    bool has_credential) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  transport_availability_info()
+      .has_recognized_platform_authenticator_credential = has_credential;
+  transport_availability_info().recognized_platform_authenticator_credentials =
+      std::move(user_entities);
+  std::move(done_callback).Run();
 }
 
 }  // namespace device

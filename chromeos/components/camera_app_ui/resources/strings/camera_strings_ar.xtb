@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
-<translation id="1175958423215084756">تم رصد الرابط. <ph name="HOSTNAME" /></translation>
+<translation id="1175958423215084756">تم رصد رابط. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">صور المعرض</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1473110567575736769">مؤقّت لمدة 3 ثوانٍ</translation>
@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">مدة المؤقِّت</translation>
 <translation id="2050339315714019657">رأسي</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> نشطة</translation>
+<translation id="2144806332417375165">مَعلمات الفيديوهات المخصّصة</translation>
 <translation id="229579744168541441">تصدير إلى القرص</translation>
 <translation id="2501278716633472235">الرجوع</translation>
 <translation id="2501853267655415902">تم إيقاف التسجيل</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">درجة دقة الكاميرا</translation>
 <translation id="3517926952904427380">تعذّر التقاط صور أشخاص</translation>
 <translation id="3569311554794739032">هل تريد فعلاً إزالة <ph name="FILE" />؟</translation>
-<translation id="3750315947605636967">يتم حاليًا استخدام الكاميرا من قِبَل تطبيق آخر.</translation>
 <translation id="3810838688059735925">الفيديوهات</translation>
 <translation id="3838931309141338733">مسح الرمز الشريطي ضوئيًا</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
@@ -77,11 +77,13 @@
 <translation id="7337660886763914220">أخطاء نظام الملفات.</translation>
 <translation id="7450541714075000668">تم نسخ النص.</translation>
 <translation id="7557677699350329807">التبديل إلى الكاميرا التالية</translation>
+<translation id="7607002721634913082">تعليق التحميل</translation>
 <translation id="7608223098072244877">4 × 4</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7670511624014457267">60 لقطة في الثانية</translation>
-<translation id="7983668134180549431">تم رصد النص.</translation>
+<translation id="7974782136796202581">عرض خيارات العرض الشامل والإمالة والتكبير/التصغير</translation>
+<translation id="7983668134180549431">تم رصد نص.</translation>
 <translation id="8067883171444229417">تشغيل الفيديو</translation>
 <translation id="8131740175452115882">التأكيد</translation>
 <translation id="8145038249676204903">التبديل لالتقاط صورة</translation>

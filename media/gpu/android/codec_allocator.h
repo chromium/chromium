@@ -31,6 +31,10 @@ namespace media {
 // path is hung up.
 class MEDIA_GPU_EXPORT CodecAllocator {
  public:
+  // Minimum coded size that we'll allow to get a hardware instance, since not
+  // all hw implementation support it.  See crbug.com/1166833 .
+  static constexpr gfx::Size kMinHardwareResolution{96, 96};
+
   static CodecAllocator* GetInstance(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 

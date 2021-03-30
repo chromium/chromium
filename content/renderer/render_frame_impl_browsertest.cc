@@ -22,7 +22,6 @@
 #include "content/common/frame_messages.h"
 #include "content/common/navigation_params_mojom_traits.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/unfreezable_frame_messages.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -33,7 +32,6 @@
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/agent_scheduling_group.h"
-#include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/navigation_state.h"
 #include "content/renderer/render_frame_impl.h"
@@ -49,7 +47,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/common/widget/screen_info.h"
+#include "third_party/blink/public/common/widget/screen_infos.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -108,6 +110,8 @@ class RenderFrameImplTest : public RenderViewTest {
         mojom::CreateFrameWidgetParams::New();
     widget_params->routing_id = kSubframeWidgetRouteId;
     widget_params->visual_properties.new_size = gfx::Size(100, 100);
+    widget_params->visual_properties.screen_infos =
+        blink::ScreenInfos(blink::ScreenInfo());
 
     widget_remote_.reset();
     mojo::PendingAssociatedReceiver<blink::mojom::Widget>
@@ -122,28 +126,28 @@ class RenderFrameImplTest : public RenderViewTest {
     widget_params->widget = std::move(blink_widget_receiver);
     widget_params->widget_host = blink_widget_host.Unbind();
 
-    FrameReplicationState frame_replication_state;
-    frame_replication_state.name = "frame";
-    frame_replication_state.unique_name = "frame-uniqueName";
+    auto frame_replication_state = blink::mojom::FrameReplicationState::New();
+    frame_replication_state->name = "frame";
+    frame_replication_state->unique_name = "frame-uniqueName";
 
     RenderFrameImpl::FromWebFrame(
         view_->GetMainRenderFrame()->GetWebFrame()->FirstChild())
-        ->OnUnload(kFrameProxyRouteId, false, frame_replication_state,
-                   base::UnguessableToken::Create());
-
-    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-        stub_browser_interface_broker;
-    ignore_result(
-        stub_browser_interface_broker.InitWithNewPipeAndPassReceiver());
-
+        ->Unload(kFrameProxyRouteId, false, frame_replication_state->Clone(),
+                 blink::RemoteFrameToken());
+    MockPolicyContainerHost mock_policy_container_host;
     RenderFrameImpl::CreateFrame(
-        *agent_scheduling_group_, kSubframeRouteId,
-        std::move(stub_browser_interface_broker), MSG_ROUTING_NONE,
-        base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
-        base::UnguessableToken::Create(), base::UnguessableToken::Create(),
-        frame_replication_state, &compositor_deps_, std::move(widget_params),
+        *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,
+        TestRenderFrame::CreateStubFrameReceiver(),
+        TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
+        MSG_ROUTING_NONE, base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
+        base::UnguessableToken::Create(), std::move(frame_replication_state),
+        &compositor_deps_, std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
-        /*has_committed_real_load=*/true, CreateStubPolicyContainer());
+        /*has_committed_real_load=*/true,
+        blink::mojom::PolicyContainer::New(
+            blink::mojom::PolicyContainerPolicies::New(),
+            mock_policy_container_host
+                .BindNewEndpointAndPassDedicatedRemote()));
 
     frame_ = static_cast<TestRenderFrame*>(
         RenderFrameImpl::FromRoutingID(kSubframeRouteId));
@@ -201,16 +205,16 @@ class RenderFrameTestObserver : public RenderFrameObserver {
   void WasHidden() override { visible_ = false; }
   void OnDestruct() override { delete this; }
   void OnMainFrameIntersectionChanged(
-      const blink::WebRect& intersection_rect) override {
+      const gfx::Rect& intersection_rect) override {
     last_intersection_rect_ = intersection_rect;
   }
 
   bool visible() { return visible_; }
-  blink::WebRect last_intersection_rect() { return last_intersection_rect_; }
+  gfx::Rect last_intersection_rect() { return last_intersection_rect_; }
 
  private:
   bool visible_;
-  blink::WebRect last_intersection_rect_;
+  gfx::Rect last_intersection_rect_;
 };
 
 // Verify that a frame with a RenderFrameProxy as a parent has its own
@@ -231,6 +235,7 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   // Make an update where the widget's size and the visible_viewport_size
   // are not the same.
   blink::VisualProperties visual_properties;
+  visual_properties.screen_infos = blink::ScreenInfos(blink::ScreenInfo());
   gfx::Size widget_size(400, 200);
   gfx::Size visible_size(350, 170);
   visual_properties.new_size = widget_size;
@@ -281,7 +286,7 @@ class DownloadURLMockLocalFrameHost : public LocalFrameHostInterceptor {
       : LocalFrameHostInterceptor(provider) {}
 
   MOCK_METHOD2(RunModalAlertDialog,
-               void(const base::string16& alert_message,
+               void(const std::u16string& alert_message,
                     RunModalAlertDialogCallback callback));
   MOCK_METHOD1(DownloadURL, void(blink::mojom::DownloadURLParamsPtr params));
 };
@@ -363,9 +368,8 @@ TEST_F(RenderFrameImplTest, NoCrashWhenDeletingFrameDuringFind) {
       true /* new_session */, true /* force */, false /* wrap_within_frame */,
       false /* async */);
 
-  UnfreezableFrameMsg_Delete delete_message(
-      0, FrameDeleteIntention::kNotMainFrame);
-  frame()->OnMessageReceived(delete_message);
+  static_cast<mojom::Frame*>(frame())->Delete(
+      mojom::FrameDeleteIntention::kNotMainFrame);
 }
 
 TEST_F(RenderFrameImplTest, AutoplayFlags) {
@@ -443,7 +447,7 @@ TEST_F(RenderFrameImplTest, MainFrameIntersectionRecorded) {
   frame()->OnMainFrameIntersectionChanged(mainframe_intersection);
   // Setting a new frame intersection in a local frame triggers the render frame
   // observer call.
-  EXPECT_EQ(observer.last_intersection_rect(), blink::WebRect(0, 0, 200, 140));
+  EXPECT_EQ(observer.last_intersection_rect(), mainframe_intersection);
 }
 
 // Used to annotate the source of an interface request.
@@ -460,7 +464,14 @@ struct SourceAnnotation {
     return document_url == rhs.document_url &&
            render_frame_event == rhs.render_frame_event;
   }
+  bool operator!=(const SourceAnnotation& rhs) const { return !(*this == rhs); }
 };
+
+std::ostream& operator<<(std::ostream& out, const SourceAnnotation& s) {
+  out << s.document_url.possibly_invalid_spec() << " : "
+      << s.render_frame_event;
+  return out;
+}
 
 // RenderFrameRemoteInterfacesTest ------------------------------------
 
@@ -830,9 +841,7 @@ TEST_F(RenderFrameRemoteInterfacesTest, ChildFrameAtFirstCommittedLoad) {
   ExpectPendingInterfaceReceiversFromSources(
       child_frame_exerciser
           .browser_interface_broker_receiver_for_initial_empty_document(),
-      {{GURL(kNoDocumentMarkerURL), kFrameEventDidCreateNewFrame},
-       {initial_empty_url, kFrameEventDidCreateNewDocument},
-       {initial_empty_url, kFrameEventDidCreateDocumentElement},
+      {{initial_empty_url, kFrameEventDidCreateNewFrame},
        {child_frame_url, kFrameEventReadyToCommitNavigation},
        // TODO(https://crbug.com/555773): It seems strange that the new
        // document is created and DidCreateNewDocument is invoked *before* the
@@ -937,9 +946,7 @@ TEST_F(RenderFrameRemoteInterfacesTest,
     ExpectPendingInterfaceReceiversFromSources(
         child_frame_exerciser
             .browser_interface_broker_receiver_for_initial_empty_document(),
-        {{GURL(kNoDocumentMarkerURL), kFrameEventDidCreateNewFrame},
-         {initial_empty_url, kFrameEventDidCreateNewDocument},
-         {initial_empty_url, kFrameEventDidCreateDocumentElement},
+        {{initial_empty_url, kFrameEventDidCreateNewFrame},
          {child_frame_url, kFrameEventReadyToCommitNavigation},
          {child_frame_url, kFrameEventDidCreateNewDocument},
          {child_frame_url, kFrameEventDidCommitProvisionalLoad},
@@ -1022,9 +1029,9 @@ TEST_F(RenderFrameImplTest, LastCommittedUrlForUKM) {
   // Test the case where we have an unreachable URL.
   GURL unreachable_url = GURL("http://www.example.com");
   waiter = std::make_unique<FrameLoadWaiter>(GetMainRenderFrame());
-  GetMainRenderFrame()->LoadHTMLString("test", data_url, "UTF-8",
-                                       unreachable_url,
-                                       false /* replace_current_item */);
+  GetMainRenderFrame()->LoadHTMLStringForTesting(
+      "test", data_url, "UTF-8", unreachable_url,
+      false /* replace_current_item */);
   waiter->Wait();
   EXPECT_EQ(GURL(GetMainRenderFrame()->LastCommittedUrlForUKM()),
             unreachable_url);

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -20,7 +19,7 @@ class Status;
 // an error message. If |release_modifiers| is true, all modifiers would be
 // depressed. |modifiers| acts both an input and an output, however, only when
 // the conversion process is successful will |modifiers| be changed.
-Status ConvertKeysToKeyEvents(const base::string16& keys,
+Status ConvertKeysToKeyEvents(const std::u16string& keys,
                               bool release_modifiers,
                               int* modifiers,
                               std::vector<KeyEvent>* key_events);

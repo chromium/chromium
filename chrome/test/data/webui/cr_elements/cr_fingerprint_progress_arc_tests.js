@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FINGEPRINT_TICK_LIGHT_URL, FINGEPRINT_TICK_DARK_URL} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
-// #import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals} from '../chai_assert.js';
-// #import {MockController, MockMethod} from '../mock_controller.m.js';
+import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
+
+import {FINGEPRINT_TICK_DARK_URL, FINGEPRINT_TICK_LIGHT_URL} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals} from '../chai_assert.js';
+import {MockController, MockMethod} from '../mock_controller.m.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-fingerprint-progress-arc. */
@@ -90,7 +92,7 @@ suite('cr_fingerprint_progress_arc_test', function() {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
     progressArc.clearCanvas();
-    Polymer.dom.flush();
+    flush();
   });
 
   /**

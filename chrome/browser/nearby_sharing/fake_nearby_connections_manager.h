@@ -77,6 +77,7 @@ class FakeNearbyConnectionsManager
   PayloadStatusListener* GetRegisteredPayloadStatusListener(int64_t payload_id);
   void SetIncomingPayload(int64_t payload_id, PayloadPtr payload);
   base::Optional<base::FilePath> GetRegisteredPayloadPath(int64_t payload_id);
+  bool WasPayloadCanceled(const int64_t& payload_id) const;
 
   bool is_shutdown() const { return is_shutdown_; }
   DataUsage advertising_data_usage() const { return advertising_data_usage_; }
@@ -121,6 +122,7 @@ class FakeNearbyConnectionsManager
       send_payload_callback_;
   base::Optional<std::vector<uint8_t>> advertising_endpoint_info_;
   std::set<std::string> disconnected_endpoints_;
+  std::set<int64_t> canceled_payload_ids_;
 
   // Maps endpoint_id to endpoint_info.
   std::map<std::string, std::vector<uint8_t>> connection_endpoint_infos_;

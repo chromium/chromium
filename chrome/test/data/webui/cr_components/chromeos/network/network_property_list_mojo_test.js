@@ -31,7 +31,7 @@ suite('NetworkPropertyListMojoTest', function() {
     Polymer.dom.flush();
   });
 
-  test('Editable field types', async () => {
+  function verifyEditableFieldTypes() {
     // ipv4.ipAddress is not set as editable (via |editFieldTypes|), so the
     // edit input does not exist.
     assertEquals(null, propertyList.$$('cr-input'));
@@ -44,5 +44,107 @@ suite('NetworkPropertyListMojoTest', function() {
 
     // The input to edit the property now exists.
     assertNotEquals(null, propertyList.$$('cr-input'));
+  }
+
+  async function flushAsync() {
+    Polymer.dom.flush();
+    // Use setTimeout to wait for the next macrotask.
+    return new Promise(resolve => setTimeout(resolve));
+  }
+
+  async function simulatePropertyChange(latestIp) {
+    propertyList.propertyDict = {
+      ipv4: {
+        ipAddress: latestIp,
+        type: 'IPv4',
+      }
+    };
+    await flushAsync();
+  }
+
+  test(
+      'Initial input text selection without subsequent property changes',
+      async () => {
+        verifyEditableFieldTypes();
+
+        // The first CrInputElement has the not been edited.
+        assertEquals(
+            propertyList.$$('cr-input').getAttribute('edited'), 'false');
+
+        const crInput = propertyList.$$('cr-input');
+
+        // Simulate user switching off automatic.
+        propertyList.allFieldsReadOnly = false;
+        await flushAsync();
+
+        // The CrInputElement is focused and its text focused.
+        assertEquals(
+            propertyList.$$('cr-input').getAttribute('edited'), 'true');
+        assertEquals('100.0.0.1', crInput.value);
+        assertEquals('100.0.0.1', window.getSelection().toString());
+        assertEquals(crInput, propertyList.shadowRoot.activeElement);
+
+        // After editing the first time, subsequent focuses will not select
+        // the entire contents.
+        crInput.value = 'fake input';
+        crInput.blur();
+        crInput.focusInput();
+        assertEquals('', window.getSelection().toString());
+        assertEquals(crInput, propertyList.shadowRoot.activeElement);
+      });
+
+  test(
+      'Initial input text selection after unpredictable property changes',
+      async () => {
+        verifyEditableFieldTypes();
+
+        // The first CrInputElement has the not been edited.
+        assertEquals(
+            propertyList.$$('cr-input').getAttribute('edited'), 'false');
+
+        // Simulate user switching off automatic.
+        propertyList.allFieldsReadOnly = false;
+        Polymer.dom.flush();
+
+        // Focus event has not fired, and the edited attribute still remains
+        // false.
+        const crInput = propertyList.$$('cr-input');
+        assertEquals(
+            propertyList.$$('cr-input').getAttribute('edited'), 'false');
+        assertEquals('100.0.0.1', propertyList.$$('cr-input').value);
+
+        // Simulate immediate change in the properties.
+        const latestIp = '100.0.0.2';
+        await simulatePropertyChange(latestIp);
+
+        // The CrInputElement is focused and its text focused with the latest
+        // property information.
+        assertEquals(
+            propertyList.$$('cr-input').getAttribute('edited'), 'true');
+        assertEquals(latestIp, window.getSelection().toString());
+        assertEquals(latestIp, crInput.value);
+        assertEquals(crInput, propertyList.shadowRoot.activeElement);
+
+        // Simulate new input.
+        crInput.value = 'fake input';
+        crInput.blur();
+
+        // Ensure that new changes to the properties do not cause focus and
+        // selection after edits have been made.
+        await simulatePropertyChange('100.0.0.3');
+        assertEquals('', window.getSelection().toString());
+        assertNotEquals(crInput, propertyList.shadowRoot.activeElement);
+      });
+
+  test('Disabled UI state', function() {
+    // Create editable property.
+    verifyEditableFieldTypes();
+
+    const input = propertyList.$$('cr-input');
+    assertFalse(input.disabled);
+
+    propertyList.disabled = true;
+
+    assertTrue(input.disabled);
   });
 });

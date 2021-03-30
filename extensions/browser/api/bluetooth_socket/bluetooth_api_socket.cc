@@ -5,6 +5,7 @@
 #include "extensions/browser/api/bluetooth_socket/bluetooth_api_socket.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "net/base/io_buffer.h"
@@ -58,7 +59,7 @@ BluetoothApiSocket::BluetoothApiSocket(
 BluetoothApiSocket::~BluetoothApiSocket() {
   DCHECK_CURRENTLY_ON(kThreadId);
   if (socket_.get())
-    socket_->Close();
+    socket_->Disconnect(base::DoNothing());
 }
 
 void BluetoothApiSocket::AdoptConnectedSocket(
@@ -68,7 +69,7 @@ void BluetoothApiSocket::AdoptConnectedSocket(
   DCHECK_CURRENTLY_ON(kThreadId);
 
   if (socket_.get())
-    socket_->Close();
+    socket_->Disconnect(base::DoNothing());
 
   socket_ = socket;
   device_address_ = device_address;
@@ -82,7 +83,7 @@ void BluetoothApiSocket::AdoptListeningSocket(
   DCHECK_CURRENTLY_ON(kThreadId);
 
   if (socket_.get())
-    socket_->Close();
+    socket_->Disconnect(base::DoNothing());
 
   socket_ = socket;
   device_address_ = "";
@@ -100,6 +101,7 @@ void BluetoothApiSocket::Disconnect(base::OnceClosure callback) {
 
   connected_ = false;
   socket_->Disconnect(std::move(callback));
+  socket_.reset();
 }
 
 bool BluetoothApiSocket::IsPersistent() const {

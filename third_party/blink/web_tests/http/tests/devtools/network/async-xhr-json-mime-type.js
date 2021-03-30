@@ -6,8 +6,8 @@
   TestRunner.addResult(`Tests that the content of resources with JSON MIME types can be accessed.`);
   TestRunner.addResult('When loaded by asynchronous XHR requests (Bug 80684) or within iframes/documents.\n');
 
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();
@@ -33,8 +33,7 @@
 
     function step3({ content, error, isEncoded }) {
       TestRunner.addResult('request.content: ' + content);
-      ConsoleTestRunner.addConsoleSniffer(step4);
-      TestRunner.addIframe('resources/json.php?type=' + encodedContentType);
+      TestRunner.addIframe('resources/json.php?type=' + encodedContentType).then(step4);
     }
 
     function step4() {

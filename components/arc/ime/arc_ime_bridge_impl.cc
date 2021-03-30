@@ -88,7 +88,7 @@ void ArcImeBridgeImpl::SendSelectionRange(const gfx::Range& selection_range) {
   ime_instance->SetSelectionText(selection_range);
 }
 
-void ArcImeBridgeImpl::SendInsertText(const base::string16& text) {
+void ArcImeBridgeImpl::SendInsertText(const std::u16string& text) {
   auto* ime_instance =
       ARC_GET_INSTANCE_FOR_METHOD(bridge_service_->ime(), InsertText);
   if (!ime_instance)

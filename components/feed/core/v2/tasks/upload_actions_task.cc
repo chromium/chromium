@@ -9,11 +9,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
-#include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/request_throttler.h"
 
@@ -136,14 +138,15 @@ UploadActionsTask::UploadActionsTask(
 UploadActionsTask::~UploadActionsTask() = default;
 
 void UploadActionsTask::Run() {
-  consistency_token_ = stream_->GetMetadata()->GetConsistencyToken();
+  consistency_token_ = stream_->GetMetadata().consistency_token();
 
   // From constructor 1: If there is an action to store, store it and maybe try
   // to upload all pending actions.
   if (wire_action_) {
     StoredAction action;
-    int32_t action_id =
-        stream_->GetMetadata()->GetNextActionId().GetUnsafeValue();
+    feedstore::Metadata metadata = stream_->GetMetadata();
+    int32_t action_id = feedstore::GetNextActionId(metadata).GetUnsafeValue();
+    stream_->SetMetadata(std::move(metadata));
     action.set_id(action_id);
     wire_action_->mutable_client_data()->set_sequence_number(action_id);
     *action.mutable_action() = std::move(*wire_action_);
@@ -257,7 +260,7 @@ void UploadActionsTask::OnUpdateActionsFinished(
   FeedNetwork* network = stream_->GetNetwork();
   DCHECK(network);
 
-  network->SendActionRequest(
+  network->SendApiRequest<UploadActionsDiscoverApi>(
       *request,
       base::BindOnce(&UploadActionsTask::OnUploadFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(batch)));
@@ -265,9 +268,8 @@ void UploadActionsTask::OnUpdateActionsFinished(
 
 void UploadActionsTask::OnUploadFinished(
     std::unique_ptr<UploadActionsTask::Batch> batch,
-    FeedNetwork::ActionRequestResult result) {
+    FeedNetwork::ApiResult<feedwire::UploadActionsResponse> result) {
   last_network_response_info_ = result.response_info;
-
   if (!result.response_body)
     return BatchComplete(UploadActionsBatchStatus::kFailedToUpload);
 
@@ -301,13 +303,14 @@ void UploadActionsTask::BatchComplete(UploadActionsBatchStatus status) {
 void UploadActionsTask::UpdateTokenAndFinish() {
   if (consistency_token_.empty())
     return Done(UploadActionsStatus::kFinishedWithoutUpdatingConsistencyToken);
-
-  stream_->GetMetadata()->SetConsistencyToken(consistency_token_);
+  feedstore::Metadata metadata = stream_->GetMetadata();
+  metadata.set_consistency_token(consistency_token_);
+  stream_->SetMetadata(metadata);
   Done(UploadActionsStatus::kUpdatedConsistencyToken);
 }
 
 void UploadActionsTask::Done(UploadActionsStatus status) {
-  stream_->GetMetricsReporter()->OnUploadActions(status);
+  stream_->GetMetricsReporter().OnUploadActions(status);
   Result result;
   result.status = status;
   result.upload_attempt_count = upload_attempt_count_;

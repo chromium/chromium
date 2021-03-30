@@ -27,13 +27,13 @@
 //
 //  class Worker {
 //   public:
-//    static void StartNew(const WeakPtr<Controller>& controller) {
-//      Worker* worker = new Worker(controller);
+//    static void StartNew(WeakPtr<Controller> controller) {
+//      Worker* worker = new Worker(std::move(controller));
 //      // Kick off asynchronous processing...
 //    }
 //   private:
-//    Worker(const WeakPtr<Controller>& controller)
-//        : controller_(controller) {}
+//    Worker(WeakPtr<Controller> controller)
+//        : controller_(std::move(controller)) {}
 //    void DidCompleteAsynchronousProcessing(const Result& result) {
 //      if (controller_)
 //        controller_->WorkComplete(result);

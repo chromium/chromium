@@ -11,10 +11,11 @@
 
 namespace mojo {
 
-// NOTE: TypeConverter is deprecated. Please consider StructTraits /
-// UnionTraits / EnumTraits / ArrayTraits / MapTraits / StringTraits if you
-// would like to convert between custom types and the wire format of mojom
-// types.
+// NOTE: When possible, please consider using StructTraits / UnionTraits /
+// EnumTraits / ArrayTraits / MapTraits / StringTraits if you would like to
+// convert between custom types and the wire format of mojom types. The use of
+// TypeConverter should be limited as much as possible: ideally, only use it in
+// renderers, e.g., for Blink IDL and Oilpan types.
 //
 // Specialize the following class:
 //   template <typename T, typename U> struct TypeConverter;
@@ -103,12 +104,17 @@ struct TypeConverter<std::vector<T>, Container> {
   }
 };
 
-// The following helper function is useful for shorthand. The compiler can infer
+// The following helper functions are useful shorthand. The compiler can infer
 // the input type, so you can write:
 //   OutputType out = ConvertTo<OutputType>(input);
 template <typename T, typename U>
 inline T ConvertTo(const U& obj) {
   return TypeConverter<T, U>::Convert(obj);
+}
+
+template <typename T, typename U>
+inline T ConvertTo(const U* obj) {
+  return TypeConverter<T, U*>::Convert(obj);
 }
 
 }  // namespace mojo

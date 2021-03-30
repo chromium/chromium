@@ -138,7 +138,7 @@ AssistantPageView::AssistantPageView(
   InitLayout();
 
   if (AssistantController::Get())  // May be |nullptr| in tests.
-    assistant_controller_observer_.Add(AssistantController::Get());
+    assistant_controller_observation_.Observe(AssistantController::Get());
 
   if (AssistantUiController::Get())  // May be |nullptr| in tests.
     AssistantUiController::Get()->GetModel()->AddObserver(this);
@@ -179,9 +179,6 @@ void AssistantPageView::RequestFocus() {
     case AssistantUiMode::kLauncherEmbeddedUi:
       if (assistant_main_view_)
         assistant_main_view_->RequestFocus();
-      break;
-    case AssistantUiMode::kAmbientUi:
-      NOTREACHED();
       break;
   }
 }
@@ -323,7 +320,9 @@ base::Optional<int> AssistantPageView::GetSearchBoxTop(
     AppListViewState view_state) const {
   if (view_state == AppListViewState::kPeeking ||
       view_state == AppListViewState::kHalf) {
-    return AppListConfig::instance().search_box_fullscreen_top_padding();
+    return contents_view()
+        ->GetAppListConfig()
+        .search_box_fullscreen_top_padding();
   }
   // For other view states, return base::nullopt so the ContentsView
   // sets the default search box widget origin.
@@ -392,8 +391,12 @@ void AssistantPageView::OnAssistantControllerDestroying() {
   if (AssistantUiController::Get())  // May be |nullptr| in tests.
     AssistantUiController::Get()->GetModel()->RemoveObserver(this);
 
-  if (AssistantController::Get())  // May be |nullptr| in tests.
-    assistant_controller_observer_.Remove(AssistantController::Get());
+  if (AssistantController::Get()) {
+    // May be |nullptr| in tests.
+    DCHECK(assistant_controller_observation_.IsObservingSource(
+        AssistantController::Get()));
+    assistant_controller_observation_.Reset();
+  }
 }
 
 void AssistantPageView::OnUiVisibilityChanged(

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 declare_args() {
   invert_fieldtrials = false
 }
@@ -25,6 +27,8 @@ action("field_trial_testing_config_action") {
 
   if (current_os == "win") {
     platform = "windows"
+  } else if (is_chromeos_lacros) {
+    platform = "chromeos_lacros"
   } else {
     platform = current_os
   }
@@ -67,7 +71,7 @@ static_library("field_trial_config") {
     ":field_trial_testing_config_action",
     "//base",
     "//components/variations",
-    "//components/variations/proto:proto",
+    "//components/variations/proto",
     "//net",
     "//ui/base",
   ]
@@ -83,6 +87,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/variations",
+    "//components/variations/service",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//ui/base",
   ]

@@ -33,6 +33,7 @@
 
 #include <memory>
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation_frame/worker_animation_frame_provider.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
@@ -59,7 +60,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       std::unique_ptr<GlobalScopeCreationParams>,
       DedicatedWorkerThread*,
       base::TimeTicks time_origin,
-      ukm::SourceId ukm_source_id);
+      mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+          dedicated_worker_host);
 
   // Do not call this. Use Create() instead. This is public only for
   // MakeGarbageCollected.
@@ -69,8 +71,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       base::TimeTicks time_origin,
       std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      ukm::SourceId ukm_source_id,
-      bool parent_cross_origin_isolated_capability);
+      bool parent_cross_origin_isolated_capability,
+      mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+          dedicated_worker_host);
 
   ~DedicatedWorkerGlobalScope() override;
 
@@ -89,12 +92,13 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   }
 
   // Implements WorkerGlobalScope.
-  void Initialize(const KURL& response_url,
-                  network::mojom::ReferrerPolicy response_referrer_policy,
-                  network::mojom::IPAddressSpace response_address_space,
-                  const Vector<CSPHeaderAndType>& response_csp_headers,
-                  const Vector<String>* response_origin_trial_tokens,
-                  int64_t appcache_host) override;
+  void Initialize(
+      const KURL& response_url,
+      network::mojom::ReferrerPolicy response_referrer_policy,
+      network::mojom::IPAddressSpace response_address_space,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
+      const Vector<String>* response_origin_trial_tokens,
+      int64_t appcache_host) override;
   void FetchAndRunClassicScript(
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>
@@ -170,8 +174,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       base::TimeTicks time_origin,
       std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      ukm::SourceId ukm_source_id,
-      bool parent_cross_origin_isolated_capability);
+      bool parent_cross_origin_isolated_capability,
+      mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+          dedicated_worker_host);
 
   void DidReceiveResponseForClassicScript(
       WorkerClassicScriptLoader* classic_script_loader);
@@ -187,6 +192,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   bool cross_origin_isolated_capability_;
   Member<WorkerAnimationFrameProvider> animation_frame_provider_;
   RejectCoepUnsafeNone reject_coep_unsafe_none_ = RejectCoepUnsafeNone(false);
+
+  HeapMojoRemote<mojom::blink::DedicatedWorkerHost> dedicated_worker_host_{
+      this};
 };
 
 template <>

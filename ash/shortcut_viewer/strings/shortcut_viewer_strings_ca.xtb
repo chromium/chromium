@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Maj</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Afegeix www. i .com al text de la barra d'adreces i obre la pàgina</translation>
+<translation id="1768987374400973299">Fes una gravació o una captura de pantalla</translation>
 <translation id="1872219238824176091">Suprimeix l'escriptori actual</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> i després <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> o <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Ves a la pestanya següent</translation>
 <translation id="2010818616644390445">Ves a l'última pestanya de la finestra</translation>
 <translation id="2040706009561734834">Obre/tanca el menú d'aplicacions</translation>
+<translation id="2086334242442703436">Obre el selector d'emojis</translation>
 <translation id="2088054208777350526">Cerca tecles de drecera</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> o <ph name="F" /></translation>
 <translation id="2145908266289632567">Edició de text</translation>
@@ -46,10 +48,11 @@
 <translation id="2480851840841871861">Obre l'Assistent de Google</translation>
 <translation id="2488661730534396940">Activa l'escriptori de l'esquerra</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Obre l'aplicació de diagnòstic</translation>
 <translation id="2530339807289914946">Desplaça la pàgina web cap avall</translation>
 <translation id="2530896289327917474">Activa o desactiva la navegació amb cursor de text</translation>
 <translation id="2574014812750545982">Restableix el nivell de zoom de la pàgina</translation>
-<translation id="2596078834055697711">Fa una captura de pantalla de la finestra</translation>
+<translation id="2596078834055697711">Fes una captura de pantalla de la finestra</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> i després <ph name="TAB" /> o <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Torna a carregar la pàgina actual</translation>
 <translation id="2764005613199379871">Situa el focus a la barra d'adreces</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Mou el cursor al final de la paraula següent</translation>
 <translation id="4866066940972151697">Activa l'escriptori de la dreta</translation>
 <translation id="4916163929714267752">Obre l'enllaç en una finestra nova</translation>
+<translation id="492453977506755176">Tecla del mode de captura</translation>
 <translation id="5030659775136592441">Mostra el gestor d'adreces d'interès</translation>
 <translation id="5034421018520995080">Ves a la part superior de la pàgina</translation>
 <translation id="5042305953558921026">Tecla del mode de visió general</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Mostra o amaga la consola d'eines per a desenvolupadors</translation>
 <translation id="5919628958418675842">Activa o desactiva la pantalla de privadesa</translation>
 <translation id="5921745308587794300">Gira la finestra</translation>
+<translation id="5926306472221400972">Fes una captura de pantalla completa</translation>
 <translation id="6022924867608035986">Esborra el text del quadre de cerca</translation>
 <translation id="6045998054441862242">Activa el mode d'alt contrast</translation>
 <translation id="6052614013050385269">Fes clic amb el botó secundari del ratolí en un enllaç</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Torna a col·locar la pestanya a la posició original</translation>
 <translation id="6474744297082284761">Redueix (quan la lupa de pantalla completa O la lupa acoblada estiguin activades)</translation>
 <translation id="649811797655257835">Selecciona el fitxer i prem <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Fes una gravació o una captura de pantalla parcial</translation>
 <translation id="6556040137485212400">Obre la finestra que fa més temps que no s'utilitza</translation>
 <translation id="666343722268997814">Obre el menú contextual de l'element destacat</translation>
 <translation id="6671538777808758331">Ves al resultat següent de la cerca</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Mou el focus a les finestres emergents i als quadres de diàleg</translation>
 <translation id="7635348532214572995">Mou la icona d'una aplicació per la quadrícula d'aplicacions</translation>
 <translation id="766326951329901120">Enganxa el contingut del porta-retalls com a text sense format</translation>
+<translation id="7673453620027697230">Fes una gravació o una captura de pantalla de la finestra</translation>
 <translation id="7703010453515335249">claudàtor de tancament</translation>
 <translation id="7724603315864178912">Retalla</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> i després <ph name="SPACE" /> o <ph name="ENTER" /></translation>

@@ -11,11 +11,11 @@
 #include "base/macros.h"
 #include "base/task/post_task.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
@@ -72,7 +72,7 @@ invalidation::ProfileInvalidationProvider* GetInvalidationProvider(
 }  // namespace
 
 class AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver
-    : public syncer::InvalidationHandler {
+    : public invalidation::InvalidationHandler {
  public:
   explicit InvalidationServiceObserver(
       AffiliatedInvalidationServiceProviderImpl* parent,
@@ -83,10 +83,10 @@ class AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver
   void CheckInvalidatorState();
   bool IsServiceConnected() const;
 
-  // public syncer::InvalidationHandler:
-  void OnInvalidatorStateChange(syncer::InvalidatorState state) override;
+  // public invalidation::InvalidationHandler:
+  void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
   void OnIncomingInvalidation(
-      const syncer::TopicInvalidationMap& invalidation_map) override;
+      const invalidation::TopicInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
 
  private:
@@ -112,7 +112,7 @@ AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
       is_observer_ready_(false) {
   invalidation_service_->RegisterInvalidationHandler(this);
   is_service_connected_ = invalidation_service->GetInvalidatorState() ==
-                          syncer::INVALIDATIONS_ENABLED;
+                          invalidation::INVALIDATIONS_ENABLED;
   is_observer_ready_ = true;
 }
 
@@ -140,13 +140,14 @@ void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
   DCHECK(invalidation_service_);
   DCHECK(parent_);
 
-  syncer::InvalidatorState state = invalidation_service_->GetInvalidatorState();
-  bool is_service_connected = (state == syncer::INVALIDATIONS_ENABLED);
+  invalidation::InvalidatorState state =
+      invalidation_service_->GetInvalidatorState();
+  bool is_service_connected = (state == invalidation::INVALIDATIONS_ENABLED);
 
   if (is_service_connected_ == is_service_connected)
     return;
 
-  if (state == syncer::TRANSIENT_INVALIDATION_ERROR) {
+  if (state == invalidation::TRANSIENT_INVALIDATION_ERROR) {
     // Do not cause disconnect if the number of disconnections caused by
     // TRANSIENT_INVALIDATION_ERROR is more than the limit.
     if (!transient_error_disconnect_limit_)
@@ -162,7 +163,7 @@ void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
 }
 
 void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
-    OnInvalidatorStateChange(syncer::InvalidatorState state) {
+    OnInvalidatorStateChange(invalidation::InvalidatorState state) {
   if (!is_observer_ready_)
     return;
 
@@ -174,13 +175,13 @@ void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
     //   * state == TRANSIENT_INVALIDATION_ERROR, hopefully will be resolved by
     //     InvalidationService, if not InvalidationService should notify again
     //     with another more severe state.
-    bool should_notify = (state != syncer::INVALIDATIONS_ENABLED &&
-                          state != syncer::TRANSIENT_INVALIDATION_ERROR);
+    bool should_notify = (state != invalidation::INVALIDATIONS_ENABLED &&
+                          state != invalidation::TRANSIENT_INVALIDATION_ERROR);
 
     if (should_notify) {
       is_service_connected_ = false;
       parent_->OnInvalidationServiceDisconnected(invalidation_service_);
-    } else if (state == syncer::TRANSIENT_INVALIDATION_ERROR) {
+    } else if (state == invalidation::TRANSIENT_INVALIDATION_ERROR) {
       transient_error_retry_timer_.Stop();
       transient_error_retry_timer_.Start(
           FROM_HERE, kCheckInvalidatorStateDelay,
@@ -191,7 +192,7 @@ void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
   } else {
     // If service is disconnected, ONLY notify parent in case:
     //   * state == INVALIDATIONS_ENABLED
-    bool should_notify = (state == syncer::INVALIDATIONS_ENABLED);
+    bool should_notify = (state == invalidation::INVALIDATIONS_ENABLED);
     if (should_notify) {
       is_service_connected_ = true;
       parent_->OnInvalidationServiceConnected(invalidation_service_);
@@ -201,7 +202,7 @@ void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
 
 void AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::
     OnIncomingInvalidation(
-        const syncer::TopicInvalidationMap& invalidation_map) {}
+        const invalidation::TopicInvalidationMap& invalidation_map) {}
 
 std::string AffiliatedInvalidationServiceProviderImpl::
     InvalidationServiceObserver::GetOwnerName() const {
@@ -216,8 +217,7 @@ AffiliatedInvalidationServiceProviderImpl::
   DCHECK(g_browser_process->profile_manager()->GetLoadedProfiles().empty());
 
   // Subscribe to notification about new user profiles becoming available.
-  registrar_.Add(this, chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-                 content::NotificationService::AllSources());
+  session_observation_.Observe(session_manager::SessionManager::Get());
 }
 
 AffiliatedInvalidationServiceProviderImpl::
@@ -226,13 +226,11 @@ AffiliatedInvalidationServiceProviderImpl::
   DCHECK(is_shut_down_);
 }
 
-void AffiliatedInvalidationServiceProviderImpl::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED, type);
+void AffiliatedInvalidationServiceProviderImpl::OnUserProfileLoaded(
+    const AccountId& account_id) {
   DCHECK(!is_shut_down_);
-  Profile* profile = content::Details<Profile>(details).ptr();
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       GetInvalidationProvider(profile);
   if (!invalidation_provider) {
@@ -294,7 +292,7 @@ void AffiliatedInvalidationServiceProviderImpl::UnregisterConsumer(
 void AffiliatedInvalidationServiceProviderImpl::Shutdown() {
   is_shut_down_ = true;
 
-  registrar_.RemoveAll();
+  session_observation_.Reset();
   profile_invalidation_service_observers_.clear();
   device_invalidation_service_observer_.reset();
 
@@ -438,13 +436,13 @@ AffiliatedInvalidationServiceProviderImpl::
   auto device_invalidation_service =
       std::make_unique<invalidation::FCMInvalidationService>(
           device_identity_provider_.get(),
-          base::BindRepeating(&syncer::FCMNetworkHandler::Create,
+          base::BindRepeating(&invalidation::FCMNetworkHandler::Create,
                               g_browser_process->gcm_driver(),
                               device_instance_id_driver_.get()),
-          base::BindRepeating(&syncer::PerUserTopicSubscriptionManager::Create,
-                              device_identity_provider_.get(),
-                              g_browser_process->local_state(),
-                              base::RetainedRef(url_loader_factory)),
+          base::BindRepeating(
+              &invalidation::PerUserTopicSubscriptionManager::Create,
+              device_identity_provider_.get(), g_browser_process->local_state(),
+              base::RetainedRef(url_loader_factory)),
           device_instance_id_driver_.get(), g_browser_process->local_state(),
           policy::kPolicyFCMInvalidationSenderID);
   device_invalidation_service->Init();

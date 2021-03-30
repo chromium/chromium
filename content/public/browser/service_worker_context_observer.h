@@ -19,7 +19,7 @@ struct ServiceWorkerRunningInfo;
 class ServiceWorkerContextObserver {
  public:
   struct ErrorInfo {
-    ErrorInfo(const base::string16& message,
+    ErrorInfo(const std::u16string& message,
               int line,
               int column,
               const GURL& url)
@@ -28,7 +28,7 @@ class ServiceWorkerContextObserver {
           column_number(column),
           source_url(url) {}
     ErrorInfo(const ErrorInfo& info) = default;
-    const base::string16 error_message;
+    const std::u16string error_message;
     const int line_number;
     const int column_number;
     const GURL source_url;

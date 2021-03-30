@@ -37,8 +37,7 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
     SetWidget(CreateWidgetWithContent(container_));
 
     bubble_ = new LoginBaseBubbleView(anchor_, widget()->GetNativeView());
-    auto* label = new views::Label(base::UTF8ToUTF16("A message"),
-                                   views::style::CONTEXT_LABEL,
+    auto* label = new views::Label(u"A message", views::style::CONTEXT_LABEL,
                                    views::style::STYLE_PRIMARY);
     bubble_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));

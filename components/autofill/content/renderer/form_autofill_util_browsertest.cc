@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -149,6 +149,12 @@ void VerifyButtonTitleCache(const WebFormElement& form_target,
                                                  expected_button_titles)));
 }
 
+LocalFrameToken GetLocalFrameToken(blink::WebLocalFrame* frame) {
+  blink::LocalFrameToken frame_token = frame->GetLocalFrameToken();
+  base::UnguessableToken unguessable_token = frame_token.value();
+  return LocalFrameToken(unguessable_token);
+}
+
 class FormAutofillUtilsTest : public content::RenderViewTest {
  public:
   FormAutofillUtilsTest() {}
@@ -205,8 +211,8 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
-  std::vector<base::char16> stop_words;
-  stop_words.push_back(static_cast<base::char16>('-'));
+  std::vector<char16_t> stop_words;
+  stop_words.push_back(u'-');
   static const AutofillFieldUtilCase test_cases[] = {
       {"DIV table test 1", kDivTableExample1, kDivTableExample1Expected},
       {"DIV table test 2", kDivTableExample2, kDivTableExample2Expected},
@@ -228,7 +234,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
 
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
-    base::string16 label;
+    std::u16string label;
     InferLabelForElementForTesting(form_target, stop_words, &label,
                                    &label_source);
     EXPECT_EQ(base::UTF8ToUTF16(test_case.expected_label), label);
@@ -259,8 +265,8 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
       {"<dl><dt>label</dt><dd><input id='target'></dd></dl>",
        FormFieldData::LabelSource::kDdTag},
   };
-  std::vector<base::char16> stop_words;
-  stop_words.push_back(static_cast<base::char16>('-'));
+  std::vector<char16_t> stop_words;
+  stop_words.push_back(u'-');
 
   for (auto test_case : test_cases) {
     SCOPED_TRACE(testing::Message() << test_case.label_source);
@@ -275,7 +281,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
 
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
-    base::string16 label;
+    std::u16string label;
     EXPECT_TRUE(autofill::form_util::InferLabelForElementForTesting(
         form_target, stop_words, &label, &label_source));
     EXPECT_EQ(base::UTF8ToUTF16(kLabelSourceExpectedLabel), label);
@@ -311,17 +317,13 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
       GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
 
   autofill::ButtonTitleList expected = {
-      {base::UTF8ToUTF16("Clear field"),
-       ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
-      {base::UTF8ToUTF16("Show password"),
-       ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
-      {base::UTF8ToUTF16("Sign Up"),
-       ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
-      {base::UTF8ToUTF16("Register"),
-       ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE},
-      {base::UTF8ToUTF16("Create account"), ButtonTitleType::HYPERLINK},
-      {base::UTF8ToUTF16("Join"), ButtonTitleType::DIV},
-      {base::UTF8ToUTF16("Start"), ButtonTitleType::SPAN}};
+      {u"Clear field", ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
+      {u"Show password", ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
+      {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
+      {u"Register", ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE},
+      {u"Create account", ButtonTitleType::HYPERLINK},
+      {u"Join", ButtonTitleType::DIV},
+      {u"Start", ButtonTitleType::SPAN}};
   EXPECT_EQ(expected, actual);
 
   VerifyButtonTitleCache(form_target, expected, cache);
@@ -383,12 +385,9 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_Formless) {
   autofill::ButtonTitleList actual =
       GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
   autofill::ButtonTitleList expected = {
-      {base::UTF8ToUTF16("Show password"),
-       ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
-      {base::UTF8ToUTF16("Sign Up"),
-       ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
-      {base::UTF8ToUTF16("Register"),
-       ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE}};
+      {u"Show password", ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
+      {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
+      {u"Register", ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE}};
   EXPECT_EQ(expected, actual);
 
   VerifyButtonTitleCache(form_target, expected, cache);
@@ -443,7 +442,7 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
   }
 
   autofill::FormData target;
-  EXPECT_TRUE(UnownedPasswordFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
       nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
@@ -484,7 +483,7 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
   }
 
   autofill::FormData target;
-  EXPECT_TRUE(UnownedPasswordFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
       nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
@@ -527,13 +526,13 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
   EXPECT_FALSE(autofill::form_util::IsWebElementVisible(control_elements[1]));
 
   autofill::FormData target;
-  EXPECT_TRUE(UnownedPasswordFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
       nullptr, EXTRACT_NONE, &target, nullptr));
   ASSERT_EQ(2u, target.fields.size());
-  EXPECT_EQ(base::UTF8ToUTF16("name1"), target.fields[0].name);
+  EXPECT_EQ(u"name1", target.fields[0].name);
   EXPECT_TRUE(target.fields[0].is_focusable);
-  EXPECT_EQ(base::UTF8ToUTF16("name2"), target.fields[1].name);
+  EXPECT_EQ(u"name2", target.fields[1].name);
   EXPECT_FALSE(target.fields[1].is_focusable);
 }
 
@@ -628,8 +627,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabel) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("the label"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"the label");
 }
 
 // Tests that aria-labelledby works. Simple case: only one id referenced.
@@ -643,8 +641,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledBySingle) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("Name"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Name");
 }
 
 // Tests that aria-labelledby works: Complex case: multiple ids referenced.
@@ -658,8 +655,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByMulti) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("Billing Name"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Billing Name");
 }
 
 // Tests that aria-labelledby takes precedence over aria-label
@@ -674,8 +670,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByTakesPrecedence) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("Name"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Name");
 }
 
 // Tests that an invalid aria-labelledby reference gets ignored (as opposed to
@@ -690,8 +685,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByInvalid) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16(""));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"");
 }
 
 // Tests that invalid aria-labelledby references fall back to aria-label.
@@ -706,8 +700,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByFallback) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("valid"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"valid");
 }
 
 // Tests that aria-describedby works: Simple case: a single id referenced.
@@ -719,7 +712,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedBySingle) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
   EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
-            base::UTF8ToUTF16("aria description"));
+            u"aria description");
 }
 
 // Tests that aria-describedby works: Complex case: multiple ids referenced.
@@ -732,7 +725,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByMulti) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
   EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
-            base::UTF8ToUTF16("aria description"));
+            u"aria description");
 }
 
 // Tests that invalid aria-describedby returns the empty string.
@@ -741,8 +734,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByInvalid) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
-            base::UTF8ToUTF16(""));
+  EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element), u"");
 }
 
 TEST_F(FormAutofillUtilsTest, IsFormVisible) {
@@ -846,15 +838,15 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
       "value='2'></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = doc.GetElementById("i1").To<WebInputElement>();
-  std::vector<base::string16> values;
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> values;
+  std::vector<std::u16string> labels;
   GetDataListSuggestions(web_control, &values, &labels);
   ASSERT_EQ(values.size(), 2u);
   ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], base::UTF8ToUTF16("1"));
-  EXPECT_EQ(values[1], base::UTF8ToUTF16("2"));
-  EXPECT_EQ(labels[0], base::UTF8ToUTF16(""));
-  EXPECT_EQ(labels[1], base::UTF8ToUTF16(""));
+  EXPECT_EQ(values[0], u"1");
+  EXPECT_EQ(values[1], u"2");
+  EXPECT_EQ(labels[0], u"");
+  EXPECT_EQ(labels[1], u"");
 }
 
 TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
@@ -864,15 +856,15 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = doc.GetElementById("i1").To<WebInputElement>();
-  std::vector<base::string16> values;
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> values;
+  std::vector<std::u16string> labels;
   GetDataListSuggestions(web_control, &values, &labels);
   ASSERT_EQ(values.size(), 2u);
   ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], base::UTF8ToUTF16("1"));
-  EXPECT_EQ(values[1], base::UTF8ToUTF16("2"));
-  EXPECT_EQ(labels[0], base::UTF8ToUTF16("one"));
-  EXPECT_EQ(labels[1], base::UTF8ToUTF16("two"));
+  EXPECT_EQ(values[0], u"1");
+  EXPECT_EQ(values[1], u"2");
+  EXPECT_EQ(labels[0], u"one");
+  EXPECT_EQ(labels[1], u"two");
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractDataList) {
@@ -892,10 +884,10 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
   auto& labels = form_data.fields.back().datalist_labels;
   ASSERT_EQ(values.size(), 2u);
   ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], base::UTF8ToUTF16("1"));
-  EXPECT_EQ(values[1], base::UTF8ToUTF16("2"));
-  EXPECT_EQ(labels[0], base::UTF8ToUTF16("one"));
-  EXPECT_EQ(labels[1], base::UTF8ToUTF16("two"));
+  EXPECT_EQ(values[0], u"1");
+  EXPECT_EQ(values[1], u"2");
+  EXPECT_EQ(labels[0], u"one");
+  EXPECT_EQ(labels[1], u"two");
   EXPECT_EQ(form_field_data.datalist_values, values);
   EXPECT_EQ(form_field_data.datalist_labels, labels);
 }
@@ -915,6 +907,60 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
 
   EXPECT_TRUE(form_data.fields.back().datalist_values.empty());
   EXPECT_TRUE(form_data.fields.back().datalist_labels.empty());
+}
+
+LocalFrameToken ExtractAndCheckFrame(const WebDocument& doc,
+                                     const WebString& inputId) {
+  auto web_control = doc.GetElementById(inputId).To<WebInputElement>();
+  FormData form_data;
+  EXPECT_FALSE(form_data.global_id());
+  FormFieldData form_field_data;
+  auto local_token = GetLocalFrameToken(doc.GetFrame());
+  EXPECT_TRUE(form_data.host_frame->is_empty());
+  EXPECT_TRUE(form_field_data.host_frame->is_empty());
+  FindFormAndFieldForFormControlElement(web_control,
+                                        nullptr /*field_data_manager*/,
+                                        &form_data, &form_field_data);
+  EXPECT_TRUE(form_data.fields.back().global_id());
+  EXPECT_FALSE(form_data.host_frame->is_empty());
+  EXPECT_FALSE(form_data.fields.back().host_frame->is_empty());
+  EXPECT_EQ(local_token, form_data.host_frame);
+  EXPECT_EQ(local_token, form_data.fields.back().host_frame);
+  return local_token;
+}
+
+// Tests that the |host_frame| of forms and fields is set to the frame's local
+// token.
+TEST_F(FormAutofillUtilsTest, SetHostFrameOwnedForm) {
+  LoadHTML("<body><form><input id='i'></form></body>");
+  ExtractAndCheckFrame(GetMainFrame()->GetDocument(), "i");
+}
+
+// Tests that the |host_frame| of unowned forms and fields is set to the frame's
+// local token.
+TEST_F(FormAutofillUtilsTest, SetHostFrameUnownedForm) {
+  LoadHTML("<body><input id='i'></body>");
+  ExtractAndCheckFrame(GetMainFrame()->GetDocument(), "i");
+}
+
+// Tests distinct frames have distinct |host_frame| tokens.
+TEST_F(FormAutofillUtilsTest, SetHostFrameDistinctTokens) {
+  LoadHTML(R"(<body>
+      <iframe id="1" srcdoc="<form><input id='i'></form>"></iframe>
+      <iframe id="2" srcdoc="<form><input id='i'></form>"></iframe>
+      </body>)");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebDocument frameDoc1 =
+      blink::WebFrame::FromFrameOwnerElement(doc.GetElementById("1"))
+          ->ToWebLocalFrame()
+          ->GetDocument();
+  WebDocument frameDoc2 =
+      blink::WebFrame::FromFrameOwnerElement(doc.GetElementById("2"))
+          ->ToWebLocalFrame()
+          ->GetDocument();
+  auto token1 = ExtractAndCheckFrame(frameDoc1, "i");
+  auto token2 = ExtractAndCheckFrame(frameDoc2, "i");
+  EXPECT_NE(token1, token2);
 }
 
 }  // namespace

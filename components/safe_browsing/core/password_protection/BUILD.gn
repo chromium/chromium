@@ -4,11 +4,42 @@
 
 source_set("password_protection") {
   sources = [
+    "password_protection_request.cc",
+    "password_protection_request.h",
+    "password_protection_service_base.cc",
+    "password_protection_service_base.h",
     "request_canceler.cc",
     "request_canceler.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":password_protection_metrics_util",
+    "//base",
+    "//components/history/core/browser",
+    "//components/password_manager/core/browser",
+    "//components/safe_browsing/core:client_model_proto",
+    "//components/safe_browsing/core:csd_proto",
+    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common:thread_utils",
+    "//components/safe_browsing/core/db:allowlist_checker_client",
+    "//components/safe_browsing/core/db:database_manager",
+    "//components/safe_browsing/core/db:v4_protocol_manager_util",
+    "//components/sessions",
+    "//components/signin/public/identity_manager",
+    "//components/url_formatter",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/service_manager/public/cpp",
+    "//third_party/protobuf:protobuf_lite",
+    "//ui/gfx/geometry",
+  ]
+
+  if (is_ios) {
+    deps += [ "//ios/web/public" ]
+  }
 }
 
 source_set("password_protection_metrics_util") {

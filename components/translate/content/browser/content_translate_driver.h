@@ -34,6 +34,7 @@ namespace translate {
 
 struct LanguageDetectionDetails;
 class TranslateManager;
+class TranslateModelService;
 
 // Content implementation of TranslateDriver.
 class ContentTranslateDriver : public TranslateDriver,
@@ -55,9 +56,9 @@ class ContentTranslateDriver : public TranslateDriver,
     }
   };
 
-  ContentTranslateDriver(
-      content::NavigationController* nav_controller,
-      language::UrlLanguageHistogram* url_language_histogram);
+  ContentTranslateDriver(content::NavigationController* nav_controller,
+                         language::UrlLanguageHistogram* url_language_histogram,
+                         TranslateModelService* translate_model_service);
   ~ContentTranslateDriver() override;
 
   // Adds or removes observers.
@@ -95,8 +96,6 @@ class ContentTranslateDriver : public TranslateDriver,
   void OpenUrlInNewTab(const GURL& url) override;
 
   // content::WebContentsObserver implementation.
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -108,11 +107,16 @@ class ContentTranslateDriver : public TranslateDriver,
   // Adds a receiver in |receivers_| for the passed |receiver|.
   void AddReceiver(
       mojo::PendingReceiver<translate::mojom::ContentTranslateDriver> receiver);
+
   // Called when a page has been loaded and can be potentially translated.
   void RegisterPage(
       mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
       const translate::LanguageDetectionDetails& details,
       bool page_level_translation_critiera_met) override;
+
+  // translate::mojom::ContentTranslateDriver implementation:
+  void GetLanguageDetectionModel(
+      GetLanguageDetectionModelCallback callback) override;
 
  protected:
   const base::ObserverList<TranslationObserver, true>& translation_observers()
@@ -130,6 +134,14 @@ class ContentTranslateDriver : public TranslateDriver,
 
  private:
   void OnPageAway(int page_seq_no);
+
+  void InitiateTranslationIfReload(
+      content::NavigationHandle* navigation_handle);
+
+  // Runs the provided callback with the loaded model file
+  // to pass it to the connected translate agent.
+  void OnLanguageDetectionModelFile(GetLanguageDetectionModelCallback callback,
+                                    base::File model_file);
 
   // The navigation controller of the tab we are associated with.
   content::NavigationController* navigation_controller_;
@@ -161,6 +173,10 @@ class ContentTranslateDriver : public TranslateDriver,
   // in the main frame). This is used to know a duration time to when the
   // page language is determined.
   base::TimeTicks finish_navigation_time_;
+
+  // The service that provides the model files needed for translate. Not owned
+  // but guaranteed to outlive |this|.
+  TranslateModelService* const translate_model_service_;
 
   base::WeakPtrFactory<ContentTranslateDriver> weak_pointer_factory_{this};
 

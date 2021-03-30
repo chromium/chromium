@@ -10,18 +10,20 @@ browse:chrome:newtab:2019,Story that loads new tab page and performs searches.,m
 browse:chrome:omnibox:2019,Story that peforms search by using omnibox search provider,mobile,"2019,emerging_market"
 browse:media:facebook_photos:2019,Load a photo page from Rihanna's facebook page then navigate a few next,mobile,"2019,emerging_market"
 browse:media:flickr_infinite_scroll:2019,,mobile,"2019,infinite_scroll"
-browse:media:googleplaystore:2018,"Navigate to the movies page of Google Play Store, scroll to the bottom,",desktop,"2018,images"
 browse:media:googleplaystore:2019,"Navigate to the movies page of Google Play Store, scroll to the bottom,",mobile,"2019,emerging_market,images"
+browse:media:googleplaystore:2021,"Navigate to the movies page of Google Play Store, scroll to the bottom,",desktop,"2018,images"
 browse:media:imgur,,desktop,2016
 browse:media:imgur:2019,,mobile,"2019,emerging_market"
 browse:media:pinterest:2018,,desktop,2018
+browse:media:tiktok_infinite_scroll:2021,,mobile,"2021,infinite_scroll"
 browse:media:tumblr:2018,,desktop,2018
 browse:media:youtube:2019,Load a typical YouTube video then navigate to a next few videos. Stop and,"desktop,mobile","2019,emerging_market,javascript_heavy"
 browse:media:youtubetv:2019,Load a typical YouTube TV video then navigate to a next few videos. Stop,desktop,2019
 browse:media:youtubetv_watch:2020,Load a typical YouTube TV video then navigate to a next few videos. Stop,desktop,2020
-browse:news:cnn:2020,The second top website in http://www.alexa.com/topsites/category/News,"desktop,mobile","2020,health_check,javascript_heavy"
+browse:news:businessinsider:2021,A newsite where we've seen janky performance in bug reports,mobile,"2021,javascript_heavy"
+browse:news:cnn:2021,The second top website in http://www.alexa.com/topsites/category/News,"desktop,mobile","2021,health_check,javascript_heavy"
 browse:news:cricbuzz:2019,,mobile,"2019,emerging_market"
-browse:news:flipboard:2018,,desktop,2018
+browse:news:flipboard:2020,,desktop,2020
 browse:news:globo:2019,,mobile,"2019,emerging_market"
 browse:news:hackernews:2020,,desktop,2020
 browse:news:nytimes:2019,The third top website in http://www.alexa.com/topsites/category/News,mobile,2019
@@ -34,7 +36,7 @@ browse:news:washingtonpost:2019,Progressive website,mobile,2019
 browse:search:amp:2018,Story for Google's Accelerated Mobile Pages (AMP).,mobile,2018
 browse:search:amp:sxg:2019,Story for Google's Signed Exchange (SXG) Accelerated Mobile Pages (AMP).,mobile,2019
 browse:search:google:2020,A typical google search story:,desktop,2020
-browse:search:google_india:2018,A typical google search story in India:,desktop,"2018,international"
+browse:search:google_india:2021,A typical google search story in India:,desktop,"2021,international"
 browse:shopping:amazon:2019,,mobile,"2019,emerging_market"
 browse:shopping:avito:2019,,mobile,"2019,emerging_market"
 browse:shopping:flipkart:2019,,mobile,"2019,emerging_market"
@@ -42,12 +44,13 @@ browse:shopping:lazada:2019,,mobile,"2019,emerging_market"
 browse:social:facebook:2019,,mobile,"2019,emerging_market"
 browse:social:facebook_infinite_scroll:2018,,"desktop,mobile","2018,infinite_scroll"
 browse:social:instagram:2019,,mobile,"2019,emerging_market"
-browse:social:pinterest_infinite_scroll:2019,,mobile,"2019,health_check,infinite_scroll"
+browse:social:pinterest_infinite_scroll:2021,,mobile,"2021,health_check,infinite_scroll"
 browse:social:tumblr_infinite_scroll:2018,,"desktop,mobile","2018,health_check,infinite_scroll,javascript_heavy"
 browse:social:twitter:2018,,desktop,2018
 browse:social:twitter:2019,,mobile,"2019,health_check"
 browse:social:twitter_infinite_scroll:2018,,desktop,"2018,infinite_scroll"
 browse:tech:discourse_infinite_scroll:2018,,"desktop,mobile","2018,infinite_scroll"
+browse:tools:autocad:2021,"AutoCAD desktop story,",desktop,"2021,keyboard_input,wasm,webgl"
 browse:tools:docs_scrolling,Google Docs scrolling story:,desktop,"2020,javascript_heavy"
 browse:tools:earth:2020,Load Google Earth and search for the Empire State Building. Watch the,desktop,"2020,keyboard_input,wasm,webgl"
 browse:tools:gmail-compose:2020,,desktop,2020

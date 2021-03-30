@@ -8,10 +8,14 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
+#include "components/site_isolation/features.h"
+#include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
@@ -114,7 +118,7 @@ std::string WebEngineContentBrowserClient::GetUserAgent() {
 }
 
 void WebEngineContentBrowserClient::OverrideWebkitPrefs(
-    content::RenderViewHost* rvh,
+    content::WebContents* web_contents,
     blink::web_pref::WebPreferences* web_prefs) {
   // Disable WebSQL support since it's being removed from the web platform.
   web_prefs->databases_enabled = false;
@@ -186,6 +190,28 @@ void WebEngineContentBrowserClient::AppendExtraCommandLineSwitches(
                                  kSwitchesToCopy, base::size(kSwitchesToCopy));
 }
 
+std::string WebEngineContentBrowserClient::GetApplicationLocale() {
+  // ICU is configured with the system locale by WebEngineBrowserMainParts.
+  return base::i18n::GetConfiguredLocale();
+}
+
+std::string WebEngineContentBrowserClient::GetAcceptLangs(
+    content::BrowserContext* context) {
+  DCHECK_EQ(main_parts_->browser_context(), context);
+  return static_cast<WebEngineBrowserContext*>(context)
+      ->GetPreferredLanguages();
+}
+
+base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
+    content::WebContents* web_contents,
+    net::SSLCertRequestInfo* cert_request_info,
+    net::ClientCertIdentityList client_certs,
+    std::unique_ptr<content::ClientCertificateDelegate> delegate) {
+  // Continue without a certificate.
+  delegate->ContinueWithCertificate(nullptr, nullptr);
+  return base::OnceClosure();
+}
+
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 WebEngineContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -237,13 +263,29 @@ void WebEngineContentBrowserClient::ConfigureNetworkContextParams(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* network_context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
-  // Same as ContentBrowserClient::ConfigureNetworkContextParams().
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   network_context_params->user_agent = GetUserAgent();
-  network_context_params->accept_language = "en-us,en";
+  network_context_params
+      ->accept_language = net::HttpUtil::GenerateAcceptLanguageHeader(
+      static_cast<WebEngineBrowserContext*>(context)->GetPreferredLanguages());
 
   // Set the list of cors_exempt_headers which may be specified in a URLRequest,
   // starting with the headers passed in via
   // |CreateContextParams.cors_exempt_headers|.
   network_context_params->cors_exempt_header_list = cors_exempt_headers_;
+}
+
+std::vector<url::Origin>
+WebEngineContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
+  std::vector<url::Origin> isolated_origin_list;
+
+  // Include additional origins preloaded with specific browser configurations,
+  // if any.
+  auto built_in_origins =
+      site_isolation::GetBrowserSpecificBuiltInIsolatedOrigins();
+  std::move(std::begin(built_in_origins), std::end(built_in_origins),
+            std::back_inserter(isolated_origin_list));
+
+  return isolated_origin_list;
 }

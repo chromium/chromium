@@ -150,8 +150,8 @@ WindowsEventRouter::WindowsEventRouter(Profile* profile)
       focused_window_id_(extension_misc::kUnknownWindowId) {
   DCHECK(!profile->IsOffTheRecord());
 
-  observed_app_registry_.Add(AppWindowRegistry::Get(profile_));
-  observed_controller_list_.Add(WindowControllerList::GetInstance());
+  observed_app_registry_.Observe(AppWindowRegistry::Get(profile_));
+  observed_controller_list_.Observe(WindowControllerList::GetInstance());
   // Needed for when no suitable window can be passed to an extension as the
   // currently focused window. On Mac (even in a toolkit-views build) always
   // rely on the notification sent by AppControllerMac after AppKit sends

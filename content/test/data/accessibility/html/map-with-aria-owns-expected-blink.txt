@@ -1,0 +1,9 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++image name='pipe'
+++++++++link name='pipe1'
+++++++genericContainer
+++++++paragraph ignored
+++++++++staticText name='Paragraph'
+++++++++++inlineTextBox name='Paragraph'

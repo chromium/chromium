@@ -125,6 +125,16 @@ cr.define('multidevice', function() {
     cancelNotificationSetup() {
       this.methodCalled('cancelNotificationSetup');
     }
+
+    /**
+     * @param {settings.MultiDeviceFeature} state
+     */
+    setInstantTetheringStateForTest(state) {
+      this.data.instantTetheringState = state;
+      cr.webUIListenerCallback(
+          'settings.updateMultidevicePageContentData',
+          Object.assign({}, this.data));
+    }
   }
 
   // #cr_define_end

@@ -21,12 +21,9 @@ namespace blink {
 // We enable LayoutNGFragmentTraversal here, so that we get the "first/last for
 // node" bits set as appropriate.
 class NGFragmentItemTest : public NGLayoutTest,
-                           ScopedLayoutNGFragmentItemForTest,
                            ScopedLayoutNGFragmentTraversalForTest {
  public:
-  NGFragmentItemTest()
-      : ScopedLayoutNGFragmentItemForTest(true),
-        ScopedLayoutNGFragmentTraversalForTest(true) {}
+  NGFragmentItemTest() : ScopedLayoutNGFragmentTraversalForTest(true) {}
 
   void ForceLayout() { RunDocumentLifecycle(); }
 

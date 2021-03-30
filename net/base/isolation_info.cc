@@ -209,6 +209,16 @@ bool IsolationInfo::IsEqualForTesting(const IsolationInfo& other) const {
           party_context_ == other.party_context_);
 }
 
+IsolationInfo IsolationInfo::ToDoUseTopFrameOriginAsWell(
+    const url::Origin& incorrectly_used_frame_origin) {
+  return IsolationInfo(
+      RequestType::kOther, incorrectly_used_frame_origin,
+      incorrectly_used_frame_origin,
+      SiteForCookies::FromOrigin(incorrectly_used_frame_origin),
+      false /* opaque_and_non_transient */,
+      std::set<SchemefulSite>() /* party_context */);
+}
+
 IsolationInfo::IsolationInfo(
     RequestType request_type,
     const base::Optional<url::Origin>& top_frame_origin,

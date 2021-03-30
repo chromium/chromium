@@ -103,8 +103,6 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
   InstanceData::FlushInfo* flush_info_;
   LockedSender* sender_;
 
-  base::Closure channel_error_callback_;
-
   uint64_t next_fence_sync_release_;
   uint64_t pending_fence_sync_release_;
   uint64_t flushed_fence_sync_release_;

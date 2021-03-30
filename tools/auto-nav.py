@@ -10,8 +10,10 @@ Usage: vpython auto-nav.py <chrome dir> <number of navigations> <url> <url> ...
 Optional flags:
 * --interval <seconds>, -i <seconds>: specify a number of seconds to wait
                                       between navigations, e.g., -i=5
-* --wait, -w: start Chrome, then wait for the user to press any key before
-              starting auto-navigation
+* --start_prompt, -s: start Chrome, then wait for the user to press Enter before
+                      starting auto-navigation
+* --exit-prompt, -e: after auto-navigation, wait for the user to press Enter
+                     before shutting down chrome.exe
 * --idlewakeups_dir: Windows only; specify the directory containing
                      idlewakeups.exe to print measurements taken by IdleWakeups,
                      e.g., --idlewakeups_dir=tools/win/IdleWakeups/x64/Debug
@@ -92,10 +94,14 @@ def ParseArgs():
                       '-i',
                       type=int,
                       help='Seconds to wait between navigations; default is 1')
-  parser.add_argument('--wait',
-                      '-w',
+  parser.add_argument('--start_prompt',
+                      '-s',
                       action='store_true',
-                      help='Wait for confirmation before beginning navigation')
+                      help='Wait for confirmation before starting navigation')
+  parser.add_argument('--exit_prompt',
+                      '-e',
+                      action='store_true',
+                      help='Wait for confirmation before exiting chrome.exe')
   parser.add_argument(
       '--idlewakeups_dir',
       help='Windows only; directory containing idlewakeups.exe, if using')
@@ -144,7 +150,7 @@ def main():
   driver = webdriver.Chrome(os.path.abspath(chromedriver_exe),
                             options=chrome_options)
 
-  if args.wait:
+  if args.start_prompt:
     driver.get(args.url[0])
     raw_input('Press Enter to begin navigation...')
 
@@ -171,6 +177,9 @@ def main():
     for url in args.url:
       driver.get(url)
       time.sleep(interval)
+
+  if args.exit_prompt:
+    raw_input('Press Enter to exit...')
   driver.quit()
 
   # Print IdleWakeups' output, if using.

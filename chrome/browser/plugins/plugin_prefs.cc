@@ -35,7 +35,7 @@ using content::BrowserThread;
 
 namespace {
 
-bool IsPDFViewerPlugin(const base::string16& plugin_name) {
+bool IsPDFViewerPlugin(const std::u16string& plugin_name) {
   return (plugin_name ==
           base::ASCIIToUTF16(ChromeContentClient::kPDFExtensionPluginName)) ||
          (plugin_name ==
@@ -61,8 +61,7 @@ scoped_refptr<PluginPrefs> PluginPrefs::GetForTestingProfile(
 }
 
 PluginPrefs::PolicyStatus PluginPrefs::PolicyStatusForPlugin(
-    const base::string16& name) const {
-
+    const std::u16string& name) const {
   // Special handling for PDF based on its specific policy.
   if (IsPDFViewerPlugin(name) && always_open_pdf_externally_)
     return POLICY_DISABLED;
@@ -73,7 +72,7 @@ PluginPrefs::PolicyStatus PluginPrefs::PolicyStatusForPlugin(
 bool PluginPrefs::IsPluginEnabled(const content::WebPluginInfo& plugin) const {
   std::unique_ptr<PluginMetadata> plugin_metadata(
       PluginFinder::GetInstance()->GetPluginMetadata(plugin));
-  base::string16 group_name = plugin_metadata->name();
+  std::u16string group_name = plugin_metadata->name();
 
   // Check if the plugin or its group is enabled by policy.
   PolicyStatus plugin_status = PolicyStatusForPlugin(plugin.name);
@@ -123,12 +122,12 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
           continue;  // Oops, don't know what to do with this item.
         }
 
-        base::FilePath::StringType path;
+        std::string path;
         // The plugin list constains all the plugin files in addition to the
         // plugin groups.
         if (plugin->GetString("path", &path)) {
           // Files have a path attribute, groups don't.
-          base::FilePath plugin_path(path);
+          base::FilePath plugin_path = base::FilePath::FromUTF8Unsafe(path);
 
           // The path to the internal plugin directory changes everytime Chrome
           // is auto-updated, since it contains the current version number. For
@@ -164,7 +163,7 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
             // |last_internal_dir|. We don't need to update it.
             if (!relative_path.empty()) {
               plugin_path = cur_internal_dir.Append(relative_path);
-              path = plugin_path.value();
+              path = plugin_path.AsUTF8Unsafe();
               plugin->SetString("path", path);
             }
           }
@@ -176,8 +175,8 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
   UpdatePdfPolicy(prefs::kPluginsAlwaysOpenPdfExternally);
   registrar_.Init(prefs_);
   registrar_.Add(prefs::kPluginsAlwaysOpenPdfExternally,
-                 base::Bind(&PluginPrefs::UpdatePdfPolicy,
-                 base::Unretained(this)));
+                 base::BindRepeating(&PluginPrefs::UpdatePdfPolicy,
+                                     base::Unretained(this)));
 }
 
 void PluginPrefs::ShutdownOnUIThread() {

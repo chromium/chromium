@@ -24,6 +24,7 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -113,7 +114,7 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
         views::LayoutProvider::Get()->GetDialogInsetsForContentType(
             views::CONTROL, views::CONTROL);
     auto color_reference = std::make_unique<views::Label>(
-        base::string16(), views::style::CONTEXT_DIALOG_TITLE,
+        std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
         views::style::STYLE_PRIMARY);
     back_arrow->SizeToPreferredSize();
     back_arrow->SetX(dialog_insets.left());
@@ -154,7 +155,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
   title_label->SetAllowCharacterBreak(true);
   label_container->AddChildView(title_label.release());
 
-  base::string16 description = model()->GetStepDescription();
+  std::u16string description = model()->GetStepDescription();
   if (!description.empty()) {
     auto description_label = std::make_unique<views::Label>(
         std::move(description), views::style::CONTEXT_DIALOG_BODY_TEXT);
@@ -164,7 +165,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     label_container->AddChildView(description_label.release());
   }
 
-  base::string16 additional_desciption = model()->GetAdditionalDescription();
+  std::u16string additional_desciption = model()->GetAdditionalDescription();
   if (!additional_desciption.empty()) {
     auto label =
         std::make_unique<views::Label>(std::move(additional_desciption),
@@ -185,7 +186,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     contents_layout->SetFlexForView(step_specific_content_, 1);
   }
 
-  base::string16 error = model()->GetError();
+  std::u16string error = model()->GetError();
   if (!error.empty()) {
     auto error_label = std::make_unique<views::Label>(
         std::move(error), views::style::CONTEXT_LABEL, STYLE_RED);
@@ -221,3 +222,6 @@ void AuthenticatorRequestSheetView::UpdateIconColors() {
             *this, views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY)));
   }
 }
+
+BEGIN_METADATA(AuthenticatorRequestSheetView, views::View)
+END_METADATA

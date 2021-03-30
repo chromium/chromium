@@ -21,6 +21,7 @@ class Process;
 namespace performance_manager {
 
 class FrameNode;
+class WorkerNode;
 class ProcessNodeObserver;
 class RenderProcessHostProxy;
 
@@ -79,6 +80,10 @@ class ProcessNode : public Node {
   // calling this causes the set of nodes to be generated.
   virtual base::flat_set<const FrameNode*> GetFrameNodes() const = 0;
 
+  // Returns the set of worker nodes that are hosted in this process. Note that
+  // calling this causes the set of nodes to be generated.
+  virtual base::flat_set<const WorkerNode*> GetWorkerNodes() const = 0;
+
   // Returns true if the main thread task load is low (below some threshold
   // of usage). See ProcessNodeObserver::OnMainThreadTaskLoadIsLow.
   virtual bool GetMainThreadTaskLoadIsLow() const = 0;
@@ -116,7 +121,9 @@ class ProcessNodeObserver {
 
   // Node lifetime notifications.
 
-  // Called when a |process_node| is added to the graph.
+  // Called when a |process_node| is added to the graph. Observers must not make
+  // any property changes or cause re-entrant notifications during the scope of
+  // this call.
   virtual void OnProcessNodeAdded(const ProcessNode* process_node) = 0;
 
   // The process associated with |process_node| has been started or has exited.
@@ -124,7 +131,9 @@ class ProcessNodeObserver {
   // exit status properties have changed.
   virtual void OnProcessLifetimeChange(const ProcessNode* process_node) = 0;
 
-  // Called before a |process_node| is removed from the graph.
+  // Called before a |process_node| is removed from the graph. Observers must
+  // not make any property changes or cause re-entrant notifications during the
+  // scope of this call.
   virtual void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) = 0;
 
   // Notifications of property changes.

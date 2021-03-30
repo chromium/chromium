@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/text.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/html/html_pre_element.h"
@@ -38,6 +39,22 @@ TEST_F(TextTest, RemoveFirstLetterPseudoElementWhenNoLetter) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(text->GetLayoutObject()->IsTextFragment());
+}
+
+TEST_F(TextTest, splitTextToEmpty) {
+  V8TestingScope scope;
+
+  SetBodyContent("<p id=sample>ab</p>");
+  const Element& sample = *GetElementById("sample");
+  Text& text = *To<Text>(sample.firstChild());
+  // |new_text| is after |text|.
+  Text& new_text = *text.splitText(0, ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ("", text.data());
+  EXPECT_FALSE(text.GetLayoutObject());
+  EXPECT_EQ("ab", new_text.data());
+  EXPECT_TRUE(new_text.GetLayoutObject());
 }
 
 TEST_F(TextTest, TextLayoutObjectIsNeeded_CannotHaveChildren) {

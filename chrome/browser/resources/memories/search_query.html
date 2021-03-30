@@ -1,0 +1,33 @@
+<style>
+  :host {
+    border: 1px solid var(--border-color);
+    border-radius: var(--pill-border-radius);
+    display: block;
+  }
+
+  a {
+    color: inherit;
+    display: flex;
+    padding: 6px 16px 6px 12px;
+    text-decoration: none;
+  }
+
+  #icon {
+    -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--google-grey-600);
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+
+  #text {
+    font-size: 0.875rem;  /* 14px */
+    line-height: 22px;
+    margin-inline-start: 8px;
+  }
+</style>
+<a href$="[[searchQuery.url.url]]">
+  <div id="icon"></div>
+  <div id="text">[[decodeMojoString16(searchQuery.query)]]</div>
+</a>

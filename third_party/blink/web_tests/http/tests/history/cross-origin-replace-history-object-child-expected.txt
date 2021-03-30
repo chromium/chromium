@@ -1,5 +1,5 @@
 ALERT: PASS: Access to window.frames[0].history threw an exception.
-ALERT: About to shadow child window's history object: [object History]
-ALERT: Child window's history object should not be shadowed: [object History]
+CONSOLE MESSAGE: line 17: About to shadow child window's history object: [object History]
+CONSOLE MESSAGE: line 19: Child window's history object should not be shadowed: [object History]
 ALERT: PASS: Access to window.frames[0].history threw an exception.
 

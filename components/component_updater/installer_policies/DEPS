@@ -1,5 +1,10 @@
 include_rules = [
+  "+components/autofill/core/browser",
+  "+components/autofill/core/common",
   "+components/omnibox/browser",
   "+components/omnibox/common",
+  "+components/optimization_guide/core",
+  "+components/prefs",
   "+components/reputation/core",
+  "+services/network/public",
 ]

@@ -9,7 +9,7 @@
 // #import * as wrappedExif from '../../../file_manager/foreground/js/metadata/exif_constants.m.js'; const {Exif} = wrappedExif;
 // #import {MetadataItem} from '../../../file_manager/foreground/js/metadata/metadata_item.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js'
-// #import {ExifEntry} from '../../../externs/exif_entry.m.js';
+// #import {ExifEntry} from '../../../file_manager/externs/exif_entry.m.js';
 // clang-format on
 
 /**

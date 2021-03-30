@@ -1,0 +1,10 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+modules_idl_files = [
+  "color_select_event.idl",
+  "eye_dropper.idl",
+]
+
+modules_dictionary_idl_files = [ "color_select_event_init.idl" ]

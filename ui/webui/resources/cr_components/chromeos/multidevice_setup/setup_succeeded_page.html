@@ -10,27 +10,28 @@
   <template>
     <style include="multidevice-setup-shared">
       #page-icon-container {
+        align-items: center;
         display: flex;
+        flex: 1;
+        flex-direction: column;
         justify-content: center;
       }
 
-      #page-icon {
-        background-image: -webkit-image-set(
-                              url(setup_succeeded_icon_1x.png) 1x,
-                              url(setup_succeeded_icon_2x.png) 2x);
-        height: 156px;
-        margin-top: 64px;
-        width: 416px;
+      img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
       }
     </style>
     <ui-page header-text="[[i18nDynamic(locale, 'setupSucceededPageHeader')]]"
         icon-name="google-g">
       <span slot="message" inner-h-t-m-l="[[getMessageHtml_()]]"></span>
       <div id="page-icon-container" slot="additional-content">
-        <div id="page-icon"></div>
+        <img id="success-img" aria-hidden="true"
+            srcset="chrome://resources/cr_components/chromeos/multidevice_setup/all_set_1x.svg 1x,
+                    chrome://resources/cr_components/chromeos/multidevice_setup/all_set_2x.svg 2x">
       </div>
     </ui-page>
   </template>
-  <script src="setup_succeeded_page.js">
-  </script>
+  <script src="setup_succeeded_page.js"></script>
 </dom-module>

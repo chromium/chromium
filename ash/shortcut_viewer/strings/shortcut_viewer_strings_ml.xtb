@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">വിലാസ ബാറിലെ നിങ്ങളുടെ ഇന്‍‌പുട്ടിൽ www., .com എന്നിവ ചേർത്ത ശേഷം പേജ് തുറക്കുക</translation>
+<translation id="1768987374400973299">സ്ക്രീൻഷോട്ട്/റെക്കോർഡിംഗ് എടുക്കുക</translation>
 <translation id="1872219238824176091">നിലവിലെ ഡെസ്‌ക് നീക്കം ചെയ്യുക</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, തുടർന്ന് <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> അല്ലെങ്കിൽ <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">അടുത്ത ടാബിലേക്ക് പോവുക</translation>
 <translation id="2010818616644390445">വിൻഡോയിലെ അവസാന ടാബിലേക്ക് പോവുക</translation>
 <translation id="2040706009561734834">ലോഞ്ചർ തുറക്കുക/അടയ്ക്കുക</translation>
+<translation id="2086334242442703436">ഇമോജി പിക്കർ തുറക്കുക</translation>
 <translation id="2088054208777350526">കീബോഡ് കുറുക്കുവഴികള്‍ക്കായി തിരയുക</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> അല്ലെങ്കിൽ <ph name="F" /></translation>
 <translation id="2145908266289632567">ടെക്‌സ്‌റ്റ് എഡിറ്റ് ചെയ്യൽ</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Google അസിസ്റ്റന്റ് തുറക്കുക</translation>
 <translation id="2488661730534396940">ഇടതുവശത്ത് ഡെസ്‌ക് സജീവമാക്കുക</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Diagnostics ആപ്പ് തുറക്കുക</translation>
 <translation id="2530339807289914946">വെബ് പേജ് താഴേയ്‌ക്ക് സ്‌ക്രോൾ ചെയ്യുക</translation>
 <translation id="2530896289327917474">ക്രമീകരണത്തിൽ കാരറ്റ് ബ്രൗസ് ചെയ്യൽ ഓണാക്കാനോ ഓഫാക്കാനോ കഴിയും</translation>
 <translation id="2574014812750545982">പേജിൽ സൂം നില പുനഃസജ്ജീകരിക്കുക</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">അടുത്ത വാക്കിന്റെ അവസാനത്തിലേക്ക് നീങ്ങുക</translation>
 <translation id="4866066940972151697">വലതുവശത്ത് ഡെസ്‌ക് സജീവമാക്കുക</translation>
 <translation id="4916163929714267752">ഒരു പുതിയ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
+<translation id="492453977506755176">ക്യാപ്‌ചർ മോഡ് കീ</translation>
 <translation id="5030659775136592441">ബുക്ക്മാർക്ക് മാനേജർ കാണിക്കുക</translation>
 <translation id="5034421018520995080">പേജിന്റെ മുകളിലേക്ക് പോവുക</translation>
 <translation id="5042305953558921026">ചുരുക്കവിവരണ മോഡ് കീ</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">ഡെവലപ്പര്‍ ടൂളുകളുടെ കൺസോൾ കാണിക്കുക അല്ലെങ്കിൽ അദൃശ്യമാക്കുക</translation>
 <translation id="5919628958418675842">സ്വകാര്യതാ സ്‌ക്രീൻ ഓണാക്കുക അല്ലെങ്കിൽ ഓഫാക്കുക</translation>
 <translation id="5921745308587794300">വിൻഡോ തിരിക്കുക</translation>
+<translation id="5926306472221400972">പൂർണ്ണ സ്ക്രീനിന്റെ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="6022924867608035986">തിരയൽ ബോക്‌സ് ടെക്‌സ്‌റ്റ് മായ്‌ക്കുക</translation>
 <translation id="6045998054441862242">ഉയർന്ന ദൃശ്യ തീവ്രത മോഡ് ഓണാക്കുക</translation>
 <translation id="6052614013050385269">ലിങ്കിൽ വലത് ക്ലിക്ക് ചെയ്യുക</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">ടാബിനെ, അതിന്റെ യഥാർത്ഥ സ്ഥാനത്തേക്ക് തിരികെ കൊണ്ടുവരിക</translation>
 <translation id="6474744297082284761">സൂം ഔട്ട് ചെയ്യുക (ഡോക്ക് ചെയ്യുമ്പോൾ അല്ലെങ്കിൽ പൂർണ്ണസ്ക്രീൻ മാഗ്നിഫയറുകൾ പ്രവർത്തനക്ഷമമായിരിക്കുമ്പോൾ)</translation>
 <translation id="649811797655257835">ഫയൽ തിരഞ്ഞെടുക്കുക, തുടർന്ന് <ph name="SPACE" /> അമർത്തുക</translation>
+<translation id="6551886416582667425">ഭാഗിക സ്‌ക്രീൻഷോട്ട്/റെക്കോർഡിംഗ് എടുക്കുക</translation>
 <translation id="6556040137485212400">ഒരുപാട് സമയം ഉപയോഗിക്കാതിരുന്ന വിൻഡോ തുറക്കുക</translation>
 <translation id="666343722268997814">ഹൈലൈറ്റ് ചെയ്ത ഇനത്തിനായി വലത്-ക്ലിക്ക് മെനു തുറക്കുക</translation>
 <translation id="6671538777808758331">നിങ്ങളുടെ തിരയലിനായി അടുത്ത പൊരുത്തതിലേക്ക് പോവുക</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">പോപ്-അപ്പുകളിലേക്കും ഡയലോഗുകളിലേക്കും ഫോക്കസ് നീക്കുക</translation>
 <translation id="7635348532214572995">ആപ്പ് ഗ്രിഡിന് ചുറ്റും ആപ്പ് ഐക്കൺ നീക്കുക</translation>
 <translation id="766326951329901120">ക്ലിപ്‌ബോർഡിൽ നിന്നുള്ള ഉള്ളടക്കം സാധാരണ വാചകമായി ഒട്ടിക്കുക</translation>
+<translation id="7673453620027697230">വിൻഡോ സ്‌ക്രീൻഷോട്ട്/റെക്കോർഡിംഗ് എടുക്കുക</translation>
 <translation id="7703010453515335249">ഇടത് ബ്രാക്കറ്റ്</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, തുടർന്ന് <ph name="SPACE" /> അല്ലെങ്കിൽ <ph name="ENTER" /></translation>

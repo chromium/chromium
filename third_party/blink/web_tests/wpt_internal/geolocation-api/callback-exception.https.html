@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+setup({allow_uncaught_exception: true});
+
+description("Tests that when an exception is thrown in the success callback, the error callback is not invoked. Note that this test throws an exception which is not caught.");
+
+const mockLatitude = 51.478;
+const mockLongitude = -0.166;
+const mockAccuracy = 100;
+
+let position;
+
+let gotError = false;
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(mockLatitude,
+                            mockLongitude,
+                            mockAccuracy);
+navigator.geolocation.getCurrentPosition(function(p) {
+    position = p;
+    assert_equals(position.coords.latitude, mockLatitude);
+    assert_equals(position.coords.longitude, mockLongitude);
+    assert_equals(position.coords.accuracy, mockAccuracy);
+
+    // Yield to allow for the error callback to be invoked. The timer
+    // must be started before the exception is thrown.
+    window.setTimeout(assertWeGotException, 0);
+    window.onerror = () => { gotError = true; };
+    expectError();
+
+    throw new Error('Exception in success callback');
+}, function(e) {
+    testFailed('Error callback invoked unexpectedly');
+    finishJSTest();
+});
+
+function assertWeGotException()
+{
+    assert_true(gotError);
+    finishJSTest();
+}
+</script>
+</body>
+</html>

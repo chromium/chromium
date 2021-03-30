@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
 #include "base/rand_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

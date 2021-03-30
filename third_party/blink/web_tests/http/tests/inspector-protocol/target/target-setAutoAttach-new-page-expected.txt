@@ -10,7 +10,7 @@ Attached to the new page: {
             targetId : <string>
             title : 
             type : page
-            url : 
+            url : http://127.0.0.1:8000/inspector-protocol/resources/test-page.html?newpage
         }
         waitingForDebugger : true
     }

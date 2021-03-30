@@ -101,15 +101,6 @@ Polymer({
       computed: 'computeIsCurrentDestinationCrosLocal_(destination)',
       reflectToAttribute: true,
     },
-
-    /** @private */
-    saveToDriveFlagEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('printSaveToDrive');
-      },
-      readOnly: true,
-    },
   },
 
   /** @private {!IronMetaElement} */
@@ -121,6 +112,7 @@ Polymer({
       this.$$('#dropdown').$$('#destination-dropdown').focus();
       return;
     }
+
     this.$$('.md-select').focus();
   },
 
@@ -156,14 +148,14 @@ Polymer({
 
     // Check for the Docs or Save as PDF ids first.
     const keyParams = this.selectedValue.split('/');
-    // <if expr="chromeos">
     if (keyParams[0] === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
       return 'print-preview:save-to-drive';
     }
-    // </if>
+
     if (keyParams[0] === Destination.GooglePromotedId.DOCS) {
       return 'print-preview:save-to-drive';
     }
+
     if (keyParams[0] === Destination.GooglePromotedId.SAVE_AS_PDF) {
       return 'cr:insert-drive-file';
     }

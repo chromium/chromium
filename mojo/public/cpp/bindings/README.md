@@ -1742,23 +1742,20 @@ received.
 
 ### Versioned Enums
 
-For convenience, every extensible enum has a generated helper function to
-determine whether a received enum value is known by the implementation's current
-version of the enum definition. For example:
+All extensible enums should have one enumerator value designated as the default
+using the `[Default]` attribute. When Mojo deserializes an enum value that is
+not defined in the current version of the enum definition, that value will be
+transparently mapped to the `[Default]` enumerator value. Implementations can
+use the presence of this enumerator value to correctly handle version skew.
 
 ```cpp
 [Extensible]
 enum Department {
-  SALES,
-  DEV,
-  RESEARCH,
+  [Default] kUnknown,
+  kSales,
+  kDev,
+  kResearch,
 };
-```
-
-generates the function in the same namespace as the generated C++ enum type:
-
-```cpp
-inline bool IsKnownEnumValue(Department value);
 ```
 
 ### Using Mojo Bindings in Chrome

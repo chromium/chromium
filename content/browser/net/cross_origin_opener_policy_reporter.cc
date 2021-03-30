@@ -56,9 +56,8 @@ std::string ToString(network::mojom::CrossOriginOpenerPolicyValue coop_value) {
   }
 }
 
-base::Optional<base::UnguessableToken> GetFrameToken(
-    FrameTreeNode* frame,
-    SiteInstance* site_instance) {
+base::Optional<blink::FrameToken> GetFrameToken(FrameTreeNode* frame,
+                                                SiteInstance* site_instance) {
   RenderFrameHostImpl* rfh = frame->current_frame_host();
   if (rfh->GetSiteInstance() == site_instance)
     return rfh->GetFrameToken();
@@ -311,7 +310,7 @@ void CrossOriginOpenerPolicyReporter::MonitorAccesses(
   RenderFrameHostImpl* accessed_rfh = accessed_node->current_frame_host();
   SiteInstance* site_instance = accessing_rfh->GetSiteInstance();
 
-  base::Optional<base::UnguessableToken> accessed_window_token =
+  base::Optional<blink::FrameToken> accessed_window_token =
       GetFrameToken(accessed_node, site_instance);
   if (!accessed_window_token)
     return;

@@ -13,7 +13,7 @@ namespace blink {
 
 ServiceWorkerRegistrationSync::ServiceWorkerRegistrationSync(
     ServiceWorkerRegistration* registration)
-    : registration_(registration) {}
+    : Supplement(*registration) {}
 
 ServiceWorkerRegistrationSync::~ServiceWorkerRegistrationSync() = default;
 
@@ -40,10 +40,11 @@ SyncManager* ServiceWorkerRegistrationSync::sync(
 
 SyncManager* ServiceWorkerRegistrationSync::sync() {
   if (!sync_manager_) {
-    ExecutionContext* execution_context = registration_->GetExecutionContext();
+    ExecutionContext* execution_context =
+        GetSupplementable()->GetExecutionContext();
     // TODO(falken): Consider defining a task source in the spec for this event.
     sync_manager_ = MakeGarbageCollected<SyncManager>(
-        registration_,
+        GetSupplementable(),
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   }
   return sync_manager_.Get();
@@ -56,17 +57,17 @@ PeriodicSyncManager* ServiceWorkerRegistrationSync::periodicSync(
 
 PeriodicSyncManager* ServiceWorkerRegistrationSync::periodicSync() {
   if (!periodic_sync_manager_) {
-    ExecutionContext* execution_context = registration_->GetExecutionContext();
+    ExecutionContext* execution_context =
+        GetSupplementable()->GetExecutionContext();
     // TODO(falken): Consider defining a task source in the spec for this event.
     periodic_sync_manager_ = MakeGarbageCollected<PeriodicSyncManager>(
-        registration_,
+        GetSupplementable(),
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   }
   return periodic_sync_manager_.Get();
 }
 
 void ServiceWorkerRegistrationSync::Trace(Visitor* visitor) const {
-  visitor->Trace(registration_);
   visitor->Trace(sync_manager_);
   visitor->Trace(periodic_sync_manager_);
   Supplement<ServiceWorkerRegistration>::Trace(visitor);

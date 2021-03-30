@@ -169,7 +169,8 @@ EventRouter::EventRouter(BrowserContext* browser_context,
     : browser_context_(browser_context),
       extension_prefs_(extension_prefs),
       lazy_event_dispatch_util_(browser_context_) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 }
 
 EventRouter::~EventRouter() {
@@ -237,15 +238,17 @@ void EventRouter::RegisterObserver(Observer* observer,
                                    const std::string& event_name) {
   // Observing sub-event names like "foo.onBar/123" is not allowed.
   DCHECK(event_name.find('/') == std::string::npos);
-  observers_[event_name] = observer;
+  auto& observers = observer_map_[event_name];
+  if (!observers) {
+    observers = std::make_unique<Observers>();
+  }
+
+  observers->AddObserver(observer);
 }
 
 void EventRouter::UnregisterObserver(Observer* observer) {
-  for (auto it = observers_.begin(); it != observers_.end();) {
-    if (it->second == observer)
-      it = observers_.erase(it);
-    else
-      ++it;
+  for (auto& it : observer_map_) {
+    it.second->RemoveObserver(observer);
   }
 }
 
@@ -263,9 +266,12 @@ void EventRouter::OnListenerAdded(const EventListener* listener) {
       listener->listener_url(), listener->GetBrowserContext(),
       listener->worker_thread_id(), listener->service_worker_version_id());
   std::string base_event_name = GetBaseEventName(listener->event_name());
-  auto observer = observers_.find(base_event_name);
-  if (observer != observers_.end())
-    observer->second->OnListenerAdded(details);
+  auto it = observer_map_.find(base_event_name);
+  if (it != observer_map_.end()) {
+    for (auto& observer : *it->second) {
+      observer.OnListenerAdded(details);
+    }
+  }
 
   content::RenderProcessHost* process = listener->process();
   if (process) {
@@ -281,9 +287,12 @@ void EventRouter::OnListenerRemoved(const EventListener* listener) {
       listener->listener_url(), listener->GetBrowserContext(),
       listener->worker_thread_id(), listener->service_worker_version_id());
   std::string base_event_name = GetBaseEventName(listener->event_name());
-  auto observer = observers_.find(base_event_name);
-  if (observer != observers_.end())
-    observer->second->OnListenerRemoved(details);
+  auto it = observer_map_.find(base_event_name);
+  if (it != observer_map_.end()) {
+    for (auto& observer : *it->second) {
+      observer.OnListenerRemoved(details);
+    }
+  }
 }
 
 void EventRouter::RenderProcessExited(

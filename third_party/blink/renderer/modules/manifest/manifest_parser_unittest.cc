@@ -31,7 +31,8 @@ class ManifestParserTest : public testing::Test {
   mojom::blink::ManifestPtr& ParseManifestWithURLs(const String& data,
                                                    const KURL& manifest_url,
                                                    const KURL& document_url) {
-    ManifestParser parser(data, manifest_url, document_url);
+    ManifestParser parser(data, manifest_url, document_url,
+                          /*feature_context=*/nullptr);
     parser.Parse();
     Vector<mojom::blink::ManifestErrorPtr> errors;
     parser.TakeErrors(&errors);
@@ -69,7 +70,7 @@ TEST_F(ManifestParserTest, CrashTest) {
   // Passing temporary variables should not crash.
   const String json = "{\"start_url\": \"/\"}";
   KURL url("http://example.com");
-  ManifestParser parser(json, url, url);
+  ManifestParser parser(json, url, url, /*feature_context=*/nullptr);
 
   parser.Parse();
   Vector<mojom::blink::ManifestErrorPtr> errors;
@@ -203,53 +204,6 @@ TEST_F(ManifestParserTest, DescriptionParseRules) {
     ASSERT_TRUE(manifest->description.IsNull());
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'description' ignored, type string expected.",
-              errors()[0]);
-  }
-}
-
-TEST_F(ManifestParserTest, CategoriesParseRules) {
-  // Smoke test.
-  {
-    auto& manifest = ParseManifest(R"({ "categories": ["cats", "memes"] })");
-    ASSERT_EQ(2u, manifest->categories.size());
-    ASSERT_EQ(manifest->categories[0], "cats");
-    ASSERT_EQ(manifest->categories[1], "memes");
-    ASSERT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Trim whitespaces.
-  {
-    auto& manifest =
-        ParseManifest(R"({ "categories": ["  cats  ", "  memes  "] })");
-    ASSERT_EQ(2u, manifest->categories.size());
-    ASSERT_EQ(manifest->categories[0], "cats");
-    ASSERT_EQ(manifest->categories[1], "memes");
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Categories should be lower-cased.
-  {
-    auto& manifest = ParseManifest(R"({ "categories": ["CaTs", "Memes"] })");
-    ASSERT_EQ(2u, manifest->categories.size());
-    ASSERT_EQ(manifest->categories[0], "cats");
-    ASSERT_EQ(manifest->categories[1], "memes");
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Empty array.
-  {
-    auto& manifest = ParseManifest(R"({ "categories": [] })");
-    ASSERT_EQ(0u, manifest->categories.size());
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Detect error if categories isn't an array.
-  {
-    auto& manifest = ParseManifest(R"({ "categories": {} })");
-    ASSERT_EQ(0u, manifest->categories.size());
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'categories' ignored, type array expected.",
               errors()[0]);
   }
 }
@@ -642,7 +596,6 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
 }
 
 TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
-  ScopedWebAppManifestDisplayOverrideForTest display_override(true);
 
   // Smoke test: if no display_override, no value.
   {
@@ -2581,6 +2534,183 @@ TEST_F(ManifestParserTest, UrlHandlerParseRules) {
     ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
                     ->IsSameOriginWith(url_handlers[0]->origin.get()));
   }
+
+  // Parse invalid handler where the origin is a TLD.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://co.uk\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse origin with wildcard.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.foo.com\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(url_handlers[0]->origin.get()));
+    ASSERT_TRUE(url_handlers[0]->has_origin_wildcard);
+  }
+
+  // Parse invalid origin wildcard format.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*foo.com\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*foo.com")
+                    ->IsSameOriginWith(url_handlers[0]->origin.get()));
+    ASSERT_FALSE(url_handlers[0]->has_origin_wildcard);
+  }
+
+  // Parse origin where the host is just the wildcard prefix.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a TLD.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.com\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse invalid origin where wildcard is used with an unknown TLD.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.foo\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a multipart TLD.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.co.uk\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse valid origin with private registry.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.glitch.me\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://glitch.me")
+                    ->IsSameOriginWith(url_handlers[0]->origin.get()));
+    ASSERT_TRUE(url_handlers[0]->has_origin_wildcard);
+  }
+
+  // Parse valid IP address as origin.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8888\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(
+        blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8888")
+            ->IsSameOriginWith(url_handlers[0]->origin.get()));
+    ASSERT_FALSE(url_handlers[0]->has_origin_wildcard);
+  }
 }
 
 TEST_F(ManifestParserTest, ShareTargetParseRules) {
@@ -4047,6 +4177,122 @@ TEST_F(ManifestParserTest, GCMSenderIDParseRules) {
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'gcm_sender_id' ignored, type string expected.",
               errors()[0]);
+  }
+}
+
+TEST_F(ManifestParserTest, CaptureLinksParseRules) {
+  // Feature not enabled, should not be parsed.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": "none" })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+}
+
+class ManifestCaptureLinksParserTest : public ManifestParserTest {
+ public:
+  ManifestCaptureLinksParserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebAppEnableLinkCapturing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ManifestCaptureLinksParserTest, CaptureLinksParseRules) {
+  // Smoke test.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": "none" })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kNone);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": ["new-client"] })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kNewClient);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Empty array is fine.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": [] })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Unknown single string.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": "unknown" })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("capture_links value 'unknown' ignored, unknown value.",
+              errors()[0]);
+  }
+
+  // First known value in array is used.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "capture_links": ["none", "existing-client-navigate"] })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kNone);
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "capture_links": [
+        "unknown",
+        "existing-client-navigate",
+        "also-unknown",
+        "none"
+      ]
+    })");
+    EXPECT_EQ(manifest->capture_links,
+              mojom::blink::CaptureLinks::kExistingClientNavigate);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("capture_links value 'unknown' ignored, unknown value.",
+              errors()[0]);
+  }
+  {
+    auto& manifest = ParseManifest(R"({
+      "capture_links": [
+        1234,
+        "new-client",
+        null,
+        "none"
+      ]
+    })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kNewClient);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("capture_links value '1234' ignored, string expected.",
+              errors()[0]);
+  }
+
+  // Don't parse if the property isn't a string or array of strings.
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": null })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'capture_links' ignored, type string or array of strings "
+        "expected.",
+        errors()[0]);
+  }
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": 1234 })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'capture_links' ignored, type string or array of strings "
+        "expected.",
+        errors()[0]);
+  }
+  {
+    auto& manifest = ParseManifest(R"({ "capture_links": [12, 34] })");
+    EXPECT_EQ(manifest->capture_links, mojom::blink::CaptureLinks::kUndefined);
+    EXPECT_EQ(2u, GetErrorCount());
+    EXPECT_EQ("capture_links value '12' ignored, string expected.",
+              errors()[0]);
+    EXPECT_EQ("capture_links value '34' ignored, string expected.",
+              errors()[1]);
   }
 }
 

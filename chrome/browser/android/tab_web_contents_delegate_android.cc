@@ -21,7 +21,6 @@
 #include "chrome/android/chrome_jni_headers/TabWebContentsDelegateAndroidImpl_jni.h"
 #include "chrome/browser/android/hung_renderer_infobar_delegate.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/banners/app_banner_manager_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
@@ -37,7 +36,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -63,7 +62,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/security_state/content/content_utils.h"
 #include "content/public/browser/file_select_listener.h"
@@ -192,13 +191,13 @@ void TabWebContentsDelegateAndroid::RunFileChooser(
 
 void TabWebContentsDelegateAndroid::CreateSmsPrompt(
     content::RenderFrameHost* host,
-    const url::Origin& origin,
+    const std::vector<url::Origin>& origin_list,
     const std::string& one_time_code,
     base::OnceClosure on_confirm,
     base::OnceClosure on_cancel) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(host);
   sms::SmsInfoBar::Create(
-      web_contents, InfoBarService::FromWebContents(web_contents), origin,
+      web_contents, InfoBarService::FromWebContents(web_contents), origin_list,
       one_time_code, std::move(on_confirm), std::move(on_cancel));
 }
 
@@ -307,14 +306,6 @@ void TabWebContentsDelegateAndroid::SetOverlayMode(bool use_overlay_mode) {
 
   Java_TabWebContentsDelegateAndroidImpl_setOverlayMode(env, obj,
                                                         use_overlay_mode);
-}
-
-void TabWebContentsDelegateAndroid::RequestPpapiBrokerPermission(
-    WebContents* web_contents,
-    const GURL& url,
-    const base::FilePath& plugin_path,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
 }
 
 WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
@@ -567,6 +558,15 @@ bool TabWebContentsDelegateAndroid::CanShowAppBanners() const {
   if (obj.is_null())
     return false;
   return Java_TabWebContentsDelegateAndroidImpl_canShowAppBanners(env, obj);
+}
+
+bool TabWebContentsDelegateAndroid::IsTabLargeEnoughForDesktopSite() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return false;
+  return Java_TabWebContentsDelegateAndroidImpl_isTabLargeEnoughForDesktopSite(
+      env, obj);
 }
 
 const GURL TabWebContentsDelegateAndroid::GetManifestScope() const {

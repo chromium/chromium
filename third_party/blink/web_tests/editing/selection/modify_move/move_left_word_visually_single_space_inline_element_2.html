@@ -27,7 +27,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">אאא| <span>בב</span></div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 <span>\u05D1\u05D1|</span></div>',
+  '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 |<span>\u05D1\u05D1</span></div>',
   '2-3 left word');
 
 selection_test(

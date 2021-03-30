@@ -48,15 +48,13 @@ class AutofillRegexComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
 };
 
 // Call once during startup to make the component update service aware of
 // the File Type Policies component.
-void RegisterAutofillRegexComponent(ComponentUpdateService* cus,
-                                    const base::FilePath& user_data_dir);
+void RegisterAutofillRegexComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 

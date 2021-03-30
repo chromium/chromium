@@ -134,7 +134,7 @@ TEST(EscapeTest, UnescapeForHTML) {
       {"&amp; &", "& &"},
   };
   for (const auto& test : tests) {
-    base::string16 result = UnescapeForHTML(base::ASCIIToUTF16(test.input));
+    std::u16string result = UnescapeForHTML(base::ASCIIToUTF16(test.input));
     EXPECT_EQ(base::ASCIIToUTF16(test.expected_output), result);
   }
 }

@@ -24,7 +24,6 @@ import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -235,7 +234,6 @@ public class InfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @DisabledTest(message = "crbug.com/593003")
     public void testInfoBarForPopUp() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(POPUP_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not added");
@@ -248,9 +246,12 @@ public class InfoBarTest {
         mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
         Assert.assertEquals("Wrong infobar count", 0, infoBars.size());
 
-        // A second load should not show the infobar.
+        // A second load should open a popup and should not show the infobar.
+        int tabCount = mActivityTestRule.tabsCount(false);
         mActivityTestRule.loadUrl(mTestServer.getURL(POPUP_PAGE));
-        mListener.addInfoBarAnimationFinished("InfoBar added when it should not");
+        CriteriaHelper.pollUiThread(
+                () -> { return mActivityTestRule.tabsCount(false) > tabCount; });
+        Assert.assertEquals("Wrong infobar count", 0, infoBars.size());
     }
 
     /**

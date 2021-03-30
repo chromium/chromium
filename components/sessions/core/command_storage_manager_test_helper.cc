@@ -5,9 +5,11 @@
 #include "components/sessions/core/command_storage_manager_test_helper.h"
 
 #include "base/bind.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_manager.h"
-#include "components/sessions/core/snapshotting_command_storage_backend.h"
 
 namespace sessions {
 
@@ -24,6 +26,18 @@ void CommandStorageManagerTestHelper::RunTaskOnBackendThread(
       from_here, std::move(task));
 }
 
+void CommandStorageManagerTestHelper::RunMessageLoopUntilBackendDone() {
+  auto current_task_runner = base::ThreadTaskRunnerHandle::Get();
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  auto quit_from_backend =
+      base::BindLambdaForTesting([&current_task_runner, &quit_closure]() {
+        current_task_runner->PostTask(FROM_HERE, std::move(quit_closure));
+      });
+  RunTaskOnBackendThread(FROM_HERE, std::move(quit_from_backend));
+  run_loop.Run();
+}
+
 bool CommandStorageManagerTestHelper::ProcessedAnyCommands() {
   return command_storage_manager_->backend_->inited() ||
          !command_storage_manager_->pending_commands().empty();
@@ -31,14 +45,22 @@ bool CommandStorageManagerTestHelper::ProcessedAnyCommands() {
 
 std::vector<std::unique_ptr<SessionCommand>>
 CommandStorageManagerTestHelper::ReadLastSessionCommands() {
-  return static_cast<SnapshottingCommandStorageBackend*>(
-             command_storage_manager_->backend_.get())
-      ->ReadLastSessionCommands();
+  return command_storage_manager_->backend_.get()
+      ->ReadLastSessionCommands()
+      .commands;
 }
 
 scoped_refptr<base::SequencedTaskRunner>
 CommandStorageManagerTestHelper::GetBackendTaskRunner() {
   return command_storage_manager_->backend_task_runner_;
+}
+
+void CommandStorageManagerTestHelper::ForceAppendCommandsToFailForTesting() {
+  RunTaskOnBackendThread(
+      FROM_HERE,
+      base::BindOnce(
+          &CommandStorageBackend::ForceAppendCommandsToFailForTesting,
+          command_storage_manager_->backend_));
 }
 
 }  // namespace sessions

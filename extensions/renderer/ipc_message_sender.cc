@@ -16,6 +16,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/renderer/message_target.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
@@ -30,9 +31,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
   MainThreadIPCMessageSender() : render_thread_(content::RenderThread::Get()) {}
   ~MainThreadIPCMessageSender() override {}
 
-  void SendRequestIPC(
-      ScriptContext* context,
-      std::unique_ptr<ExtensionHostMsg_Request_Params> params) override {
+  void SendRequestIPC(ScriptContext* context,
+                      mojom::RequestParamsPtr params) override {
     content::RenderFrame* frame = context->GetRenderFrame();
     if (!frame)
       return;
@@ -184,9 +184,8 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         service_worker_version_id_(service_worker_version_id) {}
   ~WorkerThreadIPCMessageSender() override {}
 
-  void SendRequestIPC(
-      ScriptContext* context,
-      std::unique_ptr<ExtensionHostMsg_Request_Params> params) override {
+  void SendRequestIPC(ScriptContext* context,
+                      mojom::RequestParamsPtr params) override {
     DCHECK(!context->GetRenderFrame());
     DCHECK(context->IsForServiceWorker());
     DCHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());

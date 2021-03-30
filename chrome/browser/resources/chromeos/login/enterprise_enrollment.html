@@ -2,206 +2,231 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
 
 <dom-module id="enterprise-enrollment-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="gaia_card_parameters.css">
-    <link rel="stylesheet" href="oobe_popup_overlay.css">
-    <link rel="stylesheet" href="enterprise_enrollment.css">
-    <div id="stepContents">
-      <!-- OATH GAIA DIALOG -->
-      <div id="step-signin" for-step="signin">
-        <oobe-dialog class="gaia-dialog" role="dialog"
-            id="gaiaDialog" no-header
-            has-buttons="[[!isSamlSsoVisible_]]"
-            no-footer-padding footer-shrinkable>
-          <div slot="footer" id="signinFrameContainer"
-              class="flex layout vertical">
-            <div id="samlNoticeContainer" class="layout horizontal"
-                hidden="[[!isSamlSsoVisible_]]">
-              <div class="flex layout horizontal center-justified">
-                <span id="samlNoticeMessage"></span>
-              </div>
-              <cr-icon-button id="samlCloseButton" iron-icon="cr:close"
-                  on-click="cancel">
-              </cr-icon-button>
-            </div>
-            <webview id="authView" class="flex" name="authView"></webview>
-          </div>
-          <div slot="back-navigation">
-            <oobe-back-button id="signinBackButton"
-                disabled="[[authenticatorDialogDisplayed_]]"
-                on-click="onBackButtonClicked_"></oobe-back-button>
-          </div>
-        </oobe-dialog>
+    <style include="oobe-dialog-host">
+      host {
+        padding: 0;
+      }
+
+      #learnMoreLink {
+        display: inline;
+      }
+
+      .step-message {
+        display: inline-block;
+        padding-top: 20px;
+        text-align: start;
+        vertical-align: top;
+      }
+
+      :host-context(html[new-layout]) #contentEnrolling {
+        display: none;
+      }
+
+      :host-context(html:not([new-layout])) #subtitleEnrolling {
+        display: none;
+      }
+
+      #attributePromptMessage {
+        color: black;
+      }
+
+      :host-context(html:not(html[new-layout])) .illustration {
+        display: none;
+      }
+      :host-context(html[new-layout]) .illustration-old {
+        display: none;
+      }
+    </style>
+    <!-- OAUTH GAIA DIALOG -->
+    <gaia-dialog id="step-signin" class="flex" for-step="signin"
+        auth-flow="{{authFlow_}}"
+        is-saml-sso-visible="[[isSaml_(authFlow_)]]"
+        webview-name="authView"
+        on-backcancel="cancel"
+        on-closesaml="cancel"
+        on-ready="onReady">
+    </gaia-dialog>
+
+    <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->
+    <oobe-adaptive-dialog id="step-working" for-step="working">
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
+      </h1>
+      <p slot="subtitle" id="subtitleEnrolling">
+        [[i18nDynamic(locale, 'oauthEnrollWorking')]]
+      </p>
+      <paper-progress slot="progress" indeterminate>
+      </paper-progress>
+      <div slot="content" class="flex layout vertical" role="alert">
+        <div class="step-message" id="contentEnrolling">
+          [[i18nDynamic(locale, 'oauthEnrollWorking')]]
+        </div>
       </div>
+    </oobe-adaptive-dialog>
 
-      <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->
-      <oobe-dialog id="step-working" for-step="working"
-          title-key="oauthEnrollScreenTitle">
-        <hd-iron-icon slot="oobe-icon"
-            icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
-        </hd-iron-icon>
-        <paper-progress slot="progress" indeterminate>
-        </paper-progress>
-        <div slot="footer" class="flex layout vertical" role="alert">
-          <div class="step-message">
-            [[i18nDynamic(locale, 'oauthEnrollWorking')]]
-          </div>
-        </div>
-      </oobe-dialog>
-      <div id="step-ad-join" for-step="ad-join">
-        <offline-ad-login-element id="adJoinUI" is-domain-join
-            class="fit"
-            ad-welcome-message-key="oauthEnrollAdDomainJoinWelcomeMessage">
-        </offline-ad-login-element>
+    <offline-ad-login-element id="step-ad-join" is-domain-join
+        for-step="ad-join"
+        class="fit"
+        ad-welcome-message-key="oauthEnrollAdDomainJoinWelcomeMessage">
+    </offline-ad-login-element>
+
+    <!--  ERROR DIALOG -->
+    <!-- There are three kinds of errors:
+            - General
+            - AttributePrompt
+            - ActiveDirectoryJoin
+
+        They share the same structure but have different bottom buttons.
+            General: [ Back, Skip/Manual Enrollment, Try Again ]
+            AttributePrompt: [ 'Done' ]
+            ActiveDirectoryJoin: [ 'Try Again' ]
+    -->
+    <oobe-adaptive-dialog id="step-error" role="alert"
+        for-step="error, attribute-prompt-error, active-directory-join-error">
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">[[i18nDynamic(locale, 'oauthEnrollErrorTitle')]]</h1>
+      <div id="errorMsg" slot="subtitle">[[errorText_]]</div>
+      <div slot="content"
+          class="flex layout vertical center center-justified">
+        <img srcset="images/1x/error.svg 1x,
+                     images/2x/error.svg 2x"
+            alt$="[[i18nDynamic(locale,
+                'enrollmentErrorIllustrationTitle')]]"
+            class="oobe-illustration">
       </div>
-
-      <!--  ERROR DIALOG -->
-      <!-- There are three kinds of errors:
-              - General
-              - AttributePrompt
-              - ActiveDirectoryJoin
-
-           They share the same structure but have different bottom buttons.
-              General: [ Back, Skip/Manual Enrollment, Try Again ]
-              AttributePrompt: [ 'Done' ]
-              ActiveDirectoryJoin: [ 'Try Again' ]
-      -->
-      <oobe-dialog id="step-error" has-buttons role="alert"
-          for-step="error, attribute-prompt-error, active-directory-join-error">
-        <hd-iron-icon slot="oobe-icon"
-                      icon1x="oobe-32:enterprise"
-                      icon2x="oobe-64:enterprise"></hd-iron-icon>
-        <h1 slot="title">[[i18nDynamic(locale, 'oauthEnrollErrorTitle')]]</h1>
-        <div id="errorMsg" slot="subtitle">[[errorText_]]</div>
-        <div slot="footer"
-            class="flex layout vertical center center-justified">
-          <img srcset="images/1x/enrollment_error_illustration.svg 1x,
-                  images/2x/enrollment_error_illustration.svg 2x"
-              alt$="[[i18nDynamic(locale,
-                  'enrollmentErrorIllustrationTitle')]]"
-              class="oobe-illustration">
-        </div>
-        <div slot="back-navigation">
-           <!-- BACK - Shown when the generic cancel button is hidden -->
-           <oobe-back-button id="errorCancelBackButton"
-              hidden$="[[isGenericCancel_(isAutoEnroll_, isForced_)]]"
-              on-click="cancel"></oobe-back-button>
-        </div>
-        <div slot="bottom-buttons">
-          <!-- BOTTOM BUTTONS: GENERIC ERROR -->
-          <div id="genericErrorBottomButtons"
-              class="flex layout horizontal end-justified" for-step="error">
-            <!-- GENERAL CANCEL BUTTON (SKIP / ENROLL MANUALLY) -->
-            <oobe-text-button id="errorGenericCancelButton"
-                hidden$="[[!isGenericCancel_(isAutoEnroll_, isForced_)]]"
-                on-click="cancel"  inverse$="[[!canRetryAfterError_]]"
-                text-key="[[getCancelButtonLabel_(locale, isAutoEnroll_)]]">
-            </oobe-text-button>
-
-            <!-- TRY AGAIN BUTTON -  -->
-            <oobe-text-button inverse id="errorRetryButton"
-              hidden$="[[!canRetryAfterError_]]"
-              on-click="doRetry_" class="focus-on-show"
-              text-key="oauthEnrollRetry">
-            </oobe-text-button>
-          </div>
-
-          <!-- BOTTOM BUTTONS: ACTIVE DIRECTORY JOIN ERROR-->
-          <div for-step="active-directory-join-error">
-            <oobe-text-button inverse id="adRetryButton"
-                on-click="onAdJoinErrorRetry_" class="focus-on-show"
-                text-key="oauthEnrollRetry">
-            </oobe-text-button>
-          </div>
-
-          <!-- BOTTOM BUTTONS: ATTRIBUTE ERROR -->
-          <div for-step="attribute-prompt-error">
-            <oobe-text-button inverse id="attributeErrorButton"
-                on-click="onEnrollmentFinished_" class="focus-on-show"
-                text-key="oauthEnrollDone">
-            </oobe-text-button>
-          </div>
-
-        </div>
-      </oobe-dialog>
-
-      <!-- SUCCESS DIALOG -->
-      <oobe-dialog has-buttons id="step-success" for-step="success" role="alert"
-          title-key="oauthEnrollSuccessTitle" footer-shrinkable>
-        <hd-iron-icon slot="oobe-icon"
-            icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
-        </hd-iron-icon>
-        <!-- Hide the subtitle if the domain could not be determined. -->
-        <div hidden="[[isEmpty_(domainManager_)]]" class="self-start"
-            slot="subtitle">
-          <div>[[successText_(locale, deviceName_, domainManager_)]]</div>
-        </div>
-        <div slot="footer" class="flex layout vertical center end-justified">
-          <img srcset="images/enrollment_success_illustration_1x.png 1x,
-                  images/enrollment_success_illustration_2x.png 2x"
-               alt$="[[i18nDynamic(locale,
-                  'enrollmentSuccessIllustrationTitle')]]"
-               class="oobe-illustration">
-        </div>
-        <div slot="bottom-buttons" class="layout horizontal end-justified">
-          <oobe-text-button inverse id="successDoneButton"
-              text-key="oauthEnrollDone" on-click="onEnrollmentFinished_"
-              class="focus-on-show"></oobe-text-button>
-        </div>
-      </oobe-dialog>
-
-      <!-- ATTRIBUTE PROMPT DIALOG -->
-      <oobe-dialog id="step-attribute-prompt" for-step="attribute-prompt"
-          has-buttons title-key="oauthEnrollScreenTitle"
-          subtitle-key="oauthEnrollDeviceInformation">
-        <hd-iron-icon slot="oobe-icon"
-            icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
-        </hd-iron-icon>
-        <div slot="footer" class="flex layout vertical">
-          <div class="step-message">
-            <span id="attributePromptMessage">
-              [[i18nDynamic(locale, 'oauthEnrollAttributeExplanation')]]
-            </span>
-            <a id="learnMoreLink" class="oobe-local-link" is="action-link"
-                on-click="onLearnMore_">
-              [[i18nDynamic(locale, 'oauthEnrollExplainAttributeLink')]]
-            </a>
-          </div>
-          <div class="oobe-form">
-            <cr-input id="assetId" type="text" value="{{assetId_}}"
-                class="focus-on-show"
-                label="[[i18nDynamic(locale, 'enrollmentAssetIdLabel')]]">
-            </cr-input>
-            <cr-input id="location" type="text" value="{{deviceLocation_}}"
-                label="[[i18nDynamic(locale, 'enrollmentLocationLabel')]]">
-            </cr-input>
-          </div>
-        </div>
-        <div slot="bottom-buttons" class="layout horizontal end-justified">
-          <oobe-text-button id="attributesSkip"
-              text-key="oauthEnrollSkip" on-click="skipAttributes_">
+      <div slot="back-navigation">
+        <!-- BACK - Shown when the generic cancel button is hidden -->
+        <oobe-back-button id="errorCancelBackButton"
+            hidden$="[[isGenericCancel_(isAutoEnroll_, isForced_)]]"
+            on-click="cancel"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <!-- BOTTOM BUTTONS: GENERIC ERROR -->
+        <div id="genericErrorBottomButtons"
+            class="flex layout horizontal end-justified" for-step="error">
+          <!-- GENERAL CANCEL BUTTON (SKIP / ENROLL MANUALLY) -->
+          <oobe-text-button id="errorGenericCancelButton"
+              hidden$="[[!isGenericCancel_(isAutoEnroll_, isForced_)]]"
+              on-click="cancel"  inverse$="[[!canRetryAfterError_]]"
+              text-key="[[getCancelButtonLabel_(locale, isAutoEnroll_)]]">
           </oobe-text-button>
-          <div class="flex"></div>
-          <oobe-next-button id="attributesSubmit"
-              on-click="submitAttributes_"></oobe-next-button>
+
+          <!-- TRY AGAIN BUTTON -  -->
+          <oobe-text-button inverse id="errorRetryButton"
+            hidden$="[[!canRetryAfterError_]]"
+            on-click="doRetry_" class="focus-on-show"
+            text-key="oauthEnrollRetry">
+          </oobe-text-button>
         </div>
-      </oobe-dialog>
-    </div>
-    <div class="popup-overlay"
-        hidden="[[!showPopupOverlay_(authenticatorDialogDisplayed_,
-                                     isSamlSsoVisible_)]]">
-    </div>
+
+        <!-- BOTTOM BUTTONS: ACTIVE DIRECTORY JOIN ERROR-->
+        <div for-step="active-directory-join-error">
+          <oobe-text-button inverse id="adRetryButton"
+              on-click="onAdJoinErrorRetry_" class="focus-on-show"
+              text-key="oauthEnrollRetry">
+          </oobe-text-button>
+        </div>
+
+        <!-- BOTTOM BUTTONS: ATTRIBUTE ERROR -->
+        <div for-step="attribute-prompt-error">
+          <oobe-text-button inverse id="attributeErrorButton"
+              on-click="onEnrollmentFinished_" class="focus-on-show"
+              text-key="oauthEnrollDone">
+          </oobe-text-button>
+        </div>
+
+      </div>
+    </oobe-adaptive-dialog>
+
+    <!-- SUCCESS DIALOG -->
+    <oobe-adaptive-dialog id="step-success" for-step="success" role="alert"
+        footer-shrinkable>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oauthEnrollSuccessTitle')]]
+      </h1>
+      <!-- Hide the subtitle if the domain could not be determined. -->
+      <div slot="subtitle" class="self-start" hidden="[[isMeet_]]">
+        <div hidden="[[isEmpty_(domainManager_)]]">
+          [[successText_(locale, deviceName_, domainManager_)]]
+        </div>
+      </div>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img srcset="images/enrollment_success_illustration_1x.png 1x,
+                     images/enrollment_success_illustration_2x.png 2x"
+            alt$="[[i18nDynamic(locale,
+                'enrollmentSuccessIllustrationTitle')]]"
+            class="oobe-illustration illustration-old">
+        <img src="images/enrollment_complete.svg"
+            alt$="[[i18nDynamic(locale,
+                  'enrollmentSuccessIllustrationTitle')]]"
+            class="oobe-illustration illustration" hidden="[[isMeet_]]">
+        <img src="images/cfm/enrollment.svg"
+            alt$="[[i18nDynamic(locale,
+                'enrollmentSuccessIllustrationTitle')]]"
+            class="oobe-illustration illustration" hidden="[[!isMeet_]]">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button inverse id="successDoneButton"
+            text-key="oauthEnrollDone" on-click="onEnrollmentFinished_"
+            class="focus-on-show"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <!-- ATTRIBUTE PROMPT DIALOG -->
+    <oobe-adaptive-dialog id="step-attribute-prompt"
+        for-step="attribute-prompt">
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'oauthEnrollDeviceInformation')]]
+      </p>
+      <div slot="content" class="flex layout vertical">
+        <div class="step-message">
+          <span id="attributePromptMessage">
+            [[i18nDynamic(locale, 'oauthEnrollAttributeExplanation')]]
+          </span>
+          <a id="learnMoreLink" class="oobe-local-link" is="action-link"
+              on-click="onLearnMore_">
+            [[i18nDynamic(locale, 'oauthEnrollExplainAttributeLink')]]
+          </a>
+        </div>
+        <div class="oobe-form">
+          <cr-input id="assetId" type="text" value="{{assetId_}}"
+              class="focus-on-show"
+              label="[[i18nDynamic(locale, 'enrollmentAssetIdLabel')]]">
+          </cr-input>
+          <cr-input id="location" type="text" value="{{deviceLocation_}}"
+              label="[[i18nDynamic(locale, 'enrollmentLocationLabel')]]">
+          </cr-input>
+        </div>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="attributesSkip"
+            text-key="oauthEnrollSkip" on-click="skipAttributes_">
+        </oobe-text-button>
+        <div class="flex"></div>
+        <oobe-next-button id="attributesSubmit"
+            on-click="submitAttributes_"></oobe-next-button>
+      </div>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

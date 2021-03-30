@@ -126,7 +126,8 @@ and relevant headers.
 `login_bubble_dialog_example.cc`
 
 ``` cpp
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -135,7 +136,7 @@ namespace {
 
 // Adds a label textfield pair to the login dialog's layout.
 views::Textfield* AddFormRow(views::GridLayout* layout,
-                             const base::string16& label_text) {
+                             const std::u16string& label_text) {
   layout->StartRow(0, 0);
   views::Label* label =
       layout->AddView(std::make_unique<views::Label>(label_text));
@@ -235,12 +236,12 @@ passed in by the caller. Update the code as follows.
 
 
 ``` cpp
-#include "base/strings/string16.h"
+#include <string>
 ...
 class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
  public:
-  using OnSubmitCallback = base::OnceCallback<void(base::string16 username,
-                                                   base::string16 password)>;
+  using OnSubmitCallback = base::OnceCallback<void(std::u16string username,
+                                                   std::u16string password)>;
 
   static void Show(View* anchor_view,
                    BubbleBorder::Arrow anchor_position,
@@ -322,7 +323,7 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView,
   ...
   // TextfieldController:
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   ...
 };
 ```
@@ -334,7 +335,7 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView,
 ``` cpp
 views::Textfield* AddFormRow(LoginBubbleDialogView* bubble,
                              views::GridLayout* layout,
-                             const base::string16& label_text) {
+                             const std::u16string& label_text) {
   ...
   textfield->set_controller(bubble);
   return textfield;
@@ -343,7 +344,7 @@ views::Textfield* AddFormRow(LoginBubbleDialogView* bubble,
 
 void LoginBubbleDialogView::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, !username_->GetText().empty() &&
                                              !password_->GetText().empty());
   DialogModelChanged();
@@ -387,7 +388,8 @@ The final code should resemble the following:
 #ifndef LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 #define LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -396,8 +398,8 @@ The final code should resemble the following:
 class LoginBubbleDialogView : public BubbleDialogDelegateView,
                               public TextfieldController {
  public:
-  using OnSubmitCallback = base::OnceCallback<void(base::string16 username,
-                                                   base::string16 password)>;
+  using OnSubmitCallback = base::OnceCallback<void(std::u16string username,
+                                                   std::u16string password)>;
 
   static void Show(View* anchor_view,
                    BubbleBorder::Arrow anchor_position,
@@ -407,7 +409,7 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 
   // TextfieldController:
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
  private:
   LoginBubbleDialogView(View* anchor_view,
@@ -432,9 +434,10 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 
 #include "login_bubble_dialog_example.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -446,7 +449,7 @@ namespace {
 // Adds a label textfield pair to the login dialog's layout.
 Textfield* AddFormRow(LoginBubbleDialogView* bubble,
                       GridLayout* layout,
-                      const base::string16& label_text) {
+                      const std::u16string& label_text) {
   layout->StartRow(0, 0);
   Label* label = layout->AddView(std::make_unique<Label>(label_text));
   Textfield* textfield = layout->AddView(std::make_unique<Textfield>());
@@ -475,7 +478,7 @@ LoginBubbleDialogView::~LoginBubbleDialogView() = default;
 
 void LoginBubbleDialogView::ContentsChanged(
     Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, !username_->GetText().empty() &&
                                              !password_->GetText().empty());
   DialogModelChanged();

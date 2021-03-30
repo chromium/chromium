@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout xmlns:a="http://schemas.android.com/apk/res/android"
+    a:layout_width="match_parent"
+    a:layout_height="match_parent"
+    a:gravity="center"
+    a:orientation="vertical">
+
+  <TextView
+      a:id="@+id/error_title"
+      style="@style/TextAppearance.Headline.Primary"
+      a:layout_width="match_parent"
+      a:layout_height="wrap_content"
+      a:layout_marginTop="104dp"
+      a:gravity="center_horizontal"
+      a:text="@string/cablev2_error_title"/>
+
+  <!-- This is a semantically-meaningless picture of a sad tab that
+       screen readers can ignore. Thus contentDescription is null. -->
+  <ImageView
+      a:layout_width="210dp"
+      a:layout_height="128dp"
+      a:layout_marginTop="52dp"
+      a:layout_marginBottom="35dp"
+      a:contentDescription="@null"
+      a:gravity="center_horizontal"
+      a:src="@drawable/error_icon"/>
+
+  <TextView
+      a:id="@+id/error_description"
+      style="@style/TextAppearance.TextMedium.Secondary"
+      a:layout_marginTop="4dp"
+      a:layout_marginLeft="40dp"
+      a:layout_marginRight="40dp"
+      a:layout_width="wrap_content"
+      a:layout_height="wrap_content"
+      a:gravity="center_horizontal"/>
+
+  <TextView
+      a:id="@+id/error_code"
+      style="@style/TextAppearance.TextMedium.Disabled"
+      a:layout_marginTop="4dp"
+      a:layout_marginLeft="40dp"
+      a:layout_marginRight="40dp"
+      a:layout_width="wrap_content"
+      a:layout_height="wrap_content"
+      a:gravity="center_horizontal"/>
+
+  <LinearLayout
+      a:layout_width="match_parent"
+      a:layout_height="0dp"
+      a:layout_weight="1"
+      a:gravity="bottom|center">
+
+    <org.chromium.ui.widget.ButtonCompat
+        a:id="@+id/error_close"
+        style="@style/TextButton"
+        a:layout_width="wrap_content"
+        a:layout_height="wrap_content"
+        a:gravity="bottom|center"
+        a:layout_marginBottom="35dp"
+        a:text="@string/cablev2_error_close"/>
+
+  </LinearLayout>
+</LinearLayout>

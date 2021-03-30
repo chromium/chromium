@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,6 +45,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 using content::OpenURLParams;
@@ -61,17 +62,20 @@ int g_install_delay_in_ms = 500;
 // (i.e., "Rated 4.2 stars by 379 reviews" rather than "image image...379").
 class RatingsView : public views::View {
  public:
+  METADATA_HEADER(RatingsView);
   RatingsView(double rating, int rating_count)
       : rating_(rating), rating_count_(rating_count) {
     SetID(ExtensionInstallDialogView::kRatingsViewId);
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
   }
-  ~RatingsView() override {}
+  RatingsView(const RatingsView&) = delete;
+  RatingsView& operator=(const RatingsView&) = delete;
+  ~RatingsView() override = default;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kStaticText;
-    base::string16 accessible_text;
+    std::u16string accessible_text;
     if (rating_count_ == 0) {
       accessible_text = l10n_util::GetStringUTF16(
           IDS_EXTENSION_PROMPT_NO_RATINGS_ACCESSIBLE_TEXT);
@@ -87,42 +91,49 @@ class RatingsView : public views::View {
  private:
   double rating_;
   int rating_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(RatingsView);
 };
+
+BEGIN_METADATA(RatingsView, views::View)
+END_METADATA
 
 // A custom view for the ratings star image that will be ignored by screen
 // readers (since the RatingsView handles the context).
 class RatingStar : public views::ImageView {
  public:
+  METADATA_HEADER(RatingStar);
   explicit RatingStar(const gfx::ImageSkia& image) { SetImage(image); }
-  ~RatingStar() override {}
+  RatingStar(const RatingStar&) = delete;
+  RatingStar& operator=(const RatingStar&) = delete;
+  ~RatingStar() override = default;
 
   // views::ImageView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kIgnored;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RatingStar);
 };
+
+BEGIN_METADATA(RatingStar, views::ImageView)
+END_METADATA
 
 // A custom view for the ratings label that will be ignored by screen readers
 // (since the RatingsView handles the context).
 class RatingLabel : public views::Label {
  public:
-  RatingLabel(const base::string16& text, int text_context)
+  METADATA_HEADER(RatingLabel);
+  RatingLabel(const std::u16string& text, int text_context)
       : views::Label(text, text_context, views::style::STYLE_PRIMARY) {}
-  ~RatingLabel() override {}
+  RatingLabel(const RatingLabel&) = delete;
+  RatingLabel& operator=(const RatingLabel&) = delete;
+  ~RatingLabel() override = default;
 
   // views::Label:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kIgnored;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RatingLabel);
 };
+
+BEGIN_METADATA(RatingLabel, views::Label)
+END_METADATA
 
 void AddResourceIcon(const gfx::ImageSkia* skia_image, void* data) {
   views::View* parent = static_cast<views::View*>(data);
@@ -145,9 +156,12 @@ void ShowExtensionInstallDialogImpl(
 // A custom scrollable view implementation for the dialog.
 class CustomScrollableView : public views::View {
  public:
+  METADATA_HEADER(CustomScrollableView);
   explicit CustomScrollableView(ExtensionInstallDialogView* parent)
       : parent_(parent) {}
-  ~CustomScrollableView() override {}
+  CustomScrollableView(const CustomScrollableView&) = delete;
+  CustomScrollableView& operator=(const CustomScrollableView&) = delete;
+  ~CustomScrollableView() override = default;
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override {
@@ -159,14 +173,15 @@ class CustomScrollableView : public views::View {
   // This view is an child of the dialog view (via |scroll_view_|) and thus will
   // not outlive it.
   ExtensionInstallDialogView* parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomScrollableView);
 };
+
+BEGIN_METADATA(CustomScrollableView, views::View)
+END_METADATA
 
 // Represents one section in the scrollable info area, which could be a block of
 // permissions, a list of retained files, or a list of retained devices.
 struct ExtensionInfoSection {
-  base::string16 header;
+  std::u16string header;
   std::unique_ptr<views::View> contents_view;
 };
 
@@ -395,7 +410,7 @@ bool ExtensionInstallDialogView::IsDialogButtonEnabled(
   return true;
 }
 
-base::string16 ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
+std::u16string ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
   return title_;
 }
 
@@ -467,7 +482,7 @@ void ExtensionInstallDialogView::CreateContents() {
   }
 
   if (prompt_->GetRetainedFileCount()) {
-    std::vector<base::string16> details;
+    std::vector<std::u16string> details;
     for (size_t i = 0; i < prompt_->GetRetainedFileCount(); ++i) {
       details.push_back(prompt_->GetRetainedFile(i));
     }
@@ -477,7 +492,7 @@ void ExtensionInstallDialogView::CreateContents() {
   }
 
   if (prompt_->GetRetainedDeviceCount()) {
-    std::vector<base::string16> details;
+    std::vector<std::u16string> details;
     for (size_t i = 0; i < prompt_->GetRetainedDeviceCount(); ++i) {
       details.push_back(prompt_->GetRetainedDeviceMessageString(i));
     }
@@ -539,6 +554,9 @@ void ExtensionInstallDialogView::UpdateInstallResultHistogram(bool accepted)
     }
   }
 }
+
+BEGIN_METADATA(ExtensionInstallDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 // static
 ExtensionInstallPrompt::ShowDialogCallback

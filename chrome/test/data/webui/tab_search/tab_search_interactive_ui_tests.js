@@ -14,7 +14,7 @@ GEN('#include "services/network/public/cpp/features.h"');
 var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://tab-search/test_loader.html?module=tab_search/tab_search_app_focus_test.js';
+    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/tab_search_app_focus_test.js';
   }
 
   /** @override */
@@ -27,7 +27,7 @@ var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
   }
 };
 
-GEN('#if defined(OS_MAC)');
+GEN('#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');

@@ -34,6 +34,8 @@ class XRImageTrackingResult : public ScriptWrappable {
 
   const String& trackingState() { return tracking_state_string_; }
 
+  bool IsStationary() const { return false; }
+
   void Trace(Visitor* visitor) const override;
 
  private:

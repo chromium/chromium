@@ -107,7 +107,7 @@ class MultiResolutionImageResourceFetcher::ClientImpl
 MultiResolutionImageResourceFetcher::MultiResolutionImageResourceFetcher(
     const KURL& image_url,
     LocalFrame* frame,
-    mojom::blink::RequestContextType request_context,
+    bool is_favicon,
     mojom::blink::FetchCacheMode cache_mode,
     Callback callback)
     : callback_(std::move(callback)),
@@ -116,7 +116,7 @@ MultiResolutionImageResourceFetcher::MultiResolutionImageResourceFetcher(
   WebAssociatedURLLoaderOptions options;
   SetLoaderOptions(options);
 
-  if (request_context == mojom::blink::RequestContextType::FAVICON) {
+  if (is_favicon) {
     // To prevent cache tainting, the cross-origin favicon requests have to
     // by-pass the service workers. This should ideally not happen. But Chrome’s
     // FaviconDatabase is using the icon URL as a key of the "favicons" table.
@@ -130,10 +130,10 @@ MultiResolutionImageResourceFetcher::MultiResolutionImageResourceFetcher(
 
   SetCacheMode(cache_mode);
 
-  Start(frame, request_context, network::mojom::RequestMode::kNoCors,
+  Start(frame, is_favicon, network::mojom::RequestMode::kNoCors,
         network::mojom::CredentialsMode::kInclude,
         WTF::Bind(&MultiResolutionImageResourceFetcher::OnURLFetchComplete,
-          WTF::Unretained(this)));
+                  WTF::Unretained(this)));
 }
 
 MultiResolutionImageResourceFetcher::~MultiResolutionImageResourceFetcher() {
@@ -193,7 +193,7 @@ void MultiResolutionImageResourceFetcher::SetLoaderOptions(
 
 void MultiResolutionImageResourceFetcher::Start(
     LocalFrame* frame,
-    mojom::blink::RequestContextType request_context,
+    bool is_favicon,
     network::mojom::RequestMode request_mode,
     network::mojom::CredentialsMode credentials_mode,
     StartCallback callback) {
@@ -203,11 +203,15 @@ void MultiResolutionImageResourceFetcher::Start(
   if (!request_.HttpBody().IsNull())
     DCHECK_NE("GET", request_.HttpMethod().Utf8()) << "GETs can't have bodies.";
 
+  mojom::blink::RequestContextType request_context =
+      is_favicon ? mojom::blink::RequestContextType::FAVICON
+                 : mojom::blink::RequestContextType::IMAGE;
   request_.SetRequestContext(request_context);
   request_.SetSiteForCookies(frame->GetDocument()->SiteForCookies());
   request_.SetMode(request_mode);
   request_.SetCredentialsMode(credentials_mode);
   request_.SetRequestDestination(network::mojom::RequestDestination::kImage);
+  request_.SetFavicon(is_favicon);
 
   client_ = std::make_unique<ClientImpl>(std::move(callback));
 

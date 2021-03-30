@@ -7,41 +7,49 @@
 
 #include <android/native_window.h>
 #include <jni.h>
+#include <memory>
 
+#include "android_webview/test/shell/src/draw_fn/overlays_manager.h"
 #include "base/android/scoped_java_ref.h"
-
-typedef void* EGLContext;
-typedef void* EGLSurface;
 
 namespace draw_fn {
 
 class ContextManager {
  public:
   ContextManager();
-  ~ContextManager();
+  virtual ~ContextManager();
 
-  void SetSurface(JNIEnv* env, const base::android::JavaRef<jobject>& surface);
+  void SetSurface(JNIEnv* env,
+                  const base::android::JavaRef<jobject>& surface,
+                  int width,
+                  int height);
+  virtual void ResizeSurface(JNIEnv* env, int width, int height) = 0;
+  void SetOverlaysSurface(JNIEnv* env,
+                          const base::android::JavaRef<jobject>& surface);
   void Sync(JNIEnv* env, int functor, bool apply_force_dark);
-  base::android::ScopedJavaLocalRef<jintArray> Draw(
+  virtual base::android::ScopedJavaLocalRef<jintArray> Draw(
       JNIEnv* env,
       int width,
       int height,
       int scroll_x,
       int scroll_y,
-      jboolean readback_quadrants);
+      jboolean readback_quadrants) = 0;
 
- private:
+ protected:
   void CreateContext(JNIEnv* env,
-                     const base::android::JavaRef<jobject>& surface);
-  void DestroyContext();
-  void MakeCurrent();
+                     const base::android::JavaRef<jobject>& surface,
+                     int width,
+                     int height);
+  virtual void DoCreateContext(JNIEnv* env, int width, int height) = 0;
+  virtual void DestroyContext() = 0;
+  virtual void CurrentFunctorChanged() = 0;
 
   base::android::ScopedJavaGlobalRef<jobject> java_surface_;
   ANativeWindow* native_window_ = nullptr;
-  EGLSurface surface_ = nullptr;
-  EGLContext context_ = nullptr;
 
   int current_functor_ = 0;
+
+  OverlaysManager overlays_manager_;
 };
 
 }  // namespace draw_fn

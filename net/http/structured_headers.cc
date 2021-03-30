@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace net {
@@ -535,7 +536,7 @@ class StructuredHeaderParser {
   void LogParseError(const char* func, const char* expected) {
     DVLOG(1) << func << ": " << expected << " expected, got "
              << (input_.empty() ? "EOS"
-                                : "'" + input_.substr(0, 1).as_string() + "'");
+                                : "'" + std::string(input_.substr(0, 1)) + "'");
   }
 
   base::StringPiece input_;

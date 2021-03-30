@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/renderer.h"
 #include "media/remoting/proto_enum_utils.h"
@@ -53,7 +53,7 @@ Receiver::Receiver(
   // Note: The constructor is running on the main thread, but will be destroyed
   // on the media thread. Therefore, all weak pointers must be dereferenced on
   // the media thread.
-  const RpcBroker::ReceiveMessageCallback receive_callback = BindToLoop(
+  const RpcBroker::ReceiveMessageCallback receive_callback = base::BindPostTask(
       media_task_runner_,
       BindRepeating(&Receiver::OnReceivedRpc, weak_factory_.GetWeakPtr()));
 

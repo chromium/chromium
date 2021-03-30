@@ -50,6 +50,7 @@
 #include "url/url_constants.h"
 
 using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 namespace keys = extension_management_api_constants;
 
@@ -147,11 +148,9 @@ management::ExtensionInfo CreateExtensionInfo(
         !system->management_policy()->MustRemainDisabled(&extension, nullptr,
                                                          nullptr));
   }
-
-  if (!ManifestURL::GetUpdateURL(&extension).is_empty()) {
-    info.update_url.reset(
-        new std::string(ManifestURL::GetUpdateURL(&extension).spec()));
-  }
+  const GURL update_url = delegate->GetEffectiveUpdateURL(extension, context);
+  if (!update_url.is_empty())
+    info.update_url = std::make_unique<std::string>(update_url.spec());
 
   if (extension.is_app()) {
     info.app_launch_url.reset(
@@ -193,28 +192,25 @@ management::ExtensionInfo CreateExtensionInfo(
   }
 
   switch (extension.location()) {
-    case Manifest::INTERNAL:
+    case ManifestLocation::kInternal:
       info.install_type = management::EXTENSION_INSTALL_TYPE_NORMAL;
       break;
-    case Manifest::UNPACKED:
-    case Manifest::COMMAND_LINE:
+    case ManifestLocation::kUnpacked:
+    case ManifestLocation::kCommandLine:
       info.install_type = management::EXTENSION_INSTALL_TYPE_DEVELOPMENT;
       break;
-    case Manifest::EXTERNAL_PREF:
-    case Manifest::EXTERNAL_REGISTRY:
-    case Manifest::EXTERNAL_PREF_DOWNLOAD:
+    case ManifestLocation::kExternalPref:
+    case ManifestLocation::kExternalRegistry:
+    case ManifestLocation::kExternalPrefDownload:
       info.install_type = management::EXTENSION_INSTALL_TYPE_SIDELOAD;
       break;
-    case Manifest::EXTERNAL_POLICY:
-    case Manifest::EXTERNAL_POLICY_DOWNLOAD:
+    case ManifestLocation::kExternalPolicy:
+    case ManifestLocation::kExternalPolicyDownload:
       info.install_type = management::EXTENSION_INSTALL_TYPE_ADMIN;
       break;
-    case Manifest::NUM_LOCATIONS:
-      NOTREACHED();
-      FALLTHROUGH;
-    case Manifest::INVALID_LOCATION:
-    case Manifest::COMPONENT:
-    case Manifest::EXTERNAL_COMPONENT:
+    case ManifestLocation::kInvalidLocation:
+    case ManifestLocation::kComponent:
+    case ManifestLocation::kExternalComponent:
       info.install_type = management::EXTENSION_INSTALL_TYPE_OTHER;
       break;
   }
@@ -367,7 +363,7 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
 
   std::string error;
   scoped_refptr<Extension> extension =
-      Extension::Create(base::FilePath(), Manifest::INVALID_LOCATION,
+      Extension::Create(base::FilePath(), ManifestLocation::kInvalidLocation,
                         *parsed_manifest, Extension::NO_FLAGS, &error);
   // TODO(lazyboy): Do we need to use |error|?
   if (!extension) {
@@ -648,7 +644,7 @@ void ManagementUninstallFunctionBase::Finish(bool did_start_uninstall,
 
 void ManagementUninstallFunctionBase::OnExtensionUninstallDialogClosed(
     bool did_start_uninstall,
-    const base::string16& error) {
+    const std::u16string& error) {
   Finish(did_start_uninstall,
          ErrorUtils::FormatErrorMessage(keys::kUninstallCanceledError,
                                         target_extension_id_));
@@ -668,7 +664,7 @@ void ManagementUninstallFunctionBase::UninstallExtension() {
     const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
                                                 ->Get(browser_context())
                                                 ->GetDelegate();
-    base::string16 utf16_error;
+    std::u16string utf16_error;
     success = delegate->UninstallExtension(
         browser_context(), target_extension_id_,
         extensions::UNINSTALL_REASON_MANAGEMENT_API, &utf16_error);
@@ -1054,7 +1050,8 @@ void ManagementInstallReplacementWebAppFunction::FinishResponse(
 
 ManagementEventRouter::ManagementEventRouter(content::BrowserContext* context)
     : browser_context_(context) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 }
 
 ManagementEventRouter::~ManagementEventRouter() {}

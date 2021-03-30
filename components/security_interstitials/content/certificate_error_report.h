@@ -15,7 +15,7 @@
 #include "net/net_buildflags.h"
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-#include "services/network/public/mojom/trial_comparison_cert_verifier.mojom.h"
+#include "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom.h"
 #endif
 
 namespace base {
@@ -71,17 +71,18 @@ class CertificateErrorReport {
   // cert and chain sent by the server, the result from the primary verifier,
   // and the result from the trial verifier.
   // TODO(mattm): remove this when the trial is done. (https://crbug.com/649026)
-  CertificateErrorReport(const std::string& hostname,
-                         const net::X509Certificate& unverified_cert,
-                         bool enable_rev_checking,
-                         bool require_rev_checking_local_anchors,
-                         bool enable_sha1_local_anchors,
-                         bool disable_symantec_enforcement,
-                         const std::string& stapled_ocsp,
-                         const std::string& sct_list,
-                         const net::CertVerifyResult& primary_result,
-                         const net::CertVerifyResult& trial_result,
-                         network::mojom::CertVerifierDebugInfoPtr debug_info);
+  CertificateErrorReport(
+      const std::string& hostname,
+      const net::X509Certificate& unverified_cert,
+      bool enable_rev_checking,
+      bool require_rev_checking_local_anchors,
+      bool enable_sha1_local_anchors,
+      bool disable_symantec_enforcement,
+      const std::string& stapled_ocsp,
+      const std::string& sct_list,
+      const net::CertVerifyResult& primary_result,
+      const net::CertVerifyResult& trial_result,
+      cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info);
 #endif
 
   ~CertificateErrorReport();

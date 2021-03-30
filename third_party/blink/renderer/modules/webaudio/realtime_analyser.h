@@ -42,7 +42,7 @@ class RealtimeAnalyser final {
   DISALLOW_NEW();
 
  public:
-  RealtimeAnalyser();
+  explicit RealtimeAnalyser(unsigned render_quantum_frames);
 
   uint32_t FftSize() const { return fft_size_; }
   bool SetFftSize(uint32_t);

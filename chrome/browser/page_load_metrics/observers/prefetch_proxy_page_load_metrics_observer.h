@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "net/cookies/canonical_cookie.h"
 #include "url/gurl.h"
@@ -38,7 +39,7 @@ class PrefetchProxyPageLoadMetricsObserver
   // Used as a callback for history service query results. Protected for
   // testing.
   void OnOriginLastVisitResult(base::Time query_start_time,
-                               history::HistoryLastVisitToHostResult result);
+                               history::HistoryLastVisitResult result);
 
  private:
   void RecordMetrics();
@@ -83,7 +84,7 @@ class PrefetchProxyPageLoadMetricsObserver
       content::RenderFrameHost* rfh,
       const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
           resources) override;
-  void OnEventOccurred(const void* const event_key) override;
+  void OnEventOccurred(page_load_metrics::PageLoadMetricsEvent event) override;
 
   // Whether data saver was enabled for this page load when it committed.
   bool data_saver_enabled_at_commit_ = false;
@@ -94,13 +95,6 @@ class PrefetchProxyPageLoadMetricsObserver
 
   size_t loaded_css_js_from_cache_before_fcp_ = 0;
   size_t loaded_css_js_from_network_before_fcp_ = 0;
-
-  // These vectors hold the durations that queries to the cookie manager and
-  // history service took, respectively. Since we only want to record these when
-  // we also record the query results, the query times are stashed here until
-  // |RecordMetrics()| is called.
-  std::vector<base::TimeDelta> cookie_query_times_;
-  std::vector<base::TimeDelta> history_query_times_;
 
   // The minimum number of days since the last visit, as reported by
   // HistoryService, to any origin in the redirect chain. Set to -1 if there is

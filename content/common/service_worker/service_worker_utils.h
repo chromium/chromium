@@ -14,18 +14,16 @@
 #include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace content {
 
 class ServiceWorkerUtils {
  public:
-  static bool IsMainResourceType(blink::mojom::ResourceType type);
-
   static bool IsMainRequestDestination(
       network::mojom::RequestDestination destination);
 

@@ -7,7 +7,7 @@
 #include "base/values.h"
 #include "components/invalidation/public/invalidation_util.h"
 
-namespace syncer {
+namespace invalidation {
 
 SingleObjectInvalidationSet::SingleObjectInvalidationSet() = default;
 
@@ -99,4 +99,4 @@ std::unique_ptr<base::ListValue> SingleObjectInvalidationSet::ToValue() const {
   return value;
 }
 
-}  // namespace syncer
+}  // namespace invalidation

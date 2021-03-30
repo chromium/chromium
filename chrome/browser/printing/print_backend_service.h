@@ -16,4 +16,9 @@ const mojo::Remote<printing::mojom::PrintBackendService>&
 GetPrintBackendService(const std::string& locale,
                        const std::string& printer_name);
 
+// Test support to override the print backend service for testing.  Caller
+// retains ownership of `remote`.
+void SetPrintBackendServiceForTesting(
+    mojo::Remote<printing::mojom::PrintBackendService>* remote);
+
 #endif  // CHROME_BROWSER_PRINTING_PRINT_BACKEND_SERVICE_H_

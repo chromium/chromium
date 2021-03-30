@@ -42,6 +42,7 @@ void PageNodeImplDescriber::OnTakenFromGraph(Graph* graph) {
 base::Value PageNodeImplDescriber::DescribePageNodeData(
     const PageNode* page_node) const {
   const PageNodeImpl* page_node_impl = PageNodeImpl::FromNode(page_node);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(page_node_impl->sequence_checker_);
 
   base::Value result(base::Value::Type::DICTIONARY);
 

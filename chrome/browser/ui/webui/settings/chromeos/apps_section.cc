@@ -4,23 +4,24 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/apps_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/guest_os_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/plugin_vm_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -131,7 +132,37 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementStoragePermissionLabel", IDS_APP_MANAGEMENT_STORAGE},
       {"appManagementUninstallLabel", IDS_APP_MANAGEMENT_UNINSTALL_APP},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
+void AddGuestOsStrings(content::WebUIDataSource* html_source) {
+  // These strings are used for both Crostini and Plugin VM.
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"guestOsSharedPaths", IDS_SETTINGS_GUEST_OS_SHARED_PATHS},
+      {"guestOsSharedPathsListHeading",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_HEADING},
+      {"guestOsSharedPathsInstructionsRemove",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_INSTRUCTIONS_REMOVE},
+      {"guestOsSharedPathsStopSharing",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_STOP_SHARING},
+      {"guestOsSharedPathsRemoveFailureDialogTitle",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE},
+      {"guestOsSharedPathsRemoveFailureTryAgain",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN},
+      {"guestOsSharedPathsListEmptyMessage",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_EMPTY_MESSAGE},
+      {"guestOsSharedUsbDevicesLabel",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL},
+      {"guestOsSharedUsbDevicesExtraDescription",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_EXTRA_DESCRIPTION},
+      {"guestOsSharedUsbDevicesListEmptyMessage",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE},
+      {"guestOsSharedUsbDevicesInUse",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_IN_USE},
+      {"guestOsSharedUsbDevicesReassign",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_REASSIGN},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
@@ -146,10 +177,12 @@ bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
 AppsSection::AppsSection(Profile* profile,
                          SearchTagRegistry* search_tag_registry,
                          PrefService* pref_service,
-                         ArcAppListPrefs* arc_app_list_prefs)
+                         ArcAppListPrefs* arc_app_list_prefs,
+                         apps::AppServiceProxy* app_service_proxy)
     : OsSettingsSection(profile, search_tag_registry),
       pref_service_(pref_service),
-      arc_app_list_prefs_(arc_app_list_prefs) {
+      arc_app_list_prefs_(arc_app_list_prefs),
+      app_service_proxy_(app_service_proxy) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetAppsSearchConcepts());
 
@@ -179,7 +212,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"appsPageTitle", IDS_SETTINGS_APPS_TITLE},
       {"appManagementTitle", IDS_SETTINGS_APPS_LINK_TEXT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // We have 2 variants of Android apps settings. Default case, when the Play
   // Store app exists we show expandable section that allows as to
@@ -196,17 +229,19 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       AppManagementPageHandler::IsCurrentArcVersionSupported(profile()));
 
   AddAppManagementStrings(html_source);
+  AddGuestOsStrings(html_source);
   AddAndroidAppStrings(html_source);
   AddPluginVmLoadTimeData(html_source);
 }
 
 void AppsSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::AndroidAppsHandler>(profile()));
+      std::make_unique<chromeos::settings::AndroidAppsHandler>(
+          profile(), app_service_proxy_));
 
   if (ShowPluginVm(profile(), *pref_service_)) {
-    web_ui->AddMessageHandler(
-        std::make_unique<chromeos::settings::PluginVmHandler>(profile()));
+    web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));
+    web_ui->AddMessageHandler(std::make_unique<PluginVmHandler>(profile()));
   }
 }
 
@@ -246,14 +281,13 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_SETTINGS_APP_DETAILS_TITLE, mojom::Subpage::kAppDetails,
       mojom::Subpage::kAppManagement, mojom::SearchResultIcon::kAppsGrid,
       mojom::SearchResultDefaultRank::kMedium, mojom::kAppDetailsSubpagePath);
-  generator->RegisterNestedSubpage(IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS,
-                                   mojom::Subpage::kPluginVmSharedPaths,
-                                   mojom::Subpage::kAppManagement,
-                                   mojom::SearchResultIcon::kAppsGrid,
-                                   mojom::SearchResultDefaultRank::kMedium,
-                                   mojom::kPluginVmSharedPathsSubpagePath);
   generator->RegisterNestedSubpage(
-      IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LABEL,
+      IDS_SETTINGS_GUEST_OS_SHARED_PATHS, mojom::Subpage::kPluginVmSharedPaths,
+      mojom::Subpage::kAppManagement, mojom::SearchResultIcon::kAppsGrid,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kPluginVmSharedPathsSubpagePath);
+  generator->RegisterNestedSubpage(
+      IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL,
       mojom::Subpage::kPluginVmUsbPreferences, mojom::Subpage::kAppManagement,
       mojom::SearchResultIcon::kAppsGrid,
       mojom::SearchResultDefaultRank::kMedium,
@@ -293,9 +327,8 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE},
       {"androidAppsDisableDialogRemove",
        IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE},
-      {"androidAppsManageAppLinks", IDS_SETTINGS_ANDROID_APPS_MANAGE_APP_LINKS},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString("androidAppsPageTitle",
                                   arc::IsPlayStoreAvailable()
                                       ? IDS_SETTINGS_ANDROID_APPS_TITLE
@@ -310,35 +343,12 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
 void AppsSection::AddPluginVmLoadTimeData(
     content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"pluginVmSharedPaths", IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS},
-      {"pluginVmSharedPathsListHeading",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_HEADING},
       {"pluginVmSharedPathsInstructionsAdd",
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_ADD},
-      {"pluginVmSharedPathsInstructionsRemove",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_REMOVE},
-      {"pluginVmSharedPathsRemoveSharing",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_SHARING},
       {"pluginVmSharedPathsRemoveFailureDialogMessage",
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE},
-      {"pluginVmSharedPathsRemoveFailureDialogTitle",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE},
-      {"pluginVmSharedPathsRemoveFailureTryAgain",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN},
-      {"pluginVmSharedPathsListEmptyMessage",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_EMPTY_MESSAGE},
-      {"pluginVmSharedUsbDevicesLabel",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LABEL},
       {"pluginVmSharedUsbDevicesDescription",
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_DESCRIPTION},
-      {"pluginVmSharedUsbDevicesExtraDescription",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_EXTRA_DESCRIPTION},
-      {"pluginVmSharedUsbDevicesListEmptyMessage",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE},
-      {"pluginVmSharedUsbDevicesInUse",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_IN_USE},
-      {"pluginVmSharedUsbDevicesReassign",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_REASSIGN},
       {"pluginVmPermissionDialogCameraLabel",
        IDS_SETTINGS_APPS_PLUGIN_VM_PERMISSION_DIALOG_CAMERA_LABEL},
       {"pluginVmPermissionDialogMicrophoneLabel",
@@ -346,7 +356,7 @@ void AppsSection::AddPluginVmLoadTimeData(
       {"pluginVmPermissionDialogRelaunchButton",
        IDS_SETTINGS_APPS_PLUGIN_VM_PERMISSION_DIALOG_RELAUNCH_BUTTON},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("showPluginVm",
                           ShowPluginVm(profile(), *pref_service_));

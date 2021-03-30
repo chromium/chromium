@@ -17,7 +17,7 @@ mojom("mojom") {
     "audio_logging.mojom",
     "audio_output_stream.mojom",
     "audio_parameters.mojom",
-    "cdm_infobar_service.mojom",
+    "audio_stream_factory.mojom",
     "cdm_service.mojom",
     "cdm_storage.mojom",
     "content_decryption_module.mojom",
@@ -101,6 +101,29 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.FullscreenVideoStatus"
+          cpp = "::blink::WebFullscreenVideoStatus"
+        },
+      ]
+      traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "media.mojom.MediaContentType"
+          cpp = "::media::MediaContentType"
+        },
+      ]
+      traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
+      traits_public_deps = [
+        "//base",
+        "//media",
+        "//media/base/ipc",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.VideoFrameMetadata"
           cpp = "::media::VideoFrameMetadata"
         },
@@ -116,6 +139,10 @@ mojom("mojom") {
         {
           mojom = "media.mojom.AudioDecoderConfig"
           cpp = "::media::AudioDecoderConfig"
+        },
+        {
+          mojom = "media.mojom.AudioDecoderType"
+          cpp = "::media::AudioDecoderType"
         },
       ]
       traits_headers = [ "audio_decoder_config_mojom_traits.h" ]
@@ -145,15 +172,25 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "media.mojom.VideoRotation"
-          cpp = "::media::VideoRotation"
-        },
-        {
           mojom = "media.mojom.CopyMode"
           cpp = "::media::VideoFrameMetadata::CopyMode"
         },
       ]
       traits_headers = [ "media_types_enum_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "media.mojom.VideoRotation"
+          cpp = "::media::VideoRotation"
+        },
+        {
+          mojom = "media.mojom.VideoTransformation"
+          cpp = "::media::VideoTransformation"
+        },
+      ]
+      traits_headers = [ "video_transformation_mojom_traits.h" ]
+      traits_sources = [ "video_transformation_mojom_traits.cc" ]
     },
     {
       types = [
@@ -222,7 +259,6 @@ mojom("mojom") {
         "//media/base/ipc",
       ]
     },
-
     {
       types = [
         {
@@ -230,8 +266,20 @@ mojom("mojom") {
           cpp = "::media::PipelineStatistics"
         },
         {
-          mojom = "media.mojom.PipelineDecoderInfo"
-          cpp = "::media::PipelineDecoderInfo"
+          mojom = "media.mojom.AudioDecoderInfo"
+          cpp = "::media::AudioDecoderInfo"
+        },
+        {
+          mojom = "media.mojom.VideoDecoderInfo"
+          cpp = "::media::VideoDecoderInfo"
+        },
+        {
+          mojom = "media.mojom.AudioDecoderType"
+          cpp = "::media::AudioDecoderType"
+        },
+        {
+          mojom = "media.mojom.VideoDecoderType"
+          cpp = "::media::VideoDecoderType"
         },
       ]
       traits_headers = [ "pipeline_status_mojom_traits.h" ]
@@ -284,6 +332,10 @@ mojom("mojom") {
         {
           mojom = "media.mojom.VideoDecoderImplementation"
           cpp = "::media::VideoDecoderImplementation"
+        },
+        {
+          mojom = "media.mojom.VideoDecoderType"
+          cpp = "::media::VideoDecoderType"
         },
       ]
       traits_headers = [
@@ -362,10 +414,6 @@ mojom("mojom") {
     },
     {
       types = [
-        {
-          mojom = "media.mojom.ScalingSettings"
-          cpp = "::media::ScalingSettings"
-        },
         {
           mojom = "media.mojom.ResolutionBitrateLimit"
           cpp = "::media::ResolutionBitrateLimit"
@@ -451,10 +499,6 @@ mojom("mojom") {
           cpp = "::media::VideoPixelFormat"
         },
         {
-          mojom = "media.mojom.VideoTransformation"
-          cpp = "::media::VideoTransformation"
-        },
-        {
           mojom = "media.mojom.WaitingReason"
           cpp = "::media::WaitingReason"
         },
@@ -471,11 +515,7 @@ mojom("mojom") {
           cpp = "::media::StatusCode"
         },
       ]
-      traits_headers = [
-        "video_transformation_mojom_traits.h",
-        "//media/base/ipc/media_param_traits_macros.h",
-      ]
-      traits_sources = [ "video_transformation_mojom_traits.cc" ]
+      traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
     },
     {
       types = [

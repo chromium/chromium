@@ -20,7 +20,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 using media::VideoFrame;
-using media::VideoFrameMetadata;
 
 namespace content {
 
@@ -101,7 +100,8 @@ void SlowWindowCapturerChromeOS::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void SlowWindowCapturerChromeOS::ChangeTarget(
-    const base::Optional<viz::FrameSinkId>& frame_sink_id) {
+    const base::Optional<viz::FrameSinkId>& frame_sink_id,
+    const viz::SubtreeCaptureId& subtree_capture_id) {
   // The SlowWindowCapturerChromeOS does not capture from compositor frame
   // sinks.
 }
@@ -260,11 +260,10 @@ void SlowWindowCapturerChromeOS::CaptureNextFrame() {
       begin_time - first_frame_reference_time_));
   auto* const frame = in_flight_frame->video_frame();
   DCHECK(frame);
-  VideoFrameMetadata* const metadata = frame->metadata();
-  metadata->capture_begin_time = begin_time;
-  metadata->frame_duration = capture_period_;
-  metadata->frame_rate = 1.0 / capture_period_.InSecondsF();
-  metadata->reference_time = begin_time;
+  frame->metadata().capture_begin_time = begin_time;
+  frame->metadata().frame_duration = capture_period_;
+  frame->metadata().frame_rate = 1.0 / capture_period_.InSecondsF();
+  frame->metadata().reference_time = begin_time;
   frame->set_color_space(gfx::ColorSpace::CreateREC709());
 
   // Compute the region of the VideoFrame that will contain the content. If
@@ -343,7 +342,7 @@ void SlowWindowCapturerChromeOS::DeliverFrame(
     std::unique_ptr<InFlightFrame> in_flight_frame) {
   auto* const frame = in_flight_frame->video_frame();
   DCHECK(frame);
-  frame->metadata()->capture_end_time = base::TimeTicks::Now();
+  frame->metadata().capture_end_time = base::TimeTicks::Now();
 
   // Clone the buffer handle for the consumer.
   base::ReadOnlySharedMemoryRegion handle =
@@ -356,7 +355,7 @@ void SlowWindowCapturerChromeOS::DeliverFrame(
   // the consumer.
   media::mojom::VideoFrameInfoPtr info = media::mojom::VideoFrameInfo::New();
   info->timestamp = frame->timestamp();
-  info->metadata = *(frame->metadata());
+  info->metadata = frame->metadata();
   info->pixel_format = frame->format();
   info->coded_size = frame->coded_size();
   info->visible_rect = frame->visible_rect();

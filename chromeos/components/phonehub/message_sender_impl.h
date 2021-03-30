@@ -10,17 +10,20 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace chromeos {
-namespace phonehub {
 
+namespace secure_channel {
 class ConnectionManager;
+}  // namespace secure_channel
+
+namespace phonehub {
 
 class MessageSenderImpl : public MessageSender {
  public:
-  MessageSenderImpl(ConnectionManager* connection_manager);
+  explicit MessageSenderImpl(
+      secure_channel::ConnectionManager* connection_manager);
   ~MessageSenderImpl() override;
 
   // MessageSender:
@@ -30,7 +33,7 @@ class MessageSenderImpl : public MessageSender {
   void SendDismissNotificationRequest(int64_t notification_id) override;
   void SendNotificationInlineReplyRequest(
       int64_t notification_id,
-      const base::string16& reply_text) override;
+      const std::u16string& reply_text) override;
   void SendShowNotificationAccessSetupRequest() override;
   void SendRingDeviceRequest(bool device_ringing_enabled) override;
 
@@ -38,7 +41,7 @@ class MessageSenderImpl : public MessageSender {
   void SendMessage(proto::MessageType message_type,
                    google::protobuf::MessageLite* request);
 
-  ConnectionManager* connection_manager_;
+  secure_channel::ConnectionManager* connection_manager_;
 };
 
 }  // namespace phonehub

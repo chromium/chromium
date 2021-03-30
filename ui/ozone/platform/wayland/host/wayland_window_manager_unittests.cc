@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
@@ -184,10 +185,10 @@ TEST_P(WaylandWindowManagerTest, GetWindowsOnOutput) {
 
   Sync();
 
-  auto entered_outputs_window1 = window1->entered_outputs_ids();
+  auto entered_outputs_window1 = window1->entered_outputs();
   EXPECT_EQ(1u, entered_outputs_window1.size());
 
-  uint32_t output_id = *entered_outputs_window1.begin();
+  uint32_t output_id = (*entered_outputs_window1.begin())->output_id();
 
   auto windows_on_output = manager_->GetWindowsOnOutput(output_id);
   EXPECT_EQ(1u, windows_on_output.size());

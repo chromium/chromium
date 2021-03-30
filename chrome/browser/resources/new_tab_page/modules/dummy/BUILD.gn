@@ -12,14 +12,12 @@ js_library("module") {
     "../..:img",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_grid",
+    "//ui/webui/resources/js:i18n_behavior",
   ]
 }
 
 js_library("foo_proxy") {
-  deps = [
-    "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr.m",
-  ]
+  deps = [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js_library_for_compile" ]
 }
 
 html_to_js("web_components") {

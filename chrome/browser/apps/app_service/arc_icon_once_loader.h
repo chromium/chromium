@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -35,6 +35,8 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
   // The constructor caller is responsible for calling StopObserver before
   // destroying this.
   explicit ArcIconOnceLoader(Profile* profile);
+  ArcIconOnceLoader(const ArcIconOnceLoader&) = delete;
+  ArcIconOnceLoader& operator=(const ArcIconOnceLoader&) = delete;
   ~ArcIconOnceLoader() override;
 
   void StopObserving(ArcAppListPrefs* prefs);
@@ -97,8 +99,6 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
 
   // The ArcAppIcon map to record the pending icon loading requests.
   std::map<ArcAppIcon*, std::set<ui::ScaleFactor>> pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcIconOnceLoader);
 };
 
 }  // namespace apps

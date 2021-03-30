@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omaha;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.format.DateUtils;
@@ -509,7 +508,6 @@ public class OmahaBase {
             mTimestampForNextPostAttempt = currentTime;
         }
 
-        migrateToNewerChromeVersions();
         mStateHasBeenRestored = true;
     }
 
@@ -533,15 +531,6 @@ public class OmahaBase {
         editor.apply();
 
         mDelegate.onSaveStateDone(mTimestampForNewRequest, mTimestampForNextPostAttempt);
-    }
-
-    private void migrateToNewerChromeVersions() {
-        // Remove any repeating alarms in favor of the new scheduling setup on M58 and up.
-        // Seems cheaper to cancel the alarm repeatedly than to store a SharedPreference and never
-        // do it again.
-        Intent intent = new Intent(getContext(), OmahaClient.class);
-        intent.setAction(ACTION_REGISTER_REQUEST);
-        getBackoffScheduler().cancelAlarm(intent);
     }
 
     private Context getContext() {

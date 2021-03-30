@@ -29,7 +29,7 @@ bool ShellVirtualKeyboardDelegate::HideKeyboard() {
   return false;
 }
 
-bool ShellVirtualKeyboardDelegate::InsertText(const base::string16& text) {
+bool ShellVirtualKeyboardDelegate::InsertText(const std::u16string& text) {
   return false;
 }
 
@@ -98,6 +98,24 @@ bool ShellVirtualKeyboardDelegate::SetAreaToRemainOnScreen(
 
 bool ShellVirtualKeyboardDelegate::SetWindowBoundsInScreen(
     const gfx::Rect& bounds_in_screen) {
+  return false;
+}
+
+void ShellVirtualKeyboardDelegate::GetClipboardHistory(
+    const std::set<std::string>& item_ids_filter,
+    OnGetClipboardHistoryCallback get_history_callback) {
+  NOTIMPLEMENTED();
+}
+
+bool ShellVirtualKeyboardDelegate::PasteClipboardItem(
+    const std::string& clipboard_item_id) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool ShellVirtualKeyboardDelegate::DeleteClipboardItem(
+    const std::string& clipboard_item_id) {
+  NOTIMPLEMENTED();
   return false;
 }
 

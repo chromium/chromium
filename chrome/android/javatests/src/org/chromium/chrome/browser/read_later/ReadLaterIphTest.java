@@ -14,8 +14,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
@@ -41,7 +39,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -53,7 +50,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -111,26 +107,8 @@ public class ReadLaterIphTest {
         RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 activity, tab, CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_copy_link_address);
 
-        boolean threeButtonActionBarEnabled = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
-        onView(withId(R.id.menu_button_wrapper))
-                .check(matches(withHighlight(!threeButtonActionBarEnabled)));
-        if (!threeButtonActionBarEnabled) {
-            waitForHelpBubble(withText(R.string.reading_list_save_pages_for_later));
-        }
-    }
-
-    @Test
-    @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @DisabledTest(message = "Flaky test, see https://crbug.com/1161737, https://crbug.com/1155085")
-    public void testShowBookmarksReadLaterIPH() throws Throwable {
-        mActivityTestRule.loadUrl(mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL));
-        ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
-        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                activity, tab, CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_read_later);
-        verify(mTracker, times(1)).notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
+        onView(withId(R.id.menu_button_wrapper)).check(matches(withHighlight(true)));
+        waitForHelpBubble(withText(R.string.reading_list_save_pages_for_later));
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {

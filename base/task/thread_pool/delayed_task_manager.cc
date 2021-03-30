@@ -105,8 +105,13 @@ void DelayedTaskManager::ProcessRipeTasks() {
   {
     CheckedAutoLock auto_lock(queue_lock_);
     const TimeTicks now = tick_clock_->NowTicks();
+    // A delayed task is ripe if it reached its delayed run time or if it is
+    // canceled. If it is canceled, schedule its deletion on the correct
+    // sequence now rather than in the future, to minimize CPU wake ups and save
+    // power.
     while (!delayed_task_queue_.empty() &&
-           delayed_task_queue_.Min().task.delayed_run_time <= now) {
+           (delayed_task_queue_.Min().task.delayed_run_time <= now ||
+            !delayed_task_queue_.Min().task.task.MaybeValid())) {
       // The const_cast on top is okay since the DelayedTask is
       // transactionally being popped from |delayed_task_queue_| right after
       // and the move doesn't alter the sort order.

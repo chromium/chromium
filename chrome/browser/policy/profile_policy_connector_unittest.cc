@@ -31,7 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -146,7 +146,7 @@ TEST_F(ProfilePolicyConnectorTest, IsManagedForManagedUsers) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfilePolicyConnectorTest, IsManagedForActiveDirectoryUsers) {
   user_manager::ScopedUserManager scoped_user_manager_enabler(
-      std::make_unique<chromeos::FakeChromeUserManager>());
+      std::make_unique<ash::FakeChromeUserManager>());
   ProfilePolicyConnector connector;
   const AccountId account_id =
       AccountId::AdFromUserEmailObjGuid("user@realm.example", "obj-guid");
@@ -170,9 +170,8 @@ TEST_F(ProfilePolicyConnectorTest, IsManagedForActiveDirectoryUsers) {
 }
 
 TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
-  auto user_manager_unique_ptr =
-      std::make_unique<chromeos::FakeChromeUserManager>();
-  chromeos::FakeChromeUserManager* user_manager = user_manager_unique_ptr.get();
+  auto user_manager_unique_ptr = std::make_unique<ash::FakeChromeUserManager>();
+  ash::FakeChromeUserManager* user_manager = user_manager_unique_ptr.get();
   user_manager::ScopedUserManager scoped_user_manager_enabler(
       std::move(user_manager_unique_ptr));
 

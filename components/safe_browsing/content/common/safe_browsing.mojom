@@ -6,7 +6,7 @@ module safe_browsing.mojom;
 
 import "components/safe_browsing/core/common/safe_browsing_url_checker.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
-import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
 import "url/mojom/url.mojom";
 
 // Provided by the browser and used by renderers to perform SafeBrowsing URL
@@ -16,7 +16,7 @@ interface SafeBrowsing {
   // SafeBrowsingUrlChecker interface.
   //
   // The check and (subsequent checks performed using SafeBrowsingUrlChecker)
-  // checks against SafeBrowsing's Malware, Phishing, and UwS blacklists.
+  // checks against SafeBrowsing's Malware, Phishing, and UwS blocklists.
   //
   // The SafeBrowsingUrlChecker interface should be used (and only used) for
   // subsequent checks of redirects, so that the server side could keep track of
@@ -45,7 +45,7 @@ interface SafeBrowsing {
       string method,
       network.mojom.HttpRequestHeaders headers,
       int32 load_flags,
-      blink.mojom.ResourceType resource_type,
+      network.mojom.RequestDestination request_destination,
       bool has_user_gesture,
       bool originated_from_service_worker)
           => (pending_receiver<UrlCheckNotifier>? slow_check_notifier,

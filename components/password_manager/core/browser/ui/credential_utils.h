@@ -10,7 +10,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/template_util.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
@@ -29,8 +28,8 @@ struct CanonicalizedCredential {
       : canonicalized_username(CanonicalizeUsername(credential.username())),
         password(credential.password()) {}
 
-  base::string16 canonicalized_username;
-  base::string16 password;
+  std::u16string canonicalized_username;
+  std::u16string password;
 };
 
 inline bool operator<(const CanonicalizedCredential& lhs,

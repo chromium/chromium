@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
@@ -14,6 +15,7 @@
 #include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/android/arcore/arcore_session_utils.h"
+#include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +24,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
+
+namespace {
+std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory() {
+  return nullptr;
+}
+}  // namespace
 
 class StubArImageTransport : public ArImageTransport {
  public:
@@ -98,7 +106,8 @@ class StubArCoreSessionUtils : public ArCoreSessionUtils {
     // drawing surface. It's not actually a surface, hence the nullptr
     // instead of a WindowAndroid.
     std::move(ready_callback)
-        .Run(nullptr, display::Display::Rotation::ROTATE_0, {1024, 512});
+        .Run(nullptr, gpu::kNullSurfaceHandle, nullptr,
+             display::Display::Rotation::ROTATE_0, {1024, 512});
   }
   void EndSession() override {}
 
@@ -158,7 +167,8 @@ class ArCoreDeviceTest : public testing::Test {
         std::make_unique<FakeArCoreFactory>(),
         std::make_unique<StubArImageTransportFactory>(),
         std::make_unique<StubMailboxToSurfaceBridgeFactory>(),
-        std::move(session_utils_ptr));
+        std::move(session_utils_ptr),
+        base::BindRepeating(&FrameSinkClientFactory));
   }
 
   void CreateSession() {

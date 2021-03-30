@@ -8,16 +8,19 @@
 #include <utility>
 
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "base/time/time.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/transform.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -82,9 +85,9 @@ void PerformHitTheWallAnimation(aura::Window* root, bool going_left) {
   ui::Layer* layer = root->layer();
   const gfx::Transform end_transform = layer->GetTargetTransform();
   gfx::Transform begin_transform = end_transform;
-  // |root| will be translated out horizontally by 4% of its width and then
-  // translated back to its original transform.
-  const float displacement_factor = 0.04f * (going_left ? 1 : -1);
+  // |root| will be translated out horizontally by kEdgePaddingRatio times its
+  // width and then translated back to its original transform.
+  const float displacement_factor = kEdgePaddingRatio * (going_left ? 1 : -1);
   begin_transform.Translate(displacement_factor * root->bounds().width(), 0);
 
   // Prepare two animation elements, one for the outgoing translation:
@@ -116,6 +119,7 @@ void PerformHitTheWallAnimation(aura::Window* root, bool going_left) {
 
 void PerformWindowMoveToDeskAnimation(aura::Window* window, bool going_left) {
   DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
+  DCHECK(!window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
 
   // The entire transient window tree should appear to animate together towards
   // the target desk.

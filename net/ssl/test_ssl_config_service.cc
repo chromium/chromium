@@ -26,9 +26,4 @@ void TestSSLConfigService::UpdateSSLConfigAndNotify(
   NotifySSLContextConfigChange();
 }
 
-bool TestSSLConfigService::ShouldSuppressLegacyTLSWarning(
-    const std::string& hostname) const {
-  return false;
-}
-
 }  // namespace net

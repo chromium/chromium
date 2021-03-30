@@ -35,6 +35,9 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
     m->message = message->message;
     connection_->OnPostMessage(std::move(m));
   }
+  void OnBackForwardCacheStateChanged() override {
+    connection_->OnBackForwardCacheStateChanged();
+  }
 
   // WebMessageReplyProxy:
   void PostMessage(std::unique_ptr<WebMessage> message) override {
@@ -42,6 +45,9 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
         std::make_unique<js_injection::WebMessage>();
     w->message = std::move(message->message);
     proxy_->PostMessage(std::move(w));
+  }
+  bool IsInBackForwardCache() override {
+    return proxy_->IsInBackForwardCache();
   }
 
  private:

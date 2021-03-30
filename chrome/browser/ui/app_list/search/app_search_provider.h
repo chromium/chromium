@@ -46,7 +46,7 @@ class AppSearchProvider : public SearchProvider {
   ~AppSearchProvider() override;
 
   // SearchProvider overrides:
-  void Start(const base::string16& query) override;
+  void Start(const std::u16string& query) override;
   void ViewClosing() override;
   ash::AppListSearchResultType ResultType() override;
 
@@ -85,7 +85,7 @@ class AppSearchProvider : public SearchProvider {
 
   Profile* profile_;
   AppListControllerDelegate* const list_controller_;
-  base::string16 query_;
+  std::u16string query_;
   base::TimeTicks query_start_time_;
   bool record_query_uma_ = false;
   Apps apps_;

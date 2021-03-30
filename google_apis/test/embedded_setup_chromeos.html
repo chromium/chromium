@@ -10,6 +10,9 @@ gaia.chromeOSLogin.parent_webview_ = undefined;
 gaia.chromeOSLogin.parent_webview_url_ = undefined;
 gaia.chromeOSLogin.initialized_ = false;
 
+const urlParams = new URLSearchParams(window.location.search);
+const syncTrustedVaultKeysRequestedByClient = !!urlParams.get('szkr');
+const useNativeNavigation = !!urlParams.get('use_native_navigation');
 
 function goFirstPage() {
 console.error('On first page');
@@ -131,6 +134,13 @@ function goNext() {
     request.open('POST', '/_/embedded/signin/challenge', true);
     request.onreadystatechange = function() {
       if (request.readyState == 4 && request.status == 200) {
+        if (request.getResponseHeader("fake-sync-trusted-vault-keys") &&
+            syncTrustedVaultKeysRequestedByClient) {
+          // TODO(crbug.com/1081651): Revisit if this message should be sent
+          // *after* sending userInfo.
+          sendSyncTrustedVaultKeys(JSON.parse(
+              request.getResponseHeader("fake-sync-trusted-vault-keys")));
+        }
         gaia.chromeOSLogin.sendUserInfo(services);
         history.pushState({}, "", window.location.pathname + "#close");
       }
@@ -142,6 +152,9 @@ function goNext() {
 }
 
 function onLoad() {
+  if (useNativeNavigation) {
+    document.getElementById("nextButton").remove();
+  }
   gaia.chromeOSLogin.registerHtml5Listener();
 }
 
@@ -183,6 +196,42 @@ function sendSetAllActionsEnabled(enabled) {
       value: enabled
     },
     gaia.chromeOSLogin.parent_webview_url_);
+}
+
+function base64DecodeToArrayBuffer(encoded) {
+  // atob() decodes base64 strings into binary string.
+  var decoded = atob(encoded);
+  var buffer = new ArrayBuffer(decoded.length);
+  var view = new Uint8Array(buffer);
+  for (var i = 0; i < decoded.length; i++) {
+    view[i] = decoded.charCodeAt(i);
+  }
+  return buffer;
+}
+
+// FakeGaia sends the keys in a JSON format that requires some conversion before
+// posting to authenticator.js, due to the use of binary blobs in the API.
+function convertSyncTrustedVaultKeys(fakeKeys) {
+  var keys = {
+    encryptionKeys: [
+      {keyMaterial: base64DecodeToArrayBuffer(fakeKeys.fakeEncryptionKeyMaterial),
+       version: fakeKeys.fakeEncryptionKeyVersion}
+    ],
+    trustedPublicKeys: []
+  };
+  for (var i = 0; i < fakeKeys.fakeTrustedPublicKeys.length; i++) {
+    keys.trustedPublicKeys.push(
+      {keyMaterial: base64DecodeToArrayBuffer(fakeKeys.fakeTrustedPublicKeys[i])});
+  }
+  return keys;
+}
+
+function sendSyncTrustedVaultKeys(fakeKeys) {
+  gaia.chromeOSLogin.parent_webview_.postMessage({
+    method: 'syncTrustedVaultKeys',
+    value: convertSyncTrustedVaultKeys(fakeKeys)
+  },
+  gaia.chromeOSLogin.parent_webview_url_);
 }
 </script>
 </head>

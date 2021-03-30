@@ -29,9 +29,9 @@ SyncErrorInfoBarDelegateAndroid::GetIdentifier() const {
   return SYNC_ERROR_INFOBAR_DELEGATE_ANDROID;
 }
 
-base::string16 SyncErrorInfoBarDelegateAndroid::GetMessageText() const {
+std::u16string SyncErrorInfoBarDelegateAndroid::GetMessageText() const {
   // Message is set in SyncErrorInfoBar.java.
-  return base::string16();
+  return std::u16string();
 }
 
 bool SyncErrorInfoBarDelegateAndroid::Accept() {

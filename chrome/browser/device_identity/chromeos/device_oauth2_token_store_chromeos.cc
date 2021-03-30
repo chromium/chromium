@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/token_encryptor.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/token_encryptor.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -22,9 +22,9 @@ DeviceOAuth2TokenStoreChromeOS::DeviceOAuth2TokenStoreChromeOS(
       service_account_identity_subscription_(
           CrosSettings::Get()->AddSettingsObserver(
               kServiceAccountIdentity,
-              base::Bind(&DeviceOAuth2TokenStoreChromeOS::
-                             OnServiceAccountIdentityChanged,
-                         base::Unretained(this)))) {}
+              base::BindRepeating(&DeviceOAuth2TokenStoreChromeOS::
+                                      OnServiceAccountIdentityChanged,
+                                  base::Unretained(this)))) {}
 
 DeviceOAuth2TokenStoreChromeOS::~DeviceOAuth2TokenStoreChromeOS() {
   FlushTokenSaveCallbacks(false);

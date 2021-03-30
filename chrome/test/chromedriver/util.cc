@@ -7,13 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/base64.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/rand_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/third_party/icu/icu_utf.h"
@@ -40,10 +41,10 @@ std::string GenerateId() {
 namespace {
 const double kCentimetersPerInch = 2.54;
 
-Status FlattenStringArray(const base::ListValue* src, base::string16* dest) {
-  base::string16 keys;
+Status FlattenStringArray(const base::ListValue* src, std::u16string* dest) {
+  std::u16string keys;
   for (size_t i = 0; i < src->GetSize(); ++i) {
-    base::string16 keys_list_part;
+    std::u16string keys_list_part;
     if (!src->GetString(i, &keys_list_part))
       return Status(kUnknownError, "keys should be a string");
     for (size_t j = 0; j < keys_list_part.size(); ++j) {
@@ -67,7 +68,7 @@ Status SendKeysOnWindow(
     const base::ListValue* key_list,
     bool release_modifiers,
     int* sticky_modifiers) {
-  base::string16 keys;
+  std::u16string keys;
   Status status = FlattenStringArray(key_list, &keys);
   if (status.IsError())
     return status;

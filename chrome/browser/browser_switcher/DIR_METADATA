@@ -1,3 +1,3 @@
-monorail:  {
-  component:  "Enterprise>BrowserSwitcher"
+monorail: {
+  component: "Enterprise>BrowserSwitcher"
 }

@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -17,6 +18,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
  * Tests for MimeUtils class.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class MimeUtilsTest {
     @Test
     @SmallTest

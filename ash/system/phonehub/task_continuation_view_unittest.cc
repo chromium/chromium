@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/task_continuation_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/system/phonehub/continue_browsing_chip.h"
 #include "ash/test/ash_test_base.h"
@@ -11,7 +12,6 @@
 #include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -45,6 +45,10 @@ class TaskContinuationViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
     AshTestBase::SetUp();
 
     task_continuation_view_ = std::make_unique<TaskContinuationView>(
@@ -59,14 +63,15 @@ class TaskContinuationViewTest : public AshTestBase {
  protected:
   TaskContinuationView* task_view() { return task_continuation_view_.get(); }
   chromeos::phonehub::MutablePhoneModel* phone_model() { return &phone_model_; }
-  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
 
  private:
   std::unique_ptr<TaskContinuationView> task_continuation_view_;
   chromeos::phonehub::FakeUserActionRecorder fake_user_action_recorder_;
   chromeos::phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
-  MockNewWindowDelegate new_window_delegate_;
+  MockNewWindowDelegate* new_window_delegate_;
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
 TEST_F(TaskContinuationViewTest, TaskViewVisibility) {

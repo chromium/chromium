@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "chrome/common/extensions/api/developer_private.h"
-#include "extensions/common/view_type.h"
 
 class Profile;
 class GURL;

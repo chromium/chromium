@@ -29,11 +29,11 @@ AuthenticatorClientPinEntrySheetView::BuildStepSpecificContent() {
 }
 
 void AuthenticatorClientPinEntrySheetView::OnPincodeChanged(
-    base::string16 pincode) {
+    std::u16string pincode) {
   pin_entry_sheet_model()->SetPinCode(std::move(pincode));
 }
 
 void AuthenticatorClientPinEntrySheetView::OnConfirmationChanged(
-    base::string16 pincode) {
+    std::u16string pincode) {
   pin_entry_sheet_model()->SetPinConfirmation(std::move(pincode));
 }

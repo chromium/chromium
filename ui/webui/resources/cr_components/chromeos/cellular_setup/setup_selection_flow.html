@@ -3,12 +3,15 @@
 <link rel="import" href="../../../html/i18n_behavior.html">
 <link rel="import" href="cellular_types.html">
 <link rel="import" href="subflow_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_card_radio_button.html">
 
 <dom-module id="setup-selection-flow">
   <template>
-    <style include="iron-flex">
+    <style include="iron-flex iron-positioning">
       :host {
         --cr-card-radio-button-width: 224px
       }
@@ -75,14 +78,14 @@
 
       #psimIconContainer {
         background-image: -webkit-image-set(
-            url(psim_1x.png) 1x,
-            url(psim_2x.png) 2x);
+            url(chrome://resources/cr_components/chromeos/cellular_setup/psim_1x.png) 1x,
+            url(chrome://resources/cr_components/chromeos/cellular_setup/psim_2x.png) 2x);
       }
 
       #esimIconContainer {
         background-image: -webkit-image-set(
-            url(esim_1x.png) 1x,
-            url(esim_2x.png) 2x);
+            url(chrome://resources/cr_components/chromeos/cellular_setup/esim_1x.png) 1x,
+            url(chrome://resources/cr_components/chromeos/cellular_setup/esim_2x.png) 2x);
       }
 
       .sim-btn-text {
@@ -95,6 +98,11 @@
 
       .sim-btn-description {
         margin-top: 8px;
+      }
+
+      #esimBtnDescription iron-icon {
+        --iron-icon-fill-color: var(--google-yellow-800);
+        padding-inline-end: 4px;
       }
 
     </style>
@@ -130,7 +138,8 @@
           class="sim-flow-ui-btn"
           name="esim-flow-ui"
           aria-labeledby="esimBtnTitle"
-          aria-describedby="esimBtnDescrition">
+          aria-describedby="esimBtnDescription"
+          disabled="[[!isConnectedToNonCellularNetwork_]]">
         <div class="flex-container">
           <div id="esimIconContainer" class="sim-icon-container"></div>
           <div>
@@ -139,9 +148,13 @@
                 aria-hidden="true">
               [[i18n('eSimFlowSetup')]]
             </div>
-            <div id="esimBtnDescrition"
+            <div id="esimBtnDescription"
                 class="sim-btn-description sim-btn-text"
                 aria-hidden="true">
+              <template is="dom-if" if="[[!isConnectedToNonCellularNetwork_]]]">
+                <iron-icon
+                  icon="cellular-setup:warning">
+              </template>
               [[i18n('eSimFlowSetupMessage')]]
             </div>
           </div>

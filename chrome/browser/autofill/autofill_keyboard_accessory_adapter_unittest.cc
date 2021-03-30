@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
@@ -40,9 +41,10 @@ class MockAccessoryView
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD0(Show, void());
   MOCK_METHOD3(ConfirmDeletion,
-               void(const base::string16&,
-                    const base::string16&,
+               void(const std::u16string&,
+                    const std::u16string&,
                     base::OnceClosure));
+
  private:
   DISALLOW_COPY_AND_ASSIGN(MockAccessoryView);
 };
@@ -178,19 +180,17 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, UseAdditionalLabelForElidedLabel) {
 
   // The 1st item is usually not visible (something like clear form) and has an
   // empty label. But it needs to be handled since UI might ask for it anyway.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(0), base::string16());
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(0), std::u16string());
 
   // If there is a label, use it but cap at 8 bullets.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(1),
-            ASCIIToUTF16("********"));
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(1), u"********");
 
   // If the label is empty, use the additional label:
   EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(2),
-            ASCIIToUTF16("psl.origin.eg ********"));
+            u"psl.origin.eg ********");
 
   // If the password has less than 8 bullets, show the exact amount.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(3),
-            ASCIIToUTF16("***"));
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(3), u"***");
 }
 
 TEST_F(AutofillKeyboardAccessoryAdapterTest, ProvideReorderedSuggestions) {

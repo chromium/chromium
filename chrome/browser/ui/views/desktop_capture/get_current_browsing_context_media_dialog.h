@@ -35,6 +35,16 @@ class GetCurrentBrowsingContextMediaDialog : public DesktopMediaPicker {
   std::unique_ptr<views::DialogDelegate> CreateDialogHost(
       const DesktopMediaPicker::Params& params);
 
+  // This method is used as a callback to support automatically accepting or
+  // rejecting tab-capture through getCurrentBrowserContextMedia in tests.
+  // It acts as though the user had accepted/rejected the capture-request.
+  void MaybeAutomateUserInput();
+
+  // These flags are used for testing and make an automatic selection
+  // without the user's input.
+  const bool auto_accept_tab_capture_for_testing_;
+  const bool auto_reject_tab_capture_for_testing_;
+
   DoneCallback callback_;
   views::BubbleDialogModelHost* dialog_model_host_for_testing_ = nullptr;
 

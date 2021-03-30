@@ -7,60 +7,62 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "ash/components/audio/audio_device.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/audio/audio_device.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/audio/audio_device_id_calculator.h"
 
-using content::BrowserThread;
-
 namespace extensions {
 
-using api::audio::OutputDeviceInfo;
-using api::audio::InputDeviceInfo;
 using api::audio::AudioDeviceInfo;
+using api::audio::InputDeviceInfo;
+using api::audio::OutputDeviceInfo;
+using ::ash::AudioDevice;
+using ::ash::AudioDeviceType;
+using ::ash::CrasAudioHandler;
+using ::content::BrowserThread;
 
 namespace {
 
-api::audio::DeviceType GetAsAudioApiDeviceType(chromeos::AudioDeviceType type) {
+api::audio::DeviceType GetAsAudioApiDeviceType(AudioDeviceType type) {
   switch (type) {
-    case chromeos::AUDIO_TYPE_HEADPHONE:
+    case AudioDeviceType::kHeadphone:
       return api::audio::DEVICE_TYPE_HEADPHONE;
-    case chromeos::AUDIO_TYPE_MIC:
+    case AudioDeviceType::kMic:
       return api::audio::DEVICE_TYPE_MIC;
-    case chromeos::AUDIO_TYPE_USB:
+    case AudioDeviceType::kUsb:
       return api::audio::DEVICE_TYPE_USB;
-    case chromeos::AUDIO_TYPE_BLUETOOTH:
-    case chromeos::AUDIO_TYPE_BLUETOOTH_NB_MIC:
+    case AudioDeviceType::kBluetooth:
+    case AudioDeviceType::kBluetoothNbMic:
       return api::audio::DEVICE_TYPE_BLUETOOTH;
-    case chromeos::AUDIO_TYPE_HDMI:
+    case AudioDeviceType::kHdmi:
       return api::audio::DEVICE_TYPE_HDMI;
-    case chromeos::AUDIO_TYPE_INTERNAL_SPEAKER:
+    case AudioDeviceType::kInternalSpeaker:
       return api::audio::DEVICE_TYPE_INTERNAL_SPEAKER;
-    case chromeos::AUDIO_TYPE_INTERNAL_MIC:
+    case AudioDeviceType::kInternalMic:
       return api::audio::DEVICE_TYPE_INTERNAL_MIC;
-    case chromeos::AUDIO_TYPE_FRONT_MIC:
+    case AudioDeviceType::kFrontMic:
       return api::audio::DEVICE_TYPE_FRONT_MIC;
-    case chromeos::AUDIO_TYPE_REAR_MIC:
+    case AudioDeviceType::kRearMic:
       return api::audio::DEVICE_TYPE_REAR_MIC;
-    case chromeos::AUDIO_TYPE_KEYBOARD_MIC:
+    case AudioDeviceType::kKeyboardMic:
       return api::audio::DEVICE_TYPE_KEYBOARD_MIC;
-    case chromeos::AUDIO_TYPE_HOTWORD:
+    case AudioDeviceType::kHotword:
       return api::audio::DEVICE_TYPE_HOTWORD;
-    case chromeos::AUDIO_TYPE_LINEOUT:
+    case AudioDeviceType::kLineout:
       return api::audio::DEVICE_TYPE_LINEOUT;
-    case chromeos::AUDIO_TYPE_POST_MIX_LOOPBACK:
+    case AudioDeviceType::kPostMixLoopback:
       return api::audio::DEVICE_TYPE_POST_MIX_LOOPBACK;
-    case chromeos::AUDIO_TYPE_POST_DSP_LOOPBACK:
+    case AudioDeviceType::kPostDspLoopback:
       return api::audio::DEVICE_TYPE_POST_DSP_LOOPBACK;
-    case chromeos::AUDIO_TYPE_ALSA_LOOPBACK:
+    case AudioDeviceType::kAlsaLoopback:
       return api::audio::DEVICE_TYPE_ALSA_LOOPBACK;
-    case chromeos::AUDIO_TYPE_OTHER:
+    case AudioDeviceType::kOther:
       return api::audio::DEVICE_TYPE_OTHER;
   }
 
@@ -71,7 +73,7 @@ api::audio::DeviceType GetAsAudioApiDeviceType(chromeos::AudioDeviceType type) {
 }  // namespace
 
 class AudioServiceImpl : public AudioService,
-                         public chromeos::CrasAudioHandler::AudioObserver {
+                         public CrasAudioHandler::AudioObserver {
  public:
   explicit AudioServiceImpl(AudioDeviceIdCalculator* id_calculator);
   ~AudioServiceImpl() override;
@@ -96,7 +98,7 @@ class AudioServiceImpl : public AudioService,
   bool GetMute(bool is_input, bool* value) override;
 
  protected:
-  // chromeos::CrasAudioHandler::AudioObserver overrides.
+  // CrasAudioHandler::AudioObserver overrides.
   void OnOutputNodeVolumeChanged(uint64_t id, int volume) override;
   void OnInputNodeGainChanged(uint64_t id, int gain) override;
   void OnOutputMuteChanged(bool mute_on) override;
@@ -114,13 +116,13 @@ class AudioServiceImpl : public AudioService,
   uint64_t GetIdFromStr(const std::string& id_str);
   bool GetAudioNodeIdList(const DeviceIdList& ids,
                           bool is_input,
-                          chromeos::CrasAudioHandler::NodeIdList* node_ids);
-  AudioDeviceInfo ToAudioDeviceInfo(const chromeos::AudioDevice& device);
+                          CrasAudioHandler::NodeIdList* node_ids);
+  AudioDeviceInfo ToAudioDeviceInfo(const AudioDevice& device);
 
   // List of observers.
   base::ObserverList<AudioService::Observer>::Unchecked observer_list_;
 
-  chromeos::CrasAudioHandler* cras_audio_handler_;
+  CrasAudioHandler* cras_audio_handler_;
 
   AudioDeviceIdCalculator* id_calculator_;
 
@@ -132,7 +134,7 @@ class AudioServiceImpl : public AudioService,
 };
 
 AudioServiceImpl::AudioServiceImpl(AudioDeviceIdCalculator* id_calculator)
-    : cras_audio_handler_(chromeos::CrasAudioHandler::Get()),
+    : cras_audio_handler_(CrasAudioHandler::Get()),
       id_calculator_(id_calculator) {
   CHECK(id_calculator_);
 
@@ -143,8 +145,8 @@ AudioServiceImpl::AudioServiceImpl(AudioDeviceIdCalculator* id_calculator)
 AudioServiceImpl::~AudioServiceImpl() {
   // The CrasAudioHandler global instance may have already been destroyed, so
   // do not used the cached pointer here.
-  if (chromeos::CrasAudioHandler::Get())
-    chromeos::CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  if (CrasAudioHandler::Get())
+    CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
 void AudioServiceImpl::AddObserver(AudioService::Observer* observer) {
@@ -165,7 +167,7 @@ bool AudioServiceImpl::GetInfo(OutputInfo* output_info_out,
   if (!cras_audio_handler_)
     return false;
 
-  chromeos::AudioDeviceList devices;
+  ash::AudioDeviceList devices;
   cras_audio_handler_->GetAudioDevices(&devices);
   for (size_t i = 0; i < devices.size(); ++i) {
     if (!devices[i].is_input) {
@@ -197,7 +199,7 @@ bool AudioServiceImpl::GetDevices(const api::audio::DeviceFilter* filter,
   if (!cras_audio_handler_)
     return false;
 
-  chromeos::AudioDeviceList devices;
+  ash::AudioDeviceList devices;
   cras_audio_handler_->GetAudioDevices(&devices);
 
   bool accept_input =
@@ -225,9 +227,9 @@ void AudioServiceImpl::SetActiveDevices(const DeviceIdList& device_list) {
   if (!cras_audio_handler_)
     return;
 
-  chromeos::CrasAudioHandler::NodeIdList id_list;
+  CrasAudioHandler::NodeIdList id_list;
   for (const auto& id : device_list) {
-    const chromeos::AudioDevice* device =
+    const AudioDevice* device =
         cras_audio_handler_->GetDeviceFromId(GetIdFromStr(id));
     if (device)
       id_list.push_back(device->id);
@@ -242,11 +244,11 @@ bool AudioServiceImpl::SetActiveDeviceLists(
   if (!cras_audio_handler_)
     return false;
 
-  chromeos::CrasAudioHandler::NodeIdList input_nodes;
+  CrasAudioHandler::NodeIdList input_nodes;
   if (input_ids.get() && !GetAudioNodeIdList(*input_ids, true, &input_nodes))
     return false;
 
-  chromeos::CrasAudioHandler::NodeIdList output_nodes;
+  CrasAudioHandler::NodeIdList output_nodes;
   if (output_ids.get() &&
       !GetAudioNodeIdList(*output_ids, false, &output_nodes)) {
     return false;
@@ -272,7 +274,7 @@ bool AudioServiceImpl::SetDeviceSoundLevel(const std::string& device_id,
   if (!cras_audio_handler_)
     return false;
 
-  const chromeos::AudioDevice* device =
+  const AudioDevice* device =
       cras_audio_handler_->GetDeviceFromId(GetIdFromStr(device_id));
   if (!device)
     return false;
@@ -294,7 +296,7 @@ bool AudioServiceImpl::SetMuteForDevice(const std::string& device_id,
   if (!cras_audio_handler_)
     return false;
 
-  const chromeos::AudioDevice* device =
+  const AudioDevice* device =
       cras_audio_handler_->GetDeviceFromId(GetIdFromStr(device_id));
   if (!device)
     return false;
@@ -338,9 +340,9 @@ uint64_t AudioServiceImpl::GetIdFromStr(const std::string& id_str) {
 bool AudioServiceImpl::GetAudioNodeIdList(
     const DeviceIdList& ids,
     bool is_input,
-    chromeos::CrasAudioHandler::NodeIdList* node_ids) {
+    CrasAudioHandler::NodeIdList* node_ids) {
   for (const auto& device_id : ids) {
-    const chromeos::AudioDevice* device =
+    const AudioDevice* device =
         cras_audio_handler_->GetDeviceFromId(GetIdFromStr(device_id));
     if (!device)
       return false;
@@ -351,8 +353,7 @@ bool AudioServiceImpl::GetAudioNodeIdList(
   return true;
 }
 
-AudioDeviceInfo AudioServiceImpl::ToAudioDeviceInfo(
-    const chromeos::AudioDevice& device) {
+AudioDeviceInfo AudioServiceImpl::ToAudioDeviceInfo(const AudioDevice& device) {
   AudioDeviceInfo info;
   info.id = base::NumberToString(device.id);
   info.stream_type = device.is_input
@@ -426,7 +427,7 @@ void AudioServiceImpl::NotifyMuteChanged(bool is_input, bool is_muted) {
 void AudioServiceImpl::NotifyDevicesChanged() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  chromeos::AudioDeviceList devices;
+  ash::AudioDeviceList devices;
   cras_audio_handler_->GetAudioDevices(&devices);
 
   DeviceInfoList device_info_list;

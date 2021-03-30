@@ -27,17 +27,17 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 #include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/media_stream_request.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -66,12 +66,13 @@
 #endif  // defined(OS_MAC)
 
 using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
 // Helper to get title of the calling application shown in the screen capture
 // notification.
-base::string16 GetApplicationTitle(content::WebContents* web_contents,
+std::u16string GetApplicationTitle(content::WebContents* web_contents,
                                    const extensions::Extension* extension) {
   // Use extension name as title for extensions and host/origin for drive-by
   // web.
@@ -92,8 +93,15 @@ base::string16 GetApplicationTitle(content::WebContents* web_contents,
 // notification.
 bool ShouldDisplayNotification(const extensions::Extension* extension) {
   return !(extension &&
-           (extension->location() == extensions::Manifest::COMPONENT ||
-            extension->location() == extensions::Manifest::EXTERNAL_COMPONENT));
+           (extension->location() == ManifestLocation::kComponent ||
+            extension->location() == ManifestLocation::kExternalComponent));
+}
+
+// Returns true if an on-screen notification should not be displayed after
+// desktop capture is taken for the |url|.
+bool HasNotificationExemption(const GURL& url) {
+  return (url.spec() == chrome::kChromeUIFeedbackURL &&
+          base::FeatureList::IsEnabled(features::kWebUIFeedback));
 }
 
 #if !defined(OS_ANDROID)
@@ -139,15 +147,14 @@ struct DesktopCaptureAccessHandler::PendingAccessRequest {
 
 DesktopCaptureAccessHandler::DesktopCaptureAccessHandler()
     : picker_factory_(new DesktopMediaPickerFactoryImpl()),
-      display_notification_(true) {
-  AddNotificationObserver();
-}
+      display_notification_(true),
+      web_contents_collection_(this) {}
 
 DesktopCaptureAccessHandler::DesktopCaptureAccessHandler(
     std::unique_ptr<DesktopMediaPickerFactory> picker_factory)
-    : picker_factory_(std::move(picker_factory)), display_notification_(false) {
-  AddNotificationObserver();
-}
+    : picker_factory_(std::move(picker_factory)),
+      display_notification_(false),
+      web_contents_collection_(this) {}
 
 DesktopCaptureAccessHandler::~DesktopCaptureAccessHandler() = default;
 
@@ -176,7 +183,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
       MediaCaptureDevicesDispatcher::IsOriginForCasting(
           request.security_origin) ||
       IsExtensionAllowedForScreenCapture(extension) ||
-      IsBuiltInExtension(request.security_origin);
+      IsBuiltInFeedbackUI(request.security_origin);
 
   const bool origin_is_secure =
       network::IsUrlPotentiallyTrustworthy(request.security_origin) ||
@@ -200,7 +207,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
     // chrome::ShowQuestionMessageBox() starts a nested run loop which may
     // allow |web_contents| to be destroyed on the UI thread before the messag
     // box is closed. See http://crbug.com/326690.
-    base::string16 application_title =
+    std::u16string application_title =
         GetApplicationTitle(web_contents, extension);
 #if !defined(OS_ANDROID)
     gfx::NativeWindow parent_window =
@@ -211,18 +218,19 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 
     // Some extensions do not require user approval, because they provide their
     // own user approval UI.
-    bool is_approved = IsDefaultApproved(extension);
+    bool is_approved = IsDefaultApproved(extension) ||
+                       IsDefaultApproved(request.security_origin);
     if (!is_approved) {
-      base::string16 application_name =
+      std::u16string application_name =
           base::UTF8ToUTF16(request.security_origin.spec());
       if (extension)
         application_name = base::UTF8ToUTF16(extension->name());
-      base::string16 confirmation_text = l10n_util::GetStringFUTF16(
+      std::u16string confirmation_text = l10n_util::GetStringFUTF16(
           request.audio_type == blink::mojom::MediaStreamType::NO_SERVICE
               ? IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TEXT
               : IDS_MEDIA_SCREEN_AND_AUDIO_CAPTURE_CONFIRMATION_TEXT,
           application_name);
-      chrome::MessageBoxResult result = chrome::ShowQuestionMessageBox(
+      chrome::MessageBoxResult result = chrome::ShowQuestionMessageBoxSync(
           parent_window,
           l10n_util::GetStringFUTF16(
               IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TITLE, application_name),
@@ -257,8 +265,17 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 
       // Determine if the extension is required to display a notification.
       const bool display_notification =
-          display_notification_ && ShouldDisplayNotification(extension);
+          display_notification_ && ShouldDisplayNotification(extension) &&
+          !HasNotificationExemption(request.security_origin);
 
+      if (!content::WebContents::FromRenderFrameHost(
+              content::RenderFrameHost::FromID(request.render_process_id,
+                                               request.render_frame_id))) {
+        std::move(callback).Run(
+            devices, blink::mojom::MediaStreamRequestResult::INVALID_STATE,
+            std::move(ui));
+        return;
+      }
       ui = GetDevicesForDesktopCapture(
           web_contents, &devices, screen_id,
           blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
@@ -281,9 +298,16 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 bool DesktopCaptureAccessHandler::IsDefaultApproved(
     const extensions::Extension* extension) {
   return extension &&
-         (extension->location() == extensions::Manifest::COMPONENT ||
-          extension->location() == extensions::Manifest::EXTERNAL_COMPONENT ||
+         (extension->location() == ManifestLocation::kComponent ||
+          extension->location() == ManifestLocation::kExternalComponent ||
           IsExtensionAllowedForScreenCapture(extension));
+}
+
+bool DesktopCaptureAccessHandler::IsDefaultApproved(const GURL& url) {
+  // allow the Feedback WebUI chrome://feedback/ to take screenshot without
+  // user's approval. The screenshot will not be shared by default. So the
+  // user can still decide whether the screenshot taken is shared or not.
+  return url.spec() == chrome::kChromeUIFeedbackURL;
 }
 
 bool DesktopCaptureAccessHandler::SupportsStreamType(
@@ -479,6 +503,9 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
     }
   }
 
+  // Ensure we are observing the deletion of |web_contents|.
+  web_contents_collection_.StartObserving(web_contents);
+
   RequestsQueue& queue = pending_requests_[web_contents];
   queue.push_back(std::make_unique<PendingAccessRequest>(
       std::move(picker), request, std::move(callback), extension));
@@ -535,9 +562,8 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
     }
   }
 
-  std::vector<content::DesktopMediaID::Type> media_types = {
-      content::DesktopMediaID::TYPE_WEB_CONTENTS};
-  auto source_lists = picker_factory_->CreateMediaList(media_types);
+  auto source_lists = picker_factory_->CreateMediaList(
+      {DesktopMediaList::Type::kWebContents}, web_contents);
 
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DesktopCaptureAccessHandler::OnPickerDialogResults,
@@ -607,21 +633,11 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
     ProcessQueuedAccessRequest(queue, web_contents);
 }
 
-void DesktopCaptureAccessHandler::AddNotificationObserver() {
+void DesktopCaptureAccessHandler::WebContentsDestroyed(
+    content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  notifications_registrar_.Add(this,
-                               content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-                               content::NotificationService::AllSources());
-}
 
-void DesktopCaptureAccessHandler::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_DESTROYED, type);
-
-  pending_requests_.erase(content::Source<content::WebContents>(source).ptr());
+  pending_requests_.erase(web_contents);
 }
 
 void DesktopCaptureAccessHandler::DeletePendingAccessRequest(

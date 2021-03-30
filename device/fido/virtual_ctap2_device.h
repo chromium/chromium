@@ -151,16 +151,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // a makeCredential or getAssertion request carries any extension.
     bool reject_all_extensions = false;
 
-    // Support a non-standard CTAP extension that lets the platform supply an
-    // unhashed client data for the authenticator to assemble and hash instead
-    // of using the regular, already hashed value.
-    bool support_android_client_data_extension = false;
-
-    // Support a non-standard CTAP extension that lets the platform supply an
-    // unhashed client data for the authenticator to assemble and hash instead
-    // of using the regular, already hashed value.
-    bool send_unsolicited_android_client_data_extension = false;
-
     // support_invalid_for_testing_algorithm causes the
     // |CoseAlgorithmIdentifier::kInvalidForTesting| public-key algorithm to be
     // advertised and supported to aid testing of unknown public-key types.

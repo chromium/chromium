@@ -44,7 +44,8 @@ void FakeNearbyConnectionsManager::StartDiscovery(
     ConnectionsCallback callback) {
   is_shutdown_ = false;
   discovery_listener_ = listener;
-  // TODO(alexchau): Implement.
+  std::move(callback).Run(
+      NearbyConnectionsManager::ConnectionsStatus::kSuccess);
 }
 
 void FakeNearbyConnectionsManager::StopDiscovery() {
@@ -123,7 +124,20 @@ FakeNearbyConnectionsManager::GetIncomingPayload(int64_t payload_id) {
 
 void FakeNearbyConnectionsManager::Cancel(int64_t payload_id) {
   DCHECK(!is_shutdown());
-  // TODO(alexchau): Implement.
+  PayloadStatusListener* listener =
+      GetRegisteredPayloadStatusListener(payload_id);
+  if (listener) {
+    listener->OnStatusUpdate(
+        location::nearby::connections::mojom::PayloadTransferUpdate::New(
+            payload_id,
+            location::nearby::connections::mojom::PayloadStatus::kCanceled,
+            /*total_bytes=*/0,
+            /*bytes_transferred=*/0),
+        /*upgraded_medium=*/base::nullopt);
+    payload_status_listeners_.erase(payload_id);
+  }
+
+  canceled_payload_ids_.insert(payload_id);
 }
 
 void FakeNearbyConnectionsManager::ClearIncomingPayloads() {
@@ -206,6 +220,11 @@ FakeNearbyConnectionsManager::GetRegisteredPayloadStatusListener(
 void FakeNearbyConnectionsManager::SetIncomingPayload(int64_t payload_id,
                                                       PayloadPtr payload) {
   incoming_payloads_[payload_id] = std::move(payload);
+}
+
+bool FakeNearbyConnectionsManager::WasPayloadCanceled(
+    const int64_t& payload_id) const {
+  return base::Contains(canceled_payload_ids_, payload_id);
 }
 
 base::Optional<base::FilePath>

@@ -22,9 +22,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case AutomationMsgStart:
       message_class = ChromeLegacyIpc::CLASS_AUTOMATION;
       break;
-    case FrameMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_FRAME;
-      break;
     case TestMsgStart:
       message_class = ChromeLegacyIpc::CLASS_TEST;
       break;
@@ -43,21 +40,12 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case PpapiMsgStart:
       message_class = ChromeLegacyIpc::CLASS_PPAPI;
       break;
-    case ChromeMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_CHROME;
-      break;
-    case PrintMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_PRINT;
-      break;
     case ExtensionMsgStart:
       message_class = ChromeLegacyIpc::CLASS_EXTENSION;
       break;
       break;
     case ChromotingMsgStart:
       message_class = ChromeLegacyIpc::CLASS_CHROMOTING;
-      break;
-    case AndroidWebViewMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_ANDROID_WEB_VIEW;
       break;
     case NaClHostMsgStart:
       message_class = ChromeLegacyIpc::CLASS_NACL_HOST;
@@ -82,9 +70,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
       break;
     case ExtensionWorkerMsgStart:
       message_class = ChromeLegacyIpc::CLASS_EXTENSION_WORKER;
-      break;
-    case UnfreezableFrameMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_UNFREEZABLE_FRAME;
       break;
   }
   legacy_ipc->set_message_class(message_class);

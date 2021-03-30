@@ -109,7 +109,7 @@
     },
     {
         "duration": "43.0",
-        "name": "system_health.common_desktop/browse:media:googleplaystore:2018"
+        "name": "system_health.common_desktop/browse:media:googleplaystore:2021"
     },
     {
         "duration": "72.0",
@@ -136,20 +136,8 @@
         "name": "system_health.common_desktop/browse:media:youtubetv_watch:2020"
     },
     {
-        "duration": "45.0",
-        "name": "system_health.common_desktop/browse:news:cnn:2020"
-    },
-    {
-        "duration": "52.0",
-        "name": "system_health.common_desktop/browse:news:flipboard:2018"
-    },
-    {
         "duration": "61.0",
         "name": "system_health.common_desktop/browse:news:nytimes:2020"
-    },
-    {
-        "duration": "35.0",
-        "name": "system_health.common_desktop/browse:search:google_india:2018"
     },
     {
         "duration": "64.0",

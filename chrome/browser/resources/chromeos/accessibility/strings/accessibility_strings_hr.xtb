@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Stavka popisa</translation>
 <translation id="1013742170491673792">prtrž</translation>
 <translation id="1014370462248694370">Prelazak dvama prstima udesno</translation>
-<translation id="1016393160682012902">Pritisnite tipku qwerty tipkovnice, tipku brajevog retka s mogućnošću osvježavanja ili pokret dodira da biste saznali njihove funkcije. Pritisnite tipku Control i "w" ili Esc za zatvaranje.</translation>
 <translation id="1022586497894531524">Prvi put upotrebljavate govorne povratne informacije ChromeVox? Ovaj će vam brzi vodič pokazati osnovne upute za početak upotrebe ChromeVoxa.</translation>
 <translation id="1025074108959230262">Ljepljiv način onemogućen</translation>
 <translation id="1031961866430398710">pa</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Nema prethodne kontrole</translation>
 <translation id="2045606329038304310">Kontrola polja obrasca</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2074531330963286860">Dostupne radnje. Pritisnite tipku za pretraživanje i točku za pregled</translation>
 <translation id="2086961585857038472">Sljedeća riječ</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">hr</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Početak ili kraj odabira</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Skok na prethodnu stavku s mogućnošću fokusiranja</translation>
+<translation id="8279039817939141096">Pritisnite tipku qwerty tipkovnice, tipku brajevog retka s mogućnošću osvježavanja ili pokret dodira da biste saznali njihove funkcije. Pritisnite tipku Control i w, razmaknicu i Z, prijeđite s dva prsta ulijevo ili pritisnite Escape da biste napustili način učenja.</translation>
 <translation id="8283603667300770666">Sljedeće polje obrasca</translation>
 <translation id="8310185481635255431">Nema sljedeće veze</translation>
 <translation id="831207808878314375">Definicija</translation>

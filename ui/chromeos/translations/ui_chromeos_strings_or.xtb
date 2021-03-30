@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">ଫାଇଲ୍ ବା ଡିରେକ୍ଟୋରୀ ବ୍ୟବହାର ଯୋଗ୍ୟ ନୁହେଁ।</translation>
 <translation id="1363028406613469049">ଟ୍ରାକ୍‌ କରନ୍ତୁ</translation>
 <translation id="1378727793141957596">Google Driveକୁ ସ୍ୱାଗତ!</translation>
+<translation id="1379911846207762492">ଯେତେବେଳେ ଆପଣଙ୍କ ପାଖରେ ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗ ନଥାଏ, ସେତେବେଳେ ଆପଣ ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିପାରିବେ।</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1395262318152388157">ସୀକ୍ ସ୍ଲାଇଡର୍‍</translation>
 <translation id="1404323374378969387">ନରୱେଜୀୟ</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">ସମସ୍ତ ଫାଇଲ୍</translation>
 <translation id="1810764548349082891">କୌଣସି ପୂର୍ବାବଲୋକନ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1812302367230252929">ଆମହାରିକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="1813278315230285598">ସେବା</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ସତର୍କତା:<ph name="END_BOLD" />  ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କ‌ରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ହୁଏତ ସ୍ୱଚାଳିତ ରୂପେ ଡିଲିଟ୍ କରାଯାଇଥାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ପେଙ୍ଗୁଇନ୍‍</translation>
 <translation id="183183971458492120">ସୂଚନା ଲୋଡ୍ ହେଉଛି..</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">ଏହି ଫୋଲ୍ଡରକୁ Linux ସହିତ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="1864756863218646478">ଏହି ଫାଇଲ୍ ମିଳିଲା ନାହଁ।</translation>
 <translation id="1920670151694390848">ମାଲାୟଲମ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="1920798810075583923">ତରଭୁଜ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରାଯାଇଛି</translation>
 <translation id="1931134289871235022">ସ୍ଲୋଭାକ୍</translation>
 <translation id="1933345018156373194">ଘୁଞ୍ଚାଇବା କାର୍ଯ୍ୟ ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1942765061641586207">ଛବି ରିଜୋଲ୍ୟୁସନ୍</translation>
-<translation id="1943097386230153518">ନୂଆ ସେବା ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="1972984168337863910">ମତାମତ ପ୍ୟାନେଲ୍‍ଗୁଡ଼ିକୁ ପ୍ରସାରଣ କରନ୍ତୁ</translation>
+<translation id="1984456723671657197">ଏହି ଫାଇଲର ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। Chrome OSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="1995337122023280937">ଫାଇଲ୍ ଲୋକେସନକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2001796770603320721">Driveରେ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2009067268969781306">କୌଣସି ଡ୍ରାଇଭ୍‍କୁ ଡିଲିଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">ରେକର୍ଡ ପ୍ଲେୟାର୍</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />ଟି ଫାଇଲ୍ ଖୋଲାଯାଉଛି।</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" />ଫାଇଲ୍ ଖୋଲୁଛି।</translation>
+<translation id="2304820083631266885">ଗ୍ରହ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ବାହାର କରାଯାଇଛି</translation>
 <translation id="2325650632570794183">ଏହି ଫାଇଲ୍ ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। ଏହି ପ୍ରକାରର ଫାଇଲ୍ ଖୋଲିବା ପାଇଁ ଗୋଟିଏ ଆପ୍ ଖୋଜିବାକୁ ଦୟାକରି Chrome ୱେବ୍ ଷ୍ଟୋର୍‌କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="2326539130272988168">ବୁଲଗେରିଆନ୍</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">US ଆନ୍ତର୍ଜାତିକ</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">ବେଙ୍ଗ</translation>
-<translation id="2572501073504669105">ଯେତେବେଳେ ଆପଣଙ୍କ ପାଖରେ ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗ ନଥାଏ, ସେତେବେଳେ ଆପଣ ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିପାରିବେ।</translation>
 <translation id="2578394532502990878">ତାମିଲ ଫୋନେଟିକ୍</translation>
 <translation id="2579959351793446050">ଓଡ଼ିଆ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ଭିଡିଓ</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">ଫରାସୀ (କାନାଡ଼ା)</translation>
 <translation id="3003633581067744647">ଥମ୍ବନେଲ୍ ଭ୍ୟୁକୁ ସ୍ବିଚ୍ କରନ୍ତୁ</translation>
 <translation id="3007214526293698309">ଅନୁପାତର ସମାଧାନ କରନ୍ତୁ</translation>
+<translation id="3029114385395636667">Docs, Sheets ଏବଂ Slidesକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିବା ପାଇଁ Google Docs ଅଫଲାଇନକୁ ସକ୍ଷମ କରନ୍ତୁ।</translation>
 <translation id="303198083543495566">ଭୌଗଳିକ</translation>
 <translation id="3047197340186497470">ଚାଇନିଜ୍ ଡାୟି</translation>
 <translation id="3057861065630527966">ଆପଣଙ୍କର ଫଟୋ ଓ ଭିଡିଓଗୁଡ଼ିକର ବ୍ୟାକ୍‌ଅପ୍ ନିଅନ୍ତୁ</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">ରେକର୍ଡ କରାଯାଇଥିବା ବର୍ଷ</translation>
 <translation id="3353984535370177728">ଅପ୍‌ଲୋଡ୍‍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍‌ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3356580349448036450">ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
+<translation id="3358452157379365236">ଗିଟାର</translation>
 <translation id="3382143449143186018">InScript କୀବୋର୍ଡ ସହ ନେପାଳୀ</translation>
 <translation id="3408236822532681288">ନିଓ 2 କୀବୋର୍ଡ ସହ ଜର୍ମାନ (ଜର୍ମାନୀ)</translation>
 <translation id="3414856743105198592">ବାହାର କରାଯାଇପାରୁଥିବା ମେଡ଼ିଆକୁ ଫର୍ମାଟ୍ କଲେ ଏହା ସମସ୍ତ ଡାଟା ଲିଭାଇଦେବ। ଆପଣ ଜାରି ରଖିବା ଚାହାନ୍ତି କି?</translation>
 <translation id="3437801641691368414">ତିଆରି ହୋ‌ଇଥିବାର ସମୟ</translation>
+<translation id="343907260260897561">ଇନଷ୍ଟାଣ୍ଟ କ୍ୟାମେରା</translation>
 <translation id="3455931012307786678">ଇସ୍ତୋନିଆନ୍</translation>
 <translation id="3466147780910026086">ଆପଣଙ୍କର ମେଡିଆ ଡିଭାଇସ୍ ସ୍କାନ୍ ହେଉଛି...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" />ଟି ଫଟୋକୁ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />ରେ ବ୍ୟାକ୍‌ଅପ୍‌ ନିଆଯାଇଛି</translation>
 <translation id="3475447146579922140">Google ସ୍ପ୍ରେଡ୍‌ସିଟ୍</translation>
+<translation id="3479552764303398839">ଏବେ ନୁହେଁ</translation>
 <translation id="3486821258960016770">ମଙ୍ଗୋଲିଆନ୍</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />ଟି ତ୍ରୁଟି।</translation>
 <translation id="3522708245912499433">ପର୍ତ୍ତୁଗୀଜ୍</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରନ୍ତୁ।</translation>
 <translation id="3556731189587832921">ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="357479282490346887">ଲିଥୁଆନିଆନ୍</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" />କୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3603385196401704894">କାନାଡିଆନ୍ ଫ୍ରେଞ୍ଚ୍</translation>
 <translation id="3606220979431771195">ତୁର୍କୀସ୍-F</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">ୟୁନିକର୍ନ</translation>
 <translation id="4158739975813877944">ପ୍ଲେ ତାଲିକା ଖୋଲନ୍ତୁ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଇଛି।</translation>
+<translation id="4186579485882418952">ଅଫଲାଇନ୍ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="4193154014135846272">Google ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="4197674956721858839">Zip ଚୟନ</translation>
 <translation id="4202378258276439759">ସ୍ପେନୀୟ (ଲାଟିନ୍ ଆମେରିକା)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">ସାଧାରଣ ସୂଚନା</translation>
 <translation id="432252891123397018">ଷ୍ଟାଣ୍ଡାର୍ଡ କୀବୋର୍ଡ ସହ ରୋମାନିଆନ୍</translation>
 <translation id="4325128273762811722">ସ୍ଲୋଭେନିଆନ୍</translation>
+<translation id="4326142238881453352">ବଟାନିଷ୍ଟ</translation>
 <translation id="4326192123064055915">କଫି</translation>
 <translation id="4336032328163998280">କପି କରିବା କାର୍ଯ୍ୟ ବିଫଳ ହେଲା।<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">ସୋରାନୀ କୁର୍ଦ୍ଦିଶ୍ ଆରବିକ୍-ଆଧାରିତ କୀବୋର୍ଡ</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">ଟାଇପରାଇଟର୍ କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="4711094779914110278">ତୁର୍କିସ୍</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" ଖୋଲାଯାଉଛି</translation>
-<translation id="4713544552769165154">ମେସିନ୍‍ଟୋସ୍ ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରି ଗୋଟିଏ କମ୍ପ୍ୟୁଟର୍ ପାଇଁ ଏହି ଫାଇଲ୍‍କୁ ତିଆରି କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। ଆପ୍‍ର ଗୋଟିଏ ଉପଯୁକ୍ତ ବିକଳ୍ପ ପାଇଁ ଦୟାକରି <ph name="BEGIN_LINK" />Chrome ୱେବ୍ ଷ୍ଟୋର୍<ph name="END_LINK" /> ସର୍ଚ୍ଚ କରନ୍ତୁ। <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" />ଟି ଫଟୋର ବ୍ୟାକ୍-ଅପ୍ ନିଆଯାଇଛି</translation>
 <translation id="4725511304875193254">କୋର୍ଗି</translation>
 <translation id="4732760563705710320">କ୍ଷମା କରିବେ, ଏହି ଭିଡିଓ ଆପଣଙ୍କର କାଷ୍ଟ ଡିଭାଇସ୍‌କୁ ସମର୍ଥନ କରୁନାହିଁ।</translation>
@@ -403,6 +412,7 @@
 <translation id="5257456363153333584">ଡ୍ରାଗନ୍‌ଫ୍ଲାଏ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ସବୁ ଜାଗାରୁ, ଏପରିକି ଅଫ୍‍ଲାଇନ୍‌ରେ ଫାଇଲ୍ ଆକ୍ସେସ୍ କରେ।<ph name="MARKUP_2" />Google ଡ୍ରାଇଭ୍‍‌ରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ଅପ୍ ଟୁ ଡେଟ୍ ଅଛି ଏବଂ ଯେକୌଣସି ଡିଭାଇସ୍‍ରୁ ଉପଲବ୍ଧ ଅଟେ।<ph name="MARKUP_3" /> <ph name="MARKUP_4" />ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ ସୁରକ୍ଷିତ ରଖନ୍ତୁ।<ph name="MARKUP_5" /> ଆପଣଙ୍କ ଡିଭାଇସ୍‍ର ଯାହା ହେଉନା କାହିଁକି, ଆପଣଙ୍କର ଫାଇଲ୍‍ଗୁଡ଼ିକ Google ଡ୍ରାଇଭ୍‌ରେ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର୍ ହୋଇରହିବ।<ph name="MARKUP_6" /> <ph name="MARKUP_7" />ଗୋଟିଏ ସ୍ଥାନରେ ଫାଇଲ୍‍ଗୁଡ଼ିକ ସେୟାର୍ କରନ୍ତୁ, ତିଆରି କରନ୍ତୁ<ph name="MARKUP_8" /> ଏବଂ ଅନ୍ୟମାନଙ୍କ ସହ ସହଯୋଗିତା କରନ୍ତୁ।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Driveରୁ ଫାଇଲ୍ ପୁନରୁଦ୍ଧାର ହୋଇଛି</translation>
+<translation id="5288441970121584418">ବର୍ଗର୍</translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5318819489018851358">Linux ସହିତ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5323213332664049067">ଲାଟିନ୍‍ ଆମେରିକାନ୍‍</translation>
@@ -455,8 +465,6 @@
 <translation id="5833610766403489739">ଏହି ଫାଇଲ୍‌ଟି କେଉଁଠି ଏପଟ ସେପଟ ହୋଇଯାଇଛି। ଦୟାକରି ଆପଣଙ୍କର ଡାଉନ୍‌ଲୋଡ୍ ଲୋକେସନ୍ ସେଟିଂକୁ ଯାଞ୍ଚ କରି ପୁଣି ଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5838451609423551646">ସମସ୍ତ ବଛାଯାଇଥିବା ଫାଇଲ୍‌ଗୁଡ଼ିକ କଢ଼ାଯାଇଛି।</translation>
 <translation id="5838825566232597749">US ୱର୍କମ୍ୟାନ୍ ଆନ୍ତର୍ଜାତୀୟ</translation>
-<translation id="5850516540536751549">ଏହି ଫାଇଲ୍ ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ। ଏହି ପ୍ରକାରର ଫାଇଲ୍ ଖୋଜିପାରୁଥିବା ଗୋଟିଏ ଆପ୍ ଖୋଜିବାକୁ ଦୟାକରି <ph name="BEGIN_LINK" />Chrome ୱେବ୍ ଷ୍ଟୋର୍‌<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।
-    <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ଏଠାରେ ଦେଖିବା ପାଇଁ କିଛି ନାହିଁ...</translation>
 <translation id="5911887972742538906">ଆପଣଙ୍କର Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲେସନ୍‌ ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
 <translation id="5912396950572065471">ଫର୍ମାଟ୍</translation>
@@ -494,10 +502,12 @@
 <translation id="6248400709929739064">ଉପଶୀର୍ଷକ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6269630227984243955">ମଲୟ</translation>
 <translation id="6287852322318138013">ଏହି ଫାଇଲ୍ ଖୋଲିବା ପାଇଁ ଗୋଟିଏ ଆପ୍ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="6321303798550928047">ହାତ ହଲାଇବା</translation>
 <translation id="6339145975392024142">US ଆନ୍ତର୍ଜାତିକ (PC)</translation>
 <translation id="6346310558342052870">ଆକ୍ସେସ୍‍କୁ ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି</translation>
 <translation id="6356685157277930264">ଫାଇଲ୍ସ ଫିଡ୍‍ବ୍ୟାକ୍ ୱିଣ୍ଡୋ</translation>
 <translation id="6358884629796491903">ଡ୍ରାଗନ୍</translation>
+<translation id="6367976544441405720">ଭ୍ୟାନ୍</translation>
 <translation id="637062427944097960">ଏହି ଫାଇଲ୍‌ଟି ଏକ ଭିନ୍ନ ଡେସ୍କଟପ୍‌ରେ ଖୋଲିଲା। (<ph name="MAIL_ADDRESS" />)କୁ ଦେଖିବା ପାଇଁ <ph name="USER_NAME" />କୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="6394388407447716302">କେବଳ-ପଢ଼ିବା ପାଇଁ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />ଟି ଆଇଟମ୍</translation>
@@ -521,6 +531,7 @@
 <translation id="6650726141019353908">ଗୋଲାପି ପ୍ରଜାପତି</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6673674183150363784">Bépo କୀବୋର୍ଡ ସହ ଫରାସୀ (ଫ୍ରାନ୍ସ)</translation>
+<translation id="6710022688720561421">ରୋବୋଟ୍</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6751256176799620176">1ଟି ଫୋଲ୍ଡର୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
@@ -554,6 +565,7 @@
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
 <translation id="6970230597523682626">ବୁଲଗେରୀୟ</translation>
 <translation id="6973630695168034713">ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ</translation>
+<translation id="6976795442547527108">ସିଂହ</translation>
 <translation id="6978611942794658017">Windows ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରୁଥିବା PC ପାଇଁ ଏହି ଫାଇଲ୍ ଡିଜାଇନ୍ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। ଆପ୍‍ର ଗୋଟିଏ ଉପଯୁକ୍ତ ବିକଳ୍ପ ପାଇଁ ଦୟାକରି Chrome ୱେବ୍ ଷ୍ଟୋର୍‌ରେ ସନ୍ଧାନ କରନ୍ତୁ।</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ସ୍ୱେଡିସ</translation>
@@ -600,6 +612,7 @@
 <translation id="7532029025027028521">ପାର୍ସି ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="7544830582642184299">ଆପଣଙ୍କର Google Driveରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ Linux ଆପ୍ସକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସିଙ୍କ୍ ହୋଇଯିବ।</translation>
 <translation id="7544853251252956727">ଅଦଳବଦଳ</translation>
+<translation id="7547009467130558110">ସ୍ନିକର୍</translation>
 <translation id="7547780573915868306">ଲିଥୁନିଆନ୍</translation>
 <translation id="7547811415869834682">ଡଚ୍</translation>
 <translation id="7551643184018910560">ସେଲ୍ଫରେ ପିନ୍‌ କରନ୍ତୁ</translation>
@@ -614,6 +627,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> ଟି ଆଇଟମ୍ ଘୁଞ୍ଚାଯାଉଛି ...</translation>
+<translation id="7655441028674523381">Google Photosକୁ ସହଜରେ ଆକ୍ସେସ୍ କରନ୍ତୁ</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7663224033570512922">ହିନ୍ଦୀ</translation>
 <translation id="7693909743393669729">ଏକ ଡ୍ରାଇଭକୁ ଫର୍ମାଟ୍ କରିବା ଦ୍ୱାରା ସେଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଲିଭିଯିବ ଏବଂ ଦୃଶ୍ୟମାନ ହେଉନଥିବା ପାର୍ଟିସନଗୁଡ଼ିକ ସମେତ, ପୂର୍ବରୁ ଥିବା ସମସ୍ତ ପାର୍ଟିସନକୁ କାଢ଼ି ଦିଆଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
@@ -645,7 +659,6 @@
 <translation id="7839804798877833423">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଆଣିବା ପାଇଁ ଆନୁମାନିକ <ph name="FILE_SIZE" /> ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର ହେବ।</translation>
 <translation id="7846076177841592234">ଚୟନିତ ଆଇଟମ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="7853966320808728790">ଫ୍ରେଞ୍ଚ BÉPO</translation>
-<translation id="7864662577698025113">ନୂଆ ସେବା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7868774406711971383">ପୋଲିଶ୍</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" />ରେ ସେଭ୍ କରିପାରିବ ନାହିଁ। ସମସ୍ତ ଏଡ଼ିଟ୍‌ ଡାଉନ୍‌ଲୋଡ୍‌ ଫୋଲ୍ଡର୍‌ର <ph name="DOWNLOADS_FOLDER" />ରେ ସେଭ୍‌ କରାଯିବ।</translation>
 <translation id="7874321682039004450">ଫିଲିପିନୋ</translation>
@@ -660,13 +673,13 @@
 <translation id="7972920761225148017">ଫରାସୀ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
 <translation id="7980421588063892270">କୋଲମାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="7982283708762922719">ଉଚ୍ଚତା</translation>
+<translation id="79907182588096956">Windows ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରୁଥିବା PC ପାଇଁ ଏହି ଫାଇଲ୍ ଡିଜାଇନ୍ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କ ଡିଭାଇସରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। Chrome OSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="8008366997883261463">ଶ୍ୱାନ</translation>
 <translation id="8028993641010258682">ଆକାର</translation>
 <translation id="803771048473350947">ଫାଇଲ୍</translation>
 <translation id="8038111231936746805">(ଡିଫଲ୍ଟ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ଅଡିଓ</translation>
 <translation id="8045462269890919536">ରୋମାନିୟ</translation>
-<translation id="8052887694493382350">Windows ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରୁଥିବା PC ପାଇଁ ଏହି ଫାଇଲ୍ ଡିଜାଇନ୍ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଏହା .ସୁସଙ୍ଗତ ନୁହେଁ। <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">ସମସ୍ତ ଏଡିଟ୍‌ଗୁଡ଼ିକ <ph name="DOWNLOADS_FOLDER" />ରେ ସେଭ୍ କରାଯିବ।</translation>
 <translation id="8079530767338315840">ପୁନର୍ବାର କରନ୍ତୁ</translation>
 <translation id="8106045200081704138">ମୋ ସହିତ ସେୟାର୍‌ କରାଯାଇଛି</translation>
@@ -706,6 +719,7 @@
 <translation id="8466234950814670489">ଟାର୍ ଆରକାଇଭ୍</translation>
 <translation id="8475647382427415476">Google ଡ୍ରାଇଭ୍ ଏହିକ୍ଷଣି "<ph name="FILENAME" />"କୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ। Google ଡ୍ରାଇଭ୍ ପୁଣି ପରେ ଚେଷ୍ଟା କରିବ।</translation>
 <translation id="8477649328507734757">ସ୍ପିନ୍‌</translation>
+<translation id="8484284835977497781">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଫଟୋଗୁଡ଼ିକରୁ ବାଛନ୍ତୁ।</translation>
 <translation id="8487700953926739672">ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌</translation>
@@ -738,8 +752,10 @@
 <translation id="8860454412039442620">Excel ସ୍ପ୍ରେଡ୍‍ସିଟ୍</translation>
 <translation id="8866284467018526531">ଆରବିକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="8900820606136623064">ହଙ୍ଗେରୀଆନ୍</translation>
+<translation id="8903931173357132290">ଗ୍ରାଜୁଏଟ୍</translation>
 <translation id="8919081441417203123">ଡାନିଶ୍</translation>
 <translation id="8965697826696209160">ଯଥେଷ୍ଟ ସ୍ଥାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
+<translation id="8970501467542182729">ଏହି ଫାଇଲକୁ Macintosh ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରୁଥିବା କୌଣସି କମ୍ପ୍ୟୁଟର ପାଇଁ ଡିଜାଇନ୍ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କ ଡିଭାଇସରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। Chrome OSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
 <translation id="8997962250644902079">ଚାଇନିଜ୍ (ପାରମ୍ପାରିକ) ପିନୟିନ୍</translation>
 <translation id="9017798300203431059">ରସିଆନ୍ (ଫୋନେଟିକ୍)</translation>
 <translation id="9034924485347205037">Linux ଫାଇଲ୍‍ଗୁଡ଼ିକ</translation>

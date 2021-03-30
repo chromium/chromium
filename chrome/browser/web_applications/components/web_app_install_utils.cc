@@ -11,19 +11,18 @@
 #include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
-#include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/webapps/installable/installable_data.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -185,12 +184,23 @@ base::Optional<apps::ShareTarget> ToWebAppShareTarget(
   return std::move(apps_share_target);
 }
 
+apps::UrlHandlers ToWebAppUrlHandlers(
+    const std::vector<blink::Manifest::UrlHandler>& url_handlers) {
+  apps::UrlHandlers apps_url_handlers;
+  for (const auto& url_handler : url_handlers) {
+    apps_url_handlers.emplace_back(url_handler.origin,
+                                   url_handler.has_origin_wildcard);
+  }
+  return apps_url_handlers;
+}
+
 }  // namespace
 
 void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
+                                  const GURL& manifest_url,
                                   WebApplicationInfo* web_app_info) {
   // Give the full length name priority if it's not empty.
-  base::string16 name = manifest.name.value_or(base::string16());
+  std::u16string name = manifest.name.value_or(std::u16string());
   if (!name.empty())
     web_app_info->title = name;
   else if (manifest.short_name)
@@ -220,10 +230,8 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
     web_app_info->display_override = manifest.display_override;
 
   // Create the WebApplicationInfo icons list *outside* of |web_app_info|, so
-  // that we can decide later whether or not to replace the existing icons array
-  // (conditionally on whether there were any that didn't have purpose ANY).
+  // that we can decide later whether or not to replace the existing icons.
   std::vector<WebApplicationIconInfo> web_app_icons;
-  bool has_purpose_any = false;
   for (const auto& icon : manifest.icons) {
     // An icon's purpose vector should never be empty (the manifest parser
     // should have added ANY if there was no purpose specified in the manifest).
@@ -253,9 +261,6 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
       info.purpose = purpose;
       web_app_icons.push_back(std::move(info));
 
-      if (purpose == IconPurpose::ANY)
-        has_purpose_any = true;
-
       // Limit the number of icons we store on the user's machine.
       if (web_app_icons.size() == kMaxIcons)
         break;
@@ -264,9 +269,9 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
     if (web_app_icons.size() == kMaxIcons)
       break;
   }
-  // If any icons are specified in the manifest, they take precedence over any
-  // we picked up from the web_app stuff.
-  if (has_purpose_any)
+  // If any icons are correctly specified in the manifest, they take precedence
+  // over any we picked up from web page metadata.
+  if (!web_app_icons.empty())
     web_app_info->icon_infos = std::move(web_app_icons);
 
   web_app_info->file_handlers = manifest.file_handlers;
@@ -275,7 +280,7 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
 
   web_app_info->protocol_handlers = manifest.protocol_handlers;
 
-  web_app_info->url_handlers = manifest.url_handlers;
+  web_app_info->url_handlers = ToWebAppUrlHandlers(manifest.url_handlers);
 
   // If any shortcuts are specified in the manifest, they take precedence over
   // any we picked up from the web_app stuff.
@@ -285,6 +290,11 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
     web_app_info->shortcuts_menu_item_infos =
         UpdateShortcutsMenuItemInfosFromManifest(manifest.shortcuts);
   }
+
+  web_app_info->capture_links = manifest.capture_links;
+
+  if (manifest_url.is_valid())
+    web_app_info->manifest_url = manifest_url;
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(
@@ -312,7 +322,7 @@ std::vector<GURL> GetValidIconUrlsToDownload(
 void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
                                const IconsMap* icons_map) {
   for (auto& shortcut : web_app_info->shortcuts_menu_item_infos) {
-    SizeToBitmap shortcut_icon_bitmaps;
+    IconBitmaps shortcut_icon_bitmaps;
     for (const auto& icon : shortcut.shortcut_icon_infos) {
       auto it = icons_map->find(icon.url);
       if (it != icons_map->end()) {
@@ -322,12 +332,13 @@ void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
             ConstrainBitmapsToSizes(it->second, sizes_to_generate));
 
         // Don't overwrite as a shortcut item could have multiple icon urls.
-        shortcut_icon_bitmaps.insert(resized_bitmaps.begin(),
-                                     resized_bitmaps.end());
+        shortcut_icon_bitmaps.any.insert(resized_bitmaps.begin(),
+                                         resized_bitmaps.end());
       }
     }
-    web_app_info->shortcuts_menu_icons_bitmaps.emplace_back(
-        shortcut_icon_bitmaps);
+
+    web_app_info->shortcuts_menu_icon_bitmaps.emplace_back(
+        std::move(shortcut_icon_bitmaps));
   }
 }
 
@@ -336,6 +347,9 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenu) &&
       icons_map) {
+    // When icon redownloading on app update is disabled, FilterAndResize* won't
+    // be called in the install task, and instead PopulateShortcutItemIcons will
+    // be called directly from OnIconsRetrievedFinalizeUpdate.
     PopulateShortcutItemIcons(web_app_info, icons_map);
   }
 
@@ -366,15 +380,15 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
     if (square_icons_any.empty())
       AddSquareIconsFromMap(&square_icons_any, *icons_map);
   }
-  AddSquareIconsFromBitmaps(&square_icons_any, web_app_info->icon_bitmaps_any);
+  AddSquareIconsFromBitmaps(&square_icons_any, web_app_info->icon_bitmaps.any);
 
   for (SkBitmap& bitmap : square_icons_maskable) {
     // Retain any bitmaps provided as input to the installation.
-    if (web_app_info->icon_bitmaps_maskable.count(bitmap.width()) == 0)
-      web_app_info->icon_bitmaps_maskable[bitmap.width()] = std::move(bitmap);
+    if (web_app_info->icon_bitmaps.maskable.count(bitmap.width()) == 0)
+      web_app_info->icon_bitmaps.maskable[bitmap.width()] = std::move(bitmap);
   }
 
-  base::char16 icon_letter =
+  char16_t icon_letter =
       web_app_info->title.empty()
           ? GenerateIconLetterFromUrl(web_app_info->start_url)
           : GenerateIconLetterFromAppName(web_app_info->title);
@@ -391,8 +405,8 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
 
   for (auto& item : size_to_icons) {
     // Retain any bitmaps provided as input to the installation.
-    if (web_app_info->icon_bitmaps_any.count(item.first) == 0)
-      web_app_info->icon_bitmaps_any[item.first] = std::move(item.second);
+    if (web_app_info->icon_bitmaps.any.count(item.first) == 0)
+      web_app_info->icon_bitmaps.any[item.first] = std::move(item.second);
   }
 }
 

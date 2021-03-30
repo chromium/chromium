@@ -6,9 +6,9 @@ class {{struct.name}}DataView {
 
   {{struct.name}}DataView(
       internal::{{struct.name}}_Data* data,
-      mojo::internal::SerializationContext* context)
+      mojo::Message* message)
 {%- if struct|requires_context_for_data_view %}
-      : data_(data), context_(context) {}
+      : data_(data), message_(message) {}
 {%- else %}
       : data_(data) {}
 {%- endif %}
@@ -32,7 +32,7 @@ class {{struct.name}}DataView {
     auto* pointer = !data_->{{name}}.is_null() ? &data_->{{name}} : nullptr;
 {%-     endif %}
     return mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
-        pointer, output, context_);
+        pointer, output, message_);
   }
 
 {%-   elif kind|is_object_kind %}
@@ -49,7 +49,7 @@ class {{struct.name}}DataView {
     auto* pointer = data_->{{name}}.Get();
 {%-     endif %}
     return mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
-        pointer, output, context_);
+        pointer, output, message_);
   }
 
 {%-   elif kind|is_enum_kind %}
@@ -65,13 +65,16 @@ class {{struct.name}}DataView {
         data_value, output);
   }
 
+{%-     if not kind|is_typemapped_kind %}
   {{kind|cpp_data_view_type}} {{name}}() const {
-{%-     if pf.min_version != 0 %}
+{%-       if pf.min_version != 0 %}
     if (data_->header_.version < {{pf.min_version}})
       return {{kind|cpp_data_view_type}}{};
-{%-     endif %}
-    return static_cast<{{kind|cpp_data_view_type}}>(data_->{{name}});
+{%-       endif %}
+    return ::mojo::internal::ToKnownEnumValueHelper(
+          static_cast<{{kind|unmapped_type_for_serializer}}>(data_->{{name}}));
   }
+{%-     endif %}
 
 {%-   elif kind|is_any_handle_kind %}
   {{kind|cpp_data_view_type}} Take{{name|under_to_camel}}() {
@@ -82,7 +85,7 @@ class {{struct.name}}DataView {
 {%-     endif %}
     bool ret =
         mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
-            &data_->{{name}}, &result, context_);
+            &data_->{{name}}, &result, message_);
     DCHECK(ret);
     return result;
   }
@@ -97,7 +100,7 @@ class {{struct.name}}DataView {
 {%-     endif %}
     bool ret =
         mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
-            &data_->{{name}}, &result, context_);
+            &data_->{{name}}, &result, message_);
     DCHECK(ret);
     return result;
   }
@@ -116,7 +119,7 @@ class {{struct.name}}DataView {
  private:
   internal::{{struct.name}}_Data* data_ = nullptr;
 {%- if struct|requires_context_for_data_view %}
-  mojo::internal::SerializationContext* context_ = nullptr;
+  mojo::Message* message_ = nullptr;
 {%- endif %}
 };
 

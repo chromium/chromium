@@ -27,8 +27,8 @@ StackFrame::StackFrame(const StackFrame& frame)
 
 StackFrame::StackFrame(uint32_t line_number,
                        uint32_t column_number,
-                       const base::string16& source,
-                       const base::string16& function)
+                       const std::u16string& source,
+                       const std::u16string& function)
     : line_number(line_number),
       column_number(column_number),
       source(source),
@@ -46,7 +46,7 @@ StackFrame::~StackFrame() {
 // both ways. If we reconcile this, we can clean this up.)
 // static
 std::unique_ptr<StackFrame> StackFrame::CreateFromText(
-    const base::string16& frame_text) {
+    const std::u16string& frame_text) {
   // We need to use utf8 for re2 matching.
   std::string text = base::UTF16ToUTF8(frame_text);
 

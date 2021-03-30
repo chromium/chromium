@@ -22,7 +22,7 @@ class UserChooserDetailedViewController;
 views::View* CreateUserAvatarView(int user_index);
 
 // Get accessibility string for |user_index|.
-base::string16 GetUserItemAccessibleString(int user_index);
+std::u16string GetUserItemAccessibleString(int user_index);
 
 // A button item of a switchable user.
 class UserItemButton : public views::Button {
@@ -37,7 +37,7 @@ class UserItemButton : public views::Button {
   void SetCaptureState(MediaCaptureState capture_states);
 
   // views::Button:
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:

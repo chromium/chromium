@@ -37,6 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extension_test_util::LoadManifest;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
@@ -47,7 +48,7 @@ scoped_refptr<const Extension> CreateExtensionWithOptionalPermissions(
     std::unique_ptr<base::Value> permissions,
     const std::string& name) {
   return ExtensionBuilder()
-      .SetLocation(Manifest::INTERNAL)
+      .SetLocation(mojom::ManifestLocation::kInternal)
       .SetManifest(
           DictionaryBuilder()
               .Set("name", name)
@@ -168,7 +169,7 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
           .Build();
 
   APIPermissionSet default_apis;
-  default_apis.insert(APIPermission::kManagement);
+  default_apis.insert(APIPermissionID::kManagement);
 
   URLPatternSet default_hosts;
   AddPattern(&default_hosts, "http://a.com/*");
@@ -186,7 +187,7 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
 
   // Add a few permissions.
   APIPermissionSet apis;
-  apis.insert(APIPermission::kNotifications);
+  apis.insert(APIPermissionID::kNotifications);
   URLPatternSet hosts;
   AddPattern(&hosts, "http://*.c.com/*");
 
@@ -262,7 +263,7 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
 
-  auto api_permission_set = [](APIPermission::ID id) {
+  auto api_permission_set = [](APIPermissionID id) {
     APIPermissionSet apis;
     apis.insert(id);
     return std::make_unique<PermissionSet>(std::move(apis),
@@ -294,7 +295,7 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
 
     // Add the optional "cookies" permission.
     permissions_test_util::GrantOptionalPermissionsAndWaitForCompletion(
-        profile(), *extension, *api_permission_set(APIPermission::kCookie));
+        profile(), *extension, *api_permission_set(APIPermissionID::kCookie));
     const PermissionsData* permissions = extension->permissions_data();
     // The extension should have the permission in its active permissions and
     // its granted permissions (stored in prefs). And, the permission should
@@ -308,7 +309,7 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
 
     // Repeat with "tabs".
     permissions_test_util::GrantOptionalPermissionsAndWaitForCompletion(
-        profile(), *extension, *api_permission_set(APIPermission::kTab));
+        profile(), *extension, *api_permission_set(APIPermissionID::kTab));
     EXPECT_TRUE(permissions->HasAPIPermission(APIPermission::kTab));
     granted_permissions = prefs->GetGrantedPermissions(extension->id());
     EXPECT_TRUE(granted_permissions->HasAPIPermission(APIPermission::kTab));
@@ -319,7 +320,7 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     // in its active or granted permissions, and it shouldn't be revokable.
     // The extension should still have the "cookies" permission.
     permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
-        profile(), *extension, *api_permission_set(APIPermission::kTab),
+        profile(), *extension, *api_permission_set(APIPermissionID::kTab),
         PermissionsUpdater::REMOVE_HARD);
     EXPECT_FALSE(permissions->HasAPIPermission(APIPermission::kTab));
     granted_permissions = prefs->GetGrantedPermissions(extension->id());
@@ -483,7 +484,7 @@ TEST_F(PermissionsUpdaterTest,
   EXPECT_TRUE(prefs->GetGrantedPermissions(extension->id())->IsEmpty());
 
   APIPermissionSet apis;
-  apis.insert(APIPermission::kTab);
+  apis.insert(APIPermissionID::kTab);
   PermissionSet optional_permissions(std::move(apis), ManifestPermissionSet(),
                                      URLPatternSet(), URLPatternSet());
 

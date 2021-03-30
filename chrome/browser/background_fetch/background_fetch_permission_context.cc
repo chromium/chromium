@@ -15,7 +15,8 @@ BackgroundFetchPermissionContext::BackgroundFetchPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::BACKGROUND_FETCH,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 bool BackgroundFetchPermissionContext::IsRestrictedToSecureOrigins() const {
   return true;

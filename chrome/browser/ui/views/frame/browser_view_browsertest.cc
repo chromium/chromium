@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_controller.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
+#include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -46,7 +47,10 @@
 class BrowserViewTest : public InProcessBrowserTest {
  public:
   BrowserViewTest() : devtools_(nullptr) {
-    scoped_feature_list_.InitAndEnableFeature(media::kLiveCaption);
+    // TODO(crbug.com/1182859): Update this test to enable the
+    // kUseSodaForLiveCaption feature.
+    scoped_feature_list_.InitWithFeatures({media::kLiveCaption},
+                                          {media::kUseSodaForLiveCaption});
   }
 
  protected:
@@ -110,10 +114,8 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
   explicit TestTabModalConfirmDialogDelegate(content::WebContents* contents)
       : TabModalConfirmDialogDelegate(contents) {}
-  base::string16 GetTitle() override {
-    return base::string16(base::ASCIIToUTF16("Dialog Title"));
-  }
-  base::string16 GetDialogMessage() override { return base::string16(); }
+  std::u16string GetTitle() override { return std::u16string(u"Dialog Title"); }
+  std::u16string GetDialogMessage() override { return std::u16string(); }
 
   DISALLOW_COPY_AND_ASSIGN(TestTabModalConfirmDialogDelegate);
 };
@@ -280,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
 // is set before load finishes and the throbber state updates when the title
 // changes. Regression test for crbug.com/752266
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
-  const base::string16 test_title(base::ASCIIToUTF16("Title Of Awesomeness"));
+  const std::u16string test_title(u"Title Of Awesomeness");
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::TitleWatcher title_watcher(contents, test_title);
   content::TestNavigationObserver navigation_watcher(
@@ -327,8 +329,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
 // Open a tab-modal dialog and check that the accessible window title is the
 // title of the dialog.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
-  base::string16 window_title = base::ASCIIToUTF16("about:blank - ") +
-                                l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  std::u16string window_title =
+      u"about:blank - " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
   EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
                                window_title, base::CompareCase::SENSITIVE));
 
@@ -398,8 +400,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, F6CyclesThroughCaptionBubbleToo) {
           caption_controller->GetCaptionBubbleControllerForBrowser(browser()));
   EXPECT_FALSE(bubble_controller->GetFocusableCaptionBubble());
 
+  auto caption_host_impl = std::make_unique<captions::CaptionHostImpl>(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
   caption_controller->DispatchTranscription(
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      caption_host_impl.get(),
       chrome::mojom::TranscriptionResult::New("Hello, world", false));
   // Now the caption bubble exists but is not focused.
   views::View* bubble = bubble_controller->GetFocusableCaptionBubble();

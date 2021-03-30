@@ -22,6 +22,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission.h"
+#include "extensions/common/permissions/permission_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extension_test_util::LoadManifestUnchecked;
@@ -30,6 +31,7 @@ using extensions::APIPermission;
 using extensions::Extension;
 using extensions::Manifest;
 using Result = ExtensionInstallPrompt::Result;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 namespace permission_helper {
@@ -44,9 +46,10 @@ const char kNonWhitelistedId[] = "bogus";
 
 scoped_refptr<Extension> LoadManifestHelper(const std::string& id) {
   std::string error;
-  scoped_refptr<Extension> extension = LoadManifestUnchecked(
-      "common/background_page", "manifest.json", Manifest::INVALID_LOCATION,
-      Extension::NO_FLAGS, id, &error);
+  scoped_refptr<Extension> extension =
+      LoadManifestUnchecked("common/background_page", "manifest.json",
+                            mojom::ManifestLocation::kInvalidLocation,
+                            Extension::NO_FLAGS, id, &error);
   EXPECT_TRUE(extension.get()) << error;
   return extension;
 }
@@ -57,8 +60,9 @@ bool get_did_show_dialog_and_reset() {
   return tmp;
 }
 
-base::Callback<void(const PermissionIDSet&)> BindQuitLoop(base::RunLoop* loop) {
-  return base::Bind(
+base::OnceCallback<void(const PermissionIDSet&)> BindQuitLoop(
+    base::RunLoop* loop) {
+  return base::BindOnce(
       [](base::RunLoop* loop, const PermissionIDSet&) { loop->Quit(); }, loop);
 }
 
@@ -156,14 +160,14 @@ PublicSessionPermissionHelperTest::CallHandlePermissionRequest(
     const PermissionIDSet& permissions) {
   auto* prompt = new ProgrammableInstallPrompt(web_contents());
   auto prompt_weak_ptr = prompt->AsWeakPtr();
-  auto factory_callback = base::Bind(
+  auto factory_callback = base::BindOnce(
       &PublicSessionPermissionHelperTest::ReturnPrompt, base::Unretained(this),
-      base::Passed(base::WrapUnique<ExtensionInstallPrompt>(prompt)));
+      base::WrapUnique<ExtensionInstallPrompt>(prompt));
   HandlePermissionRequest(
       *extension.get(), permissions, web_contents(),
-      base::Bind(&PublicSessionPermissionHelperTest::RequestResolved,
-                 base::Unretained(this)),
-      factory_callback);
+      base::BindOnce(&PublicSessionPermissionHelperTest::RequestResolved,
+                     base::Unretained(this)),
+      std::move(factory_callback));
   // In case all permissions were already prompted, ReturnPrompt isn't called
   // because of an early return in HandlePermissionRequest, and in that case the
   // prompt is free'd as soon as HandlePermissionRequest returns (because it's
@@ -266,20 +270,26 @@ TEST_F(PublicSessionPermissionHelperTest, TestTwoPromptsDeny) {
 TEST_F(PublicSessionPermissionHelperTest, WhitelistedExtension) {
   auto extension = LoadManifestHelper(kWhitelistedId);
   // Whitelisted extension can use any permission.
-  EXPECT_TRUE(PermissionAllowed(extension.get(), permission_a));
-  EXPECT_TRUE(PermissionAllowed(extension.get(), permission_b));
+  EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                static_cast<APIPermissionID>(permission_a)));
+  EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                static_cast<APIPermissionID>(permission_b)));
   // Whitelisted extension is already handled (no permission prompt needed).
   EXPECT_TRUE(HandlePermissionRequest(*extension, {permission_a},
                                       web_contents(), RequestResolvedCallback(),
                                       PromptFactory()));
-  EXPECT_TRUE(PermissionAllowed(extension.get(), permission_a));
-  EXPECT_TRUE(PermissionAllowed(extension.get(), permission_b));
+  EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                static_cast<APIPermissionID>(permission_a)));
+  EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                static_cast<APIPermissionID>(permission_b)));
 }
 
 TEST_F(PublicSessionPermissionHelperTest, NonWhitelistedExtension) {
   auto extension = LoadManifestHelper(kNonWhitelistedId);
-  EXPECT_FALSE(PermissionAllowed(extension.get(), permission_a));
-  EXPECT_FALSE(PermissionAllowed(extension.get(), permission_b));
+  EXPECT_FALSE(PermissionAllowed(extension.get(),
+                                 static_cast<APIPermissionID>(permission_a)));
+  EXPECT_FALSE(PermissionAllowed(extension.get(),
+                                 static_cast<APIPermissionID>(permission_b)));
   // Prompt for permission_a, grant it, verify.
   {
     ScopedTestDialogAutoConfirm auto_confirm(
@@ -290,8 +300,10 @@ TEST_F(PublicSessionPermissionHelperTest, NonWhitelistedExtension) {
                                          web_contents(), BindQuitLoop(&loop),
                                          PromptFactory()));
     loop.Run();
-    EXPECT_TRUE(PermissionAllowed(extension.get(), permission_a));
-    EXPECT_FALSE(PermissionAllowed(extension.get(), permission_b));
+    EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                  static_cast<APIPermissionID>(permission_a)));
+    EXPECT_FALSE(PermissionAllowed(extension.get(),
+                                   static_cast<APIPermissionID>(permission_b)));
   }
   // Already handled (allow), doesn't show a prompt.
   EXPECT_TRUE(HandlePermissionRequest(*extension, {permission_a},
@@ -307,8 +319,10 @@ TEST_F(PublicSessionPermissionHelperTest, NonWhitelistedExtension) {
                                          web_contents(), BindQuitLoop(&loop),
                                          PromptFactory()));
     loop.Run();
-    EXPECT_TRUE(PermissionAllowed(extension.get(), permission_a));
-    EXPECT_FALSE(PermissionAllowed(extension.get(), permission_b));
+    EXPECT_TRUE(PermissionAllowed(extension.get(),
+                                  static_cast<APIPermissionID>(permission_a)));
+    EXPECT_FALSE(PermissionAllowed(extension.get(),
+                                   static_cast<APIPermissionID>(permission_b)));
   }
   // Already handled (deny), doesn't show a prompt.
   EXPECT_TRUE(HandlePermissionRequest(*extension, {permission_b},

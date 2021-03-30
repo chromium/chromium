@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:1.0.10-cr0
+# cipd create --pkg-def cipd.yaml -tag version:1.1.1-cr0
 package: chromium/third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration
 description: "D8 configuration to desugar desugar_jdk_libs"
 data:
-- file: desugar_jdk_libs_configuration-1.0.10.jar
+- file: desugar_jdk_libs_configuration-1.1.1.jar

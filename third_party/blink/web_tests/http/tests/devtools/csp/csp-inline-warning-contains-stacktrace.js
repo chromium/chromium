@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test injects an inline script from JavaScript. The resulting console error should contain a stack trace.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
 
   await TestRunner.loadHTML(`
     <!DOCTYPE html>

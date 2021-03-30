@@ -17,6 +17,20 @@
         {"exists": false}
   },
   "RegistryEntries": {
+    "HKEY_CURRENT_USER\\$CHROME_CLIENT_STATE_KEY": {
+      "exists": "required",
+      "values": {
+        "CleanInstallRequiredForVersionBelow": {
+          "type": "SZ",
+          "data": "$LAST_INSTALLER_BREAKING_VERSION"
+        },
+        "DowngradeCleanupCommand": {
+          "type": "SZ",
+          "data": "\"$LOCAL_APPDATA\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --cleanup-for-downgrade-version=$$1 --cleanup-for-downgrade-operation=$$2 --verbose-logging"
+        }
+      },
+      "wow_key": "KEY_WOW64_32KEY"
+    },
     "HKEY_CURRENT_USER\\$CHROME_UPDATE_REGISTRY_SUBKEY": {
       "exists": "required",
       "values": {

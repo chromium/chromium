@@ -10,14 +10,15 @@ import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.hasTypefaceSpan;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.hasTypefaceStyle;
@@ -30,11 +31,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,38 +45,61 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetails;
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsModel;
+import org.chromium.chrome.browser.autofill_assistant.details.AssistantPlaceholdersConfiguration;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+
+import java.util.Arrays;
 
 /** Tests for the Autofill Assistant details. */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantDetailsUiTest {
+    public static final AssistantPlaceholdersConfiguration NO_PLACEHOLDERS =
+            new AssistantPlaceholdersConfiguration(
+                    /* showImagePlaceholder= */ false,
+                    /* showTitlePlaceholder= */ false,
+                    /* showDescriptionLine1Placeholder= */ false,
+                    /* showDescriptionLine2Placeholder= */ false,
+                    /* showDescriptionLine3Placeholder= */ false);
+
     @Rule
     public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
-    private static class ViewHolder {
-        final ImageView mImageView;
-        final TextView mTitleView;
-        final TextView mDescriptionLine1View;
-        final TextView mDescriptionLine2View;
-        final TextView mDescriptionLine3View;
-        final TextView mPriceAttributionView;
-        final View mPriceView;
-        final TextView mTotalPriceLabelView;
-        final TextView mTotalPriceView;
+    /**
+     * Matchers for the different views of a single details item in the details list. We need to use
+     * matchers (instead of directly querying with findViewById) because the inflation of the
+     * details views if postponed to the UI-thread when adding items to the list, so we can't assume
+     * that the details views are available directly after adding items to the details list.
+     */
+    private static class ViewMatchers {
+        final Matcher<View> mImageView;
+        final Matcher<View> mTitleView;
+        final Matcher<View> mDescriptionLine1View;
+        final Matcher<View> mDescriptionLine2View;
+        final Matcher<View> mDescriptionLine3View;
+        final Matcher<View> mPriceAttributionView;
+        final Matcher<View> mPriceView;
+        final Matcher<View> mTotalPriceLabelView;
+        final Matcher<View> mTotalPriceView;
 
-        ViewHolder(View detailsView) {
-            mImageView = detailsView.findViewById(R.id.details_image);
-            mTitleView = detailsView.findViewById(R.id.details_title);
-            mDescriptionLine1View = detailsView.findViewById(R.id.details_line1);
-            mDescriptionLine2View = detailsView.findViewById(R.id.details_line2);
-            mDescriptionLine3View = detailsView.findViewById(R.id.details_line3);
-            mPriceAttributionView = detailsView.findViewById(R.id.details_price_attribution);
-            mPriceView = detailsView.findViewById(R.id.details_price);
-            mTotalPriceView = detailsView.findViewById(R.id.details_total_price);
-            mTotalPriceLabelView = detailsView.findViewById(R.id.details_total_price_label);
+        ViewMatchers(View detailsListView) {
+            mImageView = descendantWithId(detailsListView, R.id.details_image);
+            mTitleView = descendantWithId(detailsListView, R.id.details_title);
+            mDescriptionLine1View = descendantWithId(detailsListView, R.id.details_line1);
+            mDescriptionLine2View = descendantWithId(detailsListView, R.id.details_line2);
+            mDescriptionLine3View = descendantWithId(detailsListView, R.id.details_line3);
+            mPriceAttributionView =
+                    descendantWithId(detailsListView, R.id.details_price_attribution);
+            mPriceView = descendantWithId(detailsListView, R.id.details_price);
+            mTotalPriceView = descendantWithId(detailsListView, R.id.details_total_price);
+            mTotalPriceLabelView =
+                    descendantWithId(detailsListView, R.id.details_total_price_label);
+        }
+
+        private Matcher<View> descendantWithId(View ancestor, int id) {
+            return allOf(isDescendantOfA(is(ancestor)), withId(id));
         }
     }
 
@@ -97,6 +120,13 @@ public class AutofillAssistantDetailsUiTest {
         return coordinator;
     }
 
+    private static void setDetails(AssistantDetailsModel model, AssistantDetails... details) {
+        runOnUiThreadBlocking(() -> model.setDetailsList(Arrays.asList(details)));
+
+        // Wait for the main thread to be idle (i.e. the UI should be stable).
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    }
+
     @Before
     public void setUp() {
         AutofillAssistantUiTestUtil.startOnBlankPage(mTestRule);
@@ -109,8 +139,8 @@ public class AutofillAssistantDetailsUiTest {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
 
-        assertThat(model.get(AssistantDetailsModel.DETAILS), nullValue());
-        onView(is(coordinator.getView())).check(matches(not(isDisplayed())));
+        assertThat(model.get(AssistantDetailsModel.DETAILS).size(), is(0));
+        assertThat(coordinator.getView().getChildCount(), is(0));
     }
 
     /** Tests visibility of views. */
@@ -119,24 +149,22 @@ public class AutofillAssistantDetailsUiTest {
     public void testVisibility() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
-        runOnUiThreadBlocking(() -> {
-            model.set(AssistantDetailsModel.DETAILS,
-                    new AssistantDetails("title", 1, "image", "hint", null, false, "Total", "$12",
-                            "line 1", "line 2", "", "line 3", false, false, false, false, false,
-                            false));
-        });
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1",
+                        "line 2", "", "line 3", false, false, false, false, false,
+                        NO_PLACEHOLDERS));
 
-        onView(is(viewHolder.mImageView)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mTitleView)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mDescriptionLine1View)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mDescriptionLine2View)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mDescriptionLine3View)).check(matches(not(isDisplayed())));
-        onView(is(viewHolder.mPriceView)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mTotalPriceLabelView)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mTotalPriceView)).check(matches(isDisplayed()));
-        onView(is(viewHolder.mPriceAttributionView)).check(matches(isDisplayed()));
+        onView(viewMatchers.mImageView).check(matches(isDisplayed()));
+        onView(viewMatchers.mTitleView).check(matches(isDisplayed()));
+        onView(viewMatchers.mDescriptionLine1View).check(matches(isDisplayed()));
+        onView(viewMatchers.mDescriptionLine2View).check(matches(isDisplayed()));
+        onView(viewMatchers.mDescriptionLine3View).check(matches(not(isDisplayed())));
+        onView(viewMatchers.mPriceView).check(matches(isDisplayed()));
+        onView(viewMatchers.mTotalPriceLabelView).check(matches(isDisplayed()));
+        onView(viewMatchers.mTotalPriceView).check(matches(isDisplayed()));
+        onView(viewMatchers.mPriceAttributionView).check(matches(isDisplayed()));
     }
 
     @Test
@@ -144,17 +172,15 @@ public class AutofillAssistantDetailsUiTest {
     public void testAccessibility() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
-        runOnUiThreadBlocking(() -> {
-            model.set(AssistantDetailsModel.DETAILS,
-                    new AssistantDetails("title", 1, "image", "hint", null, false, "Total", "$12",
-                            "line 1", "line 2", "", "line 3", false, false, false, false, false,
-                            false));
-        });
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1",
+                        "line 2", "", "line 3", false, false, false, false, false,
+                        NO_PLACEHOLDERS));
 
-        onView(is(viewHolder.mImageView)).check(matches(withContentDescription("hint")));
-        onView(is(viewHolder.mImageView))
+        onView(viewMatchers.mImageView).check(matches(withContentDescription("hint")));
+        onView(viewMatchers.mImageView)
                 .check(matches(isImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_AUTO)));
     }
 
@@ -163,17 +189,14 @@ public class AutofillAssistantDetailsUiTest {
     public void testAccessibilityEmpty() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
-        runOnUiThreadBlocking(() -> {
-            model.set(AssistantDetailsModel.DETAILS,
-                    new AssistantDetails("title", 1, "image", "", null, false, "Total", "$12",
-                            "line 1", "line 2", "", "line 3", false, false, false, false, false,
-                            false));
-        });
+        setDetails(model,
+                new AssistantDetails("title", "image", "", null, "Total", "$12", "line 1", "line 2",
+                        "", "line 3", false, false, false, false, false, NO_PLACEHOLDERS));
 
-        onView(is(viewHolder.mImageView)).check(matches(withContentDescription("")));
-        onView(is(viewHolder.mImageView))
+        onView(viewMatchers.mImageView).check(matches(withContentDescription("")));
+        onView(viewMatchers.mImageView)
                 .check(matches(isImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO)));
     }
 
@@ -182,27 +205,59 @@ public class AutofillAssistantDetailsUiTest {
     public void testTitle() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
-        /* All description lines are set, title must be in single line. */
-        runOnUiThreadBlocking(
-                ()
-                        -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "", "line 3", false,
-                                        false, false, false, false, false)));
-        onView(is(viewHolder.mTitleView)).check(matches(isTextMaxLines(1)));
-        onView(is(viewHolder.mTitleView)).check(matches(allOf(withText("title"), isDisplayed())));
+        /* Description lines 1 and 2 are set, title must be in single line. */
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1",
+                        "line 2", "", "price", false, false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mTitleView).check(matches(isTextMaxLines(1)));
+        onView(viewMatchers.mTitleView).check(matches(allOf(withText("title"), isDisplayed())));
 
-        /* titleMaxLines is set to 2, check that it is properly applied. */
-        runOnUiThreadBlocking(
-                ()
-                        -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 2, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "", "", "line 3", false, false,
-                                        false, false, false, false)));
-        onView(is(viewHolder.mTitleView)).check(matches(isTextMaxLines(2)));
-        onView(is(viewHolder.mTitleView)).check(matches(allOf(withText("title"), isDisplayed())));
+        /* Description line 1 is set, title must be max 2 lines. */
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1", "",
+                        "", "price", false, false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mTitleView).check(matches(isTextMaxLines(2)));
+        onView(viewMatchers.mTitleView).check(matches(allOf(withText("title"), isDisplayed())));
+
+        /* Description line 2 is set, title must be max 2 lines. */
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "", "line 2",
+                        "", "price", false, false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mTitleView).check(matches(isTextMaxLines(2)));
+        onView(viewMatchers.mTitleView).check(matches(allOf(withText("title"), isDisplayed())));
+
+        /* None of description line 1 or 2 is set, title must be max 3 lines. */
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "", "", "",
+                        "price", false, false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mTitleView).check(matches(isTextMaxLines(3)));
+        onView(viewMatchers.mTitleView).check(matches(allOf(withText("title"), isDisplayed())));
+
+        /* There is a placeholder for description line 1, title must be max 2 lines. */
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "", "", "",
+                        "price", false, false, false, false, false,
+                        new AssistantPlaceholdersConfiguration(
+                                /* showImagePlaceholder= */ false,
+                                /* showTitlePlaceholder= */ false,
+                                /* showDescriptionLine1Placeholder= */ true,
+                                /* showDescriptionLine2Placeholder= */ false,
+                                /* showDescriptionLine3Placeholder= */ false)));
+        onView(viewMatchers.mTitleView).check(matches(isTextMaxLines(2)));
+
+        /* There is a placeholder for description line 1 & 2, title must be max 1 line. */
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "", "", "",
+                        "price", false, false, false, false, false,
+                        new AssistantPlaceholdersConfiguration(
+                                /* showImagePlaceholder= */ false,
+                                /* showTitlePlaceholder= */ false,
+                                /* showDescriptionLine1Placeholder= */ true,
+                                /* showDescriptionLine2Placeholder= */ true,
+                                /* showDescriptionLine3Placeholder= */ false)));
+        onView(viewMatchers.mTitleView).check(matches(isTextMaxLines(1)));
     }
 
     @Test
@@ -210,24 +265,20 @@ public class AutofillAssistantDetailsUiTest {
     public void testDescriptionLine1() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
         /* Description line 1 is set and should be visible. */
-        runOnUiThreadBlocking(()
-                                      -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "line 1", "", "", "",
-                                                      false, false, false, false, false, false)));
-        onView(is(viewHolder.mDescriptionLine1View))
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "", "", "line 1", "", "", "",
+                        false, false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mDescriptionLine1View)
                 .check(matches(allOf(withText("line 1"), isDisplayed())));
 
         /* Description line 1 is not set and should be invisible. */
-        runOnUiThreadBlocking(()
-                                      -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "", "", "", "", false,
-                                                      false, false, false, false, false)));
-        onView(is(viewHolder.mDescriptionLine1View)).check(matches(not(isDisplayed())));
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "", "", "", "", "", "", false,
+                        false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mDescriptionLine1View).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -235,24 +286,20 @@ public class AutofillAssistantDetailsUiTest {
     public void testDescriptionLine2() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
         /* Description line 2 is set and should be visible. */
-        runOnUiThreadBlocking(()
-                                      -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "", "line 2", "", "",
-                                                      false, false, false, false, false, false)));
-        onView(is(viewHolder.mDescriptionLine2View))
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "", "", "", "line 2", "", "",
+                        false, false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mDescriptionLine2View)
                 .check(matches(allOf(withText("line 2"), isDisplayed())));
 
         /* Description line 2 is not set and should be invisible. */
-        runOnUiThreadBlocking(()
-                                      -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 2, "image", "hint",
-                                                      null, false, "", "", "", "", "", "", false,
-                                                      false, false, false, false, false)));
-        onView(is(viewHolder.mDescriptionLine2View)).check(matches(not(isDisplayed())));
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "", "", "", "", "", "", false,
+                        false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mDescriptionLine2View).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -260,24 +307,20 @@ public class AutofillAssistantDetailsUiTest {
     public void testDescriptionLine3() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
         /* Description line 3 is set and should be visible. */
-        runOnUiThreadBlocking(()
-                                      -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "", "", "line 3", "",
-                                                      false, false, false, false, false, false)));
-        onView(is(viewHolder.mDescriptionLine3View))
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "", "", "", "", "line 3", "",
+                        false, false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mDescriptionLine3View)
                 .check(matches(allOf(withText("line 3"), isDisplayed())));
 
         /* Description line 3 is not set and should be invisible. */
-        runOnUiThreadBlocking(()
-                                      -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 1, "image", "hint",
-                                                      null, false, "", "", "", "", "", "line 3",
-                                                      false, false, false, false, false, false)));
-        onView(is(viewHolder.mDescriptionLine3View)).check(matches(not(isDisplayed())));
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "", "", "", "", "", "line 3",
+                        false, false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mDescriptionLine3View).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -285,25 +328,20 @@ public class AutofillAssistantDetailsUiTest {
     public void testPriceAttribution() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
         /* Price attribution is set and should be visible. */
-        runOnUiThreadBlocking(
-                ()
-                        -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "", "", "", "price attribution", false,
-                                        false, false, false, false, false)));
-        onView(is(viewHolder.mPriceAttributionView))
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "", "", "",
+                        "price attribution", false, false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mPriceAttributionView)
                 .check(matches(allOf(withText("price attribution"), isDisplayed())));
 
         /* Price attribution is not set and should be invisible. */
-        runOnUiThreadBlocking(()
-                                      -> model.set(AssistantDetailsModel.DETAILS,
-                                              new AssistantDetails("title", 2, "image", "hint",
-                                                      null, false, "", "", "", "", "", "", false,
-                                                      false, false, false, false, false)));
-        onView(is(viewHolder.mPriceAttributionView)).check(matches(not(isDisplayed())));
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "", "", "", "", "", "", false,
+                        false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mPriceAttributionView).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -311,77 +349,66 @@ public class AutofillAssistantDetailsUiTest {
     public void testHighlighting() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
         AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
 
         /* Check that title is highlighted. */
-        runOnUiThreadBlocking(
-                ()
-                        -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "line 3", "Est. total",
-                                        true, true, false, false, false, false)));
-        onView(is(viewHolder.mTitleView)).check(matches(hasTypefaceStyle(Typeface.BOLD_ITALIC)));
-        onView(is(viewHolder.mDescriptionLine1View))
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1",
+                        "line 2", "line 3", "Est. total", true, true, false, false, false,
+                        NO_PLACEHOLDERS));
+        onView(viewMatchers.mTitleView).check(matches(hasTypefaceStyle(Typeface.BOLD_ITALIC)));
+        onView(viewMatchers.mDescriptionLine1View)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mDescriptionLine2View))
+        onView(viewMatchers.mDescriptionLine2View)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mDescriptionLine3View))
+        onView(viewMatchers.mDescriptionLine3View)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mPriceAttributionView))
+        onView(viewMatchers.mPriceAttributionView)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
 
         /* Check that description 1 is highlighted. */
-        runOnUiThreadBlocking(
-                ()
-                        -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "line 3", "Est. total",
-                                        true, false, true, false, false, false)));
-        onView(is(viewHolder.mTitleView))
-                .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mDescriptionLine1View))
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1",
+                        "line 2", "line 3", "Est. total", true, false, true, false, false,
+                        NO_PLACEHOLDERS));
+        onView(viewMatchers.mTitleView).check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
+        onView(viewMatchers.mDescriptionLine1View)
                 .check(matches(hasTypefaceStyle(Typeface.BOLD_ITALIC)));
-        onView(is(viewHolder.mDescriptionLine2View))
+        onView(viewMatchers.mDescriptionLine2View)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mDescriptionLine3View))
+        onView(viewMatchers.mDescriptionLine3View)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mPriceAttributionView))
+        onView(viewMatchers.mPriceAttributionView)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
 
         /* Check that description 2 is highlighted. */
-        runOnUiThreadBlocking(
-                ()
-                        -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "line 3", "Est. total",
-                                        true, false, false, true, false, false)));
-        onView(is(viewHolder.mTitleView))
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1",
+                        "line 2", "line 3", "Est. total", true, false, false, true, false,
+                        NO_PLACEHOLDERS));
+        onView(viewMatchers.mTitleView).check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
+        onView(viewMatchers.mDescriptionLine1View)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mDescriptionLine1View))
-                .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mDescriptionLine2View))
+        onView(viewMatchers.mDescriptionLine2View)
                 .check(matches(hasTypefaceStyle(Typeface.BOLD_ITALIC)));
-        onView(is(viewHolder.mDescriptionLine3View))
+        onView(viewMatchers.mDescriptionLine3View)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mPriceAttributionView))
+        onView(viewMatchers.mPriceAttributionView)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
 
         /* Check that description 3 and price attribution are highlighted. */
-        runOnUiThreadBlocking(
-                ()
-                        -> model.set(AssistantDetailsModel.DETAILS,
-                                new AssistantDetails("title", 1, "image", "hint", null, false,
-                                        "Total", "$12", "line 1", "line 2", "line 3", "Est. total",
-                                        true, false, false, false, true, false)));
-        onView(is(viewHolder.mTitleView))
+        setDetails(model,
+                new AssistantDetails("title", "image", "hint", null, "Total", "$12", "line 1",
+                        "line 2", "line 3", "Est. total", true, false, false, false, true,
+                        NO_PLACEHOLDERS));
+        onView(viewMatchers.mTitleView).check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
+        onView(viewMatchers.mDescriptionLine1View)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mDescriptionLine1View))
+        onView(viewMatchers.mDescriptionLine2View)
                 .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mDescriptionLine2View))
-                .check(matches(not(hasTypefaceStyle(Typeface.BOLD_ITALIC))));
-        onView(is(viewHolder.mDescriptionLine3View))
+        onView(viewMatchers.mDescriptionLine3View)
                 .check(matches(hasTypefaceStyle(Typeface.BOLD_ITALIC)));
-        onView(is(viewHolder.mPriceAttributionView))
+        onView(viewMatchers.mPriceAttributionView)
                 .check(matches(hasTypefaceStyle(Typeface.BOLD_ITALIC)));
     }
 
@@ -389,15 +416,12 @@ public class AutofillAssistantDetailsUiTest {
     @MediumTest
     public void testStyleSpans() throws Exception {
         AssistantDetailsModel model = new AssistantDetailsModel();
-        AssistantDetailsCoordinator coordinator = createCoordinator(model);
-        ViewHolder viewHolder = runOnUiThreadBlocking(() -> new ViewHolder(coordinator.getView()));
+        createCoordinator(model);
 
-        runOnUiThreadBlocking(() -> {
-            model.set(AssistantDetailsModel.DETAILS,
-                    new AssistantDetails("<b>title</b>", 1, "image", "hint", null, false,
-                            "<b>Total</b>", "<b>$12</b>", "<b>line 1</b>", "<b>line 2</b>", "",
-                            "<b>line 3</b>", false, false, false, false, false, false));
-        });
+        setDetails(model,
+                new AssistantDetails("<b>title</b>", "image", "hint", null, "<b>Total</b>",
+                        "<b>$12</b>", "<b>line 1</b>", "<b>line 2</b>", "", "<b>line 3</b>", false,
+                        false, false, false, false, NO_PLACEHOLDERS));
 
         onView(withText("title"))
                 .check(matches(hasTypefaceSpan(0, "title".length() - 1, Typeface.BOLD)));
@@ -411,5 +435,86 @@ public class AutofillAssistantDetailsUiTest {
                 .check(matches(hasTypefaceSpan(0, "line 2".length() - 1, Typeface.BOLD)));
         onView(withText("line 3"))
                 .check(matches(hasTypefaceSpan(0, "line 3".length() - 1, Typeface.BOLD)));
+    }
+
+    @Test
+    @MediumTest
+    public void testPlaceholders() throws Exception {
+        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsCoordinator coordinator = createCoordinator(model);
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
+
+        // Without placeholders, the image and descriptions are hidden. The title is always
+        // displayed.
+        setDetails(model,
+                new AssistantDetails("title", "", "hint", null, "", "", "", "", "", "", false,
+                        false, false, false, false, NO_PLACEHOLDERS));
+        onView(viewMatchers.mTitleView).check(matches(isDisplayed()));
+        onView(viewMatchers.mImageView).check(matches(not(isDisplayed())));
+        onView(viewMatchers.mDescriptionLine1View).check(matches(not(isDisplayed())));
+        onView(viewMatchers.mDescriptionLine2View).check(matches(not(isDisplayed())));
+        onView(viewMatchers.mDescriptionLine3View).check(matches(not(isDisplayed())));
+
+        // With placeholders, the image and descriptions are displayed.
+        setDetails(model,
+                new AssistantDetails("title", "", "hint", null, "", "", "", "", "", "", false,
+                        false, false, false, false,
+                        new AssistantPlaceholdersConfiguration(
+                                /* showImagePlaceholder= */ true,
+                                /* showTitlePlaceholder= */ true,
+                                /* showDescriptionLine1Placeholder= */ true,
+                                /* showDescriptionLine2Placeholder= */ true,
+                                /* showDescriptionLine3Placeholder= */ true)));
+        onView(viewMatchers.mTitleView).check(matches(isDisplayed()));
+        onView(viewMatchers.mImageView).check(matches(isDisplayed()));
+        onView(viewMatchers.mDescriptionLine1View).check(matches(isDisplayed()));
+        onView(viewMatchers.mDescriptionLine2View).check(matches(isDisplayed()));
+        onView(viewMatchers.mDescriptionLine3View).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleDetails() throws Exception {
+        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsCoordinator coordinator = createCoordinator(model);
+        ViewMatchers viewMatchers = new ViewMatchers(coordinator.getView());
+
+        setDetails(model,
+                new AssistantDetails("title 1", "", "", null, "", "", "", "", "", "", false, false,
+                        false, false, false, NO_PLACEHOLDERS),
+                new AssistantDetails("title 2", "", "", null, "", "", "", "", "", "", false, false,
+                        false, false, false, NO_PLACEHOLDERS),
+                new AssistantDetails("title 3", "", "", null, "", "", "", "", "", "", false, false,
+                        false, false, false, NO_PLACEHOLDERS));
+
+        onView(allOf(viewMatchers.mTitleView, withText("title 1"))).check(matches(isDisplayed()));
+        onView(allOf(viewMatchers.mTitleView, withText("title 2"))).check(matches(isDisplayed()));
+        onView(allOf(viewMatchers.mTitleView, withText("title 3"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testPlaceholdersAnimation() throws Exception {
+        // Test that the placeholders animation is running only when details have placeholders.
+        AssistantDetailsModel model = new AssistantDetailsModel();
+        AssistantDetailsCoordinator coordinator = createCoordinator(model);
+
+        assertThat(coordinator.isRunningPlaceholdersAnimationForTesting(), is(false));
+        setDetails(model,
+                new AssistantDetails("title 1", "", "", null, "", "", "", "", "", "", false, false,
+                        false, false, false, NO_PLACEHOLDERS));
+        assertThat(coordinator.isRunningPlaceholdersAnimationForTesting(), is(false));
+        setDetails(model,
+                new AssistantDetails("title 1", "", "", null, "", "", "", "", "", "", false, false,
+                        false, false, false,
+                        new AssistantPlaceholdersConfiguration(
+                                /* showImagePlaceholder= */ true,
+                                /* showTitlePlaceholder= */ false,
+                                /* showDescriptionLine1Placeholder= */ false,
+                                /* showDescriptionLine2Placeholder= */ false,
+                                /* showDescriptionLine3Placeholder= */ false)));
+        assertThat(coordinator.isRunningPlaceholdersAnimationForTesting(), is(true));
+        setDetails(model);
+        assertThat(coordinator.isRunningPlaceholdersAnimationForTesting(), is(false));
     }
 }

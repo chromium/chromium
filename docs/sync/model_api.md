@@ -10,7 +10,7 @@ API] (aka Directory), which as of mid-2019 is still used by several legacy model
 types, but "wrapped into" USS (see [SyncableServiceBasedBridge]).
 
 [SyncableService API]: https://www.chromium.org/developers/design-documents/sync/syncable-service-api
-[SyncableServiceBasedBridge]: https://cs.chromium.org/chromium/src/components/sync/model_impl/syncable_service_based_bridge.h
+[SyncableServiceBasedBridge]: https://cs.chromium.org/chromium/src/components/sync/model/syncable_service_based_bridge.h
 
 [TOC]
 
@@ -81,7 +81,7 @@ to add one (e.g. a GUID, though be wary as they have the potential to conflict).
 While the hash gets written to disk as part of the metadata, the tag itself is
 never persisted locally.
 
-[EntityData]: https://cs.chromium.org/chromium/src/components/sync/model/entity_data.h
+[EntityData]: https://cs.chromium.org/chromium/src/components/sync/engine/entity_data.h
 
 ## Storage
 

@@ -1,3 +1,4 @@
+CONSOLE WARNING: line 28: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
 CONSOLE MESSAGE: MediaElementAudioSource outputs zeroes due to CORS access restrictions for http://localhost:8000/security/resources/webaudio/laughter.wav
 MediaElementAudioSourceNode with cross-origin source
 

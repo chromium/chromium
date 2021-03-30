@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
 
  private:
   // Performs quota calculation and calls file_writer_->Write().
+  // Will either return synchronously, or run asynchronously and call
+  // |write_callback_|.
   int WriteInternal(net::IOBuffer* buf, int buf_len);
 
   // Callbacks that are chained for the first write.  This eventually calls
@@ -62,6 +64,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
                            int64_t quota);
   void DidInitializeForWrite(net::IOBuffer* buf, int buf_len, int init_status);
 
+  // Will call |write_callback_| if set, or return synchronously.
   void DidWrite(int write_response);
 
   void DidFlush(net::CompletionOnceCallback callback, int result);

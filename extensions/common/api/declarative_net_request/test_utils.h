@@ -153,6 +153,9 @@ struct TestRule : public DictionarySource {
 // Helper function to build a generic TestRule.
 TestRule CreateGenericRule(int id = kMinValidID);
 
+// Helper function to build a generic regex TestRule.
+TestRule CreateRegexRule(int id = kMinValidID);
+
 // Bitmasks to configure the extension under test.
 enum ConfigFlag {
   kConfig_None = 0,
@@ -170,6 +173,9 @@ enum ConfigFlag {
 
   // Whether the "declarative_net_request" manifest key should be omitted.
   kConfig_OmitDeclarativeNetRequestKey = 1 << 3,
+
+  // Whether the "declarativeNetRequest" permission should be omitted.
+  kConfig_OmitDeclarativeNetRequestPermission = 1 << 4,
 };
 
 // Describes a single extension ruleset.

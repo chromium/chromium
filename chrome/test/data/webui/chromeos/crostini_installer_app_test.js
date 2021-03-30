@@ -343,6 +343,22 @@ suite('<crostini-installer-app>', () => {
     expectEquals(fakeBrowserProxy.handler.getCallCount('install'), 2);
   });
 
+  test('errorNeedUpdate', async () => {
+    fakeBrowserProxy.page.onAmountOfFreeDiskSpace(diskTicks, 0, false);
+    await clickNext();
+    await clickInstall();
+    fakeBrowserProxy.page.onInstallFinished(InstallerError.kNeedUpdate);
+    await flushTasks();
+
+    expectEquals(app.$$('#title').innerText, 'Chrome OS update required');
+    expectFalse(app.$$('#error-message').hidden);
+    expectEquals(
+        app.$$('#error-message').innerText,
+        'To finish setting up Linux, update Chrome OS and try again.');
+    expectFalse(app.$$('#settings').hidden);
+    expectEquals(app.$$('#settings').innerText, 'Open Settings');
+  });
+
   [clickCancel,
    () => fakeBrowserProxy.page.requestClose(),
   ].forEach((canceller, i) => test(`cancelBeforeStart-{i}`, async () => {

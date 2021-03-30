@@ -4,8 +4,12 @@
 
 #include "chrome/chrome_cleaner/ui/main_dialog_api.h"
 
+#include <string>
+#include <vector>
+
 #include "base/logging.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"
+#include "chrome/chrome_cleaner/os/registry.h"
 #include "chrome/chrome_cleaner/pup_data/pup_cleaner_util.h"
 #include "chrome/chrome_cleaner/pup_data/pup_data.h"
 

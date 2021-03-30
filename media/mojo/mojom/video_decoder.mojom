@@ -128,7 +128,8 @@ interface VideoDecoder {
              mojo_base.mojom.UnguessableToken? cdm_id)
       => (Status status,
           bool needs_bitstream_conversion,
-          int32 max_decode_requests);
+          int32 max_decode_requests,
+          VideoDecoderType decoder_type);
 
   // Request decoding of exactly one frame or an EOS buffer. This must not be
   // called while there are pending Initialize(), Reset(), or Decode(EOS)

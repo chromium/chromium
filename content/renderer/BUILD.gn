@@ -9,6 +9,7 @@ import("//build/config/ui.gni")
 import("//content/common/features.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
@@ -27,6 +28,7 @@ target(link_target_type, "renderer") {
     "//content/app:*",
     "//content/public/renderer:renderer_sources",
     "//content/renderer:audio_decoder_fuzzer",
+    "//content/renderer:content_security_policy_util_fuzzer",
   ]
 
   sources = [
@@ -54,14 +56,9 @@ target(link_target_type, "renderer") {
     "browser_exposed_renderer_interfaces.h",
     "categorized_worker_pool.cc",
     "categorized_worker_pool.h",
-    "child_frame_compositing_helper.cc",
-    "child_frame_compositing_helper.h",
-    "child_frame_compositor.h",
     "compositor/compositor_dependencies.h",
     "content_security_policy_util.cc",
     "content_security_policy_util.h",
-    "context_menu_params_builder.cc",
-    "context_menu_params_builder.h",
     "crash_helpers.cc",
     "crash_helpers.h",
     "discardable_memory_utils.cc",
@@ -76,20 +73,12 @@ target(link_target_type, "renderer") {
     "frame_owner_properties_converter.h",
     "gpu_benchmarking_extension.cc",
     "gpu_benchmarking_extension.h",
-    "impression_conversions.cc",
-    "impression_conversions.h",
     "in_process_renderer_thread.cc",
     "in_process_renderer_thread.h",
     "internal_document_state_data.cc",
     "internal_document_state_data.h",
     "loader/navigation_body_loader.cc",
     "loader/navigation_body_loader.h",
-    "loader/resource_dispatcher.cc",
-    "loader/resource_dispatcher.h",
-    "loader/sync_load_context.cc",
-    "loader/sync_load_context.h",
-    "loader/web_url_loader_impl.cc",
-    "loader/web_url_loader_impl.h",
     "loader/web_worker_fetch_context_impl.cc",
     "loader/web_worker_fetch_context_impl.h",
     "media/audio_decoder.cc",
@@ -116,8 +105,6 @@ target(link_target_type, "renderer") {
     "media/renderer_webaudiodevice_impl.h",
     "media/renderer_webmediaplayer_delegate.cc",
     "media/renderer_webmediaplayer_delegate.h",
-    "menu_item_builder.cc",
-    "menu_item_builder.h",
     "mhtml_handle_writer.cc",
     "mhtml_handle_writer.h",
     "mojo/blink_interface_registry_impl.cc",
@@ -128,8 +115,6 @@ target(link_target_type, "renderer") {
     "navigation_state.h",
     "net_info_helper.cc",
     "net_info_helper.h",
-    "peripheral_content_heuristic.cc",
-    "peripheral_content_heuristic.h",
     "render_frame_impl.cc",
     "render_frame_impl.h",
     "render_frame_proxy.cc",
@@ -325,6 +310,7 @@ target(link_target_type, "renderer") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:network_service",
+    "//services/network/public/mojom",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//services/tracing/public/cpp",
@@ -589,4 +575,19 @@ fuzzer_test("audio_decoder_fuzzer") {
     "//content/test:test_support",
   ]
   seed_corpus = "//media/test/data"
+}
+
+fuzzer_test("content_security_policy_util_fuzzer") {
+  sources = [ "content_security_policy_util_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//content/public/renderer:renderer_sources",
+    "//content/renderer:renderer",
+    "//content/test:test_support",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+  dict = "//testing/libfuzzer/fuzzers/dicts/content_security_policy.dict"
+  seed_corpus = "//testing/libfuzzer/fuzzers/content_security_policy_corpus"
 }

@@ -233,4 +233,21 @@ Class GetVideoCaptureDeviceAVFoundationImplementationClass() {
   return [VideoCaptureDeviceAVFoundationLegacy class];
 }
 
+gfx::Size GetPixelBufferSize(CVPixelBufferRef pixel_buffer) {
+  return gfx::Size(CVPixelBufferGetWidth(pixel_buffer),
+                   CVPixelBufferGetHeight(pixel_buffer));
+}
+
+gfx::Size GetSampleBufferSize(CMSampleBufferRef sample_buffer) {
+  if (CVPixelBufferRef pixel_buffer =
+          CMSampleBufferGetImageBuffer(sample_buffer)) {
+    return GetPixelBufferSize(pixel_buffer);
+  }
+  CMFormatDescriptionRef format_description =
+      CMSampleBufferGetFormatDescription(sample_buffer);
+  CMVideoDimensions dimensions =
+      CMVideoFormatDescriptionGetDimensions(format_description);
+  return gfx::Size(dimensions.width, dimensions.height);
+}
+
 }  // namespace media

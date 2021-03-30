@@ -13,8 +13,11 @@
 namespace ui {
 
 WaylandAuxiliaryWindow::WaylandAuxiliaryWindow(PlatformWindowDelegate* delegate,
-                                               WaylandConnection* connection)
-    : WaylandWindow(delegate, connection) {}
+                                               WaylandConnection* connection,
+                                               WaylandWindow* parent)
+    : WaylandWindow(delegate, connection) {
+  set_parent_window(parent);
+}
 
 WaylandAuxiliaryWindow::~WaylandAuxiliaryWindow() = default;
 
@@ -30,6 +33,7 @@ void WaylandAuxiliaryWindow::Show(bool inactive) {
 void WaylandAuxiliaryWindow::Hide() {
   if (!subsurface_)
     return;
+  WaylandWindow::Hide();
 
   subsurface_.reset();
 
@@ -58,30 +62,35 @@ void WaylandAuxiliaryWindow::SetBounds(const gfx::Rect& bounds) {
 }
 
 void WaylandAuxiliaryWindow::CreateSubsurface() {
-  auto* parent = FindParentWindow();
-  set_parent_window(parent);
+  // wl_subsurface can be used for either tooltips or drag arrow windows.
+  // If we are in a drag process, the current parent is the entered window, so
+  // reparent the surface unconditionally.
+  if (connection()->IsDragInProgress())
+    set_parent_window(connection()->data_drag_controller()->entered_window());
+
+  if (!parent_window()) {
+    LOG(WARNING) << "Parent was not set for the auxiliary window; guessing it!";
+    set_parent_window(
+        connection()->wayland_window_manager()->GetCurrentFocusedWindow());
+  }
+
+  DCHECK(parent_window());
 
   // We need to make sure that buffer scale matches the parent window.
   UpdateBufferScale(true);
 
-  // Tooltip and drag arrow creation is an async operation. By the time Aura
-  // actually creates them, it is possible that the user has already moved the
-  // mouse/pointer out of the window that triggered the tooltip, or user is no
-  // longer in a drag/drop process. In this case, parent is nullptr.
-  if (!parent)
-    return;
-
-  subsurface_ = root_surface()->CreateSubsurface(parent->root_surface());
+  subsurface_ =
+      root_surface()->CreateSubsurface(parent_window()->root_surface());
 
   auto subsurface_bounds_dip =
-      wl::TranslateWindowBoundsToParentDIP(this, parent);
+      wl::TranslateWindowBoundsToParentDIP(this, parent_window());
 
   DCHECK(subsurface_);
   // Convert position to DIP.
   wl_subsurface_set_position(subsurface_.get(), subsurface_bounds_dip.x(),
                              subsurface_bounds_dip.y());
   wl_subsurface_set_desync(subsurface_.get());
-  parent->root_surface()->Commit();
+  parent_window()->root_surface()->Commit();
   connection()->ScheduleFlush();
 
   // Notify the observers the window has been configured. Please note that
@@ -90,34 +99,8 @@ void WaylandAuxiliaryWindow::CreateSubsurface() {
   connection()->wayland_window_manager()->NotifyWindowConfigured(this);
 }
 
-WaylandWindow* WaylandAuxiliaryWindow::FindParentWindow() {
-  // wl_subsurface can be used for several purposes: tooltips and drag arrow
-  // windows. If we are in a drag process, use the entered window. Otherwise,
-  // it must be a tooltip.
-  if (connection()->IsDragInProgress())
-    return connection()->data_drag_controller()->entered_window();
-
-  // We get the current focused window to place and show the
-  // tooltips.
-  return connection()->wayland_window_manager()->GetCurrentFocusedWindow();
-}
-
 bool WaylandAuxiliaryWindow::OnInitialize(
     PlatformWindowInitProperties properties) {
-  DCHECK(!parent_window());
-
-  // If we do not have parent window provided, we must always use a focused
-  // window or a window that entered drag whenever the subsurface is created.
-  if (properties.parent_widget == gfx::kNullAcceleratedWidget) {
-    // Need to set the possible parent window here, so the initial scale will be
-    // calculated correctly.
-    set_parent_window(FindParentWindow());
-    return true;
-  }
-
-  set_parent_window(
-      connection()->wayland_window_manager()->FindParentForNewWindow(
-          properties.parent_widget));
   return true;
 }
 

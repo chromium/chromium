@@ -50,7 +50,7 @@ BorrowedTransliterator::GetTransliterator() {
   return *instance;
 }
 
-base::string16 RemoveDiacriticsAndConvertToLowerCase(
+std::u16string RemoveDiacriticsAndConvertToLowerCase(
     base::StringPiece16 value) {
   icu::UnicodeString result = icu::UnicodeString(value.data(), value.length());
   BorrowedTransliterator().Transliterate(&result);

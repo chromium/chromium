@@ -14,7 +14,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
     StructTraits<network::mojom::SiteForCookiesDataView, net::SiteForCookies> {
   static const net::SchemefulSite& site(const net::SiteForCookies& input) {
     return input.site();

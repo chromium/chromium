@@ -14,8 +14,9 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/attestation/attestation_ca_client.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/attestation/attestation_ca_client.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
@@ -29,7 +30,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/attestation/attestation_flow_utils.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
@@ -101,11 +101,12 @@ void DeviceCloudPolicyInitializer::Init() {
 
   is_initialized_ = true;
   policy_store_->AddObserver(this);
-  state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
-      base::Bind(&DeviceCloudPolicyInitializer::TryToCreateClient,
-                 base::Unretained(this)));
+  state_keys_update_subscription_ =
+      state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
+          &DeviceCloudPolicyInitializer::TryToCreateClient,
+          base::Unretained(this), StartConnectionReason::kStateKeysStored));
 
-  TryToCreateClient();
+  TryToCreateClient(StartConnectionReason::kInitialCreation);
 }
 
 void DeviceCloudPolicyInitializer::Shutdown() {
@@ -122,7 +123,7 @@ void DeviceCloudPolicyInitializer::PrepareEnrollment(
     chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
     const EnrollmentConfig& enrollment_config,
     DMAuth dm_auth,
-    const EnrollmentCallback& enrollment_callback) {
+    EnrollmentCallback enrollment_callback) {
   DCHECK(is_initialized_);
   DCHECK(!enrollment_handler_);
 
@@ -135,8 +136,8 @@ void DeviceCloudPolicyInitializer::PrepareEnrollment(
       std::move(dm_auth), install_attributes_->GetDeviceId(),
       EnrollmentRequisitionManager::GetDeviceRequisition(),
       EnrollmentRequisitionManager::GetSubOrganization(),
-      base::Bind(&DeviceCloudPolicyInitializer::EnrollmentCompleted,
-                 base::Unretained(this), enrollment_callback)));
+      base::BindOnce(&DeviceCloudPolicyInitializer::EnrollmentCompleted,
+                     base::Unretained(this), std::move(enrollment_callback))));
 }
 
 void DeviceCloudPolicyInitializer::StartEnrollment() {
@@ -176,7 +177,8 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
 
   // If OOBE is done and we are not enrolled, make sure we only try interactive
   // enrollment.
-  const bool oobe_complete = local_state_->GetBoolean(prefs::kOobeComplete);
+  const bool oobe_complete =
+      local_state_->GetBoolean(chromeos::prefs::kOobeComplete);
   if (oobe_complete &&
       config.auth_mechanism == EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE)
     config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
@@ -280,7 +282,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
 }
 
 void DeviceCloudPolicyInitializer::OnStoreLoaded(CloudPolicyStore* store) {
-  TryToCreateClient();
+  TryToCreateClient(StartConnectionReason::kCloudPolicyLoaded);
 }
 
 void DeviceCloudPolicyInitializer::OnStoreError(CloudPolicyStore* store) {
@@ -288,7 +290,7 @@ void DeviceCloudPolicyInitializer::OnStoreError(CloudPolicyStore* store) {
 }
 
 void DeviceCloudPolicyInitializer::EnrollmentCompleted(
-    const EnrollmentCallback& enrollment_callback,
+    EnrollmentCallback enrollment_callback,
     EnrollmentStatus status) {
   std::unique_ptr<CloudPolicyClient> client =
       enrollment_handler_->ReleaseClient();
@@ -296,15 +298,16 @@ void DeviceCloudPolicyInitializer::EnrollmentCompleted(
 
   if (status.status() == EnrollmentStatus::SUCCESS &&
       !install_attributes_->IsActiveDirectoryManaged()) {
-    StartConnection(std::move(client));
+    StartConnection(StartConnectionReason::kEnrollmentCompleted,
+                    std::move(client));
   } else {
     // Some attempts to create a client may be blocked because the enrollment
     // was in progress. We give it a try again.
-    TryToCreateClient();
+    TryToCreateClient(StartConnectionReason::kEnrollmentCompleted);
   }
 
   if (!enrollment_callback.is_null())
-    enrollment_callback.Run(status);
+    std::move(enrollment_callback).Run(status);
 }
 
 std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
@@ -343,19 +346,25 @@ std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
       CloudPolicyClient::DeviceDMTokenCallback());
 }
 
-void DeviceCloudPolicyInitializer::TryToCreateClient() {
+void DeviceCloudPolicyInitializer::TryToCreateClient(
+    DeviceCloudPolicyInitializer::StartConnectionReason reason) {
   if (!policy_store_->is_initialized() || !policy_store_->has_policy() ||
       !state_keys_broker_->available() || enrollment_handler_ ||
       install_attributes_->IsActiveDirectoryManaged()) {
     return;
   }
-  StartConnection(CreateClient(enterprise_service_));
+  StartConnection(reason, CreateClient(enterprise_service_));
 }
 
 void DeviceCloudPolicyInitializer::StartConnection(
+    DeviceCloudPolicyInitializer::StartConnectionReason reason,
     std::unique_ptr<CloudPolicyClient> client) {
-  if (!policy_manager_->core()->service())
+  if (!policy_manager_->core()->service()) {
+    LOG(WARNING)
+        << "DeviceCloudPolicyInitializer will be removed soon with reason: "
+        << static_cast<int>(reason);
     policy_manager_->StartConnection(std::move(client), install_attributes_);
+  }
 }
 
 bool DeviceCloudPolicyInitializer::GetMachineFlag(const std::string& key,

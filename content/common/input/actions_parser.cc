@@ -11,6 +11,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "content/common/input/input_injector.mojom.h"
+#include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
+#include "ui/events/types/scroll_types.h"
 
 namespace content {
 
@@ -31,15 +34,15 @@ SyntheticPointerActionParams::PointerActionType ToSyntheticPointerActionType(
   return SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED;
 }
 
-SyntheticGestureParams::GestureSourceType ToSyntheticGestureSourceType(
+content::mojom::GestureSourceType ToSyntheticGestureSourceType(
     const std::string& pointer_type) {
   if (pointer_type == "touch")
-    return SyntheticGestureParams::TOUCH_INPUT;
+    return content::mojom::GestureSourceType::kTouchInput;
   else if (pointer_type == "mouse")
-    return SyntheticGestureParams::MOUSE_INPUT;
+    return content::mojom::GestureSourceType::kMouseInput;
   else if (pointer_type == "pen")
-    return SyntheticGestureParams::PEN_INPUT;
-  return SyntheticGestureParams::DEFAULT_INPUT;
+    return content::mojom::GestureSourceType::kPenInput;
+  return content::mojom::GestureSourceType::kDefaultInput;
 }
 
 SyntheticPointerActionParams::Button ToSyntheticMouseButton(int button) {
@@ -77,56 +80,71 @@ int ToKeyModifiers(const std::string& key) {
 
 }  // namespace
 
-ActionsParser::ActionsParser(base::Value pointer_actions_value)
-    : longest_action_sequence_(0),
-      pointer_actions_value_(std::move(pointer_actions_value)),
-      action_index_(0),
-      use_testdriver_api_(true) {}
+ActionsParser::ActionsParser(base::Value action_sequence_list)
+    : action_sequence_list_(std::move(action_sequence_list)) {
+  // We have two different JSON formats from testdriver Action API or
+  // gpuBenchmarking.pointerActionSequence. Below we are deciding where the
+  // action sequence list comes from.
+  if (action_sequence_list_.is_list() &&
+      action_sequence_list_.GetList().size() > 0) {
+    use_testdriver_api_ =
+        ActionsDictionaryUsesTestDriverApi(action_sequence_list_.GetList()[0]);
+  }
+}
 
 ActionsParser::~ActionsParser() {}
 
-bool ActionsParser::ParsePointerActionSequence() {
-  if (!pointer_actions_value_.is_list()) {
-    error_message_ = std::string("provided value is not a list");
+bool ActionsParser::Parse() {
+  if (!action_sequence_list_.is_list() ||
+      action_sequence_list_.GetList().size() == 0) {
+    error_message_ =
+        std::string("provided action sequence list is not a list or is empty");
     return false;
   }
 
-  int index = 0;
-  for (const auto& pointer_actions : pointer_actions_value_.GetList()) {
-    if (!pointer_actions.is_dict()) {
+  for (const auto& action_sequence : action_sequence_list_.GetList()) {
+    if (!action_sequence.is_dict()) {
       error_message_ =
-          std::string("pointer actions is missing or not a dictionary");
-      return false;
-    } else if (!ParsePointerActions(pointer_actions, index)) {
+          std::string("Expected ActionSequence is not a dictionary");
       return false;
     }
-    index++;
-    if (source_type_ == "pointer" || !use_testdriver_api_)
-      action_index_++;
+
+    if (use_testdriver_api_) {
+      if (!ParseTestDriverActionSequence(action_sequence))
+        return false;
+    } else {
+      if (!ParseGpuBenchmarkingActionSequence(action_sequence))
+        return false;
+    }
   }
 
-  gesture_params_.gesture_source_type =
+  if (source_type_ == "wheel")
+    return true;
+
+  gesture_params_ = std::make_unique<SyntheticPointerActionListParams>();
+  SyntheticPointerActionListParams* pointer_actions =
+      static_cast<SyntheticPointerActionListParams*>(gesture_params_.get());
+  pointer_actions->gesture_source_type =
       ToSyntheticGestureSourceType(pointer_type_);
   // Group a list of actions from all pointers into a
   // SyntheticPointerActionListParams object, which is a list of actions, which
   // will be dispatched together.
-  for (size_t action_index = 0; action_index < longest_action_sequence_;
-       ++action_index) {
+  for (size_t index = 0; index < longest_action_sequence_; ++index) {
     SyntheticPointerActionListParams::ParamList param_list;
     size_t longest_pause_frame = 0;
-    for (const auto& pointer_action_list : pointer_actions_list_) {
-      if (action_index < pointer_action_list.size()) {
-        param_list.push_back(pointer_action_list[action_index]);
-        if (pointer_action_list[action_index].pointer_action_type() ==
+    for (const auto& pointer_action_list : pointer_actions_lists_) {
+      if (index < pointer_action_list.size()) {
+        param_list.push_back(pointer_action_list[index]);
+        if (pointer_action_list[index].pointer_action_type() ==
             SyntheticPointerActionParams::PointerActionType::IDLE) {
           size_t num_pause_frame = static_cast<size_t>(std::ceil(
-              pointer_action_list[action_index].duration().InMilliseconds() /
+              pointer_action_list[index].duration().InMilliseconds() /
               viz::BeginFrameArgs::DefaultInterval().InMilliseconds()));
           longest_pause_frame = std::max(longest_pause_frame, num_pause_frame);
         }
       }
     }
-    gesture_params_.PushPointerActionParamsList(param_list);
+    pointer_actions->PushPointerActionParamsList(param_list);
 
     for (size_t pause_index = 1; pause_index < longest_pause_frame;
          ++pause_index) {
@@ -136,187 +154,229 @@ bool ActionsParser::ParsePointerActionSequence() {
       for (size_t i = 0; i < param_list.size(); ++i) {
         pause_param_list.push_back(pause_action_param);
       }
-      gesture_params_.PushPointerActionParamsList(pause_param_list);
+      pointer_actions->PushPointerActionParamsList(pause_param_list);
     }
   }
   return true;
 }
 
-bool ActionsParser::ParsePointerActions(const base::Value& pointer, int index) {
-  int pointer_id = -1;
-  // If the json format of each pointer has "type" element, it is from the new
-  // Action API, otherwise it is from gpuBenchmarking.pointerActionSequence
-  // API. We have to keep both formats for now, but later on once we switch to
-  // the new Action API in all tests, we will remove the old format.
-  const base::Value* type_key = pointer.FindKey("type");
-  if (index == 0)
-    use_testdriver_api_ = type_key != nullptr;
+bool ActionsParser::ActionsDictionaryUsesTestDriverApi(
+    const base::Value& action_sequence) {
+  // If the JSON format of each action_sequence has "type" element, it is from
+  // the new Action API, otherwise it is from
+  // gpuBenchmarking.pointerActionSequence API. We have to keep both formats
+  // for now, but later on once we switch to the new Action API in all tests,
+  // we will remove the old format.
+  if (action_sequence.FindKey("type"))
+    return true;
+  return false;
+}
 
-  if (use_testdriver_api_) {
-    DCHECK_NE(nullptr, type_key);
-    if (!type_key->is_string()) {
-      error_message_ =
-          std::string("action sequence type is missing or not a string");
-      return false;
-    }
-    std::string source_type = type_key->GetString();
-    if (source_type == "") {
-      error_message_ = std::string("action sequence type cannot be empty");
-      return false;
-    } else if (source_type == "key") {
-      error_message_ =
-          std::string("we do not support action sequence type of key");
-      return false;
-    }
+bool ActionsParser::ParseGpuBenchmarkingActionSequence(
+    const base::Value& action_sequence) {
+  // The GpuBenchmarking format is implicitly for pointers only and for
+  // historic reasons, the "source" key refers to what TestDriver calls the
+  // pointer_type_.
+  source_type_ = "pointer";
+  if (use_testdriver_api_ !=
+      ActionsDictionaryUsesTestDriverApi(action_sequence)) {
+    error_message_ = std::string(
+        "all action sequences must be of the same gpuBenchmarking format");
+    return false;
+  }
 
-    if (source_type == "pointer") {
-      if (source_type_.empty())
-        source_type_ = source_type;
+  const std::string* pointer_type = action_sequence.FindStringKey("source");
+  if (!pointer_type) {
+    error_message_ = std::string("source type is not defined or not a string");
+    return false;
+  }
 
-      const base::Value* parameters = pointer.FindKey("parameters");
-      if (source_type_ == "pointer" && !parameters) {
-        error_message_ = std::string(
-            "action sequence parameters is missing for pointer type");
-        return false;
-      }
+  if (*pointer_type != "touch" && *pointer_type != "mouse" &&
+      *pointer_type != "pen") {
+    error_message_ = base::StringPrintf(
+        "source type %s is an unsupported input type", (*pointer_type).c_str());
+    return false;
+  }
 
-      if (!parameters->is_dict()) {
-        error_message_ =
-            std::string("action sequence parameters is not a dictionary");
-        return false;
-      }
+  if (pointer_type_.empty()) {
+    pointer_type_ = *pointer_type;
+  } else if (pointer_type_ != *pointer_type) {
+    error_message_ =
+        std::string("currently multiple input types are not not supported");
+    return false;
+  }
 
-      const std::string* pointer_type =
-          parameters->FindStringKey("pointerType");
-      if (!pointer_type) {
-        error_message_ = std::string(
-            "action sequence pointer type is missing or not a string");
-        return false;
-      } else if (*pointer_type != "touch" && *pointer_type != "mouse" &&
-                 *pointer_type != "pen") {
-        error_message_ = std::string(
-            "action sequence pointer type is an unsupported input type");
-        return false;
-      }
-
-      if (pointer_type_.empty()) {
-        pointer_type_ = *pointer_type;
-      }
-
-      if (pointer_type_ != *pointer_type) {
-        error_message_ = std::string(
-            "currently multiple action sequence pointer type are not "
-            "supported");
-        return false;
-      }
-
-      if (*pointer_type != "touch" && action_index_ > 0) {
-        error_message_ = std::string(
-            "for input type of mouse and pen, we only support one device");
-        return false;
-      }
-
-      const std::string* pointer_name = pointer.FindStringKey("id");
-      if (!pointer_name) {
-        error_message_ = std::string("pointer name is missing or not a string");
-        return false;
-      }
-
-      if (pointer_name_set_.find(*pointer_name) != pointer_name_set_.end()) {
-        error_message_ = std::string("pointer name already exists");
-        return false;
-      }
-
-      pointer_name_set_.insert(*pointer_name);
-      pointer_id_set_.insert(action_index_);
-    }
-    pointer_id = action_index_;
-  } else {
-    DCHECK_EQ(nullptr, type_key);
-    const std::string* pointer_type = pointer.FindStringKey("source");
-    if (!pointer_type) {
-      error_message_ = std::string("source type is missing or not a string");
-      return false;
-    } else if (*pointer_type != "touch" && *pointer_type != "mouse" &&
-               *pointer_type != "pen") {
-      error_message_ =
-          std::string("source type is an unsupported input source");
-      return false;
-    }
-
-    if (pointer_type_.empty()) {
-      pointer_type_ = *pointer_type;
-    }
-
-    if (pointer_type_ != *pointer_type) {
-      error_message_ =
-          std::string("currently multiple input sources are not not supported");
-      return false;
-    }
-
-    if (*pointer_type != "touch" && action_index_ > 0) {
-      error_message_ = std::string(
-          "for input source type of mouse and pen, we only support one device "
-          "in one sequence");
-      return false;
-    }
-
-    const base::Value* id_key = pointer.FindKey("id");
-    if (id_key) {
-      if (!id_key->is_int()) {
-        error_message_ = std::string("pointer id is not an integer");
-        return false;
-      }
-      pointer_id = id_key->GetInt();
-
-      if (pointer_id < 0) {
-        error_message_ = std::string("pointer id can not be negative");
-        return false;
-      }
-    }
-
-    if (pointer_id != -1) {
-      if (pointer_id_set_.find(pointer_id) != pointer_id_set_.end()) {
-        error_message_ = std::string("pointer id already exists");
-        return false;
-      }
-
-      if (action_index_ != static_cast<int>(pointer_id_set_.size())) {
-        error_message_ = std::string("some pointers do not have a pointer id");
-        return false;
-      }
-
-      pointer_id_set_.insert(pointer_id);
-    } else {
-      if (pointer_id_set_.size() > 0) {
-        error_message_ = std::string("this pointer does not have a pointer id");
-        return false;
-      }
-    }
+  if (*pointer_type != "touch" && input_source_count_ > 0) {
+    error_message_ = std::string(
+        "for source type of mouse and pen, we only support one device "
+        "in one sequence");
+    return false;
   }
 
   const base::Value* actions =
-      pointer.FindKeyOfType("actions", base::Value::Type::LIST);
+      action_sequence.FindKeyOfType("actions", base::Value::Type::LIST);
   if (!actions) {
     error_message_ = base::StringPrintf(
-        "pointer[%d].actions is missing or not a list", action_index_);
+        "action_sequence[%zu].actions is not defined or not a list",
+        action_index_);
+    return false;
+  } else if (actions->GetList().size() == 0) {
+    error_message_ = base::StringPrintf(
+        "action_sequence[%zu].actions is an empty list", action_index_);
     return false;
   }
 
-  if (!ParseActions(*actions, pointer_id))
+  if (!ParseActionItemList(*actions, "pointer"))
     return false;
+
+  input_source_count_++;
+  return true;
+}
+
+bool ActionsParser::ParseTestDriverActionSequence(
+    const base::Value& action_sequence) {
+  if (use_testdriver_api_ !=
+      ActionsDictionaryUsesTestDriverApi(action_sequence)) {
+    error_message_ = std::string(
+        "all action sequences must be of the same TestDriver format");
+    return false;
+  }
+
+  const std::string* source_type = action_sequence.FindStringKey("type");
+  if (!source_type) {
+    error_message_ =
+        std::string("input source type is not defined or not a string");
+    return false;
+  }
+
+  if (*source_type != "none") {
+    if (source_type_.empty()) {
+      source_type_ = *source_type;
+    } else if (source_type_ != *source_type) {
+      error_message_ = std::string(
+          "currently multiple input source types are not supported");
+      return false;
+    }
+  }
+
+  if (*source_type == "pointer") {
+    if (!ParsePointerParameters(action_sequence))
+      return false;
+  } else if (*source_type == "key") {
+    error_message_ =
+        std::string("we do not support action sequence type of key");
+    return false;
+  } else if (*source_type == "wheel") {
+    // do nothing
+  } else if (*source_type == "none") {
+    // do nothing
+  } else {
+    error_message_ = base::StringPrintf("the input source type %s is invalid",
+                                        (*source_type).c_str());
+    return false;
+  }
+
+  const base::Value* actions =
+      action_sequence.FindKeyOfType("actions", base::Value::Type::LIST);
+  if (!actions) {
+    error_message_ = base::StringPrintf(
+        "action_sequence[%zu].actions is not defined or not a list",
+        action_index_);
+    return false;
+  } else if (actions->GetList().size() == 0) {
+    error_message_ = base::StringPrintf(
+        "action_sequence[%zu].actions is an empty list", action_index_);
+    return false;
+  } else if (*source_type == "wheel" && actions->GetList().size() > 1) {
+    error_message_ = base::StringPrintf(
+        "action_sequence[%zu].actions should only have one action for the "
+        "wheel input source",
+        action_index_);
+    return false;
+  }
+
+  if (!ParseActionItemList(*actions, *source_type))
+    return false;
+
+  if (*source_type != "none")
+    input_source_count_++;
 
   return true;
 }
 
-bool ActionsParser::ParseActions(const base::Value& actions, int pointer_id) {
+bool ActionsParser::ParsePointerParameters(const base::Value& action_sequence) {
+  const base::Value* parameters = action_sequence.FindKey("parameters");
+  // The default pointer type is mouse.
+  std::string pointer_type = "mouse";
+  if (parameters) {
+    if (!parameters->is_dict()) {
+      error_message_ =
+          std::string("action sequence parameters is not a dictionary");
+      return false;
+    }
+
+    const std::string* pointer_type_value =
+        parameters->FindStringKey("pointerType");
+    if (!pointer_type_value) {
+      error_message_ = std::string(
+          "action sequence pointer type is not defined or not a string");
+      return false;
+    }
+
+    if (*pointer_type_value != "touch" && *pointer_type_value != "mouse" &&
+        *pointer_type_value != "pen") {
+      error_message_ = base::StringPrintf(
+          "action sequence pointer type %s is an unsupported input type",
+          (*pointer_type_value).c_str());
+      return false;
+    }
+    pointer_type = *pointer_type_value;
+  }
+
+  if (pointer_type_.empty()) {
+    pointer_type_ = pointer_type;
+  } else if (pointer_type_ != pointer_type) {
+    error_message_ = std::string(
+        "currently multiple action sequence pointer type are not "
+        "supported");
+    return false;
+  }
+
+  if (pointer_type != "touch" && input_source_count_ > 0) {
+    error_message_ = std::string(
+        "for input type of mouse and pen, we only support one device");
+    return false;
+  }
+
+  // TODO(lanwei): according to the Webdriver spec, "Let id be the result of
+  // getting the property id from action sequence.", we should move "id" from
+  // parameters dictionary to action sequence.
+  const std::string* pointer_name = action_sequence.FindStringKey("id");
+  if (!pointer_name) {
+    error_message_ = std::string("pointer name is not defined or not a string");
+    return false;
+  }
+
+  if (pointer_name_set_.find(*pointer_name) != pointer_name_set_.end()) {
+    error_message_ = std::string("pointer name already exists");
+    return false;
+  }
+
+  pointer_name_set_.insert(*pointer_name);
+  return true;
+}
+
+bool ActionsParser::ParseActionItemList(const base::Value& actions,
+                                        std::string source_type) {
+  DCHECK(source_type == "none" || source_type == source_type_);
   SyntheticPointerActionListParams::ParamList param_list;
   for (const auto& action : actions.GetList()) {
     if (!action.is_dict()) {
       error_message_ = base::StringPrintf(
-          "actions[%d].actions is missing or not a dictionary", action_index_);
+          "actions[%zu].actions is not defined or not a dictionary",
+          action_index_);
       return false;
-    } else if (!ParseAction(action, param_list, pointer_id)) {
+    } else if (!ParseAction(action, param_list, source_type)) {
       return false;
     }
   }
@@ -324,93 +384,136 @@ bool ActionsParser::ParseActions(const base::Value& actions, int pointer_id) {
   if (param_list.size() > longest_action_sequence_)
     longest_action_sequence_ = param_list.size();
 
-  pointer_actions_list_.push_back(param_list);
+  pointer_actions_lists_.push_back(param_list);
   return true;
 }
 
 bool ActionsParser::ParseAction(
     const base::Value& action,
     SyntheticPointerActionListParams::ParamList& param_list,
-    int pointer_id) {
-  SyntheticPointerActionParams::PointerActionType pointer_action_type =
-      SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED;
-  std::string type;
-  const base::Value* type_key = action.FindKey("type");
-  if (type_key) {
-    if (!type_key->is_string()) {
+    std::string source_type) {
+  std::string subtype;
+  if (use_testdriver_api_) {
+    const std::string* type_value = action.FindStringKey("type");
+    if (!type_value) {
       error_message_ = base::StringPrintf(
-          "actions[%d].actions.name is missing or not a string", action_index_);
+          "actions[%zu].actions.type is not defined or not a string",
+          action_index_);
       return false;
     }
-    type = type_key->GetString();
+    subtype = *type_value;
   } else {
-    const std::string* name_key = action.FindStringKey("name");
-    if (!name_key) {
+    const std::string* name_value = action.FindStringKey("name");
+    if (!name_value) {
       error_message_ = base::StringPrintf(
-          "actions[%d].actions.name is missing or not a string", action_index_);
+          "actions[%zu].actions.name is not defined or not a string",
+          action_index_);
       return false;
     }
-    type = *name_key;
+    subtype = *name_value;
   }
 
-  pointer_action_type = ToSyntheticPointerActionType(type);
-  if (pointer_action_type ==
-      SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED) {
+  if (source_type == "wheel") {
+    return ParseWheelAction(action, subtype);
+  } else if (source_type == "pointer") {
+    return ParsePointerAction(action, subtype, param_list);
+  } else if (source_type == "none") {
+    return ParseNullAction(action, subtype, param_list);
+  } else {
+    NOTREACHED();
+  }
+  return false;
+}
+
+bool ActionsParser::ParseWheelAction(const base::Value& action,
+                                     std::string subtype) {
+  if (subtype == "pause") {
     error_message_ = base::StringPrintf(
-        "actions[%d].actions.name is an unsupported action name",
+        "actions[%zu].actions.type of pause is not supported now",
+        action_index_);
+    return false;
+  } else if (subtype != "scroll") {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.type is not scroll or pause when source type is "
+        "wheel",
         action_index_);
     return false;
   }
 
   double position_x = 0;
   double position_y = 0;
-  const base::Value* position_x_key = action.FindKey("x");
-  const base::Value* position_y_key = action.FindKey("y");
-  if (position_x_key) {
-    if (!position_x_key->is_int() && !position_x_key->is_double()) {
-      error_message_ = base::StringPrintf(
-          "actions[%d].actions.x is not a number", action_index_);
-      return false;
-    }
-    position_x = position_x_key->GetDouble();
+  if (!GetPosition(action, position_x, position_y))
+    return false;
+
+  int delta_x = 0;
+  int delta_y = 0;
+  if (!GetScrollDelta(action, delta_x, delta_y))
+    return false;
+
+  gesture_params_ = std::make_unique<SyntheticSmoothScrollGestureParams>();
+  SyntheticSmoothScrollGestureParams* scroll =
+      static_cast<SyntheticSmoothScrollGestureParams*>(gesture_params_.get());
+  scroll->gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
+  scroll->speed_in_pixels_s = 8000;
+  scroll->prevent_fling = true;
+  scroll->granularity = ui::ScrollGranularity::kScrollByPrecisePixel;
+  scroll->anchor.SetPoint(position_x, position_y);
+  scroll->fling_velocity_x = 0;
+  scroll->fling_velocity_y = 0;
+  scroll->distances.push_back(-gfx::Vector2dF(delta_x, delta_y));
+  scroll->modifiers = 0;
+  return true;
+}
+
+bool ActionsParser::ParsePointerAction(
+    const base::Value& action,
+    std::string subtype,
+    SyntheticPointerActionListParams::ParamList& param_list) {
+  double position_x = 0;
+  double position_y = 0;
+  if ((subtype == "pointerDown" || subtype == "pointerMove") &&
+      !GetPosition(action, position_x, position_y)) {
+    return false;
   }
 
-  if (position_y_key) {
-    if (!position_y_key->is_int() && !position_y_key->is_double()) {
-      error_message_ = base::StringPrintf(
-          "actions[%d].actions.y is not a number", action_index_);
-      return false;
-    }
-    position_y = position_y_key->GetDouble();
+  SyntheticPointerActionParams::PointerActionType pointer_action_type =
+      SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED;
+  pointer_action_type = ToSyntheticPointerActionType(subtype);
+  if (pointer_action_type ==
+      SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.name is an unsupported action name",
+        action_index_);
+    return false;
   }
 
   int button_id = 0;
-  const base::Value* button_id_key = action.FindKey("button");
-  if (button_id_key) {
-    if (!button_id_key->is_int()) {
+  const base::Value* button_id_value = action.FindKey("button");
+  if (button_id_value) {
+    if (!button_id_value->is_int()) {
       error_message_ = base::StringPrintf(
-          "actions[%d].actions.button is not a string", action_index_);
+          "actions[%zu].actions.button is not a string", action_index_);
       return false;
     }
-    button_id = button_id_key->GetInt();
+    button_id = button_id_value->GetInt();
   }
   if (button_id < 0 || button_id > 4) {
     error_message_ = base::StringPrintf(
-        "actions[%d].actions.button is an unsupported button", action_index_);
+        "actions[%zu].actions.button is an unsupported button", action_index_);
     return false;
   }
   SyntheticPointerActionParams::Button button =
       ToSyntheticMouseButton(button_id);
 
   std::string keys;
-  const base::Value* keys_key = action.FindKey("keys");
-  if (keys_key) {
-    if (!keys_key->is_string()) {
+  const base::Value* keys_value = action.FindKey("keys");
+  if (keys_value) {
+    if (!keys_value->is_string()) {
       error_message_ = base::StringPrintf(
-          "actions[%d].actions.key is not a string", action_index_);
+          "actions[%zu].actions.key is not a string", action_index_);
       return false;
     }
-    keys = keys_key->GetString();
+    keys = keys_value->GetString();
   }
 
   int key_modifiers = 0;
@@ -420,7 +523,7 @@ bool ActionsParser::ParseAction(
     int key_modifier = ToKeyModifiers(key);
     if (key_modifier == 0) {
       error_message_ = base::StringPrintf(
-          "actions[%d].actions.key is not a valid key", action_index_);
+          "actions[%zu].actions.key is not a valid key", action_index_);
       return false;
     }
     key_modifiers |= key_modifier;
@@ -428,28 +531,13 @@ bool ActionsParser::ParseAction(
 
   int duration = viz::BeginFrameArgs::DefaultInterval().InMilliseconds();
   if (pointer_action_type ==
-      SyntheticPointerActionParams::PointerActionType::IDLE) {
-    const base::Value* duration_key = action.FindKey("duration");
-    if (duration_key) {
-      if (!duration_key->is_double() && !duration_key->is_int()) {
-        error_message_ = base::StringPrintf(
-            "actions[%d].actions.duration is not a number", action_index_);
-        return false;
-      }
-      duration = duration_key->GetDouble();
-    }
-    if (duration < 0) {
-      error_message_ = base::StringPrintf(
-          "actions[%d].actions.duration should not be negative", action_index_);
-      return false;
-    }
+          SyntheticPointerActionParams::PointerActionType::IDLE &&
+      !GetPauseDuration(action, duration)) {
+    return false;
   }
 
   SyntheticPointerActionParams action_param(pointer_action_type);
-  if (pointer_id == -1)
-    action_param.set_pointer_id(action_index_);
-  else
-    action_param.set_pointer_id(pointer_id);
+  action_param.set_pointer_id(input_source_count_);
   switch (pointer_action_type) {
     case SyntheticPointerActionParams::PointerActionType::PRESS:
       action_param.set_position(gfx::PointF(position_x, position_y));
@@ -473,6 +561,100 @@ bool ActionsParser::ParseAction(
       break;
   }
   param_list.push_back(action_param);
+  return true;
+}
+
+bool ActionsParser::ParseNullAction(
+    const base::Value& action,
+    std::string subtype,
+    SyntheticPointerActionListParams::ParamList& param_list) {
+  SyntheticPointerActionParams::PointerActionType pointer_action_type =
+      SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED;
+  pointer_action_type = ToSyntheticPointerActionType(subtype);
+  if (pointer_action_type !=
+      SyntheticPointerActionParams::PointerActionType::IDLE) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.name should only be pause", action_index_);
+    return false;
+  }
+
+  int duration = viz::BeginFrameArgs::DefaultInterval().InMilliseconds();
+  if (!GetPauseDuration(action, duration))
+    return false;
+
+  SyntheticPointerActionParams action_param(pointer_action_type);
+  action_param.set_pointer_id(0);
+  action_param.set_duration(base::TimeDelta::FromMilliseconds(duration));
+  param_list.push_back(action_param);
+  return true;
+}
+
+bool ActionsParser::GetPosition(const base::Value& action,
+                                double& position_x,
+                                double& position_y) {
+  const base::Value* position_x_value = action.FindKey("x");
+  const base::Value* position_y_value = action.FindKey("y");
+  // TODO(lanwei): we should clarify the case when x or y is undefined in the
+  // WebDriver spec.
+  // https://www.w3.org/TR/webdriver/#dfn-process-a-pointer-move-action.
+  if (!position_x_value ||
+      (!position_x_value->is_int() && !position_x_value->is_double())) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.x is not defined or not a number", action_index_);
+    return false;
+  }
+  position_x = position_x_value->GetDouble();
+
+  if (!position_y_value ||
+      (!position_y_value->is_int() && !position_y_value->is_double())) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.y is not defined or not a number", action_index_);
+    return false;
+  }
+  position_y = position_y_value->GetDouble();
+  return true;
+}
+
+bool ActionsParser::GetScrollDelta(const base::Value& action,
+                                   int& delta_x,
+                                   int& delta_y) {
+  const base::Value* delta_x_value = action.FindKey("deltaX");
+  const base::Value* delta_y_value = action.FindKey("deltaY");
+  if (!delta_x_value || !delta_x_value->is_int()) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.delta_x is not defined or not an integer",
+        action_index_);
+    return false;
+  }
+  delta_x = delta_x_value->GetInt();
+
+  if (!delta_y_value || !delta_y_value->is_int()) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.delta_y is not defined or not an integer",
+        action_index_);
+    return false;
+  }
+  delta_y = delta_y_value->GetInt();
+  return true;
+}
+
+bool ActionsParser::GetPauseDuration(const base::Value& action, int& duration) {
+  const base::Value* duration_value = action.FindKey("duration");
+  // TODO(lanwei): we should always have a duration value for pause action.
+  if (duration_value) {
+    if (!duration_value->is_double() && !duration_value->is_int()) {
+      error_message_ = base::StringPrintf(
+          "actions[%zu].actions.duration is not a number", action_index_);
+      return false;
+    }
+    duration = duration_value->GetDouble();
+  }
+
+  if (duration < 0) {
+    error_message_ = base::StringPrintf(
+        "actions[%zu].actions.duration should not be negative", action_index_);
+    return false;
+  }
   return true;
 }
 

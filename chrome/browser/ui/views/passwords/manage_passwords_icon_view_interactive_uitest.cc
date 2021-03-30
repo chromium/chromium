@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/view_utils.h"
 
 // The param indicates if the feature showing password icon in the new toolbar
 // status chip is enabled.
@@ -53,11 +54,11 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest,
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider()
             ->GetPageActionIconView(PageActionIconType::kManagePasswords);
-    DCHECK_EQ(view->GetClassName(), ManagePasswordsIconViews::kClassName);
+    DCHECK(views::IsViewClass<ManagePasswordsIconViews>(view));
     return static_cast<ManagePasswordsIconViews*>(view);
   }
 
-  base::string16 GetTooltipText() {
+  std::u16string GetTooltipText() {
     return GetView()->GetTooltipText(gfx::Point());
   }
 
@@ -106,7 +107,7 @@ IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, PendingState) {
   WaitForAnimationToEnd();
   EXPECT_TRUE(GetView()->GetVisible());
   // No tooltip because the bubble is showing.
-  EXPECT_EQ(base::string16(), GetTooltipText());
+  EXPECT_EQ(std::u16string(), GetTooltipText());
   const gfx::ImageSkia active_image = GetImage();
 }
 

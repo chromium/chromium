@@ -19,16 +19,16 @@ class FakeCrashRecoveryManager : public CrashRecoveryManager {
   FakeCrashRecoveryManager();
   ~FakeCrashRecoveryManager() override;
 
-  base::Closure& on_restoration_finished_callback() {
-    return on_restoration_finished_callback_;
+  base::OnceClosure TakeOnRestorationFinishedCallback() {
+    return std::move(on_restoration_finished_callback_);
   }
 
   // CrashRecoveryManager:
   void RestorePreCrashStateIfNecessary(
-      const base::Closure& on_restoration_finished) override;
+      base::OnceClosure on_restoration_finished) override;
 
  private:
-  base::Closure on_restoration_finished_callback_;
+  base::OnceClosure on_restoration_finished_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeCrashRecoveryManager);
 };

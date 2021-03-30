@@ -2,20 +2,43 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/components/sensors/buildflags.gni")
+
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "USE_IIOSERVICE=$use_iioservice" ]
+}
 
 component("sensors") {
   output_name = "chromeos_sensors"
   defines = [ "IS_CHROMEOS_SENSORS_IMPL" ]
   sources = [
-    "sensor_hal_dispatcher.cc",
-    "sensor_hal_dispatcher.h",
+    "sensor_util.cc",
+    "sensor_util.h",
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//chromeos/components/sensors/mojom",
     "//mojo/public/cpp/bindings",
   ]
+  if (is_chromeos_ash) {
+    sources += [
+      "ash/sensor_hal_dispatcher.cc",
+      "ash/sensor_hal_dispatcher.h",
+    ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -40,7 +63,7 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "sensor_hal_dispatcher_unittest.cc" ]
+  sources = [ "ash/sensor_hal_dispatcher_unittest.cc" ]
   deps = [
     ":sensors",
     ":test_support",

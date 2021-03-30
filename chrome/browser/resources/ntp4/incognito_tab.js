@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 window.addEventListener('load', function() {
   let cookieSettingsUrl;
 
-  cr.addWebUIListener('theme-changed', themeData => {
+  addWebUIListener('theme-changed', themeData => {
     document.documentElement.setAttribute(
         'hascustombackground', themeData.hasCustomBackground);
     $('incognitothemecss').href =
@@ -13,7 +16,7 @@ window.addEventListener('load', function() {
   });
   chrome.send('observeThemeChanges');
 
-  cr.addWebUIListener('cookie-controls-changed', dict => {
+  addWebUIListener('cookie-controls-changed', dict => {
     $('cookie-controls-tooltip-icon').hidden = !dict.enforced;
     $('cookie-controls-tooltip-icon').iconClass = dict.icon;
     $('cookie-controls-toggle').disabled = dict.enforced;
@@ -34,12 +37,3 @@ window.addEventListener('load', function() {
   };
   chrome.send('observeCookieControlsSettingsChanges');
 });
-
-// Handle the bookmark bar, theme, and font size change requests
-// from the C++ side.
-const ntp = {
-  /** @param {string} attached */
-  setBookmarkBarAttached(attached) {
-    document.documentElement.setAttribute('bookmarkbarattached', attached);
-  },
-};

@@ -6,11 +6,11 @@
 #define UI_BASE_MODELS_DIALOG_MODEL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string16.h"
 #include "base/types/pass_key.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
@@ -64,11 +64,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelDelegate {
 //
 // auto dialog_model =
 //     ui::DialogModel::Builder(std::move(model_delegate))
-//         .SetTitle(base::ASCIIToUTF16("Hello, world!"))
+//         .SetTitle(u"Hello, world!")
 //         .AddOkButton(base::BindOnce(&Delegate::OnDialogAccepted,
 //                                     base::Unretained(model_delegate_ptr)))
 //         .AddTextfield(
-//             base::ASCIIToUTF16("Name"), base::string16(),
+//             u"Name", std::u16string(),
 //             ui::DialogModelTextfield::Params().SetUniqueId(kNameTextfield))
 //         .Build();
 //
@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
-    Builder& SetTitle(base::string16 title) {
+    Builder& SetTitle(std::u16string title) {
       model_->title_ = std::move(title);
       return *this;
     }
@@ -169,11 +169,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     // DialogModelHost implementation.
     Builder& AddOkButton(
         base::OnceClosure callback,
-        base::string16 label = base::string16(),
+        std::u16string label = std::u16string(),
         const DialogModelButton::Params& params = DialogModelButton::Params());
     Builder& AddCancelButton(
         base::OnceClosure callback,
-        base::string16 label = base::string16(),
+        std::u16string label = std::u16string(),
         const DialogModelButton::Params& params = DialogModelButton::Params());
 
     // Use of the extra button in new dialogs are discouraged. If this is deemed
@@ -181,7 +181,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     // them.
     Builder& AddDialogExtraButton(
         base::RepeatingCallback<void(const Event&)> callback,
-        base::string16 label,
+        std::u16string label,
         const DialogModelButton::Params& params = DialogModelButton::Params());
 
     // Adds body text. See DialogModel::AddBodyText().
@@ -200,7 +200,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     }
 
     // Adds a combobox. See DialogModel::AddCombobox().
-    Builder& AddCombobox(base::string16 label,
+    Builder& AddCombobox(std::u16string label,
                          std::unique_ptr<ui::ComboboxModel> combobox_model,
                          const DialogModelCombobox::Params& params =
                              DialogModelCombobox::Params()) {
@@ -209,8 +209,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     }
 
     // Adds a textfield. See DialogModel::AddTextfield().
-    Builder& AddTextfield(base::string16 label,
-                          base::string16 text,
+    Builder& AddTextfield(std::u16string label,
+                          std::u16string text,
                           const DialogModelTextfield::Params& params =
                               DialogModelTextfield::Params()) {
       model_->AddTextfield(std::move(label), std::move(text), params);
@@ -247,14 +247,14 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
                        DialogModelCheckbox::Params());
 
   // Adds a labeled combobox (label: [model]) at the end of the dialog model.
-  void AddCombobox(base::string16 label,
+  void AddCombobox(std::u16string label,
                    std::unique_ptr<ui::ComboboxModel> combobox_model,
                    const DialogModelCombobox::Params& params =
                        DialogModelCombobox::Params());
 
   // Adds a labeled textfield (label: [text]) at the end of the dialog model.
-  void AddTextfield(base::string16 label,
-                    base::string16 text,
+  void AddTextfield(std::u16string label,
+                    std::u16string text,
                     const DialogModelTextfield::Params& params =
                         DialogModelTextfield::Params());
 
@@ -289,7 +289,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return override_show_close_button_;
   }
 
-  const base::string16& title(base::PassKey<DialogModelHost>) const {
+  const std::u16string& title(base::PassKey<DialogModelHost>) const {
     return title_;
   }
 
@@ -340,7 +340,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
   base::Optional<bool> override_show_close_button_;
   bool close_on_deactivate_ = true;
-  base::string16 title_;
+  std::u16string title_;
   ImageModel icon_;
 
   std::vector<std::unique_ptr<DialogModelField>> fields_;

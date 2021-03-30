@@ -24,6 +24,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/android/jni_headers/IdentityManager_jni.h"
 #endif
@@ -85,23 +86,33 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos_account_manager_ = parameters.chromeos_account_manager;
+  ash_account_manager_ = parameters.ash_account_manager;
 #endif
 }
 
 IdentityManager::~IdentityManager() {
-  account_fetcher_service_->Shutdown();
-  gaia_cookie_manager_service_->Shutdown();
-  token_service_->Shutdown();
-  account_tracker_service_->Shutdown();
-
-  token_service_->RemoveAccessTokenDiagnosticsObserver(this);
-
 #if defined(OS_ANDROID)
   if (java_identity_manager_)
     Java_IdentityManager_destroy(base::android::AttachCurrentThread(),
                                  java_identity_manager_);
 #endif
+}
+
+void IdentityManager::Shutdown() {
+  for (auto& observer : observer_list_)
+    observer.OnIdentityManagerShutdown(this);
+
+  // It is no longer safe to use the SigninClient beyond this point, everything
+  // depending on it must be destroyed.
+  token_service_->RemoveAccessTokenDiagnosticsObserver(this);
+  token_service_observation_.Reset();
+  primary_account_manager_observation_.Reset();
+
+  account_fetcher_service_.reset();
+  gaia_cookie_manager_service_.reset();
+  primary_account_manager_.reset();
+  token_service_.reset();
+  account_tracker_service_.reset();
 }
 
 void IdentityManager::AddObserver(Observer* observer) {
@@ -133,9 +144,9 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
     const ScopeSet& scopes,
     AccessTokenFetcher::TokenCallback callback,
     AccessTokenFetcher::Mode mode) {
-  return std::make_unique<AccessTokenFetcher>(account_id, oauth_consumer_name,
-                                              token_service_.get(), scopes,
-                                              std::move(callback), mode);
+  return std::make_unique<AccessTokenFetcher>(
+      account_id, oauth_consumer_name, token_service_.get(),
+      primary_account_manager_.get(), scopes, std::move(callback), mode);
 }
 
 std::unique_ptr<AccessTokenFetcher>
@@ -147,8 +158,9 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
     AccessTokenFetcher::TokenCallback callback,
     AccessTokenFetcher::Mode mode) {
   return std::make_unique<AccessTokenFetcher>(
-      account_id, oauth_consumer_name, token_service_.get(), url_loader_factory,
-      scopes, std::move(callback), mode);
+      account_id, oauth_consumer_name, token_service_.get(),
+      primary_account_manager_.get(), url_loader_factory, scopes,
+      std::move(callback), mode);
 }
 
 std::unique_ptr<AccessTokenFetcher>
@@ -162,7 +174,8 @@ IdentityManager::CreateAccessTokenFetcherForClient(
     AccessTokenFetcher::Mode mode) {
   return std::make_unique<AccessTokenFetcher>(
       account_id, client_id, client_secret, oauth_consumer_name,
-      token_service_.get(), scopes, std::move(callback), mode);
+      token_service_.get(), primary_account_manager_.get(), scopes,
+      std::move(callback), mode);
 }
 
 void IdentityManager::RemoveAccessTokenFromCache(
@@ -202,8 +215,9 @@ IdentityManager::GetExtendedAccountInfoForAccountsWithRefreshToken() const {
   return accounts;
 }
 
-bool IdentityManager::HasPrimaryAccountWithRefreshToken() const {
-  return HasAccountWithRefreshToken(GetPrimaryAccountId());
+bool IdentityManager::HasPrimaryAccountWithRefreshToken(
+    ConsentLevel consent_level) const {
+  return HasAccountWithRefreshToken(GetPrimaryAccountId(consent_level));
 }
 
 bool IdentityManager::HasAccountWithRefreshToken(
@@ -388,7 +402,19 @@ IdentityManager::GetIdentityMutatorJavaObject() {
 void IdentityManager::ForceRefreshOfExtendedAccountInfo(
     const CoreAccountId& account_id) {
   DCHECK(HasAccountWithRefreshToken(account_id));
+  AccountInfo account_info =
+      account_tracker_service_->GetAccountInfo(account_id);
+  if (account_info.account_image.IsEmpty()) {
+    account_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
+  }
   account_fetcher_service_->ForceRefreshOfAccountInfo(account_id);
+}
+
+void IdentityManager::ForceRefreshOfExtendedAccountInfo(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_core_account_id) {
+  ForceRefreshOfExtendedAccountInfo(
+      ConvertFromJavaCoreAccountId(env, j_core_account_id));
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -454,8 +480,8 @@ GaiaCookieManagerService* IdentityManager::GetGaiaCookieManagerService() const {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-chromeos::AccountManager* IdentityManager::GetChromeOSAccountManager() const {
-  return chromeos_account_manager_;
+ash::AccountManager* IdentityManager::GetAshAccountManager() const {
+  return ash_account_manager_;
 }
 #endif
 
@@ -478,100 +504,27 @@ AccountInfo IdentityManager::GetAccountInfoForAccountWithRefreshToken(
 
 void IdentityManager::OnPrimaryAccountChanged(
     const PrimaryAccountChangeEvent& event_details) {
-  // TODO(crbug.com/1158855): Remove this switch statement once all observers
-  // are converted to OnPrimaryAccountChanged().
-  switch (event_details.GetEventTypeFor(ConsentLevel::kSync)) {
-    case PrimaryAccountChangeEvent::Type::kSet:
-      FirePrimaryAccountSet(event_details);
-      break;
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      FirePrimaryAccountCleared(event_details);
-      break;
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
-  switch (event_details.GetEventTypeFor(ConsentLevel::kNotRequired)) {
-    case PrimaryAccountChangeEvent::Type::kSet:
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      FireUnconsentedPrimaryAccountChanged(event_details);
-      break;
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
-
-  for (auto& observer : observer_list_)
+  CoreAccountId event_primary_account_id =
+      event_details.GetCurrentState().primary_account.account_id;
+  DCHECK_EQ(event_primary_account_id,
+            GetPrimaryAccountId(event_details.GetCurrentState().consent_level));
+  for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountChanged(event_details);
+    // Ensure that |observer| did not change the primary account as otherwise
+    // |event_details| would not longer be correct.
+    DCHECK_EQ(
+        event_primary_account_id,
+        GetPrimaryAccountId(event_details.GetCurrentState().consent_level));
+  }
 
 #if defined(OS_ANDROID)
-  if (!java_identity_manager_)
-    return;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  switch (event_details.GetEventTypeFor(ConsentLevel::kSync)) {
-    case PrimaryAccountChangeEvent::Type::kSet:
-      Java_IdentityManager_onPrimaryAccountSet(
-          env, java_identity_manager_,
-          ConvertToJavaCoreAccountInfo(
-              env, event_details.GetCurrentState().primary_account));
-      return;
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      Java_IdentityManager_onPrimaryAccountCleared(
-          env, java_identity_manager_,
-          ConvertToJavaCoreAccountInfo(
-              env, event_details.GetPreviousState().primary_account));
-      return;
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
-  }
-  switch (event_details.GetEventTypeFor(ConsentLevel::kNotRequired)) {
-    // TODO(http://crbug.com/1158855): This is a hack as the Java code expects
-    // a call to onPrimaryAccountCleared() when the unconsented primary account
-    // is cleared. This does not match the intent of OnPrimaryAccountCleared
-    // which is supposed to be fired only when sync account is being cleared.
-    // This hack *must* be removed quickly as it has a high misusage risk.
-    case PrimaryAccountChangeEvent::Type::kCleared:
-      Java_IdentityManager_onPrimaryAccountCleared(
-          env, java_identity_manager_,
-          ConvertToJavaCoreAccountInfo(
-              env, event_details.GetPreviousState().primary_account));
-      break;
-    case PrimaryAccountChangeEvent::Type::kSet:
-    case PrimaryAccountChangeEvent::Type::kNone:
-      break;
+  if (java_identity_manager_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_IdentityManager_onPrimaryAccountChanged(
+        env, java_identity_manager_,
+        ConvertToJavaPrimaryAccountChangeEvent(env, event_details));
   }
 #endif
-}
-
-void IdentityManager::FirePrimaryAccountSet(
-    const PrimaryAccountChangeEvent& event_details) {
-  const CoreAccountInfo& account_info =
-      event_details.GetCurrentState().primary_account;
-  for (auto& observer : observer_list_) {
-    observer.OnPrimaryAccountSet(account_info);
-  }
-}
-
-void IdentityManager::FireUnconsentedPrimaryAccountChanged(
-    const PrimaryAccountChangeEvent& event_details) {
-  const CoreAccountInfo& account_info =
-      event_details.GetCurrentState().primary_account;
-  for (auto& observer : observer_list_) {
-    observer.OnUnconsentedPrimaryAccountChanged(account_info);
-  }
-}
-
-void IdentityManager::FirePrimaryAccountCleared(
-    const PrimaryAccountChangeEvent& event_details) {
-  const CoreAccountInfo& account_info =
-      event_details.GetPreviousState().primary_account;
-  DCHECK(!HasPrimaryAccount());
-  DCHECK(!account_info.IsEmpty());
-  for (auto& observer : observer_list_) {
-    observer.BeforePrimaryAccountCleared(account_info);
-  }
-
-  for (auto& observer : observer_list_) {
-    observer.OnPrimaryAccountCleared(account_info);
-  }
 }
 
 void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {
@@ -677,10 +630,11 @@ void IdentityManager::OnRefreshTokenRevokedFromSource(
 }
 
 void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
-  if (HasPrimaryAccount()) {
-    const CoreAccountId primary_account_id = GetPrimaryAccountId();
+  if (HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    const CoreAccountId primary_account_id =
+        GetPrimaryAccountId(ConsentLevel::kSignin);
     if (primary_account_id == info.account_id) {
-      primary_account_manager_->UpdateSyncPrimaryAccountInfo();
+      primary_account_manager_->UpdatePrimaryAccountInfo();
     }
   }
 
@@ -689,6 +643,14 @@ void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
   }
 #if defined(OS_ANDROID)
   if (java_identity_manager_) {
+    if (account_info_fetch_start_times_.count(info.account_id) &&
+        !info.account_image.IsEmpty()) {
+      base::UmaHistogramTimes(
+          "Signin.AndroidAccountInfoFetchTime",
+          base::TimeTicks::Now() -
+              account_info_fetch_start_times_[info.account_id]);
+      account_info_fetch_start_times_.erase(info.account_id);
+    }
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_IdentityManager_onExtendedAccountInfoUpdated(
         env, java_identity_manager_, ConvertToJavaAccountInfo(env, info));

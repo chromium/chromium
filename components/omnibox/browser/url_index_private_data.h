@@ -56,7 +56,7 @@ class URLIndexPrivateData
 
   URLIndexPrivateData();
 
-  // Given a base::string16 in |term_string|, scans the history index and
+  // Given a std::u16string in |term_string|, scans the history index and
   // returns a vector with all scored, matching history items. The
   // |term_string| is broken down into individual terms (words), each of which
   // must occur in the candidate history item's URL or page title for the item
@@ -75,7 +75,7 @@ class URLIndexPrivateData
   // to this function. In total, |max_matches| of items will be returned in the
   // |ScoredHistoryMatches| vector.
   ScoredHistoryMatches HistoryItemsForTerms(
-      base::string16 term_string,
+      std::u16string term_string,
       size_t cursor_position,
       size_t max_matches,
       bookmarks::BookmarkModel* bookmark_model,
@@ -211,7 +211,7 @@ class URLIndexPrivateData
     HistoryIDSet history_id_set_;
     bool used_;  // True if this item has been used for the current term search.
   };
-  typedef std::map<base::string16, SearchTermCacheItem> SearchTermCacheMap;
+  typedef std::map<std::u16string, SearchTermCacheItem> SearchTermCacheMap;
 
   // A helper predicate class used to filter excess history items when the
   // candidate results set is too large.
@@ -242,7 +242,7 @@ class URLIndexPrivateData
 
   // Helper function to HistoryIDSetFromWords which composes a set of history
   // ids for the given term given in |term|.
-  HistoryIDSet HistoryIDsForTerm(const base::string16& term);
+  HistoryIDSet HistoryIDsForTerm(const std::u16string& term);
 
   // Given a set of Char16s, finds words containing those characters.
   WordIDSet WordIDSetForTermChars(const Char16Set& term_chars);
@@ -250,7 +250,7 @@ class URLIndexPrivateData
   // Helper function for HistoryItemsForTerms().  Fills in |scored_items| from
   // the matches listed in |history_ids|.
   void HistoryIdsToScoredMatches(HistoryIDVector history_ids,
-                                 const base::string16& lower_raw_string,
+                                 const std::u16string& lower_raw_string,
                                  const TemplateURLService* template_url_service,
                                  bookmarks::BookmarkModel* bookmark_model,
                                  ScoredHistoryMatches* scored_items) const;
@@ -282,11 +282,11 @@ class URLIndexPrivateData
 
   // Given a single word in |uni_word|, adds a reference for the containing
   // history item identified by |history_id| to the index.
-  void AddWordToIndex(const base::string16& uni_word, HistoryID history_id);
+  void AddWordToIndex(const std::u16string& uni_word, HistoryID history_id);
 
   // Adds a new entry to |word_list_|. Uses previously freed positions if
   // available.
-  WordID AddNewWordToWordList(const base::string16& term);
+  WordID AddNewWordToWordList(const std::u16string& term);
 
   // Removes |row| and all associated words and characters from the index.
   void RemoveRowFromIndex(const history::URLRow& row);

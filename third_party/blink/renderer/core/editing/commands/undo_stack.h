@@ -32,7 +32,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_UNDO_STACK_H_
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -43,8 +45,9 @@ class UndoStep;
 
 // |UndoStack| is owned by and always 1:1 to |Editor|. Since |Editor| is 1:1 to
 // |LocalFrame|, |UndoStack| is also 1:1 to |LocalFrame|.
-class UndoStack final : public GarbageCollected<UndoStack> {
-  using UndoStepStack = HeapDeque<Member<UndoStep>>;
+class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack>,
+                                    public MemoryPressureListener {
+  using UndoStepStack = HeapVector<Member<UndoStep>>;
 
  public:
   UndoStack();
@@ -57,7 +60,7 @@ class UndoStack final : public GarbageCollected<UndoStack> {
   void Redo();
   void Clear();
 
-  class UndoStepRange {
+  class CORE_EXPORT UndoStepRange {
     STACK_ALLOCATED();
 
    public:
@@ -71,14 +74,23 @@ class UndoStack final : public GarbageCollected<UndoStack> {
     const UndoStepStack& step_stack_;
   };
 
+  UndoStepRange RedoSteps() const;
   UndoStepRange UndoSteps() const;
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const final;
 
  private:
-  bool in_redo_;
+  void EnsureListeningMemoryPressure();
+  void StopListeningMemoryPressure();
+
+  // Implementation of MemoryPressureListener
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel) final;
+
   UndoStepStack undo_stack_;
   UndoStepStack redo_stack_;
+  bool in_redo_ = false;
+  bool is_listen_memory_pressure_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(UndoStack);
 };

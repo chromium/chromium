@@ -30,13 +30,22 @@
 </body>
 
 <script>
-  var node1 = document.getElementsByClassName('select')[0].firstChild;
-  var node2 = document.getElementsByClassName('select')[1].firstChild;
-  var range = document.createRange();
-  range.setStart(node1, 0);
-  range.setEnd(node2, node2.length);
-  window.getSelection().addRange(range);
+  function runTest() {
+    var node1 = document.getElementsByClassName('select')[0].firstChild;
+    var node2 = document.getElementsByClassName('select')[1].firstChild;
+    var range = document.createRange();
+    range.setStart(node1, 0);
+    range.setEnd(node2, node2.length);
+    window.getSelection().addRange(range);
+    if (window.testRunner) {
+      testRunner.setWindowFocus(false);
+      setTimeout(function() { testRunner.notifyDone(); }, 0);
+    }
+  }
 
-  if (window.testRunner)
-    testRunner.setWindowFocus(false);
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+    // Add some delay to avoid the initial focus event.
+    setTimeout(runTest, 100);
+  }
 </script>

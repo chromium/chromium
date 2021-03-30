@@ -41,6 +41,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_pref_names.h"
+#endif
+
 namespace {
 
 const int kMinDaysUntilNextUpload = 7;
@@ -94,9 +98,8 @@ ChromeTracingDelegate::~ChromeTracingDelegate() {
 
 #if defined(OS_ANDROID)
 void ChromeTracingDelegate::OnTabModelAdded() {
-  for (TabModelList::const_iterator i = TabModelList::begin();
-       i != TabModelList::end(); i++) {
-    if ((*i)->GetProfile()->IsOffTheRecord())
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->GetProfile()->IsOffTheRecord())
       incognito_launched_ = true;
   }
 }
@@ -266,6 +269,20 @@ bool ChromeTracingDelegate::IsAllowedToEndBackgroundScenario(
 
 bool ChromeTracingDelegate::IsProfileLoaded() {
   return GetProfile() != nullptr;
+}
+
+bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+  return local_state->GetBoolean(
+      chromeos::prefs::kDeviceSystemWideTracingEnabled);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1173395): Enable for Lacros-Chrome.
+  return false;
+#else
+  return false;
+#endif
 }
 
 std::unique_ptr<base::DictionaryValue>

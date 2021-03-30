@@ -15,6 +15,7 @@
 #include <primary-selection-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
+#include <wayland-cursor.h>
 #include <wayland-drm-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-foreign-unstable-v1-client-protocol.h>
@@ -130,6 +131,9 @@ const wl_interface* ObjectTraits<wl_compositor>::interface =
     &wl_compositor_interface;
 void (*ObjectTraits<wl_compositor>::deleter)(wl_compositor*) =
     &wl_compositor_destroy;
+
+void (*ObjectTraits<wl_cursor_theme>::deleter)(wl_cursor_theme*) =
+    &wl_cursor_theme_destroy;
 
 const wl_interface* ObjectTraits<wl_data_device_manager>::interface =
     &wl_data_device_manager_interface;

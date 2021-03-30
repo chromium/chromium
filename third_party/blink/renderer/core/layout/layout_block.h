@@ -378,7 +378,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
  protected:
   RecalcLayoutOverflowResult RecalcPositionedDescendantsLayoutOverflow();
-  void RecalcPositionedDescendantsVisualOverflow();
   bool RecalcSelfLayoutOverflow();
   void RecalcSelfVisualOverflow();
 
@@ -507,6 +506,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddLayoutOverflowFromBlockChildren();
 
  protected:
+  OverflowClipAxes ComputeOverflowClipAxes() const override;
   virtual void ComputeVisualOverflow(
       bool recompute_floats);
   virtual void ComputeLayoutOverflow(LayoutUnit old_client_after_edge,

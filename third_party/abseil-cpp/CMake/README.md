@@ -52,7 +52,7 @@ target_link_libraries(my_exe absl::base absl::synchronization absl::strings)
 
 ### Running Abseil Tests with CMake
 
-Use the `-DABSL_RUN_TESTS=ON` flag to run Abseil tests.  Note that if the `-DBUILD_TESTING=OFF` flag is passed then Abseil tests will not be run.
+Use the `-DBUILD_TESTING=ON` flag to run Abseil tests.
 
 You will need to provide Abseil with a Googletest dependency.  There are two
 options for how to do this:
@@ -70,7 +70,7 @@ For example, to run just the Abseil tests, you could use this script:
 cd path/to/abseil-cpp
 mkdir build
 cd build
-cmake -DABSL_USE_GOOGLETEST_HEAD=ON -DABSL_RUN_TESTS=ON ..
+cmake -DBUILD_TESTING=ON -DABSL_USE_GOOGLETEST_HEAD=ON ..
 make -j
 ctest
 ```

@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {createPermission} from './util.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {AppManagementStore} from "./store.m.js";
+// #import {AppType, PwaPermissionType, TriState, PermissionValueType, Bool, ArcPermissionType, OptionalBool} from "./constants.m.js";
+// clang-format on
+
 cr.define('app_management', function() {
   /**
    * @implements {appManagement.mojom.PageHandlerInterface}
    */
-  class FakePageHandler {
+  /* #export */ class FakePageHandler {
     /**
      * @param {Object=} options
      * @return {!Object<number, Permission>}
@@ -161,7 +168,8 @@ cr.define('app_management', function() {
      * @param {OptionalBool} pinnedValue
      */
     setPinned(appId, pinnedValue) {
-      const app = app_management.Store.getInstance().data.apps[appId];
+      const app =
+          app_management.AppManagementStore.getInstance().data.apps[appId];
 
       const newApp =
           /** @type {!App} */ (Object.assign({}, app, {isPinned: pinnedValue}));
@@ -173,7 +181,8 @@ cr.define('app_management', function() {
      * @param {Permission} permission
      */
     setPermission(appId, permission) {
-      const app = app_management.Store.getInstance().data.apps[appId];
+      const app =
+          app_management.AppManagementStore.getInstance().data.apps[appId];
 
       // Check that the app had a previous value for the given permission
       assert(app.permissions[permission.permissionId]);

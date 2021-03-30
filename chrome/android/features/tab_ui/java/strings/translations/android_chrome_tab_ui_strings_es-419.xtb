@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="125153950246128346">Presiona para ver otra pestaña</translation>
+<translation id="1302104331113804646">Configuración del seguimiento de precios</translation>
+<translation id="1378979118429748177">Recibe notificaciones cuando haya descuentos.</translation>
 <translation id="1657719826150349398">Mover la pestaña hacia abajo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña}other{<ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="2277224997687551299">Editar nombre de grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Quitar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada del grupo}other{Quita <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas del grupo.}}</translation>
+<translation id="2479148705183875116">Ir a Configuración</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestaña}other{Contraer el grupo de pestañas, el cual tiene <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="2569352796411618312">Sugerencia: Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
 <translation id="257674075312929031">Agrupar</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2759453070259087442">Expande el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> pestañas.</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
+<translation id="3291470810748040983">Recibirás una alerta cuando baje el precio de uno de los artículos de las pestañas abiertas.</translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestaña}other{Contraer el grupo de pestañas <ph name="TITLE_OF_GROUP" />, el cual tiene <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
+<translation id="3882834874697329510">Para recibir una alerta cuando hay un precio más bajo en una pestaña abierta, activa las notificaciones en la Configuración.</translation>
+<translation id="3940195383040445971">Realizar seguimiento de precios en las pestañas</translation>
+<translation id="3996880007329611795">Recibir notificaciones</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="4212246570487010370">Seguir explorando</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
 <translation id="4648718555153979859">Tus pestañas se agrupan aquí</translation>
-<translation id="4922064041913095674">Consulta qué artículo de las pestañas abiertas tiene mejor precio.</translation>
 <translation id="492284538114688557">Se detectó un descuento</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5073204694187207510">Oculta la cuadrícula de pantalla completa</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Mostrar más tarde</translation>
 <translation id="5558362125926932819">Cerrar el grupo de pestañas, el cual tiene <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="5580090775658607195">Se agruparon <ph name="TAB_COUNT" /> pestañas</translation>
+<translation id="575494663145460764">¿Deseas recibir alertas de descuentos?</translation>
 <translation id="58326064309361797">Arrastra las pestañas para agruparlas</translation>
 <translation id="5846292395804797011">Cerrar el grupo <ph name="TITLE_OF_GROUP" />, el cual tiene <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Ocultar el modo de selección múltiple</translation>
 <translation id="7151209024774799310">Quitar pestañas del grupo</translation>
 <translation id="7204204600596740190">Modo de selección múltiple</translation>
+<translation id="7352298686197644113">Consulta qué artículo de los que se muestran en las pestañas abiertas tiene el precio más bajo.</translation>
 <translation id="753732157349120914">Alternador de pestañas</translation>
 <translation id="7559245342362162951">Muestra las pestañas del grupo en la cuadrícula de pantalla completa</translation>
 <translation id="7792771145871471484">Revisa las sugerencias.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">¿No quieres volver a ver la barra de pestañas?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cierra <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Cierra <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="8557923272772633250">Expandir el grupo de pestañas, el cual tiene <ph name="NUMBER_OF_TABS" /> pestañas</translation>
+<translation id="860282621117673749">Alertas de descuentos</translation>
+<translation id="8714939927607906138">Precio más bajo</translation>
 <translation id="8749939518995770034">Se cerró la barra de pestañas</translation>
+<translation id="8820741577754260431">Visualiza los descuentos en las pestañas.</translation>
 <translation id="9150694013019234766">Alterna entre las pestañas que aparecen en el grupo de pestañas cerca de la parte inferior de la pantalla</translation>
 <translation id="9169594135889675189">Agrega una pestaña nueva al grupo</translation>
 <translation id="959682366969460160">Organízate</translation>

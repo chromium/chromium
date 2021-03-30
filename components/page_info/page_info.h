@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_PAGE_INFO_PAGE_INFO_H_
 #define COMPONENTS_PAGE_INFO_PAGE_INFO_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -119,6 +119,8 @@ class PageInfo : public content::WebContentsObserver {
   // UMA statistics for PageInfo. Do not reorder or remove existing
   // fields. A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.page_info
+  // All values here should have corresponding entries in
+  // WebsiteSettingsAction area of enums.xml.
   enum PageInfoAction {
     PAGE_INFO_OPENED = 0,
     // No longer used; indicated actions for the old version of Page Info that
@@ -139,7 +141,11 @@ class PageInfo : public content::WebContentsObserver {
     PAGE_INFO_COOKIES_CLEARED = 13,
     PAGE_INFO_PERMISSION_DIALOG_OPENED = 14,
     PAGE_INFO_PERMISSIONS_CLEARED = 15,
-    PAGE_INFO_PERMISSIONS_CHANGED = 16,
+    // No longer used; indicated permission change but was a duplicate metric.
+    // PAGE_INFO_PERMISSIONS_CHANGED = 16,
+    PAGE_INFO_FORGET_SITE_OPENED = 17,
+    PAGE_INFO_FORGET_SITE_CLEARED = 18,
+    PAGE_INFO_HISTORY_OPENED = 19,
     PAGE_INFO_COUNT
   };
 
@@ -163,8 +169,6 @@ class PageInfo : public content::WebContentsObserver {
     // The settings source e.g. user, extensions, policy, ... .
     content_settings::SettingSource source =
         content_settings::SETTING_SOURCE_NONE;
-    // Whether we're in incognito mode.
-    bool is_incognito = false;
     bool is_one_time = false;
   };
 
@@ -182,7 +186,8 @@ class PageInfo : public content::WebContentsObserver {
   //     default setting set by the user).
   //   - The setting is a wildcard setting applying to all origins (which can
   //     only be set from the default provider).
-  static bool IsPermissionFactoryDefault(const PermissionInfo& info);
+  static bool IsPermissionFactoryDefault(const PermissionInfo& info,
+                                         bool is_incognito);
 
   // Returns whether this page info is for an internal page.
   static bool IsFileOrInternalPage(const GURL& url);
@@ -224,12 +229,23 @@ class PageInfo : public content::WebContentsObserver {
   // Handles opening the link to show more site settings and records the event.
   void OpenSiteSettingsView();
 
+  // Handles opening the cookies dialog and records the event.
+  void OpenCookiesDialog();
+
+  // Handles opening the certificate dialog and records the event.
+  void OpenCertificateDialog(net::X509Certificate* certificate);
+
+  // Handles opening the safery tip help center page.
+  void OpenSafetyTipHelpCenterPage();
+
+  // Handles opening the connection help center page and records the event.
+  void OpenConnectionHelpCenterPage(const ui::Event& event);
+
   // This method is called when the user pressed "Change password" button.
-  void OnChangePasswordButtonPressed(content::WebContents* web_contents);
+  void OnChangePasswordButtonPressed();
 
   // This method is called when the user pressed "Mark as legitimate" button.
-  void OnWhitelistPasswordReuseButtonPressed(
-      content::WebContents* web_contents);
+  void OnWhitelistPasswordReuseButtonPressed();
 
   // Return a pointer to the ChooserContextBase corresponding to the
   // content settings type, |type|. Returns nullptr for content settings
@@ -293,7 +309,7 @@ class PageInfo : public content::WebContentsObserver {
   void GetSafeBrowsingStatusByMaliciousContentStatus(
       security_state::MaliciousContentStatus malicious_content_status,
       PageInfo::SafeBrowsingStatus* status,
-      base::string16* details);
+      std::u16string* details);
 
   // Retrieves all the permissions that are shown in Page Info.
   // Exposed for testing.
@@ -350,7 +366,7 @@ class PageInfo : public content::WebContentsObserver {
   // Status of the connection to the website.
   SiteConnectionStatus site_connection_status_;
 
-  // TODO(markusheintz): Move the creation of all the base::string16 typed UI
+  // TODO(markusheintz): Move the creation of all the std::u16string typed UI
   // strings below to the corresponding UI code, in order to prevent
   // unnecessary UTF-8 string conversions.
 
@@ -358,7 +374,7 @@ class PageInfo : public content::WebContentsObserver {
   // Details about the website's identity. If the website's identity has been
   // verified then |identity_status_description_android_| contains who verified
   // the identity. This string will be displayed in the UI.
-  base::string16 identity_status_description_android_;
+  std::u16string identity_status_description_android_;
 #endif
 
   // Set when the user has explicitly bypassed an SSL error for this host or
@@ -372,13 +388,13 @@ class PageInfo : public content::WebContentsObserver {
   // connection |site_connection_details_| contains encryption details, like
   // encryption strength and ssl protocol version. This string will be
   // displayed in the UI.
-  base::string16 site_connection_details_;
+  std::u16string site_connection_details_;
 
   // For websites that provided an EV certificate |orgainization_name_|
   // contains the organization name of the certificate. In all other cases
   // |organization_name| is an empty string. This string will be displayed in
   // the UI.
-  base::string16 organization_name_;
+  std::u16string organization_name_;
 
   bool did_revoke_user_ssl_decisions_;
 

@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -22,6 +21,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace {
 
@@ -278,12 +278,12 @@ void MediaControlInputElement::UpdateDisplayType() {
     overflow_element_->UpdateDisplayType();
 }
 
-WebSize MediaControlInputElement::GetSizeOrDefault() const {
+gfx::Size MediaControlInputElement::GetSizeOrDefault() const {
   if (IsControlPanelButton()) {
     return MediaControlElementsHelper::GetSizeOrDefault(
-        *this, WebSize(kDefaultButtonSize, kDefaultButtonSize));
+        *this, gfx::Size(kDefaultButtonSize, kDefaultButtonSize));
   }
-  return MediaControlElementsHelper::GetSizeOrDefault(*this, WebSize(0, 0));
+  return MediaControlElementsHelper::GetSizeOrDefault(*this, gfx::Size());
 }
 
 bool MediaControlInputElement::IsDisabled() const {

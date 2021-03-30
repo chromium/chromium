@@ -1,0 +1,60 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+
+config("utf_config") {
+  include_dirs = [
+    "src",
+    "src/include",
+  ]
+}
+
+source_set("utf-headers") {
+  public = [ "src/include/utf.h" ]
+}
+
+static_library("utf") {
+  sources = [
+    "src/include/utf.h",
+    "src/runestr/runestrcat.c",
+    "src/runestr/runestrchr.c",
+    "src/runestr/runestrcmp.c",
+    "src/runestr/runestrcpy.c",
+    "src/runestr/runestrdup.c",
+    "src/runestr/runestrecpy.c",
+    "src/runestr/runestrlen.c",
+    "src/runestr/runestrrchr.c",
+    "src/runestr/runestrstr.c",
+    "src/runetype/isalnumrune.c",
+    "src/runetype/isalpharune.c",
+    "src/runetype/isblankrune.c",
+    "src/runetype/iscntrlrune.c",
+    "src/runetype/isdigitrune.c",
+    "src/runetype/isgraphrune.c",
+    "src/runetype/islowerrune.c",
+    "src/runetype/isprintrune.c",
+    "src/runetype/ispunctrune.c",
+    "src/runetype/isspacerune.c",
+    "src/runetype/istitlerune.c",
+    "src/runetype/isupperrune.c",
+    "src/runetype/isvalidrune.c",
+    "src/runetype/isxdigitrune.c",
+    "src/runetype/runetype.c",
+    "src/utf/utfecpy.c",
+    "src/utf/utflen.c",
+    "src/utf/utfrrune.c",
+    "src/utf/utfrune.c",
+    "src/utf/utftab.c",
+    "src/utf/utfutf.c",
+  ]
+
+  public_deps = [ ":utf-headers" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":utf_config" ]
+}

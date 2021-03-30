@@ -1,0 +1,112 @@
+<style>
+  :host {
+    background: var(--cr-card-background-color);
+    border-radius: 4px;
+    box-shadow: var(--cr-elevation-3);
+    display: grid;
+    grid-template-columns: max-content max-content max-content;
+    grid-template-rows: max-content max-content;
+    height: fit-content;
+    position: relative;
+    width: fit-content;
+  }
+
+  #grid-base-emoji {
+    display: flex;
+    flex-direction: column-reverse;
+
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  #grid-skin-tone-top {
+    display: flex;
+    flex-direction: row;
+
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  #grid-skin-tone-left {
+    display: flex;
+    flex-direction: column;
+
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .skin-tone > emoji-button {
+    clip-path: circle(4px);
+  }
+
+  #grid-variants {
+    display: flex;
+    flex-direction: column;
+
+    grid-column: 3;
+    grid-row: 2;
+    width: fit-content;
+  }
+
+  .variant-row {
+    display: flex;
+    flex-direction: row;
+    height: var(--emoji-size);
+  }
+</style>
+
+<!--
+  Container uses a 3x2 grid layout. Each character below represents a cell.
+  Cells are sized according to their contents so will collapse if empty.
+
+      .
+  x . #
+
+  Here, x is the base emoji cell, . are the skin tone indicators,
+  and # is the main grid of emoji variants.
+-->
+
+<div id="grid-base-emoji">
+  <template is="dom-if" if="[[showBaseEmoji]]">
+    <emoji-button emoji="[[baseEmoji]]"></emoji-button>
+  </template>
+</div>
+
+<div id="grid-skin-tone-top" class="skin-tone">
+  <template is="dom-if" if="[[showSkinTones]]">
+    <!--
+      these decimal codepoints are the emoji modifiers for skin tone:
+      U+1F3FB EMOJI MODIFIER FITZPATRICK TYPE-1-2
+      U+1F3FC EMOJI MODIFIER FITZPATRICK TYPE-3
+      U+1F3FD EMOJI MODIFIER FITZPATRICK TYPE-4
+      U+1F3FE EMOJI MODIFIER FITZPATRICK TYPE-5
+      U+1F3FF EMOJI MODIFIER FITZPATRICK TYPE-6
+    -->
+    <emoji-button emoji="&#x1F3FB;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FC;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FD;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FE;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FF;" disabled></emoji-button>
+  </template>
+</div>
+
+<div id="grid-skin-tone-left" class="skin-tone">
+  <template is="dom-if" if="[[showSkinTones]]">
+    <emoji-button emoji="&#x1F3FB;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FC;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FD;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FE;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FF;" disabled></emoji-button>
+  </template>
+</div>
+
+<div id="grid-variants">
+  <template is="dom-repeat" items="[[variantRows]]" as="row">
+    <div class="variant-row">
+      <template is="dom-repeat" items="[[row]]" as="emoji">
+        <emoji-button emoji="[[emoji.string]]" variant base="[[baseEmoji]]">
+        </emoji-button>
+      </template>
+    </div>
+  </template>
+</div>

@@ -19,6 +19,7 @@ class CORE_EXPORT TrustedScriptURL final : public ScriptWrappable {
 
   // TrustedScriptURL.idl
   const String& toString() const;
+  const String& toJSON() const { return toString(); }
 
  private:
   const String url_;

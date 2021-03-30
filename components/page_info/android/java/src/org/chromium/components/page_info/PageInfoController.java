@@ -5,6 +5,7 @@
 package org.chromium.components.page_info;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -18,9 +19,11 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -29,6 +32,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsObserver;
@@ -72,6 +76,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         int TOOLBAR = 2;
         int VR = 3;
     }
+    @ContentSettingsType
+    public static final int NO_HIGHLIGHTED_PERMISSION = ContentSettingsType.DEFAULT;
 
     private Context mContext;
     private final WindowAndroid mWindowAndroid;
@@ -135,8 +141,14 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     // The controller for the cookies section of the page info.
     private PageInfoCookiesController mCookiesController;
 
+    // The controller for the history portions of page info.
+    private PageInfoSubpageController mHistoryController;
+
     // Bridge updating the CookieControlsView when cookie settings change.
     private CookieControlsBridge mCookieBridge;
+
+    // Dialog which is opened when clicking on forget site button.
+    private Dialog mForgetSiteDialog;
 
     /**
      * Creates the PageInfoController, but does not display it. Also initializes the corresponding
@@ -146,11 +158,14 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      * @param publisher                The name of the content publisher, if any.
      * @param delegate                 The PageInfoControllerDelegate used to provide
      *                                 embedder-specific info.
+     * @param highlightedPermission    The ContentSettingsType to be highlighted on this page or
+     *                                 NO_HIGHLIGHTED_PERMISSION for no highlight.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public PageInfoController(WebContents webContents, int securityLevel, String publisher,
             PageInfoControllerDelegate delegate,
-            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate) {
+            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate,
+            @ContentSettingsType int highlightedPermission) {
         mWebContents = webContents;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;
@@ -168,14 +183,15 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         };
         // Long press the url text to copy it to the clipboard.
         viewParams.urlTitleLongClickCallback =
-                () -> Clipboard.getInstance().copyUrlToClipboard(mFullUrl.getSpec());
+                () -> Clipboard.getInstance().copyUrlToClipboard(mFullUrl);
 
         // Work out the URL and connection message and status visibility.
         // TODO(crbug.com/1033178): dedupe the DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
         // calls.
         String url = mDelegate.isShowingOfflinePage()
                 ? mDelegate.getOfflinePageUrl()
-                : DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl());
+                : DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl())
+                          .getSpec();
 
         // This can happen if an invalid chrome-distiller:// url was entered.
         if (url == null) url = "";
@@ -229,10 +245,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             if (mCookieBridge != null) mCookieBridge.onUiClosing();
         };
 
-        mDelegate.initPreviewUiParams(viewParams, this::runAfterDismiss);
         mDelegate.initOfflinePageUiParams(viewParams, this::runAfterDismiss);
 
-        if (!mIsInternalPage && !mDelegate.isShowingOfflinePage() && !mDelegate.isShowingPreview()
+        if (!mIsInternalPage && !mDelegate.isShowingOfflinePage()
                 && mDelegate.isInstantAppAvailable(mFullUrl.getSpec())) {
             final Intent instantAppIntent = mDelegate.getInstantAppIntentForUrl(mFullUrl.getSpec());
             viewParams.instantAppButtonClickCallback = () -> {
@@ -262,8 +277,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             containerParams.urlTitleClickCallback = mContainer::toggleUrlTruncation;
             containerParams.urlTitleLongClickCallback = viewParams.urlTitleLongClickCallback;
             containerParams.urlTitleShown = viewParams.urlTitleShown;
-            containerParams.previewUIShown = viewParams.previewUIShown;
-            containerParams.previewUIIcon = mDelegate.getPreviewUiIcon();
+            // Show close button for tablets and when accessibility is enabled to make it easier
+            // to close the UI.
+            containerParams.showCloseButton =
+                    !isSheet(mContext) || mDelegate.isAccessibilityEnabled();
+            containerParams.closeButtonClickCallback = this::dismiss;
             mContainer.setParams(containerParams);
             mDelegate.getFavicon(mFullUrl.getSpec(), favicon -> {
                 // Return early if PageInfo has been dismissed.
@@ -281,10 +299,17 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             PageInfoViewV2 view2 = (PageInfoViewV2) mView;
             mConnectionController = new PageInfoConnectionController(
                     this, view2.getConnectionRowView(), mWebContents, mDelegate.getVrHandler());
-            mPermissionsController = new PageInfoPermissionsController(
-                    this, view2.getPermissionsRowView(), mDelegate, mFullUrl.getSpec());
+            mPermissionsController =
+                    new PageInfoPermissionsController(this, view2.getPermissionsRowView(),
+                            mDelegate, mFullUrl.getSpec(), highlightedPermission);
             mCookiesController = new PageInfoCookiesController(
                     this, view2.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
+
+            if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_HISTORY)) {
+                mHistoryController = mDelegate.createHistoryController(
+                        this, view2.getHistoryRowView(), mFullUrl.getSpec());
+                setupForgetSiteButton(view2.getForgetSiteButton());
+            }
         } else {
             mView.showPerformanceInfo(mDelegate.shouldShowPerformanceBadge(mFullUrl));
 
@@ -346,6 +371,12 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mDialog.show();
     }
 
+    private void dismiss() {
+        if (mDialog != null) {
+            mDialog.dismiss(true);
+        }
+    }
+
     private void destroy() {
         if (mDialog != null) {
             mDialog.destroy();
@@ -354,6 +385,10 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         if (mCookieBridge != null) {
             mCookieBridge.destroy();
             mCookieBridge = null;
+        }
+        if (mForgetSiteDialog != null){
+            mForgetSiteDialog.dismiss();
+            mForgetSiteDialog = null;
         }
     }
 
@@ -364,8 +399,30 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         // If Paint Preview is being shown, it completely obstructs the WebContents and users
         // cannot interact with it. Hence, showing connection details is not relevant.
         return mContentPublisher == null && !mDelegate.isShowingOfflinePage()
-                && !mDelegate.isShowingPreview() && !mDelegate.isShowingPaintPreviewPage()
-                && !mIsInternalPage;
+                && !mDelegate.isShowingPaintPreviewPage() && !mIsInternalPage;
+    }
+
+    private void setupForgetSiteButton(Button button) {
+        button.setOnClickListener((View v) -> {
+            recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_OPENED);
+            mForgetSiteDialog =
+                    new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog)
+                            .setTitle(R.string.page_info_forget_site_title)
+                            .setMessage(R.string.page_info_forget_site_message)
+                            .setPositiveButton(R.string.page_info_forget_site_confirmation_button,
+                                    (dialog, which) -> { clearData(); })
+                            .setNegativeButton(R.string.cancel,
+                                    (dialog, which) -> { mForgetSiteDialog = null; })
+                            .show();
+        });
+        button.setVisibility(View.VISIBLE);
+    }
+
+    private void clearData() {
+        recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_CLEARED);
+        if (mCookiesController != null) mCookiesController.clearData();
+        if (mPermissionsController != null) mPermissionsController.clearData();
+        if (mHistoryController != null) mHistoryController.clearData();
     }
 
     /**
@@ -411,8 +468,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                     mContext.getString(R.string.page_info_domain_hidden, mContentPublisher));
         } else if (mDelegate.isShowingPaintPreviewPage()) {
             messageBuilder.append(mDelegate.getPaintPreviewPageConnectionMessage());
-        } else if (mDelegate.isShowingPreview() && mDelegate.isPreviewPageInsecure()) {
-            connectionInfoParams.summary = summary;
         } else if (mDelegate.getOfflinePageConnectionMessage() != null) {
             messageBuilder.append(mDelegate.getOfflinePageConnectionMessage());
         } else {
@@ -530,6 +585,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         return mView;
     }
 
+    @VisibleForTesting
+    public boolean isDialogShowingForTesting() {
+        return mDialog != null;
+    }
+
     /**
      * Shows a PageInfo dialog for the provided WebContents. The popup adds itself to the view
      * hierarchy which owns the reference while it's visible.
@@ -540,11 +600,14 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      * @param contentPublisher The name of the publisher of the content.
      * @param source Determines the source that triggered the popup.
      * @param delegate The PageInfoControllerDelegate used to provide embedder-specific info.
+     * @param highlightedPermission The ContentSettingsType to be highlighted on this page or
+     *            NO_HIGHLIGHTED_PERMISSION for no highlight.
      */
     public static void show(final Activity activity, WebContents webContents,
             final String contentPublisher, @OpenedFromSource int source,
             PageInfoControllerDelegate delegate,
-            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate) {
+            PermissionParamsListBuilderDelegate permissionParamsListBuilderDelegate,
+            @ContentSettingsType int highlightedPermission) {
         // If the activity's decor view is not attached to window, we don't show the dialog because
         // the window manager might have revoked the window token for this activity. See
         // https://crbug.com/921450.
@@ -563,7 +626,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
         sLastPageInfoControllerForTesting = new WeakReference<>(new PageInfoController(webContents,
                 SecurityStateModel.getSecurityLevelForWebContents(webContents), contentPublisher,
-                delegate, permissionParamsListBuilderDelegate));
+                delegate, permissionParamsListBuilderDelegate, highlightedPermission));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -609,7 +672,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mSubpageController = controller;
         CharSequence title = mSubpageController.getSubpageTitle();
         View subview = mSubpageController.createViewForSubpage(mContainer);
-        mContainer.showPage(subview, title, null);
+        if (subview != null) {
+            mContainer.showPage(subview, title, null);
+        }
     }
 
     /**

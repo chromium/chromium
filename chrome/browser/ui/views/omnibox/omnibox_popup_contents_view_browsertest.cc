@@ -10,6 +10,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -73,18 +74,17 @@ class ClickTrackingOverlayView : public views::View {
 class ThemeChangeWaiter {
  public:
   explicit ThemeChangeWaiter(ThemeService* theme_service)
-      : theme_change_observer_(chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                               content::Source<ThemeService>(theme_service)) {}
+      : waiter_(theme_service) {}
 
   ~ThemeChangeWaiter() {
-    theme_change_observer_.Wait();
+    waiter_.WaitForThemeChanged();
     // Theme changes propagate asynchronously in DesktopWindowTreeHostX11::
     // FrameTypeChanged(), so ensure all tasks are consumed.
     content::RunAllPendingInMessageLoop();
   }
 
  private:
-  content::WindowedNotificationObserver theme_change_observer_;
+  test::ThemeServiceChangedWaiter waiter_;
 
   DISALLOW_COPY_AND_ASSIGN(ThemeChangeWaiter);
 };
@@ -187,9 +187,9 @@ views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {
   EXPECT_FALSE(popup_view()->IsOpen());
   EXPECT_FALSE(GetPopupWidget());
 
-  edit_model()->SetUserText(base::ASCIIToUTF16("foo"));
+  edit_model()->SetUserText(u"foo");
   AutocompleteInput input(
-      base::ASCIIToUTF16("foo"), metrics::OmniboxEventProto::BLANK,
+      u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_want_asynchronous_matches(false);
   popup_model()->autocomplete_controller()->Start(input);
@@ -335,11 +335,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, MAYBE_ClickOmnibox) {
   // should deselect the text);
   omnibox_view()->SelectAll(true);
   views::Textfield* textfield = omnibox_view();
-  EXPECT_EQ(base::ASCIIToUTF16("foo"), textfield->GetSelectedText());
+  EXPECT_EQ(u"foo", textfield->GetSelectedText());
 
   generator.MoveMouseTo(location_bar()->GetBoundsInScreen().CenterPoint());
   generator.ClickLeftButton();
-  EXPECT_EQ(base::string16(), textfield->GetSelectedText());
+  EXPECT_EQ(std::u16string(), textfield->GetSelectedText());
 
   // Clicking the result should dismiss the popup (asynchronously).
   generator.MoveMouseTo(result->GetBoundsInScreen().CenterPoint());
@@ -409,11 +409,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   AutocompleteController* controller = popup_model()->autocomplete_controller();
-  match.contents = base::ASCIIToUTF16("https://foobar.com");
-  match.description = base::ASCIIToUTF16("FooBarCom");
+  match.contents = u"https://foobar.com";
+  match.description = u"FooBarCom";
   matches.push_back(match);
-  match.contents = base::ASCIIToUTF16("https://foobarbaz.com");
-  match.description = base::ASCIIToUTF16("FooBarBazCom");
+  match.contents = u"https://foobarbaz.com";
+  match.description = u"FooBarBazCom";
   matches.push_back(match);
   controller->result_.AppendMatches(controller->input_, matches);
   popup_view()->UpdatePopupAppearance();
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 
   // Changing the user text while in the input rather than the list should not
   // result in a text/name change accessibility event.
-  edit_model()->SetUserText(base::ASCIIToUTF16("bar"));
+  edit_model()->SetUserText(u"bar");
   edit_model()->StartAutocomplete(false, false);
   popup_view()->UpdatePopupAppearance();
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 0);
@@ -476,15 +476,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 #define MAYBE_EmitAccessibilityEventsOnButtonFocusHint EmitAccessibilityEventsOnButtonFocusHint
 #endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
-                       EmitAccessibilityEventsOnButtonFocusHint) {
+                       MAYBE_EmitAccessibilityEventsOnButtonFocusHint) {
   TestAXEventObserver observer;
   CreatePopupForTestQuery();
   ACMatches matches;
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   AutocompleteController* controller = popup_model()->autocomplete_controller();
-  match.contents = base::ASCIIToUTF16("https://foobar.com");
-  match.description = base::ASCIIToUTF16("The Foo Of All Bars");
+  match.contents = u"https://foobar.com";
+  match.description = u"The Foo Of All Bars";
   match.has_tab_match = true;
   matches.push_back(match);
   controller->result_.AppendMatches(controller->input_, matches);
@@ -535,22 +535,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
                        EmitSelectedChildrenChangedAccessibilityEvent) {
   // Create a popup for the matches.
   GetPopupWidget();
-  edit_model()->SetUserText(base::ASCIIToUTF16("foo"));
+  edit_model()->SetUserText(u"foo");
   AutocompleteInput input(
-      base::ASCIIToUTF16("foo"), metrics::OmniboxEventProto::BLANK,
+      u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_want_asynchronous_matches(false);
   popup_model()->autocomplete_controller()->Start(input);
 
   // Create a match to populate the autocomplete.
-  base::string16 match_url = base::ASCIIToUTF16("https://foobar.com");
+  std::u16string match_url = u"https://foobar.com";
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
   match.contents_class.push_back(
       ACMatchClassification(0, ACMatchClassification::URL));
   match.destination_url = GURL(match_url);
-  match.description = base::ASCIIToUTF16("Foobar");
+  match.description = u"Foobar";
   match.allowed_to_be_default_match = true;
 
   AutocompleteController* autocomplete_controller =

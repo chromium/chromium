@@ -49,6 +49,7 @@ crypto_sources = [
   "src/crypto/bio/printf.c",
   "src/crypto/bio/socket.c",
   "src/crypto/bio/socket_helper.c",
+  "src/crypto/blake2/blake2.c",
   "src/crypto/bn_extra/bn_asn1.c",
   "src/crypto/bn_extra/convert.c",
   "src/crypto/buf/buf.c",
@@ -78,6 +79,7 @@ crypto_sources = [
   "src/crypto/conf/internal.h",
   "src/crypto/cpu-aarch64-fuchsia.c",
   "src/crypto/cpu-aarch64-linux.c",
+  "src/crypto/cpu-aarch64-win.c",
   "src/crypto/cpu-arm-linux.c",
   "src/crypto/cpu-arm-linux.h",
   "src/crypto/cpu-arm.c",
@@ -135,8 +137,8 @@ crypto_sources = [
   "src/crypto/fipsmodule/ec/p256-x86_64-table.h",
   "src/crypto/fipsmodule/ec/p256-x86_64.h",
   "src/crypto/fipsmodule/ec/p256_table.h",
+  "src/crypto/fipsmodule/ecdsa/internal.h",
   "src/crypto/fipsmodule/fips_shared_support.c",
-  "src/crypto/fipsmodule/is_fips.c",
   "src/crypto/fipsmodule/md5/internal.h",
   "src/crypto/fipsmodule/modes/internal.h",
   "src/crypto/fipsmodule/rand/fork_detect.h",
@@ -223,7 +225,6 @@ crypto_sources = [
   "src/crypto/x509/x509_ext.c",
   "src/crypto/x509/x509_lu.c",
   "src/crypto/x509/x509_obj.c",
-  "src/crypto/x509/x509_r2x.c",
   "src/crypto/x509/x509_req.c",
   "src/crypto/x509/x509_set.c",
   "src/crypto/x509/x509_trs.c",
@@ -300,6 +301,7 @@ crypto_headers = [
   "src/include/openssl/base.h",
   "src/include/openssl/base64.h",
   "src/include/openssl/bio.h",
+  "src/include/openssl/blake2.h",
   "src/include/openssl/blowfish.h",
   "src/include/openssl/bn.h",
   "src/include/openssl/buf.h",
@@ -325,6 +327,7 @@ crypto_headers = [
   "src/include/openssl/engine.h",
   "src/include/openssl/err.h",
   "src/include/openssl/evp.h",
+  "src/include/openssl/evp_errors.h",
   "src/include/openssl/ex_data.h",
   "src/include/openssl/hkdf.h",
   "src/include/openssl/hmac.h",
@@ -410,6 +413,27 @@ ssl_headers = [
   "src/include/openssl/ssl.h",
   "src/include/openssl/ssl3.h",
   "src/include/openssl/tls1.h",
+]
+
+tool_sources = [
+  "src/tool/args.cc",
+  "src/tool/ciphers.cc",
+  "src/tool/client.cc",
+  "src/tool/const.cc",
+  "src/tool/digest.cc",
+  "src/tool/fd.cc",
+  "src/tool/file.cc",
+  "src/tool/generate_ed25519.cc",
+  "src/tool/genrsa.cc",
+  "src/tool/internal.h",
+  "src/tool/pkcs12.cc",
+  "src/tool/rand.cc",
+  "src/tool/server.cc",
+  "src/tool/sign.cc",
+  "src/tool/speed.cc",
+  "src/tool/tool.cc",
+  "src/tool/transport_common.cc",
+  "src/tool/transport_common.h",
 ]
 
 crypto_sources_ios_aarch64 = [
@@ -549,6 +573,19 @@ crypto_sources_mac_x86_64 = [
   "mac-x86_64/crypto/fipsmodule/x86_64-mont.S",
   "mac-x86_64/crypto/fipsmodule/x86_64-mont5.S",
   "mac-x86_64/crypto/test/trampoline-x86_64.S",
+]
+
+crypto_sources_win_aarch64 = [
+  "win-aarch64/crypto/chacha/chacha-armv8.S",
+  "win-aarch64/crypto/fipsmodule/aesv8-armx64.S",
+  "win-aarch64/crypto/fipsmodule/armv8-mont.S",
+  "win-aarch64/crypto/fipsmodule/ghash-neon-armv8.S",
+  "win-aarch64/crypto/fipsmodule/ghashv8-armx64.S",
+  "win-aarch64/crypto/fipsmodule/sha1-armv8.S",
+  "win-aarch64/crypto/fipsmodule/sha256-armv8.S",
+  "win-aarch64/crypto/fipsmodule/sha512-armv8.S",
+  "win-aarch64/crypto/fipsmodule/vpaes-armv8.S",
+  "win-aarch64/crypto/test/trampoline-armv8.S",
 ]
 
 crypto_sources_win_x86 = [

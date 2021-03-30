@@ -18,7 +18,7 @@ Running: testRemove
                                     - #document
                                         - <html>
                                               <head></head>
-                                              <body>IFRAME\n</body>
+                                              <body>IFRAME </body>
                                           </html>
                                   </iframe>
                               </div>
@@ -27,7 +27,7 @@ Running: testRemove
                                     - #document
                                         - <html>
                                               <head></head>
-                                              <body>IFRAME\n</body>
+                                              <body>IFRAME </body>
                                           </html>
                                   </iframe>
                               </div>
@@ -46,7 +46,7 @@ Running: testRemove
                                     - #document
                                         - <html>
                                               <head></head>
-                                              <body>IFRAME\n</body>
+                                              <body>IFRAME </body>
                                           </html>
                                   </iframe>
                               </div>
@@ -55,7 +55,7 @@ Running: testRemove
                                     - #document
                                         - <html>
                                               <head></head>
-                                              <body>IFRAME\n</body>
+                                              <body>IFRAME </body>
                                           </html>
                                   </iframe>
                               </div>

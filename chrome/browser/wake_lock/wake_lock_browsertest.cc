@@ -64,7 +64,7 @@ class WakeLockBrowserTest : public InProcessBrowserTest {
 
 void WakeLockBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                  "ScreenWakeLock,SystemWakeLock");
+                                  "SystemWakeLock");
 }
 
 void WakeLockBrowserTest::NavigateToSimplePage() {

@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -40,6 +39,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -64,7 +64,7 @@ public class SyncAndServicesSettingsTest {
     @Feature({"Sync", "Preferences"})
     public void testSyncSwitch() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SyncAndServicesSettings fragment = startSyncAndServicesPreferences();
         final ChromeSwitchPreference syncSwitch = getSyncSwitch(fragment);
 
@@ -125,7 +125,7 @@ public class SyncAndServicesSettingsTest {
     @Feature({"Sync", "Preferences"})
     public void testDefaultControlStatesWithSyncOnThenOff() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         SyncAndServicesSettings fragment = startSyncAndServicesPreferences();
         assertSyncOnState(fragment);
         mSyncTestRule.togglePreference(getSyncSwitch(fragment));
@@ -398,28 +398,6 @@ public class SyncAndServicesSettingsTest {
                             .findPreference(
                                     SyncAndServicesSettings.PREF_AUTOFILL_ASSISTANT_SUBSECTION)
                             .isVisible());
-        });
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Preference"})
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)
-    public void testSafeBrowsingSafeBrowsingSectionUiFlagOn() {
-        final SyncAndServicesSettings syncAndServicesSettings = startSyncAndServicesPreferences();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull("Safe Browsing should be null when Safe Browsing section is enabled.",
-                    syncAndServicesSettings.findPreference(
-                            SyncAndServicesSettings.PREF_SAFE_BROWSING));
-            Assert.assertNull(
-                    "Password leak detection should be null when Safe Browsing section is enabled.",
-                    syncAndServicesSettings.findPreference(
-                            SyncAndServicesSettings.PREF_PASSWORD_LEAK_DETECTION));
-            Assert.assertNull(
-                    "Safe Browsing scout should be null when Safe Browsing section is enabled.",
-                    syncAndServicesSettings.findPreference(
-                            SyncAndServicesSettings.PREF_SAFE_BROWSING_SCOUT_REPORTING));
         });
     }
 

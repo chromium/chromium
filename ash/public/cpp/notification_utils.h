@@ -10,7 +10,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -46,8 +45,8 @@ constexpr SkColor kSystemNotificationColorCriticalWarning = gfx::kGoogleRed700;
 // display source of critical system notification is illustrated by icon.
 ASH_PUBLIC_EXPORT std::unique_ptr<message_center::Notification>
 CreateSystemNotification(const std::string& notification_id,
-                         const base::string16& title,
-                         const base::string16& message,
+                         const std::u16string& title,
+                         const std::u16string& message,
                          const std::string& system_component_id,
                          const base::RepeatingClosure& click_callback);
 
@@ -60,9 +59,9 @@ ASH_PUBLIC_EXPORT std::unique_ptr<message_center::Notification>
 CreateSystemNotification(
     message_center::NotificationType type,
     const std::string& id,
-    const base::string16& title,
-    const base::string16& message,
-    const base::string16& display_source,
+    const std::u16string& title,
+    const std::u16string& message,
+    const std::u16string& display_source,
     const GURL& origin_url,
     const message_center::NotifierId& notifier_id,
     const message_center::RichNotificationData& optional_fields,

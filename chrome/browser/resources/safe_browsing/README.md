@@ -83,7 +83,7 @@ See `download_file_types.proto` for all fields.
        send a no-PII "light-ping" for a random sample of SBER users.
        This should be used for known safe types. The verdict won't be used.
 
-    * `NO_PING`:  Don’t send any pings. This file is whitelisted. All
+    * `NO_PING`:  Don’t send any pings. This file is allowlisted. All
       NOT_DANGEROUS files should normally use this.
     * `FULL_PING`: Send full pings and use the verdict. All dangerous
       file should use this.

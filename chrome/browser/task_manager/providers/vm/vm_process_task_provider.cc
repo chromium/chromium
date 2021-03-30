@@ -119,7 +119,7 @@ bool PluginVmExtractVmNameAndOwnerId(const std::string& arg,
     return false;
 
   const base::FilePath vm_disk_path(
-      base::StringPiece(arg.begin(), arg.end() - strlen(kArgEnd)));
+      base::MakeStringPiece(arg.begin(), arg.end() - strlen(kArgEnd)));
 
   std::vector<std::string> components;
   vm_disk_path.GetComponents(&components);

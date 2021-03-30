@@ -13,15 +13,17 @@
 <translation id="1272079795634619415">روکیں</translation>
 <translation id="1289742167380433257">‏آپ کے ڈیٹا کو محفوظ کرنے کیلئے، اس صفحہ کی تصاویر Google کے ذریعے بہتر بنائی گئی ہیں۔</translation>
 <translation id="129382876167171263">ویب سائٹس کے ذریعے محفوظ کردہ فائلز یہاں ظاہر ہوں گی</translation>
+<translation id="1317194122196776028">اس سائٹ کو بھول جائیں</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">سائٹ <ph name="SITE_NAME" /> شامل کی گئی</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1384959399684842514">ڈاؤن لوڈ موقوف ہوگیا</translation>
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
-<translation id="1431402976894535801">سائٹس کو اپنی موجودگی کے بارے میں جاننے سے مسدود کریں</translation>
 <translation id="1446450296470737166">‏MIDI آلات کے مکمل کنٹرول کی اجازت دیں</translation>
 <translation id="1509960214886564027">بہت سی سائٹس پر خصوصیات میں خلل ہو سکتا ہے</translation>
 <translation id="1620510694547887537">کیمرا</translation>
+<translation id="1644574205037202324">سرگزشت</translation>
+<translation id="1647582022260550163">کیا آپ واقعی اجازتوں کو ری سیٹ کرنا اور کوکیز اور سائٹ ڈیٹا کو صاف کرنا چاہتے ہیں؟</translation>
 <translation id="1660204651932907780">سائٹس کو آواز چلانے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="1677097821151855053">کوکیز اور سائٹ کا دیگر ڈیٹا آپ کو یاد رکھنے کے لئے استعمال ہوتا ہے، مثال کے طور پر آپ کو سائن ان کرنے یا اشتہارات کو ذاتی نوعیت کا بنانے کے لیے۔ سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="1688867105868176567">سائٹ کا ڈیٹا صاف کریں؟</translation>
@@ -39,7 +41,6 @@
 <translation id="1994173015038366702">‏سائٹ کا URL</translation>
 <translation id="2025115093177348061">افزودہ حقیقت</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> پر واپس جانے کے لیے تھپتھپائیں</translation>
-<translation id="2054665754582400095">آپ کی موجودگی</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2091887806945687916">آواز</translation>
 <translation id="2107397443965016585">سائٹس کو محفوظ مواد چلانے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
@@ -82,7 +83,6 @@
 <translation id="3114012059975132928">ویڈیو پلیئر</translation>
 <translation id="3115898365077584848">معلومات دکھائیں</translation>
 <translation id="3123473560110926937">بعض سائٹس پر مسدود ہے</translation>
-<translation id="3165371858310906303">آپ کے موجود ہونے پر جب کوئی سائٹ جاننا چاہے تو پوچھیں</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> اسٹور کردہ ڈیٹا</translation>
 <translation id="321187648315454507">‏<ph name="APP_NAME" /> کو آپ کو اطلاعات بھیجنے کی سہولت دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی اطلاعات آن کریں۔</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
@@ -93,7 +93,6 @@
 <translation id="3386292677130313581">سائٹس کو آپ کا مقام جاننے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="3538390592868664640">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق یا کیمرے کی پوزیشن ٹریک کرنے سے مسدود کریں</translation>
 <translation id="3586500876634962664">کیمرا اور مائیکروفون کا استعمال</translation>
-<translation id="3587482841069643663">سبھی</translation>
 <translation id="358794129225322306">سائٹ کو خودکار طور پر متعدد فائلیں ڈاؤن لوڈ کرنے کی اجازت دیں۔</translation>
 <translation id="3594780231884063836">ویڈیو خاموش کریں</translation>
 <translation id="3596414637720633074">پوشیدگی میں فریق ثالث کوکیز کو بلاک کریں</translation>
@@ -101,9 +100,11 @@
 <translation id="3744111561329211289">پس منظر کی مطابقت پذیری</translation>
 <translation id="3763247130972274048">10 سیکنڈ کو نظر انداز کرنے کے لیے، دائیں یا بائیں ویڈیو پر دوبار تھپتھپائیں</translation>
 <translation id="381841723434055211">فون نمبرز</translation>
+<translation id="3835233591525155343">آپ کے آلے کا استعمال</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3859306556332390985">آگے لے جائیں</translation>
 <translation id="3955193568934677022">سائٹس کو محفوظ کردہ مواد چلانے کی اجازت دیں (تجویز کردہ)</translation>
+<translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3987993985790029246">لنک کاپی کریں</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">عنوان</translation>
@@ -117,6 +118,7 @@
 <translation id="429312253194641664">سائٹ پر میڈیا چل رہا ہے</translation>
 <translation id="42981349822642051">پھیلائیں</translation>
 <translation id="4336434711095810371">سبھی ڈیٹا صاف کریں</translation>
+<translation id="4402755511846832236">کب آپ فعال طور پر اس آلہ کا استعمال کر رہے ہیں اس کا پتہ لگانے سے سائٹس کو مسدود کریں</translation>
 <translation id="4433925000917964731">‏Google کی طرف سے فراہم کردہ لائٹ صفحہ</translation>
 <translation id="4434045419905280838">پوپ اپس اور ری ڈائریکٹس</translation>
 <translation id="445467742685312942">سائٹس کو محفوظ مواد چلانے کی اجازت دیں</translation>
@@ -129,6 +131,7 @@
 <translation id="4670064810192446073">ورچوئل رئیلٹی</translation>
 <translation id="4708011789095599544">کیا آپ واقعی اس ویب سائٹ کے لیے کوکیز اور دیگر سائٹ کا ڈیٹا صاف کرنا چاہتے ہیں؟</translation>
 <translation id="4751476147751820511">موشن یا لائٹ سینسرز</translation>
+<translation id="4836046166855586901">پوچھیں کہ کب کوئی سائٹ یہ جاننا چاہتی ہے کہ فعال طور پر آپ اس آلہ کا استعمال کب کر رہے ہیں</translation>
 <translation id="4883854917563148705">نظم کردہ ترتیبات کو دوبارہ سیٹ نہیں کیا جا سکتا</translation>
 <translation id="4887024562049524730">سائٹس کو اپنا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="4962975101802056554">آلہ کے لیے سبھی اجازتوں کو کالعدم کریں</translation>
@@ -140,6 +143,7 @@
 <translation id="5063480226653192405">استعمال</translation>
 <translation id="5100237604440890931">سکیڑ دیا گیا - پھیلانے کیلئے کلک کریں۔</translation>
 <translation id="5123685120097942451">پوشیدگی ٹیب</translation>
+<translation id="5186036860380548585">اسکرین کے اوپری حصہ کے قریب اختیار دستیاب ہے</translation>
 <translation id="5197729504361054390">آپ کے منتخب کردہ رابطوں کا <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> کے ساتھ اشتراک کیا جائے گا۔</translation>
 <translation id="528192093759286357">پوری اسکرین سے باہر نکلنے کیلئے اوپر سے گھسیٹیں اور پیچھے جائیں بٹن کو ٹچ کریں۔</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
@@ -278,6 +282,7 @@
 <translation id="8447861592752582886">آلہ کی اجازت کالعدم کریں</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 زیر استعمال کوکی}other{# زیر استعمال کوکیز}}</translation>
 <translation id="8463851957836045671">سائٹ تیز ہے</translation>
+<translation id="8487700953926739672">آف لائن دستیاب ہے</translation>
 <translation id="851751545965956758">سائٹس کو آلات سے منسلک ہونے سے مسدود کریں</translation>
 <translation id="8525306231823319788">پوری اسکرین</translation>
 <translation id="857943718398505171">اجازت یافتہ (تجویز کردہ)</translation>
@@ -300,10 +305,12 @@
 <translation id="894871326938397531">پوشیدگی وضع ترک کریں؟</translation>
 <translation id="8958424370300090006">کسی مخصوص سائٹ کے لیے کوکیز مسدود کریں۔</translation>
 <translation id="8959122750345127698">نیویگیشن ناقابل رسائی ہے: <ph name="URL" /></translation>
+<translation id="8986362086234534611">بھول جائیں</translation>
 <translation id="9019902583201351841">آپ کے والدین کے زیر انتظام</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}}</translation>
 <translation id="913657688200966289">‏<ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں <ph name="APP_NAME" /> کے لیے اجازتیں آن کریں۔</translation>
+<translation id="930525582205581608">اس سائٹ کو بھول جائیں؟</translation>
 <translation id="965817943346481315">اگر سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے تو مسدود کریں (تجویز کردہ)</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>
 </translationbundle>

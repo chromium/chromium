@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/init/gl_factory.h"
@@ -32,10 +33,10 @@ class GLSurfaceEGLTest : public testing::Test {
   void SetUp() override {
 #if defined(OS_WIN)
     GLSurfaceTestSupport::InitializeOneOffImplementation(
-        GLImplementation::kGLImplementationEGLANGLE, true);
+        GLImplementationParts(kGLImplementationEGLANGLE), true);
 #else
     GLSurfaceTestSupport::InitializeOneOffImplementation(
-        GLImplementation::kGLImplementationEGLGLES2, true);
+        GLImplementationParts(kGLImplementationEGLGLES2), true);
 #endif
   }
 
@@ -71,7 +72,7 @@ TEST_F(GLSurfaceEGLTest, MAYBE_SurfaceFormatTest) {
 class TestPlatformDelegate : public ui::PlatformWindowDelegate {
  public:
   // ui::PlatformWindowDelegate implementation.
-  void OnBoundsChanged(const gfx::Rect& new_bounds) override {}
+  void OnBoundsChanged(const BoundsChange& change) override {}
   void OnDamageRect(const gfx::Rect& damaged_region) override {}
   void DispatchEvent(ui::Event* event) override {}
   void OnCloseRequest() override {}

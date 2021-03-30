@@ -59,7 +59,7 @@ struct OptionsFromDocumentParams {
 // content can be composited as needed.
 struct DidPrintContentParams {
   // A shared memory region for the metafile data.
-  mojo_base.mojom.ReadOnlySharedMemoryRegion metafile_data_region;
+  mojo_base.mojom.ReadOnlySharedMemoryRegion? metafile_data_region;
   // Content id to render frame proxy token mapping for out-of-process
   // subframes.
   map<uint32, mojo_base.mojom.UnguessableToken> subframe_content_info;
@@ -218,6 +218,21 @@ interface PrintPreviewUI {
   [EnableIf=enable_print_preview]
   SetOptionsFromDocument(OptionsFromDocumentParams params, int32 request_id);
 
+  // Notifies the browser of preparing to print the document, for cases where
+  // the document will be collected from the individual pages instead of being
+  // provided by an extra metafile at end containing all pages.
+  [EnableIf=enable_print_preview]
+  DidPrepareDocumentForPreview(int32 document_cookie, int32 request_id);
+
+  // Notifies the browser a print preview page has been rendered.
+  [EnableIf=enable_print_preview]
+  DidPreviewPage(DidPreviewPageParams params, int32 request_id);
+
+  // Sends back to the browser the complete rendered document that was requested
+  // by PrintPreview.
+  [EnableIf=enable_print_preview]
+  MetafileReadyForPrinting(DidPreviewDocumentParams params, int32 request_id);
+
   // Tells the browser print preview failed. |document_cookie| is the param to
   // ensure correctness and |request_id| is the id for the preview request.
   [EnableIf=enable_print_preview]
@@ -234,6 +249,21 @@ interface PrintPreviewUI {
   // printer driver is bogus).
   [EnableIf=enable_print_preview]
   PrinterSettingsInvalid(int32 document_cookie, int32 request_id);
+
+  // Notifies the browser of the default page layout according to the currently
+  // selected printer and page size.
+  // |printable_area_in_points| Specifies the printable area in points.
+  // |has_custom_page_size_style| is true when the printing frame has a custom
+  // page size css otherwise false.
+  [EnableIf=enable_print_preview]
+  DidGetDefaultPageLayout(PageSizeMargins page_layout_in_points,
+      gfx.mojom.Rect printable_area_in_points,
+      bool has_custom_page_size_style,
+      int32 request_id);
+
+  // Notifies the browser about the to-be-rendered print preview document.
+  [EnableIf=enable_print_preview]
+  DidStartPreview(DidStartPreviewParams params, int32 request_id);
 };
 
 // Render process interface exposed to the browser to handle most of the
@@ -319,15 +349,36 @@ interface PrintManagerHost {
   [Sync]
   DidPrintDocument(DidPrintDocumentParams params) => (bool completed);
 
+  // Request the print settings from the user. This step is about showing
+  // UI to the user to select the final print settings.
+  [Sync]
+  ScriptedPrint(ScriptedPrintParams params) => (PrintPagesParams settings);
+
   // Tells the browser that there are invalid printer settings.
   ShowInvalidPrinterSettingsError();
 
   // Tells the browser printing failed.
   PrintingFailed(int32 cookie);
 
+  // Tells the browser to set up the print preview requested by the script. It
+  // runs a nested run loop in the renderer until print preview for
+  // window.print() finishes.
+  [EnableIf=enable_print_preview, Sync]
+  SetupScriptedPrintPreview() => ();
+
   // Tells the browser to show the print preview, when the document is
   // sufficiently loaded such that the renderer can determine whether it is
   // modifiable or not.
   [EnableIf=enable_print_preview]
   ShowScriptedPrintPreview(bool is_modifiable);
+
+  // Asks the browser to do print preview.
+  [EnableIf=enable_print_preview]
+  RequestPrintPreview(RequestPrintPreviewParams params);
+
+  // Asks the browser whether the print preview has been cancelled. It
+  // gets true if the preview corresponding to |preview_ui_id| and |request_id|
+  // has been cancelled.
+  [EnableIf=enable_print_preview, Sync]
+  CheckForCancel(int32 preview_ui_id, int32 request_id) => (bool cancel);
 };

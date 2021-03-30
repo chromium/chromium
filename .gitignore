@@ -60,6 +60,7 @@ tags
 Thumbs.db
 v8.log
 vs-chromium-project.txt
+/.clangd
 /.clangd/
 /.clangd-index/
 # Settings directories for eclipse
@@ -93,14 +94,11 @@ vs-chromium-project.txt
 /chrome/app/theme/google_chrome
 /chrome/browser/chromeos/arc/voice_interaction/internal
 /chrome/browser/chromeos/assistant/internal
-/chrome/browser/chromeos/login/screenshot_testing/golden_screenshots/*.png
-/chrome/browser/chromeos/login/screenshot_testing/artifacts
 /chrome/browser/extensions/api/ledger/
 /chrome/browser/extensions/default_extensions/chromeos
 /chrome/browser/google/linkdoctor_internal
 /chrome/browser/internal
 /chrome/browser/media/engagement_internal
-/chrome/browser/media/kaleidoscope/internal
 /chrome/browser/performance_monitor/performance_monitor.xml
 /chrome/browser/protector/internal
 /chrome/browser/resources/chromeos/quickoffice
@@ -172,6 +170,8 @@ vs-chromium-project.txt
 /chrome/web_ui_mojo_bindings.xml
 /chromecast/internal
 /chromeos/assistant/internal
+/chromeos/components/eche_app_ui/resources/app
+/chromeos/components/eche_app_ui/resources/prod
 /chromeos/components/help_app_ui/resources/app
 /chromeos/components/help_app_ui/resources/prod
 /chromeos/components/media_app_ui/resources/prod
@@ -188,7 +188,6 @@ vs-chromium-project.txt
 /components/gcm_driver.xml
 /components/leveldb_proto_test_support.xml
 /components/ntp_tiles/resources/internal
-/components/rappor.xml
 /components/resources/default_100_percent/google_chrome
 /components/resources/default_200_percent/google_chrome
 /components/resources/default_300_percent/google_chrome
@@ -281,6 +280,8 @@ vs-chromium-project.txt
 /sql/sql_unittests_run.xml
 /sync/sync.xml
 /testing/libfuzzer/fuzzer_corpus_for_bots/
+/testing/location_tags.json
+/testing/rts/
 /testserver.log
 # See third_party/.gitignore for entries covering src/third_party.
 /tools/.bisect-builds-cache.json

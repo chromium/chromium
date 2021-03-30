@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "ui/gfx/native_widget_types.h"
@@ -273,6 +273,7 @@ class WidgetClosingObserver : public WidgetObserver {
 class WidgetDestroyedWaiter : public WidgetObserver {
  public:
   explicit WidgetDestroyedWaiter(Widget* widget);
+  ~WidgetDestroyedWaiter() override;
 
   // Wait for the widget to be destroyed, or return immediately if it was
   // already destroyed since this object was created.
@@ -282,6 +283,7 @@ class WidgetDestroyedWaiter : public WidgetObserver {
   // views::WidgetObserver
   void OnWidgetDestroyed(Widget* widget) override;
 
+  Widget* widget_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(WidgetDestroyedWaiter);
@@ -307,7 +309,7 @@ class WidgetVisibleWaiter : public WidgetObserver {
 
   Widget* const widget_;
   base::RunLoop run_loop_;
-  ScopedObserver<Widget, WidgetObserver> widget_observer_{this};
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 }  // namespace test

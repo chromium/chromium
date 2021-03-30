@@ -61,7 +61,7 @@ void WidgetExample::CreateExampleView(View* container) {
 }
 
 LabelButton* WidgetExample::BuildButton(View* container,
-                                        const base::string16& label) {
+                                        const std::u16string& label) {
   LabelButton* button = container->AddChildView(
       std::make_unique<LabelButton>(Button::PressedCallback(), label));
   button->SetRequestFocusOnPress(true);

@@ -9,6 +9,9 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
 
 <link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_custom_vars_css.html">
+<link rel="import" href="/components/oobe_shared_vars_css.html">
+<link rel="import" href="/components/oobe_focus_behavior.html">
 
 <!--
   Simple OOBE dialog which should be used for OOBE UI elements.
@@ -26,7 +29,7 @@
   Example:
     <style include="oobe-dialog-host"></style>
     <oobe-adaptive-dialog on-show-dialog="onTestDialogShown_" has-buttons>
-      <iron-icon ... slot="oobe-icon">
+      <iron-icon ... slot="icon">
       <h1 slot="title">Title</h1>
       <div slot="subtitle">Subtitle</div>
       <div slot="content">
@@ -48,8 +51,8 @@
   images of different DPI, |oobe-icon-1x| and |oobe-icon-2x| should be used
   instead. For example:
 
-      <iron-icon icon="icon1" ... slot="oobe-icon" class="oobe-icon-1x">
-      <iron-icon icon-"icon2" ... slot="oobe-icon" class="oobe-icon-2x">
+      <iron-icon icon="icon1" ... slot="icon" class="oobe-icon-1x">
+      <iron-icon icon-"icon2" ... slot="icon" class="oobe-icon-2x">
 
   Attributes:
     no-lazy           - prevents lazy instantiation of the dialog.
@@ -57,16 +60,14 @@
 <dom-module id="oobe-adaptive-dialog">
   <template>
     <style include="oobe-dialog-host cr-shared-style">
+      /*
+       * Please check whether `multidevice_setup/ui_page.html` needs to be
+       * updated when below css rules are changed.
+       */
       :host {
         height: var(--oobe-adaptive-dialog-height);
         width: var(--oobe-adaptive-dialog-width);
         @apply --oobe-default-font;
-        --text-line-height: 18px;
-        --oobe-adaptive-dialog-buttons-horizontal-padding: min(40px,
-          max(24px, calc(var(--oobe-adaptive-dialog-width) * 0.025)));
-        --oobe-adaptive-dialog-buttons-vertical-padding: min(40px,
-          max(24px, calc(var(--oobe-adaptive-dialog-height) * 0.025)));
-        --oobe-adaptive-dialog-content-padding: 40px;
       }
 
       :host-context([orientation=horizontal]) {
@@ -81,17 +82,20 @@
         --oobe-adaptive-dialog-header-width: clamp(302px,
             calc(0.4 * (var(--oobe-adaptive-dialog-width) -
             4 * var(--oobe-adaptive-dialog-content-padding))) , 346px);
+        --oobe-adaptive-dialog-content-top-padding: 0;
       }
 
       :host-context([orientation=vertical]) {
         --oobe-adaptive-dialog-content-direction: column;
         --oobe-adaptive-dialog-item-alignment: center;
         --oobe-text-alignment: center;
-        --oobe-adaptive-dialog-content-width: 100%;
-        /* Header takes 40% of the width remaining after applying padding */
-        --oobe-adaptive-dialog-header-width: clamp(302px,
-            calc(0.4 * (var(--oobe-adaptive-dialog-width) -
-            2 * var(--oobe-adaptive-dialog-content-padding))) , 346px);
+        --oobe-adaptive-dialog-content-width: calc(
+            var(--oobe-adaptive-dialog-width) -
+            2 * var(--oobe-adaptive-dialog-content-padding));
+        /* Header takes 60% of the width remaining after applying padding */
+        --oobe-adaptive-dialog-header-width: clamp(346px,
+            calc(0.6 * (var(--oobe-adaptive-dialog-width) -
+            2 * var(--oobe-adaptive-dialog-content-padding))) , 520px);
       }
 
       #oobe-title ::slotted(h1) {
@@ -103,7 +107,7 @@
 
       #oobe-subtitle ::slotted(*) {
         color: var(--oobe-subheader-text-color);
-        line-height: var(--text-line-height);
+        @apply --oobe-subheader-font;
         margin: 0;
         overflow-wrap: break-word;
         text-align: var(--oobe-text-alignment);
@@ -118,13 +122,13 @@
         padding-bottom: 0;
         padding-inline-end: var(--oobe-adaptive-dialog-content-padding);
         padding-inline-start: var(--oobe-adaptive-dialog-content-padding);
-        padding-top: var(--oobe-adaptive-dialog-content-padding);
+        padding-top: var(--oobe-adaptive-dialog-header-top-padding);
         width: var(--oobe-adaptive-dialog-header-width);
       }
 
       #scrollContainer {
         border: transparent;
-        margin-top: var(--oobe-adaptive-dialog-content-padding);
+        margin-top: var(--oobe-adaptive-dialog-content-top-padding);
         overflow-y: auto;
         padding-bottom: 0;
         padding-inline-end: var(--oobe-adaptive-dialog-content-padding);
@@ -133,15 +137,15 @@
       }
 
       #oobe-title {
-        padding-top: 40px;
+        padding-top: var(--oobe-adaptive-dialog-title-top-padding);
       }
 
       #oobe-progress ::slotted(paper-progress) {
         --paper-progress-active-color: var(--google-blue-500);
         --paper-progress-container-color: var(--google-blue-100);
         height: 4px;
-        margin-bottom: 32px;
-        margin-top: 16px;
+        margin-bottom: 16px;
+        margin-top: 32px;
         width: 100%;
       }
 
@@ -153,39 +157,15 @@
         width: var(--oobe-adaptive-dialog-content-width);
       }
 
-      #scrollContainer.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
-        background: linear-gradient(
-          0deg,
-          rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-          rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-
-      }
-      #scrollContainer.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
-        background: linear-gradient(
-          0deg,
-          rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-          rgba(var(--google-grey-refresh-100-rgb), 0) 8px),
-                    linear-gradient(
-          180deg,
-          rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-          rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-      }
-      #scrollContainer.is-scrolled.scrolled-to-bottom {
-        background: linear-gradient(
-          180deg,
-          rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-          rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-      }
-
       .vertical-mode-centering {
         align-items: var(--oobe-adaptive-dialog-item-alignment);
         display: flex;
         flex-direction: column;
       }
 
-      .buttons-container {
+      .bottom-buttons-container {
         /* Always allocate height for buttons even a container is empty */
-        min-height: var(--cr-button-height);
+        min-height: var(--oobe-button-height);
         padding-bottom: var(--oobe-adaptive-dialog-buttons-vertical-padding);
         padding-inline-end:
           var(--oobe-adaptive-dialog-buttons-horizontal-padding);
@@ -195,16 +175,29 @@
         z-index: 1;
       }
 
+      .back-button-container {
+        /* Always allocate height for buttons even a container is empty */
+        min-height: var(--oobe-button-height);
+        padding-bottom:
+          var(--oobe-adaptive-dialog-back-button-vertical-padding);
+        padding-inline-end:
+          var(--oobe-adaptive-dialog-buttons-horizontal-padding);
+        padding-inline-start:
+          var(--oobe-adaptive-dialog-buttons-horizontal-padding);
+        padding-top: var(--oobe-adaptive-dialog-back-button-vertical-padding);
+        z-index: 1;
+      }
+
       #oobe-icon-div ::slotted(hd-iron-icon),
       #oobe-icon-div ::slotted(iron-icon) {
-        --iron-icon-height: 32px;
-        --iron-icon-width: 32px;
+        --iron-icon-height: var(--oobe-adaptive-dialog-icon-size);
+        --iron-icon-width: var(--oobe-adaptive-dialog-icon-size);
         --iron-icon-fill-color: var(--google-blue-600);
       }
     </style>
     <cr-lazy-render id="lazy">
       <template>
-        <div class="buttons-container">
+        <div class="back-button-container">
           <slot name="back-navigation"></slot>
         </div>
         <div id="main-container" class="layout vertical flex">
@@ -222,14 +215,14 @@
               <slot name="subtitle"></slot>
             </div>
           </div>
-          <div id="scrollContainer" class="layout vertical flex"
+          <div id="scrollContainer" class="layout vertical flex scrollable"
               on-scroll="applyScrollClassTags_">
             <div id="contentContainer" class="layout vertical flex">
               <slot name="content"></slot>
             </div>
           </div>
         </div>
-        <div class="buttons-container vertical-mode-centering">
+        <div class="bottom-buttons-container vertical-mode-centering">
           <slot class="layout horizontal end-justified" name="bottom-buttons">
           </slot>
         </div>
@@ -238,4 +231,3 @@
   </template>
   <script src="oobe_adaptive_dialog.js"></script>
 </dom-module>
-

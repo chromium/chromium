@@ -65,11 +65,11 @@ PasswordFormData CreateTestPasswordFormData() {
                            "http://bar.example.com",
                            "http://bar.example.com/origin",
                            "http://bar.example.com/action",
-                           L"submit_element",
-                           L"username_element",
-                           L"password_element",
-                           L"username_value",
-                           L"password_value",
+                           u"submit_element",
+                           u"username_element",
+                           u"password_element",
+                           u"username_value",
+                           u"password_value",
                            true,
                            1};
   return data;
@@ -166,7 +166,7 @@ TEST(PasswordStoreImplTest, NonASCIIData) {
   static const PasswordFormData form_data[] = {
       {PasswordForm::Scheme::kHtml, "http://foo.example.com",
        "http://foo.example.com/origin", "http://foo.example.com/action",
-       L"มีสีสัน", L"お元気ですか?", L"盆栽", L"أحب كرة", L"£éä국수çà", true, 1},
+       u"มีสีสัน", u"お元気ですか?", u"盆栽", u"أحب كرة", u"£éä국수çà", true, 1},
   };
 
   // Build the expected forms vector and add the forms to the store.
@@ -209,7 +209,7 @@ TEST(PasswordStoreImplTest, Notifications) {
   store->AddLogin(*form);
 
   // Change the password.
-  form->password_value = base::ASCIIToUTF16("a different password");
+  form->password_value = u"a different password";
 
   const PasswordStoreChange expected_update_changes[] = {
       PasswordStoreChange(PasswordStoreChange::UPDATE, *form),
@@ -280,7 +280,7 @@ TEST(PasswordStoreImplTest, OperationsOnABadDatabaseSilentlyFail) {
   delegate.FinishAsyncProcessing();
 
   // Change the login.
-  form->password_value = base::ASCIIToUTF16("a different password");
+  form->password_value = u"a different password";
   bad_store->UpdateLogin(*form);
   delegate.FinishAsyncProcessing();
 

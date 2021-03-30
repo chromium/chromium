@@ -140,6 +140,9 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
     }
 
     @Override
+    public void onActivityDestroyed() {}
+
+    @Override
     public void onPauseForTesting() {
         onActivityPaused();
     }

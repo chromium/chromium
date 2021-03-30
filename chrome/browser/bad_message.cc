@@ -14,8 +14,6 @@ namespace bad_message {
 namespace {
 
 void LogBadMessage(BadMessageReason reason) {
-  TRACE_EVENT_INSTANT1("ipc,security", "chrome::ReceivedBadMessage",
-                       TRACE_EVENT_SCOPE_THREAD, "reason", reason);
   LOG(ERROR) << "Terminating renderer for bad IPC message, reason " << reason;
   base::UmaHistogramSparse("Stability.BadMessageTerminated.Chrome", reason);
 }
@@ -24,6 +22,9 @@ void LogBadMessage(BadMessageReason reason) {
 
 void ReceivedBadMessage(content::RenderProcessHost* host,
                         BadMessageReason reason) {
+  TRACE_EVENT_INSTANT2("ipc,security", "chrome::ReceivedBadMessage",
+                       TRACE_EVENT_SCOPE_THREAD, "reason", reason,
+                       "render_process_host", host);
   LogBadMessage(reason);
   host->ShutdownForBadMessage(
       content::RenderProcessHost::CrashReportMode::GENERATE_CRASH_DUMP);
@@ -31,6 +32,8 @@ void ReceivedBadMessage(content::RenderProcessHost* host,
 
 void ReceivedBadMessage(content::BrowserMessageFilter* filter,
                         BadMessageReason reason) {
+  TRACE_EVENT_INSTANT1("ipc,security", "chrome::ReceivedBadMessage",
+                       TRACE_EVENT_SCOPE_THREAD, "reason", reason);
   LogBadMessage(reason);
   filter->ShutdownForBadMessage();
 }

@@ -3,11 +3,16 @@
 # https://chromium.googlesource.com/chromiumos/chromite/+/master/scripts/chrome_chromeos_lkgm.py#38
 # see also https://crbug.com/917623 and https://crbug.com/919552.
 
+set noparent
+
 per-file BUILD.gn=*
+per-file CHROMEOS_LKGM=*
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
 # Strings
 per-file chromeos_strings.grd=*
+# Tast test control
+per-file tast_control.gni=*
 
 # PST
 achuith@chromium.org

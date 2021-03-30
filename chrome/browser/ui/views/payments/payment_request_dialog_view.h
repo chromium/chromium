@@ -17,6 +17,7 @@
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/payment_request_state.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace autofill {
@@ -50,6 +51,8 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
                                  public PaymentRequestSpec::Observer,
                                  public InitializationTask::Observer {
  public:
+  METADATA_HEADER(PaymentRequestDialogView);
+
   class ObserverForTest {
    public:
     virtual void OnDialogOpened() = 0;
@@ -89,6 +92,9 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
     virtual void OnPaymentHandlerWindowOpened() = 0;
   };
 
+  PaymentRequestDialogView(const PaymentRequestDialogView&) = delete;
+  PaymentRequestDialogView& operator=(const PaymentRequestDialogView&) = delete;
+
   // Build a Dialog around the PaymentRequest object. |observer| is used to
   // be notified of dialog events as they happen (but may be NULL) and should
   // outlive this object.
@@ -100,7 +106,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   void RequestFocus() override;
 
   // views::WidgetDelegate:
-  ui::ModalType GetModalType() const override;
   views::View* GetInitiallyFocusedView() override;
 
   // views::DialogDelegate:
@@ -238,8 +243,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   int payment_handler_window_height_ = 0;
 
   base::WeakPtrFactory<PaymentRequestDialogView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestDialogView);
 };
 
 }  // namespace payments

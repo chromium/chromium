@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  // The work of this test is done in the ScanFilterCheckingAdapter. It asserts
+  // that this requestDevice() call tells the platform to scan for only devices
+  // that include the Battery, Glucose, or Heart Rate services.
+  return setBluetoothFakeAdapter('ScanFilterCheckingAdapter')
+      .then(() => requestDeviceWithTrustedClick({
+              filters: [
+                {services: ['battery_service']},
+                {services: ['glucose', 'heart_rate']}
+              ],
+              // The optionalServices shouldn't affect the platform's scan.
+              optionalServices: ['generic_access']
+            }));
+}, 'Filters restrict the platform\'s Bluetooth scan.');
+</script>

@@ -156,9 +156,13 @@ void PowerButtonMenuScreenView::OnWidgetShown(
     double offset_percentage) {
   power_button_position_ = position;
   power_button_offset_percentage_ = offset_percentage;
+  // The order here matters. RecreateItems() must be called before calling
+  // UpdateMenuBoundsOrigins(), since the latter relies on the
+  // power_button_menu_view_'s preferred size, which depends on the items added
+  // to the view.
+  power_button_menu_view_->RecreateItems();
   if (power_button_position_ != PowerButtonPosition::NONE)
     UpdateMenuBoundsOrigins();
-  power_button_menu_view_->RecreateItems();
   Layout();
 }
 

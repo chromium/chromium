@@ -6,8 +6,8 @@
 #define MEDIA_MIDI_MIDI_MANAGER_WINRT_H_
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/thread_annotations.h"
 #include "media/midi/midi_manager.h"
 
@@ -35,7 +35,7 @@ class MIDI_EXPORT MidiManagerWinrt final : public MidiManager {
   template <typename InterfaceType,
             typename RuntimeType,
             typename StaticsInterfaceType,
-            base::char16 const* runtime_class_id>
+            wchar_t const* runtime_class_id>
   class MidiPortManager;
 
   // Callbacks on kComTaskRunner.

@@ -28,8 +28,7 @@ class TimeTrayItemView;
 class CurrentLocaleView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
-class NotificationCounterView;
-class QuietModeView;
+class NotificationIconsController;
 class PrivacyScreenToastController;
 class TrayItemView;
 class UnifiedSliderBubbleController;
@@ -97,7 +96,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   void ShowAudioDetailedViewBubble();
 
   // Shows main bubble with network settings detailed view.
-  void ShowNetworkDetailedViewBubble(bool show_by_click);
+  void ShowNetworkDetailedViewBubble();
 
   // Return the bounds of the bubble in the screen.
   gfx::Rect GetBubbleBoundsInScreen() const;
@@ -140,11 +139,10 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   void MaybeRecordFirstInteraction(FirstInteractionType type);
 
   // TrayBackgroundView:
-  bool PerformAction(const ui::Event& event) override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   void CloseBubble() override;
-  base::string16 GetAccessibleNameForBubble() override;
-  base::string16 GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
@@ -152,12 +150,13 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   void UpdateLayout() override;
   void UpdateAfterLoginStatusChange() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
+  views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
 
-  base::string16 GetAccessibleNameForQuickSettingsBubble();
+  std::u16string GetAccessibleNameForQuickSettingsBubble();
 
   UnifiedSystemTrayModel* model() { return model_.get(); }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
@@ -176,7 +175,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   class UiDelegate;
 
   // Forwarded from UiDelegate.
-  void ShowBubbleInternal(bool show_by_click);
+  void ShowBubbleInternal();
   void HideBubbleInternal();
   void UpdateNotificationInternal();
   void UpdateNotificationAfterDelay();
@@ -204,13 +203,15 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   const std::unique_ptr<PrivacyScreenToastController>
       privacy_screen_toast_controller_;
 
+  // Manages showing notification icons in the tray.
+  const std::unique_ptr<NotificationIconsController>
+      notification_icons_controller_;
+
   CurrentLocaleView* const current_locale_view_;
   ImeModeView* const ime_mode_view_;
   ManagedDeviceTrayItemView* const managed_device_view_;
   CameraMicTrayItemView* const camera_view_;
   CameraMicTrayItemView* const mic_view_;
-  NotificationCounterView* const notification_counter_item_;
-  QuietModeView* const quiet_mode_view_;
   tray::TimeTrayItemView* const time_view_;
 
   tray::NetworkTrayView* network_tray_view_ = nullptr;

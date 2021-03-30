@@ -5,8 +5,7 @@
 #include "chrome/browser/chromeos/policy/extension_install_event_logger.h"
 
 #include "base/files/file_path.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -327,8 +326,7 @@ TEST_F(ExtensionInstallEventLoggerTest, AddSetsTimestampAndDiskSpaceInfo) {
 }
 
 TEST_F(ExtensionInstallEventLoggerTest, UpdatePolicy) {
-  chromeos::FakeChromeUserManager* fake_user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);

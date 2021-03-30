@@ -28,8 +28,15 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 
-#if ABSL_HAVE_BUILTIN(__builtin_popcountl) && \
-    ABSL_HAVE_BUILTIN(__builtin_popcountll)
+#if defined(__GNUC__) && !defined(__clang__)
+// GCC
+#define ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(x) 1
+#else
+#define ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(x) ABSL_HAVE_BUILTIN(x)
+#endif
+
+#if ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_popcountl) && \
+    ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_popcountll)
 #define ABSL_INTERNAL_CONSTEXPR_POPCOUNT constexpr
 #define ABSL_INTERNAL_HAS_CONSTEXPR_POPCOUNT 1
 #else
@@ -37,7 +44,8 @@
 #define ABSL_INTERNAL_HAS_CONSTEXPR_POPCOUNT 0
 #endif
 
-#if ABSL_HAVE_BUILTIN(__builtin_clz) && ABSL_HAVE_BUILTIN(__builtin_clzll)
+#if ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_clz) && \
+    ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_clzll)
 #define ABSL_INTERNAL_CONSTEXPR_CLZ constexpr
 #define ABSL_INTERNAL_HAS_CONSTEXPR_CLZ 1
 #else
@@ -45,7 +53,8 @@
 #define ABSL_INTERNAL_HAS_CONSTEXPR_CLZ 0
 #endif
 
-#if ABSL_HAVE_BUILTIN(__builtin_ctz) && ABSL_HAVE_BUILTIN(__builtin_ctzll)
+#if ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_ctz) && \
+    ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_ctzll)
 #define ABSL_INTERNAL_CONSTEXPR_CTZ constexpr
 #define ABSL_INTERNAL_HAS_CONSTEXPR_CTZ 1
 #else
@@ -85,7 +94,7 @@ ABSL_MUST_USE_RESULT ABSL_ATTRIBUTE_ALWAYS_INLINE constexpr T RotateLeft(
 
 ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_POPCOUNT inline int
 Popcount32(uint32_t x) noexcept {
-#if ABSL_HAVE_BUILTIN(__builtin_popcount)
+#if ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_popcount)
   static_assert(sizeof(unsigned int) == sizeof(x),
                 "__builtin_popcount does not take 32-bit arg");
   return __builtin_popcount(x);
@@ -98,7 +107,7 @@ Popcount32(uint32_t x) noexcept {
 
 ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_POPCOUNT inline int
 Popcount64(uint64_t x) noexcept {
-#if ABSL_HAVE_BUILTIN(__builtin_popcountll)
+#if ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_popcountll)
   static_assert(sizeof(unsigned long long) == sizeof(x),  // NOLINT(runtime/int)
                 "__builtin_popcount does not take 64-bit arg");
   return __builtin_popcountll(x);
@@ -122,7 +131,7 @@ Popcount(T x) noexcept {
 
 ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_CLZ inline int
 CountLeadingZeroes32(uint32_t x) {
-#if ABSL_HAVE_BUILTIN(__builtin_clz)
+#if ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_clz)
   // Use __builtin_clz, which uses the following instructions:
   //  x86: bsr, lzcnt
   //  ARM64: clz
@@ -169,7 +178,7 @@ CountLeadingZeroes16(uint16_t x) {
 
 ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_CLZ inline int
 CountLeadingZeroes64(uint64_t x) {
-#if ABSL_HAVE_BUILTIN(__builtin_clzll)
+#if ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_clzll)
   // Use __builtin_clzll, which uses the following instructions:
   //  x86: bsr, lzcnt
   //  ARM64: clz
@@ -240,7 +249,7 @@ CountLeadingZeroes(T x) {
 
 ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_CTZ inline int
 CountTrailingZeroesNonzero32(uint32_t x) {
-#if ABSL_HAVE_BUILTIN(__builtin_ctz)
+#if ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_ctz)
   static_assert(sizeof(unsigned int) == sizeof(x),
                 "__builtin_ctz does not take 32-bit arg");
   return __builtin_ctz(x);
@@ -262,7 +271,7 @@ CountTrailingZeroesNonzero32(uint32_t x) {
 
 ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_CTZ inline int
 CountTrailingZeroesNonzero64(uint64_t x) {
-#if ABSL_HAVE_BUILTIN(__builtin_ctzll)
+#if ABSL_NUMERIC_INTERNAL_HAVE_BUILTIN_OR_GCC(__builtin_ctzll)
   static_assert(sizeof(unsigned long long) == sizeof(x),  // NOLINT(runtime/int)
                 "__builtin_ctzll does not take 64-bit arg");
   return __builtin_ctzll(x);
@@ -334,7 +343,7 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE ABSL_INTERNAL_CONSTEXPR_CLZ inline
     typename std::enable_if<std::is_unsigned<T>::value, T>::type
     BitCeilNonPowerOf2(T x) {
   // If T is narrower than unsigned, it undergoes promotion to unsigned when we
-  // shift.  We calcualte the number of bits added by the wider type.
+  // shift.  We calculate the number of bits added by the wider type.
   return BitCeilPromotionHelper(
       static_cast<T>(std::numeric_limits<T>::digits - CountLeadingZeroes(x)),
       T{sizeof(T) >= sizeof(unsigned) ? 0

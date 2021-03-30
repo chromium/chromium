@@ -74,7 +74,7 @@
         android:fragment="org.chromium.chrome.browser.privacy.settings.PrivacySettings"
         android:key="privacy"
         android:order="12"
-        android:title="@string/prefs_privacy"/>
+        android:title="@string/prefs_privacy_security"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment"
         android:key="safety_check"

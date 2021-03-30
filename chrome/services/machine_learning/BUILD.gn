@@ -1,6 +1,5 @@
-import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
-import("//chrome/services/machine_learning/features.gni")
+import("//components/optimization_guide/features.gni")
 
 source_set("machine_learning") {
   sources = [
@@ -14,11 +13,11 @@ source_set("machine_learning") {
     ":metrics",
     "//base",
     "//chrome:strings",
+    "//chrome/common:buildflags",
     "//mojo/public/cpp/bindings",
   ]
 
   public_deps = [
-    ":machine_learning_tflite_buildflags",
     "//chrome/services/machine_learning/public/cpp:decision_tree",
     "//chrome/services/machine_learning/public/mojom",
     "//mojo/public/mojom/base",
@@ -30,7 +29,10 @@ source_set("machine_learning") {
       "in_process_tflite_predictor.h",
     ]
 
-    deps += [ ":tflite_simple_test" ]
+    deps += [
+      ":tflite_simple_test",
+      "//components/optimization_guide/core:machine_learning",
+    ]
 
     public_deps += [
       "//third_party/tflite",
@@ -64,11 +66,15 @@ source_set("unit_tests") {
     sources += [ "in_process_tflite_predictor_unittest.cc" ]
   }
 
+  data = [ "//components/test/data/optimization_guide/" ]
+
   deps = [
     ":machine_learning",
     ":metrics",
     "//base",
     "//base/test:test_support",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
     "//chrome/services/machine_learning/public/cpp:cpp",
     "//chrome/services/machine_learning/public/cpp:test_support",
     "//testing/gtest",
@@ -77,12 +83,7 @@ source_set("unit_tests") {
 
 if (build_with_tflite_lib) {
   copy("tflite_simple_test") {
-    sources = [ "//chrome/test/data/simple_test.tflite" ]
+    sources = [ "//components/test/data/optimization_guide/simple_test.tflite" ]
     outputs = [ "$root_out_dir/test_data/simple_test.tflite" ]
   }
-}
-
-buildflag_header("machine_learning_tflite_buildflags") {
-  header = "machine_learning_tflite_buildflags.h"
-  flags = [ "BUILD_WITH_TFLITE_LIB=$build_with_tflite_lib" ]
 }

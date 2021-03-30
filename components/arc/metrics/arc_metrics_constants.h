@@ -98,7 +98,10 @@ enum class UserInteractionType {
   // User started an app from Chrome OS sharesheet.
   APP_STARTED_FROM_SHARESHEET = 21,
 
-  kMaxValue = APP_STARTED_FROM_SHARESHEET,
+  // User started an app from Chrome OS full restore.
+  APP_STARTED_FROM_FULL_RESTORE = 22,
+
+  kMaxValue = APP_STARTED_FROM_FULL_RESTORE,
 };
 
 // Enumerates relevant Mojo connections.

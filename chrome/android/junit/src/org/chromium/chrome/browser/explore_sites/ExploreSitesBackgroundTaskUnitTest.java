@@ -98,6 +98,11 @@ public class ExploreSitesBackgroundTaskUnitTest {
         }
 
         @Override
+        public boolean isScheduled(Context context, int taskId) {
+            return (mTaskInfos.get(taskId) != null);
+        }
+
+        @Override
         public void checkForOSUpgrade(Context context) {}
 
         @Override
@@ -137,7 +142,9 @@ public class ExploreSitesBackgroundTaskUnitTest {
     public void setUp() {
         ShadowRecordHistogram.reset();
         MockitoAnnotations.initMocks(this);
-        doNothing().when(mChromeBrowserInitializer).handlePreNativeStartup(any(BrowserParts.class));
+        doNothing()
+                .when(mChromeBrowserInitializer)
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         doAnswer((InvocationOnMock invocation) -> {
             mBrowserParts.getValue().finishNativeInitialization();
             return null;

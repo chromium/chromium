@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 class GURL;
 
@@ -30,7 +29,7 @@ base::FilePath EnsureMimeExtension(const base::FilePath& name,
 
 // Function for generating a filename based on |title|, if it is empty, |url|
 // will be used as a fallback.
-base::FilePath GenerateFilename(const base::string16& title,
+base::FilePath GenerateFilename(const std::u16string& title,
                                 const GURL& url,
                                 bool can_save_as_complete,
                                 std::string contents_mime_type);

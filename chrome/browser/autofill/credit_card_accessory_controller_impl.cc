@@ -28,13 +28,13 @@ namespace autofill {
 
 namespace {
 
-base::string16 GetTitle(bool has_suggestions) {
+std::u16string GetTitle(bool has_suggestions) {
   return l10n_util::GetStringUTF16(
       has_suggestions ? IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_TITLE
                       : IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE);
 }
 
-void AddSimpleField(const base::string16& data,
+void AddSimpleField(const std::u16string& data,
                     UserInfo* user_info,
                     bool enabled) {
   user_info->add_field(UserInfo::Field(data, data,
@@ -46,7 +46,7 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
 
   UserInfo user_info(data->network());
 
-  base::string16 obfuscated_number = data->ObfuscatedLastFourDigits();
+  std::u16string obfuscated_number = data->ObfuscatedLastFourDigits();
   user_info.add_field(UserInfo::Field(obfuscated_number, obfuscated_number,
                                       data->guid(), /*is_password=*/false,
                                       enabled));
@@ -55,15 +55,15 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
     AddSimpleField(data->Expiration2DigitMonthAsString(), &user_info, enabled);
     AddSimpleField(data->Expiration4DigitYearAsString(), &user_info, enabled);
   } else {
-    AddSimpleField(base::string16(), &user_info, enabled);
-    AddSimpleField(base::string16(), &user_info, enabled);
+    AddSimpleField(std::u16string(), &user_info, enabled);
+    AddSimpleField(std::u16string(), &user_info, enabled);
   }
 
   if (data->HasNameOnCard()) {
     AddSimpleField(data->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL),
                    &user_info, enabled);
   } else {
-    AddSimpleField(base::string16(), &user_info, enabled);
+    AddSimpleField(std::u16string(), &user_info, enabled);
   }
 
   return user_info;
@@ -76,16 +76,30 @@ CreditCardAccessoryControllerImpl::~CreditCardAccessoryControllerImpl() {
     personal_data_manager_->RemoveObserver(this);
 }
 
+void CreditCardAccessoryControllerImpl::RegisterFillingSourceObserver(
+    FillingSourceObserver observer) {
+  NOTIMPLEMENTED();
+}
+
+base::Optional<autofill::AccessorySheetData>
+CreditCardAccessoryControllerImpl::GetSheetData() const {
+  NOTIMPLEMENTED();
+  return base::nullopt;
+}
+
 void CreditCardAccessoryControllerImpl::OnFillingTriggered(
+    FieldGlobalId focused_field_id,
     const UserInfo::Field& selection) {
-  if (!web_contents_->GetFocusedFrame())
+  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  if (!rfh)
     return;  // Without focused frame, driver and manager will be undefined.
   DCHECK(GetDriver());
 
   // Credit card number fields have a GUID populated to allow deobfuscation
   // before filling.
   if (selection.id().empty()) {
-    GetDriver()->RendererShouldFillFieldWithValue(selection.display_text());
+    GetDriver()->RendererShouldFillFieldWithValue(focused_field_id,
+                                                  selection.display_text());
     return;
   }
 
@@ -103,10 +117,12 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   if (matching_card->record_type() ==
       CreditCard::RecordType::MASKED_SERVER_CARD) {
     DCHECK(GetManager());
+    last_focused_field_id_ = focused_field_id;
     GetManager()->credit_card_access_manager()->FetchCreditCard(matching_card,
                                                                 AsWeakPtr());
   } else {
-    GetDriver()->RendererShouldFillFieldWithValue(matching_card->number());
+    GetDriver()->RendererShouldFillFieldWithValue(focused_field_id,
+                                                  matching_card->number());
   }
 }
 
@@ -196,15 +212,22 @@ void CreditCardAccessoryControllerImpl::OnPersonalDataChanged() {
 void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
     bool did_succeed,
     const CreditCard* credit_card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
   if (!did_succeed)
     return;
-  if (!web_contents_->GetFocusedFrame())
+  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  if (!rfh || !last_focused_field_id_ ||
+      last_focused_field_id_.frame_token !=
+          autofill::LocalFrameToken(rfh->GetFrameToken().value())) {
+    last_focused_field_id_ = {};
     return;  // If frame isn't focused anymore, don't attempt to fill.
+  }
   DCHECK(credit_card);
   DCHECK(GetDriver());
 
-  GetDriver()->RendererShouldFillFieldWithValue(credit_card->number());
+  GetDriver()->RendererShouldFillFieldWithValue(last_focused_field_id_,
+                                                credit_card->number());
+  last_focused_field_id_ = {};
 }
 
 // static

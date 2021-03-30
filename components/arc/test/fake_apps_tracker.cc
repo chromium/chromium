@@ -11,14 +11,11 @@ FakeAppsTracker::FakeAppsTracker() = default;
 FakeAppsTracker::~FakeAppsTracker() = default;
 
 void FakeAppsTracker::StartTracking(
-    base::RepeatingCallback<void(int)> update_callback) {
+    base::RepeatingCallback<void(int)> update_callback,
+    base::OnceClosure finish_callback) {
   start_tracking_num_++;
   update_callback_ = std::move(update_callback);
-}
-
-void FakeAppsTracker::StopTracking() {
-  stop_tracking_num_++;
-  update_callback_.Reset();
+  finish_callback_ = std::move(finish_callback);
 }
 
 }  // namespace data_snapshotd

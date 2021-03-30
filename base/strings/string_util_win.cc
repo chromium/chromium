@@ -8,7 +8,6 @@
 
 namespace base {
 
-#if defined(BASE_STRING16_IS_STD_U16STRING)
 bool IsStringASCII(WStringPiece str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }
@@ -102,7 +101,7 @@ void ReplaceFirstSubstringAfterOffset(std::wstring* str,
                                       WStringPiece find_this,
                                       WStringPiece replace_with) {
   internal::DoReplaceMatchesAfterOffset(
-      str, start_offset, internal::SubstringMatcher<std::wstring>{find_this},
+      str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_FIRST);
 }
 
@@ -111,7 +110,7 @@ void ReplaceSubstringsAfterOffset(std::wstring* str,
                                   WStringPiece find_this,
                                   WStringPiece replace_with) {
   internal::DoReplaceMatchesAfterOffset(
-      str, start_offset, internal::SubstringMatcher<std::wstring>{find_this},
+      str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_ALL);
 }
 
@@ -139,7 +138,5 @@ std::wstring ReplaceStringPlaceholders(WStringPiece format_string,
                                        std::vector<size_t>* offsets) {
   return internal::DoReplaceStringPlaceholders(format_string, subst, offsets);
 }
-
-#endif
 
 }  // namespace base

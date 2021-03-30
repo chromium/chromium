@@ -1,0 +1,1 @@
+GdkDisplay* gdk_display_get_default(void);

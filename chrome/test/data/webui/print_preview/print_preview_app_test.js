@@ -67,8 +67,8 @@ suite(print_preview_app_test.suiteName, function() {
    */
   const initialize = () => {
     nativeLayer.setInitialSettings(initialSettings);
-    nativeLayer.setLocalDestinationCapabilities(
-        getCddTemplate(initialSettings.printerName));
+    nativeLayer.setLocalDestinations(
+        [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
     return nativeLayer.whenCalled('getPreview');

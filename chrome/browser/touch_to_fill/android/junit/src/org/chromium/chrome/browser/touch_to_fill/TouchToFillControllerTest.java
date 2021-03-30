@@ -75,11 +75,11 @@ public class TouchToFillControllerTest {
     private static final String TEST_URL = "https://www.example.xyz";
     private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
     private static final Credential ANA =
-            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", true, false);
+            new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", true, false, 0);
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, true, false);
+            new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, true, false, 0);
     private static final Credential CARL =
-            new Credential("Carl", "G3h3!m", "Carl", TEST_URL, false, false);
+            new Credential("Carl", "G3h3!m", "Carl", TEST_URL, false, false, 0);
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
 
     @Rule

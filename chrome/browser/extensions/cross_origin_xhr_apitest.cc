@@ -31,21 +31,34 @@ IN_PROC_BROWSER_TEST_F(CrossOriginXHR, ContentScript) {
 // Tests that an extension frame can xhr a file url if it has file access and
 // "<all_urls>" host permissions.
 IN_PROC_BROWSER_TEST_F(CrossOriginXHR, FileAccessAllURLs) {
-  ASSERT_TRUE(RunExtensionTest("cross_origin_xhr/file_access_all_urls"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "cross_origin_xhr/file_access_all_urls"},
+                       {.allow_file_access = true}))
       << message_;
 }
 
 // Tests that an extension frame can't xhr a file url if it has no file access
 // even with the "<all_urls>" host permissions.
 IN_PROC_BROWSER_TEST_F(CrossOriginXHR, NoFileAccessAllURLs) {
-  ASSERT_TRUE(
-      RunExtensionTestNoFileAccess("cross_origin_xhr/no_file_access_all_urls"))
+  ASSERT_TRUE(RunExtensionTest("cross_origin_xhr/no_file_access_all_urls"))
+      << message_;
+}
+
+// Ensures that an extension tab having no corresponding background page can xhr
+// a file URL. Regression test for crbug.com/1179732.
+IN_PROC_BROWSER_TEST_F(CrossOriginXHR, FileAccessNoBackgroundPage) {
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "cross_origin_xhr/file_access_no_background_page",
+       .page_url = "test.html"},
+      {.allow_file_access = true}))
       << message_;
 }
 
 // Tests that an extension frame can't xhr a file url if it does not have host
 // permissions to the file scheme even though it has file access.
 IN_PROC_BROWSER_TEST_F(CrossOriginXHR, FileAccessNoHosts) {
-  ASSERT_TRUE(RunExtensionTest("cross_origin_xhr/file_access_no_hosts"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "cross_origin_xhr/file_access_no_hosts"},
+                       {.allow_file_access = true}))
       << message_;
 }

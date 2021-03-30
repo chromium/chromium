@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+PASS rendered legend with display: block
+PASS rendered legend with display: table
+FAIL rendered legend with display: table-row-group assert_equals: display: table-row-group is not supported expected "table-row-group" but got "block"
+FAIL rendered legend with display: table-header-group assert_equals: display: table-header-group is not supported expected "table-header-group" but got "block"
+FAIL rendered legend with display: table-footer-group assert_equals: display: table-footer-group is not supported expected "table-footer-group" but got "block"
+FAIL rendered legend with display: table-row assert_equals: display: table-row is not supported expected "table-row" but got "block"
+FAIL rendered legend with display: table-cell assert_equals: display: table-cell is not supported expected "table-cell" but got "block"
+FAIL rendered legend with display: table-column-group assert_equals: display: table-column-group is not supported expected "table-column-group" but got "block"
+FAIL rendered legend with display: table-column assert_equals: display: table-column is not supported expected "table-column" but got "block"
+FAIL rendered legend with display: table-caption assert_equals: display: table-caption is not supported expected "table-caption" but got "block"
+PASS rendered legend with display: list-item
+FAIL rendered legend with display: flow assert_equals: display: flow is not supported expected "flow" but got "block"
+PASS rendered legend with display: flow-root
+FAIL rendered legend with display: run-in assert_equals: display: run-in is not supported expected "run-in" but got "block"
+FAIL rendered legend with display: inline assert_equals: display: inline is not supported expected "inline" but got "block"
+FAIL rendered legend with display: inline-block assert_equals: display: inline-block is not supported expected "inline-block" but got "block"
+FAIL rendered legend with display: inline-table assert_equals: display: inline-table is not supported expected "inline-table" but got "table"
+FAIL rendered legend with display: ruby assert_equals: display: ruby is not supported expected "ruby" but got "block"
+FAIL rendered legend with display: ruby-base assert_equals: display: ruby-base is not supported expected "ruby-base" but got "block"
+FAIL rendered legend with display: ruby-text assert_equals: display: ruby-text is not supported expected "ruby-text" but got "block"
+FAIL rendered legend with display: ruby-base-container assert_equals: display: ruby-base-container is not supported expected "ruby-base-container" but got "block"
+FAIL rendered legend with display: ruby-text-container assert_equals: display: ruby-text-container is not supported expected "ruby-text-container" but got "block"
+PASS rendered legend with display: grid
+FAIL rendered legend with display: inline-grid assert_equals: display: inline-grid is not supported expected "inline-grid" but got "grid"
+PASS rendered legend with display: flex
+FAIL rendered legend with display: inline-flex assert_equals: display: inline-flex is not supported expected "inline-flex" but got "flex"
+Harness: the test ran to completion.
+

@@ -141,6 +141,10 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
                              bool blocked_by_policy,
                              StorageType storage_type);
 
+  // Simulate a V8 per-frame memory update.
+  void SimulateMemoryUpdate(content::RenderFrameHost* render_frame_host,
+                            int64_t delta_bytes);
+
   void SimulateMobileFriendlinessUpdate(
       blink::MobileFriendliness& mobile_friendliness);
 

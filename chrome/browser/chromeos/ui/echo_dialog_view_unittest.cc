@@ -32,7 +32,7 @@ class TestEchoDialogListener : public EchoDialogListener {
   TestEchoDialogListener& operator=(const TestEchoDialogListener&) = delete;
 };
 
-bool IsLabelWithText(const views::View* view, const base::string16& text) {
+bool IsLabelWithText(const views::View* view, const std::u16string& text) {
   const char* class_name = view->GetClassName();
   if (!strcmp(class_name, "Label")) {
     auto* label = static_cast<const views::Label*>(view);
@@ -45,7 +45,7 @@ bool IsLabelWithText(const views::View* view, const base::string16& text) {
   return false;
 }
 
-views::View* FindLabelWithText(views::View* root, const base::string16& text) {
+views::View* FindLabelWithText(views::View* root, const std::u16string& text) {
   if (IsLabelWithText(root, text))
     return root;
   for (auto* child : root->children()) {
@@ -65,8 +65,8 @@ using EchoDialogViewTest = views::ViewsTestBase;
 TEST_F(EchoDialogViewTest, EnabledHasEnabledText) {
   EchoDialogView::Params params;
   params.echo_enabled = true;
-  params.service_name = base::UTF8ToUTF16("$service");
-  params.origin = base::UTF8ToUTF16("$origin");
+  params.service_name = u"$service";
+  params.origin = u"$origin";
 
   TestEchoDialogListener listener;
   EchoDialogView dialog(&listener, params);
@@ -83,8 +83,8 @@ TEST_F(EchoDialogViewTest, EnabledHasEnabledText) {
 TEST_F(EchoDialogViewTest, DisabledHasDisabledText) {
   EchoDialogView::Params params;
   params.echo_enabled = false;
-  params.service_name = base::UTF8ToUTF16("$service");
-  params.origin = base::UTF8ToUTF16("$origin");
+  params.service_name = u"$service";
+  params.origin = u"$origin";
 
   TestEchoDialogListener listener;
   EchoDialogView dialog(&listener, params);

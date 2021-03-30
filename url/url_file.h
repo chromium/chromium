@@ -16,7 +16,7 @@ namespace url {
 #ifdef WIN32
 
 // We allow both "c:" and "c|" as drive identifiers.
-inline bool IsWindowsDriveSeparator(base::char16 ch) {
+inline bool IsWindowsDriveSeparator(char16_t ch) {
   return ch == ':' || ch == '|';
 }
 

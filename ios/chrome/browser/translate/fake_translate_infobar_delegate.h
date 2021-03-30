@@ -30,7 +30,7 @@ class FakeTranslateInfoBarDelegate
       const base::WeakPtr<translate::TranslateManager>& translate_manager,
       bool is_off_the_record,
       translate::TranslateStep step,
-      const std::string& original_language,
+      const std::string& source_language,
       const std::string& target_language,
       translate::TranslateErrors::Type error_type,
       bool triggered_from_menu);
@@ -45,14 +45,14 @@ class FakeTranslateInfoBarDelegate
       translate::TranslateStep step,
       translate::TranslateErrors::Type error_type);
 
-  base::string16 original_language_name() const override;
+  std::u16string source_language_name() const override;
 
-  base::string16 target_language_name() const override;
+  std::u16string target_language_name() const override;
 
  private:
   base::ObserverList<Observer> observers_;
-  base::string16 original_language_;
-  base::string16 target_language_;
+  std::u16string source_language_;
+  std::u16string target_language_;
 };
 
 // Factory class to create instances of FakeTranslateInfoBarDelegate.
@@ -62,9 +62,9 @@ class FakeTranslateInfoBarDelegateFactory {
   ~FakeTranslateInfoBarDelegateFactory();
 
   // Create a FakeTranslateInfoBarDelegate unique_ptr with
-  // |original_language|and |target_language|.
+  // |source_language|and |target_language|.
   std::unique_ptr<FakeTranslateInfoBarDelegate>
-  CreateFakeTranslateInfoBarDelegate(const std::string& original_language,
+  CreateFakeTranslateInfoBarDelegate(const std::string& source_language,
                                      const std::string& target_language);
 
  private:

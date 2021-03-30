@@ -36,6 +36,8 @@ class SystemTrayModel : public SystemTray {
   void SetUse24HourClock(bool use_24_hour) override;
   void SetEnterpriseDomainInfo(const std::string& enterprise_domain_manager,
                                bool active_directory_managed) override;
+  void SetEnterpriseAccountDomainInfo(
+      const std::string& account_domain_manager) override;
   void SetPerformanceTracingIconVisible(bool visible) override;
   void SetLocaleList(std::vector<LocaleInfo> locale_list,
                      const std::string& current_locale_iso_code) override;
@@ -45,11 +47,11 @@ class SystemTrayModel : public SystemTray {
                       UpdateType update_type) override;
   void SetUpdateNotificationState(
       NotificationStyle style,
-      const base::string16& notification_title,
-      const base::string16& notification_body) override;
+      const std::u16string& notification_title,
+      const std::u16string& notification_body) override;
   void SetUpdateOverCellularAvailableIconVisible(bool visible) override;
   void ShowVolumeSliderBubble() override;
-  void ShowNetworkDetailedViewBubble(bool show_by_click) override;
+  void ShowNetworkDetailedViewBubble() override;
   void SetPhoneHubManager(
       chromeos::phonehub::PhoneHubManager* phone_hub_manager) override;
 

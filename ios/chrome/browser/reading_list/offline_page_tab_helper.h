@@ -46,6 +46,9 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
   // Returns true if reading list model has processed entry for the given url.
   bool HasDistilledVersionForOnlineUrl(const GURL& url) const;
 
+  // Returns true if offline page can handle this url loading.
+  bool CanHandleErrorLoadingURL(const GURL& url) const;
+
  private:
   friend class web::WebStateUserData<OfflinePageTabHelper>;
 
@@ -99,6 +102,9 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
   // Returns the URL of the Reading List entry given a navigation URL.
   GURL GetOnlineURLFromNavigationURL(const GURL& url) const;
 
+  // Injects some JS to replace the current page with |url| and reload the page.
+  void ReplaceLocationUrlAndReload(const GURL& url);
+
   web::WebState* web_state_ = nullptr;
   ReadingListModel* reading_list_model_ = nullptr;
 
@@ -128,10 +134,18 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
   // Whether the latest navigation started for this tab helper was initiated
   // with chrome://offline URL.
   bool is_offline_navigation_ = false;
+  // Whether the latest navigation started for this tab helper was a reload.
+  bool is_reload_navigation_ = false;
+  // Whether the latest navigation started for this tab helper is a new one.
+  bool is_new_navigation_ = false;
   // Some parameters of the latest navigation started observed by this tab
   // helper.
   ui::PageTransition navigation_transition_type_ = ui::PAGE_TRANSITION_FIRST;
   bool navigation_is_renderer_initiated_ = false;
+  // On next navigation, don't reload the online page.
+  bool dont_reload_online_on_next_navigation_ = false;
+  // Whether a reload navigation has just been triggered.
+  bool reloading_from_offline_ = false;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 

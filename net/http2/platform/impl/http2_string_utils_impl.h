@@ -14,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "net/base/escape.h"
 #include "net/base/hex_utils.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_text_utils.h"
 
 namespace http2 {

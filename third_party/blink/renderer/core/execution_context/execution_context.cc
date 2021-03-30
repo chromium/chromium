@@ -28,10 +28,11 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "third_party/blink/public/common/feature_policy/document_policy_features.h"
+#include "build/build_config.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
@@ -68,13 +70,13 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
       is_context_destroyed_(false),
       csp_delegate_(MakeGarbageCollected<ExecutionContextCSPDelegate>(*this)),
       window_interaction_tokens_(0),
-      referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
-      address_space_(network::mojom::blink::IPAddressSpace::kUnknown),
       origin_trial_context_(MakeGarbageCollected<OriginTrialContext>(this)) {
   DCHECK(agent_);
 }
 
-ExecutionContext::~ExecutionContext() = default;
+ExecutionContext::~ExecutionContext() {
+  DCHECK(is_context_destroyed_);
+}
 
 // static
 ExecutionContext* ExecutionContext::From(const ScriptState* script_state) {
@@ -125,7 +127,7 @@ void ExecutionContext::SetLifecycleState(mojom::FrameLifecycleState state) {
   if (lifecycle_state_ == state)
     return;
   lifecycle_state_ = state;
-  context_lifecycle_observer_set_.ForEachObserver(
+  ContextLifecycleNotifier::observers().ForEachObserver(
       [&](ContextLifecycleObserver* observer) {
         if (!observer->IsExecutionContextLifecycleObserver())
           return;
@@ -147,30 +149,14 @@ void ExecutionContext::SetLifecycleState(mojom::FrameLifecycleState state) {
 
 void ExecutionContext::NotifyContextDestroyed() {
   is_context_destroyed_ = true;
-  context_lifecycle_observer_set_.ForEachObserver(
-      [](ContextLifecycleObserver* observer) {
-        observer->ContextDestroyed();
-        observer->ObserverSetWillBeCleared();
-      });
-  context_lifecycle_observer_set_.Clear();
-}
-
-void ExecutionContext::AddContextLifecycleObserver(
-    ContextLifecycleObserver* observer) {
-  context_lifecycle_observer_set_.AddObserver(observer);
-}
-
-void ExecutionContext::RemoveContextLifecycleObserver(
-    ContextLifecycleObserver* observer) {
-  DCHECK(context_lifecycle_observer_set_.HasObserver(observer));
-  context_lifecycle_observer_set_.RemoveObserver(observer);
+  ContextLifecycleNotifier::NotifyContextDestroyed();
 }
 
 unsigned ExecutionContext::ContextLifecycleStateObserverCountForTesting()
     const {
-  DCHECK(!context_lifecycle_observer_set_.IsIteratingOverObservers());
+  DCHECK(!ContextLifecycleNotifier::observers().IsIteratingOverObservers());
   unsigned lifecycle_state_observers = 0;
-  context_lifecycle_observer_set_.ForEachObserver(
+  ContextLifecycleNotifier::observers().ForEachObserver(
       [&](ContextLifecycleObserver* observer) {
         if (!observer->IsExecutionContextLifecycleObserver())
           return;
@@ -184,9 +170,35 @@ unsigned ExecutionContext::ContextLifecycleStateObserverCountForTesting()
 }
 
 bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
-  return RuntimeEnabledFeatures::SharedArrayBufferEnabled(this) ||
-         CrossOriginIsolatedCapability();
+  if (RuntimeEnabledFeatures::SharedArrayBufferEnabled(this) ||
+      CrossOriginIsolatedCapability()) {
+    return true;
+  }
+#if defined(OS_ANDROID)
+  return false;
+#else
+  return RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this);
+#endif
 }
+
+namespace {
+mojom::blink::InspectorIssueInfoPtr CreateSharedArrayBufferIssue(
+    const SourceLocation* source_location) {
+  auto details = mojom::blink::InspectorIssueDetails::New();
+  auto issue_details = mojom::blink::SharedArrayBufferIssueDetails::New();
+  auto affected_location = mojom::blink::AffectedLocation::New();
+  affected_location->url = source_location->Url();
+  affected_location->line = source_location->LineNumber() - 1;
+  affected_location->column = source_location->ColumnNumber();
+  affected_location->script_id =
+      WTF::String::Number(source_location->ScriptId());
+  issue_details->affected_location = std::move(affected_location);
+  details->sab_issue_details = std::move(issue_details);
+  return mojom::blink::InspectorIssueInfo::New(
+      mojom::blink::InspectorIssueCode::kSharedArrayBufferIssue,
+      std::move(details));
+}
+}  // namespace
 
 bool ExecutionContext::CheckSharedArrayBufferTransferAllowedAndReport() {
   const bool allowed = SharedArrayBufferTransferAllowed();
@@ -198,21 +210,27 @@ bool ExecutionContext::CheckSharedArrayBufferTransferAllowedAndReport() {
                    !CrossOriginIsolatedCapability())) {
     has_filed_shared_array_buffer_transfer_issue_ = true;
     auto source_location = SourceLocation::Capture(this);
-    auto details = mojom::blink::InspectorIssueDetails::New();
-    auto issue_details =
-        mojom::blink::SharedArrayBufferTransferIssueDetails::New();
-    issue_details->is_warning = allowed;
-    auto mojo_source_location = network::mojom::blink::SourceLocation::New();
-    mojo_source_location->url = source_location->Url();
-    mojo_source_location->line = source_location->LineNumber();
-    mojo_source_location->column = source_location->ColumnNumber();
-    issue_details->source_location = std::move(mojo_source_location);
-    details->sab_transfer_details = std::move(issue_details);
-    AddInspectorIssue(mojom::blink::InspectorIssueInfo::New(
-        mojom::blink::InspectorIssueCode::kSharedArrayBufferTransferIssue,
-        std::move(details)));
+    auto issue = CreateSharedArrayBufferIssue(source_location.get());
+    issue->details->sab_issue_details->is_warning = allowed;
+    issue->details->sab_issue_details->type =
+        mojom::blink::SharedArrayBufferIssueType::kTransferIssue;
+    AddInspectorIssue(std::move(issue));
   }
   return allowed;
+}
+
+void ExecutionContext::FileSharedArrayBufferCreationIssue() {
+  // This is performance critical, only do it once per context.
+  if (has_filed_shared_array_buffer_creation_issue_)
+    return;
+  has_filed_shared_array_buffer_creation_issue_ = true;
+  auto source_location = SourceLocation::Capture(this);
+  auto issue = CreateSharedArrayBufferIssue(source_location.get());
+  // In enforced mode, the SAB constructor isn't available.
+  issue->details->sab_issue_details->is_warning = true;
+  issue->details->sab_issue_details->type =
+      mojom::blink::SharedArrayBufferIssueType::kCreationIssue;
+  AddInspectorIssue(std::move(issue));
 }
 
 void ExecutionContext::AddConsoleMessageImpl(mojom::ConsoleMessageSource source,
@@ -337,7 +355,22 @@ SecurityOrigin* ExecutionContext::GetMutableSecurityOrigin() {
 }
 
 ContentSecurityPolicy* ExecutionContext::GetContentSecurityPolicy() const {
-  return security_context_.GetContentSecurityPolicy();
+  return content_security_policy_.Get();
+}
+
+void ExecutionContext::SetContentSecurityPolicy(
+    ContentSecurityPolicy* content_security_policy) {
+  content_security_policy_ = content_security_policy;
+}
+
+void ExecutionContext::SetRequireTrustedTypes() {
+  DCHECK(require_safe_types_ ||
+         content_security_policy_->IsRequireTrustedTypes());
+  require_safe_types_ = true;
+}
+
+void ExecutionContext::SetRequireTrustedTypesForTesting() {
+  require_safe_types_ = true;
 }
 
 network::mojom::blink::WebSandboxFlags ExecutionContext::GetSandboxFlags()
@@ -430,15 +463,37 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
   }
 }
 
+network::mojom::ReferrerPolicy ExecutionContext::GetReferrerPolicy() const {
+  return policy_container_->GetReferrerPolicy();
+}
+
 void ExecutionContext::SetReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
   // When a referrer policy has already been set, the latest value takes
   // precedence.
   UseCounter::Count(this, WebFeature::kSetReferrerPolicy);
-  if (referrer_policy_ != network::mojom::ReferrerPolicy::kDefault)
+  if (GetReferrerPolicy() != network::mojom::ReferrerPolicy::kDefault)
     UseCounter::Count(this, WebFeature::kResetReferrerPolicy);
 
-  referrer_policy_ = referrer_policy;
+  policy_container_->UpdateReferrerPolicy(referrer_policy);
+}
+
+network::mojom::IPAddressSpace ExecutionContext::AddressSpace() const {
+  return policy_container_->GetIPAddressSpace();
+}
+
+void ExecutionContext::SetAddressSpace(
+    network::mojom::blink::IPAddressSpace ip_address_space) {
+  GetPolicyContainer()->SetIPAddressSpace(ip_address_space);
+}
+
+void ExecutionContext::SetPolicyContainer(
+    std::unique_ptr<PolicyContainer> container) {
+  policy_container_ = std::move(container);
+}
+
+std::unique_ptr<PolicyContainer> ExecutionContext::TakePolicyContainer() {
+  return std::move(policy_container_);
 }
 
 void ExecutionContext::RemoveURLFromMemoryCache(const KURL& url) {
@@ -452,8 +507,8 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(pending_exceptions_);
   visitor->Trace(csp_delegate_);
   visitor->Trace(timers_);
-  visitor->Trace(context_lifecycle_observer_set_);
   visitor->Trace(origin_trial_context_);
+  visitor->Trace(content_security_policy_);
   ContextLifecycleNotifier::Trace(visitor);
   ConsoleLogger::Trace(visitor);
   Supplementable<ExecutionContext>::Trace(visitor);
@@ -480,16 +535,9 @@ bool ExecutionContext::FeatureEnabled(OriginTrialFeature feature) const {
 }
 
 bool ExecutionContext::IsFeatureEnabled(
-    mojom::blink::FeaturePolicyFeature feature,
+    mojom::blink::PermissionsPolicyFeature feature,
     ReportOptions report_on_failure,
     const String& message) const {
-  if (report_on_failure == ReportOptions::kReportOnFailure) {
-    // We are expecting a violation report in case the feature is disabled in
-    // the context. Therefore, this qualifies as a potential violation (i.e.,
-    // if the feature was disabled it would generate a report).
-    CountPotentialFeaturePolicyViolation(feature);
-  }
-
   bool should_report;
   bool enabled = security_context_.IsFeatureEnabled(feature, &should_report);
 
@@ -497,7 +545,7 @@ bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::PolicyDisposition disposition =
         enabled ? mojom::blink::PolicyDisposition::kReport
                 : mojom::blink::PolicyDisposition::kEnforce;
-    ReportFeaturePolicyViolation(feature, disposition, message);
+    ReportPermissionsPolicyViolation(feature, disposition, message);
   }
   return enabled;
 }
@@ -521,7 +569,7 @@ bool ExecutionContext::IsFeatureEnabled(
     const String& source_file) const {
   // The default value for any feature should be true unless restricted by
   // document policy
-  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled(this))
+  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())
     return true;
 
   SecurityContext::FeatureStatus status =
@@ -541,12 +589,12 @@ bool ExecutionContext::IsFeatureEnabled(
 }
 
 bool ExecutionContext::RequireTrustedTypes() const {
-  return security_context_.TrustedTypesRequiredByPolicy() &&
+  return require_safe_types_ &&
          RuntimeEnabledFeatures::TrustedDOMTypesEnabled(this);
 }
 
 String ExecutionContext::addressSpaceForBindings() const {
-  switch (address_space_) {
+  switch (AddressSpace()) {
     case network::mojom::IPAddressSpace::kPublic:
     case network::mojom::IPAddressSpace::kUnknown:
       return "public";

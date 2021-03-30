@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_BOOKMARKS_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_BOOKMARKS_HELPER_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -15,14 +16,15 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_test_util.h"
-#include "components/sync/engine_impl/loopback_server/loopback_server_entity.h"
-#include "components/sync/nigori/cryptographer.h"
+#include "components/sync/engine/loopback_server/loopback_server_entity.h"
+#include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -50,6 +52,61 @@ MATCHER_P(HasGuid, expected_guid, "") {
   return actual_node->guid() == expected_guid;
 }
 
+// Helping matchers to check the hierarchy of bookmarks. All matchers work with
+// either raw or smart pointer to BookmarkNode and verify its |title|. Usage
+// example:
+// EXPECT_THAT(
+//     bookmark_bar->children(), ElementsAre(
+//         IsUrlBookmarkWithTitleAndUrl("Title", GURL("http://url.com")),
+//         IsFolderWithTitle("Folder title")));
+//
+// This example checks that the bookmark bar node has two children nodes: a URL
+// and a folder. For complex hierarchy checks IsFolderWithTitleAndChildrenAre
+// might be used to verify all children of the folder:
+// EXPECT_THAT(
+//     bookmark_bar->children(), ElementsAre(
+//         IsUrlBookmarkWithTitleAndUrl("Title", GURL("http://url.com")),
+//         IsFolderWithTitleAndChildrenAre("Folder title",
+//             IsUrlBookmarkWithTitleAndUrl("Title 2", GURL("http://url2.com")),
+//             IsUrlBookmarkWithTitleAndUrl("Title 3", GURL("http://url3.com"))
+// )));
+//
+// IsFolderWithTitleAndChildren provides more general approach to verify
+// folder's children using container matchers (e.g. UnorderedElementsAre,
+// IsEmpty, SizeIs, etc):
+// EXPECT_THAT(
+//     bookmark_bar->children(), ElementsAre(
+//         IsUrlBookmarkWithTitleAndUrl("Title", GURL("http://url.com")),
+//         IsFolderWithTitleAndChildren("Folder title",
+//             AllOf(SizeIs(2), Contains(
+//                 IsUrlBookmarkWithTitleAndUrl("Title 3", "http://url.com")
+// )))));
+
+MATCHER_P(IsFolderWithTitle, title, "") {
+  *result_listener << "the actual title is " << arg->GetTitle();
+  return arg->is_folder() && base::UTF16ToUTF8(arg->GetTitle()) == title;
+}
+
+MATCHER_P2(IsUrlBookmarkWithTitleAndUrl, title, url, "") {
+  *result_listener << "the actual title is " << arg->GetTitle()
+                   << " and URL is " << arg->url();
+  return arg->is_url() && base::UTF16ToUTF8(arg->GetTitle()) == title &&
+         arg->url() == GURL(url);
+}
+
+testing::Matcher<std::unique_ptr<bookmarks::BookmarkNode>>
+IsFolderWithTitleAndChildren(
+    const std::string& title,
+    testing::Matcher<bookmarks::BookmarkNode::TreeNodes> children_matcher);
+
+template <class... Args>
+testing::Matcher<std::unique_ptr<bookmarks::BookmarkNode>>
+IsFolderWithTitleAndChildrenAre(const std::string& title,
+                                Args... children_matchers) {
+  return IsFolderWithTitleAndChildren(
+      title, testing::ElementsAre(std::move(children_matchers)...));
+}
+
 // Used to access the bookmark undo service within a particular sync profile.
 BookmarkUndoService* GetBookmarkUndoService(int index) WARN_UNUSED_RESULT;
 
@@ -68,9 +125,6 @@ const bookmarks::BookmarkNode* GetSyncedBookmarksNode(int index)
 
 // Used to access the "Managed Bookmarks" node for the given profile.
 const bookmarks::BookmarkNode* GetManagedNode(int index) WARN_UNUSED_RESULT;
-
-// Used to access the bookmarks within the verifier sync profile.
-bookmarks::BookmarkModel* GetVerifierBookmarkModel() WARN_UNUSED_RESULT;
 
 // Adds a URL with address |url| and title |title| to the bookmark bar of
 // profile |profile|. Returns a pointer to the node that was added.
@@ -174,14 +228,6 @@ void SortChildren(int profile, const bookmarks::BookmarkNode* parent);
 // Reverses the order of the children of the node |parent| in the bookmark
 // model of profile |profile|.
 void ReverseChildOrder(int profile, const bookmarks::BookmarkNode* parent);
-
-// Checks if the bookmark model of profile |profile| matches the verifier
-// bookmark model. Returns true if they match.
-bool ModelMatchesVerifier(int profile) WARN_UNUSED_RESULT;
-
-// Checks if the bookmark models of all sync profiles match the verifier
-// bookmark model. Returns true if they match.
-bool AllModelsMatchVerifier() WARN_UNUSED_RESULT;
 
 // Checks if the bookmark models of |profile_a| and |profile_b| match each
 // other. Returns true if they match.
@@ -383,16 +429,6 @@ class SingleBookmarkModelStatusChangeChecker
   bookmarks::BookmarkModel* bookmark_model_;
 };
 
-// Checker used to block until bookmarks match the verifier bookmark model.
-class BookmarksMatchVerifierChecker : public BookmarkModelStatusChangeChecker {
- public:
-  BookmarksMatchVerifierChecker();
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-  bool Wait() override;
-};
-
 // Generic status change checker that waits until a predicate as defined by
 // a gMock matches becomes true.
 class SingleBookmarksModelMatcherChecker
@@ -494,6 +530,55 @@ class BookmarksGUIDChecker : public SingleBookmarksModelMatcherChecker {
  public:
   BookmarksGUIDChecker(int profile, const base::GUID& guid);
   ~BookmarksGUIDChecker() override;
+};
+
+// Waits until the fake server has the similar structure of bookmarks like the
+// bookmark model. The checker verifies that all nodes have the same GUID,
+// title, URL, parent and order. It doesn't check favicons and any other fields.
+// Note that this class is not enough to verify test's result as it only waits
+// for the state when the bookmark model has the same structure on the server.
+// It doesn't check their content and the expected number of bookmarks. The fake
+// server must have entities with unique GUIDs.
+class BookmarkModelMatchesFakeServerChecker
+    : public SingleClientStatusChangeChecker {
+ public:
+  BookmarkModelMatchesFakeServerChecker(int profile,
+                                        syncer::ProfileSyncService* service,
+                                        fake_server::FakeServer* fake_server);
+
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  std::map<std::string, sync_pb::SyncEntity>
+  GetServerPermanentBookmarksGroupedBySyncId() const;
+
+  // Fills in |server_bookmarks_by_guid| with all non-permanent entities stored
+  // on the server. All entities must have unique GUID in specifics. Returns
+  // false if there are duplicate entities on the server.
+  bool GetServerBookmarksByUniqueGUID(std::map<base::GUID, sync_pb::SyncEntity>*
+                                          server_bookmarks_by_guid) const;
+
+  // Check that a permanent parent node of given |node| is the same as for the
+  // matching |server_entity|.
+  bool CheckPermanentParentNode(const bookmarks::BookmarkNode* node,
+                                const sync_pb::SyncEntity& server_entity,
+                                std::ostream* os) const;
+
+  // Check that a regular parent node of given |node| matches to the parent of
+  // matching server entity.
+  bool CheckParentNode(
+      const bookmarks::BookmarkNode* node,
+      const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid,
+      std::ostream* os) const;
+
+  // Return ordered GUIDs of server entities grouped by their parents.
+  std::map<std::string, std::vector<base::GUID>>
+  GetServerGuidsGroupedByParentSyncId(
+      const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid)
+      const;
+
+  fake_server::FakeServer* const fake_server_;
+  const int profile_index_;
 };
 
 }  // namespace bookmarks_helper

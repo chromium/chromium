@@ -26,7 +26,7 @@
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
 #include "sandbox/win/src/startup_information_helper.h"
 #include "sandbox/win/src/target_process.h"
-#include "sandbox/win/src/win2k_threadpool.h"
+#include "sandbox/win/src/threadpool.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace {
@@ -41,8 +41,8 @@ bool AssociateCompletionPort(HANDLE job, HANDLE port, void* key) {
              : false;
 }
 
-// the different commands that you can send to the worker thread that
-// executes TargetEventsThread().
+// Commands that can be sent to the completion port serviced by
+// TargetEventsThread().
 enum {
   THREAD_CTRL_NONE,
   THREAD_CTRL_NEW_JOB_TRACKER,
@@ -51,6 +51,27 @@ enum {
   THREAD_CTRL_GET_POLICY_INFO,
   THREAD_CTRL_QUIT,
   THREAD_CTRL_LAST,
+};
+
+// Transfers parameters to the target events thread during Init().
+struct TargetEventsThreadParams {
+  TargetEventsThreadParams(HANDLE iocp,
+                           HANDLE no_targets,
+                           std::unique_ptr<sandbox::ThreadPool> thread_pool)
+      : iocp(iocp),
+        no_targets(no_targets),
+        thread_pool(std::move(thread_pool)) {}
+  ~TargetEventsThreadParams() {}
+  // IOCP that job notifications and commands are sent to.
+  // Handle is closed when BrokerServices is destroyed.
+  HANDLE iocp;
+  // Event used when jobs cannot be tracked.
+  // Handle is closed when BrokerServices is destroyed.
+  HANDLE no_targets;
+  // Thread pool used to mediate sandbox IPC, owned by the target
+  // events thread but accessed by BrokerServices and TargetProcesses.
+  // Destroyed when TargetEventsThread ends.
+  std::unique_ptr<sandbox::ThreadPool> thread_pool;
 };
 
 // Helper structure that allows the Broker to associate a job notification
@@ -121,103 +142,35 @@ class PolicyDiagnosticList final : public sandbox::PolicyList {
   std::vector<std::unique_ptr<sandbox::PolicyInfo>> internal_list_;
 };
 
-}  // namespace
-
-namespace sandbox {
-
-BrokerServicesBase::BrokerServicesBase() {}
-
-// The broker uses a dedicated worker thread that services the job completion
-// port to perform policy notifications and associated cleanup tasks.
-ResultCode BrokerServicesBase::Init() {
-  if (job_port_.IsValid() || thread_pool_)
-    return SBOX_ERROR_UNEXPECTED_CALL;
-
-  job_port_.Set(::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 0));
-  if (!job_port_.IsValid())
-    return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
-
-  no_targets_.Set(::CreateEventW(nullptr, true, false, nullptr));
-
-#if defined(ARCH_CPU_32_BITS)
-  // Conserve address space in 32-bit Chrome. This thread uses a small and
-  // consistent amount and doesn't need the default of 1.5 MiB.
-  constexpr unsigned flags = STACK_SIZE_PARAM_IS_A_RESERVATION;
-  constexpr size_t stack_size = 128 * 1024;
-#else
-  constexpr unsigned int flags = 0;
-  constexpr size_t stack_size = 0;
-#endif
-  job_thread_.Set(::CreateThread(nullptr, stack_size,  // Default security.
-                                 TargetEventsThread, this, flags, nullptr));
-  if (!job_thread_.IsValid())
-    return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
-
-  return SBOX_ALL_OK;
-}
-
-// The destructor should only be called when the Broker process is terminating.
-// Since BrokerServicesBase is a singleton, this is called from the CRT
-// termination handlers, if this code lives on a DLL it is called during
-// DLL_PROCESS_DETACH in other words, holding the loader lock, so we cannot
-// wait for threads here.
-BrokerServicesBase::~BrokerServicesBase() {
-  // If there is no port Init() was never called successfully.
-  if (!job_port_.IsValid())
-    return;
-
-  // Closing the port causes, that no more Job notifications are delivered to
-  // the worker thread and also causes the thread to exit. This is what we
-  // want to do since we are going to close all outstanding Jobs and notifying
-  // the policy objects ourselves.
-  ::PostQueuedCompletionStatus(job_port_.Get(), 0, THREAD_CTRL_QUIT, nullptr);
-
-  if (job_thread_.IsValid() &&
-      WAIT_TIMEOUT == ::WaitForSingleObject(job_thread_.Get(), 1000)) {
-    // Cannot clean broker services.
-    NOTREACHED();
-    return;
-  }
-  thread_pool_.reset();
-}
-
-scoped_refptr<TargetPolicy> BrokerServicesBase::CreatePolicy() {
-  // If you change the type of the object being created here you must also
-  // change the downcast to it in SpawnTarget().
-  scoped_refptr<TargetPolicy> policy(new PolicyBase);
-  // PolicyBase starts with refcount 1.
-  policy->Release();
-  return policy;
-}
-
 // The worker thread stays in a loop waiting for asynchronous notifications
 // from the job objects. Right now we only care about knowing when the last
 // process on a job terminates, but in general this is the place to tell
 // the policy about events.
-DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
+DWORD WINAPI TargetEventsThread(PVOID param) {
   if (!param)
     return 1;
 
   base::PlatformThread::SetName("BrokerEvent");
 
-  BrokerServicesBase* broker = reinterpret_cast<BrokerServicesBase*>(param);
-  HANDLE port = broker->job_port_.Get();
-  HANDLE no_targets = broker->no_targets_.Get();
+  // Take ownership of params so that it is deleted on thread exit.
+  std::unique_ptr<TargetEventsThreadParams> params(
+      reinterpret_cast<TargetEventsThreadParams*>(param));
 
   std::set<DWORD> child_process_ids;
   std::list<std::unique_ptr<JobTracker>> jobs;
   std::list<std::unique_ptr<ProcessTracker>> processes;
   int target_counter = 0;
   int untracked_target_counter = 0;
-  ::ResetEvent(no_targets);
+  ::ResetEvent(params->no_targets);
 
   while (true) {
     DWORD events = 0;
     ULONG_PTR key = 0;
     LPOVERLAPPED ovl = nullptr;
 
-    if (!::GetQueuedCompletionStatus(port, &events, &key, &ovl, INFINITE)) {
-      // this call fails if the port has been closed before we have a
+    if (!::GetQueuedCompletionStatus(params->iocp, &events, &key, &ovl,
+                                     INFINITE)) {
+      // This call fails if the port has been closed before we have a
       // chance to service the last packet which is 'exit' anyway so
       // this is not an error.
       return 1;
@@ -264,7 +217,7 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
             untracked_target_counter++;
           ++target_counter;
           if (1 == target_counter) {
-            ::ResetEvent(no_targets);
+            ::ResetEvent(params->no_targets);
           }
           break;
         }
@@ -280,7 +233,7 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
           }
           --target_counter;
           if (0 == target_counter)
-            ::SetEvent(no_targets);
+            ::SetEvent(params->no_targets);
 
           DCHECK(target_counter >= 0);
           break;
@@ -296,7 +249,7 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
 
         case JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT: {
           bool res = ::TerminateJobObject(tracker->job.Get(),
-                                          SBOX_FATAL_MEMORY_EXCEEDED);
+                                          sandbox::SBOX_FATAL_MEMORY_EXCEEDED);
           DCHECK(res);
           break;
         }
@@ -319,10 +272,10 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
       tracker.reset(reinterpret_cast<ProcessTracker*>(ovl));
 
       if (child_process_ids.empty()) {
-        ::SetEvent(broker->no_targets_.Get());
+        ::SetEvent(params->no_targets);
       }
 
-      tracker->iocp = port;
+      tracker->iocp = params->iocp;
       if (!::RegisterWaitForSingleObject(&(tracker->wait_handle),
                                          tracker->process.Get(),
                                          ProcessEventCallback, tracker.get(),
@@ -350,21 +303,21 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
 
     } else if (THREAD_CTRL_GET_POLICY_INFO == key) {
       // Clone the policies for sandbox diagnostics.
-      std::unique_ptr<PolicyDiagnosticsReceiver> receiver;
-      receiver.reset(static_cast<PolicyDiagnosticsReceiver*>(
+      std::unique_ptr<sandbox::PolicyDiagnosticsReceiver> receiver;
+      receiver.reset(static_cast<sandbox::PolicyDiagnosticsReceiver*>(
           reinterpret_cast<void*>(ovl)));
       // The PollicyInfo ctor copies essential information from the trackers.
       auto policy_list = std::make_unique<PolicyDiagnosticList>();
       for (auto&& process_tracker : processes) {
         if (process_tracker->policy) {
-          policy_list->push_back(std::make_unique<PolicyDiagnostic>(
+          policy_list->push_back(std::make_unique<sandbox::PolicyDiagnostic>(
               process_tracker->policy.get()));
         }
       }
       for (auto&& job_tracker : jobs) {
         if (job_tracker->policy) {
-          policy_list->push_back(
-              std::make_unique<PolicyDiagnostic>(job_tracker->policy.get()));
+          policy_list->push_back(std::make_unique<sandbox::PolicyDiagnostic>(
+              job_tracker->policy.get()));
         }
       }
       // Receiver should return quickly.
@@ -387,6 +340,89 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
 
   NOTREACHED();
   return 0;
+}
+
+}  // namespace
+
+namespace sandbox {
+
+BrokerServicesBase::BrokerServicesBase() {}
+
+// The broker uses a dedicated worker thread that services the job completion
+// port to perform policy notifications and associated cleanup tasks.
+ResultCode BrokerServicesBase::Init() {
+  if (job_port_.IsValid() || thread_pool_)
+    return SBOX_ERROR_UNEXPECTED_CALL;
+
+  job_port_.Set(::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 0));
+  if (!job_port_.IsValid())
+    return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
+
+  no_targets_.Set(::CreateEventW(nullptr, true, false, nullptr));
+  if (!no_targets_.IsValid())
+    return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
+
+  // We transfer ownership of this memory to the thread.
+  auto params = std::make_unique<TargetEventsThreadParams>(
+      job_port_.Get(), no_targets_.Get(), std::make_unique<ThreadPool>());
+
+  // We keep the thread alive until our destructor so we can use a raw
+  // pointer to the thread pool.
+  thread_pool_ = params->thread_pool.get();
+
+#if defined(ARCH_CPU_32_BITS)
+  // Conserve address space in 32-bit Chrome. This thread uses a small and
+  // consistent amount and doesn't need the default of 1.5 MiB.
+  constexpr unsigned flags = STACK_SIZE_PARAM_IS_A_RESERVATION;
+  constexpr size_t stack_size = 128 * 1024;
+#else
+  constexpr unsigned int flags = 0;
+  constexpr size_t stack_size = 0;
+#endif
+  job_thread_.Set(::CreateThread(nullptr, stack_size,  // Default security.
+                                 TargetEventsThread, params.get(), flags,
+                                 nullptr));
+  if (!job_thread_.IsValid()) {
+    thread_pool_ = nullptr;
+    // Returning cleans up params.
+    return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
+  }
+
+  params.release();
+  return SBOX_ALL_OK;
+}
+
+// The destructor should only be called when the Broker process is terminating.
+// Since BrokerServicesBase is a singleton, this is called from the CRT
+// termination handlers, if this code lives on a DLL it is called during
+// DLL_PROCESS_DETACH in other words, holding the loader lock, so we cannot
+// wait for threads here.
+BrokerServicesBase::~BrokerServicesBase() {
+  // If there is no port Init() was never called successfully.
+  if (!job_port_.IsValid())
+    return;
+
+  // Closing the port causes, that no more Job notifications are delivered to
+  // the worker thread and also causes the thread to exit. This is what we
+  // want to do since we are going to close all outstanding Jobs and notifying
+  // the policy objects ourselves.
+  ::PostQueuedCompletionStatus(job_port_.Get(), 0, THREAD_CTRL_QUIT, nullptr);
+
+  if (job_thread_.IsValid() &&
+      WAIT_TIMEOUT == ::WaitForSingleObject(job_thread_.Get(), 1000)) {
+    // Cannot clean broker services.
+    NOTREACHED();
+    return;
+  }
+}
+
+scoped_refptr<TargetPolicy> BrokerServicesBase::CreatePolicy() {
+  // If you change the type of the object being created here you must also
+  // change the downcast to it in SpawnTarget().
+  scoped_refptr<TargetPolicy> policy(new PolicyBase);
+  // PolicyBase starts with refcount 1.
+  policy->Release();
+  return policy;
 }
 
 // SpawnTarget does all the interesting sandbox setup and creates the target
@@ -482,17 +518,12 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   if (!startup_info->BuildStartupInformation())
     return SBOX_ERROR_PROC_THREAD_ATTRIBUTES;
 
-  // Construct the thread pool here in case it is expensive.
-  // The thread pool is shared by all the targets
-  if (!thread_pool_)
-    thread_pool_ = std::make_unique<Win2kThreadPool>();
-
   // Create the TargetProcess object and spawn the target suspended. Note that
   // Brokerservices does not own the target object. It is owned by the Policy.
   base::win::ScopedProcessInformation process_info;
   std::unique_ptr<TargetProcess> target = std::make_unique<TargetProcess>(
       std::move(initial_token), std::move(lockdown_token), job.Get(),
-      thread_pool_.get(),
+      thread_pool_,
       profile ? profile->GetImpersonationCapabilities() : std::vector<Sid>());
 
   result = target->Create(exe_path, command_line, std::move(startup_info),

@@ -23,8 +23,8 @@ class ConcatMenuModel : public ui::MenuModel {
   ItemType GetTypeAt(int index) const override;
   ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override;
   int GetCommandIdAt(int index) const override;
-  base::string16 GetLabelAt(int index) const override;
-  base::string16 GetMinorTextAt(int index) const override;
+  std::u16string GetLabelAt(int index) const override;
+  std::u16string GetMinorTextAt(int index) const override;
   ui::ImageModel GetMinorIconAt(int index) const override;
   bool IsItemDynamicAt(int index) const override;
   bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const override;

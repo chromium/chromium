@@ -2,12 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {positionPopupAroundElement, AnchorType} from 'chrome://resources/js/cr/ui/position_util.m.js';
+// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
+
 cr.define('cr.ui', function() {
   /**
    * Creates a new autocomplete list popup.
    * @extends {cr.ui.List}
    */
-  class AutocompleteList extends cr.ui.List {
+  /* #export */ class AutocompleteList extends cr.ui.List {
     constructor() {
       super();
       this.__proto__ = AutocompleteList.prototype;
@@ -219,5 +229,6 @@ cr.define('cr.ui', function() {
   }
   AutocompleteList.prototype.__proto__ = cr.ui.List.prototype;
 
+  // #cr_define_end
   return {AutocompleteList: AutocompleteList};
 });

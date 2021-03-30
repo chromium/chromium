@@ -157,13 +157,20 @@ class PLATFORM_EXPORT GraphicsContext {
     return ImmutableState()->GetInterpolationQuality();
   }
 
+  SkSamplingOptions ImageSamplingOptions() const {
+    return SkSamplingOptions(
+        static_cast<SkFilterQuality>(ImageInterpolationQuality()),
+        SkSamplingOptions::kMedium_asMipmapLinear);
+  }
+
   // Specify the device scale factor which may change the way document markers
   // and fonts are rendered.
   void SetDeviceScaleFactor(float factor) { device_scale_factor_ = factor; }
   float DeviceScaleFactor() const { return device_scale_factor_; }
 
-  // Set to true if context is for printing. Bitmaps won't  be resampled when
-  // printing to keep the best possible quality.
+  // Set to true if context is for printing. Bitmaps won't be resampled when
+  // printing to keep the best possible quality. When printing text will be
+  // provided along with glyphs.
   void SetPrinting(bool printing) { printing_ = printing; }
 
   SkColorFilter* GetColorFilter() const;
@@ -215,6 +222,9 @@ class PLATFORM_EXPORT GraphicsContext {
   void FillDRRect(const FloatRoundedRect&,
                   const FloatRoundedRect&,
                   const Color&);
+  void FillRectWithRoundedHole(const FloatRect&,
+                               const FloatRoundedRect& rounded_hole_rect,
+                               const Color&);
 
   void StrokeRect(const FloatRect&, float line_width);
 
@@ -345,15 +355,6 @@ class PLATFORM_EXPORT GraphicsContext {
   // not necessarily non-empty), even when the context is disabled.
   sk_sp<PaintRecord> EndRecording();
 
-  void SetShadow(const FloatSize& offset,
-                 float blur,
-                 const Color&,
-                 DrawLooperBuilder::ShadowTransformMode =
-                     DrawLooperBuilder::kShadowRespectsTransforms,
-                 DrawLooperBuilder::ShadowAlphaMode =
-                     DrawLooperBuilder::kShadowRespectsAlpha,
-                 ShadowMode = kDrawShadowAndForeground);
-
   void SetDrawLooper(sk_sp<SkDrawLooper>);
 
   void DrawFocusRing(const Vector<IntRect>&,
@@ -364,21 +365,6 @@ class PLATFORM_EXPORT GraphicsContext {
                      const Color&,
                      mojom::blink::ColorScheme color_scheme);
   void DrawFocusRing(const Path&, float width, int offset, const Color&);
-
-  enum Edge {
-    kNoEdge = 0,
-    kTopEdge = 1 << 1,
-    kRightEdge = 1 << 2,
-    kBottomEdge = 1 << 3,
-    kLeftEdge = 1 << 4
-  };
-  typedef unsigned Edges;
-  void DrawInnerShadow(const FloatRoundedRect&,
-                       const Color& shadow_color,
-                       const FloatSize& shadow_offset,
-                       float shadow_blur,
-                       float shadow_spread,
-                       Edges clipped_edges = kNoEdge);
 
   const PaintFlags& FillFlags() const { return ImmutableState()->FillFlags(); }
   // If the length of the path to be stroked is known, pass it in for correct
@@ -401,6 +387,13 @@ class PLATFORM_EXPORT GraphicsContext {
   SkFilterQuality ComputeFilterQuality(Image*,
                                        const FloatRect& dest,
                                        const FloatRect& src) const;
+
+  SkSamplingOptions ComputeSamplingOptions(Image* image,
+                                           const FloatRect& dest,
+                                           const FloatRect& src) const {
+    return SkSamplingOptions(ComputeFilterQuality(image, dest, src),
+                             SkSamplingOptions::kMedium_asMipmapLinear);
+  }
 
   // Sets target URL of a clickable area.
   void SetURLForRect(const KURL&, const IntRect&);
@@ -504,10 +497,6 @@ class PLATFORM_EXPORT GraphicsContext {
       }
     }
   }
-
-  void FillRectWithRoundedHole(const FloatRect&,
-                               const FloatRoundedRect& rounded_hole_rect,
-                               const Color&);
 
   class DarkModeFlags;
 

@@ -280,9 +280,17 @@ void VideoEncoderClient::RequireBitstreamBuffers(
   if (video_->Resolution() != encoder_client_config_.output_resolution) {
     // Scaling case. Scaling is currently only supported when using Dmabufs.
     EXPECT_EQ(encoder_client_config_.input_storage_type,
-              VideoEncodeAccelerator::Config::StorageType::kDmabuf);
+              VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
     coded_size = video_->Resolution();
   }
+
+  // Timestamps are applied to the frames before they are submitted to the
+  // encoder.  If encode is to run as fast as possible, then the
+  // timestamps need to be spaced according to the framerate.
+  // If the encoder is to encode real-time, then |encode_interval|
+  // will be used to only submit frames every |encode_interval|.
+  const uint32_t frame_rate =
+      encoder_client_config_.encode_interval ? 0 : video_->FrameRate();
 
   // Follow the behavior of the chrome capture stack; |natural_size| is the
   // dimension to be encoded.
@@ -291,9 +299,9 @@ void VideoEncoderClient::RequireBitstreamBuffers(
       /*src_coded_size=*/video_->Resolution(),
       /*dst_coded_size=*/coded_size,
       /*visible_rect=*/video_->VisibleRect(),
-      /*natural_size=*/encoder_client_config_.output_resolution,
+      /*natural_size=*/encoder_client_config_.output_resolution, frame_rate,
       encoder_client_config_.input_storage_type ==
-              VideoEncodeAccelerator::Config::StorageType::kDmabuf
+              VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer
           ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
           : VideoFrame::STORAGE_MOJO_SHARED_BUFFER,
       gpu_memory_buffer_factory_);
@@ -546,6 +554,7 @@ void VideoEncoderClient::UpdateBitrateTask(
     uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
   DVLOGF(4);
+  aligned_data_helper_->UpdateFrameRate(framerate);
   encoder_->RequestEncodingParametersChange(bitrate, framerate);
   base::AutoLock auto_lcok(stats_lock_);
   current_stats_.framerate = framerate;

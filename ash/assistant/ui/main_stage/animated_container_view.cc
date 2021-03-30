@@ -40,7 +40,7 @@ class AnimatedContainerView::ScopedDisablePreferredSizeChanged {
 
 AnimatedContainerView::AnimatedContainerView(AssistantViewDelegate* delegate)
     : delegate_(delegate) {
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
   AssistantInteractionController::Get()->GetModel()->AddObserver(this);
 
   AddScrollViewObserver(this);
@@ -76,7 +76,9 @@ void AnimatedContainerView::OnChildViewRemoved(View* observed_view,
 
 void AnimatedContainerView::OnAssistantControllerDestroying() {
   AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-  assistant_controller_observer_.Remove(AssistantController::Get());
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void AnimatedContainerView::OnCommittedQueryChanged(

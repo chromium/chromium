@@ -145,19 +145,6 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
                     GLsizei width,
                     GLsizei height));
 
-  // OOP-Raster
-  MOCK_METHOD6(BeginRasterCHROMIUM,
-               void(GLuint texture_id,
-                    GLuint sk_color,
-                    GLuint msaa_sample_count,
-                    GLboolean can_use_lcd_text,
-                    GLint color_type,
-                    GLuint color_space_id));
-  MOCK_METHOD2(RasterCHROMIUM, void(GLsizeiptr size, const void* list));
-  MOCK_METHOD1(MapRasterCHROMIUM, void*(GLsizeiptr size));
-  MOCK_METHOD1(UnmapRasterCHROMIUM, void(GLsizeiptr written));
-  MOCK_METHOD0(EndRasterCHROMIUM, void());
-
   MOCK_METHOD2(PixelStorei, void(GLenum pname, GLint param));
   MOCK_METHOD2(TraceBeginCHROMIUM,
                void(const char* category_name, const char* trace_name));

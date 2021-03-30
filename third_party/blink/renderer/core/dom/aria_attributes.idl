@@ -46,6 +46,7 @@
     [CEReactions, Reflect=aria_valuemin] attribute DOMString? ariaValueMin;
     [CEReactions, Reflect=aria_valuenow] attribute DOMString? ariaValueNow;
     [CEReactions, Reflect=aria_valuetext] attribute DOMString? ariaValueText;
+    [RuntimeEnabled=AccessibilityAriaVirtualContent, CEReactions, Reflect=aria_virtualcontent] attribute DOMString? ariaVirtualContent;
 };
 
 Element includes AriaAttributes;

@@ -56,6 +56,8 @@
 
 namespace extensions {
 
+using mojom::ManifestLocation;
+
 namespace developer = api::developer_private;
 
 namespace {
@@ -131,8 +133,8 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
         new ExtensionInfoGenerator(browser_context()));
     generator->CreateExtensionInfo(
         extension_id,
-        base::Bind(&ExtensionInfoGeneratorUnitTest::OnInfoGenerated,
-                   base::Unretained(this), base::Unretained(&info)));
+        base::BindOnce(&ExtensionInfoGeneratorUnitTest::OnInfoGenerated,
+                       base::Unretained(this), base::Unretained(&info)));
     run_loop.Run();
     return info;
   }
@@ -151,8 +153,8 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
     generator.CreateExtensionsInfo(
         true, /* include_disabled */
         true, /* include_terminated */
-        base::Bind(&ExtensionInfoGeneratorUnitTest::OnInfosGenerated,
-                   base::Unretained(this), base::Unretained(&result)));
+        base::BindOnce(&ExtensionInfoGeneratorUnitTest::OnInfosGenerated,
+                       base::Unretained(this), base::Unretained(&result)));
     run_loop.Run();
     return result;
   }
@@ -160,7 +162,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
   const scoped_refptr<const Extension> CreateExtension(
       const std::string& name,
       std::unique_ptr<base::ListValue> permissions,
-      Manifest::Location location) {
+      mojom::ManifestLocation location) {
     const std::string kId = crx_file::id_util::GenerateId(name);
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
@@ -185,7 +187,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
 
   std::unique_ptr<developer::ExtensionInfo> CreateExtensionInfoFromPath(
       const base::FilePath& extension_path,
-      Manifest::Location location) {
+      mojom::ManifestLocation location) {
     ChromeTestExtensionLoader loader(browser_context());
     loader.set_location(location);
     loader.set_creation_flags(Extension::REQUIRE_KEY);
@@ -207,7 +209,8 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
 
     // Produce test output.
     std::unique_ptr<developer::ExtensionInfo> info =
-        CreateExtensionInfoFromPath(extension_path, Manifest::UNPACKED);
+        CreateExtensionInfoFromPath(extension_path,
+                                    mojom::ManifestLocation::kUnpacked);
     info->views = std::move(views);
     std::unique_ptr<base::DictionaryValue> actual_output_data = info->ToValue();
     ASSERT_TRUE(actual_output_data);
@@ -268,7 +271,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(std::move(manifest))
-          .SetLocation(Manifest::UNPACKED)
+          .SetLocation(ManifestLocation::kUnpacked)
           .SetPath(data_dir())
           .SetID(id)
           .Build();
@@ -276,20 +279,15 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   ErrorConsole* error_console = ErrorConsole::Get(profile());
   const GURL kContextUrl("http://example.com");
   error_console->ReportError(std::make_unique<RuntimeError>(
-      extension->id(), false, base::UTF8ToUTF16("source"),
-      base::UTF8ToUTF16("message"),
-      StackTrace(1, StackFrame(1, 1, base::UTF8ToUTF16("source"),
-                               base::UTF8ToUTF16("function"))),
-      kContextUrl, logging::LOG_ERROR, 1, 1));
+      extension->id(), false, u"source", u"message",
+      StackTrace(1, StackFrame(1, 1, u"source", u"function")), kContextUrl,
+      logging::LOG_ERROR, 1, 1));
   error_console->ReportError(std::make_unique<ManifestError>(
-      extension->id(), base::UTF8ToUTF16("message"), base::UTF8ToUTF16("key"),
-      base::string16()));
+      extension->id(), u"message", u"key", std::u16string()));
   error_console->ReportError(std::make_unique<RuntimeError>(
-      extension->id(), false, base::UTF8ToUTF16("source"),
-      base::UTF8ToUTF16("message"),
-      StackTrace(1, StackFrame(1, 1, base::UTF8ToUTF16("source"),
-                               base::UTF8ToUTF16("function"))),
-      kContextUrl, logging::LOG_WARNING, 1, 1));
+      extension->id(), false, u"source", u"message",
+      StackTrace(1, StackFrame(1, 1, u"source", u"function")), kContextUrl,
+      logging::LOG_WARNING, 1, 1));
 
   // It's not feasible to validate every field here, because that would be
   // a duplication of the logic in the method itself. Instead, test a handful
@@ -322,7 +320,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   for (const PermissionMessage& message :
        extension->permissions_data()->GetPermissionMessages()) {
     if (!message.permissions().ContainsID(
-            extensions::APIPermission::kHostReadWrite)) {
+            extensions::mojom::APIPermissionID::kHostReadWrite)) {
       messages.push_back(message);
     }
   }
@@ -333,7 +331,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
     const api::developer_private::Permission& info_permission =
         info->permissions.simple_permissions[i];
     EXPECT_EQ(message.message(), base::UTF8ToUTF16(info_permission.message));
-    const std::vector<base::string16>& submessages = message.submessages();
+    const std::vector<std::u16string>& submessages = message.submessages();
     ASSERT_EQ(submessages.size(), info_permission.submessages.size());
     for (size_t j = 0; j < submessages.size(); ++j) {
       EXPECT_EQ(submessages[j],
@@ -367,7 +365,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   id = crx_file::id_util::GenerateId("beta");
   extension = ExtensionBuilder()
                   .SetManifest(std::move(manifest_copy))
-                  .SetLocation(Manifest::EXTERNAL_PREF)
+                  .SetLocation(ManifestLocation::kExternalPref)
                   .SetID(id)
                   .Build();
   service()->AddExtension(extension.get());
@@ -444,7 +442,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
 TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissions) {
   scoped_refptr<const Extension> all_urls_extension = CreateExtension(
       "all_urls", ListBuilder().Append(kAllHostsPermission).Build(),
-      Manifest::INTERNAL);
+      ManifestLocation::kInternal);
 
   std::unique_ptr<developer::ExtensionInfo> info =
       GenerateExtensionInfo(all_urls_extension->id());
@@ -490,8 +488,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissions) {
 
   // An extension that doesn't request any host permissions should not have
   // runtime access controls.
-  scoped_refptr<const Extension> no_urls_extension =
-      CreateExtension("no urls", ListBuilder().Build(), Manifest::INTERNAL);
+  scoped_refptr<const Extension> no_urls_extension = CreateExtension(
+      "no urls", ListBuilder().Build(), ManifestLocation::kInternal);
   info = GenerateExtensionInfo(no_urls_extension->id());
   EXPECT_FALSE(info->permissions.runtime_host_permissions);
 }
@@ -503,7 +501,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
        RuntimeHostPermissionsBeyondRequestedScope) {
   scoped_refptr<const Extension> extension =
       CreateExtension("extension", ListBuilder().Append("http://*/*").Build(),
-                      Manifest::INTERNAL);
+                      ManifestLocation::kInternal);
 
   std::unique_ptr<developer::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
@@ -551,7 +549,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsSpecificHosts) {
                           .Append("https://example.com/*")
                           .Append("https://chromium.org/*")
                           .Build(),
-                      Manifest::INTERNAL);
+                      ManifestLocation::kInternal);
 
   std::unique_ptr<developer::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
@@ -587,7 +585,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsSpecificHosts) {
 TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissionsAllURLs) {
   scoped_refptr<const Extension> all_urls_extension = CreateExtension(
       "all_urls", ListBuilder().Append(kAllHostsPermission).Build(),
-      Manifest::INTERNAL);
+      ManifestLocation::kInternal);
 
   // Withholding host permissions should result in the extension being set to
   // run on click.
@@ -628,7 +626,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, WithheldUrlsOverlapping) {
                           .Append("*://example.com/*")
                           .Append("https://chromium.org/*")
                           .Build(),
-                      Manifest::INTERNAL);
+                      ManifestLocation::kInternal);
   ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
 
@@ -766,7 +764,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
 TEST_F(ExtensionInfoGeneratorUnitTest, ActiveTabFileUrls) {
   scoped_refptr<const Extension> extension =
       CreateExtension("activeTab", ListBuilder().Append("activeTab").Build(),
-                      Manifest::INTERNAL);
+                      ManifestLocation::kInternal);
   std::unique_ptr<developer::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
 
@@ -777,10 +775,12 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ActiveTabFileUrls) {
 
 // Tests that blocklisted extensions are returned by the ExtensionInfoGenerator.
 TEST_F(ExtensionInfoGeneratorUnitTest, Blocklisted) {
-  const scoped_refptr<const Extension> extension1 = CreateExtension(
-      "test1", std::make_unique<base::ListValue>(), Manifest::INTERNAL);
-  const scoped_refptr<const Extension> extension2 = CreateExtension(
-      "test2", std::make_unique<base::ListValue>(), Manifest::INTERNAL);
+  const scoped_refptr<const Extension> extension1 =
+      CreateExtension("test1", std::make_unique<base::ListValue>(),
+                      ManifestLocation::kInternal);
+  const scoped_refptr<const Extension> extension2 =
+      CreateExtension("test2", std::make_unique<base::ListValue>(),
+                      ManifestLocation::kInternal);
 
   std::string id1 = extension1->id();
   std::string id2 = extension2->id();

@@ -16,12 +16,14 @@ class LocationBarModel;
 
 class OmniboxEditController {
  public:
-  virtual void OnAutocompleteAccept(const GURL& destination_url,
-                                    TemplateURLRef::PostContent* post_content,
-                                    WindowOpenDisposition disposition,
-                                    ui::PageTransition transition,
-                                    AutocompleteMatchType::Type match_type,
-                                    base::TimeTicks match_selection_timestamp);
+  virtual void OnAutocompleteAccept(
+      const GURL& destination_url,
+      TemplateURLRef::PostContent* post_content,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      AutocompleteMatchType::Type match_type,
+      base::TimeTicks match_selection_timestamp,
+      bool destination_url_entered_without_scheme);
 
   virtual void OnInputInProgress(bool in_progress);
 
@@ -49,6 +51,9 @@ class OmniboxEditController {
   base::TimeTicks match_selection_timestamp() const {
     return match_selection_timestamp_;
   }
+  bool destination_url_entered_without_scheme() const {
+    return destination_url_entered_without_scheme_;
+  }
 
  private:
   // The details necessary to open the user's desired omnibox match.
@@ -57,6 +62,7 @@ class OmniboxEditController {
   WindowOpenDisposition disposition_;
   ui::PageTransition transition_;
   base::TimeTicks match_selection_timestamp_;
+  bool destination_url_entered_without_scheme_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_CONTROLLER_H_

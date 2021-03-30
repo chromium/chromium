@@ -98,7 +98,6 @@
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/platform/url_conversion.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -122,6 +121,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/range/range.h"
@@ -542,7 +542,9 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
   module_->InstanceCreated(this);
 
   if (render_frame_) {  // NULL in tests or if the frame has been destroyed.
-    render_frame_->PepperInstanceCreated(this);
+    render_frame_->PepperInstanceCreated(
+        this, pepper_receiver_.BindNewEndpointAndPassRemote(),
+        pepper_host_remote_.BindNewEndpointAndPassReceiver());
     view_data_.is_page_visible =
         !render_frame_->GetLocalRootWebFrameWidget()->IsHidden();
 
@@ -785,8 +787,8 @@ void PepperPluginInstanceImpl::InstanceCrashed() {
   BindGraphics(pp_instance(), 0);
   InvalidateRect(gfx::Rect());
 
-  if (render_frame_)
-    render_frame_->PluginCrashed(module_->path(), module_->GetPeerProcessId());
+  if (auto* host = GetPepperPluginInstanceHost())
+    host->InstanceCrashed(module_->path(), module_->GetPeerProcessId());
 }
 
 bool PepperPluginInstanceImpl::Initialize(
@@ -886,7 +888,7 @@ bool PepperPluginInstanceImpl::HandleDocumentLoad(
 
 bool PepperPluginInstanceImpl::SendCompositionEventToPlugin(
     PP_InputEvent_Type type,
-    const base::string16& text) {
+    const std::u16string& text) {
   std::vector<ui::ImeTextSpan> empty;
   return SendCompositionEventWithImeTextSpanInformationToPlugin(
       type, text, empty, static_cast<int>(text.size()),
@@ -896,7 +898,7 @@ bool PepperPluginInstanceImpl::SendCompositionEventToPlugin(
 bool PepperPluginInstanceImpl::
     SendCompositionEventWithImeTextSpanInformationToPlugin(
         PP_InputEvent_Type type,
-        const base::string16& text,
+        const std::u16string& text,
         const std::vector<ui::ImeTextSpan>& ime_text_spans,
         int selection_start,
         int selection_end) {
@@ -980,13 +982,13 @@ void PepperPluginInstanceImpl::RequestInputEventsHelper(
 }
 
 bool PepperPluginInstanceImpl::HandleCompositionStart(
-    const base::string16& text) {
+    const std::u16string& text) {
   return SendCompositionEventToPlugin(PP_INPUTEVENT_TYPE_IME_COMPOSITION_START,
                                       text);
 }
 
 bool PepperPluginInstanceImpl::HandleCompositionUpdate(
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     int selection_start,
     int selection_end) {
@@ -996,24 +998,24 @@ bool PepperPluginInstanceImpl::HandleCompositionUpdate(
 }
 
 bool PepperPluginInstanceImpl::HandleCompositionEnd(
-    const base::string16& text) {
+    const std::u16string& text) {
   return SendCompositionEventToPlugin(PP_INPUTEVENT_TYPE_IME_COMPOSITION_END,
                                       text);
 }
 
-bool PepperPluginInstanceImpl::HandleTextInput(const base::string16& text) {
+bool PepperPluginInstanceImpl::HandleTextInput(const std::u16string& text) {
   return SendCompositionEventToPlugin(PP_INPUTEVENT_TYPE_IME_TEXT, text);
 }
 
-void PepperPluginInstanceImpl::GetSurroundingText(base::string16* text,
+void PepperPluginInstanceImpl::GetSurroundingText(std::u16string* text,
                                                   gfx::Range* range) const {
   std::vector<size_t> offsets;
   offsets.push_back(selection_anchor_);
   offsets.push_back(selection_caret_);
   *text = base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
-  range->set_start(offsets[0] == base::string16::npos ? text->size()
+  range->set_start(offsets[0] == std::u16string::npos ? text->size()
                                                       : offsets[0]);
-  range->set_end(offsets[1] == base::string16::npos ? text->size()
+  range->set_end(offsets[1] == std::u16string::npos ? text->size()
                                                     : offsets[1]);
 }
 
@@ -1211,12 +1213,14 @@ void PepperPluginInstanceImpl::ViewChanged(
   view_data_.css_scale *= viewport_to_dip_scale_;
   view_data_.device_scale /= viewport_to_dip_scale_;
 
-  gfx::Size scroll_offset = gfx::ScaleToRoundedSize(
-      container_->GetDocument().GetFrame()->GetScrollOffset(),
-      viewport_to_dip_scale_);
+  gfx::ScrollOffset scroll_offset =
+      container_->GetDocument().GetFrame()->GetScrollOffset();
+  scroll_offset.Scale(viewport_to_dip_scale_);
 
-  view_data_.scroll_offset = PP_MakePoint(scroll_offset.width(),
-                                          scroll_offset.height());
+  gfx::Vector2d floored_scroll_offset =
+      ScrollOffsetToFlooredVector2d(scroll_offset);
+  view_data_.scroll_offset =
+      PP_MakePoint(floored_scroll_offset.x(), floored_scroll_offset.y());
 
   // The view size may have changed and we might need to update
   // our registration of event listeners.
@@ -1289,7 +1293,7 @@ void PepperPluginInstanceImpl::ViewInitiatedPaint() {
 }
 
 void PepperPluginInstanceImpl::SetSelectedText(
-    const base::string16& selected_text) {
+    const std::u16string& selected_text) {
   if (!render_frame_)
     return;
 
@@ -1330,11 +1334,11 @@ void PepperPluginInstanceImpl::UnregisterMessageHandler(PP_Instance instance) {
   NOTIMPLEMENTED();
 }
 
-base::string16 PepperPluginInstanceImpl::GetSelectedText(bool html) {
+std::u16string PepperPluginInstanceImpl::GetSelectedText(bool html) {
   return selected_text_;
 }
 
-base::string16 PepperPluginInstanceImpl::GetLinkAtPosition(
+std::u16string PepperPluginInstanceImpl::GetLinkAtPosition(
     const gfx::Point& point) {
   // Keep a reference on the stack. See NOTE above.
   scoped_refptr<PepperPluginInstanceImpl> ref(this);
@@ -1354,7 +1358,7 @@ base::string16 PepperPluginInstanceImpl::GetLinkAtPosition(
   if (rv.type == PP_VARTYPE_UNDEFINED)
     return link_under_cursor_;
   StringVar* string = StringVar::FromPPVar(rv);
-  base::string16 link;
+  std::u16string link;
   if (string)
     link = base::UTF8ToUTF16(string->value());
   // Release the ref the plugin transfered to us.
@@ -1949,7 +1953,7 @@ bool PepperPluginInstanceImpl::GetPrintPresetOptionsFromDocument(
   preset_options->copies = options.copies;
   preset_options->is_page_size_uniform =
       PP_ToBool(options.is_page_size_uniform);
-  preset_options->uniform_page_size = blink::WebSize(
+  preset_options->uniform_page_size = gfx::Size(
       options.uniform_page_size.width, options.uniform_page_size.height);
 
   return true;
@@ -2188,7 +2192,7 @@ void PepperPluginInstanceImpl::SimulateImeSetCompositionEvent(
                  input_event.composition_segment_offsets.begin(),
                  input_event.composition_segment_offsets.end());
 
-  base::string16 utf16_text =
+  std::u16string utf16_text =
       base::UTF8ToUTF16AndAdjustOffsets(input_event.character_text, &offsets);
 
   std::vector<ui::ImeTextSpan> ime_text_spans;
@@ -2428,15 +2432,14 @@ void PepperPluginInstanceImpl::SetTickmarks(PP_Instance instance,
   if (!render_frame_ || !render_frame_->GetWebFrame())
     return;
 
-  blink::WebVector<blink::WebRect> tickmarks_converted(
-      static_cast<size_t>(count));
+  blink::WebVector<gfx::Rect> tickmarks_converted(static_cast<size_t>(count));
   for (uint32_t i = 0; i < count; ++i) {
     gfx::RectF tickmark(tickmarks[i].point.x,
                         tickmarks[i].point.y,
                         tickmarks[i].size.width,
                         tickmarks[i].size.height);
     tickmark.Scale(1 / viewport_to_dip_scale_);
-    tickmarks_converted[i] = blink::WebRect(gfx::ToEnclosedRect(tickmark));
+    tickmarks_converted[i] = gfx::ToEnclosedRect(tickmark);
   }
 
   WebLocalFrame* frame = render_frame_->GetWebFrame();
@@ -3097,7 +3100,7 @@ void PepperPluginInstanceImpl::HandleAccessibilityChange() {
 }
 
 void PepperPluginInstanceImpl::OnImeSetComposition(
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     int selection_start,
     int selection_end) {
@@ -3113,11 +3116,11 @@ void PepperPluginInstanceImpl::OnImeSetComposition(
 
     // Empty -> nonempty: composition started.
     if (composition_text_.empty() && !text.empty()) {
-      HandleCompositionStart(base::string16());
+      HandleCompositionStart(std::u16string());
     }
     // Nonempty -> empty: composition canceled.
     if (!composition_text_.empty() && text.empty()) {
-      HandleCompositionEnd(base::string16());
+      HandleCompositionEnd(std::u16string());
     }
     composition_text_ = text;
     // Nonempty: composition is ongoing.
@@ -3129,19 +3132,19 @@ void PepperPluginInstanceImpl::OnImeSetComposition(
 }
 
 void PepperPluginInstanceImpl::OnImeCommitText(
-    const base::string16& text,
+    const std::u16string& text,
     const gfx::Range& replacement_range,
     int relative_cursor_pos) {
   HandlePepperImeCommit(text);
 }
 
 void PepperPluginInstanceImpl::OnImeFinishComposingText(bool keep_selection) {
-  const base::string16& text = composition_text_;
+  const std::u16string& text = composition_text_;
   HandlePepperImeCommit(text);
 }
 
 void PepperPluginInstanceImpl::HandlePepperImeCommit(
-    const base::string16& text) {
+    const std::u16string& text) {
   if (text.empty())
     return;
 
@@ -3171,6 +3174,10 @@ void PepperPluginInstanceImpl::HandlePepperImeCommit(
     HandleTextInput(text);
   }
   composition_text_.clear();
+}
+
+void PepperPluginInstanceImpl::SetVolume(double volume) {
+  audio_controller().SetVolume(volume);
 }
 
 }  // namespace content

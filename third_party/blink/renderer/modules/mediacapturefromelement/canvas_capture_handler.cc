@@ -30,6 +30,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -52,7 +53,7 @@ gfx::ColorSpace GetImageYUVColorSpace(scoped_refptr<StaticBitmapImage> image) {
 class VideoCapturerSource : public media::VideoCapturerSource {
  public:
   VideoCapturerSource(base::WeakPtr<CanvasCaptureHandler> canvas_handler,
-                      const blink::WebSize& size,
+                      const gfx::Size& size,
                       double frame_rate)
       : size_(size),
         frame_rate_(static_cast<float>(
@@ -93,7 +94,7 @@ class VideoCapturerSource : public media::VideoCapturerSource {
   }
 
  private:
-  const blink::WebSize size_;
+  const gfx::Size size_;
   const float frame_rate_;
   // Bound to Main Render thread.
   THREAD_CHECKER(main_render_thread_checker_);
@@ -118,7 +119,7 @@ class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
   void SendNewFrameOnIOThread(scoped_refptr<media::VideoFrame> video_frame,
                               base::TimeTicks current_time) {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
-    new_frame_callback_.Run(std::move(video_frame), current_time);
+    new_frame_callback_.Run(std::move(video_frame), {}, current_time);
   }
 
   base::WeakPtr<CanvasCaptureHandlerDelegate> GetWeakPtrForIOThread() {
@@ -137,7 +138,7 @@ class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
 
 CanvasCaptureHandler::CanvasCaptureHandler(
     LocalFrame* frame,
-    const blink::WebSize& size,
+    const gfx::Size& size,
     double frame_rate,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     MediaStreamComponent** component)
@@ -158,7 +159,7 @@ CanvasCaptureHandler::~CanvasCaptureHandler() {
 std::unique_ptr<CanvasCaptureHandler>
 CanvasCaptureHandler::CreateCanvasCaptureHandler(
     LocalFrame* frame,
-    const blink::WebSize& size,
+    const gfx::Size& size,
     double frame_rate,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     MediaStreamComponent** component) {

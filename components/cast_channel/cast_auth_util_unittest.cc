@@ -39,8 +39,8 @@ class CastAuthUtilTest : public testing::Test {
       std::string* signed_data,
       cast::channel::HashAlgorithm digest_algorithm) {
     auto chain = cast_certificate::ReadCertificateChainFromFile(
-        cast_certificate::testing::GetCastTestCertsCertsDirectory().AppendASCII(
-            "chromecast_gen1.pem"));
+        cast_certificate::testing::GetCastCertificatesSubDirectory()
+            .AppendASCII("chromecast_gen1.pem"));
     CHECK(!chain.empty());
 
     auto signature_data = cast_certificate::testing::ReadSignatureTestData(
@@ -190,7 +190,7 @@ TEST_F(CastAuthUtilTest, VerifySenderNonceMissing) {
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateSuccess) {
   auto tls_cert_der = cast_certificate::ReadCertificateChainFromFile(
-      cast_certificate::testing::GetCastTestCertsCertsDirectory().AppendASCII(
+      cast_certificate::testing::GetCastCertificatesSubDirectory().AppendASCII(
           "test_tls_cert.pem"));
 
   scoped_refptr<net::X509Certificate> tls_cert =
@@ -204,7 +204,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateSuccess) {
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooEarly) {
   auto tls_cert_der = cast_certificate::ReadCertificateChainFromFile(
-      cast_certificate::testing::GetCastTestCertsCertsDirectory().AppendASCII(
+      cast_certificate::testing::GetCastCertificatesSubDirectory().AppendASCII(
           "test_tls_cert.pem"));
 
   scoped_refptr<net::X509Certificate> tls_cert =
@@ -221,7 +221,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooEarly) {
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooLate) {
   auto tls_cert_der = cast_certificate::ReadCertificateChainFromFile(
-      cast_certificate::testing::GetCastTestCertsCertsDirectory().AppendASCII(
+      cast_certificate::testing::GetCastCertificatesSubDirectory().AppendASCII(
           "test_tls_cert.pem"));
 
   scoped_refptr<net::X509Certificate> tls_cert =
@@ -350,7 +350,7 @@ bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
 void RunTestSuite(const std::string& test_suite_file_name) {
   std::string testsuite_raw;
   base::ReadFileToString(
-      cast_certificate::testing::GetCastTestCertsDirectory().AppendASCII(
+      cast_certificate::testing::GetCastCertificateDirectory().AppendASCII(
           test_suite_file_name),
       &testsuite_raw);
 

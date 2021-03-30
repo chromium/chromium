@@ -21,16 +21,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Scanning.NumDetectedScanners" units="scanners"
+    expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of detected scanners. Recorded each time detected
+    scanners are received.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.NumPagesScanned" units="pages"
     expires_after="2021-12-04">
   <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the number of pages scanned in a successful scan.</summary>
 </histogram>
 
+<histogram name="Scanning.ReadyTime" units="ms" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the time between sending a request for scanners and receiving
+    capabilities for the selected scanner, which is essentially the time between
+    the user launching the Scan app and being able to interact with it to select
+    a scanner, change scan settings, or start a scan.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.ScanAppEntryPoint" enum="ScanAppEntryPoint"
     expires_after="2021-12-04">
+  <obsolete>
+    Data no longer needed 2021-02.
+  </obsolete>
   <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the entry point of where the Scan App was launched from in Chrome
@@ -38,9 +66,78 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Scanning.ScanCompleteAction" enum="ScanCompleteAction"
+    expires_after="2021-09-19">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the action taken by a user after a successful scan job on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobFailureReason" enum="ScanJobFailureReason"
+    expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>Records the reason a scan job failed.</summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.ColorMode"
+    enum="ScanJobSettingsColorMode" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Color Mode setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.FileType"
+    enum="ScanJobSettingsFileType" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected File Type setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.PageSize"
+    enum="ScanJobSettingsPageSize" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Page Size setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.Resolution"
+    enum="ScanJobSettingsResolution" expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Resolution setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.Source" enum="ScanJobSettingsSource"
+    expires_after="2021-12-04">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Source setting for a submitted scan job.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
     expires_after="2021-12-04">
   <owner>gavinwill@chromium.org</owner>
+  <owner>jschettler@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records true if the attempted scan job completed successfully and false if

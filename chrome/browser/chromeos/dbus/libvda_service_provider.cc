@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/arc/video/gpu_arc_video_service_host.h"
+#include "chrome/browser/ash/arc/video/gpu_arc_video_service_host.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "mojo/public/cpp/system/platform_handle.h"

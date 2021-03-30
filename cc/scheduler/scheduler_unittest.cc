@@ -172,7 +172,8 @@ class FakeSchedulerClient : public SchedulerClient,
 
     if (swap_will_happen_if_draw_happens_) {
       last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
-      scheduler_->DidSubmitCompositorFrame(0, EventMetricsSet());
+      scheduler_->DidSubmitCompositorFrame(0, EventMetricsSet(),
+                                           /*has_missing_content=*/false);
 
       if (automatic_ack_)
         scheduler_->DidReceiveCompositorFrameAck();
@@ -3896,7 +3897,9 @@ TEST_F(SchedulerTest, BeginFrameAckForFinishedImplFrame) {
   has_damage = false;
   EXPECT_EQ(viz::BeginFrameAck(args, has_damage),
             client_->last_begin_frame_ack());
-  EXPECT_EQ(FrameSkippedReason::kNoDamage,
+  // The pending tree is not activated yet so the frame is still waiting on
+  // Main thread update
+  EXPECT_EQ(FrameSkippedReason::kWaitingOnMain,
             client_->last_frame_skipped_reason());
 }
 

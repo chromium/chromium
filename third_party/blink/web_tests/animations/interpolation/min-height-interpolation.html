@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<style>
+.parent {
+  min-height: 30px;
+}
+.target {
+  width: 10px;
+  height: 10px;
+  background-color: black;
+}
+.expected {
+  background-color: green;
+}
+</style>
+<body>
+<script src="resources/interpolation-test.js"></script>
+<script>
+// Regression test for crbug.com/1175628.
+assertNoInterpolation({
+  property: 'min-height',
+  from: 'calc(25631651542881545922376008592752624554174702806001571610784437629701274% - 7px)',
+  to: 'calc(25631651542881545922376008592752624554174702806001571610784437629701274% - 7px)',
+});
+</script>
+</body>

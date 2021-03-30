@@ -6,6 +6,15 @@
 <body>
 <p id="description">Test for keyboard operations of &lt;input type=range></p>
 <div id="console"></div>
+
+<input type=range id=horiz-range min=0 max=100 value=50 onchange='handleChange()'>
+<input type=range id=horiz-range-rtl dir=rtl min=0 max=100 value=50 onchange='handleChange()'>
+<input type=range id=vert-range min=0 max=100 value=50 onchange='handleChange()' style='-webkit-appearance:slider-vertical;'>
+<input type=range id=vert-range-rtl dir=rtl min=0 max=100 value=50 onchange='handleChange()' style='-webkit-appearance:slider-vertical;'>
+<input type=range id=step-any min=0 max=200 value=100 step='any' onchange='handleChange()' style='-webkit-appearance:slider-vertical;'>
+<input type=range id=small-range min=0 max=10 value=6 step=3 onchange='handleChange()' style='-webkit-appearance:slider-vertical;'>
+<input type=range id=disabled disabled min=0 max=100 value=1 step=1 onchange='handleChange()' style='-webkit-appearance:slider-vertical;'>
+
 <script>
 
 function sendKey(element, keyName) {
@@ -17,15 +26,10 @@ function handleChange() {
   changeEventCounter++;
 }
 
-var parent = document.createElement('div');
-document.body.appendChild(parent);
-parent.innerHTML = '<input type=range id=range min=0 max=100 value=50>';
-
-var input = document.getElementById('range');
-input.onchange = handleChange;
+debug('Tests for a horizontal range');
+var input = document.getElementById('horiz-range');
 input.focus();
 
-debug('Tests for a horizontal range');
 debug('Press the up arrow key:');
 var lastChangeEventCounter = changeEventCounter;
 sendKey(input, 'ArrowUp');
@@ -92,23 +96,75 @@ sendKey(input, 'End');
 shouldBe('input.value', '"100"');
 shouldBe('changeEventCounter', 'lastChangeEventCounter');
 
-input.dir = 'rtl';
-input.value = '50';
-input.offsetLeft;
+
+
 debug('');
-debug('RTL');
+debug('Tests for a horizontal range with RTL');
+var input = document.getElementById('horiz-range-rtl');
+input.focus();
+
+debug('Press the up arrow key:');
+sendKey(input, 'ArrowUp');
+shouldBe('input.value', '"51"');
+
+debug('Press the down arrow key:');
+sendKey(input, 'ArrowDown');
+shouldBe('input.value', '"50"');
+
+debug('Press the left arrow key:');
 sendKey(input, 'ArrowLeft');
-shouldBeEqualToString('input.value', '51');
+shouldBe('input.value', '"51"');
+
+debug('Press the right arrow key:');
 sendKey(input, 'ArrowRight');
-shouldBeEqualToString('input.value', '50');
-input.dir = 'ltr';
+shouldBe('input.value', '"50"');
+
+
 
 debug('');
-input.setAttribute('style', '-webkit-appearance:slider-vertical; height: 40px;');
-input.offsetLeft; // force layout
-
-input.valueAsNumber = 50;
 debug('Tests for a vertical range');
+var input = document.getElementById('vert-range');
+input.focus();
+
+debug('Press the up arrow key:');
+sendKey(input, 'ArrowUp');
+shouldBe('input.value', '"51"');
+
+debug('Press the down arrow key:');
+sendKey(input, 'ArrowDown');
+shouldBe('input.value', '"50"');
+
+debug('Press the left arrow key:');
+sendKey(input, 'ArrowLeft');
+shouldBe('input.value', '"49"');
+
+debug('Press the right arrow key:');
+sendKey(input, 'ArrowRight');
+shouldBe('input.value', '"50"');
+
+debug('Press the PageUp key:');
+sendKey(input, 'PageUp');
+shouldBe('input.value', '"60"');
+
+debug('Press the PageDown key:');
+sendKey(input, 'PageDown');
+shouldBe('input.value', '"50"');
+
+debug('Press the Home key:');
+sendKey(input, 'Home');
+shouldBe('input.value', '"0"');
+
+debug('Press the End key:');
+sendKey(input, 'End');
+shouldBe('input.value', '"100"');
+
+
+
+debug('');
+debug('Tests for a vertical range with rtl');
+var input = document.getElementById('vert-range-rtl');
+input.focus();
+
 debug('Press the up arrow key:');
 sendKey(input, 'ArrowUp');
 shouldBe('input.value', '"51"');
@@ -135,18 +191,18 @@ shouldBe('input.value', '"50"');
 
 debug('Press the Home key:');
 sendKey(input, 'Home');
-shouldBe('input.value', '"100"');
+shouldBe('input.value', '"0"');
 
 debug('Press the End key:');
 sendKey(input, 'End');
-shouldBe('input.value', '"0"');
+shouldBe('input.value', '"100"');
+
+
 
 debug('');
 debug('step=any cases');
-input.step = 'any';
-input.min = '0';
-input.max = '200';
-input.valueAsNumber = 100;
+var input = document.getElementById('step-any');
+input.focus();
 
 debug('Press the up arrow key:');
 lastChangeEventCounter = changeEventCounter;
@@ -175,13 +231,13 @@ shouldBe('changeEventCounter', 'lastChangeEventCounter + 1');
 debug('Press the home key:');
 lastChangeEventCounter = changeEventCounter;
 sendKey(input, 'Home');
-shouldBe('input.value', '"200"');
+shouldBe('input.value', '"0"');
 shouldBe('changeEventCounter', 'lastChangeEventCounter + 1');
 
 debug('Press the end key:');
 lastChangeEventCounter = changeEventCounter;
 sendKey(input, 'End');
-shouldBe('input.value', '"0"');
+shouldBe('input.value', '"200"');
 shouldBe('changeEventCounter', 'lastChangeEventCounter + 1');
 
 debug('Edge cases');
@@ -225,12 +281,12 @@ shouldBe('changeEventCounter', 'lastChangeEventCounter');
 sendKey(input, 'PageUp');
 shouldBe('input.value', '"20"');
 
+
+
 debug('');
 debug('small range');
-input.min = '0';
-input.max = '10';
-input.step = '3';
-input.valueAsNumber = 6;
+var input = document.getElementById('small-range');
+input.focus();
 
 sendKey(input, 'PageUp');
 shouldBe('input.value', '"9"');
@@ -239,23 +295,21 @@ sendKey(input, 'PageDown');
 shouldBe('input.value', '"6"');
 
 sendKey(input, 'End');
-shouldBe('input.value', '"0"');
-
-sendKey(input, 'Home');
 shouldBe('input.value', '"9"');
 
-sendKey(input, 'End');
+sendKey(input, 'Home');
 shouldBe('input.value', '"0"');
+
+sendKey(input, 'End');
+shouldBe('input.value', '"9"');
+
 
 
 debug('');
 debug('Disabled and read-only');
-input.min = '0';
-input.max = '100';
-input.step = '1';
-input.value = '1';
+var input = document.getElementById('disabled');
+input.focus();
 
-input.disabled = true;
 sendKey(input, 'ArrowUp');
 shouldBe('input.value', '"1"');
 sendKey(input, 'Home');

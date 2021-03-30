@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/chromeos/hats/hats_config.h"
 #include "chrome/browser/chromeos/hats/hats_finch_helper.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -94,7 +95,8 @@ std::string GetFormattedSiteContext(const std::string& user_locale,
 }  // namespace
 
 // static
-std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow() {
+std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
+    const HatsConfig& hats_config) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -105,7 +107,7 @@ std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow() {
     user_locale = kDefaultProfileLocale;
 
   std::unique_ptr<HatsDialog> hats_dialog(
-      new HatsDialog(HatsFinchHelper::GetTriggerID(), profile));
+      new HatsDialog(HatsFinchHelper::GetTriggerID(hats_config), profile));
 
   // Raw pointer is used here since the dialog is owned by the hats
   // notification controller which lives until the end of the user session. The
@@ -144,8 +146,8 @@ ui::ModalType HatsDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_SYSTEM;
 }
 
-base::string16 HatsDialog::GetDialogTitle() const {
-  return base::string16();
+std::u16string HatsDialog::GetDialogTitle() const {
+  return std::u16string();
 }
 
 GURL HatsDialog::GetDialogContentURL() const {

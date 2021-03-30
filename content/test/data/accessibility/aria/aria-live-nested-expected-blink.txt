@@ -10,7 +10,7 @@ rootWebArea
 ++++++++++staticText containerLiveStatus='polite' name='Nested - polite'
 ++++++++++++inlineTextBox name='Nested - polite'
 ++++++group containerLiveStatus='polite' liveStatus='polite'
-++++++++genericContainer ignored containerLiveStatus='polite'
+++++++++genericContainer ignored
 ++++++++++group containerLiveStatus='assertive' liveStatus='assertive'
 ++++++++++++staticText containerLiveStatus='assertive' name='Nested - assertive'
 ++++++++++++++inlineTextBox name='Nested - assertive'

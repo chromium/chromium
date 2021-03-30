@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -91,8 +91,8 @@ class InstallTracker : public KeyedService,
   base::ObserverList<InstallObserver>::Unchecked observers_;
   content::NotificationRegistrar registrar_;
   PrefChangeRegistrar pref_change_registrar_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InstallTracker);
 };

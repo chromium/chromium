@@ -28,24 +28,26 @@ namespace capture_service {
 namespace {
 
 constexpr StreamInfo kStreamInfo =
-    StreamInfo{StreamType::kSoftwareEchoCancelled,
-               AudioCodec::kPcm,
-               1,
-               SampleFormat::PLANAR_FLOAT,
-               16000,
-               160};
-constexpr HandshakePacket kHandshakePacket =
-    HandshakePacket{0,
-                    static_cast<uint8_t>(MessageType::kHandshake),
-                    static_cast<uint8_t>(kStreamInfo.stream_type),
-                    static_cast<uint8_t>(kStreamInfo.audio_codec),
-                    static_cast<uint8_t>(kStreamInfo.sample_format),
-                    kStreamInfo.num_channels,
-                    kStreamInfo.frames_per_buffer,
-                    kStreamInfo.sample_rate};
-constexpr PcmPacketHeader kPcmAudioPacketHeader =
-    PcmPacketHeader{0, static_cast<uint8_t>(MessageType::kPcmAudio),
-                    static_cast<uint8_t>(kStreamInfo.stream_type), 0};
+    StreamInfo{.stream_type = StreamType::kSoftwareEchoCancelled,
+               .audio_codec = AudioCodec::kPcm,
+               .num_channels = 1,
+               .sample_format = SampleFormat::PLANAR_FLOAT,
+               .sample_rate = 16000,
+               .frames_per_buffer = 160};
+constexpr HandshakePacket kHandshakePacket = HandshakePacket{
+    .size = 0,  // dummy
+    .message_type = static_cast<uint8_t>(MessageType::kHandshake),
+    .stream_type = static_cast<uint8_t>(kStreamInfo.stream_type),
+    .audio_codec = static_cast<uint8_t>(kStreamInfo.audio_codec),
+    .sample_format = static_cast<uint8_t>(kStreamInfo.sample_format),
+    .num_channels = kStreamInfo.num_channels,
+    .num_frames = kStreamInfo.frames_per_buffer,
+    .sample_rate = kStreamInfo.sample_rate};
+constexpr PcmPacketHeader kPcmAudioPacketHeader = PcmPacketHeader{
+    .size = 0,  // dummy
+    .message_type = static_cast<uint8_t>(MessageType::kPcmAudio),
+    .stream_type = static_cast<uint8_t>(kStreamInfo.stream_type),
+    .timestamp_us = 0};
 
 class MockStreamSocket : public chromecast::MockStreamSocket {
  public:

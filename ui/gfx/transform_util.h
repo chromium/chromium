@@ -84,6 +84,16 @@ GEOMETRY_SKIA_EXPORT Transform WindowMatrix(int x,
                                             int width,
                                             int height);
 
+GEOMETRY_SKIA_EXPORT Vector2dF
+ComputeTransform2dScaleComponents(const Transform& transform,
+                                  float fallback_value);
+
+// Returns an approximate max scale value of the transform even if it has
+// perspective. Prefer to use ComputeTransform2dScaleComponents if there is no
+// perspective, since it can produce more accurate results.
+GEOMETRY_SKIA_EXPORT
+float ComputeApproximateMaxScale(const Transform& transform);
+
 }  // namespace gfx
 
 #endif  // UI_GFX_TRANSFORM_UTIL_H_

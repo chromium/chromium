@@ -56,7 +56,7 @@ class EnrollmentStatus;
 // handles the enrollment process.
 class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
  public:
-  using EnrollmentCallback = base::Callback<void(EnrollmentStatus)>;
+  using EnrollmentCallback = base::OnceCallback<void(EnrollmentStatus)>;
 
   // |background_task_runner| is used to execute long-running background tasks
   // that may involve file I/O.
@@ -85,7 +85,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
       const EnrollmentConfig& enrollment_config,
       DMAuth dm_auth,
-      const EnrollmentCallback& enrollment_callback);
+      EnrollmentCallback enrollment_callback);
 
   // Starts enrollment.
   virtual void StartEnrollment();
@@ -133,6 +133,24 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
         this};
   };
 
+  // TODO(crbug.com/705758) When DeviceCloudPolicyInitializer starts connection,
+  // that means it will be deleted soon by
+  // |BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerConnected|.
+  // Sometimes this happens before |EnterpriseEnrollmentHelperImpl::DoEnroll|
+  // initiates |StartConnection| and leads to a crash. Track the reason of
+  // |StartConnection| call to find who initiates removal. Remove once the crash
+  // is resolved.
+  enum class StartConnectionReason {
+    // |StartConnection| succeeds after call from |Init|.
+    kInitialCreation = 0,
+    // |StartConnection| succeeds after notification from |state_keys_broker_|.
+    kStateKeysStored = 1,
+    // |StartConnection| succeeds after notification from |policy_store_|.
+    kCloudPolicyLoaded = 2,
+    // |StartConnection| succeeds after call from |StartEnrollment|.
+    kEnrollmentCompleted = 3,
+  };
+
   FRIEND_TEST_ALL_PREFIXES(
       DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest,
       SigningSuccess);
@@ -141,15 +159,16 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       SigningFailure);
 
   // Handles completion signaled by |enrollment_handler_|.
-  void EnrollmentCompleted(const EnrollmentCallback& enrollment_callback,
+  void EnrollmentCompleted(EnrollmentCallback enrollment_callback,
                            EnrollmentStatus status);
 
   // Creates a new CloudPolicyClient.
   std::unique_ptr<CloudPolicyClient> CreateClient(
       DeviceManagementService* device_management_service);
 
-  void TryToCreateClient();
-  void StartConnection(std::unique_ptr<CloudPolicyClient> client);
+  void TryToCreateClient(StartConnectionReason reason);
+  void StartConnection(StartConnectionReason reason,
+                       std::unique_ptr<CloudPolicyClient> client);
 
   // Get a machine flag from |statistics_provider_|, returning the given
   // |default_value| if not present.

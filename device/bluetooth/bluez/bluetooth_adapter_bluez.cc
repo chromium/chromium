@@ -52,7 +52,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/devicetype.h"
+#include "ash/constants/devicetype.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #endif
@@ -1357,13 +1357,13 @@ void BluetoothAdapterBlueZ::UseProfile(
     profile_queues_[uuid] = new std::vector<RegisterProfileCompletionPair>();
   }
 
-  auto copyable_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_error_callback =
+      base::SplitOnceCallback(std::move(error_callback));
   profile_queues_[uuid]->push_back(std::make_pair(
       base::BindOnce(&BluetoothAdapterBlueZ::SetProfileDelegate, this, uuid,
                      device_path, delegate, std::move(success_callback),
-                     copyable_error_callback),
-      copyable_error_callback));
+                     std::move(split_error_callback.first)),
+      std::move(split_error_callback.second)));
 }
 
 void BluetoothAdapterBlueZ::ReleaseProfile(
@@ -1589,16 +1589,16 @@ void BluetoothAdapterBlueZ::UpdateFilter(
 
   BLUETOOTH_LOG(EVENT) << __func__;
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
 
   // DCHECK(IsDiscovering()) is removed due to BlueZ bug
   // (https://crbug.com/822104).
   // TODO(sonnysasaka): Put it back here when BlueZ bug is fixed.
   SetDiscoveryFilter(
       std::move(discovery_filter),
-      base::BindOnce(copyable_callback, /*is_error=*/false,
+      base::BindOnce(std::move(split_callback.first), /*is_error=*/false,
                      UMABluetoothDiscoverySessionOutcome::SUCCESS),
-      base::BindOnce(copyable_callback, true));
+      base::BindOnce(std::move(split_callback.second), true));
   return;
 }
 
@@ -1615,21 +1615,16 @@ void BluetoothAdapterBlueZ::StartScanWithFilter(
 
   BLUETOOTH_LOG(EVENT) << __func__;
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Only one of these is going to be called.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   SetDiscoveryFilter(
       std::move(discovery_filter),
-      base::BindOnce(
-          &BluetoothAdapterBlueZ::OnPreSetDiscoveryFilter,
-          weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(copyable_callback, /*is_error=*/false,
-                         UMABluetoothDiscoverySessionOutcome::SUCCESS),
-          base::BindOnce(copyable_callback, true)),
-      base::BindOnce(
-          &BluetoothAdapterBlueZ::OnPreSetDiscoveryFilterError,
-          weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(copyable_callback, /*is_error=*/false,
-                         UMABluetoothDiscoverySessionOutcome::SUCCESS),
-          base::BindOnce(copyable_callback, true)));
+      base::BindOnce(&BluetoothAdapterBlueZ::OnPreSetDiscoveryFilter,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
+      base::BindOnce(&BluetoothAdapterBlueZ::OnPreSetDiscoveryFilterError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(std::move(split_callback.second), true)));
 }
 
 void BluetoothAdapterBlueZ::StopScan(DiscoverySessionResultCallback callback) {
@@ -1651,17 +1646,18 @@ void BluetoothAdapterBlueZ::StopScan(DiscoverySessionResultCallback callback) {
 
   // Confirm that there are no more discovery sessions left.
   DCHECK_EQ(NumDiscoverySessions(), 0);
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->StopDiscovery(
       object_path_,
       base::BindOnce(
           &BluetoothAdapterBlueZ::OnStopDiscovery,
           weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(copyable_callback, /*is_error=*/false,
+          base::BindOnce(std::move(split_callback.first), /*is_error=*/false,
                          UMABluetoothDiscoverySessionOutcome::SUCCESS)),
-      base::BindOnce(&BluetoothAdapterBlueZ::OnStopDiscoveryError,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(copyable_callback, /*is_error=*/true)));
+      base::BindOnce(
+          &BluetoothAdapterBlueZ::OnStopDiscoveryError,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(std::move(split_callback.second), /*is_error=*/true)));
 }
 
 void BluetoothAdapterBlueZ::SetDiscoveryFilter(
@@ -1705,24 +1701,22 @@ void BluetoothAdapterBlueZ::SetDiscoveryFilter(
       dbus_discovery_filter.uuids.get()->push_back(it.value());
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-  auto copyable_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_error_callback =
+      base::SplitOnceCallback(std::move(error_callback));
   bluez::BluezDBusManager::Get()
       ->GetBluetoothAdapterClient()
       ->SetDiscoveryFilter(
           object_path_, dbus_discovery_filter,
           base::BindOnce(&BluetoothAdapterBlueZ::OnSetDiscoveryFilter,
-                         weak_ptr_factory_.GetWeakPtr(), copyable_callback,
-                         copyable_error_callback),
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         std::move(split_error_callback.first)),
           base::BindOnce(&BluetoothAdapterBlueZ::OnSetDiscoveryFilterError,
-                         weak_ptr_factory_.GetWeakPtr(), copyable_callback,
-                         copyable_error_callback));
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(split_error_callback.second)));
 }
 
 void BluetoothAdapterBlueZ::OnStartDiscovery(
-    base::OnceClosure callback,
-    DiscoverySessionErrorCallback error_callback) {
+    DiscoverySessionResultCallback callback) {
   // Report success on the original request and increment the count.
   BLUETOOTH_LOG(EVENT) << __func__;
 
@@ -1747,23 +1741,23 @@ void BluetoothAdapterBlueZ::OnStartDiscovery(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (IsPresent()) {
-    std::move(callback).Run();
+    std::move(callback).Run(false,
+                            UMABluetoothDiscoverySessionOutcome::SUCCESS);
   } else {
-    std::move(error_callback)
-        .Run(UMABluetoothDiscoverySessionOutcome::ADAPTER_REMOVED);
+    std::move(callback).Run(
+        true, UMABluetoothDiscoverySessionOutcome::ADAPTER_REMOVED);
   }
 }
 
 void BluetoothAdapterBlueZ::OnStartDiscoveryError(
-    base::OnceClosure callback,
-    DiscoverySessionErrorCallback error_callback,
+    DiscoverySessionResultCallback callback,
     const std::string& error_name,
     const std::string& error_message) {
   BLUETOOTH_LOG(ERROR) << object_path_.value()
                        << ": Failed to start discovery: " << error_name << ": "
                        << error_message;
 
-  std::move(error_callback).Run(TranslateDiscoveryErrorToUMA(error_name));
+  std::move(callback).Run(true, TranslateDiscoveryErrorToUMA(error_name));
 }
 
 void BluetoothAdapterBlueZ::OnStopDiscovery(base::OnceClosure callback) {
@@ -1785,23 +1779,19 @@ void BluetoothAdapterBlueZ::OnStopDiscoveryError(
 }
 
 void BluetoothAdapterBlueZ::OnPreSetDiscoveryFilter(
-    base::OnceClosure callback,
-    DiscoverySessionErrorCallback error_callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-  auto copyable_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+    DiscoverySessionResultCallback callback) {
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->StartDiscovery(
       object_path_,
       base::BindOnce(&BluetoothAdapterBlueZ::OnStartDiscovery,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback,
-                     copyable_error_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&BluetoothAdapterBlueZ::OnStartDiscoveryError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback,
-                     copyable_error_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void BluetoothAdapterBlueZ::OnPreSetDiscoveryFilterError(
-    base::OnceClosure callback,
     DiscoverySessionErrorCallback error_callback,
     UMABluetoothDiscoverySessionOutcome outcome) {
   BLUETOOTH_LOG(ERROR) << object_path_.value()
@@ -1824,7 +1814,6 @@ void BluetoothAdapterBlueZ::OnSetDiscoveryFilter(
 }
 
 void BluetoothAdapterBlueZ::OnSetDiscoveryFilterError(
-    base::OnceClosure callback,
     DiscoverySessionErrorCallback error_callback,
     const std::string& error_name,
     const std::string& error_message) {
@@ -1851,23 +1840,25 @@ void BluetoothAdapterBlueZ::UpdateRegisteredApplication(
   // If ignore_unregister_failure is set, we'll forward the error_callback to
   // the register call (to be called in case the register call fails). If not,
   // we'll call the error callback if this unregister itself fails.
-  auto copyable_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_error_callback =
+      base::SplitOnceCallback(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   bluez::BluezDBusManager::Get()
       ->GetBluetoothGattManagerClient()
       ->UnregisterApplication(
           object_path_, GetApplicationObjectPath(),
           base::BindOnce(&BluetoothAdapterBlueZ::RegisterApplication,
-                         weak_ptr_factory_.GetWeakPtr(), copyable_callback,
-                         copyable_error_callback),
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(split_callback.first),
+                         std::move(split_error_callback.first)),
           ignore_unregister_failure
               ? base::BindOnce(
                     &BluetoothAdapterBlueZ::RegisterApplicationOnError,
-                    weak_ptr_factory_.GetWeakPtr(), copyable_callback,
-                    copyable_error_callback)
+                    weak_ptr_factory_.GetWeakPtr(),
+                    std::move(split_callback.second),
+                    std::move(split_error_callback.second))
               : base::BindOnce(&OnRegistrationErrorCallback,
-                               copyable_error_callback, false));
+                               std::move(split_error_callback.second), false));
 }
 
 void BluetoothAdapterBlueZ::RegisterApplication(
@@ -1886,13 +1877,12 @@ void BluetoothAdapterBlueZ::RegisterApplication(
       bluez::BluezDBusManager::Get()->GetSystemBus(),
       GetApplicationObjectPath(), registered_gatt_services_);
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   DCHECK(bluez::BluezDBusManager::Get());
   bluez::BluezDBusManager::Get()
       ->GetBluetoothGattManagerClient()
       ->RegisterApplication(object_path_, GetApplicationObjectPath(),
                             BluetoothGattManagerClient::Options(),
-                            copyable_callback,
+                            std::move(callback),
                             base::BindOnce(&OnRegistrationErrorCallback,
                                            std::move(error_callback),
                                            /*is_register_callback=*/true));

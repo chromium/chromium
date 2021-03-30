@@ -102,14 +102,32 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
      * @param profile the current profile.
      * @param url the current URL. May be null.
      * @param categoryTag The category that this feedback report falls under.
+     * @param screenshotMode The kind of screenshot to include with the feedback.
+     * @param feedbackContext The context that describes the current feature being used.
+     */
+    @Override
+    public void showFeedback(final Activity activity, Profile profile, @Nullable String url,
+            @Nullable final String categoryTag, @ScreenshotMode int screenshotMode,
+            @Nullable final String feedbackContext) {
+        new ChromeFeedbackCollector(activity, categoryTag, null /* description */,
+                new ScreenshotTask(activity, screenshotMode),
+                new ChromeFeedbackCollector.InitParams(profile, url, feedbackContext),
+                collector -> showFeedback(activity, collector));
+    }
+
+    /**
+     * Starts an activity prompting the user to enter feedback.
+     *
+     * @param activity The activity to use for starting the feedback activity and to take a
+     *                 screenshot of.
+     * @param profile the current profile.
+     * @param url the current URL. May be null.
+     * @param categoryTag The category that this feedback report falls under.
      */
     @Override
     public void showFeedback(final Activity activity, Profile profile, @Nullable String url,
             @Nullable final String categoryTag) {
-        new ChromeFeedbackCollector(activity, categoryTag, null /* description */,
-                new ScreenshotTask(activity),
-                new ChromeFeedbackCollector.InitParams(profile, url, null),
-                collector -> showFeedback(activity, collector));
+        showFeedback(activity, profile, url, categoryTag, ScreenshotMode.DEFAULT, null);
     }
 
     /**
@@ -120,17 +138,16 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
      * @param profile the current profile.
      * @param categoryTag The category that this feedback report falls under.
      * @param feedContext Feed specific parameters (url, title, etc) to include with feedback.
-     * @param feedbackContext The context that describes the current feature being used.
      */
     @Override
     public void showFeedback(final Activity activity, Profile profile, @Nullable String url,
-            @Nullable final String categoryTag, @Nullable final Map<String, String> feedContext,
-            @Nullable final String feedbackContext) {
-        new FeedFeedbackCollector(activity, categoryTag, null /* description */, feedbackContext,
+            @Nullable final String categoryTag, @Nullable final Map<String, String> feedContext) {
+        new FeedFeedbackCollector(activity, categoryTag, null /* description */,
                 new ScreenshotTask(activity),
                 new FeedFeedbackCollector.InitParams(profile, url, feedContext),
                 collector -> showFeedback(activity, collector));
     }
+
     /**
      * Get help context ID from URL.
      *

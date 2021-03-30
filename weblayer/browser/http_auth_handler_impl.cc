@@ -9,6 +9,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/auth.h"
+#include "url/android/gurl_android.h"
 #include "weblayer/browser/java/jni/HttpAuthHandlerImpl_jni.h"
 #include "weblayer/browser/tab_impl.h"
 
@@ -28,8 +29,7 @@ HttpAuthHandlerImpl::HttpAuthHandlerImpl(
   JNIEnv* env = base::android::AttachCurrentThread();
   java_impl_ = Java_HttpAuthHandlerImpl_create(
       env, reinterpret_cast<intptr_t>(this), tab->GetJavaTab(),
-      base::android::ConvertUTF8ToJavaString(env, url_.host()),
-      base::android::ConvertUTF8ToJavaString(env, url_.spec()));
+      url::GURLAndroid::FromNativeGURL(env, url_));
 }
 
 HttpAuthHandlerImpl::~HttpAuthHandlerImpl() {

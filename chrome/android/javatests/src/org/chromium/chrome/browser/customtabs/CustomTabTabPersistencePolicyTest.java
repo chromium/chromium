@@ -34,12 +34,11 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
+import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
-import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
-import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
@@ -456,12 +455,11 @@ public class CustomTabTabPersistencePolicyTest {
         CustomTabActivity activity = new CustomTabActivity();
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
 
-        NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.LOCATIONAL;
-
-        TabModelSelectorImpl selector = new TabModelSelectorImpl(activity,
-                activity::getWindowAndroid, activity, buildTestPersistencePolicy(),
-                new ChromeTabModelFilterFactory(), nextTabPolicySupplier,
-                AsyncTabParamsManagerSingleton.getInstance(), false, false, false);
+        CustomTabsTabModelOrchestrator orchestrator = new CustomTabsTabModelOrchestrator();
+        orchestrator.createTabModels(activity::getWindowAndroid, activity,
+                new ChromeTabModelFilterFactory(), buildTestPersistencePolicy(),
+                AsyncTabParamsManagerSingleton.getInstance());
+        TabModelSelectorImpl selector = orchestrator.getTabModelSelector();
         selector.initializeForTesting(normalTabModel, incognitoTabModel);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
         return selector;

@@ -39,10 +39,16 @@ void EnableStartupTracingIfNeeded() {
 
   TraceEventDataSource::GetInstance()->RegisterStartupHooks();
 
-  // Initialize the Perfetto client library now that we're past the zygote's
-  // fork point. This is important to ensure Perfetto's track registry gets a
-  // unique uuid for generating track ids.
-  PerfettoTracedProcess::Get()->SetupClientLibrary();
+  // Create the PerfettoTracedProcess.
+  PerfettoTracedProcess::Get();
+
+  // Initialize the client library's TrackRegistry to support trace points
+  // during startup tracing. We don't setup the client library completely here
+  // yet, because we don't have field trials loaded yet (which influence which
+  // backends we enable).
+  // TODO(eseckler): Make it possible to initialize client lib backends after
+  // setting up the client library?
+  perfetto::internal::TrackRegistry::InitializeInstance();
 
   // Ensure TraceLog is initialized first.
   // https://crbug.com/764357

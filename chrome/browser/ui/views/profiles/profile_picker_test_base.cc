@@ -49,7 +49,7 @@ class ViewVisibilityChangedWaiter : public views::ViewObserver {
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
-// Waits until a first non empty paint for given `url`.
+// Waits until a first non empty paint for given committed `url`.
 class FirstVisuallyNonEmptyPaintObserver : public content::WebContentsObserver {
  public:
   explicit FirstVisuallyNonEmptyPaintObserver(content::WebContents* contents,
@@ -63,23 +63,53 @@ class FirstVisuallyNonEmptyPaintObserver : public content::WebContentsObserver {
     }
     run_loop_.Run();
     EXPECT_TRUE(IsExitConditionSatisfied())
-        << web_contents()->GetVisibleURL() << " != " << url_;
+        << web_contents()->GetLastCommittedURL() << " != " << url_;
   }
 
  private:
   // WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override {
-    if (web_contents()->GetVisibleURL() == url_)
+    if (IsExitConditionSatisfied())
+      run_loop_.Quit();
+  }
+
+  void NavigationEntryCommitted(
+      const content::LoadCommittedDetails& load_details) override {
+    if (IsExitConditionSatisfied())
       run_loop_.Quit();
   }
 
   bool IsExitConditionSatisfied() {
-    return (web_contents()->GetVisibleURL() == url_ &&
+    return (web_contents()->GetLastCommittedURL() == url_ &&
             web_contents()->CompletedFirstVisuallyNonEmptyPaint());
   }
 
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   GURL url_;
+};
+
+// Waits until a view is deleted.
+class ViewDeletedWaiter : public views::ViewObserver {
+ public:
+  explicit ViewDeletedWaiter(views::View* view) {
+    DCHECK(view);
+    observation_.Observe(view);
+  }
+  ~ViewDeletedWaiter() override = default;
+
+  // Waits until the view is deleted.
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // ViewObserver:
+  void OnViewIsDeleting(views::View* observed_view) override {
+    // Reset the observation before the view is actually deleted.
+    observation_.Reset();
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
 }  // namespace
@@ -118,6 +148,13 @@ void ProfilePickerTestBase::WaitForFirstPaint(content::WebContents* contents,
                                               const GURL& url) {
   DCHECK(contents);
   FirstVisuallyNonEmptyPaintObserver(contents, url).Wait();
+}
+
+void ProfilePickerTestBase::WaitForPickerClosed() {
+  if (!ProfilePicker::IsOpen())
+    return;
+  ViewDeletedWaiter(view()).Wait();
+  ASSERT_FALSE(ProfilePicker::IsOpen());
 }
 
 content::WebContents* ProfilePickerTestBase::web_contents() {

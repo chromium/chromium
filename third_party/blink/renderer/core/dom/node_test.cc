@@ -461,19 +461,15 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlotRemoval) {
   EXPECT_TRUE(GetDocument().body()->ChildNeedsStyleRecalc());
   EXPECT_TRUE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
 
-  // The StyleRecalcRoot is now the span. Removing the slot would break the flat
-  // tree ancestor chain so that when removing the span we would no longer be
-  // able to clear the dirty bits for all of the previous ancestor chain. Thus,
-  // we fall back to use the host as the style recalc root to be able to
-  // traverse and clear the dirty bit of the shadow tree div element on the next
-  // style recalc.
+  // The StyleRecalcRoot is now the span. Removing the slot breaks the flat
+  // tree ancestor chain so that the span is no longer in the flat tree. The
+  // StyleRecalcRoot is cleared.
   slot->remove();
-  span->remove();
 
-  EXPECT_TRUE(div->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(host->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(GetDocument().body()->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
+  EXPECT_FALSE(div->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(host->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(GetDocument().body()->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
 }
 
 TEST_F(NodeTest, UpdateChildDirtyAfterSlottingDirtyNode) {

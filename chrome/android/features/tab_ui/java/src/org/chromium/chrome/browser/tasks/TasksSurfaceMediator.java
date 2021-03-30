@@ -14,9 +14,11 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO_COOKIE_CONTROLS_TOGGLE_ENFORCEMENT;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO_LEARN_MORE_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
 import android.text.Editable;
@@ -26,9 +28,10 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.OverviewModeObserver;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -39,7 +42,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class TasksSurfaceMediator implements OverviewModeObserver {
     @Nullable
-    private FakeboxDelegate mFakeboxDelegate;
+    private OmniboxStub mOmniboxStub;
     private final IncognitoCookieControlsManager mIncognitoCookieControlsManager;
     private IncognitoCookieControlsManager.Observer mIncognitoCookieControlsObserver;
     private final PropertyModel mModel;
@@ -62,16 +65,17 @@ class TasksSurfaceMediator implements OverviewModeObserver {
         mModel.set(IS_SURFACE_BODY_VISIBLE, true);
         mModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
         mModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false);
+        mModel.set(IS_LENS_BUTTON_VISIBLE, false);
     }
 
-    public void initWithNative(FakeboxDelegate fakeboxDelegate) {
-        mFakeboxDelegate = fakeboxDelegate;
-        assert mFakeboxDelegate != null;
+    public void initWithNative(OmniboxStub omniboxStub) {
+        mOmniboxStub = omniboxStub;
+        assert mOmniboxStub != null;
 
         mModel.set(FAKE_SEARCH_BOX_CLICK_LISTENER, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFakeboxDelegate.setUrlBarFocus(
+                mOmniboxStub.setUrlBarFocus(
                         true, null, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP);
                 RecordUserAction.record("TasksSurface.FakeBox.Tapped");
             }
@@ -86,7 +90,7 @@ class TasksSurfaceMediator implements OverviewModeObserver {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() == 0) return;
-                mFakeboxDelegate.setUrlBarFocus(
+                mOmniboxStub.setUrlBarFocus(
                         true, s.toString(), OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS);
                 RecordUserAction.record("TasksSurface.FakeBox.LongPressed");
 
@@ -97,9 +101,17 @@ class TasksSurfaceMediator implements OverviewModeObserver {
         mModel.set(VOICE_SEARCH_BUTTON_CLICK_LISTENER, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mFakeboxDelegate.getVoiceRecognitionHandler().startVoiceRecognition(
+                mOmniboxStub.getVoiceRecognitionHandler().startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.TASKS_SURFACE);
                 RecordUserAction.record("TasksSurface.FakeBox.VoiceSearch");
+            }
+        });
+
+        mModel.set(LENS_BUTTON_CLICK_LISTENER, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOmniboxStub.startLens(LensEntryPoint.TASKS_SURFACE);
+                RecordUserAction.record("TasksSurface.FakeBox.Lens");
             }
         });
 

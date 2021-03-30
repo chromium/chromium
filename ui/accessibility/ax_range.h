@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_offscreen_result.h"
@@ -33,12 +32,12 @@ class AXRangeRectDelegate {
  public:
   virtual gfx::Rect GetInnerTextRangeBoundsRect(
       AXTreeID tree_id,
-      AXNode::AXID node_id,
+      AXNodeID node_id,
       int start_offset,
       int end_offset,
       AXOffscreenResult* offscreen_result) = 0;
   virtual gfx::Rect GetBoundsRect(AXTreeID tree_id,
-                                  AXNode::AXID node_id,
+                                  AXNodeID node_id,
                                   AXOffscreenResult* offscreen_result) = 0;
 };
 
@@ -274,18 +273,18 @@ class AXRange {
   // Pass a |max_count| of -1 to retrieve all text in the AXRange.
   // Note that if this AXRange has its anchor or focus located at an ignored
   // position, we shrink the range to the closest unignored positions.
-  base::string16 GetText(AXTextConcatenationBehavior concatenation_behavior =
+  std::u16string GetText(AXTextConcatenationBehavior concatenation_behavior =
                              AXTextConcatenationBehavior::kAsTextContent,
                          int max_count = -1,
                          bool include_ignored = false,
                          size_t* appended_newlines_count = nullptr) const {
     if (max_count == 0 || IsNull())
-      return base::string16();
+      return std::u16string();
 
     base::Optional<int> endpoint_comparison =
         CompareEndpoints(anchor(), focus());
     if (!endpoint_comparison)
-      return base::string16();
+      return std::u16string();
 
     AXPositionInstance start = (endpoint_comparison.value() < 0)
                                    ? anchor_->AsLeafTextPosition()
@@ -294,7 +293,7 @@ class AXRange {
                                  ? focus_->AsLeafTextPosition()
                                  : anchor_->AsLeafTextPosition();
 
-    base::string16 range_text;
+    std::u16string range_text;
     size_t computed_newlines_count = 0;
     bool is_first_non_whitespace_leaf = true;
     bool crossed_paragraph_boundary = false;
@@ -321,7 +320,7 @@ class AXRange {
           // When preserving layout line breaks, don't append `\n` next if the
           // previous leaf position was a <br> (already ending with a newline).
           if (crossed_paragraph_boundary && !found_trailing_newline) {
-            range_text += base::ASCIIToUTF16("\n");
+            range_text += u"\n";
             computed_newlines_count++;
           }
 

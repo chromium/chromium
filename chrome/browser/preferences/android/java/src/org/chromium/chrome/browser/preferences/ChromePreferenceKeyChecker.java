@@ -24,8 +24,8 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
     private static final ChromePreferenceKeyChecker INSTANCE = new ChromePreferenceKeyChecker();
 
     private Set<String> mKeysInUse;
-    private Set<String> mGrandfatheredFormatKeys;
-    private List<KeyPrefix> mGrandfatheredPrefixes;
+    private Set<String> mLegacyFormatKeys;
+    private List<KeyPrefix> mLegacyPrefixes;
     private Pattern mDynamicPartPattern;
 
     /**
@@ -33,19 +33,19 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
      * ChromePreferenceKeys}.
      */
     private ChromePreferenceKeyChecker() {
-        this(ChromePreferenceKeys.getKeysInUse(), GrandfatheredChromePreferenceKeys.getKeysInUse(),
-                GrandfatheredChromePreferenceKeys.getPrefixesInUse());
+        this(ChromePreferenceKeys.getKeysInUse(), LegacyChromePreferenceKeys.getKeysInUse(),
+                LegacyChromePreferenceKeys.getPrefixesInUse());
     }
 
     /**
      * Generic constructor, dependencies are passed in.
      */
     @VisibleForTesting
-    ChromePreferenceKeyChecker(List<String> keysInUse, List<String> grandfatheredKeys,
-            List<KeyPrefix> grandfatheredPrefixes) {
+    ChromePreferenceKeyChecker(
+            List<String> keysInUse, List<String> legacyKeys, List<KeyPrefix> legacyPrefixes) {
         mKeysInUse = new HashSet<>(keysInUse);
-        mGrandfatheredFormatKeys = new HashSet<>(grandfatheredKeys);
-        mGrandfatheredPrefixes = grandfatheredPrefixes;
+        mLegacyFormatKeys = new HashSet<>(legacyKeys);
+        mLegacyPrefixes = legacyPrefixes;
 
         // The dynamic part cannot be empty, but otherwise it is anything that does not contain
         // stars.
@@ -75,19 +75,19 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
      * @return Whether |key| is in use.
      */
     private boolean isKeyInUse(String key) {
-        // For non-dynamic grandfathered keys, a simple map check is enough.
-        if (mGrandfatheredFormatKeys.contains(key)) {
+        // For non-dynamic legacy keys, a simple map check is enough.
+        if (mLegacyFormatKeys.contains(key)) {
             return true;
         }
 
-        // For dynamic grandfathered keys, each grandfathered prefix has to be checked.
-        for (KeyPrefix prefix : mGrandfatheredPrefixes) {
+        // For dynamic legacy keys, each legacy prefix has to be checked.
+        for (KeyPrefix prefix : mLegacyPrefixes) {
             if (prefix.hasGenerated(key)) {
                 return true;
             }
         }
 
-        // If not a format-grandfathered key, assume it follows the format and find out if it is
+        // If not a format-legacy key, assume it follows the format and find out if it is
         // a prefixed key.
         String[] parts = key.split("\\.", 4);
         if (parts.length < 3) return false;

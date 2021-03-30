@@ -8,12 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync_sessions/session_sync_bridge.h"
 #include "components/sync_sessions/session_sync_prefs.h"
-#include "components/sync_sessions/switches.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -49,7 +47,7 @@ OpenTabsUIDelegate* SessionSyncServiceImpl::GetOpenTabsUIDelegate() {
 base::CallbackListSubscription
 SessionSyncServiceImpl::SubscribeToForeignSessionsChanged(
     const base::RepeatingClosure& cb) {
-  return foreign_sessions_changed_callback_list_.Add(cb);
+  return foreign_sessions_changed_closure_list_.Add(cb);
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -66,22 +64,13 @@ void SessionSyncServiceImpl::ProxyTabsStateChanged(
   }
 }
 
-void SessionSyncServiceImpl::SetSyncSessionsGUID(const std::string& guid) {
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncUseCacheGuidAsSyncSessionTag)) {
-    return;
-  }
-
-  sessions_client_->GetSessionSyncPrefs()->SetLegacySyncSessionsGUID(guid);
-}
-
 OpenTabsUIDelegate*
 SessionSyncServiceImpl::GetUnderlyingOpenTabsUIDelegateForTest() {
   return bridge_->GetOpenTabsUIDelegate();
 }
 
 void SessionSyncServiceImpl::NotifyForeignSessionUpdated() {
-  foreign_sessions_changed_callback_list_.Notify();
+  foreign_sessions_changed_closure_list_.Notify();
 }
 
 }  // namespace sync_sessions

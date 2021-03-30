@@ -57,7 +57,7 @@ group("remoting_all") {
       deps += [ "//remoting/host:remoting_native_messaging_host" ]
     }
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux && !is_chromeos_lacros) {
       deps += [
         "//remoting/host/linux:remoting_dev_me2me_host",
         "//remoting/host/linux:remoting_user_session",
@@ -92,6 +92,8 @@ if (is_win) {
         "rpcrt4.lib",
         "wtsapi32.lib",
       ]
+
+      deps += [ "//remoting/host:base" ]
     }
   }
 }
@@ -178,7 +180,7 @@ test("remoting_unittests") {
   }
 
   # TODO(crbug.com/1052397): Change to !is_chromeos once lacros-chrome is switched to target_os=chromeos.
-  if (!is_chromeos_ash) {
+  if (!is_chromeos_ash && !is_chromeos_lacros) {
     deps += [ "//remoting/client/display:unit_tests" ]
   }
 }
@@ -200,8 +202,17 @@ if (enable_remoting_host) {
       "//base",
       "//base/test:run_all_unittests",
       "//base/test:test_support",
+      "//jingle:webrtc_glue",
       "//net:test_support",
       "//remoting/base",
+      "//remoting/client:client",
+      "//remoting/client/audio:audio",
+      "//remoting/codec:encoder",
+      "//remoting/host:common",
+      "//remoting/host:test_support",
+      "//remoting/protocol:protocol",
+      "//remoting/signaling:test_support",
+      "//remoting/test:test_support",
       "//testing/gtest",
       "//third_party/webrtc_overrides:webrtc_component",
     ]

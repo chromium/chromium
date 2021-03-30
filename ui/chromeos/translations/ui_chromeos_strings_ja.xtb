@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">このファイルまたはディレクトリは使用できません。</translation>
 <translation id="1363028406613469049">トラック</translation>
 <translation id="1378727793141957596">Google ドライブへようこそ。</translation>
+<translation id="1379911846207762492">インターネットに接続していないときにファイルをオフラインで使用可能にできます。</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1395262318152388157">シーク スライダー</translation>
 <translation id="1404323374378969387">ノルウェー語</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">すべてのファイル</translation>
 <translation id="1810764548349082891">プレビュー機能はご利用いただけません</translation>
 <translation id="1812302367230252929">アムハラ語（文字変換）</translation>
+<translation id="1813278315230285598">サービス</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ペンギン</translation>
 <translation id="183183971458492120">情報を読み込んでいます...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">このフォルダは Linux と共有されています</translation>
 <translation id="1864756863218646478">ファイルが見つかりませんでした。</translation>
 <translation id="1920670151694390848">マラヤーラム語（文字変換）</translation>
+<translation id="1920798810075583923">スイカ</translation>
 <translation id="1924372192547904021">「<ph name="DRIVE_NAME" />」をフォーマットしました</translation>
 <translation id="1931134289871235022">スロバキア語</translation>
 <translation id="1933345018156373194">移動できませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">フィンランド語</translation>
 <translation id="1942765061641586207">画像解像度</translation>
-<translation id="1943097386230153518">新しいサービスをインストール</translation>
 <translation id="1972984168337863910">ファイルのフィードバック パネルを展開します</translation>
+<translation id="1984456723671657197">このファイル形式はサポートされていません。Chrome OS でファイルを開く方法について、詳しくは<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="1995337122023280937">ファイルの場所へ移動</translation>
 <translation id="2001796770603320721">ドライブで管理</translation>
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">レコード プレーヤー</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> 個のファイルを開いています。</translation>
 <translation id="2303301624314357662">ファイル <ph name="FILE_NAME" /> を開いています。</translation>
+<translation id="2304820083631266885">惑星</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> が取り外されました。</translation>
 <translation id="2325650632570794183">このファイル形式はサポートされていません。Chrome ウェブストアにアクセスして、この形式のファイルを開くことができるアプリをお探しください。</translation>
 <translation id="2326539130272988168">ブルガリア語</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">US インターナショナル</translation>
 <translation id="2562685439590298522">ドキュメント</translation>
 <translation id="2563185590376525700">カエル</translation>
-<translation id="2572501073504669105">インターネットに接続していないときにファイルをオフラインで使用可能にできます。</translation>
 <translation id="2578394532502990878">タミル語（表音）</translation>
 <translation id="2579959351793446050">オディア語</translation>
 <translation id="2614589611416690597">動画（<ph name="VIDEO_TYPE" />）</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">フランス語（カナダ）</translation>
 <translation id="3003633581067744647">サムネイル表示に切り替え</translation>
 <translation id="3007214526293698309">比率を固定</translation>
+<translation id="3029114385395636667">ドキュメント、スプレッドシート、スライドをオフラインで使用できるようにするには、Google オフライン ドキュメントを有効にしてください。</translation>
 <translation id="303198083543495566">位置情報</translation>
 <translation id="3047197340186497470">中国語（大易）</translation>
 <translation id="3057861065630527966">写真や動画をバックアップします</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">録音された年</translation>
 <translation id="3353984535370177728">アップロードするフォルダを選択</translation>
 <translation id="3356580349448036450">完了</translation>
+<translation id="3358452157379365236">ギター</translation>
 <translation id="3382143449143186018">ネパール語（字母）キーボード</translation>
 <translation id="3408236822532681288">ドイツ語（ドイツ）（Neo 2）キーボード</translation>
 <translation id="3414856743105198592">リムーバブル メディアをフォーマットすると、すべてのデータが消去されます。続行しますか？</translation>
 <translation id="3437801641691368414">作成日時</translation>
+<translation id="343907260260897561">インスタント カメラ</translation>
 <translation id="3455931012307786678">エストニア語</translation>
 <translation id="3466147780910026086">ご利用のメディア デバイスをスキャンしています...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> 枚の写真を <ph name="BEGIN_LINK" />Google ドライブ<ph name="END_LINK" />にバックアップしました</translation>
 <translation id="3475447146579922140">Google スプレッドシート</translation>
+<translation id="3479552764303398839">後で</translation>
 <translation id="3486821258960016770">モンゴル語</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> 件のエラーがあります。</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルをコピーしてください。</translation>
 <translation id="3556731189587832921">英語（アメリカ）（インターナショナル PC）キーボード</translation>
 <translation id="357479282490346887">リトアニア語</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" /> をオフラインで使用するよう設定できませんでした</translation>
 <translation id="3603385196401704894">フランス語（カナダ）</translation>
 <translation id="3606220979431771195">トルコ語-F</translation>
 <translation id="3616113530831147358">音声</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">ユニコーン</translation>
 <translation id="4158739975813877944">再生リストを開く</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> を移動しました。</translation>
+<translation id="4186579485882418952">オフラインを有効にする</translation>
 <translation id="4193154014135846272">Google ドキュメント</translation>
 <translation id="4197674956721858839">zip 圧縮</translation>
 <translation id="4202378258276439759">スペイン語（ラテンアメリカ）</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">一般情報</translation>
 <translation id="432252891123397018">ルーマニア語（標準）キーボード</translation>
 <translation id="4325128273762811722">スロベニア語</translation>
+<translation id="4326142238881453352">植物学者</translation>
 <translation id="4326192123064055915">コーヒー</translation>
 <translation id="4336032328163998280">コピーできませんでした。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">ソラニークルド語（アラビア語ベース）キーボード</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">タミル語（タイプライター型）キーボード</translation>
 <translation id="4711094779914110278">トルコ語</translation>
 <translation id="4712283082407695269">「<ph name="PATH" />」を開いています</translation>
-<translation id="4713544552769165154">このファイルは Macintosh ソフトウェアを使用するパソコン向けのもので、Chrome OS を実行するデバイスとは互換性がありません。<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />で、このデバイスで使用できる代わりのアプリをお探しください。<ph name="BEGIN_LINK_HELP" />詳細<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> 枚の写真をバックアップしました</translation>
 <translation id="4725511304875193254">コーギー</translation>
 <translation id="4732760563705710320">この動画はキャスト デバイスでサポートされていません。</translation>
@@ -391,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />まだデバイスを取り外さないでください。<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    使用中のデバイスを取り外すと、データが失われる恐れがあります。操作が完了してから、ファイル アプリを使ってデバイスを取り外してください。</translation>
+<translation id="5159560892333415631">ゴミ箱を空にする</translation>
 <translation id="5163869187418756376">共有できませんでした。接続を確認し、しばらくしてからもう一度お試しください。</translation>
 <translation id="516592729076796170">US Programmer Dvorak 配列</translation>
 <translation id="5170477580121653719">Google ドライブの残容量: <ph name="SPACE_AVAILABLE" /></translation>
@@ -408,7 +418,9 @@
         <ph name="MARKUP_7" />ファイルの作成、共有、共同作業<ph name="MARKUP_8" />
         他のユーザーとの作業をすべて 1 か所で行うことができます。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ドライブから復元されたファイル</translation>
+<translation id="5288441970121584418">ハンバーガー</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">ゴミ箱を空にしてもよろしいですか？</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">Linux と共有</translation>
 <translation id="5323213332664049067">ラテン アメリカ</translation>
@@ -461,8 +473,6 @@
 <translation id="5833610766403489739">このファイルは移動されています。ダウンロード保存先の設定を確認し、もう一度お試しください。</translation>
 <translation id="5838451609423551646">すべての項目を選択範囲から削除しました。</translation>
 <translation id="5838825566232597749">US Workman インターナショナル</translation>
-<translation id="5850516540536751549">このファイル形式はサポートされていません。<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />にアクセスして、この形式のファイルを開くことができるアプリをお探しください。
-    <ph name="BEGIN_LINK_HELP" />詳細<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">ここには何もありません...</translation>
 <translation id="5911887972742538906">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
 <translation id="5912396950572065471">形式</translation>
@@ -500,10 +510,12 @@
 <translation id="6248400709929739064">字幕を有効にする</translation>
 <translation id="6269630227984243955">マレー語</translation>
 <translation id="6287852322318138013">このファイルを開くアプリを選択してください</translation>
+<translation id="6321303798550928047">手を振る</translation>
 <translation id="6339145975392024142">US インターナショナル（PC）</translation>
 <translation id="6346310558342052870">アクセスが制限されています</translation>
 <translation id="6356685157277930264">ファイルのフィードバック ウィンドウ</translation>
 <translation id="6358884629796491903">ドラゴン</translation>
+<translation id="6367976544441405720">ワゴン車</translation>
 <translation id="637062427944097960">このファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="6394388407447716302">読み取り専用</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個のアイテム</translation>
@@ -527,6 +539,7 @@
 <translation id="6650726141019353908">ピンクの蝶</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6673674183150363784">フランス語（フランス）（BÉPO）キーボード</translation>
+<translation id="6710022688720561421">ロボット</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6751256176799620176">1 個のフォルダを選択しました</translation>
 <translation id="6790428901817661496">再生</translation>
@@ -560,6 +573,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">ブルガリア語</translation>
 <translation id="6973630695168034713">フォルダ</translation>
+<translation id="6976795442547527108">ライオン</translation>
 <translation id="6978611942794658017">このファイルは Windows ソフトウェアを使用する PC 用に作成されています。Chrome OS を実行するデバイスとは互換性がありません。Chrome ウェブストアで代わりのアプリをお探しください。</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6989942356279143254">スウェーデン語</translation>
@@ -606,6 +620,7 @@
 <translation id="7532029025027028521">ペルシャ語（文字変換）</translation>
 <translation id="7544830582642184299">Linux アプリに対して、Google ドライブのファイルへのアクセスを許可します。変更が加えられた場合は他のデバイスに同期されます。</translation>
 <translation id="7544853251252956727">シャッフル</translation>
+<translation id="7547009467130558110">スニーカー</translation>
 <translation id="7547780573915868306">リトアニア語</translation>
 <translation id="7547811415869834682">オランダ語</translation>
 <translation id="7551643184018910560">シェルフに固定</translation>
@@ -620,6 +635,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% 完了しました。</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを移動しています...</translation>
+<translation id="7655441028674523381">Google フォトに簡単アクセス</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7663224033570512922">ヒンディー語</translation>
 <translation id="7693909743393669729">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが消去され、既存のパーティションは非表示のパーティションを含めすべて削除されます。この操作は元に戻せません。</translation>
@@ -651,7 +667,6 @@
 <translation id="7839804798877833423">このファイルを取得すると、約 <ph name="FILE_SIZE" /> のモバイル データを使用します。</translation>
 <translation id="7846076177841592234">選択解除</translation>
 <translation id="7853966320808728790">フランス語 BÉPO</translation>
-<translation id="7864662577698025113">新しいサービスを追加</translation>
 <translation id="7868774406711971383">ポーランド語</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> に保存できません。編集内容はすべてダウンロード フォルダ内の <ph name="DOWNLOADS_FOLDER" /> に保存されます。</translation>
 <translation id="7874321682039004450">フィリピン語</translation>
@@ -666,13 +681,13 @@
 <translation id="7972920761225148017">フランス語（スイス）</translation>
 <translation id="7980421588063892270">英語（アメリカ）（Colemak）キーボード</translation>
 <translation id="7982283708762922719">高さ</translation>
+<translation id="79907182588096956">このファイルは Windows ソフトウェアを使用する PC 向けのもので、Chrome OS を実行するデバイスとは互換性がありません。Chrome OS でファイルを開く方法について、詳しくは<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="8008366997883261463">犬</translation>
 <translation id="8028993641010258682">サイズ</translation>
 <translation id="803771048473350947">ファイル</translation>
 <translation id="8038111231936746805">（デフォルト）</translation>
 <translation id="8042602468072383151">音声（<ph name="AUDIO_TYPE" />）</translation>
 <translation id="8045462269890919536">ルーマニア語</translation>
-<translation id="8052887694493382350">このファイルは Windows ソフトウェアを使用する PC 向けのもので、Chrome OS を実行するデバイスとは互換性がありません。<ph name="BEGIN_LINK_HELP" />詳細<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">編集内容はすべて <ph name="DOWNLOADS_FOLDER" /> に保存されます。</translation>
 <translation id="8079530767338315840">繰り返し</translation>
 <translation id="8106045200081704138">共有アイテム</translation>
@@ -712,6 +727,7 @@
 <translation id="8466234950814670489">tar アーカイブ</translation>
 <translation id="8475647382427415476">Google ドライブでは「<ph name="FILENAME" />」を直ちに同期できませんでした。時間を置いて再試行します。</translation>
 <translation id="8477649328507734757">スピン</translation>
+<translation id="8484284835977497781">最近撮影した写真をピックアップ。</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">全画面表示</translation>
@@ -744,8 +760,10 @@
 <translation id="8860454412039442620">Excel スプレッドシート</translation>
 <translation id="8866284467018526531">アラビア語（文字変換）</translation>
 <translation id="8900820606136623064">ハンガリー語</translation>
+<translation id="8903931173357132290">卒業</translation>
 <translation id="8919081441417203123">デンマーク語</translation>
 <translation id="8965697826696209160">空き容量が不足しています。</translation>
+<translation id="8970501467542182729">このファイルは Macintosh ソフトウェアを使用するパソコン向けのもので、Chrome OS を実行するデバイスとは互換性がありません。Chrome OS でファイルを開く方法について、詳しくは<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="8997962250644902079">中国語（繁体）（ピンイン）</translation>
 <translation id="9017798300203431059">ロシア語（表音）</translation>
 <translation id="9034924485347205037">Linux ファイル</translation>
@@ -767,6 +785,7 @@
 <translation id="9154418932169119429">この画像はオフラインでは表示できません。</translation>
 <translation id="9172592259078059678">グジャラト語（文字変換）</translation>
 <translation id="9173120999827300720">英語（アメリカ）（インターナショナル）キーボード</translation>
+<translation id="9174050671906956834">ゴミ箱内のアイテムは 30 日後に完全に削除されます。</translation>
 <translation id="9189836632794948435">カザフ語</translation>
 <translation id="9213073329713032541">インストールを開始しました。</translation>
 <translation id="9219103736887031265">画像</translation>

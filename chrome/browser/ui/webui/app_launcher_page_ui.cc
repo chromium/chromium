@@ -7,32 +7,48 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/webui/app_launcher_login_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_icon_webui_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_resource_cache_factory.h"
 #include "chrome/browser/ui/webui/ntp/core_app_launcher_handler.h"
-#include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/apps_resources.h"
+#include "chrome/grit/apps_resources_map.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/google/core/common/google_util.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_urls.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/animation/animation.h"
 
-using content::BrowserThread;
+#if defined(OS_MAC)
+#include "chrome/browser/platform_util.h"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // AppLauncherPageUI
@@ -61,12 +77,120 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
   // earlier.
   web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
 
-  content::URLDataSource::Add(
+  /*content::URLDataSource::Add(
       GetProfile(),
-      std::make_unique<HTMLSource>(GetProfile()->GetOriginalProfile()));
+      std::make_unique<HTMLSource>(GetProfile()->GetOriginalProfile()));*/
+
+  content::WebUIDataSource* source =
+      content::WebUIDataSource::Create(chrome::kChromeUIAppLauncherPageHost);
+  content::WebUIDataSource::Add(GetProfile(), source);
+
+  source->AddResourcePaths(base::make_span(kAppsResources, kAppsResourcesSize));
+  source->SetDefaultResource(IDR_APPS_NEW_TAB_HTML);
+  source->UseStringsJs();
+
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"title", IDS_NEW_TAB_TITLE},
+      {"webStoreTitle", IDS_EXTENSION_WEB_STORE_TITLE},
+      {"webStoreTitleShort", IDS_EXTENSION_WEB_STORE_TITLE_SHORT},
+      {"attributionintro", IDS_NEW_TAB_ATTRIBUTION_INTRO},
+      {"appuninstall", IDS_EXTENSIONS_UNINSTALL},
+      {"appoptions", IDS_NEW_TAB_APP_OPTIONS},
+      {"appdetails", IDS_NEW_TAB_APP_DETAILS},
+      {"appinfodialog", IDS_APP_CONTEXT_MENU_SHOW_INFO},
+      {"appcreateshortcut", IDS_NEW_TAB_APP_CREATE_SHORTCUT},
+      {"appinstalllocally", IDS_NEW_TAB_APP_INSTALL_LOCALLY},
+      {"appDefaultPageName", IDS_APP_DEFAULT_PAGE_NAME},
+      {"applaunchtypepinned", IDS_APP_CONTEXT_MENU_OPEN_PINNED},
+      {"applaunchtyperegular", IDS_APP_CONTEXT_MENU_OPEN_REGULAR},
+      {"applaunchtypewindow", IDS_APP_CONTEXT_MENU_OPEN_WINDOW},
+      {"applaunchtypefullscreen", IDS_APP_CONTEXT_MENU_OPEN_FULLSCREEN},
+      {"syncpromotext", IDS_SYNC_START_SYNC_BUTTON_LABEL},
+      {"syncLinkText", IDS_SYNC_ADVANCED_OPTIONS},
+      {"learnMore", IDS_LEARN_MORE},
+      {"appInstallHintText", IDS_NEW_TAB_APP_INSTALL_HINT_LABEL},
+      {"learn_more", IDS_LEARN_MORE},
+      {"tile_grid_screenreader_accessible_description",
+       IDS_NEW_TAB_TILE_GRID_ACCESSIBLE_DESCRIPTION},
+      {"page_switcher_change_title", IDS_NEW_TAB_PAGE_SWITCHER_CHANGE_TITLE},
+      {"page_switcher_same_title", IDS_NEW_TAB_PAGE_SWITCHER_SAME_TITLE},
+      {"runonoslogin", IDS_APP_CONTEXT_MENU_RUN_ON_OS_LOGIN},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
+
+  PrefService* prefs = GetProfile()->GetPrefs();
+  source->AddString(
+      "bookmarkbarattached",
+      prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar) ? "true" : "false");
+
+  source->AddBoolean("shouldShowSyncLogin",
+                     AppLauncherLoginHandler::ShouldShow(GetProfile()));
+
+  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  source->AddString("webStoreLink",
+                    google_util::AppendGoogleLocaleParam(
+                        extension_urls::GetWebstoreLaunchURL(), app_locale)
+                        .spec());
+
+  bool is_swipe_tracking_from_scroll_events_enabled = false;
+#if defined(OS_MAC)
+  // On Mac OS X 10.7+, horizontal scrolling can be treated as a back or
+  // forward gesture. Pass through a flag that indicates whether or not that
+  // feature is enabled.
+  is_swipe_tracking_from_scroll_events_enabled =
+      platform_util::IsSwipeTrackingFromScrollEventsEnabled();
+#endif
+  source->AddBoolean("isSwipeTrackingFromScrollEventsEnabled",
+                     is_swipe_tracking_from_scroll_events_enabled);
+
+  source->AddBoolean("showWebStoreIcon",
+                     !prefs->GetBoolean(prefs::kHideWebStoreIcon));
+
+  pref_change_registrar_.Init(prefs);
+  pref_change_registrar_.Add(
+      prefs::kHideWebStoreIcon,
+      base::BindRepeating(&AppLauncherPageUI::OnHideWebStoreIconChanged,
+                          base::Unretained(this)));
+
+  source->AddBoolean("canShowAppInfoDialog", CanPlatformShowAppInfoDialog());
+
+  AppLauncherHandler::RegisterLoadTimeData(GetProfile(), source);
+
+  // Control fade and resize animations.
+  source->AddBoolean("anim", gfx::Animation::ShouldRenderRichAnimation());
+
+  source->AddBoolean("isUserSignedIn",
+                     IdentityManagerFactory::GetForProfile(GetProfile())
+                         ->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources 'self' 'unsafe-eval' "
+      "'unsafe-inline';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'self' chrome://resources chrome://theme "
+      "'unsafe-inline';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc,
+      "img-src 'self' chrome://extension-icon chrome://app-icon chrome://theme "
+      "chrome://resources data:;");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types apps-page-js cr-ui-bubble-js-static "
+      "parse-html-subset;");
 }
 
 AppLauncherPageUI::~AppLauncherPageUI() {
+}
+
+void AppLauncherPageUI::OnHideWebStoreIconChanged() {
+  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  PrefService* prefs = GetProfile()->GetPrefs();
+  update->SetBoolean("showWebStoreIcon",
+                     !prefs->GetBoolean(prefs::kHideWebStoreIcon));
+  content::WebUIDataSource::Update(
+      GetProfile(), chrome::kChromeUIAppLauncherPageHost, std::move(update));
 }
 
 // static
@@ -92,70 +216,3 @@ bool AppLauncherPageUI::OverrideHandleWebUIMessage(
 Profile* AppLauncherPageUI::GetProfile() const {
   return Profile::FromWebUI(web_ui());
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// HTMLSource
-
-AppLauncherPageUI::HTMLSource::HTMLSource(Profile* profile)
-    : profile_(profile) {
-}
-
-std::string AppLauncherPageUI::HTMLSource::GetSource() {
-  return chrome::kChromeUIAppLauncherPageHost;
-}
-
-void AppLauncherPageUI::HTMLSource::StartDataRequest(
-    const GURL& url,
-    const content::WebContents::Getter& wc_getter,
-    content::URLDataSource::GotDataCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  NTPResourceCache* resource = AppResourceCacheFactory::GetForProfile(profile_);
-
-  content::WebContents* web_contents = wc_getter.Run();
-  content::RenderProcessHost* render_host =
-      web_contents ? web_contents->GetMainFrame()->GetProcess() : nullptr;
-  NTPResourceCache::WindowType win_type = NTPResourceCache::GetWindowType(
-      profile_, render_host);
-  scoped_refptr<base::RefCountedMemory> html_bytes(
-      resource->GetNewTabHTML(win_type));
-
-  std::move(callback).Run(html_bytes.get());
-}
-
-std::string AppLauncherPageUI::HTMLSource::GetMimeType(
-    const std::string& resource) {
-  return "text/html";
-}
-
-bool AppLauncherPageUI::HTMLSource::ShouldReplaceExistingSource() {
-  return false;
-}
-
-bool AppLauncherPageUI::HTMLSource::AllowCaching() {
-  // Should not be cached to reflect dynamically-generated contents that may
-  // depend on user profiles.
-  return false;
-}
-
-std::string AppLauncherPageUI::HTMLSource::GetContentSecurityPolicy(
-    network::mojom::CSPDirectiveName directive) {
-  if (directive == network::mojom::CSPDirectiveName::ScriptSrc) {
-    // 'unsafe-inline' is added to script-src.
-    return "script-src chrome://resources 'self' 'unsafe-eval' "
-           "'unsafe-inline';";
-  } else if (directive == network::mojom::CSPDirectiveName::StyleSrc) {
-    return "style-src 'self' chrome://resources chrome://theme "
-           "'unsafe-inline';";
-  } else if (directive == network::mojom::CSPDirectiveName::ImgSrc) {
-    return "img-src chrome://extension-icon chrome://app-icon chrome://theme "
-           "chrome://resources data:;";
-  } else if (directive == network::mojom::CSPDirectiveName::TrustedTypes) {
-    return "trusted-types apps-page-js cr-ui-bubble-js-static "
-           "parse-html-subset;";
-  }
-
-  return content::URLDataSource::GetContentSecurityPolicy(directive);
-}
-
-AppLauncherPageUI::HTMLSource::~HTMLSource() = default;

@@ -1,0 +1,118 @@
+<style>
+  :host {
+    user-select: none;
+  }
+
+  #selector {
+    background-color: var(--search-box-results-bg, white);
+    border-radius: calc(0.25 * var(--ntp-realbox-height));
+    box-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+    display: block;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    padding-top: var(--ntp-realbox-height);
+  }
+
+  @media (forced-colors: active) {
+    #selector {
+      border: 1px solid ActiveBorder;
+    }
+  }
+
+  ntp-realbox-match {
+    color: var(--search-box-results-text);
+  }
+
+  .header {
+    align-items: center;
+    display: flex;
+    margin-top: 8px;
+    outline: none;
+    padding-bottom: 6px;
+    padding-inline-end: 16px;
+    padding-inline-start: 12px;
+    padding-top: 6px;
+  }
+
+  .header .text {
+    color: var(--search-box-results-dim, var(--google-grey-refresh-700));
+    cursor: default;
+    font-size: .875em;
+    font-weight: 500;
+    overflow: hidden;
+    padding-inline-end: 8px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .header cr-icon-button {
+    --cr-icon-button-fill-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-size: 24px;
+    --cr-icon-image: url(icons/chevron.svg);
+    --cr-icon-image-transform: rotate(180deg);
+  }
+
+  .header[group-is-hidden] cr-icon-button {
+    --cr-icon-image-transform: none;
+  }
+
+  .header:focus-within:not(:focus) cr-icon-button {
+    --cr-icon-button-fill-color: var(--search-box-icon-selected, var(--google-grey-refresh-700));
+  }
+
+  ntp-realbox-match:hover,
+  .header:hover {
+    background-color: var(--search-box-results-bg-hovered, rgba(var(--google-grey-900-rgb), .1));
+  }
+
+  ntp-realbox-match:-webkit-any(:focus-within, .selected),
+  .header:focus-within:not(:focus) {
+    background-color: var(--search-box-results-bg-selected, rgba(var(--google-grey-900-rgb), .16));
+    color: var(--search-box-results-text-selected, var(--google-grey-900));
+  }
+
+  @media (forced-colors: active) {
+    ntp-realbox-match:hover,
+    .header:hover {
+      background-color: Highlight;
+    }
+    ntp-realbox-match:-webkit-any(:focus-within, .selected),
+    .header:focus-within:not(:focus) {
+      background-color: Highlight;
+    }
+  }
+</style>
+<iron-selector id="selector" selectable="ntp-realbox-match"
+    items="{{selectableMatchElements_}}" selected="{{selectedMatchIndex}}"
+    selected-class="selected">
+  <template is="dom-repeat" id="groups" items="[[groupIds_]]" as="groupId">
+    <template is="dom-if" if="[[groupHasHeader_(groupId)]]">
+      <!-- Header cannot be tabbed into but gets focus when clicked. This stops
+           the dropdown from losing focus and closing as a result. -->
+      <div class="header" data-id$="[[groupId]]" tabindex="-1"
+          on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
+          aria-hidden="true"
+          group-is-hidden$="[[groupIsHidden_(groupId, hiddenGroupIds_.*)]]">
+        <span class="text">[[headerForGroup_(groupId)]]</span>
+        <cr-icon-button class="icon-clear"
+            title="[[toggleButtonTitleForGroup_(groupId, hiddenGroupIds_.*)]]"
+            aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]"
+            on-mousedown="onToggleButtonMouseDown_">
+        </cr-icon-button>
+      </div>
+    </template>
+    <template is="dom-if" if="[[!groupIsHidden_(groupId, hiddenGroupIds_.*)]]"
+        restamp>
+      <template is="dom-repeat" items="[[result.matches]]"
+          filter="[[computeMatchBelongsToGroup_(groupId)]]"
+          on-dom-change="onResultRepaint_">
+        <ntp-realbox-match tabindex="0" role="option" match="[[item]]"
+            match-index="[[matchIndex_(item)]]">
+        </ntp-realbox-match>
+      </template>
+    </template>
+  <template>
+</iron-selector>

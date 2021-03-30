@@ -50,11 +50,11 @@ bool IsDeviceConnectedViaUsb(const base::FilePath& path) {
   return false;
 }
 
-// Returns the UDL association score between |display| and |device|. A score <=
+// Returns the USB association score between |display| and |device|. A score <=
 // 0 means that there is no association.
-int GetUdlAssociationScore(const ManagedDisplayInfo* display,
+int GetUsbAssociationScore(const ManagedDisplayInfo* display,
                            const ui::TouchscreenDevice& device) {
-  // If the devices are not both connected via USB, then there cannot be a UDL
+  // If the devices are not both connected via USB, then there cannot be a USB
   // association score.
   if (!IsDeviceConnectedViaUsb(display->sys_path()) ||
       !IsDeviceConnectedViaUsb(device.sys_path))
@@ -76,16 +76,16 @@ int GetUdlAssociationScore(const ManagedDisplayInfo* display,
   return largest_idx;
 }
 
-// Tries to find a UDL device that best matches |display|. Returns
+// Tries to find a USB device that best matches |display|. Returns
 // |devices.end()| if one is not found.
-DeviceList::const_iterator GuessBestUdlDevice(const ManagedDisplayInfo* display,
+DeviceList::const_iterator GuessBestUsbDevice(const ManagedDisplayInfo* display,
                                               const DeviceList& devices) {
   int best_score = 0;
   DeviceList::const_iterator best_device_it = devices.end();
 
   // TODO(malaykeshav): Migrate to std::max_element in the future.
   for (auto it = devices.begin(); it != devices.end(); it++) {
-    int score = GetUdlAssociationScore(display, *it);
+    int score = GetUsbAssociationScore(display, *it);
     if (score > best_score) {
       best_score = score;
       best_device_it = it;
@@ -330,7 +330,7 @@ void TouchDeviceManager::AssociateTouchscreens(
   AssociateInternalDevices(&displays, &devices);
   AssociateDevicesWithCollision(&displays, &devices);
   AssociateFromHistoricalData(&displays, &devices);
-  AssociateUdlDevices(&displays, &devices);
+  AssociateUsbDevices(&displays, &devices);
   AssociateSameSizeDevices(&displays, &devices);
   AssociateToSingleDisplay(&displays, &devices);
   AssociateAnyRemainingDevices(&displays, &devices);
@@ -457,21 +457,21 @@ void TouchDeviceManager::AssociateFromHistoricalData(
   }
 }
 
-void TouchDeviceManager::AssociateUdlDevices(ManagedDisplayInfoList* displays,
+void TouchDeviceManager::AssociateUsbDevices(ManagedDisplayInfoList* displays,
                                              DeviceList* devices) {
-  VLOG(2) << "Trying to match udl devices (" << displays->size()
+  VLOG(2) << "Trying to match usb devices (" << displays->size()
           << " displays and " << devices->size() << " devices to match)";
 
   for (auto display_it = displays->begin(); display_it != displays->end();
        display_it++) {
     ManagedDisplayInfo* display = *display_it;
-    auto device_it = GuessBestUdlDevice(display, *devices);
+    auto device_it = GuessBestUsbDevice(display, *devices);
 
     if (device_it != devices->end()) {
       const ui::TouchscreenDevice& device = *device_it;
       VLOG(2) << "=> Matched device " << device.name << " to display "
               << display->name()
-              << " (score=" << GetUdlAssociationScore(display, device) << ")";
+              << " (score=" << GetUsbAssociationScore(display, device) << ")";
       Associate(display, device);
       devices->erase(device_it);
     }

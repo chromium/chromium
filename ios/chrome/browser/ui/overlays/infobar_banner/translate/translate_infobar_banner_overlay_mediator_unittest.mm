@@ -6,14 +6,11 @@
 
 #include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -29,13 +26,9 @@ using translate_infobar_overlays::TranslateBannerRequestConfig;
 // Test fixture for TranslateInfobarBannerOverlayMediator.
 class TranslateInfobarBannerOverlayMediatorTest : public PlatformTest {
  public:
-  TranslateInfobarBannerOverlayMediatorTest() {
-    feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                   {kInfobarUIRebootOnlyiOS13});
-  }
+  TranslateInfobarBannerOverlayMediatorTest() {}
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
 };
 

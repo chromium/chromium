@@ -4,10 +4,10 @@
 
 #include "components/autofill_assistant/browser/actions/collect_user_data_action.h"
 
+#include <string>
 #include <utility>
 
 #include "base/guid.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -594,17 +594,15 @@ TEST_F(CollectUserDataActionTest, SelectContactDetails) {
 
   autofill::AutofillProfile contact_profile;
   contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL,
-                             base::UTF8ToUTF16("Marion Mitchell Morrison"));
-  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_FIRST,
-                             base::UTF8ToUTF16("Marion"));
+                             u"Marion Mitchell Morrison");
+  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_FIRST, u"Marion");
   contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_MIDDLE,
-                             base::UTF8ToUTF16("Mitchell"));
-  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_LAST,
-                             base::UTF8ToUTF16("Morrison"));
+                             u"Mitchell");
+  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_LAST, u"Morrison");
   contact_profile.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
-                             base::UTF8ToUTF16("marion@me.xyz"));
+                             u"marion@me.xyz");
   contact_profile.SetRawInfo(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
-                             base::UTF8ToUTF16("16505678910"));
+                             u"16505678910");
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
@@ -647,11 +645,10 @@ TEST_F(CollectUserDataActionTest, SelectContactDetails) {
   EXPECT_EQ(user_data_.has_selected_address(kMemoryLocation), true);
   auto* profile = user_data_.selected_address(kMemoryLocation);
   EXPECT_EQ(profile->GetRawInfo(autofill::NAME_FULL),
-            base::UTF8ToUTF16("Marion Mitchell Morrison"));
+            u"Marion Mitchell Morrison");
   EXPECT_EQ(profile->GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER),
-            base::UTF8ToUTF16("16505678910"));
-  EXPECT_EQ(profile->GetRawInfo(autofill::EMAIL_ADDRESS),
-            base::UTF8ToUTF16("marion@me.xyz"));
+            u"16505678910");
+  EXPECT_EQ(profile->GetRawInfo(autofill::EMAIL_ADDRESS), u"marion@me.xyz");
 }
 
 TEST_F(CollectUserDataActionTest,
@@ -898,8 +895,7 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Contact) {
                                                          options));
 
   user_data.selected_addresses_["profile"]->SetRawInfo(
-      autofill::ServerFieldType::EMAIL_ADDRESS,
-      base::UTF8ToUTF16("joedoe@example.com"));
+      autofill::ServerFieldType::EMAIL_ADDRESS, u"joedoe@example.com");
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
 
@@ -908,7 +904,7 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Contact) {
                                                          options));
 
   user_data.selected_addresses_["profile"]->SetRawInfo(
-      autofill::ServerFieldType::NAME_FULL, base::UTF8ToUTF16("Joe Doe"));
+      autofill::ServerFieldType::NAME_FULL, u"Joe Doe");
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
 
@@ -917,8 +913,7 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Contact) {
                                                          options));
 
   user_data.selected_addresses_["profile"]->SetRawInfo(
-      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
-      base::UTF8ToUTF16("+1 23 456 789 01"));
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER, u"+1 23 456 789 01");
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
 }
@@ -957,15 +952,15 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Payment) {
                                                          options));
 
   user_data.selected_addresses_["billing_address"]->SetRawInfo(
-      autofill::ADDRESS_HOME_ZIP, base::UTF8ToUTF16("91601"));
+      autofill::ADDRESS_HOME_ZIP, u"91601");
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
 
   // Zip code is optional in Argentinian address.
   user_data.selected_addresses_["billing_address"]->SetRawInfo(
-      autofill::ADDRESS_HOME_ZIP, base::UTF8ToUTF16(""));
+      autofill::ADDRESS_HOME_ZIP, u"");
   user_data.selected_addresses_["billing_address"]->SetRawInfo(
-      autofill::ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16("AR"));
+      autofill::ADDRESS_HOME_COUNTRY, u"AR");
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
 
@@ -974,13 +969,13 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Payment) {
                                                          options));
 
   user_data.selected_addresses_["billing_address"]->SetRawInfo(
-      autofill::ADDRESS_HOME_ZIP, base::UTF8ToUTF16("B1675"));
+      autofill::ADDRESS_HOME_ZIP, u"B1675");
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
 
   // Expired credit card.
   user_data.selected_card_->SetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
-                                       base::UTF8ToUTF16("2019"));
+                                       u"2019");
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 }
@@ -1036,7 +1031,7 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_ShippingAddress) {
                                                          options));
 
   user_data.selected_addresses_["shipping_address"]->SetRawInfo(
-      autofill::ADDRESS_HOME_ZIP, base::UTF8ToUTF16("91601"));
+      autofill::ADDRESS_HOME_ZIP, u"91601");
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
 }

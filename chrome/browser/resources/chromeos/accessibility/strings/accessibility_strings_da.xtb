@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Punkt på listen</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Stryg til højre med to fingre</translation>
-<translation id="1016393160682012902">Tryk på en qwerty-tast, en opdaterbar brailletast eller en bevægelse for at lære den tilknyttede funktion. Tryk på Ctrl+W eller Escape for at afslutte.</translation>
 <translation id="1022586497894531524">Er det første gang, du bruger talefeedback i ChromeVox? Dette hurtige selvstudie giver dig de grundlæggende oplysninger, du skal bruge for at komme godt i gang med ChromeVox.</translation>
 <translation id="1025074108959230262">Sticky-tilstand er deaktiveret</translation>
 <translation id="1031961866430398710">og derefter</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Der er ingen forrige styringselementer</translation>
 <translation id="2045606329038304310">Styring af formularfelt</translation>
 <translation id="2063539687800151747">Motto</translation>
+<translation id="2074531330963286860">Tilgængelige handlinger. Tryk på Search+Period for at se dem</translation>
 <translation id="2086961585857038472">Næste ord</translation>
 <translation id="2087981446621639008">oplysn i bskrvlst</translation>
 <translation id="2089387485033699258">da</translation>
@@ -186,7 +186,7 @@
 <translation id="2347456970887948350">Et link</translation>
 <translation id="2365384324219615024">Du kan også trykke på Enter for at aktivere elementer. Enter kan f.eks. bruges til at indsende tekst i en formular. Tryk på Enter for at fortsætte.</translation>
 <translation id="2381733276052567791">Slå tale til eller fra</translation>
-<translation id="2390264819538553347">Tryk på Enter for at gå videre. Tryk på backspace for at gå tilbage.</translation>
+<translation id="2390264819538553347">Tryk på Enter for at gå videre. Tryk på Backspace for at gå tilbage.</translation>
 <translation id="2398579267367951220">Skriv for at søge på siden. Tryk på Enter for at gå videre til resultatet, tryk på pil op eller pil ned for at gennemse resultaterne, fortsæt med at skrive for at ændre din søgning, eller tryk på Esc for at annullere.</translation>
 <translation id="240709722712693803">Violetblå</translation>
 <translation id="2416512023405990736">Et afkrydsningsfelt uden markering</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Start eller afslut det valgte</translation>
 <translation id="827422111966801947">Indigoblå</translation>
 <translation id="8276439074553447000">Gå til forrige element, der kan fokuseres på</translation>
+<translation id="8279039817939141096">Tryk på en qwerty-tast, en opdaterbar brailletast eller en bevægelse for at lære den tilknyttede funktion. Tryk på Ctrl+W, mellemrum+Z, stryg med to fingre, eller tryk på Escape for at afslutte.</translation>
 <translation id="8283603667300770666">Næste formularfelt</translation>
 <translation id="8310185481635255431">Der er ikke flere links</translation>
 <translation id="831207808878314375">Definition</translation>

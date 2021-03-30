@@ -79,8 +79,7 @@ TEST_F(DocumentSuggestionsServiceTest, VariationHeaders) {
       }));
 
   document_suggestions_service_->CreateDocumentSuggestionsRequest(
-      base::ASCIIToUTF16(""), false,
-      base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
+      u"", false, base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
       base::BindOnce(OnURLLoadComplete));
 
   base::RunLoop().RunUntilIdle();

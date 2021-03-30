@@ -32,11 +32,10 @@
 #include "cc/input/overscroll_behavior.h"
 #include "cc/paint/paint_image.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/blame_context.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 
 // To avoid conflicts with the CreateWindow macro from the Windows SDK...
 #undef CreateWindow
@@ -106,8 +106,8 @@ struct DateTimeChooserParameters;
 struct FrameLoadRequest;
 struct ViewportDescription;
 struct ScreenInfo;
+struct ScreenInfos;
 struct WebWindowFeatures;
-struct WebRect;
 
 namespace mojom {
 namespace blink {
@@ -224,7 +224,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // shown. Under some circumstances CreateWindow's implementation may return a
   // previously shown page. Calling this method should still work and the
   // browser will discard the unnecessary show request.
-  virtual void Show(const base::UnguessableToken& opener_frame_token,
+  virtual void Show(const blink::LocalFrameToken& opener_frame_token,
                     NavigationPolicy navigation_policy,
                     const IntRect& initial_rect,
                     bool consumed_user_gesture) = 0;
@@ -290,9 +290,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                             String& result);
   virtual bool TabsToLinks() = 0;
 
-  virtual ScreenInfo GetScreenInfo(LocalFrame& frame) const = 0;
-  virtual void SetCursor(const ui::Cursor&, LocalFrame* local_root) = 0;
+  virtual const ScreenInfo& GetScreenInfo(LocalFrame& frame) const = 0;
+  virtual const ScreenInfos& GetScreenInfos(LocalFrame& frame) const = 0;
 
+  virtual void SetCursor(const ui::Cursor&, LocalFrame* local_root) = 0;
   virtual void SetCursorOverridden(bool) = 0;
 
   virtual void AutoscrollStart(const gfx::PointF& position, LocalFrame*) {}
@@ -322,7 +323,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void EnablePreferredSizeChangedMode() {}
 
-  virtual void ZoomToFindInPageRect(const WebRect&) {}
+  virtual void ZoomToFindInPageRect(const gfx::Rect&) {}
 
   virtual void ContentsSizeChanged(LocalFrame*, const IntSize&) const = 0;
   // Call during pinch gestures, or when page-scale changes on main-frame load.
@@ -526,7 +527,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void SetDelegatedInkMetadata(
       LocalFrame* frame,
-      std::unique_ptr<viz::DelegatedInkMetadata> metadata) {}
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {}
 
   virtual void BatterySavingsChanged(LocalFrame& main_frame,
                                      BatterySavingsFlags savings) = 0;

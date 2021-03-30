@@ -213,7 +213,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
       String original_text = fragment_->textContent();
       auto* event =
           MakeGarbageCollected<BeforeTextInsertedEvent>(original_text);
-      editable_root->DispatchEvent(*event);
+      editable_root->DefaultEventHandler(*event);
       if (original_text != event->GetText()) {
         fragment_ = CreateFragmentFromText(
             selection.ToNormalizedEphemeralRange(), event->GetText());
@@ -245,7 +245,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
 
   // Give the root a chance to change the text.
   auto* evt = MakeGarbageCollected<BeforeTextInsertedEvent>(text);
-  editable_root->DispatchEvent(*evt);
+  editable_root->DefaultEventHandler(*evt);
   if (text != evt->GetText() || !HasRichlyEditableStyle(*editable_root)) {
     RestoreAndRemoveTestRenderingNodesToFragment(holder);
 
@@ -820,10 +820,13 @@ void ReplaceSelectionCommand::RemoveUnrenderedTextNodesAtEnds(
   // can't insert into those elements.
   auto* first_node_inserted =
       DynamicTo<Text>(inserted_nodes.FirstNodeInserted());
-  if (first_node_inserted && !NodeHasVisibleLayoutText(*first_node_inserted)) {
-    inserted_nodes.WillRemoveNode(*first_node_inserted);
-    // Removing a Text node won't dispatch synchronous events.
-    RemoveNode(first_node_inserted, ASSERT_NO_EDITING_ABORT);
+  if (first_node_inserted) {
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+    if (!NodeHasVisibleLayoutText(*first_node_inserted)) {
+      inserted_nodes.WillRemoveNode(*first_node_inserted);
+      // Removing a Text node won't dispatch synchronous events.
+      RemoveNode(first_node_inserted, ASSERT_NO_EDITING_ABORT);
+    }
   }
 }
 

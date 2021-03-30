@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -73,6 +72,8 @@ class ActivityIconLoader {
       base::OnceCallback<void(std::unique_ptr<ActivityToIconsMap>)>;
 
   ActivityIconLoader();
+  ActivityIconLoader(const ActivityIconLoader&) = delete;
+  ActivityIconLoader& operator=(const ActivityIconLoader&) = delete;
   ~ActivityIconLoader();
 
   void SetAdaptiveIconDelegate(AdaptiveIconDelegate* delegate);
@@ -133,8 +134,6 @@ class ActivityIconLoader {
 
   // This must come last to make sure weak pointers are invalidated first.
   base::WeakPtrFactory<ActivityIconLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityIconLoader);
 };
 
 }  // namespace internal

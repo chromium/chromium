@@ -28,22 +28,30 @@ static_library("content") {
     "payment_app_service.h",
     "payment_app_service_factory.cc",
     "payment_app_service_factory.h",
+    "payment_credential_enrollment_model.cc",
+    "payment_credential_enrollment_model.h",
+    "payment_credential_enrollment_view.h",
     "payment_details_converter.cc",
     "payment_details_converter.h",
     "payment_event_response_util.cc",
     "payment_event_response_util.h",
     "payment_handler_host.cc",
     "payment_handler_host.h",
+    "payment_handler_navigation_throttle.cc",
+    "payment_handler_navigation_throttle.h",
     "payment_request_converter.cc",
     "payment_request_converter.h",
     "payment_request_spec.cc",
     "payment_request_spec.h",
+    "payment_ui_observer.h",
     "payments_userdata_key.cc",
     "payments_userdata_key.h",
     "secure_payment_confirmation_app.cc",
     "secure_payment_confirmation_app.h",
     "secure_payment_confirmation_app_factory.cc",
     "secure_payment_confirmation_app_factory.h",
+    "secure_payment_confirmation_model.cc",
+    "secure_payment_confirmation_model.h",
     "secure_payment_confirmation_view.h",
     "service_worker_payment_app.cc",
     "service_worker_payment_app.h",
@@ -80,7 +88,7 @@ static_library("content") {
     sources += [ "android_app_communication_chrome_os.cc" ]
 
     deps += [
-      "//ash/public/cpp/external_arc:external_arc",
+      "//ash/public/cpp/external_arc",
       "//components/arc",
       "//components/arc/mojom",
     ]
@@ -91,13 +99,18 @@ static_library("content") {
   }
 
   if (is_android) {
-    sources += [ "secure_payment_confirmation_view_stub.cc" ]
+    sources += [
+      "payment_credential_enrollment_view_stub.cc",
+      "secure_payment_confirmation_view_stub.cc",
+    ]
   } else {
     sources += [
       "content_payment_request_delegate.cc",
       "content_payment_request_delegate.h",
       "payment_credential.cc",
       "payment_credential.h",
+      "payment_credential_enrollment_controller.cc",
+      "payment_credential_enrollment_controller.h",
       "payment_request.cc",
       "payment_request.h",
       "payment_request_dialog.h",
@@ -111,8 +124,6 @@ static_library("content") {
       "payment_response_helper.h",
       "secure_payment_confirmation_controller.cc",
       "secure_payment_confirmation_controller.h",
-      "secure_payment_confirmation_model.cc",
-      "secure_payment_confirmation_model.h",
     ]
   }
 }
@@ -184,7 +195,10 @@ source_set("unit_tests") {
     "android_app_communication_unittest.cc",
     "android_payment_app_factory_unittest.cc",
     "android_payment_app_unittest.cc",
+    "payment_credential_enrollment_model_unittest.cc",
+    "payment_event_response_util_unittest.cc",
     "payment_method_manifest_table_unittest.cc",
+    "secure_payment_confirmation_model_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
     "web_app_manifest_section_table_unittest.cc",
   ]
@@ -197,7 +211,6 @@ source_set("unit_tests") {
       "payment_request_state_unittest.cc",
       "payment_response_helper_unittest.cc",
       "secure_payment_confirmation_app_unittest.cc",
-      "secure_payment_confirmation_model_unittest.cc",
       "service_worker_payment_app_unittest.cc",
       "test_content_payment_request_delegate.cc",
       "test_content_payment_request_delegate.h",
@@ -232,7 +245,7 @@ source_set("unit_tests") {
     sources += [ "android_app_communication_test_support_chrome_os.cc" ]
 
     deps += [
-      "//ash/public/cpp/external_arc:external_arc",
+      "//ash/public/cpp/external_arc:test_support",
       "//components/arc",
       "//components/arc:arc_test_support",
       "//components/arc/mojom",

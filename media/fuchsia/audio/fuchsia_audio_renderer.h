@@ -41,6 +41,7 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
   void SetVolume(float volume) final;
   void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) final;
   void SetPreservesPitch(bool preserves_pitch) final;
+  void SetAutoplayInitiated(bool autoplay_initiated) final;
 
   // TimeSource implementation.
   void StartTicking() final;
@@ -59,11 +60,9 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
     // should not be used yet.
     kStarting,
 
+    // Playback is active. When the stream reaches EOS it stays in the kPlaying
+    // state.
     kPlaying,
-
-    // Received end-of-stream packet from the |demuxer_stream_|. Waiting for
-    // EndOfStream event from |audio_consumer_|.
-    kEndOfStream,
   };
 
   // Struct used to store state of an input buffer shared with the
@@ -118,8 +117,18 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
   // End-of-stream event handler for |audio_consumer_|.
   void OnEndOfStream();
 
+  // Returns true if media clock is ticking and the rate is above 0.0.
+  bool IsTimeMoving() EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
+
+  // Updates TimelineFunction parameters after StopTicking() or
+  // SetPlaybackRate(0.0). Normally these parameters are provided by
+  // AudioConsumer, but this happens asynchronously and we need to make sure
+  // that StopTicking() and SetPlaybackRate(0.0) stop the media clock
+  // synchronously. Must be called before updating the |state_|.
+  void UpdateTimelineOnStop() EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
+
   // Calculates media position based on the TimelineFunction returned from
-  // AudioConsumer.
+  // AudioConsumer. Must be called only when IsTimeMoving() is true.
   base::TimeDelta CurrentMediaTimeLocked()
       EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
 
@@ -158,6 +167,10 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
   // the initial AudioConsumerStatus is received.
   base::TimeDelta min_lead_time_;
   base::TimeDelta max_lead_time_;
+
+  // Set to true after we've received end-of-stream from the |demuxer_stream_|.
+  // The renderer may be restarted after Flush().
+  bool is_at_end_of_stream_ = false;
 
   // TimeSource interface is not single-threaded. The lock is used to guard
   // fields that are accessed in the TimeSource implementation. Note that these

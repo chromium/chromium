@@ -34,7 +34,7 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
       const std::string& notification_id,
       const GURL& origin,
       const base::Optional<int>& action_index,
-      const base::Optional<base::string16>& reply,
+      const base::Optional<std::u16string>& reply,
       NotificationDispatchCompleteCallback dispatch_complete_callback) override;
   void DispatchNotificationCloseEvent(
       BrowserContext* browser_context,

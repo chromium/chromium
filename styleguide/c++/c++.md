@@ -47,7 +47,7 @@ status of Chromium's C++ support is covered in more detail in
 ## Code formatting
 
   * Put `*` and `&` by the type rather than the variable name.
-  * In class declarations, group function overrides together within each access
+  * In class declarations, group function overrides together within each access
     control section, with one labeled group per parent class.
   * Prefer `(foo == 0)` to `(0 == foo)`.
 
@@ -162,10 +162,16 @@ Place platform-specific #includes in their own section below the "normal"
     not have been compiled with the same sizes for things like `int` and
     `size_t`. However, to the greatest degree possible, avoid letting these
     sized types bleed through the APIs of the layers in question.
-  * Don't use `std::wstring`. Use `base::string16` or `base::FilePath` instead.
-    (Windows-specific code interfacing with system APIs using `wstring` and
-    `wchar_t` can still use `string16` and `char16`; it is safe to assume that
-    these are equivalent to the "wide" types.)
+  * The Google Style Guide [bans
+    UTF-16](https://google.github.io/styleguide/cppguide.html#Non-ASCII_Characters).
+    For various reasons, Chromium uses UTF-16 extensively. Use `std::u16string`
+    and `char16_t*` for 16-bit strings, `u"..."` to declare UTF-16 literals, and
+    either the actual characters or the `\uXXXX` or `\UXXXXXXXX` escapes for
+    Unicode characters. Avoid `\xXX...`-style escapes, which can cause subtle
+    problems if someone attempts to change the type of string that holds the
+    literal. In code used only on Windows, it may be necessary to use
+    `std::wstring` and `wchar_t*`; these are legal, but note that they are
+    distinct types and are often not 16-bit on other platforms.
 
 ## Object ownership and calling conventions
 
@@ -287,6 +293,17 @@ these:
     bots in a bad state. Use the `ASSERT_xx()` and `EXPECT_xx()` family of
     macros, which report failures gracefully and can continue running other
     tests.
+  * Dereferencing a null pointer in C++ is generally UB (undefined behavior) as
+    the compiler is free to assume a dereference means the pointer is not null
+    and may apply optimizations based on that. As such, there is sometimes a
+    strong opinion to `CHECK()` pointers before dereference. Chromium builds
+    with the `no-delete-null-pointer-checks` Clang/GCC flag which prevents such
+    optimizations, meaning the side effect of a null dereference would just be
+    the use of 0x0 which will lead to a crash on all the platforms Chromium
+    supports. As such we do not use `CHECK()` to guard pointer deferences. A
+    `DCHECK()` can be used to document that a pointer is never null, and doing
+    so as early as possible can help with debugging, though our styleguide now
+    recommends using a reference instead of a pointer when it cannot be null.
 
 ## Miscellany
 

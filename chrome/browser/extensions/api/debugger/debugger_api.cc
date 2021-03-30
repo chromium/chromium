@@ -20,7 +20,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -221,8 +221,8 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
       api::debugger::DETACH_REASON_TARGET_CLOSED;
 
   // Listen to extension unloaded notification.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionDevToolsClientHost);
 };
@@ -241,7 +241,7 @@ ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
 
   // ExtensionRegistryObserver listen extension unloaded and detach debugger
   // from there.
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 
   // RVH-based agents disconnect from their clients when the app is terminating
   // but shared worker-based agents do not.

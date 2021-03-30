@@ -133,6 +133,9 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   views::Widget* GetWidget() override { return View::GetWidget(); }
   const views::Widget* GetWidget() const override { return View::GetWidget(); }
 
+  // views::View:
+  void OnThemeChanged() override;
+
   bool CanActivate() const override;
   void ReorderChildLayers(ui::Layer* parent_layer) override;
   void OnWidgetInitialized() override;
@@ -260,6 +263,13 @@ void ShelfWidget::DelegateView::ShowOpaqueBackground() {
   UpdateOpaqueBackground();
   UpdateDragHandle();
   UpdateBackgroundBlur();
+}
+
+void ShelfWidget::DelegateView::OnThemeChanged() {
+  views::AccessiblePaneView::OnThemeChanged();
+  shelf_widget_->background_animator_.PaintBackground(
+      shelf_widget_->shelf_layout_manager()->GetShelfBackgroundType(),
+      AnimationChangeType::IMMEDIATE);
 }
 
 bool ShelfWidget::DelegateView::CanActivate() const {
@@ -493,7 +503,7 @@ bool ShelfWidget::IsHotseatForcedShowInTabletMode() const {
 }
 
 bool ShelfWidget::SetLoginShelfSwipeHandler(
-    const base::string16& nudge_text,
+    const std::u16string& nudge_text,
     const base::RepeatingClosure& fling_callback,
     base::OnceClosure exit_callback) {
   if (!login_shelf_view_->GetVisible())
@@ -786,7 +796,7 @@ void ShelfWidget::UpdateLayout(bool animate) {
   hide_animation_observer_.reset();
   const float target_opacity = layout_manager->GetOpacity();
   if (GetLayer()->opacity() != target_opacity) {
-    if (target_opacity == 0) {
+    if (target_opacity == 0 && animate) {
       // On hide, set the opacity after the animation completes.
       hide_animation_observer_ =
           std::make_unique<HideAnimationObserver>(GetLayer());

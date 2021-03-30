@@ -32,8 +32,8 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
     model_ = BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(model_);
 
-    const bookmarks::BookmarkNode* node = model_->AddFolder(
-        model_->other_node(), 0, base::ASCIIToUTF16("Empty folder"));
+    const bookmarks::BookmarkNode* node =
+        model_->AddFolder(model_->other_node(), 0, u"Empty folder");
     node_id_ = base::NumberToString(node->id());
   }
 

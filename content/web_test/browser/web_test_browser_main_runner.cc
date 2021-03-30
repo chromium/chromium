@@ -147,9 +147,8 @@ void WebTestBrowserMainRunner::Initialize() {
   // only default to a software GL if the flag isn't already specified.
   if (!command_line.HasSwitch(switches::kUseGpuInTests) &&
       !command_line.HasSwitch(switches::kUseGL)) {
-    command_line.AppendSwitchASCII(
-        switches::kUseGL,
-        gl::GetGLImplementationName(gl::GetSoftwareGLImplementation()));
+    bool legacy_software_gl = true;
+    gl::SetSoftwareGLCommandLineSwitches(&command_line, legacy_software_gl);
   }
   command_line.AppendSwitchASCII(switches::kTouchEventFeatureDetection,
                                  switches::kTouchEventFeatureDetectionEnabled);

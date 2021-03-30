@@ -30,7 +30,6 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
-#include "extensions/common/api/declarative_net_request/utils.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/install_warning.h"
@@ -139,7 +138,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
 
   for (size_t i = 0; i < rules_list.size(); i++) {
     dnr_api::Rule parsed_rule;
-    base::string16 parse_error;
+    std::u16string parse_error;
 
     if (dnr_api::Rule::Populate(rules_list[i], &parsed_rule, &parse_error)) {
       DCHECK(parse_error.empty());
@@ -361,7 +360,7 @@ FileBackedRulesetSource FileBackedRulesetSource::CreateDynamic(
   return FileBackedRulesetSource(
       dynamic_ruleset_directory.AppendASCII(kDynamicRulesJSONFilename),
       dynamic_ruleset_directory.AppendASCII(kDynamicIndexedRulesFilename),
-      kDynamicRulesetID, GetDynamicRuleLimit(), extension_id,
+      kDynamicRulesetID, GetDynamicAndSessionRuleLimit(), extension_id,
       true /* enabled_by_default */);
 }
 
@@ -398,8 +397,6 @@ FileBackedRulesetSource FileBackedRulesetSource::Clone() const {
 
 IndexAndPersistJSONRulesetResult
 FileBackedRulesetSource::IndexAndPersistJSONRulesetUnsafe() const {
-  DCHECK(IsAPIAvailable());
-
   base::ElapsedTimer timer;
   return IndexAndPersistRuleset(*this, ReadJSONRulesUnsafe(), timer);
 }
@@ -407,8 +404,6 @@ FileBackedRulesetSource::IndexAndPersistJSONRulesetUnsafe() const {
 void FileBackedRulesetSource::IndexAndPersistJSONRuleset(
     data_decoder::DataDecoder* decoder,
     IndexAndPersistJSONRulesetCallback callback) const {
-  DCHECK(IsAPIAvailable());
-
   if (!base::PathExists(json_path_)) {
     std::move(callback).Run(IndexAndPersistJSONRulesetResult::CreateErrorResult(
         GetErrorWithFilename(json_path_, kFileDoesNotExistError)));

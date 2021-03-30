@@ -24,6 +24,7 @@
 #include "ui/display/screen.h"
 
 #if defined(OS_ANDROID)
+#include "base/android/build_info.h"
 #include "chrome/browser/download/android/download_manager_bridge.h"
 #include "chrome/browser/download/android/download_manager_service.h"
 #include "chrome/browser/download/android/download_utils.h"
@@ -47,6 +48,11 @@ const int kThumbnailSizeInDP = 64;
 // externally removed downloads.
 const base::TimeDelta kCheckExternallyRemovedDownloadsDelay =
     base::TimeDelta::FromMilliseconds(100);
+
+#if defined(OS_ANDROID)
+// Invalid system download Id.
+const int kInvalidSystemDownloadId = -1;
+#endif
 
 bool ShouldShowDownloadItem(const DownloadItem* item) {
   return !item->IsTemporary() && !item->IsTransient() && !item->IsDangerous() &&
@@ -428,21 +434,6 @@ void DownloadOfflineContentProvider::OnRenameDownloadCallbackDone(
       OfflineItemUtils::ConvertDownloadRenameResultToRenameResult(result));
 }
 
-void DownloadOfflineContentProvider::AddObserver(
-    OfflineContentProvider::Observer* observer) {
-  if (observers_.HasObserver(observer))
-    return;
-  observers_.AddObserver(observer);
-}
-
-void DownloadOfflineContentProvider::RemoveObserver(
-    OfflineContentProvider::Observer* observer) {
-  if (!observers_.HasObserver(observer))
-    return;
-
-  observers_.RemoveObserver(observer);
-}
-
 void DownloadOfflineContentProvider::OnManagerGoingDown(
     SimpleDownloadManagerCoordinator* manager) {
   std::vector<DownloadItem*> all_items;
@@ -451,8 +442,7 @@ void DownloadOfflineContentProvider::OnManagerGoingDown(
   for (auto* item : all_items) {
     if (!ShouldShowDownloadItem(item))
       continue;
-    for (auto& observer : observers_)
-      observer.OnItemRemoved(ContentId(name_space_, item->GetGuid()));
+    NotifyItemRemoved(ContentId(name_space_, item->GetGuid()));
   }
 
   manager_ = nullptr;
@@ -500,8 +490,7 @@ void DownloadOfflineContentProvider::OnDownloadRemoved(DownloadItem* item) {
 #endif
 
   ContentId contentId(name_space_, item->GetGuid());
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(contentId);
+  NotifyItemRemoved(contentId);
 }
 
 void DownloadOfflineContentProvider::OnProfileCreated(Profile* profile) {
@@ -510,10 +499,16 @@ void DownloadOfflineContentProvider::OnProfileCreated(Profile* profile) {
 
 void DownloadOfflineContentProvider::AddCompletedDownload(DownloadItem* item) {
 #if defined(OS_ANDROID)
-  DownloadManagerBridge::AddCompletedDownload(
-      item,
+  base::OnceCallback<void(int64_t)> cb =
       base::BindOnce(&DownloadOfflineContentProvider::AddCompletedDownloadDone,
-                     weak_ptr_factory_.GetWeakPtr(), item->GetGuid()));
+                     weak_ptr_factory_.GetWeakPtr(), item->GetGuid());
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_Q) {
+    DownloadManagerBridge::AddCompletedDownload(item, std::move(cb));
+  } else {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(cb), kInvalidSystemDownloadId));
+  }
 #endif
 }
 
@@ -522,6 +517,8 @@ void DownloadOfflineContentProvider::AddCompletedDownloadDone(
     int64_t system_download_id) {
 #if defined(OS_ANDROID)
   DownloadItem* item = GetDownload(download_guid);
+  if (!item)
+    return;
   if (DownloadUtils::IsOmaDownloadDescription(item->GetMimeType())) {
     DownloadManagerService::GetInstance()->HandleOMADownload(
         item, system_download_id);
@@ -547,8 +544,7 @@ void DownloadOfflineContentProvider::GetAllDownloads(
 void DownloadOfflineContentProvider::UpdateObservers(
     const OfflineItem& item,
     const base::Optional<UpdateDelta>& update_delta) {
-  for (auto& observer : observers_)
-    observer.OnItemUpdated(item, update_delta);
+  NotifyItemUpdated(item, update_delta);
 }
 
 void DownloadOfflineContentProvider::CheckForExternallyRemovedDownloads() {

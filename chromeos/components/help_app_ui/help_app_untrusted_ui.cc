@@ -32,10 +32,8 @@ content::WebUIDataSource* CreateHelpAppUntrustedDataSource(
   source->DisableTrustedTypesCSP();
 
   // Add all resources from chromeos_media_app_bundle.pak.
-  for (size_t i = 0; i < kChromeosHelpAppBundleResourcesSize; i++) {
-    source->AddResourcePath(kChromeosHelpAppBundleResources[i].name,
-                            kChromeosHelpAppBundleResources[i].value);
-  }
+  source->AddResourcePaths(base::make_span(
+      kChromeosHelpAppBundleResources, kChromeosHelpAppBundleResourcesSize));
 
   // Add device and feature flags.
   delegate->PopulateLoadTimeData(source);

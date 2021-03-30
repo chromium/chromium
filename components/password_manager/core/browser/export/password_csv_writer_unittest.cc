@@ -42,8 +42,8 @@ TEST(PasswordCSVWriterTest, SerializePasswords_SinglePassword) {
   std::vector<std::unique_ptr<PasswordForm>> passwords;
   PasswordForm form;
   form.url = GURL("http://example.com");
-  form.username_value = base::UTF8ToUTF16("Someone");
-  form.password_value = base::UTF8ToUTF16("Secret");
+  form.username_value = u"Someone";
+  form.password_value = u"Secret";
   passwords.push_back(std::make_unique<PasswordForm>(form));
 
   CSVPasswordSequence seq(PasswordCSVWriter::SerializePasswords(passwords));
@@ -61,12 +61,12 @@ TEST(PasswordCSVWriterTest, SerializePasswords_TwoPasswords) {
   std::vector<std::unique_ptr<PasswordForm>> passwords;
   PasswordForm form;
   form.url = GURL("http://example.com");
-  form.username_value = base::UTF8ToUTF16("Someone");
-  form.password_value = base::UTF8ToUTF16("Secret");
+  form.username_value = u"Someone";
+  form.password_value = u"Secret";
   passwords.push_back(std::make_unique<PasswordForm>(form));
   form.url = GURL("http://other.org");
-  form.username_value = base::UTF8ToUTF16("Anyone");
-  form.password_value = base::UTF8ToUTF16("None");
+  form.username_value = u"Anyone";
+  form.password_value = u"None";
   passwords.push_back(std::make_unique<PasswordForm>(form));
 
   CSVPasswordSequence seq(PasswordCSVWriter::SerializePasswords(passwords));

@@ -44,10 +44,6 @@
 
 namespace {
 
-// The Pepper Flash plugins are in a directory with this name.
-const base::FilePath::CharType kPepperFlashBaseDirectory[] =
-    FILE_PATH_LITERAL("PepperFlash");
-
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // The path to the external extension <id>.json files.
 // /usr/share seems like a good choice, see: http://www.pathname.com/fhs/
@@ -58,10 +54,6 @@ const base::FilePath::CharType kFilepathSinglePrefExtensions[] =
     FILE_PATH_LITERAL("/usr/share/chromium/extensions");
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// The path to the hint file that tells the pepper plugin loader
-// where it can find the latest component updated flash.
-const base::FilePath::CharType kComponentUpdatedFlashHint[] =
-    FILE_PATH_LITERAL("latest-component-updated-flash");
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
@@ -275,16 +267,6 @@ bool PathProvider(int key, base::FilePath* result) {
       if (!GetComponentDirectory(&cur))
         return false;
       break;
-    case chrome::DIR_PEPPER_FLASH_PLUGIN:
-      if (!GetInternalPluginsDirectory(&cur))
-        return false;
-      cur = cur.Append(kPepperFlashBaseDirectory);
-      break;
-    case chrome::DIR_COMPONENT_UPDATED_PEPPER_FLASH_PLUGIN:
-      if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur))
-        return false;
-      cur = cur.Append(kPepperFlashBaseDirectory);
-      break;
     case chrome::FILE_LOCAL_STATE:
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur))
         return false;
@@ -294,10 +276,6 @@ bool PathProvider(int key, base::FilePath* result) {
       if (!base::PathService::Get(chrome::DIR_USER_DATA, &cur))
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("script.log"));
-      break;
-    case chrome::FILE_PEPPER_FLASH_PLUGIN:
-      if (!base::PathService::Get(chrome::DIR_PEPPER_FLASH_PLUGIN, &cur))
-        return false;
       break;
     // PNaCl is currenly installable via the component updater or by being
     // simply built-in.  DIR_PNACL_BASE is used as the base directory for
@@ -455,7 +433,7 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_CHROMEOS) ||                                  \
+#if BUILDFLAG(IS_CHROMEOS_ASH) ||                            \
     ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
      BUILDFLAG(CHROMIUM_BRANDING)) ||                        \
     defined(OS_MAC)
@@ -535,15 +513,6 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(kGCMStoreDirname);
       break;
 #endif  // !defined(OS_ANDROID)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    case chrome::FILE_COMPONENT_FLASH_HINT:
-      if (!base::PathService::Get(
-              chrome::DIR_COMPONENT_UPDATED_PEPPER_FLASH_PLUGIN, &cur)) {
-        return false;
-      }
-      cur = cur.Append(kComponentUpdatedFlashHint);
-      break;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_LOCATION:
       cur = base::FilePath(kChromeOSTPMFirmwareUpdateLocation);

@@ -5,13 +5,13 @@
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -52,6 +52,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
@@ -64,6 +65,8 @@ namespace {
 
 class Arrow : public Button {
  public:
+  METADATA_HEADER(Arrow);
+
   explicit Arrow(PressedCallback callback) : Button(std::move(callback)) {
     // Similar to Combobox's TransparentButton.
     SetFocusBehavior(FocusBehavior::NEVER);
@@ -73,6 +76,8 @@ class Arrow : public Button {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
   }
+  Arrow(const Arrow&) = delete;
+  Arrow& operator=(const Arrow&) = delete;
   ~Arrow() override = default;
 
   double GetAnimationValue() const {
@@ -115,9 +120,10 @@ class Arrow : public Button {
     if (GetEnabled())
       node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(Arrow);
 };
+
+BEGIN_METADATA(Arrow, Button)
+END_METADATA
 
 }  // namespace
 
@@ -136,7 +142,7 @@ class EditableCombobox::EditableComboboxMenuModel
         filter_on_edit_(filter_on_edit),
         show_on_empty_(show_on_empty) {
     UpdateItemsShown();
-    observer_.Add(combobox_model_);
+    observation_.Observe(combobox_model_);
   }
 
   ~EditableComboboxMenuModel() override = default;
@@ -168,10 +174,10 @@ class EditableCombobox::EditableComboboxMenuModel
     return MenuConfig::instance().check_selected_combobox_item;
   }
 
-  base::string16 GetItemTextAt(int index, bool showing_password_text) const {
+  std::u16string GetItemTextAt(int index, bool showing_password_text) const {
     return showing_password_text
                ? items_shown_[index]
-               : base::string16(items_shown_[index].length(),
+               : std::u16string(items_shown_[index].length(),
                                 gfx::RenderText::kPasswordReplacementChar);
   }
 
@@ -197,8 +203,8 @@ class EditableCombobox::EditableComboboxMenuModel
     return index + kFirstMenuItemId;
   }
 
-  base::string16 GetLabelAt(int index) const override {
-    base::string16 text = GetItemTextAt(index, owner_->showing_password_text_);
+  std::u16string GetLabelAt(int index) const override {
+    std::u16string text = GetItemTextAt(index, owner_->showing_password_text_);
     base::i18n::AdjustStringForLocaleDirection(&text);
     return text;
   }
@@ -246,13 +252,14 @@ class EditableCombobox::EditableComboboxMenuModel
   const bool show_on_empty_;
 
   // The items from |combobox_model_| that we are currently showing.
-  std::vector<base::string16> items_shown_;
+  std::vector<std::u16string> items_shown_;
   std::vector<bool> items_shown_enabled_;
 
   // When false, UpdateItemsShown doesn't do anything.
   bool update_items_shown_enabled_ = true;
 
-  ScopedObserver<ui::ComboboxModel, ui::ComboboxModelObserver> observer_{this};
+  base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EditableComboboxMenuModel);
 };
@@ -322,7 +329,7 @@ EditableCombobox::EditableCombobox(
       show_on_empty_(show_on_empty),
       showing_password_text_(type != Type::kPassword) {
   SetModel(std::move(combobox_model));
-  observer_.Add(textfield_);
+  observation_.Observe(textfield_);
   textfield_->set_controller(this);
   textfield_->SetFontList(GetFontList());
   textfield_->SetTextInputType((type == Type::kPassword)
@@ -351,11 +358,11 @@ void EditableCombobox::SetModel(std::unique_ptr<ui::ComboboxModel> model) {
       this, combobox_model_.get(), filter_on_edit_, show_on_empty_);
 }
 
-const base::string16& EditableCombobox::GetText() const {
+const std::u16string& EditableCombobox::GetText() const {
   return textfield_->GetText();
 }
 
-void EditableCombobox::SetText(const base::string16& text) {
+void EditableCombobox::SetText(const std::u16string& text) {
   textfield_->SetText(text);
   // SetText does not actually notify the TextfieldController, so we call the
   // handling code directly.
@@ -370,7 +377,7 @@ void EditableCombobox::SelectRange(const gfx::Range& range) {
   textfield_->SetSelectedRange(range);
 }
 
-void EditableCombobox::SetAccessibleName(const base::string16& name) {
+void EditableCombobox::SetAccessibleName(const std::u16string& name) {
   textfield_->SetAccessibleName(name);
   if (arrow_)
     arrow_->SetAccessibleName(name);
@@ -394,7 +401,7 @@ int EditableCombobox::GetItemCountForTest() {
   return menu_model_->GetItemCount();
 }
 
-base::string16 EditableCombobox::GetItemForTest(int index) {
+std::u16string EditableCombobox::GetItemForTest(int index) {
   return menu_model_->GetItemTextAt(index, showing_password_text_);
 }
 
@@ -427,7 +434,7 @@ void EditableCombobox::OnVisibleBoundsChanged() {
 }
 
 void EditableCombobox::ContentsChanged(Textfield* sender,
-                                       const base::string16& new_contents) {
+                                       const std::u16string& new_contents) {
   HandleNewContent(new_contents);
   ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
 }
@@ -463,7 +470,7 @@ void EditableCombobox::CloseMenu() {
 void EditableCombobox::OnItemSelected(int index) {
   // |textfield_| can hide the characters on its own so we read the actual
   // characters instead of gfx::RenderText::kPasswordReplacementChar characters.
-  base::string16 selected_item_text =
+  std::u16string selected_item_text =
       menu_model_->GetItemTextAt(index, /*showing_password_text=*/true);
   textfield_->SetText(selected_item_text);
   // SetText does not actually notify the TextfieldController, so we call the
@@ -473,7 +480,7 @@ void EditableCombobox::OnItemSelected(int index) {
                            /*send_native_event=*/true);
 }
 
-void EditableCombobox::HandleNewContent(const base::string16& new_content) {
+void EditableCombobox::HandleNewContent(const std::u16string& new_content) {
   DCHECK(GetText() == new_content);
   // We notify |callback_| before updating |menu_model_|'s items shown. This
   // gives the user a chance to modify the ComboboxModel beforehand if they wish

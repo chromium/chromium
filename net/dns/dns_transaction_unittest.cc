@@ -24,6 +24,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/idempotency.h"
 #include "net/base/ip_address.h"
 #include "net/base/port_util.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -442,6 +443,7 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
           encoded_query, base::Base64UrlDecodePolicy::IGNORE_PADDING,
           &decoded_query));
     } else if (request->method() == "POST") {
+      EXPECT_EQ(IDEMPOTENT, request->GetIdempotency());
       const UploadDataStream* stream = request->get_upload_for_testing();
       auto* readers = stream->GetElementReaders();
       EXPECT_TRUE(readers);

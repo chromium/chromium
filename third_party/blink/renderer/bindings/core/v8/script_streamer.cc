@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -102,9 +103,9 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
           memcpy(copy_for_resource.get(), buffer, num_bytes);
           PostCrossThreadTask(
               *loading_task_runner_, FROM_HERE,
-              CrossThreadBindOnce(
-                  NotifyClientDidReceiveData, response_body_loader_client_,
-                  WTF::Passed(std::move(copy_for_resource)), num_bytes));
+              CrossThreadBindOnce(NotifyClientDidReceiveData,
+                                  response_body_loader_client_,
+                                  std::move(copy_for_resource), num_bytes));
 
           result = data_pipe_->EndReadData(num_bytes);
           CHECK_EQ(result, MOJO_RESULT_OK);
@@ -370,7 +371,7 @@ bool ScriptStreamer::ConvertEncoding(
   if (strcmp(encoding_name, "windows-1252") == 0 ||
       strcmp(encoding_name, "ISO-8859-1") == 0 ||
       strcmp(encoding_name, "US-ASCII") == 0) {
-    *encoding = v8::ScriptCompiler::StreamedSource::ONE_BYTE;
+    *encoding = v8::ScriptCompiler::StreamedSource::WINDOWS_1252;
     return true;
   }
   if (strcmp(encoding_name, "UTF-8") == 0) {
@@ -458,9 +459,11 @@ void ScriptStreamer::RunScriptStreamingTask(
   // TODO(leszeks): Add flow event data again
   TRACE_EVENT_BEGIN1(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.parseOnBackground", "data",
-      inspector_parse_script_event::Data(streamer->ScriptResourceIdentifier(),
-                                         streamer->ScriptURLString()));
+      "v8.parseOnBackground", "data", [&](perfetto::TracedValue context) {
+        inspector_parse_script_event::Data(std::move(context),
+                                           streamer->ScriptResourceIdentifier(),
+                                           streamer->ScriptURLString());
+      });
 
   TRACE_EVENT_BEGIN0(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
@@ -611,8 +614,11 @@ bool ScriptStreamer::TryStartStreamingTask() {
   TRACE_EVENT_WITH_FLOW1(
       TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.start",
       this, TRACE_EVENT_FLAG_FLOW_OUT, "data",
-      inspector_parse_script_event::Data(this->ScriptResourceIdentifier(),
-                                         this->ScriptURLString()));
+      [&](perfetto::TracedValue context) {
+        inspector_parse_script_event::Data(std::move(context),
+                                           this->ScriptResourceIdentifier(),
+                                           this->ScriptURLString());
+      });
 
   stream_->TakeDataAndPipeOnMainThread(
       script_resource_, this, std::move(data_pipe_),
@@ -628,7 +634,7 @@ bool ScriptStreamer::TryStartStreamingTask() {
   worker_pool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       CrossThreadBindOnce(RunScriptStreamingTask,
-                          WTF::Passed(std::move(script_streaming_task)),
+                          std::move(script_streaming_task),
                           WrapCrossThreadPersistent(this),
                           WTF::CrossThreadUnretained(stream_)));
 
@@ -763,9 +769,11 @@ void ScriptStreamer::StreamingComplete(LoadingState loading_state) {
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.complete",
       this, TRACE_EVENT_FLAG_FLOW_IN, "streaming_suppressed",
-      IsStreamingSuppressed(), "data",
-      inspector_parse_script_event::Data(this->ScriptResourceIdentifier(),
-                                         this->ScriptURLString()));
+      IsStreamingSuppressed(), "data", [&](perfetto::TracedValue context) {
+        inspector_parse_script_event::Data(std::move(context),
+                                           this->ScriptResourceIdentifier(),
+                                           this->ScriptURLString());
+      });
 
   // The background task is completed; do the necessary ramp-down in the main
   // thread.

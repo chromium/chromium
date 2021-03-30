@@ -78,13 +78,14 @@ public class VideoIPHCoordinatorImpl implements VideoIPHCoordinator {
     private void fetchImage(
             Callback<Drawable> consumer, int widthPx, int heightPx, Tutorial tutorial) {
         boolean useAnimatedGifUrl = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_USE_ANIMATED_GIF_URL, false);
+                ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_USE_ANIMATED_GIF_URL, true);
         ImageFetcher.Params params = ImageFetcher.Params.create(
                 useAnimatedGifUrl ? tutorial.animatedGifUrl : tutorial.thumbnailUrl,
                 ImageFetcher.VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME, widthPx, heightPx);
         if (useAnimatedGifUrl) {
             mImageFetcher.fetchGif(params, gifImage -> {
-                BaseGifDrawable baseGifDrawable = new BaseGifDrawable(gifImage, Config.ARGB_8888);
+                BaseGifDrawable baseGifDrawable =
+                        gifImage == null ? null : new BaseGifDrawable(gifImage, Config.ARGB_8888);
                 consumer.onResult(baseGifDrawable);
             });
         } else {

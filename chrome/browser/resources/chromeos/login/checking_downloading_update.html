@@ -2,14 +2,16 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
 <!--
   UI for checking and downloading updates as part of the update process.
@@ -44,14 +46,23 @@
 
 <dom-module id="checking-downloading-update">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="checking_downloading_update.css">
-    <oobe-dialog hidden="[[!checkingForUpdate]]"
-        title-key="checkingForUpdates"
+    <style include="oobe-dialog-host">
+      .progress-message {
+        color: var(--oobe-subheader-text-color);
+        margin-top: 8px;
+      }
+
+      .update-illustration {
+        height: 264px;
+        width: 264px;
+      }
+    </style>
+    <oobe-adaptive-dialog hidden="[[!checkingForUpdate]]"
         aria-live="polite" id="checking-for-updates-dialog" footer-shrinkable>
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'checkingForUpdates')]]
+      </h1>
       <div slot="subtitle" class="update-subtitle" id="checkingForUpdatesMsg">
         [[i18nDynamic(locale, checkingForUpdatesKey)]]
       </div>
@@ -62,49 +73,47 @@
       <paper-progress slot="progress" id="checking-progress"
           indeterminate="[[checkingForUpdate]]">
       </paper-progress>
-      <div slot="footer" class="flex layout vertical center-justified center">
+      <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            srcset="images/1x/updating_1x.svg 1x,
-                    images/2x/updating_2x.svg 2x">
+            src="images/1x/updating_1x.svg">
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
-    <oobe-dialog footer-shrinkable id="updating-dialog"
-        title-key="updatingScreenTitle"
+    <oobe-adaptive-dialog footer-shrinkable id="updating-dialog"
         hidden="[[isCheckingOrUpdateCompleted_(checkingForUpdate,
                                                updateCompleted)]]"
         aria-live="polite">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updatingTitle')]]
+      </h1>
       <div slot="subtitle">
         <div>[[i18nDynamic(locale, downloadingUpdatesKey)]]</div>
         <div hidden="[[!cancelAllowed]]">
           [[i18nDynamic(locale, cancelHintKey)]]
         </div>
+        <div id="progress-message" class="progress-message">
+          [[progressMessage_]]
+        </div>
       </div>
       <paper-progress id="updating-progress" slot="progress" min="0" max="100"
           value="[[progressValue]]">
       </paper-progress>
-      <div slot="footer" class="flex layout vertical">
-        <div id="progress-message" class="progress-message">
-          [[progressMessage_]]
-        </div>
+      <div slot="content" class="flex layout vertical">
         <div class="flex layout vertical center-justified center">
           <img class="update-illustration oobe-illustration"
-              srcset="images/1x/updating_1x.svg 1x,
-                      images/2x/updating_2x.svg 2x">
+              src="images/1x/updating_1x.svg">
         </div>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
-    <oobe-dialog footer-shrinkable id="update-complete-dialog"
-        hidden="[[!updateCompleted]]" subtitle-key="updateCompeletedMsg"
-        aria-live="polite">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
-    </oobe-dialog>
+    <oobe-adaptive-dialog footer-shrinkable id="update-complete-dialog"
+        hidden="[[!updateCompleted]]" aria-live="polite">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updateCompeletedMsg')]]
+      </h1>
+    </oobe-adaptive-dialog>
 
   </template>
 </dom-module>

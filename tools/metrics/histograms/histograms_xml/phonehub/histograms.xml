@@ -51,6 +51,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.Connection.Duration" units="ms" expires_after="M99">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time the phone is in the connected state, and becomes
+    disconnected.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.Connection.Result" enum="BooleanSuccess"
     expires_after="2021-11-30">
   <owner>khorimoto@chromium.org</owner>
@@ -62,6 +71,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PhoneHub.Connectivity.Duration" units="ms" expires_after="M98">
+  <obsolete>
+    Renamed to PhoneHub.Connection.Duration on 1/2021 in M89.
+  </obsolete>
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -93,17 +105,62 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
-  <summary>Events for the given PhoneHub interstitial screen.</summary>
+  <summary>Events for the given PhoneHub interstitial screen. {Screen}</summary>
 <!-- The entries below should be a subset of the PhoneHubScreen enum -->
 
   <token key="Screen">
-    <variant name="BluetoothOrWifiDisabled"/>
-    <variant name="InitialConnecting"/>
-    <variant name="Onboarding.ExistingMultideviceUser"/>
-    <variant name="Onboarding.NewMultideviceUser"/>
-    <variant name="OnboardingDismissPrompt"/>
-    <variant name="PhoneConnecting"/>
-    <variant name="PhoneDisconnected"/>
+    <variant name="BluetoothOrWifiDisabled" summary=""/>
+    <variant name="InitialConnecting" summary="">
+      <obsolete>
+        Combined into PhoneConnecting on Nov 2020.
+      </obsolete>
+    </variant>
+    <variant name="Onboarding.ExistingMultideviceUser"
+        summary="NOTE(https://crbug.com/1187255): This metric is actually
+                 logging new multi-device users. For continuity, we continue
+                 to log this metric in reverse. See ExistingMultideviceUser2
+                 for the correct logging."/>
+    <variant name="Onboarding.ExistingMultideviceUser2" summary=""/>
+    <variant name="Onboarding.NewMultideviceUser"
+        summary="NOTE(https://crbug.com/1187255): This metric is actually
+                 logging existing multi-device users. For continuity, we
+                 continue to log this metric in reverse. See
+                 NewMultideviceUser2 for the correct logging."/>
+    <variant name="Onboarding.NewMultideviceUser2" summary=""/>
+    <variant name="OnboardingDismissPrompt" summary=""/>
+    <variant name="PhoneConnecting" summary=""/>
+    <variant name="PhoneDisconnected" summary=""/>
+  </token>
+</histogram>
+
+<histogram name="PhoneHub.NotificationAccessSetup.SuccessfulSetupDuration"
+    units="ms" expires_after="M98">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the time it takes for the user to successfully go through the
+    Chromebook UI that guides them through granting Phone Hub notifications
+    access on their phone. Emitted once at the end of a successful setup flow.
+    The user should only need to go through the flow once successfully for each
+    phone they pair to.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.NotificationAccessSetup.{AllStatusesOrLastStatus}"
+    enum="PhoneHubNotificationAccessSetupStatus" expires_after="M98">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records {AllStatusesOrLastStatus} the Chromebook UI that guides them through
+    granting Phone Hub notifications access on their phone. Emitted each time
+    the user goes through the notification access setup flow. The user should
+    only need to go through the flow once successfully for each phone they pair
+    to.
+  </summary>
+  <token key="AllStatusesOrLastStatus">
+    <variant name="AllStatuses" summary="each step the user sees in"/>
+    <variant name="LastStatus"
+        summary="the last state the user experiences in"/>
   </token>
 </histogram>
 
@@ -127,6 +184,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.NotificationOptIn"
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
+  <obsolete>
+    Renamed to PhoneHub.NotificationOptInEvents on 1/2021 in M89.
+  </obsolete>
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>Events for the given notification opt-in prompt.</summary>
+</histogram>
+
 <histogram name="PhoneHub.NotificationOptInEvents"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
   <owner>tengs@chromium.org</owner>
@@ -146,6 +213,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
+</histogram>
+
+<histogram name="PhoneHub.Screen.OnSettingsButtonClicked" enum="PhoneHubScreen"
+    expires_after="2021-10-31">
+  <obsolete>
+    Renamed to PhoneHub.ScreenOnSettingsButtonClicked on 1/2021 in M89.
+  </obsolete>
+  <owner>tengs@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    Logs the current screen when the settings button is clicked in the tray
+    bubble.
+  </summary>
 </histogram>
 
 <histogram name="PhoneHub.ScreenOnSettingsButtonClicked" enum="PhoneHubScreen"

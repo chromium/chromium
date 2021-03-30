@@ -47,7 +47,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
   UsbService* GetUsbService() const { return usb_service_.get(); }
 
  private:
-  // DeviceManager implementation:
+  // mojom::UsbDeviceManager implementation
   void EnumerateDevicesAndSetClient(
       mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
       EnumerateDevicesAndSetClientCallback callback) override;
@@ -55,6 +55,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
                   GetDevicesCallback callback) override;
   void GetDevice(
       const std::string& guid,
+      const std::vector<uint8_t>& blocked_interface_classes,
       mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
   void GetSecurityKeyDevice(
@@ -73,10 +74,6 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void CheckAccess(const std::string& guid,
                    CheckAccessCallback callback) override;
-
-  void EnumerateDevicesAndSetVmSharingClient(
-      mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
-      EnumerateDevicesAndSetClientCallback callback) override;
 
   void OpenFileDescriptor(const std::string& guid,
                           uint32_t drop_privileges_mask,
@@ -98,15 +95,12 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
   void OnGetDevices(
       mojom::UsbEnumerationOptionsPtr options,
       mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
-      bool is_vm_sharing_client,
       GetDevicesCallback callback,
       const std::vector<scoped_refptr<UsbDevice>>& devices);
 
   // UsbService::Observer implementation:
-  void OnDeviceAdded(scoped_refptr<UsbDevice> device,
-                     bool is_restricted_device) override;
-  void OnDeviceRemoved(scoped_refptr<UsbDevice> device,
-                       bool is_restricted_device) override;
+  void OnDeviceAdded(scoped_refptr<UsbDevice> device) override;
+  void OnDeviceRemoved(scoped_refptr<UsbDevice> device) override;
   void WillDestroyUsbService() override;
 
   void MaybeRunDeviceChangesCallback();
@@ -114,6 +108,7 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
       const std::string& guid,
       mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client,
+      base::span<const uint8_t> blocked_interface_classes,
       bool allow_security_key_requests);
 
   std::unique_ptr<UsbService> usb_service_;
@@ -121,9 +116,6 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
 
   mojo::ReceiverSet<mojom::UsbDeviceManager> receivers_;
   mojo::AssociatedRemoteSet<mojom::UsbDeviceManagerClient> clients_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  mojo::AssociatedRemote<mojom::UsbDeviceManagerClient> vm_sharing_client_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<DeviceManagerImpl> weak_factory_{this};
 

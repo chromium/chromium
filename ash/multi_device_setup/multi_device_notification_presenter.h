@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,6 +21,7 @@
 namespace message_center {
 class MessageCenter;
 class Notification;
+class RichNotificationData;
 }  // namespace message_center
 
 namespace ash {
@@ -61,6 +61,7 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
       const std::string& new_host_device_name) override;
   void OnNewChromebookAddedForExistingUser(
       const std::string& new_host_device_name) override;
+  void OnBecameEligibleForWifiSync() override;
 
   // SessionObserver:
   void OnUserSessionAdded(const AccountId& account_id) override;
@@ -73,13 +74,14 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
   void OnNotificationClicked(
       const std::string& notification_id,
       const base::Optional<int>& button_index,
-      const base::Optional<base::string16>& reply) override;
+      const base::Optional<std::u16string>& reply) override;
 
  private:
   friend class MultiDeviceNotificationPresenterTest;
 
   // MultiDevice setup notification ID.
-  static const char kNotificationId[];
+  static const char kSetupNotificationId[];
+  static const char kWifiSyncNotificationId[];
 
   // Represents each possible MultiDevice setup notification that the setup flow
   // can show with a "none" option for the general state with no notification
@@ -93,11 +95,14 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
 
   // Reflects MultiDeviceSetupNotification enum in enums.xml. Do not
   // rearrange.
-  enum NotificationType {
-    kNotificationTypeNewUserPotentialHostExists = 0,
-    kNotificationTypeExistingUserHostSwitched = 1,
-    kNotificationTypeExistingUserNewChromebookAdded = 2,
-    kNotificationTypeMax
+  enum class NotificationType {
+    kNewUserPotentialHostExists = 0,
+    kExistingUserHostSwitched = 1,
+    kExistingUserNewChromebookAdded = 2,
+    // This is a legacy error case that is not expected to occur.
+    kErrorUnknown = 3,
+    kWifiSyncAnnouncement = 4,
+    kMaxValue = kWifiSyncAnnouncement
   };
 
   static NotificationType GetMetricValueForNotification(
@@ -107,12 +112,13 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
       Status notification_status);
 
   void ObserveMultiDeviceSetupIfPossible();
-  void ShowNotification(const Status notification_status,
-                        const base::string16& title,
-                        const base::string16& message);
-  std::unique_ptr<message_center::Notification> CreateNotification(
-      const base::string16& title,
-      const base::string16& message);
+  void ShowSetupNotification(const Status notification_status,
+                             const std::u16string& title,
+                             const std::u16string& message);
+  void ShowNotification(const std::string& id,
+                        const std::u16string& title,
+                        const std::u16string& message,
+                        message_center::RichNotificationData optional_fields);
 
   void FlushForTesting();
 

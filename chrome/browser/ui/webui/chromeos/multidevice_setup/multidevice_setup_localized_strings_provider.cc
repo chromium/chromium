@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,16 +14,18 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/multidevice_setup_resources.h"
 #include "chrome/grit/multidevice_setup_resources_map.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "chrome/grit/oobe_resources.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/services/multidevice_setup/public/cpp/url_provider.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -70,11 +73,11 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
 
 struct LocalizedStringWithName {
   LocalizedStringWithName(const char* name,
-                          const base::string16& localized_string)
+                          const std::u16string& localized_string)
       : name(name), localized_string(localized_string) {}
 
   const char* name;
-  base::string16 localized_string;
+  std::u16string localized_string;
 };
 
 const std::vector<LocalizedStringWithName>&
@@ -126,7 +129,7 @@ GetLocalizedStringsWithPlaceholders() {
 }  //  namespace
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
-  AddLocalizedStringsBulk(html_source, kLocalizedStringsWithoutPlaceholders);
+  html_source->AddLocalizedStrings(kLocalizedStringsWithoutPlaceholders);
 
   html_source->AddBoolean(
       "phoneHubEnabled",
@@ -136,8 +139,16 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       "wifiSyncEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kWifiSyncAndroid));
 
+  html_source->AddBoolean("newLayoutEnabled",
+                          chromeos::features::IsNewOobeLayoutEnabled());
+
   for (const auto& entry : GetLocalizedStringsWithPlaceholders())
     html_source->AddString(entry.name, entry.localized_string);
+
+  html_source->AddResourcePath("multidevice_setup.json",
+                               IDR_MULTIDEVICE_SETUP_ANIMATION);
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {

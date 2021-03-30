@@ -21,12 +21,14 @@ class AX_EXPORT AXTreeManager {
   // given |tree_id|. This allows for callers to access nodes outside of their
   // own tree. Returns nullptr if |tree_id| or |node_id| is not found.
   virtual AXNode* GetNodeFromTree(const AXTreeID tree_id,
-                                  const AXNode::AXID node_id) const = 0;
+                                  const AXNodeID node_id) const = 0;
 
   // Returns the AXNode in the current tree that has the given |node_id|.
   // Returns nullptr if |node_id| is not found.
-  virtual AXNode* GetNodeFromTree(const AXNode::AXID node_id) const = 0;
+  virtual AXNode* GetNodeFromTree(const AXNodeID node_id) const = 0;
 
+  // Use `AddObserver` and `RemoveObserver` when you want to be notified when
+  // changes happen to an `XTree`
   virtual void AddObserver(AXTreeObserver* observer) {}
   virtual void RemoveObserver(AXTreeObserver* observer) {}
 
@@ -45,8 +47,8 @@ class AX_EXPORT AXTreeManager {
   // tree.
   virtual AXNode* GetParentNodeFromParentTreeAsAXNode() const = 0;
 
-  // Called when the tree manager is about to be removed from the tree
-  // AXTreeManagerMap.
+  // Called when the tree manager is about to be removed from the tree map,
+  // `AXTreeManagerMap`.
   virtual void WillBeRemovedFromMap() {}
 };
 

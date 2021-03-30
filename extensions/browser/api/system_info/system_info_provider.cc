@@ -5,13 +5,39 @@
 #include "extensions/browser/api/system_info/system_info_provider.h"
 
 #include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
+#include "components/storage_monitor/storage_info.h"
+#include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/api/system_storage.h"
+
+using storage_monitor::StorageInfo;
+using storage_monitor::StorageMonitor;
 
 namespace extensions {
+
+using api::system_storage::STORAGE_UNIT_TYPE_FIXED;
+using api::system_storage::STORAGE_UNIT_TYPE_REMOVABLE;
+using api::system_storage::StorageUnitInfo;
+
+namespace systeminfo {
+
+void BuildStorageUnitInfo(const StorageInfo& info, StorageUnitInfo* unit) {
+  unit->id = StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
+      info.device_id());
+  unit->name = base::UTF16ToUTF8(info.GetDisplayName(false));
+  // TODO(hmin): Might need to take MTP device into consideration.
+  unit->type = StorageInfo::IsRemovableDevice(info.device_id())
+                   ? STORAGE_UNIT_TYPE_REMOVABLE
+                   : STORAGE_UNIT_TYPE_FIXED;
+  unit->capacity = static_cast<double>(info.total_size_in_bytes());
+}
+
+}  // namespace systeminfo
 
 SystemInfoProvider::SystemInfoProvider()
     : is_waiting_for_completion_(false),

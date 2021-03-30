@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_process_info.h"
@@ -66,7 +65,7 @@ class CONTENT_EXPORT ServiceProcessHost {
     // be a human readable and meaningful application or service name and will
     // appear in places like the system task viewer.
     Options& WithDisplayName(const std::string& name);
-    Options& WithDisplayName(const base::string16& name);
+    Options& WithDisplayName(const std::u16string& name);
     Options& WithDisplayName(int resource_id);
 
     // Specifies additional flags to configure the launched process. See
@@ -83,7 +82,7 @@ class CONTENT_EXPORT ServiceProcessHost {
 
     sandbox::policy::SandboxType sandbox_type =
         sandbox::policy::SandboxType::kUtility;
-    base::string16 display_name;
+    std::u16string display_name;
     base::Optional<int> child_flags;
     std::vector<std::string> extra_switches;
   };
@@ -165,7 +164,7 @@ class CONTENT_EXPORT ServiceProcessHost {
 // process. All new code must use ServiceProcessHost instead of this API.
 void CONTENT_EXPORT LaunchUtilityProcessServiceDeprecated(
     const std::string& service_name,
-    const base::string16& display_name,
+    const std::u16string& display_name,
     sandbox::policy::SandboxType sandbox_type,
     mojo::ScopedMessagePipeHandle service_pipe,
     base::OnceCallback<void(base::ProcessId)> callback);

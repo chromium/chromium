@@ -75,8 +75,15 @@
                shortcut="Space">
       <command id="rename" label="$i18n{RENAME_BUTTON_LABEL}"
                shortcut="Enter|Ctrl">
-      <command id="delete" shortcut="Backspace|Alt Delete">
-      <command id="restore-from-trash" label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}">
+      <command id="move-to-trash" shortcut="Backspace|Alt Delete" label="$i18n{MOVE_TO_TRASH_BUTTON_LABEL}">
+      <command id="restore-from-trash" shortcut="Backspace|Alt Delete" label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}">
+      <!-- TODO(crbug.com/953310): Remove 'Backspace|Alt' and 'Delete' from
+           'delete' once trash is permanently enabled. For now, these shortcuts
+           are left for backward-compatibility for when trash is not enabled,
+           but 'restore-from-trash' intentionally shadows these shortcuts when
+           trash is enabled -->
+      <command id="delete" shortcut="Backspace|Alt Delete Backspace|Alt|Shift Delete|Shift">
+      <command id="empty-trash" shortcut="Backspace|Alt|Ctrl|Shift Delete|Ctrl|Shift" shortcut="" label="$i18n{EMPTY_TRASH_BUTTON_LABEL}">
       <command id="refresh" label="$i18n{REFRESH_BUTTON_LABEL}"
                shortcut="b|Ctrl" hidden>
       <command id="pin-folder"
@@ -87,7 +94,7 @@
                shortcut="e|Ctrl">
       <command id="new-window" label="$i18n{NEW_WINDOW_BUTTON_LABEL}"
                shortcut="n|Ctrl">
-      <command id="new-service" label="$i18n{INSTALL_NEW_EXTENSION_LABEL}">
+      <command id="show-providers-submenu" label="$i18n{SHOW_PROVIDERS_BUTTON_LABEL}">
       </command>
       <!-- Note that actual shortcut Ctrl/Meta+A is handled in
                ListSelectionController.handleKeyDown -->
@@ -169,8 +176,6 @@
       <command id="inspect-element" shortcut="C|Shift|Ctrl">
       <command id="inspect-background" shortcut="B|Shift|Ctrl">
 
-      <command id="install-new-extension"
-               label="$i18n{INSTALL_NEW_EXTENSION_LABEL}">
       <command id="open-gear-menu" shortcut="e|Alt f|Alt">
       <command id="browser-back" shortcut="BrowserBack">
       <command id="focus-action-bar" shortcut="a|Alt">
@@ -205,6 +210,7 @@
         <cr-menu-item command="#get-info"></cr-menu-item>
         <cr-menu-item command="#rename"></cr-menu-item>
         <cr-menu-item command="#pin-folder"></cr-menu-item>
+        <cr-menu-item command="#move-to-trash"></cr-menu-item>
         <cr-menu-item command="#delete" class="hide-on-toolbar">$i18n{DELETE_BUTTON_LABEL}</cr-menu-item>
         <cr-menu-item command="#restore-from-trash"></cr-menu-item>
         <cr-menu-item command="#zip-selection"></cr-menu-item>
@@ -249,7 +255,9 @@
         <cr-menu-item command="#format"></cr-menu-item>
         <cr-menu-item command="#rename"></cr-menu-item>
         <cr-menu-item command="#pin-folder"></cr-menu-item>
+        <cr-menu-item command="#move-to-trash"></cr-menu-item>
         <cr-menu-item command="#delete">$i18n{DELETE_BUTTON_LABEL}</cr-menu-item>
+        <cr-menu-item command="#empty-trash"></cr-menu-item>
         <hr visibleif="saveas-file full-page">
         <cr-menu-item command="#new-folder" visibleif="saveas-file full-page"></cr-menu-item>
       </cr-menu>
@@ -298,8 +306,8 @@
         <cr-menu-item id="gear-menu-send-feedback"
                       command="#send-feedback"></cr-menu-item>
         <hr id="volume-space-info-separator">
-        <cr-menu-item id="gear-menu-newservice" command="#new-service"
-            sub-menu="#add-new-services-menu"></cr-menu-item>
+        <cr-menu-item id="gear-menu-providers" command="#show-providers-submenu"
+            sub-menu="#providers-menu"></cr-menu-item>
         <cr-menu-item id="gear-menu-format" command="#format"></cr-menu-item>
         <cr-menu-item id="gear-menu-erase" command="#erase-device"></cr-menu-item>
         <cr-menu-item id="volume-space-info" command="#volume-storage">
@@ -332,7 +340,7 @@
                   sub-menu="#share-sub-menu" hidden></cr-menu-item>
       </cr-menu>
 
-      <cr-menu id="add-new-services-menu"
+      <cr-menu id="providers-menu"
                class="chrome-menu files-menu has-icon-start"
                menu-item-selector="cr-menu-item, hr">
       </cr-menu>
@@ -394,6 +402,13 @@
           <files-ripple></files-ripple>
           <div class="icon"></div>
         </cr-button>
+        <cr-button id="move-to-trash-button" class="icon-button menu-button" tabindex="0" hidden
+                aria-label="$i18n{MOVE_TO_TRASH_BUTTON_LABEL}"
+                visibleif="full-page"
+                has-tooltip>
+          <files-ripple></files-ripple>
+          <div class="icon"></div>
+        </cr-button>
         <cr-button id="delete-button" class="icon-button menu-button" tabindex="0" hidden
                 aria-label="$i18n{DELETE_BUTTON_LABEL}"
                 visibleif="full-page"
@@ -407,6 +422,13 @@
                 has-tooltip>
           <files-ripple></files-ripple>
           <div class="icon"></div>
+        </cr-button>
+        <cr-button id="empty-trash-button" class="icon-button menu-button" tabindex="0" hidden
+                aria-label="$i18n{EMPTY_TRASH_BUTTON_LABEL}"
+                visibleif="full-page"
+                has-tooltip>
+          <files-ripple></files-ripple>
+          $i18n{EMPTY_TRASH_BUTTON_LABEL}
         </cr-button>
         <div id="search-wrapper">
           <cr-button id="search-button" class="icon-button menu-button" tabindex="0"
@@ -527,7 +549,8 @@
           <div class="main-panel">
             <div class="filelist-panel">
               <div class="drive-welcome header"></div>
-              <div class="holding-space-welcome" hidden></div>
+              <div id="photos-welcome" class="photos-welcome-hidden" hidden></div>
+              <div class="holding-space-welcome" hidden style="height: 0; opacity: 0;"></div>
               <div class="volume-warning banner-cloud-bg" id="volume-space-warning" hidden></div>
               <div class="volume-warning banner-cloud-bg" id="drive-auth-failed-warning" hidden>
                 <div class="drive-icon"></div>
@@ -548,6 +571,9 @@
                 </div>
               </div>
               <div class="downloads-warning" hidden></div>
+              <div id="trash-deleted-forever" class="trash-warning" hidden>
+                  $i18n{TRASH_DELETED_FOREVER}
+              </div>
               <files-message id='files-message' hidden></files-message>
               <div id="file-type-filter-container" hidden></div>
               <div id="list-container" role="main">

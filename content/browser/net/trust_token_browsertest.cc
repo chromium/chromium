@@ -8,19 +8,20 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/common/trust_tokens.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "crypto/sha2.h"
@@ -44,11 +45,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon_stdstring.h"
-
-#if defined(OS_ANDROID)
-#include "content/public/browser/android/java_interfaces.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
-#endif  // defined(OS_ANDROID)
 
 namespace content {
 
@@ -408,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
   // Ensure an isolated world can execute Trust Tokens operations when its
   // window's main world can. In particular, this ensures that the
-  // redemtion-and-signing feature policy is appropriately propagated by the
+  // redemtion-and-signing permissions policy is appropriately propagated by the
   // browser process.
 
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
@@ -446,6 +442,30 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
   base::HistogramTester histograms;
 
+  // |completion_waiter| adds a synchronization point so that we can
+  // safely fetch all of the relevant histograms from the network process.
+  //
+  // Without this, there's a race between the fetch() promises resolving and the
+  // NetErrorForTrustTokenOperation histogram being logged. This likely has no
+  // practical impact during normal operation, but it makes this test flake: see
+  // https://crbug.com/1165862.
+  //
+  // The URLLoaderInterceptor's completion callback receives its
+  // URLLoaderCompletionStatus from URLLoaderClient::OnComplete, which happens
+  // after CorsURLLoader::NotifyCompleted, which records the final histogram.
+  base::RunLoop run_loop;
+  content::URLLoaderInterceptor completion_waiter(
+      base::BindRepeating([](URLLoaderInterceptor::RequestParams*) {
+        return false;  // Don't intercept outbound requests.
+      }),
+      base::BindLambdaForTesting(
+          [&run_loop](const GURL& url,
+                      const network::URLLoaderCompletionStatus& status) {
+            if (url.spec().find("sign") != std::string::npos)
+              run_loop.Quit();
+          }),
+      /*ready_callback=*/base::NullCallback());
+
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
   GURL start_url = server_.GetURL("a.test", "/title1.html");
@@ -466,10 +486,12 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
       "Success",
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
 
+  run_loop.Run();
+  content::FetchHistogramsFromChildProcesses();
+
   // Just check that the timers were populated: since we can't mock a clock in
   // this browser test, it's hard to check the recorded values for
   // reasonableness.
-  content::FetchHistogramsFromChildProcesses();
   for (const std::string& op : {"Issuance", "Redemption", "Signing"}) {
     histograms.ExpectTotalCount(
         "Net.TrustTokens.OperationBeginTime.Success." + op, 1);
@@ -713,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, OverlongAdditionalSigningData) {
   // network::kTrustTokenAdditionalSigningDataMaxSizeBytes code units, once it's
   // converted to UTF-8 it will contain more than that many bytes, so we expect
   // that it will get rejected by the network service.
-  base::string16 overlong_signing_data(
+  std::u16string overlong_signing_data(
       network::kTrustTokenAdditionalSigningDataMaxSizeBytes,
       u'€' /* char16 literal */);
   ASSERT_LE(overlong_signing_data.size(),
@@ -1668,56 +1690,51 @@ class TrustTokenBrowsertestWithPlatformIssuance : public TrustTokenBrowsertest {
 };
 
 #if defined(OS_ANDROID)
+HandlerWrappingLocalTrustTokenFulfiller::
+    HandlerWrappingLocalTrustTokenFulfiller(TrustTokenRequestHandler& handler)
+    : handler_(handler) {
+  interface_overrider_.SetBinderForName(
+      mojom::LocalTrustTokenFulfiller::Name_,
+      base::BindRepeating(&HandlerWrappingLocalTrustTokenFulfiller::Bind,
+                          base::Unretained(this)));
+}
+HandlerWrappingLocalTrustTokenFulfiller::
+    ~HandlerWrappingLocalTrustTokenFulfiller() = default;
+
+void HandlerWrappingLocalTrustTokenFulfiller::FulfillTrustTokenIssuance(
+    network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+    FulfillTrustTokenIssuanceCallback callback) {
+  base::Optional<std::string> maybe_result =
+      handler_.Issue(std::move(request->request));
+  if (maybe_result) {
+    std::move(callback).Run(
+        network::mojom::FulfillTrustTokenIssuanceAnswer::New(
+            network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kOk,
+            std::move(*maybe_result)));
+    return;
+  }
+  std::move(callback).Run(network::mojom::FulfillTrustTokenIssuanceAnswer::New(
+      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kUnknownError,
+      ""));
+}
+
+void HandlerWrappingLocalTrustTokenFulfiller::Bind(
+    mojo::ScopedMessagePipeHandle handle) {
+  receiver_.Bind(
+      mojo::PendingReceiver<content::mojom::LocalTrustTokenFulfiller>(
+          std::move(handle)));
+}
+
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
                        EndToEndAndroidPlatformIssuance) {
+  base::HistogramTester histograms;
+
   TrustTokenRequestHandler::Options options;
   options.specify_platform_issuance_on = {
       network::mojom::TrustTokenKeyCommitmentResult::Os::kAndroid};
   request_handler_.UpdateOptions(std::move(options));
 
-  class HandlerWrappingLocalTrustTokenFulfiller
-      : public content::mojom::LocalTrustTokenFulfiller {
-   public:
-    HandlerWrappingLocalTrustTokenFulfiller(TrustTokenRequestHandler& handler)
-        : handler_(handler) {}
-    void FulfillTrustTokenIssuance(
-        network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
-        FulfillTrustTokenIssuanceCallback callback) override {
-      base::Optional<std::string> maybe_result =
-          handler_.Issue(std::move(request->request));
-      if (maybe_result) {
-        std::move(callback).Run(
-            network::mojom::FulfillTrustTokenIssuanceAnswer::New(
-                network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kOk,
-                std::move(*maybe_result)));
-        return;
-      }
-      std::move(callback).Run(
-          network::mojom::FulfillTrustTokenIssuanceAnswer::New(
-              network::mojom::FulfillTrustTokenIssuanceAnswer::Status::
-                  kUnknownError,
-              ""));
-    }
-
-    void Bind(mojo::ScopedMessagePipeHandle handle) {
-      receiver_.Bind(
-          mojo::PendingReceiver<content::mojom::LocalTrustTokenFulfiller>(
-              std::move(handle)));
-    }
-
-   private:
-    TrustTokenRequestHandler& handler_;
-    mojo::Receiver<content::mojom::LocalTrustTokenFulfiller> receiver_{this};
-  };
-
-  service_manager::InterfaceProvider::TestApi interface_overrider(
-      content::GetGlobalJavaInterfaces());
-
   HandlerWrappingLocalTrustTokenFulfiller fulfiller(request_handler_);
-  interface_overrider.SetBinderForName(
-      mojom::LocalTrustTokenFulfiller::Name_,
-      base::BindRepeating(&HandlerWrappingLocalTrustTokenFulfiller::Bind,
-                          base::Unretained(&fulfiller)));
 
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
@@ -1746,10 +1763,18 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
   EXPECT_EQ(
       "Success",
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectTotalCount(
+      base::StrCat({"Net.TrustTokens.OperationBeginTime.Success.Issuance."
+                    "PlatformProvided"}),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
                        PlatformIssuanceWithoutEmbedderSupport) {
+  base::HistogramTester histograms;
+
   TrustTokenRequestHandler::Options options;
   options.specify_platform_issuance_on = {
       network::mojom::TrustTokenKeyCommitmentResult::Os::kAndroid};
@@ -1790,6 +1815,12 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertestWithPlatformIssuance,
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
   // resolve.
   EXPECT_EQ("OperationError", EvalJs(shell(), command));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectTotalCount(
+      base::StrCat({"Net.TrustTokens.OperationBeginTime.Failure.Issuance."
+                    "PlatformProvided"}),
+      1);
 }
 #endif  // defined(OS_ANDROID)
 #if !defined(OS_ANDROID)
@@ -1836,6 +1867,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TrustTokenBrowsertestWithPlatformIssuance,
     IssuanceOnOsNotSpecifiedInKeyCommitmentsFallsBackToWebIssuanceIfSpecified) {
+  base::HistogramTester histograms;
+
   TrustTokenRequestHandler::Options options;
   options.specify_platform_issuance_on = {
       network::mojom::TrustTokenKeyCommitmentResult::Os::kAndroid};
@@ -1874,6 +1907,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       "Success",
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectTotalCount(
+      base::StrCat({"Net.TrustTokens.OperationBeginTime.Failure.Issuance."
+                    "PlatformProvided"}),
+      0);  // No platform-provided operation was attempted.
 }
 #endif  // !defined(OS_ANDROID)
 

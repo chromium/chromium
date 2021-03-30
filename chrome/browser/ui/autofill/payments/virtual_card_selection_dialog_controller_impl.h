@@ -29,10 +29,10 @@ class VirtualCardSelectionDialogControllerImpl
 
   // VirtualCardSelectionDialogController:
   bool IsOkButtonEnabled() override;
-  base::string16 GetContentTitle() const override;
-  base::string16 GetContentExplanation() const override;
-  base::string16 GetOkButtonLabel() const override;
-  base::string16 GetCancelButtonLabel() const override;
+  std::u16string GetContentTitle() const override;
+  std::u16string GetContentExplanation() const override;
+  std::u16string GetOkButtonLabel() const override;
+  std::u16string GetCancelButtonLabel() const override;
   const std::vector<CreditCard*>& GetCardList() const override;
   void OnCardSelected(const std::string& selected_card_id) override;
   void OnOkButtonClicked() override;

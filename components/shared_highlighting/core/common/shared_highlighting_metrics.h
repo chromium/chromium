@@ -38,7 +38,11 @@ enum class LinkGenerationError {
   // Timed-out waiting for a link to be generated.
   kTimeout = 11,
 
-  kMaxValue = kTimeout
+  // Link generation is not triggered because current page is not supported.
+  // Recorded on Android/Desktop.
+  kBlockList = 12,
+
+  kMaxValue = kBlockList
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -85,6 +89,14 @@ void LogGenerateErrorTabCrash();
 // Records when link generation was not completed because selection happened on
 // iframe.
 void LogGenerateErrorIFrame();
+
+// Records when link generation was not triggered because selection happened on
+// a blocklisted page.
+void LogGenerateErrorBlockList();
+
+// Records when link generation was not triggered because selection happened on
+// a blocklisted page.
+void LogGenerateErrorTimeout();
 
 // Records the latency for successfully generating a link.
 void LogGenerateSuccessLatency(base::TimeDelta latency);

@@ -9,13 +9,14 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_installer_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -37,6 +38,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -158,7 +160,7 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   upper_container_view->AddChildView(progress_bar_);
 
   download_progress_message_label_ =
-      new views::Label(base::string16(), {kDownloadProgressMessageFont});
+      new views::Label(std::u16string(), {kDownloadProgressMessageFont});
   download_progress_message_label_->SetEnabledColor(gfx::kGoogleGrey700);
   download_progress_message_label_->SetProperty(
       views::kMarginsKey, gfx::Insets(kDownloadProgressMessageHeight -
@@ -297,7 +299,7 @@ void PluginVmInstallerView::OnCancelFinished() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-base::string16 PluginVmInstallerView::GetTitle() const {
+std::u16string PluginVmInstallerView::GetTitle() const {
   switch (state_) {
     case State::kConfirmInstall:
       return l10n_util::GetStringFUTF16(
@@ -324,7 +326,7 @@ base::string16 PluginVmInstallerView::GetTitle() const {
   }
 }
 
-base::string16 PluginVmInstallerView::GetMessage() const {
+std::u16string PluginVmInstallerView::GetMessage() const {
   switch (state_) {
     case State::kConfirmInstall:
       return l10n_util::GetStringFUTF16(
@@ -414,6 +416,7 @@ base::string16 PluginVmInstallerView::GetMessage() const {
               IDS_PLUGIN_VM_DLC_NEED_REBOOT_FAILED_MESSAGE, app_name_);
         case Reason::INSUFFICIENT_DISK_SPACE:
         case Reason::DLC_NEED_SPACE:
+        case Reason::OUT_OF_DISK_SPACE:
           return l10n_util::GetStringFUTF16(
               IDS_PLUGIN_VM_INSUFFICIENT_DISK_SPACE_MESSAGE,
               ui::FormatBytesWithUnits(
@@ -454,7 +457,7 @@ int PluginVmInstallerView::GetCurrentDialogButtons() const {
   }
 }
 
-base::string16 PluginVmInstallerView::GetCurrentDialogButtonLabel(
+std::u16string PluginVmInstallerView::GetCurrentDialogButtonLabel(
     ui::DialogButton button) const {
   switch (state_) {
     case State::kConfirmInstall:
@@ -520,7 +523,7 @@ void PluginVmInstallerView::OnStateUpdated() {
   }
 }
 
-base::string16 PluginVmInstallerView::GetDownloadProgressMessage(
+std::u16string PluginVmInstallerView::GetDownloadProgressMessage(
     uint64_t bytes_downloaded,
     int64_t content_length) const {
   DCHECK_EQ(installing_state_, InstallingState::kDownloadingImage);
@@ -589,3 +592,8 @@ void PluginVmInstallerView::StartInstallation() {
   if (failure_reason)
     OnError(failure_reason.value());
 }
+
+BEGIN_METADATA(PluginVmInstallerView, views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Title)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Message)
+END_METADATA

@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/bluetooth_policy_handler.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
@@ -12,13 +13,12 @@
 
 namespace policy {
 
-BluetoothPolicyHandler::BluetoothPolicyHandler(
-    chromeos::CrosSettings* cros_settings)
+BluetoothPolicyHandler::BluetoothPolicyHandler(ash::CrosSettings* cros_settings)
     : cros_settings_(cros_settings) {
   bluetooth_policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kAllowBluetooth,
-      base::Bind(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
+                          weak_factory_.GetWeakPtr()));
 
   // Fire it once so we're sure we get an invocation on startup.
   OnBluetoothPolicyChanged();

@@ -40,6 +40,7 @@ class CORE_EXPORT ProfilerGroup
                            base::TimeTicks time_origin,
                            ExceptionState&);
 
+  void DispatchSampleBufferFullEvent();
   void WillBeDestroyed() override;
   void Trace(Visitor*) const override;
 
@@ -71,6 +72,17 @@ class CORE_EXPORT ProfilerGroup
   DISALLOW_COPY_AND_ASSIGN(ProfilerGroup);
 };
 
+class DiscardedSamplesDelegate : public v8::DiscardedSamplesDelegate {
+ public:
+  explicit DiscardedSamplesDelegate(ProfilerGroup* profiler_group)
+      : profiler_group_(profiler_group) {}
+  void Notify() override;
+
+ private:
+  // It is important to keep a weak reference to the profiler group
+  // because Notify may be invoked after profiling stops and ProfilerGroup dies.
+  WeakPersistent<ProfilerGroup> profiler_group_;
+};
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PROFILER_GROUP_H_

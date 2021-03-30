@@ -4,6 +4,10 @@
 
 #include "components/viz/service/display/display_scheduler.h"
 
+#include <set>
+#include <utility>
+#include <vector>
+
 #include "base/check.h"
 #include "base/stl_util.h"
 #include "base/test/null_task_runner.h"
@@ -13,6 +17,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/display/display.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
@@ -154,10 +159,7 @@ class DisplaySchedulerTest : public testing::Test {
       : fake_begin_frame_source_(0.f, false),
         task_runner_(new base::NullTaskRunner),
         surface_manager_(nullptr, 4u),
-        resource_provider_(DisplayResourceProvider::kSoftware,
-                           nullptr,
-                           &shared_bitmap_manager_,
-                           false),
+        resource_provider_(&shared_bitmap_manager_),
         aggregator_(&surface_manager_, &resource_provider_, false, false),
         damage_tracker_(
             std::make_unique<TestDisplayDamageTracker>(&surface_manager_,
@@ -216,7 +218,7 @@ class DisplaySchedulerTest : public testing::Test {
   scoped_refptr<base::NullTaskRunner> task_runner_;
   SurfaceManager surface_manager_;
   ServerSharedBitmapManager shared_bitmap_manager_;
-  DisplayResourceProvider resource_provider_;
+  DisplayResourceProviderSoftware resource_provider_;
   SurfaceAggregator aggregator_;
   std::unique_ptr<TestDisplayDamageTracker> damage_tracker_;
   FakeDisplaySchedulerClient client_;

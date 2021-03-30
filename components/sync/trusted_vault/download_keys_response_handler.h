@@ -17,13 +17,13 @@ namespace syncer {
 class SecureBoxKeyPair;
 
 // Helper class to extract and validate trusted vault keys from
-// ListSecurityDomainsResponse.
+// GetSecurityDomainMember response.
 class DownloadKeysResponseHandler {
  public:
   struct ProcessedResponse {
     explicit ProcessedResponse(TrustedVaultRequestStatus status);
     ProcessedResponse(TrustedVaultRequestStatus status,
-                      std::vector<std::vector<uint8_t>> keys,
+                      std::vector<std::vector<uint8_t>> new_keys,
                       int last_key_version);
     ProcessedResponse(const ProcessedResponse& other);
     ProcessedResponse& operator=(const ProcessedResponse& other);
@@ -32,25 +32,24 @@ class DownloadKeysResponseHandler {
     // kSuccess is reported if extraction was successful and there are new
     // trusted vault keys.
     // kLocalDataObsolete is reported if it's impossible to extract keys due to
-    // data corruption or absence of SecurityDomain/Member or if there is no new
-    // keys.
+    // data corruption or absence of sync SecurityDomainMembership or if there
+    // is no new keys.
     // kOtherError is reported in case of http/network errors or if the response
-    // isn't valid serialized ListSecurityDomainsResponse proto.
+    // isn't valid serialized SecurityDomainMember proto.
     TrustedVaultRequestStatus status;
 
-    // Contains new keys and potentially previously known trusted vault key if
-    // it wasn't removed server-side. Doesn't contain keys that predate
-    // last known trusted vault key, because it's impossible to validate them
-    // and the client should be aware of them already.
-    std::vector<std::vector<uint8_t>> keys;
+    // Contains new keys (e.g. keys are stored by the server, excluding last
+    // known key and keys that predate it).
+    std::vector<std::vector<uint8_t>> new_keys;
     int last_key_version;
   };
 
-  // |device_key_pair| must not be null. This class doesn't make an assumption
-  // of |last_trusted_vault_key_and_version.key| being non-empty or
-  // |last_trusted_vault_key_version_and_version.version| being non-negative.
+  // |device_key_pair| must not be null. If |last_trusted_vault_key_and_version|
+  // is provided, then it will be verified that the new keys are result of
+  // rotating the provided key.
   DownloadKeysResponseHandler(
-      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+      const base::Optional<TrustedVaultKeyAndVersion>&
+          last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair);
   DownloadKeysResponseHandler(const DownloadKeysResponseHandler& other) =
       delete;
@@ -62,7 +61,8 @@ class DownloadKeysResponseHandler {
                                     const std::string& response_body) const;
 
  private:
-  const TrustedVaultKeyAndVersion last_trusted_vault_key_and_version_;
+  const base::Optional<TrustedVaultKeyAndVersion>
+      last_trusted_vault_key_and_version_;
   const std::unique_ptr<SecureBoxKeyPair> device_key_pair_;
 };
 

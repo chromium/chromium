@@ -156,6 +156,7 @@ public final class EditUrlSuggestionUnitTest {
         doReturn(mUserDataHost).when(mTab).getUserDataHost();
         doReturn(false).when(mSadTab).isShowing();
         doReturn(OmniboxSuggestionType.URL_WHAT_YOU_TYPED).when(mWhatYouTypedSuggestion).getType();
+        doReturn(mTestUrl.getSpec()).when(mWhatYouTypedSuggestion).getDisplayText();
         doReturn(mTestUrl).when(mWhatYouTypedSuggestion).getUrl();
 
         doReturn(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED).when(mSearchSuggestion).getType();
@@ -371,7 +372,7 @@ public final class EditUrlSuggestionUnitTest {
         when(mTemplateUrlService.getSearchQueryForUrl(mBarbazSearchUrl))
                 .thenReturn(BARBAZ_SEARCH_TERMS);
 
-        Assert.assertTrue(mProcessor.doesProcessSuggestion(mSearchSuggestion, 0));
+        Assert.assertFalse(mProcessor.doesProcessSuggestion(mSearchSuggestion, 0));
         Assert.assertFalse(mProcessor.doesProcessSuggestion(mSearchSuggestion, 1));
 
         when(mSearchSuggestion.getUrl()).thenReturn(mBarbazSearchUrl);

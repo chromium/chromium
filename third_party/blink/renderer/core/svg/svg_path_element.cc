@@ -50,8 +50,7 @@ Path SVGPathElement::AttributePath() const {
 
 const StylePath* SVGPathElement::GetStylePath() const {
   if (const ComputedStyle* style = GetComputedStyle()) {
-    const StylePath* style_path = style->SvgStyle().D();
-    if (style_path)
+    if (const StylePath* style_path = style->D())
       return style_path;
     return StylePath::EmptyPath();
   }

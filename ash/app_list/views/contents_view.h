@@ -10,9 +10,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/compiler_specific.h"
@@ -33,6 +33,7 @@ class ScopedLayerAnimationSettings;
 
 namespace ash {
 
+class AppListConfig;
 class AppListPage;
 class AppListView;
 class ApplicationDragAndDropHost;
@@ -42,19 +43,16 @@ class AppsContainerView;
 class AppsGridView;
 class AssistantPageView;
 class ExpandArrowView;
-class PrivacyContainerView;
 class SearchBoxView;
-class SearchResultListView;
 class SearchResultPageView;
-class SearchResultTileItemListView;
 
 // A view to manage launcher pages within the Launcher (eg. start page, apps
 // grid view, search results). There can be any number of launcher pages, only
 // one of which can be active at a given time. ContentsView provides the user
 // interface for switching between launcher pages, and animates the transition
 // between them.
-class APP_LIST_EXPORT ContentsView : public views::View,
-                                     public PaginationModelObserver {
+class ASH_EXPORT ContentsView : public views::View,
+                                public PaginationModelObserver {
  public:
   // Used to SetActiveState without animations.
   class ScopedSetActiveStateAnimationDisabler {
@@ -93,6 +91,9 @@ class APP_LIST_EXPORT ContentsView : public views::View,
 
   // Called when the target state of AppListView changes.
   void OnAppListViewTargetStateChanged(AppListViewState target_state);
+
+  // Called from AppListView when the tablet mode state changes.
+  void OnTabletModeChanged(bool started);
 
   // Shows/hides the search results. Hiding the search results will cause the
   // app list to return to the page that was displayed before
@@ -133,16 +134,6 @@ class APP_LIST_EXPORT ContentsView : public views::View,
 
   SearchResultPageView* search_results_page_view() const {
     return search_results_page_view_;
-  }
-  SearchResultTileItemListView* search_result_tile_item_list_view_for_test()
-      const {
-    return search_result_tile_item_list_view_;
-  }
-  SearchResultListView* search_result_list_view_for_test() const {
-    return search_result_list_view_;
-  }
-  PrivacyContainerView* privacy_container_view() const {
-    return privacy_container_view_;
   }
   AppsContainerView* apps_container_view() const {
     return apps_container_view_;
@@ -203,10 +194,6 @@ class APP_LIST_EXPORT ContentsView : public views::View,
   void AnimateToViewState(AppListViewState target_view_state,
                           const base::TimeDelta& animation_duration);
 
-  // Show/hide the expand arrow view button when contents view is in fullscreen
-  // and tablet mode is enabled.
-  void SetExpandArrowViewVisibility(bool show);
-
   std::unique_ptr<ui::ScopedLayerAnimationSettings>
   CreateTransitionAnimationSettings(ui::Layer* layer) const;
 
@@ -214,6 +201,9 @@ class APP_LIST_EXPORT ContentsView : public views::View,
   // (when centered).
   gfx::Size AdjustSearchBoxSizeToFitMargins(
       const gfx::Size& preferred_size) const;
+
+  // Gets the current app list configuration.
+  const AppListConfig& GetAppListConfig() const;
 
  private:
   // Sets the active launcher page.
@@ -230,6 +220,16 @@ class APP_LIST_EXPORT ContentsView : public views::View,
 
   // Updates the expand arrow's behavior based on AppListViewState.
   void UpdateExpandArrowBehavior(AppListViewState target_state);
+
+  // Updates the expand arrow visibility depending on the selected app list page
+  // and the app list view state.
+  // `target_state` - the target selected app list page.
+  // `target_app_list_view_state` - the target app list view state.
+  // `transition_duration` - the opacity transition duration. Should be set to
+  //     zero if the opacity transition should not be animated.
+  void UpdateExpandArrowOpacity(AppListState target_state,
+                                AppListViewState target_app_list_state,
+                                base::TimeDelta transition_duration);
 
   // Updates search box visibility based on the current state.
   void UpdateSearchBoxVisibility(AppListState current_state);
@@ -276,9 +276,6 @@ class APP_LIST_EXPORT ContentsView : public views::View,
   AssistantPageView* assistant_page_view_ = nullptr;
   AppsContainerView* apps_container_view_ = nullptr;
   SearchResultPageView* search_results_page_view_ = nullptr;
-  SearchResultTileItemListView* search_result_tile_item_list_view_ = nullptr;
-  SearchResultListView* search_result_list_view_ = nullptr;
-  PrivacyContainerView* privacy_container_view_ = nullptr;
 
   // The child page views. Owned by the views hierarchy.
   std::vector<AppListPage*> app_list_pages_;

@@ -102,7 +102,8 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GetReportUrl(*report);
-  resource_request->referrer = report->impression.conversion_origin().GetURL();
+  resource_request->referrer =
+      GURL(report->impression.ConversionDestination().Serialize());
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags =
@@ -144,6 +145,15 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport* report,
                                         std::move(simple_url_loader));
   simple_url_loader_ptr->SetTimeoutDuration(base::TimeDelta::FromSeconds(30));
 
+  // Retry once on network change. A network change during DNS resolution
+  // results in a DNS error rather than a network change error, so retry in
+  // those cases as well.
+  // TODO(http://crbug.com/1181106): Consider logging metrics for how often this
+  // retry succeeds/fails.
+  int retry_mode = network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+                   network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
+  simple_url_loader_ptr->SetRetryOptions(1 /* max_retries */, retry_mode);
+
   // Unretained is safe because the URLLoader is owned by |this| and will be
   // deleted before |this|.
   simple_url_loader_ptr->DownloadHeadersOnly(
@@ -174,6 +184,11 @@ void ConversionNetworkSenderImpl::OnReportSent(
           ? Status::kOk
           : !internal_ok ? Status::kInternalError : Status::kExternalError;
   base::UmaHistogramEnumeration("Conversions.ReportStatus", status);
+
+  if (loader->GetNumRetries() > 0) {
+    base::UmaHistogramBoolean("Conversions.ReportRetrySucceed",
+                              status == Status::kOk);
+  }
 
   loaders_in_progress_.erase(it);
   std::move(sent_callback).Run();

@@ -17,6 +17,7 @@
 
 namespace {
 
+const char kStartOnboardingQueryParam[] = "onboarding";
 const char kStartReceivingQueryParam[] = "receive";
 
 constexpr base::TimeDelta kShutoffTimeout = base::TimeDelta::FromMinutes(5);
@@ -137,6 +138,10 @@ void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {
   }
 }
 
+void NearbyShareDelegateImpl::OnHighVisibilityChangeRequested() {
+  is_enable_high_visibility_request_active_ = true;
+}
+
 void NearbyShareDelegateImpl::OnHighVisibilityChanged(bool high_visibility_on) {
   is_enable_high_visibility_request_active_ = false;
 
@@ -158,7 +163,13 @@ void NearbyShareDelegateImpl::OnShutdown() {
 }
 
 void NearbyShareDelegateImpl::ShowNearbyShareSettings() const {
-  settings_opener_->ShowSettingsPage("");
+  DCHECK(nearby_share_service_);
+
+  std::string query_param =
+      nearby_share_service_->GetSettings()->IsOnboardingComplete()
+          ? std::string()  // Show settings subpage without dialog.
+          : kStartOnboardingQueryParam;  // Show onboarding dialog.
+  settings_opener_->ShowSettingsPage(query_param);
 }
 
 void NearbyShareDelegateImpl::SettingsOpener::ShowSettingsPage(

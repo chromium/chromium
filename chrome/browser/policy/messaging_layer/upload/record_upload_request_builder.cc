@@ -12,8 +12,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "components/policy/proto/record.pb.h"
-#include "components/policy/proto/record_constants.pb.h"
+#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/record_constants.pb.h"
 
 namespace reporting {
 
@@ -25,7 +25,8 @@ constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 
 // EncrypedRecordDictionaryBuilder strings
 constexpr char kEncryptedWrappedRecord[] = "encryptedWrappedRecord";
-constexpr char kSequencingInformationKey[] = "sequencingInformation";
+constexpr char kUnsignedSequencingInformationKey[] = "sequencingInformation";
+constexpr char kSequencingInformationKey[] = "sequenceInformation";
 constexpr char kEncryptionInfoKey[] = "encryptionInfo";
 
 // SequencingInformationDictionaryBuilder strings
@@ -111,6 +112,19 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
   }
   record_dictionary.SetKey(GetSequencingInformationKeyPath(),
                            std::move(sequencing_information_result.value()));
+  // For backwards compatibility, store unsigned sequencing information too.
+  // The values are non-negative anyway, so the same builder can be used.
+  auto unsigned_sequencing_information_result =
+      SequencingInformationDictionaryBuilder(record.sequencing_information())
+          .Build();
+  if (!unsigned_sequencing_information_result.has_value()) {
+    // Sequencing information was improperly configured. Record cannot be
+    // uploaded. Deny it.
+    return;
+  }
+  record_dictionary.SetKey(
+      GetUnsignedSequencingInformationKeyPath(),
+      std::move(unsigned_sequencing_information_result.value()));
 
   // Encryption information can be missing until we set up encryption as
   // mandatory.
@@ -147,6 +161,12 @@ base::Optional<base::Value> EncryptedRecordDictionaryBuilder::Build() {
 base::StringPiece
 EncryptedRecordDictionaryBuilder::GetEncryptedWrappedRecordPath() {
   return kEncryptedWrappedRecord;
+}
+
+// static
+base::StringPiece
+EncryptedRecordDictionaryBuilder::GetUnsignedSequencingInformationKeyPath() {
+  return kUnsignedSequencingInformationKey;
 }
 
 // static

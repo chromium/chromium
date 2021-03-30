@@ -23,10 +23,13 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/lookalikes/core/features.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/features.h"
+#include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
 #include "components/url_formatter/spoof_checks/top_domains/top500_domains.h"
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "components/url_formatter/url_formatter.h"
@@ -56,18 +59,15 @@ const size_t kMinE2LDLengthForTargetEmbedding = 4;
 
 // This list will be added to the static list of common words so common words
 // could be added to the list using a flag if needed.
-const base::FeatureParam<std::string> kAdditionalCommonWords{
+const base::FeatureParam<std::string> kRemoveAdditionalCommonWords{
     &lookalikes::features::kDetectTargetEmbeddingLookalikes,
     "additional_common_words", ""};
 
 // We might not protect a domain whose e2LD is a common word in target embedding
-// based on the TLD that is paired with it.
-const char* kCommonWords[] = {
-    "shop",      "jobs",      "live",       "info",    "study",   "asahi",
-    "weather",   "health",    "forum",      "radio",   "ideal",   "research",
-    "france",    "free",      "mobile",     "sky",     "ask",     "booking",
-    "canada",    "dating",    "dictionary", "express", "hoteles", "hotels",
-    "investing", "jharkhand", "nifty"};
+// based on the TLD that is paired with it. This list supplements words from
+// url_formatter::common_words::IsCommonWord().
+const char* kLocalAdditionalCommonWords[] = {"asahi", "hoteles", "jharkhand",
+                                             "nifty"};
 
 // These domains are plausible lookalike targets, but they also use common words
 // in their names. Selectively prevent flagging embeddings where the embedder
@@ -241,6 +241,13 @@ std::string GetMatchingTopDomainWithoutSeparators(
   return std::string();
 }
 
+// Returns whether the visited domain is either for a bare eTLD+1 (e.g.
+// 'google.com') or a trivial subdomain (e.g. 'www.google.com').
+bool IsETLDPlusOneOrTrivialSubdomain(const DomainInfo& host) {
+  return (host.domain_and_registry == host.hostname ||
+          "www." + host.domain_and_registry == host.hostname);
+}
+
 // Returns if |etld_plus_one| shares the skeleton of an eTLD+1 with an engaged
 // site or a top 500 domain. |embedded_target| is set to matching eTLD+1.
 bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
@@ -249,7 +256,11 @@ bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
     std::string* embedded_target) {
   for (const auto& skeleton : domain.skeletons) {
     for (const auto& engaged_site : engaged_sites) {
-      if (base::Contains(engaged_site.skeletons, skeleton)) {
+      // Skeleton matching only calculates skeletons of the eTLD+1, so only
+      // consider engaged sites that are bare eTLD+1s (or a trivial subdomain)
+      // and are a skeleton match.
+      if (IsETLDPlusOneOrTrivialSubdomain(engaged_site) &&
+          base::Contains(engaged_site.skeletons, skeleton)) {
         *embedded_target = engaged_site.domain_and_registry;
         return true;
       }
@@ -271,17 +282,33 @@ bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
 // weather.com, ask.com). Target embeddings of these domains are often false
 // positives (e.g. "super-best-fancy-hotels.com" isn't spoofing "hotels.com").
 bool UsesCommonWord(const DomainInfo& domain) {
-  std::vector<std::string> additional_common_words =
-      base::SplitString(kAdditionalCommonWords.Get(), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (base::Contains(additional_common_words, domain.domain_without_registry)) {
+  // kDomainsPermittedInEndEmbeddings are based on domains with common words,
+  // but they should not be excluded here (and instead are checked later).
+  for (auto* permitted_ending : kDomainsPermittedInEndEmbeddings) {
+    if (domain.domain_and_registry == permitted_ending) {
+      return false;
+    }
+  }
+
+  // Search for words in the big common word list.
+  if (url_formatter::common_words::IsCommonWord(
+          domain.domain_without_registry)) {
     return true;
   }
-  for (auto* common_word : kCommonWords) {
+
+  // Also check the local lists.
+  for (auto* common_word : kLocalAdditionalCommonWords) {
     if (domain.domain_without_registry == common_word) {
       return true;
     }
   }
+  std::vector<std::string> additional_common_words =
+      base::SplitString(kRemoveAdditionalCommonWords.Get(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (base::Contains(additional_common_words, domain.domain_without_registry)) {
+    return true;
+  }
+
   return false;
 }
 
@@ -347,6 +374,22 @@ bool IsAllowedToBeEmbedded(
          EndsWithPermittedDomains(embedded_target, embedding_domain);
 }
 
+// Returns the first character of the first string that is different from the
+// second string. Strings should be at least 1 edit distance apart.
+char GetFirstDifferentChar(const std::string& str1, const std::string& str2) {
+  std::string::const_iterator i1 = str1.begin();
+  std::string::const_iterator i2 = str2.begin();
+  while (i1 != str1.end() && i2 != str2.end()) {
+    if (*i1 != *i2) {
+      return *i1;
+    }
+    i1++;
+    i2++;
+  }
+  NOTREACHED();
+  return 0;
+}
+
 }  // namespace
 
 DomainInfo::DomainInfo(const std::string& arg_hostname,
@@ -365,6 +408,7 @@ DomainInfo::~DomainInfo() = default;
 DomainInfo::DomainInfo(const DomainInfo&) = default;
 
 DomainInfo GetDomainInfo(const std::string& hostname) {
+  TRACE_EVENT0("navigation", "GetDomainInfo");
   if (net::HostStringIsLocalhost(hostname) ||
       net::IsHostnameNonUnique(hostname)) {
     return DomainInfo(std::string(), std::string(), std::string(),
@@ -405,13 +449,13 @@ std::string GetETLDPlusOne(const std::string& hostname) {
       hostname, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
 }
 
-bool IsEditDistanceAtMostOne(const base::string16& str1,
-                             const base::string16& str2) {
+bool IsEditDistanceAtMostOne(const std::u16string& str1,
+                             const std::u16string& str2) {
   if (str1.size() > str2.size() + 1 || str2.size() > str1.size() + 1) {
     return false;
   }
-  base::string16::const_iterator i = str1.begin();
-  base::string16::const_iterator j = str2.begin();
+  std::u16string::const_iterator i = str1.begin();
+  std::u16string::const_iterator j = str2.begin();
   size_t edit_count = 0;
   while (i != str1.end() && j != str2.end()) {
     if (*i == *j) {
@@ -497,6 +541,17 @@ bool IsLikelyEditDistanceFalsePositive(const DomainInfo& navigated_domain,
     }
   }
 
+  // Ignore domains that only differ by an insertion of a "-".
+  if (nav_dom_len != matched_dom_len) {
+    if (nav_dom_len < matched_dom_len &&
+        GetFirstDifferentChar(matched_dom, nav_dom) == '-') {
+      return true;
+    } else if (nav_dom_len > matched_dom_len &&
+               GetFirstDifferentChar(nav_dom, matched_dom) == '-') {
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -518,10 +573,15 @@ bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type) {
   if (match_type == LookalikeUrlMatchType::kSiteEngagement) {
     return true;
   }
-  if (match_type == LookalikeUrlMatchType::kTargetEmbedding &&
-      base::FeatureList::IsEnabled(
-          lookalikes::features::kDetectTargetEmbeddingLookalikes)) {
-    return true;
+  if (match_type == LookalikeUrlMatchType::kTargetEmbedding) {
+#if defined(OS_IOS)
+    // TODO(crbug.com/1104384): Only enable target embedding on iOS once we can
+    //    check engaged sites. Otherwise, false positives are too high.
+    return false;
+#else
+    return base::FeatureList::IsEnabled(
+        lookalikes::features::kDetectTargetEmbeddingLookalikes);
+#endif
   }
   if (match_type == LookalikeUrlMatchType::kFailedSpoofChecks &&
       base::FeatureList::IsEnabled(

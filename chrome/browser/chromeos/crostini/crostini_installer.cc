@@ -4,16 +4,18 @@
 
 #include "chrome/browser/chromeos/crostini/crostini_installer.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
-#include "base/strings/string16.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/chromeos/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_disk.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
@@ -22,8 +24,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_terminal.h"
 #include "chrome/browser/chromeos/crostini/crostini_types.mojom.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_dialog.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -113,6 +113,8 @@ SetupResult ErrorToSetupResult(InstallerError error) {
       return SetupResult::kSuccess;
     case InstallerError::kErrorLoadingTermina:
       return SetupResult::kErrorLoadingTermina;
+    case InstallerError::kNeedUpdate:
+      return SetupResult::kNeedUpdate;
     case InstallerError::kErrorCreatingDiskImage:
       return SetupResult::kErrorCreatingDiskImage;
     case InstallerError::kErrorStartingTermina:
@@ -320,6 +322,9 @@ void CrostiniInstaller::OnComponentLoaded(CrostiniResult result) {
     if (content::GetNetworkConnectionTracker()->IsOffline()) {
       LOG(ERROR) << "Network connection dropped while downloading cros-termina";
       HandleError(InstallerError::kErrorOffline);
+    } else if (result == CrostiniResult::NEED_UPDATE) {
+      LOG(ERROR) << "Need to update device before installing termina-dlc";
+      HandleError(InstallerError::kNeedUpdate);
     } else {
       LOG(ERROR) << "Failed to install the cros-termina component";
       HandleError(InstallerError::kErrorLoadingTermina);

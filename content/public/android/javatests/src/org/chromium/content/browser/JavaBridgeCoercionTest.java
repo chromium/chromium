@@ -278,7 +278,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassNumberDouble(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("testObject.setByteValue(42.1);");
         Assert.assertEquals(42, mTestObject.waitForByteValue());
@@ -344,6 +344,14 @@ public class JavaBridgeCoercionTest {
 
         mActivityTestRule.executeJavaScript("testObject.setStringValue(42.1);");
         Assert.assertEquals("42.1", mTestObject.waitForStringValue());
+        // Verify to format the double value as decimal floating-point notation of 6 places and
+        // round to 42.0000, then final result should leave out .0000.
+        mActivityTestRule.executeJavaScript("testObject.setStringValue(42.000000001);");
+        Assert.assertEquals("42", mTestObject.waitForStringValue());
+        mActivityTestRule.executeJavaScript("testObject.setStringValue(42.1e22);");
+        Assert.assertEquals("4.21e+23", mTestObject.waitForStringValue());
+        mActivityTestRule.executeJavaScript("testObject.setStringValue(42.000000001e22);");
+        Assert.assertEquals("4.2e+23", mTestObject.waitForStringValue());
 
         mActivityTestRule.executeJavaScript("testObject.setBooleanValue(0.0);");
         Assert.assertFalse(mTestObject.waitForBooleanValue());
@@ -568,7 +576,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassJavaScriptObject(boolean useMojo) throws Throwable {
         // LIVECONNECT_COMPLIANCE: Should raise a JavaScript exception.
         mActivityTestRule.executeJavaScript("testObject.setObjectValue({foo: 42});");
@@ -621,7 +629,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassJavaObject(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript(
                 "testObject.setObjectValue(testObject.getObjectInstance());");
@@ -701,7 +709,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassJavaObjectFromCustomClassLoader(boolean useMojo) throws Throwable {
         // Compiled bytecode (dex) for the following class:
         //
@@ -822,7 +830,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassArrayBuffer(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(16);");
 
@@ -840,7 +848,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassDataView(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("buffer = new ArrayBuffer(16);");
 
@@ -855,7 +863,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassDateObject(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("testObject.setDoubleValue(new Date(2000, 0, 1));");
         Assert.assertEquals(0.0, mTestObject.waitForDoubleValue(), ASSERTION_DELTA);
@@ -871,7 +879,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassRegExpObject(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("testObject.setStringValue(/abc/);");
         Assert.assertEquals("undefined", mTestObject.waitForStringValue());
@@ -884,7 +892,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassFunctionObject(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("func = new Function('a', 'b', 'return a + b');");
 

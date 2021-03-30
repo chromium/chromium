@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -97,13 +99,12 @@ SyncEngine::DriveServiceFactory::CreateDriveService(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::SequencedTaskRunner* blocking_task_runner) {
-  return std::unique_ptr<
-      drive::DriveServiceInterface>(new drive::DriveAPIService(
+  return std::make_unique<drive::DriveAPIService>(
       identity_manager, url_loader_factory, blocking_task_runner,
       GURL(google_apis::DriveApiUrlGenerator::kBaseUrlForProduction),
       GURL(google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction),
       std::string(), /* custom_user_agent */
-      kSyncFileSystemTrafficAnnotation));
+      kSyncFileSystemTrafficAnnotation);
 }
 
 class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
@@ -217,7 +218,8 @@ std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(context);
 
-  std::unique_ptr<drive_backend::SyncEngine> sync_engine(new SyncEngine(
+  // Use WrapUnique instead of std::make_unique because of the private ctor.
+  auto sync_engine = base::WrapUnique(new SyncEngine(
       ui_task_runner.get(), worker_task_runner.get(), drive_task_runner.get(),
       GetSyncFileSystemDir(context->GetPath()), task_logger,
       notification_manager, extension_service, extension_registry,
@@ -268,8 +270,10 @@ void SyncEngine::Initialize() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Reset();
 
-  if (!identity_manager_ || !identity_manager_->HasPrimaryAccount())
+  if (!identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
+  }
 
   DCHECK(drive_service_factory_);
   std::unique_ptr<drive::DriveServiceInterface> drive_service =
@@ -280,9 +284,9 @@ void SyncEngine::Initialize() {
   content::GetDeviceService().BindWakeLockProvider(
       wake_lock_provider.InitWithNewPipeAndPassReceiver());
 
-  std::unique_ptr<drive::DriveUploaderInterface> drive_uploader(
-      new drive::DriveUploader(drive_service.get(), drive_task_runner_.get(),
-                               std::move(wake_lock_provider)));
+  auto drive_uploader = std::make_unique<drive::DriveUploader>(
+      drive_service.get(), drive_task_runner_.get(),
+      std::move(wake_lock_provider));
 
   InitializeInternal(std::move(drive_service), std::move(drive_uploader),
                      nullptr);
@@ -302,34 +306,35 @@ void SyncEngine::InitializeInternal(
     std::unique_ptr<drive::DriveUploaderInterface> drive_uploader,
     std::unique_ptr<SyncWorkerInterface> sync_worker) {
   drive_service_ = std::move(drive_service);
-  drive_service_wrapper_.reset(new DriveServiceWrapper(drive_service_.get()));
+  drive_service_wrapper_ =
+      std::make_unique<DriveServiceWrapper>(drive_service_.get());
 
   CoreAccountId account_id;
 
-  if (identity_manager_)
-    account_id = identity_manager_->GetPrimaryAccountId();
+  if (identity_manager_) {
+    account_id =
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+  }
   drive_service_->Initialize(account_id);
 
   drive_uploader_ = std::move(drive_uploader);
-  drive_uploader_wrapper_.reset(
-      new DriveUploaderWrapper(drive_uploader_.get()));
+  drive_uploader_wrapper_ =
+      std::make_unique<DriveUploaderWrapper>(drive_uploader_.get());
 
   // DriveServiceWrapper and DriveServiceOnWorker relay communications
   // between DriveService and syncers in SyncWorker.
-  std::unique_ptr<drive::DriveServiceInterface> drive_service_on_worker(
-      new DriveServiceOnWorker(drive_service_wrapper_->AsWeakPtr(),
-                               ui_task_runner_.get(),
-                               worker_task_runner_.get()));
-  std::unique_ptr<drive::DriveUploaderInterface> drive_uploader_on_worker(
-      new DriveUploaderOnWorker(drive_uploader_wrapper_->AsWeakPtr(),
-                                ui_task_runner_.get(),
-                                worker_task_runner_.get()));
-  std::unique_ptr<SyncEngineContext> sync_engine_context(new SyncEngineContext(
+  auto drive_service_on_worker = std::make_unique<DriveServiceOnWorker>(
+      drive_service_wrapper_->AsWeakPtr(), ui_task_runner_.get(),
+      worker_task_runner_.get());
+  auto drive_uploader_on_worker = std::make_unique<DriveUploaderOnWorker>(
+      drive_uploader_wrapper_->AsWeakPtr(), ui_task_runner_.get(),
+      worker_task_runner_.get());
+  auto sync_engine_context = std::make_unique<SyncEngineContext>(
       std::move(drive_service_on_worker), std::move(drive_uploader_on_worker),
-      task_logger_, ui_task_runner_.get(), worker_task_runner_.get()));
+      task_logger_, ui_task_runner_.get(), worker_task_runner_.get());
 
-  worker_observer_.reset(new WorkerObserver(ui_task_runner_.get(),
-                                            weak_ptr_factory_.GetWeakPtr()));
+  worker_observer_ = std::make_unique<WorkerObserver>(
+      ui_task_runner_.get(), weak_ptr_factory_.GetWeakPtr());
 
   base::WeakPtr<extensions::ExtensionServiceInterface>
       extension_service_weak_ptr;
@@ -337,9 +342,9 @@ void SyncEngine::InitializeInternal(
     extension_service_weak_ptr = extension_service_->AsWeakPtr();
 
   if (!sync_worker) {
-    sync_worker.reset(new SyncWorker(sync_file_system_dir_,
-                                     extension_service_weak_ptr,
-                                     extension_registry_, env_override_));
+    sync_worker = std::make_unique<SyncWorker>(
+        sync_file_system_dir_, extension_service_weak_ptr, extension_registry_,
+        env_override_);
   }
 
   sync_worker_ = std::move(sync_worker);
@@ -380,10 +385,12 @@ void SyncEngine::RegisterOrigin(const GURL& origin,
   if (!sync_worker_) {
     // TODO(tzik): Record |origin| and retry the registration after late
     // sign-in.  Then, return SYNC_STATUS_OK.
-    if (!identity_manager_ || !identity_manager_->HasPrimaryAccount())
+    if (!identity_manager_ ||
+        !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
       std::move(callback).Run(SYNC_STATUS_AUTHENTICATION_FAILED);
-    else
+    } else {
       std::move(callback).Run(SYNC_STATUS_ABORT);
+    }
     return;
   }
 
@@ -450,28 +457,32 @@ void SyncEngine::UninstallOrigin(const GURL& origin,
                                 flag, std::move(relayed_callback)));
 }
 
-void SyncEngine::ProcessRemoteChange(const SyncFileCallback& callback) {
+void SyncEngine::ProcessRemoteChange(SyncFileCallback callback) {
   if (GetCurrentState() == REMOTE_SERVICE_DISABLED) {
-    callback.Run(SYNC_STATUS_SYNC_DISABLED, storage::FileSystemURL());
+    std::move(callback).Run(SYNC_STATUS_SYNC_DISABLED,
+                            storage::FileSystemURL());
     return;
   }
-
-  base::Closure abort_closure =
-      base::Bind(callback, SYNC_STATUS_ABORT, storage::FileSystemURL());
 
   if (!sync_worker_) {
-    abort_closure.Run();
+    std::move(callback).Run(SYNC_STATUS_ABORT, storage::FileSystemURL());
     return;
   }
 
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  base::OnceClosure abort_closure =
+      base::BindOnce(std::move(split_callback.first), SYNC_STATUS_ABORT,
+                     storage::FileSystemURL());
+
   SyncFileCallback tracked_callback = callback_tracker_.Register(
-      abort_closure, callback);
-  SyncFileCallback relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, tracked_callback);
+      std::move(abort_closure), std::move(split_callback.second));
+  SyncFileCallback relayed_callback =
+      RelayCallbackToCurrentThread(FROM_HERE, std::move(tracked_callback));
   worker_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SyncWorkerInterface::ProcessRemoteChange,
-                     base::Unretained(sync_worker_.get()), relayed_callback));
+      FROM_HERE, base::BindOnce(&SyncWorkerInterface::ProcessRemoteChange,
+                                base::Unretained(sync_worker_.get()),
+                                std::move(relayed_callback)));
 }
 
 void SyncEngine::SetRemoteChangeProcessor(RemoteChangeProcessor* processor) {
@@ -480,13 +491,13 @@ void SyncEngine::SetRemoteChangeProcessor(RemoteChangeProcessor* processor) {
   if (!sync_worker_)
     return;
 
-  remote_change_processor_wrapper_.reset(
-      new RemoteChangeProcessorWrapper(processor));
+  remote_change_processor_wrapper_ =
+      std::make_unique<RemoteChangeProcessorWrapper>(processor);
 
-  remote_change_processor_on_worker_.reset(new RemoteChangeProcessorOnWorker(
-      remote_change_processor_wrapper_->AsWeakPtr(),
-      ui_task_runner_.get(),
-      worker_task_runner_.get()));
+  remote_change_processor_on_worker_ =
+      std::make_unique<RemoteChangeProcessorOnWorker>(
+          remote_change_processor_wrapper_->AsWeakPtr(), ui_task_runner_.get(),
+          worker_task_runner_.get());
 
   worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncWorkerInterface::SetRemoteChangeProcessor,
@@ -506,63 +517,68 @@ RemoteServiceState SyncEngine::GetCurrentState() const {
   return service_state_;
 }
 
-void SyncEngine::GetOriginStatusMap(const StatusMapCallback& callback) {
-  base::Closure abort_closure =
-      base::Bind(callback, base::Passed(std::unique_ptr<OriginStatusMap>()));
-
+void SyncEngine::GetOriginStatusMap(StatusMapCallback callback) {
   if (!sync_worker_) {
-    abort_closure.Run();
+    std::move(callback).Run(nullptr);
     return;
   }
 
-  StatusMapCallback tracked_callback =
-      callback_tracker_.Register(abort_closure, callback);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  base::OnceClosure abort_closure =
+      base::BindOnce(std::move(split_callback.first), nullptr);
+
+  StatusMapCallback tracked_callback = callback_tracker_.Register(
+      std::move(abort_closure), std::move(split_callback.second));
   StatusMapCallback relayed_callback =
-      RelayCallbackToCurrentThread(FROM_HERE, tracked_callback);
+      RelayCallbackToCurrentThread(FROM_HERE, std::move(tracked_callback));
 
   worker_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SyncWorkerInterface::GetOriginStatusMap,
-                     base::Unretained(sync_worker_.get()), relayed_callback));
+      FROM_HERE, base::BindOnce(&SyncWorkerInterface::GetOriginStatusMap,
+                                base::Unretained(sync_worker_.get()),
+                                std::move(relayed_callback)));
 }
 
-void SyncEngine::DumpFiles(const GURL& origin,
-                           const ListCallback& callback) {
-  base::Closure abort_closure =
-      base::Bind(callback, base::Passed(std::unique_ptr<base::ListValue>()));
-
+void SyncEngine::DumpFiles(const GURL& origin, ListCallback callback) {
   if (!sync_worker_) {
-    abort_closure.Run();
+    std::move(callback).Run(nullptr);
     return;
   }
 
-  ListCallback tracked_callback =
-      callback_tracker_.Register(abort_closure, callback);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  base::OnceClosure abort_closure =
+      base::BindOnce(std::move(split_callback.first), nullptr);
+
+  ListCallback tracked_callback = callback_tracker_.Register(
+      std::move(abort_closure), std::move(split_callback.second));
 
   PostTaskAndReplyWithResult(
       worker_task_runner_.get(), FROM_HERE,
       base::BindOnce(&SyncWorkerInterface::DumpFiles,
                      base::Unretained(sync_worker_.get()), origin),
-      base::BindOnce(tracked_callback));
+      std::move(tracked_callback));
 }
 
-void SyncEngine::DumpDatabase(const ListCallback& callback) {
-  base::Closure abort_closure =
-      base::Bind(callback, base::Passed(std::unique_ptr<base::ListValue>()));
-
+void SyncEngine::DumpDatabase(ListCallback callback) {
   if (!sync_worker_) {
-    abort_closure.Run();
+    std::move(callback).Run(nullptr);
     return;
   }
 
-  ListCallback tracked_callback =
-      callback_tracker_.Register(abort_closure, callback);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  base::OnceClosure abort_closure =
+      base::BindOnce(std::move(split_callback.first), nullptr);
+
+  ListCallback tracked_callback = callback_tracker_.Register(
+      std::move(abort_closure), std::move(split_callback.second));
 
   PostTaskAndReplyWithResult(
       worker_task_runner_.get(), FROM_HERE,
       base::BindOnce(&SyncWorkerInterface::DumpDatabase,
                      base::Unretained(sync_worker_.get())),
-      base::BindOnce(tracked_callback));
+      std::move(tracked_callback));
 }
 
 void SyncEngine::SetSyncEnabled(bool sync_enabled) {
@@ -597,19 +613,22 @@ void SyncEngine::SetSyncEnabled(bool sync_enabled) {
   Reset();
 }
 
-void SyncEngine::PromoteDemotedChanges(const base::Closure& callback) {
+void SyncEngine::PromoteDemotedChanges(base::OnceClosure callback) {
   if (!sync_worker_) {
-    callback.Run();
+    std::move(callback).Run();
     return;
   }
 
-  base::Closure relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, callback_tracker_.Register(callback, callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  base::OnceClosure relayed_callback = RelayCallbackToCurrentThread(
+      FROM_HERE, callback_tracker_.Register(std::move(split_callback.first),
+                                            std::move(split_callback.second)));
 
   worker_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SyncWorkerInterface::PromoteDemotedChanges,
-                     base::Unretained(sync_worker_.get()), relayed_callback));
+      FROM_HERE, base::BindOnce(&SyncWorkerInterface::PromoteDemotedChanges,
+                                base::Unretained(sync_worker_.get()),
+                                std::move(relayed_callback)));
 }
 
 void SyncEngine::ApplyLocalChange(const FileChange& local_change,
@@ -697,16 +716,20 @@ void SyncEngine::OnConnectionChanged(network::mojom::ConnectionType type) {
   }
 }
 
-void SyncEngine::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  Initialize();
-}
-
-void SyncEngine::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  Reset();
-  UpdateServiceState(REMOTE_SERVICE_AUTHENTICATION_REQUIRED,
-                     "User signed out.");
+void SyncEngine::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      Initialize();
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      Reset();
+      UpdateServiceState(REMOTE_SERVICE_AUTHENTICATION_REQUIRED,
+                         "User signed out.");
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      return;
+  }
 }
 
 SyncEngine::SyncEngine(
@@ -772,15 +795,11 @@ void SyncEngine::UpdateServiceState(RemoteServiceState state,
 }
 
 SyncStatusCallback SyncEngine::TrackCallback(SyncStatusCallback callback) {
-  // This creates a repeating callback which will call |callback| once, and
-  // ignore subsequent invocations, much like the callback tracker does.
-  // However, this allows us to bind |repeating| without giving away ownership
-  // of |callback|.
-  // TODO(https://crbug.com/1156809): Use SplitOnceCallback once it's available.
-  auto repeating = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
 
-  return callback_tracker_.Register(base::Bind(repeating, SYNC_STATUS_ABORT),
-                                    repeating);
+  return callback_tracker_.Register(
+      base::BindOnce(std::move(split_callback.first), SYNC_STATUS_ABORT),
+      std::move(split_callback.second));
 }
 
 }  // namespace drive_backend

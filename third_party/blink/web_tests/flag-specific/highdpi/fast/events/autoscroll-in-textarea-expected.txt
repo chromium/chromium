@@ -1,0 +1,8 @@
+
+
+
+
+
+This tests autoscroll in text area correctly shows selection highlight. To manually test, scroll the text area down to the end. Slowly drag up your mouse starting from the line closest to the upper edge of the text area. Once the contents of the text area get scrolled a little, the selection should not jump down to the end.
+
+FAILED the selection jumped down.

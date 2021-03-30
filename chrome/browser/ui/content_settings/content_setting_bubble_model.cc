@@ -71,6 +71,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
@@ -83,7 +85,6 @@
 
 #if defined(OS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/geolocation/geolocation_system_permission_mac.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
 
@@ -95,6 +96,7 @@ using content_settings::SETTING_SOURCE_NONE;
 using content_settings::SETTING_SOURCE_USER;
 using content_settings::SettingInfo;
 using content_settings::SettingSource;
+using device::LocationSystemPermissionStatus;
 
 namespace {
 
@@ -147,14 +149,14 @@ ContentSettingBubbleModel::ListItem CreateUrlListItem(int32_t id,
                                                       const GURL& url) {
   // Empty URLs should get a placeholder.
   // TODO(csharrison): See if we can DCHECK that the URL will be valid here.
-  base::string16 title = url.spec().empty()
+  std::u16string title = url.spec().empty()
                              ? l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE)
                              : base::UTF8ToUTF16(url.spec());
 
   // Format the title to include the unicode single dot bullet code-point
   // \u2022 and two spaces.
   title = l10n_util::GetStringFUTF16(IDS_LIST_BULLET, title);
-  return ContentSettingBubbleModel::ListItem(nullptr, title, base::string16(),
+  return ContentSettingBubbleModel::ListItem(nullptr, title, std::u16string(),
                                              true /* has_link */,
                                              false /* has_blocked_badge */, id);
 }
@@ -184,8 +186,8 @@ void SetAllowRunningInsecureContent(content::RenderFrameHost* frame) {
 
 // ContentSettingSimpleBubbleModel ---------------------------------------------
 ContentSettingBubbleModel::ListItem::ListItem(const gfx::VectorIcon* image,
-                                              const base::string16& title,
-                                              const base::string16& description,
+                                              const std::u16string& title,
+                                              const std::u16string& description,
                                               bool has_link,
                                               bool has_blocked_badge,
                                               int32_t item_id)
@@ -228,7 +230,6 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_TITLE},
       {ContentSettingsType::MIXEDSCRIPT,
        IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT_TITLE},
-      {ContentSettingsType::PPAPI_BROKER, IDS_BLOCKED_PPAPI_BROKER_TITLE},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_TITLE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_BLOCKED_CLIPBOARD_TITLE},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_TITLE},
@@ -238,7 +239,6 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
   // Fields as for kBlockedTitleIDs, above.
   static const ContentSettingsTypeIdEntry kAccessedTitleIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ACCESSED_COOKIES_TITLE},
-      {ContentSettingsType::PPAPI_BROKER, IDS_ALLOWED_PPAPI_BROKER_TITLE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_TITLE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_TITLE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_TITLE},
@@ -269,7 +269,6 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
       // {ContentSettingsType::POPUPS, No message. intentionally left out},
       {ContentSettingsType::MIXEDSCRIPT,
        IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT},
-      {ContentSettingsType::PPAPI_BROKER, IDS_BLOCKED_PPAPI_BROKER_MESSAGE},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_MESSAGE},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_MESSAGE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -282,7 +281,6 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
   // Fields as for kBlockedMessageIDs, above.
   const ContentSettingsTypeIdEntry kAccessedMessageIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ACCESSED_COOKIES_MESSAGE},
-      {ContentSettingsType::PPAPI_BROKER, IDS_ALLOWED_PPAPI_BROKER_MESSAGE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_MESSAGE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_MESSAGE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -370,7 +368,6 @@ void ContentSettingMixedScriptBubbleModel::OnLearnMoreClicked() {
 }
 
 void ContentSettingMixedScriptBubbleModel::OnCustomLinkClicked() {
-  DCHECK(rappor_service());
   MixedContentSettingsTabHelper* mixed_content_settings =
       MixedContentSettingsTabHelper::FromWebContents(web_contents());
   if (mixed_content_settings) {
@@ -418,7 +415,7 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
   pending_handler_ = content_settings->pending_protocol_handler();
   previous_handler_ = content_settings->previous_protocol_handler();
 
-  base::string16 protocol = pending_handler_.GetProtocolDisplayName();
+  std::u16string protocol = pending_handler_.GetProtocolDisplayName();
 
   // Note that we ignore the |title| parameter.
   if (previous_handler_.IsEmpty()) {
@@ -432,11 +429,11 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
         base::UTF8ToUTF16(previous_handler_.url().host())));
   }
 
-  base::string16 radio_allow_label =
+  std::u16string radio_allow_label =
       l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_ACCEPT);
-  base::string16 radio_deny_label =
+  std::u16string radio_deny_label =
       l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_DENY);
-  base::string16 radio_ignore_label =
+  std::u16string radio_ignore_label =
       l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_IGNORE);
 
   const GURL& url = web_contents->GetURL();
@@ -532,6 +529,10 @@ void ContentSettingSingleRadioGroup::CommitChanges() {
     ContentSetting setting = selected_item() == kAllowButtonIndex
                                  ? CONTENT_SETTING_ALLOW
                                  : block_setting_;
+    permissions::PermissionUmaUtil::ScopedRevocationReporter
+        scoped_revocation_reporter(
+            GetProfile(), bubble_content().radio_group.url, GURL(),
+            content_type(), permissions::PermissionSourceUI::PAGE_ACTION);
     SetNarrowestContentSetting(setting);
   }
 }
@@ -544,7 +545,7 @@ bool ContentSettingSingleRadioGroup::settings_changed() const {
 // content type and setting the default value based on the content setting.
 void ContentSettingSingleRadioGroup::SetRadioGroup() {
   const GURL& url = web_contents()->GetURL();
-  base::string16 display_host = url_formatter::FormatUrlForSecurityDisplay(url);
+  std::u16string display_host = url_formatter::FormatUrlForSecurityDisplay(url);
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
@@ -567,7 +568,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_UNBLOCK},
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_UNBLOCK},
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_UNBLOCK},
-      {ContentSettingsType::PPAPI_BROKER, IDS_BLOCKED_PPAPI_BROKER_UNBLOCK},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_UNBLOCK},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_UNBLOCK},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_UNBLOCK},
@@ -578,7 +578,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   // Fields as for kBlockedAllowIDs, above.
   static const ContentSettingsTypeIdEntry kAllowedAllowIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ALLOWED_COOKIES_NO_ACTION},
-      {ContentSettingsType::PPAPI_BROKER, IDS_ALLOWED_PPAPI_BROKER_NO_ACTION},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_NO_ACTION},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_NO_ACTION},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -586,7 +585,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_NO_ACTION},
   };
 
-  base::string16 radio_allow_label;
+  std::u16string radio_allow_label;
   if (allowed) {
     int resource_id = GetIdForContentType(
         kAllowedAllowIDs, base::size(kAllowedAllowIDs), content_type());
@@ -603,7 +602,6 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_NO_ACTION},
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_NO_ACTION},
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_NO_ACTION},
-      {ContentSettingsType::PPAPI_BROKER, IDS_BLOCKED_PPAPI_BROKER_NO_ACTION},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_NO_ACTION},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_NO_ACTION},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_NO_ACTION},
@@ -613,14 +611,13 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   };
   static const ContentSettingsTypeIdEntry kAllowedBlockIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ALLOWED_COOKIES_BLOCK},
-      {ContentSettingsType::PPAPI_BROKER, IDS_ALLOWED_PPAPI_BROKER_BLOCK},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_BLOCK},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_BLOCK},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_BLOCK},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_BLOCK},
   };
 
-  base::string16 radio_block_label;
+  std::u16string radio_block_label;
   if (allowed) {
     int resource_id = GetIdForContentType(
         kAllowedBlockIDs, base::size(kAllowedBlockIDs), content_type());
@@ -954,7 +951,7 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
   RadioGroup radio_group;
   radio_group.url = url;
 
-  base::string16 display_host = url_formatter::FormatUrlForSecurityDisplay(url);
+  std::u16string display_host = url_formatter::FormatUrlForSecurityDisplay(url);
 
   DCHECK(CameraAccessed() || MicrophoneAccessed());
   int radio_allow_label_id = 0;
@@ -1007,9 +1004,9 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
     }
   }
 
-  base::string16 radio_allow_label =
+  std::u16string radio_allow_label =
       l10n_util::GetStringFUTF16(radio_allow_label_id, display_host);
-  base::string16 radio_block_label =
+  std::u16string radio_block_label =
       l10n_util::GetStringUTF16(radio_block_label_id);
 
   radio_group.default_item =
@@ -1108,9 +1105,7 @@ bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
                 system_media_permissions::SystemPermission::kDenied &&
             MicrophoneAccessed() && !MicrophoneBlocked())) &&
           !(CameraAccessed() && CameraBlocked()) &&
-          !(MicrophoneAccessed() && MicrophoneBlocked()) &&
-          base::FeatureList::IsEnabled(
-              ::features::kMacSystemMediaPermissionsInfoUi));
+          !(MicrophoneAccessed() && MicrophoneBlocked()));
 #else
   return false;
 #endif  // defined(OS_MAC)
@@ -1242,11 +1237,11 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
     bool is_allowed =
         content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
 
-    GeolocationSystemPermissionManager* permission_delegate =
+    device::GeolocationSystemPermissionManager* permission_delegate =
         g_browser_process->platform_part()->location_permission_manager();
-    SystemPermissionStatus permission =
+    LocationSystemPermissionStatus permission =
         permission_delegate->GetSystemPermission();
-    if (permission != SystemPermissionStatus::kAllowed && is_allowed) {
+    if (permission != LocationSystemPermissionStatus::kAllowed && is_allowed) {
       // If the permission is turned off in MacOS system preferences, overwrite
       // the bubble to enable the user to trigger the system dialog.
       InitializeSystemGeolocationPermissionBubble();
@@ -1379,6 +1374,11 @@ ContentSettingDownloadsBubbleModel::~ContentSettingDownloadsBubbleModel() {}
 
 void ContentSettingDownloadsBubbleModel::CommitChanges() {
   if (selected_item() != bubble_content().radio_group.default_item) {
+    permissions::PermissionUmaUtil::ScopedRevocationReporter
+        scoped_revocation_reporter(
+            GetProfile(), bubble_content().radio_group.url, GURL(),
+            ContentSettingsType::AUTOMATIC_DOWNLOADS,
+            permissions::PermissionSourceUI::PAGE_ACTION);
     ContentSetting setting = selected_item() == kAllowButtonIndex
                                  ? CONTENT_SETTING_ALLOW
                                  : CONTENT_SETTING_BLOCK;
@@ -1401,7 +1401,7 @@ void ContentSettingDownloadsBubbleModel::SetRadioGroup() {
       g_browser_process->download_request_limiter();
   const GURL& download_origin =
       download_request_limiter->GetDownloadOrigin(web_contents());
-  base::string16 display_host =
+  std::u16string display_host =
       url_formatter::FormatUrlForSecurityDisplay(download_origin);
   DCHECK(download_request_limiter);
 
@@ -1516,7 +1516,6 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
     return;
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
-    case QuietUiReason::kPredictedVeryUnlikelyGrant:
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DESCRIPTION));
       set_done_button_text(l10n_util::GetStringUTF16(
@@ -1548,6 +1547,15 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
       set_manage_text_style(ManageTextStyle::kNone);
       base::RecordAction(
           base::UserMetricsAction("Notifications.Quiet.StaticIconClicked"));
+      break;
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
+      set_message(l10n_util::GetStringUTF16(
+          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION));
+      set_done_button_text(l10n_util::GetStringUTF16(
+          IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON));
+      set_show_learn_more(false);
+      base::RecordAction(
+          base::UserMetricsAction("Notifications.Quiet.AnimatedIconClicked"));
       break;
   }
 }
@@ -1662,7 +1670,6 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
   }
   if (content_type == ContentSettingsType::IMAGES ||
       content_type == ContentSettingsType::JAVASCRIPT ||
-      content_type == ContentSettingsType::PPAPI_BROKER ||
       content_type == ContentSettingsType::SOUND ||
       content_type == ContentSettingsType::CLIPBOARD_READ_WRITE ||
       content_type == ContentSettingsType::MIDI_SYSEX ||
@@ -1677,10 +1684,7 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
 
 ContentSettingBubbleModel::ContentSettingBubbleModel(Delegate* delegate,
                                                      WebContents* web_contents)
-    : web_contents_(web_contents),
-      owner_(nullptr),
-      delegate_(delegate),
-      rappor_service_(g_browser_process->rappor_service()) {
+    : web_contents_(web_contents), owner_(nullptr), delegate_(delegate) {
   DCHECK(web_contents_);
 }
 

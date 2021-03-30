@@ -25,19 +25,22 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
   image_view->SetImage(gfx::CreateVectorIcon(
       kCaptureModeCircleStopIcon,
       AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+          AshColorProvider::ContentLayerType::kIconColorAlert)));
   image_view->SetTooltipText(GetAccessibleNameForTray());
   image_view->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   tray_container()->AddChildView(std::move(image_view));
+
+  set_use_bounce_in_animation(true);
 }
 
 StopRecordingButtonTray::~StopRecordingButtonTray() = default;
 
 bool StopRecordingButtonTray::PerformAction(const ui::Event& event) {
   DCHECK(event.type() == ui::ET_MOUSE_RELEASED ||
-         event.type() == ui::ET_GESTURE_TAP);
+         event.type() == ui::ET_GESTURE_TAP ||
+         event.type() == ui::ET_KEY_PRESSED);
 
   base::RecordAction(base::UserMetricsAction("Tray_StopRecording"));
   CaptureModeController::Get()->EndVideoRecording(
@@ -45,7 +48,7 @@ bool StopRecordingButtonTray::PerformAction(const ui::Event& event) {
   return true;
 }
 
-base::string16 StopRecordingButtonTray::GetAccessibleNameForTray() {
+std::u16string StopRecordingButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME);
 }

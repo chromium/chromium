@@ -31,14 +31,14 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/common/impression.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/url_pattern.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/context_menu_data/input_field_type.h"
+#include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "url/gurl.h"
 
@@ -57,7 +57,7 @@ static content::ContextMenuParams CreateParams(int contexts) {
   rv.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
   rv.page_url = GURL("http://test.page/");
 
-  static const base::char16 selected_text[] = { 's', 'e', 'l', 0 };
+  static constexpr char16_t selected_text[] = u"sel";
   if (contexts & MenuItem::SELECTION)
     rv.selection_text = selected_text;
 
@@ -390,7 +390,7 @@ TEST_F(RenderViewContextMenuExtensionsTest,
       CreateContextMenu(web_contents.get(), registry_.get()));
 
   const ui::MenuModel& model = menu->menu_model();
-  base::string16 expected_title = base::ASCIIToUTF16("Added by an extension");
+  std::u16string expected_title = u"Added by an extension";
   int num_items_found = 0;
   for (int i = 0; i < model.GetItemCount(); ++i) {
     if (expected_title == model.GetLabelAt(i))
@@ -518,7 +518,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LoadBrokenImage) {
 // Verify that the suggested file name is propagated to web contents when save a
 // media file in context menu.
 TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
-  const base::string16 kTestSuggestedFileName = base::ASCIIToUTF16("test_file");
+  const std::u16string kTestSuggestedFileName = u"test_file";
   content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
   params.suggested_filename = kTestSuggestedFileName;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
@@ -526,7 +526,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0 /* event_flags */);
 
   // Video item should have suggested file name.
-  base::string16 suggested_filename =
+  std::u16string suggested_filename =
       content::WebContentsTester::For(web_contents())->GetSuggestedFileName();
   EXPECT_EQ(kTestSuggestedFileName, suggested_filename);
 
@@ -552,7 +552,7 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
   content::ContextMenuParams params = CreateParams(MenuItem::LINK);
   params.unfiltered_link_url = params.link_url;
   params.link_url = params.link_url;
-  params.impression = content::Impression();
+  params.impression = blink::Impression();
   auto menu = std::make_unique<TestRenderViewContextMenu>(main_frame, params);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
   EXPECT_TRUE(delegate.last_navigation_params());
@@ -568,6 +568,26 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
   EXPECT_TRUE(delegate.last_navigation_params()->impression);
 }
 
+// Verify ContextMenu navigations properly set the initiating origin.
+TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationInitiatorSet) {
+  TestNavigationDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+
+  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
+  params.unfiltered_link_url = params.link_url;
+  params.link_url = params.link_url;
+  params.impression = blink::Impression();
+  auto menu = std::make_unique<TestRenderViewContextMenu>(main_frame, params);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+  EXPECT_TRUE(delegate.last_navigation_params());
+
+  // Verify that the initiator is set, and set expectedly.
+  EXPECT_TRUE(delegate.last_navigation_params()->initiator_origin.has_value());
+  EXPECT_EQ(delegate.last_navigation_params()->initiator_origin->GetURL(),
+            params.page_url.GetOrigin());
+}
+
 // Verify that "Show all passwords" is displayed on a password field.
 TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
   // Set up password manager stuff.
@@ -576,7 +596,8 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
 
   NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.input_field_type = blink::ContextMenuDataInputFieldType::kPassword;
+  params.input_field_type =
+      blink::mojom::ContextMenuDataInputFieldType::kPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       web_contents()->GetMainFrame(), params);
   menu->Init();
@@ -598,7 +619,8 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
   content::WebContentsTester::For(incognito_web_contents.get())
       ->NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.input_field_type = blink::ContextMenuDataInputFieldType::kPassword;
+  params.input_field_type =
+      blink::mojom::ContextMenuDataInputFieldType::kPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       incognito_web_contents->GetMainFrame(), params);
   menu->Init();
@@ -618,7 +640,7 @@ struct FormatUrlForClipboardTestData {
 class FormatUrlForClipboardTest
     : public testing::TestWithParam<FormatUrlForClipboardTestData> {
  public:
-  static base::string16 FormatUrl(const GURL& url) {
+  static std::u16string FormatUrl(const GURL& url) {
     return RenderViewContextMenu::FormatURLForClipboard(url);
   }
 };
@@ -657,6 +679,6 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(FormatUrlForClipboardTest, FormatUrlForClipboard) {
   auto param = GetParam();
   GURL url(param.input);
-  const base::string16 result = FormatUrl(url);
+  const std::u16string result = FormatUrl(url);
   DCHECK_EQ(base::UTF8ToUTF16(param.output), result);
 }

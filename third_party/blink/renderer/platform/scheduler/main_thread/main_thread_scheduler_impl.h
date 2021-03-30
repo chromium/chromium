@@ -23,6 +23,7 @@
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
@@ -50,14 +51,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
-
 class TaskObserver;
-
-namespace trace_event {
-class ConvertableToTraceFormat;
-}
 }  // namespace base
 
 namespace blink {
@@ -143,6 +140,15 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     std::array<base::sequence_manager::TaskQueue::QueuePriority,
                net::RequestPrioritySize::NUM_PRIORITIES>
         net_to_blink_priority;
+
+    // If enabled, base::ThreadTaskRunnerHandle::Get() and
+    // base::SequencedTaskRunnerHandle::Get() returns the current active
+    // per-ASG task runner instead of the per-thread task runner.
+    bool mbi_override_task_runner_handle;
+
+    // If enabled, per-AgentGroupScheduler CompositorTaskRunner will be used
+    // instead of per-MainThreadScheduler CompositorTaskRunner.
+    bool mbi_compositor_task_runner_per_agent_scheduling_group;
   };
 
   static const char* UseCaseToString(UseCase use_case);
@@ -223,8 +229,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
-  void SetCurrentAgentGroupScheduler(
-      WebAgentGroupScheduler* agent_group_scheduler);
   std::unique_ptr<ThreadScheduler::RendererPauseHandle> PauseScheduler()
       override;
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
@@ -494,6 +498,21 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   void AddAgentGroupScheduler(AgentGroupSchedulerImpl*);
 
+  struct AgentGroupSchedulerScope {
+    std::unique_ptr<base::ThreadTaskRunnerHandleOverride>
+        thread_task_runner_handle_override;
+    WebAgentGroupScheduler* previous_agent_group_scheduler;
+    WebAgentGroupScheduler* current_agent_group_scheduler;
+    scoped_refptr<base::SingleThreadTaskRunner> previous_task_runner;
+    scoped_refptr<base::SingleThreadTaskRunner> current_task_runner;
+    const char* trace_event_scope_name;
+    void* trace_event_scope_id;
+  };
+
+  void BeginAgentGroupSchedulerScope(
+      WebAgentGroupScheduler* next_agent_group_scheduler);
+  void EndAgentGroupSchedulerScope();
+
   bool IsAnyMainFrameWaitingForFirstContentfulPaint() const;
   bool IsAnyMainFrameWaitingForFirstMeaningfulPaint() const;
 
@@ -573,11 +592,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
              use_case_ == other.use_case_;
     }
 
-    void AsValueInto(base::trace_event::TracedValue* state) const;
-
     bool IsQueueEnabled(MainThreadTaskQueue* task_queue) const;
 
     TimeDomainType GetTimeDomainType() const;
+
+    void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
    private:
     RAILMode rail_mode_{RAILMode::kAnimation};
@@ -632,13 +651,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       MainThreadTaskQueue* queue);
 
   // Returns the serialized scheduler state for tracing.
-  std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue(
-      base::TimeTicks optional_now) const;
-  std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValueLocked(
-      base::TimeTicks optional_now) const;
+  void WriteIntoTracedValueLocked(perfetto::TracedValue context,
+                                  base::TimeTicks optional_now) const;
   void CreateTraceEventObjectSnapshotLocked() const;
-
-  std::string ToString() const;
 
   static bool ShouldPrioritizeInputEvent(const WebInputEvent& web_input_event);
 
@@ -780,9 +795,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // task.
   void DispatchOnTaskCompletionCallbacks();
 
-  void AsValueIntoLocked(base::trace_event::TracedValue*,
-                         base::TimeTicks optional_now) const;
-
   bool AllPagesFrozen() const;
 
   // Indicates that scheduler has been shutdown.
@@ -821,8 +833,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<MainThreadTaskQueue> virtual_time_control_task_queue_;
   scoped_refptr<MainThreadTaskQueue>
       back_forward_cache_ipc_tracking_task_queue_;
-  std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>
-      compositor_task_queue_enabled_voter_;
 
   using TaskQueueVoterMap = std::map<
       scoped_refptr<MainThreadTaskQueue>,
@@ -862,7 +872,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   struct MainThreadOnly {
     MainThreadOnly(
         MainThreadSchedulerImpl* main_thread_scheduler_impl,
-        const scoped_refptr<MainThreadTaskQueue>& compositor_task_runner,
         const base::TickClock* time_source,
         base::TimeTicks now);
     ~MainThreadOnly();
@@ -965,6 +974,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // kNormalPriority and is updated via UpdateCompositorTaskQueuePriority().
     TraceableState<TaskQueue::QueuePriority, TracingCategoryName::kDefault>
         compositor_priority;
+
+    WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
+
+    std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter;
   };
 
   struct AnyThread {
@@ -1036,7 +1049,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     return any_thread_;
   }
 
-  // Don't access compositor_thread_only_, instead use CompositorThreadOnly().
+  // Don't access compositor_thread_only_, instead use
+  // |GetCompositorThreadOnly()|.
   CompositorThreadOnly compositor_thread_only_;
   CompositorThreadOnly& GetCompositorThreadOnly() {
     compositor_thread_only_.CheckOnValidThread();

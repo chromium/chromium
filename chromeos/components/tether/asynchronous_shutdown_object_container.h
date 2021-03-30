@@ -28,7 +28,7 @@ class AsynchronousShutdownObjectContainer {
   // Shuts down the objects contained by this class and invokes
   // |shutdown_complete_callback| upon completion. This function should only be
   // called once.
-  virtual void Shutdown(const base::Closure& shutdown_complete_callback) = 0;
+  virtual void Shutdown(base::OnceClosure shutdown_complete_callback) = 0;
 
   virtual TetherHostFetcher* tether_host_fetcher() = 0;
   virtual DisconnectTetheringRequestSender*

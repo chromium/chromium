@@ -150,8 +150,8 @@ TEST_F(BlobStorageContextMojoTest, BasicBlobCreation) {
 
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
-  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &data_pipe_producer,
-                                                 &data_pipe_consumer));
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, data_pipe_producer,
+                                                 data_pipe_consumer));
   blob->ReadAll(std::move(data_pipe_producer), mojo::NullRemote());
   std::string received = ReadDataPipe(std::move(data_pipe_consumer));
   EXPECT_EQ(std::string(kData), received);

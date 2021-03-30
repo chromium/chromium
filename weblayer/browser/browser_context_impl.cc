@@ -11,6 +11,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/download/public/common/in_progress_download_manager.h"
 #include "components/embedder_support/pref_names.h"
+#include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/payments/core/payment_prefs.h"
@@ -35,11 +36,14 @@
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "weblayer/browser/background_fetch/background_fetch_delegate_factory.h"
+#include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "weblayer/browser/background_sync/background_sync_controller_factory.h"
 #include "weblayer/browser/browsing_data_remover_delegate.h"
 #include "weblayer/browser/browsing_data_remover_delegate_factory.h"
 #include "weblayer/browser/client_hints_factory.h"
 #include "weblayer/browser/default_search_engine.h"
+#include "weblayer/browser/heavy_ad_service_factory.h"
 #include "weblayer/browser/permissions/permission_manager_factory.h"
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
 #include "weblayer/public/common/switches.h"
@@ -95,12 +99,20 @@ BrowserContextImpl::BrowserContextImpl(ProfileImpl* profile_impl,
                                        const base::FilePath& path)
     : profile_impl_(profile_impl),
       path_(path),
+      simple_factory_key_(path, path.empty()),
       resource_context_(new ResourceContextImpl()),
       download_delegate_(BrowserContext::GetDownloadManager(this)) {
   CreateUserPrefService();
 
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
+
+  auto* heavy_ad_service = HeavyAdServiceFactory::GetForBrowserContext(this);
+  if (IsOffTheRecord()) {
+    heavy_ad_service->InitializeOffTheRecord();
+  } else {
+    heavy_ad_service->Initialize(GetPath());
+  }
 
   site_isolation::SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(this);
 
@@ -195,7 +207,7 @@ BrowserContextImpl::GetClientHintsControllerDelegate() {
 
 content::BackgroundFetchDelegate*
 BrowserContextImpl::GetBackgroundFetchDelegate() {
-  return nullptr;
+  return BackgroundFetchDelegateFactory::GetForBrowserContext(this);
 }
 
 content::BackgroundSyncController*

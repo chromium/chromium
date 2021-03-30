@@ -86,6 +86,19 @@ TEST(ServiceProviderConfigTest, CurrentConfig) {
             service_provider->analysis_tags().at("dlp").mime_types());
   ASSERT_EQ(MalwareMimeTypes(),
             service_provider->analysis_tags().at("malware").mime_types());
+
+  service_provider = config.GetServiceProvider("box");
+  ASSERT_NE(nullptr, service_provider);
+
+  ASSERT_EQ("https://box.com", service_provider->fs_home_url());
+  ASSERT_EQ("https://account.box.com/api/oauth2/authorize",
+            service_provider->fs_authorization_endpoint());
+  ASSERT_EQ("https://api.box.com/oauth2/token",
+            service_provider->fs_token_endpoint());
+  ASSERT_EQ(20u * 1024 * 1024, service_provider->fs_max_direct_size());
+  ASSERT_TRUE(service_provider->fs_scopes().empty());
+  ASSERT_EQ(1u, service_provider->fs_disable().size());
+  ASSERT_EQ("box.com", service_provider->fs_disable()[0]);
 }
 
 }  // namespace enterprise_connectors

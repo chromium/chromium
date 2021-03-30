@@ -66,6 +66,7 @@ enum XRSessionFeature {
   PLANE_DETECTION = 11, // Experimental feature.
   DEPTH = 12, // Experimental feature.
   IMAGE_TRACKING = 13, // Experimental feature.
+  HAND_INPUT = 14, // Experimental feature.
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -100,6 +101,16 @@ enum XREnvironmentBlendMode {
   kAdditive = 3,
 };
 
+enum XRDepthUsage {
+  kCPUOptimized = 1,
+  kGPUOptimized = 2,
+};
+
+enum XRDepthDataFormat {
+  kLuminanceAlpha = 1,
+  kFloat32 = 2,
+};
+
 // These enum names come from the WebXR spec:
 // https://immersive-web.github.io/webxr-ar-module/#enumdef-xrinteractionmode
 // The interactionMode attribute describes the best space
@@ -114,6 +125,25 @@ struct XRTrackedImage {
   skia.mojom.BitmapN32 bitmap;
   gfx.mojom.Size size_in_pixels;
   float width_in_meters;
+};
+
+// Structure used to configure depth sensing API at session creation.
+// If the device is unable to create the session given the preferences expressed
+// in the options, the session will not have depth sensing API enabled. In case
+// it was a required feature, this means that session creation will fail.
+struct XRDepthOptions {
+  // Ordered array of depth sensing usage preferences. At session creation,
+  // the device will pick the depth sensing usage value that it supports,
+  /// starting from the lowest-indexed one. `kNone` entry is not allowed to
+  // appear in this array, and the array should not be empty.
+  array<XRDepthUsage> usage_preferences;
+  // Ordered array of depth sensing data format preferences. At session
+  // creation, the device will pick the depth sensing data format value that it
+  // supports, starting from the lowest-indexed one. `kNone` entry is not
+  // allowed to appear in this array, and the array should not be empty.
+  // The data format selection happens after the device has selected depth
+  // sensing usage.
+  array<XRDepthDataFormat> data_format_preferences;
 };
 
 struct XRSessionOptions {
@@ -131,6 +161,15 @@ struct XRSessionOptions {
   array<XRSessionFeature> optional_features;
 
   array<XRTrackedImage> tracked_images;
+
+  // Must be present if either optional or required features contain
+  // depth sensing API.
+  XRDepthOptions? depth_options;
+};
+
+struct XRDepthConfig {
+  XRDepthUsage depth_usage;
+  XRDepthDataFormat depth_data_format;
 };
 
 // This structure contains a description of the device's active configuration
@@ -154,6 +193,10 @@ struct XRSessionDeviceConfig {
   // Indicates whether we should enable anti-aliasing for WebGL layers. Value
   // comes from the underlying XR runtime.
   bool enable_anti_aliasing = true;
+
+  // If the session supports depth-sensing API, the depth configuration must be
+  // non-null.
+  XRDepthConfig? depth_configuration;
 };
 
 // This structure contains all the mojo interfaces for different kinds of
@@ -215,6 +258,53 @@ struct XRInputSourceDescription {
   // spaces and has separate words concatenated with a "-". These names are
   // sorted in descending order of specificity.
   array<string> profiles;
+};
+
+// Sourced from https://immersive-web.github.io/webxr-hand-input/#idl-index
+enum XRHandJoint {
+  kWrist = 0,
+  kThumbMetacarpal = 1,
+  kThumbPhalanxProximal = 2,
+  kThumbPhalanxDistal = 3,
+  kThumbTip = 4,
+  kIndexFingerMetacarpal = 5,
+  kIndexFingerPhalanxProximal = 6,
+  kIndexFingerPhalanxIntermediate = 7,
+  kIndexFingerPhalanxDistal = 8,
+  kIndexFingerTip = 9,
+  kMiddleFingerMetacarpal = 10,
+  kMiddleFingerPhalanxProximal = 11,
+  kMiddleFingerPhalanxIntermediate = 12,
+  kMiddleFingerPhalanxDistal = 13,
+  kMiddleFingerTip = 14,
+  kRingFingerMetacarpal = 15,
+  kRingFingerPhalanxProximal = 16,
+  kRingFingerPhalanxIntermediate = 17,
+  kRingFingerPhalanxDistal = 18,
+  kRingFingerTip = 19,
+  kPinkyFingerMetacarpal = 20,
+  kPinkyFingerPhalanxProximal = 21,
+  kPinkyFingerPhalanxIntermediate = 22,
+  kPinkyFingerPhalanxDistal = 23,
+  kPinkyFingerTip = 24,
+};
+
+// This struct contains joint data and the associated joint for which the data
+// corresponds.
+// For each hand joint we are required to supply a transform and a radius.
+struct XRHandJointData {
+  // Which joint this data is for denoted by the XRHandJoint enum.
+  XRHandJoint joint;
+  // The transform of pose of this joint in mojo space.
+  gfx.mojom.Transform mojo_from_joint;
+  // The radius of the joint in meters.
+  float radius;
+};
+
+// The list of joint data. Must have data for each of the 25 joints.
+struct XRHandTrackingData {
+  // The transforms and radii of the joints
+  array<XRHandJointData> hand_joint_data;
 };
 
 struct XRInputSourceState {
@@ -280,6 +370,11 @@ struct XRInputSourceState {
   // the ARCore device's immersive-ar mode supports it when requested via
   // XRSessionFeature.DOM_OVERLAY aka "dom-overlay".)
   gfx.mojom.PointF? overlay_pointer_position;
+
+  // If Hand-Tracking is enabled and active, and if this input source is
+  // one which supports hand tracking, this contains the hand tracking data
+  // for the input source
+  XRHandTrackingData? hand_tracking_data;
 };
 
 //
@@ -409,6 +504,15 @@ union XRNativeOriginInformation {
   uint64 plane_id;
   uint64 anchor_id;
   XRReferenceSpaceType reference_space_type;
+  XRHandJointSpaceInfo hand_joint_space_info;
+};
+
+// Since there is no single way to identify a joint as it may be on the left or
+// right hand, we include the handedness along with the joint in order to create
+// a unique method of identification.
+struct XRHandJointSpaceInfo {
+  XRHandedness handedness;
+  XRHandJoint joint;
 };
 
 enum XRPlaneOrientation {
@@ -608,6 +712,9 @@ struct XRDepthDataUpdated {
   gfx.mojom.Transform norm_texture_from_norm_view;
   // Size of the pixel array. Valid iff pixel_data is not null.
   gfx.mojom.Size size;
+  // Factor that needs to be applied when converting from raw values in the
+  // |pixel_data| buffer into meters.
+  float raw_value_to_meters;
 };
 
 // Depth data may be the same as the one returned in the previous frame - it is

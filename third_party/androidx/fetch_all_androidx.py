@@ -18,6 +18,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import tempfile
 import urllib
@@ -30,6 +31,20 @@ _FETCH_ALL_PATH = os.path.normpath(
 
 # URL to BUILD_INFO in latest androidx snapshot.
 _ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL = 'https://androidx.dev/snapshots/latest/artifacts/BUILD_INFO'
+
+# Snapshot repository URL with {{version}} placeholder.
+_SNAPSHOT_REPOSITORY_URL = 'https://androidx.dev/snapshots/builds/{{version}}/artifacts/repository'
+
+
+def _build_snapshot_repository_url(version):
+    return _SNAPSHOT_REPOSITORY_URL.replace('{{version}}', version)
+
+
+def _delete_readonly_files(paths):
+    for path in paths:
+        if os.path.exists(path):
+            os.chmod(path, stat.S_IRUSR | stat.S_IRGRP | stat.S_IWUSR)
+            os.remove(path)
 
 
 def _parse_dir_list(dir_list):
@@ -48,10 +63,11 @@ def _parse_dir_list(dir_list):
         # "repository/androidx/library_group/library_name/library_version/pom_or_jar"
         if len(dir_components) < 6:
             continue
-        dependency_module = 'androidx.{}:{}'.format(dir_components[2],
-                                                    dir_components[3])
+        dependency_package = 'androidx.' + '.'.join(dir_components[2:-3])
+        dependency_module = '{}:{}'.format(dependency_package,
+                                           dir_components[-3])
         if dependency_module not in dependency_version_map:
-            dependency_version_map[dependency_module] = dir_components[4]
+            dependency_version_map[dependency_module] = dir_components[-2]
     return dependency_version_map
 
 
@@ -72,9 +88,10 @@ def _compute_replacement(dependency_version_map, androidx_repository_url,
     if not match:
         return line
 
-    version = dependency_version_map.get(match.group(1))
+    dependency = match.group(1)
+    version = dependency_version_map.get(dependency)
     if not version:
-        return line
+        raise Exception(f'Version for {dependency} not found.')
 
     return line.replace('{{androidx_dependency_version}}', version)
 
@@ -97,17 +114,19 @@ def _download_and_parse_build_info():
         with open(androidx_build_info_path, 'w') as f:
             f.write(androidx_build_info_response.read().decode('utf-8'))
 
-        # Compute repository URL from resolved BUILD_INFO url in case 'latest' redirect changes.
-        androidx_snapshot_repository_url = (
-            androidx_build_info_response.geturl().rsplit('/', 1)[0] +
-            '/repository')
+        # Strip '/repository' from pattern.
+        resolved_snapshot_repository_url_pattern = (
+            _build_snapshot_repository_url('([0-9]*)').rsplit('/', 1)[0])
+
+        version = re.match(resolved_snapshot_repository_url_pattern,
+                           androidx_build_info_response.geturl()).group(1)
 
         with open(androidx_build_info_path, 'r') as f:
             build_info_dict = json.loads(f.read())
         dir_list = build_info_dict['target']['dir_list']
 
         dependency_version_map = _parse_dir_list(dir_list)
-        return (dependency_version_map, androidx_snapshot_repository_url)
+        return (dependency_version_map, version)
 
 
 def _process_build_gradle(dependency_version_map, androidx_repository_url):
@@ -131,36 +150,17 @@ def _process_build_gradle(dependency_version_map, androidx_repository_url):
             out.write(replacement)
 
 
-def _extract_files_from_yaml(yaml_path):
-    """Extracts '- file' file listings from yaml file."""
-
-    out = None
-    with open(yaml_path, 'r') as f:
-        for line in f.readlines():
-            line = line.rstrip('\n')
-            if line == 'data:':
-                out = []
-                continue
-            if out is not None:
-                if not line.startswith('- file:'):
-                    raise Exception(
-                        '{} has unsupported attributes. Only \'- file\' is supported'
-                        .format(yaml_path))
-                out.append(line.rsplit(' ', 1)[1])
-
-    if not out:
-        raise Exception('{} does not have \'data\' section.'.format(yaml_path))
-    return out
-
-
-def _write_cipd_yaml(libs_dir, cipd_yaml_path):
+def _write_cipd_yaml(libs_dir, version, cipd_yaml_path):
     """Writes cipd.yaml file at the passed-in path."""
 
     lib_dirs = os.listdir(libs_dir)
     if not lib_dirs:
         raise Exception('No generated libraries in {}'.format(libs_dir))
 
-    data_files = ['BUILD.gn', 'additional_readme_paths.json']
+    data_files = [
+        'BUILD.gn', 'VERSION.txt', 'additional_readme_paths.json',
+        'build.gradle'
+    ]
     for lib_dir in lib_dirs:
         abs_lib_dir = os.path.join(libs_dir, lib_dir)
         androidx_rel_lib_dir = os.path.relpath(abs_lib_dir, _ANDROIDX_PATH)
@@ -170,26 +170,19 @@ def _write_cipd_yaml(libs_dir, cipd_yaml_path):
         if not 'cipd.yaml' in lib_files:
             continue
 
-        if not 'README.chromium' in lib_files:
-            raise Exception('README.chromium not in {}'.format(abs_lib_dir))
-        if not 'LICENSE' in lib_files:
-            raise Exception('LICENSE not in {}'.format(abs_lib_dir))
-        data_files.append(os.path.join(androidx_rel_lib_dir,
-                                       'README.chromium'))
-        data_files.append(os.path.join(androidx_rel_lib_dir, 'LICENSE'))
-
-        _rel_extracted_files = _extract_files_from_yaml(
-            os.path.join(abs_lib_dir, 'cipd.yaml'))
-        data_files.extend(
-            os.path.join(androidx_rel_lib_dir, f)
-            for f in _rel_extracted_files)
+        for lib_file in lib_files:
+            if lib_file == 'cipd.yaml' or lib_file == 'OWNERS':
+                continue
+            data_files.append(os.path.join(androidx_rel_lib_dir, lib_file))
 
     contents = [
-        '# Copyright 2020 The Chromium Authors. All rights reserved.',
+        '# Copyright 2021 The Chromium Authors. All rights reserved.',
         '# Use of this source code is governed by a BSD-style license that can be',
         '# found in the LICENSE file.',
-        'package: chromium/third_party/androidx', 'description: androidx',
-        'data:'
+        '# version: ' + version,
+        'package: chromium/third_party/androidx',
+        'description: androidx',
+        'data:',
     ]
     contents.extend('- file: ' + f for f in data_files)
 
@@ -205,8 +198,17 @@ def main():
     if os.path.exists(libs_dir) and os.listdir(libs_dir):
         raise Exception('Recipe did not empty \'libs\' directory.')
 
-    dependency_version_map, androidx_snapshot_repository_url = (
-        _download_and_parse_build_info())
+    # Files uploaded to cipd are read-only. Delete them because they will be
+    # re-generated.
+    _delete_readonly_files([
+        os.path.join(_ANDROIDX_PATH, 'BUILD.gn'),
+        os.path.join(_ANDROIDX_PATH, 'VERSION.txt'),
+        os.path.join(_ANDROIDX_PATH, 'additional_readme_paths.json'),
+        os.path.join(_ANDROIDX_PATH, 'build.gradle'),
+    ])
+
+    dependency_version_map, version = _download_and_parse_build_info()
+    androidx_snapshot_repository_url = _build_snapshot_repository_url(version)
     _process_build_gradle(dependency_version_map,
                           androidx_snapshot_repository_url)
 
@@ -216,7 +218,15 @@ def main():
     ]
     subprocess.run(fetch_all_cmd, check=True)
 
-    _write_cipd_yaml(libs_dir, os.path.join(_ANDROIDX_PATH, 'cipd.yaml'))
+    # Prepend '0' to version to avoid conflicts with previous version format.
+    version = 'cr-0' + version
+
+    version_txt_path = os.path.join(_ANDROIDX_PATH, 'VERSION.txt')
+    with open(version_txt_path, 'w') as f:
+        f.write(version)
+
+    yaml_path = os.path.join(_ANDROIDX_PATH, 'cipd.yaml')
+    _write_cipd_yaml(libs_dir, version, yaml_path)
 
 
 if __name__ == '__main__':

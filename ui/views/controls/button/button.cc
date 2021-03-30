@@ -148,7 +148,7 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
 
 Button::~Button() = default;
 
-void Button::SetTooltipText(const base::string16& tooltip_text) {
+void Button::SetTooltipText(const std::u16string& tooltip_text) {
   if (tooltip_text == tooltip_text_)
     return;
   tooltip_text_ = tooltip_text;
@@ -158,11 +158,11 @@ void Button::SetTooltipText(const base::string16& tooltip_text) {
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
-base::string16 Button::GetTooltipText() const {
+std::u16string Button::GetTooltipText() const {
   return tooltip_text_;
 }
 
-void Button::SetAccessibleName(const base::string16& name) {
+void Button::SetAccessibleName(const std::u16string& name) {
   if (name == accessible_name_)
     return;
   accessible_name_ = name;
@@ -170,7 +170,7 @@ void Button::SetAccessibleName(const base::string16& name) {
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
-const base::string16& Button::GetAccessibleName() const {
+const std::u16string& Button::GetAccessibleName() const {
   return accessible_name_.empty() ? tooltip_text_ : accessible_name_;
 }
 
@@ -478,7 +478,7 @@ bool Button::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   return GetKeyClickActionForEvent(event) != KeyClickAction::kNone;
 }
 
-base::string16 Button::GetTooltipText(const gfx::Point& p) const {
+std::u16string Button::GetTooltipText(const gfx::Point& p) const {
   return tooltip_text_;
 }
 
@@ -626,7 +626,7 @@ void Button::OnClickCanceled(const ui::Event& event) {
   }
 }
 
-void Button::OnSetTooltipText(const base::string16& tooltip_text) {}
+void Button::OnSetTooltipText(const std::u16string& tooltip_text) {}
 
 void Button::StateChanged(ButtonState old_state) {}
 
@@ -682,24 +682,23 @@ void Button::OnEnabledChanged() {
   }
 }
 
-DEFINE_ENUM_CONVERTERS(
-    Button::ButtonState,
-    {Button::STATE_NORMAL, base::ASCIIToUTF16("STATE_NORMAL")},
-    {Button::STATE_HOVERED, base::ASCIIToUTF16("STATE_HOVERED")},
-    {Button::STATE_PRESSED, base::ASCIIToUTF16("STATE_PRESSED")},
-    {Button::STATE_DISABLED, base::ASCIIToUTF16("STATE_DISABLED")})
+DEFINE_ENUM_CONVERTERS(Button::ButtonState,
+                       {Button::STATE_NORMAL, u"STATE_NORMAL"},
+                       {Button::STATE_HOVERED, u"STATE_HOVERED"},
+                       {Button::STATE_PRESSED, u"STATE_PRESSED"},
+                       {Button::STATE_DISABLED, u"STATE_DISABLED"})
 
 BEGIN_METADATA(Button, InkDropHostView)
-ADD_PROPERTY_METADATA(base::string16, AccessibleName)
+ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 ADD_PROPERTY_METADATA(PressedCallback, Callback)
 ADD_PROPERTY_METADATA(bool, AnimateOnStateChange)
 ADD_PROPERTY_METADATA(bool, HasInkDropActionOnClick)
 ADD_PROPERTY_METADATA(bool, HideInkDropWhenShowingContextMenu)
-ADD_PROPERTY_METADATA(SkColor, InkDropBaseColor)
+ADD_PROPERTY_METADATA(SkColor, InkDropBaseColor, metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, InstallFocusRingOnFocus)
 ADD_PROPERTY_METADATA(bool, RequestFocusOnPress)
 ADD_PROPERTY_METADATA(ButtonState, State)
-ADD_PROPERTY_METADATA(base::string16, TooltipText)
+ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(int, TriggerableEventFlags)
 END_METADATA
 

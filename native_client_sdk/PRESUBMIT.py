@@ -19,15 +19,16 @@ def CommonChecks(input_api, output_api):
     'E1103',  # subprocess.communicate() generates these :(
     'R0201',  # method could be function (doesn't reference self)
   ]
-  black_list = [
+  files_to_skip = [
     r'src[\\\/]build_tools[\\\/]tests[\\\/].*',
     r'src[\\\/]build_tools[\\\/]sdk_tools[\\\/]third_party[\\\/].*',
     r'src[\\\/]doc[\\\/]*',
     r'src[\\\/]gonacl_appengine[\\\/]*',
   ]
   canned = input_api.canned_checks
-  output.extend(canned.RunPylint(input_api, output_api, black_list=black_list,
-                disabled_warnings=disabled_warnings))
+  output.extend(canned.RunPylint(input_api, output_api,
+                                 files_to_skip=files_to_skip,
+                                 disabled_warnings=disabled_warnings))
   return output
 
 

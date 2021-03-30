@@ -45,8 +45,8 @@ UsbPrinterNotification::UsbPrinterNotification(
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
-      base::string16(),  // title
-      base::string16(),  // body
+      std::u16string(),  // title
+      std::u16string(),  // body
       gfx::Image(),      // icon
       l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
       GURL(),  // origin_url
@@ -76,7 +76,7 @@ void UsbPrinterNotification::Close(bool by_user) {
 
 void UsbPrinterNotification::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   if (!button_index) {
     // Body of notification clicked.
     visible_ = false;

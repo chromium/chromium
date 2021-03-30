@@ -69,9 +69,9 @@ ProfileNameVerifierObserver::~ProfileNameVerifierObserver() {
 
 void ProfileNameVerifierObserver::OnProfileAdded(
     const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry = nullptr;
-  GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
-  base::string16 profile_name = entry->GetName();
+  ProfileAttributesEntry* entry =
+      GetCache()->GetProfileAttributesWithPath(profile_path);
+  std::u16string profile_name = entry->GetName();
   EXPECT_TRUE(profile_names_.find(profile_path) == profile_names_.end());
   profile_names_.insert({profile_path, profile_name});
 }
@@ -85,16 +85,16 @@ void ProfileNameVerifierObserver::OnProfileWillBeRemoved(
 
 void ProfileNameVerifierObserver::OnProfileWasRemoved(
     const base::FilePath& profile_path,
-    const base::string16& profile_name) {
+    const std::u16string& profile_name) {
   EXPECT_TRUE(profile_names_.find(profile_path) == profile_names_.end());
 }
 
 void ProfileNameVerifierObserver::OnProfileNameChanged(
     const base::FilePath& profile_path,
-    const base::string16& old_profile_name) {
-  ProfileAttributesEntry* entry = nullptr;
-  GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
-  base::string16 new_profile_name = entry->GetName();
+    const std::u16string& old_profile_name) {
+  ProfileAttributesEntry* entry =
+      GetCache()->GetProfileAttributesWithPath(profile_path);
+  std::u16string new_profile_name = entry->GetName();
   EXPECT_TRUE(profile_names_[profile_path] == old_profile_name);
   profile_names_[profile_path] = new_profile_name;
 }
@@ -140,13 +140,13 @@ void ProfileInfoCacheTest::ResetCache() {
   testing_profile_manager_.DeleteProfileInfoCache();
 }
 
-base::string16 ProfileInfoCacheTest::GetConcatenation(
-    const base::string16& gaia_name,
-    const base::string16 profile_name) {
-  base::string16 name_to_display(gaia_name);
-  name_to_display.append(base::UTF8ToUTF16(" ("));
+std::u16string ProfileInfoCacheTest::GetConcatenation(
+    const std::u16string& gaia_name,
+    const std::u16string profile_name) {
+  std::u16string name_to_display(gaia_name);
+  name_to_display.append(u" (");
   name_to_display.append(profile_name);
-  name_to_display.append(base::UTF8ToUTF16(")"));
+  name_to_display.append(u")");
   return name_to_display;
 }
 
@@ -160,7 +160,7 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
   for (uint32_t i = 0; i < 4; ++i) {
     base::FilePath profile_path =
         GetProfilePath(base::StringPrintf("path_%ud", i));
-    base::string16 profile_name =
+    std::u16string profile_name =
         ASCIIToUTF16(base::StringPrintf("name_%ud", i));
 #if !defined(OS_ANDROID)
 
@@ -175,17 +175,17 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
 #endif
 
     GetCache()->AddProfileToCache(profile_path, profile_name, std::string(),
-                                  base::string16(), false, i,
+                                  std::u16string(), false, i,
                                   supervised_user_id, EmptyAccountId());
 
-    ProfileAttributesEntry* entry = nullptr;
-    GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
+    ProfileAttributesEntry* entry =
+        GetCache()->GetProfileAttributesWithPath(profile_path);
     entry->SetBackgroundStatus(true);
-    base::string16 gaia_name = ASCIIToUTF16(base::StringPrintf("gaia_%ud", i));
+    std::u16string gaia_name = ASCIIToUTF16(base::StringPrintf("gaia_%ud", i));
     entry->SetGAIAName(gaia_name);
 
     EXPECT_EQ(i + 1, GetCache()->GetNumberOfProfiles());
-    base::string16 expected_profile_name =
+    std::u16string expected_profile_name =
         GetConcatenation(gaia_name, profile_name);
 
     EXPECT_EQ(expected_profile_name, entry->GetName());
@@ -198,7 +198,6 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
 #endif
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     EXPECT_EQ(i == 3, entry->IsSupervised());
-    EXPECT_EQ(i == 3, entry->IsOmitted());
 #else
     EXPECT_FALSE(entry->IsSupervised());
     EXPECT_FALSE(entry->IsOmitted());
@@ -214,12 +213,12 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
     base::FilePath profile_path =
           GetProfilePath(base::StringPrintf("path_%ud", i));
     int index = GetCache()->GetIndexOfProfileWithPath(profile_path);
-    ProfileAttributesEntry* entry = nullptr;
-    GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
-    base::string16 profile_name =
+    ProfileAttributesEntry* entry =
+        GetCache()->GetProfileAttributesWithPath(profile_path);
+    std::u16string profile_name =
         ASCIIToUTF16(base::StringPrintf("name_%ud", index));
-    base::string16 gaia_name = ASCIIToUTF16(base::StringPrintf("gaia_%ud", i));
-    base::string16 expected_profile_name =
+    std::u16string gaia_name = ASCIIToUTF16(base::StringPrintf("gaia_%ud", i));
+    std::u16string expected_profile_name =
         GetConcatenation(gaia_name, profile_name);
     EXPECT_EQ(expected_profile_name, entry->GetName());
 #if !defined(OS_ANDROID)
@@ -232,36 +231,35 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
 
 TEST_F(ProfileInfoCacheTest, GAIAName) {
   base::FilePath profile_path_1 = GetProfilePath("path_1");
-  GetCache()->AddProfileToCache(profile_path_1, ASCIIToUTF16("Person 1"),
-                                std::string(), base::string16(), false, 0,
-                                std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry_1 = nullptr;
-  GetCache()->GetProfileAttributesWithPath(profile_path_1, &entry_1);
-  base::string16 profile_name(ASCIIToUTF16("Person 2"));
+  GetCache()->AddProfileToCache(profile_path_1, u"Person 1", std::string(),
+                                std::u16string(), false, 0, std::string(),
+                                EmptyAccountId());
+  ProfileAttributesEntry* entry_1 =
+      GetCache()->GetProfileAttributesWithPath(profile_path_1);
+  std::u16string profile_name(u"Person 2");
   base::FilePath profile_path_2 = GetProfilePath("path_2");
   GetCache()->AddProfileToCache(GetProfilePath("path_2"), profile_name,
-                                std::string(), base::string16(), false, 0,
+                                std::string(), std::u16string(), false, 0,
                                 std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry_2 = nullptr;
-  GetCache()->GetProfileAttributesWithPath(profile_path_2, &entry_2);
+  ProfileAttributesEntry* entry_2 =
+      GetCache()->GetProfileAttributesWithPath(profile_path_2);
 
   // Sanity check.
   EXPECT_TRUE(entry_1->GetGAIAName().empty());
   EXPECT_TRUE(entry_2->GetGAIAName().empty());
 
   // Set GAIA name.
-  base::string16 gaia_name(ASCIIToUTF16("Pat Smith"));
+  std::u16string gaia_name(u"Pat Smith");
   entry_2->SetGAIAName(gaia_name);
   // Since there is a GAIA name, we use that as a display name.
   EXPECT_TRUE(entry_1->GetGAIAName().empty());
   EXPECT_EQ(gaia_name, entry_2->GetGAIAName());
   EXPECT_EQ(gaia_name, entry_2->GetName());
 
-  base::string16 custom_name(ASCIIToUTF16("Custom name"));
-  entry_2->SetLocalProfileName(custom_name);
-  entry_2->SetIsUsingDefaultName(false);
+  std::u16string custom_name(u"Custom name");
+  entry_2->SetLocalProfileName(custom_name, false);
 
-  base::string16 expected_profile_name =
+  std::u16string expected_profile_name =
       GetConcatenation(gaia_name, custom_name);
   EXPECT_EQ(expected_profile_name, entry_2->GetName());
   EXPECT_EQ(gaia_name, entry_2->GetGAIAName());
@@ -275,107 +273,104 @@ TEST_F(ProfileInfoCacheTest, ConcatenateGaiaNameAndProfileName) {
   // If one of the two conditions hold, we will show the profile name in this
   // format |GAIA name (Profile local name)|
   // Single profile.
-  GetCache()->AddProfileToCache(
-      GetProfilePath("path_1"), ASCIIToUTF16("Person 1"), std::string(),
-      base::string16(), false, 0, std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry_1 = nullptr;
-  GetCache()->GetProfileAttributesWithPath(GetProfilePath("path_1"), &entry_1);
-  EXPECT_EQ(ASCIIToUTF16("Person 1"), entry_1->GetName());
-  entry_1->SetGAIAName(ASCIIToUTF16("Patt Smith"));
-  EXPECT_EQ(ASCIIToUTF16("Patt Smith"), entry_1->GetName());
-  entry_1->SetGAIAGivenName(ASCIIToUTF16("Patt"));
-  EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
+  GetCache()->AddProfileToCache(GetProfilePath("path_1"), u"Person 1",
+                                std::string(), std::u16string(), false, 0,
+                                std::string(), EmptyAccountId());
+  ProfileAttributesEntry* entry_1 =
+      GetCache()->GetProfileAttributesWithPath(GetProfilePath("path_1"));
+  EXPECT_EQ(u"Person 1", entry_1->GetName());
+  entry_1->SetGAIAName(u"Patt Smith");
+  EXPECT_EQ(u"Patt Smith", entry_1->GetName());
+  entry_1->SetGAIAGivenName(u"Patt");
+  EXPECT_EQ(u"Patt", entry_1->GetName());
 
   // Set a custom profile name.
-  entry_1->SetIsUsingDefaultName(false);
-  entry_1->SetLocalProfileName(ASCIIToUTF16("Work"));
-  EXPECT_EQ(ASCIIToUTF16("Patt (Work)"), entry_1->GetName());
+  entry_1->SetLocalProfileName(u"Work", false);
+  EXPECT_EQ(u"Patt (Work)", entry_1->GetName());
 
   // Set the profile name to be equal to GAIA name.
-  entry_1->SetLocalProfileName(ASCIIToUTF16("patt"));
-  EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
+  entry_1->SetLocalProfileName(u"patt", false);
+  EXPECT_EQ(u"Patt", entry_1->GetName());
 
   // Multiple profiles.
   // Add another profile with the same GAIA name and a default profile name.
-  GetCache()->AddProfileToCache(
-      GetProfilePath("path_2"), ASCIIToUTF16("Person 2"), std::string(),
-      base::string16(), false, 0, std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry_2 = nullptr;
-  GetCache()->GetProfileAttributesWithPath(GetProfilePath("path_2"), &entry_2);
-  EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Person 2"), entry_2->GetName());
+  GetCache()->AddProfileToCache(GetProfilePath("path_2"), u"Person 2",
+                                std::string(), std::u16string(), false, 0,
+                                std::string(), EmptyAccountId());
+  ProfileAttributesEntry* entry_2 =
+      GetCache()->GetProfileAttributesWithPath(GetProfilePath("path_2"));
+  EXPECT_EQ(u"Patt", entry_1->GetName());
+  EXPECT_EQ(u"Person 2", entry_2->GetName());
 
-  entry_1->SetLocalProfileName(ASCIIToUTF16("Work"));
-  EXPECT_EQ(ASCIIToUTF16("Patt (Work)"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Person 2"), entry_2->GetName());
+  entry_1->SetLocalProfileName(u"Work", false);
+  EXPECT_EQ(u"Patt (Work)", entry_1->GetName());
+  EXPECT_EQ(u"Person 2", entry_2->GetName());
 
   // A second profile with a different GAIA name should not affect the first
   // profile.
-  entry_2->SetGAIAGivenName(ASCIIToUTF16("Olly"));
-  EXPECT_EQ(ASCIIToUTF16("Patt (Work)"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Olly"), entry_2->GetName());
+  entry_2->SetGAIAGivenName(u"Olly");
+  EXPECT_EQ(u"Patt (Work)", entry_1->GetName());
+  EXPECT_EQ(u"Olly", entry_2->GetName());
 
   // Mark profile name as default.
-  entry_1->SetIsUsingDefaultName(true);
-  entry_1->SetLocalProfileName(ASCIIToUTF16("Person 1"));
-  EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Olly"), entry_2->GetName());
+  entry_1->SetLocalProfileName(u"Person 1", true);
+  EXPECT_EQ(u"Patt", entry_1->GetName());
+  EXPECT_EQ(u"Olly", entry_2->GetName());
 
   // Add a third profile with the same GAIA name as the first.
   // The two profiles are marked as using default profile names.
-  GetCache()->AddProfileToCache(
-      GetProfilePath("path_3"), ASCIIToUTF16("Person 3"), std::string(),
-      base::string16(), false, 0, std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry_3 = nullptr;
-  GetCache()->GetProfileAttributesWithPath(GetProfilePath("path_3"), &entry_3);
-  entry_3->SetGAIAName(ASCIIToUTF16("Patt Smith"));
-  EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Patt Smith"), entry_3->GetName());
+  GetCache()->AddProfileToCache(GetProfilePath("path_3"), u"Person 3",
+                                std::string(), std::u16string(), false, 0,
+                                std::string(), EmptyAccountId());
+  ProfileAttributesEntry* entry_3 =
+      GetCache()->GetProfileAttributesWithPath(GetProfilePath("path_3"));
+  entry_3->SetGAIAName(u"Patt Smith");
+  EXPECT_EQ(u"Patt", entry_1->GetName());
+  EXPECT_EQ(u"Patt Smith", entry_3->GetName());
 
   // Two profiles with same GAIA name and default profile name.
   // Empty GAIA given name.
-  entry_3->SetGAIAName(ASCIIToUTF16("Patt"));
-  EXPECT_EQ(ASCIIToUTF16("Patt (Person 1)"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Patt (Person 3)"), entry_3->GetName());
+  entry_3->SetGAIAName(u"Patt");
+  EXPECT_EQ(u"Patt (Person 1)", entry_1->GetName());
+  EXPECT_EQ(u"Patt (Person 3)", entry_3->GetName());
   // Set GAIA given name.
-  entry_3->SetGAIAGivenName(ASCIIToUTF16("Patt"));
-  EXPECT_EQ(ASCIIToUTF16("Patt (Person 1)"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Patt (Person 3)"), entry_3->GetName());
+  entry_3->SetGAIAGivenName(u"Patt");
+  EXPECT_EQ(u"Patt (Person 1)", entry_1->GetName());
+  EXPECT_EQ(u"Patt (Person 3)", entry_3->GetName());
 
   // Customize the profile name for one of the two profiles.
-  entry_3->SetIsUsingDefaultName(false);
-  entry_3->SetLocalProfileName(ASCIIToUTF16("Personal"));
-  EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Patt (Personal)"), entry_3->GetName());
+  entry_3->SetLocalProfileName(u"Personal", false);
+  EXPECT_EQ(u"Patt", entry_1->GetName());
+  EXPECT_EQ(u"Patt (Personal)", entry_3->GetName());
 
   // Set one of the profile names to be equal to GAIA name, we should show
   // the profile name even if it is Person n to clear ambiguity.
-  entry_3->SetLocalProfileName(ASCIIToUTF16("patt"));
-  EXPECT_EQ(ASCIIToUTF16("Patt (Person 1)"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Patt"), entry_3->GetName());
+  entry_3->SetLocalProfileName(u"patt", false);
+  EXPECT_EQ(u"Patt (Person 1)", entry_1->GetName());
+  EXPECT_EQ(u"Patt", entry_3->GetName());
 
   // Never show the profile name if it is equal GAIA name.
-  entry_1->SetLocalProfileName(ASCIIToUTF16("Patt"));
-  EXPECT_EQ(ASCIIToUTF16("Patt"), entry_1->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Patt"), entry_3->GetName());
-  EXPECT_EQ(ASCIIToUTF16("Olly"), entry_2->GetName());
+  entry_1->SetLocalProfileName(u"Patt", false);
+  EXPECT_EQ(u"Patt", entry_1->GetName());
+  EXPECT_EQ(u"Patt", entry_3->GetName());
+  EXPECT_EQ(u"Olly", entry_2->GetName());
 }
 
 TEST_F(ProfileInfoCacheTest, DeleteProfile) {
   EXPECT_EQ(0u, GetCache()->GetNumberOfProfiles());
 
   base::FilePath path_1 = GetProfilePath("path_1");
-  GetCache()->AddProfileToCache(path_1, ASCIIToUTF16("name_1"), std::string(),
-                                base::string16(), false, 0, std::string(),
+  GetCache()->AddProfileToCache(path_1, u"name_1", std::string(),
+                                std::u16string(), false, 0, std::string(),
                                 EmptyAccountId());
   EXPECT_EQ(1u, GetCache()->GetNumberOfProfiles());
 
   base::FilePath path_2 = GetProfilePath("path_2");
-  base::string16 name_2 = ASCIIToUTF16("name_2");
-  GetCache()->AddProfileToCache(path_2, name_2, std::string(), base::string16(),
+  std::u16string name_2 = u"name_2";
+  GetCache()->AddProfileToCache(path_2, name_2, std::string(), std::u16string(),
                                 false, 0, std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry = nullptr;
-  GetCache()->GetProfileAttributesWithPath(path_2, &entry);
+  ProfileAttributesEntry* entry =
+      GetCache()->GetProfileAttributesWithPath(path_2);
   EXPECT_EQ(2u, GetCache()->GetNumberOfProfiles());
 
   GetCache()->DeleteProfileFromCache(path_1);
@@ -388,25 +383,25 @@ TEST_F(ProfileInfoCacheTest, DeleteProfile) {
 
 TEST_F(ProfileInfoCacheTest, MutateProfile) {
   base::FilePath profile_path_1 = GetProfilePath("path_1");
-  GetCache()->AddProfileToCache(profile_path_1, ASCIIToUTF16("name_1"),
-                                std::string(), base::string16(), false, 0,
-                                std::string(), EmptyAccountId());
+  GetCache()->AddProfileToCache(profile_path_1, u"name_1", std::string(),
+                                std::u16string(), false, 0, std::string(),
+                                EmptyAccountId());
 
   base::FilePath profile_path_2 = GetProfilePath("path_2");
-  GetCache()->AddProfileToCache(profile_path_2, ASCIIToUTF16("name_2"),
-                                std::string(), base::string16(), false, 0,
-                                std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry_1;
-  GetCache()->GetProfileAttributesWithPath(profile_path_1, &entry_1);
-  ProfileAttributesEntry* entry_2;
-  GetCache()->GetProfileAttributesWithPath(profile_path_2, &entry_2);
+  GetCache()->AddProfileToCache(profile_path_2, u"name_2", std::string(),
+                                std::u16string(), false, 0, std::string(),
+                                EmptyAccountId());
+  ProfileAttributesEntry* entry_1 =
+      GetCache()->GetProfileAttributesWithPath(profile_path_1);
+  ProfileAttributesEntry* entry_2 =
+      GetCache()->GetProfileAttributesWithPath(profile_path_2);
 
-  base::string16 new_name = ASCIIToUTF16("new_name");
-  entry_2->SetLocalProfileName(new_name);
+  std::u16string new_name = u"new_name";
+  entry_2->SetLocalProfileName(new_name, false);
   EXPECT_EQ(new_name, entry_2->GetName());
   EXPECT_NE(new_name, entry_1->GetName());
 
-  base::string16 new_user_name = ASCIIToUTF16("user_name");
+  std::u16string new_user_name = u"user_name";
   std::string new_gaia_id = "12345";
   entry_2->SetAuthInfo(new_gaia_id, new_user_name, true);
   EXPECT_EQ(new_user_name, entry_2->GetUserName());
@@ -431,17 +426,17 @@ TEST_F(ProfileInfoCacheTest, MutateProfile) {
 TEST_F(ProfileInfoCacheTest, BackgroundModeStatus) {
   base::FilePath path_1 = GetProfilePath("path_1");
   base::FilePath path_2 = GetProfilePath("path_2");
-  GetCache()->AddProfileToCache(path_1, ASCIIToUTF16("name_1"), std::string(),
-                                base::string16(), false, 0, std::string(),
+  GetCache()->AddProfileToCache(path_1, u"name_1", std::string(),
+                                std::u16string(), false, 0, std::string(),
                                 EmptyAccountId());
-  GetCache()->AddProfileToCache(path_2, ASCIIToUTF16("name_2"), std::string(),
-                                base::string16(), false, 0, std::string(),
+  GetCache()->AddProfileToCache(path_2, u"name_2", std::string(),
+                                std::u16string(), false, 0, std::string(),
                                 EmptyAccountId());
 
-  ProfileAttributesEntry* entry_1 = nullptr;
-  GetCache()->GetProfileAttributesWithPath(path_1, &entry_1);
-  ProfileAttributesEntry* entry_2 = nullptr;
-  GetCache()->GetProfileAttributesWithPath(path_2, &entry_2);
+  ProfileAttributesEntry* entry_1 =
+      GetCache()->GetProfileAttributesWithPath(path_1);
+  ProfileAttributesEntry* entry_2 =
+      GetCache()->GetProfileAttributesWithPath(path_2);
   EXPECT_FALSE(entry_1->GetBackgroundStatus());
   EXPECT_FALSE(entry_2->GetBackgroundStatus());
 
@@ -466,15 +461,14 @@ TEST_F(ProfileInfoCacheTest, GAIAPicture) {
   const int kOtherAvatarIndex = 1;
   const int kGaiaPictureSize = 256;  // Standard size of a Gaia account picture.
   base::FilePath path_2 = GetProfilePath("path_2");
-  GetCache()->AddProfileToCache(GetProfilePath("path_1"),
-                                ASCIIToUTF16("name_1"), std::string(),
-                                base::string16(), false, kDefaultAvatarIndex,
+  GetCache()->AddProfileToCache(
+      GetProfilePath("path_1"), u"name_1", std::string(), std::u16string(),
+      false, kDefaultAvatarIndex, std::string(), EmptyAccountId());
+  GetCache()->AddProfileToCache(path_2, u"name_2", std::string(),
+                                std::u16string(), false, kDefaultAvatarIndex,
                                 std::string(), EmptyAccountId());
-  GetCache()->AddProfileToCache(path_2, ASCIIToUTF16("name_2"), std::string(),
-                                base::string16(), false, kDefaultAvatarIndex,
-                                std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry = nullptr;
-  GetCache()->GetProfileAttributesWithPath(path_2, &entry);
+  ProfileAttributesEntry* entry =
+      GetCache()->GetProfileAttributesWithPath(path_2);
 
   // Sanity check.
   EXPECT_EQ(NULL, GetCache()->GetGAIAPictureOfProfileAtIndex(0));
@@ -542,9 +536,9 @@ TEST_F(ProfileInfoCacheTest, GAIAPicture) {
 }
 
 TEST_F(ProfileInfoCacheTest, PersistGAIAPicture) {
-  GetCache()->AddProfileToCache(
-      GetProfilePath("path_1"), ASCIIToUTF16("name_1"), std::string(),
-      base::string16(), false, 0, std::string(), EmptyAccountId());
+  GetCache()->AddProfileToCache(GetProfilePath("path_1"), u"name_1",
+                                std::string(), std::u16string(), false, 0,
+                                std::string(), EmptyAccountId());
   gfx::Image gaia_image(gfx::test::CreateImage());
 
   GetCache()->SetGAIAPictureOfProfileAtIndex(0, "GAIA_IMAGE_URL_WITH_SIZE_0",
@@ -575,11 +569,11 @@ TEST_F(ProfileInfoCacheTest, PersistGAIAPicture) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(ProfileInfoCacheTest, SetSupervisedUserId) {
   base::FilePath profile_path = GetProfilePath("test");
-  GetCache()->AddProfileToCache(profile_path, ASCIIToUTF16("Test"),
-                                std::string(), base::string16(), false, 0,
-                                std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry = nullptr;
-  GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
+  GetCache()->AddProfileToCache(profile_path, u"Test", std::string(),
+                                std::u16string(), false, 0, std::string(),
+                                EmptyAccountId());
+  ProfileAttributesEntry* entry =
+      GetCache()->GetProfileAttributesWithPath(profile_path);
   EXPECT_FALSE(entry->IsSupervised());
 
   entry->SetSupervisedUserId(supervised_users::kChildAccountSUID);
@@ -587,8 +581,7 @@ TEST_F(ProfileInfoCacheTest, SetSupervisedUserId) {
   EXPECT_EQ(supervised_users::kChildAccountSUID, entry->GetSupervisedUserId());
 
   ResetCache();
-  entry = nullptr;
-  GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
+  entry = GetCache()->GetProfileAttributesWithPath(profile_path);
   EXPECT_TRUE(entry->IsSupervised());
 
   entry->SetSupervisedUserId(std::string());
@@ -598,18 +591,18 @@ TEST_F(ProfileInfoCacheTest, SetSupervisedUserId) {
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 TEST_F(ProfileInfoCacheTest, EmptyGAIAInfo) {
-  base::string16 profile_name = ASCIIToUTF16("name_1");
+  std::u16string profile_name = u"name_1";
   size_t id = GetDefaultAvatarIconResourceIDAtIndex(0);
   const gfx::Image& profile_image(
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(id));
 
   base::FilePath profile_path = GetProfilePath("path_1");
   GetCache()->AddProfileToCache(profile_path, profile_name, std::string(),
-                                base::string16(), false, 0, std::string(),
+                                std::u16string(), false, 0, std::string(),
                                 EmptyAccountId());
 
-  ProfileAttributesEntry* entry = nullptr;
-  GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
+  ProfileAttributesEntry* entry =
+      GetCache()->GetProfileAttributesWithPath(profile_path);
 
   gfx::Image gaia_image(gfx::test::CreateImage());
   GetCache()->SetGAIAPictureOfProfileAtIndex(0, "GAIA_IMAGE_URL_WITH_SIZE_0",
@@ -619,7 +612,7 @@ TEST_F(ProfileInfoCacheTest, EmptyGAIAInfo) {
   content::RunAllTasksUntilIdle();
 
   // Set empty GAIA info.
-  entry->SetGAIAName(base::string16());
+  entry->SetGAIAName(std::u16string());
   GetCache()->SetGAIAPictureOfProfileAtIndex(0, std::string(), gfx::Image());
   GetCache()->SetIsUsingGAIAPictureOfProfileAtIndex(0, true);
 
@@ -636,7 +629,7 @@ TEST_F(ProfileInfoCacheTest, EmptyGAIAInfo) {
 TEST_F(ProfileInfoCacheTest, CreateSupervisedTestingProfile) {
   base::FilePath path_1 =
       testing_profile_manager_.CreateTestingProfile("default")->GetPath();
-  base::string16 supervised_user_name = ASCIIToUTF16("Supervised User");
+  std::u16string supervised_user_name = u"Supervised User";
   base::FilePath path_2 =
       testing_profile_manager_
           .CreateTestingProfile(
@@ -646,8 +639,8 @@ TEST_F(ProfileInfoCacheTest, CreateSupervisedTestingProfile) {
           ->GetPath();
   base::FilePath profile_path[] = {path_1, path_2};
   for (const base::FilePath& path : profile_path) {
-    ProfileAttributesEntry* entry = nullptr;
-    GetCache()->GetProfileAttributesWithPath(path, &entry);
+    ProfileAttributesEntry* entry =
+        GetCache()->GetProfileAttributesWithPath(path);
     bool is_supervised = entry->GetName() == supervised_user_name;
     EXPECT_EQ(is_supervised, entry->IsSupervised());
     std::string supervised_user_id =
@@ -678,13 +671,13 @@ TEST_F(ProfileInfoCacheTest, AddStubProfile) {
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     base::FilePath profile_path = GetProfilePath(kTestCases[i].profile_path);
-    base::string16 profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
+    std::u16string profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
 
     GetCache()->AddProfileToCache(profile_path, profile_name, std::string(),
-                                  base::string16(), false, i, "",
+                                  std::u16string(), false, i, "",
                                   EmptyAccountId());
-    ProfileAttributesEntry* entry = nullptr;
-    GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
+    ProfileAttributesEntry* entry =
+        GetCache()->GetProfileAttributesWithPath(profile_path);
     EXPECT_TRUE(entry);
     EXPECT_EQ(profile_name, entry->GetName());
   }
@@ -692,11 +685,11 @@ TEST_F(ProfileInfoCacheTest, AddStubProfile) {
   ASSERT_EQ(4U, GetCache()->GetNumberOfProfiles());
 
   // Check that the profiles can be extracted from the local state.
-  std::vector<base::string16> names;
+  std::vector<std::u16string> names;
   PrefService* local_state = g_browser_process->local_state();
   const base::DictionaryValue* cache = local_state->GetDictionary(
       prefs::kProfileInfoCache);
-  base::string16 name;
+  std::u16string name;
   for (base::DictionaryValue::Iterator it(*cache); !it.IsAtEnd();
        it.Advance()) {
     const base::DictionaryValue* info = NULL;
@@ -730,7 +723,7 @@ TEST_F(ProfileInfoCacheTest, EntriesInAttributesStorage) {
   // Add profiles.
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     base::FilePath profile_path = GetProfilePath(kTestCases[i].profile_path);
-    base::string16 profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
+    std::u16string profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
 
     ASSERT_EQ(0u, GetCache()->profile_attributes_entries_.count(
                       profile_path.value()));
@@ -739,11 +732,11 @@ TEST_F(ProfileInfoCacheTest, EntriesInAttributesStorage) {
     // profiles 1 and 3.
     if (i == 0 || i == 2) {
       GetCache()->AddProfileToCache(profile_path, profile_name, std::string(),
-                                    base::string16(), false, i, "",
+                                    std::u16string(), false, i, "",
                                     EmptyAccountId());
     } else {
       GetCache()->AddProfile(profile_path, profile_name, std::string(),
-                             base::string16(), false, i, "", EmptyAccountId());
+                             std::u16string(), false, i, "", EmptyAccountId());
     }
 
     ASSERT_EQ(i + 1, GetCache()->GetNumberOfProfiles());
@@ -756,8 +749,8 @@ TEST_F(ProfileInfoCacheTest, EntriesInAttributesStorage) {
     // impossible to check because GetProfileAttributesWithPath is called during
     // profile creation.
 
-    ProfileAttributesEntry* entry = nullptr;
-    GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
+    ProfileAttributesEntry* entry =
+        GetCache()->GetProfileAttributesWithPath(profile_path);
     EXPECT_EQ(
         entry,
         GetCache()->profile_attributes_entries_[profile_path.value()].get());
@@ -779,9 +772,9 @@ TEST_F(ProfileInfoCacheTest, EntriesInAttributesStorage) {
     ASSERT_EQ(0u, GetCache()->profile_attributes_entries_.count(
                       profile_path.value()));
 
-    ProfileAttributesEntry* entry = nullptr;
-    EXPECT_FALSE(GetCache()->GetProfileAttributesWithPath(profile_path,
-                                                          &entry));
+    ProfileAttributesEntry* entry =
+        GetCache()->GetProfileAttributesWithPath(profile_path);
+    EXPECT_EQ(entry, nullptr);
     ASSERT_EQ(0u, GetCache()->profile_attributes_entries_.count(
                       profile_path.value()));
   }
@@ -807,13 +800,12 @@ TEST_F(ProfileInfoCacheTest, MigrateLegacyProfileNamesAndRecomputeIfNeeded) {
   ProfileAttributesEntry* entry = nullptr;
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     base::FilePath profile_path = GetProfilePath(kTestCases[i].profile_path);
-    base::string16 profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
-    entry = nullptr;
+    std::u16string profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
 
     GetCache()->AddProfileToCache(profile_path, profile_name, std::string(),
-                                  base::string16(), false, i, "",
+                                  std::u16string(), false, i, "",
                                   EmptyAccountId());
-    GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
+    entry = GetCache()->GetProfileAttributesWithPath(profile_path);
     EXPECT_TRUE(entry);
     entry->SetIsUsingDefaultName(kTestCases[i].is_using_default_name);
   }
@@ -825,22 +817,18 @@ TEST_F(ProfileInfoCacheTest, MigrateLegacyProfileNamesAndRecomputeIfNeeded) {
   GetCache();
   ProfileInfoCache::SetLegacyProfileMigrationForTesting(false);
 
-  entry = nullptr;
-  GetCache()->GetProfileAttributesWithPath(
-      GetProfilePath(kTestCases[4].profile_path), &entry);
+  entry = GetCache()->GetProfileAttributesWithPath(
+      GetProfilePath(kTestCases[4].profile_path));
   EXPECT_EQ(ASCIIToUTF16(kTestCases[4].profile_name), entry->GetName());
-  GetCache()->GetProfileAttributesWithPath(
-      GetProfilePath(kTestCases[10].profile_path), &entry);
+  entry = GetCache()->GetProfileAttributesWithPath(
+      GetProfilePath(kTestCases[10].profile_path));
   EXPECT_EQ(ASCIIToUTF16(kTestCases[10].profile_name), entry->GetName());
 
   // Legacy profile names like "Default Profile" and "First user" should be
   // migrated to "Person %n" type names, i.e. any permutation of "Person %n".
-  std::set<base::string16> expected_profile_names{
-      ASCIIToUTF16("Person 1"), ASCIIToUTF16("Person 2"),
-      ASCIIToUTF16("Person 3"), ASCIIToUTF16("Person 4"),
-      ASCIIToUTF16("Person 5"), ASCIIToUTF16("Person 6"),
-      ASCIIToUTF16("Person 7"), ASCIIToUTF16("Person 8"),
-      ASCIIToUTF16("Person 9"), ASCIIToUTF16("Person 10")};
+  std::set<std::u16string> expected_profile_names{
+      u"Person 1", u"Person 2", u"Person 3", u"Person 4", u"Person 5",
+      u"Person 6", u"Person 7", u"Person 8", u"Person 9", u"Person 10"};
 
   const char* profile_path[] = {
       kTestCases[0].profile_path, kTestCases[1].profile_path,
@@ -849,10 +837,9 @@ TEST_F(ProfileInfoCacheTest, MigrateLegacyProfileNamesAndRecomputeIfNeeded) {
       kTestCases[7].profile_path, kTestCases[8].profile_path,
       kTestCases[9].profile_path, kTestCases[11].profile_path};
 
-  std::set<base::string16> actual_profile_names;
+  std::set<std::u16string> actual_profile_names;
   for (auto* path : profile_path) {
-    entry = nullptr;
-    GetCache()->GetProfileAttributesWithPath(GetProfilePath(path), &entry);
+    entry = GetCache()->GetProfileAttributesWithPath(GetProfilePath(path));
     actual_profile_names.insert(entry->GetName());
   }
   EXPECT_EQ(actual_profile_names, expected_profile_names);
@@ -866,9 +853,9 @@ TEST_F(ProfileInfoCacheTest, GetGaiaImageForAvatarMenu) {
 
   base::FilePath profile_path = GetProfilePath("path_1");
 
-  GetCache()->AddProfileToCache(profile_path, ASCIIToUTF16("name_1"),
-                                std::string(), base::string16(), false, 0,
-                                std::string(), EmptyAccountId());
+  GetCache()->AddProfileToCache(profile_path, u"name_1", std::string(),
+                                std::u16string(), false, 0, std::string(),
+                                EmptyAccountId());
 
   gfx::Image gaia_image(gfx::test::CreateImage());
   GetCache()->SetGAIAPictureOfProfileAtIndex(0, "GAIA_IMAGE_URL_WITH_SIZE_0",
@@ -922,12 +909,12 @@ TEST_F(ProfileInfoCacheTest,
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     base::FilePath profile_path = GetProfilePath(kTestCases[i].profile_path);
-    base::string16 profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
-    ProfileAttributesEntry* entry = nullptr;
+    std::u16string profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
     GetCache()->AddProfileToCache(profile_path, profile_name, std::string(),
-                                  base::string16(), false, i, "",
+                                  std::u16string(), false, i, "",
                                   EmptyAccountId());
-    GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
+    ProfileAttributesEntry* entry =
+        GetCache()->GetProfileAttributesWithPath(profile_path);
     EXPECT_TRUE(entry);
     entry->SetIsUsingDefaultName(true);
   }
@@ -938,9 +925,9 @@ TEST_F(ProfileInfoCacheTest,
   // Profile names should have been preserved.
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     base::FilePath profile_path = GetProfilePath(kTestCases[i].profile_path);
-    base::string16 profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
-    ProfileAttributesEntry* entry = nullptr;
-    GetCache()->GetProfileAttributesWithPath(profile_path, &entry);
+    std::u16string profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
+    ProfileAttributesEntry* entry =
+        GetCache()->GetProfileAttributesWithPath(profile_path);
     EXPECT_TRUE(entry);
     EXPECT_EQ(profile_name, entry->GetName());
   }
@@ -966,7 +953,7 @@ TEST_F(ProfileInfoCacheTest, RemoveProfileByAccountId) {
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     base::FilePath profile_path = GetProfilePath(kTestCases[i].profile_path);
-    base::string16 profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
+    std::u16string profile_name = ASCIIToUTF16(kTestCases[i].profile_name);
     GetCache()->AddProfileToCache(
         profile_path, profile_name, kTestCases[i].account_id.GetGaiaId(),
         UTF8ToUTF16(kTestCases[i].account_id.GetUserEmail()),
@@ -994,3 +981,29 @@ TEST_F(ProfileInfoCacheTest, RemoveProfileByAccountId) {
   GetCache()->RemoveProfileByAccountId(kTestCases[3].account_id);
   EXPECT_EQ(0u, GetCache()->GetNumberOfProfiles());
 }
+
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_WIN)
+// Checks that ProfileInfoCache doesn't crash when ProfileAttributesEntry
+// initialization modifies the cache entry.
+// This is a regression test for https://crbug.com/1180497.
+TEST_F(ProfileInfoCacheTest, ModifiyEntryWhileInitializing) {
+  base::FilePath profile_path = GetProfilePath("test");
+  AccountId account_id = AccountId::FromUserEmailGaiaId("email", "111111");
+  GetCache()->AddProfileToCache(profile_path, u"Test", account_id.GetGaiaId(),
+                                UTF8ToUTF16(account_id.GetUserEmail()), false,
+                                0, std::string(), EmptyAccountId());
+  ProfileAttributesEntry* entry =
+      GetCache()->GetProfileAttributesWithPath(profile_path);
+  // Set up the state so that ProfileAttributesEntry::Initialize() will modify
+  // the cache entry.
+  entry->SetIsSigninRequired(true);
+  // Reinitialize ProfileInfoCache.
+  ResetCache();
+  GetCache();  // Should not crash.
+
+  // The IsSigninRequired attribute should be cleaned up.
+  entry = GetCache()->GetProfileAttributesWithPath(profile_path);
+  EXPECT_FALSE(entry->IsSigninRequired());
+}
+#endif

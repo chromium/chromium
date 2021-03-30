@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -21,7 +22,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -312,6 +312,11 @@ class MetricProviderSyncSettingsTest : public testing::Test {
     // this. The Default profile is skipped when getting the sync settings from
     // user profile(s).
     testing_profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
+    // Also add two non-regular profiles that might appear on ChromeOS. They
+    // always disable sync and are skipped when getting sync settings.
+    testing_profile_manager_->CreateTestingProfile(
+        chrome::kLockScreenAppProfile);
+    testing_profile_manager_->CreateTestingProfile(chrome::kLockScreenProfile);
     metric_provider_ = std::make_unique<TestMetricProvider>(
         std::make_unique<TestMetricCollector>(test_params),
         testing_profile_manager_->profile_manager());
@@ -454,7 +459,7 @@ TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncDisabled) {
             SerializeMessageToVector(profile.perf_data()));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.CWP.RecordTest",
-      TestMetricProvider::RecordAttemptStatus::kAppSyncDisabled, 1);
+      TestMetricProvider::RecordAttemptStatus::kOSAppSyncDisabled, 1);
 }
 
 TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncEnabled) {
@@ -512,7 +517,7 @@ TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncDisabled) {
             SerializeMessageToVector(profile.perf_data()));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.CWP.RecordTest",
-      TestMetricProvider::RecordAttemptStatus::kAppSyncDisabled, 1);
+      TestMetricProvider::RecordAttemptStatus::kChromeAppSyncDisabled, 1);
 }
 
 }  // namespace metrics

@@ -47,7 +47,7 @@ MagnifierE2ETest = class extends E2ETestBase {
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`
-#include "chrome/browser/chromeos/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
     `);
@@ -57,41 +57,47 @@ MagnifierE2ETest = class extends E2ETestBase {
   testGenPreamble() {
     super.testGenPreamble();
     GEN(`
-    base::Closure load_cb =
-        base::Bind(&chromeos::MagnificationManager::SetMagnifierEnabled,
-            base::Unretained(chromeos::MagnificationManager::Get()),
+    base::OnceClosure load_cb =
+        base::BindOnce(&ash::MagnificationManager::SetMagnifierEnabled,
+            base::Unretained(ash::MagnificationManager::Get()),
             true);
-    WaitForExtension(extension_misc::kAccessibilityCommonExtensionId, load_cb);
       `);
+    super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
   }
 };
 
-TEST_F('MagnifierE2ETest', 'MovesScreenMagnifierToFocusedElement', function() {
-  const site = `
+// Flaky: http://crbug.com/1171635
+TEST_F(
+    'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToFocusedElement',
+    function() {
+      const site = `
         <button id="apple">Apple</button><br />
         <button id="banana" style="margin-top: 400px">Banana</button>
       `;
-  this.runWithLoadedTree(site, async function(root) {
-    const apple = root.find({attributes: {name: 'Apple'}});
-    const banana = root.find({attributes: {name: 'Banana'}});
+      this.runWithLoadedTree(site, async function(root) {
+        const magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
 
-    // Focus and move magnifier to apple.
-    apple.focus();
+        const apple = root.find({attributes: {name: 'Apple'}});
+        const banana = root.find({attributes: {name: 'Banana'}});
 
-    // Verify magnifier bounds contains apple, but not banana.
-    let bounds = await this.getNextMagnifierBounds();
-    assertTrue(RectUtil.contains(bounds, apple.location));
-    assertFalse(RectUtil.contains(bounds, banana.location));
+        // Focus and move magnifier to apple.
+        apple.focus();
 
-    // Focus and move magnifier to banana.
-    banana.focus();
+        // Verify magnifier bounds contains apple, but not banana.
+        let bounds = await this.getNextMagnifierBounds();
+        assertTrue(RectUtil.contains(bounds, apple.location));
+        assertFalse(RectUtil.contains(bounds, banana.location));
 
-    // Verify magnifier bounds contains banana, but not apple.
-    bounds = await this.getNextMagnifierBounds();
-    assertFalse(RectUtil.contains(bounds, apple.location));
-    assertTrue(RectUtil.contains(bounds, banana.location));
-  });
-});
+        // Focus and move magnifier to banana.
+        banana.focus();
+
+        // Verify magnifier bounds contains banana, but not apple.
+        bounds = await this.getNextMagnifierBounds();
+        assertFalse(RectUtil.contains(bounds, apple.location));
+        assertTrue(RectUtil.contains(bounds, banana.location));
+      });
+    });
 
 // Disabled - flaky: https://crbug.com/1145612
 TEST_F(
@@ -134,8 +140,10 @@ TEST_F(
     });
 
 
+// Flaky: http://crbug.com/1171750
 TEST_F(
-    'MagnifierE2ETest', 'MovesScreenMagnifierToActiveDescendant', function() {
+    'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToActiveDescendant',
+    function() {
       const site = `
     <span tabindex="1">Top</span>
     <div id="group" role="group" style="width: 200px"
@@ -151,6 +159,9 @@ TEST_F(
     </script>
   `;
       this.runWithLoadedTree(site, async function(root) {
+        const magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+
         const top = root.find({attributes: {name: 'Top'}});
         const banana = root.find({attributes: {name: 'Banana'}});
         const group = root.find({role: RoleType.GROUP});
@@ -174,8 +185,8 @@ TEST_F(
 
 TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
   this.newCallback(async () => {
-    const module = await import('/accessibility_common/magnifier/magnifier.js');
-    const Magnifier = module.Magnifier;
+    await importModule(
+        'Magnifier', '/accessibility_common/magnifier/magnifier.js');
 
     // Disable focus following for full screen magnifier, and verify prefs and
     // state.
@@ -184,6 +195,7 @@ TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
     assertEquals(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, pref.key);
     assertFalse(pref.value);
     magnifier = accessibilityCommon.getMagnifierForTest();
+    magnifier.setIsInitializingForTest(false);
     assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
     assertFalse(magnifier.shouldFollowFocus());
 
@@ -194,6 +206,7 @@ TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
     assertEquals(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, pref.key);
     assertTrue(pref.value);
     magnifier = accessibilityCommon.getMagnifierForTest();
+    magnifier.setIsInitializingForTest(false);
     assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
     assertTrue(magnifier.shouldFollowFocus());
   })();

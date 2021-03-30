@@ -46,6 +46,15 @@ void PerformMediaSessionAction(
     case mojom::MediaSessionAction::kExitPictureInPicture:
       media_controller_remote->ExitPictureInPicture();
       break;
+    case mojom::MediaSessionAction::kToggleMicrophone:
+      media_controller_remote->ToggleMicrophone();
+      break;
+    case mojom::MediaSessionAction::kToggleCamera:
+      media_controller_remote->ToggleCamera();
+      break;
+    case mojom::MediaSessionAction::kHangUp:
+      media_controller_remote->HangUp();
+      break;
     case mojom::MediaSessionAction::kSkipAd:
     case mojom::MediaSessionAction::kSeekTo:
     case mojom::MediaSessionAction::kScrubTo:

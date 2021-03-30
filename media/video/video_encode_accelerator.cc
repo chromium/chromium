@@ -8,6 +8,8 @@
 
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace media {
 
@@ -98,7 +100,7 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
   for (size_t i = 0; i < spatial_layers.size(); ++i) {
     const auto& sl = spatial_layers[i];
     str += base::StringPrintf(
-        ", {SatialLayer#%zu: width=%" PRId32 ", height=%" PRId32
+        ", {SpatialLayer#%zu: width=%" PRId32 ", height=%" PRId32
         ", bitrate_bps=%" PRIu32 ", framerate=%" PRId32
         ", max_qp=%u, num_of_temporal_layers=%u}",
         i, sl.width, sl.height, sl.bitrate_bps, sl.framerate, sl.max_qp,
@@ -127,8 +129,7 @@ VideoEncodeAccelerator::~VideoEncodeAccelerator() = default;
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile()
     : profile(media::VIDEO_CODEC_PROFILE_UNKNOWN),
       max_framerate_numerator(0),
-      max_framerate_denominator(0) {
-}
+      max_framerate_denominator(0) {}
 
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     VideoCodecProfile profile,
@@ -150,6 +151,16 @@ void VideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
 
 bool VideoEncodeAccelerator::IsFlushSupported() {
   return false;
+}
+
+bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1166889) Add proper method overrides in
+  // MojoVideoEncodeAccelerator and other subclasses that might return true.
+  return true;
+#else
+  return false;
+#endif
 }
 
 void VideoEncodeAccelerator::RequestEncodingParametersChange(

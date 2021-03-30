@@ -11,18 +11,22 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/containers/queue.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
+#include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/installer.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
@@ -167,6 +171,14 @@ void UpdateServiceImpl::RegisterApp(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   persisted_data_->RegisterApp(request);
+  if (!base::Contains(persisted_data_->GetAppIds(), kUpdaterAppId)) {
+    RegistrationRequest updater_request;
+    updater_request.app_id = kUpdaterAppId;
+    updater_request.version = base::Version(UPDATER_VERSION_STRING);
+    persisted_data_->RegisterApp(updater_request);
+    update_client_->SendRegistrationPing(
+        updater_request.app_id, updater_request.version, base::DoNothing());
+  }
 
   update_client_->SendRegistrationPing(request.app_id, request.version,
                                        base::DoNothing());
@@ -176,6 +188,30 @@ void UpdateServiceImpl::RegisterApp(
   // with 0.
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), RegistrationResponse(0)));
+}
+
+void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  tasks_.push(base::MakeRefCounted<CheckForUpdatesTask>(
+      config_,
+      base::BindOnce(&UpdateServiceImpl::UpdateAll, this, base::DoNothing()),
+      base::BindOnce(&UpdateServiceImpl::TaskDone, this, std::move(callback))));
+  if (tasks_.size() == 1)
+    TaskStart();
+}
+
+void UpdateServiceImpl::TaskStart() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!tasks_.empty()) {
+    tasks_.front()->Run();
+  }
+}
+
+void UpdateServiceImpl::TaskDone(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
+  tasks_.pop();
+  TaskStart();
 }
 
 void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,

@@ -1,57 +1,41 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared">
+  :host {
+    --justify-margin: 8px;
+    align-items: center;
+    display: flex;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="pref_control_behavior.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../settings_shared_css.html">
+  :host([enforced_]) {
+    /* Disable pointer events for this whole element, as outer on-click gets
+     * triggered when clicking anywhere in :host. */
+    pointer-events: none;
+  }
 
-<dom-module id="controlled-button">
-  <template>
-    <style include="settings-shared">
-      :host {
-        --justify-margin: 8px;
-        align-items: center;
-        display: flex;
-      }
+  cr-policy-pref-indicator {
+    /* Enable pointer events for the indicator so :hover works. Disable
+     * clicks via onIndicatorClick_ so outer on-click doesn't trigger. */
+    pointer-events: all;
+  }
 
-      :host([enforced_]) {
-        /* Disable pointer events for this whole element, as outer on-click gets
-         * triggered when clicking anywhere in :host. */
-        pointer-events: none;
-      }
+  :host(:not([end-justified])) cr-policy-pref-indicator {
+    margin-inline-start: var(--cr-controlled-by-spacing);
+  }
 
-      cr-policy-pref-indicator {
-        /* Enable pointer events for the indicator so :hover works. Disable
-         * clicks via onIndicatorClick_ so outer on-click doesn't trigger. */
-        pointer-events: all;
-      }
+  :host([end-justified]) cr-policy-pref-indicator {
+    margin-inline-end: var(--cr-controlled-by-spacing);
+    margin-inline-start: calc(
+        var(--cr-controlled-by-spacing) - var(--justify-margin));
+    order: -1;
+  }
+</style>
 
-      :host(:not([end-justified])) cr-policy-pref-indicator {
-        margin-inline-start: var(--cr-controlled-by-spacing);
-      }
+<cr-button class$="[[actionClass_]]"
+  disabled="[[!buttonEnabled_(enforced_, disabled)]]">
+  [[label]]
+</cr-button>
 
-      :host([end-justified]) cr-policy-pref-indicator {
-        margin-inline-end: var(--cr-controlled-by-spacing);
-        margin-inline-start: calc(
-            var(--cr-controlled-by-spacing) - var(--justify-margin));
-        order: -1;
-      }
-    </style>
-
-    <cr-button class$="[[actionClass_]]"
-      disabled="[[!buttonEnabled_(enforced_, disabled)]]">
-      [[label]]
-    </cr-button>
-
-    <template is="dom-if" if="[[hasPrefPolicyIndicator(pref.*)]]" restamp>
-      <cr-policy-pref-indicator pref="[[pref]]" on-click="onIndicatorClick_"
-          icon-aria-label="[[label]]">
-      </cr-policy-pref-indicator>
-    </template>
-
-  </template>
-  <script src="controlled_button.js"></script>
-</dom-module>
+<template is="dom-if" if="[[hasPrefPolicyIndicator(pref.*)]]" restamp>
+  <cr-policy-pref-indicator pref="[[pref]]" on-click="onIndicatorClick_"
+      icon-aria-label="[[label]]">
+  </cr-policy-pref-indicator>
+</template>

@@ -5,6 +5,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 
 #include <set>
+#include <string>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -30,10 +30,12 @@
 #include "components/favicon/core/favicon_handler.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/load_flags.h"
 #include "net/dns/mock_host_resolver.h"
@@ -106,7 +108,7 @@ class PendingTaskWaiter : public content::WebContentsObserver {
 
   void AlsoRequireUrl(const GURL& url) { required_url_ = url; }
 
-  void AlsoRequireTitle(const base::string16& title) {
+  void AlsoRequireTitle(const std::u16string& title) {
     required_title_ = title;
   }
 
@@ -166,7 +168,7 @@ class PendingTaskWaiter : public content::WebContentsObserver {
 
   base::RepeatingClosure quit_closure_;
   GURL required_url_;
-  base::Optional<base::string16> required_title_;
+  base::Optional<std::u16string> required_title_;
   base::WeakPtrFactory<PendingTaskWaiter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PendingTaskWaiter);
@@ -329,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
       "/favicon/page_change_favicon_type_to_touch_icon_via_js.html");
 
   PendingTaskWaiter waiter(web_contents());
-  waiter.AlsoRequireTitle(base::ASCIIToUTF16("OK"));
+  waiter.AlsoRequireTitle(u"OK");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NONE);
@@ -348,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, ChangeTouchIconViaJavascript) {
       "/favicon/page_change_touch_icon_via_js.html");
 
   PendingTaskWaiter waiter(web_contents());
-  waiter.AlsoRequireTitle(base::ASCIIToUTF16("OK"));
+  waiter.AlsoRequireTitle(u"OK");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NONE);
@@ -368,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, RemoveTouchIconViaJavascript) {
       "/favicon/page_change_favicon_type_to_favicon_via_js.html");
 
   PendingTaskWaiter waiter(web_contents());
-  waiter.AlsoRequireTitle(base::ASCIIToUTF16("OK"));
+  waiter.AlsoRequireTitle(u"OK");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NONE);
@@ -808,4 +810,98 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, SVGFavicon) {
   auto result = GetFaviconForPageURL(url, favicon_base::IconType::kFavicon, 16);
   EXPECT_EQ(gfx::Size(16, 16), result.pixel_size);
   EXPECT_NE(nullptr, result.bitmap_data);
+}
+
+// Test that when a user visits a site after a cache deletion, the favicon is
+// fetched again.
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
+                       FetchFaviconAfterCacheDeletion) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
+  GURL icon_url = embedded_test_server()->GetURL("/favicon/icon.png");
+
+  TestURLLoaderInterceptor url_loader_interceptor;
+  // Initial visit in order to populate the cache.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // A normal visit should fetch the favicon from the favicon database.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_FALSE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // Clear cache.
+  {
+    content::BrowsingDataRemover* remover =
+        content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
+    content::BrowsingDataRemoverCompletionObserver observer(remover);
+    remover->RemoveAndReply(
+        base::Time(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_CACHE,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
+    observer.BlockUntilCompletion();
+  }
+
+  // The favicon should be fetched again for navigations after cache deletion.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
+}
+
+// Test that when a user visits a site in incognito, we download the favicon
+// even if it was cached in regular mode.
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
+                       IncognitoDownloadsCachedFavicon) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
+  GURL icon_url = embedded_test_server()->GetURL("/favicon/icon.png");
+
+  TestURLLoaderInterceptor url_loader_interceptor;
+  // Initial visit in order to populate the cache.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // Visiting the site in incognito mode should always load the favicon.
+  Browser* incognito = Browser::Create(Browser::CreateParams(
+      browser()->profile()->GetPrimaryOTRProfile(), true));
+  AddBlankTabAndShow(incognito);
+  {
+    PendingTaskWaiter waiter(
+        incognito->tab_strip_model()->GetActiveWebContents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        incognito, url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
 }

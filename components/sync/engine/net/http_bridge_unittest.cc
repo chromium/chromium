@@ -18,17 +18,20 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "components/sync/engine_impl/cancelation_signal.h"
+#include "components/sync/engine/cancelation_signal.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace syncer {
 
 namespace {
+
+using ::testing::HasSubstr;
 
 // TODO(timsteele): Should use PathService here. See Chromium Issue 3113.
 const base::FilePath::CharType kDocRoot[] =
@@ -244,11 +247,10 @@ TEST_F(MAYBE_SyncHttpBridgeTest, CompressedRequestHeaderCheck) {
 
   std::string response(http_bridge->GetResponseContent(),
                        http_bridge->GetResponseContentLength());
-  EXPECT_NE(std::string::npos, response.find("Content-Encoding: gzip"));
-  EXPECT_NE(std::string::npos,
-            response.find(base::StringPrintf(
-                "%s: %s", net::HttpRequestHeaders::kAcceptEncoding,
-                "gzip, deflate")));
+  EXPECT_THAT(response, HasSubstr("Content-Encoding: gzip"));
+  EXPECT_THAT(response, HasSubstr(base::StringPrintf(
+                            "%s: %s", net::HttpRequestHeaders::kAcceptEncoding,
+                            "gzip, deflate")));
   EXPECT_NE(std::string::npos,
             response.find(base::StringPrintf(
                 "%s: %s", net::HttpRequestHeaders::kUserAgent, kUserAgent)));

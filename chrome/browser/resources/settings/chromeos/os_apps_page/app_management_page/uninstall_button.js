@@ -6,7 +6,7 @@ Polymer({
   is: 'app-management-uninstall-button',
 
   behaviors: [
-    app_management.StoreClient,
+    app_management.AppManagementStoreClient,
   ],
 
   properties: {

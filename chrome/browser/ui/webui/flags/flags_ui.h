@@ -12,10 +12,6 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/base/layout.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
-#endif
-
 namespace base {
 class RefCountedMemory;
 }

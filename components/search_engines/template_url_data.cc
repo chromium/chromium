@@ -44,7 +44,7 @@ TemplateURLData::TemplateURLData()
       usage_count(0),
       prepopulate_id(0),
       sync_guid(base::GenerateGUID()),
-      keyword_(base::ASCIIToUTF16("dummy")),
+      keyword_(u"dummy"),
       url_("x") {}
 
 TemplateURLData::TemplateURLData(const TemplateURLData& other) = default;
@@ -52,8 +52,8 @@ TemplateURLData::TemplateURLData(const TemplateURLData& other) = default;
 TemplateURLData& TemplateURLData::operator=(const TemplateURLData& other) =
     default;
 
-TemplateURLData::TemplateURLData(const base::string16& name,
-                                 const base::string16& keyword,
+TemplateURLData::TemplateURLData(const std::u16string& name,
+                                 const std::u16string& keyword,
                                  base::StringPiece search_url,
                                  base::StringPiece suggest_url,
                                  base::StringPiece image_url,
@@ -101,13 +101,13 @@ TemplateURLData::TemplateURLData(const base::string16& name,
 
 TemplateURLData::~TemplateURLData() = default;
 
-void TemplateURLData::SetShortName(const base::string16& short_name) {
+void TemplateURLData::SetShortName(const std::u16string& short_name) {
   // Remove tabs, carriage returns, and the like, as they can corrupt
   // how the short name is displayed.
   short_name_ = base::CollapseWhitespace(short_name, true);
 }
 
-void TemplateURLData::SetKeyword(const base::string16& keyword) {
+void TemplateURLData::SetKeyword(const std::u16string& keyword) {
   DCHECK(!keyword.empty());
 
   // Case sensitive keyword matching is confusing. As such, we force all

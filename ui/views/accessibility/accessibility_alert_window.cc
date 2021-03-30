@@ -23,7 +23,7 @@ AccessibilityAlertWindow::AccessibilityAlertWindow(aura::Window* parent,
   alert_window_->Init(ui::LayerType::LAYER_NOT_DRAWN);
   alert_window_->SetProperty(ui::kAXRoleOverride, ax::mojom::Role::kAlert);
   parent->AddChild(alert_window_.get());
-  observer_.Add(aura::Env::GetInstance());
+  observation_.Observe(aura::Env::GetInstance());
 }
 
 AccessibilityAlertWindow::~AccessibilityAlertWindow() = default;
@@ -38,7 +38,7 @@ void AccessibilityAlertWindow::HandleAlert(const std::string& alert_string) {
 }
 
 void AccessibilityAlertWindow::OnWillDestroyEnv() {
-  observer_.RemoveAll();
+  observation_.Reset();
   alert_window_.reset();
 }
 

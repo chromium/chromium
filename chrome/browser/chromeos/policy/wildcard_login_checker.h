@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -62,9 +61,6 @@ class WildcardLoginChecker : public UserInfoFetcher::Delegate {
 
   std::unique_ptr<PolicyOAuth2TokenFetcher> token_fetcher_;
   std::unique_ptr<UserInfoFetcher> user_info_fetcher_;
-
-  base::Time start_timestamp_;
-  base::Time token_available_timestamp_;
 
   DISALLOW_COPY_AND_ASSIGN(WildcardLoginChecker);
 };

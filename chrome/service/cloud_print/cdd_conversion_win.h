@@ -11,14 +11,13 @@
 #include <string>
 
 #include "base/memory/free_deleter.h"
-#include "base/strings/string16.h"
 
 namespace cloud_print {
 
 bool IsValidCjt(const std::string& print_ticket);
 
 std::unique_ptr<DEVMODE, base::FreeDeleter> CjtToDevMode(
-    const base::string16& printer_name,
+    const std::wstring& printer_name,
     const std::string& print_ticket);
 
 }  // namespace cloud_print

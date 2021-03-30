@@ -46,7 +46,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/extension_registry.h"
 #include "net/http/http_status_code.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -467,7 +466,6 @@ void ChromeCleanerControllerImpl::Scan(
 
 void ChromeCleanerControllerImpl::ReplyWithUserResponse(
     Profile* profile,
-    extensions::ExtensionService* extension_service,
     UserResponse user_response) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -485,8 +483,6 @@ void ChromeCleanerControllerImpl::ReplyWithUserResponse(
       RecordCleanerLogsAcceptanceHistogram(true);
       new_state = State::kCleaning;
       delegate_->TagForResetting(profile);
-      extension_service_ = extension_service;
-      extension_registry_ = extensions::ExtensionRegistry::Get(profile);
       break;
     case UserResponse::kAcceptedWithoutLogs:
       acceptance = PromptUserResponse::ACCEPTED_WITHOUT_LOGS;
@@ -494,8 +490,6 @@ void ChromeCleanerControllerImpl::ReplyWithUserResponse(
       RecordCleanerLogsAcceptanceHistogram(false);
       new_state = State::kCleaning;
       delegate_->TagForResetting(profile);
-      extension_service_ = extension_service;
-      extension_registry_ = extensions::ExtensionRegistry::Get(profile);
       break;
     case UserResponse::kDenied:  // Fallthrough
     case UserResponse::kDismissed:
@@ -615,8 +609,7 @@ void ChromeCleanerControllerImpl::OnChromeCleanerFetchedAndVerified(
           : ChromeCleanerRunner::ChromeMetricsStatus::kDisabled;
 
   ChromeCleanerRunner::RunChromeCleanerAndReplyWithExitCode(
-      extension_service_, extension_registry_, executable_path,
-      *reporter_invocation_, metrics_status,
+      executable_path, *reporter_invocation_, metrics_status,
       base::BindOnce(&ChromeCleanerControllerImpl::WeakOnPromptUser,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&ChromeCleanerControllerImpl::OnConnectionClosed,
@@ -654,7 +647,6 @@ void ChromeCleanerControllerImpl::OnPromptUser(
   DCHECK_EQ(State::kScanning, state());
   DCHECK(scanner_results_.files_to_delete().empty());
   DCHECK(scanner_results_.registry_keys().empty());
-  DCHECK(scanner_results_.extension_ids().empty());
   DCHECK(!prompt_user_reply_callback_);
   DCHECK(!time_scanning_started_.is_null());
 

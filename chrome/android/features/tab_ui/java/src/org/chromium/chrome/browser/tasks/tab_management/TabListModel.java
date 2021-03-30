@@ -19,7 +19,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageService.PriceTabData;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -66,6 +65,66 @@ class TabListModel extends ModelList {
         for (int i = 0; i < size(); i++) {
             PropertyModel model = get(i).model;
             if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return i;
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Find the Nth TAB card in the {@link TabListModel}.
+     * @param n N of the Nth TAB card.
+     * @return The index of Nth TAB card in the {@link TabListModel}.
+     */
+    public int indexOfNthTabCard(int n) {
+        if (n < 0) return TabModel.INVALID_TAB_INDEX;
+        int tabCount = 0;
+        int lastTabIndex = TabModel.INVALID_TAB_INDEX;
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) == TAB) {
+                if (tabCount++ == n) return i;
+                lastTabIndex = i;
+            }
+        }
+        // If n >= tabCount, we return the index after the last tab. This is used when adding a new
+        // tab.
+        return lastTabIndex + 1;
+    }
+
+    /**
+     * Get the number of TAB cards before the given index in TabListModel.
+     * @param index The given index in TabListModel.
+     * @return The number of TAB cards before the given index.
+     */
+    public int getTabCardCountsBefore(int index) {
+        if (index < 0) return TabModel.INVALID_TAB_INDEX;
+        if (index > size()) index = size();
+        int tabCount = 0;
+        for (int i = 0; i < index; i++) {
+            if (get(i).model.get(CARD_TYPE) == TAB) tabCount++;
+        }
+        return tabCount;
+    }
+
+    /**
+     * Get the index of the last tab before the given index in TabListModel.
+     * @param index The given index in TabListModel.
+     * @return The index of the tab before the given index in TabListModel.
+     */
+    public int getTabIndexBefore(int index) {
+        for (int i = index - 1; i >= 0; i--) {
+            if (get(i).model.get(CARD_TYPE) == TAB) return i;
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Get the index of the first tab after the given index in TabListModel.
+     * @param index The given index in TabListModel.
+     * @return The index of the tab after the given index in TabListModel.
+     */
+    public int getTabIndexAfter(int index) {
+        for (int i = index + 1; i < size(); i++) {
+            if (get(i).model.get(CARD_TYPE) == TAB) return i;
         }
         return TabModel.INVALID_TAB_INDEX;
     }
@@ -203,19 +262,5 @@ class TabListModel extends ModelList {
         if (get(index).model.get(TabProperties.CARD_ANIMATION_STATUS) == status) return;
 
         get(index).model.set(TabProperties.CARD_ANIMATION_STATUS, status);
-    }
-
-    /**
-     * Get the first tab showing price card.
-     */
-    public PriceTabData getFirstTabShowingPriceCard() {
-        for (int i = 0; i < size(); i++) {
-            PropertyModel model = get(i).model;
-            if ((model.get(CARD_TYPE) == TAB) && (model.get(TabProperties.PRICE_DROP) != null)) {
-                return new PriceTabData(
-                        model.get(TabProperties.TAB_ID), model.get(TabProperties.PRICE_DROP));
-            }
-        }
-        return null;
     }
 }

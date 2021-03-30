@@ -374,6 +374,24 @@ class TestRunner(object):
       if not os.path.exists(self.xctest_path):
         raise XCTestPlugInNotFoundError(self.xctest_path)
 
+  # TODO(crbug.com/1185295): Move this method to a utils class.
+  @staticmethod
+  def remove_proxy_settings():
+    """removes any proxy settings which may remain from a previous run."""
+    LOGGER.info('Removing any proxy settings.')
+    network_services = subprocess.check_output(
+        ['networksetup', '-listallnetworkservices']).strip().split('\n')
+    if len(network_services) > 1:
+      # We ignore the first line as it is a description of the command's output.
+      network_services = network_services[1:]
+
+      for service in network_services:
+        # Disabled services have a '*' but calls should not include it
+        if service.startswith('*'):
+          service = service[1:]
+        subprocess.check_call(
+            ['networksetup', '-setsocksfirewallproxystate', service, 'off'])
+
   def get_launch_command(self, test_app, out_dir, destination, shards=1):
     """Returns the command that can be used to launch the test app.
 
@@ -395,6 +413,14 @@ class TestRunner(object):
       A dict of environment variables.
     """
     return os.environ.copy()
+
+  def get_launch_test_app(self):
+    """Returns the proper test_app for the run.
+
+    Returns:
+      An implementation of GTestsApp for the current run to execute.
+    """
+    raise NotImplementedError
 
   def start_proc(self, cmd):
     """Starts a process with cmd command and os.environ.
@@ -567,33 +593,7 @@ class TestRunner(object):
     """Launches the test app."""
     self.set_up()
     destination = 'id=%s' % self.udid
-    # When current |launch| method is invoked, this is running a unit test
-    # target. For simulators, '--xctest' is passed to test runner scripts to
-    # make it run XCTest based unit test.
-    if self.xctest:
-      # TODO(crbug.com/1085603): Pass in test runner an arg to determine if it's
-      # device test or simulator test and test the arg here.
-      if self.__class__.__name__ == 'SimulatorTestRunner':
-        test_app = test_apps.SimulatorXCTestUnitTestsApp(
-            self.app_path,
-            included_tests=self.test_cases,
-            env_vars=self.env_vars,
-            test_args=self.test_args)
-      elif self.__class__.__name__ == 'DeviceTestRunner':
-        test_app = test_apps.DeviceXCTestUnitTestsApp(
-            self.app_path,
-            included_tests=self.test_cases,
-            env_vars=self.env_vars,
-            test_args=self.test_args)
-      else:
-        raise XCTestConfigError('Wrong config. TestRunner.launch() called from'
-                                ' an unexpected class.')
-    else:
-      test_app = test_apps.GTestsApp(
-          self.app_path,
-          included_tests=self.test_cases,
-          env_vars=self.env_vars,
-          test_args=self.test_args)
+    test_app = self.get_launch_test_app()
     out_dir = os.path.join(self.out_dir, 'TestResults')
     cmd = self.get_launch_command(test_app, out_dir, destination, self.shards)
     try:
@@ -804,6 +804,7 @@ class SimulatorTestRunner(TestRunner):
 
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""
+    self.remove_proxy_settings()
     self.kill_simulators()
     self.wipe_simulator()
     self.wipe_derived_data()
@@ -940,6 +941,26 @@ class SimulatorTestRunner(TestRunner):
     if self.xctest:
       env['NSUnbufferedIO'] = 'YES'
     return env
+
+  def get_launch_test_app(self):
+    """Returns the proper test_app for the run.
+
+    Returns:
+      A SimulatorXCTestUnitTestsApp for the current run to execute.
+    """
+    # Non iOS Chrome users have unit tests not built with XCTest.
+    if not self.xctest:
+      return test_apps.GTestsApp(
+          self.app_path,
+          included_tests=self.test_cases,
+          env_vars=self.env_vars,
+          test_args=self.test_args)
+
+    return test_apps.SimulatorXCTestUnitTestsApp(
+        self.app_path,
+        included_tests=self.test_cases,
+        env_vars=self.env_vars,
+        test_args=self.test_args)
 
 
 class DeviceTestRunner(TestRunner):
@@ -1137,3 +1158,23 @@ class DeviceTestRunner(TestRunner):
       # e.g. ios_web_shell_egtests_module
       env['TEST_TARGET_NAME'] = env['APP_TARGET_NAME'] + '_module'
     return env
+
+  def get_launch_test_app(self):
+    """Returns the proper test_app for the run.
+
+    Returns:
+      A DeviceXCTestUnitTestsApp  for the current run to execute.
+    """
+    # Non iOS Chrome users have unit tests not built with XCTest.
+    if not self.xctest:
+      return test_apps.GTestsApp(
+          self.app_path,
+          included_tests=self.test_cases,
+          env_vars=self.env_vars,
+          test_args=self.test_args)
+
+    return test_apps.DeviceXCTestUnitTestsApp(
+        self.app_path,
+        included_tests=self.test_cases,
+        env_vars=self.env_vars,
+        test_args=self.test_args)

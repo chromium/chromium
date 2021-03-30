@@ -22,6 +22,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -132,7 +133,7 @@ CrostiniRecoveryView::CrostiniRecoveryView(
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  const base::string16 message =
+  const std::u16string message =
       l10n_util::GetStringUTF16(IDS_CROSTINI_RECOVERY_MESSAGE);
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
@@ -145,3 +146,6 @@ CrostiniRecoveryView::CrostiniRecoveryView(
 CrostiniRecoveryView::~CrostiniRecoveryView() {
   g_crostini_recovery_view = nullptr;
 }
+
+BEGIN_METADATA(CrostiniRecoveryView, views::BubbleDialogDelegateView)
+END_METADATA

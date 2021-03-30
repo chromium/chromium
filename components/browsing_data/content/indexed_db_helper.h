@@ -9,12 +9,13 @@
 
 #include <list>
 #include <set>
+#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -56,7 +57,7 @@ class IndexedDBHelper : public base::RefCountedThreadSafe<IndexedDBHelper> {
   // Enumerates all indexed database files in the IndexedDB thread.
   void IndexedDBUsageInfoReceived(
       FetchCallback callback,
-      std::vector<storage::mojom::IndexedDBStorageUsageInfoPtr> origins);
+      std::vector<storage::mojom::StorageUsageInfoPtr> origins);
 
   DISALLOW_COPY_AND_ASSIGN(IndexedDBHelper);
 };

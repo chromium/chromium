@@ -1,5 +1,5 @@
 Tests that the live line-level heap profile is shown in the text editor.
 
 allocator.js
-Memory annotation added to line 13.
+Memory annotation added to line 15.
 

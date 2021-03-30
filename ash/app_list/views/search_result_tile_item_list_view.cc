@@ -77,7 +77,7 @@ SearchResultTileItemListView::SearchResultTileItemListView(
       is_app_reinstall_recommendation_enabled_(
           app_list_features::IsAppReinstallZeroStateEnabled()),
       max_search_result_tiles_(
-          AppListConfig::instance().max_search_result_tiles()) {
+          SharedAppListConfig::instance().max_search_result_tiles()) {
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(kItemListVerticalSpacing, kItemListHorizontalSpacing),
@@ -88,15 +88,14 @@ SearchResultTileItemListView::SearchResultTileItemListView(
     separator->SetVisible(false);
     separator->SetBorder(views::CreateEmptyBorder(
         kSeparatorTopPadding, kSeparatorLeftRightPadding,
-        AppListConfig::instance().search_tile_height() - kSeparatorHeight,
+        SharedAppListConfig::instance().search_tile_height() - kSeparatorHeight,
         kSeparatorLeftRightPadding));
     separator->SetColor(AppListColorProvider::Get()->GetSeparatorColor());
     separator_views_.push_back(separator);
     layout_->SetFlexForView(separator, 0);
 
     SearchResultTileItemView* tile_item =
-        AddChildView(std::make_unique<SearchResultTileItemView>(
-            view_delegate, false /* show_in_apps_page */));
+        AddChildView(std::make_unique<SearchResultTileItemView>(view_delegate));
     tile_item->set_index_in_container(i);
     tile_item->SetParentBackgroundColor(
         AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
@@ -195,7 +194,7 @@ int SearchResultTileItemListView::DoUpdate() {
 
   // Track play store results and start the timer for recording their impression
   // UMA metrics.
-  base::string16 user_typed_query = GetUserTypedQuery();
+  std::u16string user_typed_query = GetUserTypedQuery();
   if (found_playstore_results && user_typed_query != recent_playstore_query_) {
     recent_playstore_query_ = user_typed_query;
     playstore_impression_timer_.Stop();
@@ -242,17 +241,12 @@ int SearchResultTileItemListView::DoUpdate() {
     }
   }
 
-  set_container_score(
-      display_results.empty()
-          ? -1.0
-          : AppListConfig::instance().app_tiles_container_score());
-
   return display_results.size();
 }
 
 std::vector<SearchResult*> SearchResultTileItemListView::GetDisplayResults() {
-  base::string16 raw_query = search_box_->GetText();
-  base::string16 query;
+  std::u16string raw_query = search_box_->GetText();
+  std::u16string query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
 
   // We ask for |max_search_result_tiles_| policy tile results first,
@@ -316,13 +310,13 @@ std::vector<SearchResult*> SearchResultTileItemListView::GetDisplayResults() {
   return display_results;
 }
 
-base::string16 SearchResultTileItemListView::GetUserTypedQuery() {
-  base::string16 search_box_text = search_box_->GetText();
+std::u16string SearchResultTileItemListView::GetUserTypedQuery() {
+  std::u16string search_box_text = search_box_->GetText();
   gfx::Range range = search_box_->GetSelectedRange();
-  base::string16 raw_query = range.is_empty()
+  std::u16string raw_query = range.is_empty()
                                  ? search_box_text
                                  : search_box_text.substr(0, range.start());
-  base::string16 query;
+  std::u16string query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
   return query;
 }

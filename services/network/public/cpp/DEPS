@@ -3,6 +3,7 @@ include_rules = [
   # resource_request.h is an exception since it's not used by Blink.
   "-services/network/public/mojom/cors.mojom.h",
   "+third_party/webrtc/rtc_base/async_packet_socket.h",
+  "+components/link_header_util/link_header_util.h",
 ]
 
 specific_include_rules = {

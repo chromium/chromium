@@ -39,8 +39,7 @@ class StreamTextureProxyTest : public testing::Test {
  public:
   StreamTextureProxyTest()
       : task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
-        thread_task_runner_handle_override_(
-            base::ThreadTaskRunnerHandle::OverrideForTesting(task_runner_)),
+        thread_task_runner_handle_override_(task_runner_),
         channel_(base::MakeRefCounted<TestGpuChannelHost>()) {}
 
   ~StreamTextureProxyTest() override { channel_ = nullptr; }
@@ -59,7 +58,8 @@ class StreamTextureProxyTest : public testing::Test {
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ScopedClosureRunner thread_task_runner_handle_override_;
+  base::ThreadTaskRunnerHandleOverrideForTesting
+      thread_task_runner_handle_override_;
   scoped_refptr<TestGpuChannelHost> channel_;
 };
 

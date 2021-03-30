@@ -40,7 +40,7 @@ class ClipboardRecentContent {
   // Returns clipboard content as text, if it has a compatible type,
   // is recent enough, has not been suppressed and will not trigger a system
   // notification that the clipboard has been accessed.
-  virtual base::Optional<base::string16> GetRecentTextFromClipboard() = 0;
+  virtual base::Optional<std::u16string> GetRecentTextFromClipboard() = 0;
 
   // Return if system's clipboard contains an image that will not trigger a
   // system notification that the clipboard has been accessed.
@@ -54,7 +54,7 @@ class ClipboardRecentContent {
       base::OnceCallback<void(std::set<ClipboardContentType>)>;
   using GetRecentURLCallback = base::OnceCallback<void(base::Optional<GURL>)>;
   using GetRecentTextCallback =
-      base::OnceCallback<void(base::Optional<base::string16>)>;
+      base::OnceCallback<void(base::Optional<std::u16string>)>;
   using GetRecentImageCallback =
       base::OnceCallback<void(base::Optional<gfx::Image>)>;
 

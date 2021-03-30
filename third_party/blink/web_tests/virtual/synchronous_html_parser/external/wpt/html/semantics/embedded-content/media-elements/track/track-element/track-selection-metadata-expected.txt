@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Multiple 'metadata' tracks with 'default' assert_equals: expected "hidden" but got "disabled"
+Harness: the test ran to completion.
+

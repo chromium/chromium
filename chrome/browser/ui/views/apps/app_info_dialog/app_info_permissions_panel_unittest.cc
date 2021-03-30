@@ -168,13 +168,10 @@ TEST_F(AppInfoPermissionsPanelTest, RetainedFilePermissionsObtainedCorrectly) {
 
   // Since we have no guarantees on the order of retained files, make sure the
   // list is the expected length and all required entries are present.
-  const std::vector<base::string16> retained_file_paths =
+  const std::vector<std::u16string> retained_file_paths =
       panel.GetRetainedFilePaths();
   ASSERT_EQ(3U, retained_file_paths.size());
-  EXPECT_THAT(retained_file_paths,
-              Contains(Eq(base::UTF8ToUTF16("file_1.ext"))));
-  EXPECT_THAT(retained_file_paths,
-              Contains(Eq(base::UTF8ToUTF16("file_2.ext"))));
-  EXPECT_THAT(retained_file_paths,
-              Contains(Eq(base::UTF8ToUTF16("file_3.ext"))));
+  EXPECT_THAT(retained_file_paths, Contains(Eq(u"file_1.ext")));
+  EXPECT_THAT(retained_file_paths, Contains(Eq(u"file_2.ext")));
+  EXPECT_THAT(retained_file_paths, Contains(Eq(u"file_3.ext")));
 }

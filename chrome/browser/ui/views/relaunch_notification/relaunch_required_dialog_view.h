@@ -38,7 +38,7 @@ class RelaunchRequiredDialogView : views::DialogDelegateView {
   void SetDeadline(base::Time deadline);
 
   // views::DialogDelegateView:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   gfx::ImageSkia GetWindowIcon() override;
 
  private:

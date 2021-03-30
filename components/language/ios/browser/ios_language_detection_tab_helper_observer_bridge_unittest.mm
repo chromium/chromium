@@ -5,8 +5,8 @@
 #import "components/language/ios/browser/ios_language_detection_tab_helper_observer_bridge.h"
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/translate/core/common/language_detection_details.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -73,7 +73,7 @@ TEST_F(IOSLanguageDetectionTabHelperObserverBridgeTest, OnLanguageDetermined) {
   const std::string kContentLanguage = "fr";
   const std::string kAdoptedLanguage = "es";
   const std::string kUndefined = "und";
-  const base::string16 kContents = base::ASCIIToUTF16("Bonjour");
+  const std::u16string kContents = u"Bonjour";
 
   translate::LanguageDetectionDetails details;
   details.content_language = kContentLanguage;

@@ -33,7 +33,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceShutdownNotifier : public KeyedService {
   // KeyedService implementation:
   void Shutdown() override;
 
-  base::CallbackList<void()> callback_list_;
+  base::RepeatingClosureList closure_list_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyedServiceShutdownNotifier);
 };

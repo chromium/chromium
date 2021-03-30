@@ -127,11 +127,6 @@ MediaEngagementPreloadComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string>
-MediaEngagementPreloadComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterMediaEngagementPreloadComponent(ComponentUpdateService* cus,
                                              base::OnceClosure on_load) {
   if (!base::FeatureList::IsEnabled(media::kPreloadMediaEngagementData))

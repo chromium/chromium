@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/enrollment/enrollment_screen_view.h"
-#include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper.h"
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
+#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
@@ -72,7 +72,7 @@ class EnrollmentScreenHandler
                            const policy::EnrollmentConfig& config) override;
 
   void SetEnterpriseDomainInfo(const std::string& manager,
-                               const base::string16& device_type) override;
+                               const std::u16string& device_type) override;
   void Show() override;
   void Hide() override;
   void ShowSigninScreen() override;
@@ -88,6 +88,7 @@ class EnrollmentScreenHandler
   void ShowEnrollmentStatus(policy::EnrollmentStatus status) override;
   void ShowOtherError(
       EnterpriseEnrollmentHelper::OtherError error_code) override;
+  void Shutdown() override;
 
   // Implements BaseScreenHandler:
   void Initialize() override;
@@ -179,6 +180,10 @@ class EnrollmentScreenHandler
   // Whether we should handle network errors on enrollment screen.
   // True when signin screen step is shown.
   bool observe_network_failure_ = false;
+
+  // Set true when chrome is being restarted to pick up enrollment changes. The
+  // renderer processes will be destroyed and can no longer be talked to.
+  bool shutdown_ = false;
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;

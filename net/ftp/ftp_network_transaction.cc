@@ -270,13 +270,12 @@ int FtpNetworkTransaction::Start(
   ctrl_response_buffer_ = std::make_unique<FtpCtrlResponseBuffer>(net_log_);
 
   if (request_->url.has_username()) {
-    base::string16 username;
-    base::string16 password;
+    std::u16string username;
+    std::u16string password;
     GetIdentityFromURL(request_->url, &username, &password);
     credentials_.Set(username, password);
   } else {
-    credentials_.Set(base::ASCIIToUTF16("anonymous"),
-                     base::ASCIIToUTF16("chrome@example.com"));
+    credentials_.Set(u"anonymous", u"chrome@example.com");
   }
 
   DetectTypecode();
@@ -724,7 +723,7 @@ int FtpNetworkTransaction::DoCtrlReadComplete(int result) {
     // connection when anonymous login is not permitted. For more details
     // see http://crbug.com/25023.
     if (command_sent_ == COMMAND_USER &&
-        credentials_.username() == base::ASCIIToUTF16("anonymous")) {
+        credentials_.username() == u"anonymous") {
       response_.needs_auth = true;
     }
     return Stop(ERR_EMPTY_RESPONSE);

@@ -117,7 +117,7 @@ struct StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
     switch (storage_type) {
       case media::VideoEncodeAccelerator::Config::StorageType::kShmem:
         return arc::mojom::VideoFrameStorageType::SHMEM;
-      case media::VideoEncodeAccelerator::Config::StorageType::kDmabuf:
+      case media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer:
         return arc::mojom::VideoFrameStorageType::DMABUF;
     }
   }

@@ -38,11 +38,11 @@ class MockFormSaver : public password_manager::StubFormSaver {
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD3(Update,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
 
   // Convenience downcasting method.
   static MockFormSaver& Get(
@@ -59,8 +59,8 @@ CreateFormManager() {
   PasswordForm form_to_save;
   form_to_save.url = GURL("https://example.com/path");
   form_to_save.signon_realm = "https://example.com/";
-  form_to_save.username_value = ASCIIToUTF16("user1");
-  form_to_save.password_value = ASCIIToUTF16("pass1");
+  form_to_save.username_value = u"user1";
+  form_to_save.password_value = u"pass1";
   form_to_save.scheme = PasswordForm::Scheme::kHtml;
   form_to_save.type = PasswordForm::Type::kApi;
   MockDelegate delegate;
@@ -95,7 +95,7 @@ TestInfobarPasswordDelegate::GetIdentifier() const {
   return TEST_INFOBAR;
 }
 
-base::string16 TestInfobarPasswordDelegate::GetMessageText() const {
+std::u16string TestInfobarPasswordDelegate::GetMessageText() const {
   return base::SysNSStringToUTF16(infobar_message_);
 }
 

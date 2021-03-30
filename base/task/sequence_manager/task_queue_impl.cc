@@ -1249,42 +1249,6 @@ void TaskQueueImpl::ActivateDelayedFenceIfNeeded(TimeTicks now) {
   main_thread_only().delayed_fence = nullopt;
 }
 
-void TaskQueueImpl::DeletePendingTasks() {
-  main_thread_only().delayed_work_queue->DeletePendingTasks();
-  main_thread_only().immediate_work_queue->DeletePendingTasks();
-  // TODO(altimin): Add clear() method to DelayedIncomingQueue.
-  DelayedIncomingQueue queue_to_delete;
-  main_thread_only().delayed_incoming_queue.swap(&queue_to_delete);
-
-  TaskDeque deque;
-  {
-    // Limit the scope of the lock to ensure that the deque is destroyed
-    // outside of the lock to allow it to post tasks.
-    base::internal::CheckedAutoLock lock(any_thread_lock_);
-    deque.swap(any_thread_.immediate_incoming_queue);
-    any_thread_.immediate_work_queue_empty = true;
-    empty_queues_to_reload_handle_.SetActive(false);
-  }
-
-  LazyNow lazy_now = main_thread_only().time_domain->CreateLazyNow();
-  UpdateDelayedWakeUp(&lazy_now);
-}
-
-bool TaskQueueImpl::HasTasks() const {
-  if (!main_thread_only().delayed_work_queue->Empty())
-    return true;
-  if (!main_thread_only().immediate_work_queue->Empty())
-    return true;
-  if (!main_thread_only().delayed_incoming_queue.empty())
-    return true;
-
-  base::internal::CheckedAutoLock lock(any_thread_lock_);
-  if (!any_thread_.immediate_incoming_queue.empty())
-    return true;
-
-  return false;
-}
-
 void TaskQueueImpl::MaybeReportIpcTaskQueuedFromMainThread(
     Task* pending_task,
     const char* task_queue_name) {
@@ -1375,15 +1339,19 @@ void TaskQueueImpl::ReportIpcTaskQueued(
     Task* pending_task,
     const char* task_queue_name,
     const base::TimeDelta& time_since_disabled) {
-  // Use a begin/end event pair so we can get 4 fields in the event.
-  TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("lifecycles"),
-                     "task_posted_to_disabled_queue", "task_queue_name",
-                     task_queue_name, "time_since_disabled_ms",
-                     time_since_disabled.InMilliseconds());
-  TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("lifecycles"),
-                   "task_posted_to_disabled_queue", "ipc_hash",
-                   pending_task->ipc_hash, "location",
-                   pending_task->posted_from.program_counter());
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("lifecycles"), "task_posted_to_disabled_queue",
+      [&](perfetto::EventContext ctx) {
+        auto* proto = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                          ->set_chrome_task_posted_to_disabled_queue();
+        proto->set_task_queue_name(task_queue_name);
+        proto->set_time_since_disabled_ms(time_since_disabled.InMilliseconds());
+        proto->set_ipc_hash(pending_task->ipc_hash);
+        proto->set_source_location_iid(
+            base::trace_event::InternedSourceLocation::Get(
+                &ctx, base::trace_event::TraceSourceLocation(
+                          pending_task->posted_from)));
+      });
 }
 
 void TaskQueueImpl::OnQueueUnblocked() {
@@ -1433,34 +1401,52 @@ void TaskQueueImpl::DelayedIncomingQueue::swap(DelayedIncomingQueue* rhs) {
 
 void TaskQueueImpl::DelayedIncomingQueue::SweepCancelledTasks(
     SequenceManagerImpl* sequence_manager) {
-  // Under the hood a std::priority_queue is a heap and usually it's built on
-  // top of a std::vector. We poke at that vector directly here to filter out
-  // canceled tasks in place.
-  bool task_deleted = false;
-  auto it = queue_.c.begin();
-  while (it != queue_.c.end()) {
+  pending_high_res_tasks_ -= queue_.SweepCancelledTasks(sequence_manager);
+}
+
+size_t TaskQueueImpl::DelayedIncomingQueue::PQueue::SweepCancelledTasks(
+    SequenceManagerImpl* sequence_manager) {
+  // Under the hood a std::priority_queue is a heap implemented top of a
+  // std::vector. We poke at that vector directly here to filter out canceled
+  // tasks in place.
+  size_t num_high_res_tasks_swept = 0u;
+  auto keep_task = [sequence_manager,
+                    &num_high_res_tasks_swept](const Task& task) {
     // TODO(crbug.com/1155905): Remove after figuring out the cause of the
     // crash.
-    sequence_manager->RecordCrashKeys(*it);
-    if (it->task.IsCancelled()) {
-      if (it->is_high_res)
-        pending_high_res_tasks_--;
-      *it = std::move(queue_.c.back());
-      queue_.c.pop_back();
-      task_deleted = true;
-    } else {
-      it++;
-    }
-  }
+    sequence_manager->RecordCrashKeys(task);
+    if (!task.task.IsCancelled())
+      return true;
+    if (task.is_high_res)
+      num_high_res_tasks_swept++;
+    return false;
+  };
 
-  // If we deleted something, re-enforce the heap property.
-  if (task_deleted)
-    ranges::make_heap(queue_.c, queue_.comp);
+  // Because task destructors could have a side-effect of posting new tasks, we
+  // move all the cancelled tasks into a temporary container before deleting
+  // them. This is to avoid |c| from changing while c.erase() is running.
+  auto delete_start = std::stable_partition(c.begin(), c.end(), keep_task);
+  std::vector<Task> tasks_to_delete;
+  std::move(delete_start, c.end(), std::back_inserter(tasks_to_delete));
+  c.erase(delete_start, c.end());
+
+  // stable_partition ensures order was not changed if there was nothing to
+  // delete.
+  if (!tasks_to_delete.empty()) {
+    ranges::make_heap(c, comp);
+    tasks_to_delete.clear();
+  }
+  return num_high_res_tasks_swept;
 }
 
 Value TaskQueueImpl::DelayedIncomingQueue::AsValue(TimeTicks now) const {
+  return queue_.AsValue(now);
+}
+
+Value TaskQueueImpl::DelayedIncomingQueue::PQueue::AsValue(
+    TimeTicks now) const {
   Value state(Value::Type::LIST);
-  for (const Task& task : queue_.c)
+  for (const Task& task : c)
     state.Append(TaskAsValue(task, now));
   return state;
 }

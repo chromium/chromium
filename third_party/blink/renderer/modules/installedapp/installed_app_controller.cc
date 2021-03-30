@@ -88,7 +88,7 @@ void InstalledAppController::OnGetManifestForRelatedApps(
   provider_->FilterInstalledApps(
       std::move(mojo_related_apps), url,
       WTF::Bind(&InstalledAppController::OnFilterInstalledApps,
-                WrapPersistent(this), WTF::Passed(std::move(callbacks))));
+                WrapPersistent(this), std::move(callbacks)));
 }
 
 void InstalledAppController::OnFilterInstalledApps(

@@ -97,7 +97,7 @@ void SecurityInterstitialPage::SetUpMetrics() {
   }
 }
 
-base::string16 SecurityInterstitialPage::GetFormattedHostName() const {
+std::u16string SecurityInterstitialPage::GetFormattedHostName() const {
   return security_interstitials::common_string_util::GetFormattedHostName(
       request_url_);
 }

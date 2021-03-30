@@ -64,9 +64,11 @@ AppWindowLauncherItemController::AppWindowLauncherItemController(
     : ash::ShelfItemDelegate(shelf_id) {}
 
 AppWindowLauncherItemController::~AppWindowLauncherItemController() {
-  for (auto* window : windows_)
-    window->SetController(nullptr);
+  WindowList windows(windows_);
   for (auto* window : hidden_windows_)
+    windows.push_back(window);
+
+  for (auto* window : windows)
     window->SetController(nullptr);
 }
 
@@ -189,7 +191,7 @@ AppWindowLauncherItemController::GetAppMenuItems(
     int event_flags,
     const ItemFilterPredicate& filter_predicate) {
   AppMenuItems items;
-  base::string16 app_title = LauncherControllerHelper::GetAppTitle(
+  std::u16string app_title = LauncherControllerHelper::GetAppTitle(
       ChromeLauncherController::instance()->profile(), app_id());
   int command_id = -1;
   for (const auto* it : windows()) {
@@ -202,11 +204,17 @@ AppWindowLauncherItemController::GetAppMenuItems(
     auto title = (window && !window->GetTitle().empty()) ? window->GetTitle()
                                                          : app_title;
     gfx::ImageSkia image;
-    const gfx::ImageSkia* app_icon = nullptr;
-    if (window)
-      app_icon = window->GetProperty(aura::client::kAppIconKey);
-    if (app_icon && !app_icon->isNull())
-      image = *app_icon;
+    if (window) {
+      // Prefer the smaller window icon because that fits better inside a menu.
+      const gfx::ImageSkia* icon =
+          window->GetProperty(aura::client::kWindowIconKey);
+      if (!icon || icon->isNull()) {
+        // Fall back to the larger app icon.
+        icon = window->GetProperty(aura::client::kAppIconKey);
+      }
+      if (icon && !icon->isNull())
+        image = *icon;
+    }
     items.push_back({command_id, title, image});
   }
   return items;

@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -137,15 +136,17 @@ template<> void DownloadQueryTest::AddFilter(
   CHECK(query_.AddFilter(name, base::Value(cpp_value)));
 }
 
-template<> void DownloadQueryTest::AddFilter(
-    DownloadQuery::FilterType name, const base::char16* cpp_value) {
+template <>
+void DownloadQueryTest::AddFilter(DownloadQuery::FilterType name,
+                                  const char16_t* cpp_value) {
   CHECK(query_.AddFilter(name, base::Value(cpp_value)));
 }
 
-template<> void DownloadQueryTest::AddFilter(
-    DownloadQuery::FilterType name, std::vector<base::string16> cpp_value) {
+template <>
+void DownloadQueryTest::AddFilter(DownloadQuery::FilterType name,
+                                  std::vector<std::u16string> cpp_value) {
   std::unique_ptr<base::ListValue> list(new base::ListValue());
-  for (std::vector<base::string16>::const_iterator it = cpp_value.begin();
+  for (std::vector<std::u16string>::const_iterator it = cpp_value.begin();
        it != cpp_value.end(); ++it) {
     list->AppendString(*it);
   }
@@ -161,13 +162,6 @@ template<> void DownloadQueryTest::AddFilter(
   }
   CHECK(query_.AddFilter(name, *list.get()));
 }
-
-#if defined(OS_WIN)
-template<> void DownloadQueryTest::AddFilter(
-    DownloadQuery::FilterType name, std::wstring cpp_value) {
-  CHECK(query_.AddFilter(name, base::Value(cpp_value)));
-}
-#endif
 
 TEST_F(DownloadQueryTest, DownloadQueryTest_ZeroItems) {
   Search();
@@ -293,14 +287,9 @@ TEST_F(DownloadQueryTest, DownloadQueryTest_FilterGenericQueryUrlUnescaping) {
 
 TEST_F(DownloadQueryTest, DownloadQueryTest_FilterGenericQueryFilenameI18N) {
   CreateMocks(2);
-  const base::FilePath::StringType kTestString(
-#if defined(OS_POSIX)
-      "/\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd"
-#elif defined(OS_WIN)
-      L"/\x4f60\x597d\x4f60\x597d"
-#endif
-      );
-  base::FilePath match_filename(kTestString);
+  const std::string kTestString(
+      "/\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd");
+  base::FilePath match_filename = base::FilePath::FromUTF8Unsafe(kTestString);
   EXPECT_CALL(mock(0), GetTargetFilePath()).WillRepeatedly(ReturnRef(
       match_filename));
   base::FilePath fail_filename(FILE_PATH_LITERAL("fail"));
@@ -311,7 +300,7 @@ TEST_F(DownloadQueryTest, DownloadQueryTest_FilterGenericQueryFilenameI18N) {
   EXPECT_CALL(mock(1), GetOriginalUrl()).WillRepeatedly(ReturnRef(fail_url));
   EXPECT_CALL(mock(0), GetURL()).WillRepeatedly(ReturnRef(fail_url));
   EXPECT_CALL(mock(1), GetURL()).WillRepeatedly(ReturnRef(fail_url));
-  std::vector<base::FilePath::StringType> query_terms;
+  std::vector<std::string> query_terms;
   query_terms.push_back(kTestString);
   AddFilter(DownloadQuery::FILTER_QUERY, query_terms);
   ExpectStandardFilterResults();
@@ -349,7 +338,8 @@ TEST_F(DownloadQueryTest, DownloadQueryTest_FilterFilename) {
   base::FilePath fail_filename(FILE_PATH_LITERAL("fail"));
   EXPECT_CALL(mock(1), GetTargetFilePath()).WillRepeatedly(ReturnRef(
       fail_filename));
-  AddFilter(DownloadQuery::FILTER_FILENAME, match_filename.value().c_str());
+  AddFilter(DownloadQuery::FILTER_FILENAME,
+            match_filename.AsUTF8Unsafe().c_str());
   ExpectStandardFilterResults();
 }
 

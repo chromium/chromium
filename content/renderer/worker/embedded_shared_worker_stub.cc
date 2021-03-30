@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "content/public/common/network_service_util.h"
+#include "content/renderer/content_security_policy_util.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -63,6 +64,8 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
   // the browser process.
   auto worker_main_script_load_params =
       std::make_unique<blink::WorkerMainScriptLoadParameters>();
+  worker_main_script_load_params->request_id =
+      main_script_load_params->request_id;
   worker_main_script_load_params->response_head =
       std::move(main_script_load_params->response_head);
   worker_main_script_load_params->response_body =
@@ -114,8 +117,8 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       blink::WebString::FromUTF8(info->options->name),
       blink::WebSecurityOrigin(constructor_origin),
       blink::WebString::FromUTF8(user_agent), ua_metadata,
-      blink::WebString::FromUTF8(info->content_security_policy),
-      info->content_security_policy_type, info->creation_address_space,
+      ToWebContentSecurityPolicies(std::move(info->content_security_policies)),
+      info->creation_address_space,
       FetchClientSettingsObjectFromMojomToWeb(
           info->outside_fetch_client_settings_object),
       appcache_host_id, devtools_worker_token, std::move(content_settings),

@@ -13,13 +13,14 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/frame_deadline.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -162,7 +163,11 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // The ink trail created with this metadata will only last for a single frame
   // before it disappears, regardless of whether or not the next frame contains
   // delegated ink metadata.
-  std::unique_ptr<DelegatedInkMetadata> delegated_ink_metadata;
+  std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
+
+  // This represents a list of directives to execute in order to support the
+  // document transitions.
+  std::vector<CompositorFrameTransitionDirective> transition_directives;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

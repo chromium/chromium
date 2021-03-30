@@ -120,7 +120,7 @@ GLuint UploadImage(std::unique_ptr<SkBitmap> bitmap,
   DCHECK(surface->get());
   SkCanvas* canvas = (*surface)->getCanvas();
   if (bitmap) {
-    canvas->drawBitmap(*bitmap, 0, 0);
+    canvas->drawImage(bitmap->asImage(), 0, 0);
   } else {
     // If we are missing a gradient image, blending with channels at .5 will
     // have no effect -- it will be as if there is no gradient image.
@@ -187,18 +187,18 @@ void Background::SetGradientImages(
 }
 
 void Background::SetNormalFactor(float factor) {
-  animation().TransitionFloatTo(last_frame_time(), NORMAL_COLOR_FACTOR,
-                                normal_factor_, factor);
+  animator().TransitionFloatTo(this, last_frame_time(), NORMAL_COLOR_FACTOR,
+                               normal_factor_, factor);
 }
 
 void Background::SetIncognitoFactor(float factor) {
-  animation().TransitionFloatTo(last_frame_time(), INCOGNITO_COLOR_FACTOR,
-                                incognito_factor_, factor);
+  animator().TransitionFloatTo(this, last_frame_time(), INCOGNITO_COLOR_FACTOR,
+                               incognito_factor_, factor);
 }
 
 void Background::SetFullscreenFactor(float factor) {
-  animation().TransitionFloatTo(last_frame_time(), FULLSCREEN_COLOR_FACTOR,
-                                fullscreen_factor_, factor);
+  animator().TransitionFloatTo(this, last_frame_time(), FULLSCREEN_COLOR_FACTOR,
+                               fullscreen_factor_, factor);
 }
 
 void Background::CreateBackgroundTexture() {
@@ -221,9 +221,9 @@ void Background::CreateGradientTextures() {
                   provider_, &fullscreen_gradient_surface_);
 }
 
-void Background::NotifyClientFloatAnimated(float value,
-                                           int target_property_id,
-                                           cc::KeyframeModel* keyframe_model) {
+void Background::OnFloatAnimated(const float& value,
+                                 int target_property_id,
+                                 gfx::KeyframeModel* keyframe_model) {
   switch (target_property_id) {
     case NORMAL_COLOR_FACTOR:
       normal_factor_ = value;
@@ -235,8 +235,7 @@ void Background::NotifyClientFloatAnimated(float value,
       fullscreen_factor_ = value;
       break;
     default:
-      UiElement::NotifyClientFloatAnimated(value, target_property_id,
-                                           keyframe_model);
+      UiElement::OnFloatAnimated(value, target_property_id, keyframe_model);
   }
 }
 

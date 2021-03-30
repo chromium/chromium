@@ -123,7 +123,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
                  std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef>
                      readback_ref,
                  std::unique_ptr<viz::CopyOutputResult> result) {
-                std::move(callback).Run(result->AsSkBitmap());
+                auto scoped_bitmap = result->ScopedAccessSkBitmap();
+                std::move(callback).Run(scoped_bitmap.GetOutScopedBitmap());
               },
               std::move(callback), std::move(readback_ref)));
 
@@ -342,8 +343,10 @@ void DelegatedFrameHostAndroid::OnFirstSurfaceActivation(
   NOTREACHED();
 }
 
-void DelegatedFrameHostAndroid::OnFrameTokenChanged(uint32_t frame_token) {
-  client_->OnFrameTokenChanged(frame_token);
+void DelegatedFrameHostAndroid::OnFrameTokenChanged(
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
+  client_->OnFrameTokenChanged(frame_token, activation_time);
 }
 
 viz::SurfaceId DelegatedFrameHostAndroid::SurfaceId() const {

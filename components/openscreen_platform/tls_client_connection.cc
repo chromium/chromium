@@ -56,7 +56,7 @@ void TlsClientConnection::SetClient(Client* client) {
 bool TlsClientConnection::Send(const void* data, size_t len) {
   if (!send_stream_.is_valid()) {
     if (client_) {
-      client_->OnError(this, Error(Error::Code::kSocketSendFailure,
+      client_->OnError(this, Error(Error::Code::kSocketClosedFailure,
                                    "Send stream was closed."));
     }
     return false;
@@ -65,7 +65,10 @@ bool TlsClientConnection::Send(const void* data, size_t len) {
   uint32_t num_bytes = base::checked_cast<uint32_t>(len);
   const MojoResult result = send_stream_->WriteData(
       data, &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
-  return ProcessMojoResult(result, Error::Code::kSocketSendFailure) ==
+  mojo::HandleSignalsState state = send_stream_->QuerySignalsState();
+  return ProcessMojoResult(result, state.peer_closed()
+                                       ? Error::Code::kSocketClosedFailure
+                                       : Error::Code::kSocketSendFailure) ==
          Error::Code::kNone;
 }
 
@@ -81,7 +84,7 @@ void TlsClientConnection::ReceiveMore(MojoResult result,
                                       const mojo::HandleSignalsState& state) {
   if (!receive_stream_.is_valid()) {
     if (client_) {
-      client_->OnError(this, Error(Error::Code::kSocketReadFailure,
+      client_->OnError(this, Error(Error::Code::kSocketClosedFailure,
                                    "Receive stream was closed."));
     }
     return;
@@ -103,8 +106,9 @@ void TlsClientConnection::ReceiveMore(MojoResult result,
     }
   }
 
-  const Error::Code interpretation =
-      ProcessMojoResult(result, Error::Code::kSocketReadFailure);
+  const Error::Code interpretation = ProcessMojoResult(
+      result, state.peer_closed() ? Error::Code::kSocketClosedFailure
+                                  : Error::Code::kSocketReadFailure);
   if (interpretation == Error::Code::kNone ||
       interpretation == Error::Code::kAgain) {
     receive_stream_watcher_.ArmOrNotify();

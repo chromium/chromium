@@ -9,13 +9,13 @@
 
 #include "base/memory/singleton.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"  // nogncheck
+#include "chrome/browser/profiles/incognito_helpers.h"  // nogncheck
+#include "chrome/browser/profiles/profile_key.h"        // nogncheck
 #include "chrome/browser/updates/internal/update_notification_service_impl.h"
-#include "chrome/browser/updates/update_notification_config.h"
-#include "chrome/browser/updates/update_notification_service_bridge.h"
-#include "chrome/browser/updates/update_notification_service_bridge_android.h"
+#include "chrome/browser/updates/update_notification_config.h"  // nogncheck
+#include "chrome/browser/updates/update_notification_service_bridge.h"  // nogncheck
+#include "chrome/browser/updates/update_notification_service_bridge_android.h"  // nogncheck
 #include "components/keyed_service/core/simple_dependency_manager.h"
 
 // static

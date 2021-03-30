@@ -47,7 +47,7 @@ class MenuModelBase : public ui::MenuModel {
     return index + command_id_base_;
   }
 
-  base::string16 GetLabelAt(int index) const override {
+  std::u16string GetLabelAt(int index) const override {
     return items_[index].label;
   }
 
@@ -119,7 +119,7 @@ class MenuModelBase : public ui::MenuModel {
           visible(visible) {}
 
     ItemType type;
-    base::string16 label;
+    std::u16string label;
     ui::MenuModel* submenu;
     bool enabled;
     bool visible;

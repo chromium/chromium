@@ -100,7 +100,7 @@ ReSignInInfoBarDelegate::GetIdentifier() const {
   return RE_SIGN_IN_INFOBAR_DELEGATE_IOS;
 }
 
-base::string16 ReSignInInfoBarDelegate::GetMessageText() const {
+std::u16string ReSignInInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE);
 }
 
@@ -108,7 +108,7 @@ int ReSignInInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 ReSignInInfoBarDelegate::GetButtonLabel(
+std::u16string ReSignInInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16(
       IDS_IOS_SYNC_INFOBAR_SIGN_IN_SETTINGS_BUTTON_MOBILE);

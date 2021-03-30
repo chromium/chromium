@@ -161,7 +161,7 @@ class GeolocationPermissionContextTests
   void AcceptPrompt(content::WebContents* web_contents);
   void DenyPrompt();
   void ClosePrompt();
-  base::string16 GetPromptText();
+  std::u16string GetPromptText();
 
   TestPermissionsClient client_;
   // owned by |manager_|
@@ -357,7 +357,7 @@ void GeolocationPermissionContextTests::RequestManagerDocumentLoadCompleted() {
 void GeolocationPermissionContextTests::RequestManagerDocumentLoadCompleted(
     content::WebContents* web_contents) {
   PermissionRequestManager::FromWebContents(web_contents)
-      ->DocumentOnLoadCompletedInMainFrame();
+      ->DocumentOnLoadCompletedInMainFrame(main_rfh());
 }
 
 ContentSetting GeolocationPermissionContextTests::GetGeolocationContentSetting(
@@ -415,7 +415,7 @@ void GeolocationPermissionContextTests::ClosePrompt() {
   base::RunLoop().RunUntilIdle();
 }
 
-base::string16 GeolocationPermissionContextTests::GetPromptText() {
+std::u16string GeolocationPermissionContextTests::GetPromptText() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
   PermissionRequest* request = manager->Requests().front();
@@ -906,7 +906,7 @@ TEST_F(GeolocationPermissionContextTests, CancelGeolocationPermissionRequest) {
   RequestGeolocationPermission(web_contents(), RequestID(0), frame_0, true);
 
   ASSERT_TRUE(HasActivePrompt());
-  base::string16 text_0 = GetPromptText();
+  std::u16string text_0 = GetPromptText();
   ASSERT_FALSE(text_0.empty());
 
   // Simulate the frame going away; the request should be removed.

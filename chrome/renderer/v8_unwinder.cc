@@ -85,7 +85,7 @@ V8Unwinder::V8Unwinder(v8::Isolate* isolate)
 
 V8Unwinder::~V8Unwinder() = default;
 
-void V8Unwinder::AddInitialModules(base::ModuleCache* module_cache) {
+void V8Unwinder::InitializeModules() {
   // This function must be called only once.
   DCHECK(modules_.empty());
 
@@ -94,7 +94,7 @@ void V8Unwinder::AddInitialModules(base::ModuleCache* module_cache) {
   new_module.push_back(
       std::make_unique<V8Module>(embedded_code_range_, V8Module::kEmbedded));
   modules_.insert(new_module.front().get());
-  module_cache->UpdateNonNativeModules({}, std::move(new_module));
+  module_cache()->UpdateNonNativeModules({}, std::move(new_module));
 }
 
 // IMPORTANT NOTE: to avoid deadlock this function must not invoke any
@@ -109,10 +109,10 @@ void V8Unwinder::OnStackCapture() {
 }
 
 // Update the modules based on what was recorded in |code_ranges_|. The singular
-// embedded code range was already added in in AddInitialModules(). It is
+// embedded code range was already added in in InitializeModules(). It is
 // preserved by the algorithm below, which is why kNonEmbedded is
 // unconditionally passed when creating new modules.
-void V8Unwinder::UpdateModules(base::ModuleCache* module_cache) {
+void V8Unwinder::UpdateModules() {
   MemoryRangeModuleCompare less_than;
 
   const auto is_embedded_code_range_module =
@@ -173,7 +173,8 @@ void V8Unwinder::UpdateModules(base::ModuleCache* module_cache) {
     }
   }
 
-  module_cache->UpdateNonNativeModules(defunct_modules, std::move(new_modules));
+  module_cache()->UpdateNonNativeModules(defunct_modules,
+                                         std::move(new_modules));
   code_ranges_.ExpandCapacityIfNecessary(required_code_ranges_capacity_);
 }
 
@@ -189,7 +190,6 @@ bool V8Unwinder::CanUnwindFrom(const base::Frame& current_frame) const {
 base::UnwindResult V8Unwinder::TryUnwind(
     base::RegisterContext* thread_context,
     uintptr_t stack_top,
-    base::ModuleCache* module_cache,
     std::vector<base::Frame>* stack) const {
   v8::RegisterState register_state;
   register_state.pc = reinterpret_cast<void*>(
@@ -219,7 +219,7 @@ base::UnwindResult V8Unwinder::TryUnwind(
 
   stack->emplace_back(
       base::RegisterContextInstructionPointer(thread_context),
-      module_cache->GetModuleForAddress(
+      module_cache()->GetModuleForAddress(
           base::RegisterContextInstructionPointer(thread_context)));
 
   return base::UnwindResult::UNRECOGNIZED_FRAME;

@@ -13,7 +13,7 @@
 #elif defined(__APPLE__)
 #include "third_party/blink/renderer/build/mac/prefix.h"
 #else
-#error implement
+#include "third_party/blink/renderer/build/linux/prefix.h"
 #endif
 
 // Include Oilpan's handle.h by default, as it is included by a significant

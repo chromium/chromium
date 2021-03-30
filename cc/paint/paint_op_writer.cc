@@ -352,6 +352,17 @@ void PaintOpWriter::Write(const sk_sp<SkData>& data) {
   }
 }
 
+void PaintOpWriter::Write(const SkSamplingOptions& sampling) {
+  Write(sampling.useCubic);
+  if (sampling.useCubic) {
+    Write(sampling.cubic.B);
+    Write(sampling.cubic.C);
+  } else {
+    Write(sampling.filter);
+    Write(sampling.mipmap);
+  }
+}
+
 void PaintOpWriter::Write(const SkColorSpace* color_space) {
   if (!color_space) {
     WriteSize(static_cast<size_t>(0));
@@ -588,8 +599,7 @@ void PaintOpWriter::Write(const PaintFilter* filter) {
   auto* crop_rect = filter->crop_rect();
   WriteSimple(static_cast<uint32_t>(!!crop_rect));
   if (crop_rect) {
-    WriteSimple(crop_rect->flags());
-    WriteSimple(crop_rect->rect());
+    WriteSimple(*crop_rect);
   }
 
   if (!valid_)
@@ -677,7 +687,7 @@ void PaintOpWriter::Write(const ColorFilterPaintFilter& filter) {
 void PaintOpWriter::Write(const BlurPaintFilter& filter) {
   WriteSimple(filter.sigma_x());
   WriteSimple(filter.sigma_y());
-  WriteSimple(filter.tile_mode());
+  Write(filter.tile_mode());
   Write(filter.input().get());
 }
 
@@ -734,7 +744,7 @@ void PaintOpWriter::Write(const MatrixConvolutionPaintFilter& filter) {
   WriteSimple(filter.gain());
   WriteSimple(filter.bias());
   WriteSimple(filter.kernel_offset());
-  WriteSimple(static_cast<uint32_t>(filter.tile_mode()));
+  Write(filter.tile_mode());
   WriteSimple(filter.convolve_alpha());
   Write(filter.input().get());
 }

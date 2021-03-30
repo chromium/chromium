@@ -7,6 +7,7 @@
 #include "base/location.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace internal {
@@ -18,9 +19,14 @@ ScopedMayLoadLibraryAtBackgroundPriority::
     : already_loaded_(already_loaded)
 #endif  // OS_WIN
 {
-  TRACE_EVENT_BEGIN2("base", "ScopedMayLoadLibraryAtBackgroundPriority",
-                     "file_name", from_here.file_name(), "function_name",
-                     from_here.function_name());
+  TRACE_EVENT_BEGIN(
+      "base", "ScopedMayLoadLibraryAtBackgroundPriority",
+      [&](perfetto::EventContext ctx) {
+        ctx.event()->set_source_location_iid(
+            base::trace_event::InternedSourceLocation::Get(
+                &ctx, base::trace_event::TraceSourceLocation(from_here)));
+      });
+
 #if defined(OS_WIN)
   if (already_loaded_ && already_loaded_->load(std::memory_order_relaxed))
     return;

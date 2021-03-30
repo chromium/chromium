@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Test class to test UrlBarController logic.
@@ -217,7 +218,7 @@ public class UrlBarControllerTest {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(ABOUT_BLANK_URL);
         View urlBarView = activity.getUrlBarView();
 
-        Assert.assertEquals(getDisplayedUrl(), ABOUT_BLANK_URL);
+        Assert.assertEquals(ABOUT_BLANK_URL, getDisplayedUrl());
     }
 
     /**
@@ -237,7 +238,7 @@ public class UrlBarControllerTest {
         mExpectedUrlBarViewText =
                 mExpectedUrlBarViewText.substring(0, mExpectedUrlBarViewText.indexOf("/echo"));
 
-        Assert.assertEquals(getDisplayedUrl(), mExpectedUrlBarViewText);
+        Assert.assertEquals(mExpectedUrlBarViewText, getDisplayedUrl());
     }
 
     /**
@@ -245,7 +246,7 @@ public class UrlBarControllerTest {
      */
     @Test
     @SmallTest
-    public void testUrlBarTextViewOnNewActiveTab() {
+    public void testUrlBarTextViewOnNewActiveTab() throws ExecutionException {
         String url = mActivityTestRule.getTestDataURL(NEW_TAB_URL);
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(url);
         Assert.assertNotNull(activity);
@@ -261,14 +262,19 @@ public class UrlBarControllerTest {
         EventUtils.simulateTouchCenterOfView(activity.getWindow().getDecorView());
 
         callback.waitForNewTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
+        Tab newTab = TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(2, activity.getBrowser().getTabs().size());
             Tab secondTab = activity.getBrowser().getActiveTab();
             Assert.assertNotSame(firstTab, secondTab);
+            return secondTab;
         });
 
-        View urlBarView = activity.getUrlBarView();
-        Assert.assertEquals(getDisplayedUrl(), ABOUT_BLANK_URL);
+        NavigationWaiter waiter = new NavigationWaiter(ABOUT_BLANK_URL, newTab, false, true);
+        if (!ABOUT_BLANK_URL.equals(getDisplayedUrl())) {
+            waiter.waitForNavigation();
+        }
+
+        Assert.assertEquals(ABOUT_BLANK_URL, getDisplayedUrl());
     }
 
     @Test

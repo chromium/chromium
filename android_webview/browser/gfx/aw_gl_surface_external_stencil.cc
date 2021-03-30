@@ -155,7 +155,8 @@ class AwGLSurfaceExternalStencil::FrameBuffer {
   gfx::Size size_;
 };
 
-AwGLSurfaceExternalStencil::AwGLSurfaceExternalStencil() {}
+AwGLSurfaceExternalStencil::AwGLSurfaceExternalStencil(bool is_angle)
+    : AwGLSurface(is_angle) {}
 
 AwGLSurfaceExternalStencil::~AwGLSurfaceExternalStencil() = default;
 
@@ -180,6 +181,10 @@ gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
   if (stencil_state.stencil_test_enabled) {
     DCHECK(framebuffer_);
     DCHECK(blit_context_);
+
+    // Flush skia renderer rendering. This is working around what appears to be
+    // a driver bug that causes rendering to break.
+    glFlush();
 
     // Restore stencil state.
     glEnable(GL_STENCIL_TEST);

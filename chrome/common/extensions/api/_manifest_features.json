@@ -13,7 +13,8 @@
   },
   "action": {
     "channel": "stable",
-    "extension_types": ["extension"]
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
   },
   "app.icon_color": {
     "channel": "stable",
@@ -47,7 +48,7 @@
   }, {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "whitelist": [ "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E" ]
+    "allowlist": [ "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E" ]
   }],
   "browser_action": {
     "channel": "stable",
@@ -65,8 +66,7 @@
   },
   "commands": {
     "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["extension", "platform_app"]
   },
   "content_scripts": {
     "channel": "stable",
@@ -105,7 +105,7 @@
     {
       "channel": "stable",
       "extension_types": ["legacy_packaged_app", "platform_app"],
-      "whitelist": [
+      "allowlist": [
         "64291898C201DAF15B090EC4B9EC270BEB6BE6FF",
         "07BD6A765FFC289FF755D7CAB2893A40EC337FEC",  // http://crbug.com/453955
         "896B85CC7E913E11C34892C1425A093C0701D386",  // http://crbug.com/453955
@@ -123,7 +123,7 @@
     {
       "channel": "stable",
       "extension_types": ["legacy_packaged_app", "platform_app"],
-      "whitelist": [
+      "allowlist": [
         "64291898C201DAF15B090EC4B9EC270BEB6BE6FF",
         "07BD6A765FFC289FF755D7CAB2893A40EC337FEC",  // http://crbug.com/453955
         "896B85CC7E913E11C34892C1425A093C0701D386",  // http://crbug.com/453955
@@ -147,7 +147,7 @@
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/673004
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004
     ]
@@ -209,14 +209,6 @@
     "channel": "stable",
     "extension_types": "all"
   },
-  "signature": {
-    "channel": "stable",
-    "extension_types": "all"
-  },
-  "spellcheck": {
-    "channel": "dev",
-    "extension_types": ["extension"]
-  },
   "storage": {
     "channel": "stable",
     "extension_types": [
@@ -224,8 +216,7 @@
       "legacy_packaged_app",
       "platform_app",
       "login_screen_extension"
-    ],
-    "min_manifest_version": 2
+    ]
   },
   "system_indicator": [
     {
@@ -234,9 +225,9 @@
     },
     {
       "channel": "stable",
-      "whitelist": [
+      "allowlist": [
         "F29716B08705C9D3C12CDFE3F638BAE709570C31",  // browser_tests
-        // See crbug.com/245730 for details on the Hangouts whitelist.
+        // See crbug.com/245730 for details on the Hangouts allowlist.
         "53041A2FA309EECED01FFC751E7399186E860B2C",  // Hangouts
         "312745D9BF916161191143F6490085EEA0434997",  // Hangouts beta
         "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",  // Hangouts alpha

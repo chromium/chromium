@@ -15,8 +15,8 @@
 #include <map>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/attestation/platform_verification_dialog.h"
-#include "chrome/browser/chromeos/attestation/platform_verification_flow.h"
+#include "chrome/browser/ash/attestation/platform_verification_dialog.h"
+#include "chrome/browser/ash/attestation/platform_verification_flow.h"
 #endif
 
 namespace views {
@@ -73,9 +73,9 @@ class ProtectedMediaIdentifierPermissionContext
       const GURL& requesting_origin,
       const GURL& embedding_origin,
       bool user_gesture,
+      base::Time dialog_show_time,
       permissions::BrowserPermissionCallback callback,
-      chromeos::attestation::PlatformVerificationDialog::ConsentResponse
-          response);
+      ash::attestation::PlatformVerificationDialog::ConsentResponse response);
 
   // |this| is shared among multiple WebContents, so we could receive multiple
   // permission requests. This map tracks all pending requests. Note that we

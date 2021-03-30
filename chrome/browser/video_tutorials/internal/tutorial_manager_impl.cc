@@ -41,7 +41,7 @@ void TutorialManagerImpl::Initialize() {
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TutorialManagerImpl::GetTutorials(GetTutorialsCallback callback) {
+void TutorialManagerImpl::GetTutorials(MultipleItemCallback callback) {
   if (!init_success_.has_value()) {
     MaybeCacheApiCall(base::BindOnce(&TutorialManagerImpl::GetTutorials,
                                      weak_ptr_factory_.GetWeakPtr(),
@@ -69,8 +69,41 @@ void TutorialManagerImpl::GetTutorials(GetTutorialsCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void TutorialManagerImpl::GetTutorial(FeatureType feature_type,
+                                      SingleItemCallback callback) {
+  // Ensure that all the tutorials are already loaded.
+  GetTutorials(base::BindOnce(&TutorialManagerImpl::RunSingleItemCallback,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              std::move(callback), feature_type));
+}
+
+void TutorialManagerImpl::RunSingleItemCallback(
+    SingleItemCallback callback,
+    FeatureType feature_type,
+    std::vector<Tutorial> tutorials_excluding_summary) {
+  if (!tutorial_group_.has_value()) {
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+
+  for (const Tutorial& tutorial : tutorial_group_->tutorials) {
+    if (tutorial.feature == feature_type) {
+      std::move(callback).Run(tutorial);
+      return;
+    }
+  }
+
+  std::move(callback).Run(base::nullopt);
+}
+
 const std::vector<std::string>& TutorialManagerImpl::GetSupportedLanguages() {
   return supported_languages_;
+}
+
+const std::vector<std::string>&
+TutorialManagerImpl::GetAvailableLanguagesForTutorial(
+    FeatureType feature_type) {
+  return languages_for_tutorials_[feature_type];
 }
 
 base::Optional<std::string> TutorialManagerImpl::GetPreferredLocale() {
@@ -100,6 +133,14 @@ void TutorialManagerImpl::OnInitialDataLoaded(
     for (auto& tutorial_group : *all_groups) {
       supported_languages_.emplace_back(tutorial_group.language);
     }
+
+    languages_for_tutorials_.clear();
+    for (auto& tutorial_group : *all_groups) {
+      for (auto& tutorial : tutorial_group.tutorials) {
+        languages_for_tutorials_[tutorial.feature].emplace_back(
+            tutorial_group.language);
+      }
+    }
   }
 
   init_success_ = success;
@@ -113,7 +154,7 @@ void TutorialManagerImpl::OnInitialDataLoaded(
 }
 
 void TutorialManagerImpl::OnTutorialsLoaded(
-    GetTutorialsCallback callback,
+    MultipleItemCallback callback,
     bool success,
     std::unique_ptr<std::vector<TutorialGroup>> loaded_groups) {
   if (!success || !loaded_groups || loaded_groups->empty()) {

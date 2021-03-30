@@ -298,7 +298,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Check.RollbackTargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-05-16">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-08-09">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
@@ -318,7 +318,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Check.TargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-05-16">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-09-19">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
@@ -377,7 +377,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.EnterpriseRollback.Failure"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-03-01">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-06-01">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
@@ -395,7 +395,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.EnterpriseRollback.Success"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-03-01">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2021-06-01">
   <owner>mpolzer@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
@@ -597,8 +597,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="UpdateEngine.SuccessfulUpdate.DurationFromSeenDays.NoTimeRestriction"
-    units="days" expires_after="2021-05-09">
-  <owner>mpolzer@google.com</owner>
+    units="days" expires_after="2021-09-12">
+  <owner>snijhara@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
     The total number of days from when an update is first seen to when an update
@@ -612,8 +612,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="UpdateEngine.SuccessfulUpdate.DurationFromSeenDays.TimeRestricted"
-    units="days" expires_after="2021-01-01">
-  <owner>mpolzer@google.com</owner>
+    units="days" expires_after="2021-05-09">
+  <owner>snijhara@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
     The total number of days from when an update is first seen to when an update

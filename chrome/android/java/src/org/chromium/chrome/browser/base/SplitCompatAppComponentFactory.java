@@ -49,6 +49,9 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
     @Override
     public BroadcastReceiver instantiateReceiver(ClassLoader cl, String className, Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        // Receivers call createContextForSplit() on the ContextImpl, which will not run the logic
+        // in SplitChromeApplication which makes sure the preload has finished.
+        SplitChromeApplication.finishPreload(CHROME_SPLIT_NAME);
         return super.instantiateReceiver(getComponentClassLoader(cl, className), className, intent);
     }
 

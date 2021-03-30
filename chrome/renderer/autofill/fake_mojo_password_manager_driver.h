@@ -9,9 +9,8 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,7 +37,7 @@ class FakeMojoPasswordManagerDriver
 
   MOCK_METHOD4(ShowPasswordSuggestions,
                void(base::i18n::TextDirection,
-                    const base::string16&,
+                    const std::u16string&,
                     int,
                     const gfx::RectF&));
 
@@ -54,8 +53,8 @@ class FakeMojoPasswordManagerDriver
     return form_data_submitted_;
   }
 
-  bool called_same_document_navigation() const {
-    return called_same_document_navigation_;
+  bool called_dynamic_form_submission() const {
+    return called_dynamic_form_submission_;
   }
 
   const base::Optional<autofill::FormData>& form_data_maybe_submitted() const {
@@ -99,7 +98,7 @@ class FakeMojoPasswordManagerDriver
     return called_save_generation_field_;
   }
 
-  const base::Optional<base::string16>& save_generation_field() const {
+  const base::Optional<std::u16string>& save_generation_field() const {
     return save_generation_field_;
   }
 
@@ -114,6 +113,10 @@ class FakeMojoPasswordManagerDriver
 
   int called_inform_about_user_input_count() const {
     return called_inform_about_user_input_count_;
+  }
+
+  autofill::FieldRendererId last_focused_field_id() const {
+    return last_focused_field_id_;
   }
 
   autofill::mojom::FocusedFieldType last_focused_field_type() const {
@@ -131,15 +134,15 @@ class FakeMojoPasswordManagerDriver
 
   void PasswordFormSubmitted(const autofill::FormData& form_data) override;
 
-  void SameDocumentNavigation(autofill::mojom::SubmissionIndicatorEvent
-                                  submission_indication_event) override;
+  void DynamicFormSubmission(autofill::mojom::SubmissionIndicatorEvent
+                                 submission_indication_event) override;
 
   void RecordSavePasswordProgress(const std::string& log) override;
 
   void UserModifiedPasswordField() override;
 
   void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,
-                                    const base::string16& value) override;
+                                    const std::u16string& value) override;
 
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
@@ -147,6 +150,7 @@ class FakeMojoPasswordManagerDriver
   void InformAboutUserInput(const autofill::FormData& form_data) override;
 
   void FocusedInputChanged(
+      autofill::FieldRendererId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) override;
   void LogFirstFillingResult(autofill::FormRendererId form_renderer_id,
                              int32_t result) override {}
@@ -159,8 +163,8 @@ class FakeMojoPasswordManagerDriver
   base::Optional<autofill::FormData> form_data_submitted_;
   // Records data received via ShowManualFallbackForSaving() call.
   base::Optional<autofill::FormData> form_data_maybe_submitted_;
-  // Records whether SameDocumentNavigation() gets called.
-  bool called_same_document_navigation_ = false;
+  // Records whether DynamicFormSubmission() gets called.
+  bool called_dynamic_form_submission_ = false;
   // Records whether PasswordFormsParsed() gets called.
   bool called_password_forms_parsed_ = false;
   // Records if the list received via PasswordFormsParsed() call was empty.
@@ -176,7 +180,7 @@ class FakeMojoPasswordManagerDriver
   // Records whether SaveGenerationFieldDetectedByClassifier() gets called.
   bool called_save_generation_field_ = false;
   // Records data received via SaveGenerationFieldDetectedByClassifier() call.
-  base::Optional<base::string16> save_generation_field_;
+  base::Optional<std::u16string> save_generation_field_;
 
   // Records number of times CheckSafeBrowsingReputation() gets called.
   int called_check_safe_browsing_reputation_cnt_ = 0;
@@ -184,8 +188,9 @@ class FakeMojoPasswordManagerDriver
   // Records the number of request to inform about user input.
   int called_inform_about_user_input_count_ = 0;
 
-  // Records the last focused field type that FocusedInputChanged() was called
-  // with.
+  // Records the last focused field ID and type that FocusedInputChanged() was
+  // called with.
+  autofill::FieldRendererId last_focused_field_id_;
   autofill::mojom::FocusedFieldType last_focused_field_type_ =
       autofill::mojom::FocusedFieldType::kUnknown;
 

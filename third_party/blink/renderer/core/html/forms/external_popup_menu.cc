@@ -68,6 +68,7 @@ ExternalPopupMenu::~ExternalPopupMenu() = default;
 void ExternalPopupMenu::Trace(Visitor* visitor) const {
   visitor->Trace(owner_element_);
   visitor->Trace(local_frame_);
+  visitor->Trace(dispatch_event_timer_);
   visitor->Trace(receiver_);
   PopupMenu::Trace(visitor);
 }

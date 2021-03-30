@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Test that watch expressions expansion state is restored after update.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var globalObject = {
@@ -29,8 +29,7 @@
       }());
   `);
 
-  var watchExpressionsPane =
-      self.runtime.sharedInstance(Sources.WatchExpressionsSidebarPane);
+  var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
   UI.panels.sources._sidebarPaneStack
       .showView(UI.panels.sources._watchSidebarPane)
       .then(() => {
@@ -65,7 +64,7 @@
   }
 
   function dumpWatchExpressions() {
-    var pane = self.runtime.sharedInstance(Sources.WatchExpressionsSidebarPane);
+    var pane = Sources.WatchExpressionsSidebarPane.instance();
 
     for (var i = 0; i < pane._watchExpressions.length; i++) {
       var watch = pane._watchExpressions[i];
@@ -119,7 +118,7 @@
   }
 
   function expandWatchExpression(path, callback) {
-    var pane = self.runtime.sharedInstance(Sources.WatchExpressionsSidebarPane);
+    var pane = Sources.WatchExpressionsSidebarPane.instance();
     var expression = path.shift();
     for (var i = 0; i < pane._watchExpressions.length; i++) {
       var watch = pane._watchExpressions[i];

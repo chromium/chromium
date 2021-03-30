@@ -74,12 +74,7 @@ void FakeBluetoothAdapterClient::Properties::Set(
 }
 
 FakeBluetoothAdapterClient::FakeBluetoothAdapterClient()
-    : visible_(true),
-      second_visible_(false),
-      discovering_count_(0),
-      set_discovery_filter_should_fail_(false),
-      simulation_interval_ms_(kSimulationIntervalMs),
-      last_handle_(0) {
+    : simulation_interval_ms_(kSimulationIntervalMs) {
   properties_ = std::make_unique<Properties>(base::BindRepeating(
       &FakeBluetoothAdapterClient::OnPropertyChanged, base::Unretained(this)));
 
@@ -113,10 +108,10 @@ void FakeBluetoothAdapterClient::RemoveObserver(Observer* observer) {
 
 std::vector<dbus::ObjectPath> FakeBluetoothAdapterClient::GetAdapters() {
   std::vector<dbus::ObjectPath> object_paths;
-  if (visible_)
-    object_paths.push_back(dbus::ObjectPath(kAdapterPath));
-  if (second_visible_)
-    object_paths.push_back(dbus::ObjectPath(kSecondAdapterPath));
+  if (present_)
+    object_paths.emplace_back(dbus::ObjectPath(kAdapterPath));
+  if (second_present_)
+    object_paths.emplace_back(dbus::ObjectPath(kSecondAdapterPath));
   return object_paths;
 }
 
@@ -308,34 +303,34 @@ FakeBluetoothAdapterClient::GetDiscoveryFilter() {
   return discovery_filter_.get();
 }
 
-void FakeBluetoothAdapterClient::SetVisible(bool visible) {
-  if (visible && !visible_) {
-    // Adapter becoming visible
-    visible_ = visible;
+void FakeBluetoothAdapterClient::SetPresent(bool present) {
+  if (present && !present_) {
+    // Adapter becoming present
+    present_ = present;
 
     for (auto& observer : observers_)
       observer.AdapterAdded(dbus::ObjectPath(kAdapterPath));
 
-  } else if (visible_ && !visible) {
-    // Adapter becoming invisible
-    visible_ = visible;
+  } else if (present_ && !present) {
+    // Adapter no longer present
+    present_ = present;
 
     for (auto& observer : observers_)
       observer.AdapterRemoved(dbus::ObjectPath(kAdapterPath));
   }
 }
 
-void FakeBluetoothAdapterClient::SetSecondVisible(bool visible) {
-  if (visible && !second_visible_) {
-    // Second adapter becoming visible
-    second_visible_ = visible;
+void FakeBluetoothAdapterClient::SetSecondPresent(bool present) {
+  if (present && !second_present_) {
+    // Second adapter becoming present
+    second_present_ = present;
 
     for (auto& observer : observers_)
       observer.AdapterAdded(dbus::ObjectPath(kSecondAdapterPath));
 
-  } else if (second_visible_ && !visible) {
-    // Second adapter becoming invisible
-    second_visible_ = visible;
+  } else if (second_present_ && !present) {
+    // Second adapter no longer present
+    second_present_ = present;
 
     for (auto& observer : observers_)
       observer.AdapterRemoved(dbus::ObjectPath(kSecondAdapterPath));

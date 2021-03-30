@@ -23,13 +23,11 @@ bool FeatureMap::AddRealFeature(const std::string& name, double value) {
     // too small, or there is a bug causing too many features to be added.
     // In this case, we'll log to a histogram so we can see that this is
     // happening, and make phishing classification fail silently.
-    UMA_HISTOGRAM_COUNTS_1M("SBClientPhishing.TooManyFeatures", 1);
     return false;
   }
   // We only expect features in the range [0.0, 1.0], so fail if the feature is
   // outside this range.
   if (value < 0.0 || value > 1.0) {
-    UMA_HISTOGRAM_COUNTS_1M("SBClientPhishing.IllegalFeatureValue", 1);
     return false;
   }
 

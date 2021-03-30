@@ -144,10 +144,7 @@ viz_component("common") {
   sources = [
     "constants.cc",
     "constants.h",
-    "delegated_ink_metadata.cc",
-    "delegated_ink_metadata.h",
-    "delegated_ink_point.cc",
-    "delegated_ink_point.h",
+    "delegated_ink_prediction_configuration.h",
     "display/de_jelly.cc",
     "display/de_jelly.h",
     "display/overlay_strategy.cc",
@@ -247,6 +244,7 @@ viz_component("common") {
     "resources/resource_settings.cc",
     "resources/resource_settings.h",
     "resources/return_callback.h",
+    "resources/returned_resource.cc",
     "resources/returned_resource.h",
     "resources/shared_bitmap.cc",
     "resources/shared_bitmap.h",
@@ -268,6 +266,9 @@ viz_component("common") {
     "surfaces/parent_local_surface_id_allocator.h",
     "surfaces/scoped_surface_id_allocator.cc",
     "surfaces/scoped_surface_id_allocator.h",
+    "surfaces/subtree_capture_id.cc",
+    "surfaces/subtree_capture_id.h",
+    "surfaces/subtree_capture_id_allocator.h",
     "surfaces/surface_id.cc",
     "surfaces/surface_id.h",
     "surfaces/surface_info.cc",
@@ -356,6 +357,7 @@ viz_source_set("unit_tests") {
     "frame_sinks/copy_output_util_unittest.cc",
     "frame_sinks/delay_based_time_source_unittest.cc",
     "gpu/context_cache_controller_unittest.cc",
+    "quads/compositor_frame_metadata_unittest.cc",
     "quads/compositor_frame_transition_directive_unittest.cc",
     "quads/compositor_render_pass_unittest.cc",
     "quads/draw_quad_unittest.cc",
@@ -382,6 +384,9 @@ viz_source_set("unit_tests") {
     ]
   }
 
+  if (enable_vulkan) {
+    sources += [ "gpu/vulkan_in_process_context_provider_unittest.cc" ]
+  }
   deps = [
     ":common",
     "//base/test:test_support",
@@ -397,6 +402,7 @@ viz_source_set("unit_tests") {
     "//ui/gfx",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
+    "//ui/latency",
   ]
 }
 

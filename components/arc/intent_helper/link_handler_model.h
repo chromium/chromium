@@ -6,11 +6,11 @@
 #define COMPONENTS_ARC_INTENT_HELPER_LINK_HANDLER_MODEL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "url/gurl.h"
@@ -23,7 +23,7 @@ namespace arc {
 
 // This struct describes the UI presentation of a single link handler.
 struct LinkHandlerInfo {
-  base::string16 name;
+  std::u16string name;
   gfx::Image icon;
   // An opaque identifier for this handler (which happens to correlate to the
   // index in |handlers_|.
@@ -42,6 +42,8 @@ class LinkHandlerModel {
       content::BrowserContext* context,
       const GURL& link_url);
 
+  LinkHandlerModel(const LinkHandlerModel&) = delete;
+  LinkHandlerModel& operator=(const LinkHandlerModel&) = delete;
   ~LinkHandlerModel();
 
   void AddObserver(Observer* observer);
@@ -80,8 +82,6 @@ class LinkHandlerModel {
   ArcIntentHelperBridge::ActivityToIconsMap icons_;
 
   base::WeakPtrFactory<LinkHandlerModel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LinkHandlerModel);
 };
 
 }  // namespace arc

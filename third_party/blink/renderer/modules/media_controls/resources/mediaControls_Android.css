@@ -2,6 +2,7 @@
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file.*/
 
+@namespace "http://www.w3.org/1999/xhtml";
 
 /* On Android, we always want the slider thumb to appear. */
 video::-webkit-media-controls input[pseudo="-webkit-media-controls-timeline" i]::-webkit-slider-thumb,

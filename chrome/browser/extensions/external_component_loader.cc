@@ -19,7 +19,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chromeos/constants/chromeos_switches.h"
 #endif
 
 namespace extensions {

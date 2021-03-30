@@ -85,6 +85,7 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
   static bool InsertParagraphSeparator(Document&);
   static bool InsertParagraphSeparatorInQuotedContent(Document&);
   static void CloseTyping(LocalFrame*);
+  static void CloseTypingIfNeeded(LocalFrame*);
 
   static TypingCommand* LastTypingCommandIfStillOpenForTyping(LocalFrame*);
   static void UpdateSelectionIfDifferentFromCurrentSelection(TypingCommand*,

@@ -14,7 +14,6 @@ namespace features {
 extern const base::Feature kNavigationPredictorPreconnectHoldback;
 extern const base::Feature
     kNavigationPredictorEnablePreconnectOnSameDocumentNavigations;
-extern const base::Feature kNavigationPredictorRendererWarmup;
 
 }  // namespace features
 

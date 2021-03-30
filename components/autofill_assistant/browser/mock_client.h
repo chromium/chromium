@@ -10,6 +10,7 @@
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
+#include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,6 +26,9 @@ class MockClient : public Client {
   MOCK_CONST_METHOD0(GetLocale, std::string());
   MOCK_CONST_METHOD0(GetCountryCode, std::string());
   MOCK_CONST_METHOD0(GetDeviceContext, DeviceContext());
+  MOCK_CONST_METHOD0(GetWindowSize, base::Optional<std::pair<int, int>>());
+  MOCK_CONST_METHOD0(GetScreenOrientation,
+                     ClientContextProto::ScreenOrientation());
   MOCK_CONST_METHOD0(IsAccessibilityEnabled, bool());
   MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
   MOCK_CONST_METHOD0(GetChromeSignedInEmailAddress, std::string());

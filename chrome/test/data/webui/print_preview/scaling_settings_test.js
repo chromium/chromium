@@ -49,17 +49,17 @@ suite(scaling_settings_test.suiteName, function() {
             `[value="${scalingSection.ScalingValue.DEFAULT}"]`);
         const customOption = scalingSection.$$(
             `[value="${scalingSection.ScalingValue.CUSTOM}"]`);
-        assertTrue(fitToPageOption.hidden);
-        assertTrue(fitToPaperOption.hidden);
-        assertFalse(defaultOption.hidden);
-        assertFalse(customOption.hidden);
+        assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
+        assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
+        assertFalse(defaultOption.hidden && !defaultOption.disabled);
+        assertFalse(customOption.hidden && !customOption.disabled);
 
         // Fit to page and paper available -> All 4 options.
         setDocumentPdf(true);
-        assertFalse(fitToPageOption.hidden);
-        assertFalse(fitToPaperOption.hidden);
-        assertFalse(defaultOption.hidden);
-        assertFalse(customOption.hidden);
+        assertFalse(fitToPageOption.hidden && !fitToPageOption.disabled);
+        assertFalse(fitToPaperOption.hidden && !fitToPaperOption.disabled);
+        assertFalse(defaultOption.hidden && !defaultOption.disabled);
+        assertFalse(customOption.hidden && !customOption.disabled);
       });
 
   /**

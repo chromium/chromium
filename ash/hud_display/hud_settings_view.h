@@ -11,16 +11,25 @@
 #include "ash/hud_display/hud_constants.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class Event;
+}
+
+namespace views {
+class LabelButton;
+}
+
 namespace ash {
 namespace hud_display {
 
 class HUDCheckboxHandler;
+class HUDDisplayView;
 
 class HUDSettingsView : public views::View {
  public:
   METADATA_HEADER(HUDSettingsView);
 
-  HUDSettingsView();
+  explicit HUDSettingsView(HUDDisplayView* hud_display);
   ~HUDSettingsView() override;
 
   HUDSettingsView(const HUDSettingsView&) = delete;
@@ -29,8 +38,17 @@ class HUDSettingsView : public views::View {
   // Shows/hides the view.
   void ToggleVisibility();
 
+  // Creates Ui Dev Tools.
+  void OnEnableUiDevToolsButtonPressed(const ui::Event& event);
+
  private:
+  // Replace "Create Ui Dev Tools" button label with "DevTools running".
+  void UpdateDevToolsControlButtonLabel();
+
   std::vector<std::unique_ptr<HUDCheckboxHandler>> checkbox_handlers_;
+
+  // Container for "Create Ui Dev Tools" button or "DevTools running" label.
+  views::LabelButton* ui_dev_tools_control_button_ = nullptr;
 };
 
 }  // namespace hud_display

@@ -4,6 +4,8 @@
 #ifndef MEDIA_GPU_VAAPI_VAAPI_COMMON_H_
 #define MEDIA_GPU_VAAPI_VAAPI_COMMON_H_
 
+#include "build/chromeos_buildflags.h"
+#include "media/gpu/av1_picture.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vp8_picture.h"
@@ -13,10 +15,6 @@
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #include "media/gpu/h265_dpb.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "media/gpu/av1_picture.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
 
@@ -32,12 +30,21 @@ class VaapiH264Picture : public H264Picture {
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
   VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
+  void SetDecodeSurface(scoped_refptr<VASurface> decode_va_surface);
+  VASurfaceID GetVADecodeSurfaceID() const {
+    return decode_va_surface_ ? decode_va_surface_->id() : GetVASurfaceID();
+  }
+  const gfx::Size& GetDecodeSize() const {
+    return decode_va_surface_ ? decode_va_surface_->size()
+                              : va_surface_->size();
+  }
 
  protected:
   ~VaapiH264Picture() override;
 
  private:
   scoped_refptr<VASurface> va_surface_;
+  scoped_refptr<VASurface> decode_va_surface_;
 
   DISALLOW_COPY_AND_ASSIGN(VaapiH264Picture);
 };
@@ -54,12 +61,21 @@ class VaapiH265Picture : public H265Picture {
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
   VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
+  void SetDecodeSurface(scoped_refptr<VASurface> decode_va_surface);
+  VASurfaceID GetVADecodeSurfaceID() const {
+    return decode_va_surface_ ? decode_va_surface_->id() : GetVASurfaceID();
+  }
+  const gfx::Size& GetDecodeSize() const {
+    return decode_va_surface_ ? decode_va_surface_->size()
+                              : va_surface_->size();
+  }
 
  protected:
   ~VaapiH265Picture() override;
 
  private:
   scoped_refptr<VASurface> va_surface_;
+  scoped_refptr<VASurface> decode_va_surface_;
 };
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
@@ -89,6 +105,14 @@ class VaapiVP9Picture : public VP9Picture {
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
   VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
+  void SetDecodeSurface(scoped_refptr<VASurface> decode_va_surface);
+  VASurfaceID GetVADecodeSurfaceID() const {
+    return decode_va_surface_ ? decode_va_surface_->id() : GetVASurfaceID();
+  }
+  const gfx::Size& GetDecodeSize() const {
+    return decode_va_surface_ ? decode_va_surface_->size()
+                              : va_surface_->size();
+  }
 
  protected:
   ~VaapiVP9Picture() override;
@@ -97,11 +121,11 @@ class VaapiVP9Picture : public VP9Picture {
   scoped_refptr<VP9Picture> CreateDuplicate() override;
 
   scoped_refptr<VASurface> va_surface_;
+  scoped_refptr<VASurface> decode_va_surface_;
 
   DISALLOW_COPY_AND_ASSIGN(VaapiVP9Picture);
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class VaapiAV1Picture : public AV1Picture {
  public:
   VaapiAV1Picture(scoped_refptr<VASurface> display_va_surface,
@@ -135,7 +159,7 @@ class VaapiAV1Picture : public AV1Picture {
   scoped_refptr<VASurface> display_va_surface_;
   scoped_refptr<VASurface> reconstruct_va_surface_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_VAAPI_VAAPI_COMMON_H_

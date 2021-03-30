@@ -323,7 +323,7 @@ void ValidateAddressStrictly(const AutofillProfile* profile,
 }
 
 void ValidateEmailAddress(const AutofillProfile* profile) {
-  const base::string16& email = profile->GetRawInfo(EMAIL_ADDRESS);
+  const std::u16string& email = profile->GetRawInfo(EMAIL_ADDRESS);
   if (email.empty()) {
     profile->SetValidityState(EMAIL_ADDRESS, AutofillDataModel::EMPTY,
                               AutofillDataModel::CLIENT);

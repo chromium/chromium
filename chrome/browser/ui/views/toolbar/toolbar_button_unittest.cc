@@ -15,6 +15,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
@@ -145,7 +146,7 @@ class ToolbarButtonUITest : public ChromeViewsTestBase {
     // something simple with at least one item so a menu gets shown. Note that
     // ToolbarButton takes ownership of the |model|.
     auto model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-    model->AddItem(0, base::string16());
+    model->AddItem(0, std::u16string());
 
     widget_ = CreateTestWidget();
     button_ = widget_->SetContentsView(std::make_unique<TestToolbarButton>(
@@ -200,20 +201,6 @@ TEST_F(ToolbarButtonUITest, DeleteWithMenu) {
       std::make_unique<views::View>());  // Deletes |button_|.
 }
 
-// Tests to make sure the button's border is updated as its height changes.
-TEST_F(ToolbarButtonUITest, TestBorderUpdateHeightChange) {
-  const gfx::Insets toolbar_padding = GetLayoutInsets(TOOLBAR_BUTTON);
-
-  button_->ResetBorderUpdateFlag();
-  for (int bounds_height : {8, 12, 20}) {
-    EXPECT_FALSE(button_->did_border_update());
-    button_->SetBoundsRect({bounds_height, bounds_height});
-    EXPECT_TRUE(button_->did_border_update());
-    EXPECT_EQ(button_->border()->GetInsets(), gfx::Insets(toolbar_padding));
-    button_->ResetBorderUpdateFlag();
-  }
-}
-
 // Tests to make sure the button's border color is updated as its animation
 // color changes.
 TEST_F(ToolbarButtonUITest, TestBorderUpdateColorChange) {
@@ -223,9 +210,34 @@ TEST_F(ToolbarButtonUITest, TestBorderUpdateColorChange) {
   button_->ResetBorderUpdateFlag();
   for (SkColor border_color : {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE}) {
     EXPECT_FALSE(button_->did_border_update());
-    button_->SetHighlight(base::string16(), border_color);
+    button_->SetHighlight(std::u16string(), border_color);
     EXPECT_EQ(button_->border()->color(), border_color);
     EXPECT_TRUE(button_->did_border_update());
     button_->ResetBorderUpdateFlag();
   }
+}
+
+// Ensures ToolbarButton updates its border on touch mode changes to
+// match layout constants.
+//
+// Regression test for crbug.com/1163451: ToolbarButton updates its
+// border on bounds change, which usually happens during layout.
+// Updating the border itself invalidates layout if the border change
+// results in a new preferred size. But View::SetBoundsRect() sets
+// needs_layout_ = false right after the OnBoundsChanged() call.
+//
+// On touch mode changes the border change only happened after several
+// layouts. When the bug occurred, the border was eventually set
+// correctly but too late: its final size did not reflect the preferred
+// size after the border update.
+//
+// This test ensures ToolbarButtons update their border promptly after
+// the touch mode change, just after the icon update.
+TEST_F(ToolbarButtonUITest, BorderUpdatedOnTouchModeSwitch) {
+  ui::TouchUiController::TouchUiScoperForTesting touch_mode_override(false);
+  EXPECT_EQ(button_->GetInsets(), GetLayoutInsets(TOOLBAR_BUTTON));
+
+  // This constant is different in touch mode.
+  touch_mode_override.UpdateState(true);
+  EXPECT_EQ(button_->GetInsets(), GetLayoutInsets(TOOLBAR_BUTTON));
 }

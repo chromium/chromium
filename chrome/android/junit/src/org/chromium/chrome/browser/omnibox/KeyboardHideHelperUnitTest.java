@@ -27,7 +27,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.WindowDelegate;
+import org.chromium.ui.base.WindowDelegate;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

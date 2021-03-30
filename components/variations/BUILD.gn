@@ -69,8 +69,6 @@ static_library("variations") {
     "variations_client.h",
     "variations_crash_keys.cc",
     "variations_crash_keys.h",
-    "variations_id_collection.cc",
-    "variations_id_collection.h",
     "variations_ids_provider.cc",
     "variations_ids_provider.h",
     "variations_layers.cc",
@@ -106,7 +104,10 @@ static_library("variations") {
     ]
   }
 
-  public_deps = [ ":variations_features" ]
+  public_deps = [
+    ":variations_features",
+    "proto",
+  ]
 
   deps = [
     ":buildflags",
@@ -137,7 +138,7 @@ if (is_android) {
   android_library("load_seed_result_enum_java") {
     deps = [
       "//base:base_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     srcjar_deps = [ ":load_seed_result_enum_srcjar" ]
   }
@@ -183,7 +184,6 @@ source_set("unit_tests") {
     "synthetic_trial_registry_unittest.cc",
     "variations_associated_data_unittest.cc",
     "variations_crash_keys_unittest.cc",
-    "variations_id_collection_unittest.cc",
     "variations_ids_provider_unittest.cc",
     "variations_murmur_hash_unittest.cc",
     "variations_request_scheduler_unittest.cc",

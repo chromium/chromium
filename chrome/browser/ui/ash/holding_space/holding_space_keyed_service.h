@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_KEYED_SERVICE_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"

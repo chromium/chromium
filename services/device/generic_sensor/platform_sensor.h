@@ -9,11 +9,13 @@
 #include <map>
 #include <memory>
 
+#include "base/callback_forward.h"
+#include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
@@ -44,16 +46,19 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   virtual bool CheckSensorConfiguration(
       const PlatformSensorConfiguration& configuration) = 0;
 
-  // Can be overriden to return the sensor maximum sampling frequency
-  // value obtained from the platform if it is available. If platfrom
+  // Can be overridden to return the sensor maximum sampling frequency
+  // value obtained from the platform if it is available. If platform
   // does not provide maximum sampling frequency this method must
   // return default frequency.
   // The default implementation returns default frequency.
   virtual double GetMaximumSupportedFrequency();
 
-  // Can be overriden to return the sensor minimum sampling frequency.
+  // Can be overridden to return the sensor minimum sampling frequency.
   // The default implementation returns '1.0 / (60 * 60)', i.e. once per hour.
   virtual double GetMinimumSupportedFrequency();
+
+  // Can be overridden to reset this sensor by the PlatformSensorProvider.
+  virtual void SensorReplaced();
 
   mojom::SensorType GetType() const;
 
@@ -77,6 +82,11 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   using ConfigMap = std::map<Client*, std::list<PlatformSensorConfiguration>>;
   const ConfigMap& GetConfigMapForTesting() const;
 
+  // Called by API users to post a task on |main_task_runner_| when run from a
+  // different sequence.
+  void PostTaskToMainSequence(const base::Location& location,
+                              base::OnceClosure task);
+
  protected:
   virtual ~PlatformSensor();
   PlatformSensor(mojom::SensorType type,
@@ -89,25 +99,35 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   virtual bool StartSensor(
       const PlatformSensorConfiguration& configuration) = 0;
   virtual void StopSensor() = 0;
-  // Updates shared buffer with new sensor reading data and schedules
-  // NotifySensorReadingChanged invocation on IPC thread.
+
+  // Updates the shared buffer with new sensor reading data and posts a task to
+  // invoke NotifySensorReadingChanged() on |main_task_runner_|.
   // Note: this method is thread-safe.
   void UpdateSharedBufferAndNotifyClients(const SensorReading& reading);
 
   // Updates shared buffer with provided SensorReading
+  // Note: this method is thread-safe.
   void UpdateSharedBuffer(const SensorReading& reading);
 
   void NotifySensorReadingChanged();
   void NotifySensorError();
 
-  // Task runner that is used by mojo objects for the IPC.
-  // If platfrom sensor events are processed on a different
-  // thread, notifications are forwarded to |task_runner_|.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  void ResetReadingBuffer();
+
+  // Returns the task runner where this object has been created. Subclasses can
+  // use it to post tasks to the right sequence when running on a different task
+  // runner.
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner() const {
+    return main_task_runner_;
+  }
+
   base::ObserverList<Client, true>::Unchecked clients_;
 
  private:
   friend class base::RefCountedThreadSafe<PlatformSensor>;
+
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+
   SensorReadingSharedBuffer* reading_buffer_;  // NOTE: Owned by |provider_|.
   mojom::SensorType type_;
   ConfigMap config_map_;

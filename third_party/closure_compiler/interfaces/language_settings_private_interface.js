@@ -46,6 +46,19 @@ LanguageSettingsPrivate.prototype = {
   moveLanguage: function(languageCode, moveType) {},
 
   /**
+   * Gets languages that should always be automatically translated.
+   * @param {function(!Array<string>):void} callback
+   */
+  getAlwaysTranslateLanguages: function(callback) {},
+
+  /**
+   * Sets whether a given language should always be automatically translated.
+   * @param {string} languageCode
+   * @param {boolean} alwaysTranslate
+  */
+  setLanguageAlwaysTranslateState: function(languageCode, alwaysTranslate) {},
+
+  /**
    * Gets the current status of the chosen spell check dictionaries.
    * @param {function(!Array<!chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>):void}
    *     callback
@@ -75,6 +88,12 @@ LanguageSettingsPrivate.prototype = {
    * @param {function(string):void} callback
    */
   getTranslateTargetLanguage: function(callback) {},
+
+  /**
+   * Sets the translate target language given a language code.
+   * @param {string} languageCode
+   */
+  setTranslateTargetLanguage: function(languageCode) {},
 
   /**
    * Gets all supported input methods, including third-party IMEs. Chrome OS

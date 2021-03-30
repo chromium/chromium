@@ -53,12 +53,12 @@ class KeyboardNode extends BasicNode {
       return true;
     }
     if (!KeyboardNode.resetting &&
-        Navigator.instance.currentGroupHasChild(this)) {
+        Navigator.byItem.currentGroupHasChild(this)) {
       // TODO(crbug/1130773): move this code to another location, if possible
       KeyboardNode.resetting = true;
       KeyboardRootNode.ignoreNextExit_ = true;
-      Navigator.instance.exitKeyboard();
-      Navigator.instance.enterKeyboard();
+      Navigator.byItem.exitKeyboard();
+      Navigator.byItem.enterKeyboard();
     }
 
     return false;
@@ -197,9 +197,9 @@ export class KeyboardRootNode extends BasicRootNode {
     }
 
     if (KeyboardRootNode.isVisible_) {
-      Navigator.instance.enterKeyboard();
+      Navigator.byItem.enterKeyboard();
     } else {
-      Navigator.instance.exitKeyboard();
+      Navigator.byItem.exitKeyboard();
     }
   }
 
@@ -226,7 +226,7 @@ export class KeyboardRootNode extends BasicRootNode {
    */
   static getKeyboardObject() {
     if (!this.object_ || !this.object_.role) {
-      this.object_ = Navigator.instance.desktopNode.find(
+      this.object_ = Navigator.byItem.desktopNode.find(
           {role: chrome.automation.RoleType.KEYBOARD});
     }
     return this.object_;

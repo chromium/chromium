@@ -39,7 +39,7 @@ bool VerifyDownloadUrlParams(SiteInstance* site_instance,
 //
 // This function has to be called on the UI thread.
 bool VerifyOpenURLParams(SiteInstance* site_instance,
-                         const mojom::OpenURLParamsPtr& params,
+                         const blink::mojom::OpenURLParamsPtr& params,
                          GURL* out_validated_url,
                          scoped_refptr<network::SharedURLLoaderFactory>*
                              out_blob_url_loader_factory);

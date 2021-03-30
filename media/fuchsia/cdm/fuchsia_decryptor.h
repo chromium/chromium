@@ -35,9 +35,9 @@ class FuchsiaDecryptor : public Decryptor {
   void InitializeVideoDecoder(const VideoDecoderConfig& config,
                               DecoderInitCB init_cb) override;
   void DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
-                             const AudioDecodeCB& audio_decode_cb) override;
+                             AudioDecodeCB audio_decode_cb) override;
   void DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
-                             const VideoDecodeCB& video_decode_cb) override;
+                             VideoDecodeCB video_decode_cb) override;
   void ResetDecoder(StreamType stream_type) override;
   void DeinitializeDecoder(StreamType stream_type) override;
   bool CanAlwaysDecrypt() override;

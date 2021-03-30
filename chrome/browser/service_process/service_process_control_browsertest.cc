@@ -422,8 +422,8 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, HistogramsNoService) {
   ASSERT_FALSE(ServiceProcessControl::GetInstance()->IsConnected());
   EXPECT_CALL(*this, MockHistogramsCallback()).Times(0);
   EXPECT_FALSE(ServiceProcessControl::GetInstance()->GetHistograms(
-      base::BindRepeating(&ServiceProcessControlBrowserTest::HistogramsCallback,
-                          base::Unretained(this), base::DoNothing()),
+      base::BindOnce(&ServiceProcessControlBrowserTest::HistogramsCallback,
+                     base::Unretained(this), base::DoNothing()),
       base::TimeDelta()));
 }
 
@@ -434,8 +434,8 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, HistogramsTimeout) {
   EXPECT_CALL(*this, MockHistogramsCallback()).Times(0);
   base::RunLoop run_loop;
   EXPECT_TRUE(ServiceProcessControl::GetInstance()->GetHistograms(
-      base::BindRepeating(&ServiceProcessControlBrowserTest::HistogramsCallback,
-                          base::Unretained(this), run_loop.QuitClosure()),
+      base::BindOnce(&ServiceProcessControlBrowserTest::HistogramsCallback,
+                     base::Unretained(this), run_loop.QuitClosure()),
       base::TimeDelta::FromMilliseconds(100)));
   EXPECT_CALL(*this, MockHistogramsCallback()).Times(1);
   EXPECT_TRUE(ServiceProcessControl::GetInstance()->Shutdown());
@@ -450,8 +450,8 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessControlBrowserTest, Histograms) {
   // Wait for real callback by providing large timeout value.
   base::RunLoop run_loop;
   EXPECT_TRUE(ServiceProcessControl::GetInstance()->GetHistograms(
-      base::BindRepeating(&ServiceProcessControlBrowserTest::HistogramsCallback,
-                          base::Unretained(this), run_loop.QuitClosure()),
+      base::BindOnce(&ServiceProcessControlBrowserTest::HistogramsCallback,
+                     base::Unretained(this), run_loop.QuitClosure()),
       base::TimeDelta::FromHours(1)));
   EXPECT_CALL(*this, MockHistogramsCallback()).Times(1);
   run_loop.Run();

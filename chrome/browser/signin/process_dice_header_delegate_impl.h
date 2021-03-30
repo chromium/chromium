@@ -20,6 +20,7 @@ class WebContents;
 }
 
 class Profile;
+class SigninUIError;
 
 class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
                                       public content::WebContentsObserver {
@@ -34,11 +35,8 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
                               const CoreAccountId&)>;
 
   // Callback showing a signin error UI.
-  using ShowSigninErrorCallback =
-      base::OnceCallback<void(Profile*,
-                              content::WebContents*,
-                              const std::string& /* error_message */,
-                              const std::string& /* email */)>;
+  using ShowSigninErrorCallback = base::OnceCallback<
+      void(Profile*, content::WebContents*, const SigninUIError&)>;
 
   // |is_sync_signin_tab| is true if a sync signin flow has been started in that
   // tab.

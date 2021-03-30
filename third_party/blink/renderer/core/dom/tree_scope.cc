@@ -106,6 +106,8 @@ ScopedStyleResolver& TreeScope::EnsureScopedStyleResolver() {
 }
 
 void TreeScope::ClearScopedStyleResolver() {
+  if (scoped_style_resolver_)
+    scoped_style_resolver_->ResetStyle();
   scoped_style_resolver_.Clear();
 }
 

@@ -29,7 +29,7 @@ void TransformRecorder::Transform(const gfx::Transform& transform) {
 
   context_.list_->StartPaint();
   context_.list_->push<cc::SaveOp>();
-  context_.list_->push<cc::ConcatOp>(static_cast<SkMatrix>(transform.matrix()));
+  context_.list_->push<cc::ConcatOp>(transform.GetMatrixAsSkM44());
   context_.list_->EndPaintOfPairedBegin();
 
   transformed_ = true;

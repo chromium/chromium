@@ -53,10 +53,13 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
   ~AutofillPopupBaseViewTest() override {}
 
   void SetUpOnMainThread() override {
-    gfx::NativeView native_view =
-        browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView();
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    gfx::NativeView native_view = web_contents->GetNativeView();
     EXPECT_CALL(mock_delegate_, container_view())
         .WillRepeatedly(Return(native_view));
+    EXPECT_CALL(mock_delegate_, GetWebContents())
+        .WillRepeatedly(Return(web_contents));
     EXPECT_CALL(mock_delegate_, ViewDestroyed());
 
     view_ = new AutofillPopupBaseView(

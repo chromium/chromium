@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager_export.h"
@@ -23,8 +22,8 @@ class USER_MANAGER_EXPORT UserInfoImpl : public UserInfo {
   ~UserInfoImpl() override;
 
   // UserInfo:
-  base::string16 GetDisplayName() const override;
-  base::string16 GetGivenName() const override;
+  std::u16string GetDisplayName() const override;
+  std::u16string GetGivenName() const override;
   std::string GetDisplayEmail() const override;
   const AccountId& GetAccountId() const override;
   const gfx::ImageSkia& GetImage() const override;

@@ -29,6 +29,7 @@
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/nix/xdg_util.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -63,7 +64,7 @@ class SessionDialog {
       : choices_(std::move(choices)),
         callback_(std::move(callback)),
         cancel_callback_(std::move(cancel_callback)),
-        ui_(gtk_builder_new_from_string(UI, -1)) {
+        ui_(TakeGObject(gtk_builder_new_from_string(UI, -1))) {
     gtk_label_set_text(
         GTK_LABEL(gtk_builder_get_object(ui_, "message")),
         l10n_util::GetStringUTF8(IDS_SESSION_DIALOG_MESSAGE).c_str());
@@ -336,7 +337,7 @@ void ExecXSession(base::OnceClosure quit_closure, XSession session) {
   if (!session.desktop_names.empty()) {
     std::unique_ptr<base::Environment> environment =
         base::Environment::Create();
-    environment->SetVar("XDG_CURRENT_DESKTOP",
+    environment->SetVar(base::nix::kXdgCurrentDesktopEnvVar,
                         base::JoinString(session.desktop_names, ":"));
   }
   execl(xsession_script.value().c_str(), xsession_script.value().c_str(),

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that reloading page during styles sidebar pane editing cancels editing and re-renders the sidebar pane.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="color: blue">Text</div>

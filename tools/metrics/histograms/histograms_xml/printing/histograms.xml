@@ -22,78 +22,80 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Printing.ConversionSize.Emf" units="KB"
-    expires_after="2021-04-30">
+    expires_after="2021-09-30">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
     On Windows, the average size of a printed page after converting to EMF.
+    Recorded after conversion.
   </summary>
 </histogram>
 
 <histogram name="Printing.ConversionSize.EmfWithGdiText" units="KB"
-    expires_after="2021-04-30">
+    expires_after="2021-09-30">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
     On Windows, the average size of a printed page after converting to EMF with
-    the GDI Text experiment turned on.
+    the GDI Text experiment turned on. Recorded after conversion.
   </summary>
 </histogram>
 
 <histogram name="Printing.ConversionSize.EmfWithReducedRasterization"
-    units="KB" expires_after="2021-04-30">
+    units="KB" expires_after="2021-09-30">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
     On Windows, the average size of a printed page after converting to EMF with
-    the reduced rasterization feature turned on.
+    the reduced rasterization feature turned on. Recorded after conversion.
   </summary>
 </histogram>
 
 <histogram name="Printing.ConversionSize.EmfWithReducedRasterizationAndGdiText"
-    units="KB" expires_after="2021-04-30">
+    units="KB" expires_after="2021-09-30">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
     On Windows, the average size of a printed page after converting to EMF with
     the reduced rasterization feature turned on and the GDI Text experiment
-    turned on.
+    turned on. Recorded after conversion.
   </summary>
 </histogram>
 
 <histogram name="Printing.ConversionSize.PostScript2" units="KB"
-    expires_after="2021-04-30">
+    expires_after="2021-09-30">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
     On Windows, the average size of a printed page after converting to level 2
-    PostScript.
+    PostScript. Recorded after conversion.
   </summary>
 </histogram>
 
 <histogram name="Printing.ConversionSize.PostScript3" units="KB"
-    expires_after="2021-04-30">
+    expires_after="2021-09-30">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
     On Windows, the average size of a printed page after converting to level 3
-    PostScript.
+    PostScript. Recorded after conversion.
   </summary>
 </histogram>
 
 <histogram name="Printing.ConversionSize.Pwg" units="KB"
-    expires_after="2021-04-30">
+    expires_after="2021-09-30">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
     On desktop, the average size of a printed page after converting to PWG
-    Raster format.
+    Raster format. Recorded after conversion.
   </summary>
 </histogram>
 
 <histogram name="Printing.CUPS.AddressResolutionResult" enum="BooleanSuccess"
-    expires_after="M85">
+    expires_after="2021-09-19">
   <owner>skau@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     Records whether resolution of a .local address via mDNS was successful. The
     metric is recorded during attempted setup of a printer discovered via mDNS.
@@ -101,7 +103,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.HighestIppVersion" enum="IppVersion"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>skau@chromium.org</owner>
   <owner>pawliczek@chromium.org</owner>
   <summary>
@@ -113,7 +115,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.IppAttributes" enum="IppAttribute"
-    expires_after="M82">
+    expires_after="M93">
   <owner>vkuzkokov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>
@@ -133,17 +135,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
-    expires_after="M85">
+    expires_after="2021-09-19">
   <owner>skau@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     Record if the request for IPP attributes was successful during printer
     setup. This only occurs for setup attempts of IPP and IPPS printers.
     Starting with M79, this is only recorded if the printer was reachable.
+
+    Recorded when printers are queried for attributes in ChromeOS settings.
   </summary>
 </histogram>
 
 <histogram name="Printing.CUPS.IppAttributesUsed" units="count"
-    expires_after="M82">
+    expires_after="M93">
   <owner>vkuzkokov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>
@@ -153,8 +158,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
-    expires_after="M85">
+    expires_after="2021-09-19">
   <owner>skau@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     Record if the request for IPP attributes was successful in reaching the
     printer. Recorded during the attempt to setup IPP/IPPS printers.
@@ -172,7 +178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.JobDuration.JobDone" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>jschettler@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -182,16 +188,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.JobResult" enum="PrintJobResult"
-    expires_after="M85">
+    expires_after="never">
+<!-- expires-never: Monitors printing health for Chrome OS. -->
+
   <owner>skau@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     The final status of every print job that was succesfully queued. Only used
     on Chrome OS.
+
+    Recorded upon the completion of each print job by the CupsPrintJobManager.
   </summary>
 </histogram>
 
 <histogram name="Printing.CUPS.MigratedMakeAndModel" enum="BooleanMigrated"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>luum@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -202,7 +213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkPrintersCount" units="printers"
-    expires_after="2021-05-16">
+    expires_after="2021-09-19">
   <owner>skau@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -213,7 +224,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>jschettler@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -253,7 +264,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult" enum="PrinterSetupResult"
-    expires_after="2021-10-01">
+    expires_after="never">
+<!-- expires-never: Monitors printer setup health for Chrome OS. -->
+
   <owner>skau@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
@@ -296,7 +309,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintManagementAppEntryPoint"
-    enum="PrintManagementAppEntryPoint" expires_after="2021-06-22">
+    enum="PrintManagementAppEntryPoint" expires_after="2021-08-22">
+  <obsolete>
+    Data no longer needed 2021-02.
+  </obsolete>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -306,8 +322,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.ProtocolUsed" enum="PrinterProtocol"
-    expires_after="M85">
+    expires_after="2021-12-01">
   <owner>skau@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     Records the protocol for a selected printer in Chrome OS. Used to track
     usage of the various printer protocols. Since a selection occurs when print
@@ -317,7 +334,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount" units="printers"
-    expires_after="2021-05-16">
+    expires_after="2021-08-01">
   <owner>skau@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -328,17 +345,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.UnknownPpdColorModel" enum="Boolean"
-    expires_after="2021-02-01">
+    expires_after="2021-09-30">
   <owner>dhoss@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Records instances in which print preview encounters an unknown PPD color
-    model.
+    model. Recorded after print settings are received from print preview.
   </summary>
 </histogram>
 
 <histogram name="Printing.CUPS.UsbSetupSource" enum="UsbPrinterSetupSource"
-    expires_after="2021-07-15">
+    expires_after="2021-09-19">
   <owner>baileyberro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -350,6 +367,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.ValidPpdReference" enum="BooleanSuccess"
     expires_after="2020-08-01">
+  <obsolete>
+    Data no longer needed. Bug is resolved. 2020-12.
+  </obsolete>
   <owner>skau@chromium.org</owner>
   <owner>luum@chromium.org</owner>
   <summary>
@@ -361,7 +381,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.ZeroconfPrinterSetupResult"
-    enum="PrinterSetupResult" expires_after="2021-08-28">
+    enum="PrinterSetupResult" expires_after="never">
+<!-- expires-never: Monitors printer setup health for Chrome OS. -->
+
   <owner>kdlee@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -373,6 +395,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.PrinterCapabilities" units="ms" expires_after="M80">
+  <obsolete>
+    New data no longer needed 2020-12
+  </obsolete>
   <owner>vkuzkokov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>
@@ -382,7 +407,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.PrintServers.ServersToQuery" units="servers"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>pawliczek@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>

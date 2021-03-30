@@ -12,6 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -20,7 +21,7 @@
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/features.h"
 #include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #include "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
@@ -61,10 +62,10 @@ enum class MobileSessionOomShutdownHint {
   kMaxValue = SessionRestorationXte
 };
 
-// Values of the Stability.iOS.UTE.MobileSessionAppWillTerminateReceived
+// Values of the Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived
 // histogram. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
-enum class MobileSessionAppWillTerminateReceived {
+enum class MobileSessionAppWillTerminateWasReceived {
   // ApplicationWillTerminate notification was not received for this XTE.
   WasNotReceivedForXte = 0,
   // ApplicationWillTerminate notification was not received for this UTE.
@@ -108,6 +109,18 @@ enum class MobileSessionAppState {
   kMaxValue = BackgroundXte
 };
 
+// Values of the Stability.iOS.Experimental.Counts histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IOSStabilityUserVisibleCrashType {
+  // Termination caused by system signal (f.e. EXC_BAD_ACCESS).
+  TerminationCausedBySystemSignal = 0,
+  // Termination caused by Hang / UI Thread freeze (ui thread was locked for 9+
+  // seconds and the app was quit by OS or the user).
+  TerminationCausedByHang = 1,
+  kMaxValue = TerminationCausedByHang
+};
+
 // Returns value to log for Stability.iOS.UTE.MobileSessionOOMShutdownHint
 // histogram.
 MobileSessionOomShutdownHint GetMobileSessionOomShutdownHint(
@@ -143,18 +156,45 @@ MobileSessionAppState GetMobileSessionAppState(bool has_possible_explanation) {
 }
 
 // Returns value to record for
-// Stability.iOS.UTE.MobileSessionAppWillTerminateReceived histogram.
-MobileSessionAppWillTerminateReceived GetMobileSessionAppWillTerminateReceived(
-    bool has_possible_explanation) {
+// Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived histogram.
+MobileSessionAppWillTerminateWasReceived
+GetMobileSessionAppWillTerminateWasReceived(bool has_possible_explanation) {
   if (!PreviousSessionInfo.sharedInstance.applicationWillTerminateWasReceived) {
     return has_possible_explanation
-               ? MobileSessionAppWillTerminateReceived::WasNotReceivedForXte
-               : MobileSessionAppWillTerminateReceived::WasNotReceivedForUte;
+               ? MobileSessionAppWillTerminateWasReceived::WasNotReceivedForXte
+               : MobileSessionAppWillTerminateWasReceived::WasNotReceivedForUte;
   }
 
   return has_possible_explanation
-             ? MobileSessionAppWillTerminateReceived::WasReceivedForXte
-             : MobileSessionAppWillTerminateReceived::WasReceivedForUte;
+             ? MobileSessionAppWillTerminateWasReceived::WasReceivedForXte
+             : MobileSessionAppWillTerminateWasReceived::WasReceivedForUte;
+}
+
+// Records Stability.iOS.Experimental.Counts if necessary.
+void LogStabilityIOSExperimentalCounts(
+    MobileSessionShutdownType shutdown_type) {
+  IOSStabilityUserVisibleCrashType type =
+      IOSStabilityUserVisibleCrashType::kMaxValue;
+  switch (shutdown_type) {
+    case SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_WITH_MEMORY_WARNING:
+    case SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING:
+      type = IOSStabilityUserVisibleCrashType::TerminationCausedBySystemSignal;
+      break;
+    case SHUTDOWN_IN_FOREGROUND_WITH_MAIN_THREAD_FROZEN:
+      type = IOSStabilityUserVisibleCrashType::TerminationCausedByHang;
+      break;
+    case SHUTDOWN_IN_BACKGROUND:
+    case SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_NO_MEMORY_WARNING:
+    case SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING:
+    case FIRST_LAUNCH_AFTER_UPGRADE:
+    case MOBILE_SESSION_SHUTDOWN_TYPE_COUNT:
+      // Nothing to record.
+      return;
+  };
+
+  UMA_STABILITY_HISTOGRAM_ENUMERATION(
+      "Stability.iOS.Experimental.Counts", type,
+      IOSStabilityUserVisibleCrashType::kMaxValue);
 }
 
 // Logs |type| in the shutdown type histogram.
@@ -297,6 +337,8 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
   UMA_STABILITY_HISTOGRAM_COUNTS_100("Stability.iOS.TabCountBeforeCrash",
                                      allTabCount);
 
+  LogStabilityIOSExperimentalCounts(shutdown_type);
+
   // Log metrics to improve categorization of crashes.
   LogApplicationBackgroundedTime(session_info.sessionEndTime);
 
@@ -351,8 +393,8 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
 
     UMA_STABILITY_HISTOGRAM_ENUMERATION(
         "Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived",
-        GetMobileSessionAppWillTerminateReceived(possible_explanation),
-        MobileSessionAppWillTerminateReceived::kMaxValue);
+        GetMobileSessionAppWillTerminateWasReceived(possible_explanation),
+        MobileSessionAppWillTerminateWasReceived::kMaxValue);
 
     if (!possible_explanation && EnableSyntheticCrashReportsForUte() &&
         GetApplicationContext()->GetLocalState()->GetBoolean(
@@ -415,7 +457,7 @@ bool MobileSessionShutdownMetricsProvider::IsFirstLaunchAfterUpgrade() {
 }
 
 bool MobileSessionShutdownMetricsProvider::HasCrashLogs() {
-  return breakpad_helper::HasReportToUpload();
+  return crash_helper::HasReportToUpload();
 }
 
 bool MobileSessionShutdownMetricsProvider::LastSessionEndedFrozen() {

@@ -16,6 +16,7 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
+import("//third_party/webrtc/webrtc.gni")
 import("//v8/gni/v8.gni")
 
 # Most targets in this file are private actions so use that as the default.
@@ -101,7 +102,7 @@ executable("character_data_generator") {
   ]
   configs += [ "//third_party/blink/renderer:config" ]
   deps = [
-    # Default manifest on Windows (a no-op elsewhere).
+    # Default manifest on Windows(a no-op elsewhere).
     "//base",
     "//build/win:default_exe_manifest",
     "//third_party/icu",
@@ -176,6 +177,7 @@ group("blink_platform_public_deps") {
     "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/ots",
+    "//ui/gfx/animation/keyframe",
     "//url",
     "//v8",
   ]
@@ -231,7 +233,7 @@ config("blink_platform_pch") {
 
       # Force include the header.
       cflags = [ "/FI$precompiled_header" ]
-    } else if (is_mac) {
+    } else if (is_mac || is_linux) {
       precompiled_source =
           "//third_party/blink/renderer/platform/precompile_platform.h"
     }
@@ -399,6 +401,8 @@ component("platform") {
     "audio/vector_math.cc",
     "audio/vector_math.h",
     "audio/vector_math_scalar.h",
+    "back_forward_cache_utils.cc",
+    "back_forward_cache_utils.h",
     "bindings/active_script_wrappable_base.cc",
     "bindings/active_script_wrappable_base.h",
     "bindings/active_script_wrappable_manager.cc",
@@ -419,6 +423,7 @@ component("platform") {
     "bindings/dom_wrapper_world.h",
     "bindings/enumeration_base.h",
     "bindings/exception_code.h",
+    "bindings/exception_context.h",
     "bindings/exception_messages.cc",
     "bindings/exception_messages.h",
     "bindings/exception_state.cc",
@@ -428,6 +433,10 @@ component("platform") {
     "bindings/microtask.cc",
     "bindings/microtask.h",
     "bindings/name_client.h",
+    "bindings/no_alloc_direct_call_exception_state.cc",
+    "bindings/no_alloc_direct_call_exception_state.h",
+    "bindings/no_alloc_direct_call_host.cc",
+    "bindings/no_alloc_direct_call_host.h",
     "bindings/origin_trial_features.cc",
     "bindings/origin_trial_features.h",
     "bindings/parkable_string.cc",
@@ -449,6 +458,7 @@ component("platform") {
     "bindings/trace_wrapper_v8_reference.h",
     "bindings/trace_wrapper_v8_string.cc",
     "bindings/trace_wrapper_v8_string.h",
+    "bindings/union_base.cc",
     "bindings/union_base.h",
     "bindings/v8_binding.cc",
     "bindings/v8_binding.h",
@@ -482,6 +492,7 @@ component("platform") {
     "bindings/wrapper_type_info.cc",
     "bindings/wrapper_type_info.h",
     "content_decryption_module_result.h",
+    "context_lifecycle_notifier.cc",
     "context_lifecycle_notifier.h",
     "context_lifecycle_observer.cc",
     "context_lifecycle_observer.h",
@@ -497,6 +508,7 @@ component("platform") {
     "disk_data_allocator.h",
     "disk_data_metadata.h",
     "exported/file_path_conversion.cc",
+    "exported/impression_conversions.cc",
     "exported/interface_registry.cc",
     "exported/mediastream/web_media_stream.cc",
     "exported/mediastream/web_media_stream_source.cc",
@@ -504,12 +516,12 @@ component("platform") {
     "exported/mediastream/web_platform_media_stream_source.cc",
     "exported/platform.cc",
     "exported/resource_load_info_notifier_wrapper.cc",
-    "exported/sync_load_response.cc",
     "exported/url_conversion.cc",
     "exported/video_capture/web_video_capture_impl_manager.cc",
     "exported/weak_wrapper_resource_load_info_notifier.cc",
     "exported/web_audio_bus.cc",
     "exported/web_audio_device.cc",
+    "exported/web_back_forward_cache_loader_helper.cc",
     "exported/web_blob_info.cc",
     "exported/web_cache.cc",
     "exported/web_content_decryption_module.cc",
@@ -536,7 +548,6 @@ component("platform") {
     "exported/web_media_player_source.cc",
     "exported/web_media_stream_audio_sink.cc",
     "exported/web_memory_pressure_listener.cc",
-    "exported/web_mixed_content.cc",
     "exported/web_network_state_notifier.cc",
     "exported/web_runtime_features.cc",
     "exported/web_security_origin.cc",
@@ -659,6 +670,8 @@ component("platform") {
     "fonts/shaping/caching_word_shaper.h",
     "fonts/shaping/case_mapping_harfbuzz_buffer_filler.cc",
     "fonts/shaping/case_mapping_harfbuzz_buffer_filler.h",
+    "fonts/shaping/font_features.cc",
+    "fonts/shaping/font_features.h",
     "fonts/shaping/glyph_bounds_accumulator.h",
     "fonts/shaping/harfbuzz_face.cc",
     "fonts/shaping/harfbuzz_face.h",
@@ -869,6 +882,7 @@ component("platform") {
     "graphics/decoding_image_generator.h",
     "graphics/deferred_image_decoder.cc",
     "graphics/deferred_image_decoder.h",
+    "graphics/document_transition_shared_element_id.h",
     "graphics/dom_node_id.h",
     "graphics/draw_looper_builder.cc",
     "graphics/draw_looper_builder.h",
@@ -948,6 +962,8 @@ component("platform") {
     "graphics/gpu/webgl_image_conversion.h",
     "graphics/gpu/webgpu_image_bitmap_handler.cc",
     "graphics/gpu/webgpu_image_bitmap_handler.h",
+    "graphics/gpu/webgpu_mailbox_texture.cc",
+    "graphics/gpu/webgpu_mailbox_texture.h",
     "graphics/gpu/webgpu_swap_buffer_provider.cc",
     "graphics/gpu/webgpu_swap_buffer_provider.h",
     "graphics/gpu/xr_frame_transport.cc",
@@ -1092,6 +1108,8 @@ component("platform") {
     "graphics/paint_worklet_paint_dispatcher.cc",
     "graphics/paint_worklet_paint_dispatcher.h",
     "graphics/paint_worklet_painter.h",
+    "graphics/parkable_image.cc",
+    "graphics/parkable_image.h",
     "graphics/parkable_image_manager.cc",
     "graphics/parkable_image_manager.h",
     "graphics/path.cc",
@@ -1112,6 +1130,7 @@ component("platform") {
     "graphics/raster_dark_mode_filter_impl.h",
     "graphics/replaying_canvas.cc",
     "graphics/replaying_canvas.h",
+    "graphics/resource_id_traits.h",
     "graphics/rw_buffer.cc",
     "graphics/rw_buffer.h",
     "graphics/scoped_interpolation_quality.h",
@@ -1137,6 +1156,8 @@ component("platform") {
     "graphics/touch_action_rect.h",
     "graphics/unaccelerated_static_bitmap_image.cc",
     "graphics/unaccelerated_static_bitmap_image.h",
+    "graphics/video_frame_image_util.cc",
+    "graphics/video_frame_image_util.h",
     "graphics/video_frame_resource_provider.cc",
     "graphics/video_frame_resource_provider.h",
     "graphics/video_frame_submitter.cc",
@@ -1234,12 +1255,11 @@ component("platform") {
     "mojo/bluetooth_mojom_traits.h",
     "mojo/drag_mojom_traits.cc",
     "mojo/drag_mojom_traits.h",
-    "mojo/features.cc",
-    "mojo/features.h",
     "mojo/fetch_api_request_headers_mojom_traits.h",
     "mojo/heap_mojo_associated_receiver.h",
     "mojo/heap_mojo_associated_receiver_set.h",
     "mojo/heap_mojo_associated_remote.h",
+    "mojo/heap_mojo_associated_remote_set.h",
     "mojo/heap_mojo_receiver.h",
     "mojo/heap_mojo_receiver_set.h",
     "mojo/heap_mojo_remote.h",
@@ -1247,6 +1267,7 @@ component("platform") {
     "mojo/heap_mojo_unique_receiver_set.h",
     "mojo/heap_mojo_wrapper_mode.h",
     "mojo/kurl_mojom_traits.h",
+    "mojo/mojo_binding_context.h",
     "mojo/mojo_helper.h",
     "mojo/security_origin_mojom_traits.h",
     "mojo/string16_mojom_traits.cc",
@@ -1323,8 +1344,6 @@ component("platform") {
     "peerconnection/rtc_video_encoder_factory.cc",
     "peerconnection/rtc_video_encoder_factory.h",
     "peerconnection/rtc_void_request.h",
-    "peerconnection/stun_field_trial.cc",
-    "peerconnection/stun_field_trial.h",
     "peerconnection/transmission_encoding_info_handler.cc",
     "peerconnection/transmission_encoding_info_handler.h",
     "peerconnection/two_keys_adapter_map.h",
@@ -1432,8 +1451,6 @@ component("platform") {
     "transforms/transformation_matrix.h",
     "transforms/translate_transform_operation.cc",
     "transforms/translate_transform_operation.h",
-    "video_capture/local_video_capturer_source.cc",
-    "video_capture/local_video_capturer_source.h",
     "video_capture/video_capture_impl.cc",
     "video_capture/video_capture_impl.h",
     "web_test_support.cc",
@@ -1454,6 +1471,10 @@ component("platform") {
     "weborigin/security_origin_hash.h",
     "weborigin/security_policy.cc",
     "weborigin/security_policy.h",
+    "webrtc/convert_to_webrtc_video_frame_buffer.cc",
+    "webrtc/convert_to_webrtc_video_frame_buffer.h",
+    "webrtc/legacy_webrtc_video_frame_adapter.cc",
+    "webrtc/legacy_webrtc_video_frame_adapter.h",
     "webrtc/peer_connection_remote_audio_source.cc",
     "webrtc/peer_connection_remote_audio_source.h",
     "webrtc/track_observer.cc",
@@ -1624,6 +1645,8 @@ component("platform") {
     "//third_party/blink/renderer/platform/loader",
     "//third_party/blink/renderer/platform/network",
     "//third_party/blink/renderer/platform/scheduler",
+    "//third_party/blink/renderer/platform/wtf:buildflags",
+    "//third_party/fdlibm",
     "//third_party/pffft:pffft",
     "//ui/gfx",
   ]
@@ -1634,6 +1657,7 @@ component("platform") {
     "//cc/ipc",
     "//cc/mojo_embedder",
     "//components/paint_preview/common",
+    "//components/power_scheduler",
     "//components/search_engines:search_engine_utils",
     "//components/viz/client",
     "//components/viz/common",
@@ -1852,6 +1876,7 @@ static_library("test_support") {
     "testing/weburl_loader_mock.h",
     "testing/weburl_loader_mock_factory_impl.cc",
     "testing/weburl_loader_mock_factory_impl.h",
+    "webrtc/testing/mock_webrtc_video_frame_adapter_shared_resources.h",
   ]
 
   # fuzzed_data_provider may not work with a custom toolchain.
@@ -1886,6 +1911,7 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//gin",
     "//media:test_support",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
@@ -1910,6 +1936,15 @@ source_set("blink_platform_unittests_sources") {
   visibility = []  # Allow re-assignment of list.
   visibility = [ "*" ]
   testonly = true
+
+  # TODO(crbug.com/1173961): avoid depending on testonly webrtc targets.
+  if (rtc_include_tests) {
+    # This target uses some webrtc targets that are not part of
+    # "webrtc_component". This target relies on the fact that including a header
+    # that is not tracked by GN works without raising any warning. However it
+    # leads to build errors if rtc_include_tests = true.
+    check_includes = false
+  }
 
   sources = [
     "animation/animation_translation_util_test.cc",
@@ -1944,6 +1979,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/font_test.cc",
     "fonts/font_test_utilities.cc",
     "fonts/generic_font_family_settings_test.cc",
+    "fonts/opentype/font_format_check_test.cc",
     "fonts/opentype/font_settings_test.cc",
     "fonts/opentype/open_type_math_support_test.cc",
     "fonts/opentype/open_type_vertical_data_test.cc",
@@ -1951,6 +1987,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/orientation_iterator_test.cc",
     "fonts/script_run_iterator_test.cc",
     "fonts/shaping/caching_word_shaper_test.cc",
+    "fonts/shaping/font_features_test.cc",
     "fonts/shaping/harfbuzz_shaper_test.cc",
     "fonts/shaping/run_segmenter_test.cc",
     "fonts/shaping/shape_result_bloberizer_test.cc",
@@ -2024,10 +2061,12 @@ source_set("blink_platform_unittests_sources") {
     "graphics/paint/raster_invalidator_test.cc",
     "graphics/paint/scrollbar_display_item_test.cc",
     "graphics/paint_invalidation_reason_test.cc",
+    "graphics/parkable_image_test.cc",
     "graphics/path_test.cc",
     "graphics/placeholder_image_test.cc",
     "graphics/raster_dark_mode_filter_impl_test.cc",
     "graphics/rw_buffer_test.cc",
+    "graphics/video_frame_image_util_test.cc",
     "graphics/video_frame_submitter_test.cc",
     "heap_observer_set_test.cc",
     "image-decoders/bmp/bmp_image_decoder_test.cc",
@@ -2042,6 +2081,7 @@ source_set("blink_platform_unittests_sources") {
     "image-decoders/image_frame_test.cc",
     "image-decoders/jpeg/jpeg_image_decoder_test.cc",
     "image-decoders/png/png_image_decoder_test.cc",
+    "image-decoders/segment_reader_test.cc",
     "image-decoders/segment_stream_test.cc",
     "image-decoders/webp/webp_image_decoder_test.cc",
     "json/json_parser_test.cc",
@@ -2054,6 +2094,7 @@ source_set("blink_platform_unittests_sources") {
     "mojo/big_string_mojom_traits_test.cc",
     "mojo/heap_mojo_associated_receiver_set_test.cc",
     "mojo/heap_mojo_associated_receiver_test.cc",
+    "mojo/heap_mojo_associated_remote_set_test.cc",
     "mojo/heap_mojo_associated_remote_test.cc",
     "mojo/heap_mojo_receiver_set_test.cc",
     "mojo/heap_mojo_receiver_test.cc",
@@ -2066,11 +2107,11 @@ source_set("blink_platform_unittests_sources") {
     "p2p/ipc_network_manager_test.cc",
     "peerconnection/rtc_encoded_audio_stream_transformer_test.cc",
     "peerconnection/rtc_encoded_video_stream_transformer_test.cc",
+    "peerconnection/rtc_rtp_source_test.cc",
     "peerconnection/rtc_stats_test.cc",
     "peerconnection/rtc_video_decoder_adapter_test.cc",
     "peerconnection/rtc_video_decoder_stream_adapter_test.cc",
     "peerconnection/rtc_video_encoder_test.cc",
-    "peerconnection/stun_field_trial_test.cc",
     "peerconnection/task_queue_factory_test.cc",
     "peerconnection/transmission_encoding_info_handler_test.cc",
     "peerconnection/two_keys_adapter_map_unittest.cc",
@@ -2109,6 +2150,8 @@ source_set("blink_platform_unittests_sources") {
     "weborigin/scheme_registry_test.cc",
     "weborigin/security_origin_test.cc",
     "weborigin/security_policy_test.cc",
+    "webrtc/convert_to_webrtc_video_frame_buffer_test.cc",
+    "webrtc/legacy_webrtc_video_frame_adapter_test.cc",
     "webrtc/webrtc_video_frame_adapter_test.cc",
     "widget/compositing/layer_tree_settings_unittest.cc",
     "widget/compositing/layer_tree_view_unittest.cc",
@@ -2168,6 +2211,7 @@ source_set("blink_platform_unittests_sources") {
     "//mojo/public/cpp/bindings/tests:for_blink_tests",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
+    "//services/network/public/cpp:test_support",
     "//services/viz/public/mojom",
     "//skia",
     "//skia:skcms",
@@ -2190,10 +2234,12 @@ source_set("blink_platform_unittests_sources") {
     "//ui/base:features",
     "//ui/base/prediction",
     "//ui/gfx",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry/mojom:test_interfaces_blink",
     "//ui/gfx/mojom:test_interfaces_blink",
     "//url",
+    "//url:url_test_support",
     "//url/mojom:test_url_mojom_gurl_blink",
   ]
 
@@ -2411,7 +2457,7 @@ fuzzer_test("blink_json_parser_fuzzer") {
   dict = "//testing/libfuzzer/fuzzers/dicts/json.dict"
 }
 
-# Fuzzer for blink::SecurityOrigin
+# Fuzzer for blink::SecurityOrigin.
 fuzzer_test("blink_security_origin_fuzzer") {
   sources = [ "weborigin/security_origin_fuzzer.cc" ]
   deps = [

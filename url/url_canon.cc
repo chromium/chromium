@@ -10,6 +10,6 @@ namespace url {
 
 template class EXPORT_TEMPLATE_DEFINE(COMPONENT_EXPORT(URL)) CanonOutputT<char>;
 template class EXPORT_TEMPLATE_DEFINE(COMPONENT_EXPORT(URL))
-    CanonOutputT<base::char16>;
+    CanonOutputT<char16_t>;
 
 }  // namespace url

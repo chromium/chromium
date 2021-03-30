@@ -75,17 +75,19 @@ namespace alarms {
 
     // Retrieves details about the specified alarm.
     // |name|: The name of the alarm to get. Defaults to the empty string.
-    static void get(optional DOMString name, AlarmCallback callback);
+    [supportsPromises] static void get(optional DOMString name,
+                                       AlarmCallback callback);
 
     // Gets an array of all the alarms.
-    static void getAll(AlarmListCallback callback);
+    [supportsPromises] static void getAll(AlarmListCallback callback);
 
     // Clears the alarm with the given name.
     // |name|: The name of the alarm to clear. Defaults to the empty string.
-    static void clear(optional DOMString name, optional ClearCallback callback);
+    [supportsPromises] static void clear(optional DOMString name,
+                                         optional ClearCallback callback);
 
     // Clears all alarms.
-    static void clearAll(optional ClearCallback callback);
+    [supportsPromises] static void clearAll(optional ClearCallback callback);
   };
 
   interface Events {

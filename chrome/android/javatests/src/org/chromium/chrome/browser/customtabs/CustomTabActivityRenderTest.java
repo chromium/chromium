@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -68,8 +69,9 @@ public class CustomTabActivityRenderTest {
 
         public static void addMaxTopActionIconToIntent(Intent intent) {
             ArrayList<Bundle> toolbarItems = new ArrayList<>(2);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                    InstrumentationRegistry.getTargetContext(), 0, new Intent(), 0);
+            PendingIntent pendingIntent =
+                    PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
+                            new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
 
             toolbarItems.add(CustomTabsTestUtils.makeToolbarItemBundle(
                     ICON_CREDIT_CARD, "Top Action #1", pendingIntent, 1));

@@ -41,20 +41,20 @@ PaymentManager* PaymentAppServiceWorkerRegistration::paymentManager(
 PaymentManager* PaymentAppServiceWorkerRegistration::paymentManager(
     ScriptState* script_state) {
   if (!payment_manager_) {
-    payment_manager_ = MakeGarbageCollected<PaymentManager>(registration_);
+    payment_manager_ =
+        MakeGarbageCollected<PaymentManager>(GetSupplementable());
   }
   return payment_manager_.Get();
 }
 
 void PaymentAppServiceWorkerRegistration::Trace(Visitor* visitor) const {
-  visitor->Trace(registration_);
   visitor->Trace(payment_manager_);
   Supplement<ServiceWorkerRegistration>::Trace(visitor);
 }
 
 PaymentAppServiceWorkerRegistration::PaymentAppServiceWorkerRegistration(
     ServiceWorkerRegistration* registration)
-    : registration_(registration) {}
+    : Supplement(*registration) {}
 
 // static
 const char PaymentAppServiceWorkerRegistration::kSupplementName[] =

@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
 
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

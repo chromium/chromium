@@ -18,6 +18,18 @@ cr.define('cr.ui.dialogs', function() {
     // so we can restore it when we're hidden.
     this.previousActiveElement_ = null;
 
+    /**
+     * If set true, BaseDialog assumes that focus traversal of elements inside
+     * the dialog due to 'Tab' key events is handled by its container (and the
+     * practical example is this.parentNode_ is a modal <dialog> element).
+     *
+     * The default is false: BaseDialog handles focus traversal for the entire
+     * DOM document. See findFocusableElements_(), also crbug.com/1078300.
+     *
+     * @protected {boolean}
+     */
+    this.hasModalContainer = false;
+
     /** @private{boolean} */
     this.showing_ = false;
 
@@ -245,14 +257,21 @@ cr.define('cr.ui.dialogs', function() {
   BaseDialog.prototype.show_ = function(
       title, opt_onOk, opt_onCancel, opt_onShow) {
     this.showing_ = true;
-    // Make all outside nodes unfocusable while the dialog is active.
-    this.deactivatedNodes_ = this.findFocusableElements_(this.document_);
-    this.tabIndexes_ = this.deactivatedNodes_.map(function(n) {
-      return n.getAttribute('tabindex');
-    });
-    this.deactivatedNodes_.forEach(function(n) {
-      n.tabIndex = -1;
-    });
+
+    // Modal containers manage dialog focus traversal. Otherwise, the focus
+    // is managed by |this| dialog, by making all outside nodes unfocusable
+    // while the dialog is shown.
+    if (!this.hasModalContainer) {
+      this.deactivatedNodes_ = this.findFocusableElements_(this.document_);
+      this.tabIndexes_ = this.deactivatedNodes_.map(function(n) {
+        return n.getAttribute('tabindex');
+      });
+      this.deactivatedNodes_.forEach(function(n) {
+        n.tabIndex = -1;
+      });
+    } else {
+      this.deactivatedNodes_ = [];
+    }
 
     this.previousActiveElement_ = this.document_.activeElement;
     this.parentNode_.appendChild(this.container);
@@ -288,7 +307,8 @@ cr.define('cr.ui.dialogs', function() {
   /** @param {Function=} opt_onHide */
   BaseDialog.prototype.hide = function(opt_onHide) {
     this.showing_ = false;
-    // Restore focusability.
+
+    // Restore focusability for the non-modal container case.
     for (let i = 0; i < this.deactivatedNodes_.length; i++) {
       const node = this.deactivatedNodes_[i];
       if (this.tabIndexes_[i] === null) {
@@ -301,13 +321,13 @@ cr.define('cr.ui.dialogs', function() {
     this.tabIndexes_ = null;
 
     this.container.classList.remove('shown');
+    this.container.classList.remove('pulse');
 
     if (this.previousActiveElement_) {
       this.previousActiveElement_.focus();
     } else {
       this.document_.body.focus();
     }
-    this.frame.classList.remove('pulse');
 
     const self = this;
     setTimeout(function() {
@@ -357,70 +377,11 @@ cr.define('cr.ui.dialogs', function() {
 
   ConfirmDialog.prototype = {__proto__: BaseDialog.prototype};
 
-  /**
-   * PromptDialog contains a message, a text input, an ok button, and a
-   * cancel button.
-   * @constructor
-   * @extends {cr.ui.dialogs.BaseDialog}
-   */
-  /* #export */ function PromptDialog(parentNode) {
-    BaseDialog.call(this, parentNode);
-    this.input_ = this.document_.createElement('input');
-    this.input_.setAttribute('type', 'text');
-    this.input_.addEventListener('focus', this.onInputFocus.bind(this));
-    this.input_.addEventListener('keydown', this.onKeyDown_.bind(this));
-    this.initialFocusElement_ = this.input_;
-    this.frame.insertBefore(this.input_, this.text.nextSibling);
-  }
-
-  PromptDialog.prototype = {__proto__: BaseDialog.prototype};
-
-  PromptDialog.prototype.onInputFocus = function(event) {
-    this.input_.select();
-  };
-
-  /** @private */
-  PromptDialog.prototype.onKeyDown_ = function(event) {
-    if (event.keyCode === 13) {  // Enter
-      this.onOkClick_(event);
-      event.preventDefault();
-    }
-  };
-
-  /**
-   * @param {string} message
-   * @param {?} defaultValue
-   * @param {Function=} opt_onOk
-   * @param {Function=} opt_onCancel
-   * @param {Function=} opt_onShow
-   * @suppress {checkTypes}
-   * TODO(fukino): remove suppression if there is a better way to avoid warning
-   * about overriding method with different signature.
-   */
-  PromptDialog.prototype.show = function(
-      message, defaultValue, opt_onOk, opt_onCancel, opt_onShow) {
-    this.input_.value = defaultValue || '';
-    return BaseDialog.prototype.show.call(
-        this, message, opt_onOk, opt_onCancel, opt_onShow);
-  };
-
-  PromptDialog.prototype.getValue = function() {
-    return this.input_.value;
-  };
-
-  /** @private */
-  PromptDialog.prototype.onOkClick_ = function(event) {
-    this.hide();
-    if (this.onOk_) {
-      this.onOk_(this.getValue());
-    }
-  };
-
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     BaseDialog: BaseDialog,
     AlertDialog: AlertDialog,
     ConfirmDialog: ConfirmDialog,
-    PromptDialog: PromptDialog
   };
 });

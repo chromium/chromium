@@ -33,7 +33,7 @@ class TimedCanvasDrawListener final : public OnRequestCanvasDrawListener {
   void RequestFrameTimerFired(TimerBase*);
 
   base::TimeDelta frame_interval_;
-  TaskRunnerTimer<TimedCanvasDrawListener> request_frame_timer_;
+  HeapTaskRunnerTimer<TimedCanvasDrawListener> request_frame_timer_;
 };
 
 }  // namespace blink

@@ -8,12 +8,37 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + mojom_js_args + [
                     "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page/\"",
-                    "browser_resolver_prefix_replacements=\"chrome://kaleidoscope/=../../chrome/browser/media/kaleidoscope/internal/resources\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
                   ]
-  deps = [ ":img_test" ]
+  deps = [
+    ":img_test",
+    ":metrics_utils_test",
+    ":test_support",
+    "modules:module_header_test",
+    "modules:module_registry_test",
+  ]
 }
 
 js_library("img_test") {
   deps = [ "//chrome/browser/resources/new_tab_page" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("metrics_test_support") {
+}
+
+js_library("metrics_utils_test") {
+  deps = [
+    ":metrics_test_support",
+    "//chrome/browser/resources/new_tab_page",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("test_support") {
+  deps = [
+    "//chrome/browser/resources/new_tab_page",
+    "//chrome/test/data/webui:test_browser_proxy.m",
+  ]
 }

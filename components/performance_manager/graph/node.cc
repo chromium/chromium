@@ -4,8 +4,6 @@
 
 #include "components/performance_manager/public/graph/node.h"
 
-#include "components/performance_manager/graph/node_base.h"
-
 namespace performance_manager {
 
 Node::Node() = default;

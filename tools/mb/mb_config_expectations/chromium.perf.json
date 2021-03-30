@@ -1,10 +1,13 @@
 {
   "Android Builder Perf": {
     "gn_args": {
+      "chrome_pgo_phase": 0,
+      "clang_use_default_sample_profile": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
       "proprietary_codecs": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_os": "android",
       "use_goma": true
@@ -12,10 +15,13 @@
   },
   "Android arm64 Builder Perf": {
     "gn_args": {
+      "chrome_pgo_phase": 0,
+      "clang_use_default_sample_profile": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
       "proprietary_codecs": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
@@ -24,10 +30,13 @@
   },
   "android-builder-perf": {
     "gn_args": {
+      "chrome_pgo_phase": 0,
+      "clang_use_default_sample_profile": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
       "proprietary_codecs": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_os": "android",
       "use_goma": true
@@ -35,13 +44,25 @@
   },
   "android_arm64-builder-perf": {
     "gn_args": {
+      "chrome_pgo_phase": 0,
+      "clang_use_default_sample_profile": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
       "proprietary_codecs": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "chromecast-linux-builder-perf": {
+    "gn_args": {
+      "is_chromecast": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
       "use_goma": true
     }
   },
@@ -61,7 +82,7 @@
       "ozone_platform_x11": false,
       "rtc_use_pipewire": false,
       "symbol_level": 1,
-      "target_os": "linux",
+      "target_os": "chromeos",
       "use_custom_libcxx": false,
       "use_custom_libcxx_for_host": true,
       "use_evdev_gestures": false,
@@ -75,13 +96,26 @@
       "use_system_libsync": false,
       "use_thin_lto": true,
       "use_v8_context_snapshot": false,
-      "use_vaapi": false
+      "use_vaapi": true
     }
   },
   "linux-builder-perf": {
     "gn_args": {
+      "chrome_pgo_phase": 0,
       "is_chrome_branded": true,
       "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "use_gnome_keyring": false,
+      "use_goma": true
+    }
+  },
+  "linux-builder-perf-rel": {
+    "gn_args": {
+      "chrome_pgo_phase": 0,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_gnome_keyring": false,
       "use_goma": true
@@ -89,10 +123,12 @@
   },
   "mac-arm-builder-perf": {
     "gn_args": {
+      "chrome_pgo_phase": 0,
       "enable_keystone_registration_framework": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 2,
       "target_cpu": "arm64",
       "use_goma": true
@@ -100,18 +136,22 @@
   },
   "mac-builder-perf": {
     "gn_args": {
+      "chrome_pgo_phase": 0,
       "enable_keystone_registration_framework": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 2,
       "use_goma": true
     }
   },
   "win32-builder-perf": {
     "gn_args": {
+      "chrome_pgo_phase": 0,
       "is_chrome_branded": true,
       "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_goma": true
@@ -119,8 +159,10 @@
   },
   "win64-builder-perf": {
     "gn_args": {
+      "chrome_pgo_phase": 0,
       "is_chrome_branded": true,
       "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_goma": true
     }

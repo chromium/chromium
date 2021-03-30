@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -29,18 +30,18 @@ namespace {
 class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
  public:
   TestingTemplateURLServiceClient(history::HistoryService* history_service,
-                                  base::string16* search_term)
+                                  std::u16string* search_term)
       : ChromeTemplateURLServiceClient(history_service),
         search_term_(search_term) {}
 
   void SetKeywordSearchTermsForURL(const GURL& url,
                                    TemplateURLID id,
-                                   const base::string16& term) override {
+                                   const std::u16string& term) override {
     *search_term_ = term;
   }
 
  private:
-  base::string16* search_term_;
+  std::u16string* search_term_;
 
   DISALLOW_COPY_AND_ASSIGN(TestingTemplateURLServiceClient);
 };
@@ -64,7 +65,7 @@ void RemoveManagedDefaultSearchPreferences(TestingProfile* profile) {
 }
 
 std::unique_ptr<TemplateURL> CreateTestTemplateURL(
-    const base::string16& keyword,
+    const std::u16string& keyword,
     const std::string& url,
     const std::string& guid,
     base::Time last_modified,
@@ -76,7 +77,7 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
          "for clarity.";
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16("unittest"));
+  data.SetShortName(u"unittest");
   data.SetKeyword(keyword);
   data.SetURL(url);
   data.favicon_url = GURL("http://favicon.url");
@@ -173,8 +174,8 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
     VerifyLoad();
 }
 
-base::string16 TemplateURLServiceTestUtil::GetAndClearSearchTerm() {
-  base::string16 search_term;
+std::u16string TemplateURLServiceTestUtil::GetAndClearSearchTerm() {
+  std::u16string search_term;
   search_term.swap(search_term_);
   return search_term;
 }

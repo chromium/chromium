@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -47,7 +48,7 @@ namespace content {
 
 namespace {
 
-const auto kIgnoreLogMessageCB = base::BindRepeating([](const std::string&) {});
+const auto kIgnoreLogMessageCB = base::DoNothing();
 
 // Wraps FakeVideoCaptureDeviceFactory to allow mocking of the
 // VideoCaptureDevice MaybeSuspend() and Resume() methods. This is used to check
@@ -183,10 +184,9 @@ class MockFrameObserver : public VideoCaptureControllerEventHandler {
                    int buffer_id) override {}
   void OnBufferDestroyed(const VideoCaptureControllerID& id,
                          int buffer_id) override {}
-  void OnBufferReady(
-      const VideoCaptureControllerID& id,
-      int buffer_id,
-      const media::mojom::VideoFrameInfoPtr& frame_info) override {}
+  void OnBufferReady(const VideoCaptureControllerID& id,
+                     const ReadyBuffer& buffer,
+                     const std::vector<ReadyBuffer>& scaled_buffers) override {}
   void OnEnded(const VideoCaptureControllerID& id) override {}
 
   void OnGotControllerCallback(const VideoCaptureControllerID&) {}
@@ -262,10 +262,8 @@ class VideoCaptureManagerTest : public testing::Test {
     screenlock_monitor_ = std::make_unique<ScreenlockMonitor>(
         std::unique_ptr<ScreenlockMonitorSource>(screenlock_monitor_source_));
 
-    vcm_ =
-        new VideoCaptureManager(std::move(video_capture_provider),
-                                base::BindRepeating([](const std::string&) {}),
-                                ScreenlockMonitor::Get());
+    vcm_ = new VideoCaptureManager(std::move(video_capture_provider),
+                                   base::DoNothing(), ScreenlockMonitor::Get());
     const int32_t kNumberOfFakeDevices = 2;
     video_capture_device_factory_->SetToDefaultDevicesConfig(
         kNumberOfFakeDevices);

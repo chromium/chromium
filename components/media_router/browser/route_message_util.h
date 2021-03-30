@@ -12,8 +12,14 @@
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace media_router {
 namespace message_util {
+
+media_router::mojom::RouteMessagePtr RouteMessageFromValue(base::Value value);
 
 media_router::mojom::RouteMessagePtr RouteMessageFromString(
     std::string message);

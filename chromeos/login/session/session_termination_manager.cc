@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -44,7 +44,7 @@ void SessionTerminationManager::StopSession(
 }
 
 void SessionTerminationManager::RebootIfNecessary() {
-  CryptohomeClient::Get()->WaitForServiceToBeAvailable(
+  CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&SessionTerminationManager::DidWaitForServiceToBeAvailable,
                      weak_factory_.GetWeakPtr()));
 }
@@ -63,25 +63,22 @@ void SessionTerminationManager::DidWaitForServiceToBeAvailable(
     LOG(ERROR) << "WaitForServiceToBeAvailable failed.";
     return;
   }
-  CryptohomeClient::Get()->GetLoginStatus(
-      cryptohome::GetLoginStatusRequest(),
+  CryptohomeMiscClient::Get()->GetLoginStatus(
+      user_data_auth::GetLoginStatusRequest(),
       base::BindOnce(&SessionTerminationManager::RebootIfNecessaryProcessReply,
                      weak_factory_.GetWeakPtr()));
 }
 
 void SessionTerminationManager::ProcessCryptohomeLoginStatusReply(
-    const base::Optional<cryptohome::BaseReply>& reply) {
-  if (!reply.has_value() || reply->has_error() ||
-      !reply->HasExtension(cryptohome::GetLoginStatusReply::reply)) {
+    const base::Optional<user_data_auth::GetLoginStatusReply>& reply) {
+  if (!reply.has_value() ||
+      reply->error() !=
+          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
     LOG(ERROR) << "Login status request failed, error: "
-               << (reply.has_value() && reply->has_error() ? reply->error()
-                                                           : 0);
+               << (reply.has_value() ? reply->error() : 0);
     return;
   }
-  auto reply_proto =
-      reply->GetExtension(cryptohome::GetLoginStatusReply::reply);
-  if (reply_proto.has_is_locked_to_single_user() &&
-      reply_proto.is_locked_to_single_user()) {
+  if (reply->is_locked_to_single_user()) {
     is_locked_to_single_user_ = true;
   }
 }
@@ -92,7 +89,7 @@ void SessionTerminationManager::Reboot() {
 }
 
 void SessionTerminationManager::RebootIfNecessaryProcessReply(
-    base::Optional<cryptohome::BaseReply> reply) {
+    base::Optional<user_data_auth::GetLoginStatusReply> reply) {
   ProcessCryptohomeLoginStatusReply(reply);
   if (is_locked_to_single_user_)
     Reboot();

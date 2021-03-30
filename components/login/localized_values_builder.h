@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/login/login_export.h"
 
 namespace base {
@@ -30,7 +29,7 @@ class LOGIN_EXPORT LocalizedValuesBuilder {
 
   // Method to declare localized value. |key| is the i18n key used in html.
   // |message| is text of the message.
-  void Add(const std::string& key, const base::string16& message);
+  void Add(const std::string& key, const std::u16string& message);
 
   // Method to declare localized value. |key| is the i18n key used in html.
   // |message_id| is a resource id of message.
@@ -39,24 +38,24 @@ class LOGIN_EXPORT LocalizedValuesBuilder {
   // Method to declare localized value. |key| is the i18n key used in html.
   // |message_id| is a resource id of message. Message is expected to have
   // one format parameter subsituted by |a|.
-  void AddF(const std::string& key, int message_id, const base::string16& a);
+  void AddF(const std::string& key, int message_id, const std::u16string& a);
 
   // Method to declare localized value. |key| is the i18n key used in html.
   // |message_id| is a resource id of message. Message is expected to have
   // two format parameters subsituted by |a| and |b| respectively.
   void AddF(const std::string& key,
             int message_id,
-            const base::string16& a,
-            const base::string16& b);
+            const std::u16string& a,
+            const std::u16string& b);
 
   // Method to declare localized value. |key| is the i18n key used in html.
   // |message_id| is a resource id of message. Message is expected to have
   // two format parameters subsituted by |a|, |b| and |c| respectively.
   void AddF(const std::string& key,
             int message_id,
-            const base::string16& a,
-            const base::string16& b,
-            const base::string16& c);
+            const std::u16string& a,
+            const std::u16string& b,
+            const std::u16string& c);
 
   // Method to declare localized value. |key| is the i18n key used in html.
   // |message_id| is a resource id of message. Message is expected to have

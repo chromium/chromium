@@ -75,19 +75,6 @@ class GpuArcVideoEncodeAccelerator
                                        uint32_t framerate) override;
   void Flush(FlushCallback callback) override;
 
-  void EncodeDmabuf(base::ScopedFD fd,
-                    media::VideoPixelFormat format,
-                    const std::vector<::arc::VideoFramePlane>& planes,
-                    int64_t timestamp,
-                    bool force_keyframe,
-                    EncodeCallback callback);
-  void EncodeSharedMemory(base::ScopedFD fd,
-                          media::VideoPixelFormat format,
-                          const std::vector<::arc::VideoFramePlane>& planes,
-                          int64_t timestamp,
-                          bool force_keyframe,
-                          EncodeCallback callback);
-
   // Global counter that keeps track of the number of active clients (i.e., how
   // many VEAs in use by this class).
   // Since this class only works on the same thread, it's safe to access
@@ -100,8 +87,6 @@ class GpuArcVideoEncodeAccelerator
   mojo::Remote<::arc::mojom::VideoEncodeClient> client_;
   gfx::Size coded_size_;
   gfx::Size visible_size_;
-  VideoPixelFormat input_pixel_format_;
-  media::VideoEncodeAccelerator::Config::StorageType input_storage_type_;
   int32_t bitstream_buffer_serial_;
   std::unordered_map<uint32_t, UseBitstreamBufferCallback> use_bitstream_cbs_;
   gpu::GpuMemoryBufferSupport support_;

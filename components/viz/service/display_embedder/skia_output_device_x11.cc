@@ -87,18 +87,16 @@ bool SkiaOutputDeviceX11::Reshape(const gfx::Size& size,
   return true;
 }
 
-void SkiaOutputDeviceX11::SwapBuffers(
-    BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+void SkiaOutputDeviceX11::SwapBuffers(BufferPresentedCallback feedback,
+                                      OutputSurfaceFrame frame) {
   return PostSubBuffer(
       gfx::Rect(0, 0, sk_surface_->width(), sk_surface_->height()),
-      std::move(feedback), std::move(latency_info));
+      std::move(feedback), std::move(frame));
 }
 
-void SkiaOutputDeviceX11::PostSubBuffer(
-    const gfx::Rect& rect,
-    BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+void SkiaOutputDeviceX11::PostSubBuffer(const gfx::Rect& rect,
+                                        BufferPresentedCallback feedback,
+                                        OutputSurfaceFrame frame) {
   StartSwapBuffers(std::move(feedback));
   if (!rect.IsEmpty()) {
     auto ii =
@@ -117,7 +115,7 @@ void SkiaOutputDeviceX11::PostSubBuffer(
   }
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK),
                     gfx::Size(sk_surface_->width(), sk_surface_->height()),
-                    std::move(latency_info));
+                    std::move(frame));
 }
 
 }  // namespace viz

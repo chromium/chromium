@@ -1,71 +1,22 @@
 <link rel="import" href="../../../html/polymer.html">
 
 <link rel="import" href="icons.html">
+<link rel="import" href="mojo_api.html">
+<link rel="import" href="multidevice_setup_delegate.html">
 <link rel="import" href="multidevice_setup_shared_css.html">
 <link rel="import" href="ui_page.html">
 <link rel="import" href="ui_page_container_behavior.html">
 <link rel="import" href="../../../html/cr.html">
 <link rel="import" href="../../../html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <dom-module id="start-setup-page">
   <template>
     <style include="multidevice-setup-shared">
-      #selector-and-details-container {
-        display: flex;
-        margin-top: 20px;
-        min-height: 246px;
-      }
-
-      #singleDeviceName {
-        color: var(--google-grey-900);
-        margin-top: 16px;
-      }
-
-      #deviceDropdown {
-        margin-top: 16px;
-      }
-
-      .offline-device-name {
-        color: var(--google-grey-600);
-      }
-
-      #page-icon-container {
-        display: flex;
-        justify-content: center;
-      }
-
-      #page-icon {
-        background-image: -webkit-image-set(url(start_setup_icon_1x.png) 1x,
-                                            url(start_setup_icon_2x.png) 2x);
-        height: 116px;
-        margin-top: 10px;
-        width: 320px;
-      }
-
-      #deviceSelectionContainer {
-        color: var(--paper-grey-600);
-        display: flex;
-        flex-direction: column;
-      }
-
-      #feature-details-container {
-        border-inline-start: 1px solid rgb(218, 220, 224);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding-inline-start: 24px;
-      }
-
-      #feature-details-container-header {
-        margin-bottom: 18px;
-      }
-
-      .feature-detail {
-        align-items: center;
-        box-sizing: border-box;
-        display: flex;
-        padding: 10px 0;
+      #multidevice-summary-message a {
+        display: inline-block;
       }
 
       .feature-detail iron-icon {
@@ -74,35 +25,122 @@
         min-width: 20px;
       }
 
-      .feature-detail span {
+      #singleDeviceName {
+        color: var(--google-grey-900);
+      }
+
+      .offline-device-name {
+        color: var(--google-grey-700);
+      }
+
+      #animation-container {
+        padding-inline-end: 8px;
+        padding-top: 16px;
+      }
+
+      .footnote {
+        padding-top: 16px;
+      }
+
+      #deviceSelectionContainer {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #deviceDropdown {
+        margin-top: 8px;
+      }
+
+      #singleDeviceName {
+        margin-top: 8px;
+      }
+
+      .feature-detail {
+        align-items: center;
+        box-sizing: border-box;
+        display: flex;
+        min-height: 48px;
+        padding: 12px 0;
+      }
+
+      #image-container {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+      }
+
+      #page-icon {
+        background-image: -webkit-image-set(url(chrome://resources/cr_components/chromeos/multidevice_setup/start_setup_icon_1x.png) 1x,
+                                            url(chrome://resources/cr_components/chromeos/multidevice_setup/start_setup_icon_2x.png) 2x);
+        height: 116px;
+        margin-top: 10px;
+        width: 320px;
+      }
+
+      #page-icon-container {
+        display: flex;
+        justify-content: center;
+      }
+
+      #feature-details-container-header {
+        margin-bottom: 16px;
+      }
+
+      :host-context([new-layout][orientation=horizontal])
+          #additional-content-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      :host-context([new-layout]) #feature-details-container {
+        color: var(--google-grey-900);
+        padding-top: 40px;
+      }
+
+      :host-context([new-layout]) .feature-detail:not(:last-child) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      :host-context([new-layout]) .feature-detail iron-icon {
+        padding: 0 20px;
+      }
+
+      :host-context(html:not([new-layout])) #selector-and-details-container {
+        display: flex;
+        margin-top: 20px;
+        min-height: 246px;
+      }
+
+      :host-context(html:not([new-layout])) #feature-details-container {
+        border-inline-start: 1px solid rgb(218, 220, 224);
+        padding-inline-start: 24px;
+      }
+
+      :host-context(html:not([new-layout])) .feature-detail span {
         margin-inline-start: 8px;
-      }
-
-      #footnote {
-        color: var(--paper-grey-600);
-        padding-top: 12px;
-      }
-
-      #multidevice-summary-message a {
-        display: inline-block;
       }
 
       /* On devices with small screens, use a single-column layout. */
       @media screen and (max-width: 767px) {
-        #selector-and-details-container {
+        :host-context(html:not([new-layout])) #selector-and-details-container {
           display: flex;
           flex-direction: column;
           margin-top: 32px;
         }
 
-        #feature-details-container {
+        :host-context(html:not([new-layout])) #feature-details-container {
           border-inline-start: none;
           margin-top: 32px;
           padding-inline-start: inherit;
         }
+      }
 
-        .feature-detail {
-          min-height: 45px;
+      @media screen and (max-height: 736px) {
+        :host-context([screen=oobe]) #animation-container,
+        :host-context([screen=gaia-signin]) #animation-container {
+          height: 143px;
+          padding-top: 0;
         }
       }
     </style>
@@ -112,7 +150,15 @@
       <span slot="message" id="multidevice-summary-message" inner-h-t-m-l=
           "[[i18nAdvancedDynamic_(locale, 'startSetupPageMessage')]]">
       </span>
-      <div slot="additional-content">
+      <span slot="message" hidden$="[[!newLayoutEnabled_]]">
+        <div id="animation-container">
+          <cr-lottie id="multideviceSetupAnimation"
+              animation-url="multidevice_setup.json">
+          </cr-lottie>
+        </div>
+      </span>
+      <div id="additional-content-container" slot="additional-content"
+          class="flex">
         <div id="selector-and-details-container">
           <div id="deviceSelectionContainer" class="flex">
             [[getDeviceSelectionHeader_(devices)]]
@@ -133,35 +179,21 @@
                 </template>
               </select>
             </div>
-            <div class="flex"></div>
-            <div id="page-icon-container">
-              <div id="page-icon"></div>
-            </div>
-            <div class="flex"></div>
-            <div id="footnote">
-              [[i18nAdvancedDynamic_(locale, 'startSetupPageFootnote')]]
+            <div id="image-container" hidden$="[[newLayoutEnabled_]]">
+              <div class="flex"></div>
+              <div id="page-icon-container">
+                <div id="page-icon"></div>
+              </div>
+              <div class="flex"></div>
+              <div class="footnote">
+                [[i18nAdvancedDynamic_(locale, 'startSetupPageFootnote')]]
+              </div>
             </div>
           </div>
           <div id="feature-details-container" class="flex">
             <div id="feature-details-container-header">
               [[i18nDynamic(locale, 'startSetupPageFeatureListHeader')]]
             </div>
-            <div class="feature-detail">
-              <iron-icon icon="multidevice-setup-icons-20:messages"></iron-icon>
-              <span id="awm-summary-message" inner-h-t-m-l="
-                  [[i18nAdvancedDynamic_(
-                      locale, 'startSetupPageFeatureListAwm')]]">
-              </span>
-            </div>
-            <template is="dom-if" if="[[phoneHubEnabled_]]">
-              <div class="feature-detail">
-                <iron-icon icon="multidevice-setup-icons-20:notifications">
-                </iron-icon>
-                <span>
-                  [[i18nDynamic(locale, 'startSetupPageFeatureMirrorPhoneNotifications')]]
-                </span>
-              </div>
-            </template>
             <template is="dom-if" if="[[wifiSyncEnabled_]]">
               <div class="feature-detail">
                 <iron-icon icon="multidevice-setup-icons-20:wifi">
@@ -172,23 +204,18 @@
               </div>
             </template>
             <div class="feature-detail">
-              <iron-icon icon="multidevice-setup-icons-20:downloads">
-              </iron-icon>
-              <span>
-                [[i18nDynamic(locale, 'startSetupPageFeatureListInstallApps')]]
-              </span>
-            </div>
-            <div class="feature-detail">
               <iron-icon icon="multidevice-setup-icons-20:features"></iron-icon>
               <span>
                 [[i18nDynamic(locale, 'startSetupPageFeatureListAddFeatures')]]
               </span>
             </div>
           </div>
+          <div class="footnote" hidden$="[[!newLayoutEnabled_]]">
+            [[i18nAdvancedDynamic_(locale, 'startSetupPageFootnote')]]
+          </div>
         </div>
       </div>
     </ui-page>
   </template>
-  <script src="start_setup_page.js">
-  </script>
+  <script src="start_setup_page.js"></script>
 </dom-module>

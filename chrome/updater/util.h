@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_UTIL_H_
 
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
@@ -13,6 +14,8 @@ class GURL;
 
 // Externally-defined printers for base types.
 namespace base {
+
+class CommandLine;
 
 template <class T>
 std::ostream& operator<<(std::ostream& os, const base::Optional<T>& opt) {
@@ -30,12 +33,12 @@ namespace updater {
 // Returns the base directory common to all versions of the updater. For
 // instance, this function may return %localappdata%\Chromium\ChromiumUpdater
 // for a User install.
-bool GetBaseDirectory(base::FilePath* path);
+base::Optional<base::FilePath> GetBaseDirectory();
 
 // Returns a versioned directory under which the running version of the updater
 // stores its files and data. For instance, this function may return
 // %localappdata%\Chromium\ChromiumUpdater\1.2.3.4 for a User install.
-bool GetVersionedDirectory(base::FilePath* path);
+base::Optional<base::FilePath> GetVersionedDirectory();
 
 // Returns true if the user running the updater also owns the |path|.
 bool PathOwnedByUser(const base::FilePath& path);
@@ -43,13 +46,16 @@ bool PathOwnedByUser(const base::FilePath& path);
 // Initializes logging for an executable.
 void InitLogging(const base::FilePath::StringType& filename);
 
+// Wraps the 'command_line' to be executed in an elevated context.
+// On macOS this is done with 'sudo'.
+base::CommandLine MakeElevated(base::CommandLine command_line);
+
 // Functor used by associative containers of strings as a case-insensitive ASCII
-// compare. |T| could be std::string or base::string16.
-template <typename T>
+// compare. |StringT| could be either UTF-8 or UTF-16.
 struct CaseInsensitiveASCIICompare {
  public:
-  bool operator()(base::BasicStringPiece<T> x,
-                  base::BasicStringPiece<T> y) const {
+  template <typename StringT>
+  bool operator()(const StringT& x, const StringT& y) const {
     return base::CompareCaseInsensitiveASCII(x, y) > 0;
   }
 };

@@ -16,14 +16,14 @@ constexpr char kFcmPolicyPublicTopicPrefix[] = "cs-";
 
 }  // namespace
 
-bool IsPublicInvalidationTopic(const syncer::Topic& topic) {
+bool IsPublicInvalidationTopic(const invalidation::Topic& topic) {
   return base::StartsWith(topic, kFcmPolicyPublicTopicPrefix,
                           base::CompareCase::SENSITIVE);
 }
 
 bool GetCloudPolicyTopicFromPolicy(
     const enterprise_management::PolicyData& policy,
-    syncer::Topic* topic) {
+    invalidation::Topic* topic) {
   if (!policy.has_policy_invalidation_topic() ||
       policy.policy_invalidation_topic().empty()) {
     return false;
@@ -34,7 +34,7 @@ bool GetCloudPolicyTopicFromPolicy(
 
 bool GetRemoteCommandTopicFromPolicy(
     const enterprise_management::PolicyData& policy,
-    syncer::Topic* topic) {
+    invalidation::Topic* topic) {
   if (!policy.has_command_invalidation_topic() ||
       policy.command_invalidation_topic().empty()) {
     return false;
@@ -43,7 +43,7 @@ bool GetRemoteCommandTopicFromPolicy(
   return true;
 }
 
-bool IsInvalidationExpired(const syncer::Invalidation& invalidation,
+bool IsInvalidationExpired(const invalidation::Invalidation& invalidation,
                            const base::Time& last_fetch_time,
                            const base::Time& current_time) {
   // If the version is unknown, consider the invalidation invalid if the

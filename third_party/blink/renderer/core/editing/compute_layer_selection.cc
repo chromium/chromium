@@ -39,10 +39,10 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
-#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 
 #include <unicode/ubidi.h>
@@ -115,49 +115,6 @@ std::pair<PhysicalOffset, PhysicalOffset> static GetLocalSelectionEndpoints(
   return {rect.MinXMinYCorner(), rect.MaxXMinYCorner()};
 }
 
-static PhysicalOffset GetSamplePointForVisibility(
-    const PhysicalOffset& edge_start_in_layer,
-    const PhysicalOffset& edge_end_in_layer,
-    float zoom_factor) {
-  FloatSize diff(edge_start_in_layer - edge_end_in_layer);
-  // Adjust by ~1px to avoid integer snapping error. This logic is the same
-  // as that in ComputeViewportSelectionBound in cc.
-  diff.Scale(zoom_factor / diff.DiagonalLength());
-  PhysicalOffset sample_point = edge_end_in_layer;
-  sample_point += PhysicalOffset::FromFloatSizeRound(diff);
-  return sample_point;
-}
-
-// Returns whether this position is not visible on the screen (because
-// clipped out).
-static bool IsVisible(const LayoutObject& rect_layout_object,
-                      const PhysicalOffset& edge_start_in_layer,
-                      const PhysicalOffset& edge_end_in_layer) {
-  Node* const node = rect_layout_object.GetNode();
-  if (!node)
-    return true;
-  TextControlElement* text_control = EnclosingTextControl(node);
-  if (!text_control)
-    return true;
-  if (!IsA<HTMLInputElement>(text_control))
-    return true;
-
-  LayoutObject* layout_object = text_control->GetLayoutObject();
-  if (!layout_object || !layout_object->IsBox())
-    return true;
-
-  const PhysicalOffset sample_point =
-      GetSamplePointForVisibility(edge_start_in_layer, edge_end_in_layer,
-                                  rect_layout_object.View()->ZoomFactor());
-
-  auto* const text_control_object = To<LayoutBox>(layout_object);
-  const PhysicalOffset position_in_input =
-      rect_layout_object.LocalToAncestorPoint(sample_point, text_control_object,
-                                              kTraverseDocumentBoundaries);
-  return text_control_object->PhysicalBorderBoxRect().Contains(
-      position_in_input);
-}
-
 static cc::LayerSelectionBound ComputeSelectionBound(
     const LayoutObject& layout_object,
     const GraphicsLayer& graphics_layer,
@@ -170,8 +127,8 @@ static cc::LayerSelectionBound ComputeSelectionBound(
   bound.edge_end = LocalToInvalidationBackingPoint(
       edge_end_in_layer, layout_object, graphics_layer);
   bound.layer_id = graphics_layer.CcLayer().id();
-  bound.hidden =
-      !IsVisible(layout_object, edge_start_in_layer, edge_end_in_layer);
+  bound.hidden = !SelectionBoundsRecorder::IsVisible(
+      layout_object, edge_start_in_layer, edge_end_in_layer);
   return bound;
 }
 
@@ -251,8 +208,7 @@ EndPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
 
 cc::LayerSelection ComputeLayerSelection(
     const FrameSelection& frame_selection) {
-  // TODO(https://crbug.com/1065049) - Implement layer selection for
-  // CompositeAfterPaint
+  // See `SelectionBoundsRecorder` and its usage for CAP implementation.
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return {};
 

@@ -1,0 +1,19 @@
+<!-- A value does not contribute to a name when the value comes from an element pointed to by its own aria-labelledby,
+because ACCNAME 2e says "for *another* control". However, 2c applies when the embedded control rule in 2e does not (which causes the aria-label to be accumulated into the name) -->
+<span id="label">The Label</span>
+<input id="input" aria-label="ariaLabel" aria-labelledby="label input" value="the value">
+
+<!-- In this second case the value is applied to the name, but aria-label is not
+  applied because the aria-label must be skipped when the value is applied. -->
+<span role="checkbox">
+  We have <input aria-label="Number of cats" value="3"> cats
+</span>
+
+<!-- Realistic case from https://crbug.com/115967 -->
+ <fieldset>
+  <legend>
+    <label for="fieldset-0-input-0" id="fieldset-0-input-label">Range Slider</label>
+  </legend>
+  <input type="range" id="fieldset-0-input-0" aria-label="Minimum" aria-labelledby="fieldset-0-input-label fieldset-0-input-0" min="0" max="90" value="10" aria-valuetext="10" />
+  <input type="range" id="fieldset-0-input-1" aria-label="Maximum" aria-labelledby="fieldset-0-input-label fieldset-0-input-1" min="10" max="100" value="90" aria-valuetext="90" />
+</fieldset>

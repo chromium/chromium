@@ -18,9 +18,9 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -138,7 +138,8 @@ class DragDropOperation::IconSurface final : public SurfaceTreeHost,
       return;
     }
 
-    operation_->OnDragIconCaptured(icon_result->AsSkBitmap());
+    auto scoped_bitmap = icon_result->ScopedAccessSkBitmap();
+    operation_->OnDragIconCaptured(scoped_bitmap.GetOutScopedBitmap());
   }
 
   DragDropOperation* const operation_;
@@ -184,8 +185,9 @@ DragDropOperation::DragDropOperation(
 
   drag_drop_controller_->AddObserver(this);
 
-  data_exchange_delegate->SetSourceOnOSExchangeData(origin_->get()->window(),
-                                                    os_exchange_data_.get());
+  os_exchange_data_->SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      data_exchange_delegate->GetDataTransferEndpointType(
+          origin_->get()->window())));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extended_drag_source_ = ExtendedDragSource::Get();
@@ -242,7 +244,7 @@ void DragDropOperation::AbortIfPending() {
 }
 
 void DragDropOperation::OnTextRead(const std::string& mime_type,
-                                   base::string16 data) {
+                                   std::u16string data) {
   DCHECK(os_exchange_data_);
   os_exchange_data_->SetString(std::move(data));
 
@@ -253,7 +255,7 @@ void DragDropOperation::OnTextRead(const std::string& mime_type,
 }
 
 void DragDropOperation::OnHTMLRead(const std::string& mime_type,
-                                   base::string16 data) {
+                                   std::u16string data) {
   DCHECK(os_exchange_data_);
   os_exchange_data_->SetHtml(std::move(data), GURL());
   mime_type_ = mime_type;
@@ -266,8 +268,8 @@ void DragDropOperation::OnFilenamesRead(
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
   DCHECK(os_exchange_data_);
-  os_exchange_data_->SetFilenames(
-      data_exchange_delegate->GetFilenames(source, data));
+  os_exchange_data_->SetFilenames(data_exchange_delegate->GetFilenames(
+      data_exchange_delegate->GetDataTransferEndpointType(source), data));
   mime_type_ = mime_type;
   counter_.Run();
 }

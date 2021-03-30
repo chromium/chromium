@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Element seznama</translation>
 <translation id="1013742170491673792">iskel</translation>
 <translation id="1014370462248694370">Z dvema prstoma povlecite v desno</translation>
-<translation id="1016393160682012902">Pritisnite tipko na tipkovnici qwerty, tipko na zaslonu braille, ki omogoča osveževanje, ali potezo dotika, če želite izvedeti njeno funkcijo. Pritisnite tipko Control in tipko W ali Escape, če želite zapreti način.</translation>
 <translation id="1022586497894531524">Ali prvič uporabljate glasovni odziv ChromeVoxa? V tej kratki vadnici so pojasnjene osnove, ki jih morate vedeti, če želite začeti uporabljati ChromeVox.</translation>
 <translation id="1025074108959230262">Način zaklepanja je onemogočen</translation>
 <translation id="1031961866430398710">nato</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Ni prejšnjega kontrolnika</translation>
 <translation id="2045606329038304310">Kontrolnik za polje obrazca</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2074531330963286860">Na voljo so dejanja. Pritisnite tipko za iskanje in piko, če si jih želite ogledati.</translation>
 <translation id="2086961585857038472">Naslednja beseda</translation>
 <translation id="2087981446621639008">pod sznmopisov</translation>
 <translation id="2089387485033699258">sl</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Začetek ali konec izbire</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Pomik na prejšnji element, ki ga je mogoče izbrati</translation>
+<translation id="8279039817939141096">Pritisnite tipko na tipkovnici qwerty, tipko na zaslonu braille, ki omogoča osveževanje, ali potezo dotika, če želite izvedeti njeno funkcijo. Pritisnite tipko Control in tipko W, preslednico in tipko Z, z dvema prstoma povlecite v levo ali pritisnite Escape, če želite zapreti način.</translation>
 <translation id="8283603667300770666">Naslednje polje obrazca</translation>
 <translation id="8310185481635255431">Ni naslednje povezave</translation>
 <translation id="831207808878314375">Opredelitev</translation>

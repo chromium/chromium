@@ -501,14 +501,18 @@ void ContentSuggestionsService::OnSuggestionInvalidated(
   }
 }
 // signin::IdentityManager::Observer implementation
-void ContentSuggestionsService::OnPrimaryAccountSet(
-    const CoreAccountInfo& account_info) {
-  OnSignInStateChanged(/*has_signed_in=*/true);
-}
-
-void ContentSuggestionsService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
-  OnSignInStateChanged(/*has_signed_in=*/false);
+void ContentSuggestionsService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      OnSignInStateChanged(/*has_signed_in=*/true);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      OnSignInStateChanged(/*has_signed_in=*/false);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 // history::HistoryServiceObserver implementation.

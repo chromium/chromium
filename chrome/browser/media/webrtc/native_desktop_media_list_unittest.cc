@@ -253,7 +253,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   void AddWindowsAndVerify(bool has_view_dialog) {
     window_capturer_ = new FakeWindowCapturer();
     model_ = std::make_unique<NativeDesktopMediaList>(
-        DesktopMediaID::TYPE_WINDOW, base::WrapUnique(window_capturer_));
+        DesktopMediaList::Type::kWindow, base::WrapUnique(window_capturer_));
 
     // Set update period to reduce the time it takes to run tests.
     model_->SetUpdatePeriod(base::TimeDelta::FromMilliseconds(20));
@@ -305,7 +305,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
 
     for (size_t i = 0; i < window_count; ++i) {
       EXPECT_EQ(model_->GetSource(i).id.type, DesktopMediaID::TYPE_WINDOW);
-      EXPECT_EQ(model_->GetSource(i).name, base::UTF8ToUTF16("Test window"));
+      EXPECT_EQ(model_->GetSource(i).name, u"Test window");
       int index = has_view_dialog ? i + 1 : i;
       int native_id = window_list_[index].id;
       EXPECT_EQ(model_->GetSource(i).id.id, native_id);
@@ -339,7 +339,7 @@ TEST_F(NativeDesktopMediaListTest, Windows) {
 
 TEST_F(NativeDesktopMediaListTest, ScreenOnly) {
   model_ = std::make_unique<NativeDesktopMediaList>(
-      DesktopMediaID::TYPE_SCREEN, std::make_unique<FakeScreenCapturer>());
+      DesktopMediaList::Type::kScreen, std::make_unique<FakeScreenCapturer>());
 
   // Set update period to reduce the time it takes to run tests.
   model_->SetUpdatePeriod(base::TimeDelta::FromMilliseconds(20));
@@ -526,7 +526,7 @@ TEST_F(NativeDesktopMediaListTest, MoveWindow) {
 TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
   window_capturer_ = new FakeWindowCapturer();
   model_ = std::make_unique<NativeDesktopMediaList>(
-      DesktopMediaID::TYPE_WINDOW, base::WrapUnique(window_capturer_));
+      DesktopMediaList::Type::kWindow, base::WrapUnique(window_capturer_));
   model_->SetThumbnailSize(gfx::Size());
 
   // Set update period to reduce the time it takes to run tests.

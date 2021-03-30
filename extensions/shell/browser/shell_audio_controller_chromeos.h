@@ -7,18 +7,18 @@
 
 #include <stdint.h>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/macros.h"
-#include "chromeos/audio/cras_audio_handler.h"
 
 namespace extensions {
 
 // Ensures that the "best" input and output audio devices are always active.
-class ShellAudioController : public chromeos::CrasAudioHandler::AudioObserver {
+class ShellAudioController : public ash::CrasAudioHandler::AudioObserver {
  public:
   ShellAudioController();
   ~ShellAudioController() override;
 
-  // chromeos::CrasAudioHandler::Observer implementation:
+  // ash::CrasAudioHandler::Observer implementation:
   void OnAudioNodesChanged() override;
 
  private:

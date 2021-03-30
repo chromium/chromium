@@ -4,7 +4,7 @@ Profiler was enabled.
 
 Running: testProfiling
 found pageFunction cpu-profiler-profiling.js:16
-found (anonymous) cpu-profiler-profiling.js:1
+found (anonymous) cpu-profiler-profiling.js:0
 
 Profiler was disabled.
 

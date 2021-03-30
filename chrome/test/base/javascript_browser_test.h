@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
@@ -32,13 +31,13 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
 
   // Builds a vector of strings of all added javascript libraries suitable for
   // execution by subclasses.
-  void BuildJavascriptLibraries(std::vector<base::string16>* libraries);
+  void BuildJavascriptLibraries(std::vector<std::u16string>* libraries);
 
   // Builds a string with a call to the runTest JS function, passing the
   // given |is_async|, |test_name| and its |args|.
   // This is then suitable for execution by subclasses in a
   // |RunJavaScriptBrowserTestF| call.
-  base::string16 BuildRunTestJSCall(bool is_async,
+  std::u16string BuildRunTestJSCall(bool is_async,
                                     const std::string& test_name,
                                     std::vector<base::Value> args);
 

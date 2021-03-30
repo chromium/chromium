@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/location.h"
 #include "base/time/time.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -163,10 +164,10 @@ void PaintManager::EnsureCallbackPending() {
     return;
 
   client_->ScheduleTaskOnMainThread(
-      base::TimeDelta(),
+      FROM_HERE,
       base::BindOnce(&PaintManager::OnManualCallbackComplete,
                      weak_factory_.GetWeakPtr()),
-      0);
+      /*result=*/0, base::TimeDelta());
   manual_callback_pending_ = true;
 }
 
@@ -214,7 +215,7 @@ void PaintManager::DoPaint() {
   }
 
   PaintAggregator::PaintUpdate update = aggregator_.GetPendingUpdate();
-  client_->OnPaint(update.paint_rects, &ready_rects, &pending_rects);
+  client_->OnPaint(update.paint_rects, ready_rects, pending_rects);
 
   if (ready_rects.empty() && pending_rects.empty())
     return;  // Nothing was painted, don't schedule a flush.

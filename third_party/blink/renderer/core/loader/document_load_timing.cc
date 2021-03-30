@@ -33,13 +33,14 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 
 DocumentLoadTiming::DocumentLoadTiming(DocumentLoader& document_loader)
     : redirect_count_(0),
       has_cross_origin_redirect_(false),
-      has_same_origin_as_previous_document_(false),
+      can_request_from_previous_document_(false),
       clock_(base::DefaultClock::GetInstance()),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       document_loader_(document_loader) {}
@@ -114,20 +115,20 @@ void DocumentLoadTiming::MarkNavigationStart() {
   navigation_start_ = reference_monotonic_time_;
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "blink.user_timing", "navigationStart", navigation_start_, "frame",
-      ToTraceValue(GetFrame()), "data", GetNavigationStartTracingData());
+      ToTraceValue(GetFrame()), "data", [&](perfetto::TracedValue ctx) {
+        WriteNavigationStartDataIntoTracedValue(std::move(ctx));
+      });
   NotifyDocumentTimingChanged();
 }
 
-std::unique_ptr<TracedValue> DocumentLoadTiming::GetNavigationStartTracingData()
-    const {
-  auto data = std::make_unique<TracedValue>();
-  data->SetString("documentLoaderURL",
-                  document_loader_ ? document_loader_->Url().GetString() : "");
-  data->SetBoolean("isLoadingMainFrame",
-                   GetFrame() ? GetFrame()->IsMainFrame() : false);
-  data->SetString("navigationId",
-                  IdentifiersFactory::LoaderId(document_loader_));
-  return data;
+void DocumentLoadTiming::WriteNavigationStartDataIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("documentLoaderURL",
+           document_loader_ ? document_loader_->Url().GetString() : "");
+  dict.Add("isLoadingMainFrame",
+           GetFrame() ? GetFrame()->IsMainFrame() : false);
+  dict.Add("navigationId", IdentifiersFactory::LoaderId(document_loader_));
 }
 
 void DocumentLoadTiming::SetNavigationStart(base::TimeTicks navigation_start) {
@@ -138,7 +139,9 @@ void DocumentLoadTiming::SetNavigationStart(base::TimeTicks navigation_start) {
   navigation_start_ = navigation_start;
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "blink.user_timing", "navigationStart", navigation_start_, "frame",
-      ToTraceValue(GetFrame()), "data", GetNavigationStartTracingData());
+      ToTraceValue(GetFrame()), "data", [&](perfetto::TracedValue context) {
+        WriteNavigationStartDataIntoTracedValue(std::move(context));
+      });
 
   // The reference times are adjusted based on the embedder's navigationStart.
   DCHECK(!reference_monotonic_time_.is_null());
@@ -245,6 +248,14 @@ void DocumentLoadTiming::MarkRedirectEnd() {
   redirect_end_ = tick_clock_->NowTicks();
   TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing", "redirectEnd",
                                    redirect_end_, "frame",
+                                   ToTraceValue(GetFrame()));
+  NotifyDocumentTimingChanged();
+}
+
+void DocumentLoadTiming::MarkCommitNavigationEnd() {
+  commit_navigation_end_ = tick_clock_->NowTicks();
+  TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing", "commitNavigationEnd",
+                                   commit_navigation_end_, "frame",
                                    ToTraceValue(GetFrame()));
   NotifyDocumentTimingChanged();
 }

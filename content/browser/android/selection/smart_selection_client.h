@@ -7,10 +7,11 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 
 namespace content {
 
@@ -39,7 +40,7 @@ class SmartSelectionClient {
 
  private:
   void OnSurroundingTextReceived(int callback_data,
-                                 const base::string16& text,
+                                 const std::u16string& text,
                                  uint32_t start,
                                  uint32_t end);
 

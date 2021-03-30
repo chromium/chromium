@@ -26,13 +26,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import urllib2
+from six.moves import urllib
 
 from blinkpy.common.net.network_transaction import NetworkTransaction
 
 
 class Web(object):
-    class _HTTPRedirectHandler2(urllib2.HTTPRedirectHandler):  # pylint:disable=no-init
+    class _HTTPRedirectHandler2(urllib.request.HTTPRedirectHandler):  # pylint:disable=no-init
         """A subclass of HTTPRedirectHandler to support 308 Permanent Redirect."""
 
         def http_error_308(self, req, fp, code, msg, headers):  # pylint:disable=unused-argument
@@ -45,8 +45,8 @@ class Web(object):
             lambda: self.request('GET', url).read())
 
     def request(self, method, url, data=None, headers=None):
-        opener = urllib2.build_opener(Web._HTTPRedirectHandler2)
-        request = urllib2.Request(url=url, data=data)
+        opener = urllib.request.build_opener(Web._HTTPRedirectHandler2)
+        request = urllib.request.Request(url=url, data=data)
 
         request.get_method = lambda: method
 

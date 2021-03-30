@@ -7,6 +7,8 @@ import("//build/config/linux/pkg_config.gni")
 
 assert(is_linux, "This file should only be referenced on Linux")
 
+assert(gtk_version == 3 || gtk_version == 4)
+
 # GN doesn't check visibility for configs so we give this an obviously internal
 # name to discourage random targets from accidentally depending on this and
 # bypassing the GTK target's visibility.
@@ -15,9 +17,13 @@ pkg_config("gtk_internal_config") {
   # misconfigured systems.
   packages = [
     "gmodule-2.0",
-    "gtk+-${gtk_version}.0",
     "gthread-2.0",
   ]
+  if (gtk_version == 3) {
+    packages += [ "gtk+-3.0" ]
+  } else {
+    packages += [ "gtk4" ]
+  }
 }
 
 group("gtk") {
@@ -46,7 +52,11 @@ group("gtk") {
 
 # Depend on "gtkprint" to get this.
 pkg_config("gtkprint_internal_config") {
-  packages = [ "gtk+-unix-print-${gtk_version}.0" ]
+  if (gtk_version == 3) {
+    packages = [ "gtk+-unix-print-3.0" ]
+  } else {
+    packages = [ "gtk4-unix-print" ]
+  }
 }
 
 group("gtkprint") {

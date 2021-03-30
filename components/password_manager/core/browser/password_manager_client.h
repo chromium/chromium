@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
@@ -26,6 +27,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -77,13 +79,13 @@ class PasswordRequirementsService;
 class PasswordStore;
 struct PasswordForm;
 
-enum SyncState {
-  NOT_SYNCING,
-  SYNCING_NORMAL_ENCRYPTION,
-  SYNCING_WITH_CUSTOM_PASSPHRASE,
+enum class SyncState {
+  kNotSyncing,
+  kSyncingNormalEncryption,
+  kSyncingWithCustomPassphrase,
   // Sync is disabled but the user is signed in and opted in to passwords
   // account storage.
-  ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION
+  kAccountPasswordsActiveNormalEncryption
 };
 
 // An abstraction of operations that depend on the embedders (e.g. Chrome)
@@ -155,6 +157,7 @@ class PasswordManagerClient {
   // same frame (e.g. tabbed from email to password field).
   virtual void FocusedInputChanged(
       PasswordManagerDriver* driver,
+      autofill::FieldRendererId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) = 0;
 
   // Informs the embedder of a password forms that the user should choose from.
@@ -175,7 +178,7 @@ class PasswordManagerClient {
 
   // Informs `PasswordReuseDetectionManager` about reused passwords selected
   // from the AllPasswordsBottomSheet.
-  virtual void OnPasswordSelected(const base::string16& text);
+  virtual void OnPasswordSelected(const std::u16string& text);
 
   // Returns a pointer to a BiometricAuthenticator. Might be null if
   // BiometricAuthentication is not available for a given platform.
@@ -243,7 +246,7 @@ class PasswordManagerClient {
       CredentialLeakType leak_type,
       CompromisedSitesCount saved_sites,
       const GURL& origin,
-      const base::string16& username);
+      const std::u16string& username);
 
   // Requests a reauth for the primary account with |access_point| representing
   // where the reauth was triggered.
@@ -267,7 +270,7 @@ class PasswordManagerClient {
   virtual PasswordStore* GetAccountPasswordStore() const = 0;
 
   // Reports whether and how passwords are synced in the embedder. The default
-  // implementation always returns NOT_SYNCING.
+  // implementation always returns kNotSyncing.
   virtual SyncState GetPasswordSyncState() const;
 
   // Returns true if last navigation page had HTTP error i.e 5XX or 4XX
@@ -288,6 +291,9 @@ class PasswordManagerClient {
 
   // If this browsing session should not be persisted.
   virtual bool IsIncognito() const;
+
+  // Returns the profile type of the session.
+  virtual profile_metrics::BrowserProfileType GetProfileType() const;
 
   // Returns the PasswordManager associated with this client. The non-const
   // version calls the const one.

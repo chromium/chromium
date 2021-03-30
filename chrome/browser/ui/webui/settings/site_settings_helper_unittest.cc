@@ -482,11 +482,14 @@ GURL ChromiumUrl() {
 GURL AndroidUrl() {
   return GURL("https://android.com");
 }
+GURL TestUrl() {
+  return GURL("https://test.com");
+}
 
 void ExpectValidChooserExceptionObject(
     const base::Value& actual_exception_object,
     const std::string& chooser_type,
-    const base::string16& display_name,
+    const std::u16string& display_name,
     const base::Value& chooser_object) {
   const base::Value* chooser_type_value = actual_exception_object.FindKeyOfType(
       kChooserType, base::Value::Type::STRING);
@@ -510,7 +513,6 @@ void ExpectValidChooserExceptionObject(
 
 void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
                                     const GURL& origin,
-                                    const GURL& embedding_origin,
                                     const std::string source,
                                     bool incognito) {
   ASSERT_TRUE(actual_site_object.is_dict());
@@ -524,12 +526,6 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
       actual_site_object.FindKeyOfType(kOrigin, base::Value::Type::STRING);
   ASSERT_TRUE(origin_value);
   EXPECT_EQ(origin_value->GetString(), origin.GetOrigin().spec());
-
-  const base::Value* embedding_origin_value = actual_site_object.FindKeyOfType(
-      kEmbeddingOrigin, base::Value::Type::STRING);
-  ASSERT_TRUE(embedding_origin_value);
-  EXPECT_EQ(embedding_origin_value->GetString(),
-            embedding_origin.GetOrigin().spec());
 
   const base::Value* setting_value =
       actual_site_object.FindKeyOfType(kSetting, base::Value::Type::STRING);
@@ -548,14 +544,6 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
   EXPECT_EQ(incognito_value->GetBool(), incognito);
 }
 
-void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
-                                    const GURL& origin,
-                                    const std::string source,
-                                    bool incognito) {
-  ExpectValidSiteExceptionObject(actual_site_object, origin, GURL::EmptyGURL(),
-                                 source, incognito);
-}
-
 }  // namespace
 
 TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
@@ -566,7 +554,7 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
       SiteSettingSourceToString(SiteSettingSource::kPolicy);
   const std::string& kPreferenceSource =
       SiteSettingSourceToString(SiteSettingSource::kPreference);
-  const base::string16& kObjectName = base::ASCIIToUTF16("Gadget");
+  const std::u16string& kObjectName = u"Gadget";
   ChooserExceptionDetails exception_details;
 
   // Create a chooser object for testing.
@@ -591,7 +579,6 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
     const auto& sites_list = exception.FindKey(kSites)->GetList();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
                                    /*origin=*/GoogleUrl(),
-                                   /*embedding_origin=*/ChromiumUrl(),
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/false);
   }
@@ -617,12 +604,10 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
     const auto& sites_list = exception.FindKey(kSites)->GetList();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
                                    /*origin=*/AndroidUrl(),
-                                   /*embedding_origin=*/AndroidUrl(),
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/true);
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[1],
                                    /*origin=*/GoogleUrl(),
-                                   /*embedding_origin=*/ChromiumUrl(),
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/false);
   }
@@ -649,17 +634,14 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
     const auto& sites_list = exception.FindKey(kSites)->GetList();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
                                    /*origin=*/GoogleUrl(),
-                                   /*embedding_origin=*/GURL::EmptyGURL(),
                                    /*source=*/kPolicySource,
                                    /*incognito=*/false);
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[1],
                                    /*origin=*/AndroidUrl(),
-                                   /*embedding_origin=*/AndroidUrl(),
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/true);
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[2],
                                    /*origin=*/GoogleUrl(),
-                                   /*embedding_origin=*/ChromiumUrl(),
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/false);
   }
@@ -712,18 +694,16 @@ class SiteSettingsHelperChooserExceptionTest : public testing::Test {
 
     const auto kAndroidOrigin = url::Origin::Create(AndroidUrl());
     const auto kChromiumOrigin = url::Origin::Create(ChromiumUrl());
-    const auto kGoogleOrigin = url::Origin::Create(GoogleUrl());
+    const auto kTestOrigin = url::Origin::Create(TestUrl());
 
-    // Add the user granted permissions for testing.
-    // These two persistent device permissions should be lumped together with
-    // the policy permissions, since they apply to the same device and URL.
-    chooser_context->GrantDevicePermission(kChromiumOrigin, kChromiumOrigin,
+    // Add the user granted permissions for testing. "Gizmo" is allowed on two
+    // origins, one overlapping with the policy and one distinct. "Gadget" is
+    // allowed on one origin which is overlapping with the policy.
+    chooser_context->GrantDevicePermission(kTestOrigin,
                                            *persistent_device_info);
-    chooser_context->GrantDevicePermission(kChromiumOrigin, kGoogleOrigin,
+    chooser_context->GrantDevicePermission(kChromiumOrigin,
                                            *persistent_device_info);
-    chooser_context->GrantDevicePermission(kAndroidOrigin, kChromiumOrigin,
-                                           *persistent_device_info);
-    chooser_context->GrantDevicePermission(kAndroidOrigin, kAndroidOrigin,
+    chooser_context->GrantDevicePermission(kAndroidOrigin,
                                            *ephemeral_device_info);
 
     // Add the policy granted permissions for testing.
@@ -775,8 +755,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
   // This exception should describe the permissions for any device with the
   // vendor ID corresponding to "Google Inc.". There are no user granted
   // permissions that intersect with this permission, and this policy only
-  // grants one permission to the following site pair:
-  // * ("https://google.com", "https://android.com")
+  // grants one permission to the "https://android.com" origin.
   {
     const auto& exception = exceptions_list[0];
     ExpectDisplayNameEq(exception,
@@ -785,16 +764,15 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     const auto& sites_list = exception.FindKey(kSites)->GetList();
     ASSERT_EQ(sites_list.size(), 1u);
     ExpectValidSiteExceptionObject(sites_list[0],
-                                   /*origin=*/GoogleUrl(),
-                                   /*embedding_origin=*/AndroidUrl(),
+                                   /*origin=*/AndroidUrl(),
                                    /*source=*/kPolicySource,
                                    /*incognito=*/false);
   }
 
   // This exception should describe the permissions for any device.
   // There are no user granted permissions that intersect with this permission,
-  // and this policy only grants one permission to the following site pair:
-  // * ("https://google.com", "https://google.com")
+  // and this policy only grants one permission to the following site:
+  // "https://google.com".
   {
     const auto& exception = exceptions_list[1];
     ExpectDisplayNameEq(exception,
@@ -804,7 +782,6 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
     ASSERT_EQ(sites_list.size(), 1u);
     ExpectValidSiteExceptionObject(sites_list[0],
                                    /*origin=*/GoogleUrl(),
-                                   /*embedding_origin=*/GoogleUrl(),
                                    /*source=*/kPolicySource,
                                    /*incognito=*/false);
   }
@@ -812,8 +789,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
   // This exception should describe the permissions for any device with the
   // vendor ID 6354. There is a user granted permission for a device with that
   // vendor ID, so the site list for this exception will only have the policy
-  // granted permission, which is the following:
-  // * ("https://android.com", "")
+  // granted permission, which is the following: "https://android.com"
   {
     const auto& exception = exceptions_list[2];
     ExpectDisplayNameEq(exception,
@@ -829,17 +805,13 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
 
   // This exception should describe the permissions for the "Gizmo" device.
   // The user granted permissions are the following:
-  // * ("https://chromium.org", "https://chromium.org")
-  // * ("https://chromium.org", "https://google.com")
-  // * ("https://android.com", "https://chromium.org")
+  // * "https://chromium.org"
+  // * "https://test.org"
   // The policy granted permission is the following:
-  // * ("https://chromium.org", "")
-  // The embedding origin is a wildcard, so the policy granted permission covers
-  // any user granted permissions that contain a requesting origin of
-  // "https://chromium.org", so the site list for this exception will only have
-  // the following permissions:
-  // * ("https://chromium.org", "")
-  // * ("https://android.com", "https://chromium.org")
+  // * "https://chromium.org"
+  // The chromium granted permission should be coalesced into the policy
+  // permissions. The test one does not overlap with any policy permission so
+  // it will be a separate preference-sourced exception.
   {
     const auto& exception = exceptions_list[3];
     ExpectDisplayNameEq(exception, /*display_name=*/"Gizmo");
@@ -851,8 +823,7 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
                                    /*source=*/kPolicySource,
                                    /*incognito=*/false);
     ExpectValidSiteExceptionObject(sites_list[1],
-                                   /*origin=*/AndroidUrl(),
-                                   /*embedding_origin=*/ChromiumUrl(),
+                                   /*origin=*/TestUrl(),
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/false);
   }

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<title>INPUT TYPE=FILE WEBKITDIRECTORY and key events - Space key</title>
+<input type="file" webkitdirectory>
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+promise_test(async _ => {
+  const promise = new Promise(
+      resolve => mockFileChooserFactory.addEventListener('open', resolve));
+
+  const file = document.querySelector('input');
+  file.focus();
+  // Despite the name, 'keyDown' simulates a full down/press/up sequence.
+  eventSender.keyDown(' ', []);
+  const openEvent = await promise;
+  assert_equals(openEvent.detail, 'kUploadFolder');
+}, 'pressing Space on a focused webkitdirectory file input element launches a file chooser');
+</script>

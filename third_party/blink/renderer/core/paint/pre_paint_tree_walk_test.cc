@@ -245,13 +245,13 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosFixed) {
 TEST_P(PrePaintTreeWalkTest, ClipChangeRepaintsDescendants) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      #parent { height: 75px; position: relative; width: 100px; }
+      #parent { position: relative; width: 100px; }
       #child { overflow: hidden; width: 10%; height: 100%; position: relative; }
       #greatgrandchild {
-        width: 5px; height: 5px; z-index: 100; position: relative;
+        width: 100px; height: 100px; z-index: 100; position: relative;
       }
     </style>
-    <div id='parent' style='height: 100px;'>
+    <div id='parent' style='height: 10px'>
       <div id='child'>
         <div id='grandchild'>
           <div id='greatgrandchild'></div>
@@ -260,7 +260,8 @@ TEST_P(PrePaintTreeWalkTest, ClipChangeRepaintsDescendants) {
     </div>
   )HTML");
 
-  GetDocument().getElementById("parent")->removeAttribute("style");
+  GetDocument().getElementById("parent")->setAttribute(html_names::kStyleAttr,
+                                                       "height: 100px");
   UpdateAllLifecyclePhasesExceptPaint();
 
   auto* paint_layer = GetPaintLayerByElementId("greatgrandchild");
@@ -449,6 +450,51 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
   EXPECT_FALSE(ancestor.InsideBlockingWheelEventHandler());
   EXPECT_TRUE(handler.InsideBlockingWheelEventHandler());
   EXPECT_TRUE(descendant.InsideBlockingWheelEventHandler());
+}
+
+TEST_P(PrePaintTreeWalkTest, CullRectUpdateOnSVGTransformChange) {
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <svg style="width: 200px; height: 200px">
+      <rect id="rect"/>
+      <g id="g"><foreignObject id="foreign"/></g>
+    </svg>
+  )HTML");
+
+  auto& foreign = *GetLayoutObjectByElementId("foreign");
+  EXPECT_EQ(IntRect(0, 0, 200, 200),
+            foreign.FirstFragment().GetCullRect().Rect());
+
+  GetDocument().getElementById("rect")->setAttribute(
+      html_names::kStyleAttr, "transform: translateX(20px)");
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_EQ(IntRect(0, 0, 200, 200),
+            foreign.FirstFragment().GetCullRect().Rect());
+
+  GetDocument().getElementById("g")->setAttribute(
+      html_names::kStyleAttr, "transform: translateY(20px)");
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_EQ(IntRect(0, -20, 200, 200),
+            foreign.FirstFragment().GetCullRect().Rect());
+}
+
+TEST_P(PrePaintTreeWalkTest, InlineOutlineWithContinuationPaintInvalidation) {
+  SetBodyInnerHTML(R"HTML(
+    <div>
+      <span style="outline: 1px solid black">
+        <span id="child-span">span</span>
+        <div>continuation</div>
+      </span>
+    </div>
+  )HTML");
+
+  // This test passes if the following doesn't crash.
+  GetDocument()
+      .getElementById("child-span")
+      ->setAttribute(html_names::kStyleAttr, "color: blue");
+  UpdateAllLifecyclePhasesForTest();
 }
 
 }  // namespace blink

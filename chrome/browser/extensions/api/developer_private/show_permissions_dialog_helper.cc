@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "apps/saved_files_service.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
@@ -22,39 +21,29 @@ namespace extensions {
 
 ShowPermissionsDialogHelper::ShowPermissionsDialogHelper(
     Profile* profile,
-    const base::Closure& on_complete)
-    : profile_(profile),
-      on_complete_(on_complete) {
-}
+    base::OnceClosure on_complete)
+    : profile_(profile), on_complete_(std::move(on_complete)) {}
 
-ShowPermissionsDialogHelper::~ShowPermissionsDialogHelper() {
-}
+ShowPermissionsDialogHelper::~ShowPermissionsDialogHelper() = default;
 
 // static
 void ShowPermissionsDialogHelper::Show(content::BrowserContext* browser_context,
                                        content::WebContents* web_contents,
                                        const Extension* extension,
-                                       bool from_webui,
-                                       const base::Closure& on_complete) {
+                                       base::OnceClosure on_complete) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   // Show the new-style extensions dialog when it is available. It is currently
   // unavailable by default on Mac.
   if (CanPlatformShowAppInfoDialog()) {
-    if (from_webui) {
-      UMA_HISTOGRAM_ENUMERATION("Apps.AppInfoDialog.Launches",
-                                AppInfoLaunchSource::FROM_EXTENSIONS_PAGE,
-                                AppInfoLaunchSource::NUM_LAUNCH_SOURCES);
-    }
-
-    ShowAppInfoInNativeDialog(web_contents, profile, extension, on_complete);
-
+    ShowAppInfoInNativeDialog(web_contents, profile, extension,
+                              std::move(on_complete));
     return;  // All done.
   }
 
   // ShowPermissionsDialogHelper manages its own lifetime.
   ShowPermissionsDialogHelper* helper =
-      new ShowPermissionsDialogHelper(profile, on_complete);
+      new ShowPermissionsDialogHelper(profile, std::move(on_complete));
   helper->ShowPermissionsDialog(web_contents, extension);
 }
 
@@ -72,7 +61,7 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
     for (const SavedFileEntry& entry : retained_file_entries)
       retained_file_paths.push_back(entry.path);
   }
-  std::vector<base::string16> retained_device_messages;
+  std::vector<std::u16string> retained_device_messages;
   if (extension->permissions_data()->HasAPIPermission(APIPermission::kUsb)) {
     retained_device_messages =
         DevicePermissionsManager::Get(profile_)
@@ -86,8 +75,8 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
   // Unretained() is safe because this class manages its own lifetime and
   // deletes itself in OnInstallPromptDone().
   prompt_->ShowDialog(
-      base::Bind(&ShowPermissionsDialogHelper::OnInstallPromptDone,
-                 base::Unretained(this)),
+      base::BindOnce(&ShowPermissionsDialogHelper::OnInstallPromptDone,
+                     base::Unretained(this)),
       extension, nullptr, std::move(prompt),
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
 }
@@ -106,7 +95,7 @@ void ShowPermissionsDialogHelper::OnInstallPromptDone(
         ->RestartApplicationIfRunning(extension_id_);
   }
 
-  on_complete_.Run();
+  std::move(on_complete_).Run();
   delete this;
 }
 

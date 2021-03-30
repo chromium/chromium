@@ -202,7 +202,7 @@ TEST_F(RestartAfterDelayApiTest, RestartAfterDelayTest) {
   // failure.
   scoped_refptr<const Extension> test_extension =
       ExtensionBuilder("Another App", ExtensionBuilder::Type::PLATFORM_APP)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .Build();
   RunRestartAfterDelayFunctionForExtention(
       "[5]", test_extension.get(), "Not the first extension to call this API.");

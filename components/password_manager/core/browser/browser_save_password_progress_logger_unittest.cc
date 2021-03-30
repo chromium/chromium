@@ -9,8 +9,8 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
-#include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,11 +53,11 @@ class BrowserSavePasswordProgressLoggerTest : public testing::Test {
   BrowserSavePasswordProgressLoggerTest() {
     form_.url = GURL("http://myform.com/form.html");
     form_.action = GURL("http://m.myform.com/submit.html");
-    form_.name = base::UTF8ToUTF16("form_name");
+    form_.name = u"form_name";
 
     // Add a password field.
     autofill::FormFieldData field;
-    field.name = base::UTF8ToUTF16("password");
+    field.name = u"password";
     field.form_control_type = "password";
     field.is_focusable = true;
     field.autocomplete_attribute = "new-password";
@@ -65,11 +65,11 @@ class BrowserSavePasswordProgressLoggerTest : public testing::Test {
     form_.fields.push_back(field);
 
     // Add a text field.
-    field.name = base::UTF8ToUTF16("email");
+    field.name = u"email";
     field.form_control_type = "text";
     field.is_focusable = false;
     field.unique_renderer_id = autofill::FieldRendererId(42);
-    field.value = base::UTF8ToUTF16("a@example.com");
+    field.value = u"a@example.com";
     field.autocomplete_attribute.clear();
     form_.fields.push_back(field);
   }
@@ -103,9 +103,9 @@ TEST(SavePasswordProgressLoggerTest, LogPasswordForm) {
   TestLogger logger(&log_manager);
   PasswordForm form;
   form.action = GURL("http://example.org/verysecret?verysecret");
-  form.password_element = UTF8ToUTF16("pwdelement");
-  form.password_value = UTF8ToUTF16("verysecret");
-  form.username_value = UTF8ToUTF16("verysecret");
+  form.password_element = u"pwdelement";
+  form.password_value = u"verysecret";
+  form.username_value = u"verysecret";
   logger.LogPasswordForm(Logger::STRING_MESSAGE, form);
   SCOPED_TRACE(testing::Message()
                << "Log string = [" << logger.accumulated_log() << "]");

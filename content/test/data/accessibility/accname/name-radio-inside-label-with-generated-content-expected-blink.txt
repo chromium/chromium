@@ -1,0 +1,2 @@
+# BUG: The expected result is 'foo baz'
+radioButton name=' bar ' nameFrom=title

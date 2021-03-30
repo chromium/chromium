@@ -18,7 +18,7 @@
 #include "chromecast/public/media/media_capabilities_shlib.h"
 #include "chromecast/renderer/cast_url_loader_throttle_provider.h"
 #include "chromecast/renderer/cast_websocket_handshake_throttle_provider.h"
-#include "chromecast/renderer/identification_settings_manager.h"
+#include "chromecast/renderer/identification_settings_manager_renderer.h"
 #include "chromecast/renderer/js_channel_bindings.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
 #include "chromecast/renderer/media/media_caps_observer_impl.h"
@@ -74,15 +74,18 @@ bool IsSupportedBitstreamAudioCodecHelper(::media::AudioCodec codec, int mask) {
 }  // namespace
 
 #if defined(OS_ANDROID)
-// Audio renderer algorithm maximum capacity.
+// Audio renderer algorithm maximum capacity. 5s buffer is already large enough,
+// we don't need a larger capacity. Otherwise audio renderer will double the
+// buffer size when underrun happens, which will cause the playback paused to
+// wait long time for enough buffers.
 constexpr base::TimeDelta kAudioRendererMaxCapacity =
-    base::TimeDelta::FromSeconds(10);
+    base::TimeDelta::FromSeconds(5);
 // Audio renderer algorithm starting capacity.  Configure large enough to
 // prevent underrun.
 constexpr base::TimeDelta kAudioRendererStartingCapacity =
-    base::TimeDelta::FromMilliseconds(5000);
+    base::TimeDelta::FromSeconds(5);
 constexpr base::TimeDelta kAudioRendererStartingCapacityEncrypted =
-    base::TimeDelta::FromMilliseconds(5500);
+    base::TimeDelta::FromSeconds(5);
 #endif  // defined(OS_ANDROID)
 
 CastContentRendererClient::CastContentRendererClient()
@@ -156,12 +159,6 @@ void CastContentRendererClient::RenderThreadStarted() {
       std::make_unique<extensions::ExtensionsGuestViewContainerDispatcher>();
   thread->AddObserver(guest_view_container_dispatcher_.get());
 #endif
-
-  for (auto& origin_or_hostname_pattern :
-       network::SecureOriginAllowlist::GetInstance().GetCurrentAllowlist()) {
-    blink::WebSecurityPolicy::AddOriginToTrustworthySafelist(
-        blink::WebString::FromUTF8(origin_or_hostname_pattern));
-  }
 }
 
 void CastContentRendererClient::RenderViewCreated(
@@ -214,7 +211,7 @@ void CastContentRendererClient::RenderFrameCreated(
   // CastContentRendererClient should be alive.
   settings_managers_.emplace(
       render_frame->GetRoutingID(),
-      std::make_unique<IdentificationSettingsManager>(
+      std::make_unique<IdentificationSettingsManagerRenderer>(
           render_frame,
           base::BindOnce(&CastContentRendererClient::OnRenderFrameRemoved,
                          base::Unretained(this),
@@ -384,15 +381,15 @@ void CastContentRendererClient::OnSupportedBitstreamAudioCodecsChanged(
   supported_bitstream_audio_codecs_info_ = info;
 }
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 CastContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return std::make_unique<CastWebSocketHandshakeThrottleProvider>(
       activity_url_filter_manager_.get());
 }
 
-std::unique_ptr<content::URLLoaderThrottleProvider>
+std::unique_ptr<blink::URLLoaderThrottleProvider>
 CastContentRendererClient::CreateURLLoaderThrottleProvider(
-    content::URLLoaderThrottleProviderType type) {
+    blink::URLLoaderThrottleProviderType type) {
   return std::make_unique<CastURLLoaderThrottleProvider>(
       type, activity_url_filter_manager(), this);
 }

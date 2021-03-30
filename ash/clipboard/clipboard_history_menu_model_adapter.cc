@@ -73,6 +73,10 @@ void ClipboardHistoryMenuModelAdapter::Run(
   DCHECK(item_snapshots_.empty());
   DCHECK(item_views_by_command_id_.empty());
 
+  // `Run()` should be called at most once for an instance.
+  DCHECK(!run_before_);
+  run_before_ = true;
+
   menu_open_time_ = base::TimeTicks::Now();
 
   int command_id = ClipboardHistoryUtil::kFirstItemCommandId;
@@ -85,7 +89,7 @@ void ClipboardHistoryMenuModelAdapter::Run(
   const ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault,
                                           /*notify_if_restricted=*/false);
   for (const auto& item : items) {
-    model_->AddItem(command_id, base::string16());
+    model_->AddItem(command_id, std::u16string());
     item_snapshots_.emplace(command_id, item);
     ++command_id;
   }
@@ -147,6 +151,25 @@ void ClipboardHistoryMenuModelAdapter::SelectMenuItemWithCommandId(
       selected_menu_item);
 }
 
+void ClipboardHistoryMenuModelAdapter::SelectMenuItemHoveredByMouse() {
+  // Find the menu item hovered by mouse.
+  auto iter =
+      std::find_if(item_views_by_command_id_.cbegin(),
+                   item_views_by_command_id_.cend(), [](const auto& iterator) {
+                     const views::View* item_view = iterator.second;
+                     return item_view->IsMouseHovered();
+                   });
+
+  if (iter == item_views_by_command_id_.cend()) {
+    // If no item is hovered by mouse, cancel the selection on the child menu
+    // item by selecting the root menu item.
+    views::MenuController::GetActiveInstance()->SelectItemAndOpenSubmenu(
+        root_view_);
+  } else {
+    SelectMenuItemWithCommandId(iter->first);
+  }
+}
+
 void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
     int command_id) {
   // Calculate `new_selected_command_id` before removing the item specified by
@@ -188,7 +211,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
 
   // Disabling `item_view_to_delete` is more like implementation details.
   // So do not expose it to users.
-  view_accessibility.OverrideViewEnablingState(true);
+  view_accessibility.OverrideIsEnabled(true);
 
   // Specify `item_view_to_delete`'s position in the set. Without calling
   // `OverridePosInSet()`, the menu's size after deletion may be announced.
@@ -385,6 +408,13 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
 }
 
 void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
+  // Terminate alive asynchronous calls on `RemoveItemView()`. It is pointless
+  // to update views when the menu is closed.
+  // Note that data members related to the asynchronous calls, such as
+  // `item_deletion_in_progress_count_` and `scoped_ignore_`, are not reset.
+  // Because when hitting here, this instance is going to be destructed soon.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   ClipboardImageModelFactory::Get()->Deactivate();
   const base::TimeDelta user_journey_time =
       base::TimeTicks::Now() - menu_open_time_;

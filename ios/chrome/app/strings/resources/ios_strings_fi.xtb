@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">Luo uusi välilehti.</translation>
 <translation id="1145536944570833626">Poistaa olemassa olevat tiedot.</translation>
 <translation id="1147031633655575115">Kirjautunut käyttäjänä <ph name="USER" /></translation>
-<translation id="1154690515305205900">Korostettuun tekstiin ei voi luoda linkkiä.</translation>
 <translation id="1154984953698510061">Katso muut välilehdet</translation>
 <translation id="1157749421655780457">Salli sijainti…</translation>
 <translation id="1165039591588034296">Virhe</translation>
@@ -53,7 +52,6 @@
 <translation id="1400642268715879018">Viimeisten 4 viikon ajalta</translation>
 <translation id="1407135791313364759">Avaa kaikki</translation>
 <translation id="1430915738399379752">Tulosta</translation>
-<translation id="1436290164580597469">Syötä tunnuslause, niin voit aloittaa synkronoinnin.</translation>
 <translation id="1449835205994625556">Piilota salasana</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> kohdetta</translation>
 <translation id="1491277525950327607">Muuta asetusta kaksoisnapauttamalla.</translation>
@@ -103,17 +101,16 @@
 <translation id="1952172573699511566">Verkkosivustot näyttävät tekstin valitsemallasi kielellä, kun se on mahdollista.</translation>
 <translation id="1952728750904661634">Kirjaudu sisään hallinnoidulla tilillä</translation>
 <translation id="1965935827552890526">Siirry toiseen avoimeen Chrome-ikkunaan ja viimeistele aloittamasi.</translation>
+<translation id="1973912524893600642">Säilytä data</translation>
 <translation id="1974060860693918893">Lisäasetukset</translation>
 <translation id="1989112275319619282">Selaa</translation>
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
-<translation id="2047933465321076474">Organisaatiosi on laittanut yksityisen selaamisen pois päältä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">Aktiivinen <ph name="DAYS" /> päivää sitten</translation>
 <translation id="2074131957428911366">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="209018056901015185">Käytä tietokoneversiota</translation>
 <translation id="2103075008456228677">Avaa history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kohdetta siirretty</translation>
-<translation id="2118594521750010466">Korjaa nyt</translation>
 <translation id="213900355088104901">Voit selata verkkoa yksityisesti avaamalla incognito-välilehden.</translation>
 <translation id="2139867232736819575">Hae kopioitua tekstiä</translation>
 <translation id="2149973817440762519">Muokkaa kirjanmerkkiä</translation>
@@ -124,7 +121,6 @@
 <translation id="2239626343334228536">Selaustietoja poistetaan…</translation>
 <translation id="2257567812274161158">Synkronointi ei toimi.</translation>
 <translation id="225943865679747347">Virhekoodi: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">Organisaatiosi edellyttää, että selaat yksityisesti. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">Lisää tili</translation>
 <translation id="2268044343513325586">Tarkenna</translation>
 <translation id="2273327106802955778">Lisäasetusvalikko</translation>
@@ -141,7 +137,6 @@
 Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia.</translation>
 <translation id="2381405137052800939">Perusasetukset</translation>
 <translation id="2386793615875593361">1 valittu</translation>
-<translation id="2419661687355878017">Organisaatiosi on laittanut incognito-tilan pois päältä</translation>
 <translation id="2421004566762153674">Kolmannen osapuolen evästeet estetään</translation>
 <translation id="2421044535038393232">Jatka muokkausta</translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
@@ -174,6 +169,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2780046210906776326">Ei sähköpostitilejä</translation>
 <translation id="2781331604911854368">Päällä</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">Linkkiä ei voi luoda</translation>
 <translation id="2800683595868705743">Sulje välilehden vaihtaja</translation>
 <translation id="2815198996063984598">2. Valitse Oletusselain</translation>
 <translation id="2830972654601096923">Määritä osoitteet…</translation>
@@ -191,13 +187,13 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="291754862089661335">Aseta QR- tai viivakoodi tämän kehyksen sisälle.</translation>
 <translation id="2921219216347069551">Sivun jako epäonnist</translation>
 <translation id="2923448633003185837">Liitä ja siirry</translation>
-<translation id="2923827943290349720">Lukitse incognito-välilehdet, kun suljet Chromen</translation>
 <translation id="292639812446257861">Merkitse lukemattomaksi</translation>
 <translation id="2952581218264071393">1. Avaa Chromen asetukset</translation>
 <translation id="2958718410589002129">Salasanat</translation>
 <translation id="2964349545761222050">Estä kolmannen osapuolen evästeet</translation>
 <translation id="2969979262385602596">Kirjautuminen epäonnistui. Yritä myöhemmin uudelleen.</translation>
 <translation id="2975121486251958312">Vain incognito-tila on käytettävissä</translation>
+<translation id="2982481275546140226">Tyhjennä tiedot</translation>
 <translation id="298306318844797842">Lisää maksutapa…</translation>
 <translation id="2989805286512600854">Avaa uudessa välilehdessä</translation>
 <translation id="3037605927509011580">Harmin paikka!</translation>
@@ -234,11 +230,12 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="3371831930909698441">Kääntäjä on käytössä. Asetukset löytyvät näytön alalaidasta.</translation>
 <translation id="3393920035788932672">Ponnahdusikk. sallittu</translation>
 <translation id="3399930248910934354">Avaa Chromen asetukset</translation>
-<translation id="3425644765244388016">Kortin lempinimi</translation>
+<translation id="3425644765244388016">Kortin lyhytnimi</translation>
 <translation id="3433057996795775706">Vaikka poistat salasanan, tiliäsi (<ph name="WEBSITE" />) ei poisteta. Vaihda salasana (<ph name="WEBSITE" />), jotta se pysyy turvassa muilta.</translation>
 <translation id="3443810440409579745">Välilehti vastaanotettu</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Jaettu näkymä</translation>
+<translation id="3454224729131972583">Nimi</translation>
 <translation id="345565170154308620">Salasanavalinnat…</translation>
 <translation id="3469166899695866866">Pysäytetäänkö lataus?</translation>
 <translation id="3470502288861289375">Kopioidaan…</translation>
@@ -257,6 +254,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="3533436815740441613">Uusi välilehti</translation>
 <translation id="3551320343578183772">Sulje välilehti</translation>
 <translation id="3581564640715911333">Tarjoudu kääntämään vierailla kielillä kirjoitettuja sivuja</translation>
+<translation id="3588492282865875287">Haluatko kirjautua ulos?</translation>
 <translation id="3588820906588687999">Avaa kuva uudessa välilehdessä</translation>
 <translation id="359441731697487922">Voit avata linkkejä Chromessa automaattisesti tekemällä siitä oletusselainsovelluksesi.
       
@@ -287,7 +285,6 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3968505803272650567">Ylläpidä kiinnostuksen kohteita</translation>
 <translation id="3989635538409502728">Kirjaudu ulos</translation>
-<translation id="399419089947468503">Virhe synkronoitaessa salasanoja</translation>
 <translation id="3995521777587992544">Sivun lataamisen etenemispalkki, <ph name="EMAIL" /> ladattu</translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4004204301268239848">Salasanat tallennetaan Google-tilillesi, jotta voit käyttää niitä kaikilla laitteilla.</translation>
@@ -296,6 +293,7 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="4038354071007134711">Mikään laitteen sovellus ei voi avata tiedostoa.</translation>
 <translation id="4042870976416480368">Hae sivulta</translation>
 <translation id="4049507953662678203">Varmista, että käytössäsi on verkkoyhteys, ja yritä uudelleen.</translation>
+<translation id="4079195788735381731">Organisaatiosi on kirjannut sinut ulos</translation>
 <translation id="4082688844002261427">Määritä, miten selaushistoria personoi hakua, mainoksia ja muita</translation>
 <translation id="408404951701638773">Hakukenttä on nyt helpommin käytettävissä</translation>
 <translation id="411254640334432676">Lataus epäonnistui.</translation>
@@ -304,7 +302,6 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="4121993058175073134">Tee sähköp.tilin määritykset asetuksissa lähettääksesi nettovientitiet.</translation>
 <translation id="4124987746317609294">Aikaväli</translation>
 <translation id="4152011295694446843">Näet kirjanmerkkisi täällä</translation>
-<translation id="4152093603141133546">Organisaatiosi on kirjannut sinut ulos.</translation>
 <translation id="4172051516777682613">Näytä aina</translation>
 <translation id="418156467088430727">Näytä offline-versio uudella välilehdellä</translation>
 <translation id="4181841719683918333">Kielet</translation>
@@ -312,7 +309,6 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="4263576668337963058">Näytä käytettävissä olevat sivutoiminnot</translation>
 <translation id="4267380167363222949">Seuraava välilehti</translation>
 <translation id="4272631900155121838">Jos haluat skannata QR-koodin, ota kamera käyttöön asetuksissa.</translation>
-<translation id="4276041135170112053">Korjaa nyt.</translation>
 <translation id="4277990410970811858">Selaussuoja</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
 <translation id="430793432425771671">Synkronoi kaikki</translation>
@@ -337,6 +333,7 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="457386861538956877">Lisää...</translation>
 <translation id="4592368184551360546">Näppäimistö</translation>
 <translation id="461440297010471931">Haetaan Googlella</translation>
+<translation id="4619564267100705184">Todenna henkilöllisyytesi</translation>
 <translation id="4619615317237390068">Välilehdet muista laitteista</translation>
 <translation id="4620246317052452550">Lukemasi sivut</translation>
 <translation id="4630540211544979320">Käännä sivuja</translation>
@@ -382,6 +379,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4979397965658815378">Kirjaudu Google-tilillesi, niin voit käyttää kirjanmerkkejäsi, salasanojasi, historiaasi ja muuta Chrome-sisältöäsi kaikilla laitteillasi.</translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
 <translation id="5010803260590204777">Selaa verkkoa yksityisesti avaamalla incognito-välilehti.</translation>
+<translation id="5017828934289857214">Muistuta myöhemmin</translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5056446788882570708">Ongelmia havaittiin <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -408,16 +406,15 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5327248766486351172">Nimi</translation>
 <translation id="5339316356165661760">Laita synkronointi päälle</translation>
+<translation id="5360976571138293719">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ‑kohdasta.</translation>
 <translation id="5388358297987318779">Avaa kuva</translation>
 <translation id="5407969256130905701">Hylkää muutokset</translation>
-<translation id="5409365236829784218">Et ole asentanut sovellusta, jolla tämän tiedoston voi avata.</translation>
 <translation id="5416022985862681400">Viimeiset 7 päivää</translation>
 <translation id="543338862236136125">Muokkaa salasanaa</translation>
 <translation id="5433691172869980887">Käyttäjänimi kopioitu</translation>
 <translation id="54401264925851789">Sivun suojaustiedot</translation>
 <translation id="5443952882982198570">Luottokortit</translation>
 <translation id="5457226814769348910">Avaa offline-versio</translation>
-<translation id="5457907402803865181">Virhe synkronoitaessa salasanoja</translation>
 <translation id="5489208564673669003">Jos haluat ylläpitää kaikkien sivustojen evästeitä, siirry <ph name="BEGIN_LINK" />Evästeasetuksiin<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Estä kaikki evästeet (ei suositella)</translation>
 <translation id="5508435575041083207">Kirjaudu ulos ja tyhjennä data tältä laitteelta</translation>
@@ -428,7 +425,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5551897871312988470">Tarjoudu kääntämään</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5592679540098330836">Ota synkronointi käyttöön: <ph name="NAME" /></translation>
-<translation id="5597169624050330492">Organisaatiosi edellyttää, että selaat yksityisesti. Välilehtiä ei tallenneta incognito-tilassa. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">Tallennetaanko salasana?</translation>
 <translation id="5626245204502895507">Tiedostoa ei voi ladata tällä hetkellä.</translation>
 <translation id="5631164295104953411">Lisää maksutapa</translation>
@@ -463,6 +459,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5948291296578561264">Tämän avulla voit tallentaa kuvia kuvakirjastoon.</translation>
 <translation id="5955891643922670672">Näytetään offline-versio</translation>
 <translation id="5957613098218939406">Lisäasetukset</translation>
+<translation id="5963939892571022323">Korostukseen ei voi luoda linkkiä.</translation>
 <translation id="5964480694698977962">Luo uusi incognito-välilehti.</translation>
 <translation id="5965679971710331625">Olet kirjautunut sisään</translation>
 <translation id="5979837087407522202">Hae salasanoista</translation>
@@ -494,6 +491,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6254066287920239840">Avaa linkit sovelluksessa selaimen sijaan.</translation>
 <translation id="6255097610484507482">Luottokortin muokkaus</translation>
 <translation id="6284652193729350524">Tarjoudu kääntämään <ph name="LANGUAGE" /></translation>
+<translation id="6293101329759844770">Avaa <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ja valitse Selaussuoja.</translation>
 <translation id="6303969859164067831">Kirjaudu ulos ja poista synkronointi käytöstä</translation>
 <translation id="6308436439357671616">Tämän avulla voit ottaa kuvia ja ladata niitä palvelimelle.</translation>
 <translation id="6324528485781869530">Vaihda synkronointitiliä</translation>
@@ -536,10 +534,13 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="6524918542306337007">Incognito-tila ei ole käytettävissä</translation>
 <translation id="6561262006871132942">Lähennä</translation>
 <translation id="6585618849026997638">Voit palata sinulle tärkeälle sivulle lisäämällä sen kirjanmerkiksi</translation>
+<translation id="6603393121510733479">Organisaatiosi on laittanut yksityisen selaamisen pois päältä.
+<ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Käännösasetukset</translation>
 <translation id="6620279676667515405">Peruuta</translation>
 <translation id="6624219055418309072">Estä incognito-tilassa</translation>
 <translation id="6628106477656132239">Virheellinen viimeinen voimassaolopäivä</translation>
+<translation id="6634432609054530164">Organisaatiosi on laittanut incognito-tilan pois päältä</translation>
 <translation id="6638511529934826365">Zoomaa tekstiä…</translation>
 <translation id="6639730758971422557">Voit laittaa Selaussuojan päälle valitsemalla <ph name="BEGIN_LINK" />Synkronointi ja Google-palvelut<ph name="END_LINK" /> ‑kohdasta Selaussuoja.</translation>
 <translation id="6642362222295953972">Siirry aiemmalle välilehdelle</translation>
@@ -548,6 +549,7 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="6656103420185847513">Muokkaa kansiota</translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6668619169535738264">Muokkaa kirjanmerkkiä</translation>
+<translation id="6674571176963658787">Aloita synkronointi lisäämällä tunnuslause</translation>
 <translation id="667999046851023355">Dokumentti</translation>
 <translation id="6691331417640343772">Synkronoidun datan valinnat Google Hallintapaneelissa</translation>
 <translation id="6710079714193676716">Organisaatiosi ylläpitämä. Kaikki ominaisuudet eivät välttämättä ole saatavilla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -561,7 +563,6 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="6807889908376551050">Näytä kaikki...</translation>
 <translation id="681368974849482173">Kohde luotiin</translation>
 <translation id="6831043979455480757">Käännä</translation>
-<translation id="6841409746189899007">Linkitä tekstiin</translation>
 <translation id="6851516051005285358">Käytä tietokoneversiota</translation>
 <translation id="6858855187367714033">Luettu</translation>
 <translation id="6859944681507688231">Jos haluat skannata QR-koodin tai credit-kortin, ota kamera käyttöön asetuksista.</translation>
@@ -580,6 +581,8 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="6988572888918530647">Hallinnoi Google-tiliäsi</translation>
 <translation id="6995899638241819463">Varoita, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="6998989275928107238">Vastaanottaja</translation>
+<translation id="7004032350256606903">Organisaatiosi edellyttää, että selaat yksityisesti.
+<ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Hiljattain suljetut välilehdet</translation>
 <translation id="7006788746334555276">Sisältöasetukset</translation>
 <translation id="7015203776128479407">Synkronoinnin ensimääritystä ei tehty loppuun. Synkronointi on pois päältä.</translation>
@@ -599,18 +602,21 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="7192050974311852563">Aloita kirjaus</translation>
 <translation id="7203585745079012652">Puhu vastaukset</translation>
 <translation id="7207383424303353046">Uutta: Avaa sivustot Chromessa automaattisesti tekemällä siitä oletusselainsovelluksesi. <ph name="BEGIN_LINK" />Avaa Asetukset<ph name="END_LINK" /></translation>
-<translation id="721597782417389033">Virheellinen kortin lempinimi</translation>
+<translation id="721597782417389033">Virheellinen kortin lyhytnimi</translation>
 <translation id="7265758999917665941">Ei koskaan tälle sivustolle</translation>
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
 <translation id="7291368939935408496">Valmistellaan salasanoja…</translation>
 <translation id="7293171162284876153">Aloita synkronointi ottamalla Chrome-datan synkronointi käyttöön.</translation>
+<translation id="7299000566397147023">Avaa viimeisin välilehti</translation>
 <translation id="7313347584264171202">Näet incognito-välilehtesi täällä</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prosenttia ladattu</translation>
 <translation id="7340958967809483333">Discover-asetukset</translation>
 <translation id="7346909386216857016">Selvä</translation>
 <translation id="734758817008927353">Kortin tallentamisvaihtoehdot</translation>
 <translation id="7348502496356775519">Lisää kirjanmerkkeihin</translation>
+<translation id="7353432112255316844">Todenna henkilöllisyytesi</translation>
 <translation id="7383797227493018512">Lukulista</translation>
+<translation id="7398893703713203428">Luo linkki</translation>
 <translation id="739941347996872055">Edellinen välilehti</translation>
 <translation id="7400418766976504921">URL-osoite</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> lukematonta artikkelia</translation>
@@ -626,6 +632,7 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="7481312909269577407">Seuraava</translation>
 <translation id="7483467499335917849">Käytä nykyistä sijaintia</translation>
 <translation id="750493650310597496">0 valittu</translation>
+<translation id="7508728395076009983">Jos haluat lukita incognito-välilehdet, ota käyttöön Touch ID, Face ID tai tunnuskoodi.</translation>
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7537586195939242955">Passiasi ei voi asentaa Passbookiin tällä hetkellä.</translation>
 <translation id="7554791636758816595">Uusi välilehti</translation>
@@ -635,12 +642,13 @@ Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="7603852183842204213">Ponn.ikk. estetty (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Poista salasana</translation>
 <translation id="7638584964844754484">Väärä tunnuslause.</translation>
+<translation id="7646772052135772216">Salasanojen synkronointi ei toimi</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="766891008101699113">Jos haluat selata verkkoa yksityisesti, lisää uusi välilehti.</translation>
 <translation id="7671141431838911305">ASENNA</translation>
-<translation id="7690812411882623730">Tekstiin ei voi linkittää</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
+<translation id="7741325291586284254">Uusi sivu incognito-välilehdellä</translation>
 <translation id="7765158879357617694">Siirrä</translation>
 <translation id="7771470029643830783">Jos kirjaudut ulos, kirjanmerkkejä, historiaa, salasanoja tai muuta Chrome-dataasi ei enää synkronoida Google-tilillesi.
 
@@ -648,6 +656,7 @@ Koska <ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, Chrome-datasi poistetaa
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
 <translation id="7778472311864276518">Poista tili tältä laitteelta</translation>
 <translation id="7781011649027948662">Käännetäänkö sivu?</translation>
+<translation id="7781069478569868053">Uusi välilehti -sivu</translation>
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="778855399387580014">Aloita haku Chrome-välilehdellä.</translation>
 <translation id="7791543448312431591">Lisää</translation>
@@ -685,6 +694,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8105368624971345109">Poista käytöstä</translation>
 <translation id="8114753159095730575">Ladattava tiedosto on saatavilla. Ruudun alaosassa on käytettävissä valintoja.</translation>
 <translation id="8131740175452115882">Vahvista</translation>
+<translation id="8156478151976189188">Salasanojen synkronointi ei toimi</translation>
 <translation id="8197543752516192074">Käännä sivu</translation>
 <translation id="8205564605687841303">Peruuta</translation>
 <translation id="8206354486702514201">Järjestelmänvalvojasi hallinnoi tätä asetusta.</translation>
@@ -738,7 +748,10 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8756969031206844760">Päivitetäänkö salasana?</translation>
 <translation id="8775144690796719618">Virheellinen URL-osoite</translation>
 <translation id="8803639129939845298">Turvallinen</translation>
+<translation id="8806823403540278281">Organisaatiosi edellyttää, että selaat yksityisesti. Välilehtiä ei tallenneta incognito-tilassa.
+<ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>
+<translation id="8823704566850948458">Ehdota salasanaa…</translation>
 <translation id="8840513115188359703">Sinua ei kirjata ulos Google-tililtäsi.</translation>
 <translation id="8870413625673593573">Hiljattain suljetut</translation>
 <translation id="8881801611828450202">Hae kuvaa seuraavasta palvelusta: <ph name="SEARCH_ENGINE" /></translation>

@@ -1,9 +1,9 @@
 noparent = True
 
 include_rules = [
+  "+ash/constants",
   "+base",
   "+base/component_export.h",
-  "+chromeos/constants",
   "+chromeos/test",
   "+chromeos/dbus",
   "+chromeos/login/login_state",

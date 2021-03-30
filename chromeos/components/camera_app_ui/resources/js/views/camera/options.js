@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from '../../browser_proxy/browser_proxy.js';
+import * as animate from '../../animation.js';
 // eslint-disable-next-line no-unused-vars
 import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
+import * as localStorage from '../../models/local_storage.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Facing, Mode, PerfEvent, ViewName} from '../../type.js';
@@ -20,7 +21,8 @@ import * as util from '../../util.js';
 export class Options {
   /**
    * @param {!DeviceInfoUpdater} infoUpdater
-   * @param {function()} doSwitchDevice Callback to trigger device switching.
+   * @param {function(): !Promise} doSwitchDevice Callback to trigger device
+   *     switching.
    */
   constructor(infoUpdater, doSwitchDevice) {
     /**
@@ -31,7 +33,7 @@ export class Options {
     this.infoUpdater_ = infoUpdater;
 
     /**
-     * @type {function()}
+     * @type {function(): !Promise}
      * @private
      * @const
      */
@@ -95,12 +97,11 @@ export class Options {
     this.audioTrack_ = null;
 
     [['#switch-device', () => this.switchDevice_()],
-     ['#toggle-grid', () => this.animatePreviewGrid_()],
      ['#open-settings', () => nav.open(ViewName.SETTINGS)],
     ]
         .forEach(
-            ([selector, fn]) =>
-                document.querySelector(selector).addEventListener('click', fn));
+            ([selector, fn]) => dom.get(selector, HTMLButtonElement)
+                                    .addEventListener('click', fn));
 
     this.toggleMic_.addEventListener('click', () => this.updateAudioByMic_());
     this.toggleMirror_.addEventListener('click', () => this.saveMirroring_());
@@ -121,11 +122,10 @@ export class Options {
     });
 
     // Restore saved mirroring states per video device.
-    browserProxy.localStorageGet({mirroringToggles: {}})
+    localStorage.get({mirroringToggles: {}})
         .then((values) => this.mirroringToggles_ = values['mirroringToggles']);
     // Remove the deprecated values.
-    browserProxy.localStorageRemove(
-        ['effectIndex', 'toggleMulti', 'toggleMirror']);
+    localStorage.remove(['effectIndex', 'toggleMulti', 'toggleMirror']);
 
     this.infoUpdater_.addDeviceChangeListener(async (updater) => {
       state.set(
@@ -152,7 +152,7 @@ export class Options {
     }
     state.set(PerfEvent.CAMERA_SWITCHING, true);
     const devices = await this.infoUpdater_.getDevicesInfo();
-    util.animateOnce(dom.get('#switch-device', HTMLElement));
+    animate.play(dom.get('#switch-device', HTMLElement));
     let index =
         devices.findIndex((entry) => entry.deviceId === this.videoDeviceId_);
     if (index === -1) {
@@ -164,15 +164,6 @@ export class Options {
     }
     const isSuccess = await this.doSwitchDevice_();
     state.set(PerfEvent.CAMERA_SWITCHING, false, {hasError: !isSuccess});
-  }
-
-  /**
-   * Animates the preview grid.
-   * @private
-   */
-  animatePreviewGrid_() {
-    Array.from(document.querySelector('#preview-grid').children)
-        .forEach((grid) => util.animateOnce(grid));
   }
 
   /**
@@ -245,7 +236,7 @@ export class Options {
    */
   saveMirroring_() {
     this.mirroringToggles_[this.videoDeviceId_] = this.toggleMirror_.checked;
-    browserProxy.localStorageSet({mirroringToggles: this.mirroringToggles_});
+    localStorage.set({mirroringToggles: this.mirroringToggles_});
   }
 
   /**

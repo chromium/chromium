@@ -61,7 +61,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiNewTabTest, MAYBE_Tabs) {
   ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "crud.html")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
+// TODO(crbug.com/1177118) Re-enable test
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabAudible) {
   ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "audible.html")) << message_;
 }
 
@@ -165,7 +166,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleTabPng) {
                                   "test_png.html")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleTabRace) {
+// TODO(crbug.com/1177118) Re-enable test
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
+                       DISABLED_CaptureVisibleTabRace) {
   ASSERT_TRUE(RunExtensionSubtest("tabs/capture_visible_tab",
                                   "test_race.html")) << message_;
 }
@@ -177,8 +180,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleTabRace) {
 #define MAYBE_CaptureVisibleFile CaptureVisibleFile
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/capture_visible_tab",
-                                  "test_file.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "tabs/capture_visible_tab", .page_url = "test_file.html"},
+      {.allow_file_access = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleDisabled) {
@@ -292,9 +297,10 @@ IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
       is_incognito_enabled ? "true" : "false",
       extensions::ExtensionTabUtil::GetWindowId(incognito_browser));
 
-  EXPECT_TRUE(RunExtensionSubtestWithArgAndFlags(
-      "tabs/basics", "incognito.html", args.data(),
-      is_incognito_enabled ? kFlagEnableIncognito : kFlagNone, kFlagNone))
+  EXPECT_TRUE(RunExtensionTest({.name = "tabs/basics",
+                                .page_url = "incognito.html",
+                                .custom_arg = args.c_str()},
+                               {.allow_in_incognito = is_incognito_enabled}))
       << message_;
 }
 

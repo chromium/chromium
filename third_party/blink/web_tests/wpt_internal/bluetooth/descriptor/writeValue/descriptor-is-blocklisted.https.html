@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'An attempt to call writeValue on a blocked descriptor ' +
+    'must generate a SecurityError';
+const expected = new DOMException(
+    'writeValue() called on blocklisted object marked exclude-writes. ' +
+    'https://goo.gl/4NeimX',
+    'SecurityError');
+let descriptor, fake_descriptor;
+
+// 1. Connect to the device and retrieve the GATT descriptor.
+bluetooth_test(() => getBlocklistExcludeWritesDescriptor()
+    .then(_ => ({descriptor, fake_descriptor} = _))
+    // 2. Attempt to read and write the descriptor.
+    .then(() => fake_descriptor.setNextReadResponse(HCI_SUCCESS, 'foo'))
+    .then(() => descriptor.readValue())
+    .then(() => assert_promise_rejects_with_message(
+        descriptor.writeValue(new Uint8Array(1 /* length */)),
+        expected,
+        'writeValue() should reject.')),
+    test_desc);
+</script>

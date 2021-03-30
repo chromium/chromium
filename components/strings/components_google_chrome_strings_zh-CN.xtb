@@ -10,6 +10,7 @@
 <translation id="3875312571075912821">在防火墙或防病毒设置部分设为允许 Chrome 访问网络。</translation>
 <translation id="4010643444566880169">Chrome 操作系统尚未完成其初始设置。</translation>
 <translation id="4853578032408195113">您正在查看安全的 Google Chrome 网页</translation>
+<translation id="5005121315113832363">此页面已被 Chrome 屏蔽</translation>
 <translation id="6011049234605203654">依次转到 Chrome 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="ADVANCED_TITLE" />”&gt;“<ph name="PROXIES_TITLE" />”，并确保您已将配置设为“无代理”或“直接连接”。</translation>
 <translation id="6341737370356890233">前往 Chrome 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="ADVANCED_TITLE" />”部分，然后取消选中“<ph name="NO_PREFETCH_DESCRIPTION" />”。如果这无法解决该问题，我们建议您重新选中此选项，以便改善性能。</translation>
 <translation id="6855094794438142393">依次转到 Chrome 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="ADVANCED_TITLE" />”&gt;“<ph name="PROXIES_TITLE" />”&gt;“LAN 设置”，然后取消选中“为 LAN 使用代理服务器”。</translation>

@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Listeelement</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Sveip to fingre til høyre</translation>
-<translation id="1016393160682012902">Trykk på en qwerty-tast, en dynamisk punktskrifttast eller en berøringshandling for å lære den tilhørende funksjonen. Trykk på Ctrl + W eller Esc for å avslutte.</translation>
 <translation id="1022586497894531524">Bruker du taletilbakemelding med ChromeVox for første gang? Denne kjappe veiledningen forklarer det grunnleggende om hvordan du tar i bruk ChromeVox.</translation>
 <translation id="1025074108959230262">Trege taster er slått av</translation>
 <translation id="1031961866430398710">deretter</translation>
@@ -150,6 +149,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2045055672832940894">Det finnes ingen tidligere kontroller</translation>
 <translation id="2045606329038304310">Skjemafeltkontroll</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2074531330963286860">Det finnes tilgjengelige handlinger. Trykk på Søk + Punktum for å vise</translation>
 <translation id="2086961585857038472">Neste ord</translation>
 <translation id="2087981446621639008">dtlj i beskr.liste</translation>
 <translation id="2089387485033699258">no</translation>
@@ -976,6 +976,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="827266600368092403">Start eller avslutt utvalget</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Gå til forrige fokuserbare element</translation>
+<translation id="8279039817939141096">Trykk på en qwerty-tast, trykk på en dynamisk punktskrifttast eller utfør en berøringsbevegelse for å få vite den tilhørende funksjonen. Trykk på Ctrl + W eller mellomrom + Z, sveip venstre med to fingre eller trykk på Escape for å avslutte.</translation>
 <translation id="8283603667300770666">Neste skjemafelt</translation>
 <translation id="8310185481635255431">Det finnes ingen flere linker</translation>
 <translation id="831207808878314375">Definisjon</translation>

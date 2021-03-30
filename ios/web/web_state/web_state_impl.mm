@@ -25,6 +25,7 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/favicon/favicon_url.h"
+#include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
@@ -327,7 +328,7 @@ bool WebStateImpl::HasWebUI() {
   return !!web_ui_;
 }
 
-const base::string16& WebStateImpl::GetTitle() const {
+const std::u16string& WebStateImpl::GetTitle() const {
   // TODO(stuartmorgan): Implement the NavigationManager logic necessary to
   // match the WebContents implementation of this method.
   DCHECK(Configured());
@@ -682,21 +683,20 @@ CRWJSInjectionReceiver* WebStateImpl::GetJSInjectionReceiver() const {
   return [web_controller_.jsInjector JSInjectionReceiver];
 }
 
-void WebStateImpl::ExecuteJavaScript(const base::string16& javascript) {
+void WebStateImpl::ExecuteJavaScript(const std::u16string& javascript) {
   [web_controller_.jsInjector
       executeJavaScript:base::SysUTF16ToNSString(javascript)
       completionHandler:nil];
 }
 
-void WebStateImpl::ExecuteJavaScript(const base::string16& javascript,
+void WebStateImpl::ExecuteJavaScript(const std::u16string& javascript,
                                      JavaScriptResultCallback callback) {
   __block JavaScriptResultCallback stack_callback = std::move(callback);
   [web_controller_.jsInjector
       executeJavaScript:base::SysUTF16ToNSString(javascript)
       completionHandler:^(id value, NSError* error) {
         if (error) {
-          DLOG(WARNING) << "Script execution of:" << javascript
-                        << "\nfailed with error: "
+          DLOG(WARNING) << "Script execution failed with error: "
                         << base::SysNSStringToUTF16(
                                error.userInfo[NSLocalizedDescriptionKey]);
         }
@@ -901,14 +901,6 @@ void WebStateImpl::ClearDialogs() {
 
 void WebStateImpl::RecordPageStateInNavigationItem() {
   [web_controller_ recordStateInHistory];
-}
-
-void WebStateImpl::OnGoToIndexSameDocumentNavigation(
-    NavigationInitiationType type,
-    bool has_user_gesture) {
-  [web_controller_
-      didFinishGoToIndexSameDocumentNavigationWithType:type
-                                        hasUserGesture:has_user_gesture];
 }
 
 void WebStateImpl::LoadCurrentItem(NavigationInitiationType type) {

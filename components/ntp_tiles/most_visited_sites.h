@@ -22,7 +22,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_observer.h"
@@ -51,7 +50,7 @@ class IconCacher;
 class MostVisitedSitesSupervisor {
  public:
   struct Allowlist {
-    base::string16 title;
+    std::u16string title;
     GURL entry_point;
     base::FilePath large_icon_path;
   };
@@ -105,7 +104,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   class HomepageClient {
    public:
     using TitleCallback =
-        base::OnceCallback<void(const base::Optional<base::string16>& title)>;
+        base::OnceCallback<void(const base::Optional<std::u16string>& title)>;
 
     virtual ~HomepageClient() = default;
     virtual bool IsHomepageTileEnabled() const = 0;
@@ -117,7 +116,7 @@ class MostVisitedSites : public history::TopSitesObserver,
    public:
     virtual ~ExploreSitesClient() = default;
     virtual GURL GetExploreSitesUrl() const = 0;
-    virtual base::string16 GetExploreSitesTitle() const = 0;
+    virtual std::u16string GetExploreSitesTitle() const = 0;
   };
 
   // Construct a MostVisitedSites instance.
@@ -190,7 +189,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Adds a custom link. If the number of current links is maxed, returns false
   // and does nothing. Will initialize custom links if they have not been
   // initialized yet, unless the action fails. Custom links must be enabled.
-  bool AddCustomLink(const GURL& url, const base::string16& title);
+  bool AddCustomLink(const GURL& url, const std::u16string& title);
   // Updates the URL and/or title of the custom link specified by |url|. If
   // |url| does not exist or |new_url| already exists in the custom link list,
   // returns false and does nothing. Will initialize custom links if they have
@@ -198,7 +197,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   // enabled.
   bool UpdateCustomLink(const GURL& url,
                         const GURL& new_url,
-                        const base::string16& new_title);
+                        const std::u16string& new_title);
   // Moves the custom link specified by |url| to the index |new_pos|. If |url|
   // does not exist, or |new_pos| is invalid, returns false and does nothing.
   // Will initialize custom links if they have not been initialized yet, unless
@@ -214,6 +213,8 @@ class MostVisitedSites : public history::TopSitesObserver,
   // first action after initialization, uninitializes the links. Custom links
   // must be enabled.
   void UndoCustomLinkAction();
+
+  size_t GetCustomLinkNum();
 
   void AddOrRemoveBlockedUrl(const GURL& url, bool add_url);
   void ClearBlockedUrls();
@@ -331,14 +332,14 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Drops existing tiles with the same host as the home page and tiles that
   // would exceed the maximum.
   NTPTilesVector InsertHomeTile(NTPTilesVector tiles,
-                                const base::string16& title) const;
+                                const std::u16string& title) const;
 
   // Creates a tile for the Explore Sites page, if enabled. The tile is added to
   // the front of the list.
   base::Optional<NTPTile> CreateExploreSitesTile();
 
   void OnHomepageTitleDetermined(NTPTilesVector tiles,
-                                 const base::Optional<base::string16>& title);
+                                 const base::Optional<std::u16string>& title);
 
   // Returns true if there is a valid homepage that can be pinned as tile.
   bool ShouldAddHomeTile() const;

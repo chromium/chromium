@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
@@ -154,9 +154,17 @@ Polymer({
 
   /** @private */
   onLoadUnpackedTap_() {
-    this.delegate.loadUnpacked().catch(loadError => {
-      this.fire('load-error', loadError);
-    });
+    this.delegate.loadUnpacked()
+        .then((success) => {
+          if (success) {
+            const toastManager = getToastManager();
+            toastManager.duration = 3000;
+            toastManager.show(this.i18n('toolbarLoadUnpackedDone'));
+          }
+        })
+        .catch(loadError => {
+          this.fire('load-error', loadError);
+        });
     chrome.metricsPrivate.recordUserAction('Options_LoadUnpackedExtension');
   },
 

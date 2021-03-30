@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/note_taking_controller_client.h"
 
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 
 namespace chromeos {
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // This features file defines switches used to control Extension behaviour,
-// typically whitelist configuration.
+// typically allowlist configuration.
 // Note, the features defined here are generally ignored for the purposes of
 // extension documentation.
 // See chrome/common/extensions/api/_features.md to understand this file, as
@@ -14,14 +14,14 @@
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "226CF815E39A363090A1E547D53063472B8279FA"   // Media Router Stable
     ]
   },
   "zoom_without_bubble": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F"   // https://crbug.com/538252
     ]
   },
@@ -35,33 +35,33 @@
     "component_extensions_auto_granted": false,
     "platforms": ["chromeos"],
     "location": "unpacked",
-    "whitelist": [
+    "allowlist": [
       "05D1DBD6E8B9C4690FFA7D50E6F60C5290DC662A"   // crbug.com/941107
     ]
   },
   {
     // Strict restrictions for stable channel.
-    // For now only whitelisted apps.
+    // For now only allowlisted apps.
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["platform_app"],
     "location": "policy",
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       // https://crbug.com/626342
       "85DA1AC24AF23CDA9F5A19858EB9C6E9E1BA57F6",  // Sign-in Screen Test App
       "EC3DE21E048B67319893889529354DFBFA96FD23",  // Smart Card Connector
       "6B748A5C005F21B7CBCF4170C2F883E435DEB511"   // CSSI Smart Card Middleware
     ]
   }, {
-    // Explicitly whitelist extensions that should always be available
+    // Explicitly allowlist extensions that should always be available
     // on a sign-in screen. Mind that some of them will be closed when signin is
     // performed. See for reference |kNonRiskyExtensionsIdsHashes| in
-    // chrome/browser/chromeos/profiles/profile_helper.cc.
+    // chrome/browser/ash/profiles/profile_helper.cc.
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       // https://crbug.com/626342
       "E24F1786D842E91E74C27929B0B3715A4689A473",  // Gnubby component extension
       "6F9E349A0561C78A0D3F41496FE521C5151C7F71",  // Gnubby app
@@ -86,7 +86,7 @@
     "extension_types": ["login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "FA84F98B32AFC3013F5711F8711F8F38DB210AB7", // Sign-in Screen Test Extension
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519"  // Login screen APIs test extension
     ]
@@ -101,7 +101,7 @@
   "allow_deprecated_audio_api": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "whitelist": [
+    "allowlist": [
       "8C3741E3AF0B93B6E8E0DDD499BB0B74839EA578",
       "E703483CEF33DEC18B4B6DD84B5C776FB9182BDB",
       "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/335729
@@ -145,7 +145,7 @@
     "extension_types": ["login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "E219EE36A3B40612FD2A8CD6937B03EF0C97D3FE",
       "4DBFC1C52D6660DD90791976DF7FEF7B3D360509",
       "CDA6A10BE50CE65C59B766D0CE6A27E8E0A1533F",
@@ -165,7 +165,7 @@
     "extension_types": ["extension"],
     "location": "policy",
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "A24DE1B21A67E25FB62AC8491642038FE25DA75B",
       "6B25164FFE2BADB5F1DBBD301CC022170267022D",
       "4D15F9AFCF54E56F0A6E06D22DD15F133DCF0882",

@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/rename_result.h"
@@ -40,7 +39,7 @@ class OfflineItemUtils {
       offline_items_collection::FailState fail_state);
 
   // Gets the short text to display for a offline_items_collection::FailState.
-  static base::string16 GetFailStateMessage(
+  static std::u16string GetFailStateMessage(
       offline_items_collection::FailState fail_state);
 
   // Converts download::DownloadItem::DownloadRenameResult to

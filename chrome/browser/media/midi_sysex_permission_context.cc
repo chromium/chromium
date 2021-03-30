@@ -11,9 +11,10 @@
 
 MidiSysexPermissionContext::MidiSysexPermissionContext(
     content::BrowserContext* browser_context)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::MIDI_SYSEX,
-                            blink::mojom::FeaturePolicyFeature::kMidiFeature) {}
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::MIDI_SYSEX,
+          blink::mojom::PermissionsPolicyFeature::kMidiFeature) {}
 
 MidiSysexPermissionContext::~MidiSysexPermissionContext() {}
 

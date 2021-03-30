@@ -42,7 +42,6 @@ class COMPONENT_EXPORT(TRACING_CPP) MojoSharedMemory
   // classes.
   void* start() const override;
   size_t size() const override;
-  int fd() const override;
 
  private:
   mojo::ScopedSharedBufferHandle shared_buffer_;

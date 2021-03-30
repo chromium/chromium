@@ -58,8 +58,7 @@ class UdpSocket final : public openscreen::UdpSocket,
   void JoinGroupCallback(int32_t result);
   void SendCallback(int32_t result);
 
-  // Note: This can be null, per UdpSocket API header comments.
-  Client* const client_;
+  Client* const client_ = nullptr;
 
   // The local endpoint can change as a result of bind calls.
   openscreen::IPEndpoint local_endpoint_;

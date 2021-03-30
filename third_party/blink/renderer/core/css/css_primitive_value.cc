@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -55,6 +56,12 @@ struct SameSizeAsCSSPrimitiveValue : CSSValue {
 ASSERT_SIZE(CSSPrimitiveValue, SameSizeAsCSSPrimitiveValue);
 
 float CSSPrimitiveValue::ClampToCSSLengthRange(double value) {
+  // TODO(crbug.com/1133390): clampTo function could occur the DECHECK failure
+  // for NaN value. Therefore, infinity and NaN values should not be clamped
+  // here.
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    value = CSSValueClampingUtils::ClampLength(value);
+  }
   return clampTo<float>(value, kMinValueForCssLength, kMaxValueForCssLength);
 }
 
@@ -198,16 +205,25 @@ CSSPrimitiveValue* CSSPrimitiveValue::CreateFromLength(const Length& length,
   return nullptr;
 }
 
+// TODO(crbug.com/1133390): When we support <frequency>, we must clamp like
+// <time>.
 double CSSPrimitiveValue::ComputeSeconds() const {
-  if (IsCalculated())
-    return To<CSSMathFunctionValue>(this)->ComputeSeconds();
-  return To<CSSNumericLiteralValue>(this)->ComputeSeconds();
+  double result = IsCalculated()
+                      ? To<CSSMathFunctionValue>(this)->ComputeSeconds()
+                      : To<CSSNumericLiteralValue>(this)->ComputeSeconds();
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
+    result = CSSValueClampingUtils::ClampTime(result);
+  return result;
 }
 
 double CSSPrimitiveValue::ComputeDegrees() const {
-  if (IsCalculated())
-    return To<CSSMathFunctionValue>(this)->ComputeDegrees();
-  return To<CSSNumericLiteralValue>(this)->ComputeDegrees();
+  double result = IsCalculated()
+                      ? To<CSSMathFunctionValue>(this)->ComputeDegrees()
+                      : To<CSSNumericLiteralValue>(this)->ComputeDegrees();
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    result = CSSValueClampingUtils::ClampAngle(result);
+  }
+  return result;
 }
 
 double CSSPrimitiveValue::ComputeDotsPerPixel() const {
@@ -261,13 +277,24 @@ uint8_t CSSPrimitiveValue::ComputeLength(
 template <>
 float CSSPrimitiveValue::ComputeLength(
     const CSSToLengthConversionData& conversion_data) const {
-  return clampTo<float>(ComputeLengthDouble(conversion_data));
+  // TODO(crbug.com/1133390): clampTo function could occur the DECHECK failure
+  // for NaN value. Therefore, infinity and NaN values should not be clamped
+  // here.
+  float value = ComputeLengthDouble(conversion_data);
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    return CSSValueClampingUtils::ClampLength(value);
+  }
+  return value;
 }
 
 template <>
 double CSSPrimitiveValue::ComputeLength(
     const CSSToLengthConversionData& conversion_data) const {
-  return ComputeLengthDouble(conversion_data);
+  double value = ComputeLengthDouble(conversion_data);
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    return CSSValueClampingUtils::ClampLength(value);
+  }
+  return value;
 }
 
 double CSSPrimitiveValue::ComputeLengthDouble(
@@ -359,7 +386,11 @@ Length CSSPrimitiveValue::ConvertToLength(
   if (IsPercentage()) {
     if (IsNumericLiteralValue() ||
         !To<CSSMathFunctionValue>(this)->AllowsNegativePercentageReference()) {
-      return Length::Percent(GetDoubleValue());
+      double value = GetDoubleValueWithoutClamping();
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+        value = CSSValueClampingUtils::ClampLength(value);
+      }
+      return Length::Percent(value);
     }
   }
   DCHECK(IsCalculated());
@@ -367,6 +398,10 @@ Length CSSPrimitiveValue::ConvertToLength(
 }
 
 double CSSPrimitiveValue::GetDoubleValue() const {
+  return CSSValueClampingUtils::ClampDouble(GetDoubleValueWithoutClamping());
+}
+
+double CSSPrimitiveValue::GetDoubleValueWithoutClamping() const {
   return IsCalculated() ? To<CSSMathFunctionValue>(this)->DoubleValue()
                         : To<CSSNumericLiteralValue>(this)->DoubleValue();
 }

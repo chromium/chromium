@@ -49,7 +49,7 @@ class MockObserver : public FidoRequestHandlerBase::Observer {
   MOCK_CONST_METHOD0(SupportsPIN, bool());
   MOCK_METHOD2(CollectPIN,
                void(CollectPINOptions,
-                    base::OnceCallback<void(base::string16)>));
+                    base::OnceCallback<void(std::u16string)>));
   MOCK_METHOD0(OnForcePINChange, void());
   MOCK_METHOD1(StartBioEnrollment, void(base::OnceClosure));
   MOCK_METHOD1(OnSampleCollected, void(int));

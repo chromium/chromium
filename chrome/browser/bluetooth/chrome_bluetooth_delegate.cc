@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context.h"
@@ -93,7 +94,6 @@ WebBluetoothDeviceId ChromeBluetoothDelegate::GetWebBluetoothDeviceId(
     RenderFrameHost* frame,
     const std::string& device_address) {
   return GetBluetoothChooserContext(frame)->GetWebBluetoothDeviceId(
-      frame->GetLastCommittedOrigin(),
       frame->GetMainFrame()->GetLastCommittedOrigin(), device_address);
 }
 
@@ -101,7 +101,6 @@ std::string ChromeBluetoothDelegate::GetDeviceAddress(
     RenderFrameHost* frame,
     const WebBluetoothDeviceId& device_id) {
   return GetBluetoothChooserContext(frame)->GetDeviceAddress(
-      frame->GetLastCommittedOrigin(),
       frame->GetMainFrame()->GetLastCommittedOrigin(), device_id);
 }
 
@@ -109,7 +108,6 @@ WebBluetoothDeviceId ChromeBluetoothDelegate::AddScannedDevice(
     RenderFrameHost* frame,
     const std::string& device_address) {
   return GetBluetoothChooserContext(frame)->AddScannedDevice(
-      frame->GetLastCommittedOrigin(),
       frame->GetMainFrame()->GetLastCommittedOrigin(), device_address);
 }
 
@@ -118,7 +116,6 @@ WebBluetoothDeviceId ChromeBluetoothDelegate::GrantServiceAccessPermission(
     const device::BluetoothDevice* device,
     const blink::mojom::WebBluetoothRequestDeviceOptions* options) {
   return GetBluetoothChooserContext(frame)->GrantServiceAccessPermission(
-      frame->GetLastCommittedOrigin(),
       frame->GetMainFrame()->GetLastCommittedOrigin(), device, options);
 }
 
@@ -126,7 +123,6 @@ bool ChromeBluetoothDelegate::HasDevicePermission(
     RenderFrameHost* frame,
     const WebBluetoothDeviceId& device_id) {
   return GetBluetoothChooserContext(frame)->HasDevicePermission(
-      frame->GetLastCommittedOrigin(),
       frame->GetMainFrame()->GetLastCommittedOrigin(), device_id);
 }
 
@@ -135,7 +131,6 @@ bool ChromeBluetoothDelegate::IsAllowedToAccessService(
     const WebBluetoothDeviceId& device_id,
     const BluetoothUUID& service) {
   return GetBluetoothChooserContext(frame)->IsAllowedToAccessService(
-      frame->GetLastCommittedOrigin(),
       frame->GetMainFrame()->GetLastCommittedOrigin(), device_id, service);
 }
 
@@ -143,7 +138,6 @@ bool ChromeBluetoothDelegate::IsAllowedToAccessAtLeastOneService(
     RenderFrameHost* frame,
     const WebBluetoothDeviceId& device_id) {
   return GetBluetoothChooserContext(frame)->IsAllowedToAccessAtLeastOneService(
-      frame->GetLastCommittedOrigin(),
       frame->GetMainFrame()->GetLastCommittedOrigin(), device_id);
 }
 
@@ -152,9 +146,28 @@ bool ChromeBluetoothDelegate::IsAllowedToAccessManufacturerData(
     const WebBluetoothDeviceId& device_id,
     uint16_t manufacturer_code) {
   return GetBluetoothChooserContext(frame)->IsAllowedToAccessManufacturerData(
-      frame->GetLastCommittedOrigin(),
       frame->GetMainFrame()->GetLastCommittedOrigin(), device_id,
       manufacturer_code);
+}
+
+void ChromeBluetoothDelegate::AddFramePermissionObserver(
+    FramePermissionObserver* observer) {
+  std::unique_ptr<ChooserContextPermissionObserver>& chooser_observer =
+      chooser_observers_[observer->GetRenderFrameHost()];
+  if (!chooser_observer) {
+    chooser_observer = std::make_unique<ChooserContextPermissionObserver>(
+        this, GetBluetoothChooserContext(observer->GetRenderFrameHost()));
+  }
+
+  chooser_observer->AddFramePermissionObserver(observer);
+}
+
+void ChromeBluetoothDelegate::RemoveFramePermissionObserver(
+    FramePermissionObserver* observer) {
+  auto it = chooser_observers_.find(observer->GetRenderFrameHost());
+  if (it == chooser_observers_.end())
+    return;
+  it->second->RemoveFramePermissionObserver(observer);
 }
 
 std::vector<blink::mojom::WebBluetoothDevicePtr>
@@ -162,7 +175,6 @@ ChromeBluetoothDelegate::GetPermittedDevices(content::RenderFrameHost* frame) {
   auto* context = GetBluetoothChooserContext(frame);
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       objects = context->GetGrantedObjects(
-          frame->GetLastCommittedOrigin(),
           frame->GetMainFrame()->GetLastCommittedOrigin());
   std::vector<blink::mojom::WebBluetoothDevicePtr> permitted_devices;
 
@@ -176,4 +188,45 @@ ChromeBluetoothDelegate::GetPermittedDevices(content::RenderFrameHost* frame) {
   }
 
   return permitted_devices;
+}
+
+ChromeBluetoothDelegate::ChooserContextPermissionObserver::
+    ChooserContextPermissionObserver(ChromeBluetoothDelegate* owning_delegate,
+                                     permissions::ChooserContextBase* context)
+    : owning_delegate_(owning_delegate) {
+  observer_.Observe(context);
+}
+
+ChromeBluetoothDelegate::ChooserContextPermissionObserver::
+    ~ChooserContextPermissionObserver() = default;
+
+void ChromeBluetoothDelegate::ChooserContextPermissionObserver::
+    OnPermissionRevoked(const url::Origin& origin) {
+  observers_pending_removal_.clear();
+  is_traversing_observers_ = true;
+
+  for (auto& observer : observer_list_)
+    observer.OnPermissionRevoked(origin);
+
+  is_traversing_observers_ = false;
+  for (FramePermissionObserver* observer : observers_pending_removal_)
+    RemoveFramePermissionObserver(observer);
+}
+
+void ChromeBluetoothDelegate::ChooserContextPermissionObserver::
+    AddFramePermissionObserver(FramePermissionObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void ChromeBluetoothDelegate::ChooserContextPermissionObserver::
+    RemoveFramePermissionObserver(FramePermissionObserver* observer) {
+  if (is_traversing_observers_) {
+    observers_pending_removal_.emplace_back(observer);
+    return;
+  }
+
+  observer_list_.RemoveObserver(observer);
+  if (observer_list_.empty())
+    owning_delegate_->chooser_observers_.erase(observer->GetRenderFrameHost());
+  // Previous call destructed this instance. Don't add code after this.
 }

@@ -1570,7 +1570,7 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
                     << kCategoryContentId << "': " << entry;
       continue;
     }
-    base::string16 title;
+    std::u16string title;
     if (!dict->GetString(kCategoryContentTitle, &title)) {
       DLOG(WARNING) << "Invalid category pref value, missing '"
                     << kCategoryContentTitle << "': " << entry;

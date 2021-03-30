@@ -179,15 +179,6 @@ float SVGLength::ValueAsPercentage() const {
   return value_->GetFloatValue();
 }
 
-float SVGLength::ValueAsPercentage100() const {
-  // LengthTypePercentage is represented with 100% = 100.0. Good for accuracy
-  // but could eventually be changed.
-  if (value_->IsPercentage())
-    return value_->GetFloatValue();
-
-  return value_->GetFloatValue() * 100;
-}
-
 float SVGLength::ScaleByPercentage(float input) const {
   float result = input * value_->GetFloatValue();
   if (value_->IsPercentage()) {

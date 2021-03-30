@@ -27,30 +27,33 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
 scoped_refptr<Extension> ConvertUserScriptToExtension(
-    const base::FilePath& user_script_path, const GURL& original_url,
-    const base::FilePath& extensions_dir, base::string16* error) {
+    const base::FilePath& user_script_path,
+    const GURL& original_url,
+    const base::FilePath& extensions_dir,
+    std::u16string* error) {
   using ContentScript = api::content_scripts::ContentScript;
 
   std::string content;
   if (!base::ReadFileToString(user_script_path, &content)) {
-    *error = base::ASCIIToUTF16("Could not read source file.");
+    *error = u"Could not read source file.";
     return nullptr;
   }
 
   if (!base::IsStringUTF8(content)) {
-    *error = base::ASCIIToUTF16("User script must be UTF8 encoded.");
+    *error = u"User script must be UTF8 encoded.";
     return nullptr;
   }
 
   UserScript script;
   if (!UserScriptLoader::ParseMetadataHeader(content, &script)) {
-    *error = base::ASCIIToUTF16("Invalid script header.");
+    *error = u"Invalid script header.";
     return nullptr;
   }
 
@@ -64,7 +67,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDirUnderPath(install_temp_dir)) {
-    *error = base::ASCIIToUTF16("Could not create temporary directory.");
+    *error = u"Could not create temporary directory.";
     return nullptr;
   }
 
@@ -136,11 +139,11 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   content_script.js = std::make_unique<std::vector<std::string>>();
   content_script.js->push_back("script.js");
 
-  if (script.run_location() == UserScript::DOCUMENT_START) {
+  if (script.run_location() == mojom::RunLocation::kDocumentStart) {
     content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_START;
-  } else if (script.run_location() == UserScript::DOCUMENT_END) {
+  } else if (script.run_location() == mojom::RunLocation::kDocumentEnd) {
     content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_END;
-  } else if (script.run_location() == UserScript::DOCUMENT_IDLE) {
+  } else if (script.run_location() == mojom::RunLocation::kDocumentIdle) {
     // This is the default, but store it just in case we change that.
     content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_IDLE;
   }
@@ -153,23 +156,23 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   base::FilePath manifest_path = temp_dir.GetPath().Append(kManifestFilename);
   JSONFileValueSerializer serializer(manifest_path);
   if (!serializer.Serialize(*root)) {
-    *error = base::ASCIIToUTF16("Could not write JSON.");
+    *error = u"Could not write JSON.";
     return nullptr;
   }
 
   // Write the script file.
   if (!base::CopyFile(user_script_path,
                       temp_dir.GetPath().AppendASCII("script.js"))) {
-    *error = base::ASCIIToUTF16("Could not copy script file.");
+    *error = u"Could not copy script file.";
     return nullptr;
   }
 
   // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
-  // with base::string16
+  // with std::u16string
   std::string utf8_error;
   scoped_refptr<Extension> extension =
-      Extension::Create(temp_dir.GetPath(), Manifest::INTERNAL, *root,
-                        Extension::NO_FLAGS, &utf8_error);
+      Extension::Create(temp_dir.GetPath(), mojom::ManifestLocation::kInternal,
+                        *root, Extension::NO_FLAGS, &utf8_error);
   *error = base::UTF8ToUTF16(utf8_error);
   if (!extension.get()) {
     NOTREACHED() << "Could not init extension " << *error;

@@ -28,10 +28,12 @@ import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper.Source;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.infobar.DownloadProgressInfoBar;
 import org.chromium.chrome.browser.infobar.IPHInfoBarSupport;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -269,7 +271,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
     }
 
     private final boolean mUseNewDownloadPath;
-    private final boolean mIsIncognito;
+    private final OTRProfileID mOtrProfileID;
     private final Handler mHandler = new Handler();
     private final DownloadProgressInfoBar.Client mClient = new DownloadProgressInfoBarClient();
 
@@ -308,10 +310,10 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
     private DownloadLaterDialogHelper mDownloadLaterDialogHelper;
 
     /** Constructor. */
-    public DownloadInfoBarController(boolean isIncognito) {
+    public DownloadInfoBarController(OTRProfileID otrProfileID) {
         mUseNewDownloadPath =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
-        mIsIncognito = isIncognito;
+        mOtrProfileID = otrProfileID;
         mHandler.post(() -> getOfflineContentProvider().addObserver(this));
     }
 
@@ -432,7 +434,11 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
     }
 
     private boolean isVisibleToUser(OfflineItem offlineItem) {
-        if (offlineItem.isTransient || offlineItem.isOffTheRecord != mIsIncognito
+        // Need to use serialized OTRProfileID for comparison, since calling
+        // |OTRProfileID#deserialize| method causes crash if the OTR profile is destroyed.
+        String stringOTRProfileID = OTRProfileID.serialize(mOtrProfileID);
+        if (offlineItem.isTransient
+                || !OTRProfileID.areEqual(stringOTRProfileID, offlineItem.otrProfileId)
                 || offlineItem.isSuggested || offlineItem.isDangerous) {
             return false;
         }
@@ -930,8 +936,11 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
         ChromeActivity activity = getActivity();
         if (activity == null) return null;
         Tab tab = activity.getActivityTab();
-        if (tab == null || tab.isIncognito() != mIsIncognito) return null;
-        return tab;
+        if (tab == null) return null;
+
+        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
+                activity.getWindowAndroid(), tab.isIncognito());
+        return OTRProfileID.areEqual(mOtrProfileID, profile.getOTRProfileID()) ? tab : null;
     }
 
     @Nullable
@@ -1048,7 +1057,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
                 onChangeScheduleClicked(itemId, schedule);
             } else if (itemId != null) {
                 DownloadUtils.openItem(
-                        itemId, mIsIncognito, DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
+                        itemId, mOtrProfileID, DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR);
                 recordLinkClicked(true /*openItem*/);
             } else {
                 DownloadManagerService.openDownloadsPage(
@@ -1088,7 +1097,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
                         OfflineContentAggregatorFactory.get().changeSchedule(id, newSchedule);
                     } else {
                         DownloadManagerService.getDownloadManagerService().changeSchedule(
-                                id, newSchedule, mIsIncognito);
+                                id, newSchedule, mOtrProfileID);
                     }
                 });
     }

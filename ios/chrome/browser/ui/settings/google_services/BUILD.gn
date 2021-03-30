@@ -44,6 +44,7 @@ source_set("google_services") {
     "//components/prefs",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/signin/ios/browser",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
@@ -60,11 +61,12 @@ source_set("google_services") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/authentication/signin:signin_protected",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
@@ -135,6 +137,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "accounts_table_egtest.mm",
+    "accounts_table_mice_egtest.mm",
     "google_services_settings_egtest.mm",
   ]
   deps = [
@@ -144,6 +147,8 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/signin/ios/browser:features",
+    "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",

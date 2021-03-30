@@ -17,7 +17,10 @@ Polymer({
      * The dictionary containing the properties to display.
      * @type {!Object|undefined}
      */
-    propertyDict: {type: Object},
+    propertyDict: {
+      type: Object,
+      observer: 'onPropertyDictChanged_',
+    },
 
     /**
      * Fields to display.
@@ -53,6 +56,110 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /**
+     * Whether all CrInputs are automatically read-only, and none are
+     * editable by the user.
+     */
+    allFieldsReadOnly: {
+      type: Boolean,
+      value: true,
+      readonly: true,
+      observer: 'onAllFieldsReadOnlyChanged_',
+    },
+
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Whether any of the CrInputElements have been visibly focused since
+     * |allFieldsReadOnly| becoming true.
+     * @private
+     */
+    hasAnyInputFocused_: {
+      type: Boolean,
+      value: false,
+    }
+  },
+
+  /** @private */
+  onAllFieldsReadOnlyChanged_() {
+    if (this.allFieldsReadOnly) {
+      return;
+    }
+
+    this.hasAnyInputFocused_ = false;
+
+    // If this focus attempt fails (e.g. when other updates affect focus), the
+    // call in onPropertyDictChanged_ will set the focus.
+    setTimeout(() => {
+      this.attemptToFocusFirstEditableCrInput_();
+    });
+  },
+
+  /**
+   * Since |this.propertyDict| may change multiple times after the
+   * user |this.allFieldsReadOnly| becomes false (while editing the
+   * properties of a connected network), the first CrInputElement should be
+   * ready before it's focused.
+   * @private
+   */
+  onPropertyDictChanged_() {
+    // Do not proceed if the user has not opted for manual edit, or has
+    // already made an edit.
+    if (this.allFieldsReadOnly || this.hasAnyInputFocused_) {
+      return;
+    }
+
+    this.attemptToFocusFirstEditableCrInput_();
+  },
+
+  /**
+   * Attempts to focus the first non read-only CrInputElement.
+   * @private
+   */
+  attemptToFocusFirstEditableCrInput_() {
+    Polymer.dom.flush();
+
+    const crInput = /** @type {?CrInputElement} */
+        (this.shadowRoot.querySelector('cr-input:not([readonly])'));
+    if (!crInput) {
+      return;
+    }
+
+    // Note that |this.hasAnyInputFocused_| should not change here because a
+    // CrInputElement's focus event may not properly fire before
+    // |this.propertyDict| reaches steady state.
+    crInput.focusInput();
+  },
+
+  /**
+   * Select the text contents of the input if
+   * |this.allFieldsReadOnly| is true and the the CrInputElement
+   * has not been focused before.
+   * @param {!Event} e The input focus event.
+   * @private
+   */
+  onInputFocused_(e) {
+    if (this.allFieldsReadOnly) {
+      return;
+    }
+
+    const crInput = /** @type {!CrInputElement} */ (e.target);
+    // Subsequent focuses to the same CrInputElement after the first will not
+    // select the entire text.
+    if (crInput.getAttribute('edited') === 'true') {
+      return;
+    }
+
+    // Set |edited| attribute to true so that the next time the user focuses
+    // on the CrInputElement while |this.allFieldsReadOnly| is
+    // still true, the entire contents are not selected.
+    crInput.setAttribute('edited', true);
+    crInput.select();
+    this.hasAnyInputFocused_ = true;
   },
 
   /**

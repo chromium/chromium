@@ -12,9 +12,11 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 // This class manages the shortcut provider table within the SQLite database
@@ -41,36 +43,36 @@ class ShortcutsDatabase : public base::RefCountedThreadSafe<ShortcutsDatabase> {
   struct Shortcut {
     // The fields of an AutocompleteMatch that we preserve in a shortcut.
     struct MatchCore {
-      MatchCore(const base::string16& fill_into_edit,
+      MatchCore(const std::u16string& fill_into_edit,
                 const GURL& destination_url,
-                int document_type,
-                const base::string16& contents,
+                AutocompleteMatch::DocumentType document_type,
+                const std::u16string& contents,
                 const std::string& contents_class,
-                const base::string16& description,
+                const std::u16string& description,
                 const std::string& description_class,
-                int transition,
-                int type,
-                const base::string16& keyword);
+                ui::PageTransition transition,
+                AutocompleteMatchType::Type type,
+                const std::u16string& keyword);
       MatchCore(const MatchCore& other);
       ~MatchCore();
 
-      base::string16 fill_into_edit;
+      std::u16string fill_into_edit;
       GURL destination_url;
-      int document_type;
-      base::string16 contents;
+      AutocompleteMatch::DocumentType document_type;
+      std::u16string contents;
       // For both contents_class and description_class, we strip MATCH
       // classifications; the ShortcutsProvider will re-mark MATCH regions based
       // on the user's current typing.
       std::string contents_class;
-      base::string16 description;
+      std::u16string description;
       std::string description_class;
-      int transition;
-      int type;
-      base::string16 keyword;
+      ui::PageTransition transition;
+      AutocompleteMatchType::Type type;
+      std::u16string keyword;
     };
 
     Shortcut(const std::string& id,
-             const base::string16& text,
+             const std::u16string& text,
              const MatchCore& match_core,
              const base::Time& last_access_time,
              int number_of_hits);
@@ -80,7 +82,7 @@ class ShortcutsDatabase : public base::RefCountedThreadSafe<ShortcutsDatabase> {
     ~Shortcut();
 
     std::string id;  // Unique guid for the shortcut.
-    base::string16 text;   // The user's original input string.
+    std::u16string text;  // The user's original input string.
     MatchCore match_core;
     base::Time last_access_time;  // Last time shortcut was selected.
     int number_of_hits;           // How many times shortcut was selected.

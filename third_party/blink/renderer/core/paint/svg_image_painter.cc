@@ -42,9 +42,9 @@ void SVGImagePainter::Paint(const PaintInfo& paint_info) {
   ScopedSVGTransformState transform_state(paint_info, layout_svg_image_);
   {
     ScopedSVGPaintState paint_state(layout_svg_image_, paint_info);
+    SVGModelObjectPainter::RecordHitTestData(layout_svg_image_, paint_info);
     if (!DrawingRecorder::UseCachedDrawingIfPossible(
             paint_info.context, layout_svg_image_, paint_info.phase)) {
-      SVGModelObjectPainter::RecordHitTestData(layout_svg_image_, paint_info);
       SVGDrawingRecorder recorder(paint_info.context, layout_svg_image_,
                                   paint_info.phase);
       PaintForeground(paint_info);
@@ -107,8 +107,7 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
       layout_svg_image_, image->Size(), *image_content,
       paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
       EnclosingIntRect(dest_rect));
-  PaintTiming& timing = PaintTiming::From(
-      layout_svg_image_.GetElement()->GetDocument().TopDocument());
+  PaintTiming& timing = PaintTiming::From(layout_svg_image_.GetDocument());
   timing.MarkFirstContentfulPaint();
 }
 

@@ -45,7 +45,7 @@ class TestVersionUpdater : public VersionUpdater {
   bool powerwash_ = false;
   std::string version_;
   int64_t update_size_ = 0;
-  base::string16 message_;
+  std::u16string message_;
 
   DISALLOW_COPY_AND_ASSIGN(TestVersionUpdater);
 };

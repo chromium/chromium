@@ -21,9 +21,7 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_metrics.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -166,14 +164,8 @@ class DataReductionProxySettings {
   // Sets the headers to use for requests to the compression server.
   void SetProxyRequestHeaders(const net::HttpRequestHeaders& headers);
 
-  // Sets the list of prefetch_proxies to use.
-  void UpdatePrefetchProxyHosts(const std::vector<GURL>& prefetch_proxies);
-
   // Returns headers to use for requests to the compression server.
   const net::HttpRequestHeaders& GetProxyRequestHeaders() const;
-
-  // Returns the list of hosts for the prefetch proxy.
-  const std::vector<GURL>& GetPrefetchProxies() const;
 
   // Returns the time LiteMode was last enabled. This is reset whenever LiteMode
   // is disabled and re-enabled from settings. Null time is returned when
@@ -189,12 +181,6 @@ class DataReductionProxySettings {
   // change.
   void RemoveDataReductionProxySettingsObserver(
       DataReductionProxySettingsObserver* observer);
-
-  // Addds a config client that can be used to update Data Reduction Proxy
-  // settings.
-  void AddCustomProxyConfigClient(
-      mojo::Remote<network::mojom::CustomProxyConfigClient>
-          proxy_config_client);
 
   DataReductionProxyService* data_reduction_proxy_service() {
     return data_reduction_proxy_service_.get();
@@ -292,14 +278,6 @@ class DataReductionProxySettings {
 
   // The headers to use for requests to the proxy server.
   net::HttpRequestHeaders proxy_request_headers_;
-
-  // The list of prefetch proxy hosts to use.
-  std::vector<GURL> prefetch_proxies_;
-
-  // A list of CustomProxyConfigClients that may have been added before
-  // the DataReductionProxyService was available.
-  std::vector<mojo::Remote<network::mojom::CustomProxyConfigClient>>
-      proxy_config_clients_;
 
   // True if |this| was constructed for an off-the-record profile.
   const bool is_off_the_record_profile_;

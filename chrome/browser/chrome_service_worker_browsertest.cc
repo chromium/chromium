@@ -89,7 +89,7 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
   }
 
   void NavigateToPageAndWaitForReadyTitle(const std::string path) {
-    const base::string16 expected_title1 = base::ASCIIToUTF16("READY");
+    const std::u16string expected_title1 = u"READY";
     content::TitleWatcher title_watcher1(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title1);
     ui_test_utils::NavigateToURL(browser(),
@@ -138,7 +138,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/service_worker.js"), options,
-      base::BindOnce(&ExpectResultAndRun<bool>, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
+                     blink::ServiceWorkerStatusCode::kOk,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 
   // Leave the Service Worker registered, and make sure that the browser can
@@ -164,7 +166,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/service_worker.js"), options,
-      base::BindOnce(&ExpectResultAndRun<bool>, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
+                     blink::ServiceWorkerStatusCode::kOk,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 
   ui_test_utils::NavigateToURL(incognito,
@@ -190,7 +194,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/service_worker.js"), options,
-      base::BindOnce(&ExpectResultAndRun<bool>, false, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
+                     blink::ServiceWorkerStatusCode::kErrorDisallowed,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -213,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                  CONTENT_SETTING_BLOCK);
 
-  const base::string16 expected_title2 = base::ASCIIToUTF16("Done");
+  const std::u16string expected_title2 = u"Done";
   content::TitleWatcher title_watcher2(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title2);
   ui_test_utils::NavigateToURL(
@@ -232,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
                        StartServiceWorkerAndDispatchMessage) {
   base::RunLoop run_loop;
   blink::TransferableMessage msg;
-  const base::string16 message_data = base::UTF8ToUTF16("testMessage");
+  const std::u16string message_data = u"testMessage";
 
   WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
   WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);
@@ -275,9 +281,11 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
 
   std::string RequestString(const std::string& url,
                             const std::string& mode,
-                            const std::string& credentials) const {
-    return base::StringPrintf("url:%s, mode:%s, credentials:%s\n", url.c_str(),
-                              mode.c_str(), credentials.c_str());
+                            const std::string& credentials,
+                            const std::string& destination) const {
+    return base::StringPrintf(
+        "url:%s, mode:%s, credentials:%s, destination:%s\n", url.c_str(),
+        mode.c_str(), credentials.c_str(), destination.c_str());
   }
 
   std::string GetURL(const std::string& relative_url) const {
@@ -286,32 +294,34 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
 
  private:
   void WriteServiceWorkerFetchTestFiles() {
-    WriteFile(FILE_PATH_LITERAL("sw.js"),
-              "this.onactivate = function(event) {"
-              "  event.waitUntil(self.clients.claim());"
-              "};"
-              "this.onfetch = function(event) {"
-              // Ignore the default favicon request. The default favicon request
-              // is sent after the page loading is finished, and we can't
-              // control the timing of the request. If the request is sent after
-              // clients.claim() is called, fetch event for the default favicon
-              // request is triggered and the tests become flaky. See
-              // https://crbug.com/912543.
-              "  if (event.request.url.endsWith('/favicon.ico')) {"
-              "    return;"
-              "  }"
-              "  event.respondWith("
-              "      self.clients.matchAll().then(function(clients) {"
-              "          clients.forEach(function(client) {"
-              "              client.postMessage("
-              "                'url:' + event.request.url + ', ' +"
-              "                'mode:' + event.request.mode + ', ' +"
-              "                'credentials:' + event.request.credentials"
-              "              );"
-              "            });"
-              "          return fetch(event.request);"
-              "        }));"
-              "};");
+    WriteFile(
+        FILE_PATH_LITERAL("sw.js"),
+        "this.onactivate = function(event) {"
+        "  event.waitUntil(self.clients.claim());"
+        "};"
+        "this.onfetch = function(event) {"
+        // Ignore the default favicon request. The default favicon request
+        // is sent after the page loading is finished, and we can't
+        // control the timing of the request. If the request is sent after
+        // clients.claim() is called, fetch event for the default favicon
+        // request is triggered and the tests become flaky. See
+        // https://crbug.com/912543.
+        "  if (event.request.url.endsWith('/favicon.ico')) {"
+        "    return;"
+        "  }"
+        "  event.respondWith("
+        "      self.clients.matchAll().then(function(clients) {"
+        "          clients.forEach(function(client) {"
+        "              client.postMessage("
+        "                'url:' + event.request.url + ', ' +"
+        "                'mode:' + event.request.mode + ', ' +"
+        "                'credentials:' + event.request.credentials + ', ' +"
+        "                'destination:' + event.request.destination"
+        "              );"
+        "            });"
+        "          return fetch(event.request);"
+        "        }));"
+        "};");
     WriteFile(FILE_PATH_LITERAL("test.html"),
               "<script>"
               "navigator.serviceWorker.register('./sw.js', {scope: './'})"
@@ -346,7 +356,7 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
 
   void InitializeServiceWorkerFetchTestPage() {
     // The message "READY" will be sent when the service worker is activated.
-    const base::string16 expected_title = base::ASCIIToUTF16("READY");
+    const std::u16string expected_title = u"READY";
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
     ui_test_utils::NavigateToURL(browser(),
@@ -481,15 +491,16 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, ManifestSameOrigin) {
   // <link rel="manifest" href="manifest.json">
-  EXPECT_EQ(RequestString(GetURL("/manifest.json"), "cors", "omit"),
+  EXPECT_EQ(RequestString(GetURL("/manifest.json"), "cors", "omit", "manifest"),
             ExecuteManifestFetchTest("manifest.json", ""));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest,
                        ManifestSameOriginUseCredentials) {
   // <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
-  EXPECT_EQ(RequestString(GetURL("/manifest.json"), "cors", "include"),
-            ExecuteManifestFetchTest("manifest.json", "use-credentials"));
+  EXPECT_EQ(
+      RequestString(GetURL("/manifest.json"), "cors", "include", "manifest"),
+      ExecuteManifestFetchTest("manifest.json", "use-credentials"));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, ManifestOtherOrigin) {
@@ -497,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, ManifestOtherOrigin) {
   const std::string url = embedded_test_server()
                               ->GetURL("www.example.com", "/manifest.json")
                               .spec();
-  EXPECT_EQ(RequestString(url, "cors", "omit"),
+  EXPECT_EQ(RequestString(url, "cors", "omit", "manifest"),
             ExecuteManifestFetchTest(url, ""));
 }
 
@@ -508,14 +519,14 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest,
   const std::string url = embedded_test_server()
                               ->GetURL("www.example.com", "/manifest.json")
                               .spec();
-  EXPECT_EQ(RequestString(url, "cors", "include"),
+  EXPECT_EQ(RequestString(url, "cors", "include", "manifest"),
             ExecuteManifestFetchTest(url, "use-credentials"));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, FaviconSameOrigin) {
   // <link rel="favicon" href="fav.png">
   CopyTestFile("favicon/icon.png", "fav.png");
-  EXPECT_EQ(RequestString(GetURL("/fav.png"), "no-cors", "include"),
+  EXPECT_EQ(RequestString(GetURL("/fav.png"), "no-cors", "include", "image"),
             ExecuteFaviconFetchTest("/fav.png"));
 }
 
@@ -558,7 +569,7 @@ class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
   }
 
   std::string GetNavigationRequestString(const std::string& fragment) const {
-    return RequestString(test_page_url_ + fragment, "navigate", "include");
+    return RequestString(test_page_url_ + fragment, "navigate", "include", "");
   }
 
   std::string ExecutePNACLUrlLoaderTest(const std::string& mode) {
@@ -674,7 +685,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/sw.js"), options,
-      base::BindOnce(&ExpectResultAndRun<bool>, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
+                     blink::ServiceWorkerStatusCode::kOk,
+                     run_loop.QuitClosure()));
   run_loop.Run();
   RunNavigationHintTest("/scope/",
                         content::StartServiceWorkerForNavigationHintResult::
@@ -695,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest, NoFetchHandler) {
       false);
 }
 
-// Copied from devtools_sanity_browsertest.cc.
+// Copied from devtools_browsertest.cc.
 class StaticURLDataSource : public content::URLDataSource {
  public:
   StaticURLDataSource(const std::string& source, const std::string& content)
@@ -722,7 +735,7 @@ class StaticURLDataSource : public content::URLDataSource {
   DISALLOW_COPY_AND_ASSIGN(StaticURLDataSource);
 };
 
-// Copied from devtools_sanity_browsertest.cc.
+// Copied from devtools_browsertest.cc.
 class MockWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:
@@ -757,14 +770,16 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, DisallowChromeScheme) {
 
   // Try to register the service worker.
   base::RunLoop run_loop;
-  bool result = true;
+  blink::ServiceWorkerStatusCode result = blink::ServiceWorkerStatusCode::kOk;
   blink::mojom::ServiceWorkerRegistrationOptions options(
       kScope, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       kScript, options,
       base::BindOnce(
-          [](base::OnceClosure quit_closure, bool* out_result, bool result) {
+          [](base::OnceClosure quit_closure,
+             blink::ServiceWorkerStatusCode* out_result,
+             blink::ServiceWorkerStatusCode result) {
             *out_result = result;
             std::move(quit_closure).Run();
           },
@@ -786,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, DisallowChromeScheme) {
   // It's difficult to change all these, so the test author hasn't actually
   // changed Chrome in a way that makes this test fail, to prove that the test
   // would be effective at catching a regression.
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, blink::ServiceWorkerStatusCode::kErrorInvalidArguments);
 }
 
 enum class ServicifiedFeatures { kNone, kServiceWorker, kNetwork };

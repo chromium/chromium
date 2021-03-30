@@ -43,4 +43,9 @@ public class TabWindowManagerSingleton {
         assert sInstance == null;
         sSelectorFactoryForTesting = factory;
     }
+
+    @VisibleForTesting
+    public static void resetTabModelSelectorFactoryForTesting() {
+        sInstance = null;
+    }
 }

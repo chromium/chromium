@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MediaStream Insertable Streams - Video</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+  <p class="instructions">When prompted, use the accept button to give permission to use your audio and video devices.</p>
+  <h1 class="instructions">Description</h1>
+  <p class="instructions">This test checks that generating video MediaStreamTracks works as expected.</p>
+  <script>
+
+    const pixelColour = [50, 100, 150, 255];
+    function makeVideoFrame(timestamp) {
+      const height = 240;
+      const width = 320;
+      const canvas = new OffscreenCanvas(width, height);
+
+      const ctx = canvas.getContext('2d', { alpha: false });
+      ctx.fillStyle = `rgba(${pixelColour[0]}, ${pixelColour[1]}, ${pixelColour[2]}, ${pixelColour[3]})`;
+      ctx.fillRect(0, 0, width, height);
+
+      return new VideoFrame(canvas.transferToImageBitmap(), { timestamp });
+    }
+
+    async function getVideoFrame() {
+      const stream = await navigator.mediaDevices.getUserMedia({video: true});
+      const input_track = stream.getTracks()[0];
+      const processor = new MediaStreamTrackProcessor(input_track);
+      const reader = processor.readable.getReader();
+      const result = await reader.read();
+      input_track.stop();
+      return result.value;
+    }
+
+    function assertPixel(t, bytes, expected) {
+      for (let i = 0; i < bytes.length; i++) {
+        t.step(() => {
+          assert_less_than(bytes[i], expected[i] + 2, "Mismatched pixel");
+          assert_greater_than(bytes[i], expected[i] - 2, "Mismatched pixel");
+        });
+      }
+    }
+
+    promise_test(async t => {
+      const videoFrame = await getVideoFrame();
+      const originalWidth = videoFrame.displayWidth;
+      const originalHeight = videoFrame.displayHeight;
+      const originalTimestamp = videoFrame.timestamp;
+      const generator = new MediaStreamTrackGenerator({kind: 'video'});
+      t.add_cleanup(() => generator.stop());
+
+      // Use a MediaStreamTrackProcessor as a sink for |generator| to verify
+      // that |processor| actually forwards the frames written to its writable
+      // field.
+      const processor = new MediaStreamTrackProcessor(generator);
+      const reader = processor.readable.getReader();
+      const readerPromise = new Promise(async resolve => {
+        const result = await reader.read();
+        assert_equals(result.value.displayWidth, originalWidth);
+        assert_equals(result.value.displayHeight, originalHeight);
+        assert_equals(result.value.timestamp, originalTimestamp);
+        resolve();
+      });
+
+      generator.writable.getWriter().write(videoFrame);
+
+      return readerPromise;
+    }, 'Tests that MediaStreamTrackGenerator forwards frames to sink');
+
+    promise_test(async t => {
+      const videoFrame = makeVideoFrame(1);
+      const originalWidth = videoFrame.displayWidth;
+      const originalHeight = videoFrame.displayHeight;
+      const originalTimestamp = videoFrame.timestamp;
+      const generator = new MediaStreamTrackGenerator({kind: 'video'});
+      t.add_cleanup(() => generator.stop());
+
+      const video = document.createElement("video");
+      video.autoplay = true;
+      video.width = 320;
+      video.height = 240;
+      video.srcObject = new MediaStream([generator]);
+      video.play();
+
+      // Allow async setup of the track generator and stream.
+      await new Promise(r => t.step_timeout(r, 1));
+
+      await generator.writable.getWriter().write(videoFrame);
+
+      await t.step_wait(() => video.currentTime > 0, "video has played");
+
+
+      const canvas = document.createElement("canvas");
+      canvas.width = originalWidth;
+      canvas.height = originalHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0);
+      // Pick a pixel in the centre of the video and check that it has the colour of the frame provided.
+      const pixel = context.getImageData(videoFrame.displayWidth/2, videoFrame.displayHeight/2, 1, 1);
+      assertPixel(t, pixel.data, pixelColour);
+    }, 'Tests that frames are actually rendered correctly in a stream used for a video element.');
+
+
+    promise_test(async t => {
+      const generator = new MediaStreamTrackGenerator("video");
+      t.add_cleanup(() => generator.stop());
+
+      const writer = generator.writable.getWriter();
+      const frame = makeVideoFrame(1);
+      await writer.write(frame);
+
+      assert_equals(generator.kind, "video");
+      assert_equals(generator.readyState, "live");
+    }, "Tests that creating a Video MediaStreamTrackGenerator works as expected");
+
+    promise_test(async t => {
+      const generator = new MediaStreamTrackGenerator("video");
+      t.add_cleanup(() => generator.stop());
+
+      const writer = generator.writable.getWriter();
+      const frame = makeVideoFrame(1);
+      await writer.write(frame);
+
+      assert_throws_dom("InvalidStateError", () => frame.clone(), "VideoFrame wasn't destroyed on write.");
+    }, "Tests that VideoFrames are destroyed on write.");
+
+    promise_test(async t => {
+      const capturedStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      assert_equals(capturedStream.getVideoTracks().length, 1);
+      const upstreamTrack = capturedStream.getVideoTracks()[0];
+      t.add_cleanup(() => upstreamTrack.stop());
+
+      const generator = new MediaStreamTrackGenerator({ signalTarget: upstreamTrack, kind: "video" });
+      t.add_cleanup(() => generator.stop());
+
+      const writer = generator.writable.getWriter();
+      const frame = makeVideoFrame(1);
+      await writer.write(frame);
+
+      assert_equals(generator.kind, "video");
+      assert_equals(generator.readyState, "live");
+    }, "Tests that creating a Video MediaStreamTrackGenerator with a signal target works as expected");
+
+
+    promise_test(async t => {
+      const generator = new MediaStreamTrackGenerator("audio");
+      t.add_cleanup(() => generator.stop());
+
+      const writer = generator.writable.getWriter();
+      const frame = makeVideoFrame(1);
+      assert_throws_js(TypeError, writer.write(frame));
+    }, "Mismatched frame and generator kind throws on write.");
+  </script>
+</body>
+</html>

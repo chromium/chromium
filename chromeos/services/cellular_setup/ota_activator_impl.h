@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/timer/timer.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/services/cellular_setup/ota_activator.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
@@ -73,6 +74,12 @@ class OtaActivatorImpl : public OtaActivator,
   ~OtaActivatorImpl() override;
 
  private:
+  // Delay for first connection retry attempt. Delay doubles for every
+  // subsequent attempt.
+  static const base::TimeDelta kConnectRetryDelay;
+  // Maximum number of connection retry attempts.
+  static const size_t kMaxConnectRetryAttempt;
+
   friend class CellularSetupOtaActivatorImplTest;
 
   enum class State {
@@ -119,6 +126,9 @@ class OtaActivatorImpl : public OtaActivator,
   void OnCompleteActivationError(
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
+  void OnNetworkConnectionError(
+      const std::string& error_name,
+      std::unique_ptr<base::DictionaryValue> error_data);
 
   void FlushForTesting();
 
@@ -129,8 +139,11 @@ class OtaActivatorImpl : public OtaActivator,
 
   State state_ = State::kNotYetStarted;
   base::Optional<mojom::CarrierPortalStatus> last_carrier_portal_status_;
+  std::string iccid_;
   bool has_sent_metadata_ = false;
   bool has_called_complete_activation_ = false;
+  base::OneShotTimer connect_retry_timer_;
+  size_t connect_retry_attempts_ = 0;
 
   base::WeakPtrFactory<OtaActivatorImpl> weak_ptr_factory_{this};
 

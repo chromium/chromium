@@ -24,8 +24,8 @@ TEST(WebAppInstallationUtils, SetWebAppManifestFields_Summary) {
   WebApplicationInfo web_app_info;
   web_app_info.start_url = GURL("https://www.chromium.org/index.html");
   web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
-  web_app_info.title = base::ASCIIToUTF16("App Name");
-  web_app_info.description = base::ASCIIToUTF16("App Description");
+  web_app_info.title = u"App Name";
+  web_app_info.description = u"App Description";
   web_app_info.theme_color = SK_ColorCYAN;
   web_app_info.background_color = SK_ColorMAGENTA;
 
@@ -52,7 +52,7 @@ TEST(WebAppInstallationUtils, SetWebAppManifestFields_ShareTarget) {
   WebApplicationInfo web_app_info;
   web_app_info.start_url = GURL("https://www.chromium.org/index.html");
   web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
-  web_app_info.title = base::ASCIIToUTF16("App Name");
+  web_app_info.title = u"App Name";
 
   const AppId app_id = GenerateAppIdFromURL(web_app_info.start_url);
   auto web_app = std::make_unique<WebApp>(app_id);

@@ -20,7 +20,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/web_contents_tester.h"
@@ -45,7 +45,7 @@ bool HasIcon(const ContentSettingImageModel& model) {
 void ExpectImageModelState(const ContentSettingImageModel& model,
                            bool is_visible,
                            bool has_icon,
-                           const base::string16& tooltip,
+                           const std::u16string& tooltip,
                            int explanatory_string_id,
                            const gfx::VectorIcon* icon_badge) {
   EXPECT_EQ(model.is_visible(), is_visible);
@@ -82,9 +82,6 @@ class ContentSettingMediaImageModelTest
 TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
   if (!base::mac::IsAtLeastOS10_14())
     return;
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMacSystemMediaPermissionsInfoUi);
 
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),

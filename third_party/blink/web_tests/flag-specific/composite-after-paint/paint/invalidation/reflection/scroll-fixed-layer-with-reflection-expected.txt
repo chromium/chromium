@@ -10,7 +10,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='moveMe' class='fixed clipped'",
       "bounds": [100, 100],
-      "backgroundColor": "#FF0000",
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 100, 100]
       ],

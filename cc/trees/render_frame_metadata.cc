@@ -29,6 +29,7 @@ bool RenderFrameMetadata::operator==(const RenderFrameMetadata& other) const {
          is_scroll_offset_at_top == other.is_scroll_offset_at_top &&
          selection == other.selection &&
          is_mobile_optimized == other.is_mobile_optimized &&
+         delegated_ink_metadata == other.delegated_ink_metadata &&
          device_scale_factor == other.device_scale_factor &&
          viewport_size_in_pixels == other.viewport_size_in_pixels &&
          page_scale_factor == other.page_scale_factor &&

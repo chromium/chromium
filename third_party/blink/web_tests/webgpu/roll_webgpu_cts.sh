@@ -41,7 +41,7 @@ roll_cts_to() {
   popd > /dev/null
 
   perl -pi -e "s:gpuweb/cts.git' \+ '\@' \+ '[0-9a-f]{40}',$:gpuweb/cts.git' + '\@' + '${hash}',:" DEPS
-  gclient sync
+  gclient sync --nohooks
 
 
   pushd third_party/webgpu-cts/src > /dev/null
@@ -50,6 +50,9 @@ roll_cts_to() {
     npm run wpt  # build third_party/webgpu-cts/src/out-wpt/
 
   popd > /dev/null
+
+  third_party/webgpu-cts/scripts/gen_ts_dep_lists.py
+  git add third_party/webgpu-cts/ts_sources.txt
 }
 
 roll_cts_to origin/main

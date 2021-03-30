@@ -739,7 +739,7 @@ TEST_F(LayoutObjectTest, VisualRect) {
   };
 
   MockLayoutObject mock_object;
-  auto style = ComputedStyle::Create();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   mock_object.SetStyle(style.get());
   EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
   EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
@@ -1413,7 +1413,8 @@ TEST_F(LayoutObjectTest, LocalToAncestorRectFastPath) {
   PhysicalRect result;
 
   EXPECT_TRUE(target->LocalToAncestorRectFastPath(
-      rect, nullptr, kUseGeometryMapperMode, result));
+      rect, nullptr, kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor,
+      result));
   EXPECT_EQ(PhysicalRect(50, 25, 10, 10), result);
   // Compare with non-fast path.
   EXPECT_EQ(PhysicalRect(50, 25, 10, 10),
@@ -1430,6 +1431,8 @@ TEST_F(LayoutObjectTest, LocalToAncestorRectFastPath) {
   EXPECT_FALSE(target->LocalToAncestorRectFastPath(
       rect, nullptr, kIgnoreScrollOffset, result));
   EXPECT_FALSE(target->LocalToAncestorRectFastPath(
+      rect, nullptr, kIgnoreScrollOffsetOfAncestor, result));
+  EXPECT_FALSE(target->LocalToAncestorRectFastPath(
       rect, nullptr, kApplyRemoteMainFrameTransform, result));
 
   EXPECT_EQ(PhysicalRect(50, 25, 10, 10),
@@ -1439,22 +1442,150 @@ TEST_F(LayoutObjectTest, LocalToAncestorRectFastPath) {
   LayoutObject* ancestor2 = GetLayoutObjectByElementId("ancestor2");
   PhysicalRect result2;
 
-  EXPECT_TRUE(target2->LocalToAncestorRectFastPath(
-      rect, To<LayoutBoxModelObject>(ancestor2), kUseGeometryMapperMode,
-      result2));
-  EXPECT_EQ(PhysicalRect(75, 15, 10, 10), result2);
+  EXPECT_FALSE(target2->LocalToAncestorRectFastPath(
+      rect, To<LayoutBoxModelObject>(ancestor2),
+      kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor, result2));
 
   EXPECT_EQ(
       PhysicalRect(75, 15, 10, 10),
       target2->LocalToAncestorRect(rect, To<LayoutBoxModelObject>(ancestor2)));
   // Compare with non-fast path.
   EXPECT_TRUE(target2->LocalToAncestorRectFastPath(
-      rect, nullptr, kUseGeometryMapperMode, result2));
+      rect, nullptr, kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor,
+      result2));
   // 25 instead of 15, because #target is 10px high.
   EXPECT_EQ(PhysicalRect(75, 25, 10, 10), result2);
 
   EXPECT_EQ(PhysicalRect(75, 25, 10, 10),
             target2->LocalToAncestorRect(rect, nullptr));
+}
+
+TEST_F(LayoutObjectTest, LocalToAncestoRectIgnoreAncestorScroll) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div id=ancestor style="overflow:scroll; width: 100px; height: 100px">
+      <div style="height: 2000px"></div>
+      <div id="target" style="width: 100px; height: 100px"></div>
+    </div>
+    )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  LayoutBoxModelObject* ancestor =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("ancestor"));
+  ancestor->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
+                                          mojom::blink::ScrollType::kUser);
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect rect(0, 0, 100, 100);
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor,
+                                        kIgnoreScrollOffsetOfAncestor));
+
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor, kIgnoreScrollOffset));
+
+  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor, 0));
+}
+
+TEST_F(LayoutObjectTest, LocalToAncestoRectViewIgnoreAncestorScroll) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div style="height: 2000px"></div>
+    <div id="target" style="width: 100px; height: 100px"></div>
+    )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect rect(0, 0, 100, 100);
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr,
+                                        kIgnoreScrollOffsetOfAncestor));
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(
+                rect, nullptr,
+                kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor));
+
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr, kIgnoreScrollOffset));
+
+  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr, 0));
+}
+
+TEST_F(LayoutObjectTest,
+       LocalToAncestoRectIgnoreAncestorScrollIntermediateScroller) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div id=ancestor style="overflow:scroll; width: 100px; height: 100px">
+      <div id=intermediate style="overflow:scroll; width: 100px; height: 100px">
+        <div style="height: 2000px"></div>
+        <div id="target" style="width: 100px; height: 100px"></div>
+      </div>
+      <div style="height: 2000px"></div>
+    </div>
+    )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  LayoutBoxModelObject* ancestor =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("ancestor"));
+  LayoutBoxModelObject* intermediate =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("intermediate"));
+  ancestor->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
+                                          mojom::blink::ScrollType::kUser);
+  intermediate->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
+                                              mojom::blink::ScrollType::kUser);
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect rect(0, 0, 100, 100);
+  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor,
+                                        kIgnoreScrollOffsetOfAncestor));
+
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor, kIgnoreScrollOffset));
+
+  EXPECT_EQ(PhysicalRect(0, 1800, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor, 0));
+}
+
+TEST_F(LayoutObjectTest,
+       LocalToAncestoRectViewIgnoreAncestorScrollIntermediateScroller) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div id=intermediate style="overflow:scroll; width: 100px; height: 100px">
+      <div style="height: 2000px"></div>
+      <div id="target" style="width: 100px; height: 100px"></div>
+    </div>
+    <div style="height: 2000px"></div>
+    )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  LayoutBoxModelObject* intermediate =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("intermediate"));
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+  intermediate->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
+                                              mojom::blink::ScrollType::kUser);
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect rect(0, 0, 100, 100);
+  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr,
+                                        kIgnoreScrollOffsetOfAncestor));
+  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
+            target->LocalToAncestorRect(
+                rect, nullptr,
+                kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor));
+
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr, kIgnoreScrollOffset));
+
+  EXPECT_EQ(PhysicalRect(0, 1800, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr, 0));
 }
 
 }  // namespace blink

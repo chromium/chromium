@@ -42,8 +42,8 @@ class ArcVolumeMounterBridge
                                              base::OnceClosure callback) = 0;
 
     // To be called by ArcVolumeMounter when a removable media is unmounted.
-    // This removees the watcher for the removable media..
-    virtual void StopWatchingRemovableMedia(const std::string& fs_uuid) = 0;
+    // This removes the watcher for the removable media..
+    virtual void StopWatchingRemovableMedia(const std::string& mount_path) = 0;
 
    protected:
     ~Delegate() = default;

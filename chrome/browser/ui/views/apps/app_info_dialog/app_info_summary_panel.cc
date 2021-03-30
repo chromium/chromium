@@ -47,7 +47,7 @@ class LaunchOptionsComboboxModel : public ui::ComboboxModel {
 
   // Overridden from ui::ComboboxModel:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) const override;
+  std::u16string GetItemAt(int index) const override;
 
  private:
   // A list of the launch types available in the combobox, in order.
@@ -55,7 +55,7 @@ class LaunchOptionsComboboxModel : public ui::ComboboxModel {
 
   // A list of the messages to display in the combobox, in order. The indexes in
   // this list correspond to the indexes in launch_types_.
-  std::vector<base::string16> launch_type_messages_;
+  std::vector<std::u16string> launch_type_messages_;
 };
 
 LaunchOptionsComboboxModel::LaunchOptionsComboboxModel() {
@@ -93,7 +93,7 @@ int LaunchOptionsComboboxModel::GetItemCount() const {
   return launch_types_.size();
 }
 
-base::string16 LaunchOptionsComboboxModel::GetItemAt(int index) const {
+std::u16string LaunchOptionsComboboxModel::GetItemAt(int index) const {
   return launch_type_messages_[index];
 }
 
@@ -124,10 +124,10 @@ void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
 
   if (!app_->description().empty()) {
     constexpr size_t kMaxLength = 400;
-    base::string16 text = base::UTF8ToUTF16(app_->description());
+    std::u16string text = base::UTF8ToUTF16(app_->description());
     if (text.length() > kMaxLength) {
       text = text.substr(0, kMaxLength - 5);
-      text += base::ASCIIToUTF16(" ... ");
+      text += u" ... ";
     }
 
     auto description_label = std::make_unique<AppInfoLabel>(text);
@@ -157,7 +157,7 @@ void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
 
 void AppInfoSummaryPanel::AddDetailsControl(views::View* vertical_stack) {
   // Component apps have no details.
-  if (app_->location() == extensions::Manifest::COMPONENT)
+  if (app_->location() == extensions::mojom::ManifestLocation::kComponent)
     return;
 
   std::unique_ptr<views::View> details_list =
@@ -241,7 +241,7 @@ void AppInfoSummaryPanel::StartCalculatingAppSize() {
   }
 }
 
-void AppInfoSummaryPanel::OnAppSizeCalculated(const base::string16& size) {
+void AppInfoSummaryPanel::OnAppSizeCalculated(const std::u16string& size) {
   size_value_->SetText(size);
 }
 

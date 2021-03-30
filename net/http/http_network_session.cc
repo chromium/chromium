@@ -91,11 +91,12 @@ HttpNetworkSession::Params::Params()
       http2_end_stream_with_data_frame(false),
       time_func(&base::TimeTicks::Now),
       enable_http2_alternative_service(false),
-      enable_websocket_over_http2(false),
+      enable_websocket_over_http2(true),
       enable_quic(true),
       enable_quic_proxies_for_https_urls(false),
       disable_idle_sockets_close_on_memory_pressure(false),
-      key_auth_cache_server_entries_by_network_isolation_key(false) {
+      key_auth_cache_server_entries_by_network_isolation_key(false),
+      enable_priority_update(false) {
   enable_early_data =
       base::FeatureList::IsEnabled(features::kEnableTLS13EarlyData);
 }
@@ -183,6 +184,7 @@ HttpNetworkSession::HttpNetworkSession(const Params& params,
                          AddDefaultHttp2Settings(params.http2_settings),
                          params.greased_http2_frame,
                          params.http2_end_stream_with_data_frame,
+                         params.enable_priority_update,
                          params.time_func,
                          context.network_quality_estimator),
       http_stream_factory_(std::make_unique<HttpStreamFactory>(this)),

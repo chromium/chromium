@@ -8,23 +8,36 @@ module chromeos.network_config.mojom;
 
 // Connection state of visible networks.
 enum ConnectionStateType {
+  // The network is connected and internet connectivity is available.
   kOnline,
+  // The network is connected and not in a detected portal state, but
+  // internet connectivity may not be available.
   kConnected,
+  // The network is connected but a portal state was detected. Internet
+  // connectivity may be limited. Additional details are in PortalState.
   kPortal,
+  // The network is in the process of connecting.
   kConnecting,
+  // The network is not connected.
   kNotConnected,
 };
 
 // Device / Technology state for devices.
 enum DeviceStateType {
+  // The device is available but not yet initialized and can not be enabled.
   kUninitialized,
+  // The device is initialized but disabled.
   kDisabled,
+  // The device is in the process of disabling. Enable calls may fail until
+  // disabling has completed.
   kDisabling,
+  // The device is in the process of enabling. Disable calls may fail until
+  // enabling has completed.
   kEnabling,
+  // The device is enabled. Networks can be configured and connected.
   kEnabled,
+  // The device is disabled and enabling the device is prohibited by policy.
   kProhibited,
-  // Cellular devices may have Inhibited set, preventing active scans.
-  kInhibited,
   // Not used in DeviceStateProperties, but useful when querying by type.
   kUnavailable,
 };

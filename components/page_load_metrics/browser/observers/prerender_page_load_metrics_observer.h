@@ -35,6 +35,7 @@ class PrerenderPageLoadMetricsObserver
 
   bool did_fcp_ = false;
   bool did_local_storage_ = false;
+  bool did_session_storage_ = false;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRERENDER_PAGE_LOAD_METRICS_OBSERVER_H_

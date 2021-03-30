@@ -4,7 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests synchronizing the search input field to the editor selection.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../sources/debugger/resources/edit-me.js');
 
@@ -22,7 +23,8 @@
     TestRunner.addResult('Search controller: \'' + panel.searchableView()._searchInputElement.value + '\'');
     var action = new Sources.SearchSourcesView.ActionDelegate();
     await action._showSearch();
-    var searchView = /** @type {!Search.SearchView} */ (self.runtime.sharedInstance(Sources.SearchSourcesView));
+    var searchView = /** @type {!Search.SearchView} */ (
+        Sources.SearchSourcesView.instance());
     TestRunner.addResult('Advanced search controller: \'' + searchView._search.value + '\'');
     TestRunner.completeTest();
   }

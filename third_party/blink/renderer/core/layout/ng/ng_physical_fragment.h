@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -175,6 +176,7 @@ class CORE_EXPORT NGPhysicalFragment
            !layout_object_->IsTableCellLegacy();
   }
 
+  bool IsTextControlContainer() const;
   bool IsTextControlPlaceholder() const;
 
   // Return true if this fragment is a container established by a fieldset
@@ -446,6 +448,7 @@ class CORE_EXPORT NGPhysicalFragment
     DumpSelfPainting = 0x80,
     DumpNodeName = 0x100,
     DumpItems = 0x200,
+    DumpLegacyDescendants = 0x400,
     DumpAll = -1
   };
   typedef int DumpFlags;
@@ -454,8 +457,11 @@ class CORE_EXPORT NGPhysicalFragment
                           base::Optional<PhysicalOffset> = base::nullopt,
                           unsigned indent = 2) const;
 
+  static String DumpFragmentTree(const LayoutObject& root, DumpFlags);
+
 #if DCHECK_IS_ON()
   void ShowFragmentTree() const;
+  static void ShowFragmentTree(const LayoutObject& root);
 #endif
 
  protected:
@@ -495,6 +501,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned include_border_bottom_ : 1;
   unsigned include_border_left_ : 1;
   unsigned has_layout_overflow_ : 1;
+  unsigned ink_overflow_type_ : NGInkOverflow::kTypeBits;
   unsigned has_borders_ : 1;
   unsigned has_padding_ : 1;
   unsigned has_inflow_bounds_ : 1;

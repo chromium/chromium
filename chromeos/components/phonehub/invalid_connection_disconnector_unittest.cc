@@ -6,9 +6,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/components/phonehub/fake_connection_manager.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
+#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -25,7 +25,8 @@ class InvalidConnectionDisconnectorTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    fake_connection_manager_ = std::make_unique<FakeConnectionManager>();
+    fake_connection_manager_ =
+        std::make_unique<secure_channel::FakeConnectionManager>();
 
     auto timer = std::make_unique<base::MockOneShotTimer>();
     timer_ = timer.get();
@@ -43,12 +44,13 @@ class InvalidConnectionDisconnectorTest : public testing::Test {
   }
 
   void SetPhoneConnected() {
-    fake_connection_manager_->SetStatus(ConnectionManager::Status::kConnected);
+    fake_connection_manager_->SetStatus(
+        secure_channel::ConnectionManager::Status::kConnected);
   }
 
   void SetPhoneDisconnected() {
     fake_connection_manager_->SetStatus(
-        ConnectionManager::Status::kDisconnected);
+        secure_channel::ConnectionManager::Status::kDisconnected);
   }
 
   void ClearPhoneModel() {
@@ -62,7 +64,8 @@ class InvalidConnectionDisconnectorTest : public testing::Test {
   bool IsTimerRunning() const { return timer_->IsRunning(); }
 
  private:
-  std::unique_ptr<FakeConnectionManager> fake_connection_manager_;
+  std::unique_ptr<secure_channel::FakeConnectionManager>
+      fake_connection_manager_;
   MutablePhoneModel fake_phone_model_;
   base::MockOneShotTimer* timer_;
   std::unique_ptr<InvalidConnectionDisconnector>

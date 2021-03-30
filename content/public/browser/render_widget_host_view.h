@@ -5,10 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_VIEW_H_
 #define CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_VIEW_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -20,6 +21,10 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
+
+#if defined(OS_MAC)
+#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
+#endif
 
 namespace gfx {
 class Insets;
@@ -140,7 +145,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
 
   // Returns the currently selected text in both of editable text fields and
   // non-editable texts.
-  virtual base::string16 GetSelectedText() = 0;
+  virtual std::u16string GetSelectedText() = 0;
 
   // This only returns non-null on platforms that implement touch
   // selection editing (TSE), currently Aura and Android.
@@ -156,6 +161,9 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void SetBackgroundColor(SkColor color) = 0;
   // GetBackgroundColor returns the current background color of the view.
   virtual base::Optional<SkColor> GetBackgroundColor() = 0;
+  // Copy background color from another view if other view has background color.
+  virtual void CopyBackgroundColorIfPresentFrom(
+      const RenderWidgetHostView& other) = 0;
 
   // Return value indicates whether the mouse is locked successfully or a
   // reason why it failed.
@@ -254,6 +262,23 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // Allows to update the widget's screen rects when it is not attached to
   // a window (e.g. in headless mode).
   virtual void SetWindowFrameInScreen(const gfx::Rect& rect) = 0;
+
+  // Invoked by browser implementation of the navigator.share() to trigger the
+  // NSSharingServicePicker.
+  //
+  // |title|, |text|, |url| makes up the requested data that is passed to the
+  // picker after being converted to NSString.
+  // |file_paths| is the set of paths to files to be shared passed onto the
+  // picker after being converted to NSURL.
+  // |callback| returns the result from the NSSharingServicePicker depending
+  // upon the user's action.
+  virtual void ShowSharePicker(
+      const std::string& title,
+      const std::string& text,
+      const std::string& url,
+      const std::vector<std::string>& file_paths,
+      blink::mojom::ShareService::ShareCallback callback) = 0;
+
 #endif  // defined(OS_MAC)
 
   // Indicates that this view should show the contents of |view| if it doesn't

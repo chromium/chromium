@@ -66,10 +66,10 @@ namespace {
 // Helper function for GetAppId to generates profile id
 // from profile path. "profile_id" is composed of sanitized basenames of
 // user data dir and profile dir joined by a ".".
-base::string16 GetProfileIdFromPath(const base::FilePath& profile_path) {
+std::wstring GetProfileIdFromPath(const base::FilePath& profile_path) {
   // Return empty string if profile_path is empty
   if (profile_path.empty())
-    return base::string16();
+    return std::wstring();
 
   base::FilePath default_user_data_dir;
   // Return empty string if profile_path is in default user data
@@ -77,15 +77,15 @@ base::string16 GetProfileIdFromPath(const base::FilePath& profile_path) {
   if (chrome::GetDefaultUserDataDirectory(&default_user_data_dir) &&
       profile_path.DirName() == default_user_data_dir &&
       profile_path.BaseName().value() ==
-          base::ASCIIToUTF16(chrome::kInitialProfile)) {
-    return base::string16();
+          base::ASCIIToWide(chrome::kInitialProfile)) {
+    return std::wstring();
   }
 
   // Get joined basenames of user data dir and profile.
-  base::string16 basenames = profile_path.DirName().BaseName().value() +
-      L"." + profile_path.BaseName().value();
+  std::wstring basenames = profile_path.DirName().BaseName().value() + L"." +
+                           profile_path.BaseName().value();
 
-  base::string16 profile_id;
+  std::wstring profile_id;
   profile_id.reserve(basenames.size());
 
   // Generate profile_id from sanitized basenames.
@@ -99,14 +99,14 @@ base::string16 GetProfileIdFromPath(const base::FilePath& profile_path) {
   return profile_id;
 }
 
-base::string16 GetAppUserModelIdImpl(const base::string16& prefix,
-                                     const base::string16& app_name,
-                                     const base::FilePath& profile_path) {
-  std::vector<base::string16> components;
+std::wstring GetAppUserModelIdImpl(const std::wstring& prefix,
+                                   const std::wstring& app_name,
+                                   const base::FilePath& profile_path) {
+  std::vector<std::wstring> components;
   if (!prefix.empty())
     components.push_back(prefix);
   components.push_back(app_name);
-  const base::string16 profile_id(GetProfileIdFromPath(profile_path));
+  const std::wstring profile_id(GetProfileIdFromPath(profile_path));
   if (!profile_id.empty())
     components.push_back(profile_id);
   return ShellUtil::BuildAppUserModelId(components);
@@ -114,8 +114,8 @@ base::string16 GetAppUserModelIdImpl(const base::string16& prefix,
 
 // Gets expected app id for given Chrome (based on |command_line| and
 // |is_per_user_install|).
-base::string16 GetExpectedAppId(const base::CommandLine& command_line,
-                                bool is_per_user_install) {
+std::wstring GetExpectedAppId(const base::CommandLine& command_line,
+                              bool is_per_user_install) {
   base::FilePath user_data_dir;
   if (command_line.HasSwitch(switches::kUserDataDir))
     user_data_dir = command_line.GetSwitchValuePath(switches::kUserDataDir);
@@ -130,20 +130,19 @@ base::string16 GetExpectedAppId(const base::CommandLine& command_line,
     profile_subdir =
         command_line.GetSwitchValuePath(switches::kProfileDirectory);
   } else {
-    profile_subdir =
-        base::FilePath(base::ASCIIToUTF16(chrome::kInitialProfile));
+    profile_subdir = base::FilePath(base::ASCIIToWide(chrome::kInitialProfile));
   }
   DCHECK(!profile_subdir.empty());
 
   base::FilePath profile_path = user_data_dir.Append(profile_subdir);
-  base::string16 prefix;
-  base::string16 app_name;
+  std::wstring prefix;
+  std::wstring app_name;
   if (command_line.HasSwitch(switches::kApp)) {
-    app_name = base::UTF8ToUTF16(web_app::GenerateApplicationNameFromURL(
+    app_name = base::UTF8ToWide(web_app::GenerateApplicationNameFromURL(
         GURL(command_line.GetSwitchValueASCII(switches::kApp))));
     prefix = install_static::GetBaseAppId();
   } else if (command_line.HasSwitch(switches::kAppId)) {
-    app_name = base::UTF8ToUTF16(web_app::GenerateApplicationNameFromAppId(
+    app_name = base::UTF8ToWide(web_app::GenerateApplicationNameFromAppId(
         command_line.GetSwitchValueASCII(switches::kAppId)));
     prefix = install_static::GetBaseAppId();
   } else {
@@ -157,7 +156,7 @@ base::string16 GetExpectedAppId(const base::CommandLine& command_line,
 // Windows treats a given scheme as an Internet scheme only if its registry
 // entry has a "URL Protocol" key. Check this, otherwise we allow ProgIDs to be
 // used as custom protocols which leads to security bugs.
-bool IsValidCustomProtocol(const base::string16& scheme) {
+bool IsValidCustomProtocol(const std::wstring& scheme) {
   if (scheme.empty())
     return false;
   base::win::RegKey cmd_key(HKEY_CLASSES_ROOT, scheme.c_str(), KEY_QUERY_VALUE);
@@ -167,10 +166,10 @@ bool IsValidCustomProtocol(const base::string16& scheme) {
 // Windows 8 introduced a new protocol->executable binding system which cannot
 // be retrieved in the HKCR registry subkey method implemented below. We call
 // AssocQueryString with the new Win8-only flag ASSOCF_IS_PROTOCOL instead.
-base::string16 GetAppForProtocolUsingAssocQuery(const GURL& url) {
-  const base::string16 url_scheme = base::ASCIIToUTF16(url.scheme());
+std::u16string GetAppForProtocolUsingAssocQuery(const GURL& url) {
+  const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
   if (!IsValidCustomProtocol(url_scheme))
-    return base::string16();
+    return std::u16string();
 
   // Query AssocQueryString for a human-readable description of the program
   // that will be invoked given the provided URL spec. This is used only to
@@ -183,37 +182,37 @@ base::string16 GetAppForProtocolUsingAssocQuery(const GURL& url) {
                        url_scheme.c_str(), NULL, out_buffer, &buffer_size);
   if (FAILED(hr)) {
     DLOG(WARNING) << "AssocQueryString failed!";
-    return base::string16();
+    return std::u16string();
   }
-  return base::string16(out_buffer);
+  return base::AsString16(std::wstring(out_buffer));
 }
 
-base::string16 GetAppForProtocolUsingRegistry(const GURL& url) {
-  const base::string16 url_scheme = base::ASCIIToUTF16(url.scheme());
+std::u16string GetAppForProtocolUsingRegistry(const GURL& url) {
+  const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
   if (!IsValidCustomProtocol(url_scheme))
-    return base::string16();
+    return std::u16string();
 
   // First, try and extract the application's display name.
-  base::string16 command_to_launch;
+  std::wstring command_to_launch;
   base::win::RegKey cmd_key_name(HKEY_CLASSES_ROOT, url_scheme.c_str(),
                                  KEY_READ);
   if (cmd_key_name.ReadValue(NULL, &command_to_launch) == ERROR_SUCCESS &&
       !command_to_launch.empty()) {
-    return command_to_launch;
+    return base::AsString16(command_to_launch);
   }
 
   // Otherwise, parse the command line in the registry, and return the basename
   // of the program path if it exists.
-  const base::string16 cmd_key_path = url_scheme + L"\\shell\\open\\command";
+  const std::wstring cmd_key_path = url_scheme + L"\\shell\\open\\command";
   base::win::RegKey cmd_key_exe(HKEY_CLASSES_ROOT, cmd_key_path.c_str(),
                                 KEY_READ);
   if (cmd_key_exe.ReadValue(NULL, &command_to_launch) == ERROR_SUCCESS) {
     base::CommandLine command_line(
         base::CommandLine::FromString(command_to_launch));
-    return command_line.GetProgram().BaseName().value();
+    return command_line.GetProgram().BaseName().AsUTF16Unsafe();
   }
 
-  return base::string16();
+  return std::u16string();
 }
 
 DefaultWebClientState GetDefaultWebClientStateFromShellUtilDefaultState(
@@ -262,7 +261,7 @@ class DefaultBrowserActionRecorder : public SettingsAppMonitor::Delegate {
         base::UserMetricsAction("SettingsAppMonitor.ChooserInvoked"));
   }
 
-  void OnBrowserChosen(const base::string16& browser_name) override {
+  void OnBrowserChosen(const std::wstring& browser_name) override {
     if (browser_name == InstallUtil::GetDisplayName()) {
       base::RecordAction(
           base::UserMetricsAction("SettingsAppMonitor.ChromeBrowserChosen"));
@@ -523,8 +522,8 @@ void MigrateChromeAndChromeProxyShortcuts(
   win::MigrateShortcutsInPathInternal(chrome_proxy_path, shortcut_path);
 }
 
-base::string16 GetHttpProtocolUserChoiceProgId() {
-  base::string16 prog_id;
+std::wstring GetHttpProtocolUserChoiceProgId() {
+  std::wstring prog_id;
   base::win::RegKey key(HKEY_CURRENT_USER, ShellUtil::kRegVistaUrlPrefs,
                         KEY_QUERY_VALUE);
   if (key.Valid())
@@ -568,7 +567,7 @@ bool SetAsDefaultProtocolClient(const std::string& protocol) {
     return false;
   }
 
-  base::string16 wprotocol(base::UTF8ToUTF16(protocol));
+  std::wstring wprotocol(base::UTF8ToWide(protocol));
   if (!ShellUtil::MakeChromeDefaultProtocolClient(chrome_exe, wprotocol)) {
     LOG(ERROR) << "Chrome could not be set as default handler for "
                << protocol << ".";
@@ -593,10 +592,10 @@ bool IsElevationNeededForSettingDefaultProtocolClient() {
   return base::win::GetVersion() < base::win::Version::WIN8;
 }
 
-base::string16 GetApplicationNameForProtocol(const GURL& url) {
+std::u16string GetApplicationNameForProtocol(const GURL& url) {
   // Windows 8 or above has a new protocol association query.
   if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    base::string16 application_name = GetAppForProtocolUsingAssocQuery(url);
+    std::u16string application_name = GetAppForProtocolUsingAssocQuery(url);
     if (!application_name.empty())
       return application_name;
   }
@@ -618,8 +617,8 @@ bool IsFirefoxDefaultBrowser() {
 }
 
 std::string GetFirefoxProgIdSuffix() {
-  const base::string16 app_cmd = GetHttpProtocolUserChoiceProgId();
-  static constexpr base::StringPiece16 kFirefoxProgIdPrefix(L"FirefoxURL-");
+  const std::wstring app_cmd = GetHttpProtocolUserChoiceProgId();
+  static constexpr base::WStringPiece kFirefoxProgIdPrefix(L"FirefoxURL-");
   if (base::StartsWith(app_cmd, kFirefoxProgIdPrefix,
                        base::CompareCase::SENSITIVE)) {
     // Returns the id that appears after the prefix "FirefoxURL-".
@@ -636,7 +635,7 @@ bool IsIEDefaultBrowser() {
 DefaultWebClientState IsDefaultProtocolClient(const std::string& protocol) {
   return GetDefaultWebClientStateFromShellUtilDefaultState(
       ShellUtil::GetChromeDefaultProtocolClientState(
-          base::UTF8ToUTF16(protocol)));
+          base::UTF8ToWide(protocol)));
 }
 
 namespace win {
@@ -681,9 +680,8 @@ void SetAsDefaultBrowserUsingSystemSettings(
   // interaction.
   static const wchar_t* const kProtocols[] = {L"http", L"https", nullptr};
   OpenSystemSettingsHelper::Begin(
-      kProtocols,
-      base::BindOnce(&OnSettingsAppFinished, base::Passed(&recorder),
-                     std::move(on_finished_callback)));
+      kProtocols, base::BindOnce(&OnSettingsAppFinished, std::move(recorder),
+                                 std::move(on_finished_callback)));
 }
 
 bool SetAsDefaultProtocolClientUsingIntentPicker(const std::string& protocol) {
@@ -696,7 +694,7 @@ bool SetAsDefaultProtocolClientUsingIntentPicker(const std::string& protocol) {
     return false;
   }
 
-  base::string16 wprotocol(base::UTF8ToUTF16(protocol));
+  std::wstring wprotocol(base::UTF8ToWide(protocol));
   if (!ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(chrome_exe,
                                                               wprotocol)) {
     LOG(ERROR) << "Failed to launch the set-default-client Windows UI.";
@@ -718,22 +716,22 @@ void SetAsDefaultProtocolClientUsingSystemSettings(
   }
 
   // The helper manages its own lifetime.
-  base::string16 wprotocol(base::UTF8ToUTF16(protocol));
+  std::wstring wprotocol(base::UTF8ToWide(protocol));
   const wchar_t* const kProtocols[] = {wprotocol.c_str(), nullptr};
   OpenSystemSettingsHelper::Begin(kProtocols, std::move(on_finished_callback));
 
   ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(chrome_exe, wprotocol);
 }
 
-base::string16 GetAppUserModelIdForApp(const base::string16& app_name,
-                                       const base::FilePath& profile_path) {
+std::wstring GetAppUserModelIdForApp(const std::wstring& app_name,
+                                     const base::FilePath& profile_path) {
   return GetAppUserModelIdImpl(install_static::GetBaseAppId(), app_name,
                                profile_path);
 }
 
-base::string16 GetAppUserModelIdForBrowser(const base::FilePath& profile_path) {
+std::wstring GetAppUserModelIdForBrowser(const base::FilePath& profile_path) {
   return GetAppUserModelIdImpl(
-      base::string16(),
+      std::wstring(),
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
       profile_path);
 }
@@ -812,7 +810,7 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
 
   int shortcuts_migrated = 0;
   base::FilePath target_path;
-  base::string16 arguments;
+  std::wstring arguments;
   base::win::ScopedPropVariant propvariant;
   for (base::FilePath shortcut = shortcuts_enum.Next(); !shortcut.empty();
        shortcut = shortcuts_enum.Next()) {
@@ -828,7 +826,7 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
             L"\"%ls\" %ls", target_path.value().c_str(), arguments.c_str())));
 
     // Get the expected AppId for this Chrome shortcut.
-    base::string16 expected_app_id(
+    std::wstring expected_app_id(
         GetExpectedAppId(command_line, is_per_user_install));
     if (expected_app_id.empty())
       continue;
@@ -865,7 +863,7 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
             updated_properties.set_app_id(expected_app_id);
           break;
         case VT_LPWSTR:
-          if (expected_app_id != base::string16(propvariant.get().pwszVal))
+          if (expected_app_id != std::wstring(propvariant.get().pwszVal))
             updated_properties.set_app_id(expected_app_id);
           break;
         default:
@@ -877,7 +875,7 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
     // Clear dual_mode property from any shortcuts that previously had it (it
     // was only ever installed on shortcuts with the
     // |default_chromium_model_id|).
-    base::string16 default_chromium_model_id(
+    std::wstring default_chromium_model_id(
         ShellUtil::GetBrowserModelId(is_per_user_install));
     if (expected_app_id == default_chromium_model_id) {
       propvariant.Reset();

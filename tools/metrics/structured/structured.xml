@@ -1,5 +1,3 @@
-<!-- Structured metrics is under development and isn't available for use yet. -->
-
 <structured-metrics>
 
 <project name="Hindsight">
@@ -9,26 +7,27 @@
   <summary>
     Project for recording CrOSActions.
   </summary>
+
   <event name="CrOSActionEvent.FileOpened">
     <summary>
       Records whenever a file is opened in the File App on ChromeOS.
     </summary>
-    <metric name="Filename" kind="hashed-string">
+    <metric name="Filename" type="hmac-string">
       <summary>
         The absolute path of the file.
       </summary>
     </metric>
-    <metric name="OpenType" kind="int">
+    <metric name="OpenType" type="int">
       <summary>
-        The kind of file open, defined in FileTaskObserver::OpenType.
+        The type of file open, defined in FileTaskObserver::OpenType.
       </summary>
     </metric>
-    <metric name="SequenceId" kind="int">
+    <metric name="SequenceId" type="int">
       <summary>
         Sequence of this action across all CrOSActionEvent.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" kind="int">
+    <metric name="TimeSinceLastAction" type="int">
       <summary>
         Time in milliseconds since last CrOSActionLogging.
       </summary>
@@ -39,62 +38,66 @@
     <summary>
       Records information about the launch of an item from ChromeOS launcher.
     </summary>
-    <metric name="Query" kind="hashed-string">
+    <metric name="Query" type="hmac-string">
       <summary>
         The search query associated with this launch.
       </summary>
     </metric>
-    <metric name="ResultType" kind="int">
+    <metric name="ResultType" type="int">
       <summary>
-        Which kind of search provider the launched result was created by.
+        Which type of search provider the launched result was created by.
       </summary>
     </metric>
-    <metric name="SearchResultId" kind="hashed-string">
+    <metric name="SearchResultId" type="hmac-string">
       <summary>
         The ID of the launched result result. For example, the app ID for app
         results, or the URL for omnibox results.
       </summary>
     </metric>
-    <metric name="SequenceId" kind="int">
+    <metric name="SequenceId" type="int">
       <summary>
         Sequence of this action across all CrOSActionEvent.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" kind="int"/>
+    <metric name="TimeSinceLastAction" type="int">
+      <summary>
+        Time in milliseconds since last CrOSActionLogging.
+      </summary>
+    </metric>
   </event>
 
   <event name="CrOSActionEvent.SettingChanged">
     <summary>
       Records when a setting is changed; only records quick settings for now.
     </summary>
-    <metric name="CurrentValue" kind="int">
+    <metric name="CurrentValue" type="int">
       <summary>
         Value of the setting after the change.
       </summary>
     </metric>
-    <metric name="PreviousValue" kind="int">
+    <metric name="PreviousValue" type="int">
       <summary>
         Value of the setting before the change.
       </summary>
     </metric>
-    <metric name="SequenceId" kind="int">
+    <metric name="SequenceId" type="int">
       <summary>
         Sequence of this action across all CrOSActionEvent.
       </summary>
     </metric>
-    <metric name="SettingId" kind="int">
+    <metric name="SettingId" type="int">
       <summary>
         The setting id (in ash::ml::UserSettingsEvent::Event::SettingId) that
         represents the type of the changed setting.
       </summary>
     </metric>
-    <metric name="SettingType" kind="int">
+    <metric name="SettingType" type="int">
       <summary>
         Enum that represents where the settings event originated from (in
         ash::ml::UserSettingsEvent::Event::SettingType).
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" kind="int">
+    <metric name="TimeSinceLastAction" type="int">
       <summary>
         Time in milliseconds since last CrOSActionLogging.
       </summary>
@@ -105,27 +108,27 @@
     <summary>
       Records a tab activity of navigating to a new url.
     </summary>
-    <metric name="PageTransition" kind="int">
+    <metric name="PageTransition" type="int">
       <summary>
         The types of transition between pages. See more on ui::PageTransition.
       </summary>
     </metric>
-    <metric name="SequenceId" kind="int">
+    <metric name="SequenceId" type="int">
       <summary>
         Sequence of this action across all CrOSActionEvent.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" kind="int">
+    <metric name="TimeSinceLastAction" type="int">
       <summary>
         Time in milliseconds since last CrOSActionLogging.
       </summary>
     </metric>
-    <metric name="URL" kind="hashed-string">
+    <metric name="URL" type="hmac-string">
       <summary>
         The URL of the current event.
       </summary>
     </metric>
-    <metric name="Visibility" kind="int">
+    <metric name="Visibility" type="int">
       <summary>
         The visibility of this url, see more on content::Visibility.
       </summary>
@@ -136,27 +139,27 @@
     <summary>
       Records a tab activity of opening a new url with ctrl+click.
     </summary>
-    <metric name="SequenceId" kind="int">
+    <metric name="SequenceId" type="int">
       <summary>
         Sequence of this action across all CrOSActionEvent.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" kind="int">
+    <metric name="TimeSinceLastAction" type="int">
       <summary>
         Time in milliseconds since last CrOSActionLogging.
       </summary>
     </metric>
-    <metric name="URL" kind="hashed-string">
+    <metric name="URL" type="hmac-string">
       <summary>
         The URL of the current event.
       </summary>
     </metric>
-    <metric name="URLOpened" kind="hashed-string">
+    <metric name="URLOpened" type="hmac-string">
       <summary>
         The URL that is opened from the current url.
       </summary>
     </metric>
-    <metric name="WindowOpenDisposition" kind="int">
+    <metric name="WindowOpenDisposition" type="int">
       <summary>
         Enum that indicates where the new tab is opened, see more on
         WindowOpenDisposition.
@@ -168,23 +171,22 @@
     <summary>
       Records a tab activity of reactivating an existing tab.
     </summary>
-    <metric name="SequenceId" kind="int">
+    <metric name="SequenceId" type="int">
       <summary>
         Sequence of this action across all CrOSActionEvent.
       </summary>
     </metric>
-    <metric name="TimeSinceLastAction" kind="int">
+    <metric name="TimeSinceLastAction" type="int">
       <summary>
         Time in milliseconds since last CrOSActionLogging.
       </summary>
     </metric>
-    <metric name="URL" kind="hashed-string">
+    <metric name="URL" type="hmac-string">
       <summary>
         The URL of the current event.
       </summary>
     </metric>
   </event>
-
 </project>
 
 <project name="LauncherUsage">
@@ -193,6 +195,7 @@
   <summary>
     See event summary.
   </summary>
+
   <event name="LauncherUsage">
     <summary>
       Records information about the launch of an item (such as an app or a file)
@@ -200,48 +203,53 @@
       originating from any launcher UI component, and this is the only
       circumstance that records events.
     </summary>
-    <metric name="App" kind="hashed-string">
+    <metric name="App" type="hmac-string">
       <summary>
-        App ID of the most-recently-opened app when this launch occured. This
-        can be an app ID of a Chrome app, Arc++ app, or PWA.
+        App ID of the most-recently-opened app when this launch occured. This can be
+        an app ID of a Chrome app, Arc++ app, or PWA.
       </summary>
     </metric>
-    <metric name="Domain" kind="hashed-string">
+    <metric name="Domain" type="hmac-string">
       <summary>
         The most-recently-visited domain when this launch ocurred.
       </summary>
     </metric>
-    <metric name="Hour" kind="int">
+    <metric name="Hour" type="int">
       <summary>
         The hour of launch. This is the user's local time rounded to the nearest
         hour, 0 to 23 inclusive.
       </summary>
     </metric>
-    <metric name="ProviderType" kind="int">
+    <metric name="ProviderType" type="int">
       <summary>
-        Which kind of search provider the launched result was created by. This
-        comes from the RankingItemType enum.
+        Which type of search provider the launched result was created by. This comes
+        from the RankingItemType enum.
       </summary>
     </metric>
-    <metric name="SearchQuery" kind="hashed-string">
+    <metric name="Score" type="int">
       <summary>
-        The search query associated with this launch. Before hashing, the query
-        is the empty string if there was no search query.
+        The relevance score of the launched result. This is a double multiplied by
+        1000 and cast to an int64. Results that don't have a score report 0.
       </summary>
     </metric>
-    <metric name="SearchQueryLength" kind="int">
+    <metric name="SearchQuery" type="hmac-string">
       <summary>
-        String length of the search query associated with this launch. If there
-        was no query, this is zero.
+        The search query associated with this launch. Before hashing, the query is
+        the empty string if there was no search query.
       </summary>
     </metric>
-    <metric name="Target" kind="hashed-string">
+    <metric name="SearchQueryLength" type="int">
+      <summary>
+        String length of the search query associated with this launch. If there was
+        no query, this is zero.
+      </summary>
+    </metric>
+    <metric name="Target" type="hmac-string">
       <summary>
         The target item of this launch, eg. an app ID, filepath, or omnibox URL.
       </summary>
     </metric>
   </event>
-
 </project>
 
 <project name="TestProjectOne">
@@ -250,22 +258,22 @@
   <summary>
     Project for unit testing, do not use.
   </summary>
+
   <event name="TestEventOne">
     <summary>
       Event for unit testing, do not use.
     </summary>
-    <metric name="TestMetricOne" kind="hashed-string">
+    <metric name="TestMetricOne" type="hmac-string">
       <summary>
         A per-user keyed hashed value.
       </summary>
     </metric>
-    <metric name="TestMetricTwo" kind="int">
+    <metric name="TestMetricTwo" type="int">
       <summary>
         An unhashed value, recorded as-is.
       </summary>
     </metric>
   </event>
-
 </project>
 
 <project name="TestProjectTwo">
@@ -274,11 +282,12 @@
   <summary>
     Project for unit testing, do not use.
   </summary>
+
   <event name="TestEventThree">
     <summary>
       Event for unit testing, do not use.
     </summary>
-    <metric name="TestMetricFour" kind="hashed-string">
+    <metric name="TestMetricFour" type="hmac-string">
       <summary>
         A per-user keyed hashed value.
       </summary>
@@ -289,13 +298,12 @@
     <summary>
       Event for unit testing, do not use.
     </summary>
-    <metric name="TestMetricThree" kind="hashed-string">
+    <metric name="TestMetricThree" type="hmac-string">
       <summary>
         A per-user keyed hashed value.
       </summary>
     </metric>
   </event>
-
 </project>
 
 </structured-metrics>

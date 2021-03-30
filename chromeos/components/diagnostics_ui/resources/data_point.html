@@ -2,33 +2,43 @@
   .data-point {
     display: flex;
     flex-direction: column;
-    height: 45px;
+    height: 40px;
     justify-content: space-between;
+    margin: 12px 0;
   }
 
   .header {
     @apply --diagnostics-data-point-title-font;
-    color: var(--diagnostics-overview-text-color);
   }
 
   #infoIcon {
-    fill:  var(--google-grey-600);
-    height: 18px;
+    bottom: 1px;
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    fill: var(--google-grey-700);
     left: 4px;
-    width: 18px;
   }
 
   .value {
     @apply --diagnostics-data-point-subtitle-font;
   }
+
+  .text-red {
+    color: var(--google-red-600);
+  }
 </style>
-<div class="data-point">
+<div class="data-point" tabindex="0" aria-labelledby="headerText value"
+    aria-describedby="tooltipText">
   <div class="header">
-    <span>[[header]]</span>
-    <iron-icon slot="icon" icon="cr:info-outline" id="infoIcon"
-      hidden$="[[!tooltipText]]">
+    <span id="headerText" aria-hidden="true"> [[header]]</span>
+    <iron-icon slot="icon" icon="diagnostics:info" id="infoIcon"
+        hidden$="[[!tooltipText]]">
     </iron-icon>
-    <paper-tooltip for="infoIcon">[[tooltipText]]</paper-tooltip>
+    <paper-tooltip for="infoIcon" aria-hidden="true">
+      <span id="tooltipText">[[tooltipText]]</span>
+    </paper-tooltip>
   </div>
-  <div class="value">[[value]]</div>
+  <div class$="[[getValueClass_(warningState)]]" id="value" aria-hidden="true">
+    [[value]]
+  </div>
 </div>

@@ -99,7 +99,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
       SkYUVAInfo::Subsampling subsampling) = 0;
 
   // Called if SwapBuffers() will be skipped.
-  virtual void SwapBuffersSkipped() = 0;
+  virtual void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) = 0;
 
   // TODO(weiliangc): This API should move to OverlayProcessor.
   // Schedule |output_surface_plane| as an overlay plane to be displayed.
@@ -168,6 +168,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual void ScheduleGpuTaskForTesting(
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) = 0;
+
+  // Android specific, asks GLSurfaceEGLSurfaceControl to not detach child
+  // surface controls during destruction. This is necessary for cases when we
+  // switch from chrome to other app, the OS will take care of the cleanup.
+  virtual void PreserveChildSurfaceControls() = 0;
 
   // Flush pending GPU tasks. This method returns a sync token which can be
   // waited on in a command buffer to ensure all pending tasks are executed on

@@ -103,8 +103,9 @@ int32_t VideoEncoderResource::GetSupportedProfiles(
   get_supported_profiles_callback_ = callback;
   Call<PpapiPluginMsg_VideoEncoder_GetSupportedProfilesReply>(
       RENDERER, PpapiHostMsg_VideoEncoder_GetSupportedProfiles(),
-      base::Bind(&VideoEncoderResource::OnPluginMsgGetSupportedProfilesReply,
-                 this, output, false));
+      base::BindOnce(
+          &VideoEncoderResource::OnPluginMsgGetSupportedProfilesReply, this,
+          output, false));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -117,8 +118,9 @@ int32_t VideoEncoderResource::GetSupportedProfiles0_1(
   get_supported_profiles_callback_ = callback;
   Call<PpapiPluginMsg_VideoEncoder_GetSupportedProfilesReply>(
       RENDERER, PpapiHostMsg_VideoEncoder_GetSupportedProfiles(),
-      base::Bind(&VideoEncoderResource::OnPluginMsgGetSupportedProfilesReply,
-                 this, output, true));
+      base::BindOnce(
+          &VideoEncoderResource::OnPluginMsgGetSupportedProfilesReply, this,
+          output, true));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -149,10 +151,11 @@ int32_t VideoEncoderResource::Initialize(
 
   initialize_callback_ = callback;
   Call<PpapiPluginMsg_VideoEncoder_InitializeReply>(
-      RENDERER, PpapiHostMsg_VideoEncoder_Initialize(
-                    input_format, *input_visible_size, output_profile,
-                    initial_bitrate, acceleration),
-      base::Bind(&VideoEncoderResource::OnPluginMsgInitializeReply, this));
+      RENDERER,
+      PpapiHostMsg_VideoEncoder_Initialize(input_format, *input_visible_size,
+                                           output_profile, initial_bitrate,
+                                           acceleration),
+      base::BindOnce(&VideoEncoderResource::OnPluginMsgInitializeReply, this));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -172,8 +175,8 @@ int32_t VideoEncoderResource::GetVideoFrame(
   if (buffer_manager_.number_of_buffers() == 0) {
     Call<PpapiPluginMsg_VideoEncoder_GetVideoFramesReply>(
         RENDERER, PpapiHostMsg_VideoEncoder_GetVideoFrames(),
-        base::Bind(&VideoEncoderResource::OnPluginMsgGetVideoFramesReply,
-                   this));
+        base::BindOnce(&VideoEncoderResource::OnPluginMsgGetVideoFramesReply,
+                       this));
   } else {
     TryWriteVideoFrame();
   }
@@ -201,8 +204,8 @@ int32_t VideoEncoderResource::Encode(
       RENDERER,
       PpapiHostMsg_VideoEncoder_Encode(frame_resource->GetBufferIndex(),
                                        PP_ToBool(force_keyframe)),
-      base::Bind(&VideoEncoderResource::OnPluginMsgEncodeReply, this,
-                 video_frame));
+      base::BindOnce(&VideoEncoderResource::OnPluginMsgEncodeReply, this,
+                     video_frame));
 
   // Invalidate the frame to prevent the plugin from modifying it.
   it->second->Invalidate();

@@ -8,13 +8,14 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 
 namespace base {
 struct Feature;
 }
 
 namespace flags_ui {
+
+extern const char kMultiSeparatorChar;
 
 // Generic experiment choice option names.
 extern const char kGenericExperimentChoiceDefault[];
@@ -201,7 +202,7 @@ struct FeatureEntry {
 
   // Returns the human readable description for the option at |index|.
   // Only used for types that use |num_options|.
-  base::string16 DescriptionForOption(int index) const;
+  std::u16string DescriptionForOption(int index) const;
 
   // Returns the choice for the option at |index|. Only applicable for type
   // FEATURE_MULTI.

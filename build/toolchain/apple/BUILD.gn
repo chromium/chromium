@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/toolchain/concurrent_links.gni")
+
+declare_args() {
+  # Reduce the number of tasks using the copy_bundle_data and compile_xcassets
+  # tools as they can cause lots of I/O contention when invoking ninja with a
+  # large number of parallel jobs (e.g. when using distributed build like goma).
+  bundle_pool_depth = -1
+}
+
+if (current_toolchain == default_toolchain) {
+  pool("bundle_pool") {
+    if (bundle_pool_depth == -1) {
+      depth = concurrent_links
+    } else {
+      depth = bundle_pool_depth
+    }
+  }
+}

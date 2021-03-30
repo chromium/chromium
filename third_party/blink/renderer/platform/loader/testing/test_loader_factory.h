@@ -9,6 +9,7 @@
 #include <utility>
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
@@ -32,7 +33,8 @@ class TestLoaderFactory : public ResourceFetcher::LoaderFactory {
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner)
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override {
     WrappedResourceRequest wrapped(request);
     return url_loader_factory_->CreateURLLoader(
@@ -41,7 +43,8 @@ class TestLoaderFactory : public ResourceFetcher::LoaderFactory {
             std::move(freezable_task_runner)),
         scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
             std::move(unfreezable_task_runner)),
-        /*keep_alive_handle=*/mojo::NullRemote());
+        /*keep_alive_handle=*/mojo::NullRemote(),
+        back_forward_cache_loader_helper);
   }
 
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {

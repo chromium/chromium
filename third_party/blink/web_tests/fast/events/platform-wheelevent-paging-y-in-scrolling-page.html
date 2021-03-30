@@ -28,7 +28,7 @@
       document.body.addEventListener("mousewheel", mousewheelHandler, false);
 
       await smoothScroll(givenScrollTop, 100, 110, source, 'down', SPEED_INSTANT, false /* precise_scrolling_deltas */, true /* scroll_by_page */);
-      await waitFor( () => {
+      await waitForAnimationEndTimeBased( () => {
           return document.scrollingElement.scrollTop == window.expectedScrollTop;
       });
       assert_equals(last_event.wheelDeltaY, -Math.floor(expectedWheelDeltaY));

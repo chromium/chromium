@@ -27,15 +27,18 @@ class Size;
 namespace blink {
 
 class KURL;
+class FeatureContext;
 
 // ManifestParser handles the logic of parsing the Web Manifest from a string.
 // It implements:
 // http://w3c.github.io/manifest/#dfn-steps-for-processing-a-manifest
+// Takes a |FeatureContext| to check origin trial statuses with.
 class MODULES_EXPORT ManifestParser {
  public:
   ManifestParser(const String& data,
                  const KURL& manifest_url,
-                 const KURL& document_url);
+                 const KURL& document_url,
+                 const FeatureContext* feature_context);
   ~ManifestParser();
 
   // Parse the Manifest from a string using following:
@@ -119,12 +122,6 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null string if the parsing failed.
   String ParseDescription(const JSONObject* object);
 
-  // Parses the 'categories' field of the manifest, as defined in:
-  // https://w3c.github.io/manifest/#dfn-processing-the-categories-member
-  // Returns a vector of the parsed strings if any, or empty if the parsing
-  // failed.
-  Vector<String> ParseCategories(const JSONObject* object);
-
   // Parses the 'scope' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#scope-member. Returns the parsed KURL if
   // any, or start URL (falling back to document URL) without filename, path,
@@ -169,7 +166,7 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses the 'sizes' field of an icon, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-a-sizes-member-of-an-image
-  // Returns a vector of WebSize with the successfully parsed sizes, if any.
+  // Returns a vector of gfx::Size with the successfully parsed sizes, if any.
   // An empty vector if the field was not present or empty. "Any" is represented
   // by gfx::Size(0, 0).
   Vector<gfx::Size> ParseIconSizes(const JSONObject* icon);
@@ -387,6 +384,11 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null string if the parsing failed.
   String ParseGCMSenderID(const JSONObject* object);
 
+  // Parses the 'capture_links' field of the manifest.
+  // This specifies how navigations into the web app's scope should be captured.
+  // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md#proposal
+  mojom::blink::CaptureLinks ParseCaptureLinks(const JSONObject* object);
+
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
                     int error_line = 0,
@@ -395,6 +397,7 @@ class MODULES_EXPORT ManifestParser {
   const String data_;
   KURL manifest_url_;
   KURL document_url_;
+  const FeatureContext* feature_context_;
 
   bool failed_;
   mojom::blink::ManifestPtr manifest_;

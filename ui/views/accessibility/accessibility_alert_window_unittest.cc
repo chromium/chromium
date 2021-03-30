@@ -76,7 +76,7 @@ TEST_F(AccessibilityAlertWindowTest, OnWillDestroyEnv) {
   AccessibilityAlertWindow window(parent_.get(), &cache);
   window.OnWillDestroyEnv();
 
-  EXPECT_FALSE(window.observer_.IsObservingSources());
+  EXPECT_FALSE(window.observation_.IsObserving());
   EXPECT_FALSE(window.alert_window_);
 }
 

@@ -10,9 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
-#include "build/build_config.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync_sessions/switches.h"
@@ -65,6 +62,21 @@ bool ScanForTabbedWindow(SyncedWindowDelegatesGetter* delegates_getter) {
     }
   }
   return false;
+}
+
+sync_pb::SessionWindow_BrowserType BrowserTypeFromWindowDelegate(
+    const SyncedWindowDelegate& delegate) {
+  if (delegate.IsTypeNormal()) {
+    return sync_pb::SessionWindow_BrowserType_TYPE_TABBED;
+  }
+
+  if (delegate.IsTypePopup()) {
+    return sync_pb::SessionWindow_BrowserType_TYPE_POPUP;
+  }
+
+  // This is a custom tab within an app. These will not be restored on
+  // startup if not present.
+  return sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB;
 }
 
 }  // namespace
@@ -157,11 +169,6 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
 
   for (auto& window_iter_pair : windows) {
     const SyncedWindowDelegate* window_delegate = window_iter_pair.second;
-    if (option == RELOAD_TABS) {
-      UMA_HISTOGRAM_COUNTS_1M("Sync.SessionTabs",
-                              window_delegate->GetTabCount());
-    }
-
     // Make sure the window is viewable and is not about to be closed. The
     // viewable window check is necessary because, for example, when a browser
     // is closed the destructor is not necessarily run immediately. This means
@@ -228,18 +235,8 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
     if (found_tabs) {
       SyncedSessionWindow* synced_session_window =
           current_session->windows[window_id].get();
-      if (window_delegate->IsTypeNormal()) {
-        synced_session_window->window_type =
-            sync_pb::SessionWindow_BrowserType_TYPE_TABBED;
-      } else if (window_delegate->IsTypePopup()) {
-        synced_session_window->window_type =
-            sync_pb::SessionWindow_BrowserType_TYPE_POPUP;
-      } else {
-        // This is a custom tab within an app. These will not be restored on
-        // startup if not present.
-        synced_session_window->window_type =
-            sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB;
-      }
+      synced_session_window->window_type =
+          BrowserTypeFromWindowDelegate(*window_delegate);
     }
   }
 
@@ -416,6 +413,10 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
           sync_pb::TabNavigation_BlockedState_STATE_BLOCKED);
       // TODO(bauerb): Add categories
     }
+  }
+
+  if (window_delegate) {
+    specifics.set_browser_type(BrowserTypeFromWindowDelegate(*window_delegate));
   }
 
   return specifics;

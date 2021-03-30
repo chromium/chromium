@@ -5104,7 +5104,8 @@ if __name__ == '__main__':
   ChromeDriverBaseTestWithWebServer.GlobalSetUp()
 
   runner = unittest.TextTestRunner(
-      stream=sys.stdout, descriptions=False, verbosity=2)
+      stream=sys.stdout, descriptions=False, verbosity=2,
+      resultclass=unittest_util.AddSuccessTextTestResult)
   result = runner.run(test_suite)
   results = [result]
 
@@ -5128,4 +5129,5 @@ if __name__ == '__main__':
   if options.isolated_script_test_output:
     util.WriteResultToJSONFile(test_suites, results,
                                options.isolated_script_test_output)
+  util.TryUploadingResultToResultSink(results)
   sys.exit(len(results[-1].failures) + len(results[-1].errors))

@@ -8,6 +8,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "content/public/browser/media_session.h"
@@ -46,15 +47,20 @@ fuchsia::media::sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
       return {};  // PlayerControl assumes that stop is always supported.
     case MediaSessionAction::kSwitchAudioDevice:
       return {};  // PlayerControl does not support switching audio device.
+    case MediaSessionAction::kToggleMicrophone:
+      return {};  // PlayerControl does not support toggling microphone.
+    case MediaSessionAction::kToggleCamera:
+      return {};  // PlayerControl does not support toggling camera.
+    case MediaSessionAction::kHangUp:
+      return {};  // PlayerControl does not support hanging up.
   }
 }
 
 void AddMetadata(base::StringPiece label,
                  base::StringPiece16 value,
                  fuchsia::media::Metadata* metadata) {
-  fuchsia::media::Property property;
-  property.label = label.as_string();
-  property.value = base::UTF16ToUTF8(value);
+  fuchsia::media::Property property = {.label{label},
+                                       .value{base::UTF16ToUTF8(value)}};
   metadata->properties.emplace_back(std::move(property));
 }
 

@@ -455,7 +455,32 @@ cr.define('settings_about_page', function() {
       await checkHasEndOfLife(false);
     });
 
+    test('managed detailed build info page', async () => {
+      loadTimeData.overrideValues({
+        isManaged: true,
+      });
+
+      // Despite there being a valid end of life, the information is not
+      // shown if the user is managed.
+      aboutBrowserProxy.setEndOfLifeInfo({
+        hasEndOfLife: true,
+        aboutPageEndOfLifeMessage: 'message',
+      });
+      await initNewPage();
+      page.scroller = page.offsetParent;
+      assertTrue(!!page.$['detailed-build-info-trigger']);
+      page.$['detailed-build-info-trigger'].click();
+      const buildInfoPage = page.$$('settings-detailed-build-info');
+      assertTrue(!!buildInfoPage);
+      assertTrue(!!buildInfoPage.$['endOfLifeSectionContainer']);
+      assertTrue(buildInfoPage.$['endOfLifeSectionContainer'].hidden);
+    });
+
     test('detailed build info page', async () => {
+      loadTimeData.overrideValues({
+        isManaged: false,
+      });
+
       async function checkEndOfLifeSection() {
         await aboutBrowserProxy.whenCalled('getEndOfLifeInfo');
         const buildInfoPage = page.$$('settings-detailed-build-info');
@@ -491,6 +516,43 @@ cr.define('settings_about_page', function() {
       assertTrue(!!page.$.help);
       page.$.help.click();
       return aboutBrowserProxy.whenCalled('openOsHelpPage');
+    });
+
+    test('LaunchDiagnostics', async function() {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+        diagnosticsAppEnabled: true,
+      });
+
+      await initNewPage();
+      Polymer.dom.flush();
+
+      assertTrue(!!page.$.diagnostics);
+      page.$.diagnostics.click();
+      await aboutBrowserProxy.whenCalled('openDiagnostics');
+    });
+
+    test('Deep link to diagnostics', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+        diagnosticsAppEnabled: true,
+      });
+
+      await initNewPage();
+      Polymer.dom.flush();
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1707');  // Setting::kDiagnostics
+      settings.Router.getInstance().navigateTo(
+          settings.routes.ABOUT_ABOUT, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement = page.$$('#diagnostics').$$('cr-icon-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Diagnostics should be focused for settingId=1707.');
     });
   });
 

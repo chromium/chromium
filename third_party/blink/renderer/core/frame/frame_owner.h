@@ -73,7 +73,7 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   virtual bool AllowFullscreen() const = 0;
   virtual bool AllowPaymentRequest() const = 0;
   virtual bool IsDisplayNone() const = 0;
-  virtual mojom::ColorScheme GetColorScheme() const = 0;
+  virtual mojom::blink::ColorScheme GetColorScheme() const = 0;
   virtual AtomicString RequiredCsp() const = 0;
 
   // Returns whether or not children of the owned frame should be lazily loaded.
@@ -152,8 +152,8 @@ class CORE_EXPORT DummyFrameOwner final
   bool AllowFullscreen() const override { return false; }
   bool AllowPaymentRequest() const override { return false; }
   bool IsDisplayNone() const override { return false; }
-  mojom::ColorScheme GetColorScheme() const override {
-    return mojom::ColorScheme::kLight;
+  mojom::blink::ColorScheme GetColorScheme() const override {
+    return mojom::blink::ColorScheme::kLight;
   }
   AtomicString RequiredCsp() const override { return g_null_atom; }
   bool ShouldLazyLoadChildren() const override { return false; }

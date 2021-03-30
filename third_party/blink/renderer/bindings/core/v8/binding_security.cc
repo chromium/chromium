@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
@@ -146,7 +146,7 @@ bool CanAccessWindowInternal(
                    : WebFeature::kDocumentDomainBlockedCrossOriginAccess);
   }
   if (!can_access) {
-    // Ensure that if we got a cluster mismatch that it was due to a feature
+    // Ensure that if we got a cluster mismatch that it was due to a permissions
     // policy being enabled and not a logic bug.
     if (detail == SecurityOrigin::AccessResultDomainDetail::
                       kDomainNotRelevantAgentClusterMismatch) {

@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/icu_util.h"
-#include "base/task/post_task.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -19,6 +18,7 @@
 #include "content/browser/file_system/file_system_manager_impl.h"  // nogncheck
 #include "content/browser/storage_partition_impl_map.h"            // nogncheck
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_client_initializer.h"
@@ -187,16 +187,16 @@ void FileSystemManagerTestcase::SetUp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::RunLoop io_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {BrowserThread::IO},
+  GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&FileSystemManagerTestcase::SetUpOnIOThread,
                      base::Unretained(this)),
       io_run_loop.QuitClosure());
   io_run_loop.Run();
 
   base::RunLoop ui_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&FileSystemManagerTestcase::SetUpOnUIThread,
                      base::Unretained(this)),
       ui_run_loop.QuitClosure());
@@ -210,8 +210,7 @@ void FileSystemManagerTestcase::SetUpOnIOThread() {
 
   blob_storage_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
   blob_storage_context_->InitializeOnIOThread(
-      temp_dir_.GetPath(), temp_dir_.GetPath(),
-      base::CreateSingleThreadTaskRunner({BrowserThread::IO}));
+      temp_dir_.GetPath(), temp_dir_.GetPath(), GetIOThreadTaskRunner({}));
 }
 
 void FileSystemManagerTestcase::SetUpOnUIThread() {
@@ -236,16 +235,16 @@ void FileSystemManagerTestcase::TearDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::RunLoop ui_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&FileSystemManagerTestcase::TearDownOnUIThread,
                      base::Unretained(this)),
       ui_run_loop.QuitClosure());
   ui_run_loop.Run();
 
   base::RunLoop io_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&FileSystemManagerTestcase::TearDownOnIOThread,
                      base::Unretained(this)),
       io_run_loop.QuitClosure());
@@ -293,13 +292,13 @@ void FileSystemManagerTestcase::NextAction() {
         case Action::kRunThread:
           if (action.run_thread().id()) {
             base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            base::PostTask(FROM_HERE, {BrowserThread::UI},
-                           run_loop.QuitClosure());
+            GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                run_loop.QuitClosure());
             run_loop.Run();
           } else {
             base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            base::PostTask(FROM_HERE, {BrowserThread::IO},
-                           run_loop.QuitClosure());
+            GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                run_loop.QuitClosure());
             run_loop.Run();
           }
           break;
@@ -343,8 +342,8 @@ void FileSystemManagerTestcase::AddFileSystemManager(
   auto receiver = remote.BindNewPipeAndPassReceiver();
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&FileSystemManagerTestcase::AddFileSystemManagerImpl,
                      base::Unretained(this), id, render_process_id,
                      std::move(receiver)),

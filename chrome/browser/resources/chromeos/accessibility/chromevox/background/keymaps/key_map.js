@@ -22,6 +22,8 @@
 
 goog.provide('KeyMap');
 
+goog.require('KeyCode');
+
 // TODO(dtseng): Only needed for sticky mode.
 goog.require('KeyUtil');
 
@@ -68,30 +70,11 @@ KeyMap = class {
 
   /**
    * Returns a collection of command, KeySequence bindings.
-   * @return {Array<Object<KeySequence>>} Array of all command, key bindings.
-   * @suppress {checkTypes} inconsistent return type
-   * found   : (Array<(Object<{command: string,
-   *                             sequence: (KeySequence|null)}>|null)>|null)
-   * required: (Array<(Object<(KeySequence|null)>|null)>|null)
+   * @return {Array<Object<{command: string, sequence: KeySequence}>>} Array of
+   *     all command, key bindings.
    */
   bindings() {
     return this.bindings_;
-  }
-
-  /**
-   * This method is called when KeyMap instances are stringified via
-   * JSON.stringify.
-   * @return {string} The JSON representation of this instance.
-   */
-  toJSON() {
-    return JSON.stringify({bindings: this.bindings_});
-  }
-
-  /**
-   * Writes to local storage.
-   */
-  toLocalStorage() {
-    localStorage['keyBindings'] = this.toJSON();
   }
 
   /**
@@ -188,185 +171,28 @@ KeyMap = class {
   }
 
   /**
-   * Merges an input map with this one. The merge preserves this instance's
-   * mappings. It only adds new bindings if there isn't one already.
-   * If either the incoming binding's command or key exist in this, it will be
-   * ignored.
-   * @param {!KeyMap} inputMap The map to merge with this.
-   * @return {boolean} True if there were no merge conflicts.
+   * Convenience method for getting the ChromeVox key map.
+   * @return {!KeyMap} The resulting object.
    */
-  merge(inputMap) {
-    const keys = inputMap.keys();
-    let cleanMerge = true;
-    for (let i = 0; i < keys.length; ++i) {
-      const key = keys[i];
-      const command = inputMap.commandForKey(key);
-      if (command === 'toggleStickyMode') {
-        // TODO(dtseng): More uglyness because of sticky key.
-        continue;
-      } else if (
-          key && command && !this.hasKey(key) && !this.hasCommand(command)) {
-        this.bind_(command, key);
-      } else {
-        cleanMerge = false;
-      }
-    }
-    return cleanMerge;
-  }
-
-  /**
-   * Changes an existing key binding to a new key. If the key is already bound
-   * to a command, the rebind will fail.
-   * @param {string} command The command to set.
-   * @param {KeySequence} newKey The new key to assign it to.
-   * @return {boolean} Whether the rebinding succeeds.
-   */
-  rebind(command, newKey) {
-    if (this.hasCommand(command) && !this.hasKey(newKey)) {
-      this.bind_(command, newKey);
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Changes a key binding. Any existing bindings to the given key will be
-   * deleted. Use this.rebind to have non-overwrite behavior.
-   * @param {string} command The command to set.
-   * @param {KeySequence} newKey The new key to assign it to.
-   * @private
-   */
-  bind_(command, newKey) {
-    // TODO(dtseng): Need unit test to ensure command is valid for every *.json
-    // keymap.
-    let bound = false;
-    for (let i = 0; i < this.bindings_.length; i++) {
-      const binding = this.bindings_[i];
-      if (binding.command === command) {
-        // Replace the key with the new key.
-        delete binding.sequence;
-        binding.sequence = newKey;
-        if (this.commandToKey_ != null) {
-          this.commandToKey_[binding.command] = newKey;
-        }
-        bound = true;
-      }
-    }
-    if (!bound) {
-      const binding = {command, 'sequence': newKey};
-      this.bindings_.push(binding);
-      this.commandToKey_[binding.command] = binding.sequence;
-    }
-  }
-
-  /**
-   * Convenience method for getting a default key map.
-   * @return {!KeyMap} The default key map.
-   */
-  static fromDefaults() {
-    return /** @type {!KeyMap} */ (KeyMap.fromPath(
-        KeyMap.KEYMAP_PATH + KeyMap.AVAILABLE_MAP_INFO['keymap_default'].file));
-  }
-
-  /**
-   * Convenience method for creating a key map based on a JSON (key, value)
-   * Object where the key is a literal keyboard string and value is a command
-   * string.
-   * @param {string} json The JSON.
-   * @return {KeyMap} The resulting object; null if unable to parse.
-   */
-  static fromJSON(json) {
-    let commandsAndKeySequences = null;
-    try {
-      commandsAndKeySequences =
-          /**
-           * @type {Array<Object<{command: string,
-           *                       sequence: KeySequence}>>}
-           */
-          (JSON.parse(json).bindings);
-    } catch (e) {
-      console.error('Failed to load key map from JSON');
-      console.error(e);
-      return null;
-    }
+  static get() {
+    const commandsAndKeySequences =
+        /**
+         * @type {Array<Object<{command: string,
+         *                       sequence: KeySequence}>>}
+         */
+        (KeyMap.BINDINGS_);
 
     // Validate the type of the commandsAndKeySequences array.
-    if (typeof (commandsAndKeySequences) !== 'object') {
-      return null;
-    }
     for (let i = 0; i < commandsAndKeySequences.length; i++) {
       if (commandsAndKeySequences[i].command === undefined ||
           commandsAndKeySequences[i].sequence === undefined) {
-        return null;
+        throw new Error('Invalid key map.');
       } else {
         commandsAndKeySequences[i].sequence = /** @type {KeySequence} */
             (KeySequence.deserialize(commandsAndKeySequences[i].sequence));
       }
     }
     return new KeyMap(commandsAndKeySequences);
-  }
-
-  /**
-   * Convenience method for creating a map local storage.
-   * @return {KeyMap} A map that reads from local storage.
-   */
-  static fromLocalStorage() {
-    if (localStorage['keyBindings']) {
-      return KeyMap.fromJSON(localStorage['keyBindings']);
-    }
-    return null;
-  }
-
-  /**
-   * Convenience method for creating a KeyMap based on a path.
-   * Warning: you should only call this within a background page context.
-   * @param {string} path A valid path of the form
-   * chromevox/background/keymaps/*.json.
-   * @return {KeyMap} A valid KeyMap object; null on error.
-   */
-  static fromPath(path) {
-    return KeyMap.fromJSON(KeyMap.readJSON_(path));
-  }
-
-  /**
-   * Convenience method for getting a currently selected key map.
-   * @return {!KeyMap} The currently selected key map.
-   */
-  static fromCurrentKeyMap() {
-    const map = localStorage['currentKeyMap'];
-    if (map && KeyMap.AVAILABLE_MAP_INFO[map]) {
-      return /** @type {!KeyMap} */ (KeyMap.fromPath(
-          KeyMap.KEYMAP_PATH + KeyMap.AVAILABLE_MAP_INFO[map].file));
-    } else {
-      return KeyMap.fromDefaults();
-    }
-  }
-
-  /**
-   * Takes a path to a JSON file and returns a JSON Object.
-   * @param {string} path Contains the path to a JSON file.
-   * @return {string} JSON.
-   * @private
-   * @suppress {missingProperties}
-   */
-  static readJSON_(path) {
-    const url = chrome.extension.getURL(path);
-    if (!url) {
-      throw 'Invalid path: ' + path;
-    }
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, false);
-    xhr.send();
-    return xhr.responseText;
-  }
-
-  /**
-   * Resets the default modifier keys.
-   * TODO(dtseng): Move elsewhere when we figure out our localStorage story.
-   */
-  resetModifier() {
-    localStorage['cvoxKey'] = ChromeVox.modKeyStr;
   }
 
   /**
@@ -388,32 +214,560 @@ KeyMap = class {
   }
 };
 
-
-/**
- * Path to dir containing ChromeVox keymap json definitions.
- * @type {string}
- * @const
- */
-KeyMap.KEYMAP_PATH = 'chromevox/background/keymaps/';
-
-
-/**
- * An array of available key maps sorted by priority.
- * (The first map is the default, the last is the least important).
- * TODO(dtseng): Not really sure this belongs here, but it doesn't seem to be
- * user configurable, so it doesn't make sense to json-stringify it.
- * Should have class to siwtch among and manage multiple key maps.
- * @type {Object<Object<string>>}
- * @const
- */
-KeyMap.AVAILABLE_MAP_INFO = {
-  'keymap_default': {'file': 'default_keymap.json'}
-};
-
-
-/**
- * The index of the default key map info in KeyMap.AVAIABLE_KEYMAP_INFO.
- * @type {number}
- * @const
- */
-KeyMap.DEFAULT_KEYMAP = 0;
+// This is intentionally not type-checked, as it is a serialized set of
+// KeySequence objects.
+/** @private {!Object} */
+KeyMap.BINDINGS_ = [
+  {
+    command: 'previousObject',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT]}}
+  },
+  {
+    command: 'previousLine',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.UP]}}
+  },
+  {
+    command: 'nextObject',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT]}}
+  },
+  {
+    command: 'nextLine',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN]}}
+  },
+  {
+    command: 'nextCharacter',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT], shiftKey: [true]}}
+  },
+  {
+    command: 'previousCharacter',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], shiftKey: [true]}}
+  },
+  {
+    command: 'nextWord',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], shiftKey: [true]}
+    }
+  },
+  {
+    command: 'previousWord',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], shiftKey: [true]}
+    }
+  },
+  {
+    command: 'nextButton',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.B]}}
+  },
+  {
+    command: 'previousButton',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.B], shiftKey: [true]}}
+  },
+  {
+    command: 'nextCheckbox',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.X]}}
+  },
+  {
+    command: 'previousCheckbox',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.X], shiftKey: [true]}}
+  },
+  {
+    command: 'nextComboBox',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.C]}}
+  },
+  {
+    command: 'previousComboBox',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.C], shiftKey: [true]}}
+  },
+  {
+    command: 'nextEditText',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.E]}}
+  },
+  {
+    command: 'previousEditText',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.E], shiftKey: [true]}}
+  },
+  {
+    command: 'nextFormField',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.F]}}
+  },
+  {
+    command: 'previousFormField',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.F], shiftKey: [true]}}
+  },
+  {
+    command: 'previousGraphic',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.G], shiftKey: [true]}}
+  },
+  {
+    command: 'nextGraphic',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.G]}}
+  },
+  {
+    command: 'nextHeading',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.H]}}
+  },
+  {
+    command: 'nextHeading1',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE]}}
+  },
+  {
+    command: 'nextHeading2',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO]}}
+  },
+  {
+    command: 'nextHeading3',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.THREE]}}
+  },
+  {
+    command: 'nextHeading4',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR]}}
+  },
+  {
+    command: 'nextHeading5',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE]}}
+  },
+  {
+    command: 'nextHeading6',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX]}}
+  },
+  {
+    command: 'previousHeading',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.H], shiftKey: [true]}}
+  },
+  {
+    command: 'previousHeading1',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE], shiftKey: [true]}}
+  },
+  {
+    command: 'previousHeading2',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO], shiftKey: [true]}}
+  },
+  {
+    command: 'previousHeading3',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.THREE], shiftKey: [true]}}
+  },
+  {
+    command: 'previousHeading4',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR], shiftKey: [true]}}
+  },
+  {
+    command: 'previousHeading5',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE], shiftKey: [true]}}
+  },
+  {
+    command: 'previousHeading6',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX], shiftKey: [true]}}
+  },
+  {
+    command: 'nextLink',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.L]}}
+  },
+  {
+    command: 'previousLink',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.L], shiftKey: [true]}}
+  },
+  {
+    command: 'nextTable',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.T]}}
+  },
+  {
+    command: 'previousTable',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.T], shiftKey: [true]}}
+  },
+  {
+    command: 'nextVisitedLink',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.V]}}
+  },
+  {
+    command: 'previousVisitedLink',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.V], shiftKey: [true]}}
+  },
+  {
+    command: 'nextLandmark',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1]}}
+  },
+  {
+    command: 'previousLandmark',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1], shiftKey: [true]}}
+  },
+  {
+    command: 'jumpToBottom',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]}}
+  },
+  {
+    command: 'jumpToTop',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}}
+  },
+  {
+    command: 'forceClickOnCurrentItem',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}}
+  },
+  {
+    command: 'contextMenu',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.M]}}
+  },
+  {
+    command: 'readFromHere',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.R]}}
+  },
+  {
+    command: 'toggleStickyMode',
+    sequence: {
+      skipStripping: false,
+      doubleTap: true,
+      keys: {keyCode: [KeyCode.SEARCH]}
+    }
+  },
+  {
+    command: 'passThroughMode',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.ESCAPE], shiftKey: [true]}
+    }
+  },
+  {
+    command: 'toggleKeyboardHelp',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_PERIOD]}}
+  },
+  {
+    command: 'stopSpeech',
+    sequence: {
+      cvoxModifier: false,
+      keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]}
+    }
+  },
+  {
+    command: 'decreaseTtsRate',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_4], shiftKey: [true]}}
+  },
+  {
+    command: 'increaseTtsRate',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_4]}}
+  },
+  {
+    command: 'decreaseTtsPitch',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_6], shiftKey: [true]}}
+  },
+  {
+    command: 'increaseTtsPitch',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_6]}}
+  },
+  {
+    command: 'stopSpeech',
+    sequence: {keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]}}
+  },
+  {
+    command: 'cyclePunctuationEcho',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.P]}}
+  },
+  {
+    command: 'showKbExplorerPage',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.K]}}
+  },
+  {
+    command: 'cycleTypingEcho',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.T]}}
+  },
+  {
+    command: 'showOptionsPage',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.O]}}
+  },
+  {
+    command: 'showLogPage',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.W]}}
+  },
+  {
+    command: 'enableLogging',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.E]}}
+  },
+  {
+    command: 'disableLogging',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.D]}}
+  },
+  {
+    command: 'dumpTree',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.D, KeyCode.T], ctrlKey: [true]}
+    }
+  },
+  {
+    command: 'help',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.T]}}
+  },
+  {
+    command: 'toggleEarcons',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.E]}}
+  },
+  {
+    command: 'speakTimeAndDate',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.D]}}
+  },
+  {
+    command: 'readCurrentTitle',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.W]}}
+  },
+  {
+    command: 'readCurrentURL',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.U]}}
+  },
+  {
+    command: 'reportIssue',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.I]}}
+  },
+  {
+    command: 'toggleSearchWidget',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_2]}}
+  },
+  {
+    command: 'showHeadingsList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.H], ctrlKey: [true]}}
+  },
+  {
+    command: 'showFormsList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.F], ctrlKey: [true]}}
+  },
+  {
+    command: 'showLandmarksList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1], ctrlKey: [true]}}
+  },
+  {
+    command: 'showLinksList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.L], ctrlKey: [true]}}
+  },
+  {
+    command: 'showTablesList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.T], ctrlKey: [true]}}
+  },
+  {
+    command: 'toggleBrailleCaptions',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.B]}}
+  },
+  {
+    command: 'toggleBrailleTable',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.G]}}
+  },
+  {
+    command: 'viewGraphicAsBraille',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.G], altKey: [true]}}
+  },
+  {
+    command: 'toggleSelection',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.S]}}
+  },
+  {
+    command: 'fullyDescribe',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.K]}}
+  },
+  {
+    command: 'previousRow',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.UP], ctrlKey: [true], altKey: [true]}
+    }
+  },
+  {
+    command: 'nextRow',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true], altKey: [true]}
+    }
+  },
+  {
+    command: 'nextCol',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], altKey: [true]}
+    }
+  },
+  {
+    command: 'previousCol',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], altKey: [true]}
+    }
+  },
+  {
+    command: 'goToRowFirstCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {
+        keyCode: [KeyCode.LEFT],
+        ctrlKey: [true],
+        altKey: [true],
+        shiftKey: [true]
+      }
+    }
+  },
+  {
+    command: 'goToColFirstCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {
+        keyCode: [KeyCode.UP],
+        ctrlKey: [true],
+        altKey: [true],
+        shiftKey: [true]
+      }
+    }
+  },
+  {
+    command: 'goToColLastCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {
+        keyCode: [KeyCode.DOWN],
+        ctrlKey: [true],
+        altKey: [true],
+        shiftKey: [true]
+      }
+    }
+  },
+  {
+    command: 'goToFirstCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.LEFT], altKey: [true], shiftKey: [true]}
+    }
+  },
+  {
+    command: 'goToLastCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.RIGHT], altKey: [true], shiftKey: [true]}
+    }
+  },
+  {
+    command: 'goToRowLastCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {
+        keyCode: [KeyCode.RIGHT],
+        ctrlKey: [true],
+        altKey: [true],
+        shiftKey: [true]
+      }
+    }
+  },
+  {
+    command: 'previousGroup',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.UP], ctrlKey: [true]}}
+  },
+  {
+    command: 'nextGroup',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true]}}
+  },
+  {
+    command: 'previousSimilarItem',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.I], shiftKey: [true]}}
+  },
+  {
+    command: 'nextSimilarItem',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.I]}}
+  },
+  {
+    command: 'jumpToDetails',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.J]}}
+  },
+  {
+    command: 'toggleScreen',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.BRIGHTNESS_UP]}}
+  },
+  {
+    command: 'toggleSpeechOnOrOff',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.VOLUME_MUTE]}}
+  },
+  {
+    command: 'enableChromeVoxArcSupportForCurrentApp',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_4]}}
+  },
+  {
+    command: 'disableChromeVoxArcSupportForCurrentApp',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_6]}}
+  },
+  {
+    command: 'forceClickOnCurrentItem',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}, doubleTap: true}
+  },
+  {
+    command: 'showTtsSettings',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.S]}}
+  },
+  {
+    command: 'announceBatteryDescription',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.B]}}
+  },
+  {
+    command: 'announceRichTextDescription',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.F]}}
+  },
+  {
+    command: 'readPhoneticPronunciation',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.C]}}
+  },
+  {
+    command: 'readLinkURL',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.L]}}
+  },
+  {
+    command: 'nextList',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.J, KeyCode.L]}}
+  },
+  {
+    command: 'previousList',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.J, KeyCode.L], shiftKey: [true]}
+    }
+  },
+  {
+    command: 'resetTextToSpeechSettings',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.OEM_5], ctrlKey: [true], shiftKey: [true]}
+    }
+  },
+  {
+    command: 'logLanguageInformationForCurrentNode',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.P, KeyCode.L]}}
+  },
+  {
+    command: 'copy',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.C], ctrlKey: [true]}}
+  },
+];

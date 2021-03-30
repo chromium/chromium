@@ -12,6 +12,7 @@ Should be composited
     {
       "name": "LayoutNGBlockFlow DIV id='to-animate' class='container animating'",
       "bounds": [262, 212],
+      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
@@ -25,6 +26,7 @@ Should be composited
       "name": "LayoutNGBlockFlow (positioned) DIV class='test1 box'",
       "position": [11, 21],
       "bounds": [220, 150],
+      "contentsOpaqueForText": true,
       "transform": 2
     },
     {

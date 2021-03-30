@@ -12,70 +12,28 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
-#include "chromeos/services/assistant/public/shared/utils.h"
+#include "chromeos/services/assistant/public/cpp/conversation_observer.h"
+#include "chromeos/services/libassistant/public/cpp/android_app_info.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 namespace chromeos {
 namespace assistant {
 
-// Describes an Assistant interaction.
-struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionMetadata {
-  AssistantInteractionMetadata();
-  AssistantInteractionMetadata(AssistantInteractionType type,
-                               AssistantQuerySource source,
-                               const std::string& query);
-  AssistantInteractionMetadata(const AssistantInteractionMetadata& suggestion);
-  AssistantInteractionMetadata& operator=(const AssistantInteractionMetadata&);
-  AssistantInteractionMetadata(AssistantInteractionMetadata&& suggestion);
-  AssistantInteractionMetadata& operator=(AssistantInteractionMetadata&&);
-  ~AssistantInteractionMetadata();
-
-  AssistantInteractionType type{AssistantInteractionType::kText};
-  AssistantQuerySource source{AssistantQuerySource::kUnspecified};
-  std::string query;
-};
-
-// Models an Assistant suggestion.
-struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantSuggestion {
-  AssistantSuggestion();
-  AssistantSuggestion(base::UnguessableToken id,
-                      AssistantSuggestionType type,
-                      const std::string& text);
-  AssistantSuggestion(const AssistantSuggestion& suggestion);
-  AssistantSuggestion& operator=(const AssistantSuggestion&);
-  AssistantSuggestion(AssistantSuggestion&& suggestion);
-  AssistantSuggestion& operator=(AssistantSuggestion&&);
-  ~AssistantSuggestion();
-  // Uniquely identifies a given suggestion.
-  base::UnguessableToken id;
-
-  // Allows us to differentiate between a typical Assistant suggestion and an
-  // Assistant suggestion of another type (e.g. a conversation starter).
-  AssistantSuggestionType type{AssistantSuggestionType::kUnspecified};
-
-  AssistantBetterOnboardingType better_onboarding_type{
-      AssistantBetterOnboardingType::kUnspecified};
-
-  // Display text. e.g. "Cancel".
-  std::string text;
-
-  // Optional URL for icon. e.g. "https://www.gstatic.com/icon.png".
-  // NOTE: This may be an icon resource link. e.g.
-  // "googleassistant://resource?type=icon&name=assistant".
-  GURL icon_url;
-
-  // Optional URL for action. e.g.
-  // "https://www.google.com/search?query=action".
-  GURL action_url;
-};
+struct AssistantFeedback;
 
 // Subscribes to Assistant's interaction event. These events are server driven
 // in response to the user's direct interaction with the assistant. Responses
 // from the assistant may contain untrusted third-party content. Subscriber
 // implementations must be sure to handle the response data appropriately.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
-    : public base::CheckedObserver {
+    : public base::CheckedObserver,
+      public ConversationObserver {
  public:
   AssistantInteractionSubscriber() = default;
   AssistantInteractionSubscriber(const AssistantInteractionSubscriber&) =
@@ -83,33 +41,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
   AssistantInteractionSubscriber& operator=(
       const AssistantInteractionSubscriber&) = delete;
   ~AssistantInteractionSubscriber() override = default;
-
-  // Assistant interaction has started.
-  virtual void OnInteractionStarted(
-      const AssistantInteractionMetadata& metadata) {}
-
-  // Assistant interaction has ended with the specified |resolution|.
-  virtual void OnInteractionFinished(
-      AssistantInteractionResolution resolution) {}
-
-  // Assistant got Html response with fallback text from server.
-  virtual void OnHtmlResponse(const std::string& response,
-                              const std::string& fallback) {}
-
-  // Assistant got suggestions response from server.
-  virtual void OnSuggestionsResponse(
-      const std::vector<AssistantSuggestion>& response) {}
-
-  // Assistant got text response from server.
-  virtual void OnTextResponse(const std::string& response) {}
-
-  // Assistant got open URL response from server. |in_background| refers to
-  // being in background of Assistant UI, not in background of browser.
-  virtual void OnOpenUrlResponse(const GURL& url, bool in_background) {}
-
-  // Assistant got open Android app response from server. Returns if the app is
-  // opened.
-  virtual bool OnOpenAppResponse(const AndroidAppInfo& app_info);
 
   // Assistant speech recognition has started.
   virtual void OnSpeechRecognitionStarted() {}
@@ -128,27 +59,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
 
   // Assistant got an instantaneous speech level update in dB.
   virtual void OnSpeechLevelUpdated(float speech_level) {}
-
-  // Assistant has started speaking. When TTS is started due to an error that
-  // occurred during the interaction, |due_to_error| is true.
-  virtual void OnTtsStarted(bool due_to_error) {}
-
-  // Assistant has started waiting. This occur during execution of a routine to
-  // give the user time to digest a response before continuing execution.
-  virtual void OnWaitStarted() {}
-};
-
-//  Details for Assistant feedback.
-struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantFeedback {
-  // User input to be sent with the feedback report.
-  std::string description;
-
-  // Whether user consent to send debug info.
-  bool assistant_debug_info_allowed{false};
-
-  // Screenshot if allowed by user.
-  // Raw data (non-encoded binary octets)
-  std::string screenshot_png;
 };
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
@@ -194,6 +104,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
       AssistantInteractionSubscriber* subscriber) = 0;
   virtual void RemoveAssistantInteractionSubscriber(
       AssistantInteractionSubscriber* subscriber) = 0;
+  virtual void AddRemoteConversationObserver(
+      ConversationObserver* observer) = 0;
+
+  virtual mojo::PendingReceiver<
+      chromeos::libassistant::mojom::NotificationDelegate>
+  GetPendingNotificationDelegate() = 0;
 
   // Retrieves a notification. A voiceless interaction will be sent to server to
   // retrieve the notification of |action_index|, which can trigger other
@@ -215,9 +131,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
 
   // Send Assistant feedback to Assistant server.
   virtual void SendAssistantFeedback(const AssistantFeedback& feedback) = 0;
-
-  // Invoked on entry to Assistant UI.
-  virtual void NotifyEntryIntoAssistantUi(AssistantEntryPoint entry_point) = 0;
 
   // Alarm/Timer methods -------------------------------------------------------
 

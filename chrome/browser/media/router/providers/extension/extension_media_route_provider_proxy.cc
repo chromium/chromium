@@ -185,15 +185,6 @@ void ExtensionMediaRouteProviderProxy::UpdateMediaSinks(
       MediaRouteProviderWakeReason::UPDATE_MEDIA_SINKS);
 }
 
-void ExtensionMediaRouteProviderProxy::ProvideSinks(
-    const std::string& provider_name,
-    const std::vector<media_router::MediaSinkInternal>& sinks) {
-  request_manager_->RunOrDefer(
-      base::BindOnce(&ExtensionMediaRouteProviderProxy::DoProvideSinks,
-                     weak_factory_.GetWeakPtr(), provider_name, sinks),
-      MediaRouteProviderWakeReason::PROVIDE_SINKS);
-}
-
 void ExtensionMediaRouteProviderProxy::CreateMediaRouteController(
     const std::string& route_id,
     mojo::PendingReceiver<mojom::MediaController> media_controller,
@@ -333,12 +324,6 @@ void ExtensionMediaRouteProviderProxy::DoEnableMdnsDiscovery() {
 void ExtensionMediaRouteProviderProxy::DoUpdateMediaSinks(
     const std::string& media_source) {
   media_route_provider_->UpdateMediaSinks(media_source);
-}
-
-void ExtensionMediaRouteProviderProxy::DoProvideSinks(
-    const std::string& provider_name,
-    const std::vector<media_router::MediaSinkInternal>& sinks) {
-  media_route_provider_->ProvideSinks(provider_name, sinks);
 }
 
 void ExtensionMediaRouteProviderProxy::DoCreateMediaRouteController(

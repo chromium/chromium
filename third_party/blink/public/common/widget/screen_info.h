@@ -31,13 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_SCREEN_INFO_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_SCREEN_INFO_H_
 
+#include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-shared.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
-struct ScreenInfo {
+struct BLINK_COMMON_EXPORT ScreenInfo {
   // Device scale factor. Specifies the ratio between physical and logical
   // pixels.
   float device_scale_factor = 1.f;
@@ -87,24 +88,30 @@ struct ScreenInfo {
   // TODO(crbug.com/840189): we should use an enum rather than a number here.
   uint16_t orientation_angle = 0;
 
-  ScreenInfo() = default;
+  // Proposed: https://github.com/webscreens/window-placement
+  // Whether this Screen is part of a multi-screen extended visual workspace.
+  bool is_extended = false;
 
-  bool operator==(const ScreenInfo& other) const {
-    return this->device_scale_factor == other.device_scale_factor &&
-           this->display_color_spaces == other.display_color_spaces &&
-           this->depth == other.depth &&
-           this->depth_per_component == other.depth_per_component &&
-           this->is_monochrome == other.is_monochrome &&
-           this->display_frequency == other.display_frequency &&
-           this->rect == other.rect &&
-           this->available_rect == other.available_rect &&
-           this->orientation_type == other.orientation_type &&
-           this->orientation_angle == other.orientation_angle;
-  }
+  // Proposed: https://github.com/webscreens/window-placement
+  // Whether this screen is designated as the 'primary' screen by the OS
+  // (otherwise it is a 'secondary' screen).
+  bool is_primary = false;
 
-  bool operator!=(const ScreenInfo& other) const {
-    return !this->operator==(other);
-  }
+  // Proposed: https://github.com/webscreens/window-placement
+  // Whether this screen is an 'internal' panel built into the device, like a
+  // laptop display (otherwise it is 'external', like a wired monitor).
+  bool is_internal = false;
+
+  // Not web-exposed; the display::Display::id(), for internal tracking only.
+  static constexpr int64_t kInvalidDisplayId = -1;
+  int64_t display_id = kInvalidDisplayId;
+
+  ScreenInfo();
+  ScreenInfo(const ScreenInfo& other);
+  ~ScreenInfo();
+  ScreenInfo& operator=(const ScreenInfo& other);
+  bool operator==(const ScreenInfo& other) const;
+  bool operator!=(const ScreenInfo& other) const;
 };
 
 }  // namespace blink

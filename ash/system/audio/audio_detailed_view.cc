@@ -4,6 +4,7 @@
 
 #include "ash/system/audio/audio_detailed_view.h"
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -13,40 +14,40 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 
+namespace ash {
 namespace {
 
-base::string16 GetAudioDeviceName(const chromeos::AudioDevice& device) {
+std::u16string GetAudioDeviceName(const AudioDevice& device) {
   switch (device.type) {
-    case chromeos::AUDIO_TYPE_FRONT_MIC:
+    case AudioDeviceType::kFrontMic:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_FRONT_MIC);
-    case chromeos::AUDIO_TYPE_HEADPHONE:
+    case AudioDeviceType::kHeadphone:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_HEADPHONE);
-    case chromeos::AUDIO_TYPE_INTERNAL_SPEAKER:
+    case AudioDeviceType::kInternalSpeaker:
       return l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_INTERNAL_SPEAKER);
-    case chromeos::AUDIO_TYPE_INTERNAL_MIC:
+    case AudioDeviceType::kInternalMic:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_INTERNAL_MIC);
-    case chromeos::AUDIO_TYPE_REAR_MIC:
+    case AudioDeviceType::kRearMic:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_REAR_MIC);
-    case chromeos::AUDIO_TYPE_USB:
+    case AudioDeviceType::kUsb:
       return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_USB_DEVICE,
                                         base::UTF8ToUTF16(device.display_name));
-    case chromeos::AUDIO_TYPE_BLUETOOTH:
+    case AudioDeviceType::kBluetooth:
       FALLTHROUGH;
-    case chromeos::AUDIO_TYPE_BLUETOOTH_NB_MIC:
+    case AudioDeviceType::kBluetoothNbMic:
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_BLUETOOTH_DEVICE,
           base::UTF8ToUTF16(device.display_name));
-    case chromeos::AUDIO_TYPE_HDMI:
+    case AudioDeviceType::kHdmi:
       return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_HDMI_DEVICE,
                                         base::UTF8ToUTF16(device.display_name));
-    case chromeos::AUDIO_TYPE_MIC:
+    case AudioDeviceType::kMic:
       return l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_MIC_JACK_DEVICE);
     default:
@@ -56,9 +57,6 @@ base::string16 GetAudioDeviceName(const chromeos::AudioDevice& device) {
 
 }  // namespace
 
-using chromeos::CrasAudioHandler;
-
-namespace ash {
 namespace tray {
 
 AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
@@ -93,7 +91,7 @@ void AudioDetailedView::CreateItems() {
 void AudioDetailedView::UpdateAudioDevices() {
   output_devices_.clear();
   input_devices_.clear();
-  chromeos::AudioDeviceList devices;
+  AudioDeviceList devices;
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   audio_handler->GetAudioDevices(&devices);
   bool has_dual_internal_mic = audio_handler->HasDualInternalMic();
@@ -119,10 +117,10 @@ void AudioDetailedView::UpdateAudioDevices() {
   if (has_dual_internal_mic) {
     // Create stub internal mic entry for UI rendering, which representing
     // both internal front and rear mics.
-    chromeos::AudioDevice internal_mic;
+    AudioDevice internal_mic;
     internal_mic.is_input = true;
     internal_mic.stable_device_id_version = 2;
-    internal_mic.type = chromeos::AUDIO_TYPE_INTERNAL_MIC;
+    internal_mic.type = AudioDeviceType::kInternalMic;
     internal_mic.active = is_front_or_rear_mic_active;
     input_devices_.push_back(internal_mic);
   }
@@ -163,10 +161,8 @@ void AudioDetailedView::UpdateScrollableList() {
         AddScrollListCheckableItem(GetAudioDeviceName(device), device.active);
     device_map_[container] = device;
 
-    if (features::IsSystemTrayMicGainSettingEnabled()) {
-      AddScrollListChild(mic_gain_controller_->CreateMicGainSlider(
-          device.id, device.IsInternalMic()));
-    }
+    AddScrollListChild(mic_gain_controller_->CreateMicGainSlider(
+        device.id, device.IsInternalMic()));
   }
 
   scroll_content()->SizeToPreferredSize();
@@ -177,9 +173,9 @@ void AudioDetailedView::HandleViewClicked(views::View* view) {
   AudioDeviceMap::iterator iter = device_map_.find(view);
   if (iter == device_map_.end())
     return;
-  chromeos::AudioDevice device = iter->second;
+  AudioDevice device = iter->second;
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
-  if (device.type == chromeos::AUDIO_TYPE_INTERNAL_MIC &&
+  if (device.type == AudioDeviceType::kInternalMic &&
       audio_handler->HasDualInternalMic()) {
     audio_handler->SwitchToFrontOrRearMic();
   } else {

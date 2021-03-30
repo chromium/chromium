@@ -99,6 +99,10 @@ void MediaStreamAudioTrack::SetContentHint(
     sink->OnContentHintChanged(content_hint);
 }
 
+int MediaStreamAudioTrack::NumPreferredChannels() const {
+  return deliverer_.NumPreferredChannels();
+}
+
 void* MediaStreamAudioTrack::GetClassIdentifier() const {
   return nullptr;
 }
@@ -140,8 +144,8 @@ void MediaStreamAudioTrack::OnSetFormat(const media::AudioParameters& params) {
 void MediaStreamAudioTrack::OnData(const media::AudioBus& audio_bus,
                                    base::TimeTicks reference_time) {
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("mediastream"),
-               "MediaStreamAudioTrack::OnData", "this", this, "frame",
-               audio_bus.frames());
+               "MediaStreamAudioTrack::OnData", "this",
+               static_cast<void*>(this), "frame", audio_bus.frames());
 
   if (!received_audio_callback_) {
     // Add log message with unique this pointer id to mark the audio track as

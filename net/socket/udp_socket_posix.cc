@@ -10,6 +10,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
+#include <sys/socket.h>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -210,7 +211,7 @@ int UDPSocketPosix::Open(AddressFamily address_family) {
   return OK;
 }
 
-void UDPSocketPosix::ActivityMonitor::Increment(uint32_t bytes) {
+void UDPSocketPosix::ReceivedActivityMonitor::Increment(uint32_t bytes) {
   if (!bytes)
     return;
   bool timer_running = timer_.IsRunning();
@@ -227,23 +228,23 @@ void UDPSocketPosix::ActivityMonitor::Increment(uint32_t bytes) {
   }
   if (!timer_running) {
     timer_.Start(FROM_HERE, kActivityMonitorMsThreshold, this,
-                 &UDPSocketPosix::ActivityMonitor::OnTimerFired);
+                 &UDPSocketPosix::ReceivedActivityMonitor::OnTimerFired);
   }
 }
 
-void UDPSocketPosix::ActivityMonitor::Update() {
+void UDPSocketPosix::ReceivedActivityMonitor::Update() {
   if (!bytes_)
     return;
-  NetworkActivityMonitorIncrement(bytes_);
+  NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(bytes_);
   bytes_ = 0;
 }
 
-void UDPSocketPosix::ActivityMonitor::OnClose() {
+void UDPSocketPosix::ReceivedActivityMonitor::OnClose() {
   timer_.Stop();
   Update();
 }
 
-void UDPSocketPosix::ActivityMonitor::OnTimerFired() {
+void UDPSocketPosix::ReceivedActivityMonitor::OnTimerFired() {
   increments_ = 0;
   if (!bytes_) {
     // Can happen if the socket has been idle and have had no
@@ -253,16 +254,6 @@ void UDPSocketPosix::ActivityMonitor::OnTimerFired() {
     return;
   }
   Update();
-}
-
-void UDPSocketPosix::SentActivityMonitor::NetworkActivityMonitorIncrement(
-    uint32_t bytes) {
-  NetworkActivityMonitor::GetInstance()->IncrementBytesSent(bytes);
-}
-
-void UDPSocketPosix::ReceivedActivityMonitor::NetworkActivityMonitorIncrement(
-    uint32_t bytes) {
-  NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(bytes);
 }
 
 void UDPSocketPosix::Close() {
@@ -292,6 +283,13 @@ void UDPSocketPosix::Close() {
   // crbug.com/906005.
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
 #if defined(OS_MAC)
+  // Attempt to clear errors on the socket so that they are not returned by
+  // close(). See https://crbug.com/1151048.
+  // TODO(ricea): Remove this if it doesn't work, or when the OS bug is fixed.
+  int value = 0;
+  socklen_t value_len = sizeof(value);
+  HANDLE_EINTR(getsockopt(socket_, SOL_SOCKET, SO_ERROR, &value, &value_len));
+
   PCHECK(IGNORE_EINTR(guarded_close_np(socket_, &kSocketFdGuard)) == 0);
 #else
   PCHECK(IGNORE_EINTR(close(socket_)) == 0);
@@ -303,7 +301,6 @@ void UDPSocketPosix::Close() {
   tag_ = SocketTag();
 
   write_async_timer_.Stop();
-  sent_activity_monitor_.OnClose();
   received_activity_monitor_.OnClose();
 }
 
@@ -775,8 +772,6 @@ void UDPSocketPosix::LogWrite(int result,
     NetLogUDPDataTransfer(net_log_, NetLogEventType::UDP_BYTES_SENT, result,
                           bytes, address);
   }
-
-  sent_activity_monitor_.Increment(result);
 }
 
 int UDPSocketPosix::InternalRecvFrom(IOBuffer* buf,

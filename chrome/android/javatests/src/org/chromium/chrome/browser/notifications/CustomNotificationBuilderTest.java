@@ -27,14 +27,19 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -46,9 +51,13 @@ import java.util.Arrays;
  * Instrumentation unit tests for CustomNotificationBuilder.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@EnableFeatures(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER)
 public class CustomNotificationBuilderTest {
     private static final String NOTIFICATION_TAG = "TestNotificationTag";
     private static final int NOTIFICATION_ID = 99;
+
+    @Rule
+    public final TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
@@ -85,12 +94,12 @@ public class CustomNotificationBuilderTest {
                         .setVibrate(new long[] {100L})
                         .setContentIntent(contentIntent)
                         .setDeleteIntent(deleteIntent)
-                        .addButtonAction(actionIcon, "button",
-                                createIntent(context, "ActionButtonOne").getPendingIntent())
-                        .addButtonAction(actionIcon, "button",
-                                createIntent(context, "ActionButtonTwo").getPendingIntent())
+                        .addButtonAction(
+                                actionIcon, "button", createIntent(context, "ActionButtonOne"))
+                        .addButtonAction(
+                                actionIcon, "button", createIntent(context, "ActionButtonTwo"))
                         .addSettingsAction(0 /* iconId */, "settings",
-                                createIntent(context, "SettingsButton").getPendingIntent());
+                                createIntent(context, "SettingsButton"));
         Notification notification = buildNotification(builder);
 
         assertSmallNotificationIconAsExpected(context, notification, smallIcon);
@@ -161,12 +170,12 @@ public class CustomNotificationBuilderTest {
                 new CustomNotificationBuilder(context)
                         .setChannelId(ChromeChannelDefinitions.ChannelId.SITES)
                         .addButtonAction(null /* iconBitmap */, "button",
-                                createIntent(context, "ActionButtonOne").getPendingIntent())
+                                createIntent(context, "ActionButtonOne"))
                         .addButtonAction(null /* iconBitmap */, "button",
-                                createIntent(context, "ActionButtonTwo").getPendingIntent());
+                                createIntent(context, "ActionButtonTwo"));
         try {
-            builder.addButtonAction(null /* iconBitmap */, "button",
-                    createIntent(context, "ActionButtonThree").getPendingIntent());
+            builder.addButtonAction(
+                    null /* iconBitmap */, "button", createIntent(context, "ActionButtonThree"));
             Assert.fail(
                     "This statement should not be reached as the previous statement should throw.");
         } catch (IllegalStateException e) {
@@ -230,8 +239,8 @@ public class CustomNotificationBuilderTest {
                 new CustomNotificationBuilder(context)
                         .setChannelId(ChromeChannelDefinitions.ChannelId.SITES)
                         .setSmallIconId(R.drawable.ic_chrome)
-                        .addButtonAction(actionIcon, "button",
-                                createIntent(context, "ActionButton").getPendingIntent());
+                        .addButtonAction(
+                                actionIcon, "button", createIntent(context, "ActionButton"));
         Notification notification = buildNotification(builder);
 
         Bitmap whiteIcon = createIcon(Color.WHITE);
@@ -271,7 +280,7 @@ public class CustomNotificationBuilderTest {
                         .setChannelId(ChromeChannelDefinitions.ChannelId.SITES)
                         .setTicker(createString('d', maxLength + 1))
                         .addButtonAction(null /* iconBitmap */, createString('e', maxLength + 1),
-                                createIntent(context, "ActionButtonOne").getPendingIntent());
+                                createIntent(context, "ActionButtonOne"));
         Notification notification = buildNotification(builder);
 
         View compactView = notification.contentView.apply(context, new LinearLayout(context));
@@ -372,7 +381,8 @@ public class CustomNotificationBuilderTest {
         NotificationBuilderBase notificationBuilder =
                 new CustomNotificationBuilder(context)
                         .setChannelId(ChromeChannelDefinitions.ChannelId.SITES)
-                        .addTextAction(null, "Action Title", null, "Placeholder");
+                        .addTextAction(null, "Action Title",
+                                createIntent(context, "ActionButtonOne"), "Placeholder");
 
         Notification notification = buildNotification(notificationBuilder);
 

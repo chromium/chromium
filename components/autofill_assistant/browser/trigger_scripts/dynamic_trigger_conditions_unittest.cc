@@ -161,4 +161,36 @@ TEST_F(DynamicTriggerConditionsTest, HasResults) {
             base::make_optional(false));
 }
 
+TEST_F(DynamicTriggerConditionsTest, GetPathPatternMatches) {
+  dynamic_trigger_conditions_.SetURL(GURL("http://example.com/match?q=m#a"));
+  EXPECT_TRUE(dynamic_trigger_conditions_.GetPathPatternMatches("/match.*"));
+  EXPECT_TRUE(
+      dynamic_trigger_conditions_.GetPathPatternMatches("/match.*m.*a"));
+  EXPECT_FALSE(dynamic_trigger_conditions_.GetPathPatternMatches("/match1"));
+  EXPECT_FALSE(dynamic_trigger_conditions_.GetPathPatternMatches("match"));
+  EXPECT_FALSE(dynamic_trigger_conditions_.GetPathPatternMatches(""));
+}
+
+TEST_F(DynamicTriggerConditionsTest, GetDomainAndSchemeMatches) {
+  dynamic_trigger_conditions_.SetURL(GURL("http://example.com/match"));
+  EXPECT_TRUE(dynamic_trigger_conditions_.GetDomainAndSchemeMatches(
+      GURL("http://example.com")));
+
+  dynamic_trigger_conditions_.SetURL(GURL("http://example.com/match?q=m#a"));
+  EXPECT_TRUE(dynamic_trigger_conditions_.GetDomainAndSchemeMatches(
+      GURL("http://example.com")));
+
+  dynamic_trigger_conditions_.SetURL(GURL("http://example.com:8080"));
+  EXPECT_TRUE(dynamic_trigger_conditions_.GetDomainAndSchemeMatches(
+      GURL("http://example.com")));
+
+  dynamic_trigger_conditions_.SetURL(GURL("http://example.com"));
+  EXPECT_FALSE(dynamic_trigger_conditions_.GetDomainAndSchemeMatches(
+      GURL("http://nomatch.com")));
+
+  dynamic_trigger_conditions_.SetURL(GURL("http://example.com"));
+  EXPECT_FALSE(dynamic_trigger_conditions_.GetDomainAndSchemeMatches(
+      GURL("https://example.com")));
+}
+
 }  // namespace autofill_assistant

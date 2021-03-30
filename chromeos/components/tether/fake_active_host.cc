@@ -101,9 +101,10 @@ void FakeActiveHost::SetActiveHost(ActiveHostStatus active_host_status,
   tether_network_guid_ = tether_network_guid;
   wifi_network_guid_ = wifi_network_guid;
 
-  GetActiveHost(base::Bind(&FakeActiveHost::SendActiveHostChangedUpdate,
-                           base::Unretained(this), old_status, old_device_id,
-                           old_tether_network_guid, old_wifi_network_guid));
+  GetActiveHost(base::BindOnce(&FakeActiveHost::SendActiveHostChangedUpdate,
+                               base::Unretained(this), old_status,
+                               old_device_id, old_tether_network_guid,
+                               old_wifi_network_guid));
 }
 
 }  // namespace tether

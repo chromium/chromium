@@ -5,19 +5,24 @@
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/diagnostics_ui/backend/routine_log.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -125,6 +130,18 @@ void SetAvailableRoutines(
       routines);
 }
 
+std::vector<std::string> GetLogLines(const std::string& log) {
+  return base::SplitString(log, "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
+                           base::SplitResult::SPLIT_WANT_NONEMPTY);
+}
+
+std::vector<std::string> GetLogLineContents(const std::string& log_line) {
+  const std::vector<std::string> result = base::SplitString(
+      log_line, "-", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  return result;
+}
+
 }  // namespace
 
 struct FakeRoutineRunner : public mojom::RoutineRunner {
@@ -145,6 +162,14 @@ class SystemRoutineControllerTest : public testing::Test {
   SystemRoutineControllerTest() {
     chromeos::CrosHealthdClient::InitializeFake();
     system_routine_controller_ = std::make_unique<SystemRoutineController>();
+
+    wake_lock_provider_ = std::make_unique<device::TestWakeLockProvider>();
+
+    mojo::Remote<device::mojom::WakeLockProvider> remote_provider;
+    wake_lock_provider_->BindReceiver(
+        remote_provider.BindNewPipeAndPassReceiver());
+    system_routine_controller_->SetWakeLockProviderForTesting(
+        std::move(remote_provider));
   }
 
   ~SystemRoutineControllerTest() override {
@@ -158,6 +183,22 @@ class SystemRoutineControllerTest : public testing::Test {
                                                      bool charge) {
     return CreateMojoHandle(
         ConstructPowerRoutineResultJson(charge_percent, charge));
+  }
+
+  bool IsActiveWakeLock() {
+    base::RunLoop run_loop;
+    int result_count = 0;
+    wake_lock_provider_->GetActiveWakeLocksForTests(
+        device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming,
+        base::BindOnce(
+            [](base::RunLoop* run_loop, int* result_count, int32_t count) {
+              *result_count = count;
+              LOG(ERROR) << *result_count;
+              run_loop->Quit();
+            },
+            &run_loop, &result_count));
+    run_loop.Run();
+    return result_count == 1;
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -181,6 +222,7 @@ class SystemRoutineControllerTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  std::unique_ptr<device::TestWakeLockProvider> wake_lock_provider_;
 };
 
 TEST_F(SystemRoutineControllerTest, RejectedByCrosHealthd) {
@@ -485,12 +527,13 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
                         healthd::DiagnosticRoutineEnum::kPrimeSearch,
                         healthd::DiagnosticRoutineEnum::kAcPower,
                         healthd::DiagnosticRoutineEnum::kBatteryCapacity,
-                        healthd::DiagnosticRoutineEnum::kBatteryHealth});
+                        healthd::DiagnosticRoutineEnum::kBatteryHealth,
+                        healthd::DiagnosticRoutineEnum::kLanConnectivity});
 
   base::RunLoop run_loop;
   system_routine_controller_->GetSupportedRoutines(base::BindLambdaForTesting(
       [&](const std::vector<mojom::RoutineType>& supported_routines) {
-        EXPECT_EQ(3u, supported_routines.size());
+        EXPECT_EQ(4u, supported_routines.size());
         EXPECT_FALSE(base::Contains(supported_routines,
                                     mojom::RoutineType::kBatteryCharge));
         EXPECT_FALSE(base::Contains(supported_routines,
@@ -503,6 +546,8 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
                                    mojom::RoutineType::kCpuFloatingPoint));
         EXPECT_TRUE(
             base::Contains(supported_routines, mojom::RoutineType::kCpuPrime));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kLanConnectivity));
         EXPECT_TRUE(
             base::Contains(supported_routines, mojom::RoutineType::kMemory));
         run_loop.Quit();
@@ -578,6 +623,300 @@ TEST_F(SystemRoutineControllerTest, CancelRoutineDtor) {
   EXPECT_EQ(expected_id, update_params->id);
   EXPECT_EQ(healthd::DiagnosticRoutineCommandEnum::kCancel,
             update_params->command);
+}
+
+TEST_F(SystemRoutineControllerTest, RunRoutineCount0) {
+  base::HistogramTester histogram_tester;
+
+  system_routine_controller_.reset();
+
+  histogram_tester.ExpectBucketCount("ChromeOS.DiagnosticsUi.RoutineCount", 0,
+                                     1);
+}
+
+TEST_F(SystemRoutineControllerTest, RunRoutineCount1) {
+  // Run a routine.
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // Before the update interval, the routine status is not processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(59));
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kCpuStress,
+                      mojom::StandardRoutineResult::kTestPassed);
+
+  // Destroy the SystemRoutineController and check the emitted result.
+  base::HistogramTester histogram_tester;
+
+  system_routine_controller_.reset();
+
+  histogram_tester.ExpectBucketCount("ChromeOS.DiagnosticsUi.RoutineCount", 1,
+                                     1);
+}
+
+TEST_F(SystemRoutineControllerTest, RoutineLog) {
+  base::ScopedTempDir temp_dir;
+  base::FilePath log_path;
+
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  log_path = temp_dir.GetPath().AppendASCII("routine_log");
+
+  RoutineLog log(log_path);
+  system_routine_controller_ = std::make_unique<SystemRoutineController>(&log);
+
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // Verify that the Running status appears in the log.
+  std::vector<std::string> log_lines = GetLogLines(log.GetContents());
+  EXPECT_EQ(1u, log_lines.size());
+
+  std::vector<std::string> log_line_contents = GetLogLineContents(log_lines[0]);
+  ASSERT_EQ(3u, log_line_contents.size());
+  EXPECT_EQ("CpuStress", log_line_contents[1]);
+  EXPECT_EQ("Started", log_line_contents[2]);
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kCpuStress,
+                      mojom::StandardRoutineResult::kTestPassed);
+
+  // Verify that the Passed status appears in the log.
+  log_lines = GetLogLines(log.GetContents());
+  EXPECT_EQ(2u, log_lines.size());
+
+  log_line_contents = GetLogLineContents(log_lines[1]);
+  ASSERT_EQ(3u, log_line_contents.size());
+  EXPECT_EQ("CpuStress", log_line_contents[1]);
+  EXPECT_EQ("Passed", log_line_contents[2]);
+
+  // Start another routine and cancel it and verify the cancellation appears in
+  // logs. Use a unique_ptr for the RoutineRunner so we can easily destroy it.
+  auto routine_runner_2 = std::make_unique<FakeRoutineRunner>();
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuPrime,
+      routine_runner_2->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/0, healthd::DiagnosticRoutineStatusEnum::kCancelled,
+      mojo::ScopedHandle());
+
+  // Close the routine_runner
+  routine_runner_2.reset();
+  base::RunLoop().RunUntilIdle();
+
+  log_lines = GetLogLines(log.GetContents());
+  EXPECT_EQ(4u, log_lines.size());
+
+  log_line_contents = GetLogLineContents(log_lines[3]);
+  ASSERT_EQ(2u, log_line_contents.size());
+  EXPECT_EQ("Inflight Routine Cancelled", log_line_contents[1]);
+}
+
+TEST_F(SystemRoutineControllerTest, RoutineResultEmitted) {
+  // Run the CpuStress routine.
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  base::HistogramTester histogram_tester;
+
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kCpuStress,
+                      mojom::StandardRoutineResult::kTestPassed);
+
+  histogram_tester.ExpectUniqueSample("ChromeOS.DiagnosticsUi.CpuStressResult",
+                                      mojom::StandardRoutineResult::kTestPassed,
+                                      /*expected_count=*/1);
+}
+
+TEST_F(SystemRoutineControllerTest, MemoryRuntimeEmitted) {
+  // Run the CpuStress routine.
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  base::HistogramTester histogram_tester;
+
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kMemory,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1000));
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kMemory,
+                      mojom::StandardRoutineResult::kTestPassed);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "ChromeOS.DiagnosticsUi.MemoryRoutineDuration",
+      base::TimeDelta::FromSeconds(1000),
+      /*expected_count=*/1);
+}
+
+TEST_F(SystemRoutineControllerTest, CancelThenStartRoutine) {
+  const int32_t expected_id = 1;
+  SetRunRoutineResponse(expected_id,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  auto routine_runner = std::make_unique<FakeRoutineRunner>();
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner->result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/0, healthd::DiagnosticRoutineStatusEnum::kCancelled,
+      mojo::ScopedHandle());
+
+  // Close the routine_runner
+  routine_runner.reset();
+  base::RunLoop().RunUntilIdle();
+
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  FakeRoutineRunner routine_runner_2;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner_2.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner_2.result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  EXPECT_FALSE(routine_runner_2.result.is_null());
+  VerifyRoutineResult(*routine_runner_2.result, mojom::RoutineType::kCpuStress,
+                      mojom::StandardRoutineResult::kTestPassed);
+}
+
+TEST_F(SystemRoutineControllerTest, MemoryAcquiresWakeLock) {
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kMemory,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // Confirm that a wake lock is held.
+  EXPECT_TRUE(IsActiveWakeLock());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1000));
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kMemory,
+                      mojom::StandardRoutineResult::kTestPassed);
+
+  // Confirm the wake lock is released.
+  EXPECT_FALSE(IsActiveWakeLock());
+}
+
+TEST_F(SystemRoutineControllerTest, CancelMemoryReleasesWakeLock) {
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  auto routine_runner = std::make_unique<FakeRoutineRunner>();
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kMemory,
+      routine_runner->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner->result.is_null());
+
+  // Confirm that a wake lock is held.
+  EXPECT_TRUE(IsActiveWakeLock());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/0, healthd::DiagnosticRoutineStatusEnum::kCancelled,
+      mojo::ScopedHandle());
+
+  // Close the routine_runner
+  routine_runner.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Confirm the wake lock is released.
+  EXPECT_FALSE(IsActiveWakeLock());
 }
 
 }  // namespace diagnostics

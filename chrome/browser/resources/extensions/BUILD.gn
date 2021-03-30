@@ -4,12 +4,15 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("../optimize_webui.gni")
+import("../tools/optimize_webui.gni")
+
+assert(enable_extensions, "enable extensions check failed")
 
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
@@ -169,7 +172,7 @@ html_to_js("web_components_local") {
   }
 }
 
-grit("extensions_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.
@@ -388,7 +391,7 @@ js_library("manager") {
     ":sidebar",
     ":toolbar",
     "activity_log:activity_log",
-    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer.m",
+    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
     "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",

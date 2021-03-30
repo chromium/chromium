@@ -271,8 +271,14 @@ message DecryptConfig {
   optional uint32 skip_byte_block = 6 [deprecated = true];
 }
 
-message PipelineDecoderInfo {
-  optional string decoder_name = 1;
+message AudioDecoderInfo {
+  optional int64 decoder_type = 1;
+  optional bool is_platform_decoder = 2;
+  optional bool has_decrypting_demuxer_stream = 3 [deprecated = true];
+};
+
+message VideoDecoderInfo {
+  optional int64 decoder_type = 1;
   optional bool is_platform_decoder = 2;
   optional bool has_decrypting_demuxer_stream = 3 [deprecated = true];
 };
@@ -285,8 +291,8 @@ message PipelineStatistics {
   optional int64 audio_memory_usage = 5;
   optional int64 video_memory_usage = 6;
   optional int64 video_frame_duration_average_usec = 7;
-  optional PipelineDecoderInfo audio_decoder_info = 8;
-  optional PipelineDecoderInfo video_decoder_info = 9;
+  optional AudioDecoderInfo audio_decoder_info = 8;
+  optional VideoDecoderInfo video_decoder_info = 9;
 };
 
 message CdmKeyInformation {

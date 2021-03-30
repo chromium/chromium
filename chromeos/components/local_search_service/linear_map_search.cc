@@ -130,7 +130,7 @@ void LinearMapSearch::UpdateDocuments(const std::vector<Data>& data,
   std::move(callback).Run(num_deleted);
 }
 
-void LinearMapSearch::Find(const base::string16& query,
+void LinearMapSearch::Find(const std::u16string& query,
                            uint32_t max_results,
                            FindCallback callback) {
   const base::TimeTicks start = base::TimeTicks::Now();
@@ -163,7 +163,7 @@ void LinearMapSearch::ClearIndex(ClearIndexCallback callback) {
 }
 
 std::vector<Result> LinearMapSearch::GetSearchResults(
-    const base::string16& query,
+    const std::u16string& query,
     uint32_t max_results) const {
   std::vector<Result> results;
   const TokenizedString tokenized_query(query);

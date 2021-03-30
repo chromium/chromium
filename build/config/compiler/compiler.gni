@@ -21,7 +21,7 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
 }
 
 if (is_apple) {
-  import("//build/config/mac/symbols.gni")
+  import("//build/config/apple/symbols.gni")
 }
 
 declare_args() {
@@ -67,10 +67,11 @@ declare_args() {
   # Use it by default on official-optimized android and Chrome OS builds, but
   # not ARC or linux-chromeos since it's been seen to not play nicely with
   # Chrome's clang. crbug.com/1033839
-  use_thin_lto = is_cfi || (is_official_build &&
-                            (target_os == "android" ||
-                             ((is_chromeos_ash || is_chromeos_lacros)
-                              && is_chromeos_device)))
+  use_thin_lto =
+      is_cfi ||
+      (is_official_build && chrome_pgo_phase != 1 &&
+       (is_linux || is_win || (is_android && target_os != "chromeos") ||
+        ((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device)))
 
   # If true, use Goma for ThinLTO code generation where applicable.
   use_goma_thin_lto = false
@@ -100,13 +101,12 @@ declare_args() {
   clang_diagnostic_dir =
       rebase_path("//tools/clang/crashreports", root_build_dir)
 
-  # Experimental option to mark binaries as compatible with Shadow
-  # Stack of Control-flow Enforcement Technology (CET). If Windows version
-  # and hardware supports the feature and it's enabled by OS then additional
-  # additional validation of return address will be performed as mitigation
-  # against Return-oriented programming (ROP).
+  # Mark binaries as compatible with Shadow Stack of Control-flow Enforcement
+  # Technology (CET). If Windows version and hardware supports the feature and
+  # it's enabled by OS then additional validation of return address will be
+  # performed as mitigation against Return-oriented programming (ROP).
   # https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#cet-shadow-stack
-  enable_cet_shadow_stack = false
+  enable_cet_shadow_stack = target_cpu == "x64"
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
@@ -195,8 +195,9 @@ enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 declare_args() {
   # Set to true to use lld, the LLVM linker.
   # Not supported for macOS (see docs/mac_lld.md), and not functional at all for
-  # iOS. The default linker everywhere else.
-  use_lld = is_clang && !is_apple
+  # iOS. But used for mac cross-compile on linux (may not work properly).
+  # The default linker everywhere else.
+  use_lld = is_clang && (!is_apple || host_os == "linux")
 }
 
 declare_args() {
@@ -221,8 +222,11 @@ declare_args() {
 # deterministic builds to reduce compile times, so this is less relevant for
 # official builders.
 strip_absolute_paths_from_debug_symbols_default =
-    is_android || is_fuchsia || is_nacl || (is_win && use_lld) || is_linux ||
-    is_chromeos || (is_apple && !enable_dsyms)
+    # TODO(crbug.com/1010267): remove '!use_clang_coverage', coverage build has
+    # dependency to absolute path of source files.
+    !use_clang_coverage &&
+    (is_android || is_fuchsia || is_nacl || (is_win && use_lld) || is_linux ||
+     is_chromeos || (is_apple && !enable_dsyms))
 
 # If the platform uses stripped absolute paths by default, then we don't expose
 # it as a configuration option. If this is causing problems, please file a bug.

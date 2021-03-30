@@ -8,12 +8,14 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/network_device_handler_impl.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state_handler.h"
@@ -429,12 +431,19 @@ TEST_F(NetworkDeviceHandlerTest, UsbEthernetMacAddressSource) {
 }
 
 TEST_F(NetworkDeviceHandlerTest, RequirePin) {
+  base::HistogramTester histogram_tester;
+
   // Test that the success callback gets called.
   network_device_handler_->RequirePin(kDefaultCellularDevicePath, true,
                                       kDefaultPin, GetSuccessCallback(),
                                       GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockSuccessHistogram, 1);
+  histogram_tester.ExpectBucketCount(
+      CellularMetricsLogger::kSimPinLockSuccessHistogram,
+      CellularMetricsLogger::SimPinOperationResult::kSuccess, 1);
 
   // Test that the shill error propagates to the error callback.
   network_device_handler_->RequirePin(kUnknownCellularDevicePath, true,
@@ -442,23 +451,42 @@ TEST_F(NetworkDeviceHandlerTest, RequirePin) {
                                       GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
+
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockSuccessHistogram, 2);
+  histogram_tester.ExpectBucketCount(
+      CellularMetricsLogger::kSimPinLockSuccessHistogram,
+      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, EnterPin) {
+  base::HistogramTester histogram_tester;
+
   // Test that the success callback gets called.
   network_device_handler_->EnterPin(kDefaultCellularDevicePath, kDefaultPin,
                                     GetSuccessCallback(), GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 1);
+  histogram_tester.ExpectBucketCount(
+      CellularMetricsLogger::kSimPinUnlockSuccessHistogram,
+      CellularMetricsLogger::SimPinOperationResult::kSuccess, 1);
 
   // Test that the shill error propagates to the error callback.
   network_device_handler_->EnterPin(kUnknownCellularDevicePath, kDefaultPin,
                                     GetSuccessCallback(), GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 2);
+  histogram_tester.ExpectBucketCount(
+      CellularMetricsLogger::kSimPinUnlockSuccessHistogram,
+      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, UnblockPin) {
+  base::HistogramTester histogram_tester;
   const char kPuk[] = "12345678";
   const char kPin[] = "1234";
 
@@ -467,15 +495,26 @@ TEST_F(NetworkDeviceHandlerTest, UnblockPin) {
                                       GetSuccessCallback(), GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinUnblockSuccessHistogram, 1);
+  histogram_tester.ExpectBucketCount(
+      CellularMetricsLogger::kSimPinUnblockSuccessHistogram,
+      CellularMetricsLogger::SimPinOperationResult::kSuccess, 1);
 
   // Test that the shill error propagates to the error callback.
   network_device_handler_->UnblockPin(kUnknownCellularDevicePath, kPin, kPuk,
                                       GetSuccessCallback(), GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinUnblockSuccessHistogram, 2);
+  histogram_tester.ExpectBucketCount(
+      CellularMetricsLogger::kSimPinUnblockSuccessHistogram,
+      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, ChangePin) {
+  base::HistogramTester histogram_tester;
   const char kNewPin[] = "1234";
   const char kIncorrectPin[] = "9999";
 
@@ -488,6 +527,11 @@ TEST_F(NetworkDeviceHandlerTest, ChangePin) {
       kNewPin, GetSuccessCallback(), GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinChangeSuccessHistogram, 1);
+  histogram_tester.ExpectBucketCount(
+      CellularMetricsLogger::kSimPinChangeSuccessHistogram,
+      CellularMetricsLogger::SimPinOperationResult::kSuccess, 1);
 
   // Test that the shill error propagates to the error callback.
   network_device_handler_->ChangePin(kDefaultCellularDevicePath, kIncorrectPin,
@@ -495,6 +539,11 @@ TEST_F(NetworkDeviceHandlerTest, ChangePin) {
                                      GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorIncorrectPin, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinChangeSuccessHistogram, 2);
+  histogram_tester.ExpectBucketCount(
+      CellularMetricsLogger::kSimPinChangeSuccessHistogram,
+      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, AddWifiWakeOnPacketOfTypes) {

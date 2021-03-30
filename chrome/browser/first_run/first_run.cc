@@ -151,7 +151,7 @@ void ImportFromFile(Profile* profile,
 
   const base::FilePath::StringType& import_bookmarks_path_str =
 #if defined(OS_WIN)
-      base::UTF8ToUTF16(import_bookmarks_path);
+      base::UTF8ToWide(import_bookmarks_path);
 #else
       import_bookmarks_path;
 #endif

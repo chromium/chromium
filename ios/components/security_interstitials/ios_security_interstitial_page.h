@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #include "ios/web/public/security/web_interstitial_delegate.h"
 #include "url/gurl.h"
@@ -62,7 +61,7 @@ class IOSSecurityInterstitialPage : public web::WebInterstitialDelegate {
   virtual void AfterShow() = 0;
 
   // Returns the formatted host name for the request url.
-  base::string16 GetFormattedHostName() const;
+  std::u16string GetFormattedHostName() const;
 
   web::WebState* web_state() const { return web_state_; }
   const GURL& request_url() const { return request_url_; }

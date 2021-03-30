@@ -185,6 +185,7 @@ void StabilityMetricsHelper::IncreaseRendererCrashCount() {
 
 void StabilityMetricsHelper::IncreaseGpuCrashCount() {
   IncrementPrefValue(prefs::kStabilityGpuCrashCount);
+  RecordStabilityEvent(StabilityEventType::kGpuCrash);
 }
 
 void StabilityMetricsHelper::BrowserUtilityProcessLaunched(
@@ -204,6 +205,7 @@ void StabilityMetricsHelper::BrowserUtilityProcessCrashed(
 
 void StabilityMetricsHelper::BrowserChildProcessCrashed() {
   IncrementPrefValue(prefs::kStabilityChildProcessCrashCount);
+  RecordStabilityEvent(StabilityEventType::kChildProcessCrash);
 }
 
 void StabilityMetricsHelper::LogLoadStarted() {
@@ -266,15 +268,14 @@ void StabilityMetricsHelper::LogRendererCrash(bool was_extension_process,
           RENDERER_TYPE_COUNT);
       break;
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
+      // TODO(rkaplow): See if we can remove this histogram as we have
+      // Stability.Counts2 which has the same metrics.
       base::UmaHistogramEnumeration(
           "BrowserRenderProcessHost.ChildLaunchFailures", histogram_type,
           RENDERER_TYPE_COUNT);
       base::UmaHistogramSparse(
           "BrowserRenderProcessHost.ChildLaunchFailureCodes", exit_code);
-      if (was_extension_process)
-        IncrementPrefValue(prefs::kStabilityExtensionRendererFailedLaunchCount);
-      else
-        IncrementPrefValue(prefs::kStabilityRendererFailedLaunchCount);
+      LogRendererLaunchFailed(was_extension_process);
       break;
 #if defined(OS_WIN)
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
@@ -290,20 +291,31 @@ void StabilityMetricsHelper::LogRendererCrash(bool was_extension_process,
 }
 
 void StabilityMetricsHelper::LogRendererLaunched(bool was_extension_process) {
-  if (was_extension_process)
-    IncrementPrefValue(prefs::kStabilityExtensionRendererLaunchCount);
-  else
-    IncrementPrefValue(prefs::kStabilityRendererLaunchCount);
+  auto metric = was_extension_process
+                    ? StabilityEventType::kExtensionRendererLaunch
+                    : StabilityEventType::kRendererLaunch;
+  auto* pref = was_extension_process
+                   ? prefs::kStabilityExtensionRendererLaunchCount
+                   : prefs::kStabilityRendererLaunchCount;
+  RecordStabilityEvent(metric);
+  IncrementPrefValue(pref);
+}
+
+void StabilityMetricsHelper::LogRendererLaunchFailed(
+    bool was_extension_process) {
+  auto metric = was_extension_process
+                    ? StabilityEventType::kExtensionRendererFailedLaunch
+                    : StabilityEventType::kRendererFailedLaunch;
+  auto* pref = was_extension_process
+                   ? prefs::kStabilityExtensionRendererFailedLaunchCount
+                   : prefs::kStabilityRendererFailedLaunchCount;
+  RecordStabilityEvent(metric);
+  IncrementPrefValue(pref);
 }
 
 void StabilityMetricsHelper::IncrementPrefValue(const char* path) {
   int value = local_state_->GetInteger(path);
   local_state_->SetInteger(path, value + 1);
-}
-
-void StabilityMetricsHelper::IncrementLongPrefsValue(const char* path) {
-  int64_t value = local_state_->GetInt64(path);
-  local_state_->SetInt64(path, value + 1);
 }
 
 void StabilityMetricsHelper::LogRendererHang() {
@@ -320,13 +332,24 @@ void StabilityMetricsHelper::LogRendererHang() {
       "ChildProcess.HungRendererAvailableMemoryMB",
       base::SysInfo::AmountOfAvailablePhysicalMemory() / 1024 / 1024);
   IncrementPrefValue(prefs::kStabilityRendererHangCount);
+  RecordStabilityEvent(StabilityEventType::kRendererHang);
 }
 
 // static
 void StabilityMetricsHelper::RecordStabilityEvent(
     StabilityEventType stability_event_type) {
-  UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.Experimental.Counts",
+  UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.Counts2",
                                       stability_event_type);
+  // TODO(crbug.com/1176977): Remove temporary debugging histograms below.
+  // Like UmaHistogramSparse(), but with kUmaStabilityHistogramFlag.
+  base::SparseHistogram::FactoryGet(
+      "Stability.Experimental.Counts2",
+      base::HistogramBase::kUmaStabilityHistogramFlag)
+      ->Add(static_cast<int>(stability_event_type));
+  if (stability_event_type == StabilityEventType::kBrowserCrash) {
+    UMA_STABILITY_HISTOGRAM_BOOLEAN("Stability.Experimental.BrowserCrash",
+                                    true);
+  }
 }
 
 }  // namespace metrics

@@ -117,7 +117,8 @@ MULTIPROCESS_TEST_MAIN(ChrootMe) {
 }
 
 // Temporarily disabled on ASAN due to crbug.com/451603.
-TEST_F(NamespaceSandboxTest, DISABLE_ON_ASAN(ChrootAndDropCapabilities)) {
+// Disabled on MSAN due to crbug.com/1180105
+TEST_F(NamespaceSandboxTest, DISABLE_ON_SANITIZERS(ChrootAndDropCapabilities)) {
   TestProc("ChrootMe");
 }
 

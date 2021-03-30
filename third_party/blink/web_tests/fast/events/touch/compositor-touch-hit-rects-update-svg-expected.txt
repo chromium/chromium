@@ -1,0 +1,11 @@
+[object HTMLDivElement]: layer(800x600) has hit test rect (0,0 50x50)
+[object HTMLDivElement]: layer(800x600) has hit test rect (0,100 20x20)
+
+[object HTMLDivElement]: layer(900x585) has hit test rect (100,0 50x50)
+[object HTMLDivElement]: layer(900x585) has hit test rect (100,100 20x20)
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

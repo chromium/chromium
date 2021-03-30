@@ -24,11 +24,11 @@
 #include "base/test/scoped_path_override.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
@@ -243,8 +243,7 @@ const HoldingSpaceItem* AddHoldingSpaceItem(Profile* profile,
           base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
                                          const base::FilePath& file_path) {
             return std::make_unique<HoldingSpaceImage>(
-                file_path,
-                /*placeholder=*/gfx::ImageSkia(),
+                HoldingSpaceImage::GetMaxSizeForType(type), file_path,
                 /*async_bitmap_resolver=*/base::DoNothing());
           }));
 

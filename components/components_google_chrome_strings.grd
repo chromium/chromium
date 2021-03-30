@@ -36,6 +36,9 @@
       <output filename="components_google_chrome_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="components_google_chrome_strings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="components_google_chrome_strings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="components_google_chrome_strings_am.pak" type="data_package" lang="am" />
     <output filename="components_google_chrome_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="components_google_chrome_strings_bg.pak" type="data_package" lang="bg" />
@@ -57,7 +60,6 @@
     </if>
     <output filename="components_google_chrome_strings_et.pak" type="data_package" lang="et" />
     <output filename="components_google_chrome_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="components_google_chrome_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="components_google_chrome_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="components_google_chrome_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="components_google_chrome_strings_fr.pak" type="data_package" lang="fr" />
@@ -104,6 +106,10 @@
     <output filename="components_google_chrome_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="components_google_chrome_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="components_google_chrome_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="components_google_chrome_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="components_google_chrome_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/components_google_chrome_strings_af.xtb" lang="af" />
@@ -188,7 +194,7 @@
     <file path="strings/components_google_chrome_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/components_google_chrome_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- Network Error Pages -->
       <if expr="not is_android and not is_ios">
@@ -207,6 +213,9 @@
           settings.
         </message>
       </if>
+      <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_CLIENT" desc="Summary in the error page when a request is blocked by the browser.">
+        This page has been blocked by Chrome
+      </message>
       <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
         Chrome OS hasn’t completed its initial setup.
       </message>

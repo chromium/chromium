@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -48,7 +49,8 @@ class WebFileTasksTest : public ::testing::Test {
         std::make_unique<web_app::TestOsIntegrationManager>(
             profile_.get(), /*app_shortcut_manager=*/nullptr,
             std::move(file_handler_manager),
-            /*protocol_handler_manager=*/nullptr);
+            /*protocol_handler_manager=*/nullptr,
+            /*url_handler_manager=*/nullptr);
     app_provider_->SetOsIntegrationManager(std::move(os_integration_manager));
 
     app_provider_->Start();
@@ -146,7 +148,8 @@ TEST_F(WebFileTasksTest, DisabledFileHandlersAreNotVisible) {
   EXPECT_EQ(2u, tasks.size());
   tasks.clear();
 
-  file_handler_manager()->DisableAndUnregisterOsFileHandlers(kGraphrId);
+  file_handler_manager()->DisableAndUnregisterOsFileHandlers(kGraphrId, nullptr,
+                                                             base::DoNothing());
 
   // Graphr should no longer be found.
   FindWebTasks(profile(), entries, &tasks);

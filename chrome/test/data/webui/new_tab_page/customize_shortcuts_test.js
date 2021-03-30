@@ -3,30 +3,35 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/lazy_load.js';
-import {BrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {createTestProxy} from 'chrome://test/new_tab_page/test_support.js';
+import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 
 suite('NewTabPageCustomizeShortcutsTest', () => {
   /** @type {!CustomizeShortcutsElement} */
   let customizeShortcuts;
 
   /**
-   * @implements {BrowserProxy}
+   * @implements {newTabPage.mojom.PageHandlerRemote}
    * @extends {TestBrowserProxy}
    */
-  let testProxy;
+  let handler;
+
+  /** @type {newTabPage.mojom.PageHandlerRemote} */
+  let callbackRouterRemote;
 
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = createTestProxy();
-    testProxy.handler.setResultFor('addMostVisitedTile', Promise.resolve({
+    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    const callbackRouter = new newTabPage.mojom.PageCallbackRouter();
+    handler.setResultFor('addMostVisitedTile', Promise.resolve({
       success: true,
     }));
-    testProxy.handler.setResultFor('updateMostVisitedTile', Promise.resolve({
+    handler.setResultFor('updateMostVisitedTile', Promise.resolve({
       success: true,
     }));
-    BrowserProxy.instance_ = testProxy;
+    NewTabPageProxy.setInstance(handler, callbackRouter);
+    callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
     customizeShortcuts = document.createElement('ntp-customize-shortcuts');
     document.body.appendChild(customizeShortcuts);
@@ -39,12 +44,12 @@ suite('NewTabPageCustomizeShortcutsTest', () => {
    * @private
    */
   async function setInitialSettings(customLinksEnabled, visible) {
-    testProxy.callbackRouterRemote.setMostVisitedInfo({
+    callbackRouterRemote.setMostVisitedInfo({
       customLinksEnabled: customLinksEnabled,
       tiles: [],
       visible: visible,
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await callbackRouterRemote.$.flushForTesting();
   }
 
   /**
@@ -110,8 +115,7 @@ suite('NewTabPageCustomizeShortcutsTest', () => {
         /* visible= */ false);
     assertHidden();
     customizeShortcuts.$.optionCustomLinksButton.click();
-    const setSettingsCalled =
-        testProxy.handler.whenCalled('setMostVisitedSettings');
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
     customizeShortcuts.apply();
     const [customLinksEnabled, visible] = await setSettingsCalled;
     assertTrue(customLinksEnabled);
@@ -124,8 +128,7 @@ suite('NewTabPageCustomizeShortcutsTest', () => {
         /* visible= */ false);
     assertHidden();
     customizeShortcuts.$.optionMostVisitedButton.click();
-    const setSettingsCalled =
-        testProxy.handler.whenCalled('setMostVisitedSettings');
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
     customizeShortcuts.apply();
     const [customLinksEnabled, visible] = await setSettingsCalled;
     assertFalse(customLinksEnabled);
@@ -138,8 +141,7 @@ suite('NewTabPageCustomizeShortcutsTest', () => {
         /* visible= */ true);
     assertCustomLinksEnabled();
     customizeShortcuts.$.hideToggle.click();
-    const setSettingsCalled =
-        testProxy.handler.whenCalled('setMostVisitedSettings');
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
     customizeShortcuts.apply();
     const [customLinksEnabled, visible] = await setSettingsCalled;
     assertTrue(customLinksEnabled);

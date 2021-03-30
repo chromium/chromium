@@ -82,10 +82,10 @@ std::vector<content::WebContents*> GetHungWebContentsList(
 // Given a WebContents that is affected by the hang, and the RenderProcessHost
 // of the hung process, returns the title of the WebContents that should be used
 // in the "Hung Page" dialog.
-base::string16 GetHungWebContentsTitle(
+std::u16string GetHungWebContentsTitle(
     content::WebContents* affected_web_contents,
     content::RenderProcessHost* hung_process) {
-  base::string16 page_title = affected_web_contents->GetTitle();
+  std::u16string page_title = affected_web_contents->GetTitle();
   if (page_title.empty())
     page_title = CoreTabHelper::GetDefaultTitle();
   // TODO(xji): Consider adding a special case if the title text is a URL,
@@ -103,7 +103,7 @@ base::string16 GetHungWebContentsTitle(
   // N.B. using just the host here is OK since this is a notification and the
   // user doesn't need to make a security critical decision about the page in
   // this dialog.
-  base::string16 host_string;
+  std::u16string host_string;
   url_formatter::AppendFormattedHost(hung_url, &host_string);
 
   return l10n_util::GetStringFUTF16(IDS_BROWSER_HANGMONITOR_IFRAME_TITLE,

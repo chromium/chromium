@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/arc/process/arc_process.h"
+#include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {
@@ -35,7 +34,7 @@ class ToolbarActionsBarBubbleDelegate {
     const gfx::VectorIcon* resource;
 
     // Text in the view. If this is an empty string, no text will be added.
-    base::string16 text;
+    std::u16string text;
 
     // If the struct's text is nonempty and this value is true, then a button
     // with the (?) image is displayed and the text is set as the tooltip. If
@@ -54,25 +53,25 @@ class ToolbarActionsBarBubbleDelegate {
   virtual bool ShouldCloseOnDeactivate() = 0;
 
   // Gets the text for the bubble's heading (title).
-  virtual base::string16 GetHeadingText() = 0;
+  virtual std::u16string GetHeadingText() = 0;
 
   // Gets the text for the bubble's body.
   // |anchored_to_action| is true if the bubble is being anchored to a specific
   // action (rather than the overflow menu or the full container).
-  virtual base::string16 GetBodyText(bool anchored_to_action) = 0;
+  virtual std::u16string GetBodyText(bool anchored_to_action) = 0;
 
   // Gets the text for an optional item list to display. If this returns an
   // empty string, no list will be added.
-  virtual base::string16 GetItemListText() = 0;
+  virtual std::u16string GetItemListText() = 0;
 
   // Gets the text for the main button on the bubble; this button will
   // correspond with ACTION_EXECUTE.
-  virtual base::string16 GetActionButtonText() = 0;
+  virtual std::u16string GetActionButtonText() = 0;
 
   // Gets the text for a second button on the bubble; this button will
   // correspond with ACTION_DISMISS. If this returns an empty string, no
   // button will be added.
-  virtual base::string16 GetDismissButtonText() = 0;
+  virtual std::u16string GetDismissButtonText() = 0;
 
   // Returns the button that should be set to the default.
   virtual ui::DialogButton GetDefaultDialogButton() = 0;

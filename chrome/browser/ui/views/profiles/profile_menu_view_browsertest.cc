@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -32,15 +31,14 @@
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
-#include "chrome/browser/ui/views/profiles/user_manager_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/common/chrome_paths.h"
@@ -58,7 +56,6 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -91,13 +88,12 @@ class UnconsentedPrimaryAccountChecker
   // StatusChangeChecker overrides:
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for unconsented primary account";
-    return identity_manager_->HasPrimaryAccount(
-        signin::ConsentLevel::kNotRequired);
+    return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   }
 
   // signin::IdentityManager::Observer overrides:
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& unconsented_primary_account_info) override {
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
     CheckExitCondition();
   }
 
@@ -197,12 +193,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, ThemeChanged) {
 
   // The theme change destroys the avatar button. Make sure the profile chooser
   // widget doesn't try to reference a stale observer during its shutdown.
+  test::ThemeServiceChangedWaiter waiter(
+      ThemeServiceFactory::GetForProfile(profile()));
   InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
-  content::WindowedNotificationObserver theme_change_observer(
-      chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-      content::Source<ThemeService>(
-          ThemeServiceFactory::GetForProfile(profile())));
-  theme_change_observer.Wait();
+  waiter.WaitForThemeChanged();
 
   EXPECT_TRUE(ProfileMenuView::IsShowing());
   profile_menu_view()->GetWidget()->Close();
@@ -590,8 +584,7 @@ constexpr ProfileMenuViewBase::ActionableItem
 PROFILE_MENU_CLICK_TEST(
     kActionableItems_SingleProfileWithCustomName,
     DISABLED_ProfileMenuClickTest_SingleProfileWithCustomName) {
-  profiles::UpdateProfileName(browser()->profile(),
-                              base::UTF8ToUTF16("Custom name"));
+  profiles::UpdateProfileName(browser()->profile(), u"Custom name");
   RunTest();
 }
 
@@ -629,6 +622,7 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_MultipleProfiles,
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncEnabled[] = {
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
     ProfileMenuViewBase::ActionableItem::kPasswordsButton,
     ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
     ProfileMenuViewBase::ActionableItem::kAddressesButton,
@@ -639,7 +633,7 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncEnabled[] = {
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     // The first button is added again to finish the cycle and test that
     // there are no other buttons at the end.
-    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 #if defined(OS_WIN)
 // TODO(crbug.com/1068103): Flaky on Windows
@@ -652,7 +646,8 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncEnabled,
                         MAYBE_ProfileMenuClickTest_SyncEnabled) {
   ASSERT_TRUE(sync_harness()->SetupSync());
   // Check that the sync setup was successful.
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount());
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   RunTest();
@@ -661,6 +656,7 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncEnabled,
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncError[] = {
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
     ProfileMenuViewBase::ActionableItem::kPasswordsButton,
     ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
     ProfileMenuViewBase::ActionableItem::kAddressesButton,
@@ -671,7 +667,7 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncError[] = {
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     // The first button is added again to finish the cycle and test that
     // there are no other buttons at the end.
-    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 #if defined(OS_WIN)
 // TODO(crbug.com/1021930): Failure on Windows
@@ -684,7 +680,8 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncError,
                         MAYBE_ProfileMenuClickTest_SyncError) {
   ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
   // Check that the setup was successful.
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount());
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
 
   RunTest();
@@ -693,6 +690,7 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncError,
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncPaused[] = {
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
     ProfileMenuViewBase::ActionableItem::kPasswordsButton,
     ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
     ProfileMenuViewBase::ActionableItem::kAddressesButton,
@@ -702,7 +700,7 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncPaused[] = {
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     // The first button is added again to finish the cycle and test that
     // there are no other buttons at the end.
-    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 // TODO(https://crbug.com/1079012): Test is flaky on Windows.
 #if defined(OS_WIN)
@@ -716,7 +714,8 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncPaused,
   ASSERT_TRUE(sync_harness()->SetupSync());
   sync_harness()->EnterSyncPausedStateForPrimaryAccount();
   // Check that the setup was successful.
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount());
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   ASSERT_EQ(syncer::SyncService::TransportState::PAUSED,
             sync_service()->GetTransportState());
 
@@ -758,6 +757,7 @@ IN_PROC_BROWSER_TEST_P(DISABLED_ProfileMenuClickTest_SigninDisallowed,
 // If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem
     kActionableItems_WithUnconsentedPrimaryAccount[] = {
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
         ProfileMenuViewBase::ActionableItem::kPasswordsButton,
         ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
         ProfileMenuViewBase::ActionableItem::kAddressesButton,
@@ -769,7 +769,7 @@ constexpr ProfileMenuViewBase::ActionableItem
         ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
         // The first button is added again to finish the cycle and test that
         // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 // TODO(https://crbug.com/1021930) flakey on Linux and Windows.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
@@ -786,9 +786,10 @@ PROFILE_MENU_CLICK_TEST(
       browser()->profile(), &test_url_loader_factory_, "user@example.com");
   UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
   // Check that the setup was successful.
-  ASSERT_FALSE(identity_manager()->HasPrimaryAccount());
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   RunTest();
 }
@@ -813,9 +814,6 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_IncognitoProfile,
 // If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem kActionableItems_GuestProfile[] =
     {ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-     ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
      // The first button is added again to finish the cycle and test that
      // there are no other buttons at the end.
      // Note that the test does not rely on the specific order of running test

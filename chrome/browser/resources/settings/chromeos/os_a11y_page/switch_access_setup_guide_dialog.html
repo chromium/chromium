@@ -1,0 +1,102 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../../router.html">
+<link rel="import" href="../os_icons.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="switch_access_constants.html">
+<link rel="import" href="switch_access_subpage_browser_proxy.html">
+
+<dom-module id="settings-switch-access-setup-guide-dialog">
+  <template>
+    <style include="cr-shared-style settings-shared">
+      cr-dialog::part(dialog) {
+        height: 380px;
+        width: 600px;
+      }
+
+      .sa-setup-title {
+        line-height: 150%;
+      }
+
+      .sa-setup-body {
+        height: 238px;
+      }
+
+      .sa-setup-contents {
+        width: 280px;
+      }
+
+      .flex {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      .illustration {
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        height: 145px;
+        margin: 25px 20px;
+        width: 215px;
+      }
+
+      #intro .illustration {
+         background-image:
+            url(chrome://os-settings/images/computer_and_bluetooth_switch.svg);
+      }
+
+      #button-container {
+        padding: 24px;
+      }
+
+      cr-button {
+        margin: 4px;
+      }
+
+      #bluetooth {
+        margin-inline-end: 250px;
+      }
+    </style>
+    <cr-dialog id="switchAccessSetupGuideDialog" show-on-attach>
+      <div slot="title" class="sa-setup-title" id="title">
+        $i18n{switchAccessSetupIntroTitle}
+      </div>
+      <div slot="body" class="sa-setup-body">
+        <div id="intro" class="flex">
+          <div class="sa-setup-contents">
+            $i18n{switchAccessSetupIntroBody}
+          </div>
+          <div class="illustration"></div>
+        </div>
+        <div id="assign-select" class="flex" hidden>
+          <div class="sa-setup-contents">
+            Nothing to see here yet!
+          </div>
+        </div>
+      </div>
+      <div id="button-container" slot="button-container">
+        <cr-button on-click="onBluetoothClick_" id="bluetooth">
+          $i18n{switchAccessSetupPairBluetooth}
+        </cr-button>
+        <cr-button on-click="onPreviousClick_" id="previous" hidden>
+          $i18n{switchAccessSetupPrevious}
+        </cr-button>
+        <cr-button class="exit-button" on-click="onExitClick_" id="exit">
+          $i18n{switchAccessDialogExit}
+        </cr-button>
+        <cr-button class="action-button" on-click="onNextClick_" id="next">
+          $i18n{switchAccessSetupNext}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="switch_access_setup_guide_dialog.js"></script>
+</dom-module>

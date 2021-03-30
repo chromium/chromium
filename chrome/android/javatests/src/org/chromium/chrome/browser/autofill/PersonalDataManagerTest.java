@@ -8,13 +8,15 @@ import static com.google.common.truth.Truth.assertThat;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -29,15 +31,21 @@ import java.util.concurrent.TimeoutException;
  * Tests for Chrome on Android's usage of the PersonalDataManager API.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class PersonalDataManagerTest {
-    @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @ClassRule
+    public static final ChromeBrowserTestRule sChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private AutofillTestHelper mHelper;
 
     @Before
     public void setUp() {
         mHelper = new AutofillTestHelper();
+    }
+
+    @After
+    public void tearDown() throws TimeoutException {
+        mHelper.clearAllDataForTesting();
     }
 
     private AutofillProfile createTestProfile() {
@@ -499,5 +507,35 @@ public class PersonalDataManagerTest {
         Assert.assertEquals("John Major, Acme Inc., 123 Main, Los Angeles, California 90210, "
                         + "United States",
                 profiles.get(0).getLabel());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testClearAllData() throws TimeoutException {
+        CreditCard localCard = new CreditCard("" /* guid */, "" /* origin */, true /* isLocal */,
+                false /* isCached */, "John Doe", "1234123412341234", "", "5", "2020", "Visa",
+                0 /* issuerIconDrawableId */, "" /* billingAddressId */, "" /* serverId */);
+        CreditCard serverCard = new CreditCard("serverGuid" /* guid */, "" /* origin */,
+                false /* isLocal */, false /* isCached */, "John Doe Server", "41111111111111111",
+                "", "3", "2019", "Visa", 0 /* issuerIconDrawableId */, "" /* billingAddressId */,
+                "serverId" /* serverId */);
+        mHelper.addServerCreditCard(serverCard);
+        Assert.assertEquals(1, mHelper.getNumberOfCreditCardsForSettings());
+
+        // Clears all server data.
+        mHelper.clearAllDataForTesting();
+        Assert.assertEquals(0, mHelper.getNumberOfCreditCardsForSettings());
+
+        mHelper.setProfile(createTestProfile());
+        mHelper.setCreditCard(localCard);
+        mHelper.addServerCreditCard(serverCard);
+        Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
+        Assert.assertEquals(2, mHelper.getNumberOfCreditCardsForSettings());
+
+        // Clears all server and local data.
+        mHelper.clearAllDataForTesting();
+        Assert.assertEquals(0, mHelper.getNumberOfProfilesForSettings());
+        Assert.assertEquals(0, mHelper.getNumberOfCreditCardsForSettings());
     }
 }

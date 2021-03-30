@@ -1,0 +1,16 @@
+layer at (0,0) size 1200x900 scrollHeight 1226
+  LayoutView at (0,0) size 1600x1200
+layer at (0,0) size 1600x1226
+  LayoutBlockFlow {HTML} at (0,0) size 1600x1226
+    LayoutBlockFlow {BODY} at (8,16) size 1584x1202
+      LayoutBlockFlow {P} at (0,0) size 1584x18
+        LayoutText {#text} at (0,0) size 1330x17
+          text run at (0,0) width 554: "This is a test that only dumps the layout tree, and doesn't actually display the page. This "
+          text run at (554,0) width 562: "tests some peculiarities in the test framework for printing. To run this test manually, run it "
+          text run at (1116,0) width 214: "with content_shell --run-web-tests"
+      LayoutBlockFlow {DIV} at (0,34) size 1584x18
+        LayoutText {#text} at (0,0) size 163x17
+          text run at (0,0) width 163: "This should be on page 1."
+      LayoutBlockFlow {DIV} at (0,1184) size 1584x18
+        LayoutText {#text} at (0,0) size 163x17
+          text run at (0,0) width 163: "This should be on page 2."

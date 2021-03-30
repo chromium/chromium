@@ -10,6 +10,7 @@
 
 #include "base/bit_cast.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/string_util.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -26,7 +27,6 @@ class TriggeredProfileResetterTest : public testing::Test {
  protected:
   void SetUp() override {
     TestingProfile::Builder profile_builder;
-    profile_builder.OverrideIsNewProfile(false);
     profile_ = profile_builder.Build();
 
     ASSERT_NO_FATAL_FAILURE(
@@ -41,7 +41,7 @@ class TriggeredProfileResetterTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
-  void SetRegTimestampAndToolName(const base::string16& toolname,
+  void SetRegTimestampAndToolName(const std::wstring& toolname,
                                   FILETIME* file_time) {
     RegKey trigger_key(HKEY_CURRENT_USER, kTriggeredResetRegistryPath,
                        KEY_ALL_ACCESS);
@@ -61,7 +61,7 @@ class TriggeredProfileResetterTest : public testing::Test {
 };
 
 TEST_F(TriggeredProfileResetterTest, HasResetTriggerAndClear) {
-  SetRegTimestampAndToolName(base::string16(), nullptr);
+  SetRegTimestampAndToolName(std::wstring(), nullptr);
   TriggeredProfileResetter triggered_profile_resetter(profile_.get());
   triggered_profile_resetter.Activate();
   EXPECT_TRUE(triggered_profile_resetter.HasResetTrigger());
@@ -71,7 +71,7 @@ TEST_F(TriggeredProfileResetterTest, HasResetTriggerAndClear) {
 
 TEST_F(TriggeredProfileResetterTest, HasDuplicateResetTrigger) {
   FILETIME ft = {};
-  SetRegTimestampAndToolName(base::string16(), &ft);
+  SetRegTimestampAndToolName(std::wstring(), &ft);
   profile_->GetPrefs()->SetInt64(prefs::kLastProfileResetTimestamp,
                                  bit_cast<int64_t, FILETIME>(ft));
 
@@ -86,8 +86,8 @@ TEST_F(TriggeredProfileResetterTest, HasToolName) {
   TriggeredProfileResetter triggered_profile_resetter(profile_.get());
   triggered_profile_resetter.Activate();
   EXPECT_TRUE(triggered_profile_resetter.HasResetTrigger());
-  EXPECT_STREQ(kToolName,
-               triggered_profile_resetter.GetResetToolName().c_str());
+  EXPECT_EQ(base::as_u16cstr(kToolName),
+            triggered_profile_resetter.GetResetToolName());
 }
 
 TEST_F(TriggeredProfileResetterTest, HasLongToolName) {
@@ -95,13 +95,12 @@ TEST_F(TriggeredProfileResetterTest, HasLongToolName) {
       L"ToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcTool"
       L"ToolMcToolToolMcToolToolMcToolThisIsTheToolThatNeverEndsYesItGoesOnAnd"
       L"OnMyFriend";
-  const wchar_t kExpectedToolName[] =
-      L"ToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcTool"
-      L"ToolMcToolToolMcToolToolMcTool";
+  const char16_t kExpectedToolName[] =
+      u"ToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcTool"
+      u"ToolMcToolToolMcToolToolMcTool";
   SetRegTimestampAndToolName(kLongToolName, nullptr);
   TriggeredProfileResetter triggered_profile_resetter(profile_.get());
   triggered_profile_resetter.Activate();
   EXPECT_TRUE(triggered_profile_resetter.HasResetTrigger());
-  EXPECT_STREQ(kExpectedToolName,
-               triggered_profile_resetter.GetResetToolName().c_str());
+  EXPECT_EQ(kExpectedToolName, triggered_profile_resetter.GetResetToolName());
 }

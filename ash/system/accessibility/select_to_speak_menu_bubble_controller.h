@@ -37,7 +37,7 @@ class ASH_EXPORT SelectToSpeakMenuBubbleController
   friend class SelectToSpeakSpeedBubbleControllerTest;
 
   // TrayBubbleView::Delegate:
-  base::string16 GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForBubble() override;
   void BubbleViewDestroyed() override;
 
   // ::wm::ActivationChangeObserver:

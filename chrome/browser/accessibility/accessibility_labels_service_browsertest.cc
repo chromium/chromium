@@ -16,7 +16,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #else
 #include "content/public/browser/browser_accessibility_state.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -37,7 +37,7 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
   void EnableScreenReader(bool enabled) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Enable Chromevox.
-    chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
+    ash::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
 #else
     // Spoof a screen reader.
     if (enabled) {

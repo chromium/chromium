@@ -22,7 +22,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -101,19 +101,25 @@ AutocompleteMatch::DocumentType GetIconForMIMEType(
              : AutocompleteMatch::DocumentType::DRIVE_OTHER;
 }
 
+String16Vector SplitByColon(const String16Vector& words) {
+  return std::accumulate(
+      words.begin(), words.end(), String16Vector(),
+      [](String16Vector accumulated, const auto& word) {
+        const auto split = base::SplitString(
+            word, u":", base::WhitespaceHandling::TRIM_WHITESPACE,
+            base::SplitResult::SPLIT_WANT_NONEMPTY);
+        accumulated.insert(accumulated.end(), split.begin(), split.end());
+        return accumulated;
+      });
+}
+
 struct FieldMatches {
   double weight;
   String16Vector words;
   size_t count;
 
   FieldMatches(double weight, const std::string* string)
-      : weight(weight),
-        words(string ? String16VectorFromString16(
-                           base::UTF8ToUTF16(string->c_str()),
-                           false,
-                           nullptr)
-                     : String16Vector()),
-        count(0) {}
+      : FieldMatches(weight, std::vector<const std::string*>{string}) {}
 
   FieldMatches(double weight, std::vector<const std::string*> strings)
       : weight(weight),
@@ -123,8 +129,9 @@ struct FieldMatches {
             String16Vector(),
             [](String16Vector words, const std::string* string) {
               if (string) {
-                const auto string_words = String16VectorFromString16(
-                    base::UTF8ToUTF16(string->c_str()), false, nullptr);
+                const auto string_words =
+                    SplitByColon(String16VectorFromString16(
+                        base::UTF8ToUTF16(string->c_str()), false, nullptr));
                 words.insert(words.end(), string_words.begin(),
                              string_words.end());
               }
@@ -134,8 +141,8 @@ struct FieldMatches {
 
   // Increments |count| and returns true if |words| includes a word equal to or
   // prefixed by |word|.
-  bool Includes(const base::string16& word) {
-    if (std::none_of(words.begin(), words.end(), [word](base::string16 w) {
+  bool Includes(const std::u16string& word) {
+    if (std::none_of(words.begin(), words.end(), [word](std::u16string w) {
           return base::StartsWith(w, word,
                                   base::CompareCase::INSENSITIVE_ASCII);
         }))
@@ -174,7 +181,7 @@ double FieldWeight(const std::string& param_name, double default_weight) {
                                                    param_name, default_weight);
 }
 
-int CalculateScore(const base::string16& input,
+int CalculateScore(const std::u16string& input,
                    const base::DictionaryValue* result) {
   // Suggestions scored lower than |raw_score_cutoff| will be discarded.
   double raw_score_cutoff = base::GetFieldTrialParamByFeatureAsDouble(
@@ -205,7 +212,8 @@ int CalculateScore(const base::string16& input,
                    });
 
   String16Vector input_words =
-      String16VectorFromString16(input, false, nullptr);
+      SplitByColon(String16VectorFromString16(input, false, nullptr));
+
   for (const auto& word : input_words) {
     (void)std::find_if(
         field_matches_vec.begin(), field_matches_vec.end(),
@@ -365,8 +373,10 @@ bool DocumentProvider::IsDocumentProviderAllowed(
       template_url_service->GetDefaultSearchProvider();
   if (default_provider == nullptr ||
       default_provider->GetEngineType(
-          template_url_service->search_terms_data()) != SEARCH_ENGINE_GOOGLE)
+          template_url_service->search_terms_data()) != SEARCH_ENGINE_GOOGLE) {
     return false;
+  }
+
   if (OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() &&
       input.prefer_keyword()) {
     // If a keyword provider matches, and we're explicitly in keyword mode,
@@ -376,14 +386,31 @@ bool DocumentProvider::IsDocumentProviderAllowed(
     const TemplateURL* keyword_provider =
         KeywordProvider::GetSubstitutingTemplateURLForInput(
             template_url_service, &keyword_input);
-    if (keyword_provider == nullptr)
-      return true;
-    // True if not explicitly in keyword mode, or a Drive suggestion.
-    return !IsExplicitlyInKeywordMode(input, keyword_provider->keyword()) ||
-           base::StartsWith(input.text(),
-                            base::ASCIIToUTF16("drive.google.com"),
-                            base::CompareCase::SENSITIVE);
+    if (keyword_provider &&
+        IsExplicitlyInKeywordMode(input, keyword_provider->keyword()) &&
+        !base::StartsWith(input.text(), u"drive.google.com",
+                          base::CompareCase::SENSITIVE)) {
+      return false;
+    }
   }
+
+  // There should be no document suggestions fetched for on-focus suggestion
+  // requests, or if the input is empty.
+  if (input.focus_type() != OmniboxFocusType::DEFAULT ||
+      input.type() == metrics::OmniboxInputType::EMPTY) {
+    return false;
+  }
+
+  // Experiment: don't issue queries for inputs under some length.
+  if (!WithinBounds(input.text().length(), min_query_length_,
+                    max_query_length_)) {
+    return false;
+  }
+
+  // Don't issue queries for input likely to be a URL.
+  if (IsInputLikelyURL(input))
+    return false;
+
   return true;
 }
 
@@ -396,11 +423,11 @@ bool DocumentProvider::IsInputLikelyURL(const AutocompleteInput& input) {
   // prefixes, but the SchemeClassifier won't have classified them as URLs yet.
   // Note these checks are of the form "(string constant) starts with input."
   if (input.text().length() <= 8) {
-    if (StartsWith(base::ASCIIToUTF16("https://"), input.text(),
+    if (StartsWith(u"https://", input.text(),
                    base::CompareCase::INSENSITIVE_ASCII) ||
-        StartsWith(base::ASCIIToUTF16("http://"), input.text(),
+        StartsWith(u"http://", input.text(),
                    base::CompareCase::INSENSITIVE_ASCII) ||
-        StartsWith(base::ASCIIToUTF16("www."), input.text(),
+        StartsWith(u"www.", input.text(),
                    base::CompareCase::INSENSITIVE_ASCII)) {
       return true;
     }
@@ -417,31 +444,15 @@ void DocumentProvider::Start(const AutocompleteInput& input,
 
   // Perform various checks - feature is enabled, user is allowed to use the
   // feature, we're not under backoff, etc.
-  if (!IsDocumentProviderAllowed(client_, input)) {
+  if (!IsDocumentProviderAllowed(client_, input))
     return;
-  }
-
-  // There should be no document suggestions fetched for on-focus suggestion
-  // requests, or if the input is empty.
-  if (input.focus_type() != OmniboxFocusType::DEFAULT ||
-      input.type() == metrics::OmniboxInputType::EMPTY) {
-    return;
-  }
-
-  // Experiment: don't issue queries for inputs under some length.
-  if (!WithinBounds(input.text().length(), min_query_length_,
-                    max_query_length_))
-    return;
-
-  // Don't issue queries for input likely to be a URL.
-  if (IsInputLikelyURL(input)) {
-    return;
-  }
 
   input_ = input;
 
-  // Return cached suggestions synchronously.
+  // Return cached suggestions synchronously after setting the relevance of any
+  // beyond |provider_max_matches_| to 0.
   CopyCachedMatchesToMatches();
+  DemoteMatchesBeyondMax();
 
   if (!input.want_asynchronous_matches()) {
     return;
@@ -600,11 +611,30 @@ bool DocumentProvider::UpdateResults(const std::string& json_data) {
   if (!response)
     return false;
 
+  // 1) Fill |matches_| with <N> new server matches.
   matches_ = ParseDocumentSearchResults(*response);
+  // 2) Clear cached matches' scores to ensure cached matches for all but the
+  // previous input can only be shown if deduped. E.g., this allows matches for
+  // the input 'pari' to be displayed synchronously for the input 'paris', but
+  // be hidden if the user clears their input and starts anew 'london'.
+  SetCachedMatchesScoresTo0();
+  // 3) Push the <N> new matches to the cache.
   for (auto it = matches_.rbegin(); it != matches_.rend(); ++it)
     matches_cache_.Put(it->stripped_destination_url, *it);
+  // 4) Copy the cached matches to |matches_|, skipping the most recent <N>
+  // cached matches since they were already added in step (1). Pass
+  // |set_scores_to_0| as true as we don't trust cached scores since they may no
+  // longer match the current input; if the cached matches were still relevant,
+  // they would have been returned from the server again.
   CopyCachedMatchesToMatches(matches_.size());
+  // 5) Only now can we shrink the cache to |cache_size_|. Doing this
+  // automatically when pushing the new matches to the cache would reduce it's
+  // effective size, especially if the server returns close to |cache_size_|
+  // matches.
   matches_cache_.ShrinkToSize(cache_size_);
+  // 6) Limit matches to |provider_max_matches_| unless used for deduping; i.e.
+  // set the scores of matches beyond the limit to 0.
+  DemoteMatchesBeyondMax();
 
   return !matches_.empty();
 }
@@ -616,15 +646,15 @@ void DocumentProvider::OnDocumentSuggestionsLoaderAvailable(
 }
 
 // static
-base::string16 DocumentProvider::GenerateLastModifiedString(
+std::u16string DocumentProvider::GenerateLastModifiedString(
     const std::string& modified_timestamp_string,
     base::Time now) {
   if (modified_timestamp_string.empty())
-    return base::string16();
+    return std::u16string();
   base::Time modified_time;
   if (!base::Time::FromString(modified_timestamp_string.c_str(),
                               &modified_time))
-    return base::string16();
+    return std::u16string();
 
   // Use shorthand if the times fall on the same day or in the same year.
   base::Time::Exploded exploded_modified_time;
@@ -646,7 +676,7 @@ base::string16 DocumentProvider::GenerateLastModifiedString(
 }
 
 // static
-base::string16 DocumentProvider::GetProductDescriptionString(
+std::u16string DocumentProvider::GetProductDescriptionString(
     const std::string& mimetype) {
   if (mimetype == kDocumentMimetype)
     return l10n_util::GetStringUTF16(IDS_DRIVE_SUGGESTION_DOCUMENT);
@@ -661,13 +691,13 @@ base::string16 DocumentProvider::GetProductDescriptionString(
 }
 
 // static
-base::string16 DocumentProvider::GetMatchDescription(
+std::u16string DocumentProvider::GetMatchDescription(
     const std::string& update_time,
     const std::string& mimetype,
     const std::string& owner) {
-  base::string16 mime_desc = GetProductDescriptionString(mimetype);
+  std::u16string mime_desc = GetProductDescriptionString(mimetype);
   if (!update_time.empty()) {
-    base::string16 date_desc =
+    std::u16string date_desc =
         GenerateLastModifiedString(update_time, base::Time::Now());
     return owner.empty()
                ? l10n_util::GetStringFUTF16(
@@ -705,7 +735,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   // two scores will be used.
   // If both are false, the server score will be used.
   bool use_client_score = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kDocumentProvider, "DocumentUseClientScore", true);
+      omnibox::kDocumentProvider, "DocumentUseClientScore", false);
   bool use_server_score = base::GetFieldTrialParamByFeatureAsBool(
       omnibox::kDocumentProvider, "DocumentUseServerScore", true);
 
@@ -765,8 +795,8 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     if (!results_list->GetDictionary(i, &result)) {
       return matches;
     }
-    base::string16 title;
-    base::string16 url;
+    std::u16string title;
+    std::u16string url;
     result->GetString("title", &title);
     result->GetString("url", &url);
     if (title.empty() || url.empty()) {
@@ -779,31 +809,26 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     int server_score = 0;
     result->GetInteger("score", &server_score);
     int score = 0;
-    // Set |score| only if we haven't surpassed |provider_max_matches_| yet.
-    // Otherwise, score the remaining matches 0 to avoid displaying them except
-    // when deduped with history, shortcut, or bookmark matches.
-    if (matches.size() < provider_max_matches_) {
-      if (use_client_score && use_server_score)
-        score = std::min(client_score, server_score);
-      else
-        score = use_client_score ? client_score : server_score;
 
-      if (cap_score_per_rank) {
-        int score_cap =
-            i < score_caps.size() ? score_caps[i] : score_caps.back();
-        score = std::min(score, score_cap);
-      }
+    if (use_client_score && use_server_score)
+      score = std::min(client_score, server_score);
+    else
+      score = use_client_score ? client_score : server_score;
 
-      if (boost_owned)
-        score = BoostOwned(score, client_->ProfileUserName(), result);
-
-      // Decrement scores if necessary to ensure suggestion order is preserved.
-      // Don't decrement client scores which don't necessarily rank suggestions
-      // the same order as the server.
-      if (!use_client_score && score >= previous_score)
-        score = std::max(previous_score - 1, 0);
-      previous_score = score;
+    if (cap_score_per_rank) {
+      int score_cap = i < score_caps.size() ? score_caps[i] : score_caps.back();
+      score = std::min(score, score_cap);
     }
+
+    if (boost_owned)
+      score = BoostOwned(score, client_->ProfileUserName(), result);
+
+    // Decrement scores if necessary to ensure suggestion order is preserved.
+    // Don't decrement client scores which don't necessarily rank suggestions
+    // the same order as the server.
+    if (!use_client_score && score >= previous_score)
+      score = std::max(previous_score - 1, 0);
+    previous_score = score;
 
     AutocompleteMatch match(this, score, false,
                             AutocompleteMatchType::DOCUMENT_SUGGESTION);
@@ -811,12 +836,19 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     // deduping if present.
     match.fill_into_edit = url;
     match.destination_url = GURL(url);
-    base::string16 original_url;
+    std::u16string original_url;
     if (result->GetString("originalUrl", &original_url)) {
-      GURL stripped_url = GetURLForDeduping(GURL(original_url));
-      if (stripped_url.is_valid())
-        match.stripped_destination_url = stripped_url;
+      // |AutocompleteMatch::GURLToStrippedGURL()| will try to use
+      // |GetURLForDeduping()| to extract a doc ID and generate a canonical doc
+      // URL; this is ideal as it handles different URL formats pointing to the
+      // same doc. Otherwise, it'll resort to the typical stripped URL
+      // generation that can still be used for generic deduping and as a key to
+      // |matches_cache_|.
+      match.stripped_destination_url = AutocompleteMatch::GURLToStrippedGURL(
+          GURL(original_url), input_, client_->GetTemplateURLService(),
+          std::u16string());
     }
+
     match.contents = AutocompleteMatch::SanitizeString(title);
     match.contents_class = Classify(match.contents, input_.text());
     const base::DictionaryValue* metadata = nullptr;
@@ -831,7 +863,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       std::string update_time;
       metadata->GetString("updateTime", &update_time);
       bool display_owner = base::GetFieldTrialParamByFeatureAsBool(
-          omnibox::kDocumentProvider, "DisplayOwner", false);
+          omnibox::kDocumentProvider, "DisplayOwner", true);
       auto owners = ExtractResultList(result, "metadata.owner.personNames",
                                       "displayName");
       if (!owners.empty())
@@ -874,9 +906,8 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 void DocumentProvider::CopyCachedMatchesToMatches(
     size_t skip_n_most_recent_matches) {
   std::for_each(std::next(matches_cache_.begin(), skip_n_most_recent_matches),
-                matches_cache_.end(), [this](const auto& cache_key_match_pair) {
+                matches_cache_.end(), [&](const auto& cache_key_match_pair) {
                   auto match = cache_key_match_pair.second;
-                  match.relevance = 0;
                   match.allowed_to_be_default_match = false;
                   match.TryRichAutocompletion(
                       base::UTF8ToUTF16(match.destination_url.spec()),
@@ -888,10 +919,22 @@ void DocumentProvider::CopyCachedMatchesToMatches(
                 });
 }
 
+void DocumentProvider::SetCachedMatchesScoresTo0() {
+  std::for_each(matches_cache_.begin(), matches_cache_.end(),
+                [&](auto& cache_key_match_pair) {
+                  cache_key_match_pair.second.relevance = 0;
+                });
+}
+
+void DocumentProvider::DemoteMatchesBeyondMax() {
+  for (size_t i = provider_max_matches_; i < matches_.size(); ++i)
+    matches_[i].relevance = 0;
+}
+
 // static
 ACMatchClassifications DocumentProvider::Classify(
-    const base::string16& text,
-    const base::string16& input_text) {
+    const std::u16string& text,
+    const std::u16string& input_text) {
   TermMatches term_matches = FindTermMatches(input_text, text);
   return ClassifyTermMatches(term_matches, text.size(),
                              ACMatchClassification::MATCH,

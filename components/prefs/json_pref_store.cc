@@ -196,8 +196,7 @@ void JsonPrefStore::RemoveObserver(PrefStore::Observer* observer) {
 
 bool JsonPrefStore::HasObservers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 bool JsonPrefStore::IsInitializationComplete() const {

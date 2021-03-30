@@ -29,7 +29,6 @@
 #include "base/containers/mru_cache.h"
 #include "base/containers/queue.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/template_util.h"
 
 // Composable memory usage estimators.
@@ -350,7 +349,7 @@ size_t EstimateMemoryUsage(const std::basic_string<C, T, A>& string) {
 
 // Use explicit instantiations from the .cc file (reduces bloat).
 extern template BASE_EXPORT size_t EstimateMemoryUsage(const std::string&);
-extern template BASE_EXPORT size_t EstimateMemoryUsage(const string16&);
+extern template BASE_EXPORT size_t EstimateMemoryUsage(const std::u16string&);
 
 // Arrays
 

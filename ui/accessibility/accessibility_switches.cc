@@ -13,6 +13,21 @@ namespace switches {
 const char kEnableExperimentalAccessibilityAutoclick[] =
     "enable-experimental-accessibility-autoclick";
 
+// Enables the experimental dictation extension on Chrome OS that hasn't
+// launched yet.
+const char kEnableExperimentalAccessibilityDictationExtension[] =
+    "enable-experimental-accessibility-dictation-extension";
+
+// Enables dictation to use on-device speech recognition.
+const char kEnableExperimentalAccessibilityDictationOffline[] =
+    "enable-experimental-accessibility-dictation-offline";
+
+// Enables dictation using web speech to listen for a longer duration,
+// and for dictation with web speech or on-device speech to continue listening
+// after speech is finalized.
+const char kEnableExperimentalAccessibilityDictationListening[] =
+    "enable-experimental-accessibility-dictation-listening";
+
 // Enables support for visually debugging the accessibility labels
 // feature, which provides images descriptions for screen reader users.
 const char kEnableExperimentalAccessibilityLabelsDebugging[] =
@@ -32,13 +47,28 @@ const char kEnableExperimentalAccessibilityLanguageDetectionDynamic[] =
 const char kEnableExperimentalAccessibilitySwitchAccessText[] =
     "enable-experimental-accessibility-switch-access-text";
 
-// Enables annotations feature that hasn't launched yet.
-const char kEnableExperimentalAccessibilityChromeVoxAnnotations[] =
-    "enable-experimental-accessibility-chromevox-annotations";
-
 // Enables Switch Access point scanning. This feature hasn't launched yet.
 const char kEnableSwitchAccessPointScanning[] =
     "enable-switch-access-point-scanning";
+
+// Enables the Switch Access setup guide that hasn't launched yet.
+const char kEnableExperimentalAccessibilitySwitchAccessSetupGuide[] =
+    "enable-experimental-accessibility-switch-access-setup-guide";
+
+bool IsExperimentalAccessibilityDictationExtensionEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableExperimentalAccessibilityDictationExtension);
+}
+
+bool IsExperimentalAccessibilityDictationOfflineEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableExperimentalAccessibilityDictationOffline);
+}
+
+bool IsExperimentalAccessibilityDictationListeningEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableExperimentalAccessibilityDictationListening);
+}
 
 bool IsExperimentalAccessibilityLanguageDetectionEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(

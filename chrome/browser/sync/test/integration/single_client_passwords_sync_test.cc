@@ -198,11 +198,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   ASSERT_EQ(1, GetPasswordCount(0));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
-  // to get a non-empty refresh token on startup.
-  GetClient(0)->SignInPrimaryAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
   // After restart, the last sync cycle snapshot should be empty. Once a sync
@@ -274,15 +269,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        StoresDataForSyncingPrimaryAccountInProfileDB) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-
   // Sign in and enable Sync.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
-  GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
-      kSetSourceFromTest);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
@@ -374,15 +362,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        DoesNotClearProfileDBOnSignout) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-
   // Sign in and enable Sync.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
-  GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
-      kSetSourceFromTest);
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
-
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   // Make sure the password showed up in the profile store.

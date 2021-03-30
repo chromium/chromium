@@ -45,8 +45,6 @@ class ChromeSigninStatusMetricsProviderDelegate
   // IdentityManagerFactoryObserver:
   void IdentityManagerCreated(
       signin::IdentityManager* identity_manager) override;
-  void IdentityManagerShutdown(
-      signin::IdentityManager* identity_manager) override;
 
   // Updates the sign-in status right after a new browser is opened.
   void UpdateStatusWhenBrowserAdded(bool signed_in);

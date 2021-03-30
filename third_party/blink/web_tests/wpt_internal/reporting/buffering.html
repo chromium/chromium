@@ -1,0 +1,51 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/intervention.js"></script>
+
+<div id="target" style="padding: 10px; background-color: blue;">
+  <p>Testing ReportingObserver's |buffered| option.</p>
+</div>
+
+<script>
+async_test(function(test) {
+  var observer1 = new ReportingObserver(function(reports, observer) {
+    test.step(function() {
+      // Both reports should be observed, since the |buffered| option is set to
+      // true.
+      assert_equals(reports.length, 2);
+    });
+
+    test.done();
+  }, { buffered: true });
+
+  // Generate two reports (deprecation and intervention), one before
+  // and one after calling observe().
+  causeIntervention();
+  observer1.observe();
+  window.webkitStorageInfo;
+  observer1.disconnect();
+}, "Buffered reports observed");
+
+
+async_test(function(test) {
+  var observer2 = new ReportingObserver(function(reports, observer) {
+    test.step(function() {
+      // Only the second report should be observed, since the |buffered| option
+      // is set to false by default.
+      assert_equals(reports.length, 1);
+      assert_equals(reports[0].type, "deprecation");
+      assert_equals(reports[0].body.id, "PrefixedRequestAnimationFrame");
+    });
+
+    test.done();
+  });
+
+  // Generate two reports (deprecation and intervention), one before
+  // and one after calling observe().
+  causeIntervention();
+  observer2.observe();
+  webkitRequestAnimationFrame(() => {});  // id = "PrefixedCancelAnimationFrame"
+  observer2.disconnect();
+}, "Buffered reports not observed");
+</script>

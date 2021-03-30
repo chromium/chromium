@@ -66,6 +66,11 @@ void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
   exclusion_reasons_ &= ~(GetExclusionBitmask(reason));
 }
 
+void CookieInclusionStatus::RemoveExclusionReasons(
+    const std::vector<ExclusionReason>& reasons) {
+  exclusion_reasons_ = ExclusionReasonsWithout(reasons);
+}
+
 uint32_t CookieInclusionStatus::ExclusionReasonsWithout(
     const std::vector<ExclusionReason>& reasons) const {
   uint32_t mask = 0u;
@@ -217,6 +222,8 @@ std::string CookieInclusionStatus::GetDebugString() const {
     base::StrAppend(&out, {"EXCLUDE_SAMESITE_NONE_INSECURE, "});
   if (HasExclusionReason(EXCLUDE_USER_PREFERENCES))
     base::StrAppend(&out, {"EXCLUDE_USER_PREFERENCES, "});
+  if (HasExclusionReason(EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT))
+    base::StrAppend(&out, {"EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT, "});
   if (HasExclusionReason(EXCLUDE_FAILURE_TO_STORE))
     base::StrAppend(&out, {"EXCLUDE_FAILURE_TO_STORE, "});
   if (HasExclusionReason(EXCLUDE_NONCOOKIEABLE_SCHEME))
@@ -256,6 +263,14 @@ std::string CookieInclusionStatus::GetDebugString() const {
     base::StrAppend(&out, {"WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE, "});
   if (HasWarningReason(WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC))
     base::StrAppend(&out, {"WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC, "});
+  if (HasWarningReason(WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE))
+    base::StrAppend(&out, {"WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE, "});
+  if (HasWarningReason(WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE))
+    base::StrAppend(&out, {"WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE, "});
+  if (HasWarningReason(WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211)) {
+    base::StrAppend(&out,
+                    {"WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211, "});
+  }
 
   // Strip trailing comma and space.
   out.erase(out.end() - 2, out.end());

@@ -40,6 +40,7 @@ class Element;
 class ExceptionState;
 class HTMLCollection;
 class RadioNodeList;
+class StyleRecalcContext;
 class WhitespaceAttacher;
 
 using StaticElementList = StaticNodeTypeList<Element>;
@@ -92,6 +93,7 @@ class CORE_EXPORT ContainerNode : public Node {
 
   Node* firstChild() const { return first_child_; }
   Node* lastChild() const { return last_child_; }
+  bool hasChildren() const { return first_child_; }
   bool HasChildren() const { return first_child_; }
 
   bool HasOneChild() const {
@@ -286,7 +288,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                    Element* changed_element,
                                    Node* node_before_change,
                                    Node* node_after_change);
-  void RecalcDescendantStyles(const StyleRecalcChange);
+  void RecalcDescendantStyles(const StyleRecalcChange,
+                              const StyleRecalcContext&);
   void RebuildChildrenLayoutTrees(WhitespaceAttacher&);
   void RebuildLayoutTreeForChild(Node* child, WhitespaceAttacher&);
 
@@ -318,7 +321,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                &node,
                                unchanged_previous,
                                unchanged_next,
-                               {}};
+                               {},
+                               String()};
       return change;
     }
 
@@ -333,7 +337,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                &node,
                                previous_sibling,
                                next_sibling,
-                               {}};
+                               {},
+                               String()};
       return change;
     }
 
@@ -370,6 +375,8 @@ class CORE_EXPORT ContainerNode : public Node {
     // Only populated if ChildrenChangedAllChildrenRemovedNeedsList() returns
     // true.
     HeapVector<Member<Node>> removed_nodes;
+    // |old_text| is mostly empty, only used for text node changes.
+    const String& old_text;
   };
 
   // Notifies the node that it's list of children have changed (either by adding

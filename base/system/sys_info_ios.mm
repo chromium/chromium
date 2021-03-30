@@ -17,7 +17,9 @@
 #include "base/process/process_metrics.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -87,6 +89,21 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
 }
 
 // static
+std::string SysInfo::OperatingSystemArchitecture() {
+#if defined(ARCH_CPU_X86)
+  return "x86";
+#elif defined(ARCH_CPU_X86_64)
+  return "x86_64";
+#elif defined(ARCH_CPU_ARMEL)
+  return "arm";
+#elif defined(ARCH_CPU_ARM64)
+  return "arm64";
+#else
+#error Unsupported CPU architecture
+#endif
+}
+
+// static
 std::string SysInfo::GetIOSBuildNumber() {
   int mib[2] = {CTL_KERN, KERN_OSVERSION};
   unsigned int namelen = sizeof(mib) / sizeof(mib[0]);
@@ -133,7 +150,21 @@ std::string SysInfo::HardwareModelName() {
 #if TARGET_OS_SIMULATOR
   // On the simulator, "hw.machine" returns "i386" or "x86_64" which doesn't
   // match the expected format, so supply a fake string here.
-  return "Simulator1,1";
+  const char* model = getenv("SIMULATOR_MODEL_IDENTIFIER");
+  if (model == nullptr) {
+    switch ([[UIDevice currentDevice] userInterfaceIdiom]) {
+      case UIUserInterfaceIdiomPhone:
+        model = "iPhone";
+        break;
+      case UIUserInterfaceIdiomPad:
+        model = "iPad";
+        break;
+      default:
+        model = "Unknown";
+        break;
+    }
+  }
+  return base::StringPrintf("iOS Simulator (%s)", model);
 #else
   // Note: This uses "hw.machine" instead of "hw.model" like the Mac code,
   // because "hw.model" doesn't always return the right string on some devices.

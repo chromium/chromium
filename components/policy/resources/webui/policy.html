@@ -41,6 +41,7 @@
         </label>
       </div>
     </div>
+    <div aria-live="polite" id="screen-reader-message"></div>
   </header>
   <main id="policy-ui">
     <section id="status-section" class="status-box-section" hidden>
@@ -63,10 +64,6 @@
         <div class="enterprise-enrollment-domain"></div>
       </div>
       <div class="status-entry" hidden>
-        <div class="label">$i18n{labelEnterpriseDisplayDomain}</div>
-        <div class="enterprise-display-domain"></div>
-      </div>
-      <div class="status-entry" hidden>
         <div class="label">$i18n{labelMachineEnrollmentMachineName}</div>
         <div class="machine-enrollment-name"></div>
       </div>
@@ -85,6 +82,10 @@
       <div class="status-entry" hidden>
         <div class="label">$i18n{labelUsername}</div>
         <div class="username"></div>
+      </div>
+      <div class="status-entry" hidden>
+        <div class="label">$i18n{labelManagedBy}</div>
+        <div class="managed-by"></div>
       </div>
       <div class="status-entry" hidden>
         <div class="label">$i18n{labelGaiaId}</div>
@@ -157,7 +158,7 @@
     <div class="policy-conflict-data" id="policy-conflict-template"
          role="rowgroup" hidden>
       <div class="policy conflict row" role="row">
-          <div class="name" role="rowheader">$i18n{conflict}</div>
+          <div class="name" role="rowheader">$i18n{conflictValue}</div>
           <div class="value" role="cell"></div>
           <div class="source" role="cell"></div>
           <div class="scope" role="cell"></div>
@@ -204,6 +205,10 @@
       </div>
       <div class="warnings row" role="row" hidden>
         <div class="name" role="rowheader">$i18n{warning}</div>
+        <div class="value" role="cell"></div>
+      </div>
+      <div class="infos row" role="row" hidden>
+        <div class="name" role="rowheader">$i18n{info}</div>
         <div class="value" role="cell"></div>
       </div>
     </div>

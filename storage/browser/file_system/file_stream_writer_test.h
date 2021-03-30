@@ -41,8 +41,8 @@ class FileStreamWriterTest : public testing::Test {
   static void NeverCalled(int unused) { ADD_FAILURE(); }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 };
 
 template <class SubClass>
@@ -109,11 +109,11 @@ TYPED_TEST_P(FileStreamWriterTypedTest, WriteAfterEnd) {
 
   std::unique_ptr<FileStreamWriter> writer(
       this->CreateWriter(std::string(this->kTestFileName), 7));
-  EXPECT_EQ(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE,
-            WriteStringToWriter(writer.get(), "xxx"));
+  EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "xxx"));
 
   EXPECT_TRUE(this->FilePathExists(std::string(this->kTestFileName)));
-  EXPECT_EQ("foobar", this->GetFileContent(std::string(this->kTestFileName)));
+  EXPECT_EQ(std::string("foobar\0xxx", 10),
+            this->GetFileContent(std::string(this->kTestFileName)));
 }
 
 TYPED_TEST_P(FileStreamWriterTypedTest, WriteFailForNonexistingFile) {

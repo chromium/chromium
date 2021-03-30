@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "components/autofill/core/browser/crypto/rc4_decryptor.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -75,13 +74,12 @@ bool IsEmptySalt(std::wstring const& salt) {
   return true;
 }
 
-base::string16 ReadAndDecryptValue(const RegKey& key,
-                                   const wchar_t* value_name) {
+std::wstring ReadAndDecryptValue(const RegKey& key, const wchar_t* value_name) {
   DWORD data_type = REG_BINARY;
   DWORD data_size = 0;
   LONG result = key.ReadValue(value_name, nullptr, &data_size, &data_type);
   if ((result != ERROR_SUCCESS) || !data_size || data_type != REG_BINARY)
-    return base::string16();
+    return std::wstring();
   std::string data;
   data.resize(data_size);
   result = key.ReadValue(value_name, &(data[0]), &data_size, &data_type);
@@ -91,12 +89,11 @@ base::string16 ReadAndDecryptValue(const RegKey& key,
       // The actual data is in UTF16 already.
       if (!(out_data.size() & 1) && (out_data.size() > 2) &&
           !out_data[out_data.size() - 1] && !out_data[out_data.size() - 2]) {
-        return base::string16(
-            reinterpret_cast<const wchar_t *>(out_data.c_str()));
+        return reinterpret_cast<const wchar_t*>(out_data.c_str());
       }
     }
   }
-  return base::string16();
+  return std::wstring();
 }
 
 struct {
@@ -157,16 +154,18 @@ bool ImportSingleFormGroup(const RegKey& key,
     if (it == reg_to_field.end())
       continue;  // This field is not imported.
 
-    base::string16 field_value = ReadAndDecryptValue(key, value_name.c_str());
+    std::wstring field_value = ReadAndDecryptValue(key, value_name.c_str());
     if (!field_value.empty()) {
       if (it->second == CREDIT_CARD_NUMBER)
         field_value = DecryptCCNumber(field_value);
 
       // Phone numbers are stored piece-by-piece, and then reconstructed from
       // the pieces.  The rest of the fields are set "as is".
-      if (!phone || !phone->SetInfo(AutofillType(it->second), field_value)) {
+      if (!phone || !phone->SetInfo(AutofillType(it->second),
+                                    base::WideToUTF16(field_value))) {
         has_non_empty_fields = true;
-        form_group->SetInfo(AutofillType(it->second), field_value, app_locale);
+        form_group->SetInfo(AutofillType(it->second),
+                            base::WideToUTF16(field_value), app_locale);
       }
     }
   }
@@ -186,7 +185,7 @@ bool ImportSingleProfile(const std::string& app_locale,
       ImportSingleFormGroup(key, reg_to_field, app_locale, profile, &phone);
 
   // Now re-construct the phones if needed.
-  base::string16 constructed_number;
+  std::u16string constructed_number;
   if (phone.ParseNumber(*profile, app_locale, &constructed_number)) {
     has_non_empty_fields = true;
     profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, constructed_number);
@@ -265,8 +264,8 @@ bool ImportCurrentUserProfiles(const std::string& app_locale,
       profiles->push_back(profile);
     }
   }
-  base::string16 password_hash;
-  base::string16 salt;
+  std::wstring password_hash;
+  std::wstring salt;
   RegKey cc_key(HKEY_CURRENT_USER, kCreditCardKey, KEY_READ);
   if (cc_key.Valid()) {
     password_hash = ReadAndDecryptValue(cc_key, kPasswordHashValue);
@@ -286,7 +285,7 @@ bool ImportCurrentUserProfiles(const std::string& app_locale,
       credit_card.set_origin(kIEToolbarImportOrigin);
       if (ImportSingleFormGroup(key, reg_to_field, app_locale, &credit_card,
                                 nullptr)) {
-        base::string16 cc_number = credit_card.GetRawInfo(CREDIT_CARD_NUMBER);
+        std::u16string cc_number = credit_card.GetRawInfo(CREDIT_CARD_NUMBER);
         if (!cc_number.empty())
           credit_cards->push_back(credit_card);
       }

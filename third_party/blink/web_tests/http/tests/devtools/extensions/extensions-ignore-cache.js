@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests ignoreCache flag of WebInspector.inspectedPage.reload()\n`);
-  await TestRunner.loadModule('extensions_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
   await TestRunner.navigatePromise('resources/random-script.html');
   await ExtensionsTestRunner.runExtensionTests([
     function extension_testIgnoreCache(nextTest) {

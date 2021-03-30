@@ -27,8 +27,10 @@ class DesktopMediaPickerFactoryImpl : public DesktopMediaPickerFactory {
   // Can return |nullptr| if platform doesn't support DesktopMediaPicker.
   std::unique_ptr<DesktopMediaPicker> CreatePicker(
       const content::MediaStreamRequest* request) override;
+
   std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
-      const std::vector<content::DesktopMediaID::Type>& types) override;
+      const std::vector<DesktopMediaList::Type>& types,
+      content::WebContents* web_contents) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DesktopMediaPickerFactoryImpl);

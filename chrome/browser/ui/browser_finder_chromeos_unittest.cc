@@ -7,8 +7,8 @@
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -31,7 +31,7 @@ const char kTestAccount2[] = "user2@test.com";
 class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
  protected:
   BrowserFinderChromeOSTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager),
+      : fake_user_manager_(new ash::FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
   TestingProfile* CreateMultiUserProfile(const AccountId& account_id) {
@@ -77,7 +77,7 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
   TestingProfile* second_profile_;
 
   // |fake_user_manager_| is owned by |user_manager_enabler_|
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserFinderChromeOSTest);

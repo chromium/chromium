@@ -12,16 +12,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- RTL is handled manually in ClearBrowsingDataTabsFragment because
-         it is not working correctly with a ViewPager -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/clear_browsing_data_tabs"
-        android:layoutDirection="ltr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/TabLayoutStyle" />
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/clear_browsing_data_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -41,15 +41,23 @@ SyncedSessionsObserverBridge::~SyncedSessionsObserverBridge() {}
 
 #pragma mark - signin::IdentityManager::Observer
 
-void SyncedSessionsObserverBridge::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  [owner_ reloadSessions];
+void SyncedSessionsObserverBridge::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      // Ignored.
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [owner_ reloadSessions];
+      break;
+  }
 }
 
 #pragma mark - Signin and syncing status
 
 bool SyncedSessionsObserverBridge::IsSignedIn() {
-  return identity_manager_->HasPrimaryAccount();
+  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 void SyncedSessionsObserverBridge::OnForeignSessionChanged() {

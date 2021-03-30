@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/workers/threaded_worklet_messaging_proxy.h"
 
+#include <utility>
+
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
@@ -62,7 +64,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
           window->UserAgent(),
           window->GetFrame()->Client()->UserAgentMetadata(),
           window->GetFrame()->Client()->CreateWorkerFetchContext(),
-          csp->Headers(), window->GetReferrerPolicy(),
+          mojo::Clone(csp->GetParsedPolicies()), window->GetReferrerPolicy(),
           window->GetSecurityOrigin(), window->IsSecureContext(),
           window->GetHttpsState(), worker_clients,
           window->GetFrame()->Client()->CreateWorkerContentSettingsClient(),
@@ -71,8 +73,9 @@ void ThreadedWorkletMessagingProxy::Initialize(
           std::make_unique<WorkerSettings>(window->GetFrame()->GetSettings()),
           mojom::blink::V8CacheOptions::kDefault, module_responses_map,
           mojo::NullRemote() /* browser_interface_broker */,
-          BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
-          window->GetAgentClusterID(), window->GetExecutionContextToken(),
+          BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
+          window->GetAgentClusterID(), ukm::kInvalidSourceId,
+          window->GetExecutionContextToken(),
           window->CrossOriginIsolatedCapability());
 
   // Worklets share the pre-initialized backing thread so that we don't have to
@@ -98,7 +101,7 @@ void ThreadedWorkletMessagingProxy::FetchAndInvokeScript(
       CrossThreadBindOnce(
           &ThreadedWorkletObjectProxy::FetchAndInvokeScript,
           CrossThreadUnretained(worklet_object_proxy_.get()), module_url_record,
-          credentials_mode, WTF::Passed(outside_settings_object.CopyData()),
+          credentials_mode, outside_settings_object.CopyData(),
           WrapCrossThreadPersistent(&outside_resource_timing_notifier),
           std::move(outside_settings_task_runner),
           WrapCrossThreadPersistent(pending_tasks),

@@ -73,7 +73,7 @@
         errorLine1="            if (AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(desc.type)) return true;"
         errorLine2="                             ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../components/signin/core/browser/android/java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java"
+            file="../../components/signin/public/android/java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java"
             line="188"
             column="30"/>
     </issue>
@@ -96,7 +96,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/payments/AndroidPaymentAppFinder.java"
-            line="593"
+            line="594"
             column="55"/>
     </issue>
 
@@ -118,7 +118,7 @@
         errorLine2="                   ^">
         <location
             file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/additional_sections/AssistantTextInputSection.java"
-            line="82"
+            line="83"
             column="20"/>
     </issue>
 
@@ -129,7 +129,7 @@
         errorLine2="                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/additional_sections/AssistantTextInputSection.java"
-            line="144"
+            line="145"
             column="23"/>
     </issue>
 
@@ -173,7 +173,7 @@
         errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteMediator.java"
-            line="422"
+            line="425"
             column="30"/>
     </issue>
 
@@ -195,7 +195,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="1348"
+            line="1388"
             column="9"/>
     </issue>
 
@@ -206,7 +206,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="1349"
+            line="1389"
             column="17"/>
     </issue>
 
@@ -217,7 +217,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="1845"
+            line="1888"
             column="46"/>
     </issue>
 
@@ -228,7 +228,7 @@
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="2840"
+            line="2885"
             column="22"/>
     </issue>
 
@@ -305,7 +305,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsObserver.java"
-            line="144"
+            line="148"
             column="36"/>
     </issue>
 
@@ -316,7 +316,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java"
-            line="236"
+            line="235"
             column="55"/>
     </issue>
 
@@ -327,7 +327,7 @@
         errorLine2="                                               ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java"
-            line="240"
+            line="239"
             column="48"/>
     </issue>
 
@@ -338,7 +338,7 @@
         errorLine2="                                                        ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="300"
+            line="315"
             column="57"/>
     </issue>
 
@@ -349,7 +349,7 @@
         errorLine2="                                                                            ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="411"
+            line="426"
             column="77"/>
     </issue>
 
@@ -360,7 +360,7 @@
         errorLine2="                                                                                   ~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="364"
+            line="372"
             column="84"/>
     </issue>
 
@@ -371,7 +371,7 @@
         errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="754"
+            line="762"
             column="23"/>
     </issue>
 
@@ -393,7 +393,7 @@
         errorLine2="                                                                  ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="797"
+            line="803"
             column="67"/>
     </issue>
 
@@ -470,7 +470,7 @@
         errorLine2="                                          ^">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorDialog.java"
-            line="504"
+            line="494"
             column="43"/>
     </issue>
 
@@ -481,7 +481,7 @@
         errorLine2="                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorDialog.java"
-            line="508"
+            line="498"
             column="42"/>
     </issue>
 
@@ -525,7 +525,7 @@
         errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/external_intents/android/java/src/org/chromium/components/external_intents/InterceptNavigationDelegateImpl.java"
-            line="139"
+            line="142"
             column="44"/>
     </issue>
 
@@ -536,7 +536,7 @@
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/external_intents/android/java/src/org/chromium/components/external_intents/InterceptNavigationDelegateImpl.java"
-            line="283"
+            line="286"
             column="41"/>
     </issue>
 
@@ -547,7 +547,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="111"
+            line="117"
             column="20"/>
     </issue>
 
@@ -558,7 +558,7 @@
         errorLine2="                                         ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="130"
+            line="136"
             column="42"/>
     </issue>
 
@@ -569,7 +569,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="144"
+            line="150"
             column="20"/>
     </issue>
 
@@ -591,7 +591,7 @@
         errorLine2="                                                                              ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/NavigationControllerImpl.java"
-            line="35"
+            line="41"
             column="79"/>
     </issue>
 
@@ -712,7 +712,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java"
-            line="470"
+            line="471"
             column="52"/>
     </issue>
 
@@ -745,7 +745,7 @@
         errorLine2="                   ~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java"
-            line="334"
+            line="341"
             column="20"/>
     </issue>
 
@@ -756,7 +756,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/share/ShareHelper.java"
-            line="64"
+            line="67"
             column="25"/>
     </issue>
 
@@ -778,7 +778,7 @@
         errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="109"
+            line="110"
             column="48"/>
     </issue>
 
@@ -789,7 +789,7 @@
         errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="123"
+            line="124"
             column="40"/>
     </issue>
 
@@ -800,7 +800,7 @@
         errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="130"
+            line="131"
             column="48"/>
     </issue>
 
@@ -832,7 +832,7 @@
         errorLine1="        assert AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(account.type);"
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../components/signin/core/browser/android/java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java"
+            file="../../components/signin/public/android/java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java"
             line="141"
             column="29"/>
     </issue>
@@ -921,7 +921,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="1534"
+            line="1548"
             column="74"/>
     </issue>
 
@@ -932,7 +932,7 @@
         errorLine2="                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinator.java"
-            line="590"
+            line="610"
             column="31"/>
     </issue>
 
@@ -965,7 +965,7 @@
         errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="972"
+            line="971"
             column="58"/>
     </issue>
 
@@ -976,7 +976,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="1828"
+            line="1827"
             column="29"/>
     </issue>
 
@@ -1031,18 +1031,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/messages/android/java/res/layout/message_banner_view.xml"
-            line="31"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseAppTint"
-        message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="        android:tint=&quot;@color/default_icon_color_secondary&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/messages/android/java/res/layout/message_banner_view.xml"
-            line="60"
+            line="29"
             column="9"/>
     </issue>
 
@@ -1086,7 +1075,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/res/layout/tab_switcher_toolbar.xml"
-            line="28"
+            line="29"
             column="13"/>
     </issue>
 
@@ -1158,7 +1147,7 @@
 
     <issue
         id="UseCompatLoadingForDrawables"
-        message="Use `ContextCompat.getDrawable()`"
+        message="Use `AppCompatResources.getDrawable()`"
         errorLine1="            final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_cloud_offline_24dp);"
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1169,7 +1158,7 @@
 
     <issue
         id="UseCompatLoadingForDrawables"
-        message="Use `ContextCompat.getDrawable()`"
+        message="Use `AppCompatResources.getDrawable()`"
         errorLine1="            final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_globe_24dp);"
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1180,7 +1169,7 @@
 
     <issue
         id="UseCompatLoadingForDrawables"
-        message="Use `ContextCompat.getDrawable()`"
+        message="Use `AppCompatResources.getDrawable()`"
         errorLine1="                view.setForeground(view.getContext().getDrawable(R.drawable.piet_clickable_ripple));"
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1471,7 +1460,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"
-            line="240"
+            line="241"
             column="47"/>
     </issue>
 
@@ -1548,7 +1537,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkRow.java"
-            line="283"
+            line="292"
             column="9"/>
     </issue>
 
@@ -1558,7 +1547,7 @@
         errorLine1="    public boolean onTouchEvent(MotionEvent e) {"
         errorLine2="                   ~~~~~~~~~~~~">
         <location
-            file="../../components/browser_ui/android/bottomsheet/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
+            file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
             line="278"
             column="20"/>
     </issue>
@@ -1614,7 +1603,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="661"
+            line="670"
             column="20"/>
     </issue>
 
@@ -1638,17 +1627,6 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/tablet/emptybackground/EmptyBackgroundViewTablet.java"
             line="98"
             column="9"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view `FirstRunViewPager` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
-        errorLine2="                   ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunViewPager.java"
-            line="21"
-            column="20"/>
     </issue>
 
     <issue
@@ -1712,7 +1690,7 @@
         errorLine1="        holder.mStartIcon.setOnTouchListener((v, event) -> {"
         errorLine2="        ^">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
             line="173"
             column="9"/>
     </issue>
@@ -1723,7 +1701,7 @@
         errorLine1="        holder.mStartIcon.setOnTouchListener((v, event) -> {"
         errorLine2="                                             ^">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
             line="173"
             column="46"/>
     </issue>
@@ -1735,7 +1713,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/omnibox/LocationBarTablet.java"
-            line="139"
+            line="135"
             column="20"/>
     </issue>
 
@@ -1834,7 +1812,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayout.java"
-            line="241"
+            line="239"
             column="46"/>
     </issue>
 
@@ -1856,7 +1834,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="487"
+            line="503"
             column="20"/>
     </issue>
 
@@ -1866,7 +1844,7 @@
         errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
         errorLine2="                   ~~~~~~~~~~~~">
         <location
-            file="../../components/browser_ui/android/bottomsheet/internal/java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java"
+            file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java"
             line="46"
             column="20"/>
     </issue>
@@ -1932,17 +1910,6 @@
         errorLine1="        android:clickable=&quot;true&quot;"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/res/layout/languages_preference.xml"
-            line="32"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;"
-        errorLine1="        android:clickable=&quot;true&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
             file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_dialog.xml"
             line="38"
             column="9"/>
@@ -1977,7 +1944,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/res/layout/tab_switcher_toolbar.xml"
-            line="12"
+            line="13"
             column="5"/>
     </issue>
 

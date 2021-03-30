@@ -38,7 +38,8 @@ class FakeCompositorFrameReportingController
       uint32_t frame_token,
       const viz::BeginFrameId& current_frame_id,
       const viz::BeginFrameId& last_activated_frame_id,
-      EventMetricsSet events_metrics) override;
+      EventMetricsSet events_metrics,
+      bool has_missing_content) override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& details) override;

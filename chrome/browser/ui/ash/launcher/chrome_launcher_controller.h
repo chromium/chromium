@@ -37,6 +37,8 @@ class ShelfSpinnerController;
 
 namespace ash {
 class ShelfModel;
+FORWARD_DECLARE_TEST(SpokenFeedbackTest, ShelfIconFocusForward);
+FORWARD_DECLARE_TEST(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem);
 }  // namespace ash
 
 namespace content {
@@ -49,11 +51,6 @@ class Image;
 
 namespace ui {
 class BaseWindow;
-}
-
-namespace chromeos {
-FORWARD_DECLARE_TEST(SpokenFeedbackTest, ShelfIconFocusForward);
-FORWARD_DECLARE_TEST(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem);
 }
 
 // ChromeLauncherController helps manage Ash's shelf for Chrome prefs and apps.
@@ -89,7 +86,7 @@ class ChromeLauncherController
   ash::ShelfID CreateAppLauncherItem(
       std::unique_ptr<ash::ShelfItemDelegate> item_delegate,
       ash::ShelfItemStatus status,
-      const base::string16& title = base::string16());
+      const std::u16string& title = std::u16string());
 
   // Returns the shelf item with the given id, or null if |id| isn't found.
   const ash::ShelfItem* GetItem(const ash::ShelfID& id) const;
@@ -102,7 +99,7 @@ class ChromeLauncherController
   void SetItemStatus(const ash::ShelfID& id, ash::ShelfItemStatus status);
 
   // Updates the shelf item title (displayed in the tooltip).
-  void SetItemTitle(const ash::ShelfID& id, const base::string16& title);
+  void SetItemTitle(const ash::ShelfID& id, const std::u16string& title);
 
   // Closes or unpins the shelf item.
   void CloseLauncherItem(const ash::ShelfID& id);
@@ -209,11 +206,20 @@ class ChromeLauncherController
 
   // Get the title for the application menu entry for |web_contents|.
   // Returns "New Tab" if |web_contents| is null or has not loaded.
-  base::string16 GetAppMenuTitle(content::WebContents* web_contents) const;
+  std::u16string GetAppMenuTitle(content::WebContents* web_contents) const;
 
   // Returns the ash::ShelfItemDelegate of BrowserShortcut.
   BrowserShortcutLauncherItemController*
-  GetBrowserShortcutLauncherItemController();
+  GetBrowserShortcutLauncherItemControllerForTesting();
+
+  // Updates the browser shortcut item state.
+  // This may create or delete the item, specifically if the browser icon
+  // is not pinned. Practically, when Lacros is the primary browser.
+  void UpdateBrowserItemState();
+
+  // Sets the shelf id for the browser window if the browser is represented.
+  void SetShelfIDForBrowserWindowContents(Browser* browser,
+                                          content::WebContents* web_contents);
 
   // Called when the user profile is fully loaded and ready to switch to.
   void OnUserProfileReadyToSwitch(Profile* profile);
@@ -268,6 +274,9 @@ class ChromeLauncherController
   // CanDoShowAppInfoFlow() returns true.
   void DoShowAppInfoFlow(Profile* profile, const std::string& app_id);
 
+  SkColor CalculateNotificationBadgeColorForApp(const std::string& app_id,
+                                                const gfx::ImageSkia& icon);
+
   // LauncherAppUpdater::Delegate:
   void OnAppInstalled(content::BrowserContext* browser_context,
                       const std::string& app_id) override;
@@ -286,8 +295,8 @@ class ChromeLauncherController
   friend class ShelfAppBrowserTest;
   friend class TestChromeLauncherController;
 
-  FRIEND_TEST_ALL_PREFIXES(chromeos::SpokenFeedbackTest, ShelfIconFocusForward);
-  FRIEND_TEST_ALL_PREFIXES(chromeos::SpokenFeedbackTest,
+  FRIEND_TEST_ALL_PREFIXES(ash::SpokenFeedbackTest, ShelfIconFocusForward);
+  FRIEND_TEST_ALL_PREFIXES(ash::SpokenFeedbackTest,
                            SpeakingTextUnderMouseForShelfItem);
 
   using WebContentsToAppIDMap = std::map<content::WebContents*, std::string>;
@@ -297,7 +306,7 @@ class ChromeLauncherController
                                              int index);
   ash::ShelfID CreateAppShortcutLauncherItem(const ash::ShelfID& shelf_id,
                                              int index,
-                                             const base::string16& title);
+                                             const std::u16string& title);
 
   // Remembers / restores list of running applications.
   // Note that this order will neither be stored in the preference nor will it
@@ -340,7 +349,7 @@ class ChromeLauncherController
       ash::ShelfItemStatus status,
       int index,
       ash::ShelfItemType shelf_item_type,
-      const base::string16& title = base::string16());
+      const std::u16string& title = std::u16string());
 
   // Create the Chrome browser shortcut ShelfItem.
   void CreateBrowserShortcutLauncherItem();
@@ -449,6 +458,9 @@ class ChromeLauncherController
   using RunningAppListIds = std::vector<std::string>;
   using RunningAppListIdMap = std::map<std::string, RunningAppListIds>;
   RunningAppListIdMap last_used_running_application_order_;
+
+  using AppIdBadgeColor = std::map<std::string, SkColor>;
+  AppIdBadgeColor app_id_badge_color_map_;
 
   base::WeakPtrFactory<ChromeLauncherController> weak_ptr_factory_{this};
 

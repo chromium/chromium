@@ -84,4 +84,10 @@ void TestWebAppUiManager::ReparentAppTabToWindow(content::WebContents* contents,
                                                  const AppId& app_id,
                                                  bool shortcut_created) {}
 
+content::WebContents* TestWebAppUiManager::NavigateExistingWindow(
+    const AppId& app_id,
+    const GURL& url) {
+  return nullptr;
+}
+
 }  // namespace web_app

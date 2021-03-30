@@ -25,7 +25,8 @@ class AppViewGuestDelegate {
                                  const content::ContextMenuParams& params) = 0;
 
   // Returns an AppDelegate to be used by the AppViewGuest.
-  virtual AppDelegate* CreateAppDelegate() = 0;
+  virtual AppDelegate* CreateAppDelegate(
+      content::WebContents* web_contents) = 0;
 };
 
 }  // namespace extensions

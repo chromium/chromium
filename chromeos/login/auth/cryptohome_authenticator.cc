@@ -8,14 +8,13 @@
 
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/cryptohome/homedir_methods.h"
@@ -113,8 +112,8 @@ const char* AuthStateToString(CryptohomeAuthenticator::AuthState state) {
       return "GUEST_LOGIN";
     case CryptohomeAuthenticator::PUBLIC_ACCOUNT_LOGIN:
       return "PUBLIC_ACCOUNT_LOGIN";
-    case CryptohomeAuthenticator::SUPERVISED_USER_LOGIN:
-      return "SUPERVISED_USER_LOGIN";
+    case CryptohomeAuthenticator::SUPERVISED_USER_LOGIN_DEPRECATED:
+      return "SUPERVISED_USER_LOGIN_DEPRECATED";
     case CryptohomeAuthenticator::LOGIN_FAILED:
       return "LOGIN_FAILED";
     case CryptohomeAuthenticator::OWNER_REQUIRED:
@@ -562,9 +561,11 @@ void Remove(const base::WeakPtr<AuthAttemptState>& attempt,
 
 CryptohomeAuthenticator::CryptohomeAuthenticator(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
     AuthStatusConsumer* consumer)
     : Authenticator(consumer),
       task_runner_(std::move(task_runner)),
+      safe_mode_delegate_(std::move(safe_mode_delegate)),
       migrate_attempted_(false),
       remove_attempted_(false),
       resync_attempted_(false),
@@ -576,17 +577,12 @@ CryptohomeAuthenticator::CryptohomeAuthenticator(
       delayed_login_failure_(AuthFailure::NONE) {}
 
 void CryptohomeAuthenticator::AuthenticateToLogin(
-    content::BrowserContext* context,
     const UserContext& user_context) {
   DCHECK(user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
          user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
          user_context.GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  authentication_context_ = context;
-  current_state_.reset(new AuthAttemptState(user_context,
-                                            false,  // unlock
-                                            false,  // online_complete
-                                            !IsKnownUser(user_context)));
+  current_state_.reset(new AuthAttemptState(user_context, false /* unlock */));
   // Reset the verified flag.
   owner_is_verified_ = false;
 
@@ -595,17 +591,12 @@ void CryptohomeAuthenticator::AuthenticateToLogin(
              false /* ephemeral */, false /* create_if_nonexistent */);
 }
 
-void CryptohomeAuthenticator::CompleteLogin(content::BrowserContext* context,
-                                            const UserContext& user_context) {
+void CryptohomeAuthenticator::CompleteLogin(const UserContext& user_context) {
   DCHECK(user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
          user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
          user_context.GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  authentication_context_ = context;
-  current_state_.reset(new AuthAttemptState(user_context,
-                                            true,   // unlock
-                                            false,  // online_complete
-                                            !IsKnownUser(user_context)));
+  current_state_.reset(new AuthAttemptState(user_context, true /* unlock */));
 
   // Reset the verified flag.
   owner_is_verified_ = false;
@@ -628,30 +619,12 @@ void CryptohomeAuthenticator::CompleteLogin(content::BrowserContext* context,
                      this));
 }
 
-void CryptohomeAuthenticator::LoginAsSupervisedUser(
-    const UserContext& user_context) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(user_manager::USER_TYPE_SUPERVISED, user_context.GetUserType());
-
-  // TODO(nkostylev): Pass proper value for |user_is_new| or remove (not used).
-  current_state_.reset(new AuthAttemptState(user_context,
-                                            false,    // unlock
-                                            false,    // online_complete
-                                            false));  // user_is_new
-  remove_user_data_on_failure_ = false;
-  StartMount(current_state_->AsWeakPtr(),
-             scoped_refptr<CryptohomeAuthenticator>(this),
-             false /* ephemeral */, false /* create_if_nonexistent */);
-}
-
 void CryptohomeAuthenticator::LoginOffTheRecord() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   current_state_.reset(
       new AuthAttemptState(UserContext(user_manager::USER_TYPE_GUEST,
                                        user_manager::GuestAccountId()),
-                           false,    // unlock
-                           false,    // online_complete
-                           false));  // user_is_new
+                           false /* unlock */));
   remove_user_data_on_failure_ = false;
   ephemeral_mount_attempted_ = true;
   MountGuestAndGetHash(current_state_->AsWeakPtr(),
@@ -673,10 +646,8 @@ void CryptohomeAuthenticator::LoginAsPublicSession(
   DCHECK(user_context.GetKey()->GetLabel().empty());
   new_user_context.GetKey()->SetLabel(kCryptohomeGaiaKeyLabel);
 
-  current_state_.reset(new AuthAttemptState(new_user_context,
-                                            false,    // unlock
-                                            false,    // online_complete
-                                            false));  // user_is_new
+  current_state_.reset(
+      new AuthAttemptState(new_user_context, false /* unlock */));
   remove_user_data_on_failure_ = false;
   ephemeral_mount_attempted_ = true;
   StartMount(current_state_->AsWeakPtr(),
@@ -693,9 +664,7 @@ void CryptohomeAuthenticator::LoginAsKioskAccount(
       use_guest_mount ? user_manager::GuestAccountId() : app_account_id;
   current_state_.reset(new AuthAttemptState(
       UserContext(user_manager::USER_TYPE_KIOSK_APP, account_id),
-      false,    // unlock
-      false,    // online_complete
-      false));  // user_is_new
+      false /* unlock */));
 
   remove_user_data_on_failure_ = true;
   if (!use_guest_mount) {
@@ -715,9 +684,7 @@ void CryptohomeAuthenticator::LoginAsArcKioskAccount(
 
   current_state_.reset(new AuthAttemptState(
       UserContext(user_manager::USER_TYPE_ARC_KIOSK_APP, app_account_id),
-      false,    // unlock
-      false,    // online_complete
-      false));  // user_is_new
+      false /* unlock */));
 
   remove_user_data_on_failure_ = true;
   MountPublic(current_state_->AsWeakPtr(),
@@ -731,9 +698,7 @@ void CryptohomeAuthenticator::LoginAsWebKioskAccount(
 
   current_state_.reset(new AuthAttemptState(
       UserContext(user_manager::USER_TYPE_WEB_KIOSK_APP, app_account_id),
-      false,    // unlock
-      false,    // online_complete
-      false));  // user_is_new
+      false /* unlock */));
 
   remove_user_data_on_failure_ = true;
   MountPublic(current_state_->AsWeakPtr(),
@@ -802,10 +767,7 @@ void CryptohomeAuthenticator::OnAuthFailure(const AuthFailure& error) {
 
 void CryptohomeAuthenticator::MigrateKey(const UserContext& user_context,
                                          const std::string& old_password) {
-  current_state_.reset(new AuthAttemptState(user_context,
-                                            false,  // unlock
-                                            false,  // online_complete
-                                            !IsKnownUser(user_context)));
+  current_state_.reset(new AuthAttemptState(user_context, false /* unlock */));
   RecoverEncryptedData(old_password);
 }
 
@@ -838,14 +800,14 @@ bool CryptohomeAuthenticator::VerifyOwner() {
   if (owner_is_verified_)
     return true;
   // Check if policy data is fine and continue in safe mode if needed.
-  if (!IsSafeMode()) {
+  if (!safe_mode_delegate_->IsSafeMode()) {
     // Now we can continue with the login and report mount success.
     user_can_login_ = true;
     owner_is_verified_ = true;
     return true;
   }
 
-  CheckSafeModeOwnership(
+  safe_mode_delegate_->CheckSafeModeOwnership(
       current_state_->user_context,
       base::BindOnce(&CryptohomeAuthenticator::OnOwnershipChecked, this));
   return false;
@@ -962,7 +924,7 @@ void CryptohomeAuthenticator::Resolve() {
           FROM_HERE,
           base::BindOnce(&CryptohomeAuthenticator::OnAuthSuccess, this));
       break;
-    case SUPERVISED_USER_LOGIN:
+    case SUPERVISED_USER_LOGIN_DEPRECATED:
       current_state_->user_context.SetIsUsingOAuth(false);
       task_runner_->PostTask(
           FROM_HERE,
@@ -1047,11 +1009,8 @@ CryptohomeAuthenticator::AuthState CryptohomeAuthenticator::ResolveState() {
     return state;
 
   if (current_state_->online_complete()) {
-    if (current_state_->online_outcome().reason() == AuthFailure::NONE) {
-      // Online attempt succeeded as well, so combine the results.
-      return ResolveOnlineSuccessState(state);
-    }
-    NOTREACHED() << "Using obsolete ClientLogin code path.";
+    // Online attempt succeeded as well, so combine the results.
+    return ResolveOnlineSuccessState(state);
   }
   // if online isn't complete yet, just return the offline result.
   return state;
@@ -1141,8 +1100,9 @@ CryptohomeAuthenticator::ResolveCryptohomeSuccessState() {
     return PUBLIC_ACCOUNT_LOGIN;
   if (user_type == user_manager::USER_TYPE_KIOSK_APP)
     return KIOSK_ACCOUNT_LOGIN;
-  if (user_type == user_manager::USER_TYPE_SUPERVISED)
-    return SUPERVISED_USER_LOGIN;
+  // TODO(crbug/1155729): If this check is never true, remove the enum field.
+  if (user_type == user_manager::USER_TYPE_SUPERVISED_DEPRECATED)
+    return SUPERVISED_USER_LOGIN_DEPRECATED;
 
   if (!VerifyOwner())
     return CONTINUE;
@@ -1168,7 +1128,7 @@ CryptohomeAuthenticator::ResolveOnlineSuccessState(
 
 void CryptohomeAuthenticator::ResolveLoginCompletionStatus() {
   // Shortcut online state resolution process.
-  current_state_->RecordOnlineLoginStatus(AuthFailure::AuthFailureNone());
+  current_state_->RecordOnlineLoginComplete();
   Resolve();
 }
 

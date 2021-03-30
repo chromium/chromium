@@ -4,10 +4,16 @@
 
 package org.chromium.chrome.browser.services.gcm;
 
+import android.annotation.SuppressLint;
+
 import org.chromium.chrome.browser.base.SplitCompatGcmListenerService;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
 
-/** See {@link ChromeGcmListenerServiceImpl}. */
+/**
+ * See {@link ChromeGcmListenerServiceImpl}.
+ * Suppressing linting as onNewToken() is implemented in base class.
+ */
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class ChromeGcmListenerService extends SplitCompatGcmListenerService {
     public ChromeGcmListenerService() {
         super(SplitCompatUtils.getIdentifierName(

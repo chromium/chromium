@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -50,7 +51,7 @@ ChromeOmniboxClientIOS::CreateAutocompleteProviderClient() {
 
 std::unique_ptr<OmniboxNavigationObserver>
 ChromeOmniboxClientIOS::CreateOmniboxNavigationObserver(
-    const base::string16& text,
+    const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternate_nav_match) {
   // TODO(blundell): Bring up an OmniboxNavigationObserver implementation on
@@ -101,6 +102,15 @@ ChromeOmniboxClientIOS::GetSchemeClassifier() const {
 
 AutocompleteClassifier* ChromeOmniboxClientIOS::GetAutocompleteClassifier() {
   return ios::AutocompleteClassifierFactory::GetForBrowserState(browser_state_);
+}
+
+bool ChromeOmniboxClientIOS::ShouldDefaultTypedNavigationsToHttps() const {
+  // Defaulting omnibox navigations to HTTPS not yet supported on iOS.
+  return false;
+}
+
+int ChromeOmniboxClientIOS::GetHttpsPortForTesting() const {
+  return 0;
 }
 
 gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
@@ -203,7 +213,7 @@ void ChromeOmniboxClientIOS::DiscardNonCommittedNavigations() {
       ->DiscardNonCommittedItems();
 }
 
-const base::string16& ChromeOmniboxClientIOS::GetTitle() const {
+const std::u16string& ChromeOmniboxClientIOS::GetTitle() const {
   return CurrentPageExists() ? controller_->GetWebState()->GetTitle()
                              : base::EmptyString16();
 }

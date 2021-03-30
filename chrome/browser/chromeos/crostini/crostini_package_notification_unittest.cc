@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/chromeos/crostini/crostini_package_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
@@ -64,7 +63,7 @@ TEST_F(CrostiniPackageNotificationTest, InstallWithNoIcons) {
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
       PackageOperationStatus::RUNNING, ContainerId::GetDefault(),
-      base::string16(), kNotificationId, service_.get());
+      std::u16string(), kNotificationId, service_.get());
 
   notification.UpdateProgress(PackageOperationStatus::SUCCEEDED, 100);
   EXPECT_EQ(notification.GetButtonCountForTesting(), 0);
@@ -75,7 +74,7 @@ TEST_F(CrostiniPackageNotificationTest, InstallWithOneIcon) {
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
       PackageOperationStatus::RUNNING, ContainerId::GetDefault(),
-      base::string16(), kNotificationId, service_.get());
+      std::u16string(), kNotificationId, service_.get());
 
   auto app = CrostiniTestHelper::BasicApp(kDefaultAppFileId);
   crostini_test_helper_->AddApp(app);
@@ -89,7 +88,7 @@ TEST_F(CrostiniPackageNotificationTest, InstallWithTwoIcons) {
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
       PackageOperationStatus::RUNNING, ContainerId::GetDefault(),
-      base::string16(), kNotificationId, service_.get());
+      std::u16string(), kNotificationId, service_.get());
 
   auto app = CrostiniTestHelper::BasicApp(kDefaultAppFileId);
   crostini_test_helper_->AddApp(app);
@@ -110,7 +109,7 @@ TEST_F(CrostiniPackageNotificationTest, InstallIgnorePreviousIcons) {
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
       PackageOperationStatus::RUNNING,
       ContainerId(kCrostiniDefaultVmName, kCrostiniDefaultContainerName),
-      base::string16(), kNotificationId, service_.get());
+      std::u16string(), kNotificationId, service_.get());
 
   app = CrostiniTestHelper::BasicApp(kSecondAppFileId);
   crostini_test_helper_->AddApp(app);
@@ -125,7 +124,7 @@ TEST_F(CrostiniPackageNotificationTest, FailureErrorMessage) {
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
       PackageOperationStatus::RUNNING,
       ContainerId(kCrostiniDefaultVmName, kCrostiniDefaultContainerName),
-      base::string16(), kNotificationId, service_.get());
+      std::u16string(), kNotificationId, service_.get());
 
   // Initially, the error message is blank.
   EXPECT_EQ(notification.GetErrorMessageForTesting(), "");

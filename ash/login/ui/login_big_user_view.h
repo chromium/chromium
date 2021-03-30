@@ -82,8 +82,8 @@ class ASH_EXPORT LoginBigUserView : public NonAccessibleView,
   LoginAuthUserView::Callbacks auth_user_callbacks_;
   LoginPublicAccountUserView::Callbacks public_account_callbacks_;
 
-  ScopedObserver<WallpaperController, WallpaperControllerObserver> observer_{
-      this};
+  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoginBigUserView);
 };

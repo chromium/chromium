@@ -37,21 +37,12 @@ AccountManagerErrorUI::AccountManagerErrorUI(content::WebUI* web_ui)
       "secondaryAccountsDisabledErrorMessage",
       IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT);
 
-  html_source->AddLocalizedString(
-      "childUserArcDisabledErrorTitle",
-      IDS_ACCOUNT_MANAGER_CHILD_USER_ARC_DISABLED_TITLE);
-  html_source->AddLocalizedString(
-      "childUserArcDisabledErrorMessage",
-      IDS_ACCOUNT_MANAGER_CHILD_USER_ARC_DISABLED_TEXT);
-
   html_source->AddLocalizedString("okButton", IDS_APP_OK);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddResourcePath("googleg.svg",
                                IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG);
 #endif
-  html_source->AddResourcePath("family_link_logo.svg",
-                               IDR_FAMILY_LINK_LOGO_SVG);
 
   // Add required resources.
   html_source->AddResourcePath("account_manager_shared_css.js",

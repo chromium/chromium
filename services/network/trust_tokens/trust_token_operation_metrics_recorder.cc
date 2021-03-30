@@ -31,6 +31,8 @@ base::StringPiece StatusToSuccessOrFailure(
   switch (status) {
     case mojom::TrustTokenOperationStatus::kOk:
     case mojom::TrustTokenOperationStatus::kAlreadyExists:
+    case mojom::TrustTokenOperationStatus::
+        kOperationSuccessfullyFulfilledLocally:
       return "Success";
     default:
       return "Failure";
@@ -52,11 +54,32 @@ base::StringPiece TypeToString(mojom::TrustTokenOperationType type) {
 
 const char kHistogramPartsSeparator[] = ".";
 
+// If |operation_is_platform_provided| indicates that the Trust Tokens operation
+// corresponding to the metric name in |pieces| is platform-provided, adds an
+// element to |pieces| mentioning this fact.
+//
+// Note: As of writing during the initial platform-provided issuance
+// implementation, issuance is the only platform-provided operation and its
+// control flow never enters TrustTokenRequestHelper::Finalize call, so the only
+// metrics this is expected (initially) to affect are
+// OperationBeginTime.Issuance.Success and OperationBeginTime.Issuance.Failure.
+std::vector<base::StringPiece> MaybeAppendPlatformProvidedIndicator(
+    std::vector<base::StringPiece> pieces,
+    bool operation_is_platform_provided) {
+  if (operation_is_platform_provided)
+    pieces.push_back("PlatformProvided");
+  return pieces;
+}
+
 }  // namespace
 
-void TrustTokenOperationMetricsRecorder::BeginBegin(
-    mojom::TrustTokenOperationType type) {
-  type_ = type;
+TrustTokenOperationMetricsRecorder::TrustTokenOperationMetricsRecorder(
+    mojom::TrustTokenOperationType type)
+    : type_(type) {}
+TrustTokenOperationMetricsRecorder::~TrustTokenOperationMetricsRecorder() =
+    default;
+
+void TrustTokenOperationMetricsRecorder::BeginBegin() {
   begin_start_ = base::TimeTicks::Now();
 }
 
@@ -65,9 +88,12 @@ void TrustTokenOperationMetricsRecorder::FinishBegin(
   begin_end_ = base::TimeTicks::Now();
 
   base::UmaHistogramTimes(
-      base::JoinString({internal::kTrustTokenBeginTimeHistogramNameBase,
-                        StatusToSuccessOrFailure(status), TypeToString(type_)},
-                       kHistogramPartsSeparator),
+      base::JoinString(
+          MaybeAppendPlatformProvidedIndicator(
+              {internal::kTrustTokenBeginTimeHistogramNameBase,
+               StatusToSuccessOrFailure(status), TypeToString(type_)},
+              operation_is_platform_provided_),
+          kHistogramPartsSeparator),
       begin_end_ - begin_start_);
 }
 
@@ -82,22 +108,36 @@ void TrustTokenOperationMetricsRecorder::FinishFinalize(
   base::TimeTicks finalize_end = base::TimeTicks::Now();
 
   base::UmaHistogramTimes(
-      base::JoinString({internal::kTrustTokenServerTimeHistogramNameBase,
-                        StatusToSuccessOrFailure(status), TypeToString(type_)},
-                       kHistogramPartsSeparator),
+      base::JoinString(
+          MaybeAppendPlatformProvidedIndicator(
+              {internal::kTrustTokenServerTimeHistogramNameBase,
+               StatusToSuccessOrFailure(status), TypeToString(type_)},
+              operation_is_platform_provided_),
+          kHistogramPartsSeparator),
       finalize_start_ - begin_end_);
 
   base::UmaHistogramTimes(
-      base::JoinString({internal::kTrustTokenTotalTimeHistogramNameBase,
-                        StatusToSuccessOrFailure(status), TypeToString(type_)},
-                       kHistogramPartsSeparator),
+      base::JoinString(
+          MaybeAppendPlatformProvidedIndicator(
+              {internal::kTrustTokenTotalTimeHistogramNameBase,
+               StatusToSuccessOrFailure(status), TypeToString(type_)},
+              operation_is_platform_provided_),
+          kHistogramPartsSeparator),
       finalize_end - begin_start_);
 
   base::UmaHistogramTimes(
-      base::JoinString({internal::kTrustTokenFinalizeTimeHistogramNameBase,
-                        StatusToSuccessOrFailure(status), TypeToString(type_)},
-                       kHistogramPartsSeparator),
+      base::JoinString(
+          MaybeAppendPlatformProvidedIndicator(
+              {internal::kTrustTokenFinalizeTimeHistogramNameBase,
+               StatusToSuccessOrFailure(status), TypeToString(type_)},
+              operation_is_platform_provided_),
+          kHistogramPartsSeparator),
       finalize_end - finalize_start_);
+}
+
+void TrustTokenOperationMetricsRecorder::
+    WillExecutePlatformProvidedOperation() {
+  operation_is_platform_provided_ = true;
 }
 
 void HistogramTrustTokenOperationNetError(

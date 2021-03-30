@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -323,9 +322,8 @@ void WebSocketStream::UnderlyingSink::SendAny(ScriptState* script_state,
       return;
     }
 
-    SendArrayBuffer(script_state, data.View()->buffer(),
-                    data.View()->byteOffset(), data.View()->byteLength(),
-                    resolver, std::move(callback));
+    SendArrayBuffer(script_state, data->buffer(), data->byteOffset(),
+                    data->byteLength(), resolver, std::move(callback));
     return;
   }
 

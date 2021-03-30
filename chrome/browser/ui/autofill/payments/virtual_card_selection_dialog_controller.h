@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_CONTROLLER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace autofill {
 
@@ -22,10 +22,10 @@ class VirtualCardSelectionDialogController {
 
   virtual bool IsOkButtonEnabled() = 0;
 
-  virtual base::string16 GetContentTitle() const = 0;
-  virtual base::string16 GetContentExplanation() const = 0;
-  virtual base::string16 GetOkButtonLabel() const = 0;
-  virtual base::string16 GetCancelButtonLabel() const = 0;
+  virtual std::u16string GetContentTitle() const = 0;
+  virtual std::u16string GetContentExplanation() const = 0;
+  virtual std::u16string GetOkButtonLabel() const = 0;
+  virtual std::u16string GetCancelButtonLabel() const = 0;
 
   virtual const std::vector<CreditCard*>& GetCardList() const = 0;
 

@@ -375,6 +375,7 @@ FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
   else
     response = FetchResponseData::CreateNetworkErrorResponse();
 
+  response->SetPadding(fetch_api_response.padding);
   response->SetResponseSource(fetch_api_response.response_source);
   response->SetURLList(fetch_api_response.url_list);
   response->SetStatus(fetch_api_response.status_code);
@@ -387,8 +388,6 @@ FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
   response->SetConnectionInfo(fetch_api_response.connection_info);
   response->SetAlpnNegotiatedProtocol(
       WTF::AtomicString(fetch_api_response.alpn_negotiated_protocol));
-  response->SetLoadedWithCredentials(
-      fetch_api_response.loaded_with_credentials);
   response->SetWasFetchedViaSpdy(fetch_api_response.was_fetched_via_spdy);
   response->SetHasRangeRequested(fetch_api_response.has_range_requested);
 

@@ -11,7 +11,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_state.h"
 
 namespace chromeos {
@@ -126,7 +125,7 @@ TEST_F(NetworkPortalNotificationControllerTest, NotificationUpdated) {
                     ->GetDisplayedNotificationsForType(
                         NotificationHandler::Type::TRANSIENT)
                     .size());
-  const base::string16 initial_message =
+  const std::u16string initial_message =
       display_service_->GetNotification(kNotificationId)->message();
 
   // Second network is also behind a captive portal, so notification

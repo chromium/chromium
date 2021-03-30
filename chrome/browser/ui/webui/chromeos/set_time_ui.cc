@@ -14,12 +14,12 @@
 #include "base/build_time.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/chromeos/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/chromeos/set_time_dialog.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/system/timezone_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -69,13 +69,13 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   }
 
   void OnJavascriptAllowed() override {
-    clock_observer_.Add(SystemClockClient::Get());
-    timezone_observer_.Add(system::TimezoneSettings::GetInstance());
+    clock_observation_.Observe(SystemClockClient::Get());
+    timezone_observation_.Observe(system::TimezoneSettings::GetInstance());
   }
 
   void OnJavascriptDisallowed() override {
-    clock_observer_.RemoveAll();
-    timezone_observer_.RemoveAll();
+    clock_observation_.Reset();
+    timezone_observation_.Reset();
   }
 
  private:
@@ -157,10 +157,11 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
       FireWebUIListener("validation-complete");
   }
 
-  ScopedObserver<SystemClockClient, SystemClockClient::Observer>
-      clock_observer_{this};
-  ScopedObserver<system::TimezoneSettings, system::TimezoneSettings::Observer>
-      timezone_observer_{this};
+  base::ScopedObservation<SystemClockClient, SystemClockClient::Observer>
+      clock_observation_{this};
+  base::ScopedObservation<system::TimezoneSettings,
+                          system::TimezoneSettings::Observer>
+      timezone_observation_{this};
   base::WeakPtrFactory<SetTimeMessageHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SetTimeMessageHandler);
@@ -174,11 +175,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   // Set up the chrome://set-time source.
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISetTimeHost);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
-  source->DisableTrustedTypesCSP();
-
+  webui::SetJSModuleDefaults(source);
   static constexpr webui::LocalizedString kStrings[] = {
       {"setTimeTitle", IDS_SET_TIME_TITLE},
       {"prompt", IDS_SET_TIME_PROMPT},
@@ -187,7 +184,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
       {"timeLabel", IDS_SET_TIME_TIME_LABEL},
       {"doneButton", IDS_DONE},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   base::DictionaryValue values;
   // List of list of strings: [[ID, name], [ID, name], ...]
@@ -201,16 +198,11 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   values.SetDouble("buildTime", base::GetBuildTime().ToJsTime());
 
   source->AddLocalizedStrings(values);
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
 
   source->AddResourcePath("set_time_browser_proxy.js",
                           IDR_SET_TIME_BROWSER_PROXY_JS);
   source->AddResourcePath("set_time_dialog.js", IDR_SET_TIME_DIALOG_JS);
   source->SetDefaultResource(IDR_SET_TIME_HTML);
-
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

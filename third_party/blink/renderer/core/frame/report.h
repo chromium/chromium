@@ -19,7 +19,7 @@ struct CORE_EXPORT ReportType {
   static constexpr const char kDeprecation[] = "deprecation";
   static constexpr const char kDocumentPolicyViolation[] =
       "document-policy-violation";
-  static constexpr const char kFeaturePolicyViolation[] =
+  static constexpr const char kPermissionsPolicyViolation[] =
       "permissions-policy-violation";
   static constexpr const char kIntervention[] = "intervention";
 };

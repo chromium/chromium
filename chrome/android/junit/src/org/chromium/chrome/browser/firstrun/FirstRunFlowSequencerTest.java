@@ -70,7 +70,7 @@ public class FirstRunFlowSequencerTest {
         @Override
         public void onFlowIsKnown(Bundle freProperties) {
             calledOnFlowIsKnown = true;
-            if (freProperties != null) onNativeInitialized(freProperties);
+            if (freProperties != null) onNativeAndPoliciesInitialized(freProperties);
             returnedBundle = freProperties;
         }
 
@@ -171,7 +171,7 @@ public class FirstRunFlowSequencerTest {
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(4, bundle.size());
     }
 
@@ -196,10 +196,8 @@ public class FirstRunFlowSequencerTest {
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.REGULAR_CHILD,
-                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
-        assertEquals(
-                DEFAULT_ACCOUNT, bundle.getString(SigninFirstRunFragment.FORCE_SIGNIN_ACCOUNT_TO));
-        assertEquals(5, bundle.size());
+                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
+        assertEquals(4, bundle.size());
     }
 
     @Test
@@ -223,7 +221,7 @@ public class FirstRunFlowSequencerTest {
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(4, bundle.size());
     }
 
@@ -248,7 +246,7 @@ public class FirstRunFlowSequencerTest {
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(4, bundle.size());
     }
 }

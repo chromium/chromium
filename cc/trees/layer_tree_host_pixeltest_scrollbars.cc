@@ -173,14 +173,22 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, MAYBE_HugeTransformScale) {
   scale_transform.Scale(scale, scale);
   layer->SetTransform(scale_transform);
 
-  if (renderer_type_ == viz::RendererType::kSkiaGL ||
+  if (use_swangle() || use_skia_vulkan() ||
+      renderer_type_ == viz::RendererType::kSkiaGL ||
       renderer_type_ == viz::RendererType::kSkiaDawn)
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
 
-  RunPixelTest(background,
-               use_skia_vulkan()
-                   ? base::FilePath(FILE_PATH_LITERAL("spiral_64_scale_vk.png"))
-                   : base::FilePath(FILE_PATH_LITERAL("spiral_64_scale.png")));
+  RunPixelTest(
+      background,
+      base::FilePath(
+          use_swangle()
+              ? (use_skia_vulkan() ? FILE_PATH_LITERAL("spiral_64_scale_vk.png")
+                                   : FILE_PATH_LITERAL("spiral_64_scale.png"))
+              : (use_skia_vulkan()
+                     ? FILE_PATH_LITERAL(
+                           "spiral_64_scale_legacy_swiftshader_vk.png")
+                     : FILE_PATH_LITERAL(
+                           "spiral_64_scale_legacy_swiftshader.png"))));
 }
 
 class LayerTreeHostOverlayScrollbarsPixelTest

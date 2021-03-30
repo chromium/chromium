@@ -58,7 +58,7 @@ class MediaStreamManager {
       content::MediaResponseCallback callback,
       const blink::MediaStreamDevices& devices,
       blink::mojom::MediaStreamRequestResult result,
-      bool blocked_by_feature_policy,
+      bool blocked_by_permissions_policy,
       ContentSetting audio_setting,
       ContentSetting video_setting);
 

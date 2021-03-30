@@ -17,14 +17,11 @@
 #include "base/synchronization/lock.h"
 #include "chromeos/login/auth/auth_attempt_state.h"
 #include "chromeos/login/auth/authenticator.h"
+#include "chromeos/login/auth/safe_mode_delegate.h"
 #include "chromeos/login/auth/test_attempt_state.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
 class AuthFailure;
-
-namespace content {
-class BrowserContext;
-}
 
 namespace cryptohome {
 class BaseReply;
@@ -84,10 +81,12 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
     ONLINE_FAILED = 15,      // Obsolete (ClientLogin): Online login disallowed,
                              // but offline succeeded.
     GUEST_LOGIN = 16,        // Logged in guest mode.
-    PUBLIC_ACCOUNT_LOGIN = 17,        // Logged into a public account.
-    SUPERVISED_USER_LOGIN = 18,       // Logged in as a supervised user.
-    LOGIN_FAILED = 19,                // Obsolete: Login denied.
-    OWNER_REQUIRED = 20,              // Login is restricted to the owner only.
+    PUBLIC_ACCOUNT_LOGIN = 17,  // Logged into a public account.
+    // TODO(crbug/1155729): Remove this enum.
+    SUPERVISED_USER_LOGIN_DEPRECATED =
+        18,               // Logged in as deprecated legacy supervised user.
+    LOGIN_FAILED = 19,    // Obsolete: Login denied.
+    OWNER_REQUIRED = 20,  // Login is restricted to the owner only.
     FAILED_USERNAME_HASH = 21,        // Failed GetSanitizedUsername request.
     KIOSK_ACCOUNT_LOGIN = 22,         // Logged into a kiosk account.
     REMOVED_DATA_AFTER_FAILURE = 23,  // Successfully removed the user's
@@ -104,11 +103,11 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   };
 
   CryptohomeAuthenticator(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                          std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
                           AuthStatusConsumer* consumer);
 
   // Authenticator overrides.
-  void CompleteLogin(content::BrowserContext* context,
-                     const UserContext& user_context) override;
+  void CompleteLogin(const UserContext& user_context) override;
 
   // Given |user_context|, this method attempts to authenticate to your
   // Chrome OS device. As soon as we have successfully mounted the encrypted
@@ -116,15 +115,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   // with the username.
   // Upon failure to login consumer_->OnAuthFailure() is called
   // with an error message.
-  //
-  // Uses |context| when doing URL fetches.
-  void AuthenticateToLogin(content::BrowserContext* context,
-                           const UserContext& user_context) override;
-
-  // Initiates supervised user login.
-  // Creates cryptohome if missing or mounts existing one and
-  // notifies consumer on the success/failure.
-  void LoginAsSupervisedUser(const UserContext& user_context) override;
+  void AuthenticateToLogin(const UserContext& user_context) override;
 
   // Initiates incognito ("browse without signing in") login.
   // Mounts tmpfs and notifies consumer on the success/failure.
@@ -186,22 +177,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
  protected:
   ~CryptohomeAuthenticator() override;
 
-  using IsOwnerCallback = base::OnceCallback<void(bool is_owner)>;
-
-  // Method to be implemented in child. Return |true| if user specified in
-  // |context| exists on device.
-  virtual bool IsKnownUser(const UserContext& context) = 0;
-
-  // Method to be implemented in child. Return |true| if device is running
-  // in safe mode.
-  virtual bool IsSafeMode() = 0;
-
-  // Method to be implemented in child. Have to call |callback| with boolean
-  // parameter that indicates if user in |context| can act as an owner in
-  // safe mode.
-  virtual void CheckSafeModeOwnership(const UserContext& context,
-                                      IsOwnerCallback callback) = 0;
-
  private:
   friend class CryptohomeAuthenticatorTest;
   FRIEND_TEST_ALL_PREFIXES(CryptohomeAuthenticatorTest,
@@ -261,6 +236,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   void ResolveLoginCompletionStatus();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  std::unique_ptr<SafeModeDelegate> safe_mode_delegate_;
 
   std::unique_ptr<AuthAttemptState> current_state_;
   bool migrate_attempted_;

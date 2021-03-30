@@ -98,6 +98,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void SetSimulateConfigurationResult(
       FakeShillSimulatedResult configuration_result) override;
   base::Value GetEnabledServiceList() const override;
+  void ClearProfiles() override;
 
   // Constants used for testing.
   static const char kFakeEthernetNetworkGuid[];

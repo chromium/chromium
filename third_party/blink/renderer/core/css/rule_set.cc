@@ -60,6 +60,8 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
         return ValidPropertyFilter::kCue;
       case CSSSelector::kPseudoFirstLetter:
         return ValidPropertyFilter::kFirstLetter;
+      case CSSSelector::kPseudoFirstLine:
+        return ValidPropertyFilter::kFirstLine;
       case CSSSelector::kPseudoMarker:
         return ValidPropertyFilter::kMarker;
       case CSSSelector::kPseudoSelection:
@@ -171,6 +173,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoWebkitAnyLink:
         case CSSSelector::kPseudoAnyLink:
         case CSSSelector::kPseudoFocus:
+        case CSSSelector::kPseudoFocusVisible:
         case CSSSelector::kPseudoPlaceholder:
         case CSSSelector::kPseudoFileSelectorButton:
         case CSSSelector::kPseudoHost:
@@ -263,6 +266,9 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
     case CSSSelector::kPseudoFocus:
       focus_pseudo_class_rules_.push_back(rule_data);
       return true;
+    case CSSSelector::kPseudoFocusVisible:
+      focus_visible_pseudo_class_rules_.push_back(rule_data);
+      return true;
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
       if (it->FollowsPart()) {
@@ -339,50 +345,6 @@ void RuleSet::AddFontFaceRule(StyleRuleFontFace* rule) {
 void RuleSet::AddKeyframesRule(StyleRuleKeyframes* rule) {
   EnsurePendingRules();  // So that keyframes_rules_.ShrinkToFit() gets called.
   keyframes_rules_.push_back(rule);
-  keyframes_rules_sorted_ = false;
-}
-
-void RuleSet::SortKeyframesRulesIfNeeded() {
-  if (keyframes_rules_sorted_)
-    return;
-  // Sort keyframes rules by name, breaking ties with vendor prefixing.
-  // Since equal AtomicStrings always have the same impl, there's no need to
-  // actually compare the contents of two AtomicStrings. Comparing their impl
-  // addresses is enough.
-  std::stable_sort(
-      keyframes_rules_.begin(), keyframes_rules_.end(),
-      [](const StyleRuleKeyframes* lhs, const StyleRuleKeyframes* rhs) {
-        if (lhs->GetName() != rhs->GetName())
-          return lhs->GetName().Impl() < rhs->GetName().Impl();
-        if (lhs->IsVendorPrefixed() != rhs->IsVendorPrefixed())
-          return lhs->IsVendorPrefixed();
-        return false;
-      });
-  // Deduplicate rules, erase all but the last one for each animation name,
-  // since all the preceding ones are overridden.
-  auto boundary = std::unique(
-      keyframes_rules_.rbegin(), keyframes_rules_.rend(),
-      [](const StyleRuleKeyframes* lhs, const StyleRuleKeyframes* rhs) {
-        return lhs->GetName() == rhs->GetName();
-      });
-  keyframes_rules_.erase(keyframes_rules_.begin(), boundary.base());
-  keyframes_rules_.ShrinkToFit();
-  keyframes_rules_sorted_ = true;
-}
-
-StyleRuleKeyframes* RuleSet::KeyframeStylesForAnimation(
-    const AtomicString& name) {
-  SortKeyframesRulesIfNeeded();
-  Member<StyleRuleKeyframes>* rule_iterator = std::lower_bound(
-      keyframes_rules_.begin(), keyframes_rules_.end(), name,
-      [](const StyleRuleKeyframes* rule, const AtomicString& name) {
-        return rule->GetName().Impl() < name.Impl();
-      });
-  if (rule_iterator != keyframes_rules_.end() &&
-      (*rule_iterator)->GetName() == name) {
-    return *rule_iterator;
-  }
-  return nullptr;
 }
 
 void RuleSet::AddPropertyRule(StyleRuleProperty* rule) {
@@ -528,6 +490,7 @@ void RuleSet::CompactRules() {
   link_pseudo_class_rules_.ShrinkToFit();
   cue_pseudo_rules_.ShrinkToFit();
   focus_pseudo_class_rules_.ShrinkToFit();
+  focus_visible_pseudo_class_rules_.ShrinkToFit();
   spatial_navigation_interest_class_rules_.ShrinkToFit();
   universal_rules_.ShrinkToFit();
   shadow_host_rules_.ShrinkToFit();
@@ -601,6 +564,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(link_pseudo_class_rules_);
   visitor->Trace(cue_pseudo_rules_);
   visitor->Trace(focus_pseudo_class_rules_);
+  visitor->Trace(focus_visible_pseudo_class_rules_);
   visitor->Trace(spatial_navigation_interest_class_rules_);
   visitor->Trace(universal_rules_);
   visitor->Trace(shadow_host_rules_);

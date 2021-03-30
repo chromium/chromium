@@ -4,6 +4,7 @@
 
 #include "services/viz/public/cpp/compositing/copy_output_request_mojom_traits.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -39,7 +40,7 @@ class CopyOutputResultSenderImpl : public viz::mojom::CopyOutputResultSender {
       result_callback_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(std::move(result_callback_),
                                     std::make_unique<viz::CopyOutputResult>(
-                                        result_format_, gfx::Rect())));
+                                        result_format_, gfx::Rect(), false)));
     }
   }
 

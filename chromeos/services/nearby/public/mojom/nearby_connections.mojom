@@ -13,13 +13,20 @@ import "mojo/public/mojom/base/read_only_file.mojom";
 import "services/network/public/mojom/mdns_responder.mojom";
 import "services/network/public/mojom/p2p.mojom";
 
+// Hosted in the browser process to allow the Sharing utility process to create
+// an MdnsResponder on demand.
+interface MdnsResponderFactory {
+  // Creates an MdnsResponder instance.
+  CreateMdnsResponder(
+      pending_receiver<network.mojom.MdnsResponder> responder_receiver);
+};
+
 // Collection of dependencies required by WebRTC medium.
 struct WebRtcDependencies {
   // Used to allocate p2p sockets via Chromium's network service.
   pending_remote<network.mojom.P2PSocketManager> socket_manager;
-  // Used to implement mDNS responder interface in WebRTC via MdnsResponder
-  // service in Chromium.
-  pending_remote<network.mojom.MdnsResponder> mdns_responder;
+  // Used to create an mDNS responder interface on demand.
+  pending_remote<MdnsResponderFactory> mdns_responder_factory;
   // Used to fetch STUN and TURN servers for establishing WebRTC connection.
   pending_remote<sharing.mojom.IceConfigFetcher> ice_config_fetcher;
   // Used to send and receive SDP messages for establishing WebRTC connection.
@@ -338,6 +345,14 @@ interface NearbyConnections {
   StopAllEndpoints(string service_id) => (Status status);
 
   // Sends a request to initiate connection bandwidth upgrade.
+  //
+  // Important note: Bandwidth upgrades may expose stable identifiers,
+  // which are only safe to expose after the caller has verified
+  // the sender's identity. If the caller is already performing
+  // high-visibility advertising (and thus already leaking the device
+  // name), then calling this method introduces no further privacy
+  // leaks -- in fact, the caller should consider instead requesting
+  // to auto-upgrade bandwidth when invoking StartAdvertising().
   //
   // service_id  - Service ID used to discover the endpoint.
   // endpoint_id - The identifier for the remote endpoint which will be

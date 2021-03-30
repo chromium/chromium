@@ -63,7 +63,7 @@ bool EncryptKeyBag(const CryptographerImpl& cryptographer,
 void UpdateNigoriSpecificsFromEncryptedTypes(
     ModelTypeSet encrypted_types,
     sync_pb::NigoriSpecifics* specifics) {
-  static_assert(41 == ModelType::NUM_ENTRIES,
+  static_assert(38 == GetNumModelTypes(),
                 "If adding an encryptable type, update handling below.");
   specifics->set_encrypt_bookmarks(encrypted_types.Has(BOOKMARKS));
   specifics->set_encrypt_preferences(encrypted_types.Has(PREFERENCES));
@@ -82,10 +82,6 @@ void UpdateNigoriSpecificsFromEncryptedTypes(
   specifics->set_encrypt_extension_settings(
       encrypted_types.Has(EXTENSION_SETTINGS));
   specifics->set_encrypt_dictionary(encrypted_types.Has(DICTIONARY));
-  specifics->set_encrypt_favicon_images(
-      encrypted_types.Has(DEPRECATED_FAVICON_IMAGES));
-  specifics->set_encrypt_favicon_tracking(
-      encrypted_types.Has(DEPRECATED_FAVICON_TRACKING));
   specifics->set_encrypt_app_list(encrypted_types.Has(APP_LIST));
   specifics->set_encrypt_arc_package(encrypted_types.Has(ARC_PACKAGE));
   specifics->set_encrypt_printers(encrypted_types.Has(PRINTERS));
@@ -280,7 +276,7 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
 
 NigoriState NigoriState::Clone() const {
   NigoriState result;
-  result.cryptographer = cryptographer->CloneImpl();
+  result.cryptographer = cryptographer->Clone();
   result.pending_keys = pending_keys;
   result.passphrase_type = passphrase_type;
   result.keystore_migration_time = keystore_migration_time;

@@ -32,7 +32,19 @@ class TransferMetadata {
     kNotEnoughSpace,
     kUnsupportedAttachmentType,
     kExternalProviderLaunched,
-    kMaxValue = kExternalProviderLaunched
+    kDecodeAdvertisementFailed,
+    kMissingTransferUpdateCallback,
+    kMissingShareTarget,
+    kMissingEndpointId,
+    kMissingPayloads,
+    kPairedKeyVerificationFailed,
+    kInvalidIntroductionFrame,
+    kIncompletePayloads,
+    kFailedToCreateShareTarget,
+    kFailedToInitiateOutgoingConnection,
+    kFailedToReadOutgoingConnectionResponse,
+    kUnexpectedDisconnection,
+    kMaxValue = kUnexpectedDisconnection
   };
 
   static bool IsFinalStatus(Status status);

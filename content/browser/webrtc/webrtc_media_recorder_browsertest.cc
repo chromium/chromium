@@ -218,6 +218,10 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   DISABLED_AddingTrackToMediaStreamFiresErrorEvent
+#elif defined(OS_ANDROID)
+// Flaky on Android (crbug.com/1174634).
+#define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
+  DISABLED_AddingTrackToMediaStreamFiresErrorEvent
 #else
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   AddingTrackToMediaStreamFiresErrorEvent

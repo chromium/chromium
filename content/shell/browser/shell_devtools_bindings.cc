@@ -329,7 +329,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     resource_request->site_for_cookies = net::SiteForCookies::FromUrl(gurl);
     resource_request->headers.AddHeadersFromString(headers);
 
-    auto* partition = content::BrowserContext::GetStoragePartitionForSite(
+    auto* partition = content::BrowserContext::GetStoragePartitionForUrl(
         web_contents()->GetBrowserContext(), gurl);
     auto factory = partition->GetURLLoaderFactoryForBrowserProcess();
 

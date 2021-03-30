@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.os.Bundle;
 
+import org.chromium.base.supplier.OneshotSupplier;
+
 /**
  * Defines the host interface for First Run Experience pages.
  */
@@ -74,6 +76,9 @@ public interface FirstRunPageDelegate {
      */
     void showInfoPage(int url);
 
-    /** Returns the provider of whether the device has app restrictions. */
-    FirstRunAppRestrictionInfo getFirstRunAppRestrictionInfo();
+    /**
+     * The supplier that supplies whether reading policy value is necessary.
+     * See {@link PolicyLoadListener} for details.
+     */
+    OneshotSupplier<Boolean> getPolicyLoadListener();
 }

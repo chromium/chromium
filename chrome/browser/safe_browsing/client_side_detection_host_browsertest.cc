@@ -32,8 +32,6 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
 
   void SendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
-      bool is_extended_reporting,
-      bool is_enhanced_protection,
       ClientReportPhishingRequestCallback callback) override {
     saved_request_ = *verdict;
     saved_callback_ = std::move(callback);

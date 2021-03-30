@@ -20,9 +20,16 @@ namespace blink {
 
 class BaseRenderingContext2D;
 class CanvasRenderingContext2D;
+class CanvasFilter;
 class CanvasStyle;
 class CSSValue;
 class Element;
+
+enum ShadowMode {
+  kDrawShadowAndForeground,
+  kDrawShadowOnly,
+  kDrawForegroundOnly
+};
 
 class CanvasRenderingContext2DState final
     : public GarbageCollected<CanvasRenderingContext2DState>,
@@ -46,7 +53,7 @@ class CanvasRenderingContext2DState final
   // FontSelectorClient implementation
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
 
-  bool HasUnrealizedSaves() const { return unrealized_save_count_; }
+  inline bool HasUnrealizedSaves() const { return unrealized_save_count_; }
   void Save() { ++unrealized_save_count_; }
   void Restore() { --unrealized_save_count_; }
   void ResetUnrealizedSaveCount() { unrealized_save_count_ = 0; }
@@ -79,17 +86,19 @@ class CanvasRenderingContext2DState final
   void SetFont(const FontDescription&, FontSelector*);
   const Font& GetFont() const;
   const FontDescription& GetFontDescription() const;
-  bool HasRealizedFont() const { return realized_font_; }
+  inline bool HasRealizedFont() const { return realized_font_; }
   void SetUnparsedFont(const String& font) { unparsed_font_ = font; }
   const String& UnparsedFont() const { return unparsed_font_; }
 
   void SetFontForFilter(const Font& font) { font_for_filter_ = font; }
 
-  void SetFilter(const CSSValue*);
-  void SetUnparsedFilter(const String& filter_string) {
-    unparsed_filter_ = filter_string;
+  void SetCSSFilter(const CSSValue*);
+  void SetUnparsedCSSFilter(const String& filter_string) {
+    unparsed_css_filter_ = filter_string;
   }
-  const String& UnparsedFilter() const { return unparsed_filter_; }
+  const String& UnparsedCSSFilter() const { return unparsed_css_filter_; }
+  void SetCanvasFilter(CanvasFilter* filter_value);
+  CanvasFilter* GetCanvasFilter() const { return canvas_filter_; }
   sk_sp<PaintFilter> GetFilter(Element*,
                                IntSize canvas_size,
                                CanvasRenderingContext2D*) const;
@@ -258,8 +267,9 @@ class CanvasRenderingContext2DState final
   Font font_;
   Font font_for_filter_;
 
-  String unparsed_filter_;
-  Member<const CSSValue> filter_value_;
+  Member<CanvasFilter> canvas_filter_;
+  String unparsed_css_filter_;
+  Member<const CSSValue> css_filter_value_;
   mutable sk_sp<PaintFilter> resolved_filter_;
 
   // Text state.

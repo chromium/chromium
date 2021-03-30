@@ -119,13 +119,6 @@ cr.define('cr.ui', function() {
   };
 
   /**
-   * Disables signin UI.
-   */
-  Oobe.disableSigninUI = function() {
-    DisplayManager.disableSigninUI();
-  };
-
-  /**
    * Shows signin UI.
    * @param {string} opt_email An optional email for signin UI.
    */
@@ -157,10 +150,11 @@ cr.define('cr.ui', function() {
    * Show user-pods.
    */
   Oobe.showUserPods = function() {
-    $('pod-row').maybePreselectPod();
-    Oobe.showScreen({id: SCREEN_ACCOUNT_PICKER});
-    if (Oobe.getInstance().showingViewsLogin)
+    if (Oobe.getInstance().showingViewsLogin) {
+      chrome.send('hideOobeDialog');
       return;
+    }
+    Oobe.showSigninUI();
     Oobe.resetSigninUI(true);
   };
 
@@ -198,20 +192,6 @@ cr.define('cr.ui', function() {
   };
 
   /**
-   * Clears password field in user-pod.
-   */
-  Oobe.clearUserPodPassword = function() {
-    DisplayManager.clearUserPodPassword();
-  };
-
-  /**
-   * Restores input focus to currently selected pod.
-   */
-  Oobe.refocusCurrentPod = function() {
-    DisplayManager.refocusCurrentPod();
-  };
-
-  /**
    * Some ForTesting APIs directly access to DOM. Because this script is loaded
    * in header, DOM tree may not be available at beginning.
    * In DOMContentLoaded, after Oobe.initialize() is done, this is marked to
@@ -225,7 +205,6 @@ cr.define('cr.ui', function() {
    * Skip to login screen for telemetry.
    */
   Oobe.skipToLoginForTesting = function() {
-    Oobe.disableSigninUI();
     chrome.send('skipToLoginForTesting');
   };
 
@@ -233,7 +212,6 @@ cr.define('cr.ui', function() {
    * Skip to update screen for telemetry.
    */
   Oobe.skipToUpdateForTesting = function() {
-    Oobe.disableSigninUI();
     chrome.send('skipToUpdateForTesting');
   };
 
@@ -260,7 +238,6 @@ cr.define('cr.ui', function() {
       }
     }
 
-    Oobe.disableSigninUI();
     chrome.send('skipToLoginForTesting');
 
     if (!enterpriseEnroll) {
@@ -292,7 +269,6 @@ cr.define('cr.ui', function() {
    * @param {string} password Login password.
    */
   Oobe.authenticateForTesting = function(username, password) {
-    Oobe.disableSigninUI();
     chrome.send('authenticateUser', [username, password, false]);
   };
 
@@ -366,7 +342,6 @@ cr.define('cr.ui', function() {
    */
   Oobe.setVirtualKeyboardShown = function(shown) {
     Oobe.getInstance().virtualKeyboardShown = shown;
-    $('pod-row').setFocusedPodPinVisibility(!shown);
   };
 
   /**

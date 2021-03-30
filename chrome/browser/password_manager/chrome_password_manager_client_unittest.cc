@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +33,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
@@ -83,13 +83,12 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
-#include "chrome/browser/autofill/mock_address_accessory_controller.h"
 #include "chrome/browser/autofill/mock_credit_card_accessory_controller.h"
-#include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #endif  // defined(OS_ANDROID)
 
+using autofill::FieldRendererId;
 using autofill::mojom::FocusedFieldType;
 using content::BrowserContext;
 using content::WebContents;
@@ -178,7 +177,7 @@ class FakePasswordAutofillAgent
       bool should_show_popup_without_passwords) override {}
 
   void FillIntoFocusedField(bool is_password,
-                            const base::string16& credential) override {}
+                            const std::u16string& credential) override {}
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override {}
 
@@ -323,24 +322,26 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
   ChromePasswordManagerClient* client = GetClient();
 
   // Passwords are syncing and custom passphrase isn't used.
-  EXPECT_EQ(password_manager::SYNCING_NORMAL_ENCRYPTION,
+  EXPECT_EQ(password_manager::SyncState::kSyncingNormalEncryption,
             client->GetPasswordSyncState());
 
   // Again, using a custom passphrase.
   sync_service->SetIsUsingSecondaryPassphrase(true);
 
-  EXPECT_EQ(password_manager::SYNCING_WITH_CUSTOM_PASSPHRASE,
+  EXPECT_EQ(password_manager::SyncState::kSyncingWithCustomPassphrase,
             client->GetPasswordSyncState());
 
   // Report correctly if we aren't syncing passwords.
   sync_service->SetActiveDataTypes(syncer::ModelTypeSet(syncer::BOOKMARKS));
 
-  EXPECT_EQ(password_manager::NOT_SYNCING, client->GetPasswordSyncState());
+  EXPECT_EQ(password_manager::SyncState::kNotSyncing,
+            client->GetPasswordSyncState());
 
   // Again, without a custom passphrase.
   sync_service->SetIsUsingSecondaryPassphrase(false);
 
-  EXPECT_EQ(password_manager::NOT_SYNCING, client->GetPasswordSyncState());
+  EXPECT_EQ(password_manager::SyncState::kNotSyncing,
+            client->GetPasswordSyncState());
 }
 
 TEST_F(ChromePasswordManagerClientTest,
@@ -457,14 +458,28 @@ TEST_F(ChromePasswordManagerClientTest,
   EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));
 }
 
-TEST_F(ChromePasswordManagerClientTest, SavingDependsOnAutomation) {
-  // Test that saving passwords UI is disabled for automated tests.
+class ChromePasswordManagerClientAutomatedTest
+    : public ChromePasswordManagerClientTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ChromePasswordManagerClientAutomatedTest() {
+    if (GetParam()) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kEnableAutomation);
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(AutomatedTestPasswordHandling,
+                         ChromePasswordManagerClientAutomatedTest,
+                         testing::Bool());
+
+TEST_P(ChromePasswordManagerClientAutomatedTest, SavingDependsOnAutomation) {
+  // Test that saving passwords UI is disabled for automated tests,
+  // and enabled for non-automated tests.
   ChromePasswordManagerClient* client = GetClient();
   const GURL kUrlOn("https://accounts.google.com");
-  EXPECT_TRUE(client->IsSavingAndFillingEnabled(kUrlOn));
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableAutomation);
-  EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
+  EXPECT_NE(client->IsSavingAndFillingEnabled(kUrlOn), GetParam());
 }
 
 // Check that password manager is disabled on about:blank pages.
@@ -787,7 +802,7 @@ TEST_F(ChromePasswordManagerClientTest,
       MaybeStartProtectedPasswordEntryRequest(_, _, "username", _, _, true))
       .Times(4);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"saved_domain.com", base::ASCIIToUTF16("username")}};
+      {"saved_domain.com", u"username"}};
 
   client->CheckProtectedPasswordEntry(
       password_manager::metrics_util::PasswordType::SAVED_PASSWORD, "username",
@@ -885,7 +900,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(main_rfh());
-  client->FocusedInputChanged(driver.get(),
+  client->FocusedInputChanged(driver.get(), FieldRendererId(123),
                               FocusedFieldType::kFillablePasswordField);
 
   PasswordGenerationController* pwd_generation_controller =
@@ -910,7 +925,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   ASSERT_FALSE(web_contents()->GetFocusedFrame());
   ASSERT_TRUE(pwd_generation_controller->GetActiveFrameDriver());
-  client->FocusedInputChanged(driver.get(), FocusedFieldType::kUnknown);
+  client->FocusedInputChanged(driver.get(), FieldRendererId(123),
+                              FocusedFieldType::kUnknown);
 
   // Check that the event was processed by the generation controller and that
   // the active frame driver was unset.
@@ -929,7 +945,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest, FocusedInputChangedWrongFrame) {
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(subframe);
-  client->FocusedInputChanged(driver.get(),
+  client->FocusedInputChanged(driver.get(), FieldRendererId(123),
                               FocusedFieldType::kFillablePasswordField);
 
   PasswordGenerationController* pwd_generation_controller =
@@ -947,7 +963,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest, FocusedInputChangedGoodFrame) {
   std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
       CreateContentPasswordManagerDriver(main_rfh());
   FocusWebContentsOnMainFrame();
-  client->FocusedInputChanged(driver.get(),
+  client->FocusedInputChanged(driver.get(), FieldRendererId(123),
                               FocusedFieldType::kFillablePasswordField);
 
   PasswordGenerationController* pwd_generation_controller =
@@ -960,8 +976,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   auto origin = url::Origin::Create(GURL("https://example.com"));
   PasswordForm form;
   form.url = origin.GetURL();
-  form.username_value = base::ASCIIToUTF16("alice");
-  form.password_value = base::ASCIIToUTF16("S3cr3t");
+  form.username_value = u"alice";
+  form.password_value = u"S3cr3t";
   GetClient()
       ->GetCredentialCacheForTesting()
       ->SaveCredentialsAndBlocklistedForOrigin(

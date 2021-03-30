@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMECandidateWindowHandler
   // IMECandidateWindowHandlerInterface override.
   void UpdateLookupTable(const ui::CandidateWindow& candidate_window,
                          bool visible) override;
-  void UpdatePreeditText(const base::string16& text,
+  void UpdatePreeditText(const std::u16string& text,
                          uint32_t cursor_pos,
                          bool visible) override;
   void SetCursorBounds(const gfx::Rect& cursor_bounds,

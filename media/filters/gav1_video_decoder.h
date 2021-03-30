@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame_pool.h"
 #include "media/filters/offloading_video_decoder.h"
@@ -28,6 +29,8 @@ class MediaLog;
 
 class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
  public:
+  static SupportedVideoDecoderConfigs SupportedConfigs();
+
   explicit Gav1VideoDecoder(MediaLog* media_log,
                             OffloadState offload_state = OffloadState::kNormal);
   ~Gav1VideoDecoder() override;
@@ -35,7 +38,7 @@ class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
   Gav1VideoDecoder& operator=(const Gav1VideoDecoder&) = delete;
 
   // VideoDecoder implementation.
-  std::string GetDisplayName() const override;
+  VideoDecoderType GetDecoderType() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
@@ -44,6 +47,7 @@ class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
+  bool IsOptimizedForRTC() const override;
 
   // OffloadableVideoDecoder implementation.
   void Detach() override;
@@ -70,7 +74,7 @@ class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
 
   // Info configured in Initialize(). These are used in outputting frames.
   VideoColorSpace color_space_;
-  gfx::Size natural_size_;
+  double pixel_aspect_ratio_;
 
   DecoderState state_ = DecoderState::kUninitialized;
 

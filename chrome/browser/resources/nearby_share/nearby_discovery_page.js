@@ -24,7 +24,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getDiscoveryManager} from './discovery_manager.js';
+import {getDiscoveryManager, observeDiscoveryManager} from './discovery_manager.js';
 
 /**
  * Converts an unguessable token to a string.
@@ -142,6 +142,9 @@ Polymer({
   /** @type {ResizeObserver} used to observer size changes to this element */
   resizeObserver_: null,
 
+  /** @private {?nearbyShare.mojom.DiscoveryObserverReceiver} */
+  discoveryObserver_: null,
+
   /** @override */
   attached() {
     this.shareTargetMap_ = new Map();
@@ -162,12 +165,39 @@ Polymer({
       }
     });
     this.resizeObserver_.observe(this);
+    this.discoveryObserver_ = observeDiscoveryManager(
+        /** @type {!nearbyShare.mojom.DiscoveryObserverInterface} */ (this));
   },
 
   /** @override */
   detached() {
     this.stopDiscovery_();
     this.resizeObserver_.disconnect();
+    if (this.discoveryObserver_) {
+      this.discoveryObserver_.$.close();
+    }
+  },
+
+  /**
+   * @return {!Array<!nearbyShare.mojom.ShareTarget>}
+   * @public
+   */
+  getShareTargetsForTesting() {
+    return this.shareTargets_;
+  },
+
+  /**
+   * @param {nearbyShare.mojom.ShareTarget} shareTarget
+   * @return {boolean} True if share target found
+   * @public
+   */
+  selectShareTargetForTesting(shareTarget) {
+    const token = tokenToString(shareTarget.id);
+    if (this.shareTargetMap_.has(token)) {
+      this.selectShareTarget_(this.shareTargetMap_.get(token));
+      return true;
+    }
+    return false;
   },
 
   /** @private */
@@ -234,6 +264,29 @@ Polymer({
     this.mojoEventTarget_ = null;
   },
 
+  /**
+   * Mojo callback when the Nearby utility process stops.
+   * @public
+   */
+  onNearbyProcessStopped() {
+    if (!this.errorTitle_) {
+      this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+      this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
+    }
+  },
+
+  /**
+   * Mojo callback when discovery is started.
+   * @param {boolean} success
+   * @public
+   */
+  onStartDiscoveryResult(success) {
+    if (!success && !this.errorTitle_) {
+      this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+      this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
+    }
+  },
+
   /** @private */
   clearShareTargets_() {
     if (this.shareTargetMap_) {
@@ -276,26 +329,29 @@ Polymer({
 
   /** @private */
   onNext_() {
-    if (!this.selectedShareTarget) {
-      return;
+    if (this.selectedShareTarget) {
+      this.selectShareTarget_(this.selectedShareTarget);
     }
+  },
 
-    getDiscoveryManager()
-        .selectShareTarget(this.selectedShareTarget.id)
-        .then(response => {
-          const {result, transferUpdateListener, confirmationManager} =
-              response;
-          if (result !== nearbyShare.mojom.SelectShareTargetResult.kOk) {
-            this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
-            this.errorDescription_ =
-                this.i18n('nearbyShareErrorSomethingWrong');
-            return;
-          }
+  /**
+   * Select the given share target and proceed to the confirmation page.
+   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @private
+   */
+  selectShareTarget_(shareTarget) {
+    getDiscoveryManager().selectShareTarget(shareTarget.id).then(response => {
+      const {result, transferUpdateListener, confirmationManager} = response;
+      if (result !== nearbyShare.mojom.SelectShareTargetResult.kOk) {
+        this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+        this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
+        return;
+      }
 
-          this.confirmationManager = confirmationManager;
-          this.transferUpdateListener = transferUpdateListener;
-          this.fire('change-page', {page: 'confirmation'});
-        });
+      this.confirmationManager = confirmationManager;
+      this.transferUpdateListener = transferUpdateListener;
+      this.fire('change-page', {page: 'confirmation'});
+    });
   },
 
   /** @private */
@@ -358,7 +414,7 @@ Polymer({
    * and setting the href of the link. This function is largely
    * copied from getAriaLabelledContent_ in <settings-localized-link>, which
    * can't be used directly because this isn't part of settings.
-   * TODO(crbug.com/1154718): Extract this logic into a general method.
+   * TODO(crbug.com/1170849): Extract this logic into a general method.
    * @return {string}
    * @private
    */

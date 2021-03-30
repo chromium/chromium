@@ -54,13 +54,14 @@ void TabGroupViews::OnGroupVisualsChanged() {
 gfx::Rect TabGroupViews::GetBounds() const {
   gfx::Rect bounds = header_->bounds();
 
-  if (!tab_strip_->controller()->IsGroupCollapsed(group_)) {
-    const Tab* last_tab = GetLastTabInGroup();
-    if (last_tab) {
-      const int width = last_tab->bounds().right() - bounds.x();
-      if (width > 0)
-        bounds.set_width(width);
-    }
+  // If the group is (done animating to) collapsed, the tabs will be stacked at
+  // the right edge of the header, so this is a no-op. But if the group is mid
+  // collapse animation, this will set the header bounds correctly.
+  const Tab* last_tab = GetLastTabInGroup();
+  if (last_tab) {
+    const int width = last_tab->bounds().right() - bounds.x();
+    if (width > 0)
+      bounds.set_width(width);
   }
   return bounds;
 }

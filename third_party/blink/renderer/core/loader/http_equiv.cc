@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/http_equiv.h"
 
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -97,17 +98,20 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
     const AtomicString& content) {
   if (!window || !window->GetFrame())
     return;
-  if (window->GetFrame()->GetSettings()->BypassCSP())
+  if (window->GetFrame()->GetSettings()->GetBypassCSP())
     return;
   if (EqualIgnoringASCIICase(equiv, "content-security-policy")) {
-    window->GetContentSecurityPolicy()->DidReceiveHeader(
-        content, network::mojom::ContentSecurityPolicyType::kEnforce,
-        network::mojom::ContentSecurityPolicySource::kMeta);
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed =
+        ParseContentSecurityPolicies(
+            content, network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+            network::mojom::blink::ContentSecurityPolicySource::kMeta,
+            *(window->GetSecurityOrigin()
+                  ->GetOriginOrPrecursorOriginIfOpaque()));
+    window->GetContentSecurityPolicy()->AddPolicies(mojo::Clone(parsed));
+    window->GetPolicyContainer()->AddContentSecurityPolicies(std::move(parsed));
   } else if (EqualIgnoringASCIICase(equiv,
                                     "content-security-policy-report-only")) {
-    window->GetContentSecurityPolicy()->DidReceiveHeader(
-        content, network::mojom::ContentSecurityPolicyType::kReport,
-        network::mojom::ContentSecurityPolicySource::kMeta);
+    window->GetContentSecurityPolicy()->ReportReportOnlyInMeta(content);
   } else {
     NOTREACHED();
   }
@@ -174,7 +178,7 @@ void HttpEquiv::ProcessHttpEquivRefresh(LocalDOMWindow* window,
   UseCounter::Count(window, WebFeature::kMetaRefresh);
   if (!window->GetContentSecurityPolicy()->AllowInline(
           ContentSecurityPolicy::InlineType::kScript, element, "" /* content */,
-          "" /* nonce */, NullURL(), OrdinalNumber(),
+          "" /* nonce */, NullURL(), OrdinalNumber::First(),
           ReportingDisposition::kSuppressReporting)) {
     UseCounter::Count(window,
                       WebFeature::kMetaRefreshWhenCSPBlocksInlineScript);

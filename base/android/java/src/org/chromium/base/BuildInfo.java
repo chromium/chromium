@@ -4,10 +4,14 @@
 
 package org.chromium.base;
 
+import static android.content.Context.UI_MODE_SERVICE;
+
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.text.TextUtils;
@@ -16,6 +20,7 @@ import androidx.annotation.ChecksSdkIntAtLeast;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.compat.ApiHelperForP;
+import org.chromium.build.BuildConfig;
 
 /**
  * BuildInfo is a utility class providing easy access to {@link PackageInfo} information. This is
@@ -27,6 +32,10 @@ public class BuildInfo {
 
     private static PackageInfo sBrowserPackageInfo;
     private static boolean sInitialized;
+
+    // TODO(crbug.com/1192402): Replace this with Build.VERSION_CODES.S in the code once chromium
+    // import Android S SDK.
+    public static final int ANDROID_S_API_SDK_INT = 31;
 
     /** Not a member variable to avoid creating the instance early (it is set early in start up). */
     private static String sFirebaseAppId = "";
@@ -49,12 +58,12 @@ public class BuildInfo {
     public final String abiString;
     /** Truncated version of Build.FINGERPRINT (for crash reporting). */
     public final String androidBuildFingerprint;
-    /** A string that is different each time the apk changes. */
-    public final String extractedFileSuffix;
     /** Whether or not the device has apps installed for using custom themes. */
     public final String customThemes;
     /** Product version as stored in Android resources. */
     public final String resourcesVersion;
+    /** Whether we're running on Android TV or not */
+    public final boolean isTV;
 
     private static class Holder { private static BuildInfo sInstance = new BuildInfo(); }
 
@@ -84,10 +93,10 @@ public class BuildInfo {
                 sFirebaseAppId,
                 buildInfo.customThemes,
                 buildInfo.resourcesVersion,
-                buildInfo.extractedFileSuffix,
                 String.valueOf(
                         ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion),
                 isDebugAndroid() ? "1" : "0",
+                buildInfo.isTV ? "1" : "0",
         };
     }
 
@@ -181,13 +190,16 @@ public class BuildInfo {
                 abiString = String.format("ABI1: %s, ABI2: %s", Build.CPU_ABI, Build.CPU_ABI2);
             }
 
-            // Append lastUpdateTime to versionCode, since versionCode is unlikely to change when
-            // developing locally but lastUpdateTime is.
-            extractedFileSuffix = String.format("@%x_%x", versionCode, pi.lastUpdateTime);
-
             // The value is truncated, as this is used for crash and UMA reporting.
             androidBuildFingerprint = Build.FINGERPRINT.substring(
                     0, Math.min(Build.FINGERPRINT.length(), MAX_FINGERPRINT_LENGTH));
+
+            // See https://developer.android.com/training/tv/start/hardware.html#runtime-check.
+            UiModeManager uiModeManager =
+                    (UiModeManager) appContext.getSystemService(UI_MODE_SERVICE);
+            isTV = uiModeManager != null
+                    && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+
         } catch (NameNotFoundException e) {
             throw new RuntimeException(e);
         }

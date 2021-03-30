@@ -21,6 +21,7 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 
+  std::unique_ptr<SkiaOutputDevice::ScopedPaint> BeginScopedPaint() override;
   void Submit(bool sync_cpu, base::OnceClosure callback) override;
   bool Reshape(const gfx::Size& size,
                float device_scale_factor,
@@ -28,10 +29,10 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
                gfx::BufferFormat format,
                gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
-                   std::vector<ui::LatencyInfo> latency_info) override;
+                   OutputSurfaceFrame frame) override;
   void PostSubBuffer(const gfx::Rect& rect,
                      BufferPresentedCallback feedback,
-                     std::vector<ui::LatencyInfo> latency_info) override;
+                     OutputSurfaceFrame frame) override;
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;

@@ -1,0 +1,358 @@
+10.1:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [27, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+10.2:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [27, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+10.299999999999999:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [27, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+10.399999999999999:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [28, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+10.499999999999998:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [28, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+10.599999999999998:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [28, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+10.699999999999998:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [28, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+10.799999999999997:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [28, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+10.899999999999997:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [28, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+10.999999999999996:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [29, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.099999999999996:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [29, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.199999999999996:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [29, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.299999999999995:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [29, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.399999999999995:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [29, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.499999999999995:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [29, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.599999999999994:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [29, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.699999999999994:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [30, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.799999999999994:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [30, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.899999999999993:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [30, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+11.999999999999993:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [30, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+12.099999999999993:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
+      "position": [30, 12],
+      "bounds": [150, 75],
+      "drawsContent": false
+    }
+  ]
+}
+

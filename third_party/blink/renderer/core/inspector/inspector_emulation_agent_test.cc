@@ -6,44 +6,39 @@
 
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
 class InspectorEmulationAgentTest : public testing::Test {};
 
 TEST_F(InspectorEmulationAgentTest, ModifiesAcceptHeader) {
-  String expected_default =
-      "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-  String expected_no_webp = "image/apng,image/svg+xml,image/*,*/*;q=0.8";
-  String expected_no_webp_and_avif =
-      "image/apng,image/svg+xml,image/*,*/*;q=0.8";
-  String expected_no_avif =
-      "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-  bool avif_enabled = base::FeatureList::IsEnabled(features::kAVIF);
-  if (avif_enabled) {
-    expected_default =
-        "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-    expected_no_webp = "image/avif,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-    expected_no_webp_and_avif = "image/apng,image/svg+xml,image/*,*/*;q=0.8";
-    expected_no_avif = "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-  }
+  const char kExpectedDefault[] =
+      "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+  const char kExpectedNoWebp[] =
+      "image/avif,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+#else
+  const char kExpectedDefault[] =
+      "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
+  const char kExpectedNoWebp[] = "image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #endif
+  const char kExpectedNoWebpAndAvif[] =
+      "image/apng,image/svg+xml,image/*,*/*;q=0.8";
+  const char kExpectedNoAvif[] =
+      "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 
   HashSet<String> disabled_types;
   EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(&disabled_types),
-            expected_default);
+            kExpectedDefault);
   disabled_types.insert("image/webp");
   EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(&disabled_types),
-            expected_no_webp);
+            kExpectedNoWebp);
   disabled_types.insert("image/avif");
   EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(&disabled_types),
-            expected_no_webp_and_avif);
+            kExpectedNoWebpAndAvif);
   disabled_types.erase("image/webp");
   EXPECT_EQ(InspectorEmulationAgent::OverrideAcceptImageHeader(&disabled_types),
-            expected_no_avif);
+            kExpectedNoAvif);
 }
 
 }  // namespace blink

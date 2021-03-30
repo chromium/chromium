@@ -49,7 +49,7 @@ KeywordExtensionsDelegateImpl::~KeywordExtensionsDelegateImpl() {
 
 void KeywordExtensionsDelegateImpl::DeleteSuggestion(
     const TemplateURL* template_url,
-    const base::string16& suggestion_text) {
+    const std::u16string& suggestion_text) {
   extensions::ExtensionOmniboxEventRouter::OnDeleteSuggestion(
       profile_, template_url->GetExtensionId(),
       base::UTF16ToUTF8(suggestion_text));
@@ -73,7 +73,7 @@ bool KeywordExtensionsDelegateImpl::Start(
     const AutocompleteInput& input,
     bool minimal_changes,
     const TemplateURL* template_url,
-    const base::string16& remaining_input) {
+    const std::u16string& remaining_input) {
   DCHECK(template_url);
 
   if (input.want_asynchronous_matches()) {
@@ -150,7 +150,7 @@ void KeywordExtensionsDelegateImpl::Observe(
       DCHECK(model);
       // It's possible to change the default suggestion while not in an editing
       // session.
-      base::string16 keyword, remaining_input;
+      std::u16string keyword, remaining_input;
       if (matches()->empty() || current_keyword_extension_id_.empty() ||
           !KeywordProvider::ExtractKeywordFromInput(input, model, &keyword,
                                                     &remaining_input))
@@ -175,7 +175,7 @@ void KeywordExtensionsDelegateImpl::Observe(
       // ExtractKeywordFromInput() can fail if e.g. this code is triggered by
       // direct calls from the development console, outside the normal flow of
       // user input.
-      base::string16 keyword, remaining_input;
+      std::u16string keyword, remaining_input;
       if (!KeywordProvider::ExtractKeywordFromInput(input, model, &keyword,
                                                     &remaining_input))
         return;

@@ -13,8 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/optimization_target_model_observer.h"
-
+#include "components/optimization_guide/core/optimization_target_model_observer.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -42,6 +41,7 @@ class TranslateModelService
   // optimization_guide::OptimizationTargetModelObserver implementation:
   void OnModelFileUpdated(
       optimization_guide::proto::OptimizationTarget optimization_target,
+      const base::Optional<optimization_guide::proto::Any>& model_metadata,
       const base::FilePath& file_path) override;
 
   // Invokes |callback| with a language detection model file when it is

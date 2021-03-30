@@ -5,7 +5,9 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 
 #include <cstdarg>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -17,7 +19,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
@@ -119,8 +123,13 @@ class ImmediateAfterActivityPollPolicy
 //
 // The tests which verify the polling code re-enable the polling behavior but
 // are careful to avoid timing problems.
-class ConfiguredProxyResolutionServiceTest : public TestWithTaskEnvironment {
+class ConfiguredProxyResolutionServiceTest : public ::testing::Test,
+                                             public WithTaskEnvironment {
  protected:
+  ConfiguredProxyResolutionServiceTest()
+      : WithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     testing::Test::SetUp();
     previous_policy_ =
@@ -3731,6 +3740,175 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PACScriptRefetchAfterActivity) {
                             &request3, NetLogWithSource());
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(info3.is_direct());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest, IpAddressChangeResetsProxy) {
+  NeverPollPolicy poll_policy;
+  ConfiguredProxyResolutionService::set_pac_script_poll_policy(&poll_policy);
+
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(
+      /*resolvers_expect_pac_bytes=*/true);
+  MockAsyncProxyResolverFactory* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::make_unique<MockProxyConfigService>(ProxyConfig::CreateAutoDetect()),
+      std::move(factory),
+      /*net_log=*/nullptr, /*quick_check_enabled=*/true);
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  MockPacFileFetcher* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  const base::TimeDelta kConfigDelay = base::TimeDelta::FromSeconds(5);
+  service.set_stall_proxy_auto_config_delay(kConfigDelay);
+
+  // Initialize by making and completing a proxy request.
+  ProxyInfo info1;
+  TestCompletionCallback callback1;
+  std::unique_ptr<ProxyResolutionRequest> request1;
+  int rv = service.ResolveProxy(
+      GURL("http://request1"), std::string(), NetworkIsolationKey(), &info1,
+      callback1.callback(), &request1, NetLogWithSource());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_TRUE(fetcher_ptr->has_pending_request());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+  ASSERT_THAT(factory_ptr->pending_requests(), testing::SizeIs(1));
+  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+  ASSERT_THAT(resolver.pending_jobs(), testing::SizeIs(1));
+  resolver.pending_jobs()[0]->CompleteNow(OK);
+  ASSERT_THAT(callback1.WaitForResult(), IsOk());
+  EXPECT_FALSE(fetcher_ptr->has_pending_request());
+
+  // Expect IP address notification to trigger a fetch after wait period.
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  FastForwardBy(kConfigDelay - base::TimeDelta::FromMilliseconds(2));
+  EXPECT_FALSE(fetcher_ptr->has_pending_request());
+  FastForwardBy(base::TimeDelta::FromMilliseconds(2));
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+
+  // Leave pending fetch hanging.
+
+  // Expect proxy requests are blocked on completion of change-triggered fetch.
+  ProxyInfo info2;
+  TestCompletionCallback callback2;
+  std::unique_ptr<ProxyResolutionRequest> request2;
+  rv = service.ResolveProxy(GURL("http://request1"), std::string(),
+                            NetworkIsolationKey(), &info2, callback2.callback(),
+                            &request2, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_THAT(resolver.pending_jobs(), testing::IsEmpty());
+
+  // Finish pending fetch and expect proxy request to be able to complete.
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript2);
+  ASSERT_THAT(factory_ptr->pending_requests(), testing::SizeIs(1));
+  EXPECT_EQ(ASCIIToUTF16(kValidPacScript2),
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+  ASSERT_THAT(resolver.pending_jobs(), testing::SizeIs(1));
+  resolver.pending_jobs()[0]->CompleteNow(OK);
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  EXPECT_FALSE(fetcher_ptr->has_pending_request());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest, DnsChangeTriggersPoll) {
+  ImmediateAfterActivityPollPolicy poll_policy;
+  ConfiguredProxyResolutionService::set_pac_script_poll_policy(&poll_policy);
+
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(
+      /*resolvers_expect_pac_bytes=*/true);
+  MockAsyncProxyResolverFactory* factory_ptr = factory.get();
+  ConfiguredProxyResolutionService service(
+      std::make_unique<MockProxyConfigService>(ProxyConfig::CreateAutoDetect()),
+      std::move(factory),
+      /*net_log=*/nullptr, /*quick_check_enabled=*/true);
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  MockPacFileFetcher* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  // Initialize config and poller by making and completing a proxy request.
+  ProxyInfo info1;
+  TestCompletionCallback callback1;
+  std::unique_ptr<ProxyResolutionRequest> request1;
+  int rv = service.ResolveProxy(
+      GURL("http://request1"), std::string(), NetworkIsolationKey(), &info1,
+      callback1.callback(), &request1, NetLogWithSource());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_TRUE(fetcher_ptr->has_pending_request());
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript1);
+  ASSERT_THAT(factory_ptr->pending_requests(), testing::SizeIs(1));
+  EXPECT_EQ(ASCIIToUTF16(kValidPacScript1),
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+  ASSERT_THAT(resolver.pending_jobs(), testing::SizeIs(1));
+  resolver.pending_jobs()[0]->CompleteNow(OK);
+  ASSERT_THAT(callback1.WaitForResult(), IsOk());
+  EXPECT_FALSE(fetcher_ptr->has_pending_request());
+
+  // Expect DNS notification to trigger a fetch.
+  NetworkChangeNotifier::NotifyObserversOfDNSChangeForTests();
+  fetcher_ptr->WaitUntilFetch();
+  EXPECT_TRUE(fetcher_ptr->has_pending_request());
+
+  // Leave pending fetch hanging.
+
+  // Expect proxy requests are not blocked on completion of DNS-triggered fetch.
+  ProxyInfo info2;
+  TestCompletionCallback callback2;
+  std::unique_ptr<ProxyResolutionRequest> request2;
+  rv = service.ResolveProxy(GURL("http://request2"), std::string(),
+                            NetworkIsolationKey(), &info2, callback2.callback(),
+                            &request2, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_THAT(resolver.pending_jobs(), testing::SizeIs(1));
+  resolver.pending_jobs()[0]->CompleteNow(OK);
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+
+  // Complete DNS-triggered fetch.
+  fetcher_ptr->NotifyFetchCompletion(OK, kValidPacScript2);
+  RunUntilIdle();
+
+  // Expect further proxy requests to use the new fetch result.
+  ProxyInfo info3;
+  TestCompletionCallback callback3;
+  std::unique_ptr<ProxyResolutionRequest> request3;
+  rv = service.ResolveProxy(GURL("http://request3"), std::string(),
+                            NetworkIsolationKey(), &info3, callback3.callback(),
+                            &request3, NetLogWithSource());
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_THAT(factory_ptr->pending_requests(), testing::SizeIs(1));
+  EXPECT_EQ(ASCIIToUTF16(kValidPacScript2),
+            factory_ptr->pending_requests()[0]->script_data()->utf16());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+  ASSERT_THAT(resolver.pending_jobs(), testing::SizeIs(1));
+  resolver.pending_jobs()[0]->CompleteNow(OK);
+  ASSERT_THAT(callback3.WaitForResult(), IsOk());
+  EXPECT_FALSE(fetcher_ptr->has_pending_request());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest, DnsChangeNoopWithoutResolver) {
+  ImmediateAfterActivityPollPolicy poll_policy;
+  ConfiguredProxyResolutionService::set_pac_script_poll_policy(&poll_policy);
+
+  MockAsyncProxyResolver resolver;
+  ConfiguredProxyResolutionService service(
+      std::make_unique<MockProxyConfigService>(ProxyConfig::CreateAutoDetect()),
+      std::make_unique<MockAsyncProxyResolverFactory>(
+          /*resolvers_expect_pac_bytes=*/true),
+      /*net_log=*/nullptr, /*quick_check_enabled=*/true);
+  auto fetcher = std::make_unique<MockPacFileFetcher>();
+  MockPacFileFetcher* fetcher_ptr = fetcher.get();
+  service.SetPacFileFetchers(std::move(fetcher),
+                             std::make_unique<DoNothingDhcpPacFileFetcher>());
+
+  // Expect DNS notification to do nothing because no proxy requests have yet
+  // been made.
+  NetworkChangeNotifier::NotifyObserversOfDNSChangeForTests();
+  RunUntilIdle();
+  EXPECT_FALSE(fetcher_ptr->has_pending_request());
 }
 
 // Helper class to exercise URL sanitization by submitting URLs to the

@@ -79,27 +79,27 @@ const StateData kStateData[] = {
 
 }  // namespace
 
-base::string16 GetAbbreviationForName(const base::string16& name) {
+std::u16string GetAbbreviationForName(const std::u16string& name) {
   for (const StateData& state : kStateData) {
     if (base::LowerCaseEqualsASCII(name, state.name))
       return base::ASCIIToUTF16(state.abbreviation);
   }
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetNameForAbbreviation(const base::string16& abbreviation) {
+std::u16string GetNameForAbbreviation(const std::u16string& abbreviation) {
   for (const StateData& state : kStateData) {
     if (base::LowerCaseEqualsASCII(abbreviation, state.abbreviation))
       return base::ASCIIToUTF16(state.name);
   }
-  return base::string16();
+  return std::u16string();
 }
 
-void GetNameAndAbbreviation(const base::string16& value,
-                            base::string16* name,
-                            base::string16* abbreviation) {
-  base::string16 full = GetNameForAbbreviation(value);
-  base::string16 abbr = value;
+void GetNameAndAbbreviation(const std::u16string& value,
+                            std::u16string* name,
+                            std::u16string* abbreviation) {
+  std::u16string full = GetNameForAbbreviation(value);
+  std::u16string abbr = value;
   if (full.empty()) {
     abbr = GetAbbreviationForName(value);
     full = value;

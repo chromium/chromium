@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
@@ -27,10 +28,10 @@ bool ShouldRegisterFileHandlersWithOs() {
 
 void RegisterFileHandlersWithOsTask(
     const AppId& app_id,
-    const base::string16& app_name,
+    const std::wstring& app_name,
     const base::FilePath& profile_path,
-    const std::set<base::string16>& file_extensions,
-    const base::string16& app_name_extension) {
+    const std::set<std::wstring>& file_extensions,
+    const std::wstring& app_name_extension) {
   const base::FilePath web_app_path =
       GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL());
   base::Optional<base::FilePath> app_specific_launcher_path =
@@ -41,10 +42,11 @@ void RegisterFileHandlersWithOsTask(
   base::CommandLine app_specific_launcher_command = GetAppLauncherCommand(
       app_id, app_specific_launcher_path.value(), profile_path);
 
-  base::string16 user_visible_app_name(app_name);
+  std::wstring user_visible_app_name(app_name);
   user_visible_app_name.append(app_name_extension);
 
-  base::FilePath icon_path = internals::GetIconFilePath(web_app_path, app_name);
+  base::FilePath icon_path =
+      internals::GetIconFilePath(web_app_path, base::AsString16(app_name));
 
   bool result = ShellUtil::AddFileAssociations(
       GetProgIdForApp(profile_path, app_id), app_specific_launcher_command,
@@ -62,26 +64,26 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
   if (file_handlers.empty())
     return;
 
-  base::string16 app_name_extension =
+  std::wstring app_name_extension =
       GetAppNameExtensionForNextInstall(app_id, profile->GetPath());
 
   std::set<std::string> file_extensions =
       apps::GetFileExtensionsFromFileHandlers(file_handlers);
-  std::set<base::string16> file_extensions16;
+  std::set<std::wstring> file_extensions_wide;
   for (const auto& file_extension : file_extensions) {
     // The file extensions in apps::FileHandler include a '.' prefix, which must
     // be removed.
-    file_extensions16.insert(base::UTF8ToUTF16(file_extension.substr(1)));
+    file_extensions_wide.insert(base::UTF8ToWide(file_extension.substr(1)));
   }
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&RegisterFileHandlersWithOsTask, app_id,
-                     base::UTF8ToUTF16(app_name), profile->GetPath(),
-                     file_extensions16, app_name_extension),
+                     base::UTF8ToWide(app_name), profile->GetPath(),
+                     file_extensions_wide, app_name_extension),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id));
+                     app_id, base::DoNothing::Once()));
 }
 
 void UnregisterFileHandlersWithOsTask(const AppId& app_id,
@@ -90,7 +92,7 @@ void UnregisterFileHandlersWithOsTask(const AppId& app_id,
   // remove the web application directory. This must be done before cleaning up
   // the registry, since the app-specific-launcher path is retrieved from the
   // registry.
-  base::string16 prog_id = GetProgIdForApp(profile_path, app_id);
+  std::wstring prog_id = GetProgIdForApp(profile_path, app_id);
   base::FilePath app_specific_launcher_path =
       ShellUtil::GetApplicationPathForProgId(prog_id);
   ShellUtil::DeleteFileAssociations(prog_id);
@@ -100,14 +102,17 @@ void UnregisterFileHandlersWithOsTask(const AppId& app_id,
   base::DeleteFile(app_specific_launcher_path);
 }
 
-void UnregisterFileHandlersWithOs(const AppId& app_id, Profile* profile) {
+void UnregisterFileHandlersWithOs(const AppId& app_id,
+                                  Profile* profile,
+                                  std::unique_ptr<ShortcutInfo> info,
+                                  base::OnceCallback<void()> callback) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&UnregisterFileHandlersWithOsTask, app_id,
                      profile->GetPath()),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id));
+                     app_id, std::move(callback)));
 }
 
 }  // namespace web_app

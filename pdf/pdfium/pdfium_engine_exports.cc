@@ -153,7 +153,7 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   if (children_count <= 0)
     return base::Value(base::Value::Type::NONE);
 
-  base::Optional<base::string16> opt_type =
+  base::Optional<std::u16string> opt_type =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetType, struct_elem), true);
   if (!opt_type)
@@ -162,14 +162,14 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   base::Value result(base::Value::Type::DICTIONARY);
   result.SetStringKey("type", *opt_type);
 
-  base::Optional<base::string16> opt_alt =
+  base::Optional<std::u16string> opt_alt =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetAltText, struct_elem),
           true);
   if (opt_alt)
     result.SetStringKey("alt", *opt_alt);
 
-  base::Optional<base::string16> opt_lang =
+  base::Optional<std::u16string> opt_lang =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetLang, struct_elem), true);
   if (opt_lang)

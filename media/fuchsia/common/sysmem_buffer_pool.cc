@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/process/process_handle.h"
 #include "media/fuchsia/common/sysmem_buffer_reader.h"
 #include "media/fuchsia/common/sysmem_buffer_writer.h"
 
@@ -33,6 +34,13 @@ SysmemBufferPool::Creator::Creator(
 
 SysmemBufferPool::Creator::~Creator() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void SysmemBufferPool::Creator::SetName(uint32_t priority,
+                                        base::StringPiece name) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!create_cb_);
+  collection_->SetName(priority, std::string(name));
 }
 
 void SysmemBufferPool::Creator::Create(
@@ -125,10 +133,13 @@ void SysmemBufferPool::OnError() {
     std::move(create_writer_cb_).Run(nullptr);
 }
 
-BufferAllocator::BufferAllocator() {
+BufferAllocator::BufferAllocator(base::StringPiece client_name) {
   allocator_ = base::ComponentContextForProcess()
                    ->svc()
                    ->Connect<fuchsia::sysmem::Allocator>();
+
+  allocator_->SetDebugClientInfo(std::string(client_name),
+                                 base::GetCurrentProcId());
 
   allocator_.set_error_handler([](zx_status_t status) {
     // Just log a warning. We will handle BufferCollection the failure when

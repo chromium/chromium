@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {pageVisibility} from './page_visibility.js';
-import {Route, Router} from './router.m.js';
+import {Route, Router} from './router.js';
 import {SettingsRoutes} from './settings_routes.js';
 
 /**
@@ -146,10 +146,12 @@ function createBrowserSettingsRoutes() {
     r.SAFETY_CHECK = r.BASIC.createSection('/safetyCheck', 'safetyCheck');
   }
 
+  // <if expr="not chromeos and not lacros">
   if (visibility.defaultBrowser !== false) {
     r.DEFAULT_BROWSER =
         r.BASIC.createSection('/defaultBrowser', 'defaultBrowser');
   }
+  // </if>
 
   r.SEARCH_ENGINES = r.SEARCH.createChild('/searchEngines');
 
@@ -165,6 +167,11 @@ function createBrowserSettingsRoutes() {
     r.LANGUAGES = r.ADVANCED.createSection('/languages', 'languages');
     // <if expr="not is_macosx">
     r.EDIT_DICTIONARY = r.LANGUAGES.createChild('/editDictionary');
+    // </if>
+    // <if expr="not chromeos and not lacros">
+    if (loadTimeData.getBoolean('enableDesktopRestructuredLanguageSettings')) {
+      r.LANGUAGE_SETTINGS = r.LANGUAGES.createChild('/languageSettings');
+    }
     // </if>
 
     if (visibility.downloads !== false) {
@@ -183,7 +190,7 @@ function createBrowserSettingsRoutes() {
     }
     // </if>
 
-    // <if expr="not chromeos">
+    // <if expr="not chromeos and not lacros">
     r.SYSTEM = r.ADVANCED.createSection('/system', 'system');
     // </if>
 

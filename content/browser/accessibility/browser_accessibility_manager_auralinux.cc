@@ -184,7 +184,7 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       FireDescriptionChangedEvent(node);
       break;
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
-      ui::AXNode::AXID focus_id =
+      ui::AXNodeID focus_id =
           ax_tree()->GetUnignoredSelection().focus_object_id;
       BrowserAccessibility* focus_object = GetFromID(focus_id);
       if (focus_object)

@@ -45,17 +45,33 @@ enum class ZoomChange { IN, OUT, RESET };
 class ClientControlledShellSurface : public ShellSurfaceBase,
                                      public ui::CompositorLockClient {
  public:
+  // TODO(mukai): integrate this with ShellSurfaceBase's callback.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void OnGeometryChanged(const gfx::Rect& geometry) = 0;
+    virtual void OnStateChanged(chromeos::WindowStateType old_state_type,
+                                chromeos::WindowStateType new_state_type) = 0;
+    virtual void OnBoundsChanged(chromeos::WindowStateType current_state,
+                                 chromeos::WindowStateType requested_state,
+                                 int64_t display_id,
+                                 const gfx::Rect& bounds_in_display,
+                                 bool is_resize,
+                                 int bounds_change) = 0;
+    virtual void OnDragStarted(int component) = 0;
+    virtual void OnDragFinished(int x, int y, bool canceled) = 0;
+    virtual void OnZoomLevelChanged(ZoomChange zoom_change) = 0;
+  };
+
   ClientControlledShellSurface(Surface* surface,
                                bool can_minimize,
                                int container,
                                bool default_scale_cancellation);
   ~ClientControlledShellSurface() override;
 
-  using GeometryChangedCallback =
-      base::RepeatingCallback<void(const gfx::Rect& geometry)>;
-
-  void set_geometry_changed_callback(const GeometryChangedCallback& callback) {
-    geometry_changed_callback_ = callback;
+  Delegate* set_delegate(std::unique_ptr<Delegate> delegate) {
+    delegate_ = std::move(delegate);
+    return delegate_.get();
   }
 
   void set_server_reparent_window(bool reparent) {
@@ -83,58 +99,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Called when the client changed the fullscreen state.
   void SetFullscreen(bool fullscreen);
 
-  // Called when the client was snapped to left.
-  void SetSnappedToLeft();
-
-  // Called when the client was snapped to right.
-  void SetSnappedToRight();
-
   // Called when the client was set to PIP.
   void SetPip();
-
-  // Set the callback to run when the surface state changed.
-  using StateChangedCallback =
-      base::RepeatingCallback<void(chromeos::WindowStateType old_state_type,
-                                   chromeos::WindowStateType new_state_type)>;
-  void set_state_changed_callback(
-      const StateChangedCallback& state_changed_callback) {
-    state_changed_callback_ = state_changed_callback;
-  }
-
-  // Set the callback to run when the surface bounds changed.
-  using BoundsChangedCallback =
-      base::RepeatingCallback<void(chromeos::WindowStateType current_state,
-                                   chromeos::WindowStateType requested_state,
-                                   int64_t display_id,
-                                   const gfx::Rect& bounds_in_display,
-                                   bool is_resize,
-                                   int bounds_change)>;
-  void set_bounds_changed_callback(
-      const BoundsChangedCallback& bounds_changed_callback) {
-    bounds_changed_callback_ = bounds_changed_callback;
-  }
-
-  bool has_bounds_changed_callback() const {
-    return static_cast<bool>(bounds_changed_callback_);
-  }
-
-  // Set the callback to run when the drag operation started.
-  using DragStartedCallback = base::RepeatingCallback<void(int direction)>;
-  void set_drag_started_callback(const DragStartedCallback& callback) {
-    drag_started_callback_ = callback;
-  }
-
-  // Set the callback to run when the drag operation finished.
-  using DragFinishedCallback = base::RepeatingCallback<void(int, int, bool)>;
-  void set_drag_finished_callback(const DragFinishedCallback& callback) {
-    drag_finished_callback_ = callback;
-  }
-
-  // Set callback to run when user requests to change a zoom level.
-  using ChangeZoomLevelCallback = base::RepeatingCallback<void(ZoomChange)>;
-  void set_change_zoom_level_callback(const ChangeZoomLevelCallback& callback) {
-    change_zoom_level_callback_ = callback;
-  }
 
   // Returns true if this shell surface is currently being dragged.
   bool IsDragging();
@@ -167,9 +133,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   // Set top inset for surface.
   void SetTopInset(int height);
-
-  // Set resize outset for surface.
-  void SetResizeOutset(int outset);
 
   // Sends the request to change the zoom level to the client.
   void ChangeZoomLevel(ZoomChange change);
@@ -209,7 +172,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
                        uint32_t frame_enabled_button_mask);
 
   // Set the extra title for the surface.
-  void SetExtraTitle(const base::string16& extra_title);
+  void SetExtraTitle(const std::u16string& extra_title);
 
   // Set specific orientation lock for this surface. When this surface is in
   // foreground and the display can be rotated (e.g. tablet mode), apply the
@@ -228,6 +191,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   bool IsInputEnabled(Surface* surface) const override;
   void OnSetFrame(SurfaceFrameType type) override;
   void OnSetFrameColors(SkColor active_color, SkColor inactive_color) override;
+  void SetSnappedToLeft() override;
+  void SetSnappedToRight() override;
 
   // Overridden from views::WidgetDelegate:
   bool CanMaximize() const override;
@@ -269,6 +234,12 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   // Used to scale incoming coordinates from the client to DP.
   float GetClientToDpScale() const;
+
+  // Sets the resize lock state to the surface.
+  void SetResizeLock(bool resize_lock);
+
+  // Update the resizability based on the resize lock state.
+  void UpdateCanResize() override;
 
  protected:
   // Overridden from ShellSurfaceBase:
@@ -321,8 +292,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
       const gfx::Rect& window_bounds,
       chromeos::WindowStateType window_state) const;
 
-  GeometryChangedCallback geometry_changed_callback_;
-
   int top_inset_height_ = 0;
   int pending_top_inset_height_ = 0;
 
@@ -334,11 +303,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   uint32_t frame_visible_button_mask_ = 0;
   uint32_t frame_enabled_button_mask_ = 0;
 
-  StateChangedCallback state_changed_callback_;
-  BoundsChangedCallback bounds_changed_callback_;
-  DragStartedCallback drag_started_callback_;
-  DragFinishedCallback drag_finished_callback_;
-  ChangeZoomLevelCallback change_zoom_level_callback_;
+  std::unique_ptr<Delegate> delegate_;
 
   // TODO(reveman): Use configure callbacks for orientation. crbug.com/765954
   Orientation pending_orientation_ = Orientation::LANDSCAPE;
@@ -372,7 +337,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   ash::OrientationLockType initial_orientation_lock_ =
       ash::OrientationLockType::kAny;
   // The extra title to be applied when widget is being created.
-  base::string16 initial_extra_title_ = base::string16();
+  std::u16string initial_extra_title_ = std::u16string();
 
   bool preserve_widget_bounds_ = false;
 
@@ -404,6 +369,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   // Accessibility ID provided by client.
   base::Optional<int32_t> client_accessibility_id_;
+
+  bool pending_resize_lock_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ClientControlledShellSurface);
 };

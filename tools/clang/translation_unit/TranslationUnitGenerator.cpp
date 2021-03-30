@@ -281,7 +281,13 @@ static llvm::cl::extrahelp common_help(CommonOptionsParser::HelpMessage);
 
 int main(int argc, const char* argv[]) {
   llvm::cl::OptionCategory category("TranslationUnitGenerator Tool");
-  CommonOptionsParser options(argc, argv, category);
+  auto ExpectedParser = CommonOptionsParser::create(
+      argc, argv, category, llvm::cl::OneOrMore, nullptr);
+  if (!ExpectedParser) {
+    llvm::errs() << ExpectedParser.takeError();
+    return 1;
+  }
+  CommonOptionsParser& options = ExpectedParser.get();
   std::unique_ptr<clang::tooling::FrontendActionFactory> frontend_factory =
       clang::tooling::newFrontendActionFactory<CompilationIndexerAction>();
   clang::tooling::ClangTool tool(options.getCompilations(),

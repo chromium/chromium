@@ -82,7 +82,8 @@ const char TimeZoneResolver::kLastTimeZoneRefreshTime[] =
 
 // This class periodically refreshes location and timezone.
 // It should be destroyed to stop refresh.
-class TimeZoneResolver::TimeZoneResolverImpl : public base::PowerObserver {
+class TimeZoneResolver::TimeZoneResolverImpl
+    : public base::PowerSuspendObserver {
  public:
   explicit TimeZoneResolverImpl(const TimeZoneResolver* resolver);
 
@@ -91,7 +92,7 @@ class TimeZoneResolver::TimeZoneResolverImpl : public base::PowerObserver {
   // This is called once after the object is created.
   void Start();
 
-  // PowerObserver implementation.
+  // PowerSuspendObserver implementation.
   void OnResume() override;
 
   // (Re)Starts timer.
@@ -269,7 +270,7 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
   DCHECK(!resolver_->apply_timezone().is_null());
   DCHECK(!resolver_->delay_network_call().is_null());
 
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
 
   const int64_t last_refresh_at_raw =
       resolver_->local_state()->GetInt64(kLastTimeZoneRefreshTime);
@@ -286,7 +287,7 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
 }
 
 TimeZoneResolver::TimeZoneResolverImpl::~TimeZoneResolverImpl() {
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
 void TimeZoneResolver::TimeZoneResolverImpl::Start() {

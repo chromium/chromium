@@ -88,6 +88,10 @@ constexpr HidBlocklist::Entry kStaticEntries[] = {
     VENDOR_PRODUCT_RULE(0x2abe, 0x1002),
     // Feitian USB, HyperFIDO
     VENDOR_PRODUCT_RULE(0x2ccf, 0x0880),
+
+    // Block Jabra access to certain proprietary functionality.
+    {true, /*vendorId=*/0x0b0e, false, 0, true, /*usagePage=*/0xff00, false, 0,
+     false, 0, HidBlocklist::ReportType::kReportTypeOutput},
 };
 
 bool IsValidBlocklistEntry(const HidBlocklist::Entry& entry) {

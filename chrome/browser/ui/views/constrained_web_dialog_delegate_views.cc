@@ -21,6 +21,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -59,11 +61,14 @@ class ConstrainedDialogWebView : public views::WebView,
                                  public ConstrainedWebDialogDelegate,
                                  public views::WidgetDelegate {
  public:
+  METADATA_HEADER(ConstrainedDialogWebView);
   ConstrainedDialogWebView(content::BrowserContext* browser_context,
                            std::unique_ptr<ui::WebDialogDelegate> delegate,
                            content::WebContents* web_contents,
                            const gfx::Size& min_size,
                            const gfx::Size& max_size);
+  ConstrainedDialogWebView(const ConstrainedDialogWebView&) = delete;
+  ConstrainedDialogWebView& operator=(const ConstrainedDialogWebView&) = delete;
   ~ConstrainedDialogWebView() override;
 
   // ConstrainedWebDialogDelegate:
@@ -82,20 +87,20 @@ class ConstrainedDialogWebView : public views::WebView,
   void WindowClosing() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
-  base::string16 GetWindowTitle() const override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   views::View* GetContentsView() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   bool ShouldShowCloseButton() const override;
-  ui::ModalType GetModalType() const override;
 
   // views::WebView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
  private:
   InitiatorWebContentsObserver initiator_observer_;
@@ -106,9 +111,10 @@ class ConstrainedDialogWebView : public views::WebView,
   PopunderPreventer popunder_preventer_;
 
   std::unique_ptr<ConstrainedWebDialogDelegateViews> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConstrainedDialogWebView);
 };
+
+BEGIN_METADATA(ConstrainedDialogWebView, views::WebView)
+END_METADATA
 
 class WebDialogWebContentsDelegateViews
     : public ui::WebDialogWebContentsDelegate {
@@ -375,6 +381,7 @@ ConstrainedDialogWebView::ConstrainedDialogWebView(
           std::move(delegate),
           &initiator_observer_,
           this)) {
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetWebContents(GetWebContents());
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   if (!max_size.IsEmpty()) {
@@ -440,14 +447,14 @@ const views::Widget* ConstrainedDialogWebView::GetWidget() const {
   return View::GetWidget();
 }
 
-base::string16 ConstrainedDialogWebView::GetWindowTitle() const {
-  return impl_->closed_via_webui() ? base::string16()
+std::u16string ConstrainedDialogWebView::GetWindowTitle() const {
+  return impl_->closed_via_webui() ? std::u16string()
                                    : GetWebDialogDelegate()->GetDialogTitle();
 }
 
-base::string16 ConstrainedDialogWebView::GetAccessibleWindowTitle() const {
+std::u16string ConstrainedDialogWebView::GetAccessibleWindowTitle() const {
   return impl_->closed_via_webui()
-             ? base::string16()
+             ? std::u16string()
              : GetWebDialogDelegate()->GetAccessibleDialogTitle();
 }
 
@@ -463,10 +470,6 @@ ConstrainedDialogWebView::CreateNonClientFrameView(views::Widget* widget) {
 bool ConstrainedDialogWebView::ShouldShowCloseButton() const {
   // No close button if the dialog doesn't want a title bar.
   return impl_->GetWebDialogDelegate()->ShouldShowDialogTitle();
-}
-
-ui::ModalType ConstrainedDialogWebView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
 }
 
 bool ConstrainedDialogWebView::AcceleratorPressed(
@@ -498,7 +501,8 @@ gfx::Size ConstrainedDialogWebView::GetMaximumSize() const {
   return !max_size().IsEmpty() ? max_size() : WebView::GetMaximumSize();
 }
 
-void ConstrainedDialogWebView::DocumentOnLoadCompletedInMainFrame() {
+void ConstrainedDialogWebView::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   if (!max_size().IsEmpty() && initiator_observer_.web_contents()) {
     content::WebContents* top_level_web_contents =
         constrained_window::GetTopLevelWebContents(

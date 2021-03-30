@@ -27,6 +27,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -78,6 +79,7 @@
 #if defined(OS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/test/base/scoped_bundle_swizzler_mac.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
 #endif
 
 #if defined(OS_WIN)
@@ -95,11 +97,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/chromeos/input_method/input_method_configuration.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
 #include "chromeos/services/device_sync/fake_device_sync.h"
@@ -166,6 +169,34 @@ void UnblockOnProfileCreation(base::RunLoop* run_loop,
     run_loop->Quit();
 }
 #endif
+
+#if defined(OS_MAC)
+class ChromeBrowserMainExtraPartsBrowserProcessInjection
+    : public ChromeBrowserMainExtraParts {
+ public:
+  ChromeBrowserMainExtraPartsBrowserProcessInjection() = default;
+
+  // ChromeBrowserMainExtraParts implementation
+  void PreMainMessageLoopStart() override {
+    // The real SystemGeolocationPermissionsManager initializes a
+    // CLLocationManager. It has been observed that when thousands of instances
+    // of this object are created, as happens when running browser tests, the
+    // CoreLocationAgent process uses lots of CPU. This makes test execution
+    // slower and causes jobs to time out. We therefore insert a fake.
+    auto fake_geolocation_manager =
+        std::make_unique<FakeSystemGeolocationPermissionsManager>();
+    fake_geolocation_manager->set_status(
+        device::LocationSystemPermissionStatus::kAllowed);
+    g_browser_process->platform_part()->SetGeolocationManagerForTesting(
+        std::move(fake_geolocation_manager));
+  }
+
+  ChromeBrowserMainExtraPartsBrowserProcessInjection(
+      const ChromeBrowserMainExtraPartsBrowserProcessInjection&) = delete;
+  ChromeBrowserMainExtraPartsBrowserProcessInjection& operator=(
+      const ChromeBrowserMainExtraPartsBrowserProcessInjection&) = delete;
+};
+#endif  // defined(OS_MAC)
 
 }  // namespace
 
@@ -292,10 +323,6 @@ void InProcessBrowserTest::SetUp() {
                                       chrome::kTestUserProfileDir);
     }
   }
-
-  // By default, OS settings are not opened in a browser tab but in settings
-  // app. OS browsertests require OS settings to be opened in a browser tab.
-  SetAllowOsSettingsInTabForTesting(true);
 #endif
 
   SetScreenInstance();
@@ -332,14 +359,17 @@ void InProcessBrowserTest::SetUp() {
   // Using a screenshot for clamshell to tablet mode transitions makes the flow
   // async which we want to disable for most tests.
   ash::ShellTestApi::SetTabletControllerUseScreenshotForTest(false);
+
+  // Disable the notification delay timer used to prevent non system
+  // notifications from showing up right after login.
+  ash::ShellTestApi::SetUseLoginNotificationDelayForTest(false);
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Redirect the default download directory to a temporary directory.
   ASSERT_TRUE(default_download_dir_.CreateUniqueTempDir());
   CHECK(base::PathService::Override(chrome::DIR_DEFAULT_DOWNLOADS,
                                     default_download_dir_.GetPath()));
-
-  AfterStartupTaskUtils::DisableScheduleTaskDelayForTesting();
 
 #if defined(TOOLKIT_VIEWS)
   // Prevent hover cards from appearing when the mouse is over the tab. Tests
@@ -389,6 +419,14 @@ size_t InProcessBrowserTest::GetTestPreCount() {
   }
   return count;
 }
+
+#if defined(OS_MAC)
+void InProcessBrowserTest::CreatedBrowserMainParts(
+    content::BrowserMainParts* parts) {
+  static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+      std::make_unique<ChromeBrowserMainExtraPartsBrowserProcessInjection>());
+}
+#endif
 
 void InProcessBrowserTest::SelectFirstBrowser() {
   const BrowserList* browser_list = BrowserList::GetInstance();
@@ -528,7 +566,7 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
       guest_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   run_loop.Run();
 
   Profile* profile = profile_manager->GetProfileByPath(guest_path);
@@ -582,6 +620,17 @@ base::FilePath InProcessBrowserTest::GetChromeTestDataDir() const {
 
 void InProcessBrowserTest::PreRunTestOnMainThread() {
   AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS does not create a browser by default when the full restore feature
+  // is enabled. Nearly all existing tests assume a browser is created. This
+  // call triggers creating a browser.
+  auto* full_restore_service =
+      chromeos::full_restore::FullRestoreService::GetForProfile(
+          ProfileManager::GetPrimaryUserProfile());
+  if (!skip_initial_restore_ && full_restore_service)
+    full_restore_service->RestoreForTesting();
+#endif
 
   // Take the ChromeBrowserMainParts' RunLoop to run ourself, when we
   // want to wait for the browser to exit.

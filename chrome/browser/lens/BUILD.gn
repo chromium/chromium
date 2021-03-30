@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//chrome/browser/buildflags.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/lens/LensController.java" ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/contextmenu:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+
+  public_deps = [ ":util_java" ]
+
+  resources_package = "org.chromium.chrome.browser.lens"
+}
+
+android_library("util_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/lens/LensEntryPoint.java",
+    "java/src/org/chromium/chrome/browser/lens/LensFeature.java",
+    "java/src/org/chromium/chrome/browser/lens/LensIntentParams.java",
+    "java/src/org/chromium/chrome/browser/lens/LensQueryParams.java",
+    "java/src/org/chromium/chrome/browser/lens/LensQueryResult.java",
+    "java/src/org/chromium/chrome/browser/lens/LensUma.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/drawable/lens_icon.xml" ]
+}

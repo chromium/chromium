@@ -37,7 +37,7 @@ class AppContextMenu : public ui::SimpleMenuModel::Delegate {
 
   // ui::SimpleMenuModel::Delegate overrides:
   bool IsItemForCommandIdDynamic(int command_id) const override;
-  base::string16 GetLabelForCommandId(int command_id) const override;
+  std::u16string GetLabelForCommandId(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   ui::ImageModel GetIconForCommandId(int command_id) const override;

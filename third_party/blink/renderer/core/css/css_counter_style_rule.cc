@@ -3,7 +3,14 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -165,48 +172,103 @@ String CSSCounterStyleRule::fallback() const {
   return String();
 }
 
-void CSSCounterStyleRule::setName(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::SetterInternal(
+    const ExecutionContext* execution_context,
+    AtRuleDescriptorID descriptor_id,
+    const String& text) {
+  CSSStyleSheet* style_sheet = parentStyleSheet();
+  auto& context = *MakeGarbageCollected<CSSParserContext>(
+      ParserContext(execution_context->GetSecureContextMode()), style_sheet);
+  CSSTokenizer tokenizer(text);
+  auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange token_range(tokens);
+  CSSValue* new_value = AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
+      descriptor_id, token_range, context);
+  if (!new_value ||
+      !counter_style_rule_->NewValueInvalidOrEqual(descriptor_id, new_value))
+    return;
+
+  // TODO(xiaochengh): RuleMutationScope causes all rules of the tree scope to
+  // be re-collected and the entire CounterStyleMap rebuilt, while we only need
+  // to dirty one CounterStyle. Try to improve.
+  CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
+
+  counter_style_rule_->SetDescriptorValue(descriptor_id, new_value);
+  if (Document* document = style_sheet->OwnerDocument())
+    document->GetStyleEngine().MarkCounterStylesNeedUpdate();
 }
 
-void CSSCounterStyleRule::setSystem(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setName(const ExecutionContext* execution_context,
+                                  const String& text) {
+  CSSStyleSheet* style_sheet = parentStyleSheet();
+  auto& context = *MakeGarbageCollected<CSSParserContext>(
+      ParserContext(execution_context->GetSecureContextMode()), style_sheet);
+  CSSTokenizer tokenizer(text);
+  auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange token_range(tokens);
+  AtomicString name =
+      css_parsing_utils::ConsumeCounterStyleNameInPrelude(token_range, context);
+  if (!name || name == counter_style_rule_->GetName())
+    return;
+
+  // Changing name may affect cascade result, which requires re-collecting all
+  // the rules and re-constructing the CounterStyleMap to handle.
+  CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
+
+  counter_style_rule_->SetName(name);
+  if (Document* document = style_sheet->OwnerDocument())
+    document->GetStyleEngine().MarkCounterStylesNeedUpdate();
 }
 
-void CSSCounterStyleRule::setSymbols(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setSystem(const ExecutionContext* execution_context,
+                                    const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::System, text);
 }
 
-void CSSCounterStyleRule::setAdditiveSymbols(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setSymbols(const ExecutionContext* execution_context,
+                                     const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::Symbols, text);
 }
 
-void CSSCounterStyleRule::setNegative(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setAdditiveSymbols(
+    const ExecutionContext* execution_context,
+    const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::AdditiveSymbols, text);
 }
 
-void CSSCounterStyleRule::setPrefix(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setNegative(const ExecutionContext* execution_context,
+                                      const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::Negative, text);
 }
 
-void CSSCounterStyleRule::setSuffix(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setPrefix(const ExecutionContext* execution_context,
+                                    const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::Prefix, text);
 }
 
-void CSSCounterStyleRule::setRange(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setSuffix(const ExecutionContext* execution_context,
+                                    const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::Suffix, text);
 }
 
-void CSSCounterStyleRule::setPad(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setRange(const ExecutionContext* execution_context,
+                                   const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::Range, text);
 }
 
-void CSSCounterStyleRule::setSpeakAs(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setPad(const ExecutionContext* execution_context,
+                                 const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::Pad, text);
 }
 
-void CSSCounterStyleRule::setFallback(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setSpeakAs(const ExecutionContext* execution_context,
+                                     const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::SpeakAs, text);
+}
+
+void CSSCounterStyleRule::setFallback(const ExecutionContext* execution_context,
+                                      const String& text) {
+  SetterInternal(execution_context, AtRuleDescriptorID::Fallback, text);
 }
 
 void CSSCounterStyleRule::Trace(Visitor* visitor) const {

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test the set of visible records is correctly update when category filter changes\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const sessionId = '4.20';
@@ -78,7 +78,7 @@
       'tid': mainThread,
       'pid': pid,
       'cat': 'disabled-by-default-devtools.timeline',
-      'args': {'endData': {'root': [0, 0, 1570, 0, 1570, 243, 0, 243], 'rootNode': 1}}
+      'args': {'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': [[0, 0, 1570, 0, 1570, 243, 0, 243]]}]}}
     },
     {
       'name': 'FunctionCall',

@@ -18,10 +18,10 @@
         android:title="Translate" />
     <item android:id="@+id/clear_browsing_data_menu_id"
         android:title="Clear all browsing data" />
-    <item android:id="@+id/webview_compat_menu_id"
-        android:title="Restart with WebView compat mode" />
-    <item android:id="@+id/no_webview_compat_menu_id"
-        android:title="Restart without WebView compat mode" />
+    <item android:id="@+id/enable_incognito_menu_id"
+        android:title="Restart with Incognito" />
+    <item android:id="@+id/disable_incognito_menu_id"
+        android:title="Restart without Incognito" />
     <item android:id="@+id/set_translate_target_lang_menu_id"
         android:title="Set translate target language to German" />
     <item android:id="@+id/clear_translate_target_lang_menu_id"
@@ -30,4 +30,6 @@
         android:title="Request desktop site" />
     <item android:id="@+id/no_desktop_site_menu_id"
         android:title="Request mobile site" />
+    <item android:id="@+id/add_to_homescreen"
+        android:title="Add to homescreen" />
 </menu>

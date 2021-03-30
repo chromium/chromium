@@ -53,8 +53,7 @@ void WebContentsHelper::DidFinishNavigation(
   if (!navigation_handle->HasCommitted())
     return;
 
-  ruleset_manager_->OnDidFinishNavigation(
-      navigation_handle->GetRenderFrameHost());
+  ruleset_manager_->OnDidFinishNavigation(navigation_handle);
 }
 
 }  // namespace declarative_net_request

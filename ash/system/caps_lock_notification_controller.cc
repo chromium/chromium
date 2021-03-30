@@ -5,11 +5,16 @@
 #include "ash/system/caps_lock_notification_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_model.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,6 +25,7 @@
 
 using message_center::MessageCenter;
 using message_center::Notification;
+using SystemTrayButtonSize = ash::UnifiedSystemTrayModel::SystemTrayButtonSize;
 
 namespace ash {
 
@@ -37,13 +43,28 @@ std::unique_ptr<Notification> CreateNotification() {
       message_center::NOTIFICATION_TYPE_SIMPLE, kCapsLockNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPS_LOCK_ENABLED),
       l10n_util::GetStringUTF16(string_id),
-      base::string16() /* display_source */, GURL(),
+      std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierCapsLock),
       message_center::RichNotificationData(), nullptr,
       kNotificationCapslockIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_pinned(true);
+
+  SystemTrayButtonSize primary_tray_button_size =
+      Shell::GetPrimaryRootWindowController()
+          ->GetStatusAreaWidget()
+          ->unified_system_tray()
+          ->model()
+          ->GetSystemTrayButtonSize();
+  if (ash::features::IsScalableStatusAreaEnabled() &&
+      primary_tray_button_size != SystemTrayButtonSize::kSmall) {
+    // Set the priority to low to prevent the notification showing as a popup in
+    // medium or large size tray button because we already show an icon in tray
+    // for this in the feature.
+    notification->set_priority(message_center::LOW_PRIORITY);
+  }
+
   return notification;
 }
 

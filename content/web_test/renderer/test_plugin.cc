@@ -229,9 +229,9 @@ bool TestPlugin::SupportsKeyboardFocus() const {
   return supports_keyboard_focus_;
 }
 
-void TestPlugin::UpdateGeometry(const blink::WebRect& window_rect,
-                                const blink::WebRect& clip_rect,
-                                const blink::WebRect& unobscured_rect,
+void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
+                                const gfx::Rect& clip_rect,
+                                const gfx::Rect& unobscured_rect,
                                 bool is_visible) {
   if (clip_rect == rect_)
     return;
@@ -251,8 +251,8 @@ void TestPlugin::UpdateGeometry(const blink::WebRect& window_rect,
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
     mailbox_ = sii->CreateSharedImage(
-        viz::ResourceFormat::RGBA_8888, gfx::Size(rect_.width, rect_.height),
-        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        viz::ResourceFormat::RGBA_8888, rect_.size(), gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY,
         gpu::kNullSurfaceHandle);
     gl_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -266,7 +266,7 @@ void TestPlugin::UpdateGeometry(const blink::WebRect& window_rect,
     gl_->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                               GL_TEXTURE_2D, color_texture, 0);
 
-    gl_->Viewport(0, 0, rect_.width, rect_.height);
+    gl_->Viewport(0, 0, rect_.width(), rect_.height());
     DrawSceneGL();
 
     gl_->EndSharedImageAccessDirectCHROMIUM(color_texture);
@@ -319,7 +319,7 @@ bool TestPlugin::PrepareTransferableResource(
     std::unique_ptr<viz::SingleReleaseCallback>* release_callback) {
   if (!content_changed_)
     return false;
-  gfx::Size size(rect_.width, rect_.height);
+  gfx::Size size(rect_.size());
   if (!mailbox_.IsZero()) {
     *resource = viz::TransferableResource::MakeGL(
         mailbox_, GL_LINEAR, GL_TEXTURE_2D, sync_token_, size,
@@ -398,7 +398,7 @@ bool TestPlugin::InitScene() {
 
   gl_->GenFramebuffers(1, &framebuffer_);
 
-  gl_->Viewport(0, 0, rect_.width, rect_.height);
+  gl_->Viewport(0, 0, rect_.width(), rect_.height());
   gl_->Disable(GL_DEPTH_TEST);
   gl_->Disable(GL_SCISSOR_TEST);
 
@@ -412,7 +412,7 @@ bool TestPlugin::InitScene() {
 }
 
 void TestPlugin::DrawSceneGL() {
-  gl_->Viewport(0, 0, rect_.width, rect_.height);
+  gl_->Viewport(0, 0, rect_.width(), rect_.height());
   gl_->Clear(GL_COLOR_BUFFER_BIT);
 
   if (scene_.primitive != PrimitiveNone)
@@ -425,7 +425,7 @@ void TestPlugin::DrawSceneSoftware(void* memory) {
       scene_.background_color[1], scene_.background_color[2]);
 
   const SkImageInfo info =
-      SkImageInfo::MakeN32Premul(rect_.width, rect_.height);
+      SkImageInfo::MakeN32Premul(rect_.width(), rect_.height());
   SkBitmap bitmap;
   bitmap.installPixels(info, memory, info.minRowBytes());
   SkCanvas canvas(bitmap, SkSurfaceProps{});
@@ -437,9 +437,9 @@ void TestPlugin::DrawSceneSoftware(void* memory) {
         static_cast<uint8_t>(scene_.opacity * 255), scene_.primitive_color[0],
         scene_.primitive_color[1], scene_.primitive_color[2]);
     SkPath triangle_path;
-    triangle_path.moveTo(0.5f * rect_.width, 0.9f * rect_.height);
-    triangle_path.lineTo(0.1f * rect_.width, 0.1f * rect_.height);
-    triangle_path.lineTo(0.9f * rect_.width, 0.1f * rect_.height);
+    triangle_path.moveTo(0.5f * rect_.width(), 0.9f * rect_.height());
+    triangle_path.lineTo(0.1f * rect_.width(), 0.1f * rect_.height());
+    triangle_path.lineTo(0.9f * rect_.width(), 0.1f * rect_.height());
     SkPaint paint;
     paint.setColor(foreground_color);
     paint.setStyle(SkPaint::kFill_Style);

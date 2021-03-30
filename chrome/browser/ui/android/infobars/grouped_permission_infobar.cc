@@ -26,13 +26,13 @@ ScopedJavaLocalRef<jobject> CreateRenderInfoBarHelper(
     JNIEnv* env,
     int enumerated_icon_id,
     const JavaRef<jobject>& window,
-    const base::string16& compact_message_text,
-    const base::string16& compact_link_text,
-    const base::string16& message_text,
-    const base::string16& description_text,
-    const base::string16& learn_more_link_text,
-    const base::string16& primary_button_text,
-    const base::string16& secondary_button_text,
+    const std::u16string& compact_message_text,
+    const std::u16string& compact_link_text,
+    const std::u16string& message_text,
+    const std::u16string& description_text,
+    const std::u16string& learn_more_link_text,
+    const std::u16string& primary_button_text,
+    const std::u16string& secondary_button_text,
     bool secondary_button_should_open_settings,
     const std::vector<int>& content_settings) {
   ScopedJavaLocalRef<jstring> compact_message_text_java =
@@ -74,14 +74,14 @@ GroupedPermissionInfoBar::CreateRenderInfoBar(
     const ResourceIdMapper& resource_id_mapper) {
   GroupedPermissionInfoBarDelegate* delegate = GetDelegate();
 
-  base::string16 compact_message_text = delegate->GetCompactMessageText();
-  base::string16 compact_link_text = delegate->GetCompactLinkText();
-  base::string16 message_text = delegate->GetMessageText();
-  base::string16 description_text = delegate->GetDescriptionText();
-  base::string16 learn_more_link_text = delegate->GetLinkText();
-  base::string16 primary_button_text =
+  std::u16string compact_message_text = delegate->GetCompactMessageText();
+  std::u16string compact_link_text = delegate->GetCompactLinkText();
+  std::u16string message_text = delegate->GetMessageText();
+  std::u16string description_text = delegate->GetDescriptionText();
+  std::u16string learn_more_link_text = delegate->GetLinkText();
+  std::u16string primary_button_text =
       GetTextFor(ConfirmInfoBarDelegate::BUTTON_OK);
-  base::string16 secondary_button_text =
+  std::u16string secondary_button_text =
       GetTextFor(ConfirmInfoBarDelegate::BUTTON_CANCEL);
   const bool secondary_button_should_open_settings =
       delegate->ShouldSecondaryButtonOpenSettings();

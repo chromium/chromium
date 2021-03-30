@@ -50,17 +50,24 @@ class WebTestFinder(object):
         self.WEB_TESTS_DIRECTORIES = ('src', 'third_party', 'blink',
                                       'web_tests')
 
-    def find_tests(self,
-                   args,
-                   test_list=None,
-                   fastest_percentile=None,
-                   filters=None):
+    def find_tests(
+            self,
+            args,
+            filter_files=None,
+            fastest_percentile=None,
+            filters=None,
+    ):
         filters = filters or []
         paths = self._strip_test_dir_prefixes(args)
-        if test_list:
-            paths += self._strip_test_dir_prefixes(
-                self._read_test_names_from_file(
-                    test_list, self._port.TEST_PATH_SEPARATOR))
+        positive_matches, negative_matches, positive_globs, negative_globs = [], [], [], []
+        if filter_files:
+            file_filters = self._read_filter_files(
+                filter_files, self._port.TEST_PATH_SEPARATOR)
+            positive_matches, negative_matches, positive_globs, negative_globs = [
+                self._strip_test_dir_prefixes(file_filter)
+                for file_filter in file_filters
+            ]
+            paths += positive_matches
 
         all_tests = []
         if not paths or fastest_percentile:
@@ -90,7 +97,13 @@ class WebTestFinder(object):
             test_files = all_tests
             running_all_tests = True
 
-        test_files = filter_tests(test_files, [f.split('::') for f in filters])
+        test_files = filter_tests(test_files,
+                                  [f.split('::') for f in filters] +
+                                  [positive_globs, negative_globs])
+        if negative_matches:
+            test_files = filter_out_exact_negative_matches(
+                test_files, negative_matches)
+
         # de-dupe the test list and paths here before running them.
         test_files = list(OrderedDict.fromkeys(test_files))
         paths = list(OrderedDict.fromkeys(paths))
@@ -148,9 +161,19 @@ class WebTestFinder(object):
                     return path[len(directory_prefix):]
         return path
 
-    def _read_test_names_from_file(self, filenames, test_path_separator):
+    def _read_filter_files(self, filenames, test_path_separator):
+        # TODO(crbug.com/794783)
+        # https://bit.ly/chromium-test-runner-api says "A test should be run
+        # only if it would be RUN when EVERY flag is evaluated individually.
+        # A test should be SKIPPED if it would be skipped if ANY flag was
+        # evaluated individually."
+        # The current logic here unions the positive flags, while it should
+        # intersect them.
         fs = self._filesystem
-        tests = []
+        positive_matches = []
+        negative_matches = []
+        positive_globs = []
+        negative_globs = []
         for filename in filenames:
             try:
                 if test_path_separator != fs.sep:
@@ -158,14 +181,24 @@ class WebTestFinder(object):
                 file_contents = fs.read_text_file(filename).split('\n')
                 for line in file_contents:
                     line = self._strip_comments(line)
-                    if line:
-                        tests.append(line)
+                    if not line:
+                        continue
+                    is_glob = line[-1] == '*' and line[-2] != '\\'
+                    if line[0] == '-':
+                        if is_glob:
+                            negative_globs.append(line)
+                        else:
+                            negative_matches.append(line)
+                    elif is_glob:
+                        positive_globs.append(line)
+                    else:
+                        positive_matches.append(line)
             except IOError as error:
                 if error.errno == errno.ENOENT:
                     _log.critical('')
                     _log.critical('--test-list file "%s" not found', file)
                 raise
-        return tests
+        return positive_matches, negative_matches, positive_globs, negative_globs
 
     @staticmethod
     def _strip_comments(line):
@@ -280,6 +313,19 @@ class WebTestFinder(object):
         return tests_to_run
 
 
+def filter_out_exact_negative_matches(tests, negative_matches):
+    """Similar to filter_tests, but filters only negative match filters for more speed
+
+    With globbing disallowed, we can use sets, which have O(1) lookup time in
+    CPython. This allows for larger filter lists.
+
+    negative_filters is a list of lists of filters (because the user can pass the flag
+    multiple times
+    """
+    filter_set = set(fil[1:] for fil in negative_matches)
+    return [test for test in tests if test not in filter_set]
+
+
 def filter_tests(tests, filters):
     """Returns a filtered list of tests to run.
 
@@ -315,7 +361,7 @@ def filter_tests(tests, filters):
             include = include_by_default
             for glob in sorted(globs, key=glob_sort_key):
                 if (glob.startswith('-') and not glob[1:]) or not glob:
-                    raise ValueError('Empty glob filter "%s"' % (filter, ))
+                    raise ValueError('Empty glob filter "%s"' % (glob, ))
                 if '*' in glob[:-1]:
                     raise ValueError(
                         'Bad test filter "%s" specified; '

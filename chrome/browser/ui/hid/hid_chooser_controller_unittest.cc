@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/hid_chooser.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/device/public/cpp/hid/fake_hid_manager.h"
+#include "services/device/public/cpp/hid/hid_switches.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -33,12 +35,13 @@ using ::testing::_;
 
 namespace {
 
-const char kDefaultTestUrl[] = "https://www.google.com/";
+constexpr char kDefaultTestUrl[] = "https://www.google.com/";
 
 const char* const kTestPhysicalDeviceIds[] = {"1", "2", "3"};
 
-const uint16_t kVendorYubico = 0x1050;
-const uint16_t kProductYubicoGnubby = 0x0200;
+constexpr uint16_t kVendorYubico = 0x1050;
+constexpr uint16_t kProductYubicoGnubby = 0x0200;
+constexpr uint16_t kUsageFidoU2f = 0x0001;
 
 class HidChooserControllerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -171,9 +174,7 @@ TEST_F(HidChooserControllerTest, AddBlockedFidoDevice) {
 
 TEST_F(HidChooserControllerTest, AddUnknownFidoDevice) {
   // Devices that expose a top-level collection with the FIDO usage page should
-  // be blocked even if they aren't on the USB blocklist.
-  const uint16_t kFidoU2fHidUsage = 1;
-
+  // be blocked even if they aren't on the HID blocklist.
   base::RunLoop device_added_loop1;
   base::RunLoop device_added_loop2;
   EXPECT_CALL(device_observer(), OnDeviceAdded(_))
@@ -186,7 +187,7 @@ TEST_F(HidChooserControllerTest, AddUnknownFidoDevice) {
 
   // 1. Connect a device blocked by HID usage.
   CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "fido", "001",
-                            device::mojom::kPageFido, kFidoU2fHidUsage);
+                            device::mojom::kPageFido, kUsageFidoU2f);
   device_added_loop1.Run();
 
   // 2. Connect a second device blocked by HID usage.
@@ -199,6 +200,34 @@ TEST_F(HidChooserControllerTest, AddUnknownFidoDevice) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(0u, hid_chooser_controller->NumOptions());
+}
+
+TEST_F(HidChooserControllerTest, BlockedFidoDeviceAllowedWithFlag) {
+  base::RunLoop device_added_loop;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce(RunClosure(device_added_loop.QuitClosure()));
+
+  base::RunLoop options_initialized_loop;
+  EXPECT_CALL(view(), OnOptionsInitialized())
+      .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
+
+  // 1. Allow WebHID to access devices on the HID blocklist.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableHidBlocklist);
+
+  // 2. Connect a device with the FIDO usage page. The device uses
+  // vendor/product IDs that are blocked by the HID blocklist.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], kVendorYubico,
+                            kProductYubicoGnubby, "gnubby", "001",
+                            device::mojom::kPageFido, kUsageFidoU2f);
+  device_added_loop.Run();
+
+  // 3. Create the HidChooserController. The blocked device should be included.
+  auto hid_chooser_controller = CreateHidChooserController({});
+  options_initialized_loop.Run();
+
+  EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
+  EXPECT_EQ(u"gnubby", hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, AddNamedDevice) {
@@ -220,8 +249,7 @@ TEST_F(HidChooserControllerTest, AddNamedDevice) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, AddUnnamedDevice) {
@@ -243,9 +271,8 @@ TEST_F(HidChooserControllerTest, AddUnnamedDevice) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(
-      base::ASCIIToUTF16("Unknown Device (Vendor: 0x0001, Product: 0x0001)"),
-      hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(u"Unknown Device (0001:0001)",
+            hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, DeviceIdFilterVendorOnly) {
@@ -283,12 +310,9 @@ TEST_F(HidChooserControllerTest, DeviceIdFilterVendorOnly) {
 
   EXPECT_EQ(2u, hid_chooser_controller->NumOptions());
 
-  std::set<base::string16> options{hid_chooser_controller->GetOption(0),
+  std::set<std::u16string> options{hid_chooser_controller->GetOption(0),
                                    hid_chooser_controller->GetOption(1)};
-  EXPECT_THAT(options,
-              testing::UnorderedElementsAre(
-                  base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-                  base::ASCIIToUTF16("b (Vendor: 0x0001, Product: 0x0002)")));
+  EXPECT_THAT(options, testing::UnorderedElementsAre(u"a", u"b"));
 }
 
 TEST_F(HidChooserControllerTest, DeviceIdFilterVendorAndProduct) {
@@ -325,8 +349,7 @@ TEST_F(HidChooserControllerTest, DeviceIdFilterVendorAndProduct) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, UsageFilterUsagePageOnly) {
@@ -360,8 +383,7 @@ TEST_F(HidChooserControllerTest, UsageFilterUsagePageOnly) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, UsageFilterUsageAndPage) {
@@ -405,8 +427,7 @@ TEST_F(HidChooserControllerTest, UsageFilterUsageAndPage) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, DeviceIdAndUsageFilterIntersection) {
@@ -453,8 +474,7 @@ TEST_F(HidChooserControllerTest, DeviceIdAndUsageFilterIntersection) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, DeviceIdAndUsageFilterUnion) {
@@ -543,8 +563,7 @@ TEST_F(HidChooserControllerTest, OneOptionForSamePhysicalDevice) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
 
   // 4. Select the chooser option. The returned device list should include both
   // devices.
@@ -559,8 +578,7 @@ TEST_F(HidChooserControllerTest, OneOptionForSamePhysicalDevice) {
   // Regression test for https://crbug.com/1069057. Ensure that the
   // set of options is still valid after the callback is run.
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, NoMergeWithDifferentPhysicalDeviceIds) {

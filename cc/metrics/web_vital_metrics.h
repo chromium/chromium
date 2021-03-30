@@ -14,14 +14,17 @@ namespace cc {
 
 // Web Vital metrics reported from blink to be displayed with cc's HUD display.
 struct CC_EXPORT WebVitalMetrics {
-  base::Optional<base::TimeDelta> largest_contentful_paint;
-  base::Optional<base::TimeDelta> first_input_delay;
+  bool has_lcp = false;
+  base::TimeDelta largest_contentful_paint;
+  bool has_fid = false;
+  base::TimeDelta first_input_delay;
+  bool has_cls = false;
   double layout_shift = 0.f;
 
-  WebVitalMetrics();
-  WebVitalMetrics(const WebVitalMetrics& other);
+  WebVitalMetrics() = default;
+  WebVitalMetrics(const WebVitalMetrics& other) = default;
 
-  bool HasValue() const;
+  bool HasValue() const { return has_lcp || has_fid || has_cls; }
 
   struct MetricsInfo {
     double green_threshold;

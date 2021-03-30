@@ -42,6 +42,10 @@ const base::Feature kWebViewMixedContentAutoupgrades{
 const base::Feature kWebViewExtraHeadersSameOriginOnly{
     "WebViewExtraHeadersSameOriginOnly", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the new Java/JS Bridge code path with mojo implementation.
+const base::Feature kWebViewJavaJsBridgeMojo{"WebViewJavaJsBridgeMojo",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Measure the number of pixels occupied by one or more WebViews as a
 // proportion of the total screen size. Depending on the number of
 // WebVieaws and the size of the screen this might be expensive so
@@ -49,6 +53,10 @@ const base::Feature kWebViewExtraHeadersSameOriginOnly{
 // measured.
 const base::Feature kWebViewMeasureScreenCoverage{
     "WebViewMeasureScreenCoverage", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Field trial feature for controlling support of Origin Trials on WebView.
+const base::Feature kWebViewOriginTrials{"WebViewOriginTrials",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // A Feature used for WebView variations tests. Not used in production.
 const base::Feature kWebViewTestFeature{"WebViewTestFeature",

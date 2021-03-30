@@ -15,6 +15,7 @@
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
 #include "ipc/ipc_channel_proxy.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace base {
@@ -23,6 +24,7 @@ class WaitableEvent;
 }
 
 namespace blink {
+class WebResourceRequestSenderDelegate;
 struct UserAgentMetadata;
 
 namespace scheduler {
@@ -42,7 +44,6 @@ class Extension;
 
 namespace content {
 class RenderThreadObserver;
-class ResourceDispatcherDelegate;
 
 class CONTENT_EXPORT RenderThread : virtual public ChildThread {
  public:
@@ -63,11 +64,18 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Called to add or remove a listener for a particular message routing ID.
   // These methods normally get delegated to a MessageRouter.
   virtual void AddRoute(int32_t routing_id, IPC::Listener* listener) = 0;
+  // Attach a task runner to run received IPC tasks on for the given routing ID.
+  // This must be called after the route has already been added via AddRoute(),
+  // but it is optional. The default main thread task runner would be used if
+  // this method is not called.
+  virtual void AttachTaskRunnerToRoute(
+      int32_t routing_id,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
   virtual void RemoveRoute(int32_t routing_id) = 0;
   virtual int GenerateRoutingID() = 0;
   virtual bool GenerateFrameRoutingID(
       int32_t& routing_id,
-      base::UnguessableToken& frame_token,
+      blink::LocalFrameToken& frame_token,
       base::UnguessableToken& devtools_frame_token) = 0;
 
   // These map to IPC::ChannelProxy methods.
@@ -78,9 +86,11 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   virtual void AddObserver(RenderThreadObserver* observer) = 0;
   virtual void RemoveObserver(RenderThreadObserver* observer) = 0;
 
-  // Set the ResourceDispatcher delegate object for this process.
-  virtual void SetResourceDispatcherDelegate(
-      ResourceDispatcherDelegate* delegate) = 0;
+  // Set the WebResourceRequestSender delegate object for this process.
+  // This does not take the ownership of the delegate. It is expected that the
+  // delegate is kept alive while a request may be dispatched.
+  virtual void SetResourceRequestSenderDelegate(
+      blink::WebResourceRequestSenderDelegate* delegate) = 0;
 
   // Registers the given V8 extension with WebKit.
   virtual void RegisterExtension(std::unique_ptr<v8::Extension> extension) = 0;
@@ -93,10 +103,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
 
   // Retrieve the process ID of the browser process.
   virtual int32_t GetClientId() = 0;
-
-  // Get the online status of the browser - false when there is no network
-  // access.
-  virtual bool IsOnline() = 0;
 
   // Set the renderer process type.
   virtual void SetRendererProcessType(

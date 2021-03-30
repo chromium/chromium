@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -73,9 +72,6 @@ class MimeHandlerStreamManager : public KeyedService,
   // Maps view id->EmbedderObserver for maintaining the lifetime of the
   // EmbedderObserver until it is removed.
   std::map<std::string, std::unique_ptr<EmbedderObserver>> embedder_observers_;
-
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MimeHandlerStreamManager);
 };

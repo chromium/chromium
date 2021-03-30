@@ -87,9 +87,16 @@ class FullscreenController : public base::SupportsUserData::Data {
   // 1.0.
   virtual void ExitFullscreen() = 0;
 
+  virtual void FreezeToolbarHeight(bool freeze_toolbar_height) = 0;
+
   // Force horizontal content resize, when content isn't tracking resize by
   // itself.
   virtual void ResizeHorizontalViewport() = 0;
+
+ protected:
+  // Returns the key used to store the UserData. Protected so it can be used in
+  // tests.
+  static const void* UserDataKey();
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_H_

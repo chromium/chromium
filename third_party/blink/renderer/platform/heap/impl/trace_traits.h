@@ -24,8 +24,6 @@ namespace blink {
 
 template <typename T>
 struct TraceTrait;
-template <typename T>
-class WeakMember;
 
 template <typename T, bool = NeedsAdjustPointer<T>::value>
 struct AdjustPointerTrait;
@@ -71,67 +69,6 @@ template <typename T>
 struct TraceIfNeeded<T, true> {
   STATIC_ONLY(TraceIfNeeded);
   static void Trace(Visitor* visitor, const T& t) { visitor->Trace(t); }
-};
-
-template <WTF::WeakHandlingFlag weakness,
-          typename T,
-          typename Traits,
-          bool = WTF::IsTraceableInCollectionTrait<Traits>::value,
-          WTF::WeakHandlingFlag = WTF::WeakHandlingTrait<T>::value>
-struct TraceCollectionIfEnabled;
-
-template <WTF::WeakHandlingFlag weakness, typename T, typename Traits>
-struct TraceCollectionIfEnabled<weakness,
-                                T,
-                                Traits,
-                                false,
-                                WTF::kNoWeakHandling> {
-  STATIC_ONLY(TraceCollectionIfEnabled);
-
-  static bool IsAlive(const blink::LivenessBroker& info, const T&) {
-    return true;
-  }
-
-  static void Trace(Visitor*, const void*) {
-    static_assert(!WTF::IsTraceableInCollectionTrait<Traits>::value,
-                  "T should not be traced");
-  }
-};
-
-template <typename T, typename Traits>
-struct TraceCollectionIfEnabled<WTF::kNoWeakHandling,
-                                T,
-                                Traits,
-                                false,
-                                WTF::kWeakHandling> {
-  STATIC_ONLY(TraceCollectionIfEnabled);
-
-  static void Trace(Visitor* visitor, const void* t) {
-    WTF::TraceInCollectionTrait<WTF::kNoWeakHandling, T, Traits>::Trace(
-        visitor, *reinterpret_cast<const T*>(t));
-  }
-};
-
-template <WTF::WeakHandlingFlag weakness,
-          typename T,
-          typename Traits,
-          bool,
-          WTF::WeakHandlingFlag>
-struct TraceCollectionIfEnabled {
-  STATIC_ONLY(TraceCollectionIfEnabled);
-
-  static bool IsAlive(const blink::LivenessBroker& info, const T& traceable) {
-    return WTF::TraceInCollectionTrait<weakness, T, Traits>::IsAlive(info,
-                                                                     traceable);
-  }
-
-  static void Trace(Visitor* visitor, const void* t) {
-    static_assert(WTF::IsTraceableInCollectionTrait<Traits>::value ||
-                      weakness == WTF::kWeakHandling,
-                  "Traits should be traced");
-    WTF::TraceInCollectionTrait<weakness, T, Traits>::Trace(
-        visitor, *reinterpret_cast<const T*>(t));
-  }
 };
 
 // The TraceTrait is used to specify how to trace and object for Oilpan and
@@ -186,116 +123,6 @@ struct TraceTrait<std::pair<T, U>> {
   }
 };
 
-// While using base::Optional<T> with garbage-collected types is generally
-// disallowed by the OptionalGarbageCollected check in blink_gc_plugin,
-// garbage-collected containers such as HeapVector are allowed and need to be
-// traced.
-template <typename T>
-struct TraceTrait<base::Optional<T>> {
-  STATIC_ONLY(TraceTrait);
-
- public:
-  static void Trace(Visitor* visitor, const base::Optional<T>* optional) {
-    if (*optional != base::nullopt) {
-      TraceIfNeeded<T>::Trace(visitor, optional->value());
-    }
-  }
-};
-
-// Helper for processing ephemerons represented as KeyValuePair. Reorders
-// parameters if needed so that KeyType is always weak.
-template <typename _KeyType,
-          typename _ValueType,
-          typename _KeyTraits,
-          typename _ValueTraits,
-          bool = WTF::IsWeak<_ValueType>::value>
-struct EphemeronKeyValuePair {
-  using KeyType = _KeyType;
-  using ValueType = _ValueType;
-  using KeyTraits = _KeyTraits;
-  using ValueTraits = _ValueTraits;
-
-  // Ephemerons have different weakness for KeyType and ValueType. If weakness
-  // is equal, we either have Strong/Strong, or Weak/Weak, which would indicate
-  // a full strong or fully weak pair.
-  static constexpr bool is_ephemeron =
-      WTF::IsWeak<KeyType>::value != WTF::IsWeak<ValueType>::value;
-
-  static_assert(!WTF::IsWeak<KeyType>::value ||
-                    WTF::IsSubclassOfTemplate<KeyType, WeakMember>::value,
-                "Weakness must be encoded using WeakMember.");
-
-  EphemeronKeyValuePair(const KeyType* k, const ValueType* v)
-      : key(k), value(v) {}
-  const KeyType* key;
-  const ValueType* value;
-};
-
-template <typename _KeyType,
-          typename _ValueType,
-          typename _KeyTraits,
-          typename _ValueTraits>
-struct EphemeronKeyValuePair<_KeyType,
-                             _ValueType,
-                             _KeyTraits,
-                             _ValueTraits,
-                             true> : EphemeronKeyValuePair<_ValueType,
-                                                           _KeyType,
-                                                           _ValueTraits,
-                                                           _KeyTraits,
-                                                           false> {
-  EphemeronKeyValuePair(const _KeyType* k, const _ValueType* v)
-      : EphemeronKeyValuePair<_ValueType,
-                              _KeyType,
-                              _ValueTraits,
-                              _KeyTraits,
-                              false>(v, k) {}
-};
-
 }  // namespace blink
-
-namespace WTF {
-
-// Catch-all for types that have a way to trace that don't have special
-// handling for weakness in collections.  This means that if this type
-// contains WeakMember fields, they will simply be zeroed, but the entry
-// will not be removed from the collection.  This always happens for
-// things in vectors, which don't currently support special handling of
-// weak elements.
-template <typename T, typename Traits>
-struct TraceInCollectionTrait<kNoWeakHandling, T, Traits> {
-  static bool IsAlive(const blink::LivenessBroker& info, const T& t) {
-    return true;
-  }
-
-  static void Trace(blink::Visitor* visitor, const T& t) {
-    static_assert(IsTraceableInCollectionTrait<Traits>::value,
-                  "T should be traceable");
-    visitor->Trace(t);
-  }
-};
-
-template <typename T, typename Traits>
-struct TraceInCollectionTrait<kNoWeakHandling, blink::WeakMember<T>, Traits> {
-  static void Trace(blink::Visitor* visitor, const blink::WeakMember<T>& t) {
-    // Extract raw pointer to avoid using the WeakMember<> overload in Visitor.
-    visitor->TraceStrongly(t);
-  }
-};
-
-// Catch-all for types that have HashTrait support for tracing with weakness.
-// Empty to enforce specialization.
-template <typename T, typename Traits>
-struct TraceInCollectionTrait<kWeakHandling, T, Traits> {};
-
-template <typename T, typename Traits>
-struct TraceInCollectionTrait<kWeakHandling, blink::WeakMember<T>, Traits> {
-  static bool IsAlive(const blink::LivenessBroker& info,
-                      const blink::WeakMember<T>& value) {
-    return info.IsHeapObjectAlive(value);
-  }
-};
-
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_TRACE_TRAITS_H_

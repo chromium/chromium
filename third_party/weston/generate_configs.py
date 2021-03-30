@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -168,12 +168,23 @@ def GenerateWestonVersion():
     print("Created version.h file from version.h.in\n")
 
 
+def RemoveUndesiredDefines():
+    configfile = os.path.join(BASE_DIR, "config/config.h")
+    # Weston doesn't have a meson option to avoid using memfd_create() method that was
+    # introduced in GLIBC 2.27. That results in weston failing to run on Xenial based bot as
+    # it has GLIBC 2.23, because this config might be generated on a system that has newer
+    # libc libraries that meson checks with has_function() method. Thus, explicitly rewrite
+    # the config to disable usage of that method.
+    RewriteFile(configfile, [("#define HAVE_MEMFD_CREATE .*", "")])
+
+
 def main():
     env = os.environ
     env['CC'] = 'clang'
     GenerateGitConfig('version', env)
     GenerateConfig('config', env)
     ChangeConfigPath()
+    RemoveUndesiredDefines()
     GenerateWestonVersion()
 
 if __name__ == '__main__':

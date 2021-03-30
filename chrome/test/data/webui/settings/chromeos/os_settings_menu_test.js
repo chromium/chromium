@@ -2,18 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {Router, routes, Route, pageVisibility} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 /** @fileoverview Runs tests for the OS settings menu. */
 
 function setupRouter() {
-  const routes = {
+  const testRoutes = {
     BASIC: new settings.Route('/'),
     ADVANCED: new settings.Route('/advanced'),
   };
-  routes.BLUETOOTH = routes.BASIC.createSection('/bluetooth', 'bluetooth');
-  routes.RESET = routes.ADVANCED.createSection('/osReset', 'osReset');
+  testRoutes.BLUETOOTH =
+      testRoutes.BASIC.createSection('/bluetooth', 'bluetooth');
+  testRoutes.RESET = testRoutes.ADVANCED.createSection('/osReset', 'osReset');
 
-  settings.Router.resetInstanceForTesting(new settings.Router(routes));
-  settings.routes = routes;
+  settings.Router.resetInstanceForTesting(new settings.Router(testRoutes));
+
+  settings.routes.RESET = testRoutes.RESET;
+  settings.routes.BLUETOOTH = testRoutes.BLUETOOTH;
+  settings.routes.ADVANCED = testRoutes.ADVANCED;
+  settings.routes.BASIC = testRoutes.BASIC;
 }
 
 suite('OSSettingsMenu', function() {
@@ -82,17 +94,21 @@ suite('OSSettingsMenu', function() {
     // the Advanced route, then ensure that the advanced menu expands.
     const params = new URLSearchParams('search=test');
     settings.Router.getInstance().navigateTo(settings.routes.RESET, params);
+    Polymer.dom.flush();
     assertTrue(settingsMenu.advancedOpened);
   });
 });
 
 suite('OSSettingsMenuReset', function() {
+  let settingsMenu = null;
+
   setup(function() {
     setupRouter();
     PolymerTest.clearBody();
     settings.Router.getInstance().navigateTo(settings.routes.RESET, '');
     settingsMenu = document.createElement('os-settings-menu');
     document.body.appendChild(settingsMenu);
+    Polymer.dom.flush();
   });
 
   teardown(function() {

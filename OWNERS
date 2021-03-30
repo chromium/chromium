@@ -1,6 +1,8 @@
 # OWNERS_STATUS = build/OWNERS.status
 
 # Eng reviewer. Please reach out before adding new top-level directories.
+# Note: this list is not for rubber-stamping mechanical changes that span the
+# code base. Please reach out to owners of top-level directories instead.
 file://ENG_REVIEW_OWNERS
 
 per-file .clang-format=thakis@chromium.org

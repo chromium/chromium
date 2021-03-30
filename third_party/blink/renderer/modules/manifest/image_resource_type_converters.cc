@@ -7,7 +7,6 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
@@ -21,7 +20,6 @@ namespace mojo {
 namespace {
 
 using Purpose = blink::mojom::blink::ManifestImageResource::Purpose;
-using blink::WebSize;
 using blink::WebString;
 using blink::WebVector;
 

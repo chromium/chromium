@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="windows-1252">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {callWithKeyDown, share_test} from './resources/share-test.js';
+import {ShareError} from '/gen/third_party/blink/public/mojom/webshare/share_error.mojom.m.js';
+
+// Exact same test as in share-success.html, with same expectations. This tests
+// that the page's encoding (Windows-1252) is ignored and Unicode characters are
+// always percent-encoded in UTF-8.
+share_test(mock => {
+  assert_equals(document.characterSet, 'windows-1252');
+
+  const title = 'f\xe1ncy \u5199\u4f5c \ud83d\ude31';
+  const url = 'https://\u6d4b\u8bd5.example.com/\ud83d\udcc4';
+  const url_ascii = 'https://xn--0zwm56d.example.com/%F0%9F%93%84';
+  mock.pushShareResult(title, '\ufffdx', url_ascii, ShareError.OK);
+  return callWithKeyDown(() => navigator.share(
+        {title: title, text: '\ud9a3x', url: url}));
+}, 'successful share with Unicode characters');
+
+</script>

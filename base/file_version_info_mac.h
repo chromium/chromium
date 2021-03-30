@@ -22,21 +22,21 @@ class FileVersionInfoMac : public FileVersionInfo {
 
   // Accessors to the different version properties.
   // Returns an empty string if the property is not found.
-  base::string16 company_name() override;
-  base::string16 company_short_name() override;
-  base::string16 product_name() override;
-  base::string16 product_short_name() override;
-  base::string16 internal_name() override;
-  base::string16 product_version() override;
-  base::string16 special_build() override;
-  base::string16 original_filename() override;
-  base::string16 file_description() override;
-  base::string16 file_version() override;
+  std::u16string company_name() override;
+  std::u16string company_short_name() override;
+  std::u16string product_name() override;
+  std::u16string product_short_name() override;
+  std::u16string internal_name() override;
+  std::u16string product_version() override;
+  std::u16string special_build() override;
+  std::u16string original_filename() override;
+  std::u16string file_description() override;
+  std::u16string file_version() override;
 
  private:
-  // Returns a base::string16 value for a property name.
+  // Returns a std::u16string value for a property name.
   // Returns the empty string if the property does not exist.
-  base::string16 GetString16Value(CFStringRef name);
+  std::u16string GetString16Value(CFStringRef name);
 
   base::scoped_nsobject<NSBundle> bundle_;
 };

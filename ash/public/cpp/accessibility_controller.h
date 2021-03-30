@@ -5,13 +5,14 @@
 #ifndef ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace gfx {
 class Rect;
@@ -100,6 +101,10 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Stops point scanning in Switch Access.
   virtual void StopPointScan() = 0;
 
+  // Sets point scanning speed in Switch Access.
+  virtual void SetPointScanSpeedDipsPerSecond(
+      int point_scan_speed_dips_per_second) = 0;
+
   // Set whether dictation is active.
   virtual void SetDictationActive(bool is_active) = 0;
 
@@ -111,7 +116,7 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
       gfx::Rect& bounds_in_screen) = 0;
 
   // Retrieves a string description of the current battery status.
-  virtual base::string16 GetBatteryDescription() const = 0;
+  virtual std::u16string GetBatteryDescription() const = 0;
 
   // Shows or hides the virtual keyboard.
   virtual void SetVirtualKeyboardVisible(bool is_visible) = 0;
@@ -146,6 +151,15 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
 
   // Enables ChromeVox's volume slide gesture.
   virtual void EnableChromeVoxVolumeSlideGesture() {}
+
+  // Shows a confirmation dialog with the given text and description,
+  // and calls the relevant callback when the dialog is confirmed, canceled
+  // or closed.
+  virtual void ShowConfirmationDialog(const std::u16string& title,
+                                      const std::u16string& description,
+                                      base::OnceClosure on_accept_callback,
+                                      base::OnceClosure on_cancel_callback,
+                                      base::OnceClosure on_close_callback) {}
 
  protected:
   AccessibilityController();

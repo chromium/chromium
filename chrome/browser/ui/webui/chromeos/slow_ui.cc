@@ -51,7 +51,7 @@ content::WebUIDataSource* CreateSlowUIHTMLSource() {
       {"slowDescription", IDS_SLOW_DESCRIPTION},
       {"slowWarning", IDS_SLOW_WARNING},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->AddResourcePath("slow.js", IDR_SLOW_JS);
   source->AddResourcePath("slow.css", IDR_SLOW_CSS);

@@ -574,9 +574,9 @@ TEST_F(MediaControllerTest, ActiveController_ScrubTo) {
 
 TEST_F(MediaControllerTest, ActiveController_Metadata_Observer_Abandoned) {
   MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
-  metadata.album = base::ASCIIToUTF16("album");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
+  metadata.album = u"album";
 
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
@@ -619,9 +619,9 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_Observer_Empty) {
 
 TEST_F(MediaControllerTest, ActiveController_Metadata_Observer_WithInfo) {
   MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
-  metadata.album = base::ASCIIToUTF16("album");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
+  metadata.album = u"album";
 
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);
@@ -663,9 +663,9 @@ TEST_F(MediaControllerTest, ActiveController_Metadata_AddObserver_Empty) {
 
 TEST_F(MediaControllerTest, ActiveController_Metadata_AddObserver_WithInfo) {
   MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
-  metadata.album = base::ASCIIToUTF16("album");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
+  metadata.album = u"album";
 
   test::MockMediaSession media_session;
   media_session.SetIsControllable(true);

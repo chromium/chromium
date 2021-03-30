@@ -71,4 +71,10 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chrome/browser/chromeos/net
+// moved to ash
+namespace ash {
+using ::chromeos::NetworkPortalDetectorTestImpl;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_NET_NETWORK_PORTAL_DETECTOR_TEST_IMPL_H_

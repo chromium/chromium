@@ -11,7 +11,7 @@
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -100,8 +100,8 @@ class ASH_EXPORT TrayAction : public mojom::TrayAction,
 
   mojo::Remote<mojom::TrayActionClient> tray_action_client_;
 
-  ScopedObserver<ui::DeviceDataManager, ui::InputDeviceEventObserver>
-      stylus_observer_{this};
+  base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
+      stylus_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TrayAction);
 };

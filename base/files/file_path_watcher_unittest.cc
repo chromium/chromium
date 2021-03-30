@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #endif
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -28,9 +29,11 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,6 +45,11 @@
 #if defined(OS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif  // defined(OS_POSIX)
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "base/files/file_path_watcher_linux.h"
+#include "base/format_macros.h"
+#endif
 
 namespace base {
 
@@ -129,15 +137,22 @@ class TestDelegate : public TestDelegateBase {
   TestDelegate& operator=(const TestDelegate&) = delete;
   ~TestDelegate() override = default;
 
+  // Configure this delegate so that it expects an error.
+  void set_expect_error() { expect_error_ = true; }
+
+  // TestDelegateBase:
   void OnFileChanged(const FilePath& path, bool error) override {
-    if (error)
-      ADD_FAILURE() << "Error " << path.value();
-    else
+    if (error != expect_error_) {
+      ADD_FAILURE() << "Unexpected change for \"" << path
+                    << "\" with |error| = " << (error ? "true" : "false");
+    } else {
       collector_->OnChange(this);
+    }
   }
 
  private:
   scoped_refptr<NotificationCollector> collector_;
+  bool expect_error_ = false;
 };
 
 class FilePathWatcherTest : public testing::Test {
@@ -815,6 +830,210 @@ TEST_F(FilePathWatcherTest, LinkedDirectoryPart3) {
   ASSERT_TRUE(WaitForEvents());
 }
 
+// Regression tests that FilePathWatcherImpl does not leave its reference in
+// `g_inotify_reader` due to a race in recursive watch.
+// See https://crbug.com/990004.
+TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
+  if (!FilePathWatcher::RecursiveWatchAvailable()) {
+    GTEST_SKIP();
+    return;
+  }
+
+  FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
+
+  // Create and delete many subdirs. 20 is an arbitrary number big enough
+  // to have more chances to make FilePathWatcherImpl leak watchers.
+  std::vector<FilePath> subdirs;
+  for (int i = 0; i < 20; ++i)
+    subdirs.emplace_back(dir.AppendASCII(base::StringPrintf("subdir_%d", i)));
+
+  Thread subdir_updater("SubDir Updater");
+  ASSERT_TRUE(subdir_updater.Start());
+
+  auto subdir_update_task = base::BindLambdaForTesting([&]() {
+    for (const auto& subdir : subdirs) {
+      // First update event to trigger watch callback.
+      ASSERT_TRUE(CreateDirectory(subdir));
+
+      // Second update event. The notification sent for this event will race
+      // with the upcoming deletion of the directory below. This test is about
+      // verifying that the impl handles this.
+      FilePath subdir_file(subdir.AppendASCII("subdir_file"));
+      ASSERT_TRUE(WriteFile(subdir_file, "content"));
+
+      // Racy subdir delete to trigger watcher leak.
+      ASSERT_TRUE(DeletePathRecursively(subdir));
+    }
+  });
+
+  // Try the racy subdir update 100 times.
+  for (int i = 0; i < 100; ++i) {
+    RunLoop run_loop;
+    auto watcher = std::make_unique<FilePathWatcher>();
+
+    // Keep watch callback in `watcher_callback` so that "watcher.reset()"
+    // inside does not release the callback and the lambda capture with it.
+    // Otherwise, accessing `run_loop` as part of the lamda capture would be
+    // use-after-free under asan.
+    auto watcher_callback =
+        base::BindLambdaForTesting([&](const FilePath& path, bool error) {
+          // Release watchers in callback so that the leaked watchers of
+          // the subdir stays. Otherwise, when the subdir is deleted,
+          // its delete event would clean up leaked watchers in
+          // `g_inotify_reader`.
+          watcher.reset();
+
+          run_loop.Quit();
+        });
+
+    bool setup_result = watcher->Watch(dir, FilePathWatcher::Type::kRecursive,
+                                       watcher_callback);
+    ASSERT_TRUE(setup_result);
+
+    subdir_updater.task_runner()->PostTask(FROM_HERE, subdir_update_task);
+
+    // Wait for the watch callback.
+    run_loop.Run();
+
+    // `watcher` should have been released.
+    ASSERT_FALSE(watcher);
+
+    // There should be no outstanding watchers.
+    ASSERT_FALSE(FilePathWatcher::HasWatchesForTest());
+  }
+}
+
+// Verify that "Watch()" returns false and callback is not invoked when limit is
+// hit during setup.
+TEST_F(FilePathWatcherTest, InotifyLimitInWatch) {
+  auto watcher = std::make_unique<FilePathWatcher>();
+
+  // "test_file()" is like "/tmp/__unique_path__/FilePathWatcherTest" and has 4
+  // dir components ("/" + 3 named parts). "Watch()" creates inotify watches
+  // for each dir component of the given dir. It would fail with limit set to 1.
+  ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(1);
+  ASSERT_FALSE(watcher->Watch(
+      test_file(), FilePathWatcher::Type::kNonRecursive,
+      base::BindLambdaForTesting(
+          [&](const FilePath& path, bool error) { ADD_FAILURE(); })));
+
+  // Triggers update but callback should not be invoked.
+  ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+  // Ensures that the callback did not happen.
+  base::RunLoop().RunUntilIdle();
+}
+
+// Verify that "error=true" callback happens when limit is hit during update.
+TEST_F(FilePathWatcherTest, InotifyLimitInUpdate) {
+  enum kTestType {
+    // Destroy watcher in "error=true" callback.
+    // No crash/deadlock when releasing watcher in the callback.
+    kDestroyWatcher,
+
+    // Do not destroy watcher in "error=true" callback.
+    kDoNothing,
+  };
+
+  for (auto callback_type : {kDestroyWatcher, kDoNothing}) {
+    SCOPED_TRACE(testing::Message() << "type=" << callback_type);
+
+    base::RunLoop run_loop;
+    auto watcher = std::make_unique<FilePathWatcher>();
+
+    bool error_callback_called = false;
+    auto watcher_callback =
+        base::BindLambdaForTesting([&](const FilePath& path, bool error) {
+          // No callback should happen after "error=true" one.
+          ASSERT_FALSE(error_callback_called);
+
+          if (!error)
+            return;
+
+          error_callback_called = true;
+
+          if (callback_type == kDestroyWatcher)
+            watcher.reset();
+
+          run_loop.Quit();
+        });
+    ASSERT_TRUE(watcher->Watch(
+        test_file(), FilePathWatcher::Type::kNonRecursive, watcher_callback));
+
+    ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(1);
+
+    // Triggers update and over limit.
+    ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+    run_loop.Run();
+
+    // More update but no more callback should happen.
+    ASSERT_TRUE(DeleteFile(test_file()));
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
+// Similar to InotifyLimitInUpdate but test a recursive watcher.
+TEST_F(FilePathWatcherTest, InotifyLimitInUpdateRecursive) {
+  enum kTestType {
+    // Destroy watcher in "error=true" callback.
+    // No crash/deadlock when releasing watcher in the callback.
+    kDestroyWatcher,
+
+    // Do not destroy watcher in "error=true" callback.
+    kDoNothing,
+  };
+
+  FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
+
+  for (auto callback_type : {kDestroyWatcher, kDoNothing}) {
+    SCOPED_TRACE(testing::Message() << "type=" << callback_type);
+
+    base::RunLoop run_loop;
+    auto watcher = std::make_unique<FilePathWatcher>();
+
+    bool error_callback_called = false;
+    auto watcher_callback =
+        base::BindLambdaForTesting([&](const FilePath& path, bool error) {
+          // No callback should happen after "error=true" one.
+          ASSERT_FALSE(error_callback_called);
+
+          if (!error)
+            return;
+
+          error_callback_called = true;
+
+          if (callback_type == kDestroyWatcher)
+            watcher.reset();
+
+          run_loop.Quit();
+        });
+    ASSERT_TRUE(watcher->Watch(dir, FilePathWatcher::Type::kRecursive,
+                               watcher_callback));
+
+    constexpr size_t kMaxLimit = 10u;
+    ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(
+        kMaxLimit);
+
+    // Triggers updates and over limit.
+    for (size_t i = 0; i < kMaxLimit; ++i) {
+      base::FilePath subdir =
+          dir.AppendASCII(base::StringPrintf("subdir_%" PRIuS, i));
+      ASSERT_TRUE(CreateDirectory(subdir));
+    }
+
+    run_loop.Run();
+
+    // More update but no more callback should happen.
+    for (size_t i = 0; i < kMaxLimit; ++i) {
+      base::FilePath subdir =
+          dir.AppendASCII(base::StringPrintf("subdir_%" PRIuS, i));
+      ASSERT_TRUE(DeleteFile(subdir));
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 enum Permission {
@@ -945,6 +1164,23 @@ TEST_F(FilePathWatcherTest, TrivialParentDirChange) {
   // There should be no notification for a change to |sub_dir2|'s parent.
   ASSERT_TRUE(Move(sub_dir1, tmp_dir.Append(FILE_PATH_LITERAL("over_here"))));
   ASSERT_FALSE(WaitForEvents());
+}
+
+// Do not crash when a directory is moved; https://crbug.com/1156603.
+TEST_F(FilePathWatcherTest, TrivialDirMove) {
+  const FilePath tmp_dir = temp_dir_.GetPath();
+  const FilePath sub_dir = tmp_dir.Append(FILE_PATH_LITERAL("subdir"));
+
+  ASSERT_TRUE(CreateDirectory(sub_dir));
+
+  FilePathWatcher watcher;
+  auto delegate = std::make_unique<TestDelegate>(collector());
+  delegate->set_expect_error();
+  ASSERT_TRUE(SetupWatch(sub_dir, &watcher, delegate.get(),
+                         FilePathWatcher::Type::kTrivial));
+
+  ASSERT_TRUE(Move(sub_dir, tmp_dir.Append(FILE_PATH_LITERAL("over_here"))));
+  ASSERT_TRUE(WaitForEvents());
 }
 
 #endif  // defined(OS_MAC)

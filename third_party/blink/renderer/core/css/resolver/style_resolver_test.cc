@@ -30,10 +30,11 @@ namespace blink {
 using animation_test_helpers::CreateSimpleKeyframeEffectForTest;
 
 class StyleResolverTest : public PageTestBase {
- public:
+ protected:
   scoped_refptr<ComputedStyle> StyleForId(AtomicString id) {
     Element* element = GetDocument().getElementById(id);
-    auto style = GetStyleEngine().GetStyleResolver().StyleForElement(element);
+    auto style = GetStyleEngine().GetStyleResolver().ResolveStyle(
+        element, StyleRecalcContext());
     DCHECK(style);
     return style;
   }
@@ -45,8 +46,12 @@ class StyleResolverTest : public PageTestBase {
         .CSSValueFromComputedStyle(style, nullptr, false)
         ->CssText();
   }
+};
 
+class StyleResolverTestCQ : public StyleResolverTest,
+                            public ScopedCSSContainerQueriesForTest {
  protected:
+  StyleResolverTestCQ() : ScopedCSSContainerQueriesForTest(true) {}
 };
 
 TEST_F(StyleResolverTest, StyleForTextInDisplayNone) {
@@ -82,8 +87,8 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   animations.SetAnimationStyleChange(true);
 
   StyleResolver& resolver = GetStyleEngine().GetStyleResolver();
-  ASSERT_TRUE(resolver.StyleForElement(div));
-  EXPECT_EQ(20, resolver.StyleForElement(div)->FontSize());
+  ASSERT_TRUE(resolver.ResolveStyle(div, StyleRecalcContext()));
+  EXPECT_EQ(20, resolver.ResolveStyle(div, StyleRecalcContext())->FontSize());
   ASSERT_TRUE(animations.BaseComputedStyle());
   EXPECT_EQ(20, animations.BaseComputedStyle()->FontSize());
 
@@ -91,12 +96,14 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   // animation base computed style.
   const ComputedStyle* parent_style =
       GetDocument().documentElement()->GetComputedStyle();
-  EXPECT_EQ(
-      10,
-      resolver.StyleForElement(div, parent_style, parent_style)->FontSize());
+  StyleRequest style_request;
+  style_request.parent_override = parent_style;
+  style_request.layout_parent_override = parent_style;
+  EXPECT_EQ(10, resolver.ResolveStyle(div, StyleRecalcContext(), style_request)
+                    ->FontSize());
   ASSERT_TRUE(animations.BaseComputedStyle());
   EXPECT_EQ(20, animations.BaseComputedStyle()->FontSize());
-  EXPECT_EQ(20, resolver.StyleForElement(div)->FontSize());
+  EXPECT_EQ(20, resolver.ResolveStyle(div, StyleRecalcContext())->FontSize());
 }
 
 TEST_F(StyleResolverTest, HasEmUnits) {
@@ -237,34 +244,6 @@ TEST_F(StyleResolverTest, AnimationMaskedByImportant) {
   EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
 }
 
-TEST_F(StyleResolverTest, CachedExplicitInheritanceFlags) {
-  ScopedCSSMatchedPropertiesCacheDependenciesForTest scoped_feature(true);
-
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
-    <style>
-      #outer { height: 10px; }
-      #inner { height: inherit; }
-    </style>
-    <div id=outer>
-      <div id=inner></div>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* outer = GetDocument().getElementById("outer");
-  ASSERT_TRUE(outer);
-  EXPECT_TRUE(outer->ComputedStyleRef().ChildHasExplicitInheritance());
-
-  auto recalc_reason = StyleChangeReasonForTracing::Create("test");
-
-  // This will hit the MatchedPropertiesCache for both #outer/#inner,
-  // which means special care must be taken for the ChildHasExplicit-
-  // Inheritance flag to persist.
-  GetStyleEngine().MarkAllElementsForStyleRecalc(recalc_reason);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(outer->ComputedStyleRef().ChildHasExplicitInheritance());
-}
-
 TEST_F(StyleResolverTest,
        TransitionRetargetRelativeFontSizeOnParentlessElement) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
@@ -295,7 +274,7 @@ TEST_F(StyleResolverTest,
   EXPECT_EQ("20px", ComputedValue("font-size", *StyleForId("target")));
 
   // Bump the animation time to ensure a transition reversal.
-  transition->setCurrentTime(50);
+  transition->setCurrentTime(CSSNumberish::FromDouble(50));
   transition->pause();
   UpdateAllLifecyclePhasesForTest();
   const String before_reversal_font_size =
@@ -339,7 +318,7 @@ TEST_F(StyleResolverTest, NonCachableStyleCheckDoesNotAffectBaseComputedStyle) {
   EXPECT_TRUE(transition);
 
   // Advance to the midpoint of the transition.
-  transition->setCurrentTime(500);
+  transition->setCurrentTime(CSSNumberish::FromDouble(500));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ("rgb(0, 64, 0)", ComputedValue("color", *StyleForId("target")));
   EXPECT_TRUE(element_animations->BaseComputedStyle());
@@ -348,8 +327,10 @@ TEST_F(StyleResolverTest, NonCachableStyleCheckDoesNotAffectBaseComputedStyle) {
 
   // Perform a non-cacheable style resolution, and ensure that the base computed
   // style is not updated.
-  GetStyleEngine().GetStyleResolver().StyleForElement(
-      target, nullptr, nullptr, kMatchAllRulesExcludingSMIL);
+  StyleRequest style_request;
+  style_request.matching_behavior = kMatchAllRulesExcludingSMIL;
+  GetStyleEngine().GetStyleResolver().ResolveStyle(target, StyleRecalcContext(),
+                                                   style_request);
   EXPECT_FALSE(element_animations->BaseComputedStyle());
 
   // Computing the style with default args updates the base computed style.
@@ -415,6 +396,28 @@ INSTANTIATE_TEST_SUITE_P(All,
                          StyleResolverFontRelativeUnitTest,
                          testing::Values("em", "rem", "ex", "ch"));
 
+// TODO(crbug.com/1180159): Remove this test when @container and transitions
+// work properly.
+TEST_F(StyleResolverTestCQ, BaseNotReusableWithContainerQueries) {
+  GetDocument().documentElement()->setInnerHTML("<div id=div>Test</div>");
+  UpdateAllLifecyclePhasesForTest();
+  Element* div = GetDocument().getElementById("div");
+
+  auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kWidth,
+                                                   "50px", "100px");
+  GetDocument().Timeline().Play(effect);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ("50px", ComputedValue("width", *StyleForId("div")));
+
+  div->SetNeedsAnimationStyleRecalc();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  StyleForId("div");
+
+  StyleResolverState state(GetDocument(), *div);
+  EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
+}
+
 namespace {
 
 const CSSImageValue& GetBackgroundImageValue(const ComputedStyle& style) {
@@ -476,6 +479,11 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
       #first-line-none::first-line {
         background-image: url(first-line-none.png);
       }
+      frameset {
+        display: none;
+        border-color: currentColor; /* UA inherit defeats caching */
+        background-image: url(frameset-none.png);
+      }
     </style>
     <div id="none">
       <div id="inside-none"></div>
@@ -495,6 +503,11 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
     <span id="first-line-span">XXX</span>
     <div id="first-line-none">XXX</div>
   )HTML");
+
+  auto* frameset1 = GetDocument().CreateRawElement(html_names::kFramesetTag);
+  auto* frameset2 = GetDocument().CreateRawElement(html_names::kFramesetTag);
+  GetDocument().documentElement()->AppendChild(frameset1);
+  GetDocument().documentElement()->AppendChild(frameset2);
 
   GetDocument().getElementById("host")->AttachShadowRootInternal(
       ShadowRootType::kOpen);
@@ -547,6 +560,17 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
       << "Fetch for image inherited from display:contents";
   EXPECT_TRUE(GetBackgroundImageValue(non_slotted).IsCachePending())
       << "No fetch for element outside the flat tree";
+
+  // Added two frameset elements to hit the MatchedPropertiesCache for the
+  // second one. Frameset adjusts style to display:block in StyleAdjuster, but
+  // adjustments are not run before ComputedStyle is added to the
+  // MatchedPropertiesCache leaving the cached style with StylePendingImage
+  // unless we also check for LayoutObjectIsNeeded in
+  // StyleResolverState::LoadPendingImages.
+  EXPECT_FALSE(GetBackgroundImageValue(frameset1).IsCachePending())
+      << "Fetch for display:none frameset";
+  EXPECT_FALSE(GetBackgroundImageValue(frameset2).IsCachePending())
+      << "Fetch for display:none frameset - cached";
 }
 
 TEST_F(StyleResolverTest, NoFetchForAtPage) {
@@ -594,16 +618,26 @@ TEST_F(StyleResolverTest, NoFetchForHighlightPseudoElements) {
   const auto* element_style = body->GetComputedStyle();
   ASSERT_TRUE(element_style);
 
+  StyleRequest pseudo_style_request;
+  pseudo_style_request.parent_override = element_style;
+  pseudo_style_request.layout_parent_override = element_style;
+
+  StyleRequest target_text_style_request = pseudo_style_request;
+  target_text_style_request.pseudo_id = kPseudoIdTargetText;
+
   scoped_refptr<ComputedStyle> target_text_style =
-      GetDocument().GetStyleResolver().PseudoStyleForElement(
-          GetDocument().body(), PseudoElementStyleRequest(kPseudoIdTargetText),
-          element_style, element_style);
+      GetDocument().GetStyleResolver().ResolveStyle(GetDocument().body(),
+                                                    StyleRecalcContext(),
+                                                    target_text_style_request);
   ASSERT_TRUE(target_text_style);
 
+  StyleRequest selection_style_style_request = pseudo_style_request;
+  selection_style_style_request.pseudo_id = kPseudoIdSelection;
+
   scoped_refptr<ComputedStyle> selection_style =
-      GetDocument().GetStyleResolver().PseudoStyleForElement(
-          GetDocument().body(), PseudoElementStyleRequest(kPseudoIdSelection),
-          element_style, element_style);
+      GetDocument().GetStyleResolver().ResolveStyle(
+          GetDocument().body(), StyleRecalcContext(),
+          selection_style_style_request);
   ASSERT_TRUE(selection_style);
 
   // Check that we don't fetch the cursor url() for ::target-text.
@@ -710,8 +744,6 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
 }
 
 TEST_F(StyleResolverTest, ApplyInheritedOnlyCustomPropertyChange) {
-  ScopedCSSMatchedPropertiesCacheDependenciesForTest scoped_feature(true);
-
   // This test verifies that when we get a "apply inherited only"-type
   // hit in the MatchesPropertiesCache, we're able to detect that custom
   // properties changed, and that we therefore need to apply the non-inherited
@@ -956,8 +988,9 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     StyleResolverState state(GetDocument(), *host);
     SelectorFilter filter;
     MatchResult match_result;
-    ElementRuleCollector collector(state.ElementContext(), filter, match_result,
-                                   state.Style(), EInsideLink::kNotInsideLink);
+    ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
+                                   filter, match_result, state.Style(),
+                                   EInsideLink::kNotInsideLink);
     GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
         state, collector, false /* include_smil_properties */);
     const auto& properties = match_result.GetMatchedProperties();
@@ -982,8 +1015,9 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     StyleResolverState state(GetDocument(), *span);
     SelectorFilter filter;
     MatchResult match_result;
-    ElementRuleCollector collector(state.ElementContext(), filter, match_result,
-                                   state.Style(), EInsideLink::kNotInsideLink);
+    ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
+                                   filter, match_result, state.Style(),
+                                   EInsideLink::kNotInsideLink);
     GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
         state, collector, false /* include_smil_properties */);
     const auto& properties = match_result.GetMatchedProperties();
@@ -1075,18 +1109,106 @@ TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
       << "-webkit-mask-image is fetched";
 }
 
-// https://crbug.com/1145406
-TEST_F(StyleResolverTest, StyleSheetWithNullRuleSet) {
-  ScopedCSSKeyframesMemoryReductionForTest enabled_scope(true);
-
+TEST_F(StyleResolverTestCQ, DependsOnContainerQueries) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
-    <style>.c6 { animation-name: anim; }</style>
-    <style media=print></style>
-    <div class=c6></div>
+    <style>
+      #a { color: red; }
+      @container (min-width: 0px) {
+        #b { color: blue; }
+        span { color: green; }
+        #d { color: coral; }
+      }
+    </style>
+    <div id=a></div>
+    <span id=b></span>
+    <span id=c></span>
+    <div id=d></div>
+    <div id=e></div>
   )HTML");
 
-  // Should not crash inside
   UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetDocument().getElementById("a");
+  auto* b = GetDocument().getElementById("b");
+  auto* c = GetDocument().getElementById("c");
+  auto* d = GetDocument().getElementById("d");
+  auto* e = GetDocument().getElementById("e");
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(c);
+  ASSERT_TRUE(d);
+  ASSERT_TRUE(e);
+
+  EXPECT_FALSE(a->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(b->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(c->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(d->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_FALSE(e->ComputedStyleRef().DependsOnContainerQueries());
+}
+
+TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesPseudo) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      main { contain: size layout; width: 100px; }
+      #a::before { content: "before"; }
+      @container (min-width: 0px) {
+        #a::after { content: "after"; }
+      }
+    </style>
+    <main>
+      <div id=a></div>
+    </main>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetDocument().getElementById("a");
+  auto* before = a->GetPseudoElement(kPseudoIdBefore);
+  auto* after = a->GetPseudoElement(kPseudoIdAfter);
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(before);
+  ASSERT_TRUE(after);
+
+  EXPECT_TRUE(a->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_FALSE(before->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_TRUE(after->ComputedStyleRef().DependsOnContainerQueries());
+}
+
+// Verify that the ComputedStyle::DependsOnContainerQuery flag does
+// not end up in the MatchedPropertiesCache (MPC).
+TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesMPC) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @container (min-width: 9999999px) {
+        #a { color: green; }
+      }
+    </style>
+    <div id=a></div>
+    <div id=b></div>
+  )HTML");
+
+  // In the above example, both <div id=a> and <div id=b> match the same
+  // rules (i.e. whatever is provided by UA style). The selector inside
+  // the @container rule does ultimately _not_ match <div id=a> (because the
+  // container query evaluates to 'false'), however, it _does_ cause the
+  // ComputedStyle::DependsOnContainerQuery flag to be set on #a.
+  //
+  // We must ensure that we don't add the DependsOnContainerQuery-flagged
+  // style to the MPC, otherwise the subsequent cache hit for #b would result
+  // in the flag being (incorrectly) set for that element.
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* a = GetDocument().getElementById("a");
+  auto* b = GetDocument().getElementById("b");
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  EXPECT_TRUE(a->ComputedStyleRef().DependsOnContainerQueries());
+  EXPECT_FALSE(b->ComputedStyleRef().DependsOnContainerQueries());
 }
 
 }  // namespace blink

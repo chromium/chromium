@@ -14,6 +14,7 @@
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 
@@ -73,6 +74,40 @@ void ShowCastAction::OnWaitForElement(const Selector& selector,
     return;
   }
 
+  if (proto_.show_cast().has_container()) {
+    Selector container_selector = Selector(proto_.show_cast().container());
+    if (container_selector.empty()) {
+      VLOG(1) << __func__ << ": empty selector for container";
+      EndAction(ClientStatus(INVALID_SELECTOR));
+      return;
+    }
+    delegate_->FindElement(
+        container_selector,
+        base::BindOnce(&ShowCastAction::OnFindContainer,
+                       weak_ptr_factory_.GetWeakPtr(), selector, top_padding));
+  } else {
+    ScrollToElement(selector, top_padding, /* container= */ nullptr);
+  }
+}
+
+void ShowCastAction::OnFindContainer(
+    const Selector& selector,
+    const TopPadding& top_padding,
+    const ClientStatus& element_status,
+    std::unique_ptr<ElementFinder::Result> container) {
+  if (!element_status.ok()) {
+    VLOG(1) << __func__ << " Failed to find container.";
+    EndAction(element_status);
+    return;
+  }
+
+  ScrollToElement(selector, top_padding, std::move(container));
+}
+
+void ShowCastAction::ScrollToElement(
+    const Selector& selector,
+    const TopPadding& top_padding,
+    std::unique_ptr<ElementFinder::Result> container) {
   auto actions = std::make_unique<action_delegate_util::ElementActionVector>();
   actions->emplace_back(base::BindOnce(
       &ShowCastAction::RunAndIncreaseWaitTimer, weak_ptr_factory_.GetWeakPtr(),
@@ -86,18 +121,24 @@ void ShowCastAction::OnWaitForElement(const Selector& selector,
   }
   action_delegate_util::AddOptionalStep(
       wait_for_stable_element,
+      base::BindOnce(&WebController::ScrollIntoView,
+                     delegate_->GetWebController()->GetWeakPtr(), false),
+      actions.get());
+  action_delegate_util::AddOptionalStep(
+      wait_for_stable_element,
       base::BindOnce(
           &ShowCastAction::RunAndIncreaseWaitTimer,
           weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
-                         delegate_->GetWeakPtr(),
+          base::BindOnce(&WebController::WaitUntilElementIsStable,
+                         delegate_->GetWebController()->GetWeakPtr(),
                          proto_.show_cast().stable_check_max_rounds(),
                          base::TimeDelta::FromMilliseconds(
                              proto_.show_cast().stable_check_interval_ms()))),
       actions.get());
   actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollToElementPosition,
                                        delegate_->GetWeakPtr(), selector,
-                                       top_padding));
+                                       top_padding, std::move(container)));
+
   action_delegate_util::FindElementAndPerform(
       delegate_, selector,
       base::BindOnce(&action_delegate_util::PerformAll, std::move(actions)),

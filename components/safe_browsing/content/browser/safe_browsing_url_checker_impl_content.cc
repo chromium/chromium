@@ -5,7 +5,6 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
@@ -20,13 +19,14 @@ void SafeBrowsingUrlCheckerImpl::LogRTLookupRequest(
 
   // The following is to log this RTLookupRequest on any open
   // chrome://safe-browsing pages.
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, CreateTaskTraits(ThreadID::UI),
-      base::BindOnce(&WebUIInfoSingleton::AddToRTLookupPings,
-                     base::Unretained(WebUIInfoSingleton::GetInstance()),
-                     request, oauth_token),
-      base::BindOnce(&SafeBrowsingUrlCheckerImpl::SetWebUIToken,
-                     weak_factory_.GetWeakPtr()));
+  GetTaskRunner(ThreadID::UI)
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&WebUIInfoSingleton::AddToRTLookupPings,
+                         base::Unretained(WebUIInfoSingleton::GetInstance()),
+                         request, oauth_token),
+          base::BindOnce(&SafeBrowsingUrlCheckerImpl::SetWebUIToken,
+                         weak_factory_.GetWeakPtr()));
 }
 
 void SafeBrowsingUrlCheckerImpl::LogRTLookupResponse(
@@ -36,11 +36,12 @@ void SafeBrowsingUrlCheckerImpl::LogRTLookupResponse(
   if (url_web_ui_token_ != -1) {
     // The following is to log this RTLookupResponse on any open
     // chrome://safe-browsing pages.
-    base::PostTask(
-        FROM_HERE, CreateTaskTraits(ThreadID::UI),
-        base::BindOnce(&WebUIInfoSingleton::AddToRTLookupResponses,
-                       base::Unretained(WebUIInfoSingleton::GetInstance()),
-                       url_web_ui_token_, response));
+    GetTaskRunner(ThreadID::UI)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&WebUIInfoSingleton::AddToRTLookupResponses,
+                           base::Unretained(WebUIInfoSingleton::GetInstance()),
+                           url_web_ui_token_, response));
   }
 }
 

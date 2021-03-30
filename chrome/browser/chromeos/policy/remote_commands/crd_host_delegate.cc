@@ -7,11 +7,11 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "components/user_manager/user_manager.h"
@@ -116,17 +116,17 @@ bool CRDHostDelegate::IsRunningKiosk() const {
     return false;
 
   if (user_manager->IsLoggedInAsKioskApp()) {
-    chromeos::KioskAppManager* manager = chromeos::KioskAppManager::Get();
+    ash::KioskAppManager* manager = ash::KioskAppManager::Get();
     if (manager->GetAutoLaunchApp().empty())
       return false;
-    chromeos::KioskAppManager::App app;
+    ash::KioskAppManager::App app;
     CHECK(manager->GetApp(manager->GetAutoLaunchApp(), &app));
     return app.was_auto_launched_with_zero_delay;
   } else if (user_manager->IsLoggedInAsArcKioskApp()) {
     return chromeos::ArcKioskAppManager::Get()
         ->current_app_was_auto_launched_with_zero_delay();
   } else if (user_manager->IsLoggedInAsWebKioskApp()) {
-    return chromeos::WebKioskAppManager::Get()
+    return ash::WebKioskAppManager::Get()
         ->current_app_was_auto_launched_with_zero_delay();
   }
   NOTREACHED();

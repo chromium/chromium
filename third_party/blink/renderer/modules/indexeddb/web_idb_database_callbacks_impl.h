@@ -46,9 +46,6 @@ class WebIDBDatabaseCallbacksImpl final : public WebIDBDatabaseCallbacks {
   void OnVersionChange(int64_t old_version, int64_t new_version) override;
   void OnAbort(int64_t transaction_id, const IDBDatabaseError&) override;
   void OnComplete(int64_t transaction_id) override;
-  void OnChanges(const ObservationIndexMap&,
-                 Vector<Persistent<IDBObservation>> observations,
-                 const TransactionMap& transactions) override;
   void Detach() override;
 
  private:

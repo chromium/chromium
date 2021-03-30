@@ -6,12 +6,12 @@
 #define ASH_SYSTEM_TRAY_TRAY_POPUP_UTILS_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/login_status.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ash/system/tray/tri_view.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/button/button.h"
 
 namespace views {
@@ -145,7 +145,7 @@ class TrayPopupUtils {
   // ownership.
   static views::LabelButton* CreateTrayPopupButton(
       views::Button::PressedCallback callback,
-      const base::string16& text);
+      const std::u16string& text);
 
   // Creates and returns a vertical separator to be used between two items in a
   // material design system menu row. The caller assumes ownership of the

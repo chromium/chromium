@@ -103,7 +103,8 @@ noinst_PROGRAMS = celt/tests/test_unit_cwrs32 \
                   tests/test_opus_decode \
                   tests/test_opus_encode \
                   tests/test_opus_padding \
-                  tests/test_opus_projection
+                  tests/test_opus_projection \
+                  trivial_example
 
 TESTS = celt/tests/test_unit_cwrs32 \
         celt/tests/test_unit_dft \
@@ -130,6 +131,9 @@ repacketizer_demo_LDADD = libopus.la $(NE10_LIBS) $(LIBM)
 
 opus_compare_SOURCES = src/opus_compare.c
 opus_compare_LDADD = $(LIBM)
+
+trivial_example_SOURCES = doc/trivial_example.c
+trivial_example_LDADD = libopus.la $(LIBM)
 
 tests_test_opus_api_SOURCES = tests/test_opus_api.c tests/test_opus_common.h
 tests_test_opus_api_LDADD = libopus.la $(NE10_LIBS) $(LIBM)
@@ -211,12 +215,27 @@ EXTRA_DIST = opus.pc.in \
              Makefile.mips \
              Makefile.unix \
              CMakeLists.txt \
-             config.h.cmake.in \
-             opus_buildtype.cmake \
-             opus_config.cmake \
-             opus_functions.cmake \
-             opus_sources.cmake \
-             OpusConfig.cmake.in \
+             cmake/CFeatureCheck.cmake \
+             cmake/OpusBuildtype.cmake \
+             cmake/OpusConfig.cmake \
+             cmake/OpusConfig.cmake.in \
+             cmake/OpusFunctions.cmake \
+             cmake/OpusPackageVersion.cmake \
+             cmake/OpusSources.cmake \
+             cmake/config.h.cmake.in \
+             cmake/vla.c \
+             meson/get-version.py \
+             meson/read-sources-list.py \
+             meson.build \
+             meson_options.txt \
+             include/meson.build \
+             celt/meson.build \
+             celt/tests/meson.build \
+             silk/meson.build \
+             silk/tests/meson.build \
+             src/meson.build \
+             tests/meson.build \
+             doc/meson.build \
              tests/run_vectors.sh \
              celt/arm/arm2gnu.pl \
              celt/arm/celt_pitch_xcorr_arm.s \

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -291,6 +291,7 @@ class DebianBuilder(InstrumentedPackageBuilder):
     self._build_env['DEB_CFLAGS_APPEND'] = self._cflags
     self._build_env['DEB_CXXFLAGS_APPEND'] = self._cflags
     self._build_env['DEB_LDFLAGS_APPEND'] = self._ldflags
+    self._build_env['DEB_BUILD_OPTIONS'] = 'nocheck notest nodoc nostrip'
 
     self.set_asan_options()
 

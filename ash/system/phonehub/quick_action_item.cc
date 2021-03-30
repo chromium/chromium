@@ -84,7 +84,7 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
 
 QuickActionItem::~QuickActionItem() = default;
 
-void QuickActionItem::SetSubLabel(const base::string16& sub_label) {
+void QuickActionItem::SetSubLabel(const std::u16string& sub_label) {
   sub_label_->SetText(sub_label);
 }
 
@@ -99,7 +99,7 @@ void QuickActionItem::SetIcon(bool is_on) {
   icon_button_->SetVectorIcon(is_on ? icon_on_ : icon_off_);
 }
 
-void QuickActionItem::SetIconTooltip(const base::string16& text) {
+void QuickActionItem::SetIconTooltip(const std::u16string& text) {
   icon_button_->SetTooltipText(text);
 }
 
@@ -112,7 +112,7 @@ bool QuickActionItem::IsToggled() const {
   return icon_button_->toggled();
 }
 
-const base::string16& QuickActionItem::GetItemLabel() const {
+const std::u16string& QuickActionItem::GetItemLabel() const {
   return label_->GetText();
 }
 

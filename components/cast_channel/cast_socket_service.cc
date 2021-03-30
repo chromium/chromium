@@ -4,8 +4,10 @@
 
 #include "components/cast_channel/cast_socket_service.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "components/cast_channel/cast_socket.h"
+#include "components/cast_channel/libcast_socket_service.h"
 #include "components/cast_channel/logger.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -14,7 +16,17 @@ using content::BrowserThread;
 
 namespace cast_channel {
 
-int CastSocketService::last_channel_id_ = 0;
+const base::Feature kLibcastSocketService{"LibcastSocketService",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// static
+CastSocketService* CastSocketService::GetInstance() {
+  static CastSocketService* service =
+      base::FeatureList::IsEnabled(kLibcastSocketService)
+          ? static_cast<CastSocketService*>(new LibcastSocketService())
+          : static_cast<CastSocketService*>(new CastSocketServiceImpl());
+  return service;
+}
 
 CastSocketService::CastSocketService()
     : logger_(new Logger()),
@@ -24,20 +36,17 @@ CastSocketService::CastSocketService()
       // CastChannel extension API functions run on IO thread.
       task_runner_(content::GetIOThreadTaskRunner({})) {}
 
-// This is a leaky singleton and the dtor won't be called.
 CastSocketService::~CastSocketService() = default;
 
-// static
-CastSocketService* CastSocketService::GetInstance() {
-  static CastSocketService* instance = new CastSocketService();
-  return instance;
-}
+int CastSocketServiceImpl::last_channel_id_ = 0;
 
-scoped_refptr<Logger> CastSocketService::GetLogger() {
-  return logger_;
-}
+CastSocketServiceImpl::CastSocketServiceImpl() = default;
 
-CastSocket* CastSocketService::AddSocket(std::unique_ptr<CastSocket> socket) {
+// This is a leaky singleton and the dtor won't be called.
+CastSocketServiceImpl::~CastSocketServiceImpl() = default;
+
+CastSocket* CastSocketServiceImpl::AddSocket(
+    std::unique_ptr<CastSocket> socket) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(socket);
   int id = ++last_channel_id_;
@@ -48,7 +57,8 @@ CastSocket* CastSocketService::AddSocket(std::unique_ptr<CastSocket> socket) {
   return socket_ptr;
 }
 
-std::unique_ptr<CastSocket> CastSocketService::RemoveSocket(int channel_id) {
+std::unique_ptr<CastSocket> CastSocketServiceImpl::RemoveSocket(
+    int channel_id) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(channel_id > 0);
   auto socket_it = sockets_.find(channel_id);
@@ -61,14 +71,14 @@ std::unique_ptr<CastSocket> CastSocketService::RemoveSocket(int channel_id) {
   return socket;
 }
 
-CastSocket* CastSocketService::GetSocket(int channel_id) const {
+CastSocket* CastSocketServiceImpl::GetSocket(int channel_id) const {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(channel_id > 0);
   const auto& socket_it = sockets_.find(channel_id);
   return socket_it == sockets_.end() ? nullptr : socket_it->second.get();
 }
 
-CastSocket* CastSocketService::GetSocket(
+CastSocket* CastSocketServiceImpl::GetSocket(
     const net::IPEndPoint& ip_endpoint) const {
   DCHECK(task_runner_->BelongsToCurrentThread());
   auto it = std::find_if(
@@ -80,9 +90,10 @@ CastSocket* CastSocketService::GetSocket(
   return it == sockets_.end() ? nullptr : it->second.get();
 }
 
-void CastSocketService::OpenSocket(NetworkContextGetter network_context_getter,
-                                   const CastSocketOpenParams& open_params,
-                                   CastSocket::OnOpenCallback open_cb) {
+void CastSocketServiceImpl::OpenSocket(
+    NetworkContextGetter network_context_getter,
+    const CastSocketOpenParams& open_params,
+    CastSocket::OnOpenCallback open_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   const net::IPEndPoint& ip_endpoint = open_params.ip_endpoint;
@@ -103,7 +114,7 @@ void CastSocketService::OpenSocket(NetworkContextGetter network_context_getter,
   socket->Connect(std::move(open_cb));
 }
 
-void CastSocketService::AddObserver(CastSocket::Observer* observer) {
+void CastSocketServiceImpl::AddObserver(CastSocket::Observer* observer) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(observer);
   if (observers_.HasObserver(observer))
@@ -114,18 +125,13 @@ void CastSocketService::AddObserver(CastSocket::Observer* observer) {
     socket_it.second->AddObserver(observer);
 }
 
-void CastSocketService::RemoveObserver(CastSocket::Observer* observer) {
+void CastSocketServiceImpl::RemoveObserver(CastSocket::Observer* observer) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(observer);
 
   for (auto& socket_it : sockets_)
     socket_it.second->RemoveObserver(observer);
   observers_.RemoveObserver(observer);
-}
-
-void CastSocketService::SetSocketForTest(
-    std::unique_ptr<cast_channel::CastSocket> socket_for_test) {
-  socket_for_test_ = std::move(socket_for_test);
 }
 
 }  // namespace cast_channel

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/av1_picture.h"
@@ -392,16 +393,10 @@ void FillModeControlInfo(VADecPictureParameterBufferAV1& va_pic_param,
   mode_control.delta_lf_present_flag = frame_header.delta_lf.present;
   mode_control.log2_delta_lf_res = frame_header.delta_lf.scale;
   mode_control.delta_lf_multi = frame_header.delta_lf.multi;
-  switch (frame_header.tx_mode) {
-    case libgav1::TxMode::kTxModeOnly4x4:
-    case libgav1::TxMode::kTxModeLargest:
-    case libgav1::TxMode::kTxModeSelect:
-      mode_control.tx_mode = base::strict_cast<uint32_t>(frame_header.tx_mode);
-      break;
-    default:
-      NOTREACHED() << "Unknown tx mode: "
-                   << base::strict_cast<int>(frame_header.tx_mode);
-  }
+  DCHECK_LE(0u, frame_header.tx_mode);
+  DCHECK_LE(frame_header.tx_mode, 2u);
+  mode_control.tx_mode = frame_header.tx_mode;
+
   mode_control.reference_select = frame_header.reference_mode_select;
   mode_control.reduced_tx_set_used = frame_header.reduced_tx_set;
   mode_control.skip_mode_present = frame_header.skip_mode_present;
@@ -409,7 +404,8 @@ void FillModeControlInfo(VADecPictureParameterBufferAV1& va_pic_param,
 
 void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
                              const libgav1::LoopRestoration& loop_restoration) {
-  auto to_frame_restoration_type = [](libgav1::LoopRestorationType lr_type) {
+  auto to_frame_restoration_type =
+      [](libgav1::LoopRestorationType lr_type) -> uint16_t {
     // Spec. 6.10.15
     switch (lr_type) {
       case libgav1::LoopRestorationType::kLoopRestorationTypeNone:
@@ -420,7 +416,6 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
         return 1;
       case libgav1::LoopRestorationType::kLoopRestorationTypeSgrProj:
         return 2;
-      case libgav1::LoopRestorationType::kNumLoopRestorationTypes:
       default:
         NOTREACHED() << "Invalid restoration type"
                      << base::strict_cast<int>(lr_type);
@@ -428,7 +423,8 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
     }
   };
   static_assert(
-      ARRAY_SIZE(loop_restoration.type) == libgav1::kMaxPlanes &&
+      libgav1::kMaxPlanes == 3 &&
+          ARRAY_SIZE(loop_restoration.type) == libgav1::kMaxPlanes &&
           ARRAY_SIZE(loop_restoration.unit_size_log2) == libgav1::kMaxPlanes,
       "Invalid size of loop restoration values");
   auto& va_loop_restoration = va_pic_param.loop_restoration_fields.bits;
@@ -448,9 +444,14 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
                    }) != (loop_restoration.type + num_planes);
   if (!use_loop_restoration)
     return;
+  static_assert(libgav1::kPlaneY == 0u && libgav1::kPlaneU == 1u,
+                "Invalid plane index");
   DCHECK_GE(loop_restoration.unit_size_log2[0], 6);
   DCHECK_GE(loop_restoration.unit_size_log2[0],
             loop_restoration.unit_size_log2[1]);
+  DCHECK_LE(
+      loop_restoration.unit_size_log2[0] - loop_restoration.unit_size_log2[1],
+      1);
   va_loop_restoration.lr_unit_shift = loop_restoration.unit_size_log2[0] - 6;
   va_loop_restoration.lr_uv_shift =
       loop_restoration.unit_size_log2[0] - loop_restoration.unit_size_log2[1];
@@ -593,13 +594,17 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
         ref_pic ? ref_pic->reconstruct_va_surface()->id() : VA_INVALID_SURFACE;
   }
 
-  // |ref_frame_map| doesn't need to be filled in keyframe case.
-  if (frame_header.frame_type != libgav1::FrameType::kFrameKey) {
+  // |va_pic_param.ref_frame_idx| doesn't need to be filled in for intra frames
+  // (it can be left zero initialized).
+  if (!libgav1::IsIntraFrame(frame_header.frame_type)) {
     for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
       const int8_t index = frame_header.reference_frame_index[i];
-      if (index < 0)
-        continue;
+      CHECK_GE(index, 0);
       CHECK_LT(index, libgav1::kNumReferenceFrameTypes);
+      // AV1Decoder::CheckAndCleanUpReferenceFrames() ensures that
+      // |ref_frames[index]| is valid for all the reference frames needed by the
+      // current frame.
+      DCHECK_NE(va_pic_param.ref_frame_map[index], VA_INVALID_SURFACE);
       va_pic_param.ref_frame_idx[i] = base::checked_cast<uint8_t>(index);
     }
   }
@@ -651,6 +656,8 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
   va_pic_info_fields.disable_frame_end_update_cdf =
       !frame_header.enable_frame_end_update_cdf;
 
+  static_assert(libgav1::kSuperResScaleNumerator == 8,
+                "Invalid libgav1::kSuperResScaleNumerator value");
   CHECK_EQ(frame_header.superres_scale_denominator,
            libgav1::kSuperResScaleNumerator);
   va_pic_param.superres_scale_denominator =
@@ -719,7 +726,11 @@ AV1VaapiVideoDecoderDelegate::AV1VaapiVideoDecoderDelegate(
                                 base::DoNothing(),
                                 nullptr) {}
 
-AV1VaapiVideoDecoderDelegate::~AV1VaapiVideoDecoderDelegate() = default;
+AV1VaapiVideoDecoderDelegate::~AV1VaapiVideoDecoderDelegate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!picture_params_);
+  DCHECK(slice_params_.empty());
+}
 
 scoped_refptr<AV1Picture> AV1VaapiVideoDecoderDelegate::CreateAV1Picture(
     bool apply_grain) {
@@ -775,28 +786,55 @@ bool AV1VaapiVideoDecoderDelegate::SubmitDecode(
     return false;
   }
 
-  // TODO(hiroh): Batch VABuffer submissions like Vp9VaapiVideoDecoderDelegate.
-  // Submit the picture parameters.
-  if (!vaapi_wrapper_->SubmitBuffer(VAPictureParameterBufferType, &pic_param))
-    return false;
-
-  // Submit the entire buffer and the per-tile information.
+  if (!picture_params_) {
+    picture_params_ = vaapi_wrapper_->CreateVABuffer(
+        VAPictureParameterBufferType, sizeof(pic_param));
+    if (!picture_params_)
+      return false;
+  }
+  if (slice_params_.size() != slice_params.size()) {
+    while (slice_params_.size() < slice_params.size()) {
+      slice_params_.push_back(vaapi_wrapper_->CreateVABuffer(
+          VASliceParameterBufferType, sizeof(VASliceParameterBufferAV1)));
+      if (!slice_params_.back()) {
+        slice_params_.clear();
+        return false;
+      }
+    }
+    slice_params_.resize(slice_params.size());
+    slice_params_.shrink_to_fit();
+  }
   // TODO(hiroh): Don't submit the entire coded data to the buffer. Instead,
   // only pass the data starting from the tile list OBU to reduce the size of
   // the VA buffer.
-  if (!vaapi_wrapper_->SubmitBuffer(VASliceDataBufferType, data.size(),
-                                    data.data())) {
+  // Always re-create |encoded_data| because reusing the buffer causes horrific
+  // artifacts in decoded buffers. TODO(b/177028692): This seems to be a driver
+  // bug, fix it and reuse the buffer.
+  auto encoded_data =
+      vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType, data.size_bytes());
+  if (!encoded_data)
     return false;
-  }
-  for (const VASliceParameterBufferAV1& tile_param : slice_params) {
-    if (!vaapi_wrapper_->SubmitBuffer(VASliceParameterBufferType,
-                                      &tile_param)) {
-      return false;
-    }
+
+  std::vector<std::pair<VABufferID, VaapiWrapper::VABufferDescriptor>> buffers =
+      {{picture_params_->id(),
+        {picture_params_->type(), picture_params_->size(), &pic_param}},
+       {encoded_data->id(),
+        {encoded_data->type(), encoded_data->size(), data.data()}}};
+  for (size_t i = 0; i < slice_params.size(); ++i) {
+    buffers.push_back({slice_params_[i]->id(),
+                       {slice_params_[i]->type(), slice_params_[i]->size(),
+                        &slice_params[i]}});
   }
 
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
-  return vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
-      vaapi_pic->reconstruct_va_surface()->id());
+  return vaapi_wrapper_->MapAndCopyAndExecute(
+      vaapi_pic->reconstruct_va_surface()->id(), buffers);
+}
+
+void AV1VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
+  // Destroy the member ScopedVABuffers below since they refer to a VAContextID
+  // that will be destroyed soon.
+  picture_params_.reset();
+  slice_params_.clear();
 }
 }  // namespace media

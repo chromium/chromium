@@ -20,7 +20,6 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
  * This class is a thin wrapper that forwards lifecycle events to the WebLayer implementation, which
  * in turn manages a system notification and {@link MediaSession}. This service will be in the
  * foreground when the MediaSession is active.
- * @since 85
  */
 public class MediaSessionService extends MediaPlaybackBaseService {
     // A helper to automatically pause the media session when a user removes headphones.

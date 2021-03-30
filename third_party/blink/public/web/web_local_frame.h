@@ -16,27 +16,27 @@
 #include "base/unguessable_token.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/css/page_size_type.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-shared.h"
 #include "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom-shared.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_document_loader.h"
@@ -52,6 +52,7 @@
 
 namespace gfx {
 class Point;
+class ScrollOffset;
 }  // namespace gfx
 
 namespace ui {
@@ -114,7 +115,7 @@ class WebLocalFrame : public WebFrame {
       WebView*,
       WebLocalFrameClient*,
       blink::InterfaceRegistry*,
-      const base::UnguessableToken& frame_token,
+      const LocalFrameToken& frame_token,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       WebFrame* opener = nullptr,
       const WebString& name = WebString(),
@@ -144,8 +145,8 @@ class WebLocalFrame : public WebFrame {
   // frame.
   BLINK_EXPORT static WebLocalFrame* CreateProvisional(
       WebLocalFrameClient*,
-      blink::InterfaceRegistry*,
-      const base::UnguessableToken& frame_token,
+      InterfaceRegistry*,
+      const LocalFrameToken& frame_token,
       WebFrame* previous_web_frame,
       const FramePolicy&,
       const WebString& name);
@@ -156,8 +157,8 @@ class WebLocalFrame : public WebFrame {
   virtual WebLocalFrame* CreateLocalChild(
       mojom::TreeScopeType,
       WebLocalFrameClient*,
-      blink::InterfaceRegistry*,
-      const base::UnguessableToken& frame_token) = 0;
+      InterfaceRegistry*,
+      const LocalFrameToken& frame_token) = 0;
 
   // Returns the WebFrame associated with the current V8 context. This
   // function can return 0 if the context is associated with a Document that
@@ -182,7 +183,7 @@ class WebLocalFrame : public WebFrame {
   // Basic properties ---------------------------------------------------
 
   LocalFrameToken GetLocalFrameToken() const {
-    return LocalFrameToken(GetFrameToken());
+    return GetFrameToken().GetAs<LocalFrameToken>();
   }
 
   virtual WebDocument GetDocument() const = 0;
@@ -440,7 +441,7 @@ class WebLocalFrame : public WebFrame {
   // Returns the text range rectangle in the viepwort coordinate space.
   virtual bool FirstRectForCharacterRange(unsigned location,
                                           unsigned length,
-                                          WebRect&) const = 0;
+                                          gfx::Rect&) const = 0;
 
   // Supports commands like Undo, Redo, Cut, Copy, Paste, SelectAll,
   // Unselect, etc. See EditorCommand.cpp for the full list of supported
@@ -539,10 +540,10 @@ class WebLocalFrame : public WebFrame {
   // pairs in the requested range.
   virtual void DeleteSurroundingTextInCodePoints(int before, int after) = 0;
 
-  virtual void ExtractSmartClipData(WebRect rect_in_viewport,
+  virtual void ExtractSmartClipData(const gfx::Rect& rect_in_viewport,
                                     WebString& clip_text,
                                     WebString& clip_html,
-                                    WebRect& clip_rect) = 0;
+                                    gfx::Rect& clip_rect) = 0;
 
   // Spell-checking support -------------------------------------------------
   virtual void SetTextCheckClient(WebTextCheckClient*) = 0;
@@ -555,6 +556,7 @@ class WebLocalFrame : public WebFrame {
 
   // Content Settings -------------------------------------------------------
 
+  virtual WebContentSettingsClient* GetContentSettingsClient() const = 0;
   virtual void SetContentSettingsClient(WebContentSettingsClient*) = 0;
 
   // Image reload -----------------------------------------------------------
@@ -567,6 +569,10 @@ class WebLocalFrame : public WebFrame {
   // Returns false if this frame, or any parent frame is sandboxed and does not
   // have the flag "allow-downloads" set.
   virtual bool IsAllowedToDownload() const = 0;
+
+  // Returns true if a frame is a subframe and it is cross-origin to the main
+  // frame.
+  virtual bool IsCrossOriginToMainFrame() const = 0;
 
   // Find-in-page -----------------------------------------------------------
 
@@ -596,16 +602,34 @@ class WebLocalFrame : public WebFrame {
   // given layout object. If this is called with an empty array, the default
   // behavior will be restored.
   virtual void SetTickmarks(const WebElement& target,
-                            const WebVector<WebRect>& tickmarks) = 0;
+                            const WebVector<gfx::Rect>& tickmarks) = 0;
 
   // Context menu -----------------------------------------------------------
 
   // Returns the node that the context menu opened over.
+  virtual WebNode ContextMenuImageNode() const = 0;
   virtual WebNode ContextMenuNode() const = 0;
 
   // Copy to the clipboard the image located at a particular point in visual
   // viewport coordinates.
   virtual void CopyImageAtForTesting(const gfx::Point&) = 0;
+
+  // Shows a context menu with the given information from an external context
+  // menu request. The given client will be called with the result.
+  //
+  // The request ID will be returned by this function. This is passed to the
+  // client functions for identification.
+  //
+  // If the client is destroyed, CancelContextMenu() should be called with the
+  // request ID returned by this function.
+  //
+  // Note: if you end up having clients outliving the WebLocalFrame, we should
+  // add a CancelContextMenuCallback function that takes a request id.
+  virtual void ShowContextMenuFromExternal(
+      const UntrustworthyContextMenuParams& params,
+      CrossVariantMojoAssociatedRemote<
+          blink::mojom::ContextMenuClientInterfaceBase>
+          context_menu_client) = 0;
 
   // Events --------------------------------------------------------------
 
@@ -658,18 +682,18 @@ class WebLocalFrame : public WebFrame {
   // not be accurate if the page layout is out-of-date.
 
   // The scroll offset from the top-left corner of the frame in pixels.
-  virtual WebSize GetScrollOffset() const = 0;
-  virtual void SetScrollOffset(const WebSize&) = 0;
+  virtual gfx::ScrollOffset GetScrollOffset() const = 0;
+  virtual void SetScrollOffset(const gfx::ScrollOffset&) = 0;
 
   // The size of the document in this frame.
-  virtual WebSize DocumentSize() const = 0;
+  virtual gfx::Size DocumentSize() const = 0;
 
   // Returns true if the contents (minus scrollbars) has non-zero area.
   virtual bool HasVisibleContent() const = 0;
 
   // Returns the visible content rect (minus scrollbars), relative to the
   // document.
-  virtual WebRect VisibleContentRect() const = 0;
+  virtual gfx::Rect VisibleContentRect() const = 0;
 
   // Printing ------------------------------------------------------------
 
@@ -721,7 +745,7 @@ class WebLocalFrame : public WebFrame {
   // Captures a full frame paint preview of the WebFrame including subframes. If
   // |include_linked_destinations| is true, the capture will include annotations
   // about linked destinations within the document.
-  virtual bool CapturePaintPreview(const WebRect& bounds,
+  virtual bool CapturePaintPreview(const gfx::Rect& bounds,
                                    cc::PaintCanvas* canvas,
                                    bool include_linked_destinations) = 0;
 
@@ -739,11 +763,17 @@ class WebLocalFrame : public WebFrame {
 
   // True if the frame is thought (heuristically) to be created for
   // advertising purposes.
-  virtual bool IsAdSubframe() const = 0;
+  bool IsAdSubframe() const override = 0;
 
-  // This setter is available in case the embedder has more information about
-  // whether or not the frame is an ad.
+  // See blink::LocalFrame::SetIsAdSubframe()
   virtual void SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type) = 0;
+
+  // True iff a script tagged as an ad was on the v8 stack when the frame was
+  // created and the frame is a subframe. This is not currently propagated when
+  // a frame navigates cross-origin.
+  // TODO(crbug.com/1145634): propagate this bit for a frame that navigates
+  // cross-origin.
+  virtual bool IsSubframeCreatedByAdScript() = 0;
 
   // User activation -----------------------------------------------------------
 
@@ -774,21 +804,21 @@ class WebLocalFrame : public WebFrame {
   // oneanother vertically), when printing for testing. Even if we still only
   // support a uniform page size, some pages may be rotated using
   // page-orientation.
-  virtual WebSize SpoolSizeInPixelsForTesting(
-      const WebSize& page_size_in_pixels,
+  virtual gfx::Size SpoolSizeInPixelsForTesting(
+      const gfx::Size& page_size_in_pixels,
       uint32_t page_count) = 0;
 
   // Prints the frame into the canvas, with page boundaries drawn as one pixel
   // wide blue lines. This method exists to support web tests.
   virtual void PrintPagesForTesting(cc::PaintCanvas*,
-                                    const WebSize& page_size_in_pixels,
-                                    const WebSize& spool_size_in_pixels) = 0;
+                                    const gfx::Size& page_size_in_pixels,
+                                    const gfx::Size& spool_size_in_pixels) = 0;
 
   // Returns the bounds rect for current selection. If selection is performed
   // on transformed text, the rect will still bound the selection but will
   // not be transformed itself. If no selection is present, the rect will be
   // empty ((0,0), (0,0)).
-  virtual WebRect GetSelectionBoundsRectForTesting() const = 0;
+  virtual gfx::Rect GetSelectionBoundsRectForTesting() const = 0;
 
   // Returns the position of the frame's origin relative to the viewport (ie the
   // local root).
@@ -812,7 +842,7 @@ class WebLocalFrame : public WebFrame {
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,
-                         const base::UnguessableToken& frame_token)
+                         const LocalFrameToken& frame_token)
       : WebFrame(scope, frame_token) {}
 
   // Inherited from WebFrame, but intentionally hidden: it never makes sense

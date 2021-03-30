@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
@@ -125,10 +124,10 @@ class PRINTING_EXPORT PrintSettings {
     return page_setup_device_units_;
   }
 
-  void set_device_name(const base::string16& device_name) {
+  void set_device_name(const std::u16string& device_name) {
     device_name_ = device_name;
   }
-  const base::string16& device_name() const { return device_name_; }
+  const std::u16string& device_name() const { return device_name_; }
 
   void set_dpi(int dpi) { dpi_ = gfx::Size(dpi, dpi); }
   void set_dpi_xy(int dpi_horizontal, int dpi_vertical) {
@@ -177,11 +176,11 @@ class PRINTING_EXPORT PrintSettings {
   }
   bool display_header_footer() const { return display_header_footer_; }
 
-  void set_title(const base::string16& title) { title_ = title; }
-  const base::string16& title() const { return title_; }
+  void set_title(const std::u16string& title) { title_ = title; }
+  const std::u16string& title() const { return title_; }
 
-  void set_url(const base::string16& url) { url_ = url; }
-  const base::string16& url() const { return url_; }
+  void set_url(const std::u16string& url) { url_ = url; }
+  const std::u16string& url() const { return url_; }
 
   void set_collate(bool collate) { collate_ = collate; }
   bool collate() const { return collate_; }
@@ -259,8 +258,8 @@ class PRINTING_EXPORT PrintSettings {
   mojom::MarginType margin_type_;
 
   // Strings to be printed as headers and footers if requested by the user.
-  base::string16 title_;
-  base::string16 url_;
+  std::u16string title_;
+  std::u16string url_;
 
   // True if the user wants headers and footers to be displayed.
   bool display_header_footer_;
@@ -281,7 +280,7 @@ class PRINTING_EXPORT PrintSettings {
   mojom::DuplexMode duplex_mode_;
 
   // Printer device name as opened by the OS.
-  base::string16 device_name_;
+  std::u16string device_name_;
 
   // Media requested by the user.
   RequestedMedia requested_media_;

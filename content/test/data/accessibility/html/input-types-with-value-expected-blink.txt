@@ -1,0 +1,77 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++labelText
+++++++++staticText name='Email: '
+++++++++++inlineTextBox name='Email: '
+++++++++textField editable name='Email:' value='email@example.com' editableRoot=true
+++++++++++genericContainer editable
+++++++++++++staticText editable name='email@example.com'
+++++++++++++++inlineTextBox name='email@example.com'
+++++++labelText
+++++++++staticText name='Number: '
+++++++++++inlineTextBox name='Number: '
+++++++++spinButton editable name='Number:' value='3' editableRoot=true valueForRange=3.00
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++++++staticText editable name='3'
+++++++++++++++++++inlineTextBox name='3'
+++++++++++++genericContainer ignored
+++++++labelText
+++++++++staticText name='Password: '
+++++++++++inlineTextBox name='Password: '
+++++++++textField editable protected name='Password:' value='%E2%80%A2%E2%80%A2%E2%80%A2' editableRoot=true
+++++++++++genericContainer editable
+++++++++++++staticText editable name='%E2%80%A2%E2%80%A2%E2%80%A2'
+++++++++++++++inlineTextBox name='%E2%80%A2%E2%80%A2%E2%80%A2'
+++++++labelText
+++++++++staticText name='Search: '
+++++++++++inlineTextBox name='Search: '
+++++++++searchBox editable name='Search:' value='search' editableRoot=true
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++++++staticText editable name='search'
+++++++++++++++++++inlineTextBox name='search'
+++++++++++++genericContainer ignored
+++++++labelText
+++++++++staticText name='Tel: '
+++++++++++inlineTextBox name='Tel: '
+++++++++textField editable name='Tel:' value='555-1212' editableRoot=true
+++++++++++genericContainer editable
+++++++++++++staticText editable name='555-1212'
+++++++++++++++inlineTextBox name='555-1212'
+++++++labelText
+++++++++staticText name='Text: '
+++++++++++inlineTextBox name='Text: '
+++++++++textField editable name='Text:' value='just text' editableRoot=true
+++++++++++genericContainer editable
+++++++++++++staticText editable name='just text'
+++++++++++++++inlineTextBox name='just text'
+++++++labelText
+++++++++staticText name='Url: '
+++++++++++inlineTextBox name='Url: '
+++++++++textField editable name='Url:' editableRoot=true
+++++++++++genericContainer editable
+++++++++++++staticText editable name='https://www.example.com'
+++++++++++++++inlineTextBox name='https://www.example.com'
+++++++labelText
+++++++++staticText name='Textarea: '
+++++++++++inlineTextBox name='Textarea: '
+++++++++textField editable multiline name='Textarea:' value='Sometext' editableRoot=true
+++++++++++genericContainer editable
+++++++++++++staticText editable name='Sometext'
+++++++++++++++inlineTextBox name='Sometext'
+++++++genericContainer editable editableRoot=true
+++++++++staticText editable name='Plain contenteditable'
+++++++++++inlineTextBox name='Plain contenteditable'
+++++++genericContainer editable multiline richlyEditable value='Rich contenteditable' editableRoot=true
+++++++++staticText editable richlyEditable name='Rich contenteditable'
+++++++++++inlineTextBox name='Rich contenteditable'
+++++++textField editable value='Plain contenteditable' editableRoot=true
+++++++++staticText editable name='Plain contenteditable'
+++++++++++inlineTextBox name='Plain contenteditable'
+++++++textField editable richlyEditable value='Rich contenteditable' editableRoot=true
+++++++++staticText editable richlyEditable name='Rich contenteditable'
+++++++++++inlineTextBox name='Rich contenteditable'

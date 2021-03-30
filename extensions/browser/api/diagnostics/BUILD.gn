@@ -16,7 +16,12 @@ source_set("diagnostics") {
     "diagnostics_api.h",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//chromeos/dbus",
+    "//chromeos/dbus/debug_daemon",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

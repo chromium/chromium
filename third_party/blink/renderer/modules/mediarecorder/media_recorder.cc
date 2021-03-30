@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -47,6 +48,29 @@ String StateToString(MediaRecorder::State state) {
 
   NOTREACHED();
   return String();
+}
+
+String BitrateModeToString(AudioTrackRecorder::BitrateMode bitrateMode) {
+  switch (bitrateMode) {
+    case AudioTrackRecorder::BitrateMode::CONSTANT:
+      return "constant";
+    case AudioTrackRecorder::BitrateMode::VARIABLE:
+      return "variable";
+  }
+
+  NOTREACHED();
+  return String();
+}
+
+AudioTrackRecorder::BitrateMode GetBitrateModeFromOptions(
+    const MediaRecorderOptions* const options) {
+  if (options->hasAudioBitrateMode()) {
+    if (!WTF::CodeUnitCompareIgnoringASCIICase(options->audioBitrateMode(),
+                                               "constant"))
+      return AudioTrackRecorder::BitrateMode::CONSTANT;
+  }
+
+  return AudioTrackRecorder::BitrateMode::VARIABLE;
 }
 
 // Allocates the requested bit rates from |bitrateOptions| into the respective
@@ -190,7 +214,7 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
   if (!recorder_handler_->Initialize(
           this, stream->Descriptor(), content_type.GetType(),
           content_type.Parameter("codecs"), audio_bits_per_second_,
-          video_bits_per_second_)) {
+          video_bits_per_second_, GetBitrateModeFromOptions(options))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Failed to initialize native MediaRecorder the type provided (" +
@@ -204,6 +228,10 @@ MediaRecorder::~MediaRecorder() = default;
 
 String MediaRecorder::state() const {
   return StateToString(state_);
+}
+
+String MediaRecorder::audioBitrateMode() const {
+  return BitrateModeToString(recorder_handler_->AudioBitrateMode());
 }
 
 void MediaRecorder::start(ExceptionState& exception_state) {

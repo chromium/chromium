@@ -4,11 +4,15 @@
 
 #include "components/ui_devtools/views/view_element.h"
 
+#include <algorithm>
+
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/ui_devtools/views/element_utility.h"
+#include "ui/events/event_utils.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/metadata/metadata_types.h"
 #include "ui/views/widget/widget.h"
@@ -17,19 +21,69 @@ namespace ui_devtools {
 
 namespace {
 
-// Returns true if |property_name| is type SkColor, false if not. If type
-// SkColor, remove the "--" from the name.
-bool GetSkColorPropertyName(std::string& property_name) {
-  if (property_name.length() < 2U)
-    return false;
-
-  // Check if property starts with "--", meaning its type is SkColor.
-  if (property_name[0] == '-' && property_name[1] == '-') {
-    // Remove "--" from |property_name|.
-    base::TrimString(property_name, "-", &property_name);
-    return true;
+// Remove any custom editor "prefixes" from the property name. The prefixes must
+// not be valid identifier characters.
+void StripPrefix(std::string& property_name) {
+  auto cur = property_name.cbegin();
+  for (; cur < property_name.cend(); ++cur) {
+    if ((*cur >= 'A' && *cur <= 'Z') || (*cur >= 'a' && *cur <= 'z') ||
+        *cur == '_') {
+      break;
+    }
   }
-  return false;
+  property_name.erase(property_name.cbegin(), cur);
+}
+
+ui::EventType GetMouseEventType(const std::string& type) {
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MousePressed)
+    return ui::ET_MOUSE_PRESSED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseDragged)
+    return ui::ET_MOUSE_DRAGGED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseReleased)
+    return ui::ET_MOUSE_RELEASED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseMoved)
+    return ui::ET_MOUSE_MOVED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseEntered)
+    return ui::ET_MOUSE_ENTERED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseExited)
+    return ui::ET_MOUSE_EXITED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseWheel)
+    return ui::ET_MOUSEWHEEL;
+  return ui::ET_UNKNOWN;
+}
+
+int GetButtonFlags(const std::string& button) {
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Left)
+    return ui::EF_LEFT_MOUSE_BUTTON;
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Right)
+    return ui::EF_RIGHT_MOUSE_BUTTON;
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Middle)
+    return ui::EF_MIDDLE_MOUSE_BUTTON;
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Back)
+    return ui::EF_BACK_MOUSE_BUTTON;
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Forward)
+    return ui::EF_FORWARD_MOUSE_BUTTON;
+  return ui::EF_NONE;
+}
+
+int GetMouseWheelXOffset(const std::string& mouse_wheel_direction) {
+  if (mouse_wheel_direction ==
+      protocol::DOM::MouseEvent::WheelDirectionEnum::Left)
+    return ui::MouseWheelEvent::kWheelDelta;
+  if (mouse_wheel_direction ==
+      protocol::DOM::MouseEvent::WheelDirectionEnum::Right)
+    return -ui::MouseWheelEvent::kWheelDelta;
+  return 0;
+}
+
+int GetMouseWheelYOffset(const std::string& mouse_wheel_direction) {
+  if (mouse_wheel_direction ==
+      protocol::DOM::MouseEvent::WheelDirectionEnum::Up)
+    return ui::MouseWheelEvent::kWheelDelta;
+  if (mouse_wheel_direction ==
+      protocol::DOM::MouseEvent::WheelDirectionEnum::Down)
+    return -ui::MouseWheelEvent::kWheelDelta;
+  return 0;
 }
 
 }  // namespace
@@ -94,36 +148,11 @@ ViewElement::GetCustomPropertiesForMatchedStyle() const {
   std::vector<UIElement::UIProperty> class_properties;
   views::metadata::ClassMetaData* metadata = view_->GetClassMetaData();
   for (auto member = metadata->begin(); member != metadata->end(); member++) {
-    if (member.GetCurrentCollectionName() == "View" &&
-        class_properties.empty()) {
-      gfx::Rect bounds = view_->bounds();
-      class_properties.emplace_back("x", base::NumberToString(bounds.x()));
-      class_properties.emplace_back("y", base::NumberToString(bounds.y()));
-      class_properties.emplace_back("width",
-                                    base::NumberToString(bounds.width()));
-      class_properties.emplace_back("height",
-                                    base::NumberToString(bounds.height()));
-      class_properties.emplace_back("is-drawn",
-                                    view_->IsDrawn() ? "true" : "false");
-      base::string16 description = view_->GetTooltipText(gfx::Point());
-      if (!description.empty())
-        class_properties.emplace_back("tooltip",
-                                      base::UTF16ToUTF8(description));
-    }
-
-    // Check if type is SkColor and add "--" to property name so that DevTools
-    // frontend will interpret this field as a color. Also convert SkColor value
-    // to rgba string.
-    if ((*member)->member_type() == "SkColor") {
-      SkColor color;
-      if (base::StringToUint(
-              base::UTF16ToUTF8((*member)->GetValueAsString(view_)), &color))
-        class_properties.emplace_back("--" + (*member)->member_name(),
-                                      color_utils::SkColorToRgbaString(color));
-    } else if (!!((*member)->GetPropertyFlags() &
-                  views::metadata::PropertyFlags::kSerializable)) {
+    auto flags = (*member)->GetPropertyFlags();
+    if (!!(flags & views::metadata::PropertyFlags::kSerializable) ||
+        !!(flags & views::metadata::PropertyFlags::kReadOnly)) {
       class_properties.emplace_back(
-          (*member)->member_name(),
+          (*member)->GetMemberNamePrefix() + (*member)->member_name(),
           base::UTF16ToUTF8((*member)->GetValueAsString(view_)));
     }
 
@@ -165,12 +194,8 @@ bool ViewElement::SetPropertiesFromString(const std::string& text) {
     std::string property_name = tokens.at(i);
     std::string property_value = base::ToLowerASCII(tokens.at(i + 1));
 
-    // Check if property is type SkColor.
-    if (GetSkColorPropertyName(property_name)) {
-      // Convert from CSS color format to SkColor.
-      if (!ParseColorFromFrontend(property_value, &property_value))
-        continue;
-    }
+    // Remove any type editor "prefixes" from the property name.
+    StripPrefix(property_name);
 
     views::metadata::ClassMetaData* metadata = view_->GetClassMetaData();
     views::metadata::MemberMetaDataBase* member =
@@ -182,16 +207,19 @@ bool ViewElement::SetPropertiesFromString(const std::string& text) {
     }
 
     // Since DevTools frontend doesn't check the value, we do a sanity check
-    // based on its type here.
-    if (member->member_type() == "bool") {
-      if (property_value != "true" && property_value != "false") {
-        // Ignore the value.
-        continue;
-      }
+    // based on the allowed values specified in the metadata.
+    auto valid_values = member->GetValidValues();
+    if (!valid_values.empty() &&
+        std::find(valid_values.begin(), valid_values.end(),
+                  base::UTF8ToUTF16(property_value)) == valid_values.end()) {
+      // Ignore the value.
+      continue;
     }
 
-    DCHECK(!!(member->GetPropertyFlags() &
-              views::metadata::PropertyFlags::kSerializable));
+    auto property_flags = member->GetPropertyFlags();
+    if (!!(property_flags & views::metadata::PropertyFlags::kReadOnly))
+      continue;
+    DCHECK(!!(property_flags & views::metadata::PropertyFlags::kSerializable));
     member->SetValueAsString(view_, base::UTF8ToUTF16(property_value));
     property_set = true;
   }
@@ -247,6 +275,28 @@ void ViewElement::InitSources() {
       AddSource(metadata->file(), metadata->line());
     }
   }
+}
+
+bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
+  ui::EventType event_type = GetMouseEventType(event->getType());
+  int button_flags = GetButtonFlags(event->getButton());
+  if (event_type == ui::ET_UNKNOWN)
+    return false;
+  gfx::Point location(event->getX(), event->getY());
+  if (event_type == ui::ET_MOUSEWHEEL) {
+    int x_offset = GetMouseWheelXOffset(event->getWheelDirection());
+    int y_offset = GetMouseWheelYOffset(event->getWheelDirection());
+    ui::MouseWheelEvent mouse_wheel_event(
+        gfx::Vector2d(x_offset, y_offset), location, location,
+        ui::EventTimeForNow(), button_flags, button_flags);
+    view_->OnMouseWheel(mouse_wheel_event);
+  } else {
+    ui::MouseEvent mouse_event(event_type, location, location,
+                               ui::EventTimeForNow(), button_flags,
+                               button_flags);
+    view_->OnMouseEvent(&mouse_event);
+  }
+  return true;
 }
 
 }  // namespace ui_devtools

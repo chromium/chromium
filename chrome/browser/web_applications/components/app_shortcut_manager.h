@@ -28,7 +28,7 @@ struct ShortcutInfo;
 //
 // TODO(crbug.com/860581): Migrate functions from
 // web_app_extension_shortcut.(h|cc) and
-// platform_apps/shortcut_manager.(h|cc) to web_app::AppShortcutManager and
+// platform_apps/shortcut_manager.(h|cc) to AppShortcutManager and
 // its subclasses.
 class AppShortcutManager {
  public:
@@ -50,8 +50,12 @@ class AppShortcutManager {
   void CreateShortcuts(const AppId& app_id,
                        bool add_to_desktop,
                        CreateShortcutsCallback callback);
-  void UpdateShortcuts(const web_app::AppId& app_id,
-                       base::StringPiece old_name);
+  // Fetch already-updated shortcut data and deploy to OS integration.
+  void UpdateShortcuts(const AppId& app_id, base::StringPiece old_name);
+  void DeleteShortcuts(const AppId& app_id,
+                       const base::FilePath& shortcuts_data_dir,
+                       std::unique_ptr<ShortcutInfo> shortcut_info,
+                       DeleteShortcutsCallback callback);
 
   // TODO(crbug.com/1098471): Move this into web_app_shortcuts_menu_win.cc when
   // a callback is integrated into the Shortcuts Menu registration flow.
@@ -73,7 +77,7 @@ class AppShortcutManager {
       const AppId& app_id,
       const std::vector<WebApplicationShortcutsMenuItemInfo>&
           shortcuts_menu_item_infos,
-      const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps);
+      const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps);
 
   void UnregisterShortcutsMenuWithOs(const AppId& app_id);
 
@@ -97,6 +101,9 @@ class AppShortcutManager {
   void OnShortcutsCreated(const AppId& app_id,
                           CreateShortcutsCallback callback,
                           bool success);
+  void OnShortcutsDeleted(const AppId& app_id,
+                          DeleteShortcutsCallback callback,
+                          bool success);
 
   AppRegistrar* registrar() { return registrar_; }
   Profile* profile() { return profile_; }
@@ -111,13 +118,13 @@ class AppShortcutManager {
       std::unique_ptr<ShortcutInfo> info);
 
   void OnShortcutInfoRetrievedUpdateShortcuts(
-      base::string16 old_name,
+      std::u16string old_name,
       std::unique_ptr<ShortcutInfo> info);
 
   void OnShortcutsMenuIconsReadRegisterShortcutsMenu(
       const AppId& app_id,
       RegisterShortcutsMenuCallback callback,
-      ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps);
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 
   bool suppress_shortcuts_for_testing_ = false;
 

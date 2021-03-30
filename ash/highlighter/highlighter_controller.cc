@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/base_event_utils.h"
@@ -233,7 +232,7 @@ void HighlighterController::DestroyPointerView() {
   DestroyResultView();
 }
 
-bool HighlighterController::CanStartNewGesture(ui::TouchEvent* event) {
+bool HighlighterController::CanStartNewGesture(ui::LocatedEvent* event) {
   // Ignore events over the palette.
   if (palette_utils::PaletteContainsPointInScreen(event->root_location()))
     return false;

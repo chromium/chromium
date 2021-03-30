@@ -25,21 +25,18 @@ class MODULES_EXPORT TextDetector final : public ShapeDetector {
   static TextDetector* Create(ExecutionContext*);
 
   explicit TextDetector(ExecutionContext*);
+  ~TextDetector() override = default;
 
   void Trace(Visitor*) const override;
 
  private:
-  ~TextDetector() override = default;
-
   ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) override;
   void OnDetectText(
       ScriptPromiseResolver*,
       Vector<shape_detection::mojom::blink::TextDetectionResultPtr>);
   void OnTextServiceConnectionError();
 
-  HeapMojoRemote<shape_detection::mojom::blink::TextDetection,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      text_service_;
+  HeapMojoRemote<shape_detection::mojom::blink::TextDetection> text_service_;
 
   HeapHashSet<Member<ScriptPromiseResolver>> text_service_requests_;
 };

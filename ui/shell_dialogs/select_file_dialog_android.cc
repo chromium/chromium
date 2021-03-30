@@ -112,7 +112,7 @@ void SelectFileDialogImpl::ListenerDestroyed() {
 
 void SelectFileDialogImpl::SelectFileImpl(
     SelectFileDialog::Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const SelectFileDialog::FileTypeInfo* file_types,
     int file_type_index,
@@ -123,9 +123,9 @@ void SelectFileDialogImpl::SelectFileImpl(
 
   // The first element in the pair is a list of accepted types, the second
   // indicates whether the device's capture capabilities should be used.
-  typedef std::pair<std::vector<base::string16>, bool> AcceptTypes;
-  AcceptTypes accept_types = std::make_pair(std::vector<base::string16>(),
-                                            false);
+  typedef std::pair<std::vector<std::u16string>, bool> AcceptTypes;
+  AcceptTypes accept_types =
+      std::make_pair(std::vector<std::u16string>(), false);
 
   if (params)
     accept_types = *(reinterpret_cast<AcceptTypes*>(params));

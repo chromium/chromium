@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -16,14 +17,11 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
@@ -44,7 +42,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,7 +54,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/test/blob_test_utils.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -97,12 +93,12 @@ struct FetchResult {
 
 void RunWithDelay(base::OnceClosure closure, base::TimeDelta delay) {
   base::RunLoop run_loop;
-  base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
-                        base::BindLambdaForTesting([&]() {
-                          std::move(closure).Run();
-                          run_loop.Quit();
-                        }),
-                        delay);
+  GetUIThreadTaskRunner({})->PostDelayedTask(FROM_HERE,
+                                             base::BindLambdaForTesting([&]() {
+                                               std::move(closure).Run();
+                                               run_loop.Quit();
+                                             }),
+                                             delay);
   run_loop.Run();
 }
 
@@ -133,9 +129,16 @@ ServiceWorkerRegistry::FindRegistrationCallback CreateFindRegistrationReceiver(
                         std::move(quit), status);
 }
 
-void ExpectResultAndRun(bool expected,
-                        base::RepeatingClosure continuation,
-                        bool actual) {
+void ExpectRegisterResultAndRun(blink::ServiceWorkerStatusCode expected,
+                                base::RepeatingClosure continuation,
+                                blink::ServiceWorkerStatusCode actual) {
+  EXPECT_EQ(expected, actual);
+  continuation.Run();
+}
+
+void ExpectUnregisterResultAndRun(bool expected,
+                                  base::RepeatingClosure continuation,
+                                  bool actual) {
   EXPECT_EQ(expected, actual);
   continuation.Run();
 }
@@ -264,8 +267,28 @@ RequestHandlerForBigWorkerScript(const net::test_server::HttpRequest& request) {
   return http_response;
 }
 
-network::CrossOriginEmbedderPolicy CrossOriginEmbedderPolicyNone() {
-  return network::CrossOriginEmbedderPolicy();
+// Returns a response with Cross-Origin-Embedder-Policy header matching with
+// |coep|.
+std::unique_ptr<net::test_server::HttpResponse>
+RequestHandlerForWorkerScriptWithCoep(
+    base::Optional<network::mojom::CrossOriginEmbedderPolicyValue> coep,
+    const net::test_server::HttpRequest& request) {
+  static int counter = 0;
+  if (request.relative_url != "/service_worker/generated")
+    return nullptr;
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content(
+      base::StringPrintf("// empty. counter = %d\n", counter++));
+  response->set_content_type("text/javascript");
+  if (coep.has_value()) {
+    std::string header_value =
+        coep.value() == network::mojom::CrossOriginEmbedderPolicyValue::kNone
+            ? "none"
+            : "require-corp";
+    response->AddCustomHeader("Cross-Origin-Embedder-Policy", header_value);
+  }
+  return response;
 }
 
 network::CrossOriginEmbedderPolicy CrossOriginEmbedderPolicyRequireCorp() {
@@ -280,7 +303,7 @@ class ConsoleListener : public EmbeddedWorkerInstance::Listener {
  public:
   void OnReportConsoleMessage(blink::mojom::ConsoleMessageSource source,
                               blink::mojom::ConsoleMessageLevel message_level,
-                              const base::string16& message,
+                              const std::u16string& message,
                               int line_number,
                               const GURL& source_url) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -304,10 +327,10 @@ class ConsoleListener : public EmbeddedWorkerInstance::Listener {
     ASSERT_EQ(messages_.size(), expected_message_count);
   }
 
-  const std::vector<base::string16>& messages() const { return messages_; }
+  const std::vector<std::u16string>& messages() const { return messages_; }
 
  private:
-  std::vector<base::string16> messages_;
+  std::vector<std::u16string> messages_;
   size_t expected_message_count_ = 0;
   base::OnceClosure quit_;
 };
@@ -742,7 +765,7 @@ class MockContentBrowserClient : public TestContentBrowserClient {
     return data_saver_enabled_;
   }
 
-  void OverrideWebkitPrefs(RenderViewHost* render_view_host,
+  void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override {
     prefs->data_saver_enabled = data_saver_enabled_;
   }
@@ -984,10 +1007,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected,
             status.value());
 
-  const base::string16 expected =
-      base::ASCIIToUTF16("Rejecting oninstall event");
+  const std::u16string expected = u"Rejecting oninstall event";
   console_listener.WaitForConsoleMessages(1);
-  ASSERT_NE(base::string16::npos,
+  ASSERT_NE(std::u16string::npos,
             console_listener.messages()[0].find(expected));
   version_->embedded_worker()->RemoveObserver(&console_listener);
 }
@@ -1188,12 +1210,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   version_->embedded_worker()->AddObserver(&console_listener);
 
   FetchOnRegisteredWorker("/service_worker/empty.html", &result, &response);
-  const base::string16 expected1 = base::ASCIIToUTF16(
+  const std::u16string expected1 = base::ASCIIToUTF16(
       "resulted in a network error response: the promise was rejected.");
-  const base::string16 expected2 =
-      base::ASCIIToUTF16("Uncaught (in promise) Rejecting respondWith promise");
+  const std::u16string expected2 =
+      u"Uncaught (in promise) Rejecting respondWith promise";
   console_listener.WaitForConsoleMessages(2);
-  ASSERT_NE(base::string16::npos,
+  ASSERT_NE(std::u16string::npos,
             console_listener.messages()[0].find(expected1));
   ASSERT_EQ(0u, console_listener.messages()[1].find(expected2));
   version_->embedded_worker()->RemoveObserver(&console_listener);
@@ -1235,7 +1257,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   observer->Init();
   public_context()->RegisterServiceWorker(
       embedded_test_server()->GetURL(kWorkerUrl), options,
-      base::BindOnce(&ExpectResultAndRun, true, base::DoNothing()));
+      base::BindOnce(&ExpectRegisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   observer->Wait();
   int64_t registration_id = observer->registration_id();
 
@@ -1282,7 +1305,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   base::RunLoop run_loop;
   public_context()->UnregisterServiceWorker(
       embedded_test_server()->GetURL(kScope),
-      base::BindOnce(&ExpectResultAndRun, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1306,7 +1330,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   observer->Init();
   public_context()->RegisterServiceWorker(
       embedded_test_server()->GetURL(kWorkerUrl), options,
-      base::BindOnce(&ExpectResultAndRun, true, base::DoNothing()));
+      base::BindOnce(&ExpectRegisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   observer->Wait();
   int64_t registration_id = observer->registration_id();
 
@@ -1324,7 +1349,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   base::RunLoop run_loop;
   public_context()->UnregisterServiceWorker(
       embedded_test_server()->GetURL(kScope),
-      base::BindOnce(&ExpectResultAndRun, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1391,60 +1417,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest, RendererCrash) {
   version_->RemoveObserver(&observer);
 }
 
-// This tests whether the ServiceWorkerVersion can have the correct value of
-// Cross-Origin-Embedder-Policy and checks if it works either of when
-// CrossOriginIsolation is enabled and disabled.
-class ServiceWorkerVersionCoepTest : public ServiceWorkerVersionBrowserTest,
-                                     public testing::WithParamInterface<bool> {
- public:
-  ServiceWorkerVersionCoepTest() {
-    if (IsCrossOriginIsolationEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          network::features::kCrossOriginEmbedderPolicy);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          network::features::kCrossOriginEmbedderPolicy);
-    }
-  }
-
-  static bool IsCrossOriginIsolationEnabled() { return GetParam(); }
-
-  // Returns a response with Cross-Origin-Embedder-Policy header matching with
-  // |coep|.
-  static std::unique_ptr<net::test_server::HttpResponse>
-  RequestHandlerForWorkerScriptWithCoep(
-      base::Optional<network::mojom::CrossOriginEmbedderPolicyValue> coep,
-      const net::test_server::HttpRequest& request) {
-    static int counter = 0;
-    if (request.relative_url != "/service_worker/generated")
-      return nullptr;
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-    response->set_content(
-        base::StringPrintf("// empty. counter = %d\n", counter++));
-    response->set_content_type("text/javascript");
-    if (coep.has_value()) {
-      std::string header_value =
-          coep.value() == network::mojom::CrossOriginEmbedderPolicyValue::kNone
-              ? "none"
-              : "require-corp";
-      response->AddCustomHeader("Cross-Origin-Embedder-Policy", header_value);
-    }
-    return response;
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, ServiceWorkerVersionCoepTest, testing::Bool());
-
 // Checks if ServiceWorkerVersion has the correct value of COEP when a new
 // worker is installed.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerVersionCoepTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
                        CrossOriginEmbedderPolicyValue_Install) {
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &ServiceWorkerVersionCoepTest::RequestHandlerForWorkerScriptWithCoep,
+      &RequestHandlerForWorkerScriptWithCoep,
       network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp));
   StartServerAndNavigateToSetup();
 
@@ -1455,9 +1433,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerVersionCoepTest,
   // Once it's started, the worker script is read from the network and the COEP
   // value is set to the version.
   StartWorker(blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(IsCrossOriginIsolationEnabled()
-                ? CrossOriginEmbedderPolicyRequireCorp()
-                : CrossOriginEmbedderPolicyNone(),
+  EXPECT_EQ(CrossOriginEmbedderPolicyRequireCorp(),
             version_->cross_origin_embedder_policy());
 }
 
@@ -1581,9 +1557,6 @@ class CacheStorageEagerReadingTest : public ServiceWorkerVersionBrowserTest {
   // the service worker fetch handler.
   static constexpr const char* kOtherURL =
       "/service_worker/non-matching-url.js";
-
- private:
-  base::test::ScopedFeatureList feature_list;
 };
 
 IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingTest,

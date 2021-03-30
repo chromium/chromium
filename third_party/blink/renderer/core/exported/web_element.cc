@@ -30,7 +30,6 @@
 
 #include "third_party/blink/public/web/web_element.h"
 
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -78,6 +77,10 @@ bool WebElement::IsEditable() const {
 
 WebString WebElement::TagName() const {
   return ConstUnwrap<Element>()->tagName();
+}
+
+WebString WebElement::GetIdAttribute() const {
+  return ConstUnwrap<Element>()->GetIdAttribute();
 }
 
 bool WebElement::HasHTMLTagName(const WebString& tag_name) const {
@@ -153,7 +156,7 @@ WebNode WebElement::OpenOrClosedShadowRoot() {
   return WebNode(root);
 }
 
-WebRect WebElement::BoundsInViewport() const {
+gfx::Rect WebElement::BoundsInViewport() const {
   return ConstUnwrap<Element>()->BoundsInViewport();
 }
 

@@ -59,12 +59,13 @@ error_page::Error ProbeError(error_page::DnsProbeStatus status) {
 }
 
 error_page::Error NetErrorForURL(net::Error net_error, const GURL& url) {
-  return error_page::Error::NetError(url, net_error,
+  return error_page::Error::NetError(url, net_error, 0 /* extended_reason */,
                                      net::ResolveErrorInfo(net::OK), false);
 }
 
 error_page::Error NetError(net::Error net_error) {
   return error_page::Error::NetError(GURL(kFailedUrl), net_error,
+                                     0 /* extended_reason */,
                                      net::ResolveErrorInfo(net::OK), false);
 }
 

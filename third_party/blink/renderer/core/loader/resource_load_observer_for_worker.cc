@@ -4,14 +4,13 @@
 
 #include "third_party/blink/renderer/core/loader/resource_load_observer_for_worker.h"
 
-#include "third_party/blink/public/platform/web_mixed_content.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/mixed_content.h"
 
 namespace blink {
 
@@ -31,15 +30,16 @@ void ResourceLoadObserverForWorker::DidStartRequest(const FetchParameters&,
                                                     ResourceType) {}
 
 void ResourceLoadObserverForWorker::WillSendRequest(
-    uint64_t identifier,
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     ResourceType resource_type,
-    const FetchInitiatorInfo& initiator_info) {
+    const FetchInitiatorInfo& initiator_info,
+    RenderBlockingBehavior render_blocking_behavior) {
   probe::WillSendRequest(
-      probe_, identifier, nullptr,
+      probe_, nullptr,
       fetcher_properties_->GetFetchClientSettingsObject().GlobalObjectUrl(),
-      request, redirect_response, initiator_info, resource_type);
+      request, redirect_response, initiator_info, resource_type,
+      render_blocking_behavior);
 }
 
 void ResourceLoadObserverForWorker::DidChangePriority(
@@ -56,7 +56,7 @@ void ResourceLoadObserverForWorker::DidReceiveResponse(
   if (response.HasMajorCertificateErrors()) {
     MixedContentChecker::HandleCertificateError(
         response, request.GetRequestContext(),
-        WebMixedContent::CheckModeForPlugin::kLax,
+        MixedContent::CheckModeForPlugin::kLax,
         worker_fetch_context_->GetContentSecurityNotifier());
   }
   probe::DidReceiveResourceResponse(probe_, identifier, nullptr, response,

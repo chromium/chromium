@@ -66,7 +66,7 @@ bool ReadStringPayload(NtlmBufferReader* reader, std::string* str) {
 // Reads bytes from a payload and assigns them to a string16. This makes
 // no assumptions about the underlying encoding. This will fail if there
 // are an odd number of bytes in the payload.
-bool ReadString16Payload(NtlmBufferReader* reader, base::string16* str) {
+bool ReadString16Payload(NtlmBufferReader* reader, std::u16string* str) {
   SecurityBuffer sec_buf;
   if (!reader->ReadSecurityBuffer(&sec_buf) || (sec_buf.length % 2 != 0))
     return false;
@@ -81,9 +81,34 @@ bool ReadString16Payload(NtlmBufferReader* reader, base::string16* str) {
   }
 #endif
 
-  str->assign(reinterpret_cast<const base::char16*>(raw.data()),
-              raw.size() / 2);
+  str->assign(reinterpret_cast<const char16_t*>(raw.data()), raw.size() / 2);
   return true;
+}
+
+void MakeV2ChallengeMessage(size_t target_info_len, std::vector<uint8_t>* out) {
+  static const size_t kChallengeV2HeaderLen = 56;
+
+  // Leave room for the AV_PAIR header and the EOL pair.
+  size_t server_name_len = target_info_len - kAvPairHeaderLen * 2;
+
+  // See [MS-NLP] Section 2.2.1.2.
+  NtlmBufferWriter challenge(kChallengeV2HeaderLen + target_info_len);
+  ASSERT_TRUE(challenge.WriteMessageHeader(MessageType::kChallenge));
+  ASSERT_TRUE(
+      challenge.WriteSecurityBuffer(SecurityBuffer(0, 0)));  // target name
+  ASSERT_TRUE(challenge.WriteFlags(NegotiateFlags::kTargetInfo));
+  ASSERT_TRUE(challenge.WriteZeros(kChallengeLen));  // server challenge
+  ASSERT_TRUE(challenge.WriteZeros(8));              // reserved
+  ASSERT_TRUE(challenge.WriteSecurityBuffer(
+      SecurityBuffer(kChallengeV2HeaderLen, target_info_len)));  // target info
+  ASSERT_TRUE(challenge.WriteZeros(8));                          // version
+  ASSERT_EQ(kChallengeV2HeaderLen, challenge.GetCursor());
+  ASSERT_TRUE(challenge.WriteAvPair(
+      AvPair(TargetInfoAvId::kServerName,
+             std::vector<uint8_t>(server_name_len, 'a'))));
+  ASSERT_TRUE(challenge.WriteAvPairTerminator());
+  ASSERT_TRUE(challenge.IsEndOfBuffer());
+  *out = challenge.Pass();
 }
 
 }  // namespace
@@ -354,9 +379,9 @@ TEST(NtlmClientTest, ClientDoesNotDowngradeSessionSecurity) {
   ASSERT_EQ(0, memcmp(test::kExpectedNtlmResponseWithV1SS, actual_ntlm_response,
                       kResponseLenV1));
 
-  base::string16 domain;
-  base::string16 username;
-  base::string16 hostname;
+  std::u16string domain;
+  std::u16string username;
+  std::u16string hostname;
   ASSERT_TRUE(ReadString16Payload(&reader, &domain));
   ASSERT_EQ(test::kNtlmDomain, domain);
   ASSERT_TRUE(ReadString16Payload(&reader, &username));
@@ -426,6 +451,23 @@ TEST(NtlmClientTest,
             result.size());
   ASSERT_EQ(0, memcmp(test::kExpectedAuthenticateMsgToOldV1ChallegeV2,
                       result.data(), result.size()));
+}
+
+// When the challenge message's target info is maximum size, adding new AV_PAIRs
+// to the response will overflow SecurityBuffer. Test that we handle this.
+TEST(NtlmClientTest, AvPairsOverflow) {
+  {
+    NtlmClient client(NtlmFeatures(/*enable_NTLMv2=*/true));
+    std::vector<uint8_t> short_challenge;
+    ASSERT_NO_FATAL_FAILURE(MakeV2ChallengeMessage(0xfff, &short_challenge));
+    EXPECT_FALSE(GenerateAuthMsg(client, short_challenge).empty());
+  }
+  {
+    NtlmClient client(NtlmFeatures(/*enable_NTLMv2=*/true));
+    std::vector<uint8_t> long_challenge;
+    ASSERT_NO_FATAL_FAILURE(MakeV2ChallengeMessage(0xffff, &long_challenge));
+    EXPECT_TRUE(GenerateAuthMsg(client, long_challenge).empty());
+  }
 }
 
 }  // namespace ntlm

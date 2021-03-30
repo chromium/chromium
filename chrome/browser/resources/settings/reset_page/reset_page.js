@@ -9,8 +9,8 @@
  */
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import './reset_profile_dialog.js';
-import '../settings_page/settings_animated_pages.m.js';
-import '../settings_shared_css.m.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_shared_css.js';
 
 // <if expr="_google_chrome and is_win">
 import '../chrome_cleanup_page/chrome_cleanup_page.js';
@@ -23,7 +23,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 
 Polymer({

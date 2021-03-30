@@ -29,6 +29,19 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
     : public blink::mojom::DirectSocketsService,
       public WebContentsObserver {
  public:
+  // This enum is used to track how often each permission check cause
+  // Permission Denied failures.
+  enum class FailureType {
+    kPermissionsPolicy = 0,
+    kTransientActivation = 1,
+    kUserDialog = 2,
+    kResolvingToNonPublic = 3,
+    kRateLimiting = 4,
+    kCORS = 5,
+    kEnterprisePolicy = 6,
+    kMaxValue = kEnterprisePolicy,
+  };
+
   enum class ProtocolType { kTcp, kUdp };
 
   using PermissionCallback = base::RepeatingCallback<net::Error(
@@ -61,13 +74,14 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
+  static void SetEnterpriseManagedForTesting(bool enterprise_managed);
+
   static void SetPermissionCallbackForTesting(PermissionCallback callback);
 
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
-  static void PopulateLocalAddrForTesting(
-      const blink::mojom::DirectSocketOptions& options,
-      base::Optional<net::IPEndPoint>& local_addr);
+  static base::Optional<net::IPEndPoint> GetLocalAddrForTesting(
+      const blink::mojom::DirectSocketOptions& options);
 
  private:
   friend class DirectSocketsUnitTest;

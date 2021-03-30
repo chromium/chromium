@@ -10,10 +10,10 @@ namespace switches {
 // List of comma-separated sha256 hashes of executable files which the
 // download-protection service should treat as "dangerous."  For a file to
 // show a warning, it also must be considered a dangerous filetype and not
-// be whitelisted otherwise (by signature or URL) and must be on a supported
+// be allowlisted otherwise (by signature or URL) and must be on a supported
 // OS. Hashes are in hex. This is used for manual testing when looking
 // for ways to by-pass download protection.
-const char kSbManualDownloadBlacklist[] =
+const char kSbManualDownloadBlocklist[] =
     "safebrowsing-manual-download-blacklist";
 
 // Enable Safe Browsing Enhanced Protection.

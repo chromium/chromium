@@ -136,7 +136,7 @@ class DecryptingDemuxerStreamTest : public testing::Test {
   // function names. But for testing purpose, they all use an audio input
   // demuxer stream.
 
-  void Initialize() {
+  void Initialize(int audio_init_times = 1, int video_init_times = 1) {
     SetCdmType(CDM_WITH_DECRYPTOR);
     EXPECT_CALL(*cdm_context_, RegisterEventCB(_)).WillOnce([&](auto cb) {
       event_cb_ = cb;
@@ -146,10 +146,15 @@ class DecryptingDemuxerStreamTest : public testing::Test {
     AudioDecoderConfig input_config(kCodecVorbis, kSampleFormatPlanarF32,
                                     CHANNEL_LAYOUT_STEREO, 44100,
                                     EmptyExtraData(), EncryptionScheme::kCenc);
+
+    EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks")).Times(audio_init_times);
+    EXPECT_MEDIA_LOG(HasSubstr("kVideoTracks")).Times(video_init_times);
+
     InitializeAudioAndExpectStatus(input_config, PIPELINE_OK);
 
     const AudioDecoderConfig& output_config =
         demuxer_stream_->audio_decoder_config();
+
     EXPECT_EQ(DemuxerStream::AUDIO, demuxer_stream_->type());
     EXPECT_FALSE(output_config.is_encrypted());
     EXPECT_EQ(input_config.bits_per_channel(),
@@ -312,6 +317,8 @@ TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalVideo) {
   });
 
   VideoDecoderConfig input_config = TestVideoConfig::NormalEncrypted();
+  EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks"));
+  EXPECT_MEDIA_LOG(HasSubstr("kVideoTracks"));
   InitializeVideoAndExpectStatus(input_config, PIPELINE_OK);
 
   const VideoDecoderConfig& output_config =
@@ -332,6 +339,8 @@ TEST_F(DecryptingDemuxerStreamTest, Initialize_CdmWithoutDecryptor) {
   AudioDecoderConfig input_config(kCodecVorbis, kSampleFormatPlanarF32,
                                   CHANNEL_LAYOUT_STEREO, 44100,
                                   EmptyExtraData(), EncryptionScheme::kCenc);
+  EXPECT_MEDIA_LOG(HasSubstr("kAudioTracks"));
+  EXPECT_MEDIA_LOG(HasSubstr("kVideoTracks"));
   InitializeAudioAndExpectStatus(input_config, DECODER_ERROR_NOT_SUPPORTED);
 }
 
@@ -505,7 +514,7 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_DuringAbortedDemuxerRead) {
 
 // Test config change on the input demuxer stream.
 TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_ConfigChanged) {
-  Initialize();
+  Initialize(2, 2);
 
   AudioDecoderConfig new_config(kCodecVorbis, kSampleFormatPlanarF32,
                                 CHANNEL_LAYOUT_STEREO, 88200, EmptyExtraData(),
@@ -521,7 +530,7 @@ TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_ConfigChanged) {
 
 // Test resetting when waiting for a config changed read.
 TEST_F(DecryptingDemuxerStreamTest, Reset_DuringConfigChangedDemuxerRead) {
-  Initialize();
+  Initialize(2, 2);
   EnterPendingReadState();
 
   // Make sure we get a |kConfigChanged| instead of a |kAborted|.

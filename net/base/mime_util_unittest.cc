@@ -275,6 +275,7 @@ TEST(MimeUtilTest, TestIsValidTopLevelMimeType) {
   EXPECT_TRUE(IsValidTopLevelMimeType("application"));
   EXPECT_TRUE(IsValidTopLevelMimeType("audio"));
   EXPECT_TRUE(IsValidTopLevelMimeType("example"));
+  EXPECT_TRUE(IsValidTopLevelMimeType("font"));
   EXPECT_TRUE(IsValidTopLevelMimeType("image"));
   EXPECT_TRUE(IsValidTopLevelMimeType("message"));
   EXPECT_TRUE(IsValidTopLevelMimeType("model"));

@@ -87,6 +87,29 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_NoFillMiddleNotDrawable) {
   }
 }
 
+TEST_F(NinePieceImageGridTest, NinePieceImagePainting_EmptySidesNotDrawable) {
+  NinePieceImage nine_piece;
+  nine_piece.SetImage(GeneratedImage());
+  nine_piece.SetImageSlices(LengthBox(Length::Percent(49), Length::Percent(49),
+                                      Length::Percent(49),
+                                      Length::Percent(49)));
+
+  FloatSize image_size(6, 6);
+  IntRect border_image_area(0, 0, 6, 6);
+  IntRectOutsets border_widths(3, 3, 3, 3);
+
+  NinePieceImageGrid grid(nine_piece, image_size, FloatSize(1, 1), 1,
+                          border_image_area, border_widths);
+  for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
+    auto draw_info = grid.GetNinePieceDrawInfo(piece);
+    if (piece == kLeftPiece || piece == kRightPiece || piece == kTopPiece ||
+        piece == kBottomPiece || piece == kMiddlePiece)
+      EXPECT_FALSE(draw_info.is_drawable);
+    else
+      EXPECT_TRUE(draw_info.is_drawable);
+  }
+}
+
 TEST_F(NinePieceImageGridTest, NinePieceImagePainting_TopLeftDrawable) {
   NinePieceImage nine_piece;
   nine_piece.SetImage(GeneratedImage());

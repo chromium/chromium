@@ -34,11 +34,11 @@ const BackgroundTracingRule* FindReachedCodeRuleInConfig(
   return nullptr;
 }
 
-std::unique_ptr<BackgroundTracingConfigImpl> GetGpuConfig() {
+std::unique_ptr<BackgroundTracingConfigImpl> GetStartupConfig() {
   auto rules_dict = std::make_unique<base::DictionaryValue>();
   rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
   rules_dict->SetString("trigger_name", "test");
-  rules_dict->SetString("category", "BENCHMARK_GPU");
+  rules_dict->SetString("category", "BENCHMARK_STARTUP");
   base::DictionaryValue dict;
   auto rules_list = std::make_unique<base::ListValue>();
   rules_list->Append(std::move(rules_dict));
@@ -80,15 +80,15 @@ void TestReachedCodeRuleExists(const BackgroundTracingConfigImpl& config,
   }
 }
 
-void TestGpuConfigExists(const BackgroundTracingConfigImpl& config) {
-  bool found_gpu = false;
+void TestStartupConfigExists(const BackgroundTracingConfigImpl& config) {
+  bool found_startup = false;
   for (const auto& rule : config.rules()) {
     if (rule->category_preset() ==
-        BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_GPU) {
-      found_gpu = true;
+        BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP) {
+      found_startup = true;
     }
   }
-  EXPECT_TRUE(found_gpu);
+  EXPECT_TRUE(found_startup);
 }
 
 }  // namespace
@@ -106,9 +106,9 @@ TEST(BackgroundReachedCodeTracingObserverTest,
   EXPECT_FALSE(observer.enabled_in_current_session());
   EXPECT_FALSE(base::android::IsReachedCodeProfilerEnabled());
 
-  // A GPU config without preference set should not set preference and keep
+  // A startup config without preference set should not set preference and keep
   // config same.
-  config_impl = GetGpuConfig();
+  config_impl = GetStartupConfig();
   ASSERT_TRUE(config_impl);
 
   EXPECT_FALSE(base::android::IsReachedCodeProfilerEnabled());
@@ -118,7 +118,7 @@ TEST(BackgroundReachedCodeTracingObserverTest,
   EXPECT_FALSE(base::android::IsReachedCodeProfilerEnabled());
   EXPECT_EQ(1u, config_impl->rules().size());
   TestReachedCodeRuleExists(*config_impl, false);
-  TestGpuConfigExists(*config_impl);
+  TestStartupConfigExists(*config_impl);
 
   // A reached code config without profiler should stay config same.
   config_impl = GetReachedCodeConfig();
@@ -149,8 +149,8 @@ TEST(BackgroundReachedCodeTracingObserverTest,
             config_impl->tracing_mode());
   TestReachedCodeRuleExists(*config_impl, true);
 
-  // A GPU config with profiler on should not enabled reached code config.
-  config_impl = GetGpuConfig();
+  // A startup config with profiler on should not enabled reached code config.
+  config_impl = GetStartupConfig();
   config_impl =
       observer.IncludeReachedCodeConfigIfNeeded(std::move(config_impl));
   EXPECT_FALSE(observer.enabled_in_current_session());
@@ -161,7 +161,7 @@ TEST(BackgroundReachedCodeTracingObserverTest,
             config_impl->tracing_mode());
   TestReachedCodeRuleExists(*config_impl, false);
 
-  TestGpuConfigExists(*config_impl);
+  TestStartupConfigExists(*config_impl);
 }
 
 }  // namespace content

@@ -164,19 +164,18 @@ AuthenticatedLeakCheck::~AuthenticatedLeakCheck() = default;
 // static
 bool AuthenticatedLeakCheck::HasAccountForRequest(
     const signin::IdentityManager* identity_manager) {
-  // On desktop HasPrimaryAccount(signin::ConsentLevel::kNotRequired) will
+  // On desktop HasPrimaryAccount(signin::ConsentLevel::kSignin) will
   // always return something if the user is signed in.
   // On Android it will be empty if the user isn't syncing. Thus,
   // GetAccountsWithRefreshTokens() check is necessary.
   return identity_manager &&
-         (identity_manager->HasPrimaryAccount(
-              signin::ConsentLevel::kNotRequired) ||
+         (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
           !identity_manager->GetAccountsWithRefreshTokens().empty());
 }
 
 void AuthenticatedLeakCheck::Start(const GURL& url,
-                                   base::string16 username,
-                                   base::string16 password) {
+                                   std::u16string username,
+                                   std::u16string password) {
   DCHECK(payload_helper_);
   DCHECK(!request_);
 

@@ -30,7 +30,6 @@ class PaginationModel;
 class PowerPrefs;
 class ScreenPositionController;
 class Shell;
-class SystemGestureEventFilter;
 class WorkspaceController;
 
 // Accesses private data from a Shell for testing.
@@ -44,8 +43,15 @@ class ASH_EXPORT ShellTestApi {
   // operation that we want to disable for most tests.
   static void SetTabletControllerUseScreenshotForTest(bool use_screenshot);
 
+  // `SessionStateNotificationBlocker` adds a 6 second delays for showing all
+  // non system component notifications after login. This behavior can cause
+  // tests that expect to generate a notification to fail so should be disabled
+  // for most tests. If a test deals specifically with this delay and needs to
+  // set this to enabled, the test is responsible for setting it back to
+  // disabled to prevent failing subsequent tests.
+  static void SetUseLoginNotificationDelayForTest(bool use_delay);
+
   MessageCenterController* message_center_controller();
-  SystemGestureEventFilter* system_gesture_event_filter();
   WorkspaceController* workspace_controller();
   ScreenPositionController* screen_position_controller();
   NativeCursorManagerAsh* native_cursor_manager_ash();
@@ -66,10 +72,8 @@ class ASH_EXPORT ShellTestApi {
 
   // Enables or disables the tablet mode. TabletMode switch can be
   // asynchronous, and this will wait until the transition is complete
-  // by default. Set |wait_for_completion| to false if you do not want
-  // to wait.
-  void SetTabletModeEnabledForTest(bool enable,
-                                   bool wait_for_completion = true);
+  // by default.
+  void SetTabletModeEnabledForTest(bool enable);
 
   // Enables the keyboard and associates it with the primary root window
   // controller. In tablet mode, enables the virtual keyboard.
@@ -78,9 +82,6 @@ class ASH_EXPORT ShellTestApi {
   // Fullscreens the active window, as if the user had pressed the hardware
   // fullscreen button.
   void ToggleFullscreen();
-
-  // Returns true if it is in overview selecting mode.
-  bool IsOverviewSelecting();
 
   // Used to emulate display change when run in a desktop environment instead
   // of on a device.
@@ -121,9 +122,9 @@ class ASH_EXPORT ShellTestApi {
   // It returns nullptr when app-list is not shown.
   PaginationModel* GetAppListPaginationModel();
 
-  // Returns the list of windows used in overview item. Returns empty
-  // if not in the overview mode.
-  std::vector<aura::Window*> GetItemWindowListInOverviewGrids();
+  // Returns true if the context menu associated with the primary root window is
+  // shown.
+  bool IsContextMenuShown() const;
 
  private:
   Shell* shell_;  // not owned

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import android.util.ArraySet;
 import android.util.SparseArray;
 
 import androidx.test.filters.SmallTest;
@@ -17,7 +18,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -380,7 +380,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisabledTest(message = "https://crbug.com/1128298")
     public void rejectCacheIfSubtypesAreMalformed() {
         List<AutocompleteMatch> list = Arrays.asList(
                 createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
@@ -396,7 +395,8 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
         // Insert garbage for the Suggestion Subtypes.
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
-        final Set<String> garbageSubtypes = Set.of("invalid");
+        final Set<String> garbageSubtypes = new ArraySet<>();
+        garbageSubtypes.add("invalid");
         manager.writeStringSet(
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX.createKey(1),
                 garbageSubtypes);
@@ -408,7 +408,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisabledTest(message = "https://crbug.com/1128298")
     public void rejectCacheIfSubtypesIncludeNull() {
         List<AutocompleteMatch> list = Arrays.asList(
                 createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
@@ -419,7 +418,8 @@ public class CachedZeroSuggestionsManagerUnitTest {
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
 
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
-        final Set<String> garbageSubtypes = Set.of("null");
+        final Set<String> garbageSubtypes = new ArraySet<>();
+        garbageSubtypes.add("null");
         manager.writeStringSet(
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX.createKey(0),
                 garbageSubtypes);

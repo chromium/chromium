@@ -106,12 +106,6 @@ void DamageTracker::UpdateDamageTracking(LayerTreeImpl* layer_tree_impl) {
     render_surface->damage_tracker()->PrepareForUpdate();
   }
 
-  // A vector of surfaces paired with each's surface rect in target space, used
-  // for potential optimization with caching when no damage from under a surface
-  // intersects its rect.
-  std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>
-      surfaces_with_no_damage_under;
-
   EffectTree& effect_tree = layer_tree_impl->property_trees()->effect_tree;
   int current_target_effect_id = EffectTree::kContentsRootNodeId;
   DCHECK(effect_tree.GetRenderSurface(current_target_effect_id));
@@ -132,11 +126,10 @@ void DamageTracker::UpdateDamageTracking(LayerTreeImpl* layer_tree_impl) {
         // in draw order.
         RenderSurfaceImpl* current_target =
             effect_tree.GetRenderSurface(current_target_effect_id);
-        current_target->damage_tracker()->ComputeSurfaceDamage(
-            current_target, surfaces_with_no_damage_under);
+        current_target->damage_tracker()->ComputeSurfaceDamage(current_target);
         RenderSurfaceImpl* parent_target = current_target->render_target();
         parent_target->damage_tracker()->AccumulateDamageFromRenderSurface(
-            current_target, surfaces_with_no_damage_under);
+            current_target);
         current_target_effect_id =
             effect_tree.Node(current_target_effect_id)->target_id;
       }
@@ -157,23 +150,17 @@ void DamageTracker::UpdateDamageTracking(LayerTreeImpl* layer_tree_impl) {
   RenderSurfaceImpl* current_target =
       effect_tree.GetRenderSurface(current_target_effect_id);
   while (true) {
-    current_target->damage_tracker()->ComputeSurfaceDamage(
-        current_target, surfaces_with_no_damage_under);
+    current_target->damage_tracker()->ComputeSurfaceDamage(current_target);
     if (current_target->EffectTreeIndex() == EffectTree::kContentsRootNodeId)
       break;
     RenderSurfaceImpl* next_target = current_target->render_target();
     next_target->damage_tracker()->AccumulateDamageFromRenderSurface(
-        current_target, surfaces_with_no_damage_under);
+        current_target);
     current_target = next_target;
   }
-
-  DCHECK(surfaces_with_no_damage_under.empty());
 }
 
-void DamageTracker::ComputeSurfaceDamage(
-    RenderSurfaceImpl* render_surface,
-    std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>&
-        surfaces_with_no_damage_under) {
+void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
   // All damage from contributing layers and surfaces must already have been
   // added to damage_for_this_update_ through calls to AccumulateDamageFromLayer
   // and AccumulateDamageFromRenderSurface.
@@ -185,6 +172,35 @@ void DamageTracker::ComputeSurfaceDamage(
   // True if any layer is removed.
   has_damage_from_contributing_content_ |=
       !damage_from_leftover_rects.IsEmpty();
+
+  gfx::Rect expanded_damage_rect;
+  bool valid = damage_from_leftover_rects.GetAsRect(&expanded_damage_rect);
+  bool expanded = false;
+  // Iterate through the surfaces rendering to the current target back to
+  // front, intersect their surface rects with the damage from leftover rects.
+  // Update surfaces' |intersects_damage_under| flags accordingly and expand the
+  // damage by surface rects for surfaces with pixel-moving backdrop filters
+  // when appropriate.
+  for (auto& contributing_surface : contributing_surfaces_) {
+    RenderSurfaceImpl* surface = contributing_surface.render_surface;
+    bool has_pixel_moving_backdrop_filters =
+        surface->BackdropFilters().HasFilterThatMovesPixels();
+    if (!surface->intersects_damage_under() ||
+        has_pixel_moving_backdrop_filters) {
+      if (!valid || contributing_surface.rect_in_target_space.Intersects(
+                        expanded_damage_rect)) {
+        surface->set_intersects_damage_under(true);
+        if (has_pixel_moving_backdrop_filters) {
+          expanded_damage_rect.Union(contributing_surface.rect_in_target_space);
+          expanded = true;
+        }
+      }
+    }
+  }
+  if (expanded)
+    damage_for_this_update_.Union(expanded_damage_rect);
+
+  contributing_surfaces_.clear();
 
   if (render_surface->SurfacePropertyChangedOnlyFromDescendant()) {
     damage_for_this_update_ = DamageAccumulator();
@@ -209,24 +225,6 @@ void DamageTracker::ComputeSurfaceDamage(
   // Damage accumulates until we are notified that we actually did draw on that
   // frame.
   current_damage_.Union(damage_for_this_update_);
-
-  if (!surfaces_with_no_damage_under.empty()) {
-    gfx::Rect leftover_damage_rect;
-    bool valid = damage_from_leftover_rects.GetAsRect(&leftover_damage_rect);
-    auto rit = surfaces_with_no_damage_under.rbegin();
-    while (rit != surfaces_with_no_damage_under.rend()) {
-      RenderSurfaceImpl* surface = rit->first;
-      if (surface->render_target() == render_surface) {
-        surface->set_intersects_damage_under(
-            !valid || rit->second.Intersects(leftover_damage_rect));
-        ++rit;
-      } else {
-        break;
-      }
-    }
-    surfaces_with_no_damage_under.erase(rit.base(),
-                                        surfaces_with_no_damage_under.end());
-  }
 }
 
 bool DamageTracker::GetDamageRectIfValid(gfx::Rect* rect) {
@@ -269,6 +267,7 @@ void DamageTracker::PrepareForUpdate() {
   mailboxId_++;
   damage_for_this_update_ = DamageAccumulator();
   has_damage_from_contributing_content_ = false;
+  contributing_surfaces_.clear();
 }
 
 DamageTracker::DamageAccumulator DamageTracker::TrackDamageFromLeftoverRects() {
@@ -410,9 +409,7 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
 }
 
 void DamageTracker::AccumulateDamageFromRenderSurface(
-    RenderSurfaceImpl* render_surface,
-    std::vector<std::pair<RenderSurfaceImpl*, gfx::Rect>>&
-        surfaces_with_no_damage_under) {
+    RenderSurfaceImpl* render_surface) {
   // There are two ways a "descendant surface" can damage regions of the "target
   // surface":
   //   1. Property change:
@@ -436,6 +433,20 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
   gfx::Rect surface_rect_in_target_space =
       gfx::ToEnclosingRect(render_surface->DrawableContentRect());
   data.Update(surface_rect_in_target_space, mailboxId_);
+  contributing_surfaces_.emplace_back(render_surface,
+                                      surface_rect_in_target_space);
+
+  // If the render surface has pixel-moving backdrop filters and the surface
+  // rect intersects current accumulated damage, expand the damage by surface
+  // rect.
+  gfx::Rect damage_on_target;
+  bool valid = damage_for_this_update_.GetAsRect(&damage_on_target);
+  bool intersects_damage_under =
+      !valid || damage_on_target.Intersects(surface_rect_in_target_space);
+  if (render_surface->BackdropFilters().HasFilterThatMovesPixels() &&
+      intersects_damage_under) {
+    damage_for_this_update_.Union(surface_rect_in_target_space);
+  }
 
   if (surface_is_new || render_surface->SurfacePropertyChanged()) {
     // The entire surface contributes damage.
@@ -443,17 +454,8 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
 
     // The surface's old region is now exposed on the target surface, too.
     damage_for_this_update_.Union(old_surface_rect);
-    render_surface->set_intersects_damage_under(true);
+    intersects_damage_under = true;
   } else {
-    // Check if current accumulated damage intersects the render surface.
-    gfx::Rect damage_on_target;
-    bool valid = damage_for_this_update_.GetAsRect(&damage_on_target);
-    if (valid && !damage_on_target.Intersects(surface_rect_in_target_space)) {
-      surfaces_with_no_damage_under.emplace_back(
-          std::make_pair(render_surface, surface_rect_in_target_space));
-    } else {
-      render_surface->set_intersects_damage_under(true);
-    }
     // Only the surface's damage_rect will damage the target surface.
     gfx::Rect damage_rect_in_local_space;
     bool is_valid_rect = render_surface->damage_tracker()->GetDamageRectIfValid(
@@ -472,6 +474,7 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
     }
   }
 
+  render_surface->set_intersects_damage_under(intersects_damage_under);
   // True if any changes from contributing render surface.
   has_damage_from_contributing_content_ |= !damage_for_this_update_.IsEmpty();
 }

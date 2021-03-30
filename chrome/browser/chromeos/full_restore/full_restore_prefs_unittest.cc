@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
+
 #include "ash/public/cpp/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -20,8 +21,7 @@ namespace full_restore {
 class FullRestorePrefsTest : public testing::Test {
  public:
   FullRestorePrefsTest()
-      : user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
@@ -33,7 +33,7 @@ class FullRestorePrefsTest : public testing::Test {
   }
 
   FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+    return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
@@ -82,7 +82,7 @@ TEST_F(FullRestorePrefsTest, UpgradingFromNotRestore) {
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
 }
 
-// When a new Chrome OS user, set 'always restore' as the default value if the
+// For a new Chrome OS user, set 'always restore' as the default value if the
 // browser setting is 'continue where you left off'.
 TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
   GetFakeUserManager()->set_current_user_new(true);
@@ -100,7 +100,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
   EXPECT_EQ(RestoreOption::kAlways, GetRestoreOption());
 }
 
-// When a new Chrome OS user, set 'ask every time' as the default value if the
+// For a new Chrome OS user, set 'ask every time' as the default value if the
 // browser setting is 'new tab'.
 TEST_F(FullRestorePrefsTest, NewChromeOSUserFromNotRestore) {
   GetFakeUserManager()->set_current_user_new(true);

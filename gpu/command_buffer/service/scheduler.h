@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -35,11 +36,17 @@ class SyncPointManager;
 struct GpuPreferences;
 
 class GPU_EXPORT Scheduler {
+  // A callback to be used for reporting when the task is ready to run (when the
+  // dependencies have been solved).
+  using ReportingCallback =
+      base::OnceCallback<void(base::TimeTicks task_ready)>;
+
  public:
   struct GPU_EXPORT Task {
     Task(SequenceId sequence_id,
          base::OnceClosure closure,
-         std::vector<SyncToken> sync_token_fences);
+         std::vector<SyncToken> sync_token_fences,
+         ReportingCallback report_callback = ReportingCallback());
     Task(Task&& other);
     ~Task();
     Task& operator=(Task&& other);
@@ -47,6 +54,7 @@ class GPU_EXPORT Scheduler {
     SequenceId sequence_id;
     base::OnceClosure closure;
     std::vector<SyncToken> sync_token_fences;
+    ReportingCallback report_callback;
   };
 
   Scheduler(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -169,6 +177,14 @@ class GPU_EXPORT Scheduler {
     // Update cached scheduling priority while running.
     void UpdateRunningPriority();
 
+    // The time delta it took for the front task's dependencies to be completed.
+    base::TimeDelta FrontTaskWaitingDependencyDelta();
+
+    // The delay between when the front task was ready to run (no more
+    // dependencies) and now. This is used when the task is actually started to
+    // check for low scheduling delays.
+    base::TimeDelta FrontTaskSchedulingDelay();
+
     // Returns the next order number and closure. Sets running state to RUNNING.
     uint32_t BeginTask(base::OnceClosure* closure);
 
@@ -177,11 +193,16 @@ class GPU_EXPORT Scheduler {
     void FinishTask();
 
     // Enqueues a task in the sequence and returns the generated order number.
-    uint32_t ScheduleTask(base::OnceClosure closure);
+    uint32_t ScheduleTask(base::OnceClosure closure,
+                          ReportingCallback report_callback);
 
     // Continue running the current task with the given closure. Must be called
     // in between |BeginTask| and |FinishTask|.
     void ContinueTask(base::OnceClosure closure);
+
+    // Sets the first dependency added time on the last task if it wasn't
+    // already set, no-op otherwise.
+    void SetLastTaskFirstDependencyTimeIfNeeded();
 
     // Add a sync token fence that this sequence should wait on.
     void AddWaitFence(const SyncToken& sync_token,
@@ -229,12 +250,20 @@ class GPU_EXPORT Scheduler {
 
     struct Task {
       Task(Task&& other);
-      Task(base::OnceClosure closure, uint32_t order_num);
+      Task(base::OnceClosure closure,
+           uint32_t order_num,
+           ReportingCallback report_callback);
       ~Task();
       Task& operator=(Task&& other);
 
       base::OnceClosure closure;
       uint32_t order_num;
+
+      ReportingCallback report_callback;
+      // Note: this time is only correct once the last fence has been removed,
+      // as it is updated for all fences.
+      base::TimeTicks running_ready = base::TimeTicks::Now();
+      base::TimeTicks first_dependency_added;
     };
 
     // Description of Stream priority propagation: Each Stream has an initial
@@ -348,6 +377,9 @@ class GPU_EXPORT Scheduler {
   const bool blocked_time_collection_enabled_;
 
   base::ThreadChecker thread_checker_;
+
+  // Indicate when the next task run was scheduled
+  base::TimeTicks run_next_task_scheduled_;
 
   // Invalidated on main thread.
   base::WeakPtr<Scheduler> weak_ptr_;

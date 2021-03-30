@@ -141,13 +141,16 @@ UIView* WebStateDelegateBridge::GetWebViewContainer(WebState* source) {
 void WebStateDelegateBridge::ContextMenuConfiguration(
     WebState* source,
     const ContextMenuParams& params,
+    UIContextMenuContentPreviewProvider preview_provider,
     void (^completion_handler)(UIContextMenuConfiguration*))
     API_AVAILABLE(ios(13.0)) {
   if ([delegate_ respondsToSelector:@selector
                  (webState:
-                     contextMenuConfigurationForParams:completionHandler:)]) {
+                     contextMenuConfigurationForParams:previewProvider
+                                                      :completionHandler:)]) {
     [delegate_ webState:source
         contextMenuConfigurationForParams:params
+                          previewProvider:preview_provider
                         completionHandler:completion_handler];
   } else {
     completion_handler(nil);
@@ -184,6 +187,14 @@ void WebStateDelegateBridge::ContextMenuWillPresent(WebState* source,
                  (webState:contextMenuWillPresentForLinkWithURL:)]) {
     [delegate_ webState:source contextMenuWillPresentForLinkWithURL:link_url];
   }
+}
+
+id<CRWResponderInputView> WebStateDelegateBridge::GetResponderInputView(
+    WebState* source) {
+  if ([delegate_ respondsToSelector:@selector(webStateInputViewProvider:)]) {
+    return [delegate_ webStateInputViewProvider:source];
+  }
+  return nil;
 }
 
 }  // web

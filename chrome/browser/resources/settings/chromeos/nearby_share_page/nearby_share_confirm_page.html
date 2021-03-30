@@ -83,19 +83,17 @@
       <div id="centerContent" slot="content">
         <div id="processRow">
           <div id="processRowContent">
-            <!-- nearby-progress is used with progress=0 to disable progress 
-                 ring and animation -->
             <nearby-progress id="progressIcon"
                 share-target="[[shareTarget]]"
-                has-error="[[errorTitle_]]"
-                progress="0">
+                has-error="[[errorTitle_]]">
             </nearby-progress>
             <div id="connectionToken" aria-live="polite">
               <template is="dom-if" if="[[connectionToken]]">
                 [[i18n('nearbyShareSecureConnectionId', connectionToken)]]
               </template>
             </div>
-            <nearby-preview payload-preview="[[shareTarget.payloadPreview]]">
+            <nearby-preview payload-preview="[[shareTarget.payloadPreview]]"
+                disabled="[[errorTitle_]]">
             </nearby-preview>
           </div>
         </div>

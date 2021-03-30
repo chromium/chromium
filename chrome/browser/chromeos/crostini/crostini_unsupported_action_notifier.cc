@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/aura_constants.h"
@@ -189,7 +189,7 @@ CrostiniUnsupportedActionNotifier::Delegate::GetLocalizedDisplayName(
 }
 
 int CrostiniUnsupportedActionNotifier::Delegate::ToastTimeoutMs() {
-  auto* manager = chromeos::MagnificationManager::Get();
+  auto* manager = ash::MagnificationManager::Get();
   if (manager &&
       (manager->IsMagnifierEnabled() || manager->IsDockedMagnifierEnabled())) {
     return 60 * 1000;

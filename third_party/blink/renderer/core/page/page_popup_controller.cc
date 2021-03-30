@@ -49,7 +49,7 @@ PagePopupController* PagePopupController::From(Page& page) {
 PagePopupController::PagePopupController(Page& page,
                                          PagePopup& popup,
                                          PagePopupClient* client)
-    : popup_(popup), popup_client_(client) {
+    : Supplement(page), popup_(popup), popup_client_(client) {
   DCHECK(client);
   ProvideTo(page, this);
 }

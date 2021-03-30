@@ -59,6 +59,7 @@ std::unique_ptr<TileService> CreateTileService(
     const std::string& country_code,
     const std::string& api_key,
     const std::string& client_version,
+    const std::string& default_server_url,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service) {
   // Create image loader.
@@ -87,9 +88,9 @@ std::unique_ptr<TileService> CreateTileService(
 
   // Create fetcher.
   auto tile_fetcher = TileFetcher::Create(
-      TileConfig::GetQueryTilesServerUrl(), country_code, accepted_language,
-      api_key, TileConfig::GetExperimentTag(), client_version,
-      url_loader_factory);
+      TileConfig::GetQueryTilesServerUrl(default_server_url, false),
+      country_code, accepted_language, api_key, TileConfig::GetExperimentTag(),
+      client_version, url_loader_factory);
 
   // Wrap background task scheduler.
   auto policy = std::make_unique<net::BackoffEntry::Policy>();

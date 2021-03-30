@@ -62,14 +62,10 @@ DownloadFilePicker::DownloadFilePicker(DownloadItem* item,
       web_contents ? platform_util::GetTopLevel(web_contents->GetNativeView())
                    : gfx::kNullNativeWindow;
 
-  select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE,
-                                  base::string16(),
-                                  suggested_path_,
-                                  &file_type_info,
-                                  0,
-                                  base::FilePath::StringType(),
-                                  owning_window,
-                                  NULL);
+  select_file_dialog_->SelectFile(
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
+      suggested_path_, &file_type_info, 0, base::FilePath::StringType(),
+      owning_window, NULL);
 }
 
 DownloadFilePicker::~DownloadFilePicker() {

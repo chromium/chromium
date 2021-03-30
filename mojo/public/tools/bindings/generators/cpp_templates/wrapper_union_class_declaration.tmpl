@@ -92,8 +92,7 @@ class {{export_attribute}} {{union.name}} {
   static bool DeserializeFromMessage(mojo::Message input,
                                      UserType* output) {
     return mojo::internal::DeserializeImpl<{{union.name}}::DataView>(
-        input.payload(), input.payload_num_bytes(),
-        std::move(*input.mutable_handles()), output, Validate);
+        input, input.payload(), input.payload_num_bytes(), output, Validate);
   }
 
  private:

@@ -63,7 +63,7 @@ class PRINTING_EXPORT PrintingContextAndroid : public PrintingContext {
   Result UpdatePrinterSettings(bool external_preview,
                                bool show_system_dialog,
                                int page_count) override;
-  Result NewDocument(const base::string16& document_name) override;
+  Result NewDocument(const std::u16string& document_name) override;
   Result NewPage() override;
   Result PageDone() override;
   Result DocumentDone() override;

@@ -30,7 +30,7 @@ def ComputePythonDependencies():
   src/. The paths will be relative to the current directory.
   """
   module_paths = (m.__file__ for m in sys.modules.values()
-                  if m and hasattr(m, '__file__'))
+                  if m and hasattr(m, '__file__') and m.__file__)
 
   src_paths = set()
   for path in module_paths:
@@ -58,8 +58,8 @@ def _NormalizeCommandLine(options):
     args.extend(('--output', os.path.relpath(options.output, _SRC_ROOT)))
   if options.gn_paths:
     args.extend(('--gn-paths',))
-  for whitelist in sorted(options.whitelists):
-    args.extend(('--whitelist', os.path.relpath(whitelist, _SRC_ROOT)))
+  for allowlist in sorted(options.allowlists):
+    args.extend(('--allowlist', os.path.relpath(allowlist, _SRC_ROOT)))
   args.append(os.path.relpath(options.module, _SRC_ROOT))
   return ' '.join(pipes.quote(x) for x in args)
 
@@ -136,8 +136,10 @@ def main():
                       help='Write paths as //foo/bar/baz.py')
   parser.add_argument('--did-relaunch', action='store_true',
                       help=argparse.SUPPRESS)
-  parser.add_argument('--whitelist', default=[], action='append',
-                      dest='whitelists',
+  parser.add_argument('--allowlist',
+                      default=[],
+                      action='append',
+                      dest='allowlists',
                       help='Recursively include all non-test python files '
                       'within this directory. May be specified multiple times.')
   options = parser.parse_args()
@@ -193,7 +195,7 @@ def main():
     sys.stderr.write('python={}\n'.format(sys.executable))
     raise
 
-  for path in options.whitelists:
+  for path in options.allowlists:
     paths_set.update(
         os.path.abspath(p)
         for p in _FindPythonInDirectory(path, allow_test=False))

@@ -24,6 +24,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 class SystemTrayNotifier;
+enum class ParentCodeValidationResult;
 enum class SupervisedAction;
 
 // LoginScreenController implements LoginScreen and wraps the LoginScreenClient
@@ -68,9 +69,10 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   void AuthenticateUserWithEasyUnlock(const AccountId& account_id);
   void AuthenticateUserWithChallengeResponse(const AccountId& account_id,
                                              OnAuthenticateCallback callback);
-  bool ValidateParentAccessCode(const AccountId& account_id,
-                                base::Time validation_time,
-                                const std::string& code);
+  ParentCodeValidationResult ValidateParentAccessCode(
+      const AccountId& account_id,
+      base::Time validation_time,
+      const std::string& code);
   bool GetSecurityTokenPinRequestCanceled() const;
   void HardlockPod(const AccountId& account_id);
   void OnFocusPod(const AccountId& account_id);
@@ -121,7 +123,7 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   void RequestSecurityTokenPin(SecurityTokenPinRequest request) override;
   void ClearSecurityTokenPinRequest() override;
-  bool SetLoginShelfGestureHandler(const base::string16& nudge_text,
+  bool SetLoginShelfGestureHandler(const std::u16string& nudge_text,
                                    const base::RepeatingClosure& fling_callback,
                                    base::OnceClosure exit_callback) override;
   void ClearLoginShelfGestureHandler() override;
@@ -135,6 +137,9 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   AuthenticationStage authentication_stage() const {
     return authentication_stage_;
   }
+
+  // Called when Login or Lock screen is destroyed.
+  void OnLockScreenDestroyed();
 
   LoginDataDispatcher* data_dispatcher() { return &login_data_dispatcher_; }
 

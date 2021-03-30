@@ -44,7 +44,7 @@
 
 namespace blink {
 
-class ContentSecurityPolicy;
+class PolicyContainer;
 
 // Extends blink::DocumentLoader to attach |extra_data_| to store data that can
 // be set/get via the WebDocumentLoader interface.
@@ -53,8 +53,9 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
  public:
   WebDocumentLoaderImpl(LocalFrame*,
                         WebNavigationType navigation_type,
-                        ContentSecurityPolicy*,
-                        std::unique_ptr<WebNavigationParams> navigation_params);
+                        std::unique_ptr<WebNavigationParams> navigation_params,
+                        std::unique_ptr<PolicyContainer> policy_container);
+  ~WebDocumentLoaderImpl() override;
 
   static WebDocumentLoaderImpl* FromDocumentLoader(DocumentLoader* loader) {
     return static_cast<WebDocumentLoaderImpl*>(loader);
@@ -75,6 +76,7 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   bool ReplacesCurrentHistoryItem() const override;
   WebNavigationType GetNavigationType() const override;
   ExtraData* GetExtraData() const override;
+  std::unique_ptr<ExtraData> TakeExtraData() override;
   void SetExtraData(std::unique_ptr<ExtraData>) override;
   void SetSubresourceFilter(WebDocumentSubresourceFilter*) override;
   void SetServiceWorkerNetworkProvider(
@@ -85,13 +87,12 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   bool HasBeenLoadedAsWebArchive() const override;
   PreviewsState GetPreviewsState() const override;
   WebArchiveInfo GetArchiveInfo() const override;
-  bool HadUserGesture() const override;
+  bool LastNavigationHadTransientUserActivation() const override;
   bool IsListingFtpDirectory() const override;
 
   void Trace(Visitor*) const override;
 
  private:
-  ~WebDocumentLoaderImpl() override;
   void DetachFromFrame(bool flush_microtask_queue) override;
 
   // Mutable because the const getters will magically sync these to the

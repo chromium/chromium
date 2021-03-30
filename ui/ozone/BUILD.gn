@@ -51,6 +51,7 @@ if (ozone_platform_wayland) {
   ozone_platforms += [ "wayland" ]
   ozone_platform_deps += [ "platform/wayland" ]
   ozone_platform_test_deps += [ "platform/wayland:wayland_unittests" ]
+  ozone_platform_ui_test_support_deps += [ "platform/wayland:ui_test_support" ]
 }
 
 if (ozone_platform_x11) {

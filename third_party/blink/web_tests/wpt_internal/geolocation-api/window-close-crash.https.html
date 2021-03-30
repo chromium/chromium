@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script>
+description("Tests the assertion that the GeolocationClient should not be updating<br>" +
+            "when the GeolocationController is destroyed.<br>" +
+            "See https://bugs.webkit.org/show_bug.cgi?id=52216");
+
+let otherWindow;
+
+function gotPosition(p)
+{
+    testPassed("Received Geoposition.");
+    otherWindow.close();
+    window.setTimeout(waitForWindowToClose, 0);
+}
+
+function waitForWindowToClose()
+{
+    if (!otherWindow.closed) {
+        window.setTimeout(waitForWindowToClose, 0);
+        return;
+    }
+    testPassed("Success - no crash!");
+    finishJSTest();
+}
+
+otherWindow = window.open("resources/window-close-popup.html");
+</script>
+</body>
+</html>

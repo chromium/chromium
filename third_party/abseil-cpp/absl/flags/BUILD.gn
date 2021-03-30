@@ -116,7 +116,10 @@ absl_source_set("reflection") {
 
 absl_source_set("flag_internal") {
   sources = [ "internal/flag.cc" ]
-  public = [ "internal/flag.h" ]
+  public = [
+    "internal/flag.h",
+    "internal/sequence_lock.h",
+  ]
   deps = [
     ":commandlineflag",
     ":commandlineflag_internal",

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -20,18 +21,17 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
@@ -147,7 +147,7 @@ class PowerPolicyBrowserTestBase : public DevicePolicyCrosBrowserTest {
  private:
   // Runs |closure| and waits for |profile|'s user policy to be updated as a
   // result.
-  void RunClosureAndWaitForUserPolicyUpdate(const base::Closure& closure,
+  void RunClosureAndWaitForUserPolicyUpdate(base::OnceClosure closure,
                                             Profile* profile);
 
   // Reloads user policy for |profile| from session manager client.
@@ -221,8 +221,8 @@ void PowerPolicyBrowserTestBase::StoreAndReloadUserPolicy() {
   // Reload user policy from session manager client and wait for the update to
   // take effect.
   RunClosureAndWaitForUserPolicyUpdate(
-      base::Bind(&PowerPolicyBrowserTestBase::ReloadUserPolicy,
-                 base::Unretained(this), browser()->profile()),
+      base::BindOnce(&PowerPolicyBrowserTestBase::ReloadUserPolicy,
+                     base::Unretained(this), browser()->profile()),
       browser()->profile());
 }
 
@@ -235,8 +235,8 @@ void PowerPolicyBrowserTestBase::
   // policy from session manager client and wait for a change in the login
   // profile's policy to be observed.
   RunClosureAndWaitForUserPolicyUpdate(
-      base::Bind(&PowerPolicyBrowserTestBase::RefreshDevicePolicy,
-                 base::Unretained(this)),
+      base::BindOnce(&PowerPolicyBrowserTestBase::RefreshDevicePolicy,
+                     base::Unretained(this)),
       profile);
 }
 
@@ -246,7 +246,7 @@ std::string PowerPolicyBrowserTestBase::GetDebugString(
 }
 
 void PowerPolicyBrowserTestBase::RunClosureAndWaitForUserPolicyUpdate(
-    const base::Closure& closure,
+    base::OnceClosure closure,
     Profile* profile) {
   base::RunLoop run_loop;
   MockPolicyServiceObserver observer;
@@ -257,7 +257,7 @@ void PowerPolicyBrowserTestBase::RunClosureAndWaitForUserPolicyUpdate(
       profile->GetProfilePolicyConnector()->policy_service();
   ASSERT_TRUE(policy_service);
   policy_service->AddObserver(POLICY_DOMAIN_CHROME, &observer);
-  closure.Run();
+  std::move(closure).Run();
   run_loop.Run();
   policy_service->RemoveObserver(POLICY_DOMAIN_CHROME, &observer);
 }

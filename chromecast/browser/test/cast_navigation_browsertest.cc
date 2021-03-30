@@ -39,7 +39,7 @@ class CastNavigationBrowserTest : public CastBrowserTest {
         NavigateToURL(GURL(url::kAboutBlankURL));
     content::TitleWatcher title_watcher(
         web_contents, base::ASCIIToUTF16(url::kAboutBlankURL));
-    base::string16 result = title_watcher.WaitAndGetTitle();
+    std::u16string result = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(url::kAboutBlankURL, base::UTF16ToASCII(result));
   }
   void PlayAudio(const std::string& media_file) {
@@ -83,7 +83,7 @@ class CastNavigationBrowserTest : public CastBrowserTest {
     title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kEnded));
     title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kError));
     title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kFailed));
-    base::string16 result = title_watcher.WaitAndGetTitle();
+    std::u16string result = title_watcher.WaitAndGetTitle();
     return base::UTF16ToASCII(result);
   }
 

@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, ReloadDoesntHang) {
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"),
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
                                                  base::NullCallback());
   runner->Run();
 
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WebContentsAddedObserver new_wc_observer;
   tab1->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16("window.open('about:blank');"), base::NullCallback());
+      u"window.open('about:blank');", base::NullCallback());
   content::WebContents* tab2 = new_wc_observer.GetWebContents();
   ASSERT_NE(tab1, tab2);
   ASSERT_EQ(tab1->GetMainFrame()->GetProcess(),
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   javascript_dialogs::TabModalDialogManager* js_helper2 =
       javascript_dialogs::TabModalDialogManager::FromWebContents(tab2);
   js_helper2->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab2->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"),
+  tab2->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
                                                   base::NullCallback());
   runner->Run();
 
@@ -132,16 +132,16 @@ class JavaScriptCallbackHelper {
   }
 
   bool last_success() { return last_success_; }
-  base::string16 last_input() { return last_input_; }
+  std::u16string last_input() { return last_input_; }
 
  private:
-  void DialogClosed(bool success, const base::string16& user_input) {
+  void DialogClosed(bool success, const std::u16string& user_input) {
     last_success_ = success;
     last_input_ = user_input;
   }
 
   bool last_success_;
-  base::string16 last_input_;
+  std::u16string last_input_;
 };
 
 // Tests to make sure HandleJavaScriptDialog works correctly.
@@ -157,45 +157,43 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, HandleJavaScriptDialog) {
   // alert
   bool did_suppress = false;
   js_helper->RunJavaScriptDialog(
-      tab, frame, content::JAVASCRIPT_DIALOG_TYPE_ALERT, base::string16(),
-      base::string16(), callback_helper.GetCallback(), &did_suppress);
+      tab, frame, content::JAVASCRIPT_DIALOG_TYPE_ALERT, std::u16string(),
+      std::u16string(), callback_helper.GetCallback(), &did_suppress);
   ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
   js_helper->HandleJavaScriptDialog(tab, true, nullptr);
   ASSERT_FALSE(js_helper->IsShowingDialogForTesting());
   ASSERT_TRUE(callback_helper.last_success());
-  ASSERT_EQ(base::string16(), callback_helper.last_input());
+  ASSERT_EQ(std::u16string(), callback_helper.last_input());
 
   // confirm
   for (auto response : {true, false}) {
     js_helper->RunJavaScriptDialog(
-        tab, frame, content::JAVASCRIPT_DIALOG_TYPE_CONFIRM, base::string16(),
-        base::string16(), callback_helper.GetCallback(), &did_suppress);
+        tab, frame, content::JAVASCRIPT_DIALOG_TYPE_CONFIRM, std::u16string(),
+        std::u16string(), callback_helper.GetCallback(), &did_suppress);
     ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
     js_helper->HandleJavaScriptDialog(tab, response, nullptr);
     ASSERT_FALSE(js_helper->IsShowingDialogForTesting());
     ASSERT_EQ(response, callback_helper.last_success());
-    ASSERT_EQ(base::string16(), callback_helper.last_input());
+    ASSERT_EQ(std::u16string(), callback_helper.last_input());
   }
 
   // prompt, cancel
-  js_helper->RunJavaScriptDialog(tab, frame,
-                                 content::JAVASCRIPT_DIALOG_TYPE_PROMPT,
-                                 base::ASCIIToUTF16("Label"), base::string16(),
-                                 callback_helper.GetCallback(), &did_suppress);
+  js_helper->RunJavaScriptDialog(
+      tab, frame, content::JAVASCRIPT_DIALOG_TYPE_PROMPT, u"Label",
+      std::u16string(), callback_helper.GetCallback(), &did_suppress);
   ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
   js_helper->HandleJavaScriptDialog(tab, false, nullptr);
   ASSERT_FALSE(js_helper->IsShowingDialogForTesting());
   ASSERT_FALSE(callback_helper.last_success());
-  ASSERT_EQ(base::string16(), callback_helper.last_input());
+  ASSERT_EQ(std::u16string(), callback_helper.last_input());
 
-  base::string16 value1 = base::ASCIIToUTF16("abc");
-  base::string16 value2 = base::ASCIIToUTF16("123");
+  std::u16string value1 = u"abc";
+  std::u16string value2 = u"123";
 
   // prompt, ok + override
-  js_helper->RunJavaScriptDialog(tab, frame,
-                                 content::JAVASCRIPT_DIALOG_TYPE_PROMPT,
-                                 base::ASCIIToUTF16("Label"), value1,
-                                 callback_helper.GetCallback(), &did_suppress);
+  js_helper->RunJavaScriptDialog(
+      tab, frame, content::JAVASCRIPT_DIALOG_TYPE_PROMPT, u"Label", value1,
+      callback_helper.GetCallback(), &did_suppress);
   ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
   js_helper->HandleJavaScriptDialog(tab, true, &value2);
   ASSERT_FALSE(js_helper->IsShowingDialogForTesting());
@@ -203,10 +201,9 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, HandleJavaScriptDialog) {
   ASSERT_EQ(value2, callback_helper.last_input());
 
   // prompt, ok + no override
-  js_helper->RunJavaScriptDialog(tab, frame,
-                                 content::JAVASCRIPT_DIALOG_TYPE_PROMPT,
-                                 base::ASCIIToUTF16("Label"), value1,
-                                 callback_helper.GetCallback(), &did_suppress);
+  js_helper->RunJavaScriptDialog(
+      tab, frame, content::JAVASCRIPT_DIALOG_TYPE_PROMPT, u"Label", value1,
+      callback_helper.GetCallback(), &did_suppress);
   ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
   js_helper->HandleJavaScriptDialog(tab, true, nullptr);
   ASSERT_FALSE(js_helper->IsShowingDialogForTesting());
@@ -228,12 +225,11 @@ class JavaScriptDialogDismissalCauseTester {
 
   void PopupDialog(content::JavaScriptDialogType type) {
     bool did_suppress = false;
-    js_helper_->RunJavaScriptDialog(
-        tab_, frame_, type, base::ASCIIToUTF16("Label"),
-        base::ASCIIToUTF16("abc"), {}, &did_suppress);
+    js_helper_->RunJavaScriptDialog(tab_, frame_, type, u"Label", u"abc", {},
+                                    &did_suppress);
   }
 
-  void ClickDialogButton(bool accept, const base::string16& user_input) {
+  void ClickDialogButton(bool accept, const std::u16string& user_input) {
     EXPECT_TRUE(js_helper_->IsShowingDialogForTesting());
     js_helper_->ClickDialogButtonForTesting(accept, user_input);
   }
@@ -243,7 +239,7 @@ class JavaScriptDialogDismissalCauseTester {
     EXPECT_TRUE(content::WaitForLoadStop(tab_));
   }
 
-  void CallHandleDialog(bool accept, const base::string16* prompt_override) {
+  void CallHandleDialog(bool accept, const std::u16string* prompt_override) {
     EXPECT_TRUE(js_helper_->IsShowingDialogForTesting());
     js_helper_->HandleJavaScriptDialog(tab_, accept, prompt_override);
   }
@@ -273,7 +269,7 @@ class JavaScriptDialogDismissalCauseTester {
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCausePromptAcceptButton) {
   JavaScriptDialogDismissalCauseTester tester(this);
   tester.PopupDialog(content::JAVASCRIPT_DIALOG_TYPE_PROMPT);
-  tester.ClickDialogButton(true, base::string16());
+  tester.ClickDialogButton(true, std::u16string());
   EXPECT_EQ(DismissalCause::kDialogButtonClicked,
             tester.GetLastDismissalCause());
 }
@@ -281,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCausePromptAcceptButton) {
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCausePromptCancelButton) {
   JavaScriptDialogDismissalCauseTester tester(this);
   tester.PopupDialog(content::JAVASCRIPT_DIALOG_TYPE_PROMPT);
-  tester.ClickDialogButton(false, base::string16());
+  tester.ClickDialogButton(false, std::u16string());
   EXPECT_EQ(DismissalCause::kDialogButtonClicked,
             tester.GetLastDismissalCause());
 }
@@ -367,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCauseUkm) {
 
   JavaScriptDialogDismissalCauseTester tester(this);
   tester.PopupDialog(content::JAVASCRIPT_DIALOG_TYPE_CONFIRM);
-  tester.ClickDialogButton(true, base::string16());
+  tester.ClickDialogButton(true, std::u16string());
 
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AbusiveExperienceHeuristic_JavaScriptDialog::kEntryName);

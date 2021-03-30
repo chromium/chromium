@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,9 +26,8 @@
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    UIView* contentView = self.contentView;
-    contentView.layer.cornerRadius = kGridCellCornerRadius;
-    contentView.layer.masksToBounds = YES;
+    self.layer.cornerRadius = kGridCellCornerRadius;
+    self.layer.masksToBounds = YES;
     UIImageView* plusSignView = [[UIImageView alloc]
         initWithImage:[UIImage imageNamed:@"grid_cell_plus_sign"]];
     [self.contentView addSubview:plusSignView];
@@ -34,6 +35,13 @@
     _plusSignView = plusSignView;
 
     AddSameCenterConstraints(plusSignView, self.contentView);
+
+    if (@available(iOS 13, *)) {
+      // TODO(crbug.com/981889): When iOS 12 is dropped, only the next line is
+      // needed for styling. Every other check can be sremoved, as well as the
+      // incognito specific assets.
+      self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    }
   }
   return self;
 }
@@ -64,34 +72,17 @@
       break;
   }
 
-  switch (theme) {
-    // This is necessary for iOS 13 because on iOS 13, this will return
-    // the dynamic color (which will then be colored with the user
-    // interface style).
-    // On iOS 12, this will always return the dynamic color in the light
-    // variant.
-    case GridThemeLight:
-      self.contentView.backgroundColor =
-          [UIColor colorNamed:kPlusSignCellBackgroundColor];
-      break;
-    // These dark-theme specific colorsets should only be used for iOS 12
-    // dark theme, as they will be removed along with iOS 12.
-    // TODO (crbug.com/981889): The following lines will be removed
-    // along with iOS 12
-    case GridThemeDark:
-      self.contentView.backgroundColor =
-          [UIColor colorNamed:kPlusSignCellBackgroundDarkColor];
-      break;
-  }
+  self.backgroundView = [[UIView alloc] init];
+  self.backgroundView.backgroundColor =
+      [UIColor colorNamed:kPlusSignCellBackgroundColor];
 
-  if (@available(iOS 13, *)) {
-    // When iOS 12 is dropped, only the next line is needed for styling.
-    // Every other check for |GridThemeDark| can be removed, as well as
-    // the dark theme specific assets.
-    self.overrideUserInterfaceStyle = (theme == GridThemeDark)
-                                          ? UIUserInterfaceStyleDark
-                                          : UIUserInterfaceStyleUnspecified;
-  }
+  // selectedBackgroundView is used for highlighting as well.
+  self.selectedBackgroundView = [[UIView alloc] init];
+  UIColor* highlightedBackgroundColor = color::DarkModeDynamicColor(
+      [UIColor colorNamed:kTertiaryBackgroundColor], /*forceDark=*/true,
+      [UIColor colorNamed:kTertiaryBackgroundDarkColor]);
+  self.selectedBackgroundView.backgroundColor = highlightedBackgroundColor;
+
   _theme = theme;
 }
 

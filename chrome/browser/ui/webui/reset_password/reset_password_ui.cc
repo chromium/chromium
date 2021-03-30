@@ -89,18 +89,21 @@ PasswordType GetPasswordType(content::WebContents* web_contents) {
   if (!nav_entry || !nav_entry->GetHasPostData())
     return PasswordType::PASSWORD_TYPE_UNKNOWN;
   auto& post_data = nav_entry->GetPostData()->elements()->at(0);
-  int post_data_int = -1;
-  if (base::StringToInt(std::string(post_data.bytes(), post_data.length()),
-                        &post_data_int)) {
-    return static_cast<PasswordType>(post_data_int);
+  if (post_data.type() == network::DataElement::Tag::kBytes) {
+    int post_data_int = -1;
+    if (base::StringToInt(
+            post_data.As<network::DataElementBytes>().AsStringPiece(),
+            &post_data_int)) {
+      return static_cast<PasswordType>(post_data_int);
+    }
   }
 
   return PasswordType::PASSWORD_TYPE_UNKNOWN;
 }
 
 // Properly format host name based on text direction.
-base::string16 GetFormattedHostName(const std::string host_name) {
-  base::string16 host = url_formatter::IDNToUnicode(host_name);
+std::u16string GetFormattedHostName(const std::string host_name) {
+  std::u16string host = url_formatter::IDNToUnicode(host_name);
   if (base::i18n::IsRTL())
     base::i18n::WrapStringWithLTRFormatting(&host);
   return host;
@@ -145,7 +148,7 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
   int heading_string_id = known_password_type
                               ? IDS_RESET_PASSWORD_WARNING_HEADING
                               : IDS_RESET_PASSWORD_HEADING;
-  base::string16 explanation_paragraph_string;
+  std::u16string explanation_paragraph_string;
   if (org_name.empty()) {
     explanation_paragraph_string = l10n_util::GetStringUTF16(
         known_password_type ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH
@@ -155,7 +158,7 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
                                   ? StringType::WARNING_NO_ORG_NAME
                                   : StringType::GENERIC_NO_ORG_NAME);
   } else {
-    base::string16 formatted_org_name = GetFormattedHostName(org_name);
+    std::u16string formatted_org_name = GetFormattedHostName(org_name);
     explanation_paragraph_string = l10n_util::GetStringFUTF16(
         known_password_type
             ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH_WITH_ORG_NAME

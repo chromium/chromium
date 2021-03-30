@@ -170,12 +170,21 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
  public:
   // Contains the result of the Install operation.
   struct Result {
+    Result() = default;
     explicit Result(int error, int extended_error = 0)
         : error(error), extended_error(extended_error) {}
     explicit Result(InstallError error, int extended_error = 0)
         : error(static_cast<int>(error)), extended_error(extended_error) {}
+
     int error = 0;  // 0 indicates that install has been successful.
     int extended_error = 0;
+
+    // Localized text displayed to the user, if applicable.
+    std::string installer_text;
+
+    // Shell command run at the end of the install, if applicable. This string
+    // must be escaped to be a command line.
+    std::string installer_cmd_line;
   };
 
   struct InstallParams {
@@ -276,7 +285,6 @@ struct CrxComponent {
 
   std::string fingerprint;  // Optional.
   std::string name;         // Optional.
-  std::vector<std::string> handled_mime_types;
 
   // Optional.
   // Valid values for the name part of an attribute match

@@ -177,7 +177,7 @@ void CrashesDOMHandler::UpdateUI() {
       ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
 
   bool system_crash_reporter = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Chrome OS has a system crash reporter.
   system_crash_reporter = true;
 #endif
@@ -198,7 +198,8 @@ void CrashesDOMHandler::UpdateUI() {
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
   if (identity_manager) {
     is_internal = gaia::IsGoogleInternalAccountEmail(
-        identity_manager->GetPrimaryAccountInfo().email);
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email);
   }
 
   // Manual uploads currently are supported only for Crashpad-using platforms

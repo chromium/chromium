@@ -56,7 +56,6 @@ component("chromeos") {
   deps = [
     ":ime_types",
     "//build:branding_buildflags",
-    "//chromeos/constants",
     "//chromeos/services/ime/public/mojom",
     "//chromeos/system",
     "//third_party/icu",

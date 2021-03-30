@@ -56,7 +56,7 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
   void EnqueueSecondaryCBSemaphores(
       std::vector<VkSemaphore> semaphores) override;
   void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) override;
-  uint32_t GetSyncCpuMemoryLimit() const override;
+  base::Optional<uint32_t> GetSyncCpuMemoryLimit() const override;
 
   VkDevice device() { return globals_->device_queue->GetVulkanDevice(); }
   VkQueue queue() { return globals_->device_queue->GetVulkanQueue(); }

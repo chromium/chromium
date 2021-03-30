@@ -1,0 +1,11 @@
+Test for chromium bug : 408066. ASSERTION FAILED: !extraRowSpanningHeight in blink::RenderTableSection::distributeRowSpanHeightToRows.
+	
+PASS
+r0c0
+
+r2c0
+	
+PASS
+r0c0	r0c1
+
+r2c0

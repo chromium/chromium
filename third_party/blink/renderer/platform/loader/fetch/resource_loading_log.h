@@ -9,7 +9,7 @@
 
 #if DCHECK_IS_ON()
 // We can see logs with |--v=N| or |--vmodule=ResourceLoadingLog=N| where N is a
-// verbose level.
+// verbose level, as well as the |--enable-logging=stderr| CLI argument.
 #define RESOURCE_LOADING_DVLOG(verbose_level) \
   LAZY_STREAM(                                \
       VLOG_STREAM(verbose_level),             \

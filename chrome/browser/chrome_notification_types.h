@@ -43,6 +43,7 @@ enum NotificationType {
   // Source<Browser> containing the affected Browser.  No details are
   // expected.
   // DEPRECATED: Use BrowserListObserver::OnBrowserAdded()
+  // TODO(https://crbug.com/1174776): Remove.
   NOTIFICATION_BROWSER_OPENED = NOTIFICATION_CHROME_START,
 
   // This message is sent when closing a browser has been cancelled, either by
@@ -51,16 +52,8 @@ enum NotificationType {
   // BROWSER_CLOSED notification will be sent.
   // The source is a Source<Browser> containing the affected browser. No details
   // are expected.
+  // TODO(https://crbug.com/1174777): Remove.
   NOTIFICATION_BROWSER_CLOSE_CANCELLED,
-
-  // Sent when the language (English, French...) for a page has been detected.
-  // The details Details<std::string> contain the ISO 639-1 language code and
-  // the source is Source<WebContents>.
-  NOTIFICATION_TAB_LANGUAGE_DETERMINED,
-
-  // The user has changed the browser theme. The source is a
-  // Source<ThemeService>. There are no details.
-  NOTIFICATION_BROWSER_THEME_CHANGED,
 
   // Application-wide ----------------------------------------------------------
 
@@ -69,12 +62,14 @@ enum NotificationType {
   // or the user closed the last browser window on Windows/Linux and there are
   // no BackgroundContents keeping the browser running). No source or details
   // are passed.
+  // TODO(https://crbug.com/1174781): Remove.
   NOTIFICATION_APP_TERMINATING,
 
 #if defined(OS_MAC)
   // This notification is sent when the app has no key window, such as when
   // all windows are closed but the app is still active. No source or details
   // are provided.
+  // TODO(https://crbug.com/1174783): Remove.
   NOTIFICATION_NO_KEY_WINDOW,
 #endif
 
@@ -87,6 +82,7 @@ enum NotificationType {
   // Note that receiving this notification does not necessarily mean the process
   // will exit because the shutdown process can be cancelled by an unload
   // handler.  Use APP_TERMINATING for such needs.
+  // TODO(https://crbug.com/1174784): Remove.
   NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
 
   // Authentication ----------------------------------------------------------
@@ -95,6 +91,7 @@ enum NotificationType {
   // Source<NavigationController> for the tab in which the prompt is shown.
   // Details are a LoginNotificationDetails which provide the LoginHandler
   // that should be given authentication.
+  // TODO(https://crbug.com/1174785): Remove.
   NOTIFICATION_AUTH_NEEDED,
 
   // This is sent when authentication credentials have been supplied (either
@@ -104,6 +101,7 @@ enum NotificationType {
   // Details are an AuthSuppliedLoginNotificationDetails which provide the
   // LoginHandler that should be given authentication as well as the supplied
   // username and password.
+  // TODO(https://crbug.com/1174785): Remove.
   NOTIFICATION_AUTH_SUPPLIED,
 
   // This is sent when an authentication request has been dismissed without
@@ -111,18 +109,16 @@ enum NotificationType {
   // The source is the Source<NavigationController> for the tab in which the
   // prompt was shown. Details are a LoginNotificationDetails which provide
   // the LoginHandler that should be cancelled.
+  // TODO(https://crbug.com/1174785): Remove.
   NOTIFICATION_AUTH_CANCELLED,
 
   // Profiles -----------------------------------------------------------------
 
-  // Sent after a Profile has been created. This notification is sent both for
-  // normal and OTR profiles.
-  // The details are none and the source is the new profile.
-  NOTIFICATION_PROFILE_CREATED,
-
   // Use ProfileManagerObserver::OnProfileAdded instead of this notification.
   // Sent after a Profile has been added to ProfileManager.
   // The details are none and the source is the new profile.
+  // TODO(https://crbug.com/1174720): Remove. See also
+  // https://crbug.com/1038437.
   NOTIFICATION_PROFILE_ADDED,
 
   // Printing ----------------------------------------------------------------
@@ -130,21 +126,20 @@ enum NotificationType {
   // Notification from PrintJob that an event occurred. It can be that a page
   // finished printing or that the print job failed. Details is
   // PrintJob::EventDetails. Source is a PrintJob.
+  // TODO(https://crbug.com/796051): Remove.
   NOTIFICATION_PRINT_JOB_EVENT,
 
   // Sent when a PrintJob has been released.
   // Source is the WebContents that holds the print job.
+  // TODO(https://crbug.com/1174788): Remove.
   NOTIFICATION_PRINT_JOB_RELEASED,
 
   // Misc --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Sent immediately after the logged-in user's profile is ready.
-  // The details are a Profile object.
-  NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-
   // Sent when a network error message is displayed on the WebUI login screen.
   // First paint event of this fires NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE.
+  // TODO(https://crbug.com/1174791): Remove.
   NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
 
   // Sent when the specific part of login/lock WebUI is considered to be
@@ -163,6 +158,7 @@ enum NotificationType {
   //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
   // 4. Boot into retail mode
   //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
+  // TODO(https://crbug.com/1174793): Remove.
   NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
 
   // Sent when the screen lock state has changed. The source is
@@ -170,23 +166,27 @@ enum NotificationType {
   // screen is locked. When details is a false, the source object
   // is being deleted, so the receiver shouldn't use the screen locker
   // object.
+  // TODO(https://crbug.com/1174796): Remove.
   NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
 #endif
 
 #if defined(TOOLKIT_VIEWS)
   // Notification that the nested loop using during tab dragging has returned.
   // Used for testing.
+  // TODO(https://crbug.com/1174797): Remove.
   NOTIFICATION_TAB_DRAG_LOOP_DONE,
 #endif
 
   // Sent when the applications in the NTP app launcher have been reordered.
   // The details, if not NoDetails, is the std::string ID of the extension that
   // was moved.
+  // TODO(https://crbug.com/1174798): Remove.
   NOTIFICATION_APP_LAUNCHER_REORDERED,
 
   // Sent when an app is installed and an NTP has been shown. Source is the
   // WebContents that was shown, and Details is the string ID of the extension
   // which was installed.
+  // TODO(https://crbug.com/1174799): Remove.
   NOTIFICATION_APP_INSTALLED_TO_NTP,
 
   // Note:-

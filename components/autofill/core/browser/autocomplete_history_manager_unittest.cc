@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -47,8 +49,11 @@ namespace {
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() : prefs_(test::PrefServiceForTesting()) {}
-  ~MockAutofillClient() override {}
-  PrefService* GetPrefs() override { return prefs_.get(); }
+  ~MockAutofillClient() override = default;
+  PrefService* GetPrefs() override {
+    return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  }
+  const PrefService* GetPrefs() const override { return prefs_.get(); }
 
  private:
   std::unique_ptr<PrefService> prefs_;
@@ -124,8 +129,8 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   }
 
   AutofillEntry GetAutofillEntry(
-      const base::string16& name,
-      const base::string16& value,
+      const std::u16string& name,
+      const std::u16string& value,
       const base::Time& date_created = AutofillClock::Now(),
       const base::Time& date_last_used = AutofillClock::Now()) {
     return AutofillEntry(AutofillKey(name, value), date_created,
@@ -471,6 +476,79 @@ TEST_F(AutocompleteHistoryManagerTest,
                                     testing::Truly(IsEmptySuggestionVector)));
 
   // Simulate response from DB.
+  autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
+                                                     std::move(mocked_results));
+}
+
+// Tests that no suggestions are queried if the field name is filtered because
+// it has a meaningless name.
+TEST_F(AutocompleteHistoryManagerTest,
+       DoQuerySuggestionsForMeaninglessFieldNames_FilterName) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      features::kAutocompleteFilterForMeaningfulNames);
+
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int test_query_id = 2;
+  auto test_name = ASCIIToUTF16("input_123");
+  auto test_prefix = ASCIIToUTF16("");
+
+  // Only expect a call when the name is not filtered out.
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_name, test_prefix, _,
+                                          autocomplete_manager_.get()))
+      .Times(0);
+
+  // Simulate request for suggestions.
+  autocomplete_manager_->OnGetAutocompleteSuggestions(
+      test_query_id, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
+      "Some Type", suggestions_handler->GetWeakPtr());
+
+  // Setting up mock to verify that DB response does not trigger a call to the
+  // handler's OnSuggestionsReturned.
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_query_id,
+                                    /*autoselect_first_suggestion=*/false, _))
+      .Times(0);
+}
+
+// Tests that the suggestions are queried if the field name is not filtered
+// because the field's name is meaningful.
+TEST_F(AutocompleteHistoryManagerTest,
+       DoQuerySuggestionsForMeaninglessFieldNames_PassName) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      features::kAutocompleteFilterForMeaningfulNames);
+
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int test_query_id = 2;
+  auto test_name = ASCIIToUTF16("addressline_1");
+  auto test_prefix = ASCIIToUTF16("");
+  int mocked_db_query_id = 100;
+
+  std::vector<AutofillEntry> expected_values;
+
+  std::unique_ptr<WDTypedResult> mocked_results =
+      GetMockedDbResults(expected_values);
+
+  // Expect a call because the name is not filtered.
+  EXPECT_CALL(*web_data_service_,
+              GetFormValuesForElementName(test_name, test_prefix, _,
+                                          autocomplete_manager_.get()))
+      .WillOnce(Return(mocked_db_query_id));
+
+  // Simulate request for suggestions.
+  autocomplete_manager_->OnGetAutocompleteSuggestions(
+      test_query_id, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_name, test_prefix,
+      "Some Type", suggestions_handler->GetWeakPtr());
+
+  // Setting up mock to verify that DB response triggers a call to the handler's
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_query_id,
+                                    /*autoselect_first_suggestion=*/false, _));
+
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
                                                      std::move(mocked_results));
 }

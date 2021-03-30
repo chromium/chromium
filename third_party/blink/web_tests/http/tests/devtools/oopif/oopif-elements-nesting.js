@@ -4,12 +4,11 @@
 
 (async function() {
   TestRunner.addResult(`Tests that oopif iframes are rendered inline.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
 
   // Save time on style updates.
-  Elements.StylesSidebarPane.prototype.update = function() {};
-  Elements.MetricsSidebarPane.prototype.update = function() {};
+  ElementsTestRunner.ignoreSidebarUpdates();
 
   await TestRunner.navigatePromise('resources/page.html');
 

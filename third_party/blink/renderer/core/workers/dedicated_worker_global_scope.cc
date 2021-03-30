@@ -32,7 +32,6 @@
 
 #include <memory>
 #include "base/feature_list.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
@@ -66,7 +65,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     DedicatedWorkerThread* thread,
     base::TimeTicks time_origin,
-    ukm::SourceId ukm_source_id) {
+    mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+        dedicated_worker_host) {
   std::unique_ptr<Vector<String>> outside_origin_trial_tokens =
       std::move(creation_params->origin_trial_tokens);
   BeginFrameProviderParams begin_frame_provider_params =
@@ -83,7 +83,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       std::move(creation_params), thread, time_origin,
       std::move(outside_origin_trial_tokens), begin_frame_provider_params,
-      ukm_source_id, parent_cross_origin_isolated_capability);
+      parent_cross_origin_isolated_capability,
+      std::move(dedicated_worker_host));
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
     // Legacy on-the-main-thread worker script fetch (to be removed):
@@ -95,7 +96,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
     // have its own appcache and instead depends on the parent frame's one.
     global_scope->Initialize(
         response_script_url, response_referrer_policy, *response_address_space,
-        Vector<CSPHeaderAndType>(), nullptr /* response_origin_trial_tokens */,
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        nullptr /* response_origin_trial_tokens */,
         mojom::blink::kAppCacheNoCacheId);
     return global_scope;
   } else {
@@ -127,16 +129,17 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     base::TimeTicks time_origin,
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    ukm::SourceId ukm_source_id,
-    bool parent_cross_origin_isolated_capability)
+    bool parent_cross_origin_isolated_capability,
+    mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+        dedicated_worker_host)
     : DedicatedWorkerGlobalScope(
           ParseCreationParams(std::move(creation_params)),
           thread,
           time_origin,
           std::move(outside_origin_trial_tokens),
           begin_frame_provider_params,
-          ukm_source_id,
-          parent_cross_origin_isolated_capability) {}
+          parent_cross_origin_isolated_capability,
+          std::move(dedicated_worker_host)) {}
 
 DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     ParsedCreationParams parsed_creation_params,
@@ -144,12 +147,12 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     base::TimeTicks time_origin,
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    ukm::SourceId ukm_source_id,
-    bool parent_cross_origin_isolated_capability)
+    bool parent_cross_origin_isolated_capability,
+    mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+        dedicated_worker_host)
     : WorkerGlobalScope(std::move(parsed_creation_params.creation_params),
                         thread,
-                        time_origin,
-                        ukm_source_id),
+                        time_origin),
       token_(thread->WorkerObjectProxy().token()),
       parent_token_(parsed_creation_params.parent_context_token),
       cross_origin_isolated_capability_(Agent::IsCrossOriginIsolated()),
@@ -168,6 +171,9 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
   ReadyToRunWorkerScript();
   // Inherit the outside's origin trial tokens.
   OriginTrialContext::AddTokens(this, outside_origin_trial_tokens.get());
+
+  dedicated_worker_host_.Bind(std::move(dedicated_worker_host),
+                              GetTaskRunner(TaskType::kInternalDefault));
 }
 
 DedicatedWorkerGlobalScope::~DedicatedWorkerGlobalScope() = default;
@@ -181,7 +187,8 @@ void DedicatedWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
     network::mojom::IPAddressSpace response_address_space,
-    const Vector<CSPHeaderAndType>& /* response_csp_headers */,
+    Vector<network::mojom::blink::
+               ContentSecurityPolicyPtr> /* response_csp_headers */,
     const Vector<String>* /* response_origin_trial_tokens */,
     int64_t appcache_id) {
   // Step 14.3. "Set worker global scope's url to response's url."
@@ -204,7 +211,8 @@ void DedicatedWorkerGlobalScope::Initialize(
   // response CSP headers. These should be called after SetAddressSpace() to
   // correctly override the address space by the "treat-as-public-address" CSP
   // directive.
-  InitContentSecurityPolicyFromVector(OutsideContentSecurityPolicyHeaders());
+  InitContentSecurityPolicyFromVector(
+      mojo::Clone(OutsideContentSecurityPolicies()));
   BindContentSecurityPolicyToExecutionContext();
 
   // This should be called after OriginTrialContext::AddTokens() to install
@@ -399,7 +407,7 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
   // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
   Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
              classic_script_loader->ResponseAddressSpace(),
-             Vector<CSPHeaderAndType>(),
+             Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
              nullptr /* response_origin_trial_tokens */,
              classic_script_loader->AppCacheID());
 
@@ -437,6 +445,7 @@ DedicatedWorkerObjectProxy& DedicatedWorkerGlobalScope::WorkerObjectProxy()
 }
 
 void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {
+  visitor->Trace(dedicated_worker_host_);
   visitor->Trace(animation_frame_provider_);
   WorkerGlobalScope::Trace(visitor);
 }

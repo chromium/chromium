@@ -22,18 +22,17 @@ class PostSaveCompromisedBubbleController
     kPasswordUpdatedSafeState = 0,
     // A compromised password was updated and there are more issues to fix.
     kPasswordUpdatedWithMoreToFix = 1,
-    // There are stored compromised credentials.
-    kUnsafeState = 2,
-    kMaxValue = kUnsafeState,
+    // kUnsafeState = 2, // was dropped
+    kMaxValue = kPasswordUpdatedWithMoreToFix,
   };
   explicit PostSaveCompromisedBubbleController(
       base::WeakPtr<PasswordsModelDelegate> delegate);
   ~PostSaveCompromisedBubbleController() override;
 
   BubbleType type() const { return type_; }
-  base::string16 GetBody();
+  std::u16string GetBody();
   gfx::Range GetSettingLinkRange() const;
-  base::string16 GetButtonText() const;
+  std::u16string GetButtonText() const;
   int GetImageID(bool dark) const;
 
   // The user chose to check passwords.
@@ -44,7 +43,7 @@ class PostSaveCompromisedBubbleController
 
  private:
   // PasswordBubbleControllerBase:
-  base::string16 GetTitle() const override;
+  std::u16string GetTitle() const override;
   void ReportInteractions() override;
 
   BubbleType type_;

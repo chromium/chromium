@@ -11,10 +11,9 @@
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_move_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
@@ -172,7 +171,7 @@ class HeartbeatSchedulerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   MockGCMDriver gcm_driver_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   testing::NiceMock<policy::MockCloudPolicyClient> cloud_policy_client_;
   testing::NiceMock<policy::MockCloudPolicyStore> cloud_policy_store_;
 
@@ -181,8 +180,6 @@ class HeartbeatSchedulerTest : public testing::Test {
 
   // The HeartbeatScheduler instance under test.
   policy::HeartbeatScheduler scheduler_;
-
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(HeartbeatSchedulerTest, Basic) {
@@ -254,8 +251,6 @@ TEST_F(HeartbeatSchedulerTest, StoreResetDuringRegistration) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
   task_runner_->RunPendingTasks();
   testing::Mock::VerifyAndClearExpectations(&gcm_driver_);
-  histogram_tester_.ExpectTotalCount(
-      policy::HeartbeatScheduler::kHeartbeatSignalHistogram, 0);
 }
 
 TEST_F(HeartbeatSchedulerTest, StoreResetAfterRegistration) {
@@ -324,9 +319,6 @@ TEST_F(HeartbeatSchedulerTest, ChangeHeartbeatFrequency) {
   gcm_driver_.CompleteSend(
       kHeartbeatGCMAppID, message.id, gcm::GCMClient::SERVER_ERROR);
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
-  histogram_tester_.ExpectUniqueSample(
-      policy::HeartbeatScheduler::kHeartbeatSignalHistogram, /*failure*/ false,
-      /*amount*/ 1);
   CheckPendingTaskDelay(scheduler_.last_heartbeat(),
                         base::TimeDelta::FromMilliseconds(new_delay));
 }
@@ -350,9 +342,6 @@ TEST_F(HeartbeatSchedulerTest, DisableHeartbeats) {
   // Complete sending a message - we should queue up the next heartbeat.
   gcm_driver_.CompleteSend(
       kHeartbeatGCMAppID, message.id, gcm::GCMClient::SUCCESS);
-  histogram_tester_.ExpectUniqueSample(
-      policy::HeartbeatScheduler::kHeartbeatSignalHistogram, /*success*/ true,
-      /*amount*/ 1);
 
   // Should have a new heartbeat task posted.
   ASSERT_EQ(1U, task_runner_->NumPendingTasks());

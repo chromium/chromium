@@ -56,6 +56,7 @@ import java.util.List;
 class TabListRecyclerView
         extends RecyclerView implements TabListMediator.TabGridAccessibilityHelper {
     private static final String TAG = "TabListRecyclerView";
+    private static final String SHADOW_VIEW_TAG = "TabListViewShadow";
 
     private static final String MAX_DUTY_CYCLE_PARAM = "max-duty-cycle";
     private static final float DEFAULT_MAX_DUTY_CYCLE = 0.2f;
@@ -224,6 +225,7 @@ class TabListRecyclerView
             mShadowImageView.setImageDrawable(AppCompatResources.getDrawable(
                     context, org.chromium.chrome.R.drawable.modern_toolbar_shadow));
             mShadowImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            mShadowImageView.setTag(SHADOW_VIEW_TAG);
             Resources res = context.getResources();
             if (getParent() instanceof FrameLayout) {
                 // Add shadow for grid tab switcher.
@@ -558,14 +560,22 @@ class TabListRecyclerView
             actions.remove(topAction);
         }
         // Cannot move down if current tab is the last X tab where X is the span count.
-        if (getAdapter().getItemCount() - position <= spanCount) {
+        if (getSwappableItemCount() - position <= spanCount) {
             actions.remove(downAction);
         }
         // Cannot move the last tab to its right.
-        if (position == getAdapter().getItemCount() - 1) {
+        if (position == getSwappableItemCount() - 1) {
             actions.remove(rightAction);
         }
         return actions;
+    }
+
+    private int getSwappableItemCount() {
+        int count = 0;
+        for (int i = 0; i < getAdapter().getItemCount(); i++) {
+            if (getAdapter().getItemViewType(i) == TabProperties.UiType.CLOSABLE) count++;
+        }
+        return count;
     }
 
     @Override

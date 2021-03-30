@@ -32,21 +32,21 @@ void SyntheticSmoothScrollGesture::WaitForTargetAck(
 
 SyntheticSmoothMoveGestureParams::InputType
 SyntheticSmoothScrollGesture::GetInputSourceType(
-    SyntheticGestureParams::GestureSourceType gesture_source_type) {
-  if (gesture_source_type == SyntheticGestureParams::MOUSE_INPUT)
+    content::mojom::GestureSourceType gesture_source_type) {
+  if (gesture_source_type == content::mojom::GestureSourceType::kMouseInput)
     return SyntheticSmoothMoveGestureParams::MOUSE_WHEEL_INPUT;
   else
     return SyntheticSmoothMoveGestureParams::TOUCH_INPUT;
 }
 
 bool SyntheticSmoothScrollGesture::InitializeMoveGesture(
-    SyntheticGestureParams::GestureSourceType gesture_type,
+    content::mojom::GestureSourceType gesture_type,
     SyntheticGestureTarget* target) {
-  if (gesture_type == SyntheticGestureParams::DEFAULT_INPUT)
+  if (gesture_type == content::mojom::GestureSourceType::kDefaultInput)
     gesture_type = target->GetDefaultSyntheticGestureSourceType();
 
-  if (gesture_type == SyntheticGestureParams::TOUCH_INPUT ||
-      gesture_type == SyntheticGestureParams::MOUSE_INPUT) {
+  if (gesture_type == content::mojom::GestureSourceType::kTouchInput ||
+      gesture_type == content::mojom::GestureSourceType::kMouseInput) {
     SyntheticSmoothMoveGestureParams move_params;
     move_params.start_point = params_.anchor;
     move_params.distances = params_.distances;

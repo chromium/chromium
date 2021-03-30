@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -197,12 +198,7 @@ static HTMLElement* HighestAncestorToWrapMarkup(
           FirstPositionInOrBeforeNode(*first_node);
       if (Node* parent_list_node =
               EnclosingNodeOfType(first_node_position, IsListItem)) {
-        EphemeralRangeTemplate<Strategy> markup_range =
-            EphemeralRangeTemplate<Strategy>(start_position, end_position);
-        EphemeralRangeTemplate<Strategy> node_range =
-            NormalizeRange(EphemeralRangeTemplate<Strategy>::RangeOfContents(
-                *parent_list_node));
-        if (node_range == markup_range) {
+        if (AreSameRanges(parent_list_node, start_position, end_position)) {
           ContainerNode* ancestor = parent_list_node->parentNode();
           while (ancestor && !IsHTMLListElement(ancestor))
             ancestor = ancestor->parentNode();
@@ -776,10 +772,11 @@ void MergeWithNextTextNode(Text* text_node, ExceptionState& exception_state) {
     text_next->remove(exception_state);
 }
 
-static Document* CreateStagingDocumentForMarkupSanitization() {
+static Document* CreateStagingDocumentForMarkupSanitization(
+    scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
   Page::PageClients page_clients;
   FillWithEmptyClients(page_clients);
-  Page* page = Page::CreateNonOrdinary(page_clients);
+  Page* page = Page::CreateNonOrdinary(page_clients, agent_group_scheduler);
 
   page->GetSettings().SetScriptEnabled(false);
   page->GetSettings().SetPluginsEnabled(false);
@@ -792,16 +789,15 @@ static Document* CreateStagingDocumentForMarkupSanitization() {
       nullptr,  // FrameOwner*
       nullptr,  // Frame* parent
       nullptr,  // Frame* previous_sibling
-      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
+      FrameInsertType::kInsertInConstructor, blink::LocalFrameToken(),
       nullptr,  // WindowAgentFactory*
-      nullptr,  // InterfaceRegistry*
-      nullptr   // policy_container
+      nullptr   // InterfaceRegistry*
   );
   // Don't leak the actual viewport size to unsanitized markup
   LocalFrameView* frame_view =
       MakeGarbageCollected<LocalFrameView>(*frame, IntSize(800, 600));
   frame->SetView(frame_view);
-  frame->Init(nullptr);
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 
   Document* document = frame->GetDocument();
   DCHECK(document);
@@ -849,7 +845,8 @@ DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
   if (raw_markup.IsEmpty())
     return nullptr;
 
-  Document* staging_document = CreateStagingDocumentForMarkupSanitization();
+  Document* staging_document = CreateStagingDocumentForMarkupSanitization(
+      *document.GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
   Element* body = staging_document->body();
 
   DocumentFragment* fragment = CreateFragmentFromMarkupWithContext(

@@ -47,3 +47,28 @@ interface FlingingRendererClientExtension {
   // network).
   OnRemotePlayStateChange(MediaStatusState state);
 };
+
+[EnableIf=is_win]
+// Extension of the mojo::RendererClient communication layer for MF-based CDM
+// Renderer.
+// This allows the media::Renderer from Renderer process calling into the
+// MediaFoundationRenderer in the "mf_cdm" sandbox'ed Utility process.
+// Concretely, the MediaFoundationRendererClient uses these methods to send
+// commands to MediaFoundationRenderer, which lives in the mf_cdm LPAC-based
+// Utility process.
+// Please refer to media/renderers/win/media_foundation_renderer_extension.h
+// for its C++ interface equivalence.
+interface MediaFoundationRendererExtension {
+  // Enable Direct Composition video rendering.
+  [Sync]
+  SetDCOMPMode(bool enabled) => (bool succeeded);
+
+  // Get a Direct Composition Surface handle.
+  GetDCOMPSurface() => (handle? dcomp_surface);
+
+  // Notify renderer whether video is enabled.
+  SetVideoStreamEnabled(bool enabled);
+
+  // Notify renderer of output composition parameters
+  SetOutputParams(gfx.mojom.Rect rect);
+};

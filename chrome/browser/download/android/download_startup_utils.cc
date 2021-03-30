@@ -19,17 +19,21 @@ static void JNI_DownloadStartupUtils_EnsureDownloadSystemInitialized(
     jboolean is_off_the_record) {
   DCHECK(is_full_browser_started || !is_off_the_record)
       << "OffTheRecord mode must load full browser.";
-  std::vector<Profile*> profiles;
-  if (is_full_browser_started) {
-    Profile* active_profile = ProfileManager::GetActiveUserProfile();
-    if (is_off_the_record)
-      profiles = active_profile->GetAllOffTheRecordProfiles();
-    else
-      profiles.push_back(active_profile);
+  if (!is_full_browser_started) {
+    DownloadStartupUtils::EnsureDownloadSystemInitialized(nullptr);
+    return;
   }
-  for (Profile* profile : profiles)
+
+  std::vector<Profile*> profiles;
+  Profile* active_profile = ProfileManager::GetActiveUserProfile();
+  if (is_off_the_record)
+    profiles = active_profile->GetAllOffTheRecordProfiles();
+  else
+    profiles.push_back(active_profile);
+  for (Profile* profile : profiles) {
     DownloadStartupUtils::EnsureDownloadSystemInitialized(
         profile->GetProfileKey());
+  }
 }
 
 // static

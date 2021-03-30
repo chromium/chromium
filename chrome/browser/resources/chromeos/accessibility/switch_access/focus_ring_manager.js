@@ -148,15 +148,15 @@ export class FocusRingManager {
       rects: [],
       type: chrome.accessibilityPrivate.FocusType.SOLID,
       color: SAConstants.Focus.PRIMARY_COLOR,
-      secondaryColor: SAConstants.Focus.SECONDARY_COLOR
+      secondaryColor: SAConstants.Focus.OUTER_COLOR
     };
 
     const previewRing = {
       id: SAConstants.Focus.ID.PREVIEW,
       rects: [],
       type: chrome.accessibilityPrivate.FocusType.DASHED,
-      color: SAConstants.Focus.PRIMARY_COLOR,
-      secondaryColor: SAConstants.Focus.SECONDARY_COLOR
+      color: SAConstants.Focus.PREVIEW_COLOR,
+      secondaryColor: SAConstants.Focus.OUTER_COLOR
     };
 
     return new Map([

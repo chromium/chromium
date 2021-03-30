@@ -45,16 +45,6 @@ bool PathContainsDisallowedCharacter(const GURL& url) {
 }  // namespace
 
 // static
-bool ServiceWorkerUtils::IsMainResourceType(blink::mojom::ResourceType type) {
-  // When PlzDedicatedWorker is enabled, a dedicated worker script is considered
-  // to be a main resource.
-  if (type == blink::mojom::ResourceType::kWorker)
-    return base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker);
-  return blink::IsResourceTypeFrame(type) ||
-         type == blink::mojom::ResourceType::kSharedWorker;
-}
-
-// static
 bool ServiceWorkerUtils::IsMainRequestDestination(
     network::mojom::RequestDestination destination) {
   // When PlzDedicatedWorker is enabled, a dedicated worker script is considered

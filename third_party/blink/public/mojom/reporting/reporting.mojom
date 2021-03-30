@@ -46,10 +46,10 @@ interface ReportingServiceProxy {
                           int32 line_number,
                           int32 column_number);
 
-  // Attempts to queue a Feature Policy violation report using the Reporting API.
+  // Attempts to queue a Permissions Policy violation report using the Reporting API.
   //
-  // (See //third_party/blink/renderer/core/frame/feature_policy_violation_report_body.h.)
-  QueueFeaturePolicyViolationReport(url.mojom.Url url,
+  // (See //third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h.)
+  QueuePermissionsPolicyViolationReport(url.mojom.Url url,
                                     string policy_id,
                                     string disposition,
                                     string? message,

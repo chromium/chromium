@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "ui/views/controls/table/table_view_observer.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class ChooserController;
@@ -19,12 +20,12 @@ class DeviceChooserContentView;
 class ChooserDialogView : public views::DialogDelegateView,
                           public views::TableViewObserver {
  public:
+  METADATA_HEADER(ChooserDialogView);
   explicit ChooserDialogView(
       std::unique_ptr<ChooserController> chooser_controller);
+  ChooserDialogView(const ChooserDialogView&) = delete;
+  ChooserDialogView& operator=(const ChooserDialogView&) = delete;
   ~ChooserDialogView() override;
-
-  // views::WidgetDelegate:
-  ui::ModalType GetModalType() const override;
 
   // views::DialogDelegate:
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
@@ -44,8 +45,6 @@ class ChooserDialogView : public views::DialogDelegateView,
 
  private:
   DeviceChooserContentView* device_chooser_content_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChooserDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_CHOOSER_DIALOG_VIEW_H_

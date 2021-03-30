@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 
+#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,7 +16,6 @@
 #include "base/numerics/ranges.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/utils.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace chromeos {
 namespace power {

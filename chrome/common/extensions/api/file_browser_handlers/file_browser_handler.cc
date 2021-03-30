@@ -141,7 +141,7 @@ namespace {
 std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
     const std::string& extension_id,
     const base::DictionaryValue* file_browser_handler,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<FileBrowserHandler> result(new FileBrowserHandler());
   result->set_extension_id(extension_id);
 
@@ -249,11 +249,10 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
 }
 
 // Loads FileBrowserHandlers from |extension_actions| into a list in |result|.
-bool LoadFileBrowserHandlers(
-    const std::string& extension_id,
-    const base::ListValue* extension_actions,
-    FileBrowserHandler::List* result,
-    base::string16* error) {
+bool LoadFileBrowserHandlers(const std::string& extension_id,
+                             const base::ListValue* extension_actions,
+                             FileBrowserHandler::List* result,
+                             std::u16string* error) {
   for (const auto& entry : *extension_actions) {
     const base::DictionaryValue* dict;
     if (!entry.GetAsDictionary(&dict)) {
@@ -272,7 +271,7 @@ bool LoadFileBrowserHandlers(
 }  // namespace
 
 bool FileBrowserHandlerParser::Parse(extensions::Extension* extension,
-                                     base::string16* error) {
+                                     std::u16string* error) {
   const base::Value* file_browser_handlers_value = nullptr;
   if (!extension->manifest()->Get(keys::kFileBrowserHandlers,
                                   &file_browser_handlers_value)) {
@@ -280,7 +279,7 @@ bool FileBrowserHandlerParser::Parse(extensions::Extension* extension,
   }
 
   if (!extensions::PermissionsParser::HasAPIPermission(
-          extension, extensions::APIPermission::ID::kFileBrowserHandler)) {
+          extension, extensions::mojom::APIPermissionID::kFileBrowserHandler)) {
     extension->AddInstallWarning(extensions::InstallWarning(
         errors::kInvalidFileBrowserHandlerMissingPermission));
     return true;

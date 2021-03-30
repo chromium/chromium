@@ -18,7 +18,7 @@ std::unique_ptr<views::BubbleBorder> GetBorderForWindow(
     case WindowBorderType::Suggestion:
     default:
       border = std::make_unique<views::BubbleBorder>(
-          views::BubbleBorder::NONE, views::BubbleBorder::SMALL_SHADOW,
+          views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
           gfx::kPlaceholderColor);
       border->set_md_shadow_elevation(
           ChromeLayoutProvider::Get()->GetShadowElevationMetric(

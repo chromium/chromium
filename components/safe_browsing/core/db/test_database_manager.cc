@@ -17,8 +17,8 @@ void TestSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   NOTIMPLEMENTED();
 }
 
-bool TestSafeBrowsingDatabaseManager::CanCheckResourceType(
-    blink::mojom::ResourceType resource_type) const {
+bool TestSafeBrowsingDatabaseManager::CanCheckRequestDestination(
+    network::mojom::RequestDestination request_destination) const {
   NOTIMPLEMENTED();
   return false;
 }
@@ -75,20 +75,20 @@ bool TestSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
   return true;
 }
 
-AsyncMatch TestSafeBrowsingDatabaseManager::CheckCsdWhitelistUrl(
+AsyncMatch TestSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
     const GURL& url,
     Client* client) {
   NOTIMPLEMENTED();
   return AsyncMatch::MATCH;
 }
 
-bool TestSafeBrowsingDatabaseManager::MatchDownloadWhitelistString(
+bool TestSafeBrowsingDatabaseManager::MatchDownloadAllowlistString(
     const std::string& str) {
   NOTIMPLEMENTED();
   return true;
 }
 
-bool TestSafeBrowsingDatabaseManager::MatchDownloadWhitelistUrl(
+bool TestSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
     const GURL& url) {
   NOTIMPLEMENTED();
   return true;

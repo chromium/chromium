@@ -17,257 +17,205 @@ using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
 
 using TestVote = voting::Vote<void, int, 0>;
-using TestVoteReceipt = voting::VoteReceipt<TestVote>;
 using TestVotingChannel = voting::VotingChannel<TestVote>;
 using TestVotingChannelFactory = voting::VotingChannelFactory<TestVote>;
-using TestVoteConsumer = voting::VoteConsumer<TestVote>;
-using TestAcceptedVote = voting::AcceptedVote<TestVote>;
-using TestVotingChannelWrapper = voting::VotingChannelWrapper<TestVote>;
 
-using DummyVoter = voting::test::DummyVoter<TestVote>;
-using DummyVoteConsumer = voting::test::DummyVoteConsumer<TestVote>;
 using DummyVoteObserver = voting::test::DummyVoteObserver<TestVote>;
 
 // Some dummy contexts.
 const void* kDummyContext1 = reinterpret_cast<const void*>(0xDEADBEEF);
 const void* kDummyContext2 = reinterpret_cast<const void*>(0xBAADF00D);
 
-AssertionResult IsEntangled(const TestVoteReceipt& receipt,
-                            const TestAcceptedVote& vote) {
-  if (!receipt.HasVote(&vote))
-    return AssertionFailure() << "Receipt has wrong vote";
-  if (!vote.HasReceipt(&receipt))
-    return AssertionFailure() << "Vote has wrong receipt";
-  if (!vote.IsValid())
-    return AssertionFailure() << "Vote is not valid";
-  return AssertionSuccess();
-}
-
-AssertionResult IsNotEntangled(const TestVoteReceipt& receipt,
-                               const TestAcceptedVote& vote) {
-  if (receipt.HasVote(&vote))
-    return AssertionFailure() << "Receipt has unexpected vote";
-  if (vote.HasReceipt(&receipt))
-    return AssertionFailure() << "Vote has unexpected receipt";
-  if (vote.IsValid())
-    return AssertionFailure() << "Vote is unexpectedly valid";
-  return AssertionSuccess();
-}
-
 static const char kReason[] = "reason";
 
 }  // namespace
 
-TEST(VotingTest, DefaultAcceptedVoteIsInvalid) {
-  TestAcceptedVote vote;
-  EXPECT_FALSE(vote.IsValid());
-}
-
-TEST(VotingTest, VoteReceiptsWork) {
-  DummyVoteConsumer consumer;
-  DummyVoter voter;
-
-  EXPECT_FALSE(voter.voting_channel_.IsValid());
-  voter.SetVotingChannel(consumer.voting_channel_factory_.BuildVotingChannel());
-  EXPECT_EQ(&consumer.voting_channel_factory_,
-            voter.voting_channel_.factory_for_testing());
-  EXPECT_TRUE(voter.voting_channel_.voter_id());
-  EXPECT_TRUE(voter.voting_channel_.IsValid());
-
-  voter.EmitVote(kDummyContext1, 0);
-  EXPECT_EQ(1u, voter.receipts_.size());
-  EXPECT_EQ(1u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(voter.voting_channel_.voter_id(), consumer.votes_[0].voter_id());
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
-  EXPECT_TRUE(consumer.votes_[0].IsValid());
-  EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-
-  // Move the vote and the receipt out of their containers and back in.
-  // All should be well.
-  {
-    TestVoteReceipt receipt = std::move(voter.receipts_[0]);
-    EXPECT_FALSE(voter.receipts_[0].HasVote());
-    EXPECT_TRUE(IsEntangled(receipt, consumer.votes_[0]));
-
-    TestAcceptedVote vote = std::move(consumer.votes_[0]);
-    EXPECT_FALSE(consumer.votes_[0].IsValid());
-    EXPECT_TRUE(IsEntangled(receipt, vote));
-
-    voter.receipts_[0] = std::move(receipt);
-    EXPECT_FALSE(receipt.HasVote());
-    EXPECT_TRUE(IsEntangled(voter.receipts_[0], vote));
-
-    consumer.votes_[0] = std::move(vote);
-    EXPECT_FALSE(vote.IsValid());
-    EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  }
-
-  voter.EmitVote(kDummyContext2, 0);
-  EXPECT_EQ(2u, voter.receipts_.size());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(2u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
-  EXPECT_EQ(kDummyContext2, consumer.votes_[1].context());
-  EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_TRUE(IsEntangled(voter.receipts_[1], consumer.votes_[1]));
-
-  // Change a vote, but making no change.
-  EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
-  EXPECT_EQ(0, consumer.votes_[0].vote().value());
-  EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
-  voter.receipts_[0].ChangeVote(0, DummyVoter::kReason);
-  EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
-  EXPECT_EQ(0, consumer.votes_[0].vote().value());
-  EXPECT_EQ(DummyVoter::kReason, consumer.votes_[0].vote().reason());
-
-  // Change the vote and expect the change to propagate.
-  static const char kReason[] = "another reason";
-  voter.receipts_[0].ChangeVote(5, kReason);
-  EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
-  EXPECT_EQ(5, consumer.votes_[0].vote().value());
-  EXPECT_EQ(kReason, consumer.votes_[0].vote().reason());
-
-  // Cancel a vote.
-  voter.receipts_[0].Reset();
-  EXPECT_EQ(2u, voter.receipts_.size());
-  EXPECT_EQ(2u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext1, consumer.votes_[0].context());
-  EXPECT_EQ(kDummyContext2, consumer.votes_[1].context());
-  EXPECT_TRUE(IsNotEntangled(voter.receipts_[0], consumer.votes_[0]));
-  EXPECT_TRUE(IsEntangled(voter.receipts_[1], consumer.votes_[1]));
-
-  // Cause the votes to be moved by deleting the invalid one.
-  consumer.votes_.erase(consumer.votes_.begin());
-  EXPECT_EQ(2u, voter.receipts_.size());
-  EXPECT_EQ(1u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext2, consumer.votes_[0].context());
-  EXPECT_FALSE(voter.receipts_[0].HasVote());
-  EXPECT_TRUE(IsEntangled(voter.receipts_[1], consumer.votes_[0]));
-
-  // Cause the receipts to be moved by deleting the empty one.
-  voter.receipts_.erase(voter.receipts_.begin());
-  EXPECT_EQ(1u, voter.receipts_.size());
-  EXPECT_EQ(1u, consumer.votes_.size());
-  EXPECT_EQ(1u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext2, consumer.votes_[0].context());
-  EXPECT_TRUE(IsEntangled(voter.receipts_[0], consumer.votes_[0]));
-
-  // Cancel the remaining vote by deleting the receipt.
-  voter.receipts_.clear();
-  EXPECT_EQ(0u, voter.receipts_.size());
-  EXPECT_EQ(1u, consumer.votes_.size());
-  EXPECT_EQ(0u, consumer.valid_vote_count_);
-  EXPECT_EQ(kDummyContext2, consumer.votes_[0].context());
-  EXPECT_FALSE(consumer.votes_[0].HasReceipt());
-  EXPECT_FALSE(consumer.votes_[0].IsValid());
-}
-
-// Tests that an overwritten vote receipt will property clean up its state.
-TEST(VotingTest, OverwriteVoteReceipt) {
-  DummyVoteConsumer consumer;
-
-  TestVotingChannel voting_channel =
-      consumer.voting_channel_factory_.BuildVotingChannel();
-
-  TestVoteReceipt receipt =
-      voting_channel.SubmitVote(kDummyContext1, TestVote(5, kReason));
-  receipt = voting_channel.SubmitVote(kDummyContext2, TestVote(5, kReason));
-
-  // The first vote was invalidated because its vote receipt was cleaned up.
-  consumer.ExpectInvalidVote(0);
-}
-
-TEST(VotingTest, VoteObserver) {
+TEST(VotingTest, SimpleVoter) {
   DummyVoteObserver observer;
 
   TestVotingChannel voting_channel = observer.BuildVotingChannel();
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
-
-  {
-    TestVoteReceipt receipt =
-        voting_channel.SubmitVote(kDummyContext1, TestVote(5, kReason));
-    EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
-  }
-
-  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
-}
-
-TEST(VotingTest, VotingChannelWrapper) {
-  DummyVoteObserver observer;
-
-  TestVotingChannel voting_channel = observer.BuildVotingChannel();
-  voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
-
-  TestVotingChannelWrapper voting_channel_wrapper;
-  voting_channel_wrapper.SetVotingChannel(std::move(voting_channel));
 
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
 
-  voting_channel_wrapper.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  voting_channel.SubmitVote(kDummyContext1, TestVote(5, kReason));
   EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
 
-  voting_channel_wrapper.ChangeVote(kDummyContext1, TestVote(10, kReason));
+  voting_channel.ChangeVote(kDummyContext1, TestVote(10, kReason));
   EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 10, kReason));
 
-  voting_channel_wrapper.InvalidateVote(kDummyContext1);
+  voting_channel.InvalidateVote(kDummyContext1);
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
 }
 
-// Tests that submitting 2 votes for the same context using a
-// VotingChannelWrapper results in a DCHECK.
-TEST(VotingTest, VotingChannelWrapper_SubmitDuplicateVote) {
+// Tests that an observer can receive votes for different contexts from the same
+// voting channel.
+TEST(VotingTest, OneVoterMultipleContexts) {
   DummyVoteObserver observer;
 
   TestVotingChannel voting_channel = observer.BuildVotingChannel();
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
-  TestVotingChannelWrapper voting_channel_wrapper;
-  voting_channel_wrapper.SetVotingChannel(std::move(voting_channel));
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
+
+  voting_channel.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext2));
+
+  voting_channel.SubmitVote(kDummyContext2, TestVote(100, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext2, 100, kReason));
+
+  voting_channel.ChangeVote(kDummyContext1, TestVote(10, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 10, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext2, 100, kReason));
+
+  voting_channel.InvalidateVote(kDummyContext1);
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext2, 100, kReason));
+
+  voting_channel.InvalidateVote(kDummyContext2);
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext2));
+}
+
+// Tests that an observer can receive votes from more than one voting channel.
+TEST(VotingTest, TwoVoter) {
+  DummyVoteObserver observer;
+
+  TestVotingChannel voting_channel_1 = observer.BuildVotingChannel();
+  voting::VoterId<TestVote> voter_id_1 = voting_channel_1.voter_id();
+
+  TestVotingChannel voting_channel_2 = observer.BuildVotingChannel();
+  voting::VoterId<TestVote> voter_id_2 = voting_channel_2.voter_id();
+
+  EXPECT_FALSE(observer.HasVote(voter_id_1, kDummyContext1));
+  EXPECT_FALSE(observer.HasVote(voter_id_2, kDummyContext1));
+
+  voting_channel_1.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id_1, kDummyContext1, 5, kReason));
+  EXPECT_FALSE(observer.HasVote(voter_id_2, kDummyContext1));
+
+  voting_channel_2.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id_1, kDummyContext1, 5, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id_2, kDummyContext1, 5, kReason));
+
+  voting_channel_1.ChangeVote(kDummyContext1, TestVote(10, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id_1, kDummyContext1, 10, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id_2, kDummyContext1, 5, kReason));
+
+  voting_channel_2.ChangeVote(kDummyContext1, TestVote(10, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id_1, kDummyContext1, 10, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id_2, kDummyContext1, 10, kReason));
+
+  voting_channel_1.InvalidateVote(kDummyContext1);
+  EXPECT_FALSE(observer.HasVote(voter_id_1, kDummyContext1));
+  EXPECT_TRUE(observer.HasVote(voter_id_2, kDummyContext1, 10, kReason));
+
+  voting_channel_2.InvalidateVote(kDummyContext1);
+  EXPECT_FALSE(observer.HasVote(voter_id_1, kDummyContext1));
+  EXPECT_FALSE(observer.HasVote(voter_id_2, kDummyContext1));
+}
+
+TEST(VotingTest, ResetVotingChannel) {
+  DummyVoteObserver observer;
+
+  TestVotingChannel voting_channel = observer.BuildVotingChannel();
+  EXPECT_TRUE(voting_channel.IsValid());
+
+  voting_channel.Reset();
+
+  EXPECT_FALSE(voting_channel.IsValid());
+}
+
+// Tests that VotingChannel supports move sementics.
+TEST(VotingTest, MoveVotingChannel) {
+  DummyVoteObserver observer;
+
+  // Build the voting channel.
+  TestVotingChannel voting_channel_1 = observer.BuildVotingChannel();
+  voting::VoterId<TestVote> voter_id = voting_channel_1.voter_id();
+  EXPECT_TRUE(voting_channel_1.IsValid());
+
+  // Cast a vote with that voting channel.
+  voting_channel_1.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
+
+  // Move the voting channel.
+  TestVotingChannel voting_channel_2 = std::move(voting_channel_1);
+  EXPECT_TRUE(voting_channel_2.IsValid());
+
+  // Use the second variable to change the vote.
+  voting_channel_2.ChangeVote(kDummyContext1, TestVote(10, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 10, kReason));
+
+  // Move the voting channel back using the move assignment operator.
+  voting_channel_1 = std::move(voting_channel_2);
+  EXPECT_TRUE(voting_channel_1.IsValid());
+
+  // Invalidate the vote.
+  voting_channel_1.InvalidateVote(kDummyContext1);
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
+}
+
+// Tests that submitting 2 votes for the same context using a VotingChannel
+// results in a DCHECK.
+TEST(VotingTest, SubmitDuplicateVote) {
+  DummyVoteObserver observer;
+
+  TestVotingChannel voting_channel = observer.BuildVotingChannel();
+  voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
 
-  voting_channel_wrapper.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  voting_channel.SubmitVote(kDummyContext1, TestVote(5, kReason));
   EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
 
   EXPECT_DCHECK_DEATH(
-      voting_channel_wrapper.SubmitVote(kDummyContext1, TestVote(10, kReason)));
+      voting_channel.SubmitVote(kDummyContext1, TestVote(10, kReason)));
+
+  // Clean up.
+  voting_channel.InvalidateVote(kDummyContext1);
 }
 
 // Tests that calling ChangeVote() for a context before a vote was submitted for
 // that context results in a DCHECK.
-TEST(VotingTest, VotingChannelWrapper_ChangeNonExisting) {
+TEST(VotingTest, ChangeNonExisting) {
   DummyVoteObserver observer;
 
   TestVotingChannel voting_channel = observer.BuildVotingChannel();
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
-  TestVotingChannelWrapper voting_channel_wrapper;
-  voting_channel_wrapper.SetVotingChannel(std::move(voting_channel));
-
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
   EXPECT_DCHECK_DEATH(
-      voting_channel_wrapper.ChangeVote(kDummyContext1, TestVote(5, kReason)));
+      voting_channel.ChangeVote(kDummyContext1, TestVote(5, kReason)));
 }
 
 // Tests that calling InvalidateVote() for a context before a vote was submitted
 // for that context results in a DCHECK.
-TEST(VotingTest, VotingChannelWrapper_InvalidateNonExisting) {
+TEST(VotingTest, InvalidateNonExisting) {
   DummyVoteObserver observer;
 
   TestVotingChannel voting_channel = observer.BuildVotingChannel();
   voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
 
-  TestVotingChannelWrapper voting_channel_wrapper;
-  voting_channel_wrapper.SetVotingChannel(std::move(voting_channel));
-
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
-  EXPECT_DCHECK_DEATH(voting_channel_wrapper.InvalidateVote(kDummyContext1));
+  EXPECT_DCHECK_DEATH(voting_channel.InvalidateVote(kDummyContext1));
+}
+
+// Tests that destroying a VotingChannelFactory before all of its VotingChannels
+// results in a DCHECK.
+TEST(VotingTest, DestroyFactoryBeforeChannel) {
+  TestVotingChannel voting_channel;
+
+  auto observer = std::make_unique<DummyVoteObserver>();
+
+  voting_channel = observer->BuildVotingChannel();
+
+  EXPECT_DCHECK_DEATH(observer.reset());
+
+  // Clean up.
+  voting_channel.Reset();
 }
 
 }  // namespace performance_manager

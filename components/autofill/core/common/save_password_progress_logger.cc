@@ -5,12 +5,12 @@
 #include "components/autofill/core/common/save_password_progress_logger.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -148,7 +148,7 @@ void SavePasswordProgressLogger::LogValue(StringID label, const Value& log) {
 
 // static
 std::string SavePasswordProgressLogger::ScrubElementID(
-    const base::string16& element_id) {
+    const std::u16string& element_id) {
   return ScrubElementID(base::UTF16ToUTF8(element_id));
 }
 
@@ -265,8 +265,10 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Blocked password due to same origin but insecure scheme";
     case SavePasswordProgressLogger::STRING_ON_PASSWORD_FORMS_RENDERED_METHOD:
       return "PasswordManager::OnPasswordFormsRendered";
-    case SavePasswordProgressLogger::STRING_ON_SAME_DOCUMENT_NAVIGATION:
-      return "PasswordManager::OnSameDocumentNavigation";
+    case SavePasswordProgressLogger::STRING_ON_DYNAMIC_FORM_SUBMISSION:
+      return "PasswordManager::OnDynamicFormSubmission";
+    case SavePasswordProgressLogger::STRING_ON_SUBFRAME_FORM_SUBMISSION:
+      return "PasswordManager::OnSubframeFormSubmission";
     case SavePasswordProgressLogger::STRING_ON_ASK_USER_OR_SAVE_PASSWORD:
       return "PasswordManager::AskUserOrSavePassword";
     case SavePasswordProgressLogger::STRING_CAN_PROVISIONAL_MANAGER_SAVE_METHOD:

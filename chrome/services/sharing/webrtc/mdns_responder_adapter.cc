@@ -36,8 +36,8 @@ void OnNameRemovedForAddress(
 }  // namespace
 
 MdnsResponderAdapter::MdnsResponderAdapter(
-    const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder)
-    : mdns_responder_(mdns_responder) {
+    mojo::Remote<network::mojom::MdnsResponder> mdns_responder)
+    : mdns_responder_(std::move(mdns_responder)) {
   DCHECK(mdns_responder_.is_bound());
 }
 
@@ -45,6 +45,15 @@ MdnsResponderAdapter::~MdnsResponderAdapter() = default;
 
 void MdnsResponderAdapter::CreateNameForAddress(const rtc::IPAddress& addr,
                                                 NameCreatedCallback callback) {
+  if (!mdns_responder_ || !mdns_responder_.is_connected()) {
+    LOG(ERROR) << "MdnsResponderAdapter::" << __func__ << ": mDNS responder"
+               << " no longer available over mojo, returning empty name.";
+    // If the responder is no longer available we trigger the callback now with
+    // no name since this the only way we can signal an error.
+    callback(addr, std::string());
+    return;
+  }
+
   mdns_responder_->CreateNameForAddress(
       jingle_glue::RtcIPAddressToNetIPAddress(addr),
       base::BindOnce(&OnNameCreatedForAddress, callback, addr));
@@ -52,6 +61,14 @@ void MdnsResponderAdapter::CreateNameForAddress(const rtc::IPAddress& addr,
 
 void MdnsResponderAdapter::RemoveNameForAddress(const rtc::IPAddress& addr,
                                                 NameRemovedCallback callback) {
+  if (!mdns_responder_ || !mdns_responder_.is_connected()) {
+    LOG(ERROR) << "MdnsResponderAdapter::" << __func__ << ": mDNS responder"
+               << " no longer available over mojo, returning false.";
+    // If the responder is no longer available we trigger the callback now.
+    callback(false);
+    return;
+  }
+
   mdns_responder_->RemoveNameForAddress(
       jingle_glue::RtcIPAddressToNetIPAddress(addr),
       base::BindOnce(&OnNameRemovedForAddress, callback));

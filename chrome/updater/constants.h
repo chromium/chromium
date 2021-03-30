@@ -83,6 +83,12 @@ extern const char kInstallFromOutDir[];
 // Uninstalls the updater.
 extern const char kUninstallSwitch[];
 
+// Uninstalls this version of the updater.
+extern const char kUninstallSelfSwitch[];
+
+// Uninstalls the updater if no apps are managed by it.
+extern const char kUninstallIfUnusedSwitch[];
+
 // Kicks off the update service. This switch is typically used for by a
 // scheduled to invoke the updater periodically.
 extern const char kWakeSwitch[];
@@ -113,18 +119,6 @@ extern const char kAppIdSwitch[];
 // Specifies the version of the application that the updater needs to register.
 extern const char kAppVersionSwitch[];
 
-// URLs.
-//
-// Omaha server end point.
-extern const char kUpdaterJSONDefaultUrl[];
-
-// The URL where crash reports are uploaded.
-extern const char kCrashUploadURL[];
-extern const char kCrashStagingUploadURL[];
-
-// DM server end point.
-extern const char kDeviceManagementServerURL[];
-
 // File system paths.
 //
 // The directory name where CRX apps get installed. This is provided for demo
@@ -138,6 +132,11 @@ extern const char kUninstallScript[];
 // Developer override keys.
 extern const char kDevOverrideKeyUrl[];
 extern const char kDevOverrideKeyUseCUP[];
+extern const char kDevOverrideKeyInitialDelay[];
+extern const char kDevOverrideKeyServerKeepAliveSeconds[];
+
+// File name of developer overrides file.
+extern const char kDevOverrideFileName[];
 
 // Timing constants.
 #if defined(OS_WIN)
@@ -151,6 +150,11 @@ constexpr int kWaitForInstallerProgressSec = 1;
 #elif defined(OS_MAC)
 // How long to wait for launchd changes to be reported by launchctl.
 constexpr int kWaitForLaunchctlUpdateSec = 5;
+#endif  // defined(OS_MAC)
+
+#if defined(OS_MAC)
+// The user defaults suite name.
+extern const char kUserDefaultsSuiteName[];
 #endif  // defined(OS_MAC)
 
 // Install Errors.
@@ -188,6 +192,12 @@ constexpr int kErrorFailedToLockPrefsMutex = 1;
 constexpr int kErrorFailedToSwap = 2;
 
 // Policy Management constants.
+// The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
+constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
+
+// The maximum value allowed for policy UpdatesSuppressedDurationMin.
+constexpr int kMaxUpdatesSuppressedDurationMinutes = 960;
+
 extern const char kProxyModeDirect[];
 extern const char kProxyModeAutoDetect[];
 extern const char kProxyModePacScript[];
@@ -212,11 +222,8 @@ constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 // The file downloaded to a temporary location could not be moved.
 constexpr int kErrorFailedToMoveDownloadedFile = 5;
 
-// TODO(crbug.com/1144151): This constant should be `60` for production code and
-// `0.1` for test code. Due to test timeout limitation, the full jitter interval
-// (0 to 60 seconds) cannot be tested. A jitter in the interval of 0 to 0.1
-// seconds should be used for testing.
-constexpr double kUpdateCheckJitterMultiplier = 0.1;
+constexpr double kInitialDelay = 60;
+constexpr int kServerKeepAliveSeconds = 10;
 
 }  // namespace updater
 

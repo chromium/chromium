@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Interface for retrieving passwords and password exceptions (websites for which Chrome should not
@@ -87,8 +88,14 @@ public interface PasswordManagerHandler {
             String targetPath, IntStringCallback successCallback, Callback<String> errorCallback);
 
     /**
-     * Proceed to edit a credential entry.
-     * @param index is the current id of a credential.
+     * Show the UI that allows to edit saved credentials.
+     *
+     * @param context the current Activity to launch the edit view from, or an application context
+     * if no Activity is available.
+     * @param settingsLauncher the {@link SettingsLauncher} used to launch the edit UI fragment
+     * @param index the index of the password entry to edit
+     * @param isBlockedCredential whether this credential is blocked for saving
      */
-    void showPasswordEntryEditingView(Context context, int index);
+    void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher, int index,
+            boolean isBlockedCredential);
 }

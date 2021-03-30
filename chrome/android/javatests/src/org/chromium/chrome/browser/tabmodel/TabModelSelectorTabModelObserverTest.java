@@ -8,12 +8,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -28,16 +29,17 @@ import java.util.concurrent.TimeoutException;
  * Tests for the TabModelSelectorTabModelObserver.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class TabModelSelectorTabModelObserverTest {
-    @Rule
-    public final TabModelSelectorObserverTestRule mTestRule =
+    @ClassRule
+    public static final TabModelSelectorObserverTestRule sTestRule =
             new TabModelSelectorObserverTestRule();
 
     private TabModelSelectorBase mSelector;
 
     @Before
     public void setUp() {
-        mSelector = mTestRule.getSelector();
+        mSelector = sTestRule.getSelector();
     }
 
     @Test
@@ -75,7 +77,7 @@ public class TabModelSelectorTabModelObserverTest {
                         registrationCompleteCallback.notifyCalled();
                     }
                 };
-        mSelector.initialize(mTestRule.getNormalTabModel(), mTestRule.getIncognitoTabModel());
+        mSelector.initialize(sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
         registrationCompleteCallback.waitForCallback(0);
         assertAllModelsHaveObserver(mSelector, observer);
     }

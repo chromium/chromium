@@ -79,8 +79,7 @@ class LoginPromptObserver : public content::NotificationObserver {
           content::Details<LoginNotificationDetails>(details).ptr();
       // |login_details->handler()| is the associated LoginHandler object.
       // SetAuth() will close the login dialog.
-      login_details->handler()->SetAuth(base::ASCIIToUTF16("foo"),
-                                        base::ASCIIToUTF16("bar"));
+      login_details->handler()->SetAuth(u"foo", u"bar");
       auth_handled_ = true;
     }
   }
@@ -112,8 +111,8 @@ IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
   registrar.Add(&observer, chrome::NOTIFICATION_AUTH_NEEDED,
                 content::Source<content::NavigationController>(controller));
 
-  content::TitleWatcher watcher(tab, base::ASCIIToUTF16("PASS"));
-  watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+  content::TitleWatcher watcher(tab, u"PASS");
+  watcher.AlsoWaitForTitle(u"FAIL");
 
   // Visit a page that tries to establish WebSocket connection. The title
   // of the page will be 'PASS' on success.
@@ -123,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
                                ws_server.GetURL("proxied_request_check.html")
                                    .ReplaceComponents(replacements));
 
-  const base::string16 result = watcher.WaitAndGetTitle();
+  const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "PASS"));
   EXPECT_TRUE(observer.auth_handled());
 }

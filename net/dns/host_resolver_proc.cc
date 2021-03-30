@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/base/sys_addrinfo.h"
@@ -26,11 +27,13 @@ namespace net {
 
 HostResolverProc* HostResolverProc::default_proc_ = nullptr;
 
-HostResolverProc::HostResolverProc(HostResolverProc* previous) {
+HostResolverProc::HostResolverProc(HostResolverProc* previous,
+                                   bool allow_fallback_to_system_or_default)
+    : allow_fallback_to_system_(allow_fallback_to_system_or_default) {
   SetPreviousProc(previous);
 
   // Implicitly fall-back to the global default procedure.
-  if (!previous)
+  if (!previous && allow_fallback_to_system_or_default)
     SetPreviousProc(default_proc_);
 }
 
@@ -46,6 +49,12 @@ int HostResolverProc::ResolveUsingPrevious(
     return previous_proc_->Resolve(
         host, address_family, host_resolver_flags, addrlist, os_error);
   }
+
+  // If `allow_fallback_to_system_` is false there is no final fallback. It must
+  // be ensured that the Procs can handle any allowed requests. If this check
+  // fails while using MockHostResolver or RuleBasedHostResolverProc, it means
+  // none of the configured rules matched a host resolution request.
+  CHECK(allow_fallback_to_system_);
 
   // Final fallback is the system resolver.
   return SystemHostResolverCall(host, address_family, host_resolver_flags,
@@ -149,6 +158,14 @@ int SystemHostResolverCall(const std::string& host,
 
   if (host_resolver_flags & HOST_RESOLVER_CANONNAME)
     hints.ai_flags |= AI_CANONNAME;
+
+#if defined(OS_WIN)
+  // See crbug.com/1176970. Flag not documented (other than the declaration
+  // comment in ws2def.h) but confirmed by Microsoft to work for this purpose
+  // and be safe.
+  if (host_resolver_flags & HOST_RESOLVER_AVOID_MULTICAST)
+    hints.ai_flags |= AI_DNS_ONLY;
+#endif  // defined(OS_WIN)
 
   // Restrict result set to only this socket type to avoid duplicates.
   hints.ai_socktype = SOCK_STREAM;

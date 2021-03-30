@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-'use strict';
-
-const mojom = chromeos.settings.mojom;
-
 const MAX_NUM_SEARCH_RESULTS = 5;
 
 const SEARCH_REQUEST_METRIC_NAME = 'ChromeOS.Settings.SearchRequests';
@@ -82,7 +77,7 @@ Polymer({
      * <os-search-result-row>. This property is bound to the <iron-list>. Note
      * that when an item is selected, its associated <os-search-result-row>
      * is not focus()ed at the same time unless it is explicitly clicked/tapped.
-     * @private {!mojom.SearchResult}
+     * @private {!chromeos.settings.mojom.SearchResult}
      */
     selectedItem_: {
       type: Object,
@@ -92,7 +87,7 @@ Polymer({
      * Prevent user deselection by tracking last item selected. This item must
      * only be assigned to an item within |this.$.searchResultList|, and not
      * directly to |this.selectedItem_| or an item within |this.searchResults_|.
-     * @private {!mojom.SearchResult}
+     * @private {!chromeos.settings.mojom.SearchResult}
      */
     lastSelectedItem_: {
       type: Object,
@@ -100,7 +95,7 @@ Polymer({
 
     /**
      * Passed into <iron-list>. Exactly one result is the selectedItem_.
-     * @private {!Array<!mojom.SearchResult>}
+     * @private {!Array<!chromeos.settings.mojom.SearchResult>}
      */
     searchResults_: {
       type: Array,
@@ -215,7 +210,9 @@ Polymer({
    */
   getSelectedOsSearchResultRow_() {
     return assert(
-        this.$.searchResultList.querySelector('os-search-result-row[selected]'),
+        /** @type {!OsSearchResultRowElement} */ (
+            this.$.searchResultList.querySelector(
+                'os-search-result-row[selected]')),
         'No OsSearchResultRow is selected.');
   },
 
@@ -251,15 +248,15 @@ Polymer({
 
     this.spinnerActive = true;
 
-    // The C++ layer uses base::string16, which use 16 bit characters. JS
+    // The C++ layer uses std::u16string, which use 16 bit characters. JS
     // strings support either 8 or 16 bit characters, and must be converted to
-    // an array of 16 bit character codes that match base::string16.
+    // an array of 16 bit character codes that match std::u16string.
     const queryMojoString16 = {data: Array.from(query, c => c.charCodeAt())};
     const timeOfSearchRequest = Date.now();
     settings.getSearchHandler()
         .search(
             queryMojoString16, MAX_NUM_SEARCH_RESULTS,
-            mojom.ParentResultBehavior.kAllowParentResults)
+            chromeos.settings.mojom.ParentResultBehavior.kAllowParentResults)
         .then(response => {
           const latencyMs = Date.now() - timeOfSearchRequest;
           chrome.metricsPrivate.recordTime(
@@ -280,7 +277,8 @@ Polymer({
   /**
    * Updates search results UI when settings search results are fetched.
    * @param {string} query The string used to find search results.
-   * @param {!Array<!mojom.SearchResult>} results Array of search results.
+   * @param {!Array<!chromeos.settings.mojom.SearchResult>} results Array of
+   * search results.
    * @private
    */
   onSearchResultsReceived_(query, results) {
@@ -378,7 +376,8 @@ Polymer({
   },
 
   /**
-   * @param {!mojom.SearchResult} item The search result item in searchResults_.
+   * @param {!chromeos.settings.mojom.SearchResult} item The search result item
+   * in searchResults_.
    * @return {boolean} True if the item is selected.
    * @private
    */
@@ -399,7 +398,8 @@ Polymer({
    * Returns the correct tab index since <iron-list>'s default tabIndex property
    * does not automatically add selectedItem_'s <os-search-result-row> to the
    * default navigation flow, unless the user explicitly clicks on the row.
-   * @param {!mojom.SearchResult} item The search result item in searchResults_.
+   * @param {!chromeos.settings.mojom.SearchResult} item The search result item
+   * in searchResults_.
    * @return {number} A 0 if the row should be in the navigation flow, or a -1
    *     if the row should not be in the navigation flow.
    * @private
@@ -410,6 +410,11 @@ Polymer({
 
   /** @private */
   onSearchResultsChanged_() {
+    // Select the first search result if it exists.
+    if (this.searchResultsExist_) {
+      this.selectedItem_ = this.searchResults_[0];
+    }
+
     // Only show dropdown if focus is on search field with a non empty query.
     this.shouldShowDropdown_ =
         this.$.search.isSearchFocused() && !!this.getCurrentQuery_();
@@ -422,9 +427,6 @@ Polymer({
       this.fire('iron-announce', {text: this.i18n('searchNoResults')});
       return;
     }
-
-    // Select the first search result.
-    this.selectedItem_ = this.searchResults_[0];
   },
 
   /**
@@ -512,4 +514,3 @@ Polymer({
     }
   },
 });
-})();

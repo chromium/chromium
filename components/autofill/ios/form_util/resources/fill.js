@@ -137,22 +137,16 @@ __gCrWeb.fill.ROLE_ATTRIBUTE_PRESENTATION = 0;
 /**
  * The value for a unique form or field ID not set or missing.
  *
- * This variable is |kNotSetRendererID| from
- * chromium/src/components/autofill/ios/browser/autofill_util.h
- *
  * @const {string}
  */
-__gCrWeb.fill.RENDERER_ID_NOT_SET = '-1';
+__gCrWeb.fill.RENDERER_ID_NOT_SET = '0';
 
 /**
- * The name of the JS Symbol used to set stable unique form and field IDs.
+ * The JS Symbol object used to set stable unique form and field IDs.
  *
- * This variable is |kNotSetRendererID| from
- * chromium/src/components/autofill/ios/browser/autofill_util.h
- *
- * @const {string}
+ * @const {symbol}
  */
-__gCrWeb.fill.UNIQUE_ID_SYMBOL_NAME = '__gChrome~uniqueID';
+__gCrWeb.fill.ID_SYMBOL = window.Symbol.for('__gChrome~uniqueID');
 
 /**
  * Returns true if an element can be autocompleted.
@@ -1276,7 +1270,7 @@ __gCrWeb.fill.InferLabelFromValueAttr = function(element) {
  *
  * It is based on the logic in
  *     bool IsLabelValid(base::StringPiece16 inferred_label,
- *         const std::vector<base::char16>& stop_words)
+ *         const std::vector<char16_t>& stop_words)
  * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  * The list of characters that are considered special is hard-coded in a regexp.
  *
@@ -2256,7 +2250,6 @@ __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   for (let index = 0; index < count; index++) {
     const keyword = keywords[index];
     if (title.includes(keyword) || path.includes(keyword)) {
-      form['is_formless_checkout'] = true;
       return __gCrWeb.fill.formOrFieldsetsToFormData(
           null /* formElement*/, null /* formControlElement */, fieldsets,
           controlElements, extractMask, form, null /* field */);
@@ -2310,8 +2303,7 @@ __gCrWeb.fill.extractAutofillableElementsFromSet = function(controlElements) {
  * @param {int} nextAvailableID Next available integer.
  */
 __gCrWeb.fill['setUpForUniqueIDs'] = function(nextAvailableID) {
-  const uniqueID = Symbol.for(__gCrWeb.fill.UNIQUE_ID_SYMBOL_NAME);
-  document[uniqueID] = nextAvailableID;
+  document[__gCrWeb.fill.ID_SYMBOL] = nextAvailableID;
 };
 
 /**
@@ -2319,7 +2311,7 @@ __gCrWeb.fill['setUpForUniqueIDs'] = function(nextAvailableID) {
  */
 __gCrWeb.fill.setUniqueIDIfNeeded = function(element) {
   try {
-    const uniqueID = Symbol.for(__gCrWeb.fill.UNIQUE_ID_SYMBOL_NAME);
+    const uniqueID = __gCrWeb.fill.ID_SYMBOL;
     // Do not assign element id value if the base value for the document
     // is not set.
     if (typeof document[uniqueID] !== 'undefined' &&
@@ -2336,7 +2328,7 @@ __gCrWeb.fill.setUniqueIDIfNeeded = function(element) {
  */
 __gCrWeb.fill.getUniqueID = function(element) {
   try {
-    const uniqueID = Symbol.for(__gCrWeb.fill.UNIQUE_ID_SYMBOL_NAME);
+    const uniqueID = __gCrWeb.fill.ID_SYMBOL;
     if (typeof element[uniqueID] !== 'undefined' && !isNaN(element[uniqueID])) {
       return element[uniqueID].toString();
     } else {

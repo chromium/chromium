@@ -44,8 +44,7 @@ std::unique_ptr<HoldingSpaceImage> CreateTestHoldingSpaceImage(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
-      file_path,
-      /*placeholder=*/gfx::ImageSkia(),
+      HoldingSpaceImage::GetMaxSizeForType(type), file_path,
       /*async_bitmap_resolver=*/base::DoNothing());
 }
 
@@ -171,6 +170,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
   auto* holding_space_client = HoldingSpaceController::Get()->client();
   ASSERT_TRUE(holding_space_client);
 
+  // Verify no failures have yet been recorded.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount("HoldingSpace.Item.FailureToLaunch", 0);
+
   {
     // Create a holding space item backed by a non-existing file.
     auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
@@ -182,8 +185,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
     base::RunLoop run_loop;
     holding_space_client->OpenItems(
         {holding_space_item.get()},
-        base::BindLambdaForTesting([&run_loop](bool success) {
+        base::BindLambdaForTesting([&](bool success) {
           EXPECT_FALSE(success);
+
+          // Verify the failure has been recorded.
+          histogram_tester.ExpectBucketCount(
+              "HoldingSpace.Item.FailureToLaunch", holding_space_item->type(),
+              1);
+
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -204,6 +213,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItems) {
         }));
     run_loop.Run();
   }
+
+  // Verify that only the expected failure was recorded.
+  histogram_tester.ExpectTotalCount("HoldingSpace.Item.FailureToLaunch", 1);
 }
 
 // Verifies that `HoldingSpaceClient::ShowItemInFolder()` works as intended when

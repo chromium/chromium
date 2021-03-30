@@ -7,40 +7,8 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":os_powerwash_dialog",
-    ":os_reset_browser_proxy",
-    ":os_reset_page",
-  ]
-}
-
-js_library("os_powerwash_dialog") {
-  deps = [
-    ":os_reset_browser_proxy",
-    "..:metrics_recorder",
-    "../..:lifetime_browser_proxy",
-    "../localized_link:localized_link",
-  ]
-}
-
-js_library("os_reset_page") {
-  deps = [
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("os_reset_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":os_powerwash_dialog.m",
@@ -54,7 +22,7 @@ js_library("os_powerwash_dialog.m") {
   deps = [
     ":os_reset_browser_proxy.m",
     "..:metrics_recorder.m",
-    "../..:lifetime_browser_proxy.m",
+    "../..:lifetime_browser_proxy",
     "../localized_link:localized_link.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -75,7 +43,7 @@ js_library("os_reset_page.m") {
   deps = [
     "..:deep_linking_behavior.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
@@ -96,6 +64,7 @@ polymer_modulizer("os_powerwash_dialog") {
   html_file = "os_powerwash_dialog.html"
   html_type = "dom-module"
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
 }
 
@@ -103,7 +72,7 @@ polymer_modulizer("os_reset_page") {
   js_file = "os_reset_page.js"
   html_file = "os_reset_page.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports +
                  [ "ui/webui/resources/html/assert.html|assert" ]

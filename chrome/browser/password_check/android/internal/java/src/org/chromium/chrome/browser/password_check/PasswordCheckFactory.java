@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.password_check;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Use {@link #getOrCreate()} to instantiate a {@link PasswordCheckImpl}

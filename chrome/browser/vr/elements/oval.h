@@ -18,9 +18,9 @@ class VR_UI_EXPORT Oval : public Rect {
   ~Oval() override;
 
  private:
-  void NotifyClientSizeAnimated(const gfx::SizeF& size,
-                                int target_property_id,
-                                cc::KeyframeModel* keyframe_model) override;
+  void OnSizeAnimated(const gfx::SizeF& size,
+                      int target_property_id,
+                      gfx::KeyframeModel* keyframe_model) override;
 
   DISALLOW_COPY_AND_ASSIGN(Oval);
 };

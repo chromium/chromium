@@ -23,10 +23,10 @@ class CanvasTest : public testing::Test {
   }
 
   gfx::Size SizeStringInt(const char *text, int width, int line_height) {
-    base::string16 text16 = base::UTF8ToUTF16(text);
+    std::u16string text16 = base::UTF8ToUTF16(text);
     int height = 0;
     int flags =
-        (text16.find('\n') != base::string16::npos) ? Canvas::MULTI_LINE : 0;
+        (text16.find('\n') != std::u16string::npos) ? Canvas::MULTI_LINE : 0;
     Canvas::SizeStringInt(text16, font_list_, &width, &height, line_height,
                           flags);
     return gfx::Size(width, height);

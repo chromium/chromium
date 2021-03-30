@@ -17,7 +17,6 @@ source_set("pup_data_base") {
   deps = [
     ":test_uws",
     "//base",
-    "//chrome/chrome_cleaner/chrome_utils:force_installed_extension",
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
   ]

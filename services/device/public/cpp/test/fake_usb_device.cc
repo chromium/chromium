@@ -4,7 +4,6 @@
 
 #include "services/device/public/cpp/test/fake_usb_device.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -13,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "services/device/public/cpp/test/mock_usb_mojo_device.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
@@ -22,9 +22,11 @@ namespace device {
 // static
 void FakeUsbDevice::Create(
     scoped_refptr<FakeUsbDeviceInfo> device,
+    base::span<const uint8_t> blocked_interface_classes,
     mojo::PendingReceiver<device::mojom::UsbDevice> receiver,
     mojo::PendingRemote<mojom::UsbDeviceClient> client) {
-  auto* device_object = new FakeUsbDevice(device, std::move(client));
+  auto* device_object =
+      new FakeUsbDevice(device, blocked_interface_classes, std::move(client));
   device_object->receiver_ = mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(device_object), std::move(receiver));
 }
@@ -34,9 +36,15 @@ FakeUsbDevice::~FakeUsbDevice() {
   observer_.RemoveAll();
 }
 
-FakeUsbDevice::FakeUsbDevice(scoped_refptr<FakeUsbDeviceInfo> device,
-                             mojo::PendingRemote<mojom::UsbDeviceClient> client)
-    : device_(device), observer_(this), client_(std::move(client)) {
+FakeUsbDevice::FakeUsbDevice(
+    scoped_refptr<FakeUsbDeviceInfo> device,
+    base::span<const uint8_t> blocked_interface_classes,
+    mojo::PendingRemote<mojom::UsbDeviceClient> client)
+    : device_(device),
+      blocked_interface_classes_(blocked_interface_classes.begin(),
+                                 blocked_interface_classes.end()),
+      observer_(this),
+      client_(std::move(client)) {
   DCHECK(device_);
   observer_.Add(device_.get());
 
@@ -106,7 +114,7 @@ void FakeUsbDevice::SetConfiguration(uint8_t value,
     return;
   }
 
-  std::move(callback).Run(true);
+  std::move(callback).Run(device_->SetActiveConfig(value));
 }
 
 void FakeUsbDevice::ClaimInterface(uint8_t interface_number,
@@ -118,9 +126,44 @@ void FakeUsbDevice::ClaimInterface(uint8_t interface_number,
     return;
   }
 
-  bool success = claimed_interfaces_.insert(interface_number).second;
+  const mojom::UsbDeviceInfo& device_info = device_->GetDeviceInfo();
+  auto config_it = base::ranges::find_if(
+      device_info.configurations,
+      [&device_info](const mojom::UsbConfigurationInfoPtr& config) {
+        return device_info.active_configuration == config->configuration_value;
+      });
+  if (config_it == device_info.configurations.end()) {
+    std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
+    LOG(ERROR) << "No such configuration.";
+    return;
+  }
 
-  std::move(callback).Run(success);
+  auto interface_it = base::ranges::find_if(
+      (*config_it)->interfaces,
+      [interface_number](const mojom::UsbInterfaceInfoPtr& interface) {
+        return interface->interface_number == interface_number;
+      });
+  if (interface_it == (*config_it)->interfaces.end()) {
+    std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
+    LOG(ERROR) << "No such interface in " << (*config_it)->interfaces.size()
+               << " interfaces.";
+    return;
+  }
+
+  for (const auto& alternate : (*interface_it)->alternates) {
+    if (base::Contains(blocked_interface_classes_, alternate->class_code)) {
+      std::move(callback).Run(mojom::UsbClaimInterfaceResult::kProtectedClass);
+      return;
+    }
+  }
+
+  bool success = claimed_interfaces_.insert(interface_number).second;
+  if (!success) {
+    LOG(ERROR) << "Interface already claimed.";
+  }
+
+  std::move(callback).Run(success ? mojom::UsbClaimInterfaceResult::kSuccess
+                                  : mojom::UsbClaimInterfaceResult::kFailure);
 }
 
 void FakeUsbDevice::ReleaseInterface(uint8_t interface_number,

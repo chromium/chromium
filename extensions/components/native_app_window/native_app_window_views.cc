@@ -4,7 +4,7 @@
 
 #include "extensions/components/native_app_window/native_app_window_views.h"
 
-#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -42,8 +43,8 @@ void NativeAppWindowViews::Init(
   web_view_->SetWebContents(app_window_->web_contents());
 
   SetCanMinimize(!app_window_->show_on_lock_screen());
-  SetCanMaximize(CanMaximizeWindow());
-  SetCanResize(CanResizeWindow());
+  SetCanMaximize(GetCanMaximizeWindow());
+  SetCanResize(GetCanResizeWindow());
 
   widget_ = new views::Widget;
   widget_->AddObserver(this);
@@ -187,7 +188,7 @@ views::View* NativeAppWindowViews::GetInitiallyFocusedView() {
   return web_view_;
 }
 
-base::string16 NativeAppWindowViews::GetWindowTitle() const {
+std::u16string NativeAppWindowViews::GetWindowTitle() const {
   return app_window_->GetTitle();
 }
 
@@ -242,28 +243,19 @@ void NativeAppWindowViews::OnWidgetActivationChanged(views::Widget* widget,
 
 // WebContentsObserver implementation.
 
-void NativeAppWindowViews::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
+void NativeAppWindowViews::RenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host->GetParent())
+    return;
+
   if (app_window_->requested_alpha_enabled() && CanHaveAlphaEnabled()) {
-    content::RenderWidgetHostView* view =
-        render_view_host->GetWidget()->GetView();
-    DCHECK(view);
-    view->SetBackgroundColor(SK_ColorTRANSPARENT);
+    render_frame_host->GetView()->SetBackgroundColor(SK_ColorTRANSPARENT);
   } else if (app_window_->show_on_lock_screen()) {
-    content::RenderWidgetHostView* view =
-        render_view_host->GetWidget()->GetView();
-    DCHECK(view);
     // When shown on the lock screen, app windows will be shown on top of black
     // background - to avoid a white flash while launching the app window,
     // initialize it with black background color.
-    view->SetBackgroundColor(SK_ColorBLACK);
+    render_frame_host->GetView()->SetBackgroundColor(SK_ColorBLACK);
   }
-}
-
-void NativeAppWindowViews::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
-  OnViewWasResized();
 }
 
 // views::View implementation.
@@ -374,8 +366,8 @@ void NativeAppWindowViews::SetContentSizeConstraints(
     const gfx::Size& max_size) {
   size_constraints_.set_minimum_size(min_size);
   size_constraints_.set_maximum_size(max_size);
-  SetCanMaximize(CanMaximizeWindow());
-  SetCanResize(CanResizeWindow());
+  SetCanMaximize(GetCanMaximizeWindow());
+  SetCanResize(GetCanResizeWindow());
   widget_->OnSizeConstraintsChanged();
 }
 
@@ -413,8 +405,8 @@ void NativeAppWindowViews::RemoveObserver(
 }
 
 void NativeAppWindowViews::OnWidgetHasHitTestMaskChanged() {
-  SetCanMaximize(CanMaximizeWindow());
-  SetCanResize(CanResizeWindow());
+  SetCanMaximize(GetCanMaximizeWindow());
+  SetCanResize(GetCanResizeWindow());
 }
 
 void NativeAppWindowViews::OnViewWasResized() {
@@ -422,14 +414,19 @@ void NativeAppWindowViews::OnViewWasResized() {
     observer.OnPositionRequiresUpdate();
 }
 
-bool NativeAppWindowViews::CanResizeWindow() const {
+bool NativeAppWindowViews::GetCanResizeWindow() const {
   return resizable_ && !size_constraints_.HasFixedSize() &&
          !WidgetHasHitTestMask();
 }
 
-bool NativeAppWindowViews::CanMaximizeWindow() const {
+bool NativeAppWindowViews::GetCanMaximizeWindow() const {
   return resizable_ && !size_constraints_.HasMaximumSize() &&
          !WidgetHasHitTestMask();
 }
+
+BEGIN_METADATA(NativeAppWindowViews, views::WidgetDelegateView)
+ADD_READONLY_PROPERTY_METADATA(bool, CanMaximizeWindow)
+ADD_READONLY_PROPERTY_METADATA(bool, CanResizeWindow)
+END_METADATA
 
 }  // namespace native_app_window

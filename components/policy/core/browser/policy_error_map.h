@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
@@ -21,7 +20,7 @@ namespace policy {
 // Collects error messages and their associated policies.
 class POLICY_EXPORT PolicyErrorMap {
  public:
-  typedef std::multimap<std::string, base::string16> PolicyMapType;
+  typedef std::multimap<std::string, std::u16string> PolicyMapType;
   typedef PolicyMapType::const_iterator const_iterator;
 
   class PendingError;
@@ -79,9 +78,12 @@ class POLICY_EXPORT PolicyErrorMap {
                 const std::string& error_path,
                 const std::string& message);
 
+  // Returns true if there is any error for |policy|.
+  bool HasError(const std::string& policy);
+
   // Returns all the error messages stored for |policy|, separated by a white
   // space. Returns an empty string if there are no errors for |policy|.
-  base::string16 GetErrors(const std::string& policy);
+  std::u16string GetErrors(const std::string& policy);
 
   bool empty() const;
   size_t size();

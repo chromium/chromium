@@ -80,13 +80,6 @@ class StaticSingleton final {
 
   using WrapperType = typename Wrapper<Type>::type;
 
-  // To cooperate with leak detection(LSan) for Blink garbage collected objects,
-  // the objects owned by persistent local statics will in some cases have to be
-  // finalized prior to leak checking. This only applies to static references to
-  // Blink heap objects and what they transitively hold on to. Hence the
-  // LEAK_SANITIZER_REGISTER_STATIC_LOCAL() use, it taking care of the grungy
-  // details.
-
   template <typename HeapNew, typename PlacementNew>
   StaticSingleton(const HeapNew& heap_new, const PlacementNew& placement_new)
       : instance_(heap_new, placement_new)
@@ -98,7 +91,7 @@ class StaticSingleton final {
   {
     static_assert(!WTF::IsGarbageCollectedType<Type>::value,
                   "Garbage collected objects must be wrapped in a Persistent");
-    LEAK_SANITIZER_REGISTER_STATIC_LOCAL(WrapperType, instance_.Get());
+    LEAK_SANITIZER_IGNORE_OBJECT(instance_.Get());
   }
 
   Type& Get(bool allow_cross_thread_use) {

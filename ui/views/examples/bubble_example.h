@@ -32,10 +32,9 @@ class VIEWS_EXAMPLES_EXPORT BubbleExample : public ExampleBase {
                   bool persistent,
                   const ui::Event& event);
 
+  Button* no_shadow_legacy_;
+  Button* standard_shadow_;
   Button* no_shadow_;
-  Button* big_shadow_;
-  Button* small_shadow_;
-  Button* no_assets_;
   Button* persistent_;
 
   DISALLOW_COPY_AND_ASSIGN(BubbleExample);

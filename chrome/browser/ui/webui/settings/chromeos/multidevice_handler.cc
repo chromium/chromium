@@ -4,21 +4,21 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/quick_unlock/auth_token.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_pairing_state_tracker_impl.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_urls.h"
-#include "chrome/browser/chromeos/login/quick_unlock/auth_token.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/util/histogram_util.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
@@ -70,11 +70,7 @@ MultideviceHandler::MultideviceHandler(
       multidevice_setup_client_(multidevice_setup_client),
       notification_access_manager_(notification_access_manager),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
-      android_sms_app_manager_(android_sms_app_manager),
-      multidevice_setup_observer_(this),
-      android_sms_pairing_state_tracker_observer_(this),
-      android_sms_app_manager_observer_(this),
-      notification_access_manager_observer_(this) {
+      android_sms_app_manager_(android_sms_app_manager) {
   pref_change_registrar_.Init(prefs_);
 }
 
@@ -133,18 +129,19 @@ void MultideviceHandler::RegisterMessages() {
 
 void MultideviceHandler::OnJavascriptAllowed() {
   if (multidevice_setup_client_)
-    multidevice_setup_observer_.Add(multidevice_setup_client_);
+    multidevice_setup_observation_.Observe(multidevice_setup_client_);
 
   if (notification_access_manager_)
-    notification_access_manager_observer_.Add(notification_access_manager_);
+    notification_access_manager_observation_.Observe(
+        notification_access_manager_);
 
   if (android_sms_pairing_state_tracker_) {
-    android_sms_pairing_state_tracker_observer_.Add(
+    android_sms_pairing_state_tracker_observation_.Observe(
         android_sms_pairing_state_tracker_);
   }
 
   if (android_sms_app_manager_)
-    android_sms_app_manager_observer_.Add(android_sms_app_manager_);
+    android_sms_app_manager_observation_.Observe(android_sms_app_manager_);
 
   pref_change_registrar_.Add(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
@@ -161,21 +158,30 @@ void MultideviceHandler::OnJavascriptAllowed() {
 void MultideviceHandler::OnJavascriptDisallowed() {
   pref_change_registrar_.RemoveAll();
 
-  if (multidevice_setup_client_)
-    multidevice_setup_observer_.Remove(multidevice_setup_client_);
+  if (multidevice_setup_client_) {
+    DCHECK(multidevice_setup_observation_.IsObservingSource(
+        multidevice_setup_client_));
+    multidevice_setup_observation_.Reset();
+  }
 
   if (notification_access_manager_) {
-    notification_access_manager_observer_.Remove(notification_access_manager_);
+    DCHECK(notification_access_manager_observation_.IsObservingSource(
+        notification_access_manager_));
+    notification_access_manager_observation_.Reset();
     notification_access_operation_.reset();
   }
 
   if (android_sms_pairing_state_tracker_) {
-    android_sms_pairing_state_tracker_observer_.Remove(
-        android_sms_pairing_state_tracker_);
+    DCHECK(android_sms_pairing_state_tracker_observation_.IsObservingSource(
+        android_sms_pairing_state_tracker_));
+    android_sms_pairing_state_tracker_observation_.Reset();
   }
 
-  if (android_sms_app_manager_)
-    android_sms_app_manager_observer_.Remove(android_sms_app_manager_);
+  if (android_sms_app_manager_) {
+    DCHECK(android_sms_app_manager_observation_.IsObservingSource(
+        android_sms_app_manager_));
+    android_sms_app_manager_observation_.Reset();
+  }
 
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   callback_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -275,7 +281,7 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
       base::BindOnce(&MultideviceHandler::OnSetFeatureStateEnabledResult,
                      callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 
-  if (feature == multidevice_setup::mojom::Feature::kPhoneHub) {
+  if (enabled && feature == multidevice_setup::mojom::Feature::kPhoneHub) {
     phonehub::util::LogFeatureOptInEntryPoint(
         phonehub::util::OptInEntryPoint::kSettings);
   }

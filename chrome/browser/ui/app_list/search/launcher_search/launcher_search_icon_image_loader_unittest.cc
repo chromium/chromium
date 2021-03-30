@@ -113,8 +113,8 @@ scoped_refptr<extensions::Extension> CreateTestExtension(
   manifest.SetKey(extensions::manifest_keys::kName,
                   base::Value("TestExtension"));
   return extensions::Extension::Create(
-      base::FilePath(), extensions::Manifest::UNPACKED, manifest,
-      extensions::Extension::NO_FLAGS, extension_id, &error);
+      base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
+      manifest, extensions::Extension::NO_FLAGS, extension_id, &error);
 }
 
 // Returns true if icon image of |result_image| equals to |expected_image|.

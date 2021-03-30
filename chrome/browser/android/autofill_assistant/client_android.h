@@ -50,7 +50,6 @@ class ClientAndroid : public Client,
       const base::android::JavaParamRef<jobject>& jcaller,
       const base::android::JavaParamRef<jstring>& jinitial_url,
       const base::android::JavaParamRef<jstring>& jexperiment_ids,
-      const base::android::JavaParamRef<jstring>& jcaller_account,
       const base::android::JavaParamRef<jobjectArray>& parameter_names,
       const base::android::JavaParamRef<jobjectArray>& parameter_values,
       jboolean jis_cct,
@@ -113,6 +112,8 @@ class ClientAndroid : public Client,
   version_info::Channel GetChannel() const override;
   std::string GetEmailAddressForAccessTokenAccount() const override;
   std::string GetChromeSignedInEmailAddress() const override;
+  base::Optional<std::pair<int, int>> GetWindowSize() const override;
+  ClientContextProto::ScreenOrientation GetScreenOrientation() const override;
   AccessTokenFetcher* GetAccessTokenFetcher() override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;
@@ -124,7 +125,6 @@ class ClientAndroid : public Client,
   void Shutdown(Metrics::DropOutReason reason) override;
   void RecordDropOut(Metrics::DropOutReason reason) override;
   bool HasHadUI() const override;
-  bool IsFirstTimeTriggerScriptUser() const override;
 
   // Overrides AccessTokenFetcher
   void FetchAccessToken(
@@ -165,6 +165,10 @@ class ClientAndroid : public Client,
 
   // True if Start() was called. This turns on the tracking of dropouts.
   bool started_ = false;
+
+  // Intent parameter used for tracking dropouts per intent.
+  // TODO(b/182164683) Do not store intent paramenter in |ClientAndroid|.
+  std::string intent_;
 
   // True if the UI was ever attached.
   bool has_had_ui_ = false;

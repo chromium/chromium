@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Document shouldn't be sandboxed by <meta>
-FAIL Worker shouldn't be sandboxed by inheriting <meta> assert_equals: expected "http://web-platform.test:8001" but got "null"
-FAIL Worker shouldn't be sandboxed when created <iframe> inheriting parent's CSP with sandbox <meta> assert_equals: expected "http://web-platform.test:8001" but got "null"
-Harness: the test ran to completion.
-

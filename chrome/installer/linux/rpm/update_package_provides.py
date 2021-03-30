@@ -41,7 +41,6 @@ LIBRARY_FILTER = set([
     "libgbm.so.1",
     "libgcc_s.so",
     "libgdk-3.so",
-    "libgdk_pixbuf-2.0.so",
     "libgio-2.0.so",
     "libglib-2.0.so",
     "libgmodule-2.0.so",

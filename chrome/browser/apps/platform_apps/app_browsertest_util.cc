@@ -243,8 +243,9 @@ AppWindow* PlatformAppBrowserTest::CreateAppWindowFromParams(
     content::BrowserContext* context,
     const Extension* extension,
     const AppWindow::CreateParams& params) {
-  AppWindow* window = new AppWindow(browser()->profile(),
-                                    new ChromeAppDelegate(true), extension);
+  AppWindow* window = new AppWindow(
+      browser()->profile(), new ChromeAppDelegate(browser()->profile(), true),
+      extension);
   ProcessManager* process_manager = ProcessManager::Get(context);
   ExtensionHost* background_host =
       process_manager->GetBackgroundHostForExtension(extension->id());

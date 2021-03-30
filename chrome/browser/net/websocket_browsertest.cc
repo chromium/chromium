@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -83,9 +84,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
   // Prepare the title watcher.
   void SetUpOnMainThread() override {
     watcher_.reset(new content::TitleWatcher(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        base::ASCIIToUTF16("PASS")));
-    watcher_->AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+        browser()->tab_strip_model()->GetActiveWebContents(), u"PASS"));
+    watcher_->AlsoWaitForTitle(u"FAIL");
   }
 
   void TearDownOnMainThread() override { watcher_.reset(); }
@@ -115,10 +115,14 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
 
     process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
         url, requested_protocols, site_for_cookies, isolation_info,
-        std::move(additional_headers), process->GetID(), frame->GetRoutingID(),
-        origin, network::mojom::kWebSocketOptionNone,
+        std::move(additional_headers), process->GetID(), origin,
+        network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        std::move(handshake_client), mojo::NullRemote(), mojo::NullRemote());
+        std::move(handshake_client),
+        process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
+            process->GetID(), frame->GetRoutingID()),
+        /*auth_handler=*/mojo::NullRemote(),
+        /*header_client=*/mojo::NullRemote());
   }
 
   net::SpawnedTestServer ws_server_;
@@ -193,8 +197,8 @@ class AutoLogin : public content::NotificationObserver {
   bool logged_in() const { return logged_in_; }
 
  private:
-  const base::string16 username_;
-  const base::string16 password_;
+  const std::u16string username_;
+  const std::u16string password_;
   bool logged_in_;
 
   content::NotificationRegistrar registrar_;
@@ -213,7 +217,15 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketSplitSegments) {
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SecureWebSocketSplitRecords) {
+// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// does not support modern TLS on the macOS bots.
+#if defined(OS_MAC)
+#define MAYBE_SecureWebSocketSplitRecords DISABLED_SecureWebSocketSplitRecords
+#else
+#define MAYBE_SecureWebSocketSplitRecords SecureWebSocketSplitRecords
+#endif
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
+                       MAYBE_SecureWebSocketSplitRecords) {
   // Launch a secure WebSocket server.
   ASSERT_TRUE(wss_server_.Start());
 
@@ -237,11 +249,10 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SendCloseFrameWhenTabIsClosed) {
     browser()->tab_strip_model()->AppendWebContents(std::move(new_tab), true);
     ASSERT_EQ(raw_new_tab, browser()->tab_strip_model()->GetWebContentsAt(1));
 
-    content::TitleWatcher connected_title_watcher(
-        raw_new_tab, base::ASCIIToUTF16("CONNECTED"));
-    connected_title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("CLOSED"));
+    content::TitleWatcher connected_title_watcher(raw_new_tab, u"CONNECTED");
+    connected_title_watcher.AlsoWaitForTitle(u"CLOSED");
     NavigateToHTTP("connect_and_be_observed.html");
-    const base::string16 result = connected_title_watcher.WaitAndGetTitle();
+    const std::u16string result = connected_title_watcher.WaitAndGetTitle();
     EXPECT_TRUE(base::EqualsASCII(result, "CONNECTED"));
 
     content::WebContentsDestroyedWatcher destroyed_watcher(raw_new_tab);
@@ -269,7 +280,15 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPURL) {
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPSURL) {
+// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// does not support modern TLS on the macOS bots.
+#if defined(OS_MAC)
+#define MAYBE_WebSocketBasicAuthInHTTPSURL DISABLED_WebSocketBasicAuthInHTTPSURL
+#else
+#define MAYBE_WebSocketBasicAuthInHTTPSURL WebSocketBasicAuthInHTTPSURL
+#endif
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
+                       MAYBE_WebSocketBasicAuthInHTTPSURL) {
   // Launch a basic-auth-protected secure WebSocket server.
   wss_server_.set_websocket_basic_auth(true);
   ASSERT_TRUE(wss_server_.Start());
@@ -345,7 +364,14 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserConnectToTest,
 // HTTPS connection limits should not be applied to wss:. This is only tested
 // for secure connections here because the unencrypted case is tested in the
 // Blink layout tests, and browser tests are expensive to run.
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SSLConnectionLimit) {
+// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// does not support modern TLS on the macOS bots.
+#if defined(OS_MAC)
+#define MAYBE_SSLConnectionLimit DISABLED_SSLConnectionLimit
+#else
+#define MAYBE_SSLConnectionLimit SSLConnectionLimit
+#endif
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_SSLConnectionLimit) {
   ASSERT_TRUE(wss_server_.Start());
 
   NavigateToHTTPS("multiple-connections.html");
@@ -354,7 +380,14 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SSLConnectionLimit) {
 }
 
 // Regression test for crbug.com/903553005
-IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
+// TODO(crbug.com/1176880): Disabled on macOS because the WSS SpawnedTestServer
+// does not support modern TLS on the macOS bots.
+#if defined(OS_MAC)
+#define MAYBE_WebSocketAppliesHSTS DISABLED_WebSocketAppliesHSTS
+#else
+#define MAYBE_WebSocketAppliesHSTS WebSocketAppliesHSTS
+#endif
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(
       net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
@@ -374,11 +407,10 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
 
   // Set HSTS on localhost.
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      base::ASCIIToUTF16("SET"));
+      browser()->tab_strip_model()->GetActiveWebContents(), u"SET");
   ui_test_utils::NavigateToURL(browser(),
                                https_server.GetURL("/websocket/set-hsts.html"));
-  const base::string16 result = title_watcher.WaitAndGetTitle();
+  const std::u16string result = title_watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "SET"));
 
   // Verify that it applies to WebSockets.
@@ -557,7 +589,7 @@ class FailureMonitoringHandshakeClient
     int response_code = -1;
   };
 
-  explicit FailureMonitoringHandshakeClient(base::Closure quit)
+  explicit FailureMonitoringHandshakeClient(base::OnceClosure quit)
       : quit_(std::move(quit)) {}
 
   FailureMonitoringHandshakeClient(const FailureMonitoringHandshakeClient&) =
@@ -595,7 +627,7 @@ class FailureMonitoringHandshakeClient
 
  private:
   Result result_;
-  base::Closure quit_;
+  base::OnceClosure quit_;
   mojo::Receiver<network::mojom::WebSocketHandshakeClient>
       handshake_client_receiver_{this};
 };

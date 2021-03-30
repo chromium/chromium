@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {FilesAlertDialog} from './ui/files_alert_dialog.m.js';
+// #import {EmptyFolder} from './ui/empty_folder.m.js';
+// #import {FileListModel} from './file_list_model.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {str, strf, util} from '../../common/js/util.m.js';
+// #import {constants} from './constants.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
 /**
  * Empty folder controller.
  */
-class EmptyFolderController {
+/* #export */ class EmptyFolderController {
   /**
    * @param {!EmptyFolder} emptyFolder Empty folder ui.
    * @param {!DirectoryModel} directoryModel Directory model.
@@ -77,7 +85,7 @@ class EmptyFolderController {
   onScanFailed_(event) {
     this.isScanning_ = false;
     // Show alert for crostini connection error.
-    if (event.error.name == DirectoryModel.CROSTINI_CONNECT_ERR) {
+    if (event.error.name == constants.CROSTINI_CONNECT_ERR) {
       this.alertDialog_.showWithTitle(
           str('ERROR_LINUX_FILES_CONNECTION'), event.error.message);
     }

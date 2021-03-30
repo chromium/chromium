@@ -244,6 +244,9 @@ struct NGLogicalLineItem {
   bool is_hidden_for_paint = false;
 };
 
+CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
+                                     const NGLogicalLineItem& item);
+
 // A vector of Child.
 // Unlike the fragment builder, chlidren are mutable.
 // Callers can add to the fragment builder in a batch once finalized.

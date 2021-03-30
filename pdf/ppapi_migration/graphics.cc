@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -62,7 +63,8 @@ void PepperGraphics::PaintImage(const Image& image, const gfx::Rect& src_rect) {
 
 void PepperGraphics::Scroll(const gfx::Rect& clip,
                             const gfx::Vector2d& amount) {
-  pepper_graphics_.Scroll(PPRectFromRect(clip), PPPointFromVector(amount));
+  pepper_graphics_.Scroll(PPRectFromRect(clip),
+                          pp::Point(amount.x(), amount.y()));
 }
 
 void PepperGraphics::SetScale(float scale) {
@@ -74,27 +76,32 @@ void PepperGraphics::SetLayerTransform(float scale,
                                        const gfx::Point& origin,
                                        const gfx::Vector2d& translate) {
   bool result = pepper_graphics_.SetLayerTransform(
-      scale, PPPointFromPoint(origin), PPPointFromVector(translate));
+      scale, pp::Point(origin.x(), origin.y()),
+      pp::Point(translate.x(), translate.y()));
   DCHECK(result);
 }
 
 // static
-std::unique_ptr<SkiaGraphics> SkiaGraphics::Create(const gfx::Size& size) {
-  auto graphics = base::WrapUnique(new SkiaGraphics(size));
+std::unique_ptr<SkiaGraphics> SkiaGraphics::Create(Client* client,
+                                                   const gfx::Size& size) {
+  auto graphics = base::WrapUnique(new SkiaGraphics(client, size));
   if (!graphics->skia_graphics_)
     return nullptr;
 
   return graphics;
 }
 
-SkiaGraphics::SkiaGraphics(const gfx::Size& size)
+SkiaGraphics::SkiaGraphics(Client* client, const gfx::Size& size)
     : Graphics(size),
+      client_(client),
       skia_graphics_(
           SkSurface::MakeRasterN32Premul(size.width(), size.height())) {}
 
 SkiaGraphics::~SkiaGraphics() = default;
 
 bool SkiaGraphics::Flush(ResultCallback callback) {
+  client_->UpdateSnapshot(skia_graphics_->makeImageSnapshot());
+
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), 0));
   return true;
@@ -102,8 +109,9 @@ bool SkiaGraphics::Flush(ResultCallback callback) {
 
 void SkiaGraphics::PaintImage(const Image& image, const gfx::Rect& src_rect) {
   SkRect skia_rect = RectToSkRect(src_rect);
-  skia_graphics_->getCanvas()->drawBitmapRect(image.skia_image(), skia_rect,
-                                              skia_rect, nullptr);
+  skia_graphics_->getCanvas()->drawImageRect(
+      image.skia_image().asImage(), skia_rect, skia_rect, SkSamplingOptions(),
+      nullptr, SkCanvas::kStrict_SrcRectConstraint);
 }
 
 void SkiaGraphics::Scroll(const gfx::Rect& clip, const gfx::Vector2d& amount) {
@@ -118,10 +126,6 @@ void SkiaGraphics::SetLayerTransform(float scale,
                                      const gfx::Point& origin,
                                      const gfx::Vector2d& translate) {
   NOTIMPLEMENTED_LOG_ONCE();
-}
-
-sk_sp<SkImage> SkiaGraphics::CreateSnapshot() {
-  return skia_graphics_->makeImageSnapshot();
 }
 
 }  // namespace chrome_pdf

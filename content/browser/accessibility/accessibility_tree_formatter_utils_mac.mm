@@ -60,12 +60,12 @@ std::string LineIndexer::IndexBy(const gfx::NativeViewAccessible node) const {
   if (IsBrowserAccessibilityCocoa(node)) {
     auto iter = map.find(node);
     if (iter != map.end()) {
-      line_index = iter->second;
+      line_index = iter->second.line_index;
     }
   } else if (IsAXUIElement(node)) {
     for (auto& iter : map) {
       if (CFEqual(iter.first, node)) {
-        line_index = iter.second;
+        line_index = iter.second.line_index;
         break;
       }
     }
@@ -74,9 +74,12 @@ std::string LineIndexer::IndexBy(const gfx::NativeViewAccessible node) const {
 }
 
 gfx::NativeViewAccessible LineIndexer::NodeBy(
-    const std::string& line_index) const {
-  for (std::pair<const gfx::NativeViewAccessible, std::string> item : map) {
-    if (item.second == line_index) {
+    const std::string& identifier) const {
+  // Finds a first match either by a line number in :LINE_NUM format or by DOM
+  // id.
+  for (auto& item : map) {
+    if (item.second.line_index == identifier ||
+        item.second.DOMid == identifier) {
       return item.first;
     }
   }
@@ -86,7 +89,13 @@ gfx::NativeViewAccessible LineIndexer::NodeBy(
 void LineIndexer::Build(const gfx::NativeViewAccessible node, int* counter) {
   const std::string line_index =
       std::string(1, ':') + base::NumberToString(++(*counter));
-  map.insert({node, line_index});
+
+  const id domid_value =
+      AttributeValueOf(node, base::SysUTF8ToNSString("AXDOMIdentifier"));
+  const std::string domid =
+      base::SysNSStringToUTF8(static_cast<NSString*>(domid_value));
+
+  map.insert({node, {line_index, domid}});
   NSArray* children = ChildrenOf(node);
   for (gfx::NativeViewAccessible child in children) {
     Build(child, counter);
@@ -120,6 +129,13 @@ AttributeInvoker::AttributeInvoker(const id node,
 OptionalNSObject AttributeInvoker::Invoke(
     const AXPropertyNode& property_node) const {
   id target = TargetOf(property_node);
+  if (!target) {
+    // TODO(alexs): failing the tests when filters are incorrect is a good idea,
+    // however crashing ax_dump tools on wrong input might be not. Figure out
+    // a working solution that works nicely in both cases.
+    LOG(ERROR) << "No target to invoke attribute";
+    return OptionalNSObject::Error();
+  }
 
   // Attributes
   for (NSString* attribute : AttributeNamesOf(target)) {
@@ -363,36 +379,39 @@ OptionalNSObject TextMarkerRangeGetStartMarker(const OptionalNSObject& obj) {
   if (!IsAXTextMarkerRange(*obj))
     return OptionalNSObject::NotApplicable();
 
-  BrowserAccessibilityPosition::AXRangeType range =
-      AXTextMarkerRangeToRange(*obj);
+  const BrowserAccessibility::AXRange range = AXTextMarkerRangeToAXRange(*obj);
   if (range.IsNull())
     return OptionalNSObject::Error();
 
-  BrowserAccessibilityPosition::AXPositionInstance::pointer position =
-      range.anchor();
-  const BrowserAccessibility* node = position->GetAnchor();
+  auto* manager =
+      BrowserAccessibilityManager::FromID(range.anchor()->tree_id());
+  DCHECK(manager) << "A non-null range should have an associated AX tree.";
+  const BrowserAccessibility* node =
+      manager->GetFromID(range.anchor()->anchor_id());
+  DCHECK(node) << "A non-null range should have a non-null anchor node.";
   const BrowserAccessibilityCocoa* cocoa_node =
       ToBrowserAccessibilityCocoa(node);
   return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
-      cocoa_node, position->text_offset(), position->affinity()));
+      cocoa_node, range.anchor()->text_offset(), range.anchor()->affinity()));
 }
 
 OptionalNSObject TextMarkerRangeGetEndMarker(const OptionalNSObject& obj) {
   if (!IsAXTextMarkerRange(*obj))
     return OptionalNSObject::NotApplicable();
 
-  BrowserAccessibilityPosition::AXRangeType range =
-      AXTextMarkerRangeToRange(*obj);
+  const BrowserAccessibility::AXRange range = AXTextMarkerRangeToAXRange(*obj);
   if (range.IsNull())
     return OptionalNSObject::Error();
 
-  BrowserAccessibilityPosition::AXPositionInstance::pointer position =
-      range.focus();
-  const BrowserAccessibility* node = position->GetAnchor();
+  auto* manager = BrowserAccessibilityManager::FromID(range.focus()->tree_id());
+  DCHECK(manager) << "A non-null range should have an associated AX tree.";
+  const BrowserAccessibility* node =
+      manager->GetFromID(range.focus()->anchor_id());
+  DCHECK(node) << "A non-null range should have a non-null focus node.";
   const BrowserAccessibilityCocoa* cocoa_node =
       ToBrowserAccessibilityCocoa(node);
   return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
-      cocoa_node, position->text_offset(), position->affinity()));
+      cocoa_node, range.focus()->text_offset(), range.focus()->affinity()));
 }
 
 OptionalNSObject MakePairArray(const OptionalNSObject& obj1,

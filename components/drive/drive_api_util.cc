@@ -9,7 +9,6 @@
 #include "base/files/file.h"
 #include "base/hash/md5.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,13 +55,13 @@ std::string EscapeQueryStringValue(const std::string& str) {
 
 std::string TranslateQuery(const std::string& original_query) {
   // In order to handle non-ascii white spaces correctly, convert to UTF16.
-  base::string16 query = base::UTF8ToUTF16(original_query);
-  const base::string16 kDelimiter(
-      base::kWhitespaceUTF16 + base::ASCIIToUTF16("\""));
+  std::u16string query = base::UTF8ToUTF16(original_query);
+  const std::u16string kDelimiter(base::kWhitespaceUTF16 +
+                                  base::ASCIIToUTF16("\""));
 
   std::string result;
   for (size_t index = query.find_first_not_of(base::kWhitespaceUTF16);
-       index != base::string16::npos;
+       index != std::u16string::npos;
        index = query.find_first_not_of(base::kWhitespaceUTF16, index)) {
     bool is_exclusion = (query[index] == '-');
     if (is_exclusion)
@@ -73,12 +72,12 @@ std::string TranslateQuery(const std::string& original_query) {
     }
 
     size_t begin_token = index;
-    base::string16 token;
+    std::u16string token;
     if (query[begin_token] == '"') {
       // Quoted query.
       ++begin_token;
       size_t end_token = query.find('"', begin_token);
-      if (end_token == base::string16::npos) {
+      if (end_token == std::u16string::npos) {
         // This is kind of syntax error, since quoted string isn't finished.
         // However, the query is built by user manually, so here we treat
         // whole remaining string as a token as a fallback, by appending
@@ -91,7 +90,7 @@ std::string TranslateQuery(const std::string& original_query) {
       index = end_token + 1;  // Consume last '"', too.
     } else {
       size_t end_token = query.find_first_of(kDelimiter, begin_token);
-      if (end_token == base::string16::npos) {
+      if (end_token == std::u16string::npos) {
         end_token = query.length();
       }
 

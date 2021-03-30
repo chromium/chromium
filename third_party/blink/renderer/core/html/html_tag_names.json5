@@ -351,6 +351,11 @@
       interfaceName: "HTMLElement",
     },
     {
+      name: "popup",
+      interfaceName: "HTMLPopupElement",
+      runtimeEnabled: "HTMLPopupElement",
+    },
+    {
       name: "portal",
       interfaceName: "HTMLPortalElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/portal",
@@ -408,6 +413,12 @@
     },
     {
       name: "select",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
+    },
+    {
+      name: "selectmenu",
+      interfaceName: "HTMLSelectMenuElement",
+      runtimeEnabled: "HTMLSelectMenuElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {

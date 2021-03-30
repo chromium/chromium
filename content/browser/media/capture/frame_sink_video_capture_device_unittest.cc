@@ -101,8 +101,8 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                     const gfx::Size& max_size,
                     bool use_fixed_aspect_ratio));
   MOCK_METHOD1(SetAutoThrottlingEnabled, void(bool));
-  void ChangeTarget(
-      const base::Optional<viz::FrameSinkId>& frame_sink_id) final {
+  void ChangeTarget(const base::Optional<viz::FrameSinkId>& frame_sink_id,
+                    const viz::SubtreeCaptureId& subtree_capture_id) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
     MockChangeTarget(frame_sink_id ? *frame_sink_id : viz::FrameSinkId());
   }
@@ -181,17 +181,16 @@ class MockVideoFrameReceiver : public media::VideoFrameReceiver {
                void(int buffer_id,
                     media::mojom::VideoBufferHandle* buffer_handle));
   void OnFrameReadyInBuffer(
-      int buffer_id,
-      int frame_feedback_id,
-      std::unique_ptr<Buffer::ScopedAccessPermission> buffer_read_permission,
-      media::mojom::VideoFrameInfoPtr frame_info) final {
+      media::ReadyFrameInBuffer frame,
+      std::vector<media::ReadyFrameInBuffer> scaled_frames) final {
     DCHECK_ON_DEVICE_THREAD();
-    feedback_ids_[buffer_id] = frame_feedback_id;
-    auto* const raw_pointer_to_permission = buffer_read_permission.get();
-    access_permissions_[buffer_id] = std::move(buffer_read_permission);
-    auto* const raw_pointer_to_info = frame_info.get();
-    frame_infos_[buffer_id] = std::move(frame_info);
-    MockOnFrameReadyInBuffer(buffer_id, frame_feedback_id,
+    feedback_ids_[frame.buffer_id] = frame.frame_feedback_id;
+    auto* const raw_pointer_to_permission = frame.buffer_read_permission.get();
+    access_permissions_[frame.buffer_id] =
+        std::move(frame.buffer_read_permission);
+    auto* const raw_pointer_to_info = frame.frame_info.get();
+    frame_infos_[frame.buffer_id] = std::move(frame.frame_info);
+    MockOnFrameReadyInBuffer(frame.buffer_id, frame.frame_feedback_id,
                              raw_pointer_to_permission, raw_pointer_to_info);
   }
   MOCK_METHOD4(MockOnFrameReadyInBuffer,

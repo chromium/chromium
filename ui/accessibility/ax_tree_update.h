@@ -12,8 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/strings/string_number_conversions.h"
-#include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -49,9 +48,10 @@ namespace ui {
 //        placeholder must be updated within the same AXTreeUpdate, otherwise
 //        it's a fatal error. This guarantees the tree is always complete
 //        before or after an AXTreeUpdate.
-template<typename AXNodeData, typename AXTreeData> struct AXTreeUpdateBase {
-  AXTreeUpdateBase() = default;
-  ~AXTreeUpdateBase() = default;
+struct AX_BASE_EXPORT AXTreeUpdate {
+  AXTreeUpdate();
+  AXTreeUpdate(const AXTreeUpdate& other);
+  ~AXTreeUpdate();
 
   // If |has_tree_data| is true, the value of |tree_data| should be used
   // to update the tree data, otherwise it should be ignored.
@@ -63,19 +63,22 @@ template<typename AXNodeData, typename AXTreeData> struct AXTreeUpdateBase {
   // all of its children and their descendants, but leaving that node in
   // the tree. It's an error to clear a node but not subsequently update it
   // as part of the tree update.
-  int node_id_to_clear = 0;
+  AXNodeID node_id_to_clear = kInvalidAXNodeID;
 
   // The id of the root of the tree, if the root is changing. This is
   // required to be set if the root of the tree is changing or Unserialize
   // will fail. If the root of the tree is not changing this is optional
   // and it is allowed to pass 0.
-  int root_id = 0;
+  AXNodeID root_id = kInvalidAXNodeID;
 
   // A vector of nodes to update, according to the rules above.
   std::vector<AXNodeData> nodes;
 
   // The source of the event which generated this tree update.
   ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone;
+
+  // The accessibility action that caused this tree update.
+  ax::mojom::Action event_from_action = ax::mojom::Action::kNone;
 
   // The event intents associated with this tree update.
   std::vector<AXEventIntent> event_intents;
@@ -86,71 +89,12 @@ template<typename AXNodeData, typename AXTreeData> struct AXTreeUpdateBase {
   // TODO(dmazzoni): location changes
 };
 
-using AXTreeUpdate = AXTreeUpdateBase<AXNodeData, AXTreeData>;
-
-template<typename AXNodeData, typename AXTreeData>
-std::string AXTreeUpdateBase<AXNodeData, AXTreeData>::ToString() const {
-  std::string result;
-
-  if (has_tree_data) {
-    result += "AXTreeUpdate tree data:" + tree_data.ToString() + "\n";
-  }
-
-  if (node_id_to_clear != 0) {
-    result += "AXTreeUpdate: clear node " +
-              base::NumberToString(node_id_to_clear) + "\n";
-  }
-
-  if (root_id != 0) {
-    result += "AXTreeUpdate: root id " + base::NumberToString(root_id) + "\n";
-  }
-
-  if (event_from != ax::mojom::EventFrom::kNone)
-    result += "event_from=" + std::string(ui::ToString(event_from)) + "\n";
-
-  if (!event_intents.empty()) {
-    result += "event_intents=[\n";
-    for (const auto& event_intent : event_intents)
-      result += "  " + event_intent.ToString() + "\n";
-    result += "]\n";
-  }
-
-  // The challenge here is that we want to indent the nodes being updated
-  // so that parent/child relationships are clear, but we don't have access
-  // to the rest of the tree for context, so we have to try to show the
-  // relative indentation of child nodes in this update relative to their
-  // parents.
-  std::unordered_map<int32_t, int> id_to_indentation;
-  for (size_t i = 0; i < nodes.size(); ++i) {
-    int indent = id_to_indentation[nodes[i].id];
-    result += std::string(2 * indent, ' ');
-    result += nodes[i].ToString() + "\n";
-    for (size_t j = 0; j < nodes[i].child_ids.size(); ++j)
-      id_to_indentation[nodes[i].child_ids[j]] = indent + 1;
-  }
-
-  return result;
-}
-
 // Two tree updates can be merged into one if the second one
 // doesn't clear a subtree, doesn't have new tree data, and
 // doesn't have a new root id - in other words the second tree
 // update consists of only changes to nodes.
-template <typename AXNodeData, typename AXTreeData>
-bool TreeUpdatesCanBeMerged(
-    const AXTreeUpdateBase<AXNodeData, AXTreeData>& u1,
-    const AXTreeUpdateBase<AXNodeData, AXTreeData>& u2) {
-  if (u2.node_id_to_clear)
-    return false;
-
-  if (u2.has_tree_data && u2.tree_data != u1.tree_data)
-    return false;
-
-  if (u2.root_id != u1.root_id)
-    return false;
-
-  return true;
-}
+bool AX_BASE_EXPORT TreeUpdatesCanBeMerged(const AXTreeUpdate& u1,
+                                           const AXTreeUpdate& u2);
 
 }  // namespace ui
 

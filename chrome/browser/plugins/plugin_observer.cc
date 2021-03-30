@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/component_updater/component_updater_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
@@ -55,7 +54,7 @@ class PluginObserver::PluginPlaceholderHost : public PluginInstallerObserver {
  public:
   PluginPlaceholderHost(
       PluginObserver* observer,
-      base::string16 plugin_name,
+      std::u16string plugin_name,
       PluginInstaller* installer,
       mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer_remote)
       : PluginInstallerObserver(installer),
@@ -76,60 +75,6 @@ class PluginObserver::PluginPlaceholderHost : public PluginInstallerObserver {
   mojo::Remote<chrome::mojom::PluginRenderer> plugin_renderer_remote_;
 };
 
-class PluginObserver::ComponentObserver
-    : public update_client::UpdateClient::Observer {
- public:
-  using Events = update_client::UpdateClient::Observer::Events;
-  ComponentObserver(
-      PluginObserver* observer,
-      const std::string& component_id,
-      mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer_remote)
-      : observer_(observer),
-        component_id_(component_id),
-        plugin_renderer_remote_(std::move(plugin_renderer_remote)) {
-    plugin_renderer_remote_.set_disconnect_handler(
-        base::BindOnce(&PluginObserver::RemoveComponentObserver,
-                       base::Unretained(observer_), this));
-    g_browser_process->component_updater()->AddObserver(this);
-  }
-
-  ~ComponentObserver() override {
-    g_browser_process->component_updater()->RemoveObserver(this);
-  }
-
-  void OnEvent(Events event, const std::string& id) override {
-    // TODO(lukasza): https://crbug.com/760637: |routing_id_| might live in a
-    // different process than the RenderViewHost - need to track and use
-    // placeholder's process when calling Send below.
-
-    if (id != component_id_)
-      return;
-    switch (event) {
-      case Events::COMPONENT_UPDATED:
-        plugin_renderer_remote_->UpdateSuccess();
-        observer_->RemoveComponentObserver(this);
-        break;
-      case Events::COMPONENT_UPDATE_FOUND:
-        plugin_renderer_remote_->UpdateDownloading();
-        break;
-      case Events::COMPONENT_NOT_UPDATED:
-      case Events::COMPONENT_UPDATE_ERROR:
-        plugin_renderer_remote_->UpdateFailure();
-        observer_->RemoveComponentObserver(this);
-        break;
-      default:
-        // No message to send.
-        break;
-    }
-  }
-
- private:
-  PluginObserver* observer_;
-  std::string component_id_;
-  mojo::Remote<chrome::mojom::PluginRenderer> plugin_renderer_remote_;
-  DISALLOW_COPY_AND_ASSIGN(ComponentObserver);
-};
-
 PluginObserver::PluginObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       plugin_host_receivers_(web_contents, this) {}
@@ -141,9 +86,9 @@ void PluginObserver::PluginCrashed(const base::FilePath& plugin_path,
                                    base::ProcessId plugin_pid) {
   DCHECK(!plugin_path.value().empty());
 
-  base::string16 plugin_name =
+  std::u16string plugin_name =
       PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
-  base::string16 infobar_text;
+  std::u16string infobar_text;
 #if defined(OS_WIN)
   // Find out whether the plugin process is still alive.
   // Note: Although the chances are slim, it is possible that after the plugin
@@ -190,7 +135,7 @@ void PluginObserver::PluginCrashed(const base::FilePath& plugin_path,
 // static
 void PluginObserver::CreatePluginObserverInfoBar(
     InfoBarService* infobar_service,
-    const base::string16& plugin_name) {
+    const std::u16string& plugin_name) {
   SimpleAlertInfoBarDelegate::Create(
       infobar_service,
       infobars::InfoBarDelegate::PLUGIN_OBSERVER_INFOBAR_DELEGATE,
@@ -220,23 +165,6 @@ void PluginObserver::BlockedOutdatedPlugin(
   }
 }
 
-void PluginObserver::BlockedComponentUpdatedPlugin(
-    mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer,
-    const std::string& identifier) {
-  auto component_observer = std::make_unique<ComponentObserver>(
-      this, identifier, std::move(plugin_renderer));
-  component_observers_[component_observer.get()] =
-      std::move(component_observer);
-  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
-      identifier, component_updater::OnDemandUpdater::Priority::FOREGROUND,
-      component_updater::Callback());
-}
-
-void PluginObserver::RemoveComponentObserver(
-    ComponentObserver* component_observer) {
-  component_observers_.erase(component_observer);
-}
-
 void PluginObserver::RemovePluginPlaceholderHost(
     PluginPlaceholderHost* placeholder) {
   plugin_placeholders_.erase(placeholder);
@@ -251,7 +179,7 @@ void PluginObserver::ShowFlashPermissionBubble() {
 void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
   g_browser_process->GetMetricsServicesManager()->OnPluginLoadingError(
       plugin_path);
-  base::string16 plugin_name =
+  std::u16string plugin_name =
       PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
   CreatePluginObserverInfoBar(InfoBarService::FromWebContents(web_contents()),
                               plugin_name);
@@ -259,8 +187,7 @@ void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
 
 void PluginObserver::OpenPDF(const GURL& url) {
   // WebViews should never trigger PDF downloads.
-  auto* guest_view = guest_view::GuestViewBase::FromWebContents(web_contents());
-  if (guest_view && guest_view->IsViewType(extensions::WebViewGuest::Type))
+  if (extensions::WebViewGuest::FromWebContents(web_contents()))
     return;
 
   content::RenderFrameHost* render_frame_host =

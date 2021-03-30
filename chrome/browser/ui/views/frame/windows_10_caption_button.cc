@@ -15,12 +15,13 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 Windows10CaptionButton::Windows10CaptionButton(
     PressedCallback callback,
     GlassBrowserFrameView* frame_view,
     ViewID button_type,
-    const base::string16& accessible_name)
+    const std::u16string& accessible_name)
     : views::Button(std::move(callback)),
       frame_view_(frame_view),
       button_type_(button_type) {
@@ -37,7 +38,7 @@ gfx::Size Windows10CaptionButton::CalculatePreferredSize() const {
   if (!frame_view_->browser_view()->webui_tab_strip() &&
       frame_view_->IsMaximized()) {
     int maximized_height =
-        frame_view_->browser_view()->IsTabStripVisible()
+        frame_view_->browser_view()->GetTabStripVisible()
             ? frame_view_->browser_view()->GetTabStripHeight()
             : frame_view_->TitlebarMaximizedVisualHeight();
     constexpr int kMaximizedBottomMargin = 2;
@@ -267,3 +268,11 @@ void Windows10CaptionButton::PaintSymbol(gfx::Canvas* canvas) {
       return;
   }
 }
+
+BEGIN_METADATA(Windows10CaptionButton, views::Button)
+ADD_READONLY_PROPERTY_METADATA(int, BetweenButtonSpacing)
+ADD_READONLY_PROPERTY_METADATA(int, ButtonDisplayOrderIndex)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               BaseColor,
+                               views::metadata::SkColorConverter)
+END_METADATA

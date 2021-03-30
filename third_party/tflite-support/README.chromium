@@ -1,0 +1,38 @@
+Name: TensorFlow Lite Support
+Short Name: tflite-support
+URL: https://github.com/tensorflow/tflite-support
+Version: 3faaca9c6a3b22dec4d636b6b092431c9ac409e8
+Date: 2021/01/05
+License: Apache 2.0
+License File: LICENSE
+Security Critical: Yes
+CPEPrefix: unknown
+
+Description:
+TFLite Support is a toolkit that helps users to develop ML and deploy TFLite
+models onto mobile devices.  It works cross-Platform and is supported on
+Java, C++ (WIP), and Swift (WIP).
+
+Modifications:
+- Use chromium's logging utility in place of glog (patches/0001-use-base-logging.patch)
+- Use size_t rather than int for loops according to chromium style (0001-use-size_t.patch)
+- Rely on re::StringPiece instead of absl::string_view (0001-use_StringPiece-for_string_view.patch)
+- Remove unsafe use of conversions between NSString and string by using SysNSStringToUTF8. Note, this
+  is unused code but required for presubmit checks. (0001-use-SysNSStringToUTF8.patch)
+- Remove usage of absl::Cord in tflite::support::CreateStatusWithPayload (0001-no-absl-cord.patch)
+- Use _Exit instead of _exit to work on all platforms (0001-use-exit.patch)
+- Remove external file handlers support for memory mapping files to support Windows
+  (0001-remove-unsupported-memory-map-from-file-handler.patch)
+- Fixes sign compare issues in tflite-support (0001-task-utils-sign-compare.patch)
+- Remove support for sentencepiece tokenizers (0001-no-sentencepiece-tokenizer.patch)
+- Allows for the max sequence used by BERT models to be 512 instead of 128 (0001-bert-max-seq-len.patch)
+
+Third party dependencies:
+- tflite
+- libzip
+- utf
+- tensorflow-text
+
+Update Process:
+1) Clone the tflite-support github repo at the desired commit into src/
+2) Apply each patch listed above residing in patches/ using `git apply patches/$PATCHFILE`

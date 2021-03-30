@@ -20,7 +20,7 @@ class CONTENT_EXPORT SmsQueue {
   SmsQueue();
   ~SmsQueue();
 
-  using FailureType = SmsFetcher::FailureType;
+  using FailureType = SmsFetchFailureType;
   using Subscriber = SmsFetcher::Subscriber;
 
   void Push(const OriginList& origin_list, Subscriber* subscriber);

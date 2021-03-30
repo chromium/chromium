@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {PortState} from '/gen/media/midi/midi_service.mojom.m.js';
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+
+async_test(t => {
+  let noteOn = [ 0x90, 0x45, 0x7f ];
+
+  t.step(() => {
+    setMidiPermission({}, 'granted').then(() => {
+      return navigator.requestMIDIAccess();
+    }).then(a => {
+      let started = false;
+      let receivedMessages = 0;
+      let receiveMessage = e => {
+        t.step(() => {
+          assert_array_equals(
+              e.data, noteOn, 'received message should be noteOn');
+        });
+        if (++receivedMessages != 2)
+          return;
+        t.done();
+      };
+
+      a.onstatechange = e => {
+        // Wait until three outputs and three inputs appear.
+        if (a.inputs.size != 3 || a.outputs.size != 3 || started)
+          return;
+        started = true;
+
+        // Set an event handler respectively for newly connected ports.
+        const inputs = a.inputs.values();
+        inputs.next();
+        inputs.next().value.onmidimessage = receiveMessage;
+        inputs.next().value.onmidimessage = receiveMessage;
+
+        // Send a message respectively, and see if it is loopbacked.
+        const outputs = a.outputs.values();
+        outputs.next();
+        outputs.next().value.send(noteOn);
+        outputs.next().value.send(noteOn);
+      };
+
+      mock.addInputPort(PortState.CONNECTED);
+      mock.addOutputPort(PortState.CONNECTED);
+      mock.addInputPort(PortState.OPENED);
+      mock.addOutputPort(PortState.OPENED);
+    }).catch(e => assert_unreached(e));
+  });
+}, "Test if newly connected ports work correctly");
+</script>

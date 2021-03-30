@@ -5,13 +5,14 @@
 #include "ui/ozone/platform/x11/ozone_platform_x11.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -30,6 +31,7 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/switches.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"
@@ -107,7 +109,7 @@ class OzonePlatformX11 : public OzonePlatform,
       PlatformWindowInitProperties properties) override {
     auto window = std::make_unique<X11Window>(delegate);
     window->Initialize(std::move(properties));
-    window->SetTitle(base::ASCIIToUTF16("Ozone X11"));
+    window->SetTitle(u"Ozone X11");
     return std::move(window);
   }
 
@@ -175,6 +177,8 @@ class OzonePlatformX11 : public OzonePlatform,
       properties->message_pump_type_for_viz_compositor =
           base::MessagePumpType::UI;
       properties->supports_vulkan_swap_chain = true;
+      properties->uses_external_vulkan_image_factory = true;
+      properties->skia_can_fall_back_to_x11 = true;
       properties->platform_shows_drag_image = false;
       properties->supports_global_application_menus = true;
       properties->app_modal_dialogs_use_event_blocker = true;
@@ -194,6 +198,14 @@ class OzonePlatformX11 : public OzonePlatform,
   }
 
   void InitializeUI(const InitParams& params) override {
+    // If opening the connection failed there is nothing we can do. Crash here
+    // instead of crashing later. If you are crashing here, make sure there is
+    // an X server running and $DISPLAY is set.
+    // In case of non-Ozone/X11, the very same check happens during the
+    // BrowserMainLoop::InitializeToolkit call.
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
+      CHECK(x11::Connection::Get()->Ready()) << "Missing X server or $DISPLAY";
+
     InitializeCommon(params);
     CreatePlatformEventSource();
     overlay_manager_ = std::make_unique<StubOverlayManager>();
@@ -268,11 +280,6 @@ class OzonePlatformX11 : public OzonePlatform,
   void InitializeCommon(const InitParams& params) {
     if (common_initialized_)
       return;
-
-    // If opening the connection failed there is nothing we can do. Crash here
-    // instead of crashing later. If you are crashing here, make sure there is
-    // an X server running and $DISPLAY is set.
-    CHECK(x11::Connection::Get()->Ready()) << "Missing X server or $DISPLAY";
 
     common_initialized_ = true;
   }

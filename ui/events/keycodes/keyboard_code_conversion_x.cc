@@ -1017,7 +1017,7 @@ DomKey GetDomKeyFromXEvent(const x11::Event& xev) {
   // https://crbug.com/633838
   modifiers &= ~static_cast<int>(x11::KeyButMask::Control);
   uint32_t keysym = TranslateKey(xkeycode, modifiers);
-  base::char16 ch = GetUnicodeCharacterFromXKeySym(keysym);
+  char16_t ch = GetUnicodeCharacterFromXKeySym(keysym);
   return XKeySymToDomKey(keysym, ch);
 }
 

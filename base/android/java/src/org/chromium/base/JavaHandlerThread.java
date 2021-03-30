@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -70,10 +69,8 @@ public class JavaHandlerThread {
                 JavaHandlerThreadJni.get().onLooperStopped(nativeThread);
             }
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            // When we can, signal that new tasks queued up won't be run.
-            mThread.getLooper().quitSafely();
-        }
+        // Signal that new tasks queued up won't be run.
+        mThread.getLooper().quitSafely();
     }
 
     @CalledByNative

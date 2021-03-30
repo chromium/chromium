@@ -19,31 +19,32 @@ base::CommandLine GetAppLauncherCommand(const AppId& app_id,
 
 // Returns the extension required for new installations of |app_id| based on
 // current state of duplicate installations of |app_id| in other profiles.
-base::string16 GetAppNameExtensionForNextInstall(
+std::wstring GetAppNameExtensionForNextInstall(
     const AppId& app_id,
     const base::FilePath& profile_path);
 
-base::FilePath GetAppSpecificLauncherFilename(const base::string16& app_name);
+base::FilePath GetAppSpecificLauncherFilename(const std::wstring& app_name);
 
 // See https://docs.microsoft.com/en-us/windows/win32/com/-progid--key for
 // the allowed characters in a prog_id. Since the prog_id is stored in the
 // Windows registry, the mapping between a given profile+app_id and a prog_id
 // can not be changed.
-base::string16 GetProgIdForApp(const base::FilePath& profile_path,
-                               const AppId& app_id);
+std::wstring GetProgIdForApp(const base::FilePath& profile_path,
+                             const AppId& app_id);
 
 // Makes an app-specific copy of chrome_pwa_launcher.exe that lives in the web
 // application directory |web_app_path|. Returns path of the launcher file if
 // successful, base::nullopt otherwise.
 base::Optional<base::FilePath> CreateAppLauncherFile(
-    const base::string16& app_name,
-    const base::string16& app_name_extension,
+    const std::wstring& app_name,
+    const std::wstring& app_name_extension,
     const base::FilePath& web_app_path);
 
 // Checks if there is an installation of this app in another profile that needs
 // to be updated with a profile specific name and executes required update.
 void CheckAndUpdateExternalInstallations(const base::FilePath& cur_profile_path,
-                                         const AppId& app_id);
+                                         const AppId& app_id,
+                                         base::OnceCallback<void()> callback);
 
 // Result of file handler registration process.
 // These values are persisted to logs. Entries should not be renumbered and

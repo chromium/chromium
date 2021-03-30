@@ -7,7 +7,6 @@ include_rules = [
   "+components/account_id",
   "+components/discardable_memory/public",
   "+components/discardable_memory/service/discardable_shared_memory_manager.h",
-  "+components/exo",
   "+components/media_message_center",
   "+components/pref_registry",
   "+components/prefs",
@@ -44,46 +43,37 @@ include_rules = [
   "+ui",
   "-ash/host",
 
-  # Ash components are mini-apps and in general ash should not depend on them.
-  # If ash needs to launch a mini-app it can add a deps exception just for the
-  # header required to launch the app.
-  "-ash/components",
-
   # Ash sits above content. Exceptions live in //ash/content.
   "-content",
 
   # Only allow Chrome OS services and D-Bus clients accessible to the mustash
   # ash process.
   "-chromeos",
-  "+chromeos/audio",
   "+chromeos/components/multidevice/logging/logging.h",
-  "+chromeos/components/bloom/public/cpp",
   "+chromeos/components/phonehub",
   "+chromeos/components/proximity_auth/public/mojom",
   "+chromeos/components/quick_answers",
   "+chromeos/components/security_token_pin",
   "+chromeos/components/sensors",
-  "+chromeos/constants",
-  # TODO(https://crbug.com/940810): Eliminate this.
+  "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/dbus/initialize_dbus_client.h",
   "+chromeos/dbus/audio",
   "+chromeos/dbus/hammerd",
-  # TODO(https://crbug.com/644348): Eliminate this.
   "+chromeos/dbus/power",
   "+chromeos/dbus/power_manager",
-  # TODO(https://crbug.com/644355): Eliminate this.
   "+chromeos/dbus/shill",
   "+chromeos/dbus/system_clock",
   "+chromeos/dbus/usb",
-  # TODO(https://crbug.com/644355): Eliminate this.
   "+chromeos/network",
   "+chromeos/services/assistant/public" ,
   "+chromeos/services/assistant/test_support",
+  "+chromeos/services/libassistant/public/cpp",
+  "+chromeos/services/libassistant/public/mojom",
+  "+chromeos/services/machine_learning/public",
   "+chromeos/services/multidevice_setup/public",
   "+chromeos/services/nearby/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",
-  # TODO(https://crbug.com/644361): Eliminate this.
   "+chromeos/settings/timezone_settings.h",
   "+chromeos/strings",
   "+chromeos/system",

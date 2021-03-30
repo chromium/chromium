@@ -61,7 +61,7 @@
       chrome_test_util::GetOriginalBrowserState();
   CoreAccountInfo info =
       IdentityManagerFactory::GetForBrowserState(browserState)
-          ->GetPrimaryAccountInfo();
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
 
   return base::SysUTF8ToNSString(info.gaia);
 }
@@ -71,7 +71,7 @@
       chrome_test_util::GetOriginalBrowserState();
   CoreAccountInfo info =
       IdentityManagerFactory::GetForBrowserState(browserState)
-          ->GetPrimaryAccountInfo();
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
 
   return base::SysUTF8ToNSString(info.email);
 }
@@ -81,7 +81,7 @@
       chrome_test_util::GetOriginalBrowserState();
 
   return !IdentityManagerFactory::GetForBrowserState(browserState)
-              ->HasPrimaryAccount();
+              ->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 + (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email {

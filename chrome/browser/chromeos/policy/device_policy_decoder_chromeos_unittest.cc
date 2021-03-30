@@ -149,13 +149,14 @@ TEST_F(DevicePolicyDecoderChromeOSTest, UserWhitelistWarning) {
   EXPECT_EQ(base::ListValue(list),
             *policies.GetValue(key::kDeviceUserWhitelist));
 
-  base::RepeatingCallback<base::string16(int)> l10nlookup =
+  base::RepeatingCallback<std::u16string(int)> l10nlookup =
       base::BindRepeating(&l10n_util::GetStringUTF16);
 
   // Should have a deprecation warning.
-  EXPECT_FALSE(policies.Get(key::kDeviceUserWhitelist)
-                   ->GetLocalizedErrors(l10nlookup)
-                   .empty());
+  EXPECT_FALSE(
+      policies.Get(key::kDeviceUserWhitelist)
+          ->GetLocalizedMessages(PolicyMap::MessageType::kError, l10nlookup)
+          .empty());
 }
 
 }  // namespace policy

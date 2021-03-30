@@ -39,19 +39,11 @@ class PersistentLocation final {
   base::Location location_;
 };
 
-#if !BUILDFLAG(FROM_HERE_USES_LOCATION_BUILTINS) && \
-    BUILDFLAG(RAW_HEAP_SNAPSHOTS)
-#if !BUILDFLAG(ENABLE_LOCATION_SOURCE)
-#define PERSISTENT_FROM_HERE \
-  PersistentLocation(::base::Location::CreateFromHere(__FILE__))
-#else
-#define PERSISTENT_FROM_HERE \
-  PersistentLocation(        \
-      ::base::Location::CreateFromHere(__func__, __FILE__, __LINE__))
-#endif
-#else
+#if BUILDFLAG(RAW_HEAP_SNAPSHOTS)
+#define PERSISTENT_FROM_HERE PersistentLocation(base::Location::Current())
+#else  // !RAW_HEAP_SNAPSHOTS
 #define PERSISTENT_FROM_HERE PersistentLocation()
-#endif  // BUILDFLAG(RAW_HEAP_SNAPSHOTS)
+#endif  // !RAW_HEAP_SNAPSHOTS
 
 template <typename T,
           WeaknessPersistentConfiguration weaknessConfiguration,
@@ -80,33 +72,10 @@ class PersistentBase {
     return raw_;
   }
 
-  // TODO(https://crbug.com/653394): Consider returning a thread-safe best
-  // guess of validity.
-  bool MaybeValid() const { return true; }
-
   explicit operator bool() const { return Get(); }
   T& operator*() const { return *Get(); }
   operator T*() const { return Get(); }
   T* operator->() const { return Get(); }
-
-  // Register the persistent node as a 'static reference',
-  // belonging to the current thread and a persistent that must
-  // be cleared when the ThreadState itself is cleared out and
-  // destructed.
-  //
-  // Static singletons arrange for this to happen, either to ensure
-  // clean LSan leak reports or to register a thread-local persistent
-  // needing to be cleared out before the thread is terminated.
-  PersistentBase* RegisterAsStaticReference() {
-    static_assert(weaknessConfiguration == kNonWeakPersistentConfiguration,
-                  "Can only register non-weak Persistent references as static "
-                  "references.");
-    if (PersistentNode* node = persistent_node_.Get()) {
-      ThreadState::Current()->RegisterStaticPersistentNode(node);
-      LEAK_SANITIZER_IGNORE_OBJECT(this);
-    }
-    return this;
-  }
 
   NO_SANITIZE_ADDRESS
   void ClearWithLockHeld() {
@@ -251,7 +220,7 @@ class PersistentBase {
                            weaknessConfiguration,
                            crossThreadnessConfiguration>& other) {
     PersistentMutexTraits<crossThreadnessConfiguration>::AssertAcquired();
-    AssignUnsafe(other);
+    AssignUnsafe(static_cast<T*>(other.Get()));
     return *this;
   }
 
@@ -583,9 +552,6 @@ class WeakPersistent
     Parent::operator=(other);
     return *this;
   }
-
-  NO_SANITIZE_ADDRESS
-  bool IsClearedUnsafe() const { return this->IsNotNull(); }
 };
 
 // CrossThreadPersistent allows for holding onto an object strongly on a
@@ -808,17 +774,6 @@ Persistent<T> WrapPersistentInternal(T* value) {
 #define WrapPersistent(value) WrapPersistentInternal(value)
 #endif  // BUILDFLAG(RAW_HEAP_SNAPSHOTS)
 
-template <typename T,
-          typename = std::enable_if_t<WTF::IsGarbageCollectedType<T>::value>>
-Persistent<T> WrapPersistentIfNeeded(T* value) {
-  return Persistent<T>(value);
-}
-
-template <typename T>
-T& WrapPersistentIfNeeded(T& value) {
-  return value;
-}
-
 template <typename T>
 WeakPersistent<T> WrapWeakPersistent(T* value) {
   return WeakPersistent<T>(value);
@@ -884,88 +839,26 @@ inline bool operator!=(const Persistent<T>& a, const Member<U>& b) {
   return a.Get() != b.Get();
 }
 
+template <typename U, typename T>
+Persistent<U> DownCast(const Persistent<T>& p) {
+  return Persistent<U>(p);
+}
+
+template <typename U, typename T>
+WeakPersistent<U> DownCast(const WeakPersistent<T>& p) {
+  return WeakPersistent<U>(p);
+}
+
+template <typename U, typename T>
+CrossThreadPersistent<U> DownCast(const CrossThreadPersistent<T>& p) {
+  return CrossThreadPersistent<U>(p);
+}
+
+template <typename U, typename T>
+CrossThreadWeakPersistent<U> DownCast(const CrossThreadWeakPersistent<T>& p) {
+  return CrossThreadWeakPersistent<U>(p);
+}
+
 }  // namespace blink
-
-namespace WTF {
-
-template <
-    typename T,
-    blink::WeaknessPersistentConfiguration weaknessConfiguration,
-    blink::CrossThreadnessPersistentConfiguration crossThreadnessConfiguration>
-struct VectorTraits<blink::PersistentBase<T,
-                                          weaknessConfiguration,
-                                          crossThreadnessConfiguration>>
-    : VectorTraitsBase<blink::PersistentBase<T,
-                                             weaknessConfiguration,
-                                             crossThreadnessConfiguration>> {
-  STATIC_ONLY(VectorTraits);
-  static const bool kNeedsDestruction = true;
-  static const bool kCanInitializeWithMemset = true;
-  static const bool kCanClearUnusedSlotsWithMemset = false;
-  static const bool kCanMoveWithMemcpy = true;
-};
-
-template <typename T>
-struct HashTraits<blink::Persistent<T>>
-    : HandleHashTraits<T, blink::Persistent<T>> {};
-
-template <typename T>
-struct HashTraits<blink::CrossThreadPersistent<T>>
-    : HandleHashTraits<T, blink::CrossThreadPersistent<T>> {};
-
-template <typename T>
-struct DefaultHash<blink::Persistent<T>> {
-  STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
-};
-
-template <typename T>
-struct DefaultHash<blink::WeakPersistent<T>> {
-  STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
-};
-
-template <typename T>
-struct DefaultHash<blink::CrossThreadPersistent<T>> {
-  STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
-};
-
-template <typename T>
-struct DefaultHash<blink::CrossThreadWeakPersistent<T>> {
-  STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
-};
-
-template <typename T>
-struct CrossThreadCopier<blink::CrossThreadPersistent<T>>
-    : public CrossThreadCopierPassThrough<blink::CrossThreadPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <typename T>
-struct CrossThreadCopier<blink::CrossThreadWeakPersistent<T>>
-    : public CrossThreadCopierPassThrough<blink::CrossThreadWeakPersistent<T>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace WTF
-
-namespace base {
-
-template <typename T>
-struct IsWeakReceiver<blink::WeakPersistent<T>> : std::true_type {};
-
-template <typename T>
-struct IsWeakReceiver<blink::CrossThreadWeakPersistent<T>> : std::true_type {};
-
-template <typename T>
-struct BindUnwrapTraits<blink::CrossThreadWeakPersistent<T>> {
-  static blink::CrossThreadPersistent<T> Unwrap(
-      const blink::CrossThreadWeakPersistent<T>& wrapped) {
-    return blink::CrossThreadPersistent<T>(wrapped);
-  }
-};
-}  // namespace base
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_PERSISTENT_H_

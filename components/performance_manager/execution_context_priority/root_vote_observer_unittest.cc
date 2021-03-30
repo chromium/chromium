@@ -63,8 +63,7 @@ TEST_F(RootVoteObserverTest, VotesForwardedToGraph) {
   MockFrameNodeObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
-  VotingChannelWrapper voter;
-  voter.SetVotingChannel(root_vote_observer.GetVotingChannel());
+  VotingChannel voter = root_vote_observer.GetVotingChannel();
 
   // The priority and reason starts with a default value.
   static const PriorityAndReason kDefaultPriorityAndReason(

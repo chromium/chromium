@@ -18,8 +18,9 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/host_id.h"
 #include "extensions/common/identifiability_metrics.h"
+#include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
@@ -57,7 +58,7 @@ int GetIsolatedWorldIdForInstance(const InjectionHost* injection_host) {
   IsolatedWorldMap& isolated_worlds = g_isolated_worlds.Get();
 
   int id = 0;
-  const std::string& key = injection_host->id().id();
+  const std::string& key = injection_host->id().id;
   auto iter = isolated_worlds.find(key);
   if (iter != isolated_worlds.end()) {
     id = iter->second;
@@ -159,7 +160,7 @@ ScriptInjection::ScriptInjection(
     std::unique_ptr<ScriptInjector> injector,
     content::RenderFrame* render_frame,
     std::unique_ptr<const InjectionHost> injection_host,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     bool log_activity)
     : injector_(std::move(injector)),
       render_frame_(render_frame),
@@ -181,9 +182,9 @@ ScriptInjection::~ScriptInjection() {
 }
 
 ScriptInjection::InjectionResult ScriptInjection::TryToInject(
-    UserScript::RunLocation current_location,
+    mojom::RunLocation current_location,
     ScriptsRunInfo* scripts_run_info,
-    CompletionCallback async_completion_callback) {
+    StatusUpdatedCallback async_updated_callback) {
   if (current_location < run_location_)
     return INJECTION_WAITING;  // Wait for the right location.
 
@@ -205,14 +206,14 @@ ScriptInjection::InjectionResult ScriptInjection::TryToInject(
       NotifyWillNotInject(ScriptInjector::NOT_ALLOWED);
       return INJECTION_FINISHED;  // We're done.
     case PermissionsData::PageAccess::kWithheld:
-      RequestPermissionFromBrowser();
+      RequestPermissionFromBrowser(std::move(async_updated_callback));
       return INJECTION_WAITING;  // Wait around for permission.
     case PermissionsData::PageAccess::kAllowed:
       InjectionResult result = Inject(scripts_run_info);
       // If the injection is blocked, we need to set the manager so we can
       // notify it upon completion.
       if (result == INJECTION_BLOCKED)
-        async_completion_callback_ = std::move(async_completion_callback);
+        async_completion_callback_ = std::move(async_updated_callback);
       return result;
   }
 
@@ -234,19 +235,32 @@ void ScriptInjection::OnHostRemoved() {
   injection_host_.reset(nullptr);
 }
 
-void ScriptInjection::RequestPermissionFromBrowser() {
+void ScriptInjection::RequestPermissionFromBrowser(
+    StatusUpdatedCallback async_updated_callback) {
   // If we are just notifying the browser of the injection, then send an
   // invalid request (which is treated like a notification).
   request_id_ = g_next_pending_id++;
-  render_frame_->Send(new ExtensionHostMsg_RequestScriptInjectionPermission(
-      render_frame_->GetRoutingID(), host_id().id(), injector_->script_type(),
-      run_location_, request_id_));
+  ExtensionFrameHelper::Get(render_frame_)
+      ->GetLocalFrameHost()
+      ->RequestScriptInjectionPermission(
+          host_id().id, injector_->script_type(), run_location_,
+          base::BindOnce(&ScriptInjection::HandlePermission,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(async_updated_callback)));
 }
 
 void ScriptInjection::NotifyWillNotInject(
     ScriptInjector::InjectFailureReason reason) {
   complete_ = true;
-  injector_->OnWillNotInject(reason, render_frame_);
+  injector_->OnWillNotInject(reason);
+}
+
+void ScriptInjection::HandlePermission(
+    StatusUpdatedCallback async_updated_callback,
+    bool granted) {
+  if (!granted)
+    return;
+  std::move(async_updated_callback).Run(InjectionStatus::kPermitted, this);
 }
 
 ScriptInjection::InjectionResult ScriptInjection::Inject(
@@ -255,9 +269,9 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
   DCHECK(scripts_run_info);
   DCHECK(!complete_);
   bool should_inject_js = injector_->ShouldInjectJs(
-      run_location_, scripts_run_info->executing_scripts[host_id().id()]);
+      run_location_, scripts_run_info->executing_scripts[host_id().id]);
   bool should_inject_or_remove_css = injector_->ShouldInjectOrRemoveCss(
-      run_location_, scripts_run_info->injected_stylesheets[host_id().id()]);
+      run_location_, scripts_run_info->injected_stylesheets[host_id().id]);
 
   // This can happen if the extension specified a script to
   // be run in multiple rules, and the script has already run.
@@ -267,19 +281,18 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
   }
 
   if (should_inject_js)
-    InjectJs(&(scripts_run_info->executing_scripts[host_id().id()]),
+    InjectJs(&(scripts_run_info->executing_scripts[host_id().id]),
              &(scripts_run_info->num_js));
   if (should_inject_or_remove_css)
-    InjectOrRemoveCss(&(scripts_run_info->injected_stylesheets[host_id().id()]),
+    InjectOrRemoveCss(&(scripts_run_info->injected_stylesheets[host_id().id]),
                       &(scripts_run_info->num_css));
 
   complete_ = did_inject_js_ || !should_inject_js;
 
   if (complete_) {
-    if (host_id().type() == HostID::EXTENSIONS)
-      RecordContentScriptInjection(ukm_source_id_, host_id().id());
-    injector_->OnInjectionComplete(std::move(execution_result_), run_location_,
-                                   render_frame_);
+    if (host_id().type == mojom::HostID::HostType::kExtensions)
+      RecordContentScriptInjection(ukm_source_id_, host_id().id);
+    injector_->OnInjectionComplete(std::move(execution_result_), run_location_);
   } else {
     ++scripts_run_info->num_blocking_js;
   }
@@ -300,20 +313,22 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       new TimedScriptInjectionCallback(weak_ptr_factory_.GetWeakPtr()));
 
   base::ElapsedTimer exec_timer;
-  if (injection_host_->id().type() == HostID::EXTENSIONS && log_activity_)
-    DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id());
+  if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
+      log_activity_) {
+    DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
+  }
 
   // For content scripts executing during page load, we run them asynchronously
   // in order to reduce UI jank experienced by the user. (We don't do this for
-  // DOCUMENT_START scripts, because there's no UI to jank until after those
+  // kDocumentStart scripts, because there's no UI to jank until after those
   // run, so we run them as soon as we can.)
   // Note: We could potentially also run deferred and browser-driven scripts
   // asynchronously; however, these are rare enough that there probably isn't
   // UI jank. If this changes, we can update this.
   bool should_execute_asynchronously =
-      injector_->script_type() == UserScript::CONTENT_SCRIPT &&
-      (run_location_ == UserScript::DOCUMENT_END ||
-       run_location_ == UserScript::DOCUMENT_IDLE);
+      injector_->script_type() == mojom::InjectionType::kContentScript &&
+      (run_location_ == mojom::RunLocation::kDocumentEnd ||
+       run_location_ == mojom::RunLocation::kDocumentIdle);
   blink::WebLocalFrame::ScriptExecutionType execution_option =
       should_execute_asynchronously
           ? blink::WebLocalFrame::kAsynchronousBlockingOnload
@@ -329,18 +344,19 @@ void ScriptInjection::OnJsInjectionCompleted(
     base::Optional<base::TimeDelta> elapsed) {
   DCHECK(!did_inject_js_);
 
-  if (injection_host_->id().type() == HostID::EXTENSIONS && elapsed) {
+  if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
+      elapsed) {
     UMA_HISTOGRAM_TIMES("Extensions.InjectedScriptExecutionTime", *elapsed);
     switch (run_location_) {
-      case UserScript::DOCUMENT_START:
+      case mojom::RunLocation::kDocumentStart:
         UMA_HISTOGRAM_TIMES(
             "Extensions.InjectedScriptExecutionTime.DocumentStart", *elapsed);
         break;
-      case UserScript::DOCUMENT_END:
+      case mojom::RunLocation::kDocumentEnd:
         UMA_HISTOGRAM_TIMES(
             "Extensions.InjectedScriptExecutionTime.DocumentEnd", *elapsed);
         break;
-      case UserScript::DOCUMENT_IDLE:
+      case mojom::RunLocation::kDocumentIdle:
         UMA_HISTOGRAM_TIMES(
             "Extensions.InjectedScriptExecutionTime.DocumentIdle", *elapsed);
         break;
@@ -366,17 +382,16 @@ void ScriptInjection::OnJsInjectionCompleted(
       execution_result_ = std::make_unique<base::Value>();
   }
   did_inject_js_ = true;
-  if (host_id().type() == HostID::EXTENSIONS)
-    RecordContentScriptInjection(ukm_source_id_, host_id().id());
+  if (host_id().type == mojom::HostID::HostType::kExtensions)
+    RecordContentScriptInjection(ukm_source_id_, host_id().id);
 
   // If |async_completion_callback_| is set, it means the script finished
   // asynchronously, and we should run it.
   if (!async_completion_callback_.is_null()) {
     complete_ = true;
-    injector_->OnInjectionComplete(std::move(execution_result_), run_location_,
-                                   render_frame_);
+    injector_->OnInjectionComplete(std::move(execution_result_), run_location_);
     // Warning: this object can be destroyed after this line!
-    std::move(async_completion_callback_).Run(this);
+    std::move(async_completion_callback_).Run(InjectionStatus::kFinished, this);
   }
 }
 
@@ -386,12 +401,18 @@ void ScriptInjection::InjectOrRemoveCss(
   std::vector<blink::WebString> css_sources = injector_->GetCssSources(
       run_location_, injected_stylesheets, num_injected_stylesheets);
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
-  // Default CSS origin is "author", but can be overridden to "user" by scripts.
-  base::Optional<CSSOrigin> css_origin = injector_->GetCssOrigin();
+
   blink::WebDocument::CSSOrigin blink_css_origin =
-      css_origin && *css_origin == CSS_ORIGIN_USER
-          ? blink::WebDocument::kUserOrigin
-          : blink::WebDocument::kAuthorOrigin;
+      blink::WebDocument::kAuthorOrigin;
+  switch (injector_->GetCssOrigin()) {
+    case mojom::CSSOrigin::kUser:
+      blink_css_origin = blink::WebDocument::kUserOrigin;
+      break;
+    case mojom::CSSOrigin::kAuthor:
+      blink_css_origin = blink::WebDocument::kAuthorOrigin;
+      break;
+  }
+
   blink::WebStyleSheetKey style_sheet_key;
   if (const base::Optional<std::string>& injection_key =
           injector_->GetInjectionKey())

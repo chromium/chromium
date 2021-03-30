@@ -125,8 +125,8 @@ class SettingsResetPromptModelBrowserTest
     ASSERT_TRUE(template_url_service);
 
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16("default"));
-    data.SetKeyword(base::ASCIIToUTF16("default"));
+    data.SetShortName(u"default");
+    data.SetKeyword(u"default");
     data.SetURL(kDefaultSearchUrl);
 
     TemplateURL* template_url =

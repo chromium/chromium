@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/login/login_handler.h"
 
 #include <memory>
+#include <string>
 
 #include "base/logging.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/chrome_http_auth_handler.h"
@@ -41,8 +41,8 @@ class LoginHandlerAndroid : public LoginHandler {
 
  protected:
   // LoginHandler methods:
-  void BuildViewImpl(const base::string16& authority,
-                     const base::string16& explanation,
+  void BuildViewImpl(const std::u16string& authority,
+                     const std::u16string& explanation,
                      LoginModelData* login_model_data) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

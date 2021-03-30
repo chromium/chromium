@@ -116,12 +116,6 @@ void SyncInternalsMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestUserEventsVisibility,
-      base::BindRepeating(
-          &SyncInternalsMessageHandler::HandleRequestUserEventsVisibility,
-          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       syncer::sync_ui_util::kSetIncludeSpecifics,
       base::BindRepeating(
           &SyncInternalsMessageHandler::HandleSetIncludeSpecifics,
@@ -199,7 +193,8 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
     type_list->AppendString(ModelTypeToString(type));
   }
   event_details.Set(syncer::sync_ui_util::kTypes, std::move(type_list));
-  DispatchEvent(syncer::sync_ui_util::kOnReceivedListOfTypes, event_details);
+  FireWebUIListener(syncer::sync_ui_util::kOnReceivedListOfTypes,
+                    event_details);
 }
 
 void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
@@ -211,16 +206,16 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
   value.SetBoolean(syncer::sync_ui_util::kIncludeSpecifics,
                    GetIncludeSpecificsInitialState());
 
-  DispatchEvent(syncer::sync_ui_util::kOnReceivedIncludeSpecificsInitialState,
-                value);
+  FireWebUIListener(
+      syncer::sync_ui_util::kOnReceivedIncludeSpecificsInitialState, value);
 }
 
 void SyncInternalsMessageHandler::HandleGetAllNodes(const ListValue* args) {
   DCHECK_EQ(1U, args->GetSize());
   AllowJavascript();
 
-  int request_id = 0;
-  bool success = ExtractIntegerValue(args, &request_id);
+  std::string callback_id;
+  bool success = args->GetString(0, &callback_id);
   DCHECK(success);
 
   SyncService* service = GetSyncService();
@@ -231,18 +226,8 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(const ListValue* args) {
     // should javascript become disallowed.
     service->GetAllNodesForDebugging(
         base::BindOnce(&SyncInternalsMessageHandler::OnReceivedAllNodes,
-                       weak_ptr_factory_.GetWeakPtr(), request_id));
+                       weak_ptr_factory_.GetWeakPtr(), callback_id));
   }
-}
-
-void SyncInternalsMessageHandler::HandleRequestUserEventsVisibility(
-    const base::ListValue* args) {
-  DCHECK(args->empty());
-  AllowJavascript();
-  // TODO(crbug.com/934333): Get rid of this callback now that user events are
-  // always enabled.
-  CallJavascriptFunction(syncer::sync_ui_util::kUserEventsVisibilityCallback,
-                         Value(true));
 }
 
 void SyncInternalsMessageHandler::HandleSetIncludeSpecifics(
@@ -328,10 +313,9 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
 }
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
-    int request_id,
+    const std::string& callback_id,
     std::unique_ptr<ListValue> nodes) {
-  CallJavascriptFunction(syncer::sync_ui_util::kGetAllNodesCallback,
-                         Value(request_id), *nodes);
+  ResolveJavascriptCallback(base::Value(callback_id), *nodes);
 }
 
 void SyncInternalsMessageHandler::OnStateChanged(SyncService* sync) {
@@ -341,7 +325,7 @@ void SyncInternalsMessageHandler::OnStateChanged(SyncService* sync) {
 void SyncInternalsMessageHandler::OnProtocolEvent(
     const syncer::ProtocolEvent& event) {
   std::unique_ptr<DictionaryValue> value(event.ToValue(include_specifics_));
-  DispatchEvent(syncer::sync_ui_util::kOnProtocolEvent, *value);
+  FireWebUIListener(syncer::sync_ui_util::kOnProtocolEvent, *value);
 }
 
 void SyncInternalsMessageHandler::OnInvalidationReceived(
@@ -362,7 +346,8 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
     }
   }
 
-  DispatchEvent(syncer::sync_ui_util::kOnInvalidationReceived, data_types_list);
+  FireWebUIListener(syncer::sync_ui_util::kOnInvalidationReceived,
+                    data_types_list);
 }
 
 void SyncInternalsMessageHandler::HandleJsEvent(
@@ -370,13 +355,14 @@ void SyncInternalsMessageHandler::HandleJsEvent(
     const syncer::JsEventDetails& details) {
   DVLOG(1) << "Handling event: " << name << " with details "
            << details.ToString();
-  DispatchEvent(name, details.Get());
+  FireWebUIListener(name, details.Get());
 }
 
 void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
-  std::unique_ptr<DictionaryValue> value =
-      about_sync_data_delegate_.Run(GetSyncService(), chrome::GetChannel());
-  DispatchEvent(syncer::sync_ui_util::kOnAboutInfoUpdated, *value);
+  std::unique_ptr<DictionaryValue> value = about_sync_data_delegate_.Run(
+      GetSyncService(),
+      chrome::GetChannelName(chrome::WithExtendedStable(true)));
+  FireWebUIListener(syncer::sync_ui_util::kOnAboutInfoUpdated, *value);
 
   if (SyncService* service = GetSyncService()) {
     service->GetEntityCountsForDebugging(
@@ -404,8 +390,8 @@ void SyncInternalsMessageHandler::OnGotEntityCounts(
   DictionaryValue event_details;
   event_details.SetPath(syncer::sync_ui_util::kEntityCounts,
                         std::move(count_list));
-  DispatchEvent(syncer::sync_ui_util::kOnEntityCountsUpdated,
-                std::move(event_details));
+  FireWebUIListener(syncer::sync_ui_util::kOnEntityCountsUpdated,
+                    std::move(event_details));
 }
 
 SyncService* SyncInternalsMessageHandler::GetSyncService() {
@@ -417,12 +403,6 @@ SyncInvalidationsService*
 SyncInternalsMessageHandler::GetSyncInvalidationsService() {
   return SyncInvalidationsServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui())->GetOriginalProfile());
-}
-
-void SyncInternalsMessageHandler::DispatchEvent(const std::string& name,
-                                                const Value& details_value) {
-  CallJavascriptFunction(syncer::sync_ui_util::kDispatchEvent, Value(name),
-                         details_value);
 }
 
 void SyncInternalsMessageHandler::UnregisterModelNotifications() {

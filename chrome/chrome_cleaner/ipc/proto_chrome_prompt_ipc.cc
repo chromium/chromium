@@ -57,20 +57,6 @@ void ProtoChromePromptIPC::PostPromptUserTask(
                      extension_ids, std::move(callback)));
 }
 
-void ProtoChromePromptIPC::PostDisableExtensionsTask(
-    const std::vector<std::wstring>& extension_ids,
-    DisableExtensionsCallback callback) {
-  NOTIMPLEMENTED();
-  OnConnectionError();
-}
-
-void ProtoChromePromptIPC::TryDeleteExtensions(
-    base::OnceClosure delete_allowed_callback,
-    base::OnceClosure delete_not_allowed_callback) {
-  NOTIMPLEMENTED();
-  OnConnectionError();
-}
-
 void ProtoChromePromptIPC::InitializeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(State::kUninitialized, state_);

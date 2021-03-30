@@ -24,7 +24,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
  public:
   // Type alias for |callback_|.
   using LeakTypeReply = base::OnceCallback<
-      void(IsSaved, IsReused, GURL, base::string16, CompromisedSitesCount)>;
+      void(IsSaved, IsReused, GURL, std::u16string, CompromisedSitesCount)>;
 
   LeakDetectionDelegateHelper(scoped_refptr<PasswordStore> profile_store,
                               scoped_refptr<PasswordStore> account_store,
@@ -34,8 +34,8 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   // Request all credentials with |password| from the store.
   // Results are passed to |OnGetPasswordStoreResults|.
   void ProcessLeakedPassword(GURL url,
-                             base::string16 username,
-                             base::string16 password);
+                             std::u16string username,
+                             std::u16string password);
 
  private:
   // PasswordStoreConsumer:
@@ -51,8 +51,8 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   scoped_refptr<PasswordStore> account_store_;
   LeakTypeReply callback_;
   GURL url_;
-  base::string16 username_;
-  base::string16 password_;
+  std::u16string username_;
+  std::u16string password_;
 
   int wait_counter_ = 0;
   std::vector<std::unique_ptr<PasswordForm>> partial_results_;

@@ -8,6 +8,8 @@
 
 #include "base/logging.h"
 #include "base/values.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
+#include "chromeos/components/quick_answers/utils/unit_converter.h"
 
 namespace chromeos {
 namespace quick_answers {
@@ -15,25 +17,60 @@ namespace {
 
 using base::Value;
 
-constexpr char kDestPath[] =
+constexpr char kRuleSetPath[] = "unitConversionResult.conversions";
+constexpr char kSourceUnitPath[] = "unitConversionResult.sourceUnit";
+constexpr char kSourceAmountPath[] = "unitConversionResult.sourceAmount";
+constexpr char kDestAmountPath[] = "unitConversionResult.destAmount";
+constexpr char kDestTextPath[] =
     "unitConversionResult.destination.valueAndUnit.rawText";
+
+constexpr double kPreferredRatioRange = 100;
 
 }  // namespace
 
 // Extract |quick_answer| from unit conversion result.
 bool UnitConversionResultParser::Parse(const Value* result,
                                        QuickAnswer* quick_answer) {
-  const std::string* dest = result->FindStringPath(kDestPath);
+  std::string result_string;
 
-  if (!dest) {
-    LOG(ERROR) << "Can't find the destination value.";
-    return false;
+  const auto src_amount = result->FindDoublePath(kSourceAmountPath);
+  const auto dst_amount = result->FindDoublePath(kDestAmountPath);
+  // If the conversion ratio is not within the preferred range, try to find a
+  // better destination unit type.
+  if (src_amount.has_value() && dst_amount.has_value()) {
+    const auto ratio = GetRatio(src_amount.value(), dst_amount.value());
+    if (ratio.has_value() && ratio.value() > kPreferredRatioRange) {
+      const auto* rule = result->FindListPath(kRuleSetPath);
+      if (rule) {
+        UnitConverter converter(*rule);
+
+        const auto* src_unit = result->FindPath(kSourceUnitPath);
+        if (src_unit) {
+          const auto* dst_unit =
+              converter.FindProperDestinationUnit(*src_unit, ratio.value());
+
+          if (dst_unit) {
+            result_string =
+                converter.Convert(src_amount.value(), *src_unit, *dst_unit);
+          }
+        }
+      }
+    }
+  }
+
+  // Fallback to the existing result.
+  if (result_string.empty()) {
+    auto* dest = result->FindStringPath(kDestTextPath);
+    if (!dest) {
+      LOG(ERROR) << "Failed to get the conversion result.";
+      return false;
+    }
+    result_string = *dest;
   }
 
   quick_answer->result_type = ResultType::kUnitConversionResult;
-  quick_answer->primary_answer = *dest;
   quick_answer->first_answer_row.push_back(
-      std::make_unique<QuickAnswerResultText>(*dest));
+      std::make_unique<QuickAnswerResultText>(result_string));
 
   return true;
 }

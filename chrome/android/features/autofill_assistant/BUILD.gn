@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//build/config/zip.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -17,7 +18,7 @@ android_library("animated_poodle_java") {
     "//base:base_java",
     "//chrome/android:chrome_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
   ]
 
   sources = [ "java/src/org/chromium/chrome/browser/" +
@@ -34,7 +35,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/android:base_module_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/browser_controls/android:java",
@@ -49,30 +49,30 @@ android_library("java") {
     "//chrome/browser/util:java",
     "//chrome/browser/version:java",
     "//components/autofill/android:autofill_java",
-    "//components/browser_ui/android/bottomsheet:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
     "//components/payments/content/android:java",
     "//components/policy/android:policy_java",
-    "//components/signin/core/browser/android:java",
     "//components/signin/public/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
-    "//third_party/android_deps:androidx_collection_collection_java",
-    "//third_party/android_deps:androidx_coordinatorlayout_coordinatorlayout_java",
-    "//third_party/android_deps:androidx_core_core_java",
-    "//third_party/android_deps:androidx_gridlayout_gridlayout_java",
-    "//third_party/android_deps:androidx_lifecycle_lifecycle_common_java",
-    "//third_party/android_deps:androidx_lifecycle_lifecycle_runtime_java",
-    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
     "//third_party/android_deps:com_android_support_support_annotations_java",
     "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_gridlayout_gridlayout_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
@@ -104,16 +104,13 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantActionHandlerImpl.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantClient.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantDirectActionImpl.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantLiteScriptCoordinator.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantLiteService.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantModuleEntryImpl.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantServiceInjector.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantUiController.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/BaseOnboardingCoordinator.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/BottomSheetOnboardingCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/BottomSheetUtils.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/FeedbackContext.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/LayoutUtils.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/ScrollToHideGestureListener.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/SizeListenableLinearLayout.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/carousel/AssistantActionsCarouselCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/carousel/AssistantActionsDecoration.java",
@@ -123,9 +120,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/carousel/AssistantChipViewHolder.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/carousel/ButtonView.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetails.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetailsAdapter.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetailsCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetailsModel.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetailsViewBinder.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantPlaceholdersConfiguration.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/details/ImageClickthroughData.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/form/AssistantFormCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/form/AssistantFormCounter.java",
@@ -157,6 +155,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/infobox/AssistantInfoBoxCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/infobox/AssistantInfoBoxModel.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/infobox/AssistantInfoBoxViewBinder.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/onboarding/BaseOnboardingCoordinator.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/onboarding/BottomSheetOnboardingCoordinator.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/onboarding/DialogOnboardingCoordinator.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/onboarding/OnboardingCoordinatorFactory.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/onboarding/OnboardingView.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/overlay/AssistantOverlayCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/overlay/AssistantOverlayDelegate.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/overlay/AssistantOverlayDrawable.java",
@@ -202,12 +205,11 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantModel.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantClient.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantDirectActionImpl.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantLiteService.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantUiController.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/BaseOnboardingCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/carousel/AssistantChip.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetails.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetailsModel.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantPlaceholdersConfiguration.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/form/AssistantFormDelegate.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/form/AssistantFormInput.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/form/AssistantFormModel.java",
@@ -224,6 +226,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/header/AssistantHeaderModel.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/infobox/AssistantInfoBox.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/infobox/AssistantInfoBoxModel.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/onboarding/BaseOnboardingCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/overlay/AssistantOverlayDelegate.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/overlay/AssistantOverlayModel.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/trigger_scripts/AssistantTriggerScriptBridge.java",
@@ -234,9 +237,14 @@ generate_jni("jni_headers") {
   split_name = "autofill_assistant"
 }
 
+generate_jni("jni_headers_public") {
+  sources = [ "public/java/src/org/chromium/chrome/browser/autofill_assistant/TriggerContext.java" ]
+}
+
 generate_jni("test_support_jni_headers") {
   testonly = true
   sources = [
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestEndpointService.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestService.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestServiceRequestSender.java",
   ]
@@ -247,6 +255,7 @@ android_library("autofill_assistant_java_test_support") {
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantService.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestEndpointService.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestScript.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestService.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestServiceRequestSender.java",
@@ -257,11 +266,10 @@ android_library("autofill_assistant_java_test_support") {
     ":test_support_jni_headers",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//components/autofill_assistant/browser:proto_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/hamcrest:hamcrest_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -288,6 +296,7 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantHeaderUiTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantInfoBoxUiTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantInputActionIntegrationTest.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantInterruptIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantKeyboardIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantNavigationIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantOverlayIntegrationTest.java",
@@ -301,7 +310,11 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantUiTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantUiTestUtil.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/BottomSheetOnboardingCoordinatorTest.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/PasswordChangeFixtureParameters.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/PasswordChangeFixtureTest.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/PasswordChangeFixtureTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/TestingAutofillAssistantModuleEntryProvider.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/TriggerContextTest.java",
   ]
 
   deps = [
@@ -314,27 +327,29 @@ android_library("test_java") {
     "//chrome/android:chrome_test_util_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/image_fetcher:java",
+    "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android_test_helpers:test_support_java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/autofill_assistant/browser:proto_java",
-    "//components/browser_ui/android/bottomsheet:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_coordinatorlayout_coordinatorlayout_java",
-    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/gif_player:gif_player_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
@@ -353,6 +368,7 @@ android_resources("java_resources") {
     "java/res/drawable/autofill_assistant_circle_background.xml",
     "java/res/drawable/autofill_assistant_default_details.xml",
     "java/res/drawable/autofill_assistant_details_bg.xml",
+    "java/res/drawable/autofill_assistant_details_list_divider.xml",
     "java/res/drawable/autofill_assistant_lightblue_rect_bg.xml",
     "java/res/drawable/autofill_assistant_rounded_corner_background.xml",
     "java/res/drawable/autofill_assistant_swipe_indicator.xml",
@@ -361,7 +377,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_autofill_assistant_add_circle_24dp.xml",
     "java/res/drawable/ic_autofill_assistant_default_progress_start_black_24dp.xml",
     "java/res/drawable/ic_check_circle_black_24dp.xml",
-    "java/res/drawable/ic_clear_black_24dp.xml",
+    "java/res/drawable/ic_clear_black_chrome_24dp.xml",
     "java/res/drawable/ic_confirmation_number_black_24dp.xml",
     "java/res/drawable/ic_directions_car_black_24dp.xml",
     "java/res/drawable/ic_done_black_24dp.xml",
@@ -378,6 +394,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_vpn_key_black_24dp.xml",
     "java/res/layout/autofill_assistant_address_full.xml",
     "java/res/layout/autofill_assistant_address_summary.xml",
+    "java/res/layout/autofill_assistant_base_onboarding.xml",
     "java/res/layout/autofill_assistant_bottom_sheet_content.xml",
     "java/res/layout/autofill_assistant_bottom_sheet_toolbar.xml",
     "java/res/layout/autofill_assistant_button_assistive.xml",
@@ -396,7 +413,8 @@ android_resources("java_resources") {
     "java/res/layout/autofill_assistant_header.xml",
     "java/res/layout/autofill_assistant_info_box.xml",
     "java/res/layout/autofill_assistant_login.xml",
-    "java/res/layout/autofill_assistant_onboarding.xml",
+    "java/res/layout/autofill_assistant_onboarding_no_button.xml",
+    "java/res/layout/autofill_assistant_onboarding_yes_button.xml",
     "java/res/layout/autofill_assistant_payment_method_full.xml",
     "java/res/layout/autofill_assistant_payment_method_summary.xml",
     "java/res/layout/autofill_assistant_payment_request_section_divider.xml",
@@ -423,4 +441,35 @@ java_strings_grd("java_strings_grd") {
   outputs = [ "values/android_chrome_autofill_assistant_strings.xml" ] + process_file_template(
                 android_bundle_locales_as_resources,
                 [ "values-{{source_name_part}}/android_chrome_autofill_assistant_strings.xml" ])
+}
+
+if (!incremental_install) {
+  zip("password_change_tests_runner") {
+    testonly = true
+    inputs = [
+      "$root_build_dir/test_runner/ChromePublicTest.apk",
+      "$root_build_dir/test_runner/ChromiumNetTestSupport.apk",
+      "$root_build_dir/test_runner/config_example.cfg",
+      "$root_build_dir/test_runner/parse_logs.py",
+      "$root_build_dir/test_runner/runner.py",
+    ]
+    output = "$root_build_dir/test_runner/password_change_tests_runner.zip"
+    deps = [ ":copy_password_change_tests_runner" ]
+  }
+
+  copy("copy_password_change_tests_runner") {
+    testonly = true
+    sources = [
+      "$root_build_dir/apks/ChromePublicTest.apk",
+      "$root_build_dir/apks/ChromiumNetTestSupport.apk",
+      "tools/password_change_tests_runner/config_example.cfg",
+      "tools/password_change_tests_runner/parse_logs.py",
+      "tools/password_change_tests_runner/runner.py",
+    ]
+    outputs = [ "$root_out_dir/test_runner/{{source_file_part}}" ]
+    deps = [
+      "//chrome/android:chrome_public_test_apk__test_apk__create",
+      "//net/android:net_test_support_apk__create",
+    ]
+  }
 }

@@ -6,8 +6,12 @@
 
 #include <string>
 
+#include "base/bind.h"
+#include "base/files/file_path.h"
+#include "base/guid.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -19,21 +23,22 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/resource_context.h"
+#include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "chromeos/constants/chromeos_switches.h"
 #endif
 
 #if defined(OS_ANDROID)
@@ -43,7 +48,6 @@
 #endif
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/first_run/first_run.h"
 #include "content/public/browser/host_zoom_map.h"
 #endif
 
@@ -98,17 +102,17 @@ bool Profile::OTRProfileID::AllowsBrowserWindows() const {
 
 // static
 const Profile::OTRProfileID Profile::OTRProfileID::PrimaryID() {
+  // OTRProfileID value should be same as
+  // |OTRProfileID.java#sPrimaryOTRProfileID| variable.
   return OTRProfileID("profile::primary_otr");
 }
 
 // static
-int Profile::OTRProfileID::first_unused_index_ = 0;
-
-// static
 Profile::OTRProfileID Profile::OTRProfileID::CreateUnique(
     const std::string& profile_id_prefix) {
-  return OTRProfileID(base::StringPrintf("%s-%i", profile_id_prefix.c_str(),
-                                         first_unused_index_++));
+  return OTRProfileID(base::StringPrintf(
+      "%s-%s", profile_id_prefix.c_str(),
+      base::GUID::GenerateRandomV4().AsLowercaseString().c_str()));
 }
 
 // static
@@ -135,17 +139,15 @@ std::ostream& operator<<(std::ostream& out,
 base::android::ScopedJavaLocalRef<jobject>
 Profile::OTRProfileID::ConvertToJavaOTRProfileID(JNIEnv* env) const {
   return Java_OTRProfileID_Constructor(
-      env, base::android::ConvertUTF16ToJavaString(
-               env, base::ASCIIToUTF16(profile_id_)));
+      env, base::android::ConvertUTF8ToJavaString(env, profile_id_));
 }
 
 // static
 Profile::OTRProfileID Profile::OTRProfileID::ConvertFromJavaOTRProfileID(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_otr_profile_id) {
-  return OTRProfileID(
-      base::UTF16ToASCII(base::android::ConvertJavaStringToUTF16(
-          env, Java_OTRProfileID_getProfileID(env, j_otr_profile_id))));
+  return OTRProfileID(base::android::ConvertJavaStringToUTF8(
+      env, Java_OTRProfileID_getProfileID(env, j_otr_profile_id)));
 }
 
 // static
@@ -153,9 +155,8 @@ base::android::ScopedJavaLocalRef<jobject>
 JNI_OTRProfileID_CreateUniqueOTRProfileID(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_profile_id_prefix) {
-  Profile::OTRProfileID profile_id =
-      Profile::OTRProfileID::CreateUnique(base::UTF16ToASCII(
-          base::android::ConvertJavaStringToUTF16(env, j_profile_id_prefix)));
+  Profile::OTRProfileID profile_id = Profile::OTRProfileID::CreateUnique(
+      base::android::ConvertJavaStringToUTF8(env, j_profile_id_prefix));
   return profile_id.ConvertToJavaOTRProfileID(env);
 }
 
@@ -165,14 +166,26 @@ base::android::ScopedJavaLocalRef<jobject> JNI_OTRProfileID_GetPrimaryID(
   return Profile::OTRProfileID::PrimaryID().ConvertToJavaOTRProfileID(env);
 }
 
+// static
+Profile::OTRProfileID Profile::OTRProfileID::Deserialize(
+    const std::string& value) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> j_value =
+      base::android::ConvertUTF8ToJavaString(env, value);
+  base::android::ScopedJavaLocalRef<jobject> j_otr_profile_id =
+      Java_OTRProfileID_deserializeWithoutVerify(env, j_value);
+  return ConvertFromJavaOTRProfileID(env, j_otr_profile_id);
+}
+
 std::string Profile::OTRProfileID::Serialize() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return ConvertJavaStringToUTF8(
+  return base::android::ConvertJavaStringToUTF8(
       env, Java_OTRProfileID_serialize(env, ConvertToJavaOTRProfileID(env)));
 }
-#endif
+#endif  // defined(OS_ANDROID)
 
-Profile::Profile() {
+Profile::Profile()
+    : resource_context_(std::make_unique<content::ResourceContext>()) {
 #if DCHECK_IS_ON()
   base::AutoLock lock(g_profile_instances_lock.Get());
   g_profile_instances.Get().insert(this);
@@ -182,6 +195,10 @@ Profile::Profile() {
 }
 
 Profile::~Profile() {
+  if (content::BrowserThread::IsThreadInitialized(content::BrowserThread::IO)) {
+    content::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, std::move(resource_context_));
+  }
 #if DCHECK_IS_ON()
   base::AutoLock lock(g_profile_instances_lock.Get());
   g_profile_instances.Get().erase(this);
@@ -258,9 +275,6 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif  // defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kSessionExitedCleanly, true);
   registry->RegisterStringPref(prefs::kSessionExitType, std::string());
-  registry->RegisterInt64Pref(prefs::kSiteEngagementLastUpdateTime, 0,
-                              PrefRegistry::LOSSY_PREF);
-  registry->RegisterBooleanPref(prefs::kSSLErrorOverrideAllowed, true);
   registry->RegisterBooleanPref(prefs::kDisableExtensions, false);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterBooleanPref(extensions::pref_names::kAlertsInitialized,
@@ -353,6 +367,8 @@ bool Profile::IsRegularProfile() const {
 }
 
 bool Profile::IsIncognitoProfile() const {
+  // TODO(https://1169142): Replace logic of this function and other
+  // IsXProfile functions with GetBrowserProfileType().
   return IsPrimaryOTRProfile() && !IsGuestSession() && !IsSystemProfile();
 }
 
@@ -418,19 +434,6 @@ bool Profile::ShouldRestoreOldSessionCookies() const {
 
 bool Profile::ShouldPersistSessionCookies() const {
   return false;
-}
-
-bool Profile::IsNewProfile() const {
-#if !defined(OS_ANDROID)
-  // The profile is new if the preference files has just been created, except on
-  // first run, because the installer may create a preference file. See
-  // https://crbug.com/728402
-  if (first_run::IsChromeFirstRun())
-    return true;
-#endif
-
-  return GetOriginalProfile()->GetPrefs()->GetInitializationStatus() ==
-         PrefService::INITIALIZATION_STATUS_CREATED_NEW_PREF_STORE;
 }
 
 void Profile::MaybeSendDestroyedNotification() {
@@ -518,4 +521,8 @@ variations::VariationsClient* Profile::GetVariationsClient() {
   if (!chrome_variations_client_)
     chrome_variations_client_ = std::make_unique<ChromeVariationsClient>(this);
   return chrome_variations_client_.get();
+}
+
+content::ResourceContext* Profile::GetResourceContext() {
+  return resource_context_.get();
 }

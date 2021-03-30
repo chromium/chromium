@@ -18,10 +18,8 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -50,6 +48,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -129,12 +129,9 @@ class ExtensionFromWebApp : public extensions::ExtensionServiceTestBase {
 class ExtensionFromWebAppWithShortcutsMenu : public ExtensionFromWebApp {
  public:
   ExtensionFromWebAppWithShortcutsMenu() {
-    scoped_feature_list.InitAndEnableFeature(
+    feature_list_.InitAndEnableFeature(
         features::kDesktopPWAsAppIconShortcutsMenu);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp) {
@@ -153,13 +150,12 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp) {
   //   },
   // }
   GURL scope_url = GURL("http://aaronboodman.com/gearpad/");
-  manifest.SetDictionary(keys::kUrlHandlers,
-                         CreateURLHandlersForBookmarkApp(
-                             scope_url, base::ASCIIToUTF16("Test App")));
+  manifest.SetDictionary(keys::kUrlHandlers, CreateURLHandlersForBookmarkApp(
+                                                 scope_url, u"Test App"));
 
   std::string error;
   scoped_refptr<Extension> bookmark_app =
-      Extension::Create(ExtensionPath(), Manifest::INTERNAL, manifest,
+      Extension::Create(ExtensionPath(), ManifestLocation::kInternal, manifest,
                         Extension::FROM_BOOKMARK, &error);
   ASSERT_TRUE(bookmark_app.get());
 
@@ -177,7 +173,7 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp_NoURLHandlers) {
 
   std::string error;
   scoped_refptr<Extension> bookmark_app =
-      Extension::Create(ExtensionPath(), Manifest::INTERNAL, manifest,
+      Extension::Create(ExtensionPath(), ManifestLocation::kInternal, manifest,
                         Extension::FROM_BOOKMARK, &error);
   ASSERT_TRUE(bookmark_app.get());
 
@@ -212,7 +208,7 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp_WrongURLHandler) {
 
   std::string error;
   scoped_refptr<Extension> bookmark_app =
-      Extension::Create(ExtensionPath(), Manifest::INTERNAL, manifest,
+      Extension::Create(ExtensionPath(), ManifestLocation::kInternal, manifest,
                         Extension::FROM_BOOKMARK, &error);
   ASSERT_TRUE(bookmark_app.get());
 
@@ -240,8 +236,7 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp_ExtraURLHandler) {
   // }
   GURL scope_url = GURL("http://aaronboodman.com/gearpad/");
   std::unique_ptr<base::DictionaryValue> url_handlers =
-      CreateURLHandlersForBookmarkApp(scope_url,
-                                      base::ASCIIToUTF16("Test App"));
+      CreateURLHandlersForBookmarkApp(scope_url, u"Test App");
 
   auto test_matches = std::make_unique<base::ListValue>();
   test_matches->AppendString("http://*.aaronboodman.com/");
@@ -255,7 +250,7 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp_ExtraURLHandler) {
 
   std::string error;
   scoped_refptr<Extension> bookmark_app =
-      Extension::Create(ExtensionPath(), Manifest::INTERNAL, manifest,
+      Extension::Create(ExtensionPath(), ManifestLocation::kInternal, manifest,
                         Extension::FROM_BOOKMARK, &error);
   ASSERT_TRUE(bookmark_app.get());
 
@@ -280,9 +275,8 @@ TEST_F(ExtensionFromWebApp, GenerateVersion) {
 TEST_F(ExtensionFromWebApp, Basic) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
-  web_app.description =
-      base::ASCIIToUTF16("The best text editor in the universe!");
+  web_app.title = u"Gearpad";
+  web_app.description = u"The best text editor in the universe!";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
   web_app.scope = GURL("http://aaronboodman.com/gearpad/");
 
@@ -293,12 +287,12 @@ TEST_F(ExtensionFromWebApp, Basic) {
         web_app.start_url.Resolve(base::StringPrintf("%i.png", sizes[i]));
     icon_info.square_size_px = sizes[i];
     web_app.icon_infos.push_back(std::move(icon_info));
-    web_app.icon_bitmaps_any[sizes[i]] = GetIconBitmap(sizes[i]);
+    web_app.icon_bitmaps.any[sizes[i]] = GetIconBitmap(sizes[i]);
   }
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
   ASSERT_TRUE(extension.get());
 
   base::ScopedTempDir extension_dir;
@@ -312,7 +306,7 @@ TEST_F(ExtensionFromWebApp, Basic) {
   EXPECT_FALSE(extension->was_installed_by_default());
   EXPECT_FALSE(extension->was_installed_by_oem());
   EXPECT_FALSE(extension->from_webstore());
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
 
   EXPECT_EQ("zVvdNZy3Mp7CFU8JVSyXNlDuHdVLbP7fDO3TGVzj/0w=",
             extension->public_key());
@@ -335,10 +329,10 @@ TEST_F(ExtensionFromWebApp, Basic) {
     EXPECT_EQ(web_app.icon_infos[i].square_size_px, linked_icons.icons[i].size);
   }
 
-  EXPECT_EQ(web_app.icon_bitmaps_any.size(),
+  EXPECT_EQ(web_app.icon_bitmaps.any.size(),
             IconsInfo::GetIcons(extension.get()).map().size());
   for (const std::pair<const SquareSizePx, SkBitmap>& icon :
-       web_app.icon_bitmaps_any) {
+       web_app.icon_bitmaps.any) {
     int size = icon.first;
     EXPECT_EQ(base::StringPrintf("icons/%i.png", size),
               IconsInfo::GetIcons(extension.get())
@@ -353,12 +347,12 @@ TEST_F(ExtensionFromWebApp, Basic) {
 TEST_F(ExtensionFromWebApp, Minimal) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
+  web_app.title = u"Gearpad";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
   ASSERT_TRUE(extension.get());
 
   base::ScopedTempDir extension_dir;
@@ -372,7 +366,7 @@ TEST_F(ExtensionFromWebApp, Minimal) {
   EXPECT_FALSE(extension->was_installed_by_default());
   EXPECT_FALSE(extension->was_installed_by_oem());
   EXPECT_FALSE(extension->from_webstore());
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
 
   EXPECT_EQ("zVvdNZy3Mp7CFU8JVSyXNlDuHdVLbP7fDO3TGVzj/0w=",
             extension->public_key());
@@ -392,13 +386,13 @@ TEST_F(ExtensionFromWebApp, Minimal) {
 TEST_F(ExtensionFromWebApp, ExtraInstallationFlags) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
+  web_app.title = u"Gearpad";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
       Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_OEM,
-      Manifest::INTERNAL);
+      ManifestLocation::kInternal);
   ASSERT_TRUE(extension.get());
 
   EXPECT_TRUE(extension->is_app());
@@ -409,18 +403,18 @@ TEST_F(ExtensionFromWebApp, ExtraInstallationFlags) {
   EXPECT_TRUE(extension->was_installed_by_oem());
   EXPECT_TRUE(extension->from_webstore());
   EXPECT_FALSE(extension->was_installed_by_default());
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
 }
 
 TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
+  web_app.title = u"Gearpad";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::EXTERNAL_POLICY);
+      Extension::NO_FLAGS, ManifestLocation::kExternalPolicy);
   ASSERT_TRUE(extension.get());
 
   EXPECT_TRUE(extension->is_app());
@@ -428,7 +422,7 @@ TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {
   EXPECT_TRUE(extension->from_bookmark());
   EXPECT_FALSE(extension->is_legacy_packaged_app());
 
-  EXPECT_EQ(Manifest::EXTERNAL_POLICY, extension->location());
+  EXPECT_EQ(mojom::ManifestLocation::kExternalPolicy, extension->location());
 }
 
 // Tests that a scope not ending in "/" works correctly.
@@ -437,15 +431,14 @@ TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {
 TEST_F(ExtensionFromWebApp, ScopeDoesNotEndInSlash) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
-  web_app.description =
-      base::ASCIIToUTF16("The best text editor in the universe!");
+  web_app.title = u"Gearpad";
+  web_app.description = u"The best text editor in the universe!";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
   web_app.scope = GURL("http://aaronboodman.com/gear");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
   ASSERT_TRUE(extension.get());
   EXPECT_EQ(web_app.scope, GetScopeURLFromBookmarkApp(extension.get()));
 }
@@ -455,32 +448,29 @@ TEST_F(ExtensionFromWebApp, ScopeDoesNotEndInSlash) {
 TEST_F(ExtensionFromWebApp, FileHandlersAreCorrectlyConverted) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Graphr");
-  web_app.description = base::ASCIIToUTF16("A magical graphy thing");
+  web_app.title = u"Graphr";
+  web_app.description = u"A magical graphy thing";
   web_app.start_url = GURL("https://graphr.n/");
   web_app.scope = GURL("https://graphr.n/");
 
   {
     blink::Manifest::FileHandler graph;
     graph.action = GURL("https://graphr.n/open-graph/");
-    graph.name = base::ASCIIToUTF16("Graph");
-    graph.accept[base::ASCIIToUTF16("text/svg+xml")].push_back(
-        base::ASCIIToUTF16(""));
-    graph.accept[base::ASCIIToUTF16("text/svg+xml")].push_back(
-        base::ASCIIToUTF16(".svg"));
+    graph.name = u"Graph";
+    graph.accept[u"text/svg+xml"].push_back(u"");
+    graph.accept[u"text/svg+xml"].push_back(u".svg");
     web_app.file_handlers.push_back(graph);
 
     blink::Manifest::FileHandler raw;
     raw.action = GURL("https://graphr.n/open-raw/");
-    raw.name = base::ASCIIToUTF16("Raw");
-    raw.accept[base::ASCIIToUTF16("text/csv")].push_back(
-        base::ASCIIToUTF16(".csv"));
+    raw.name = u"Raw";
+    raw.accept[u"text/csv"].push_back(u".csv");
     web_app.file_handlers.push_back(raw);
   }
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
 
   ASSERT_TRUE(extension.get());
 
@@ -517,33 +507,30 @@ TEST_F(ExtensionFromWebApp, FileHandlersAreCorrectlyConverted) {
 TEST_F(ExtensionFromWebApp, WebAppFileHandlersAreCorrectlyConverted) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Graphr");
-  web_app.description = base::ASCIIToUTF16("A magical graphy thing.");
+  web_app.title = u"Graphr";
+  web_app.description = u"A magical graphy thing.";
   web_app.start_url = GURL("https://graphr.n/");
   web_app.scope = GURL("https://graphr.n");
 
   {
     blink::Manifest::FileHandler file_handler;
     file_handler.action = GURL("https://graphr.n/open-graph/");
-    file_handler.name = base::ASCIIToUTF16("Graph");
-    file_handler.accept[base::ASCIIToUTF16("text/svg+xml")].push_back(
-        base::ASCIIToUTF16(""));
-    file_handler.accept[base::ASCIIToUTF16("text/svg+xml")].push_back(
-        base::ASCIIToUTF16(".svg"));
+    file_handler.name = u"Graph";
+    file_handler.accept[u"text/svg+xml"].push_back(u"");
+    file_handler.accept[u"text/svg+xml"].push_back(u".svg");
     web_app.file_handlers.push_back(file_handler);
   }
   {
     blink::Manifest::FileHandler file_handler;
     file_handler.action = GURL("https://graphr.n/open-raw/");
-    file_handler.name = base::ASCIIToUTF16("Raw");
-    file_handler.accept[base::ASCIIToUTF16("text/csv")].push_back(
-        base::ASCIIToUTF16(".csv"));
+    file_handler.name = u"Raw";
+    file_handler.accept[u"text/csv"].push_back(u".csv");
     web_app.file_handlers.push_back(file_handler);
   }
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
 
   ASSERT_TRUE(extension.get());
 
@@ -579,15 +566,15 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
   StartExtensionService();
   WebApplicationInfo web_app;
   WebApplicationShortcutsMenuItemInfo shortcut_item;
-  std::map<SquareSizePx, SkBitmap> shortcut_icon_bitmaps;
-  web_app.title = base::ASCIIToUTF16("Shortcut App");
-  web_app.description = base::ASCIIToUTF16("We have shortcuts.");
+  web_app.title = u"Shortcut App";
+  web_app.description = u"We have shortcuts.";
   web_app.start_url = GURL("https://shortcut-app.io/");
   web_app.scope = GURL("https://shortcut-app.io");
 
-  shortcut_item.name = base::ASCIIToUTF16("Shortcut 1");
+  shortcut_item.name = u"Shortcut 1";
   shortcut_item.url = GURL("https://shortcut-app.io/shortcuts/shortcut1");
   {
+    IconBitmaps shortcut_icon_bitmaps;
     const int sizes[] = {16, 128};
     for (const auto& size : sizes) {
       WebApplicationShortcutsMenuItemInfo::Icon icon_info;
@@ -595,16 +582,17 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
           base::StringPrintf("shortcut1/%i.png", size));
       icon_info.square_size_px = size;
       shortcut_item.shortcut_icon_infos.push_back(std::move(icon_info));
-      shortcut_icon_bitmaps[size] = GetIconBitmap(size);
+      shortcut_icon_bitmaps.any[size] = GetIconBitmap(size);
     }
-    web_app.shortcuts_menu_icons_bitmaps.emplace_back(
+    web_app.shortcuts_menu_icon_bitmaps.emplace_back(
         std::move(shortcut_icon_bitmaps));
   }
   web_app.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
 
-  shortcut_item.name = base::ASCIIToUTF16("Shortcut 2");
+  shortcut_item.name = u"Shortcut 2";
   shortcut_item.url = GURL("https://shortcut-app.io/shortcuts/shortcut2");
   {
+    IconBitmaps shortcut_icon_bitmaps;
     const int sizes[] = {16, 48};
     for (const auto& size : sizes) {
       WebApplicationShortcutsMenuItemInfo::Icon icon_info;
@@ -612,16 +600,16 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
           web_app.start_url.Resolve(base::StringPrintf("0/%i.png", size));
       icon_info.square_size_px = size;
       shortcut_item.shortcut_icon_infos.push_back(std::move(icon_info));
-      shortcut_icon_bitmaps[size] = GetIconBitmap(size);
+      shortcut_icon_bitmaps.any[size] = GetIconBitmap(size);
     }
-    web_app.shortcuts_menu_icons_bitmaps.emplace_back(
+    web_app.shortcuts_menu_icon_bitmaps.emplace_back(
         std::move(shortcut_icon_bitmaps));
   }
   web_app.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::FROM_BOOKMARK, Manifest::INTERNAL);
+      Extension::FROM_BOOKMARK, ManifestLocation::kInternal);
 
   ASSERT_TRUE(extension.get());
 
@@ -644,7 +632,7 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
     }
 
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps =
-        web_app.shortcuts_menu_icons_bitmaps[i];
+        web_app.shortcuts_menu_icon_bitmaps[i].any;
     EXPECT_EQ(icon_bitmaps.size(), shortcut_icons.at(i).map().size());
     for (const std::pair<const SquareSizePx, SkBitmap>& icon : icon_bitmaps) {
       int size = icon.first;

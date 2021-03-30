@@ -48,6 +48,14 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
       sk_color_type;
 }
 
+std::unique_ptr<SkiaOutputDevice::ScopedPaint>
+SkiaOutputDeviceVulkanSecondaryCB::BeginScopedPaint() {
+  std::vector<GrBackendSemaphore> end_semaphores;
+  SkSurface* sk_surface = BeginPaint(&end_semaphores);
+  return std::make_unique<SkiaOutputDevice::ScopedPaint>(
+      std::move(end_semaphores), this, sk_surface);
+}
+
 void SkiaOutputDeviceVulkanSecondaryCB::Submit(bool sync_cpu,
                                                base::OnceClosure callback) {
   // Submit the primary command buffer which may render passes.
@@ -68,16 +76,16 @@ bool SkiaOutputDeviceVulkanSecondaryCB::Reshape(
 
 void SkiaOutputDeviceVulkanSecondaryCB::SwapBuffers(
     BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+    OutputSurfaceFrame frame) {
   StartSwapBuffers(std::move(feedback));
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK), size_,
-                    std::move(latency_info));
+                    std::move(frame));
 }
 
 void SkiaOutputDeviceVulkanSecondaryCB::PostSubBuffer(
     const gfx::Rect& rect,
     BufferPresentedCallback feedback,
-    std::vector<ui::LatencyInfo> latency_info) {
+    OutputSurfaceFrame frame) {
   CHECK(false);
 }
 

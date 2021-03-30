@@ -70,6 +70,7 @@ source_set("browsing_data") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate:translate",
     "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/font_size",
     "//ios/chrome/browser/webdata_services",
     "//ios/net",
     "//ios/public/provider/chrome/browser",

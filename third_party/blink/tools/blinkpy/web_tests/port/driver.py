@@ -328,6 +328,7 @@ class Driver(object):
     HTTP_LOCAL_DIR = 'http/tests/local/'
     HTTP_HOST_AND_PORTS = ('127.0.0.1', 8000, 8443)
     WPT_HOST_AND_PORTS = ('web-platform.test', 8001, 8444)
+    WPT_H2_PORT = 9000
 
     def is_http_test(self, test_name):
         return (test_name.startswith(self.HTTP_DIR)
@@ -365,6 +366,8 @@ class Driver(object):
             hostname, insecure_port, secure_port = self.WPT_HOST_AND_PORTS
             if '.www.' in test_name:
                 hostname = "www.%s" % hostname
+            if '.h2.' in test_name:
+                secure_port = self.WPT_H2_PORT
         else:
             test_dir_prefix = self.HTTP_DIR
             test_url_prefix = '/'
@@ -372,7 +375,8 @@ class Driver(object):
 
         relative_path = test_name[len(test_dir_prefix):]
 
-        if '/https/' in test_name or '.https.' in test_name or '.serviceworker.' in test_name:
+        if ('/https/' in test_name or '.https.' in test_name
+                or '.h2.' in test_name or '.serviceworker.' in test_name):
             return 'https://%s:%d%s%s' % (hostname, secure_port,
                                           test_url_prefix, relative_path)
         return 'http://%s:%d%s%s' % (hostname, insecure_port, test_url_prefix,
@@ -433,6 +437,14 @@ class Driver(object):
             environment = self._profiler.adjusted_environment(environment)
         return environment
 
+    def _initialize_server_process(self, server_name, cmd_line, environment):
+        self._server_process = self._port.server_process_constructor(
+            self._port,
+            server_name,
+            cmd_line,
+            environment,
+            more_logging=self._port.get_option('driver_logging'))
+
     def _start(self, per_test_args, wait_for_ready=True):
         self.stop()
         self._driver_tempdir = self._port.host.filesystem.mkdtemp(
@@ -444,12 +456,7 @@ class Driver(object):
         self._crashed_pid = None
         self._leaked = False
         cmd_line = self.cmd_line(per_test_args)
-        self._server_process = self._port.server_process_constructor(
-            self._port,
-            server_name,
-            cmd_line,
-            environment,
-            more_logging=self._port.get_option('driver_logging'))
+        self._initialize_server_process(server_name, cmd_line, environment)
         self._server_process.start()
         self._current_cmd_line = cmd_line
 

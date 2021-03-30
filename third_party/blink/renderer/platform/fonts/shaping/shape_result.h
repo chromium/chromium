@@ -173,7 +173,8 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
   }
-  bool Rtl() const { return Direction() == TextDirection::kRtl; }
+  bool IsLtr() const { return blink::IsLtr(Direction()); }
+  bool IsRtl() const { return blink::IsRtl(Direction()); }
 
   // True if at least one glyph in this result has vertical offsets.
   //
@@ -186,6 +187,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
   // For memory reporting.
   size_t ByteSize() const;
+
+  // True if |StartIndex()| is safe to break.
+  bool IsStartSafeToBreak() const;
 
   // Returns the next or previous offsets respectively at which it is safe to
   // break without reshaping.

@@ -1,0 +1,15 @@
+{
+  "default_applications": ["pay.json"],
+  "name": "Test Payment App",
+  "short_name": "Test",
+  "icons": [{
+    "src": "/icon.png",
+    "sizes": "40x40",
+    "type": "image/png"
+  }],
+  "serviceworker": {
+    "src": "sw.js",
+    "use_cache": false,
+    "scope": "/just-in-time/"
+  }
+}

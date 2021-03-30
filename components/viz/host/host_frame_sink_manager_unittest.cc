@@ -95,11 +95,9 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
   MOCK_METHOD2(UnregisterFrameSinkHierarchy,
                void(const FrameSinkId& parent, const FrameSinkId& child));
   MOCK_METHOD(void,
-              StartThrottling,
-              (const std::vector<FrameSinkId>& frame_sink_ids,
-               base::TimeDelta interval),
+              Throttle,
+              (const std::vector<FrameSinkId>& ids, base::TimeDelta interval),
               (override));
-  MOCK_METHOD(void, EndThrottling, (), (override));
 };
 
 }  // namespace
@@ -304,39 +302,6 @@ TEST_F(HostFrameSinkManagerTest, HierarchyMultipleParents) {
   FlushHostAndVerifyExpectations();
 }
 
-TEST_F(HostFrameSinkManagerTest, FindRootFrameSinkId) {
-  FakeHostFrameSinkClient host_client;
-
-  EXPECT_FALSE(host().FindRootFrameSinkId(kFrameSinkParent1));
-  EXPECT_FALSE(host().FindRootFrameSinkId(kFrameSinkChild1));
-
-  // Register two FrameSinkIds, hierarchy between them and create a
-  // CompositorFrameSink for one.
-  host().RegisterFrameSinkId(kFrameSinkParent1, &host_client,
-                             ReportFirstSurfaceActivation::kYes);
-  host().RegisterFrameSinkId(kFrameSinkChild1, &host_client,
-                             ReportFirstSurfaceActivation::kYes);
-  host().RegisterFrameSinkHierarchy(kFrameSinkParent1, kFrameSinkChild1);
-
-  EXPECT_FALSE(host().FindRootFrameSinkId(kFrameSinkParent1));
-  EXPECT_FALSE(host().FindRootFrameSinkId(kFrameSinkChild1));
-
-  RootCompositorFrameSinkData root_data;
-  host().CreateRootCompositorFrameSink(
-      root_data.BuildParams(kFrameSinkParent1));
-
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  host().CreateCompositorFrameSink(
-      kFrameSinkChild1, compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
-
-  EXPECT_EQ(base::Optional<FrameSinkId>(kFrameSinkParent1),
-            host().FindRootFrameSinkId(kFrameSinkParent1));
-  EXPECT_EQ(base::Optional<FrameSinkId>(kFrameSinkParent1),
-            host().FindRootFrameSinkId(kFrameSinkChild1));
-}
-
 // Verify that HostFrameSinkManager can handle restarting after a GPU crash.
 TEST_F(HostFrameSinkManagerTest, RestartOnGpuCrash) {
   FakeHostFrameSinkClient host_client;
@@ -490,11 +455,10 @@ TEST_F(HostFrameSinkManagerTest, ContextLossRecreateNonRoot) {
 TEST_F(HostFrameSinkManagerTest, ThrottleFramePainting) {
   const std::vector<FrameSinkId> frame_sink_ids{
       FrameSinkId(1, 1), FrameSinkId(2, 2), FrameSinkId(3, 3)};
-  constexpr base::TimeDelta interval = base::TimeDelta::FromSeconds(1) / 10;
-  EXPECT_CALL(impl(), StartThrottling(frame_sink_ids, interval)).Times(1);
-  host().StartThrottling(frame_sink_ids, interval);
-  EXPECT_CALL(impl(), EndThrottling()).Times(1);
-  host().EndThrottling();
+  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(10);
+  EXPECT_CALL(impl(), Throttle(frame_sink_ids, interval));
+  host().Throttle(frame_sink_ids, interval);
+
   FlushHostAndVerifyExpectations();
 }
 }  // namespace viz

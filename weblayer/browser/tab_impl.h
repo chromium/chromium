@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "components/find_in_page/find_result_observer.h"
@@ -66,7 +66,6 @@ class ProfileImpl;
 #if defined(OS_ANDROID)
 class BrowserControlsContainerView;
 enum class ControlsVisibilityReason;
-class WebMessageHostFactoryProxy;
 #endif
 
 class TabImpl : public Tab,
@@ -127,7 +126,8 @@ class TabImpl : public Tab,
   bool has_new_tab_delegate() const { return new_tab_delegate_ != nullptr; }
   NewTabDelegate* new_tab_delegate() const { return new_tab_delegate_; }
 
-  // Called from Browser when this Tab is losing active status.
+  // Called from Browser when this Tab is gaining/losing active status.
+  void OnGainedActive();
   void OnLosingActive();
 
   bool IsActive();
@@ -219,18 +219,18 @@ class TabImpl : public Tab,
   void AddObserver(TabObserver* observer) override;
   void RemoveObserver(TabObserver* observer) override;
   NavigationController* GetNavigationController() override;
-  void ExecuteScript(const base::string16& script,
+  void ExecuteScript(const std::u16string& script,
                      bool use_separate_isolate,
                      JavaScriptResultCallback callback) override;
   const std::string& GetGuid() override;
   void SetData(const std::map<std::string, std::string>& data) override;
   const std::map<std::string, std::string>& GetData() override;
-  base::string16 AddWebMessageHostFactory(
+  std::u16string AddWebMessageHostFactory(
       std::unique_ptr<WebMessageHostFactory> factory,
-      const base::string16& js_object_name,
+      const std::u16string& js_object_name,
       const std::vector<std::string>& js_origins) override;
   void RemoveWebMessageHostFactory(
-      const base::string16& js_object_name) override;
+      const std::u16string& js_object_name) override;
   std::unique_ptr<FaviconFetcher> CreateFaviconFetcher(
       FaviconFetcherDelegate* delegate) override;
 #if !defined(OS_ANDROID)
@@ -241,7 +241,7 @@ class TabImpl : public Tab,
   void SetWebPreferences(blink::web_pref::WebPreferences* prefs);
 
   // Executes |script| with a user gesture.
-  void ExecuteScriptWithUserGestureForTests(const base::string16& script);
+  void ExecuteScriptWithUserGestureForTests(const std::u16string& script);
 
   // Initializes the autofill system with |provider| for tests.
   void InitializeAutofillForTests(
@@ -266,7 +266,7 @@ class TabImpl : public Tab,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
   void CreateSmsPrompt(content::RenderFrameHost*,
-                       const url::Origin&,
+                       const std::vector<url::Origin>&,
                        const std::string& one_time_code,
                        base::OnceClosure on_confirm,
                        base::OnceClosure on_cancel) override;
@@ -363,6 +363,8 @@ class TabImpl : public Tab,
 
   bool SetDataInternal(const std::map<std::string, std::string>& data);
 
+  void EnterFullscreenImpl();
+
   BrowserImpl* browser_ = nullptr;
   ErrorPageDelegate* error_page_delegate_ = nullptr;
   FullscreenDelegate* fullscreen_delegate_ = nullptr;
@@ -389,15 +391,15 @@ class TabImpl : public Tab,
   cc::BrowserControlsState current_browser_controls_visibility_constraint_ =
       cc::BrowserControlsState::kShown;
 
-  std::map<std::string, std::unique_ptr<WebMessageHostFactoryProxy>>
-      js_name_to_proxy_;
-
   bool desktop_user_agent_enabled_ = false;
 #endif
 
   bool is_fullscreen_ = false;
   // Set to true doing EnterFullscreenModeForTab().
   bool processing_enter_fullscreen_ = false;
+
+  // If true, the fullscreen delegate is called when the tab gains active.
+  bool enter_fullscreen_on_gained_active_ = false;
 
   std::unique_ptr<autofill::AutofillProvider> autofill_provider_;
 
@@ -406,11 +408,11 @@ class TabImpl : public Tab,
   std::map<std::string, std::string> data_;
   base::ObserverList<DataObserver>::Unchecked data_observers_;
 
-  base::string16 title_;
+  std::u16string title_;
 
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 
-  base::WeakPtrFactory<TabImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TabImpl> weak_ptr_factory_for_fullscreen_exit_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TabImpl);
 };

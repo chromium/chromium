@@ -33,7 +33,6 @@ source_set("unit_tests") {
   deps = [
     ":confirm",
     "//base/test:test_support",
-    "//components/infobars/core:feature_flags",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays",

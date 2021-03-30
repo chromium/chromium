@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -140,17 +140,17 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<content::TestWebUI> web_ui_;
-  std::unique_ptr<content::WebContents> preview_web_contents_;
-  PrintPreviewHandlerChromeOS* handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestPrintServersManager> print_servers_manager_;
+  std::unique_ptr<content::WebContents> preview_web_contents_;
+  std::unique_ptr<content::TestWebUI> web_ui_;
+  PrintPreviewHandlerChromeOS* handler_;
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewHandlerChromeOSTest);
 };
 
-TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServer) {
+TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServers) {
   base::Value selected_args(base::Value::Type::LIST);
   base::Value selected_ids_js(base::Value::Type::LIST);
   selected_ids_js.Append(kSelectedPrintServerId);
@@ -160,13 +160,13 @@ TEST_F(PrintPreviewHandlerChromeOSTest, ChoosePrintServer) {
   base::Value none_selected_js(base::Value::Type::LIST);
   none_selected_args.Append(std::move(none_selected_js));
 
-  web_ui()->HandleReceivedMessage("choosePrintServer",
+  web_ui()->HandleReceivedMessage("choosePrintServers",
                                   &base::Value::AsListValue(selected_args));
   EXPECT_THAT(print_servers_manager()->selected_print_server_ids(),
               testing::ElementsAre(std::string(kSelectedPrintServerId)));
 
   web_ui()->HandleReceivedMessage(
-      "choosePrintServer", &base::Value::AsListValue(none_selected_args));
+      "choosePrintServers", &base::Value::AsListValue(none_selected_args));
   EXPECT_THAT(print_servers_manager()->selected_print_server_ids(),
               testing::IsEmpty());
 

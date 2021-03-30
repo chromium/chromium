@@ -225,7 +225,8 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
 
     std::string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
-        extension_root, Manifest::INTERNAL, /*flags=*/0, &error);
+        extension_root, mojom::ManifestLocation::kInternal, /*flags=*/0,
+        &error);
     EXPECT_NE(nullptr, extension.get()) << " error:'" << error << "'";
 
     content_verifier_->OnExtensionLoaded(&testing_context_, extension.get());

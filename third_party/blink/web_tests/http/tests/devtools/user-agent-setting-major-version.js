@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test user agent setting\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   const chromeRegex = new RegExp('(?:^|\\W)Chrome/(\\S+)');

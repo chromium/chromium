@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS showModal() should center in the viewport
+PASS Dialog should be recentered if showModal() is called after close()
+PASS Dialog should not recenter on relayout.
+PASS A tall dialog should be positioned at the top of the viewport.
+PASS The dialog should be centered regardless of the presence of a horizontal scrollbar.
+PASS Centering should work when dialog is inside positioned containers.
+PASS A centered dialog's position should survive becoming display:none temporarily.
+FAIL Dialog should not still be centered when removed, and re-added to the document. assert_equals: expected 291 but got 320
+PASS Dialog's specified position should survive after close() and showModal().
+PASS Dialog should be recentered if showModal() is called after removing 'open'.
+Harness: the test ran to completion.
+

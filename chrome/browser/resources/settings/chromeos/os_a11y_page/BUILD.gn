@@ -4,135 +4,23 @@
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":externs",
-    ":manage_a11y_page",
-    ":manage_a11y_page_browser_proxy",
-    ":os_a11y_page",
-    ":os_a11y_page_browser_proxy",
-    ":switch_access_action_assignment_dialog",
-    ":switch_access_constants",
-    ":switch_access_subpage",
-    ":switch_access_subpage_browser_proxy",
-    ":tts_subpage",
-    ":tts_subpage_browser_proxy",
-    "../../a11y_page:captions_subpage",
-    "../../appearance_page:fonts_browser_proxy",
-  ]
-}
-
-js_library("os_a11y_page_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("os_a11y_page") {
-  deps = [
-    ":os_a11y_page_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../../:router",
-    "../../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("manage_a11y_page_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("manage_a11y_page") {
-  deps = [
-    ":manage_a11y_page_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "..:route_origin_behavior",
-    "../..:router",
-    "../device_page:device_page_browser_proxy",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("switch_access_action_assignment_dialog") {
-  deps = [
-    ":switch_access_constants",
-    "//chrome/browser/resources/settings/prefs:prefs_behavior",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("switch_access_constants") {
-}
-
-js_library("switch_access_subpage_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("switch_access_subpage") {
-  deps = [
-    ":switch_access_constants",
-    ":switch_access_subpage_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../../prefs:prefs_behavior",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("tts_subpage_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("tts_subpage") {
-  deps = [
-    ":externs",
-    ":tts_subpage_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../../controls:settings_slider",
-    "../../languages_page:languages_browser_proxy",
-    "../../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("externs") {
-}
-
-# TODO: Uncomment as the Polymer3 migration makes progress.
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":externs.m",
-
-    #    ":manage_a11y_page.m",
+    ":manage_a11y_page.m",
     ":manage_a11y_page_browser_proxy.m",
-
-    #    ":os_a11y_page.m",
+    ":os_a11y_page.m",
     ":os_a11y_page_browser_proxy.m",
-
     ":switch_access_action_assignment_dialog.m",
     ":switch_access_constants.m",
-    #    ":switch_access_subpage.m",
+    ":switch_access_setup_guide_dialog.m",
+    ":switch_access_subpage.m",
     ":switch_access_subpage_browser_proxy.m",
     ":tts_subpage.m",
     ":tts_subpage_browser_proxy.m",
@@ -141,16 +29,23 @@ js_type_check("closure_compile_module") {
 
 js_library("externs.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/externs.m.js" ]
-  deps = [
-    # TODO: Fill those in.
-  ]
   extra_deps = [ ":modulize" ]
 }
 
 js_library("manage_a11y_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/manage_a11y_page.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":manage_a11y_page_browser_proxy.m",
+    "//chrome/browser/resources/settings:router",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:route_origin_behavior.m",
+    "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy.m",
+    "//chrome/browser/resources/settings/controls:settings_slider",
+    "//chrome/browser/resources/settings/controls:settings_toggle_button",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":manage_a11y_page_module" ]
 }
@@ -165,7 +60,17 @@ js_library("manage_a11y_page_browser_proxy.m") {
 js_library("os_a11y_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/os_a11y_page.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":os_a11y_page_browser_proxy.m",
+    "//chrome/browser/resources/settings:router",
+    "//chrome/browser/resources/settings/a11y_page:captions_subpage",
+    "//chrome/browser/resources/settings/a11y_page:live_caption_section",
+    "//chrome/browser/resources/settings/appearance_page:fonts_browser_proxy",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/settings_page:settings_animated_pages",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":os_a11y_page_module" ]
 }
@@ -181,7 +86,7 @@ js_library("switch_access_action_assignment_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_action_assignment_dialog.m.js" ]
   deps = [
     ":switch_access_constants.m",
-    "//chrome/browser/resources/settings/prefs:prefs_behavior.m",
+    "//chrome/browser/resources/settings/prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -200,10 +105,33 @@ js_library("switch_access_constants.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("switch_access_setup_guide_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_setup_guide_dialog.m.js" ]
+  deps = [
+    ":switch_access_constants.m",
+    "//chrome/browser/resources/settings/prefs:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  extra_deps = [ ":switch_access_setup_guide_dialog_module" ]
+}
+
 js_library("switch_access_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_subpage.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":switch_access_constants.m",
+    ":switch_access_subpage_browser_proxy.m",
+    "//chrome/browser/resources/settings:router",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/prefs:prefs_behavior",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":switch_access_subpage_module" ]
 }
@@ -219,11 +147,11 @@ js_library("tts_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/tts_subpage.m.js" ]
   deps = [
     ":tts_subpage_browser_proxy.m",
-    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
-    "//chrome/browser/resources/settings/controls:settings_slider.m",
-    "//chrome/browser/resources/settings/languages_page:languages_browser_proxy.m",
+    "//chrome/browser/resources/settings/controls:settings_slider",
+    "//chrome/browser/resources/settings/languages_page:languages_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
@@ -242,14 +170,13 @@ js_library("tts_subpage_browser_proxy.m") {
   extra_deps = [ ":modulize" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
   public_deps = [
     ":manage_a11y_page_module",
     ":modulize",
     ":os_a11y_page_module",
     ":switch_access_action_assignment_dialog_module",
+    ":switch_access_setup_guide_dialog_module",
     ":switch_access_subpage_module",
     ":tts_subpage_module",
   ]
@@ -259,12 +186,18 @@ polymer_modulizer("manage_a11y_page") {
   js_file = "manage_a11y_page.js"
   html_file = "manage_a11y_page.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("os_a11y_page") {
   js_file = "os_a11y_page.js"
   html_file = "os_a11y_page.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
 }
 
 polymer_modulizer("switch_access_action_assignment_dialog") {
@@ -272,6 +205,16 @@ polymer_modulizer("switch_access_action_assignment_dialog") {
   html_file = "switch_access_action_assignment_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+}
+
+polymer_modulizer("switch_access_setup_guide_dialog") {
+  js_file = "switch_access_setup_guide_dialog.js"
+  html_file = "switch_access_setup_guide_dialog.html"
+  html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -279,6 +222,9 @@ polymer_modulizer("switch_access_subpage") {
   js_file = "switch_access_subpage.js"
   html_file = "switch_access_subpage.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("tts_subpage") {
@@ -286,10 +232,9 @@ polymer_modulizer("tts_subpage") {
   html_file = "tts_subpage.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
-
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
   input_files = [

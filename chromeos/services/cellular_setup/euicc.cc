@@ -4,17 +4,75 @@
 
 #include "chromeos/services/cellular_setup/euicc.h"
 
+#include <cstdint>
 #include <memory>
 
+#include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_esim_profile.h"
+#include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/network/network_event_log.h"
+#include "chromeos/network/network_state_handler.h"
+#include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/esim_profile.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-shared.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {
 namespace cellular_setup {
+namespace {
+
+// Prefix for EID when encoded in QR Code.
+const char kEidQrCodePrefix[] = "EID:";
+
+// Measures the time from which this function is called to when |callback|
+// is expected to run. The measured time difference should capture the time it
+// took for a profile to be fully downloaded from a provided activation code.
+Euicc::InstallProfileFromActivationCodeCallback
+CreateTimedInstallProfileCallback(
+    Euicc::InstallProfileFromActivationCodeCallback callback) {
+  return base::BindOnce(
+      [](Euicc::InstallProfileFromActivationCodeCallback callback,
+         base::Time installation_start_time, mojom::ProfileInstallResult result,
+         mojo::PendingRemote<mojom::ESimProfile> esim_profile_pending_remote)
+          -> void {
+        std::move(callback).Run(result, std::move(esim_profile_pending_remote));
+        if (result != mojom::ProfileInstallResult::kSuccess)
+          return;
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency",
+            base::Time::Now() - installation_start_time);
+      },
+      std::move(callback), base::Time::Now());
+}
+
+// Measures the time from which this function is called to when |callback|
+// is expected to run. The measured time difference should capture the time it
+// took for a profile discovery request to complete.
+Euicc::RequestPendingProfilesCallback CreateTimedRequestPendingProfilesCallback(
+    Euicc::RequestPendingProfilesCallback callback) {
+  return base::BindOnce(
+      [](Euicc::RequestPendingProfilesCallback callback,
+         base::Time installation_start_time,
+         mojom::ESimOperationResult result) -> void {
+        std::move(callback).Run(result);
+        if (result != mojom::ESimOperationResult::kSuccess)
+          return;
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Network.Cellular.ESim.ProfileDiscovery.Latency",
+            base::Time::Now() - installation_start_time);
+      },
+      std::move(callback), base::Time::Now());
+}
+}  // namespace
 
 Euicc::Euicc(const dbus::ObjectPath& path, ESimManager* esim_manager)
     : esim_manager_(esim_manager),
@@ -44,13 +102,17 @@ void Euicc::InstallProfileFromActivationCode(
   ESimProfile* profile_info = nullptr;
   mojom::ProfileInstallResult status =
       GetPendingProfileInfoFromActivationCode(activation_code, &profile_info);
+
+  // Return early if profile was found but not in the correct state.
   if (profile_info && status != mojom::ProfileInstallResult::kSuccess) {
-    // Return early if profile was found but not in the correct state.
+    NET_LOG(ERROR) << "EUICC could not install profile: " << status;
     std::move(callback).Run(status, mojo::NullRemote());
     return;
   }
 
   if (profile_info) {
+    NET_LOG(USER) << "Installing profile with path "
+                  << profile_info->path().value();
     profile_info->InstallProfile(
         confirmation_code,
         base::BindOnce(
@@ -64,33 +126,87 @@ void Euicc::InstallProfileFromActivationCode(
   }
 
   // Try installing directly with activation code.
-  HermesEuiccClient::Get()->InstallProfileFromActivationCode(
-      path_, activation_code, confirmation_code,
-      base::BindOnce(&Euicc::OnProfileInstallResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  // TODO(crbug.com/1186682) Add a check for activation codes that are
+  // currently being installed to prevent multiple attempts for the same
+  // activation code.
+  NET_LOG(USER) << "Attempting installation with code " << activation_code;
+  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(
+      CellularInhibitor::InhibitReason::kInstallingProfile,
+      base::BindOnce(&Euicc::PerformInstallProfileFromActivationCode,
+                     weak_ptr_factory_.GetWeakPtr(), activation_code,
+                     confirmation_code,
+                     CreateTimedInstallProfileCallback(std::move(callback))));
 }
 
 void Euicc::RequestPendingProfiles(RequestPendingProfilesCallback callback) {
   NET_LOG(EVENT) << "Requesting Pending profiles";
-  HermesEuiccClient::Get()->RequestPendingEvents(
-      path_,
-      base::BindOnce(&Euicc::OnRequestPendingEventsResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(
+      CellularInhibitor::InhibitReason::kRefreshingProfileList,
+      base::BindOnce(
+          &Euicc::PerformRequestPendingProfiles, weak_ptr_factory_.GetWeakPtr(),
+          CreateTimedRequestPendingProfilesCallback(std::move(callback))));
 }
 
-void Euicc::UpdateProfileList() {
-  HermesEuiccClient::Properties* euicc_properties =
-      HermesEuiccClient::Get()->GetProperties(path_);
-  std::set<dbus::ObjectPath> new_profile_paths;
-  for (auto& path : euicc_properties->installed_carrier_profiles().value()) {
-    GetOrCreateESimProfile(path);
-    new_profile_paths.insert(path);
+void Euicc::GetEidQRCode(GetEidQRCodeCallback callback) {
+  // Format EID to string that should be encoded in the QRCode.
+  std::string qr_code_string =
+      base::StrCat({kEidQrCodePrefix, properties_->eid});
+  QRCodeGenerator qr_generator;
+  base::Optional<QRCodeGenerator::GeneratedCode> qr_data =
+      qr_generator.Generate(base::as_bytes(
+          base::make_span(qr_code_string.data(), qr_code_string.size())));
+  if (!qr_data || qr_data->data.data() == nullptr ||
+      qr_data->data.size() == 0) {
+    std::move(callback).Run(nullptr);
+    return;
   }
-  for (auto& path : euicc_properties->pending_carrier_profiles().value()) {
-    GetOrCreateESimProfile(path);
-    new_profile_paths.insert(path);
+
+  // Data returned from QRCodeGenerator consist of bytes that represents
+  // tiles. Least significant bit of each byte is set if the tile should be
+  // filled. Other bit positions indicate QR Code structure and are not required
+  // for rendering. Convert this data to 0 or 1 values for simpler UI side
+  // rendering.
+  for (uint8_t& qr_data_byte : qr_data->data) {
+    qr_data_byte &= 1;
   }
-  RemoveUntrackedProfiles(new_profile_paths);
+
+  mojom::QRCodePtr qr_code = mojom::QRCode::New();
+  qr_code->size = qr_data->qr_size;
+  qr_code->data.assign(qr_data->data.begin(), qr_data->data.end());
+  std::move(callback).Run(std::move(qr_code));
+}
+
+void Euicc::UpdateProfileList(
+    const std::vector<CellularESimProfile>& esim_profile_states) {
+  std::vector<ESimProfile*> newly_created_profiles;
+  bool profile_list_changed = false;
+  for (auto esim_profile_state : esim_profile_states) {
+    if (esim_profile_state.eid() != properties_->eid) {
+      continue;
+    }
+    ESimProfile* new_profile = UpdateOrCreateESimProfile(esim_profile_state);
+    if (new_profile) {
+      profile_list_changed = true;
+      newly_created_profiles.push_back(new_profile);
+    }
+  }
+  profile_list_changed |= RemoveUntrackedProfiles(esim_profile_states);
+  if (profile_list_changed) {
+    esim_manager_->NotifyESimProfileListChanged(this);
+
+    // Run any install callbacks that are pending creation of new ESimProfile
+    // object.
+    for (ESimProfile* esim_profile : newly_created_profiles) {
+      auto it = install_calls_pending_create_.find(esim_profile->path());
+      if (it == install_calls_pending_create_.end()) {
+        continue;
+      }
+      std::move(it->second)
+          .Run(mojom::ProfileInstallResult::kSuccess,
+               esim_profile->CreateRemote());
+      install_calls_pending_create_.erase(it);
+    }
+  }
 }
 
 void Euicc::UpdateProperties() {
@@ -115,10 +231,30 @@ ESimProfile* Euicc::GetProfileFromPath(const dbus::ObjectPath& path) {
   return nullptr;
 }
 
+void Euicc::PerformInstallProfileFromActivationCode(
+    const std::string& activation_code,
+    const std::string& confirmation_code,
+    InstallProfileFromActivationCodeCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!inhibit_lock) {
+    NET_LOG(ERROR) << "Error inhibiting cellular device";
+    std::move(callback).Run(mojom::ProfileInstallResult::kFailure,
+                            mojo::NullRemote());
+    return;
+  }
+
+  HermesEuiccClient::Get()->InstallProfileFromActivationCode(
+      path_, activation_code, confirmation_code,
+      base::BindOnce(&Euicc::OnProfileInstallResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(inhibit_lock)));
+}
+
 void Euicc::OnProfileInstallResult(
     InstallProfileFromActivationCodeCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status,
-    const dbus::ObjectPath* object_path) {
+    const dbus::ObjectPath* profile_path) {
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Error Installing profile status="
                    << static_cast<int>(status);
@@ -127,13 +263,102 @@ void Euicc::OnProfileInstallResult(
     return;
   }
 
-  ESimProfile* profile_info = GetOrCreateESimProfile(*object_path);
-  std::move(callback).Run(mojom::ProfileInstallResult::kSuccess,
-                          profile_info->CreateRemote());
+  install_calls_pending_connect_.emplace(*profile_path, std::move(callback));
+  esim_manager_->cellular_esim_connection_handler()
+      ->EnableNewProfileForConnection(
+          path_, *profile_path, std::move(inhibit_lock),
+          base::BindOnce(&Euicc::OnNewProfileEnableSuccess,
+                         weak_ptr_factory_.GetWeakPtr(), *profile_path),
+          base::BindOnce(&Euicc::OnNewProfileConnectFailure,
+                         weak_ptr_factory_.GetWeakPtr(), *profile_path));
 }
 
-void Euicc::OnRequestPendingEventsResult(
+void Euicc::OnNewProfileEnableSuccess(const dbus::ObjectPath& profile_path,
+                                      const std::string& service_path) {
+  const NetworkState* network_state =
+      esim_manager_->network_state_handler()->GetNetworkState(service_path);
+  if (!network_state) {
+    OnNewProfileConnectFailure(profile_path,
+                               NetworkConnectionHandler::kErrorNotFound,
+                               /*error_data=*/nullptr);
+    return;
+  }
+
+  if (network_state->IsConnectingOrConnected()) {
+    OnNewProfileConnectSuccess(profile_path);
+    return;
+  }
+
+  esim_manager_->network_connection_handler()->ConnectToNetwork(
+      service_path,
+      base::BindOnce(&Euicc::OnNewProfileConnectSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), profile_path),
+      base::BindOnce(&Euicc::OnNewProfileConnectFailure,
+                     weak_ptr_factory_.GetWeakPtr(), profile_path),
+      /*check_error_state=*/false, ConnectCallbackMode::ON_STARTED);
+}
+
+void Euicc::OnNewProfileConnectSuccess(const dbus::ObjectPath& profile_path) {
+  auto it = install_calls_pending_connect_.find(profile_path);
+  if (it == install_calls_pending_connect_.end()) {
+    NET_LOG(ERROR) << "ESim profile install callback missing after connect "
+                      "success. profile_path="
+                   << profile_path.value();
+    return;
+  }
+  InstallProfileFromActivationCodeCallback callback = std::move(it->second);
+  install_calls_pending_connect_.erase(it);
+
+  ESimProfile* esim_profile = GetProfileFromPath(profile_path);
+  if (!esim_profile) {
+    // An ESimProfile may not exist for the newly created esim profile object
+    // path if ESimProfileHandler has not updated profile lists yet. Save the
+    // callback until an UpdateProfileList call creates an ESimProfile
+    // object for this path
+    install_calls_pending_create_.emplace(profile_path, std::move(callback));
+    return;
+  }
+  std::move(callback).Run(mojom::ProfileInstallResult::kSuccess,
+                          esim_profile->CreateRemote());
+}
+
+void Euicc::OnNewProfileConnectFailure(
+    const dbus::ObjectPath& profile_path,
+    const std::string& error_name,
+    std::unique_ptr<base::DictionaryValue> error_data) {
+  NET_LOG(ERROR) << "Error connecting to newly created profile path="
+                 << profile_path.value() << " error_name=" << error_name;
+
+  auto it = install_calls_pending_connect_.find(profile_path);
+  if (it == install_calls_pending_connect_.end()) {
+    NET_LOG(ERROR)
+        << "ESim profile install callback missing after connect failure";
+    return;
+  }
+  std::move(it->second)
+      .Run(mojom::ProfileInstallResult::kFailure, mojo::NullRemote());
+  install_calls_pending_connect_.erase(it);
+}
+
+void Euicc::PerformRequestPendingProfiles(
     RequestPendingProfilesCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!inhibit_lock) {
+    NET_LOG(ERROR) << "Error inhibiting cellular device";
+    std::move(callback).Run(mojom::ESimOperationResult::kFailure);
+    return;
+  }
+
+  HermesEuiccClient::Get()->RequestPendingProfiles(
+      path_, /*root_smds=*/std::string(),
+      base::BindOnce(&Euicc::OnRequestPendingProfilesResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(inhibit_lock)));
+}
+
+void Euicc::OnRequestPendingProfilesResult(
+    RequestPendingProfilesCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status) {
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Request Pending events failed status="
@@ -142,6 +367,7 @@ void Euicc::OnRequestPendingEventsResult(
   std::move(callback).Run(status == HermesResponseStatus::kSuccess
                               ? mojom::ESimOperationResult::kSuccess
                               : mojom::ESimOperationResult::kFailure);
+  // inhibit_lock goes out of scope and will uninhibit automatically.
 }
 
 mojom::ProfileInstallResult Euicc::GetPendingProfileInfoFromActivationCode(
@@ -165,25 +391,40 @@ mojom::ProfileInstallResult Euicc::GetPendingProfileInfoFromActivationCode(
   return mojom::ProfileInstallResult::kSuccess;
 }
 
-ESimProfile* Euicc::GetOrCreateESimProfile(
-    const dbus::ObjectPath& carrier_profile_path) {
-  ESimProfile* profile_info = GetProfileFromPath(carrier_profile_path);
-  if (profile_info)
-    return profile_info;
+ESimProfile* Euicc::UpdateOrCreateESimProfile(
+    const CellularESimProfile& esim_profile_state) {
+  ESimProfile* esim_profile = GetProfileFromPath(esim_profile_state.path());
+  if (esim_profile) {
+    esim_profile->UpdateProperties(esim_profile_state, /*notify=*/true);
+    return nullptr;
+  }
   esim_profiles_.push_back(
-      std::make_unique<ESimProfile>(carrier_profile_path, this, esim_manager_));
+      std::make_unique<ESimProfile>(esim_profile_state, this, esim_manager_));
   return esim_profiles_.back().get();
 }
 
-void Euicc::RemoveUntrackedProfiles(
-    const std::set<dbus::ObjectPath>& new_profile_paths) {
+bool Euicc::RemoveUntrackedProfiles(
+    const std::vector<CellularESimProfile>& esim_profile_states) {
+  std::set<std::string> new_iccids;
+  for (auto esim_profile_state : esim_profile_states) {
+    if (esim_profile_state.eid() != properties_->eid) {
+      continue;
+    }
+    new_iccids.insert(esim_profile_state.iccid());
+  }
+
+  bool removed = false;
   for (auto it = esim_profiles_.begin(); it != esim_profiles_.end();) {
-    if (new_profile_paths.find((*it)->path()) == new_profile_paths.end()) {
+    ESimProfile* profile = (*it).get();
+    if (new_iccids.find(profile->properties()->iccid) == new_iccids.end()) {
+      profile->OnProfileRemove();
       it = esim_profiles_.erase(it);
+      removed = true;
     } else {
       it++;
     }
   }
+  return removed;
 }
 
 }  // namespace cellular_setup

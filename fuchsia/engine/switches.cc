@@ -20,5 +20,6 @@ const char kEnableCastStreamingReceiver[] = "enable-cast-streaming-receiver";
 const char kCdmDataDirectory[] = "cdm-data-directory";
 const char kCdmDataQuotaBytes[] = "cdm-data-quota-bytes";
 const char kDataQuotaBytes[] = "data-quota-bytes";
+const char kGoogleApiKey[] = "google-api-key";
 
 }  // namespace switches

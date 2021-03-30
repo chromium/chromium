@@ -13,8 +13,8 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sync/driver/profile_sync_service.h"
-#include "components/sync/engine_impl/loopback_server/loopback_server_entity.h"
-#include "components/sync/engine_impl/loopback_server/persistent_unique_client_entity.h"
+#include "components/sync/engine/loopback_server/loopback_server_entity.h"
+#include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/model/sync_data.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,13 +81,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest,
   // Create two TemplateURLs with the same keyword, but different guids.
   // "guid2" is newer, so it should be treated as better.
   fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
-      /*keyword=*/base::ASCIIToUTF16("key1"), /*url=*/"http://key1.com",
+      /*keyword=*/u"key1", /*url=*/"http://key1.com",
       /*guid=*/"guid1", base::Time::FromTimeT(10))));
   fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
-      /*keyword=*/base::ASCIIToUTF16("key1"), /*url=*/"http://key1.com",
+      /*keyword=*/u"key1", /*url=*/"http://key1.com",
       /*guid=*/"guid2", base::Time::FromTimeT(5))));
   fake_server_->InjectEntity(CreateFromTemplateURL(CreateTestTemplateURL(
-      /*keyword=*/base::ASCIIToUTF16("key1"), /*url=*/"http://key1.com",
+      /*keyword=*/u"key1", /*url=*/"http://key1.com",
       /*guid=*/"guid3", base::Time::FromTimeT(5))));
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -101,11 +101,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientSearchEnginesSyncTest,
   ASSERT_THAT(guid2, NotNull());
   ASSERT_THAT(guid3, NotNull());
   // All three should retain their "key1" keywords, even if they are duplicates.
-  EXPECT_EQ(base::ASCIIToUTF16("key1"), guid1->keyword());
-  EXPECT_EQ(base::ASCIIToUTF16("key1"), guid2->keyword());
-  EXPECT_EQ(base::ASCIIToUTF16("key1"), guid3->keyword());
+  EXPECT_EQ(u"key1", guid1->keyword());
+  EXPECT_EQ(u"key1", guid2->keyword());
+  EXPECT_EQ(u"key1", guid3->keyword());
 
   // But "guid1" should be considered the "best", as it's the most recent.
-  EXPECT_EQ(guid1,
-            service->GetTemplateURLForKeyword(base::ASCIIToUTF16("key1")));
+  EXPECT_EQ(guid1, service->GetTemplateURLForKeyword(u"key1"));
 }

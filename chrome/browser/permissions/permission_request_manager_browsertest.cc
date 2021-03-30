@@ -26,12 +26,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_impl.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/variations/variations_associated_data.h"
@@ -46,6 +48,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -99,6 +102,10 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    ShutDownFirstTabMockPermissionPromptFactory();
+  }
+
+  void ShutDownFirstTabMockPermissionPromptFactory() {
     mock_permission_prompt_factory_.reset();
   }
 
@@ -204,9 +211,11 @@ class PermissionRequestManagerWithBackForwardCacheBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PermissionRequestManagerBrowserTest::SetUpCommandLine(command_line);
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCache,
-        {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
   }
 
  private:
@@ -596,7 +605,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       browser(), embedded_test_server()->GetURL("b.com", "/title1.html"), 1);
   EXPECT_TRUE(back_forward_cache_tester.IsDisabledForFrameWithReason(
       main_frame_process_id, main_frame_routing_id,
-      "PermissionRequestManager"));
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::kPermissionRequestManager)));
 }
 
 class PermissionRequestManagerQuietUiBrowserTest
@@ -634,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   // First add a quiet permission request. Ensure that this request is decided
   // by the end of this test.
   permissions::MockPermissionRequest request_quiet(
-      "quiet", permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+      "quiet", permissions::RequestType::kNotifications,
       permissions::PermissionRequestGestureType::UNKNOWN);
   GetPermissionRequestManager()->AddRequest(source_frame, &request_quiet);
   base::RunLoop().RunUntilIdle();
@@ -642,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   // Add a second permission request. This ones should cause the initial
   // request to be cancelled.
   permissions::MockPermissionRequest request_loud(
-      "loud", permissions::PermissionRequestType::PERMISSION_GEOLOCATION,
+      "loud", permissions::RequestType::kGeolocation,
       permissions::PermissionRequestGestureType::UNKNOWN);
   GetPermissionRequestManager()->AddRequest(source_frame, &request_loud);
   base::RunLoop().RunUntilIdle();
@@ -692,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
     content::WebContentsConsoleObserver console_observer(web_contents);
 
     permissions::MockPermissionRequest request_quiet(
-        "quiet", permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+        "quiet", permissions::RequestType::kNotifications,
         permissions::PermissionRequestGestureType::UNKNOWN);
     GetPermissionRequestManager()->AddRequest(web_contents->GetMainFrame(),
                                               &request_quiet);
@@ -725,14 +735,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
                        LoudPendingRequestsQueued) {
   content::RenderFrameHost* source_frame = GetActiveMainFrame();
   permissions::MockPermissionRequest request1(
-      "request1",
-      permissions::PermissionRequestType::PERMISSION_CLIPBOARD_READ_WRITE,
+      "request1", permissions::RequestType::kClipboard,
       permissions::PermissionRequestGestureType::UNKNOWN);
   GetPermissionRequestManager()->AddRequest(source_frame, &request1);
   base::RunLoop().RunUntilIdle();
 
   permissions::MockPermissionRequest request2(
-      "request2", permissions::PermissionRequestType::PERMISSION_GEOLOCATION,
+      "request2", permissions::RequestType::kGeolocation,
       permissions::PermissionRequestGestureType::UNKNOWN);
   GetPermissionRequestManager()->AddRequest(source_frame, &request2);
   base::RunLoop().RunUntilIdle();
@@ -811,19 +820,16 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   // have different urls in the navigations above but use the same url (default)
   // for the MockPermissionRequest here.
   permissions::MockPermissionRequest req_a_1(
-      "req_a_1",
-      permissions::PermissionRequestType::PERMISSION_CAMERA_PAN_TILT_ZOOM,
+      "req_a_1", permissions::RequestType::kCameraPanTiltZoom,
       permissions::PermissionRequestGestureType::GESTURE);
   permissions::MockPermissionRequest req_a_2(
-      "req_a_2",
-      permissions::PermissionRequestType::PERMISSION_CAMERA_PAN_TILT_ZOOM,
+      "req_a_2", permissions::RequestType::kCameraPanTiltZoom,
       permissions::PermissionRequestGestureType::GESTURE);
   permissions::MockPermissionRequest req_b_1(
-      "req_b_1",
-      permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA,
+      "req_b_1", permissions::RequestType::kCameraStream,
       permissions::PermissionRequestGestureType::GESTURE);
   permissions::MockPermissionRequest req_b_2(
-      "req_b_2", permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_MIC,
+      "req_b_2", permissions::RequestType::kMicStream,
       permissions::PermissionRequestGestureType::GESTURE);
   GetPermissionRequestManager()->AddRequest(rfh_a,
                                             &req_a_1);  // Should be skipped
@@ -845,6 +851,107 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
 
   // Cleanup before we delete the requests.
   GetPermissionRequestManager()->Closing();
+}
+
+class PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest
+    : public PermissionRequestManagerBrowserTest {
+ public:
+  PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        permissions::features::kOneTimeGeolocationPermission);
+    geolocation_overrider_ =
+        std::make_unique<device::ScopedGeolocationOverrider>(0, 0);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest,
+    RequestForPermission) {
+  const char kQueryCurrentPosition[] = R"(
+        navigator.geolocation.getCurrentPosition(
+          _ => domAutomationController.send('success'),
+          _ => domAutomationController.send('failure'));
+      )";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/title1.html"), 1);
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE);
+
+  // Request 'geolocation' permission.
+  std::string result = content::EvalJsWithManualReply(GetActiveMainFrame(),
+                                                      kQueryCurrentPosition)
+                           .ExtractString();
+  EXPECT_EQ("success", result);
+  EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
+
+  // Request 'geolocation' permission. There should not be a 2nd prompt.
+  result = content::EvalJsWithManualReply(GetActiveMainFrame(),
+                                          kQueryCurrentPosition)
+               .ExtractString();
+  EXPECT_EQ("success", result);
+  EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
+
+  // Open a new tab with same domain.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title1.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Create a new mock permission prompt factory for the second tab.
+  std::unique_ptr<permissions::MockPermissionPromptFactory>
+      second_tab_bubble_factory(
+          std::make_unique<permissions::MockPermissionPromptFactory>(
+              GetPermissionRequestManager()));
+
+  // Request 'geolocation' permission.
+  result = content::EvalJsWithManualReply(GetActiveMainFrame(),
+                                          kQueryCurrentPosition)
+               .ExtractString();
+  EXPECT_EQ("success", result);
+  // There should be no permission prompt.
+  EXPECT_EQ(0, second_tab_bubble_factory.get()->TotalRequestCount());
+
+  // Open a new empty tab before closing the first two tabs.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Need to close the mock permission managers before closing the tabs.
+  // Otherwise the tab instances can't be destroyed due to a DCHECK
+  ShutDownFirstTabMockPermissionPromptFactory();
+  second_tab_bubble_factory.reset();
+
+  // Close the first two tabs.
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_USER_GESTURE);
+  tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_USER_GESTURE);
+
+  ASSERT_EQ(1, tab_strip_model->count());
+
+  // Create a new mock permission prompt factory for the third tab.
+  std::unique_ptr<permissions::MockPermissionPromptFactory>
+      third_tab_bubble_factory(
+          std::make_unique<permissions::MockPermissionPromptFactory>(
+              GetPermissionRequestManager()));
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/title1.html"), 1);
+  third_tab_bubble_factory.get()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE);
+
+  // Request 'geolocation' permission. We should get a prompt.
+  result = content::EvalJsWithManualReply(GetActiveMainFrame(),
+                                          kQueryCurrentPosition)
+               .ExtractString();
+  EXPECT_EQ("success", result);
+
+  EXPECT_EQ(1, third_tab_bubble_factory.get()->TotalRequestCount());
 }
 
 }  // anonymous namespace

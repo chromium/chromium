@@ -454,7 +454,7 @@ def main(args):
       # 3. Dex files
       logging.debug('Adding classes.dex')
       if options.dex_file:
-        with open(options.dex_file) as dex_file_obj:
+        with open(options.dex_file, 'rb') as dex_file_obj:
           if options.dex_file.endswith('.dex'):
             max_dex_number = 1
             # This is the case for incremental_install=true.
@@ -473,7 +473,7 @@ def main(args):
                     compress=not options.uncompress_dex)
 
       if options.jdk_libs_dex_file:
-        with open(options.jdk_libs_dex_file) as dex_file_obj:
+        with open(options.jdk_libs_dex_file, 'rb') as dex_file_obj:
           add_to_zip(
               apk_dex_dir + 'classes{}.dex'.format(max_dex_number + 1),
               dex_file_obj.read(),

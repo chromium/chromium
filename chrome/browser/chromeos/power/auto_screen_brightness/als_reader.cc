@@ -15,7 +15,12 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/components/sensors/buildflags.h"
+#if BUILDFLAG(USE_IIOSERVICE)
+#include "chrome/browser/chromeos/power/auto_screen_brightness/light_provider_mojo.h"
+#else  // !BUILDFLAG(USE_IIOSERVICE)
 #include "chrome/browser/chromeos/power/auto_screen_brightness/als_file_reader.h"
+#endif  // BUILDFLAG(USE_IIOSERVICE)
 #include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
@@ -90,9 +95,14 @@ void AlsReader::OnNumAlsRetrieved(int num_als) {
     return;
   }
 
+#if BUILDFLAG(USE_IIOSERVICE)
+  blocking_task_runner_.reset();
+  provider_ = std::make_unique<LightProviderMojo>(this, num_als > 1);
+#else   // !BUILDFLAG(USE_IIOSERVICE)
   auto provider = std::make_unique<AlsFileReader>(this);
   provider->Init(std::move(blocking_task_runner_));
   provider_ = std::move(provider);
+#endif  // BUILDFLAG(USE_IIOSERVICE)
 }
 
 void AlsReader::SetLux(int lux) {

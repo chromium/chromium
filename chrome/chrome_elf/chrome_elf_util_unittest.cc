@@ -20,7 +20,7 @@ namespace {
 
 bool SetSecurityFinchFlag(bool creation) {
   bool success = true;
-  const base::string16 finch_path(install_static::GetRegistryPath().append(
+  const std::wstring finch_path(install_static::GetRegistryPath().append(
       elf_sec::kRegSecurityFinchKeyName));
   base::win::RegKey security_key(HKEY_CURRENT_USER, L"", KEY_ALL_ACCESS);
 
@@ -65,7 +65,7 @@ bool IsSecuritySet() {
 void RegRedirect(nt::ROOT_KEY key,
                  registry_util::RegistryOverrideManager* rom) {
   ASSERT_NE(key, nt::AUTO);
-  base::string16 temp;
+  std::wstring temp;
 
   if (key == nt::HKCU) {
     ASSERT_NO_FATAL_FAILURE(rom->OverrideRegistry(HKEY_CURRENT_USER, &temp));
@@ -79,9 +79,9 @@ void RegRedirect(nt::ROOT_KEY key,
 void CancelRegRedirect(nt::ROOT_KEY key) {
   ASSERT_NE(key, nt::AUTO);
   if (key == nt::HKCU)
-    ASSERT_TRUE(nt::SetTestingOverride(nt::HKCU, base::string16()));
+    ASSERT_TRUE(nt::SetTestingOverride(nt::HKCU, std::wstring()));
   else
-    ASSERT_TRUE(nt::SetTestingOverride(nt::HKLM, base::string16()));
+    ASSERT_TRUE(nt::SetTestingOverride(nt::HKLM, std::wstring()));
 }
 
 TEST(ChromeElfUtilTest, BrowserProcessSecurityTest) {

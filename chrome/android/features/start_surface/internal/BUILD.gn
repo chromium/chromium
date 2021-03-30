@@ -18,7 +18,6 @@ java_strings_grd("java_strings_grd") {
 
 android_resources("java_resources") {
   sources = [
-    "java/explore_res/layout/ss_feed_header.xml",
     "java/res/drawable-hdpi/ic_explore.png",
     "java/res/drawable-hdpi/ic_home.png",
     "java/res/drawable-mdpi/ic_explore.png",
@@ -62,7 +61,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceLayout.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceMediator.java",
     "java/src/org/chromium/chrome/features/start_surface/StartSurfaceProperties.java",
-    "java/src/org/chromium/chrome/features/start_surface/StartSurfaceStackLayout.java",
     "java/src/org/chromium/chrome/features/start_surface/TasksSurfaceViewBinder.java",
   ]
 
@@ -73,6 +71,7 @@ android_library("java") {
     "//chrome/android/feed:chrome_feed_java_resources",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/lens:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -82,15 +81,15 @@ android_library("java") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//chrome/browser/version:java",
-    "//components/browser_ui/android/bottomsheet:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:material_design_java",
-    "//third_party/android_sdk/androidx_browser:androidx_browser_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
     "//ui/base/mojom:mojom_java",

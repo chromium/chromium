@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -79,7 +79,8 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
       AddContextMenuOption(menu_model.get(), ash::MENU_NEW_INCOGNITO_WINDOW,
                            IDS_APP_LIST_NEW_INCOGNITO_WINDOW);
     }
-    if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty() ||
+    if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty(
+            controller()->shelf_model()) ||
         item().type == ash::TYPE_DIALOG || controller()->IsOpen(item().id)) {
       AddContextMenuOption(menu_model.get(), ash::MENU_CLOSE,
                            IDS_SHELF_CONTEXT_MENU_CLOSE);
@@ -100,7 +101,7 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
     const extensions::MenuItem::ExtensionKey app_key(app_id);
     if (!app_key.empty()) {
       int index = 0;
-      extension_items_->AppendExtensionItems(app_key, base::string16(), &index,
+      extension_items_->AppendExtensionItems(app_key, std::u16string(), &index,
                                              false);  // is_action_menu
       app_list::AddMenuItemIconsForSystemApps(
           app_id, menu_model.get(), menu_model.get()->GetItemCount() - index,

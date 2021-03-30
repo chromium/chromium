@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <set>
@@ -43,6 +44,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_util.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "content/public/test/test_utils.h"
@@ -52,12 +54,32 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
 
+using bookmarks::BookmarkModel;
+using bookmarks::BookmarkNode;
+
 namespace bookmarks_helper {
 
 namespace {
 
-using bookmarks::BookmarkModel;
-using bookmarks::BookmarkNode;
+const char kBookmarkBarTag[] = "bookmark_bar";
+const char kSyncedBookmarksTag[] = "synced_bookmarks";
+const char kOtherBookmarksTag[] = "other_bookmarks";
+
+const BookmarkNode* GetPermanentNodeForServerTag(
+    int profile_index,
+    const std::string& server_defined_unique_tag) {
+  if (server_defined_unique_tag == kBookmarkBarTag) {
+    return GetBookmarkBarNode(profile_index);
+  }
+  if (server_defined_unique_tag == kSyncedBookmarksTag) {
+    return GetSyncedBookmarksNode(profile_index);
+  }
+  if (server_defined_unique_tag == kOtherBookmarksTag) {
+    return GetOtherNode(profile_index);
+  }
+
+  return nullptr;
+}
 
 void ApplyBookmarkFavicon(
     const BookmarkNode* bookmark_node,
@@ -155,7 +177,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
 // titles match the string |title|.
 size_t CountNodesWithTitlesMatching(BookmarkModel* model,
                                     BookmarkNode::Type node_type,
-                                    const base::string16& title) {
+                                    const std::u16string& title) {
   ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
   // Walk through the model tree looking for bookmark nodes of node type
   // |node_type| whose titles match |title|.
@@ -328,11 +350,13 @@ bool FaviconsMatch(BookmarkModel* model_a,
   // If either of the two favicons is still loading, let's return false now
   // because observers will get notified when the load completes. Note that even
   // the lack of favicon is considered a loaded favicon.
-  if (!favicon_data_a.has_value() || !favicon_data_b.has_value())
+  if (!favicon_data_a.has_value() || !favicon_data_b.has_value()) {
     return false;
+  }
 
-  if (favicon_data_a->icon_url != favicon_data_b->icon_url)
+  if (favicon_data_a->icon_url != favicon_data_b->icon_url) {
     return false;
+  }
 
   gfx::Image image_a = favicon_data_a->image;
   gfx::Image image_b = favicon_data_b->image;
@@ -340,8 +364,9 @@ bool FaviconsMatch(BookmarkModel* model_a,
   if (image_a.IsEmpty() && image_b.IsEmpty())
     return true;  // Two empty images are equivalent.
 
-  if (image_a.IsEmpty() != image_b.IsEmpty())
+  if (image_a.IsEmpty() != image_b.IsEmpty()) {
     return false;
+  }
 
   // Compare only the 1x bitmaps as only those are synced.
   SkBitmap bitmap_a = image_a.AsImageSkia().GetRepresentation(1.0f).GetBitmap();
@@ -378,6 +403,20 @@ bool NodesMatch(const BookmarkNode* node_a, const BookmarkNode* node_b) {
   if (node_a->guid() != node_b->guid()) {
     LOG(ERROR) << "GUID mismatch: " << node_a->guid() << " vs. "
                << node_b->guid();
+    return false;
+  }
+  if (node_a->parent()->is_root() != node_b->parent()->is_root() ||
+      node_a->parent()->is_permanent_node() !=
+          node_b->parent()->is_permanent_node()) {
+    LOG(ERROR) << "Permanent parent node mismatch: "
+               << node_a->parent()->is_permanent_node() << " vs. "
+               << node_b->parent()->is_permanent_node();
+    return false;
+  }
+  if (!node_a->parent()->is_root() &&
+      node_a->parent()->guid() != node_b->parent()->guid()) {
+    LOG(ERROR) << "Parent node mismatch: " << node_a->parent()->GetTitle()
+               << " vs. " << node_b->parent()->GetTitle();
     return false;
   }
   return true;
@@ -422,34 +461,6 @@ bool BookmarkModelsMatch(BookmarkModel* model_a, BookmarkModel* model_b) {
   return !iterator_b.has_next();
 }
 
-// Finds the node in the verifier bookmark model that corresponds to
-// |foreign_node| in |foreign_model| and stores its address in |result|.
-void FindNodeInVerifier(BookmarkModel* foreign_model,
-                        const BookmarkNode* foreign_node,
-                        const BookmarkNode** result) {
-  // Climb the tree.
-  base::stack<size_t> path;
-  const BookmarkNode* walker = foreign_node;
-  while (walker != foreign_model->root_node()) {
-    path.push(size_t{walker->parent()->GetIndexOf(walker)});
-    walker = walker->parent();
-  }
-
-  // Swing over to the other tree.
-  walker = GetVerifierBookmarkModel()->root_node();
-
-  // Climb down.
-  while (!path.empty()) {
-    ASSERT_TRUE(walker->is_folder());
-    ASSERT_LT(path.top(), walker->children().size());
-    walker = walker->children()[path.top()].get();
-    path.pop();
-  }
-
-  ASSERT_TRUE(NodesMatch(foreign_node, walker));
-  *result = walker;
-}
-
 std::vector<const BookmarkNode*> GetAllBookmarkNodes(
     const BookmarkModel* model) {
   std::vector<const BookmarkNode*> all_nodes;
@@ -475,6 +486,16 @@ void TriggerAllFaviconLoading(BookmarkModel* model) {
 }
 
 }  // namespace
+
+testing::Matcher<std::unique_ptr<bookmarks::BookmarkNode>>
+IsFolderWithTitleAndChildren(
+    const std::string& title,
+    testing::Matcher<BookmarkNode::TreeNodes> children_matcher) {
+  return testing::AllOf(
+      IsFolderWithTitle(title),
+      testing::Pointee(testing::Property(&bookmarks::BookmarkNode::children,
+                                         std::move(children_matcher))));
+}
 
 BookmarkUndoService* GetBookmarkUndoService(int index) {
   return BookmarkUndoServiceFactory::GetForProfile(
@@ -502,11 +523,6 @@ const BookmarkNode* GetManagedNode(int index) {
   return ManagedBookmarkServiceFactory::GetForProfile(
              sync_datatype_helper::test()->GetProfile(index))
       ->managed_node();
-}
-
-BookmarkModel* GetVerifierBookmarkModel() {
-  return BookmarkModelFactory::GetForBrowserContext(
-      sync_datatype_helper::test()->verifier());
 }
 
 const BookmarkNode* AddURL(int profile,
@@ -540,18 +556,6 @@ const BookmarkNode* AddURL(int profile,
                << profile;
     return nullptr;
   }
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_parent = nullptr;
-    FindNodeInVerifier(model, parent, &v_parent);
-    const BookmarkNode* v_node = GetVerifierBookmarkModel()->AddURL(
-        v_parent, index, base::UTF8ToUTF16(title), url,
-        /*meta_info=*/nullptr, result->date_added(), result->guid());
-    if (!v_node) {
-      LOG(ERROR) << "Could not add bookmark " << title << " to the verifier";
-      return nullptr;
-    }
-    EXPECT_TRUE(NodesMatch(v_node, result));
-  }
   return result;
 }
 
@@ -584,18 +588,6 @@ const BookmarkNode* AddFolder(int profile,
                << profile;
     return nullptr;
   }
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_parent = nullptr;
-    FindNodeInVerifier(model, parent, &v_parent);
-    const BookmarkNode* v_node = GetVerifierBookmarkModel()->AddFolder(
-        v_parent, index, base::UTF8ToUTF16(title),
-        /*meta_info=*/nullptr, result->guid());
-    if (!v_node) {
-      LOG(ERROR) << "Could not add folder " << title << " to the verifier";
-      return nullptr;
-    }
-    EXPECT_TRUE(NodesMatch(v_node, result));
-  }
   return result;
 }
 
@@ -606,11 +598,6 @@ void SetTitle(int profile,
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, node->id()), node)
       << "Node " << node->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_node = nullptr;
-    FindNodeInVerifier(model, node, &v_node);
-    GetVerifierBookmarkModel()->SetTitle(v_node, base::UTF8ToUTF16(new_title));
-  }
   model->SetTitle(node, base::UTF8ToUTF16(new_title));
 }
 
@@ -625,15 +612,6 @@ void SetFavicon(int profile,
       << "Profile " << profile;
   ASSERT_EQ(BookmarkNode::URL, node->type()) << "Node " << node->GetTitle()
                                              << " must be a url.";
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_node = nullptr;
-    FindNodeInVerifier(model, node, &v_node);
-    SetFaviconImpl(sync_datatype_helper::test()->verifier(),
-                   v_node,
-                   icon_url,
-                   image,
-                   favicon_source);
-  }
   SetFaviconImpl(sync_datatype_helper::test()->GetProfile(profile),
                  node,
                  icon_url,
@@ -649,11 +627,6 @@ void ExpireFavicon(int profile, const BookmarkNode* node) {
   ASSERT_EQ(BookmarkNode::URL, node->type()) << "Node " << node->GetTitle()
                                              << " must be a url.";
 
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_node = nullptr;
-    FindNodeInVerifier(model, node, &v_node);
-    ExpireFaviconImpl(sync_datatype_helper::test()->verifier(), node);
-  }
   ExpireFaviconImpl(sync_datatype_helper::test()->GetProfile(profile), node);
 }
 
@@ -705,12 +678,6 @@ void DeleteFaviconMappings(int profile,
   ASSERT_EQ(BookmarkNode::URL, node->type())
       << "Node " << node->GetTitle() << " must be a url.";
 
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_node = nullptr;
-    FindNodeInVerifier(model, node, &v_node);
-    DeleteFaviconMappingsImpl(sync_datatype_helper::test()->verifier(), v_node,
-                              favicon_source);
-  }
   DeleteFaviconMappingsImpl(sync_datatype_helper::test()->GetProfile(profile),
                             node, favicon_source);
 }
@@ -723,12 +690,6 @@ const BookmarkNode* SetURL(int profile,
     LOG(ERROR) << "Node " << node->GetTitle() << " does not belong to "
                << "Profile " << profile;
     return nullptr;
-  }
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_node = nullptr;
-    FindNodeInVerifier(model, node, &v_node);
-    if (v_node->is_url())
-      GetVerifierBookmarkModel()->SetURL(v_node, new_url);
   }
   if (node->is_url())
     model->SetURL(node, new_url);
@@ -743,13 +704,6 @@ void Move(int profile,
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, node->id()), node)
       << "Node " << node->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_new_parent = nullptr;
-    const BookmarkNode* v_node = nullptr;
-    FindNodeInVerifier(model, new_parent, &v_new_parent);
-    FindNodeInVerifier(model, node, &v_node);
-    GetVerifierBookmarkModel()->Move(v_node, v_new_parent, index);
-  }
   model->Move(node, new_parent, index);
 }
 
@@ -758,26 +712,10 @@ void Remove(int profile, const BookmarkNode* parent, size_t index) {
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, parent->id()), parent)
       << "Node " << parent->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_parent = nullptr;
-    FindNodeInVerifier(model, parent, &v_parent);
-    ASSERT_TRUE(NodesMatch(parent->children()[index].get(),
-                           v_parent->children()[index].get()));
-    GetVerifierBookmarkModel()->Remove(v_parent->children()[index].get());
-  }
   model->Remove(parent->children()[index].get());
 }
 
 void RemoveAll(int profile) {
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* root_node = GetVerifierBookmarkModel()->root_node();
-    for (const auto& permanent_node : root_node->children()) {
-      while (!permanent_node->children().empty()) {
-        GetVerifierBookmarkModel()->Remove(
-            permanent_node->children().back().get());
-      }
-    }
-  }
   GetBookmarkModel(profile)->RemoveAllUserBookmarks();
 }
 
@@ -786,11 +724,6 @@ void SortChildren(int profile, const BookmarkNode* parent) {
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, parent->id()), parent)
       << "Node " << parent->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (sync_datatype_helper::test()->UseVerifier()) {
-    const BookmarkNode* v_parent = nullptr;
-    FindNodeInVerifier(model, parent, &v_parent);
-    GetVerifierBookmarkModel()->SortChildren(v_parent);
-  }
   model->SortChildren(parent);
 }
 
@@ -800,32 +733,12 @@ void ReverseChildOrder(int profile, const BookmarkNode* parent) {
       parent)
       << "Node " << parent->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (parent->children().empty())
+  if (parent->children().empty()) {
     return;
+  }
   for (size_t i = 0; i < parent->children().size(); ++i) {
-    Move(profile, parent->children()[i].get(), parent,
-         parent->children().size() - i);
+    Move(profile, parent->children().back().get(), parent, i);
   }
-}
-
-bool ModelMatchesVerifier(int profile) {
-  if (!sync_datatype_helper::test()->UseVerifier()) {
-    LOG(ERROR) << "Illegal to call ModelMatchesVerifier() when verifier isn't "
-               << "enabled. Use ModelsMatch() instead.";
-    return false;
-  }
-  return BookmarkModelsMatch(GetVerifierBookmarkModel(),
-                             GetBookmarkModel(profile));
-}
-
-bool AllModelsMatchVerifier() {
-  for (int i = 0; i < sync_datatype_helper::test()->num_clients(); ++i) {
-    if (!ModelMatchesVerifier(i)) {
-      LOG(ERROR) << "Model " << i << " does not match the verifier.";
-      return false;
-    }
-  }
-  return true;
 }
 
 bool ModelsMatch(int profile_a, int profile_b) {
@@ -1155,26 +1068,6 @@ bool BookmarksMatchChecker::Wait() {
   return BookmarkModelStatusChangeChecker::Wait();
 }
 
-BookmarksMatchVerifierChecker::BookmarksMatchVerifierChecker() {
-  Observe(GetVerifierBookmarkModel());
-  for (int i = 0; i < sync_datatype_helper::test()->num_clients(); ++i) {
-    Observe(GetBookmarkModel(i));
-  }
-}
-
-bool BookmarksMatchVerifierChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Waiting for model to match verifier";
-  return AllModelsMatchVerifier();
-}
-
-bool BookmarksMatchVerifierChecker::Wait() {
-  TriggerAllFaviconLoading(GetVerifierBookmarkModel());
-  for (int i = 0; i < sync_datatype_helper::test()->num_clients(); ++i) {
-    TriggerAllFaviconLoading(GetBookmarkModel(i));
-  }
-  return BookmarkModelStatusChangeChecker::Wait();
-}
-
 SingleBookmarkModelStatusChangeChecker::SingleBookmarkModelStatusChangeChecker(
     int profile_index)
     : profile_index_(profile_index),
@@ -1338,5 +1231,226 @@ BookmarksGUIDChecker::BookmarksGUIDChecker(int profile, const base::GUID& guid)
                                          testing::Contains(HasGuid(guid))) {}
 
 BookmarksGUIDChecker::~BookmarksGUIDChecker() {}
+
+BookmarkModelMatchesFakeServerChecker::BookmarkModelMatchesFakeServerChecker(
+    int profile,
+    syncer::ProfileSyncService* service,
+    fake_server::FakeServer* fake_server)
+    : SingleClientStatusChangeChecker(service),
+      fake_server_(fake_server),
+      profile_index_(profile) {}
+
+bool BookmarkModelMatchesFakeServerChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting for server-side bookmarks to match bookmark model.";
+
+  std::map<base::GUID, sync_pb::SyncEntity> server_bookmarks_by_guid;
+  if (!GetServerBookmarksByUniqueGUID(&server_bookmarks_by_guid)) {
+    *os << "The server has duplicate entities having the same GUID.";
+    return false;
+  }
+
+  const std::map<std::string, std::vector<base::GUID>>
+      server_guids_by_parent_id =
+          GetServerGuidsGroupedByParentSyncId(server_bookmarks_by_guid);
+
+  // |bookmarks_count| is used to check that the bookmark model doesn't have
+  // less nodes than the fake server.
+  size_t bookmarks_count = 0;
+  const bookmarks::BookmarkNode* root_node =
+      GetBookmarkModel(profile_index_)->root_node();
+  ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(root_node);
+  while (iterator.has_next()) {
+    const BookmarkNode* node = iterator.Next();
+
+    // Do not check permanent nodes.
+    if (node->is_permanent_node()) {
+      continue;
+    }
+
+    auto iter = server_bookmarks_by_guid.find(node->guid());
+    if (iter == server_bookmarks_by_guid.end()) {
+      *os << "Missing a node from on the server for GUID: " << node->guid();
+      return false;
+    }
+    const sync_pb::SyncEntity& server_entity = iter->second;
+
+    bookmarks_count++;
+
+    // Check that the server node has the same parent as the local |node|.
+    if (!CheckParentNode(node, server_bookmarks_by_guid, os)) {
+      return false;
+    }
+
+    // Check that the local |node| and the server entity have the same position.
+    auto parent_iter =
+        server_guids_by_parent_id.find(server_entity.parent_id_string());
+    DCHECK(parent_iter != server_guids_by_parent_id.end());
+    auto server_position_iter = std::find(
+        parent_iter->second.begin(), parent_iter->second.end(), node->guid());
+    DCHECK(server_position_iter != parent_iter->second.end());
+    const size_t server_position =
+        server_position_iter - parent_iter->second.begin();
+    const size_t local_position = node->parent()->GetIndexOf(node);
+    if (server_position != local_position) {
+      *os << "Different positions on the server and in the local model for "
+             "node: "
+          << node->GetTitle() << ", server position: " << server_position
+          << ", local position: " << local_position;
+      return false;
+    }
+
+    // Check titles and URLs.
+    if (base::UTF16ToUTF8(node->GetTitle()) !=
+        server_entity.specifics().bookmark().full_title()) {
+      *os << " Title mismatch for node: " << node->GetTitle();
+      return false;
+    }
+
+    if (node->is_folder() != server_entity.folder()) {
+      *os << " Node type mismatch for node: " << node->GetTitle();
+      return false;
+    }
+
+    if (!node->is_folder() &&
+        node->url() != server_entity.specifics().bookmark().url()) {
+      *os << " Node URL mismatch for node: " << node->GetTitle();
+      return false;
+    }
+  }
+
+  if (server_bookmarks_by_guid.size() != bookmarks_count) {
+    // An iteration over the local bookmark model has been finished at the
+    // moment. So the server can have only more entities than the local model if
+    // their sizes differ.
+    *os << " The fake server has more nodes than the bookmark model";
+    return false;
+  }
+
+  return true;
+}
+
+bool BookmarkModelMatchesFakeServerChecker::CheckPermanentParentNode(
+    const bookmarks::BookmarkNode* node,
+    const sync_pb::SyncEntity& server_entity,
+    std::ostream* os) const {
+  // Parent node must be a permanent node.
+  const BookmarkNode* parent_node = node->parent();
+  DCHECK(parent_node->is_permanent_node());
+
+  // Matching server entity must exist.
+  DCHECK_EQ(node->guid().AsLowercaseString(),
+            server_entity.specifics().bookmark().guid());
+
+  const std::map<std::string, sync_pb::SyncEntity>
+      permanent_nodes_by_server_id =
+          GetServerPermanentBookmarksGroupedBySyncId();
+
+  auto permanent_parent_iter =
+      permanent_nodes_by_server_id.find(server_entity.parent_id_string());
+  if (permanent_parent_iter == permanent_nodes_by_server_id.end()) {
+    *os << " A permanent parent node is missing on the server for node: "
+        << node->GetTitle();
+    return false;
+  }
+
+  if (parent_node !=
+      GetPermanentNodeForServerTag(
+          profile_index_,
+          permanent_parent_iter->second.server_defined_unique_tag())) {
+    *os << " Permanent parent node mismatch for node: " << node->GetTitle();
+    return false;
+  }
+  return true;
+}
+
+bool BookmarkModelMatchesFakeServerChecker::CheckParentNode(
+    const bookmarks::BookmarkNode* node,
+    const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid,
+    std::ostream* os) const {
+  // Only one matching server entity must exist.
+  DCHECK_EQ(1u, server_bookmarks_by_guid.count(node->guid()));
+  auto iter = server_bookmarks_by_guid.find(node->guid());
+  const sync_pb::SyncEntity& server_entity = iter->second;
+
+  const BookmarkNode* parent_node = node->parent();
+  if (parent_node->is_permanent_node()) {
+    return CheckPermanentParentNode(node, server_entity, os);
+  }
+
+  auto parent_iter = server_bookmarks_by_guid.find(parent_node->guid());
+  if (parent_iter == server_bookmarks_by_guid.end()) {
+    *os << " Missing a parent node on the server for node: "
+        << node->GetTitle();
+    return false;
+  }
+
+  if (parent_iter->second.id_string() != iter->second.parent_id_string()) {
+    *os << " Parent mismatch found for node: " << node->GetTitle();
+    return false;
+  }
+  return true;
+}
+
+std::map<std::string, sync_pb::SyncEntity>
+BookmarkModelMatchesFakeServerChecker::
+    GetServerPermanentBookmarksGroupedBySyncId() const {
+  const std::vector<sync_pb::SyncEntity> server_permanent_bookmarks =
+      fake_server_->GetPermanentSyncEntitiesByModelType(syncer::BOOKMARKS);
+  std::map<std::string, sync_pb::SyncEntity> permanent_nodes_by_server_id;
+  for (const sync_pb::SyncEntity& entity : server_permanent_bookmarks) {
+    DCHECK(!entity.server_defined_unique_tag().empty());
+    permanent_nodes_by_server_id[entity.id_string()] = entity;
+  }
+  return permanent_nodes_by_server_id;
+}
+
+bool BookmarkModelMatchesFakeServerChecker::GetServerBookmarksByUniqueGUID(
+    std::map<base::GUID, sync_pb::SyncEntity>* server_bookmarks_by_guid) const {
+  const std::vector<sync_pb::SyncEntity> server_bookmarks =
+      fake_server_->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
+  for (const sync_pb::SyncEntity& entity : server_bookmarks) {
+    // Skip permanent nodes.
+    if (!entity.server_defined_unique_tag().empty()) {
+      continue;
+    }
+    if (!server_bookmarks_by_guid
+             ->emplace(base::GUID::ParseLowercase(
+                           entity.specifics().bookmark().guid()),
+                       entity)
+             .second) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::map<std::string, std::vector<base::GUID>>
+BookmarkModelMatchesFakeServerChecker::GetServerGuidsGroupedByParentSyncId(
+    const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid)
+    const {
+  std::map<std::string, std::vector<base::GUID>> guids_grouped_by_parent_id;
+  for (const auto& guid_and_entity : server_bookmarks_by_guid) {
+    const sync_pb::SyncEntity& entity = guid_and_entity.second;
+    guids_grouped_by_parent_id[entity.parent_id_string()].push_back(
+        guid_and_entity.first);
+  }
+  auto sort_by_position_fn = [&server_bookmarks_by_guid](
+                                 const base::GUID& left,
+                                 const base::GUID& right) {
+    const sync_pb::UniquePosition& left_position =
+        server_bookmarks_by_guid.at(left).unique_position();
+    const sync_pb::UniquePosition& right_position =
+        server_bookmarks_by_guid.at(right).unique_position();
+    return syncer::UniquePosition::FromProto(left_position)
+        .LessThan(syncer::UniquePosition::FromProto(right_position));
+  };
+
+  for (auto& parent_id_and_children_guids : guids_grouped_by_parent_id) {
+    std::vector<base::GUID>& children = parent_id_and_children_guids.second;
+    std::sort(children.begin(), children.end(), sort_by_position_fn);
+  }
+  return guids_grouped_by_parent_id;
+}
 
 }  // namespace bookmarks_helper

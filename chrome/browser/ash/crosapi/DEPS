@@ -1,0 +1,29 @@
+specific_include_rules = {
+  "message_center_ash(\.cc|_unittest\.cc)": [
+    # Provides a mojo interface around the message center, but lives in this
+    # directory for consistency with other crosapi classes.
+    "-chrome",
+    "+chrome/browser/ash/crosapi",
+    "+ui/message_center/message_center.h",
+  ],
+  "screen_manager_ash\.cc": [
+    # For window parenting.
+    "+ash/shell.h",
+    "+ash/wm/desks/desks_util.h",
+  ],
+  "select_file_ash\.cc": [
+    # For window parenting.
+    "+ash/shell.h",
+    "+ash/wm/desks/desks_util.h",
+    # For Chrome OS-specific file manager parameters.
+    "+chrome/browser/ui/views/select_file_dialog_extension.h",
+  ],
+  "test_controller_ash\.cc": [
+    # Glue for tests.
+    "+ash/shell.h",
+    "+ash/wm",
+  ],
+  "window_util\.cc":[
+    "+ash/shell.h",
+  ],
+}

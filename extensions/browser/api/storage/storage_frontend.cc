@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_context.h"
@@ -61,26 +62,30 @@ class DefaultObserver : public SettingsObserver {
   // SettingsObserver implementation.
   void OnSettingsChanged(const std::string& extension_id,
                          settings_namespace::Namespace settings_namespace,
-                         const std::string& change_json) override {
-    std::unique_ptr<base::Value> changes =
-        base::JSONReader::ReadDeprecated(change_json);
-    DCHECK(changes);
-    // TODO(devlin): crbug.com/645500 implies this can sometimes fail. If this
-    // safeguard fixes it, that means there's an underlying problem (why are we
-    // passing invalid json here?).
-    if (!changes)
-      changes = std::make_unique<base::DictionaryValue>();
+                         const base::Value& changes) override {
+    TRACE_EVENT1("browser", "SettingsObserver:OnSettingsChanged",
+                 "extension_id", extension_id);
+
+    // Alias extension_id for investigation of shutdown hangs. crbug.com/1154997
+    // Extension IDs are exactly 32 characters in length.
+    constexpr size_t kExtensionsIdLength = 32;
+    char extension_id_str[kExtensionsIdLength + 1];
+    base::strlcpy(extension_id_str, extension_id.c_str(),
+                  base::size(extension_id_str));
+    base::debug::Alias(extension_id_str);
 
     const std::string namespace_string =
         settings_namespace::ToString(settings_namespace);
     EventRouter* event_router = EventRouter::Get(browser_context_);
 
+    // We only dispatch the events if there's a valid listener (even though
+    // EventRouter would handle the no-listener case) since copying `changes`
+    // can be expensive.
     // Event for each storage(sync, local, managed).
-    {
-      // TODO(gdk): This is a temporary hack while the refactoring for
-      // string-based event payloads is removed. http://crbug.com/136045
+    if (event_router->ExtensionHasEventListener(
+            extension_id, api::storage::OnChanged::kEventName)) {
       std::unique_ptr<base::ListValue> args(new base::ListValue());
-      args->Append(std::make_unique<base::Value>(changes->Clone()));
+      args->Append(changes.Clone());
       args->AppendString(namespace_string);
       std::unique_ptr<Event> event(
           new Event(events::STORAGE_ON_CHANGED,
@@ -89,13 +94,15 @@ class DefaultObserver : public SettingsObserver {
     }
 
     // Event for StorageArea.
-    {
+    auto area_event_name =
+        base::StringPrintf("storage.%s.onChanged", namespace_string.c_str());
+    if (event_router->ExtensionHasEventListener(extension_id,
+                                                area_event_name)) {
       auto args = std::make_unique<base::ListValue>();
-      args->Append(changes->Clone());
-      auto event = std::make_unique<Event>(
-          NamespaceToEventHistogram(settings_namespace),
-          base::StringPrintf("storage.%s.onChanged", namespace_string.c_str()),
-          std::move(args));
+      args->Append(changes.Clone());
+      auto event =
+          std::make_unique<Event>(NamespaceToEventHistogram(settings_namespace),
+                                  area_event_name, std::move(args));
       event_router->DispatchEventToExtension(extension_id, std::move(event));
     }
   }
@@ -130,7 +137,7 @@ StorageFrontend::StorageFrontend(scoped_refptr<ValueStoreFactory> factory,
 }
 
 void StorageFrontend::Init(scoped_refptr<ValueStoreFactory> factory) {
-  TRACE_EVENT0("browser,startup", "StorageFrontend::Init")
+  TRACE_EVENT0("browser,startup", "StorageFrontend::Init");
 
   observers_ = new SettingsObserverList();
   browser_context_observer_.reset(new DefaultObserver(browser_context_));

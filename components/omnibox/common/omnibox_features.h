@@ -13,7 +13,6 @@ namespace omnibox {
 // Instead, use the categorized and alphabetized lists below this "big blob".
 // You can create a new category if none of the existing ones fit.
 extern const base::Feature kHideFileUrlScheme;
-extern const base::Feature kOmniboxShortBookmarkSuggestions;
 extern const base::Feature kOmniboxTailSuggestions;
 extern const base::Feature kOmniboxTabSwitchSuggestions;
 extern const base::Feature kExperimentalKeywordMode;
@@ -72,6 +71,8 @@ extern const base::Feature kOmniboxExperimentalSuggestScoring;
 extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
 extern const base::Feature kDisableCGIParamMatching;
 extern const base::Feature kNativeVoiceSuggestProvider;
+extern const base::Feature kShortBookmarkSuggestions;
+extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;
@@ -82,6 +83,7 @@ extern const base::Feature kRichAutocompletion;
 extern const base::Feature kOmniboxSearchReadyIncognito;
 extern const base::Feature kOmniboxSuggestionButtonRow;
 extern const base::Feature kOmniboxPedalSuggestions;
+extern const base::Feature kOmniboxPedalsBatch2;
 extern const base::Feature kOmniboxKeywordSearchButton;
 extern const base::Feature kOmniboxRefinedFocusState;
 extern const base::Feature kWebUIOmniboxPopup;
@@ -90,6 +92,7 @@ extern const base::Feature kWebUIOmniboxPopup;
 // popup).
 extern const base::Feature kIntranetRedirectBehaviorPolicyRollout;
 extern const base::Feature kOmniboxAssistantVoiceSearch;
+extern const base::Feature kDoubleSpaceKeywordTriggering;
 
 // Path-hiding experiments - these hide the path and other URL components in
 // some circumstances in the steady-state omnibox.
@@ -99,6 +102,7 @@ extern const base::Feature kMaybeElideToRegistrableDomain;
 
 // Navigation experiments.
 extern const base::Feature kDefaultTypedNavigationsToHttps;
+extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];
 
 // Experiment to control whether visits from CCT are hidden.
 // TODO(https://crbug.com/1141501): this is for an experiment, and will be

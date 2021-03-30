@@ -36,6 +36,10 @@ class MockMediaSessionService : public mojom::blink::MediaSessionService {
   MOCK_METHOD1(SetPositionState,
                void(media_session::mojom::blink::MediaPositionPtr));
   void SetMetadata(mojom::blink::SpecMediaMetadataPtr metadata) override {}
+  void SetMicrophoneState(
+      media_session::mojom::MicrophoneState microphone_state) override {}
+  void SetCameraState(media_session::mojom::CameraState camera_state) override {
+  }
   void EnableAction(
       media_session::mojom::blink::MediaSessionAction action) override {}
   void DisableAction(

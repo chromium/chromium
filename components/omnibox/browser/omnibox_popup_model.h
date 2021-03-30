@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 #include <map>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -248,8 +248,8 @@ class OmniboxPopupModel {
   // extended version of AutocompleteMatchType::ToAccessibilityLabel() which
   // also returns narration about the any focused secondary button.
   // Never call this when the current selection is kNoMatch.
-  base::string16 GetAccessibilityLabelForCurrentSelection(
-      const base::string16& match_text,
+  std::u16string GetAccessibilityLabelForCurrentSelection(
+      const std::u16string& match_text,
       bool include_positional_info,
       int* label_prefix_length = nullptr);
 

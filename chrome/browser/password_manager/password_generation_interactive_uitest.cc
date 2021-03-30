@@ -68,6 +68,8 @@ class TestPopupObserver : public PasswordGenerationPopupObserver {
   void WaitForStatus(GenerationPopup status) {
     if (status == popup_showing_)
       return;
+    SCOPED_TRACE(::testing::Message()
+                 << "WaitForStatus " << static_cast<int>(status));
     base::RunLoop run_loop;
     run_loop_ = &run_loop;
     run_loop_->Run();
@@ -76,6 +78,7 @@ class TestPopupObserver : public PasswordGenerationPopupObserver {
 
   // Waits until the popup is either shown or hidden.
   void WaitForStatusChange() {
+    SCOPED_TRACE(::testing::Message() << "WaitForStatusChange");
     base::RunLoop run_loop;
     run_loop_ = &run_loop;
     run_loop_->Run();
@@ -206,7 +209,12 @@ class PasswordGenerationInteractiveTest
     observer_.WaitForStatus(status);
   }
 
-  void WaitForPopupStatusChange() { observer_.WaitForStatusChange(); }
+  void WaitForGenerationPopupShowing() {
+    if (GenerationPopupShowing())
+      return;
+    observer_.WaitForStatusChange();
+    EXPECT_TRUE(GenerationPopupShowing());
+  }
 
  private:
   TestPopupObserver observer_;
@@ -258,9 +266,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   // Delete the password. The generation prompt should be visible.
   base::HistogramTester histogram_tester;
   SimulateUserDeletingFieldContent("password_field");
-  WaitForPopupStatusChange();
-  EXPECT_FALSE(EditingPopupShowing());
-  EXPECT_TRUE(GenerationPopupShowing());
+  WaitForGenerationPopupShowing();
 
   // The metrics are recorded on navigation when the frame is destroyed.
   NavigateToFile("/password/done.html");
@@ -299,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_PopupShownAndDismissed) {
+                       PopupShownAndDismissed) {
   FocusPasswordField();
   EXPECT_TRUE(GenerationPopupShowing());
 
@@ -434,8 +440,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       password_store->stored_passwords();
   EXPECT_EQ(1u, stored_passwords.size());
   EXPECT_EQ(1u, stored_passwords.begin()->second.size());
-  EXPECT_EQ(base::UTF8ToUTF16("UN"),
-            (stored_passwords.begin()->second)[0].username_value);
+  EXPECT_EQ(u"UN", (stored_passwords.begin()->second)[0].username_value);
 }
 
 // Verify that navigating away closes the popup.

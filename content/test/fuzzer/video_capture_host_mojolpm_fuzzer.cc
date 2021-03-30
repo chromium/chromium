@@ -9,11 +9,11 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/media/video_capture_host.h"  // nogncheck
 #include "content/browser/renderer_host/media/video_capture_manager.h"  // nogncheck
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_client_initializer.h"
@@ -296,13 +297,13 @@ void VideoCaptureHostTestcase::NextAction() {
         case Action::kRunThread: {
           if (action.run_thread().id()) {
             base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                           run_loop.QuitClosure());
+            content::GetUIThreadTaskRunner({})->PostTask(
+                FROM_HERE, run_loop.QuitClosure());
             run_loop.Run();
           } else {
             base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            base::PostTask(FROM_HERE, {content::BrowserThread::IO},
-                           run_loop.QuitClosure());
+            content::GetIOThreadTaskRunner({})->PostTask(
+                FROM_HERE, run_loop.QuitClosure());
             run_loop.Run();
           }
         } break;
@@ -333,8 +334,8 @@ void VideoCaptureHostTestcase::NextAction() {
 void VideoCaptureHostTestcase::SetUp() {
   {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    base::PostTaskAndReply(
-        FROM_HERE, {content::BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
         base::BindOnce(&VideoCaptureHostTestcase::SetUpOnIOThreadFirst,
                        base::Unretained(this)),
         run_loop.QuitClosure());
@@ -342,8 +343,8 @@ void VideoCaptureHostTestcase::SetUp() {
   }
   {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    base::PostTaskAndReply(
-        FROM_HERE, {content::BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
         base::BindOnce(&VideoCaptureHostTestcase::SetUpOnUIThread,
                        base::Unretained(this)),
         run_loop.QuitClosure());
@@ -351,8 +352,8 @@ void VideoCaptureHostTestcase::SetUp() {
   }
   {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    base::PostTaskAndReply(
-        FROM_HERE, {content::BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
         base::BindOnce(&VideoCaptureHostTestcase::SetUpOnIOThreadSecond,
                        base::Unretained(this)),
         run_loop.QuitClosure());
@@ -412,8 +413,8 @@ void VideoCaptureHostTestcase::OpenSession(int render_process_id,
   content::MediaDeviceSaltAndOrigin salt_and_origin;
   {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    base::PostTaskAndReply(
-        FROM_HERE, {content::BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
         base::BindOnce(&VideoCaptureHostTestcase::OpenSessionOnUIThread,
                        base::Unretained(this), render_process_id,
                        render_frame_id, base::Unretained(&salt_and_origin)),
@@ -422,8 +423,8 @@ void VideoCaptureHostTestcase::OpenSession(int render_process_id,
   }
   {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    base::PostTask(
-        FROM_HERE, {content::BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&VideoCaptureHostTestcase::OpenSessionOnIOThread,
                        base::Unretained(this), render_process_id,
                        render_frame_id, requester_id, page_request_id,
@@ -485,8 +486,8 @@ void VideoCaptureHostTestcase::OpenSessionOnIOThread(
 void VideoCaptureHostTestcase::TearDown() {
   {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    base::PostTaskAndReply(
-        FROM_HERE, {content::BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
         base::BindOnce(&VideoCaptureHostTestcase::TearDownOnIOThread,
                        base::Unretained(this)),
         run_loop.QuitClosure());
@@ -494,8 +495,8 @@ void VideoCaptureHostTestcase::TearDown() {
   }
   {
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    base::PostTaskAndReply(
-        FROM_HERE, {content::BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
         base::BindOnce(&VideoCaptureHostTestcase::TearDownOnUIThread,
                        base::Unretained(this)),
         run_loop.QuitClosure());
@@ -555,8 +556,8 @@ void VideoCaptureHostTestcase::AddVideoCaptureHost(uint32_t id,
   auto receiver = remote.BindNewPipeAndPassReceiver();
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&content::VideoCaptureHost::Create, render_process_id,
                      media_stream_manager_.get(), std::move(receiver)),
       run_loop.QuitClosure());

@@ -1,3 +1,4 @@
 monorail: {
   component: "Internals>Network>Certificate"
 }
+team_email: "trusty-transport@chromium.org"

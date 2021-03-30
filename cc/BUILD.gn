@@ -35,6 +35,7 @@ cc_component("cc") {
     "benchmarks/unittest_only_benchmark_impl.h",
     "document_transition/document_transition_request.cc",
     "document_transition/document_transition_request.h",
+    "document_transition/document_transition_shared_element_id.h",
     "input/actively_scrolling_type.h",
     "input/browser_controls_offset_manager.cc",
     "input/browser_controls_offset_manager.h",
@@ -186,12 +187,15 @@ cc_component("cc") {
     "metrics/frame_sequence_tracker_collection.h",
     "metrics/frame_sorter.cc",
     "metrics/frame_sorter.h",
+    "metrics/jank_injector.cc",
+    "metrics/jank_injector.h",
     "metrics/jank_metrics.cc",
     "metrics/jank_metrics.h",
     "metrics/latency_ukm_reporter.cc",
     "metrics/latency_ukm_reporter.h",
     "metrics/lcd_text_metrics_reporter.cc",
     "metrics/lcd_text_metrics_reporter.h",
+    "metrics/shared_metrics_buffer.h",
     "metrics/throughput_ukm_reporter.cc",
     "metrics/throughput_ukm_reporter.h",
     "metrics/total_frame_counter.cc",
@@ -409,6 +413,8 @@ cc_component("cc") {
     "trees/target_property.h",
     "trees/task_runner_provider.cc",
     "trees/task_runner_provider.h",
+    "trees/throttle_decider.cc",
+    "trees/throttle_decider.h",
     "trees/transform_node.cc",
     "trees/transform_node.h",
     "trees/tree_synchronizer.cc",
@@ -443,6 +449,7 @@ cc_component("cc") {
     "//services/tracing/public/cpp:cpp",
     "//ui/events:events_base",
     "//ui/gfx",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/latency",
@@ -514,7 +521,6 @@ cc_test_static_library("test_support") {
     "test/fake_ui_resource_layer_tree_host_impl.h",
     "test/fake_video_frame_provider.cc",
     "test/fake_video_frame_provider.h",
-    "test/geometry_test_utils.cc",
     "test/geometry_test_utils.h",
     "test/layer_test_common.cc",
     "test/layer_test_common.h",
@@ -625,6 +631,7 @@ cc_test_static_library("test_support") {
     "//ui/base:features",
     "//ui/gfx",
     "//ui/gfx:test_support",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
@@ -707,6 +714,7 @@ cc_test("cc_unittests") {
     "metrics/frame_sequence_metrics_unittest.cc",
     "metrics/frame_sequence_tracker_unittest.cc",
     "metrics/frame_sorter_unittest.cc",
+    "metrics/jank_injector_unittest.cc",
     "metrics/jank_metrics_unittest.cc",
     "metrics/total_frame_counter_unittest.cc",
     "metrics/video_playback_roughness_reporter_unittest.cc",
@@ -767,6 +775,7 @@ cc_test("cc_unittests") {
     "trees/layer_tree_host_pixeltest_tiles.cc",
     "trees/layer_tree_host_unittest.cc",
     "trees/layer_tree_host_unittest_animation.cc",
+    "trees/layer_tree_host_unittest_capture.cc",
     "trees/layer_tree_host_unittest_capture_content.cc",
     "trees/layer_tree_host_unittest_checkerimaging.cc",
     "trees/layer_tree_host_unittest_context.cc",
@@ -786,6 +795,7 @@ cc_test("cc_unittests") {
     "trees/property_tree_builder_unittest.cc",
     "trees/property_tree_unittest.cc",
     "trees/swap_promise_manager_unittest.cc",
+    "trees/throttle_decider_unittest.cc",
     "trees/tree_synchronizer_unittest.cc",
     "trees/ukm_manager_unittest.cc",
 
@@ -794,11 +804,10 @@ cc_test("cc_unittests") {
     "animation/animation_timeline_unittest.cc",
     "animation/animation_unittest.cc",
     "animation/element_animations_unittest.cc",
+    "animation/filter_animation_curve_unittest.cc",
     "animation/keyframe_model_unittest.cc",
-    "animation/keyframed_animation_curve_unittest.cc",
     "animation/scroll_offset_animation_curve_unittest.cc",
     "animation/scroll_timeline_unittest.cc",
-    "animation/transform_operations_unittest.cc",
     "animation/worklet_animation_unittest.cc",
 
     # Setup.
@@ -841,6 +850,7 @@ cc_test("cc_unittests") {
     "//ui/events:events_base",
     "//ui/gfx",
     "//ui/gfx:test_support",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
@@ -851,7 +861,14 @@ cc_test("cc_unittests") {
   ]
 
   if (is_fuchsia) {
-    manifest = "//build/config/fuchsia/gfx_tests.cmx"
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/font_capabilities.test-cmx",
+
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    ]
   }
 
   if (enable_vulkan) {
@@ -933,7 +950,7 @@ if (is_android) {
     srcjar_deps = [ ":cc_android_java_enums_srcjar" ]
     deps = [
       "//base:base_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 }

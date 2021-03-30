@@ -24,6 +24,7 @@ Para conceder esta autorização, clique no botão "<ph name="BUTTON_NAME" />" a
 Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e volte a selecioná-lo.</translation>
 <translation id="225614027745146050">Bem-vindo</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Todos os direitos reservados.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Não é possível contactar o anfitrião. Provavelmente, isso deve-se à configuração da rede que está a utilizar.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Última atividade online <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -71,6 +72,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="4405930547258349619">Biblioteca Principal</translation>
 <translation id="443560535555262820">Abrir as Preferências de acessibilidade</translation>
 <translation id="4450893287417543264">Não mostrar de novo</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Todos os direitos reservados.</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4563926062592110512">Cliente desligado: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
@@ -129,7 +131,6 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="7067321367069083429">O ecrã funciona como um ecrã tátil</translation>
 <translation id="7116737094673640201">Bem-vindo ao Ambiente de Trabalho Remoto do Chrome</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. Todos os direitos reservados.</translation>
 <translation id="7312846573060934304">O anfitrião está offline.</translation>
 <translation id="7319983568955948908">Terminar Partilha</translation>
 <translation id="7401733114166276557">Ambiente de Trabalho Remoto do Chrome</translation>
@@ -155,7 +156,6 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="8073845705237259513">Para utilizar o Ambiente de Trabalho Remoto do Chrome, tem de adicionar uma Conta Google ao seu dispositivo.</translation>
 <translation id="809687642899217504">Os Meus Computadores</translation>
 <translation id="8116630183974937060">Ocorreu um erro de rede. Verifique se o dispositivo está online e tente novamente.</translation>
-<translation id="8187079423890319756">Copyright 2013 Os Autores do Chromium. Todos os Direitos Reservados.</translation>
 <translation id="8295077433896346116">Para utilizar o <ph name="PRODUCT_NAME" />, tem de conceder a autorização "Acessibilidade" para que a entrada do computador remoto possa ser inserida neste Mac.
 
 Para conceder esta autorização, clique em "<ph name="BUTTON_NAME" />" abaixo. No painel de preferências "Acessibilidade" aberto, selecione a caixa junto a "<ph name="SERVICE_SCRIPT_NAME" />".
@@ -174,6 +174,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="8743328882720071828">Permitir que <ph name="CLIENT_USERNAME" /> veja e controle o seu computador?</translation>
 <translation id="8747048596626351634">Falha da sessão ou falha ao iniciar a sessão. Se ~/.chrome-remote-desktop-session existir no computador remoto, certifique-se de que inicia um processo em primeiro plano de longa execução, como um gestor de janelas ou um ambiente de trabalho.</translation>
 <translation id="8804164990146287819">Política de Privacidade</translation>
+<translation id="8906511416443321782">O acesso ao microfone é necessário para capturar áudio e fazer stream do mesmo para o cliente do Ambiente de Trabalho Remoto do Chrome.</translation>
 <translation id="9111855907838866522">Está ligado ao seu dispositivo remoto. Para abrir o menu, toque no ecrã com quatro dedos.</translation>
 <translation id="9126115402994542723">Não voltar a pedir um PIN ao ligar a este anfitrião a partir deste dispositivo.</translation>
 <translation id="916856682307586697">Inicie a XSession predefinida.</translation>

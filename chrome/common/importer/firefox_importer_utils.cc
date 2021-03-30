@@ -29,15 +29,14 @@ namespace {
 // Retrieves the file system path of the profile name.
 base::FilePath GetProfilePath(const base::DictionaryValue& root,
                               const std::string& profile_name) {
-  base::string16 path16;
+  std::u16string path16;
   std::string is_relative;
   if (!root.GetStringASCII(profile_name + ".IsRelative", &is_relative) ||
       !root.GetString(profile_name + ".Path", &path16))
     return base::FilePath();
 
 #if defined(OS_WIN)
-  base::ReplaceSubstringsAfterOffset(
-      &path16, 0, base::ASCIIToUTF16("/"), base::ASCIIToUTF16("\\"));
+  base::ReplaceSubstringsAfterOffset(&path16, 0, u"/", u"\\");
 #endif
   base::FilePath path = base::FilePath::FromUTF16Unsafe(path16);
 
@@ -75,17 +74,16 @@ std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
       break;
     }
 
-    base::string16 path;
+    std::u16string path;
     if (!root.GetString(current_profile + ".Path", &path))
       continue;
 
     FirefoxDetail details;
     details.path = GetProfilePath(root, current_profile);
-    base::string16 name;
+    std::u16string name;
     root.GetString(current_profile + ".Name", &name);
     // Make the profile name more presentable by replacing dashes with spaces.
-    base::ReplaceChars(name, base::ASCIIToUTF16("-"), base::ASCIIToUTF16(" "),
-                       &name);
+    base::ReplaceChars(name, u"-", u" ", &name);
     details.name = name;
     profile_details.push_back(details);
   }
@@ -94,7 +92,7 @@ std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
   // The name is only used to disambiguate profiles in the profile selection UI,
   // which is only useful when there are multiple profiles.
   if (profile_details.size() == 1) {
-    profile_details[0].name = base::string16();
+    profile_details[0].name = std::u16string();
   }
 
   return profile_details;
@@ -300,7 +298,7 @@ std::string GetPrefsJsValue(const std::string& content,
 //   ID={ec8030f7-c20a-464f-9b0e-13a3a9e97384}
 //   .........................................
 // In this example the function returns "Iceweasel" (or a localized equivalent).
-base::string16 GetFirefoxImporterName(const base::FilePath& app_path) {
+std::u16string GetFirefoxImporterName(const base::FilePath& app_path) {
   const base::FilePath app_ini_file = app_path.AppendASCII("application.ini");
   std::string branding_name;
   if (base::PathExists(app_ini_file)) {

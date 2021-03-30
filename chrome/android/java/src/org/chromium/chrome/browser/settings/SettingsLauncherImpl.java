@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Implementation class for launching a {@link SettingsActivity}.

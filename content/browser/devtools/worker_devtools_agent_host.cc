@@ -5,6 +5,7 @@
 #include "content/browser/devtools/worker_devtools_agent_host.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/network_handler.h"

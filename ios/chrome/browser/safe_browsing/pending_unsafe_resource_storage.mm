@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/pending_unsafe_resource_storage.h"
 
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #import "ios/chrome/browser/safe_browsing/unsafe_resource_util.h"
 

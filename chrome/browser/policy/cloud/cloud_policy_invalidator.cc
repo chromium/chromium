@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -254,18 +255,18 @@ void CloudPolicyInvalidator::Shutdown() {
 }
 
 void CloudPolicyInvalidator::OnInvalidatorStateChange(
-    syncer::InvalidatorState state) {
+    invalidation::InvalidatorState state) {
   DCHECK(state_ == STARTED);
   DCHECK(thread_checker_.CalledOnValidThread());
-  invalidation_service_enabled_ = state == syncer::INVALIDATIONS_ENABLED;
+  invalidation_service_enabled_ = state == invalidation::INVALIDATIONS_ENABLED;
   UpdateInvalidationsEnabled();
 }
 
 void CloudPolicyInvalidator::OnIncomingInvalidation(
-    const syncer::TopicInvalidationMap& invalidation_map) {
+    const invalidation::TopicInvalidationMap& invalidation_map) {
   DCHECK(state_ == STARTED);
   DCHECK(thread_checker_.CalledOnValidThread());
-  const syncer::SingleObjectInvalidationSet& list =
+  const invalidation::SingleObjectInvalidationSet& list =
       invalidation_map.ForTopic(topic_);
   if (list.IsEmpty()) {
     NOTREACHED();
@@ -287,7 +288,8 @@ std::string CloudPolicyInvalidator::GetOwnerName() const {
   return owner_name_;
 }
 
-bool CloudPolicyInvalidator::IsPublicTopic(const syncer::Topic& topic) const {
+bool CloudPolicyInvalidator::IsPublicTopic(
+    const invalidation::Topic& topic) const {
   return IsPublicInvalidationTopic(topic);
 }
 
@@ -343,7 +345,7 @@ void CloudPolicyInvalidator::OnStoreLoaded(CloudPolicyStore* store) {
 void CloudPolicyInvalidator::OnStoreError(CloudPolicyStore* store) {}
 
 void CloudPolicyInvalidator::HandleInvalidation(
-    const syncer::Invalidation& invalidation) {
+    const invalidation::Invalidation& invalidation) {
   // Ignore old invalidations.
   if (invalid_ && !invalidation.is_unknown_version() &&
       invalidation.version() <= invalidation_version_) {
@@ -394,7 +396,7 @@ void CloudPolicyInvalidator::HandleInvalidation(
 
   // Update invalidation state.
   invalid_ = true;
-  invalidation_.reset(new syncer::Invalidation(invalidation));
+  invalidation_ = std::make_unique<invalidation::Invalidation>(invalidation);
   invalidation_version_ = version;
 
   // In order to prevent the cloud policy server from becoming overwhelmed when
@@ -426,7 +428,7 @@ void CloudPolicyInvalidator::UpdateSubscription(
     const enterprise_management::PolicyData* policy) {
   // Create the Topic based on the policy data.
   // If the policy does not specify a Topic, then unregister.
-  syncer::Topic topic;
+  invalidation::Topic topic;
   if (!policy || !GetCloudPolicyTopicFromPolicy(*policy, &topic)) {
     Unregister();
     return;
@@ -438,7 +440,7 @@ void CloudPolicyInvalidator::UpdateSubscription(
     Register(topic);
 }
 
-void CloudPolicyInvalidator::Register(const syncer::Topic& topic) {
+void CloudPolicyInvalidator::Register(const invalidation::Topic& topic) {
   // Register this handler with the invalidation service if needed.
   if (!is_registered_) {
     OnInvalidatorStateChange(invalidation_service_->GetInvalidatorState());
@@ -469,8 +471,8 @@ void CloudPolicyInvalidator::Unregister() {
   if (is_registered_) {
     if (invalid_)
       AcknowledgeInvalidation();
-    CHECK(invalidation_service_->UpdateInterestedTopics(this,
-                                                        syncer::TopicSet()));
+    CHECK(invalidation_service_->UpdateInterestedTopics(
+        this, invalidation::TopicSet()));
     invalidation_service_->UnregisterInvalidationHandler(this);
     is_registered_ = false;
     UpdateInvalidationsEnabled();

@@ -21,8 +21,7 @@ class DOMTask;
 class DOMTaskSignal;
 class ExceptionState;
 class SchedulerPostTaskOptions;
-class ScriptValue;
-class V8Function;
+class V8SchedulerPostTaskCallback;
 class WebSchedulingTaskQueue;
 
 class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
@@ -44,9 +43,8 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
   // underlying context is destroyed, e.g. for detached windows, this will
   // return a rejected promise.
   ScriptPromise postTask(ScriptState*,
-                         V8Function*,
+                         V8SchedulerPostTaskCallback*,
                          SchedulerPostTaskOptions*,
-                         const HeapVector<ScriptValue>& args,
                          ExceptionState&);
 
   // Returns a TaskSignal representing the state when the current task was

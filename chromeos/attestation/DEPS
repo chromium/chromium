@@ -2,8 +2,6 @@ noparent = True
 
 include_rules = [
   "+base",
-  "+chromeos/chromeos_constants",
-  "+chromeos/constants",
   "+chromeos/cryptohome",
   "+chromeos/dbus",
   "+components/account_id",

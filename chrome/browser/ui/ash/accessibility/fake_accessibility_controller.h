@@ -42,10 +42,12 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void StartPointScan() override;
   void StopPointScan() override;
   void SetDictationActive(bool is_active) override;
+  void SetPointScanSpeedDipsPerSecond(
+      int point_scan_speed_dips_per_second) override;
   void ToggleDictationFromSource(ash::DictationToggleSource source) override;
   void HandleAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) override;
-  base::string16 GetBatteryDescription() const override;
+  std::u16string GetBatteryDescription() const override;
   void SetVirtualKeyboardVisible(bool is_visible) override;
   void PerformAcceleratorAction(
       ash::AcceleratorAction accelerator_action) override;

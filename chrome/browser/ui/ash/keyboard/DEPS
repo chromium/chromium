@@ -1,8 +1,0 @@
-specific_include_rules = {
-  "chrome_keyboard_bounds_observer\.cc": [
-    "+ash/root_window_controller.h",
-  ],
-  "chrome_keyboard_ui.*": [
-    "+ash/shell.h",
-  ],
-}

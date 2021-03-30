@@ -32,9 +32,6 @@ const char kKeyIdsTag[] = "kids";
 const char kTypeTag[] = "type";
 const char kTemporarySession[] = "temporary";
 const char kPersistentLicenseSession[] = "persistent-license";
-const char kPersistentUsageRecordSession[] = "persistent-usage-record";
-const char kPersistentUsageRecordFirstTime[] = "firstTime";
-const char kPersistentUsageRecordLatestTime[] = "latestTime";
 
 static std::string ShortenTo64Characters(const std::string& input) {
   // Convert |input| into a string with escaped characters replacing any
@@ -69,12 +66,6 @@ static std::unique_ptr<base::DictionaryValue> CreateJSONDictionary(
   jwk->SetString(kKeyTag, key_string);
   jwk->SetString(kKeyIdTag, key_id_string);
   return jwk;
-}
-
-// base::DictionaryValue::Set() does not accept nullptr. A 'null' Value must
-// be used instead if we want to add a key to a JSON with a 'null' value.
-static std::unique_ptr<base::Value> GetNullValue() {
-  return std::make_unique<base::Value>(base::Value::Type::NONE);
 }
 
 std::string GenerateJWKSet(const uint8_t* key,
@@ -113,9 +104,6 @@ std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
       break;
     case CdmSessionType::kPersistentLicense:
       jwk_set.SetString(kTypeTag, kPersistentLicenseSession);
-      break;
-    case CdmSessionType::kPersistentUsageRecord:
-      jwk_set.SetString(kTypeTag, kPersistentUsageRecordSession);
       break;
   }
 
@@ -228,8 +216,6 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
     *session_type = CdmSessionType::kTemporary;
   } else if (session_type_id == kPersistentLicenseSession) {
     *session_type = CdmSessionType::kPersistentLicense;
-  } else if (session_type_id == kPersistentUsageRecordSession) {
-    *session_type = CdmSessionType::kPersistentUsageRecord;
   } else {
     DVLOG(1) << "Invalid '" << kTypeTag << "' value: " << session_type_id;
     return false;
@@ -331,9 +317,6 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
     case CdmSessionType::kPersistentLicense:
       request->SetString(kTypeTag, kPersistentLicenseSession);
       break;
-    case CdmSessionType::kPersistentUsageRecord:
-      request->SetString(kTypeTag, kPersistentUsageRecordSession);
-      break;
   }
 
   // Serialize the license request as a string.
@@ -382,9 +365,8 @@ void CreateKeyIdsInitData(const KeyIdList& key_ids,
   init_data->swap(data);
 }
 
-// The format is a JSON object. For sessions of type "persistent-license" and
-// "persistent-usage-record", the object shall contain the following member:
-//
+// The format is a JSON object. For sessions of type "persistent-license", the
+// object shall contain the following member:
 //    "kids"
 //      An array of key IDs. Each element of the array is the base64url encoding
 //      of the octet sequence containing the key ID value.
@@ -392,43 +374,6 @@ std::vector<uint8_t> CreateLicenseReleaseMessage(const KeyIdList& key_ids) {
   // Create the init_data.
   auto dictionary = std::make_unique<base::DictionaryValue>();
   AddKeyIdsToDictionary(key_ids, dictionary.get());
-  return SerializeDictionaryToVector(dictionary.get());
-}
-
-// For sessions of type "persistent-usage-record" the object shall also contain
-// the following members:
-//
-//    "firstTime"
-//      The first decryption time expressed as a number giving the time, in
-//      milliseconds since 01 January, 1970 UTC.
-//    "latestTime"
-//      The latest decryption time expressed as a number giving the time, in
-//      milliseconds since 01 January,
-// 1970 UTC. https://w3c.github.io/encrypted-media/#clear-key-release-format
-std::vector<uint8_t> CreateLicenseReleaseMessage(
-    const KeyIdList& key_ids,
-    const base::Time first_decrypt_time,
-    const base::Time latest_decrypt_time) {
-  // Create the init_data.
-  auto dictionary = std::make_unique<base::DictionaryValue>();
-  AddKeyIdsToDictionary(key_ids, dictionary.get());
-
-  if (!first_decrypt_time.is_null()) {
-    // Persistent-Usage-Record
-    // Time need to be millisecond since 01 January, 1970 UTC
-    dictionary->SetDouble(kPersistentUsageRecordFirstTime,
-                          first_decrypt_time.ToJsTimeIgnoringNull());
-  } else {
-    dictionary->Set(kPersistentUsageRecordFirstTime, GetNullValue());
-  }
-
-  if (!latest_decrypt_time.is_null()) {
-    dictionary->SetDouble(kPersistentUsageRecordLatestTime,
-                          latest_decrypt_time.ToJsTimeIgnoringNull());
-  } else {
-    dictionary->Set(kPersistentUsageRecordLatestTime, GetNullValue());
-  }
-
   return SerializeDictionaryToVector(dictionary.get());
 }
 

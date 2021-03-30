@@ -15,6 +15,7 @@
 #include "media/base/key_systems.h"
 #include "media/cdm/aes_decryptor.h"
 #include "media/mojo/clients/mojo_cdm.h"
+#include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,21 +31,20 @@ void OnCdmCreated(
     const SessionExpirationUpdateCB& session_expiration_update_cb,
     CdmCreatedCB cdm_created_cb,
     mojo::PendingRemote<mojom::ContentDecryptionModule> cdm_remote,
-    const base::Optional<base::UnguessableToken>& cdm_id,
-    mojo::PendingRemote<mojom::Decryptor> decryptor,
+    media::mojom::CdmContextPtr cdm_context,
     const std::string& error_message) {
   // Convert from a PendingRemote to Remote so we can verify that it is
   // connected, this will also check if |cdm_remote| is null.
   mojo::Remote<mojom::ContentDecryptionModule> remote(std::move(cdm_remote));
-  if (!remote || !remote.is_connected()) {
+  if (!remote || !remote.is_connected() || !cdm_context) {
     std::move(cdm_created_cb).Run(nullptr, error_message);
     return;
   }
 
   std::move(cdm_created_cb)
       .Run(base::MakeRefCounted<MojoCdm>(
-               std::move(remote), cdm_id, std::move(decryptor),
-               session_message_cb, session_closed_cb, session_keys_change_cb,
+               std::move(remote), std::move(cdm_context), session_message_cb,
+               session_closed_cb, session_keys_change_cb,
                session_expiration_update_cb),
            "");
 }

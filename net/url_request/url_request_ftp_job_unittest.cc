@@ -173,8 +173,7 @@ TEST_F(UrlRequestFtpJobTest, HistogramLogSuccessAuth) {
   context.Init();
 
   TestDelegate test_delegate;
-  test_delegate.set_credentials(
-      AuthCredentials(base::ASCIIToUTF16("user"), base::ASCIIToUTF16("pass")));
+  test_delegate.set_credentials(AuthCredentials(u"user", u"pass"));
   std::unique_ptr<URLRequest> r(context.CreateRequest(
       GURL("ftp://example.test/"), RequestPriority::DEFAULT_PRIORITY,
       &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -227,8 +226,7 @@ TEST_F(UrlRequestFtpJobTest, HistogramLogFailedInvalidAuthThenSucceed) {
   context.Init();
 
   TestDelegate test_delegate;
-  test_delegate.set_credentials(
-      AuthCredentials(base::ASCIIToUTF16("user"), base::ASCIIToUTF16("pass")));
+  test_delegate.set_credentials(AuthCredentials(u"user", u"pass"));
   std::unique_ptr<URLRequest> r(context.CreateRequest(
       GURL("ftp://example.test/"), RequestPriority::DEFAULT_PRIORITY,
       &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));

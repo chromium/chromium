@@ -68,6 +68,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/extensions/api/file_handlers/non_native_file_system_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/media_perception_private/media_perception_api_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h"
@@ -152,11 +153,11 @@ bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
        request.initiator ==
            url::Origin::Create(GURL(chrome::kChromeUINewTabURL)));
 
-  // Hide requests made by the browser on behalf of the local NTP.
+  // Hide requests made by the browser on behalf of the 1P WebUI NTP.
   is_sensitive_request |=
       (is_browser_request &&
        request.initiator ==
-           url::Origin::Create(GURL(chrome::kChromeSearchLocalNtpUrl)));
+           url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL)));
 
   // Hide requests made by the NTP Instant renderer.
   auto* instant_service =
@@ -311,8 +312,8 @@ ChromeExtensionsAPIClient::CreateContentRulesRegistry(
     RulesCacheDelegate* cache_delegate) const {
   return base::MakeRefCounted<ChromeContentRulesRegistry>(
       browser_context, cache_delegate,
-      base::Bind(&CreateDefaultContentPredicateEvaluators,
-                 base::Unretained(browser_context)));
+      base::BindOnce(&CreateDefaultContentPredicateEvaluators,
+                     base::Unretained(browser_context)));
 }
 
 std::unique_ptr<DevicePermissionsPrompt>
@@ -320,6 +321,24 @@ ChromeExtensionsAPIClient::CreateDevicePermissionsPrompt(
     content::WebContents* web_contents) const {
   return std::make_unique<ChromeDevicePermissionsPrompt>(web_contents);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
+                                                        int pid) const {
+  const base::ListValue* policy_list;
+  if (ash::CrosSettings::Get()->GetList(chromeos::kUsbDetachableAllowlist,
+                                        &policy_list)) {
+    for (const auto& entry : *policy_list) {
+      if (entry.FindIntKey(chromeos::kUsbDetachableAllowlistKeyVid) == vid &&
+          entry.FindIntKey(chromeos::kUsbDetachableAllowlistKeyPid) == pid) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<VirtualKeyboardDelegate>
 ChromeExtensionsAPIClient::CreateVirtualKeyboardDelegate(

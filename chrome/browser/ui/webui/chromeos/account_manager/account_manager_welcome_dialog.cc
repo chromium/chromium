@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -35,7 +36,7 @@ constexpr int kMaxNumTimesShown = 1;
 
 AccountManagerWelcomeDialog::AccountManagerWelcomeDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIAccountManagerWelcomeURL),
-                              base::string16() /* title */) {}
+                              std::u16string() /* title */) {}
 
 AccountManagerWelcomeDialog::~AccountManagerWelcomeDialog() {
   DCHECK_EQ(this, g_dialog);
@@ -44,6 +45,10 @@ AccountManagerWelcomeDialog::~AccountManagerWelcomeDialog() {
 
 // static
 bool AccountManagerWelcomeDialog::ShowIfRequired() {
+  if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+    return false;
+  }
+
   PrefService* pref_service =
       ProfileManager::GetActiveUserProfile()->GetPrefs();
   const int num_times_shown = pref_service->GetInteger(

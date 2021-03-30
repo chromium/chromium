@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/pdf_features.h"
@@ -25,7 +26,7 @@ namespace {
 int g_last_timer_id = 0;
 
 std::string WideStringToString(FPDF_WIDESTRING wide_string) {
-  return base::UTF16ToUTF8(reinterpret_cast<const base::char16*>(wide_string));
+  return base::UTF16ToUTF8(reinterpret_cast<const char16_t*>(wide_string));
 }
 
 }  // namespace
@@ -405,9 +406,6 @@ void PDFiumFormFiller::Form_GetPageViewRect(FPDF_FORMFILLINFO* param,
 
   gfx::Rect page_view_rect = engine->GetPageContentsRect(page_index);
 
-  float toolbar_height_in_screen_coords =
-      engine->GetToolbarHeightInScreenCoords();
-
   float page_width = FPDF_GetPageWidth(page);
   float page_height = FPDF_GetPageHeight(page);
 
@@ -420,11 +418,10 @@ void PDFiumFormFiller::Form_GetPageViewRect(FPDF_FORMFILLINFO* param,
   // coords, we use (page_width * (x - base_x) / page_view_rect.width()).
   // For y positions, (page_height * (y - base_y) / page_view_rect.height()).
 
-  // The top-most y position that can be relied to be visible on the screen is
-  // the bottom of the toolbar, which is y = toolbar_height_in_screen_coords.
+  // The top-most x position that is visible on the screen is the top of the
+  // plugin area, which is y = 0.
   float screen_top_in_page_coords =
-      page_height * (toolbar_height_in_screen_coords - page_view_rect.y()) /
-      page_view_rect.height();
+      page_height * (0 - page_view_rect.y()) / page_view_rect.height();
   // The bottom-most y position that is visible on the screen is the bottom of
   // the plugin area, which is y = engine->plugin_size_.height().
   float screen_bottom_in_page_coords =
@@ -614,8 +611,8 @@ int PDFiumFormFiller::Form_Response(IPDF_JSPLATFORM* param,
 
   PDFiumEngine* engine = GetEngine(param);
   std::string rv = engine->client_->Prompt(question_str, default_str);
-  base::string16 rv_16 = base::UTF8ToUTF16(rv);
-  int rv_bytes = rv_16.size() * sizeof(base::char16);
+  std::u16string rv_16 = base::UTF8ToUTF16(rv);
+  int rv_bytes = rv_16.size() * sizeof(char16_t);
   if (response) {
     int bytes_to_copy = rv_bytes < length ? rv_bytes : length;
     memcpy(response, rv_16.c_str(), bytes_to_copy);

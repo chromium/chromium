@@ -4,7 +4,6 @@
 
 import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/libaom/options.gni")
 
 source_set("run_all_unittests") {
   testonly = true
@@ -44,7 +43,6 @@ source_set("pipeline_integration_test_base") {
       "//media:test_support",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/libaom:libaom_buildflags",
       "//url",
     ]
   }

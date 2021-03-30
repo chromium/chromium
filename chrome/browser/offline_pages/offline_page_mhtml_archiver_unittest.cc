@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -35,7 +34,7 @@ const char kTestURL[] = "http://example.com/hello.mhtml";
 const char kNonExistentURL[] = "http://example.com/non_existent.mhtml";
 // Size of chrome/test/data/offline_pages/hello.mhtml
 const int64_t kTestFileSize = 471LL;
-const base::string16 kTestTitle = base::UTF8ToUTF16("a title");
+const std::u16string kTestTitle = u"a title";
 // SHA256 Hash of chrome/test/data/offline_pages/hello.mhtml
 const std::string kTestDigest(
     "\x43\x60\x62\x02\x06\x15\x0f\x3e\x77\x99\x3d\xed\xdc\xd4\xe2\x0d\xbe\xbd"
@@ -157,7 +156,7 @@ class OfflinePageMHTMLArchiverTest : public testing::Test {
   void OnCreateArchiveDone(OfflinePageArchiver::ArchiverResult result,
                            const GURL& url,
                            const base::FilePath& file_path,
-                           const base::string16& title,
+                           const std::u16string& title,
                            int64_t file_size,
                            const std::string& digest);
 
@@ -211,7 +210,7 @@ void OfflinePageMHTMLArchiverTest::OnCreateArchiveDone(
     OfflinePageArchiver::ArchiverResult result,
     const GURL& url,
     const base::FilePath& file_path,
-    const base::string16& title,
+    const std::u16string& title,
     int64_t file_size,
     const std::string& digest) {
   DCHECK(!async_operation_completed_);

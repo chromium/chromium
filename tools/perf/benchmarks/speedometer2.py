@@ -14,6 +14,8 @@ from core import path_util
 
 from telemetry import benchmark
 from telemetry import story
+from telemetry.timeline import chrome_trace_category_filter
+from telemetry.web_perf import timeline_based_measurement
 
 from page_sets import speedometer2_pages
 
@@ -31,6 +33,7 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
   """
 
   enable_smoke_test_mode = False
+  enable_rcs = False
 
   @classmethod
   def Name(cls):
@@ -47,10 +50,39 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
         filtered_suite_names, self.enable_smoke_test_mode))
     return ps
 
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    if not self.enable_rcs:
+      return timeline_based_measurement.Options()
+
+    cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter()
+
+    # "blink.console" is used for marking ranges in
+    # cache_temperature.MarkTelemetryInternal.
+    cat_filter.AddIncludedCategory('blink.console')
+
+    # "toplevel" category is used to capture TaskQueueManager events.
+    cat_filter.AddIncludedCategory('toplevel')
+
+    # V8 needed categories
+    cat_filter.AddIncludedCategory('v8')
+    cat_filter.AddDisabledByDefault('disabled-by-default-v8.runtime_stats')
+
+    tbm_options = timeline_based_measurement.Options(overhead_level=cat_filter)
+    tbm_options.SetTimelineBasedMetrics(['runtimeStatsTotalMetric'])
+    return tbm_options
+
+  def SetExtraBrowserOptions(self, options):
+    if self.enable_rcs:
+      options.AppendExtraBrowserArgs(
+          '--enable-blink-features=BlinkRuntimeCallStats')
+
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
     parser.add_option('--suite', type="string",
                       help="Only runs suites that match regex provided")
+    parser.add_option('--enable-rcs',
+                      action="store_true",
+                      help="Enables runtime call stats")
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -60,6 +92,8 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
           raise parser.error('--suite: No matches.')
       except re.error:
         raise parser.error('--suite: Invalid regex.')
+    if args.enable_rcs:
+      cls.enable_rcs = True
 
 
 @benchmark.Info(emails=['hablich@chromium.org'],
@@ -90,4 +124,5 @@ class Speedometer2PCScan(Speedometer2):
     return 'speedometer2-pcscan'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--enable-features=PartitionAllocPCScan')
+    options.AppendExtraBrowserArgs(
+        '--enable-features=PartitionAllocPCScanBrowserOnly')

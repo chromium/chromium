@@ -17,6 +17,7 @@
 #include "ui/base/page_transition_types.h"
 #include "weblayer/browser/navigation_entry_data.h"
 #include "weblayer/browser/navigation_ui_data_impl.h"
+#include "weblayer/browser/page_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation_observer.h"
 
@@ -190,6 +191,11 @@ void NavigationControllerImpl::OnLargestContentfulPaint(
                                       largest_contentful_paint);
 }
 
+void NavigationControllerImpl::OnPageDestroyed(Page* page) {
+  for (auto& observer : observers_)
+    observer.OnPageDestroyed(page);
+}
+
 #if defined(OS_ANDROID)
 void NavigationControllerImpl::SetNavigationControllerImpl(
     JNIEnv* env,
@@ -202,6 +208,7 @@ void NavigationControllerImpl::Navigate(
     const JavaParamRef<jstring>& url,
     jboolean should_replace_current_entry,
     jboolean disable_intent_processing,
+    jboolean allow_intent_launches_in_background,
     jboolean disable_network_error_auto_reload,
     jboolean enable_auto_play,
     const base::android::JavaParamRef<jobject>& response) {
@@ -219,6 +226,9 @@ void NavigationControllerImpl::Navigate(
 
   if (disable_network_error_auto_reload)
     data->set_disable_network_error_auto_reload(true);
+
+  data->set_allow_intent_launches_in_background(
+      allow_intent_launches_in_background);
 
   if (!response.is_null()) {
     data->SetResponse(
@@ -302,11 +312,6 @@ void NavigationControllerImpl::Navigate(
       std::make_unique<content::NavigationController::LoadURLParams>(url);
   load_params->should_replace_current_entry =
       params.should_replace_current_entry;
-  if (params.disable_network_error_auto_reload) {
-    auto data = std::make_unique<NavigationUIDataImpl>();
-    data->set_disable_network_error_auto_reload(true);
-    load_params->navigation_ui_data = std::move(data);
-  }
   if (params.enable_auto_play)
     load_params->was_activated = content::mojom::WasActivatedOption::kYes;
 
@@ -396,6 +401,7 @@ void NavigationControllerImpl::DidStartNavigation(
   base::AutoReset<NavigationImpl*> auto_reset(&navigation_starting_,
                                               navigation);
   navigation->set_safe_to_set_request_headers(true);
+  navigation->set_safe_to_disable_network_error_auto_reload(true);
 
 #if defined(OS_ANDROID)
   // Desktop mode and per-navigation UA use the same mechanism and so don't
@@ -434,6 +440,7 @@ void NavigationControllerImpl::DidStartNavigation(
     observer.NavigationStarted(navigation);
   navigation->set_safe_to_set_user_agent(false);
   navigation->set_safe_to_set_request_headers(false);
+  navigation->set_safe_to_disable_network_error_auto_reload(false);
 }
 
 void NavigationControllerImpl::DidRedirectNavigation(
@@ -445,12 +452,12 @@ void NavigationControllerImpl::DidRedirectNavigation(
 
 void NavigationControllerImpl::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+#if defined(OS_ANDROID)
   if (!navigation_handle->IsInMainFrame())
     return;
 
   DCHECK(navigation_map_.find(navigation_handle) != navigation_map_.end());
   auto* navigation = navigation_map_[navigation_handle].get();
-#if defined(OS_ANDROID)
   if (java_controller_) {
     TRACE_EVENT0("weblayer",
                  "Java_NavigationControllerImpl_readyToCommitNavigation");
@@ -458,8 +465,6 @@ void NavigationControllerImpl::ReadyToCommitNavigation(
         AttachCurrentThread(), java_controller_, navigation->java_navigation());
   }
 #endif
-  for (auto& observer : observers_)
-    observer.ReadyToCommitNavigation(navigation);
 }
 
 void NavigationControllerImpl::DidFinishNavigation(
@@ -470,6 +475,8 @@ void NavigationControllerImpl::DidFinishNavigation(
   DelayDeletionHelper deletion_helper(this);
   DCHECK(navigation_map_.find(navigation_handle) != navigation_map_.end());
   auto* navigation = navigation_map_[navigation_handle].get();
+
+  navigation->set_safe_to_get_page();
 
   if (navigation_handle->HasCommitted()) {
     // Set state on NavigationEntry user data if a per-navigation user agent was
@@ -483,6 +490,10 @@ void NavigationControllerImpl::DidFinishNavigation(
           entry_data->set_per_navigation_user_agent_override(true);
       }
     }
+
+    auto* rfh = navigation_handle->GetRenderFrameHost();
+    if (rfh)
+      PageImpl::GetOrCreateForCurrentDocument(rfh);
   }
 
   if (navigation_handle->GetNetErrorCode() == net::OK &&

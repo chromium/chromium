@@ -1,0 +1,56 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//chrome/browser/buildflags.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java",
+    "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceNotification.java",
+    "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettings.java",
+  ]
+
+  srcjar_deps = [ "//components/search_engines:search_engine_type_java" ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/omaha/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/version:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/location/android:location_java",
+    "//components/search_engines/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//ui/android:ui_full_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.search_engines"
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/search_engine.xml",
+    "java/res/layout/search_engine_recent_title.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
+}

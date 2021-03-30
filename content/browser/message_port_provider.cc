@@ -29,9 +29,9 @@ namespace {
 
 void PostMessageToFrameInternal(
     WebContents* web_contents,
-    const base::string16& source_origin,
-    const base::string16& target_origin,
-    const base::string16& data,
+    const std::u16string& source_origin,
+    const std::u16string& target_origin,
+    const std::u16string& data,
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -53,10 +53,10 @@ void PostMessageToFrameInternal(
 }
 
 #if defined(OS_ANDROID)
-base::string16 ToString16(JNIEnv* env,
+std::u16string ToString16(JNIEnv* env,
                           const base::android::JavaParamRef<jstring>& s) {
   if (s.is_null())
-    return base::string16();
+    return std::u16string();
   return base::android::ConvertJavaStringToUTF16(env, s);
 }
 #endif
@@ -66,9 +66,9 @@ base::string16 ToString16(JNIEnv* env,
 // static
 void MessagePortProvider::PostMessageToFrame(
     WebContents* web_contents,
-    const base::string16& source_origin,
-    const base::string16& target_origin,
-    const base::string16& data) {
+    const std::u16string& source_origin,
+    const std::u16string& target_origin,
+    const std::u16string& data) {
   PostMessageToFrameInternal(web_contents, source_origin, target_origin, data,
                              std::vector<blink::MessagePortDescriptor>());
 }
@@ -92,9 +92,9 @@ void MessagePortProvider::PostMessageToFrame(
 // static
 void MessagePortProvider::PostMessageToFrame(
     WebContents* web_contents,
-    const base::string16& source_origin,
-    const base::Optional<base::string16>& target_origin,
-    const base::string16& data,
+    const std::u16string& source_origin,
+    const base::Optional<std::u16string>& target_origin,
+    const std::u16string& data,
     std::vector<blink::WebMessagePort> ports) {
   // Extract the underlying descriptors.
   std::vector<blink::MessagePortDescriptor> descriptors;

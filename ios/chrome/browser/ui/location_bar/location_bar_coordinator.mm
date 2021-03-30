@@ -7,15 +7,18 @@
 #import <CoreLocation/CoreLocation.h>
 
 #include "base/memory/ptr_util.h"
+#import "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
@@ -201,6 +204,7 @@
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
   self.mediator.consumer = self;
+  self.mediator.webStateList = self.webStateList;
 
   self.steadyViewMediator = [[LocationBarSteadyViewMediator alloc]
       initWithLocationBarModel:[self locationBarModel]];
@@ -235,6 +239,7 @@
   _editController.reset();
 
   self.viewController = nil;
+  [self.mediator disconnect];
   self.mediator = nil;
   [self.steadyViewMediator disconnect];
   self.steadyViewMediator = nil;
@@ -273,7 +278,7 @@
 - (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
   DCHECK(query);
   // Since the query is not user typed, sanitize it to make sure it's safe.
-  base::string16 sanitizedQuery =
+  std::u16string sanitizedQuery =
       OmniboxView::SanitizeTextForPaste(base::SysNSStringToUTF16(query));
   if (immediately) {
     [self loadURLForQuery:sanitizedQuery];
@@ -294,10 +299,6 @@
     LoadJavaScriptURL(url, self.browserState,
                       self.webStateList->GetActiveWebState());
   } else {
-    // When opening a URL, warn the omnibox geolocation in case it needs to stop
-    // the service.
-    [[OmniboxGeolocationController sharedInstance] locationBarDidSubmitURL];
-
     // TODO(crbug.com/785244): Is it ok to call |cancelOmniboxEdit| after
     // |loadURL|?  It doesn't seem to be causing major problems.  If we call
     // cancel before load, then any prerendered pages get destroyed before the
@@ -332,11 +333,11 @@
     }
   }
   // Dismiss the edit menu.
-  if (@available(iOS 13, *)) {
-    [[UIMenuController sharedMenuController] hideMenu];
-  } else {
-    [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
-  }
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+  [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+#else
+  [[UIMenuController sharedMenuController] hideMenu];
+#endif
 
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
@@ -367,10 +368,6 @@
   [self.delegate locationBarDidResignFirstResponder];
 }
 
-- (void)locationBarBeganEdit {
-  [self.delegate locationBarBeganEdit];
-}
-
 - (web::WebState*)webState {
   return self.webStateList->GetActiveWebState();
 }
@@ -391,6 +388,15 @@
 
 - (void)locationBarCopyTapped {
   StoreURLInPasteboard(self.webState->GetVisibleURL());
+}
+
+- (void)recordShareButtonPressed {
+  if (!self.browserState) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration("iOS.LocationBar.ShareButton.PerProfileType",
+                                GetBrowserStateType(self.browserState));
 }
 
 #pragma mark - LocationBarConsumer
@@ -461,7 +467,7 @@
 }
 
 // Navigate to |query| from omnibox.
-- (void)loadURLForQuery:(const base::string16&)query {
+- (void)loadURLForQuery:(const std::u16string&)query {
   GURL searchURL;
   metrics::OmniboxInputType type = AutocompleteInput::Parse(
       query, std::string(), AutocompleteSchemeClassifierImpl(), nullptr,

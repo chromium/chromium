@@ -28,7 +28,6 @@ weblayer_resource_values_filter_rules = [
   "${_material_package}:[Ff]loatingActionButton",
   "${_material_package}:[Mm]aterialAlertDialog",
   "${_material_package}:mtrl_alert",
-  "${_material_package}:mtrl_navigation",
   "${_material_package}:mtrl_slider",
   "${_material_package}:[Nn]avigationView",
   "${_material_package}:picker",

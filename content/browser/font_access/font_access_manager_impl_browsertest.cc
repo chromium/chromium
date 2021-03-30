@@ -67,7 +67,12 @@ class FontAccessManagerImplBrowserTest
     : public FontAccessManagerImplBrowserBase {
  public:
   FontAccessManagerImplBrowserTest() {
-    scoped_feature_list_->InitAndEnableFeature(blink::features::kFontAccess);
+    std::vector<base::Feature> enabled_features({
+        blink::features::kFontAccess,
+        blink::features::kFontAccessPersistent,
+    });
+    scoped_feature_list_->InitWithFeatures(std::move(enabled_features),
+                                           /*disabled_features=*/{});
   }
 };
 
@@ -99,13 +104,15 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, EnumerationTest) {
   int result = EvalJs(shell(),
                       "(async () => {"
                       "  let count = 0;"
-                      "  for await (const item of navigator.fonts.query()) {"
+                      "  const fonts = await "
+                      "navigator.fonts.query({persistentAccess: true});"
+                      "  for (const item of fonts) {"
                       "    count++;"
                       "  }"
                       "  return count;"
                       "})()")
                    .ExtractInt();
-  ASSERT_GT(result, 0) << "Expected at least one font. Got: " << result;
+  EXPECT_GT(result, 0) << "Expected at least one font. Got: " << result;
 }
 
 #if defined(OS_WIN)
@@ -119,7 +126,9 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
       EvalJs(shell(),
              "(async () => {"
              "  let fullName = '';"
-             "  for await (const item of navigator.fonts.query()) {"
+             "  const fonts = await navigator.fonts.query({persistentAccess: "
+             "true});"
+             "  for (const item of fonts) {"
              "    if (item.postscriptName == 'MicrosoftYaHei') {"
              "      fullName = item.fullName;"
              "      break;"
@@ -129,8 +138,33 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
              "})()")
           .ExtractString();
   std::string ms_yahei_utf8 = "微软雅黑";
-  ASSERT_EQ(result, ms_yahei_utf8)
-      << "Expected:" << ms_yahei_utf8 << " Got:" << result;
+  EXPECT_EQ(result, ms_yahei_utf8);
+}
+
+IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
+                       UnlocalizedFamilyTest) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
+  font_access_manager()->SkipPrivacyChecksForTesting(true);
+
+  OverrideFontAccessLocale("zh-cn");
+
+  std::string result =
+      EvalJs(shell(),
+             "(async () => {"
+             "  let family = '';"
+             "  const fonts = await navigator.fonts.query({persistentAccess: "
+             "true});"
+             "  for (const item of fonts) {"
+             "    if (item.postscriptName == 'MicrosoftYaHei') {"
+             "      family = item.family;"
+             "      break;"
+             "    }"
+             "  }"
+             "  return family;"
+             "})()")
+          .ExtractString();
+  std::string unlocalized_family = "Microsoft YaHei";
+  EXPECT_EQ(result, unlocalized_family);
 }
 #endif
 

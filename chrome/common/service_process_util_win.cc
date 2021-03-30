@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -16,7 +17,6 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -30,12 +30,12 @@ namespace {
 
 const char kTerminateEventSuffix[] = "_service_terminate_evt";
 
-base::string16 GetServiceProcessReadyEventName() {
+std::wstring GetServiceProcessReadyEventName() {
   return base::UTF8ToWide(
       GetServiceProcessScopedVersionedName("_service_ready"));
 }
 
-base::string16 GetServiceProcessTerminateEventName() {
+std::wstring GetServiceProcessTerminateEventName() {
   return base::UTF8ToWide(
       GetServiceProcessScopedVersionedName(kTerminateEventSuffix));
 }
@@ -62,7 +62,7 @@ class ServiceProcessTerminateMonitor
   explicit ServiceProcessTerminateMonitor(base::OnceClosure terminate_task)
       : terminate_task_(std::move(terminate_task)) {}
   void Start() {
-    base::string16 event_name = GetServiceProcessTerminateEventName();
+    std::wstring event_name = GetServiceProcessTerminateEventName();
     DCHECK(event_name.length() <= MAX_PATH);
     terminate_event_.Set(CreateEvent(nullptr, TRUE, FALSE, event_name.c_str()));
     watcher_.StartWatchingOnce(terminate_event_.Get(), this);
@@ -93,7 +93,7 @@ bool ForceServiceProcessShutdown(const std::string& version,
   base::win::ScopedHandle terminate_event;
   std::string versioned_name = version;
   versioned_name.append(kTerminateEventSuffix);
-  base::string16 event_name =
+  std::wstring event_name =
       base::UTF8ToWide(GetServiceProcessScopedName(versioned_name));
   terminate_event.Set(OpenEvent(EVENT_MODIFY_STATE, FALSE, event_name.c_str()));
   if (!terminate_event.IsValid())
@@ -109,7 +109,7 @@ ServiceProcessState::CreateServiceProcessDataRegion(size_t size) {
   if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
     return {};
 
-  base::string16 name = base::ASCIIToUTF16(GetServiceProcessSharedMemName());
+  std::u16string name = base::ASCIIToUTF16(GetServiceProcessSharedMemName());
 
   SECURITY_ATTRIBUTES sa = {sizeof(sa), nullptr, FALSE};
   HANDLE raw_handle =
@@ -139,7 +139,7 @@ ServiceProcessState::CreateServiceProcessDataRegion(size_t size) {
 base::ReadOnlySharedMemoryMapping
 ServiceProcessState::OpenServiceProcessDataMapping(size_t size) {
   DWORD access = FILE_MAP_READ | SECTION_QUERY;
-  base::string16 name = base::ASCIIToUTF16(GetServiceProcessSharedMemName());
+  std::u16string name = base::ASCIIToUTF16(GetServiceProcessSharedMemName());
   HANDLE raw_handle = OpenFileMapping(access, false, base::as_wcstr(name));
   if (!raw_handle) {
     auto err = GetLastError();
@@ -185,7 +185,7 @@ bool ServiceProcessState::DeleteServiceProcessDataRegion() {
 }
 
 bool CheckServiceProcessReady() {
-  base::string16 event_name = GetServiceProcessReadyEventName();
+  std::wstring event_name = GetServiceProcessReadyEventName();
   base::win::ScopedHandle event(
       OpenEvent(SYNCHRONIZE | READ_CONTROL, false, event_name.c_str()));
   if (!event.IsValid())
@@ -207,7 +207,7 @@ void ServiceProcessState::CreateState() {
 
 bool ServiceProcessState::TakeSingletonLock() {
   DCHECK(state_);
-  base::string16 event_name = GetServiceProcessReadyEventName();
+  std::wstring event_name = GetServiceProcessReadyEventName();
   DCHECK(event_name.length() <= MAX_PATH);
   base::win::ScopedHandle service_process_ready_event;
   service_process_ready_event.Set(

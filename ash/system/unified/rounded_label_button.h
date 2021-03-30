@@ -5,8 +5,9 @@
 #ifndef ASH_SYSTEM_UNIFIED_ROUNDED_LABEL_BUTTON_H_
 #define ASH_SYSTEM_UNIFIED_ROUNDED_LABEL_BUTTON_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
@@ -14,7 +15,7 @@ namespace ash {
 // LabelButton that has a rounded shape with a Material Design ink drop.
 class RoundedLabelButton : public views::LabelButton {
  public:
-  RoundedLabelButton(PressedCallback callback, const base::string16& text);
+  RoundedLabelButton(PressedCallback callback, const std::u16string& text);
   ~RoundedLabelButton() override;
 
   // views::LabelButton:

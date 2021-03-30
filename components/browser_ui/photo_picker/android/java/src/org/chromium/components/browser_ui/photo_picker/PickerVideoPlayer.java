@@ -18,6 +18,7 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,7 +31,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.math.MathUtils;
 import androidx.core.view.GestureDetectorCompat;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -236,12 +236,12 @@ public class PickerVideoPlayer
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        if (mVideoControls.getVisibility() != View.GONE) {
-            // When configuration changes, the video overlay controls need to be synced to the new
-            // video size. Post a task, so that size adjustments happen after layout of the video
-            // controls has completed.
-            ThreadUtils.postOnUiThread(() -> { syncOverlayControlsSize(); });
-        }
+        // When configuration changes, the video size and controls need to be synced to the new
+        // size. Post a task, so that size adjustments happen after layout of the video controls has
+        // completed (so that the calculations for the view have had time to account for the
+        // existence of the nav bar and status bar -- or lack thereof).
+        getHandler().post(() -> adjustVideoLayoutParamsToOrientation());
+        super.onConfigurationChanged(newConfig);
     }
 
     /**
@@ -270,10 +270,7 @@ public class PickerVideoPlayer
 
             mMediaPlayer.setOnVideoSizeChangedListener(
                     (MediaPlayer player, int width, int height) -> {
-                        // Once the size of the video player is known, it is possible to calculate
-                        // the correct size of the overlay container and show it. This way the
-                        // controls won't briefly appear in the wrong position.
-                        syncOverlayControlsSize();
+                        adjustVideoLayoutParamsToOrientation();
                         mVideoOverlayContainer.setVisibility(View.VISIBLE);
                     });
 
@@ -320,6 +317,58 @@ public class PickerVideoPlayer
         mVideoView.setMediaController(null);
         mMuteButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
         return true;
+    }
+
+    private void adjustVideoLayoutParamsToOrientation() {
+        if (mMediaPlayer == null || mMediaPlayer.getVideoWidth() == 0
+                || mMediaPlayer.getVideoHeight() == 0) {
+            return;
+        }
+        float aspectRatio = (float) mMediaPlayer.getVideoWidth() / mMediaPlayer.getVideoHeight();
+
+        boolean landscapeMode = mContext.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
+        int viewWidth = landscapeMode ? Math.max(getWidth(), getHeight())
+                                      : Math.min(getWidth(), getHeight());
+        int viewHeight = landscapeMode ? Math.min(getWidth(), getHeight())
+                                       : Math.max(getWidth(), getHeight());
+
+        ViewGroup.LayoutParams layoutParams = mVideoView.getLayoutParams();
+        if (landscapeMode) {
+            // Landscape mode. Use full height of the container.
+            layoutParams.width = Math.round(viewHeight * aspectRatio);
+            layoutParams.height = viewHeight;
+
+            // Check if there's enough width to show all the video. If not, use full view width
+            // instead with aspect ratio of the video (black bars appear above and below the video).
+            if (layoutParams.width > viewWidth) {
+                layoutParams.width = viewWidth;
+                layoutParams.height = Math.round(viewWidth / aspectRatio);
+            }
+
+            // In landscape mode, the video will obscure parts or all of these.
+            mBackButton.setVisibility(View.GONE);
+            mFileName.setVisibility(View.GONE);
+        } else {
+            // Portrait mode. Use full width of the container.
+            layoutParams.height = Math.round(viewWidth / aspectRatio);
+            layoutParams.width = viewWidth;
+
+            // Check if there's enough height to show all the video. If not, use full view height
+            // instead with aspect ratio of the video (black bars appear left and right).
+            if (layoutParams.height > viewHeight) {
+                layoutParams.height = viewHeight;
+                layoutParams.width = Math.round(viewHeight * aspectRatio);
+            }
+
+            mBackButton.setVisibility(View.VISIBLE);
+            mFileName.setVisibility(View.VISIBLE);
+        }
+
+        mVideoView.setLayoutParams(layoutParams);
+        mVideoView.requestLayout();
+        mVideoControls.setLayoutParams(layoutParams);
+        mVideoControls.requestLayout();
     }
 
     private boolean onSingleTapVideo() {
@@ -381,14 +430,14 @@ public class PickerVideoPlayer
                 // from the top of the screen, the system sends the visibility change event before
                 // the resize has happened, so the new video size isn't known yet. Syncing
                 // immediately would make the overlay controls appear in the wrong location.
-                getHandler().post(() -> syncOverlayControlsSize());
+                getHandler().post(() -> adjustVideoLayoutParamsToOrientation());
                 return;
             }
         } else {
             onEnterFullScreenMode();
         }
 
-        syncOverlayControlsSize();
+        adjustVideoLayoutParamsToOrientation();
         mFullScreenToggledInApp = false;
     }
 
@@ -671,12 +720,6 @@ public class PickerVideoPlayer
         mLargePlayButton.setImageResource(R.drawable.ic_pause_circle_outline_white_24dp);
         mLargePlayButton.setContentDescription(
                 mContext.getResources().getString(R.string.accessibility_pause_video));
-    }
-
-    private void syncOverlayControlsSize() {
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                mVideoView.getMeasuredWidth(), mVideoView.getMeasuredHeight());
-        mVideoControls.setLayoutParams(params);
     }
 
     private void toggleMute() {

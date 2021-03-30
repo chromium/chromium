@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+
+<input id="filetype" type="file">
+
+<script type="module">
+import  '/wpt_internal/forms/resources/mock-file-chooser.js';
+
+async_test((t) => {
+    testRunner.waitUntilDone();
+
+    // Initially the name is just the button title.
+    var fileChooser = document.getElementById("filetype");
+    let axFileChooser = accessibilityController.accessibleElementById("filetype");
+    assert_equals(axFileChooser.name, "No file chosen, Choose File");
+    assert_equals(axFileChooser.stringValue, "AXValue: No file chosen");
+
+    // After a file is selected, the value should be the file chosen,
+    // and the name should concatenate both - because ATs think of this as a single
+    // control and they're only going to read the name.
+    axFileChooser.addNotificationListener((e) => {
+        assert_equals(axFileChooser.name, "cake.png, Choose File");
+        assert_equals(axFileChooser.stringValue, "AXValue: cake.png");
+        t.done();
+    });
+
+    // Simulate dragging a file to the file control.
+    eventSender.beginDragWithFiles(['resources/cake.png']);
+    var centerX = fileChooser.offsetLeft + fileChooser.offsetWidth / 2;
+    var centerY = fileChooser.offsetTop + fileChooser.offsetHeight / 2;
+    eventSender.mouseMoveTo(centerX, centerY);
+    eventSender.mouseUp();
+
+}, "Test that the accessible name of a file control changes when you choose a file.");
+
+</script>
+
+</body>
+</html>

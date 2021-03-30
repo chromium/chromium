@@ -129,7 +129,7 @@ class PrintJobSubmitter {
   scoped_refptr<const extensions::Extension> extension_;
   api::printing::SubmitJobRequest request_;
   std::unique_ptr<printing::PrintSettings> settings_;
-  base::string16 printer_name_;
+  std::u16string printer_name_;
   base::ReadOnlySharedMemoryMapping flattened_pdf_mapping_;
   // This is cleared after the request is handled (successfully or not).
   SubmitJobCallback callback_;

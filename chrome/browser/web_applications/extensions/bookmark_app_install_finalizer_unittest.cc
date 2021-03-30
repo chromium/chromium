@@ -55,6 +55,8 @@ GURL AlternateWebAppUrl() {
 // Do not add tests to this class. Instead, add tests to
 // |InstallFinalizerUnitTest| so that both |InstallFinalizer| implementations
 // are tested.
+// TODO(crbug.com/1068081): Migrate remaining tests to
+// install_finalizer_unittest.
 class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
  public:
   // Subclass that runs a closure when an extension is unpacked successfully.
@@ -82,8 +84,7 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
 
     void SimulateInstallFailed() {
       CrxInstallError error(CrxInstallErrorType::DECLINED,
-                            CrxInstallErrorDetail::INSTALL_NOT_ENABLED,
-                            base::ASCIIToUTF16(""));
+                            CrxInstallErrorDetail::INSTALL_NOT_ENABLED, u"");
       NotifyCrxInstallComplete(error);
     }
     FakeCrxInstaller(const FakeCrxInstaller&) = delete;
@@ -93,7 +94,6 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
     ~FakeCrxInstaller() override = default;
 
     base::RunLoop run_loop_;
-
   };
 
   BookmarkAppInstallFinalizerTest() = default;
@@ -121,7 +121,8 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<web_app::TestOsIntegrationManager>(
             profile(), /*shortcut_manager=*/nullptr,
             /*file_handler_manager=*/nullptr,
-            /*protocol_handler_manager=*/nullptr);
+            /*protocol_handler_manager=*/nullptr,
+            /*url_handler_manager=*/nullptr);
 
     finalizer_ = std::make_unique<BookmarkAppInstallFinalizer>(profile());
     finalizer_->SetSubsystems(registrar_.get(), ui_manager_.get(),
@@ -160,8 +161,9 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
   void SimulateExternalAppUninstalledByUser(const web_app::AppId& app_id) {
     ExtensionRegistry::Get(profile())->RemoveEnabled(app_id);
     auto* extension_prefs = ExtensionPrefs::Get(profile());
-    extension_prefs->OnExtensionUninstalled(app_id, Manifest::EXTERNAL_POLICY,
-                                            false /* external_uninstall */);
+    extension_prefs->OnExtensionUninstalled(
+        app_id, mojom::ManifestLocation::kExternalPolicy,
+        false /* external_uninstall */);
     DCHECK(extension_prefs->IsExternalExtensionUninstalled(app_id));
   }
 
@@ -217,57 +219,6 @@ TEST_F(BookmarkAppInstallFinalizerTest, BasicInstallFails) {
   EXPECT_TRUE(callback_called);
 }
 
-TEST_F(BookmarkAppInstallFinalizerTest, ConcurrentInstallSucceeds) {
-  base::RunLoop run_loop;
-
-  const GURL url1("https://foo1.example");
-  const GURL url2("https://foo2.example");
-
-  bool callback1_called = false;
-  bool callback2_called = false;
-  web_app::InstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
-
-  // Start install finalization for the 1st app
-  {
-    WebApplicationInfo web_application_info;
-    web_application_info.start_url = url1;
-
-    finalizer().FinalizeInstall(
-        web_application_info, options,
-        base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
-                                       web_app::InstallResultCode code) {
-          EXPECT_EQ(web_app::InstallResultCode::kSuccessNewInstall, code);
-          EXPECT_EQ(installed_app_id, web_app::GenerateAppIdFromURL(url1));
-          callback1_called = true;
-          if (callback2_called)
-            run_loop.Quit();
-        }));
-  }
-
-  // Start install finalization for the 2nd app
-  {
-    WebApplicationInfo web_application_info;
-    web_application_info.start_url = url2;
-
-    finalizer().FinalizeInstall(
-        web_application_info, options,
-        base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
-                                       web_app::InstallResultCode code) {
-          EXPECT_EQ(web_app::InstallResultCode::kSuccessNewInstall, code);
-          EXPECT_EQ(installed_app_id, web_app::GenerateAppIdFromURL(url2));
-          callback2_called = true;
-          if (callback1_called)
-            run_loop.Quit();
-        }));
-  }
-
-  run_loop.Run();
-
-  EXPECT_TRUE(callback1_called);
-  EXPECT_TRUE(callback2_called);
-}
-
 TEST_F(BookmarkAppInstallFinalizerTest, DefaultInstalledSucceeds) {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = WebAppUrl();
@@ -287,7 +238,8 @@ TEST_F(BookmarkAppInstallFinalizerTest, DefaultInstalledSucceeds) {
             ExtensionRegistry::Get(profile())->GetInstalledExtension(
                 installed_app_id);
         EXPECT_TRUE(Manifest::IsExternalLocation(extension->location()));
-        EXPECT_EQ(Manifest::EXTERNAL_PREF_DOWNLOAD, extension->location());
+        EXPECT_EQ(mojom::ManifestLocation::kExternalPrefDownload,
+                  extension->location());
         EXPECT_TRUE(extension->was_installed_by_default());
 
         run_loop.Quit();
@@ -339,7 +291,8 @@ TEST_F(BookmarkAppInstallFinalizerTest, NoNetworkInstallForArc) {
             ExtensionRegistry::Get(profile())->GetInstalledExtension(
                 installed_app_id);
         EXPECT_TRUE(Manifest::IsExternalLocation(extension->location()));
-        EXPECT_EQ(Manifest::EXTERNAL_PREF_DOWNLOAD, extension->location());
+        EXPECT_EQ(mojom::ManifestLocation::kExternalPrefDownload,
+                  extension->location());
 
         run_loop.Quit();
       }));

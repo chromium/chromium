@@ -40,7 +40,7 @@ namespace {
 // will have to be bumped.
 
 // The SSV format version whose encoding hole is (ab)used for wrapping.
-const static uint8_t kRequiresProcessingSSVPseudoVersion = 17;
+static const uint8_t kRequiresProcessingSSVPseudoVersion = 17;
 
 // SSV processing command replacing the SSV data bytes with a Blob's contents.
 //
@@ -50,7 +50,7 @@ const static uint8_t kRequiresProcessingSSVPseudoVersion = 17;
 // 4) varint - Blob size
 // 5) varint - the offset of the SSV-wrapping Blob in the IDBValue list of Blobs
 //             (should always be the last Blob)
-const static uint8_t kReplaceWithBlob = 1;
+static const uint8_t kReplaceWithBlob = 1;
 
 }  // namespace
 

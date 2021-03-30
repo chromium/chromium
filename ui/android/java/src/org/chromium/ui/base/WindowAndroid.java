@@ -171,6 +171,11 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
          * Called when the activity goes into resumed state.
          */
         void onActivityResumed();
+
+        /**
+         * Called when the activity goes into destroyed state.
+         */
+        void onActivityDestroyed();
     }
 
     private ObserverList<ActivityStateObserver> mActivityStateObservers = new ObserverList<>();
@@ -202,15 +207,15 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
             new ObserverList<>();
 
     /**
-     * @param context The application context.
+     * @param context The application {@link Context}.
      */
     public WindowAndroid(Context context) {
         this(context, DisplayAndroid.getNonMultiDisplay(context));
     }
 
     /**
-     * @param context The application context.
-     * @param display
+     * @param context The application {@link Context}.
+     * @param display The application {@link DisplayAndroid}.
      */
     @SuppressLint("UseSparseArrays")
     protected WindowAndroid(Context context, DisplayAndroid display) {
@@ -371,7 +376,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      */
     @CalledByNative
     @Override
-    public final boolean hasPermission(String permission) {
+    public boolean hasPermission(String permission) {
         if (mPermissionDelegate != null) return mPermissionDelegate.hasPermission(permission);
 
         return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
@@ -393,7 +398,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      */
     @CalledByNative
     @Override
-    public final boolean canRequestPermission(String permission) {
+    public boolean canRequestPermission(String permission) {
         if (mPermissionDelegate != null) {
             return mPermissionDelegate.canRequestPermission(permission);
         }
@@ -412,7 +417,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      * @return Whether the permission is revoked by policy and the user has no ability to change it.
      */
     @Override
-    public final boolean isPermissionRevokedByPolicy(String permission) {
+    public boolean isPermissionRevokedByPolicy(String permission) {
         if (mPermissionDelegate != null) {
             return mPermissionDelegate.isPermissionRevokedByPolicy(permission);
         }
@@ -430,7 +435,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      * @param callback The callback to be notified whether the permissions were granted.
      */
     @Override
-    public final void requestPermissions(String[] permissions, PermissionCallback callback) {
+    public void requestPermissions(String[] permissions, PermissionCallback callback) {
         if (mPermissionDelegate != null) {
             mPermissionDelegate.requestPermissions(permissions, callback);
             return;
@@ -567,6 +572,12 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     protected void onActivityResumed() {
         for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityResumed();
+    }
+
+    protected void onActivityDestroyed() {
+        for (ActivityStateObserver observer : mActivityStateObservers) {
+            observer.onActivityDestroyed();
+        }
     }
 
     /**

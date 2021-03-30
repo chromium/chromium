@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -40,6 +41,7 @@
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/events/keyboard_layout_util.h"
 
 namespace chromeos {
 namespace settings {
@@ -196,18 +198,18 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kFullscreenMagnifier}},
-      {IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_FOCUS_FOLLOWING,
-       mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kFullscreenMagnifierFocusFollowing}},
       {IDS_OS_SETTINGS_TAG_A11Y_ENABLE_SWITCH_ACCESS,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kEnableSwitchAccess}},
+      {IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR,
+       mojom::kManageAccessibilitySubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kEnableCursorColor}},
   });
   return *tags;
 }
@@ -300,23 +302,24 @@ const std::vector<SearchConcept>& GetA11yLabelsSearchConcepts() {
 const std::vector<SearchConcept>& GetA11yLiveCaptionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION,
-       mojom::kManageAccessibilitySubpagePath,
+       mojom::kCaptionsSubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kLiveCaptions}},
+       {.setting = mojom::Setting::kLiveCaption}},
   });
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetA11yCursorColorSearchConcepts() {
+const std::vector<SearchConcept>&
+GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR,
+      {IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_FOCUS_FOLLOWING,
        mojom::kManageAccessibilitySubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kEnableCursorColor}},
+       {.setting = mojom::Setting::kFullscreenMagnifierFocusFollowing}},
   });
   return *tags;
 }
@@ -326,17 +329,31 @@ bool AreExperimentalA11yLabelsAllowed() {
       ::features::kExperimentalAccessibilityLabels);
 }
 
-bool AreLiveCaptionsAllowed() {
+bool IsLiveCaptionEnabled() {
   return base::FeatureList::IsEnabled(media::kLiveCaption);
 }
 
-bool IsCursorColorAllowed() {
-  return features::IsAccessibilityCursorColorEnabled();
+bool IsMagnifierPanningImprovementsEnabled() {
+  return features::IsMagnifierPanningImprovementsEnabled();
+}
+
+bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
+  return features::IsMagnifierContinuousMouseFollowingModeSettingEnabled();
 }
 
 bool IsSwitchAccessTextAllowed() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
+}
+
+bool IsSwitchAccessPointScanningEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableSwitchAccessPointScanning);
+}
+
+bool IsSwitchAccessSetupGuideAllowed() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableExperimentalAccessibilitySwitchAccessSetupGuide);
 }
 
 bool AreTabletNavigationButtonsAllowed() {
@@ -365,6 +382,10 @@ AccessibilitySection::AccessibilitySection(
                           base::Unretained(this)));
   pref_change_registrar_.Add(
       ash::prefs::kAccessibilitySwitchAccessAutoScanEnabled,
+      base::BindRepeating(&AccessibilitySection::UpdateSearchTags,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      ash::prefs::kAccessibilityScreenMagnifierEnabled,
       base::BindRepeating(&AccessibilitySection::UpdateSearchTags,
                           base::Unretained(this)));
 
@@ -425,9 +446,18 @@ void AccessibilitySection::AddLoadTimeData(
       {"chromeVoxLabel", IDS_SETTINGS_CHROMEVOX_LABEL},
       {"chromeVoxOptionsLabel", IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL},
       {"screenMagnifierLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL},
+      {"screenMagnifierHintLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_HINT_LABEL},
+      {"screenMagnifierMouseFollowingModeContinuous",
+       IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CONTINUOUS},
+      {"screenMagnifierMouseFollowingModeCentered",
+       IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CENTERED},
+      {"screenMagnifierMouseFollowingModeEdge",
+       IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_EDGE},
       {"screenMagnifierFocusFollowingLabel",
        IDS_SETTINGS_SCREEN_MAGNIFIER_FOCUS_FOLLOWING_LABEL},
       {"screenMagnifierZoomLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_LABEL},
+      {"screenMagnifierZoomHintLabel",
+       IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_HINT_LABEL},
       {"dockedMagnifierLabel", IDS_SETTINGS_DOCKED_MAGNIFIER_LABEL},
       {"dockedMagnifierZoomLabel", IDS_SETTINGS_DOCKED_MAGNIFIER_ZOOM_LABEL},
       {"screenMagnifierZoom2x", IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_2_X},
@@ -494,6 +524,8 @@ void AccessibilitySection::AddLoadTimeData(
       {"manageSwitchAccessSettings",
        IDS_SETTINGS_MANAGE_SWITCH_ACCESS_SETTINGS},
       {"switchAssignmentHeading", IDS_SETTINGS_SWITCH_ASSIGNMENT_HEADING},
+      {"switchAccessSetupGuideLabel",
+       IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_LABEL},
       {"assignSwitchSubLabel0Switches",
        IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_0_SWITCHES},
       {"assignSwitchSubLabel1Switch",
@@ -509,6 +541,14 @@ void AccessibilitySection::AddLoadTimeData(
       {"assignSelectSwitchLabel", IDS_SETTINGS_ASSIGN_SELECT_SWITCH_LABEL},
       {"assignNextSwitchLabel", IDS_SETTINGS_ASSIGN_NEXT_SWITCH_LABEL},
       {"assignPreviousSwitchLabel", IDS_SETTINGS_ASSIGN_PREVIOUS_SWITCH_LABEL},
+      {"switchAccessInternalDeviceTypeLabel",
+       IDS_SETTINGS_SWITCH_ACCESS_INTERNAL_DEVICE_TYPE_LABEL},
+      {"switchAccessUsbDeviceTypeLabel",
+       IDS_SETTINGS_SWITCH_ACCESS_USB_DEVICE_TYPE_LABEL},
+      {"switchAccessBluetoothDeviceTypeLabel",
+       IDS_SETTINGS_SWITCH_ACCESS_BLUETOOTH_DEVICE_TYPE_LABEL},
+      {"switchAccessUnknownDeviceTypeLabel",
+       IDS_SETTINGS_SWITCH_ACCESS_UNKNOWN_DEVICE_TYPE_LABEL},
       {"switchAccessActionAssignmentDialogAssignedIconLabel",
        IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_ASSIGNED_ICON_LABEL},
       {"switchAccessActionAssignmentDialogAddAssignmentIconLabel",
@@ -535,9 +575,17 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_CONFIRMATION_REMOVAL_PROMPT},
       {"switchAccessActionAssignmentDialogWarnCannotRemoveLastSelectSwitch",
        IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH},
+      {"switchAndDeviceType", IDS_SETTINGS_SWITCH_AND_DEVICE_TYPE},
       {"noSwitchesAssigned", IDS_SETTINGS_NO_SWITCHES_ASSIGNED},
-      {"switchAccessActionAssignmentDialogExit",
-       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_EXIT},
+      {"switchAccessDialogExit", IDS_SETTINGS_SWITCH_ACCESS_DIALOG_EXIT},
+      {"switchAccessSetupIntroTitle",
+       IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_TITLE},
+      {"switchAccessSetupIntroBody",
+       IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_BODY},
+      {"switchAccessSetupPairBluetooth",
+       IDS_SETTINGS_SWITCH_ACCESS_SETUP_PAIR_BLUETOOTH},
+      {"switchAccessSetupNext", IDS_SETTINGS_SWITCH_ACCESS_SETUP_NEXT},
+      {"switchAccessSetupPrevious", IDS_SETTINGS_SWITCH_ACCESS_SETUP_PREVIOUS},
       {"switchAccessAutoScanHeading",
        IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_HEADING},
       {"switchAccessAutoScanLabel", IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_LABEL},
@@ -545,6 +593,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_SPEED_LABEL},
       {"switchAccessAutoScanKeyboardSpeedLabel",
        IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD_SPEED_LABEL},
+      {"switchAccessPointScanSpeedLabel",
+       IDS_SETTINGS_SWITCH_ACCESS_POINT_SCAN_SPEED_LABEL},
       {"durationInSeconds", IDS_SETTINGS_DURATION_IN_SECONDS},
       {"manageAccessibilityFeatures",
        IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES},
@@ -614,7 +664,12 @@ void AccessibilitySection::AddLoadTimeData(
       {"caretBrowsingSubtitle", IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE},
       {"cancel", IDS_CANCEL},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddLocalizedString("screenMagnifierHintSearchKey",
+                                  ui::DeviceUsesKeyboardLayout2()
+                                      ? IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER
+                                      : IDS_SETTINGS_KEYBOARD_KEY_SEARCH);
 
   html_source->AddString("a11yLearnMoreUrl",
                          chrome::kChromeAccessibilityHelpURL);
@@ -622,6 +677,12 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",
       IsSwitchAccessTextAllowed());
+
+  html_source->AddBoolean("isSwitchAccessPointScanningEnabled",
+                          IsSwitchAccessPointScanningEnabled());
+
+  html_source->AddBoolean("showSwitchAccessSetupGuide",
+                          IsSwitchAccessSetupGuideAllowed());
 
   html_source->AddBoolean("showExperimentalA11yLabels",
                           AreExperimentalA11yLabelsAllowed());
@@ -632,8 +693,12 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
 
-  html_source->AddBoolean("showExperimentalAccessibilityCursorColor",
-                          IsCursorColorAllowed());
+  html_source->AddBoolean("isMagnifierPanningImprovementsEnabled",
+                          IsMagnifierPanningImprovementsEnabled());
+
+  html_source->AddBoolean(
+      "isMagnifierContinuousMouseFollowingModeSettingEnabled",
+      IsMagnifierContinuousMouseFollowingModeSettingEnabled());
 
   ::settings::AddCaptionSubpageStrings(html_source);
 }
@@ -669,12 +734,18 @@ std::string AccessibilitySection::GetSectionPath() const {
 bool AccessibilitySection::LogMetric(mojom::Setting setting,
                                      base::Value& value) const {
   // TODO(accessibility): Ensure to capture metrics for Switch Access's action
-  // idalog on detach.
+  // dialog on detach.
   switch (setting) {
     case mojom::Setting::kFullscreenMagnifierFocusFollowing:
       base::UmaHistogramBoolean(
           "ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing",
           value.GetBool());
+      return true;
+    case mojom::Setting::kFullscreenMagnifierMouseFollowingMode:
+      base::UmaHistogramEnumeration(
+          "ChromeOS.Settings.Accessibility."
+          "FullscreenMagnifierMouseFollowingMode",
+          static_cast<ash::MagnifierMouseFollowingMode>(value.GetInt()));
       return true;
 
     default:
@@ -700,6 +771,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kHighContrastMode,
       mojom::Setting::kFullscreenMagnifier,
       mojom::Setting::kFullscreenMagnifierFocusFollowing,
+      mojom::Setting::kFullscreenMagnifierMouseFollowingMode,
       mojom::Setting::kDockedMagnifier,
       mojom::Setting::kStickyKeys,
       mojom::Setting::kOnScreenKeyboard,
@@ -713,7 +785,6 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kTabletNavigationButtons,
       mojom::Setting::kMonoAudio,
       mojom::Setting::kStartupSound,
-      mojom::Setting::kLiveCaptions,
       mojom::Setting::kEnableCursorColor,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
@@ -751,6 +822,11 @@ void AccessibilitySection::RegisterHierarchy(
       IDS_SETTINGS_CAPTIONS, mojom::Subpage::kCaptions,
       mojom::SearchResultIcon::kA11y, mojom::SearchResultDefaultRank::kMedium,
       mojom::kCaptionsSubpagePath);
+  static constexpr mojom::Setting kCaptionsSettings[] = {
+      mojom::Setting::kLiveCaption,
+  };
+  RegisterNestedSettingBulk(mojom::Subpage::kCaptions, kCaptionsSettings,
+                            generator);
 }
 
 void AccessibilitySection::OnVoicesChanged() {
@@ -810,16 +886,20 @@ void AccessibilitySection::UpdateSearchTags() {
   updater.RemoveSearchTags(GetA11ySwitchAccessOnSearchConcepts());
   updater.RemoveSearchTags(GetA11ySwitchAccessKeyboardSearchConcepts());
 
-  if (AreLiveCaptionsAllowed()) {
+  if (IsLiveCaptionEnabled()) {
     updater.AddSearchTags(GetA11yLiveCaptionSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetA11yLiveCaptionSearchConcepts());
   }
 
-  if (IsCursorColorAllowed()) {
-    updater.AddSearchTags(GetA11yCursorColorSearchConcepts());
+  if (IsMagnifierPanningImprovementsEnabled() &&
+      pref_service_->GetBoolean(
+          ash::prefs::kAccessibilityScreenMagnifierEnabled)) {
+    updater.AddSearchTags(
+        GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
   } else {
-    updater.RemoveSearchTags(GetA11yCursorColorSearchConcepts());
+    updater.RemoveSearchTags(
+        GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(

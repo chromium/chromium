@@ -7,46 +7,52 @@
 #include <string.h>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 
 // Conversion table from code page 437 to Unicode.
-// Index is code at CP437 and value is Unicode code point.
 // Based on ftp://www.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/PC/CP437.TXT
-const base::char16 kCp437ToUnicodeTable[256] = {
-    0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 0x0008,
-    0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 0x0010, 0x0011,
-    0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 0x0018, 0x0019, 0x001a,
-    0x001b, 0x001c, 0x001d, 0x001e, 0x001f, 0x0020, 0x0021, 0x0022, 0x0023,
-    0x0024, 0x0025, 0x0026, 0x0027, 0x0028, 0x0029, 0x002a, 0x002b, 0x002c,
-    0x002d, 0x002e, 0x002f, 0x0030, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035,
-    0x0036, 0x0037, 0x0038, 0x0039, 0x003a, 0x003b, 0x003c, 0x003d, 0x003e,
-    0x003f, 0x0040, 0x0041, 0x0042, 0x0043, 0x0044, 0x0045, 0x0046, 0x0047,
-    0x0048, 0x0049, 0x004a, 0x004b, 0x004c, 0x004d, 0x004e, 0x004f, 0x0050,
-    0x0051, 0x0052, 0x0053, 0x0054, 0x0055, 0x0056, 0x0057, 0x0058, 0x0059,
-    0x005a, 0x005b, 0x005c, 0x005d, 0x005e, 0x005f, 0x0060, 0x0061, 0x0062,
-    0x0063, 0x0064, 0x0065, 0x0066, 0x0067, 0x0068, 0x0069, 0x006a, 0x006b,
-    0x006c, 0x006d, 0x006e, 0x006f, 0x0070, 0x0071, 0x0072, 0x0073, 0x0074,
-    0x0075, 0x0076, 0x0077, 0x0078, 0x0079, 0x007a, 0x007b, 0x007c, 0x007d,
-    0x007e, 0x007f, 0x00c7, 0x00fc, 0x00e9, 0x00e2, 0x00e4, 0x00e0, 0x00e5,
-    0x00e7, 0x00ea, 0x00eb, 0x00e8, 0x00ef, 0x00ee, 0x00ec, 0x00c4, 0x00c5,
-    0x00c9, 0x00e6, 0x00c6, 0x00f4, 0x00f6, 0x00f2, 0x00fb, 0x00f9, 0x00ff,
-    0x00d6, 0x00dc, 0x00a2, 0x00a3, 0x00a5, 0x20a7, 0x0192, 0x00e1, 0x00ed,
-    0x00f3, 0x00fa, 0x00f1, 0x00d1, 0x00aa, 0x00ba, 0x00bf, 0x2310, 0x00ac,
-    0x00bd, 0x00bc, 0x00a1, 0x00ab, 0x00bb, 0x2591, 0x2592, 0x2593, 0x2502,
-    0x2524, 0x2561, 0x2562, 0x2556, 0x2555, 0x2563, 0x2551, 0x2557, 0x255d,
-    0x255c, 0x255b, 0x2510, 0x2514, 0x2534, 0x252c, 0x251c, 0x2500, 0x253c,
-    0x255e, 0x255f, 0x255a, 0x2554, 0x2569, 0x2566, 0x2560, 0x2550, 0x256c,
-    0x2567, 0x2568, 0x2564, 0x2565, 0x2559, 0x2558, 0x2552, 0x2553, 0x256b,
-    0x256a, 0x2518, 0x250c, 0x2588, 0x2584, 0x258c, 0x2590, 0x2580, 0x03b1,
-    0x00df, 0x0393, 0x03c0, 0x03a3, 0x03c3, 0x00b5, 0x03c4, 0x03a6, 0x0398,
-    0x03a9, 0x03b4, 0x221e, 0x03c6, 0x03b5, 0x2229, 0x2261, 0x00b1, 0x2265,
-    0x2264, 0x2320, 0x2321, 0x00f7, 0x2248, 0x00b0, 0x2219, 0x00b7, 0x221a,
-    0x207f, 0x00b2, 0x25a0, 0x00a0,
+const char16_t kCp437ToUnicodeTable[256] = {
+    u'\u0000', u'\u0001', u'\u0002', u'\u0003', u'\u0004', u'\u0005', u'\u0006',
+    u'\u0007', u'\u0008', u'\u0009', u'\u000a', u'\u000b', u'\u000c', u'\u000d',
+    u'\u000e', u'\u000f', u'\u0010', u'\u0011', u'\u0012', u'\u0013', u'\u0014',
+    u'\u0015', u'\u0016', u'\u0017', u'\u0018', u'\u0019', u'\u001a', u'\u001b',
+    u'\u001c', u'\u001d', u'\u001e', u'\u001f', u'\u0020', u'\u0021', u'\u0022',
+    u'\u0023', u'\u0024', u'\u0025', u'\u0026', u'\u0027', u'\u0028', u'\u0029',
+    u'\u002a', u'\u002b', u'\u002c', u'\u002d', u'\u002e', u'\u002f', u'\u0030',
+    u'\u0031', u'\u0032', u'\u0033', u'\u0034', u'\u0035', u'\u0036', u'\u0037',
+    u'\u0038', u'\u0039', u'\u003a', u'\u003b', u'\u003c', u'\u003d', u'\u003e',
+    u'\u003f', u'\u0040', u'\u0041', u'\u0042', u'\u0043', u'\u0044', u'\u0045',
+    u'\u0046', u'\u0047', u'\u0048', u'\u0049', u'\u004a', u'\u004b', u'\u004c',
+    u'\u004d', u'\u004e', u'\u004f', u'\u0050', u'\u0051', u'\u0052', u'\u0053',
+    u'\u0054', u'\u0055', u'\u0056', u'\u0057', u'\u0058', u'\u0059', u'\u005a',
+    u'\u005b', u'\u005c', u'\u005d', u'\u005e', u'\u005f', u'\u0060', u'\u0061',
+    u'\u0062', u'\u0063', u'\u0064', u'\u0065', u'\u0066', u'\u0067', u'\u0068',
+    u'\u0069', u'\u006a', u'\u006b', u'\u006c', u'\u006d', u'\u006e', u'\u006f',
+    u'\u0070', u'\u0071', u'\u0072', u'\u0073', u'\u0074', u'\u0075', u'\u0076',
+    u'\u0077', u'\u0078', u'\u0079', u'\u007a', u'\u007b', u'\u007c', u'\u007d',
+    u'\u007e', u'\u007f', u'\u00c7', u'\u00fc', u'\u00e9', u'\u00e2', u'\u00e4',
+    u'\u00e0', u'\u00e5', u'\u00e7', u'\u00ea', u'\u00eb', u'\u00e8', u'\u00ef',
+    u'\u00ee', u'\u00ec', u'\u00c4', u'\u00c5', u'\u00c9', u'\u00e6', u'\u00c6',
+    u'\u00f4', u'\u00f6', u'\u00f2', u'\u00fb', u'\u00f9', u'\u00ff', u'\u00d6',
+    u'\u00dc', u'\u00a2', u'\u00a3', u'\u00a5', u'\u20a7', u'\u0192', u'\u00e1',
+    u'\u00ed', u'\u00f3', u'\u00fa', u'\u00f1', u'\u00d1', u'\u00aa', u'\u00ba',
+    u'\u00bf', u'\u2310', u'\u00ac', u'\u00bd', u'\u00bc', u'\u00a1', u'\u00ab',
+    u'\u00bb', u'\u2591', u'\u2592', u'\u2593', u'\u2502', u'\u2524', u'\u2561',
+    u'\u2562', u'\u2556', u'\u2555', u'\u2563', u'\u2551', u'\u2557', u'\u255d',
+    u'\u255c', u'\u255b', u'\u2510', u'\u2514', u'\u2534', u'\u252c', u'\u251c',
+    u'\u2500', u'\u253c', u'\u255e', u'\u255f', u'\u255a', u'\u2554', u'\u2569',
+    u'\u2566', u'\u2560', u'\u2550', u'\u256c', u'\u2567', u'\u2568', u'\u2564',
+    u'\u2565', u'\u2559', u'\u2558', u'\u2552', u'\u2553', u'\u256b', u'\u256a',
+    u'\u2518', u'\u250c', u'\u2588', u'\u2584', u'\u258c', u'\u2590', u'\u2580',
+    u'\u03b1', u'\u00df', u'\u0393', u'\u03c0', u'\u03a3', u'\u03c3', u'\u00b5',
+    u'\u03c4', u'\u03a6', u'\u0398', u'\u03a9', u'\u03b4', u'\u221e', u'\u03c6',
+    u'\u03b5', u'\u2229', u'\u2261', u'\u00b1', u'\u2265', u'\u2264', u'\u2320',
+    u'\u2321', u'\u00f7', u'\u2248', u'\u00b0', u'\u2219', u'\u00b7', u'\u221a',
+    u'\u207f', u'\u00b2', u'\u25a0', u'\u00a0',
 };
 
 std::string Cp437ToUtf8(const std::string& source) {
-  base::string16 utf16string;
+  std::u16string utf16string;
   for (size_t i = 0; i < source.length(); i++) {
     utf16string.push_back(kCp437ToUnicodeTable[static_cast<size_t>(
         static_cast<unsigned char>(source.at(i)))]);

@@ -113,6 +113,11 @@ WebDocumentLoader::ExtraData* WebDocumentLoaderImpl::GetExtraData() const {
   return extra_data_.get();
 }
 
+std::unique_ptr<WebDocumentLoader::ExtraData>
+WebDocumentLoaderImpl::TakeExtraData() {
+  return std::move(extra_data_);
+}
+
 void WebDocumentLoaderImpl::SetExtraData(
     std::unique_ptr<ExtraData> extra_data) {
   extra_data_ = std::move(extra_data);
@@ -121,12 +126,12 @@ void WebDocumentLoaderImpl::SetExtraData(
 WebDocumentLoaderImpl::WebDocumentLoaderImpl(
     LocalFrame* frame,
     WebNavigationType navigation_type,
-    ContentSecurityPolicy* content_security_policy,
-    std::unique_ptr<WebNavigationParams> navigation_params)
+    std::unique_ptr<WebNavigationParams> navigation_params,
+    std::unique_ptr<PolicyContainer> policy_container)
     : DocumentLoader(frame,
                      navigation_type,
-                     content_security_policy,
-                     std::move(navigation_params)),
+                     std::move(navigation_params),
+                     std::move(policy_container)),
       response_wrapper_(DocumentLoader::GetResponse()) {}
 
 WebDocumentLoaderImpl::~WebDocumentLoaderImpl() {
@@ -192,8 +197,8 @@ WebArchiveInfo WebDocumentLoaderImpl::GetArchiveInfo() const {
   };
 }
 
-bool WebDocumentLoaderImpl::HadUserGesture() const {
-  return DocumentLoader::HadTransientActivation();
+bool WebDocumentLoaderImpl::LastNavigationHadTransientUserActivation() const {
+  return DocumentLoader::LastNavigationHadTransientUserActivation();
 }
 
 bool WebDocumentLoaderImpl::IsListingFtpDirectory() const {

@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 
-#include "base/strings/string16.h"
 #include "compat/non_win/timezoneapi.h"
 #include "compat/non_win/verrsrc.h"
 #include "compat/non_win/winnt.h"
@@ -134,7 +133,7 @@ struct __attribute__((packed, aligned(4))) MINIDUMP_STRING {
 
   //! \brief The string, encoded in UTF-16, and terminated with a UTF-16 `NUL`
   //!     code unit (two `NUL` bytes).
-  base::char16 Buffer[0];
+  char16_t Buffer[0];
 };
 
 //! \brief Minidump stream type values for MINIDUMP_DIRECTORY::StreamType. Each
@@ -990,7 +989,7 @@ struct __attribute__((packed, aligned(4))) MINIDUMP_MISC_INFO_4
   //!
   //! On Windows 8.1 (NT 6.3), this is “6.3.9600.17031
   //! (winblue_gdr.140221-1952)”.
-  base::char16 BuildString[260];
+  char16_t BuildString[260];
 
   //! \brief The minidump producer’s “build string”, a string identifying the
   //!     module that produced a minidump file.
@@ -999,7 +998,7 @@ struct __attribute__((packed, aligned(4))) MINIDUMP_MISC_INFO_4
   //!
   //! On Windows 8.1 (NT 6.3), this may be “dbghelp.i386,6.3.9600.16520” or
   //! “dbghelp.amd64,6.3.9600.16520” depending on CPU architecture.
-  base::char16 DbgBldStr[40];
+  char16_t DbgBldStr[40];
 };
 
 //! \brief Information about the process that the minidump file contains a

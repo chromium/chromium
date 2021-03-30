@@ -384,18 +384,18 @@ class AutofillProfileComparatorTest
 }  // namespace
 
 TEST_P(AutofillProfileComparatorTest, UniqueTokens) {
-  base::string16 kInput = UTF8ToUTF16("a b a a b");
-  std::vector<base::string16> tokens = {UTF8ToUTF16("a"), UTF8ToUTF16("b")};
+  std::u16string kInput = u"a b a a b";
+  std::vector<std::u16string> tokens = {u"a", u"b"};
   EXPECT_EQ(std::set<base::StringPiece16>(tokens.begin(), tokens.end()),
             comparator_.UniqueTokens(kInput));
 }
 
 TEST_P(AutofillProfileComparatorTest, CompareTokens) {
-  base::string16 kEmptyStr = UTF8ToUTF16("");
-  base::string16 kHello = UTF8ToUTF16("hello");
-  base::string16 kHelloThere = UTF8ToUTF16("hello there");
-  base::string16 kHelloThereAlice = UTF8ToUTF16("hello there alice");
-  base::string16 kHelloThereBob = UTF8ToUTF16("hello there bob");
+  std::u16string kEmptyStr = u"";
+  std::u16string kHello = u"hello";
+  std::u16string kHelloThere = u"hello there";
+  std::u16string kHelloThereAlice = u"hello there alice";
+  std::u16string kHelloThereBob = u"hello there bob";
 
   EXPECT_EQ(AutofillProfileComparator::SAME_TOKENS,
             comparator_.CompareTokens(kHelloThereBob, kHelloThereBob));
@@ -416,178 +416,142 @@ TEST_P(AutofillProfileComparatorTest, CompareTokens) {
 TEST_P(AutofillProfileComparatorTest, Compare) {
   // Checks the empty case.
   EXPECT_TRUE(
-      comparator_.Compare(base::string16(), base::string16(),
+      comparator_.Compare(std::u16string(), std::u16string(),
                           AutofillProfileComparator::RETAIN_WHITESPACE));
   EXPECT_TRUE(
-      comparator_.Compare(base::string16(), base::string16(),
+      comparator_.Compare(std::u16string(), std::u16string(),
                           AutofillProfileComparator::DISCARD_WHITESPACE));
 
   // Checks that leading punctuation and white space are ignored.
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16(".,  -()."), UTF8ToUTF16(""),
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16(".,  -()."), UTF8ToUTF16(""),
-                          AutofillProfileComparator::DISCARD_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u".,  -().", u"", AutofillProfileComparator::RETAIN_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u".,  -().", u"", AutofillProfileComparator::DISCARD_WHITESPACE));
 
   // Checks that trailing punctuation and white space are ignored.
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("a ., "), UTF8ToUTF16("a"),
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("a ., "), UTF8ToUTF16("a"),
-                          AutofillProfileComparator::DISCARD_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"a ., ", u"a", AutofillProfileComparator::RETAIN_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"a ., ", u"a", AutofillProfileComparator::DISCARD_WHITESPACE));
 
   // Checks that embedded punctuation and white space is collapsed to a single
   // white space with RETAIN_WHITESPACE and is ignored with DISCARD_WHITESPACE.
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("a() -  a"), UTF8ToUTF16("a a"),
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("a() -  a"), UTF8ToUTF16("aa"),
-                          AutofillProfileComparator::DISCARD_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"a() -  a", u"a a", AutofillProfileComparator::RETAIN_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"a() -  a", u"aa", AutofillProfileComparator::DISCARD_WHITESPACE));
 
   // Checks that characters such as 'œ' respect the status quo established by
   // NormalizeForComparison.
-  EXPECT_FALSE(comparator_.Compare(UTF8ToUTF16("œil"), UTF8ToUTF16("oeil")));
+  EXPECT_FALSE(comparator_.Compare(u"œil", u"oeil"));
 
   // Checks that a substring of the string is not considered equal.
-  EXPECT_FALSE(comparator_.Compare(UTF8ToUTF16("A"), UTF8ToUTF16("Anna")));
+  EXPECT_FALSE(comparator_.Compare(u"A", u"Anna"));
 
-  EXPECT_FALSE(comparator_.Compare(UTF8ToUTF16("Anna"), UTF8ToUTF16("A")));
+  EXPECT_FALSE(comparator_.Compare(u"Anna", u"A"));
 
   // Checks that Compare behaves like NormalizeForComparison. Also, checks that
   // diacritics are removed.
+  EXPECT_TRUE(comparator_.Compare(
+      u"Timothé", u"timothe", AutofillProfileComparator::RETAIN_WHITESPACE));
   EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("Timothé"), UTF8ToUTF16("timothe"),
+      comparator_.Compare(u" sven-åke ", u"sven ake",
                           AutofillProfileComparator::RETAIN_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"Ç 㸐", u"c 㸐", AutofillProfileComparator::RETAIN_WHITESPACE));
   EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16(" sven-åke "), UTF8ToUTF16("sven ake"),
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("Ç 㸐"), UTF8ToUTF16("c 㸐"),
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("902103214"), UTF8ToUTF16("90210-3214"),
+      comparator_.Compare(u"902103214", u"90210-3214",
                           AutofillProfileComparator::DISCARD_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"Timothé-Noël Étienne Périer", u"timothe noel etienne perier",
+      AutofillProfileComparator::RETAIN_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"1600 Amphitheatre, Pkwy.", u"1600 amphitheatre pkwy",
+      AutofillProfileComparator::RETAIN_WHITESPACE));
   EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("Timothé-Noël Étienne Périer"),
-                          UTF8ToUTF16("timothe noel etienne perier"),
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("1600 Amphitheatre, Pkwy."),
-                          UTF8ToUTF16("1600 amphitheatre pkwy"),
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(base::WideToUTF16(L"Mid\x2013Island\x2003 Plaza"),
-                          UTF8ToUTF16("mid island plaza"),
+      comparator_.Compare(u"Mid\x2013Island\x2003 Plaza", u"mid island plaza",
                           AutofillProfileComparator::RETAIN_WHITESPACE));
   EXPECT_TRUE(
       comparator_.Compare(UTF8ToUTF16("1600 amphitheatre pkwy \n App. 2"),
-                          UTF8ToUTF16("1600 amphitheatre pkwy app 2"),
+                          u"1600 amphitheatre pkwy app 2",
                           AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("まéÖä정"), UTF8ToUTF16("まeoa정"),
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(UTF8ToUTF16("유재석"), UTF8ToUTF16("유 재석"),
-                          AutofillProfileComparator::DISCARD_WHITESPACE));
   EXPECT_TRUE(comparator_.Compare(
-      UTF8ToUTF16("ビルゲイツ"), UTF8ToUTF16("ヒル・ケイツ"),
-      AutofillProfileComparator::DISCARD_WHITESPACE));
+      u"まéÖä정", u"まeoa정", AutofillProfileComparator::RETAIN_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"유재석", u"유 재석", AutofillProfileComparator::DISCARD_WHITESPACE));
+  EXPECT_TRUE(
+      comparator_.Compare(u"ビルゲイツ", u"ヒル・ケイツ",
+                          AutofillProfileComparator::DISCARD_WHITESPACE));
 }
 
 TEST_P(AutofillProfileComparatorTest, NormalizeForComparison) {
-  EXPECT_EQ(UTF8ToUTF16("timothe"),
-            comparator_.NormalizeForComparison(UTF8ToUTF16("Timothé")));
-  EXPECT_EQ(UTF8ToUTF16("sven ake"),
-            comparator_.NormalizeForComparison(UTF8ToUTF16(" sven-åke ")));
-  EXPECT_EQ(UTF8ToUTF16("c 㸐"),
-            comparator_.NormalizeForComparison(UTF8ToUTF16("Ç 㸐")));
-  EXPECT_EQ(UTF8ToUTF16("902103214"),
+  EXPECT_EQ(u"timothe", comparator_.NormalizeForComparison(u"Timothé"));
+  EXPECT_EQ(u"sven ake", comparator_.NormalizeForComparison(u" sven-åke "));
+  EXPECT_EQ(u"c 㸐", comparator_.NormalizeForComparison(u"Ç 㸐"));
+  EXPECT_EQ(u"902103214",
             comparator_.NormalizeForComparison(
-                base::UTF8ToUTF16("90210-3214"),
-                AutofillProfileComparator::DISCARD_WHITESPACE));
-  EXPECT_EQ(UTF8ToUTF16("timothe noel etienne perier"),
-            comparator_.NormalizeForComparison(
-                UTF8ToUTF16("Timothé-Noël Étienne Périer")));
+                u"90210-3214", AutofillProfileComparator::DISCARD_WHITESPACE));
+  EXPECT_EQ(u"timothe noel etienne perier",
+            comparator_.NormalizeForComparison(u"Timothé-Noël Étienne Périer"));
   // NOP.
-  EXPECT_EQ(base::string16(),
-            comparator_.NormalizeForComparison(base::string16()));
+  EXPECT_EQ(std::u16string(),
+            comparator_.NormalizeForComparison(std::u16string()));
 
   // Simple punctuation removed.
-  EXPECT_EQ(UTF8ToUTF16("1600 amphitheatre pkwy"),
-            comparator_.NormalizeForComparison(
-                UTF8ToUTF16("1600 Amphitheatre, Pkwy.")));
+  EXPECT_EQ(u"1600 amphitheatre pkwy",
+            comparator_.NormalizeForComparison(u"1600 Amphitheatre, Pkwy."));
 
   // Unicode punctuation (hyphen and space), multiple spaces collapsed.
-  EXPECT_EQ(UTF8ToUTF16("mid island plaza"),
-            comparator_.NormalizeForComparison(
-                base::WideToUTF16(L"Mid\x2013Island\x2003 Plaza")));
+  EXPECT_EQ(u"mid island plaza",
+            comparator_.NormalizeForComparison(u"Mid\x2013Island\x2003 Plaza"));
 
   // Newline character removed.
-  EXPECT_EQ(UTF8ToUTF16("1600 amphitheatre pkwy app 2"),
+  EXPECT_EQ(u"1600 amphitheatre pkwy app 2",
             comparator_.NormalizeForComparison(
                 UTF8ToUTF16("1600 amphitheatre pkwy \n App. 2")));
 
   // Diacritics removed.
-  EXPECT_EQ(UTF8ToUTF16("まeoa정"),
-            comparator_.NormalizeForComparison(UTF8ToUTF16("まéÖä정")));
+  EXPECT_EQ(u"まeoa정", comparator_.NormalizeForComparison(u"まéÖä정"));
 
   // Spaces removed.
-  EXPECT_EQ(UTF8ToUTF16("유재석"),
+  EXPECT_EQ(u"유재석",
             comparator_.NormalizeForComparison(
-                UTF8ToUTF16("유 재석"),
-                AutofillProfileComparator::DISCARD_WHITESPACE));
+                u"유 재석", AutofillProfileComparator::DISCARD_WHITESPACE));
 
   // Punctuation removed, Japanese kana normalized.
-  EXPECT_EQ(UTF8ToUTF16("ヒルケイツ"),
-            comparator_.NormalizeForComparison(
-                UTF8ToUTF16("ビル・ゲイツ"),
-                AutofillProfileComparator::DISCARD_WHITESPACE));
+  EXPECT_EQ(u"ヒルケイツ", comparator_.NormalizeForComparison(
+                               u"ビル・ゲイツ",
+                               AutofillProfileComparator::DISCARD_WHITESPACE));
 }
 
 TEST_P(AutofillProfileComparatorTest, GetNamePartVariants) {
-  std::set<base::string16> expected_variants = {
-      UTF8ToUTF16("timothe noel"),
-      UTF8ToUTF16("timothe n"),
-      UTF8ToUTF16("timothe"),
-      UTF8ToUTF16("t noel"),
-      UTF8ToUTF16("t n"),
-      UTF8ToUTF16("t"),
-      UTF8ToUTF16("noel"),
-      UTF8ToUTF16("n"),
-      UTF8ToUTF16(""),
-      UTF8ToUTF16("tn"),
+  std::set<std::u16string> expected_variants = {
+      u"timothe noel", u"timothe n", u"timothe", u"t noel", u"t n", u"t",
+      u"noel",         u"n",         u"",        u"tn",
   };
 
   EXPECT_EQ(expected_variants,
-            comparator_.GetNamePartVariants(UTF8ToUTF16("timothe noel")));
+            comparator_.GetNamePartVariants(u"timothe noel"));
 }
 
 TEST_P(AutofillProfileComparatorTest, IsNameVariantOf) {
-  const base::string16 kNormalizedFullName =
-      UTF8ToUTF16("timothe noel etienne perier");
+  const std::u16string kNormalizedFullName = u"timothe noel etienne perier";
 
   EXPECT_TRUE(
       comparator_.IsNameVariantOf(kNormalizedFullName, kNormalizedFullName));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(
-      kNormalizedFullName, UTF8ToUTF16("t noel etienne perier")));
   EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName,
-                                          UTF8ToUTF16("timothe perier")));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName,
-                                          UTF8ToUTF16("t perier")));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName,
-                                          UTF8ToUTF16("noel perier")));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName,
-                                          UTF8ToUTF16("t n etienne perier")));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName,
-                                          UTF8ToUTF16("tn perier")));
-  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName,
-                                          UTF8ToUTF16("te perier")));
+                                          u"t noel etienne perier"));
+  EXPECT_TRUE(
+      comparator_.IsNameVariantOf(kNormalizedFullName, u"timothe perier"));
+  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName, u"t perier"));
+  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName, u"noel perier"));
+  EXPECT_TRUE(
+      comparator_.IsNameVariantOf(kNormalizedFullName, u"t n etienne perier"));
+  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName, u"tn perier"));
+  EXPECT_TRUE(comparator_.IsNameVariantOf(kNormalizedFullName, u"te perier"));
 
-  EXPECT_FALSE(comparator_.IsNameVariantOf(kNormalizedFullName,
-                                           UTF8ToUTF16("etienne noel perier")));
+  EXPECT_FALSE(
+      comparator_.IsNameVariantOf(kNormalizedFullName, u"etienne noel perier"));
 }
 
 TEST_P(AutofillProfileComparatorTest, HaveMergeableNames) {
@@ -730,8 +694,8 @@ TEST_P(AutofillProfileComparatorTest, HaveMergeableAddresses) {
   AutofillProfile empty = CreateProfileWithAddress("", "", "", "", "", "");
   AutofillProfile p1 = CreateProfileWithAddress(
       "1 Some Street", "Unit 3", "Carver", "CA - California", "90210", "US");
-  p1.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, UTF8ToUTF16("Some String"));
-  p1.SetRawInfo(ADDRESS_HOME_SORTING_CODE, UTF8ToUTF16("64205 Biarritz CEDEX"));
+  p1.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Some String");
+  p1.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"64205 Biarritz CEDEX");
 
   AutofillProfile p2 = CreateProfileWithAddress(
       "Unit 3", "1 Some Street", "Suburb", "california", "90 210-3214", "");
@@ -827,25 +791,25 @@ TEST_P(AutofillProfileComparatorTest, MergeStructuredNames_WithPermutation) {
   // The first name has an observed structure.
   NameInfo name1;
   name1.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, UTF8ToUTF16("Thomas"),
+      NAME_FIRST, u"Thomas",
       autofill::structured_address::VerificationStatus::kObserved);
   name1.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, UTF8ToUTF16("A."),
+      NAME_MIDDLE, u"A.",
       autofill::structured_address::VerificationStatus::kObserved);
   name1.SetRawInfoWithVerificationStatus(
-      NAME_LAST, UTF8ToUTF16("Anderson"),
+      NAME_LAST, u"Anderson",
       autofill::structured_address::VerificationStatus::kObserved);
   AutofillProfile profile1 = CreateProfileWithName(name1);
   profile1.FinalizeAfterImport();
 
-  EXPECT_EQ(profile1.GetRawInfo(NAME_FULL), UTF8ToUTF16("Thomas A. Anderson"));
+  EXPECT_EQ(profile1.GetRawInfo(NAME_FULL), u"Thomas A. Anderson");
   EXPECT_EQ(profile1.GetVerificationStatus(NAME_FULL),
             autofill::structured_address::VerificationStatus::kFormatted);
 
   // The second name has an observed full name that uses a custom formatting.
   NameInfo name2;
   name2.SetRawInfoWithVerificationStatus(
-      NAME_FULL, UTF8ToUTF16("Anderson, Thomas A."),
+      NAME_FULL, u"Anderson, Thomas A.",
       autofill::structured_address::VerificationStatus::kObserved);
   AutofillProfile profile2 = CreateProfileWithName(name2);
   profile2.FinalizeAfterImport();
@@ -855,57 +819,56 @@ TEST_P(AutofillProfileComparatorTest, MergeStructuredNames_WithPermutation) {
 
   // The merged name should maintain the structure but use the observation of
   // the custom-formatted full name.
-  EXPECT_EQ(merged_name.GetRawInfo(NAME_FULL),
-            UTF8ToUTF16("Anderson, Thomas A."));
+  EXPECT_EQ(merged_name.GetRawInfo(NAME_FULL), u"Anderson, Thomas A.");
   EXPECT_EQ(merged_name.GetVerificationStatus(NAME_FULL),
             autofill::structured_address::VerificationStatus::kObserved);
-  EXPECT_EQ(merged_name.GetRawInfo(NAME_FIRST), UTF8ToUTF16("Thomas"));
+  EXPECT_EQ(merged_name.GetRawInfo(NAME_FIRST), u"Thomas");
   EXPECT_EQ(merged_name.GetVerificationStatus(NAME_FIRST),
             autofill::structured_address::VerificationStatus::kObserved);
-  EXPECT_EQ(merged_name.GetRawInfo(NAME_MIDDLE), UTF8ToUTF16("A."));
+  EXPECT_EQ(merged_name.GetRawInfo(NAME_MIDDLE), u"A.");
   EXPECT_EQ(merged_name.GetVerificationStatus(NAME_MIDDLE),
             autofill::structured_address::VerificationStatus::kObserved);
-  EXPECT_EQ(merged_name.GetRawInfo(NAME_LAST), UTF8ToUTF16("Anderson"));
+  EXPECT_EQ(merged_name.GetRawInfo(NAME_LAST), u"Anderson");
   EXPECT_EQ(merged_name.GetVerificationStatus(NAME_LAST),
             autofill::structured_address::VerificationStatus::kObserved);
 }
 
 TEST_P(AutofillProfileComparatorTest, MergeNames) {
   NameInfo name1;
-  name1.SetRawInfo(NAME_FULL, UTF8ToUTF16("John Quincy Public"));
-  name1.SetRawInfo(NAME_FIRST, UTF8ToUTF16("John"));
-  name1.SetRawInfo(NAME_MIDDLE, UTF8ToUTF16("Quincy"));
-  name1.SetRawInfo(NAME_LAST, UTF8ToUTF16("Public"));
+  name1.SetRawInfo(NAME_FULL, u"John Quincy Public");
+  name1.SetRawInfo(NAME_FIRST, u"John");
+  name1.SetRawInfo(NAME_MIDDLE, u"Quincy");
+  name1.SetRawInfo(NAME_LAST, u"Public");
   name1.FinalizeAfterImport();
 
   NameInfo name2;
-  name2.SetRawInfo(NAME_FULL, UTF8ToUTF16("John Q. Public"));
-  name2.SetRawInfo(NAME_FIRST, UTF8ToUTF16("John"));
-  name2.SetRawInfo(NAME_MIDDLE, UTF8ToUTF16("Q."));
-  name2.SetRawInfo(NAME_LAST, UTF8ToUTF16("Public"));
+  name2.SetRawInfo(NAME_FULL, u"John Q. Public");
+  name2.SetRawInfo(NAME_FIRST, u"John");
+  name2.SetRawInfo(NAME_MIDDLE, u"Q.");
+  name2.SetRawInfo(NAME_LAST, u"Public");
   name2.FinalizeAfterImport();
 
   NameInfo name3;
-  name3.SetRawInfo(NAME_FULL, UTF8ToUTF16("J Public"));
-  name3.SetRawInfo(NAME_FIRST, UTF8ToUTF16("J"));
-  name3.SetRawInfo(NAME_MIDDLE, UTF8ToUTF16(""));
-  name3.SetRawInfo(NAME_LAST, UTF8ToUTF16("Public"));
+  name3.SetRawInfo(NAME_FULL, u"J Public");
+  name3.SetRawInfo(NAME_FIRST, u"J");
+  name3.SetRawInfo(NAME_MIDDLE, u"");
+  name3.SetRawInfo(NAME_LAST, u"Public");
   name3.FinalizeAfterImport();
 
   NameInfo name4;
-  name4.SetRawInfo(NAME_FULL, UTF8ToUTF16("John Quincy Public"));
+  name4.SetRawInfo(NAME_FULL, u"John Quincy Public");
   name4.FinalizeAfterImport();
 
   NameInfo name5;
-  name5.SetRawInfo(NAME_FIRST, UTF8ToUTF16("John"));
-  name5.SetRawInfo(NAME_LAST, UTF8ToUTF16("Public"));
+  name5.SetRawInfo(NAME_FIRST, u"John");
+  name5.SetRawInfo(NAME_LAST, u"Public");
   name5.FinalizeAfterImport();
 
   NameInfo synthesized;
-  synthesized.SetRawInfo(NAME_FULL, UTF8ToUTF16("John Public"));
-  synthesized.SetRawInfo(NAME_FIRST, UTF8ToUTF16("John"));
-  synthesized.SetRawInfo(NAME_MIDDLE, UTF8ToUTF16(""));
-  synthesized.SetRawInfo(NAME_LAST, UTF8ToUTF16("Public"));
+  synthesized.SetRawInfo(NAME_FULL, u"John Public");
+  synthesized.SetRawInfo(NAME_FIRST, u"John");
+  synthesized.SetRawInfo(NAME_MIDDLE, u"");
+  synthesized.SetRawInfo(NAME_LAST, u"Public");
   synthesized.FinalizeAfterImport();
 
   AutofillProfile p1 = CreateProfileWithName(name1);
@@ -1166,7 +1129,7 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
 }
 
 TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_Intl) {
-  const base::string16 kGermany = UTF8ToUTF16("DE");
+  const std::u16string kGermany = u"DE";
   const AutofillType kCountry(ADDRESS_HOME_COUNTRY);
 
   static const char kPhoneA[] = "+49492180185611";
@@ -1215,17 +1178,16 @@ TEST_P(AutofillProfileComparatorTest, MergeAddresses) {
       "1 Some Street #3", "", "Carver City", "ca", "90210-1234", "us");
 
   Address expected;
-  expected.SetRawInfo(ADDRESS_HOME_LINE1, UTF8ToUTF16("1 Some Street"));
-  expected.SetRawInfo(ADDRESS_HOME_LINE2, UTF8ToUTF16("Unit 3"));
-  expected.SetRawInfo(ADDRESS_HOME_CITY, UTF8ToUTF16("Carver City"));
-  expected.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16("ca"));
-  expected.SetRawInfo(ADDRESS_HOME_ZIP, UTF8ToUTF16("90210-1234"));
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("US"));
+  expected.SetRawInfo(ADDRESS_HOME_LINE1, u"1 Some Street");
+  expected.SetRawInfo(ADDRESS_HOME_LINE2, u"Unit 3");
+  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Carver City");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"ca");
+  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"90210-1234");
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   if (autofill::structured_address::StructuredAddressesEnabled()) {
-    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, UTF8ToUTF16("1"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                        UTF8ToUTF16("Some Street"));
+    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"1");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"Some Street");
   }
 
   MergeAddressesAndExpect(p1, p2, expected,
@@ -1236,51 +1198,41 @@ TEST_P(AutofillProfileComparatorTest, MergeAddressesMostUniqueTokens) {
   AutofillProfile p1 = CreateProfileWithAddress(
       "1 Some Street", "Unit 3", "Carver", "CA - California", "90210", "US");
 
-  p1.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                base::UTF8ToUTF16("Some Street"));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                base::UTF8ToUTF16(""));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, base::UTF8ToUTF16(""));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, base::UTF8ToUTF16(""));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, base::UTF8ToUTF16("Unit 3"));
+  p1.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"Some Street");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME, u"");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Unit 3");
 
   AutofillProfile p2 = CreateProfileWithAddress(
       "1 Some Other Street", "Unit 3", "Carver City", "ca", "90210-1234", "us");
 
   p2.set_use_date(p1.use_date() + base::TimeDelta::FromMinutes(1));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                base::UTF8ToUTF16("Some Other Street"));
+  p2.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"Some Other Street");
   p2.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                base::UTF8ToUTF16("DependentStreetName2"));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER,
-                base::UTF8ToUTF16("HouseNumber2"));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME,
-                base::UTF8ToUTF16("PremiseName2"));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE,
-                base::UTF8ToUTF16("Subpremise2"));
+                u"DependentStreetName2");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName2");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
 
   Address expected;
-  expected.SetRawInfo(ADDRESS_HOME_LINE1, UTF8ToUTF16("1 Some Other Street"));
-  expected.SetRawInfo(ADDRESS_HOME_LINE2, UTF8ToUTF16("Unit 3"));
-  expected.SetRawInfo(ADDRESS_HOME_CITY, UTF8ToUTF16("Carver City"));
-  expected.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16("ca"));
-  expected.SetRawInfo(ADDRESS_HOME_ZIP, UTF8ToUTF16("90210-1234"));
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("US"));
+  expected.SetRawInfo(ADDRESS_HOME_LINE1, u"1 Some Other Street");
+  expected.SetRawInfo(ADDRESS_HOME_LINE2, u"Unit 3");
+  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Carver City");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"ca");
+  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"90210-1234");
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
   // If address enhancement votes are enabled, it is expecfted that the
   // substructure from p2 since it is a superset of p1.
   // Otherwise the fields are expected to be empty after the merge process.
   if (AddressEnhancementVotes()) {
-    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                        base::UTF8ToUTF16("StreetName2"));
+    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName2");
     expected.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                        base::UTF8ToUTF16("DependentStreetName2"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER,
-                        base::UTF8ToUTF16("HouseNumber2"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME,
-                        base::UTF8ToUTF16("PremiseName2"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE,
-                        base::UTF8ToUTF16("Subpremise2"));
+                        u"DependentStreetName2");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName2");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
   }
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
@@ -1290,53 +1242,41 @@ TEST_P(AutofillProfileComparatorTest, MergeAddressesWithStructure) {
   AutofillProfile p1 = CreateProfileWithAddress(
       "6543 CH BACON", "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "ca");
 
-  p1.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                base::UTF8ToUTF16("StreetName"));
+  p1.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName");
   p1.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                base::UTF8ToUTF16("DependentStreetName"));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER,
-                base::UTF8ToUTF16("HouseNumber"));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME,
-                base::UTF8ToUTF16("PremiseName"));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE,
-                base::UTF8ToUTF16("Subpremise"));
+                u"DependentStreetName");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise");
 
   AutofillProfile p2 = CreateProfileWithAddress(
       "6543, Bacon Rd", "", "Montreal", "QC", "hhh 999", "CA");
   p2.set_use_date(p1.use_date() + base::TimeDelta::FromMinutes(1));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                base::UTF8ToUTF16("StreetName2"));
+  p2.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName2");
   p2.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                base::UTF8ToUTF16("DependentStreetName2"));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER,
-                base::UTF8ToUTF16("HouseNumber2"));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME,
-                base::UTF8ToUTF16("PremiseName2"));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE,
-                base::UTF8ToUTF16("Subpremise2"));
+                u"DependentStreetName2");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName2");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
 
   Address expected;
-  expected.SetRawInfo(ADDRESS_HOME_LINE1, UTF8ToUTF16("6543 CH BACON"));
-  expected.SetRawInfo(ADDRESS_HOME_LINE2, UTF8ToUTF16("APP 3"));
-  expected.SetRawInfo(ADDRESS_HOME_CITY, UTF8ToUTF16("Montreal"));
-  expected.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16("QC"));
-  expected.SetRawInfo(ADDRESS_HOME_ZIP, UTF8ToUTF16("hhh 999"));
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("CA"));
+  expected.SetRawInfo(ADDRESS_HOME_LINE1, u"6543 CH BACON");
+  expected.SetRawInfo(ADDRESS_HOME_LINE2, u"APP 3");
+  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Montreal");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
+  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"hhh 999");
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
 
   // If address enhancement votes are enabled, it is expecfted that the
   // substructure from p1 is used since it is most recent.
   // Otherwise the fields are expected to be empty after the merge process.
   if (AddressEnhancementVotes()) {
-    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                        base::UTF8ToUTF16("StreetName"));
+    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName");
     expected.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                        base::UTF8ToUTF16("DependentStreetName"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER,
-                        base::UTF8ToUTF16("HouseNumber"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME,
-                        base::UTF8ToUTF16("PremiseName"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE,
-                        base::UTF8ToUTF16("Subpremise"));
+                        u"DependentStreetName");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise");
   }
 
   MergeAddressesAndExpect(p1, p2, expected);
@@ -1347,53 +1287,41 @@ TEST_P(AutofillProfileComparatorTest, MergeAddressesWithRewrite) {
   AutofillProfile p1 = CreateProfileWithAddress(
       "6543 CH BACON", "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "ca");
 
-  p1.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                base::UTF8ToUTF16("StreetName"));
+  p1.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName");
   p1.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                base::UTF8ToUTF16("DependentStreetName"));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER,
-                base::UTF8ToUTF16("HouseNumber"));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME,
-                base::UTF8ToUTF16("PremiseName"));
-  p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE,
-                base::UTF8ToUTF16("Subpremise"));
+                u"DependentStreetName");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName");
+  p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise");
 
   AutofillProfile p2 = CreateProfileWithAddress(
       "6543, Bacon Rd", "", "Montreal", "QC", "hhh 999", "CA");
-  p2.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                base::UTF8ToUTF16("StreetName2"));
+  p2.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName2");
   p2.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                base::UTF8ToUTF16("DependentStreetName2"));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER,
-                base::UTF8ToUTF16("HouseNumber2"));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME,
-                base::UTF8ToUTF16("PremiseName2"));
-  p2.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE,
-                base::UTF8ToUTF16("Subpremise2"));
+                u"DependentStreetName2");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName2");
+  p2.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
 
   p2.set_use_date(p1.use_date() + base::TimeDelta::FromMinutes(1));
 
   Address expected;
-  expected.SetRawInfo(ADDRESS_HOME_LINE1, UTF8ToUTF16("6543 CH BACON"));
-  expected.SetRawInfo(ADDRESS_HOME_LINE2, UTF8ToUTF16("APP 3"));
-  expected.SetRawInfo(ADDRESS_HOME_CITY, UTF8ToUTF16("Montreal"));
-  expected.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16("QC"));
-  expected.SetRawInfo(ADDRESS_HOME_ZIP, UTF8ToUTF16("hhh 999"));
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("CA"));
+  expected.SetRawInfo(ADDRESS_HOME_LINE1, u"6543 CH BACON");
+  expected.SetRawInfo(ADDRESS_HOME_LINE2, u"APP 3");
+  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Montreal");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
+  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"hhh 999");
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
 
   // If address enhancement votes are enabled, it is expecfted that the
   // substructure from p1 is used since it has more tokens.
   if (AddressEnhancementVotes()) {
-    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME,
-                        base::UTF8ToUTF16("StreetName"));
+    expected.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"StreetName");
     expected.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                        base::UTF8ToUTF16("DependentStreetName"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER,
-                        base::UTF8ToUTF16("HouseNumber"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME,
-                        base::UTF8ToUTF16("PremiseName"));
-    expected.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE,
-                        base::UTF8ToUTF16("Subpremise"));
+                        u"DependentStreetName");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName");
+    expected.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise");
   }
 
   MergeAddressesAndExpect(p1, p2, expected);
@@ -1404,26 +1332,24 @@ TEST_P(AutofillProfileComparatorTest,
        MergeAddressesDependendLocalityAndSortingCode) {
   AutofillProfile p1 = CreateProfileWithAddress(
       "6543 CH BACON", "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "ca");
-  p1.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, UTF8ToUTF16("Some String"));
-  p1.SetRawInfo(ADDRESS_HOME_SORTING_CODE, UTF8ToUTF16("64205 Biarritz CEDEX"));
+  p1.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Some String");
+  p1.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"64205 Biarritz CEDEX");
   AutofillProfile p2 = CreateProfileWithAddress(
       "6543, Bacon Rd", "", "Montreal", "QC", "hhh 999", "CA");
-  p2.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                UTF8ToUTF16("Some Other String"));
-  p2.SetRawInfo(ADDRESS_HOME_SORTING_CODE, UTF8ToUTF16("64205 Biarritz"));
+  p2.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Some Other String");
+  p2.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"64205 Biarritz");
   p2.set_use_date(p1.use_date() + base::TimeDelta::FromMinutes(1));
 
   Address expected;
-  expected.SetRawInfo(ADDRESS_HOME_LINE1, UTF8ToUTF16("6543 CH BACON"));
-  expected.SetRawInfo(ADDRESS_HOME_LINE2, UTF8ToUTF16("APP 3"));
-  expected.SetRawInfo(ADDRESS_HOME_CITY, UTF8ToUTF16("Montreal"));
-  expected.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16("QC"));
-  expected.SetRawInfo(ADDRESS_HOME_ZIP, UTF8ToUTF16("hhh 999"));
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("CA"));
-  expected.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                      UTF8ToUTF16("Some Other String"));
+  expected.SetRawInfo(ADDRESS_HOME_LINE1, u"6543 CH BACON");
+  expected.SetRawInfo(ADDRESS_HOME_LINE2, u"APP 3");
+  expected.SetRawInfo(ADDRESS_HOME_CITY, u"Montreal");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"QC");
+  expected.SetRawInfo(ADDRESS_HOME_ZIP, u"hhh 999");
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
+  expected.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Some Other String");
   expected.SetRawInfo(ADDRESS_HOME_SORTING_CODE,
-                      UTF8ToUTF16("64205 Biarritz"));  // Preferred by use date.
+                      u"64205 Biarritz");  // Preferred by use date.
 
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
@@ -1481,8 +1407,8 @@ TEST_P(AutofillProfileComparatorTest, MergeProfilesBasedOnState) {
       CreateProfileWithAddress("", "", "", "Bayern - BY - Bavaria", "", "DE");
 
   Address expected;
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("DE"));
-  expected.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16("Bayern"));
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"Bayern");
   MergeAddressesAndExpect(empty, p1, expected);
   MergeAddressesAndExpect(p1, empty, expected);
   MergeAddressesAndExpect(p1, p2, expected);
@@ -1492,8 +1418,8 @@ TEST_P(AutofillProfileComparatorTest, MergeProfilesBasedOnState) {
       CreateProfileWithAddress("", "", "", "Pradesh", "", "IN");
   AutofillProfile p4 =
       CreateProfileWithAddress("", "", "", "Uttar Pradesh", "", "IN");
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("IN"));
-  expected.SetRawInfo(ADDRESS_HOME_STATE, UTF8ToUTF16("Uttar Pradesh"));
+  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"IN");
+  expected.SetRawInfo(ADDRESS_HOME_STATE, u"Uttar Pradesh");
   MergeAddressesAndExpect(p3, p4, expected);
   MergeAddressesAndExpect(p4, p3, expected);
 }

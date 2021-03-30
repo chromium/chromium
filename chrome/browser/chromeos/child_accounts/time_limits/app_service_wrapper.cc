@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -97,7 +98,7 @@ void AppServiceWrapper::ResumeApp(const AppId& app_id) {
 void AppServiceWrapper::LaunchApp(const std::string& app_service_id) {
   GetAppProxy()->Launch(app_service_id, ui::EventFlags::EF_NONE,
                         apps::mojom::LaunchSource::kFromParentalControls,
-                        display::kDefaultDisplayId);
+                        apps::MakeWindowInfo(display::kDefaultDisplayId));
 }
 
 std::vector<AppId> AppServiceWrapper::GetInstalledApps() const {

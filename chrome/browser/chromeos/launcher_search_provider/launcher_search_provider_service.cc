@@ -139,7 +139,7 @@ void Service::SetSearchResults(
     // Results with a match score of 0 are discarded. This will also be used to
     // set the title tags (highlighting which parts of the title matched the
     // search query).
-    const base::string16 title = base::UTF8ToUTF16(result.title);
+    const std::u16string title = base::UTF8ToUTF16(result.title);
     TokenizedString tokenized_title(title);
     TokenizedStringMatch match;
     TokenizedString tokenized_query(base::UTF8ToUTF16(query_));

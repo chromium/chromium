@@ -5,12 +5,13 @@
 #ifndef WEBLAYER_BROWSER_WEBLAYER_IMPL_ANDROID_H_
 #define WEBLAYER_BROWSER_WEBLAYER_IMPL_ANDROID_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace weblayer {
 
 // Returns the name of the WebLayer embedder.
-base::string16 GetClientApplicationName();
+std::u16string GetClientApplicationName();
 
 }  // namespace weblayer
 

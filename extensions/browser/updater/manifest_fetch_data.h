@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/version.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -85,7 +86,7 @@ class ManifestFetchData {
   // Returns a string to use for reporting an extension's install location.
   // Some locations with a common purpose, such as the external locations, are
   // grouped together and will return the same string.
-  static std::string GetSimpleLocationString(Manifest::Location loc);
+  static std::string GetSimpleLocationString(mojom::ManifestLocation loc);
 
   ManifestFetchData(const GURL& update_url,
                     int request_id,
@@ -104,7 +105,7 @@ class ManifestFetchData {
                     const PingData* ping_data,
                     const std::string& update_url_data,
                     const std::string& install_source,
-                    Manifest::Location install_location,
+                    mojom::ManifestLocation install_location,
                     FetchPriority fetch_priority);
 
   const GURL& base_url() const { return base_url_; }
@@ -147,13 +148,14 @@ class ManifestFetchData {
     ExtensionData(const base::Version& version,
                   const std::string& update_url_data,
                   const std::string& install_source,
-                  Manifest::Location extension_location);
+                  mojom::ManifestLocation extension_location);
 
     ~ExtensionData();
     base::Version version;
     std::string update_url_data;
     std::string install_source;
-    Manifest::Location extension_location{Manifest::Location::INTERNAL};
+    mojom::ManifestLocation extension_location{
+        mojom::ManifestLocation::kInternal};
   };
 
   const std::map<ExtensionId, ExtensionData>& extensions_data() const {

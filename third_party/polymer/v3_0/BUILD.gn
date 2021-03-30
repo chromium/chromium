@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 generate_grd("build_grdp") {
   grd_prefix = "polymer_3_0"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
   input_files = [
-    "font-roboto/roboto.js",
     "iron-a11y-announcer/iron-a11y-announcer.js",
     "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
     "iron-a11y-keys/iron-a11y-keys.js",
@@ -44,12 +44,11 @@ generate_grd("build_grdp") {
     "paper-spinner/paper-spinner-styles.js",
     "paper-styles/color.js",
     "paper-styles/shadow.js",
-    "paper-styles/typography.js",
     "paper-tooltip/paper-tooltip.js",
     "polymer/polymer_bundled.min.js",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     input_files += [
       "iron-dropdown/iron-dropdown.js",
       "iron-dropdown/iron-dropdown-scroll-manager.js",

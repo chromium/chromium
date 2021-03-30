@@ -61,8 +61,6 @@ class MODULES_EXPORT WakeLockSentinel final
   // where |script_state_|'s context is no longer valid.
   void DoRelease();
 
-  void DispatchReleaseEvent();
-
   Member<WakeLockManager> manager_;
   bool released_ = false;
   const WakeLockType type_;

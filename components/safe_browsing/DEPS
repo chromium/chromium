@@ -1,4 +1,7 @@
 include_rules = [
+  # NOTE: Dependencies on signin and sync are restricted to specific
+  # subdirectories to facilitate reuse of this component on WebLayer, which
+  # doesn't use signin or sync.
   "+components/content_settings/core/browser",
   "+components/grit/components_resources.h",
   "+components/history/core/browser",
@@ -7,8 +10,6 @@ include_rules = [
   "+components/prefs",
   "+components/security_interstitials/content",
   "+components/security_interstitials/core",
-  "+components/signin/public",
-  "+components/sync",
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/unified_consent",
   "+components/user_prefs/user_prefs.h",
@@ -32,4 +33,5 @@ include_rules = [
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
   "+third_party/protobuf",
   "+ui/base/resource/resource_bundle.h",
+  "+ui/android/view_android.h",
 ]

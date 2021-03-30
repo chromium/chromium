@@ -19,6 +19,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
 
@@ -67,32 +68,34 @@ public class ShareDelegateImplTest {
     @Test
     @SmallTest
     public void testGetUrlToShare() {
-        Assert.assertNull(ShareDelegateImpl.getUrlToShare(null, null));
-        Assert.assertEquals("", ShareDelegateImpl.getUrlToShare("", null));
+        Assert.assertEquals("", ShareDelegateImpl.getUrlToShare(GURL.emptyGURL(), null));
 
-        final String httpUrl = "http://blah.com";
-        final String otherHttpUrl = "http://eek.com";
-        final String httpsUrl = "https://blah.com";
-        final String otherHttpsUrl = "https://eek.com";
-        final String ftpUrl = "ftp://blah.com";
-        final String contentUrl = "content://eek.com";
+        final GURL httpUrl = new GURL("http://blah.com");
+        final GURL otherHttpUrl = new GURL("http://eek.com");
+        final GURL httpsUrl = new GURL("https://blah.com");
+        final GURL otherHttpsUrl = new GURL("https://eek.com");
+        final GURL ftpUrl = new GURL("ftp://blah.com");
+        final GURL contentUrl = new GURL("content://eek.com");
 
         // HTTP Display URL, HTTP Canonical URL -> HTTP Display URL
-        Assert.assertEquals(httpUrl, ShareDelegateImpl.getUrlToShare(httpUrl, otherHttpUrl));
+        Assert.assertEquals(
+                httpUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpUrl, otherHttpUrl));
         // HTTP Display URL, HTTPS Canonical URL -> HTTP Display URL
-        Assert.assertEquals(httpUrl, ShareDelegateImpl.getUrlToShare(httpUrl, httpsUrl));
+        Assert.assertEquals(httpUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpUrl, httpsUrl));
         // HTTPS Display URL, HTTP Canonical URL -> HTTP Canonical URL
-        Assert.assertEquals(httpUrl, ShareDelegateImpl.getUrlToShare(httpsUrl, httpUrl));
+        Assert.assertEquals(httpUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl, httpUrl));
 
         // HTTPS Display URL, HTTPS Canonical URL -> HTTPS Canonical URL
-        Assert.assertEquals(httpsUrl, ShareDelegateImpl.getUrlToShare(httpsUrl, httpsUrl));
         Assert.assertEquals(
-                otherHttpsUrl, ShareDelegateImpl.getUrlToShare(httpsUrl, otherHttpsUrl));
+                httpsUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl, httpsUrl));
+        Assert.assertEquals(
+                otherHttpsUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl, otherHttpsUrl));
 
         // HTTPS Display URL, FTP URL -> HTTPS Display URL
-        Assert.assertEquals(httpsUrl, ShareDelegateImpl.getUrlToShare(httpsUrl, ftpUrl));
+        Assert.assertEquals(httpsUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl, ftpUrl));
         // HTTPS Display URL, Content URL -> HTTPS Display URL
-        Assert.assertEquals(httpsUrl, ShareDelegateImpl.getUrlToShare(httpsUrl, contentUrl));
+        Assert.assertEquals(
+                httpsUrl.getSpec(), ShareDelegateImpl.getUrlToShare(httpsUrl, contentUrl));
     }
 
     private static class MockUrlTab extends MockTab {

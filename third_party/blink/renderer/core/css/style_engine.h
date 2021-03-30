@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
@@ -67,6 +68,7 @@ class CounterStyleMap;
 class CSSFontSelector;
 class CSSStyleSheet;
 class FontSelector;
+class HTMLSelectElement;
 class MediaQueryEvaluator;
 class Node;
 class RuleFeatureSet;
@@ -77,6 +79,7 @@ class StyleRuleUsageTracker;
 class StyleSheetContents;
 class StyleInitialData;
 class ViewportStyleResolver;
+struct LogicalSize;
 
 enum InvalidationScope { kInvalidateCurrentScope, kInvalidateAllScopes };
 
@@ -114,6 +117,24 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
    public:
     explicit AllowMarkStyleDirtyFromRecalcScope(StyleEngine& engine)
         : allow_marking_(&engine.allow_mark_style_dirty_from_recalc_, true) {}
+
+   private:
+    base::AutoReset<bool> allow_marking_;
+  };
+
+  // We postpone updating ::first-letter styles until layout tree rebuild to
+  // know which text node contains the first letter. If we need to re-attach the
+  // ::first-letter element as a result means we mark for re-attachment during
+  // layout tree rebuild. That is not generally allowed, and we make sure we
+  // explicitly allow it for that case.
+  class AllowMarkForReattachFromRebuildLayoutTreeScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit AllowMarkForReattachFromRebuildLayoutTreeScope(StyleEngine& engine)
+        : allow_marking_(
+              &engine.allow_mark_for_reattach_from_rebuild_layout_tree_,
+              true) {}
 
    private:
     base::AutoReset<bool> allow_marking_;
@@ -293,6 +314,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void EnsureUAStyleForXrOverlay();
   void EnsureUAStyleForElement(const Element&);
   void EnsureUAStyleForPseudoElement(PseudoId);
+  void EnsureUAStyleForForcedColors();
 
   void PlatformColorsChanged();
 
@@ -332,7 +354,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     style_recalc_root_.RemovedFromFlatTree(node);
   }
   void PseudoElementRemoved(Element& originating_element) {
-    layout_tree_rebuild_root_.ChildrenRemoved(originating_element);
+    layout_tree_rebuild_root_.SubtreeModified(originating_element);
   }
 
   unsigned StyleForElementCount() const { return style_for_element_count_; }
@@ -375,6 +397,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkFontsNeedUpdate();
   void InvalidateStyleAndLayoutForFontUpdates();
 
+  void MarkCounterStylesNeedUpdate();
+  void UpdateCounterStyles();
+
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
   StyleRuleScrollTimeline* FindScrollTimelineRule(const AtomicString& name);
@@ -400,15 +425,19 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateViewportStyle();
   void UpdateStyleAndLayoutTree();
   // To be called from layout when container queries change for the container.
-  void UpdateStyleAndLayoutTreeForContainer(Element& container);
-  void RecalcStyle() { RecalcStyle({}); }
+  void UpdateStyleAndLayoutTreeForContainer(Element& container,
+                                            const LogicalSize&,
+                                            LogicalAxes contained_axes);
+  void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);
   void RebuildLayoutTree();
   bool InRebuildLayoutTree() const { return in_layout_tree_rebuild_; }
+  bool InDOMRemoval() const { return in_dom_removal_; }
   bool InContainerQueryStyleRecalc() const {
     return in_container_query_style_recalc_;
   }
+  void ChangeRenderingForHTMLSelect(HTMLSelectElement& select);
 
   void SetColorSchemeFromMeta(const CSSValue* color_scheme);
   const CSSValue* GetMetaColorSchemeValue() const { return meta_color_scheme_; }
@@ -419,8 +448,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateColorSchemeBackground(bool color_scheme_changed = false);
   Color ForcedBackgroundColor() const { return forced_background_color_; }
   Color ColorAdjustBackgroundColor() const;
-
-  TreeScopeStyleSheetCollection* StyleSheetCollectionFor(TreeScope&);
 
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
@@ -438,6 +465,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
 
   TreeScopeStyleSheetCollection& EnsureStyleSheetCollectionFor(TreeScope&);
+  TreeScopeStyleSheetCollection* StyleSheetCollectionFor(TreeScope&);
   bool ShouldUpdateDocumentStyleSheetCollection() const;
   bool ShouldUpdateShadowTreeStyleSheetCollection() const;
 
@@ -541,7 +569,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void ViewportDefiningElementDidChange();
   void PropagateWritingModeAndDirectionToHTMLRoot();
 
-  void RecalcStyle(StyleRecalcChange);
+  void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
 
   Member<Document> document_;
 
@@ -554,8 +582,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // (parser-inserted scripts may not run until all pending stylesheets have
   // loaded). See:
   // https://html.spec.whatwg.org/multipage/semantics.html#interactions-of-styling-and-scripting
-  // Once the BlockHTMLParserOnStyleSheets flag has shipped, this is the same
-  // as pending_parser_blocking_stylesheets_.
   int pending_script_blocking_stylesheets_{0};
 
   // Tracks the number of currently loading top-level stylesheets which block
@@ -597,11 +623,16 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool in_dom_removal_{false};
   bool viewport_style_dirty_{false};
   bool fonts_need_update_{false};
+  bool counter_styles_need_update_{false};
 
   // Set to true if we allow marking style dirty from style recalc. Ideally, we
   // should get rid of this, but we keep track of where we allow it with
   // AllowMarkStyleDirtyFromRecalcScope.
   bool allow_mark_style_dirty_from_recalc_{false};
+
+  // Set to true if we allow marking for reattachment from layout tree rebuild.
+  // AllowMarkStyleDirtyFromRecalcScope.
+  bool allow_mark_for_reattach_from_rebuild_layout_tree_{false};
 
   VisionDeficiency vision_deficiency_{VisionDeficiency::kNoVisionDeficiency};
   Member<ReferenceFilterOperation> vision_deficiency_filter_;

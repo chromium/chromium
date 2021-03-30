@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -115,7 +116,7 @@ bool CheckNodeType(const base::Value* node,
 // Parse AutofillQueryContents or AutofillQueryResponseContents from the given
 // |http_text|.
 template <class T>
-StatusOr<T> ParseProtoContents(const std::string http_text) {
+StatusOr<T> ParseProtoContents(const std::string& http_text) {
   T proto_contents;
   if (!proto_contents.ParseFromString(http_text)) {
     return MakeInternalError(
@@ -215,28 +216,24 @@ StatusOr<typename Env::Query> GetAutofillQueryFromGETQueryURL(const GURL& url) {
 // that all the response body data is utilized.
 std::string GetStringFromDataElements(
     const std::vector<network::DataElement>* data_elements) {
-  network::DataElement unified_data_element;
-  unified_data_element.SetToEmptyBytes();
-  for (auto it = data_elements->begin(); it != data_elements->end(); ++it) {
-    unified_data_element.AppendBytes(it->bytes(), it->length());
+  std::string result;
+  for (const network::DataElement& element : *data_elements) {
+    DCHECK_EQ(element.type(), network::DataElement::Tag::kBytes);
+    // Provide the length of the bytes explicitly, not to rely on the null
+    // termination.
+    const auto piece = element.As<network::DataElementBytes>().AsStringPiece();
+    result.append(piece.data(), piece.size());
   }
-
-  // Using the std::string constructor with length ensures that we don't rely
-  // on having a termination character to delimit the string. This is the
-  // safest approach.
-  return std::string(unified_data_element.bytes(),
-                     unified_data_element.length());
+  return result;
 }
 
-// Gets Query request proto content from HTTP POST body.
-StatusOr<AutofillPageQueryRequest> GetAutofillQueryFromPOSTQuery(
-    const network::ResourceRequest& resource_request) {
-  // Queries for the Api environment are special in the sense that the actual
-  // AutofillPageQueryRequest is base64 encoded and wrapped in an
-  // AutofillPageResourceQueryRequest.
+// Queries for the Api environment are special in the sense that the actual
+// AutofillPageQueryRequest is base64 encoded and wrapped in an
+// AutofillPageResourceQueryRequest.
+StatusOr<std::string> PeelAutofillPageResourceQueryRequestWrapper(
+    const std::string& text) {
   StatusOr<AutofillPageResourceQueryRequest> request =
-      ParseProtoContents<AutofillPageResourceQueryRequest>(
-          GetStringFromDataElements(resource_request.request_body->elements()));
+      ParseProtoContents<AutofillPageResourceQueryRequest>(text);
   if (!request.ok())
     return request.status();
   std::string encoded_query = request.ValueOrDie().serialized_request();
@@ -245,10 +242,20 @@ StatusOr<AutofillPageQueryRequest> GetAutofillQueryFromPOSTQuery(
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &query)) {
     return MakeInternalError(base::StrCat(
-        {"could not base64-decode serialiezed body of a POST request: \"",
+        {"could not base64-decode serialized body of a POST request: \"",
          encoded_query.c_str(), "\""}));
   }
-  return ParseProtoContents<AutofillPageQueryRequest>(query);
+  return query;
+}
+
+// Gets Query request proto content from HTTP POST body.
+StatusOr<AutofillPageQueryRequest> GetAutofillQueryFromPOSTQuery(
+    const network::ResourceRequest& resource_request) {
+  StatusOr<std::string> query = PeelAutofillPageResourceQueryRequestWrapper(
+      GetStringFromDataElements(resource_request.request_body->elements()));
+  if (!query.ok())
+    return query.status();
+  return ParseProtoContents<AutofillPageQueryRequest>(query.ValueOrDie());
 }
 
 bool IsSingleFormRequest(const LegacyEnv::Query& query) {
@@ -295,8 +302,15 @@ StatusOr<typename Env::Query> GetAutofillQueryFromRequestNode(
     return MakeInternalError(
         "Unable to retrieve serialized request from WPR request_node");
   }
-  return ParseProtoContents<typename Env::Query>(
-      SplitHTTP(decoded_request_text).second);
+  std::string http_text = SplitHTTP(decoded_request_text).second;
+  if (std::is_same<Env, ApiEnv>::value) {
+    StatusOr<std::string> query =
+        PeelAutofillPageResourceQueryRequestWrapper(http_text);
+    if (!query.ok())
+      return query.status();
+    http_text = query.ValueOrDie();
+  }
+  return ParseProtoContents<typename Env::Query>(http_text);
 }
 
 // Gets AutofillQueryResponseContents from WPR recorded HTTP response body.

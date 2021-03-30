@@ -4,14 +4,17 @@
 
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cycle_solver.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_client.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 namespace blink {
@@ -51,14 +54,14 @@ void SVGResource::InvalidateCycleCache() {
     client_entry.cached_cycle_check = kNeedCheck;
 }
 
-void SVGResource::NotifyElementChanged() {
+void SVGResource::NotifyContentChanged() {
   InvalidateCycleCache();
 
   HeapVector<Member<SVGResourceClient>> clients;
   CopyKeysToVector(clients_, clients);
 
   for (SVGResourceClient* client : clients)
-    client->ResourceElementChanged();
+    client->ResourceContentChanged(this);
 }
 
 LayoutSVGResourceContainer* SVGResource::ResourceContainerNoCycleCheck() const {
@@ -77,9 +80,8 @@ LayoutSVGResourceContainer* SVGResource::ResourceContainer(
     return nullptr;
   ClientEntry& entry = it->value;
   if (entry.cached_cycle_check == kNeedCheck) {
-    SVGResourcesCycleSolver solver;
     entry.cached_cycle_check = kPerformingCheck;
-    bool has_cycle = container->FindCycle(solver);
+    bool has_cycle = container->FindCycle();
     DCHECK_EQ(entry.cached_cycle_check, kPerformingCheck);
     entry.cached_cycle_check = has_cycle ? kHasCycle : kNoCycle;
   }
@@ -89,8 +91,7 @@ LayoutSVGResourceContainer* SVGResource::ResourceContainer(
   return container;
 }
 
-bool SVGResource::FindCycle(SVGResourceClient& client,
-                            SVGResourcesCycleSolver& solver) const {
+bool SVGResource::FindCycle(SVGResourceClient& client) const {
   auto it = clients_.find(&client);
   if (it == clients_.end())
     return false;
@@ -101,7 +102,7 @@ bool SVGResource::FindCycle(SVGResourceClient& client,
   switch (entry.cached_cycle_check) {
     case kNeedCheck: {
       entry.cached_cycle_check = kPerformingCheck;
-      bool has_cycle = container->FindCycle(solver);
+      bool has_cycle = container->FindCycle();
       DCHECK_EQ(entry.cached_cycle_check, kPerformingCheck);
       // Update our cached state based on the result of FindCycle(), but don't
       // signal a cycle since ResourceContainer() will consider the resource
@@ -134,17 +135,6 @@ void LocalSVGResource::Unregister() {
   SVGURIReference::UnobserveTarget(id_observer_);
 }
 
-void LocalSVGResource::NotifyContentChanged(
-    InvalidationModeMask invalidation_mask) {
-  InvalidateCycleCache();
-
-  HeapVector<Member<SVGResourceClient>> clients;
-  CopyKeysToVector(clients_, clients);
-
-  for (SVGResourceClient* client : clients)
-    client->ResourceContentChanged(invalidation_mask);
-}
-
 void LocalSVGResource::NotifyFilterPrimitiveChanged(
     SVGFilterPrimitiveStandardAttributes& primitive,
     const QualifiedName& attribute) {
@@ -152,7 +142,7 @@ void LocalSVGResource::NotifyFilterPrimitiveChanged(
   CopyKeysToVector(clients_, clients);
 
   for (SVGResourceClient* client : clients)
-    client->FilterPrimitiveChanged(primitive, attribute);
+    client->FilterPrimitiveChanged(this, primitive, attribute);
 }
 
 void LocalSVGResource::TargetChanged(const AtomicString& id) {
@@ -165,7 +155,7 @@ void LocalSVGResource::TargetChanged(const AtomicString& id) {
   if (old_resource)
     old_resource->RemoveAllClientsFromCache();
   target_ = new_target;
-  NotifyElementChanged();
+  NotifyContentChanged();
 }
 
 void LocalSVGResource::Trace(Visitor* visitor) const {
@@ -177,19 +167,26 @@ void LocalSVGResource::Trace(Visitor* visitor) const {
 ExternalSVGResource::ExternalSVGResource(const KURL& url) : url_(url) {}
 
 void ExternalSVGResource::Load(Document& document) {
-  if (cache_entry_)
+  if (document_content_)
     return;
-  cache_entry_ = SVGExternalDocumentCache::From(document)->Get(
-      this, url_, fetch_initiator_type_names::kCSS);
+  ExecutionContext* execution_context = document.GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  FetchParameters params(ResourceRequest(url_), options);
+  document_content_ = SVGResourceDocumentContent::Fetch(params, document, this);
   target_ = ResolveTarget();
 }
 
 void ExternalSVGResource::LoadWithoutCSP(Document& document) {
-  if (cache_entry_)
+  if (document_content_)
     return;
-  cache_entry_ = SVGExternalDocumentCache::From(document)->Get(
-      this, url_, fetch_initiator_type_names::kCSS,
+  ExecutionContext* execution_context = document.GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  FetchParameters params(ResourceRequest(url_), options);
+  params.SetContentSecurityCheck(
       network::mojom::blink::CSPDisposition::DO_NOT_CHECK);
+  document_content_ = SVGResourceDocumentContent::Fetch(params, document, this);
   target_ = ResolveTarget();
 }
 
@@ -198,7 +195,7 @@ void ExternalSVGResource::NotifyFinished(Resource*) {
   if (new_target == target_)
     return;
   target_ = new_target;
-  NotifyElementChanged();
+  NotifyContentChanged();
 }
 
 String ExternalSVGResource::DebugName() const {
@@ -206,11 +203,11 @@ String ExternalSVGResource::DebugName() const {
 }
 
 Element* ExternalSVGResource::ResolveTarget() {
-  if (!cache_entry_)
+  if (!document_content_)
     return nullptr;
   if (!url_.HasFragmentIdentifier())
     return nullptr;
-  Document* external_document = cache_entry_->GetDocument();
+  Document* external_document = document_content_->GetDocument();
   if (!external_document)
     return nullptr;
   AtomicString decoded_fragment(DecodeURLEscapeSequences(
@@ -219,7 +216,7 @@ Element* ExternalSVGResource::ResolveTarget() {
 }
 
 void ExternalSVGResource::Trace(Visitor* visitor) const {
-  visitor->Trace(cache_entry_);
+  visitor->Trace(document_content_);
   SVGResource::Trace(visitor);
   ResourceClient::Trace(visitor);
 }

@@ -164,8 +164,8 @@ source_set("internal") {
     ":common_constants",
     "//components/policy:generated",
     "//components/policy/proto",
-    "//components/policy/proto:policy_record_constants",
-    "//components/policy/proto:reporting_record_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
   ]
 
   deps = [
@@ -188,6 +188,18 @@ source_set("internal") {
     "//ui/base",
     "//url",
   ]
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "policy_loader_lacros.cc",
+      "policy_loader_lacros.h",
+    ]
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//chromeos/startup:startup",
+    ]
+  }
 
   allow_circular_includes_from = [
     # Generated files use policy_details.h and policy_map.h from this target.
@@ -365,8 +377,8 @@ static_library("test_support") {
     "//components/account_id",
     "//components/policy:generated",
     "//components/policy/proto",
-    "//components/policy/proto:policy_record_constants",
-    "//components/policy/proto:reporting_record_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
     "//components/strings",
     "//crypto",
     "//net",
@@ -505,6 +517,9 @@ source_set("unit_tests") {
   if (is_win) {
     sources += [ "policy_loader_win_unittest.cc" ]
   }
+  if (is_chromeos_lacros) {
+    sources += [ "policy_loader_lacros_unittest.cc" ]
+  }
 
   deps = [
     ":common_constants",
@@ -530,6 +545,14 @@ source_set("unit_tests") {
   }
   if (is_android) {
     deps += [ "//components/policy/android:test_jni_headers" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chrome/browser",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//chromeos/startup:startup",
+    ]
   }
 }
 

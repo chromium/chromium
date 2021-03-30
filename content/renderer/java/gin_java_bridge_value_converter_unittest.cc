@@ -137,9 +137,22 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
     base::ListValue* list;
     ASSERT_TRUE(list_value->GetAsList(&list)) << typed_array_type;
     EXPECT_EQ(1u, list->GetSize()) << typed_array_type;
-    double first_element;
-    ASSERT_TRUE(list->GetDouble(0, &first_element)) << typed_array_type;
-    EXPECT_EQ(42.0, first_element) << typed_array_type;
+
+    const base::Value* value;
+    list->Get(0, &value);
+    if (value->type() == base::Value::Type::BINARY) {
+      std::unique_ptr<const GinJavaBridgeValue> gin_value(
+          GinJavaBridgeValue::FromValue(value));
+      EXPECT_EQ(gin_value->GetType(), GinJavaBridgeValue::TYPE_UINT32);
+      uint32_t first_element = 0;
+      ASSERT_TRUE(gin_value->GetAsUInt32(&first_element));
+      EXPECT_EQ(42u, first_element) << typed_array_type;
+
+    } else {
+      double first_element;
+      ASSERT_TRUE(value->GetAsDouble(&first_element)) << typed_array_type;
+      EXPECT_EQ(42.0, first_element) << typed_array_type;
+    }
   }
 }
 

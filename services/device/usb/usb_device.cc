@@ -38,9 +38,9 @@ UsbDevice::UsbDevice(uint16_t usb_version,
                      uint16_t vendor_id,
                      uint16_t product_id,
                      uint16_t device_version,
-                     const base::string16& manufacturer_string,
-                     const base::string16& product_string,
-                     const base::string16& serial_number,
+                     const std::u16string& manufacturer_string,
+                     const std::u16string& product_string,
+                     const std::u16string& serial_number,
                      uint32_t bus_number,
                      uint32_t port_number) {
   device_info_ = mojom::UsbDeviceInfo::New();

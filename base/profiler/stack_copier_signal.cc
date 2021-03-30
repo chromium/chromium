@@ -10,6 +10,7 @@
 #include <syscall.h>
 
 #include <atomic>
+#include <cstring>
 
 #include "base/notreached.h"
 #include "base/profiler/register_context.h"
@@ -122,7 +123,7 @@ void CopyStackSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
   *params->success = false;
 
   const ucontext_t* ucontext = static_cast<ucontext_t*>(sigcontext);
-  memcpy(params->context, &ucontext->uc_mcontext, sizeof(mcontext_t));
+  std::memcpy(params->context, &ucontext->uc_mcontext, sizeof(mcontext_t));
 
   const uintptr_t bottom = RegisterContextStackPointer(params->context);
   const uintptr_t top = params->stack_base_address;

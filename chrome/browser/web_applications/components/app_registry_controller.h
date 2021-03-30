@@ -46,6 +46,8 @@ class AppRegistryController {
 
   virtual void SetAppIsDisabled(const AppId& app_id, bool is_disabled) = 0;
 
+  virtual void UpdateAppsDisableMode() = 0;
+
   // TODO(crbug.com/897314): Finish experiment by legitimising it as a
   // DisplayMode or removing entirely.
   void SetExperimentalTabbedWindowMode(const AppId& app_id,
@@ -54,6 +56,9 @@ class AppRegistryController {
 
   virtual void SetAppIsLocallyInstalled(const AppId& app_id,
                                         bool is_locally_installed) = 0;
+
+  virtual void SetAppLastBadgingTime(const AppId& app_id,
+                                     const base::Time& time) = 0;
 
   virtual void SetAppLastLaunchTime(const AppId& app_id,
                                     const base::Time& time) = 0;

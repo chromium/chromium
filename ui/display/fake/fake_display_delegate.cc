@@ -132,9 +132,9 @@ void FakeDisplayDelegate::GetDisplays(GetDisplaysCallback callback) {
 void FakeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     ConfigureCallback callback) {
-  base::flat_map<int64_t, bool> statuses;
+  bool config_success = true;
   for (const auto& config : config_requests) {
-    bool configure_success = false;
+    bool request_success = false;
 
     if (config.mode.has_value()) {
       // Find display snapshot of display ID.
@@ -147,19 +147,20 @@ void FakeDisplayDelegate::Configure(
         // Check that config mode is appropriate for the display snapshot.
         for (const auto& existing_mode : snapshot->get()->modes()) {
           if (AreModesEqual(*existing_mode.get(), *config.mode.value().get())) {
-            configure_success = true;
+            request_success = true;
             break;
           }
         }
       }
     } else {
       // This is a request to turn off the display.
-      configure_success = true;
+      request_success = true;
     }
-    statuses.insert(std::make_pair(config.id, configure_success));
+    config_success &= request_success;
   }
 
-  configure_callbacks_.push(base::BindOnce(std::move(callback), statuses));
+  configure_callbacks_.push(
+      base::BindOnce(std::move(callback), config_success));
 
   // Start the timer if it's not already running. If there are multiple queued
   // configuration requests then ConfigureDone() will handle starting the

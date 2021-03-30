@@ -44,6 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUpdateEngineClient
       const std::string& target_version,
       int64_t target_size,
       UpdateOverCellularOneTimePermissionCallback callback) override;
+  void ToggleFeature(const std::string& feature, bool enable) override;
   // Pushes update_engine::StatusResult in the queue to test changing status.
   // GetLastStatus() returns the status set by this method in FIFO order.
   // See set_default_status().
@@ -115,5 +116,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUpdateEngineClient
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace ash {
+using ::chromeos::FakeUpdateEngineClient;
+}
 
 #endif  // CHROMEOS_DBUS_FAKE_UPDATE_ENGINE_CLIENT_H_

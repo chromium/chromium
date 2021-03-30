@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/render_frame_observer_natives.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
@@ -87,7 +89,7 @@ void RenderFrameObserverNatives::OnDocumentElementCreated(
                                        args[1].As<v8::Function>());
   auto callback(base::BindOnce(&RenderFrameObserverNatives::InvokeCallback,
                                weak_ptr_factory_.GetWeakPtr(),
-                               base::Passed(&v8_callback)));
+                               std::move(v8_callback)));
   if (ExtensionFrameHelper::Get(frame)->did_create_current_document_element()) {
     // If the document element is already created, then we can call the callback
     // immediately (though use PostTask to ensure that the callback is called

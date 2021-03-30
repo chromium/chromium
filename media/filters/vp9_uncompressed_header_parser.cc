@@ -622,6 +622,11 @@ Vp9UncompressedHeaderParser::Vp9UncompressedHeaderParser(
     Vp9Parser::Context* context)
     : context_(context) {}
 
+const Vp9FrameContext&
+Vp9UncompressedHeaderParser::GetVp9DefaultFrameContextForTesting() const {
+  return kVp9DefaultFrameContext;
+}
+
 uint8_t Vp9UncompressedHeaderParser::ReadProfile() {
   uint8_t profile = 0;
 
@@ -765,6 +770,8 @@ Vp9InterpolationFilter Vp9UncompressedHeaderParser::ReadInterpolationFilter() {
 
 void Vp9UncompressedHeaderParser::SetupPastIndependence(Vp9FrameHeader* fhdr) {
   memset(&context_->segmentation_, 0, sizeof(context_->segmentation_));
+  memset(fhdr->ref_frame_sign_bias, 0, sizeof(fhdr->ref_frame_sign_bias));
+
   ResetLoopfilter();
   fhdr->frame_context = kVp9DefaultFrameContext;
   DCHECK(fhdr->frame_context.IsValid());
@@ -1069,7 +1076,7 @@ bool Vp9UncompressedHeaderParser::Parse(const uint8_t* stream,
   fhdr->frame_context_idx_to_save_probs = fhdr->frame_context_idx =
       reader_.ReadLiteral(kVp9NumFrameContextsLog2);
 
-  if (fhdr->IsIntra()) {
+  if (fhdr->IsIntra() || fhdr->error_resilient_mode) {
     SetupPastIndependence(fhdr);
     if (fhdr->IsKeyframe() || fhdr->error_resilient_mode ||
         fhdr->reset_frame_context == 3) {

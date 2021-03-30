@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>page which continuously creates hanging wss connection</title>
+<script type="text/javascript">
+var href = window.location.href;
+var hostBegin = href.indexOf('/') + 2;
+var hostEnd = href.lastIndexOf(':');
+var host = href.slice(hostBegin, hostEnd);
+var queryBegin = href.lastIndexOf('?') + 1;
+var port = href.slice(queryBegin);
+var url = 'wss://' + host + ':' + port;
+var ws;
+var cb = function() {
+  ws = new WebSocket(url);
+  ws.onclose = cb;
+}
+cb();
+</script>
+</head>
+</html>

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Clamps the scroll offset if the scroller's size is changed during animation. assert_equals: expected 1015 but got 1014.6666870117188
+Harness: the test ran to completion.
+

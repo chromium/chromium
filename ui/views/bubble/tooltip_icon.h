@@ -6,10 +6,10 @@
 #define UI_VIEWS_BUBBLE_TOOLTIP_ICON_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/image_view.h"
@@ -37,7 +37,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
 
   METADATA_HEADER(TooltipIcon);
 
-  explicit TooltipIcon(const base::string16& tooltip,
+  explicit TooltipIcon(const std::u16string& tooltip,
                        int tooltip_icon_size = 16);
   ~TooltipIcon() override;
 
@@ -77,7 +77,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   void HideBubble();
 
   // The text to show in a bubble when hovered.
-  base::string16 tooltip_;
+  std::u16string tooltip_;
 
   // The size of the tooltip icon, in dip.
   // Must be set in the constructor, otherwise the pre-hovered icon will show
@@ -102,7 +102,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   // A watcher that keeps |bubble_| open if the user's mouse enters it.
   std::unique_ptr<MouseWatcher> mouse_watcher_;
 
-  ScopedObserver<Widget, WidgetObserver> observer_{this};
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 

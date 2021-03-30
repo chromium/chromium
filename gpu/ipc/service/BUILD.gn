@@ -94,6 +94,7 @@ component("service") {
       "gpu_memory_buffer_factory_dxgi.h",
       "image_transport_surface_win.cc",
     ]
+    libs += [ "d3d11.lib" ]
   }
   if (is_mac) {
     sources += [

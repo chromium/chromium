@@ -6,7 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/hats/hats_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -28,21 +28,24 @@ const char HatsFinchHelper::kResetAllParam[] = "reset_all";
 // static
 const char HatsFinchHelper::kTriggerIdParam[] = "trigger_id";
 
-std::string HatsFinchHelper::GetTriggerID() {
-  DCHECK(base::FeatureList::IsEnabled(features::kHappinessTrackingSystem));
-  return base::GetFieldTrialParamValueByFeature(
-      features::kHappinessTrackingSystem, kTriggerIdParam);
+std::string HatsFinchHelper::GetTriggerID(const HatsConfig& hats_config) {
+  DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
+  return base::GetFieldTrialParamValueByFeature(hats_config.feature,
+                                                kTriggerIdParam);
 }
 
-HatsFinchHelper::HatsFinchHelper(Profile* profile) : profile_(profile) {
-  LoadFinchParamValues();
+HatsFinchHelper::HatsFinchHelper(Profile* profile,
+                                 const HatsConfig& hats_config)
+    : profile_(profile), hats_config_(hats_config) {
+  LoadFinchParamValues(hats_config);
 
   // Reset prefs related to survey cycle if the finch seed has the reset param
   // set. Do no futher op until a new finch seed with the reset flags unset is
   // received.
+  // Warning: |reset_hats_| applies to all surveys.
   if (reset_survey_cycle_ || reset_hats_) {
-    profile_->GetPrefs()->ClearPref(prefs::kHatsSurveyCycleEndTimestamp);
-    profile_->GetPrefs()->ClearPref(prefs::kHatsDeviceIsSelected);
+    profile_->GetPrefs()->ClearPref(hats_config.hatsCycleEndTimestampPrefName);
+    profile_->GetPrefs()->ClearPref(hats_config.hatsIsSelectedPrefName);
     if (reset_hats_)
       profile_->GetPrefs()->ClearPref(prefs::kHatsLastInteractionTimestamp);
     return;
@@ -53,13 +56,12 @@ HatsFinchHelper::HatsFinchHelper(Profile* profile) : profile_(profile) {
 
 HatsFinchHelper::~HatsFinchHelper() {}
 
-void HatsFinchHelper::LoadFinchParamValues() {
-  const auto& feature = features::kHappinessTrackingSystem;
-  if (!base::FeatureList::IsEnabled(feature))
+void HatsFinchHelper::LoadFinchParamValues(const HatsConfig& hats_config) {
+  if (!base::FeatureList::IsEnabled(hats_config.feature))
     return;
 
   probability_of_pick_ = base::GetFieldTrialParamByFeatureAsDouble(
-      feature, kProbabilityParam, -1.0);
+      hats_config.feature, kProbabilityParam, -1.0);
 
   if (probability_of_pick_ < 0.0 || probability_of_pick_ > 1.0) {
     LOG(ERROR) << "Invalid value for probability: " << probability_of_pick_;
@@ -67,7 +69,7 @@ void HatsFinchHelper::LoadFinchParamValues() {
   }
 
   survey_cycle_length_ = base::GetFieldTrialParamByFeatureAsInt(
-      feature, kSurveyCycleLengthParam, 0);
+      hats_config.feature, kSurveyCycleLengthParam, 0);
 
   if (survey_cycle_length_ <= 0) {
     LOG(ERROR) << "Invalid value for survey cycle length: "
@@ -76,7 +78,7 @@ void HatsFinchHelper::LoadFinchParamValues() {
   }
 
   double first_survey_start_date_ms = base::GetFieldTrialParamByFeatureAsDouble(
-      feature, kSurveyStartDateMsParam, -1.0);
+      hats_config.feature, kSurveyStartDateMsParam, -1.0);
   if (first_survey_start_date_ms < 0) {
     LOG(ERROR) << "Invalid timestamp for survey start date: "
                << first_survey_start_date_ms;
@@ -87,13 +89,13 @@ void HatsFinchHelper::LoadFinchParamValues() {
   first_survey_start_date_ =
       base::Time().FromJsTime(first_survey_start_date_ms);
 
-  trigger_id_ = GetTriggerID();
+  trigger_id_ = GetTriggerID(hats_config);
 
   reset_survey_cycle_ = base::GetFieldTrialParamByFeatureAsBool(
-      feature, kResetSurveyCycleParam, false);
+      hats_config.feature, kResetSurveyCycleParam, false);
 
-  reset_hats_ =
-      base::GetFieldTrialParamByFeatureAsBool(feature, kResetAllParam, false);
+  reset_hats_ = base::GetFieldTrialParamByFeatureAsBool(hats_config.feature,
+                                                        kResetAllParam, false);
 
   // Set every property to no op values if this is a reset finch seed.
   if (reset_survey_cycle_ || reset_hats_) {
@@ -105,8 +107,8 @@ void HatsFinchHelper::LoadFinchParamValues() {
 }
 
 bool HatsFinchHelper::HasPreviousCycleEnded() {
-  int64_t serialized_timestamp =
-      profile_->GetPrefs()->GetInt64(prefs::kHatsSurveyCycleEndTimestamp);
+  int64_t serialized_timestamp = profile_->GetPrefs()->GetInt64(
+      hats_config_.hatsCycleEndTimestampPrefName);
   base::Time recent_survey_cycle_end_time =
       base::Time::FromInternalValue(serialized_timestamp);
   return recent_survey_cycle_end_time < base::Time::Now();
@@ -128,7 +130,7 @@ void HatsFinchHelper::CheckForDeviceSelection() {
   // for the current cycle, then return the stored value of the result.
   if (!HasPreviousCycleEnded()) {
     device_is_selected_for_cycle_ =
-        profile_->GetPrefs()->GetBoolean(prefs::kHatsDeviceIsSelected);
+        profile_->GetPrefs()->GetBoolean(hats_config_.hatsIsSelectedPrefName);
     return;
   }
 
@@ -140,7 +142,7 @@ void HatsFinchHelper::CheckForDeviceSelection() {
   base::Time survey_cycle_end_date = ComputeNextEndDate();
 
   PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetInt64(prefs::kHatsSurveyCycleEndTimestamp,
+  pref_service->SetInt64(hats_config_.hatsCycleEndTimestampPrefName,
                          survey_cycle_end_date.ToInternalValue());
 
   double rand_double = base::RandDouble();
@@ -152,7 +154,7 @@ void HatsFinchHelper::CheckForDeviceSelection() {
   // of around 26 characters.
   is_selected = is_selected && (trigger_id_.length() > 15);
 
-  pref_service->SetBoolean(prefs::kHatsDeviceIsSelected, is_selected);
+  pref_service->SetBoolean(hats_config_.hatsIsSelectedPrefName, is_selected);
   device_is_selected_for_cycle_ = is_selected;
 }
 

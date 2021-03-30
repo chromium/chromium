@@ -5,6 +5,7 @@
 #ifndef UI_WEBUI_WEBUI_CONFIG_H_
 #define UI_WEBUI_WEBUI_CONFIG_H_
 
+#include <memory>
 #include <string>
 
 #include "base/strings/string_piece.h"

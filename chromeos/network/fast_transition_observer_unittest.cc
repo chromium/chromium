@@ -4,8 +4,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/network/fast_transition_observer.h"

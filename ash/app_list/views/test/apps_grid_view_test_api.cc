@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/test/apps_grid_view_test_api.h"
 
+#include <memory>
 #include <vector>
 
 #include "ash/app_list/paged_view_structure.h"
@@ -90,20 +91,20 @@ bool AppsGridViewTestApi::HasPendingPageFlip() const {
          view_->pagination_model()->has_transition();
 }
 
-int AppsGridViewTestApi::TilesPerPage(int page) const {
-  return view_->TilesPerPage(page);
+int AppsGridViewTestApi::TilesPerPage() const {
+  return view_->TilesPerPage();
 }
 
 int AppsGridViewTestApi::AppsOnPage(int page) const {
-  return view_->view_structure_.items_on_page(page);
+  return view_->GetItemsNumOfPage(page);
 }
 
 AppListItemView* AppsGridViewTestApi::GetViewAtIndex(GridIndex index) const {
   return view_->GetViewAtIndex(index);
 }
 
-views::View* AppsGridViewTestApi::GetViewAtVisualIndex(int page,
-                                                       int slot) const {
+AppListItemView* AppsGridViewTestApi::GetViewAtVisualIndex(int page,
+                                                           int slot) const {
   const std::vector<std::vector<AppListItemView*>>& view_structure =
       view_->view_structure_.pages();
   if (page >= static_cast<int>(view_structure.size()) ||

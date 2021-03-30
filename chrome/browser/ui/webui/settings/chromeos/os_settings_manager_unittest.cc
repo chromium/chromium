@@ -7,12 +7,13 @@
 #include "base/metrics/histogram_base.h"
 #include "base/no_destructor.h"
 #include "base/test/metrics/histogram_enum_reader.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -67,7 +68,8 @@ class OsSettingsManagerTest : public testing::Test {
         ArcAppListPrefsFactory::GetForBrowserContext(profile),
         IdentityManagerFactory::GetForProfile(profile),
         android_sms::AndroidSmsServiceFactory::GetForBrowserContext(profile),
-        CupsPrintersManagerFactory::GetForBrowserContext(profile));
+        CupsPrintersManagerFactory::GetForBrowserContext(profile),
+        apps::AppServiceProxyFactory::GetForProfile(profile));
   }
 
   content::BrowserTaskEnvironment task_environment_;

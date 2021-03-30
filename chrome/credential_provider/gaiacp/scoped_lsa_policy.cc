@@ -127,7 +127,7 @@ bool ScopedLsaPolicy::PrivateDataExists(const wchar_t* key) {
 
 HRESULT ScopedLsaPolicy::AddAccountRights(
     PSID sid,
-    const std::vector<base::string16>& rights) {
+    const std::vector<std::wstring>& rights) {
   LOGFN(VERBOSE);
   for (auto& right : rights) {
     std::vector<LSA_UNICODE_STRING> lsa_rights;
@@ -148,7 +148,7 @@ HRESULT ScopedLsaPolicy::AddAccountRights(
 
 HRESULT ScopedLsaPolicy::RemoveAccountRights(
     PSID sid,
-    const std::vector<base::string16>& rights) {
+    const std::vector<std::wstring>& rights) {
   LOGFN(VERBOSE);
   for (auto& right : rights) {
     std::vector<LSA_UNICODE_STRING> lsa_rights;

@@ -13,7 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
 
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
@@ -21,7 +20,6 @@ import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
@@ -67,10 +65,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
-        ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED})
-@Features.
-DisableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.REPORT_FEED_USER_ACTIONS})
+@EnableFeatures({ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD})
+@Features.DisableFeatures({ChromeFeatureList.QUERY_TILES})
 public class EnhancedProtectionPromoTest {
     private static final String METRICS_ENHANCED_PROTECTION_PROMO =
             "NewTabPage.Promo.EnhancedProtectionPromo";
@@ -200,7 +196,7 @@ public class EnhancedProtectionPromoTest {
     }
 
     private void scrollToEnhancedProtectionPromo() {
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(NTP_HEADER_POSITION + 1));
         waitForView((ViewGroup) mActivityTestRule.getActivity().findViewById(
                             R.id.enhanced_protection_promo),

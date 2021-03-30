@@ -46,8 +46,8 @@ public class AwProxyController {
 
     public AwProxyController() {}
 
-    public void setProxyOverride(
-            String[][] proxyRules, String[] bypassRules, Runnable listener, Executor executor) {
+    public void setProxyOverride(String[][] proxyRules, String[] bypassRules, Runnable listener,
+            Executor executor, boolean reverseBypass) {
         int length = (proxyRules == null ? 0 : proxyRules.length);
         String[] urlSchemes = new String[length];
         String[] proxyUrls = new String[length];
@@ -96,8 +96,8 @@ public class AwProxyController {
             throw new IllegalArgumentException("Executor must not be null");
         }
 
-        String result = AwProxyControllerJni.get().setProxyOverride(
-                AwProxyController.this, urlSchemes, proxyUrls, bypassRules, listener, executor);
+        String result = AwProxyControllerJni.get().setProxyOverride(AwProxyController.this,
+                urlSchemes, proxyUrls, bypassRules, listener, executor, reverseBypass);
         if (!result.isEmpty()) {
             throw new IllegalArgumentException(result);
         }
@@ -156,7 +156,7 @@ public class AwProxyController {
     @NativeMethods
     interface Natives {
         String setProxyOverride(AwProxyController caller, String[] urlSchemes, String[] proxyUrls,
-                String[] bypassRules, Runnable listener, Executor executor);
+                String[] bypassRules, Runnable listener, Executor executor, boolean reverseBypass);
         void clearProxyOverride(AwProxyController caller, Runnable listener, Executor executor);
     }
 }

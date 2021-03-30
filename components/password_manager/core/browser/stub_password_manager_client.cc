@@ -35,6 +35,7 @@ void StubPasswordManagerClient::HideManualFallbackForSaving() {}
 
 void StubPasswordManagerClient::FocusedInputChanged(
     password_manager::PasswordManagerDriver* driver,
+    autofill::FieldRendererId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {}
 
 bool StubPasswordManagerClient::PromptUserToChooseCredentials(

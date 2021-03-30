@@ -4,25 +4,19 @@
 
 #include "components/system_media_controls/mac/system_media_controls_mac.h"
 
-#include "base/memory/singleton.h"
-
 namespace system_media_controls {
 
 // static
-SystemMediaControls* SystemMediaControls::GetInstance() {
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
+    const std::string& product_name) {
   // The required APIs for interacting with the Now Playing Info Center only
-  // exist on 10.12.2 or later.
-  if (@available(macOS 10.12.2, *))
-    return internal::SystemMediaControlsMac::GetInstance();
+  // exist on 10.13.1 or later.
+  if (@available(macOS 10.13.1, *))
+    return std::make_unique<internal::SystemMediaControlsMac>();
   return nullptr;
 }
 
 namespace internal {
-
-// static
-SystemMediaControlsMac* SystemMediaControlsMac::GetInstance() {
-  return base::Singleton<SystemMediaControlsMac>::get();
-}
 
 SystemMediaControlsMac::SystemMediaControlsMac() = default;
 
@@ -54,20 +48,33 @@ void SystemMediaControlsMac::SetIsStopEnabled(bool value) {
   remote_command_center_delegate_.SetIsStopEnabled(value);
 }
 
+void SystemMediaControlsMac::SetIsSeekToEnabled(bool value) {
+  remote_command_center_delegate_.SetIsSeekToEnabled(value);
+}
+
 void SystemMediaControlsMac::SetPlaybackStatus(PlaybackStatus status) {
   now_playing_info_center_delegate_.SetPlaybackStatus(status);
 }
 
-void SystemMediaControlsMac::SetTitle(const base::string16& title) {
+void SystemMediaControlsMac::SetTitle(const std::u16string& title) {
   now_playing_info_center_delegate_.SetTitle(title);
 }
 
-void SystemMediaControlsMac::SetArtist(const base::string16& artist) {
+void SystemMediaControlsMac::SetArtist(const std::u16string& artist) {
   now_playing_info_center_delegate_.SetArtist(artist);
 }
 
-void SystemMediaControlsMac::SetAlbum(const base::string16& album) {
+void SystemMediaControlsMac::SetAlbum(const std::u16string& album) {
   now_playing_info_center_delegate_.SetAlbum(album);
+}
+
+void SystemMediaControlsMac::SetThumbnail(const SkBitmap& bitmap) {
+  now_playing_info_center_delegate_.SetThumbnail(bitmap);
+}
+
+void SystemMediaControlsMac::SetPosition(
+    const media_session::MediaPosition& position) {
+  now_playing_info_center_delegate_.SetPosition(position);
 }
 
 void SystemMediaControlsMac::ClearMetadata() {

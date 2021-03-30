@@ -41,11 +41,7 @@
   # script-src: https://feedback.googleusercontent.com https://www.google.com
   #      https://www.gstatic.com/feedback
   # child-src: https://www.google.com
-  #
-  # Webview elements are implemented as a custom <object> elements that loads
-  # dynamic plugin data. Without an "object-src 'self'" permission in the CSP,
-  # webview elements fail to attach to extension pages (crbug.com/509854).
-  "content_security_policy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' https://feedback.googleusercontent.com https://www.google.com https://www.gstatic.com; child-src https://www.google.com; connect-src 'self' http://*:* https://*:*; font-src https://fonts.gstatic.com; object-src 'self';",
+  "content_security_policy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' https://feedback.googleusercontent.com https://www.google.com https://www.gstatic.com; child-src https://www.google.com; connect-src 'self' http://*:* https://*:*; font-src https://fonts.gstatic.com;",
 
   # Setting the public key fixes the extension id to:
   # enhhojjnijigcajfphajepfemndkmdlo

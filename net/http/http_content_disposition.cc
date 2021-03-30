@@ -94,7 +94,7 @@ bool DecodeWord(const std::string& encoded_word,
     if (base::IsStringUTF8(encoded_word)) {
       *output = encoded_word;
     } else {
-      base::string16 utf16_output;
+      std::u16string utf16_output;
       if (!referrer_charset.empty() &&
           ConvertToUTF16(encoded_word, referrer_charset.c_str(),
                          &utf16_output)) {
@@ -344,7 +344,7 @@ HttpContentDisposition::~HttpContentDisposition() = default;
 std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
     std::string::const_iterator begin, std::string::const_iterator end) {
   DCHECK(type_ == INLINE);
-  base::StringPiece header(begin, end);
+  auto header = base::MakeStringPiece(begin, end);
   size_t delimiter = header.find(';');
   base::StringPiece type = header.substr(0, delimiter);
   type = HttpUtil::TrimLWS(type);

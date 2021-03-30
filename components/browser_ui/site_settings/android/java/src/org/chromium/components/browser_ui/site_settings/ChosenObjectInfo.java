@@ -18,17 +18,15 @@ import java.io.Serializable;
 public class ChosenObjectInfo implements Serializable {
     private final @ContentSettingsType int mContentSettingsType;
     private final String mOrigin;
-    private final String mEmbedder;
     private final String mName;
     private final String mObject;
     private final boolean mIsManaged;
 
     @VisibleForTesting
     public ChosenObjectInfo(@ContentSettingsType int contentSettingsType, String origin,
-            String embedder, String name, String object, boolean isManaged) {
+            String name, String object, boolean isManaged) {
         mContentSettingsType = contentSettingsType;
         mOrigin = origin;
-        mEmbedder = embedder;
         mName = name;
         mObject = object;
         mIsManaged = isManaged;
@@ -46,13 +44,6 @@ public class ChosenObjectInfo implements Serializable {
      */
     public String getOrigin() {
         return mOrigin;
-    }
-
-    /**
-     * Returns the origin that the requester was embedded in.
-     */
-    public String getEmbedder() {
-        return mEmbedder;
     }
 
     /**
@@ -82,7 +73,7 @@ public class ChosenObjectInfo implements Serializable {
     public void revoke(BrowserContextHandle browserContextHandle) {
         if (!mIsManaged) {
             WebsitePreferenceBridgeJni.get().revokeObjectPermission(
-                    browserContextHandle, mContentSettingsType, mOrigin, mEmbedder, mObject);
+                    browserContextHandle, mContentSettingsType, mOrigin, mObject);
         }
     }
 }

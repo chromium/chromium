@@ -42,13 +42,13 @@ void FindTabHelper::RemoveObserver(FindResultObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FindTabHelper::StartFinding(base::string16 search_string,
+void FindTabHelper::StartFinding(std::u16string search_string,
                                  bool forward_direction,
                                  bool case_sensitive,
                                  bool find_match,
                                  bool run_synchronously_for_testing) {
   // Remove the carriage return character, which generally isn't in web content.
-  const base::char16 kInvalidChars[] = {'\r', 0};
+  const char16_t kInvalidChars[] = u"\r";
   base::RemoveChars(search_string, kInvalidChars, &search_string);
 
   // Keep track of what the last search was across the tabs.
@@ -95,7 +95,7 @@ void FindTabHelper::StopFinding(SelectionAction selection_action) {
     // kClearSelection means the find string has been cleared by the user, but
     // the UI has not been dismissed. In that case we want to clear the
     // previously remembered search (http://crbug.com/42639).
-    previous_find_text_ = base::string16();
+    previous_find_text_ = std::u16string();
   } else {
     find_ui_active_ = false;
     if (!find_text_.empty())
@@ -130,13 +130,13 @@ void FindTabHelper::ActivateFindInPageResultForAccessibility() {
       current_find_request_id_);
 }
 
-base::string16 FindTabHelper::GetInitialSearchText() {
+std::u16string FindTabHelper::GetInitialSearchText() {
   // Try the last thing we searched for in this tab.
   if (!previous_find_text_.empty())
     return previous_find_text_;
 
   // Then defer to the delegate.
-  return delegate_ ? delegate_->GetSearchPrepopulateText() : base::string16();
+  return delegate_ ? delegate_->GetSearchPrepopulateText() : std::u16string();
 }
 
 #if defined(OS_ANDROID)

@@ -22,7 +22,7 @@ class DesktopCapturer;
 class NativeDesktopMediaList : public DesktopMediaListBase {
  public:
   // |capturer| must exist.
-  NativeDesktopMediaList(content::DesktopMediaID::Type type,
+  NativeDesktopMediaList(DesktopMediaList::Type type,
                          std::unique_ptr<webrtc::DesktopCapturer> capturer);
   ~NativeDesktopMediaList() override;
 
@@ -36,8 +36,8 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
   // thumbnails and schedules next refresh.
   void Refresh(bool update_thumnails) override;
 
-  void RefreshForAuraWindows(std::vector<SourceDescription> sources,
-                             bool update_thumnails);
+  void RefreshForVizFrameSinkWindows(std::vector<SourceDescription> sources,
+                                     bool update_thumnails);
   void UpdateNativeThumbnailsFinished();
 
 #if defined(USE_AURA)

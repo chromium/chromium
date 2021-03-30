@@ -176,7 +176,7 @@ bool RunTest(const DeviceCertTest& test_case) {
 void RunTestSuite(const std::string& test_suite_file_name) {
   std::string testsuite_raw;
   base::ReadFileToString(
-      testing::GetCastTestCertsDirectory().AppendASCII(test_suite_file_name),
+      testing::GetCastCertificateDirectory().AppendASCII(test_suite_file_name),
       &testsuite_raw);
 
   DeviceCertTestSuite test_suite;

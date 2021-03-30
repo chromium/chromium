@@ -9,7 +9,7 @@
 #include <set>
 
 #include "base/memory/ref_counted.h"
-#include "extensions/browser/api/storage/settings_namespace.h"
+#include "extensions/browser/value_store/settings_namespace.h"
 #include "extensions/common/extension_id.h"
 
 class ValueStore;

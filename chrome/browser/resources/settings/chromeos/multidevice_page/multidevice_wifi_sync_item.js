@@ -75,4 +75,9 @@ Polymer({
     this.isWifiSyncV1Enabled_ = osSyncFeatureEnabled && !!osSyncPrefs &&
         osSyncPrefs.osWifiConfigurationsSynced;
   },
+
+  /** @override */
+  focus() {
+    this.$$('settings-multidevice-feature-item').focus();
+  },
 });

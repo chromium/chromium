@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/callback_helpers.h"
@@ -32,7 +33,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -199,8 +199,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   }
 
   void CheckJavascriptErrors() {
-    content::RenderFrameHost* host =
-        dialog_->GetRenderViewHost()->GetMainFrame();
+    content::RenderFrameHost* host = dialog_->GetMainFrame();
     base::Value value =
         content::ExecuteScriptAndGetValue(host, "window.JSErrorCount");
     int js_error_count = value.GetInt();
@@ -208,8 +207,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   }
 
   void ClickElement(const std::string& selector) {
-    content::RenderFrameHost* frame_host =
-        dialog_->GetRenderViewHost()->GetMainFrame();
+    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
 
     auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
     CHECK(web_contents);
@@ -257,7 +255,7 @@ class BaseSelectFileDialogExtensionBrowserTest
     // the Files app.
     ui::SelectFileDialog::FileTypeInfo file_types;
     file_types.extensions = {{"html"}};
-    dialog_->SelectFile(dialog_type, base::string16() /* title */, file_path,
+    dialog_->SelectFile(dialog_type, std::u16string() /* title */, file_path,
                         UseFileTypeFilter() ? &file_types : nullptr,
                         0 /* file_type_index */,
                         FILE_PATH_LITERAL("") /* default_extension */,
@@ -293,30 +291,27 @@ class BaseSelectFileDialogExtensionBrowserTest
 
     // The dialog type is not relevant for this test but is required: use the
     // open file dialog type.
-    second_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
-                               base::string16() /* title */,
-                               base::FilePath() /* default_path */,
-                               NULL /* file_types */,
-                               0 /* file_type_index */,
-                               FILE_PATH_LITERAL("") /* default_extension */,
-                               owning_window,
-                               this /* params */);
+    second_dialog_->SelectFile(
+        ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string() /* title */,
+        base::FilePath() /* default_path */, NULL /* file_types */,
+        0 /* file_type_index */, FILE_PATH_LITERAL("") /* default_extension */,
+        owning_window, this /* params */);
   }
 
   void CloseDialog(DialogButtonType button_type,
                    const gfx::NativeWindow& owning_window) {
     // Inject JavaScript into the dialog to click the dialog |button_type|.
-    content::RenderViewHost* host = dialog_->GetRenderViewHost();
+    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
     std::string button_class =
         (button_type == DIALOG_BTN_OK) ? ".button-panel .ok" :
                                          ".button-panel .cancel";
-    base::string16 script = base::ASCIIToUTF16(
+    std::u16string script = base::ASCIIToUTF16(
         "console.log(\'Test JavaScript injected.\');"
-        "document.querySelector(\'" + button_class + "\').click();");
+        "document.querySelector(\'" +
+        button_class + "\').click();");
     // The file selection handler code closes the dialog but does not return
     // control to JavaScript, so do not wait for the script return value.
-    host->GetMainFrame()->ExecuteJavaScriptForTests(script,
-                                                    base::NullCallback());
+    frame_host->ExecuteJavaScriptForTests(script, base::NullCallback());
 
     // Instead, wait for Listener notification that the window has closed.
     LOG(INFO) << "Waiting for window close notification.";
@@ -621,8 +616,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
   // Open the file dialog on the default path.
   ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                      base::FilePath(), owning_window, ""));
-  content::RenderFrameHost* frame_host =
-      dialog_->GetRenderViewHost()->GetMainFrame();
+  content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
   SkColor active_color =

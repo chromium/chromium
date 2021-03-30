@@ -27,6 +27,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -237,6 +238,15 @@ void DefineCursor(x11::Window window, x11::Cursor cursor) {
       .Sync();
 }
 
+size_t RowBytesForVisualWidth(const x11::Connection::VisualInfo& visual_info,
+                              int width) {
+  auto bpp = visual_info.format->bits_per_pixel;
+  auto align = visual_info.format->scanline_pad;
+  size_t row_bits = bpp * width;
+  row_bits += (align - (row_bits % align)) % align;
+  return (row_bits + 7) / 8;
+}
+
 void DrawPixmap(x11::Connection* connection,
                 x11::VisualId visual,
                 x11::Drawable drawable,
@@ -248,15 +258,15 @@ void DrawPixmap(x11::Connection* connection,
                 int dst_y,
                 int width,
                 int height) {
+  // 24 bytes for the PutImage header, an additional 4 bytes in case this is an
+  // extended size request, and an additional 4 bytes in case padding is needed.
+  constexpr size_t kPutImageExtraSize = 32;
+
   const auto* visual_info = connection->GetVisualInfoFromId(visual);
   if (!visual_info)
     return;
 
-  auto bpp = visual_info->format->bits_per_pixel;
-  auto align = visual_info->format->scanline_pad;
-  size_t row_bits = bpp * width;
-  row_bits += (align - (row_bits % align)) % align;
-  size_t row_bytes = (row_bits + 7) / 8;
+  size_t row_bytes = RowBytesForVisualWidth(*visual_info, width);
 
   auto color_type = ColorTypeForVisual(visual);
   if (color_type == kUnknown_SkColorType) {
@@ -271,19 +281,30 @@ void DrawPixmap(x11::Connection* connection,
   std::vector<uint8_t> vec(row_bytes * height);
   SkPixmap pixmap(image_info, vec.data(), row_bytes);
   skia_pixmap.readPixels(pixmap, src_x, src_y);
-  x11::PutImageRequest put_image_request{
-      .format = x11::ImageFormat::ZPixmap,
-      .drawable = drawable,
-      .gc = gc,
-      .width = width,
-      .height = height,
-      .dst_x = dst_x,
-      .dst_y = dst_y,
-      .left_pad = 0,
-      .depth = visual_info->format->depth,
-      .data = base::RefCountedBytes::TakeVector(&vec),
-  };
-  connection->PutImage(put_image_request);
+
+  DCHECK_GT(connection->MaxRequestSizeInBytes(), kPutImageExtraSize);
+  int rows_per_request =
+      (connection->MaxRequestSizeInBytes() - kPutImageExtraSize) / row_bytes;
+  DCHECK_GT(rows_per_request, 1);
+  for (int row = 0; row < height; row += rows_per_request) {
+    size_t n_rows = std::min<size_t>(rows_per_request, height - row);
+    auto data = base::MakeRefCounted<base::RefCountedStaticMemory>(
+        vec.data() + row * row_bytes, n_rows * row_bytes);
+    connection->PutImage({
+        .format = x11::ImageFormat::ZPixmap,
+        .drawable = drawable,
+        .gc = gc,
+        .width = width,
+        .height = n_rows,
+        .dst_x = dst_x,
+        .dst_y = dst_y + row,
+        .left_pad = 0,
+        .depth = visual_info->format->depth,
+        .data = data,
+    });
+  }
+  // Flush since the PutImage requests depend on |vec| being alive.
+  connection->Flush();
 }
 
 bool IsXInput2Available() {
@@ -291,7 +312,7 @@ bool IsXInput2Available() {
 }
 
 bool QueryShmSupport() {
-  static bool supported = x11::Connection::Get()->shm().QueryVersion({}).Sync();
+  static bool supported = x11::Connection::Get()->shm().QueryVersion().Sync();
   return supported;
 }
 
@@ -305,16 +326,14 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
 
   conn->ReadResponses();
   if (motion) {
-    for (auto it = conn->events().begin(); it != conn->events().end();) {
-      const auto& next_event = *it;
+    for (auto& next_event : conn->events()) {
       // Discard all but the most recent motion event that targets the same
       // window with unchanged state.
       const auto* next_motion = next_event.As<x11::MotionNotifyEvent>();
       if (next_motion && next_motion->event == motion->event &&
           next_motion->child == motion->child &&
           next_motion->state == motion->state) {
-        *last_event = std::move(*it);
-        it = conn->events().erase(it);
+        *last_event = std::move(next_event);
       } else {
         break;
       }
@@ -324,8 +343,8 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
            device->opcode == x11::Input::DeviceEvent::TouchUpdate);
 
     auto* ddmx11 = ui::DeviceDataManagerX11::GetInstance();
-    for (auto it = conn->events().begin(); it != conn->events().end();) {
-      auto* next_device = it->As<x11::Input::DeviceEvent>();
+    for (auto& event : conn->events()) {
+      auto* next_device = event.As<x11::Input::DeviceEvent>();
 
       if (!next_device)
         break;
@@ -336,13 +355,13 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
       // always be at least one pending.
       if (!ui::TouchFactory::GetInstance()->ShouldProcessDeviceEvent(
               *next_device)) {
-        it = conn->events().erase(it);
+        event = x11::Event();
         continue;
       }
 
       if (next_device->opcode == device->opcode &&
-          !ddmx11->IsCMTGestureEvent(*it) &&
-          ddmx11->GetScrollClassEventDetail(*it) == SCROLL_TYPE_NO_SCROLL) {
+          !ddmx11->IsCMTGestureEvent(event) &&
+          ddmx11->GetScrollClassEventDetail(event) == SCROLL_TYPE_NO_SCROLL) {
         // Confirm that the motion event is targeted at the same window
         // and that no buttons or modifiers have changed.
         if (device->event == next_device->event &&
@@ -353,12 +372,12 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
             device->mods.latched == next_device->mods.latched &&
             device->mods.locked == next_device->mods.locked &&
             device->mods.effective == next_device->mods.effective) {
-          *last_event = std::move(*it);
-          it = conn->events().erase(it);
+          *last_event = std::move(event);
           num_coalesced++;
           continue;
         }
       }
+
       break;
     }
   }
@@ -441,7 +460,7 @@ bool GetInnerWindowBounds(x11::Window window, gfx::Rect* rect) {
   auto root = static_cast<x11::Window>(GetX11RootWindow());
 
   x11::Connection* connection = x11::Connection::Get();
-  auto get_geometry = connection->GetGeometry({x11_window});
+  auto get_geometry = connection->GetGeometry(x11_window);
   auto translate_coords = connection->TranslateCoordinates({x11_window, root});
 
   // Sync after making both requests so only one round-trip is made.
@@ -932,31 +951,19 @@ void SuspendX11ScreenSaver(bool suspend) {
   x11::Connection::Get()->screensaver().Suspend({suspend});
 }
 
-base::Value GpuExtraInfoAsListValue(x11::VisualId system_visual,
-                                    x11::VisualId rgba_visual) {
-  base::Value result(base::Value::Type::LIST);
-  result.Append(
+void StoreGpuExtraInfoIntoListValue(x11::VisualId system_visual,
+                                    x11::VisualId rgba_visual,
+                                    base::Value& list_value) {
+  list_value.Append(
       NewDescriptionValuePair("Window manager", ui::GuessWindowManagerName()));
-  {
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    std::string value;
-    const char kXDGCurrentDesktop[] = "XDG_CURRENT_DESKTOP";
-    if (env->GetVar(kXDGCurrentDesktop, &value))
-      result.Append(NewDescriptionValuePair(kXDGCurrentDesktop, value));
-    const char kGDMSession[] = "GDMSESSION";
-    if (env->GetVar(kGDMSession, &value))
-      result.Append(NewDescriptionValuePair(kGDMSession, value));
-    result.Append(NewDescriptionValuePair(
-        "Compositing manager",
-        ui::IsCompositingManagerPresent() ? "Yes" : "No"));
-  }
-  result.Append(NewDescriptionValuePair(
+  list_value.Append(NewDescriptionValuePair(
+      "Compositing manager", ui::IsCompositingManagerPresent() ? "Yes" : "No"));
+  list_value.Append(NewDescriptionValuePair(
       "System visual ID",
       base::NumberToString(static_cast<uint32_t>(system_visual))));
-  result.Append(NewDescriptionValuePair(
+  list_value.Append(NewDescriptionValuePair(
       "RGBA visual ID",
       base::NumberToString(static_cast<uint32_t>(rgba_visual))));
-  return result;
 }
 
 bool WmSupportsHint(x11::Atom atom) {
@@ -1067,7 +1074,7 @@ bool IsVulkanSurfaceSupported() {
   };
   auto* connection = x11::Connection::Get();
   for (const auto* extension : extensions) {
-    if (connection->QueryExtension({extension}).Sync())
+    if (connection->QueryExtension(extension).Sync())
       return true;
   }
   return false;

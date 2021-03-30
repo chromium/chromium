@@ -52,9 +52,6 @@ class RelaunchNotificationControllerPlatformImpl
   // refresh.
   void RefreshRelaunchRecommendedTitle(bool past_deadline);
 
-  // Ensure show recording only once.
-  void RecordRecommendedShowResult();
-
   // Callback triggered whenever the required notification's title has to
   // refresh.
   void RefreshRelaunchRequiredTitle();
@@ -71,9 +68,6 @@ class RelaunchNotificationControllerPlatformImpl
   // Timer that takes care of the string refresh in the relaunch required
   // notification title.
   std::unique_ptr<RelaunchRequiredTimer> relaunch_required_timer_;
-
-  // Indicate that show of the Recommended notification was already recorded.
-  bool recorded_shown_ = false;
 
   base::OnceCallback<base::Time()> on_visible_;
 

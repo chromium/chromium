@@ -65,15 +65,6 @@ public class InstantAppsHandler {
             "com.google.android.instantapps.START", "com.google.android.instantapps.nmr1.INSTALL",
             "com.google.android.instantapps.nmr1.VIEW"};
 
-    /** Finch experiment name. */
-    private static final String INSTANT_APPS_EXPERIMENT_NAME = "InstantApps";
-
-    /** Finch experiment group which is enabled for instant apps. */
-    private static final String INSTANT_APPS_ENABLED_ARM = "InstantAppsEnabled";
-
-    /** Finch experiment group which is disabled for instant apps. */
-    private static final String INSTANT_APPS_DISABLED_ARM = "InstantAppsDisabled";
-
     // Only two possible call sources for fallback intents, set boundary at n+1.
     private static final int SOURCE_BOUNDARY = 3;
 

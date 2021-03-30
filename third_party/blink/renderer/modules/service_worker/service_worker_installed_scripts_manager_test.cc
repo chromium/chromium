@@ -54,9 +54,9 @@ class BrowserSideSender
     script_info->encoding = encoding;
     script_info->headers = headers;
     EXPECT_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(nullptr, &body_handle_, &script_info->body));
-    EXPECT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &meta_data_handle_,
-                                                   &script_info->meta_data));
+              mojo::CreateDataPipe(nullptr, body_handle_, script_info->body));
+    EXPECT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, meta_data_handle_,
+                                                   script_info->meta_data));
     script_info->body_size = body_size;
     script_info->meta_data_size = meta_data_size;
     manager_->TransferInstalledScript(std::move(script_info));

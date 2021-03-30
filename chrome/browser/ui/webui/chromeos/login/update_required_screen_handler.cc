@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/update_required_screen.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -91,7 +91,7 @@ void UpdateRequiredScreenHandler::Initialize() {
 
 void UpdateRequiredScreenHandler::SetEnterpriseAndDeviceName(
     const std::string& enterpriseDomain,
-    const base::string16& deviceName) {
+    const std::u16string& deviceName) {
   CallJS("login.UpdateRequiredScreen.setEnterpriseAndDeviceName",
          enterpriseDomain, deviceName);
 }
@@ -135,7 +135,7 @@ void UpdateRequiredScreenHandler::SetUpdateProgressValue(int progress) {
 }
 
 void UpdateRequiredScreenHandler::SetUpdateProgressMessage(
-    const base::string16& message) {
+    const std::u16string& message) {
   CallJS("login.UpdateRequiredScreen.setUpdateProgressMessage", message);
 }
 

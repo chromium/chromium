@@ -18,7 +18,7 @@
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -291,7 +291,7 @@ class ExtensionsBrowserClient {
   // on |view_type|, so that its corresponding task shows up in the task
   // manager.
   virtual void AttachExtensionTaskManagerTag(content::WebContents* web_contents,
-                                             ViewType view_type) {}
+                                             mojom::ViewType view_type) {}
 
   // Returns a new UpdateClient.
   virtual scoped_refptr<update_client::UpdateClient> CreateUpdateClient(

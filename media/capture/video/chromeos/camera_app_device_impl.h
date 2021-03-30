@@ -25,6 +25,8 @@
 
 namespace media {
 
+class CameraDeviceContext;
+
 struct ReprocessTask {
  public:
   ReprocessTask();
@@ -59,13 +61,21 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
       media::mojom::ImageCapture::TakePhotoCallback take_photo_callback);
 
   CameraAppDeviceImpl(const std::string& device_id,
-                      cros::mojom::CameraInfoPtr camera_info,
-                      base::OnceClosure cleanup_callback);
+                      cros::mojom::CameraInfoPtr camera_info);
   ~CameraAppDeviceImpl() override;
 
   // Binds the mojo receiver to this implementation.
   void BindReceiver(
       mojo::PendingReceiver<cros::mojom::CameraAppDevice> receiver);
+
+  // All the weak pointers should be retrieved, dereferenced and invalidated on
+  // the camera device ipc thread.
+  base::WeakPtr<CameraAppDeviceImpl> GetWeakPtr();
+
+  // Invalidates all the existing weak pointers and then triggers |callback|.
+  // When |should_disable_new_ptrs| is set to true, no more weak pointers can be
+  // created. It is used when tearing down the CameraAppDeviceImpl instance.
+  void InvalidatePtrs(base::OnceClosure callback, bool should_disable_new_ptrs);
 
   // Consumes all the pending reprocess tasks if there is any and eventually
   // generates a ReprocessTaskQueue which contains:
@@ -94,6 +104,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // Notifies the camera event observers that the shutter is finished.
   void OnShutterDone();
 
+  // Sets the pointer to the camera device context instance associated with the
+  // opened camera.  Used to configure and query camera frame rotation.
+  void SetCameraDeviceContext(CameraDeviceContext* device_context);
+
   // cros::mojom::CameraAppDevice implementations.
   void GetCameraInfo(GetCameraInfoCallback callback) override;
   void SetReprocessOption(cros::mojom::Effect effect,
@@ -118,6 +132,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   void RemoveCameraEventObserver(
       uint32_t id,
       RemoveCameraEventObserverCallback callback) override;
+  void SetCameraFrameRotationEnabledAtSource(
+      bool is_enabled,
+      SetCameraFrameRotationEnabledAtSourceCallback callback) override;
+  void GetCameraFrameRotation(GetCameraFrameRotationCallback callback) override;
 
  private:
   static void DisableEeNr(ReprocessTask* task);
@@ -132,15 +150,13 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   std::string device_id_;
 
+  // If it is set to false, no weak pointers for this instance can be generated
+  // for IPC thread.
+  bool allow_new_ipc_weak_ptrs_;
+
   mojo::ReceiverSet<cros::mojom::CameraAppDevice> receivers_;
 
   cros::mojom::CameraInfoPtr camera_info_;
-
-  // Callback which should be triggered when the connection is down.
-  base::OnceClosure cleanup_callback_;
-
-  // It is used to invalidate weak pointer.
-  const scoped_refptr<base::SingleThreadTaskRunner> creation_task_runner_;
 
   // It is used for calls which should run on the mojo thread.
   scoped_refptr<base::SingleThreadTaskRunner> mojo_task_runner_;
@@ -175,7 +191,17 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   base::flat_map<uint32_t, mojo::Remote<cros::mojom::CameraEventObserver>>
       camera_event_observers_;
 
-  std::unique_ptr<base::WeakPtrFactory<CameraAppDeviceImpl>> weak_ptr_factory_;
+  base::Lock camera_device_context_lock_;
+  CameraDeviceContext* camera_device_context_
+      GUARDED_BY(camera_device_context_lock_);
+
+  // The weak pointers should be dereferenced and invalidated on camera device
+  // ipc thread.
+  base::WeakPtrFactory<CameraAppDeviceImpl> weak_ptr_factory_{this};
+
+  // The weak pointers should be dereferenced and invalidated on the Mojo
+  // thread.
+  base::WeakPtrFactory<CameraAppDeviceImpl> weak_ptr_factory_for_mojo_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CameraAppDeviceImpl);
 };

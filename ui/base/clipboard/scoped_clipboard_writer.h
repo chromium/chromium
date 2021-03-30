@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -41,25 +40,31 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   ~ScopedClipboardWriter();
 
   // Converts |text| to UTF-8 and adds it to the clipboard.
-  void WriteText(const base::string16& text);
+  void WriteText(const std::u16string& text);
 
   // Adds HTML to the clipboard.  The url parameter is optional, but especially
   // useful if the HTML fragment contains relative links.
-  void WriteHTML(const base::string16& markup, const std::string& source_url);
+  void WriteHTML(const std::u16string& markup, const std::string& source_url);
 
   // Adds SVG to the clipboard.
-  void WriteSvg(const base::string16& text);
+  void WriteSvg(const std::u16string& text);
 
   // Adds RTF to the clipboard.
   void WriteRTF(const std::string& rtf_data);
 
+  // Adds text/uri-list filenames to the clipboard.
+  // Security Note: This function is expected to be called only by exo in
+  // Chrome OS. It should not be called by renderers or any other untrusted
+  // party since any paths written to the clipboard can be read by renderers.
+  void WriteFilenames(const std::string& uri_list);
+
   // Adds a bookmark to the clipboard.
-  void WriteBookmark(const base::string16& bookmark_title,
+  void WriteBookmark(const std::u16string& bookmark_title,
                      const std::string& url);
 
   // Adds an html hyperlink (<a href>) to the clipboard. |anchor_text| and
   // |url| will be escaped as needed.
-  void WriteHyperlink(const base::string16& anchor_text,
+  void WriteHyperlink(const std::u16string& anchor_text,
                       const std::string& url);
 
   // Used by WebKit to determine whether WebKit wrote the clipboard last
@@ -71,7 +76,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
 
   // Data is written to the system clipboard in the same order as WriteData
   // calls are received.
-  void WriteData(const base::string16& format, mojo_base::BigBuffer data);
+  void WriteData(const std::u16string& format, mojo_base::BigBuffer data);
 
   void WriteImage(const SkBitmap& bitmap);
 

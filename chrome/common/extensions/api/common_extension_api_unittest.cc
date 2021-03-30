@@ -470,9 +470,9 @@ scoped_refptr<Extension> CreateExtensionWithPermissions(
   }
 
   std::string error;
-  scoped_refptr<Extension> extension(Extension::Create(
-      base::FilePath(), Manifest::UNPACKED,
-      manifest, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension(
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kUnpacked,
+                        manifest, Extension::NO_FLAGS, &error));
   CHECK(extension.get());
   CHECK(error.empty());
 
@@ -551,9 +551,9 @@ scoped_refptr<Extension> CreateHostedApp() {
   values.SetString(manifest_keys::kLaunchWebURL,
                    "http://www.example.com");
   std::string error;
-  scoped_refptr<Extension> extension(Extension::Create(
-      base::FilePath(), Manifest::INTERNAL, values, Extension::NO_FLAGS,
-      &error));
+  scoped_refptr<Extension> extension(
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
+                        values, Extension::NO_FLAGS, &error));
   CHECK(extension.get());
   return extension;
 }
@@ -582,9 +582,9 @@ scoped_refptr<Extension> CreatePackagedAppWithPermissions(
   }
 
   std::string error;
-  scoped_refptr<Extension> extension(Extension::Create(
-      base::FilePath(), Manifest::INTERNAL, values, Extension::NO_FLAGS,
-      &error));
+  scoped_refptr<Extension> extension(
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
+                        values, Extension::NO_FLAGS, &error));
   CHECK(extension.get()) << error;
   return extension;
 }

@@ -128,7 +128,7 @@ HashPasswordManager::HashPasswordManager() = default;
 HashPasswordManager::~HashPasswordManager() = default;
 
 bool HashPasswordManager::SavePasswordHash(const std::string username,
-                                           const base::string16& password,
+                                           const std::u16string& password,
                                            bool is_gaia_password) {
   if (!prefs_)
     return false;

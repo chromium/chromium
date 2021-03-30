@@ -197,22 +197,22 @@ TEST_F(BluetoothLocalGattCharacteristicTest,
 #endif
 TEST_F(BluetoothLocalGattCharacteristicTest, MAYBE_StartAndStopNotifications) {
   EXPECT_FALSE(SimulateLocalGattCharacteristicNotificationsRequest(
-      read_characteristic_.get(), true));
+      device_, read_characteristic_.get(), true));
   EXPECT_FALSE(delegate_->NotificationStatusForCharacteristic(
       read_characteristic_.get()));
 
   EXPECT_FALSE(SimulateLocalGattCharacteristicNotificationsRequest(
-      write_characteristic_.get(), true));
+      device_, write_characteristic_.get(), true));
   EXPECT_FALSE(delegate_->NotificationStatusForCharacteristic(
       write_characteristic_.get()));
 
   EXPECT_TRUE(SimulateLocalGattCharacteristicNotificationsRequest(
-      notify_characteristic_.get(), true));
+      device_, notify_characteristic_.get(), true));
   EXPECT_TRUE(delegate_->NotificationStatusForCharacteristic(
       notify_characteristic_.get()));
 
   EXPECT_TRUE(SimulateLocalGattCharacteristicNotificationsRequest(
-      notify_characteristic_.get(), false));
+      device_, notify_characteristic_.get(), false));
   EXPECT_FALSE(delegate_->NotificationStatusForCharacteristic(
       notify_characteristic_.get()));
 }

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 
+#include <utility>
+
 #include "base/stl_util.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
@@ -101,7 +103,8 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 
     // Not used, fall through to NOTREACHED.
     case blink::mojom::IDBKeyType::Invalid:  // Only used in blink.
-    case blink::mojom::IDBKeyType::Min:;     // Only used in the browser.
+    case blink::mojom::IDBKeyType::Min:      // Only used in the browser.
+      break;
   }
   NOTREACHED();
   return blink::mojom::IDBKeyDataView::Tag::OTHER_NONE;
@@ -174,7 +177,7 @@ StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     external_objects(const std::unique_ptr<blink::IDBValue>& input) {
   Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
   external_objects.ReserveInitialCapacity(
-      input->BlobInfo().size() + input->NativeFileSystemTokens().size());
+      input->BlobInfo().size() + input->FileSystemAccessTokens().size());
   for (const blink::WebBlobInfo& info : input->BlobInfo()) {
     auto blob_info = blink::mojom::blink::IDBBlobInfo::New();
     if (info.IsFile()) {
@@ -198,9 +201,9 @@ StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
         blink::mojom::blink::IDBExternalObject::NewBlobOrFile(
             std::move(blob_info)));
   }
-  for (auto& token : input->NativeFileSystemTokens()) {
+  for (auto& token : input->FileSystemAccessTokens()) {
     external_objects.push_back(
-        blink::mojom::blink::IDBExternalObject::NewNativeFileSystemToken(
+        blink::mojom::blink::IDBExternalObject::NewFileSystemAccessToken(
             std::move(token)));
   }
   return external_objects;
@@ -230,8 +233,8 @@ bool StructTraits<blink::mojom::IDBValueDataView,
 
   Vector<blink::WebBlobInfo> value_blob_info;
   Vector<
-      mojo::PendingRemote<blink::mojom::blink::NativeFileSystemTransferToken>>
-      native_file_system_tokens;
+      mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>
+      file_system_access_tokens;
 
   for (const auto& object : external_objects) {
     switch (object->which()) {
@@ -249,16 +252,16 @@ bool StructTraits<blink::mojom::IDBValueDataView,
         break;
       }
       case blink::mojom::blink::IDBExternalObject::Tag::
-          NATIVE_FILE_SYSTEM_TOKEN:
-        native_file_system_tokens.push_back(
-            std::move(object->get_native_file_system_token()));
+          FILE_SYSTEM_ACCESS_TOKEN:
+        file_system_access_tokens.push_back(
+            std::move(object->get_file_system_access_token()));
         break;
     }
   }
 
   *out = std::make_unique<blink::IDBValue>(
       std::move(value_buffer), std::move(value_blob_info),
-      std::move(native_file_system_tokens));
+      std::move(file_system_access_tokens));
   return true;
 }
 

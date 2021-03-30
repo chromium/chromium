@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/service/gpu_memory_buffer_factory_dxgi.h"
-#include <wrl.h>
+
 #include <vector>
+
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/ipc/common/dxgi_helpers.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
@@ -93,6 +96,21 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
 void GpuMemoryBufferFactoryDXGI::DestroyGpuMemoryBuffer(
     gfx::GpuMemoryBufferId id,
     int client_id) {}
+
+bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory) {
+  DCHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+  if (!d3d11_device)
+    return false;
+
+  return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle.Get(),
+                               std::move(shared_memory), d3d11_device.Get(),
+                               &staging_texture_);
+}
 
 ImageFactory* GpuMemoryBufferFactoryDXGI::AsImageFactory() {
   return this;

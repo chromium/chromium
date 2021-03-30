@@ -79,7 +79,6 @@
 ../../../../third_party/catapult/telemetry/third_party/websocket-client/websocket/_url.py
 ../../../../third_party/catapult/telemetry/third_party/websocket-client/websocket/_utils.py
 ../../../../third_party/catapult/third_party/gsutil/third_party/monotonic/monotonic.py
-../../../../third_party/catapult/third_party/zipfile/zipfile_2_7_13.py
 ../chrome_paths.py
 ../client/chromedriver.py
 ../client/command_executor.py

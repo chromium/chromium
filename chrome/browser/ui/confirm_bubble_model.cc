@@ -11,7 +11,7 @@
 ConfirmBubbleModel::ConfirmBubbleModel() = default;
 ConfirmBubbleModel::~ConfirmBubbleModel() = default;
 
-base::string16 ConfirmBubbleModel::GetButtonLabel(
+std::u16string ConfirmBubbleModel::GetButtonLabel(
     ui::DialogButton button) const {
   return l10n_util::GetStringUTF16(
       (button == ui::DIALOG_BUTTON_OK) ? IDS_OK : IDS_CANCEL);
@@ -21,8 +21,8 @@ void ConfirmBubbleModel::Accept() {}
 
 void ConfirmBubbleModel::Cancel() {}
 
-base::string16 ConfirmBubbleModel::GetLinkText() const {
-  return base::string16();
+std::u16string ConfirmBubbleModel::GetLinkText() const {
+  return std::u16string();
 }
 
 GURL ConfirmBubbleModel::GetHelpPageURL() const {

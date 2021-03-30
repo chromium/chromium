@@ -36,6 +36,7 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
   bool is_empty() const { return registry_.empty(); }
 
   const WebApp* GetAppById(const AppId& app_id) const;
+  std::vector<AppId> GetAppsInSyncInstall();
 
   // AppRegistrar:
   void Start() override;
@@ -43,6 +44,7 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
   bool IsInstalled(const AppId& app_id) const override;
   bool IsLocallyInstalled(const AppId& app_id) const override;
   bool WasInstalledByUser(const AppId& app_id) const override;
+  bool WasInstalledByOem(const AppId& app_id) const override;
   int CountUserInstalledApps() const override;
   std::string GetAppShortName(const AppId& app_id) const override;
   std::string GetAppDescription(const AppId& app_id) const override;
@@ -54,13 +56,20 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
       const AppId& app_id) const override;
   const apps::ShareTarget* GetAppShareTarget(
       const AppId& app_id) const override;
+  blink::mojom::CaptureLinks GetAppCaptureLinks(
+      const AppId& app_id) const override;
+  const apps::FileHandlers* GetAppFileHandlers(
+      const AppId& app_id) const override;
   base::Optional<GURL> GetAppScopeInternal(const AppId& app_id) const override;
   DisplayMode GetAppDisplayMode(const AppId& app_id) const override;
   DisplayMode GetAppUserDisplayMode(const AppId& app_id) const override;
   std::vector<DisplayMode> GetAppDisplayModeOverride(
       const AppId& app_id) const override;
-  base::Time GetAppLastLaunchTime(const web_app::AppId& app_id) const override;
-  base::Time GetAppInstallTime(const web_app::AppId& app_id) const override;
+  apps::UrlHandlers GetAppUrlHandlers(const AppId& app_id) const override;
+  GURL GetAppManifestUrl(const AppId& app_id) const override;
+  base::Time GetAppLastBadgingTime(const AppId& app_id) const override;
+  base::Time GetAppLastLaunchTime(const AppId& app_id) const override;
+  base::Time GetAppInstallTime(const AppId& app_id) const override;
   std::vector<WebApplicationIconInfo> GetAppIconInfos(
       const AppId& app_id) const override;
   SortedSizesPx GetAppDownloadedIconSizesAny(

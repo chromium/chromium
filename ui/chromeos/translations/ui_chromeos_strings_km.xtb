@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">ឯកសារ ឬថតឯកសារមិនអាចប្រើបានទេ។</translation>
 <translation id="1363028406613469049">សំឡេង</translation>
 <translation id="1378727793141957596">ស្វាគមន៍មកកាន់ Google Drive!</translation>
+<translation id="1379911846207762492">អ្នកអាចទាញយកឯកសារសម្រាប់ចូលប្រើ នៅពេលគ្មានការតភ្ជាប់អ៊ីនធឺណិតបាន។</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="1395262318152388157">រកមើលរបាររំកិល</translation>
 <translation id="1404323374378969387">ភាសា​ន័រវែស</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">ឯកសារទាំងអស់</translation>
 <translation id="1810764548349082891">ការមើលជាមុនមិនអាចប្រើបានទេ</translation>
 <translation id="1812302367230252929">ការសរសេរ​តាមសូរសព្ទ​ជាភាសា​អំហារិក</translation>
+<translation id="1813278315230285598">សេវាកម្ម</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ប្រុងប្រយ័ត្ន៖<ph name="END_BOLD" />  ឯកសារនេះគឺបណ្តោះអាសន្ន ហើយអាចត្រូវបានលុបដោយស្វ័យប្រវត្តិដើម្បីទុកចន្លោះផ្ទុកទិន្នន័យ។  <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ភីនខ្វីន</translation>
 <translation id="183183971458492120">កំពុង​ផ្ទុក​ព័ត៌មាន...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">ថតនេះ​ត្រូវបានចែករំលែក​ជាមួយ Linux</translation>
 <translation id="1864756863218646478">ឯកសារមិនត្រូវបានរកឃើញទេ។</translation>
 <translation id="1920670151694390848">ការសរសេរ​តាមសូរសព្ទជា​ភាសាម៉ាឡាយ៉ាឡាម</translation>
+<translation id="1920798810075583923">ឪឡឹក</translation>
 <translation id="1924372192547904021">បានសម្អាត <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">ស្លូវ៉ាគី</translation>
 <translation id="1933345018156373194">មិនអាចផ្លាស់ទីបានទេ បញ្ហាមិនបានរំពឹងទុក៖ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ភាសាហ្វាំងឡង់</translation>
 <translation id="1942765061641586207">កម្រិតភាពច្បាស់នៃរូបភាព</translation>
-<translation id="1943097386230153518">ដំឡើង​សេវាកម្ម​ថ្មី</translation>
 <translation id="1972984168337863910">ពង្រីកផ្ទាំង​មតិកែលម្អ​ឯកសារ</translation>
+<translation id="1984456723671657197">ប្រភេទឯកសារនេះ​មិនអាចប្រើបានទេ។ <ph name="BEGIN_LINK_HELP" />ស្វែងយល់បន្ថែម<ph name="END_LINK_HELP" />អំពីការបើកឯកសារនៅលើ​ប្រព័ន្ធប្រតិបត្តិការ Chrome។</translation>
 <translation id="1995337122023280937">ទៅកាន់​ទីតាំង​ឯកសារ</translation>
 <translation id="2001796770603320721">គ្រប់គ្រង​ក្នុង​​ថាស</translation>
 <translation id="2009067268969781306">ការសម្អាត​ឧបករណ៍ផ្ទុក USB នឹងលុបទិន្នន័យ​ទាំងអស់​ដែលបានរក្សាទុក​នៅលើវា។ សកម្មភាព​នេះ​មិន​អាច​​ត្រឡប់វិញ​បានទេ។</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">ឧបករណ៍ចាក់ថាស</translation>
 <translation id="2291538123825441971">កំពុងបើក​ឯកសារ <ph name="NUMBER_OF_FILES" />។</translation>
 <translation id="2303301624314357662">កំពុងបើក​ឯកសារ <ph name="FILE_NAME" /> ។</translation>
+<translation id="2304820083631266885">ភព</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ត្រូវបាន​ដកចេញ។</translation>
 <translation id="2325650632570794183">ប្រភេទឯកសារនេះមិនត្រូវបានគាំទ្រទេ។ សូមទៅកាន់ Chrome Web Store ដើម្បិស្វែងរកកម្មវិធីដែលអាចបើកប្រភេទឯកសារនេះបាន។</translation>
 <translation id="2326539130272988168">ភាសា​ប៊ុលហ្ការី</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">US អន្តរជាតិ</translation>
 <translation id="2562685439590298522">ឯកសារ</translation>
 <translation id="2563185590376525700">កង្កែប</translation>
-<translation id="2572501073504669105">អ្នកអាចកំណត់ឱ្យមានសិទ្ធិចូលប្រើឯកសារ នៅពេលគ្មានការតភ្ជាប់អ៊ីនធឺណិត។</translation>
 <translation id="2578394532502990878">សូរសព្ទជាភាសា​តាមិល</translation>
 <translation id="2579959351793446050">ភាសា​អូឌៀ</translation>
 <translation id="2614589611416690597">វីដេអូ <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">ភាសា​បារាំង (កាណាដា)</translation>
 <translation id="3003633581067744647">ប្តូរទៅ​ទិដ្ឋភាព​ជា​រូបភាពតូចៗ</translation>
 <translation id="3007214526293698309">សមាមាត្រថេរ</translation>
+<translation id="3029114385395636667">បើក Google ឯកសារ​គ្មានអ៊ីនធឺណិត ដើម្បីអាចប្រើ​ឯកសារ បញ្ជី និង​បទបង្ហាញ​បានពេលគ្មានអ៊ីនធឺណិត។</translation>
 <translation id="303198083543495566">ភូមិសាស្ដ្រ</translation>
 <translation id="3047197340186497470">ភាសាចិនដាយី</translation>
 <translation id="3057861065630527966">បម្រុងទុករូបថត និងវីដេអូរបស់អ្នក</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">ឆ្នាំដែល​បានថត</translation>
 <translation id="3353984535370177728">ជ្រើសរើសថតឯកសារដើម្បីទាញឡើង</translation>
 <translation id="3356580349448036450">រួចរាល់</translation>
+<translation id="3358452157379365236">ហ្គីតា</translation>
 <translation id="3382143449143186018">ភាសានេប៉ាល់​ដែលប្រើ​ក្ដារចុច InScript</translation>
 <translation id="3408236822532681288">ភាសា​អាល្លឺម៉ង់ (អាល្លឺម៉ង់) ដែលប្រើ​ក្ដារចុច Neo 2</translation>
 <translation id="3414856743105198592">ការសម្អាតឯកសារកំសាន្តដែលអាចយកចេញបាននឹងលុបទិន្នន័យទាំងអស់។ តើអ្នកចង់បន្តទេ?</translation>
 <translation id="3437801641691368414">ម៉ោងបង្កើត</translation>
+<translation id="343907260260897561">កាមេរ៉ាថតបានរូបសន្លឹកភ្លាមៗ</translation>
 <translation id="3455931012307786678">ភាសា​អេស្តូនី</translation>
 <translation id="3466147780910026086">កំពុងស្កេនឯកសារកំសាន្តរបស់អ្នក...</translation>
 <translation id="3468522857997926824">រូបថតចំនួន<ph name="FILE_COUNT" /> បានបម្រុងទុកទៅក្នុង <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google សៀវភៅបញ្ជី</translation>
+<translation id="3479552764303398839">មិនមែនឥឡូវនេះទេ</translation>
 <translation id="3486821258960016770">ភាសា​ម៉ុងហ្គោលី</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> កំហុសឆ្គង។</translation>
 <translation id="3522708245912499433">ភាសាប៉ទុយកាល់</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">ដើម្បីបើកឯកសារដោយប្រើ <ph name="APP_NAME" /> សូមចម្លងឯកសារទាំងនោះទៅក្នុងថតឯកសារ Windows ជាមុនសិន។</translation>
 <translation id="3556731189587832921">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើក្ដារចុច​កុំព្យូទ័រ​អន្តរជាតិ</translation>
 <translation id="357479282490346887">ភាសាលីទុយអានី</translation>
+<translation id="3592251141500063301">មិនអាចទាញយក <ph name="FILE_NAME" /> មកប្រើពេលគ្មានអ៊ីនធឺណិតបានទេ</translation>
 <translation id="3603385196401704894">ភាសាបារាំងកាណាដា</translation>
 <translation id="3606220979431771195">តួកគី-F</translation>
 <translation id="3616113530831147358">សម្លេង</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">សេះមាន​ស្នែង</translation>
 <translation id="4158739975813877944">បើកបញ្ជីចាក់</translation>
 <translation id="4159731583141908892">បានផ្លាស់ទី <ph name="FILE_NAME" />។</translation>
+<translation id="4186579485882418952">បើកឯកសារគ្មានអ៊ីនធឺណិត</translation>
 <translation id="4193154014135846272">ឯកសារ Google</translation>
 <translation id="4197674956721858839">ការជ្រើសរើសការបង្រួម</translation>
 <translation id="4202378258276439759">ភាសាអេស្ប៉ាញ (អាមេរិក​ឡាទីន)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">ព័ត៌​មាន​ទូទៅ</translation>
 <translation id="432252891123397018">ភាសារូម៉ានី​ដែលប្រើ​ក្ដារចុច​ស្តង់ដារ</translation>
 <translation id="4325128273762811722">ភាសា​ស្លូវ៉ានី</translation>
+<translation id="4326142238881453352">អ្នកជំនាញផ្នែករុក្ខជាតិ</translation>
 <translation id="4326192123064055915">កាហ្វេ</translation>
 <translation id="4336032328163998280">ប្រតិបត្តិការចម្លងបានបរាជ័យ។ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">ភាសាសូរ៉ានី​ឃឺដ​ដែលប្រើ​ក្ដារចុច​ផ្អែកលើ​ភាសា​អារ៉ាប់</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">ភាសាតាមិល​ដែលប្រើ​ក្ដារចុច​អង្គុលីលេខ</translation>
 <translation id="4711094779914110278">ភាសាតួគី</translation>
 <translation id="4712283082407695269">កំពុងបើក "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">ឯកសារនេះត្រូវបានរចនាឡើងសម្រាប់កុំព្យូទ័រដែលប្រើកម្មវិធី Macintosh។ វាមិនត្រូវគ្នាជាមួយឧបករណ៍របស់អ្នកដែលដំណើរការ Chrome OS ទេ។ សូមស្វែងរក<ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> សម្រាប់កម្មវិធីជំនួសដែលសមស្រប។<ph name="BEGIN_LINK_HELP" />ស្វែងយល់បន្ថែម<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">រូបថតចំនួន<ph name="FILE_COUNT" /> ត្រូវបានបម្រុងទុក</translation>
 <translation id="4725511304875193254">ឆ្កែ​ខកហ្គី</translation>
 <translation id="4732760563705710320">សូមទោស វីដេអូនេះមិនត្រូវបានគាំទ្រដោយឧបករណ៍ខាសរបស់អ្នកទេ។</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />ចែករំលែក បង្កើត និងធ្វើការសហការ<ph name="MARKUP_8" />
     នៅលើឯកសារជាមួយអ្នកដ៏ទៃនៅក្នុងកន្លែងតែមួយ។<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">ឯកសារដែលបានសង្គ្រោះពី Google Drive</translation>
+<translation id="5288441970121584418">ប៊ឺហ្គឺ</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5318819489018851358">ចែករំលែកជាមួយ Linux</translation>
 <translation id="5323213332664049067">ភាសាអាមេរិកឡាទីន</translation>
@@ -460,8 +470,6 @@
 <translation id="5833610766403489739">ឯកសារបានវង្វេងបាត់ទៅណាហើយ។ សូមពិនិត្យការកំណត់ទីតាំងទាញយករបស់អ្នក ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="5838451609423551646">បានលុបធាតុទាំងអស់​ចេញពីការជ្រើសរើស។</translation>
 <translation id="5838825566232597749">US Workman អន្តរជាតិ</translation>
-<translation id="5850516540536751549">ប្រភេទឯកសារនេះមិនត្រូវបានគាំទ្រទេ។ សូមទៅកាន់ <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> ដើម្បីស្វែងរកកម្មវិធីដែលអាចបើកប្រភេទឯកសារនេះ។
-    <ph name="BEGIN_LINK_HELP" />ស្វែងយល់បន្ថែម<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">គ្មានអ្វីមើលទេនៅទីនេះ...</translation>
 <translation id="5911887972742538906">មានបញ្ហា​កើតឡើង អំឡុង​ពេលដំឡើង​កម្មវិធី Linux របស់អ្នក។</translation>
 <translation id="5912396950572065471">ទម្រង់</translation>
@@ -499,10 +507,12 @@
 <translation id="6248400709929739064">បើកដំណើរការចំណងជើងរង</translation>
 <translation id="6269630227984243955">ភាសា​ម៉ាឡេ</translation>
 <translation id="6287852322318138013">ជ្រើសរើសកម្មវិធីដើម្បីបើកឯកសារនេះ</translation>
+<translation id="6321303798550928047">បក់​ដៃ</translation>
 <translation id="6339145975392024142">អាមេរិក​អន្តរជាតិ (PC)</translation>
 <translation id="6346310558342052870">បាន​រឹតបន្តឹង​ការ​ចូលប្រើ​</translation>
 <translation id="6356685157277930264">វិនដូមតិកែលម្អ​របស់ឯកសារ</translation>
 <translation id="6358884629796491903">នាគ</translation>
+<translation id="6367976544441405720">ឡានដឹកទំនិញ</translation>
 <translation id="637062427944097960">៝ឯកសារនេះបានបើកនៅលើដេស៍ថបផ្សេង។ ផ្លាស់ទីទៅ <ph name="USER_NAME" /> <ph name="MAIL_ADDRESS" /> ដើម្បីមើលវា។</translation>
 <translation id="6394388407447716302">បានតែអានប៉ុណ្ណោះ</translation>
 <translation id="6395575651121294044">ធាតុ <ph name="NUMBER_OF_FILES" /></translation>
@@ -526,6 +536,7 @@
 <translation id="6650726141019353908">មេអំបៅ​ពណ៌​ផ្កាឈូក</translation>
 <translation id="6657585470893396449">ពាក្យសម្ងាត់</translation>
 <translation id="6673674183150363784">ភាសា​បារាំង (បារាំង) ដែលប្រើ​ក្ដារចុច Bépo</translation>
+<translation id="6710022688720561421">មនុស្សយន្ត</translation>
 <translation id="6710213216561001401">មុន</translation>
 <translation id="6751256176799620176">បានជ្រើសថតឯកសារ 1</translation>
 <translation id="6790428901817661496">លេង</translation>
@@ -559,6 +570,7 @@
 <translation id="6965382102122355670">យល់ព្រម</translation>
 <translation id="6970230597523682626">ភាសាប៊ុលហ្គារី</translation>
 <translation id="6973630695168034713">ថតឯកសារ</translation>
+<translation id="6976795442547527108">តោ</translation>
 <translation id="6978611942794658017">ឯកសារនេះត្រូវបានរចនាឡើងសម្រាប់កុំព្យូទ័រដែលប្រើកម្មវិធី Windows។ វាមិនត្រូវគ្នាជាមួយឧបករណ៍របស់អ្នកដែលដំណើរការប្រព័ន្ធប្រតិបត្តិការ Chrome OS ទេ។ សូមស្វែងរក Chrome Web Store សម្រាប់កម្មវិធីជំនួសដែលសមស្រប។</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ភាសា​ស៊ុយអែត</translation>
@@ -605,6 +617,7 @@
 <translation id="7532029025027028521">ការ​សរសេរ​តាម​សូរសព្ទជាភាសាពែក្ស</translation>
 <translation id="7544830582642184299">ផ្ដល់ការអនុញ្ញាតឱ្យកម្មវិធី Linux ចូលប្រើ​ឯកសារ​នៅក្នុង Google ថាស​របស់អ្នក។ ការផ្លាស់ប្ដូរនឹង​ធ្វើសមកាលកម្ម​ទៅឧបករណ៍​ផ្សេងទៀត​របស់អ្នក។</translation>
 <translation id="7544853251252956727">ច្របល់</translation>
+<translation id="7547009467130558110">ស្បែកជើងប៉ាតា</translation>
 <translation id="7547780573915868306">ភាសា​លីទុយអានី</translation>
 <translation id="7547811415869834682">ភាសាហូឡង់</translation>
 <translation id="7551643184018910560">ដៅទៅធ្នើ</translation>
@@ -619,6 +632,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% បញ្ចប់​។</translation>
 <translation id="7649070708921625228">ជំនួយ</translation>
 <translation id="7654209398114106148">កំពុងផ្លាស់ទី​ធាតុ <ph name="NUMBER_OF_ITEMS" /> ...</translation>
+<translation id="7655441028674523381">ចូលប្រើ Google រូបថតបាន​យ៉ាងងាយស្រួល</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7663224033570512922">ភាសា​ហិណ្ឌី</translation>
 <translation id="7693909743393669729">ការសម្អាត​ថាសនឹងលុបទិន្នន័យ​ទាំងអស់ ​ដែលបានរក្សាទុក​នៅក្នុងថាសនោះ និងលុបផ្នែកដែលមានស្រាប់ទាំងអស់ រួមទាំងផ្នែកដែលប្រហែលជាមិនអាចមើលឃើញផងដែរ។ សកម្មភាព​នេះ​មិន​អាច​​ត្រឡប់វិញ​បានទេ។</translation>
@@ -650,7 +664,6 @@
 <translation id="7839804798877833423">ការនាំយកឯកសារទាំងនេះនឹងត្រូវប្រើប្រហែល <ph name="FILE_SIZE" /> នៃទិន្នន័យទូរស័ព្ទរបស់អ្នក។</translation>
 <translation id="7846076177841592234">បោះបង់ការជ្រើសរើស</translation>
 <translation id="7853966320808728790">BÉPO បារាំង</translation>
-<translation id="7864662577698025113">បញ្ចូល​សេវាកម្មថ្មី</translation>
 <translation id="7868774406711971383">ភាសា​ប៉ូឡូញ</translation>
 <translation id="7873831373602885875">មិនអាច​រក្សាទុកទៅ <ph name="FOLDER_NAME" /> បានទេ។ ការកែសម្រួល​ទាំងអស់​នឹងត្រូវរក្សាទុកទៅក្នុង <ph name="DOWNLOADS_FOLDER" /> នៅក្នុងថត​ទាញយក។</translation>
 <translation id="7874321682039004450">ភាសា​ហ្វ៊ីលីពីន</translation>
@@ -665,13 +678,13 @@
 <translation id="7972920761225148017">ភាសា​បារាំង (ស្វ៊ីស)</translation>
 <translation id="7980421588063892270">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើ​ក្ដារចុច Colemak</translation>
 <translation id="7982283708762922719">កម្ពស់</translation>
+<translation id="79907182588096956">ឯកសារនេះ​ត្រូវបានរចនាឡើង​សម្រាប់កុំព្យូទ័រ​ដែលប្រើ​កម្មវិធី Windows។ ឯកសារនេះ​មិនត្រូវគ្នា​ជាមួយ​ឧបករណ៍​របស់អ្នក ដែល​ដំណើរការប្រព័ន្ធប្រតិបត្តិការ Chrome ទេ។ <ph name="BEGIN_LINK_HELP" />ស្វែងយល់បន្ថែម<ph name="END_LINK_HELP" />អំពីការបើកឯកសារនៅលើ​ប្រព័ន្ធប្រតិបត្តិការ Chrome។</translation>
 <translation id="8008366997883261463">សត្វឆ្កែ</translation>
 <translation id="8028993641010258682">ទំហំ</translation>
 <translation id="803771048473350947">ឯកសារ</translation>
 <translation id="8038111231936746805">(លំនាំដើម)</translation>
 <translation id="8042602468072383151">សំឡេង <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">ភាសារូម៉ានី</translation>
-<translation id="8052887694493382350">ឯកសារនេះ​ត្រូវបានរចនា​សម្រាប់ PC ដែលប្រើ​កម្មវិធី Windows ។ ឯកសារនេះ​មិនត្រូវគ្នា​ជាមួយ​ឧបករណ៍​របស់អ្នក ដែល​ដំណើរការ Chrome OS ទេ។ <ph name="BEGIN_LINK_HELP" />ស្វែងយល់​បន្ថែម<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">ការកែសម្រួល​ទាំងអស់នឹងត្រូវបាន​រក្សាទុកទៅក្នុង <ph name="DOWNLOADS_FOLDER" /> ។</translation>
 <translation id="8079530767338315840">ចាក់ឡើងវិញ</translation>
 <translation id="8106045200081704138">បានចែករំលែកជាមួយខ្ញុំ</translation>
@@ -711,6 +724,7 @@
 <translation id="8466234950814670489">បណ្ណាសារ tar</translation>
 <translation id="8475647382427415476">Google ថាសមិនអាចធ្វើសមកាលកម្ម "<ph name="FILENAME" />" បានទេឥឡូវនេះ។ Google ថាសនឹងព្យាយាមម្តងទៀតពេលក្រោយ។</translation>
 <translation id="8477649328507734757">Spin</translation>
+<translation id="8484284835977497781">ជ្រើសរើសពី​រូបថតថ្មីៗ​របស់អ្នក។</translation>
 <translation id="8487700953926739672">មាននៅក្រៅបណ្តាញ</translation>
 <translation id="8521441079177373948">ភាសាអង់គ្លេស</translation>
 <translation id="8525306231823319788">ពេញអេក្រង់</translation>
@@ -743,8 +757,10 @@
 <translation id="8860454412039442620">សៀវភៅបញ្ជី Excel</translation>
 <translation id="8866284467018526531">ការសរសេរតាម​សូរសព្ទជាភាសា​អារ៉ាប់</translation>
 <translation id="8900820606136623064">ភាសាហុងគ្រី</translation>
+<translation id="8903931173357132290">បញ្ចប់ការសិក្សា</translation>
 <translation id="8919081441417203123">ភាសាដាណឺម៉ាក</translation>
 <translation id="8965697826696209160">គ្មានចន្លោះផ្ទុកគ្រប់គ្រាន់ទេ។</translation>
+<translation id="8970501467542182729">ឯកសារនេះ​ត្រូវបានរចនាឡើង​សម្រាប់កុំព្យូទ័រដែលប្រើ​កម្មវិធី Macintosh។ ឯកសារនេះ​មិនត្រូវគ្នា​ជាមួយ​ឧបករណ៍​របស់អ្នក ដែល​ដំណើរការប្រព័ន្ធប្រតិបត្តិការ Chrome ទេ។ <ph name="BEGIN_LINK_HELP" />ស្វែងយល់បន្ថែម<ph name="END_LINK_HELP" />អំពីការបើកឯកសារនៅលើ​ប្រព័ន្ធប្រតិបត្តិការ Chrome។</translation>
 <translation id="8997962250644902079">ភាសាចិន (អក្សរពេញ) ភីងអ៊ីង</translation>
 <translation id="9017798300203431059">ស្រះជាភាសារុស្សី</translation>
 <translation id="9034924485347205037">ឯកសារ Linux</translation>

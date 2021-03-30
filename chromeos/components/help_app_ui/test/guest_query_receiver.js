@@ -81,4 +81,4 @@ if (document.readyState !== 'complete') {
   installTestHandlers();
 }
 
-//# sourceURL=guest_query_reciever.js
+//# sourceURL=guest_query_receiver.js

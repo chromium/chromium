@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Pridanie predpony www. a prípony .com k zadanému vstupu v paneli s adresou a následné otvorenie stránky</translation>
+<translation id="1768987374400973299">Vytvoriť snímku obrazovky alebo nahrávku</translation>
 <translation id="1872219238824176091">Odstrániť aktuálnu plochu</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, potom <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> alebo <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Prechod na ďalšiu kartu</translation>
 <translation id="2010818616644390445">Prechod na poslednú kartu v okne</translation>
 <translation id="2040706009561734834">Otvoriť/zavrieť spúšťač</translation>
+<translation id="2086334242442703436">Otvoriť výber emodži</translation>
 <translation id="2088054208777350526">Vyhľadávanie klávesových skratiek</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> alebo <ph name="F" /></translation>
 <translation id="2145908266289632567">Úprava textu</translation>
@@ -46,9 +48,10 @@
 <translation id="2480851840841871861">Otvoriť Asistenta Google</translation>
 <translation id="2488661730534396940">Aktivovať plochu vľavo</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Otvoriť diagnostickú aplikáciu</translation>
 <translation id="2530339807289914946">Posunutie nadol na webovej stránke</translation>
 <translation id="2530896289327917474">Vypnutie alebo zapnutie prehliadania Caret</translation>
-<translation id="2574014812750545982">Obnovenie úrovne priblíženia/oddialenia na stránke</translation>
+<translation id="2574014812750545982">Resetovať na stránke úroveň lupy</translation>
 <translation id="2596078834055697711">Vytvorenie snímky obrazovky okna</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, potom <ph name="TAB" /> alebo <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Obnovenie aktuálnej stránky</translation>
@@ -87,7 +90,7 @@
 <translation id="3837047332182291558">Zvýšenie jasu klávesnice (iba v prípade podsvietených klávesníc)</translation>
 <translation id="3949671998904569433">čiarka</translation>
 <translation id="3976863468609830880">Kliknutie na poslednú ikonu na poličke</translation>
-<translation id="3994783594793697310">Obnovenie úrovne priblíženia/oddialenia zobrazenia</translation>
+<translation id="3994783594793697310">Resetovať na obrazovke úroveň lupy</translation>
 <translation id="4026843240379844265">Presun aktívneho okna medzi obrazovkami</translation>
 <translation id="4035482366624727273">Výber celého obsahu stránky</translation>
 <translation id="4060703249685950734">Opätovné otvorenie poslednej zatvorenej karty alebo okna</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Posunutie kurzora na koniec ďalšieho slova</translation>
 <translation id="4866066940972151697">Aktivovať plochu vpravo</translation>
 <translation id="4916163929714267752">Otvorenie odkazu v novom okne</translation>
+<translation id="492453977506755176">Kláves režimu snímania</translation>
 <translation id="5030659775136592441">Zobrazenie správcu záložiek</translation>
 <translation id="5034421018520995080">Prechod na začiatok stránky</translation>
 <translation id="5042305953558921026">Kláves režimu prehľadu</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Zobrazenie alebo skrytie konzoly s nástrojmi pre vývojárov</translation>
 <translation id="5919628958418675842">Zapnite alebo vypnite obrazovku ochrany súkromia</translation>
 <translation id="5921745308587794300">Otočiť okno</translation>
+<translation id="5926306472221400972">Nasnímať celú obrazovku</translation>
 <translation id="6022924867608035986">Vymazať text vo vyhľadávacom poli</translation>
 <translation id="6045998054441862242">Zapnutie režimu vysokého kontrastu</translation>
 <translation id="6052614013050385269">Kliknutie na odkaz pravým tlačidlom</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Vrátenie karty do pôvodnej pozície</translation>
 <translation id="6474744297082284761">Oddialenie (pri vložení do doku ALEBO povolení lúp na celú obrazovku)</translation>
 <translation id="649811797655257835">Výber súboru a stlačenie klávesa <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Vytvorenie čiastočnej snímky obrazovky alebo nahrávky</translation>
 <translation id="6556040137485212400">Otvorenie okna, ktoré bolo najdlhšie nepoužívané</translation>
 <translation id="666343722268997814">Otvorenie ponuky prístupnej kliknutím pravým tlačidlom myši pre zvýraznenú položku</translation>
 <translation id="6671538777808758331">Prechod na ďalšiu zhodu s vyhľadávacím dopytom</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Presunutie zamerania na kontextové a dialógové okná</translation>
 <translation id="7635348532214572995">Presun ikony aplikácie po mriežke aplikácií</translation>
 <translation id="766326951329901120">Prilepenie obsahu zo schránky ako obyčajného textu</translation>
+<translation id="7673453620027697230">Vytvorenie snímky obrazovky alebo nahrávky okna</translation>
 <translation id="7703010453515335249">ľavá hranatá zátvorka</translation>
 <translation id="7724603315864178912">Vystrihnúť</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, potom <ph name="SPACE" /> alebo <ph name="ENTER" /></translation>

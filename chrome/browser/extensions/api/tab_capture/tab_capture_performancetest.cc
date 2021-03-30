@@ -279,7 +279,13 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(TabCapturePerformanceTest, Performance) {
+// Failing on Linux/Mac: https://crbug.com/1182662
+#if defined(OS_LINUX) || defined(OS_MAC)
+#define MAYBE_Performance DISABLED_Performance
+#else
+#define MAYBE_Performance Performance
+#endif
+IN_PROC_BROWSER_TEST_P(TabCapturePerformanceTest, MAYBE_Performance) {
   if (!is_full_performance_run()) {
     // TODO(crbug.com/1042457): Flaky failures across multiple CQ builders.
     return;

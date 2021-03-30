@@ -22,6 +22,7 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -115,7 +116,7 @@ CrostiniUpdateFilesystemView::CrostiniUpdateFilesystemView() {
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       kDialogSpacingVertical));
 
-  const base::string16 message =
+  const std::u16string message =
       l10n_util::GetStringUTF16(IDS_CROSTINI_UPGRADING_SUBTEXT);
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
@@ -129,3 +130,6 @@ CrostiniUpdateFilesystemView::CrostiniUpdateFilesystemView() {
 CrostiniUpdateFilesystemView::~CrostiniUpdateFilesystemView() {
   g_crostini_update_filesystem_view_dialog = nullptr;
 }
+
+BEGIN_METADATA(CrostiniUpdateFilesystemView, views::BubbleDialogDelegateView)
+END_METADATA

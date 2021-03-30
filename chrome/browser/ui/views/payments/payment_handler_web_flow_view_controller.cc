@@ -19,7 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/payments/content/icon/icon_size.h"
-#include "components/payments/content/payments_userdata_key.h"
+#include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/ssl_validity_checker.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
@@ -48,21 +48,23 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace payments {
 namespace {
 
-base::string16 GetPaymentHandlerDialogTitle(
+std::u16string GetPaymentHandlerDialogTitle(
     content::WebContents* web_contents) {
   if (!web_contents)
-    return base::string16();
+    return std::u16string();
 
-  const base::string16 title = web_contents->GetTitle();
-  const base::string16 https_prefix =
+  const std::u16string title = web_contents->GetTitle();
+  const std::u16string https_prefix =
       base::ASCIIToUTF16(url::kHttpsScheme) +
       base::ASCIIToUTF16(url::kStandardSchemeSeparator);
   return base::StartsWith(title, https_prefix, base::CompareCase::SENSITIVE)
-             ? base::string16()
+             ? std::u16string()
              : title;
 }
 
@@ -70,7 +72,8 @@ base::string16 GetPaymentHandlerDialogTitle(
 
 class ReadOnlyOriginView : public views::View {
  public:
-  ReadOnlyOriginView(const base::string16& page_title,
+  METADATA_HEADER(ReadOnlyOriginView);
+  ReadOnlyOriginView(const std::u16string& page_title,
                      const GURL& origin,
                      const SkBitmap* icon_bitmap,
                      Profile* profile,
@@ -185,6 +188,9 @@ class ReadOnlyOriginView : public views::View {
   ~ReadOnlyOriginView() override = default;
 };
 
+BEGIN_METADATA(ReadOnlyOriginView, views::View)
+END_METADATA
+
 PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
     base::WeakPtr<PaymentRequestSpec> spec,
     base::WeakPtr<PaymentRequestState> state,
@@ -213,7 +219,7 @@ PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
   state()->OnPaymentAppWindowClosed();
 }
 
-base::string16 PaymentHandlerWebFlowViewController::GetSheetTitle() {
+std::u16string PaymentHandlerWebFlowViewController::GetSheetTitle() {
   return GetPaymentHandlerDialogTitle(web_contents());
 }
 
@@ -240,8 +246,8 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   auto* web_view =
       content_view->AddChildView(std::make_unique<views::WebView>(profile_));
   Observe(web_view->GetWebContents());
-  web_contents()->SetUserData(kPaymentHandlerWebContentsUserDataKey,
-                              std::make_unique<base::SupportsUserData::Data>());
+  PaymentHandlerNavigationThrottle::MarkPaymentHandlerWebContents(
+      web_contents());
   web_contents()->SetDelegate(this);
   DCHECK_NE(log_.web_contents(), web_contents());
   content::PaymentAppProvider::GetOrCreateForWebContents(

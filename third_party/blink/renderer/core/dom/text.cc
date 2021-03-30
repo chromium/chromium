@@ -124,8 +124,13 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
   if (exception_state.HadException())
     return nullptr;
 
-  if (GetLayoutObject())
+  if (GetLayoutObject()) {
     GetLayoutObject()->SetTextWithOffset(DataImpl(), 0, old_str.length());
+    if (data().IsEmpty()) {
+      // To avoid |LayoutText| has empty text, we rebuild layout tree.
+      SetForceReattachLayoutTree();
+    }
+  }
 
   if (parentNode())
     GetDocument().DidSplitTextNode(*this);
@@ -259,7 +264,7 @@ static inline bool CanHaveWhitespaceChildren(
 
   if (parent.IsTable() || parent.IsTableRow() || parent.IsTableSection() ||
       parent.IsLayoutTableCol() || parent.IsFrameSet() ||
-      parent.IsFlexibleBoxIncludingNG() || parent.IsLayoutGrid() ||
+      parent.IsFlexibleBoxIncludingNG() || parent.IsLayoutGridIncludingNG() ||
       parent.IsSVGRoot() || parent.IsSVGContainer() || parent.IsSVGImage() ||
       parent.IsSVGShape()) {
     if (!context.use_previous_in_flow || !context.previous_in_flow ||

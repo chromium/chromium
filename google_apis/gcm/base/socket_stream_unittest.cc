@@ -422,11 +422,12 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
   // |kWriteDataSize|. This is so that the first write is a partial write
   // of |prefix_data|, and the second write is a complete write of kWriteData.
   // The 1 byte shortage is to simulate the partial write.
-  mojo::DataPipe pipe(kWriteDataSize + prefix_data.size() - 1 /* size */);
-  mojo::ScopedDataPipeConsumerHandle consumer_handle =
-      std::move(pipe.consumer_handle);
-  mojo::ScopedDataPipeProducerHandle producer_handle =
-      std::move(pipe.producer_handle);
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(
+      mojo::CreateDataPipe(kWriteDataSize + prefix_data.size() - 1 /* size */,
+                           producer_handle, consumer_handle),
+      MOJO_RESULT_OK);
 
   // Prepopulate |producer_handle| of |prefix_data|, now the pipe's capacity is
   // less than |kWriteDataSize|.

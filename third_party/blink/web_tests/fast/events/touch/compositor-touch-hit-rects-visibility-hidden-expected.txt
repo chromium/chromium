@@ -12,7 +12,7 @@
 
 : no rects
 
-: layer(785x1326) has hit test rect (8,738 100x100)
+: layer(785x1326) has hit test rect (10,738 96x100)
 
 : no rects
 

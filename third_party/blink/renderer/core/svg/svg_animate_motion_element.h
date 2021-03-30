@@ -42,8 +42,7 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
-  SMILAnimationValue CreateAnimationValue(
-      bool needs_underlying_value) const override;
+  SMILAnimationValue CreateAnimationValue() const override;
   void ClearAnimationValue() override;
   bool CalculateToAtEndOfDurationValue(
       const String& to_at_end_of_duration_string) override;

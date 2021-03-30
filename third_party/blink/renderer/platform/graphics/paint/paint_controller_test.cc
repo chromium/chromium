@@ -1416,6 +1416,37 @@ TEST_P(PaintControllerTest, PartialSkipCache) {
                          .GetPaintRecord());
 }
 
+TEST_P(PaintControllerTest, SkipCacheDuplicatedItemAndChunkIds) {
+  FakeDisplayItemClient chunk_client("chunk client");
+  FakeDisplayItemClient item_client("item client");
+  auto properties = DefaultPaintChunkProperties();
+  PaintChunk::Id chunk_id(chunk_client, DisplayItem::kLayerChunk);
+  auto& paint_controller = GetPaintController();
+
+  GraphicsContext context(paint_controller);
+  paint_controller.BeginSkippingCache();
+  paint_controller.SetWillForceNewChunk(true);
+  paint_controller.UpdateCurrentPaintChunkProperties(&chunk_id, properties);
+  DrawRect(context, item_client, kBackgroundType, IntRect(0, 0, 100, 100));
+  paint_controller.SetWillForceNewChunk(true);
+  paint_controller.UpdateCurrentPaintChunkProperties(&chunk_id, properties);
+  DrawRect(context, item_client, kBackgroundType, IntRect(0, 0, 100, 100));
+  paint_controller.EndSkippingCache();
+
+  CommitAndFinishCycle();
+
+  EXPECT_THAT(paint_controller.GetDisplayItemList(),
+              ElementsAre(IsSameId(&item_client, kBackgroundType),
+                          IsSameId(&item_client, kBackgroundType)));
+  EXPECT_FALSE(paint_controller.GetDisplayItemList()[0].IsCacheable());
+  EXPECT_FALSE(paint_controller.GetDisplayItemList()[1].IsCacheable());
+
+  EXPECT_THAT(GetPaintController().PaintChunks(),
+              ElementsAre(IsPaintChunk(0, 1, chunk_id, properties),
+                          IsPaintChunk(1, 2, chunk_id, properties)));
+  EXPECT_FALSE(paint_controller.PaintChunks()[0].is_cacheable);
+  EXPECT_FALSE(paint_controller.PaintChunks()[1].is_cacheable);
+}
 
 TEST_P(PaintControllerTest, SmallPaintControllerHasOnePaintChunk) {
   FakeDisplayItemClient client("test client");

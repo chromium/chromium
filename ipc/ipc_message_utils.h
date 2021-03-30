@@ -31,7 +31,6 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/util/type_safety/id_type.h"
@@ -53,7 +52,6 @@ namespace base {
 class DictionaryValue;
 class FilePath;
 class ListValue;
-class NullableString16;
 class Time;
 class TimeDelta;
 class TimeTicks;
@@ -111,21 +109,21 @@ struct CheckedTuple {
 //    time_t, suseconds_t (including typedefs to)
 // 3. Any template referencing types above (e.g. std::vector<size_t>)
 template <class P>
-static inline void WriteParam(base::Pickle* m, const P& p) {
+inline void WriteParam(base::Pickle* m, const P& p) {
   typedef typename SimilarTypeTraits<P>::Type Type;
   ParamTraits<Type>::Write(m, static_cast<const Type& >(p));
 }
 
 template <class P>
-static inline bool WARN_UNUSED_RESULT ReadParam(const base::Pickle* m,
-                                                base::PickleIterator* iter,
-                                                P* p) {
+inline bool WARN_UNUSED_RESULT ReadParam(const base::Pickle* m,
+                                         base::PickleIterator* iter,
+                                         P* p) {
   typedef typename SimilarTypeTraits<P>::Type Type;
   return ParamTraits<Type>::Read(m, iter, reinterpret_cast<Type* >(p));
 }
 
 template <class P>
-static inline void LogParam(const P& p, std::string* l) {
+inline void LogParam(const P& p, std::string* l) {
   typedef typename SimilarTypeTraits<P>::Type Type;
   ParamTraits<Type>::Log(static_cast<const Type& >(p), l);
 }
@@ -333,8 +331,8 @@ struct ParamTraits<std::string> {
 };
 
 template <>
-struct ParamTraits<base::string16> {
-  typedef base::string16 param_type;
+struct ParamTraits<std::u16string> {
+  typedef std::u16string param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     m->WriteString16(p);
   }
@@ -346,9 +344,9 @@ struct ParamTraits<base::string16> {
   COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_WIN) && defined(BASE_STRING16_IS_STD_U16STRING)
+#if defined(OS_WIN)
 template <>
-struct ParamTraits<std::wstring> {
+struct COMPONENT_EXPORT(IPC) ParamTraits<std::wstring> {
   typedef std::wstring param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     m->WriteString16(base::AsStringPiece16(p));
@@ -356,7 +354,7 @@ struct ParamTraits<std::wstring> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
+  static void Log(const param_type& p, std::string* l);
 };
 #endif
 
@@ -753,8 +751,8 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::ListValue> {
 };
 
 template <>
-struct COMPONENT_EXPORT(IPC) ParamTraits<base::NullableString16> {
-  typedef base::NullableString16 param_type;
+struct COMPONENT_EXPORT(IPC) ParamTraits<base::Value> {
+  typedef base::Value param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

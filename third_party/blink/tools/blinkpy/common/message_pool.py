@@ -39,12 +39,13 @@ If you don't need these features, use multiprocessing.Pool or concurrency.future
 instead.
 """
 
-import cPickle
 import logging
 import multiprocessing
-import Queue
+import six
 import sys
 import traceback
+
+from six.moves import cPickle, range, queue as Queue
 
 from blinkpy.common.host import Host
 from blinkpy.common.system import stack_utils
@@ -92,7 +93,7 @@ class _MessagePool(object):
                     from_user=True,
                     logs=()))
 
-        for _ in xrange(self._num_workers):
+        for _ in range(self._num_workers):
             self._messages_to_worker.put(
                 _Message(
                     self._name,
@@ -110,7 +111,7 @@ class _MessagePool(object):
         if self._running_inline or self._can_pickle(self._host):
             host = self._host
 
-        for worker_number in xrange(self._num_workers):
+        for worker_number in range(self._num_workers):
             worker = _Worker(host, self._messages_to_manager,
                              self._messages_to_worker, self._worker_factory,
                              worker_number, self._running_inline,
@@ -307,7 +308,7 @@ class _Worker(multiprocessing.Process):
     def _raise(self, exc_info):
         exception_type, exception_value, exception_traceback = exc_info
         if self._running_inline:
-            raise exception_type, exception_value, exception_traceback
+            six.reraise(exception_type, exception_value, exception_traceback)
 
         if exception_type == KeyboardInterrupt:
             _log.debug('%s: interrupted, exiting', self.name)

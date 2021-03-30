@@ -34,10 +34,10 @@ var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
 
 TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
   const DEFAULT_PARAMETERS = {
-    codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
     enableUserInput: true,
-    errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.NONE,
-    attemptsLeft: -1
+    hasError: false,
+    formattedError: '',
+    formattedAttemptsLeft: ''
   };
 
   let securityTokenPin;
@@ -107,10 +107,10 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
 
     // The response arrives, requesting to prompt for the PIN again.
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN,
-      attemptsLeft: -1
+      hasError: true,
+      formattedError: '',
+      formattedAttemptsLeft: ''
     };
 
     // The user enters some value. No new 'completed' event is triggered so far.
@@ -173,10 +173,10 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     pinInput.value = '123';
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN,
-      attemptsLeft: -1
+      hasError: true,
+      formattedError: '',
+      formattedAttemptsLeft: ''
     };
     expectFalse(inputField.disabled);
 
@@ -185,11 +185,10 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     pinInput.value = '456';
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: false,
-      errorLabel:
-          OobeTypes.SecurityTokenPinDialogErrorType.MAX_ATTEMPTS_EXCEEDED,
-      attemptsLeft: 0
+      hasError: true,
+      formattedError: '',
+      formattedAttemptsLeft: ''
     };
     expectTrue(inputField.disabled);
   });
@@ -204,17 +203,17 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     // The input gets cleared.
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN,
-      attemptsLeft: -1
+      hasError: true,
+      formattedError: '',
+      formattedAttemptsLeft: ''
     };
     expectEquals(pinInput.value, '');
     expectEquals(inputField.value, '');
   });
 
-  // Test that the input field gets cleared when the request fails with the
-  // final error.
+  // // Test that the input field gets cleared when the request fails with the
+  // // final error.
   test('input cleared on final error', () => {
     // The user enters and submits a PIN. The response arrives, requesting the
     // PIN again. The input is cleared.
@@ -226,11 +225,10 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     // and that the user input isn't requested anymore. The input gets cleared.
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: false,
-      errorLabel:
-          OobeTypes.SecurityTokenPinDialogErrorType.MAX_ATTEMPTS_EXCEEDED,
-      attemptsLeft: 0
+      hasError: true,
+      formattedError: '',
+      formattedAttemptsLeft: ''
     };
     expectEquals(pinInput.value, '');
     expectEquals(inputField.value, '');
@@ -273,10 +271,10 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     pinInput.value = '123';
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN,
-      attemptsLeft: -1
+      hasError: true,
+      formattedError: '',
+      formattedAttemptsLeft: ''
     };
     expectEquals(getErrorContainerVisibility(), 'visible');
     expectTrue(pinInput.hasAttribute('invalid'));
@@ -287,119 +285,38 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     expectFalse(pinInput.hasAttribute('invalid'));
   });
 
-  // Test the text of the label for the |INVALID_PIN| error.
+  // Test the text of the error label.
   test('label text: invalid PIN', () => {
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN,
-      attemptsLeft: -1
+      hasError: true,
+      formattedError: 'Invalid PIN.',
+      formattedAttemptsLeft: ''
     };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString('securityTokenPinDialogUnknownInvalidPin'));
+    expectEquals(errorElement.textContent, 'Invalid PIN.');
   });
 
-  // Test the text of the label for the |INVALID_PUK| error.
-  test('label text: invalid PUK', () => {
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PUK,
-      enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PUK,
-      attemptsLeft: -1
-    };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString('securityTokenPinDialogUnknownInvalidPuk'));
-  });
-
-  // Test the text of the label for the |MAX_ATTEMPTS_EXCEEDED| error.
+  // Test the text of the error label when the user input is disabled.
   test('label text: max attempts exceeded', () => {
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: false,
-      errorLabel:
-          OobeTypes.SecurityTokenPinDialogErrorType.MAX_ATTEMPTS_EXCEEDED,
-      attemptsLeft: 0
+      hasError: true,
+      formattedError: 'Maximum allowed attempts exceeded.',
+      formattedAttemptsLeft: ''
     };
     expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString(
-            'securityTokenPinDialogUnknownMaxAttemptsExceeded'));
-  });
-
-  // Test the text of the label for the |UNKNOWN| error.
-  test('label text: unknown error', () => {
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.UNKNOWN,
-      attemptsLeft: -1
-    };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString('securityTokenPinDialogUnknownError'));
+        errorElement.textContent, 'Maximum allowed attempts exceeded.');
   });
 
   // Test the text of the label when the number of attempts left is given.
   test('label text: attempts number', () => {
-    const ATTEMPTS_LEFT = 3;
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.NONE,
-      attemptsLeft: ATTEMPTS_LEFT
+      hasError: false,
+      formattedError: '',
+      formattedAttemptsLeft: '3 attempts left'
     };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getStringF(
-            'securityTokenPinDialogAttemptsLeft', ATTEMPTS_LEFT));
-  });
-
-  // Test that the label is empty when the number of attempts is, heuristically,
-  // too big to be displayed for the user.
-  test('label text: hidden attempts number', () => {
-    const BIG_ATTEMPTS_LEFT = 4;
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.NONE,
-      attemptsLeft: BIG_ATTEMPTS_LEFT
-    };
-    expectEquals(errorElement.textContent, '');
-  });
-
-  // Test the text of the label for the |INVALID_PIN| error when the number of
-  // attempts left is given.
-  test('label text: invalid PIN with attempts number', () => {
-    const ATTEMPTS_LEFT = 3;
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN,
-      attemptsLeft: ATTEMPTS_LEFT
-    };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getStringF(
-            'securityTokenPinDialogErrorAttempts',
-            loadTimeData.getString('securityTokenPinDialogUnknownInvalidPin'),
-            ATTEMPTS_LEFT));
-  });
-
-  // Test the text of the label for the |INVALID_PIN| error when the number of
-  // attempts left is, heuristically, too big to be displayed for the user.
-  test('label text: invalid PIN with hidden attempts number', () => {
-    const BIG_ATTEMPTS_LEFT = 4;
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN,
-      attemptsLeft: BIG_ATTEMPTS_LEFT
-    };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString('securityTokenPinDialogUnknownInvalidPin'));
+    expectEquals(errorElement.textContent, '3 attempts left');
   });
 
   // Test that no scrolling is necessary in order to see all dots after entering
@@ -442,10 +359,10 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
 
     // The response arrives, requesting to prompt for the PIN again.
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN,
-      attemptsLeft: -1
+      hasError: true,
+      formattedError: '',
+      formattedAttemptsLeft: ''
     };
     // The PIN keyboard is shown again, replacing the animation UI.
     expectFalse(pinKeyboardContainer.hidden);
@@ -471,10 +388,10 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
 
     // The response arrives, requesting to prompt for the PIN again.
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      errorLabel: OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN,
-      attemptsLeft: -1
+      hasError: true,
+      formattedError: '',
+      formattedAttemptsLeft: ''
     };
     // The PIN keyboard is shown again, replacing the animation UI.
     expectFalse(pinKeyboardContainer.hidden);

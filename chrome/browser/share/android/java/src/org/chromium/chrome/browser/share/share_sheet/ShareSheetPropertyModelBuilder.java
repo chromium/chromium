@@ -189,7 +189,8 @@ public class ShareSheetPropertyModelBuilder {
             };
             PropertyModel propertyModel =
                     createPropertyModel(ShareHelper.loadIconForResolveInfo(info, mPackageManager),
-                            (String) info.loadLabel(mPackageManager), onClickListener);
+                            (String) info.loadLabel(mPackageManager), onClickListener,
+                            /*displayNew*/ false);
             models.add(propertyModel);
         }
 
@@ -250,11 +251,12 @@ public class ShareSheetPropertyModelBuilder {
     }
 
     static PropertyModel createPropertyModel(
-            Drawable icon, String label, OnClickListener listener) {
+            Drawable icon, String label, OnClickListener listener, boolean showNewBadge) {
         return new PropertyModel.Builder(ShareSheetItemViewProperties.ALL_KEYS)
                 .with(ShareSheetItemViewProperties.ICON, icon)
                 .with(ShareSheetItemViewProperties.LABEL, label)
                 .with(ShareSheetItemViewProperties.CLICK_LISTENER, listener)
+                .with(ShareSheetItemViewProperties.SHOW_NEW_BADGE, showNewBadge)
                 .build();
     }
 

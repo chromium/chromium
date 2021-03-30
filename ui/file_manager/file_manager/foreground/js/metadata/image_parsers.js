@@ -5,7 +5,7 @@
 // clang-format off
 // #import {ByteReader} from './byte_reader.m.js';
 // #import {ImageParser, MetadataParser} from './metadata_parser.m.js';
-// #import {MetadataParserLogger} from '../../../../externs/metadata_worker_window.m.js';
+// #import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
 // clang-format on
 
 /**

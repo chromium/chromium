@@ -31,9 +31,9 @@ struct SessionWindow;
 
 // Callback from TabRestoreServiceClient::GetLastSession.
 // The second parameter is the id of the window that was last active.
-using GetLastSessionCallback =
-    base::OnceCallback<void(std::vector<std::unique_ptr<SessionWindow>>,
-                            SessionID)>;
+// The third parameter indicates if there was an error reading from the file.
+using GetLastSessionCallback = base::OnceCallback<
+    void(std::vector<std::unique_ptr<SessionWindow>>, SessionID, bool)>;
 
 // A client interface that needs to be supplied to the tab restore service by
 // the embedder.

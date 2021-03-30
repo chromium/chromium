@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -19,16 +18,17 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/optimization_guide/command_line_top_host_provider.h"
-#include "components/optimization_guide/optimization_guide_enums.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_prefs.h"
-#include "components/optimization_guide/optimization_guide_store.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
+#include "components/optimization_guide/core/command_line_top_host_provider.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/optimization_guide/test_hints_component_creator.h"
 #include "components/prefs/pref_service.h"
-#include "components/previews/core/previews_switches.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
@@ -222,8 +222,8 @@ class OptimizationGuideKeyedServiceBrowserTest
             optimization_guide::proto::NOSCRIPT, {url_with_hints_.host()},
             "simple.html");
 
-    g_browser_process->optimization_guide_service()->MaybeUpdateHintsComponent(
-        component_info);
+    optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+        ->MaybeUpdateHintsComponent(component_info);
 
     run_loop.Run();
   }
@@ -603,18 +603,16 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
     OptimizationGuideKeyedServiceBrowserTest::SetUpOnMainThread();
 
     SeedSiteEngagementService();
-    // Set the blacklist state to initialized so the sites in the engagement
-    // service will be used and not blacklisted on the first GetTopHosts
+    // Set the blocklist state to initialized so the sites in the engagement
+    // service will be used and not blocklisted on the first GetTopHosts
     // request.
-    InitializeTopHostBlacklist();
+    InitializeTopHostBlocklist();
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
     OptimizationGuideKeyedServiceBrowserTest::SetUpCommandLine(cmd);
 
     cmd->AppendSwitch("enable-spdy-proxy-auth");
-    // Add switch to avoid having to see the infobar in the test.
-    cmd->AppendSwitch(previews::switches::kDoNotRequireLitePageRedirectInfoBar);
     // Add switch to avoid racing navigations in the test.
     cmd->AppendSwitch(optimization_guide::switches::
                           kDisableFetchingHintsAtNavigationStartForTesting);
@@ -636,16 +634,16 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
     service->AddPointsForTesting(https_url2, 3);
   }
 
-  void InitializeTopHostBlacklist() {
+  void InitializeTopHostBlocklist() {
     Profile::FromBrowserContext(browser()
                                     ->tab_strip_model()
                                     ->GetActiveWebContents()
                                     ->GetBrowserContext())
         ->GetPrefs()
         ->SetInteger(
-            optimization_guide::prefs::kHintsFetcherTopHostBlacklistState,
+            optimization_guide::prefs::kHintsFetcherTopHostBlocklistState,
             static_cast<int>(
-                optimization_guide::prefs::HintsFetcherTopHostBlacklistState::
+                optimization_guide::prefs::HintsFetcherTopHostBlocklistState::
                     kInitialized));
   }
 

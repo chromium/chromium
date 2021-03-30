@@ -64,7 +64,7 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
   void OnDisplayConfigured(display::DisplaySnapshot* display,
                            const display::DisplayMode* mode,
                            const gfx::Point& origin,
-                           const base::flat_map<int64_t, bool>& statuses);
+                           bool statuses);
   void UpdateScreen(int64_t display_id,
                     const gfx::Rect& bounds,
                     float device_scale_factor,

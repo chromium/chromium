@@ -78,10 +78,9 @@ TEST_F(MetalayerToolTest, PaletteMenuState) {
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_POLICY,
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_LOCALE,
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_SUPERVISED_USER,
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_INCOGNITO,
   };
-  const base::string16 kLoading(base::ASCIIToUTF16("loading"));
+  const std::u16string kLoading(u"loading");
 
   // Iterate over every possible combination of states.
   for (chromeos::assistant::AssistantStatus state : kStates) {
@@ -108,13 +107,13 @@ TEST_F(MetalayerToolTest, PaletteMenuState) {
           EXPECT_TRUE(view);
           EXPECT_EQ(selectable, view->GetEnabled());
 
-          const base::string16 label_text =
+          const std::u16string label_text =
               static_cast<HoverHighlightView*>(view.get())
                   ->text_label()
                   ->GetText();
 
           const bool label_contains_loading =
-              label_text.find(kLoading) != base::string16::npos;
+              label_text.find(kLoading) != std::u16string::npos;
 
           EXPECT_EQ(allowed && enabled && context && !ready,
                     label_contains_loading);

@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-KEYCHAIN_PASSWORD=g0atMaster
 # This must match the commonName in codesign.cfg.
 KEYCHAIN_IDENTITY=untrusted@goat.local
 
-# Funcitons to add and remove codesigning identity to user's keychain. These
+# Functions to add and remove codesigning identity to user's keychain. These
 # are necessary since the codesign utility no longer supports the -k option,
 # which reads the identity from a file.
 pre-build = security import codesign.key && security import codesign.crt

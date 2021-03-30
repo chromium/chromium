@@ -354,3 +354,19 @@ class FilterTestsTests(unittest.TestCase):
                           [['*1.html']], [])
         self.assertRaises(ValueError, self.check, self.simple_test_list,
                           [['a*.html']], [])
+
+
+class NegativeFilterTestsNoGlobTests(unittest.TestCase):
+    simple_test_list = ['a/a1.html', 'a/a2.html', 'b/b1.html']
+
+    def check(self, tests, filters, expected_tests):
+        self.assertEqual(
+            expected_tests,
+            web_test_finder.filter_out_exact_negative_matches(tests, filters))
+
+    def test_no_filters(self):
+        self.check(self.simple_test_list, [], self.simple_test_list)
+
+    def test_one_all_negative_filter(self):
+        self.check(self.simple_test_list, ['-' + self.simple_test_list[0]],
+                   self.simple_test_list[1:])

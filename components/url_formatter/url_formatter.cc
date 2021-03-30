@@ -45,19 +45,18 @@ struct ComponentResult {
 };
 
 ComponentResult IDNToUnicodeOneComponent(
-    const base::char16* comp,
-    size_t comp_len,
+    base::StringPiece16 comp,
     base::StringPiece top_level_domain,
     base::StringPiece16 top_level_domain_unicode,
     bool ignore_spoof_check_results,
-    base::string16* out);
+    std::u16string* out);
 
 class AppendComponentTransform {
  public:
   AppendComponentTransform() {}
   virtual ~AppendComponentTransform() {}
 
-  virtual base::string16 Execute(
+  virtual std::u16string Execute(
       const std::string& component_text,
       base::OffsetAdjuster::Adjustments* adjustments) const = 0;
 
@@ -72,7 +71,7 @@ class HostComponentTransform : public AppendComponentTransform {
       : trim_trivial_subdomains_(trim_trivial_subdomains) {}
 
  private:
-  base::string16 Execute(
+  std::u16string Execute(
       const std::string& component_text,
       base::OffsetAdjuster::Adjustments* adjustments) const override {
     if (!trim_trivial_subdomains_)
@@ -87,7 +86,7 @@ class HostComponentTransform : public AppendComponentTransform {
     base::OffsetAdjuster::Adjustments trivial_subdomains_adjustments;
     trivial_subdomains_adjustments.push_back(
         base::OffsetAdjuster::Adjustment(0, kWwwLength, 0));
-    base::string16 unicode_result =
+    std::u16string unicode_result =
         IDNToUnicodeWithAdjustments(www_stripped_component_text, adjustments)
             .result;
     base::OffsetAdjuster::MergeSequentialAdjustments(
@@ -104,7 +103,7 @@ class NonHostComponentTransform : public AppendComponentTransform {
       : unescape_rules_(unescape_rules) {}
 
  private:
-  base::string16 Execute(
+  std::u16string Execute(
       const std::string& component_text,
       base::OffsetAdjuster::Adjustments* adjustments) const override {
     return (unescape_rules_ == net::UnescapeRule::NONE)
@@ -125,7 +124,7 @@ class NonHostComponentTransform : public AppendComponentTransform {
 void AppendFormattedComponent(const std::string& spec,
                               const url::Component& original_component,
                               const AppendComponentTransform& transform,
-                              base::string16* output,
+                              std::u16string* output,
                               url::Component* output_component,
                               base::OffsetAdjuster::Adjustments* adjustments) {
   DCHECK(output);
@@ -184,7 +183,7 @@ void AdjustAllComponentsButScheme(int delta, url::Parsed* parsed) {
 }
 
 // Helper for FormatUrlWithOffsets().
-base::string16 FormatViewSourceUrl(
+std::u16string FormatViewSourceUrl(
     const GURL& url,
     FormatUrlTypes format_types,
     net::UnescapeRule::Type unescape_rules,
@@ -205,7 +204,7 @@ base::string16 FormatViewSourceUrl(
   // Format the underlying URL and record adjustments.
   const std::string& url_str(url.possibly_invalid_spec());
   adjustments->clear();
-  base::string16 result(
+  std::u16string result(
       base::ASCIIToUTF16(kViewSource) +
       FormatUrlWithAdjustments(GURL(url_str.substr(kViewSourceLength)),
                                format_types, unescape_rules, new_parsed,
@@ -239,21 +238,21 @@ base::LazyInstance<IDNSpoofChecker>::Leaky g_idn_spoof_checker =
 // remain empty if the TLD is not well formed punycode.
 void GetTopLevelDomain(base::StringPiece host,
                        base::StringPiece* top_level_domain,
-                       base::string16* top_level_domain_unicode) {
+                       std::u16string* top_level_domain_unicode) {
   size_t last_dot = host.rfind('.');
   if (last_dot == base::StringPiece::npos)
     return;
 
   *top_level_domain = host.substr(last_dot + 1);
-  base::string16 tld16;
+  std::u16string tld16;
   tld16.reserve(top_level_domain->length());
   tld16.insert(tld16.end(), top_level_domain->begin(), top_level_domain->end());
 
   // Convert the TLD to unicode, ignoring the spoof check results. This will
   // always decode the input to unicode as long as it's valid punycode.
-  IDNToUnicodeOneComponent(
-      tld16.data(), tld16.size(), std::string(), base::string16(),
-      /*ignore_spoof_check_results=*/true, top_level_domain_unicode);
+  IDNToUnicodeOneComponent(tld16, std::string(), std::u16string(),
+                           /*ignore_spoof_check_results=*/true,
+                           top_level_domain_unicode);
 }
 
 IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
@@ -262,25 +261,25 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
     bool ignore_spoof_check_results) {
   if (adjustments)
     adjustments->clear();
-  // Convert the ASCII input to a base::string16 for ICU.
-  base::string16 host16;
+  // Convert the ASCII input to a std::u16string for ICU.
+  std::u16string host16;
   host16.reserve(host.length());
   host16.insert(host16.end(), host.begin(), host.end());
 
   // Compute the top level domain to be used in spoof checks later.
   base::StringPiece top_level_domain;
-  base::string16 top_level_domain_unicode;
+  std::u16string top_level_domain_unicode;
   GetTopLevelDomain(host, &top_level_domain, &top_level_domain_unicode);
 
   IDNConversionResult result;
   // Do each component of the host separately, since we enforce script matching
   // on a per-component basis.
-  base::string16 out16;
+  std::u16string out16;
   for (size_t component_start = 0, component_end;
        component_start < host16.length(); component_start = component_end + 1) {
     // Find the end of the component.
     component_end = host16.find('.', component_start);
-    if (component_end == base::string16::npos)
+    if (component_end == std::u16string::npos)
       component_end = host16.length();  // For getting the last component.
     size_t component_length = component_end - component_start;
     size_t new_component_start = out16.length();
@@ -288,7 +287,7 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
     if (component_end > component_start) {
       // Add the substring that we just found.
       component_result = IDNToUnicodeOneComponent(
-          host16.data() + component_start, component_length, top_level_domain,
+          {host16.data() + component_start, component_length}, top_level_domain,
           top_level_domain_unicode, ignore_spoof_check_results, &out16);
       result.has_idn_component |= component_result.has_idn_component;
       if (component_result.spoof_check_result !=
@@ -402,24 +401,21 @@ base::LazyInstance<UIDNAWrapper>::Leaky g_uidna = LAZY_INSTANCE_INITIALIZER;
 // if conversion was made. Sets |has_idn_component| to true if the input has
 // IDN, regardless of whether it was converted to unicode or not.
 ComponentResult IDNToUnicodeOneComponent(
-    const base::char16* comp,
-    size_t comp_len,
+    base::StringPiece16 comp,
     base::StringPiece top_level_domain,
     base::StringPiece16 top_level_domain_unicode,
     bool ignore_spoof_check_results,
-    base::string16* out) {
+    std::u16string* out) {
   DCHECK(out);
   ComponentResult result;
-  if (comp_len == 0)
+  if (comp.empty())
     return result;
 
   // Early return if the input cannot be an IDN component.
   // Valid punycode must not end with a dash.
-  static const base::char16 kIdnPrefix[] = {'x', 'n', '-', '-'};
-  if (comp_len <= base::size(kIdnPrefix) ||
-      memcmp(comp, kIdnPrefix, sizeof(kIdnPrefix)) != 0 ||
-      comp[comp_len - 1] == '-') {
-    out->append(comp, comp_len);
+  static constexpr char16_t kIdnPrefix[] = u"xn--";
+  if (!base::StartsWith(comp, kIdnPrefix) || comp.back() == '-') {
+    out->append(comp.data(), comp.size());
     return result;
   }
 
@@ -436,8 +432,8 @@ ComponentResult IDNToUnicodeOneComponent(
     // code units, |status| will be U_BUFFER_OVERFLOW_ERROR and we'll try
     // the conversion again, but with a sufficiently large buffer.
     output_length = uidna_labelToUnicode(
-        uidna, comp, static_cast<int32_t>(comp_len), &(*out)[original_length],
-        output_length, &info, &status);
+        uidna, comp.data(), static_cast<int32_t>(comp.size()),
+        &(*out)[original_length], output_length, &info, &status);
   } while ((status == U_BUFFER_OVERFLOW_ERROR && info.errors == 0));
 
   if (U_SUCCESS(status) && info.errors == 0) {
@@ -462,7 +458,7 @@ ComponentResult IDNToUnicodeOneComponent(
   // We get here with no IDN or on error, in which case we just revert to
   // original string and append the literal input.
   out->resize(original_length);
-  out->append(comp, comp_len);
+  out->append(comp.data(), comp.size());
   return result;
 }
 
@@ -482,14 +478,14 @@ const FormatUrlType kFormatUrlOmitDefaults =
     kFormatUrlOmitUsernamePassword | kFormatUrlOmitHTTP |
     kFormatUrlOmitTrailingSlashOnBareHostname;
 
-base::string16 FormatUrl(const GURL& url,
+std::u16string FormatUrl(const GURL& url,
                          FormatUrlTypes format_types,
                          net::UnescapeRule::Type unescape_rules,
                          url::Parsed* new_parsed,
                          size_t* prefix_end,
                          size_t* offset_for_adjustment) {
   base::OffsetAdjuster::Adjustments adjustments;
-  base::string16 result = FormatUrlWithAdjustments(
+  std::u16string result = FormatUrlWithAdjustments(
       url, format_types, unescape_rules, new_parsed, prefix_end, &adjustments);
   if (offset_for_adjustment) {
     base::OffsetAdjuster::AdjustOffset(adjustments, offset_for_adjustment,
@@ -498,7 +494,7 @@ base::string16 FormatUrl(const GURL& url,
   return result;
 }
 
-base::string16 FormatUrlWithOffsets(
+std::u16string FormatUrlWithOffsets(
     const GURL& url,
     FormatUrlTypes format_types,
     net::UnescapeRule::Type unescape_rules,
@@ -506,14 +502,14 @@ base::string16 FormatUrlWithOffsets(
     size_t* prefix_end,
     std::vector<size_t>* offsets_for_adjustment) {
   base::OffsetAdjuster::Adjustments adjustments;
-  const base::string16& result = FormatUrlWithAdjustments(
+  const std::u16string& result = FormatUrlWithAdjustments(
       url, format_types, unescape_rules, new_parsed, prefix_end, &adjustments);
   base::OffsetAdjuster::AdjustOffsets(adjustments, offsets_for_adjustment,
                                       result.length());
   return result;
 }
 
-base::string16 FormatUrlWithAdjustments(
+std::u16string FormatUrlWithAdjustments(
     const GURL& url,
     FormatUrlTypes format_types,
     net::UnescapeRule::Type unescape_rules,
@@ -548,7 +544,7 @@ base::string16 FormatUrlWithAdjustments(
   // Scheme & separators.  These are ASCII.
   size_t scheme_size = static_cast<size_t>(parsed.CountCharactersBefore(
       url::Parsed::USERNAME, true /* include_delimiter */));
-  base::string16 url_string;
+  std::u16string url_string;
   url_string.insert(url_string.end(), spec.begin(), spec.begin() + scheme_size);
   new_parsed->scheme = parsed.scheme;
 
@@ -683,7 +679,7 @@ base::string16 FormatUrlWithAdjustments(
     // files on Windows, we should remove it for URL display when eliding
     // the scheme by offsetting by an additional character.
     if (url.SchemeIs(url::kFileScheme) &&
-        base::StartsWith(url_string, base::ASCIIToUTF16("file:///"),
+        base::StartsWith(url_string, u"file:///",
                          base::CompareCase::INSENSITIVE_ASCII)) {
       ++new_parsed->path.begin;
       ++scheme_size;
@@ -717,7 +713,7 @@ bool CanStripTrailingSlash(const GURL& url) {
          !url.has_query() && !url.has_ref() && url.path_piece() == "/";
 }
 
-void AppendFormattedHost(const GURL& url, base::string16* output) {
+void AppendFormattedHost(const GURL& url, std::u16string* output) {
   AppendFormattedComponent(
       url.possibly_invalid_spec(), url.parsed_for_possibly_invalid_spec().host,
       HostComponentTransform(false), output, nullptr, nullptr);
@@ -727,7 +723,7 @@ IDNConversionResult UnsafeIDNToUnicodeWithDetails(base::StringPiece host) {
   return UnsafeIDNToUnicodeWithAdjustments(host, nullptr);
 }
 
-base::string16 IDNToUnicode(base::StringPiece host) {
+std::u16string IDNToUnicode(base::StringPiece host) {
   return IDNToUnicodeWithAdjustments(host, nullptr).result;
 }
 
@@ -754,7 +750,7 @@ void StripWWWFromHostComponent(const std::string& url, url::Component* host) {
   host->len -= kWwwLength;
 }
 
-Skeletons GetSkeletons(const base::string16& host) {
+Skeletons GetSkeletons(const std::u16string& host) {
   return g_idn_spoof_checker.Get().GetSkeletons(host);
 }
 

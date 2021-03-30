@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "content/common/content_export.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
@@ -48,7 +49,7 @@ class RenderFrameHost;
 // If the IDP returns an id_token, the sequence finishes. If it returns a
 // signin_url, that URL is loaded as a rendered Document into a new window
 // for the user to interact with the IDP.
-class IdpNetworkRequestManager {
+class CONTENT_EXPORT IdpNetworkRequestManager {
  public:
   enum class FetchStatus {
     kSuccess,
@@ -63,6 +64,8 @@ class IdpNetworkRequestManager {
     kSigninError,
     kInvalidResponseError,
   };
+
+  static constexpr char kWellKnownFilePath[] = ".well-known/webid";
 
   using FetchWellKnownCallback =
       base::OnceCallback<void(FetchStatus, const std::string&)>;
@@ -81,12 +84,12 @@ class IdpNetworkRequestManager {
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
 
   // Attempt to fetch the IDP's WebID parameters from the its .well-known file.
-  void FetchIDPWellKnown(FetchWellKnownCallback);
+  virtual void FetchIdpWellKnown(FetchWellKnownCallback);
 
   // Transmit the OAuth request to the IDP.
-  void SendSigninRequest(const GURL& signin_url,
-                         const std::string& request,
-                         SigninRequestCallback);
+  virtual void SendSigninRequest(const GURL& signin_url,
+                                 const std::string& request,
+                                 SigninRequestCallback);
 
  private:
   void OnWellKnownLoaded(std::unique_ptr<std::string> response_body);

@@ -11,6 +11,7 @@ export const Entity = {
   BOOKMARK: 1,
   TAB: 2,
   WINDOW: 3,
+  GROUP: 4,
 };
 
 /**

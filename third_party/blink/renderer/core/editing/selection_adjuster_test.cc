@@ -523,17 +523,17 @@ TEST_F(SelectionAdjusterTest, AdjustSelectionTypeWithShadow) {
   SetShadowContent("bar<slot></slot>", "host");
 
   Element* host = GetDocument().getElementById("host");
+  const Position& base = Position(host->firstChild(), 0);
+  const Position& extent = Position(host, 0);
   const SelectionInDOMTree& selection =
-      SelectionInDOMTree::Builder()
-          .Collapse(Position(host->firstChild(), 0))
-          .Extend(Position(host, 0))
-          .Build();
+      SelectionInDOMTree::Builder().Collapse(base).Extend(extent).Build();
+
   // Should not crash
   const SelectionInDOMTree& adjusted =
       SelectionAdjuster::AdjustSelectionType(selection);
 
-  EXPECT_EQ(Position::BeforeNode(*host), adjusted.Base());
-  EXPECT_EQ(Position::BeforeNode(*host), adjusted.Extent());
+  EXPECT_EQ(base, adjusted.Base());
+  EXPECT_EQ(extent, adjusted.Extent());
 }
 
 }  // namespace blink

@@ -74,7 +74,7 @@ def DoRenaming(options, deps):
     print('Renaming source and destination files not match.')
     sys.exit(-1)
 
-  for src, dest in itertools.izip(src_files, dest_files):
+  for src, dest in zip(src_files, dest_files):
     if os.path.isdir(src):
       print('renaming diretory is not supported.')
       sys.exit(-1)

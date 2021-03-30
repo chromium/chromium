@@ -7,9 +7,9 @@ package org.chromium.native_test;
 import android.app.Application;
 import android.content.Context;
 
-import org.chromium.base.BuildConfig;
 import org.chromium.base.CommandLine;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
+import org.chromium.build.BuildConfig;
 
 /**
  * Application class to be used by native_test apks.

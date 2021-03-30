@@ -367,4 +367,49 @@ TEST(StringBuilderTest, AppendNumberDoubleUChar) {
   EXPECT_EQ(reference, test);
 }
 
+TEST(StringBuilderTest, ReserveCapacity) {
+  StringBuilder builder;
+  builder.ReserveCapacity(100);
+  EXPECT_LE(100u, builder.Capacity());
+
+  builder.Append(0x202B);
+  ASSERT_FALSE(builder.Is8Bit());
+  EXPECT_LE(100u, builder.Capacity());
+}
+
+TEST(StringBuilderTest, ReserveCapacityAfterEnsure16Bit) {
+  StringBuilder builder;
+  // |Ensure16Bit()| creates an inline buffer, so the subsequent
+  // |ReserveCapacity()| should be an expansion.
+  builder.Ensure16Bit();
+  builder.ReserveCapacity(100);
+  EXPECT_LE(100u, builder.Capacity());
+}
+
+TEST(StringBuilderTest, Reserve16BitCapacity) {
+  StringBuilder builder;
+  builder.Reserve16BitCapacity(100);
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_LE(100u, builder.Capacity());
+}
+
+TEST(StringBuilderTest, ReserveCapacityTwice) {
+  StringBuilder builder;
+  builder.ReserveCapacity(100);
+  EXPECT_LE(100u, builder.Capacity());
+
+  builder.ReserveCapacity(400);
+  EXPECT_LE(400u, builder.Capacity());
+}
+
+TEST(StringBuilderTest, ReserveCapacityTwice16) {
+  StringBuilder builder;
+  builder.Ensure16Bit();
+  builder.ReserveCapacity(100);
+  EXPECT_LE(100u, builder.Capacity());
+
+  builder.ReserveCapacity(400);
+  EXPECT_LE(400u, builder.Capacity());
+}
+
 }  // namespace WTF

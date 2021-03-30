@@ -11,26 +11,6 @@
 #ifndef CONTENT_COMMON_FRAME_MESSAGES_H_
 #error "Failed to include content/common/frame_messages.h"
 #endif
-#undef CONTENT_COMMON_INPUT_MESSAGES_H_
-#include "content/common/input_messages.h"
-#ifndef CONTENT_COMMON_INPUT_MESSAGES_H_
-#error "Failed to include content/common/input_messages.h"
-#endif
-#undef CONTENT_COMMON_MEDIA_MEDIA_PLAYER_DELEGATE_MESSAGES_H_
-#include "content/common/media/media_player_delegate_messages.h"
-#ifndef CONTENT_COMMON_MEDIA_MEDIA_PLAYER_DELEGATE_MESSAGES_H_
-#error "Failed to include content/common/media/media_player_delegate_messages.h"
-#endif
-#undef CONTENT_COMMON_RESOURCE_MESSAGES_H_
-#include "content/common/resource_messages.h"
-#ifndef CONTENT_COMMON_RESOURCE_MESSAGES_H_
-#error "Failed to include content/common/resource_messages.h"
-#endif
-#undef CONTENT_COMMON_UNFREEZABLE_FRAME_MESSAGES_H_
-#include "content/common/unfreezable_frame_messages.h"
-#ifndef CONTENT_COMMON_UNFREEZABLE_FRAME_MESSAGES_H_
-#error "Failed to include content/common/unfreezable_frame_messages.h"
-#endif
 #include "media/media_buildflags.h"
 
 #if defined(OS_ANDROID)

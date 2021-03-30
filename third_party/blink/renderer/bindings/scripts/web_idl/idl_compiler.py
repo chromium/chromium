@@ -211,7 +211,7 @@ class IdlCompiler(object):
                       only_to_members_of_partial_or_mixin=False)
             propagate_to_exposure(propagate)
 
-            map(process_member_like, ir.iter_all_members())
+            list(map(process_member_like, ir.iter_all_members()))
 
         def process_member_like(ir):
             propagate = functools.partial(propagate_extattr, ir=ir)
@@ -237,7 +237,7 @@ class IdlCompiler(object):
 
         self._ir_map.move_to_new_phase()
 
-        map(process_interface_like, old_irs)
+        list(map(process_interface_like, old_irs))
 
     def _determine_blink_headers(self):
         irs = self._ir_map.irs_of_kinds(
@@ -425,9 +425,9 @@ class IdlCompiler(object):
             assert not new_interface.deriveds
             derived_set = identifier_to_derived_set.get(
                 new_interface.identifier, set())
-            new_interface.deriveds = map(
-                lambda id_: self._ref_to_idl_def_factory.create(id_),
-                sorted(derived_set))
+            new_interface.deriveds = list(
+                map(lambda id_: self._ref_to_idl_def_factory.create(id_),
+                    sorted(derived_set)))
 
     def _supplement_missing_html_constructor_operation(self):
         # Temporary mitigation of misuse of [HTMLConstructor]
@@ -556,7 +556,8 @@ class IdlCompiler(object):
             self._ir_map.add(new_ir)
 
             for group in new_ir.iter_all_overload_groups():
-                exposures = map(lambda overload: overload.exposure, group)
+                exposures = list(map(lambda overload: overload.exposure,
+                                     group))
 
                 # [Exposed]
                 if any(not exposure.global_names_and_features
@@ -656,8 +657,8 @@ class IdlCompiler(object):
             constructs = set()
             for global_name in global_names:
                 constructs.update(exposed_map.get(global_name, []))
-            new_ir.exposed_constructs = map(
-                self._ref_to_idl_def_factory.create, sorted(constructs))
+            new_ir.exposed_constructs = list(
+                map(self._ref_to_idl_def_factory.create, sorted(constructs)))
 
             assert not new_ir.legacy_window_aliases
             if new_ir.identifier != 'Window':

@@ -4,11 +4,11 @@
 
 #include "chromeos/system/core_scheduling.h"
 
-#include <base/logging.h>
 #include <errno.h>
 #include <sys/prctl.h>
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 
 #ifndef PR_SET_CORE_SCHED

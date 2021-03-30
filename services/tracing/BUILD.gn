@@ -28,6 +28,7 @@ source_set("lib") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":privacy_check",
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp",
@@ -41,8 +42,6 @@ source_set("lib") {
 }
 
 source_set("privacy_check") {
-  testonly = true
-
   sources = [
     "perfetto/privacy_filtered_fields-inl.h",
     "perfetto/privacy_filtering_check.cc",
@@ -65,6 +64,8 @@ source_set("test_utils") {
 
   deps = [
     ":lib",
+    "//base",
+    "//base/test:test_support",
     "//testing/gtest",
     "//third_party/perfetto/protos/perfetto/common:lite",
     "//third_party/perfetto/protos/perfetto/trace:lite",
@@ -84,9 +85,9 @@ source_set("tests") {
   sources = [
     "perfetto/consumer_host_unittest.cc",
     "perfetto/perfetto_integration_unittest.cc",
+    "perfetto/privacy_filtering_check_unittest.cc",
     "public/cpp/perfetto/producer_test_utils.cc",
     "public/cpp/perfetto/producer_test_utils.h",
-    "public/cpp/perfetto/task_runner_unittest.cc",
     "public/cpp/perfetto/trace_event_data_source_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
     "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
@@ -112,6 +113,7 @@ source_set("tests") {
 
   deps = [
     ":lib",
+    ":privacy_check",
     ":test_utils",
     "//base",
     "//base/test:test_support",
@@ -126,11 +128,19 @@ source_set("tests") {
     "//third_party/perfetto/protos/perfetto/trace:lite",
     "//third_party/perfetto/protos/perfetto/trace/chrome:lite",
     "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
+    "//third_party/perfetto/protos/perfetto/trace/profiling:lite",
     "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
   ]
 
   if (is_posix) {
-    sources += [ "perfetto/system_perfetto_unittest.cc" ]
+    # TODO(crbug.com/1184180): System perfetto tests are flaky on Mac.
+    if (!is_mac) {
+      sources += [ "perfetto/system_perfetto_unittest.cc" ]
+    }
+
+    if (!is_android) {
+      sources += [ "public/cpp/system_tracing_service_unittest.cc" ]
+    }
 
     if (can_unwind_with_cfi_table && is_official_build) {
       if (is_android) {

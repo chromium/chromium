@@ -198,7 +198,7 @@ TEST_F(CustomLinksManagerImplTest, UpdateLink) {
 
   // Update the link's URL.
   EXPECT_TRUE(custom_links_->UpdateLink(GURL(kTestCase1[0].url), GURL(kTestUrl),
-                                        base::string16()));
+                                        std::u16string()));
   EXPECT_EQ(
       std::vector<Link>({Link{GURL(kTestUrl),
                               base::UTF8ToUTF16(kTestCase1[0].title), false}}),
@@ -235,7 +235,7 @@ TEST_F(CustomLinksManagerImplTest, UpdateLinkWithInvalidParams) {
 
   // Try to pass empty params. This should fail and not modify the list.
   EXPECT_FALSE(custom_links_->UpdateLink(GURL(kTestCase1[0].url), GURL(),
-                                         base::string16()));
+                                         std::u16string()));
   EXPECT_EQ(initial_links, custom_links_->GetLinks());
 
   // Try to pass an invalid URL. This should fail and not modify the list.
@@ -243,7 +243,7 @@ TEST_F(CustomLinksManagerImplTest, UpdateLinkWithInvalidParams) {
                                          base::UTF8ToUTF16(kTestTitle)));
   EXPECT_EQ(initial_links, custom_links_->GetLinks());
   EXPECT_FALSE(custom_links_->UpdateLink(GURL(kTestCase1[0].url), GURL("test"),
-                                         base::string16()));
+                                         std::u16string()));
   EXPECT_EQ(initial_links, custom_links_->GetLinks());
 }
 
@@ -256,7 +256,7 @@ TEST_F(CustomLinksManagerImplTest, UpdateLinkWhenUrlAlreadyExists) {
   // Try to update a link with a URL that exists in the list. This should fail
   // and not modify the list.
   EXPECT_FALSE(custom_links_->UpdateLink(
-      GURL(kTestCase2[0].url), GURL(kTestCase2[1].url), base::string16()));
+      GURL(kTestCase2[0].url), GURL(kTestCase2[1].url), std::u16string()));
   EXPECT_EQ(initial_links, custom_links_->GetLinks());
 }
 
@@ -373,7 +373,7 @@ TEST_F(CustomLinksManagerImplTest, UndoUpdateLink) {
 
   // Update the link's URL.
   EXPECT_TRUE(custom_links_->UpdateLink(GURL(kTestCase1[0].url), GURL(kTestUrl),
-                                        base::string16()));
+                                        std::u16string()));
   EXPECT_EQ(
       std::vector<Link>({Link{GURL(kTestUrl),
                               base::UTF8ToUTF16(kTestCase1[0].title), false}}),

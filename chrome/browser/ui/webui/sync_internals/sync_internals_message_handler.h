@@ -16,7 +16,6 @@
 #include "components/sync/invalidations/invalidations_listener.h"
 #include "components/sync/js/js_controller.h"
 #include "components/sync/js/js_event_handler.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace syncer {
@@ -52,9 +51,6 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   // Handler for getAllNodes message.  Needs a |request_id| argument.
   void HandleGetAllNodes(const base::ListValue* args);
 
-  // Handler for requests to get UserEvents tab visibility.
-  void HandleRequestUserEventsVisibility(const base::ListValue* args);
-
   // Handler for setting internal state of if specifics should be included in
   // protocol events when sent to be displayed.
   void HandleSetIncludeSpecifics(const base::ListValue* args);
@@ -79,7 +75,7 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
                      const syncer::JsEventDetails& details) override;
 
   // Callback used in GetAllNodes.
-  void OnReceivedAllNodes(int request_id,
+  void OnReceivedAllNodes(const std::string& callback_id,
                           std::unique_ptr<base::ListValue> nodes);
 
   // syncer::SyncServiceObserver implementation.
@@ -95,7 +91,7 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   using AboutSyncDataDelegate =
       base::RepeatingCallback<std::unique_ptr<base::DictionaryValue>(
           syncer::SyncService* service,
-          version_info::Channel channel)>;
+          const std::string& channel)>;
 
   // Constructor used for unit testing to override dependencies.
   explicit SyncInternalsMessageHandler(
@@ -118,9 +114,6 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   // Gets the SyncInvalidationsService of the underlying original profile. May
   // return nullptr (e.g. if sync invalidations are not enabled).
   syncer::SyncInvalidationsService* GetSyncInvalidationsService();
-
-  // Sends a dispatch event to the UI. Javascript must be enabled.
-  void DispatchEvent(const std::string& name, const base::Value& details_value);
 
   // Unregisters for notifications from all notifications coming from the sync
   // machinery. Leaves notifications hooked into the UI alone.

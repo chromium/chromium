@@ -19,7 +19,6 @@
 #include "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -82,8 +81,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
-  self.styler.cellBackgroundColor = UIColor.cr_systemBackgroundColor;
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.styler.cellBackgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.sectionFooterHeight = 0;
   [self.tableView

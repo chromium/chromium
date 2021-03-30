@@ -5,9 +5,9 @@
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 
 #include <memory>
+#include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "url/gurl.h"
@@ -24,11 +24,11 @@ std::unique_ptr<PasswordForm> CreatePasswordFormFromCredentialInfo(
 
   form = std::make_unique<PasswordForm>();
   form->icon_url = info.icon;
-  form->display_name = info.name.value_or(base::string16());
+  form->display_name = info.name.value_or(std::u16string());
   form->federation_origin = info.federation;
   form->url = origin.GetURL();
-  form->password_value = info.password.value_or(base::string16());
-  form->username_value = info.id.value_or(base::string16());
+  form->password_value = info.password.value_or(std::u16string());
+  form->username_value = info.id.value_or(std::u16string());
   form->scheme = PasswordForm::Scheme::kHtml;
   form->type = PasswordForm::Type::kApi;
 

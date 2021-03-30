@@ -55,7 +55,7 @@ void BluetoothDeviceScanningPromptController::OnBluetoothScanningPromptEvent(
 void BluetoothDeviceScanningPromptController::AddFilteredDevice(
     const std::string& device_id,
     bool should_update_name,
-    const base::string16& device_name) {
+    const std::u16string& device_name) {
   if (prompt_)
     prompt_->AddOrUpdateDevice(device_id, should_update_name, device_name);
 }

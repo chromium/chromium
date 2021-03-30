@@ -137,7 +137,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   bool CopyVideoFrameYUVDataToGLTexture(
       viz::RasterContextProvider* raster_context_provider,
       gpu::gles2::GLES2Interface* destination_gl,
-      const VideoFrame& video_frame,
+      scoped_refptr<VideoFrame> video_frame,
       unsigned int target,
       unsigned int texture,
       unsigned int internal_format,

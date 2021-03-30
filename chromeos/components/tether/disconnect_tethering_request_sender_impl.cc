@@ -63,8 +63,8 @@ void DisconnectTetheringRequestSenderImpl::SendDisconnectRequestToDevice(
   num_pending_host_fetches_++;
   tether_host_fetcher_->FetchTetherHost(
       device_id,
-      base::Bind(&DisconnectTetheringRequestSenderImpl::OnTetherHostFetched,
-                 weak_ptr_factory_.GetWeakPtr(), device_id));
+      base::BindOnce(&DisconnectTetheringRequestSenderImpl::OnTetherHostFetched,
+                     weak_ptr_factory_.GetWeakPtr(), device_id));
 }
 
 bool DisconnectTetheringRequestSenderImpl::HasPendingRequests() {

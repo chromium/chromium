@@ -8,16 +8,19 @@
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
-      "bounds": [500, 250]
+      "bounds": [500, 250],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
       "bounds": [150, 150],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='indicator box'",
-      "bounds": [100, 350]
+      "bounds": [100, 350],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

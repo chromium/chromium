@@ -21,6 +21,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::ElementsAreArray;
+
 namespace language {
 
 static void ExpectEqualLanguageLists(
@@ -159,6 +161,23 @@ TEST_F(LanguagePrefsTest, ResetEmptyFluentLanguagesToDefaultTest) {
   ExpectFluentLanguageListContent({"en"});
 }
 
+TEST_F(LanguagePrefsTest, GetFluentLanguagesTest) {
+  // Default Fluent language is "en".
+  EXPECT_THAT(language_prefs_->GetFluentLanguages(), ElementsAreArray({"en"}));
+
+  // Add two languages with the same base.
+  language_prefs_->SetFluent("fr-FR");
+  language_prefs_->SetFluent("fr-CA");
+  EXPECT_THAT(language_prefs_->GetFluentLanguages(),
+              ElementsAreArray({"en", "fr"}));
+
+  // Add language that comes before English alphabetically. It should be
+  // appended to the list.
+  language_prefs_->SetFluent("af");
+  EXPECT_THAT(language_prefs_->GetFluentLanguages(),
+              ElementsAreArray({"en", "fr", "af"}));
+}
+
 TEST_F(LanguagePrefsTest, GetFirstLanguageTest) {
   EXPECT_EQ("a", language::GetFirstLanguage("a,b,c"));
   EXPECT_EQ("en-US", language::GetFirstLanguage("en-US,en,en-GB"));
@@ -167,32 +186,103 @@ TEST_F(LanguagePrefsTest, GetFirstLanguageTest) {
 }
 
 TEST_F(LanguagePrefsTest, UpdateLanguageList) {
-  language::test::AcceptLanguagesTester content_languages_tester =
-      language::test::AcceptLanguagesTester(prefs_.get());
+  language::test::LanguagePrefTester content_languages_tester =
+      language::test::LanguagePrefTester(prefs_.get());
   // Empty update.
   std::vector<std::string> languages;
-  language_prefs_->SetAcceptLanguagesList(languages);
-  content_languages_tester.ExpectLanguagePrefs("");
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.ExpectAcceptLanguagePrefs("");
 
   // One language.
   languages = {"en"};
-  language_prefs_->SetAcceptLanguagesList(languages);
-  content_languages_tester.ExpectLanguagePrefs("en");
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.ExpectAcceptLanguagePrefs("en");
 
   // More than one language.
   languages = {"en", "ja", "it"};
-  language_prefs_->SetAcceptLanguagesList(languages);
-  content_languages_tester.ExpectLanguagePrefs("en,ja,it");
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,ja,it");
 
   // Locale-specific codes.
   // The list is exanded by adding the base languagese.
   languages = {"en-US", "ja", "en-CA", "fr-CA"};
-  language_prefs_->SetAcceptLanguagesList(languages);
-  content_languages_tester.ExpectLanguagePrefs("en-US,ja,en-CA,fr-CA");
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.ExpectAcceptLanguagePrefs("en-US,ja,en-CA,fr-CA");
 
   // List already expanded.
   languages = {"en-US", "en", "fr", "fr-CA"};
-  language_prefs_->SetAcceptLanguagesList(languages);
-  content_languages_tester.ExpectLanguagePrefs("en-US,en,fr,fr-CA");
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.ExpectAcceptLanguagePrefs("en-US,en,fr,fr-CA");
+}
+
+TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
+  // Only test policy-forced languages on non-Chrome OS platforms.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  GTEST_SKIP();
+#else
+  language::test::LanguagePrefTester content_languages_tester =
+      language::test::LanguagePrefTester(prefs_.get());
+  // Empty update.
+  std::vector<std::string> languages;
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.ExpectAcceptLanguagePrefs("");
+
+  // Forced languages with no duplicates.
+  languages = {"fr"};
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.SetForcedLanguagePrefs({"en", "it"});
+  content_languages_tester.ExpectSelectedLanguagePrefs("fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,it,fr");
+  content_languages_tester.SetForcedLanguagePrefs({});  // Reset pref
+
+  // Forced languages with some duplicates.
+  languages = {"en-US", "en", "fr", "fr-CA"};
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.SetForcedLanguagePrefs({"en", "it"});
+  content_languages_tester.ExpectSelectedLanguagePrefs("en-US,en,fr,fr-CA");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,it,en-US,fr,fr-CA");
+  content_languages_tester.SetForcedLanguagePrefs({});  // Reset pref
+
+  // Forced languages with full duplicates.
+  languages = {"en", "es", "fr"};
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.SetForcedLanguagePrefs({"en", "es", "fr"});
+  content_languages_tester.ExpectSelectedLanguagePrefs("en,es,fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,es,fr");
+  content_languages_tester.SetForcedLanguagePrefs({});  // Reset pref
+
+  // Add then remove forced languages with no duplicates.
+  languages = {"en", "fr"};
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.SetForcedLanguagePrefs({"it"});
+  content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("it,en,fr");
+  // Remove forced languages
+  content_languages_tester.SetForcedLanguagePrefs({});
+  content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,fr");
+
+  // Add then remove forced languages with some duplicates.
+  languages = {"en", "fr"};
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.SetForcedLanguagePrefs({"en", "it"});
+  content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,it,fr");
+  // Remove forced languages
+  content_languages_tester.SetForcedLanguagePrefs({});
+  content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,fr");
+
+  // Add then remove forced languages with full duplicates.
+  languages = {"en", "fr"};
+  language_prefs_->SetUserSelectedLanguagesList(languages);
+  content_languages_tester.SetForcedLanguagePrefs({"en", "fr"});
+  content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,fr");
+  // Remove forced languages
+  content_languages_tester.SetForcedLanguagePrefs({});
+  content_languages_tester.ExpectSelectedLanguagePrefs("en,fr");
+  content_languages_tester.ExpectAcceptLanguagePrefs("en,fr");
+#endif
 }
 }  // namespace language

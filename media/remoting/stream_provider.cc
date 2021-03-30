@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
@@ -62,9 +63,9 @@ StreamProvider::MediaStream::MediaStream(
 
   media_weak_this_ = media_weak_factory_.GetWeakPtr();
 
-  const RpcBroker::ReceiveMessageCallback receive_callback =
-      BindToLoop(media_task_runner_,
-                 BindRepeating(&MediaStream::OnReceivedRpc, media_weak_this_));
+  const RpcBroker::ReceiveMessageCallback receive_callback = base::BindPostTask(
+      media_task_runner_,
+      BindRepeating(&MediaStream::OnReceivedRpc, media_weak_this_));
   rpc_broker_->RegisterMessageReceiverCallback(rpc_handle_, receive_callback);
 }
 
@@ -424,7 +425,7 @@ StreamProvider::StreamProvider(
 
   media_weak_this_ = media_weak_factory_.GetWeakPtr();
 
-  auto callback = BindToLoop(
+  auto callback = base::BindPostTask(
       media_task_runner_,
       base::BindRepeating(&StreamProvider::OnReceivedRpc, media_weak_this_));
   rpc_broker_->RegisterMessageReceiverCallback(RpcBroker::kAcquireDemuxerHandle,

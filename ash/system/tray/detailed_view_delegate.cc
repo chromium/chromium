@@ -10,12 +10,12 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/custom_shape_button.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -33,16 +33,19 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
 
   switch (container) {
     case TriView::Container::START:
-      FALLTHROUGH;
-    case TriView::Container::END:
+    case TriView::Container::END: {
+      const int left_padding = container == TriView::Container::START
+                                   ? kUnifiedBackButtonLeftPadding
+                                   : 0;
       layout = std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          kUnifiedTopShortcutSpacing);
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets(0, left_padding, 0, 0), kUnifiedTopShortcutSpacing);
       layout->set_main_axis_alignment(
           views::BoxLayout::MainAxisAlignment::kCenter);
       layout->set_cross_axis_alignment(
           views::BoxLayout::CrossAxisAlignment::kCenter);
       break;
+    }
     case TriView::Container::CENTER:
       tri_view->SetFlexForContainer(TriView::Container::CENTER, 1.f);
 
@@ -60,49 +63,24 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
                        gfx::Size(0, kUnifiedDetailedViewTitleRowHeight));
 }
 
-gfx::ImageSkia CreateBackButtonIcon() {
-  return gfx::CreateVectorIcon(kUnifiedMenuArrowBackIcon,
-                               AshColorProvider::Get()->GetContentLayerColor(
-                                   ContentLayerType::kIconColorPrimary));
-}
-
-class BackButton : public CustomShapeButton {
+class BackButton : public TopShortcutButton {
  public:
   BackButton(views::Button::PressedCallback callback)
-      : CustomShapeButton(std::move(callback)) {
-    gfx::ImageSkia image = CreateBackButtonIcon();
-    SetImage(views::Button::STATE_NORMAL, image);
-    SetImageHorizontalAlignment(ALIGN_RIGHT);
-    SetImageVerticalAlignment(ALIGN_MIDDLE);
-    SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_PREVIOUS_MENU));
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets((kTrayItemSize - image.width()) / 2)));
-  }
-
+      : TopShortcutButton(std::move(callback),
+                          kUnifiedMenuExpandIcon,
+                          IDS_ASH_STATUS_TRAY_PREVIOUS_MENU) {}
+  BackButton(const BackButton&) = delete;
+  BackButton& operator=(const BackButton&) = delete;
   ~BackButton() override = default;
 
-  // CustomShapeButton:
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(kTrayItemSize * 3 / 2, kTrayItemSize);
+  // Use the same icon as CollapseButton with rotation.
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    gfx::ScopedCanvas scoped(canvas);
+    canvas->Translate(gfx::Vector2d(size().width() / 2, size().height() / 2));
+    canvas->sk_canvas()->rotate(-90);
+    gfx::ImageSkia image = GetImageToPaint();
+    canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
   }
-
-  void OnThemeChanged() override {
-    CustomShapeButton::OnThemeChanged();
-    SetImage(views::Button::STATE_NORMAL, CreateBackButtonIcon());
-  }
-
-  SkPath CreateCustomShapePath(const gfx::Rect& bounds) const override {
-    SkPath path;
-    SkScalar bottom_radius = SkIntToScalar(kTrayItemSize / 2);
-    SkScalar radii[8] = {
-        0, 0, bottom_radius, bottom_radius, bottom_radius, bottom_radius, 0, 0};
-    path.addRoundRect(gfx::RectToSkRect(bounds), radii);
-    return path;
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackButton);
 };
 
 }  // namespace
@@ -123,6 +101,10 @@ void DetailedViewDelegate::CloseBubble() {
 
 base::Optional<SkColor> DetailedViewDelegate::GetBackgroundColor() {
   return base::nullopt;
+}
+
+gfx::Insets DetailedViewDelegate::GetInsetsForDetailedView() const {
+  return kUnifiedDetailedViewPadding;
 }
 
 bool DetailedViewDelegate::IsOverflowIndicatorEnabled() const {
@@ -188,7 +170,7 @@ views::Separator* DetailedViewDelegate::CreateListSubHeaderSeparator() {
 HoverHighlightView* DetailedViewDelegate::CreateScrollListItem(
     ViewClickListener* listener,
     const gfx::VectorIcon& icon,
-    const base::string16& text) {
+    const std::u16string& text) {
   HoverHighlightView* item = new HoverHighlightView(listener);
   if (icon.is_empty())
     item->AddLabelRow(text);

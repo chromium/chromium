@@ -30,8 +30,12 @@ bool IsSubFrameTranslationEnabled();
 // Return whether sub frame language detection is enabled.
 bool IsSubFrameLanguageDetectionEnabled();
 
-// Return whether TFLIte-based language detection is enabled.
+// Return whether TFLite-based language detection is enabled.
 bool IsTFLiteLanguageDetectionEnabled();
+
+// Return the threshold used to determine if TFLite language detection model's
+// prediction is reliable.
+float GetTFLiteLanguageDetectionThreshold();
 
 }  // namespace translate
 

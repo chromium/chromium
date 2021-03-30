@@ -32,8 +32,10 @@ struct Transfer;
 
 class UsbDeviceHandleMac : public UsbDeviceHandle {
  public:
+  // Requires Mac OS X version 10.1.2 or later.
   using ScopedIOUSBDeviceInterface =
-      base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface182>;
+      base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface187>;
+  // Requires Mac OS X version 10.0.4 or later.
   using ScopedIOUSBInterfaceInterface =
       base::mac::ScopedIOPluginInterface<IOUSBInterfaceInterface182>;
 
@@ -134,6 +136,7 @@ class UsbDeviceHandleMac : public UsbDeviceHandle {
       transfers_;
 
   ScopedIOUSBDeviceInterface device_interface_;
+  base::ScopedCFTypeRef<CFRunLoopSourceRef> device_source_;
   scoped_refptr<UsbDeviceMac> device_;
 
   // Both maps take the interface number in as the respective key.

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -27,6 +28,16 @@ namespace chromeos {
 class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
     : public CryptohomeClient {
  public:
+  // Represents the ongoing AuthSessions.
+  struct AuthSessionData {
+    // AuthSession id.
+    std::string id;
+    // Account associated with the session.
+    cryptohome::AccountIdentifier account;
+    // True if session is authenticated.
+    bool authenticated = false;
+  };
+
   // FakeCryptohomeClient can be embedded in unit tests, but the
   // InitializeFake/Shutdown pattern should be preferred. Constructing the
   // instance will set the global instance for the fake and for the base class,
@@ -68,6 +79,13 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   void MountGuestEx(
       const cryptohome::MountGuestRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) override;
+  void StartAuthSession(
+      const cryptohome::AccountIdentifier& account,
+      const cryptohome::StartAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) override;
+  void AuthenticateAuthSessionRequest(
+      const cryptohome::AuthenticateAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) override;
   void GetRsuDeviceId(
       DBusMethodCallback<cryptohome::BaseReply> callback) override;
   void Pkcs11IsTpmTokenReady(DBusMethodCallback<bool> callback) override;
@@ -98,6 +116,10 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
                   const cryptohome::AuthorizationRequest& auth,
                   const cryptohome::CheckKeyRequest& request,
                   DBusMethodCallback<cryptohome::BaseReply> callback) override;
+  void ListKeysEx(const cryptohome::AccountIdentifier& cryptohome_id,
+                  const cryptohome::AuthorizationRequest& auth,
+                  const cryptohome::ListKeysRequest& request,
+                  DBusMethodCallback<cryptohome::BaseReply> callback) override;
   void MountEx(const cryptohome::AccountIdentifier& cryptohome_id,
                const cryptohome::AuthorizationRequest& auth,
                const cryptohome::MountRequest& request,
@@ -121,15 +143,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
       const cryptohome::AccountIdentifier& cryptohome_id,
       const cryptohome::AuthorizationRequest& auth,
       const cryptohome::MassRemoveKeysRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override;
-  void GetBootAttribute(
-      const cryptohome::GetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override;
-  void SetBootAttribute(
-      const cryptohome::SetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override;
-  void FlushAndSignBootAttributes(
-      const cryptohome::FlushAndSignBootAttributesRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) override;
   void MigrateToDircrypto(const cryptohome::AccountIdentifier& cryptohome_id,
                           const cryptohome::MigrateToDircryptoRequest& request,
@@ -246,7 +259,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   bool to_migrate_from_ecryptfs() const {
     return last_mount_request_.to_migrate_from_ecryptfs();
   }
-  bool hidden_mount() const { return last_mount_request_.hidden_mount(); }
   bool public_mount() const { return last_mount_request_.public_mount(); }
   const cryptohome::AuthorizationRequest& get_last_mount_authentication()
       const {
@@ -282,31 +294,9 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
       const cryptohome::BaseReply& reply,
       DBusMethodCallback<cryptohome::BaseReply> callback);
 
-  // Posts tasks which return fake results to the UI thread.
-  void ReturnAsyncMethodResult(AsyncMethodCallback callback);
-
-  // Posts tasks which return fake data to the UI thread.
-  void ReturnAsyncMethodData(AsyncMethodCallback callback,
-                             const std::string& data);
-
-  // This method is used to implement ReturnAsyncMethodResult without data.
-  void ReturnAsyncMethodResultInternal(AsyncMethodCallback callback);
-
-  // This method is used to implement ReturnAsyncMethodResult with data.
-  void ReturnAsyncMethodDataInternal(AsyncMethodCallback callback,
-                                     const std::string& data);
-
   // This method is used to implement MigrateToDircrypto with simulated progress
   // updates.
   void OnDircryptoMigrationProgressUpdated();
-
-  // Notifies AsyncCallStatus() to Observer instances.
-  void NotifyAsyncCallStatus(int async_id, bool return_status, int return_code);
-
-  // Notifies AsyncCallStatusWithData() to Observer instances.
-  void NotifyAsyncCallStatusWithData(int async_id,
-                                     bool return_status,
-                                     const std::string& data);
 
   // Loads install attributes from the stub file.
   bool LoadInstallAttributes();
@@ -328,7 +318,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
 
   int remove_firmware_management_parameters_from_tpm_call_count_ = 0;
 
-  int async_call_id_ = 1;
   bool mount_create_required_ = false;
   bool unmount_result_ = true;
   std::vector<uint8_t> system_salt_{GetStubSystemSalt()};
@@ -344,6 +333,9 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   std::map<cryptohome::AccountIdentifier,
            std::map<std::string, cryptohome::Key>>
       key_data_map_;
+
+  int next_auth_session_id = 0;
+  base::flat_map<std::string, AuthSessionData> auth_sessions_;
 
   // Set of account identifiers whose user homes use ecryptfs. User homes not
   // mentioned here use dircrypto.

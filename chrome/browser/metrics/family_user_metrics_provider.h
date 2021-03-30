@@ -28,8 +28,7 @@ class FamilyUserMetricsProvider
   // numeric values should never be reused. Please keep in sync with
   // "FamilyUserLogSegment" in src/tools/metrics/histograms/enums.xml.
   enum class LogSegment {
-    // User does not fall into any of the below categories. For example, this
-    // bucket includes regular users.
+    // User does not fall into any of the below categories.
     kOther = 0,
     // Supervised primary account with no secondary accounts.
     kSupervisedUser = 1,
@@ -40,10 +39,13 @@ class FamilyUserMetricsProvider
     // K-12 EDU primary account on an unmanaged device, regardless of the
     // secondary account.
     kStudentAtHome = 3,
+    // Regular unmanaged user on any device, regardless of the secondary
+    // account.
+    kRegularUser = 4,
     // Add future entries above this comment, in sync with
     // "FamilyUserLogSegment" in src/tools/metrics/histograms/enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kStudentAtHome
+    kMaxValue = kRegularUser
   };
 
   FamilyUserMetricsProvider();
@@ -62,6 +64,8 @@ class FamilyUserMetricsProvider
   // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override;
 
   static const char* GetHistogramNameForTesting();
 

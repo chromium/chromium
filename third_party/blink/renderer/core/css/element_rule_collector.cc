@@ -60,15 +60,17 @@ unsigned AdjustLinkMatchType(EInsideLink inside_link,
 
 }  // namespace
 
-ElementRuleCollector::ElementRuleCollector(const ElementResolveContext& context,
-                                           const SelectorFilter& filter,
-                                           MatchResult& result,
-                                           ComputedStyle* style,
-                                           EInsideLink inside_link)
+ElementRuleCollector::ElementRuleCollector(
+    const ElementResolveContext& context,
+    const StyleRecalcContext& style_recalc_context,
+    const SelectorFilter& filter,
+    MatchResult& result,
+    ComputedStyle* style,
+    EInsideLink inside_link)
     : context_(context),
+      style_recalc_context_(style_recalc_context),
       selector_filter_(filter),
       style_(style),
-      pseudo_style_request_(kPseudoIdNone),
       mode_(SelectorChecker::kResolvingStyle),
       can_use_fast_reject_(
           selector_filter_.ParentStackIsConsistent(context.ParentNode())),
@@ -201,12 +203,11 @@ void ElementRuleCollector::CollectMatchingRulesForList(
       continue;
     }
     if (auto* container_query = rule_data->GetContainerQuery()) {
-      // TODO(crbug.com/1145970): Propagate actual ContainerQueryEvaluator
-      // instance from the container.
-      // For now a fixed container size of 500x500 is used.
-      auto* eval = MakeGarbageCollected<ContainerQueryEvaluator>(500.0, 500.0);
+      result_.SetDependsOnContainerQueries();
 
-      if (!eval->Eval(*container_query)) {
+      auto* evaluator = style_recalc_context_.cq_evaluator;
+
+      if (!evaluator || !evaluator->EvalAndAdd(*container_query)) {
         rejected++;
         continue;
       }
@@ -283,6 +284,10 @@ void ElementRuleCollector::CollectMatchingRules(
   if (SelectorChecker::MatchesFocusPseudoClass(element)) {
     CollectMatchingRulesForList(match_request.rule_set->FocusPseudoClassRules(),
                                 match_request);
+  }
+  if (SelectorChecker::MatchesFocusVisiblePseudoClass(element)) {
+    CollectMatchingRulesForList(
+        match_request.rule_set->FocusVisiblePseudoClassRules(), match_request);
   }
   if (SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(element)) {
     CollectMatchingRulesForList(
@@ -404,9 +409,8 @@ void ElementRuleCollector::DidMatchRule(
     if (!rule_data->Rule()->Properties().IsEmpty())
       style_->SetHasPseudoElementStyle(dynamic_pseudo);
   } else {
-    matched_rules_.push_back(MatchedRule(rule_data, result.specificity,
-                                         match_request.style_sheet_index,
-                                         match_request.style_sheet));
+    matched_rules_.push_back(MatchedRule(
+        rule_data, match_request.style_sheet_index, match_request.style_sheet));
   }
 }
 

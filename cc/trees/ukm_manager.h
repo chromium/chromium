@@ -12,7 +12,6 @@
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
-#include "components/viz/common/frame_timing_details.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
@@ -57,12 +56,18 @@ class CC_EXPORT UkmManager {
       CompositorFrameReporter::FrameReportType report_type,
       const std::vector<CompositorFrameReporter::StageData>& stage_history,
       const CompositorFrameReporter::ActiveTrackers& active_trackers,
-      const viz::FrameTimingDetails& viz_breakdown) const;
+      const CompositorFrameReporter::ProcessedBlinkBreakdown&
+          processed_blink_breakdown,
+      const CompositorFrameReporter::ProcessedVizBreakdown&
+          processed_viz_breakdown) const;
 
   void RecordEventLatencyUKM(
       const EventMetrics::List& events_metrics,
       const std::vector<CompositorFrameReporter::StageData>& stage_history,
-      const viz::FrameTimingDetails& viz_breakdown) const;
+      const CompositorFrameReporter::ProcessedBlinkBreakdown&
+          processed_blink_breakdown,
+      const CompositorFrameReporter::ProcessedVizBreakdown&
+          processed_viz_breakdown) const;
 
   ukm::UkmRecorder* recorder_for_testing() { return recorder_.get(); }
 

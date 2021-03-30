@@ -191,12 +191,14 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
   return true;
 }
 
-void LinkLoader::LoadStylesheet(const LinkLoadParameters& params,
-                                const AtomicString& local_name,
-                                const WTF::TextEncoding& charset,
-                                FetchParameters::DeferOption defer_option,
-                                Document& document,
-                                ResourceClient* link_client) {
+void LinkLoader::LoadStylesheet(
+    const LinkLoadParameters& params,
+    const AtomicString& local_name,
+    const WTF::TextEncoding& charset,
+    FetchParameters::DeferOption defer_option,
+    Document& document,
+    ResourceClient* link_client,
+    RenderBlockingBehavior render_blocking_behavior) {
   ExecutionContext* context = document.GetExecutionContext();
   ResourceRequest resource_request(context->CompleteURL(params.href));
   resource_request.SetReferrerPolicy(params.referrer_policy);
@@ -209,11 +211,11 @@ void LinkLoader::LoadStylesheet(const LinkLoadParameters& params,
 
   ResourceLoaderOptions options(context->GetCurrentWorld());
   options.initiator_info.name = local_name;
+
   FetchParameters link_fetch_params(std::move(resource_request), options);
   link_fetch_params.SetCharset(charset);
-
   link_fetch_params.SetDefer(defer_option);
-
+  link_fetch_params.SetRenderBlockingBehavior(render_blocking_behavior);
   link_fetch_params.SetContentSecurityPolicyNonce(params.nonce);
 
   CrossOriginAttributeValue cross_origin = params.cross_origin;

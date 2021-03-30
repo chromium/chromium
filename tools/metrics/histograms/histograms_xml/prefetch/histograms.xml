@@ -1,0 +1,444 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Prefetch histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="IsolatedPrerender.AfterClick.Mainframe.CookieWaitTime"
+    units="ms" expires_after="2021-06-20">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the amount of time that the navigation to a previously prefetched
+    page was delayed because cookies had to be copied from the isolated cookie
+    jar.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.AfterClick.Subresources.UsedCache"
+    enum="BooleanCacheHit" expires_after="2021-06-20">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records whether a previously prefetched subresource from an Isolated
+    Prerender was served from cache when its page was later navigated to.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Mainframe.BodyLength" units="bytes"
+    expires_after="2021-06-20">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the response body length as cached in memory encountered when
+    isolated prefetching a mainframe HTML resource from the Google Search Result
+    Page. Recorded for non-network error prefetches only.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Mainframe.ConnectTime" units="ms"
+    expires_after="2021-06-20">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the time taken to establish a socket connection when isolated
+    prefetching a mainframe HTML resource from the Google Search Result Page.
+    Recorded for non-network error prefetches only.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Mainframe.CookiesToCopy"
+    units="count" expires_after="M90">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the number of cookies that needed to be copied from the prefetch
+    navigation to the user's profile after a prefetched link is navigated to.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Mainframe.NetError"
+    enum="NetErrorCodes" expires_after="2021-06-20">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the Net Error encountered when isolated prefetching a mainframe HTML
+    resource from the Google Search Result Page. Recorded for every completed
+    prefetch.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Mainframe.RespCode"
+    enum="HttpResponseCode" expires_after="M90">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the HTTP response code encountered isolated prefetching a mainframe
+    HTML resource from the Google Search Result Page. Recorded for non-network
+    error prefetches only. Redirects are not included here.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Mainframe.RetryAfter" units="ms"
+    expires_after="M90">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the duration of a Retry-After header on a 503 response to a
+    mainframe prefetch request.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Mainframe.TotalRedirects"
+    units="count" expires_after="M90">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the total number of redirects encountered while doing all the
+    prefetches on an eligible Google Search Result page. Only recorded when at
+    least one prefetch was attempted.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Mainframe.TotalTime" units="ms"
+    expires_after="M90">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the total time taken when isolated prefetching a mainframe HTML
+    resource from the Google Search Result Page. Recorded for successful
+    non-network error prefetches only.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Subresources.NetError"
+    enum="NetErrorCodes" expires_after="2021-06-20">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the net error encountered when prefetching a single subresource
+    during Isolated Prerenders.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Subresources.Quantity"
+    units="count" expires_after="2021-06-20">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the number of subresources that were NoStatePrefetch'd during an
+    Isolated Prerender. Recorded once for each page that is NoStatePrefetch'd
+    during Isolated Prerenders.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Prefetch.Subresources.RespCode"
+    enum="HttpResponseCode" expires_after="2021-07-18">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the HTTP response code encountered when prefetching a single
+    subresource during Isolated Prerenders.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Proxy.Fallback.NetError"
+    enum="NetErrorCodes" expires_after="M95">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the Net Error encountered when Chrome did a fallback from the
+    prefetch proxy. Recorded only on fallbacks.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.Proxy.RespCode" enum="HttpResponseCode"
+    expires_after="M95">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the HTTP response code encountered when connecting to the prefetch
+    proxy CONNECT tunnel. Recorded every time Chrome gets CONNECT tunnel
+    response headers.
+  </summary>
+</histogram>
+
+<histogram name="IsolatedPrerender.SpareRenderer.CountStartedOnSRP"
+    units="count" expires_after="2021-06-20">
+  <obsolete>
+    Renamed to PrefetchProxy* in M90
+  </obsolete>
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the number of spare renderers that were attempted to be started on
+    the SRP, when the feature param is enabled.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.AfterClick.Mainframe.CookieWaitTime" units="ms"
+    expires_after="2021-08-22">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the amount of time that the navigation to a previously prefetched
+    page was delayed because cookies had to be copied from the isolated cookie
+    jar.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.AfterClick.Subresources.UsedCache"
+    enum="BooleanCacheHit" expires_after="2021-08-22">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records whether a previously prefetched subresource from an Isolated
+    Prerender was served from cache when its page was later navigated to.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Mainframe.BodyLength" units="bytes"
+    expires_after="2021-08-22">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the response body length as cached in memory encountered when
+    isolated prefetching a mainframe HTML resource from the Google Search Result
+    Page. Recorded for non-network error prefetches only.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
+    expires_after="2021-06-20">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the time taken to establish a socket connection when isolated
+    prefetching a mainframe HTML resource from the Google Search Result Page.
+    Recorded for non-network error prefetches only.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Mainframe.CookiesToCopy" units="count"
+    expires_after="2021-08-22">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the number of cookies that needed to be copied from the prefetch
+    navigation to the user's profile after a prefetched link is navigated to.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Mainframe.NetError"
+    enum="NetErrorCodes" expires_after="2021-06-20">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the Net Error encountered when isolated prefetching a mainframe HTML
+    resource from the Google Search Result Page. Recorded for every completed
+    prefetch.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Mainframe.RespCode"
+    enum="HttpResponseCode" expires_after="2021-06-20">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the HTTP response code encountered isolated prefetching a mainframe
+    HTML resource from the Google Search Result Page. Recorded for non-network
+    error prefetches only. Redirects are not included here.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Mainframe.RetryAfter" units="ms"
+    expires_after="2021-06-20">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the duration of a Retry-After header on a 503 response to a
+    mainframe prefetch request.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Mainframe.TotalRedirects" units="count"
+    expires_after="2021-06-20">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the total number of redirects encountered while doing all the
+    prefetches on an eligible Google Search Result page. Only recorded when at
+    least one prefetch was attempted.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Mainframe.TotalTime" units="ms"
+    expires_after="2021-08-22">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the total time taken when isolated prefetching a mainframe HTML
+    resource from the Google Search Result Page. Recorded for successful
+    non-network error prefetches only.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Subresources.NetError"
+    enum="NetErrorCodes" expires_after="2021-08-22">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the net error encountered when prefetching a single subresource
+    during Isolated Prerenders.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Subresources.Quantity" units="count"
+    expires_after="2021-06-20">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the number of subresources that were NoStatePrefetch'd during an
+    Isolated Prerender. Recorded once for each page that is NoStatePrefetch'd
+    during Isolated Prerenders.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.Subresources.RespCode"
+    enum="HttpResponseCode" expires_after="2021-06-20">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the HTTP response code encountered when prefetching a single
+    subresource during Isolated Prerenders.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Proxy.Fallback.NetError" enum="NetErrorCodes"
+    expires_after="2021-06-20">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the Net Error encountered when Chrome did a fallback from the
+    prefetch proxy. Recorded only on fallbacks.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.Proxy.RespCode" enum="HttpResponseCode"
+    expires_after="2021-06-20">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the HTTP response code encountered when connecting to the prefetch
+    proxy CONNECT tunnel. Recorded every time Chrome gets CONNECT tunnel
+    response headers.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.SpareRenderer.CountStartedOnSRP" units="count"
+    expires_after="2021-08-29">
+  <owner>robertogden@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the number of spare renderers that were attempted to be started on
+    the SRP, when the feature param is enabled.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

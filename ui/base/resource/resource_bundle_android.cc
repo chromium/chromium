@@ -106,6 +106,8 @@ bool ResourceBundle::LocaleDataPakExists(const std::string& locale) {
   }
   if (!GetPathForAndroidLocalePakWithinApk(locale, in_split, log_error).empty())
     return true;
+
+  // Fall back to checking on disk, which is necessary only for tests.
   const auto path = GetLocaleFilePath(locale);
   return !path.empty() && base::PathExists(path);
 }
@@ -122,9 +124,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   // a) WebView strings, which are always stored uncompressed under
   //    assets/stored-locales/ inside the APK or App Bundle.
   //
-  // b) For APKs, the Chrome UI strings are stored under assets/locales/
-  //    in compressed form. The relevant pak files is extracted on startup
-  //    and stored on the /data partition, with a version-specific suffix.
+  // b) For APKs, the Chrome UI strings are stored under assets/locales/.
   //
   // c) For App Bundles, Chrome UI strings are stored uncompressed under
   //    assets/locales#lang_<lang>/ (where <lang> is an Android language code)
@@ -139,8 +139,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   //
   //    If false, try to load it from the app bundle specific location
   //    (e.g. locales#lang_<language>/<locale>.pak). If the latter does not
-  //    exist, try to lookup the extracted APK-specific locale .pak file
-  //    from /data/app/.../<locale>.pak@<version> instead.
+  //    exist, try to lookup the APK-specific locale .pak file.
   //
   //    g_locale_paks_in_apk is set by SetLocalePaksStoredInApk() which
   //    is called from the WebView startup code.
@@ -172,7 +171,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
           LoadLocalePakFromApk(app_locale, true, &g_locale_pack_region);
     }
     if (g_locale_pack_fd < 0) {
-      // Otherwise, try to locate the extracted locale .pak file.
+      // Otherwise, try to locate the side-loaded locale .pak file (for tests).
       if (locale_file_path.empty()) {
         auto path = GetLocaleFilePath(app_locale);
         if (base::PathExists(path))

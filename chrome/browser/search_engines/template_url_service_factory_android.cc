@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "chrome/android/chrome_jni_headers/TemplateUrlServiceFactory_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/search_engines/android/jni_headers/TemplateUrlServiceFactory_jni.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_provider_logos/switches.h"

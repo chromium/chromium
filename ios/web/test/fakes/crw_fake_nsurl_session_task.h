@@ -20,8 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) NSURLSessionTaskState state;
 @property(nonatomic, nullable, copy) NSURLResponse* response;
 
-- (nullable instancetype)initWithURL:(NSURL*)URL NS_DESIGNATED_INITIALIZER;
-- (nonnull instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithURL:(NSURL*)URL;  // NS_DESIGNATED_INITIALIZER;
+// - (nonnull instancetype)init NS_UNAVAILABLE;
 
 @end
 

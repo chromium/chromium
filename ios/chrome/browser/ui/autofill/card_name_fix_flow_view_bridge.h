@@ -8,9 +8,9 @@
 #import <UIKit/UIKit.h>
 
 #include <memory>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 
@@ -31,7 +31,7 @@ class CardNameFixFlowViewBridge : public CardNameFixFlowView {
   CardNameFixFlowController* GetController();
 
   // Called when the user confirms their name.
-  void OnConfirmedName(const base::string16& confirmed_name);
+  void OnConfirmedName(const std::u16string& confirmed_name);
 
   // Called when the user cancels the card name fix flow.
   void OnDismissed();

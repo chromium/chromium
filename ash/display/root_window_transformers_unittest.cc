@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/display/display_util.h"
 #include "ash/display/mirror_window_test_api.h"
 #include "ash/host/root_window_transformer.h"
-#include "ash/magnifier/magnification_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -440,6 +440,43 @@ TEST_F(RootWindowTransformersTest, LetterBoxPillarBox) {
   // The aspect ratio is flipped, so X margin is now 125.
   transformer = CreateCurrentRootWindowTransformerForMirroring();
   EXPECT_EQ("125,0,125,0", transformer->GetHostInsets().ToString());
+}
+
+TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
+  MirrorWindowTestApi test_api;
+  UpdateDisplay("400x200,500x500");
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+
+  for (auto rotation :
+       {display::Display::ROTATE_0, display::Display::ROTATE_90,
+        display::Display::ROTATE_180, display::Display::ROTATE_270}) {
+    SCOPED_TRACE(::testing::Message() << "Rotation: " << rotation);
+    display_manager()->SetDisplayRotation(
+        display::Screen::GetScreen()->GetPrimaryDisplay().id(), rotation,
+        display::Display::RotationSource::ACTIVE);
+    std::unique_ptr<RootWindowTransformer> transformer(
+        CreateCurrentRootWindowTransformerForMirroring());
+
+    const bool need_transpose = rotation == display::Display::ROTATE_90 ||
+                                rotation == display::Display::ROTATE_270;
+
+    // Y margin is (500 - 500/400 * 200) / 2 = 125 for no rotation. Transposed
+    // on 90/270 degree.
+    gfx::Insets expected_insets(0, 125);
+    if (need_transpose)
+      expected_insets = gfx::Insets(125, 0);
+    EXPECT_EQ(expected_insets, transformer->GetHostInsets());
+
+    // Expected rect in mirror of the source root, with y margin applied for no
+    // rotation. Transposed on 90/270 degree.
+    gfx::RectF expected_rect(0, 125, 500, 250);
+    if (need_transpose)
+      expected_rect.Transpose();
+
+    gfx::RectF rect(transformer->GetRootWindowBounds(gfx::Size()));
+    transformer->GetTransform().TransformRect(&rect);
+    EXPECT_EQ(expected_rect, rect);
+  }
 }
 
 TEST_F(RootWindowTransformersTest, ShouldSetWindowSize) {

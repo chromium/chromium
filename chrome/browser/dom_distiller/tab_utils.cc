@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/content/browser/uma_helper.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -96,7 +97,9 @@ SelfDeletingRequestDelegate::SelfDeletingRequestDelegate(
   // cache.
   content::BackForwardCache::DisableForRenderFrameHost(
       web_contents->GetMainFrame(),
-      "browser::DomDistiller_SelfDeletingRequestDelegate");
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::
+              kDomDistiller_SelfDeletingRequestDelegate));
 }
 
 SelfDeletingRequestDelegate::~SelfDeletingRequestDelegate() {}

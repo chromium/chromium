@@ -11,8 +11,12 @@ component("account_manager_core") {
   sources = [
     "account.cc",
     "account.h",
+    "account_addition_result.cc",
+    "account_addition_result.h",
     "account_manager_facade.cc",
     "account_manager_facade.h",
+    "account_manager_facade_impl.cc",
+    "account_manager_facade_impl.h",
     "account_manager_util.cc",
     "account_manager_util.h",
   ]
@@ -20,6 +24,8 @@ component("account_manager_core") {
   deps = [
     "//base",
     "//chromeos/crosapi/mojom",
+    "//google_apis:google_apis",
+    "//mojo/public/cpp/bindings",
   ]
 
   defines = [ "IS_ACCOUNT_MANAGER_CORE_IMPL" ]
@@ -34,4 +40,19 @@ source_set("test_support") {
   ]
 
   deps = [ ":account_manager_core" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "account_manager_facade_impl_unittest.cc" ]
+
+  deps = [
+    ":account_manager_core",
+    ":test_support",
+    "//base/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//google_apis:google_apis",
+    "//testing/gtest",
+  ]
 }

@@ -14,10 +14,12 @@ RelocatablePosition::RelocatablePosition(const Position& position)
                                                position)
                  : nullptr) {}
 
-RelocatablePosition::~RelocatablePosition() {
-  if (!range_)
-    return;
-  range_->Dispose();
+void RelocatablePosition::SetPosition(const Position& position) {
+  DCHECK(position.IsNotNull());
+  DCHECK(range_);
+  DCHECK_EQ(position.GetDocument(), range_->StartPosition().GetDocument());
+  range_->setStart(position);
+  range_->setEnd(position);
 }
 
 Position RelocatablePosition::GetPosition() const {
@@ -25,6 +27,10 @@ Position RelocatablePosition::GetPosition() const {
     return Position();
   DCHECK(range_->collapsed());
   return range_->StartPosition();
+}
+
+void RelocatablePosition::Trace(Visitor* visitor) const {
+  visitor->Trace(range_);
 }
 
 }  // namespace blink

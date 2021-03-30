@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Tydsduur van afteller</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> is aktief</translation>
+<translation id="2144806332417375165">Gepasmaakte videoparameters</translation>
 <translation id="229579744168541441">Voer uit na skyf</translation>
 <translation id="2501278716633472235">Gaan terug</translation>
 <translation id="2501853267655415902">Opname is gestop</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Kameraresolusie</translation>
 <translation id="3517926952904427380">Kan nie portretfoto neem nie</translation>
 <translation id="3569311554794739032">Wil jy regtig <ph name="FILE" /> verwyder?</translation>
-<translation id="3750315947605636967">'n Ander program gebruik tans jou kamera</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skandeer strepieskode</translation>
 <translation id="3892148308691398805">Kopieer teks</translation>
@@ -76,10 +76,12 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="7337660886763914220">Lêerstelselfoute.</translation>
 <translation id="7450541714075000668">Teks gekopieer</translation>
 <translation id="7557677699350329807">Skakel oor na volgende kamera</translation>
+<translation id="7607002721634913082">Laat wag</translation>
 <translation id="7608223098072244877">4 by 4</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Wys beeldrol-, kantel- en zoemopsies</translation>
 <translation id="7983668134180549431">Teks is bespeur.</translation>
 <translation id="8067883171444229417">Speel video</translation>
 <translation id="8131740175452115882">Bevestig</translation>

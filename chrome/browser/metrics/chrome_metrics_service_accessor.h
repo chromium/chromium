@@ -75,6 +75,10 @@ namespace settings {
 class MetricsReportingHandler;
 }
 
+namespace feed {
+class FeedServiceDelegateImpl;
+}  // namespace feed
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -123,6 +127,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class Browser;
   friend class OptimizationGuideKeyedService;
   friend class WebUITabStripFieldTrial;
+  friend class feed::FeedServiceDelegateImpl;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ChromeCameraAppUIDelegate;
@@ -133,6 +138,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ForceFieldTrialsBrowserTest;
   friend class MetricsReportingStateTest;
   friend class metrics::UkmConsentParamBrowserTest;
+  friend class ClonedInstallClientIdResetBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServicesManagerClientTest,

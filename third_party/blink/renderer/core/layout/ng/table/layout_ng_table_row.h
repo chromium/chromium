@@ -40,6 +40,8 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
 
   void RemoveChild(LayoutObject*) override;
 
+  void WillBeRemovedFromTree() override;
+
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) override;
 
@@ -52,6 +54,12 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
   // spacing, border collapsing, missing cells, etc.
   // For simplicity, just conservatively assume all table rows are not opaque.
   // Copied from Legacy's LayoutTableRow
+  bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
+                                         unsigned) const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override {
     NOT_DESTROYED();
     return false;
@@ -68,6 +76,8 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
     NOT_DESTROYED();
     return false;
   }
+
+  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   // LayoutBlock methods end.
 

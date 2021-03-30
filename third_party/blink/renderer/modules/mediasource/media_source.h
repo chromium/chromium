@@ -100,8 +100,7 @@ class MediaSource final : public EventTargetWithInlineData,
   // Set |enforce_codec_specificity| true to require fully specified mime and
   // codecs, false otherwise.
   // TODO(https://crbug.com/535738): When |enforce_codec_specificity| is set to
-  // false, then fully relax requirements beyond initial special casing for HEVC
-  // on ChromeOS with EME in mp4.
+  // false, then fully relax codec requirements.
   static bool IsTypeSupportedInternal(ExecutionContext* context,
                                       const String& type,
                                       bool enforce_codec_specificity);
@@ -264,7 +263,7 @@ class MediaSource final : public EventTargetWithInlineData,
 
   // |attachment_link_lock_| protects read/write of |media_source_attachment_|,
   // |attachment_tracer_|, |context_already_destroyed_|, and
-  // |live_seekable_range_|.  It is only truly necessary for
+  // |*live_seekable_range*_|.  It is only truly necessary for
   // CrossThreadAttachment usage of worker MSE, to prevent read/write collision
   // on main thread versus worker thread. Note that |attachment_link_lock_| must
   // be released before attempting CrossThreadMediaSourceAttachment
@@ -289,7 +288,11 @@ class MediaSource final : public EventTargetWithInlineData,
   Member<SourceBufferList> source_buffers_;
   Member<SourceBufferList> active_source_buffers_;
 
-  Member<TimeRanges> live_seekable_range_ GUARDED_BY(attachment_link_lock_);
+  // These are kept as raw data (not an Oilpan managed GC-able TimeRange) to
+  // avoid need to take lock during ::Trace, which could lead to deadlock.
+  bool has_live_seekable_range_ GUARDED_BY(attachment_link_lock_);
+  double live_seekable_range_start_ GUARDED_BY(attachment_link_lock_);
+  double live_seekable_range_end_ GUARDED_BY(attachment_link_lock_);
 };
 
 }  // namespace blink

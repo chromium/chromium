@@ -7,9 +7,10 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/fido_constants.h"
@@ -58,7 +59,7 @@ std::vector<WEBAUTHN_CREDENTIAL_EX> ToWinCredentialExVector(
 // WinCtapDeviceResponseCodeTo{MakeCredential,GetAssertion}Status().
 COMPONENT_EXPORT(DEVICE_FIDO)
 CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
-    const base::string16& error_name);
+    const std::u16string& error_name);
 
 // WinCtapDeviceResponseCodeToMakeCredentialStatus returns the
 // MakeCredentialStatus that corresponds to a synthetic CtapDeviceResponseCode

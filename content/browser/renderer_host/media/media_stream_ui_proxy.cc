@@ -17,7 +17,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/common/content_switches.h"
 #include "media/capture/video/fake_video_capture_device.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -25,9 +25,10 @@ namespace content {
 
 bool IsFeatureEnabled(RenderFrameHost* rfh,
                       bool tests_use_fake_render_frame_hosts,
-                      blink::mojom::FeaturePolicyFeature feature) {
+                      blink::mojom::PermissionsPolicyFeature feature) {
   // Some tests don't (or can't) set up the RenderFrameHost. In these cases we
-  // just ignore feature policy checks (there is no feature policy to test).
+  // just ignore permissions policy checks (there is no permissions policy to
+  // test).
   if (!rfh && tests_use_fake_render_frame_hosts)
     return true;
 
@@ -99,6 +100,10 @@ class MediaStreamUIProxy::Core {
   // cancel media requests.
   base::WeakPtrFactory<Core> weak_factory_{this};
 
+  // Used for calls supplied to `ui_`. Invalidated every time a new UI is
+  // created.
+  base::WeakPtrFactory<Core> weak_factory_for_ui_{this};
+
   DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
@@ -144,20 +149,22 @@ void MediaStreamUIProxy::Core::OnStarted(
     std::vector<DesktopMediaID> screen_share_ids) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // base::Unretained is safe here because |ui_| is owned by Core.
+  if (!ui_)
+    return;
+
   MediaStreamUI::SourceCallback device_change_cb;
   if (has_source_callback) {
-    device_change_cb = base::BindRepeating(
-        &Core::ProcessChangeSourceRequestFromUI, base::Unretained(this));
+    device_change_cb =
+        base::BindRepeating(&Core::ProcessChangeSourceRequestFromUI,
+                            weak_factory_for_ui_.GetWeakPtr());
   }
 
-  if (ui_) {
-    *window_id = ui_->OnStarted(
-        base::BindOnce(&Core::ProcessStopRequestFromUI, base::Unretained(this)),
-        device_change_cb, label, screen_share_ids,
-        base::BindRepeating(&Core::ProcessStateChangeFromUI,
-                            base::Unretained(this)));
-  }
+  *window_id =
+      ui_->OnStarted(base::BindOnce(&Core::ProcessStopRequestFromUI,
+                                    weak_factory_for_ui_.GetWeakPtr()),
+                     device_change_cb, label, screen_share_ids,
+                     base::BindRepeating(&Core::ProcessStateChangeFromUI,
+                                         weak_factory_for_ui_.GetWeakPtr()));
 }
 
 void MediaStreamUIProxy::Core::OnDeviceStopped(const std::string& label,
@@ -179,14 +186,15 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
   auto* host = RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
   for (const blink::MediaStreamDevice& device : devices) {
     if (device.type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
-        !IsFeatureEnabled(host, tests_use_fake_render_frame_hosts_,
-                          blink::mojom::FeaturePolicyFeature::kMicrophone)) {
+        !IsFeatureEnabled(
+            host, tests_use_fake_render_frame_hosts_,
+            blink::mojom::PermissionsPolicyFeature::kMicrophone)) {
       continue;
     }
 
     if (device.type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
         !IsFeatureEnabled(host, tests_use_fake_render_frame_hosts_,
-                          blink::mojom::FeaturePolicyFeature::kCamera)) {
+                          blink::mojom::PermissionsPolicyFeature::kCamera)) {
       continue;
     }
 
@@ -196,8 +204,15 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
       result == blink::mojom::MediaStreamRequestResult::OK)
     result = blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
 
-  if (stream_ui)
+  if (stream_ui) {
+    // Callbacks that were supplied to the existing `ui_` are no longer
+    // applicable. This is important as some implementions (TabSharingUIViews)
+    // always run the callback when destroyed. However at the point the UI is
+    // replaced while the screencast is ongoing. Invalidating ensures the
+    // screencast is not terminated. See crbug.com/1155426 for details.
+    weak_factory_for_ui_.InvalidateWeakPtrs();
     ui_ = std::move(stream_ui);
+  }
 
   if (host && result == blink::mojom::MediaStreamRequestResult::OK)
     host->OnGrantedMediaStreamAccess();
@@ -325,9 +340,8 @@ void MediaStreamUIProxy::ProcessAccessRequestResponse(
 
 void MediaStreamUIProxy::ProcessStopRequestFromUI() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!stop_callback_.is_null());
-
-  std::move(stop_callback_).Run();
+  if (stop_callback_)
+    std::move(stop_callback_).Run();
 }
 
 void MediaStreamUIProxy::ProcessChangeSourceRequestFromUI(

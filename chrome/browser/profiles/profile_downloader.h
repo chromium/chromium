@@ -11,7 +11,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -54,15 +53,15 @@ class ProfileDownloader : public ImageDecoder::ImageRequest,
   virtual void StartForAccount(const CoreAccountId& account_id);
 
   // On successful download this returns the hosted domain of the user.
-  virtual base::string16 GetProfileHostedDomain() const;
+  virtual std::u16string GetProfileHostedDomain() const;
 
   // On successful download this returns the full name of the user. For example
   // "Pat Smith".
-  virtual base::string16 GetProfileFullName() const;
+  virtual std::u16string GetProfileFullName() const;
 
   // On successful download this returns the given name of the user. For example
   // if the name is "Pat Smith", the given name is "Pat".
-  virtual base::string16 GetProfileGivenName() const;
+  virtual std::u16string GetProfileGivenName() const;
 
   // On successful download this returns G+ locale preference of the user.
   virtual std::string GetProfileLocale() const;

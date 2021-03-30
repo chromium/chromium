@@ -12,10 +12,13 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequence_manager/task_time_observer.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "cc/base/math_util.h"
 #include "cc/raster/task_category.h"
+#include "ui/gfx/rendering_pipeline.h"
 
 namespace content {
 namespace {
@@ -49,10 +52,12 @@ class CategorizedWorkerPoolThread : public base::SimpleThread {
       const Options& options,
       CategorizedWorkerPool* pool,
       std::vector<cc::TaskCategory> categories,
+      gfx::RenderingPipeline* pipeline,
       base::ConditionVariable* has_ready_to_run_tasks_cv)
       : SimpleThread(name_prefix, options),
         pool_(pool),
         categories_(categories),
+        pipeline_(pipeline),
         has_ready_to_run_tasks_cv_(has_ready_to_run_tasks_cv) {}
 
   void SetBackgroundingCallback(
@@ -72,11 +77,14 @@ class CategorizedWorkerPoolThread : public base::SimpleThread {
     }
   }
 
-  void Run() override { pool_->Run(categories_, has_ready_to_run_tasks_cv_); }
+  void Run() override {
+    pool_->Run(categories_, pipeline_, has_ready_to_run_tasks_cv_);
+  }
 
  private:
   CategorizedWorkerPool* const pool_;
   const std::vector<cc::TaskCategory> categories_;
+  gfx::RenderingPipeline* pipeline_;
   base::ConditionVariable* const has_ready_to_run_tasks_cv_;
 
   base::OnceCallback<void(base::PlatformThreadId)> backgrounding_callback_;
@@ -181,7 +189,8 @@ CategorizedWorkerPool::CategorizedWorkerPool()
   has_task_for_background_priority_thread_cv_.declare_only_used_while_idle();
 }
 
-void CategorizedWorkerPool::Start(int num_normal_threads) {
+void CategorizedWorkerPool::Start(int num_normal_threads,
+                                  gfx::RenderingPipeline* foreground_pipeline) {
   DCHECK(threads_.empty());
 
   // |num_normal_threads| normal threads and 1 background threads are created.
@@ -198,7 +207,7 @@ void CategorizedWorkerPool::Start(int num_normal_threads) {
     auto thread = std::make_unique<CategorizedWorkerPoolThread>(
         base::StringPrintf("CompositorTileWorker%d", i + 1),
         base::SimpleThread::Options(), this, normal_thread_prio_categories,
-        &has_task_for_normal_priority_thread_cv_);
+        foreground_pipeline, &has_task_for_normal_priority_thread_cv_);
     thread->StartAsync();
     threads_.push_back(std::move(thread));
   }
@@ -216,7 +225,7 @@ void CategorizedWorkerPool::Start(int num_normal_threads) {
   auto thread = std::make_unique<CategorizedWorkerPoolThread>(
       "CompositorTileWorkerBackground", thread_options, this,
       background_thread_prio_categories,
-      &has_task_for_background_priority_thread_cv_);
+      /*pipeline=*/nullptr, &has_task_for_background_priority_thread_cv_);
   if (backgrounding_callback_) {
     thread->SetBackgroundingCallback(std::move(background_task_runner_),
                                      std::move(backgrounding_callback_));
@@ -286,11 +295,15 @@ bool CategorizedWorkerPool::PostDelayedTask(const base::Location& from_here,
 
 void CategorizedWorkerPool::Run(
     const std::vector<cc::TaskCategory>& categories,
+    gfx::RenderingPipeline* pipeline,
     base::ConditionVariable* has_ready_to_run_tasks_cv) {
+  base::sequence_manager::TaskTimeObserver* observer =
+      pipeline ? pipeline->AddSimpleThread(base::PlatformThread::CurrentId())
+               : nullptr;
   base::AutoLock lock(lock_);
 
   while (true) {
-    if (!RunTaskWithLockAcquired(categories)) {
+    if (!RunTaskWithLockAcquired(categories, observer)) {
       // We are no longer running tasks, which may allow another category to
       // start running. Signal other worker threads.
       SignalHasReadyToRunTasksWithLockAcquired();
@@ -328,7 +341,7 @@ void CategorizedWorkerPool::SetBackgroundingCallback(
   background_task_runner_ = std::move(task_runner);
 }
 
-CategorizedWorkerPool::~CategorizedWorkerPool() {}
+CategorizedWorkerPool::~CategorizedWorkerPool() = default;
 
 cc::NamespaceToken CategorizedWorkerPool::GenerateNamespaceToken() {
   base::AutoLock lock(lock_);
@@ -403,10 +416,11 @@ void CategorizedWorkerPool::CollectCompletedTasksWithLockAcquired(
 }
 
 bool CategorizedWorkerPool::RunTaskWithLockAcquired(
-    const std::vector<cc::TaskCategory>& categories) {
+    const std::vector<cc::TaskCategory>& categories,
+    base::sequence_manager::TaskTimeObserver* observer) {
   for (const auto& category : categories) {
     if (ShouldRunTaskForCategoryWithLockAcquired(category)) {
-      RunTaskInCategoryWithLockAcquired(category);
+      RunTaskInCategoryWithLockAcquired(category, observer);
       return true;
     }
   }
@@ -414,21 +428,32 @@ bool CategorizedWorkerPool::RunTaskWithLockAcquired(
 }
 
 void CategorizedWorkerPool::RunTaskInCategoryWithLockAcquired(
-    cc::TaskCategory category) {
-
+    cc::TaskCategory category,
+    base::sequence_manager::TaskTimeObserver* observer) {
   lock_.AssertAcquired();
 
   auto prioritized_task = work_queue_.GetNextTaskToRun(category);
 
-  TRACE_EVENT1("toplevel", "TaskGraphRunner::RunTask", "source_frame_number_",
-               prioritized_task.task->frame_number());
+  TRACE_EVENT(
+      "toplevel", "TaskGraphRunner::RunTask", [&](perfetto::EventContext ctx) {
+        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+            ->set_chrome_raster_task()
+            ->set_source_frame_number(prioritized_task.task->frame_number());
+      });
   // There may be more work available, so wake up another worker thread.
   SignalHasReadyToRunTasksWithLockAcquired();
 
   {
     base::AutoUnlock unlock(lock_);
-
+    base::TimeTicks start_time;
+    if (observer) {
+      start_time = base::TimeTicks::Now();
+      observer->WillProcessTask(start_time);
+    }
     prioritized_task.task->RunOnWorkerThread();
+    if (observer) {
+      observer->DidProcessTask(start_time, base::TimeTicks::Now());
+    }
   }
 
   auto* task_namespace = prioritized_task.task_namespace;

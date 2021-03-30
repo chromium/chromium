@@ -46,7 +46,7 @@ std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
     }
 
     std::string url_pattern = iter->primary_pattern.ToString();
-    base::string16 name = base::UTF8ToUTF16(url_pattern);
+    std::u16string name = base::UTF8ToUTF16(url_pattern);
     GURL url(url_pattern);
     message_center::NotifierId notifier_id(url);
     NotifierStateTracker* const notifier_state_tracker =

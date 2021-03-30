@@ -38,7 +38,7 @@ void TestCreditCardSaveManager::set_show_save_prompt(bool show_save_prompt) {
 }
 
 void TestCreditCardSaveManager::set_upload_request_card_number(
-    const base::string16& credit_card_number) {
+    const std::u16string& credit_card_number) {
   upload_request_.card.SetNumber(credit_card_number);
 }
 

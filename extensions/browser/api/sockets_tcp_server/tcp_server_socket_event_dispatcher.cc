@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/event_router.h"
@@ -154,9 +153,10 @@ void TCPServerSocketEventDispatcher::AcceptCallback(
 
     // Post a task to delay the "accept" until the socket is available, as
     // calling StartAccept at this point would error with ERR_IO_PENDING.
-    base::PostTask(
-        FROM_HERE, {params.thread_id},
-        base::BindOnce(&TCPServerSocketEventDispatcher::StartAccept, params));
+    content::BrowserThread::GetTaskRunnerForThread(params.thread_id)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&TCPServerSocketEventDispatcher::StartAccept,
+                                  params));
   } else {
     // Dispatch "onAcceptError" event but don't start another accept to avoid
     // potential infinite "accepts" if we have a persistent network error.

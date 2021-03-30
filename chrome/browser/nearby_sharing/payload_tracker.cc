@@ -128,8 +128,6 @@ void PayloadTracker::OnTransferUpdate() {
     return;
   }
 
-  NS_LOG(VERBOSE) << __func__ << ": Payloads are in progress at " << percent
-                  << " percent.";
   last_update_progress_ = current_progress;
   last_update_timestamp_ = current_time;
 
@@ -192,6 +190,8 @@ void PayloadTracker::EmitFinalMetrics(
   DCHECK_NE(status,
             location::nearby::connections::mojom::PayloadStatus::kInProgress);
   RecordNearbySharePayloadFinalStatusMetric(status, last_upgraded_medium_);
+  RecordNearbySharePayloadMediumMetric(
+      last_upgraded_medium_, share_target_.type, GetTotalTransferred());
   RecordNearbySharePayloadSizeMetric(share_target_.is_incoming,
                                      share_target_.type, last_upgraded_medium_,
                                      status, total_transfer_size_);
@@ -207,5 +207,15 @@ void PayloadTracker::EmitFinalMetrics(
         share_target_.is_incoming, share_target_.type, last_upgraded_medium_,
         status, transferred_bytes_with_offset,
         base::TimeTicks::Now() - *first_update_timestamp_);
+  }
+
+  for (const auto& file_attachment : share_target_.file_attachments) {
+    RecordNearbySharePayloadFileAttachmentTypeMetric(
+        file_attachment.type(), share_target_.is_incoming, status);
+  }
+
+  for (const auto& text_attachment : share_target_.text_attachments) {
+    RecordNearbySharePayloadTextAttachmentTypeMetric(
+        text_attachment.type(), share_target_.is_incoming, status);
   }
 }

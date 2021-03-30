@@ -5,7 +5,8 @@
 #ifndef WEBLAYER_PUBLIC_URL_BAR_CONTROLLER_H_
 #define WEBLAYER_PUBLIC_URL_BAR_CONTROLLER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/security_state/core/security_state.h"
 
 namespace weblayer {
@@ -17,7 +18,7 @@ class UrlBarController {
   static std::unique_ptr<UrlBarController> Create(Browser* browser);
 
   virtual ~UrlBarController() {}
-  virtual base::string16 GetUrlForDisplay() = 0;
+  virtual std::u16string GetUrlForDisplay() = 0;
   virtual security_state::SecurityLevel GetConnectionSecurityLevel() = 0;
 };
 

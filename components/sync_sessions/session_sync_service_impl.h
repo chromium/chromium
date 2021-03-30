@@ -44,9 +44,6 @@ class SessionSyncServiceImpl : public SessionSyncService {
   // GetOpenTabsUIDelegate() returns null or not.
   void ProxyTabsStateChanged(syncer::DataTypeController::State state) override;
 
-  // Used on Android only, to override the machine tag.
-  void SetSyncSessionsGUID(const std::string& guid) override;
-
   // Returns OpenTabsUIDelegate regardless of sync being enabled or disabled,
   // useful for tests.
   OpenTabsUIDelegate* GetUnderlyingOpenTabsUIDelegateForTest();
@@ -64,7 +61,7 @@ class SessionSyncServiceImpl : public SessionSyncService {
 
   std::unique_ptr<SessionSyncBridge> bridge_;
 
-  base::CallbackList<void()> foreign_sessions_changed_callback_list_;
+  base::RepeatingClosureList foreign_sessions_changed_closure_list_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionSyncServiceImpl);
 };

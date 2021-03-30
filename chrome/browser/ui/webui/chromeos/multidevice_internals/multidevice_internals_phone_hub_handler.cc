@@ -61,7 +61,7 @@ const SkBitmap ImageTypeToBitmap(ImageType image_type_num, int size) {
 
 phonehub::Notification::AppMetadata DictToAppMetadata(
     const base::DictionaryValue* app_metadata_dict) {
-  base::string16 visible_app_name;
+  std::u16string visible_app_name;
   CHECK(app_metadata_dict->GetString("visibleAppName", &visible_app_name));
 
   std::string package_name;
@@ -90,7 +90,7 @@ void TryAddingMetadata(
   if (!browser_tab_metadata->GetString("url", &url) || url.empty())
     return;
 
-  base::string16 title;
+  std::u16string title;
   if (!browser_tab_metadata->GetString("title", &title) || title.empty())
     return;
 
@@ -205,51 +205,24 @@ void MultidevicePhoneHubHandler::OnJavascriptDisallowed() {
 }
 
 void MultidevicePhoneHubHandler::AddObservers() {
-  notification_manager_observer_.Add(
+  notification_manager_observation_.Observe(
       fake_phone_hub_manager_->fake_notification_manager());
-  do_not_disturb_controller_observer_.Add(
+  do_not_disturb_controller_observation_.Observe(
       fake_phone_hub_manager_->fake_do_not_disturb_controller());
-  find_my_device_controller_oberserver_.Add(
+  find_my_device_controller_observation_.Observe(
       fake_phone_hub_manager_->fake_find_my_device_controller());
-  tether_controller_observer_.Add(
+  tether_controller_observation_.Observe(
       fake_phone_hub_manager_->fake_tether_controller());
-  onboarding_ui_tracker_observer_.Add(
+  onboarding_ui_tracker_observation_.Observe(
       fake_phone_hub_manager_->fake_onboarding_ui_tracker());
 }
 
 void MultidevicePhoneHubHandler::RemoveObservers() {
-  phonehub::FakeNotificationManager* fake_notification_manager =
-      fake_phone_hub_manager_->fake_notification_manager();
-  if (notification_manager_observer_.IsObserving(fake_notification_manager)) {
-    notification_manager_observer_.Remove(fake_notification_manager);
-  }
-
-  phonehub::FakeDoNotDisturbController* fake_do_not_disturb_controller =
-      fake_phone_hub_manager_->fake_do_not_disturb_controller();
-  if (do_not_disturb_controller_observer_.IsObserving(
-          fake_do_not_disturb_controller)) {
-    do_not_disturb_controller_observer_.Remove(fake_do_not_disturb_controller);
-  }
-
-  phonehub::FakeFindMyDeviceController* fake_find_my_device_controller =
-      fake_phone_hub_manager_->fake_find_my_device_controller();
-  if (find_my_device_controller_oberserver_.IsObserving(
-          fake_find_my_device_controller)) {
-    find_my_device_controller_oberserver_.Remove(
-        fake_find_my_device_controller);
-  }
-
-  phonehub::FakeTetherController* fake_tether_controller =
-      fake_phone_hub_manager_->fake_tether_controller();
-  if (tether_controller_observer_.IsObserving(fake_tether_controller)) {
-    tether_controller_observer_.Remove(fake_tether_controller);
-  }
-
-  phonehub::OnboardingUiTracker* fake_onboarding_ui_tracker =
-      fake_phone_hub_manager_->fake_onboarding_ui_tracker();
-  if (onboarding_ui_tracker_observer_.IsObserving(fake_onboarding_ui_tracker)) {
-    onboarding_ui_tracker_observer_.Remove(fake_onboarding_ui_tracker);
-  }
+  notification_manager_observation_.Reset();
+  do_not_disturb_controller_observation_.Reset();
+  find_my_device_controller_observation_.Reset();
+  tether_controller_observation_.Reset();
+  onboarding_ui_tracker_observation_.Reset();
 }
 
 void MultidevicePhoneHubHandler::OnNotificationsRemoved(
@@ -379,7 +352,7 @@ void MultidevicePhoneHubHandler::HandleSetShowOnboardingFlow(
 
 void MultidevicePhoneHubHandler::HandleSetFakePhoneName(
     const base::ListValue* args) {
-  base::string16 phone_name;
+  std::u16string phone_name;
   CHECK(args->GetString(0, &phone_name));
   fake_phone_hub_manager_->mutable_phone_model()->SetPhoneName(phone_name);
   PA_LOG(VERBOSE) << "Set phone name to " << phone_name;
@@ -402,7 +375,7 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
       static_cast<phonehub::PhoneStatusModel::SignalStrength>(
           signal_strength_as_int);
 
-  base::string16 mobile_provider;
+  std::u16string mobile_provider;
   CHECK(phones_status_dict->GetString("mobileProvider", &mobile_provider));
 
   int charging_state_as_int;
@@ -503,14 +476,14 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   int inline_reply_id;
   CHECK(notification_data_dict->GetInteger("inlineReplyId", &inline_reply_id));
 
-  base::Optional<base::string16> opt_title;
-  base::string16 title;
+  base::Optional<std::u16string> opt_title;
+  std::u16string title;
   if (notification_data_dict->GetString("title", &title) && !title.empty()) {
     opt_title = title;
   }
 
-  base::Optional<base::string16> opt_text_content;
-  base::string16 text_content;
+  base::Optional<std::u16string> opt_text_content;
+  std::u16string text_content;
   if (notification_data_dict->GetString("textContent", &text_content) &&
       !text_content.empty()) {
     opt_text_content = text_content;
@@ -538,7 +511,8 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   }
 
   auto notification = phonehub::Notification(
-      id, app_metadata, timestamp, importance, inline_reply_id, opt_title,
+      id, app_metadata, timestamp, importance, inline_reply_id,
+      phonehub::Notification::InteractionBehavior::kNone, opt_title,
       opt_text_content, opt_shared_image, opt_contact_image);
 
   PA_LOG(VERBOSE) << "Set notification" << notification;

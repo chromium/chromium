@@ -74,6 +74,10 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 // Holds the state of the first run flow.
 @property(nonatomic, strong) FirstRunConfiguration* firstRunConfig;
 
+// Stores the interrupt completion block to be invoked once the first run is
+// dismissed.
+@property(nonatomic, copy) void (^interruptCompletion)(void);
+
 @end
 
 @implementation WelcomeToChromeViewController
@@ -115,6 +119,21 @@ const BOOL kDefaultStatsCheckboxValue = YES;
     _dispatcher = dispatcher;
   }
   return self;
+}
+
+- (void)interruptSigninCoordinatorWithCompletion:(void (^)(void))completion {
+  // The first run can only be dismissed on the sign-in view.
+  DCHECK(self.coordinator);
+  // The sign-in coordinator is part of the navigation controller, so the
+  // sign-in coordinator didn't present itself. Therefore the interrupt action
+  // must be SigninCoordinatorInterruptActionNoDismiss.
+  // |completion| has to be stored in order to be invoked when
+  // |firstRunDismissedWithPresentingViewController:needsAdvancedSignin:| is
+  // called.
+  self.interruptCompletion = completion;
+  [self.coordinator
+      interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+               completion:nil];
 }
 
 - (void)loadView {
@@ -234,13 +253,10 @@ const BOOL kDefaultStatsCheckboxValue = YES;
           [self.firstRunConfig hasSSOAccount]);
       break;
     }
-    case SigninCoordinatorResultCanceledByUser: {
+    case SigninCoordinatorResultCanceledByUser:
+    case SigninCoordinatorResultInterrupted:
       // No-op
       break;
-    }
-    case SigninCoordinatorResultInterrupted: {
-      NOTREACHED();
-    }
   }
 
   BOOL needsAdvancedSignin = signinCompletionInfo.signinCompletionAction ==
@@ -258,23 +274,35 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   FinishFirstRun(_browser->GetBrowserState(), currentWebState,
                  self.firstRunConfig, self.presenter);
 
+  __weak __typeof(self) weakSelf = self;
   UIViewController* presentingViewController =
       self.navigationController.presentingViewController;
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           FirstRunDismissed();
-                           if (needsAvancedSettingsSignin) {
-                             [self.dispatcher
-                                 showAdvancedSigninSettingsFromViewController:
-                                     presentingViewController];
-                           } else if (location_permissions_field_trial::
-                                          IsInFirstRunModalGroup()) {
-                             [self.dispatcher
-                                 showLocationPermissionsFromViewController:
-                                     presentingViewController];
-                           }
-                         }];
+  void (^completion)(void) = ^{
+    [weakSelf
+        firstRunDismissedWithPresentingViewController:presentingViewController
+                                  needsAdvancedSignin:
+                                      needsAvancedSettingsSignin];
+  };
+  [presentingViewController dismissViewControllerAnimated:YES
+                                               completion:completion];
+}
+
+// Triggers all the events after the first run is dismissed.
+- (void)firstRunDismissedWithPresentingViewController:
+            (UIViewController*)presentingViewController
+                                  needsAdvancedSignin:
+                                      (BOOL)needsAvancedSettingsSignin {
+  FirstRunDismissed();
+  if (needsAvancedSettingsSignin) {
+    DCHECK(!self.interruptCompletion);
+    [self.dispatcher
+        showAdvancedSigninSettingsFromViewController:presentingViewController];
+  } else if (self.interruptCompletion) {
+    self.interruptCompletion();
+  } else if (location_permissions_field_trial::IsInFirstRunModalGroup()) {
+    [self.dispatcher
+        showLocationPermissionsFromViewController:presentingViewController];
+  }
 }
 
 #pragma mark - Notifications

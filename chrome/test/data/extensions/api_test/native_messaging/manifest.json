@@ -4,9 +4,9 @@
   "version": "1.0.0.0",
   "manifest_version": 2,
   "name": "native messaging test",
-  "description": "Test the basic functionality of passing native messages.",
+  "description": "Test the basic functionality of passing native messages from a persistent extension.",
   "background": {
-    "scripts": ["test.js"],
+    "scripts": ["lazy/test.js"],
     "persistent": true
   },
   "permissions": [

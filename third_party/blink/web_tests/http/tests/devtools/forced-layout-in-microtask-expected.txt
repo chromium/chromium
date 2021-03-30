@@ -11,8 +11,24 @@ Layout Properties:
             totalObjects : 4
         }
         endData : {
-            root : <object>
-            rootNode : <number>
+            layoutRoots : [
+                {
+                    depth : 1
+                    nodeId : <number>
+                    quads : [
+                        [
+                            0
+                            0
+                            800
+                            0
+                            800
+                            600
+                            0
+                            600
+                        ]
+                    ]
+                }
+            ]
         }
     }
     endTime : <number>
@@ -21,5 +37,5 @@ Layout Properties:
     startTime : <number>
     type : "Layout"
 }
-Text details for Layout: forced-layout-in-microtask.js:21
+Text details for Layout: test://evaluations/0/forced-layout-in-microtask.js:21
 

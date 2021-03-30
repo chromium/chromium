@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -16,7 +15,8 @@
 
 namespace {
 
-void CheckCharToKeyCode16(base::char16 character, ui::KeyboardCode key_code,
+void CheckCharToKeyCode16(char16_t character,
+                          ui::KeyboardCode key_code,
                           int modifiers) {
   ui::KeyboardCode actual_key_code = ui::VKEY_UNKNOWN;
   int actual_modifiers = 0;
@@ -44,7 +44,7 @@ void CheckCharToKeyCode(wchar_t character, ui::KeyboardCode key_code,
 void CheckCantConvertChar(wchar_t character) {
   std::wstring character_string;
   character_string.push_back(character);
-  base::char16 character_utf16 = base::WideToUTF16(character_string)[0];
+  char16_t character_utf16 = base::WideToUTF16(character_string)[0];
   ui::KeyboardCode actual_key_code = ui::VKEY_UNKNOWN;
   int actual_modifiers = 0;
   std::string error_msg;

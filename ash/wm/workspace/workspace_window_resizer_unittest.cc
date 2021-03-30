@@ -10,7 +10,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -23,6 +22,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/test/test_utils.h"
@@ -92,25 +92,25 @@ class WorkspaceWindowResizerTest : public AshTestBase {
     gfx::Rect root_bounds(root->bounds());
     EXPECT_EQ(800, root_bounds.width());
     Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
-    window_ = window_factory::NewWindow(&delegate_);
+    window_ = std::make_unique<aura::Window>(&delegate_);
     window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window_.get());
     window_->set_id(1);
 
-    window2_ = window_factory::NewWindow(&delegate2_);
+    window2_ = std::make_unique<aura::Window>(&delegate2_);
     window2_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window2_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window2_.get());
     window2_->set_id(2);
 
-    window3_ = window_factory::NewWindow(&delegate3_);
+    window3_ = std::make_unique<aura::Window>(&delegate3_);
     window3_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window3_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window3_.get());
     window3_->set_id(3);
 
-    window4_ = window_factory::NewWindow(&delegate4_);
+    window4_ = std::make_unique<aura::Window>(&delegate4_);
     window4_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window4_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window4_.get());
@@ -181,6 +181,14 @@ class WorkspaceWindowResizerTest : public AshTestBase {
     touch_resize_delegate_.set_window_component(window_component);
     touch_resize_window_.reset(CreateTestWindowInShellWithDelegate(
         &touch_resize_delegate_, 0, bounds));
+  }
+
+  bool IsDwellCountdownTimerRunning() {
+    return workspace_resizer_->dwell_countdown_timer_.IsRunning();
+  }
+
+  void DwellCountdownTimerFireNow() {
+    workspace_resizer_->dwell_countdown_timer_.FireNow();
   }
 
   TestWindowDelegate delegate_;
@@ -1897,6 +1905,7 @@ TEST_F(WorkspaceWindowResizerTest, DragToSnapMaximize) {
   std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
   resizer->Drag(gfx::PointF(400.f, 400.f), 0);
   resizer->Drag(gfx::PointF(400.f, 2.f), 0);
+  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   auto* window_state = WindowState::Get(window_.get());
   ASSERT_TRUE(window_state->IsMaximized());
@@ -1915,6 +1924,7 @@ TEST_F(WorkspaceWindowResizerTest, DragToSnapMaximize) {
   // End the drag in the snap to maximize region. The window should be maximized
   // and sized to fit the whole work area.
   resizer->Drag(gfx::PointF(200.f, 2.f), 0);
+  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   EXPECT_TRUE(window_state->IsMaximized());
   EXPECT_EQ(gfx::Rect(800, 600), window_->bounds());
@@ -1943,6 +1953,7 @@ TEST_F(WorkspaceWindowResizerTest, DragToMaximizeStartingInSnapRegion) {
   resizer = CreateResizerForTest(window_.get(), gfx::Point(400.f, 1.f));
   resizer->Drag(gfx::PointF(400.f, 400.f), 0);
   resizer->Drag(gfx::PointF(400.f, 5.f), 0);
+  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   EXPECT_TRUE(WindowState::Get(window_.get())->IsMaximized());
 }
@@ -1997,6 +2008,7 @@ TEST_F(WorkspaceWindowResizerTest, MultiDisplayRestoreBounds) {
           gfx::Point(1200, 200)));
   resizer->Drag(gfx::PointF(1200.f, 200.f), 0);
   resizer->Drag(gfx::PointF(1200.f, 5.f), 0);
+  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   ASSERT_TRUE(window_state->IsMaximized());
 
@@ -2049,6 +2061,47 @@ TEST_F(WorkspaceWindowResizerTest, FlingRestoreSize) {
   window_state->Unminimize();
   EXPECT_TRUE(window_state->IsNormalStateType());
   EXPECT_EQ(window_size, touch_resize_window_->bounds().size());
+}
+
+// Tests that fling to maximize does not crash or DCHECK if the window's restore
+// bounds is on another display.
+TEST_F(WorkspaceWindowResizerTest,
+       FlingMaximizeRestoreBoundsOnDifferentDisplay) {
+  UpdateDisplay("800x600,500x500");
+
+  // Prepare `touch_resize_window_` in the 2nd display.
+  gfx::Size window_size(300, 300);
+  InitTouchResizeWindow(gfx::Rect(gfx::Point(800, 100), window_size),
+                        HTCAPTION);
+
+  // Speculatively simulate how a window could get a restore bounds in another
+  // display. What actually happens in the field is still a mystery.
+  // 1. Maximize to set a restore bounds in the 2nd display.
+  auto* window_state = WindowState::Get(touch_resize_window_.get());
+  window_state->Maximize();
+  ASSERT_TRUE(window_state->IsMaximized());
+
+  // 2. SetBoundsInScreen to move the window to the primary display.
+  touch_resize_window_->SetBoundsInScreen(
+      gfx::Rect(100, 100, 300, 30),
+      display::Screen::GetScreen()->GetPrimaryDisplay());
+
+  // Ensures that the restore bounds is not in the same display of window.
+  gfx::Rect restore_bounds = window_state->GetRestoreBoundsInScreen();
+  ASSERT_FALSE(
+      touch_resize_window_->GetRootWindow()->GetBoundsInScreen().Contains(
+          restore_bounds));
+
+  // Fling up.
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
+                                     touch_resize_window_.get());
+  generator.GestureScrollSequence(gfx::Point(250, 110), gfx::Point(250, 10),
+                                  base::TimeDelta::FromMilliseconds(10), 10);
+  ASSERT_TRUE(window_state->IsMaximized());
+
+  // No crash, no DCHECK, and the window stays in the primary display.
+  EXPECT_TRUE(
+      Shell::GetPrimaryRootWindow()->Contains(touch_resize_window_.get()));
 }
 
 using MultiDisplayWorkspaceWindowResizerTest = AshTestBase;
@@ -2124,4 +2177,96 @@ TEST_F(WorkspaceWindowResizerTest, TabDraggingHistogram) {
   }
 }
 
+// Test dwell time before snap to maximize.
+TEST_F(WorkspaceWindowResizerTest, SnapMaximizeDwellTime) {
+  UpdateDisplay("800x648");
+  window_->SetBounds(gfx::Rect(10, 10, 100, 100));
+  window_->SetProperty(aura::client::kResizeBehaviorKey,
+                       aura::client::kResizeBehaviorCanResize |
+                           aura::client::kResizeBehaviorCanMaximize);
+  std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
+  // Ensure the timer is not running.
+  EXPECT_FALSE(IsDwellCountdownTimerRunning());
+  // Test when dwell timer finished countdown window is maximized.
+  resizer->Drag(gfx::PointF(400.f, 400.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 3.f), 0);
+  // Timer is triggered.
+  EXPECT_TRUE(IsDwellCountdownTimerRunning());
+  DwellCountdownTimerFireNow();
+  resizer->CompleteDrag();
+  auto* window_state = WindowState::Get(window_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // If dwell timer doesn't finish countdown,
+  // Window will not be maximized.
+  resizer.reset();
+  resizer = CreateResizerForTest(window_.get());
+  resizer->Drag(gfx::PointF(400.f, 400.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 3.f), 0);
+  // Timer is triggered.
+  EXPECT_TRUE(IsDwellCountdownTimerRunning());
+  resizer->CompleteDrag();
+  window_state = WindowState::Get(window_.get());
+  EXPECT_FALSE(window_state->IsMaximized());
+
+  // Once dwell timer starts, drag away the window
+  // will not maximize the window if move more than
+  // kSnapDragDwellTimeResetThreshold.
+  resizer.reset();
+  resizer = CreateResizerForTest(window_.get());
+  resizer->Drag(gfx::PointF(400.f, 400.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 3.f), 0);
+  DwellCountdownTimerFireNow();
+  resizer->Drag(gfx::PointF(200.f, 3.f), 0);
+  // Timer is triggered.
+  EXPECT_TRUE(IsDwellCountdownTimerRunning());
+  resizer->CompleteDrag();
+  window_state = WindowState::Get(window_.get());
+  EXPECT_FALSE(window_state->IsMaximized());
+
+  // Once dwell timer starts, drag away the window
+  // can still maximize the window if move less than
+  // kSnapDragDwellTimeResetThreshold.
+  resizer.reset();
+  resizer = CreateResizerForTest(window_.get());
+  resizer->Drag(gfx::PointF(400.f, 400.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 3.f), 0);
+  DwellCountdownTimerFireNow();
+  resizer->Drag(gfx::PointF(101.f, 3.f), 0);
+  // Timer is triggered.
+  EXPECT_TRUE(IsDwellCountdownTimerRunning());
+  resizer->CompleteDrag();
+  window_state = WindowState::Get(window_.get());
+  EXPECT_TRUE(window_state->IsMaximized());
+}
+
+// Test horizontal move won't trigger snap.
+TEST_F(WorkspaceWindowResizerTest, HorizontalMoveNotTriggerSnap) {
+  UpdateDisplay("800x648");
+  window_->SetBounds(gfx::Rect(10, 10, 100, 100));
+  window_->SetProperty(aura::client::kResizeBehaviorKey,
+                       aura::client::kResizeBehaviorCanResize |
+                           aura::client::kResizeBehaviorCanMaximize);
+  std::unique_ptr<WindowResizer> resizer =
+      CreateResizerForTest(window_.get(), gfx::Point(400.f, 67.f));
+  // Check if a horizontal move more than threshold will trigger snap.
+  resizer->Drag(gfx::PointF(400.f, 67.f), 0);
+  resizer->Drag(gfx::PointF(400.f, 2.f), 0);
+  DwellCountdownTimerFireNow();
+  resizer->CompleteDrag();
+  auto* window_state = WindowState::Get(window_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Check if a horizontal move less than threshold won't trigger snap.
+  resizer.reset();
+  resizer = CreateResizerForTest(window_.get());
+  resizer->Drag(gfx::PointF(1.f, 1.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 1.f), 0);
+  DwellCountdownTimerFireNow();
+  resizer->CompleteDrag();
+  window_state = WindowState::Get(window_.get());
+  EXPECT_FALSE(window_state->IsMaximized());
+}
 }  // namespace ash

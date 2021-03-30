@@ -64,10 +64,6 @@ enum class ExternalFilesLoadedInWebStateFeature {
 - (void)stopChromeMain {
 }
 
-- (BOOL)canLaunchInIncognito {
-  return NO;
-}
-
 - (NSDictionary*)launchOptions {
   return @{};
 }
@@ -174,7 +170,8 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
                          applicationActive:applicationIsActive
                                  tabOpener:tabOpener
                      connectionInformation:connectionInformation
-                        startupInformation:startupInformation];
+                        startupInformation:startupInformation
+                               prefService:nil];
 
           // Tests.
           EXPECT_EQ(isValid, result);
@@ -246,7 +243,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptions) {
                        tabOpener:tabOpenerMock
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -268,7 +266,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsNil) {
                        tabOpener:nil
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 }
 
 // Tests that -handleApplication set startup parameters as expected with no
@@ -309,7 +308,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
                        tabOpener:tabOpenerMock
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -337,7 +337,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoURL) {
                        tabOpener:nil
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 }
 
 // Tests that -handleApplication set startup parameters as expected with a bad
@@ -372,7 +373,8 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
                        tabOpener:tabOpenerMock
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -414,7 +416,8 @@ TEST_F(URLOpenerTest, PresentingFirstRunUI) {
                        tabOpener:tabOpenerMock
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
-                        appState:appStateMock];
+                        appState:appStateMock
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(tabOpenerMock);

@@ -10,6 +10,8 @@
   data: [
     "AccessibleNode",
     "Animation",
+    "AppHistory",
+    "AppHistoryEntry",
     "Clipboard",
     "EditContext",
     "FontFaceSet",
@@ -33,6 +35,7 @@
     "EventSource",
     "Performance",
     "PortalHost",
+    "Profiler",
     {
       name: "VisualViewport",
       ImplementedAs: "DOMVisualViewport",
@@ -42,10 +45,12 @@
       ImplementedAs: "DOMWindow",
     },
     "DedicatedWorkerGlobalScope",
+    "Screen",
     "SharedWorker",
     "SharedWorkerGlobalScope",
     "Worker",
     "XMLHttpRequest",
     "XMLHttpRequestUpload",
+    "WindowControlsOverlay",
   ],
 }

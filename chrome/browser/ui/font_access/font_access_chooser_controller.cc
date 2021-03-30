@@ -24,6 +24,7 @@ content::FontAccessContext* GetChooserContext(content::RenderFrameHost* frame) {
 
 FontAccessChooserController::FontAccessChooserController(
     content::RenderFrameHost* frame,
+    const std::vector<std::string>& selection,
     content::FontAccessChooser::Callback callback)
     : ChooserController(frame,
                         IDS_FONT_ACCESS_CHOOSER_PROMPT_ORIGIN,
@@ -39,6 +40,8 @@ FontAccessChooserController::FontAccessChooserController(
     return;
   }
 
+  selection_ = base::flat_set<std::string>(selection);
+
   chooser_context->FindAllFonts(
       base::BindOnce(&FontAccessChooserController::DidFindAllFonts,
                      weak_factory_.GetWeakPtr()));
@@ -51,27 +54,34 @@ FontAccessChooserController::~FontAccessChooserController() {
   }
 }
 
-base::string16 FontAccessChooserController::GetNoOptionsText() const {
+std::u16string FontAccessChooserController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(
       IDS_FONT_ACCESS_CHOOSER_NO_FONTS_FOUND_PROMPT);
 }
 
-base::string16 FontAccessChooserController::GetOkButtonLabel() const {
+std::u16string FontAccessChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_FONT_ACCESS_CHOOSER_IMPORT_BUTTON_TEXT);
+}
+
+std::pair<std::u16string, std::u16string>
+FontAccessChooserController::GetThrobberLabelAndTooltip() const {
+  return {
+      l10n_util::GetStringUTF16(IDS_FONT_ACCESS_CHOOSER_LOADING_LABEL),
+      l10n_util::GetStringUTF16(IDS_FONT_ACCESS_CHOOSER_LOADING_LABEL_TOOLTIP)};
 }
 
 size_t FontAccessChooserController::NumOptions() const {
   return items_.size();
 }
 
-base::string16 FontAccessChooserController::GetOption(size_t index) const {
+std::u16string FontAccessChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, items_.size());
   DCHECK(base::Contains(font_metadata_map_, items_[index]));
 
   return base::UTF8ToUTF16(items_[index]);
 }
 
-base::string16 FontAccessChooserController::GetSelectAllCheckboxLabel() const {
+std::u16string FontAccessChooserController::GetSelectAllCheckboxLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_FONT_ACCESS_CHOOSER_SELECT_ALL_CHECKBOX_TEXT);
 }
@@ -138,6 +148,10 @@ void FontAccessChooserController::DidFindAllFonts(
     auto found = font_metadata_map_.find(font.postscript_name);
     // If the font is already in the map, skip it.
     if (found != font_metadata_map_.end()) {
+      continue;
+    }
+    // If a selection list is provided and the font isn't in the list, skip it.
+    if (!selection_.empty() && !selection_.contains(font.postscript_name)) {
       continue;
     }
     items_.push_back(font.postscript_name);

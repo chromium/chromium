@@ -22,13 +22,6 @@ enum RequestIdTokenStatus {
   kError,
 };
 
-enum ProvideIdTokenStatus {
-  kSuccess,
-  kErrorTooManyResponses,
-  kError,
-};
-
-
 // Create a federated sign-in request using the specified provider.
 // This interface is called from a renderer process and implemented in the
 // browser process.
@@ -36,16 +29,5 @@ interface FederatedAuthRequest {
   // Requests an IdToken to be generated, given an IDP URL and an OAuth request.
   // Returns the raw content of the IdToken.
   RequestIdToken(url.mojom.Url provider, string id_request) => (RequestIdTokenStatus status, string? id_token);
-
-  // TODO(majidvp): Consider creating a whole new interface for the response
-  // This is cleaner and more flexible. It also avoids wasting resource by
-  // keeping unused state around given that we mostly expect each frame to use
-  // only one of these interfaces. http://crbug.com/1141125
-
-  // Provides an IdToken that is passed to the pending request. This is meant to
-  // be used by the IDP generating the token. Empty string resolves the pending
-  // request with an error.
-  // Returns a status indicating if the the pending RP request was resolved.
-  ProvideIdToken(string id_token) => (ProvideIdTokenStatus status);
 };
 

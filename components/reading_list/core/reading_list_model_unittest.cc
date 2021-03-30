@@ -11,7 +11,7 @@
 #include "components/reading_list/core/reading_list_store_delegate.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
+#include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -40,10 +40,8 @@ class TestReadingListStorage : public ReadingListModelStorage {
   TestReadingListStorage(TestReadingListStorageObserver* observer,
                          base::SimpleTestClock* clock)
       : ReadingListModelStorage(
-            // TODO(crbug.com/823380): Consider using mock/fake here.
-            std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-                syncer::READING_LIST,
-                /*dump_stack=*/base::RepeatingClosure())),
+            std::make_unique<
+                testing::NiceMock<syncer::MockModelTypeChangeProcessor>>()),
         entries_(new ReadingListStoreDelegate::ReadingListEntries()),
         observer_(observer),
         clock_(clock) {}

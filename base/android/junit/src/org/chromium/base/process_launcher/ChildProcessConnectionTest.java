@@ -387,9 +387,9 @@ public class ChildProcessConnectionTest {
         verify(mConnectionCallback, times(1)).onConnected(connection);
 
         // Add strong binding so that connection is oom protected.
-        connection.removeModerateBinding();
+        connection.removeModerateBinding(false);
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
-        connection.addModerateBinding();
+        connection.addModerateBinding(false);
         assertEquals(ChildBindingState.MODERATE, connection.bindingStateCurrentOrWhenDied());
         connection.addStrongBinding();
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
@@ -441,10 +441,10 @@ public class ChildProcessConnectionTest {
         ShadowLooper.runUiThreadTasks();
 
         // Add and remove moderate binding works as expected.
-        connection2.removeModerateBinding();
+        connection2.removeModerateBinding(false);
         assertArrayEquals(
                 connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 1, 0, 1});
-        connection2.addModerateBinding();
+        connection2.addModerateBinding(false);
         assertArrayEquals(
                 connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
 
@@ -463,7 +463,7 @@ public class ChildProcessConnectionTest {
         assertArrayEquals(
                 connection1.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 0});
 
-        connection2.removeModerateBinding();
+        connection2.removeModerateBinding(false);
         assertArrayEquals(
                 connection0.remainingBindingStateCountsCurrentOrWhenDied(), new int[] {0, 0, 1, 1});
         assertArrayEquals(
@@ -479,8 +479,7 @@ public class ChildProcessConnectionTest {
         connection.updateGroupImportance(1, 2);
         assertEquals(1, connection.getGroup());
         assertEquals(2, connection.getImportanceInGroup());
-        // Expect a important, moderate and waived bindings.
-        assertEquals(3, mMockConnections.size());
+        assertEquals(4, mMockConnections.size());
         // Group should be set on the wavied (last) binding.
         ChildServiceConnectionMock mock = mMockConnections.get(mMockConnections.size() - 1);
         assertEquals(1, mock.getGroup());
@@ -520,7 +519,7 @@ public class ChildProcessConnectionTest {
         assertNotNull(mFirstServiceConnection);
         connection.start(false /* useStrongBinding */, mServiceCallback);
 
-        Assert.assertEquals(3, mMockConnections.size());
+        Assert.assertEquals(4, mMockConnections.size());
         boolean anyServiceConnectionBound = false;
         for (ChildServiceConnectionMock serviceConnection : mMockConnections) {
             anyServiceConnectionBound = anyServiceConnectionBound || serviceConnection.isBound();
@@ -545,15 +544,15 @@ public class ChildProcessConnectionTest {
         verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
 
-        Assert.assertEquals(6, mMockConnections.size());
-        // First 3 should be unbound now.
-        for (int i = 0; i < 3; ++i) {
+        Assert.assertEquals(8, mMockConnections.size());
+        // First 4 should be unbound now.
+        for (int i = 0; i < 4; ++i) {
             verify(mMockConnections.get(i), times(1)).retire();
             Assert.assertFalse(mMockConnections.get(i).isBound());
         }
         // New connection for fallback service should be bound.
         ChildServiceConnectionMock boundServiceConnection = null;
-        for (int i = 3; i < 6; ++i) {
+        for (int i = 4; i < 8; ++i) {
             if (mMockConnections.get(i).isBound()) {
                 boundServiceConnection = mMockConnections.get(i);
             }
@@ -569,5 +568,34 @@ public class ChildProcessConnectionTest {
         verify(mServiceCallback, times(1)).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
+    }
+
+    @Test
+    public void testModerateWaiveCpuPriority() throws RemoteException {
+        ChildProcessConnection connection = createDefaultTestConnection();
+        connection.start(false /* useStrongBinding */, null /* serviceCallback */);
+        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
+        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
+        ChildServiceConnectionMock moderateConnection = mMockConnections.get(0);
+        ChildServiceConnectionMock moderateWaiveCpuConnection = mMockConnections.get(1);
+
+        Assert.assertTrue(connection.isModerateBindingBound());
+        assertTrue(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(false /* waiveCpuPriority */);
+        Assert.assertFalse(connection.isModerateBindingBound());
+        assertFalse(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
+
+        connection.addModerateBinding(true /* waiveCpuPriority */);
+        Assert.assertTrue(connection.isModerateBindingBound());
+        assertFalse(moderateConnection.isBound());
+        assertTrue(moderateWaiveCpuConnection.isBound());
+
+        connection.removeModerateBinding(true /* waiveCpuPriority */);
+        Assert.assertFalse(connection.isModerateBindingBound());
+        assertFalse(moderateConnection.isBound());
+        assertFalse(moderateWaiveCpuConnection.isBound());
     }
 }

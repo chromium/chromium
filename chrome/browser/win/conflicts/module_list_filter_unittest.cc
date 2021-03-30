@@ -13,7 +13,6 @@
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/win/conflicts/module_info.h"
@@ -48,7 +47,7 @@ class ModuleListBuilder {
   }
 
   // Adds a module to the allowlist.
-  void AddAllowlistedModule(base::Optional<base::string16> basename,
+  void AddAllowlistedModule(base::Optional<std::u16string> basename,
                             base::Optional<std::string> code_id) {
     CHECK(basename.has_value() || code_id.has_value());
 
@@ -129,7 +128,8 @@ ModuleInfo CreateModuleInfo(const base::FilePath& module_path,
 
   result.second.inspection_result =
       base::make_optional<ModuleInspectionResult>();
-  result.second.inspection_result->basename = module_path.BaseName().value();
+  result.second.inspection_result->basename =
+      module_path.BaseName().AsUTF16Unsafe();
 
   return result;
 }
@@ -170,7 +170,7 @@ class ModuleListFilterTest : public ::testing::Test {
 };
 
 TEST_F(ModuleListFilterTest, IsAllowlistedStringPieceVersion) {
-  base::string16 basename = L"basename.dll";  // Must be lowercase.
+  std::u16string basename = u"basename.dll";  // Must be lowercase.
   std::string code_id = GetCodeId(12u, 32u);
 
   ModuleListBuilder module_list_builder(module_list_path());

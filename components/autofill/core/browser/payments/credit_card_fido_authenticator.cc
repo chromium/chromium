@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -514,7 +513,7 @@ void CreditCardFIDOAuthenticator::OnDidGetOptChangeResult(
 void CreditCardFIDOAuthenticator::OnFullCardRequestSucceeded(
     const payments::FullCardRequest& full_card_request,
     const CreditCard& card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
   DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
   current_flow_ = NONE_FLOW;
   requester_->OnFIDOAuthenticationComplete(/*did_succeed=*/true, &card, cvc);
@@ -574,10 +573,13 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
     options->relying_party.icon_url = GURL(*icon_url);
 
   const std::string gaia =
-      autofill_client_->GetIdentityManager()->GetPrimaryAccountInfo().gaia;
+      autofill_client_->GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .gaia;
   options->user.id = std::vector<uint8_t>(gaia.begin(), gaia.end());
-  options->user.name =
-      autofill_client_->GetIdentityManager()->GetPrimaryAccountInfo().email;
+  options->user.name = autofill_client_->GetIdentityManager()
+                           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                           .email;
 
   base::Optional<AccountInfo> account_info =
       autofill_client_->GetIdentityManager()

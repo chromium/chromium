@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTouchIdDiscovery
   void Start() override;
 
  private:
-  void AddAuthenticator();
+  void OnAuthenticatorAvailable(bool is_available);
 
   AuthenticatorConfig authenticator_config_;
   std::unique_ptr<TouchIdAuthenticator> authenticator_;

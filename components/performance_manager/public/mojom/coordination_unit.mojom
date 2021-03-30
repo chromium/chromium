@@ -33,12 +33,9 @@ interface DocumentCoordinationUnit {
   // Called the first time a form in this document is interacted with.
   SetHadFormInteraction();
 
-  SetIsAdFrame();
-
-  // Called when the intersection between this frame and the viewport changes.
-  // The viewport is the rectangular area of the top-level document that is
-  // visible. This is used to drive the frame prioritization logic.
-  SetViewportIntersection(gfx.mojom.Rect viewport_intersection);
+  // Called whenever the frame associated with this document is tagged or
+  // untagged as an ad, providing the new status.
+  SetIsAdFrame(bool is_ad_frame);
 
   // Event signals.
 
@@ -55,7 +52,7 @@ interface DocumentCoordinationUnit {
   OnFirstContentfulPaint(mojo_base.mojom.TimeDelta time_since_navigation_start);
 
   // Invoked when JS in the renderer requests a memory measurement via
-  // the performance.measureMemory API.
+  // the performance.measureUserAgentSpecificMemory API.
   OnWebMemoryMeasurementRequested(WebMemoryMeasurement.Mode mode) =>
       (WebMemoryMeasurement measurement);
 };
@@ -112,4 +109,10 @@ interface ProcessCoordinationUnit {
   // by OnRemoteIframeAttached.
   OnRemoteIframeDetached(blink.mojom.LocalFrameToken parent_frame_token,
                          blink.mojom.RemoteFrameToken remote_frame_token);
+
+  // Called when a renderer has observed an allow-listed performance.mark
+  // trigger event. The browser will reconfirm that the trigger is indeed
+  // allow-listed before firing the background tracing trigger, which can result
+  // in a trace being uploaded to the background tracing pipeline.
+  FireBackgroundTracingTrigger(string trigger_name);
 };

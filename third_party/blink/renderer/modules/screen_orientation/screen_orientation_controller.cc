@@ -6,8 +6,6 @@
 
 #include <memory>
 #include <utility>
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -106,14 +104,14 @@ void ScreenOrientationController::UpdateOrientation() {
   DCHECK(GetPage());
   ChromeClient& chrome_client = GetPage()->GetChromeClient();
   LocalFrame& frame = *DomWindow()->GetFrame();
-  ScreenInfo screen_info = chrome_client.GetScreenInfo(frame);
+  const ScreenInfo& screen_info = chrome_client.GetScreenInfo(frame);
   mojom::blink::ScreenOrientation orientation_type =
       screen_info.orientation_type;
   if (orientation_type == mojom::blink::ScreenOrientation::kUndefined) {
     // The embedder could not provide us with an orientation, deduce it
     // ourselves.
-    orientation_type = ComputeOrientation(
-        chrome_client.GetScreenInfo(frame).rect, screen_info.orientation_angle);
+    orientation_type =
+        ComputeOrientation(screen_info.rect, screen_info.orientation_angle);
   }
   DCHECK(orientation_type != mojom::blink::ScreenOrientation::kUndefined);
 
@@ -149,25 +147,9 @@ void ScreenOrientationController::PageVisibilityChanged() {
 }
 
 void ScreenOrientationController::NotifyOrientationChanged() {
-  // TODO(dcheng): Remove this and check in the caller.
+  // TODO(dcheng): Update this code to better handle instances when v8 memory
+  // is forcibly purged.
   if (!DomWindow()) {
-    // In theory, it should not be possible to reach this when called via
-    // WebLocalFrameImpl, as WebLocalFrameImpl's checks should be sufficient
-    // to avoid notifying orientation change events on a detached execution
-    // context. Nonetheless, ExecutionContextLifecycleObserver::DomWindow() is
-    // returning null here, which seems to indicate the execution context is
-    // detached... make sure this isn't somehow associated with a null
-    // LocalDOMWindow, even though that should be impossible...
-    SCOPED_CRASH_KEY_NUMBER("debug-1154141", "supplement",
-                            reinterpret_cast<uintptr_t>(GetSupplementable()));
-    SCOPED_CRASH_KEY_NUMBER(
-        "debug-1154141", "supplement_frame",
-        reinterpret_cast<uintptr_t>(GetSupplementable()->GetFrame()));
-    SCOPED_CRASH_KEY_NUMBER("debug-1154141", "execution_context",
-                            reinterpret_cast<uintptr_t>(GetExecutionContext()));
-    SCOPED_CRASH_KEY_BOOL("debug-1154141", "is_context_destroyed",
-                          GetSupplementable()->IsContextDestroyed());
-    base::debug::DumpWithoutCrashing();
     return;
   }
 

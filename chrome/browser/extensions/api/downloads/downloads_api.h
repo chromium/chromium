@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/common/extensions/api/downloads.h"
@@ -187,7 +187,8 @@ class DownloadsRemoveFileFunction : public ExtensionFunction {
 
 class DownloadsAcceptDangerFunction : public ExtensionFunction {
  public:
-  typedef base::Callback<void(DownloadDangerPrompt*)> OnPromptCreatedCallback;
+  using OnPromptCreatedCallback =
+      base::OnceCallback<void(DownloadDangerPrompt*)>;
   static void OnPromptCreatedForTesting(
       OnPromptCreatedCallback* callback) {
     on_prompt_created_ = callback;
@@ -364,12 +365,6 @@ class ExtensionDownloadsEventRouter
   // extensions::EventRouter::Observer.
   void OnListenerRemoved(const extensions::EventListenerInfo& details) override;
 
-  // Used for testing.
-  struct DownloadsNotificationSource {
-    std::string event_name;
-    Profile* profile;
-  };
-
   void CheckForHistoryFilesRemoval();
 
  private:
@@ -391,9 +386,9 @@ class ExtensionDownloadsEventRouter
   base::Time last_checked_removal_;
 
   // Listen to extension unloaded notifications.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionDownloadsEventRouter);
 };

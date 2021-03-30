@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -60,7 +59,7 @@ class OSCrypt {
   // Encrypt a string16. The output (second argument) is really an array of
   // bytes, but we're passing it back as a std::string.
   static COMPONENT_EXPORT(OS_CRYPT) bool EncryptString16(
-      const base::string16& plaintext,
+      const std::u16string& plaintext,
       std::string* ciphertext);
 
   // Decrypt an array of bytes obtained with EncryptString16 back into a
@@ -68,7 +67,7 @@ class OSCrypt {
   // need to first get your (binary) data into a string.
   static COMPONENT_EXPORT(OS_CRYPT) bool DecryptString16(
       const std::string& ciphertext,
-      base::string16* plaintext);
+      std::u16string* plaintext);
 
   // Encrypt a string.
   static COMPONENT_EXPORT(OS_CRYPT) bool EncryptString(

@@ -9,9 +9,9 @@
 
 namespace ui {
 
-AXTreeManagerMap::AXTreeManagerMap() {}
+AXTreeManagerMap::AXTreeManagerMap() = default;
 
-AXTreeManagerMap::~AXTreeManagerMap() {}
+AXTreeManagerMap::~AXTreeManagerMap() = default;
 
 // static
 AXTreeManagerMap& AXTreeManagerMap::GetInstance() {

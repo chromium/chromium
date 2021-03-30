@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -16,10 +17,6 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
-
-#if defined(USE_X11)
-#include "ui/base/ui_base_features.h"  // nogncheck
-#endif
 
 namespace gpu {
 
@@ -40,7 +37,8 @@ VkSemaphore CreateSemaphore(VkDevice vk_device) {
 
 }  // namespace
 
-VulkanSwapChain::VulkanSwapChain() {
+VulkanSwapChain::VulkanSwapChain(uint64_t acquire_next_image_timeout_ns)
+    : acquire_next_image_timeout_ns_(acquire_next_image_timeout_ns) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
@@ -68,7 +66,6 @@ bool VulkanSwapChain::Initialize(
   DCHECK(device_queue);
   DCHECK(!use_protected_memory || device_queue->allow_protected_memory());
 
-  task_runner_ = base::ThreadTaskRunnerHandle::Get();
   use_protected_memory_ = use_protected_memory;
   device_queue_ = device_queue;
   is_incremental_present_supported_ =
@@ -146,7 +143,7 @@ void VulkanSwapChain::PostSubBufferAsync(
   DCHECK(!has_pending_post_sub_buffer_);
 
   if (UNLIKELY(!PresentBuffer(rect))) {
-    task_runner_->PostTask(
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), gfx::SwapResult::SWAP_FAILED));
     return;
@@ -158,18 +155,21 @@ void VulkanSwapChain::PostSubBufferAsync(
   post_sub_buffer_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](VulkanSwapChain* self, PostSubBufferCompletionCallback callback) {
+          [](VulkanSwapChain* self,
+             scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+             PostSubBufferCompletionCallback callback) {
             base::AutoLock auto_lock(self->lock_);
             DCHECK(self->has_pending_post_sub_buffer_);
             auto swap_result = self->AcquireNextImage()
                                    ? gfx::SwapResult::SWAP_ACK
                                    : gfx::SwapResult::SWAP_FAILED;
-            self->task_runner_->PostTask(
+            task_runner->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), swap_result));
             self->has_pending_post_sub_buffer_ = false;
             self->condition_variable_.Signal();
           },
-          base::Unretained(this), std::move(callback)));
+          base::Unretained(this), base::ThreadTaskRunnerHandle::Get(),
+          std::move(callback)));
 }
 
 bool VulkanSwapChain::InitializeSwapChain(
@@ -412,7 +412,7 @@ bool VulkanSwapChain::PresentBuffer(const gfx::Rect& rect) {
     return false;
   }
 
-  LOG_IF(ERROR, result == VK_SUBOPTIMAL_KHR) << "Swapchian is suboptimal.";
+  LOG_IF(ERROR, result == VK_SUBOPTIMAL_KHR) << "Swapchain is suboptimal.";
   acquired_image_.reset();
 
   return true;
@@ -421,24 +421,6 @@ bool VulkanSwapChain::PresentBuffer(const gfx::Rect& rect) {
 bool VulkanSwapChain::AcquireNextImage() {
   DCHECK_EQ(state_, VK_SUCCESS);
   DCHECK(!acquired_image_);
-
-#if defined(USE_X11)
-  // The xserver should still composite windows with a 1Hz fake vblank when
-  // screen is off or the window is offscreen. However there is an xserver
-  // bug, the requested hardware vblanks are lost, when screen turns off, so
-  // FIFO swapchain will hang.
-  // Workaround the issue by using the 2 seconds timeout for
-  // vkAcquireNextImageKHR(). When timeout happens, we consider the swapchain
-  // hang happened, and then make the surface lost, so a new swapchain will
-  // be recreated.
-  //
-  // TODO(https://crbug.com/1098237): set correct timeout for ozone/x11.
-  static uint64_t kTimeout = features::IsUsingOzonePlatform()
-                                 ? UINT64_MAX
-                                 : base::Time::kNanosecondsPerSecond * 2;
-#else
-  static uint64_t kTimeout = UINT64_MAX;
-#endif
 
   // VulkanDeviceQueue is not threadsafe for now, but |device_queue_| will not
   // be released, and device_queue_->device will never be changed after
@@ -464,8 +446,8 @@ bool VulkanSwapChain::AcquireNextImage() {
   auto result = ({
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
-    vkAcquireNextImageKHR(device, swap_chain_, kTimeout, acquire_semaphore,
-                          acquire_fence, &next_image);
+    vkAcquireNextImageKHR(device, swap_chain_, acquire_next_image_timeout_ns_,
+                          acquire_semaphore, acquire_fence, &next_image);
   });
 
   if (UNLIKELY(result == VK_TIMEOUT)) {
@@ -522,6 +504,12 @@ VulkanSwapChain::GetOrCreateFenceAndSemaphores() {
   FenceAndSemaphores fence_and_semaphores;
   do {
 #if !defined(OS_FUCHSIA)
+    // This crash key is for diagnosing OOM crash.
+    // TODO(penghuang): remove it when OOM crash is fixed, or find out it is not
+    // related.
+    SCOPED_CRASH_KEY_NUMBER("VulkanSwapChian", "queue_.size()",
+                            fence_and_semaphores_queue_.size());
+
     if (LIKELY(!fence_and_semaphores_queue_.empty())) {
       fence_and_semaphores = fence_and_semaphores_queue_.front();
       auto result = vkGetFenceStatus(device, fence_and_semaphores.fence);

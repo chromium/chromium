@@ -20,56 +20,24 @@ enum AssistantAllowedState {
   // Assistant feature is allowed.
   ALLOWED = 0,
   // Disallowed because search and assistant is disabled by policy.
-  DISALLOWED_BY_POLICY,
+  DISALLOWED_BY_POLICY = 1,
   // Disallowed because user's locale is not compatible.
-  DISALLOWED_BY_LOCALE,
+  DISALLOWED_BY_LOCALE = 2,
   // Disallowed because current user is not primary user.
-  DISALLOWED_BY_NONPRIMARY_USER,
-  // TODO(crbug.com/866790): Remove this value as a part of Supervised users
-  // code cleanup.
-  // Disallowed because current user is supervised user.
-  DISALLOWED_BY_SUPERVISED_USER,
+  DISALLOWED_BY_NONPRIMARY_USER = 3,
+  // DISALLOWED_BY_SUPERVISED_USER = 4, // Deprecated.
   // Disallowed because incognito mode.
-  DISALLOWED_BY_INCOGNITO,
+  DISALLOWED_BY_INCOGNITO = 5,
   // Disallowed because the device is in demo mode.
-  DISALLOWED_BY_DEMO_MODE,
+  DISALLOWED_BY_DEMO_MODE = 6,
   // Disallowed because the device is in public session.
-  DISALLOWED_BY_PUBLIC_SESSION,
+  DISALLOWED_BY_PUBLIC_SESSION = 7,
   // Disallowed because the user's account type is currently not supported.
-  DISALLOWED_BY_ACCOUNT_TYPE,
+  DISALLOWED_BY_ACCOUNT_TYPE = 8,
   // Disallowed because the device is in Kiosk mode.
-  DISALLOWED_BY_KIOSK_MODE,
+  DISALLOWED_BY_KIOSK_MODE = 9,
 
   MAX_VALUE = DISALLOWED_BY_KIOSK_MODE,
-};
-
-// Enumeration of possible Assistant query sources. These values are persisted
-// to logs. Entries should not be renumbered and numeric values should never
-// be reused. Append new values to the end.
-enum class AssistantQuerySource {
-  kUnspecified = 0,
-  kMinValue = kUnspecified,
-  kDeepLink = 1,
-  kDialogPlateTextField = 2,
-  kStylus = 3,
-  kSuggestionChip = 4,
-  kVoiceInput = 5,
-  kProactiveSuggestions = 6,
-  kLibAssistantInitiated = 7,
-  // kWarmerWelcomeDeprecated = 8,
-  kConversationStarter = 9,
-  kWhatsOnMyScreen = 10,
-  kQuickAnswers = 11,
-  kLauncherChip = 12,
-  kBetterOnboarding = 13,
-  kBloom = 14,
-  kMaxValue = kBloom,
-};
-
-// Enumeration of possible Assistant interaction types.
-enum class AssistantInteractionType {
-  kText,
-  kVoice,
 };
 
 // Enumeration of possible completions for an Assistant interaction.
@@ -86,28 +54,6 @@ enum class AssistantInteractionResolution {
   // Assistant interaction completed due to multi-device hotword loss.
   kMultiDeviceHotwordLoss = 4,
   kMaxValue = kMultiDeviceHotwordLoss,
-};
-
-// Enumeration of possible Assistant suggestion types.
-enum class AssistantSuggestionType {
-  kUnspecified,
-  kConversationStarter,
-  kBetterOnboarding,
-};
-
-// Enumeration of better onboarding options. This is reported to histogram,
-// please do not change the values.
-enum class AssistantBetterOnboardingType {
-  kUnspecified = 0,
-  kMath = 1,
-  kKnowledgeEdu = 2,
-  kConversion = 3,
-  kKnowledge = 4,
-  kProductivity = 5,
-  kPersonality = 6,
-  kLanguage = 7,
-  kTechnical = 8,
-  kMaxValue = kTechnical,
 };
 
 // Enumeration of Assistant entry points. These values are persisted to logs.
@@ -127,8 +73,9 @@ enum class AssistantEntryPoint {
   kLauncherSearchBoxIcon = 9,
   kProactiveSuggestions = 10,
   kLauncherChip = 11,
-  kBloom = 12,
-  kMaxValue = kBloom,
+  // Deprecated, please do not reuse
+  // kBloom = 12,
+  kMaxValue = kLauncherChip,
 };
 
 // Enumeration of Assistant exit points. These values are persisted to logs.

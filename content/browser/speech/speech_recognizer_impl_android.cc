@@ -166,7 +166,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionResults(
     const JavaParamRef<jfloatArray>& floats,
     jboolean provisional) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<base::string16> options;
+  std::vector<std::u16string> options;
   AppendJavaStringArrayToStringVector(env, strings, &options);
   std::vector<float> scores(options.size(), 0.0);
   if (floats != NULL)

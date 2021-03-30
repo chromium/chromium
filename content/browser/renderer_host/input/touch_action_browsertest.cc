@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
@@ -26,7 +27,6 @@
 #include "content/common/input/synthetic_gesture_params.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
-#include "content/common/input_messages.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
@@ -143,8 +143,11 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   ~TouchActionBrowserTest() override = default;
 
   RenderWidgetHostImpl* GetWidgetHost() {
-    return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    return RenderWidgetHostImpl::From(shell()
+                                          ->web_contents()
+                                          ->GetMainFrame()
+                                          ->GetRenderViewHost()
+                                          ->GetWidget());
   }
 
   void OnSyntheticGestureCompleted(SyntheticGesture::Result result) {
@@ -162,7 +165,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
         host->render_frame_metadata_provider());
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 
@@ -217,9 +220,9 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   }
 
   bool URLLoaded() {
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    const base::string16 title = watcher.WaitAndGetTitle();
+    const std::u16string title = watcher.WaitAndGetTitle();
     return title == ready_title;
   }
 
@@ -239,14 +242,16 @@ class TouchActionBrowserTest : public ContentBrowserTest {
       bool wait_until_scrolled,
       const gfx::Vector2d& expected_scroll_position_after_scroll) {
     SyntheticSmoothScrollGestureParams params1;
-    params1.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+    params1.gesture_source_type =
+        content::mojom::GestureSourceType::kTouchInput;
     params1.anchor = gfx::PointF(25, 125);
     params1.distances.push_back(gfx::Vector2dF(-5, 0));
     params1.prevent_fling = true;
     params1.speed_in_pixels_s = 5;
 
     SyntheticSmoothScrollGestureParams params2;
-    params2.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+    params2.gesture_source_type =
+        content::mojom::GestureSourceType::kTouchInput;
     params2.anchor = gfx::PointF(25, 125);
     params2.distances.push_back(gfx::Vector2dF(-50, 0));
 
@@ -254,9 +259,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
     std::unique_ptr<SyntheticSmoothScrollGesture> gesture1(
         new SyntheticSmoothScrollGesture(params1));
-    GetWidgetHost()->QueueSyntheticGesture(
-        std::move(gesture1),
-        base::BindOnce([](SyntheticGesture::Result result) {}));
+    GetWidgetHost()->QueueSyntheticGesture(std::move(gesture1),
+                                           base::DoNothing());
 
     JankMainThread(kLongJankTime);
     GiveItSomeTime(800);
@@ -311,7 +315,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
       touch_point.set_y(touch_point.y() * page_scale_factor);
     }
     SyntheticSmoothScrollGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
     params.anchor = touch_point;
     params.distances.push_back(-distance);
     // Set the speed to very high so that there is one GSU only.
@@ -362,7 +366,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
     ActionsParser actions_parser(std::move(*parsed_json.value));
 
-    ASSERT_TRUE(actions_parser.ParsePointerActionSequence());
+    ASSERT_TRUE(actions_parser.Parse());
 
     run_loop_ = std::make_unique<base::RunLoop>();
 
@@ -400,7 +404,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
     ActionsParser actions_parser(std::move(*parsed_json.value));
 
-    ASSERT_TRUE(actions_parser.ParsePointerActionSequence());
+    ASSERT_TRUE(actions_parser.Parse());
 
     run_loop_ = std::make_unique<base::RunLoop>();
 

@@ -290,6 +290,27 @@ void VRServiceImpl::OnImmersiveSessionCreated(
   DVLOG(3) << __func__
            << ": enabled_features.size()=" << enabled_features.size();
 
+  // Try to find a required feature that was not enabled on the created session:
+  auto required_but_not_enabled_it =
+      std::find_if(request.options->required_features.begin(),
+                   request.options->required_features.end(),
+                   [&enabled_features](const auto& required_feature) {
+                     return !base::Contains(enabled_features, required_feature);
+                   });
+  if (required_but_not_enabled_it != request.options->required_features.end()) {
+    DVLOG(2) << __func__
+             << ": one of the required features was not enabled on the created "
+                "session, feature: "
+             << *required_but_not_enabled_it;
+    // UNKNOWN_FAILURE since a runtime should not return a session if there
+    // exists a required feature that was not enabled - this would signify a bug
+    // in the runtime.
+    std::move(request.callback)
+        .Run(device::mojom::RequestSessionResult::NewFailureReason(
+            device::mojom::RequestSessionError::UNKNOWN_FAILURE));
+    return;
+  }
+
   // Get the metrics tracker for the new immersive session
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
       session_metrics_recorder =
@@ -481,6 +502,10 @@ void VRServiceImpl::EnsureRuntimeInstalled(SessionRequestData request,
 
   // Ensure that it's the same runtime as the one we expect.
   if (!runtime || runtime->GetId() != request.runtime_id) {
+    DVLOG(1) << __func__
+             << ": failed to obtain the runtime or the runtime id does not "
+                "match the expected ID, request.runtime_id="
+             << request.runtime_id;
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::RUNTIMES_CHANGED));
@@ -496,6 +521,8 @@ void VRServiceImpl::EnsureRuntimeInstalled(SessionRequestData request,
 
 void VRServiceImpl::OnInstallResult(SessionRequestData request,
                                     bool install_succeeded) {
+  DVLOG(2) << __func__ << ": install_succeeded=" << install_succeeded;
+
   if (!install_succeeded) {
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
@@ -564,6 +591,8 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
             request.options->tracked_images[i].Clone();
       }
     }
+
+    runtime_options->depth_options = std::move(request.options->depth_options);
 
     base::OnceCallback<void(device::mojom::XRSessionPtr)> immersive_callback =
         base::BindOnce(&VRServiceImpl::OnImmersiveSessionCreated,

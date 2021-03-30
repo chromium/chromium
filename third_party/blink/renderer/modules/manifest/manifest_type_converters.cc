@@ -79,6 +79,8 @@ TypeConverter<blink::Manifest, blink::mojom::blink::ManifestPtr>::Convert(
   if (!input->scope.IsEmpty())
     output.scope = input->scope;
 
+  output.capture_links = input->capture_links;
+
   return output;
 }
 
@@ -226,8 +228,10 @@ TypeConverter<blink::Manifest::UrlHandler,
   if (input.is_null())
     return output;
 
-  if (!output.origin.opaque())
+  if (!output.origin.opaque()) {
     output.origin = input->origin->ToUrlOrigin();
+    output.has_origin_wildcard = input->has_origin_wildcard;
+  }
 
   return output;
 }

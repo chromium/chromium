@@ -32,6 +32,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
@@ -374,7 +375,8 @@ TEST_F(MHTMLArchiveTest, MHTMLFromScheme) {
   CheckLoadResult(ToKURL("fooscheme://bar"), data.get(),
                   MHTMLLoadResult::kUrlSchemeNotAllowed);
 
-  SchemeRegistry::RegisterURLSchemeAsLocal("fooscheme");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddLocalScheme("fooscheme");
   CheckLoadResult(ToKURL("fooscheme://bar"), data.get(),
                   MHTMLLoadResult::kSuccess);
 }

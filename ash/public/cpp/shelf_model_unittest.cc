@@ -114,7 +114,7 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   int index = model_->Add(item1);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item1.id));
-  EXPECT_NE(model_->items().end(), model_->ItemByID(item1.id));
+  EXPECT_TRUE(model_->ItemByID(item1.id));
   EXPECT_EQ("added=1", observer_->StateStringAndClear());
 
   // Change to a platform app item.
@@ -122,7 +122,7 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   model_->Set(index, item1);
   EXPECT_EQ(item1.id, model_->items()[index].id);
   EXPECT_LE(0, model_->ItemIndexByID(item1.id));
-  EXPECT_NE(model_->items().end(), model_->ItemByID(item1.id));
+  EXPECT_TRUE(model_->ItemByID(item1.id));
   EXPECT_EQ("changed=1", observer_->StateStringAndClear());
   EXPECT_EQ(TYPE_APP, model_->items()[index].type);
 
@@ -130,7 +130,7 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   model_->RemoveItemAt(index);
   EXPECT_EQ(0, model_->item_count());
   EXPECT_EQ(-1, model_->ItemIndexByID(item1.id));
-  EXPECT_EQ(model_->items().end(), model_->ItemByID(item1.id));
+  EXPECT_FALSE(model_->ItemByID(item1.id));
   EXPECT_EQ("removed=1", observer_->StateStringAndClear());
 
   // Add an app item.
@@ -140,14 +140,14 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   index = model_->Add(item2);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item2.id));
-  EXPECT_NE(model_->items().end(), model_->ItemByID(item2.id));
+  EXPECT_TRUE(model_->ItemByID(item2.id));
   EXPECT_EQ("added=1", observer_->StateStringAndClear());
 
   // Change the item type.
   item2.type = TYPE_APP;
   model_->Set(index, item2);
   EXPECT_LE(0, model_->ItemIndexByID(item2.id));
-  EXPECT_NE(model_->items().end(), model_->ItemByID(item2.id));
+  EXPECT_TRUE(model_->ItemByID(item2.id));
   EXPECT_EQ("changed=1", observer_->StateStringAndClear());
   EXPECT_EQ(TYPE_APP, model_->items()[index].type);
 
@@ -158,7 +158,7 @@ TEST_F(ShelfModelTest, BasicAssertions) {
   model_->Add(item3);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item3.id));
-  EXPECT_NE(model_->items().end(), model_->ItemByID(item3.id));
+  EXPECT_TRUE(model_->ItemByID(item3.id));
   EXPECT_EQ("added=1", observer_->StateStringAndClear());
 
   // Move the second to the first.
@@ -240,6 +240,13 @@ TEST_F(ShelfModelTest, AddIndices) {
   EXPECT_EQ(6, platform_app_index4);
 
   EXPECT_EQ(TYPE_BROWSER_SHORTCUT, model_->items()[2].type);
+
+  // TYPE_UNPINNED_BROWSER_SHORTCUT icons should behave similar to
+  // unpinned apps.
+  item.type = TYPE_UNPINNED_BROWSER_SHORTCUT;
+  item.id = ShelfID("unpinned_browser");
+  int unpinned_browser_index = model_->AddAt(2, item);
+  EXPECT_EQ(6, unpinned_browser_index);
 }
 
 // Test that the indexes for the running applications are properly determined.
@@ -266,6 +273,11 @@ TEST_F(ShelfModelTest, FirstRunningAppIndex) {
   EXPECT_EQ(2, model_->FirstRunningAppIndex());
   item.id = ShelfID("app2");
   EXPECT_EQ(3, model_->Add(item));
+  EXPECT_EQ(2, model_->FirstRunningAppIndex());
+
+  item.type = TYPE_UNPINNED_BROWSER_SHORTCUT;
+  item.id = ShelfID("unpinned browser");
+  EXPECT_EQ(4, model_->Add(item));
   EXPECT_EQ(2, model_->FirstRunningAppIndex());
 }
 
@@ -441,7 +453,7 @@ TEST_F(ShelfModelTest, RemoveItemAndTakeShelfItemDelegate) {
   model_->Add(item1);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_LE(0, model_->ItemIndexByID(item1.id));
-  EXPECT_NE(model_->items().end(), model_->ItemByID(item1.id));
+  EXPECT_TRUE(model_->ItemByID(item1.id));
   EXPECT_EQ("added=1", observer_->StateStringAndClear());
 
   // Set item delegate.
@@ -454,7 +466,7 @@ TEST_F(ShelfModelTest, RemoveItemAndTakeShelfItemDelegate) {
   auto taken_delegate = model_->RemoveItemAndTakeShelfItemDelegate(item1.id);
   EXPECT_EQ(0, model_->item_count());
   EXPECT_EQ(-1, model_->ItemIndexByID(item1.id));
-  EXPECT_EQ(model_->items().end(), model_->ItemByID(item1.id));
+  EXPECT_FALSE(model_->ItemByID(item1.id));
   EXPECT_EQ("removed=1", observer_->StateStringAndClear());
   EXPECT_EQ(delegate, taken_delegate.get());
 }

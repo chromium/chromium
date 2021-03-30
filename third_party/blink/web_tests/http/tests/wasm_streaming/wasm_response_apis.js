@@ -156,11 +156,11 @@ function buildImportingModuleBytes() {
 
   builder.addFunction("main", kSig_i_i)
     .addBody([
-      kExprGetLocal, 0,
+      kExprLocalGet, 0,
       kExprI32LoadMem, 0, 0,
       kExprI32Const, 1,
       kExprCallIndirect, signature, kTableZero,
-      kExprGetLocal,0,
+      kExprLocalGet,0,
       kExprI32LoadMem,0, 0,
       kExprCallFunction, 0,
       kExprI32Add
@@ -170,7 +170,7 @@ function buildImportingModuleBytes() {
   // return mem[i] + some_value();
   builder.addFunction("_wrap_writer", signature)
     .addBody([
-      kExprGetLocal, 0,
+      kExprLocalGet, 0,
       kExprCallFunction, 1]);
   builder.appendToTable([2, 3]);
 

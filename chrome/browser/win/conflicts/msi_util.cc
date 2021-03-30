@@ -30,7 +30,7 @@ namespace {
 constexpr DWORD kBufferInitialSize = 256;
 
 // Retrieves the file path to the product's installer.
-bool GetMsiPath(const base::string16& product_guid, base::string16* result) {
+bool GetMsiPath(const std::wstring& product_guid, std::wstring* result) {
   DWORD buffer_size = kBufferInitialSize;
   UINT ret =
       ::MsiGetProductInfo(product_guid.c_str(), INSTALLPROPERTY_LOCALPACKAGE,
@@ -55,7 +55,7 @@ bool GetMsiPath(const base::string16& product_guid, base::string16* result) {
 // Note that columns are 1-indexed.
 bool GetRecordString(MSIHANDLE record_handle,
                      size_t index,
-                     base::string16* result) {
+                     std::wstring* result) {
   DWORD buffer_size = kBufferInitialSize;
   UINT ret = ::MsiRecordGetString(
       record_handle, index, base::WriteInto(result, buffer_size), &buffer_size);
@@ -77,8 +77,8 @@ bool GetRecordString(MSIHANDLE record_handle,
 
 // Inspects the installer file and extracts the component guids. Each .msi file
 // is actually an SQL database.
-bool GetMsiComponentGuids(const base::string16& msi_database_path,
-                          std::vector<base::string16>* component_guids) {
+bool GetMsiComponentGuids(const std::wstring& msi_database_path,
+                          std::vector<std::wstring>* component_guids) {
   PMSIHANDLE msi_database_handle;
   if (::MsiOpenDatabase(msi_database_path.c_str(), MSIDBOPEN_READONLY,
                         &msi_database_handle) != ERROR_SUCCESS) {
@@ -99,7 +99,7 @@ bool GetMsiComponentGuids(const base::string16& msi_database_path,
   while (::MsiViewFetch(components_view_handle, &record_handle) ==
          ERROR_SUCCESS) {
     // The record only have the ComponentId column, and its index is 1.
-    base::string16 component_guid;
+    std::wstring component_guid;
     if (GetRecordString(record_handle, 1, &component_guid))
       component_guids->push_back(std::move(component_guid));
   }
@@ -112,10 +112,10 @@ bool GetMsiComponentGuids(const base::string16& msi_database_path,
 // but without directly calling it. This is because that function can trigger
 // the configuration of a product in some rare cases.
 // See https://crbug.com/860537.
-bool GetMsiComponentPath(base::StringPiece16 product_guid,
-                         base::StringPiece16 component_guid,
-                         const base::string16& user_sid,
-                         base::string16* path) {
+bool GetMsiComponentPath(base::WStringPiece product_guid,
+                         base::WStringPiece component_guid,
+                         const std::wstring& user_sid,
+                         std::wstring* path) {
   constexpr wchar_t kRegistryKeyPathFormat[] =
       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Installer\\UserData\\"
       L"%ls\\Components\\%ls";
@@ -123,23 +123,23 @@ bool GetMsiComponentPath(base::StringPiece16 product_guid,
   // Internally, the Microsoft Installer uses a special formatting of the guids
   // to store the information in the registry.
   product_guid = product_guid.substr(1, 36);
-  if (!base::IsValidGUID(product_guid))
+  if (!base::IsValidGUID(base::AsStringPiece16(product_guid)))
     return false;
-  base::string16 product_squid = InstallUtil::GuidToSquid(product_guid);
+  std::wstring product_squid = InstallUtil::GuidToSquid(product_guid);
 
   component_guid = component_guid.substr(1, 36);
-  if (!base::IsValidGUID(component_guid))
+  if (!base::IsValidGUID(base::AsStringPiece16(component_guid)))
     return false;
-  base::string16 component_squid = InstallUtil::GuidToSquid(component_guid);
+  std::wstring component_squid = InstallUtil::GuidToSquid(component_guid);
 
-  std::vector<base::string16> sids = {
+  std::vector<std::wstring> sids = {
       L"S-1-5-18",
   };
   if (!user_sid.empty())
     sids.push_back(user_sid);
 
   for (const auto& sid : sids) {
-    base::string16 value;
+    std::wstring value;
     base::win::RegKey registry_key(
         HKEY_LOCAL_MACHINE,
         base::StringPrintf(kRegistryKeyPathFormat, sid.c_str(),
@@ -168,22 +168,22 @@ bool GetMsiComponentPath(base::StringPiece16 product_guid,
 // So this function retrieves the path to the installer, extracts the component
 // GUIDS from it, and uses those to find the path of each component.
 bool MsiUtil::GetMsiComponentPaths(
-    const base::string16& product_guid,
-    const base::string16& user_sid,
-    std::vector<base::string16>* component_paths) const {
+    const std::wstring& product_guid,
+    const std::wstring& user_sid,
+    std::vector<std::wstring>* component_paths) const {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  base::string16 msi_path;
+  std::wstring msi_path;
   if (!GetMsiPath(product_guid, &msi_path))
     return false;
 
-  std::vector<base::string16> component_guids;
+  std::vector<std::wstring> component_guids;
   if (!GetMsiComponentGuids(msi_path, &component_guids))
     return false;
 
   for (const auto& component_guid : component_guids) {
-    base::string16 component_path;
+    std::wstring component_path;
     if (!GetMsiComponentPath(product_guid, component_guid, user_sid,
                              &component_path)) {
       continue;

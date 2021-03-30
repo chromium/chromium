@@ -37,10 +37,9 @@ ExtensionActionIconFactory::ExtensionActionIconFactory(
       action_(action),
       observer_(observer),
       should_check_icons_(extension->location() !=
-                          extensions::Manifest::UNPACKED),
-      icon_image_observer_(this) {
+                          extensions::mojom::ManifestLocation::kUnpacked) {
   if (action->default_icon_image())
-    icon_image_observer_.Add(action->default_icon_image());
+    icon_image_observation_.Observe(action->default_icon_image());
 }
 
 ExtensionActionIconFactory::~ExtensionActionIconFactory() {}
@@ -53,7 +52,7 @@ void ExtensionActionIconFactory::OnExtensionIconImageChanged(IconImage* image) {
 
 void ExtensionActionIconFactory::OnExtensionIconImageDestroyed(
     IconImage* image) {
-  icon_image_observer_.RemoveAll();
+  icon_image_observation_.Reset();
 }
 
 gfx::Image ExtensionActionIconFactory::GetIcon(int tab_id) {

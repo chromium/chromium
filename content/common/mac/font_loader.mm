@@ -8,6 +8,7 @@
 #include <CoreText/CoreText.h>
 
 #include <limits>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -17,7 +18,6 @@
 #import "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -27,7 +27,7 @@ namespace content {
 namespace {
 
 std::unique_ptr<FontLoader::ResultInternal> LoadFontOnFileThread(
-    const base::string16& font_name,
+    const std::u16string& font_name,
     const float font_point_size) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -127,7 +127,7 @@ FontLoader::ResultInternal::ResultInternal() = default;
 FontLoader::ResultInternal::~ResultInternal() = default;
 
 // static
-void FontLoader::LoadFont(const base::string16& font_name,
+void FontLoader::LoadFont(const std::u16string& font_name,
                           const float font_point_size,
                           LoadedCallback callback) {
   // Tasks are triggered when font loading in the sandbox fails. Usually due to
@@ -165,7 +165,7 @@ bool FontLoader::CTFontDescriptorFromBuffer(
 
 // static
 std::unique_ptr<FontLoader::ResultInternal> FontLoader::LoadFontForTesting(
-    const base::string16& font_name,
+    const std::u16string& font_name,
     const float font_point_size) {
   return LoadFontOnFileThread(font_name, font_point_size);
 }

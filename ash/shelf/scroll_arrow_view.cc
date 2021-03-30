@@ -56,4 +56,9 @@ const char* ScrollArrowView::GetClassName() const {
   return "ScrollArrowView";
 }
 
+void ScrollArrowView::OnThemeChanged() {
+  ShelfButton::OnThemeChanged();
+  SchedulePaint();
+}
+
 }  // namespace ash

@@ -31,23 +31,25 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_CLIENT_H_
 
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
+#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
 class WebPagePopup;
 class WebURLRequest;
 class WebView;
-struct WebRect;
 struct WebWindowFeatures;
 
 class WebViewClient {
@@ -70,17 +72,13 @@ class WebViewClient {
       WebNavigationPolicy policy,
       network::mojom::WebSandboxFlags,
       const SessionStorageNamespaceId& session_storage_namespace_id,
-      bool& consumed_user_gesture) {
+      bool& consumed_user_gesture,
+      const base::Optional<WebImpression>&) {
     return nullptr;
   }
 
   // Create a new popup WebWidget.
   virtual WebPagePopup* CreatePopup(WebLocalFrame*) { return nullptr; }
-
-  // Returns the session storage namespace id associated with this WebView.
-  virtual base::StringPiece GetSessionStorageNamespaceId() {
-    return base::StringPiece();
-  }
 
   // Misc ----------------------------------------------------------------
 
@@ -88,7 +86,7 @@ class WebViewClient {
   // for non-composited WebViews that exist to contribute to a "parent" WebView
   // painting. Otherwise invalidations are transmitted to the compositor through
   // the layers.
-  virtual void DidInvalidateRect(const WebRect&) {}
+  virtual void DidInvalidateRect(const gfx::Rect&) {}
 
   // Called when script in the page calls window.print().  If frame is
   // non-null, then it selects a particular frame, including its
@@ -111,41 +109,12 @@ class WebViewClient {
   // Called to check if layout update should be processed.
   virtual bool CanUpdateLayout() { return false; }
 
-  // Indicates two things:
-  //   1) This view may have a new layout now.
-  //   2) Layout is up-to-date.
-  // After calling WebWidget::updateAllLifecyclePhases(), expect to get this
-  // notification unless the view did not need a layout.
-  virtual void DidUpdateMainFrameLayout() {}
-
-  // Returns comma separated list of accept languages.
-  virtual WebString AcceptLanguages() { return WebString(); }
-
   // Called when the View has changed size as a result of an auto-resize.
   virtual void DidAutoResize(const gfx::Size& new_size) {}
 
   // Called when the View acquires focus.
   virtual void DidFocus() {}
 
-  // Called when the View's zoom has changed.
-  virtual void ZoomLevelChanged() {}
-
-  // Notification that the output of a BeginMainFrame was committed to the
-  // compositor (thread), though would not be submitted to the display
-  // compositor yet. This will only be called for local main frames.
-  virtual void DidCommitCompositorFrameForLocalMainFrame(
-      base::TimeTicks commit_start_time) {}
-
-  // Session history -----------------------------------------------------
-
-  // Returns the number of history items before/after the current
-  // history item.
-  virtual int HistoryBackListCount() { return 0; }
-  virtual int HistoryForwardListCount() { return 0; }
-
-  // History -------------------------------------------------------------
-  virtual void OnSetHistoryOffsetAndLength(int history_offset,
-                                           int history_length) {}
 };
 
 }  // namespace blink

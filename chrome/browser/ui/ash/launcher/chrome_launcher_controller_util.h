@@ -7,6 +7,12 @@
 
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 
+class Browser;
+
+namespace ash {
+class ShelfModel;
+}
+
 namespace extensions {
 class Extension;
 }
@@ -20,5 +26,10 @@ const extensions::Extension* GetExtensionForAppID(const std::string& app_id,
 AppListControllerDelegate::Pinnable GetPinnableForAppID(
     const std::string& app_id,
     Profile* profile);
+
+// Returns true when the given |browser| is listed in the browser application
+// list.
+bool IsBrowserRepresentedInBrowserList(Browser* browser,
+                                       const ash::ShelfModel* model);
 
 #endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_LAUNCHER_CONTROLLER_UTIL_H_

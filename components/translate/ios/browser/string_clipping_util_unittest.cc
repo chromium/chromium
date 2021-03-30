@@ -11,7 +11,7 @@
 
 // Tests that a regular sentence is clipped correctly.
 TEST(StringByClippingLastWordTest, ClipRegularSentence) {
-  const base::string16 kInput =
+  const std::u16string kInput =
       base::UTF8ToUTF16("\nSome text here and there.");
   EXPECT_EQ(kInput, GetStringByClippingLastWord(kInput, 100));
 }
@@ -20,10 +20,10 @@ TEST(StringByClippingLastWordTest, ClipRegularSentence) {
 TEST(StringByClippingLastWordTest, ClipLongSentence) {
   // An arbitrary length.
   const size_t kStringLength = 10;
-  base::string16 string(kStringLength, 'a');
-  string.append(base::UTF8ToUTF16(" b cdefghijklmnopqrstuvwxyz"));
+  std::u16string string(kStringLength, 'a');
+  string.append(u" b cdefghijklmnopqrstuvwxyz");
   // The string should be cut at the last whitespace, after the 'b' character.
-  base::string16 result =
+  std::u16string result =
       GetStringByClippingLastWord(string, kStringLength + 3);
   EXPECT_EQ(kStringLength + 2, result.size());
   EXPECT_EQ(0u, string.find_first_of(result));
@@ -34,9 +34,9 @@ TEST(StringByClippingLastWordTest, ClipLongTextContentNoSpace) {
   // Very long string.
   const size_t kLongStringLength = 65536;
   // A string slightly longer than |kLongStringLength|.
-  base::string16 long_string(kLongStringLength + 10, 'a');
+  std::u16string long_string(kLongStringLength + 10, 'a');
   // Block of text with no space should be truncated to kLongStringLength.
-  base::string16 result =
+  std::u16string result =
       GetStringByClippingLastWord(long_string, kLongStringLength);
   EXPECT_EQ(kLongStringLength, result.size());
   EXPECT_EQ(0u, long_string.find_first_of(result));

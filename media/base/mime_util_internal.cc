@@ -565,13 +565,12 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
     case THEORA:
       return false;
 
-    // AV1 is not supported on Android yet.
-    case AV1:
-      return false;
-
     // ----------------------------------------------------------------------
     // The remaining codecs may be supported depending on platform abilities.
     // ----------------------------------------------------------------------
+    case AV1:
+      return BUILDFLAG(ENABLE_AV1_DECODER);
+
     case MPEG2_AAC:
       // MPEG2_AAC cannot be used in HLS (mpegurl suffix), but this is enforced
       // in the parsing step by excluding MPEG2_AAC from the list of

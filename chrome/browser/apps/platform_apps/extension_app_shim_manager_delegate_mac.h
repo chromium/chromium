@@ -28,7 +28,9 @@ class ExtensionAppShimManagerDelegate : public AppShimManager::Delegate {
                        base::OnceCallback<void()> callback) override;
   void LaunchApp(Profile* profile,
                  const web_app::AppId& app_id,
-                 const std::vector<base::FilePath>& files) override;
+                 const std::vector<base::FilePath>& files,
+                 chrome::mojom::AppShimLoginItemRestoreState
+                     login_item_restore_state) override;
   void LaunchShim(Profile* profile,
                   const web_app::AppId& app_id,
                   bool recreate_shims,

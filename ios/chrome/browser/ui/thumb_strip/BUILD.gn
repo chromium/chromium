@@ -6,15 +6,17 @@ import("//build/config/chrome_build.gni")
 
 source_set("thumb_strip") {
   sources = [
-    "thumb_strip_attacher.h",
     "thumb_strip_coordinator.h",
     "thumb_strip_coordinator.mm",
     "thumb_strip_mediator.h",
     "thumb_strip_mediator.mm",
   ]
   deps = [
+    ":public",
     "//base",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
@@ -22,6 +24,11 @@ source_set("thumb_strip") {
     "//ios/web/public",
     "//ios/web/public/ui",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("public") {
+  sources = [ "thumb_strip_supporting.h" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -35,6 +42,7 @@ source_set("feature_flags") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/util",
   ]
+  frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -51,6 +59,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

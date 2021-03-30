@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,
 
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("012"));
+  PayWithCreditCardAndWait(u"012");
 
   ExpectBodyContains({"\"cardSecurityCode\": \"012\""});
 }
@@ -55,13 +55,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  OpenCVCPromptWithCVC(base::ASCIIToUTF16("012"));
+  OpenCVCPromptWithCVC(u"012");
 
   // Go back before confirming the CVC.
   ClickOnBackArrow();
 
   // Now pay for real.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("012"));
+  PayWithCreditCardAndWait(u"012");
   ExpectBodyContains({"\"cardSecurityCode\": \"012\""});
 }
 
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,
   ASSERT_TRUE(dialog_view()
                   ->GetViewByID(static_cast<int>(DialogViewID::PAY_BUTTON))
                   ->GetEnabled());
-  OpenCVCPromptWithCVC(base::ASCIIToUTF16("012"));
+  OpenCVCPromptWithCVC(u"012");
 
   ResetEventWaiterForSequence(
       {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,
   ASSERT_TRUE(dialog_view()
                   ->GetViewByID(static_cast<int>(DialogViewID::PAY_BUTTON))
                   ->GetEnabled());
-  OpenCVCPromptWithCVC(base::ASCIIToUTF16(""));
+  OpenCVCPromptWithCVC(u"");
   views::View* done_button = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::CVC_PROMPT_CONFIRM_BUTTON));
   EXPECT_FALSE(done_button->GetEnabled());
@@ -118,16 +118,16 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,
   views::Textfield* cvc_field =
       static_cast<views::Textfield*>(dialog_view()->GetViewByID(
           static_cast<int>(DialogViewID::CVC_PROMPT_TEXT_FIELD)));
-  cvc_field->SetText(base::UTF8ToUTF16(""));
-  cvc_field->InsertOrReplaceText(base::UTF8ToUTF16("0"));
+  cvc_field->SetText(u"");
+  cvc_field->InsertOrReplaceText(u"0");
   EXPECT_FALSE(done_button->GetEnabled());
 
-  cvc_field->SetText(base::UTF8ToUTF16(""));
-  cvc_field->InsertOrReplaceText(base::UTF8ToUTF16("aaa"));
+  cvc_field->SetText(u"");
+  cvc_field->InsertOrReplaceText(u"aaa");
   EXPECT_FALSE(done_button->GetEnabled());
 
-  cvc_field->SetText(base::UTF8ToUTF16(""));
-  cvc_field->InsertOrReplaceText(base::UTF8ToUTF16("111"));
+  cvc_field->SetText(u"");
+  cvc_field->InsertOrReplaceText(u"111");
   EXPECT_TRUE(done_button->GetEnabled());
 }
 

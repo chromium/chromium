@@ -28,19 +28,20 @@ class SharedClipboardUiController
 
   ~SharedClipboardUiController() override;
 
-  void OnDeviceSelected(const base::string16& text,
+  void OnDeviceSelected(const std::u16string& text,
                         const syncer::DeviceInfo& device);
 
   // Overridden from SharingUiController:
-  base::string16 GetTitle(SharingDialogType dialog_type) override;
+  std::u16string GetTitle(SharingDialogType dialog_type) override;
   PageActionIconType GetIconType() override;
-  sync_pb::SharingSpecificFields::EnabledFeatures GetRequiredFeature() override;
+  sync_pb::SharingSpecificFields::EnabledFeatures GetRequiredFeature()
+      const override;
   void OnDeviceChosen(const syncer::DeviceInfo& device) override;
   void OnAppChosen(const SharingApp& app) override;
-  base::string16 GetContentType() const override;
-  base::string16 GetErrorDialogText() const override;
+  std::u16string GetContentType() const override;
+  std::u16string GetErrorDialogText() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
   SharingFeatureName GetFeatureMetricsPrefix() const override;
 
  protected:
@@ -52,7 +53,7 @@ class SharedClipboardUiController
  private:
   friend class content::WebContentsUserData<SharedClipboardUiController>;
 
-  base::string16 text_;
+  std::u16string text_;
 
   base::WeakPtrFactory<SharedClipboardUiController> weak_ptr_factory_{this};
 

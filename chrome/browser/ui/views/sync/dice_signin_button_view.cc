@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/sync/dice_signin_button_view.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -20,6 +21,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 DiceSigninButtonView::DiceSigninButtonView(
     views::Button::PressedCallback callback,
@@ -77,3 +79,6 @@ DiceSigninButtonView::DiceSigninButtonView(
 }
 
 DiceSigninButtonView::~DiceSigninButtonView() = default;
+
+BEGIN_METADATA(DiceSigninButtonView, views::View)
+END_METADATA

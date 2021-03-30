@@ -16,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "media/base/bind_to_current_loop.h"
-#include "media/capabilities/video_decode_stats_db_impl.h"
 #include "media/capabilities/video_decode_stats_db_provider.h"
 
 namespace media {
@@ -29,9 +28,6 @@ InMemoryVideoDecodeStatsDBImpl::InMemoryVideoDecodeStatsDBImpl(
 
 InMemoryVideoDecodeStatsDBImpl::~InMemoryVideoDecodeStatsDBImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (seed_db_)
-    seed_db_->set_dependent_db(nullptr);
 }
 
 void InMemoryVideoDecodeStatsDBImpl::Initialize(InitializeCB init_cb) {
@@ -42,7 +38,7 @@ void InMemoryVideoDecodeStatsDBImpl::Initialize(InitializeCB init_cb) {
   // Tracking down crbug.com/1114128. Suspect we're double initializing somehow,
   // so this should show who the crash at the time of the second initialize
   // call.
-  CHECK(!seed_db_) << __func__ << " Already have a seed_db_?";
+  DCHECK(!seed_db_) << __func__ << " Already have a seed_db_?";
 
   // Fetch an *initialized* seed DB.
   if (seed_db_provider_) {
@@ -65,12 +61,8 @@ void InMemoryVideoDecodeStatsDBImpl::OnGotSeedDB(InitializeCB init_cb,
   DVLOG(2) << __func__ << (db ? " has" : " null") << " seed db";
 
   db_init_ = true;
-
-  CHECK(!seed_db_) << __func__ << " Already have a seed_db_?";
+  DCHECK(!seed_db_) << __func__ << " Already have a seed_db_?";
   seed_db_ = db;
-
-  if (seed_db_)
-    seed_db_->set_dependent_db(this);
 
   // Hard coding success = true. There are rare cases (e.g. disk corruption)
   // where an incognito profile may fail to acquire a reference to the base

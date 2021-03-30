@@ -25,7 +25,7 @@ JNI_OmniboxUrlEmphasizer_ParseForEmphasizeComponents(
           jautocomplete_scheme_classifier);
   DCHECK(autocomplete_scheme_classifier);
 
-  base::string16 text(base::android::ConvertJavaStringToUTF16(env, jtext));
+  std::u16string text(base::android::ConvertJavaStringToUTF16(env, jtext));
 
   url::Component scheme, host;
   AutocompleteInput::ParseForEmphasizeComponents(

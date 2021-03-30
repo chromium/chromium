@@ -122,6 +122,12 @@ TEST_P(FailureSignalHandlerDeathTest, AbslFatalSignalsWithWriterFn) {
           "*** ", absl::debugging_internal::FailureSignalToString(signo),
           " received at ")));
 
+  // On platforms where it is possible to get the current CPU, the
+  // CPU number is also logged. Check that it is present in output.
+#if defined(__linux__)
+  EXPECT_THAT(error_line, testing::HasSubstr(" on cpu "));
+#endif
+
   if (absl::debugging_internal::StackTraceWorksForTest()) {
     std::getline(error_output, error_line);
     EXPECT_THAT(error_line, StartsWith("PC: "));

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -62,7 +63,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;
-  bool SupportsImplScrolling() const override;
   bool MainFrameWillHappenForTesting() override;
   void SetSourceURL(ukm::SourceId source_id, const GURL& url) override {
     // Single-threaded mode is only for browser compositing and for renderers in
@@ -132,7 +132,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void NotifyImageDecodeRequestFinished() override;
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
-      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
+      PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
       const viz::FrameTimingDetails& details) override;
   void NotifyAnimationWorkletStateChange(
       AnimationWorkletMutationState state,
@@ -141,6 +141,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       Scheduler::PaintWorkletState state) override;
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override;
   bool IsInSynchronousComposite() const override;
+  void FrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) override;
 
   void RequestNewLayerTreeFrameSink();
 
@@ -178,6 +180,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void IssueImageDecodeFinishedCallbacks();
 
   void DidReceiveCompositorFrameAck();
+  void NotifyThroughputTrackerResultsOnMainThread(CustomTrackerResults results);
 
   // Accessed on main thread only.
   LayerTreeHost* layer_tree_host_;

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test passes if it does not crash.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -25,7 +25,7 @@
   `);
 
   await UI.viewManager.showView('animations');
-  var timeline = self.runtime.sharedInstance(Animation.AnimationTimeline);
+  var timeline = Animation.AnimationTimeline.instance();
   TestRunner.evaluateInPage('startCSSTransition()');
   ElementsTestRunner.waitForAnimationAdded(animationAdded);
   function animationAdded(group) {

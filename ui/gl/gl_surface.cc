@@ -4,6 +4,8 @@
 
 #include "ui/gl/gl_surface.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
@@ -181,6 +183,10 @@ bool GLSurface::IsSurfaceless() const {
   return false;
 }
 
+bool GLSurface::SupportsViewporter() const {
+  return false;
+}
+
 gfx::SurfaceOrigin GLSurface::GetOrigin() const {
   return gfx::SurfaceOrigin::kBottomLeft;
 }
@@ -194,6 +200,10 @@ bool GLSurface::SupportsDCLayers() const {
 }
 
 bool GLSurface::SupportsProtectedVideo() const {
+  return false;
+}
+
+bool GLSurface::SupportsOverridePlatformSize() const {
   return false;
 }
 
@@ -238,6 +248,10 @@ EGLTimestampClient* GLSurface::GetEGLTimestampClient() {
 }
 
 bool GLSurface::SupportsGpuVSync() const {
+  return false;
+}
+
+bool GLSurface::SupportsDelegatedInk() {
   return false;
 }
 
@@ -449,6 +463,10 @@ bool GLSurfaceAdapter::IsSurfaceless() const {
   return surface_->IsSurfaceless();
 }
 
+bool GLSurfaceAdapter::SupportsViewporter() const {
+  return surface_->SupportsViewporter();
+}
+
 gfx::SurfaceOrigin GLSurfaceAdapter::GetOrigin() const {
   return surface_->GetOrigin();
 }
@@ -463,6 +481,10 @@ bool GLSurfaceAdapter::SupportsDCLayers() const {
 
 bool GLSurfaceAdapter::SupportsProtectedVideo() const {
   return surface_->SupportsProtectedVideo();
+}
+
+bool GLSurfaceAdapter::SupportsOverridePlatformSize() const {
+  return surface_->SupportsOverridePlatformSize();
 }
 
 bool GLSurfaceAdapter::SetDrawRectangle(const gfx::Rect& rect) {
@@ -521,7 +543,16 @@ bool GLSurfaceAdapter::IsCurrent() {
   return surface_->IsCurrent();
 }
 
-GLSurfaceAdapter::~GLSurfaceAdapter() {}
+bool GLSurfaceAdapter::SupportsDelegatedInk() {
+  return surface_->SupportsDelegatedInk();
+}
+
+void GLSurfaceAdapter::SetDelegatedInkTrailStartPoint(
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+  surface_->SetDelegatedInkTrailStartPoint(std::move(metadata));
+}
+
+GLSurfaceAdapter::~GLSurfaceAdapter() = default;
 
 scoped_refptr<GLSurface> InitializeGLSurfaceWithFormat(
     scoped_refptr<GLSurface> surface, GLSurfaceFormat format) {

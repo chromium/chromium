@@ -4,32 +4,22 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
-
-js_type_check("closure_compile") {
-  deps = [ ":about_page_browser_proxy" ]
-}
-
-js_library("about_page_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
     ":about_page",
-    ":about_page_browser_proxy.m",
+    ":about_page_browser_proxy",
   ]
 }
 
 js_library("about_page") {
   deps = [
-    ":about_page_browser_proxy.m",
-    "..:lifetime_browser_proxy.m",
-    "..:router.m",
+    ":about_page_browser_proxy",
+    "..:lifetime_browser_proxy",
+    "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -38,24 +28,10 @@ js_library("about_page") {
   ]
 }
 
-js_library("about_page_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/about_page/about_page_browser_proxy.m.js" ]
+js_library("about_page_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
-group("web_components") {
-  public_deps = [
-    ":modulize",
-    ":web_components_local",
-  ]
-}
-
-html_to_js("web_components_local") {
+html_to_js("web_components") {
   js_files = [ "about_page.js" ]
-}
-
-js_modulizer("modulize") {
-  input_files = [ "about_page_browser_proxy.js" ]
-  namespace_rewrites = settings_namespace_rewrites
 }

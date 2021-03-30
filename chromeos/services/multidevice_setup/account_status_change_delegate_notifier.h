@@ -41,6 +41,8 @@ class AccountStatusChangeDelegateNotifier {
   friend class MultiDeviceSetupImpl;
   friend class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest;
   friend class MultiDeviceSetupImplTest;
+  friend class WifiSyncFeatureManagerImpl;
+  friend class MultiDeviceSetupWifiSyncFeatureManagerImplTest;
 
   void FlushForTesting();
 

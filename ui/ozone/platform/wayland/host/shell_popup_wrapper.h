@@ -11,6 +11,7 @@
 namespace ui {
 
 class WaylandConnection;
+class WaylandWindow;
 
 enum class MenuType {
   TYPE_RIGHT_CLICK,
@@ -73,11 +74,21 @@ class ShellPopupWrapper {
   // Initializes the popup surface.
   virtual bool Initialize(WaylandConnection* connection,
                           const gfx::Rect& bounds) = 0;
+
+  // Sends acknowledge configure event back to wayland.
+  virtual void AckConfigure(uint32_t serial) = 0;
+
+  MenuType GetMenuTypeForPositioner(WaylandConnection* connection,
+                                    WaylandWindow* parent_window) const;
+  bool CanGrabPopup(WaylandConnection* connection) const;
 };
 
 gfx::Rect GetAnchorRect(MenuType menu_type,
                         const gfx::Rect& menu_bounds,
                         const gfx::Rect& parent_window_bounds);
+WlAnchor GetAnchor(MenuType menu_type, const gfx::Rect& bounds);
+WlGravity GetGravity(MenuType menu_type, const gfx::Rect& bounds);
+WlConstraintAdjustment GetConstraintAdjustment(MenuType menu_type);
 
 }  // namespace ui
 

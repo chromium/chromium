@@ -5,6 +5,7 @@
 package org.chromium.components.paintpreview.player;
 
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
@@ -29,7 +30,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.url.GURL;
@@ -41,7 +41,7 @@ import java.util.List;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
-    private static final long TIMEOUT_MS = ScalableTimeout.scaleTimeout(5000);
+    private static final long TIMEOUT_MS = 5000;
 
     private static final String TEST_DIRECTORY_KEY = "test_dir";
     private static final String TEST_URL = "https://www.chromium.org";
@@ -152,21 +152,6 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
         final View playerHostView = mPlayerManager.getView();
         assertLinkUrl(playerHostView, 220, 220, TEST_IN_VIEWPORT_LINK_URL);
         assertLinkUrl(playerHostView, 300, 270, TEST_IN_VIEWPORT_LINK_URL);
-
-        // Temporarily commenting out as this is flaky on P.
-
-        // UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        // int deviceHeight = device.getDisplayHeight();
-        // int statusBarHeight = statusBarHeight();
-        // int navigationBarHeight = navigationBarHeight();
-        // int padding = 20;
-        // int fromY = deviceHeight - navigationBarHeight - padding;
-        // int toY = statusBarHeight + padding;
-        // mLinkClickHandler.mUrl = null;
-        // device.swipe(300, fromY, 300, toY, 10);
-
-        // Manually click as assertLinkUrl() doesn't handle subframe scrolls well.
-        // assertLinkUrl(playerHostView, 200, 1500, TEST_OUT_OF_VIEWPORT_LINK_URL);
     }
 
     @Test
@@ -227,6 +212,11 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
                         public void onLinkClick(GURL url) {
                             mLinkClickHandler.onLinkClicked(url);
                         }
+
+                        @Override
+                        public boolean isAccessibilityEnabled() {
+                            return false;
+                        }
                     }, 0xffffffff, false);
             mPlayerManager.setCompressOnClose(false);
         });
@@ -235,10 +225,33 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
 
     private void scaleSmokeTest(boolean multiFrame) throws Exception {
         initPlayerManager(multiFrame);
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
-        // Query all FrameLayout objects as the PlayerFrameView isn't recognized.
-        List<UiObject2> objects = device.findObjects(By.clazz("android.widget.FrameLayout"));
+        device.waitForIdle();
+        List<UiObject2> objects = null;
+        boolean failed = false;
+        try {
+            // Query all FrameLayout objects as the PlayerFrameView isn't recognized.
+            //
+            // This may throw a NullPointerException when an AccessibilityNodeInfo is unexpectedly
+            // null on P. It appears to be a bug with null checks inside UiAutomator. However, it
+            // could be exacerbated were the UI state to change mid-invocation (it is unclear
+            // why/whether that happens). This occurs < 30% of the time.
+            objects = device.findObjects(By.clazz("android.widget.FrameLayout"));
+        } catch (NullPointerException e) {
+            failed = true;
+        }
+        if (failed || objects == null) {
+            // Ignore NullPointerException failures on P (particularly Pixel 2 ARM on the
+            // waterfall).
+            if (Build.VERSION.SDK_INT > VERSION_CODES.O_MR1
+                    && Build.VERSION.SDK_INT < VERSION_CODES.Q) {
+                return;
+            }
+
+            // If this fails on any other configuration it is an unexpected issue.
+            Assert.fail("UiDevice#findObjects() threw an unexpected NullPointerException.");
+        }
 
         int viewAxHashCode = mPlayerManager.getView().createAccessibilityNodeInfo().hashCode();
         boolean didPinch = false;
@@ -409,6 +422,11 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
                         public void onLinkClick(GURL url) {
                             mLinkClickHandler.onLinkClicked(url);
                         }
+
+                        @Override
+                        public boolean isAccessibilityEnabled() {
+                            return false;
+                        }
                     }, 0xffffffff, false);
             mPlayerManager.setCompressOnClose(false);
             getActivity().setContentView(mPlayerManager.getView());
@@ -479,6 +497,7 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
         int[] locationXY = new int[2];
         view.getLocationOnScreen(locationXY);
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.waitForIdle();
         device.click(scaledX + locationXY[0], scaledY + locationXY[1]);
 
         CriteriaHelper.pollUiThread(() -> {

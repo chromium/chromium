@@ -141,6 +141,7 @@ bool VaapiMjpegDecodeAccelerator::Initialize(
 
   vpp_vaapi_wrapper_ = VaapiWrapper::Create(
       VaapiWrapper::kVideoProcess, VAProfileNone,
+      EncryptionScheme::kUnencrypted,
       base::BindRepeating(&ReportVaapiErrorToUMA,
                           "Media.VaapiMjpegDecodeAccelerator.Vpp.VAAPIError"));
   if (!vpp_vaapi_wrapper_) {

@@ -9,6 +9,7 @@
 
 #include <limits>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -51,12 +52,9 @@ void SetFirstChanceExceptionHandler(bool (*handler)(int, siginfo_t*, void*)) {
       FirstChanceHandlerHelper);
 }
 
-// TODO(jperaza): Remove kEnableCrashpad and IsCrashpadEnabled() when Crashpad
-// is fully enabled on Linux.
-const char kEnableCrashpad[] = "enable-crashpad";
-
 bool IsCrashpadEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kEnableCrashpad);
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableCrashpad);
 }
 
 bool GetHandlerSocket(int* fd, pid_t* pid) {
@@ -121,7 +119,7 @@ base::FilePath PlatformCrashpadInitialization(
     // to ChromeOS's /sbin/crash_reporter which in turn passes the dump to
     // crash_sender which handles the upload.
     std::string url;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
     url = crash_reporter_client->GetUploadUrl();
 #else
     url = std::string();
@@ -138,6 +136,11 @@ base::FilePath PlatformCrashpadInitialization(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Empty means stable.
     const bool allow_empty_channel = true;
+    if (channel == "extended") {
+      // Extended stable reports as stable (empty string) with an extra bool.
+      channel.clear();
+      annotations["extended_stable_channel"] = "true";
+    }
 #else
     const bool allow_empty_channel = false;
 #endif
@@ -157,7 +160,7 @@ base::FilePath PlatformCrashpadInitialization(
     // contain these annotations.
     arguments.push_back("--monitor-self-annotation=ptype=crashpad-handler");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     arguments.push_back("--use-cros-crash-reporter");
 
     if (crash_reporter_client->IsRunningUnattended()) {

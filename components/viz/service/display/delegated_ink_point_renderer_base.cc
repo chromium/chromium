@@ -5,18 +5,12 @@
 #include "components/viz/service/display/delegated_ink_point_renderer_base.h"
 
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/delegated_ink_metadata.h"
-#include "ui/base/prediction/kalman_predictor.h"
+#include "components/viz/service/display/delegated_ink_trail_data.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 
 namespace viz {
 
-DelegatedInkPointRendererBase::DelegatedInkPointRendererBase()
-    : metrics_handler_("Renderer.DelegatedInkTrail.Prediction") {
-  unsigned int predictor_options =
-      ui::KalmanPredictor::PredictionOptions::kHeuristicsEnabled |
-      ui::KalmanPredictor::PredictionOptions::kDirectionCutOffEnabled;
-  predictor_ = std::make_unique<ui::KalmanPredictor>(predictor_options);
-}
+DelegatedInkPointRendererBase::DelegatedInkPointRendererBase() = default;
 DelegatedInkPointRendererBase::~DelegatedInkPointRendererBase() = default;
 
 void DelegatedInkPointRendererBase::InitMessagePipeline(
@@ -29,24 +23,53 @@ void DelegatedInkPointRendererBase::InitMessagePipeline(
   if (receiver_.is_bound()) {
     receiver_.reset();
     metadata_.reset();
-    points_.clear();
+    pointer_ids_.clear();
   }
   receiver_.Bind(std::move(receiver));
 }
 
 void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
-    std::unique_ptr<DelegatedInkMetadata> metadata) {
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   // Frame time is set later than everything else due to what is available
   // at time of creation, so confirm that it was actually set.
   DCHECK_NE(metadata->frame_time(), base::TimeTicks());
   metadata_ = std::move(metadata);
+
+  // If we already have a cached pointer ID, check if the same pointer ID
+  // matches the new metadata.
+  if (pointer_id_.has_value() &&
+      pointer_ids_[pointer_id_.value()].ContainsMatchingPoint(
+          metadata_.get())) {
+    return;
+  }
+
+  // If not, find the pointer ID that does match it, if any, and cache it.
+  for (auto& it : pointer_ids_) {
+    if (it.second.ContainsMatchingPoint(metadata_.get())) {
+      pointer_id_ = it.first;
+      return;
+    }
+  }
+
+  // If we aren't able to find any matching point, set the pointer ID to null
+  // so that FilterPoints and PredictPoints can early out.
+  pointer_id_ = base::nullopt;
 }
 
-std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
-  if (points_.size() == 0)
+std::vector<gfx::DelegatedInkPoint>
+DelegatedInkPointRendererBase::FilterPoints() {
+  if (pointer_ids_.size() == 0)
     return {};
 
   DCHECK(metadata_);
+
+  // Any stored point with a timestamp earlier than the metadata's has already
+  // been drawn as part of the ink stroke and therefore should not be part of
+  // the delegated ink trail. Do this before checking if |pointer_id_| is valid
+  // because it helps manage the number of DelegatedInkPoints that are being
+  // stored and isn't dependent on |pointer_id_| at all.
+  for (auto& it : pointer_ids_)
+    it.second.ErasePointsOlderThanMetadata(metadata_.get());
 
   // TODO(1052145): Add additional filtering to prevent points in |points_| from
   // having a timestamp that is far ahead of |metadata_|'s timestamp. This could
@@ -56,121 +79,63 @@ std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
   // stored here, resulting in a long possibly incorrect trail if the max
   // number of points to store was reached.
 
-  // First remove all points from |points_| with timestamps earlier than
-  // |metadata_|, as they have already been rendered by the app and are no
-  // longer useful for a trail.
-  // After that, there are three possible state of |points_|:
-  //   1. The earliest DelegatedInkPoint in |points_| matches |metadata_|'s
-  //      timestamp. All the points in |points_| can be used to draw a trail.
-  //   2. |points_| is empty. No DelegatedInkPoints arrived from the browser
-  //      process with a timestamp equal to or later than |metadata_|'s, so we
-  //      don't have any points to make a trail from.
-  //   3. There are DelegatedInkPoints in |points_|, but the earliest one is
-  //      later than |metadata_|. This can happen most often when the API is
-  //      first used, as the browser process did not know to send the point
-  //      to viz before it was used to make the metadata in the renderer. So
-  //      although it didn't send the DelegatedInkPoint matching |metadata_|, it
-  //      still may have sent future points before the metadata propagated all
-  //      the way here. In this case, we choose not to use the points in
-  //      |points_| to draw, as we have no way of confirming that there
-  //      shouldn't be any extra points between |metadata_| and the beginning
-  //      of |points_|. So instead, just leave everything after |metadata_| in
-  //      |points_| so that they may be used in future trails and don't draw
-  //      any trail for the current |metadata_|.
-  // So if |points_| contains a timestamp that matches |metadata_|'s timestamp,
-  // add it and every point after it to |points_to_draw| and return it for
-  // drawing. If it doesn't, just return an empty vector and leave any point
-  // with a timestamp later than |metadata_|'s in |points_|.
-  std::vector<DelegatedInkPoint> points_to_draw;
+  // If no point with any pointer id exactly matches the metadata, then we can't
+  // confirm which set of points to use for the delegated ink trail, so just
+  // return an empty vector so that nothing will be drawn. This happens most
+  // often at the beginning of delegated ink trail use. The metadata is created
+  // using a PointerEvent earlier than any DelegatedInkPoint is created,
+  // resulting in the metadata having an earlier timestamp and a point that
+  // doesn't match anything that is sent here from viz. Even if only a single
+  // pointer ID is in use, we can't know with any certainty what happened
+  // between the metadata point and the earliest DelegatedInkPoint we have, so
+  // we choose to just not draw anything.
+  if (!pointer_id_.has_value())
+    return {};
 
-  auto it = points_.begin();
-  while (points_.size() > 0 && it != points_.end()) {
-    if (it->first < metadata_->timestamp()) {
-      // Sanity check to confirm that we always find the points that are before
-      // |metadata_|'s timestamp at the beginning of |points_| since it should
-      // be sorted.
-      DCHECK(it == points_.begin());
-      it = points_.erase(it);
-    } else {
-      if (it->first == metadata_->timestamp() || points_to_draw.size() > 0) {
-        points_to_draw.emplace_back(it->second, it->first);
-        metrics_handler_.AddRealEvent(it->second, it->first,
-                                      metadata_->frame_time());
-        it++;
-      } else {
-        // If we find a point that is later than |metadata_|'s timestamp before
-        // finding one that matches |metadata_|'s timestamp, that means that
-        // it doesn't exist in |points_|, so return an empty vector as there are
-        // no valid points to draw.
-        break;
-      }
-    }
-  }
+  DelegatedInkTrailData& trail_data = pointer_ids_[pointer_id_.value()];
+
+  // Make sure the metrics handler is provided the new real events to accurately
+  // measure the prediction later.
+  trail_data.UpdateMetrics(metadata_.get());
+
+  // Any remaining points must be the points that should be part of the
+  // delegated ink trail
+  std::vector<gfx::DelegatedInkPoint> points_to_draw;
+  for (auto it : trail_data.GetPoints())
+    points_to_draw.emplace_back(it.second, it.first, pointer_id_.value());
+
+  DCHECK(points_to_draw.front().point() == metadata_->point() &&
+         points_to_draw.front().timestamp() == metadata_->timestamp());
 
   return points_to_draw;
 }
 
 void DelegatedInkPointRendererBase::PredictPoints(
-    std::vector<DelegatedInkPoint>* ink_points_to_draw) {
+    std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw) {
   DCHECK(metadata_);
-  int points_predicted = 0;
 
-  // |ink_points_to_draw| needs to have at least one point in it already as a
-  // reference to know what timestamp to start predicting points at. This single
-  // point may just match |metadata_|.
-  if (predictor_->HasPrediction() && ink_points_to_draw->size() > 0) {
-    for (int i = 0; i < kNumberOfPointsToPredict; ++i) {
-      base::TimeTicks timestamp =
-          ink_points_to_draw->back().timestamp() +
-          base::TimeDelta::FromMilliseconds(
-              kNumberOfMillisecondsIntoFutureToPredictPerPoint);
-      std::unique_ptr<ui::InputPredictor::InputData> predicted_point =
-          predictor_->GeneratePrediction(timestamp);
-      if (predicted_point) {
-        ink_points_to_draw->emplace_back(predicted_point->pos,
-                                         predicted_point->time_stamp);
-        metrics_handler_.AddPredictedEvent(predicted_point->pos,
-                                           predicted_point->time_stamp,
-                                           metadata_->frame_time());
-        points_predicted++;
-      } else {
-        // HasPrediction() can return true while GeneratePrediction() fails to
-        // produce a prediction if the predicted point would go in to the
-        // opposite direction of most recently stored points. If this happens,
-        // don't continue trying to generate more predicted points.
-        break;
-      }
-    }
-  }
+  if (!pointer_id_.has_value() ||
+      static_cast<int>(ink_points_to_draw->size()) == 0)
+    return;
 
-  TRACE_EVENT_INSTANT1("viz", "DelegatedInkPointRendererBase::PredictPoints",
-                       TRACE_EVENT_SCOPE_THREAD, "predicted points",
-                       points_predicted);
-
-  metrics_handler_.EvaluatePrediction();
+  pointer_ids_[pointer_id_.value()].PredictPoints(ink_points_to_draw,
+                                                  metadata_.get());
 }
 
 void DelegatedInkPointRendererBase::ResetPrediction() {
-  predictor_->Reset();
-  metrics_handler_.Reset();
+  for (auto& it : pointer_ids_)
+    it.second.Reset();
+  TRACE_EVENT_INSTANT0("viz", "Delegated ink prediction reset.",
+                       TRACE_EVENT_SCOPE_THREAD);
 }
 
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(
-    const DelegatedInkPoint& point) {
+    const gfx::DelegatedInkPoint& point) {
   TRACE_EVENT_INSTANT1("viz",
                        "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
                        TRACE_EVENT_SCOPE_THREAD, "point", point.ToString());
 
-  predictor_->Update(
-      ui::InputPredictor::InputData(point.point(), point.timestamp()));
-
-  // Fail-safe to prevent storing excessive points if they are being sent but
-  // never filtered and used, like if the renderer has stalled during a long
-  // running script.
-  if (points_.size() == kMaximumDelegatedInkPointsStored)
-    points_.erase(points_.begin());
-
-  points_.insert({point.timestamp(), point.point()});
+  pointer_ids_[point.pointer_id()].AddPoint(point);
 }
 
 }  // namespace viz

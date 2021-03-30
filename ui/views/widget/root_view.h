@@ -99,7 +99,7 @@ class VIEWS_EXPORT RootView : public View,
   // Accessibility -------------------------------------------------------------
 
   // Make an announcement through the screen reader, if present.
-  void AnnounceText(const base::string16& text);
+  void AnnounceText(const std::u16string& text);
 
   // FocusTraversable:
   FocusSearch* GetFocusSearch() override;
@@ -123,7 +123,7 @@ class VIEWS_EXPORT RootView : public View,
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
-  void SetMouseHandler(View* new_mouse_handler) override;
+  void SetMouseAndGestureHandler(View* new_handler) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void UpdateParentLayer() override;
 
@@ -167,6 +167,9 @@ class VIEWS_EXPORT RootView : public View,
       ui::EventType type,
       View* view,
       View* sibling) WARN_UNUSED_RESULT;
+
+  // Updates the mouse handler and other related data members.
+  void SetMouseHandler(View* new_mouse_handler);
 
   // ui::EventDispatcherDelegate:
   bool CanDispatchToTarget(ui::EventTarget* target) override;

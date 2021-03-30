@@ -27,8 +27,9 @@ public class ExperimentContentCaptureConsumer extends ContentCaptureConsumer {
     }
 
     @Override
-    public void onContentCaptured(FrameSession parentFrame, ContentCaptureData contentCaptureData) {
-        if (sDump) Log.d(TAG, "onContentCaptured " + contentCaptureData.toString());
+    public void onContentCaptured(
+            FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
+        if (sDump) Log.d(TAG, "onContentCaptured " + contentCaptureFrame.toString());
     }
 
     @Override
@@ -42,7 +43,13 @@ public class ExperimentContentCaptureConsumer extends ContentCaptureConsumer {
     }
 
     @Override
-    public void onContentUpdated(FrameSession parentFrame, ContentCaptureData contentCaptureData) {
+    public void onContentUpdated(
+            FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
         if (sDump) Log.d(TAG, "onContentUpdated");
+    }
+
+    @Override
+    public void onTitleUpdated(ContentCaptureFrame contentCaptureFrame) {
+        if (sDump) Log.d(TAG, "onTitleUpdated");
     }
 }

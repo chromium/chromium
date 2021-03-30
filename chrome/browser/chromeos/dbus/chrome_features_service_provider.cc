@@ -7,18 +7,19 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_features.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/bus.h"
@@ -29,11 +30,14 @@ namespace {
 
 void SendResponse(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender response_sender,
-                  bool answer) {
+                  bool answer,
+                  const std::string& reason = std::string()) {
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
   writer.AppendBool(answer);
+  if (!reason.empty())
+    writer.AppendString(reason);
   std::move(response_sender).Run(std::move(response));
 }
 
@@ -141,6 +145,7 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
       &arc::kFilePickerExperimentFeature,
       &arc::kNativeBridgeToggleFeature,
       &features::kSessionManagerLongKillTimeout,
+      &features::kCrostiniUseDlc,
   };
 
   dbus::MessageReader reader(method_call);
@@ -178,10 +183,10 @@ void ChromeFeaturesServiceProvider::IsCrostiniEnabled(
   if (!profile)
     return;
 
-  SendResponse(method_call, std::move(response_sender),
-               profile
-                   ? crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)
-                   : false);
+  std::string reason;
+  bool answer =
+      crostini::CrostiniFeatures::Get()->IsAllowedNow(profile, &reason);
+  SendResponse(method_call, std::move(response_sender), answer, reason);
 }
 
 void ChromeFeaturesServiceProvider::IsCryptohomeDistributedModelEnabled(
@@ -215,9 +220,9 @@ void ChromeFeaturesServiceProvider::IsPluginVmEnabled(
   if (!profile)
     return;
 
-  SendResponse(
-      method_call, std::move(response_sender),
-      profile ? plugin_vm::PluginVmFeatures::Get()->IsAllowed(profile) : false);
+  std::string reason;
+  bool answer = plugin_vm::PluginVmFeatures::Get()->IsAllowed(profile, &reason);
+  SendResponse(method_call, std::move(response_sender), answer, reason);
 }
 
 void ChromeFeaturesServiceProvider::IsVmManagementCliAllowed(

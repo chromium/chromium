@@ -47,6 +47,11 @@ struct CHROMEOS_EXPORT PrinterSearchData {
   int usb_vendor_id = 0;
   int usb_product_id = 0;
 
+  // Original make and model for USB printer. Note, it is used only in metrics
+  // for USB printers (in printer_event_tracker.cc).
+  std::string usb_manufacturer;
+  std::string usb_model;
+
   // Method of printer discovery.
   enum PrinterDiscoveryType {
     kUnknown = 0,

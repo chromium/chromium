@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/printing/cloud_print/privet_constants.h"
@@ -76,7 +75,7 @@ void PrivetPrinterHandler::StartGetCapability(const std::string& destination_id,
 }
 
 void PrivetPrinterHandler::StartPrint(
-    const base::string16& job_title,
+    const std::u16string& job_title,
     base::Value settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
@@ -202,7 +201,7 @@ void PrivetPrinterHandler::OnGotCapabilities(
 }
 
 void PrivetPrinterHandler::PrintUpdateClient(
-    const base::string16& job_title,
+    const std::u16string& job_title,
     scoped_refptr<base::RefCountedMemory> print_data,
     base::Value print_ticket,
     const std::string& capabilities,
@@ -235,7 +234,7 @@ bool PrivetPrinterHandler::UpdateClient(
 }
 
 void PrivetPrinterHandler::StartPrint(
-    const base::string16& job_title,
+    const std::u16string& job_title,
     scoped_refptr<base::RefCountedMemory> print_data,
     base::Value print_ticket,
     const std::string& capabilities,
@@ -253,7 +252,8 @@ void PrivetPrinterHandler::StartPrint(
       IdentityManagerFactory::GetForProfileIfExists(profile_);
   if (identity_manager) {
     privet_local_print_operation_->SetUsername(
-        identity_manager->GetPrimaryAccountInfo().email);
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email);
   }
 
   privet_local_print_operation_->Start();

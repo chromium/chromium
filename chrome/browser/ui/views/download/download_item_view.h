@@ -7,13 +7,13 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -32,6 +32,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class DownloadShelfView;
@@ -67,6 +68,8 @@ class DownloadItemView : public views::View,
                          public DownloadUIModel::Observer,
                          public views::AnimationDelegateViews {
  public:
+  METADATA_HEADER(DownloadItemView);
+
   enum class Mode;
 
   DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
@@ -80,7 +83,7 @@ class DownloadItemView : public views::View,
   void Layout() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::ContextMenuController:
@@ -118,7 +121,8 @@ class DownloadItemView : public views::View,
   Mode GetDesiredMode() const;
 
   // Sets the current mode to |mode| and updates UI appropriately.
-  void UpdateMode(Mode mode);
+  void SetMode(Mode mode);
+  Mode GetMode() const;
 
   // Updates the file path, and if necessary, begins loading the file icon in
   // various sizes. This may eventually result in a callback to
@@ -135,14 +139,14 @@ class DownloadItemView : public views::View,
   void UpdateAccessibleAlertAndAnimationsForNormalMode();
 
   // Update accessible status text, and announce it if desired.
-  void UpdateAccessibleAlert(const base::string16& alert);
+  void UpdateAccessibleAlert(const std::u16string& alert);
 
   // Updates the animation used during deep scanning. The animation is started
   // or stopped depending on the current mode.
   void UpdateAnimationForDeepScanningMode();
 
   // Get the accessible alert text for a download that is currently in progress.
-  base::string16 GetInProgressAccessibleAlertText() const;
+  std::u16string GetInProgressAccessibleAlertText() const;
 
   // Callback for |accessible_update_timer_|, or can be used to ask a screen
   // reader to speak the current alert immediately.
@@ -167,7 +171,7 @@ class DownloadItemView : public views::View,
   gfx::RectF GetIconBounds() const;
 
   // Returns the text and style to use for the status label.
-  std::pair<base::string16, int> GetStatusTextAndStyle() const;
+  std::pair<std::u16string, int> GetStatusTextAndStyle() const;
 
   // Returns the size of any button visible next to the label (all visible
   // buttons are given the same size).
@@ -175,7 +179,8 @@ class DownloadItemView : public views::View,
 
   // Returns the file name to report to the user. It might be elided to fit into
   // the text width. |label| dictates the default text style.
-  base::string16 ElidedFilename(const views::StyledLabel& label) const;
+  std::u16string ElidedFilename(const views::Label& label) const;
+  std::u16string ElidedFilename(const views::StyledLabel& label) const;
 
   // Returns the Y coordinate that centers |element_height| within the current
   // height().
@@ -188,6 +193,7 @@ class DownloadItemView : public views::View,
 
   // Sets the state and triggers a repaint.
   void SetDropdownPressed(bool pressed);
+  bool GetDropdownPressed() const;
 
   // Sets |dropdown_button_| to have the correct image for the current state.
   void UpdateDropdownButtonImage();
@@ -252,7 +258,7 @@ class DownloadItemView : public views::View,
   // used, so that we can detect a change in the path and reload the icon.
   base::FilePath file_path_;
 
-  views::StyledLabel* file_name_label_;
+  views::Label* file_name_label_;
   views::Label* status_label_;
   views::StyledLabel* warning_label_;
   views::StyledLabel* deep_scanning_label_;
@@ -282,9 +288,9 @@ class DownloadItemView : public views::View,
   gfx::ThrobAnimation scanning_animation_{this};
 
   // The tooltip.  Only displayed when not showing a warning dialog.
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // A hidden view for accessible status alerts that are spoken by screen
   // readers when a download changes state.

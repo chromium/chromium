@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_content_browser_client.h"
 
 #include "android_webview/browser/aw_feature_list_creator.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,17 +17,25 @@ class AwContentBrowserClientTest : public testing::Test {
   void SetUp() override {
     mojo::core::Init();
   }
-
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(AwContentBrowserClientTest, DisableCreatingThreadPool) {
   AwFeatureListCreator aw_feature_list_creator;
   AwContentBrowserClient client(&aw_feature_list_creator);
-  EXPECT_TRUE(client.ShouldCreateThreadPool());
+  EXPECT_TRUE(client.CreateThreadPool("Hello"));
+  EXPECT_TRUE(base::ThreadPoolInstance::Get());
+
+  // Have to start the threed pool to shut it down, have to shut it down to
+  // destroy it.
+  base::ThreadPoolInstance::Get()->Start(
+      base::ThreadPoolInstance::InitParams(1));
+  base::ThreadPoolInstance::Get()->Shutdown();
+  base::ThreadPoolInstance::Get()->JoinForTesting();
+  base::ThreadPoolInstance::Set(nullptr);
 
   AwContentBrowserClient::DisableCreatingThreadPool();
-  EXPECT_FALSE(client.ShouldCreateThreadPool());
+  EXPECT_FALSE(client.CreateThreadPool("Hello"));
+  EXPECT_FALSE(base::ThreadPoolInstance::Get());
 }
 
 }  // namespace android_webview

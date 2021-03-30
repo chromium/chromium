@@ -8,8 +8,6 @@ import androidx.annotation.NonNull;
 
 /**
  * ErrorPage contains the html to show when an error is encountered.
- *
- * @since 86
  */
 public class ErrorPage {
     public final String htmlContent;

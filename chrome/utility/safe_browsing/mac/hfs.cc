@@ -23,7 +23,7 @@ namespace safe_browsing {
 namespace dmg {
 
 // UTF-16 character for file path seprator.
-static const base::char16 kFilePathSeparator = '/';
+static const char16_t kFilePathSeparator = u'/';
 
 static void ConvertBigEndian(HFSPlusForkData* fork) {
   ConvertBigEndian(&fork->logicalSize);
@@ -150,7 +150,7 @@ class HFSBTreeIterator {
  public:
   struct Entry {
     uint16_t record_type;  // Catalog folder item type.
-    base::string16 path;  // Full path to the item.
+    std::u16string path;   // Full path to the item.
     bool unexported;  // Whether this is HFS+ private data.
     union {
       HFSPlusCatalogFile* file;
@@ -182,14 +182,14 @@ class HFSBTreeIterator {
 
   // Checks if the HFS+ catalog key is a Mac OS X reserved key that should not
   // have it or its contents iterated over.
-  bool IsKeyUnexported(const base::string16& path);
+  bool IsKeyUnexported(const std::u16string& path);
 
   ReadStream* stream_;  // The stream backing the catalog file.
   BTHeaderRec header_;  // The header B-tree node.
 
   // Maps CNIDs to their full path. This is used to construct full paths for
   // items that descend from the folders in this map.
-  std::map<uint32_t, base::string16> folder_cnid_map_;
+  std::map<uint32_t, std::u16string> folder_cnid_map_;
 
   // CNIDs of the non-exported folders reserved by OS X. If an item has this
   // CNID as a parent, it should be skipped.
@@ -213,9 +213,9 @@ class HFSBTreeIterator {
   Entry current_record_;  // The record read at |current_leaf_offset_|.
 
   // Constant, string16 versions of the __APPLE_API_PRIVATE values.
-  const base::string16 kHFSMetadataFolder =
+  const std::u16string kHFSMetadataFolder =
       base::UTF8ToUTF16(base::StringPiece("\x0\x0\x0\x0HFS+ Private Data", 21));
-  const base::string16 kHFSDirMetadataFolder =
+  const std::u16string kHFSDirMetadataFolder =
       base::UTF8ToUTF16(".HFS+ Private Directory Data\xd");
 
   DISALLOW_COPY_AND_ASSIGN(HFSBTreeIterator);
@@ -306,7 +306,7 @@ bool HFSIterator::IsDecmpfsCompressed() {
   return file->bsdInfo.ownerFlags & UF_COMPRESSED;
 }
 
-base::string16 HFSIterator::GetPath() {
+std::u16string HFSIterator::GetPath() {
   return catalog_->current_record()->path;
 }
 
@@ -536,7 +536,7 @@ bool HFSBTreeIterator::Next() {
   }
 
   // Read and byte-swap the variable-length key string.
-  base::string16 key(key_string_length, '\0');
+  std::u16string key(key_string_length, '\0');
   for (uint16_t i = 0; i < key_string_length; ++i) {
     auto* character = GetLeafData<uint16_t>();
     if (!character) {
@@ -589,7 +589,7 @@ bool HFSBTreeIterator::Next() {
       ++leaf_records_read_;
       ++current_leaf_records_read_;
 
-      base::string16 path =
+      std::u16string path =
           folder_cnid_map_[parent_id] + kFilePathSeparator + key;
       current_record_.path = path;
       current_record_.file = file;
@@ -675,7 +675,7 @@ T* HFSBTreeIterator::GetLeafData() {
   return object;
 }
 
-bool HFSBTreeIterator::IsKeyUnexported(const base::string16& key) {
+bool HFSBTreeIterator::IsKeyUnexported(const std::u16string& key) {
   return key == kHFSDirMetadataFolder ||
          key == kHFSMetadataFolder;
 }

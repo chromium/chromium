@@ -219,7 +219,7 @@ class LockDebugView::DebugDataDispatcherTransformer
 
   int GetUserCount() const { return debug_users_.size(); }
 
-  base::string16 GetDisplayNameForUserIndex(size_t user_index) {
+  std::u16string GetDisplayNameForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     return base::UTF8ToUTF16(debug_users_[user_index].display_name);
   }
@@ -294,7 +294,7 @@ class LockDebugView::DebugDataDispatcherTransformer
     EasyUnlockIconOptions icon;
     icon.icon = debug_user->easy_unlock_id;
     if (icon.icon == EasyUnlockIconId::SPINNER) {
-      icon.aria_label = base::ASCIIToUTF16("Icon is spinning");
+      icon.aria_label = u"Icon is spinning";
     } else if (icon.icon == EasyUnlockIconId::LOCKED ||
                icon.icon == EasyUnlockIconId::LOCKED_TO_BE_ACTIVATED) {
       icon.autoshow_tooltip = true;
@@ -303,8 +303,7 @@ class LockDebugView::DebugDataDispatcherTransformer
           "automatically. icon_id=" +
           base::NumberToString(static_cast<int>(icon.icon)));
     } else {
-      icon.tooltip =
-          base::ASCIIToUTF16("This should not show up automatically.");
+      icon.tooltip = u"This should not show up automatically.";
     }
 
     // Show icon and enable/disable click to unlock.
@@ -431,7 +430,7 @@ class LockDebugView::DebugDataDispatcherTransformer
                                     adb_sideloading_enabled);
   }
 
-  void UpdateWarningMessage(const base::string16& message) {
+  void UpdateWarningMessage(const std::u16string& message) {
     debug_dispatcher_.UpdateWarningMessage(message);
   }
 
@@ -826,6 +825,14 @@ void LockDebugView::Layout() {
   lock_->SetBoundsRect(GetLocalBounds());
   container_->SetPosition(gfx::Point());
   container_->SizeToPreferredSize();
+
+  for (views::View* child : container_->children())
+    child->Layout();
+}
+
+void LockDebugView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdatePerUserActionContainerAndLayout();
 }
 
 void LockDebugView::AddOrRemoveUsersButtonPressed(int delta) {
@@ -926,7 +933,7 @@ void LockDebugView::CycleDetachableBaseIdButtonPressed() {
 void LockDebugView::ToggleWarningBannerButtonPressed() {
   debug_data_dispatcher_->UpdateWarningMessage(
       is_warning_banner_shown_
-          ? base::string16()
+          ? std::u16string()
           : base::ASCIIToUTF16("A critical update is ready to install. Sign "
                                "in to get started."));
   is_warning_banner_shown_ = !is_warning_banner_shown_;

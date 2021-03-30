@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Varighed for timer</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> er aktiv</translation>
+<translation id="2144806332417375165">Tilpassede videoparametre</translation>
 <translation id="229579744168541441">Eksportér til disk</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
 <translation id="2501853267655415902">Optagelsen er stoppet</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Kameraets opløsning</translation>
 <translation id="3517926952904427380">Det var ikke muligt at tage et billede i stående format</translation>
 <translation id="3569311554794739032">Er du sikker på, at du vil fjerne <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Dit kamera anvendes af en anden app</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scan stregkode</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
@@ -77,10 +77,12 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="7337660886763914220">Der er fejl i filsystemet.</translation>
 <translation id="7450541714075000668">Teksten blev kopieret</translation>
 <translation id="7557677699350329807">Skift til næste kamera</translation>
+<translation id="7607002721634913082">Sat på pause</translation>
 <translation id="7608223098072244877">4 gange 4</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Vis muligheder for panorering, tilpasning af horisont og zoom</translation>
 <translation id="7983668134180549431">Tekst er registreret.</translation>
 <translation id="8067883171444229417">Afspil video</translation>
 <translation id="8131740175452115882">Bekræft</translation>

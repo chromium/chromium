@@ -44,7 +44,7 @@ void PopulateExtensionInfo(
   else if (extension_registry.disabled_extensions().Contains(extension_id))
     extension_info->set_state(Info::STATE_DISABLED);
   else if (extension_registry.blocklisted_extensions().Contains(extension_id))
-    extension_info->set_state(Info::STATE_BLACKLISTED);
+    extension_info->set_state(Info::STATE_BLOCKLISTED);
   else if (extension_registry.blocked_extensions().Contains(extension_id))
     extension_info->set_state(Info::STATE_BLOCKED);
   else if (extension_registry.terminated_extensions().Contains(extension_id))
@@ -90,7 +90,8 @@ void PopulateExtensionInfo(
   if (serializer.Serialize(*extension.manifest()->value()))
     extension_info->mutable_manifest()->swap(manifest_json);
 
-  extension_info->set_manifest_location_type(extension.manifest()->location());
+  extension_info->set_manifest_location_type(
+      static_cast<int>(extension.manifest()->location()));
 }
 
 }  // namespace

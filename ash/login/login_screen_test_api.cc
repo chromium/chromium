@@ -367,22 +367,22 @@ void LoginScreenTestApi::SubmitPassword(const AccountId& account_id,
 }
 
 // static
-base::string16 LoginScreenTestApi::GetChallengeResponseLabel(
+std::u16string LoginScreenTestApi::GetChallengeResponseLabel(
     const AccountId& account_id) {
   if (GetFocusedUser() != account_id) {
     ADD_FAILURE() << "The user " << account_id.Serialize() << " is not focused";
-    return base::string16();
+    return std::u16string();
   }
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
   if (!big_user_view) {
     ADD_FAILURE() << "Could not find user " << account_id.Serialize();
-    return base::string16();
+    return std::u16string();
   }
   LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
   if (!auth_test.challenge_response_label()->IsDrawn()) {
     ADD_FAILURE() << "Challenge-response label is not drawn for user "
                   << account_id.Serialize();
-    return base::string16();
+    return std::u16string();
   }
   return auth_test.challenge_response_label()->GetText();
 }
@@ -691,12 +691,12 @@ std::string LoginScreenTestApi::GetDisplayedName(const AccountId& account_id) {
 }
 
 // static
-base::string16 LoginScreenTestApi::GetDisabledAuthMessage(
+std::u16string LoginScreenTestApi::GetDisabledAuthMessage(
     const AccountId& account_id) {
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
   if (!big_user_view) {
     ADD_FAILURE() << "Could not find user " << account_id.Serialize();
-    return base::string16();
+    return std::u16string();
   }
   LoginAuthUserView::TestApi auth_test(big_user_view->auth_user());
 
@@ -704,12 +704,12 @@ base::string16 LoginScreenTestApi::GetDisabledAuthMessage(
 }
 
 // static
-base::string16 LoginScreenTestApi::GetManagementDisclosureText(
+std::u16string LoginScreenTestApi::GetManagementDisclosureText(
     const AccountId& account_id) {
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
   if (!big_user_view) {
     ADD_FAILURE() << "Could not find user " << account_id.Serialize();
-    return base::string16();
+    return std::u16string();
   }
   LoginUserView::TestApi user_test(big_user_view->GetUserView());
   LoginUserMenuView::TestApi user_menu_test(user_test.menu());
@@ -725,10 +725,10 @@ bool LoginScreenTestApi::IsOobeDialogVisible() {
 }
 
 // static
-base::string16 LoginScreenTestApi::GetShutDownButtonLabel() {
+std::u16string LoginScreenTestApi::GetShutDownButtonLabel() {
   views::View* button = GetShutDownButton();
   if (!button)
-    return base::string16();
+    return std::u16string();
 
   return static_cast<views::LabelButton*>(button)->GetText();
 }
@@ -758,10 +758,10 @@ void LoginScreenTestApi::SetPinRequestWidgetShownCallback(
 }
 
 // static
-base::string16 LoginScreenTestApi::GetPinRequestWidgetTitle() {
+std::u16string LoginScreenTestApi::GetPinRequestWidgetTitle() {
   if (!PinRequestWidget::Get()) {
     ADD_FAILURE() << "No PIN request widget is shown";
-    return base::string16();
+    return std::u16string();
   }
   PinRequestWidget::TestApi pin_widget_test(PinRequestWidget::Get());
   PinRequestView::TestApi pin_view_test(pin_widget_test.pin_request_view());

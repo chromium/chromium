@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_
 #define CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/range/range.h"
 
 namespace chromeos {
@@ -24,14 +24,14 @@ class TokenizedString {
     kWords,
   };
 
-  typedef std::vector<base::string16> Tokens;
+  typedef std::vector<std::u16string> Tokens;
   typedef std::vector<gfx::Range> Mappings;
 
-  explicit TokenizedString(const base::string16& text,
+  explicit TokenizedString(const std::u16string& text,
                            Mode mode = Mode::kCamelCase);
   ~TokenizedString();
 
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
   const Tokens& tokens() const { return tokens_; }
   const Mappings& mappings() const { return mappings_; }
 
@@ -40,7 +40,7 @@ class TokenizedString {
   void TokenizeWords();
 
   // Input text.
-  const base::string16 text_;
+  const std::u16string text_;
 
   // Broken down tokens and the index mapping of tokens in original string.
   Tokens tokens_;

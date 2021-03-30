@@ -10,19 +10,14 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/value_store/value_store_factory.h"
 #include "extensions/common/extension.h"
 
 namespace {
-
-// Delay, in seconds, before we should open the State Store database. We
-// defer it to avoid slowing down startup. See http://crbug.com/161848
-const int kInitDelaySeconds = 1;
 
 std::string GetFullKey(const std::string& extension_id,
                        const std::string& key) {
@@ -74,27 +69,23 @@ StateStore::StateStore(content::BrowserContext* context,
                        const scoped_refptr<ValueStoreFactory>& store_factory,
                        ValueStoreFrontend::BackendType backend_type,
                        bool deferred_load)
-    : store_(new ValueStoreFrontend(store_factory, backend_type)),
-      task_queue_(new DelayedTaskQueue()) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(context));
+    : store_(
+          std::make_unique<ValueStoreFrontend>(store_factory,
+                                               backend_type,
+                                               GetExtensionFileTaskRunner())),
+      task_queue_(std::make_unique<DelayedTaskQueue>()) {
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
 
   if (deferred_load) {
-    // Don't Init() until the first page is loaded or the embedder explicitly
-    // requests it.
-    registrar_.Add(
-        this,
-        content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-        content::NotificationService::AllBrowserContextsAndSources());
+    // Call `Init()` asynchronously with a low priority to not delay startup.
+    content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+        ->PostTask(FROM_HERE, base::BindOnce(&StateStore::Init, AsWeakPtr()));
   } else {
     Init();
   }
 }
 
 StateStore::~StateStore() {
-}
-
-void StateStore::RequestInitAfterDelay() {
-  InitAfterDelay();
 }
 
 void StateStore::RegisterKey(const std::string& key) {
@@ -151,14 +142,6 @@ bool StateStore::IsInitialized() const {
   return task_queue_->ready();
 }
 
-void StateStore::Observe(int type,
-                         const content::NotificationSource& source,
-                         const content::NotificationDetails& details) {
-  DCHECK_EQ(type, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME);
-  registrar_.RemoveAll();
-  InitAfterDelay();
-}
-
 void StateStore::OnExtensionWillBeInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
@@ -175,24 +158,10 @@ void StateStore::OnExtensionUninstalled(
 }
 
 void StateStore::Init() {
-  // Could be called twice if InitAfterDelay() is requested explicitly by the
-  // embedder in addition to internally after first page load.
-  if (IsInitialized())
-    return;
-
   // TODO(cmumford): The store now always lazily initializes upon first access.
   // A follow-on CL will remove this deferred initialization implementation
   // which is now vestigial.
   task_queue_->SetReady();
-}
-
-void StateStore::InitAfterDelay() {
-  if (IsInitialized())
-    return;
-
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&StateStore::Init, AsWeakPtr()),
-      base::TimeDelta::FromSeconds(kInitDelaySeconds));
 }
 
 void StateStore::RemoveKeysForExtension(const std::string& extension_id) {

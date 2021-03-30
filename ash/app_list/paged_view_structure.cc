@@ -38,8 +38,7 @@ void PagedViewStructure::LoadFromMetadata() {
     }
 
     // Create a new page if the current page is full.
-    const size_t current_page_max_items =
-        apps_grid_view_->TilesPerPage(pages_.size() - 1);
+    const size_t current_page_max_items = apps_grid_view_->TilesPerPage();
     if (pages_.back().size() == current_page_max_items)
       pages_.emplace_back();
 
@@ -139,9 +138,14 @@ void PagedViewStructure::Add(AppListItemView* view,
                              bool clear_overflow,
                              bool clear_empty_pages) {
   const int view_structure_size = total_pages();
-  CHECK((target_index.page < view_structure_size &&
-         target_index.slot <= items_on_page(target_index.page)) ||
-        (target_index.page == view_structure_size && target_index.slot == 0));
+  if (target_index.page < view_structure_size) {
+    // Adding to an existing page.
+    CHECK_LE(target_index.slot, items_on_page(target_index.page));
+  } else {
+    // Adding to a new page at the end.
+    CHECK_EQ(target_index.page, view_structure_size);
+    CHECK_EQ(target_index.slot, 0);
+  }
 
   if (target_index.page == view_structure_size)
     pages_.emplace_back();
@@ -183,7 +187,7 @@ GridIndex PagedViewStructure::GetLastTargetIndex() const {
 
   int last_page_index = total_pages() - 1;
   int target_slot = CalculateTargetSlot(pages_.back());
-  if (target_slot == apps_grid_view_->TilesPerPage(last_page_index)) {
+  if (target_slot == apps_grid_view_->TilesPerPage()) {
     // The last page is full, so the last target visual index is the first slot
     // in the next new page.
     target_slot = 0;
@@ -201,7 +205,7 @@ GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
     return GridIndex(page_index, 0);
 
   int target_slot = CalculateTargetSlot(pages_[page_index]);
-  if (target_slot == apps_grid_view_->TilesPerPage(page_index)) {
+  if (target_slot == apps_grid_view_->TilesPerPage()) {
     // The specified page is full, so the last target visual index is the last
     // slot in the page_index.
     --target_slot;
@@ -273,7 +277,7 @@ int PagedViewStructure::GetTargetItemIndexForMove(
     ++current_index.page;
     current_index.slot = 0;
   }
-  DCHECK(current_index == index);
+  DCHECK_EQ(current_index, index);
   return current_item_index - offset;
 }
 
@@ -299,7 +303,7 @@ bool PagedViewStructure::IsFullPage(int page_index) const {
   if (page_index >= total_pages())
     return false;
   return static_cast<int>(pages_[page_index].size()) ==
-         apps_grid_view_->TilesPerPage(page_index);
+         apps_grid_view_->TilesPerPage();
 }
 
 int PagedViewStructure::CalculateTargetSlot(const Page& page) const {
@@ -310,6 +314,7 @@ int PagedViewStructure::CalculateTargetSlot(const Page& page) const {
 }
 
 bool PagedViewStructure::ClearOverflow() {
+  const size_t max_item_views = apps_grid_view_->TilesPerPage();
   bool changed = false;
   std::vector<AppListItemView*> overflow_views;
   auto iter = pages_.begin();
@@ -321,8 +326,6 @@ bool PagedViewStructure::ClearOverflow() {
       changed = true;
     }
 
-    const size_t max_item_views =
-        apps_grid_view_->TilesPerPage(static_cast<int>(iter - pages_.begin()));
     auto& page = *iter;
 
     if (!overflow_views.empty()) {

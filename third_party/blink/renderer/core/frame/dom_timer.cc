@@ -61,9 +61,8 @@ int DOMTimer::Install(ExecutionContext* context,
 
 void DOMTimer::RemoveByID(ExecutionContext* context, int timeout_id) {
   DOMTimer* timer = context->Timers()->RemoveTimeoutByID(timeout_id);
-  TRACE_EVENT_INSTANT1("devtools.timeline", "TimerRemove",
-                       TRACE_EVENT_SCOPE_THREAD, "data",
-                       inspector_timer_remove_event::Data(context, timeout_id));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "TimerRemove", inspector_timer_remove_event::Data, context, timeout_id);
   // Eagerly unregister as ExecutionContext observer.
   if (timer)
     timer->SetExecutionContext(nullptr);
@@ -108,18 +107,17 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   }
   MoveToNewTaskRunner(context->GetTaskRunner(task_type));
 
-  // Clamping up to 1ms for historical reasons crbug.com/402694.
-  timeout = std::max(timeout, base::TimeDelta::FromMilliseconds(1));
-
-  if (single_shot)
+  if (single_shot) {
     StartOneShot(timeout, FROM_HERE);
-  else
+  } else {
+    // TODO(crbug.com/402694): Don't clamp interval timers to 1ms here
+    timeout = std::max(timeout, base::TimeDelta::FromMilliseconds(1));
     StartRepeating(timeout, FROM_HERE);
+  }
 
-  TRACE_EVENT_INSTANT1("devtools.timeline", "TimerInstall",
-                       TRACE_EVENT_SCOPE_THREAD, "data",
-                       inspector_timer_install_event::Data(
-                           context, timeout_id, timeout, single_shot));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "TimerInstall", inspector_timer_install_event::Data, context, timeout_id,
+      timeout, single_shot);
   probe::AsyncTaskScheduledBreakable(
       context, single_shot ? "setTimeout" : "setInterval", &async_task_id_);
 }
@@ -160,8 +158,8 @@ void DOMTimer::Fired() {
   // Only the first execution of a multi-shot timer should get an affirmative
   // user gesture indicator.
 
-  TRACE_EVENT1("devtools.timeline", "TimerFire", "data",
-               inspector_timer_fire_event::Data(context, timeout_id_));
+  DEVTOOLS_TIMELINE_TRACE_EVENT("TimerFire", inspector_timer_fire_event::Data,
+                                context, timeout_id_);
   const bool is_interval = !RepeatInterval().is_zero();
   probe::UserCallback probe(context, is_interval ? "setInterval" : "setTimeout",
                             g_null_atom, true);

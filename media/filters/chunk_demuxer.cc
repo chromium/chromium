@@ -28,7 +28,6 @@
 #include "media/filters/frame_processor.h"
 #include "media/filters/source_buffer_stream.h"
 #include "media/filters/stream_parser_factory.h"
-#include "media/media_buildflags.h"
 
 using base::TimeDelta;
 
@@ -53,17 +52,6 @@ std::unique_ptr<media::StreamParser> CreateParserForTypeAndCodecs(
 // for a few mime types that have an implicit codec.
 std::string ExpectedCodecs(const std::string& content_type,
                            const std::string& codecs) {
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  // TODO(crbug.com/535738): Undo this hardcoded assumption of a valid HEVC
-  // codec string when codec specificity is widely relaxed. We use a valid HEVC
-  // string here in short-term to let the codec-specificity checks in
-  // SourceBufferState::OnNewConfigs require an HEVC decoder config (with not
-  // necessarily matching profile/level, just codec) be emitted from parsers
-  // initialized by addSourceBuffer or changeType with just "video/mp4".
-  if (codecs == "" && content_type == "video/mp4")
-    return "hvc1.1.6.L93.B0";
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
-        // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (codecs == "" && content_type == "audio/aac")
     return "aac";
   if (codecs == "" &&

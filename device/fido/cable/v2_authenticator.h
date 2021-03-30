@@ -37,6 +37,7 @@ class Platform {
   virtual ~Platform();
 
   enum class Status {
+    // These values must match up with CableAuthenticatorUI.java.
     TUNNEL_SERVER_CONNECT = 1,
     HANDSHAKE_COMPLETE = 2,
     REQUEST_RECEIVED = 3,
@@ -44,6 +45,7 @@ class Platform {
   };
 
   enum class Error {
+    // These values must match up with CableAuthenticatorUI.java.
     UNEXPECTED_EOF = 100,
     TUNNEL_SERVER_CONNECT_FAILED = 101,
     HANDSHAKE_FAILED = 102,
@@ -56,7 +58,6 @@ class Platform {
 
   using MakeCredentialCallback =
       base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> client_data_json,
                               base::span<const uint8_t> attestation_obj)>;
 
   struct MakeCredentialParams {
@@ -66,9 +67,8 @@ class Platform {
     MakeCredentialParams& operator=(const MakeCredentialParams&) = delete;
     MakeCredentialParams(MakeCredentialParams&&) = delete;
 
-    std::string origin;
+    std::vector<uint8_t> client_data_hash;
     std::string rp_id;
-    std::vector<uint8_t> challenge;
     std::vector<uint8_t> user_id;
     std::vector<int> algorithms;
     std::vector<std::vector<uint8_t>> excluded_cred_ids;
@@ -80,7 +80,6 @@ class Platform {
 
   using GetAssertionCallback =
       base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> client_data_json,
                               base::span<const uint8_t> cred_id,
                               base::span<const uint8_t> auth_data,
                               base::span<const uint8_t> sig)>;
@@ -92,9 +91,8 @@ class Platform {
     GetAssertionParams& operator=(const GetAssertionParams&) = delete;
     GetAssertionParams(GetAssertionParams&&) = delete;
 
-    std::string origin;
+    std::vector<uint8_t> client_data_hash;
     std::string rp_id;
-    std::vector<uint8_t> challenge;
     std::vector<std::vector<uint8_t>> allowed_cred_ids;
     GetAssertionCallback callback;
   };
@@ -163,7 +161,7 @@ std::unique_ptr<Transaction> TransactFromQRCode(
     base::span<const uint8_t, kP256X962Length> peer_identity,
     base::Optional<std::vector<uint8_t>> contact_id);
 
-// TransactFromQRCode starts a network-based transaction based on the decoded
+// TransactFromFCM starts a network-based transaction based on the decoded
 // contents of a cloud message.
 std::unique_ptr<Transaction> TransactFromFCM(
     std::unique_ptr<Platform> platform,

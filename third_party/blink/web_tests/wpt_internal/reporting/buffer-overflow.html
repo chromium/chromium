@@ -1,0 +1,31 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/intervention.js"></script>
+
+<div id="target" style="padding: 10px; background-color: blue;">
+  <p>Testing ReportingObserver's buffer size.</p>
+</div>
+
+<script>
+async_test(function(test) {
+  var observer3 = new ReportingObserver(function(reports, observer) {
+    test.step(function() {
+      // All 101 buffered reports should be received.
+      assert_equals(reports.length, 101);
+    });
+
+    test.done();
+  }, { buffered: true });
+
+  // Generate 110 intervention reports and 1 deprecation report. Only 100
+  // reports should be buffered per report type, so 101 total.
+  for (var i = 0; i != 110; ++i) {
+    causeIntervention();
+  }
+  window.webkitStorageInfo;
+
+  observer3.observe();
+  observer3.disconnect();
+}, "Buffer overflow");
+</script>

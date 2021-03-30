@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test toolbar state when switching modes.\n`);
-  await TestRunner.loadModule('device_mode_test_runner');
+  await TestRunner.loadTestModule('device_mode_test_runner');
 
   var phoneA = DeviceModeTestRunner.buildFakePhone();
   var view = new Emulation.DeviceModeView();

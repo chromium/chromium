@@ -15,8 +15,8 @@ js_type_check("closure_compile_module") {
 js_library("search_page") {
   deps = [
     "..:route",
-    "..:router.m",
-    "../search_engines_page:search_engines_browser_proxy.m",
+    "..:router",
+    "../search_engines_page:search_engines_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
   ]

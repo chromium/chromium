@@ -55,7 +55,6 @@ class ArcNotificationContentView
   ArcNotificationContentView& operator=(const ArcNotificationContentView&) = delete;
   ~ArcNotificationContentView() override;
 
-
   void Update(const message_center::Notification& notification);
   message_center::NotificationControlButtonsView* GetControlButtonsView();
   void UpdateControlButtonsVisibility();
@@ -105,6 +104,7 @@ class ArcNotificationContentView
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnThemeChanged() override;
   views::FocusTraversable* GetFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnAccessibilityEvent(ax::mojom::Event event) override;
@@ -192,7 +192,7 @@ class ArcNotificationContentView
   // Widget which this view tree is currently attached to.
   views::Widget* attached_widget_ = nullptr;
 
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // If it's true, the surface gets active when attached to this view.
   bool activate_on_attach_ = false;

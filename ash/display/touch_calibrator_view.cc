@@ -96,7 +96,7 @@ views::Widget::InitParams GetWidgetParams(aura::Window* root_window) {
 }
 
 // Returns the size of bounding box required for |text| of given |font_list|.
-gfx::Size GetSizeForString(const base::string16& text,
+gfx::Size GetSizeForString(const std::u16string& text,
                            const gfx::FontList& font_list) {
   int height = 0, width = 0;
   gfx::Canvas::SizeStringInt(text, font_list, &width, &height, 0, 0);
@@ -274,14 +274,14 @@ class HintBox : public views::View {
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
-  void SetLabel(const base::string16& text, const SkColor& color);
-  void SetSubLabel(const base::string16& text, const SkColor& color);
+  void SetLabel(const std::u16string& text, const SkColor& color);
+  void SetSubLabel(const std::u16string& text, const SkColor& color);
 
  private:
   void UpdateWidth(int updated_width);
 
-  base::string16 label_text_;
-  base::string16 sublabel_text_;
+  std::u16string label_text_;
+  std::u16string sublabel_text_;
 
   SkColor label_color_;
   SkColor sublabel_color_;
@@ -312,7 +312,7 @@ HintBox::HintBox(const gfx::Rect& bounds, int border_radius)
   SetBorder(std::make_unique<views::BubbleBorder>(
       base::i18n::IsRTL() ? views::BubbleBorder::RIGHT_CENTER
                           : views::BubbleBorder::LEFT_CENTER,
-      views::BubbleBorder::NO_ASSETS, SK_ColorWHITE));
+      views::BubbleBorder::NO_SHADOW, SK_ColorWHITE));
 
   arrow_width_ = (GetInsets().right() - GetInsets().left()) *
                  (base::i18n::IsRTL() ? 1 : -1);
@@ -352,14 +352,13 @@ void HintBox::UpdateWidth(int updated_width) {
   rounded_rect_bounds_ = GetContentsBounds();
 }
 
-void HintBox::SetLabel(const base::string16& text, const SkColor& color) {
+void HintBox::SetLabel(const std::u16string& text, const SkColor& color) {
   label_text_ = text;
   label_color_ = color;
 
   label_font_list_ =
       ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-          kHintBoxLabelTextSize, gfx::Font::FontStyle::NORMAL,
-          gfx::Font::Weight::NORMAL);
+          kHintBoxLabelTextSize);
 
   // Adjust size of label bounds based on text and font.
   gfx::Size size = GetSizeForString(label_text_, label_font_list_);
@@ -373,14 +372,13 @@ void HintBox::SetLabel(const base::string16& text, const SkColor& color) {
     UpdateWidth(minimum_expected_width);
 }
 
-void HintBox::SetSubLabel(const base::string16& text, const SkColor& color) {
+void HintBox::SetSubLabel(const std::u16string& text, const SkColor& color) {
   sublabel_text_ = text;
   sublabel_color_ = color;
 
   sublabel_font_list_ =
       ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-          kHintBoxSublabelTextSize, gfx::Font::FontStyle::NORMAL,
-          gfx::Font::Weight::NORMAL);
+          kHintBoxSublabelTextSize);
 
   // Adjust size of sublabel label bounds based on text and font.
   gfx::Size size = GetSizeForString(sublabel_text_, sublabel_font_list_);
@@ -406,14 +404,14 @@ void HintBox::OnPaint(gfx::Canvas* canvas) {
 
 class CompletionMessageView : public views::View {
  public:
-  CompletionMessageView(const gfx::Rect& bounds, const base::string16& message);
+  CompletionMessageView(const gfx::Rect& bounds, const std::u16string& message);
   ~CompletionMessageView() override;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
-  const base::string16 message_;
+  const std::u16string message_;
   gfx::FontList font_list_;
 
   gfx::Rect text_bounds_;
@@ -426,7 +424,7 @@ class CompletionMessageView : public views::View {
 };
 
 CompletionMessageView::CompletionMessageView(const gfx::Rect& bounds,
-                                             const base::string16& message)
+                                             const std::u16string& message)
     : message_(message) {
   SetBoundsRect(bounds);
 
@@ -434,8 +432,7 @@ CompletionMessageView::CompletionMessageView(const gfx::Rect& bounds,
   text_bounds_.SetRect(x_offset, 0, width() - x_offset, height());
 
   font_list_ = ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-      kCompleteMessageTextSize, gfx::Font::FontStyle::NORMAL,
-      gfx::Font::Weight::NORMAL);
+      kCompleteMessageTextSize);
 
   // crbug/676513 moves this file to src/ash which will require an ash icon
   // file.
@@ -499,8 +496,7 @@ void TouchCalibratorView::InitViewContents() {
   // calibration setup.
   exit_label_ = AddChildView(std::make_unique<views::Label>(
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL),
-      views::Label::CustomFont{rb.GetFontListWithDelta(
-          8, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL)}));
+      views::Label::CustomFont{rb.GetFontListWithDelta(8)}));
   exit_label_->SetBounds((display_.bounds().width() - kExitLabelWidth) / 2,
                          display_.bounds().height() * 3.f / 4, kExitLabelWidth,
                          kExitLabelHeight);
@@ -541,8 +537,7 @@ void TouchCalibratorView::InitViewContents() {
   // Initialize the tap label.
   tap_label_ = touch_point_view_->AddChildView(std::make_unique<views::Label>(
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_TAP_HERE_LABEL),
-      views::Label::CustomFont{rb.GetFontListWithDelta(
-          6, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL)}));
+      views::Label::CustomFont{rb.GetFontListWithDelta(6)}));
   tap_label_->SetBounds(0, kThrobberCircleViewWidth, kTapLabelWidth,
                         kTapLabelHeight);
   tap_label_->SetEnabledColor(kTapHereLabelColor);
@@ -552,9 +547,9 @@ void TouchCalibratorView::InitViewContents() {
   tap_label_->SetVisible(false);
 
   // Initialize the Hint Box view.
-  base::string16 hint_label_text =
+  std::u16string hint_label_text =
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_HINT_LABEL_TEXT);
-  base::string16 hint_sublabel_text =
+  std::u16string hint_sublabel_text =
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_HINT_SUBLABEL_TEXT);
 
   int tpv_width = touch_point_view_->width();
@@ -584,7 +579,7 @@ void TouchCalibratorView::InitViewContents() {
 
   // Initialize the view that contains the calibration complete message which
   // will be displayed at the end.
-  base::string16 finish_msg_text =
+  std::u16string finish_msg_text =
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_FINISH_LABEL);
 
   gfx::Rect msg_view_bounds(

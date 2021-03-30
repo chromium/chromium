@@ -33,10 +33,8 @@
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/feature_list.h"
 #include "chrome/common/printing/ipp_l10n.h"
 #include "components/strings/grit/components_strings.h"
-#include "printing/printing_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -54,18 +52,18 @@ const char kPrinter[] = "printer";
 namespace {
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
-// Iterate on the Papers of a given printer |info| and set the
-// display_name members, localizing where possible. We expect the
+// Iterate on the `Papers` of a given printer `info` and set the
+// `display_name` members, localizing where possible. We expect the
 // backend to have populated non-empty display names already, so we
 // don't touch media display names that we can't localize.
-void PopulateAllPaperDisplayNames(PrinterSemanticCapsAndDefaults* info) {
+void PopulateAllPaperDisplayNames(PrinterSemanticCapsAndDefaults& info) {
   std::string default_paper_display =
-      LocalizePaperDisplayName(info->default_paper.vendor_id);
+      LocalizePaperDisplayName(info.default_paper.vendor_id);
   if (!default_paper_display.empty()) {
-    info->default_paper.display_name = default_paper_display;
+    info.default_paper.display_name = default_paper_display;
   }
 
-  for (PrinterSemanticCapsAndDefaults::Paper& paper : info->papers) {
+  for (PrinterSemanticCapsAndDefaults::Paper& paper : info.papers) {
     std::string display = LocalizePaperDisplayName(paper.vendor_id);
     if (!display.empty()) {
       paper.display_name = display;
@@ -79,40 +77,29 @@ void PopulateAdvancedCapsLocalization(
     std::vector<AdvancedCapability>* advanced_capabilities) {
   auto& l10n_map = CapabilityLocalizationMap();
   for (AdvancedCapability& capability : *advanced_capabilities) {
-    auto it = l10n_map.find(capability.name);
-    if (it != l10n_map.end())
-      capability.display_name = l10n_util::GetStringUTF8(it->second);
+    auto capability_it = l10n_map.find(capability.name);
+    if (capability_it != l10n_map.end())
+      capability.display_name = l10n_util::GetStringUTF8(capability_it->second);
 
     for (AdvancedCapabilityValue& value : capability.values) {
-      auto it = l10n_map.find(capability.name + "/" + value.name);
-      if (it != l10n_map.end())
-        value.display_name = l10n_util::GetStringUTF8(it->second);
+      auto value_it = l10n_map.find(capability.name + "/" + value.name);
+      if (value_it != l10n_map.end())
+        value.display_name = l10n_util::GetStringUTF8(value_it->second);
     }
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Returns a dictionary representing printer capabilities as CDD.  Returns
-// an empty dictionary if a dictionary could not be generated.
-base::Value GetPrinterCapabilitiesOnBlockingTaskRunner(
+// Returns a dictionary representing printer capabilities as CDD, or an empty
+// value if no capabilities are provided.
+base::Value AssemblePrinterCapabilities(
     const std::string& device_name,
-    PrinterSemanticCapsAndDefaults::Papers user_defined_papers,
+    const PrinterSemanticCapsAndDefaults::Papers& user_defined_papers,
     bool has_secure_protocol,
-    scoped_refptr<PrintBackend> backend) {
+    PrinterSemanticCapsAndDefaults* caps) {
   DCHECK(!device_name.empty());
-
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  VLOG(1) << "Get printer capabilities start for " << device_name;
-  crash_keys::ScopedPrinterInfo crash_key(
-      backend->GetPrinterDriverInfo(device_name));
-
-  PrinterSemanticCapsAndDefaults info;
-  if (!backend->GetPrinterSemanticCapsAndDefaults(device_name, &info)) {
-    LOG(WARNING) << "Failed to get capabilities for " << device_name;
+  if (!caps)
     return base::Value(base::Value::Type::DICTIONARY);
-  }
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
   bool populate_paper_display_names = true;
@@ -124,27 +111,26 @@ base::Value GetPrinterCapabilitiesOnBlockingTaskRunner(
       base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend);
 #endif
   if (populate_paper_display_names)
-    PopulateAllPaperDisplayNames(&info);
+    PopulateAllPaperDisplayNames(*caps);
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
-  info.user_defined_papers = std::move(user_defined_papers);
+  caps->user_defined_papers = std::move(user_defined_papers);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!has_secure_protocol)
-    info.pin_supported = false;
+    caps->pin_supported = false;
 
-  if (base::FeatureList::IsEnabled(printing::features::kAdvancedPpdAttributes))
-    PopulateAdvancedCapsLocalization(&info.advanced_capabilities);
+  PopulateAdvancedCapsLocalization(&caps->advanced_capabilities);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  return cloud_print::PrinterSemanticCapsAndDefaultsToCdd(info);
+  return cloud_print::PrinterSemanticCapsAndDefaultsToCdd(*caps);
 }
 
 }  // namespace
 
 #if defined(OS_WIN)
 std::string GetUserFriendlyName(const std::string& printer_name) {
-  // |printer_name| may be a UNC path like \\printserver\printername.
+  // `printer_name` may be a UNC path like \\printserver\printername.
   if (!base::StartsWith(printer_name, "\\\\",
                         base::CompareCase::INSENSITIVE_ASCII)) {
     return printer_name;
@@ -163,16 +149,12 @@ std::string GetUserFriendlyName(const std::string& printer_name) {
 }
 #endif
 
-base::Value GetSettingsOnBlockingTaskRunner(
+base::Value AssemblePrinterSettings(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
-    PrinterSemanticCapsAndDefaults::Papers user_defined_papers,
+    const PrinterSemanticCapsAndDefaults::Papers& user_defined_papers,
     bool has_secure_protocol,
-    scoped_refptr<PrintBackend> print_backend) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Printing.PrinterCapabilities");
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
+    PrinterSemanticCapsAndDefaults* caps) {
   base::Value printer_info(base::Value::Type::DICTIONARY);
   printer_info.SetKey(kSettingDeviceName, base::Value(device_name));
   printer_info.SetKey(kSettingPrinterName,
@@ -194,10 +176,36 @@ base::Value GetSettingsOnBlockingTaskRunner(
   base::Value printer_info_capabilities(base::Value::Type::DICTIONARY);
   printer_info_capabilities.SetKey(kPrinter, std::move(printer_info));
   printer_info_capabilities.SetKey(
-      kSettingCapabilities, GetPrinterCapabilitiesOnBlockingTaskRunner(
-                                device_name, std::move(user_defined_papers),
-                                has_secure_protocol, print_backend));
+      kSettingCapabilities,
+      AssemblePrinterCapabilities(device_name, user_defined_papers,
+                                  has_secure_protocol, caps));
   return printer_info_capabilities;
+}
+
+base::Value GetSettingsOnBlockingTaskRunner(
+    const std::string& device_name,
+    const PrinterBasicInfo& basic_info,
+    PrinterSemanticCapsAndDefaults::Papers user_defined_papers,
+    bool has_secure_protocol,
+    scoped_refptr<PrintBackend> print_backend) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  VLOG(1) << "Get printer capabilities start for " << device_name;
+  crash_keys::ScopedPrinterInfo crash_key(
+      print_backend->GetPrinterDriverInfo(device_name));
+
+  auto caps = base::make_optional<PrinterSemanticCapsAndDefaults>();
+  if (!print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps)) {
+    // Failed to get capabilities, but proceed to assemble the settings to
+    // return what information we do have.
+    LOG(WARNING) << "Failed to get capabilities for " << device_name;
+    caps = base::nullopt;
+  }
+
+  return AssemblePrinterSettings(device_name, basic_info, user_defined_papers,
+                                 has_secure_protocol,
+                                 base::OptionalOrNullptr(caps));
 }
 
 }  // namespace printing

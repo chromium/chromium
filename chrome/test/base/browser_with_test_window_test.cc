@@ -30,9 +30,14 @@
 #include "components/constrained_window/constrained_window_views.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "content/public/browser/context_factory.h"
 #endif
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_delegate.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
 
 using content::NavigationController;
@@ -49,6 +54,9 @@ void BrowserWithTestWindowTest::SetUp() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosChromeServiceImpl::DisableCrosapiForTests();
+  lacros_chrome_service_ =
+      std::make_unique<chromeos::LacrosChromeServiceImpl>(nullptr);
   tablet_state_ = std::make_unique<chromeos::TabletState>();
 #endif
 
@@ -108,7 +116,7 @@ void BrowserWithTestWindowTest::TearDown() {
   // If initialized, the KioskAppManager will register an observer to
   // CrosSettings and will need to be destroyed before it. Having it destroyed
   // as part of the teardown will avoid unexpected test failures.
-  chromeos::KioskAppManager::Shutdown();
+  ash::KioskAppManager::Shutdown();
 
   test_views_delegate_.reset();
   ash_test_helper_.TearDown();
@@ -166,7 +174,7 @@ void BrowserWithTestWindowTest::NavigateAndCommitActiveTab(const GURL& url) {
 void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
     Browser* navigating_browser,
     const GURL& url,
-    const base::string16& title) {
+    const std::u16string& title) {
   WebContents* contents =
       navigating_browser->tab_strip_model()->GetActiveWebContents();
   NavigationController* controller = &contents->GetController();
@@ -176,7 +184,7 @@ void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
 
 TestingProfile* BrowserWithTestWindowTest::CreateProfile() {
   return profile_manager_->CreateTestingProfile(
-      "testing_profile", nullptr, base::string16(), 0, std::string(),
+      "testing_profile", nullptr, std::u16string(), 0, std::string(),
       GetTestingFactories());
 }
 
@@ -209,7 +217,7 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-chromeos::ScopedCrosSettingsTestHelper*
+ash::ScopedCrosSettingsTestHelper*
 BrowserWithTestWindowTest::GetCrosSettingsHelper() {
   return &cros_settings_test_helper_;
 }

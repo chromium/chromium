@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/local_search_service/public/mojom/types_mojom_traits.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/local_search_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -14,7 +13,7 @@ namespace chromeos {
 namespace local_search_service {
 
 TEST(LocalSearchMojomTraitsTest, ContentTraits) {
-  Content input("id", base::UTF8ToUTF16("content"), 0.3);
+  Content input("id", u"content", 0.3);
   Content output;
 
   ASSERT_TRUE(
@@ -25,9 +24,8 @@ TEST(LocalSearchMojomTraitsTest, ContentTraits) {
 }
 
 TEST(LocalSearchMojomTraitsTest, DataTraits) {
-  std::vector<Content> contents{
-      Content("id1", base::UTF8ToUTF16("contents1"), 0.1),
-      Content("id2", base::UTF8ToUTF16("contents2"), 0.2)};
+  std::vector<Content> contents{Content("id1", u"contents1", 0.1),
+                                Content("id2", u"contents2", 0.2)};
 
   {
     // Empty locale.

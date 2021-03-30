@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
@@ -75,7 +74,7 @@ class LegalMessageLine {
                     LegalMessageLines* out,
                     bool escape_apostrophes = false);
 
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
   const Links& links() const { return links_; }
 
  private:
@@ -83,7 +82,7 @@ class LegalMessageLine {
 
   bool ParseLine(const base::Value& line, bool escape_apostrophes);
 
-  base::string16 text_;
+  std::u16string text_;
   Links links_;
 };
 

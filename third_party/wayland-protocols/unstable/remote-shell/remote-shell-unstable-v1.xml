@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v1" version="30">
+  <interface name="zcr_remote_shell_v1" version="32">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -294,7 +294,7 @@
 
   </interface>
 
-  <interface name="zcr_remote_surface_v1" version="27">
+  <interface name="zcr_remote_surface_v1" version="31">
     <description summary="A desktop window">
       An interface that may be implemented by a wl_surface, for
       implementations that provide a desktop-style user interface
@@ -1113,12 +1113,34 @@
       </description>
     </request>
 
+    <!-- Version 27 additions -->
     <request name="set_system_gesture_exclusion" since="27">
       <description summary="set system gesture exclusion">
         Set system gesture exclusion region in which system gestures e.g. back
         gesture should not be triggered.
       </description>
       <arg name="region" type="object" interface="wl_region" allow-null="true"/>
+    </request>
+
+    <!-- Version 31 additions -->
+    <request name="set_resize_lock" since="31">
+      <description summary="set resize lock state">
+          Enable the resize lock and put restrictions related to resizing on
+          the shell surface.
+
+          The resize lock state is double buffered, and will be applied at the
+          time wl_surface.commit of the corresponding wl_surface is called.
+      </description>
+    </request>
+
+    <request name="unset_resize_lock" since="31">
+      <description summary="unset resize lock state">
+          Disable the resize lock and allow the shell surface to be resized
+          freely.
+
+          The resize lock state is double buffered, and will be applied at the
+          time wl_surface.commit of the corresponding wl_surface is called.
+      </description>
     </request>
   </interface>
 
@@ -1240,7 +1262,7 @@
     </request>
   </interface>
 
-  <interface name="zcr_remote_output_v1" version="29">
+  <interface name="zcr_remote_output_v1" version="32">
     <description summary="remote shell interface to a wl_output">
 	An additional interface to a wl_output object, which allows the
 	client to access additional functionality for output.
@@ -1297,10 +1319,28 @@
 
     <event name="systemui_visibility" since="29">
       <description summary="systemui_visibility_state for a display">
-	Sends information about whether the systemui is visible. The "systemui_visibility"
-	value is of enum type "systemui_visibility_state".
+	[Deprecated] Sends information about whether the systemui is visible.
+	The "systemui_visibility" value is of enum type "systemui_visibility_state".
       </description>
       <arg name="systemui_visibility" type="int" summary="systemui_visibility_state enum"/>
+    </event>
+
+    <!-- Version 32 additions -->
+
+    <enum name="systemui_behavior">
+      <description summary="systemui behavior">
+	Determine the behavior of the system UI.
+      </description>
+      <entry name="visible" value="1" summary="system ui is visible"/>
+      <entry name="hidden" value="2" summary="system ui is autohide or hidden"/>
+    </enum>
+
+    <event name="systemui_behavior" since="32">
+      <description summary="systemui_behavior_state for a display">
+	Sends information about whether the systemui behavior is auto hide.
+	The "systemui_behavior" value is of enum type "systemui_behavior".
+      </description>
+      <arg name="systemui_behavior" type="int" summary="systemui_behavior enum"/>
     </event>
 
  </interface>

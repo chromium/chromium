@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests accessibility of WebSQL console in application panel.`);
-  await TestRunner.loadModule('axe_core_test_runner');
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadTestModule('axe_core_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 

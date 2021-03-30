@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package cart_db;
+
+// Used for storing ChromeCart Content.
+message ChromeCartContentProto {
+  // Original key for data.
+  string key = 1;
+
+  // Merchant name of the site that the cart belongs to.
+  string merchant = 2;
+
+  // URL that leads to the cart page.
+  string merchant_cart_url = 3;
+
+  // Timestamp that last time user interacts with this cart.
+  double timestamp = 4;
+
+  // Image URLs of products within the cart.
+  repeated string product_image_urls = 5;
+
+  // Whether the cart has been temporarily hidden. Hidden cart will be
+  // re-activated when cart content changes or user visits that cart page.
+  bool is_hidden = 6;
+
+  // Whether the cart has been permanently removed. Removed cart will be deleted
+  // from the database.
+  bool is_removed = 7;
+}

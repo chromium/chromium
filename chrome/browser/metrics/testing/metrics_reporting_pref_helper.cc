@@ -14,7 +14,7 @@
 #include "components/metrics/metrics_pref_names.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/device_settings_cache.h"
+#include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #endif
@@ -34,7 +34,7 @@ void SetMetricsReportingEnabledChromeOS(
   policy_data.set_policy_value(device_settings_proto.SerializeAsString());
   local_state_dict->SetString(
       prefs::kDeviceSettingsCache,
-      chromeos::device_settings_cache::PolicyDataToString(policy_data));
+      ash::device_settings_cache::PolicyDataToString(policy_data));
 }
 
 }  // namespace

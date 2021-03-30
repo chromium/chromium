@@ -105,6 +105,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void SetVolume(float volume) override;
   void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
+  void SetAutoplayInitiated(bool autoplay_initiated) override;
   base::TimeDelta GetMediaTime() const override;
   Ranges<base::TimeDelta> GetBufferedTimeRanges() const override;
   base::TimeDelta GetMediaDuration() const override;
@@ -161,8 +162,8 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void OnVideoNaturalSizeChange(const gfx::Size& size);
   void OnVideoOpacityChange(bool opaque);
   void OnVideoAverageKeyframeDistanceUpdate();
-  void OnAudioDecoderChange(const PipelineDecoderInfo& info);
-  void OnVideoDecoderChange(const PipelineDecoderInfo& info);
+  void OnAudioDecoderChange(const AudioDecoderInfo& info);
+  void OnVideoDecoderChange(const VideoDecoderInfo& info);
   void OnRemotePlayStateChange(MediaStatus::State state);
   void OnVideoFrameRateChange(base::Optional<int> fps);
 

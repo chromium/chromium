@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -45,7 +44,8 @@ RulesRegistryService::RulesRegistryService(content::BrowserContext* context)
       content_rules_registry_(nullptr),
       browser_context_(context) {
   if (browser_context_) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+    extension_registry_observation_.Observe(
+        ExtensionRegistry::Get(browser_context_));
     EnsureDefaultRulesRegistriesRegistered();
   }
 }
@@ -229,7 +229,8 @@ void RulesRegistryService::NotifyRegistriesHelper(
     if (content::BrowserThread::CurrentlyOn(registry->owner_thread())) {
       (registry.get()->*notification_callback)(extension);
     } else {
-      base::PostTask(FROM_HERE, {registry->owner_thread()},
+      content::BrowserThread::GetTaskRunnerForThread(registry->owner_thread())
+          ->PostTask(FROM_HERE,
                      base::BindOnce(&NotifyWithExtensionSafe,
                                     base::WrapRefCounted(extension),
                                     notification_callback, registry));

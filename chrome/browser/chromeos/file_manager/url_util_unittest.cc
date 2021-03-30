@@ -12,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
 #include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,13 +37,14 @@ std::string PrettyPrintEscapedJson(const std::string& query) {
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrl) {
-  EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/main.html",
-            GetFileManagerMainPageUrl().spec());
+  EXPECT_EQ(
+      "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/main_modules.html",
+      GetFileManagerMainPageUrl().spec());
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
   const GURL url = GetFileManagerMainPageUrlWithParams(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::UTF8ToUTF16("some title"),
+      ui::SelectFileDialog::SELECT_OPEN_FILE, u"some title",
       GURL("filesystem:chrome-extension://abc/Downloads/"),
       GURL("filesystem:chrome-extension://abc/Downloads/foo.txt"), "foo.txt",
       nullptr,  // No file types
@@ -54,7 +54,7 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
   );
   EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
   EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
-  EXPECT_EQ("/main.html", url.path());
+  EXPECT_EQ("/main_modules.html", url.path());
   // Confirm that "%20" is used instead of "+" in the query.
   EXPECT_TRUE(url.query().find("+") == std::string::npos);
   EXPECT_TRUE(url.query().find("%20") != std::string::npos);
@@ -86,15 +86,13 @@ TEST(FileManagerUrlUtilTest,
   file_types.extensions[0].push_back(FILE_PATH_LITERAL("html"));
   file_types.extensions.emplace_back();
   file_types.extensions[1].push_back(FILE_PATH_LITERAL("txt"));
-  file_types.extension_description_overrides.push_back(
-      base::UTF8ToUTF16("HTML"));
-  file_types.extension_description_overrides.push_back(
-      base::UTF8ToUTF16("TEXT"));
+  file_types.extension_description_overrides.push_back(u"HTML");
+  file_types.extension_description_overrides.push_back(u"TEXT");
   // "shouldReturnLocalPath" will be false if drive is supported.
   file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
 
   const GURL url = GetFileManagerMainPageUrlWithParams(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::UTF8ToUTF16("some title"),
+      ui::SelectFileDialog::SELECT_OPEN_FILE, u"some title",
       GURL("filesystem:chrome-extension://abc/Downloads/"),
       GURL("filesystem:chrome-extension://abc/Downloads/foo.txt"), "foo.txt",
       &file_types,
@@ -104,7 +102,7 @@ TEST(FileManagerUrlUtilTest,
   );
   EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
   EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
-  EXPECT_EQ("/main.html", url.path());
+  EXPECT_EQ("/main_modules.html", url.path());
   // Confirm that "%20" is used instead of "+" in the query.
   EXPECT_TRUE(url.query().find("+") == std::string::npos);
   EXPECT_TRUE(url.query().find("%20") != std::string::npos);

@@ -36,8 +36,8 @@ class MODULES_EXPORT MediaControlInputElement : public HTMLInputElement,
   }
 
   // Get the size of the element in pixels or the default if we cannot get the
-  // size because the element has not been layed out yet.
-  WebSize GetSizeOrDefault() const override;
+  // size because the element has not been laid out yet.
+  gfx::Size GetSizeOrDefault() const override;
   bool IsDisabled() const override;
 
  protected:

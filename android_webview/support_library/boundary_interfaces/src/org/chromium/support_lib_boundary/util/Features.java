@@ -135,6 +135,9 @@ public class Features {
     // ProxyController.clearProxyOverride
     public static final String PROXY_OVERRIDE = "PROXY_OVERRIDE:3";
 
+    // ProxyController.setProxyOverride
+    public static final String PROXY_OVERRIDE_REVERSE_BYPASS = "PROXY_OVERRIDE_REVERSE_BYPASS";
+
     // WebSettingsCompat.setWillSuppressErrorPage
     // WebSettingsCompat.getWillSuppressErrorPage
     public static final String SUPPRESS_ERROR_PAGE = "SUPPRESS_ERROR_PAGE";
@@ -181,5 +184,5 @@ public class Features {
     public static final String SET_SUPPORT_LIBRARY_VERSION = "SET_SUPPORT_LIBRARY_VERSION";
 
     // WebViewCompat.addDocumentStartJavascript
-    public static final String DOCUMENT_START_SCRIPT = "DOCUMENT_START_SCRIPT:1";
+    public static final String DOCUMENT_START_SCRIPT = "DOCUMENT_START_SCRIPT";
 }

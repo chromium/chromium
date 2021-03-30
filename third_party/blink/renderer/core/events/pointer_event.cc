@@ -9,38 +9,11 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/events/pointer_event_util.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
-
-PointerEvent* PointerEvent::Create(const AtomicString& event_type,
-                                   AbstractView* view,
-                                   const Event* underlying_event,
-                                   SimulatedClickCreationScope creation_scope) {
-  PointerEventInit* initializer = PointerEventInit::Create();
-  MouseEvent::PopulateMouseEventInit(event_type, view, underlying_event,
-                                     creation_scope, initializer);
-  base::TimeTicks timestamp = underlying_event
-                                  ? underlying_event->PlatformTimeStamp()
-                                  : base::TimeTicks::Now();
-  SyntheticEventType synthetic_type = kPositionless;
-  if (const auto* mouse_event = DynamicTo<MouseEvent>(underlying_event)) {
-    synthetic_type = kRealOrIndistinguishable;
-  }
-  PointerEvent* created_event = MakeGarbageCollected<PointerEvent>(
-      event_type, initializer, timestamp, synthetic_type, kMenuSourceNone);
-  created_event->SetTrusted(creation_scope ==
-                            SimulatedClickCreationScope::kFromUserAgent);
-  created_event->SetUnderlyingEvent(underlying_event);
-
-  if (synthetic_type == kRealOrIndistinguishable) {
-    auto* mouse_event = To<MouseEvent>(created_event->UnderlyingEvent());
-    created_event->InitCoordinates(mouse_event->client_location_.X(),
-                                   mouse_event->client_location_.Y());
-  }
-
-  return created_event;
-}
 
 PointerEvent::PointerEvent(const AtomicString& type,
                            const PointerEventInit* initializer,
@@ -223,6 +196,12 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 
   return dispatcher.Dispatch();
+}
+
+PointerId PointerEvent::pointerIdForBindings() const {
+  if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(view()))
+    UseCounter::Count(local_dom_window->document(), WebFeature::kPointerId);
+  return pointerId();
 }
 
 }  // namespace blink

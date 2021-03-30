@@ -129,11 +129,13 @@ bool WVTestLicenseServerConfig::SelectServerPort() {
 }
 
 bool WVTestLicenseServerConfig::IsPlatformSupported() {
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+// TODO(crbug.com/1175344): Reenable OS_LINUX once license server
+// (or Widevine CDM) updated.
+#if defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_64)
   return true;
 #else
   return false;
-#endif // (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#endif  // defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 }
 
 std::string WVTestLicenseServerConfig::GetServerURL() {

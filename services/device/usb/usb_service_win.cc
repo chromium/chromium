@@ -603,11 +603,10 @@ UsbServiceWin::~UsbServiceWin() {
   NotifyWillDestroyUsbService();
 }
 
-void UsbServiceWin::GetDevices(bool allow_restricted_devices,
-                               GetDevicesCallback callback) {
+void UsbServiceWin::GetDevices(GetDevicesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (enumeration_ready())
-    UsbService::GetDevices(allow_restricted_devices, std::move(callback));
+    UsbService::GetDevices(std::move(callback));
   else
     enumeration_callbacks_.push_back(std::move(callback));
 }
@@ -637,7 +636,7 @@ void UsbServiceWin::OnDeviceRemoved(const GUID& class_guid,
                   << " guid=" << device->guid();
 
     devices().erase(by_guid_it);
-    NotifyDeviceRemoved(device, /*is_restricted_device=*/false);
+    NotifyDeviceRemoved(device);
   }
 }
 
@@ -735,7 +734,7 @@ void UsbServiceWin::DeviceReady(scoped_refptr<UsbDeviceWin> device,
       std::move(callback).Run(result);
     enumeration_callbacks_.clear();
   } else if (success && enumeration_ready()) {
-    NotifyDeviceAdded(device, /*is_restricted_device=*/false);
+    NotifyDeviceAdded(device);
   }
 }
 

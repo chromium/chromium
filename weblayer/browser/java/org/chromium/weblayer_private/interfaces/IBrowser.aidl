@@ -41,7 +41,6 @@ interface IBrowser {
                                       in boolean onlyExpandControlsAtPageTop,
                                       in boolean animate) = 12;
 
-  // Added in 87.
   boolean isRestoringPreviousState() = 14;
 
   // Added in 88.
@@ -49,4 +48,8 @@ interface IBrowser {
 
   // Added in 89.
   void setMinimumSurfaceSize(in int width, in int height) = 15;
+
+  // Added in 90.
+  void setDarkModeStrategy(in int strategy) = 16;
+  void setEmbeddabilityMode(in int mode, in IObjectWrapper valueCallback) = 17;
 }

@@ -51,6 +51,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
   std::vector<int32_t> algorithms = {
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
   };
+  base::Optional<uint32_t> max_serialized_large_blob_array;
   base::Optional<uint32_t> remaining_discoverable_credentials;
   base::Optional<bool> force_pin_change;
   base::Optional<uint32_t> min_pin_length;

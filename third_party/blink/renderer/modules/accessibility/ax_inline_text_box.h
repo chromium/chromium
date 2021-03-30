@@ -46,6 +46,7 @@ class AXInlineTextBox final : public AXObject {
   AXInlineTextBox(scoped_refptr<AbstractInlineTextBox>, AXObjectCacheImpl&);
 
   // AXObject overrides.
+  RGBA32 GetColor() const override { return Color::kTransparent; }
   String GetName(ax::mojom::blink::NameFrom&,
                  AXObject::AXObjectVector* name_objects) const override;
   void TextCharacterOffsets(Vector<int>&) const override;
@@ -57,21 +58,28 @@ class AXInlineTextBox final : public AXObject {
                          FloatRect& out_bounds_in_container,
                          SkMatrix44& out_container_transform,
                          bool* clips_children = nullptr) const override;
-  AXObject* ComputeParent() const override;
   ax::mojom::blink::WritingDirection GetTextDirection() const override;
   Node* GetNode() const override;
+  Document* GetDocument() const override;
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
-  void GetDocumentMarkers(Vector<DocumentMarker::MarkerType>* marker_types,
-                          Vector<AXRange>* marker_ranges) const override;
+  void SerializeMarkerAttributes(ui::AXNodeData* node_data) const override;
+  ax::mojom::blink::Role DetermineAccessibilityRole() override {
+    // role_ is set manually in Init(), but must implement pure virtual method.
+    NOTREACHED();
+    return ax::mojom::blink::Role::kInlineTextBox;
+  }
 
  protected:
-  void Init() override;
+  void Init(AXObject* parent) override;
   void Detach() override;
-  bool IsDetached() const override;
   bool IsAXInlineTextBox() const override;
   bool IsLineBreakingObject() const override;
   int TextLength() const override;
+
+  // Always a leaf.
+  bool CanHaveChildren() const override { return false; }
+  void AddChildren() override {}
 
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;

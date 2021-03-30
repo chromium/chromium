@@ -3,20 +3,18 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
@@ -127,39 +125,25 @@ void ExtensionUninstallDialogViews::Show() {
   std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
   dialog_model_ = dialog_model.get();
 
+  // TODO(devlin): There's a lot of shared-ish code between this and
+  // PrintJobConfirmationDialogView. We should pull it into a common location.
   BrowserView* const browser_view =
       parent() ? BrowserView::GetBrowserViewForNativeWindow(parent()) : nullptr;
-  ToolbarActionView* anchor_view = nullptr;
   ExtensionsToolbarContainer* const container =
       browser_view ? browser_view->toolbar_button_provider()
                          ->GetExtensionsToolbarContainer()
                    : nullptr;
-  if (container) {
-    anchor_view = container->GetViewForId(extension()->id());
-  } else if (browser_view &&
-             !base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    BrowserActionsContainer* const browser_actions_container =
-        browser_view->toolbar_button_provider()->GetBrowserActionsContainer();
-    ToolbarActionView* const reference_view =
-        browser_actions_container
-            ? browser_actions_container->GetViewForId(extension()->id())
-            : nullptr;
-    if (reference_view && reference_view->GetVisible())
-      anchor_view = reference_view;
-  }
+  ToolbarActionView* anchor_view =
+      container ? container->GetViewForId(extension()->id()) : nullptr;
 
   if (anchor_view) {
+    DCHECK(container);
     auto bubble = std::make_unique<views::BubbleDialogModelHost>(
         std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
 
-    if (container) {
       container->ShowWidgetForExtension(
           views::BubbleDialogDelegateView::CreateBubble(std::move(bubble)),
           extension()->id());
-    } else {
-      DCHECK(!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
-      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
-    }
   } else {
     // TODO(pbos): Add unique_ptr version of CreateBrowserModalDialogViews and
     // remove .release().

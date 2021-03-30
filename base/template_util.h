@@ -233,16 +233,94 @@ struct disjunction<B1, Bn...>
 template <typename B>
 struct negation : bool_constant<!static_cast<bool>(B::value)> {};
 
-// Implementation of C++17's std::invoke_result_t.
+// Implementation of C++17's invoke_result.
 //
 // This implementation adds references to `Functor` and `Args` to work around
-// some quirks of std::result_of_t. See the #Notes section of [1] for details.
+// some quirks of std::result_of. See the #Notes section of [1] for details.
 //
 // References:
 // [1] https://en.cppreference.com/w/cpp/types/result_of
-// [2] https://wg21.link/meta.type.synop#lib:invoke_result_t
+// [2] https://wg21.link/meta.trans.other#lib:invoke_result
 template <typename Functor, typename... Args>
-using invoke_result_t = std::result_of_t<Functor && (Args && ...)>;
+using invoke_result = std::result_of<Functor && (Args && ...)>;
+
+// Implementation of C++17's std::invoke_result_t.
+//
+// Reference: https://wg21.link/meta.type.synop#lib:invoke_result_t
+template <typename Functor, typename... Args>
+using invoke_result_t = typename invoke_result<Functor, Args...>::type;
+
+namespace internal {
+
+// Base case, `InvokeResult` does not have a nested type member. This means `F`
+// could not be invoked with `Args...` and thus is not invocable.
+template <typename InvokeResult, typename R, typename = void>
+struct IsInvocableImpl : std::false_type {};
+
+// Happy case, `InvokeResult` does have a nested type member. Now check whether
+// `InvokeResult::type` is convertible to `R`. Short circuit in case
+// `std::is_void<R>`.
+template <typename InvokeResult, typename R>
+struct IsInvocableImpl<InvokeResult, R, void_t<typename InvokeResult::type>>
+    : disjunction<std::is_void<R>,
+                  std::is_convertible<typename InvokeResult::type, R>> {};
+
+}  // namespace internal
+
+// Implementation of C++17's std::is_invocable_r.
+//
+// Returns whether `F` can be invoked with `Args...` and the result is
+// convertible to `R`.
+//
+// Reference: https://wg21.link/meta.rel#lib:is_invocable_r
+template <typename R, typename F, typename... Args>
+struct is_invocable_r
+    : internal::IsInvocableImpl<invoke_result<F, Args...>, R> {};
+
+// Implementation of C++17's std::is_invocable.
+//
+// Returns whether `F` can be invoked with `Args...`.
+//
+// Reference: https://wg21.link/meta.rel#lib:is_invocable
+template <typename F, typename... Args>
+struct is_invocable : is_invocable_r<void, F, Args...> {};
+
+namespace internal {
+
+// The indirection with std::is_enum<T> is required, because instantiating
+// std::underlying_type_t<T> when T is not an enum is UB prior to C++20.
+template <typename T, bool = std::is_enum<T>::value>
+struct IsScopedEnumImpl : std::false_type {};
+
+template <typename T>
+struct IsScopedEnumImpl<T, /*std::is_enum<T>::value=*/true>
+    : negation<std::is_convertible<T, std::underlying_type_t<T>>> {};
+
+}  // namespace internal
+
+// Implementation of C++23's std::is_scoped_enum
+//
+// Reference: https://en.cppreference.com/w/cpp/types/is_scoped_enum
+template <typename T>
+struct is_scoped_enum : internal::IsScopedEnumImpl<T> {};
+
+// Implementation of C++20's std::remove_cvref.
+//
+// References:
+// - https://en.cppreference.com/w/cpp/types/remove_cvref
+// - https://wg21.link/meta.trans.other#lib:remove_cvref
+template <typename T>
+struct remove_cvref {
+  using type = std::remove_cv_t<std::remove_reference_t<T>>;
+};
+
+// Implementation of C++20's std::remove_cvref_t.
+//
+// References:
+// - https://en.cppreference.com/w/cpp/types/remove_cvref
+// - https://wg21.link/meta.type.synop#lib:remove_cvref_t
+template <typename T>
+using remove_cvref_t = typename remove_cvref<T>::type;
 
 // Simplified implementation of C++20's std::iter_value_t.
 // As opposed to std::iter_value_t, this implementation does not restrict
@@ -251,8 +329,8 @@ using invoke_result_t = std::result_of_t<Functor && (Args && ...)>;
 //
 // Reference: https://wg21.link/readable.traits#2
 template <typename Iter>
-using iter_value_t = typename std::iterator_traits<
-    std::remove_cv_t<std::remove_reference_t<Iter>>>::value_type;
+using iter_value_t =
+    typename std::iterator_traits<remove_cvref_t<Iter>>::value_type;
 
 // Simplified implementation of C++20's std::iter_reference_t.
 // As opposed to std::iter_reference_t, this implementation does not restrict
@@ -281,7 +359,7 @@ template <typename Iter,
           typename Proj,
           typename IndirectResultT = indirect_result_t<Proj, Iter>>
 struct projected {
-  using value_type = std::remove_cv_t<std::remove_reference_t<IndirectResultT>>;
+  using value_type = remove_cvref_t<IndirectResultT>;
 
   IndirectResultT operator*() const;  // not defined
 };

@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->IsFirstSetupComplete());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
-  syncer::SyncPrefs prefs(GetProfile(0)->GetPrefs());
+  syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
   const std::string cache_guid = prefs.GetCacheGuid();
   ASSERT_FALSE(cache_guid.empty());
 
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->IsFirstSetupComplete());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
-  syncer::SyncPrefs prefs(GetProfile(0)->GetPrefs());
+  syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
   ASSERT_FALSE(prefs.GetCacheGuid().empty());
 
   std::string old_cache_guid;

@@ -16,13 +16,6 @@ public interface FirstRunFragment {
     default void onNativeInitialized() {}
 
     /**
-     * @return Whether the back button press was handled by this page.
-     */
-    default boolean interceptBackPressed() {
-        return false;
-    }
-
-    /**
      * @see Fragment#getActivity().
      */
     Activity getActivity();

@@ -6,70 +6,8 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":bluetooth_device_list_item",
-    ":bluetooth_page",
-    ":bluetooth_subpage",
-  ]
-}
-
-js_library("bluetooth_page") {
-  deps = [
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../..:router",
-    "../../prefs:prefs_behavior",
-    "../../settings_page:settings_animated_pages",
-    "//services/device/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-  externs_list = [
-    "$externs_path/bluetooth.js",
-    "$externs_path/bluetooth_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/bluetooth_interface.js",
-    "$interfaces_path/bluetooth_private_interface.js",
-  ]
-}
-
-js_library("bluetooth_subpage") {
-  deps = [
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../..:router",
-    "//services/device/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_dialog",
-    "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:list_property_update_behavior",
-  ]
-  externs_list = chrome_extension_public_externs + [
-                   "$externs_path/bluetooth.js",
-                   "$externs_path/bluetooth_private.js",
-                 ]
-  extra_sources = [
-    "$interfaces_path/bluetooth_interface.js",
-    "$interfaces_path/bluetooth_private_interface.js",
-  ]
-}
-
-js_library("bluetooth_device_list_item") {
-  deps = [
-    "//services/device/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
-  ]
-  externs_list = [ "$externs_path/bluetooth.js" ]
-}
-
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":bluetooth_device_list_item.m",
@@ -97,9 +35,9 @@ js_library("bluetooth_page.m") {
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
-    "../..:router.m",
-    "../../prefs:prefs_behavior.m",
-    "../../settings_page:settings_animated_pages.m",
+    "../..:router",
+    "../../prefs:prefs_behavior",
+    "../../settings_page:settings_animated_pages",
     "//services/device/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -117,7 +55,7 @@ js_library("bluetooth_subpage.m") {
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "//services/device/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_dialog.m",

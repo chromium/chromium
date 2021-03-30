@@ -1,0 +1,76 @@
+<!doctype html>
+<title>Test basic interaction with the Speech JavaScript API</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockSpeechRecognizer} from '../resources/mock-speechrecognizer.js';
+
+const mock = new MockSpeechRecognizer();
+
+test(() => {
+  assert_true('webkitSpeechRecognition' in self);
+  assert_false(webkitSpeechRecognition == null);
+}, "Check constructors");
+
+async_test(t => {
+  const r = new webkitSpeechRecognition();
+  let count = 0;
+
+  r.onstart = t.step_func(() => { assert_equals(count, 0); count++; });
+  r.onaudiostart = t.step_func(() => { assert_equals(count, 1); count++ });
+  r.onsoundstart = t.step_func(() => { assert_equals(count, 2); count++ });
+  r.onspeechstart = t.step_func(() => { assert_equals(count, 3); count++ });
+
+  r.onresult = t.step_func((event) => {
+    assert_equals(count, 4);
+    count++;
+    assert_equals(event.results.length, 1);
+    assert_equals(event.results.item(-1), null);
+    assert_equals(event.results[0].length, 1);
+    assert_true(event.results[0].isFinal);
+    assert_equals(event.results[0].item(0).transcript, 'hello, world');
+    assert_approx_equals(event.results[0].item(0).confidence, 0.42, 1e-3);
+    assert_equals(event.results[0].item(-1), null);
+  });
+
+  r.onspeechend = t.step_func(() => { assert_equals(count, 5); count++; });
+  r.onsoundend = t.step_func(() => { assert_equals(count, 6); count++; });
+  r.onaudioend = t.step_func(() => { assert_equals(count, 7); count++; });
+
+  r.onend = t.step_func_done(() => {
+    assert_equals(count, 8);
+    count++;
+  });
+
+  mock.addMockSpeechRecognitionResult('hello, world', 0.42);
+  r.start();
+}, "One match test");
+
+async_test(t => {
+  const r = new webkitSpeechRecognition();
+  let count = 0;
+
+  r.onstart = t.step_func(() => { assert_equals(count, 0); count++; });
+  r.onaudiostart = t.step_func(() => { assert_equals(count, 1); count++ });
+  r.onsoundstart = t.step_func(() => { assert_equals(count, 2); count++ });
+  r.onspeechstart = t.step_func(() => { assert_equals(count, 3); count++ });
+
+  r.onnomatch = t.step_func((event) => {
+    assert_equals(count, 4);
+    count++;
+    assert_equals(event.results, null);
+  });
+
+  r.onspeechend = t.step_func(() => { assert_equals(count, 5); count++; });
+  r.onsoundend = t.step_func(() => { assert_equals(count, 6); count++; });
+  r.onaudioend = t.step_func(() => { assert_equals(count, 7); count++; });
+
+  r.onend = t.step_func_done(() => {
+    assert_equals(count, 8);
+    count++;
+  });
+
+  r.start();
+});
+
+</script>

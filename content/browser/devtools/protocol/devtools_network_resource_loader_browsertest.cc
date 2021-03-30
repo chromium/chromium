@@ -131,7 +131,7 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
         current_frame_host()->GetLastCommittedOrigin(),
         current_frame_host()->ComputeSiteForCookies(), caching,
         protocol::DevToolsNetworkResourceLoader::Credentials::kInclude,
-        MSG_ROUTING_NONE, std::move(callback));
+        std::move(callback));
   }
 
  protected:

@@ -269,18 +269,18 @@ void BluetoothGattDescriptorServiceProviderImpl::ReadValue(
   }
 
   // GetValue() promises to only call either the success or error callback.
-  auto response_sender_adapted =
-      base::AdaptCallbackForRepeating(std::move(response_sender));
+  auto split_response_sender =
+      base::SplitOnceCallback(std::move(response_sender));
 
   DCHECK(delegate_);
   delegate_->GetValue(
       device_path,
       base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnReadValue,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
-                     response_sender_adapted),
+                     std::move(split_response_sender.first)),
       base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnFailure,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
-                     response_sender_adapted));
+                     std::move(split_response_sender.second)));
 }
 
 void BluetoothGattDescriptorServiceProviderImpl::WriteValue(
@@ -318,18 +318,18 @@ void BluetoothGattDescriptorServiceProviderImpl::WriteValue(
   }
 
   // SetValue() promises to only call either the success or error callback.
-  auto response_sender_adapted =
-      base::AdaptCallbackForRepeating(std::move(response_sender));
+  auto split_response_sender =
+      base::SplitOnceCallback(std::move(response_sender));
 
   DCHECK(delegate_);
   delegate_->SetValue(
       device_path, value,
       base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnWriteValue,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
-                     response_sender_adapted),
+                     std::move(split_response_sender.first)),
       base::BindOnce(&BluetoothGattDescriptorServiceProviderImpl::OnFailure,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
-                     response_sender_adapted));
+                     std::move(split_response_sender.second)));
 }
 
 void BluetoothGattDescriptorServiceProviderImpl::OnExported(

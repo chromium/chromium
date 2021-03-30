@@ -21,6 +21,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case NAME_LAST_SECOND:
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
+    case NAME_FULL_WITH_HONORIFIC_PREFIX:
     case NAME_SUFFIX:
     case EMAIL_ADDRESS:
     case USERNAME_AND_EMAIL_ADDRESS:
@@ -98,6 +99,10 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case COMPANY_NAME:
       return true;
 
+    case MERCHANT_PROMO_CODE:
+      // TODO(crbug/1190334): Create flag for this and use flag value instead.
+      return false;
+
     // Fillable credential fields.
     case USERNAME:
     case PASSWORD:
@@ -129,7 +134,6 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case PHONE_FAX_WHOLE_NUMBER:
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
-    case MERCHANT_PROMO_CODE:
     case PRICE:
     case SEARCH_TERM:
     case UNKNOWN_TYPE:
@@ -152,6 +156,8 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "EMPTY_TYPE";
     case NAME_HONORIFIC_PREFIX:
       return "NAME_HONORIFIC_PREFIX";
+    case NAME_FULL_WITH_HONORIFIC_PREFIX:
+      return "NAME_FULL_WITH_HONORIFIC_PREFIX";
     case NAME_FIRST:
       return "NAME_FIRST";
     case NAME_MIDDLE:

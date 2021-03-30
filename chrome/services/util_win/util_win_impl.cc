@@ -8,6 +8,7 @@
 #include <shldisp.h>
 #include <wrl/client.h>
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
-#include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
@@ -46,7 +47,7 @@ class IsPinnedToTaskbarHelper {
  private:
   // Returns the shell resource string identified by |resource_id|, or an empty
   // string on error.
-  base::string16 LoadShellResourceString(uint32_t resource_id);
+  std::wstring LoadShellResourceString(uint32_t resource_id);
 
   // Returns true if the "Unpin from taskbar" verb is available for |shortcut|,
   // which means that the shortcut is pinned to the taskbar.
@@ -71,20 +72,20 @@ class IsPinnedToTaskbarHelper {
   DISALLOW_COPY_AND_ASSIGN(IsPinnedToTaskbarHelper);
 };
 
-base::string16 IsPinnedToTaskbarHelper::LoadShellResourceString(
+std::wstring IsPinnedToTaskbarHelper::LoadShellResourceString(
     uint32_t resource_id) {
   base::ScopedNativeLibrary scoped_native_library(::LoadLibraryEx(
       FILE_PATH_LITERAL("shell32.dll"), nullptr,
       LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE));
   if (!scoped_native_library.is_valid())
-    return base::string16();
+    return std::wstring();
 
   const wchar_t* resource_ptr = nullptr;
   int length = ::LoadStringW(scoped_native_library.get(), resource_id,
                              reinterpret_cast<wchar_t*>(&resource_ptr), 0);
   if (!length || !resource_ptr)
-    return base::string16();
-  return base::string16(resource_ptr, length);
+    return std::wstring();
+  return std::wstring(resource_ptr, length);
 }
 
 bool IsPinnedToTaskbarHelper::ShortcutHasUnpinToTaskbarVerb(
@@ -92,7 +93,7 @@ bool IsPinnedToTaskbarHelper::ShortcutHasUnpinToTaskbarVerb(
   // Found inside shell32.dll's resources.
   constexpr uint32_t kUnpinFromTaskbarID = 5387;
 
-  base::string16 verb_name(LoadShellResourceString(kUnpinFromTaskbarID));
+  std::wstring verb_name(LoadShellResourceString(kUnpinFromTaskbarID));
   if (verb_name.empty()) {
     error_occured_ = true;
     return false;
@@ -151,7 +152,7 @@ bool IsPinnedToTaskbarHelper::ShortcutHasUnpinToTaskbarVerb(
       error_count++;
       continue;
     }
-    if (base::StringPiece16(name.Get(), name.Length()) == verb_name)
+    if (base::WStringPiece(name.Get(), name.Length()) == verb_name)
       return true;
   }
 
@@ -246,18 +247,19 @@ void UtilWinImpl::IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) {
 void UtilWinImpl::CallExecuteSelectFile(
     ui::SelectFileDialog::Type type,
     uint32_t owner,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const std::vector<ui::FileFilterSpec>& filter,
     int32_t file_type_index,
-    const base::string16& default_extension,
+    const std::u16string& default_extension,
     CallExecuteSelectFileCallback callback) {
   base::win::ScopedCOMInitializer scoped_com_initializer;
 
   base::win::EnableHighDPISupport();
 
   ui::ExecuteSelectFile(
-      type, title, default_path, filter, file_type_index, default_extension,
+      type, title, default_path, filter, file_type_index,
+      base::UTF16ToWide(default_extension),
       reinterpret_cast<HWND>(base::win::Uint32ToHandle(owner)),
       base::BindOnce(std::move(callback)));
 }

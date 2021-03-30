@@ -73,6 +73,17 @@ FakeFileSystemInstance::File::File(const std::string& url,
                                    Seekable seekable)
     : url(url), content(content), mime_type(mime_type), seekable(seekable) {}
 
+FakeFileSystemInstance::File::File(const std::string& url,
+                                   const std::string& content,
+                                   const std::string& mime_type,
+                                   Seekable seekable,
+                                   int64_t size_override)
+    : url(url),
+      content(content),
+      mime_type(mime_type),
+      seekable(seekable),
+      size_override(size_override) {}
+
 FakeFileSystemInstance::File::File(const File& that) = default;
 
 FakeFileSystemInstance::File::~File() = default;
@@ -128,11 +139,15 @@ FakeFileSystemInstance::Document::~Document() = default;
 FakeFileSystemInstance::Root::Root(const std::string& authority,
                                    const std::string& root_id,
                                    const std::string& document_id,
-                                   const std::string& title)
+                                   const std::string& title,
+                                   int64_t available_bytes,
+                                   int64_t capacity_bytes)
     : authority(authority),
       root_id(root_id),
       document_id(document_id),
-      title(title) {}
+      title(title),
+      available_bytes(available_bytes),
+      capacity_bytes(capacity_bytes) {}
 
 FakeFileSystemInstance::Root::Root(const Root& that) = default;
 
@@ -179,7 +194,10 @@ void FakeFileSystemInstance::AddRecentDocument(const std::string& root_id,
 
 void FakeFileSystemInstance::AddRoot(const Root& root) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  roots_.push_back(root);
+  roots_list_.push_back(root);
+  RootKey key(root.authority, root.root_id);
+  DCHECK_EQ(0u, roots_.count(key));
+  roots_.insert(std::make_pair(key, root));
 }
 
 void FakeFileSystemInstance::SetGetLastChangeTimeCallback(
@@ -232,6 +250,13 @@ bool FakeFileSystemInstance::DocumentExists(const std::string& authority,
   std::string document_id =
       FindChildDocumentId(authority, root_document_id, path_components);
   return DocumentExists(authority, document_id);
+}
+
+bool FakeFileSystemInstance::RootExists(const std::string& authority,
+                                        const std::string& root_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  RootKey key(authority, root_id);
+  return roots_.find(key) != roots_.end();
 }
 
 FakeFileSystemInstance::Document FakeFileSystemInstance::GetDocument(
@@ -318,7 +343,7 @@ void FakeFileSystemInstance::GetFileSize(const std::string& url,
   }
   const File& file = iter->second;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), file.content.size()));
+      FROM_HERE, base::BindOnce(std::move(callback), file.size()));
 }
 
 void FakeFileSystemInstance::GetMimeType(const std::string& url,
@@ -477,11 +502,29 @@ void FakeFileSystemInstance::GetRecentDocuments(
 void FakeFileSystemInstance::GetRoots(GetRootsCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::vector<mojom::RootPtr> roots;
-  for (const Root& root : roots_)
+  for (const Root& root : roots_list_)
     roots.emplace_back(MakeRoot(root));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 base::make_optional(std::move(roots))));
+}
+
+void FakeFileSystemInstance::GetRootSize(const std::string& authority,
+                                         const std::string& root_id,
+                                         GetRootSizeCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = roots_.find(RootKey(authority, root_id));
+  if (iter == roots_.end()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojom::RootSizePtr()));
+    return;
+  }
+  const Root& root = iter->second;
+  mojom::RootSizePtr root_size = mojom::RootSize::New();
+  root_size->available_bytes = root.available_bytes;
+  root_size->capacity_bytes = root.capacity_bytes;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(root_size)));
 }
 
 void FakeFileSystemInstance::DeleteDocument(const std::string& authority,
@@ -680,6 +723,14 @@ void FakeFileSystemInstance::ReindexDirectory(
 
 void FakeFileSystemInstance::OpenUrlsWithPermission(
     mojom::OpenUrlsRequestPtr request,
+    OpenUrlsWithPermissionCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  handled_url_requests_.emplace_back(std::move(request));
+}
+
+void FakeFileSystemInstance::OpenUrlsWithPermissionAndWindowInfo(
+    mojom::OpenUrlsRequestPtr request,
+    mojom::WindowInfoPtr window_info,
     OpenUrlsWithPermissionCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   handled_url_requests_.emplace_back(std::move(request));

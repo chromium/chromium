@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -203,6 +204,14 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
       loggedErrorState = SYNC_UNRECOVERABLE_ERROR;
       break;
     case SyncSetupService::kSyncSettingsNotConfirmed:
+      // Do not display sync not confirmed infobar if the user is in the MICE
+      // sign-in flow, since disabling Sync during sign-in is considered a
+      // valid end state.
+      // TODO(crbug.com/1084941): the kSyncSettingsNotConfirmed case should be
+      // removed following the launch of MICE.
+      if (signin::IsMobileIdentityConsistencyEnabled()) {
+        return false;
+      }
       loggedErrorState = SYNC_SYNC_SETTINGS_NOT_CONFIRMED;
       break;
   }

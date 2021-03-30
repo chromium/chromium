@@ -67,7 +67,6 @@ SyncAuthManager::SyncAuthManager(
     : identity_manager_(identity_manager),
       account_state_changed_callback_(account_state_changed),
       credentials_changed_callback_(credentials_changed),
-      registered_for_auth_notifications_(false),
       request_access_token_backoff_(&kRequestAccessTokenBackoffPolicy) {
   // |identity_manager_| can be null if local Sync is enabled.
 }
@@ -88,6 +87,16 @@ void SyncAuthManager::RegisterForAuthNotifications() {
   // Also initialize the sync account here, but *without* notifying the
   // SyncService.
   sync_account_ = DetermineAccountToUse();
+  // If there's already a persistent auth error, also propagate that into our
+  // local state. Note that (as of 2021-01) this shouldn't happen in practice:
+  // Auth errors are not persisted, so it's unlikely that at this point in time
+  // (early during browser startup) an auth error has already been detected.
+  GoogleServiceAuthError token_error =
+      identity_manager_->GetErrorStateOfRefreshTokenForAccount(
+          sync_account_.account_info.account_id);
+  if (token_error.IsPersistentError()) {
+    SetLastAuthError(token_error);
+  }
 }
 
 bool SyncAuthManager::IsActiveAccountInfoFullyLoaded() const {
@@ -147,7 +156,6 @@ SyncCredentials SyncAuthManager::GetCredentials() const {
   const CoreAccountInfo& account_info = sync_account_.account_info;
 
   SyncCredentials credentials;
-  credentials.account_id = account_info.account_id;
   credentials.email = account_info.email;
   credentials.access_token = access_token_;
 
@@ -279,14 +287,12 @@ void SyncAuthManager::ConnectionClosed() {
   connection_open_ = false;
 }
 
-void SyncAuthManager::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  UpdateSyncAccountIfNecessary();
-}
-
-void SyncAuthManager::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", SIGN_OUT, STOP_SOURCE_LIMIT);
+void SyncAuthManager::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", SIGN_OUT, STOP_SOURCE_LIMIT);
+  }
   UpdateSyncAccountIfNecessary();
 }
 
@@ -371,8 +377,9 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
   // If we're still here, then that means Chrome is still signed in to this
   // account. Keep Sync alive but set an auth error.
   // TODO(crbug.com/1156584): Should we stop Sync in this case?
-  DCHECK_EQ(sync_account_.account_info.account_id,
-            identity_manager_->GetPrimaryAccountId());
+  DCHECK_EQ(
+      sync_account_.account_info.account_id,
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
 
   // TODO(crbug.com/839834): REQUEST_CANCELED doesn't seem like the right auth
   // error to use here. Maybe INVALID_GAIA_CREDENTIALS?
@@ -399,11 +406,6 @@ void SyncAuthManager::OnRefreshTokensLoaded() {
     // let's treat it as account state change.
     account_state_changed_callback_.Run();
   }
-}
-
-void SyncAuthManager::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
-  UpdateSyncAccountIfNecessary();
 }
 
 bool SyncAuthManager::IsRetryingAccessTokenFetchForTest() const {
@@ -541,9 +543,14 @@ void SyncAuthManager::AccessTokenFetched(
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
       SetLastAuthError(error);
       break;
-    default:
+    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
+    case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
       DLOG(ERROR) << "Unexpected persistent error: " << error.ToString();
       SetLastAuthError(error);
+      break;
+    case GoogleServiceAuthError::NUM_STATES:
+      NOTREACHED();
+      break;
   }
 
   credentials_changed_callback_.Run();

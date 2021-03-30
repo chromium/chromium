@@ -11,11 +11,13 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/policy/affiliated_invalidation_service_provider.h"
 #include "components/invalidation/public/identity_provider.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
+class AccountId;
 namespace invalidation {
 class InvalidationService;
 }
@@ -28,15 +30,13 @@ namespace policy {
 
 class AffiliatedInvalidationServiceProviderImpl
     : public AffiliatedInvalidationServiceProvider,
-      public content::NotificationObserver {
+      public session_manager::SessionManagerObserver {
  public:
   AffiliatedInvalidationServiceProviderImpl();
   ~AffiliatedInvalidationServiceProviderImpl() override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // AffiliatedInvalidationServiceProvider:
   void RegisterConsumer(Consumer* consumer) override;
@@ -78,7 +78,9 @@ class AffiliatedInvalidationServiceProviderImpl
   std::unique_ptr<invalidation::InvalidationService>
   InitializeDeviceInvalidationService();
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
   // State observer for the device-global invalidation service.
   std::unique_ptr<InvalidationServiceObserver>

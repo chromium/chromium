@@ -105,14 +105,11 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
 
   Member<DevToolsAgent> agent_;
   // DevToolsSession is not tied to ExecutionContext
-  HeapMojoAssociatedReceiver<mojom::blink::DevToolsSession,
-                             DevToolsSession,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoAssociatedReceiver<mojom::blink::DevToolsSession, DevToolsSession>
       receiver_{this, nullptr};
   // DevToolsSession is not tied to ExecutionContext
-  HeapMojoAssociatedRemote<mojom::blink::DevToolsSessionHost,
-                           HeapMojoWrapperMode::kWithoutContextObserver>
-      host_remote_{nullptr};
+  HeapMojoAssociatedRemote<mojom::blink::DevToolsSessionHost> host_remote_{
+      nullptr};
   IOSession* io_session_;
   std::unique_ptr<v8_inspector::V8InspectorSession> v8_session_;
   std::unique_ptr<protocol::UberDispatcher> inspector_backend_dispatcher_;

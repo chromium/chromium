@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -21,7 +22,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -37,8 +38,6 @@
 #endif
 
 #if defined(OS_WIN)
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/gfx/native_widget_types.h"
 #endif  // defined(OS_WIN)
 
@@ -60,26 +59,19 @@ bool IsAppInstalled(apps::AppServiceProxy* proxy, const AppId& app_id) {
 
 // UninstallWebAppWithDialog handles WebApp uninstallation from the
 // Windows Settings.
-void UninstallWebAppWithDialog(
-    const AppId& app_id,
-    Profile* profile,
-    std::unique_ptr<ScopedKeepAlive> keep_browser_alive) {
+void UninstallWebAppWithDialog(const AppId& app_id, Profile* profile) {
   auto* provider = WebAppProvider::Get(profile);
   if (!provider->registrar().IsLocallyInstalled(app_id)) {
     // App does not exist and controller is destroyed.
     return;
   }
 
+  // Note: WebAppInstallFinalizer::UninstallWebApp creates a ScopedKeepAlive
+  // object which ensures the browser stays alive during the WebApp
+  // uninstall.
   WebAppUiManagerImpl::Get(profile)->dialog_manager().UninstallWebApp(
       app_id, WebAppDialogManager::UninstallSource::kOsSettings,
-      gfx::kNullNativeWindow,
-      base::BindOnce(
-          [](std::unique_ptr<ScopedKeepAlive> keep_browser_alive,
-             bool /*uninstalled*/) {
-            // This callback exists to own |keep_browser_alive|,
-            // until after the uninstallation completes.
-          },
-          std::move(keep_browser_alive)));
+      gfx::kNullNativeWindow, base::DoNothing());
 }
 
 #endif  // defined(OS_WIN)
@@ -287,6 +279,21 @@ void WebAppUiManagerImpl::ReparentAppTabToWindow(content::WebContents* contents,
   ReparentWebContentsIntoAppBrowser(contents, app_id);
 }
 
+content::WebContents* WebAppUiManagerImpl::NavigateExistingWindow(
+    const AppId& app_id,
+    const GURL& url) {
+  for (Browser* open_browser : *BrowserList::GetInstance()) {
+    if (web_app::AppBrowserController::IsForWebApp(open_browser, app_id)) {
+      open_browser->OpenURL(content::OpenURLParams(
+          url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_LINK,
+          /*is_renderer_initiated=*/false));
+      return open_browser->tab_strip_model()->GetActiveWebContents();
+    }
+  }
+  return nullptr;
+}
+
 void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {
   DCHECK(started_);
   if (!IsBrowserForInstalledApp(browser))
@@ -322,12 +329,8 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 #if defined(OS_WIN)
 void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(
     const AppId& app_id) {
-  auto keep_browser_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::APP_UNINSTALLATION_FROM_OS_SETTINGS,
-      KeepAliveRestartOption::DISABLED);
   WebAppProvider::Get(profile_)->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&UninstallWebAppWithDialog, app_id, profile_,
-                                std::move(keep_browser_alive)));
+      FROM_HERE, base::BindOnce(&UninstallWebAppWithDialog, app_id, profile_));
 }
 #endif  //  defined(OS_WIN)
 

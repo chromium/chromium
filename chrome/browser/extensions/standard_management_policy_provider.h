@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "extensions/browser/management_policy.h"
 
 namespace extensions {
@@ -27,28 +26,28 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
   // ManagementPolicy::Provider implementation.
   std::string GetDebugPolicyProviderName() const override;
   bool UserMayLoad(const Extension* extension,
-                   base::string16* error) const override;
+                   std::u16string* error) const override;
   bool UserMayInstall(const Extension* extension,
-                      base::string16* error) const override;
+                      std::u16string* error) const override;
   bool UserMayModifySettings(const Extension* extension,
-                             base::string16* error) const override;
+                             std::u16string* error) const override;
   bool ExtensionMayModifySettings(const Extension* source_extension,
                                   const Extension* extension,
-                                  base::string16* error) const override;
+                                  std::u16string* error) const override;
   bool MustRemainEnabled(const Extension* extension,
-                         base::string16* error) const override;
+                         std::u16string* error) const override;
   bool MustRemainDisabled(const Extension* extension,
                           disable_reason::DisableReason* reason,
-                          base::string16* error) const override;
+                          std::u16string* error) const override;
   bool MustRemainInstalled(const Extension* extension,
-                           base::string16* error) const override;
+                           std::u16string* error) const override;
   bool ShouldForceUninstall(const Extension* extension,
-                            base::string16* error) const override;
+                            std::u16string* error) const override;
 
  private:
   const ExtensionManagement* settings_;
   bool ReturnLoadError(const extensions::Extension* extension,
-                       base::string16* error) const;
+                       std::u16string* error) const;
 };
 
 }  // namespace extensions

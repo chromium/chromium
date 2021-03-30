@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {assertString} from '../chrome_util.js';
+import * as dom from '../dom.js';
+import * as loadTimeData from '../models/load_time_data.js';
 import {ViewName} from '../type.js';
+
 import {View} from './view.js';
 
 /**
@@ -12,9 +14,9 @@ import {View} from './view.js';
  * @enum {string}
  */
 export const WarningType = {
-  NO_CAMERA: 'error_msg_no_camera',
+  CAMERA_PAUSED: 'error_msg_camera_paused',
   FILESYSTEM_FAILURE: 'error_msg_file_system_failed',
-  CAMERA_BEING_USED: 'error_msg_camera_being_used',
+  NO_CAMERA: 'error_msg_no_camera',
 };
 
 /**
@@ -40,8 +42,8 @@ export class Warning extends View {
    */
   updateMessage_() {
     const message = this.errorNames_[this.errorNames_.length - 1];
-    document.querySelector('#error-msg').textContent =
-        browserProxy.getI18nMessage(message);
+    dom.get('#error-msg', HTMLElement).textContent =
+        loadTimeData.getI18nMessage(message);
   }
 
   /**
@@ -80,7 +82,7 @@ export class Warning extends View {
       this.updateMessage_();
       return false;
     }
-    document.querySelector('#error-msg').textContent = '';
+    dom.get('#error-msg', HTMLElement).textContent = '';
     return true;
   }
 }

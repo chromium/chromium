@@ -101,7 +101,7 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
             env, base::FeatureList::IsEnabled(
                      features::kAutofillEnableOffersInDownstream)
                      ? suggestion.offer_label
-                     : base::string16());
+                     : std::u16string());
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(
         env, data_array, i, value, label, item_tag, android_icon_id,
         /*icon_at_start=*/false, suggestion.frontend_id, is_deletable,
@@ -133,7 +133,7 @@ void AutofillPopupViewAndroid::DeletionRequested(
   if (!controller_ || java_object_.is_null())
     return;
 
-  base::string16 confirmation_title, confirmation_body;
+  std::u16string confirmation_title, confirmation_body;
   if (!controller_->GetRemovalConfirmationText(list_index, &confirmation_title,
           &confirmation_body)) {
     return;

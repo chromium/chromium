@@ -1,7 +1,7 @@
 Name: play-services-fido
 Short Name: play-services-fido
 URL: https://developers.google.com/android/guides/setup
-Version: 18.1.0
+Version: 19.0.0-beta
 License: Android Software Development Kit License
 License File: LICENSE
 Security Critical: yes

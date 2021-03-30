@@ -69,7 +69,7 @@ MobileLabelFormatter::MobileLabelFormatter(
 
 MobileLabelFormatter::~MobileLabelFormatter() = default;
 
-base::string16 MobileLabelFormatter::GetLabelForProfile(
+std::u16string MobileLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
   std::string label_variant = base::GetFieldTrialParamValueByFeature(
@@ -84,14 +84,14 @@ base::string16 MobileLabelFormatter::GetLabelForProfile(
   }
   // An unknown parameter was received.
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 // The order in which pieces of data are considered--address, and then, if the
 // data is not the same across |profiles_|, phone number, email address, and
 // name--ensures that the label contains the most useful information given the
 // |focused_group| and the |focused_field_type_|.
-base::string16 MobileLabelFormatter::GetLabelForShowOneVariant(
+std::u16string MobileLabelFormatter::GetLabelForShowOneVariant(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
   if (ShowLabelAddress(focused_group)) {
@@ -125,7 +125,7 @@ base::string16 MobileLabelFormatter::GetLabelForShowOneVariant(
 // and email address--ensures that the label is formatted correctly for the
 // |focused_group|, the |focused_field_type_|, and the non-focused form fields
 // whose data is not the same across |profiles_|.
-base::string16 MobileLabelFormatter::GetLabelForShowAllVariant(
+std::u16string MobileLabelFormatter::GetLabelForShowAllVariant(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
   if (!(could_show_email_ || could_show_name_ ||
@@ -137,7 +137,7 @@ base::string16 MobileLabelFormatter::GetLabelForShowAllVariant(
     return GetDefaultLabel(profile, focused_group);
   }
 
-  std::vector<base::string16> label_parts;
+  std::vector<std::u16string> label_parts;
 
   // TODO(crbug.com/961819): Maybe put name after address for some app locales.
   if (could_show_name_) {
@@ -181,7 +181,7 @@ base::string16 MobileLabelFormatter::GetLabelForShowAllVariant(
 // The order in which pieces of data are considered--address, phone number,
 // email address, and name--ensures that the label contains the most useful
 // information given the |focused_group| and the |focused_field_type_|.
-base::string16 MobileLabelFormatter::GetDefaultLabel(
+std::u16string MobileLabelFormatter::GetDefaultLabel(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
   if (ShowLabelAddress(focused_group)) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {Route} from '../router.m.js';
+// #import {Route} from '../router.js';
 
 /**
  * Specifies all possible os routes in settings.
@@ -26,6 +26,7 @@
  *   CROSTINI_DETAILS: !settings.Route,
  *   CROSTINI_DISK_RESIZE: !settings.Route,
  *   CROSTINI_EXPORT_IMPORT: !settings.Route,
+ *   CROSTINI_PORT_FORWARDING: !settings.Route,
  *   CROSTINI_SHARED_PATHS: !settings.Route,
  *   CROSTINI_SHARED_USB_DEVICES: !settings.Route,
  *   BASIC: !settings.Route,

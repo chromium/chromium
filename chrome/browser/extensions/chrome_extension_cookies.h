@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,6 +28,7 @@ struct CookieStoreConfig;
 
 namespace net {
 class CookieStore;
+class IsolationInfo;
 }
 
 namespace url {
@@ -52,8 +53,7 @@ class ChromeExtensionCookies
   // storage or not depends on the Profile |this| was created for.
   void CreateRestrictedCookieManager(
       const url::Origin& origin,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::IsolationInfo& isolation_info,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);
 
   // Deletes all cookies matching the host of |origin|.
@@ -76,8 +76,7 @@ class ChromeExtensionCookies
 
     void CreateRestrictedCookieManager(
         const url::Origin& origin,
-        const net::SiteForCookies& site_for_cookies,
-        const url::Origin& top_frame_origin,
+        const net::IsolationInfo& isolation_info,
         mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
             receiver);
     void ClearCookies(const GURL& origin);
@@ -129,9 +128,9 @@ class ChromeExtensionCookies
 
   // Cookie config Chrome-side.
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  ScopedObserver<content_settings::CookieSettings,
-                 content_settings::CookieSettings::Observer>
-      cookie_settings_observer_{this};
+  base::ScopedObservation<content_settings::CookieSettings,
+                          content_settings::CookieSettings::Observer>
+      cookie_settings_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeExtensionCookies);
 };

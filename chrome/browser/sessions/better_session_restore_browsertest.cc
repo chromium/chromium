@@ -25,7 +25,9 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_impl.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
@@ -100,10 +102,10 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
   BetterSessionRestoreTest()
       : fake_server_address_("http://www.test.com/"),
         test_path_("session_restore/"),
-        title_pass_(base::ASCIIToUTF16("PASS")),
-        title_storing_(base::ASCIIToUTF16("STORING")),
-        title_error_write_failed_(base::ASCIIToUTF16("ERROR_WRITE_FAILED")),
-        title_error_empty_(base::ASCIIToUTF16("ERROR_EMPTY")) {
+        title_pass_(u"PASS"),
+        title_storing_(u"STORING"),
+        title_error_write_failed_(u"ERROR_WRITE_FAILED"),
+        title_error_empty_(u"ERROR_EMPTY") {
     // Set up the URL request filtering.
     test_files_.push_back("common.js");
     test_files_.push_back("cookies.html");
@@ -154,10 +156,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
  protected:
   void SetUpOnMainThread() override {
-    SessionServiceTestHelper helper(
-        SessionServiceFactory::GetForProfile(browser()->profile()));
+    SessionServiceTestHelper helper(browser()->profile());
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
     g_browser_process->set_background_mode_manager_for_test(
         std::unique_ptr<BackgroundModeManager>(new FakeBackgroundModeManager));
@@ -179,7 +179,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     title_watcher.AlsoWaitForTitle(title_error_empty_);
     ui_test_utils::NavigateToURL(
         browser, GURL(fake_server_address_ + test_path_ + filename));
-    base::string16 final_title = title_watcher.WaitAndGetTitle();
+    std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title_storing_, final_title);
   }
 
@@ -199,7 +199,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     title_watcher.AlsoWaitForTitle(title_error_empty_);
     ui_test_utils::NavigateToURL(
         browser, GURL(fake_server_address_ + test_path_ + filename));
-    base::string16 final_title = title_watcher.WaitAndGetTitle();
+    std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title_pass_, final_title);
   }
 
@@ -219,7 +219,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     CheckTitle(browser, title_storing_);
   }
 
-  void CheckTitle(Browser* browser, const base::string16& expected_title) {
+  void CheckTitle(Browser* browser, const std::u16string& expected_title) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetWebContentsAt(0);
     content::TitleWatcher title_watcher(web_contents, expected_title);
@@ -229,12 +229,12 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     title_watcher.AlsoWaitForTitle(title_error_empty_);
     // It's possible that the title was already the right one before
     // title_watcher was created.
-    base::string16 first_title = web_contents->GetTitle();
+    std::u16string first_title = web_contents->GetTitle();
     if (first_title != title_pass_ &&
         first_title != title_storing_ &&
         first_title != title_error_write_failed_ &&
         first_title != title_error_empty_) {
-      base::string16 final_title = title_watcher.WaitAndGetTitle();
+      std::u16string final_title = title_watcher.WaitAndGetTitle();
       EXPECT_EQ(expected_title, final_title);
     } else {
       EXPECT_EQ(expected_title, first_title);
@@ -255,7 +255,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     content::TitleWatcher title_watcher(web_contents, title_pass_);
     ui_test_utils::NavigateToURL(
         browser(), GURL(fake_server_address_ + test_path_ + filename));
-    base::string16 final_title = title_watcher.WaitAndGetTitle();
+    std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title_pass_, final_title);
     EXPECT_TRUE(DidLastUploadContain("posted-text"));
     EXPECT_TRUE(DidLastUploadContain("text-entered"));
@@ -284,6 +284,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
     ScopedKeepAlive test_keep_alive(KeepAliveOrigin::PANEL_VIEW,
                                     KeepAliveRestartOption::DISABLED);
+    ScopedProfileKeepAlive test_profile_keep_alive(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
     // Close the browser.
     if (close_all_windows)
@@ -291,11 +293,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     else
       CloseBrowserSynchronously(browser);
 
-    SessionServiceTestHelper helper;
-    helper.SetService(
-        SessionServiceFactory::GetForProfileForSessionRestore(profile));
+    SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 
     // Create a new window, which may trigger session restore.
     size_t count = BrowserList::GetInstance()->size();
@@ -336,10 +335,10 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
   std::string last_upload_bytes_;
   std::vector<std::string> test_files_;
   const std::string test_path_;
-  const base::string16 title_pass_;
-  const base::string16 title_storing_;
-  const base::string16 title_error_write_failed_;
-  const base::string16 title_error_empty_;
+  const std::u16string title_pass_;
+  const std::u16string title_storing_;
+  const std::u16string title_error_write_failed_;
+  const std::u16string title_error_empty_;
 
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 

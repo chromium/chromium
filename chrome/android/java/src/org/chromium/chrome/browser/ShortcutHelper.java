@@ -4,29 +4,21 @@
 
 package org.chromium.chrome.browser;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Icon;
 import android.net.Uri;
-import android.os.Build;
-import android.text.TextUtils;
 import android.util.Base64;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.webapps.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappAuthenticator;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
@@ -35,9 +27,7 @@ import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.common.ScreenOrientationConstants;
-import org.chromium.ui.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -97,19 +87,15 @@ public class ShortcutHelper {
     public static class Delegate {
         /**
          * Request Android to add a shortcut to the home screen.
+         * @param id The generated GUID of the shortcut.
          * @param title Title of the shortcut.
          * @param icon Image that represents the shortcut.
          * @param isIconAdaptive Whether to create an Android Adaptive icon.
          * @param shortcutIntent Intent to fire when the shortcut is activated.
          */
-        public void addShortcutToHomescreen(
-                String title, Bitmap icon, boolean isIconAdaptive, Intent shortcutIntent) {
-            if (WebappsUtils.isRequestPinShortcutSupported()) {
-                addShortcutWithShortcutManager(title, icon, isIconAdaptive, shortcutIntent);
-                return;
-            }
-            Intent intent = WebappsUtils.createAddToHomeIntent(title, icon, shortcutIntent);
-            ContextUtils.getApplicationContext().sendBroadcast(intent);
+        public void addShortcutToHomescreen(String id, String title, Bitmap icon,
+                boolean isIconAdaptive, Intent shortcutIntent) {
+            WebappsUtils.addShortcutToHomescreen(id, title, icon, isIconAdaptive, shortcutIntent);
         }
 
         /**
@@ -147,7 +133,7 @@ public class ShortcutHelper {
                 // Encoding {@link icon} as a string and computing the mac are expensive.
 
                 // Encode the icon as a base64 string (Launcher drops Bitmaps in the Intent).
-                String encodedIcon = encodeBitmapAsString(icon);
+                String encodedIcon = BitmapHelper.encodeBitmapAsString(icon);
 
                 // TODO(http://crbug.com/1000046): Use action which does not require mac on O+
                 Intent shortcutIntent = createWebappShortcutIntent(id, url, scopeUrl, name,
@@ -159,7 +145,8 @@ public class ShortcutHelper {
             }
             @Override
             protected void onPostExecute(final Intent resultIntent) {
-                sDelegate.addShortcutToHomescreen(userTitle, icon, isIconAdaptive, resultIntent);
+                sDelegate.addShortcutToHomescreen(
+                        id, userTitle, icon, isIconAdaptive, resultIntent);
 
                 // Store the webapp data so that it is accessible without the intent.
                 WebappRegistry.getInstance().register(id, storage -> {
@@ -177,9 +164,6 @@ public class ShortcutHelper {
                         storeWebappSplashImage(id, splashImage);
                     }
                 });
-                if (shouldShowToastWhenAddingShortcut()) {
-                    showAddedToHomescreenToast(userTitle);
-                }
             }
         }
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -191,53 +175,8 @@ public class ShortcutHelper {
     @CalledByNative
     public static void addShortcut(String id, String url, String userTitle, Bitmap icon,
             boolean isIconAdaptive, int source, String iconUrl) {
-        Intent shortcutIntent = createShortcutIntent(url);
-        shortcutIntent.putExtra(EXTRA_ID, id);
-        shortcutIntent.putExtra(EXTRA_SOURCE, source);
-        shortcutIntent.setPackage(ContextUtils.getApplicationContext().getPackageName());
-        sDelegate.addShortcutToHomescreen(userTitle, icon, isIconAdaptive, shortcutIntent);
-        if (shouldShowToastWhenAddingShortcut()) {
-            showAddedToHomescreenToast(userTitle);
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.O)
-    private static void addShortcutWithShortcutManager(
-            String title, Bitmap bitmap, boolean isMaskableIcon, Intent shortcutIntent) {
-        String id = shortcutIntent.getStringExtra(ShortcutHelper.EXTRA_ID);
-        Context context = ContextUtils.getApplicationContext();
-
-        if (bitmap == null) {
-            Log.e(TAG, "Failed to find an icon for " + title + ", not adding.");
-            return;
-        }
-        Icon icon = isMaskableIcon ? Icon.createWithAdaptiveBitmap(bitmap)
-                                   : Icon.createWithBitmap(bitmap);
-
-        ShortcutInfo shortcutInfo = new ShortcutInfo.Builder(context, id)
-                                            .setShortLabel(title)
-                                            .setLongLabel(title)
-                                            .setIcon(icon)
-                                            .setIntent(shortcutIntent)
-                                            .build();
-        try {
-            ShortcutManager shortcutManager =
-                    ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);
-            shortcutManager.requestPinShortcut(shortcutInfo, null);
-        } catch (IllegalStateException e) {
-            Log.d(TAG,
-                    "Could not create pinned shortcut: device is locked, or "
-                            + "activity is backgrounded.");
-        }
-    }
-
-    /**
-     * Show toast to alert user that the shortcut was added to the home screen.
-     */
-    private static void showAddedToHomescreenToast(final String title) {
-        Context applicationContext = ContextUtils.getApplicationContext();
-        String toastText = applicationContext.getString(R.string.added_to_homescreen, title);
-        showToast(toastText);
+        Intent shortcutIntent = createShortcutIntent(url, id, source);
+        sDelegate.addShortcutToHomescreen(id, userTitle, icon, isIconAdaptive, shortcutIntent);
     }
 
     /**
@@ -249,14 +188,7 @@ public class ShortcutHelper {
     private static void showWebApkInstallInProgressToast() {
         Context applicationContext = ContextUtils.getApplicationContext();
         String toastText = applicationContext.getString(R.string.webapk_install_in_progress);
-        showToast(toastText);
-    }
-
-    public static void showToast(String text) {
-        assert ThreadUtils.runningOnUiThread();
-        Toast toast =
-                Toast.makeText(ContextUtils.getApplicationContext(), text, Toast.LENGTH_SHORT);
-        toast.show();
+        WebappsUtils.showToast(toastText);
     }
 
     /**
@@ -276,7 +208,7 @@ public class ShortcutHelper {
             new AsyncTask<String>() {
                 @Override
                 protected String doInBackground() {
-                    return encodeBitmapAsString(splashImage);
+                    return BitmapHelper.encodeBitmapAsString(splashImage);
                 }
 
                 @Override
@@ -347,9 +279,12 @@ public class ShortcutHelper {
      * @param url Url of the shortcut.
      * @return Intent for onclick action of the shortcut.
      */
-    public static Intent createShortcutIntent(String url) {
+    public static Intent createShortcutIntent(String url, String id, int source) {
         Intent shortcutIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         shortcutIntent.putExtra(REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+        shortcutIntent.putExtra(EXTRA_ID, id);
+        shortcutIntent.putExtra(EXTRA_SOURCE, source);
+        shortcutIntent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         return shortcutIntent;
     }
 
@@ -379,31 +314,6 @@ public class ShortcutHelper {
         Set<String> originSet = WebappRegistry.getInstance().getOriginsWithInstalledApp();
         String[] output = new String[originSet.size()];
         return originSet.toArray(output);
-    }
-
-    /**
-     * Compresses a bitmap into a PNG and converts into a Base64 encoded string.
-     * The encoded string can be decoded using {@link decodeBitmapFromString(String)}.
-     * @param bitmap The Bitmap to compress and encode.
-     * @return the String encoding the Bitmap.
-     */
-    public static String encodeBitmapAsString(Bitmap bitmap) {
-        if (bitmap == null) return "";
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
-        return Base64.encodeToString(output.toByteArray(), Base64.DEFAULT);
-    }
-
-    /**
-     * Decodes a Base64 string into a Bitmap. Used to decode Bitmaps encoded by
-     * {@link encodeBitmapAsString(Bitmap)}.
-     * @param encodedString the Base64 String to decode.
-     * @return the Bitmap which was encoded by the String.
-     */
-    public static Bitmap decodeBitmapFromString(String encodedString) {
-        if (TextUtils.isEmpty(encodedString)) return null;
-        byte[] decoded = Base64.decode(encodedString, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
     }
 
     /**
@@ -446,10 +356,6 @@ public class ShortcutHelper {
         builder.fragment("");
         builder.query("");
         return builder.build().toString();
-    }
-
-    private static boolean shouldShowToastWhenAddingShortcut() {
-        return !WebappsUtils.isRequestPinShortcutSupported();
     }
 
     @CalledByNative

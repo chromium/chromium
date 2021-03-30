@@ -53,6 +53,7 @@ class FakeFileHandlingExpiryService
   }
 
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.reset();
     receiver_.Bind(
         mojo::PendingAssociatedReceiver<blink::mojom::FileHandlingExpiry>(
             std::move(handle)));
@@ -114,20 +115,18 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = url;
     web_app_info->scope = url.GetWithoutFilename();
-    web_app_info->title = base::ASCIIToUTF16("A Hosted App");
+    web_app_info->title = u"A Hosted App";
 
     blink::Manifest::FileHandler entry1;
     entry1.action = GetTextFileHandlerActionURL();
-    entry1.name = base::ASCIIToUTF16("text");
-    entry1.accept[base::ASCIIToUTF16("text/*")].push_back(
-        base::ASCIIToUTF16(".txt"));
+    entry1.name = u"text";
+    entry1.accept[u"text/*"].push_back(u".txt");
     web_app_info->file_handlers.push_back(std::move(entry1));
 
     blink::Manifest::FileHandler entry2;
     entry2.action = GetCSVFileHandlerActionURL();
-    entry2.name = base::ASCIIToUTF16("csv");
-    entry2.accept[base::ASCIIToUTF16("application/csv")].push_back(
-        base::ASCIIToUTF16(".csv"));
+    entry2.name = u"csv";
+    entry2.accept[u"application/csv"].push_back(u".csv");
     web_app_info->file_handlers.push_back(std::move(entry2));
 
     app_id_ =
@@ -231,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   EXPECT_EQ(1,
             content::EvalJs(web_contents, "window.launchParams.files.length"));
-  EXPECT_EQ(test_file_path.BaseName().value(),
+  EXPECT_EQ(test_file_path.BaseName().AsUTF8Unsafe(),
             content::EvalJs(web_contents, "window.launchParams.files[0].name"));
 }
 
@@ -245,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   EXPECT_EQ(1,
             content::EvalJs(web_contents, "window.launchParams.files.length"));
-  EXPECT_EQ(test_file_path.BaseName().value(),
+  EXPECT_EQ(test_file_path.BaseName().AsUTF8Unsafe(),
             content::EvalJs(web_contents, "window.launchParams.files[0].name"));
 }
 
@@ -515,13 +514,12 @@ class WebAppFileHandlingOriginTrialTest
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
-    web_app_info->title = base::ASCIIToUTF16("A Web App");
+    web_app_info->title = u"A Web App";
 
     blink::Manifest::FileHandler entry1;
     entry1.action = start_url;
-    entry1.name = base::ASCIIToUTF16("text");
-    entry1.accept[base::ASCIIToUTF16("text/*")].push_back(
-        base::ASCIIToUTF16(".txt"));
+    entry1.name = u"text";
+    entry1.accept[u"text/*"].push_back(u".txt");
     web_app_info->file_handlers.push_back(std::move(entry1));
 
     web_app::AppId app_id =

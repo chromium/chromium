@@ -23,7 +23,7 @@ namespace {
 bool ParseShortcutItemIconValue(
     const base::Value& value,
     WebAppLinkedShortcutItems::ShortcutItemInfo::IconInfo* icon_info,
-    base::string16* error) {
+    std::u16string* error) {
   const base::DictionaryValue* shortcut_item_icon_dict = nullptr;
   if (!value.GetAsDictionary(&shortcut_item_icon_dict)) {
     *error = base::UTF8ToUTF16(
@@ -58,7 +58,7 @@ bool ParseShortcutItemIconValue(
 
 bool ParseShortcutItemValue(const base::Value& value,
                             WebAppLinkedShortcutItems::ShortcutItemInfo* info,
-                            base::string16* error) {
+                            std::u16string* error) {
   const base::DictionaryValue* shortcut_item_dict = nullptr;
   if (!value.GetAsDictionary(&shortcut_item_dict)) {
     *error =
@@ -151,7 +151,7 @@ WebAppLinkedShortcutItemsHandler::WebAppLinkedShortcutItemsHandler() = default;
 WebAppLinkedShortcutItemsHandler::~WebAppLinkedShortcutItemsHandler() = default;
 
 bool WebAppLinkedShortcutItemsHandler::Parse(Extension* extension,
-                                             base::string16* error) {
+                                             std::u16string* error) {
   // The "web_app_linked_shortcut_items" key is only available for Bookmark
   // Apps. Including it elsewhere results in an install warning, and the linked
   // shortcut items are not parsed.

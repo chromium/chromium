@@ -34,14 +34,11 @@ TEST(AlternativeStateNameMapTest, StateCanonicalString) {
               base::nullopt);
   }
 
-  EXPECT_EQ(AlternativeStateNameMap::GetCanonicalStateName(
-                "US", base::ASCIIToUTF16("Bavaria")),
+  EXPECT_EQ(AlternativeStateNameMap::GetCanonicalStateName("US", u"Bavaria"),
             base::nullopt);
-  EXPECT_EQ(AlternativeStateNameMap::GetCanonicalStateName(
-                "DE", base::ASCIIToUTF16("")),
+  EXPECT_EQ(AlternativeStateNameMap::GetCanonicalStateName("DE", u""),
             base::nullopt);
-  EXPECT_EQ(AlternativeStateNameMap::GetCanonicalStateName(
-                "", base::ASCIIToUTF16("")),
+  EXPECT_EQ(AlternativeStateNameMap::GetCanonicalStateName("", u""),
             base::nullopt);
 }
 
@@ -51,11 +48,9 @@ TEST(AlternativeStateNameMapTest, SeparateEntryForDifferentCounties) {
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting("DE");
   test::PopulateAlternativeStateNameMapForTesting("US");
-  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName(
-                "DE", base::ASCIIToUTF16("Bavaria")),
+  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName("DE", u"Bavaria"),
             base::nullopt);
-  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName(
-                "US", base::ASCIIToUTF16("Bavaria")),
+  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName("US", u"Bavaria"),
             base::nullopt);
 }
 
@@ -86,14 +81,13 @@ TEST(AlternativeStateNameMapTest, GetEntry) {
   test::PopulateAlternativeStateNameMapForTesting();
   AlternativeStateNameMap* alternative_state_name_map =
       AlternativeStateNameMap::GetInstance();
-  EXPECT_EQ(
-      alternative_state_name_map->GetEntry(
-          AlternativeStateNameMap::CountryCode("DE"),
-          AlternativeStateNameMap::StateName(base::ASCIIToUTF16("Random"))),
-      base::nullopt);
+  EXPECT_EQ(alternative_state_name_map->GetEntry(
+                AlternativeStateNameMap::CountryCode("DE"),
+                AlternativeStateNameMap::StateName(u"Random")),
+            base::nullopt);
   auto entry = alternative_state_name_map->GetEntry(
       AlternativeStateNameMap::CountryCode("DE"),
-      AlternativeStateNameMap::StateName(base::ASCIIToUTF16("Bavaria")));
+      AlternativeStateNameMap::StateName(u"Bavaria"));
   EXPECT_NE(entry, base::nullopt);
   ASSERT_TRUE(entry->has_canonical_name());
   EXPECT_EQ(entry->canonical_name(), "Bavaria");

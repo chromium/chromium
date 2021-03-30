@@ -5,28 +5,75 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_HANDLE_SERIALIZATION_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_HANDLE_SERIALIZATION_H_
 
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
-#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
+// This header defines helpers used by generated bindings to stash various types
+// of handles and interface endpoints within a Message object while also
+// encoding appropriate data within the message to reference the attached
+// object as needed.
+
 namespace mojo {
 namespace internal {
+
+struct PendingReceiverState;
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SerializeHandle(ScopedHandle handle, Message& message, Handle_Data& data);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SerializeInterfaceInfo(ScopedMessagePipeHandle handle,
+                            uint32_t version,
+                            Message& message,
+                            Interface_Data& data);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SerializeAssociatedEndpoint(ScopedInterfaceEndpointHandle handle,
+                                 Message& message,
+                                 AssociatedEndpointHandle_Data& data);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SerializeAssociatedInterfaceInfo(ScopedInterfaceEndpointHandle handle,
+                                      uint32_t version,
+                                      Message& message,
+                                      AssociatedInterface_Data& data);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+ScopedHandle DeserializeHandle(const Handle_Data& data, Message& message);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void DeserializeHandleAsReceiver(const Handle_Data& data,
+                                 Message& message,
+                                 PendingReceiverState& receiver_state);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+ScopedInterfaceEndpointHandle DeserializeAssociatedEndpointHandle(
+    const AssociatedEndpointHandle_Data& data,
+    Message& message);
+
+template <typename T>
+ScopedHandleBase<T> DeserializeHandleAs(const Handle_Data& data,
+                                        Message& message) {
+  return ScopedHandleBase<T>::From(DeserializeHandle(data, message));
+}
 
 template <typename T>
 struct Serializer<ScopedHandleBase<T>, ScopedHandleBase<T>> {
   static void Serialize(ScopedHandleBase<T>& input,
                         Handle_Data* output,
-                        SerializationContext* context) {
-    context->AddHandle(ScopedHandle::From(std::move(input)), output);
+                        Message* message) {
+    SerializeHandle(ScopedHandle::From(std::move(input)), *message, *output);
   }
 
   static bool Deserialize(Handle_Data* input,
                           ScopedHandleBase<T>* output,
-                          SerializationContext* context) {
-    *output = context->TakeHandleAs<T>(*input);
+                          Message* message) {
+    *output = DeserializeHandleAs<T>(*input, *message);
     return true;
   }
 };
@@ -35,16 +82,17 @@ template <>
 struct Serializer<PlatformHandle, PlatformHandle> {
   static void Serialize(PlatformHandle& input,
                         Handle_Data* output,
-                        SerializationContext* context) {
+                        Message* message) {
     ScopedHandle handle = WrapPlatformHandle(std::move(input));
     DCHECK(handle.is_valid());
-    context->AddHandle(std::move(handle), output);
+    SerializeHandle(std::move(handle), *message, *output);
   }
 
   static bool Deserialize(Handle_Data* input,
                           PlatformHandle* output,
-                          SerializationContext* context) {
-    *output = UnwrapPlatformHandle(context->TakeHandleAs<Handle>(*input));
+                          Message* message) {
+    *output =
+        UnwrapPlatformHandle(DeserializeHandleAs<Handle>(*input, *message));
     return true;
   }
 };

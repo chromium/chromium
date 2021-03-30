@@ -128,13 +128,13 @@ void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
   g_key_is_cached = true;
 }
 
-bool OSCrypt::EncryptString16(const base::string16& plaintext,
+bool OSCrypt::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
   return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
 }
 
 bool OSCrypt::DecryptString16(const std::string& ciphertext,
-                              base::string16* plaintext) {
+                              std::u16string* plaintext) {
   std::string utf8;
   if (!DecryptString(ciphertext, &utf8))
     return false;

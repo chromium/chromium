@@ -26,8 +26,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
@@ -498,13 +496,9 @@ class AppMenuAdapter extends BaseAdapter {
             setupImageButton(holder.buttons[i], item.getSubMenu().getItem(i));
         }
 
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS)
-                || CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR)) {
-            // Tint action bar's background.
-            convertView.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
-                    convertView.getContext().getResources(), R.drawable.menu_action_bar_bg));
-        }
+        // Tint action bar's background.
+        convertView.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
+                convertView.getContext().getResources(), R.drawable.menu_action_bar_bg));
 
         convertView.setFocusable(false);
         convertView.setEnabled(false);

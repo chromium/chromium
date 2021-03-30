@@ -75,12 +75,8 @@ class DeviceSensorEntry : public GarbageCollected<DeviceSensorEntry>,
 
   State state_ = State::NOT_INITIALIZED;
 
-  HeapMojoRemote<device::mojom::blink::Sensor,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      sensor_remote_;
-  HeapMojoReceiver<device::mojom::blink::SensorClient,
-                   DeviceSensorEntry,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<device::mojom::blink::Sensor> sensor_remote_;
+  HeapMojoReceiver<device::mojom::blink::SensorClient, DeviceSensorEntry>
       client_receiver_;
 
   device::mojom::blink::SensorType type_;

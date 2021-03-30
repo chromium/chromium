@@ -39,10 +39,9 @@ NetworkChangeNotifierFuchsia::NetworkChangeNotifierFuchsia(
   fuchsia::net::interfaces::WatcherSyncPtr watcher = handle.BindSync();
   base::Optional<internal::ExistingInterfaceProperties> interfaces =
       internal::GetExistingInterfaces(watcher);
-  if (!interfaces) {
-    ZX_LOG(ERROR, ZX_ERR_INVALID_ARGS) << "Failed to load existing interfaces";
+  if (!interfaces)
     return;
-  }
+
   handle = watcher.Unbind();
   bool notify_ip_address_changed = false;
   for (const auto& interface_entry : *interfaces) {

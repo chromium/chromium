@@ -40,24 +40,24 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   ContentSettingsType GetContentSettingType(size_t position) const;
 
   // Returns the string to show in the infobar in its compact state.
-  base::string16 GetCompactMessageText() const;
+  std::u16string GetCompactMessageText() const;
 
   // Returns the title of the link to show in the infobar in its compact state.
-  base::string16 GetCompactLinkText() const;
+  std::u16string GetCompactLinkText() const;
 
   // Returns the secondary string to show in the infobar in the expanded state.
-  base::string16 GetDescriptionText() const;
+  std::u16string GetDescriptionText() const;
 
   // Whether the secondary button should open site settings.
   bool ShouldSecondaryButtonOpenSettings() const;
 
   // ConfirmInfoBarDelegate:
   int GetIconId() const override;
-  base::string16 GetLinkText() const override;
+  std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
   bool LinkClicked(WindowOpenDisposition disposition) override;
   void InfoBarDismissed() override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   bool Accept() override;
   bool Cancel() override;
 
@@ -74,7 +74,7 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate:
   InfoBarIdentifier GetIdentifier() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
 
   // InfoBarDelegate:
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;

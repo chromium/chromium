@@ -97,8 +97,14 @@ void TapOnWebElementWithID(const std::string& elementID) {
   [super tearDown];
 }
 
+// TODO(crbug.com/1173513) This test is flaky on the ios simulator bots.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testKeyboardHideState DISABLED_testKeyboardHideState
+#else
+#define MAYBE_testKeyboardHideState testKeyboardHideState
+#endif
 // Tests that when the keyboard actually dismiss the right callback is done.
-- (void)testKeyboardHideState {
+- (void)MAYBE_testKeyboardHideState {
   // Opening the keyboard from a webview blocks EarlGrey's synchronization.
   ScopedSynchronizationDisabler disabler;
 

@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 
@@ -87,7 +86,7 @@ class ASH_EXPORT BluetoothNotificationController
   // the notification will have Accept and Reject buttons, if false only the
   // usual cancel/dismiss button will be present on the notification.
   void NotifyPairing(device::BluetoothDevice* device,
-                     const base::string16& message,
+                     const std::u16string& message,
                      bool with_buttons);
 
   // Clears any shown pairing notification now that the device has been paired.

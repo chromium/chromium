@@ -23,12 +23,13 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -78,8 +79,9 @@ public class MediaViewerUtils {
             Intent chooserIntent = Intent.createChooser(viewIntent, null);
             chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             String openWithStr = context.getString(R.string.download_manager_open_with);
-            PendingIntent pendingViewIntent = PendingIntent.getActivity(
-                    context, 0, chooserIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent pendingViewIntent = PendingIntent.getActivity(context, 0, chooserIntent,
+                    PendingIntent.FLAG_CANCEL_CURRENT
+                            | IntentUtils.getPendingIntentMutabilityFlag(true));
             builder.addMenuItem(openWithStr, pendingViewIntent);
         }
 
@@ -87,8 +89,10 @@ public class MediaViewerUtils {
         // If the URI is a file URI and the Android version is N or later, this will throw a
         // FileUriExposedException. In this case, we just don't add the share button.
         if (!willExposeFileUri(contentUri)) {
-            PendingIntent pendingShareIntent = PendingIntent.getActivity(context, 0,
-                    createShareIntent(contentUri, mimeType), PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent pendingShareIntent =
+                    PendingIntent.getActivity(context, 0, createShareIntent(contentUri, mimeType),
+                            PendingIntent.FLAG_CANCEL_CURRENT
+                                    | IntentUtils.getPendingIntentMutabilityFlag(true));
             builder.setActionButton(
                     shareIcon, context.getString(R.string.share), pendingShareIntent, true);
         }
@@ -271,6 +275,8 @@ public class MediaViewerUtils {
     }
 
     private static boolean willExposeFileUri(Uri uri) {
+        assert uri != null && !uri.equals(Uri.EMPTY) : "URI is not successfully generated.";
+
         // On Android N and later, an Exception is thrown if we try to expose a file:// URI.
         return uri.getScheme().equals(ContentResolver.SCHEME_FILE)
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;

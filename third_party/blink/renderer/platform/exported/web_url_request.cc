@@ -347,6 +347,14 @@ void WebURLRequest::SetMode(network::mojom::RequestMode mode) {
   return resource_request_->SetMode(mode);
 }
 
+bool WebURLRequest::GetFavicon() const {
+  return resource_request_->IsFavicon();
+}
+
+void WebURLRequest::SetFavicon(bool) {
+  resource_request_->SetFavicon(true);
+}
+
 network::mojom::CredentialsMode WebURLRequest::GetCredentialsMode() const {
   return resource_request_->GetCredentialsMode();
 }
@@ -546,6 +554,13 @@ base::Optional<base::UnguessableToken> WebURLRequest::RecursivePrefetchToken()
 
 network::OptionalTrustTokenParams WebURLRequest::TrustTokenParams() const {
   return ConvertTrustTokenParams(resource_request_->TrustTokenParams());
+}
+
+base::Optional<WebURL> WebURLRequest::WebBundleUrl() const {
+  if (resource_request_->GetWebBundleTokenParams()) {
+    return resource_request_->GetWebBundleTokenParams()->bundle_url;
+  }
+  return base::nullopt;
 }
 
 base::Optional<base::UnguessableToken> WebURLRequest::WebBundleToken() const {

@@ -12,12 +12,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_permissions_util.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
+#include "components/optimization_guide/core/url_pattern_with_wildcards.h"
 #include "components/optimization_guide/proto/performance_hints_metadata.pb.h"
-#include "components/optimization_guide/url_pattern_with_wildcards.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -149,7 +148,9 @@ PerformanceClass PerformanceHintsObserver::PerformanceClassForURL(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!profile || !IsUserPermittedToFetchFromRemoteOptimizationGuide(profile)) {
+  if (!profile ||
+      !optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile->IsOffTheRecord(), profile->GetPrefs())) {
     // We can't get performance hints if OptimizationGuide can't fetch them.
     return PerformanceClass::PERFORMANCE_UNKNOWN;
   }

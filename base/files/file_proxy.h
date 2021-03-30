@@ -48,7 +48,6 @@ class BASE_EXPORT FileProxy : public SupportsWeakPtr<FileProxy> {
       OnceCallback<void(File::Error, const char* data, int bytes_read)>;
   using WriteCallback = OnceCallback<void(File::Error, int bytes_written)>;
 
-  FileProxy();
   explicit FileProxy(TaskRunner* task_runner);
   FileProxy(const FileProxy&) = delete;
   FileProxy& operator=(const FileProxy&) = delete;

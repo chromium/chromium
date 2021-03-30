@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.send_tab_to_self;
 
+import android.app.Activity;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.ChromeAccessorActivity;
@@ -15,6 +17,7 @@ import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -25,13 +28,17 @@ public class SendTabToSelfShareActivity extends ChromeAccessorActivity {
     private static BottomSheetController sBottomSheetControllerForTesting;
 
     @Override
-    public void handleAction(ChromeActivity triggeringActivity) {
-        Tab tab = triggeringActivity.getActivityTabProvider().get();
+    public void handleAction(Activity triggeringActivity,
+            MenuOrKeyboardActionController menuOrKeyboardActionController) {
+        // TODO(crbug.com/1175155): Remove ChromeActivity reference once the activity tab is
+        // available via UnownedUserData.
+        ChromeActivity chromeActivity = (ChromeActivity) triggeringActivity;
+        Tab tab = chromeActivity.getActivityTabProvider().get();
         if (tab == null) return;
         NavigationEntry entry = tab.getWebContents().getNavigationController().getVisibleEntry();
         if (entry == null) return;
         BottomSheetController controller =
-                getBottomSheetController(triggeringActivity.getWindowAndroid());
+                getBottomSheetController(chromeActivity.getWindowAndroid());
         if (controller == null) {
             return;
         }

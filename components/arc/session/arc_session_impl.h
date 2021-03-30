@@ -211,6 +211,8 @@ class ArcSessionImpl
   void SetUserInfo(const cryptohome::Identification& cryptohome_id,
                    const std::string& hash,
                    const std::string& serial_number) override;
+  void SetDemoModeDelegate(
+      ArcClientAdapter::DemoModeDelegate* delegate) override;
 
   // chromeos::SchedulerConfigurationManagerBase::Observer overrides:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;

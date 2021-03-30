@@ -21,7 +21,9 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -184,7 +186,7 @@ public class WebappDataStorage {
         new AsyncTask<Bitmap>() {
             @Override
             protected final Bitmap doInBackground() {
-                return ShortcutHelper.decodeBitmapFromString(
+                return BitmapHelper.decodeBitmapFromString(
                         mPreferences.getString(KEY_SPLASH_ICON, null));
             }
 
@@ -199,7 +201,7 @@ public class WebappDataStorage {
 
     /**
      * Update the splash screen image associated with the web app with the specified data. The image
-     * must have been encoded using {@link ShortcutHelper#encodeBitmapAsString}.
+     * must have been encoded using {@link BitmapHelper#encodeBitmapAsString}.
      * @param splashScreenImage The image which should be shown on the splash screen of the web app.
      */
     public void updateSplashScreenImage(String splashScreenImage) {

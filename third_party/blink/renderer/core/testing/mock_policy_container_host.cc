@@ -15,4 +15,11 @@ void MockPolicyContainerHost::FlushForTesting() {
   receiver_.FlushForTesting();
 }
 
+void MockPolicyContainerHost::BindWithNewEndpoint(
+    mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>
+        receiver) {
+  receiver.EnableUnassociatedUsage();
+  receiver_.Bind(std::move(receiver));
+}
+
 }  // namespace blink

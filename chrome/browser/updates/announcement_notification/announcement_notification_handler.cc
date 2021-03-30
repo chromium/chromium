@@ -5,8 +5,8 @@
 #include "chrome/browser/updates/announcement_notification/announcement_notification_handler.h"
 
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/notifications/notification_display_service.h"  // nogncheck
+#include "chrome/browser/notifications/notification_display_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -41,7 +41,7 @@ void AnnouncementNotificationHandler::OnClick(
     const GURL& origin,
     const std::string& notification_id,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   int button_index = action_index.has_value() ? action_index.value() : -1;
 

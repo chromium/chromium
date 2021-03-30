@@ -10,10 +10,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 
 class TabSearchUIBrowserTest : public InProcessBrowserTest {
  public:
@@ -46,6 +48,12 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
 
   content::WebContents* GetActiveTab() {
     return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  TabSearchUI* GetWebUIController() {
+    return webui_contents_->GetWebUI()
+        ->GetController()
+        ->template GetAs<TabSearchUI>();
   }
 
  protected:
@@ -114,6 +122,46 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
   for (int tab_index = 0; tab_index < tab_count; tab_index++) {
     open_tab_ids.push_back(extensions::ExtensionTabUtil::GetTabId(
         browser()->tab_strip_model()->GetWebContentsAt(tab_index)));
+  }
+  ASSERT_EQ(open_tab_ids.end(),
+            std::find(open_tab_ids.begin(), open_tab_ids.end(), tab_id));
+}
+
+// When hosting the Tab Search UI as a browser tab, ensure that closing the tab
+// hosting Tab Search does not result in any UAF errors. Test for regression
+// (https://crbug.com/1175507).
+IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
+                       CloseTabSearchAsBrowserTabDoesNotCrash) {
+  AppendTab(chrome::kChromeUITabSearchURL);
+  auto* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(5, tab_strip_model->GetTabCount());
+  content::WebContents* tab_contents = tab_strip_model->GetWebContentsAt(4);
+  const int tab_id = extensions::ExtensionTabUtil::GetTabId(
+      tab_strip_model->GetWebContentsAt(4));
+
+  // Finish loading after initializing.
+  ASSERT_TRUE(content::WaitForLoadStop(tab_contents));
+
+  TabSearchPageHandler* page_handler = tab_contents->GetWebUI()
+                                           ->GetController()
+                                           ->template GetAs<TabSearchUI>()
+                                           ->page_handler_for_testing();
+  ASSERT_NE(nullptr, page_handler);
+  content::WebContentsDestroyedWatcher close_observer(tab_contents);
+  page_handler->CloseTab(tab_id);
+  tab_contents->DispatchBeforeUnload(false /* auto_cancel */);
+  close_observer.Wait();
+  ASSERT_EQ(4, tab_strip_model->GetTabCount());
+
+  // Check to make sure the browser tab hosting Tab Search has been closed but
+  // the rest remain.
+  int tab_count = tab_strip_model->GetTabCount();
+  ASSERT_EQ(4, tab_count);
+
+  std::vector<int> open_tab_ids(tab_count);
+  for (int tab_index = 0; tab_index < tab_count; tab_index++) {
+    open_tab_ids.push_back(extensions::ExtensionTabUtil::GetTabId(
+        tab_strip_model->GetWebContentsAt(tab_index)));
   }
   ASSERT_EQ(open_tab_ids.end(),
             std::find(open_tab_ids.begin(), open_tab_ids.end(), tab_id));

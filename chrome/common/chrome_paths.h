@@ -53,7 +53,7 @@ enum {
 #endif
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_CHROMEOS) ||                                  \
+#if BUILDFLAG(IS_CHROMEOS_ASH) ||                            \
     ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
      BUILDFLAG(CHROMIUM_BRANDING)) ||                        \
     defined(OS_MAC)
@@ -74,11 +74,6 @@ enum {
 
   DIR_DEFAULT_APPS,         // Directory where installer places .crx files
                             // to be installed when chrome is first run.
-  DIR_PEPPER_FLASH_PLUGIN,  // Directory to the bundled Pepper Flash plugin,
-                            // containing the plugin and the manifest.
-  DIR_COMPONENT_UPDATED_PEPPER_FLASH_PLUGIN,  // Base directory of the Pepper
-                                              // Flash plugins downloaded by the
-                                              // component updater.
   FILE_RESOURCE_MODULE,      // Full path and filename of the module that
                              // contains embedded resources (version,
                              // strings, images, etc.).
@@ -87,8 +82,6 @@ enum {
   FILE_RECORDED_SCRIPT,      // Full path to the script.log file that
                              // contains recorded browser events for
                              // playback.
-  FILE_PEPPER_FLASH_PLUGIN,  // Full path to the bundled Pepper Flash plugin
-                             // file.
   DIR_PNACL_BASE,            // Full path to the base dir for PNaCl.
   DIR_PNACL_COMPONENT,       // Full path to the latest PNaCl version
                              // (subdir of DIR_PNACL_BASE).
@@ -133,10 +126,6 @@ enum {
   DIR_GEN_TEST_DATA,  // Directory where generated test data resides.
   DIR_TEST_DATA,      // Directory where unit test data resides.
   DIR_TEST_TOOLS,     // Directory where unit test tools reside.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  FILE_COMPONENT_FLASH_HINT,  // A file in a known location that points to
-                              // the component updated flash plugin.
-#endif                        // defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // File containing the location of the updated TPM firmware binary in the file
   // system.

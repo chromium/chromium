@@ -211,19 +211,19 @@ class PathManager(object):
 # //third_party/blink/renderer/bindings/scripts/utilities.py
 _BACKWARD_COMPATIBLE_UNION_FILEPATHS = {
     # modules/canvas2d/CanvasRenderingContext2D.idl
-    "CSSImageValueOrHTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrImageBitmapOrOffscreenCanvas":
+    "CSSImageValueOrHTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrImageBitmapOrOffscreenCanvasOrVideoFrame":
     "CanvasImageSource",
     # modules/canvas/htmlcanvas/html_canvas_element_module.idl
     "CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext":
     "RenderingContext",
     # core/frame/window_or_worker_global_scope.idl
-    "HTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrBlobOrImageDataOrImageBitmapOrOffscreenCanvas":
+    "HTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrBlobOrImageDataOrImageBitmapOrOffscreenCanvasOrVideoFrame":
     "ImageBitmapSource",
     # bindings/tests/idls/core/TestTypedefs.idl
     "NodeOrLongSequenceOrEventOrXMLHttpRequestOrStringOrStringByteStringOrNodeListRecord":
     "NestedUnionType",
     # modules/canvas/offscreencanvas/offscreen_canvas_module.idl
-    "OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContext":
+    "OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext":
     "OffscreenRenderingContext",
     # core/xmlhttprequest/xml_http_request.idl
     "DocumentOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString":

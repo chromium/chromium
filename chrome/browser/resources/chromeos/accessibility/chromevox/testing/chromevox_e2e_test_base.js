@@ -21,7 +21,7 @@ ChromeVoxE2ETest = class extends E2ETestBase {
   #include "ash/shell.h"
   #include "base/bind.h"
   #include "base/callback.h"
-  #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+  #include "chrome/browser/ash/accessibility/accessibility_manager.h"
   #include "chrome/common/extensions/extension_constants.h"
   #include "content/public/test/browser_test.h"
   #include "extensions/common/extension_l10n_util.h"
@@ -33,11 +33,18 @@ ChromeVoxE2ETest = class extends E2ETestBase {
     super.testGenPreamble();
     GEN(`
     auto allow = extension_l10n_util::AllowGzippedMessagesAllowedForTest();
-    base::Closure load_cb =
-        base::Bind(&chromeos::AccessibilityManager::EnableSpokenFeedback,
-            base::Unretained(chromeos::AccessibilityManager::Get()),
+    base::OnceClosure load_cb =
+        base::BindOnce(&ash::AccessibilityManager::EnableSpokenFeedback,
+            base::Unretained(ash::AccessibilityManager::Get()),
             true);
-    WaitForExtension(extension_misc::kChromeVoxExtensionId, load_cb);
       `);
+
+    super.testGenPreambleCommon(
+        'kChromeVoxExtensionId', ChromeVoxE2ETest.prototype.failOnConsoleError);
   }
 };
+
+// TODO: wasm logs errors if it takes too long to load (e.g. liblouis wasm).
+// Separately, LibLouis also logs errors.
+// See https://crbug.com/1170991.
+ChromeVoxE2ETest.prototype.failOnConsoleError = false;

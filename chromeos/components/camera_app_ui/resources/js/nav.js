@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
+import * as localStorage from './models/local_storage.js';
 import {DeviceOperator} from './mojo/device_operator.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
@@ -13,7 +13,7 @@ import {ViewName} from './type.js';
 import * as util from './util.js';
 // eslint-disable-next-line no-unused-vars
 import {View} from './views/view.js';
-import {windowController} from './window_controller/window_controller.js';
+import {windowController} from './window_controller.js';
 
 /**
  * All views stacked in ascending z-order (DOM order) for navigation, and only
@@ -35,8 +35,6 @@ let topmostIndex = -1;
 export function setup(views) {
   allViews = views;
   // Manage all tabindex usages in for navigation.
-  dom.getAll('[tabindex]', HTMLElement)
-      .forEach((element) => util.makeUnfocusableByMouse(element));
   document.body.addEventListener('keydown', (event) => {
     const e = assertInstanceof(event, KeyboardEvent);
     if (e.key === 'Tab') {
@@ -73,7 +71,10 @@ function inactivate(index) {
     element.dataset['tabindex'] = element.getAttribute('tabindex');
     element.setAttribute('tabindex', '-1');
   });
-  document.activeElement.blur();
+  const activeElement = document.activeElement;
+  if (activeElement instanceof HTMLElement) {
+    activeElement.blur();
+  }
 }
 
 /**
@@ -179,7 +180,16 @@ export function onKeyPressed(event) {
   const key = util.getShortcutIdentifier(event);
   switch (key) {
     case 'BrowserBack':
-      windowController.minimize();
+      // Only works for non-intent instance.
+      if (!state.get(state.State.INTENT)) {
+        windowController.minimize();
+      }
+      break;
+    case 'Alt--':
+      // Prevent intent window from minimizing.
+      if (state.get(state.State.INTENT)) {
+        event.preventDefault();
+      }
       break;
     case 'Ctrl-=':
     case 'Ctrl--':
@@ -187,16 +197,7 @@ export function onKeyPressed(event) {
       event.preventDefault();
       break;
     case 'Ctrl-V':
-      toast.showDebugMessage(browserProxy.getAppVersion());
-      break;
-    case 'Ctrl-Shift-I':
-      browserProxy.openInspector('normal');
-      break;
-    case 'Ctrl-Shift-J':
-      browserProxy.openInspector('console');
-      break;
-    case 'Ctrl-Shift-C':
-      browserProxy.openInspector('element');
+      toast.showDebugMessage('SWA');
       break;
     case 'Ctrl-Shift-E':
       (async () => {
@@ -206,7 +207,7 @@ export function onKeyPressed(event) {
         }
         const newState = !state.get(state.State.EXPERT);
         state.set(state.State.EXPERT, newState);
-        browserProxy.localStorageSet({expert: newState});
+        localStorage.set({expert: newState});
       })();
       break;
     default:

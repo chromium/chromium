@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/printing/print_servers_provider_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"

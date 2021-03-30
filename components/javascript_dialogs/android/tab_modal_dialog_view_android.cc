@@ -27,10 +27,10 @@ namespace javascript_dialogs {
 base::WeakPtr<TabModalDialogViewAndroid> TabModalDialogViewAndroid::Create(
     content::WebContents* parent_web_contents,
     content::WebContents* alerting_web_contents,
-    const base::string16& title,
+    const std::u16string& title,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     content::JavaScriptDialogManager::DialogClosedCallback
         callback_on_button_clicked,
     base::OnceClosure callback_on_cancelled) {
@@ -57,7 +57,7 @@ void TabModalDialogViewAndroid::CloseDialogWithoutCallback() {
   delete this;
 }
 
-base::string16 TabModalDialogViewAndroid::GetUserInput() {
+std::u16string TabModalDialogViewAndroid::GetUserInput() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> prompt =
       Java_JavascriptTabModalDialog_getUserInput(env, dialog_jobject_);
@@ -68,7 +68,7 @@ void TabModalDialogViewAndroid::Accept(JNIEnv* env,
                                        const JavaParamRef<jobject>&,
                                        const JavaParamRef<jstring>& prompt) {
   if (callback_on_button_clicked_) {
-    base::string16 prompt_text =
+    std::u16string prompt_text =
         base::android::ConvertJavaStringToUTF16(env, prompt);
     std::move(callback_on_button_clicked_).Run(true, prompt_text);
   }
@@ -80,7 +80,7 @@ void TabModalDialogViewAndroid::Cancel(JNIEnv* env,
                                        jboolean button_clicked) {
   if (button_clicked) {
     if (callback_on_button_clicked_) {
-      std::move(callback_on_button_clicked_).Run(false, base::string16());
+      std::move(callback_on_button_clicked_).Run(false, std::u16string());
     }
   } else if (callback_on_cancelled_) {
     std::move(callback_on_cancelled_).Run();
@@ -91,10 +91,10 @@ void TabModalDialogViewAndroid::Cancel(JNIEnv* env,
 TabModalDialogViewAndroid::TabModalDialogViewAndroid(
     content::WebContents* parent_web_contents,
     content::WebContents* alerting_web_contents,
-    const base::string16& title,
+    const std::u16string& title,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     content::JavaScriptDialogManager::DialogClosedCallback
         callback_on_button_clicked,
     base::OnceClosure callback_on_cancelled)

@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_video_texture.h"
 
 #include "build/build_config.h"
+#include "media/base/video_frame.h"
+#include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_metadata.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_video_texture_enum.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 
 namespace blink {
 
@@ -79,27 +82,45 @@ VideoFrameMetadata* WebGLVideoTexture::shareVideoImageWEBGL(
   NOTIMPLEMENTED();
   return nullptr;
 #else
+  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
+  scoped_refptr<media::VideoFrame> media_video_frame;
+  if (auto* wmp = video->GetWebMediaPlayer()) {
+    media_video_frame = wmp->GetCurrentFrame();
+    video_renderer = wmp->GetPaintCanvasVideoRenderer();
+  }
+
+  if (!media_video_frame || !video_renderer)
+    return nullptr;
+
   // For WebGL last-uploaded-frame-metadata API.
-  WebMediaPlayer::VideoFrameUploadMetadata frame_metadata = {};
-  auto* frame_metadata_ptr = &frame_metadata;
-  int already_uploaded_id = HTMLVideoElement::kNoAlreadyUploadedFrame;
-  if (RuntimeEnabledFeatures::ExtraWebGLVideoTextureMetadataEnabled())
-    already_uploaded_id = texture->GetLastUploadedVideoFrameId();
+  auto metadata = CreateVideoFrameUploadMetadata(
+      media_video_frame.get(), texture->GetLastUploadedVideoFrameId());
+  if (metadata.skipped) {
+    texture->UpdateLastUploadedFrame(metadata);
+    DCHECK(current_frame_metadata_);
+    return current_frame_metadata_;
+  }
 
   target = GL_TEXTURE_2D;
 
+  viz::RasterContextProvider* raster_context_provider = nullptr;
+  if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+    if (auto* context_provider = wrapper->ContextProvider())
+      raster_context_provider = context_provider->RasterContextProvider();
+  }
+
   // TODO(shaobo.yan@intel.com) : A fallback path or exception needs to be
   // added when video is not using gpu decoder.
-  bool success = video->PrepareVideoFrameForWebGL(
-      scoped.Context()->ContextGL(), target, texture->Object(),
-      already_uploaded_id, frame_metadata_ptr);
+  const bool success = video_renderer->PrepareVideoFrameForWebGL(
+      raster_context_provider, scoped.Context()->ContextGL(),
+      std::move(media_video_frame), target, texture->Object());
   if (!success) {
     exception_state.ThrowTypeError("Failed to share video to texture.");
     return nullptr;
   }
 
   if (RuntimeEnabledFeatures::ExtraWebGLVideoTextureMetadataEnabled())
-    texture->UpdateLastUploadedFrame(frame_metadata);
+    texture->UpdateLastUploadedFrame(metadata);
 
   if (!current_frame_metadata_)
     current_frame_metadata_ = VideoFrameMetadata::Create();
@@ -109,14 +130,13 @@ VideoFrameMetadata* WebGLVideoTexture::shareVideoImageWEBGL(
   // not currently saved in VideoFrameCompositor, so VFC::ProcessNewFrame()
   // would need to save the current time as well as the presentation time.
   current_frame_metadata_->setPresentationTime(
-      frame_metadata_ptr->timestamp.InMicrosecondsF());
+      metadata.timestamp.InMicrosecondsF());
   current_frame_metadata_->setExpectedDisplayTime(
-      frame_metadata_ptr->expected_timestamp.InMicrosecondsF());
+      metadata.expected_timestamp.InMicrosecondsF());
 
-  current_frame_metadata_->setWidth(frame_metadata_ptr->visible_rect.width());
-  current_frame_metadata_->setHeight(frame_metadata_ptr->visible_rect.height());
-  current_frame_metadata_->setMediaTime(
-      frame_metadata_ptr->timestamp.InSecondsF());
+  current_frame_metadata_->setWidth(metadata.visible_rect.Width());
+  current_frame_metadata_->setHeight(metadata.visible_rect.Height());
+  current_frame_metadata_->setMediaTime(metadata.timestamp.InSecondsF());
 
   // This is a required field. It is supposed to be monotonically increasing for
   // video.requestVideoFrameCallback, but it isn't used yet for
@@ -133,6 +153,30 @@ bool WebGLVideoTexture::releaseVideoImageWEBGL(
   // NOTE: In current WEBGL_video_texture status, there is no lock on video
   // frame. So this API doesn't need to do anything.
   return true;
+}
+
+// static
+WebGLTexture::VideoFrameUploadMetadata
+WebGLVideoTexture::CreateVideoFrameUploadMetadata(
+    const media::VideoFrame* frame,
+    int already_uploaded_id) {
+  DCHECK(frame);
+  WebGLTexture::VideoFrameUploadMetadata metadata = {};
+  if (!RuntimeEnabledFeatures::ExtraWebGLVideoTextureMetadataEnabled())
+    return metadata;
+
+  metadata.frame_id = frame->unique_id();
+  metadata.visible_rect = IntRect(frame->visible_rect());
+  metadata.timestamp = frame->timestamp();
+  if (frame->metadata().frame_duration.has_value()) {
+    metadata.expected_timestamp =
+        frame->timestamp() + *frame->metadata().frame_duration;
+  };
+
+  // Skip uploading frames which have already been uploaded.
+  if (already_uploaded_id == frame->unique_id())
+    metadata.skipped = true;
+  return metadata;
 }
 
 }  // namespace blink

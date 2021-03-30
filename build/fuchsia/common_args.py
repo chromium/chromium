@@ -128,31 +128,9 @@ def ConfigureLogging(args):
       logging.DEBUG if args.verbose else logging.WARN)
 
 
-# TODO(crbug.com/1121763): remove the need for additional_args
-def GetDeploymentTargetForArgs(additional_args=None):
+def GetDeploymentTargetForArgs(args):
   """Constructs a deployment target object using command line arguments.
      If needed, an additional_args dict can be used to supplement the
      command line arguments."""
 
-  # Determine target type from command line arguments.
-  device_type_parser = argparse.ArgumentParser()
-  _AddTargetSpecificationArgs(device_type_parser)
-  module_args, _ = device_type_parser.parse_known_args()
-  target_class = _GetTargetClass(module_args)
-
-  # Process command line args needed to initialize target in separate arg
-  # parser.
-  target_arg_parser = argparse.ArgumentParser()
-  target_class.RegisterArgs(target_arg_parser)
-  known_args, _ = target_arg_parser.parse_known_args()
-  target_args = vars(known_args)
-
-  # target_cpu is needed to determine target type, and fuchsia_out_dir
-  # is needed for devices with Fuchsia built from source code.
-  target_args.update({'target_cpu': module_args.target_cpu})
-  target_args.update({'fuchsia_out_dir': module_args.fuchsia_out_dir})
-
-  if additional_args:
-    target_args.update(additional_args)
-
-  return target_class(**target_args)
+  return _GetTargetClass(args).CreateFromArgs(args)

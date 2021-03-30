@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/browser/event_router.h"
@@ -147,9 +146,10 @@ void TCPSocketEventDispatcher::ReadCallback(
 
     // Post a task to delay the read until the socket is available, as
     // calling StartReceive at this point would error with ERR_IO_PENDING.
-    base::PostTask(
-        FROM_HERE, {params.thread_id},
-        base::BindOnce(&TCPSocketEventDispatcher::StartRead, params));
+    content::BrowserThread::GetTaskRunnerForThread(params.thread_id)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&TCPSocketEventDispatcher::StartRead, params));
   } else if (bytes_read == net::ERR_IO_PENDING) {
     // This happens when resuming a socket which already had an
     // active "read" callback.

@@ -61,7 +61,9 @@ class WebAppNavigationBrowserTest : public InProcessBrowserTest {
       const GURL& target_url,
       LinkTarget target,
       const std::string& rel,
-      int modifiers);
+      int modifiers,
+      blink::WebMouseEvent::Button button =
+          blink::WebMouseEvent::Button::kLeft);
 
   // Creates an <a> element, sets its href and target to |link_url| and |target|
   // respectively, adds it to the DOM, and clicks on it. Returns once

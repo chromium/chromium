@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(WebClipboardImplTest, PasteRTF) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "paste_listener.html")));
   focus_observer.Wait();
 
-  const base::string16 expected_title = base::UTF8ToUTF16(rtf_content);
+  const std::u16string expected_title = base::UTF8ToUTF16(rtf_content);
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   shell()->web_contents()->Paste();
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());

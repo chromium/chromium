@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPicture.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace paint_preview {
@@ -83,20 +84,61 @@ base::Optional<PaintPreviewFrame> BuildFrame(
   return frame;
 }
 
+// Adjusts `clip_rect` to be bounded by `picture_rectf` when scaled by
+// `scale_factor`. This also replaces a 0 value for the width or height of
+// `clip_rect` to fill the extent of that dimension remaining.
+gfx::Rect AdjustClipRect(const gfx::Rect& clip_rect,
+                         const SkRect& picture_rectf,
+                         float scale_factor) {
+  // Scale the picture dimensions and clamp ceil to an int as `picture_size`
+  // needs to be pixel aligned.
+  gfx::Size picture_size(
+      base::ClampCeil(picture_rectf.width() * scale_factor),
+      base::ClampCeil(picture_rectf.height() * scale_factor));
+
+  // Clamp the x/y to be within the bounds of the picture.
+  gfx::Rect out_rect;
+  out_rect.set_x(std::min(std::max(0, clip_rect.x()), picture_size.width()));
+  out_rect.set_y(std::min(std::max(0, clip_rect.y()), picture_size.height()));
+
+  // Default the width/height to be that of the picture if no value was
+  // provided.
+  const int width =
+      (clip_rect.width() <= 0) ? picture_size.width() : clip_rect.width();
+  const int height =
+      (clip_rect.height() <= 0) ? picture_size.height() : clip_rect.height();
+
+  // Clamp the width/height to be within the picture's bounds. Using the
+  // `width` and `height` calculated above could result in an `out_rect` that
+  // overflows the picture if x/y are non-zero.
+  //
+  // Example:
+  // - `picture_size` is 100x200
+  // - `clip_rect` is (10, 20) 0x230
+  // - Above the `width` and `height` will be set to 100 and 230 respectively.
+  // However, 10+100 and 20+230 will overflow the `picture_size` so these values
+  // need to be clamped. The maximum value to clamp to (in both dimensions) is:
+  // `picture_size` - `out_rect.origin()`.
+  out_rect.set_width(std::min(width, picture_size.width() - out_rect.x()));
+  out_rect.set_height(std::min(height, picture_size.height() - out_rect.y()));
+
+  return out_rect;
+}
+
 // Holds a ref to the discardable_shared_memory_manager so it sticks around
 // until at least after skia is finished with it.
 base::Optional<SkBitmap> CreateBitmap(
     scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
         discardable_shared_memory_manager,
     sk_sp<SkPicture> skp,
-    const gfx::Rect& clip_rect,
+    const gfx::Rect& raw_clip_rect,
     float scale_factor) {
   TRACE_EVENT0("paint_preview", "PaintPreviewCompositorImpl::CreateBitmap");
+  const gfx::Rect clip_rect =
+      AdjustClipRect(raw_clip_rect, skp->cullRect(), scale_factor);
   SkBitmap bitmap;
-  // Use N32 rather than an alpha color type as frames cannot have transparent
-  // backgrounds.
-  if (!bitmap.tryAllocPixels(SkImageInfo::MakeN32(
-          clip_rect.width(), clip_rect.height(), kOpaque_SkAlphaType))) {
+  if (!bitmap.tryAllocPixels(
+          SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()))) {
     return base::nullopt;
   }
   SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());

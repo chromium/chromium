@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/ntp_tiles/tile_source.h"
 #include "components/ntp_tiles/tile_title_source.h"
@@ -173,7 +172,7 @@ struct InstantMostVisitedItem {
 
   // The title of the Most Visited page.  May be empty, in which case the |url|
   // is used as the title.
-  base::string16 title;
+  std::u16string title;
 
   // The external URL of the favicon associated with this page.
   GURL favicon;

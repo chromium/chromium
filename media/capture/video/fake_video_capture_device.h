@@ -34,13 +34,18 @@ class PacmanFramePainter {
   PacmanFramePainter(Format pixel_format,
                      const FakeDeviceState* fake_device_state);
 
-  void PaintFrame(base::TimeDelta elapsed_time, uint8_t* target_buffer);
+  void PaintFrame(base::TimeDelta elapsed_time,
+                  uint8_t* target_buffer,
+                  int bytes_per_row = 0);
 
  private:
   void DrawGradientSquares(base::TimeDelta elapsed_time,
-                           uint8_t* target_buffer);
+                           uint8_t* target_buffer,
+                           int bytes_per_row);
 
-  void DrawPacman(base::TimeDelta elapsed_time, uint8_t* target_buffer);
+  void DrawPacman(base::TimeDelta elapsed_time,
+                  uint8_t* target_buffer,
+                  int bytes_per_row);
 
   const Format pixel_format_;
   const FakeDeviceState* fake_device_state_ = nullptr;

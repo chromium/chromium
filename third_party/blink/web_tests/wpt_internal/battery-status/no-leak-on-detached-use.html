@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async _ => {
+  const iframe = document.createElement('iframe');
+  iframe.srcdoc = '<html></html>';
+  document.body.appendChild(iframe);
+
+  const frameNav = iframe.contentWindow.navigator;
+  document.body.removeChild(iframe);
+
+  const battery = await frameNav.getBattery();
+  assert_equals(battery, undefined);
+}, 'navigator.getBattery() on a detached frame does not leak or crash');
+</script>
+</body>
+</html>

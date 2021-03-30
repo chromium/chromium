@@ -26,7 +26,7 @@ class ChromeTemplateURLServiceClient : public TemplateURLServiceClient,
   void DeleteAllSearchTermsForKeyword(history::KeywordID keyword_Id) override;
   void SetKeywordSearchTermsForURL(const GURL& url,
                                    TemplateURLID id,
-                                   const base::string16& term) override;
+                                   const std::u16string& term) override;
   void AddKeywordGeneratedVisit(const GURL& url) override;
 
   // history::HistoryServiceObserver:

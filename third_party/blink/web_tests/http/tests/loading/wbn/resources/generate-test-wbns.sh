@@ -20,6 +20,9 @@ gen-bundle \
   -dir hello/ \
   -o wbn/hello.wbn
 
+cp wbn/hello.wbn wbn/hello.wbn-without-nosniff
+cp wbn/hello.wbn wbn/hello.wbn-wrong-mime-type
+
 gen-bundle \
   -version b1 \
   -baseURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-origin-trial/ \

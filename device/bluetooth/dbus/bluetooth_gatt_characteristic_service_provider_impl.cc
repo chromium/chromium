@@ -305,18 +305,19 @@ void BluetoothGattCharacteristicServiceProviderImpl::ReadValue(
   }
 
   // GetValue() promises to only call either the success or error callback.
-  auto response_sender_adapted =
-      base::AdaptCallbackForRepeating(std::move(response_sender));
+  auto split_response_sender =
+      base::SplitOnceCallback(std::move(response_sender));
 
   DCHECK(delegate_);
   delegate_->GetValue(
       device_path,
       base::BindOnce(
           &BluetoothGattCharacteristicServiceProviderImpl::OnReadValue,
-          weak_ptr_factory_.GetWeakPtr(), method_call, response_sender_adapted),
+          weak_ptr_factory_.GetWeakPtr(), method_call,
+          std::move(split_response_sender.first)),
       base::BindOnce(&BluetoothGattCharacteristicServiceProviderImpl::OnFailure,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
-                     response_sender_adapted));
+                     std::move(split_response_sender.second)));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::WriteValue(
@@ -354,18 +355,19 @@ void BluetoothGattCharacteristicServiceProviderImpl::WriteValue(
   }
 
   // SetValue() promises to only call either the success or error callback.
-  auto response_sender_adapted =
-      base::AdaptCallbackForRepeating(std::move(response_sender));
+  auto split_response_sender =
+      base::SplitOnceCallback(std::move(response_sender));
 
   DCHECK(delegate_);
   delegate_->SetValue(
       device_path, value,
       base::BindOnce(
           &BluetoothGattCharacteristicServiceProviderImpl::OnWriteValue,
-          weak_ptr_factory_.GetWeakPtr(), method_call, response_sender_adapted),
+          weak_ptr_factory_.GetWeakPtr(), method_call,
+          std::move(split_response_sender.first)),
       base::BindOnce(&BluetoothGattCharacteristicServiceProviderImpl::OnFailure,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
-                     response_sender_adapted));
+                     std::move(split_response_sender.second)));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::PrepareWriteValue(
@@ -411,18 +413,19 @@ void BluetoothGattCharacteristicServiceProviderImpl::PrepareWriteValue(
 
   // PrepareSetValue() promises to only call either the success or error
   // callback.
-  auto response_sender_adapted =
-      base::AdaptCallbackForRepeating(std::move(response_sender));
+  auto split_response_sender =
+      base::SplitOnceCallback(std::move(response_sender));
 
   DCHECK(delegate_);
   delegate_->PrepareSetValue(
       device_path, value, offset, has_subsequent_write,
       base::BindOnce(
           &BluetoothGattCharacteristicServiceProviderImpl::OnWriteValue,
-          weak_ptr_factory_.GetWeakPtr(), method_call, response_sender_adapted),
+          weak_ptr_factory_.GetWeakPtr(), method_call,
+          std::move(split_response_sender.first)),
       base::BindOnce(&BluetoothGattCharacteristicServiceProviderImpl::OnFailure,
                      weak_ptr_factory_.GetWeakPtr(), method_call,
-                     response_sender_adapted));
+                     std::move(split_response_sender.second)));
 }
 
 void BluetoothGattCharacteristicServiceProviderImpl::StartNotify(

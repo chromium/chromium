@@ -15,19 +15,18 @@ namespace blink {
 // anchor node is moved out of document. The class is implemented by using a
 // temporary |Range| object to keep track of the |Position|, and disposing the
 // |Range| when out of scope.
-class CORE_EXPORT RelocatablePosition final {
-  STACK_ALLOCATED();
-
+class CORE_EXPORT RelocatablePosition final
+    : public GarbageCollected<RelocatablePosition> {
  public:
   explicit RelocatablePosition(const Position&);
-  ~RelocatablePosition();
 
+  void SetPosition(const Position&);
   Position GetPosition() const;
 
- private:
-  Range* const range_;
+  void Trace(Visitor* visitor) const;
 
-  DISALLOW_COPY_AND_ASSIGN(RelocatablePosition);
+ private:
+  Member<Range> const range_;
 };
 
 }  // namespace blink

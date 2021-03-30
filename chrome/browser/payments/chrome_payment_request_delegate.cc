@@ -45,7 +45,7 @@
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace payments {
@@ -186,8 +186,11 @@ std::string ChromePaymentRequestDelegate::GetAuthenticatedEmail() const {
   Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager && identity_manager->HasPrimaryAccount())
-    return identity_manager->GetPrimaryAccountInfo().email;
+  if (identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        .email;
+  }
 
   return std::string();
 }
@@ -209,10 +212,10 @@ bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
 std::unique_ptr<autofill::InternalAuthenticator>
 ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
   // This authenticator can be used in a cross-origin iframe only if the
-  // top-level frame allowed it with Feature Policy, e.g., with allow="payment"
-  // iframe attribute. The secure payment confirmation dialog displays the
-  // top-level origin in its UI before the user can click on the [Verify] button
-  // to invoke this authenticator.
+  // top-level frame allowed it with Permissions Policy, e.g., with
+  // allow="payment" iframe attribute. The secure payment confirmation dialog
+  // displays the top-level origin in its UI before the user can click on the
+  // [Verify] button to invoke this authenticator.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   return rfh && rfh->IsCurrent()
              ? std::make_unique<content::InternalAuthenticatorImpl>(
@@ -276,7 +279,7 @@ std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
   if (!web_app::AppBrowserController::IsWebApp(browser))
     return "";
 
-  auto* apk_web_app_service = chromeos::ApkWebAppService::Get(
+  auto* apk_web_app_service = ash::ApkWebAppService::Get(
       Profile::FromBrowserContext(rfh->GetBrowserContext()));
   if (!apk_web_app_service)
     return "";
@@ -299,6 +302,11 @@ content::BrowserContext* ChromePaymentRequestDelegate::GetBrowserContextOrNull()
     const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   return rfh ? rfh->GetBrowserContext() : nullptr;
+}
+
+const PaymentUIObserver* ChromePaymentRequestDelegate::GetPaymentUIObserver()
+    const {
+  return nullptr;
 }
 
 }  // namespace payments

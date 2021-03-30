@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Duración del temporizador</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> activa</translation>
+<translation id="2144806332417375165">Parámetros de video personalizados</translation>
 <translation id="229579744168541441">Exportar al disco</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2501853267655415902">Se detuvo la grabación</translation>
@@ -33,7 +34,6 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="3259149966178251584">Resolución de la cámara</translation>
 <translation id="3517926952904427380">No es posible cambiar al modo vertical para tomar fotos.</translation>
 <translation id="3569311554794739032">¿Confirmas que quieres quitar <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Otra app está usando tu cámara</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Escanear el código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -76,10 +76,12 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="7337660886763914220">Errores en el sistema de archivos</translation>
 <translation id="7450541714075000668">Se copió el texto.</translation>
 <translation id="7557677699350329807">Cambiar a la siguiente cámara</translation>
+<translation id="7607002721634913082">Detenido</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Mostrar opciones de desplazamiento lateral, inclinación y zoom</translation>
 <translation id="7983668134180549431">Se detectó texto.</translation>
 <translation id="8067883171444229417">Reproducir video</translation>
 <translation id="8131740175452115882">Confirmar</translation>

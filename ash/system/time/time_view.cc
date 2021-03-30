@@ -54,6 +54,12 @@ const int kVerticalClockMinutesTopOffset = -2;
 // when the shelf is vertically aligned.
 const int kClockLeadingPadding = 8;
 
+std::u16string FormatDate(const base::Time& time) {
+  // Use 'short' month format (e.g., "Oct") followed by non-padded day of
+  // month (e.g., "2", "10").
+  return base::TimeFormatWithPattern(time, "LLLd");
+}
+
 }  // namespace
 
 TimeView::TimeView(ClockLayout clock_layout, ClockModel* model)
@@ -110,6 +116,14 @@ void TimeView::SetTextShadowValues(const gfx::ShadowValues& shadows) {
 
   vertical_label_hours_->SetShadows(shadows);
   vertical_label_minutes_->SetShadows(shadows);
+}
+
+void TimeView::SetShowDateWhenHorizontal(bool show_date_when_horizontal) {
+  if (show_date_when_horizontal_ == show_date_when_horizontal)
+    return;
+  show_date_when_horizontal_ = show_date_when_horizontal;
+  UpdateText();
+  PreferredSizeChanged();
 }
 
 void TimeView::OnDateFormatChanged() {
@@ -182,27 +196,30 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
 
   SetAccessibleName(base::TimeFormatTimeOfDayWithHourClockType(
                         now, model_->hour_clock_type(), base::kKeepAmPm) +
-                    base::ASCIIToUTF16(", ") +
-                    base::TimeFormatFriendlyDate(now));
+                    u", " + base::TimeFormatFriendlyDate(now));
 
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 
-  base::string16 current_time = base::TimeFormatTimeOfDayWithHourClockType(
+  std::u16string current_time = base::TimeFormatTimeOfDayWithHourClockType(
       now, model_->hour_clock_type(), base::kDropAmPm);
-  horizontal_label_->SetText(current_time);
+  std::u16string current_date_time = l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_DATE_TIME, FormatDate(now), current_time);
+
+  horizontal_label_->SetText(show_date_when_horizontal_ ? current_date_time
+                                                        : current_time);
   horizontal_label_->SetTooltipText(base::TimeFormatFriendlyDate(now));
   horizontal_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                               true);
 
   // Calculate vertical clock layout labels.
-  size_t colon_pos = current_time.find(base::ASCIIToUTF16(":"));
-  base::string16 hour = current_time.substr(0, colon_pos);
-  base::string16 minute = current_time.substr(colon_pos + 1);
+  size_t colon_pos = current_time.find(u":");
+  std::u16string hour = current_time.substr(0, colon_pos);
+  std::u16string minute = current_time.substr(colon_pos + 1);
 
   // Sometimes pad single-digit hours with a zero for aesthetic reasons.
   if (hour.length() == 1 && model_->hour_clock_type() == base::k24HourClock &&
       !base::i18n::IsRTL())
-    hour = base::ASCIIToUTF16("0") + hour;
+    hour = u"0" + hour;
 
   vertical_label_hours_->SetText(hour);
   vertical_label_minutes_->SetText(minute);

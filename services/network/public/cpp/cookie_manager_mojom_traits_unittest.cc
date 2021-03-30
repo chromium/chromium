@@ -326,6 +326,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     EXPECT_FALSE(least_trusted.return_excluded_cookies());
     least_trusted.set_return_excluded_cookies();  // differ from default.
     least_trusted.set_full_party_context_size(10u);
+    least_trusted.set_is_in_nontrivial_first_party_set(
+        true);  // differ from default.
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
         least_trusted, copy));
@@ -338,6 +340,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     EXPECT_EQ(net::CookieOptions::SamePartyCookieContextType::kCrossParty,
               copy.same_party_cookie_context_type());
     EXPECT_EQ(10u, copy.full_party_context_size());
+    EXPECT_TRUE(copy.is_in_nontrivial_first_party_set());
   }
 
   {
@@ -348,6 +351,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     very_trusted.set_same_party_cookie_context_type(
         net::CookieOptions::SamePartyCookieContextType::kSameParty);
     very_trusted.set_full_party_context_size(1u);
+    very_trusted.set_is_in_nontrivial_first_party_set(true);
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
         very_trusted, copy));
@@ -358,6 +362,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     EXPECT_EQ(net::CookieOptions::SamePartyCookieContextType::kSameParty,
               copy.same_party_cookie_context_type());
     EXPECT_EQ(1u, copy.full_party_context_size());
+    EXPECT_TRUE(copy.is_in_nontrivial_first_party_set());
   }
 }
 

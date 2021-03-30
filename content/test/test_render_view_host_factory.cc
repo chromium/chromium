@@ -38,6 +38,7 @@ void TestRenderViewHostFactory::set_render_process_host_factory(
 }
 
 RenderViewHost* TestRenderViewHostFactory::CreateRenderViewHost(
+    FrameTree* frame_tree,
     SiteInstance* instance,
     RenderViewHostDelegate* delegate,
     RenderWidgetHostDelegate* widget_delegate,
@@ -46,9 +47,9 @@ RenderViewHost* TestRenderViewHostFactory::CreateRenderViewHost(
     int32_t widget_routing_id,
     bool swapped_out) {
   return new TestRenderViewHost(
-      instance,
+      frame_tree, instance,
       TestRenderWidgetHost::Create(
-          widget_delegate,
+          frame_tree, widget_delegate,
           static_cast<SiteInstanceImpl*>(instance)->GetAgentSchedulingGroup(),
           widget_routing_id, false),
       delegate, routing_id, main_frame_routing_id, swapped_out);

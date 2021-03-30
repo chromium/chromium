@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {util} from '../../common/js/util.m.js';
-// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js'
+// #import {util} from './util.m.js';
+// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js'
 // clang-format on
 
 /* #export */ class FileOperationProgressEvent extends Event {

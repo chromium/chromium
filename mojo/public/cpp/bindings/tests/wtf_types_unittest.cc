@@ -6,7 +6,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
-#include "mojo/public/cpp/bindings/lib/fixed_buffer.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/wtf_serialization.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -114,16 +114,15 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorToWTFVector) {
   auto cloned_strs = strs;
 
   mojo::Message message(0, 0, 0, 0, nullptr);
-  mojo::internal::SerializationContext context;
-  typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
-      writer;
+  mojo::internal::MessageFragment<
+      typename mojo::internal::MojomTypeTraits<MojomType>::Data>
+      fragment(message);
   mojo::internal::ContainerValidateParams validate_params(
       0, true, new mojo::internal::ContainerValidateParams(0, false, nullptr));
-  mojo::internal::Serialize<MojomType>(cloned_strs, message.payload_buffer(),
-                                       &writer, &validate_params, &context);
+  mojo::internal::Serialize<MojomType>(cloned_strs, fragment, &validate_params);
 
   WTF::Vector<WTF::String> strs2;
-  mojo::internal::Deserialize<MojomType>(writer.data(), &strs2, &context);
+  mojo::internal::Deserialize<MojomType>(fragment.data(), &strs2, &message);
 
   EXPECT_EQ(strs, strs2);
 }
@@ -140,16 +139,15 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorInlineCapacity) {
   auto cloned_strs = strs;
 
   mojo::Message message(0, 0, 0, 0, nullptr);
-  mojo::internal::SerializationContext context;
-  typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
-      writer;
+  mojo::internal::MessageFragment<
+      typename mojo::internal::MojomTypeTraits<MojomType>::Data>
+      fragment(message);
   mojo::internal::ContainerValidateParams validate_params(
       0, true, new mojo::internal::ContainerValidateParams(0, false, nullptr));
-  mojo::internal::Serialize<MojomType>(cloned_strs, message.payload_buffer(),
-                                       &writer, &validate_params, &context);
+  mojo::internal::Serialize<MojomType>(cloned_strs, fragment, &validate_params);
 
   WTF::Vector<WTF::String, 1> strs2;
-  mojo::internal::Deserialize<MojomType>(writer.data(), &strs2, &context);
+  mojo::internal::Deserialize<MojomType>(fragment.data(), &strs2, &message);
 
   EXPECT_EQ(strs, strs2);
 }
@@ -161,16 +159,15 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorToStlVector) {
   auto cloned_strs = strs;
 
   mojo::Message message(0, 0, 0, 0, nullptr);
-  mojo::internal::SerializationContext context;
-  typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
-      writer;
+  mojo::internal::MessageFragment<
+      typename mojo::internal::MojomTypeTraits<MojomType>::Data>
+      fragment(message);
   mojo::internal::ContainerValidateParams validate_params(
       0, true, new mojo::internal::ContainerValidateParams(0, false, nullptr));
-  mojo::internal::Serialize<MojomType>(cloned_strs, message.payload_buffer(),
-                                       &writer, &validate_params, &context);
+  mojo::internal::Serialize<MojomType>(cloned_strs, fragment, &validate_params);
 
   std::vector<base::Optional<std::string>> strs2;
-  mojo::internal::Deserialize<MojomType>(writer.data(), &strs2, &context);
+  mojo::internal::Deserialize<MojomType>(fragment.data(), &strs2, &message);
 
   ASSERT_EQ(4u, strs2.size());
   EXPECT_FALSE(strs2[0]);

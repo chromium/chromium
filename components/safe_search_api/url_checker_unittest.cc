@@ -91,6 +91,7 @@ class SafeSearchURLCheckerTest : public testing::Test {
   size_t next_url_;
   FakeURLCheckerClient* fake_client_;
   std::unique_ptr<URLChecker> checker_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(SafeSearchURLCheckerTest, Simple) {
@@ -194,6 +195,22 @@ TEST_F(SafeSearchURLCheckerTest, NoAllowAllGoogleURLs) {
     EXPECT_CALL(*this, OnCheckDone(url, Classification::UNSAFE, false));
     ASSERT_FALSE(SendResponse(url, Classification::UNSAFE, false));
   }
+}
+
+TEST_F(SafeSearchURLCheckerTest, DestroyURLCheckerBeforeCallback) {
+  GURL url(GetNewURL());
+  EXPECT_CALL(*this, OnCheckDone(_, _, _)).Times(0);
+
+  // Start a URL check.
+  ASSERT_FALSE(CheckURL(url));
+  fake_client_->RunCallbackAsync(
+      ToAPIClassification(Classification::SAFE, false));
+
+  // Reset the URLChecker before the callback occurs.
+  checker_.reset();
+
+  // The callback should now be invalid.
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace safe_search_api

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/assistant/util/deep_link_util.h"
@@ -14,7 +15,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -46,7 +46,7 @@ bool AreResultsAllowed() {
 
 class AssistantTextSearchResult : public ChromeSearchResult {
  public:
-  explicit AssistantTextSearchResult(const base::string16& text)
+  explicit AssistantTextSearchResult(const std::u16string& text)
       : action_url_(ash::assistant::util::CreateAssistantQueryDeepLink(
             base::UTF16ToUTF8(text))) {
     set_id(kIdPrefix + base::UTF16ToUTF8(text));
@@ -58,7 +58,7 @@ class AssistantTextSearchResult : public ChromeSearchResult {
         IDS_ASH_ASSISTANT_QUERY_ACCESSIBILITY_ANNOUNCEMENT, text));
     SetIcon(gfx::CreateVectorIcon(
         chromeos::kAssistantIcon,
-        ash::AppListConfig::instance().search_list_icon_dimension(),
+        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
         gfx::kPlaceholderColor));
 
     set_dismiss_view_on_open(false);
@@ -97,7 +97,7 @@ ash::AppListSearchResultType AssistantTextSearchProvider::ResultType() {
   return ash::AppListSearchResultType::kAssistantText;
 }
 
-void AssistantTextSearchProvider::Start(const base::string16& query) {
+void AssistantTextSearchProvider::Start(const std::u16string& query) {
   query_ = query;
   UpdateResults();
 }

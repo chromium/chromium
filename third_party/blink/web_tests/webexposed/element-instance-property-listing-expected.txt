@@ -76,6 +76,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaValueMin
     property ariaValueNow
     property ariaValueText
+    property ariaVirtualContent
     property assignedSlot
     property attachInternals
     property attachShadow
@@ -108,6 +109,7 @@ namespace http://www.w3.org/1999/xhtml
     property dir
     property dispatchEvent
     property draggable
+    property editContext
     property elementTiming
     property enterKeyHint
     property firstChild
@@ -326,6 +328,7 @@ namespace http://www.w3.org/1999/xhtml
     property webkitRequestFullscreen
 html element a
     property charset
+    property conversionDestination
     property coords
     property download
     property hash
@@ -334,6 +337,8 @@ html element a
     property href
     property hrefTranslate
     property hreflang
+    property impressionData
+    property impressionExpiry
     property name
     property origin
     property password
@@ -344,6 +349,7 @@ html element a
     property referrerPolicy
     property rel
     property relList
+    property reportingOrigin
     property rev
     property search
     property shape
@@ -783,6 +789,7 @@ html element link
     property relList
     property resources
     property rev
+    property scopes
     property sheet
     property sizes
     property target
@@ -896,6 +903,10 @@ html element param
     property valueType
 html element picture
 html element plaintext
+html element popup
+    property hide
+    property open
+    property show
 html element pre
     property width
 html element progress
@@ -951,6 +962,8 @@ html element select
     property validity
     property value
     property willValidate
+html element selectmenu
+    property value
 html element slot
     property assign
     property assignedElements
@@ -958,11 +971,13 @@ html element slot
     property name
 html element small
 html element source
+    property height
     property media
     property sizes
     property src
     property srcset
     property type
+    property width
 html element span
 html element strike
 html element strong
@@ -1274,6 +1289,7 @@ namespace http://www.w3.org/2000/svg
     property ariaValueMin
     property ariaValueNow
     property ariaValueText
+    property ariaVirtualContent
     property assignedSlot
     property attachShadow
     property attributeStyleMap
@@ -1300,6 +1316,7 @@ namespace http://www.w3.org/2000/svg
     property contains
     property dataset
     property dispatchEvent
+    property editContext
     property elementTiming
     property firstChild
     property firstElementChild

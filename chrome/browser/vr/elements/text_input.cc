@@ -127,7 +127,7 @@ void TextInput::RequestUnfocus() {
   delegate_->RequestUnfocus(id());
 }
 
-void TextInput::SetHintText(const base::string16& text) {
+void TextInput::SetHintText(const std::u16string& text) {
   hint_element_->SetText(text);
 }
 

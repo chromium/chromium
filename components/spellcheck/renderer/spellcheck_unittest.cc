@@ -28,8 +28,6 @@
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 
-#define TYPOGRAPHICAL_APOSTROPHE L"\x2019"
-
 namespace {
 
 const int kNoOffset = 0;
@@ -99,21 +97,20 @@ class SpellCheckTest : public testing::Test {
                                                    tag);
   }
 
-  bool IsValidContraction(const base::string16& word, int tag) {
+  bool IsValidContraction(const std::u16string& word, int tag) {
     return spell_check_->languages_.front()->IsValidContraction(word, tag);
   }
 
   static void FillSuggestions(
-      const std::vector<std::vector<base::string16>>& suggestions_list,
-      std::vector<base::string16>* optional_suggestions) {
+      const std::vector<std::vector<std::u16string>>& suggestions_list,
+      std::vector<std::u16string>* optional_suggestions) {
     spellcheck::FillSuggestions(suggestions_list, optional_suggestions);
   }
 
 #if !defined(OS_APPLE)
  protected:
-  void TestSpellCheckParagraph(
-      const base::string16& input,
-      const std::vector<SpellCheckResult>& expected) {
+  void TestSpellCheckParagraph(const std::u16string& input,
+                               const std::vector<SpellCheckResult>& expected) {
     blink::WebVector<blink::WebTextCheckingResult> results;
     spell_check()->SpellCheckParagraph(input, &results);
 
@@ -197,215 +194,352 @@ TEST_F(SpellCheckTest, SpellCheckStrings_EN_US) {
     size_t misspelling_start;
     size_t misspelling_length;
   } kTestCases[] = {
-    // Empty strings.
-    {L"", true},
-    {L" ", true},
-    {L"\xA0", true},
-    {L"\x3000", true},
+      // Empty strings.
+      {L"", true},
+      {L" ", true},
+      {L"\xA0", true},
+      {L"\x3000", true},
 
-    // A valid English word "hello".
-    {L"hello", true},
-    // A valid Chinese word (meaning "hello") consisting of two CJKV
-    // ideographs
-    {L"\x4F60\x597D", true},
-    // A valid Korean word (meaning "hello") consisting of five hangul
-    // syllables
-    {L"\xC548\xB155\xD558\xC138\xC694", true},
-    // A valid Japanese word (meaning "hello") consisting of five Hiragana
-    // letters
-    {L"\x3053\x3093\x306B\x3061\x306F", true},
-    // A valid Hindi word (meaning ?) consisting of six Devanagari letters
-    // (This word is copied from "http://b/issue?id=857583".)
-    {L"\x0930\x093E\x091C\x0927\x093E\x0928", true},
-    // A valid English word "affix" using a Latin ligature 'ffi'
-    {L"a\xFB03x", true},
-    // A valid English word "hello" (fullwidth version)
-    {L"\xFF28\xFF45\xFF4C\xFF4C\xFF4F", true},
-    // Two valid Greek words (meaning "hello") consisting of seven Greek
-    // letters
-    {L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5", true},
-    // A valid Russian word (meaning "hello") consisting of twelve Cyrillic
-    // letters
-    {L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435", true},
-    // A valid English contraction
-    {L"isn't", true},
-    // A valid English contraction with a typographical apostrophe.
-    {L"isn" TYPOGRAPHICAL_APOSTROPHE L"t", true},
-    // A valid English word enclosed with underscores.
-    {L"_hello_", true},
+      // A valid English word "hello".
+      {L"hello", true},
+      // A valid Chinese word (meaning "hello") consisting of two CJKV
+      // ideographs
+      {L"\x4F60\x597D", true},
+      // A valid Korean word (meaning "hello") consisting of five hangul
+      // syllables
+      {L"\xC548\xB155\xD558\xC138\xC694", true},
+      // A valid Japanese word (meaning "hello") consisting of five Hiragana
+      // letters
+      {L"\x3053\x3093\x306B\x3061\x306F", true},
+      // A valid Hindi word (meaning ?) consisting of six Devanagari letters
+      // (This word is copied from "http://b/issue?id=857583".)
+      {L"\x0930\x093E\x091C\x0927\x093E\x0928", true},
+      // A valid English word "affix" using a Latin ligature 'ffi'
+      {L"a\xFB03x", true},
+      // A valid English word "hello" (fullwidth version)
+      {L"\xFF28\xFF45\xFF4C\xFF4C\xFF4F", true},
+      // Two valid Greek words (meaning "hello") consisting of seven Greek
+      // letters
+      {L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5",
+       true},
+      // A valid Russian word (meaning "hello") consisting of twelve Cyrillic
+      // letters
+      {L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435",
+       true},
+      // A valid English contraction
+      {L"isn't", true},
+      // A valid English contraction with a typographical apostrophe.
+      {L"isn’t", true},
+      // A valid English word enclosed with underscores.
+      {L"_hello_", true},
 
-    // A valid English word with a preceding whitespace
-    {L" " L"hello", true},
-    // A valid English word with a preceding no-break space
-    {L"\xA0" L"hello", true},
-    // A valid English word with a preceding ideographic space
-    {L"\x3000" L"hello", true},
-    // A valid English word with a preceding Chinese word
-    {L"\x4F60\x597D" L"hello", true},
-    // [ROBUSTNESS] A valid English word with a preceding Korean word
-    {L"\xC548\xB155\xD558\xC138\xC694" L"hello", true},
-    // A valid English word with a preceding Japanese word
-    {L"\x3053\x3093\x306B\x3061\x306F" L"hello", true},
-    // [ROBUSTNESS] A valid English word with a preceding Hindi word
-    {L"\x0930\x093E\x091C\x0927\x093E\x0928" L"hello", true},
-    // [ROBUSTNESS] A valid English word with two preceding Greek words
-    {L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5"
-     L"hello", true},
-    // [ROBUSTNESS] A valid English word with a preceding Russian word
-    {L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435" L"hello", true},
+      // A valid English word with a preceding whitespace
+      {L" "
+       L"hello",
+       true},
+      // A valid English word with a preceding no-break space
+      {L"\xA0"
+       L"hello",
+       true},
+      // A valid English word with a preceding ideographic space
+      {L"\x3000"
+       L"hello",
+       true},
+      // A valid English word with a preceding Chinese word
+      {L"\x4F60\x597D"
+       L"hello",
+       true},
+      // [ROBUSTNESS] A valid English word with a preceding Korean word
+      {L"\xC548\xB155\xD558\xC138\xC694"
+       L"hello",
+       true},
+      // A valid English word with a preceding Japanese word
+      {L"\x3053\x3093\x306B\x3061\x306F"
+       L"hello",
+       true},
+      // [ROBUSTNESS] A valid English word with a preceding Hindi word
+      {L"\x0930\x093E\x091C\x0927\x093E\x0928"
+       L"hello",
+       true},
+      // [ROBUSTNESS] A valid English word with two preceding Greek words
+      {L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5"
+       L"hello",
+       true},
+      // [ROBUSTNESS] A valid English word with a preceding Russian word
+      {L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435"
+       L"hello",
+       true},
 
-    // A valid English word with a following whitespace
-    {L"hello" L" ", true},
-    // A valid English word with a following no-break space
-    {L"hello" L"\xA0", true},
-    // A valid English word with a following ideographic space
-    {L"hello" L"\x3000", true},
-    // A valid English word with a following Chinese word
-    {L"hello" L"\x4F60\x597D", true},
-    // [ROBUSTNESS] A valid English word with a following Korean word
-    {L"hello" L"\xC548\xB155\xD558\xC138\xC694", true},
-    // A valid English word with a following Japanese word
-    {L"hello" L"\x3053\x3093\x306B\x3061\x306F", true},
-    // [ROBUSTNESS] A valid English word with a following Hindi word
-    {L"hello" L"\x0930\x093E\x091C\x0927\x093E\x0928", true},
-    // [ROBUSTNESS] A valid English word with two following Greek words
-    {L"hello"
-     L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5", true},
-    // [ROBUSTNESS] A valid English word with a following Russian word
-    {L"hello" L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435", true},
+      // A valid English word with a following whitespace
+      {L"hello"
+       L" ",
+       true},
+      // A valid English word with a following no-break space
+      {L"hello"
+       L"\xA0",
+       true},
+      // A valid English word with a following ideographic space
+      {L"hello"
+       L"\x3000",
+       true},
+      // A valid English word with a following Chinese word
+      {L"hello"
+       L"\x4F60\x597D",
+       true},
+      // [ROBUSTNESS] A valid English word with a following Korean word
+      {L"hello"
+       L"\xC548\xB155\xD558\xC138\xC694",
+       true},
+      // A valid English word with a following Japanese word
+      {L"hello"
+       L"\x3053\x3093\x306B\x3061\x306F",
+       true},
+      // [ROBUSTNESS] A valid English word with a following Hindi word
+      {L"hello"
+       L"\x0930\x093E\x091C\x0927\x093E\x0928",
+       true},
+      // [ROBUSTNESS] A valid English word with two following Greek words
+      {L"hello"
+       L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5",
+       true},
+      // [ROBUSTNESS] A valid English word with a following Russian word
+      {L"hello"
+       L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435",
+       true},
 
-    // Two valid English words concatenated with a whitespace
-    {L"hello" L" " L"hello", true},
-    // Two valid English words concatenated with a no-break space
-    {L"hello" L"\xA0" L"hello", true},
-    // Two valid English words concatenated with an ideographic space
-    {L"hello" L"\x3000" L"hello", true},
-    // Two valid English words concatenated with a Chinese word
-    {L"hello" L"\x4F60\x597D" L"hello", true},
-    // [ROBUSTNESS] Two valid English words concatenated with a Korean word
-    {L"hello" L"\xC548\xB155\xD558\xC138\xC694" L"hello", true},
-    // Two valid English words concatenated with a Japanese word
-    {L"hello" L"\x3053\x3093\x306B\x3061\x306F" L"hello", true},
-    // [ROBUSTNESS] Two valid English words concatenated with a Hindi word
-    {L"hello" L"\x0930\x093E\x091C\x0927\x093E\x0928" L"hello" , true},
-    // [ROBUSTNESS] Two valid English words concatenated with two Greek words
-    {L"hello" L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5"
-     L"hello", true},
-    // [ROBUSTNESS] Two valid English words concatenated with a Russian word
-    {L"hello" L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435" L"hello", true},
-    // [ROBUSTNESS] Two valid English words concatenated with a contraction
-    // character.
-    {L"hello:hello", true},
+      // Two valid English words concatenated with a whitespace
+      {L"hello"
+       L" "
+       L"hello",
+       true},
+      // Two valid English words concatenated with a no-break space
+      {L"hello"
+       L"\xA0"
+       L"hello",
+       true},
+      // Two valid English words concatenated with an ideographic space
+      {L"hello"
+       L"\x3000"
+       L"hello",
+       true},
+      // Two valid English words concatenated with a Chinese word
+      {L"hello"
+       L"\x4F60\x597D"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with a Korean word
+      {L"hello"
+       L"\xC548\xB155\xD558\xC138\xC694"
+       L"hello",
+       true},
+      // Two valid English words concatenated with a Japanese word
+      {L"hello"
+       L"\x3053\x3093\x306B\x3061\x306F"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with a Hindi word
+      {L"hello"
+       L"\x0930\x093E\x091C\x0927\x093E\x0928"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with two Greek words
+      {L"hello"
+       L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with a Russian word
+      {L"hello"
+       L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with a contraction
+      // character.
+      {L"hello:hello", true},
 
-    // An invalid English word
-    {L"ifmmp", false, 0, 5},
-    // An invalid English word "bffly" containing a Latin ligature 'ffl'
-    {L"b\xFB04y", false, 0, 3},
-    // An invalid English word "ifmmp" (fullwidth version)
-    {L"\xFF29\xFF46\xFF4D\xFF4D\xFF50", false, 0, 5},
-    // An invalid English contraction
-    {L"jtm'u", false, 0, 5},
-    // An invalid English word enclosed with underscores.
-    {L"_ifmmp_", false, 1, 5},
+      // An invalid English word
+      {L"ifmmp", false, 0, 5},
+      // An invalid English word "bffly" containing a Latin ligature 'ffl'
+      {L"b\xFB04y", false, 0, 3},
+      // An invalid English word "ifmmp" (fullwidth version)
+      {L"\xFF29\xFF46\xFF4D\xFF4D\xFF50", false, 0, 5},
+      // An invalid English contraction
+      {L"jtm'u", false, 0, 5},
+      // An invalid English word enclosed with underscores.
+      {L"_ifmmp_", false, 1, 5},
 
-    // An invalid English word with a preceding whitespace
-    {L" " L"ifmmp", false, 1, 5},
-    // An invalid English word with a preceding no-break space
-    {L"\xA0" L"ifmmp", false, 1, 5},
-    // An invalid English word with a preceding ideographic space
-    {L"\x3000" L"ifmmp", false, 1, 5},
-    // An invalid English word with a preceding Chinese word
-    {L"\x4F60\x597D" L"ifmmp", false, 2, 5},
-    // [ROBUSTNESS] An invalid English word with a preceding Korean word
-    {L"\xC548\xB155\xD558\xC138\xC694" L"ifmmp", false, 5, 5},
-    // An invalid English word with a preceding Japanese word
-    {L"\x3053\x3093\x306B\x3061\x306F" L"ifmmp", false, 5, 5},
-    // [ROBUSTNESS] An invalid English word with a preceding Hindi word
-    {L"\x0930\x093E\x091C\x0927\x093E\x0928" L"ifmmp", false, 6, 5},
-    // [ROBUSTNESS] An invalid English word with two preceding Greek words
-    {L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5"
-     L"ifmmp", false, 8, 5},
-    // [ROBUSTNESS] An invalid English word with a preceding Russian word
-    {L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435" L"ifmmp", false, 12, 5},
+      // An invalid English word with a preceding whitespace
+      {L" "
+       L"ifmmp",
+       false, 1, 5},
+      // An invalid English word with a preceding no-break space
+      {L"\xA0"
+       L"ifmmp",
+       false, 1, 5},
+      // An invalid English word with a preceding ideographic space
+      {L"\x3000"
+       L"ifmmp",
+       false, 1, 5},
+      // An invalid English word with a preceding Chinese word
+      {L"\x4F60\x597D"
+       L"ifmmp",
+       false, 2, 5},
+      // [ROBUSTNESS] An invalid English word with a preceding Korean word
+      {L"\xC548\xB155\xD558\xC138\xC694"
+       L"ifmmp",
+       false, 5, 5},
+      // An invalid English word with a preceding Japanese word
+      {L"\x3053\x3093\x306B\x3061\x306F"
+       L"ifmmp",
+       false, 5, 5},
+      // [ROBUSTNESS] An invalid English word with a preceding Hindi word
+      {L"\x0930\x093E\x091C\x0927\x093E\x0928"
+       L"ifmmp",
+       false, 6, 5},
+      // [ROBUSTNESS] An invalid English word with two preceding Greek words
+      {L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5"
+       L"ifmmp",
+       false, 8, 5},
+      // [ROBUSTNESS] An invalid English word with a preceding Russian word
+      {L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435"
+       L"ifmmp",
+       false, 12, 5},
 
-    // An invalid English word with a following whitespace
-    {L"ifmmp" L" ", false, 0, 5},
-    // An invalid English word with a following no-break space
-    {L"ifmmp" L"\xA0", false, 0, 5},
-    // An invalid English word with a following ideographic space
-    {L"ifmmp" L"\x3000", false, 0, 5},
-    // An invalid English word with a following Chinese word
-    {L"ifmmp" L"\x4F60\x597D", false, 0, 5},
-    // [ROBUSTNESS] An invalid English word with a following Korean word
-    {L"ifmmp" L"\xC548\xB155\xD558\xC138\xC694", false, 0, 5},
-    // An invalid English word with a following Japanese word
-    {L"ifmmp" L"\x3053\x3093\x306B\x3061\x306F", false, 0, 5},
-    // [ROBUSTNESS] An invalid English word with a following Hindi word
-    {L"ifmmp" L"\x0930\x093E\x091C\x0927\x093E\x0928", false, 0, 5},
-    // [ROBUSTNESS] An invalid English word with two following Greek words
-    {L"ifmmp"
-     L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5", false, 0, 5},
-    // [ROBUSTNESS] An invalid English word with a following Russian word
-    {L"ifmmp" L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435", false, 0, 5},
+      // An invalid English word with a following whitespace
+      {L"ifmmp"
+       L" ",
+       false, 0, 5},
+      // An invalid English word with a following no-break space
+      {L"ifmmp"
+       L"\xA0",
+       false, 0, 5},
+      // An invalid English word with a following ideographic space
+      {L"ifmmp"
+       L"\x3000",
+       false, 0, 5},
+      // An invalid English word with a following Chinese word
+      {L"ifmmp"
+       L"\x4F60\x597D",
+       false, 0, 5},
+      // [ROBUSTNESS] An invalid English word with a following Korean word
+      {L"ifmmp"
+       L"\xC548\xB155\xD558\xC138\xC694",
+       false, 0, 5},
+      // An invalid English word with a following Japanese word
+      {L"ifmmp"
+       L"\x3053\x3093\x306B\x3061\x306F",
+       false, 0, 5},
+      // [ROBUSTNESS] An invalid English word with a following Hindi word
+      {L"ifmmp"
+       L"\x0930\x093E\x091C\x0927\x093E\x0928",
+       false, 0, 5},
+      // [ROBUSTNESS] An invalid English word with two following Greek words
+      {L"ifmmp"
+       L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5",
+       false, 0, 5},
+      // [ROBUSTNESS] An invalid English word with a following Russian word
+      {L"ifmmp"
+       L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435",
+       false, 0, 5},
 
-    // Two invalid English words concatenated with a whitespace
-    {L"ifmmp" L" " L"ifmmp", false, 0, 5},
-    // Two invalid English words concatenated with a no-break space
-    {L"ifmmp" L"\xA0" L"ifmmp", false, 0, 5},
-    // Two invalid English words concatenated with an ideographic space
-    {L"ifmmp" L"\x3000" L"ifmmp", false, 0, 5},
-    // Two invalid English words concatenated with a Chinese word
-    {L"ifmmp" L"\x4F60\x597D" L"ifmmp", false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with a Korean word
-    {L"ifmmp" L"\xC548\xB155\xD558\xC138\xC694" L"ifmmp", false, 0, 5},
-    // Two invalid English words concatenated with a Japanese word
-    {L"ifmmp" L"\x3053\x3093\x306B\x3061\x306F" L"ifmmp", false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with a Hindi word
-    {L"ifmmp" L"\x0930\x093E\x091C\x0927\x093E\x0928" L"ifmmp" , false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with two Greek words
-    {L"ifmmp" L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5"
-     L"ifmmp", false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with a Russian word
-    {L"ifmmp" L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435" L"ifmmp", false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with a contraction
-    // character.
-    {L"ifmmp:ifmmp", false, 0, 11},
+      // Two invalid English words concatenated with a whitespace
+      {L"ifmmp"
+       L" "
+       L"ifmmp",
+       false, 0, 5},
+      // Two invalid English words concatenated with a no-break space
+      {L"ifmmp"
+       L"\xA0"
+       L"ifmmp",
+       false, 0, 5},
+      // Two invalid English words concatenated with an ideographic space
+      {L"ifmmp"
+       L"\x3000"
+       L"ifmmp",
+       false, 0, 5},
+      // Two invalid English words concatenated with a Chinese word
+      {L"ifmmp"
+       L"\x4F60\x597D"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with a Korean word
+      {L"ifmmp"
+       L"\xC548\xB155\xD558\xC138\xC694"
+       L"ifmmp",
+       false, 0, 5},
+      // Two invalid English words concatenated with a Japanese word
+      {L"ifmmp"
+       L"\x3053\x3093\x306B\x3061\x306F"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with a Hindi word
+      {L"ifmmp"
+       L"\x0930\x093E\x091C\x0927\x093E\x0928"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with two Greek
+      // words
+      {L"ifmmp"
+       L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with a Russian word
+      {L"ifmmp"
+       L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with a contraction
+      // character.
+      {L"ifmmp:ifmmp", false, 0, 11},
 
-    // [REGRESSION] Issue 13432: "Any word of 13 or 14 characters is not
-    // spellcheck" <http://crbug.com/13432>.
-    {L"qwertyuiopasd", false, 0, 13},
-    {L"qwertyuiopasdf", false, 0, 14},
+      // [REGRESSION] Issue 13432: "Any word of 13 or 14 characters is not
+      // spellcheck" <http://crbug.com/13432>.
+      {L"qwertyuiopasd", false, 0, 13},
+      {L"qwertyuiopasdf", false, 0, 14},
 
-    // [REGRESSION] Issue 128896: "en_US hunspell dictionary includes
-    // acknowledgement but not acknowledgements" <http://crbug.com/128896>
-    {L"acknowledgement", true},
-    {L"acknowledgements", true},
+      // [REGRESSION] Issue 128896: "en_US hunspell dictionary includes
+      // acknowledgement but not acknowledgements" <http://crbug.com/128896>
+      {L"acknowledgement", true},
+      {L"acknowledgements", true},
 
-    // Issue 123290: "Spellchecker should treat numbers as word characters"
-    {L"0th", true},
-    {L"1st", true},
-    {L"2nd", true},
-    {L"3rd", true},
-    {L"4th", true},
-    {L"5th", true},
-    {L"6th", true},
-    {L"7th", true},
-    {L"8th", true},
-    {L"9th", true},
-    {L"10th", true},
-    {L"100th", true},
-    {L"1000th", true},
-    {L"25", true},
-    {L"2012", true},
-    {L"100,000,000", true},
-    {L"3.141592653", true},
+      // Issue 123290: "Spellchecker should treat numbers as word characters"
+      {L"0th", true},
+      {L"1st", true},
+      {L"2nd", true},
+      {L"3rd", true},
+      {L"4th", true},
+      {L"5th", true},
+      {L"6th", true},
+      {L"7th", true},
+      {L"8th", true},
+      {L"9th", true},
+      {L"10th", true},
+      {L"100th", true},
+      {L"1000th", true},
+      {L"25", true},
+      {L"2012", true},
+      {L"100,000,000", true},
+      {L"3.141592653", true},
   };
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
@@ -456,7 +590,7 @@ TEST_F(SpellCheckTest, SpellCheckSuggestions_EN_US) {
   };
 
   for (const auto& test_case : kTestCases) {
-    std::vector<base::string16> suggestions;
+    std::vector<std::u16string> suggestions;
     size_t input_length = 0;
     if (test_case.input)
       input_length = wcslen(test_case.input);
@@ -875,7 +1009,7 @@ TEST_F(SpellCheckTest, MisspelledWords) {
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     ReinitializeSpellCheck(kTestCases[i].language);
 
-    base::string16 word(base::WideToUTF16(kTestCases[i].input));
+    std::u16string word(base::WideToUTF16(kTestCases[i].input));
     size_t word_length = word.length();
     size_t misspelling_start = 0;
     size_t misspelling_length = 0;
@@ -895,19 +1029,19 @@ TEST_F(SpellCheckTest, MisspelledWords) {
 // Make sure SpellCheckParagraph does not crash if the input is empty.
 TEST_F(SpellCheckTest, SpellCheckParagraphEmptyParagraph) {
   std::vector<SpellCheckResult> expected;
-  TestSpellCheckParagraph(base::UTF8ToUTF16(""), expected);
+  TestSpellCheckParagraph(u"", expected);
 }
 
 // A simple test case having no misspellings.
 TEST_F(SpellCheckTest, SpellCheckParagraphNoMisspellings) {
-  const base::string16 text = base::UTF8ToUTF16("apple");
+  const std::u16string text = u"apple";
   std::vector<SpellCheckResult> expected;
   TestSpellCheckParagraph(text, expected);
 }
 
 // A simple test case having one misspelling.
 TEST_F(SpellCheckTest, SpellCheckParagraphSingleMisspellings) {
-  const base::string16 text = base::UTF8ToUTF16("zz");
+  const std::u16string text = u"zz";
   std::vector<SpellCheckResult> expected;
   expected.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 2));
@@ -917,7 +1051,7 @@ TEST_F(SpellCheckTest, SpellCheckParagraphSingleMisspellings) {
 
 // A simple test case having multiple misspellings.
 TEST_F(SpellCheckTest, SpellCheckParagraphMultipleMisspellings) {
-  const base::string16 text = base::UTF8ToUTF16("zz, zz");
+  const std::u16string text = u"zz, zz";
   std::vector<SpellCheckResult> expected;
   expected.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 2));
@@ -931,7 +1065,7 @@ TEST_F(SpellCheckTest, SpellCheckParagraphMultipleMisspellings) {
 TEST_F(SpellCheckTest, SpellCheckParagraphLongSentence) {
   std::vector<SpellCheckResult> expected;
   // The text is taken from US constitution preamble.
-  const base::string16 text = base::UTF8ToUTF16(
+  const std::u16string text = base::UTF8ToUTF16(
       "We the people of the United States, in order to form a more perfect "
       "union, establish justice, insure domestic tranquility, provide for "
       "the common defense, promote the general welfare, and secure the "
@@ -946,7 +1080,7 @@ TEST_F(SpellCheckTest, SpellCheckParagraphLongSentenceMultipleMisspellings) {
   std::vector<SpellCheckResult> expected;
 
   // All 'the' are converted to 'hte' in US consitition preamble.
-  const base::string16 text = base::UTF8ToUTF16(
+  const std::u16string text = base::UTF8ToUTF16(
       "We hte people of hte United States, in order to form a more perfect "
       "union, establish justice, insure domestic tranquility, provide for "
       "hte common defense, promote hte general welfare, and secure hte "
@@ -977,7 +1111,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithEmptyString) {
   MockTextCheckingResult completion;
 
   spell_check()->RequestTextChecking(
-      base::string16(),
+      std::u16string(),
       std::make_unique<MockTextCheckingCompletion>(&completion));
 
   base::RunLoop().RunUntilIdle();
@@ -989,7 +1123,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithEmptyString) {
 TEST_F(SpellCheckTest, RequestSpellCheckWithoutMisspelling) {
   MockTextCheckingResult completion;
 
-  const base::string16 text = base::ASCIIToUTF16("hello");
+  const std::u16string text = u"hello";
   spell_check()->RequestTextChecking(
       text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
@@ -1002,7 +1136,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithoutMisspelling) {
 TEST_F(SpellCheckTest, RequestSpellCheckWithSingleMisspelling) {
   MockTextCheckingResult completion;
 
-  const base::string16 text = base::ASCIIToUTF16("apple, zz");
+  const std::u16string text = u"apple, zz";
   spell_check()->RequestTextChecking(
       text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
@@ -1018,7 +1152,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithSingleMisspelling) {
 TEST_F(SpellCheckTest, RequestSpellCheckWithMisspellings) {
   MockTextCheckingResult completion;
 
-  const base::string16 text = base::ASCIIToUTF16("apple, zz, orange, zz");
+  const std::u16string text = u"apple, zz, orange, zz";
   spell_check()->RequestTextChecking(
       text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
@@ -1037,11 +1171,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithMisspellings) {
 TEST_F(SpellCheckTest, RequestSpellCheckWithMultipleRequests) {
   MockTextCheckingResult completion[3];
 
-  const base::string16 text[3] = {
-    base::ASCIIToUTF16("what, zz"),
-    base::ASCIIToUTF16("apple, zz"),
-    base::ASCIIToUTF16("orange, zz")
-  };
+  const std::u16string text[3] = {u"what, zz", u"apple, zz", u"orange, zz"};
 
   for (int i = 0; i < 3; ++i)
     spell_check()->RequestTextChecking(
@@ -1063,7 +1193,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithoutInitialization) {
   UninitializeSpellCheck();
 
   MockTextCheckingResult completion;
-  const base::string16 text = base::ASCIIToUTF16("zz");
+  const std::u16string text = u"zz";
 
   spell_check()->RequestTextChecking(
       text, std::make_unique<MockTextCheckingCompletion>(&completion));
@@ -1079,11 +1209,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
   UninitializeSpellCheck();
 
   MockTextCheckingResult completion[3];
-  const base::string16 text[3] = {
-    base::ASCIIToUTF16("what, zz"),
-    base::ASCIIToUTF16("apple, zz"),
-    base::ASCIIToUTF16("orange, zz")
-  };
+  const std::u16string text[3] = {u"what, zz", u"apple, zz", u"orange, zz"};
 
   // Calls RequestTextchecking a few times.
   for (int i = 0; i < 3; ++i)
@@ -1113,10 +1239,10 @@ TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
 // Verify that the SpellCheck class keeps the spelling marker added to a
 // misspelled word "zz".
 TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsMarkers) {
-  base::string16 text = base::ASCIIToUTF16("zz");
+  std::u16string text = u"zz";
   std::vector<SpellCheckResult> spellcheck_results;
   spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, base::string16()));
+      SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, std::u16string()));
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(SpellCheck::USE_HUNSPELL_FOR_GRAMMAR,
                                            0, text, spellcheck_results,
@@ -1131,10 +1257,10 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsMarkers) {
 // Verify that the SpellCheck class replaces the spelling marker added to a
 // contextually-misspelled word "bean" with a grammar marker.
 TEST_F(SpellCheckTest, CreateTextCheckingResultsAddsGrammarMarkers) {
-  base::string16 text = base::ASCIIToUTF16("I have bean to USA.");
+  std::u16string text = u"I have bean to USA.";
   std::vector<SpellCheckResult> spellcheck_results;
   spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 7, 4, base::string16()));
+      SpellCheckResult(SpellCheckResult::SPELLING, 7, 4, std::u16string()));
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(SpellCheck::USE_HUNSPELL_FOR_GRAMMAR,
                                            0, text, spellcheck_results,
@@ -1149,83 +1275,65 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsAddsGrammarMarkers) {
 // Verify that the SpellCheck preserves the original apostrophe type in the
 // checked text, regardless of the type of apostrophe the browser returns.
 TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
-  base::string16 text = base::WideToUTF16(
-        L"Ik've havn" TYPOGRAPHICAL_APOSTROPHE L"t ni'n"
-        TYPOGRAPHICAL_APOSTROPHE L"out-s I've I" TYPOGRAPHICAL_APOSTROPHE
-        L"ve");
+  std::u16string text = u"Ik've havn’t ni'n’out-s I've I’ve";
   std::vector<SpellCheckResult> spellcheck_results;
 
   // All typewriter apostrophe results.
-  spellcheck_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 0,
-                                                5, base::UTF8ToUTF16("I've")));
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 6, 6, base::UTF8ToUTF16("haven't")));
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 13, 10, base::UTF8ToUTF16("in'n'out's")));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 0, 5, u"I've"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 6, 6, u"haven't"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 13, 10, u"in'n'out's"));
 
   // Replacements that differ only by apostrophe type should be ignored.
-  spellcheck_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 24,
-                                                4, base::UTF8ToUTF16("I've")));
-  spellcheck_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 29,
-                                                4, base::UTF8ToUTF16("I've")));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 24, 4, u"I've"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 29, 4, u"I've"));
 
   // All typographical apostrophe results.
   spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 0, 5,
-                       base::WideToUTF16(L"I" TYPOGRAPHICAL_APOSTROPHE L"ve")));
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 6, 6,
-      base::WideToUTF16(L"haven" TYPOGRAPHICAL_APOSTROPHE L"t")));
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 13, 10,
-      base::WideToUTF16(
-          L"in" TYPOGRAPHICAL_APOSTROPHE L"n" TYPOGRAPHICAL_APOSTROPHE L"ou"
-          L"t" TYPOGRAPHICAL_APOSTROPHE L"s")));
+      SpellCheckResult(SpellCheckResult::SPELLING, 0, 5, u"I’ve"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 6, 6, u"haven’t"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 13, 10, u"in’n’out’s"));
 
   // Replacements that differ only by apostrophe type should be ignored.
   spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 24, 4,
-                       base::WideToUTF16(L"I" TYPOGRAPHICAL_APOSTROPHE L"ve")));
+      SpellCheckResult(SpellCheckResult::SPELLING, 24, 4, u"I’ve"));
   spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 29, 4,
-                       base::WideToUTF16(L"I" TYPOGRAPHICAL_APOSTROPHE L"ve")));
+      SpellCheckResult(SpellCheckResult::SPELLING, 29, 4, u"I’ve"));
 
   // If we have no suggested replacements, we should keep this misspelling.
   spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 0, 5, std::vector<base::string16>()));
+      SpellCheckResult::SPELLING, 0, 5, std::vector<std::u16string>()));
 
   // If we have multiple replacements that all differ only by apostrophe type,
   // we should ignore this misspelling.
   spellcheck_results.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 11,
-      std::vector<base::string16>(
-          {base::UTF8ToUTF16("Ik've havn'"),
-           base::WideToUTF16(L"Ik" TYPOGRAPHICAL_APOSTROPHE
-                             "ve havn" TYPOGRAPHICAL_APOSTROPHE)})));
+      std::vector<std::u16string>({u"Ik've havn'", u"Ik’ve havn’"})));
 
   // If we have multiple replacements where some only differ by apostrophe type
   // and some don't, we should keep this misspelling, but remove the
   // replacements that only differ by apostrophe type.
   spellcheck_results.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 5,
-      std::vector<base::string16>(
-          {base::UTF8ToUTF16("I've"), base::UTF8ToUTF16("Ive"),
-           base::WideToUTF16(L"Ik" TYPOGRAPHICAL_APOSTROPHE "ve")})));
+      std::vector<std::u16string>({u"I've", u"Ive", u"Ik’ve"})));
 
   // Similar to the previous case except with the apostrophe changing from
   // typographical to straight instead of the other direction
   spellcheck_results.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 6, 6,
-      std::vector<base::string16>({base::UTF8ToUTF16("havn't"),
-                                   base::UTF8ToUTF16("havnt"),
-                                   base::UTF8ToUTF16("haven't")})));
+      std::vector<std::u16string>({u"havn't", u"havnt", u"haven't"})));
 
   // If we have multiple replacements, none of which differ only by apostrophe
   // type, we should keep this misspelling.
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 6, 6,
-      std::vector<base::string16>(
-          {base::UTF8ToUTF16("have"), base::UTF8ToUTF16("haven't")})));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 6, 6,
+                       std::vector<std::u16string>({u"have", u"haven't"})));
 
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(SpellCheck::USE_HUNSPELL_FOR_GRAMMAR,
@@ -1234,15 +1342,15 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
 
   static std::vector<std::vector<const wchar_t*>> kExpectedReplacements = {
       {L"I've"},
-      {L"haven" TYPOGRAPHICAL_APOSTROPHE L"t"},
-      {L"in'n" TYPOGRAPHICAL_APOSTROPHE L"out's"},
+      {L"haven’t"},
+      {L"in'n’out's"},
       {L"I've"},
-      {L"haven" TYPOGRAPHICAL_APOSTROPHE L"t"},
-      {L"in'n" TYPOGRAPHICAL_APOSTROPHE L"out" TYPOGRAPHICAL_APOSTROPHE L"s"},
+      {L"haven’t"},
+      {L"in'n’out’s"},
       std::vector<const wchar_t*>(),
       {L"I've", L"Ive"},
-      {L"havnt", L"haven" TYPOGRAPHICAL_APOSTROPHE "t"},
-      {L"have", L"haven" TYPOGRAPHICAL_APOSTROPHE "t"},
+      {L"havnt", L"haven’t"},
+      {L"have", L"haven’t"},
   };
 
   ASSERT_EQ(kExpectedReplacements.size(), textcheck_results.size());
@@ -1336,7 +1444,7 @@ TEST_F(SpellCheckTest, NoSuggest) {
     EXPECT_EQ(test_case.should_pass, result) << test_case.suggestion;
 
     // Now verify that this test case does not show up as a suggestion.
-    std::vector<base::string16> suggestions;
+    std::vector<std::u16string> suggestions;
     size_t input_length = 0;
     if (test_case.input)
       input_length = strlen(test_case.input);
@@ -1349,7 +1457,7 @@ TEST_F(SpellCheckTest, NoSuggest) {
     EXPECT_FALSE(result) << test_case.input << " is not a misspelling";
 
     // Check if the suggested words occur.
-    for (const base::string16& suggestion : suggestions) {
+    for (const std::u16string& suggestion : suggestions) {
       for (const auto& test_case_to_check : kTestCases) {
         int compare_result = suggestion.compare(
             base::ASCIIToUTF16(test_case_to_check.suggestion));
@@ -1426,7 +1534,7 @@ TEST_F(SpellCheckTest, LogicalSuggestions) {
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     size_t misspelling_start = 0;
     size_t misspelling_length = 0;
-    std::vector<base::string16> suggestions;
+    std::vector<std::u16string> suggestions;
     EXPECT_FALSE(spell_check()->SpellCheckWord(
         base::ASCIIToUTF16(kTestCases[i].misspelled).c_str(),
         kNoOffset,
@@ -1448,7 +1556,7 @@ TEST_F(SpellCheckTest, IsValidContraction) {
 
   static constexpr const wchar_t* kWords[] = {
       L"in'n'out",
-      L"in" TYPOGRAPHICAL_APOSTROPHE L"n" TYPOGRAPHICAL_APOSTROPHE L"out",
+      L"in’n’out",
   };
 
   for (size_t i = 0; i < base::size(kLanguages); ++i) {
@@ -1459,8 +1567,8 @@ TEST_F(SpellCheckTest, IsValidContraction) {
 }
 
 TEST_F(SpellCheckTest, FillSuggestions_OneLanguageNoSuggestions) {
-  std::vector<std::vector<base::string16>> suggestions_list;
-  std::vector<base::string16> suggestion_results;
+  std::vector<std::vector<std::u16string>> suggestions_list;
+  std::vector<std::u16string> suggestion_results;
 
   suggestions_list.resize(1);
 
@@ -1469,20 +1577,20 @@ TEST_F(SpellCheckTest, FillSuggestions_OneLanguageNoSuggestions) {
 }
 
 TEST_F(SpellCheckTest, FillSuggestions_OneLanguageFewSuggestions) {
-  std::vector<std::vector<base::string16>> suggestions_list;
-  std::vector<base::string16> suggestion_results;
+  std::vector<std::vector<std::u16string>> suggestions_list;
+  std::vector<std::u16string> suggestion_results;
 
   suggestions_list.resize(1);
-  suggestions_list[0].push_back(base::ASCIIToUTF16("foo"));
+  suggestions_list[0].push_back(u"foo");
 
   FillSuggestions(suggestions_list, &suggestion_results);
   ASSERT_EQ(1U, suggestion_results.size());
-  EXPECT_EQ(base::ASCIIToUTF16("foo"), suggestion_results[0]);
+  EXPECT_EQ(u"foo", suggestion_results[0]);
 }
 
 TEST_F(SpellCheckTest, FillSuggestions_OneLanguageManySuggestions) {
-  std::vector<std::vector<base::string16>> suggestions_list;
-  std::vector<base::string16> suggestion_results;
+  std::vector<std::vector<std::u16string>> suggestions_list;
+  std::vector<std::u16string> suggestion_results;
 
   suggestions_list.resize(1);
   for (int i = 0; i < spellcheck::kMaxSuggestions + 2; ++i)
@@ -1497,26 +1605,26 @@ TEST_F(SpellCheckTest, FillSuggestions_OneLanguageManySuggestions) {
 }
 
 TEST_F(SpellCheckTest, FillSuggestions_RemoveDuplicates) {
-  std::vector<std::vector<base::string16>> suggestions_list;
-  std::vector<base::string16> suggestion_results;
+  std::vector<std::vector<std::u16string>> suggestions_list;
+  std::vector<std::u16string> suggestion_results;
 
   suggestions_list.resize(2);
   for (size_t i = 0; i < 2; ++i) {
-    suggestions_list[i].push_back(base::ASCIIToUTF16("foo"));
-    suggestions_list[i].push_back(base::ASCIIToUTF16("bar"));
-    suggestions_list[i].push_back(base::ASCIIToUTF16("baz"));
+    suggestions_list[i].push_back(u"foo");
+    suggestions_list[i].push_back(u"bar");
+    suggestions_list[i].push_back(u"baz");
   }
 
   FillSuggestions(suggestions_list, &suggestion_results);
   ASSERT_EQ(3U, suggestion_results.size());
-  EXPECT_EQ(base::ASCIIToUTF16("foo"), suggestion_results[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("bar"), suggestion_results[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("baz"), suggestion_results[2]);
+  EXPECT_EQ(u"foo", suggestion_results[0]);
+  EXPECT_EQ(u"bar", suggestion_results[1]);
+  EXPECT_EQ(u"baz", suggestion_results[2]);
 }
 
 TEST_F(SpellCheckTest, FillSuggestions_TwoLanguages) {
-  std::vector<std::vector<base::string16>> suggestions_list;
-  std::vector<base::string16> suggestion_results;
+  std::vector<std::vector<std::u16string>> suggestions_list;
+  std::vector<std::u16string> suggestion_results;
 
   suggestions_list.resize(2);
   for (size_t i = 0; i < 2; ++i) {
@@ -1531,16 +1639,16 @@ TEST_F(SpellCheckTest, FillSuggestions_TwoLanguages) {
   ASSERT_EQ(5, spellcheck::kMaxSuggestions);
   FillSuggestions(suggestions_list, &suggestion_results);
   ASSERT_EQ(5U, suggestion_results.size());
-  EXPECT_EQ(base::ASCIIToUTF16("0foo"), suggestion_results[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("1foo"), suggestion_results[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("0bar"), suggestion_results[2]);
-  EXPECT_EQ(base::ASCIIToUTF16("1bar"), suggestion_results[3]);
-  EXPECT_EQ(base::ASCIIToUTF16("0baz"), suggestion_results[4]);
+  EXPECT_EQ(u"0foo", suggestion_results[0]);
+  EXPECT_EQ(u"1foo", suggestion_results[1]);
+  EXPECT_EQ(u"0bar", suggestion_results[2]);
+  EXPECT_EQ(u"1bar", suggestion_results[3]);
+  EXPECT_EQ(u"0baz", suggestion_results[4]);
 }
 
 TEST_F(SpellCheckTest, FillSuggestions_ThreeLanguages) {
-  std::vector<std::vector<base::string16>> suggestions_list;
-  std::vector<base::string16> suggestion_results;
+  std::vector<std::vector<std::u16string>> suggestions_list;
+  std::vector<std::u16string> suggestion_results;
 
   suggestions_list.resize(3);
   for (size_t i = 0; i < 3; ++i) {
@@ -1555,9 +1663,9 @@ TEST_F(SpellCheckTest, FillSuggestions_ThreeLanguages) {
   ASSERT_EQ(5, spellcheck::kMaxSuggestions);
   FillSuggestions(suggestions_list, &suggestion_results);
   ASSERT_EQ(5U, suggestion_results.size());
-  EXPECT_EQ(base::ASCIIToUTF16("0foo"), suggestion_results[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("1foo"), suggestion_results[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("2foo"), suggestion_results[2]);
-  EXPECT_EQ(base::ASCIIToUTF16("0bar"), suggestion_results[3]);
-  EXPECT_EQ(base::ASCIIToUTF16("1bar"), suggestion_results[4]);
+  EXPECT_EQ(u"0foo", suggestion_results[0]);
+  EXPECT_EQ(u"1foo", suggestion_results[1]);
+  EXPECT_EQ(u"2foo", suggestion_results[2]);
+  EXPECT_EQ(u"0bar", suggestion_results[3]);
+  EXPECT_EQ(u"1bar", suggestion_results[4]);
 }

@@ -26,8 +26,6 @@
 #include "components/webrtc/media_stream_devices_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 
 #if defined(OS_ANDROID)
@@ -133,18 +131,11 @@ struct PermissionBubbleMediaAccessHandler::PendingAccessRequest {
   RepeatingMediaResponseCallback callback;
 };
 
-PermissionBubbleMediaAccessHandler::PermissionBubbleMediaAccessHandler() {
-  // PermissionBubbleMediaAccessHandler should be created on UI thread.
-  // Otherwise, it will not receive
-  // content::NOTIFICATION_WEB_CONTENTS_DESTROYED, and that will result in
-  // possible use after free.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  notifications_registrar_.Add(this,
-                               content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-                               content::NotificationService::AllSources());
-}
+PermissionBubbleMediaAccessHandler::PermissionBubbleMediaAccessHandler()
+    : web_contents_collection_(this) {}
 
-PermissionBubbleMediaAccessHandler::~PermissionBubbleMediaAccessHandler() {}
+PermissionBubbleMediaAccessHandler::~PermissionBubbleMediaAccessHandler() =
+    default;
 
 bool PermissionBubbleMediaAccessHandler::SupportsStreamType(
     content::WebContents* web_contents,
@@ -204,6 +195,9 @@ void PermissionBubbleMediaAccessHandler::HandleRequest(
     return;
   }
 #endif  // defined(OS_ANDROID)
+
+  // Ensure we are observing the deletion of |web_contents|.
+  web_contents_collection_.StartObserving(web_contents);
 
   RequestsMap& requests_map = pending_requests_[web_contents];
   requests_map.emplace(
@@ -294,7 +288,7 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
     content::MediaStreamRequest request,
     const blink::MediaStreamDevices& devices,
     blink::mojom::MediaStreamRequestResult result,
-    bool blocked_by_feature_policy,
+    bool blocked_by_permissions_policy,
     ContentSetting audio_setting,
     ContentSetting video_setting) {
   if (pending_requests_.find(web_contents) == pending_requests_.end()) {
@@ -302,10 +296,10 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
     return;
   }
 
-  // If the kill switch is, or the request was blocked because of feature
+  // If the kill switch is, or the request was blocked because of permissions
   // policy we don't update the tab context.
   if (result != blink::mojom::MediaStreamRequestResult::KILL_SWITCH_ON &&
-      !blocked_by_feature_policy) {
+      !blocked_by_permissions_policy) {
     UpdatePageSpecificContentSettings(web_contents, request, audio_setting,
                                       video_setting);
   }
@@ -427,12 +421,9 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
   std::move(callback).Run(devices, final_result, std::move(ui));
 }
 
-void PermissionBubbleMediaAccessHandler::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
+void PermissionBubbleMediaAccessHandler::WebContentsDestroyed(
+    content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_DESTROYED, type);
 
-  pending_requests_.erase(content::Source<content::WebContents>(source).ptr());
+  pending_requests_.erase(web_contents);
 }

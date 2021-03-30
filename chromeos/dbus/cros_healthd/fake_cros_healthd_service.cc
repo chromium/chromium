@@ -7,7 +7,27 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/system/platform_handle.h"
+
+namespace {
+
+// Will destroy `handle` if it's not a valid platform handle.
+mojo::ScopedHandle CloneScopedHandle(mojo::ScopedHandle* handle) {
+  DCHECK(handle);
+  if (!handle->is_valid()) {
+    return mojo::ScopedHandle();
+  }
+  mojo::PlatformHandle platform_handle =
+      mojo::UnwrapPlatformHandle(std::move(*handle));
+  DCHECK(platform_handle.is_valid());
+  *handle = mojo::WrapPlatformHandle(platform_handle.Clone());
+  return mojo::WrapPlatformHandle(std::move(platform_handle));
+}
+
+}  // namespace
 
 namespace chromeos {
 namespace cros_healthd {
@@ -49,6 +69,19 @@ void FakeCrosHealthdService::SendNetworkDiagnosticsRoutines(
   network_diagnostics_routines_.Bind(std::move(network_diagnostics_routines));
 }
 
+void FakeCrosHealthdService::GetSystemService(
+    mojom::CrosHealthdSystemServiceRequest service) {
+  system_receiver_set_.Add(this, std::move(service));
+}
+
+void FakeCrosHealthdService::GetServiceStatus(
+    GetServiceStatusCallback callback) {
+  auto response = mojom::ServiceStatus::New();
+  response->network_health_bound = network_health_remote_.is_bound();
+  response->network_diagnostics_bound = network_health_remote_.is_bound();
+  std::move(callback).Run(std::move(response));
+}
+
 void FakeCrosHealthdService::GetAvailableRoutines(
     GetAvailableRoutinesCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -69,8 +102,8 @@ void FakeCrosHealthdService::GetRoutineUpdate(
           std::move(callback),
           mojom::RoutineUpdate::New(
               routine_update_response_->progress_percent,
-              std::move(routine_update_response_->output),
-              std::move(routine_update_response_->routine_update_union))),
+              CloneScopedHandle(&routine_update_response_->output),
+              routine_update_response_->routine_update_union.Clone())),
       callback_delay_);
 }
 
@@ -265,6 +298,12 @@ void FakeCrosHealthdService::RunHttpsLatencyRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
+void FakeCrosHealthdService::RunVideoConferencingRoutine(
+    const base::Optional<std::string>& stun_server_hostname,
+    RunVideoConferencingRoutineCallback callback) {
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
 void FakeCrosHealthdService::AddBluetoothObserver(
     mojom::CrosHealthdBluetoothObserverPtr observer) {
   bluetooth_observers_.Add(observer.PassInterface());
@@ -278,6 +317,12 @@ void FakeCrosHealthdService::AddLidObserver(
 void FakeCrosHealthdService::AddPowerObserver(
     mojom::CrosHealthdPowerObserverPtr observer) {
   power_observers_.Add(observer.PassInterface());
+}
+
+void FakeCrosHealthdService::AddNetworkObserver(
+    mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
+        observer) {
+  network_observers_.Add(std::move(observer));
 }
 
 void FakeCrosHealthdService::ProbeTelemetryInfo(
@@ -384,6 +429,24 @@ void FakeCrosHealthdService::EmitLidClosedEventForTesting() {
 void FakeCrosHealthdService::EmitLidOpenedEventForTesting() {
   for (auto& observer : lid_observers_)
     observer->OnLidOpened();
+}
+
+void FakeCrosHealthdService::EmitConnectionStateChangedEventForTesting(
+    const std::string& network_guid,
+    chromeos::network_health::mojom::NetworkState state) {
+  for (auto& observer : network_observers_) {
+    observer->OnConnectionStateChanged(network_guid, state);
+  }
+}
+
+void FakeCrosHealthdService::EmitSignalStrengthChangedEventForTesting(
+    const std::string& network_guid,
+    chromeos::network_health::mojom::UInt32ValuePtr signal_strength) {
+  for (auto& observer : network_observers_) {
+    observer->OnSignalStrengthChanged(
+        network_guid, chromeos::network_health::mojom::UInt32Value::New(
+                          signal_strength->value));
+  }
 }
 
 void FakeCrosHealthdService::RequestNetworkHealthForTesting(

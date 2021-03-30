@@ -23,6 +23,7 @@ import android.util.SparseArray;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
@@ -221,7 +222,13 @@ public class ChildProcessService {
 
         mDelegate.onServiceCreated();
 
-        mMainThread = new Thread(new Runnable() {
+        // Unlike desktop Linux, on Android we leave the main looper thread to handle Android
+        // lifecycle events, and create a separate thread to serve as the main renderer. This
+        // affects the thread stack size: instead of getting the kernel default we get the Java
+        // default, which can be much smaller. So, explicitly set up a larger stack here.
+        long stackSize = ContextUtils.isProcess64Bit() ? 8 * 1024 * 1024 : 4 * 1024 * 1024;
+
+        mMainThread = new Thread(/*threadGroup=*/null, new Runnable() {
             @Override
             public void run() {
                 try {
@@ -239,6 +246,7 @@ public class ChildProcessService {
                         android.os.Debug.waitForDebugger();
                     }
 
+                    EarlyTraceEvent.onCommandLineAvailableInChildProcess();
                     mDelegate.loadNativeLibrary(getApplicationContext());
 
                     synchronized (mLibraryInitializedLock) {
@@ -305,7 +313,7 @@ public class ChildProcessService {
                 }
                 ChildProcessServiceJni.get().exitChildProcess();
             }
-        }, MAIN_THREAD_NAME);
+        }, MAIN_THREAD_NAME, stackSize);
         mMainThread.start();
     }
 
@@ -336,9 +344,16 @@ public class ChildProcessService {
                 intent.getBooleanExtra(ChildProcessConstants.EXTRA_BIND_TO_CALLER, false);
         mServiceBound = true;
         mDelegate.onServiceBound(intent);
+
+        String packageName =
+                intent.getStringExtra(ChildProcessConstants.EXTRA_BROWSER_PACKAGE_NAME);
+        if (packageName == null) {
+            packageName = getApplicationContext().getApplicationInfo().packageName;
+        }
         // Don't block bind() with any extra work, post it to the application thread instead.
+        final String preloadPackageName = packageName;
         new Handler(Looper.getMainLooper())
-                .post(() -> mDelegate.preloadNativeLibrary(getApplicationContext()));
+                .post(() -> mDelegate.preloadNativeLibrary(preloadPackageName));
         return mBinder;
     }
 

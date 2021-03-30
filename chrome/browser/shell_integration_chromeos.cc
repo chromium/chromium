@@ -18,8 +18,8 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
   return SET_DEFAULT_NOT_ALLOWED;
 }
 
-base::string16 GetApplicationNameForProtocol(const GURL& url) {
-  return base::string16();
+std::u16string GetApplicationNameForProtocol(const GURL& url) {
+  return std::u16string();
 }
 
 DefaultWebClientState GetDefaultBrowser() {

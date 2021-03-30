@@ -19,10 +19,11 @@ class WaylandConnection;
 class ZwpPrimarySelectionDevice : public WaylandDataDeviceBase {
  public:
   ZwpPrimarySelectionDevice(WaylandConnection* connection,
-                         zwp_primary_selection_device_v1* data_device);
+                            zwp_primary_selection_device_v1* data_device);
 
   ZwpPrimarySelectionDevice(const ZwpPrimarySelectionDevice&) = delete;
-  ZwpPrimarySelectionDevice& operator =(const ZwpPrimarySelectionDevice&) = delete;
+  ZwpPrimarySelectionDevice& operator=(const ZwpPrimarySelectionDevice&) =
+      delete;
 
   ~ZwpPrimarySelectionDevice() override;
 

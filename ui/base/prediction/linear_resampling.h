@@ -38,12 +38,24 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearResampling
   // Generate the prediction based on stored points and given frame_time.
   // Return false if no prediction available.
   std::unique_ptr<InputData> GeneratePrediction(
-      base::TimeTicks frame_time) const override;
+      base::TimeTicks frame_time,
+      base::TimeDelta frame_interval) override;
 
   // Return the average time delta in the event queue.
   base::TimeDelta TimeInterval() const override;
 
  private:
+  // Class to cache the Resample Latency to avoid its recalculation each frame.
+  class LatencyCalculator {
+   public:
+    base::TimeDelta GetResampleLatency(base::TimeDelta frame_interval);
+
+   private:
+    base::TimeDelta CalculateLatency();
+    base::TimeDelta resample_latency_;
+    base::TimeDelta frame_interval_;
+  };
+
   static constexpr size_t kNumEventsForResampling = 2;
 
   // Store the last events received
@@ -51,6 +63,8 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearResampling
 
   // Store the current delta time between the last 2 events
   base::TimeDelta events_dt_;
+
+  LatencyCalculator latency_calculator_;
 
   DISALLOW_COPY_AND_ASSIGN(LinearResampling);
 };

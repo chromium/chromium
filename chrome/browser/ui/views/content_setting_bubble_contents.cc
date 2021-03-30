@@ -46,6 +46,8 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 
 namespace {
@@ -76,7 +78,7 @@ class MediaComboboxModel : public ui::ComboboxModel {
 
   // ui::ComboboxModel:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) const override;
+  std::u16string GetItemAt(int index) const override;
 
  private:
   blink::mojom::MediaStreamType type_;
@@ -89,6 +91,7 @@ class MediaComboboxModel : public ui::ComboboxModel {
 // and/or camera).
 class MediaMenuBlock : public views::View {
  public:
+  METADATA_HEADER(MediaMenuBlock);
   MediaMenuBlock(base::RepeatingCallback<void(views::Combobox*)> callback,
                  ContentSettingBubbleModel::MediaMenuMap media) {
     const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -143,9 +146,12 @@ class MediaMenuBlock : public views::View {
     }
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaMenuBlock);
+  MediaMenuBlock(const MediaMenuBlock&) = delete;
+  MediaMenuBlock& operator=(const MediaMenuBlock&) = delete;
 };
+
+BEGIN_METADATA(MediaMenuBlock, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -182,7 +188,7 @@ int MediaComboboxModel::GetItemCount() const {
   return std::max(1, static_cast<int>(GetDevices().size()));
 }
 
-base::string16 MediaComboboxModel::GetItemAt(int index) const {
+std::u16string MediaComboboxModel::GetItemAt(int index) const {
   return GetDevices().empty()
              ? l10n_util::GetStringUTF16(IDS_MEDIA_MENU_NO_DEVICE_TITLE)
              : base::UTF8ToUTF16(GetDevices()[index].name);
@@ -192,7 +198,10 @@ base::string16 MediaComboboxModel::GetItemAt(int index) const {
 
 class ContentSettingBubbleContents::ListItemContainer : public views::View {
  public:
+  METADATA_HEADER(ListItemContainer);
   explicit ListItemContainer(ContentSettingBubbleContents* parent);
+  ListItemContainer(const ListItemContainer&) = delete;
+  ListItemContainer& operator=(const ListItemContainer&) = delete;
 
   // Creates and adds child views representing |item|.
   void AddItem(const ContentSettingBubbleModel::ListItem& item);
@@ -215,8 +224,6 @@ class ContentSettingBubbleContents::ListItemContainer : public views::View {
   // Our controls representing list items, so we can add or remove
   // these dynamically. Each pair represents one list item.
   std::vector<Row> list_item_views_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListItemContainer);
 };
 
 ContentSettingBubbleContents::ListItemContainer::ListItemContainer(
@@ -264,7 +271,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
         views::CreateEmptyBorder(kTitleDescriptionListItemInset));
     item_contents->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    const auto add_label = [&item_contents](const base::string16& string,
+    const auto add_label = [&item_contents](const std::u16string& string,
                                             int style) {
       if (!string.empty()) {
         auto label = std::make_unique<views::Label>(
@@ -357,6 +364,9 @@ void ContentSettingBubbleContents::ListItemContainer::UpdateScrollHeight(
   }
 }
 
+BEGIN_METADATA(ContentSettingBubbleContents, ListItemContainer, views::View)
+END_METADATA
+
 // ContentSettingBubbleContents -----------------------------------------------
 
 ContentSettingBubbleContents::ContentSettingBubbleContents(
@@ -375,9 +385,9 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
   // WebContentsDestroyed() is called, which can't happen until the constructor
   // has run - so it is never null here.
   DCHECK(content_setting_bubble_model_);
-  const base::string16& done_text =
+  const std::u16string& done_text =
       content_setting_bubble_model_->bubble_content().done_button_text;
-  const base::string16& cancel_text =
+  const std::u16string& cancel_text =
       content_setting_bubble_model_->bubble_content().cancel_button_text;
   SetButtons(cancel_text.empty()
                  ? ui::DIALOG_BUTTON_OK
@@ -441,9 +451,9 @@ void ContentSettingBubbleContents::OnThemeChanged() {
     StyleLearnMoreButton();
 }
 
-base::string16 ContentSettingBubbleContents::GetWindowTitle() const {
+std::u16string ContentSettingBubbleContents::GetWindowTitle() const {
   if (!content_setting_bubble_model_)
-    return base::string16();
+    return std::u16string();
   return content_setting_bubble_model_->bubble_content().title;
 }
 
@@ -603,7 +613,7 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
   // invoke a separate management UI related to the dialog content.
   if (bubble_content.manage_text_style ==
       ContentSettingBubbleModel::ManageTextStyle::kButton) {
-    base::string16 title = bubble_content.manage_text;
+    std::u16string title = bubble_content.manage_text;
     if (title.empty())
       title = l10n_util::GetStringUTF16(IDS_MANAGE);
     auto manage_button = std::make_unique<views::MdTextButton>(
@@ -681,3 +691,6 @@ void ContentSettingBubbleContents::OnPerformAction(views::Combobox* combobox) {
   content_setting_bubble_model_->OnMediaMenuClicked(
       model->type(), model->GetDevices()[combobox->GetSelectedIndex()].id);
 }
+
+BEGIN_METADATA(ContentSettingBubbleContents, views::BubbleDialogDelegateView)
+END_METADATA

@@ -154,13 +154,13 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeNTPs) {
-  AddTabAtIndexToBrowser(browser(), 0, GURL(chrome::kChromeSearchLocalNtpUrl),
+  AddTabAtIndexToBrowser(browser(), 0, GURL(chrome::kChromeUINewTabPageURL),
                          ui::PAGE_TRANSITION_LINK,
                          false /* check_navigation_success */);
   auto* web_contents = GetActiveWebContents(browser());
   ASSERT_TRUE(web_contents);
   EXPECT_STREQ(web_contents->GetLastCommittedURL().spec().c_str(),
-               chrome::kChromeSearchLocalNtpUrl);
+               chrome::kChromeUINewTabPageURL);
 
   // NTPs should not be affected in tablet mode.
   ToggleTabletMode();

@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 PasswordSignInPromoView::DiceSyncPromoDelegate::DiceSyncPromoDelegate(
     SignInPromoBubbleController* controller)
@@ -52,3 +53,6 @@ PasswordSignInPromoView::PasswordSignInPromoView(
 }
 
 PasswordSignInPromoView::~PasswordSignInPromoView() = default;
+
+BEGIN_METADATA(PasswordSignInPromoView, views::View)
+END_METADATA

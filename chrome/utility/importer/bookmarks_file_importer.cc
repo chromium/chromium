@@ -102,7 +102,7 @@ void BookmarksFileImporter::StartImport(
       &bookmarks, &search_engines, &favicons);
 
   if (!bookmarks.empty() && !cancelled()) {
-    base::string16 first_folder_name =
+    std::u16string first_folder_name =
         bridge->GetLocalizedString(IDS_BOOKMARK_GROUP);
     bridge->AddBookmarks(bookmarks, first_folder_name);
   }

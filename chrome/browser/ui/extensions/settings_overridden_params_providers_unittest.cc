@@ -27,8 +27,9 @@ class SettingsOverriddenParamsProvidersUnitTest
     // exists.
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
         ->SetTestingFactoryAndUse(
-            profile(), base::Bind([](content::BrowserContext* context)
-                                      -> std::unique_ptr<KeyedService> {
+            profile(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
               return std::make_unique<
                   extensions::ExtensionWebUIOverrideRegistrar>(context);
             }));
@@ -46,7 +47,7 @@ class SettingsOverriddenParamsProvidersUnitTest
         extensions::DictionaryBuilder().Set("newtab", "newtab.html").Build();
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name)
-            .SetLocation(extensions::Manifest::INTERNAL)
+            .SetLocation(extensions::mojom::ManifestLocation::kInternal)
             .SetManifestKey("chrome_url_overrides",
                             std::move(chrome_url_overrides))
             .Build();

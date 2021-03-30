@@ -57,6 +57,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void EmitAshInitialized() override;
   void RestartJob(int socket_fd,
                   const std::vector<std::string>& argv,
+                  RestartJobReason reason,
                   VoidDBusMethodCallback callback) override;
   void SaveLoginPassword(const std::string& password) override;
 
@@ -117,6 +118,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   bool SupportsBrowserRestart() const override;
   void SetFlagsForUser(const cryptohome::AccountIdentifier& cryptohome_id,
                        const std::vector<std::string>& flags) override;
+  void SetFeatureFlagsForUser(
+      const cryptohome::AccountIdentifier& cryptohome_id,
+      const std::vector<std::string>& feature_flags) override;
   void GetServerBackedStateKeys(StateKeysCallback callback) override;
 
   void StartArcMiniContainer(
@@ -162,6 +166,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   const base::Optional<std::vector<std::string>>& restart_job_argv() const {
     return restart_job_argv_;
   }
+
+  base::Optional<RestartJobReason> restart_job_reason() const {
+    return restart_job_reason_;
+  }
+
   // If |force_failure| is true, forces StorePolicy() to fail.
   void ForceStorePolicyFailure(bool force_failure) {
     force_store_policy_failure_ = force_failure;
@@ -286,6 +295,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // requested restarted arguments.
   base::Optional<std::vector<std::string>> restart_job_argv_;
 
+  // If restart job was requested, and the client supports restart job, the
+  // requested restart reason.
+  base::Optional<RestartJobReason> restart_job_reason_;
+
   base::ObserverList<Observer>::Unchecked observers_{
       SessionManagerClient::kObserverListPolicy};
   SessionManagerClient::ActiveSessionsMap user_sessions_;
@@ -350,5 +363,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::FakeSessionManagerClient;
+}
 
 #endif  // CHROMEOS_DBUS_SESSION_MANAGER_FAKE_SESSION_MANAGER_CLIENT_H_

@@ -41,19 +41,19 @@ class ThemeMap {
     storage.reserve(storage_size);
 
     for (size_t i = 0; i < kComponentsScaledResourcesSize; ++i) {
-      storage.emplace_back(kComponentsScaledResources[i].name,
-                           kComponentsScaledResources[i].value);
+      storage.emplace_back(kComponentsScaledResources[i].path,
+                           kComponentsScaledResources[i].id);
     }
     for (size_t i = 0; i < kThemeResourcesSize; ++i) {
-      storage.emplace_back(kThemeResources[i].name, kThemeResources[i].value);
+      storage.emplace_back(kThemeResources[i].path, kThemeResources[i].id);
     }
     for (size_t i = 0; i < kUiResourcesSize; ++i) {
-      storage.emplace_back(kUiResources[i].name, kUiResources[i].value);
+      storage.emplace_back(kUiResources[i].path, kUiResources[i].id);
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     for (size_t i = 0; i < kUiChromeosResourcesSize; ++i) {
-      storage.emplace_back(kUiChromeosResources[i].name,
-                           kUiChromeosResources[i].value);
+      storage.emplace_back(kUiChromeosResources[i].path,
+                           kUiChromeosResources[i].id);
     }
 #endif
 

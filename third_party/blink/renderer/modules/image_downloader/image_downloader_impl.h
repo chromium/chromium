@@ -11,14 +11,16 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 namespace blink {
 
 class KURL;
 class LocalFrame;
 class MultiResolutionImageResourceFetcher;
 class WebString;
-
-struct WebSize;
 
 class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
                                   public Supplement<LocalFrame>,
@@ -73,7 +75,7 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
   // are returned.
   void FetchImage(const KURL& image_url,
                   bool is_favicon,
-                  const WebSize& preferred_size,
+                  const gfx::Size& preferred_size,
                   bool bypass_cache,
                   DownloadCallback callback);
 
@@ -81,7 +83,7 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
   // successfully or with a failure. See FetchImage for more
   // details.
   void DidFetchImage(DownloadCallback callback,
-                     const WebSize& preferred_size,
+                     const gfx::Size& preferred_size,
                      MultiResolutionImageResourceFetcher* fetcher,
                      const std::string& image_data,
                      const WebString& mime_type);

@@ -159,13 +159,14 @@ class Dependency:
         self.input_scheme = 'chrome'
       return POLYMER_V3_DIR + 'polymer/polymer_bundled.min.js'
 
+    extension = ('.js'
+                 if self.html_path_normalized in _migrated_imports else '.m.js')
+
     if re.match(r'ui/webui/resources/html/', self.html_path_normalized):
       return (self.html_path_normalized
           .replace(r'ui/webui/resources/html/', 'ui/webui/resources/js/')
-          .replace(r'.html', '.m.js'))
+          .replace(r'.html', extension))
 
-    extension = (
-        '.js' if self.html_path_normalized in _migrated_imports else '.m.js')
     return self.html_path_normalized.replace(r'.html', extension)
 
   def _to_js(self):

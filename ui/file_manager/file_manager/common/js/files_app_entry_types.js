@@ -22,9 +22,9 @@
  */
 
 // clang-format off
-// #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {FilesAppEntry, FilesAppDirEntry, FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import {FilesAppEntry, FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
 // clang-format on
 
 /**
@@ -400,7 +400,7 @@
   }
 
   /**
-   * @see https://github.com/google/closure-compiler/blob/master/externs/browser/fileapi.js
+   * @see https://github.com/google/closure-compiler/blob/mastexterns/browser/fileapi.js
    * @param {string} path Entry fullPath.
    * @param {!FileSystemFlags=} options
    * @param {function(!DirectoryEntry)=} success
@@ -415,7 +415,7 @@
   }
 
   /**
-   * @see https://github.com/google/closure-compiler/blob/master/externs/browser/fileapi.js
+   * @see https://github.com/google/closure-compiler/blob/mastexterns/browser/fileapi.js
    * @param {string} path
    * @param {!FileSystemFlags=} options
    * @param {function(!FileEntry)=} success

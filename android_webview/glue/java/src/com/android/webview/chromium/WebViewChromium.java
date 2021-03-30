@@ -20,7 +20,6 @@ import android.net.http.SslCertificate;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.print.PrintDocumentAdapter;
@@ -295,21 +294,32 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                 }
             }
 
-            // We will defer real initialization until we know which thread to do it on, unless:
-            // - we are on the main thread already (common case),
-            // - the app is targeting >= JB MR2, in which case checkThread enforces that all usage
-            //   comes from a single thread. (Note in JB MR2 this exception was in WebView.java).
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                // If the app targets >= JB MR2 then we require that WebView is only used from a
+                // single thread. So, we:
+                // 1) start Chromium using the current thread as the UI thread (this is a no-op if
+                //    it was already started).
                 mFactory.startYourEngines(false);
+                // 2) check that the current thread is the UI thread, which will throw if it was
+                //    already started using a different thread as the UI thread.
                 checkThread();
-            } else if (!mFactory.hasStarted()) {
-                if (Looper.myLooper() == Looper.getMainLooper()) {
-                    mFactory.startYourEngines(true);
-                } else {
-                    // Record which thread we're on now so we can track whether the final UI thread
-                    // decision differed.
-                    mFactory.getAwInit().setFirstWebViewConstructedOn(Looper.myLooper());
-                }
+            } else {
+                // For older apps, only the view methods that relate to the view hierarchy must come
+                // from a single thread. Other calls, including the constructor itself, can come
+                // from any thread, and will be posted to the UI thread if necessary.
+                //
+                // We used to defer the decision about which thread is the UI thread for as long as
+                // possible to allow for the case where an app targeting < JB MR2 used a different
+                // thread, but this significantly complicated initialization and is virtually never
+                // encountered in the wild. We can't just use the current thread as the UI thread as
+                // the normal case does, because it *is* somewhat common for old apps to construct
+                // WebView on a background thread and then attach it to the view hierarchy on the
+                // main looper.
+                //
+                // So, we just start Chromium using the main looper as the UI thread, which works
+                // for virtually every old app, and accept that a very tiny number of them will
+                // break.
+                mFactory.startYourEngines(true);
             }
 
             final boolean isAccessFromFileURLsGrantedByDefault =

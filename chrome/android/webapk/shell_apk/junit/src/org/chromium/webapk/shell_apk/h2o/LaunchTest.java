@@ -218,10 +218,8 @@ public final class LaunchTest {
      */
     @Test
     public void testTargetShareActivityPreserved() {
-        registerWebApk(true /* isNewStyleWebApk */);
-
         Bundle metadata = new Bundle();
-        metadata.putString(WebApkMetaDataKeys.START_URL, "https://pwa.rocks/");
+        metadata.putString(WebApkMetaDataKeys.START_URL, DEFAULT_START_URL);
         Bundle[] shareMetadata = new Bundle[2];
         for (int i = 0; i < shareMetadata.length; ++i) {
             shareMetadata[i] = new Bundle();
@@ -494,8 +492,7 @@ public final class LaunchTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.N_MR1)
     public void testAddsSiteSettings() {
-        registerWebApk(true /* isNewStyleWebApk */);
-        registerSiteSettingsCategory();
+        registerApkForSiteSettings(true /*enableInMetadata*/, true /*addCategory*/);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -514,13 +511,30 @@ public final class LaunchTest {
     }
 
     /**
-     * Tests that we remove the shortcut in the case that it was previously
-     * added but the current version of Chrome no longer supports it.
+     * Tests that no shortcut is added if the current version of Chrome does not support it.
      */
     @Test
     @Config(sdk = Build.VERSION_CODES.N_MR1)
     public void testDoesNotAddSiteSettingsIfCategoryMissing() {
-        registerWebApk(true /* isNewStyleWebApk */);
+        registerApkForSiteSettings(true /*enableInMetadata*/, false /*addCategory*/);
+
+        Intent launchIntent = new Intent(Intent.ACTION_MAIN);
+        launchIntent.setPackage(sWebApkPackageName);
+
+        launchAndCheckBrowserLaunched(false /* opaqueMainActivityInitiallyEnabled */, launchIntent,
+                H2OMainActivity.class, SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
+
+        ShortcutManager shortcutManager = mAppContext.getSystemService(ShortcutManager.class);
+        assertFalse(containsSiteSettingsDynamicShortcut(shortcutManager));
+    }
+
+    /**
+     * Tests that no shortcut is added if the feature is disabled in the metadata of the WebAPK.
+     */
+    @Test
+    @Config(sdk = Build.VERSION_CODES.N_MR1)
+    public void testDoesNotAddSiteSettingsIfDisabledInMetadata() {
+        registerApkForSiteSettings(false /*enableInMetadata*/, true /*addCategory*/);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -536,8 +550,7 @@ public final class LaunchTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
     public void testDoesNotAddSiteSettingsWhenSdkLow() {
-        registerWebApk(true /* isNewStyleWebApk */);
-        registerSiteSettingsCategory();
+        registerApkForSiteSettings(true /*enableInMetadata*/, true /*addCategory*/);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -545,7 +558,7 @@ public final class LaunchTest {
         launchAndCheckBrowserLaunched(false /* opaqueMainActivityInitiallyEnabled */, launchIntent,
                 H2OMainActivity.class, SITE_SETTINGS_COMPATIBLE_BROWSER_VERSION);
 
-        // There is no shortcut manager in Android M. Therefore if
+        // There is no shortcut manager in Android L. Therefore if
         // this test passes, then we did not attempt to add the shortcut.
     }
 
@@ -578,11 +591,18 @@ public final class LaunchTest {
     private static void registerWebApk(boolean isNewStyleWebApk) {
         Bundle metadata = new Bundle();
         metadata.putBoolean(WebApkMetaDataKeys.IS_NEW_STYLE_WEBAPK, isNewStyleWebApk);
-        metadata.putString(WebApkMetaDataKeys.START_URL, "https://pwa.rocks/");
+        metadata.putString(WebApkMetaDataKeys.START_URL, DEFAULT_START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(sWebApkPackageName, metadata, null);
     }
 
-    private void registerSiteSettingsCategory() {
+    private void registerApkForSiteSettings(boolean enableInMetadata, boolean addCategory) {
+        Bundle metadata = new Bundle();
+        metadata.putString(WebApkMetaDataKeys.START_URL, DEFAULT_START_URL);
+        metadata.putBoolean(WebApkMetaDataKeys.ENABLE_SITE_SETTINGS_SHORTCUT, enableInMetadata);
+        WebApkTestHelper.registerWebApkWithMetaData(sWebApkPackageName, metadata, null);
+
+        if (!addCategory) return;
+
         Intent intent =
                 new Intent().setAction("android.support.customtabs.action.CustomTabsService");
         intent.setPackage(BROWSER_PACKAGE_NAME);

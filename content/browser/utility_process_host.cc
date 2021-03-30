@@ -40,6 +40,10 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/gl_switches.h"
 
+#if defined(OS_ANDROID)
+#include "services/network/public/mojom/network_service.mojom.h"
+#endif
+
 #if defined(OS_MAC)
 #include "components/os_crypt/os_crypt_switches.h"
 #endif
@@ -64,7 +68,7 @@ UtilityProcessHost::UtilityProcessHost(std::unique_ptr<Client> client)
       child_flags_(ChildProcessHost::CHILD_NORMAL),
 #endif
       started_(false),
-      name_(base::ASCIIToUTF16("utility process")),
+      name_(u"utility process"),
       client_(std::move(client)) {
   process_.reset(new BrowserChildProcessHostImpl(
       PROCESS_TYPE_UTILITY, this, ChildProcessHost::IpcMode::kNormal));
@@ -129,7 +133,7 @@ void UtilityProcessHost::SetMetricsName(const std::string& metrics_name) {
   metrics_name_ = metrics_name;
 }
 
-void UtilityProcessHost::SetName(const base::string16& name) {
+void UtilityProcessHost::SetName(const std::u16string& name) {
   name_ = name;
 }
 
@@ -173,7 +177,7 @@ bool UtilityProcessHost::StartProcess() {
     // not needed on Android anyway. See crbug.com/500854.
     std::unique_ptr<base::CommandLine> cmd_line =
         std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
-    if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork &&
+    if (metrics_name_ == network::mojom::NetworkService::Name_ &&
         base::FeatureList::IsEnabled(features::kWarmUpNetworkProcess)) {
       process_->EnableWarmUpConnection();
     }
@@ -236,6 +240,7 @@ bool UtilityProcessHost::StartProcess() {
       os_crypt::switches::kUseMockKeychain,
 #endif
       switches::kDisableTestCerts,
+      switches::kEnableBackgroundThreadPool,
       switches::kEnableExperimentalCookieFeatures,
       switches::kEnableLogging,
       switches::kForceTextDirection,
@@ -252,6 +257,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kUseMockCertVerifierForTesting,
       switches::kMockCertVerifierDefaultResultForTesting,
       switches::kUtilityStartupDialog,
+      switches::kUseANGLE,
       switches::kUseGL,
       switches::kV,
       switches::kVModule,
@@ -310,12 +316,6 @@ bool UtilityProcessHost::StartProcess() {
     std::unique_ptr<UtilitySandboxedProcessLauncherDelegate> delegate =
         std::make_unique<UtilitySandboxedProcessLauncherDelegate>(
             sandbox_type_, env_, *cmd_line);
-
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-    if (child_flags == ChildProcessHost::CHILD_LAUNCH_X86_64) {
-      delegate->set_launch_x86_64(true);
-    }
-#endif  // OS_MAC && ARCH_CPU_ARM64
 
     process_->LaunchWithPreloadedFiles(std::move(delegate), std::move(cmd_line),
                                        GetV8SnapshotFilesToPreload(), true);

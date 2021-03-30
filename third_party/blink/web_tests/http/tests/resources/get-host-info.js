@@ -1,10 +1,6 @@
-// |original_host_override| and |remote_host_override| are custom hostnames.
-// These are for tests where we cannot just use '127.0.0.1' and 'localhost'
-// because some web platform features may behave differently for localhost
-// URLs, which means we must use other URLs to get realistic behavior.
-function get_host_info(original_host_override, remote_host_override) {
-  var ORIGINAL_HOST = original_host_override || '127.0.0.1';
-  var REMOTE_HOST = remote_host_override || 'localhost';
+function get_host_info() {
+  var ORIGINAL_HOST = '127.0.0.1';
+  var REMOTE_HOST = 'localhost';
   // TODO(mkwst): This should be a host that WPT supports. I don't know why we're using 'example.test'.
   var OTHER_HOST = 'example.test';
   var HTTP_PORT = 8000;

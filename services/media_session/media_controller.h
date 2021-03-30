@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -54,6 +53,9 @@ class MediaController : public mojom::MediaController,
   void EnterPictureInPicture() override;
   void ExitPictureInPicture() override;
   void SetAudioSinkId(const base::Optional<std::string>& id) override;
+  void ToggleMicrophone() override;
+  void ToggleCamera() override;
+  void HangUp() override;
 
   // mojom::MediaSessionObserver overrides.
   void MediaSessionInfoChanged(

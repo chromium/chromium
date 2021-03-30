@@ -11,7 +11,7 @@ import "click_to_call_message.proto";
 import "peer_connection_messages.proto";
 import "remote_copy_message.proto";
 import "shared_clipboard_message.proto";
-import "sms_fetch_message.proto";
+import "sms_fetch_message_test_proto3_optional.proto";
 
 package chrome_browser_sharing;
 

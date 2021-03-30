@@ -23,9 +23,6 @@ public class SiteSuggestion {
     /** URL of the suggested site. */
     public final GURL url;
 
-    /** Id of the favicon. It is optional and used when caching the favion on device. */
-    public int faviconId;
-
     /** The path to the icon image file for allowlisted tile, empty string otherwise. */
     public final String allowlistIconPath;
 
@@ -52,7 +49,6 @@ public class SiteSuggestion {
             int source, int sectionType, Date dataGenerationTime) {
         this.title = title;
         this.url = url;
-        this.faviconId = INVALID_FAVICON_ID;
         this.allowlistIconPath = allowlistIconPath;
         this.source = source;
         this.titleSource = titleSource;

@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 class AutocompleteInput;
 class KeywordProvider;
@@ -42,7 +41,7 @@ class KeywordExtensionsDelegate {
   virtual bool Start(const AutocompleteInput& input,
                      bool minimal_changes,
                      const TemplateURL* template_url,
-                     const base::string16& remaining_input);
+                     const std::u16string& remaining_input);
 
   // Tells the extension with |extension_id| that the user typed the omnibox
   // keyword.
@@ -56,7 +55,7 @@ class KeywordExtensionsDelegate {
   // Called when the user asks to delete a match an extension previously marked
   // deletable.
   virtual void DeleteSuggestion(const TemplateURL* template_url,
-                                const base::string16& suggestion_text);
+                                const std::u16string& suggestion_text);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_KEYWORD_EXTENSIONS_DELEGATE_H_

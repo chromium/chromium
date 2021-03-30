@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/titled_url_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -30,6 +29,36 @@
 using bookmarks::BookmarkNode;
 using bookmarks::TitledUrlMatch;
 using TitledUrlMatches = std::vector<TitledUrlMatch>;
+
+namespace {
+
+// for_each helper functor that calculates a match factor for each query term
+// when calculating the final score.
+//
+// Calculate a 'factor' from 0 to the bookmark's title length for a match
+// based on 1) how many characters match and 2) where the match is positioned.
+class ScoringFunctor {
+ public:
+  // |title_length| is the length of the bookmark title against which this
+  // match will be scored.
+  explicit ScoringFunctor(size_t title_length)
+      : title_length_(static_cast<double>(title_length)),
+        scoring_factor_(0.0) {}
+
+  void operator()(const query_parser::Snippet::MatchPosition& match) {
+    double term_length = static_cast<double>(match.second - match.first);
+    scoring_factor_ +=
+        term_length * (title_length_ - match.first) / title_length_;
+  }
+
+  double ScoringFactor() { return scoring_factor_; }
+
+ private:
+  double title_length_;
+  double scoring_factor_;
+};
+
+}  // namespace
 
 // BookmarkProvider ------------------------------------------------------------
 
@@ -69,7 +98,8 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   //  - Terms must be at least three characters in length in order to perform
   //    partial word matches. Any term of lesser length will only be used as an
   //    exact match. 'def' will match against 'define' but 'de' will not match.
-  //    (Unless IsShortBookmarkSuggestionsEnabled is true.)
+  //    (Unless either |IsShortBookmarkSuggestionsEnabled()| or
+  //    |IsShortBookmarkSuggestionsByTotalInputLengthEnabled()| is true.)
   //  - A search containing multiple terms will return results with those words
   //    occurring in any order.
   //  - Terms enclosed in quotes comprises a phrase that must match exactly.
@@ -79,15 +109,11 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // Please refer to the code for TitledUrlIndex::GetResultsMatching for
   // complete details of how searches are performed against the user's
   // bookmarks.
-  std::vector<TitledUrlMatch> matches = bookmark_model_->GetBookmarksMatching(
-      input.text(), kMaxBookmarkMatches,
-      OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled()
-          ? query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH
-          : query_parser::MatchingAlgorithm::DEFAULT,
-      base::FeatureList::IsEnabled(omnibox::kBookmarkPaths));
+  std::vector<TitledUrlMatch> matches =
+      GetMatchesWithBookmarkPaths(input, kMaxBookmarkMatches);
   if (matches.empty())
     return;  // There were no matches.
-  const base::string16 fixed_up_input(FixupUserInput(input).second);
+  const std::u16string fixed_up_input(FixupUserInput(input).second);
   for (auto& bookmark_match : matches) {
     if (OmniboxFieldTrial::ShouldDisableCGIParamMatching()) {
       RemoveQueryParamKeyMatches(bookmark_match);
@@ -112,36 +138,72 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   matches_.resize(num_matches);
 }
 
-namespace {
+std::vector<TitledUrlMatch> BookmarkProvider::GetMatchesWithBookmarkPaths(
+    const AutocompleteInput& input,
+    size_t kMaxBookmarkMatches) {
+  // Determining whether the |kBookmarkPaths| feature had, or would have had, an
+  // impact for counterfactual logging is expensive as it requires invoking
+  // |BookmarkModel::GetBookmarksMatching()| twice. Therefore, the param
+  // |kBookmarkPathsCounterfactual| determines whether to counterfactual log:
+  // - When empty, counterfactual logging won't occur.
+  // - When set to "control" counterfactual logging will occur like usual; i.e.
+  //   path matched bookmarks won't be returned but will be compared to
+  //   determine if the feature triggered.
+  // - When set to "enabled", counterfactual logging will occur and path matched
+  //   bookmarks will be returned.
+  std::string counterfactual = base::GetFieldTrialParamValueByFeature(
+      omnibox::kBookmarkPaths, OmniboxFieldTrial::kBookmarkPathsCounterfactual);
 
-// for_each helper functor that calculates a match factor for each query term
-// when calculating the final score.
-//
-// Calculate a 'factor' from 0 to the bookmark's title length for a match
-// based on 1) how many characters match and 2) where the match is positioned.
-class ScoringFunctor {
- public:
-  // |title_length| is the length of the bookmark title against which this
-  // match will be scored.
-  explicit ScoringFunctor(size_t title_length)
-      : title_length_(static_cast<double>(title_length)),
-        scoring_factor_(0.0) {
+  bool match_paths = base::FeatureList::IsEnabled(omnibox::kBookmarkPaths) &&
+                     counterfactual != "control";
+
+  query_parser::MatchingAlgorithm matching_algorithm =
+      GetMatchingAlgorithm(input);
+
+  if (counterfactual.empty()) {
+    return bookmark_model_->GetBookmarksMatching(
+        input.text(), kMaxBookmarkMatches, matching_algorithm, match_paths);
   }
 
-  void operator()(const query_parser::Snippet::MatchPosition& match) {
-    double term_length = static_cast<double>(match.second - match.first);
-    scoring_factor_ += term_length *
-        (title_length_ - match.first) / title_length_;
+  std::vector<TitledUrlMatch> matches_without_paths =
+      bookmark_model_->GetBookmarksMatching(input.text(), kMaxBookmarkMatches,
+                                            matching_algorithm);
+  std::vector<TitledUrlMatch> matches_with_paths =
+      bookmark_model_->GetBookmarksMatching(input.text(), kMaxBookmarkMatches,
+                                            matching_algorithm, true);
+  DCHECK_LE(matches_without_paths.size(), matches_with_paths.size());
+
+  // It's unnecessary to compare the matches themselves because all
+  // |matches_without_paths| should be contained in |matches_with_paths|.
+  if (matches_without_paths.size() != matches_with_paths.size()) {
+    client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
+        OmniboxTriggeredFeatureService::Feature::kBookmarkPaths);
   }
 
-  double ScoringFactor() { return scoring_factor_; }
+  return match_paths ? matches_with_paths : matches_without_paths;
+}
 
- private:
-  double title_length_;
-  double scoring_factor_;
-};
+query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
+    AutocompleteInput input) {
+  if (OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled())
+    return query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
 
-}  // namespace
+  if (OmniboxFieldTrial::
+          IsShortBookmarkSuggestionsByTotalInputLengthEnabled() &&
+      input.text().length() >=
+          OmniboxFieldTrial::
+              ShortBookmarkSuggestionsByTotalInputLengthThreshold()) {
+    client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
+        OmniboxTriggeredFeatureService::Feature::
+            kShortBookmarkSuggestionsByTotalInputLength);
+    return OmniboxFieldTrial::
+                   ShortBookmarkSuggestionsByTotalInputLengthCounterfactual()
+               ? query_parser::MatchingAlgorithm::DEFAULT
+               : query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
+  }
+
+  return query_parser::MatchingAlgorithm::DEFAULT;
+}
 
 int BookmarkProvider::CalculateBookmarkMatchRelevance(
     const TitledUrlMatch& bookmark_match) const {
@@ -196,7 +258,7 @@ int BookmarkProvider::CalculateBookmarkMatchRelevance(
   // scored up to a maximum of three, the score is boosted by a fixed amount
   // given by |kURLCountBoost|, below.
 
-  base::string16 title(bookmark_match.node->GetTitledUrlNodeTitle());
+  std::u16string title(bookmark_match.node->GetTitledUrlNodeTitle());
   const GURL& url(bookmark_match.node->GetTitledUrlNodeUrl());
 
   // Pretend empty titles are identical to the URL.

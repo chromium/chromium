@@ -38,7 +38,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
       presentation = '<presentation defaultLocale="en-US"/>'
 
     return '''<?xml version="1.0" ?>
-<managedAppConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/com.google.chrome.ios/appconfig/appconfig.xsd">
+<managedAppConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://storage.googleapis.com/appconfig-media/appconfigschema.xsd">
   <version>%s</version>
   <bundleId>com.google.chrome.ios</bundleId>
   %s
@@ -370,38 +370,11 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
         'desc': 'string description'
     }])
     policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<string future="true" keyName="FuturePolicy">
+    expected_configuration = '''<!--FUTURE POLICY-->
+    <string keyName="FuturePolicy">
       <constraint nullable="true"/>
     </string>'''
     expected_presentation = '''<field keyName="FuturePolicy" type="input">
-      <label>
-        <language value="en-US">string caption</language>
-      </label>
-      <description>
-        <language value="en-US">string description</language>
-      </description>
-    </field>'''
-    expected = self._GetExpectedOutput('83', expected_configuration,
-                                       expected_presentation)
-    output = self.GetOutput(policy_json, {
-        '_google_chrome': '1',
-        'version': '83.0.4089.0'
-    }, 'ios_app_config')
-    self.assertEquals(output.strip(), expected.strip())
-
-  def testNonFuturePolicy(self):
-    policy_definition = json.dumps([{
-        'name': 'NonFuturePolicy',
-        'type': 'string',
-        'supported_on': ['ios:80-'],
-        'caption': 'string caption',
-        'desc': 'string description'
-    }])
-    policy_json = self._GetTestPolicyTemplate(policy_definition)
-    expected_configuration = '''<string keyName="NonFuturePolicy">
-      <constraint nullable="true"/>
-    </string>'''
-    expected_presentation = '''<field keyName="NonFuturePolicy" type="input">
       <label>
         <language value="en-US">string caption</language>
       </label>

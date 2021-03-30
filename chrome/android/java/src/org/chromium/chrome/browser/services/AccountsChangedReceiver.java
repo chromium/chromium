@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninHelperProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -25,10 +24,12 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  * This receiver is notified when accounts are added, accounts are removed, or
  * an account's credentials (saved password, etc) are changed.
  * All public methods must be called from the UI thread.
+ *
+ * TODO(crbug/1193412): We can trigger the signed-in account validation directly
+ * after the seeding to avoid listening to the same LOGIN_ACCOUNTS_CHANGED_ACTION
+ * event in two different places.
  */
 public class AccountsChangedReceiver extends BroadcastReceiver {
-    private static final String TAG = "AccountsChangedRx";
-
     @Override
     public void onReceive(Context context, final Intent intent) {
         if (!AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION.equals(intent.getAction())) return;
@@ -36,9 +37,6 @@ public class AccountsChangedReceiver extends BroadcastReceiver {
         boolean isChromeVisible = ApplicationStatus.hasVisibleActivities();
         if (isChromeVisible) {
             startBrowserIfNeededAndValidateAccounts();
-        } else {
-            // Notify SigninHelper of changed accounts (via shared prefs).
-            SigninPreferencesManager.getInstance().markAccountsChangedPref();
         }
     }
 
@@ -50,20 +48,12 @@ public class AccountsChangedReceiver extends BroadcastReceiver {
                     AccountTrackerService trackerService =
                             IdentityServicesProvider.get().getAccountTrackerService(
                                     Profile.getLastUsedRegularProfile());
-                    // TODO(bsazonov): Check whether invalidateAccountSeedStatus is needed here.
-                    trackerService.invalidateAccountSeedStatus(false /* don't refresh right now */);
-                    SigninHelperProvider.get().validateAccountSettings(true);
+                    trackerService.seedAccounts();
+                    SigninHelperProvider.get().validateAccountSettings();
                 });
             }
-
-            @Override
-            public void onStartupFailure(Exception failureCause) {
-                // Startup failed. So notify SigninHelper of changed accounts via
-                // shared prefs.
-                SigninPreferencesManager.getInstance().markAccountsChangedPref();
-            }
         };
-        ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+        ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
         ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
     }
 }

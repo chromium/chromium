@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Lijstitem</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Swipe met twee vingers naar rechts</translation>
-<translation id="1016393160682012902">Druk op een QWERTY-toets of een vernieuwbare brailletoets of maak een aanraakgebaar om de functie ervan te leren. Druk op Ctrl en W of Escape om af te sluiten.</translation>
 <translation id="1022586497894531524">Gebruik je de gesproken feedback van ChromeVox voor de eerste keer? In deze korte handleiding worden de basisprincipes uitgelegd, zodat je aan de slag kunt met ChromeVox.</translation>
 <translation id="1025074108959230262">Modus voor vastzetten uitgeschakeld</translation>
 <translation id="1031961866430398710">dan</translation>
@@ -103,7 +102,7 @@
 <translation id="1627222324347828322">Spookwit</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{groter-dan-teken}other{# groter-dan-tekens}}</translation>
 <translation id="1653266918374749391">Vorige kop voor niveau 3</translation>
-<translation id="1657616855184033958">Filters voor gebeurtenisstream weergeven</translation>
+<translation id="1657616855184033958">Filters voor gebeurtenisstream tonen</translation>
 <translation id="1659072772017912254">Niet aangevinkt</translation>
 <translation id="1666326070478924810">Instellingen voor 'Selecteer om uitgesproken te worden'</translation>
 <translation id="1674262202423278359">ChromeVox-navigatie</translation>
@@ -133,7 +132,7 @@
 <translation id="1876229593313240038">document</translation>
 <translation id="1902396333223336119">Cel</translation>
 <translation id="1903683160884433981">Middenlentegroen</translation>
-<translation id="1905379170753160525">Lijst met koppen weergeven</translation>
+<translation id="1905379170753160525">Lijst met koppen tonen</translation>
 <translation id="1913761808037590218">genummerd</translation>
 <translation id="1914424852593176649">Grootte <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Combinatie <ph name="DOT" /></translation>
@@ -142,7 +141,7 @@
 <translation id="1964135212174907577">Volgend object</translation>
 <translation id="1966649499058910679">Markeer elk woord terwijl het wordt uitgesproken</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
-<translation id="1988733631391393183">Braille-opdrachten weergeven in de ChromeVox-menu's</translation>
+<translation id="1988733631391393183">Braille-opdrachten tonen in de ChromeVox-menu's</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{vierkante haak links}other{# vierkante haken links}}</translation>
 <translation id="2009187674653301682">Geen superscript</translation>
 <translation id="2010555995361223825">ChromeVox-menu's</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Geen vorig bedieningselement</translation>
 <translation id="2045606329038304310">Formulierveldbediening</translation>
 <translation id="2063539687800151747">Epigraaf</translation>
+<translation id="2074531330963286860">Acties beschikbaar. Druk nu op Zoeken + punt om te bekijken.</translation>
 <translation id="2086961585857038472">Volgend woord</translation>
 <translation id="2087981446621639008">dtl beschrlst</translation>
 <translation id="2089387485033699258">nl</translation>
@@ -302,7 +302,7 @@
 <translation id="3131002934070407451">Nummers lezen als:</translation>
 <translation id="3134461040845705080">alleen-lezen</translation>
 <translation id="3137663468179739624">Olijf</translation>
-<translation id="3138767756593758860">Lijst met oriëntatiepunten weergeven</translation>
+<translation id="3138767756593758860">Lijst met oriëntatiepunten tonen</translation>
 <translation id="3143851963874289911">cll</translation>
 <translation id="3149472044574196936">Volgende regel</translation>
 <translation id="3153024374267644603">Spraak aan</translation>
@@ -347,7 +347,7 @@
 <translation id="338583716107319301">Separator</translation>
 <translation id="3389259863310851658">Vorig formulierveld</translation>
 <translation id="3393605254399152980">Sleep met één vinger om te horen wat je aanraakt</translation>
-<translation id="3406283310380167331">Lijst met formulieren weergeven</translation>
+<translation id="3406283310380167331">Lijst met formulieren tonen</translation>
 <translation id="3414400929511680526">Alice-blauw</translation>
 <translation id="3418936350470374046">Geen cel hieronder beschikbaar</translation>
 <translation id="3435494200763325275">Tabbladnavigatie (vervolg)</translation>
@@ -395,7 +395,7 @@
 <translation id="3777255250339039212">k1</translation>
 <translation id="3777742246909257041">Sneeuw</translation>
 <translation id="3781428340399460090">Felroze</translation>
-<translation id="3783725005098956899">Logbestand weergeven</translation>
+<translation id="3783725005098956899">Logbestand tonen</translation>
 <translation id="3801735343383419236">Automatisch lijst aanvullen</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Lichtkoraal</translation>
@@ -471,7 +471,7 @@
 <translation id="4342180618051828363">{COUNT,plural, =1{punt}=3{ellipsis}other{# punten}}</translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">Spraak stoppen</translation>
-<translation id="4376316291247992553">Afbeelding als braille weergeven</translation>
+<translation id="4376316291247992553">Afbeelding als braille bekijken</translation>
 <translation id="437809255587011096">Stijl van aankondigingstekst</translation>
 <translation id="4378308539633073595">Vooruit scrollen</translation>
 <translation id="4384583879834880242">Q&amp;A</translation>
@@ -603,7 +603,7 @@
 <translation id="5368505757342402527">Download van <ph name="FILE_NAME" /> is <ph name="PROGRESS" />% voltooid. Het duurt nog ongeveer <ph name="TIME" /> <ph name="UNITS" />.</translation>
 <translation id="5400836586163650660">Grijs</translation>
 <translation id="5402367795255837559">Braille</translation>
-<translation id="5402791055281059602">Een melding die in een modaal dialoogvenster wordt weergegeven</translation>
+<translation id="5402791055281059602">Een melding in een modaal dialoogvenster</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{puntkomma}other{# puntkomma's}}</translation>
 <translation id="5420259671171615858">Zoeken in de menu's</translation>
 <translation id="5435274640623994081">Earconregistratie inschakelen</translation>
@@ -682,7 +682,7 @@
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Dialoogvenster</translation>
 <translation id="5963413905009737549">Sectie</translation>
-<translation id="5968607524793740041">Contextmenu weergeven</translation>
+<translation id="5968607524793740041">Contextmenu tonen</translation>
 <translation id="597121107011153418">{COUNT,plural, =1{met # item}other{met # items}}</translation>
 <translation id="5981446804259161541">Lichtcyaan</translation>
 <translation id="5983179082906765664">Detailniveau van navigatie vergroten</translation>
@@ -760,7 +760,7 @@
 <translation id="6657128831881431364">Voortgangsbalk</translation>
 <translation id="6660819301598582123">Pa's wijze lynx bezag vroom het fikse aquaduct.</translation>
 <translation id="667999046851023355">Document</translation>
-<translation id="6688209025607531203">Een melding die niet in een modaal dialoogvenster wordt weergegeven</translation>
+<translation id="6688209025607531203">Een melding in een niet-modaal dialoogvenster</translation>
 <translation id="6689672606256159458">Donker zalmroze</translation>
 <translation id="669617842401078250">Download van <ph name="FILE_NAME" /> is onderbroken</translation>
 <translation id="6696967141280706829">Voorwoord</translation>
@@ -790,7 +790,7 @@
 <translation id="6901540140423170855">datum</translation>
 <translation id="6910211073230771657">Verwijderd</translation>
 <translation id="6910969481785184048">Inschakelen, uitschakelen en stoppen</translation>
-<translation id="6919104639734799681">Lijst met tabellen weergeven</translation>
+<translation id="6919104639734799681">Lijst met tabellen tonen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6949846980769640811">Middenaquamarijn</translation>
 <translation id="6951482098621102657">Geen volgende kop van niveau 5</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">Selectie starten of beëindigen</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Springen naar vorig actief item</translation>
+<translation id="8279039817939141096">Druk op een QWERTY-toets of een vernieuwbare brailletoets of maak een aanraakgebaar om de functie ervan te leren. Druk op Control en W, spatiebalk en Z, swipe naar links met 2 vingers of druk op Escape om af te sluiten.</translation>
 <translation id="8283603667300770666">Volgend formulierveld</translation>
 <translation id="8310185481635255431">Geen volgende link</translation>
 <translation id="831207808878314375">Definitie</translation>
@@ -1019,8 +1020,8 @@
 <translation id="8628186274519446680">Tomaat</translation>
 <translation id="8638532244051952400">Huidige celcoördinaten bekendmaken</translation>
 <translation id="8640369214276455272">Rookwit</translation>
-<translation id="8651481478098336970">volume dempen</translation>
-<translation id="8653646212587894517">Lijst met links weergeven</translation>
+<translation id="8651481478098336970">geluid uitzetten</translation>
+<translation id="8653646212587894517">Lijst met links tonen</translation>
 <translation id="8656888282555543604">Brailleregistratie inschakelen</translation>
 <translation id="8659501358298941449">Dropdownmenu's</translation>
 <translation id="867187640362843212">Kop 5</translation>

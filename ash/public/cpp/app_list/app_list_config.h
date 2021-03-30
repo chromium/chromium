@@ -11,14 +11,189 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace base {
+template <typename T>
+class NoDestructor;
+}  // namespace base
+
 namespace gfx {
 class FontList;
 }
 
 namespace ash {
 
-// Shared layout type information for app list. Use the instance() method to
-// obtain the AppListConfig.
+// App list layout related constants that are used outside the core app list UI
+// code - for example in chrome, and app list search UI.
+// Unlike values is `AppListConfig`, the values in `SharedAppListConfig` do not
+// depend on the current app list view state nor dimensions.
+// An instance can be retrieved using `SharedAppListConfig::instance()`.
+class ASH_PUBLIC_EXPORT SharedAppListConfig {
+ public:
+  static SharedAppListConfig& instance();
+
+  int default_grid_icon_dimension() const {
+    return default_grid_icon_dimension_;
+  }
+
+  size_t max_search_results() const { return max_search_results_; }
+
+  size_t max_search_result_tiles() const { return max_search_result_tiles_; }
+
+  size_t max_search_result_list_items() const {
+    return max_search_result_list_items_;
+  }
+
+  size_t max_assistant_search_result_list_items() const {
+    return max_assistant_search_result_list_items_;
+  }
+
+  size_t num_start_page_tiles() const { return num_start_page_tiles_; }
+
+  int search_tile_icon_dimension() const { return search_tile_icon_dimension_; }
+
+  gfx::Size search_tile_icon_size() const {
+    return gfx::Size(search_tile_icon_dimension_, search_tile_icon_dimension_);
+  }
+
+  int search_tile_badge_icon_dimension() const {
+    return search_tile_badge_icon_dimension_;
+  }
+
+  gfx::Size search_tile_badge_icon_size() const {
+    return gfx::Size(search_tile_badge_icon_dimension_,
+                     search_tile_badge_icon_dimension_);
+  }
+
+  int search_tile_badge_icon_offset() const {
+    return search_tile_badge_icon_offset_;
+  }
+
+  int search_list_icon_dimension() const { return search_list_icon_dimension_; }
+
+  gfx::Size search_list_icon_size() const {
+    return gfx::Size(search_list_icon_dimension_, search_list_icon_dimension_);
+  }
+
+  int search_list_answer_icon_dimension() const {
+    return search_list_answer_icon_dimension_;
+  }
+
+  gfx::Size search_list_answer_icon_size() const {
+    return gfx::Size(search_list_answer_icon_dimension_,
+                     search_list_answer_icon_dimension_);
+  }
+
+  int search_list_image_icon_dimension() const {
+    return search_list_image_icon_dimension_;
+  }
+
+  gfx::Size search_list_image_icon_size() const {
+    return gfx::Size(search_list_image_icon_dimension_,
+                     search_list_image_icon_dimension_);
+  }
+
+  int search_list_icon_vertical_bar_dimension() const {
+    return search_list_icon_vertical_bar_dimension_;
+  }
+
+  int search_list_badge_icon_dimension() const {
+    return search_list_badge_icon_dimension_;
+  }
+
+  gfx::Size search_list_badge_icon_size() const {
+    return gfx::Size(search_list_badge_icon_dimension_,
+                     search_list_badge_icon_dimension_);
+  }
+
+  int suggestion_chip_icon_dimension() const {
+    return suggestion_chip_icon_dimension_;
+  }
+
+  ui::ResourceBundle::FontStyle search_result_title_font_style() const {
+    return search_result_title_font_style_;
+  }
+
+  gfx::FontList search_result_recommendation_title_font() const {
+    return search_result_recommendation_title_font_;
+  }
+
+  int search_tile_height() const { return search_tile_height_; }
+
+  // Returns the maximum number of items allowed in a page in the apps grid.
+  int GetMaxNumOfItemsPerPage() const;
+
+  // Returns the dimension at which a result's icon should be displayed.
+  int GetPreferredIconDimension(SearchResultDisplayType display_type) const;
+
+ private:
+  friend class base::NoDestructor<SharedAppListConfig>;
+  SharedAppListConfig();
+
+  // The icon dimension of tile views in apps grid view.
+  const int default_grid_icon_dimension_ = 64;
+
+  // Maximum number of results to show in the launcher Search UI.
+  const size_t max_search_results_ = 6;
+
+  // Max number of search result tiles in the launcher suggestion window.
+  const size_t max_search_result_tiles_ = 6;
+
+  // Max number of search result list items in the launcher suggestion window.
+  const size_t max_search_result_list_items_ = 5;
+
+  // Max number of Assistant search result list items in the launcher suggestion
+  // window. Appears in the list after normal search results.
+  const size_t max_assistant_search_result_list_items_ = 1;
+
+  // The number of apps shown in the start page app grid.
+  const size_t num_start_page_tiles_ = 5;
+
+  // The icon dimension of tile views in search result page view.
+  const int search_tile_icon_dimension_ = 48;
+
+  // The badge icon dimension of tile views in search result page view.
+  const int search_tile_badge_icon_dimension_ = 22;
+
+  // The badge icon offset of tile views in search result page view.
+  const int search_tile_badge_icon_offset_ = 5;
+
+  // The icon dimension of list views in search result page view.
+  const int search_list_icon_dimension_ = 20;
+
+  // The icon dimension of answer list views in search result page view.
+  const int search_list_answer_icon_dimension_ = 24;
+
+  // The dimension of image icons for list views in search result page view.
+  const int search_list_image_icon_dimension_ = 32;
+
+  // The vertical bar icon dimension of list views in search result page view.
+  const int search_list_icon_vertical_bar_dimension_ = 48;
+
+  // The badge background corner radius of list views in search result page
+  // view.
+  const int search_list_badge_icon_dimension_ = 14;
+
+  // The suggestion chip icon dimension.
+  const int suggestion_chip_icon_dimension_ = 20;
+
+  // Font style for AppListSearchResultItemViews that are not suggested
+  // apps.
+  const ui::ResourceBundle::FontStyle search_result_title_font_style_;
+
+  // Font style for AppListSearchResultTileItemViews that are suggested
+  // apps.
+  const gfx::FontList search_result_recommendation_title_font_;
+
+  // The height of tiles in search result.
+  const int search_tile_height_ = 92;
+};
+
+// Contains app list layout information for an app list view. `AppListConfig`
+// values depend on the context in which the app list is shown (e.g. the size of
+// the display on which the app list is shown). `AppListConfig` instances are
+// generally owned by the app list view, which creates them using
+// `AppListConfigProvider` (defined in
+// ash/public/cpp/app_list/app_list_config_provider.h).
 class ASH_PUBLIC_EXPORT AppListConfig {
  public:
   // Constructor for unscaled configurations of the provided type.
@@ -44,9 +219,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
                 bool min_y_scale);
   ~AppListConfig();
 
-  // Gets default app list configuration.
-  static AppListConfig& instance();
-
   AppListConfigType type() const { return type_; }
   float scale_x() const { return scale_x_; }
   float scale_y() const { return scale_y_; }
@@ -70,23 +242,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return grid_to_page_switcher_margin_;
   }
   int page_switcher_end_margin() const { return page_switcher_end_margin_; }
-  int search_tile_icon_dimension() const { return search_tile_icon_dimension_; }
-  int search_tile_badge_icon_dimension() const {
-    return search_tile_badge_icon_dimension_;
-  }
-  int search_tile_badge_icon_offset() const {
-    return search_tile_badge_icon_offset_;
-  }
-  int search_list_icon_dimension() const { return search_list_icon_dimension_; }
-  int search_list_icon_vertical_bar_dimension() const {
-    return search_list_icon_vertical_bar_dimension_;
-  }
-  int search_list_badge_icon_dimension() const {
-    return search_list_badge_icon_dimension_;
-  }
-  int suggestion_chip_icon_dimension() const {
-    return suggestion_chip_icon_dimension_;
-  }
   int suggestion_chip_container_top_margin() const {
     return suggestion_chip_container_top_margin_;
   }
@@ -160,8 +315,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   base::TimeDelta folder_transition_out_duration() const {
     return folder_transition_out_duration_;
   }
-  size_t num_start_page_tiles() const { return num_start_page_tiles_; }
-  size_t max_search_results() const { return max_search_results_; }
   size_t max_folder_pages() const { return max_folder_pages_; }
   size_t max_folder_items_per_page() const {
     return max_folder_items_per_page_;
@@ -169,28 +322,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   size_t max_folder_name_chars() const { return max_folder_name_chars_; }
   float all_apps_opacity_start_px() const { return all_apps_opacity_start_px_; }
   float all_apps_opacity_end_px() const { return all_apps_opacity_end_px_; }
-  ui::ResourceBundle::FontStyle search_result_title_font_style() const {
-    return search_result_title_font_style_;
-  }
-  int search_tile_height() const { return search_tile_height_; }
-
-  size_t max_search_result_tiles() const { return max_search_result_tiles_; }
-
-  size_t max_search_result_list_items() const {
-    return max_search_result_list_items_;
-  }
-
-  size_t max_assistant_search_result_list_items() const {
-    return max_assistant_search_result_list_items_;
-  }
-
-  double privacy_container_score() const { return privacy_container_score_; }
-  double app_tiles_container_score() const {
-    return app_tiles_container_score_;
-  }
-  double results_list_container_score() const {
-    return results_list_container_score_;
-  }
 
   gfx::Size grid_icon_size() const {
     return gfx::Size(grid_icon_dimension_, grid_icon_dimension_);
@@ -198,24 +329,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   gfx::Size grid_focus_size() const {
     return gfx::Size(grid_focus_dimension_, grid_focus_dimension_);
-  }
-
-  gfx::Size search_tile_icon_size() const {
-    return gfx::Size(search_tile_icon_dimension_, search_tile_icon_dimension_);
-  }
-
-  gfx::Size search_tile_badge_icon_size() const {
-    return gfx::Size(search_tile_badge_icon_dimension_,
-                     search_tile_badge_icon_dimension_);
-  }
-
-  gfx::Size search_list_icon_size() const {
-    return gfx::Size(search_list_icon_dimension_, search_list_icon_dimension_);
-  }
-
-  gfx::Size search_list_badge_icon_size() const {
-    return gfx::Size(search_list_badge_icon_dimension_,
-                     search_list_badge_icon_dimension_);
   }
 
   gfx::Size folder_icon_size() const {
@@ -240,12 +353,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return gfx::Size(item_icon_in_folder_icon_dimension_,
                      item_icon_in_folder_icon_dimension_);
   }
-
-  // Returns the dimension at which a result's icon should be displayed.
-  int GetPreferredIconDimension(SearchResultDisplayType display_type) const;
-
-  // Returns the maximum number of items allowed in specified page in apps grid.
-  int GetMaxNumOfItemsPerPage(int page) const;
 
   // The minimal horizontal padding for the apps grid.
   int GetMinGridHorizontalPadding() const;
@@ -306,28 +413,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // Minimal horizontal page switcher distance from the app list UI edge.
   const int page_switcher_end_margin_;
-
-  // The icon dimension of tile views in search result page view.
-  const int search_tile_icon_dimension_;
-
-  // The badge icon dimension of tile views in search result page view.
-  const int search_tile_badge_icon_dimension_;
-
-  // The badge icon offset of tile views in search result page view.
-  const int search_tile_badge_icon_offset_;
-
-  // The icon dimension of list views in search result page view.
-  const int search_list_icon_dimension_;
-
-  // The vertical bar icon dimension of list views in search result page view.
-  const int search_list_icon_vertical_bar_dimension_;
-
-  // The badge background corner radius of list views in search result page
-  // view.
-  const int search_list_badge_icon_dimension_;
-
-  // The suggestion chip icon dimension.
-  const int suggestion_chip_icon_dimension_;
 
   // The suggestion chip container top margin.
   const int suggestion_chip_container_top_margin_;
@@ -447,12 +532,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // closing a folder.
   const base::TimeDelta folder_transition_out_duration_;
 
-  // The number of apps shown in the start page app grid.
-  const size_t num_start_page_tiles_;
-
-  // Maximum number of results to show in the launcher Search UI.
-  const size_t max_search_results_;
-
   // Max pages allowed in a folder.
   const size_t max_folder_pages_;
 
@@ -467,31 +546,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // well.
   const float all_apps_opacity_start_px_ = 8.0f;
   const float all_apps_opacity_end_px_ = 144.0f;
-
-  // Font style for AppListSearchResultTileItemViews that are not suggested
-  // apps.
-  const ui::ResourceBundle::FontStyle search_result_title_font_style_;
-
-  // The height of tiles in search result.
-  const int search_tile_height_ = 90;
-
-  // Max number of search result tiles in the launcher suggestion window.
-  const size_t max_search_result_tiles_ = 6;
-
-  // Max number of search result list items in the launcher suggestion window.
-  const size_t max_search_result_list_items_ = 5;
-
-  // Max number of Assistant search result list items in the launcher suggestion
-  // window. Appears in the list after normal search results.
-  const size_t max_assistant_search_result_list_items_ = 1;
-
-  // Scores for the containers within the search box view. These are displayed
-  // in high-to-low order.
-  // The privacy container is not always visible, but when available it should
-  // always be the first item underneath the search box.
-  const double privacy_container_score_ = 4.0;
-  const double app_tiles_container_score_ = 3.0;
-  const double results_list_container_score_ = 1.0;
 
   // Cardified app list background properties
   const SkColor cardified_background_color_;

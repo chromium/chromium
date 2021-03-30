@@ -22,7 +22,7 @@ bool IsValidString(const std::string& str) {
   return str.size() <= kMaxDataLength;
 }
 
-bool IsValidString16(const base::string16& str) {
+bool IsValidString16(const std::u16string& str) {
   return str.size() <= kMaxDataLength;
 }
 
@@ -56,7 +56,7 @@ bool IsValidPasswordFormFillData(const PasswordFormFillData& form) {
          });
 }
 
-bool IsValidString16Vector(const std::vector<base::string16>& v) {
+bool IsValidString16Vector(const std::vector<std::u16string>& v) {
   return v.size() <= kMaxListSize && base::ranges::all_of(v, &IsValidString16);
 }
 

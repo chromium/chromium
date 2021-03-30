@@ -23,7 +23,7 @@ import java.util.List;
  * 1. Add its constant value to {@link DeprecatedChromePreferenceKeys#getKeysForTesting()}, in
  * alphabetical order by value.
  * 2. Remove the key from {@link #getKeysInUse()} or {@link
- * GrandfatheredChromePreferenceKeys#getKeysInUse()}.
+ * LegacyChromePreferenceKeys#getKeysInUse()}.
  * 3. Delete the constant.
  *
  * To add a new KeyPrefix:
@@ -35,7 +35,7 @@ import java.util.List;
  * 1. Add its String value to {@link DeprecatedChromePreferenceKeys#getPrefixesForTesting()},
  * including the ".*", in alphabetical order by value.
  * 2. Remove it from {@link #getKeysInUse()} or {@link
- * GrandfatheredChromePreferenceKeys#getPrefixesInUse()}.
+ * LegacyChromePreferenceKeys#getPrefixesInUse()}.
  * 3. Delete the KeyPrefix constant.
  *
  * Tests in ChromePreferenceKeysTest and checks in {@link ChromePreferenceKeyChecker} ensure the
@@ -52,6 +52,9 @@ public final class ChromePreferenceKeys {
     public static final String ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT =
             "Chrome.AccountPickerBottomSheet.ShownCount";
 
+    public static final String ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT =
+            "Chrome.AccountPickerBottomSheet.ConsecutiveActiveDismissalCount";
+
     /** The language code to override application language with. */
     public static final String APPLICATION_OVERRIDE_LANGUAGE =
             "Chrome.Language.ApplicationOverrideLanguage";
@@ -59,8 +62,6 @@ public final class ChromePreferenceKeys {
     public static final String APP_LOCALE = "locale";
 
     /** Assistant voice search keys. */
-    public static final String ASSISTANT_LAST_VERSION = "Chrome.Assistant.LastVersion";
-    public static final String ASSISTANT_VOICE_SEARCH_SUPPORTED = "Chrome.Assistant.Supported";
     public static final String ASSISTANT_VOICE_SEARCH_ENABLED = "Chrome.Assistant.Enabled";
 
     /** Whether Autofill Assistant is enabled */
@@ -438,6 +439,10 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED =
             "tab_group_android_enabled";
 
+    /** See CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis(). */
+    public static final String FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS =
+            "Chrome.Flags.LastCachedMinimalBrowserFlagsTimeMillis";
+
     public static final String FONT_USER_FONT_SCALE_FACTOR = "user_font_scale_factor";
     public static final String FONT_USER_SET_FORCE_ENABLE_ZOOM = "user_set_force_enable_zoom";
 
@@ -469,7 +474,7 @@ public final class ChromePreferenceKeys {
      * details.
      */
     public static final String ISOLATED_SPLITS_DEX_COMPILE_VERSION =
-            "Chrome.IsolatedSplits.DexCompileVersion";
+            "Chrome.IsolatedSplits.VersionCode";
 
     /**
      * When the user is shown a badge that the current Android OS version is unsupported, and they
@@ -478,6 +483,20 @@ public final class ChromePreferenceKeys {
      * if the Chrome version later changes.
      */
     public static final String LATEST_UNSUPPORTED_VERSION = "android_os_unsupported_chrome_version";
+
+    /**
+     * The previous browser process PID, updated when crash reporting is initialized.
+     */
+    public static final String LAST_SESSION_BROWSER_PID =
+            "Chrome.CrashReporting.LastSessionBrowserPid";
+
+    /**
+     * The application state last recorded by browser in previous session, updated when crash
+     * reporting is initialized and when current application state changes henceforth. If read after
+     * crash reporting is initialized, then the value would hold current session state.
+     */
+    public static final String LAST_SESSION_APPLICATION_STATE =
+            "Chrome.CrashReporting.LastSessionApplicationState";
 
     public static final String LOCALE_MANAGER_AUTO_SWITCH = "LocaleManager_PREF_AUTO_SWITCH";
     public static final String LOCALE_MANAGER_PROMO_SHOWN = "LocaleManager_PREF_PROMO_SHOWN";
@@ -514,6 +533,63 @@ public final class ChromePreferenceKeys {
      */
     public static final String OFFLINE_INDICATOR_V2_ENABLED = "offline_indicator_v2_enabled";
 
+    /**
+     * The wall time of when the offline indicator was shown in milliseconds.
+     */
+    public static final String OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS =
+            "Chrome.OfflineIndicatorV2.WallTimeShownMs";
+
+    /**
+     * Used to divide the duration that the offline indicator is shown between when Chrome is in the
+     * foreground and the background.
+     */
+    public static final String OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS =
+            "Chrome.OfflineIndicatorV2.LastUpdateWallTimeMs";
+    public static final String OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS =
+            "Chrome.OfflineIndicatorV2.TimeInForegroundMs";
+    public static final String OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS =
+            "Chrome.OfflineIndicatorV2.TimeInBackgroundMs";
+    public static final String OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS =
+            "Chrome.OfflineIndicatorV2.FirstTimeInForegroundMs";
+    public static final String OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED =
+            "Chrome.OfflineIndicatorV2.NumTimesBackgrounded";
+
+    /**
+     * The measurement interval (in minutes) used to schedule the currently running
+     * OfflineMeasureBackgroundTask. This value is zero if the OfflineMeasureBackgroundTask is not
+     * currently running.
+     */
+    public static final String OFFLINE_MEASUREMENTS_CURRENT_TASK_MEASUREMENT_INTERVAL_IN_MINUTES =
+            "Chrome.OfflineMeasurements.CurrentTaskMeasurementIntervalInMinutes";
+
+    /** Time of the last OfflineMeasurementsBackgroundTask check. */
+    public static final String OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS =
+            "Chrome.OfflineMeasurements.LastCheckMillis";
+
+    /** Parameters that control the HTTP probe of the Offline Measurements Background task */
+    public static final String OFFLINE_MEASUREMENTS_USER_AGENT_STRING =
+            "Chrome.OfflineMeasurements.UserAgentString";
+    public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_URL =
+            "Chrome.OfflineMeasurements.HttpProbeUrl";
+    public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_TIMEOUT_MS =
+            "Chrome.OfflineMeasurements.HttpProbeTimeoutMs";
+    public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_METHOD =
+            "Chrome.OfflineMeasurements.HttpProbeMethod";
+
+    /**
+     * Comma separated list of time between OfflineMeasurementsBackgroundTask checks. When possible
+     * these values will be recorded to UMA.
+     */
+    public static final String OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST =
+            "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList";
+
+    /**
+     * Comma separated list of the results of HTTP probes from OfflineMeasurementsBackgroundTask.
+     * When possible values will be recorded to UMA then cleared.
+     */
+    public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST =
+            "Chrome.OfflineMeasurements.HttpProbeResultsList";
+
     /** The shared preference for the 'save card to device' checkbox status. */
     public static final String PAYMENTS_CHECK_SAVE_CARD_TO_DEVICE = "check_save_card_to_device";
 
@@ -543,7 +619,17 @@ public final class ChromePreferenceKeys {
     public static final String PREFETCH_OFFLINE_COUNTER = "prefetch_notification_offline_counter";
 
     /**
-     * Whether users disable the PriceWelcomeMessageCard.
+     * Whether the PriceAlertsMessageCard is enabled.
+     */
+    public static final String PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD =
+            "Chrome.PriceTracking.PriceAlerts";
+    /**
+     * Indicates how many times the PriceAlertsMessageCard has shown in the tab switcher.
+     */
+    public static final String PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT =
+            "Chrome.PriceTracking.PriceAlertsShowCount";
+    /**
+     * Whether the PriceWelcomeMessageCard is enabled.
      */
     public static final String PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD =
             "Chrome.PriceTracking.PriceWelcome";
@@ -580,6 +666,29 @@ public final class ChromePreferenceKeys {
     public static final String PROMOS_SKIPPED_ON_FIRST_START = "promos_skipped_on_first_start";
 
     /**
+     * The next timestamp to decide whether to show query tiles.
+     */
+    public static final String QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS =
+            "Chrome.Querytiles.NextDecisionTime";
+
+    /**
+     * Recent number of MV tile clicks, before the decision time.
+     */
+    public static final String QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS =
+            "Chrome.Querytiles.RecentMvClicks";
+
+    /**
+     * Recent number of query tile clicks, before the decision time.
+     */
+    public static final String QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS =
+            "Chrome.Querytiles.RecentQueryTileClicks";
+
+    /**
+     * Whether query tiles should be shown on NTP. Default value is false.
+     */
+    public static final String QUERY_TILES_SHOW_ON_NTP = "Chrome.Querytiles.ShowOnNTP";
+
+    /**
      * Contains a trial group that was used to determine whether the reached code profiler should be
      * enabled.
      */
@@ -613,13 +722,6 @@ public final class ChromePreferenceKeys {
     public static final String SETTINGS_DEVELOPER_ENABLED = "developer";
     public static final String SETTINGS_DEVELOPER_TRACING_CATEGORIES = "tracing_categories";
     public static final String SETTINGS_DEVELOPER_TRACING_MODE = "tracing_mode";
-
-    /**
-     * SharedPreference name for the preference that disables signing out of Chrome.
-     * Signing out is forever disabled once Chrome signs the user in automatically
-     * if the device has a child account or if the device is an Android EDU device.
-     */
-    public static final String SETTINGS_SYNC_SIGN_OUT_ALLOWED = "auto_signed_in_school_account";
 
     public static final String SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN =
             "org.chromium.chrome.browser.settings.privacy."
@@ -700,8 +802,6 @@ public final class ChromePreferenceKeys {
      *  than once.
      */
     public static final String SURVEY_INFO_BAR_DISPLAYED = "chrome_home_survey_info_bar_displayed";
-
-    public static final String SYNC_SESSIONS_UUID = "chromium.sync.sessions.id";
 
     public static final String TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF =
             "ChromeTabbedActivity.BackgroundTimeMs";
@@ -811,7 +911,7 @@ public final class ChromePreferenceKeys {
 
     /**
      * These values are currently used as SharedPreferences keys, along with the keys in
-     * {@link GrandfatheredChromePreferenceKeys#getKeysInUse()}. Add new SharedPreferences keys
+     * {@link LegacyChromePreferenceKeys#getKeysInUse()}. Add new SharedPreferences keys
      * here.
      *
      * @return The list of [keys in use] conforming to the format.
@@ -821,9 +921,8 @@ public final class ChromePreferenceKeys {
         // clang-format off
         return Arrays.asList(
                 ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT,
-                ASSISTANT_LAST_VERSION,
+                ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT,
                 ASSISTANT_VOICE_SEARCH_ENABLED,
-                ASSISTANT_VOICE_SEARCH_SUPPORTED,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP,
@@ -851,17 +950,40 @@ public final class ChromePreferenceKeys {
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FLAGS_CACHED.pattern(),
                 FLAGS_FIELD_TRIAL_PARAM_CACHED.pattern(),
+                FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 HOMEPAGE_LOCATION_POLICY,
                 HOMEPAGE_USE_CHROME_NTP,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
+                LAST_SESSION_BROWSER_PID,
+                LAST_SESSION_APPLICATION_STATE,
+                OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,
+                OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
+                OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS,
+                OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS,
+                OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS,
+                OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED,
+                OFFLINE_MEASUREMENTS_CURRENT_TASK_MEASUREMENT_INTERVAL_IN_MINUTES,
+                OFFLINE_MEASUREMENTS_HTTP_PROBE_METHOD,
+                OFFLINE_MEASUREMENTS_HTTP_PROBE_TIMEOUT_MS,
+                OFFLINE_MEASUREMENTS_HTTP_PROBE_URL,
+                OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST,
+                OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
+                OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS,
+                OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
+                PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD,
+                PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_TRACK_PRICES_ON_TABS,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
+                QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
+                QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS,
+                QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS,
+                QUERY_TILES_SHOW_ON_NTP,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,

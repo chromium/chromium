@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_SANDBOX_FLAGS_H_
 
 #include <bitset>
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 
 namespace blink {
 namespace mojom {

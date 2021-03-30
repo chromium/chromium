@@ -14,15 +14,26 @@
 #include "ash/system/phonehub/phone_connecting_view.h"
 #include "ash/system/phonehub/phone_disconnected_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "ash/system/phonehub/tether_connection_pending_view.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "chromeos/components/phonehub/browser_tabs_model_provider.h"
 #include "chromeos/components/phonehub/connection_scheduler.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/components/phonehub/tether_controller.h"
 #include "chromeos/components/phonehub/user_action_recorder.h"
 
 using FeatureStatus = chromeos::phonehub::FeatureStatus;
+using TetherStatus = chromeos::phonehub::TetherController::Status;
 
 namespace ash {
+
+namespace {
+
+constexpr base::TimeDelta kConnectingViewGracePeriod =
+    base::TimeDelta::FromSeconds(40);
+
+}  // namespace
 
 PhoneHubUiController::PhoneHubUiController() {
   // ash::Shell may not exist in tests.
@@ -79,7 +90,11 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
       return std::make_unique<BluetoothDisabledView>();
     case UiState::kPhoneConnecting:
       return std::make_unique<PhoneConnectingView>();
+    case UiState::kTetherConnectionPending:
+      return std::make_unique<TetherConnectionPendingView>();
     case UiState::kPhoneDisconnected:
+      if (connecting_view_grace_period_timer_.IsRunning())
+        return std::make_unique<PhoneConnectingView>();
       return std::make_unique<PhoneDisconnectedView>(
           phone_hub_manager_->GetConnectionScheduler());
     case UiState::kPhoneConnected:
@@ -98,6 +113,21 @@ void PhoneHubUiController::HandleBubbleOpened() {
 
   phone_hub_manager_->GetBrowserTabsModelProvider()->TriggerRefresh();
   phone_hub_manager_->GetUserActionRecorder()->RecordUiOpened();
+
+  bool is_feature_enabled =
+      feature_status == FeatureStatus::kEnabledAndConnected ||
+      feature_status == FeatureStatus::kEnabledButDisconnected ||
+      feature_status == FeatureStatus::kEnabledAndConnected;
+
+  if (!is_feature_enabled)
+    return;
+
+  if (!has_requested_tether_scan_during_session_ &&
+      phone_hub_manager_->GetTetherController()->GetStatus() ==
+          TetherStatus::kConnectionUnavailable) {
+    phone_hub_manager_->GetTetherController()->ScanForAvailableConnection();
+    has_requested_tether_scan_during_session_ = true;
+  }
 }
 
 void PhoneHubUiController::AddObserver(Observer* observer) {
@@ -147,33 +177,79 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
   auto* tracker = phone_hub_manager_->GetOnboardingUiTracker();
   auto* phone_model = phone_hub_manager_->GetPhoneModel();
   bool should_show_onboarding_ui = tracker->ShouldShowOnboardingUi();
+  bool is_tether_connecting =
+      phone_hub_manager_->GetTetherController()->GetStatus() ==
+      TetherStatus::kConnecting;
 
   switch (feature_status) {
     case FeatureStatus::kPhoneSelectedAndPendingSetup:
       FALLTHROUGH;
     case FeatureStatus::kNotEligibleForFeature:
       return UiState::kHidden;
+
     case FeatureStatus::kEligiblePhoneButNotSetUp:
-      return should_show_onboarding_ui ? UiState::kOnboardingWithPhone
-                                       : UiState::kHidden;
-    case FeatureStatus::kDisabled:
       return should_show_onboarding_ui ? UiState::kOnboardingWithoutPhone
                                        : UiState::kHidden;
+
+    case FeatureStatus::kDisabled:
+      return should_show_onboarding_ui ? UiState::kOnboardingWithPhone
+                                       : UiState::kHidden;
+
     case FeatureStatus::kUnavailableBluetoothOff:
       return UiState::kBluetoothDisabled;
+
     case FeatureStatus::kEnabledButDisconnected:
       return UiState::kPhoneDisconnected;
+
     case FeatureStatus::kEnabledAndConnecting:
-      return UiState::kPhoneConnecting;
+      connecting_view_grace_period_timer_.Start(
+          FROM_HERE, kConnectingViewGracePeriod,
+          base::BindOnce(&PhoneHubUiController::OnConnectingViewTimerEnd,
+                         base::Unretained(this)));
+
+      // If a tether network is being connected to, or the |ui_state_|
+      // was UiState::kTetherConnectionPending, continue returning
+      // the UiState::kTetherConnectionPending state.
+      return is_tether_connecting ||
+                     ui_state_ == UiState::kTetherConnectionPending
+                 ? UiState::kTetherConnectionPending
+                 : UiState::kPhoneConnecting;
+
     case FeatureStatus::kEnabledAndConnected:
+      // If the timer is running, reset the timer so if we disconnect, we will
+      // show the connecting view instead of the disconnecting view.
+      if (connecting_view_grace_period_timer_.IsRunning())
+        connecting_view_grace_period_timer_.Reset();
+
       // Delay displaying the connected view until the phone model is ready.
       if (phone_model->phone_status_model().has_value())
         return UiState::kPhoneConnected;
-      else
-        return UiState::kPhoneConnecting;
+
+      // If the the |ui_state_| was UiState::kTetherConnectionPending, continue
+      // returning the UiState::kTetherConnectionPending state.
+      if (ui_state_ == UiState::kTetherConnectionPending)
+        return UiState::kTetherConnectionPending;
+
+      return UiState::kPhoneConnecting;
+
     case FeatureStatus::kLockOrSuspended:
       return UiState::kHidden;
   }
+}
+
+void PhoneHubUiController::OnConnectingViewTimerEnd() {
+  // Update the UI state if the UI state has changed.
+  if (ui_state_ != UiState::kPhoneDisconnected) {
+    UpdateUiState(GetUiStateFromPhoneHubManager());
+    return;
+  }
+
+  // If we are still disconnected, force the observation. We cannot call
+  // |GetUiStateFromPhoneHubManager()| in this case because it will reset the
+  // timer, and thus the disconnected view will never be shown. This way, the
+  // disconnected view will be shown.
+  for (auto& observer : observer_list_)
+    observer.OnPhoneHubUiStateChanged();
 }
 
 void PhoneHubUiController::CleanUpPhoneHubManager() {

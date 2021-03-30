@@ -74,9 +74,6 @@ signin_metrics::AccessPoint GetAccessPointForEmbeddedPromoURL(const GURL& url);
 // Gets the sign in reason from the query portion of the sign in promo URL.
 signin_metrics::Reason GetSigninReasonForEmbeddedPromoURL(const GURL& url);
 
-// Returns true if the auto_close parameter in the given URL is set to true.
-bool IsAutoCloseEnabledInEmbeddedURL(const GURL& url);
-
 // Registers the preferences the Sign In Promo needs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

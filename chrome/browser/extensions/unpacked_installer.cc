@@ -4,13 +4,13 @@
 
 #include "chrome/browser/extensions/unpacked_installer.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -119,7 +119,8 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   }
 
   std::string error;
-  if (!LoadExtension(Manifest::COMMAND_LINE, GetFlags(), &error)) {
+  if (!LoadExtension(mojom::ManifestLocation::kCommandLine, GetFlags(),
+                     &error)) {
     ReportExtensionLoadError(error);
     return false;
   }
@@ -158,7 +159,8 @@ void UnpackedInstaller::StartInstallChecks() {
   // they are disabled for extensions loaded from the command-line is that
   // installing unpacked extensions is asynchronous, but there can be
   // dependencies between the extensions loaded by the command line.
-  if (extension()->manifest()->location() != Manifest::COMMAND_LINE) {
+  if (extension()->manifest()->location() !=
+      mojom::ManifestLocation::kCommandLine) {
     if (service->browser_terminating())
       return;
 
@@ -211,7 +213,7 @@ void UnpackedInstaller::OnInstallChecksComplete(
     return;
   }
 
-  base::string16 error_message;
+  std::u16string error_message;
   if (errors.count(PreloadCheck::DISALLOWED_BY_POLICY))
     error_message = policy_check_->GetErrorMessage();
   else
@@ -224,7 +226,7 @@ void UnpackedInstaller::OnInstallChecksComplete(
 int UnpackedInstaller::GetFlags() {
   std::string id = crx_file::id_util::GenerateIdForPath(extension_path_);
   bool allow_file_access =
-      Manifest::ShouldAlwaysAllowFileAccess(Manifest::UNPACKED);
+      Manifest::ShouldAlwaysAllowFileAccess(mojom::ManifestLocation::kUnpacked);
   ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
   if (allow_file_access_.has_value()) {
     allow_file_access = *allow_file_access_;
@@ -241,7 +243,7 @@ int UnpackedInstaller::GetFlags() {
   return result;
 }
 
-bool UnpackedInstaller::LoadExtension(Manifest::Location location,
+bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
                                       int flags,
                                       std::string* error) {
   // Clean up the kMetadataFolder if necessary. This prevents spurious
@@ -252,7 +254,7 @@ bool UnpackedInstaller::LoadExtension(Manifest::Location location,
   // Treat presence of illegal filenames as a hard error for unpacked
   // extensions. Don't do so for command line extensions since this breaks
   // Chrome OS autotests (crbug.com/764787).
-  if (location == Manifest::UNPACKED &&
+  if (location == mojom::ManifestLocation::kUnpacked &&
       !file_util::CheckForIllegalFilenames(extension_path_, error)) {
     return false;
   }
@@ -324,7 +326,7 @@ void UnpackedInstaller::CheckExtensionFileAccess() {
 
 void UnpackedInstaller::LoadWithFileAccess(int flags) {
   std::string error;
-  if (!LoadExtension(Manifest::UNPACKED, flags, &error)) {
+  if (!LoadExtension(mojom::ManifestLocation::kUnpacked, flags, &error)) {
     // Set priority explicitly to avoid unwanted task priority inheritance.
     content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
         ->PostTask(FROM_HERE,

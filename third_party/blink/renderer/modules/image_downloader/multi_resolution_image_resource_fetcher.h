@@ -42,12 +42,11 @@ class MultiResolutionImageResourceFetcher {
   using StartCallback = base::OnceCallback<void(const WebURLResponse& response,
                                                 const std::string& data)>;
 
-  MultiResolutionImageResourceFetcher(
-      const KURL& image_url,
-      LocalFrame* frame,
-      mojom::blink::RequestContextType request_context,
-      mojom::blink::FetchCacheMode cache_mode,
-      Callback callback);
+  MultiResolutionImageResourceFetcher(const KURL& image_url,
+                                      LocalFrame* frame,
+                                      bool is_favicon,
+                                      mojom::blink::FetchCacheMode cache_mode,
+                                      Callback callback);
 
   virtual ~MultiResolutionImageResourceFetcher();
 
@@ -81,7 +80,7 @@ class MultiResolutionImageResourceFetcher {
   // |fetch_credentials_mode| is the credentials mode to use. See
   // https://fetch.spec.whatwg.org/#concept-request-credentials-mode
   void Start(LocalFrame* frame,
-             mojom::blink::RequestContextType request_context,
+             bool is_favicon,
              network::mojom::RequestMode request_mode,
              network::mojom::CredentialsMode credentials_mode,
              StartCallback callback);

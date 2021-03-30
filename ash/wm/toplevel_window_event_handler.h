@@ -68,6 +68,12 @@ class ASH_EXPORT ToplevelWindowEventHandler
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
+  // wm::WindowMoveClient:
+  wm::WindowMoveResult RunMoveLoop(aura::Window* source,
+                                   const gfx::Vector2d& drag_offset,
+                                   ::wm::WindowMoveSource move_source) override;
+  void EndMoveLoop() override;
+
   // Attempts to start a drag if one is not already in progress. Returns true if
   // successful. |end_closure| is run when the drag completes, including if the
   // drag is not started. If |update_gesture_target| is true, the gesture
@@ -89,9 +95,6 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // If there is a drag in progress it is reverted, otherwise does nothing.
   void RevertDrag();
 
-  // Returns true if there is a drag in progress.
-  bool is_drag_in_progress() const { return window_resizer_.get() != nullptr; }
-
   // Returns the toplevel window that should be dragged for a gesture event that
   // occurs in the HTCLIENT area of a window. Returns null if there shouldn't be
   // special casing for this HTCLIENT area gesture. This is used to drag app
@@ -107,12 +110,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
     return event_location_in_gesture_target_;
   }
 
-  // Overridden from wm::WindowMoveClient:
-  ::wm::WindowMoveResult RunMoveLoop(
-      aura::Window* source,
-      const gfx::Vector2d& drag_offset,
-      ::wm::WindowMoveSource move_source) override;
-  void EndMoveLoop() override;
+  // Returns true if there is a drag in progress.
+  bool is_drag_in_progress() const { return window_resizer_.get() != nullptr; }
 
  private:
   class ScopedWindowResizer;

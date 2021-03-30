@@ -7,11 +7,14 @@ import json
 import os
 import sys
 
+import six
+
 import common
 
 BLINK_TOOLS_DIR = os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools')
 WEB_TESTS_DIR = os.path.join(BLINK_TOOLS_DIR, os.pardir, 'web_tests')
 EXTERNAL_WPT_TESTS_DIR = os.path.join(WEB_TESTS_DIR, 'external', 'wpt')
+LAYOUT_TEST_RESULTS_SUBDIR = 'layout-test-results'
 
 if BLINK_TOOLS_DIR not in sys.path:
     sys.path.append(BLINK_TOOLS_DIR)
@@ -58,7 +61,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
 
         # Move json results into layout-test-results directory
         results_dir = os.path.dirname(self.wpt_output)
-        layout_test_results = os.path.join(results_dir, 'layout-test-results')
+        layout_test_results = os.path.join(results_dir,
+                                           LAYOUT_TEST_RESULTS_SUBDIR)
         if self.fs.exists(layout_test_results):
             self.fs.rmtree(layout_test_results)
         self.fs.maybe_make_directory(layout_test_results)
@@ -142,15 +146,20 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             test_failures.FILENAME_SUFFIX_DIFF, results_dir,
             path_so_far, diff_content)
         root_node["artifacts"]["text_diff"] = [diff_subpath]
-        # We pass the text as bytes here because the html_diff library
-        # requires that but the file contents is read-in as unicode.
-        html_diff_content = html_diff(expected_text.encode('utf-8'),
-                                      actual_text.encode('utf-8'))
-        # Ensure the diff itself is properly decoded, to avoid
-        # UnicodeDecodeErrors when writing to file. This can happen if
-        # the diff contains unicode characters but the file is written
-        # as ascii because of the default system-level encoding.
-        html_diff_content = unicode(html_diff_content, 'utf-8')
+        # The html_diff library requires str arguments but the file contents is
+        # read-in as unicode. In python3 the contents comes in as a str, but in
+        # python2 it remains type unicode, so we have to encode it to get the
+        # str version.
+        if six.PY2:
+            expected_text = expected_text.encode('utf8')
+            actual_text = actual_text.encode('utf8')
+        html_diff_content = html_diff(expected_text, actual_text)
+        if six.PY2:
+            # Ensure the diff itself is properly decoded, to avoid
+            # UnicodeDecodeErrors when writing to file. This can happen if
+            # the diff contains unicode characters but the file is written
+            # as ascii because of the default system-level encoding.
+            html_diff_content = unicode(html_diff_content, 'utf8')
         html_diff_subpath = self._write_text_artifact(
             test_failures.FILENAME_SUFFIX_HTML_DIFF, results_dir,
             path_so_far, html_diff_content, extension=".html")
@@ -235,8 +244,8 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             two strings:
             - first is the path to the artifact file that the expected output
               was written to, relative to the directory that the original output
-              is located. Returns None if there is no expected output for this
-              test.
+              is located. Returns empty string if there is no expected output
+              for this test.
             - second is the text that is written to the file, or empty string if
               there is no expected output for this test.
         """
@@ -247,12 +256,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             # manifest) or .any.js tests (which appear in the output even though
             # they do not actually run - they have corresponding tests like
             # .any.worker.html which are covered here).
-            return None, ""
+            return "", ""
 
         test_file_path = os.path.join(EXTERNAL_WPT_TESTS_DIR, test_file_subpath)
         expected_ini_path = test_file_path + ".ini"
         if not self.fs.exists(expected_ini_path):
-            return None, ""
+            return "", ""
 
         # This test has checked-in expected output. It needs to be copied to the
         # results viewer directory and renamed from <test>.ini to
@@ -281,8 +290,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             # failures).
             return not root_node.get("is_regression")
 
-        # Not a leaf, recurse into the subtree
-        for key, node in root_node.items():
+        # Not a leaf, recurse into the subtree. Note that we make a copy of the
+        # items since we delete from root_node.items() during the loop.
+        for key, node in list(root_node.items()):
             if self._trim_to_regressions(node):
                 del root_node[key]
 
@@ -312,7 +322,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
               to the |results_dir|.
         """
         log_artifact_sub_path = (
-            os.path.join("layout-test-results",
+            os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
                          self.port.output_filename(
                              test_name, suffix, extension))
         )
@@ -345,6 +355,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
              path of the file for that screenshot
         """
         result={}
+        # Remember the two images so we can diff them later.
+        actual_image_bytes = None
+        expected_image_bytes = None
         for screenshot_pair in screenshot_artifact:
             screenshot_split = screenshot_pair.split(":")
             url = screenshot_split[0]
@@ -360,8 +373,13 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 screenshot_key = "actual_image"
                 file_suffix = test_failures.FILENAME_SUFFIX_ACTUAL
 
+            if screenshot_key == "expected_image":
+                expected_image_bytes = image_bytes
+            else:
+                actual_image_bytes = image_bytes
+
             screenshot_sub_path = (
-                os.path.join("layout-test-results",
+                os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
                              self.port.output_filename(
                                  test_name, file_suffix, ".png"))
             )
@@ -373,4 +391,25 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                     os.path.dirname(screenshot_full_path))
             # Note: we are writing raw bytes to this file
             self.fs.write_binary_file(screenshot_full_path, image_bytes)
+
+        # Diff the two images and output the diff file.
+        diff_bytes, error = self.port.diff_image(expected_image_bytes,
+                                                 actual_image_bytes)
+        if diff_bytes and not error:
+            diff_sub_path = (
+                os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
+                             self.port.output_filename(
+                                 test_name, test_failures.FILENAME_SUFFIX_DIFF,
+                                 ".png")))
+            result["image_diff"] = diff_sub_path
+            diff_full_path = os.path.join(results_dir, diff_sub_path)
+            if not self.fs.exists(os.path.dirname(diff_full_path)):
+                self.fs.maybe_make_directory(os.path.dirname(diff_full_path))
+            # Note: we are writing raw bytes to this file
+            self.fs.write_binary_file(diff_full_path, diff_bytes)
+        else:
+            print("Error creating diff image for test %s. "
+                  "Error=%s, diff_bytes is None? %s\n"
+                  % (test_name, error, diff_bytes is None))
+
         return result

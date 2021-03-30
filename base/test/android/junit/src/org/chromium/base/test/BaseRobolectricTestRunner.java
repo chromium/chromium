@@ -15,6 +15,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.PathUtils;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.lang.reflect.Method;
@@ -32,6 +33,7 @@ public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
             ContextUtils.initApplicationContextForTests(
                     ApplicationProvider.getApplicationContext());
             ApplicationStatus.initialize(ApplicationProvider.getApplicationContext());
+            UmaRecorderHolder.resetForTesting();
             CommandLine.init(null);
             super.beforeTest(method);
         }

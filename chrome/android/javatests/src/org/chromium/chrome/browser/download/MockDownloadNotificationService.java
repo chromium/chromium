@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import org.junit.Assert;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -64,14 +65,14 @@ public class MockDownloadNotificationService extends DownloadNotificationService
 
     @Override
     public int notifyDownloadSuccessful(final ContentId id, final String filePath,
-            final String fileName, final long systemDownloadId, final boolean isOffTheRecord,
+            final String fileName, final long systemDownloadId, final OTRProfileID otrProfileID,
             final boolean isSupportedMimeType, final boolean isOpenable, final Bitmap icon,
             final String originalUrl, final boolean shouldPromoteOrigin, final String referrer,
             final long totalBytes) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadSuccessful(id,
-                                filePath, fileName, systemDownloadId, isOffTheRecord,
+                                filePath, fileName, systemDownloadId, otrProfileID,
                                 isSupportedMimeType, isOpenable, icon, originalUrl,
                                 shouldPromoteOrigin, referrer, totalBytes));
     }
@@ -79,38 +80,38 @@ public class MockDownloadNotificationService extends DownloadNotificationService
     @Override
     public void notifyDownloadProgress(final ContentId id, final String fileName,
             final Progress progress, final long bytesReceived, final long timeRemainingInMillis,
-            final long startTime, final boolean isOffTheRecord,
+            final long startTime, final OTRProfileID otrProfileID,
             final boolean canDownloadWhileMetered, final boolean isTransient, final Bitmap icon,
             final String originalUrl, final boolean shouldPromoteOrigin) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadProgress(id,
                                 fileName, progress, bytesReceived, timeRemainingInMillis, startTime,
-                                isOffTheRecord, canDownloadWhileMetered, isTransient, icon,
+                                otrProfileID, canDownloadWhileMetered, isTransient, icon,
                                 originalUrl, shouldPromoteOrigin));
     }
 
     @Override
     void notifyDownloadPaused(ContentId id, String fileName, boolean isResumable,
-            boolean isAutoResumable, boolean isOffTheRecord, boolean isTransient, Bitmap icon,
+            boolean isAutoResumable, OTRProfileID otrProfileID, boolean isTransient, Bitmap icon,
             final String originalUrl, final boolean shouldPromoteOrigin, boolean hasUserGesture,
             boolean forceRebuild, @PendingState int pendingState) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadPaused(id, fileName,
-                                isResumable, isAutoResumable, isOffTheRecord, isTransient, icon,
+                                isResumable, isAutoResumable, otrProfileID, isTransient, icon,
                                 originalUrl, shouldPromoteOrigin, hasUserGesture, forceRebuild,
                                 pendingState));
     }
 
     @Override
     public void notifyDownloadFailed(final ContentId id, final String fileName, final Bitmap icon,
-            final String originalUrl, final boolean shouldPromoteOrigin, boolean isOffTheRecord,
+            final String originalUrl, final boolean shouldPromoteOrigin, OTRProfileID otrProfileID,
             @FailState int failState) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadFailed(id, fileName,
-                                icon, originalUrl, shouldPromoteOrigin, isOffTheRecord, failState));
+                                icon, originalUrl, shouldPromoteOrigin, otrProfileID, failState));
     }
 
     @Override

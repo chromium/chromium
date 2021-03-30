@@ -39,8 +39,12 @@ class MockNearbySharingService : public NearbySharingService {
               (TransferUpdateCallback*),
               (override));
   MOCK_METHOD(StatusCodes, ClearForegroundReceiveSurfaces, (), (override));
-  MOCK_METHOD(bool, IsInHighVisibility, (), (override));
+  MOCK_METHOD(bool, IsInHighVisibility, (), (const override));
   MOCK_METHOD(bool, IsTransferring, (), (const override));
+  MOCK_METHOD(bool, IsSendingFile, (), (const override));
+  MOCK_METHOD(bool, IsReceivingFile, (), (const override));
+  MOCK_METHOD(bool, IsConnecting, (), (const override));
+  MOCK_METHOD(bool, IsScanning, (), (const override));
   MOCK_METHOD(StatusCodes,
               SendAttachments,
               (const ShareTarget&, std::vector<std::unique_ptr<Attachment>>),
@@ -56,6 +60,10 @@ class MockNearbySharingService : public NearbySharingService {
   MOCK_METHOD(void,
               Cancel,
               (const ShareTarget&, StatusCodesCallback),
+              (override));
+  MOCK_METHOD(bool,
+              DidLocalUserCancelTransfer,
+              (const ShareTarget&),
               (override));
   MOCK_METHOD(void,
               Open,

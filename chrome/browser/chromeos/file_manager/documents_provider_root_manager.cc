@@ -14,7 +14,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/mojom/bitmap.mojom.h"
@@ -109,10 +109,6 @@ void DocumentsProviderRootManager::RemoveObserver(Observer* observer) {
 
 void DocumentsProviderRootManager::SetEnabled(bool enabled) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(
-          arc::kEnableDocumentsProviderInFilesAppFeature)) {
-    return;
-  }
   if (enabled == is_enabled_)
     return;
 

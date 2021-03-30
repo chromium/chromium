@@ -447,12 +447,12 @@ class ThreadedOpacityTransition : public ThreadedLayerAnimationElement {
   }
 
   std::unique_ptr<cc::KeyframeModel> CreateCCKeyframeModel() override {
-    std::unique_ptr<cc::AnimationCurve> animation_curve(
+    std::unique_ptr<gfx::AnimationCurve> animation_curve(
         new FloatAnimationCurveAdapter(tween_type(), start_, target_,
                                        duration()));
     std::unique_ptr<cc::KeyframeModel> keyframe_model(cc::KeyframeModel::Create(
         std::move(animation_curve), keyframe_model_id(), animation_group_id(),
-        cc::TargetProperty::OPACITY));
+        cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::OPACITY)));
     return keyframe_model;
   }
 
@@ -517,12 +517,12 @@ class ThreadedTransformTransition : public ThreadedLayerAnimationElement {
   }
 
   std::unique_ptr<cc::KeyframeModel> CreateCCKeyframeModel() override {
-    std::unique_ptr<cc::AnimationCurve> animation_curve(
+    std::unique_ptr<gfx::AnimationCurve> animation_curve(
         new TransformAnimationCurveAdapter(tween_type(), start_, target_,
                                            duration()));
     std::unique_ptr<cc::KeyframeModel> keyframe_model(cc::KeyframeModel::Create(
         std::move(animation_curve), keyframe_model_id(), animation_group_id(),
-        cc::TargetProperty::TRANSFORM));
+        cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::TRANSFORM)));
     return keyframe_model;
   }
 

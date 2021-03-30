@@ -6,13 +6,12 @@
 
 #include "base/command_line.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/enterprise/reporting/extension_info.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -112,6 +111,8 @@ em::ExtensionInstallReportLogEvent_FailureReason ConvertFailureReasonToProto(
       return em::ExtensionInstallReportLogEvent::CRX_FETCH_URL_INVALID;
     case extensions::InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS:
       return em::ExtensionInstallReportLogEvent::OVERRIDDEN_BY_SETTINGS;
+    case extensions::InstallStageTracker::FailureReason::REPLACED_BY_SYSTEM_APP:
+      return em::ExtensionInstallReportLogEvent::REPLACED_BY_SYSTEM_APP;
     default:
       NOTREACHED();
   }
@@ -149,8 +150,9 @@ em::ExtensionInstallReportLogEvent_UserType ConvertUserTypeToProto(
       return em::ExtensionInstallReportLogEvent::USER_TYPE_GUEST;
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return em::ExtensionInstallReportLogEvent::USER_TYPE_PUBLIC_ACCOUNT;
-    case user_manager::USER_TYPE_SUPERVISED:
-      return em::ExtensionInstallReportLogEvent::USER_TYPE_SUPERVISED;
+    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
+      return em::ExtensionInstallReportLogEvent::
+          USER_TYPE_SUPERVISED_DEPRECATED;
     case user_manager::USER_TYPE_KIOSK_APP:
       return em::ExtensionInstallReportLogEvent::USER_TYPE_KIOSK_APP;
     case user_manager::USER_TYPE_CHILD:
@@ -357,6 +359,17 @@ ConvertUnpackerFailureReasonToProto(
       return em::ExtensionInstallReportLogEvent::ERROR_INDEXING_DNR_RULESET;
     case FailureReason::CRX_REQUIRED_PROOF_MISSING:
       return em::ExtensionInstallReportLogEvent::CRX_REQUIRED_PROOF_MISSING;
+    case FailureReason::CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE:
+      return em::ExtensionInstallReportLogEvent::
+          CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE;
+    case FailureReason::MALFORMED_VERIFIED_CONTENTS:
+      return em::ExtensionInstallReportLogEvent::MALFORMED_VERIFIED_CONTENTS;
+    case FailureReason::COULD_NOT_CREATE_METADATA_DIRECTORY:
+      return em::ExtensionInstallReportLogEvent::
+          COULD_NOT_CREATE_METADATA_DIRECTORY;
+    case FailureReason::COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE:
+      return em::ExtensionInstallReportLogEvent::
+          COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE;
     default:
       NOTREACHED();
       return em::ExtensionInstallReportLogEvent::
@@ -505,12 +518,12 @@ ExtensionInstallEventLogCollector::~ExtensionInstallEventLogCollector() {
 void ExtensionInstallEventLogCollector::OnLoginInternal() {
   std::unique_ptr<em::ExtensionInstallReportLogEvent> event =
       CreateSessionChangeEvent(em::ExtensionInstallReportLogEvent::LOGIN);
-  if (chromeos::ProfileHelper::Get()->GetUserByProfile(profile_)) {
     extensions::InstallStageTracker::UserInfo user_info =
         extensions::InstallStageTracker::GetUserInfo(profile_);
-    event->set_user_type(ConvertUserTypeToProto(user_info.user_type));
-    event->set_is_new_user(user_info.is_new_user);
-  }
+    if (user_info.is_user_present) {
+      event->set_user_type(ConvertUserTypeToProto(user_info.user_type));
+      event->set_is_new_user(user_info.is_new_user);
+    }
   event->set_online(online_);
   delegate_->AddForAllExtensions(std::move(event));
 }

@@ -14,20 +14,15 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
   EXPECT_EQ("", MainThreadScrollingReason::AsText(0));
   EXPECT_EQ(
       "Has background-attachment:fixed, "
-      "Has non-layer viewport-constrained objects, "
       "Threaded scrolling is disabled, "
       "Scrollbar scrolling, "
-      "Frame overlay, "
-      "Handling scroll from main thread, "
       "Not opaque for text and LCD text, "
       "Can't paint scrolling background and LCD text, "
       "Non fast scrollable region, "
       "Failed hit test, "
       "No scrolling layer, "
       "Not scrollable, "
-      "Continuing main thread scroll, "
       "Non-invertible transform, "
-      "Page-based scrolling, "
       "Wheel event handler region, "
       "Touch event handler region",
       MainThreadScrollingReason::AsText(0xffffffffu));

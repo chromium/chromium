@@ -142,16 +142,16 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override;
   void DidStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
-  void DidFinishLoading(base::TimeTicks response_end,
+  void DidFinishLoading(base::TimeTicks response_end_time,
                         int64_t encoded_data_length,
                         int64_t encoded_body_length,
                         int64_t decoded_body_length,
                         bool should_report_corb_blocking) override;
   void DidFail(const WebURLError&,
+               base::TimeTicks response_end_time,
                int64_t encoded_data_length,
                int64_t encoded_body_length,
                int64_t decoded_body_length) override;
-  void EvictFromBackForwardCache(mojom::RendererEvictionReason) override;
 
   blink::mojom::CodeCacheType GetCodeCacheType() const;
   void SendCachedCodeToResource(mojo_base::BigBuffer data);
@@ -260,7 +260,7 @@ class PLATFORM_EXPORT ResourceLoader final
   // struct is used to store the information needed to refire DidFinishLoading
   // when the blob is finished too.
   struct DeferredFinishLoadingInfo {
-    base::TimeTicks response_end;
+    base::TimeTicks response_end_time;
     bool should_report_corb_blocking;
   };
   base::Optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
@@ -271,10 +271,12 @@ class PLATFORM_EXPORT ResourceLoader final
   // HandleDataURL().
   bool defers_handling_data_url_ = false;
 
-  TaskRunnerTimer<ResourceLoader> cancel_timer_;
+  HeapTaskRunnerTimer<ResourceLoader> cancel_timer_;
 
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
+
+  base::TimeTicks response_end_time_for_error_cases_;
 };
 
 }  // namespace blink

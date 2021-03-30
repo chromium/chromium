@@ -10,7 +10,7 @@
 #include "base/hash/hash.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
-#include "base/strings/string16.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -18,8 +18,8 @@
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -131,8 +131,8 @@ class VotesUploaderTest : public testing::Test {
   }
 
  protected:
-  base::string16 GetFieldNameByIndex(size_t index) {
-    return ASCIIToUTF16("field") + base::NumberToString16(index);
+  std::u16string GetFieldNameByIndex(size_t index) {
+    return u"field" + base::NumberToString16(index);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -148,8 +148,8 @@ class VotesUploaderTest : public testing::Test {
 
 TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
   VotesUploader votes_uploader(&client_, true);
-  base::string16 new_password_element = GetFieldNameByIndex(3);
-  base::string16 confirmation_element = GetFieldNameByIndex(11);
+  std::u16string new_password_element = GetFieldNameByIndex(3);
+  std::u16string confirmation_element = GetFieldNameByIndex(11);
   form_to_upload_.new_password_element = new_password_element;
   submitted_form_.new_password_element = new_password_element;
   form_to_upload_.confirmation_password_element = confirmation_element;
@@ -177,8 +177,8 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
 
 TEST_F(VotesUploaderTest, UploadPasswordVoteSave) {
   VotesUploader votes_uploader(&client_, false);
-  base::string16 password_element = GetFieldNameByIndex(5);
-  base::string16 confirmation_element = GetFieldNameByIndex(12);
+  std::u16string password_element = GetFieldNameByIndex(5);
+  std::u16string confirmation_element = GetFieldNameByIndex(12);
   form_to_upload_.password_element = password_element;
   submitted_form_.password_element = password_element;
   form_to_upload_.confirmation_password_element = confirmation_element;
@@ -205,7 +205,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   // correctly written to the corresponding field in the |form_structure|.
   // Note that the value of the username field is deliberately altered before
   // the |form_structure| is generated from |form_data| to test the persistence.
-  base::string16 prefilled_username = ASCIIToUTF16("prefilled_username");
+  std::u16string prefilled_username = u"prefilled_username";
   autofill::FieldRendererId username_field_renderer_id(123456);
   const uint32_t kNumberOfHashValues = 64;
   FormData form_data;
@@ -215,7 +215,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   username_field.unique_renderer_id = username_field_renderer_id;
 
   FormFieldData other_field;
-  other_field.value = ASCIIToUTF16("some_field");
+  other_field.value = u"some_field";
   other_field.unique_renderer_id = autofill::FieldRendererId(3234);
 
   form_data.fields = {other_field, username_field};
@@ -223,7 +223,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   VotesUploader votes_uploader(&client_, true);
   votes_uploader.StoreInitialFieldValues(form_data);
 
-  form_data.fields.at(1).value = ASCIIToUTF16("user entered value");
+  form_data.fields.at(1).value = u"user entered value";
   FormStructure form_structure(form_data);
 
   PasswordForm password_form;
@@ -253,7 +253,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
   const char* kPasswordSnippets[kNumberOfPasswordAttributes] = {"abc", "*-_"};
   for (int test_case = 0; test_case < 10; ++test_case) {
     bool has_password_attribute[kNumberOfPasswordAttributes];
-    base::string16 password_value;
+    std::u16string password_value;
     for (int i = 0; i < kNumberOfPasswordAttributes; ++i) {
       has_password_attribute[i] = base::RandGenerator(2);
       if (has_password_attribute[i])
@@ -316,7 +316,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
 TEST_F(VotesUploaderTest, GeneratePasswordSpecialSymbolVote) {
   VotesUploader votes_uploader(&client_, true);
 
-  const base::string16 password_value = ASCIIToUTF16("password-withsymbols!");
+  const std::u16string password_value = u"password-withsymbols!";
   const int kNumberOfRuns = 2000;
   const int kSpecialSymbolsAttribute =
       static_cast<int>(PasswordAttribute::kHasSpecialSymbol);
@@ -361,8 +361,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_OneCharacterPassword) {
   FormData form;
   FormStructure form_structure(form);
   VotesUploader votes_uploader(&client_, true);
-  votes_uploader.GeneratePasswordAttributesVote(ASCIIToUTF16("1"),
-                                                &form_structure);
+  votes_uploader.GeneratePasswordAttributesVote(u"1", &form_structure);
   base::Optional<std::pair<PasswordAttribute, bool>> vote =
       form_structure.get_password_attributes_vote();
   EXPECT_TRUE(vote.has_value());
@@ -450,6 +449,50 @@ TEST_F(VotesUploaderTest, UploadSingleUsername) {
                                    /* pref_service= */ nullptr));
 
     votes_uploader.MaybeSendSingleUsernameVote(credentials_saved);
+  }
+}
+
+// Verifies that the sent username vote depends on whether the username was
+// changed or not.
+TEST_F(VotesUploaderTest, UploadedVotesDependOnUsernameChangeState) {
+  using State = VotesUploader::UsernameChangeState;
+  constexpr autofill::FieldRendererId kUsernameRendererId(101);
+  constexpr FieldSignature kUsernameFieldSignature(1234);
+  constexpr FormSignature kFormSignature(1000);
+
+  MockFieldInfoManager mock_field_manager;
+  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
+  ON_CALL(client_, GetFieldInfoManager)
+      .WillByDefault(Return(&mock_field_manager));
+
+  for (State username_change_state :
+       {State::kUnchanged, State::kChangedToKnownValue,
+        State::kChangedToUnknownValue}) {
+    SCOPED_TRACE(testing::Message("username_change_state = ")
+                 << base::to_underlying(username_change_state));
+    ServerFieldTypeSet kExpectedVotes = {
+        username_change_state == State::kUnchanged ? SINGLE_USERNAME
+                                                   : NOT_USERNAME};
+
+    VotesUploader votes_uploader(&client_, false);
+    votes_uploader.set_username_change_state(username_change_state);
+
+    FormPredictions form_predictions;
+    form_predictions.form_signature = kFormSignature;
+    form_predictions.fields.push_back({
+        .renderer_id = kUsernameRendererId,
+        .signature = kUsernameFieldSignature,
+    });
+    votes_uploader.set_single_username_vote_data(kUsernameRendererId,
+                                                 form_predictions);
+    EXPECT_CALL(
+        mock_autofill_download_manager_,
+        StartUploadRequest(SignatureIs(kFormSignature),
+                           /*form_was_autofilled=*/false, kExpectedVotes,
+                           /*login_form_signature=*/"",
+                           /*observed_submission=*/true,
+                           /*pref_service=*/nullptr));
+    votes_uploader.MaybeSendSingleUsernameVote(/*credentials_saved=*/true);
   }
 }
 

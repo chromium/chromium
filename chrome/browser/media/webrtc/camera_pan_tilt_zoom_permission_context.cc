@@ -11,13 +11,13 @@
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
   host_content_settings_map_ =
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
   host_content_settings_map_->AddObserver(this);

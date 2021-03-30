@@ -268,4 +268,58 @@ TEST_F(RunSegmenterTest, StartOffset) {
   VerifyRuns(&run_segmenter, expect);
 }
 
+TEST_F(RunSegmenterTest, CJKBracketsAfterLatinLetter) {
+  CheckRunsHorizontal(
+      {{"A", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText},
+       {"\u300C"   // CJK LEFT CORNER BRACKET
+        "\u56FD"   // CJK UNIFIED IDEOGRAPH
+        "\u300D",  // CJK RIGHT CORNER BRACKET
+        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText}});
+}
+
+TEST_F(RunSegmenterTest, CJKBracketsAfterLatinParenthesis) {
+  CheckRunsHorizontal(
+      {{"A(", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText},
+       {"\u300C"   // CJK LEFT CORNER BRACKET
+        "\u56FD"   // CJK UNIFIED IDEOGRAPH
+        "\u300D",  // CJK RIGHT CORNER BRACKET
+        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText},
+       {")", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText}});
+}
+
+TEST_F(RunSegmenterTest, CJKBracketsWithLatinParenthesisInside) {
+  CheckRunsHorizontal(
+      {{"A", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText},
+       {"\u300C"  // CJK LEFT CORNER BRACKET
+        "\u56FD"  // CJK UNIFIED IDEOGRAPH
+        "(",
+        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText},
+       {"A", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText},
+       {")"
+        "\u300D",  // CJK RIGHT CORNER BRACKET
+        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText}});
+}
+
+TEST_F(RunSegmenterTest, CJKBracketsAfterUnmatchingLatinParenthesis) {
+  CheckRunsHorizontal(
+      {{"A((", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText},
+       {"\u300C"   // CJK LEFT CORNER BRACKET
+        "\u56FD"   // CJK UNIFIED IDEOGRAPH
+        "\u300D",  // CJK RIGHT CORNER BRACKET
+        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText},
+       {")", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText}});
+}
+
 }  // namespace blink

@@ -22,7 +22,6 @@
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/url_loader_throttles.h"
 #include "content/public/common/content_client.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
@@ -35,120 +34,6 @@ namespace content {
 
 // We chose this size because the AppCache uses this.
 const uint32_t ServiceWorkerUpdatedScriptLoader::kReadBufferSize = 32768;
-
-ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper::LoaderOnUI::
-    LoaderOnUI() = default;
-ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper::LoaderOnUI::
-    ~LoaderOnUI() = default;
-ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper::
-    ThrottlingURLLoaderCoreWrapper()
-    : loader_on_ui_(new LoaderOnUI()) {}
-ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper::
-    ~ThrottlingURLLoaderCoreWrapper() = default;
-
-// static
-std::unique_ptr<
-    ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper>
-ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper::
-    CreateLoaderAndStart(
-        std::unique_ptr<network::PendingSharedURLLoaderFactory>
-            pending_loader_factory,
-        BrowserContextGetter browser_context_getter,
-        int32_t routing_id,
-        int32_t request_id,
-        uint32_t options,
-        const network::ResourceRequest& resource_request,
-        mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-        const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  auto wrapper = base::WrapUnique(new ThrottlingURLLoaderCoreWrapper());
-
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&ThrottlingURLLoaderCoreWrapper::StartInternalOnUI,
-                     std::move(pending_loader_factory),
-                     std::move(browser_context_getter), routing_id, request_id,
-                     options, network::ResourceRequest(resource_request),
-                     std::move(client),
-                     net::NetworkTrafficAnnotationTag(traffic_annotation),
-                     base::Unretained(wrapper->loader_on_ui_.get())));
-  return wrapper;
-}
-
-// static
-void ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper::
-    StartInternalOnUI(
-        std::unique_ptr<network::PendingSharedURLLoaderFactory>
-            pending_loader_factory,
-        BrowserContextGetter browser_context_getter,
-        int32_t routing_id,
-        int32_t request_id,
-        uint32_t options,
-        network::ResourceRequest resource_request,
-        mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
-        net::NetworkTrafficAnnotationTag traffic_annotation,
-        LoaderOnUI* loader_on_ui) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  BrowserContext* browser_context = browser_context_getter.Run();
-  if (!browser_context)
-    return;
-
-  // Service worker update checking doesn't have a relevant frame and tab, so
-  // that |wc_getter| returns nullptr and the frame id is set to
-  // kNoFrameTreeNodeId.
-  base::RepeatingCallback<WebContents*()> wc_getter =
-      base::BindRepeating([]() -> WebContents* { return nullptr; });
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
-      CreateContentBrowserURLLoaderThrottles(
-          resource_request, browser_context, std::move(wc_getter),
-          /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId);
-
-  mojo::Remote<network::mojom::URLLoaderClient> client(
-      std::move(client_remote));
-  auto loader = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-      network::SharedURLLoaderFactory::Create(
-          std::move(pending_loader_factory)),
-      std::move(throttles), routing_id, request_id, options, &resource_request,
-      client.get(), traffic_annotation, base::ThreadTaskRunnerHandle::Get());
-  loader_on_ui->loader = std::move(loader);
-  loader_on_ui->client = std::move(client);
-}
-
-void ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper::
-    SetPriority(net::RequestPriority priority, int32_t intra_priority_value) {
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(
-          [](LoaderOnUI* loader_on_ui, net::RequestPriority priority,
-             int32_t intra_priority_value) {
-            DCHECK(loader_on_ui->loader);
-            loader_on_ui->loader->SetPriority(priority, intra_priority_value);
-          },
-          base::Unretained(loader_on_ui_.get()), priority,
-          intra_priority_value));
-}
-
-void ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper::
-    PauseReadingBodyFromNet() {
-  RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                        base::BindOnce(
-                            [](LoaderOnUI* loader_on_ui) {
-                              DCHECK(loader_on_ui->loader);
-                              loader_on_ui->loader->PauseReadingBodyFromNet();
-                            },
-                            base::Unretained(loader_on_ui_.get())));
-}
-
-void ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper::
-    ResumeReadingBodyFromNet() {
-  RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                        base::BindOnce(
-                            [](LoaderOnUI* loader_on_ui) {
-                              DCHECK(loader_on_ui->loader);
-                              loader_on_ui->loader->ResumeReadingBodyFromNet();
-                            },
-                            base::Unretained(loader_on_ui_.get())));
-}
 
 // This is for debugging https://crbug.com/959627.
 // The purpose is to see where the IOBuffer comes from by checking |__vfptr|.
@@ -211,6 +96,7 @@ ServiceWorkerUpdatedScriptLoader::ServiceWorkerUpdatedScriptLoader(
   DCHECK(cache_writer_);
 
   network_loader_ = std::move(info.paused_state->network_loader);
+  network_client_remote_ = std::move(info.paused_state->network_client_remote);
   pending_network_client_receiver_ =
       std::move(info.paused_state->network_client_receiver);
 
@@ -269,6 +155,11 @@ void ServiceWorkerUpdatedScriptLoader::ResumeReadingBodyFromNet() {
 }
 
 // URLLoaderClient for network loader ------------------------------------------
+
+void ServiceWorkerUpdatedScriptLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  NOTREACHED();
+}
 
 void ServiceWorkerUpdatedScriptLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
@@ -355,7 +246,7 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
   client_->OnReceiveResponse(std::move(client_response));
 
   mojo::ScopedDataPipeConsumerHandle client_consumer;
-  if (mojo::CreateDataPipe(nullptr, &client_producer_, &client_consumer) !=
+  if (mojo::CreateDataPipe(nullptr, client_producer_, client_consumer) !=
       MOJO_RESULT_OK) {
     // Reports error to cache writer and finally the loader would process this
     // failure in OnCacheWriterResumed()
@@ -612,6 +503,7 @@ void ServiceWorkerUpdatedScriptLoader::CommitCompleted(
   client_producer_watcher_.Cancel();
 
   network_loader_.reset();
+  network_client_remote_.reset();
   network_client_receiver_.reset();
   network_consumer_.reset();
   network_watcher_.Cancel();

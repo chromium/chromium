@@ -21,7 +21,6 @@
 
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/svg_computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
@@ -82,7 +81,7 @@ bool SVGFEDropShadowElement::SetFilterEffectAttribute(
     return true;
   }
   if (attr_name == svg_names::kFloodOpacityAttr) {
-    drop_shadow->SetShadowOpacity(style.SvgStyle().FloodOpacity());
+    drop_shadow->SetShadowOpacity(style.FloodOpacity());
     return true;
   }
   return SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
@@ -110,7 +109,7 @@ FilterEffect* SVGFEDropShadowElement::Build(SVGFilterBuilder* filter_builder,
     return nullptr;
 
   Color color = style->VisitedDependentColor(GetCSSPropertyFloodColor());
-  float opacity = style->SvgStyle().FloodOpacity();
+  float opacity = style->FloodOpacity();
 
   FilterEffect* input1 = filter_builder->GetEffectById(
       AtomicString(in1_->CurrentValue()->Value()));
@@ -131,7 +130,7 @@ bool SVGFEDropShadowElement::TaintsOrigin() const {
   // TaintsOrigin() is only called after a successful call to Build()
   // (see above), so we should have a ComputedStyle here.
   DCHECK(style);
-  return style->SvgStyle().FloodColor().IsCurrentColor();
+  return style->FloodColor().IsCurrentColor();
 }
 
 }  // namespace blink

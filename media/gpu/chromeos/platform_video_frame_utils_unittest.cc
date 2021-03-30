@@ -107,6 +107,13 @@ class FakeGpuMemoryBufferFactory : public gpu::GpuMemoryBufferFactory {
     gpu_memory_buffers_[client_id].erase(id);
   }
 
+  bool FillSharedMemoryRegionWithBufferContents(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory) override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+
   // Type-checking downcast routine.
   gpu::ImageFactory* AsImageFactory() override {
     NOTIMPLEMENTED();
@@ -159,7 +166,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
   constexpr gfx::Size kNaturalSize(kCodedSize);
   constexpr auto kTimeStamp = base::TimeDelta::FromMilliseconds(1234);
   constexpr gfx::BufferUsage kBufferUsage =
-      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
   auto gpu_memory_buffer_factory =
       std::make_unique<FakeGpuMemoryBufferFactory>();

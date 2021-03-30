@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import re
 import mock
+import sys
 
 # This set must be the union of the driver tags used in WebGL and WebGL2
 # expectations files.
@@ -142,15 +144,28 @@ def GetSkiaRenderer(gpu_feature_status, extra_browser_args):
   retval = 'skia-renderer-disabled'
   skia_renderer_enabled = (
       gpu_feature_status
-      and gpu_feature_status.get('skia_renderer') == 'enabled_on')
+      and gpu_feature_status.get('skia_renderer') == 'enabled_on'
+      and gpu_feature_status.get('gpu_compositing') == 'enabled')
   if skia_renderer_enabled:
     if HasDawnSkiaRenderer(extra_browser_args):
       retval = 'skia-renderer-dawn'
-    elif HasGlSkiaRenderer(extra_browser_args):
-      retval = 'skia-renderer-gl'
     elif HasVulkanSkiaRenderer(gpu_feature_status):
       retval = 'skia-renderer-vulkan'
+    # The check for GL must come after Vulkan since the 'opengl' feature can be
+    # enabled for WebGL and interop even if SkiaRenderer is using Vulkan.
+    elif HasGlSkiaRenderer(gpu_feature_status):
+      retval = 'skia-renderer-gl'
   return retval
+
+
+def GetDisplayServer():
+  if sys.platform == 'linux2':
+    if 'WAYLAND_DISPLAY' in os.environ:
+      return 'display-server-wayland'
+    else:
+      return 'display-server-x'
+  else:
+    return None
 
 
 # TODO(sgilhuly): Use GPU feature status for Dawn instead of command line.
@@ -162,12 +177,8 @@ def HasDawnSkiaRenderer(extra_browser_args):
   return False
 
 
-def HasGlSkiaRenderer(extra_browser_args):
-  if extra_browser_args:
-    for arg in extra_browser_args:
-      if '--use-gl=' in arg:
-        return True
-  return False
+def HasGlSkiaRenderer(gpu_feature_status):
+  return gpu_feature_status and gpu_feature_status.get('opengl') == 'enabled_on'
 
 
 def HasVulkanSkiaRenderer(gpu_feature_status):

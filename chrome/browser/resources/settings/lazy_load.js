@@ -29,9 +29,9 @@ import './site_settings/zoom_levels.js';
 import './people_page/import_data_dialog.js';
 import './people_page/manage_profile.js';
 // </if>
-import './people_page/signout_dialog.m.js';
-import './people_page/sync_controls.m.js';
-import './people_page/sync_page.m.js';
+import './people_page/signout_dialog.js';
+import './people_page/sync_controls.js';
+import './people_page/sync_page.js';
 // <if expr="use_nss_certs">
 import 'chrome://resources/cr_components/certificate_manager/certificate_manager.js';
 // </if>
@@ -41,7 +41,7 @@ import './a11y_page/a11y_page.js';
 import './downloads_page/downloads_page.js';
 import './languages_page/languages_page.js';
 import './reset_page/reset_page.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 import './system_page/system_page.js';
 // </if>
 
@@ -51,7 +51,7 @@ import './languages_page/edit_dictionary_page.js';
 // </if>
 
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
-export {FontsBrowserProxy, FontsBrowserProxyImpl} from './appearance_page/fonts_browser_proxy.m.js';
+export {FontsBrowserProxy, FontsBrowserProxyImpl} from './appearance_page/fonts_browser_proxy.js';
 export {CountryDetailManagerImpl} from './autofill_page/address_edit_dialog.js';
 export {AutofillManager, AutofillManagerImpl} from './autofill_page/autofill_section.js';
 // <if expr="chromeos">
@@ -68,11 +68,12 @@ export {DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_prox
 // <if expr="_google_chrome and is_win">
 export {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_page/incompatible_applications_browser_proxy.js';
 // </if>
-export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.m.js';
+export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.js';
 // <if expr="chromeos">
 export {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_page/languages_metrics_proxy.js';
 // </if>
-export {kMenuCloseDelay} from './languages_page/languages_page.js';
+export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_page/languages_settings_metrics_proxy.js';
+export {kMenuCloseDelay} from './languages_page/languages_subpage.js';
 // <if expr="not chromeos">
 export {ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_page/manage_profile_browser_proxy.js';
@@ -87,14 +88,14 @@ export {SafeBrowsingSetting} from './privacy_page/security_page.js';
 export {AndroidInfoBrowserProxyImpl} from './site_settings/android_info_browser_proxy.js';
 // </if>
 export {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SortMethod} from './site_settings/constants.js';
-export {cookieInfo} from './site_settings/cookie_info.js';
-export {CookieList, LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './site_settings/local_data_browser_proxy.js';
+export {CookieDetails, cookieInfo} from './site_settings/cookie_info.js';
+export {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './site_settings/local_data_browser_proxy.js';
 export {HandlerEntry, ProtocolEntry} from './site_settings/protocol_handlers.js';
 export {kControlledByLookup} from './site_settings/site_settings_behavior.js';
 export {ContentSettingProvider, DefaultContentSetting, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 export {WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos and not lacros">
 export {SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
 
 // </if>

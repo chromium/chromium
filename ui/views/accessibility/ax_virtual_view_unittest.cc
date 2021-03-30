@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -98,19 +99,7 @@ class AXVirtualViewTest : public ViewsTestBase {
   void ExpectReceivedAccessibilityEvents(
       const std::vector<std::pair<const ui::AXPlatformNodeDelegate*,
                                   const ax::mojom::Event>>& expected_events) {
-    EXPECT_EQ(accessibility_events_.size(), expected_events.size());
-
-    size_t i = 0;
-    for (const auto& actual_event : accessibility_events_) {
-      if (i >= expected_events.size())
-        break;
-
-      const auto& expected_event = expected_events[i];
-      EXPECT_EQ(actual_event.first, expected_event.first);
-      EXPECT_EQ(actual_event.second, expected_event.second);
-      ++i;
-    }
-
+    EXPECT_THAT(accessibility_events_, testing::ContainerEq(expected_events));
     accessibility_events_.clear();
   }
 
@@ -374,9 +363,7 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   button_->RequestFocus();
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus),
-       std::make_pair(GetButtonAccessibility(),
-                      ax::mojom::Event::kChildrenChanged)});
+      {std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus)});
 
   EXPECT_EQ(button_accessibility.GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
@@ -439,9 +426,7 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   button_->RequestFocus();
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(virtual_child_3, ax::mojom::Event::kFocus),
-       std::make_pair(GetButtonAccessibility(),
-                      ax::mojom::Event::kChildrenChanged)});
+      {std::make_pair(virtual_child_3, ax::mojom::Event::kFocus)});
 
   // Test that calling GetFocus() from any object in the tree will return the
   // same result.
@@ -759,6 +744,15 @@ TEST_F(AXVirtualViewTest, HitTesting) {
   EXPECT_EQ(virtual_child_4->GetNativeObject(),
             virtual_label_->HitTestSync(point_3.x(), point_3.y()));
 }
+
+#if defined(USE_AURA)
+TEST_F(AXVirtualViewTest, GetOrCreateWrapper) {
+  std::unique_ptr<AXAuraObjCache> cache;
+  auto* wrapper1 = virtual_label_->GetOrCreateWrapper(cache.get());
+  cache = std::make_unique<AXAuraObjCache>();
+  EXPECT_NE(wrapper1, virtual_label_->GetOrCreateWrapper(cache.get()));
+}
+#endif
 
 // Test for GetTargetForNativeAccessibilityEvent().
 #if defined(OS_WIN)

@@ -8,9 +8,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
-import ast
-import traceback
-
 PRESUBMIT_VERSION = '2.0.0'
 
 
@@ -141,36 +138,4 @@ def CheckOutagesConfigOnCommit(input_api, output_api):
           ])),
       ]
 
-  return []
-
-_IGNORE_GOMA_FREEZE_FOOTER = 'Ignore-Goma-Freeze'
-
-def CheckGomaUsageDuringFreeze(input_api, output_api):
-  for f in input_api.AffectedFiles():
-    if f.LocalPath() != 'infra/config/generated/goma-usage.pyl':
-      continue
-    if f.Action() == 'D':
-      break
-    def get_goma_usage(lines):
-      return ast.literal_eval('\n'.join(lines))
-    # Make sure that the file can be parsed
-    try:
-      new_usage = get_goma_usage(f.NewContents())
-    except Exception as e:
-      return [
-          output_api.PresubmitError('Failed to parse goma-usage.pyl',
-                                    long_text=traceback.format_exc()),
-      ]
-    if f.Action() != 'M':
-      break
-    old_usage = get_goma_usage(f.OldContents())
-    if new_usage['*weighted total*'] > old_usage['*weighted total*']:
-      footers = input_api.change.GitFootersFromDescription()
-      if _IGNORE_GOMA_FREEZE_FOOTER not in footers:
-        return [output_api.PresubmitError('\n'.join([
-            ('The goma team has a freeze on goma usage until January 5, 2021, '
-             'this change increases the usage of goma.'),
-            ('If this change needs to be made before the freeze ends, '
-             'contact the troopers about how to proceed'),
-        ]))]
   return []

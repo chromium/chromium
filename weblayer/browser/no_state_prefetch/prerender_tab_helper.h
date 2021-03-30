@@ -14,13 +14,13 @@ class WebContents;
 }
 
 namespace prerender {
-class PrerenderManager;
+class NoStatePrefetchManager;
 }
 
 namespace weblayer {
 
-// Notifies the prerender::PrerenderManager with the events happening in the
-// prerendered WebContents.
+// Notifies the prerender::NoStatePrefetchManager with the events happening in
+// the prerendered WebContents.
 class PrerenderTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<PrerenderTabHelper> {

@@ -7,9 +7,10 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -19,10 +20,10 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupVisualData {
  public:
   // Construct a TabGroupVisualData with placeholder name and random color.
   TabGroupVisualData();
-  TabGroupVisualData(base::string16 title,
+  TabGroupVisualData(std::u16string title,
                      tab_groups::TabGroupColorId color,
                      bool is_collapsed = false);
-  TabGroupVisualData(base::string16 title,
+  TabGroupVisualData(std::u16string title,
                      uint32_t color_int,
                      bool is_collapsed = false);
 
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupVisualData {
   TabGroupVisualData& operator=(const TabGroupVisualData& other) = default;
   TabGroupVisualData& operator=(TabGroupVisualData&& other) = default;
 
-  const base::string16& title() const { return title_; }
+  const std::u16string& title() const { return title_; }
   const tab_groups::TabGroupColorId& color() const { return color_; }
   bool is_collapsed() const { return is_collapsed_; }
 
@@ -45,7 +46,7 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupVisualData {
   }
 
  private:
-  base::string16 title_;
+  std::u16string title_;
   tab_groups::TabGroupColorId color_;
   bool is_collapsed_;
 };

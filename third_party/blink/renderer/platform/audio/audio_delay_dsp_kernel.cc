@@ -46,29 +46,33 @@ AudioDelayDSPKernel::AudioDelayDSPKernel(AudioDSPKernelProcessor* processor,
       temp_buffer_(processing_size_in_frames) {}
 
 AudioDelayDSPKernel::AudioDelayDSPKernel(double max_delay_time,
-                                         float sample_rate)
-    : AudioDSPKernel(sample_rate),
+                                         float sample_rate,
+                                         unsigned render_quantum_frames)
+    : AudioDSPKernel(sample_rate, render_quantum_frames),
       max_delay_time_(max_delay_time),
       write_index_(0),
-      temp_buffer_(audio_utilities::kRenderQuantumFrames) {
+      temp_buffer_(render_quantum_frames) {
   DCHECK_GT(max_delay_time_, 0.0);
   DCHECK_LE(max_delay_time_, kMaxDelayTimeSeconds);
   DCHECK(std::isfinite(max_delay_time_));
 
-  size_t buffer_length = BufferLengthForDelay(max_delay_time, sample_rate);
+  size_t buffer_length =
+      BufferLengthForDelay(max_delay_time, sample_rate, render_quantum_frames);
   DCHECK(buffer_length);
 
   buffer_.Allocate(buffer_length);
   buffer_.Zero();
 }
 
-size_t AudioDelayDSPKernel::BufferLengthForDelay(double max_delay_time,
-                                                 double sample_rate) const {
+size_t AudioDelayDSPKernel::BufferLengthForDelay(
+    double max_delay_time,
+    double sample_rate,
+    unsigned render_quantum_frames) const {
   // Compute the length of the buffer needed to handle a max delay of
   // |maxDelayTime|. Add an additional render quantum frame size so we can
   // vectorize the delay processing.  The extra space is needed so that writes
   // to the buffer won't overlap reads from the buffer.
-  return audio_utilities::kRenderQuantumFrames +
+  return render_quantum_frames +
          audio_utilities::TimeToSampleFrame(max_delay_time, sample_rate,
                                             audio_utilities::kRoundUp);
 }

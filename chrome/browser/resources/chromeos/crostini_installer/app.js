@@ -29,13 +29,13 @@ const State = {
   CONFIGURE: 'configure',
   INSTALLING: 'installing',
   ERROR: 'error',
-  ERROR_NO_RETRY: 'error_no_retry',
   CANCELING: 'canceling',
 };
 
 const MAX_USERNAME_LENGTH = 32;
 const InstallerState = crostini.mojom.InstallerState;
 const InstallerError = crostini.mojom.InstallerError;
+const NoDiskSpaceError = 'no_disk_space';
 
 const UNAVAILABLE_USERNAMES = [
   'root',
@@ -80,6 +80,12 @@ Polymer({
     state_: {
       type: String,
       value: State.PROMPT,
+    },
+
+    /** @private */
+    error_: {
+      type: String,
+      value: InstallerError.kNone,
     },
 
     /** @private */
@@ -176,6 +182,7 @@ Polymer({
         } else {
           assert(this.state_ === State.INSTALLING);
           this.errorMessage_ = this.getErrorMessage_(error);
+          this.error_ = error;
           this.state_ = State.ERROR;
         }
       }),
@@ -242,7 +249,8 @@ Polymer({
           .catch(() => {
             this.errorMessage_ =
                 loadTimeData.getString('minimumFreeSpaceUnmetError');
-            this.state_ = State.ERROR_NO_RETRY;
+            this.error_ = NoDiskSpaceError;
+            this.state_ = State.ERROR;
           })
           .finally(() => {
             this.onNextButtonClickIsRunning_ = false;
@@ -252,7 +260,7 @@ Polymer({
 
   /** @private */
   onInstallButtonClick_() {
-    assert(this.showInstallButton_(this.state_));
+    assert(this.showInstallButton_(this.state_, this.error_));
     var diskSize = 0;
     if (loadTimeData.getBoolean('diskResizingEnabled')) {
       if (this.showDiskSlider_) {
@@ -265,6 +273,11 @@ Polymer({
     this.installerProgress_ = 0;
     this.state_ = State.INSTALLING;
     BrowserProxy.getInstance().handler.install(diskSize, this.username_);
+  },
+
+  /** @private */
+  onSettingsButtonClick_() {
+    window.open('chrome://os-settings/help');
   },
 
   /**
@@ -296,7 +309,6 @@ Polymer({
         BrowserProxy.getInstance().handler.cancel();
         break;
       case State.ERROR:
-      case State.ERROR_NO_RETRY:
         this.closePage_();
         break;
       case State.CANCELING:
@@ -318,7 +330,7 @@ Polymer({
    * @returns {string}
    * @private
    */
-  getTitle_(state) {
+  getTitle_(state, error) {
     let titleId;
     switch (state) {
       case State.PROMPT:
@@ -329,8 +341,11 @@ Polymer({
         titleId = 'installingTitle';
         break;
       case State.ERROR:
-      case State.ERROR_NO_RETRY:
-        titleId = 'errorTitle';
+        if (error == InstallerError.kNeedUpdate) {
+          titleId = 'needUpdateTitle';
+        } else {
+          titleId = 'errorTitle';
+        }
         break;
       case State.CANCELING:
         titleId = 'cancelingTitle';
@@ -353,11 +368,14 @@ Polymer({
 
   /**
    * @param {State} state
+   * @param {string} error
    * @returns {boolean}
    * @private
    */
-  showInstallButton_(state) {
-    return state === State.CONFIGURE || state === State.ERROR;
+  showInstallButton_(state, error) {
+    return state === State.CONFIGURE ||
+        (state === State.ERROR && error != NoDiskSpaceError &&
+         error != InstallerError.kNeedUpdate);
   },
 
   /**
@@ -381,6 +399,16 @@ Polymer({
    */
   showNextButton_(state) {
     return state === State.PROMPT;
+  },
+
+  /**
+   * @param {State} state
+   * @param {string} error
+   * @returns {boolean}
+   * @private
+   */
+  showSettingsButton_(state, error) {
+    return state === State.ERROR && error == InstallerError.kNeedUpdate;
   },
 
   /**
@@ -460,6 +488,9 @@ Polymer({
     switch (error) {
       case InstallerError.kErrorLoadingTermina:
         messageId = 'loadTerminaError';
+        break;
+      case InstallerError.kNeedUpdate:
+        messageId = 'needUpdateError';
         break;
       case InstallerError.kErrorCreatingDiskImage:
         messageId = 'createDiskImageError';
@@ -548,7 +579,7 @@ Polymer({
 
   /** @private */
   showErrorMessage_(state) {
-    return state === State.ERROR || state === State.ERROR_NO_RETRY;
+    return state === State.ERROR;
   },
 
   /** @private */

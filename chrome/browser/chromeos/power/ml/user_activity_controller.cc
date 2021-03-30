@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/power/ml/user_activity_controller.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/session_manager/session_manager_types.h"
@@ -51,7 +51,7 @@ UserActivityController::UserActivityController() {
       &user_activity_ukm_logger_, detector, power_manager_client,
       session_manager,
       video_observer_user_logger.InitWithNewPipeAndPassReceiver(),
-      chromeos::ChromeUserManager::Get());
+      ChromeUserManager::Get());
   aura::Env::GetInstance()
       ->context_factory()
       ->GetHostFrameSinkManager()

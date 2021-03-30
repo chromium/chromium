@@ -34,15 +34,12 @@
       cr-policy-indicator {
         padding: 0 var(--cr-controlled-by-spacing);
       }
-
-      #nearbySetUp {
-        margin: 0 16px;
-      }
     </style>
     <settings-animated-pages id="pages" section="multidevice"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-        <div id="multidevice-item" class="settings-box two-line no-padding">
+        <div id="multidevice-item"
+            class="settings-box first two-line no-padding">
           <div class="link-wrapper" actionable
               actionable$="[[doesClickOpenSubpage_(pageContentData)]]"
               on-click="handleItemClick_">
@@ -111,7 +108,7 @@
             </settings-multidevice-feature-toggle>
           </template>
         </div>
-        <template is="dom-if" if="[[nearbySharingFeatureEnabled_]]" restamp>
+        <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
           <div id="nearbyshare-item" class="settings-box two-line no-padding">
             <div class="link-wrapper" actionable on-click="nearbyShareClick_">
               <iron-icon icon="os-settings:nearby-share">
@@ -151,15 +148,18 @@
             <template is="dom-if"
                 if="[[prefs.nearby_sharing.onboarding_complete.value]]"
                 restamp>
-              <settings-toggle-button id="nearbySharingToggleButton"
-                  pref="{{prefs.nearby_sharing.enabled}}"
+              <cr-toggle id="nearbySharingToggleButton"
+                  class="margin-matches-padding"
+                  aria-label="$i18n{nearbyShareTitle}"
+                  checked="{{prefs.nearby_sharing.enabled.value}}"
                   deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
-              </settings-toggle-button>
+              </cr-toggle>
             </template>
             <template is="dom-if"
                 if="[[!prefs.nearby_sharing.onboarding_complete.value]]"
                 restamp>
-              <cr-button id="nearbySetUp" on-click="handleNearbySetUpClick_">
+              <cr-button class="margin-matches-padding"
+                  id="nearbySetUp" on-click="handleNearbySetUpClick_">
                 $i18n{nearbyShareSetUpButtonTitle}
               </cr-button>
             </template>
@@ -185,7 +185,7 @@
           </settings-multidevice-smartlock-subpage>
         </settings-subpage>
       </template>
-      <template is="dom-if" if="[[nearbySharingFeatureEnabled_]]" restamp>
+      <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
         <template is="dom-if" route-path="/multidevice/nearbyshare" restamp>
           <settings-subpage associated-control="[[$$('#nearbyshare-item')]]"
               page-title="$i18n{nearbyShareTitle}">

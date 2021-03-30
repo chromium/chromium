@@ -8,44 +8,13 @@ if (is_android) {
 
 source_set("feed_core_common") {
   sources = [
-    "enums.h",
     "pref_names.cc",
     "pref_names.h",
-    "refresh_throttler.cc",
-    "refresh_throttler.h",
-    "user_classifier.cc",
-    "user_classifier.h",
   ]
   deps = [ "//components/prefs" ]
 
   public_deps = [
     "//base",
     "//components/feed:feature_list",
-    "//components/feed/core/proto",
-  ]
-}
-
-source_set("core_common_unit_tests") {
-  testonly = true
-  sources = [
-    "refresh_throttler_unittest.cc",
-    "user_classifier_unittest.cc",
-  ]
-
-  deps = [
-    ":feed_core_common",
-    "//base",
-    "//base/test:test_support",
-    "//components/leveldb_proto:test_support",
-    "//components/prefs:test_support",
-    "//components/signin/public/identity_manager:test_support",
-    "//components/variations:test_support",
-    "//components/web_resource",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-    "//third_party/zlib/google:compression_utils",
-    "//ui/gfx:test_support",
   ]
 }

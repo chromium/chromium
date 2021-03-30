@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.payments.PaymentHandlerNavigationThrottle;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
@@ -70,12 +71,13 @@ public class PaymentHandlerCoordinator {
                 activity.getWindowAndroid(), isIncognito);
         mPaymentHandlerWebContents =
                 WebContentsFactory.createWebContents(profile, /*initiallyHidden=*/false);
+        PaymentHandlerNavigationThrottle.markPaymentHandlerWebContents(mPaymentHandlerWebContents);
         ContentView webContentView = ContentView.createContentView(
                 activity, null /* eventOffsetHandler */, mPaymentHandlerWebContents);
         initializeWebContents(activity, webContentView, url);
 
-        mToolbarCoordinator =
-                new PaymentHandlerToolbarCoordinator(activity, mPaymentHandlerWebContents, url);
+        mToolbarCoordinator = new PaymentHandlerToolbarCoordinator(activity,
+                mPaymentHandlerWebContents, url, activity.getModalDialogManagerSupplier());
 
         PropertyModel model = new PropertyModel.Builder(PaymentHandlerProperties.ALL_KEYS).build();
         PaymentHandlerMediator mediator = new PaymentHandlerMediator(model, this::hide,
@@ -112,7 +114,12 @@ public class PaymentHandlerCoordinator {
             mPaymentHandlerWebContents.destroy();
         };
         boolean isShowSuccess = bottomSheetController.requestShowContent(view, /*animate=*/true);
-        return isShowSuccess ? mPaymentHandlerWebContents : null;
+        if (!isShowSuccess) {
+            mHider.run();
+            mHider = null;
+            return null;
+        }
+        return mPaymentHandlerWebContents;
     }
 
     private void initializeWebContents(

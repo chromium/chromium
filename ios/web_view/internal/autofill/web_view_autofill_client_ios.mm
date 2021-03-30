@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -105,6 +106,10 @@ WebViewAutofillClientIOS::GetAutocompleteHistoryManager() {
 }
 
 PrefService* WebViewAutofillClientIOS::GetPrefs() {
+  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+}
+
+const PrefService* WebViewAutofillClientIOS::GetPrefs() const {
   return pref_service_;
 }
 
@@ -142,7 +147,7 @@ AddressNormalizer* WebViewAutofillClientIOS::GetAddressNormalizer() {
   return nullptr;
 }
 
-const GURL& WebViewAutofillClientIOS::GetLastCommittedURL() {
+const GURL& WebViewAutofillClientIOS::GetLastCommittedURL() const {
   return web_state_->GetLastCommittedURL();
 }
 
@@ -152,6 +157,10 @@ WebViewAutofillClientIOS::GetSecurityLevelForUmaHistograms() {
 }
 
 const translate::LanguageState* WebViewAutofillClientIOS::GetLanguageState() {
+  return nullptr;
+}
+
+translate::TranslateDriver* WebViewAutofillClientIOS::GetTranslateDriver() {
   return nullptr;
 }
 
@@ -173,20 +182,21 @@ void WebViewAutofillClientIOS::OnUnmaskVerificationResult(
 }
 
 void WebViewAutofillClientIOS::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const base::string16&)> callback) {
+    base::OnceCallback<void(const std::u16string&)> callback) {
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo());
-  base::string16 account_name =
+          identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSync));
+  std::u16string account_name =
       primary_account_info ? base::UTF8ToUTF16(primary_account_info->full_name)
-                           : base::string16();
+                           : std::u16string();
   [bridge_ confirmCreditCardAccountName:account_name
                                callback:std::move(callback)];
 }
 
 void WebViewAutofillClientIOS::ConfirmExpirationDateFixFlow(
     const CreditCard& card,
-    base::OnceCallback<void(const base::string16&, const base::string16&)>
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
   [bridge_ confirmCreditCardExpirationWithCard:card
                                       callback:std::move(callback)];
@@ -219,6 +229,10 @@ void WebViewAutofillClientIOS::ConfirmCreditCardFillAssist(
     const CreditCard& card,
     base::OnceClosure callback) {}
 
+void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
+    const AutofillProfile& profile,
+    AddressProfileSavePromptCallback callback) {}
+
 bool WebViewAutofillClientIOS::HasCreditCardScanFeature() {
   return false;
 }
@@ -234,8 +248,8 @@ void WebViewAutofillClientIOS::ShowAutofillPopup(
 }
 
 void WebViewAutofillClientIOS::UpdateAutofillPopupDataListValues(
-    const std::vector<base::string16>& values,
-    const std::vector<base::string16>& labels) {
+    const std::vector<std::u16string>& values,
+    const std::vector<std::u16string>& labels) {
   // No op. ios/web_view does not support display datalist.
 }
 
@@ -276,10 +290,10 @@ void WebViewAutofillClientIOS::PropagateAutofillPredictions(
 }
 
 void WebViewAutofillClientIOS::DidFillOrPreviewField(
-    const base::string16& autofilled_value,
-    const base::string16& profile_full_name) {}
+    const std::u16string& autofilled_value,
+    const std::u16string& profile_full_name) {}
 
-bool WebViewAutofillClientIOS::IsContextSecure() {
+bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
@@ -287,7 +301,7 @@ bool WebViewAutofillClientIOS::ShouldShowSigninPromo() {
   return false;
 }
 
-bool WebViewAutofillClientIOS::AreServerCardsSupported() {
+bool WebViewAutofillClientIOS::AreServerCardsSupported() const {
   return true;
 }
 

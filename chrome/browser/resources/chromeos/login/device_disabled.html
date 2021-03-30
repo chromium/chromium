@@ -4,10 +4,13 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
 
 <dom-module id="device-disabled-element">
   <template>
@@ -22,20 +25,22 @@
       }
     </style>
 
-    <oobe-dialog title-key="deviceDisabledHeading" id="dialog"
+    <oobe-adaptive-dialog title-key="deviceDisabledHeading" id="dialog"
+        role="dialog"
         aria-label$="[[i18nDynamic(locale, 'deviceDisabledHeading')]]">
-      <hd-iron-icon slot="oobe-icon"
-        icon1x="oobe-32:warning" icon2x="oobe-64:warning">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'deviceDisabledHeading')]]
+      </h1>
       <div slot="subtitle">
         [[disabledText_(locale, serial_, enrollmentDomain_)]]
       </div>
-      <div slot="footer" class="flex layout vertical center center-justified">
+      <div slot="content" class="flex layout vertical center center-justified">
         <div id="message">[[message_]]</div>
         <img class="oobe-illustration flex"
              srcset="images/1x/device-disabled.svg 1x,
                      images/2x/device-disabled.svg 2x">
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

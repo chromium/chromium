@@ -154,6 +154,8 @@ This attribute is read only and cannot be changed, unless `settable_from_interna
 
 **Note:** The `internals` JavaScript API is only available in content_shell for use by web tests and does not appear in Chromium. In content_shell's browser mode, `--expose-internals-for-testing` is needed to have the `internals` JavaScript API.
 
+**Note:** If your runtime feature is called `AmazingNewFeature`, the Javascript variable name is `internals.runtimeFlags.amazingNewFeatureEnabled`.
+
 ### Running Web Tests
 When content_shell is run for web tests with `--stable-release-mode` flag, test-only and experimental features (ones listed in [runtime_enabled_features.json5] with `status: "test"` or `status: "experimental"`) are turned off. The [virtual/stable] suite runs with the flag, which is one of the ways to ensure test coverage of production code path for these features.
 

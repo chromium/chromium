@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/debug/debug_overlay_handler.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -17,7 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "ui/display/display_switches.h"
 #include "ui/snapshot/snapshot.h"
 
 namespace chromeos {
@@ -39,6 +40,8 @@ void StoreScreenshot(const base::FilePath& screenshot_dir,
           file_path, reinterpret_cast<const char*>(png_data->front()),
           static_cast<int>(png_data->size()))) != png_data->size()) {
     LOG(ERROR) << "Failed to save screenshot to " << file_path.value();
+  } else {
+    VLOG(1) << "Saved screenshot to " << file_path.value();
   }
 }
 
@@ -80,6 +83,10 @@ DebugOverlayHandler::DebugOverlayHandler(JSCallsContainer* js_calls_container)
     }
     base_dir = base_dir.Append("OOBE_Screenshots");
   }
+
+  add_resolution_to_filename_ =
+      command_line->HasSwitch(::switches::kHostWindowBounds);
+
   base::Time::Exploded now;
   base::Time::Now().LocalExplode(&now);
   std::string series_name =
@@ -118,6 +125,10 @@ void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
     if (root_windows.size() > 1) {
       filename.append(base::StringPrintf("- Display %zu", screen));
     }
+
+    if (add_resolution_to_filename_)
+      filename.append("_" + rect.size().ToString());
+
     filename.append(".png");
     ui::GrabWindowSnapshotAsyncPNG(
         root_window, rect,

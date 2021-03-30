@@ -28,16 +28,16 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
-#include "third_party/blink/public/common/feature_policy/document_policy.h"
-#include "third_party/blink/public/common/feature_policy/document_policy_features.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
-#include "third_party/blink/public/mojom/feature_policy/policy_value.mojom-blink.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -65,7 +65,6 @@ SecurityContext::~SecurityContext() = default;
 
 void SecurityContext::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
-  visitor->Trace(content_security_policy_);
 }
 
 void SecurityContext::SetSecurityOrigin(
@@ -132,11 +131,6 @@ void SecurityContext::SetSecurityOriginForTesting(
   security_origin_ = std::move(security_origin);
 }
 
-void SecurityContext::SetContentSecurityPolicy(
-    ContentSecurityPolicy* content_security_policy) {
-  content_security_policy_ = content_security_policy;
-}
-
 bool SecurityContext::IsSandboxed(
     network::mojom::blink::WebSandboxFlags mask) const {
   return (sandbox_flags_ & mask) !=
@@ -148,28 +142,14 @@ void SecurityContext::SetSandboxFlags(
   sandbox_flags_ = flags;
 }
 
-void SecurityContext::SetRequireTrustedTypes() {
-  DCHECK(require_safe_types_ ||
-         content_security_policy_->IsRequireTrustedTypes());
-  require_safe_types_ = true;
+void SecurityContext::SetPermissionsPolicy(
+    std::unique_ptr<PermissionsPolicy> permissions_policy) {
+  permissions_policy_ = std::move(permissions_policy);
 }
 
-void SecurityContext::SetRequireTrustedTypesForTesting() {
-  require_safe_types_ = true;
-}
-
-bool SecurityContext::TrustedTypesRequiredByPolicy() const {
-  return require_safe_types_;
-}
-
-void SecurityContext::SetFeaturePolicy(
-    std::unique_ptr<FeaturePolicy> feature_policy) {
-  feature_policy_ = std::move(feature_policy);
-}
-
-void SecurityContext::SetReportOnlyFeaturePolicy(
-    std::unique_ptr<FeaturePolicy> feature_policy) {
-  report_only_feature_policy_ = std::move(feature_policy);
+void SecurityContext::SetReportOnlyPermissionsPolicy(
+    std::unique_ptr<PermissionsPolicy> permissions_policy) {
+  report_only_permissions_policy_ = std::move(permissions_policy);
 }
 
 void SecurityContext::SetDocumentPolicy(
@@ -183,20 +163,21 @@ void SecurityContext::SetReportOnlyDocumentPolicy(
 }
 
 bool SecurityContext::IsFeatureEnabled(
-    mojom::blink::FeaturePolicyFeature feature,
+    mojom::blink::PermissionsPolicyFeature feature,
     bool* should_report) const {
-  DCHECK(feature_policy_);
-  bool feature_policy_result = feature_policy_->IsFeatureEnabled(feature);
-  bool report_only_feature_policy_result =
-      !report_only_feature_policy_ ||
-      report_only_feature_policy_->IsFeatureEnabled(feature);
+  DCHECK(permissions_policy_);
+  bool permissions_policy_result =
+      permissions_policy_->IsFeatureEnabled(feature);
+  bool report_only_permissions_policy_result =
+      !report_only_permissions_policy_ ||
+      report_only_permissions_policy_->IsFeatureEnabled(feature);
 
   if (should_report) {
     *should_report =
-        !feature_policy_result || !report_only_feature_policy_result;
+        !permissions_policy_result || !report_only_permissions_policy_result;
   }
 
-  return feature_policy_result;
+  return permissions_policy_result;
 }
 
 bool SecurityContext::IsFeatureEnabled(

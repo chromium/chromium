@@ -105,8 +105,9 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   // Named triggers
   void TriggerNamedEvent(TriggerHandle, StartedFinalizingCallback) override;
-  TriggerHandle RegisterTriggerType(const char* trigger_name) override;
-  std::string GetTriggerNameFromHandle(TriggerHandle handle) const;
+  TriggerHandle RegisterTriggerType(base::StringPiece trigger_name) override;
+  const std::string& GetTriggerNameFromHandle(
+      TriggerHandle trigger_handle) override;
 
   void OnHistogramTrigger(const std::string& histogram_name);
 

@@ -25,8 +25,6 @@ class Version;
 
 namespace extensions {
 
-class PendingExtensionManager;
-
 // A specialization of the ExternalProvider that uses an instance of
 // ExternalLoader to provide external extensions. This class can be seen as a
 // bridge between the extension system and an ExternalLoader. Instances live
@@ -39,12 +37,12 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   // |crx_location|: extensions originating from crx files
   // |download_location|: extensions originating from update URLs
   // If either of the origins is not supported by this provider, then it should
-  // be initialized as Manifest::INVALID_LOCATION.
+  // be initialized as mojom::ManifestLocation::kInvalidLocation.
   ExternalProviderImpl(VisitorInterface* service,
                        const scoped_refptr<ExternalLoader>& loader,
                        Profile* profile,
-                       Manifest::Location crx_location,
-                       Manifest::Location download_location,
+                       mojom::ManifestLocation crx_location,
+                       mojom::ManifestLocation download_location,
                        int creation_flags);
 
   ~ExternalProviderImpl() override;
@@ -53,7 +51,6 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   static void CreateExternalProviders(
       VisitorInterface* service,
       Profile* profile,
-      PendingExtensionManager* pending_extension_manager,
       ProviderCollection* provider_list);
 
   // Sets underlying prefs and notifies provider. Only to be called by the
@@ -70,7 +67,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   bool HasExtension(const std::string& id) const override;
   bool GetExtensionDetails(
       const std::string& id,
-      Manifest::Location* location,
+      mojom::ManifestLocation* location,
       std::unique_ptr<base::Version>* version) const override;
 
   bool IsReady() const override;
@@ -116,11 +113,11 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   // Location for external extensions that are provided by this provider from
   // local crx files.
-  const Manifest::Location crx_location_;
+  const mojom::ManifestLocation crx_location_;
 
   // Location for external extensions that are provided by this provider from
   // update URLs.
-  const Manifest::Location download_location_;
+  const mojom::ManifestLocation download_location_;
 
   // Weak pointer to the object that consumes the external extensions.
   // This is zeroed out by: ServiceShutdown()

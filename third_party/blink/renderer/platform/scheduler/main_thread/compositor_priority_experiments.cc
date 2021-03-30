@@ -182,7 +182,7 @@ CompositorPriorityExperiments::CompositorBudgetPoolController::
       "CompositorBudgetPool", this, tracing_controller, now));
   compositor_budget_pool_->SetMinBudgetLevelToRun(now, min_budget);
   compositor_budget_pool_->SetTimeBudgetRecoveryRate(now, budget_recovery_rate);
-  compositor_budget_pool_->AddQueue(now, compositor_queue->GetTaskQueue());
+  compositor_queue->AddToBudgetPool(now, compositor_budget_pool_.get());
 }
 
 CompositorPriorityExperiments::CompositorBudgetPoolController::

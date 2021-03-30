@@ -38,9 +38,23 @@
 
 namespace blink {
 
+class LocalFrame;
+class ResourceResponse;
+
+// Describes a type of fetch for the purposes of categorizing feature use.
+enum class FetchType {
+  // A document fetching a subresource (image, script, etc.).
+  kSubresource,
+
+  // A navigation from one document to the next.
+  kNavigation,
+};
+
 // Returns the kAddressSpace* WebFeature enum value corresponding to a client
-// in |client_address_space| loading a resource from |resource_address_space|,
-// if any.
+// in |client_address_space| fetching data from |response_address_space|, if
+// any.
+//
+// |fetch_type| describes the fetch itself.
 //
 // |client_is_secure_context| specifies whether the client execution context is
 // a secure context, as defined in
@@ -49,9 +63,19 @@ namespace blink {
 // Returns nullopt if the load is not a private network request, as defined in
 // https://wicg.github.io/cors-rfc1918/#private-network-request.
 base::Optional<mojom::blink::WebFeature> CORE_EXPORT AddressSpaceFeature(
+    FetchType fetch_type,
     network::mojom::blink::IPAddressSpace client_address_space,
     bool client_is_secure_context,
-    network::mojom::blink::IPAddressSpace resource_address_space);
+    network::mojom::blink::IPAddressSpace response_address_space);
+
+// Increments the correct kAddressSpace* WebFeature UseCounter corresponding to
+// the given |client_frame| performing a fetch of type |fetch_type| and
+// receiving the given |response|.
+//
+// Does nothing if |client_frame| is nullptr.
+void RecordAddressSpaceFeature(FetchType fetch_type,
+                               LocalFrame* client_frame,
+                               const ResourceResponse& response);
 
 }  // namespace blink
 

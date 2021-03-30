@@ -12,6 +12,19 @@ export function getFakeAccountsList() {
   return ['test@gmail.com', 'test2@gmail.com', 'test3@gmail.com'];
 }
 
+export const fakeAuthExtensionData = {
+  hl: 'hl',
+  gaiaUrl: 'gaiaUrl',
+  authMode: 1,
+};
+
+export const fakeAuthExtensionDataWithEmail = {
+  hl: 'hl',
+  gaiaUrl: 'gaiaUrl',
+  authMode: 1,
+  email: 'example@gmail.com',
+};
+
 export class TestAuthenticator extends EventTarget {
   constructor() {
     super();

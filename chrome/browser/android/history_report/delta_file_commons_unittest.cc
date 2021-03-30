@@ -98,32 +98,32 @@ TEST_F(DeltaFileEntryWithDataTest, BookmarkScore) {
 
 TEST_F(DeltaFileEntryWithDataTest, NoBookmarkEmptyTitle) {
   history::URLRow row(GURL("http://www.host.org/path?query=param"));
-  row.set_title(base::UTF8ToUTF16(""));
+  row.set_title(u"");
   row.set_hidden(false);
   data_.SetData(row);
   EXPECT_TRUE(data_.Valid());
-  EXPECT_EQ(base::UTF8ToUTF16("www.host.org"), data_.Title());
+  EXPECT_EQ(u"www.host.org", data_.Title());
 }
 
 TEST_F(DeltaFileEntryWithDataTest, NoBookmarkNonEmptyTitle) {
   history::URLRow row(GURL("http://host.org/path?query=param"));
-  row.set_title(base::UTF8ToUTF16("title"));
+  row.set_title(u"title");
   row.set_hidden(false);
   data_.SetData(row);
   EXPECT_TRUE(data_.Valid());
-  EXPECT_EQ(base::UTF8ToUTF16("title"), data_.Title());
+  EXPECT_EQ(u"title", data_.Title());
 }
 
 TEST_F(DeltaFileEntryWithDataTest, BookmarkTitle) {
   UrlAndTitle bookmark;
-  bookmark.title = base::UTF8ToUTF16("bookmark_title");
+  bookmark.title = u"bookmark_title";
   history::URLRow row(GURL("http://host.org/path?query=param"));
-  row.set_title(base::UTF8ToUTF16("title"));
+  row.set_title(u"title");
   row.set_hidden(false);
   data_.SetData(row);
   data_.MarkAsBookmark(bookmark);
   EXPECT_TRUE(data_.Valid());
-  EXPECT_EQ(base::UTF8ToUTF16("bookmark_title"), data_.Title());
+  EXPECT_EQ(u"bookmark_title", data_.Title());
 }
 
 TEST_F(DeltaFileEntryWithDataTest, TrimWWWPrefix) {

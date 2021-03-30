@@ -12,6 +12,7 @@
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -76,13 +77,21 @@ std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
   return output_bytes;
 }
 
+// Records UMA metric for the system prompt result.
+void RecordSystemPromptResult(
+    const SecurePaymentConfirmationSystemPromptResult result) {
+  base::UmaHistogramEnumeration(
+      "PaymentRequest.SecurePaymentConfirmation.Funnel.SystemPromptResult",
+      result);
+}
+
 }  // namespace
 
 SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     content::WebContents* web_contents_to_observe,
     const std::string& effective_relying_party_identity,
     std::unique_ptr<SkBitmap> icon,
-    const base::string16& label,
+    const std::u16string& label,
     std::vector<uint8_t> credential_id,
     const url::Origin& merchant_origin,
     base::WeakPtr<PaymentRequestSpec> spec,
@@ -90,8 +99,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     std::unique_ptr<autofill::InternalAuthenticator> authenticator)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
       content::WebContentsObserver(web_contents_to_observe),
-      authenticator_render_frame_host_pointer_do_not_dereference_(
-          authenticator->GetRenderFrameHost()),
+      authenticator_frame_routing_id_(
+          authenticator->GetRenderFrameHost()->GetGlobalFrameRoutingId()),
       effective_relying_party_identity_(effective_relying_party_identity),
       icon_(std::move(icon)),
       label_(label),
@@ -101,8 +110,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       spec_(spec),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)) {
-  DCHECK_EQ(web_contents_to_observe->GetMainFrame(),
-            authenticator_render_frame_host_pointer_do_not_dereference_);
+  DCHECK(web_contents_to_observe->GetMainFrame()->GetGlobalFrameRoutingId() ==
+         authenticator_frame_routing_id_);
   DCHECK(!credential_id_.empty());
 
   app_method_names_.insert(methods::kSecurePaymentConfirmation);
@@ -110,7 +119,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
 
 SecurePaymentConfirmationApp::~SecurePaymentConfirmationApp() = default;
 
-void SecurePaymentConfirmationApp::InvokePaymentApp(Delegate* delegate) {
+void SecurePaymentConfirmationApp::InvokePaymentApp(
+    base::WeakPtr<Delegate> delegate) {
   if (!authenticator_ || !spec_)
     return;
 
@@ -171,9 +181,9 @@ bool SecurePaymentConfirmationApp::CanPreselect() const {
   return true;
 }
 
-base::string16 SecurePaymentConfirmationApp::GetMissingInfoLabel() const {
+std::u16string SecurePaymentConfirmationApp::GetMissingInfoLabel() const {
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool SecurePaymentConfirmationApp::HasEnrolledInstrument() const {
@@ -194,12 +204,12 @@ std::string SecurePaymentConfirmationApp::GetId() const {
   return encoded_credential_id_;
 }
 
-base::string16 SecurePaymentConfirmationApp::GetLabel() const {
+std::u16string SecurePaymentConfirmationApp::GetLabel() const {
   return label_;
 }
 
-base::string16 SecurePaymentConfirmationApp::GetSublabel() const {
-  return base::string16();
+std::u16string SecurePaymentConfirmationApp::GetSublabel() const {
+  return std::u16string();
 }
 
 const SkBitmap* SecurePaymentConfirmationApp::icon_bitmap() const {
@@ -255,7 +265,7 @@ void SecurePaymentConfirmationApp::AbortPaymentApp(
 
 void SecurePaymentConfirmationApp::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (authenticator_render_frame_host_pointer_do_not_dereference_ ==
+  if (content::RenderFrameHost::FromID(authenticator_frame_routing_id_) ==
       render_frame_host) {
     // The authenticator requires to be deleted before the render frame.
     authenticator_.reset();
@@ -263,16 +273,24 @@ void SecurePaymentConfirmationApp::RenderFrameDeleted(
 }
 
 void SecurePaymentConfirmationApp::OnGetAssertion(
-    Delegate* delegate,
+    base::WeakPtr<Delegate> delegate,
     blink::mojom::AuthenticatorStatus status,
     blink::mojom::GetAssertionAuthenticatorResponsePtr response) {
+  if (!delegate)
+    return;
+
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS || !response) {
     std::stringstream status_string_stream;
     status_string_stream << status;
     delegate->OnInstrumentDetailsError(base::StringPrintf(
         "Authenticator returned %s.", status_string_stream.str().c_str()));
+    RecordSystemPromptResult(
+        SecurePaymentConfirmationSystemPromptResult::kCanceled);
     return;
   }
+
+  RecordSystemPromptResult(
+      SecurePaymentConfirmationSystemPromptResult::kAccepted);
 
   // Serialize response into a JSON string. Browser will pass this string over
   // Mojo IPC into Blink, which will parse it into a JavaScript object for the

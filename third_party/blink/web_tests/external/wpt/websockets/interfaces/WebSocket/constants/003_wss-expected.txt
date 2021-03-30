@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL WebSockets: deleting constants SCHEME_DOMAIN_PORT is not defined
-FAIL WebSockets: deleting constants 1 SCHEME_DOMAIN_PORT is not defined
-FAIL WebSockets: deleting constants 2 SCHEME_DOMAIN_PORT is not defined
-FAIL WebSockets: deleting constants 3 SCHEME_DOMAIN_PORT is not defined
-Harness: the test ran to completion.
-

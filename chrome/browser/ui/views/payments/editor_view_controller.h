@@ -7,13 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
@@ -51,7 +51,7 @@ struct EditorField {
   };
 
   EditorField(autofill::ServerFieldType type,
-              base::string16 label,
+              std::u16string label,
               LengthHint length_hint,
               bool required,
               ControlType control_type = ControlType::TEXTFIELD)
@@ -64,7 +64,7 @@ struct EditorField {
   // Data type in the field.
   autofill::ServerFieldType type;
   // Label to be shown alongside the field.
-  base::string16 label;
+  std::u16string label;
   // Hint about the length of this field's contents.
   LengthHint length_hint;
   // Whether the field is required.
@@ -98,7 +98,7 @@ class EditorViewController : public PaymentRequestSheetController,
   // Will display |error_message| alongside the input field represented by
   // field |type|.
   void DisplayErrorMessageForField(autofill::ServerFieldType type,
-                                   const base::string16& error_message);
+                                   const std::u16string& error_message);
 
   const ComboboxMap& comboboxes() const { return comboboxes_; }
   const TextFieldsMap& text_fields() const { return text_fields_; }
@@ -121,7 +121,7 @@ class EditorViewController : public PaymentRequestSheetController,
       autofill::ServerFieldType type,
       views::View** focusable_field,
       bool* valid,
-      base::string16* error_message);
+      std::u16string* error_message);
   // Create an extra view to go to the right of the field with |type|, which
   // can either be a textfield, combobox, or custom view.
   virtual std::unique_ptr<views::View> CreateExtraViewForField(
@@ -130,7 +130,7 @@ class EditorViewController : public PaymentRequestSheetController,
   virtual bool IsEditingExistingItem() = 0;
   // Returns the field definitions used to build the UI.
   virtual std::vector<EditorField> GetFieldDefinitions() = 0;
-  virtual base::string16 GetInitialValueForType(
+  virtual std::u16string GetInitialValueForType(
       autofill::ServerFieldType type) = 0;
   // Validates the data entered and attempts to save; returns true on success.
   virtual bool ValidateModelAndSave() = 0;
@@ -146,8 +146,8 @@ class EditorViewController : public PaymentRequestSheetController,
   bool ValidateInputFields();
 
   // PaymentRequestSheetController:
-  base::string16 GetPrimaryButtonLabel() override;
-  views::Button::PressedCallback GetPrimaryButtonCallback() override;
+  std::u16string GetPrimaryButtonLabel() override;
+  ButtonCallback GetPrimaryButtonCallback() override;
   int GetPrimaryButtonId() override;
   bool GetPrimaryButtonEnabled() override;
   bool ShouldShowSecondaryButton() override;
@@ -171,14 +171,14 @@ class EditorViewController : public PaymentRequestSheetController,
   // appropriate.
   std::unique_ptr<ValidatingCombobox> CreateComboboxForField(
       const EditorField& field,
-      base::string16* error_message);
+      std::u16string* error_message);
 
   bool is_incognito() const { return is_incognito_; }
 
  private:
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
   // Creates the whole editor view to go within the editor dialog. It
   // encompasses all the input fields created by CreateInputField().
@@ -199,7 +199,7 @@ class EditorViewController : public PaymentRequestSheetController,
   int ComputeWidestExtraViewWidth(EditorField::LengthHint size);
 
   void AddOrUpdateErrorMessageForField(autofill::ServerFieldType type,
-                                       const base::string16& error_message);
+                                       const std::u16string& error_message);
 
   void SaveButtonPressed();
 

@@ -9,6 +9,7 @@
     {
       "name": "LayoutNGBlockFlow DIV class='composited box'",
       "bounds": [10, 10],
+      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]

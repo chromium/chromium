@@ -4,15 +4,15 @@
 
 #include "components/autofill/core/browser/autofill_regexes.h"
 
+#include <map>
 #include <memory>
-#include <unordered_map>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/i18n/unicodestring.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 
@@ -28,19 +28,20 @@ class AutofillRegexes {
   AutofillRegexes() = default;
 
   // Returns the compiled regex matcher corresponding to |pattern|.
-  icu::RegexMatcher* GetMatcher(const base::string16& pattern);
+  icu::RegexMatcher* GetMatcher(const base::StringPiece16& pattern);
 
  private:
   ~AutofillRegexes() = default;
 
   // Maps patterns to their corresponding regex matchers.
-  std::unordered_map<base::string16, std::unique_ptr<icu::RegexMatcher>>
+  std::map<std::u16string, std::unique_ptr<icu::RegexMatcher>, std::less<>>
       matchers_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillRegexes);
 };
 
-icu::RegexMatcher* AutofillRegexes::GetMatcher(const base::string16& pattern) {
+icu::RegexMatcher* AutofillRegexes::GetMatcher(
+    const base::StringPiece16& pattern) {
   auto it = matchers_.find(pattern);
   if (it == matchers_.end()) {
     const icu::UnicodeString icu_pattern(false, pattern.data(),
@@ -62,9 +63,9 @@ icu::RegexMatcher* AutofillRegexes::GetMatcher(const base::string16& pattern) {
 
 namespace autofill {
 
-bool MatchesPattern(const base::string16& input,
-                    const base::string16& pattern,
-                    base::string16* match,
+bool MatchesPattern(const base::StringPiece16& input,
+                    const base::StringPiece16& pattern,
+                    std::u16string* match,
                     int32_t group_to_be_captured) {
   static base::NoDestructor<AutofillRegexes> g_autofill_regexes;
   static base::NoDestructor<base::Lock> g_lock;

@@ -81,6 +81,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
             const cc::PaintFlags&,
             const FloatRect& dst_rect,
             const FloatRect& src_rect,
+            const SkSamplingOptions&,
             RespectImageOrientationEnum,
             ImageClampingMode,
             ImageDecodingMode) override;

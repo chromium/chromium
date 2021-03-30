@@ -18,6 +18,7 @@ source_set("browser") {
     "threat_details_history.h",
   ]
   deps = [
+    "//components/back_forward_cache",
     "//components/history/core/browser",
     "//components/safe_browsing/content",
     "//components/safe_browsing/content/common:interfaces",
@@ -39,6 +40,7 @@ source_set("browser") {
     "//components/signin/public/identity_manager",
     "//content/public/browser:browser",
     "//net:extras",
+    "//services/network/public/mojom",
   ]
 }
 

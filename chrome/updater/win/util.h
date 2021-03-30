@@ -12,10 +12,10 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
@@ -51,19 +51,19 @@ HMODULE GetModuleHandleFromAddress(void* address);
 HMODULE GetCurrentModuleHandle();
 
 // Creates a unique event name and stores it in the specified environment var.
-HRESULT CreateUniqueEventInEnvironment(const base::string16& var_name,
-                                       bool is_machine,
+HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
+                                       UpdaterScope scope,
                                        HANDLE* unique_event);
 
 // Obtains a unique event name from specified environment var and opens it.
-HRESULT OpenUniqueEventFromEnvironment(const base::string16& var_name,
-                                       bool is_machine,
+HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
+                                       UpdaterScope scope,
                                        HANDLE* unique_event);
 
 struct NamedObjectAttributes {
   NamedObjectAttributes();
   ~NamedObjectAttributes();
-  base::string16 name;
+  std::wstring name;
   CSecurityAttributes sa;
 };
 
@@ -72,8 +72,8 @@ struct NamedObjectAttributes {
 // For machine objects, returns a security attributes that gives permissions to
 // both Admins and SYSTEM. This allows for cases where SYSTEM creates the named
 // object first. The default DACL for SYSTEM will not allow Admins access.
-void GetNamedObjectAttributes(const base::char16* base_name,
-                              bool is_machine,
+void GetNamedObjectAttributes(const wchar_t* base_name,
+                              UpdaterScope scope,
                               NamedObjectAttributes* attr);
 
 // Creates an event based on the provided attributes.
@@ -95,22 +95,16 @@ void GetAdminDaclSecurityDescriptor(CSecurityDesc* sd, ACCESS_MASK accessmask);
 
 // Returns the registry path for the Updater app id under the |Clients| subkey.
 // The path does not include the registry root hive prefix.
-base::string16 GetRegistryKeyClientsUpdater();
+std::wstring GetRegistryKeyClientsUpdater();
 
 // Returns the registry path for the Updater app id under the |ClientState|
 // subkey. The path does not include the registry root hive prefix.
-base::string16 GetRegistryKeyClientStateUpdater();
+std::wstring GetRegistryKeyClientStateUpdater();
 
 // Returns a value in the [0, 100] range or -1 if the progress could not
 // be computed.
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 
-// Reads installer progress for |app_id| from registry. The installer progress
-// is written by the application installer. Returns a value in the [0, 100]
-// range or -1 if the install progress is not available.
-int GetInstallerProgress(const std::string& app_id);
-
-bool DeleteInstallerProgress(const std::string& app_id);
 
 // Returns a logged on user token handle from the current session.
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId();

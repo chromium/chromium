@@ -26,6 +26,9 @@ constexpr const char* kSwitchesToRemoveOnAutorestart[] = {
     switches::kApp,
     switches::kAppId,
     switches::kForceFirstRun,
+#if defined(OS_WIN)
+    switches::kFromInstaller,
+#endif
     switches::kGuest,
     switches::kIncognito,
     switches::kMakeDefaultBrowser,

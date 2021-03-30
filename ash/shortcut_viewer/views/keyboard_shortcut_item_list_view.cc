@@ -63,7 +63,7 @@ KeyboardShortcutItemListView::KeyboardShortcutItemListView() {
 }
 
 void KeyboardShortcutItemListView::AddCategoryLabel(
-    const base::string16& text) {
+    const std::u16string& text) {
   constexpr int kLabelTopPadding = 44;
   constexpr int kLabelBottomPadding = 20;
   constexpr SkColor kLabelColor = SkColorSetARGB(0xFF, 0x42, 0x85, 0xF4);
@@ -75,8 +75,9 @@ void KeyboardShortcutItemListView::AddCategoryLabel(
   category_label->SetEnabledColor(kLabelColor);
   constexpr int kLabelFontSizeDelta = 1;
   category_label->SetFontList(
-      ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-          kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::BOLD));
+      ui::ResourceBundle::GetSharedInstance().GetFontListForDetails(
+          ui::ResourceBundle::FontDetails(std::string(), kLabelFontSizeDelta,
+                                          gfx::Font::Weight::BOLD)));
   AddChildView(std::move(category_label));
 }
 

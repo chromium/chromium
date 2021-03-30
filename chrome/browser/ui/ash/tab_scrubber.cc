@@ -293,14 +293,14 @@ void TabScrubber::UpdateSwipeX(float x_offset) {
   // one fourth of |x_offset| as the minimum (i.e. we need 38 tabs to reach
   // that minimum reduction).
   swipe_x_ += base::ClampToRange(
-      x_offset - (tab_strip_->tab_count() * 0.02f * x_offset), 0.25f * x_offset,
-      x_offset);
+      x_offset - (tab_strip_->GetTabCount() * 0.02f * x_offset),
+      0.25f * x_offset, x_offset);
 
   // In an RTL layout, everything is mirrored, i.e. the index of the first tab
   // (with the smallest X mirrored co-ordinates) is actually the index of the
   // last tab. Same for the index of the last tab.
-  int first_tab_index = base::i18n::IsRTL() ? tab_strip_->tab_count() - 1 : 0;
-  int last_tab_index = base::i18n::IsRTL() ? 0 : tab_strip_->tab_count() - 1;
+  int first_tab_index = base::i18n::IsRTL() ? tab_strip_->GetTabCount() - 1 : 0;
+  int last_tab_index = base::i18n::IsRTL() ? 0 : tab_strip_->GetTabCount() - 1;
 
   Tab* first_tab = tab_strip_->tab_at(first_tab_index);
   int first_tab_center = first_tab->GetMirroredBounds().CenterPoint().x();

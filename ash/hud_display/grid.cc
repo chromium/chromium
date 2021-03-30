@@ -23,7 +23,7 @@ namespace {
 
 constexpr SkColor kGridColor = SkColorSetRGB(162, 162, 220);
 
-base::string16 GenerateLabelText(float value, const base::string16& dimention) {
+std::u16string GenerateLabelText(float value, const std::u16string& dimention) {
   if (value == (int)value) {
     return base::ASCIIToUTF16(base::StringPrintf("%d ", (int)value).c_str()) +
            dimention;
@@ -43,8 +43,8 @@ Grid::Grid(float left,
            float top,
            float right,
            float bottom,
-           const base::string16& x_unit,
-           const base::string16& y_unit,
+           const std::u16string& x_unit,
+           const std::u16string& y_unit,
            int horizontal_points_number,
            int horizontal_ticks_interval,
            float vertical_ticks_interval)
@@ -63,13 +63,13 @@ Grid::Grid(float left,
 
   // Text is set later.
   right_top_label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL));
+      std::u16string(), views::style::CONTEXT_LABEL));
   right_middle_label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL));
+      std::u16string(), views::style::CONTEXT_LABEL));
   right_bottom_label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL));
+      std::u16string(), views::style::CONTEXT_LABEL));
   left_bottom_label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL));
+      std::u16string(), views::style::CONTEXT_LABEL));
 
   // Set label text.
   SetTopLabel(top_);

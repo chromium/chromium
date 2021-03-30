@@ -23,14 +23,24 @@ AutofillSyncSigninState TestPersonalDataManager::GetSyncSigninState() const {
   return sync_and_signin_state_;
 }
 
-void TestPersonalDataManager::RecordUseOf(const AutofillDataModel& data_model) {
-  CreditCard* credit_card = GetCreditCardWithGUID(data_model.guid().c_str());
-  if (credit_card)
-    credit_card->RecordAndLogUse();
+void TestPersonalDataManager::RecordUseOf(
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card) {
+  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
+    CreditCard* credit_card = GetCreditCardByGUID(
+        absl::get<const CreditCard*>(profile_or_credit_card)->guid());
 
-  AutofillProfile* profile = GetProfileWithGUID(data_model.guid().c_str());
-  if (profile)
-    profile->RecordAndLogUse();
+    if (credit_card)
+      credit_card->RecordAndLogUse();
+  }
+
+  if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)) {
+    AutofillProfile* profile = GetProfileByGUID(
+        absl::get<const AutofillProfile*>(profile_or_credit_card)->guid());
+
+    if (profile)
+      profile->RecordAndLogUse();
+  }
 }
 
 std::string TestPersonalDataManager::SaveImportedProfile(

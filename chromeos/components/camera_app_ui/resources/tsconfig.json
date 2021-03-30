@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "esnext"
+  },
+  "files": ["js/main.js", "js/externs/types.d.ts"]
+}

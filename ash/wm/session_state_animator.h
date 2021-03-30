@@ -18,13 +18,9 @@ class ASH_EXPORT SessionStateAnimator {
  public:
   // Animations that can be applied to groups of containers.
   enum AnimationType {
-    ANIMATION_PARTIAL_CLOSE = 0,
-    ANIMATION_UNDO_PARTIAL_CLOSE,
-    ANIMATION_FULL_CLOSE,
     ANIMATION_FADE_IN,
     ANIMATION_FADE_OUT,
     ANIMATION_HIDE_IMMEDIATELY,
-    ANIMATION_RESTORE,
     // Animations that raise/lower windows to/from area "in front" of the
     // screen.
     ANIMATION_LIFT,
@@ -32,12 +28,10 @@ class ASH_EXPORT SessionStateAnimator {
     ANIMATION_DROP,
     // Animations that raise/lower windows from/to area "behind" of the screen.
     ANIMATION_RAISE_TO_SCREEN,
-    ANIMATION_LOWER_BELOW_SCREEN,
-    ANIMATION_PARTIAL_FADE_IN,
-    ANIMATION_UNDO_PARTIAL_FADE_IN,
-    ANIMATION_FULL_FADE_IN,
     ANIMATION_GRAYSCALE_BRIGHTNESS,
     ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS,
+    // Pseudo animation type to copy layer.
+    ANIMATION_COPY_LAYER,
   };
 
   // Constants for determining animation speed.
@@ -47,15 +41,6 @@ class ASH_EXPORT SessionStateAnimator {
     // Speed for animations associated with user action that can be undone.
     // Used for pre-lock and pre-shutdown animations.
     ANIMATION_SPEED_UNDOABLE,
-    // Speed for animation that reverts undoable action. Used for aborting
-    // pre-lock and pre-shutdown animations.
-    ANIMATION_SPEED_REVERT,
-    // Speed for user action that can not be undone, Used for lock and shutdown
-    // animations requested via menus/shortcuts and for animating remaining
-    // parts of partial lock/shutdown animations.
-    ANIMATION_SPEED_FAST,
-    // Speed for lock screen appearance in "old" animation set.
-    ANIMATION_SPEED_SHOW_LOCK_SCREEN,
     // Speed for workspace-like animations in "new" animation set.
     ANIMATION_SPEED_MOVE_WINDOWS,
     // Speed for undoing workspace-like animations in "new" animation set.

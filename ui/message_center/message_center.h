@@ -146,7 +146,7 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   virtual void ClickOnNotificationButtonWithReply(
       const std::string& id,
       int button_index,
-      const base::string16& reply) = 0;
+      const std::u16string& reply) = 0;
 
   // Called by the UI classes when the settings buttons is clicked
   // to trigger the notification's delegate and update the message
@@ -208,8 +208,8 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // used to identify the application that generated a notification. Only used
   // for MD style notifications, which means that currently it's only set and
   // used on Chrome OS. On Chrome OS, this is "Chrome OS".
-  virtual const base::string16& GetSystemNotificationAppName() const = 0;
-  virtual void SetSystemNotificationAppName(const base::string16& name) = 0;
+  virtual const std::u16string& GetSystemNotificationAppName() const = 0;
+  virtual void SetSystemNotificationAppName(const std::u16string& name) = 0;
 
  protected:
   friend class ::DownloadNotification;

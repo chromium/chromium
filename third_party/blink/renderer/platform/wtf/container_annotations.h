@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONTAINER_ANNOTATIONS_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 
 // TODO(ochang): Remove the ARCH_CPU_X86_64 condition to enable this for X86
@@ -36,13 +37,15 @@
   ANNOTATE_NEW_BUFFER(buffer, newCapacity, bufferSize);
 // Annotations require buffers to begin on an 8-byte boundary.
 
-#else  // ADDRESS_SANITIZER && (OS_LINUX || OS_CHROMEOS) && ARCH_CPU_X86_64
+#else  // ADDRESS_SANITIZER && (OS_LINUX || IS_CHROMEOS_ASH) &&
+       // ARCH_CPU_X86_64
 
 #define ANNOTATE_NEW_BUFFER(buffer, capacity, newSize)
 #define ANNOTATE_DELETE_BUFFER(buffer, capacity, oldSize)
 #define ANNOTATE_CHANGE_SIZE(buffer, capacity, oldSize, newSize)
 #define ANNOTATE_CHANGE_CAPACITY(buffer, oldCapacity, bufferSize, newCapacity)
 
-#endif  // ADDRESS_SANITIZER && (OS_LINUX || OS_CHROMEOS) && ARCH_CPU_X86_64
+#endif  // ADDRESS_SANITIZER && (OS_LINUX || IS_CHROMEOS_ASH) &&
+        // ARCH_CPU_X86_64
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONTAINER_ANNOTATIONS_H_

@@ -76,6 +76,10 @@ bool NGLayoutInputNode::IsSliderThumb() const {
   return IsBlock() && blink::IsSliderThumb(GetDOMNode());
 }
 
+bool NGLayoutInputNode::IsSVGText() const {
+  return box_ && box_->IsNGSVGText();
+}
+
 bool NGLayoutInputNode::IsEmptyTableSection() const {
   return box_->IsTableSection() && To<LayoutNGTableSection>(box_)->IsEmpty();
 }
@@ -97,15 +101,6 @@ wtf_size_t NGLayoutInputNode::TableCellRowspan() const {
 
 bool NGLayoutInputNode::IsTextControlPlaceholder() const {
   return IsBlock() && blink::IsTextControlPlaceholder(GetDOMNode());
-}
-
-MinMaxSizesResult NGLayoutInputNode::ComputeMinMaxSizes(
-    WritingMode writing_mode,
-    const MinMaxSizesInput& input,
-    const NGConstraintSpace* space) const {
-  if (auto* inline_node = DynamicTo<NGInlineNode>(this))
-    return inline_node->ComputeMinMaxSizes(writing_mode, input, space);
-  return To<NGBlockNode>(*this).ComputeMinMaxSizes(writing_mode, input, space);
 }
 
 void NGLayoutInputNode::IntrinsicSize(
@@ -176,6 +171,7 @@ void NGLayoutInputNode::GetOverrideIntrinsicSize(
       *computed_block_size = default_block_size;
   }
 
+  // TODO(mstensho): Update for contain:inline-size / contain:block-size.
   if (ShouldApplySizeContainment()) {
     if (!*computed_inline_size)
       *computed_inline_size = LayoutUnit();

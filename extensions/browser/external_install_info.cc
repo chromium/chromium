@@ -18,7 +18,7 @@ ExternalInstallInfoFile::ExternalInstallInfoFile(
     const std::string& extension_id,
     const base::Version& version,
     const base::FilePath& path,
-    Manifest::Location crx_location,
+    mojom::ManifestLocation crx_location,
     int creation_flags,
     bool mark_acknowledged,
     bool install_immediately)
@@ -36,7 +36,7 @@ ExternalInstallInfoUpdateUrl::ExternalInstallInfoUpdateUrl(
     const std::string& extension_id,
     const std::string& install_parameter,
     GURL update_url,
-    Manifest::Location download_location,
+    mojom::ManifestLocation download_location,
     int creation_flags,
     bool mark_acknowledged)
     : ExternalInstallInfo(extension_id, creation_flags, mark_acknowledged),

@@ -31,6 +31,7 @@ public class ActivityTabStartupMetricsTracker {
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private PageLoadMetrics.Observer mPageLoadMetricsObserver;
     private boolean mShouldTrackStartupMetrics;
+    private boolean mFirstVisibleContentRecorded;
     private boolean mVisibleContentRecorded;
 
     public ActivityTabStartupMetricsTracker(
@@ -140,6 +141,9 @@ public class ActivityTabStartupMetricsTracker {
             RecordHistogram.recordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit" + mHistogramSuffix,
                     mFirstCommitTimeMs);
+            if (mHistogramSuffix.equals(UMA_HISTOGRAM_TABBED_SUFFIX)) {
+                recordFirstVisibleContent(mFirstCommitTimeMs);
+            }
         }
         mShouldTrackStartupMetrics = false;
     }
@@ -168,6 +172,22 @@ public class ActivityTabStartupMetricsTracker {
     }
 
     /**
+     * Record the time to first visible content. This metric acts as the Clank cold start guardian
+     * metric. Reports the minimum value of
+     * Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed and
+     * Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap.
+     *
+     * @param durationMs duration in millis.
+     */
+    private void recordFirstVisibleContent(long durationMs) {
+        if (mFirstVisibleContentRecorded) return;
+
+        mFirstVisibleContentRecorded = true;
+        RecordHistogram.recordMediumTimesHistogram(
+                "Startup.Android.Cold.TimeToFirstVisibleContent", durationMs);
+    }
+
+    /**
      * Record the first Visible Content time.
      * This metric reports the minimum value of
      * Startup.Android.Cold.TimeToFirstContentfulPaint.Tabbed and
@@ -175,11 +195,22 @@ public class ActivityTabStartupMetricsTracker {
      *
      * @param durationMs duration in millis.
      */
-    public void recordVisibleContent(long durationMs) {
+    private void recordVisibleContent(long durationMs) {
         if (mVisibleContentRecorded) return;
 
         mVisibleContentRecorded = true;
         RecordHistogram.recordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToVisibleContent", durationMs);
+    }
+
+    /**
+     * An API for the caller to notify the metrics tracker that a page preview or an external UI was
+     * drawn.
+     *
+     * @param durationMs the external UI render duration
+     */
+    public void pagePreviewRendered(long durationMs) {
+        recordFirstVisibleContent(durationMs);
+        recordVisibleContent(durationMs);
     }
 }

@@ -48,13 +48,16 @@ SSLHostStateDelegate::CertJudgment MockSSLHostStateDelegate::QueryPolicy(
 void MockSSLHostStateDelegate::HostRanInsecureContent(
     const std::string& host,
     int child_id,
-    InsecureContentType content_type) {}
+    InsecureContentType content_type) {
+  hosts_ran_insecure_content_.insert(host);
+}
 
 bool MockSSLHostStateDelegate::DidHostRunInsecureContent(
     const std::string& host,
     int child_id,
     InsecureContentType content_type) {
-  return false;
+  return hosts_ran_insecure_content_.find(host) !=
+         hosts_ran_insecure_content_.end();
 }
 
 void MockSSLHostStateDelegate::RevokeUserAllowExceptions(

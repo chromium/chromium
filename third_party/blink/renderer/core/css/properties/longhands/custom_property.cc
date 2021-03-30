@@ -38,8 +38,7 @@ CustomProperty::CustomProperty(const AtomicString& name,
 
 CustomProperty::CustomProperty(const AtomicString& name,
                                const PropertyRegistration* registration)
-    : Variable(InheritedFlag(registration) |
-               CSSProperty::kComputedValueComparable),
+    : Variable(InheritedFlag(registration)),
       name_(name),
       registration_(registration) {}
 
@@ -82,6 +81,10 @@ void CustomProperty::ApplyInherit(StyleResolverState& state) const {
 void CustomProperty::ApplyValue(StyleResolverState& state,
                                 const CSSValue& value) const {
   if (value.IsInvalidVariableValue()) {
+    if (!SupportsGuaranteedInvalid()) {
+      ApplyUnset(state);
+      return;
+    }
     state.Style()->SetVariableData(name_, nullptr, IsInherited());
     if (registration_)
       state.Style()->SetVariableValue(name_, nullptr, IsInherited());
@@ -156,23 +159,8 @@ const CSSValue* CustomProperty::ParseSingleValue(
   }
 }
 
-bool CustomProperty::ComputedValuesEqual(const ComputedStyle& a,
-                                         const ComputedStyle& b) const {
-  if (registration_) {
-    const CSSValue* a_value = a.GetVariableValue(name_, IsInherited());
-    const CSSValue* b_value = b.GetVariableValue(name_, IsInherited());
-    if (!DataEquivalent(a_value, b_value))
-      return false;
-  }
-
-  CSSVariableData* a_data = a.GetVariableData(name_, IsInherited());
-  CSSVariableData* b_data = b.GetVariableData(name_, IsInherited());
-  return DataEquivalent(a_data, b_data);
-}
-
 const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
   if (registration_) {

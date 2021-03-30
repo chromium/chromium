@@ -22,7 +22,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -39,8 +38,8 @@ class BASE_EXPORT CommandLine {
   using StringType = std::string;
 #endif
 
-  using StringPieceType = base::BasicStringPiece<StringType>;
   using CharType = StringType::value_type;
+  using StringPieceType = base::BasicStringPiece<CharType>;
   using StringVector = std::vector<StringType>;
   using SwitchMap = std::map<std::string, StringType, std::less<>>;
 
@@ -121,12 +120,19 @@ class BASE_EXPORT CommandLine {
   // ending with the argument placeholder "--single-argument %1". The single-
   // argument switch prevents unexpected parsing of arguments from other
   // software that cannot be trusted to escape double quotes when substituting
-  // into a placeholder (e.g., "%1" placeholders populated by the Windows
+  // into a placeholder (e.g., "%1" insert sequences populated by the Windows
   // shell).
   // NOTE: this must be used to generate the command-line string for the shell
   // even if this command line was parsed from a string with the proper syntax,
   // because the --single-argument switch is not preserved during parsing.
   StringType GetCommandLineStringForShell() const;
+
+  // Returns the represented command-line string. Allows the use of unsafe
+  // Windows insert sequences like "%1". Only use this method if
+  // GetCommandLineStringForShell() is not adequate AND the processor inserting
+  // the arguments is known to do so securely (i.e., is not the Windows shell).
+  // If in doubt, do not use.
+  StringType GetCommandLineStringWithUnsafeInsertSequences() const;
 #endif
 
   // Constructs and returns the represented arguments string.
@@ -214,6 +220,12 @@ class BASE_EXPORT CommandLine {
 
   // Append switches and arguments, keeping switches before arguments.
   void AppendSwitchesAndArguments(const StringVector& argv);
+
+  // Internal version of GetArgumentsString to support allowing unsafe insert
+  // sequences in rare cases (see
+  // GetCommandLineStringWithUnsafeInsertSequences).
+  StringType GetArgumentsStringInternal(
+      bool allow_unsafe_insert_sequences) const;
 
 #if defined(OS_WIN)
   // Initializes by parsing |raw_command_line_string_|, treating everything

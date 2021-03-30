@@ -107,7 +107,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"landingNewUser", IDS_WELCOME_LANDING_NEW_USER},
       {"landingExistingUser", IDS_WELCOME_LANDING_EXISTING_USER},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 }  // namespace
@@ -161,7 +161,7 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
       {"images/set_default_dark.svg", IDR_WELCOME_SET_DEFAULT_DARK},
       {"images/set_default_light.svg", IDR_WELCOME_SET_DEFAULT_LIGHT},
   };
-  webui::AddResourcePathsBulk(html_source, kPaths);
+  html_source->AddResourcePaths(kPaths);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if defined(OS_WIN)

@@ -24,7 +24,7 @@ cast_source_set("accessibility") {
     "//chromecast/common",
     "//components/exo",
     "//content/public/browser",
-    "//extensions/browser/api",
+    "//extensions/browser/api/automation_internal",
     "//skia",
     "//third_party/grpc:grpc++",
     "//ui/views",
@@ -32,7 +32,10 @@ cast_source_set("accessibility") {
 }
 
 test("cast_accessibility_unittests") {
-  sources = [ "ax_tree_source_flutter_unittest.cc" ]
+  sources = [
+    "ax_tree_source_flutter_unittest.cc",
+    "flutter_semantics_node_wrapper_unittest.cc",
+  ]
 
   deps = [
     ":accessibility",
@@ -41,7 +44,7 @@ test("cast_accessibility_unittests") {
     "//chromecast:cast_shell_lib",
     "//chromecast/browser",
     "//content/test:test_support",
-    "//extensions/browser/api",
+    "//extensions/browser/api/automation_internal",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

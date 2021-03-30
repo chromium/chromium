@@ -66,8 +66,8 @@ uint32_t WebsiteSettingsInfo::GetPrefRegistrationFlags() const {
 
 bool WebsiteSettingsInfo::SupportsSecondaryPattern() const {
   return scoping_type_ == COOKIES_SCOPE ||
-         scoping_type_ == SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE ||
-         scoping_type_ == REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE;
+         scoping_type_ == STORAGE_ACCESS_SCOPE ||
+         scoping_type_ == SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE;
 }
 
 }  // namespace content_settings

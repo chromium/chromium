@@ -7,9 +7,9 @@
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/sharing/features.h"
+#include "components/sync/model/dummy_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/model_impl/dummy_metadata_change_list.h"
 #include "net/base/network_change_notifier.h"
 
 namespace {
@@ -194,7 +194,8 @@ void SharingMessageBridgeImpl::OnCommitAttemptErrors(
   }
 }
 
-void SharingMessageBridgeImpl::OnCommitAttemptFailed(
+syncer::ModelTypeSyncBridge::CommitAttemptFailedBehavior
+SharingMessageBridgeImpl::OnCommitAttemptFailed(
     syncer::SyncCommitError commit_error) {
   // Full commit failed means we need to drop all entities and report an error
   // using callback.
@@ -207,7 +208,7 @@ void SharingMessageBridgeImpl::OnCommitAttemptFailed(
     case syncer::SyncCommitError::kAuthError:
       // Ignore the auth error because it may be a temporary error and the
       // message will be sent on the second attempt.
-      return;
+      return CommitAttemptFailedBehavior::kShouldRetryOnNextCycle;
     case syncer::SyncCommitError::kServerError:
     case syncer::SyncCommitError::kBadServerResponse:
       sharing_message_error_code =
@@ -222,6 +223,7 @@ void SharingMessageBridgeImpl::OnCommitAttemptFailed(
     cth_and_commit.second.timed_callback->Run(sync_error_message);
   }
   pending_commits_.clear();
+  return CommitAttemptFailedBehavior::kDontRetryOnNextCycle;
 }
 
 void SharingMessageBridgeImpl::ApplyStopSyncChanges(

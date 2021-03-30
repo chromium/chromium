@@ -78,8 +78,7 @@ content::GlobalFrameRoutingId GetFrameRoutingId(
   if (!host)
     return content::GlobalFrameRoutingId();
 
-  return content::GlobalFrameRoutingId(host->GetProcess()->GetID(),
-                                       host->GetRoutingID());
+  return host->GetGlobalFrameRoutingId();
 }
 
 }  // namespace

@@ -18,7 +18,7 @@ PowerMonitorTestSource::PowerMonitorTestSource() {
 
 PowerMonitorTestSource::~PowerMonitorTestSource() = default;
 
-PowerObserver::DeviceThermalState
+PowerThermalObserver::DeviceThermalState
 PowerMonitorTestSource::GetCurrentThermalState() {
   return current_thermal_state_;
 }
@@ -39,12 +39,12 @@ void PowerMonitorTestSource::GenerateResumeEvent() {
   RunLoop().RunUntilIdle();
 }
 
-bool PowerMonitorTestSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorTestSource::IsOnBatteryPower() {
   return test_on_battery_power_;
 }
 
 void PowerMonitorTestSource::GenerateThermalThrottlingEvent(
-    PowerObserver::DeviceThermalState new_thermal_state) {
+    PowerThermalObserver::DeviceThermalState new_thermal_state) {
   ProcessThermalEvent(new_thermal_state);
   current_thermal_state_ = new_thermal_state;
   RunLoop().RunUntilIdle();
@@ -59,7 +59,6 @@ PowerMonitorTestObserver::PowerMonitorTestObserver()
 
 PowerMonitorTestObserver::~PowerMonitorTestObserver() = default;
 
-// PowerObserver callbacks.
 void PowerMonitorTestObserver::OnPowerStateChange(bool on_battery_power) {
   last_power_state_ = on_battery_power;
   power_state_changes_++;
@@ -74,7 +73,7 @@ void PowerMonitorTestObserver::OnResume() {
 }
 
 void PowerMonitorTestObserver::OnThermalStateChange(
-    PowerObserver::DeviceThermalState new_state) {
+    PowerThermalObserver::DeviceThermalState new_state) {
   last_thermal_state_ = new_state;
 }
 

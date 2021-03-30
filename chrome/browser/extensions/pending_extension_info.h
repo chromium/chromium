@@ -9,7 +9,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/version.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/common/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -25,7 +27,8 @@ class Extension;
 // PendingExtensionManager, and remove all other users.
 class PendingExtensionInfo {
  public:
-  typedef bool (*ShouldAllowInstallPredicate)(const Extension*);
+  typedef bool (*ShouldAllowInstallPredicate)(const Extension*,
+                                              content::BrowserContext* context);
 
   PendingExtensionInfo(const std::string& id,
                        const std::string& install_parameter,
@@ -33,7 +36,7 @@ class PendingExtensionInfo {
                        const base::Version& version,
                        ShouldAllowInstallPredicate should_allow_install,
                        bool is_from_sync,
-                       Manifest::Location install_source,
+                       mojom::ManifestLocation install_source,
                        int creation_flags,
                        bool mark_acknowledged,
                        bool remote_install);
@@ -59,11 +62,12 @@ class PendingExtensionInfo {
   // If not, the extension is discarded. This allows creators of
   // PendingExtensionInfo objects to ensure that extensions meet some criteria
   // that can only be tested once the extension is unpacked.
-  bool ShouldAllowInstall(const Extension* extension) const {
-    return should_allow_install_(extension);
+  bool ShouldAllowInstall(const Extension* extension,
+                          content::BrowserContext* context) const {
+    return should_allow_install_(extension, context);
   }
   bool is_from_sync() const { return is_from_sync_; }
-  Manifest::Location install_source() const { return install_source_; }
+  mojom::ManifestLocation install_source() const { return install_source_; }
   int creation_flags() const { return creation_flags_; }
   bool mark_acknowledged() const { return mark_acknowledged_; }
   bool remote_install() const { return remote_install_; }
@@ -88,7 +92,7 @@ class PendingExtensionInfo {
   ShouldAllowInstallPredicate should_allow_install_;
 
   bool is_from_sync_;  // This update check was initiated from sync.
-  Manifest::Location install_source_;
+  mojom::ManifestLocation install_source_;
   int creation_flags_;
   bool mark_acknowledged_;
   bool remote_install_;

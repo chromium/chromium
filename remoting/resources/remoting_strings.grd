@@ -17,7 +17,7 @@
     <output filename="remoting/resources/de.pak" lang="de" type="data_package"/>
     <output filename="remoting/resources/el.pak" lang="el" type="data_package"/>
     <output filename="remoting/resources/en-GB.pak" lang="en-GB" type="data_package"/>
-    <if expr="chromeos">
+    <if expr="chromeos or lacros">
       <output filename="remoting/resources/en-US.pak" lang="en" type="data_package"/>
     </if>
     <output filename="remoting/resources/en.pak" lang="en" type="data_package"/>
@@ -31,10 +31,6 @@
     <output filename="remoting/resources/es.pak" lang="es" type="data_package"/>
     <output filename="remoting/resources/et.pak" lang="et" type="data_package"/>
     <output filename="remoting/resources/fa.pak" lang="fa" type="data_package"/>
-    <if expr="not is_ios or not _official_build">
-      <!-- The fake-bidi locale isn't accepted by the app store. -->
-      <output filename="remoting/resources/fake-bidi.pak" lang="fake-bidi" type="data_package"/>
-    </if>
     <output filename="remoting/resources/fi.pak" lang="fi" type="data_package"/>
     <output filename="remoting/resources/fil.pak" lang="fil" type="data_package"/>
     <output filename="remoting/resources/fr.pak" lang="fr" type="data_package"/>
@@ -44,6 +40,9 @@
     <output filename="remoting/resources/hr.pak" lang="hr" type="data_package"/>
     <output filename="remoting/resources/hu.pak" lang="hu" type="data_package"/>
     <output filename="remoting/resources/id.pak" lang="id" type="data_package"/>
+    <if expr="chromeos or lacros">
+      <output filename="remoting/resources/is.pak" lang="is" type="data_package"/>
+    </if>
     <output filename="remoting/resources/it.pak" lang="it" type="data_package"/>
     <output filename="remoting/resources/ja.pak" lang="ja" type="data_package"/>
     <output filename="remoting/resources/kn.pak" lang="kn" type="data_package"/>
@@ -81,6 +80,10 @@
     <output filename="remoting/resources/zh-CN.pak" lang="zh-CN" type="data_package"/>
     <output filename="remoting/resources/zh-TW.pak" lang="zh-TW" type="data_package"/>
 
+    <!-- Pseudolocales -->
+    <output filename="remoting/resources/ar-XB.pak" lang="ar-XB" type="data_package"/>
+    <output filename="remoting/resources/en-XA.pak" lang="en-XA" type="data_package"/>
+
     <output filename="remoting/resources/_locales/am/messages.json" lang="am" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ar/messages.json" lang="ar" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/bg/messages.json" lang="bg" type="chrome_messages_json"/>
@@ -90,13 +93,9 @@
     <output filename="remoting/resources/_locales/da/messages.json" lang="da" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/de/messages.json" lang="de" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fa/messages.json" lang="fa" type="chrome_messages_json"/>
-    <if expr="not is_ios or not _official_build">
-      <!-- The fake-bidi locale isn't accepted by the app store. -->
-      <output filename="remoting/resources/_locales/fake_bidi/messages.json" lang="fake-bidi" type="chrome_messages_json"/>
-    </if>
     <output filename="remoting/resources/_locales/el/messages.json" lang="el" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/en/messages.json" lang="en" type="chrome_messages_json"/>
-    <if expr="chromeos">
+    <if expr="chromeos or lacros">
       <!-- lang="en-US" will create an empty json file. -->
       <output filename="remoting/resources/_locales/en_US/messages.json" lang="en" type="chrome_messages_json"/>
     </if>
@@ -119,6 +118,9 @@
     <output filename="remoting/resources/_locales/hr/messages.json" lang="hr" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hu/messages.json" lang="hu" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/id/messages.json" lang="id" type="chrome_messages_json"/>
+    <if expr="chromeos or lacros">
+      <output filename="remoting/resources/_locales/is/messages.json" lang="is" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/it/messages.json" lang="it" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ja/messages.json" lang="ja" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/kn/messages.json" lang="kn" type="chrome_messages_json"/>
@@ -155,6 +157,10 @@
     <output filename="remoting/resources/_locales/vi/messages.json" lang="vi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_CN/messages.json" lang="zh-CN" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_TW/messages.json" lang="zh-TW" type="chrome_messages_json"/>
+
+    <!-- Pseudolocales -->
+    <output filename="remoting/resources/_locales/ar_XB/messages.json" lang="ar-XB" type="chrome_messages_json"/>
+    <output filename="remoting/resources/_locales/en_XA/messages.json" lang="en-XA" type="chrome_messages_json"/>
 
     <if expr="is_android">
       <output filename="remoting/android/res/values-am/remoting_strings.xml" lang="am" type="android" context="android_java"/>
@@ -203,7 +209,6 @@
       <output filename="remoting/android/res/values-zh-rCN/remoting_strings.xml" lang="zh-CN" type="android" context="android_java"/>
       <output filename="remoting/android/res/values-zh-rTW/remoting_strings.xml" lang="zh-TW" type="android" context="android_java"/>
     </if>
-
   </outputs>
   <translations>
     <file lang="af" path="remoting_strings_af.xtb"/>
@@ -288,7 +293,7 @@
     <file lang="zh-TW" path="remoting_strings_zh-TW.xtb"/>
     <file lang="zu" path="remoting_strings_zu.xtb"/>
   </translations>
-  <release allow_pseudo="false" seq="1">
+  <release seq="1">
     <messages fallback_to_english="true">
 
       <if expr="_google_chrome">
@@ -317,7 +322,7 @@
           Google LLC
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chrome Remote Desktop Host executable. It should be updated every year.">
-          Copyright 2020 Google LLC. All Rights Reserved.
+          Copyright 2021 Google LLC. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chrome Remote Desktop.">
           Chrome Remote Desktop Service
@@ -327,6 +332,9 @@
         </message>
         <message name="IDS_MAC_UNINSTALLER_BUNDLE_NAME" desc="The bundle name specified in the property list of Chrome Remote Desktop Host Uninstaller bundle on MacOS. The Chrome Remote Desktop host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer).">
           Chrome Remote Desktop Host Uninstaller
+        </message>
+        <message name="IDS_MAC_MICROPHONE_USAGE" desc="The description explaining how the Chrome Remote Desktop host requests for microphone access.">
+          Microphone access is required to capture audio and stream it to the Chrome Remote Desktop client.
         </message>
       </if>  <!-- _google_chrome -->
 
@@ -356,7 +364,7 @@
           The Chromium Authors
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chromoting Host executable. It should be updated every year.">
-          Copyright 2013 The Chromium Authors. All Rights Reserved.
+          Copyright 2021 The Chromium Authors. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chromoting.">
           Chromoting Service
@@ -366,6 +374,9 @@
         </message>
         <message name="IDS_MAC_UNINSTALLER_BUNDLE_NAME" desc="The bundle name specified in the property list of Chromoting Host Uninstaller bundle on MacOS.">
           Chromoting Host Uninstaller
+        </message>
+        <message name="IDS_MAC_MICROPHONE_USAGE" desc="The description explaining how the Chrome Remote Desktop host uses microphone.">
+          Microphone access is required to capture audio and stream it to the Chrome Remote Desktop client.
         </message>
       </if>  <!-- not _google_chrome -->
 

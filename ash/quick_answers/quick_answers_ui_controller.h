@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chromeos {
@@ -62,8 +61,8 @@ class ASH_EXPORT QuickAnswersUiController {
   // Creates a view for notifying the user about the Quick Answers feature
   // vertically aligned to the anchor.
   void CreateUserNoticeView(const gfx::Rect& anchor_bounds,
-                            const base::string16& intent_type,
-                            const base::string16& intent_text);
+                            const std::u16string& intent_type,
+                            const std::u16string& intent_text);
 
   void CloseUserNoticeView();
 

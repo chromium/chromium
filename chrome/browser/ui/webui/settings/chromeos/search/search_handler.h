@@ -51,7 +51,7 @@ class SearchHandler : public mojom::SearchHandler,
       mojo::PendingReceiver<mojom::SearchHandler> pending_receiver);
 
   // mojom::SearchHandler:
-  void Search(const base::string16& query,
+  void Search(const std::u16string& query,
               uint32_t max_num_results,
               mojom::ParentResultBehavior parent_result_behavior,
               SearchCallback callback) override;

@@ -119,7 +119,7 @@ class ValueStore {
   // The result of a write operation (Set/Remove/Clear).
   class WriteResult {
    public:
-    WriteResult(std::unique_ptr<ValueStoreChangeList> changes, Status status);
+    WriteResult(ValueStoreChangeList changes, Status status);
     explicit WriteResult(Status status);
     WriteResult(WriteResult&& other);
     ~WriteResult();
@@ -128,15 +128,13 @@ class ValueStore {
     // Gets the list of changes to the settings which resulted from the write.
     // Won't be present if the NO_GENERATE_CHANGES WriteOptions was given.
     // Only call if no error.
-    const ValueStoreChangeList& changes() const { return *changes_; }
-    std::unique_ptr<ValueStoreChangeList> PassChanges() {
-      return std::move(changes_);
-    }
+    const ValueStoreChangeList& changes() const { return changes_; }
+    ValueStoreChangeList PassChanges() { return std::move(changes_); }
 
     const Status& status() const { return status_; }
 
    private:
-    std::unique_ptr<ValueStoreChangeList> changes_;
+    ValueStoreChangeList changes_;
     Status status_;
 
     DISALLOW_COPY_AND_ASSIGN(WriteResult);

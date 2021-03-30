@@ -244,18 +244,18 @@ void RegistryDict::Swap(RegistryDict* other) {
 }
 
 #if defined(OS_WIN)
-void RegistryDict::ReadRegistry(HKEY hive, const base::string16& root) {
+void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
   ClearKeys();
   ClearValues();
 
   // First, read all the values of the key.
   for (RegistryValueIterator it(hive, root.c_str()); it.Valid(); ++it) {
-    const std::string name = base::UTF16ToUTF8(it.Name());
+    const std::string name = base::WideToUTF8(it.Name());
     switch (it.Type()) {
       case REG_SZ:
       case REG_EXPAND_SZ:
         SetValue(name, std::unique_ptr<base::Value>(
-                           new base::Value(base::UTF16ToUTF8(it.Value()))));
+                           new base::Value(base::WideToUTF8(it.Value()))));
         continue;
       case REG_DWORD_LITTLE_ENDIAN:
       case REG_DWORD_BIG_ENDIAN:
@@ -287,7 +287,7 @@ void RegistryDict::ReadRegistry(HKEY hive, const base::string16& root) {
 
   // Recurse for all subkeys.
   for (RegistryKeyIterator it(hive, root.c_str()); it.Valid(); ++it) {
-    std::string name(base::UTF16ToUTF8(it.Name()));
+    std::string name(base::WideToUTF8(it.Name()));
     std::unique_ptr<RegistryDict> subdict(new RegistryDict());
     subdict->ReadRegistry(hive, root + L"\\" + it.Name());
     SetKey(name, std::move(subdict));

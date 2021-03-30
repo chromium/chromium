@@ -30,7 +30,6 @@ namespace offline_pages {
 
 class OfflinerPolicy;
 class OfflinePageModel;
-class PageRenovationLoader;
 class PageRenovator;
 
 struct RequestStats {
@@ -75,8 +74,10 @@ class BackgroundLoaderOffliner
   void CanDownload(base::OnceCallback<void(bool)> callback) override;
 
   // WebContentsObserver implementation.
-  void DocumentAvailableInMainFrame() override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentAvailableInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
   void RenderProcessGone(base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
   void DidFinishNavigation(
@@ -84,7 +85,6 @@ class BackgroundLoaderOffliner
 
   // BackgroundSnapshotController::Client implementation.
   void StartSnapshot() override;
-  void RunRenovations() override;
 
   void SetBackgroundSnapshotControllerForTest(
       std::unique_ptr<BackgroundSnapshotController> controller);
@@ -169,11 +169,6 @@ class BackgroundLoaderOffliner
   std::unique_ptr<LoadTerminationListener> load_termination_listener_;
   // Whether we are on a low-end device.
   bool is_low_end_device_;
-
-  // PageRenovationLoader must live longer than the PageRenovator.
-  std::unique_ptr<PageRenovationLoader> page_renovation_loader_;
-  // Per-offliner PageRenovator instance.
-  std::unique_ptr<PageRenovator> page_renovator_;
 
   // Save state.
   SaveState save_state_;

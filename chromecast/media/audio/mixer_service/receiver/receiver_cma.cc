@@ -93,6 +93,11 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
       cma_audio_->SetVolumeMultiplier(message.set_stream_volume().volume());
     }
 
+    if (message.has_eos_played_out()) {
+      // Explicit EOS.
+      return HandleAudioData(nullptr, 0, INT64_MIN);
+    }
+
     return true;
   }
 

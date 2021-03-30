@@ -51,7 +51,7 @@ std::unique_ptr<CSS::SourceRange> BuildDefaultSelectorSourceRange() {
 std::unique_ptr<Array<int>> BuildDefaultMatchingSelectors() {
   auto matching_selectors = std::make_unique<Array<int>>();
 
-  // Add index 0 to matching delectors array, so frontend uses the class mame
+  // Add index 0 to matching selectors array, so frontend uses the class name
   // from the selectors array as the header for the properties section
   matching_selectors->emplace_back(0);
   return matching_selectors;
@@ -272,21 +272,21 @@ Response CSSAgent::setStyleTexts(
     if (!ui_element)
       return Response::ServerError("Node id not found");
     // Handle setting properties from metadata for View.
-    if (ui_element->type() == VIEW)
-      ui_element->SetPropertiesFromString(edit->getText());
+    if (ui_element->type() != VIEW ||
+        !ui_element->SetPropertiesFromString(edit->getText())) {
+      gfx::Rect updated_bounds;
+      bool visible = false;
+      if (!GetPropertiesForUIElement(ui_element, &updated_bounds, &visible))
+        return NodeNotFoundError(node_id);
 
-    gfx::Rect updated_bounds;
-    bool visible = false;
-    if (!GetPropertiesForUIElement(ui_element, &updated_bounds, &visible))
-      return NodeNotFoundError(node_id);
+      Response response(
+          ParseProperties(edit->getText(), &updated_bounds, &visible));
+      if (!response.IsSuccess())
+        return response;
 
-    Response response(
-        ParseProperties(edit->getText(), &updated_bounds, &visible));
-    if (!response.IsSuccess())
-      return response;
-
-    if (!SetPropertiesForUIElement(ui_element, updated_bounds, visible))
-      return NodeNotFoundError(node_id);
+      if (!SetPropertiesForUIElement(ui_element, updated_bounds, visible))
+        return NodeNotFoundError(node_id);
+    }
 
     updated_styles->emplace_back(BuildCSSStyle(
         edit->getStyleSheetId(), GetClassPropertiesWithBounds(ui_element)

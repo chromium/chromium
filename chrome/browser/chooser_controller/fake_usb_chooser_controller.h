@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_CHOOSER_CONTROLLER_FAKE_USB_CHOOSER_CONTROLLER_H_
 #define CHROME_BROWSER_CHOOSER_CONTROLLER_FAKE_USB_CHOOSER_CONTROLLER_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 
 // A subclass of ChooserController that pretends to be a USB device chooser for
@@ -17,10 +18,12 @@ class FakeUsbChooserController : public ChooserController {
   explicit FakeUsbChooserController(int device_count);
 
   // ChooserController:
-  base::string16 GetNoOptionsText() const override;
-  base::string16 GetOkButtonLabel() const override;
+  std::u16string GetNoOptionsText() const override;
+  std::u16string GetOkButtonLabel() const override;
+  std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
+      const override;
   size_t NumOptions() const override;
-  base::string16 GetOption(size_t index) const override;
+  std::u16string GetOption(size_t index) const override;
   void Select(const std::vector<size_t>& indices) override {}
   void Cancel() override {}
   void Close() override {}

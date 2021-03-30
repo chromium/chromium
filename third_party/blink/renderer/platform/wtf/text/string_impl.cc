@@ -80,18 +80,17 @@ void StringImpl::DestroyIfNotStatic() const {
     delete this;
 }
 
-bool StringImpl::ContainsOnlyASCIIOrEmptySlowCase() const {
-  bool contains_only_ascii =
-      Is8Bit() ? CharactersAreAllASCII(Characters8(), length())
-               : CharactersAreAllASCII(Characters16(), length());
-  uint32_t new_flags = kAsciiCheckDone;
-  if (contains_only_ascii)
-    new_flags |= kContainsOnlyAscii;
+unsigned StringImpl::ComputeASCIIFlags() const {
+  ASCIIStringAttributes ascii_attributes =
+      Is8Bit() ? CharacterAttributes(Characters8(), length())
+               : CharacterAttributes(Characters16(), length());
+  uint32_t new_flags = ASCIIStringAttributesToFlags(ascii_attributes);
   const uint32_t previous_flags =
       hash_and_flags_.fetch_or(new_flags, std::memory_order_relaxed);
-  static constexpr uint32_t mask = kAsciiCheckDone | kContainsOnlyAscii;
+  static constexpr uint32_t mask =
+      kAsciiPropertyCheckDone | kContainsOnlyAscii | kIsLowerAscii;
   DCHECK((previous_flags & mask) == 0 || (previous_flags & mask) == new_flags);
-  return contains_only_ascii;
+  return new_flags;
 }
 
 bool StringImpl::IsSafeToSendToAnotherThread() const {
@@ -258,6 +257,21 @@ scoped_refptr<StringImpl> StringImpl::Create(const LChar* characters,
   scoped_refptr<StringImpl> string = CreateUninitialized(length, data);
   memcpy(data, characters, length * sizeof(LChar));
   return string;
+}
+
+scoped_refptr<StringImpl> StringImpl::Create(
+    const LChar* characters,
+    wtf_size_t length,
+    ASCIIStringAttributes ascii_attributes) {
+  scoped_refptr<StringImpl> ret = Create(characters, length);
+  if (length) {
+    // If length is 0 then `ret` is empty_ and should not have its
+    // attributes calculated or changed.
+    uint32_t new_flags = ASCIIStringAttributesToFlags(ascii_attributes);
+    ret->hash_and_flags_.fetch_or(new_flags, std::memory_order_relaxed);
+  }
+
+  return ret;
 }
 
 scoped_refptr<StringImpl> StringImpl::Create8BitIfPossible(

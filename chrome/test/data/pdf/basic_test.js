@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFilenameFromURL, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer.js';
-import {shouldIgnoreKeyEvents} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_utils.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {getFilenameFromURL, PDFViewerElement, shouldIgnoreKeyEvents, ViewerPdfToolbarNewElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 const tests = [
   /**
@@ -14,11 +12,12 @@ const tests = [
   function testHasElements() {
     const viewer = /** @type {!PDFViewerElement} */ (
         document.body.querySelector('pdf-viewer'));
-    const commonElements = ['viewer-password-screen', 'viewer-error-screen'];
-    const elementNames =
-        document.documentElement.hasAttribute('pdf-viewer-update-enabled') ?
-        ['viewer-pdf-toolbar-new', 'viewer-pdf-sidenav', ...commonElements] :
-        ['viewer-pdf-toolbar', 'viewer-zoom-toolbar', ...commonElements];
+    const elementNames = [
+      'viewer-error-screen',
+      'viewer-pdf-sidenav',
+      'viewer-pdf-toolbar-new',
+    ];
+
     for (let i = 0; i < elementNames.length; i++) {
       const elements = viewer.shadowRoot.querySelectorAll(elementNames[i]);
       chrome.test.assertEq(1, elements.length);
@@ -44,7 +43,7 @@ const tests = [
   function testShouldIgnoreKeyEvents() {
     const viewer = /** @type {!PDFViewerElement} */ (
         document.body.querySelector('pdf-viewer'));
-    const toolbar = /** @type {!ViewerPdfToolbarElement} */ (
+    const toolbar = /** @type {!ViewerPdfToolbarNewElement} */ (
         viewer.shadowRoot.querySelector('#toolbar'));
 
     // Test case where an <input> field is focused.
@@ -53,64 +52,14 @@ const tests = [
     chrome.test.assertTrue(shouldIgnoreKeyEvents());
 
     // Test case where another field is focused.
-    const rotateButton =
-        document.documentElement.hasAttribute('pdf-viewer-update-enabled') ?
-        toolbar.shadowRoot.querySelector(
-            'cr-icon-button[iron-icon=\'pdf:rotate-left\']') :
-        toolbar.$['rotate-right'];
+    const rotateButton = toolbar.shadowRoot.querySelector(
+        'cr-icon-button[iron-icon=\'pdf:rotate-left\']');
     rotateButton.focus();
     chrome.test.assertFalse(shouldIgnoreKeyEvents());
 
     // Test case where the plugin itself is focused.
     viewer.shadowRoot.querySelector('#plugin').focus();
     chrome.test.assertFalse(shouldIgnoreKeyEvents());
-
-    chrome.test.succeed();
-  },
-
-  /**
-   * Test that the bookmarks menu can be closed by clicking the plugin and
-   * pressing escape.
-   */
-  function testOpenCloseBookmarks() {
-    // Test is not relevant for the new viewer, as bookmarks are no longer in a
-    // dropdown.
-    if (document.documentElement.hasAttribute('pdf-viewer-update-enabled')) {
-      chrome.test.succeed();
-      return;
-    }
-
-    const viewer = /** @type {!PDFViewerElement} */ (
-        document.body.querySelector('pdf-viewer'));
-    const toolbar = /** @type {!ViewerPdfToolbarElement} */ (
-        viewer.shadowRoot.querySelector('#toolbar'));
-    toolbar.show();
-    const dropdown =
-        /** @type {!ViewerToolbarDropdownElement} */ (toolbar.$$('#bookmarks'));
-    const plugin = viewer.shadowRoot.querySelector('#plugin');
-    const ESC_KEY = 27;
-
-    // Clicking on the plugin should close the bookmarks menu.
-    chrome.test.assertFalse(dropdown.dropdownOpen);
-    dropdown.$.button.click();
-    chrome.test.assertTrue(dropdown.dropdownOpen);
-    // Generate pointer event manually, as MockInteractions doesn't include
-    // this.
-    plugin.dispatchEvent(
-        new PointerEvent('pointerdown', {bubbles: true, composed: true}));
-    chrome.test.assertFalse(
-        dropdown.dropdownOpen, 'Clicking plugin closes dropdown');
-
-    dropdown.$.button.click();
-    chrome.test.assertTrue(dropdown.dropdownOpen);
-    pressAndReleaseKeyOn(document.documentElement, ESC_KEY, '', 'Escape');
-    chrome.test.assertFalse(
-        dropdown.dropdownOpen, 'Escape key closes dropdown');
-    chrome.test.assertTrue(
-        toolbar.opened, 'First escape key does not close toolbar');
-
-    pressAndReleaseKeyOn(document.documentElement, ESC_KEY, '', 'Escape');
-    chrome.test.assertFalse(toolbar.opened, 'Second escape key closes toolbar');
 
     chrome.test.succeed();
   },

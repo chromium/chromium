@@ -172,10 +172,6 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
     return installer_attributes;
   }
 
-  std::vector<std::string> GetMimeTypes() const override {
-    return std::vector<std::string>();
-  }
-
  private:
   static void GetPkHash(std::vector<uint8_t>* hash) {
     hash->assign(std::begin(kSha256Hash), std::end(kSha256Hash));

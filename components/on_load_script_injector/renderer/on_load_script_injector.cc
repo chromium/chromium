@@ -36,11 +36,11 @@ void OnLoadScriptInjector::DidCommitProvisionalLoad(
 
   for (base::ReadOnlySharedMemoryRegion& script : on_load_scripts_) {
     // Crude check to see this is UTF-16.
-    DCHECK_EQ(script.GetSize() % sizeof(base::char16), 0u);
+    DCHECK_EQ(script.GetSize() % sizeof(char16_t), 0u);
 
     auto mapping = script.Map();
-    base::string16 script_converted(mapping.GetMemoryAs<base::char16>(),
-                                    script.GetSize() / sizeof(base::char16));
+    std::u16string script_converted(mapping.GetMemoryAs<char16_t>(),
+                                    script.GetSize() / sizeof(char16_t));
     render_frame()->ExecuteJavaScript(script_converted);
   }
 }

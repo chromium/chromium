@@ -59,7 +59,7 @@ TEST_P(ExperimentStorageTest, TestEncodeDecodeMetrics) {
   metrics.last_used_bucket = 2;
   metrics.action_delay_bucket = 11;
   metrics.session_length_bucket = 36;
-  base::string16 encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
+  std::wstring encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
   EXPECT_EQ(L"5BIMD2IA", encoded_metrics);
   ExperimentMetrics decoded_metrics;
   ASSERT_TRUE(
@@ -86,7 +86,7 @@ TEST_P(ExperimentStorageTest, TestEncodeDecodeForMax) {
   // toast_hour uses LocalMidnight whose value depend on local time. So, reset
   // it to its maximum value.
   metrics.toast_hour = 24;
-  base::string16 encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
+  std::wstring encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
   EXPECT_EQ(L"///j//9B", encoded_metrics);
   ExperimentMetrics decoded_metrics;
   ASSERT_TRUE(
@@ -112,7 +112,7 @@ TEST_P(ExperimentStorageTest, TestEncodeDecodeForMax) {
 TEST_P(ExperimentStorageTest, TestEncodeDecodeForMin) {
   ExperimentMetrics metrics;
   metrics.state = ExperimentMetrics::kRelaunchFailed;
-  base::string16 encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
+  std::wstring encoded_metrics(ExperimentStorage::EncodeMetrics(metrics));
   EXPECT_EQ(L"AAAAAAAA", encoded_metrics);
   ExperimentMetrics decoded_metrics;
   ASSERT_TRUE(
@@ -142,7 +142,7 @@ TEST_P(ExperimentStorageTest, TestLoadStoreExperiment) {
   EXPECT_EQ(5, stored_experiment.group());
   // Verify that expeirment state is stored in correct location in registry.
   base::win::RegKey key;
-  base::string16 client_state_path(
+  std::wstring client_state_path(
       system_level_install_ ? install_static::GetClientStateMediumKeyPath()
                             : install_static::GetClientStateKeyPath());
   client_state_path.append(L"\\Retention");

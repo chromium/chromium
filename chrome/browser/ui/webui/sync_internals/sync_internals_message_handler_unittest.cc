@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_message_handler.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -129,7 +130,7 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
   // Returns copies of the same constant dictionary, |about_information_|.
   std::unique_ptr<DictionaryValue> ConstructFakeAboutInformation(
       SyncService* service,
-      version_info::Channel channel) {
+      const std::string& channel) {
     ++about_sync_data_delegate_call_count_;
     last_delegate_sync_service_ = service;
     return base::DictionaryValue::From(
@@ -142,8 +143,7 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
     // Check the syncer::sync_ui_util::kOnAboutInfoUpdated event dispatch.
     const content::TestWebUI::CallData& about_info_call_data =
         *web_ui_.call_data()[0];
-    EXPECT_EQ(syncer::sync_ui_util::kDispatchEvent,
-              about_info_call_data.function_name());
+    EXPECT_EQ("cr.webUIListenerCallback", about_info_call_data.function_name());
     ASSERT_NE(nullptr, about_info_call_data.arg1());
     EXPECT_EQ(base::Value(syncer::sync_ui_util::kOnAboutInfoUpdated),
               *about_info_call_data.arg1());
@@ -154,7 +154,7 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
     // so check the syncer::sync_ui_util::kOnEntityCountsUpdated event dispatch.
     const content::TestWebUI::CallData& entity_counts_updated_call_data =
         *web_ui_.call_data()[1];
-    EXPECT_EQ(syncer::sync_ui_util::kDispatchEvent,
+    EXPECT_EQ("cr.webUIListenerCallback",
               entity_counts_updated_call_data.function_name());
     ASSERT_NE(nullptr, entity_counts_updated_call_data.arg1());
     EXPECT_EQ(base::Value(syncer::sync_ui_util::kOnEntityCountsUpdated),
@@ -253,24 +253,28 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
 
 TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
   ListValue args;
-  args.AppendInteger(0);
+  args.AppendString("getAllNodes_0");
   handler()->HandleGetAllNodes(&args);
   test_sync_service()->get_all_nodes_callback().Run(
       std::make_unique<ListValue>());
-  EXPECT_EQ(1, CallCountWithName(syncer::sync_ui_util::kGetAllNodesCallback));
+  EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
 
-  handler()->HandleGetAllNodes(&args);
+  ListValue args2;
+  args2.AppendString("getAllNodes_1");
+  handler()->HandleGetAllNodes(&args2);
   // This  breaks the weak ref the callback is hanging onto. Which results in
   // the call count not incrementing.
   handler()->DisallowJavascript();
   test_sync_service()->get_all_nodes_callback().Run(
       std::make_unique<ListValue>());
-  EXPECT_EQ(1, CallCountWithName(syncer::sync_ui_util::kGetAllNodesCallback));
+  EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
 
-  handler()->HandleGetAllNodes(&args);
+  ListValue args3;
+  args3.AppendString("getAllNodes_2");
+  handler()->HandleGetAllNodes(&args3);
   test_sync_service()->get_all_nodes_callback().Run(
       std::make_unique<ListValue>());
-  EXPECT_EQ(2, CallCountWithName(syncer::sync_ui_util::kGetAllNodesCallback));
+  EXPECT_EQ(2, CallCountWithName("cr.webUIResponse"));
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfo) {

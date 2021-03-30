@@ -23,7 +23,7 @@ namespace ash {
 class AppListViewDelegate;
 
 // Displays a list of SearchResultTileItemView.
-class APP_LIST_EXPORT SearchResultTileItemListView
+class ASH_EXPORT SearchResultTileItemListView
     : public SearchResultContainerView {
  public:
   SearchResultTileItemListView(views::Textfield* search_box,
@@ -57,7 +57,7 @@ class APP_LIST_EXPORT SearchResultTileItemListView
 
   std::vector<SearchResult*> GetDisplayResults();
 
-  base::string16 GetUserTypedQuery();
+  std::u16string GetUserTypedQuery();
 
   void OnPlayStoreImpressionTimer();
 
@@ -73,7 +73,7 @@ class APP_LIST_EXPORT SearchResultTileItemListView
   views::Textfield* search_box_ = nullptr;
   views::BoxLayout* layout_ = nullptr;
 
-  base::string16 recent_playstore_query_;
+  std::u16string recent_playstore_query_;
 
   base::OneShotTimer playstore_impression_timer_;
 

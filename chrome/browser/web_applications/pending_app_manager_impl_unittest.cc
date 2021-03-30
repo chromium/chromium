@@ -95,7 +95,7 @@ std::unique_ptr<WebApplicationInfo> GetFooWebApplicationInfo() {
       std::make_unique<WebApplicationInfo>();
   info->start_url = FooWebAppUrl();
   info->scope = FooWebAppUrl().GetWithoutFilename();
-  info->title = base::UTF8ToUTF16("Foo Web App");
+  info->title = u"Foo Web App";
   return info;
 }
 
@@ -339,17 +339,10 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
                  ResultCallback callback) override {
       pending_app_manager_impl_->OnInstallCalled(install_options());
 
-      const GURL install_url = install_options().install_url;
-      test_install_task_manager_.RunOrSaveRequest(base::BindLambdaForTesting(
-          [&, install_url, callback = std::move(callback)]() mutable {
-            DoInstall(install_url, std::move(callback));
-          }));
-    }
-
-    void InstallFromInfo(ResultCallback callback) override {
-      pending_app_manager_impl_->OnInstallCalled(install_options());
-
-      GURL install_url = install_options().app_info_factory.Run()->start_url;
+      const GURL install_url =
+          install_options().only_use_app_info_factory
+              ? install_options().app_info_factory.Run()->start_url
+              : install_options().install_url;
       test_install_task_manager_.RunOrSaveRequest(base::BindLambdaForTesting(
           [&, install_url, callback = std::move(callback)]() mutable {
             DoInstall(install_url, std::move(callback));

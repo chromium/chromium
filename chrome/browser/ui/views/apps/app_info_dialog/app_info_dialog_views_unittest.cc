@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -93,6 +94,11 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     chrome_launcher_controller_ = std::make_unique<ChromeLauncherController>(
         extension_environment_.profile(), shelf_model_.get());
+    chrome_launcher_controller_->SetProfileForTest(
+        extension_environment_.profile());
+    chrome_launcher_controller_->SetLauncherControllerHelperForTest(
+        std::make_unique<LauncherControllerHelper>(
+            extension_environment_.profile()));
     chrome_launcher_controller_->Init();
     arc_test_.SetUp(extension_environment_.profile());
 #endif

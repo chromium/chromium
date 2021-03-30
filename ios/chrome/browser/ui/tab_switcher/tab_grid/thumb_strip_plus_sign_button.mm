@@ -52,11 +52,14 @@
   CAGradientLayer* gradient = [CAGradientLayer layer];
   self.gradient = gradient;
   gradient.frame = self.bounds;
-  gradient.colors =
-      @[ (id)[UIColor clearColor].CGColor, (id)[UIColor blackColor].CGColor ];
+  gradient.colors = @[
+    (id)UIColor.clearColor.CGColor,
+    (id)[UIColor.blackColor colorWithAlphaComponent:0.72].CGColor,
+    (id)UIColor.blackColor.CGColor
+  ];
   gradient.startPoint = CGPointMake(0.0, 0.5);
   gradient.endPoint = CGPointMake(1.0, 0.5);
-  gradient.locations = @[ @0, @0.5 ];
+  gradient.locations = @[ @0, @0.5, @0.87 ];
   if (UseRTLLayout()) {
     gradient.affineTransform = CGAffineTransformMakeScale(-1, 1);
   }

@@ -63,8 +63,8 @@ TEST_F(ServerBackedStateKeysBrokerTest, Load) {
   EXPECT_TRUE(broker_.current_state_key().empty());
 
   base::CallbackListSubscription subscription = broker_.RegisterUpdateCallback(
-      base::Bind(&ServerBackedStateKeysBrokerTest::StateKeysUpdated,
-                 base::Unretained(this)));
+      base::BindRepeating(&ServerBackedStateKeysBrokerTest::StateKeysUpdated,
+                          base::Unretained(this)));
   mocked_main_runner_->RunUntilIdle();
   EXPECT_TRUE(updated_);
   ExpectGood();
@@ -75,8 +75,8 @@ TEST_F(ServerBackedStateKeysBrokerTest, Retry) {
       std::vector<std::string>());
 
   base::CallbackListSubscription subscription = broker_.RegisterUpdateCallback(
-      base::Bind(&ServerBackedStateKeysBrokerTest::StateKeysUpdated,
-                 base::Unretained(this)));
+      base::BindRepeating(&ServerBackedStateKeysBrokerTest::StateKeysUpdated,
+                          base::Unretained(this)));
   mocked_main_runner_->RunUntilIdle();
   EXPECT_TRUE(updated_);
 
@@ -95,8 +95,8 @@ TEST_F(ServerBackedStateKeysBrokerTest, Retry) {
 
 TEST_F(ServerBackedStateKeysBrokerTest, Refresh) {
   base::CallbackListSubscription subscription = broker_.RegisterUpdateCallback(
-      base::Bind(&ServerBackedStateKeysBrokerTest::StateKeysUpdated,
-                 base::Unretained(this)));
+      base::BindRepeating(&ServerBackedStateKeysBrokerTest::StateKeysUpdated,
+                          base::Unretained(this)));
   mocked_main_runner_->RunUntilIdle();
   EXPECT_TRUE(updated_);
   ExpectGood();

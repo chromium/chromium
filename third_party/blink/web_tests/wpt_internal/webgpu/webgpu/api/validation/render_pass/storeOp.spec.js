@@ -13,10 +13,12 @@ Test Coverage:
   - Tests that the depthReadOnly value matches the stencilReadOnly value.
     - When depthReadOnly does not match stencilReadOnly, an error should be generated.
 
-  - Tests that depthReadOnly and stencilReadOnly default to false.`;
-import { makeTestGroup } from '../../../../common/framework/test_group.js';
+  - Tests that depthReadOnly and stencilReadOnly default to false.
 
-import { ValidationTest } from './../validation_test.js';
+TODO: test interactions with depthLoadValue too
+`;
+import { makeTestGroup } from '../../../../common/framework/test_group.js';
+import { ValidationTest } from '../validation_test.js';
 
 export const g = makeTestGroup(ValidationTest);
 
@@ -48,8 +50,8 @@ g.test('store_op_and_read_only')
 
     const depthAttachment = t.device.createTexture({
       format: 'depth24plus-stencil8',
-      size: { width: 1, height: 1, depth: 1 },
-      usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+      size: { width: 1, height: 1, depthOrArrayLayers: 1 },
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
     });
 
     const depthAttachmentView = depthAttachment.createView();

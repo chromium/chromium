@@ -1,0 +1,5 @@
+Tests that the console can preserve log messages across cross-process navigations.
+log-message.html:5 before navigation
+Navigated to log-message.html
+log-message.html:5 after navigation
+

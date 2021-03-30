@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_CHROMEOS_UI_IDLE_APP_NAME_NOTIFICATION_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace extensions {
 class Extension;
@@ -37,7 +37,7 @@ class IdleAppNameNotificationView {
   bool IsVisible();
 
   // Returns the shown text for testing.
-  base::string16 GetShownTextForTest();
+  std::u16string GetShownTextForTest();
 
  private:
   // Show the message. This will make the message visible.
@@ -52,5 +52,10 @@ class IdleAppNameNotificationView {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace ash {
+using ::chromeos::IdleAppNameNotificationView;
+}
 
 #endif  // CHROME_BROWSER_CHROMEOS_UI_IDLE_APP_NAME_NOTIFICATION_VIEW_H_

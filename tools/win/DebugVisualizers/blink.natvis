@@ -138,22 +138,6 @@
   <Type Name="blink::PhysicalSize">
     <DisplayString>({width} x {height})</DisplayString>
   </Type>
-  <Type Name="blink::WebRect">
-    <AlternativeType Name="blink::WebFloatRect"/>
-    <DisplayString>({x}, {y}) x ({width}, {height})</DisplayString>
-    <Expand>
-      <Item Name="x">x</Item>
-      <Item Name="y">y</Item>
-      <Item Name="width">width</Item>
-      <Item Name="height">height</Item>
-      <Synthetic Name="right">
-        <DisplayString>{x + width}</DisplayString>
-      </Synthetic>
-      <Synthetic Name="bottom">
-        <DisplayString>{y + height}</DisplayString>
-      </Synthetic>
-    </Expand>
-  </Type>
   <!-- Component build version -->
   <Type Name="blink::WebString">
     <DisplayString>{(wtf.dll!WTF::StringImpl*)(impl_.ptr_)}</DisplayString>

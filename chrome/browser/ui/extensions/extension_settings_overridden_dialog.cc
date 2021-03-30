@@ -60,8 +60,8 @@ ExtensionSettingsOverriddenDialog::Params::Params(
     extensions::ExtensionId controlling_extension_id,
     const char* extension_acknowledged_preference_name,
     const char* dialog_result_histogram_name,
-    base::string16 dialog_title,
-    base::string16 dialog_message,
+    std::u16string dialog_title,
+    std::u16string dialog_message,
     const gfx::VectorIcon* icon)
     : controlling_extension_id(std::move(controlling_extension_id)),
       extension_acknowledged_preference_name(

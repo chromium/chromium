@@ -1,4 +1,6 @@
 include_rules = [
+  "+ash/components/account_manager",
+  "+ash/components/audio",
   "+components/services/app_service/public",
   "+device/bluetooth",
   "+extensions/strings/grit/extensions_strings.h",
@@ -11,3 +13,9 @@ include_rules = [
   "+third_party/brotli",      # For compressed resources.
   "+third_party/zlib/zlib.h", # For compression level constants.
 ]
+
+specific_include_rules = {
+  "inspect_ui\.cc": [
+    "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
+  ],
+}

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
-import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer.js';
+import {PDFScriptingAPI, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 /**
  * These tests require that the PDF plugin be available to run correctly.
@@ -21,7 +20,7 @@ const tests = [
     viewer.viewport.setZoom(1);
     const sizer = viewer.shadowRoot.querySelector('#sizer');
     chrome.test.assertEq(826, sizer.offsetWidth);
-    chrome.test.assertEq(1066 + viewer.getToolbarHeight(), sizer.offsetHeight);
+    chrome.test.assertEq(1066, sizer.offsetHeight);
     chrome.test.succeed();
   },
 

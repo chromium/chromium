@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/extensions/expandable_container_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 ExtensionPermissionsView::ExtensionPermissionsView(int available_width)
     : available_width_(available_width) {
@@ -20,8 +21,8 @@ ExtensionPermissionsView::ExtensionPermissionsView(int available_width)
 }
 
 void ExtensionPermissionsView::AddItem(
-    const base::string16& permission_text,
-    const base::string16& permission_details) {
+    const std::u16string& permission_text,
+    const std::u16string& permission_details) {
   auto permission_label = std::make_unique<views::Label>(
       permission_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
@@ -31,7 +32,7 @@ void ExtensionPermissionsView::AddItem(
   AddChildView(std::move(permission_label));
   if (!permission_details.empty()) {
     // If we have more details to provide, show them in collapsed form.
-    std::vector<base::string16> details_container;
+    std::vector<std::u16string> details_container;
     details_container.push_back(permission_details);
     AddChildView(std::make_unique<ExpandableContainerView>(details_container,
                                                            available_width_));
@@ -48,3 +49,6 @@ void ExtensionPermissionsView::AddPermissions(
 void ExtensionPermissionsView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
+
+BEGIN_METADATA(ExtensionPermissionsView, views::View)
+END_METADATA

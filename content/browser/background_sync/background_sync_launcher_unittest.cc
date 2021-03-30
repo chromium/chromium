@@ -44,7 +44,7 @@ class TestBrowserClient : public ContentBrowserClient {
     DCHECK(browser_context);
     auto partition_num = std::to_string(++partition_count_);
     return StoragePartitionConfig::Create(
-        std::string("PartitionDomain") + partition_num,
+        browser_context, std::string("PartitionDomain") + partition_num,
         std::string("Partition") + partition_num, false /* in_memory */);
   }
 
@@ -65,7 +65,7 @@ class BackgroundSyncLauncherTest : public testing::Test {
     DCHECK(!urls.empty());
 
     for (const auto& url : urls) {
-      auto* storage_partition = BrowserContext::GetStoragePartitionForSite(
+      auto* storage_partition = BrowserContext::GetStoragePartitionForUrl(
           &test_browser_context_, url);
 
       auto iter = wakeup_deltas.find(url);

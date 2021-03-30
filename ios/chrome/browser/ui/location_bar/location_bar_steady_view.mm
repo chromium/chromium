@@ -127,11 +127,9 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         self.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
   }
   return self;
 }
@@ -181,14 +179,12 @@ const CGFloat kLocationLabelVerticalOffset = -1;
     _trailingButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _trailingButton.pointerInteractionEnabled = YES;
         // Make the pointer shape fit the location bar's semi-circle end shape.
         _trailingButton.pointerStyleProvider =
             CreateLiftEffectCirclePointerStyleProvider();
     }
-#endif  // defined(__IPHONE_13_4)
 
     // Setup label.
     _locationLabel.lineBreakMode = NSLineBreakByTruncatingHead;

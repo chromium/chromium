@@ -8,11 +8,11 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 
 class UndoManagerObserver;
 class UndoOperation;
@@ -65,8 +65,8 @@ class UndoManager {
   size_t undo_count() const { return undo_actions_.size(); }
   size_t redo_count() const { return redo_actions_.size(); }
 
-  base::string16 GetUndoLabel() const;
-  base::string16 GetRedoLabel() const;
+  std::u16string GetUndoLabel() const;
+  std::u16string GetRedoLabel() const;
 
   void AddUndoOperation(std::unique_ptr<UndoOperation> operation);
 

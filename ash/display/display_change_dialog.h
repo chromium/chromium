@@ -5,10 +5,11 @@
 #ifndef ASH_DISPLAY_DISPLAY_CHANGE_DIALOG_H_
 #define ASH_DISPLAY_DISPLAY_CHANGE_DIALOG_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -24,8 +25,8 @@ class ASH_EXPORT DisplayChangeDialog : public views::DialogDelegateView {
  public:
   using CancelCallback = base::OnceCallback<void(bool display_was_removed)>;
 
-  DisplayChangeDialog(base::string16 window_title,
-                      base::string16 timeout_message_with_placeholder,
+  DisplayChangeDialog(std::u16string window_title,
+                      std::u16string timeout_message_with_placeholder,
                       base::OnceClosure on_accept_callback,
                       CancelCallback on_cancel_callback);
   ~DisplayChangeDialog() override;
@@ -52,12 +53,12 @@ class ASH_EXPORT DisplayChangeDialog : public views::DialogDelegateView {
 
   // Returns the string displayed as a message in the dialog which includes a
   // countdown timer.
-  base::string16 GetRevertTimeoutString() const;
+  std::u16string GetRevertTimeoutString() const;
 
   // The remaining timeout in seconds.
   uint16_t timeout_count_ = kDefaultTimeoutInSeconds;
 
-  const base::string16 timeout_message_with_placeholder_;
+  const std::u16string timeout_message_with_placeholder_;
 
   views::Label* label_ = nullptr;  // Not owned.
   base::OnceClosure on_accept_callback_;

@@ -10,6 +10,7 @@
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -54,8 +55,8 @@ class CONTENT_EXPORT PrerenderProcessor final
   // may navigate away before Start() is called from a renderer process.
   const url::Origin initiator_origin_;
 
-  // URL to be prerendered.
-  GURL prerendering_url_;
+  // The root frame tree node id of the prerendered page.
+  int prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
   enum class State { kInitial, kStarted, kCancelled };
   State state_ = State::kInitial;

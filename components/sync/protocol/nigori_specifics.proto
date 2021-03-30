@@ -142,9 +142,8 @@ message NigoriSpecifics {
   // encrypted.
   optional bool encrypt_dictionary = 34;
 
-  // Boolean corresponding to Whether to encrypt favicons data or not.
-  optional bool encrypt_favicon_images = 35;
-  optional bool encrypt_favicon_tracking = 36;
+  reserved 35;
+  reserved 36;
 
   reserved 37;
   reserved "encrypt_articles";

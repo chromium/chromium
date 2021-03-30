@@ -15,11 +15,11 @@ class SystemEncryptor : public AutofillTableEncryptor {
   SystemEncryptor() = default;
   ~SystemEncryptor() override = default;
 
-  bool EncryptString16(const base::string16& plaintext,
+  bool EncryptString16(const std::u16string& plaintext,
                        std::string* ciphertext) const override;
 
   bool DecryptString16(const std::string& ciphertext,
-                       base::string16* plaintext) const override;
+                       std::u16string* plaintext) const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SystemEncryptor);

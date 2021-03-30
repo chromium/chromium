@@ -12,6 +12,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ProxyControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/SafeBrowsingResponseBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/ScriptHandlerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ScriptReferenceBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerClientBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ServiceWorkerControllerBoundaryInterface.java",
@@ -42,7 +43,7 @@ android_library("boundary_interface_java") {
   # build when we mirror this into AndroidX. We are only permitted to depend on
   # core Android classes and other AndroidX classes (must be in the androidx.*
   # package name).
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 android_apk("boundary_interface_example_apk") {

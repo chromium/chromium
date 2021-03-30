@@ -19,6 +19,9 @@ constexpr char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 //     "https://canvas.apps.chrome/"))
 constexpr char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 
+// Generated as: web_app::GenerateAppIdFromURL(GURL("chrome://diagnostics/"))
+constexpr char kDiagnosticsAppId[] = "keejpcfcpecjhmepmpcfgjemkmlicpam";
+
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://mail.google.com/?usp=installed_webapp"))
 constexpr char kGmailAppId[] = "fpgpbaljnbnpjbpnlnjjhfeigfpemdda";
@@ -34,6 +37,10 @@ constexpr char kGoogleDocsAppId[] = "mpnpojknpmmopombnjdcgaaiekajbnjb";
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://drive.google.com/?lfhs=2"))
 constexpr char kGoogleDriveAppId[] = "aghbiahbpaijignceidepookljebhfak";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://keep.google.com/?usp=installed_webapp"))
+constexpr char kGoogleKeepAppId[] = "eilembjdkfgodjkcjnpgpaenohkicgjd";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://www.google.com/maps?force=tt&source=ttpwa"))
@@ -70,6 +77,10 @@ constexpr char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://books.google.com/ebooks/app"))
 constexpr char kPlayBooksAppId[] = "jglfhlbohpgcbefmhdmpancnijacbbji";
+
+// Generated as:web_app::GenerateAppIdFromURL(GURL(
+//      "chrome://print-management/"))
+constexpr char kPrintManagementAppId[] = "fglkccnmnaankjodgccmiodmlkpaiodc";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL("chrome://scanning/"))
 constexpr char kScanningAppId[] = "cdkahakpgkdaoffdmfgnhgomkelkocfo";

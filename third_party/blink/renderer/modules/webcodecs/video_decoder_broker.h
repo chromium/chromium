@@ -20,6 +20,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace base {
@@ -44,7 +45,7 @@ class MediaVideoTaskWrapper;
 class CrossThreadVideoDecoderClient {
  public:
   struct DecoderDetails {
-    std::string display_name;
+    media::VideoDecoderType decoder_id;
     bool is_platform_decoder;
     bool needs_bitstream_conversion;
     int max_decode_requests;
@@ -74,8 +75,6 @@ class CrossThreadVideoDecoderClient {
 class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
                                           public CrossThreadVideoDecoderClient {
  public:
-  static constexpr char kDefaultDisplayName[] = "EmptyWebCodecsVideoDecoder";
-
   // |gpu_factories| may be null when GPU accelerated decoding is not available.
   explicit VideoDecoderBroker(
       ExecutionContext& execution_context,
@@ -88,7 +87,7 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
   VideoDecoderBroker& operator=(const VideoDecoderBroker&) = delete;
 
   // VideoDecoder implementation.
-  std::string GetDisplayName() const override;
+  media::VideoDecoderType GetDecoderType() const override;
   bool IsPlatformDecoder() const override;
   void Initialize(const media::VideoDecoderConfig& config,
                   bool low_delay,
@@ -102,6 +101,8 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
   bool NeedsBitstreamConversion() const override;
   bool CanReadWithoutStalling() const override;
   int GetMaxDecodeRequests() const override;
+
+  void SetHardwarePreference(HardwarePreference hardware_preference);
 
  private:
   // Creates a new (incremented) callback ID from |last_callback_id_| for
@@ -127,11 +128,7 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
   // Owner of state and methods to be used on media_task_runner_;
   std::unique_ptr<MediaVideoTaskWrapper> media_tasks_;
 
-  // Display name for current underlying decoder. Will be kDefaultDisplayName
-  // if no decoder is currently initialized.
-  std::string display_name_ = kDefaultDisplayName;
-
-  // Wrapper state for GetDisplayName(), IsPlatformDecoder() and others.
+  // Wrapper state for GetDecoderType(), IsPlatformDecoder() and others.
   base::Optional<DecoderDetails> decoder_details_;
 
   // Set to match the underlying decoder's answer at every OnDecodeOutput().

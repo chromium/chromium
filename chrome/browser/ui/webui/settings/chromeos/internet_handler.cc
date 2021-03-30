@@ -9,7 +9,9 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/tether/tether_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -113,8 +115,10 @@ void InternetHandler::AddThirdPartyVpn(const base::ListValue* args) {
   // Request to launch Arc VPN provider.
   const auto* arc_app_list_prefs = ArcAppListPrefs::Get(profile_);
   if (arc_app_list_prefs && arc_app_list_prefs->GetApp(app_id)) {
-    arc::LaunchApp(profile_, app_id, ui::EF_NONE,
-                   arc::UserInteractionType::APP_STARTED_FROM_SETTINGS);
+    DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+        profile_));
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
+        app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromParentalControls);
     return;
   }
 

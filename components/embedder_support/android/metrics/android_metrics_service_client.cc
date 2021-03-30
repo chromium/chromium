@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <cstdint>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -25,10 +26,12 @@
 #include "components/embedder_support/android/metrics/jni/AndroidMetricsServiceClient_jni.h"
 #include "components/metrics/android_metrics_provider.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/content/accessibility_metrics_provider.h"
 #include "components/metrics/content/gpu_metrics_provider.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
+#include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -37,6 +40,7 @@
 #include "components/metrics/net/net_metrics_log_uploader.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/metrics/sampling_metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "components/metrics/ui/screen_info_metrics_provider.h"
 #include "components/metrics/version_utils.h"
@@ -115,9 +119,8 @@ void RegisterOrRemovePreviousRunMetricsFile(
     base::StringPiece metrics_name,
     metrics::FileMetricsProvider::SourceAssociation association,
     metrics::FileMetricsProvider* file_metrics_provider) {
-  base::FilePath metrics_file;
-  base::GlobalHistogramAllocator::ConstructFilePaths(
-      dir, metrics_name, &metrics_file, nullptr, nullptr);
+  base::FilePath metrics_file =
+      base::GlobalHistogramAllocator::ConstructFilePath(dir, metrics_name);
 
   if (metrics_reporting_enabled) {
     // Enable reading any existing saved metrics.
@@ -147,8 +150,8 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
     PrefService* pref_service,
     bool metrics_reporting_enabled) {
   // Create an object to monitor files of metrics and include them in reports.
-  std::unique_ptr<metrics::FileMetricsProvider> file_metrics_provider(
-      new metrics::FileMetricsProvider(pref_service));
+  std::unique_ptr<metrics::FileMetricsProvider> file_metrics_provider =
+      std::make_unique<metrics::FileMetricsProvider>(pref_service);
 
   base::FilePath user_data_dir;
   base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir);
@@ -177,14 +180,13 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
         base::BindRepeating(FilterBrowserMetricsFiles);
     file_metrics_provider->RegisterSource(browser_metrics_params);
 
-    base::FilePath active_path;
-    base::GlobalHistogramAllocator::ConstructFilePaths(
-        user_data_dir, kCrashpadHistogramAllocatorName, nullptr, &active_path,
-        nullptr);
+    base::FilePath crashpad_active_path =
+        base::GlobalHistogramAllocator::ConstructFilePathForActiveFile(
+            user_data_dir, kCrashpadHistogramAllocatorName);
     // Register data that will be populated for the current run. "Active"
     // files need an empty "prefs_key" because they update the file itself.
     file_metrics_provider->RegisterSource(metrics::FileMetricsProvider::Params(
-        active_path,
+        crashpad_active_path,
         metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ACTIVE_FILE,
         metrics::FileMetricsProvider::ASSOCIATE_CURRENT_RUN));
   } else {
@@ -243,7 +245,7 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
   pref_service_ = pref_service;
 
   metrics_state_manager_ =
-      MetricsStateManager::Create(pref_service_, this, base::string16(),
+      MetricsStateManager::Create(pref_service_, this, std::wstring(),
                                   base::BindRepeating(&StoreClientInfo),
                                   base::BindRepeating(&LoadClientInfo));
 
@@ -264,34 +266,46 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
 // TODO:(crbug.com/1148351) Make the initialization consistent with Chrome.
 void AndroidMetricsServiceClient::MaybeStartMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsConsentDetermined())
+    return;
+
+#if DCHECK_IS_ON()
+  // This function should be called only once after consent has been determined.
+  DCHECK(!did_start_metrics_with_consent_);
+  did_start_metrics_with_consent_ = true;
+#endif
+
   // Treat the debugging flag the same as user consent because the user set it,
   // but keep app_consent_ separate so we never persist data from an opted-out
   // app.
   bool user_consent_or_flag = user_consent_ || IsMetricsReportingForceEnabled();
-  if (IsConsentDetermined()) {
-    if (app_consent_ && user_consent_or_flag) {
-      did_start_metrics_ = true;
-      // Make GetSampleBucketValue() work properly.
-      metrics_state_manager_->ForceClientIdCreation();
-      is_client_id_forced_ = true;
-      RegisterMetricsProvidersAndInitState();
-      // Register for notifications so we can detect when the user or app are
-      // interacting with the embedder. We use these as signals to wake up the
-      // MetricsService.
-      RegisterForNotifications();
-      OnMetricsStart();
+  if (app_consent_ && user_consent_or_flag) {
+    did_start_metrics_ = true;
+    // Make GetSampleBucketValue() work properly.
+    metrics_state_manager_->ForceClientIdCreation();
+    is_client_id_forced_ = true;
+    RegisterMetricsProvidersAndInitState();
+    // Register for notifications so we can detect when the user or app are
+    // interacting with the embedder. We use these as signals to wake up the
+    // MetricsService.
+    RegisterForNotifications();
+    OnMetricsStart();
 
-      if (IsReportingEnabled()) {
-        // We assume the embedder has no shutdown sequence, so there's no need
-        // for a matching Stop() call.
-        metrics_service_->Start();
-      }
-
-      CreateUkmService();
-    } else {
-      OnMetricsNotStarted();
-      pref_service_->ClearPref(prefs::kMetricsClientID);
+    if (IsReportingEnabled()) {
+      // We assume the embedder has no shutdown sequence, so there's no need
+      // for a matching Stop() call.
+      metrics_service_->Start();
     }
+
+    CreateUkmService();
+  } else {
+    // Even though reporting is not enabled, CreateFileMetricsProvider() is
+    // called. This ensures on disk state is removed.
+    metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
+        pref_service_, /* metrics_reporting_enabled */ false));
+    OnMetricsNotStarted();
+    pref_service_->ClearPref(prefs::kMetricsClientID);
   }
 }
 
@@ -303,6 +317,8 @@ void AndroidMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
           content::CreateNetworkConnectionTrackerAsyncGetter()));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<CPUMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<EntropyStateProvider>(pref_service_));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ScreenInfoMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
@@ -316,6 +332,11 @@ void AndroidMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
           base::DIR_ANDROID_APP_DATA));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::GPUMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::SamplingMetricsProvider>(
+          GetSampleRatePerMille()));
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<AccessibilityMetricsProvider>());
   RegisterAdditionalMetricsProviders(metrics_service_.get());
 
   // The file metrics provider performs IO.
@@ -463,8 +484,12 @@ SystemProfileProto::Channel AndroidMetricsServiceClient::GetChannel() {
   return AsProtobufChannel(version_info::android::GetChannel());
 }
 
+bool AndroidMetricsServiceClient::IsExtendedStableChannel() {
+  return false;  // Not supported on AndroidMetricsServiceClients.
+}
+
 std::string AndroidMetricsServiceClient::GetVersionString() {
-  return version_info::GetVersionNumber();
+  return metrics::GetVersionString();
 }
 
 void AndroidMetricsServiceClient::CollectFinalMetricsForLog(

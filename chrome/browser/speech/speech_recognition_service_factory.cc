@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -33,7 +34,7 @@ SpeechRecognitionServiceFactory::~SpeechRecognitionServiceFactory() = default;
 
 KeyedService* SpeechRecognitionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new speech::SpeechRecognitionService(context);
+  return new speech::ChromeSpeechRecognitionService(context);
 }
 
 // Incognito profiles should use their own instance of the browser context.

@@ -17,6 +17,10 @@ namespace policy {
 class DlpRulesManager : public KeyedService {
  public:
   // A restriction that can be set by DataLeakPreventionRulesList policy.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // When new entries are added, EnterpriseDlpPolicyRestriction enum in
+  // histograms/enums.xml should be updated.
   enum class Restriction {
     kUnknownRestriction = 0,
     kClipboard = 1,      // Restricts sharing the data via clipboard and
@@ -29,7 +33,9 @@ class DlpRulesManager : public KeyedService {
                          // confidential content on the screen.
     kScreenShare = 5,    // Restricts screen sharing of confidential content
                          // through 3P extensions/websites.
-    kMaxValue = kScreenShare
+    kFiles = 6,          // Restricts file operations, like copying, uploading
+                         // or opening in an app.
+    kMaxValue = kFiles
   };
 
   // A representation of destinations to which sharing confidential data is
@@ -48,7 +54,8 @@ class DlpRulesManager : public KeyedService {
     kNotSet,  // Restriction level is not set.
     kBlock,   // Sets the restriction level to block the user on every action.
     kAllow,   // Sets the restriction level to allow (no restriction).
-    kMaxValue = kAllow
+    kWarn,    // Sets the restriction level to warn the user on every action.
+    kMaxValue = kWarn
   };
 
   ~DlpRulesManager() override = default;
@@ -63,7 +70,7 @@ class DlpRulesManager : public KeyedService {
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is
   // returned if no restrictions should be applied. Requires `restriction` to be
-  // clipboard.
+  // clipboard or files.
   virtual Level IsRestrictedDestination(const GURL& source,
                                         const GURL& destination,
                                         Restriction restriction) const = 0;

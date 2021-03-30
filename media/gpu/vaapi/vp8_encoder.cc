@@ -18,12 +18,12 @@ constexpr int kCPBWindowSizeMs = 1500;
 
 // Quantization parameter. They are vp8 ac/dc indices and their ranges are
 // 0-127. Based on WebRTC's defaults.
-constexpr int kMinQP = 4;
+constexpr uint8_t kMinQP = 4;
 // b/110059922, crbug.com/1001900: Tuned 112->117 for bitrate issue in a lower
 // resolution (180p).
-constexpr int kMaxQP = 117;
+constexpr uint8_t kMaxQP = 117;
 // This stands for 32 as a real ac value (see rfc 14.1. table ac_qlookup).
-constexpr int kDefaultQP = 28;
+constexpr uint8_t kDefaultQP = 28;
 }  // namespace
 
 VP8Encoder::EncodeParams::EncodeParams()
@@ -32,7 +32,8 @@ VP8Encoder::EncodeParams::EncodeParams()
       cpb_window_size_ms(kCPBWindowSizeMs),
       cpb_size_bits(0),
       initial_qp(kDefaultQP),
-      scaling_settings(kMinQP, kMaxQP),
+      min_qp(kMinQP),
+      max_qp(kMaxQP),
       error_resilient_mode(false) {}
 
 void VP8Encoder::Reset() {
@@ -87,12 +88,6 @@ size_t VP8Encoder::GetMaxNumOfRefFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return kNumVp8ReferenceBuffers;
-}
-
-ScalingSettings VP8Encoder::GetScalingSettings() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return current_params_.scaling_settings;
 }
 
 bool VP8Encoder::PrepareEncodeJob(EncodeJob* encode_job) {

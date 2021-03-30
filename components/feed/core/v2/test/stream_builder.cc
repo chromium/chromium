@@ -8,6 +8,8 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 
@@ -49,6 +51,7 @@ feedstore::StreamStructure MakeStream(int id_number) {
   feedstore::StreamStructure result;
   result.set_type(feedstore::StreamStructure::STREAM);
   result.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
+  result.set_is_root(true);
   *result.mutable_content_id() = MakeRootId(id_number);
   return result;
 }
@@ -187,7 +190,7 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id) const {
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
-  SetLastAddedTime(last_added_time, initial_update->stream_data);
+  feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;
 }
@@ -216,7 +219,7 @@ StreamModelUpdateRequestGenerator::MakeNextPage(int page_number) const {
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
-  SetLastAddedTime(last_added_time, initial_update->stream_data);
+  feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;
 }
@@ -247,6 +250,18 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
   generator.logging_enabled = logging_enabled;
   generator.privacy_notice_fulfilled = privacy_notice_fulfilled;
   return generator.MakeNextPage(page_number);
+}
+
+feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name) {
+  feedstore::WebFeedInfo result;
+  result.set_web_feed_id("id_" + name);
+  result.set_title("Title " + name);
+  result.mutable_favicon()->set_url("http://favicon/" + name);
+  result.set_follower_count(123);
+  result.set_visit_uri("https://" + name + ".com");
+  feedstore::UriMatcher* matcher = result.add_uri_matchers();
+  matcher->set_domain_match(name + ".com");
+  return result;
 }
 
 }  // namespace feed

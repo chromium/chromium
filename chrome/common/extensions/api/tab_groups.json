@@ -41,15 +41,14 @@
             "type": "integer",
             "name": "groupId",
             "minimum": 0
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {"name": "group", "$ref": "TabGroup"}
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {"name": "group", "$ref": "TabGroup"}
+          ]
+        }
       },
       {
         "name": "query",
@@ -82,21 +81,20 @@
                 "description": "The ID of the parent window, or $(ref:windows.WINDOW_ID_CURRENT) for the <a href='windows#current-window'>current window</a>."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "array",
-                "items": {
-                  "$ref": "TabGroup"
-                }
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "array",
+              "items": {
+                "$ref": "TabGroup"
+              }
+            }
+          ]
+        }
       },
       {
         "name": "update",
@@ -129,21 +127,20 @@
                 "description": "The title of the group."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "group",
-                "$ref": "TabGroup",
-                "optional": true,
-                "description": "Details about the updated group."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "group",
+              "$ref": "TabGroup",
+              "optional": true,
+              "description": "Details about the updated group."
+            }
+          ]
+        }
       },
       {
         "name": "move",
@@ -172,19 +169,68 @@
                 "description": "The position to move the group to. Use <code>-1</code> to place the group at the end of the window."
               }
             }
-          },
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "group",
+              "$ref": "TabGroup",
+              "optional": true,
+              "description": "Details about the moved group."
+            }
+          ]
+        }
+      }
+    ],
+    "events": [
+      {
+        "name": "onCreated",
+        "type": "function",
+        "description": "Fired when a group is created.",
+        "parameters": [
           {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "group",
-                "$ref": "TabGroup",
-                "optional": true,
-                "description": "Details about the moved group."
-              }
-            ]
+            "$ref": "TabGroup",
+            "name": "group",
+            "description": "Details of the group that was created."
+          }
+        ]
+      },
+      {
+        "name": "onUpdated",
+        "type": "function",
+        "description": "Fired when a group is updated.",
+        "parameters": [
+          {
+            "$ref": "TabGroup",
+            "name": "group",
+            "description": "Details of the group that was updated."
+          }
+        ]
+      },
+      {
+        "name": "onMoved",
+        "type": "function",
+        "description": "Fired when a group is moved within a window. Move events are still fired for the individual tabs within the group, as well as for the group itself. This event is not fired when a group is moved between windows; instead, it will be removed from one window and created in another.",
+        "parameters": [
+          {
+            "$ref": "TabGroup",
+            "name": "group",
+            "description": "Details of the group that was moved."
+          }
+        ]
+      },
+      {
+        "name": "onRemoved",
+        "type": "function",
+        "description": "Fired when a group is closed, either directly by the user or automatically because it contained zero tabs.",
+        "parameters": [
+          {
+            "$ref": "TabGroup",
+            "name": "group",
+            "description": "Details of the group that was removed."
           }
         ]
       }

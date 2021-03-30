@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">‏اپنے ایڈریس بار کے ان پٹ میں www.‎ اور ‎.com شامل کریں، پھر صفحہ کھولیں</translation>
+<translation id="1768987374400973299">اسکرین شاٹ لیں/ریکارڈ کریں</translation>
 <translation id="1872219238824176091">موجودہ ڈیسک ہٹائیں</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />، پھر <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> یا <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">اگلے ٹیب پر جائیں</translation>
 <translation id="2010818616644390445">ونڈو میں آخری ٹیب پر جائيں</translation>
 <translation id="2040706009561734834">لانچر کھولیں/بند کریں</translation>
+<translation id="2086334242442703436">ایموجی منتخب کنندہ کھولیں</translation>
 <translation id="2088054208777350526">کی بورڈ شارٹ کٹس تلاش کریں</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> یا <ph name="F" /></translation>
 <translation id="2145908266289632567">متن میں ترمیم</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">‏Google اسسٹنٹ کھولیں</translation>
 <translation id="2488661730534396940">بائیں طرف ڈیسک کو فعال کریں</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">‏Diagnostics ایپ کھولیں</translation>
 <translation id="2530339807289914946">ویب صفحہ کو نیچے اسکرال کریں</translation>
 <translation id="2530896289327917474">کیرٹ براؤزنگ کو آن یا آف کریں</translation>
 <translation id="2574014812750545982">صفحہ پر زوم کی سطح کو دوبارہ سیٹ کریں</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">اگلے لفظ کے آخر میں لے جائیں</translation>
 <translation id="4866066940972151697">دائیں طرف ڈیسک کو فعال کریں</translation>
 <translation id="4916163929714267752">لنک کو ایک نئے ونڈو میں کھولیں</translation>
+<translation id="492453977506755176">وضع کی کلید کیپچر کریں</translation>
 <translation id="5030659775136592441">بُک مارک مینیجر دکھائیں</translation>
 <translation id="5034421018520995080">صفحہ کے اوپری حصہ پر جائیں</translation>
 <translation id="5042305953558921026">مجموعی جائزہ وضع کی کلید</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">ڈویلپر ٹولز کونسول دکھائیں یا چھپائیں</translation>
 <translation id="5919628958418675842">پرائیویسی اسکرین کو آن یا آف کریں</translation>
 <translation id="5921745308587794300">ونڈو گھمائیں</translation>
+<translation id="5926306472221400972">مکمل اسکرین کا اسکرین شاٹ لیں</translation>
 <translation id="6022924867608035986">تلاش کے خانے کا ٹیکسٹ صاف کریں</translation>
 <translation id="6045998054441862242">اعلی تناسب امتزاج وضع آن کریں</translation>
 <translation id="6052614013050385269">لنک پر دایاں کلک کریں</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">ٹیب کو اس کی اصل پوزیشن میں لوٹائیں</translation>
 <translation id="6474744297082284761">(ڈاک کیے ہونے یا فُل اسکرین میگنیفائرز کے فعال ہونے کے وقت) زوم آؤٹ کریں</translation>
 <translation id="649811797655257835">فائل منتخب کریں پھر <ph name="SPACE" /> دبائیں</translation>
+<translation id="6551886416582667425">جزوی اسکرین شاٹ لیں/ریکارڈنگ کریں</translation>
 <translation id="6556040137485212400">ایسی ونڈو کھولیں جسے طویل ترین وقت سے استعمال نہیں کیا گیا ہے</translation>
 <translation id="666343722268997814">نمایاں کردہ آئٹم کے لیے دائیں کلک کا مینو کھولیں</translation>
 <translation id="6671538777808758331">اپنی تلاش کے اگلے مماثل پر جائیں</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">فوکس پوپ اپس اور ڈائیلاگز پر منتقل کریں</translation>
 <translation id="7635348532214572995">ایپ گرڈ کے آس پاس ایپ آئیکن منتقل کریں</translation>
 <translation id="766326951329901120">کلپ بورڈ کے مواد کو سادہ متن کے طور پر پیسٹ کریں</translation>
+<translation id="7673453620027697230">ونڈو اسکرین شاٹ لیں/ریکارڈنگ کریں</translation>
 <translation id="7703010453515335249">بایاں بریکٹ</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />، پھر <ph name="SPACE" /> یا <ph name="ENTER" /></translation>

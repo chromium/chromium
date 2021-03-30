@@ -102,7 +102,7 @@ void CrostiniExportImportStatusTracker::SetStatusFailedConcurrentOperation(
 
 void CrostiniExportImportStatusTracker::SetStatusFailedWithMessage(
     Status status,
-    const base::string16& message) {
+    const std::u16string& message) {
   DCHECK(status_ == Status::RUNNING || status_ == Status::CANCELLING);
   status_ = status;
   SetStatusFailedWithMessageUI(status, message);

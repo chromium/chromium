@@ -46,35 +46,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_MAC)
-#include "chrome/browser/geolocation/geolocation_system_permission_mac.h"
-#endif
-
 using content::WebContentsTester;
 using content_settings::PageSpecificContentSettings;
-
-namespace {
-
-#if defined(OS_MAC)
-class FakeSystemGeolocationPermissionsManager
-    : public GeolocationSystemPermissionManager {
- public:
-  FakeSystemGeolocationPermissionsManager() = default;
-
-  ~FakeSystemGeolocationPermissionsManager() override = default;
-
-  SystemPermissionStatus GetSystemPermission() override { return status_; }
-  void set_status(SystemPermissionStatus status) { status_ = status; }
-
- private:
-  SystemPermissionStatus status_ = SystemPermissionStatus::kDenied;
-};
-#endif  // defined(OS_MAC)
-
-}  // namespace
 
 class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
  protected:
@@ -130,7 +109,7 @@ TEST_F(ContentSettingBubbleModelTest, Cookies) {
           NULL, web_contents(), ContentSettingsType::COOKIES));
   const ContentSettingBubbleModel::BubbleContent& bubble_content =
       content_setting_bubble_model->bubble_content();
-  base::string16 title = bubble_content.title;
+  std::u16string title = bubble_content.title;
   EXPECT_FALSE(title.empty());
   ASSERT_EQ(2U, bubble_content.radio_group.radio_items.size());
   EXPECT_FALSE(bubble_content.custom_link.empty());
@@ -737,50 +716,20 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   EXPECT_EQ(2U, new_bubble_content.media_menus.size());
 }
 
-TEST_F(ContentSettingBubbleModelTest, PepperBroker) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
-  content_settings->OnContentBlocked(ContentSettingsType::PPAPI_BROKER);
+class GeolocationContentSettingBubbleModelTest
+    : public ContentSettingBubbleModelTest {
+ public:
+  GeolocationContentSettingBubbleModelTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kMacCoreLocationImplementation);
+  }
 
-  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          NULL, web_contents(), ContentSettingsType::PPAPI_BROKER));
-  const ContentSettingBubbleModel::BubbleContent& bubble_content =
-      content_setting_bubble_model->bubble_content();
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
-  base::string16 title = bubble_content.title;
-  EXPECT_FALSE(title.empty());
-  ASSERT_EQ(2U, bubble_content.radio_group.radio_items.size());
-  base::string16 radio1 = bubble_content.radio_group.radio_items[0];
-  base::string16 radio2 = bubble_content.radio_group.radio_items[1];
-  EXPECT_FALSE(bubble_content.custom_link_enabled);
-  EXPECT_FALSE(bubble_content.manage_text.empty());
-
-  WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("https://www.example.com"));
-  content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
-  content_settings->OnContentAllowed(ContentSettingsType::PPAPI_BROKER);
-  content_setting_bubble_model =
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          NULL, web_contents(), ContentSettingsType::PPAPI_BROKER);
-  const ContentSettingBubbleModel::BubbleContent& bubble_content_2 =
-      content_setting_bubble_model->bubble_content();
-
-  EXPECT_FALSE(bubble_content_2.title.empty());
-  EXPECT_NE(title, bubble_content_2.title);
-  ASSERT_EQ(2U, bubble_content_2.radio_group.radio_items.size());
-  EXPECT_NE(radio1, bubble_content_2.radio_group.radio_items[0]);
-  EXPECT_NE(radio2, bubble_content_2.radio_group.radio_items[1]);
-  EXPECT_FALSE(bubble_content_2.custom_link_enabled);
-  EXPECT_FALSE(bubble_content_2.manage_text.empty());
-}
-
-TEST_F(ContentSettingBubbleModelTest, Geolocation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
+TEST_F(GeolocationContentSettingBubbleModelTest, Geolocation) {
+  ASSERT_TRUE(profile()->CreateHistoryService());
 
 #if defined(OS_MAC)
   auto fake_geolocation_permission_manager =
@@ -835,7 +784,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
     geolocation_permission_manager->set_status(
-        SystemPermissionStatus::kAllowed);
+        device::LocationSystemPermissionStatus::kAllowed);
 
     EXPECT_EQ(bubble_content.title,
               l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
@@ -1070,9 +1019,9 @@ TEST_F(ContentSettingBubbleModelTest, FileURL) {
   std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
           nullptr, web_contents(), ContentSettingsType::IMAGES));
-  base::string16 title =
+  std::u16string title =
       content_setting_bubble_model->bubble_content().radio_group.radio_items[0];
-  ASSERT_NE(base::string16::npos, title.find(base::UTF8ToUTF16(file_url)));
+  ASSERT_NE(std::u16string::npos, title.find(base::UTF8ToUTF16(file_url)));
 }
 
 TEST_F(ContentSettingBubbleModelTest, RegisterProtocolHandler) {

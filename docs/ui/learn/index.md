@@ -10,8 +10,10 @@
 
 * [Views](/docs/ui/views/overview.md)
 * [Product Excellence](/docs/ui/product_excellence/index.md)
+* [UI Debugging](/docs/ui/learn/ui_debugging.md)
 * [UI Devtools](/docs/ui/ui_devtools/index.md)
 * [Input Event Routing](/docs/ui/input_event/index.md)
+* [Metadata and Properties](/docs/ui/views/metadata_properties.md)
 
 # Archival Documentation on Chrome UI.
 

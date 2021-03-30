@@ -9,13 +9,13 @@
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_controller.h"
 #include "content/browser/media/session/media_session_impl.h"
-#include "content/common/media/media_player_delegate_messages.h"
 #include "content/test/mock_agent_scheduling_group_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/media_player.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -70,20 +70,31 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
     // Bind the remote to the receiver, so that we can intercept incoming
     // messages sent via the different methods that use the remote.
     media_web_contents_observer->OnMediaPlayerAdded(
-        receiver_.BindNewPipeAndPassRemote(), player_id);
+        receiver_.BindNewEndpointAndPassDedicatedRemote(), player_id);
   }
 
-  // Needs to be called from tests after invoking a method from the MediaPlayer
-  // mojo interface, so that we have enough time to process the message.
+  // Needs to be called from tests after invoking a method related playback
+  // from the MediaPlayer mojo interface, so that we have enough time to
+  // process the message.
   void WaitUntilReceivedMessage() {
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset();
   }
 
+  // Needs to be called from tests after invoking SetVolumeMultiplier method
+  // from the MediaPlayer mojo interface, so that we have enough time to
+  // process the message.
+  void WaitUntilVolumeChanged() {
+    run_loop_for_volume_ = std::make_unique<base::RunLoop>();
+    run_loop_for_volume_->Run();
+    run_loop_for_volume_.reset();
+  }
+
   // media::mojom::MediaPlayer implementation.
   void AddMediaPlayerObserver(
-      mojo::PendingRemote<media::mojom::MediaPlayerObserver>) override {}
+      mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>)
+      override {}
 
   void RequestPlay() override {
     received_play_ = true;
@@ -107,9 +118,28 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
     run_loop_->Quit();
   }
 
+  void RequestSeekTo(base::TimeDelta seek_time) override {
+    received_seek_to_time_ = seek_time;
+    run_loop_->Quit();
+  }
+
   void RequestEnterPictureInPicture() override {}
 
   void RequestExitPictureInPicture() override {}
+
+  void SetVolumeMultiplier(double multiplier) override {
+    received_volume_multiplier_ = multiplier;
+    if (run_loop_for_volume_)
+      run_loop_for_volume_->Quit();
+  }
+
+  void SetPersistentState(bool persistent) override {}
+
+  void SetPowerExperimentState(bool enabled) override {}
+
+  void SetAudioSinkId(const std::string& sink_id) override {}
+
+  void SuspendForFrameClosed() override {}
 
   // Getters used from MediaSessionControllerTest.
   bool received_play() const { return received_play_; }
@@ -124,14 +154,25 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
     return received_seek_backward_time_;
   }
 
+  const base::TimeDelta& received_seek_to_time() const {
+    return received_seek_to_time_;
+  }
+
+  double received_volume_multiplier() const {
+    return received_volume_multiplier_;
+  }
+
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  mojo::Receiver<media::mojom::MediaPlayer> receiver_{this};
+  std::unique_ptr<base::RunLoop> run_loop_for_volume_;
+  mojo::AssociatedReceiver<media::mojom::MediaPlayer> receiver_{this};
 
   bool received_play_{false};
+  double received_volume_multiplier_{0};
   PauseRequestType received_pause_type_{PauseRequestType::kNone};
   base::TimeDelta received_seek_forward_time_;
   base::TimeDelta received_seek_backward_time_;
+  base::TimeDelta received_seek_to_time_;
 };
 
 class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
@@ -139,7 +180,8 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
 
-    id_ = MediaPlayerId(contents()->GetMainFrame(), 0);
+    id_ =
+        MediaPlayerId(contents()->GetMainFrame()->GetGlobalFrameRoutingId(), 0);
     controller_ = CreateController();
     media_player_receiver_ = CreateMediaPlayerReceiver(controller_.get());
 
@@ -176,7 +218,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   }
 
   IPC::TestSink& test_sink() {
-    return main_test_rfh()->agent_scheduling_group().sink();
+    return main_test_rfh()->GetAgentSchedulingGroup().sink();
   }
 
   void Suspend() {
@@ -201,9 +243,15 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
     media_player_receiver_->WaitUntilReceivedMessage();
   }
 
+  void SeekTo(base::TimeDelta seek_time) {
+    controller_->OnSeekTo(controller_->get_player_id_for_testing(), seek_time);
+    media_player_receiver_->WaitUntilReceivedMessage();
+  }
+
   void SetVolumeMultiplier(double multiplier) {
     controller_->OnSetVolumeMultiplier(controller_->get_player_id_for_testing(),
                                        multiplier);
+    media_player_receiver_->WaitUntilVolumeChanged();
   }
 
   // Helpers to check the results of using the basic controls.
@@ -228,26 +276,14 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
            media_player_receiver_->received_seek_backward_time();
   }
 
-  // Legacy IPC-based helpers to check the results of using the basic controls.
-  // TODO: Remove these ones as more legacy IPC messages get migrated to mojo.
+  bool ReceivedMessageSeekTo(base::TimeDelta expected_seek_time) {
+    return expected_seek_time ==
+           media_player_receiver_->received_seek_to_time();
+  }
 
-  template <typename T>
-  bool ReceivedMessageVolumeMultiplierUpdate(double expected_multiplier) {
-    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(T::ID);
-    if (!msg)
-      return false;
-
-    std::tuple<int, double> result;
-    if (!T::Read(msg, &result))
-      return false;
-
-    EXPECT_EQ(id_.delegate_id, std::get<0>(result));
-    if (id_.delegate_id != std::get<0>(result))
-      return false;
-
-    EXPECT_EQ(expected_multiplier, std::get<1>(result));
-    test_sink().ClearMessages();
-    return expected_multiplier == std::get<1>(result);
+  bool ReceivedMessageVolume(double expected_volume_multiplier) {
+    return expected_volume_multiplier ==
+           media_player_receiver_->received_volume_multiplier();
   }
 
   MediaPlayerId id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
@@ -291,6 +327,9 @@ TEST_F(MediaSessionControllerTest, BasicControls) {
   const base::TimeDelta kTestSeekBackwardTime = base::TimeDelta::FromSeconds(2);
   SeekBackward(kTestSeekBackwardTime);
   EXPECT_TRUE(ReceivedMessageSeekBackward(kTestSeekBackwardTime));
+  const base::TimeDelta kTestSeekToTime = base::TimeDelta::FromSeconds(3);
+  SeekTo(kTestSeekToTime);
+  EXPECT_TRUE(ReceivedMessageSeekTo(kTestSeekToTime));
 
   // Verify destruction of the controller removes its session.
   controller_.reset();
@@ -305,14 +344,13 @@ TEST_F(MediaSessionControllerTest, VolumeMultiplier) {
   EXPECT_TRUE(media_session()->IsControllable());
 
   // Upon creation of the MediaSession the default multiplier will be sent.
-  EXPECT_TRUE(ReceivedMessageVolumeMultiplierUpdate<
-              MediaPlayerDelegateMsg_UpdateVolumeMultiplier>(1.0));
+  media_player_receiver_->WaitUntilVolumeChanged();
+  EXPECT_TRUE(ReceivedMessageVolume(1.0));
 
   // Verify a different volume multiplier is sent.
   const double kTestMultiplier = 0.5;
   SetVolumeMultiplier(kTestMultiplier);
-  EXPECT_TRUE(ReceivedMessageVolumeMultiplierUpdate<
-              MediaPlayerDelegateMsg_UpdateVolumeMultiplier>(kTestMultiplier));
+  EXPECT_TRUE(ReceivedMessageVolume(kTestMultiplier));
 }
 
 TEST_F(MediaSessionControllerTest, ControllerSidePause) {

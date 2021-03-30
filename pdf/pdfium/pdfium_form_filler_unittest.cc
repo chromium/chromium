@@ -27,7 +27,7 @@ class FormFillerTestClient : public TestClient {
 
   // Mock PDFEngine::Client methods.
   MOCK_METHOD(void, ScrollToX, (int), (override));
-  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int), (override));
   MOCK_METHOD(void,
               NavigateTo,
               (const std::string&, WindowOpenDisposition),
@@ -140,8 +140,7 @@ TEST_F(FormFillerTest, FormOnFocusChange) {
 
     for (const auto& test_case : test_cases) {
       if (test_case.final_scroll_position.y() != 0) {
-        EXPECT_CALL(client,
-                    ScrollToY(test_case.final_scroll_position.y(), false));
+        EXPECT_CALL(client, ScrollToY(test_case.final_scroll_position.y()));
       }
       if (test_case.final_scroll_position.x() != 0)
         EXPECT_CALL(client, ScrollToX(test_case.final_scroll_position.x()));

@@ -16,6 +16,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
@@ -26,13 +27,15 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
+#include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace network {
 
-// Typemapped to network.mojom.URLRequest in url_loader.mojom.
+// Typemapped to network.mojom.URLRequest in url_request.mojom.
 //
 // Note: Please revise EqualsForTesting accordingly on any updates to this
 // struct.
@@ -55,6 +58,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     bool disable_secure_dns = false;
     bool has_user_activation = false;
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer;
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
     mojom::ClientSecurityStatePtr client_security_state;
   };
 
@@ -70,8 +76,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     WebBundleTokenParams(const WebBundleTokenParams& params);
     WebBundleTokenParams& operator=(const WebBundleTokenParams& other);
 
-    WebBundleTokenParams(const base::UnguessableToken& token,
+    WebBundleTokenParams(const GURL& bundle_url,
+                         const base::UnguessableToken& token,
                          mojo::PendingRemote<mojom::WebBundleHandle> handle);
+    WebBundleTokenParams(const GURL& bundle_url,
+                         const base::UnguessableToken& token,
+                         int32_t render_process_id);
 
     // For testing. Regarding the equality of |handle|, |this| equals |other| if
     // both |handle| exists, or neither exists, because we cannot test the
@@ -80,8 +90,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
 
     mojo::PendingRemote<mojom::WebBundleHandle> CloneHandle() const;
 
+    GURL bundle_url;
     base::UnguessableToken token;
     mojo::PendingRemote<mojom::WebBundleHandle> handle;
+    int32_t render_process_id = -1;
   };
 
   ResourceRequest();
@@ -92,7 +104,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool SendsCookies() const;
   bool SavesCookies() const;
 
-  // See comments in network.mojom.URLRequest in url_loader.mojom for details
+  // See comments in network.mojom.URLRequest in url_request.mojom for details
   // of each field.
   std::string method = net::HttpRequestHeaders::kGetMethod;
   GURL url;
@@ -100,7 +112,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool update_first_party_url_on_redirect = false;
 
   // SECURITY NOTE: |request_initiator| is a security-sensitive field.  Please
-  // consult the doc comment for |request_initiator| in url_loader.mojom.
+  // consult the doc comment for |request_initiator| in url_request.mojom.
   base::Optional<url::Origin> request_initiator;
 
   base::Optional<url::Origin> isolated_world_origin;
@@ -129,7 +141,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool enable_load_timing = false;
   bool enable_upload_progress = false;
   bool do_not_prompt_for_login = false;
-  int render_frame_id = MSG_ROUTING_NONE;
   bool is_main_frame = false;
   int transition_type = 0;
   bool report_raw_headers = false;
@@ -144,6 +155,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   base::Optional<std::string> devtools_stack_id;
   bool is_signed_exchange_prefetch_cache_enabled = false;
   bool is_fetch_like_api = false;
+  bool is_favicon = false;
   bool obey_origin_policy = false;
   base::Optional<base::UnguessableToken> recursive_prefetch_token;
   base::Optional<TrustedParams> trusted_params;
@@ -152,6 +164,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // more context.
   OptionalTrustTokenParams trust_token_params;
   base::Optional<WebBundleTokenParams> web_bundle_token_params;
+  // If not null, the network service will not advertise any stream types
+  // (via Accept-Encoding) that are not listed. Also, it will not attempt
+  // decoding any non-listed stream types.
+  base::Optional<std::vector<net::SourceStream::SourceType>>
+      devtools_accepted_stream_types;
 };
 
 // This does not accept |kDefault| referrer policy.

@@ -17,4 +17,5 @@ Local Modifications:
   namespace collisions with other versions of CityHash, and use ARCH_CPU_LITTLE_ENDIAN and
   LIKELY from //base
 - 004-google-style.patch: Use nullptr, remove 'using namespace std;'.
+- 005-bswap-clang.patch: Use the builtins for bswap when compiling with clang.
 - clang-format

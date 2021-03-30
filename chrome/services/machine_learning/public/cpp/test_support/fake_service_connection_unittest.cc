@@ -16,6 +16,7 @@
 #include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
 #include "chrome/services/machine_learning/public/mojom/machine_learning_service.mojom-shared.h"
 #include "chrome/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

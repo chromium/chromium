@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/file_system_provider/service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"

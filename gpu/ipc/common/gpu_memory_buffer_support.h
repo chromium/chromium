@@ -9,6 +9,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/unsafe_shared_memory_pool.h"
 #include "build/build_config.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
@@ -23,6 +25,8 @@ class ClientNativePixmapFactory;
 #endif
 
 namespace gpu {
+
+class GpuMemoryBufferManager;
 
 // Provides a common factory for GPU memory buffer implementations.
 class GPU_EXPORT GpuMemoryBufferSupport {
@@ -53,13 +57,17 @@ class GPU_EXPORT GpuMemoryBufferSupport {
   // should match what was used to allocate the |handle|. |callback|, if
   // non-null, is called when instance is deleted, which is not necessarily on
   // the same thread as this function was called on and instance was created on.
+  // |gpu_memory_buffer_manager| and |pool| are only needed if the created
+  // buffer is a windows DXGI buffer and it needs to be mapped at the consumer.
   virtual std::unique_ptr<GpuMemoryBufferImpl>
   CreateGpuMemoryBufferImplFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      GpuMemoryBufferImpl::DestructionCallback callback);
+      GpuMemoryBufferImpl::DestructionCallback callback,
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr,
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
  private:
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)

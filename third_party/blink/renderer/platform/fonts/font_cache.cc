@@ -78,6 +78,10 @@ const base::Feature kFontCacheNoSizeInKey{"FontCacheNoSizeInKey",
 
 const char kColorEmojiLocale[] = "und-Zsye";
 
+#if defined(OS_ANDROID)
+extern const char kNotoColorEmojiCompat[] = "Noto Color Emoji Compat";
+#endif
+
 SkFontMgr* FontCache::static_font_manager_ = nullptr;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -416,7 +420,7 @@ void FontCache::AddClient(FontCacheClient* client) {
   if (!font_cache_clients_) {
     font_cache_clients_ =
         MakeGarbageCollected<HeapHashSet<WeakMember<FontCacheClient>>>();
-    font_cache_clients_.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&font_cache_clients_);
   }
   DCHECK(!font_cache_clients_->Contains(client));
   font_cache_clients_->insert(client);

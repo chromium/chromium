@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-thumbnail.js';
+import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
+import {ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 /** @return {!ViewerThumbnailElement} */
 function createThumbnail() {
@@ -184,6 +185,20 @@ const tests = [
     testThumbnailRotations(
         [50, 1500], [[25, 750], [140, 4], [25, 750], [140, 4]]);
 
+    chrome.test.succeed();
+  },
+  async function testContextMenuDisabled() {
+    // Set some image data so a canvas is created inside the thumbnail.
+    const thumbnail = createThumbnail();
+    thumbnail.image = new ImageData(108, 140);
+    const canvas = /** @type {!HTMLCanvasElement} */ (
+        thumbnail.shadowRoot.querySelector('canvas'));
+
+    const whenContextMenu = eventToPromise('contextmenu', canvas);
+    canvas.dispatchEvent(new CustomEvent('contextmenu', {cancelable: true}));
+    const e = await whenContextMenu;
+
+    chrome.test.assertTrue(e.defaultPrevented);
     chrome.test.succeed();
   },
 ];

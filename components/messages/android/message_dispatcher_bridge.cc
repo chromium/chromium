@@ -8,31 +8,56 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/no_destructor.h"
 #include "components/messages/android/jni_headers/MessageDispatcherBridge_jni.h"
 #include "content/public/browser/web_contents.h"
 
 namespace messages {
 
+namespace {
+
+MessageDispatcherBridge* g_message_dospatcher_bridge_for_testing = nullptr;
+
+}  // namespace
+
 // static
-void MessageDispatcherBridge::EnqueueMessage(
-    MessageWrapper* message,
-    content::WebContents* web_contents) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_MessageDispatcherBridge_enqueueMessage(
-      env, message->GetJavaMessageWrapper(),
-      web_contents->GetJavaWebContents());
+MessageDispatcherBridge* MessageDispatcherBridge::Get() {
+  if (g_message_dospatcher_bridge_for_testing)
+    return g_message_dospatcher_bridge_for_testing;
+  static base::NoDestructor<MessageDispatcherBridge> instance;
+  return instance.get();
 }
 
 // static
-void MessageDispatcherBridge::DismissMessage(
-    MessageWrapper* message,
-    content::WebContents* web_contents) {
+void MessageDispatcherBridge::SetInstanceForTesting(
+    MessageDispatcherBridge* instance) {
+  g_message_dospatcher_bridge_for_testing = instance;
+}
+
+void MessageDispatcherBridge::EnqueueMessage(MessageWrapper* message,
+                                             content::WebContents* web_contents,
+                                             MessageScopeType scopeType) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageDispatcherBridge_enqueueMessage(
+      env, message->GetJavaMessageWrapper(), web_contents->GetJavaWebContents(),
+      static_cast<int>(scopeType));
+}
+
+void MessageDispatcherBridge::DismissMessage(MessageWrapper* message,
+                                             content::WebContents* web_contents,
+                                             DismissReason dismiss_reason) {
   base::android::ScopedJavaLocalRef<jobject> jmessage(
       message->GetJavaMessageWrapper());
   JNIEnv* env = base::android::AttachCurrentThread();
-  message->HandleDismissCallback(env);
-  Java_MessageDispatcherBridge_dismissMessage(
-      env, jmessage, web_contents->GetJavaWebContents());
+  message->HandleDismissCallback(env, static_cast<int>(dismiss_reason));
+  // DismissMessage can be called in the process of WebContents destruction.
+  // In this case WebContentsAndroid is already torn down. We shouldn't call
+  // GetJavaWebContents() because it recreates WebContentsAndroid.
+  if (!web_contents->IsBeingDestroyed()) {
+    Java_MessageDispatcherBridge_dismissMessage(
+        env, jmessage, web_contents->GetJavaWebContents(),
+        static_cast<int>(dismiss_reason));
+  }
 }
 
 }  // namespace messages

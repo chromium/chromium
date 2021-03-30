@@ -29,7 +29,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 
 namespace {
 constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
@@ -190,7 +190,7 @@ WebAppBrowserController* WebAppBrowserController::AsWebAppBrowserController() {
   return this;
 }
 
-base::string16 WebAppBrowserController::GetTitle() const {
+std::u16string WebAppBrowserController::GetTitle() const {
   // When showing the toolbar, display the name of the app, instead of the
   // current page as the title.
   if (ShouldShowCustomTabBar()) {
@@ -201,11 +201,11 @@ base::string16 WebAppBrowserController::GetTitle() const {
   return AppBrowserController::GetTitle();
 }
 
-base::string16 WebAppBrowserController::GetAppShortName() const {
+std::u16string WebAppBrowserController::GetAppShortName() const {
   return base::UTF8ToUTF16(registrar().GetAppShortName(GetAppId()));
 }
 
-base::string16 WebAppBrowserController::GetFormattedUrlOrigin() const {
+std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
   return FormatUrlOrigin(GetAppStartUrl());
 }
 
@@ -289,8 +289,8 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   if (!HasAppId())
     return;
 
-  chromeos::ApkWebAppService* apk_web_app_service =
-      chromeos::ApkWebAppService::Get(browser->profile());
+  ash::ApkWebAppService* apk_web_app_service =
+      ash::ApkWebAppService::Get(browser->profile());
   if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(GetAppId()))
     return;
 

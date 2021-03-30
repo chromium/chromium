@@ -16,10 +16,13 @@
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
+#include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
 #include "components/printing/common/print.mojom.h"
+#include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
@@ -29,10 +32,6 @@ namespace base {
 class DictionaryValue;
 class FilePath;
 class RefCountedMemory;
-}
-
-namespace gfx {
-class Rect;
 }
 
 namespace printing {
@@ -57,18 +56,30 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // printing::mojo::PrintPreviewUI:
   void SetOptionsFromDocument(const mojom::OptionsFromDocumentParamsPtr params,
                               int32_t request_id) override;
+  void DidPrepareDocumentForPreview(int32_t document_cookie,
+                                    int32_t request_id) override;
+  void DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
+                      int32_t request_id) override;
+  void MetafileReadyForPrinting(mojom::DidPreviewDocumentParamsPtr params,
+                                int32_t request_id) override;
   void PrintPreviewFailed(int32_t document_cookie, int32_t request_id) override;
   void PrintPreviewCancelled(int32_t document_cookie,
                              int32_t request_id) override;
   void PrinterSettingsInvalid(int32_t document_cookie,
                               int32_t request_id) override;
+  void DidGetDefaultPageLayout(mojom::PageSizeMarginsPtr page_layout_in_points,
+                               const gfx::Rect& printable_area_in_points,
+                               bool has_custom_page_size_style,
+                               int32_t request_id) override;
+  void DidStartPreview(mojom::DidStartPreviewParamsPtr params,
+                       int32_t request_id) override;
 
   bool IsBound() const;
 
   // Setters
-  void SetInitiatorTitle(const base::string16& initiator_title);
+  void SetInitiatorTitle(const std::u16string& initiator_title);
 
-  const base::string16& initiator_title() const { return initiator_title_; }
+  const std::u16string& initiator_title() const { return initiator_title_; }
 
   bool source_is_arc() const { return source_is_arc_; }
 
@@ -128,9 +139,10 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
                                const mojom::RequestPrintPreviewParams& params);
 
   // Determines whether to cancel a print preview request based on the request
-  // and UI ids in |ids|.
+  // id.
   // Can be called from any thread.
-  static bool ShouldCancelRequest(const mojom::PreviewIds& ids);
+  static bool ShouldCancelRequest(const base::Optional<int32_t>& preview_ui_id,
+                                  int request_id);
 
   // Returns an id to uniquely identify this PrintPreviewUI.
   base::Optional<int32_t> GetIDForPrintPreviewUI() const;
@@ -138,32 +150,10 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Notifies the Web UI of a print preview request with |request_id|.
   virtual void OnPrintPreviewRequest(int request_id);
 
-  // Notifies the Web UI about the properties of the request preview.
-  void OnDidStartPreview(const mojom::DidStartPreviewParams& params,
-                         int request_id);
-
-  // Notifies the Web UI of the default page layout according to the currently
-  // selected printer and page size.
-  void OnDidGetDefaultPageLayout(const mojom::PageSizeMargins& page_layout,
-                                 const gfx::Rect& printable_area,
-                                 bool has_custom_page_size_style,
-                                 int request_id);
-
   // Notifies the Web UI that the 0-based page |page_number| rendering is being
   // processed and an OnPendingPreviewPage() call is imminent. Returns whether
   // |page_number| is the expected page.
   bool OnPendingPreviewPage(uint32_t page_number);
-
-  // Notifies the Web UI that the 0-based page |page_number| has been rendered.
-  // |preview_request_id| indicates which request resulted in this response.
-  void OnDidPreviewPage(uint32_t page_number,
-                        scoped_refptr<base::RefCountedMemory> data,
-                        int preview_request_id);
-
-  // Notifies the Web UI renderer that preview data is available.
-  // |preview_request_id| indicates which request resulted in this response.
-  void OnPreviewDataIsAvailable(scoped_refptr<base::RefCountedMemory> data,
-                                int preview_request_id);
 
   // Notifies the Web UI that the print preview failed to render for the request
   // with id = |request_id|.
@@ -246,6 +236,39 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Clear the existing print preview data.
   void ClearAllPreviewData();
 
+  // Notifies the Web UI that the 0-based page |page_number| has been rendered.
+  // |request_id| indicates which request resulted in this response.
+  void NotifyUIPreviewPageReady(
+      uint32_t page_number,
+      int request_id,
+      scoped_refptr<base::RefCountedMemory> data_bytes);
+
+  // Notifies the Web UI renderer that preview data is available. |request_id|
+  // indicates which request resulted in this response.
+  void NotifyUIPreviewDocumentReady(
+      int request_id,
+      scoped_refptr<base::RefCountedMemory> data_bytes);
+
+  // Callbacks for print compositor client.
+  void OnPrepareForDocumentToPdfDone(int32_t request_id,
+                                     mojom::PrintCompositor::Status status);
+  void OnCompositePdfPageDone(uint32_t page_number,
+                              int32_t document_cookie,
+                              int32_t request_id,
+                              mojom::PrintCompositor::Status status,
+                              base::ReadOnlySharedMemoryRegion region);
+  void OnNupPdfConvertDone(uint32_t page_number,
+                           int32_t request_id,
+                           mojom::PdfNupConverter::Status status,
+                           base::ReadOnlySharedMemoryRegion region);
+  void OnNupPdfDocumentConvertDone(int32_t request_id,
+                                   mojom::PdfNupConverter::Status status,
+                                   base::ReadOnlySharedMemoryRegion region);
+  void OnCompositeToPdfDone(int document_cookie,
+                            int32_t request_id,
+                            mojom::PrintCompositor::Status status,
+                            base::ReadOnlySharedMemoryRegion region);
+
   base::TimeTicks initial_preview_start_time_;
 
   // The unique ID for this class instance. Stored here to avoid calling
@@ -275,7 +298,7 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // Store the initiator title, used for populating the print preview dialog
   // title.
-  base::string16 initiator_title_;
+  std::u16string initiator_title_;
 
   // The list of 0-based page numbers that will be rendered.
   std::vector<uint32_t> pages_to_render_;
@@ -296,6 +319,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   gfx::Rect printable_area_;
 
   mojo::AssociatedReceiver<mojom::PrintPreviewUI> receiver_{this};
+
+  base::WeakPtrFactory<PrintPreviewUI> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewUI);
 };

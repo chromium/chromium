@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -15,11 +16,10 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -50,10 +50,8 @@ base::Value GetForceInstalledExtensionsFromPrefs(const PrefService* prefs) {
 }  // namespace
 
 SigninScreenExtensionsExternalLoader::SigninScreenExtensionsExternalLoader(
-    Profile* profile,
-    extensions::PendingExtensionManager* pending_extension_manager)
+    Profile* profile)
     : profile_(profile),
-      pending_extension_manager_(pending_extension_manager),
       external_cache_(
           base::PathService::CheckedGet(DIR_SIGNIN_PROFILE_EXTENSIONS),
           g_browser_process->shared_url_loader_factory(),
@@ -64,7 +62,6 @@ SigninScreenExtensionsExternalLoader::SigninScreenExtensionsExternalLoader(
           /*always_check_updates=*/true,
           /*wait_for_cache_initialization=*/false) {
   DCHECK(ProfileHelper::IsSigninProfile(profile));
-  DCHECK(pending_extension_manager);
 }
 
 void SigninScreenExtensionsExternalLoader::StartLoading() {
@@ -89,11 +86,6 @@ void SigninScreenExtensionsExternalLoader::OnExtensionListsUpdated(
   LoadFinished(prefs->CreateDeepCopy());
 }
 
-void SigninScreenExtensionsExternalLoader::OnCachedExtensionFileDeleted(
-    const extensions::ExtensionId& id) {
-  pending_extension_manager_->Remove(id);
-}
-
 SigninScreenExtensionsExternalLoader::~SigninScreenExtensionsExternalLoader() =
     default;
 
@@ -106,8 +98,9 @@ void SigninScreenExtensionsExternalLoader::SubscribeAndInitializeFromPrefs() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       extensions::pref_names::kInstallForceList,
-      base::Bind(&SigninScreenExtensionsExternalLoader::UpdateStateFromPrefs,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &SigninScreenExtensionsExternalLoader::UpdateStateFromPrefs,
+          base::Unretained(this)));
 
   UpdateStateFromPrefs();
 }

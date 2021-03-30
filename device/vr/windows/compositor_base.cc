@@ -37,9 +37,6 @@ mojom::XRFrameDataPtr XRDeviceAbstraction::GetNextFrameData() {
 }
 void XRDeviceAbstraction::OnSessionStart() {}
 void XRDeviceAbstraction::HandleDeviceLost() {}
-bool XRDeviceAbstraction::PreComposite() {
-  return true;
-}
 bool XRDeviceAbstraction::HasSessionEnded() {
   return false;
 }
@@ -89,6 +86,10 @@ void XRCompositorCommon::ClearPendingFrame() {
   }
 }
 
+bool XRCompositorCommon::IsUsingSharedImages() const {
+  return false;
+}
+
 void XRCompositorCommon::SubmitFrameMissing(int16_t frame_index,
                                             const gpu::SyncToken& sync_token) {
   TRACE_EVENT_INSTANT0("xr", "SubmitFrameMissing", TRACE_EVENT_SCOPE_THREAD);
@@ -110,7 +111,6 @@ void XRCompositorCommon::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
-  // Not currently implemented for Windows.
   NOTREACHED();
 }
 
@@ -139,8 +139,11 @@ void XRCompositorCommon::SubmitFrameWithTextureHandle(
   pending_frame_->submit_frame_time_ = base::TimeTicks::Now();
 
 #if defined(OS_WIN)
-  texture_helper_.SetSourceTexture(texture_handle.TakeHandle(),
-                                   left_webxr_bounds_, right_webxr_bounds_);
+  base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
+                                              ? texture_handle.TakeHandle()
+                                              : base::win::ScopedHandle();
+  texture_helper_.SetSourceTexture(std::move(scoped_handle), left_webxr_bounds_,
+                                   right_webxr_bounds_);
   pending_frame_->webxr_submitted_ = true;
 
   // Regardless of success - try to composite what we have.
@@ -206,7 +209,28 @@ void XRCompositorCommon::RequestSession(
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
 
-  if (!StartRuntime()) {
+  EnableSupportedFeatures(options->required_features,
+                          options->optional_features);
+
+  // Call the subclass's StartRuntime method. Upon completion, StartRuntime will
+  // call the callback passed to its first parameter, start_runtime_callback.
+  // XRCompositorCommon::StartRuntimeFinish. We setup BindOnce such that all of
+  // the parameters give to us here in XRCompositorCommon::RequestSession are
+  // passed through to StartRuntimeFinish so that it can finish the job.
+  StartRuntime(base::BindOnce(
+      &XRCompositorCommon::StartRuntimeFinish, base::Unretained(this),
+      std::move(on_presentation_ended), std::move(on_visibility_state_changed),
+      std::move(options), std::move(callback)));
+}
+
+void XRCompositorCommon::StartRuntimeFinish(
+    base::OnceCallback<void()> on_presentation_ended,
+    base::RepeatingCallback<void(mojom::XRVisibilityState)>
+        on_visibility_state_changed,
+    mojom::XRRuntimeSessionOptionsPtr options,
+    RequestSessionCallback callback,
+    bool success) {
+  if (!success) {
     TRACE_EVENT_INSTANT0("xr", "Failed to start runtime",
                          TRACE_EVENT_SCOPE_THREAD);
     main_thread_task_runner_->PostTask(
@@ -232,8 +256,15 @@ void XRCompositorCommon::RequestSession(
 
   device::mojom::XRPresentationTransportOptionsPtr transport_options =
       device::mojom::XRPresentationTransportOptions::New();
-  transport_options->transport_method =
-      device::mojom::XRPresentationTransportMethod::SUBMIT_AS_TEXTURE_HANDLE;
+
+  if (IsUsingSharedImages()) {
+    transport_options->transport_method =
+        device::mojom::XRPresentationTransportMethod::DRAW_INTO_TEXTURE_MAILBOX;
+  } else {
+    transport_options->transport_method =
+        device::mojom::XRPresentationTransportMethod::SUBMIT_AS_TEXTURE_HANDLE;
+  }
+
   // Only set boolean options that we need. Default is false, and we should be
   // able to safely ignore ones that our implementation doesn't care about.
   transport_options->wait_for_transfer_notification = true;
@@ -251,8 +282,6 @@ void XRCompositorCommon::RequestSession(
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
   session->submit_frame_sink = std::move(submit_frame_sink);
 
-  EnableSupportedFeatures(options->required_features,
-                          options->optional_features);
   session->enabled_features.insert(session->enabled_features.end(),
                                    enabled_features_.begin(),
                                    enabled_features_.end());
@@ -538,7 +567,7 @@ void XRCompositorCommon::MaybeCompositeAndSubmit() {
     texture_helper_.CleanupNoSubmit();
   } else {
     copy_successful = texture_helper_.UpdateBackbufferSizes() &&
-                      PreComposite() && texture_helper_.CompositeToBackBuffer();
+                      texture_helper_.CompositeToBackBuffer();
     if (copy_successful) {
       pending_frame_->frame_ready_time_ = base::TimeTicks::Now();
       if (!SubmitCompositedFrame()) {

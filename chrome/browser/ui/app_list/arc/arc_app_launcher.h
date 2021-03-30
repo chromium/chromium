@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -21,14 +23,15 @@ class BrowserContext;
 
 // Helper class for deferred ARC app launching in case app is not ready on the
 // moment of request.
-class ArcAppLauncher : public ArcAppListPrefs::Observer {
+class ArcAppLauncher : public ArcAppListPrefs::Observer,
+                       public apps::AppRegistryCache::Observer {
  public:
   ArcAppLauncher(content::BrowserContext* context,
                  const std::string& app_id,
-                 const base::Optional<std::string>& launch_intent,
+                 apps::mojom::IntentPtr launch_intent,
                  bool deferred_launch_allowed,
                  int64_t display_id,
-                 arc::UserInteractionType interaction);
+                 apps::mojom::LaunchSource launch_source);
   ~ArcAppLauncher() override;
 
   bool app_launched() const { return app_launched_; }
@@ -39,9 +42,15 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer {
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;
 
+  // apps::AppRegistryCache::Observer overrides:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
  private:
   bool MaybeLaunchApp(const std::string& app_id,
-                      const ArcAppListPrefs::AppInfo& app_info);
+                      const ArcAppListPrefs::AppInfo& app_info,
+                      apps::mojom::Readiness readiness);
 
   // Unowned pointer.
   content::BrowserContext* context_;
@@ -49,7 +58,7 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer {
   const std::string app_id_;
   // Optional intent to launch the app. If not set then app is started default
   // way.
-  const base::Optional<std::string> launch_intent_;
+  apps::mojom::IntentPtr launch_intent_;
   // If it is set to true that means app is allowed to launch in deferred mode
   // once it is registered, regardless it is ready or not. Otherwise app is
   // launched when it becomes ready.
@@ -59,7 +68,7 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer {
   // Flag indicating that ARC app was launched.
   bool app_launched_ = false;
   // Enum that indicates what type of metric to record to UMA on launch.
-  arc::UserInteractionType interaction_;
+  apps::mojom::LaunchSource launch_source_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcAppLauncher);
 };

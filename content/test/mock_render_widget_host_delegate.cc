@@ -29,7 +29,7 @@ MockRenderWidgetHostDelegate::PreHandleKeyboardEvent(
 
 void MockRenderWidgetHostDelegate::ExecuteEditCommand(
     const std::string& command,
-    const base::Optional<base::string16>& value) {}
+    const base::Optional<std::u16string>& value) {}
 
 void MockRenderWidgetHostDelegate::Undo() {}
 
@@ -75,10 +75,6 @@ bool MockRenderWidgetHostDelegate::IsFullscreen() {
 
 RenderViewHostDelegateView* MockRenderWidgetHostDelegate::GetDelegateView() {
   return &rvh_delegate_view_;
-}
-
-FrameTree* MockRenderWidgetHostDelegate::GetFrameTree() {
-  return frame_tree_;
 }
 
 bool MockRenderWidgetHostDelegate::ShouldIgnoreInputEvents() {

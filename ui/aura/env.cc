@@ -8,6 +8,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list_types.h"
+#include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/env_observer.h"
@@ -21,11 +22,19 @@
 #include "ui/events/gestures/gesture_recognizer_impl.h"
 #include "ui/events/platform/platform_event_source.h"
 
+#if defined(OS_WIN)
+#include "ui/base/cursor/win/win_cursor_factory.h"
+#endif
+
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if defined(USE_X11)
+#include "ui/base/x/x11_cursor_factory.h"
+#endif
+
+#if defined(OS_WIN) || defined(USE_X11)
 #include "ui/gfx/switches.h"
 #endif
 
@@ -156,20 +165,11 @@ WindowOcclusionTracker* Env::GetWindowOcclusionTracker() {
 }
 
 void Env::PauseWindowOcclusionTracking() {
-  const bool was_paused = GetWindowOcclusionTracker();
   GetWindowOcclusionTracker()->Pause();
-  if (!was_paused) {
-    for (EnvObserver& observer : observers_)
-      observer.OnWindowOcclusionTrackingPaused();
-  }
 }
 
 void Env::UnpauseWindowOcclusionTracking() {
   GetWindowOcclusionTracker()->Unpause();
-  if (!GetWindowOcclusionTracker()->IsPaused()) {
-    for (EnvObserver& observer : observers_)
-      observer.OnWindowOcclusionTrackingResumed();
-  }
 }
 
 void Env::AddEventObserver(ui::EventObserver* observer,
@@ -210,12 +210,17 @@ Env::Env()
     : env_controller_(std::make_unique<EnvInputStateController>(this)),
       gesture_recognizer_(std::make_unique<ui::GestureRecognizerImpl>()),
       input_state_lookup_(InputStateLookup::Create()) {
+#if defined(OS_WIN) || defined(USE_X11)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
 #if defined(USE_X11)
-  // In Ozone/X11, the cursor factory is initialized by the platform
-  // initialization code.
-  if (!features::IsUsingOzonePlatform() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
-    cursor_factory_ = std::make_unique<ui::X11CursorFactory>();
+    // In Ozone/X11, the cursor factory is initialized by the platform
+    // initialization code.
+    if (!features::IsUsingOzonePlatform())
+      cursor_factory_ = std::make_unique<ui::X11CursorFactory>();
+#else
+    cursor_factory_ = std::make_unique<ui::WinCursorFactory>();
+#endif
+  }
 #endif
 }
 
@@ -244,8 +249,15 @@ void Env::NotifyWindowInitialized(Window* window) {
 }
 
 void Env::NotifyHostInitialized(WindowTreeHost* host) {
+  window_tree_hosts_.push_back(host);
   for (EnvObserver& observer : observers_)
     observer.OnHostInitialized(host);
+}
+
+void Env::NotifyHostDestroyed(WindowTreeHost* host) {
+  base::Erase(window_tree_hosts_, host);
+  for (EnvObserver& observer : observers_)
+    observer.OnHostDestroyed(host);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

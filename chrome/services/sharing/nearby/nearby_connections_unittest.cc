@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -188,7 +189,7 @@ class NearbyConnectionsTest : public testing::Test {
   NearbyConnectionsTest() {
     auto webrtc_dependencies = mojom::WebRtcDependencies::New(
         webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
-        webrtc_dependencies_.mdns_responder_.BindNewPipeAndPassRemote(),
+        webrtc_dependencies_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.ice_config_fetcher_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
     auto dependencies = mojom::NearbyConnectionsDependencies::New(
@@ -201,7 +202,8 @@ class NearbyConnectionsTest : public testing::Test {
         remote_.BindNewPipeAndPassReceiver(), std::move(dependencies),
         /*io_task_runner=*/nullptr,
         base::BindOnce(&NearbyConnectionsTest::OnDisconnect,
-                       base::Unretained(this)),
+                       base::Unretained(this)));
+    nearby_connections_->SetServiceControllerForTesting(
         std::move(service_controller));
   }
 
@@ -405,8 +407,8 @@ TEST_F(NearbyConnectionsTest, P2PSocketManagerDisconnect) {
   disconnect_run_loop_.Run();
 }
 
-TEST_F(NearbyConnectionsTest, MdnsResponderDisconnect) {
-  webrtc_dependencies_.mdns_responder_.reset();
+TEST_F(NearbyConnectionsTest, MdnsResponderFactoryDisconnect) {
+  webrtc_dependencies_.mdns_responder_factory_.reset();
   disconnect_run_loop_.Run();
 }
 

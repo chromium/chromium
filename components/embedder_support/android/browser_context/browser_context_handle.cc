@@ -13,6 +13,7 @@ using base::android::JavaRef;
 
 namespace browser_context {
 
+// static
 content::BrowserContext* BrowserContextFromJavaHandle(
     const JavaRef<jobject>& jhandle) {
   if (!jhandle)

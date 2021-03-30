@@ -10,15 +10,13 @@
 #include <set>
 
 #include "base/memory/ref_counted.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 
 class Profile;
 class ProfileImpl;
-
-namespace content {
-class RenderProcessHost;
-}
 
 // We use this class to destroy the off the record profile so that we can make
 // sure it gets done asynchronously after all render process hosts are gone.
@@ -70,6 +68,10 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
 
   // We don't want to wait forever, so we have a cancellation timer.
   base::OneShotTimer timer_;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      observations_{this};
 
   // Used to count down the number of render process host left.
   uint32_t num_hosts_;

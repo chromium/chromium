@@ -10,7 +10,6 @@
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -430,10 +429,10 @@ TEST_F(AssistantPageViewTest,
   }
 }
 
-TEST_F(AssistantPageViewTest, ShouldNotFocusMicWhenOpeningWithHotword) {
+TEST_F(AssistantPageViewTest, ShouldFocusMicWhenOpeningWithHotword) {
   ShowAssistantUi(AssistantEntryPoint::kHotword);
 
-  EXPECT_NOT_HAS_FOCUS(mic_view());
+  EXPECT_HAS_FOCUS(mic_view());
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelWhenOpening) {
@@ -628,13 +627,12 @@ TEST_F(AssistantPageViewTest,
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_F(AssistantPageViewTest,
-       ShouldNotFocusMicViewWhenPressingVoiceInputToggle) {
+TEST_F(AssistantPageViewTest, ShouldFocusMicViewWhenPressingVoiceInputToggle) {
   ShowAssistantUiInTextMode();
 
   ClickOnAndWait(voice_input_toggle());
 
-  EXPECT_NOT_HAS_FOCUS(mic_view());
+  EXPECT_HAS_FOCUS(mic_view());
 }
 
 TEST_F(AssistantPageViewTest,
@@ -839,23 +837,23 @@ TEST_F(AssistantPageViewTest, RememberAndShowHistory) {
   EXPECT_TRUE(input_text_field()->GetText().empty());
 
   PressKey(ui::VKEY_UP);
-  EXPECT_EQ(input_text_field()->GetText(), base::UTF8ToUTF16("query 2"));
+  EXPECT_EQ(input_text_field()->GetText(), u"query 2");
 
   PressKey(ui::VKEY_UP);
-  EXPECT_EQ(input_text_field()->GetText(), base::UTF8ToUTF16("query 1"));
+  EXPECT_EQ(input_text_field()->GetText(), u"query 1");
 
   PressKey(ui::VKEY_UP);
-  EXPECT_EQ(input_text_field()->GetText(), base::UTF8ToUTF16("query 1"));
+  EXPECT_EQ(input_text_field()->GetText(), u"query 1");
 
   PressKey(ui::VKEY_DOWN);
-  EXPECT_EQ(input_text_field()->GetText(), base::UTF8ToUTF16("query 2"));
+  EXPECT_EQ(input_text_field()->GetText(), u"query 2");
 
   PressKey(ui::VKEY_DOWN);
   EXPECT_TRUE(input_text_field()->GetText().empty());
 }
 
 TEST_F(AssistantPageViewTest, ShouldNotClearQueryWhenSwitchingToTabletMode) {
-  const base::string16 query_text = base::UTF8ToUTF16("unsubmitted query");
+  const std::u16string query_text = u"unsubmitted query";
   ShowAssistantUiInTextMode();
   input_text_field()->SetText(query_text);
 
@@ -935,17 +933,16 @@ class AssistantPageViewTabletModeTest : public AssistantPageViewTest {
 };
 
 TEST_F(AssistantPageViewTabletModeTest,
-       ShouldNotFocusMicWhenOpeningWithLongPressLauncher) {
+       ShouldFocusMicWhenOpeningWithLongPressLauncher) {
   ShowAssistantUi(AssistantEntryPoint::kLongPressLauncher);
 
-  EXPECT_NOT_HAS_FOCUS(mic_view());
+  EXPECT_HAS_FOCUS(mic_view());
 }
 
-TEST_F(AssistantPageViewTabletModeTest,
-       ShouldNotFocusMicWhenOpeningWithHotword) {
+TEST_F(AssistantPageViewTabletModeTest, ShouldFocusMicWhenOpeningWithHotword) {
   ShowAssistantUi(AssistantEntryPoint::kHotword);
 
-  EXPECT_NOT_HAS_FOCUS(mic_view());
+  EXPECT_HAS_FOCUS(mic_view());
 }
 
 TEST_F(AssistantPageViewTabletModeTest, ShouldFocusTextFieldAfterSendingQuery) {

@@ -38,6 +38,8 @@
 
 using base::Time;
 using base::TimeDelta;
+using extensions::mojom::APIPermissionID;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -193,12 +195,13 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
  public:
   void Initialize() override {
     const APIPermissionInfo* permission_info =
-      PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+        PermissionsInfo::GetInstance()->GetByID(
+            mojom::APIPermissionID::kSocket);
 
     extension_id_ = prefs_.AddExtensionAndReturnId("test");
 
-    api_perm_set1_.insert(APIPermission::kTab);
-    api_perm_set1_.insert(APIPermission::kBookmark);
+    api_perm_set1_.insert(APIPermissionID::kTab);
+    api_perm_set1_.insert(APIPermissionID::kBookmark);
     std::unique_ptr<APIPermission> permission(
         permission_info->CreateAPIPermission());
     {
@@ -210,7 +213,7 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
     }
     api_perm_set1_.insert(std::move(permission));
 
-    api_perm_set2_.insert(APIPermission::kHistory);
+    api_perm_set2_.insert(APIPermissionID::kHistory);
 
     AddPattern(&ehost_perm_set1_, "http://*.google.com/*");
     AddPattern(&ehost_perm_set1_, "http://example.com/*");
@@ -341,9 +344,9 @@ class ExtensionPrefsActivePermissions : public ExtensionPrefsTest {
 
     {
       APIPermissionSet api_perms;
-      api_perms.insert(APIPermission::kTab);
-      api_perms.insert(APIPermission::kBookmark);
-      api_perms.insert(APIPermission::kHistory);
+      api_perms.insert(APIPermissionID::kTab);
+      api_perms.insert(APIPermissionID::kBookmark);
+      api_perms.insert(APIPermissionID::kHistory);
 
       URLPatternSet ehosts;
       AddPattern(&ehosts, "http://*.google.com/*");
@@ -398,7 +401,7 @@ class ExtensionPrefsVersionString : public ExtensionPrefsTest {
     extension = prefs_.AddExtension("test");
     EXPECT_EQ("0.1", prefs()->GetVersionString(extension->id()));
     prefs()->OnExtensionUninstalled(extension->id(),
-                                    Manifest::INTERNAL, false);
+                                    ManifestLocation::kInternal, false);
   }
 
   void Verify() override {
@@ -486,8 +489,9 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     base::FilePath path =
         prefs_.extensions_dir().AppendASCII(base::NumberToString(num));
     std::string errors;
-    scoped_refptr<Extension> extension = Extension::Create(
-        path, Manifest::INTERNAL, manifest, Extension::NO_FLAGS, id, &errors);
+    scoped_refptr<Extension> extension =
+        Extension::Create(path, ManifestLocation::kInternal, manifest,
+                          Extension::NO_FLAGS, id, &errors);
     ASSERT_TRUE(extension.get()) << errors;
     ASSERT_EQ(id, extension->id());
     prefs()->SetDelayedInstallInfo(extension.get(),
@@ -597,8 +601,8 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     dictionary.SetString(manifest_keys::kVersion, "0.1");
     dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
     dictionary.SetString(manifest_keys::kBackgroundPage, "background.html");
-    scoped_refptr<Extension> extension =
-        prefs_.AddExtensionWithManifest(dictionary, Manifest::INTERNAL);
+    scoped_refptr<Extension> extension = prefs_.AddExtensionWithManifest(
+        dictionary, ManifestLocation::kInternal);
     id_ = extension->id();
 
 
@@ -613,8 +617,9 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     base::FilePath path =
         prefs_.extensions_dir().AppendASCII("test_0.2");
     std::string errors;
-    scoped_refptr<Extension> new_extension = Extension::Create(
-        path, Manifest::INTERNAL, manifest, Extension::NO_FLAGS, id_, &errors);
+    scoped_refptr<Extension> new_extension =
+        Extension::Create(path, ManifestLocation::kInternal, manifest,
+                          Extension::NO_FLAGS, id_, &errors);
     ASSERT_TRUE(new_extension.get()) << errors;
     ASSERT_EQ(id_, new_extension->id());
     prefs()->SetDelayedInstallInfo(new_extension.get(),
@@ -682,7 +687,7 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
       dictionary.SetString(manifest_keys::kVersion, "0.1");
       dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
       webstore_extension_ = prefs_.AddExtensionWithManifestAndFlags(
-          dictionary, Manifest::INTERNAL, Extension::FROM_WEBSTORE);
+          dictionary, ManifestLocation::kInternal, Extension::FROM_WEBSTORE);
     }
 
     {
@@ -691,7 +696,7 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
       dictionary.SetString(manifest_keys::kVersion, "0.1");
       dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
       bookmark_extension_ = prefs_.AddExtensionWithManifestAndFlags(
-          dictionary, Manifest::INTERNAL, Extension::FROM_BOOKMARK);
+          dictionary, ManifestLocation::kInternal, Extension::FROM_BOOKMARK);
     }
 
     {
@@ -700,8 +705,7 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
       dictionary.SetString(manifest_keys::kVersion, "0.1");
       dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
       default_extension_ = prefs_.AddExtensionWithManifestAndFlags(
-          dictionary,
-          Manifest::INTERNAL,
+          dictionary, ManifestLocation::kInternal,
           Extension::WAS_INSTALLED_BY_DEFAULT);
     }
 
@@ -711,7 +715,8 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
       dictionary.SetString(manifest_keys::kVersion, "0.1");
       dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
       oem_extension_ = prefs_.AddExtensionWithManifestAndFlags(
-          dictionary, Manifest::INTERNAL, Extension::WAS_INSTALLED_BY_OEM);
+          dictionary, ManifestLocation::kInternal,
+          Extension::WAS_INSTALLED_BY_OEM);
     }
   }
 
@@ -743,34 +748,22 @@ PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase()
   simple_dict.SetInteger(manifest_keys::kManifestVersion, 2);
   simple_dict.SetString(manifest_keys::kName, "unused");
 
-  extension1_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("ext1_"),
-      Manifest::EXTERNAL_PREF,
-      simple_dict,
-      Extension::NO_FLAGS,
-      &error);
-  extension2_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("ext2_"),
-      Manifest::EXTERNAL_PREF,
-      simple_dict,
-      Extension::NO_FLAGS,
-      &error);
-  extension3_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("ext3_"),
-      Manifest::EXTERNAL_PREF,
-      simple_dict,
-      Extension::NO_FLAGS,
-      &error);
-  extension4_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("ext4_"),
-      Manifest::EXTERNAL_PREF,
-      simple_dict,
-      Extension::NO_FLAGS,
-      &error);
+  extension1_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext1_"),
+                                  ManifestLocation::kExternalPref, simple_dict,
+                                  Extension::NO_FLAGS, &error);
+  extension2_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext2_"),
+                                  ManifestLocation::kExternalPref, simple_dict,
+                                  Extension::NO_FLAGS, &error);
+  extension3_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext3_"),
+                                  ManifestLocation::kExternalPref, simple_dict,
+                                  Extension::NO_FLAGS, &error);
+  extension4_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext4_"),
+                                  ManifestLocation::kExternalPref, simple_dict,
+                                  Extension::NO_FLAGS, &error);
 
   internal_extension_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("internal extension"), Manifest::INTERNAL,
-      simple_dict, Extension::NO_FLAGS, &error);
+      prefs_.temp_dir().AppendASCII("internal extension"),
+      ManifestLocation::kInternal, simple_dict, Extension::NO_FLAGS, &error);
 
   for (size_t i = 0; i < kNumInstalledExtensions; ++i)
     installed_[i] = false;
@@ -945,7 +938,7 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
     // Adding a component extension.
     component_extension_ =
         ExtensionBuilder("a")
-            .SetLocation(Manifest::COMPONENT)
+            .SetLocation(ManifestLocation::kComponent)
             .SetPath(prefs_.extensions_dir().AppendASCII("a"))
             .Build();
     prefs_.AddExtension(component_extension_.get());
@@ -953,15 +946,15 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
     // Adding a non component extension.
     no_component_extension_ =
         ExtensionBuilder("b")
-            .SetLocation(Manifest::INTERNAL)
+            .SetLocation(ManifestLocation::kInternal)
             .SetPath(prefs_.extensions_dir().AppendASCII("b"))
             .Build();
     prefs_.AddExtension(no_component_extension_.get());
 
     APIPermissionSet api_perms;
-    api_perms.insert(APIPermission::kTab);
-    api_perms.insert(APIPermission::kBookmark);
-    api_perms.insert(APIPermission::kHistory);
+    api_perms.insert(APIPermissionID::kTab);
+    api_perms.insert(APIPermissionID::kBookmark);
+    api_perms.insert(APIPermissionID::kHistory);
 
     URLPatternSet shosts;
     AddPattern(&shosts, "chrome://print/*");
@@ -1154,32 +1147,35 @@ class ExtensionPrefsIsExternalExtensionUninstalled : public ExtensionPrefsTest {
     uninstalled_external_id_ =
         prefs_
             .AddExtensionWithLocation("external uninstall",
-                                      Manifest::EXTERNAL_PREF)
+                                      ManifestLocation::kExternalPref)
             ->id();
     uninstalled_by_program_external_id_ =
         prefs_
             .AddExtensionWithLocation("external uninstall by program",
-                                      Manifest::EXTERNAL_PREF)
+                                      ManifestLocation::kExternalPref)
             ->id();
     installed_external_id_ =
         prefs_
             .AddExtensionWithLocation("external install",
-                                      Manifest::EXTERNAL_PREF)
+                                      ManifestLocation::kExternalPref)
             ->id();
     uninstalled_internal_id_ =
         prefs_
-            .AddExtensionWithLocation("internal uninstall", Manifest::INTERNAL)
+            .AddExtensionWithLocation("internal uninstall",
+                                      ManifestLocation::kInternal)
             ->id();
     installed_internal_id_ =
-        prefs_.AddExtensionWithLocation("internal install", Manifest::INTERNAL)
+        prefs_
+            .AddExtensionWithLocation("internal install",
+                                      ManifestLocation::kInternal)
             ->id();
 
     prefs()->OnExtensionUninstalled(uninstalled_external_id_,
-                                    Manifest::EXTERNAL_PREF, false);
+                                    ManifestLocation::kExternalPref, false);
     prefs()->OnExtensionUninstalled(uninstalled_by_program_external_id_,
-                                    Manifest::EXTERNAL_PREF, true);
+                                    ManifestLocation::kExternalPref, true);
     prefs()->OnExtensionUninstalled(uninstalled_internal_id_,
-                                    Manifest::INTERNAL, false);
+                                    ManifestLocation::kInternal, false);
   }
 
   void Verify() override {
@@ -1227,7 +1223,7 @@ TEST_F(ExtensionPrefsSimpleTest, OldWithholdingPrefMigration) {
   std::string force_installed_id =
       prefs
           .AddExtensionWithLocation("Force installed",
-                                    Manifest::EXTERNAL_POLICY)
+                                    ManifestLocation::kExternalPolicy)
           ->id();
 
   // We need to explicitly remove the default value for the new pref as it is
@@ -1302,10 +1298,11 @@ TEST_F(ExtensionPrefsSimpleTest, MigrateToNewExternalUninstallBits) {
   std::string external_extension =
       prefs
           .AddExtensionWithLocation("external uninstall",
-                                    Manifest::EXTERNAL_PREF)
+                                    ManifestLocation::kExternalPref)
           ->id();
   std::string internal_extension =
-      prefs.AddExtensionWithLocation("internal", Manifest::INTERNAL)->id();
+      prefs.AddExtensionWithLocation("internal", ManifestLocation::kInternal)
+          ->id();
 
   EXPECT_TRUE(has_extension_pref_entry(external_extension));
   EXPECT_TRUE(has_extension_pref_entry(internal_extension));

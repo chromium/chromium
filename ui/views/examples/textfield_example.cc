@@ -156,16 +156,16 @@ bool TextfieldExample::HandleMouseEvent(Textfield* sender,
 }
 
 void TextfieldExample::ClearAllButtonPressed() {
-  name_->SetText(base::string16());
-  password_->SetText(base::string16());
-  disabled_->SetText(base::string16());
-  read_only_->SetText(base::string16());
-  invalid_->SetText(base::string16());
-  rtl_->SetText(base::string16());
+  name_->SetText(std::u16string());
+  password_->SetText(std::u16string());
+  disabled_->SetText(std::u16string());
+  read_only_->SetText(std::u16string());
+  invalid_->SetText(std::u16string());
+  rtl_->SetText(std::u16string());
 }
 
 void TextfieldExample::AppendButtonPressed() {
-  const base::string16 append_text =
+  const std::u16string append_text =
       GetStringUTF16(IDS_TEXTFIELD_APPEND_UPDATE_TEXT);
   name_->AppendText(append_text);
   password_->AppendText(append_text);
@@ -176,7 +176,7 @@ void TextfieldExample::AppendButtonPressed() {
 }
 
 void TextfieldExample::SetButtonPressed() {
-  const base::string16 set_text = GetStringUTF16(IDS_TEXTFIELD_SET_UPDATE_TEXT);
+  const std::u16string set_text = GetStringUTF16(IDS_TEXTFIELD_SET_UPDATE_TEXT);
   name_->SetText(set_text);
   password_->SetText(set_text);
   disabled_->SetText(set_text);

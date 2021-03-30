@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Dodaj www. i .com do ciągu wpisanego w pasku adresu i otwórz stronę</translation>
+<translation id="1768987374400973299">Zrób zrzut/nagranie ekranu</translation>
 <translation id="1872219238824176091">Usuń bieżące biurko</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, a następnie <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> lub <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Przejdź do następnej karty</translation>
 <translation id="2010818616644390445">Przejdź do ostatniej karty w oknie</translation>
 <translation id="2040706009561734834">Otwórz/zamknij menu z aplikacjami</translation>
+<translation id="2086334242442703436">Otwórz selektor emotikonów</translation>
 <translation id="2088054208777350526">Znajdź skróty klawiszowe</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> lub <ph name="F" /></translation>
 <translation id="2145908266289632567">Edytowanie tekstu</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Otwórz Asystenta Google</translation>
 <translation id="2488661730534396940">Aktywuj biurko po lewej</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Otwórz aplikację diagnostyczną</translation>
 <translation id="2530339807289914946">Przewiń stronę internetową w dół</translation>
 <translation id="2530896289327917474">Włącz lub wyłącz przeglądanie przy użyciu kursora</translation>
 <translation id="2574014812750545982">Zresetuj poziom powiększenia na stronie</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Przejdź na koniec następnego słowa</translation>
 <translation id="4866066940972151697">Aktywuj biurko po prawej</translation>
 <translation id="4916163929714267752">Otwórz link w nowym oknie</translation>
+<translation id="492453977506755176">Klawisz trybu przechwytywania</translation>
 <translation id="5030659775136592441">Pokaż menedżera zakładek</translation>
 <translation id="5034421018520995080">Przejdź na górę strony</translation>
 <translation id="5042305953558921026">Klawisz trybu przeglądu</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Pokaż lub ukryj konsolę Narzędzi dla deweloperów</translation>
 <translation id="5919628958418675842">Włącz lub wyłącz filtr prywatyzujący</translation>
 <translation id="5921745308587794300">Obróć okno</translation>
+<translation id="5926306472221400972">Zrób zrzut całego ekranu</translation>
 <translation id="6022924867608035986">Wyczyść tekst w polu wyszukiwania</translation>
 <translation id="6045998054441862242">Włącz tryb wysokiego kontrastu</translation>
 <translation id="6052614013050385269">Kliknij link prawym przyciskiem myszy</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Przywróć kartę do pierwotnego położenia</translation>
 <translation id="6474744297082284761">Pomniejsz (gdy zadokowany LUB włączona lupa pełnego ekranu)</translation>
 <translation id="649811797655257835">Wybierz plik i naciśnij <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Wykonaj zrzut/nagranie części ekranu</translation>
 <translation id="6556040137485212400">Otwórz okno, które było nieużywane przez najdłuższy czas</translation>
 <translation id="666343722268997814">Otwórz menu prawego przycisku myszy dla zaznaczonego elementu</translation>
 <translation id="6671538777808758331">Przejdź do następnego wyrażenia pasującego do zapytania</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Przenieś sterowanie na wyskakujące okienka i okna dialogowe</translation>
 <translation id="7635348532214572995">Przenieś ikonę aplikacji w inne miejsce na siatce aplikacji</translation>
 <translation id="766326951329901120">Wklej zawartość schowka jako zwykły tekst</translation>
+<translation id="7673453620027697230">Wykonaj zrzut/nagranie okna</translation>
 <translation id="7703010453515335249">lewy nawias</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, a następnie <ph name="SPACE" /> lub <ph name="ENTER" /></translation>

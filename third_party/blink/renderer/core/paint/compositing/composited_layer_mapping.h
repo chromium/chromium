@@ -136,9 +136,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // a no-change paint.
   void SetNeedsCheckRasterInvalidation();
 
-  // Notification from the layoutObject that its content changed.
-  void ContentChanged(ContentChangeType);
-
   PhysicalRect CompositedBounds() const { return composited_bounds_; }
 
   void PositionOverflowControlsLayers();
@@ -169,6 +166,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   IntRect ComputeInterestRect(
       const GraphicsLayer*,
       const IntRect& previous_interest_rect) const override;
+  IntRect PaintableRegion(const GraphicsLayer*) const override;
   LayoutSize SubpixelAccumulation() const final;
   bool NeedsRepaint(const GraphicsLayer&) const override;
   void PaintContents(const GraphicsLayer*,
@@ -178,6 +176,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   bool ShouldSkipPaintingSubtree() const override;
   bool IsTrackingRasterInvalidations() const override;
   void GraphicsLayersDidChange() override;
+  PaintArtifactCompositor* GetPaintArtifactCompositor() override;
 
 #if DCHECK_IS_ON()
   void VerifyNotPainting() override;
@@ -246,10 +245,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // Returns whether an adjustment happend.
   bool AdjustForCompositedScrolling(const GraphicsLayer*,
                                     IntSize& offset) const;
-
-  bool DrawsBackgroundOntoContentLayer() const {
-    return draws_background_onto_content_layer_;
-  }
 
  private:
   // Returns true for layers with scrollable overflow which have a background
@@ -459,8 +454,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   PhysicalRect composited_bounds_;
 
   unsigned pending_update_scope_ : 2;
-
-  bool draws_background_onto_content_layer_;
 
   friend class CompositedLayerMappingTest;
 };

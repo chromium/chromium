@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -17,7 +18,6 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
-#include "ash/wm/splitview/multi_display_overview_and_split_view_test.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/callback_forward.h"
@@ -40,8 +40,7 @@
 
 namespace ash {
 
-class OverviewWindowDragHistogramTest
-    : public MultiDisplayOverviewAndSplitViewTest {
+class OverviewWindowDragHistogramTest : public AshTestBase {
  public:
   OverviewWindowDragHistogramTest() = default;
   ~OverviewWindowDragHistogramTest() override = default;
@@ -51,18 +50,13 @@ class OverviewWindowDragHistogramTest
       const OverviewWindowDragHistogramTest&) = delete;
 
   void SetUp() override {
-    // Always enable |features::kDragToSnapInClamshellMode|. When the test
-    // parameter value is true, |features::kMultiDisplayOverviewAndSplitView| is
-    // enabled too (see |MultiDisplayOverviewAndSplitViewTest|).
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDragToSnapInClamshellMode);
-    MultiDisplayOverviewAndSplitViewTest::SetUp();
+    AshTestBase::SetUp();
     window_ = CreateAppWindow();
   }
 
   void TearDown() override {
     window_.reset();
-    MultiDisplayOverviewAndSplitViewTest::TearDown();
+    AshTestBase::TearDown();
   }
 
  protected:
@@ -141,25 +135,24 @@ class OverviewWindowDragHistogramTest
 
  private:
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<aura::Window> window_;
 };
 
-TEST_P(OverviewWindowDragHistogramTest, ToGridSameDisplayClamshellMouse) {
+TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayClamshellMouse) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
   generator->DragMouseBy(5, 0);
   ExpectDragRecorded(OverviewDragAction::kToGridSameDisplayClamshellMouse);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToGridSameDisplayClamshellTouch) {
+TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayClamshellTouch) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(EnterOverviewAndGetItemCenterPoint());
   generator->PressMoveAndReleaseTouchBy(20, 0);
   ExpectDragRecorded(OverviewDragAction::kToGridSameDisplayClamshellTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellMouse) {
+TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellMouse) {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
@@ -167,7 +160,7 @@ TEST_P(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellMouse) {
   ExpectDragRecorded(OverviewDragAction::kToDeskSameDisplayClamshellMouse);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellTouch) {
+TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellTouch) {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(EnterOverviewAndGetItemCenterPoint());
@@ -176,54 +169,54 @@ TEST_P(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellTouch) {
   ExpectDragRecorded(OverviewDragAction::kToDeskSameDisplayClamshellTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToSnapSameDisplayClamshellMouse) {
+TEST_F(OverviewWindowDragHistogramTest, ToSnapSameDisplayClamshellMouse) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
   generator->DragMouseTo(0, 300);
   ExpectDragRecorded(OverviewDragAction::kToSnapSameDisplayClamshellMouse);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToSnapSameDisplayClamshellTouch) {
+TEST_F(OverviewWindowDragHistogramTest, ToSnapSameDisplayClamshellTouch) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(EnterOverviewAndGetItemCenterPoint());
   generator->PressMoveAndReleaseTouchTo(0, 300);
   ExpectDragRecorded(OverviewDragAction::kToSnapSameDisplayClamshellTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, SwipeToCloseSuccessfulClamshellTouch) {
+TEST_F(OverviewWindowDragHistogramTest, SwipeToCloseSuccessfulClamshellTouch) {
   EnterOverviewAndSwipeItemDown(180u);
   ExpectDragRecorded(OverviewDragAction::kSwipeToCloseSuccessfulClamshellTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, SwipeToCloseCanceledClamshellTouch) {
+TEST_F(OverviewWindowDragHistogramTest, SwipeToCloseCanceledClamshellTouch) {
   EnterOverviewAndSwipeItemDown(20u);
   ExpectDragRecorded(OverviewDragAction::kSwipeToCloseCanceledClamshellTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, SwipeToCloseSuccessfulTabletTouch) {
+TEST_F(OverviewWindowDragHistogramTest, SwipeToCloseSuccessfulTabletTouch) {
   EnterTablet();
   EnterOverviewAndSwipeItemDown(180u);
   ExpectDragRecorded(OverviewDragAction::kSwipeToCloseSuccessfulTabletTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, SwipeToCloseCanceledTabletTouch) {
+TEST_F(OverviewWindowDragHistogramTest, SwipeToCloseCanceledTabletTouch) {
   EnterTablet();
   EnterOverviewAndSwipeItemDown(20u);
   ExpectDragRecorded(OverviewDragAction::kSwipeToCloseCanceledTabletTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, FlingToCloseClamshellTouch) {
+TEST_F(OverviewWindowDragHistogramTest, FlingToCloseClamshellTouch) {
   EnterOverviewAndFlingItemDown();
   ExpectDragRecorded(OverviewDragAction::kFlingToCloseClamshellTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, FlingToCloseTabletTouch) {
+TEST_F(OverviewWindowDragHistogramTest, FlingToCloseTabletTouch) {
   EnterTablet();
   EnterOverviewAndFlingItemDown();
   ExpectDragRecorded(OverviewDragAction::kFlingToCloseTabletTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletTouch) {
+TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletTouch) {
   EnterTabletAndOverviewAndLongPressItem();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveTouchBy(20, 0);
@@ -231,7 +224,7 @@ TEST_P(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletTouch) {
   ExpectDragRecorded(OverviewDragAction::kToGridSameDisplayTabletTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletTouch) {
+TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletTouch) {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
   EnterTabletAndOverviewAndLongPressItem();
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -240,7 +233,7 @@ TEST_P(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletTouch) {
   ExpectDragRecorded(OverviewDragAction::kToDeskSameDisplayTabletTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToSnapSameDisplayTabletTouch) {
+TEST_F(OverviewWindowDragHistogramTest, ToSnapSameDisplayTabletTouch) {
   EnterTabletAndOverviewAndLongPressItem();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveTouch(gfx::Point(0, 300));
@@ -248,7 +241,7 @@ TEST_P(OverviewWindowDragHistogramTest, ToSnapSameDisplayTabletTouch) {
   ExpectDragRecorded(OverviewDragAction::kToSnapSameDisplayTabletTouch);
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletMouse) {
+TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletMouse) {
   EnterTablet();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
@@ -256,7 +249,7 @@ TEST_P(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletMouse) {
   ExpectNoDragRecorded();
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletMouse) {
+TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletMouse) {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
   EnterTablet();
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -265,7 +258,7 @@ TEST_P(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletMouse) {
   ExpectNoDragRecorded();
 }
 
-TEST_P(OverviewWindowDragHistogramTest, ToSnapSameDisplayTabletMouse) {
+TEST_F(OverviewWindowDragHistogramTest, ToSnapSameDisplayTabletMouse) {
   EnterTablet();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
@@ -276,7 +269,7 @@ TEST_P(OverviewWindowDragHistogramTest, ToSnapSameDisplayTabletMouse) {
 using OverviewWindowDragHistogramTestMultiDisplayOnly =
     OverviewWindowDragHistogramTest;
 
-TEST_P(OverviewWindowDragHistogramTestMultiDisplayOnly,
+TEST_F(OverviewWindowDragHistogramTestMultiDisplayOnly,
        ToGridOtherDisplayClamshellMouse) {
   UpdateDisplay("800x600,800x600");
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -288,7 +281,7 @@ TEST_P(OverviewWindowDragHistogramTestMultiDisplayOnly,
   ExpectDragRecorded(OverviewDragAction::kToGridOtherDisplayClamshellMouse);
 }
 
-TEST_P(OverviewWindowDragHistogramTestMultiDisplayOnly,
+TEST_F(OverviewWindowDragHistogramTestMultiDisplayOnly,
        ToDeskOtherDisplayClamshellMouse) {
   UpdateDisplay("800x600,800x600");
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
@@ -301,7 +294,7 @@ TEST_P(OverviewWindowDragHistogramTestMultiDisplayOnly,
   ExpectDragRecorded(OverviewDragAction::kToDeskOtherDisplayClamshellMouse);
 }
 
-TEST_P(OverviewWindowDragHistogramTestMultiDisplayOnly,
+TEST_F(OverviewWindowDragHistogramTestMultiDisplayOnly,
        ToSnapOtherDisplayClamshellMouse) {
   UpdateDisplay("800x600,800x600");
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -312,10 +305,5 @@ TEST_P(OverviewWindowDragHistogramTestMultiDisplayOnly,
   generator->ReleaseLeftButton();
   ExpectDragRecorded(OverviewDragAction::kToSnapOtherDisplayClamshellMouse);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, OverviewWindowDragHistogramTest, testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All,
-                         OverviewWindowDragHistogramTestMultiDisplayOnly,
-                         testing::Values(true));
 
 }  // namespace ash

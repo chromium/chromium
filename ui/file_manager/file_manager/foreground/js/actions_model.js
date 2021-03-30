@@ -2,11 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ActionModelUI} from './ui/action_model_ui.m.js';
+// #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
+// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {util, str, strf} from '../../common/js/util.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * A single action, that can be taken on a set of entries.
  * @interface
  */
-class Action {
+/* #export */ class Action {
   /**
    * Executes this action on the set of entries.
    */
@@ -285,13 +299,11 @@ class DriveToggleOfflineAction {
       },
 
       // Show an error.
+      // TODO(crbug.com/1138744): Migrate this error message to a visual signal.
       showError: size => {
-        this.ui_.alertDialog.showHtml(
-            str('DRIVE_OUT_OF_SPACE_HEADER'),
-            strf(
-                'DRIVE_OUT_OF_SPACE_MESSAGE', unescape(currentEntry.name),
-                util.bytesToString(size)),
-            null, null, null);
+        this.ui_.alertDialog.show(
+            strf('OFFLINE_FAILURE_MESSAGE', unescape(currentEntry.name)), null,
+            null, null);
       }
     };
     steps.start();
@@ -643,7 +655,7 @@ class CustomAction {
  * Represents a set of actions for a set of entries. Includes actions set
  * locally in JS, as well as those retrieved from the FSP API.
  */
-class ActionsModel extends cr.EventTarget {
+/* #export */ class ActionsModel extends cr.EventTarget {
   /**
    * @param {!VolumeManager} volumeManager
    * @param {!MetadataModel} metadataModel

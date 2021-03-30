@@ -41,36 +41,7 @@ ServicesDelegate::~ServicesDelegate() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void ServicesDelegate::CreatePasswordProtectionService(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
-  auto it = password_protection_service_map_.find(profile);
-  DCHECK(it == password_protection_service_map_.end());
-  auto service = std::make_unique<ChromePasswordProtectionService>(
-      safe_browsing_service_, profile);
-  password_protection_service_map_[profile] = std::move(service);
-}
-
-void ServicesDelegate::RemovePasswordProtectionService(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
-  auto it = password_protection_service_map_.find(profile);
-  if (it != password_protection_service_map_.end())
-    password_protection_service_map_.erase(it);
-}
-
-PasswordProtectionService* ServicesDelegate::GetPasswordProtectionService(
-    Profile* profile) const {
-  DCHECK(profile);
-  auto it = password_protection_service_map_.find(profile);
-  return it != password_protection_service_map_.end() ? it->second.get()
-                                                      : nullptr;
-}
-
 void ServicesDelegate::ShutdownServices() {
-  // Delete the ChromePasswordProtectionService instances.
-  password_protection_service_map_.clear();
-
   // Delete the NetworkContexts and associated ProxyConfigMonitors
   network_context_map_.clear();
   proxy_config_monitor_map_.clear();

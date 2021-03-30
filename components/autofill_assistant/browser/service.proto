@@ -96,6 +96,23 @@ message ClientContextProto {
     SIGNED_IN = 2;
   }
   optional SignedIntoChromeStatus signed_into_chrome_status = 14;
+
+  // The size of the current Chrome window. This not only includes the part of
+  // the window that renders the website but also everything around it
+  // (toolbars, omnibox, ...).
+  message WindowSize {
+    optional int32 height_pixels = 1;
+    optional int32 width_pixels = 2;
+  }
+  optional WindowSize window_size = 15;
+
+  // The current orientation of the device.
+  enum ScreenOrientation {
+    UNDEFINED_ORIENTATION = 0;
+    PORTRAIT = 1;
+    LANDSCAPE = 2;
+  }
+  optional ScreenOrientation screen_orientation = 16;
 }
 
 // Get the list of scripts that can potentially be run on a url.
@@ -155,6 +172,7 @@ message OverlayImageProto {
   optional ClientDimensionProto text_size = 7;
 }
 
+// Next ID: 22
 message ClientSettingsProto {
   message IntegrationTestSettings {
     // Disables animations for the poodle and the progress bar.
@@ -230,6 +248,50 @@ message ClientSettingsProto {
     optional string undo_label = 2;
   }
   optional BackButtonSettings back_button_settings = 19;
+
+  // Settings to define the behavior for showing warnings about slow connection
+  // and/or websites to users.
+  message SlowWarningSettings {
+    enum MessageMode {
+      UNKNOWN = 0;
+      // The warning message will be appended to the existing status message.
+      CONCATENATE = 1;
+      // The warning message will replace the current status message.
+      REPLACE = 2;
+    }
+    // Whether to show warnings related to a slow connection to the user.
+    optional bool enable_slow_connection_warnings = 1;
+    // Whether to show warnings related to a slow website to the user.
+    optional bool enable_slow_website_warnings = 2;
+    // If true, only one warning will be shown to the user, i.e. either the slow
+    // connection or website, depending on which one triggers first.
+    optional bool only_show_warning_once = 3;
+    // If true, the slow connection warning will be shown only once.
+    optional bool only_show_connection_warning_once = 4;
+    // If true, the website warning will be shown only once.
+    optional bool only_show_website_warning_once = 5;
+    // Defines the maximum wait on a dom find element operation before showing
+    // the slow website warning.
+    optional int32 warning_delay_ms = 6;
+    // Defines the threshold above which a roundtrip is considered too slow.
+    optional int32 slow_roundtrip_threshold_ms = 7;
+    // Defines the number of consecutive slow roundtrips allowed before showing
+    // the slow connection warning.
+    optional int32 max_consecutive_slow_roundtrips = 8;
+    // The message to show as a warning to inform the user of a slow connection.
+    // If this is not set, no warning will be shown in case of slow connection.
+    optional string slow_connection_message = 9;
+    // The message to show as a warning to inform the user of a slow website.
+    // If this is not set, no warning will be shown in case of a slow website.
+    optional string slow_website_message = 10;
+    // The minimum duration that the message will be shown for (only applies to
+    // the slow connection messages).
+    optional int32 minimum_warning_message_duration_ms = 11;
+    // Whether the warning message should replace the current status message or
+    // should be concatenated.
+    optional MessageMode message_mode = 12;
+  }
+  optional SlowWarningSettings slow_warning_settings = 21;
 
   reserved 8 to 11;
 }
@@ -421,6 +483,9 @@ message NextScriptActionsRequestProto {
   repeated ProcessedActionProto processed_actions = 1;
   // Contains all roundtrip level (as opposed to action level) timing stats.
   optional RoundtripTimingStats timing_stats = 2;
+  // Tracks whether the last roundtrip triggered a slow connection warning and
+  // whether it was shown to the user.
+  optional SlowWarningStatus slow_connection_warning = 34;
 }
 
 // Response of a script's actions.
@@ -448,6 +513,8 @@ message ActionsResponseProto {
   // the backend.
   message UpdateScriptListProto { repeated SupportedScriptProto scripts = 1; }
   optional UpdateScriptListProto update_script_list = 5;
+
+  reserved 1, 6 to 10;
 }
 
 // Can be used to indicate the presence of a field, without the ambiguity that
@@ -524,7 +591,22 @@ message TriggerScriptProto {
   optional TriggerScriptAction on_swipe_to_dismiss = 4
       [default = CANCEL_SESSION];
 
+  // An identifier for the type of trigger UI this trigger represents, for UKM.
+  optional TriggerUIType trigger_ui_type = 5;
+
   reserved 2;
+}
+
+// Set of TriggerUIType to group UKM metrics by.
+//
+// The set of available values is defined by AutofillAssistantTriggerUIType in
+// tools/metrics/histograms/enums.xml
+enum TriggerUIType {
+  UNSPECIFIED_TRIGGER_UI_TYPE = 0;
+  CART_FIRST_TIME_USER = 1;
+  CART_RETURNING_USER = 2;
+  CHECKOUT_FIRST_TIME_USER = 3;
+  CHECKOUT_RETURNING_USER = 4;
 }
 
 message TriggerScriptConditionProto {
@@ -547,6 +629,13 @@ message TriggerScriptConditionProto {
     int32 experiment_id = 7;
     // The condition matches if the keyboard is hidden.
     Empty keyboard_hidden = 9;
+    // The condition describes a parameter value that must be set to trigger.
+    ScriptParameterMatchProto script_parameter_match = 10;
+    // Pattern of the path parts of the URL, including query and '#'.
+    string path_pattern = 11;
+    // Domain (exact match), including the scheme (e.g.
+    // "https://www.example.com").
+    string domain_with_scheme = 12;
   }
 
   reserved 4;
@@ -596,6 +685,13 @@ message TriggerScriptUIProto {
   // Whether the visual viewport should be resized to allow scrolling to the
   // bottom of the page while the trigger script is being displayed.
   optional bool resize_visual_viewport = 8;
+  // Whether the bottom sheet should temporarily disappear when scrolling down
+  // the website, to move out of the way.
+  //
+  // The value of resize_visual_viewport is ignored when scroll_to_hide is true.
+  // This allows the backend setting both to true and letting chrome choose
+  // scroll_to_hide if it is supported.
+  optional bool scroll_to_hide = 9;
 }
 
 // An action could be performed.
@@ -654,6 +750,7 @@ message ActionProto {
     WaitForElementToBecomeStableProto wait_for_element_to_become_stable = 68;
     CheckElementIsOnTopProto check_element_is_on_top = 69;
     ReleaseElementsProto release_elements = 70;
+    DispatchJsEventProto dispatch_js_event = 72;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -661,7 +758,7 @@ message ActionProto {
   // action sent to the client after this one. Default is false.
   optional bool clean_contextual_ui = 33;
 
-  reserved 8, 13 to 17, 20 to 23, 25 to 27, 30, 34, 38, 46 to 48, 50, 51;
+  reserved 8, 13 to 17, 20 to 23, 25 to 27, 30, 34, 38, 46 to 48, 50, 51, 71;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
@@ -721,6 +818,17 @@ message ActionTimingStats {
   optional int64 wait_time_ms = 3;
 }
 
+// Enum used to track the slow warnings that can trigger due to slow connection
+// or long running wait for dom actions.
+enum SlowWarningStatus {
+  // The warning wasn't triggered.
+  NO_WARNING = 0;
+  // The warning was triggered but not shown to the user.
+  WARNING_TRIGGERED = 1;
+  // The warning was triggered and shown to the user.
+  WARNING_SHOWN = 2;
+}
+
 message ProcessedActionProto {
   // The action that was processed.
   optional ActionProto action = 1;
@@ -763,6 +871,10 @@ message ProcessedActionProto {
   // action, such as a prompt choice, through a direct action instead of
   // selecting a chip on the UI. This is meant for monitoring and debugging.
   optional bool direct_action = 24;
+
+  // Tracks whether the action triggered a slow website warning and whether it
+  // was shown to the user.
+  optional SlowWarningStatus slow_warning_status = 34;
 
   reserved 3, 4, 6 to 14, 16, 18, 26, 27, 29, 30;
 }
@@ -945,8 +1057,9 @@ message WebControllerErrorInfoProto {
     // element.
     HIGHLIGHT_ELEMENT = 5;
 
-    // Scroll the element into view with padding. This does not use native JS
-    // functionality but calculates the scrolling manually.
+    // Scroll the element into view with padding. This uses native JS
+    // functionality for the initial scrolling and calculates the scrolling
+    // for padding manually.
     SCROLL_INTO_VIEW_WITH_PADDING = 6;
 
     // Get the |value| attribute of an element.
@@ -990,6 +1103,9 @@ message WebControllerErrorInfoProto {
 
     // Trigger a change event.
     SEND_CHANGE_EVENT = 19;
+
+    // Dispatch a 'duplexweb' event on document.
+    DISPATCH_EVENT_ON_DOCUMENT = 20;
   }
 
   // The web-action that failed. This is usually a step in an execution chain
@@ -1093,15 +1209,6 @@ message SelectorProto {
       //   <label>First Name <input ...></label>
       EmptyFilter labelled = 9;
 
-      // Filter elements by their position on the page, relative to a given
-      // target element.
-      //
-      // The distance between two elements is the shortest euclidean distance
-      // between their borders. The distance between two overlapping elements is
-      // always 0. If there are multiple elements at exactly the same distance,
-      // an arbitrary one is returned.
-      ProximityFilter closest = 10;
-
       // Only keep results that match the given CSS selector.
       string match_css_selector = 11;
 
@@ -1140,6 +1247,8 @@ message SelectorProto {
       // frame element before calling enter_frame.
       OnTopFilter on_top = 13;
     }
+
+    reserved 10;
   }
 
   // A way of filtering elements by their pseudo-element content.
@@ -1175,72 +1284,6 @@ message SelectorProto {
     optional TextFilter value = 6;
 
     reserved 1, 2;
-  }
-
-  // Filter elements by their position on the page, relative to a given target
-  // element.
-  message ProximityFilter {
-    // From the set of potential matches, choose the one closest to the given
-    // target. The target filters are evaluated relative to the current frame
-    // and must select an element in the current frame.
-    //
-    // If there is no target the whole selector matches nothing.
-    //
-    // This element cannot include enter_frame filters.
-    repeated Filter target = 1;
-
-    // If true, the element and targets must be aligned either
-    // horizontally or vertically.
-    //
-    // This is usually what we want, as elements close, but in diagonal position
-    // relative to each other are usually not considered part of the same group.
-    optional bool in_alignment = 3;
-
-    // Require the target and element to have a specific relative position.
-    //
-    // If unspecified, the target and element be in any position relative to
-    // each other.
-    //
-    // If necessary, this can be combined with in_alignment, so in_aligment=true
-    // relative_position=LEFT requires the element to be strictly to the left or
-    // target.
-    optional RelativePosition relative_position = 4;
-
-    enum RelativePosition {
-      // Unspecified relative position.
-      UNSPECIFIED_POSITION = 0;
-
-      // Element is above target.
-      ABOVE = 1;
-
-      // Element is below target.
-      BELOW = 2;
-
-      // Element is left of target.
-      LEFT = 3;
-
-      // Element is right of target.
-      RIGHT = 4;
-    }
-
-    // Maximum number of pairs the client is allowed to compare.
-    //
-    // If there are too many pairs to compare, the client bails out and returns
-    // the status TOO_MANY_CANDIDATES to the server.
-    //
-    // The maximum number of pairs is limited, to avoid clients being slowed
-    // down by overly expensive selectors, as the current algorithm is not
-    // optimized for large number of pairs. Authors of selectors must take care
-    // to keep the number of pairs reasonable.
-    //
-    // For example, avoid looking for "a div near label X". This will be too
-    // slow to process. Look instead for "a button near label X" or "a clickable
-    // div near label X".
-    //
-    // This setting must not be exposed to scripts. It must not be increased
-    // just to allow that one slow selector. This is a value that must be
-    // maintained by the team responsible for keeping clients running properly.
-    optional int32 max_pairs = 5 [default = 50];
   }
 
   // Only keep elements that have a bounding box.
@@ -1370,6 +1413,8 @@ message ShowCastProto {
   optional ElementAreaProto touchable_element_area = 6;
 
   // The padding that will be added between the focused element and the top.
+  // If |container| is specified, this will indicate the padding between the
+  // focused element and the top of the container instead.
   optional TopPadding top_padding = 7;
 
   // Configure whether the scrolling should wait for the element to be stable
@@ -1383,6 +1428,10 @@ message ShowCastProto {
 
   // Interval for stable check in ms.
   optional int32 stable_check_interval_ms = 11 [default = 200];
+
+  // Optional: the container to be scrolled to focus |element_to_present|. If
+  // not set, the window will be scrolled.
+  optional SelectorProto container = 12;
 
   reserved 3, 4, 8;
 }
@@ -2250,6 +2299,13 @@ message StopProto {
   // Assistant.
   optional bool close_cct = 2;
 
+  // Whether to show the feedback chip once Autofill Assistant has stopped.
+  // Note that this is only relevant if the UI is still being shown after the
+  // stop, which happens only if:
+  // - close_cct is false.
+  // - The action preceding this one is a Tell action.
+  optional bool show_feedback_chip = 3;
+
   reserved 1;  // stop_action_type
 }
 
@@ -2274,11 +2330,8 @@ message DetailsChangesProto {
 message DetailsProto {
   optional string title = 1;
 
-  oneof image {
-    string image_url = 2;
-    // When set to true shows placeholder in place of an image.
-    bool show_image_placeholder = 10;
-  }
+  optional string image_url = 2;
+
   // Specifies the hint for accessibility. If set to empty, the image will not
   // be announced by accessibility.
   optional string image_accessibility_hint = 14;
@@ -2317,17 +2370,30 @@ message DetailsProto {
   optional DateTimeProto datetime = 3;
   optional string description = 4;
 
-  // Asks the UI to show animated placeholders for missing fields.
-  // The placeholder will be shown on effectively missing:
-  // * title
-  // * image
-  // * description line (1, 2 or 3)
-  // TODO(crbug.com/806868): Make the fields for displaying placeholders
-  // configurable by the server.
-  optional bool animate_placeholders = 11;
+  // The configuration for the placeholders.
+  message PlaceholdersConfiguration {
+    // Show a placeholder if |DetailsProto.image_url| is empty.
+    optional bool show_image_placeholder = 1;
+
+    // Show a placeholder if |DetailsProto.title| is empty.
+    optional bool show_title_placeholder = 2;
+
+    // Show a placeholder if |DetailsProto.description_line_1| is empty.
+    optional bool show_description_line_1_placeholder = 3;
+
+    // Show a placeholder if |DetailsProto.description_line_2| is empty.
+    optional bool show_description_line_2_placeholder = 4;
+
+    // Show a placeholder if |DetailsProto.description_line_3| is empty.
+    optional bool show_description_line_3_placeholder = 5;
+  }
+
+  // The placeholders configuration. Note that a placeholder will be shown only
+  // if the associated data is empty.
+  optional PlaceholdersConfiguration placeholders = 15;
 
   // Deprecated, no longer supported.
-  reserved 5;
+  reserved 5, 10, 11;
 }
 
 // Show contextual information.
@@ -2344,6 +2410,19 @@ message ShowDetailsProto {
   // Flags indicating which parts of the details (if any) have changed.
   // This field is taken into account only if |details| is filled.
   optional DetailsChangesProto change_flags = 2;
+
+  // Whether the details should be added/appended instead of replacing the
+  // current details.
+  optional bool append = 6;
+
+  // If set, add a delay of |delay_ms| before setting/appending the details.
+  //
+  // The details will never be shown if another ShowDetailsProto action with
+  // |append| = false is sent after this action and before the delay is reached.
+  //
+  // Note that it's not possible to delay the clearing of the details. If
+  // |data_to_show| is not set, then the details will be cleared directly.
+  optional int32 delay_ms = 7;
 }
 
 // Set the value of an form element.
@@ -2849,3 +2928,6 @@ message GetElementStatusProto {
 message ReleaseElementsProto {
   repeated ClientIdProto client_ids = 1;
 }
+
+// Action to unconditionally dispatch a custom JS event 'duplexweb' on document.
+message DispatchJsEventProto {}

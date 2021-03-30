@@ -199,7 +199,7 @@ void ThirdPartyMetricsObserver::OnDidFinishSubFrameNavigation(
   recorded_frames_.erase(navigation_handle->GetRenderFrameHost());
 }
 
-void ThirdPartyMetricsObserver::OnFrameDeleted(
+void ThirdPartyMetricsObserver::OnRenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   recorded_frames_.erase(render_frame_host);
 }

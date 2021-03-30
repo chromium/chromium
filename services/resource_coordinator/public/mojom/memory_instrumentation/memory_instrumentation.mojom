@@ -334,28 +334,12 @@ interface Coordinator {
       (bool success, uint64 dump_id);
 };
 
-// An interface which can be used by client processes to register themselves
-// with a CoordinatorController client (like the browser), who can then pass the
-// registration along to the service with authoritative information about the
-// process's identity.
+// An interface used by client processes to register themselves with a
+// memory_instrumentation::Registry. The implementation must already know the
+// calling process. It adds authoritative information about the calling process'
+// identity when forwarding the registration to a
+// memory_instrumentation::Registry.
 interface CoordinatorConnector {
-  // Registers the calling process. The implementation of this API must already
-  // know who the calling process is and should forward these arguments along to
-  // the CoordinatorController along with information about the process.
   RegisterCoordinatorClient(pending_receiver<Coordinator> receiver,
                             pending_remote<ClientProcess> client_process);
-};
-
-// Main interface to the memory instrumentation coordinator. This is considered
-// privileged and the browser should effectively be the only client.
-interface CoordinatorController {
-  // Binds a new Coordinator interface endpoint for a unique client process.
-  // Should be called once for each process, including the browser itself.
-  // |client_process| is an endpoint the service can use to push client events
-  // to the process.
-  RegisterClientProcess(pending_receiver<Coordinator> receiver,
-                        pending_remote<ClientProcess> client_process,
-                        ProcessType process_type,
-                        mojo_base.mojom.ProcessId process_id,
-                        string? service_name);
 };

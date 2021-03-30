@@ -25,7 +25,10 @@ source_set("hid") {
   deps = [
     "//content/public/browser",
     "//content/public/common",
+    "//extensions/browser/api",
+    "//extensions/common",
     "//extensions/common/api",
+    "//services/device/public/cpp/hid",
   ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]

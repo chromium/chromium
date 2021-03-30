@@ -23,7 +23,7 @@ class MockImageProvider : public ImageProvider {
     return ScopedResult(
         DecodedDrawImage(CreateBitmapImage(gfx::Size(10, 10)).GetSwSkImage(),
                          nullptr, SkSize::MakeEmpty(), SkSize::Make(1.0f, 1.0f),
-                         draw_image.filter_quality()));
+                         draw_image.filter_quality(), true));
   }
   int image_count_ = 0;
 };
@@ -40,11 +40,11 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       image, SkRect::MakeWH(100.f, 100.f), SkRect::MakeWH(100.f, 100.f),
       kNone_SkFilterQuality);
   auto record = sk_make_sp<PaintOpBuffer>();
-  record->push<DrawImageOp>(image, 0.f, 0.f, nullptr);
+  record->push<DrawImageOp>(image, 0.f, 0.f);
   auto record_filter =
       sk_make_sp<RecordPaintFilter>(record, SkRect::MakeWH(100.f, 100.f));
 
-  SkImageFilter::CropRect crop_rect(SkRect::MakeWH(100.f, 100.f));
+  PaintFilter::CropRect crop_rect(SkRect::MakeWH(100.f, 100.f));
 
   switch (filter_type) {
     case PaintFilter::Type::kNullFilter:
@@ -54,13 +54,12 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       return sk_make_sp<ColorFilterPaintFilter>(SkLumaColorFilter::Make(),
                                                 image_filter, &crop_rect);
     case PaintFilter::Type::kBlur:
-      return sk_make_sp<BlurPaintFilter>(0.1f, 0.2f,
-                                         SkBlurImageFilter::kClamp_TileMode,
+      return sk_make_sp<BlurPaintFilter>(0.1f, 0.2f, SkTileMode::kClamp,
                                          record_filter, &crop_rect);
     case PaintFilter::Type::kDropShadow:
       return sk_make_sp<DropShadowPaintFilter>(
           0.1, 0.2f, 0.3f, 0.4f, SK_ColorWHITE,
-          SkDropShadowImageFilter::kDrawShadowOnly_ShadowMode, image_filter,
+          DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, image_filter,
           &crop_rect);
     case PaintFilter::Type::kMagnifier:
       return sk_make_sp<MagnifierPaintFilter>(SkRect::MakeWH(100.f, 100.f),
@@ -82,14 +81,12 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       SkScalar scalars[9] = {1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f};
       return sk_make_sp<MatrixConvolutionPaintFilter>(
           SkISize::Make(3, 3), scalars, 0.1f, 0.2f, SkIPoint::Make(2, 2),
-          SkMatrixConvolutionImageFilter::TileMode::kRepeat_TileMode, false,
-          image_filter, &crop_rect);
+          SkTileMode::kRepeat, false, image_filter, &crop_rect);
     }
     case PaintFilter::Type::kDisplacementMapEffect:
       return sk_make_sp<DisplacementMapEffectPaintFilter>(
-          SkDisplacementMapEffect::ChannelSelectorType::kR_ChannelSelectorType,
-          SkDisplacementMapEffect::ChannelSelectorType::kR_ChannelSelectorType,
-          0.1f, image_filter, record_filter, &crop_rect);
+          SkColorChannel::kR, SkColorChannel::kR, 0.1f, image_filter,
+          record_filter, &crop_rect);
     case PaintFilter::Type::kImage:
       return image_filter;
     case PaintFilter::Type::kPaintRecord:

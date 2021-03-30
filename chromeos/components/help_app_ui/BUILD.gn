@@ -25,11 +25,11 @@ static_library("help_app_ui") {
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
+    "//ash/constants",
     "//chromeos/components/local_search_service/public/cpp",
     "//chromeos/components/local_search_service/public/mojom",
     "//chromeos/components/local_search_service/public/mojom:mojom_js",
     "//chromeos/components/web_applications",
-    "//chromeos/constants",
     "//chromeos/resources:help_app_bundle_resources",
     "//chromeos/resources:help_app_resources",
     "//chromeos/strings",
@@ -67,7 +67,7 @@ js2gtest("browser_tests_js") {
 
   deps = [
     ":browser_test_support",
-    "//chromeos/constants",
+    "//ash/constants",
   ]
 }
 
@@ -133,6 +133,7 @@ js_library("test_guest_query_receiver_js") {
 js_library("test_driver_js") {
   testonly = true
   sources = [ "test/driver.js" ]
+  externs_list = [ "//third_party/chaijs/externs/chai-3.5.js" ]
   deps = [
     ":test_driver_api_js",
     "//chromeos/components/help_app_ui/resources:browser_proxy",

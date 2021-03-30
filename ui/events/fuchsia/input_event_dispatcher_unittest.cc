@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
-#include "ui/events/fuchsia/input_event_dispatcher_delegate.h"
+#include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
 using fuchsia::ui::input::InputEvent;
@@ -20,8 +20,7 @@ using FuchsiaPointerEvent = fuchsia::ui::input::PointerEvent;
 namespace ui {
 namespace {
 
-class InputEventDispatcherTest : public testing::Test,
-                                 public InputEventDispatcherDelegate {
+class InputEventDispatcherTest : public testing::Test, public InputEventSink {
  public:
   InputEventDispatcherTest() : dispatcher_(this) {}
   ~InputEventDispatcherTest() override = default;
@@ -179,84 +178,6 @@ TEST_F(InputEventDispatcherTest, TouchPhases) {
   event.set_pointer(pointer_event);
   dispatcher_.ProcessEvent(event);
   EXPECT_EQ(nullptr, captured_event_.get());
-}
-
-TEST_F(InputEventDispatcherTest, KeyPhases) {
-  FuchsiaKeyboardEvent key_event;
-  key_event.hid_usage = 4;  // Corresponds to pressing "a" on a US keyboard.
-  key_event.phase = fuchsia::ui::input::KeyboardEventPhase::PRESSED;
-
-  InputEvent event;
-  event.set_keyboard(key_event);
-  dispatcher_.ProcessEvent(event);
-  EXPECT_EQ(ET_KEY_PRESSED, captured_event_->type());
-  ResetCapturedEvent();
-
-  key_event.phase = fuchsia::ui::input::KeyboardEventPhase::REPEAT;
-  event.set_keyboard(key_event);
-  dispatcher_.ProcessEvent(event);
-  EXPECT_EQ(ET_KEY_PRESSED, captured_event_->type());
-  ResetCapturedEvent();
-
-  key_event.phase = fuchsia::ui::input::KeyboardEventPhase::RELEASED;
-  event.set_keyboard(key_event);
-  dispatcher_.ProcessEvent(event);
-  EXPECT_EQ(ET_KEY_RELEASED, captured_event_->type());
-  ResetCapturedEvent();
-
-  key_event.phase = fuchsia::ui::input::KeyboardEventPhase::CANCELLED;
-  event.set_keyboard(key_event);
-  dispatcher_.ProcessEvent(event);
-  EXPECT_EQ(ET_KEY_RELEASED, captured_event_->type());
-}
-
-TEST_F(InputEventDispatcherTest, KeyModifiers) {
-  FuchsiaKeyboardEvent key_event;
-  key_event.hid_usage = 4;  // Corresponds to pressing "a" on a US keyboard.
-  key_event.phase = fuchsia::ui::input::KeyboardEventPhase::PRESSED;
-
-  InputEvent event;
-  event.set_keyboard(key_event);
-  dispatcher_.ProcessEvent(event);
-  EXPECT_EQ(ET_KEY_PRESSED, captured_event_->type());
-  EXPECT_EQ('a',
-            DomKey(captured_event_->AsKeyEvent()->GetDomKey()).ToCharacter());
-  EXPECT_EQ('a', captured_event_->AsKeyEvent()->GetCharacter());
-  ResetCapturedEvent();
-
-  key_event.modifiers = fuchsia::ui::input::kModifierShift;
-  event.set_keyboard(key_event);
-  dispatcher_.ProcessEvent(event);
-  EXPECT_EQ(ET_KEY_PRESSED, captured_event_->type());
-  EXPECT_EQ('A',
-            DomKey(captured_event_->AsKeyEvent()->GetDomKey()).ToCharacter());
-  EXPECT_EQ('A', captured_event_->AsKeyEvent()->GetCharacter());
-  EXPECT_TRUE(captured_event_->IsShiftDown());
-  EXPECT_FALSE(captured_event_->IsControlDown());
-  EXPECT_FALSE(captured_event_->IsAltDown());
-  ResetCapturedEvent();
-
-  key_event.modifiers =
-      fuchsia::ui::input::kModifierShift | fuchsia::ui::input::kModifierControl;
-  event.set_keyboard(key_event);
-  dispatcher_.ProcessEvent(event);
-  EXPECT_EQ(ET_KEY_PRESSED, captured_event_->type());
-  EXPECT_TRUE(captured_event_->IsShiftDown());
-  EXPECT_TRUE(captured_event_->IsControlDown());
-  EXPECT_FALSE(captured_event_->IsAltDown());
-  ResetCapturedEvent();
-
-  key_event.modifiers = fuchsia::ui::input::kModifierShift |
-                        fuchsia::ui::input::kModifierControl |
-                        fuchsia::ui::input::kModifierAlt;
-  event.set_keyboard(key_event);
-  dispatcher_.ProcessEvent(event);
-  EXPECT_EQ(ET_KEY_PRESSED, captured_event_->type());
-  EXPECT_EQ('A',
-            DomKey(captured_event_->AsKeyEvent()->GetDomKey()).ToCharacter());
-  EXPECT_TRUE(captured_event_->IsShiftDown());
-  EXPECT_TRUE(captured_event_->IsControlDown());
-  EXPECT_TRUE(captured_event_->IsAltDown());
 }
 
 }  // namespace

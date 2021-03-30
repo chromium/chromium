@@ -1,4 +1,4 @@
-# User action guidelines
+# User Action Guidelines
 
 This document covers the best practices on using user actions in code and
 documenting them for the dashboard. User actions come with only a name and

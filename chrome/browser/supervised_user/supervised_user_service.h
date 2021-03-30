@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/file_downloader.h"
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
@@ -29,7 +28,6 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -50,7 +48,7 @@ class SupervisedUserURLFilter;
 namespace base {
 class FilePath;
 class Version;
-}
+}  // namespace base
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace extensions {
@@ -152,7 +150,7 @@ class SupervisedUserService : public KeyedService,
 
   // Returns a message saying that extensions can only be modified by the
   // custodian.
-  base::string16 GetExtensionsLockedMessage() const;
+  std::u16string GetExtensionsLockedMessage() const;
 
   bool IsSupervisedUserIframeFilterEnabled() const;
 
@@ -224,6 +222,10 @@ class SupervisedUserService : public KeyedService,
   void RecordExtensionEnablementUmaMetrics(bool enabled) const;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+  // Returns true if prefs::kDefaultSupervisedUserFilteringBehavior is set to
+  // default value.
+  bool IsFilteringBehaviorPrefDefault() const;
+
  private:
   friend class SupervisedUserServiceExtensionTestBase;
   friend class SupervisedUserServiceFactory;
@@ -249,10 +251,10 @@ class SupervisedUserService : public KeyedService,
   // extensions::ManagementPolicy::Provider implementation:
   std::string GetDebugPolicyProviderName() const override;
   bool UserMayLoad(const extensions::Extension* extension,
-                   base::string16* error) const override;
+                   std::u16string* error) const override;
   bool MustRemainDisabled(const extensions::Extension* extension,
                           extensions::disable_reason::DisableReason* reason,
-                          base::string16* error) const override;
+                          std::u16string* error) const override;
 
   // extensions::ExtensionRegistryObserver overrides:
   void OnExtensionInstalled(content::BrowserContext* browser_context,

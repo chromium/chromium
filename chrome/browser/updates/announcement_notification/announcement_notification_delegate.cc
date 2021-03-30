@@ -7,8 +7,8 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/first_run/first_run.h"  // nogncheck
+#include "chrome/browser/notifications/notification_display_service.h"  // nogncheck
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -34,7 +34,7 @@ void AnnouncementNotificationDelegate::ShowNotification() {
       message_center::NOTIFICATION_TYPE_SIMPLE, kAnnouncementNotificationId,
       l10n_util::GetStringUTF16(IDS_TOS_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(IDS_TOS_NOTIFICATION_BODY_TEXT), gfx::Image(),
-      base::string16(), GURL(),
+      std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kAnnouncementNotificationId),
       rich_notification_data, nullptr /*delegate*/);

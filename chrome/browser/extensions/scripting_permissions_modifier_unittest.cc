@@ -31,6 +31,8 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace {
@@ -107,7 +109,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantAndWithholdHostPermissions) {
         ExtensionBuilder(test_case_name)
             .AddPermissions(test_case)
             .AddContentScript("foo.js", test_case)
-            .SetLocation(Manifest::INTERNAL)
+            .SetLocation(ManifestLocation::kInternal)
             .Build();
 
     PermissionsUpdater(profile()).InitializePermissions(extension.get());
@@ -155,7 +157,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, WithholdHostPermissionsOnInstall) {
       ExtensionBuilder("a")
           .AddPermissions({kHostGoogle, kHostChromium})
           .AddContentScript("foo.js", {kHostGoogle})
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .AddFlags(Extension::WITHHOLD_PERMISSIONS)
           .Build();
 
@@ -317,7 +319,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
       data_dir().AppendASCII("permissions/update.pem");
   scoped_refptr<const Extension> extension = PackAndInstallCRX(
       test_extension_dir.UnpackedPath(), pem_path, INSTALL_NEW,
-      Extension::WITHHOLD_PERMISSIONS, Manifest::Location::INTERNAL);
+      Extension::WITHHOLD_PERMISSIONS, mojom::ManifestLocation::kInternal);
   // Cache the ID, since the extension will be invalidated across updates.
   ExtensionId extension_id = extension->id();
   // Hold onto references for the extension dirs so they don't get deleted
@@ -412,7 +414,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, SwitchBehavior) {
       ExtensionBuilder("a")
           .AddPermission(URLPattern::kAllUrlsPattern)
           .AddContentScript("foo.js", {URLPattern::kAllUrlsPattern})
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
@@ -442,7 +444,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantHostPermission) {
       ExtensionBuilder("extension")
           .AddPermission(URLPattern::kAllUrlsPattern)
           .AddContentScript("foo.js", {URLPattern::kAllUrlsPattern})
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   PermissionsUpdater(profile()).InitializePermissions(extension.get());
 
@@ -499,12 +501,14 @@ TEST_F(ScriptingPermissionsModifierUnitTest, CanAffectExtensionByLocation) {
   InitializeEmptyExtensionService();
 
   struct {
-    Manifest::Location location;
+    ManifestLocation location;
     bool can_be_affected;
   } test_cases[] = {
-      {Manifest::INTERNAL, true},   {Manifest::EXTERNAL_PREF, true},
-      {Manifest::UNPACKED, true},   {Manifest::EXTERNAL_POLICY_DOWNLOAD, false},
-      {Manifest::COMPONENT, false},
+      {ManifestLocation::kInternal, true},
+      {ManifestLocation::kExternalPref, true},
+      {ManifestLocation::kUnpacked, true},
+      {ManifestLocation::kExternalPolicyDownload, false},
+      {ManifestLocation::kComponent, false},
   };
 
   for (const auto& test_case : test_cases) {
@@ -1021,7 +1025,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_IgnorePaths) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .AddContentScript("foo.js", {"https://www.example.com/foo"})
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   InitializeExtensionPermissions(profile(), *extension);
 

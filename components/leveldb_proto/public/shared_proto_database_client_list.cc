@@ -16,9 +16,6 @@
 
 namespace leveldb_proto {
 
-namespace {
-const char* const kDBNameParamPrefix = "migrate_";
-}  // namespace
 
 // static
 std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
@@ -88,6 +85,12 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "NearbySharePublicCertificateDatabase";
     case ProtoDbType::VIDEO_TUTORIALS_DATABASE:
       return "VideoTutorialsDatabase";
+    case ProtoDbType::FEED_KEY_VALUE_DATABASE:
+      return "FeedKeyValueDatabase";
+    case ProtoDbType::CART_DATABASE:
+      return "CartDatabase";
+    case ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE:
+      return "CommerceSubscriptionDatabase";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();
@@ -96,18 +99,15 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
 
 // static
 bool SharedProtoDatabaseClientList::ShouldUseSharedDB(ProtoDbType db_type) {
-  for (size_t i = 0; kWhitelistedDbForSharedImpl[i] != ProtoDbType::LAST; ++i) {
-    if (kWhitelistedDbForSharedImpl[i] == db_type)
-      return true;
+  for (size_t i = 0; kBlocklistedDbForSharedImpl[i] != ProtoDbType::LAST; ++i) {
+    if (kBlocklistedDbForSharedImpl[i] == db_type)
+      return false;
   }
 
   if (!base::FeatureList::IsEnabled(kProtoDBSharedMigration))
     return false;
 
-  std::string name =
-      SharedProtoDatabaseClientList::ProtoDbTypeToString(db_type);
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kProtoDBSharedMigration, kDBNameParamPrefix + name, false);
+  return true;
 }
 
 }  // namespace leveldb_proto

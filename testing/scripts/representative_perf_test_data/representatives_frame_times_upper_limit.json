@@ -126,7 +126,9 @@
     "canvas_05000_pixels_per_second": {
       "ci_095": 0.177,
       "avg": 16.684,
-      "cpu_wall_time_ratio": 0.268
+      "cpu_wall_time_ratio": 0.268,
+      "experimental": true,
+      "_comment": "crbug.com/1191220"
     },
     "main_30fps_impl_60fps": {
       "control": true,

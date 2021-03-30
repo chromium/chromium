@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {down, up, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js'
-// #import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.m.js';
-// #import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {down, pressAndReleaseKeyOn, up} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+
 // clang-format on
 
 suite('cr-focus-row-behavior-test', function() {
@@ -51,7 +52,7 @@ suite('cr-focus-row-behavior-test', function() {
 
     Polymer({
       is: 'focus-row-element',
-      behaviors: [cr.ui.FocusRowBehavior],
+      behaviors: [FocusRowBehavior],
       focusCallCount: 0,
 
       focus: function() {
@@ -67,10 +68,10 @@ suite('cr-focus-row-behavior-test', function() {
     document.body.appendChild(testElement);
 
     // Block so that FocusRowBehavior.attached can run.
-    await test_util.waitAfterNextRender(testElement);
+    await waitAfterNextRender(testElement);
     // Wait one more time to ensure that async setup in FocusRowBehavior has
     // executed.
-    await test_util.waitAfterNextRender(testElement);
+    await waitAfterNextRender(testElement);
   });
 
   test('ID is not overriden when index is set', function() {
@@ -121,8 +122,8 @@ suite('cr-focus-row-behavior-test', function() {
     testElement.$.control.addEventListener('focus', function() {
       focused = true;
     });
-    MockInteractions.down(testElement);
-    MockInteractions.up(testElement);
+    down(testElement);
+    up(testElement);
     testElement.click();
     // iron-list is responsible for firing 'focus' after taps, but is not used
     // in the test, so its necessary to manually fire 'focus' after tap.
@@ -135,7 +136,7 @@ suite('cr-focus-row-behavior-test', function() {
     lastButton.setAttribute('focus-type', 'fake-btn-three');
     testElement.lastFocused = lastButton;
 
-    const wait = test_util.eventToPromise('focus', testElement);
+    const wait = eventToPromise('focus', testElement);
     testElement.fire('focus');
     return wait.then(() => {
       const button = getDeepActiveElement();
@@ -146,22 +147,22 @@ suite('cr-focus-row-behavior-test', function() {
   test('when shift+tab pressed on first control, focus on container', () => {
     const first = testElement.$.control;
     const second = testElement.$.controlTwo;
-    MockInteractions.pressAndReleaseKeyOn(first, '', 'shift', 'Tab');
+    pressAndReleaseKeyOn(first, '', 'shift', 'Tab');
     assertEquals(1, testElement.focusCallCount);
-    MockInteractions.pressAndReleaseKeyOn(second, '', 'shift', 'Tab');
+    pressAndReleaseKeyOn(second, '', 'shift', 'Tab');
     assertEquals(1, testElement.focusCallCount);
 
     // Simulate updating a row with same first control.
     testElement.fire('dom-change');
-    MockInteractions.pressAndReleaseKeyOn(first, '', 'shift', 'Tab');
+    pressAndReleaseKeyOn(first, '', 'shift', 'Tab');
     assertEquals(2, testElement.focusCallCount);
-    MockInteractions.pressAndReleaseKeyOn(second, '', 'shift', 'Tab');
+    pressAndReleaseKeyOn(second, '', 'shift', 'Tab');
     assertEquals(2, testElement.focusCallCount);
 
     // Simulate updating row with different first control.
     first.remove();
     testElement.fire('dom-change');
-    MockInteractions.pressAndReleaseKeyOn(second, '', 'shift', 'Tab');
+    pressAndReleaseKeyOn(second, '', 'shift', 'Tab');
     assertEquals(3, testElement.focusCallCount);
   });
 });

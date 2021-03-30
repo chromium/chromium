@@ -21,12 +21,14 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -74,7 +76,6 @@ HitTestResult::HitTestResult(const HitTestResult& other)
       local_point_(other.LocalPoint()),
       inner_url_element_(other.URLElement()),
       scrollbar_(other.GetScrollbar()),
-      box_fragment_(other.box_fragment_),
       is_over_embedded_content_view_(other.IsOverEmbeddedContentView()),
       canvas_region_id_(other.CanvasRegionId()) {
   // Only copy the NodeSet in case of list hit test.
@@ -102,7 +103,6 @@ bool HitTestResult::EqualForCacheability(const HitTestResult& other) const {
          local_point_ == other.LocalPoint() &&
          inner_url_element_ == other.URLElement() &&
          scrollbar_ == other.GetScrollbar() &&
-         box_fragment_ == other.box_fragment_ &&
          is_over_embedded_content_view_ == other.IsOverEmbeddedContentView();
 }
 
@@ -120,7 +120,6 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
   local_point_ = other.LocalPoint();
   inner_url_element_ = other.URLElement();
   scrollbar_ = other.GetScrollbar();
-  box_fragment_ = other.box_fragment_;
 
   is_over_embedded_content_view_ = other.IsOverEmbeddedContentView();
   cacheable_ = other.cacheable_;
@@ -147,49 +146,46 @@ void HitTestResult::SetNodeAndPosition(
     Node* node,
     scoped_refptr<const NGPhysicalBoxFragment> box_fragment,
     const PhysicalOffset& position) {
-  local_point_ = position;
-  SetInnerNodeAndBoxFragment(node, std::move(box_fragment));
+  if (box_fragment) {
+    local_point_ = position + box_fragment->OffsetFromOwnerLayoutBox();
+  } else {
+    local_point_ = position;
+  }
+  SetInnerNode(node);
 }
 
 void HitTestResult::OverrideNodeAndPosition(Node* node,
                                             PhysicalOffset position) {
-  // We are replacing the inner node. Reset any box fragment previously found.
-  box_fragment_.reset();
-
-  // The new inner node needs to be monolithic.
-  DCHECK(!node->GetLayoutBox() ||
-         node->GetLayoutBox()->PhysicalFragmentCount() <= 1);
-
   local_point_ = position;
   SetInnerNode(node);
-}
-
-void HitTestResult::SetBoxFragment(
-    scoped_refptr<const NGPhysicalBoxFragment> box_fragment) {
-  DCHECK(!box_fragment || !box_fragment->IsInlineBox());
-  box_fragment_ = std::move(box_fragment);
 }
 
 PositionWithAffinity HitTestResult::GetPosition() const {
   const Node* node = inner_possibly_pseudo_node_;
   if (!node)
     return PositionWithAffinity();
+  // |LayoutObject::PositionForPoint()| requires |kPrePaintClean|.
+  DCHECK_GE(node->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
     return PositionWithAffinity();
+
+  // We should never have a layout object that is within a locked subtree.
+  CHECK(!DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object));
+
+  // If the layout object is blocked by display lock, we return the beginning of
+  // the node as the position. This is because we don't paint contents of the
+  // element. Furthermore, any caret adjustments below can access layout-dirty
+  // state in the subtree of this object.
+  if (layout_object->ChildPaintBlockedByDisplayLock())
+    return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
+
   if (node->IsPseudoElement() && node->GetPseudoId() == kPseudoIdBefore) {
     return PositionWithAffinity(
         MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
   }
-  // TODO(crbug.com/1152696): We have to use PostLayout() here, but maybe it
-  // should rather be illegal to call GetPosition() on a HitTestResult after
-  // relayout?
-  if (box_fragment_ &&
-      RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
-      !box_fragment_->IsLayoutObjectDestroyedOrMoved()) {
-    if (const NGPhysicalBoxFragment* fragment = box_fragment_->PostLayout())
-      return fragment->PositionForPoint(LocalPoint());
-  }
+
   return layout_object->PositionForPoint(LocalPoint());
 }
 
@@ -200,16 +196,23 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
     node = InnerNodeOrImageMapImage();
   if (!node)
     return PositionWithAffinity();
+  // |LayoutObject::PositionForPoint()| requires |kPrePaintClean|.
+  DCHECK_GE(node->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
     return PositionWithAffinity();
-  PositionWithAffinity position;
-  if (box_fragment_ &&
-      RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
-      layout_object == InnerPossiblyPseudoNode()->GetLayoutObject())
-    position = box_fragment_->PositionForPoint(LocalPoint());
-  else
-    position = layout_object->PositionForPoint(LocalPoint());
+  // We should never have a layout object that is within a locked subtree.
+  CHECK(!DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object));
+
+  // If the layout object is blocked by display lock, we return the beginning of
+  // the node as the position. This is because we don't paint contents of the
+  // element. Furthermore, any caret adjustments below can access layout-dirty
+  // state in the subtree of this object.
+  if (layout_object->ChildPaintBlockedByDisplayLock())
+    return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
+
+  PositionWithAffinity position = layout_object->PositionForPoint(LocalPoint());
   if (position.IsNull())
     return PositionWithAffinity(FirstPositionInOrBeforeNode(*node));
   return position;
@@ -287,18 +290,10 @@ HTMLAreaElement* HitTestResult::ImageAreaForImage() const {
 }
 
 void HitTestResult::SetInnerNode(Node* n) {
-  SetInnerNodeAndBoxFragment(n, /* box_fragment */ nullptr);
-}
-
-void HitTestResult::SetInnerNodeAndBoxFragment(
-    Node* n,
-    scoped_refptr<const NGPhysicalBoxFragment> box_fragment) {
   if (!n) {
     inner_possibly_pseudo_node_ = nullptr;
     inner_node_ = nullptr;
     inner_element_ = nullptr;
-    DCHECK(!box_fragment);
-    box_fragment_ = nullptr;
     return;
   }
 
@@ -314,25 +309,6 @@ void HitTestResult::SetInnerNodeAndBoxFragment(
       if (inert_node_ && n != inert_node_ &&
           !n->IsShadowIncludingInclusiveAncestorOf(*inert_node_)) {
         return;
-      }
-    }
-  }
-
-  if (box_fragment) {
-    SetBoxFragment(std::move(box_fragment));
-  } else if (RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
-    if (const LayoutBox* layout_box = n->GetLayoutBox()) {
-      // Fragmentation-aware code will set the correct box fragment on its own,
-      // but sometimes we enter legacy layout code when hit-testing, e.g. for
-      // replaced content. In such cases we need to set it here.
-      if (box_fragment_) {
-        DCHECK(!box_fragment_->GetLayoutObject() ||
-               layout_box == box_fragment_->GetLayoutObject());
-      } else if (layout_box->PhysicalFragmentCount() > 0) {
-        // If we set the fragment on our own, make sure that there's only one of
-        // them, since there's no way for us to pick the right one here.
-        DCHECK_EQ(layout_box->PhysicalFragmentCount(), 1u);
-        box_fragment_ = layout_box->GetPhysicalFragment(0);
       }
     }
   }
@@ -416,12 +392,14 @@ const AtomicString& HitTestResult::AltDisplayString() const {
 }
 
 Image* HitTestResult::GetImage() const {
-  Node* inner_node_or_image_map_image = InnerNodeOrImageMapImage();
-  if (!inner_node_or_image_map_image)
+  return GetImage(InnerNodeOrImageMapImage());
+}
+
+Image* HitTestResult::GetImage(const Node* node) {
+  if (!node)
     return nullptr;
 
-  LayoutObject* layout_object =
-      inner_node_or_image_map_image->GetLayoutObject();
+  LayoutObject* layout_object = node->GetLayoutObject();
   if (layout_object && layout_object->IsImage()) {
     auto* image = To<LayoutImage>(layout_object);
     if (image->CachedImage() && !image->CachedImage()->ErrorOccurred())
@@ -440,9 +418,8 @@ IntRect HitTestResult::ImageRect() const {
       .EnclosingBoundingBox();
 }
 
-KURL HitTestResult::AbsoluteImageURL() const {
-  Node* inner_node_or_image_map_image = InnerNodeOrImageMapImage();
-  if (!inner_node_or_image_map_image)
+KURL HitTestResult::AbsoluteImageURL(const Node* node) {
+  if (!node)
     return KURL();
 
   AtomicString url_string;
@@ -450,23 +427,24 @@ KURL HitTestResult::AbsoluteImageURL() const {
   // even if they don't have a LayoutImage (e.g. because the image didn't load
   // and we are using an alt container). For other elements we don't create alt
   // containers so ensure they contain a loaded image.
-  auto* html_input_element =
-      DynamicTo<HTMLInputElement>(inner_node_or_image_map_image);
-  if (IsA<HTMLImageElement>(*inner_node_or_image_map_image) ||
+  auto* html_input_element = DynamicTo<HTMLInputElement>(node);
+  if (IsA<HTMLImageElement>(*node) ||
       (html_input_element &&
        html_input_element->type() == input_type_names::kImage))
-    url_string = To<Element>(*inner_node_or_image_map_image).ImageSourceURL();
-  else if ((inner_node_or_image_map_image->GetLayoutObject() &&
-            inner_node_or_image_map_image->GetLayoutObject()->IsImage()) &&
-           (IsA<HTMLEmbedElement>(*inner_node_or_image_map_image) ||
-            IsA<HTMLObjectElement>(*inner_node_or_image_map_image) ||
-            IsA<SVGImageElement>(*inner_node_or_image_map_image)))
-    url_string = To<Element>(*inner_node_or_image_map_image).ImageSourceURL();
+    url_string = To<Element>(*node).ImageSourceURL();
+  else if ((node->GetLayoutObject() && node->GetLayoutObject()->IsImage()) &&
+           (IsA<HTMLEmbedElement>(*node) || IsA<HTMLObjectElement>(*node) ||
+            IsA<SVGImageElement>(*node)))
+    url_string = To<Element>(*node).ImageSourceURL();
   if (url_string.IsEmpty())
     return KURL();
 
-  return inner_node_or_image_map_image->GetDocument().CompleteURL(
+  return node->GetDocument().CompleteURL(
       StripLeadingAndTrailingHTMLSpaces(url_string));
+}
+
+KURL HitTestResult::AbsoluteImageURL() const {
+  return AbsoluteImageURL(InnerNodeOrImageMapImage());
 }
 
 KURL HitTestResult::AbsoluteMediaURL() const {

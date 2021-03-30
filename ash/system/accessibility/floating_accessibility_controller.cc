@@ -194,7 +194,7 @@ void FloatingAccessibilityController::BubbleViewDestroyed() {
   menu_view_ = nullptr;
 }
 
-base::string16 FloatingAccessibilityController::GetAccessibleNameForBubble() {
+std::u16string FloatingAccessibilityController::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_FLOATING_ACCESSIBILITY_MAIN_MENU);
 }
 

@@ -26,8 +26,8 @@
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/reading_list/core/reading_list_store.h"
 #include "components/sync/base/report_unrecoverable_error.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -89,6 +89,11 @@ void ReadingListModelFactory::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       reading_list::prefs::kReadingListHasUnseenEntries, false,
       PrefRegistry::NO_REGISTRATION_FLAGS);
+#if !defined(OS_ANDROID)
+  registry->RegisterBooleanPref(
+      reading_list::prefs::kReadingListDesktopFirstUseExperienceShown, false,
+      PrefRegistry::NO_REGISTRATION_FLAGS);
+#endif  // !defined(OS_ANDROID)
 }
 
 content::BrowserContext* ReadingListModelFactory::GetBrowserContextToUse(

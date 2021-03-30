@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/ios/ios_util.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -97,8 +96,7 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableCardNicknameManagement);
+  // Add feature configs here.
   return config;
 }
 

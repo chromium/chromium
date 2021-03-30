@@ -51,6 +51,7 @@ std::vector<base::ScopedFD> DuplicateFD(base::ScopedFD fd, size_t num_fds) {
 
 base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
+    uint64_t modifier,
     const gfx::Size& coded_size,
     std::vector<base::ScopedFD> scoped_fds,
     const std::vector<VideoFramePlane>& planes) {
@@ -70,12 +71,13 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     color_planes.emplace_back(stride, offset, current_size.ValueOrDie());
   }
 
-  return CreateGpuMemoryBufferHandle(pixel_format, coded_size,
+  return CreateGpuMemoryBufferHandle(pixel_format, modifier, coded_size,
                                      std::move(scoped_fds), color_planes);
 }
 
 base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
+    uint64_t modifier,
     const gfx::Size& coded_size,
     std::vector<base::ScopedFD> scoped_fds,
     const std::vector<media::ColorPlaneLayout>& planes) {
@@ -93,6 +95,7 @@ base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
 
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::NATIVE_PIXMAP;
+  gmb_handle.native_pixmap_handle.modifier = modifier;
   for (size_t i = 0; i < num_planes; ++i) {
     // NOTE: planes[i].stride and planes[i].offset both are int32_t. stride and
     // offset in NativePixmapPlane are uint32_t and uint64_t, respectively.

@@ -31,10 +31,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace content {
-class BrowserContext;
-}
-
 namespace chromeos {
 
 // This class encapsulates sign in operations.
@@ -73,10 +69,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   // will perform auth checks.
   void PerformLogin(const UserContext& user_context,
                     AuthorizationMode auth_mode);
-
-  // TODO(crbug.com/866790): Check it is not used anymore and remove it.
-  // Performs supervised user login with a given |user_context|.
-  void LoginAsSupervisedUser(const UserContext& user_context);
 
   // Performs actions to prepare guest mode login.
   void LoginOffTheRecord();
@@ -163,9 +155,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   // PolicyLoadFailed is called.
   virtual bool CheckPolicyForUser(const AccountId& account_id) = 0;
 
-  // Look up browser context to use during signin.
-  virtual content::BrowserContext* GetSigninContext() = 0;
-
   // Gets the SharedURLLoaderFactory used for sign in.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetSigninURLLoaderFactory() = 0;
@@ -223,5 +212,11 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::LoginPerformer;
+}
 
 #endif  // CHROMEOS_LOGIN_AUTH_LOGIN_PERFORMER_H_

@@ -7,7 +7,7 @@
     </output>
     <output filename="views_examples_resources.pak" type="data_package" lang="en" />
   </outputs>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
        <!-- colored dialog example -->
       <message translateable="false" name="IDS_COLORED_DIALOG_CHOOSER_CHECKBOX">
@@ -157,6 +157,11 @@
         Native Theme Colors
       </message>
 
+      <!-- notification example -->
+      <message translateable="false" name="IDS_NOTIFICATION_SELECT_LABEL">
+        Notification
+      </message>
+
       <!-- progress example -->
       <message translateable="false" name="IDS_PROGRESS_SELECT_LABEL">
         Progress Bar
@@ -214,6 +219,12 @@
       <!-- tabbed pane example -->
       <message translateable="false" name="IDS_TABBED_PANE_SELECT_LABEL">
         Tabbed Pane
+      </message>
+      <message translateable="false" name="IDS_TABBED_PANE_SWAP_LAYOUT_LABEL">
+        Swap Layout
+      </message>
+      <message translateable="false" name="IDS_TABBED_PANE_TOGGLE_HIGHLIGHTED_LABEL">
+        Toggle Highlighted
       </message>
       <message translateable="false" name="IDS_TABBED_PANE_ADD_LABEL">
         Add

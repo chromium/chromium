@@ -107,7 +107,8 @@ const PhysicalRect NGLayoutOverflowCalculator::Result(
   PhysicalRect normal_overflow = layout_overflow_;
   normal_overflow.UniteEvenIfEmpty(inflow_overflow);
 
-  if (node_.IsInlineFormattingContextRoot())
+  if (node_.IsInlineFormattingContextRoot() || node_.IsFlexibleBox() ||
+      node_.IsGrid())
     return normal_overflow;
 
   WritingModeConverter converter(writing_direction_, size_);
@@ -260,10 +261,16 @@ PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
 
   PhysicalRect overflow = {{}, child_fragment.Size()};
   const auto& child_style = child_fragment.Style();
-  if (!child_fragment.ShouldApplyLayoutContainment() &&
-      (!child_fragment.ShouldClipOverflowAlongBothAxis() ||
-       child_style.OverflowClipMargin() != LayoutUnit()) &&
-      !child_fragment.IsInlineBox()) {
+
+  // Collapsed table rows/sections set IsHiddenForPaint flag.
+  bool ignore_layout_overflow =
+      child_fragment.ShouldApplyLayoutContainment() ||
+      child_fragment.IsInlineBox() ||
+      (child_fragment.ShouldClipOverflowAlongBothAxis() &&
+       child_style.OverflowClipMargin() == LayoutUnit()) ||
+      child_fragment.IsHiddenForPaint();
+
+  if (!ignore_layout_overflow) {
     PhysicalRect child_overflow = child_fragment.LayoutOverflow();
     if (child_fragment.HasNonVisibleOverflow()) {
       const OverflowClipAxes overflow_clip_axes =

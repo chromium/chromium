@@ -20,6 +20,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
     Profile* profile,
@@ -46,7 +47,7 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
   SetLayoutManager(std::move(layout));
 
   if (title_resource_id) {
-    base::string16 title_text = l10n_util::GetStringUTF16(title_resource_id);
+    std::u16string title_text = l10n_util::GetStringUTF16(title_resource_id);
     views::Label* title = new views::Label(
         title_text, views::style::CONTEXT_DIALOG_BODY_TEXT, text_style);
     title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -86,6 +87,5 @@ void DiceBubbleSyncPromoView::EnableSync() {
   delegate_->OnEnableSync(account.value_or(AccountInfo()));
 }
 
-const char* DiceBubbleSyncPromoView::GetClassName() const {
-  return "DiceBubbleSyncPromoView";
-}
+BEGIN_METADATA(DiceBubbleSyncPromoView, views::View)
+END_METADATA

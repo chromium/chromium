@@ -169,9 +169,9 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerContactDetailsTest,
 
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   // Remove the name from the profile to be stored.
-  profile.SetRawInfo(autofill::NAME_FIRST, base::ASCIIToUTF16(""));
-  profile.SetRawInfo(autofill::NAME_MIDDLE, base::ASCIIToUTF16(""));
-  profile.SetRawInfo(autofill::NAME_LAST, base::ASCIIToUTF16(""));
+  profile.SetRawInfo(autofill::NAME_FIRST, u"");
+  profile.SetRawInfo(autofill::NAME_MIDDLE, u"");
+  profile.SetRawInfo(autofill::NAME_LAST, u"");
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerContactDetailsTest,
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
   RetryPaymentRequest("{}", dialog_view());
 
   EXPECT_EQ(base::ASCIIToUTF16(
@@ -425,11 +425,10 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerContactDetailsTest,
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
   RetryPaymentRequest("{ error: 'ERROR MESSAGE' }", dialog_view());
 
-  EXPECT_EQ(base::ASCIIToUTF16("ERROR MESSAGE"),
-            GetLabelText(DialogViewID::WARNING_LABEL));
+  EXPECT_EQ(u"ERROR MESSAGE", GetLabelText(DialogViewID::WARNING_LABEL));
 }
 
 typedef PaymentRequestBrowserTestBase PaymentHandlerUITest;

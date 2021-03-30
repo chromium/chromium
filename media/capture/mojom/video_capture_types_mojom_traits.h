@@ -7,11 +7,11 @@
 
 #include "base/optional.h"
 #include "media/base/video_facing.h"
-#include "media/base/video_frame_feedback.h"
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video_capture_types.h"
+#include "media/capture/video_frame_feedback.h"
 
 namespace mojo {
 
@@ -253,6 +253,15 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
 
   static int max_pixels(const media::VideoFrameFeedback& feedback) {
     return feedback.max_pixels;
+  }
+
+  static bool require_mapped_frame(const media::VideoFrameFeedback& feedback) {
+    return feedback.require_mapped_frame;
+  }
+
+  static const std::vector<gfx::Size>& mapped_sizes(
+      const media::VideoFrameFeedback& feedback) {
+    return feedback.mapped_sizes;
   }
 
   static bool Read(media::mojom::VideoFrameFeedbackDataView data,

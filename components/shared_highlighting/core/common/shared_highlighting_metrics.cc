@@ -56,6 +56,7 @@ void LogTextFragmentSelectorCount(int count) {
   base::UmaHistogramCounts100("TextFragmentAnchor.SelectorCount", count);
 }
 
+// TODO(gayane): Replace by one function LogGenerateError(Error).
 void LogGenerateErrorTabHidden() {
   LogLinkGenerationErrorReason(LinkGenerationError::kTabHidden);
 }
@@ -70,6 +71,14 @@ void LogGenerateErrorTabCrash() {
 
 void LogGenerateErrorIFrame() {
   LogLinkGenerationErrorReason(LinkGenerationError::kIFrame);
+}
+
+void LogGenerateErrorBlockList() {
+  LogLinkGenerationErrorReason(LinkGenerationError::kBlockList);
+}
+
+void LogGenerateErrorTimeout() {
+  LogLinkGenerationErrorReason(LinkGenerationError::kTimeout);
 }
 
 void LogGenerateSuccessLatency(base::TimeDelta latency) {

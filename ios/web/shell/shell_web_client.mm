@@ -83,40 +83,4 @@ void ShellWebClient::BindInterfaceReceiverFromMainFrame(
   }
 }
 
-void ShellWebClient::AllowCertificateError(
-    WebState*,
-    int /*cert_error*/,
-    const net::SSLInfo&,
-    const GURL&,
-    bool overridable,
-    int64_t /*navigation_id*/,
-    base::OnceCallback<void(bool)> callback) {
-  UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:@"Your connection is not private"
-                       message:nil
-                preferredStyle:UIAlertControllerStyleActionSheet];
-
-  __block base::OnceCallback<void(bool)> local_callback = std::move(callback);
-  void (^callback_block)(bool result) = ^(bool result) {
-    std::move(local_callback).Run(result);
-  };
-  [alert addAction:[UIAlertAction actionWithTitle:@"Go Back"
-                                            style:UIAlertActionStyleCancel
-                                          handler:^(UIAlertAction*) {
-                                            callback_block(false);
-                                          }]];
-
-  if (overridable) {
-    [alert addAction:[UIAlertAction actionWithTitle:@"Continue"
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction*) {
-                                              callback_block(true);
-                                            }]];
-  }
-  [[UIApplication sharedApplication].keyWindow.rootViewController
-      presentViewController:alert
-                   animated:YES
-                 completion:nil];
-}
-
 }  // namespace web

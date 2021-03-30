@@ -1,0 +1,60 @@
+Even though the fixed-position element's container is nonscrollable, it should still be composited because one of its ancestors is scrolling.
+
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='scrollable bigBox'",
+      "bounds": [453, 453],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [1, 430],
+      "bounds": [428, 22],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [430, 1],
+      "bounds": [22, 428],
+      "transform": 1
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [429, 429],
+      "bounds": [22, 22],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [2, 2],
+      "bounds": [428, 1200],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "position": [15, 150],
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 102, 0, 1]
+      ]
+    }
+  ]
+}
+

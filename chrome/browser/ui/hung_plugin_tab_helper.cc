@@ -59,7 +59,7 @@ void KillPluginOnIOThread(int child_id) {
 // not we're currently showing the infobar.
 struct HungPluginTabHelper::PluginState {
   // Initializes the plugin state to be a hung plugin.
-  PluginState(const base::FilePath& path, const base::string16& name);
+  PluginState(const base::FilePath& path, const std::u16string& name);
 
   // Since the scope of the timer manages our callback, this struct should
   // not be copied.
@@ -69,7 +69,7 @@ struct HungPluginTabHelper::PluginState {
   ~PluginState() = default;
 
   base::FilePath path;
-  base::string16 name;
+  std::u16string name;
 
   // Possibly-null if we're not showing an infobar right now.
   infobars::InfoBar* infobar = nullptr;
@@ -83,7 +83,7 @@ struct HungPluginTabHelper::PluginState {
 };
 
 HungPluginTabHelper::PluginState::PluginState(const base::FilePath& path,
-                                              const base::string16& name)
+                                              const std::u16string& name)
     : path(path), name(name) {}
 
 // HungPluginTabHelper --------------------------------------------------------
@@ -132,7 +132,7 @@ void HungPluginTabHelper::PluginHungStatusChanged(
   if (!infobar_observer_.IsObserving(infobar_service))
     infobar_observer_.Add(infobar_service);
 
-  base::string16 plugin_name =
+  std::u16string plugin_name =
       content::PluginService::GetInstance()->GetPluginDisplayNameByPath(
           plugin_path);
   hung_plugins_[plugin_child_id] =

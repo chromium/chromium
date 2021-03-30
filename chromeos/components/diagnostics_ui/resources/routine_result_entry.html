@@ -1,15 +1,20 @@
 <style include="diagnostics-shared">
   .entryRow {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    align-items: center;
+    column-gap: 15px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    height: 40px;
+  }
+
+  #routine {
+    @apply --diagnostics-routine-name-font;
   }
 </style>
 
 <div class="entryRow">
-  <div id="routine">[[routineType_]]</div>
-  <text-badge id="status" badge-type="[[getBadgeType_(item.progress, item.result)]]"
-  		value="[[getBadgeText_(item.progress, item.result)]]"
-  		hidden="[[!isTestStarted_(item.progress)]]">
+  <text-badge id="status" badge-type="[[badgeType_]]" value="[[badgeText_]]"
+      aria-labelledby="routine">
   </text-badge>
+  <div id="routine" aria-hidden="true">[[routineType_]]</div>
 </div>

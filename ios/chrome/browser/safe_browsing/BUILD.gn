@@ -4,9 +4,17 @@
 
 import("//ios/build/config.gni")
 import("//ios/features.gni")
+import("//ios/web/js_compile.gni")
 
 source_set("safe_browsing") {
   sources = [
+    "chrome_password_protection_service.h",
+    "chrome_password_protection_service.mm",
+    "chrome_password_protection_service_factory.h",
+    "chrome_password_protection_service_factory.mm",
+    "input_event_observer.h",
+    "password_protection_java_script_feature.h",
+    "password_protection_java_script_feature.mm",
     "pending_unsafe_resource_storage.h",
     "pending_unsafe_resource_storage.mm",
     "real_time_url_lookup_service_factory.h",
@@ -26,35 +34,52 @@ source_set("safe_browsing") {
     "safe_browsing_unsafe_resource_container.mm",
     "url_checker_delegate_impl.h",
     "url_checker_delegate_impl.mm",
+    "user_population.h",
+    "user_population.mm",
     "verdict_cache_manager_factory.h",
     "verdict_cache_manager_factory.mm",
   ]
 
   deps = [
+    ":password_protection_js",
     ":util",
     "//base",
     "//build:branding_buildflags",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/omnibox/common",
+    "//components/password_manager/core/browser",
     "//components/prefs",
+    "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core:verdict_cache_manager",
     "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/db",
     "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:v4_local_database_manager",
     "//components/safe_browsing/core/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/realtime:url_lookup_service",
     "//components/safe_browsing/ios/browser:allow_list",
+    "//components/safe_browsing/ios/password_protection",
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/strings:components_strings_grit",
+    "//components/sync/base",
+    "//components/sync/protocol",
+    "//components/sync_user_events",
+    "//components/unified_consent",
+    "//components/variations/service",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/net",
+    "//ios/chrome/browser/passwords:store_factory",
+    "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
@@ -63,12 +88,34 @@ source_set("safe_browsing") {
     "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ios/web/public/init",
+    "//ios/web/public/js_messaging",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//ui/base",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+js_compile_bundle("password_protection_js") {
+  visibility = [ ":safe_browsing" ]
+  closure_entry_point = "__crWeb.passwordProtection"
+
+  sources = [ "resources/password_protection.js" ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/password_manager/core/common",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -88,6 +135,7 @@ source_set("test_support") {
     "//ios/web/public",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -141,6 +189,7 @@ source_set("eg2_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "chrome_password_protection_service_unittest.mm",
     "pending_unsafe_resource_storage_unittest.mm",
     "real_time_url_lookup_service_factory_unittest.mm",
     "safe_browsing_blocking_page_unittest.mm",
@@ -156,7 +205,11 @@ source_set("unit_tests") {
   deps = [
     ":safe_browsing",
     ":test_support",
+    "//base",
     "//base/test:test_support",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:test_support",
     "//components/prefs:test_support",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core:realtimeapi_proto",
@@ -172,23 +225,35 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/db:v4_get_hash_protocol_manager",
     "//components/safe_browsing/core/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/db:v4_test_util",
+    "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/strings:components_strings_grit",
+    "//components/sync/protocol",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//components/sync_user_events:test_support",
     "//components/unified_consent",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/prerender:test_support",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public",
     "//ios/web/public/test",
     "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
+    "//url",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

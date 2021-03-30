@@ -16,7 +16,9 @@ class XRSession;
 
 // Helper class that returns an XRSpace that tracks the position of object of
 // type T (for example XRPlane, XRAnchor). The type T has to have a
-// MojoFromObject() method, returning a base::Optional<TransformationMatrix>.
+// MojoFromObject() method, returning a base::Optional<TransformationMatrix>,
+// and IsStationary() method returning true if the object is supposed to be
+// treated as stationary for the purposes of anchor creation.
 //
 // If the object's MojoFromObject() method returns a base::nullopt, it means
 // that the object is not localizable in the current frame (i.e. its pose is
@@ -24,10 +26,12 @@ class XRSession;
 // That does not necessarily mean that object tracking is lost - it may be that
 // the object's location will become known in subsequent frames.
 template <typename T>
-class XRObjectSpace : public XRSpace {
+class XRObjectSpace final : public XRSpace {
  public:
   explicit XRObjectSpace(XRSession* session, const T* object)
-      : XRSpace(session), object_(object) {}
+      : XRSpace(session),
+        object_(object),
+        is_stationary_(object->IsStationary()) {}
 
   base::Optional<TransformationMatrix> MojoFromNative() override {
     return object_->MojoFromObject();
@@ -38,11 +42,7 @@ class XRObjectSpace : public XRSpace {
     return XRNativeOriginInformation::Create(object_);
   }
 
-  bool IsStationary() const override {
-    // Object spaces are considered stationary - they are supposed to remain
-    // fixed relative to their surroundings (at least locally).
-    return true;
-  }
+  bool IsStationary() const override { return is_stationary_; }
 
   std::string ToString() const override { return "XRObjectSpace"; }
 
@@ -53,6 +53,7 @@ class XRObjectSpace : public XRSpace {
 
  private:
   Member<const T> object_;
+  const bool is_stationary_;
 };
 
 }  // namespace blink

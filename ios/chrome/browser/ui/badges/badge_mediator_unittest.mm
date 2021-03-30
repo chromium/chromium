@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/ui/badges/badge_mediator.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_badge_model.h"
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
@@ -25,7 +23,6 @@
 #import "ios/chrome/browser/ui/badges/badge_item.h"
 #import "ios/chrome/browser/ui/badges/badge_type.h"
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -42,11 +39,9 @@
 namespace {
 // The two infobar types used in tests.  Both support badges.
 InfobarType kFirstInfobarType = InfobarType::kInfobarTypePasswordSave;
-base::string16 kFirstInfobarMessageText =
-    base::ASCIIToUTF16("FakeInfobarDelegate1");
+std::u16string kFirstInfobarMessageText = u"FakeInfobarDelegate1";
 InfobarType kSecondInfobarType = InfobarType::kInfobarTypePasswordUpdate;
-base::string16 kSecondInfobarMessageText =
-    base::ASCIIToUTF16("FakeInfobarDelegate2");
+std::u16string kSecondInfobarMessageText = u"FakeInfobarDelegate2";
 // Parameters used for BadgeMediator test fixtures.
 enum class TestParam {
   kNormal,
@@ -87,8 +82,6 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
       : badge_consumer_([[FakeBadgeConsumer alloc] init]),
         browser_state_(TestChromeBrowserState::Builder().Build()),
         web_state_list_(&web_state_list_delegate_) {
-    feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                   {kInfobarUIRebootOnlyiOS13});
     OverlayPresenter::FromBrowser(browser(), OverlayModality::kInfobarBanner)
         ->SetPresentationContext(&overlay_presentation_context_);
     badge_mediator_ = [[BadgeMediator alloc] initWithBrowser:browser()];
@@ -116,7 +109,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
 
   // Adds an Infobar of |type| to the InfoBarManager and returns the infobar.
   // Pass in different |message_text| to avoid replacing existing infobar.
-  InfoBarIOS* AddInfobar(InfobarType type, base::string16 message_text) {
+  InfoBarIOS* AddInfobar(InfobarType type, std::u16string message_text) {
     std::unique_ptr<InfoBarIOS> added_infobar =
         std::make_unique<FakeInfobarIOS>(type, message_text);
     InfoBarIOS* infobar = added_infobar.get();
@@ -158,7 +151,6 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
     return InfobarBadgeTabHelper::FromWebState(web_state());
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment environment_;
   FakeBadgeConsumer* badge_consumer_;
   std::unique_ptr<ChromeBrowserState> browser_state_;

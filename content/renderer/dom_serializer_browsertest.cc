@@ -33,10 +33,10 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
-#include "third_party/blink/public/web/web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/public/web/web_frame_serializer_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -48,17 +48,17 @@
 using blink::WebData;
 using blink::WebDocument;
 using blink::WebElement;
-using blink::WebMetaElement;
 using blink::WebElementCollection;
 using blink::WebFrame;
 using blink::WebFrameSerializer;
 using blink::WebFrameSerializerClient;
 using blink::WebLocalFrame;
+using blink::WebMetaElement;
 using blink::WebNode;
 using blink::WebString;
 using blink::WebURL;
-using blink::WebView;
 using blink::WebVector;
+using blink::WebView;
 
 namespace content {
 
@@ -186,7 +186,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
  private:
   // Written only on the browser main UI thread. Read only from the in-process
   // renderer thread via posted tasks:
-  base::UnguessableToken main_frame_token_;
+  blink::LocalFrameToken main_frame_token_;
   std::string serialized_contents_;
   bool serialization_reported_end_of_data_ = false;
 };
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
     // Unescaped string for "&percnt;&nsup;&sup1;&apos;".
     static const wchar_t parsed_value[] = {'%', 0x2285, 0x00b9, '\'', 0};
     WebString value = body_element.GetAttribute("title");
-    WebString content = blink::WebFrameContentDumper::DumpWebViewAsText(
+    WebString content = blink::TestWebFrameContentDumper::DumpWebViewAsText(
         web_frame->View(), 1024);
     ASSERT_TRUE(base::UTF16ToWide(value.Utf16()) == parsed_value);
     ASSERT_TRUE(base::UTF16ToWide(content.Utf16()) == parsed_value);

@@ -121,7 +121,7 @@ TEST(SendTabToSelfEntry, IsExpired) {
 
 // Tests that the send tab to self entry rejects strings that are not utf8.
 TEST(SendTabToSelfEntry, InvalidStrings) {
-  const base::char16 term[1] = {0xFDD1u};
+  const char16_t term[1] = {u'\uFDD1'};
   std::string invalid_utf8;
   base::UTF16ToUTF8(&term[0], 1, &invalid_utf8);
 

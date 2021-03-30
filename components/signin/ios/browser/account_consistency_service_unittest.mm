@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
+#include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "components/signin/ios/browser/features.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
@@ -162,6 +163,11 @@ class AccountConsistencyServiceTest : public PlatformTest {
   }
 
   void TearDown() override {
+    if (has_set_web_state_handler_) {
+      account_consistency_service_->RemoveWebStateHandler(&web_state_);
+      has_set_web_state_handler_ = false;
+    }
+
     // Destroy the web state before shutting down
     // |account_consistency_service_|.
     web_state_.WebStateDestroyed();
@@ -175,11 +181,15 @@ class AccountConsistencyServiceTest : public PlatformTest {
 
   void ResetAccountConsistencyService() {
     if (account_consistency_service_) {
+      if (has_set_web_state_handler_) {
+        account_consistency_service_->RemoveWebStateHandler(&web_state_);
+        has_set_web_state_handler_ = false;
+      }
       account_consistency_service_->Shutdown();
     }
-    account_consistency_service_.reset(new AccountConsistencyService(
+    account_consistency_service_ = std::make_unique<AccountConsistencyService>(
         &browser_state_, account_reconcilor_.get(), cookie_settings_,
-        identity_test_env_->identity_manager()));
+        identity_test_env_->identity_manager());
   }
 
   // Identity APIs.
@@ -196,24 +206,21 @@ class AccountConsistencyServiceTest : public PlatformTest {
 
   // Cookie verification APIs.
   void CheckDomainHasChromeConnectedCookie(const std::string& domain) {
-    EXPECT_TRUE(
-        ContainsCookie(GetCookiesInCookieJar(),
-                       AccountConsistencyService::kChromeConnectedCookieName,
-                       GetCookieDomain(domain)));
+    EXPECT_TRUE(ContainsCookie(GetCookiesInCookieJar(),
+                               signin::kChromeConnectedCookieName,
+                               GetCookieDomain(domain)));
   }
 
   void CheckNoChromeConnectedCookieForDomain(const std::string& domain) {
-    EXPECT_FALSE(
-        ContainsCookie(GetCookiesInCookieJar(),
-                       AccountConsistencyService::kChromeConnectedCookieName,
-                       GetCookieDomain(domain)));
+    EXPECT_FALSE(ContainsCookie(GetCookiesInCookieJar(),
+                                signin::kChromeConnectedCookieName,
+                                GetCookieDomain(domain)));
   }
 
   void CheckNoChromeConnectedCookies() {
-    EXPECT_FALSE(
-        ContainsCookie(GetCookiesInCookieJar(),
-                       AccountConsistencyService::kChromeConnectedCookieName,
-                       /*domain=*/std::string()));
+    EXPECT_FALSE(ContainsCookie(GetCookiesInCookieJar(),
+                                signin::kChromeConnectedCookieName,
+                                /*domain=*/std::string()));
   }
 
   // Verifies the time that the Gaia cookie was last updated for google.com.
@@ -278,6 +285,17 @@ class AccountConsistencyServiceTest : public PlatformTest {
                                   base::OnceCallback<void(uint)>());
   }
 
+  void SetWebStateHandler(id<ManageAccountsDelegate> delegate) {
+    // If we have already added the |web_state_| with a previous |delegate|,
+    // remove it to enforce a one-to-one mapping between web state handler and
+    // web state.
+    if (has_set_web_state_handler_)
+      account_consistency_service_->RemoveWebStateHandler(&web_state_);
+
+    account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+    has_set_web_state_handler_ = true;
+  }
+
   // Properties available for tests.
   // Creates test threads, necessary for ActiveStateManager that needs a UI
   // thread.
@@ -296,14 +314,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
                              id<ManageAccountsDelegate> delegate,
                              web::PageLoadCompletionStatus page_status,
                              bool expect_allowed_response) {
-    // If we have already added the |web_state_| with a previous |delegate|,
-    // remove it to enforce a one-to-one mapping between web state handler and
-    // web state.
-    if (!account_consistency_service_->web_state_handlers_.empty()) {
-      account_consistency_service_->RemoveWebStateHandler(&web_state_);
-    }
-
-    account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+    SetWebStateHandler(delegate);
     EXPECT_EQ(
         expect_allowed_response,
         web_state_.ShouldAllowResponse(response, /* for_main_frame = */ true));
@@ -333,6 +344,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
   std::unique_ptr<TestSigninClient> signin_client_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  bool has_set_web_state_handler_ = false;
 };
 
 // Tests that main domains are added to the internal map when cookies are set in
@@ -849,7 +861,7 @@ TEST_F(AccountConsistencyServiceTest,
        HTTPVersion:@"HTTP/1.1"
       headerFields:headers];
 
-  account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
+  SetWebStateHandler(delegate);
   EXPECT_TRUE(web_state_.ShouldAllowResponse(response,
                                              /* for_main_frame = */ true));
 

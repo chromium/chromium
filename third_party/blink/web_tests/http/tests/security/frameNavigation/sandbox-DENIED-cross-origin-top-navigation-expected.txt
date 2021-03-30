@@ -1,0 +1,6 @@
+CONSOLE ERROR: line 8: Unsafe attempt to initiate navigation for frame with origin 'http://127.0.0.1:8000' from frame with URL 'https://localhost:8443/security/frameNavigation/resources/failed-top-navigation.html'. The frame attempting navigation of the top-level window is sandboxed and is not allowed to navigate since its ancestor frame with origin 'http://localhost:8080' is unable to navigate the top frame.
+
+
+This tests that an iframe in sandbox with 'allow-top-navigation' can't navigate the top level page if its ancestor can't.
+
+DOMAIN

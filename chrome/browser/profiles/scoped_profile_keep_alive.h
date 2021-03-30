@@ -20,6 +20,11 @@ class ScopedProfileKeepAlive {
   ProfileKeepAliveOrigin origin() { return origin_; }
 
  private:
+  // Called after the ScopedProfileKeepAlive has been deleted, so this is a
+  // static method where we pass parameters manually.
+  static void RemoveKeepAliveOnUIThread(const Profile* profile,
+                                        ProfileKeepAliveOrigin origin);
+
   const Profile* const profile_;
   const ProfileKeepAliveOrigin origin_;
 };

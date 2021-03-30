@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 namespace scheduler {
@@ -170,13 +171,12 @@ constexpr base::TimeDelta PageSchedulerImpl::kDefaultThrottledWakeUpInterval;
 PageSchedulerImpl::PageSchedulerImpl(
     PageScheduler::Delegate* delegate,
     AgentGroupSchedulerImpl& agent_group_scheduler)
-    : main_thread_scheduler_(&agent_group_scheduler.GetMainThreadScheduler()),
+    : main_thread_scheduler_(static_cast<MainThreadSchedulerImpl*>(
+          &agent_group_scheduler.GetMainThreadScheduler())),
       agent_group_scheduler_(agent_group_scheduler),
       page_visibility_(kDefaultPageVisibility),
       page_visibility_changed_time_(
-          agent_group_scheduler.GetMainThreadScheduler()
-              .GetTickClock()
-              ->NowTicks()),
+          main_thread_scheduler_->GetTickClock()->NowTicks()),
       audio_state_(AudioState::kSilent),
       is_frozen_(false),
       reported_background_throttling_since_navigation_(false),
@@ -185,8 +185,7 @@ PageSchedulerImpl::PageSchedulerImpl(
       is_main_frame_local_(false),
       is_cpu_time_throttled_(false),
       are_wake_ups_intensively_throttled_(false),
-      keep_active_(
-          agent_group_scheduler.GetMainThreadScheduler().SchedulerKeepActive()),
+      keep_active_(main_thread_scheduler_->SchedulerKeepActive()),
       had_recent_title_or_favicon_update_(false),
       focused_(delegate ? delegate->IsFocused() : true),
       delegate_(delegate),
@@ -342,6 +341,8 @@ void PageSchedulerImpl::SetPageBackForwardCached(
   is_stored_in_back_forward_cache_ = is_in_back_forward_cache;
 
   if (!is_stored_in_back_forward_cache_) {
+    TRACE_EVENT_INSTANT("navigation",
+                        "PageSchedulerImpl::SetPageBackForwardCached_Restore");
     set_ipc_posted_handler_task_.Cancel();
     has_ipc_detection_enabled_ = false;
     main_thread_scheduler_->UpdateIpcTracking();
@@ -350,6 +351,8 @@ void PageSchedulerImpl::SetPageBackForwardCached(
     }
     stored_in_back_forward_cache_timestamp_ = base::TimeTicks();
   } else {
+    TRACE_EVENT_INSTANT("navigation",
+                        "PageSchedulerImpl::SetPageBackForwardCached_Store");
     stored_in_back_forward_cache_timestamp_ =
         main_thread_scheduler_->tick_clock()->NowTicks();
 
@@ -380,6 +383,13 @@ void PageSchedulerImpl::SetUpIPCTaskDetection() {
 }
 
 void PageSchedulerImpl::SetKeepActive(bool keep_active) {
+  if (keep_active) {
+    TRACE_EVENT_INSTANT("renderer.scheduler",
+                        "PageSchedulerImpl::SetKeepActive_True");
+  } else {
+    TRACE_EVENT_INSTANT("renderer.scheduler",
+                        "PageSchedulerImpl::SetKeepActive_False");
+  }
   if (keep_active_ == keep_active)
     return;
   keep_active_ = keep_active;
@@ -611,40 +621,33 @@ bool PageSchedulerImpl::IsWaitingForMainFrameMeaningfulPaint() const {
                      });
 }
 
-void PageSchedulerImpl::AsValueInto(
-    base::trace_event::TracedValue* state) const {
-  state->SetBoolean("page_visible",
-                    page_visibility_ == PageVisibilityState::kVisible);
-  state->SetBoolean("is_audio_playing", IsAudioPlaying());
-  state->SetBoolean("is_frozen", is_frozen_);
-  state->SetBoolean("reported_background_throttling_since_navigation",
-                    reported_background_throttling_since_navigation_);
-  state->SetBoolean("is_page_freezable", IsBackgrounded());
+void PageSchedulerImpl::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("page_visible", page_visibility_ == PageVisibilityState::kVisible);
+  dict.Add("is_audio_playing", IsAudioPlaying());
+  dict.Add("is_frozen", is_frozen_);
+  dict.Add("reported_background_throttling_since_navigation",
+           reported_background_throttling_since_navigation_);
+  dict.Add("is_page_freezable", IsBackgrounded());
 
-  {
-    auto dictionary_scope = state->BeginDictionaryScoped("frame_schedulers");
-    for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
-      auto inner_dictionary = state->BeginDictionaryScopedWithCopiedName(
-          PointerToString(frame_scheduler));
-      frame_scheduler->AsValueInto(state);
-    }
-  }
+  dict.Add("frame_schedulers", frame_schedulers_);
 }
 
 void PageSchedulerImpl::AddQueueToWakeUpBudgetPool(
     MainThreadTaskQueue* task_queue,
     FrameOriginType frame_origin_type,
     base::sequence_manager::LazyNow* lazy_now) {
-  GetWakeUpBudgetPool(task_queue, frame_origin_type)
-      ->AddQueue(lazy_now->Now(), task_queue->GetTaskQueue());
+  task_queue->AddToBudgetPool(
+      lazy_now->Now(), GetWakeUpBudgetPool(task_queue, frame_origin_type));
 }
 
 void PageSchedulerImpl::RemoveQueueFromWakeUpBudgetPool(
     MainThreadTaskQueue* task_queue,
     FrameOriginType frame_origin_type,
     base::sequence_manager::LazyNow* lazy_now) {
-  GetWakeUpBudgetPool(task_queue, frame_origin_type)
-      ->RemoveQueue(lazy_now->Now(), task_queue->GetTaskQueue());
+  task_queue->RemoveFromBudgetPool(
+      lazy_now->Now(), GetWakeUpBudgetPool(task_queue, frame_origin_type));
 }
 
 WakeUpBudgetPool* PageSchedulerImpl::GetWakeUpBudgetPool(

@@ -8,7 +8,10 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
+#include "chrome/services/speech/soda/proto/soda_api.pb.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,13 +50,23 @@ class SodaClientUnitTest : public testing::Test {
   std::vector<std::string> recognition_results_;
 };
 
-// static
-void SodaClientUnitTest::RecognitionCallback(const char* result,
-                                             const bool is_final,
-                                             void* callback_handle) {
+void OnSodaResponse(const char* serialized_proto,
+                    int length,
+                    void* callback_handle) {
   ASSERT_TRUE(callback_handle);
-  static_cast<soda::SodaClientUnitTest*>(callback_handle)
-      ->AddRecognitionResult(result);
+  speech::soda::chrome::SodaResponse response;
+  if (!response.ParseFromArray(serialized_proto, length)) {
+    LOG(ERROR) << "Unable to parse result from SODA.";
+    NOTREACHED();
+  }
+
+  if (response.soda_type() == speech::soda::chrome::SodaResponse::RECOGNITION) {
+    speech::soda::chrome::SodaRecognitionResult result =
+        response.recognition_result();
+    ASSERT_TRUE(result.hypothesis_size());
+    static_cast<soda::SodaClientUnitTest*>(callback_handle)
+        ->AddRecognitionResult(result.hypothesis(0));
+  }
 }
 
 void SodaClientUnitTest::AddRecognitionResult(std::string result) {
@@ -86,21 +99,31 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
       test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
           .Append(base::FilePath(kSodaTestonfigRelativePath));
   ASSERT_TRUE(base::PathExists(config_file_path));
-  SodaConfig config;
-  config.channel_count = handler->num_channels();
-  config.sample_rate = handler->sample_rate();
-  config.language_pack_directory = config_file_path.value().c_str();
-  config.callback = SodaClientUnitTest::RecognitionCallback;
-  config.callback_handle = this;
+
+  speech::soda::chrome::ExtendedSodaConfigMsg config_msg;
+  config_msg.set_channel_count(handler->num_channels());
+  config_msg.set_sample_rate(handler->sample_rate());
+  config_msg.set_language_pack_directory(config_file_path.value().c_str());
+  config_msg.set_simulate_realtime_testonly(false);
+  config_msg.set_enable_lang_id(false);
+  config_msg.set_recognition_mode(
+      speech::soda::chrome::ExtendedSodaConfigMsg::CAPTION);
 
   // The test binary does not verify the execution context.
-  config.api_key = "";
+  config_msg.set_api_key("");
 
-  soda_client_->Reset(config);
+  auto serialized = config_msg.SerializeAsString();
+
+  SerializedSodaConfig config;
+  config.soda_config = serialized.c_str();
+  config.soda_config_size = serialized.size();
+  config.callback = &OnSodaResponse;
+  config.callback_handle = this;
+  soda_client_->Reset(config, handler->sample_rate(), handler->num_channels());
   ASSERT_TRUE(soda_client_->IsInitialized());
 
   auto bus =
-      media::AudioBus::Create(config.channel_count, handler->total_frames());
+      media::AudioBus::Create(handler->num_channels(), handler->total_frames());
 
   size_t bytes_written = 0u;
   ASSERT_TRUE(handler->CopyTo(bus.get(), 0, &bytes_written));

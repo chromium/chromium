@@ -134,7 +134,7 @@ void SetStringIfNotEmpty(const AutofillDataModel& profile,
                          const std::string& app_locale,
                          const std::string& path,
                          base::Value& dictionary) {
-  const base::string16 value = profile.GetInfo(AutofillType(type), app_locale);
+  const std::u16string value = profile.GetInfo(AutofillType(type), app_locale);
   if (!value.empty())
     dictionary.SetKey(path, base::Value(value));
 }
@@ -143,7 +143,7 @@ void AppendStringIfNotEmpty(const AutofillProfile& profile,
                             const ServerFieldType& type,
                             const std::string& app_locale,
                             base::Value& list) {
-  const base::string16 value = profile.GetInfo(type, app_locale);
+  const std::u16string value = profile.GetInfo(type, app_locale);
   if (!value.empty())
     list.Append(value);
 }
@@ -180,7 +180,7 @@ base::Value BuildAddressDictionary(const AutofillProfile& profile,
                       "postal_code_number", postal_address);
 
   // Use GetRawInfo to get a country code instead of the country name:
-  const base::string16 country_code = profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
+  const std::u16string country_code = profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
   if (!country_code.empty())
     postal_address.SetKey("country_name_code", base::Value(country_code));
 
@@ -206,9 +206,9 @@ base::Value BuildCreditCardDictionary(const CreditCard& credit_card,
   base::Value card(base::Value::Type::DICTIONARY);
   card.SetKey("unique_id", base::Value(credit_card.guid()));
 
-  const base::string16 exp_month =
+  const std::u16string exp_month =
       credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), app_locale);
-  const base::string16 exp_year = credit_card.GetInfo(
+  const std::u16string exp_year = credit_card.GetInfo(
       AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale);
   int value = 0;
   if (base::StringToInt(exp_month, &value))
@@ -218,11 +218,8 @@ base::Value BuildCreditCardDictionary(const CreditCard& credit_card,
   SetStringIfNotEmpty(credit_card, CREDIT_CARD_NAME_FULL, app_locale,
                       "cardholder_name", card);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCardNicknameUpstream) &&
-      credit_card.HasNonEmptyValidNickname()) {
+  if (credit_card.HasNonEmptyValidNickname())
     card.SetKey("nickname", base::Value(credit_card.nickname()));
-  }
 
   card.SetKey("encrypted_pan", base::Value("__param:" + pan_field_name));
   return card;
@@ -598,7 +595,7 @@ class GetUploadDetailsRequest : public PaymentsRequest {
       const bool full_sync_enabled,
       const std::string& app_locale,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const base::string16&,
+                              const std::u16string&,
                               std::unique_ptr<base::Value>,
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
@@ -689,7 +686,7 @@ class GetUploadDetailsRequest : public PaymentsRequest {
   void ParseResponse(const base::Value& response) override {
     const auto* context_token = response.FindStringKey("context_token");
     context_token_ =
-        context_token ? base::UTF8ToUTF16(*context_token) : base::string16();
+        context_token ? base::UTF8ToUTF16(*context_token) : std::u16string();
 
     const base::Value* dictionary_value =
         response.FindKeyOfType("legal_message", base::Value::Type::DICTIONARY);
@@ -748,11 +745,11 @@ class GetUploadDetailsRequest : public PaymentsRequest {
   const bool full_sync_enabled_;
   std::string app_locale_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                          const base::string16&,
+                          const std::u16string&,
                           std::unique_ptr<base::Value>,
                           std::vector<std::pair<int, int>>)>
       callback_;
-  base::string16 context_token_;
+  std::u16string context_token_;
   std::unique_ptr<base::Value> legal_message_;
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   const int billable_service_number_;
@@ -816,25 +813,23 @@ class UploadCardRequest : public PaymentsRequest {
                         base::Value(request_details_.context_token));
 
     int value = 0;
-    const base::string16 exp_month = request_details_.card.GetInfo(
+    const std::u16string exp_month = request_details_.card.GetInfo(
         AutofillType(CREDIT_CARD_EXP_MONTH), app_locale);
-    const base::string16 exp_year = request_details_.card.GetInfo(
+    const std::u16string exp_year = request_details_.card.GetInfo(
         AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale);
     if (base::StringToInt(exp_month, &value))
       request_dict.SetKey("expiration_month", base::Value(value));
     if (base::StringToInt(exp_year, &value))
       request_dict.SetKey("expiration_year", base::Value(value));
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableCardNicknameUpstream) &&
-        request_details_.card.HasNonEmptyValidNickname()) {
+    if (request_details_.card.HasNonEmptyValidNickname()) {
       request_dict.SetKey("nickname",
                           base::Value(request_details_.card.nickname()));
     }
 
     SetActiveExperiments(request_details_.active_experiments, request_dict);
 
-    const base::string16 pan = request_details_.card.GetInfo(
+    const std::u16string pan = request_details_.card.GetInfo(
         AutofillType(CREDIT_CARD_NUMBER), app_locale);
     std::string json_request;
     base::JSONWriter::Write(request_dict, &json_request);
@@ -990,7 +985,7 @@ class MigrateCardsRequest : public PaymentsRequest {
   std::string GetAppendPan(const CreditCard& credit_card,
                            const std::string& app_locale,
                            const std::string& pan_field_name) {
-    const base::string16 pan =
+    const std::u16string pan =
         credit_card.GetInfo(AutofillType(CREDIT_CARD_NUMBER), app_locale);
     std::string pan_str =
         net::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str();
@@ -1165,7 +1160,7 @@ void PaymentsClient::GetUploadDetails(
     const std::vector<const char*>& active_experiments,
     const std::string& app_locale,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const base::string16&,
+                            const std::u16string&,
                             std::unique_ptr<base::Value>,
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,

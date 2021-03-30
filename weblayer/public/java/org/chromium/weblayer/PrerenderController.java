@@ -20,8 +20,6 @@ import org.chromium.weblayer_private.interfaces.IProfile;
  * is implemented using NoStatePrefetch and fetches resources needed for a url in advance, but does
  * not execute Javascript or render any part of the page in advance. For more information on
  * NoStatePrefetch, see https://developers.google.com/web/updates/2018/07/nostate-prefetch.
- *
- * @since 87
  */
 public class PrerenderController {
     private final IPrerenderController mImpl;

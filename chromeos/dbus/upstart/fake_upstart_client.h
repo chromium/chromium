@@ -42,7 +42,8 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
   void StopMediaAnalytics(VoidDBusMethodCallback callback) override;
   void StartWilcoDtcService(VoidDBusMethodCallback callback) override;
   void StopWilcoDtcService(VoidDBusMethodCallback callback) override;
-  void StartArcDataSnapshotd(VoidDBusMethodCallback callback) override;
+  void StartArcDataSnapshotd(const std::vector<std::string>& upstart_env,
+                             VoidDBusMethodCallback callback) override;
   void StopArcDataSnapshotd(VoidDBusMethodCallback callback) override;
 
   void set_start_job_cb(const StartStopJobCallback& cb) { start_job_cb_ = cb; }

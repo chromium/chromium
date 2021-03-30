@@ -10,6 +10,8 @@
 
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
+import {ScanCompleteAction} from './scanning_app_types.js';
+
 /**
  * @typedef {{
  *   baseName: string,
@@ -17,6 +19,17 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
  * }}
  */
 export let SelectedPath;
+
+/**
+ * @typedef {{
+ *   sourceType: chromeos.scanning.mojom.SourceType,
+ *   fileType: chromeos.scanning.mojom.FileType,
+ *   colorMode: chromeos.scanning.mojom.ColorMode,
+ *   pageSize: chromeos.scanning.mojom.PageSize,
+ *   resolution: number,
+ * }}
+ */
+let ScanJobSettingsForMetrics;
 
 /** @interface */
 export class ScanningBrowserProxy {
@@ -43,6 +56,30 @@ export class ScanningBrowserProxy {
    * @return {!Promise<string>}
    */
   getPluralString(name, count) {}
+
+  /**
+   * Records the settings for a scan job.
+   * @param {!ScanJobSettingsForMetrics} scanJobSettings
+   */
+  recordScanJobSettings(scanJobSettings) {}
+
+  /**
+   * Returns the MyFiles path for the current user.
+   * @return {!Promise<string>}
+   */
+  getMyFilesPath() {}
+
+  /**
+   * Opens the Media app with the files specified in |filePaths|.
+   * @param {!Array<string>} filePaths
+   */
+  openFilesInMediaApp(filePaths) {}
+
+  /**
+   * Records the action taken after a completed scan job.
+   * @param {!ScanCompleteAction} action
+   */
+  recordScanCompleteAction(action) {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -65,6 +102,26 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   getPluralString(name, count) {
     return sendWithPromise('getPluralString', name, count);
+  }
+
+  /** @override */
+  recordScanJobSettings(scanJobSettings) {
+    chrome.send('recordScanJobSettings', [scanJobSettings]);
+  }
+
+  /** @override */
+  getMyFilesPath() {
+    return sendWithPromise('getMyFilesPath');
+  }
+
+  /** @override */
+  openFilesInMediaApp(filePaths) {
+    chrome.send('openFilesInMediaApp', [filePaths]);
+  }
+
+  /** @override */
+  recordScanCompleteAction(action) {
+    chrome.send('recordScanCompleteAction', [action]);
   }
 }
 

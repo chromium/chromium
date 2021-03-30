@@ -33,8 +33,14 @@ import java.util.List;
 public class AutofillAssistantTestService
         implements AutofillAssistantService,
                    AutofillAssistantServiceInjector.NativeServiceProvider {
+    public enum ScriptsReturnMode {
+        ONE_BY_ONE,
+        ALL_AT_ONCE,
+    }
+
     private final List<AutofillAssistantTestScript> mScripts;
     private final ClientSettingsProto mClientSettings;
+    private final ScriptsReturnMode mScriptsReturnMode;
     private List<ActionProto> mNextActions = Collections.emptyList();
     /** The most recently received list of processed actions. */
     private @Nullable List<ProcessedActionProto> mProcessedActions;
@@ -43,20 +49,33 @@ public class AutofillAssistantTestService
 
     /** Default constructor which disables animations. */
     AutofillAssistantTestService(List<AutofillAssistantTestScript> scripts) {
+        this(scripts, ScriptsReturnMode.ONE_BY_ONE);
+    }
+
+    /** Default constructor which disables animations and allows specifying the ScriptReturnMode. */
+    AutofillAssistantTestService(
+            List<AutofillAssistantTestScript> scripts, ScriptsReturnMode scriptsReturnMode) {
         this(scripts,
                 (ClientSettingsProto) ClientSettingsProto.newBuilder()
                         .setIntegrationTestSettings(
                                 ClientSettingsProto.IntegrationTestSettings.newBuilder()
                                         .setDisableHeaderAnimations(true)
                                         .setDisableCarouselChangeAnimations(true))
-                        .build());
+                        .build(),
+                scriptsReturnMode);
     }
 
     /** Constructor which allows injecting custom client settings. */
     AutofillAssistantTestService(
             List<AutofillAssistantTestScript> scripts, ClientSettingsProto clientSettings) {
+        this(scripts, clientSettings, ScriptsReturnMode.ONE_BY_ONE);
+    }
+
+    AutofillAssistantTestService(List<AutofillAssistantTestScript> scripts,
+            ClientSettingsProto clientSettings, ScriptsReturnMode scriptsReturnMode) {
         mScripts = scripts;
         mClientSettings = clientSettings;
+        mScriptsReturnMode = scriptsReturnMode;
     }
 
     /**
@@ -76,7 +95,7 @@ public class AutofillAssistantTestService
     }
 
     @Override
-    public long createNativeService() {
+    public long createNativeService(long nativeClientAndroid) {
         // Ask native to create and return a wrapper around |this|. The wrapper will be injected
         // upon startup, at which point the native controller will take ownership of the wrapper.
         return AutofillAssistantTestServiceJni.get().javaServiceCreate(this);
@@ -85,11 +104,19 @@ public class AutofillAssistantTestService
     /** @see AutofillAssistantService#getScriptsForUrl(String) */
     @Override
     public SupportsScriptResponseProto getScriptsForUrl(String url) {
-        // Return scripts one after the other. Note: Returning more than one script at once leads
-        // to a dropout with RENDER_PROCESS_GONE.
         SupportsScriptResponseProto.Builder builder = SupportsScriptResponseProto.newBuilder();
-        if (mCurrentScriptIndex < mScripts.size()) {
-            builder.addScripts(mScripts.get(mCurrentScriptIndex++).getSupportedScript());
+
+        switch (mScriptsReturnMode) {
+            case ONE_BY_ONE:
+                if (mCurrentScriptIndex < mScripts.size()) {
+                    builder.addScripts(mScripts.get(mCurrentScriptIndex++).getSupportedScript());
+                }
+                break;
+            case ALL_AT_ONCE:
+                while (mCurrentScriptIndex < mScripts.size()) {
+                    builder.addScripts(mScripts.get(mCurrentScriptIndex++).getSupportedScript());
+                }
+                break;
         }
         builder.setClientSettings(mClientSettings);
         return builder.build();

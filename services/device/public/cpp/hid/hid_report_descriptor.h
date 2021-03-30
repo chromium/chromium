@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "services/device/public/cpp/hid/hid_collection.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor_item.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -21,7 +22,7 @@ namespace device {
 // See section 6.2.2 of HID specifications (v1.11).
 class HidReportDescriptor {
  public:
-  HidReportDescriptor(const std::vector<uint8_t>& bytes);
+  explicit HidReportDescriptor(base::span<const uint8_t> bytes);
   ~HidReportDescriptor();
 
   const std::vector<std::unique_ptr<HidReportDescriptorItem>>& items() const {

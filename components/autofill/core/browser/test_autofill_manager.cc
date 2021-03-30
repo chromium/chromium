@@ -103,7 +103,7 @@ void TestAutofillManager::AddSeenForm(
     const std::vector<ServerFieldType>& server_types) {
   FormData empty_form = form;
   for (size_t i = 0; i < empty_form.fields.size(); ++i) {
-    empty_form.fields[i].value = base::string16();
+    empty_form.fields[i].value = std::u16string();
   }
 
   std::unique_ptr<TestFormStructure> form_structure =
@@ -117,8 +117,8 @@ void TestAutofillManager::AddSeenForm(
 
 void TestAutofillManager::AddSeenFormStructure(
     std::unique_ptr<FormStructure> form_structure) {
-  const auto renderer_id = form_structure->unique_renderer_id();
-  (*mutable_form_structures())[renderer_id] = std::move(form_structure);
+  const auto id = form_structure->global_id();
+  (*mutable_form_structures())[id] = std::move(form_structure);
 }
 
 void TestAutofillManager::ClearFormStructures() {

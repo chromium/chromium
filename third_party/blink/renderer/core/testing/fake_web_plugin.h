@@ -55,10 +55,10 @@ class FakeWebPlugin : public WebPlugin {
   void Destroy() override;
   bool CanProcessDrag() const override { return false; }
   void UpdateAllLifecyclePhases(blink::DocumentUpdateReason) override {}
-  void Paint(cc::PaintCanvas*, const WebRect&) override {}
-  void UpdateGeometry(const WebRect& client_rect,
-                      const WebRect& clip_rect,
-                      const WebRect& window_clip_rect,
+  void Paint(cc::PaintCanvas*, const gfx::Rect&) override {}
+  void UpdateGeometry(const gfx::Rect& client_rect,
+                      const gfx::Rect& clip_rect,
+                      const gfx::Rect& window_clip_rect,
                       bool is_visible) override {}
   void UpdateFocus(bool, mojom::blink::FocusType) override {}
   void UpdateVisibility(bool) override {}

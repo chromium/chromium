@@ -8,7 +8,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {AccountInfo, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {isChildVisible} from '../test_util.m.js';
+import {isChildVisible, waitAfterNextRender} from '../test_util.m.js';
 
 import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_intercept_browser_proxy.js';
 
@@ -29,7 +29,7 @@ suite('DiceWebSigninInterceptTest', function() {
   /** @type {string} */
   const AVATAR_URL_2 = 'chrome://theme/IDR_PROFILE_AVATAR_2';
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestDiceWebSigninInterceptBrowserProxy();
     browserProxy.setInterceptionParameters({
       headerText: 'header_text',
@@ -37,6 +37,7 @@ suite('DiceWebSigninInterceptTest', function() {
       bodyText: 'body_text',
       confirmButtonLabel: 'confirm_label',
       cancelButtonLabel: 'cancel_label',
+      showGuestOption: true,
       headerTextColor: 'rgba(255, 255, 255, 1)',
       headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
@@ -47,6 +48,7 @@ suite('DiceWebSigninInterceptTest', function() {
     app = /** @type {!DiceWebSigninInterceptAppElement} */ (
         document.createElement('dice-web-signin-intercept-app'));
     document.body.append(app);
+    await waitAfterNextRender(app);
     return browserProxy.whenCalled('pageLoaded');
   });
 
@@ -95,6 +97,26 @@ suite('DiceWebSigninInterceptTest', function() {
     return browserProxy.whenCalled('accept');
   });
 
+  test('ClickGuest', function() {
+    assertTrue(isChildVisible(app, '#footer-description'));
+    const spinner = app.$$('paper-spinner-lite');
+    const acceptButton = app.$$('#acceptButton');
+    const cancelButton = app.$$('#cancelButton');
+    const guestLink = app.$$('#footer-description');
+    assertFalse(spinner.active);
+    assertFalse(acceptButton.disabled);
+    assertFalse(cancelButton.disabled);
+
+    guestLink.click();
+
+    // Buttons are disabled and the spinner is active.
+    assertTrue(acceptButton.disabled);
+    assertTrue(cancelButton.disabled);
+    assertTrue(spinner.active);
+    return browserProxy.whenCalled('guest');
+  });
+
+
   test('ClickCancel', function() {
     assertTrue(isChildVisible(app, '#cancelButton'));
     app.$$('#cancelButton').click();
@@ -114,9 +136,11 @@ suite('DiceWebSigninInterceptTest', function() {
       bodyText: 'new_body_text',
       confirmButtonLabel: 'new_confirm_label',
       cancelButtonLabel: 'new_cancel_label',
+      showGuestOption: true,
       headerTextColor: 'rgba(255, 255, 255, 1)',
       headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
+      primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_2}
     });
     checkTextValues(
         'new_header_text', 'new_body_title', 'new_body_text',
@@ -134,9 +158,11 @@ suite('DiceWebSigninInterceptTest', function() {
       bodyText: 'body_text',
       confirmButtonLabel: 'confirm_label',
       cancelButtonLabel: 'cancel_label',
+      showGuestOption: true,
       headerTextColor: 'rgba(255, 255, 255, 1)',
       headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_2},
+      primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_2}
     };
 
     // Update urls.

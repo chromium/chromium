@@ -9,11 +9,11 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/chromeos/system/procfs_util.h"
+#include "chrome/browser/ash/system/procfs_util.h"
 
 namespace crostini {
 
-using PidStatMap = std::unordered_map<pid_t, chromeos::system::SingleProcStat>;
+using PidStatMap = std::unordered_map<pid_t, ash::system::SingleProcStat>;
 
 // Returns a map from crosvm PIDs to their stat map.
 // |slash_proc| is "/proc" for production and is only changed for tests.

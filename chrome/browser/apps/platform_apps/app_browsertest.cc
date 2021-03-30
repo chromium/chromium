@@ -69,11 +69,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -236,8 +235,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     base::FilePath file_path = test_doc.NormalizePathSeparators();
 
     base::FilePath extension_path = test_data_dir_.AppendASCII(extension_name);
-    const extensions::Extension* extension =
-        LoadExtensionWithFlags(extension_path, kFlagNone);
+    const extensions::Extension* extension = LoadExtension(extension_path);
     ASSERT_TRUE(extension);
 
     apps::mojom::FilePathsPtr launch_files = apps::mojom::FilePaths::New();
@@ -260,8 +258,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     extensions::ResultCatcher catcher;
 
     base::FilePath extension_path = test_data_dir_.AppendASCII(extension_name);
-    const extensions::Extension* extension =
-        LoadExtensionWithFlags(extension_path, kFlagNone);
+    const extensions::Extension* extension = LoadExtension(extension_path);
     if (!extension) {
       message_ = "Failed to load extension.";
       return false;
@@ -433,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuSelection) {
   WebContents* web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
-  params.selection_text = base::ASCIIToUTF16("Hello World");
+  params.selection_text = u"Hello World";
   std::unique_ptr<PlatformAppContextMenu> menu;
   menu.reset(new PlatformAppContextMenu(web_contents->GetMainFrame(), params));
   menu->Init();
@@ -527,7 +524,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, Restrictions) {
 
 // Tests that extensions can't use platform-app-only APIs.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PlatformAppsOnly) {
-  ASSERT_TRUE(RunExtensionTestIgnoreManifestWarnings("platform_apps/apps_only"))
+  ASSERT_TRUE(RunExtensionTest({.name = "platform_apps/apps_only"},
+                               {.ignore_manifest_warnings = true}))
       << message_;
 }
 
@@ -790,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest, LaunchWithNothing) {
 }
 
 // Test that platform apps can use the chrome.fileSystem.getDisplayPath
-// function to get the native file system path of a file they are launched with.
+// function to get the File System Access path of a file they are launched with.
 IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest, GetDisplayPath) {
   ASSERT_TRUE(RunPlatformAppTestWithFileInTestDataDir(
       "platform_apps/get_display_path", kTestFilePath))
@@ -811,16 +809,11 @@ IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest, LaunchNewFile) {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(https://crbug.com/1000234): Re-enable this test.
-#define MAYBE_OpenLink DISABLED_OpenLink
-#else
-#define MAYBE_OpenLink OpenLink
-#endif
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_OpenLink) {
+IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, OpenLink) {
   ASSERT_TRUE(StartEmbeddedTestServer());
+  ui_test_utils::TabAddedWaiter tab_added_waiter(browser());
   LoadAndLaunchPlatformApp("open_link", "Launched");
-  ui_test_utils::TabAddedWaiter(browser()).Wait();
+  tab_added_waiter.Wait();
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 }
 
@@ -1301,8 +1294,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
                    apps::mojom::LaunchContainer::kLaunchContainerWindow,
                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
                    true /* prefer_container */),
-               apps::mojom::LaunchSource::kFromTest,
-               display::kInvalidDisplayId);
+               apps::mojom::LaunchSource::kFromTest);
 
   while (!base::Contains(opener_app_ids_, file_manager->id())) {
     content::RunAllPendingInMessageLoop();
@@ -1324,7 +1316,7 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
 
-    mock_user_manager_ = new chromeos::MockUserManager;
+    mock_user_manager_ = new ash::MockUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(mock_user_manager_));
 
@@ -1334,7 +1326,7 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
         .WillRepeatedly(testing::Return(true));
     EXPECT_CALL(*mock_user_manager_, GetLoggedInUsers())
         .WillRepeatedly(testing::Invoke(mock_user_manager_,
-                                        &chromeos::MockUserManager::GetUsers));
+                                        &ash::MockUserManager::GetUsers));
   }
 
   void TearDownOnMainThread() override {
@@ -1351,7 +1343,7 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
   }
 
  private:
-  chromeos::MockUserManager* mock_user_manager_ = nullptr;
+  ash::MockUserManager* mock_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
 

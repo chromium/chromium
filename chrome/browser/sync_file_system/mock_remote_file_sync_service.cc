@@ -43,12 +43,12 @@ MockRemoteFileSyncService::~MockRemoteFileSyncService() {
 }
 
 void MockRemoteFileSyncService::DumpFiles(const GURL& origin,
-                                          const ListCallback& callback) {
-  callback.Run(nullptr);
+                                          ListCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
-void MockRemoteFileSyncService::DumpDatabase(const ListCallback& callback) {
-  callback.Run(nullptr);
+void MockRemoteFileSyncService::DumpDatabase(ListCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
 void MockRemoteFileSyncService::SetServiceState(RemoteServiceState state) {
@@ -105,10 +105,11 @@ void MockRemoteFileSyncService::DeleteOriginDirectoryStub(
 }
 
 void MockRemoteFileSyncService::ProcessRemoteChangeStub(
-    const SyncFileCallback& callback) {
+    SyncFileCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, SYNC_STATUS_NO_CHANGE_TO_SYNC,
-                                storage::FileSystemURL()));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), SYNC_STATUS_NO_CHANGE_TO_SYNC,
+                     storage::FileSystemURL()));
 }
 
 RemoteServiceState MockRemoteFileSyncService::GetCurrentStateStub() const {

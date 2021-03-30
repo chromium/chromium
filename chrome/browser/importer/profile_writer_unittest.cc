@@ -47,8 +47,8 @@ PasswordForm MakePasswordForm() {
   PasswordForm form;
   form.url = GURL("https://example.com/");
   form.signon_realm = form.url.GetOrigin().spec();
-  form.username_value = base::ASCIIToUTF16("user@gmail.com");
-  form.password_value = base::ASCIIToUTF16("s3cre3t");
+  form.username_value = u"user@gmail.com";
+  form.password_value = u"s3cre3t";
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
@@ -98,15 +98,13 @@ class ProfileWriterTest : public testing::Test {
   // Create test bookmark entries to be added to ProfileWriter to
   // simulate bookmark importing.
   void CreateImportedBookmarksEntries() {
-    AddImportedBookmarkEntry(GURL("http://www.google.com"),
-                             base::ASCIIToUTF16("Google"));
-    AddImportedBookmarkEntry(GURL("http://www.yahoo.com"),
-                             base::ASCIIToUTF16("Yahoo"));
+    AddImportedBookmarkEntry(GURL("http://www.google.com"), u"Google");
+    AddImportedBookmarkEntry(GURL("http://www.yahoo.com"), u"Yahoo");
   }
 
   // Helper function to create history entries.
   history::URLRow MakeURLRow(const char* url,
-                             base::string16 title,
+                             std::u16string title,
                              int visit_count,
                              int days_since_last_visit,
                              int typed_count) {
@@ -123,11 +121,9 @@ class ProfileWriterTest : public testing::Test {
   // simulate history importing.
   void CreateHistoryPageEntries() {
     history::URLRow row1(
-        MakeURLRow("http://www.google.com", base::ASCIIToUTF16("Google"),
-        3, 10, 1));
+        MakeURLRow("http://www.google.com", u"Google", 3, 10, 1));
     history::URLRow row2(
-        MakeURLRow("http://www.yahoo.com", base::ASCIIToUTF16("Yahoo"),
-        3, 30, 10));
+        MakeURLRow("http://www.yahoo.com", u"Yahoo", 3, 30, 10));
     pages_.push_back(row1);
     pages_.push_back(row2);
   }
@@ -151,7 +147,7 @@ class ProfileWriterTest : public testing::Test {
     base::CancelableTaskTracker history_task_tracker;
     base::RunLoop loop;
     history_service->QueryHistory(
-        base::string16(), options,
+        std::u16string(), options,
         base::BindLambdaForTesting([&](history::QueryResults results) {
           history_count_ = results.size();
           loop.Quit();
@@ -171,7 +167,7 @@ class ProfileWriterTest : public testing::Test {
   size_t history_count_;
 
  private:
-  void AddImportedBookmarkEntry(const GURL& url, const base::string16& title) {
+  void AddImportedBookmarkEntry(const GURL& url, const std::u16string& title) {
     base::Time date;
     ImportedBookmarkEntry entry;
     entry.creation_time = date;
@@ -201,8 +197,8 @@ TEST_F(ProfileWriterTest, CheckBookmarksWithMultiProfile) {
   BookmarkModel* bookmark_model2 =
       BookmarkModelFactory::GetForBrowserContext(second_profile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model2);
-  bookmarks::AddIfNotBookmarked(
-      bookmark_model2, GURL("http://www.bing.com"), base::ASCIIToUTF16("Bing"));
+  bookmarks::AddIfNotBookmarked(bookmark_model2, GURL("http://www.bing.com"),
+                                u"Bing");
 
   CreateImportedBookmarksEntries();
   BookmarkModel* bookmark_model1 =
@@ -211,8 +207,7 @@ TEST_F(ProfileWriterTest, CheckBookmarksWithMultiProfile) {
 
   scoped_refptr<TestProfileWriter> profile_writer(
       new TestProfileWriter(profile()));
-  profile_writer->AddBookmarks(bookmarks_,
-                               base::ASCIIToUTF16("Imported from Firefox"));
+  profile_writer->AddBookmarks(bookmarks_, u"Imported from Firefox");
 
   std::vector<UrlAndTitle> url_record1;
   bookmark_model1->GetBookmarks(&url_record1);
@@ -232,16 +227,14 @@ TEST_F(ProfileWriterTest, CheckBookmarksAfterWritingDataTwice) {
 
   scoped_refptr<TestProfileWriter> profile_writer(
       new TestProfileWriter(profile()));
-  profile_writer->AddBookmarks(bookmarks_,
-                               base::ASCIIToUTF16("Imported from Firefox"));
+  profile_writer->AddBookmarks(bookmarks_, u"Imported from Firefox");
   std::vector<UrlAndTitle> bookmarks_record;
   bookmark_model->GetBookmarks(&bookmarks_record);
   EXPECT_EQ(2u, bookmarks_record.size());
 
   VerifyBookmarksCount(bookmarks_record, bookmark_model, 1);
 
-  profile_writer->AddBookmarks(bookmarks_,
-                               base::ASCIIToUTF16("Imported from Firefox"));
+  profile_writer->AddBookmarks(bookmarks_, u"Imported from Firefox");
   // Verify that duplicate bookmarks exist.
   VerifyBookmarksCount(bookmarks_record, bookmark_model, 2);
 }
@@ -296,13 +289,13 @@ TEST_F(ProfileWriterTest, AddKeywords) {
   auto turls = turl_model->GetTemplateURLs();
   EXPECT_EQ(turls.size(), 2u);
 
-  EXPECT_EQ(turls[0]->keyword(), base::ASCIIToUTF16("key1"));
+  EXPECT_EQ(turls[0]->keyword(), u"key1");
   EXPECT_EQ(turls[0]->url(), "http://key1.com");
-  EXPECT_EQ(turls[0]->short_name(), base::ASCIIToUTF16("n1"));
+  EXPECT_EQ(turls[0]->short_name(), u"n1");
 
-  EXPECT_EQ(turls[1]->keyword(), base::ASCIIToUTF16("key2"));
+  EXPECT_EQ(turls[1]->keyword(), u"key2");
   EXPECT_EQ(turls[1]->url(), "http://key2.com");
-  EXPECT_EQ(turls[1]->short_name(), base::ASCIIToUTF16("n2"));
+  EXPECT_EQ(turls[1]->short_name(), u"n2");
 }
 
 TEST_F(ProfileWriterTest, AddPassword) {

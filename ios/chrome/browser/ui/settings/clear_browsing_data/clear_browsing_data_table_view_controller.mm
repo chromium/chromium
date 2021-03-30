@@ -139,10 +139,10 @@
 
   if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.styler.cellBackgroundColor = UIColor.cr_systemBackgroundColor;
-    self.styler.tableViewBackgroundColor = UIColor.cr_systemBackgroundColor;
     self.tableView.accessibilityIdentifier =
         kClearBrowsingDataViewAccessibilityIdentifier;
+    self.styler.tableViewBackgroundColor =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
     self.tableView.backgroundColor = self.styler.tableViewBackgroundColor;
 
     // TableView configuration
@@ -312,10 +312,8 @@
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)TableViewLinkHeaderFooterView:(TableViewLinkHeaderFooterView*)cell
-                    didRequestOpenURL:(const GURL&)URL {
-  GURL copiedURL(URL);
-  [self.delegate openURL:copiedURL];
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)url {
+  [self.delegate openURL:url];
 }
 
 #pragma mark - ClearBrowsingDataConsumer

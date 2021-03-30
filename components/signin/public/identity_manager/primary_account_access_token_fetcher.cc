@@ -25,18 +25,14 @@ PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
       identity_manager_(identity_manager),
       scopes_(scopes),
       callback_(std::move(callback)),
-      access_token_retried_(false),
       mode_(mode),
       consent_(consent) {
+  identity_manager_observation_.Observe(identity_manager_);
   if (mode_ == Mode::kImmediate || AreCredentialsAvailable()) {
     StartAccessTokenRequest();
     return;
   }
-
-  // Start observing the IdentityManager. This observer will be removed either
-  // when credentials are obtained and an access token request is started or
-  // when this object is destroyed.
-  identity_manager_observation_.Observe(identity_manager_);
+  waiting_for_account_available_ = true;
 }
 
 PrimaryAccountAccessTokenFetcher::~PrimaryAccountAccessTokenFetcher() = default;
@@ -55,8 +51,8 @@ void PrimaryAccountAccessTokenFetcher::StartAccessTokenRequest() {
   DCHECK(mode_ == Mode::kImmediate || AreCredentialsAvailable());
 
   // By the time of starting an access token request, we should no longer be
-  // listening for signin-related events.
-  DCHECK(!identity_manager_observation_.IsObservingSource(identity_manager_));
+  // waiting for the account.
+  DCHECK(!waiting_for_account_available_);
 
   // Note: We might get here even in cases where we know that there's no refresh
   // token. We're requesting an access token anyway, so that the token service
@@ -77,25 +73,15 @@ void PrimaryAccountAccessTokenFetcher::StartAccessTokenRequest() {
       AccessTokenFetcher::Mode::kImmediate);
 }
 
-void PrimaryAccountAccessTokenFetcher::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  // When sync consent is not required the signin is handled in
-  // OnUnconsentedPrimaryAccountChanged() below.
-  if (consent_ == ConsentLevel::kNotRequired)
+void PrimaryAccountAccessTokenFetcher::OnPrimaryAccountChanged(
+    const PrimaryAccountChangeEvent& event) {
+  // We're only interested when the account is set for the |consent_|
+  // consent level.
+  if (event.GetEventTypeFor(consent_) !=
+      PrimaryAccountChangeEvent::Type::kSet) {
     return;
-  DCHECK(!primary_account_info.account_id.empty());
-  ProcessSigninStateChange();
-}
-
-void PrimaryAccountAccessTokenFetcher::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& primary_account_info) {
-  // This method is called after both SetPrimaryAccount and
-  // SetUnconsentedPrimaryAccount.
-  if (consent_ == ConsentLevel::kSync)
-    return;
-  // We're only interested when the account is set.
-  if (primary_account_info.account_id.empty())
-    return;
+  }
+  DCHECK(!event.GetCurrentState().primary_account.account_id.empty());
   ProcessSigninStateChange();
 }
 
@@ -104,15 +90,26 @@ void PrimaryAccountAccessTokenFetcher::OnRefreshTokenUpdatedForAccount(
   ProcessSigninStateChange();
 }
 
-void PrimaryAccountAccessTokenFetcher::ProcessSigninStateChange() {
-  DCHECK_EQ(Mode::kWaitUntilAvailable, mode_);
+void PrimaryAccountAccessTokenFetcher::OnIdentityManagerShutdown(
+    IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
+  access_token_fetcher_.reset();
+  if (callback_) {
+    std::move(callback_).Run(
+        GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+        AccessTokenInfo());
+  }
+}
 
+void PrimaryAccountAccessTokenFetcher::ProcessSigninStateChange() {
+  if (!waiting_for_account_available_)
+    return;
+
+  DCHECK_EQ(Mode::kWaitUntilAvailable, mode_);
   if (!AreCredentialsAvailable())
     return;
 
-  DCHECK(identity_manager_observation_.IsObservingSource(identity_manager_));
-  identity_manager_observation_.Reset();
-
+  waiting_for_account_available_ = false;
   StartAccessTokenRequest();
 }
 

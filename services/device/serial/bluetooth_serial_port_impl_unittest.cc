@@ -96,7 +96,7 @@ class BluetoothSerialPortImplTest : public testing::Test {
     options.element_num_bytes = kElementNumBytes;
     options.capacity_num_bytes = kCapacityNumBytes;
 
-    MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
+    MojoResult result = mojo::CreateDataPipe(&options, *producer, *consumer);
     DCHECK_EQ(result, MOJO_RESULT_OK);
   }
 
@@ -126,7 +126,7 @@ TEST_F(BluetoothSerialPortImplTest, OpenFailure) {
       .WillOnce(RunOnceCallback<2>("Error"));
 
   EXPECT_CALL(mock_socket(), Receive(_, _, _)).Times(0);
-  EXPECT_CALL(mock_socket(), Close()).Times(0);
+  EXPECT_CALL(mock_socket(), Disconnect(_)).Times(0);
 
   base::RunLoop loop;
   BluetoothSerialPortImpl::Open(
@@ -170,7 +170,7 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
             std::move(success_callback).Run(buffer_size);
           })));
 
-  EXPECT_CALL(mock_socket(), Close());
+  EXPECT_CALL(mock_socket(), Disconnect(_)).WillOnce(RunOnceCallback<0>());
 
   serial_port->StartWriting(std::move(consumer));
 
@@ -202,7 +202,7 @@ TEST_F(BluetoothSerialPortImplTest, StartReadingTest) {
   EXPECT_CALL(mock_socket(), Receive(_, _, _))
       .WillOnce(RunOnceCallback<1>(write_buffer->size(), write_buffer))
       .WillOnce(RunOnceCallback<2>(BluetoothSocket::kSystemError, "Error"));
-  EXPECT_CALL(mock_socket(), Close());
+  EXPECT_CALL(mock_socket(), Disconnect(_)).WillOnce(RunOnceCallback<0>());
 
   serial_port->StartReading(std::move(producer));
 
@@ -255,7 +255,7 @@ TEST_F(BluetoothSerialPortImplTest, Close) {
   mojo::ScopedDataPipeConsumerHandle consumer;
   CreateDataPipe(&producer, &consumer);
 
-  EXPECT_CALL(mock_socket(), Close());
+  EXPECT_CALL(mock_socket(), Disconnect(_)).WillOnce(RunOnceCallback<0>());
 
   base::RunLoop close_loop;
   serial_port->Close(close_loop.QuitClosure());

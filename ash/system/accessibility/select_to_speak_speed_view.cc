@@ -23,9 +23,6 @@ namespace ash {
 
 namespace {
 
-// View ID for the option that represents the system default speech rate.
-constexpr int kDefaultSpeedId = 100;
-
 // Start offset in pixels to use for option views.
 constexpr int kOptionInset = 16;
 
@@ -41,25 +38,17 @@ SelectToSpeakSpeedView::SelectToSpeakSpeedView(Delegate* delegate,
 void SelectToSpeakSpeedView::SetInitialSpeechRate(double initial_speech_rate) {
   RemoveAllChildViews(true);
 
-  bool any_selected = false;
   for (size_t i = 0; i < base::size(kSelectToSpeakSpeechRates); i++) {
     double option_speed = kSelectToSpeakSpeechRates[i];
     bool is_selected = option_speed == initial_speech_rate;
     // Add 1 to the index, because view IDs cannot be 0.
     auto label = base::ASCIIToUTF16(base::StringPrintf("%.1fx", option_speed));
     AddMenuItem(/*option_id=*/i + 1, label, is_selected);
-    any_selected |= is_selected;
-  }
-  if (!any_selected) {
-    default_speech_rate_ = initial_speech_rate;
-    auto label =
-        l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_DEFAULT_OPTION);
-    AddMenuItem(/*option_id=*/kDefaultSpeedId, label, /*is_selected=*/true);
   }
 }
 
 void SelectToSpeakSpeedView::AddMenuItem(int option_id,
-                                         const base::string16& label,
+                                         const std::u16string& label,
                                          bool is_selected) {
   HoverHighlightView* item = new HoverHighlightView(this);
   AddChildView(item);
@@ -70,11 +59,9 @@ void SelectToSpeakSpeedView::AddMenuItem(int option_id,
 
 void SelectToSpeakSpeedView::OnViewClicked(views::View* sender) {
   unsigned int speed_index = sender->GetID() - 1;
-  double selected_rate = default_speech_rate_;
-  if (speed_index >= 0 && speed_index < base::size(kSelectToSpeakSpeechRates))
-    selected_rate = kSelectToSpeakSpeechRates[speed_index];
-  if (selected_rate != 0.0)
-    delegate_->OnSpeechRateSelected(selected_rate);
+  if (speed_index >= 0 && speed_index < base::size(kSelectToSpeakSpeechRates)) {
+    delegate_->OnSpeechRateSelected(kSelectToSpeakSpeechRates[speed_index]);
+  }
 }
 
 void SelectToSpeakSpeedView::SetInitialFocus() {

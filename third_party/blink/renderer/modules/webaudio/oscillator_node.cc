@@ -56,8 +56,8 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
       detune_(&detune),
       first_render_(true),
       virtual_read_index_(0),
-      phase_increments_(audio_utilities::kRenderQuantumFrames),
-      detune_values_(audio_utilities::kRenderQuantumFrames) {
+      phase_increments_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      detune_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
   if (wave_table) {
     // A PeriodicWave overrides any value for the oscillator type,
     // forcing the type to be 'custom".

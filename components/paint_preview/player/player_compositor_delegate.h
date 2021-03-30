@@ -69,7 +69,8 @@ class PlayerCompositorDelegate {
   // situations.
   virtual void OnCompositorReady(
       CompositorStatus compositor_status,
-      mojom::PaintPreviewBeginCompositeResponsePtr composite_response) {}
+      mojom::PaintPreviewBeginCompositeResponsePtr composite_response,
+      std::unique_ptr<ui::AXTreeUpdate> update) {}
 
   // Called when there is a request for a new bitmap. When the bitmap
   // is ready, it will be passed to callback. Returns an ID for the request.
@@ -134,6 +135,8 @@ class PlayerCompositorDelegate {
                           base::TimeDelta timeout_duration,
                           size_t max_requests);
 
+  void OnAXTreeUpdateAvailable(std::unique_ptr<ui::AXTreeUpdate> update);
+
   void OnCompositorReadyStatusAdapter(
       mojom::PaintPreviewCompositor::BeginCompositeStatus status,
       mojom::PaintPreviewBeginCompositeResponsePtr composite_response);
@@ -178,6 +181,7 @@ class PlayerCompositorDelegate {
   base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>
       hit_testers_;
   std::unique_ptr<PaintPreviewProto> proto_;
+  std::unique_ptr<ui::AXTreeUpdate> ax_tree_update_;
 
   int active_requests_{0};
   int32_t next_request_id_{0};

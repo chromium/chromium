@@ -983,11 +983,6 @@ function MediaRouterHandlers() {
   this.updateMediaSinks = null;
 
   /**
-   * @type {function()}
-   */
-  this.provideSinks = null;
-
-  /**
    * @type {function(string, !mojo.InterfaceRequest,
    *            !mediaRouter.mojom.MediaStatusObserverPtr): !Promise<void>}
    */
@@ -1038,7 +1033,6 @@ MediaRouteProvider.prototype.setHandlers = function(handlers) {
     'connectRouteByRouteId',
     'enableMdnsDiscovery',
     'updateMediaSinks',
-    'provideSinks',
     'createMediaRouteController',
     'onBeforeInvokeHandler'
   ];
@@ -1267,18 +1261,6 @@ MediaRouteProvider.prototype.enableMdnsDiscovery = function() {
 MediaRouteProvider.prototype.updateMediaSinks = function(sourceUrn) {
   this.handlers_.onBeforeInvokeHandler();
   this.handlers_.updateMediaSinks(sourceUrn);
-};
-
-/**
- * Notifies the provider manager that MediaRouter has discovered a list of
- * sinks.
- * @param {string} providerName
- * @param {!Array<!mediaRouter.mojom.MediaSink>} sinks
- */
-MediaRouteProvider.prototype.provideSinks = function(providerName, sinks) {
-  this.handlers_.onBeforeInvokeHandler();
-  this.handlers_.provideSinks(providerName,
-                              sinks.map(MediaSinkAdapter.fromNewVersion));
 };
 
 /**

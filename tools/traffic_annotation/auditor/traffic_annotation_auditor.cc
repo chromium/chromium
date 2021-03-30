@@ -218,7 +218,7 @@ bool TrafficAnnotationAuditor::RunExtractor(
   base::CommandLine cmdline(
       base::MakeAbsoluteFilePath(source_path_.Append(kExtractorScript)));
 #if defined(OS_WIN)
-  cmdline.PrependWrapper(L"python");
+  cmdline.PrependWrapper(L"python.bat");
 #endif
   cmdline.AppendArg(base::StringPrintf(
       "--options-file=%s", options_filepath.MaybeAsASCII().c_str()));
@@ -251,7 +251,7 @@ bool TrafficAnnotationAuditor::RunExtractor(
         "Returned output: %s\n\nPartial options file: %s\n",
         source_path_.MaybeAsASCII().c_str(),
 #if defined(OS_WIN)
-        base::UTF16ToASCII(cmdline.GetCommandLineString()).c_str(),
+        base::WideToUTF8(cmdline.GetCommandLineString()).c_str(),
 #else
         cmdline.GetCommandLineString().c_str(),
 #endif

@@ -43,6 +43,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -197,10 +198,6 @@ void QRCodeGeneratorBubble::WindowClosing() {
     controller_->OnBubbleClosed();
     controller_ = nullptr;
   }
-}
-
-const char* QRCodeGeneratorBubble::GetClassName() const {
-  return "QRCodeGeneratorBubble";
 }
 
 void QRCodeGeneratorBubble::Init() {
@@ -360,7 +357,7 @@ void QRCodeGeneratorBubble::Init() {
 
 void QRCodeGeneratorBubble::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   DCHECK_EQ(sender, textfield_url_);
   if (sender == textfield_url_) {
     url_ = GURL(base::UTF16ToUTF8(new_contents));
@@ -387,10 +384,10 @@ bool QRCodeGeneratorBubble::HandleMouseEvent(
 }
 
 /*static*/
-const base::string16 QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
+const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
     const GURL& url) {
   if (!url.has_host() || url.HostIsIPAddress())
-    return base::ASCIIToUTF16("qrcode_chrome.png");
+    return u"qrcode_chrome.png";
 
   return base::ASCIIToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
 }
@@ -439,5 +436,8 @@ void QRCodeGeneratorBubble::DownloadButtonPressed() {
   download_manager->DownloadUrl(std::move(params));
   base::RecordAction(base::UserMetricsAction("SharingQRCode.DownloadQRCode"));
 }
+
+BEGIN_METADATA(QRCodeGeneratorBubble, LocationBarBubbleDelegateView)
+END_METADATA
 
 }  // namespace qrcode_generator

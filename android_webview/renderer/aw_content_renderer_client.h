@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "android_webview/common/mojom/frame.mojom.h"
+#include "android_webview/common/mojom/render_message_filter.mojom.h"
 #include "android_webview/renderer/aw_render_thread_observer.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
@@ -49,7 +49,7 @@ class AwContentRendererClient : public content::ContentRendererClient,
   void AddSupportedKeySystems(
       std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems)
       override;
-  std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+  std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
   CreateWebSocketHandshakeThrottleProvider() override;
   bool HandleNavigation(content::RenderFrame* render_frame,
                         bool is_content_initiated,
@@ -59,9 +59,9 @@ class AwContentRendererClient : public content::ContentRendererClient,
                         blink::WebNavigationType type,
                         blink::WebNavigationPolicy default_policy,
                         bool is_redirect) override;
-  std::unique_ptr<content::URLLoaderThrottleProvider>
+  std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(
-      content::URLLoaderThrottleProviderType provider_type) override;
+      blink::URLLoaderThrottleProviderType provider_type) override;
 
   visitedlink::VisitedLinkReader* visited_link_reader() {
     return visited_link_reader_.get();
@@ -72,11 +72,15 @@ class AwContentRendererClient : public content::ContentRendererClient,
   void GetInterface(const std::string& name,
                     mojo::ScopedMessagePipeHandle request_handle) override;
 
+  mojom::RenderMessageFilter* GetRenderMessageFilter();
+
   std::unique_ptr<AwRenderThreadObserver> aw_render_thread_observer_;
   std::unique_ptr<visitedlink::VisitedLinkReader> visited_link_reader_;
 
   scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_;
+
+  mojo::AssociatedRemote<mojom::RenderMessageFilter> render_message_filter_;
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   std::unique_ptr<SpellCheck> spellcheck_;

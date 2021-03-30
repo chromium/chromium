@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/android/build_info.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
@@ -54,6 +55,9 @@ scoped_refptr<base::SequencedTaskRunner> CreateCodecTaskRunner() {
 }  // namespace
 
 // static
+constexpr gfx::Size CodecAllocator::kMinHardwareResolution;
+
+// static
 CodecAllocator* CodecAllocator::GetInstance(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   static base::NoDestructor<CodecAllocator> allocator(
@@ -94,6 +98,20 @@ void CodecAllocator::CreateMediaCodecAsync(
 
   if (force_sw_codecs_)
     codec_config->codec_type = CodecType::kSoftware;
+
+  // If we're still allowed to pick any type we want, then limit to software for
+  // low resolution.  https://crbug.com/1166833
+  // Software decoders on Lollipop refuse to decode media that played
+  // everywhere else, so let's not force it.   https://crbug.com/1175322
+  bool lollipop = base::android::BuildInfo::GetInstance()->sdk_int() <
+                  base::android::SDK_VERSION_MARSHMALLOW;
+  if (!lollipop && codec_config->codec_type == CodecType::kAny &&
+      (codec_config->initial_expected_coded_size.width() <
+           kMinHardwareResolution.width() ||
+       codec_config->initial_expected_coded_size.height() <
+           kMinHardwareResolution.height())) {
+    codec_config->codec_type = CodecType::kSoftware;
+  }
 
   const auto start_time = tick_clock_->NowTicks();
   pending_operations_.push_back(start_time);

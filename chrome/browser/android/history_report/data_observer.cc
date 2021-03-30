@@ -25,28 +25,23 @@ DataObserver::DataObserver(
     UsageReportsBufferService* usage_reports_buffer_service,
     BookmarkModel* bookmark_model,
     history::HistoryService* history_service)
-    : bookmark_model_(bookmark_model),
-      data_changed_callback_(data_changed_callback),
+    : data_changed_callback_(data_changed_callback),
       data_cleared_callback_(data_cleared_callback),
       stop_reporting_callback_(stop_reporting_callback),
       delta_file_service_(delta_file_service),
       usage_reports_buffer_service_(usage_reports_buffer_service) {
-  bookmark_model_->AddObserver(this);
-  history_service->AddObserver(this);
+  scoped_bookmark_model_observer_.Observe(bookmark_model);
+  scoped_history_service_observer_.Observe(history_service);
 }
 
-DataObserver::~DataObserver() {
-  if (bookmark_model_)
-    bookmark_model_->RemoveObserver(this);
-}
+DataObserver::~DataObserver() = default;
 
 void DataObserver::BookmarkModelLoaded(BookmarkModel* model,
                                        bool ids_reassigned) {}
 
 void DataObserver::BookmarkModelBeingDeleted(BookmarkModel* model) {
-  DCHECK_EQ(model, bookmark_model_);
-  bookmark_model_->RemoveObserver(this);
-  bookmark_model_ = nullptr;
+  DCHECK(scoped_bookmark_model_observer_.IsObservingSource(model));
+  scoped_bookmark_model_observer_.Reset();
 }
 
 void DataObserver::BookmarkNodeMoved(BookmarkModel* model,
@@ -144,6 +139,11 @@ void DataObserver::OnURLsDeleted(history::HistoryService* history_service,
 
     data_changed_callback_.Run();
   }
+}
+
+void DataObserver::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  scoped_history_service_observer_.Reset();
 }
 
 }  // namespace history_report

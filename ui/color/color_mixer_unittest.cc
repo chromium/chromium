@@ -30,7 +30,7 @@ TEST(ColorMixerTest, AddSet) {
 // Tests that the recipe returned by operator[] is respected by the mixer.
 TEST(ColorMixerTest, AccessOperator) {
   ColorMixer mixer;
-  mixer[kColorTest0] = ColorTransform(SK_ColorGREEN);
+  mixer[kColorTest0] = {SK_ColorGREEN};
   EXPECT_EQ(SK_ColorGREEN, mixer.GetResultColor(kColorTest0));
 }
 
@@ -203,7 +203,7 @@ TEST(ColorMixerTest, GetResultColorNoRecipe) {
 // initial value for its requested color.
 TEST(ColorMixerTest, GetResultColorNoSet) {
   ColorMixer mixer;
-  mixer[kColorTest0] = ColorTransform(SK_ColorGREEN);
+  mixer[kColorTest0] = {SK_ColorGREEN};
   mixer[kColorTest1] = GetColorWithMaxContrast(FromTransformInput());
   EXPECT_EQ(SK_ColorGREEN, mixer.GetResultColor(kColorTest0));
   EXPECT_NE(gfx::kPlaceholderColor, mixer.GetResultColor(kColorTest1));
@@ -215,8 +215,8 @@ TEST(ColorMixerTest, GetResultColorIgnoresSet) {
   ColorMixer mixer;
   mixer.AddSet({kColorSetTest0,
                 {{kColorTest0, SK_ColorWHITE}, {kColorTest1, SK_ColorBLACK}}});
-  mixer[kColorTest0] = ColorTransform(SK_ColorGREEN);
-  mixer[kColorTest1] = ColorTransform(SK_ColorGREEN);
+  mixer[kColorTest0] = {SK_ColorGREEN};
+  mixer[kColorTest1] = {SK_ColorGREEN};
   EXPECT_EQ(SK_ColorGREEN, mixer.GetResultColor(kColorTest0));
   EXPECT_EQ(SK_ColorGREEN, mixer.GetResultColor(kColorTest1));
 }
@@ -226,12 +226,29 @@ TEST(ColorMixerTest, GetResultColorIgnoresSet) {
 TEST(ColorMixerTest, GetResultColorChained) {
   ColorMixer mixer;
   mixer.AddSet({kColorSetTest0, {{kColorTest1, SK_ColorWHITE}}});
-  mixer[kColorTest0] = ColorTransform(gfx::kGoogleBlue050);
+  mixer[kColorTest0] = {gfx::kGoogleBlue050};
   mixer[kColorTest1] = BlendTowardMaxContrast(
       GetColorWithMaxContrast(FromTransformInput()), 0x29);
   mixer[kColorTest2] =
       BlendForMinContrast(gfx::kGoogleBlue500, kColorTest1, kColorTest0);
   EXPECT_EQ(SkColorSetRGB(0x89, 0xB3, 0xF8), mixer.GetResultColor(kColorTest2));
+}
+
+// Tests that GetResultColor() will use an input getter, if specified, to source
+// input colors for recipes.
+TEST(ColorMixerTest, GetResultColorWithInputGetter) {
+  const ColorMixer* front_mixer;
+  const auto getter = base::BindRepeating(
+      [](const ColorMixer** mixer) { return *mixer; }, &front_mixer);
+  ColorMixer mixer0(nullptr, getter);
+  ColorMixer mixer1(&mixer0, getter);
+  front_mixer = &mixer1;
+  mixer0[kColorTest0] = {SK_ColorWHITE};
+  mixer0[kColorTest1] = GetColorWithMaxContrast(kColorTest0);
+  mixer1[kColorTest0] = {SK_ColorBLACK};
+  const SkColor output = mixer0.GetResultColor(kColorTest1);
+  EXPECT_EQ(output, mixer1.GetResultColor(kColorTest1));
+  EXPECT_FALSE(color_utils::IsDark(output));
 }
 
 }  // namespace

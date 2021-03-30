@@ -1,0 +1,96 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+
+<dom-module id="cellular-eid-popup">
+  <template>
+    <style include="cr-shared-style iron-flex">
+      :host {
+        background-color: white;
+        border-radius: 4px;
+        box-shadow:  0 2px 5px rgba(0,0,0,0.18);
+        margin: 34px 0 0 12px;
+        position: absolute;
+        width: 275px;
+        z-index: 1;
+      }
+
+      .cellular-network-list-header {
+        border-top: var(--cr-separator-line);
+        padding: 16px 0 8px 0;
+      }
+
+      .body {
+        margin-top: 6px;
+      }
+
+      .cellular-network-content {
+        margin: 8px 0 8px 32px;
+      }
+
+      .cellular-not-setup {
+        color: var(--google-grey-700);
+        font-size: smaller;
+        margin-bottom: 16px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .title {
+        align-self: center;
+      }
+
+      #container {
+        padding: 8px 16px;
+      }
+
+      #closeBtn {
+        align-self: center;
+        cursor: pointer;
+      }
+
+      #qrCodeCanvas {
+        width: 100%;
+      }
+
+      #eid {
+        margin-top: 15px;
+      }
+    </style>
+    <div id="container"
+        class="dialog"
+        tabindex="1"
+        aria-labelledby="eidTitle"
+        aria-describedby="eidDescription">
+      <div class="header">
+        <div id="eidTitle" class="title" arian-hidden="true">
+          [[i18n('eidPopupTitle')]]
+        </div>
+        <cr-icon-button
+            id="eidPopupCloseIcon"
+            iron-icon="cr:close"
+            title="[[i18n('closeEidPopupButtonLabel')]]"
+            aria-label="[[i18n('closeEidPopupButtonLabel')]]"
+            on-click="onCloseTap_">
+        </cr-icon-button>
+      </div>
+      <div class="body">
+        <div id="eidDescription" arian-hidden="true">
+          [[i18n('eidPopupDescription')]]
+        </div>
+        <div id="eid">[[eid_]]</div>
+        <canvas id="qrCodeCanvas"
+            width="[[canvasSize_]]"
+            height="[[canvasSize_]]">
+        </canvas>
+      </div>
+    </div>
+  </template>
+  <script src="cellular_eid_popup.js"></script>
+</dom-module>

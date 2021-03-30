@@ -39,14 +39,12 @@ constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
   return ranges::adjacent_find(range, base::not_fn(comp)) == ranges::end(range);
 }
 
-// This is a convenience method returning true if Iterator is at least a
-// ForwardIterator and thus supports multiple passes over a range.
+// This is a convenience trait inheriting from std::true_type if Iterator is at
+// least a ForwardIterator and thus supports multiple passes over a range.
 template <class Iterator>
-constexpr bool is_multipass() {
-  return std::is_base_of<
+using is_multipass = std::is_base_of<
       std::forward_iterator_tag,
-      typename std::iterator_traits<Iterator>::iterator_category>::value;
-}
+      typename std::iterator_traits<Iterator>::iterator_category>;
 
 // Uses SFINAE to detect whether type has is_transparent member.
 template <typename T, typename = void>

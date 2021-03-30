@@ -25,6 +25,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsObserver
   virtual void OnPause() = 0;
   virtual void OnPlayPause() = 0;
   virtual void OnStop() = 0;
+  virtual void OnSeekTo(const base::TimeDelta& time) = 0;
 
  protected:
   ~SystemMediaControlsObserver() override = default;

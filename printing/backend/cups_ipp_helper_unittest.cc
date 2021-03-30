@@ -11,12 +11,9 @@
 
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/backend/cups_printer.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/printing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -198,7 +195,7 @@ TEST_F(PrintBackendCupsIppHelperTest, A4PaperSupported) {
 
   PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
   // media display name localization is handled more fully in
-  // GetPrinterCapabilitiesOnBlockingTaskRunner().
+  // AssemblePrinterSettings().
   EXPECT_EQ("iso a4", paper.display_name);
   EXPECT_EQ("iso_a4_210x297mm", paper.vendor_id);
   EXPECT_EQ(210000, paper.size_um.width());
@@ -211,7 +208,7 @@ TEST_F(PrintBackendCupsIppHelperTest, LegalPaperDefault) {
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
   // media display name localization is handled more fully in
-  // GetPrinterCapabilitiesOnBlockingTaskRunner().
+  // AssemblePrinterSettings().
   EXPECT_EQ("na legal", caps.default_paper.display_name);
   EXPECT_EQ("na_legal_8.5x14in", caps.default_paper.vendor_id);
   EXPECT_EQ(215900, caps.default_paper.size_um.width());
@@ -327,8 +324,6 @@ TEST_F(PrintBackendCupsIppHelperTest, PinTooShort) {
 
 TEST_F(PrintBackendCupsIppHelperTest, AdvancedCaps) {
   base::HistogramTester histograms;
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(printing::features::kAdvancedPpdAttributes);
 
   printer_->SetSupportedOptions(
       "job-creation-attributes",

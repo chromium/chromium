@@ -19,16 +19,30 @@ const utils = goog.require(
   __gCrWeb['textFragments'] = {};
 
   /**
-   * Attempts to identify and highlight the given text fragments and,
-   * optionally, scroll them into view.
+   * Attempts to identify and highlight the given text fragments and
+   * optionally, scroll them into view, and apply default colors.
+   * @param {object[]} fragments - Text fragments to process
+   * @param {bool} scroll - scroll into view
+   * @param {string} backgroundColor - default text fragments background
+   *    color in hexadecimal value enabled by IOSSharedHighlightingColorChange
+   *    feature flag
+   * @param {string} foregroundColor - default text fragments foreground
+   *    color in hexadecimal value enabled by IOSSharedHighlightingColorChange
+   *    feature flag.
    */
-  __gCrWeb.textFragments.handleTextFragments = function(fragments, scroll) {
+  __gCrWeb.textFragments.handleTextFragments =
+      function(fragments, scroll, backgroundColor, foregroundColor) {
+    const markDefaultStyle = backgroundColor && foregroundColor ? {
+      backgroundColor: `#${backgroundColor}`,
+      color: `#${foregroundColor}`
+    } : null;
+
     if (document.readyState === "complete" ||
         document.readyState === "interactive") {
-      doHandleTextFragments(fragments, scroll);
+      doHandleTextFragments(fragments, scroll, markDefaultStyle);
     } else {
-      document.addEventListener("DOMContentLoaded", () => {
-        doHandleTextFragments(fragments, scroll);
+      document.addEventListener('DOMContentLoaded', () => {
+        doHandleTextFragments(fragments, scroll, markDefaultStyle);
       });
     }
   }
@@ -36,9 +50,11 @@ const utils = goog.require(
   /**
    * Does the actual work for handleTextFragments.
    */
-  const doHandleTextFragments = function(fragments, scroll) {
+  const doHandleTextFragments = function(fragments, scroll, markStyle) {
     const marks = [];
     let successCount = 0;
+
+    if (markStyle) utils.setDefaultTextFragmentsStyle(markStyle);
 
     for (const fragment of fragments) {
       // Process the fragments, then filter out any that evaluate to false.

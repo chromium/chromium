@@ -28,7 +28,7 @@ TEST_F(BookmarkTest, NonEmptyBookmarkBarShownOnNTP) {
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
   bookmarks::AddIfNotBookmarked(bookmark_model, GURL("https://www.test.com"),
-                                base::string16());
+                                std::u16string());
 
   AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
   EXPECT_EQ(BookmarkBar::SHOW, browser()->bookmark_bar_state());
@@ -78,9 +78,9 @@ TEST_F(BookmarkTest, BookmarkReaderModePageActuallyBookmarksOriginal) {
   // The URL to bookmark and the title of the page should be based on the
   // original page.
   GURL bookmarked_url;
-  base::string16 bookmarked_title;
+  std::u16string bookmarked_title;
   chrome::GetURLAndTitleToBookmark(web_contents.get(), &bookmarked_url,
                                    &bookmarked_title);
   EXPECT_EQ(original, bookmarked_url);
-  EXPECT_EQ(base::ASCIIToUTF16("Article title"), bookmarked_title);
+  EXPECT_EQ(u"Article title", bookmarked_title);
 }

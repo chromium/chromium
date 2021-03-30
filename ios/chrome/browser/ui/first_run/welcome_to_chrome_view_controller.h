@@ -33,6 +33,9 @@ class Browser;
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
+// Interrupts and dismisses the sign-in UI.
+- (void)interruptSigninCoordinatorWithCompletion:(void (^)(void))completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_WELCOME_TO_CHROME_VIEW_CONTROLLER_H_

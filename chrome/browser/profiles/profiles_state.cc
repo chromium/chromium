@@ -46,8 +46,51 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #endif
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1179280): Remove this method and replace its calls with
+// direct check of pref::kLacrosSecondaryProfilesAllowed once
+// https://crbug.com/1169547 is done and default_for_enterprise_users in
+// policy_templates.json works in Lacros.
+bool AreSecondaryProfilesAllowed() {
+  const PrefService* const pref_service = g_browser_process->local_state();
+  DCHECK(pref_service);
+  const PrefService::Preference* lacros_secondary_profiles_preference =
+      pref_service->FindPreference(prefs::kLacrosSecondaryProfilesAllowed);
+  DCHECK(lacros_secondary_profiles_preference);
+
+  if (!lacros_secondary_profiles_preference->IsDefaultValue() ||
+      lacros_secondary_profiles_preference->IsManaged()) {
+    // Lacros pref is set by policy. Return state according to prefs.
+    return pref_service->GetBoolean(prefs::kLacrosSecondaryProfilesAllowed);
+  }
+
+  // Lacros pref is not set by its policy and has default true value. Secondary
+  // profiles shall be disabled for managed Lacros browser.
+  // Note: this is a temporary hack to make
+  // prefs::kLacrosSecondaryProfilesAllowed behave as if it's managed by a
+  // device policy with "default_for_enterprise_users: False". Once this tag in
+  // policy_templates.json works in Lacros (currently Ash only), this check will
+  // be removed and the perf will be checked directly.
+  DCHECK(pref_service->GetBoolean(prefs::kLacrosSecondaryProfilesAllowed));
+
+  if (!g_browser_process->browser_policy_connector()
+           ->HasMachineLevelPolicies()) {
+    // Lacros browser is not managed. Return true by default.
+    return true;
+  }
+
+  // Lacros browser is managed. Return false by default.
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
 
 namespace profiles {
 
@@ -83,6 +126,12 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kBrowserProfilePickerAvailabilityOnStartup,
       static_cast<int>(ProfilePicker::AvailabilityOnStartup::kEnabled));
+  registry->RegisterBooleanPref(prefs::kBrowserProfilePickerShown, false);
+// TODO(crbug.com/1179280): Remove OS_LINUX once https://crbug.com/1169547 is
+// done.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  registry->RegisterBooleanPref(prefs::kLacrosSecondaryProfilesAllowed, true);
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
 
 void SetLastUsedProfile(const std::string& profile_dir) {
@@ -97,7 +146,7 @@ void SetLastUsedProfile(const std::string& profile_dir) {
 }
 
 #if !defined(OS_ANDROID)
-base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path) {
+std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path) {
   if (profile_path == ProfileManager::GetGuestProfilePath()) {
     return l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
   }
@@ -105,18 +154,19 @@ base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path) {
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
 
-  ProfileAttributesEntry* entry;
-  if (!storage.GetProfileAttributesWithPath(profile_path, &entry))
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_path);
+  if (!entry)
     return l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
 
-  const base::string16 profile_name_to_display = entry->GetName();
+  const std::u16string profile_name_to_display = entry->GetName();
   // If the user has set their local profile name on purpose.
   bool is_default_name = entry->IsUsingDefaultName();
   if (!is_default_name)
     return profile_name_to_display;
 
   // The profile is signed in and has a GAIA name.
-  const base::string16 gaia_name_to_display = entry->GetGAIANameToDisplay();
+  const std::u16string gaia_name_to_display = entry->GetGAIANameToDisplay();
   if (!gaia_name_to_display.empty())
     return profile_name_to_display;
 
@@ -131,26 +181,24 @@ base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path) {
   // local profile name, show the email address if it exists.
   // Otherwise, show the profile name which is expected to be the local
   // profile name.
-  const base::string16 email = entry->GetUserName();
+  const std::u16string email = entry->GetUserName();
   return email.empty() ? profile_name_to_display : email;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-base::string16 GetProfileSwitcherTextForItem(const AvatarMenu::Item& item) {
-  if (item.legacy_supervised) {
-    return l10n_util::GetStringFUTF16(
-        IDS_LEGACY_SUPERVISED_USER_NEW_AVATAR_LABEL, item.name);
-  }
+std::u16string GetProfileSwitcherTextForItem(const AvatarMenu::Item& item) {
   if (item.child_account)
     return l10n_util::GetStringFUTF16(IDS_CHILD_AVATAR_LABEL, item.name);
   return item.name;
 }
 
 void UpdateProfileName(Profile* profile,
-                       const base::string16& new_profile_name) {
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+                       const std::u16string& new_profile_name) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!entry) {
     return;
   }
 
@@ -198,10 +246,34 @@ bool IsGuestModeRequested(const base::CommandLine& command_line,
   return false;
 }
 
+bool IsProfileCreationAllowed() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!AreSecondaryProfilesAllowed())
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  const PrefService* const pref_service = g_browser_process->local_state();
+  DCHECK(pref_service);
+  return pref_service->GetBoolean(prefs::kBrowserAddPersonEnabled);
+}
+
+bool IsGuestModeEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!AreSecondaryProfilesAllowed())
+    return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  const PrefService* const pref_service = g_browser_process->local_state();
+  DCHECK(pref_service);
+  return pref_service->GetBoolean(prefs::kBrowserGuestModeEnabled);
+}
+
 bool IsProfileLocked(const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile_path, &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  if (!entry) {
     return false;
   }
 
@@ -209,14 +281,6 @@ bool IsProfileLocked(const base::FilePath& profile_path) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void UpdateIsProfileLockEnabledIfNeeded(Profile* profile) {
-  if (!profile->GetPrefs()->GetString(prefs::kGoogleServicesHostedDomain).
-      empty())
-    return;
-
-  UpdateGaiaProfileInfoIfNeeded(profile);
-}
-
 void UpdateGaiaProfileInfoIfNeeded(Profile* profile) {
   DCHECK(profile);
 
@@ -236,13 +300,13 @@ bool SetActiveProfileToGuestIfLocked() {
   if (active_profile_path == guest_path)
     return true;
 
-  ProfileAttributesEntry* entry;
-  bool has_entry =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(active_profile_path, &entry);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(active_profile_path);
 
-  // |has_entry| may be false if a profile is specified on the command line.
-  if (has_entry && !entry->IsSigninRequired())
+  // |entry| may be false if a profile is specified on the command line.
+  if (entry && !entry->IsSigninRequired())
     return false;
 
   SetLastUsedProfile(guest_path.BaseName().MaybeAsASCII());
@@ -258,8 +322,8 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
   if (!g_browser_process->safe_browsing_service())
     return;
 
-  Profile* profile = g_browser_process->profile_manager()->GetProfileByPath(
-      profile_path);
+  Profile* profile =
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
   if (!profile)
     return;
 
@@ -269,29 +333,6 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
 
   profile->Wipe();
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-bool AreAllNonChildNonSupervisedProfilesLocked() {
-  bool at_least_one_regular_profile_present = false;
-
-  std::vector<ProfileAttributesEntry*> entries =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetAllProfilesAttributes();
-  for (const ProfileAttributesEntry* entry : entries) {
-    if (entry->IsOmitted())
-      continue;
-
-    // Only consider non-child and non-supervised profiles.
-    if (!entry->IsChild() && !entry->IsLegacySupervised()) {
-      at_least_one_regular_profile_present = true;
-
-      if (!entry->IsSigninRequired())
-        return false;
-    }
-  }
-  return at_least_one_regular_profile_present;
-}
-#endif
 
 bool IsPublicSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -317,16 +358,23 @@ bool ArePublicSessionRestrictionsEnabled() {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-base::string16 GetDefaultNameForNewSignedInProfile(
-    const AccountInfo& account_info) {
-  DCHECK(account_info.IsValid());
-  if (!account_info.IsManaged())
-    return base::UTF8ToUTF16(account_info.given_name);
+std::u16string GetDefaultNameForNewEnterpriseProfile(
+    const std::string& hosted_domain) {
+  if (AccountInfo::IsManaged(hosted_domain))
+    return base::UTF8ToUTF16(hosted_domain);
   return l10n_util::GetStringUTF16(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
 }
 
-base::string16 GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
+std::u16string GetDefaultNameForNewSignedInProfile(
+    const AccountInfo& account_info) {
+  DCHECK(account_info.IsValid());
+  if (!account_info.IsManaged())
+    return base::UTF8ToUTF16(account_info.given_name);
+  return GetDefaultNameForNewEnterpriseProfile(account_info.hosted_domain);
+}
+
+std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
     const CoreAccountInfo& account_info) {
   // As a fallback, use the email of the user as the profile name when extended
   // account info is not available.

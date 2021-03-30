@@ -1586,13 +1586,19 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 // the NSEvent is sent to NSApplication in ui/base/test/ui_controls_mac.mm .
 // This test is disabled on only the Mac until the problem is resolved.
 // See http://crbug.com/425859 for more information.
-#if !defined(OS_MAC)
+#if defined(OS_MAC)
+#define MAYBE_SubframeAnchorOpenedInBackgroundTab \
+  DISABLED_SubframeAnchorOpenedInBackgroundTab
+#else
+#define MAYBE_SubframeAnchorOpenedInBackgroundTab \
+  SubframeAnchorOpenedInBackgroundTab
+#endif
 // Tests that ctrl-click in a subframe results in a background, not a foreground
 // tab - see https://crbug.com/804838.  This test is somewhat similar to
 // CtrlClickShouldEndUpIn*ProcessTest tests, but this test has to simulate an
 // actual mouse click.
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
-                       SubframeAnchorOpenedInBackgroundTab) {
+                       MAYBE_SubframeAnchorOpenedInBackgroundTab) {
   // Setup the test page - the ctrl-clicked link should be in a subframe.
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/iframe.html"));
   ui_test_utils::NavigateToURL(browser(), main_url);
@@ -1636,4 +1642,3 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   EXPECT_EQ(1,
             browser()->tab_strip_model()->GetIndexOfWebContents(new_contents));
 }
-#endif

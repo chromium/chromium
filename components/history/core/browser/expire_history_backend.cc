@@ -476,6 +476,11 @@ void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
       if (main_db_->GetURLRow(visits[i].url_id, &row))
         effects->affected_urls[visits[i].url_id] = row;
     }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    // Delete content annotations associated with visit.
+    main_db_->DeleteContentAnnotationsForVisit(visits[i].visit_id);
+#endif
   }
 }
 

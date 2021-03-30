@@ -12,6 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -157,7 +158,7 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
   media_session::MediaImage CreateTestImageWithSize(int size) const {
     media_session::MediaImage image;
     image.src = GetTestImageURL();
-    image.type = base::ASCIIToUTF16("image/jpeg");
+    image.type = u"image/jpeg";
     image.sizes.push_back(gfx::Size(size, size));
     return image;
   }
@@ -214,7 +215,8 @@ class MediaSessionBrowserTestWithBackForwardCache
         {{features::kBackForwardCache,
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
          {media::kInternalMediaSession, {}}},
-        /*disabled_features=*/{});
+        // Allow BackForwardCache for all devices regardless of their memory.
+        /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
   }
 
   void SetUpOnMainThread() override {
@@ -247,14 +249,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithoutInternalMediaSession,
   EXPECT_TRUE(IsPlaying(shell(), "long-video"));
 }
 
-// Flaky on Linux and Android and Mac. http://crbug.com/1157239,
-// http://crbug.com/1157319
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_MAC)
-#define MAYBE_SimplePlayPause DISABLED_SimplePlayPause
-#else
-#define MAYBE_SimplePlayPause SimplePlayPause
-#endif
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_SimplePlayPause) {
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, SimplePlayPause) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             GetTestUrl("media/session", "media-session.html")));
 
@@ -272,15 +267,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_SimplePlayPause) {
   EXPECT_TRUE(IsPlaying(shell(), "long-video"));
 }
 
-// Flaky on Linux and Android. http://crbug.com/1157239,
-// http://crbug.com/1157319
-#if defined(OS_LINUX) || defined(OS_ANDROID)
-#define MAYBE_MultiplePlayersPlayPause DISABLED_MultiplePlayersPlayPause
-#else
-#define MAYBE_MultiplePlayersPlayPause MultiplePlayersPlayPause
-#endif
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
-                       MAYBE_MultiplePlayersPlayPause) {
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultiplePlayersPlayPause) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             GetTestUrl("media/session", "media-session.html")));
 
@@ -333,9 +320,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_WebContents_Muted) {
 #if !defined(OS_ANDROID)
 // On Android, System Audio Focus would break this test.
 
-// Flaky: http://crbug.com/1157263
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
-                       DISABLED_MultipleTabsPlayPause) {
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultipleTabsPlayPause) {
   Shell* other_shell = CreateBrowser();
 
   EXPECT_TRUE(NavigateToURL(shell(),
@@ -382,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, GetMediaImageBitmap) {
 
   media_session::MediaImage image;
   image.src = embedded_test_server()->GetURL("/media/session/test_image.jpg");
-  image.type = base::ASCIIToUTF16("image/jpeg");
+  image.type = u"image/jpeg";
   image.sizes.push_back(gfx::Size(1, 1));
 
   MediaImageGetterHelper helper(media_session, CreateTestImageWithSize(1), 0,

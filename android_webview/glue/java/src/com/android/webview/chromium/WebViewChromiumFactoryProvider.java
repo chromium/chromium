@@ -31,6 +31,7 @@ import android.webkit.WebViewProvider;
 
 import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
 
+import org.chromium.android_webview.ApkType;
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
@@ -258,6 +259,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 packageInfo = WebViewFactory.getLoadedPackageInfo();
             }
             AwBrowserProcess.setWebViewPackageName(packageInfo.packageName);
+            AwBrowserProcess.initializeApkType(packageInfo.applicationInfo);
 
             mAwInit = createAwInit();
             mWebViewDelegate = webViewDelegate;
@@ -288,7 +290,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             }
             int packageId = webViewDelegate.getPackageId(ctx.getResources(), resourcePackage);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                    && !isTrichrome(packageInfo.applicationInfo)
+                    && AwBrowserProcess.getApkType() != ApkType.TRICHROME
                     && packageId > SHARED_LIBRARY_MAX_ID) {
                 throw new RuntimeException("Package ID too high for WebView: " + packageId);
             }
@@ -314,6 +316,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             if (multiProcess) {
                 CommandLine cl = CommandLine.getInstance();
                 cl.appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
+            }
+
+            // Enable modern SameSite cookie behavior if the app targets at least S.
+            if (BuildInfo.targetsAtLeastS()) {
+                CommandLine cl = CommandLine.getInstance();
+                cl.appendSwitch(AwSwitches.WEBVIEW_ENABLE_MODERN_COOKIE_SAME_SITE);
             }
 
             int applicationFlags = ctx.getApplicationInfo().flags;
@@ -405,13 +413,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             throw new IllegalArgumentException(
                     "WebView cannot be used with device protected storage");
         }
-    }
-
-    /**
-     * Determines whether this is Trichrome WebView by checking if any shared library files exist.
-     */
-    private static boolean isTrichrome(ApplicationInfo info) {
-        return info.sharedLibraryFiles != null && info.sharedLibraryFiles.length > 0;
     }
 
     /**
@@ -541,7 +542,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return new WebViewChromium(this, webView, privateAccess, mShouldDisableThreadChecking);
     }
 
-    // Workaround for IME thread crashes on grandfathered OEM apps.
+    // Workaround for IME thread crashes on legacy OEM apps.
     private boolean shouldDisableThreadChecking(Context context) {
         String appName = context.getPackageName();
         int versionCode = PackageUtils.getPackageVersion(context, appName);

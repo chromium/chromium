@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
-// #import {DriveSyncHandler} from '../../../externs/background/drive_sync_handler.m.js';
+// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+// #import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
+// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
 // #import {str, strf} from '../../common/js/util.m.js';
 // #import {fileOperationUtil} from './file_operation_util.m.js';
 // #import {AsyncUtil} from '../../common/js/async_util.m.js';
 // #import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {launcher, LaunchType} from './launcher.m.js';
 // clang-format on
 
 /**
@@ -140,6 +142,17 @@
       this.progressCenter_.updateItem(this.pinItem_);
     }, 2000);
 
+    /**
+     * Saved dialog event to be sent to the next launched Files App UI window.
+     * @private {?chrome.fileManagerPrivate.DriveConfirmDialogEvent}
+     */
+    this.savedDialogEvent_ = null;
+
+    /**
+     * A mapping of App IDs to dialogs.
+     * @private {Map<string, DriveDialogControllerInterface>}
+     */
+    this.dialogs_ = new Map();
 
     // Register events.
     chrome.fileManagerPrivate.onFileTransfersUpdated.addListener(
@@ -148,12 +161,18 @@
         this.onFileTransfersStatusReceived_.bind(this, this.pinItem_));
     chrome.fileManagerPrivate.onDriveSyncError.addListener(
         this.onDriveSyncError_.bind(this));
+    chrome.fileManagerPrivate.onDriveConfirmDialog.addListener(
+        this.onDriveConfirmDialog_.bind(this));
     chrome.notifications.onButtonClicked.addListener(
         this.onNotificationButtonClicked_.bind(this));
+    chrome.notifications.onClosed.addListener(
+        this.onNotificationClosed_.bind(this));
     chrome.fileManagerPrivate.onPreferencesChanged.addListener(
         this.onPreferencesChanged_.bind(this));
     chrome.fileManagerPrivate.onDriveConnectionStatusChanged.addListener(
         this.onDriveConnectionStatusChanged_.bind(this));
+    chrome.fileManagerPrivate.onMountCompleted.addListener(
+        this.onMountCompleted_.bind(this));
 
     // Set initial values.
     this.onPreferencesChanged_();
@@ -338,19 +357,114 @@
   }
 
   /**
+   * Adds a dialog to be controlled by DriveSyncHandler.
+   * @param {string} appId App ID of window containing the dialog.
+   * @param {DriveDialogControllerInterface} dialog Dialog to be controlled.
+   */
+  addDialog(appId, dialog) {
+    this.dialogs_.set(appId, dialog);
+    if (this.savedDialogEvent_) {
+      chrome.notifications.clear(
+          DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, () => {});
+      dialog.showDialog(this.savedDialogEvent_);
+      this.savedDialogEvent_ = null;
+    }
+  }
+
+  /**
+   * Removes a dialog from being controlled by DriveSyncHandler.
+   * @param {string} appId App ID of window containing the dialog.
+   */
+  removeDialog(appId) {
+    if (this.dialogs_.has(appId) && this.dialogs_.get(appId).open) {
+      chrome.fileManagerPrivate.notifyDriveDialogResult(
+          chrome.fileManagerPrivate.DriveDialogResult.DISMISS);
+      this.dialogs_.delete(appId);
+    }
+  }
+
+  /**
+   * Handles showing dialogs from Drive.
+   * @param {chrome.fileManagerPrivate.DriveConfirmDialogEvent} event
+   * @private
+   */
+  async onDriveConfirmDialog_(event) {
+    let appId = null;
+    // When a file manager is launched, its dialog will be added to dialogs_, so
+    // check it to see if there is already a window open.
+    if (this.dialogs_.size > 0) {
+      // launchFileManager() should always return a string, but this is not
+      // shown in the closure type.
+      // TODO(austinct): Change launchFileManager() to have return type
+      // Promise<?string>.
+      appId = /** @type {?string} */ (await launcher.launchFileManager(
+          /* opt_appState */ {}, /* opt_id */ undefined,
+          LaunchType.FOCUS_ANY_OR_CREATE));
+    }
+    if (!appId) {
+      chrome.notifications.create(
+          DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, {
+            type: 'basic',
+            title: chrome.runtime.getManifest().name,
+            message: str('OFFLINE_ENABLE_MESSAGE'),
+            iconUrl: chrome.runtime.getURL('/common/images/icon96.png'),
+            buttons: [
+              {title: str('OFFLINE_ENABLE_REJECT')},
+              {title: str('OFFLINE_ENABLE_ACCEPT')},
+            ]
+          },
+          () => {});
+      this.savedDialogEvent_ = event;
+      return;
+    }
+
+    if (this.dialogs_.has(appId)) {
+      this.dialogs_.get(appId).showDialog(event);
+    } else {
+      // File manager is still being launched, so save the event for later when
+      // it has fully initialized.
+      this.savedDialogEvent_ = event;
+    }
+  }
+
+  /**
    * Handles notification's button click.
    * @param {string} notificationId Notification ID.
    * @param {number} buttonIndex Index of the button.
    * @private
    */
   onNotificationButtonClicked_(notificationId, buttonIndex) {
-    const expectedId =
-        DriveSyncHandlerImpl.DISABLED_MOBILE_SYNC_NOTIFICATION_ID_;
-    if (notificationId !== expectedId) {
-      return;
+    switch (notificationId) {
+      case DriveSyncHandlerImpl.DISABLED_MOBILE_SYNC_NOTIFICATION_ID_:
+        chrome.notifications.clear(notificationId, () => {});
+        chrome.fileManagerPrivate.setPreferences({cellularDisabled: false});
+        break;
+      case DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_:
+        chrome.notifications.clear(notificationId, () => {});
+        this.savedDialogEvent_ = null;
+        chrome.fileManagerPrivate.notifyDriveDialogResult(
+            buttonIndex == 1 ?
+                chrome.fileManagerPrivate.DriveDialogResult.ACCEPT :
+                chrome.fileManagerPrivate.DriveDialogResult.REJECT);
+        break;
     }
-    chrome.notifications.clear(notificationId, () => {});
-    chrome.fileManagerPrivate.setPreferences({cellularDisabled: false});
+  }
+
+  /**
+   * Handles notifications being closed by user or system action.
+   * @param {string} notificationId Notification ID.
+   * @param {boolean} byUser True if the notification was closed by user action.
+   */
+  onNotificationClosed_(notificationId, byUser) {
+    switch (notificationId) {
+      case DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_:
+        this.savedDialogEvent_ = null;
+        if (byUser) {
+          chrome.fileManagerPrivate.notifyDriveDialogResult(
+              chrome.fileManagerPrivate.DriveDialogResult.DISMISS);
+        }
+        break;
+    }
   }
 
   /**
@@ -383,6 +497,22 @@
       }
     });
   }
+
+  /**
+   * Handles mount events to handle Drive mounting and unmounting.
+   * @param {chrome.fileManagerPrivate.MountCompletedEvent} event Mount
+   *     completed event.
+   * @private
+   */
+  onMountCompleted_(event) {
+    if (event.eventType ===
+            chrome.fileManagerPrivate.MountCompletedEventType.UNMOUNT &&
+        event.volumeMetadata.volumeType ===
+            chrome.fileManagerPrivate.VolumeType.DRIVE) {
+      chrome.notifications.clear(
+          DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, () => {});
+    }
+  }
 }
 
 /**
@@ -401,6 +531,15 @@ DriveSyncHandlerImpl.DRIVE_SYNC_COMPLETED_EVENT = 'completed';
  */
 DriveSyncHandlerImpl.DISABLED_MOBILE_SYNC_NOTIFICATION_ID_ =
     'disabled-mobile-sync';
+
+/**
+ * Notification ID of the enable Docs Offline notification.
+ * @type {string}
+ * @private
+ * @const
+ */
+DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_ =
+    'enable-docs-offline';
 
 
 /**

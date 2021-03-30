@@ -23,6 +23,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Renderer.CompositedScrolling" enum="CompositedScrolling"
     expires_after="M85">
+  <obsolete>
+    Expired in M86.
+  </obsolete>
   <owner>hartmanng@chromium.org</owner>
   <summary>
     Total count of the number of RenderLayers which are scrollable areas, need
@@ -35,7 +38,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
-    units="ms" expires_after="2021-04-01">
+    units="ms" expires_after="M95">
   <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
   <summary>
@@ -55,8 +58,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram
+    name="Renderer.DelegatedInkTrail.LatencyImprovementWithPrediction.Experiment{Number}"
+    units="ms" expires_after="M95">
+  <owner>jonross@chromium.org</owner>
+  <owner>mabian@microsoft.com</owner>
+  <summary>
+    The latency improvement provided by predicting extra delegated ink points
+    when using the delegated ink trail API with SkiaRenderer in milliseconds.
+    The improvement is the difference between the timestamp of the final real
+    point and the final predicted point.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
+</histogram>
+
 <histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
-    enum="BooleanDirection" expires_after="2021-04-01">
+    enum="BooleanDirection" expires_after="M95">
   <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
   <summary>
@@ -67,7 +92,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
-    units="pixels" expires_after="2021-04-01">
+    units="pixels" expires_after="M95">
   <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
   <summary>
@@ -81,7 +106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Type}Jitter"
-    units="pixels" expires_after="2021-04-01">
+    units="pixels" expires_after="M95">
   <owner>jonross@chromium.org</owner>
   <owner>mabian@microsoft.com</owner>
   <summary>
@@ -90,6 +115,76 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     point and its corresponding interpolated real position that occurred at
     {Type} time.
   </summary>
+  <token key="Type">
+    <variant name="Prediction" summary="prediction"/>
+    <variant name="Visual" summary="frame"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.WrongDirection"
+    enum="BooleanDirection" expires_after="M95">
+  <owner>jonross@chromium.org</owner>
+  <owner>mabian@microsoft.com</owner>
+  <summary>
+    Whether the prediction is in the same direction as the real trajectory at
+    the same prediction time.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{Direction}Prediction"
+    units="pixels" expires_after="M95">
+  <owner>jonross@chromium.org</owner>
+  <owner>mabian@microsoft.com</owner>
+  <summary>
+    {Direction}-shoot distance in pixels between a predicted point and the
+    corresponding interpolated real point that occurred at the prediction time.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
+  <token key="Direction">
+    <variant name="Over"/>
+    <variant name="Under"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{Type}Jitter"
+    units="pixels" expires_after="M95">
+  <owner>jonross@chromium.org</owner>
+  <owner>mabian@microsoft.com</owner>
+  <summary>
+    Euclidean distance in pixels between two successive variations of delegated
+    ink trail deltas which are the difference beween a predicted delegated ink
+    point and its corresponding interpolated real position that occurred at
+    {Type} time.
+
+    Part of a series of predicted point experimentation histograms. This
+    experiment predicts {Number} in the future.
+  </summary>
+  <token key="Number">
+    <variant name="0" summary="1 predicted point, 12ms"/>
+    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
+    <variant name="2" summary="1 predicted point, 6ms"/>
+    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
+  </token>
   <token key="Type">
     <variant name="Prediction" summary="prediction"/>
     <variant name="Visual" summary="frame"/>
@@ -135,7 +230,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
-    units="ms" expires_after="2021-05-30">
+    units="ms" expires_after="2021-08-29">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -146,7 +241,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.MainFrameSuccess"
-    enum="BooleanSuccess" expires_after="2021-04-18">
+    enum="BooleanSuccess" expires_after="2021-08-29">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -156,7 +251,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.SubframeBlinkCaptureDuration"
-    units="ms" expires_after="2021-03-08">
+    units="ms" expires_after="2021-08-29">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -167,7 +262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.SubframeSuccess"
-    enum="BooleanSuccess" expires_after="2021-03-08">
+    enum="BooleanSuccess" expires_after="2021-06-27">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -197,7 +292,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="RendererScheduler.QueueingDurationPerQueueType"
-    units="ms" expires_after="2021-06-06">
+    units="ms" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="RendererScheduler.QueueType" -->
 
   <owner>kdillon@chromium.org</owner>

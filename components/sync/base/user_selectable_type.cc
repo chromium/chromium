@@ -13,7 +13,7 @@
 #include "components/sync/base/pref_names.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif
 
 namespace syncer {
@@ -67,7 +67,6 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       return {kTypedUrlsTypeName,
               TYPED_URLS,
               {TYPED_URLS, HISTORY_DELETE_DIRECTIVES, SESSIONS,
-               DEPRECATED_FAVICON_IMAGES, DEPRECATED_FAVICON_TRACKING,
                USER_EVENTS}};
     case UserSelectableType::kExtensions:
       return {
@@ -89,10 +88,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kReadingList:
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
     case UserSelectableType::kTabs:
-      return {kTabsTypeName,
-              PROXY_TABS,
-              {PROXY_TABS, SESSIONS, DEPRECATED_FAVICON_IMAGES,
-               DEPRECATED_FAVICON_TRACKING, SEND_TAB_TO_SELF}};
+      return {
+          kTabsTypeName, PROXY_TABS, {PROXY_TABS, SESSIONS, SEND_TAB_TO_SELF}};
     case UserSelectableType::kWifiConfigurations: {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // SplitSettingsSync moves Wi-Fi configurations to Chrome OS settings.

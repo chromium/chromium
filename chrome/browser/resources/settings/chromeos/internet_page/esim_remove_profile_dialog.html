@@ -1,16 +1,30 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="../../router.html">
+<link rel="import" href="../os_route.html">
 
 <dom-module id="esim-remove-profile-dialog">
   <template>
     <style>
       :host {
         --cr-dialog-width: 324px;
+      }
+
+      #warningMessage {
+        --iron-icon-fill-color: #5F6368;
+        --iron-icon-height: 16px;
+        --iron-icon-width: 16px;
+        font-size: smaller;
+      }
+
+      #warningMessage iron-icon {
+        padding-inline-end: 4px;
       }
 
       #cancel {
@@ -20,28 +34,20 @@
     <cr-dialog id="dialog" show-on-attach>
       <div slot="title">[[getTitleString_(esimProfileName_)]]</div>
       <div slot="body">
-        <div id="errorMessage" hidden$="[[!errorMessage_]]">
-          [[errorMessage_]]
+        <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
+          <iron-icon icon="cellular-setup:warning"></iron-icon>
+          $i18n{eSimDialogConnectionWarning}
         </div>
       </div>
       <div slot="button-container">
-        <template is="dom-if" if="[[!errorMessage_]]" restamp>
-          <cr-button id="cancel" on-click="onCancelTap_"
+        <cr-button id="cancel" on-click="onCancelTap_"
               class="cancel-button">
             $i18n{eSimRemoveProfileDialogCancel}
-          </cr-button>
-          <cr-button id="remove" on-click="onRemoveProfileTap_"
-              disabled="[[isRemoveInProgress_]]"
-              class="action-button">
-            $i18n{eSimRemoveProfileDialogRemove}
-          </cr-button>
-        </template>
-        <template is="dom-if" if="[[errorMessage_]]" restamp>
-          <cr-button id="done" on-click="onCancelTap_"
-              class="action-button">
-            $i18n{eSimRemoveProfileDialogOkay}
-          </cr-button>
-        </template>
+        </cr-button>
+        <cr-button id="remove" on-click="onRemoveProfileTap_"
+            class="action-button">
+          $i18n{eSimRemoveProfileDialogRemove}
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

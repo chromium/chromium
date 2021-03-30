@@ -96,10 +96,46 @@
     <dimen name="swipe_vertical_drag_threshold">5dp</dimen>
     <dimen name="swipe_horizontal_drag_threshold">10dp</dimen>
 
-  <!-- Query tile dimensions -->
-  <dimen name="tile_ideal_width">80dp</dimen>
+    <!-- Query tile dimensions -->
+    <dimen name="tile_ideal_width">80dp</dimen>
 
-  <!-- Query tile container dimensions -->
-  <dimen name="tile_grid_inter_tile_padding">12dp</dimen>
+    <!-- Query tile container dimensions -->
+    <dimen name="tile_grid_inter_tile_padding">12dp</dimen>
 
+    <!-- Tile view dimensions -->
+    <dimen name="tile_view_bg_corner_radius">2dp</dimen>
+    <dimen name="tile_view_width">80dp</dimen>
+    <dimen name="tile_view_width_condensed">64dp</dimen>
+    <dimen name="tile_view_min_height">86dp</dimen>
+    <dimen name="tile_view_icon_size">48dp</dimen>
+    <dimen name="tile_view_icon_size_modern">24dp</dimen>
+    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <dimen tools:ignore="PxUsage" name="tile_view_icon_min_size">24px</dimen>
+    <dimen name="tile_view_icon_corner_radius">4dp</dimen>
+    <dimen name="tile_view_icon_text_size">20dp</dimen>
+    <dimen name="tile_view_monogram_size_modern">26dp</dimen>
+    <dimen name="tile_view_icon_margin_top_modern">19dp</dimen>
+    <dimen name="tile_view_monogram_margin_top_modern">18dp</dimen>
+    <dimen name="tile_view_icon_background_margin_top_modern">7dp</dimen>
+    <dimen name="tile_view_offline_badge_size_modern">16dp</dimen>
+    <dimen name="tile_view_offline_badge_margin_top_modern">7dp</dimen>
+    <dimen name="tile_view_offline_badge_margin_end_modern">9dp</dimen>
+    <dimen name="tile_view_offline_badge_margin_top_modern_condensed">6dp</dimen>
+    <dimen name="tile_view_offline_badge_margin_end_modern_condensed">7dp</dimen>
+    <dimen name="tile_view_padding">4dp</dimen>
+    <dimen name="tile_view_title_margin_top_modern">61dp</dimen>
+
+    <!-- Chips layout dimensions -->
+    <dimen name="chip_list_inter_chip_padding">2.5dp</dimen>
+    <dimen name="chip_list_side_padding">-16dp</dimen>
+
+    <!-- Misc. app menu dimens -->
+    <!-- ?attr/menuCornerSize doesn't work on Lollipop. So, we use a default dimen here and
+         reference the ?attr/ one in v23/dimens.xml. See https://crbug.com/1187338. -->
+    <dimen name="app_menu_corner_size">@dimen/popup_bg_corner_radius</dimen>
+    <dimen name="app_menu_shadow_length">@dimen/default_shadow_length_elev_2</dimen>
+    <dimen name="app_menu_elevation">@dimen/default_elevation_2</dimen>
+
+    <!-- Misc refactor dimensions -->
+    <dimen name="refactor_menu_rounded_corner_radius">28dp</dimen>
 </resources>

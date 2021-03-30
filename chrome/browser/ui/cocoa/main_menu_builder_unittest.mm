@@ -95,7 +95,7 @@ TEST(MainMenuBuilderTest, StringId) {
 }
 
 TEST(MainMenuBuilderTest, StringIdWithArg) {
-  base::string16 product_name(base::ASCIIToUTF16("MyAppIsTotallyAwesome"));
+  std::u16string product_name(u"MyAppIsTotallyAwesome");
   base::scoped_nsobject<NSMenuItem> item =
       MenuItemBuilder(IDS_ABOUT_MAC).string_format_1(product_name).Build();
 

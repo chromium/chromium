@@ -20,6 +20,7 @@ from devil.android.sdk import adb_wrapper
 from devil.utils import file_utils
 from devil.utils import parallelizer
 from pylib import constants
+from pylib.constants import host_paths
 from pylib.base import environment
 from pylib.utils import instrumentation_tracing
 from py_trace_event import trace_event
@@ -127,10 +128,12 @@ class LocalDeviceEnvironment(environment.Environment):
         output_directory=constants.GetOutDirectory(),
         adb_path=args.adb_path)
 
-    # Some things such as Forwarder require ADB to be in the environment path.
+    # Some things such as Forwarder require ADB to be in the environment path,
+    # while others like Devil's bundletool.py require Java on the path.
     adb_dir = os.path.dirname(adb_wrapper.AdbWrapper.GetAdbPath())
     if adb_dir and adb_dir not in os.environ['PATH'].split(os.pathsep):
-      os.environ['PATH'] = adb_dir + os.pathsep + os.environ['PATH']
+      os.environ['PATH'] = os.pathsep.join(
+          [adb_dir, host_paths.JAVA_PATH, os.environ['PATH']])
 
   #override
   def SetUp(self):

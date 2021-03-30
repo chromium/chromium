@@ -1,5 +1,5 @@
 include_rules = [
-  "+chromeos/constants",
+  "+ash/constants",
   "+components/invalidation",
   "+components/keyed_service/core",
   "+components/metrics",
@@ -10,11 +10,9 @@ include_rules = [
   "+components/signin/public",
   "+components/sync/base",
   "+components/sync/engine",
-  "+components/sync/engine_impl",
   "+components/sync/invalidations",
   "+components/sync/js",
   "+components/sync/model",
-  "+components/sync/model_impl",
   "+components/sync/nigori",
   "+components/sync/protocol",
   "+components/sync/test",

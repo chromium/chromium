@@ -20,6 +20,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -71,7 +72,7 @@ void IdleActionWarningDialogView::Update(base::TimeTicks idle_action_time) {
   UpdateTitle();
 }
 
-base::string16 IdleActionWarningDialogView::GetWindowTitle() const {
+std::u16string IdleActionWarningDialogView::GetWindowTitle() const {
   const base::TimeDelta time_until_idle_action =
       std::max(idle_action_time_ - base::TimeTicks::Now(), base::TimeDelta());
   return l10n_util::GetStringFUTF16(
@@ -86,5 +87,8 @@ IdleActionWarningDialogView::~IdleActionWarningDialogView() = default;
 void IdleActionWarningDialogView::UpdateTitle() {
   GetWidget()->UpdateWindowTitle();
 }
+
+BEGIN_METADATA(IdleActionWarningDialogView, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace chromeos

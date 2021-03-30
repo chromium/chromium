@@ -33,7 +33,6 @@ namespace blink {
 
 class Document;
 class ExceptionState;
-class QualifiedName;
 
 class HTMLDialogElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -54,7 +53,6 @@ class HTMLDialogElement final : public HTMLElement {
   }
 
  private:
-  bool IsPresentationAttribute(const QualifiedName&) const override;
   void DefaultEventHandler(Event&) override;
 
   void SetIsModal(bool is_modal);

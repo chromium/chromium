@@ -5,7 +5,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
@@ -24,8 +23,7 @@ class StackingControllerTest : public AshTestBase {
 
   aura::Window* CreateTestWindow() {
     aura::Window* window =
-        window_factory::NewWindow(nullptr, aura::client::WINDOW_TYPE_NORMAL)
-            .release();
+        new aura::Window(nullptr, aura::client::WINDOW_TYPE_NORMAL);
     window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     return window;

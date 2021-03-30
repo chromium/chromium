@@ -23,14 +23,11 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/base32/base32.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/optimization_guide/hints_component_info.h"
-#include "components/optimization_guide/hints_component_util.h"
-#include "components/optimization_guide/optimization_guide_constants.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_service.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
-#include "components/optimization_guide/optimization_metadata.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/public_image_metadata.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -975,6 +972,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   VerifyIneligibleImageHintsUnavailableUkm(0);
   VerifyIneligibleMissingInImageHintsUkm(0);
   VerifyImageCompressionPageInfoState(true);
+  histogram_tester()->ExpectTotalCount(
+      "SubresourceRedirect.Blink.Ineligibility", 1);
 }
 
 // This test verifies images restricted via CSP img-src directive will not be
@@ -995,6 +994,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
       "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
 
   EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   EXPECT_EQ(GURL(RunScriptExtractString("imageSrc()")).port(),
             https_url().port());
@@ -1004,10 +1005,12 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectBrowserTest,
   VerifyIneligibleImageHintsUnavailableUkm(0);
   VerifyIneligibleMissingInImageHintsUkm(0);
   VerifyImageCompressionPageInfoState(true);
+  histogram_tester()->ExpectTotalCount(
+      "SubresourceRedirect.Blink.Ineligibility", 2);
 }
 
-// This test verifies images restricted via CSP img-src directive will not be
-// redirected.
+// This test verifies images restricted via CSP default-src directive will not
+// be redirected.
 IN_PROC_BROWSER_TEST_F(
     SubresourceRedirectBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(
@@ -1025,6 +1028,8 @@ IN_PROC_BROWSER_TEST_F(
       "SubresourceRedirect.CompressionAttempt.ResponseCode", 0);
 
   EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   EXPECT_EQ(GURL(RunScriptExtractString("imageSrc()")).port(),
             https_url().port());
@@ -1034,6 +1039,8 @@ IN_PROC_BROWSER_TEST_F(
   VerifyIneligibleImageHintsUnavailableUkm(0);
   VerifyIneligibleMissingInImageHintsUkm(0);
   VerifyImageCompressionPageInfoState(true);
+  histogram_tester()->ExpectTotalCount(
+      "SubresourceRedirect.Blink.Ineligibility", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1065,6 +1072,8 @@ IN_PROC_BROWSER_TEST_F(
   VerifyIneligibleMissingInImageHintsUkm(0);
   VerifyIneligibleOtherImageUkm(0);
   VerifyImageCompressionPageInfoState(true);
+  histogram_tester()->ExpectTotalCount(
+      "SubresourceRedirect.Blink.Ineligibility", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1088,11 +1097,14 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GURL(RunScriptExtractString("imageSrc()")).port(),
             https_url().port());
 
+  // 3 images are not compressible, 1 image is compressible.
   VerifyCompressibleImageUkm(1);
   VerifyIneligibleImageHintsUnavailableUkm(0);
   VerifyIneligibleMissingInImageHintsUkm(0);
   VerifyIneligibleOtherImageUkm(3);
   VerifyImageCompressionPageInfoState(true);
+  histogram_tester()->ExpectTotalCount(
+      "SubresourceRedirect.Blink.Ineligibility", 6);
 }
 
 // This test verifies that no image redirect happens when empty hints is sent.

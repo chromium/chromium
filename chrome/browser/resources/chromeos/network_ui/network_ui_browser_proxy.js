@@ -2,150 +2,144 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('network_ui', function() {
-  /** @interface */
-  /* #export */ class NetworkUIBrowserProxy {
-    /** @param {string} type */
-    addNetwork(type) {}
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-    /**
-     * @param {string} type
-     * @return {Promise<!Array>}
-     */
-    getShillDeviceProperties(type) {}
+/** @interface */
+export class NetworkUIBrowserProxy {
+  /** @param {string} type */
+  addNetwork(type) {}
 
-    /**
-     * @return {Promise<!Array>}
-     */
-    getShillEthernetEAP() {}
+  /**
+   * @param {string} type
+   * @return {Promise<!Array>}
+   */
+  getShillDeviceProperties(type) {}
 
-    /**
-     * @param {string} guid
-     * @return {Promise<!Array>}
-     */
-    getShillNetworkProperties(guid) {}
+  /**
+   * @return {Promise<!Array>}
+   */
+  getShillEthernetEAP() {}
 
-    /**
-     * @param {string} content
-     * @return {Promise<!Array>}
-     */
-    importONC(content) {}
+  /**
+   * @param {string} guid
+   * @return {Promise<!Array>}
+   */
+  getShillNetworkProperties(guid) {}
 
-    /**
-     * @return {Promise<!Array>}
-     */
-    openCellularActivationUi() {}
+  /**
+   * @param {string} content
+   * @return {Promise<!Array>}
+   */
+  importONC(content) {}
 
-    /**
-     * @param {string} debugging
-     * @return {Promise<!Array>}
-     */
-    setShillDebugging(debugging) {}
+  /**
+   * @return {Promise<!Array>}
+   */
+  openCellularActivationUi() {}
 
-    showAddNewWifi() {}
+  /**
+   * @param {string} debugging
+   * @return {Promise<!Array>}
+   */
+  setShillDebugging(debugging) {}
 
-    /** @param {string} guid */
-    showNetworkConfig(guid) {}
+  showAddNewWifi() {}
 
-    /** @param {string} guid */
-    showNetworkDetails(guid) {}
+  /** @param {string} guid */
+  showNetworkConfig(guid) {}
 
-    /**
-     * @param {Object<string>} options
-     * @return {Promise<!Array>}
-     */
-    storeLogs(options) {}
+  /** @param {string} guid */
+  showNetworkDetails(guid) {}
 
-    /**
-     * @return {Promise<string>}
-     */
-    getHostname() {}
+  /**
+   * @param {Object<string>} options
+   * @return {Promise<!Array>}
+   */
+  storeLogs(options) {}
 
-    /**
-     * @param {string} hostname
-     */
-    setHostname(hostname) {}
+  /**
+   * @return {Promise<string>}
+   */
+  getHostname() {}
+
+  /**
+   * @param {string} hostname
+   */
+  setHostname(hostname) {}
+}
+
+/**
+ * @implements {NetworkUIBrowserProxy}
+ */
+export class NetworkUIBrowserProxyImpl {
+  /** @override */
+  addNetwork(type) {
+    chrome.send('addNetwork', [type]);
+  }
+
+  /** @override */
+  getShillDeviceProperties(type) {
+    return sendWithPromise('getShillDeviceProperties', type);
+  }
+
+  /** @override */
+  getShillEthernetEAP() {
+    return sendWithPromise('getShillEthernetEAP');
+  }
+
+  /** @override */
+  getShillNetworkProperties(guid) {
+    return sendWithPromise('getShillNetworkProperties', guid);
+  }
+
+  /** @override */
+  importONC(content) {
+    return sendWithPromise('importONC', content);
+  }
+
+  /** @override */
+  openCellularActivationUi() {
+    return sendWithPromise('openCellularActivationUi');
+  }
+
+  /** @override */
+  setShillDebugging(debugging) {
+    return sendWithPromise('setShillDebugging', debugging);
+  }
+
+  /** @override */
+  showAddNewWifi() {
+    chrome.send('showAddNewWifi');
+  }
+
+  /** @override */
+  showNetworkConfig(guid) {
+    chrome.send('showNetworkConfig', [guid]);
+  }
+
+  /** @override */
+  showNetworkDetails(guid) {
+    chrome.send('showNetworkDetails', [guid]);
+  }
+
+  /** @override */
+  storeLogs(options) {
+    return sendWithPromise('storeLogs', options);
   }
 
   /**
-   * @implements {network_ui.NetworkUIBrowserProxy}
+   * @return {Promise<string>}
    */
-  /* #export */ class NetworkUIBrowserProxyImpl {
-    /** @override */
-    addNetwork(type) {
-      chrome.send('addNetwork', [type]);
-    }
-
-    /** @override */
-    getShillDeviceProperties(type) {
-      return cr.sendWithPromise('getShillDeviceProperties', type);
-    }
-
-    /** @override */
-    getShillEthernetEAP() {
-      return cr.sendWithPromise('getShillEthernetEAP');
-    }
-
-    /** @override */
-    getShillNetworkProperties(guid) {
-      return cr.sendWithPromise('getShillNetworkProperties', guid);
-    }
-
-    /** @override */
-    importONC(content) {
-      return cr.sendWithPromise('importONC', content);
-    }
-
-    /** @override */
-    openCellularActivationUi() {
-      return cr.sendWithPromise('openCellularActivationUi');
-    }
-
-    /** @override */
-    setShillDebugging(debugging) {
-      return cr.sendWithPromise('setShillDebugging', debugging);
-    }
-
-    /** @override */
-    showAddNewWifi() {
-      chrome.send('showAddNewWifi');
-    }
-
-    /** @override */
-    showNetworkConfig(guid) {
-      chrome.send('showNetworkConfig', [guid]);
-    }
-
-    /** @override */
-    showNetworkDetails(guid) {
-      chrome.send('showNetworkDetails', [guid]);
-    }
-
-    /** @override */
-    storeLogs(options) {
-      return cr.sendWithPromise('storeLogs', options);
-    }
-
-    /**
-     * @return {Promise<string>}
-     */
-    getHostname() {
-      return cr.sendWithPromise('getHostname');
-    }
-
-    /**
-     * @param {string} hostname
-     */
-    setHostname(hostname) {
-      chrome.send('setHostname', [hostname]);
-    }
+  getHostname() {
+    return sendWithPromise('getHostname');
   }
 
-  cr.addSingletonGetter(NetworkUIBrowserProxyImpl);
+  /**
+   * @param {string} hostname
+   */
+  setHostname(hostname) {
+    chrome.send('setHostname', [hostname]);
+  }
+}
 
-  // #cr_define_end
-  return {
-    NetworkUIBrowserProxy: NetworkUIBrowserProxy,
-    NetworkUIBrowserProxyImpl: NetworkUIBrowserProxyImpl
-  };
-});
+addSingletonGetter(NetworkUIBrowserProxyImpl);

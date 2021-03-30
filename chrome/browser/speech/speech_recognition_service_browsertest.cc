@@ -3,25 +3,38 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/sync_socket.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/speech/speech_recognition_service.h"
+#include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/pref_names.h"
+#include "content/public/browser/audio_service.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "sandbox/policy/switches.h"
+#include "services/audio/public/cpp/fake_stream_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+using testing::StrictMock;
 
 namespace speech {
 
@@ -39,6 +52,72 @@ constexpr int kExpectedChannelCount = 1;
 constexpr base::FilePath::CharType kSodaBinaryRelativePath[] =
     FILE_PATH_LITERAL("libsoda_for_testing.so");
 
+// TODO: Should be a way to generate this, this seems way too brittle.
+const size_t kShMemSize = 82240;
+
+class MockStream : public media::mojom::AudioInputStream {
+ public:
+  MOCK_METHOD0(Record, void());
+  MOCK_METHOD1(SetVolume, void(double));
+};
+
+class TestStreamFactory : public audio::FakeStreamFactory {
+ public:
+  TestStreamFactory() : stream_(), stream_receiver_(&stream_) {}
+  ~TestStreamFactory() override = default;
+  void CreateInputStream(
+      mojo::PendingReceiver<media::mojom::AudioInputStream> stream_receiver,
+      mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+      mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
+      const std::string& device_id,
+      const media::AudioParameters& params,
+      uint32_t shared_memory_count,
+      bool enable_agc,
+      base::ReadOnlySharedMemoryRegion key_press_count_buffer,
+      CreateInputStreamCallback created_callback) {
+    if (stream_receiver_.is_bound())
+      stream_receiver_.reset();
+    stream_receiver_.Bind(std::move(stream_receiver));
+    if (client_)
+      client_.reset();
+    // Keep the passed client alive to avoid binding errors.
+    client_.Bind(std::move(client));
+    base::SyncSocket socket1, socket2;
+    base::SyncSocket::CreatePair(&socket1, &socket2);
+    std::move(created_callback)
+        .Run({base::in_place,
+              base::ReadOnlySharedMemoryRegion::Create(kShMemSize).region,
+              mojo::PlatformHandle(socket1.Take())},
+             false /*initially muted*/, base::UnguessableToken::Create());
+  }
+
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> MakeRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void WaitToCreateInputStream() {
+    if (stream_receiver_.is_bound())
+      return;
+    base::RepeatingTimer check_timer;
+    check_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10), this,
+                      &TestStreamFactory::OnTimer);
+    runner_.Run();
+  }
+
+  StrictMock<MockStream> stream_;
+  mojo::Remote<media::mojom::AudioInputStreamClient> client_;
+  mojo::Receiver<media::mojom::AudioInputStream> stream_receiver_;
+
+ private:
+  void OnTimer() {
+    if (stream_receiver_.is_bound())
+      runner_.Quit();
+  }
+
+  base::RunLoop runner_;
+};
+
 class SpeechRecognitionServiceTest
     : public InProcessBrowserTest,
       public media::mojom::SpeechRecognitionRecognizerClient {
@@ -55,6 +134,9 @@ class SpeechRecognitionServiceTest
   // media::mojom::SpeechRecognitionRecognizerClient
   void OnSpeechRecognitionRecognitionEvent(
       media::mojom::SpeechRecognitionResultPtr result) override;
+  void OnSpeechRecognitionError() override;
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Required for the utility process to access the directory containing the
@@ -64,6 +146,7 @@ class SpeechRecognitionServiceTest
 
  protected:
   void LaunchService();
+  void LaunchServiceWithAudioSourceFetcher();
 
   // The root directory for test files.
   base::FilePath test_data_dir_;
@@ -75,8 +158,12 @@ class SpeechRecognitionServiceTest
   mojo::Remote<media::mojom::SpeechRecognitionRecognizer>
       speech_recognition_recognizer_;
 
+  mojo::Remote<media::mojom::AudioSourceFetcher> audio_source_fetcher_;
+
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
       speech_recognition_client_receiver_{this};
+
+  std::unique_ptr<StrictMock<TestStreamFactory>> stream_factory_;
 
   std::vector<std::string> recognition_results_;
 
@@ -93,11 +180,20 @@ void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
   recognition_results_.push_back(std::move(result->transcription));
 }
 
+void SpeechRecognitionServiceTest::OnSpeechRecognitionError() {
+  NOTREACHED();
+}
+
+void SpeechRecognitionServiceTest::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
+  NOTREACHED();
+}
+
 void SpeechRecognitionServiceTest::LaunchService() {
   // Launch the Speech Recognition service.
   auto* browser_context =
       static_cast<content::BrowserContext*>(browser()->profile());
-  auto* service = new SpeechRecognitionService(browser_context);
+  auto* service = new ChromeSpeechRecognitionService(browser_context);
 
   mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
       speech_recognition_context_receiver =
@@ -123,7 +219,38 @@ void SpeechRecognitionServiceTest::LaunchService() {
           &is_multichannel_supported, run_loop.get()));
 
   run_loop->Run();
-  ASSERT_TRUE(is_multichannel_supported);
+  ASSERT_FALSE(is_multichannel_supported);
+}
+
+void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
+  // Create a fake stream factory.
+  stream_factory_ = std::make_unique<StrictMock<TestStreamFactory>>();
+
+  // Launch the Speech Recognition service.
+  auto* browser_context =
+      static_cast<content::BrowserContext*>(browser()->profile());
+  auto* service = new ChromeSpeechRecognitionService(browser_context);
+
+  mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
+      speech_recognition_context_receiver =
+          speech_recognition_context_.BindNewPipeAndPassReceiver();
+  service->Create(std::move(speech_recognition_context_receiver));
+
+  bool success = false;
+  auto run_loop = std::make_unique<base::RunLoop>();
+  // Bind the recognizer pipes used to send audio and receive results.
+  speech_recognition_context_->BindAudioSourceFetcher(
+      audio_source_fetcher_.BindNewPipeAndPassReceiver(),
+      speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
+      stream_factory_->MakeRemote(),
+      base::BindOnce(
+          [](bool* p_success, base::RunLoop* run_loop, bool success) {
+            *p_success = success;
+            run_loop->Quit();
+          },
+          &success, run_loop.get()));
+  run_loop->Run();
+  ASSERT_TRUE(success);
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
@@ -136,6 +263,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
       prefs::kSodaEnUsConfigPath,
       test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
           .Append(kSodaLanguagePackRelativePath));
+
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->SetBoolean(prefs::kLiveCaptionEnabled, true);
   LaunchService();
 
   std::string buffer;
@@ -206,6 +336,37 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   histograms.ExpectUniqueTimeSample(
       SpeechRecognitionRecognizerImpl::kCaptionBubbleHiddenHistogramName,
       base::TimeDelta::FromMilliseconds(1260), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
+  base::HistogramTester histograms;
+  g_browser_process->local_state()->SetFilePath(
+      prefs::kSodaBinaryPath,
+      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
+          .Append(kSodaBinaryRelativePath));
+  g_browser_process->local_state()->SetFilePath(
+      prefs::kSodaEnUsConfigPath,
+      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
+          .Append(kSodaLanguagePackRelativePath));
+
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  // TODO(crbug.com/1173135): Disconnect from kLiveCaptionEnabled.
+  profile_prefs->SetBoolean(prefs::kLiveCaptionEnabled, true);
+  LaunchServiceWithAudioSourceFetcher();
+
+  // TODO(crbug.com/1185978): Check implementation / sandbox policy on Mac and
+  // Windows.
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+  // Check that Start begins audio recording.
+  // TODO(crbug.com/1173135): Try to mock audio input, maybe with
+  // TestStreamFactory::stream_, to test end-to-end.
+  EXPECT_CALL(stream_factory_->stream_, Record());
+  audio_source_fetcher_->Start();
+  stream_factory_->WaitToCreateInputStream();
+#endif
+
+  audio_source_fetcher_->Stop();
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace speech

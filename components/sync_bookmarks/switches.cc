@@ -3,20 +3,17 @@
 // found in the LICENSE file.
 
 #include "components/sync_bookmarks/switches.h"
+#include "base/feature_list.h"
 
 namespace switches {
-
-const base::Feature kSyncDoNotCommitBookmarksWithoutFavicon = {
-    "SyncDoNotCommitBookmarksWithoutFavicon", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSyncReuploadBookmarkFullTitles{
     "SyncReuploadBookmarkFullTitles", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSyncDeduplicateAllBookmarksWithSameGUID{
-    "SyncDeduplicateAllBookmarksWithSameGUID",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kSyncUseClientTagForBookmarkCommits{
+    "SyncUseClientTagForBookmarkCommits", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSyncIgnoreChangesInTouchIcons{
-    "SyncIgnoreChangesInTouchIcons", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kSyncReuploadBookmarksUponMatchingData{
+    "SyncReuploadBookmarksUponMatchingData", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace switches

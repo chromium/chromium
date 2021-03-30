@@ -23,7 +23,7 @@ namespace {
 // last one is optional and only shows up when IsFirstCharOfToken returns true.
 std::string GetIterateState(const TokenizedStringCharIterator& iter) {
   return base::StringPrintf(
-      "%s%d%s", base::UTF16ToUTF8(base::string16(1, iter.Get())).c_str(),
+      "%s%d%s", base::UTF16ToUTF8(std::u16string(1, iter.Get())).c_str(),
       iter.GetArrayPos(), iter.IsFirstCharOfToken() ? "!" : "");
 }
 

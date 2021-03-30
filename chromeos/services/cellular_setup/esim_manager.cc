@@ -4,7 +4,12 @@
 
 #include "chromeos/services/cellular_setup/esim_manager.h"
 
+#include <sstream>
+
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/network/network_event_log.h"
+#include "chromeos/network/network_handler.h"
 #include "chromeos/services/cellular_setup/esim_profile.h"
 #include "chromeos/services/cellular_setup/euicc.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
@@ -14,18 +19,56 @@
 
 namespace chromeos {
 namespace cellular_setup {
+namespace {
 
-ESimManager::ESimManager() {
+void LogEuiccPaths(const std::set<dbus::ObjectPath>& new_euicc_paths) {
+  if (new_euicc_paths.empty()) {
+    NET_LOG(EVENT) << "EUICC list updated; no EUICCs present";
+    return;
+  }
+
+  std::stringstream ss("[");
+  for (const auto& new_path : new_euicc_paths)
+    ss << new_path.value() << ", ";
+  ss.seekp(-2, ss.cur);  // Remove last ", " from the stream.
+  ss << "]";
+
+  NET_LOG(EVENT) << "EUICC list updated; paths: " << ss.str();
+}
+
+}  // namespace
+
+ESimManager::ESimManager()
+    : ESimManager(NetworkHandler::Get()->cellular_esim_connection_handler(),
+                  NetworkHandler::Get()->cellular_esim_profile_handler(),
+                  NetworkHandler::Get()->cellular_esim_uninstall_handler(),
+                  NetworkHandler::Get()->cellular_inhibitor(),
+                  NetworkHandler::Get()->network_connection_handler(),
+                  NetworkHandler::Get()->network_state_handler()) {}
+
+ESimManager::ESimManager(
+    CellularESimConnectionHandler* cellular_esim_connection_handler,
+    CellularESimProfileHandler* cellular_esim_profile_handler,
+    CellularESimUninstallHandler* cellular_esim_uninstall_handler,
+    CellularInhibitor* cellular_inhibitor,
+    NetworkConnectionHandler* network_connection_handler,
+    NetworkStateHandler* network_state_handler)
+    : cellular_esim_connection_handler_(cellular_esim_connection_handler),
+      cellular_esim_profile_handler_(cellular_esim_profile_handler),
+      cellular_esim_uninstall_handler_(cellular_esim_uninstall_handler),
+      cellular_inhibitor_(cellular_inhibitor),
+      network_connection_handler_(network_connection_handler),
+      network_state_handler_(network_state_handler) {
   HermesManagerClient::Get()->AddObserver(this);
   HermesEuiccClient::Get()->AddObserver(this);
-  HermesProfileClient::Get()->AddObserver(this);
-  UpdateAvailableEuiccs();
+  cellular_esim_profile_handler_->AddObserver(this);
+  OnESimProfileListUpdated();
 }
 
 ESimManager::~ESimManager() {
   HermesManagerClient::Get()->RemoveObserver(this);
   HermesEuiccClient::Get()->RemoveObserver(this);
-  HermesProfileClient::Get()->RemoveObserver(this);
+  cellular_esim_profile_handler_->RemoveObserver(this);
 }
 
 void ESimManager::AddObserver(
@@ -42,8 +85,6 @@ void ESimManager::GetAvailableEuiccs(GetAvailableEuiccsCallback callback) {
 
 void ESimManager::OnAvailableEuiccListChanged() {
   UpdateAvailableEuiccs();
-  for (auto& observer : observers_)
-    observer->OnAvailableEuiccListChanged();
 }
 
 void ESimManager::OnEuiccPropertyChanged(const dbus::ObjectPath& euicc_path,
@@ -52,29 +93,28 @@ void ESimManager::OnEuiccPropertyChanged(const dbus::ObjectPath& euicc_path,
   // Skip notifying observers if the euicc object is not tracked.
   if (!euicc)
     return;
+
+  // Profile lists are handled in OnESimProfileListUpdated notification from
+  // CellularESimProfileHandler.
   if (property_name == hermes::euicc::kPendingProfilesProperty ||
       property_name == hermes::euicc::kInstalledProfilesProperty) {
-    euicc->UpdateProfileList();
-    for (auto& observer : observers_)
-      observer->OnProfileListChanged(euicc->CreateRemote());
-  } else {
-    euicc->UpdateProperties();
-    for (auto& observer : observers_)
-      observer->OnEuiccChanged(euicc->CreateRemote());
+    return;
   }
+  euicc->UpdateProperties();
+  for (auto& observer : observers_)
+    observer->OnEuiccChanged(euicc->CreateRemote());
 }
 
-void ESimManager::OnCarrierProfilePropertyChanged(
-    const dbus::ObjectPath& carrier_profile_path,
-    const std::string& property_name) {
-  ESimProfile* esim_profile = GetESimProfileFromPath(carrier_profile_path);
+void ESimManager::OnESimProfileListUpdated() {
+  // Force update available euiccs in case OnAvailableEuiccListChanged on this
+  // class was not called before this handler
+  UpdateAvailableEuiccs();
 
-  // Skip notifying observers if the carrier profile is not tracked.
-  if (!esim_profile)
-    return;
-
-  esim_profile->UpdateProperties();
-  NotifyESimProfileChanged(esim_profile);
+  std::vector<CellularESimProfile> esim_profile_states =
+      cellular_esim_profile_handler_->GetESimProfiles();
+  for (auto& euicc : available_euiccs_) {
+    euicc->UpdateProfileList(esim_profile_states);
+  }
 }
 
 void ESimManager::BindReceiver(
@@ -88,51 +128,60 @@ void ESimManager::NotifyESimProfileChanged(ESimProfile* esim_profile) {
     observer->OnProfileChanged(esim_profile->CreateRemote());
 }
 
-void ESimManager::UpdateAvailableEuiccs() {
-  NET_LOG(EVENT) << "Updating available Euiccs";
-  std::set<dbus::ObjectPath> new_euicc_paths;
-  for (auto& euicc_path : HermesManagerClient::Get()->GetAvailableEuiccs()) {
-    Euicc* euicc_info = GetOrCreateEuicc(euicc_path);
-    euicc_info->UpdateProfileList();
-    new_euicc_paths.insert(euicc_path);
-  }
-  RemoveUntrackedEuiccs(new_euicc_paths);
+void ESimManager::NotifyESimProfileListChanged(Euicc* euicc) {
+  for (auto& observer : observers_)
+    observer->OnProfileListChanged(euicc->CreateRemote());
 }
 
-void ESimManager::RemoveUntrackedEuiccs(
+void ESimManager::UpdateAvailableEuiccs() {
+  NET_LOG(DEBUG) << "Updating available Euiccs";
+
+  std::set<dbus::ObjectPath> new_euicc_paths;
+  bool available_euiccs_changed = false;
+
+  for (auto& euicc_path : HermesManagerClient::Get()->GetAvailableEuiccs()) {
+    available_euiccs_changed |= CreateEuiccIfNew(euicc_path);
+    new_euicc_paths.insert(euicc_path);
+  }
+
+  available_euiccs_changed |= RemoveUntrackedEuiccs(new_euicc_paths);
+
+  if (!available_euiccs_changed)
+    return;
+
+  LogEuiccPaths(new_euicc_paths);
+
+  for (auto& observer : observers_)
+    observer->OnAvailableEuiccListChanged();
+}
+
+bool ESimManager::RemoveUntrackedEuiccs(
     const std::set<dbus::ObjectPath> new_euicc_paths) {
+  bool removed = false;
   for (auto euicc_it = available_euiccs_.begin();
        euicc_it != available_euiccs_.end();) {
     if (new_euicc_paths.find((*euicc_it)->path()) == new_euicc_paths.end()) {
+      removed = true;
       euicc_it = available_euiccs_.erase(euicc_it);
     } else {
       euicc_it++;
     }
   }
+  return removed;
 }
 
-Euicc* ESimManager::GetOrCreateEuicc(const dbus::ObjectPath& euicc_path) {
+bool ESimManager::CreateEuiccIfNew(const dbus::ObjectPath& euicc_path) {
   Euicc* euicc_info = GetEuiccFromPath(euicc_path);
   if (euicc_info)
-    return euicc_info;
+    return false;
   available_euiccs_.push_back(std::make_unique<Euicc>(euicc_path, this));
-  return available_euiccs_.back().get();
+  return true;
 }
 
 Euicc* ESimManager::GetEuiccFromPath(const dbus::ObjectPath& path) {
   for (auto& euicc : available_euiccs_) {
     if (euicc->path() == path) {
       return euicc.get();
-    }
-  }
-  return nullptr;
-}
-
-ESimProfile* ESimManager::GetESimProfileFromPath(const dbus::ObjectPath& path) {
-  for (auto& euicc : available_euiccs_) {
-    ESimProfile* esim_profile = euicc->GetProfileFromPath(path);
-    if (esim_profile) {
-      return esim_profile;
     }
   }
   return nullptr;

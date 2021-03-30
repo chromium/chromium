@@ -1,25 +1,4 @@
 include_rules = [
   "+components/services/app_service/public",
+  "+components/full_restore/full_restore_utils.h",
 ]
-
-specific_include_rules = {
-  "app_service_app_window_browsertest\.cc": [
-    "+ash/shell.h",
-  ],
-  # https://crbug.com/826386
-  "app_window_launcher_controller\.cc": [
-    "+ash/shell.h",
-  ],
-  "chrome_launcher_controller_unittest\.cc": [
-    # https://crbug.com/875111
-    "+ash/multi_user/multi_user_window_manager_impl.h",
-  ],
-  "browser_shortcut_launcher_item_controller\.cc": [
-    "+ash/wm/desks/desks_util.h",
-  ],
-  "chrome_launcher_controller_browsertest.cc": [
-    "+ash/wm/desks/desk.h",
-    "+ash/wm/desks/desks_controller.h",
-    "+ash/wm/desks/desks_test_util.h",
-  ],
-}

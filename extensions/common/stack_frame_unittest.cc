@@ -7,8 +7,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,7 +23,7 @@ void AssertStackFrameValid(const std::string& text,
                            size_t column,
                            const std::string& source,
                            const std::string& function) {
-  base::string16 utf16_text = base::UTF8ToUTF16(text);
+  std::u16string utf16_text = base::UTF8ToUTF16(text);
   std::unique_ptr<StackFrame> frame = StackFrame::CreateFromText(utf16_text);
 
   ASSERT_TRUE(frame.get()) << "Failed to create frame from '" << text << "'";
@@ -34,7 +34,7 @@ void AssertStackFrameValid(const std::string& text,
 }
 
 void AssertStackFrameInvalid(const std::string& text) {
-  base::string16 utf16_text = base::UTF8ToUTF16(text);
+  std::u16string utf16_text = base::UTF8ToUTF16(text);
   std::unique_ptr<StackFrame> frame = StackFrame::CreateFromText(utf16_text);
   ASSERT_FALSE(frame.get()) << "Errantly created frame from '" << text << "'";
 }

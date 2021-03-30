@@ -271,6 +271,7 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
     <input id=target
      aria-keyshortcuts=Ctrl+K
      aria-roledescription=Widget
+     aria-virtualcontent=block-end
      aria-activedescendant=active
      aria-details=details
      aria-errormessage=error>
@@ -294,6 +295,9 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
                           ax::mojom::blink::StringAttribute::kKeyShortcuts));
   ASSERT_EQ("Widget", node_data.GetStringAttribute(
                           ax::mojom::blink::StringAttribute::kRoleDescription));
+  ASSERT_EQ("block-end",
+            node_data.GetStringAttribute(
+                ax::mojom::blink::StringAttribute::kVirtualContent));
   auto* active_descendant_target =
       cache->ObjectFromAXID(node_data.GetIntAttribute(
           ax::mojom::blink::IntAttribute::kActivedescendantId));
@@ -311,6 +315,7 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
 
   target->accessibleNode()->setKeyShortcuts("Ctrl+L");
   target->accessibleNode()->setRoleDescription("Object");
+  target->accessibleNode()->setVirtualContent("inline-start");
   target->accessibleNode()->setActiveDescendant(
       GetDocument().getElementById("active2")->accessibleNode());
   AccessibleNodeList* details_node_list =
@@ -328,6 +333,10 @@ TEST_F(AccessibilityObjectModelTest, SparseAttributes) {
                           ax::mojom::blink::StringAttribute::kKeyShortcuts));
   ASSERT_EQ("Widget", node_data.GetStringAttribute(
                           ax::mojom::blink::StringAttribute::kRoleDescription));
+  ASSERT_EQ(target->accessibleNode()->virtualContent(), "inline-start");
+  ASSERT_EQ("block-end",
+            node_data.GetStringAttribute(
+                ax::mojom::blink::StringAttribute::kVirtualContent));
   auto* active_descendant_target2 =
       cache->ObjectFromAXID(node_data2.GetIntAttribute(
           ax::mojom::blink::IntAttribute::kActivedescendantId));

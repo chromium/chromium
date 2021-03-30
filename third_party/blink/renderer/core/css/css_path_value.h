@@ -21,7 +21,7 @@ namespace cssvalue {
 
 class CSSPathValue : public CSSValue {
  public:
-  static CSSPathValue& EmptyPathValue();
+  static const CSSPathValue& EmptyPathValue();
 
   explicit CSSPathValue(scoped_refptr<StylePath>,
                         PathSerializationFormat = kNoTransformation);

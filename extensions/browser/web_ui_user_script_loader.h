@@ -13,7 +13,9 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 
+class GURL;
 class WebUIURLFetcher;
 
 namespace content {
@@ -24,7 +26,7 @@ class BrowserContext;
 class WebUIUserScriptLoader : public extensions::UserScriptLoader {
  public:
   WebUIUserScriptLoader(content::BrowserContext* browser_context,
-                        const HostID& host_id);
+                        const GURL& url);
   ~WebUIUserScriptLoader() override;
 
  private:
@@ -34,9 +36,10 @@ class WebUIUserScriptLoader : public extensions::UserScriptLoader {
   // UserScriptLoader:
   void AddScripts(std::unique_ptr<extensions::UserScriptList> scripts,
                   int render_process_id,
-                  int render_frame_id) override;
+                  int render_frame_id,
+                  ScriptsLoadedCallback callback) override;
   void LoadScripts(std::unique_ptr<extensions::UserScriptList> user_scripts,
-                   const std::set<HostID>& changed_hosts,
+                   const std::set<extensions::mojom::HostID>& changed_hosts,
                    const std::set<std::string>& added_script_ids,
                    LoadScriptsCallback callback) override;
 

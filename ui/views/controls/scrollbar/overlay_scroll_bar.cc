@@ -61,10 +61,12 @@ gfx::Size OverlayScrollBar::Thumb::CalculatePreferredSize() const {
 }
 
 void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
+  const bool hovered = GetState() != Button::STATE_NORMAL;
   cc::PaintFlags fill_flags;
   fill_flags.setStyle(cc::PaintFlags::kFill_Style);
   fill_flags.setColor(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_OverlayScrollbarThumbBackground));
+      hovered ? ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill
+              : ui::NativeTheme::kColorId_OverlayScrollbarThumbFill));
   gfx::RectF fill_bounds(GetLocalBounds());
   fill_bounds.Inset(gfx::InsetsF(IsHorizontal() ? kThumbHoverOffset : 0,
                                  IsHorizontal() ? 0 : kThumbHoverOffset, 0, 0));
@@ -76,7 +78,8 @@ void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
   cc::PaintFlags stroke_flags;
   stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
   stroke_flags.setColor(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_OverlayScrollbarThumbForeground));
+      hovered ? ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke
+              : ui::NativeTheme::kColorId_OverlayScrollbarThumbStroke));
   stroke_flags.setStrokeWidth(kThumbStrokeVisualSize);
   stroke_flags.setStrokeCap(cc::PaintFlags::kSquare_Cap);
 
@@ -117,14 +120,13 @@ void OverlayScrollBar::Thumb::OnStateChanged() {
         gfx::Vector2d(IsHorizontal() ? 0 : direction * kThumbHoverOffset,
                       IsHorizontal() ? kThumbHoverOffset : 0));
     layer()->SetTransform(translation);
-    layer()->SetOpacity(ui::kOverlayScrollbarThumbNormalAlpha);
 
     if (GetWidget())
       scroll_bar_->StartHideCountdown();
   } else {
     layer()->SetTransform(gfx::Transform());
-    layer()->SetOpacity(ui::kOverlayScrollbarThumbHoverAlpha);
   }
+  SchedulePaint();
 }
 
 OverlayScrollBar::OverlayScrollBar(bool horizontal) : ScrollBar(horizontal) {

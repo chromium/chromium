@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -15,6 +16,9 @@
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/layer_tree_host.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
@@ -80,7 +84,7 @@ mojom::blink::InputEventResultState InputEventDispositionToAck(
       return mojom::blink::InputEventResultState::kSetNonBlockingDueToFling;
     case InputHandlerProxy::DROP_EVENT:
       return mojom::blink::InputEventResultState::kNoConsumerExists;
-    case InputHandlerProxy::DID_HANDLE_NON_BLOCKING:
+    case InputHandlerProxy::DID_NOT_HANDLE_NON_BLOCKING:
       return mojom::blink::InputEventResultState::kSetNonBlocking;
     case InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST:
     default:
@@ -211,7 +215,10 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
           main_thread_scheduler,
           /*allow_raf_aligned_input=*/!never_composited)),
       main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      compositor_task_runner_(std::move(compositor_task_runner)) {
+      compositor_task_runner_(std::move(compositor_task_runner)),
+      response_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Response")) {
 #if defined(OS_ANDROID)
   if (compositor_task_runner_) {
     synchronous_compositor_registry_ =
@@ -365,21 +372,21 @@ WidgetInputHandlerManager::GetWidgetInputHandlerHost() {
   return nullptr;
 }
 
+#if defined(OS_ANDROID)
 void WidgetInputHandlerManager::AttachSynchronousCompositor(
     mojo::PendingRemote<mojom::blink::SynchronousCompositorControlHost>
         control_host,
     mojo::PendingAssociatedRemote<mojom::blink::SynchronousCompositorHost> host,
     mojo::PendingAssociatedReceiver<mojom::blink::SynchronousCompositor>
         compositor_request) {
-#if defined(OS_ANDROID)
   DCHECK(synchronous_compositor_registry_);
   if (synchronous_compositor_registry_->proxy()) {
     synchronous_compositor_registry_->proxy()->BindChannel(
         std::move(control_host), std::move(host),
         std::move(compositor_request));
   }
-#endif
 }
+#endif
 
 void WidgetInputHandlerManager::ObserveGestureEventOnMainThread(
     const WebGestureEvent& gesture_event,
@@ -434,6 +441,13 @@ void WidgetInputHandlerManager::
 void WidgetInputHandlerManager::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     mojom::blink::WidgetInputHandler::DispatchEventCallback callback) {
+  // Since we can't easily track the end of processing for a non-blocking input
+  // event from here, we just temporarily bump kResponse mode for every
+  // dispatched event.
+  response_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kResponse);
+  response_power_mode_voter_->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kResponseTimeout);
+
   bool event_is_move =
       event->Event().GetType() == WebInputEvent::Type::kMouseMove ||
       event->Event().GetType() == WebInputEvent::Type::kPointerMove;

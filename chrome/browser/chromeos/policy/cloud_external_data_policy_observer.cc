@@ -14,9 +14,8 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -27,10 +26,6 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/user_manager/user.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-
 namespace policy {
 
 // Helper class that observes a policy for a logged-in user, notifying the
@@ -122,7 +117,7 @@ CloudExternalDataPolicyObserver::Delegate::~Delegate() {
 }
 
 CloudExternalDataPolicyObserver::CloudExternalDataPolicyObserver(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     DeviceLocalAccountPolicyService* device_local_account_policy_service,
     const std::string& policy,
     Delegate* delegate)
@@ -130,18 +125,19 @@ CloudExternalDataPolicyObserver::CloudExternalDataPolicyObserver(
       device_local_account_policy_service_(device_local_account_policy_service),
       policy_(policy),
       delegate_(delegate) {
-  notification_registrar_.Add(
-      this,
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources());
+  auto* session_manager = session_manager::SessionManager::Get();
+  // SessionManager might not exist in unit tests.
+  if (session_manager)
+    session_observation_.Observe(session_manager);
 
   if (device_local_account_policy_service_)
     device_local_account_policy_service_->AddObserver(this);
 
   device_local_accounts_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kAccountsPrefDeviceLocalAccounts,
-      base::Bind(&CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts,
+          base::Unretained(this)));
 }
 
 CloudExternalDataPolicyObserver::~CloudExternalDataPolicyObserver() {
@@ -154,13 +150,10 @@ void CloudExternalDataPolicyObserver::Init() {
   RetrieveDeviceLocalAccounts();
 }
 
-void CloudExternalDataPolicyObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED, type);
-
-  Profile* profile = content::Details<Profile>(details).ptr();
+void CloudExternalDataPolicyObserver::OnUserProfileLoaded(
+    const AccountId& account_id) {
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user) {

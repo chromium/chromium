@@ -88,7 +88,7 @@ void AndroidAccessTokenFetcher::Start(const std::string& client_id,
                                       const std::vector<std::string>& scopes) {
   JNIEnv* env = AttachCurrentThread();
   std::string scope = CombineScopes(scopes);
-  ScopedJavaLocalRef<jstring> j_username =
+  ScopedJavaLocalRef<jstring> j_email =
       ConvertUTF8ToJavaString(env, account_id_);
   ScopedJavaLocalRef<jstring> j_scope = ConvertUTF8ToJavaString(env, scope);
   std::unique_ptr<FetchOAuth2TokenCallback> heap_callback(
@@ -98,7 +98,7 @@ void AndroidAccessTokenFetcher::Start(const std::string& client_id,
 
   // Call into Java to get a new token.
   signin::Java_ProfileOAuth2TokenServiceDelegate_getAccessTokenFromNative(
-      env, oauth2_token_service_delegate_->GetJavaObject(), j_username, j_scope,
+      env, oauth2_token_service_delegate_->GetJavaObject(), j_email, j_scope,
       reinterpret_cast<intptr_t>(heap_callback.release()));
 }
 
@@ -204,11 +204,11 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable(
     return false;
   }
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_account_id =
+  ScopedJavaLocalRef<jstring> j_account_name =
       ConvertUTF8ToJavaString(env, account_name);
   jboolean refresh_token_is_available =
       signin::Java_ProfileOAuth2TokenServiceDelegate_hasOAuth2RefreshToken(
-          env, java_ref_, j_account_id);
+          env, java_ref_, j_account_name);
   return refresh_token_is_available == JNI_TRUE;
 }
 

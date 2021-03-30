@@ -4,12 +4,13 @@
 
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 
-#include <utility>
 #include <map>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -25,13 +26,15 @@
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_shortcuts_menu.h"
+#include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -164,6 +167,13 @@ void WebAppInstallFinalizer::FinalizeInstall(
   if (options.chromeos_data.has_value())
     web_app->SetWebAppChromeOsData(options.chromeos_data.value());
 
+  // `WebApp::system_web_app_data` has a default value already. Only override if
+  // the caller provided a new value.
+  if (options.system_web_app_data.has_value()) {
+    web_app->client_data()->system_web_app_data =
+        options.system_web_app_data.value();
+  }
+
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(source);
   web_app->SetIsInSyncInstall(false);
@@ -193,7 +203,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // We should install shadow bookmark app only for kSync source (we sync only
   // user-installed apps). System, Policy, WebAppStore, Default apps should not
   // get a shadow bookmark app.
-  if (legacy_finalizer_ && is_synced) {
+  if (legacy_finalizer_ && is_synced &&
+      base::FeatureList::IsEnabled(features::kSyncBookmarkApps)) {
     legacy_finalizer_->FinalizeInstall(web_app_info, options,
                                        base::DoNothing());
   }
@@ -204,13 +215,15 @@ void WebAppInstallFinalizer::FinalizeUninstallAfterSync(
     UninstallWebAppCallback callback) {
   DCHECK(started_);
   // WebAppSyncBridge::ApplySyncChangesToRegistrar does the actual
-  // NotifyWebAppUninstalled and unregistration of the app from the registry.
+  // NotifyWebAppWillBeUninstalled and unregistration of the app from the
+  // registry.
   DCHECK(!GetWebAppRegistrar().GetAppById(app_id));
 
   icon_manager_->DeleteData(
-      app_id, base::BindOnce(&WebAppInstallFinalizer::OnIconsDataDeleted,
-                             weak_ptr_factory_.GetWeakPtr(), app_id,
-                             std::move(callback)));
+      app_id,
+      base::BindOnce(
+          &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
+          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
 }
 
 void WebAppInstallFinalizer::UninstallExternalWebApp(
@@ -226,7 +239,7 @@ void WebAppInstallFinalizer::UninstallExternalWebApp(
 bool WebAppInstallFinalizer::CanUserUninstallExternalApp(
     const AppId& app_id) const {
   DCHECK(started_);
-  // TODO(loyso): Policy Apps: Implement web_app::ManagementPolicy taking
+  // TODO(loyso): Policy Apps: Implement ManagementPolicy taking
   // extensions::ManagementPolicy::UserMayModifySettings as inspiration.
   const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
   return app ? app->CanUserUninstallExternalApp() : false;
@@ -283,20 +296,12 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     return;
   }
 
-  // Prepare copy-on-write to update existing app.
-  auto web_app = std::make_unique<WebApp>(*existing_web_app);
-  const bool is_synced = web_app->IsSynced();
-
-  CommitCallback commit_callback = base::BindOnce(
-      &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
-      existing_web_app->name(), web_app_info);
-
-  SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
-                                      std::move(commit_callback));
-
-  if (legacy_finalizer_ && is_synced)
-    legacy_finalizer_->FinalizeUpdate(web_app_info, base::DoNothing());
+  // Grab the shortcut info before the app is removed from the database.
+  os_integration_manager().GetShortcutInfoForApp(
+      app_id,
+      base::BindOnce(&WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     app_id, web_app_info));
 }
 
 void WebAppInstallFinalizer::RemoveLegacyInstallFinalizerForTesting() {
@@ -314,7 +319,8 @@ void WebAppInstallFinalizer::Shutdown() {
 
 void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
                                              UninstallWebAppCallback callback) {
-  registrar().NotifyWebAppUninstalled(app_id);
+
+  registrar().NotifyWebAppWillBeUninstalled(app_id);
   os_integration_manager().UninstallAllOsHooks(
       app_id, base::BindOnce(&WebAppInstallFinalizer::OnUninstallOsHooks,
                              weak_ptr_factory_.GetWeakPtr(), app_id,
@@ -329,9 +335,10 @@ void WebAppInstallFinalizer::OnUninstallOsHooks(
   update->DeleteApp(app_id);
 
   icon_manager_->DeleteData(
-      app_id, base::BindOnce(&WebAppInstallFinalizer::OnIconsDataDeleted,
-                             weak_ptr_factory_.GetWeakPtr(), app_id,
-                             std::move(callback)));
+      app_id,
+      base::BindOnce(
+          &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
+          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
 }
 
 void WebAppInstallFinalizer::UninstallWebAppOrRemoveSource(
@@ -367,20 +374,20 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 
   AppId app_id = web_app->app_id();
   IconBitmaps icon_bitmaps;
-  icon_bitmaps.any = web_app_info.icon_bitmaps_any;
-  icon_bitmaps.maskable = web_app_info.icon_bitmaps_maskable;
+  icon_bitmaps.any = web_app_info.icon_bitmaps.any;
+  icon_bitmaps.maskable = web_app_info.icon_bitmaps.maskable;
   icon_manager_->WriteData(
       std::move(app_id), std::move(icon_bitmaps),
       base::BindOnce(&WebAppInstallFinalizer::OnIconsDataWritten,
                      weak_ptr_factory_.GetWeakPtr(), std::move(commit_callback),
                      std::move(web_app),
-                     web_app_info.shortcuts_menu_icons_bitmaps));
+                     web_app_info.shortcuts_menu_icon_bitmaps));
 }
 
 void WebAppInstallFinalizer::OnIconsDataWritten(
     CommitCallback commit_callback,
     std::unique_ptr<WebApp> web_app,
-    const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps,
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
@@ -388,13 +395,13 @@ void WebAppInstallFinalizer::OnIconsDataWritten(
     return;
   }
 
-  if (shortcuts_menu_icons_bitmaps.empty()) {
+  if (shortcuts_menu_icon_bitmaps.empty()) {
     OnShortcutsMenuIconsDataWritten(std::move(commit_callback),
                                     std::move(web_app), success);
   } else {
     AppId app_id = web_app->app_id();
     icon_manager_->WriteShortcutsMenuIconsData(
-        app_id, shortcuts_menu_icons_bitmaps,
+        app_id, shortcuts_menu_icon_bitmaps,
         base::BindOnce(&WebAppInstallFinalizer::OnShortcutsMenuIconsDataWritten,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(commit_callback), std::move(web_app)));
@@ -426,10 +433,11 @@ void WebAppInstallFinalizer::OnShortcutsMenuIconsDataWritten(
       std::move(update), std::move(commit_callback));
 }
 
-void WebAppInstallFinalizer::OnIconsDataDeleted(
+void WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled(
     const AppId& app_id,
     UninstallWebAppCallback callback,
     bool success) {
+  registrar().NotifyWebAppUninstalled(app_id);
   std::move(callback).Run(success);
 }
 
@@ -447,10 +455,34 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   std::move(callback).Run(app_id, InstallResultCode::kSuccessNewInstall);
 }
 
+void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
+    InstallFinalizedCallback callback,
+    const AppId app_id,
+    const WebApplicationInfo& web_app_info,
+    std::unique_ptr<ShortcutInfo> old_shortcut) {
+  // Prepare copy-on-write to update existing app.
+  const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
+  auto web_app = std::make_unique<WebApp>(*existing_web_app);
+  const bool is_synced = web_app->IsSynced();
+
+  CommitCallback commit_callback = base::BindOnce(
+      &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
+      existing_web_app->name(), std::move(old_shortcut), web_app_info);
+
+  SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
+                                      std::move(commit_callback));
+
+  if (legacy_finalizer_ && is_synced &&
+      base::FeatureList::IsEnabled(features::kSyncBookmarkApps))
+    legacy_finalizer_->FinalizeUpdate(web_app_info, base::DoNothing());
+}
+
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     InstallFinalizedCallback callback,
     AppId app_id,
     std::string old_name,
+    std::unique_ptr<ShortcutInfo> old_shortcut,
     const WebApplicationInfo& web_app_info,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -459,7 +491,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  os_integration_manager().UpdateOsHooks(app_id, old_name, web_app_info);
+  os_integration_manager().UpdateOsHooks(app_id, old_name,
+                                         std::move(old_shortcut), web_app_info);
 
   registrar().NotifyWebAppManifestUpdated(app_id, old_name);
   std::move(callback).Run(app_id, InstallResultCode::kSuccessAlreadyInstalled);

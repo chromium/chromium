@@ -28,6 +28,7 @@ source_set("unit_tests") {
   deps = [
     ":lib",
     "//components/prefs:test_support",
+    "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:preferred_apps",
     "//components/services/app_service/public/cpp:publisher",

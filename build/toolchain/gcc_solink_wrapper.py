@@ -144,7 +144,7 @@ def main():
 
   # Instead of linking, records all inputs to a file. This is used by
   # enable_resource_allowlist_generation in order to avoid needing to
-  # link (which is slow) to build the resources whitelist.
+  # link (which is slow) to build the resources allowlist.
   if collect_inputs_only:
     with open(args.sofile, 'w') as f:
       CollectInputs(f, args.command)

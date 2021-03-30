@@ -101,7 +101,7 @@ class CrostiniUpgrader : public KeyedService,
     void SetStatusDoneUI() override;
     void SetStatusCancelledUI() override;
     void SetStatusFailedWithMessageUI(Status status,
-                                      const base::string16& message) override;
+                                      const std::u16string& message) override;
 
    private:
     bool has_notified_start_ = false;

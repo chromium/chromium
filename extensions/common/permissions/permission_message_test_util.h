@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "extensions/common/manifest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,7 +18,7 @@ class PermissionSet;
 
 testing::AssertionResult VerifyHasPermissionMessage(
     const PermissionsData* permissions_data,
-    const base::string16& expected_message);
+    const std::u16string& expected_message);
 testing::AssertionResult VerifyHasPermissionMessage(
     const PermissionSet& permissions,
     Manifest::Type extension_type,
@@ -33,11 +32,11 @@ testing::AssertionResult VerifyOnePermissionMessage(
     const std::string& expected_message);
 testing::AssertionResult VerifyOnePermissionMessage(
     const PermissionsData* permissions_data,
-    const base::string16& expected_message);
+    const std::u16string& expected_message);
 testing::AssertionResult VerifyOnePermissionMessage(
     const PermissionSet& permissions,
     Manifest::Type extension_type,
-    const base::string16& expected_message);
+    const std::u16string& expected_message);
 
 testing::AssertionResult VerifyOnePermissionMessageWithSubmessages(
     const PermissionsData* permissions_data,
@@ -56,7 +55,7 @@ testing::AssertionResult VerifyPermissionMessages(
     bool check_order);
 testing::AssertionResult VerifyPermissionMessages(
     const PermissionsData* permissions_data,
-    const std::vector<base::string16>& expected_messages,
+    const std::vector<std::u16string>& expected_messages,
     bool check_order);
 
 testing::AssertionResult VerifyPermissionMessagesWithSubmessages(
@@ -66,8 +65,8 @@ testing::AssertionResult VerifyPermissionMessagesWithSubmessages(
     bool check_order);
 testing::AssertionResult VerifyPermissionMessagesWithSubmessages(
     const PermissionsData* permissions_data,
-    const std::vector<base::string16>& expected_messages,
-    const std::vector<std::vector<base::string16>>& expected_submessages,
+    const std::vector<std::u16string>& expected_messages,
+    const std::vector<std::vector<std::u16string>>& expected_submessages,
     bool check_order);
 
 }  // namespace extensions

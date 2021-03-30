@@ -37,7 +37,7 @@ AssistantMainView::AssistantMainView(AssistantViewDelegate* delegate)
   SetID(AssistantViewID::kMainView);
   InitLayout();
 
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
   AssistantUiController::Get()->GetModel()->AddObserver(this);
 }
 
@@ -79,7 +79,9 @@ void AssistantMainView::RequestFocus() {
 
 void AssistantMainView::OnAssistantControllerDestroying() {
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
-  assistant_controller_observer_.Remove(AssistantController::Get());
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void AssistantMainView::OnUiVisibilityChanged(

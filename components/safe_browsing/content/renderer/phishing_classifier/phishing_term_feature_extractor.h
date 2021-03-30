@@ -27,7 +27,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
 
@@ -79,7 +78,7 @@ class PhishingTermFeatureExtractor {
   // |page_text|, |features|, and |shingle_hashes| are owned by the caller,
   // and must not be destroyed until either |done_callback| is run or
   // CancelPendingExtraction() is called.
-  void ExtractFeatures(const base::string16* page_text,
+  void ExtractFeatures(const std::u16string* page_text,
                        FeatureMap* features,
                        std::set<uint32_t>* shingle_hashes,
                        DoneCallback done_callback);
@@ -148,7 +147,7 @@ class PhishingTermFeatureExtractor {
   const base::TickClock* clock_;
 
   // The output parameters from the most recent call to ExtractFeatures().
-  const base::string16* page_text_;  // The caller keeps ownership of this.
+  const std::u16string* page_text_;  // The caller keeps ownership of this.
   FeatureMap* features_;             // The caller keeps ownership of this.
   std::set<uint32_t>* shingle_hashes_;
   DoneCallback done_callback_;

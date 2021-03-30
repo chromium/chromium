@@ -30,9 +30,12 @@ TaskSession::DocumentSession::~DocumentSession() {
 }
 
 bool TaskSession::DocumentSession::AddDetachedNode(const Node& node) {
-  // Take the node out of |sent_nodes|, otherwise, the |node| would be found
-  // invisible in next capturing and be reported as the removed node again.
-  if (sent_nodes_.Take(&node)) {
+  // Only notify the detachment of visible node which shall be in |sent_nodes|
+  // or |changed_nodes|.
+  // Take the node out of |sent_nodes| or |changed_nodes|, otherwise, the |node|
+  // would be found invisible in next capturing and be reported as the removed
+  // node again.
+  if (sent_nodes_.Take(&node) || changed_nodes_.Take(&node)) {
     detached_nodes_.emplace_back(reinterpret_cast<int64_t>(&node));
     return true;
   }
@@ -61,6 +64,7 @@ ContentHolder* TaskSession::DocumentSession::GetNextChangedNode() {
     auto node = changed_content_.begin()->key;
     const gfx::Rect rect = changed_content_.Take(node);
     if (node.Get() && node->GetLayoutObject()) {
+      sent_nodes_.insert(WeakMember<const Node>(node));
       total_sent_nodes_++;
       return MakeGarbageCollected<ContentHolder>(node, rect);
     }
@@ -72,7 +76,7 @@ bool TaskSession::DocumentSession::AddChangedNode(Node& node) {
   // No need to save the node that hasn't been sent because it will be captured
   // once being on screen.
   if (sent_nodes_.Contains(&node)) {
-    changed_nodes_.insert(WeakMember<Node>(&node));
+    changed_nodes_.insert(WeakMember<const Node>(&node));
     return true;
   }
   return false;
@@ -83,6 +87,8 @@ void TaskSession::DocumentSession::OnContentCaptured(
     const gfx::Rect& visual_rect) {
   if (changed_nodes_.Take(&node)) {
     changed_content_.Set(WeakMember<Node>(&node), visual_rect);
+    if (IsConstantStreamingEnabled())
+      sent_nodes_.Take(&node);
   } else {
     if (IsConstantStreamingEnabled()) {
       if (auto value = sent_nodes_.Take(&node))

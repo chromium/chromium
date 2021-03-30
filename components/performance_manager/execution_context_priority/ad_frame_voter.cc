@@ -31,7 +31,7 @@ AdFrameVoter::AdFrameVoter() = default;
 AdFrameVoter::~AdFrameVoter() = default;
 
 void AdFrameVoter::SetVotingChannel(VotingChannel voting_channel) {
-  voting_channel_.SetVotingChannel(std::move(voting_channel));
+  voting_channel_ = std::move(voting_channel);
 }
 
 void AdFrameVoter::OnFrameNodeAdded(const FrameNode* frame_node) {
@@ -50,12 +50,12 @@ void AdFrameVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
 }
 
 void AdFrameVoter::OnIsAdFrameChanged(const FrameNode* frame_node) {
-  // The IsAdFrame() bit is a one-way switch that can only go from false to
-  // true.
-  DCHECK(frame_node->IsAdFrame());
-
-  const Vote vote(base::TaskPriority::LOWEST, kAdFrameReason);
-  voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
+  if (frame_node->IsAdFrame()) {
+    const Vote vote(base::TaskPriority::LOWEST, kAdFrameReason);
+    voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
+  } else {
+    voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
+  }
 }
 
 }  // namespace execution_context_priority

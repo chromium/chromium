@@ -30,7 +30,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -38,9 +37,7 @@
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_render_frame_observer.h"
 #include "extensions/renderer/extensions_renderer_client.h"
-#include "extensions/renderer/guest_view/extensions_guest_view_container.h"
 #include "extensions/renderer/guest_view/extensions_guest_view_container_dispatcher.h"
-#include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/script_context.h"
@@ -116,10 +113,6 @@ bool ChromeExtensionsRendererClient::ExtensionAPIEnabledForServiceWorkerScript(
     const GURL& scope,
     const GURL& script_url) const {
   if (!script_url.SchemeIs(extensions::kExtensionScheme))
-    return false;
-
-  if (!extensions::ExtensionsClient::Get()
-           ->ExtensionAPIEnabledInExtensionServiceWorkers())
     return false;
 
   const Extension* extension =
@@ -313,19 +306,6 @@ void ChromeExtensionsRendererClient::SetExtensionDispatcherForTest(
 extensions::Dispatcher*
 ChromeExtensionsRendererClient::GetExtensionDispatcherForTest() {
   return extension_dispatcher();
-}
-
-// static
-guest_view::GuestViewContainer*
-ChromeExtensionsRendererClient::CreateBrowserPluginDelegate(
-    content::RenderFrame* render_frame,
-    const content::WebPluginInfo& info,
-    const std::string& mime_type,
-    const GURL& original_url) {
-  if (mime_type == content::kBrowserPluginMimeType)
-    return new extensions::ExtensionsGuestViewContainer(render_frame);
-  return new extensions::MimeHandlerViewContainer(render_frame, info, mime_type,
-                                                  original_url);
 }
 
 // static

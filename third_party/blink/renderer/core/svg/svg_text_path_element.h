@@ -56,6 +56,7 @@ class SVGTextPathElement final : public SVGTextContentElement,
   };
 
   explicit SVGTextPathElement(Document&);
+  ~SVGTextPathElement() override;
 
   SVGAnimatedLength* startOffset() const { return start_offset_.Get(); }
   SVGAnimatedEnumeration<SVGTextPathMethodType>* method() {
@@ -68,8 +69,6 @@ class SVGTextPathElement final : public SVGTextContentElement,
   void Trace(Visitor*) const override;
 
  private:
-  ~SVGTextPathElement() override;
-
   void ClearResourceReferences();
 
   void BuildPendingResource() override;

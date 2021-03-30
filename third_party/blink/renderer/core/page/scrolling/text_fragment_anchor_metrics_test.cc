@@ -266,8 +266,9 @@ TEST_F(TextFragmentAnchorMetricsTest, UMAMetricsCollectedSearchEngineReferrer) {
                                        1);
 }
 
-// Test UMA metrics collection when there is no match found
-TEST_F(TextFragmentAnchorMetricsTest, NoMatchFound) {
+// Test UMA metrics collection when there is no match found with an unknown
+// referrer.
+TEST_F(TextFragmentAnchorMetricsTest, NoMatchFoundWithUnknownSource) {
   SimRequest request("https://example.com/test.html#:~:text=cat", "text/html");
   LoadURL("https://example.com/test.html#:~:text=cat");
   request.Complete(R"HTML(
@@ -343,6 +344,93 @@ TEST_F(TextFragmentAnchorMetricsTest, NoMatchFound) {
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                       1);
+}
+
+// Test UMA metrics collection when there is no match found with a Search Engine
+// referrer.
+TEST_F(TextFragmentAnchorMetricsTest, NoMatchFoundWithSearchEngineSource) {
+  // Set the referrer to a known search engine URL. This should cause metrics
+  // to be reported for the SearchEngine variant of histograms.
+  SimRequest::Params params;
+  params.referrer = "https://www.bing.com";
+  SimRequest request("https://example.com/test.html#:~:text=cat", "text/html",
+                     params);
+  LoadURL("https://example.com/test.html#:~:text=cat");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 1200px;
+      }
+      p {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.SelectorCount", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.SelectorCount", 1, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.MatchRate", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.MatchRate", 0, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.AmbiguousMatch", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.AmbiguousMatch", 0, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.ScrollCancelled", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.ScrollCancelled", 0, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.DidScrollIntoView", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.TimeToScrollIntoView", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.DirectiveLength", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.DirectiveLength", 8, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.ExactTextLength", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.RangeMatchLength", 0);
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.StartTextLength", 0);
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.EndTextLength", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.Parameters", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.TimeToScrollToTop", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.ListItemMatch", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.TableCellMatch", 0);
+
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
+  histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 1,
                                        1);
 }
 
@@ -751,12 +839,6 @@ INSTANTIATE_TEST_SUITE_P(
 // Test that the ScrollCancelled metric gets reported when a user scroll cancels
 // the scroll into view.
 TEST_P(TextFragmentAnchorScrollMetricsTest, ScrollCancelled) {
-  // This test isn't relevant with this flag enabled. When it's enabled,
-  // there's no way to block rendering and the fragment is installed and
-  // invoked as soon as parsing finishes which means the user cannot scroll
-  // before this point.
-  ScopedBlockHTMLParserOnStyleSheetsForTest block_parser(false);
-
   SimRequest request("https://example.com/test.html#:~:text=test", "text/html");
   SimSubresourceRequest css_request("https://example.com/test.css", "text/css");
   LoadURL("https://example.com/test.html#:~:text=test");
@@ -1618,6 +1700,62 @@ TEST_F(TextFragmentAnchorMetricsTest, LinkOpenedFailedUKM) {
   ukm_recorder()->ExpectEntryMetric(entry, kSuccessUkmMetric,
                                     /*expected_value=*/false);
   EXPECT_TRUE(ukm_recorder()->GetEntryMetric(entry, kSourceUkmMetric));
+}
+
+// Tests that loading a page that has a ForceLoadAtTop DocumentPolicy invokes
+// the UseCounter.
+TEST_F(TextFragmentAnchorMetricsTest, ForceLoadAtTopUseCounter) {
+  SimRequest::Params params;
+  params.response_http_headers.insert("Document-Policy", "force-load-at-top");
+  SimRequest request("https://example.com/test.html", "text/html", params);
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
+}
+
+// Tests that loading a page that explicitly disables ForceLoadAtTop
+// DocumentPolicy or has no DocumentPolicy doesn't invoke the UseCounter for
+// ForceLoadAtTop.
+TEST_F(TextFragmentAnchorMetricsTest, NoForceLoadAtTopUseCounter) {
+  SimRequest::Params params;
+  params.response_http_headers.insert("Document-Policy",
+                                      "no-force-load-at-top");
+  SimRequest request("https://example.com/test.html", "text/html", params);
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
+
+  // Try without any DocumentPolicy headers.
+  SimRequest request2("https://example.com/test2.html", "text/html");
+  LoadURL("https://example.com/test2.html");
+  request2.Complete(R"HTML(
+    <!DOCTYPE html>
+    <p>This is a different test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kForceLoadAtTop));
 }
 
 }  // namespace blink

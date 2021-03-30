@@ -13,12 +13,12 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "net/android/cert_verify_result_android.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_export.h"
-#include "net/dns/dns_config_service_posix.h"
 #include "net/socket/socket_descriptor.h"
 
 namespace net {
@@ -92,12 +92,17 @@ NET_EXPORT_PRIVATE base::Optional<int32_t> GetWifiSignalLevel();
 // settings. |dns_over_tls_hostname| will only be non-empty if
 // |dns_over_tls_active| is true.
 // Only callable on Marshmallow and newer releases.
-// Returns CONFIG_PARSE_POSIX_OK upon success,
-// CONFIG_PARSE_POSIX_NO_NAMESERVERS if no DNS servers found.
-NET_EXPORT_PRIVATE internal::ConfigParsePosixResult GetDnsServers(
+// Returns false when a valid server config could not be read.
+NET_EXPORT_PRIVATE bool GetDnsServers(
     std::vector<IPEndPoint>* dns_servers,
     bool* dns_over_tls_active,
-    std::string* dns_over_tls_hostname);
+    std::string* dns_over_tls_hostname,
+    std::vector<std::string>* search_suffixes);
+using DnsServerGetter =
+    base::RepeatingCallback<bool(std::vector<IPEndPoint>* dns_servers,
+                                 bool* dns_over_tls_active,
+                                 std::string* dns_over_tls_hostname,
+                                 std::vector<std::string>* search_suffixes)>;
 
 // Reports to the framework that the current default network appears to have
 // connectivity issues. This may serve as a signal for the OS to consider

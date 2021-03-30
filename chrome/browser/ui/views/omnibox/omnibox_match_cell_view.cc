@@ -29,6 +29,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -44,6 +46,8 @@ static constexpr int kEntityImageSize = 32;
 class PlaceholderImageSource : public gfx::CanvasImageSource {
  public:
   PlaceholderImageSource(const gfx::Size& canvas_size, SkColor color);
+  PlaceholderImageSource(const PlaceholderImageSource&) = delete;
+  PlaceholderImageSource& operator=(const PlaceholderImageSource&) = delete;
   ~PlaceholderImageSource() override = default;
 
   // gfx::CanvasImageSource:
@@ -51,8 +55,6 @@ class PlaceholderImageSource : public gfx::CanvasImageSource {
 
  private:
   const SkColor color_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlaceholderImageSource);
 };
 
 PlaceholderImageSource::PlaceholderImageSource(const gfx::Size& canvas_size,
@@ -75,7 +77,10 @@ void PlaceholderImageSource::Draw(gfx::Canvas* canvas) {
 
 class RoundedCornerImageView : public views::ImageView {
  public:
+  METADATA_HEADER(RoundedCornerImageView);
   RoundedCornerImageView() = default;
+  RoundedCornerImageView(const RoundedCornerImageView&) = delete;
+  RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
 
   // views::ImageView:
   bool GetCanProcessEventsWithinSubtree() const override { return false; }
@@ -83,9 +88,6 @@ class RoundedCornerImageView : public views::ImageView {
  protected:
   // views::ImageView:
   void OnPaint(gfx::Canvas* canvas) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RoundedCornerImageView);
 };
 
 void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
@@ -97,6 +99,9 @@ void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
   canvas->ClipPath(mask, true);
   ImageView::OnPaint(canvas);
 }
+
+BEGIN_METADATA(RoundedCornerImageView, views::ImageView)
+END_METADATA
 
 }  // namespace
 
@@ -201,7 +206,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   SetTailSuggestCommonPrefixWidth(
       (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL)
           ? match.tail_suggest_common_prefix  // Used for indent calculation.
-          : base::string16());
+          : std::u16string());
 }
 
 void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image) {
@@ -218,10 +223,6 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image) {
   width = kEntityImageSize * width / max;
   height = kEntityImageSize * height / max;
   answer_image_view_->SetImageSize(gfx::Size(width, height));
-}
-
-const char* OmniboxMatchCellView::GetClassName() const {
-  return "OmniboxMatchCellView";
 }
 
 gfx::Insets OmniboxMatchCellView::GetInsets() const {
@@ -251,7 +252,7 @@ void OmniboxMatchCellView::Layout() {
   const int text_width = child_area.width() - text_indent;
 
   if (two_line) {
-    if (description_view_->text().empty()) {
+    if (description_view_->GetText().empty()) {
       // This vertically centers content in the rare case that no description is
       // provided.
       content_view_->SetBounds(x, y, text_width, row_height);
@@ -298,7 +299,7 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
 }
 
 void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
-    const base::string16& common_prefix) {
+    const std::u16string& common_prefix) {
   InvalidateLayout();
   if (common_prefix.empty()) {
     tail_suggest_common_prefix_width_ = 0;
@@ -315,3 +316,6 @@ void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
   // Indent text by prefix, but come back by width of ellipsis.
   tail_suggest_common_prefix_width_ -= ellipsis_width_;
 }
+
+BEGIN_METADATA(OmniboxMatchCellView, views::View)
+END_METADATA

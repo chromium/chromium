@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
 #include "base/strings/stringprintf.h"
-#include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/child_process_launcher_helper.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
@@ -17,7 +15,6 @@
 #include "content/grit/content_resources.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
@@ -65,10 +62,6 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   options->mach_ports_for_rendezvous.insert(std::make_pair(
       'mojo', base::MachRendezvousPort(endpoint.TakeMachReceiveRight())));
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-  options->launch_x86_64 = delegate_->LaunchX86_64();
-#endif  // OS_MAC && ARCH_CPU_ARM64
-
   options->environment = delegate_->GetEnvironment();
 
   options->disclaim_responsibility = delegate_->DisclaimResponsibility();
@@ -80,10 +73,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
       command_line_->HasSwitch(sandbox::policy::switches::kNoSandbox) ||
       sandbox::policy::IsUnsandboxedSandboxType(sandbox_type);
 
-  bool use_v2 = (sandbox_type != sandbox::policy::SandboxType::kGpu) ||
-                base::FeatureList::IsEnabled(features::kMacV2GPUSandbox);
-
-  if (use_v2 && !no_sandbox) {
+  if (!no_sandbox) {
     // Generate the profile string.
     std::string profile =
         sandbox::policy::SandboxMac::GetSandboxProfile(sandbox_type);

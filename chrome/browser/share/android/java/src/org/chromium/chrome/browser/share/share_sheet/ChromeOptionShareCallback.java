@@ -21,4 +21,13 @@ public interface ChromeOptionShareCallback {
      */
     public void showThirdPartyShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime);
+
+    /**
+     * Used to show the share sheet
+     * @param params The share parameters.
+     * @param chromeShareExtras The extras not contained in {@code params}.
+     * @param shareStartTime The start time of the current share.
+     */
+    public void showShareSheet(
+            ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime);
 }

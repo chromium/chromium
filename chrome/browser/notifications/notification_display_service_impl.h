@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_queue.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -60,7 +60,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
       const GURL& origin,
       const std::string& notification_id,
       const base::Optional<int>& action_index,
-      const base::Optional<base::string16>& reply,
+      const base::Optional<std::u16string>& reply,
       const base::Optional<bool>& by_user);
 
   // Registers an implementation object to handle notification operations
@@ -89,7 +89,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
                                     const GURL& origin,
                                     const std::string& notification_id,
                                     const base::Optional<int>& action_index,
-                                    const base::Optional<base::string16>& reply,
+                                    const base::Optional<std::u16string>& reply,
                                     const base::Optional<bool>& by_user,
                                     Profile* profile);
 

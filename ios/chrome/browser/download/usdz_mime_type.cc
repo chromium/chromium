@@ -14,7 +14,7 @@ char kLegacyPixarUsdzMimeType[] = "model/vnd.pixar.usd";
 char krealityFileExtension[] = ".reality";
 
 bool IsUsdzFileFormat(const std::string& mime_type,
-                      const base::string16& suggested_filename) {
+                      const std::u16string& suggested_filename) {
   base::FilePath suggested_path =
       base::FilePath(base::UTF16ToUTF8(suggested_filename));
   return mime_type == kUsdzMimeType || mime_type == kLegacyUsdzMimeType ||

@@ -28,6 +28,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -169,8 +170,7 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
               simulated_reason_for_quiet_ui));
   DCHECK(!notification_permission_request_);
   notification_permission_request_.emplace(
-      "notifications",
-      permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+      "notifications", permissions::RequestType::kNotifications,
       GURL("https://example.com"));
   permission_request_manager->AddRequest(web_contents->GetMainFrame(),
                                          &*notification_permission_request_);
@@ -227,8 +227,6 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
       {"javascript", ContentSettingsType::JAVASCRIPT, ImageType::JAVASCRIPT},
       {"popups", ContentSettingsType::POPUPS, ImageType::POPUPS},
       {"geolocation", ContentSettingsType::GEOLOCATION, ImageType::GEOLOCATION},
-      {"ppapi_broker", ContentSettingsType::PPAPI_BROKER,
-       ImageType::PPAPI_BROKER},
       {"mixed_script", ContentSettingsType::MIXEDSCRIPT,
        ImageType::MIXEDSCRIPT},
       {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS,
@@ -266,10 +264,6 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleDialogTest, InvokeUi_popups) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContentSettingBubbleDialogTest, InvokeUi_geolocation) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ContentSettingBubbleDialogTest, InvokeUi_ppapi_broker) {
   ShowAndVerifyUi();
 }
 

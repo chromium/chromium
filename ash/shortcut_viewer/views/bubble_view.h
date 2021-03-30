@@ -5,10 +5,10 @@
 #ifndef ASH_SHORTCUT_VIEWER_VIEWS_BUBBLE_VIEW_H_
 #define ASH_SHORTCUT_VIEWER_VIEWS_BUBBLE_VIEW_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -32,7 +32,7 @@ class BubbleView : public views::View {
 
   void SetIcon(const gfx::VectorIcon& icon);
 
-  void SetText(const base::string16& text);
+  void SetText(const std::u16string& text);
 
  private:
   // views::View:

@@ -34,11 +34,4 @@
     [CEReactions, RaisesException] DOMString removeProperty(DOMString property);
     readonly attribute CSSRule? parentRule;
     [CEReactions, SetterCallWith=ExecutionContext, RaisesException=Setter] attribute [TreatNullAs=EmptyString] DOMString cssFloat;
-
-    // The camel-cased and dashed attribute getters have custom bindings.
-    // https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-camel-cased-attribute
-    // https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-dashed-attribute
-    [Affects=Nothing] getter DOMString (DOMString name);
-    [CEReactions, CallWith=ScriptState] setter void (DOMString property, [TreatNullAs=EmptyString] DOMString propertyValue);
-    deleter void (DOMString property);
 };

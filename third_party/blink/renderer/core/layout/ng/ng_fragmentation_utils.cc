@@ -16,6 +16,7 @@
 
 namespace blink {
 
+namespace {
 // At a class A break point [1], the break value with the highest precedence
 // wins. If the two values have the same precedence (e.g. "left" and "right"),
 // the value specified on a latter object wins.
@@ -54,6 +55,25 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
       return 6;
   }
 }
+
+// Return layout overflow block-size that's not clipped (or simply the
+// block-size if it *is* clipped).
+LayoutUnit BlockAxisLayoutOverflow(const NGPhysicalFragment& fragment,
+                                   WritingDirectionMode writing_direction) {
+  const auto* box = DynamicTo<NGPhysicalBoxFragment>(fragment);
+  if (box && box->HasNonVisibleOverflow()) {
+    OverflowClipAxes block_axis =
+        writing_direction.IsHorizontal() ? kOverflowClipY : kOverflowClipX;
+    if (box->GetOverflowClipAxes() & block_axis)
+      box = nullptr;
+  }
+  PhysicalRect rect = fragment.LocalRect();
+  if (box)
+    rect.UniteEvenIfEmpty(box->LayoutOverflow());
+  return writing_direction.IsHorizontal() ? rect.Bottom() : rect.Right();
+}
+
+}  // anonymous namespace
 
 EBreakBetween JoinFragmentainerBreakValues(EBreakBetween first_value,
                                            EBreakBetween second_value) {
@@ -196,11 +216,6 @@ void SetupFragmentBuilderForFragmentation(
     NGBoxFragmentBuilder* builder) {
   builder->SetHasBlockFragmentation();
   builder->SetPreviousBreakToken(previous_break_token);
-
-  // The whereabouts of our container's so far best breakpoint is none of our
-  // business, but we store its appeal, so that we don't look for breakpoints
-  // with lower appeal than that.
-  builder->SetBreakAppeal(space.EarlyBreakAppeal());
 
   if (space.IsInitialColumnBalancingPass())
     builder->SetIsInitialColumnBalancingPass();
@@ -570,6 +585,26 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     return false;
   }
 
+  if (!child.IsInline() && builder) {
+    // We need to propagate the initial break-before value up our container
+    // chain, until we reach a container that's not a first child. If we get all
+    // the way to the root of the fragmentation context without finding any such
+    // container, we have no valid class A break point, and if a forced break
+    // was requested, none will be inserted.
+    builder->SetInitialBreakBeforeIfNeeded(child.Style().BreakBefore());
+
+    // We also need to store the previous break-after value we've seen, since it
+    // will serve as input to the next breakpoint (where we will combine the
+    // break-after value of the previous child and the break-before value of the
+    // next child, to figure out what to do at the breakpoint). The break-after
+    // value of the last child will also be propagated up our container chain,
+    // until we reach a container that's not a last child. This will be the
+    // class A break point that it affects.
+    EBreakBetween break_after = JoinFragmentainerBreakValues(
+        layout_result.FinalBreakAfter(), child.Style().BreakAfter());
+    builder->SetPreviousBreakAfter(break_after);
+  }
+
   const auto& physical_fragment = layout_result.PhysicalFragment();
   NGFragment fragment(space.GetWritingDirection(), physical_fragment);
 
@@ -594,12 +629,12 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
       DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken());
 
   LayoutUnit space_left =
-      space.FragmentainerBlockSize() - fragmentainer_block_offset;
+      FragmentainerCapacity(space) - fragmentainer_block_offset;
 
   // If we haven't used any space at all in the fragmentainer yet, we cannot
   // break before this child, or there'd be no progress. We'd risk creating an
   // infinite number of fragmentainers without putting any content into them.
-  bool refuse_break_before = space_left >= space.FragmentainerBlockSize();
+  bool refuse_break_before = space_left >= FragmentainerCapacity(space);
 
   // If the child starts past the end of the fragmentainer (probably due to a
   // block-start margin), we must break before it.
@@ -639,7 +674,10 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
         builder->SetBreakAppeal(appeal_inside);
       return true;
     }
-  } else if (refuse_break_before || fragment.BlockSize() <= space_left) {
+  } else if (refuse_break_before ||
+             BlockAxisLayoutOverflow(physical_fragment,
+                                     space.GetWritingDirection()) <=
+                 space_left) {
     // The child either fits, or we are not allowed to break. So we can move
     // past this breakpoint.
     if (child.IsBlock() && builder) {
@@ -715,6 +753,25 @@ bool AttemptSoftBreak(const NGConstraintSpace& space,
   return true;
 }
 
+const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
+                                           const NGEarlyBreak& early_break) {
+  if (early_break.Type() != NGEarlyBreak::kBlock ||
+      early_break.BlockNode() != child)
+    return nullptr;
+
+  // If there's no break inside, we should already have broken before the child.
+  DCHECK(early_break.BreakInside());
+  return early_break.BreakInside();
+}
+
+bool IsEarlyBreakTarget(const NGEarlyBreak& early_break,
+                        const NGBoxFragmentBuilder& builder,
+                        const NGLayoutInputNode& child) {
+  if (early_break.Type() == NGEarlyBreak::kLine)
+    return child.IsInline() && early_break.LineNumber() == builder.LineCount();
+  return early_break.IsBreakBefore() && early_break.BlockNode() == child;
+}
+
 NGConstraintSpace CreateConstraintSpaceForColumns(
     const NGConstraintSpace& parent_space,
     LogicalSize column_size,
@@ -726,15 +783,8 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
   space_builder.SetAvailableSize(column_size);
   space_builder.SetPercentageResolutionSize(percentage_resolution_size);
   space_builder.SetStretchInlineSizeIfAuto(true);
-
-  // To ensure progression, we need something larger than 0 here. The spec
-  // actually says that fragmentainers have to accept at least 1px of content.
-  // See https://www.w3.org/TR/css-break-3/#breaking-rules
-  LayoutUnit column_block_size =
-      std::max(column_size.block_size, LayoutUnit(1));
-
   space_builder.SetFragmentationType(kFragmentColumn);
-  space_builder.SetFragmentainerBlockSize(column_block_size);
+  space_builder.SetFragmentainerBlockSize(column_size.block_size);
   space_builder.SetIsAnonymous(true);
   space_builder.SetIsInColumnBfc();
   if (balance_columns)
@@ -750,6 +800,30 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
 
   space_builder.SetBaselineAlgorithmType(parent_space.BaselineAlgorithmType());
 
+  return space_builder.ToConstraintSpace();
+}
+
+NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
+    const NGBlockNode& multicol,
+    const NGConstraintSpace& space,
+    const NGFragmentGeometry& fragment_geometry) {
+  const ComputedStyle* style = &multicol.Style();
+  NGBoxFragmentBuilder multicol_container_builder(multicol, style, &space,
+                                                  style->GetWritingDirection());
+  multicol_container_builder.SetIsNewFormattingContext(true);
+  multicol_container_builder.SetInitialFragmentGeometry(fragment_geometry);
+  multicol_container_builder.SetIsBlockFragmentationContextRoot();
+
+  return multicol_container_builder;
+}
+
+NGConstraintSpace CreateConstraintSpaceForMulticol(
+    const NGBlockNode& multicol) {
+  WritingDirectionMode writing_direction_mode =
+      multicol.Style().GetWritingDirection();
+  NGConstraintSpaceBuilder space_builder(
+      writing_direction_mode.GetWritingMode(), writing_direction_mode,
+      /* is_new_fc */ true);
   return space_builder.ToConstraintSpace();
 }
 

@@ -37,10 +37,6 @@ class NavigationManagerDelegate {
   // navigation item.
   virtual void RecordPageStateInNavigationItem() = 0;
 
-  // Informs the delegate that a go to index same-document navigation occured.
-  virtual void OnGoToIndexSameDocumentNavigation(NavigationInitiationType type,
-                                                 bool has_user_gesture) = 0;
-
   // Instructs the delegate to load the current navigation item.
   virtual void LoadCurrentItem(NavigationInitiationType type) = 0;
 

@@ -63,7 +63,8 @@ class LayerUtilTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(LayerUtilTest, CopyContentToExistingLayer) {
+// TODO(crbug.com/1177129) Re-enable test
+TEST_F(LayerUtilTest, DISABLED_CopyContentToExistingLayer) {
   ui::Layer layer1;
   layer1.SetBounds(gfx::Rect(100, 100));
   root_layer()->Add(&layer1);

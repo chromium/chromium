@@ -11,34 +11,22 @@
 #include "chrome/grit/chromium_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-bool IsObsoleteCpu() {
-#if defined(ARCH_CPU_X86_FAMILY)
-  return !base::CPU().has_sse3();
-#else
-  return false;
-#endif
-}
-
-}  // namespace
-
 // static
 bool ObsoleteSystem::IsObsoleteNowOrSoon() {
-  return IsObsoleteCpu();
+  return false;
 }
 
 // static
-base::string16 ObsoleteSystem::LocalizedObsoleteString() {
-  return l10n_util::GetStringUTF16(IDS_CPU_X86_SSE2_OBSOLETE_SOON);
+std::u16string ObsoleteSystem::LocalizedObsoleteString() {
+  return std::u16string();
 }
 
 // static
 bool ObsoleteSystem::IsEndOfTheLine() {
-  return CHROME_VERSION_MAJOR >= 88;
+  return true;
 }
 
 // static
 const char* ObsoleteSystem::GetLinkURL() {
-  return chrome::kCpuX86Sse2ObsoleteURL;
+  return "";
 }

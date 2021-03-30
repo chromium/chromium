@@ -271,12 +271,9 @@ IN_PROC_BROWSER_TEST_F(SavePageAsWebBundleBrowserTest,
   ASSERT_TRUE(CreateSaveDir());
   const auto file_path =
       save_dir_.GetPath().Append(FILE_PATH_LITERAL("test.wbn"));
-  // Currently WebBundler in the data decoder service is not implemented yet,
-  // and just returns kNotImplemented.
-  // TODO(crbug.com/1040752): Implement WebBundler and update test.
-  EXPECT_EQ(
-      std::make_tuple(0, data_decoder::mojom::WebBundlerError::kNotImplemented),
-      GenerateWebBundle(file_path));
+  const auto result = GenerateWebBundle(file_path);
+  EXPECT_GT(std::get<0>(result), 0lu);
+  EXPECT_EQ(std::get<1>(result), data_decoder::mojom::WebBundlerError::kOK);
 }
 
 IN_PROC_BROWSER_TEST_F(SavePageAsWebBundleBrowserTest,

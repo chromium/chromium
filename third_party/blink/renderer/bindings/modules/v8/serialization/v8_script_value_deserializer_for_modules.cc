@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto.h"
@@ -13,8 +13,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_directory_handle.h"
-#include "third_party/blink/renderer/modules/file_system_access/native_file_system_file_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
@@ -22,6 +22,9 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_frame_attachment.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
 
@@ -52,9 +55,9 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
           ExecutionContext::From(GetScriptState()), name,
           static_cast<mojom::blink::FileSystemType>(raw_type), KURL(root_url));
     }
-    case kNativeFileSystemFileHandleTag:
-    case kNativeFileSystemDirectoryHandleTag:
-      return ReadNativeFileSystemHandle(tag);
+    case kFileSystemFileHandleTag:
+    case kFileSystemDirectoryHandleTag:
+      return ReadFileSystemHandle(tag);
     case kRTCCertificateTag: {
       String pem_private_key;
       String pem_certificate;
@@ -75,6 +78,8 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
       return ReadRTCEncodedAudioFrame();
     case kRTCEncodedVideoFrameTag:
       return ReadRTCEncodedVideoFrame();
+    case kAudioFrameTag:
+      return ReadAudioFrame();
     case kVideoFrameTag:
       return ReadVideoFrame();
     default:
@@ -311,10 +316,9 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
   return MakeGarbageCollected<CryptoKey>(key);
 }
 
-NativeFileSystemHandle*
-V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
+FileSystemHandle* V8ScriptValueDeserializerForModules::ReadFileSystemHandle(
     SerializationTag tag) {
-  if (!RuntimeEnabledFeatures::NativeFileSystemEnabled(
+  if (!RuntimeEnabledFeatures::FileSystemAccessEnabled(
           ExecutionContext::From(GetScriptState()))) {
     return nullptr;
   }
@@ -326,52 +330,52 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
   }
 
   // Find the FileSystemHandle's token.
-  SerializedScriptValue::NativeFileSystemTokensArray& tokens_array =
-      GetSerializedScriptValue()->NativeFileSystemTokens();
+  SerializedScriptValue::FileSystemAccessTokensArray& tokens_array =
+      GetSerializedScriptValue()->FileSystemAccessTokens();
   if (token_index >= tokens_array.size()) {
     return nullptr;
   }
 
   // IndexedDB code assumes that deserializing a SSV is non-destructive. So
   // rather than consuming the token here instead we clone it.
-  mojo::Remote<mojom::blink::NativeFileSystemTransferToken> token(
+  mojo::Remote<mojom::blink::FileSystemAccessTransferToken> token(
       std::move(tokens_array[token_index]));
   if (!token) {
     return nullptr;
   }
 
-  mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> token_clone;
+  mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> token_clone;
   token->Clone(token_clone.InitWithNewPipeAndPassReceiver());
   tokens_array[token_index] = std::move(token_clone);
 
-  // Use the NativeFileSystemManager to redeem the token to clone the
+  // Use the FileSystemAccessManager to redeem the token to clone the
   // FileSystemHandle.
   ExecutionContext* execution_context =
       ExecutionContext::From(GetScriptState());
-  mojo::Remote<mojom::blink::NativeFileSystemManager>
-      native_file_system_manager;
+  mojo::Remote<mojom::blink::FileSystemAccessManager>
+      file_system_access_manager;
   execution_context->GetBrowserInterfaceBroker().GetInterface(
-      native_file_system_manager.BindNewPipeAndPassReceiver());
+      file_system_access_manager.BindNewPipeAndPassReceiver());
 
   // Clone the FileSystemHandle object.
   switch (tag) {
-    case kNativeFileSystemFileHandleTag: {
-      mojo::PendingRemote<mojom::blink::NativeFileSystemFileHandle> file_handle;
+    case kFileSystemFileHandleTag: {
+      mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle> file_handle;
 
-      native_file_system_manager->GetFileHandleFromToken(
+      file_system_access_manager->GetFileHandleFromToken(
           token.Unbind(), file_handle.InitWithNewPipeAndPassReceiver());
 
-      return MakeGarbageCollected<NativeFileSystemFileHandle>(
-          execution_context, name, std::move(file_handle));
+      return MakeGarbageCollected<FileSystemFileHandle>(execution_context, name,
+                                                        std::move(file_handle));
     }
-    case kNativeFileSystemDirectoryHandleTag: {
-      mojo::PendingRemote<mojom::blink::NativeFileSystemDirectoryHandle>
+    case kFileSystemDirectoryHandleTag: {
+      mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
           directory_handle;
 
-      native_file_system_manager->GetDirectoryHandleFromToken(
+      file_system_access_manager->GetDirectoryHandleFromToken(
           token.Unbind(), directory_handle.InitWithNewPipeAndPassReceiver());
 
-      return MakeGarbageCollected<NativeFileSystemDirectoryHandle>(
+      return MakeGarbageCollected<FileSystemDirectoryHandle>(
           execution_context, name, std::move(directory_handle));
     }
     default: {
@@ -417,6 +421,28 @@ V8ScriptValueDeserializerForModules::ReadRTCEncodedVideoFrame() {
     return nullptr;
 
   return MakeGarbageCollected<RTCEncodedVideoFrame>(frames[index]);
+}
+
+AudioFrame* V8ScriptValueDeserializerForModules::ReadAudioFrame() {
+  if (!RuntimeEnabledFeatures::WebCodecsEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  uint32_t index;
+  if (!ReadUint32(&index))
+    return nullptr;
+
+  const auto* attachment =
+      GetSerializedScriptValue()->GetAttachmentIfExists<AudioFrameAttachment>();
+  if (!attachment)
+    return nullptr;
+
+  const auto& serialization_data = attachment->SerializationData();
+  if (index >= attachment->size())
+    return nullptr;
+
+  return MakeGarbageCollected<AudioFrame>(serialization_data[index].get());
 }
 
 VideoFrame* V8ScriptValueDeserializerForModules::ReadVideoFrame() {

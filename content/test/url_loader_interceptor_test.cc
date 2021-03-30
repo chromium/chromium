@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(URLLoaderInterceptorTest, InterceptBrowser) {
                       ->GetURLLoaderFactoryForBrowserProcess()
                       .get();
   factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0, 0, 0, request,
+      loader.InitWithNewPipeAndPassReceiver(), 0, 0, request,
       client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   client.RunUntilComplete();

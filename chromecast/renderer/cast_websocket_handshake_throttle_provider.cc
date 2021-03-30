@@ -30,7 +30,7 @@ CastWebSocketHandshakeThrottleProvider::CastWebSocketHandshakeThrottleProvider(
   DETACH_FROM_THREAD(thread_checker_);
 }
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 CastWebSocketHandshakeThrottleProvider::Clone(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   return base::WrapUnique(new CastWebSocketHandshakeThrottleProvider(*this));

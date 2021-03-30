@@ -13,8 +13,13 @@
 #include "base/native_library.h"
 #include "build/build_config.h"
 #include "ui/gfx/extension_set.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_switches.h"
+
+namespace base {
+class CommandLine;
+}
 
 namespace gl {
 
@@ -48,7 +53,22 @@ enum class ANGLEImplementation {
   kVulkan = 6,
   kSwiftShader = 7,
   kMetal = 8,
-  kMaxValue = kMetal,
+  kDefault = 9,
+  kMaxValue = kDefault,
+};
+
+struct GL_EXPORT GLImplementationParts {
+  explicit GLImplementationParts(const ANGLEImplementation angle_impl);
+  explicit GLImplementationParts(const GLImplementation gl_impl);
+
+  GLImplementation gl = kGLImplementationNone;
+  ANGLEImplementation angle = ANGLEImplementation::kNone;
+
+  constexpr bool operator==(const GLImplementationParts& other) const {
+    return (gl == other.gl && angle == other.angle);
+  }
+
+  bool IsValid() const;
 };
 
 struct GL_EXPORT GLWindowSystemBindingInfo {
@@ -92,6 +112,13 @@ class GL_EXPORT DisableNullDrawGLBindings {
   bool initial_enabled_;
 };
 
+// Set the current GL and ANGLE implementation.
+GL_EXPORT void SetGLImplementationParts(
+    const GLImplementationParts& implementation);
+
+// Get the current GL and ANGLE implementation.
+GL_EXPORT const GLImplementationParts& GetGLImplementationParts();
+
 // Set the current GL implementation.
 GL_EXPORT void SetGLImplementation(GLImplementation implementation);
 
@@ -104,18 +131,32 @@ GL_EXPORT void SetANGLEImplementation(ANGLEImplementation implementation);
 // Get the current ANGLE implementation.
 GL_EXPORT ANGLEImplementation GetANGLEImplementation();
 
-// Get the software GL implementation for the current platform.
-GL_EXPORT GLImplementation GetSoftwareGLImplementation();
+// Get the software GL implementation
+GL_EXPORT GLImplementationParts GetLegacySoftwareGLImplementation();
+GL_EXPORT GLImplementationParts GetSoftwareGLImplementation();
+GL_EXPORT GLImplementationParts GetSoftwareGLForTestsImplementation();
+
+// Set the software GL implementation on the provided command line
+GL_EXPORT void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line,
+                                                bool legacy_software_gl);
+
+// Whether the implementation is one of the software GL implementations
+GL_EXPORT bool IsSoftwareGLImplementation(GLImplementationParts implementation);
 
 // Does the underlying GL support all features from Desktop GL 2.0 that were
 // removed from the ES 2.0 spec without requiring specific extension strings.
 GL_EXPORT bool HasDesktopGLFeatures();
 
 // Get the GL implementation with a given name.
-GL_EXPORT GLImplementation GetNamedGLImplementation(const std::string& name);
+GL_EXPORT GLImplementationParts
+GetNamedGLImplementation(const std::string& gl_name,
+                         const std::string& angle_name);
 
 // Get the name of a GL implementation.
-GL_EXPORT const char* GetGLImplementationName(GLImplementation implementation);
+GL_EXPORT const char* GetGLImplementationGLName(
+    GLImplementationParts implementation);
+GL_EXPORT const char* GetGLImplementationANGLEName(
+    GLImplementationParts implementation);
 
 // Add a native library to those searched for GL entry points.
 GL_EXPORT void AddGLNativeLibrary(base::NativeLibrary library);
@@ -160,6 +201,11 @@ GL_EXPORT base::NativeLibrary LoadLibraryAndPrintError(
     const base::FilePath::CharType* filename);
 GL_EXPORT base::NativeLibrary LoadLibraryAndPrintError(
     const base::FilePath& filename);
+
+#if BUILDFLAG(USE_OPENGL_APITRACE)
+// Notify end of frame at buffer swap request.
+GL_EXPORT void TerminateFrame();
+#endif
 
 }  // namespace gl
 

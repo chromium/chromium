@@ -158,13 +158,6 @@ def main():
                       help='Upload the target archive to Google Cloud Storage.')
   args = parser.parse_args()
 
-  # Check that the script is not going to upload a toolchain built from HEAD.
-  use_head_revision = bool(int(os.environ.get('LLVM_FORCE_HEAD_REVISION', '0')))
-  if args.upload and use_head_revision:
-    print ("--upload and LLVM_FORCE_HEAD_REVISION could not be used "
-           "at the same time.")
-    return 1
-
   expected_stamp = GetExpectedStamp()
   pdir = 'clang-' + expected_stamp
   print(pdir)
@@ -189,7 +182,7 @@ def main():
         os.path.join(THIS_DIR, 'build.py'), '--bootstrap', '--disable-asserts',
         '--run-tests', '--pgo'
     ]
-    if sys.platform.startswith('linux'):
+    if sys.platform != 'darwin':
       build_cmd.append('--thinlto')
 
     TeeCmd(build_cmd, log)
@@ -226,6 +219,7 @@ def main():
       # Include libclang_rt.builtins.a for Fuchsia targets.
       'lib/clang/$V/lib/aarch64-fuchsia/libclang_rt.builtins.a',
       'lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.builtins.a',
+      'lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.profile.a',
     ])
   if sys.platform == 'darwin':
     want.extend([
@@ -249,74 +243,77 @@ def main():
     ])
   elif sys.platform.startswith('linux'):
     want.extend([
-      # Copy the stdlibc++.so.6 we linked the binaries against.
-      'lib/libstdc++.so.6',
+        # Copy the stdlibc++.so.6 we linked the binaries against.
+        'lib/libstdc++.so.6',
 
-      # Add LLD.
-      'bin/lld',
+        # Add LLD.
+        'bin/lld',
 
-      # Add llvm-ar for LTO.
-      'bin/llvm-ar',
+        # Add llvm-ar for LTO.
+        'bin/llvm-ar',
 
-      # Add llvm-objcopy for partition extraction on Android.
-      'bin/llvm-objcopy',
+        # Add llvm-objcopy for partition extraction on Android.
+        'bin/llvm-objcopy',
 
-      # AddressSanitizer C runtime (pure C won't link with *_cxx).
-      'lib/clang/$V/lib/linux/libclang_rt.asan-i386.a',
-      'lib/clang/$V/lib/linux/libclang_rt.asan-x86_64.a',
-      'lib/clang/$V/lib/linux/libclang_rt.asan-x86_64.a.syms',
+        # Add llvm-nm.
+        'bin/llvm-nm',
 
-      # AddressSanitizer C++ runtime.
-      'lib/clang/$V/lib/linux/libclang_rt.asan_cxx-i386.a',
-      'lib/clang/$V/lib/linux/libclang_rt.asan_cxx-x86_64.a',
-      'lib/clang/$V/lib/linux/libclang_rt.asan_cxx-x86_64.a.syms',
+        # AddressSanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/linux/libclang_rt.asan-i386.a',
+        'lib/clang/$V/lib/linux/libclang_rt.asan-x86_64.a',
+        'lib/clang/$V/lib/linux/libclang_rt.asan-x86_64.a.syms',
 
-      # AddressSanitizer Android runtime.
-      'lib/clang/$V/lib/linux/libclang_rt.asan-aarch64-android.so',
-      'lib/clang/$V/lib/linux/libclang_rt.asan-arm-android.so',
-      'lib/clang/$V/lib/linux/libclang_rt.asan-i686-android.so',
+        # AddressSanitizer C++ runtime.
+        'lib/clang/$V/lib/linux/libclang_rt.asan_cxx-i386.a',
+        'lib/clang/$V/lib/linux/libclang_rt.asan_cxx-x86_64.a',
+        'lib/clang/$V/lib/linux/libclang_rt.asan_cxx-x86_64.a.syms',
 
-      # HWASAN Android runtime.
-      'lib/clang/$V/lib/linux/libclang_rt.hwasan-aarch64-android.so',
+        # AddressSanitizer Android runtime.
+        'lib/clang/$V/lib/linux/libclang_rt.asan-aarch64-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.asan-arm-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.asan-i686-android.so',
 
-      # MemorySanitizer C runtime (pure C won't link with *_cxx).
-      'lib/clang/$V/lib/linux/libclang_rt.msan-x86_64.a',
-      'lib/clang/$V/lib/linux/libclang_rt.msan-x86_64.a.syms',
+        # HWASAN Android runtime.
+        'lib/clang/$V/lib/linux/libclang_rt.hwasan-aarch64-android.so',
 
-      # MemorySanitizer C++ runtime.
-      'lib/clang/$V/lib/linux/libclang_rt.msan_cxx-x86_64.a',
-      'lib/clang/$V/lib/linux/libclang_rt.msan_cxx-x86_64.a.syms',
+        # MemorySanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/linux/libclang_rt.msan-x86_64.a',
+        'lib/clang/$V/lib/linux/libclang_rt.msan-x86_64.a.syms',
 
-      # Profile runtime (used by profiler and code coverage).
-      'lib/clang/$V/lib/linux/libclang_rt.profile-i386.a',
-      'lib/clang/$V/lib/linux/libclang_rt.profile-x86_64.a',
-      'lib/clang/$V/lib/linux/libclang_rt.profile-aarch64-android.a',
-      'lib/clang/$V/lib/linux/libclang_rt.profile-arm-android.a',
+        # MemorySanitizer C++ runtime.
+        'lib/clang/$V/lib/linux/libclang_rt.msan_cxx-x86_64.a',
+        'lib/clang/$V/lib/linux/libclang_rt.msan_cxx-x86_64.a.syms',
 
-      # ThreadSanitizer C runtime (pure C won't link with *_cxx).
-      'lib/clang/$V/lib/linux/libclang_rt.tsan-x86_64.a',
-      'lib/clang/$V/lib/linux/libclang_rt.tsan-x86_64.a.syms',
+        # Profile runtime (used by profiler and code coverage).
+        'lib/clang/$V/lib/linux/libclang_rt.profile-i386.a',
+        'lib/clang/$V/lib/linux/libclang_rt.profile-x86_64.a',
+        'lib/clang/$V/lib/linux/libclang_rt.profile-aarch64-android.a',
+        'lib/clang/$V/lib/linux/libclang_rt.profile-arm-android.a',
 
-      # ThreadSanitizer C++ runtime.
-      'lib/clang/$V/lib/linux/libclang_rt.tsan_cxx-x86_64.a',
-      'lib/clang/$V/lib/linux/libclang_rt.tsan_cxx-x86_64.a.syms',
+        # ThreadSanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/linux/libclang_rt.tsan-x86_64.a',
+        'lib/clang/$V/lib/linux/libclang_rt.tsan-x86_64.a.syms',
 
-      # UndefinedBehaviorSanitizer C runtime (pure C won't link with *_cxx).
-      'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-i386.a',
-      'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-x86_64.a',
-      'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-x86_64.a.syms',
+        # ThreadSanitizer C++ runtime.
+        'lib/clang/$V/lib/linux/libclang_rt.tsan_cxx-x86_64.a',
+        'lib/clang/$V/lib/linux/libclang_rt.tsan_cxx-x86_64.a.syms',
 
-      # UndefinedBehaviorSanitizer C++ runtime.
-      'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone_cxx-i386.a',
-      'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone_cxx-x86_64.a',
-      'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone_cxx-x86_64.a.syms',
+        # UndefinedBehaviorSanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-i386.a',
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-x86_64.a',
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-x86_64.a.syms',
 
-      # UndefinedBehaviorSanitizer Android runtime, needed for CFI.
-      'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-aarch64-android.so',
-      'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-arm-android.so',
+        # UndefinedBehaviorSanitizer C++ runtime.
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone_cxx-i386.a',
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone_cxx-x86_64.a',
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone_cxx-x86_64.a.syms',
 
-      # Blacklist for MemorySanitizer (used on Linux only).
-      'lib/clang/$V/share/msan_blacklist.txt',
+        # UndefinedBehaviorSanitizer Android runtime, needed for CFI.
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-aarch64-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-arm-android.so',
+
+        # Blacklist for MemorySanitizer (used on Linux only).
+        'lib/clang/$V/share/msan_blacklist.txt',
     ])
   elif sys.platform == 'win32':
     want.extend([
@@ -398,8 +395,8 @@ def main():
   if sys.platform.startswith('linux'):
     os.symlink('lld', os.path.join(pdir, 'bin', 'ld.lld'))
     os.symlink('lld', os.path.join(pdir, 'bin', 'ld64.lld'))
-    os.symlink('lld', os.path.join(pdir, 'bin', 'ld64.lld.darwinnew'))
     os.symlink('lld', os.path.join(pdir, 'bin', 'lld-link'))
+    os.symlink('llvm-objcopy', os.path.join(pdir, 'bin', 'llvm-strip'))
 
   # Copy libc++ headers.
   if sys.platform == 'darwin':

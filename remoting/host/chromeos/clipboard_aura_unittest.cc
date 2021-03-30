@@ -112,7 +112,7 @@ TEST_F(ClipboardAuraTest, MonitorClipboardChanges) {
   {
     // |clipboard_writer| will write to the clipboard when it goes out of scope.
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteText(base::UTF8ToUTF16("Test data."));
+    clipboard_writer.WriteText(u"Test data.");
   }
 
   EXPECT_CALL(*client_clipboard_,

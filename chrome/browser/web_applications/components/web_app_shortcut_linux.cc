@@ -26,6 +26,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/common/auto_start_linux.h"
@@ -402,18 +403,21 @@ bool CreateDesktopShortcut(base::Environment* env,
     return false;
   }
 
-  if (creation_locations.on_desktop || creation_locations.in_startup) {
+  if (creation_locations.on_desktop) {
     std::string contents = shell_integration_linux::GetDesktopFileContents(
         chrome_exe_path, app_name, shortcut_info.url,
         shortcut_info.extension_id, shortcut_info.title, icon_name,
-        shortcut_info.profile_path, "", "", false);
+        shortcut_info.profile_path, "", "", false, "");
+    success = CreateShortcutOnDesktop(shortcut_filename, contents);
+  }
 
-    if (creation_locations.on_desktop)
-      success = CreateShortcutOnDesktop(shortcut_filename, contents);
-
-    if (creation_locations.in_startup)
-      success = CreateShortcutInAutoStart(env, shortcut_filename, contents) &&
-                success;
+  if (creation_locations.in_startup) {
+    std::string contents = shell_integration_linux::GetDesktopFileContents(
+        chrome_exe_path, app_name, shortcut_info.url,
+        shortcut_info.extension_id, shortcut_info.title, icon_name,
+        shortcut_info.profile_path, "", "", false, kRunOnOsLoginModeWindowed);
+    success =
+        CreateShortcutInAutoStart(env, shortcut_filename, contents) && success;
   }
 
   if (creation_locations.applications_menu_location == APP_MENU_LOCATION_NONE) {
@@ -445,8 +449,8 @@ bool CreateDesktopShortcut(base::Environment* env,
       chrome_exe_path, app_name, shortcut_info.url, shortcut_info.extension_id,
       shortcut_info.title, icon_name, shortcut_info.profile_path, "",
       base::JoinString(mime_types, ";"),
-      creation_locations.applications_menu_location ==
-          APP_MENU_LOCATION_HIDDEN);
+      creation_locations.applications_menu_location == APP_MENU_LOCATION_HIDDEN,
+      "");
   success = CreateShortcutInApplicationsMenu(env, shortcut_filename, contents,
                                              directory_filename,
                                              directory_contents) &&
@@ -654,7 +658,7 @@ bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
 }
 
 void UpdatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
-                             const base::string16& /*old_app_title*/,
+                             const std::u16string& /*old_app_title*/,
                              const ShortcutInfo& shortcut_info) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -673,7 +677,7 @@ std::vector<base::FilePath> GetShortcutLocations(
     const ShortcutLocations& locations,
     const base::FilePath& profile_path,
     const std::string& app_id) {
-#if !defined(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return GetShortcutLocations(env.get(), locations, profile_path, app_id);
 #endif

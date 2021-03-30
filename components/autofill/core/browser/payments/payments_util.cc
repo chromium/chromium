@@ -38,9 +38,9 @@ bool HasGooglePaymentsAccount(PersonalDataManager* personal_data_manager) {
 }
 
 bool IsCreditCardNumberSupported(
-    const base::string16& card_number,
+    const std::u16string& card_number,
     const std::vector<std::pair<int, int>>& supported_card_bin_ranges) {
-  base::string16 stripped_number = CreditCard::StripSeparators(card_number);
+  std::u16string stripped_number = CreditCard::StripSeparators(card_number);
   for (auto& bin_range : supported_card_bin_ranges) {
     unsigned long range_num_of_digits =
         base::NumberToString(bin_range.first).size();

@@ -434,7 +434,6 @@ void* BindUntypedMethod(base::NativeLibrary lib,
                         const NetLogWithSource& net_log) {
   void* ptr = base::GetFunctionPointerFromNativeLibrary(lib, method);
   if (ptr == nullptr) {
-    std::string method_string = method.as_string();
     net_log.AddEvent(NetLogEventType::AUTH_LIBRARY_BIND_FAILED,
                      [&] { return BindFailureParams(library_name, method); });
   }

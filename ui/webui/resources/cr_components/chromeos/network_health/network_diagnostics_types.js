@@ -55,6 +55,7 @@
   HTTPS_FIREWALL: 8,
   HTTPS_LATENCY: 9,
   CAPTIVE_PORTAL: 10,
+  VIDEO_CONFERENCING: 11,
 };
 
 /**
@@ -68,6 +69,7 @@
   GATEWAY: 3,
   FIREWALL: 4,
   DNS: 5,
+  GOOGLE_SERVICES: 6,
 };
 
 /* #export */ const Icons = {

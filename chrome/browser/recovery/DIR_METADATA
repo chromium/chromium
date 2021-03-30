@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Internals"
+monorail: {
+  component: "Internals"
 }
-team_email:  "chrome-updates-dev@chromium.org"
+team_email: "chrome-updates-dev@chromium.org"

@@ -10,31 +10,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "ui/events/event.h"
-#include "ui/events/fuchsia/input_event_dispatcher_delegate.h"
+#include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace ui {
-namespace {
 
-int KeyModifiersToFlags(int modifiers) {
-  int flags = 0;
-  if (modifiers & fuchsia::ui::input::kModifierShift)
-    flags |= EF_SHIFT_DOWN;
-  if (modifiers & fuchsia::ui::input::kModifierControl)
-    flags |= EF_CONTROL_DOWN;
-  if (modifiers & fuchsia::ui::input::kModifierAlt)
-    flags |= EF_ALT_DOWN;
-  // TODO(crbug.com/850697): Add AltGraph support.
-  return flags;
-}
-
-}  // namespace
-
-InputEventDispatcher::InputEventDispatcher(
-    InputEventDispatcherDelegate* delegate)
-    : delegate_(delegate) {
-  DCHECK(delegate_);
+InputEventDispatcher::InputEventDispatcher(InputEventSink* event_sink)
+    : event_sink_(event_sink) {
+  DCHECK(event_sink_);
 }
 
 InputEventDispatcher::~InputEventDispatcher() = default;
@@ -55,8 +39,7 @@ bool InputEventDispatcher::ProcessEvent(
       }
 
     case fuchsia::ui::input::InputEvent::Tag::kKeyboard:
-      return ProcessKeyboardEvent(event.keyboard());
-
+      // Only input3 should be used for receiving keyboard events.
     case fuchsia::ui::input::InputEvent::Tag::kFocus:
     case fuchsia::ui::input::InputEvent::Tag::Invalid:
       return false;
@@ -103,7 +86,7 @@ bool InputEventDispatcher::ProcessMouseEvent(
                              base::TimeTicks::FromZxTime(event.event_time),
                              buttons_flags, buttons_flags);
   mouse_event.set_location_f(gfx::PointF(event.x, event.y));
-  delegate_->DispatchEvent(&mouse_event);
+  event_sink_->DispatchEvent(&mouse_event);
   return mouse_event.handled();
 }
 
@@ -143,48 +126,8 @@ bool InputEventDispatcher::ProcessTouchEvent(
                              pointer_details);
   touch_event.set_hovering(hovering);
   touch_event.set_location_f(gfx::PointF(event.x, event.y));
-  delegate_->DispatchEvent(&touch_event);
+  event_sink_->DispatchEvent(&touch_event);
   return touch_event.handled();
-}
-
-bool InputEventDispatcher::ProcessKeyboardEvent(
-    const fuchsia::ui::input::KeyboardEvent& event) const {
-  EventType event_type;
-
-  switch (event.phase) {
-    case fuchsia::ui::input::KeyboardEventPhase::PRESSED:
-    case fuchsia::ui::input::KeyboardEventPhase::REPEAT:
-      event_type = ET_KEY_PRESSED;
-      break;
-
-    case fuchsia::ui::input::KeyboardEventPhase::RELEASED:
-      event_type = ET_KEY_RELEASED;
-      break;
-
-    case fuchsia::ui::input::KeyboardEventPhase::CANCELLED:
-      NOTIMPLEMENTED() << "Key event cancellation is not supported.";
-      event_type = ET_KEY_RELEASED;
-      break;
-  }
-
-  DomCode dom_code = KeycodeConverter::NativeKeycodeToDomCode(event.hid_usage);
-  DomKey dom_key;
-  KeyboardCode key_code;
-  if (!DomCodeToUsLayoutDomKey(dom_code, KeyModifiersToFlags(event.modifiers),
-                               &dom_key, &key_code)) {
-    LOG(ERROR) << "DomCodeToUsLayoutDomKey() failed for usb_key: "
-               << event.hid_usage;
-    key_code = VKEY_UNKNOWN;
-  }
-
-  if (event.code_point)
-    dom_key = DomKey::FromCharacter(event.code_point);
-
-  ui::KeyEvent key_event(event_type, key_code, dom_code,
-                         KeyModifiersToFlags(event.modifiers), dom_key,
-                         base::TimeTicks::FromZxTime(event.event_time));
-  delegate_->DispatchEvent(&key_event);
-  return key_event.handled();
 }
 
 }  // namespace ui

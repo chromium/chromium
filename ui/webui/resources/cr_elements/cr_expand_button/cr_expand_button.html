@@ -1,20 +1,14 @@
 <link rel="import" href="../../html/polymer.html">
 
 <link rel="import" href="../../html/cr/ui/focus_without_ink.html">
+<link rel="import" href="../cr_actionable_row_style.html">
 <link rel="import" href="../cr_icon_button/cr_icon_button.html">
 <link rel="import" href="../icons.html">
 <link rel="import" href="../shared_vars_css.html">
 
 <dom-module id="cr-expand-button">
   <template>
-    <style>
-      :host {
-        align-items: center;
-        cursor: pointer;
-        display: flex;
-        outline: none;
-      }
-
+    <style include="cr-actionable-row-style">
       :host([disabled]) {
         opacity: 0.65;
         pointer-events: none;

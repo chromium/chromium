@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -117,7 +117,7 @@ const gfx::ImageSkia& AssistantOnboardingSuggestionView::GetIcon() const {
   return icon_->GetImage();
 }
 
-const base::string16& AssistantOnboardingSuggestionView::GetText() const {
+const std::u16string& AssistantOnboardingSuggestionView::GetText() const {
   return label_->GetText();
 }
 

@@ -18,10 +18,10 @@ public interface SearchResultUserDataObserver {
     /**
      * Called when the underlying data has entirely changed.
      */
-    void onUpdate(SearchResultMetadata metadata, GURL currentUrl);
+    void onUpdate(SearchResultMetadata metadata);
 
     /**
      * Called when a new page is loaded that is in the data set.
      */
-    void onUrlChanged(GURL currentUrl);
+    void onUrlChanged(GURL currentUrl, boolean onSrp);
 }

@@ -27,7 +27,10 @@ CustomTab::CustomTab(aura::Window* arc_app_window)
   widget->GetContentsView()->AddChildView(host_.get());
 }
 
-CustomTab::~CustomTab() = default;
+CustomTab::~CustomTab() {
+  if (host_->GetWidget())
+    host_->GetWidget()->GetContentsView()->RemoveChildView(host_.get());
+}
 
 void CustomTab::Attach(gfx::NativeView view) {
   DCHECK(view);
@@ -75,7 +78,7 @@ void CustomTab::OnWindowDestroying(aura::Window* window) {
 
 void CustomTab::UpdateHostBounds(aura::Window* arc_app_window) {
   DCHECK(arc_app_window);
-  auto* surface = exo::GetShellMainSurface(arc_app_window);
+  auto* surface = exo::GetShellRootSurface(arc_app_window);
   if (!surface)
     return;
 

@@ -9,6 +9,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -19,14 +22,20 @@
 
 namespace chromeos {
 
+class NetworkDeviceHandler;
 class NetworkStateHandler;
 
-// Helper class for tests that use NetworkStateHandler. Handles initialization,
-// shutdown, and adds default profiles and a wifi device (but no services).
+// Helper class for tests that use NetworkStateHandler and/or
+// NetworkDeviceHandler. Handles initialization, shutdown, and adds default
+// profiles and a wifi device (but no services).
+//
 // NOTE: This is not intended to be used with NetworkHandler::Initialize()
 // which constructs its own NetworkStateHandler instance. When testing code that
 // accesses NetworkHandler::Get() directly, use
 // NetworkHandler::Get()->network_state_handler() directly instead.
+//
+// TODO(khorimoto): Rename this class since it now deals with more than just
+// NetworkStates.
 class NetworkStateTestHelper {
  public:
   // If |use_default_devices_and_services| is false, the default devices and
@@ -45,6 +54,9 @@ class NetworkStateTestHelper {
 
   // Clears any fake services.
   void ClearServices();
+
+  // Clears the profile list.
+  void ClearProfiles();
 
   // Calls ShillDeviceClient::TestInterface::AddDevice and sets update_received
   // on the DeviceState.
@@ -84,6 +96,10 @@ class NetworkStateTestHelper {
     return network_state_handler_.get();
   }
 
+  NetworkDeviceHandler* network_device_handler() {
+    return network_device_handler_.get();
+  }
+
   ShillManagerClient::TestInterface* manager_test() { return manager_test_; }
   ShillProfileClient::TestInterface* profile_test() { return profile_test_; }
   ShillDeviceClient::TestInterface* device_test() { return device_test_; }
@@ -92,10 +108,22 @@ class NetworkStateTestHelper {
     return ip_config_test_;
   }
 
+  HermesEuiccClient::TestInterface* hermes_euicc_test() {
+    return hermes_euicc_test_;
+  }
+  HermesManagerClient::TestInterface* hermes_manager_test() {
+    return hermes_manager_test_;
+  }
+  HermesProfileClient::TestInterface* hermes_profile_test() {
+    return hermes_profile_test_;
+  }
+
  private:
   void ConfigureCallback(const dbus::ObjectPath& result);
 
   bool shill_clients_initialized_ = false;
+  bool hermes_clients_initialized_ = false;
+
   std::string last_created_service_path_;
 
   ShillManagerClient::TestInterface* manager_test_;
@@ -104,11 +132,22 @@ class NetworkStateTestHelper {
   ShillServiceClient::TestInterface* service_test_;
   ShillIPConfigClient::TestInterface* ip_config_test_;
 
+  HermesEuiccClient::TestInterface* hermes_euicc_test_;
+  HermesManagerClient::TestInterface* hermes_manager_test_;
+  HermesProfileClient::TestInterface* hermes_profile_test_;
+
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
+  std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
 
   base::WeakPtrFactory<NetworkStateTestHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when
+// //chromeos/network moved to ash
+namespace ash {
+using ::chromeos::NetworkStateTestHelper;
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_NETWORK_STATE_TEST_HELPER_H_

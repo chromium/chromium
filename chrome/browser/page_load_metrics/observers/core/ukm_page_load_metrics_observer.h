@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/site_instance_process_assignment.h"
 #include "net/http/http_response_info.h"
@@ -27,6 +28,13 @@ namespace builders {
 class PageLoad;
 }
 }  // namespace ukm
+
+namespace internal {
+
+// Exposed for tests.
+int BucketWithOffsetAndUnit(int num, int offset, int unit);
+
+}  // namespace internal
 
 // This enum represents the type of page load: abort, non-abort, or neither.
 // A page is of type NEVER_FOREGROUND if it was never in the foreground.
@@ -152,6 +160,10 @@ class UkmPageLoadMetricsObserver
       base::TimeTicks page_end_time,
       ukm::builders::PageLoad* builder);
 
+  void RecordMemoriesMetrics(
+      ukm::builders::PageLoad& builder,
+      const page_load_metrics::PageEndReason page_end_reason);
+
   void RecordInputTimingMetrics();
   void RecordSmoothnessMetrics();
 
@@ -181,7 +193,8 @@ class UkmPageLoadMetricsObserver
   // loads.
   void RecordPageEndMetrics(
       const page_load_metrics::mojom::PageLoadTiming* timing,
-      base::TimeTicks page_end_time);
+      base::TimeTicks page_end_time,
+      bool app_entered_background);
 
   // Records a score from the SiteEngagementService. Called when the page
   // becomes hidden, or at the end of the session if the page is never hidden.
@@ -189,6 +202,9 @@ class UkmPageLoadMetricsObserver
 
   // Guaranteed to be non-null during the lifetime of |this|.
   network::NetworkQualityTracker* network_quality_tracker_;
+
+  // The ID of this navigation, as recorded at each navigation start.
+  int64_t navigation_id_ = -1;
 
   // The number of body (not header) prefilter bytes consumed by requests for
   // the page.

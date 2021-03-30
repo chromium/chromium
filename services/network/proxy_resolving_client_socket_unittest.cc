@@ -665,16 +665,12 @@ TEST_P(ProxyResolvingClientSocketTest, MultiroundAuth) {
   auth_cache->Add(GURL("http://bad:99"), net::HttpAuth::AUTH_PROXY,
                   "test_realm", net::HttpAuth::AUTH_SCHEME_BASIC,
                   net::NetworkIsolationKey(), "Basic realm=\"test_realm\"",
-                  net::AuthCredentials(base::ASCIIToUTF16("user"),
-                                       base::ASCIIToUTF16("password")),
-                  std::string());
+                  net::AuthCredentials(u"user", u"password"), std::string());
 
   auth_cache->Add(GURL("http://bad:99"), net::HttpAuth::AUTH_PROXY,
                   "test_realm2", net::HttpAuth::AUTH_SCHEME_BASIC,
                   net::NetworkIsolationKey(), "Basic realm=\"test_realm2\"",
-                  net::AuthCredentials(base::ASCIIToUTF16("user2"),
-                                       base::ASCIIToUTF16("password2")),
-                  std::string());
+                  net::AuthCredentials(u"user2", u"password2"), std::string());
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
       &context_with_proxy_);
@@ -730,9 +726,7 @@ TEST_P(ProxyResolvingClientSocketTest, ReusesHTTPAuthCache_Lookup) {
   auth_cache->Add(GURL("http://bad:99"), net::HttpAuth::AUTH_PROXY,
                   "test_realm", net::HttpAuth::AUTH_SCHEME_BASIC,
                   net::NetworkIsolationKey(), "Basic realm=\"test_realm\"",
-                  net::AuthCredentials(base::ASCIIToUTF16("user"),
-                                       base::ASCIIToUTF16("password")),
-                  std::string());
+                  net::AuthCredentials(u"user", u"password"), std::string());
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
       &context_with_proxy_);
@@ -765,9 +759,7 @@ TEST_P(ProxyResolvingClientSocketTest, FactoryUsesLatestHTTPAuthCache) {
   auth_cache->Add(GURL("http://bad:99"), net::HttpAuth::AUTH_PROXY,
                   "test_realm", net::HttpAuth::AUTH_SCHEME_BASIC,
                   net::NetworkIsolationKey(), "Basic realm=\"test_realm\"",
-                  net::AuthCredentials(base::ASCIIToUTF16("user"),
-                                       base::ASCIIToUTF16("password")),
-                  std::string());
+                  net::AuthCredentials(u"user", u"password"), std::string());
 
   const GURL kDestination("https://example.com:443");
 
@@ -830,9 +822,7 @@ TEST_P(ProxyResolvingClientSocketTest, ReusesHTTPAuthCache_Preemptive) {
   auth_cache->Add(GURL("http://bad:99"), net::HttpAuth::AUTH_PROXY,
                   "test_realm", net::HttpAuth::AUTH_SCHEME_BASIC,
                   net::NetworkIsolationKey(), "Basic realm=\"test_realm\"",
-                  net::AuthCredentials(base::ASCIIToUTF16("user"),
-                                       base::ASCIIToUTF16("password")),
-                  "/");
+                  net::AuthCredentials(u"user", u"password"), "/");
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
       &context_with_proxy_);

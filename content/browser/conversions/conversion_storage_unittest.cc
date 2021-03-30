@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
@@ -163,6 +164,18 @@ TEST_F(ConversionStorageTest, MultipleImpressionsForConversion_AllConvert) {
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   EXPECT_EQ(
       2, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+}
+
+TEST_F(ConversionStorageTest,
+       CrossOriginSameDomainConversion_ImpressionConverted) {
+  auto impression =
+      ImpressionBuilder(clock()->Now())
+          .SetConversionOrigin(url::Origin::Create(GURL("https://sub.a.test")))
+          .Build();
+  storage()->StoreImpression(impression);
+  StorableConversion conversion("1", net::SchemefulSite(GURL("https://a.test")),
+                                impression.reporting_origin());
+  EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
 }
 
 TEST_F(ConversionStorageTest, ImpressionExpired_NoConversionsStored) {
@@ -584,12 +597,13 @@ TEST_F(ConversionStorageTest, MaxImpressionsPerOrigin) {
 }
 
 TEST_F(ConversionStorageTest, MaxConversionsPerOrigin) {
-  delegate()->set_max_conversions_per_origin(2);
+  delegate()->set_max_conversions_per_origin(3);
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+      2, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  // Verify that MaxConversionsPerOrigin is enforced when there are multiple
+  // impressions for a single conversion.
   EXPECT_EQ(
       0, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
 }
@@ -618,22 +632,7 @@ TEST_F(ConversionStorageTest, ClearDataOutsideRange_NoDelete) {
 
 TEST_F(ConversionStorageTest, ClearDataImpression) {
   base::Time now = clock()->Now();
-  {
-    auto impression = ImpressionBuilder(now).Build();
-    storage()->StoreImpression(impression);
-    storage()->ClearData(now, now + base::TimeDelta::FromMinutes(20),
-                         GetMatcher(impression.impression_origin()));
-    EXPECT_EQ(0, storage()->MaybeCreateAndStoreConversionReports(
-                     DefaultConversion()));
-  }
-  {
-    auto impression = ImpressionBuilder(now).Build();
-    storage()->StoreImpression(impression);
-    storage()->ClearData(now, now + base::TimeDelta::FromMinutes(20),
-                         GetMatcher(impression.reporting_origin()));
-    EXPECT_EQ(0, storage()->MaybeCreateAndStoreConversionReports(
-                     DefaultConversion()));
-  }
+
   {
     auto impression = ImpressionBuilder(now).Build();
     storage()->StoreImpression(impression);
@@ -679,14 +678,14 @@ TEST_F(ConversionStorageTest, ClearDataNullFilter) {
   for (int i = 0; i < 5; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion("1", origin, origin);
+    StorableConversion conversion("1", net::SchemefulSite(origin), origin);
     EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
   }
   clock()->Advance(base::TimeDelta::FromDays(1));
   for (int i = 5; i < 10; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion("1", origin, origin);
+    StorableConversion conversion("1", net::SchemefulSite(origin), origin);
     EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
   }
 
@@ -847,6 +846,27 @@ TEST_F(ConversionStorageTest, DeleteAllNullDeleteBegin) {
 
   // Verify that everything is deleted.
   EXPECT_TRUE(storage()->GetConversionsToReport(base::Time::Max()).empty());
+}
+
+TEST_F(ConversionStorageTest, MaxAttributionReportsBetweenSites) {
+  delegate()->set_rate_limits({
+      .time_window = base::TimeDelta::Max(),
+      .max_attributions_per_window = 2,
+  });
+
+  auto impression = ImpressionBuilder(clock()->Now()).Build();
+  auto conversion = DefaultConversion();
+
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
+  EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
+  EXPECT_EQ(0, storage()->MaybeCreateAndStoreConversionReports(conversion));
+
+  ConversionReport expected_report = GetExpectedReport(impression, conversion);
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(base::Time::Max());
+  EXPECT_TRUE(ReportsEqual({expected_report, expected_report}, actual_reports));
 }
 
 }  // namespace content

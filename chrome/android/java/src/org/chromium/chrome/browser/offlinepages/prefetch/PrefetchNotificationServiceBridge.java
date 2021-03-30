@@ -61,7 +61,7 @@ public class PrefetchNotificationServiceBridge {
      */
     @CalledByNative
     private static void launchDownloadHome() {
-        DownloadUtils.showDownloadManager(null, null,
+        DownloadUtils.showDownloadManager(null, null, null,
                 DownloadOpenSource.OFFLINE_CONTENT_NOTIFICATION, true /*showPrefetchedContent*/);
     }
 }

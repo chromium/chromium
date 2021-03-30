@@ -1,6 +1,10 @@
 <style include="pdf-viewer-shared-style cr-hidden-style">
   :host {
     --viewer-pdf-sidenav-width: 300px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
   }
 
   viewer-pdf-sidenav,
@@ -8,22 +12,42 @@
     --pdf-toolbar-text-color: rgb(241, 241, 241);
   }
 
-  viewer-pdf-toolbar,
   viewer-pdf-toolbar-new {
     --active-button-bg: rgba(255, 255, 255, 0.24);
+    z-index: 1;
+  }
+
+  @media(max-width: 200px),
+  (max-height: 250px) {
+    viewer-pdf-toolbar-new {
+      display: none;
+    }
   }
 
   #sidenav-container {
     overflow: hidden;
-    transition: width 250ms cubic-bezier(.6, 0, 0, 1), visibility 250ms;
+    transition: transform 250ms cubic-bezier(.6, 0, 0, 1), visibility 250ms;
     visibility: visible;
     width: var(--viewer-pdf-sidenav-width);
   }
 
+  #sidenav-container.floating {
+    bottom: 0;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+  }
+
   #sidenav-container[closed] {
-    transition: width 200ms cubic-bezier(.6, 0, 0, 1), visibility 200ms;
+    transform: translateX(-100%);
+    transition: transform 200ms cubic-bezier(.6, 0, 0, 1),
+        visibility 200ms, width 0ms 200ms;
     visibility: hidden;
     width: 0;
+  }
+
+  :host-context([dir='rtl']) #sidenav-container[closed] {
+    transform: translateX(100%);
   }
 
   @media(max-width: 500px),
@@ -45,41 +69,9 @@
     z-index: 5;
   }
 
-  viewer-pdf-toolbar {
-    position: fixed;
-    width: 100%;
-    z-index: 4;
-  }
-
   viewer-ink-host {
     height: 100%;
     position: absolute;
-    width: 100%;
-  }
-
-  @media(max-height: 250px) {
-    viewer-pdf-toolbar {
-      display: none;
-    }
-  }
-
-  /* Styles only applying when the pdfViewerUpdateEnabled flag is on. */
-
-  viewer-pdf-toolbar-new {
-    z-index: 1;
-  }
-
-  @media(max-width: 200px),
-  (max-height: 250px) {
-    viewer-pdf-toolbar-new {
-      display: none;
-    }
-  }
-
-  :host-context([pdf-viewer-update-enabled]):host {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
     width: 100%;
   }
 
@@ -87,13 +79,14 @@
     display: flex;
     flex: 1;
     overflow: hidden;
+    position: relative;
   }
 
-  :host-context([pdf-viewer-update-enabled]) #plugin {
+  #plugin {
     position: initial;
   }
 
-  :host-context([pdf-viewer-update-enabled]) #content {
+  #content {
     height: 100%;
     left: 0;
     position: sticky;
@@ -101,7 +94,7 @@
     z-index: initial;
   }
 
-  :host-context([pdf-viewer-update-enabled]) #sizer {
+  #sizer {
     top: 0;
     width: 100%;
     z-index: initial;
@@ -135,38 +128,12 @@
   }
 </style>
 
-<template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
-  <viewer-pdf-toolbar id="toolbar" strings="[[strings]]"
-      bookmarks="[[bookmarks_]]" doc-title="[[title_]]"
-      has-edits="[[hasEdits_]]"
-      has-entered-annotation-mode="[[hasEnteredAnnotationMode_]]"
-      pdf-form-save-enabled="[[pdfFormSaveEnabled_]]"
-      printing-enabled="[[printingEnabled_]]"
-      is-form-field-focused="[[isFormFieldFocused_]]"
-      doc-length="[[docLength_]]" page-no="[[pageNo_]]"
-      load-progress="[[loadProgress_]]"
-<if expr="chromeos">
-      annotation-available="[[annotationAvailable_]]"
-      pdf-annotations-enabled="[[pdfAnnotationsEnabled_]]"
-</if>
-      on-change-page-and-xy="onChangePageAndXy_"
-      on-change-page="onChangePage_"
-      on-dropdown-opened="onDropdownOpened_"
-      on-navigate="onNavigate_"
-      on-save="onToolbarSave_" on-print="onPrint_"
-<if expr="chromeos">
-      on-annotation-mode-toggled="onAnnotationModeToggled_"
-</if>
-      on-rotate-right="rotateClockwise" hidden>
-  </viewer-pdf-toolbar>
-</template>
-<template is="dom-if" if="[[pdfViewerUpdateEnabled_]]">
-  <viewer-pdf-toolbar-new id="toolbar"
+<viewer-pdf-toolbar-new id="toolbar"
     annotation-mode="[[annotationMode_]]"
     doc-title="[[title_]]" doc-length="[[docLength_]]" page-no="[[pageNo_]]"
     load-progress="[[loadProgress_]]" has-edits="[[hasEdits_]]"
     has-entered-annotation-mode="[[hasEnteredAnnotationMode_]]"
-    pdf-form-save-enabled="[[pdfFormSaveEnabled_]]"
+    document-properties-enabled="[[documentPropertiesEnabled_]]"
     presentation-mode-enabled="[[presentationModeEnabled_]]"
     printing-enabled="[[printingEnabled_]]"
     rotated="[[isRotated_(clockwiseRotations_)]]"
@@ -180,9 +147,9 @@
 </if>
     on-change-page="onChangePage_"
     on-display-annotations-changed="onDisplayAnnotationsChanged_"
-    on-dropdown-opened="onDropdownOpened_"
     on-fit-to-changed="onFitToChanged"
     on-present-click="onPresentClick_"
+    on-properties-click="onPropertiesClick_"
     on-annotation-mode-dialog-confirmed="onResetView_"
     on-sidenav-toggle-click="onSidenavToggleClick_"
     on-two-up-view-changed="onTwoUpViewChanged_"
@@ -192,42 +159,37 @@
     on-annotation-mode-toggled="onAnnotationModeToggled_"
 </if>
     on-print="onPrint_" on-save="onToolbarSave_" hidden>
-  </viewer-pdf-toolbar-new>
-</template>
+</viewer-pdf-toolbar-new>
 
-<template is="dom-if" if="[[pdfViewerUpdateEnabled_]]">
-  <div id="container">
-    <div id="sidenav-container" closed$="[[sidenavCollapsed_]]"
-        hidden$="[[!toolbarEnabled_]]">
-      <viewer-pdf-sidenav id="sidenav"
-          active-page="[[pageNo_]]" bookmarks="[[bookmarks_]]"
-          clockwise-rotations="[[clockwiseRotations_]]"
-          doc-length="[[docLength_]]" on-change-page="onChangePage_"
-          on-change-page-and-xy="onChangePageAndXy_" on-navigate="onNavigate_">
-      </viewer-pdf-sidenav>
-    </div>
-    <div id="main">
-      <div id="scroller" on-scroll="onScroll_">
-        <div id="sizer"></div>
-        <div id="content"></div>
-      </div>
-    <div>
+<div id="container">
+  <div id="sidenav-container" closed$="[[sidenavCollapsed_]]"
+      hidden$="[[!toolbarEnabled_]]">
+    <viewer-pdf-sidenav id="sidenav"
+        active-page="[[pageNo_]]" bookmarks="[[bookmarks_]]"
+        clockwise-rotations="[[clockwiseRotations_]]"
+        doc-length="[[docLength_]]" on-change-page="onChangePage_"
+        on-change-page-and-xy="onChangePageAndXy_" on-navigate="onNavigate_">
+    </viewer-pdf-sidenav>
   </div>
+  <div id="main">
+    <div id="scroller" on-scroll="onScroll_">
+      <div id="sizer"></div>
+      <div id="content"></div>
+    </div>
+  <div>
+</div>
+
+<template is="dom-if" if="[[showPasswordDialog_]]" restamp>
+  <viewer-password-dialog id="password-dialog" on-close="onPasswordDialogClose_"
+      on-password-submitted="onPasswordSubmitted_">
+  </viewer-password-dialog>
 </template>
 
-<template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
-  <div id="sizer"></div>
-</template>
-
-<viewer-password-screen id="password-screen"
-    on-password-submitted="onPasswordSubmitted_">
-</viewer-password-screen>
-
-<template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
-  <viewer-zoom-toolbar id="zoom-toolbar"
-      on-fit-to-changed="onFitToChanged"
-      on-zoom-in="onZoomIn" on-zoom-out="onZoomOut">
-  </viewer-zoom-toolbar>
+<template is="dom-if" if="[[showPropertiesDialog_]]" restamp>
+  <viewer-properties-dialog id="properties-dialog"
+      document-metadata="[[documentMetadata_]]" file-name="[[fileName_]]"
+      page-count="[[docLength_]]" on-close="onPropertiesDialogClose_">
+  </viewer-properties-dialog>
 </template>
 
 <viewer-error-screen id="error-screen"></viewer-error-screen>
@@ -235,9 +197,5 @@
 <if expr="chromeos">
 <viewer-form-warning id="form-warning"></viewer-form-warning>
 </if>
-
-<template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
-  <div id="content"></div>
-</template>
 
 <div id="content-focus-rectangle" hidden$="[[!documentHasFocus_]]"></div>

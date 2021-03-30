@@ -5,11 +5,11 @@
 #include "chrome/browser/printing/print_job.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -99,7 +99,7 @@ TEST(PrintJobTest, SimplePrint) {
                 content::NotificationService::AllSources());
   volatile bool check = false;
   scoped_refptr<PrintJob> job(new TestPrintJob(&check));
-  job->Initialize(std::make_unique<TestQuery>(), base::string16(), 1);
+  job->Initialize(std::make_unique<TestQuery>(), std::u16string(), 1);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   job->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

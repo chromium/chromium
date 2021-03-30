@@ -8,13 +8,13 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class BoxLayout;
@@ -30,8 +30,11 @@ class AutofillPopupViewNativeViews;
 // separators.
 class AutofillPopupRowView : public views::View {
  public:
+  METADATA_HEADER(AutofillPopupRowView);
+  AutofillPopupRowView(const AutofillPopupRowView&) = delete;
+  AutofillPopupRowView& operator=(const AutofillPopupRowView&) = delete;
   ~AutofillPopupRowView() override = default;
-  void SetSelected(bool is_selected);
+  void SetSelected(bool selected);
 
   // views::View:
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
@@ -52,8 +55,8 @@ class AutofillPopupRowView : public views::View {
   void Init();
 
   AutofillPopupViewNativeViews* popup_view() { return popup_view_; }
-  int line_number() const { return line_number_; }
-  bool is_selected() const { return is_selected_; }
+  int GetLineNumber() const;
+  bool GetSelected() const;
 
   virtual void CreateContent() = 0;
   virtual void RefreshStyle() = 0;
@@ -62,9 +65,7 @@ class AutofillPopupRowView : public views::View {
  private:
   AutofillPopupViewNativeViews* popup_view_;
   const int line_number_;
-  bool is_selected_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupRowView);
+  bool selected_ = false;
 };
 
 // Views implementation for the autofill and password suggestion.
@@ -72,8 +73,12 @@ class AutofillPopupRowView : public views::View {
 class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
                                      public AutofillPopupView {
  public:
+  METADATA_HEADER(AutofillPopupViewNativeViews);
   AutofillPopupViewNativeViews(AutofillPopupController* controller,
                                views::Widget* parent_widget);
+  AutofillPopupViewNativeViews(const AutofillPopupViewNativeViews&) = delete;
+  AutofillPopupViewNativeViews& operator=(const AutofillPopupViewNativeViews&) =
+      delete;
   ~AutofillPopupViewNativeViews() override;
 
   const std::vector<AutofillPopupRowView*>& GetRowsForTesting() {
@@ -118,8 +123,6 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   views::ScrollView* scroll_view_ = nullptr;
   views::View* body_container_ = nullptr;
   views::View* footer_container_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupViewNativeViews);
 };
 
 }  // namespace autofill

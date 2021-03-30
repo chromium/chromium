@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/browserservices/intents/BitmapHelper.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/BrowserServicesIntentDataProvider.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/CustomButtonParams.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkExtras.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkShareTarget.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/WebDisplayMode.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/WebappExtras.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/WebappIcon.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//components/webapps/browser/android:java",
+    "//services/device/public/mojom:mojom_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+  ]
+  srcjar_deps = [ "//chrome/browser/android/webapk:enums_srcjar" ]
+}

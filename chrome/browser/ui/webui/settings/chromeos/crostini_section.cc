@@ -4,22 +4,23 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/crostini_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_disk.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/chromeos/crostini_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/guest_os_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
@@ -235,23 +236,10 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"crostiniPageTitle", IDS_SETTINGS_CROSTINI_TITLE},
       {"crostiniPageLabel", IDS_SETTINGS_CROSTINI_LABEL},
       {"crostiniEnable", IDS_SETTINGS_TURN_ON},
-      {"crostiniSharedPaths", IDS_SETTINGS_CROSTINI_SHARED_PATHS},
-      {"crostiniSharedPathsListHeading",
-       IDS_SETTINGS_CROSTINI_SHARED_PATHS_LIST_HEADING},
       {"crostiniSharedPathsInstructionsAdd",
        IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_ADD},
-      {"crostiniSharedPathsInstructionsRemove",
-       IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_REMOVE},
-      {"crostiniSharedPathsRemoveSharing",
-       IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_SHARING},
       {"crostiniSharedPathsRemoveFailureDialogMessage",
        IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE},
-      {"crostiniSharedPathsRemoveFailureDialogTitle",
-       IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE},
-      {"crostiniSharedPathsRemoveFailureTryAgain",
-       IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN},
-      {"crostiniSharedPathsListEmptyMessage",
-       IDS_SETTINGS_CROSTINI_SHARED_PATHS_LIST_EMPTY_MESSAGE},
       {"crostiniExportImportTitle", IDS_SETTINGS_CROSTINI_EXPORT_IMPORT_TITLE},
       {"crostiniExport", IDS_SETTINGS_CROSTINI_EXPORT},
       {"crostiniExportLabel", IDS_SETTINGS_CROSTINI_EXPORT_LABEL},
@@ -264,18 +252,8 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"crostiniImportConfirmationDialogConfirmationButton",
        IDS_SETTINGS_CROSTINI_IMPORT},
       {"crostiniRemoveButton", IDS_SETTINGS_CROSTINI_REMOVE_BUTTON},
-      {"crostiniSharedUsbDevicesLabel",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LABEL},
       {"crostiniSharedUsbDevicesDescription",
        IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_DESCRIPTION},
-      {"crostiniSharedUsbDevicesExtraDescription",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_EXTRA_DESCRIPTION},
-      {"crostiniSharedUsbDevicesListEmptyMessage",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE},
-      {"crostiniSharedUsbDevicesInUse",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_IN_USE},
-      {"crostiniSharedUsbDevicesReassign",
-       IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_REASSIGN},
       {"crostiniArcAdbTitle", IDS_SETTINGS_CROSTINI_ARC_ADB_TITLE},
       {"crostiniArcAdbDescription", IDS_SETTINGS_CROSTINI_ARC_ADB_DESCRIPTION},
       {"crostiniArcAdbLabel", IDS_SETTINGS_CROSTINI_ARC_ADB_LABEL},
@@ -371,7 +349,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CROSTINI_MIC_DIALOG_SHUTDOWN_BUTTON},
       {"crostiniRemove", IDS_SETTINGS_CROSTINI_REMOVE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Should the crostini section in settings be displayed?
   html_source->AddBoolean(
@@ -435,6 +413,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
 void CrostiniSection::AddHandlers(content::WebUI* web_ui) {
   if (crostini::CrostiniFeatures::Get()->CouldBeAllowed(profile())) {
+    web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));
     web_ui->AddMessageHandler(std::make_unique<CrostiniHandler>(profile()));
   }
 }
@@ -481,7 +460,7 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // Manage shared folders.
   generator->RegisterNestedSubpage(
-      IDS_SETTINGS_CROSTINI_SHARED_PATHS,
+      IDS_SETTINGS_GUEST_OS_SHARED_PATHS,
       mojom::Subpage::kCrostiniManageSharedFolders,
       mojom::Subpage::kCrostiniDetails, mojom::SearchResultIcon::kPenguin,
       mojom::SearchResultDefaultRank::kMedium,
@@ -489,7 +468,7 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // USB preferences.
   generator->RegisterNestedSubpage(
-      IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LABEL,
+      IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL,
       mojom::Subpage::kCrostiniUsbPreferences, mojom::Subpage::kCrostiniDetails,
       mojom::SearchResultIcon::kPenguin,
       mojom::SearchResultDefaultRank::kMedium,

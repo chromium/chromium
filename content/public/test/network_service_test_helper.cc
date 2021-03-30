@@ -42,6 +42,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "base/test/android/url_utils.h"
@@ -126,7 +127,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
           DCHECK(ip_address.AssignFromIPLiteral(rule->replacement));
           host_resolver->AddRuleWithFlags(rule->host_pattern, rule->replacement,
                                           rule->host_resolver_flags,
-                                          rule->canonical_name);
+                                          rule->dns_aliases);
           break;
         }
         case network::mojom::ResolverType::kResolverTypeDirectLookup:
@@ -135,7 +136,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
         default:
           host_resolver->AddRuleWithFlags(rule->host_pattern, rule->replacement,
                                           rule->host_resolver_flags,
-                                          rule->canonical_name);
+                                          rule->dns_aliases);
           break;
       }
     }
@@ -320,10 +321,9 @@ void NetworkServiceTestHelper::RegisterNetworkBinders(
       base::Unretained(this)));
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  sandbox::policy::SandboxType sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(*command_line);
-  if (IsUnsandboxedSandboxType(sandbox_type) ||
-      sandbox_type == sandbox::policy::SandboxType::kNetwork) {
+  auto utility_sub_type =
+      command_line->GetSwitchValueASCII(switches::kUtilitySubType);
+  if (utility_sub_type == network::mojom::NetworkService::Name_) {
     // Register the EmbeddedTestServer's certs, so that any SSL connections to
     // it succeed. Only do this when file I/O is allowed in the current process.
 #if defined(OS_ANDROID)

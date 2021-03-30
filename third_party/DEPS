@@ -3,6 +3,7 @@ include_rules = [
   '-base',
   '-build',
   '-ipc',
+  '-third_party/perfetto/include/perfetto/tracing',
   '-library_loaders',
   '-testing',
   '-third_party/icu/source/common/unicode',

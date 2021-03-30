@@ -15,6 +15,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -32,6 +33,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/cert/cert_verifier.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log.h"
@@ -111,6 +113,14 @@ enum class ConnectionStateAfterDNS {
   kMaxValue = kCryptoFinishedDnsNoMatch,
 };
 
+enum class JobProtocolErrorLocation {
+  kSessionStartReadingFailed = 0,
+  kCreateSessionFailed = 1,
+  kCryptoConnectFailedSync = 2,
+  kCryptoConnectFailedAsync = 3,
+  kMaxValue = kCryptoConnectFailedAsync,
+};
+
 base::Value NetLogQuicStreamFactoryJobParams(
     const QuicStreamFactory::QuicSessionAliasKey* key) {
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -146,6 +156,11 @@ std::string QuicPlatformNotificationToString(
 void HistogramCreateSessionFailure(enum CreateSessionFailure error) {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.CreationError", error,
                             CREATION_ERROR_MAX);
+}
+
+void HistogramProtocolErrorLocation(enum JobProtocolErrorLocation location) {
+  UMA_HISTOGRAM_ENUMERATION("Net.QuicStreamFactory.DoConnectFailureLocation",
+                            location);
 }
 
 void LogConnectionIpPooling(bool pooled) {
@@ -309,6 +324,7 @@ class QuicStreamFactory::Job {
       bool retry_on_alternate_network_before_handshake,
       bool race_stale_dns_on_connection,
       RequestPriority priority,
+      bool use_dns_aliases,
       int cert_verify_flags,
       const NetLogWithSource& net_log);
 
@@ -447,6 +463,7 @@ class QuicStreamFactory::Job {
   const QuicSessionAliasKey key_;
   const std::unique_ptr<CryptoClientConfigHandle> client_config_handle_;
   RequestPriority priority_;
+  const bool use_dns_aliases_;
   const int cert_verify_flags_;
   const bool was_alternative_service_recently_broken_;
   const bool retry_on_alternate_network_before_handshake_;
@@ -483,6 +500,7 @@ QuicStreamFactory::Job::Job(
     bool retry_on_alternate_network_before_handshake,
     bool race_stale_dns_on_connection,
     RequestPriority priority,
+    bool use_dns_aliases,
     int cert_verify_flags,
     const NetLogWithSource& net_log)
     : io_state_(STATE_RESOLVE_HOST),
@@ -492,6 +510,7 @@ QuicStreamFactory::Job::Job(
       key_(key),
       client_config_handle_(std::move(client_config_handle)),
       priority_(priority),
+      use_dns_aliases_(use_dns_aliases),
       cert_verify_flags_(cert_verify_flags),
       was_alternative_service_recently_broken_(
           was_alternative_service_recently_broken),
@@ -594,7 +613,8 @@ void QuicStreamFactory::Job::OnResolveHostComplete(int rv) {
       io_state_ = STATE_RESOLVE_HOST_COMPLETE;
     } else if (factory_->HasMatchingIpSession(
                    key_,
-                   fresh_resolve_host_request_->GetAddressResults().value())) {
+                   fresh_resolve_host_request_->GetAddressResults().value(),
+                   use_dns_aliases_)) {
       // Session with resolved IP has already existed, so close racing
       // connection, run callback, and return.
       LogRacingStatus(ConnectionStateAfterDNS::kIpPooled);
@@ -646,6 +666,11 @@ void QuicStreamFactory::Job::OnConnectComplete(int rv) {
   if (!session_) {
     LogStaleConnectionTime(quic_connection_start_time_);
     return;
+  }
+
+  if (rv == ERR_QUIC_PROTOCOL_ERROR) {
+    HistogramProtocolErrorLocation(
+        JobProtocolErrorLocation::kCryptoConnectFailedAsync);
   }
 
   rv = DoLoop(rv);
@@ -751,7 +776,8 @@ int QuicStreamFactory::Job::DoResolveHostComplete(int rv) {
   // Inform the factory of this resolution, which will set up
   // a session alias, if possible.
   if (factory_->HasMatchingIpSession(
-          key_, resolve_host_request_->GetAddressResults().value())) {
+          key_, resolve_host_request_->GetAddressResults().value(),
+          use_dns_aliases_)) {
     LogConnectionIpPooling(true);
     return OK;
   }
@@ -780,6 +806,10 @@ int QuicStreamFactory::Job::DoConnect() {
   if (rv != OK) {
     DCHECK(rv != ERR_IO_PENDING);
     DCHECK(!session_);
+    if (rv == ERR_QUIC_PROTOCOL_ERROR) {
+      HistogramProtocolErrorLocation(
+          JobProtocolErrorLocation::kCreateSessionFailed);
+    }
     return rv;
   }
 
@@ -787,8 +817,11 @@ int QuicStreamFactory::Job::DoConnect() {
     return ERR_CONNECTION_CLOSED;
 
   session_->StartReading();
-  if (!session_->connection()->connected())
+  if (!session_->connection()->connected()) {
+    HistogramProtocolErrorLocation(
+        JobProtocolErrorLocation::kSessionStartReadingFailed);
     return ERR_QUIC_PROTOCOL_ERROR;
+  }
 
   rv = session_->CryptoConnect(
       base::BindOnce(&QuicStreamFactory::Job::OnConnectComplete, GetWeakPtr()));
@@ -798,6 +831,10 @@ int QuicStreamFactory::Job::DoConnect() {
     return ERR_QUIC_HANDSHAKE_FAILED;
   }
 
+  if (rv == ERR_QUIC_PROTOCOL_ERROR) {
+    HistogramProtocolErrorLocation(
+        JobProtocolErrorLocation::kCryptoConnectFailedSync);
+  }
   return rv;
 }
 
@@ -918,7 +955,7 @@ int QuicStreamFactory::Job::DoConfirmConnection(int rv) {
   // There may well now be an active session for this IP.  If so, use the
   // existing session instead.
   AddressList address(ToIPEndPoint(session_->connection()->peer_address()));
-  if (factory_->HasMatchingIpSession(key_, address)) {
+  if (factory_->HasMatchingIpSession(key_, address, use_dns_aliases_)) {
     LogConnectionIpPooling(true);
     session_->connection()->CloseConnection(
         quic::QUIC_CONNECTION_IP_POOLED,
@@ -929,7 +966,11 @@ int QuicStreamFactory::Job::DoConfirmConnection(int rv) {
   }
   LogConnectionIpPooling(false);
 
-  factory_->ActivateSession(key_, session_);
+  std::vector<std::string> dns_aliases =
+      use_dns_aliases_ && resolve_host_request_->GetDnsAliasResults()
+          ? resolve_host_request_->GetDnsAliasResults().value()
+          : std::vector<std::string>();
+  factory_->ActivateSession(key_, session_, std::move(dns_aliases));
 
   return OK;
 }
@@ -950,6 +991,7 @@ int QuicStreamRequest::Request(
     const SocketTag& socket_tag,
     const NetworkIsolationKey& network_isolation_key,
     bool disable_secure_dns,
+    bool use_dns_aliases,
     int cert_verify_flags,
     const GURL& url,
     const NetLogWithSource& net_log,
@@ -969,8 +1011,9 @@ int QuicStreamRequest::Request(
       QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
                      network_isolation_key, disable_secure_dns);
 
-  int rv = factory_->Create(session_key_, destination, quic_version, priority,
-                            cert_verify_flags, url, net_log, this);
+  int rv =
+      factory_->Create(session_key_, destination, quic_version, priority,
+                       use_dns_aliases, cert_verify_flags, url, net_log, this);
   if (rv == ERR_IO_PENDING) {
     net_log_ = net_log;
     callback_ = std::move(callback);
@@ -1130,6 +1173,8 @@ QuicStreamFactory::~QuicStreamFactory() {
   }
   active_jobs_.clear();
 
+  DCHECK(dns_aliases_by_session_key_.empty());
+
   // This should have been moved to the recent map when all consumers of
   // QuicCryptoClientConfigs were deleted, in the above lines.
   DCHECK(active_crypto_config_map_.empty());
@@ -1145,11 +1190,6 @@ QuicStreamFactory::~QuicStreamFactory() {
 
 bool QuicStreamFactory::CanUseExistingSession(const QuicSessionKey& session_key,
                                               const HostPortPair& destination) {
-  // TODO(zhongyi): delete active_sessions_.empty() checks once the
-  // android crash issue(crbug.com/498823) is resolved.
-  if (active_sessions_.empty())
-    return false;
-
   if (base::Contains(active_sessions_, session_key))
     return true;
 
@@ -1168,6 +1208,7 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
                               const HostPortPair& destination,
                               quic::ParsedQuicVersion quic_version,
                               RequestPriority priority,
+                              bool use_dns_aliases,
                               int cert_verify_flags,
                               const GURL& url,
                               const NetLogWithSource& net_log,
@@ -1193,27 +1234,24 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
   }
 
   // Use active session for |session_key| if such exists.
-  // TODO(rtenneti): crbug.com/498823 - delete active_sessions_.empty() checks.
-  if (!active_sessions_.empty()) {
-    auto it = active_sessions_.find(session_key);
-    if (it != active_sessions_.end()) {
-      QuicChromiumClientSession* session = it->second;
-      request->SetSession(session->CreateHandle(destination));
-      return OK;
-    }
+  auto active_session = active_sessions_.find(session_key);
+  if (active_session != active_sessions_.end()) {
+    QuicChromiumClientSession* session = active_session->second;
+    request->SetSession(session->CreateHandle(destination));
+    return OK;
   }
 
   // Associate with active job to |session_key| if such exists.
-  auto it = active_jobs_.find(session_key);
-  if (it != active_jobs_.end()) {
-    const NetLogWithSource& job_net_log = it->second->net_log();
+  auto active_job = active_jobs_.find(session_key);
+  if (active_job != active_jobs_.end()) {
+    const NetLogWithSource& job_net_log = active_job->second->net_log();
     job_net_log.AddEventReferencingSource(
         NetLogEventType::QUIC_STREAM_FACTORY_JOB_BOUND_TO_HTTP_STREAM_JOB,
         net_log.source());
     net_log.AddEventReferencingSource(
         NetLogEventType::HTTP_STREAM_JOB_BOUND_TO_QUIC_STREAM_FACTORY_JOB,
         job_net_log.source());
-    it->second->AddRequest(request);
+    active_job->second->AddRequest(request);
     return ERR_IO_PENDING;
   }
 
@@ -1243,8 +1281,8 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
       CreateCryptoConfigHandle(session_key.network_isolation_key()),
       WasQuicRecentlyBroken(session_key),
       params_.retry_on_alternate_network_before_handshake,
-      params_.race_stale_dns_on_connection, priority, cert_verify_flags,
-      net_log);
+      params_.race_stale_dns_on_connection, priority, use_dns_aliases,
+      cert_verify_flags, net_log);
   int rv = job->Run(base::BindOnce(&QuicStreamFactory::OnJobComplete,
                                    base::Unretained(this), job.get()));
   if (rv == ERR_IO_PENDING) {
@@ -1253,10 +1291,6 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
     return rv;
   }
   if (rv == OK) {
-    // TODO(rtenneti): crbug.com/498823 - revert active_sessions_.empty()
-    // related changes.
-    if (active_sessions_.empty())
-      return ERR_QUIC_PROTOCOL_ERROR;
     auto it = active_sessions_.find(session_key);
     DCHECK(it != active_sessions_.end());
     if (it == active_sessions_.end())
@@ -1290,7 +1324,7 @@ void QuicStreamFactory::OnSessionGoingAway(QuicChromiumClientSession* session) {
       ip_aliases_.erase(peer_address);
     session_peer_ip_.erase(session);
   }
-  session_aliases_.erase(session);
+  UnmapSessionFromSessionAliases(session);
 }
 
 void QuicStreamFactory::OnSessionClosed(QuicChromiumClientSession* session) {
@@ -1654,8 +1688,22 @@ void QuicStreamFactory::DumpMemoryStats(
                           active_jobs_.size());
 }
 
+const std::vector<std::string>& QuicStreamFactory::GetDnsAliasesForSessionKey(
+    const QuicSessionKey& key) const {
+  auto it = dns_aliases_by_session_key_.find(key);
+
+  if (it == dns_aliases_by_session_key_.end()) {
+    static const base::NoDestructor<std::vector<std::string>>
+        emptyvector_result;
+    return *emptyvector_result;
+  }
+
+  return it->second;
+}
+
 bool QuicStreamFactory::HasMatchingIpSession(const QuicSessionAliasKey& key,
-                                             const AddressList& address_list) {
+                                             const AddressList& address_list,
+                                             bool use_dns_aliases) {
   const quic::QuicServerId& server_id(key.server_id());
   DCHECK(!HasActiveSession(key.session_key()));
   for (const IPEndPoint& address : address_list) {
@@ -1667,7 +1715,13 @@ bool QuicStreamFactory::HasMatchingIpSession(const QuicSessionAliasKey& key,
       if (!session->CanPool(server_id.host(), key.session_key()))
         continue;
       active_sessions_[key.session_key()] = session;
-      session_aliases_[session].insert(key);
+
+      std::vector<std::string> dns_aliases =
+          use_dns_aliases ? dns_alias_utility::SanitizeDnsAliases(
+                                address_list.dns_aliases())
+                          : std::vector<std::string>();
+      MapSessionToAliasKey(session, key, std::move(dns_aliases));
+
       return true;
     }
   }
@@ -1703,9 +1757,6 @@ void QuicStreamFactory::OnJobComplete(Job* job, int rv) {
 
 bool QuicStreamFactory::HasActiveSession(
     const QuicSessionKey& session_key) const {
-  // TODO(rtenneti): crbug.com/498823 - delete active_sessions_.empty() check.
-  if (active_sessions_.empty())
-    return false;
   return base::Contains(active_sessions_, session_key);
 }
 
@@ -1752,12 +1803,13 @@ int QuicStreamFactory::CreateSession(
   }
 
   if (!helper_.get()) {
-    helper_.reset(new QuicChromiumConnectionHelper(clock_, random_generator_));
+    helper_ = std::make_unique<QuicChromiumConnectionHelper>(clock_,
+                                                             random_generator_);
   }
 
   if (!alarm_factory_.get()) {
-    alarm_factory_.reset(new QuicChromiumAlarmFactory(
-        base::ThreadTaskRunnerHandle::Get().get(), clock_));
+    alarm_factory_ = std::make_unique<QuicChromiumAlarmFactory>(
+        base::ThreadTaskRunnerHandle::Get().get(), clock_);
   }
 
   quic::QuicConnectionId connection_id =
@@ -1849,11 +1901,12 @@ int QuicStreamFactory::CreateSession(
 }
 
 void QuicStreamFactory::ActivateSession(const QuicSessionAliasKey& key,
-                                        QuicChromiumClientSession* session) {
+                                        QuicChromiumClientSession* session,
+                                        std::vector<std::string> dns_aliases) {
   DCHECK(!HasActiveSession(key.session_key()));
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicActiveSessions", active_sessions_.size());
   active_sessions_[key.session_key()] = session;
-  session_aliases_[session].insert(key);
+  MapSessionToAliasKey(session, key, std::move(dns_aliases));
   const IPEndPoint peer_address =
       ToIPEndPoint(session->connection()->peer_address());
   DCHECK(!base::Contains(ip_aliases_[peer_address], session));
@@ -2097,6 +2150,21 @@ void QuicStreamFactory::ProcessGoingAwaySession(
   // broken, which means that 0-RTT will be disabled but we'll still race.
   http_server_properties_->MarkAlternativeServiceRecentlyBroken(
       alternative_service, session->quic_session_key().network_isolation_key());
+}
+
+void QuicStreamFactory::MapSessionToAliasKey(
+    QuicChromiumClientSession* session,
+    const QuicSessionAliasKey& key,
+    std::vector<std::string> dns_aliases) {
+  session_aliases_[session].insert(key);
+  dns_aliases_by_session_key_[key.session_key()] = std::move(dns_aliases);
+}
+
+void QuicStreamFactory::UnmapSessionFromSessionAliases(
+    QuicChromiumClientSession* session) {
+  for (const auto& key : session_aliases_[session])
+    dns_aliases_by_session_key_.erase(key.session_key());
+  session_aliases_.erase(session);
 }
 
 std::unique_ptr<QuicStreamFactory::CryptoClientConfigHandle>

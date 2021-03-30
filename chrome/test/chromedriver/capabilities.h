@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -39,7 +38,6 @@ class Switches {
 
   void SetSwitch(const std::string& name);
   void SetSwitch(const std::string& name, const std::string& value);
-  void SetSwitch(const std::string& name, const base::string16& value);
   void SetSwitch(const std::string& name, const base::FilePath& value);
 
   // In case of same key, |switches| will override.

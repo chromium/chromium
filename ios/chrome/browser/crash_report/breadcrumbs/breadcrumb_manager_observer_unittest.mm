@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -13,7 +13,8 @@
 #endif
 
 namespace {
-class FakeBreadcrumbManagerObserver : public BreadcrumbManagerObserver {
+class FakeBreadcrumbManagerObserver
+    : public breadcrumbs::BreadcrumbManagerObserver {
  public:
   FakeBreadcrumbManagerObserver() {}
   ~FakeBreadcrumbManagerObserver() override = default;
@@ -23,22 +24,22 @@ class FakeBreadcrumbManagerObserver : public BreadcrumbManagerObserver {
       const FakeBreadcrumbManagerObserver&) = delete;
 
   // BreadcrumbManagerObserver
-  void EventAdded(BreadcrumbManager* manager,
+  void EventAdded(breadcrumbs::BreadcrumbManager* manager,
                   const std::string& event) override {
     event_added_last_received_manager_ = manager;
     event_added_last_received_event_ = event;
   }
 
-  void OldEventsRemoved(BreadcrumbManager* manager) override {
+  void OldEventsRemoved(breadcrumbs::BreadcrumbManager* manager) override {
     old_events_removed_last_received_manager_ = manager;
   }
 
-  BreadcrumbManager* event_added_last_received_manager_ = nullptr;
+  breadcrumbs::BreadcrumbManager* event_added_last_received_manager_ = nullptr;
   std::string event_added_last_received_event_;
 
-  BreadcrumbManager* old_events_removed_last_received_manager_ = nullptr;
+  breadcrumbs::BreadcrumbManager* old_events_removed_last_received_manager_ =
+      nullptr;
 };
-
 }
 
 class BreadcrumbManagerObserverTest : public PlatformTest {
@@ -53,7 +54,7 @@ class BreadcrumbManagerObserverTest : public PlatformTest {
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  BreadcrumbManager manager_;
+  breadcrumbs::BreadcrumbManager manager_;
   FakeBreadcrumbManagerObserver observer_;
 };
 

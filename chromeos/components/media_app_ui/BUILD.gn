@@ -28,7 +28,6 @@ static_library("media_app_ui") {
     ":mojo_bindings",
     ":mojo_bindings_js",
     "//chromeos/components/web_applications",
-    "//chromeos/constants",
     "//chromeos/resources:media_app_bundle_resources",
     "//chromeos/resources:media_app_resources",
     "//chromeos/strings",
@@ -49,7 +48,7 @@ js2gtest("browser_tests_js") {
 
   deps = [
     ":browser_test_support",
-    "//chromeos/constants",
+    "//ash/constants",
   ]
 }
 

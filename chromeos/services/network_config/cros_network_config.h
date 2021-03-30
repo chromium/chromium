@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_certificate_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -17,10 +18,11 @@
 
 namespace base {
 class DictionaryValue;
-}
+}  // namespace base
 
 namespace chromeos {
 
+class CellularESimProfileHandler;
 class ManagedNetworkConfigurationHandler;
 class NetworkConnectionHandler;
 class NetworkDeviceHandler;
@@ -30,7 +32,8 @@ namespace network_config {
 
 class CrosNetworkConfig : public mojom::CrosNetworkConfig,
                           public NetworkStateHandlerObserver,
-                          public NetworkCertificateHandler::Observer {
+                          public NetworkCertificateHandler::Observer,
+                          public CellularInhibitor::Observer {
  public:
   // Constructs an instance of CrosNetworkConfig with default network subsystem
   // dependencies appropriate for a production environment.
@@ -41,6 +44,8 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   CrosNetworkConfig(
       NetworkStateHandler* network_state_handler,
       NetworkDeviceHandler* network_device_handler,
+      CellularInhibitor* cellular_inhibitor,
+      CellularESimProfileHandler* cellular_esim_profile_handler,
       ManagedNetworkConfigurationHandler* network_configuration_handler,
       NetworkConnectionHandler* network_connection_handler,
       NetworkCertificateHandler* network_certificate_handler);
@@ -142,7 +147,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
 
-  // NetworkStateHandlerObserver
+  // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
   void DeviceListChanged() override;
   void ActiveNetworksChanged(
@@ -156,10 +161,15 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   // NetworkCertificateHandler::Observer
   void OnCertificatesChanged() override;
 
+  // CellularInhibitor::Observer:
+  void OnInhibitStateChanged() override;
+
   const std::string& GetServicePathFromGuid(const std::string& guid);
 
   NetworkStateHandler* network_state_handler_;    // Unowned
   NetworkDeviceHandler* network_device_handler_;  // Unowned
+  CellularInhibitor* cellular_inhibitor_;         // Unowned
+  CellularESimProfileHandler* cellular_esim_profile_handler_;  // Unowned
   ManagedNetworkConfigurationHandler*
       network_configuration_handler_;                       // Unowned
   NetworkConnectionHandler* network_connection_handler_;    // Unowned

@@ -21,13 +21,10 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/core/db/database_manager.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_test_utils.h"
-#include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
-#include "components/subresource_filter/content/common/subresource_filter_messages.h"
+#include "components/subresource_filter/content/browser/test_subresource_filter_client.h"
 #include "components/subresource_filter/content/mojom/subresource_filter_agent.mojom.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
@@ -74,6 +71,7 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
 
   void OnSubresourceFilterAgentReceiver(
       mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.reset();
     receiver_.Bind(
         mojo::PendingAssociatedReceiver<mojom::SubresourceFilterAgent>(
             std::move(handle)));
@@ -105,17 +103,6 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
   mojom::ActivationStatePtr last_activation_;
   bool is_ad_subframe_ = false;
   mojo::AssociatedReceiver<mojom::SubresourceFilterAgent> receiver_{this};
-};
-
-// Overrides the TestSafeBrowsingDatabaseManager methods that are
-// expected to be called to eliminate error logs.
-class CustomTestSafeBrowsingDatabaseManager
-    : public safe_browsing::TestSafeBrowsingDatabaseManager {
- public:
-  bool IsSupported() const override { return false; }
-
- private:
-  ~CustomTestSafeBrowsingDatabaseManager() override = default;
 };
 
 // Simple throttle that sends page-level activation to the manager for a
@@ -176,42 +163,6 @@ class MockPageStateActivationThrottle : public content::NavigationThrottle {
   DISALLOW_COPY_AND_ASSIGN(MockPageStateActivationThrottle);
 };
 
-class TestSubresourceFilterClient : public SubresourceFilterClient {
- public:
-  TestSubresourceFilterClient() = default;
-  ~TestSubresourceFilterClient() override = default;
-
-  // SubresourceFilterClient:
-  void ShowNotification() override { ++disallowed_notification_count_; }
-  mojom::ActivationLevel OnPageActivationComputed(
-      content::NavigationHandle* navigation_handle,
-      mojom::ActivationLevel effective_activation_level,
-      ActivationDecision* decision) override {
-    return effective_activation_level;
-  }
-  void OnAdsViolationTriggered(
-      content::RenderFrameHost* rfh,
-      mojom::AdsViolation triggered_violation) override {}
-  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-  GetSafeBrowsingDatabaseManager() override {
-    return database_manager_;
-  }
-  void OnReloadRequested() override {}
-
-  void CreateSafeBrowsingDatabaseManager() {
-    database_manager_ =
-        base::MakeRefCounted<CustomTestSafeBrowsingDatabaseManager>();
-  }
-
-  int disallowed_notification_count() const {
-    return disallowed_notification_count_;
-  }
-
- private:
-  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
-  int disallowed_notification_count_ = 0;
-};
-
 class ContentSubresourceFilterThrottleManagerTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver,
@@ -248,8 +199,12 @@ class ContentSubresourceFilterThrottleManagerTest
                                              base::DoNothing());
 
     auto subresource_filter_client =
-        std::make_unique<TestSubresourceFilterClient>();
+        std::make_unique<TestSubresourceFilterClient>(web_contents);
     client_ = subresource_filter_client.get();
+
+    // Turn off smart UI to make it easier to reason about expectations on
+    // ShowNotification() being invoked.
+    client_->SetShouldUseSmartUI(false);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
             std::move(subresource_filter_client), dealer_handle_.get(),
@@ -324,7 +279,7 @@ class ContentSubresourceFilterThrottleManagerTest
     CreateAgentForHost(new_host);
   }
 
-  void FrameDeleted(content::RenderFrameHost* host) override {
+  void RenderFrameDeleted(content::RenderFrameHost* host) override {
     agent_map_.erase(host);
   }
 
@@ -855,7 +810,8 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
     // CreateForWebContents() should not do anything if the subresource filter
     // feature is not enabled.
     ContentSubresourceFilterThrottleManager::CreateForWebContents(
-        web_contents.get(), std::make_unique<TestSubresourceFilterClient>(),
+        web_contents.get(),
+        std::make_unique<TestSubresourceFilterClient>(web_contents.get()),
         dealer_handle());
     EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                   web_contents.get()),
@@ -865,7 +821,8 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
   // If the subresource filter feature is enabled (as it is by default),
   // CreateForWebContents() should create and attach an instance.
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents.get(), std::make_unique<TestSubresourceFilterClient>(),
+      web_contents.get(),
+      std::make_unique<TestSubresourceFilterClient>(web_contents.get()),
       dealer_handle());
   auto* throttle_manager =
       ContentSubresourceFilterThrottleManager::FromWebContents(
@@ -874,7 +831,8 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
 
   // A second call should not attach a different instance.
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents.get(), std::make_unique<TestSubresourceFilterClient>(),
+      web_contents.get(),
+      std::make_unique<TestSubresourceFilterClient>(web_contents.get()),
       dealer_handle());
   EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                 web_contents.get()),
@@ -958,8 +916,8 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_EQ(1, disallowed_notification_count());
 }
 
-// If the RenderFrame determines that the frame is an ad, then any navigation
-// for that frame should be considered an ad.
+// If the RenderFrame determines that the frame is an ad due to creation by ad
+// script, then any navigation for that frame should be considered an ad.
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        SubframeNavigationTaggedAsAdByRenderer) {
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
@@ -970,8 +928,8 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
       GURL("https://www.example.com/allowed.html"), main_rfh());
 
   EXPECT_FALSE(throttle_manager()->IsFrameTaggedAsAd(subframe));
+  throttle_manager()->OnSubframeWasCreatedByAdScript(subframe);
   throttle_manager()->OnFrameIsAdSubframe(subframe);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(subframe));
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()));
@@ -979,6 +937,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateCommitAndGetResult(navigation_simulator()));
   subframe = navigation_simulator()->GetFinalRenderFrameHost();
   EXPECT_TRUE(subframe);
+  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(subframe));
   ExpectActivationSignalForFrame(subframe, true /* expect_activation */,
                                  true /* is_ad_subframe */);
 
@@ -992,8 +951,9 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
                                  true /* is_ad_subframe */);
 }
 
-// If the RenderFrame determines that the frame is an ad, and the frame changes
-// processes, then the frame should still be considered an ad.
+// If the RenderFrame determines that the frame is an ad due to creation by ad
+// script, and the frame changes processes, then the frame should still be
+// considered an ad.
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        AdTagCarriesAcrossProcesses) {
   content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
@@ -1008,13 +968,13 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   content::RenderFrameHost* initial_subframe = CreateSubframeWithTestNavigation(
       GURL("https://www.example2.com/allowed.html"), main_rfh());
 
-  // Simulate the render process telling the manager that the frame is an ad.
+  // Simulate the render process telling the manager that the frame is an ad due
+  // to creation by ad script.
+  throttle_manager()->OnSubframeWasCreatedByAdScript(initial_subframe);
   throttle_manager()->OnFrameIsAdSubframe(initial_subframe);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(initial_subframe));
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()));
-
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
   content::RenderFrameHost* final_subframe =
@@ -1027,8 +987,8 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
                                  true /* is_ad_subframe */);
 }
 
-// If the RenderFrame determines that the frame is an ad, then its child frames
-// should also be considered ads.
+// If the RenderFrame determines that the frame was created by ad script, it
+// should be tagged and then its child frames should also be tagged as ads.
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        GrandchildNavigationTaggedAsAdByRenderer) {
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
@@ -1039,7 +999,9 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   content::RenderFrameHost* subframe = CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/allowed.html"), main_rfh());
 
-  // Simulate the render process telling the manager that the frame is an ad.
+  // Simulate the render process telling the manager that the frame is an ad due
+  // to creation by ad script.
+  throttle_manager()->OnSubframeWasCreatedByAdScript(subframe);
   throttle_manager()->OnFrameIsAdSubframe(subframe);
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,

@@ -26,9 +26,9 @@
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/base/features.h"
 #include "cc/base/histograms.h"
+#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/page_scale_animation.h"
@@ -100,6 +100,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/transform_operations.h"
 
 #define EXPECT_SCOPED(statements) \
   {                               \
@@ -107,12 +108,12 @@
     statements;                   \
   }
 
-using ::testing::Mock;
-using ::testing::Return;
+using media::VideoFrame;
+using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
-using ::testing::_;
-using media::VideoFrame;
+using ::testing::Mock;
+using ::testing::Return;
 
 using ScrollThread = cc::InputHandler::ScrollThread;
 
@@ -260,8 +261,12 @@ class LayerTreeHostImplTest : public testing::Test,
   void RequestBeginMainFrameNotExpected(bool new_state) override {}
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
-      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
-      const viz::FrameTimingDetails& details) override {}
+      PresentationTimeCallbackBuffer::PendingCallbacks activated,
+      const viz::FrameTimingDetails& details) override {
+    std::move(activated.main_thread_callbacks);
+    host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
+        frame_token, std::move(activated), details);
+  }
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
   void NotifyPaintWorkletStateChange(
@@ -274,6 +279,8 @@ class LayerTreeHostImplTest : public testing::Test,
     first_scroll_observed++;
   }
   bool IsInSynchronousComposite() const override { return false; }
+  void FrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) override {}
   void set_reduce_memory_result(bool reduce_memory_result) {
     reduce_memory_result_ = reduce_memory_result;
   }
@@ -1666,9 +1673,13 @@ class LayerTreeHostImplTestInvokeMainThreadCallbacks
  public:
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
-      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
+      PresentationTimeCallbackBuffer::PendingCallbacks activated,
       const viz::FrameTimingDetails& details) override {
-    for (LayerTreeHost::PresentationTimeCallback& callback : callbacks) {
+    auto main_thread_callbacks = std::move(activated.main_thread_callbacks);
+    host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
+        frame_token, std::move(activated), details);
+    for (LayerTreeHost::PresentationTimeCallback& callback :
+         main_thread_callbacks) {
       std::move(callback).Run(details.presentation_feedback);
     }
   }
@@ -2681,8 +2692,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SnapAnimationTargetUpdated) {
       AnimatedUpdateState(gfx::Point(10, 10), gfx::Vector2dF(0, -10)).get());
   EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
   // Finish the smooth scroll animation for wheel.
+  const int scroll_animation_duration_ms =
+      base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 300
+                                                                       : 150;
   BeginImplFrameAndAnimate(begin_frame_args,
-                           start_time + base::TimeDelta::FromMilliseconds(150));
+                           start_time + base::TimeDelta::FromMilliseconds(
+                                            scroll_animation_duration_ms));
 
   // At the end of the previous scroll animation, a new animation for the
   // snapping should have started.
@@ -3261,9 +3276,9 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   CreateTransformNode(child);
 
   // Add a translate from 6,7 to 8,9.
-  TransformOperations start;
+  gfx::TransformOperations start;
   start.AppendTranslate(6, 7, 0);
-  TransformOperations end;
+  gfx::TransformOperations end;
   end.AppendTranslate(8, 9, 0);
   AddAnimatedTransformToElementWithAnimation(child->element_id(), timeline(),
                                              4.0, start, end);
@@ -3356,9 +3371,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   CreateTransformNode(child);
 
   // Add a translate animation.
-  TransformOperations start;
+  gfx::TransformOperations start;
   start.AppendTranslate(6, 7, 0);
-  TransformOperations end;
+  gfx::TransformOperations end;
   end.AppendTranslate(8, 9, 0);
   AddAnimatedTransformToElementWithAnimation(child->element_id(), timeline(),
                                              4.0, start, end);
@@ -4832,14 +4847,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   gfx::Point position(295, 195);
   gfx::Vector2dF offset(0, 50);
 
-// TODO(bokan): Unfortunately, Mac currently doesn't support smooth scrolling
-// wheel events. https://crbug.com/574283.
-#if defined(OS_MAC)
-  std::vector<ui::ScrollInputType> types = {ui::ScrollInputType::kScrollbar};
-#else
   std::vector<ui::ScrollInputType> types = {ui::ScrollInputType::kScrollbar,
                                             ui::ScrollInputType::kWheel};
-#endif
   for (auto type : types) {
     auto begin_state = BeginState(position, offset, type);
     begin_state->data()->set_current_native_scrolling_element(
@@ -11436,14 +11445,14 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UIResourceManagement) {
   host_impl_->CreateUIResource(ui_resource_id, bitmap);
   EXPECT_EQ(1u, sii->shared_image_count());
   viz::ResourceId id1 = host_impl_->ResourceIdForUIResource(ui_resource_id);
-  EXPECT_NE(0u, id1);
+  EXPECT_NE(viz::kInvalidResourceId, id1);
 
   // Multiple requests with the same id is allowed.  The previous texture is
   // deleted.
   host_impl_->CreateUIResource(ui_resource_id, bitmap);
   EXPECT_EQ(1u, sii->shared_image_count());
   viz::ResourceId id2 = host_impl_->ResourceIdForUIResource(ui_resource_id);
-  EXPECT_NE(0u, id2);
+  EXPECT_NE(viz::kInvalidResourceId, id2);
   EXPECT_NE(id1, id2);
 
   // Deleting invalid UIResourceId is allowed and does not change state.
@@ -11452,11 +11461,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UIResourceManagement) {
 
   // Should return zero for invalid UIResourceId.  Number of textures should
   // not change.
-  EXPECT_EQ(0u, host_impl_->ResourceIdForUIResource(-1));
+  EXPECT_EQ(viz::kInvalidResourceId, host_impl_->ResourceIdForUIResource(-1));
   EXPECT_EQ(1u, sii->shared_image_count());
 
   host_impl_->DeleteUIResource(ui_resource_id);
-  EXPECT_EQ(0u, host_impl_->ResourceIdForUIResource(ui_resource_id));
+  EXPECT_EQ(viz::kInvalidResourceId,
+            host_impl_->ResourceIdForUIResource(ui_resource_id));
   EXPECT_EQ(0u, sii->shared_image_count());
 
   // Should not change state for multiple deletion on one UIResourceId
@@ -11486,7 +11496,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, CreateETC1UIResource) {
   host_impl_->CreateUIResource(ui_resource_id, bitmap);
   EXPECT_EQ(1u, sii->shared_image_count());
   viz::ResourceId id1 = host_impl_->ResourceIdForUIResource(ui_resource_id);
-  EXPECT_NE(0u, id1);
+  EXPECT_NE(viz::kInvalidResourceId, id1);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ObeyMSAACaps) {
@@ -13126,32 +13136,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   EXPECT_EQ(node->surface_contents_scale, gfx::Vector2dF(1, 1));
 }
 
-#if defined(OS_MAC)
-// Ensure Mac wheel scrolling causes instant scrolling. This test can be removed
-// once https://crbug.com/574283 is fixed.
-TEST_P(ScrollUnifiedLayerTreeHostImplTest, MacWheelIsNonAnimated) {
-  const gfx::Size content_size(1000, 1000);
-  const gfx::Size viewport_size(50, 100);
-  SetupViewportLayersOuterScrolls(viewport_size, content_size);
-  LayerImpl* scrolling_layer = OuterViewportScrollLayer();
-
-  host_impl_->set_force_smooth_wheel_scrolling_for_testing(false);
-  ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD,
-            GetInputHandler()
-                .ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 50),
-                                        ui::ScrollInputType::kWheel)
-                                 .get(),
-                             ui::ScrollInputType::kWheel)
-                .thread);
-  GetInputHandler().ScrollUpdate(
-      AnimatedUpdateState(gfx::Point(), gfx::Vector2d(0, 50)).get());
-
-  // Ensure the scroll update happens immediately.
-  EXPECT_EQ(CurrentScrollOffset(scrolling_layer).y(), 50);
-  GetInputHandler().ScrollEnd();
-}
-#endif
-
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, OneScrollForFirstScrollDelay) {
   LayerTreeSettings settings = DefaultSettings();
   settings.commit_to_active_tree = false;
@@ -13886,14 +13870,14 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, FadedOutPaintedScrollbarHitTest) {
 
   // MouseDown on the track of a scrollbar with opacity 0 should not produce a
   // scroll.
-  scrollbar->set_scrollbar_painted_opacity(0);
+  scrollbar->SetScrollbarPaintedOpacity(0);
   InputHandlerPointerResult result = GetInputHandler().MouseDown(
       gfx::PointF(350, 100), /*jump_key_modifier*/ false);
   EXPECT_EQ(result.scroll_offset.y(), 0u);
 
   // MouseDown on the track of a scrollbar with opacity > 0 should produce a
   // scroll.
-  scrollbar->set_scrollbar_painted_opacity(1);
+  scrollbar->SetScrollbarPaintedOpacity(1);
   result = GetInputHandler().MouseDown(gfx::PointF(350, 100),
                                        /*jump_key_modifier*/ false);
   EXPECT_GT(result.scroll_offset.y(), 0u);
@@ -14364,6 +14348,89 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragAfterJumpClick) {
   host_impl_ = nullptr;
 }
 
+// Tests that an existing scroll offset animation (for a scrollbar) is aborted
+// before a new one is created.
+TEST_P(ScrollUnifiedLayerTreeHostImplTest,
+       AbortAnimatedScrollBeforeStartingAutoscroll) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.compositor_threaded_scrollbar_scrolling = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+
+  // Setup the viewport.
+  const gfx::Size viewport_size = gfx::Size(360, 600);
+  const gfx::Size content_size = gfx::Size(345, 3800);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+  LayerImpl* scroll_layer = OuterViewportScrollLayer();
+
+  // Set up the scrollbar and its dimensions.
+  LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+  auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
+      layer_tree_impl, ScrollbarOrientation::VERTICAL,
+      /*is_left_side_vertical_scrollbar*/ false,
+      /*is_overlay*/ false);
+
+  SetupScrollbarLayer(scroll_layer, scrollbar);
+  const gfx::Size scrollbar_size = gfx::Size(15, 600);
+  scrollbar->SetBounds(scrollbar_size);
+  host_impl_->set_force_smooth_wheel_scrolling_for_testing(true);
+
+  // Set up the thumb dimensions.
+  scrollbar->SetThumbThickness(15);
+  scrollbar->SetThumbLength(50);
+  scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
+
+  // Set up scrollbar arrows.
+  scrollbar->SetBackButtonRect(
+      gfx::Rect(gfx::Point(345, 0), gfx::Size(15, 15)));
+  scrollbar->SetForwardButtonRect(
+      gfx::Rect(gfx::Point(345, 570), gfx::Size(15, 15)));
+  scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
+
+  TestInputHandlerClient input_handler_client;
+  GetInputHandler().BindToClient(&input_handler_client);
+
+  {
+    // Set up an animated scrollbar autoscroll.
+    GetInputHandler().scrollbar_controller_for_testing()->HandlePointerDown(
+        gfx::PointF(350, 560), /*jump_key_modifier*/ false);
+    auto begin_state = BeginState(gfx::Point(350, 560), gfx::Vector2d(0, 40),
+                                  ui::ScrollInputType::kScrollbar);
+    EXPECT_EQ(
+        ScrollThread::SCROLL_ON_IMPL_THREAD,
+        GetInputHandler()
+            .ScrollBegin(begin_state.get(), ui::ScrollInputType::kScrollbar)
+            .thread);
+    auto update_state = UpdateState(gfx::Point(350, 560), gfx::Vector2dF(0, 40),
+                                    ui::ScrollInputType::kScrollbar);
+    update_state->data()->delta_granularity =
+        ui::ScrollGranularity::kScrollByPixel;
+    GetInputHandler().ScrollUpdate(update_state.get());
+
+    // Autoscroll animations should be active.
+    EXPECT_TRUE(GetInputHandler()
+                    .scrollbar_controller_for_testing()
+                    ->ScrollbarScrollIsActive());
+    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+  }
+
+  {
+    // When it's time to kick off the scrollbar autoscroll animation (i.e ~250ms
+    // after pointerdown), the ScrollbarController should ensure that any
+    // existing scroll offset animations are aborted and a new autoscroll
+    // animation is created. Test passes if unit test doesn't hit any DCHECK
+    // failures.
+    GetInputHandler()
+        .scrollbar_controller_for_testing()
+        ->StartAutoScrollAnimation(/*scroll_velocity*/ 800,
+                                   ScrollbarPart::FORWARD_TRACK);
+    EXPECT_TRUE(GetImplAnimationHost()->ImplOnlyScrollAnimatingElement());
+  }
+
+  // Tear down the LayerTreeHostImpl before the InputHandlerClient.
+  host_impl_->ReleaseLayerTreeFrameSink();
+  host_impl_ = nullptr;
+}
+
 // Tests that an animated scrollbar scroll aborts when a different device (like
 // a mousewheel) wants to animate the scroll offset.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, AnimatedScrollYielding) {
@@ -14620,7 +14687,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, MainThreadFallback) {
   // InputHandlerPointerResult should return a zero offset. This will cause the
   // main thread to handle the scroll.
   GetScrollNode(scroll_layer)->main_thread_scrolling_reasons =
-      MainThreadScrollingReason::kHasNonLayerViewportConstrainedObjects;
+      MainThreadScrollingReason::kThreadedScrollingDisabled;
   compositor_threaded_scrolling_result = GetInputHandler().MouseDown(
       gfx::PointF(350, 500), /*jump_key_modifier*/ false);
   GetInputHandler().MouseUp(gfx::PointF(350, 500));
@@ -14763,7 +14830,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAnimatedWithDelay) {
   begin_frame_args.frame_id.sequence_number++;
   host_impl_->WillBeginImplFrame(begin_frame_args);
   host_impl_->UpdateAnimationState(true);
-  EXPECT_EQ(50, CurrentScrollOffset(scrolling_layer).y());
+  EXPECT_NEAR(
+      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 87
+                                                                        : 50),
+      CurrentScrollOffset(scrolling_layer).y(), 1);
   host_impl_->DidFinishImplFrame(begin_frame_args);
 
   // Update target.
@@ -16308,9 +16378,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatedTilingsForNonDrawingLayers) {
   // Now add a transform animation to this layer. While we don't drawn layers
   // with non-invertible transforms, we still raster them if there is a
   // transform animation.
-  TransformOperations start_transform_operations;
+  gfx::TransformOperations start_transform_operations;
   start_transform_operations.AppendMatrix(singular);
-  TransformOperations end_transform_operations;
+  gfx::TransformOperations end_transform_operations;
   AddAnimatedTransformToElementWithAnimation(
       animated_transform_layer->element_id(), timeline(), 10.0,
       start_transform_operations, end_transform_operations);
@@ -18141,6 +18211,41 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSibling) {
   // should be discarded outside of the simple frame -> subframe case.
   EXPECT_FALSE(
       GetInputHandler().FindFrameElementIdAtPoint(gfx::PointF(30, 30)));
+}
+
+TEST_F(LayerTreeHostImplTest, DocumentTransitionRequestCausesDamage) {
+  const gfx::Size viewport_size(100, 100);
+  SetupDefaultRootLayer(viewport_size);
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  const gfx::Transform draw_transform;
+  const gfx::Rect draw_viewport(viewport_size);
+  bool resourceless_software_draw = false;
+
+  // Clear any damage.
+  host_impl_->OnDraw(draw_transform, draw_viewport, resourceless_software_draw,
+                     false);
+  last_on_draw_frame_.reset();
+  did_request_redraw_ = false;
+
+  // Ensure there is no damage.
+  host_impl_->OnDraw(draw_transform, draw_viewport, resourceless_software_draw,
+                     false);
+  EXPECT_FALSE(did_request_redraw_);
+  EXPECT_TRUE(last_on_draw_frame_->has_no_damage);
+  last_on_draw_frame_.reset();
+  did_request_redraw_ = false;
+
+  // Adding a transition effect should cause us to redraw.
+  host_impl_->active_tree()->AddDocumentTransitionRequest(
+      DocumentTransitionRequest::CreateStart(
+          /*document_tag=*/0, /*shared_element_count=*/0, base::OnceClosure()));
+
+  // Ensure there is damage and we requested a redraw.
+  host_impl_->OnDraw(draw_transform, draw_viewport, resourceless_software_draw,
+                     false);
+  EXPECT_TRUE(did_request_redraw_);
+  EXPECT_FALSE(last_on_draw_frame_->has_no_damage);
 }
 
 }  // namespace cc

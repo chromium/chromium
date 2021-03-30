@@ -64,26 +64,6 @@ Default:
   For thorough tests: ,-other-https,-base-https-other-https
   For others: ,-base-https-other-https
 
-# HOSTS and custom hostnames
-
-One can also override the hostnames used for the base origin and other origin.
-By default they are '127.0.0.1' and 'localhost', but some tests may require
-use of other URLs for behavior that differs between localhost URLs and web URLs.
-
-For example (to use base host 'a.test' and remote host 'b.test'):
-  Put this in the script-tests X.js file (and run generate.py):
-    // HOSTS: 'a.test', 'b.test'
-  Add the same hostnames to the URL getter calls in X.js as well:
-    get_fetch_test_options('a.test', 'b.test');
-    get_thorough_test_options('a.test', 'b.test');
-
-Then when running the test, there will be a preliminary redirect from the
-starting URL of http://127.0.0.1/.../X.html to http://a.test/.../X.html before
-proceeding.
-
-TODO(chlily): Finish plumbing work to actually apply custom hostnames. The
-get_*_test_options() calls should take the custom hostnames.
-
 # File structure
 
 Helper JS files and server side scripts are located on

@@ -50,7 +50,8 @@ bool HasWebRequestScheme(const GURL& url) {
   return (url.SchemeIs(url::kAboutScheme) || url.SchemeIs(url::kFileScheme) ||
           url.SchemeIs(url::kFileSystemScheme) ||
           url.SchemeIs(url::kFtpScheme) || url.SchemeIsHTTPOrHTTPS() ||
-          url.SchemeIs(extensions::kExtensionScheme) || url.SchemeIsWSOrWSS());
+          url.SchemeIs(extensions::kExtensionScheme) || url.SchemeIsWSOrWSS() ||
+          url.SchemeIs(url::kUrnScheme));
 }
 
 bool g_allow_all_extension_locations_in_public_session = false;

@@ -8,11 +8,9 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
-import("../optimize_webui.gni")
+import("../tools/optimize_webui.gni")
 import("settings.gni")
 
 preprocess_folder = "preprocessed"
@@ -101,7 +99,9 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "a11y_page/captions_browser_proxy.js",
+    "about_page/about_page_browser_proxy.js",
     "appearance_page/appearance_browser_proxy.js",
+    "appearance_page/fonts_browser_proxy.js",
     "autofill_page/merge_exceptions_store_copies_behavior.js",
     "autofill_page/merge_passwords_store_copies_behavior.js",
     "autofill_page/multi_store_exception_entry.js",
@@ -112,22 +112,41 @@ preprocess_if_expr("preprocess") {
     "autofill_page/show_password_behavior.js",
     "chrome_cleanup_page/chrome_cleanup_proxy.js",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js",
+    "controls/pref_control_behavior.js",
+    "controls/settings_boolean_control_behavior.js",
     "controls/settings_idle_load.js",
     "downloads_page/downloads_browser_proxy.js",
     "ensure_lazy_loaded.js",
+    "extension_control_browser_proxy.js",
+    "global_scroll_target_behavior.js",
     "hats_browser_proxy.js",
     "i18n_setup.js",
     "incompatible_applications_page/incompatible_applications_browser_proxy.js",
+    "languages_page/languages.js",
+    "languages_page/languages_browser_proxy.js",
+    "languages_page/languages_settings_metrics_proxy.js",
     "lazy_load.js",
+    "lifetime_browser_proxy.js",
     "metrics_browser_proxy.js",
     "on_startup_page/on_startup_browser_proxy.js",
     "on_startup_page/startup_urls_page_browser_proxy.js",
     "open_window_proxy.js",
     "page_visibility.js",
+    "people_page/sync_browser_proxy.js",
+    "people_page/profile_info_browser_proxy.js",
+    "prefs/prefs_behavior.js",
+    "prefs/prefs.js",
+    "prefs/prefs_types.js",
+    "prefs/pref_util.js",
+    "privacy_page/privacy_page_browser_proxy.js",
     "privacy_page/security_keys_browser_proxy.js",
     "reset_page/reset_browser_proxy.js",
     "route.js",
+    "router.js",
     "safety_check_page/safety_check_browser_proxy.js",
+    "search_engines_page/search_engines_browser_proxy.js",
+    "search_settings.js",
+    "setting_id_param_util.js",
     "settings.js",
     "settings_page/main_page_behavior.js",
     "settings_routes.js",
@@ -143,14 +162,19 @@ preprocess_if_expr("preprocess") {
     in_files += [
       "autofill_page/blocking_request_manager.js",
       "languages_page/languages_metrics_proxy.js",
+      "people_page/account_manager_browser_proxy.js",
       "site_settings/android_info_browser_proxy.js",
     ]
   } else {
+    if (!is_chromeos_lacros) {
+      in_files += [
+        "default_browser_page/default_browser_browser_proxy.js",
+        "system_page/system_page_browser_proxy.js",
+      ]
+    }
     in_files += [
-      "default_browser_page/default_browser_browser_proxy.js",
       "people_page/import_data_browser_proxy.js",
       "people_page/manage_profile_browser_proxy.js",
-      "system_page/system_page_browser_proxy.js",
     ]
   }
 }
@@ -162,12 +186,11 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "a11y_page/a11y_page.js",
-    "a11y_page/captions_subpage.m.js",
-    "about_page/about_page_browser_proxy.m.js",
+    "a11y_page/captions_subpage.js",
+    "a11y_page/live_caption_section.js",
     "about_page/about_page.js",
     "appearance_page/appearance_fonts_page.js",
     "appearance_page/appearance_page.js",
-    "appearance_page/fonts_browser_proxy.m.js",
     "appearance_page/home_url_input.js",
     "autofill_page/autofill_page.js",
     "autofill_page/avatar_icon.js",
@@ -199,50 +222,37 @@ preprocess_if_expr("preprocess_generated") {
     "clear_browsing_data_dialog/history_deletion_dialog.js",
     "clear_browsing_data_dialog/installed_app_checkbox.js",
     "clear_browsing_data_dialog/passwords_deletion_dialog.js",
-    "controls/controlled_button.m.js",
-    "controls/controlled_radio_button.m.js",
-    "controls/extension_controlled_indicator.m.js",
-    "controls/password_prompt_dialog.m.js",
-    "controls/settings_boolean_control_behavior.m.js",
+    "controls/controlled_button.js",
+    "controls/controlled_radio_button.js",
+    "controls/extension_controlled_indicator.js",
+    "controls/password_prompt_dialog.js",
     "controls/settings_checkbox.js",
-    "controls/settings_dropdown_menu.m.js",
-    "controls/pref_control_behavior.m.js",
-    "controls/settings_radio_group.m.js",
-    "controls/settings_slider.m.js",
-    "controls/settings_textarea.m.js",
-    "controls/settings_toggle_button.m.js",
+    "controls/settings_dropdown_menu.js",
+    "controls/settings_radio_group.js",
+    "controls/settings_slider.js",
+    "controls/settings_textarea.js",
+    "controls/settings_toggle_button.js",
     "downloads_page/downloads_page.js",
-    "extension_control_browser_proxy.m.js",
-    "global_scroll_target_behavior.m.js",
-    "icons.m.js",
-    "languages_page/languages.m.js",
-    "languages_page/languages_browser_proxy.m.js",
+    "icons.js",
     "languages_page/add_languages_dialog.js",
     "languages_page/languages_page.js",
-    "lifetime_browser_proxy.m.js",
+    "languages_page/languages_subpage.js",
     "settings_menu/settings_menu.js",
     "on_startup_page/on_startup_page.js",
     "on_startup_page/startup_url_dialog.js",
     "on_startup_page/startup_url_entry.js",
     "on_startup_page/startup_urls_page.js",
-    "people_page/sync_account_control.m.js",
-    "people_page/sync_browser_proxy.m.js",
-    "people_page/sync_encryption_options.m.js",
+    "people_page/sync_account_control.js",
+    "people_page/sync_encryption_options.js",
     "people_page/people_page.js",
-    "people_page/profile_info_browser_proxy.m.js",
-    "people_page/signout_dialog.m.js",
-    "people_page/sync_controls.m.js",
-    "people_page/sync_page.m.js",
-    "prefs/prefs.m.js",
-    "prefs/prefs_behavior.m.js",
-    "prefs/prefs_types.m.js",
-    "prefs/pref_util.m.js",
+    "people_page/signout_dialog.js",
+    "people_page/sync_controls.js",
+    "people_page/sync_page.js",
     "privacy_page/collapse_radio_button.js",
     "privacy_page/cookies_page.js",
     "privacy_page/do_not_track_toggle.js",
     "privacy_page/privacy_page.js",
-    "privacy_page/personalization_options.m.js",
-    "privacy_page/privacy_page_browser_proxy.m.js",
+    "privacy_page/personalization_options.js",
     "privacy_page/secure_dns.js",
     "privacy_page/secure_dns_input.js",
     "privacy_page/security_page.js",
@@ -256,14 +266,12 @@ preprocess_if_expr("preprocess_generated") {
     "reset_page/reset_page.js",
     "reset_page/reset_profile_dialog.js",
     "reset_page/reset_profile_banner.js",
-    "router.m.js",
     "safety_check_page/safety_check_child.js",
     "safety_check_page/safety_check_extensions_child.js",
     "safety_check_page/safety_check_page.js",
     "safety_check_page/safety_check_passwords_child.js",
     "safety_check_page/safety_check_safe_browsing_child.js",
     "safety_check_page/safety_check_updates_child.js",
-    "search_engines_page/search_engines_browser_proxy.m.js",
     "search_engines_page/omnibox_extension_entry.js",
     "search_engines_page/search_engine_dialog.js",
     "search_engines_page/search_engine_entry_css.js",
@@ -271,16 +279,14 @@ preprocess_if_expr("preprocess_generated") {
     "search_engines_page/search_engines_list.js",
     "search_engines_page/search_engines_page.js",
     "search_page/search_page.js",
-    "search_settings.m.js",
     "settings_main/settings_main.js",
-    "settings_page/settings_animated_pages.m.js",
-    "settings_page/settings_section.m.js",
-    "settings_page/settings_subpage.m.js",
+    "settings_page/settings_animated_pages.js",
+    "settings_page/settings_section.js",
+    "settings_page/settings_subpage.js",
     "settings_ui/settings_ui.js",
-    "setting_id_param_util.m.js",
-    "settings_page_css.m.js",
-    "settings_shared_css.m.js",
-    "settings_vars_css.m.js",
+    "settings_page_css.js",
+    "settings_shared_css.js",
+    "settings_vars_css.js",
     "site_favicon.js",
     "site_settings/add_site_dialog.js",
     "site_settings/all_sites.js",
@@ -323,19 +329,21 @@ preprocess_if_expr("preprocess_generated") {
     in_files += [ "languages_page/edit_dictionary_page.js" ]
   }
 
-  if (is_chromeos_ash) {
-    in_files += [ "people_page/account_manager_browser_proxy.m.js" ]
-  } else {
+  if (!is_chromeos_ash) {
+    if (!is_chromeos_lacros) {
+      in_files += [
+        "default_browser_page/default_browser_page.js",
+        "system_page/system_page.js",
+      ]
+    }
     in_files += [
-      "default_browser_page/default_browser_page.js",
       "people_page/import_data_dialog.js",
       "people_page/manage_profile.js",
-      "system_page/system_page.js",
     ]
   }
 }
 
-grit("settings_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.
@@ -354,88 +362,6 @@ grit("settings_resources") {
 
 group("closure_compile") {
   deps = [
-    ":local_resources",
-    "a11y_page:closure_compile",
-    "about_page:closure_compile",
-    "appearance_page:closure_compile",
-    "controls:closure_compile",
-    "languages_page:closure_compile",
-    "people_page:closure_compile",
-    "prefs:closure_compile",
-    "privacy_page:closure_compile",
-    "privacy_sandbox:closure_compile",
-    "search_engines_page:closure_compile",
-    "settings_page:closure_compile",
-  ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "../../../test/data/webui/settings/chromeos:closure_compile",
-      "chromeos:closure_compile",
-    ]
-  }
-}
-
-js_type_check("local_resources") {
-  deps = [
-    ":extension_control_browser_proxy",
-    ":global_scroll_target_behavior",
-    ":lifetime_browser_proxy",
-    ":router",
-    ":search_settings",
-    ":setting_id_param_util",
-  ]
-}
-
-js_library("extension_control_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("global_scroll_target_behavior") {
-  deps = [
-    ":router",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("lifetime_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("router") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("search_settings") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:search_highlight_utils",
-    "//ui/webui/resources/js:util",
-  ]
-  externs_list = [ "$externs_path/pending_polymer.js" ]
-}
-
-js_library("setting_id_param_util") {
-  deps = [
-    ":router",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-# Polymer 3 related rules.
-
-group("closure_compile_module") {
-  deps = [
     ":closure_compile_local_module",
     "a11y_page:closure_compile_module",
     "about_page:closure_compile_module",
@@ -450,6 +376,7 @@ group("closure_compile_module") {
     "people_page:closure_compile_module",
     "prefs:closure_compile_module",
     "privacy_page:closure_compile_module",
+    "privacy_sandbox:closure_compile",
     "reset_page:closure_compile_module",
     "safety_check_page:closure_compile_module",
     "search_engines_page:closure_compile_module",
@@ -461,7 +388,7 @@ group("closure_compile_module") {
     "site_settings:closure_compile_module",
     "site_settings_page:closure_compile_module",
   ]
-  if (!is_chromeos_ash) {
+  if (!is_chromeos_ash && !is_chromeos_lacros) {
     deps += [
       "default_browser_page:closure_compile_module",
       "system_page:closure_compile_module",
@@ -484,19 +411,19 @@ js_type_check("closure_compile_local_module") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
-    ":extension_control_browser_proxy.m",
-    ":global_scroll_target_behavior.m",
+    ":extension_control_browser_proxy",
+    ":global_scroll_target_behavior",
     ":hats_browser_proxy",
     ":i18n_setup",
     ":lazy_load",
-    ":lifetime_browser_proxy.m",
+    ":lifetime_browser_proxy",
     ":metrics_browser_proxy",
     ":open_window_proxy",
     ":page_visibility",
     ":route",
-    ":router.m",
-    ":search_settings.m",
-    ":setting_id_param_util.m",
+    ":router",
+    ":search_settings",
+    ":setting_id_param_util",
     ":settings",
     ":settings_routes",
     ":site_favicon",
@@ -506,25 +433,23 @@ js_type_check("closure_compile_local_module") {
 js_library("settings") {
   deps = [
     ":hats_browser_proxy",
-    ":lifetime_browser_proxy.m",
+    ":lifetime_browser_proxy",
     ":metrics_browser_proxy",
     ":open_window_proxy",
-    "about_page:about_page_browser_proxy.m",
+    "about_page:about_page_browser_proxy",
     "autofill_page:multi_store_exception_entry",
     "autofill_page:multi_store_password_ui_entry",
     "autofill_page:password_manager_proxy",
-    "people_page:sync_browser_proxy.m",
-    "privacy_page:privacy_page_browser_proxy.m",
+    "people_page:sync_browser_proxy",
+    "privacy_page:privacy_page_browser_proxy",
     "safety_check_page:safety_check_browser_proxy",
-    "search_engines_page:search_engines_browser_proxy.m",
+    "search_engines_page:search_engines_browser_proxy",
     "settings_ui:settings_ui",
   ]
 }
 
-js_library("extension_control_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/extension_control_browser_proxy.m.js" ]
+js_library("extension_control_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
@@ -532,13 +457,11 @@ js_library("i18n_setup") {
   deps = [ "//ui/webui/resources/js:load_time_data.m" ]
 }
 
-js_library("global_scroll_target_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/global_scroll_target_behavior.m.js" ]
+js_library("global_scroll_target_behavior") {
   deps = [
-    ":router.m",
+    ":router",
     "//ui/webui/resources/js:promise_resolver.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("hats_browser_proxy") {
@@ -551,9 +474,10 @@ js_library("lazy_load") {
     "autofill_page:payments_section",
     "chrome_cleanup_page:chrome_cleanup_proxy",
     "clear_browsing_data_dialog:clear_browsing_data_browser_proxy",
-    "languages_page:languages_browser_proxy.m",
+    "languages_page:languages_browser_proxy",
     "languages_page:languages_metrics_proxy",
     "languages_page:languages_page",
+    "languages_page:languages_settings_metrics_proxy",
     "privacy_page:cookies_page",
     "privacy_page:security_page",
     "site_settings:category_setting_exceptions",
@@ -565,10 +489,8 @@ js_library("lazy_load") {
   ]
 }
 
-js_library("lifetime_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/lifetime_browser_proxy.m.js" ]
+js_library("lifetime_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("metrics_browser_proxy") {
@@ -586,25 +508,21 @@ js_library("page_visibility") {
 js_library("route") {
   deps = [
     ":page_visibility",
-    ":router.m",
+    ":router",
     ":settings_routes",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
-js_library("router.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/router.m.js" ]
+js_library("router") {
   deps = [
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
-js_library("search_settings.m") {
-  sources =
-      [ "$root_gen_dir/chrome/browser/resources/settings/search_settings.m.js" ]
+js_library("search_settings") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -613,20 +531,17 @@ js_library("search_settings.m") {
     "//ui/webui/resources/js:search_highlight_utils.m",
     "//ui/webui/resources/js:util.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("setting_id_param_util.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/setting_id_param_util.m.js" ]
+js_library("setting_id_param_util") {
   deps = [
-    ":router.m",
+    ":router",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("settings_routes") {
-  deps = [ ":router.m" ]
+  deps = [ ":router" ]
 }
 
 js_library("site_favicon") {
@@ -639,18 +554,17 @@ js_library("site_favicon") {
 group("polymer3_elements") {
   public_deps = [
     # Sub-folder targets
-    "a11y_page:polymer3_elements",
+    "a11y_page:web_components",
     "about_page:web_components",
     "appearance_page:web_components",
     "autofill_page:web_components",
     "basic_page:web_components",
     "clear_browsing_data_dialog:web_components",
-    "controls:polymer3_elements",
+    "controls:web_components",
     "downloads_page:web_components",
-    "languages_page:polymer3_elements",
+    "languages_page:web_components",
     "on_startup_page:web_components",
-    "people_page:polymer3_elements",
-    "prefs:polymer3_elements",
+    "people_page:web_components",
     "privacy_page:polymer3_elements",
     "reset_page:web_components",
     "safety_check_page:web_components",
@@ -658,21 +572,16 @@ group("polymer3_elements") {
     "search_page:web_components",
     "settings_main:web_components",
     "settings_menu:web_components",
-    "settings_page:polymer3_elements",
+    "settings_page:web_components",
     "settings_ui:web_components",
     "site_settings:web_components",
     "site_settings_page:web_components",
 
     # Local targets
-    ":icons_module",
-    ":modulize",
-    ":settings_page_css_module",
-    ":settings_shared_css_module",
-    ":settings_vars_css_module",
     ":web_components_local",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos_ash && !is_chromeos_lacros) {
     public_deps += [
       "default_browser_page:web_components",
       "system_page:web_components",
@@ -687,49 +596,12 @@ group("polymer3_elements") {
   }
 }
 
-polymer_modulizer("icons") {
-  js_file = "icons.m.js"
-  html_file = "icons.html"
-  html_type = "iron-iconset"
-}
-
-polymer_modulizer("settings_page_css") {
-  js_file = "settings_page_css.m.js"
-  html_file = "settings_page_css.html"
-  html_type = "style-module"
-}
-
-polymer_modulizer("settings_shared_css") {
-  js_file = "settings_shared_css.m.js"
-  html_file = "settings_shared_css.html"
-  html_type = "style-module"
-}
-
-polymer_modulizer("settings_vars_css") {
-  js_file = "settings_vars_css.m.js"
-  html_file = "settings_vars_css.html"
-  html_type = "custom-style"
-}
-
 html_to_js("web_components_local") {
-  js_files = [ "site_favicon.js" ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "extension_control_browser_proxy.js",
-    "global_scroll_target_behavior.js",
-    "lifetime_browser_proxy.js",
-    "router.js",
-    "search_settings.js",
-    "setting_id_param_util.js",
+  js_files = [
+    "icons.js",
+    "settings_vars_css.js",
+    "settings_page_css.js",
+    "settings_shared_css.js",
+    "site_favicon.js",
   ]
-  namespace_rewrites = settings_namespace_rewrites + [
-                         "cr.search_highlight_utils.createEmptySearchBubble|createEmptySearchBubble",
-                         "cr.search_highlight_utils.findAndRemoveHighlights|findAndRemoveHighlights",
-                         "cr.search_highlight_utils.highlight|highlight",
-                         "cr.search_highlight_utils.removeHighlights|removeHighlights",
-                         "cr.search_highlight_utils.stripDiacritics|stripDiacritics",
-                         "Polymer.DomIf|DomIf",
-                       ]
 }

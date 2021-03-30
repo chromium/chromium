@@ -316,14 +316,13 @@ IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, AllTypesWithNigoriAtOnce) {
 class MigrationTwoClientTest : public MigrationTest {
  public:
   MigrationTwoClientTest() : MigrationTest(TWO_CLIENT) {}
-  ~MigrationTwoClientTest() override {}
+  ~MigrationTwoClientTest() override = default;
 
   // Helper function that verifies that preferences sync still works.
   void VerifyPrefSync() {
     ASSERT_TRUE(BooleanPrefMatches(prefs::kShowHomeButton));
     ChangeBooleanPref(0, prefs::kShowHomeButton);
-    ASSERT_TRUE(GetClient(0)->AwaitMutualSyncCycleCompletion(GetClient(1)));
-    ASSERT_TRUE(BooleanPrefMatches(prefs::kShowHomeButton));
+    ASSERT_TRUE(BooleanPrefMatchChecker(prefs::kShowHomeButton).Wait());
   }
 
   void RunTwoClientMigrationTest(const MigrationList& migration_list,

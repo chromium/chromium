@@ -169,13 +169,13 @@ class APIKeyCache {
     // written.
     client_ids_[CLIENT_MAIN] = CalculateKeyValue(
         GOOGLE_CLIENT_ID_MAIN, STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_MAIN),
-        switches::kOAuth2ClientID, default_client_id, environment.get(),
+        ::switches::kOAuth2ClientID, default_client_id, environment.get(),
         command_line, gaia_config);
-    client_secrets_[CLIENT_MAIN] =
-        CalculateKeyValue(GOOGLE_CLIENT_SECRET_MAIN,
-                          STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_MAIN),
-                          switches::kOAuth2ClientSecret, default_client_secret,
-                          environment.get(), command_line, gaia_config);
+    client_secrets_[CLIENT_MAIN] = CalculateKeyValue(
+        GOOGLE_CLIENT_SECRET_MAIN,
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_MAIN),
+        ::switches::kOAuth2ClientSecret, default_client_secret,
+        environment.get(), command_line, gaia_config);
 
     client_ids_[CLIENT_CLOUD_PRINT] = CalculateKeyValue(
         GOOGLE_CLIENT_ID_CLOUD_PRINT,
@@ -206,7 +206,7 @@ class APIKeyCache {
   }
 
   std::string api_key() const { return api_key_; }
-#if defined(OS_IOS)
+#if defined(OS_IOS) || defined(OS_FUCHSIA)
   void set_api_key(const std::string& api_key) { api_key_ = api_key; }
 #endif
   std::string api_key_non_stable() const { return api_key_non_stable_; }
@@ -300,10 +300,12 @@ class APIKeyCache {
     }
 
     if (key_value == DUMMY_API_TOKEN) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_FUCHSIA)
       // No key should be unset in an official build except the
       // GOOGLE_DEFAULT_* keys.  The default keys don't trigger this
       // check as their "unset" value is not DUMMY_API_TOKEN.
+      // Exclude Fuchsia to match BUILD.gn.
+      // TODO(crbug.com/1171510): Update Fuchsia exclusion when bug is fixed.
       CHECK(false);
 #endif
       if (default_if_unset.size() > 0) {
@@ -356,7 +358,7 @@ std::string GetSodaAPIKey() {
   return g_api_key_cache.Get().api_key_soda();
 }
 
-#if defined(OS_IOS)
+#if defined(OS_IOS) || defined(OS_FUCHSIA)
 void SetAPIKey(const std::string& api_key) {
   g_api_key_cache.Get().set_api_key(api_key);
 }

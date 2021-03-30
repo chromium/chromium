@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/strings/string_util.h"
@@ -18,14 +19,11 @@ namespace {
 class ModelTypeTest : public testing::Test {};
 
 TEST_F(ModelTypeTest, ModelTypeToValue) {
-  for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
+  for (int i = 0; i < GetNumModelTypes(); ++i) {
     ModelType model_type = ModelTypeFromInt(i);
     base::ExpectStringValue(ModelTypeToString(model_type),
                             *ModelTypeToValue(model_type));
   }
-  base::ExpectStringValue("Top-level folder",
-                          *ModelTypeToValue(TOP_LEVEL_FOLDER));
-  base::ExpectStringValue("Unspecified", *ModelTypeToValue(UNSPECIFIED));
 }
 
 TEST_F(ModelTypeTest, ModelTypeSetToValue) {
@@ -42,9 +40,8 @@ TEST_F(ModelTypeTest, ModelTypeSetToValue) {
 
 TEST_F(ModelTypeTest, IsRealDataType) {
   EXPECT_FALSE(IsRealDataType(UNSPECIFIED));
-  EXPECT_FALSE(IsRealDataType(ModelType::NUM_ENTRIES));
-  EXPECT_FALSE(IsRealDataType(TOP_LEVEL_FOLDER));
   EXPECT_TRUE(IsRealDataType(FIRST_REAL_MODEL_TYPE));
+  EXPECT_TRUE(IsRealDataType(LAST_REAL_MODEL_TYPE));
   EXPECT_TRUE(IsRealDataType(BOOKMARKS));
   EXPECT_TRUE(IsRealDataType(APPS));
   EXPECT_TRUE(IsRealDataType(ARC_PACKAGE));
@@ -54,8 +51,9 @@ TEST_F(ModelTypeTest, IsRealDataType) {
 
 TEST_F(ModelTypeTest, IsProxyType) {
   EXPECT_FALSE(IsProxyType(BOOKMARKS));
-  EXPECT_FALSE(IsProxyType(ModelType::NUM_ENTRIES));
   EXPECT_TRUE(IsProxyType(PROXY_TABS));
+  EXPECT_TRUE(IsProxyType(FIRST_PROXY_TYPE));
+  EXPECT_TRUE(IsProxyType(LAST_PROXY_TYPE));
 }
 
 // Make sure we can convert ModelTypes to and from specifics field
@@ -168,10 +166,11 @@ TEST_F(ModelTypeTest, ModelTypeNotificationTypeMapping) {
     std::string notification_type;
     bool ret = RealModelTypeToNotificationType(model_type, &notification_type);
     if (ret) {
-      ModelType notified_model_type;
+      auto notified_model_type = ModelType::UNSPECIFIED;
+      ASSERT_NE(model_type, notified_model_type);
       EXPECT_TRUE(NotificationTypeToRealModelType(notification_type,
                                                   &notified_model_type));
-      EXPECT_EQ(notified_model_type, model_type);
+      EXPECT_EQ(model_type, notified_model_type);
     } else {
       EXPECT_FALSE(ProtocolTypes().Has(model_type));
       EXPECT_TRUE(notification_type.empty());

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/async-cookies-api/blob/gh-pages/explainer.md
+// https://wicg.github.io/cookie-store/explainer.html
 
 dictionary CookieStoreDeleteOptions {
   required USVString name;

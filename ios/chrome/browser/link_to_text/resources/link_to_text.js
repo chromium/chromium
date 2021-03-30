@@ -39,12 +39,24 @@ const utils = goog.require(
       selectionRect.height = domRect.height;
     }
 
+    const canonicalLinkNode = document.querySelector('link[rel=\'canonical\']');
+
     const response = utils.generateFragment(selection);
     return {
       status: response.status,
       fragment: response.fragment,
       selectedText: selectedText,
-      selectionRect: selectionRect
+      selectionRect: selectionRect,
+      canonicalUrl: canonicalLinkNode && canonicalLinkNode.getAttribute('href')
     };
+  }
+
+  /**
+   * Checks if the range is suitable to attempt link generation; the feature
+   * should be disabled if this does not return true.
+   */
+  __gCrWeb.linkToText.checkPreconditions = function() {
+    return utils.isValidRangeForFragmentGeneration(
+        window.getSelection().getRangeAt(0));
   }
 })();

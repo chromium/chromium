@@ -42,7 +42,7 @@ bool ShouldShowPromo(Profile* profile) {
   // Display the signin promo if the user is not signed in.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(original_profile);
-  return !identity_manager->HasPrimaryAccount();
+  return !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 #endif
 }
 

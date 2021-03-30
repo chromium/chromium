@@ -790,6 +790,54 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_MostRecentVisitTime) {
   EXPECT_EQ(last_visit, begin_time + base::TimeDelta::FromMinutes(2));
 }
 
+TEST_F(VisitDatabaseTest, GetLastVisitToURL) {
+  {
+    base::Time last_visit;
+    EXPECT_TRUE(GetLastVisitToURL(GURL("https://foo.com/bar/baz"),
+                                  base::Time::FromTimeT(1000), &last_visit));
+    EXPECT_EQ(last_visit, base::Time());
+  }
+
+  VisitRow most_recent{AddURL(URLRow(GURL("https://foo.com/bar/baz"))),
+                       base::Time::FromTimeT(200),
+                       0,
+                       ui::PageTransitionFromInt(0),
+                       0,
+                       false,
+                       false};
+  AddVisit(&most_recent, SOURCE_BROWSED);
+  VisitRow older_visit{AddURL(URLRow(GURL("https://foo.com/bar/baz"))),
+                       base::Time::FromTimeT(100),
+                       0,
+                       ui::PageTransitionFromInt(0),
+                       0,
+                       false,
+                       false};
+  AddVisit(&older_visit, SOURCE_BROWSED);
+  VisitRow wrong_url{AddURL(URLRow(GURL("https://foo.com/wrong_url"))),
+                     base::Time::FromTimeT(300),
+                     0,
+                     ui::PageTransitionFromInt(0),
+                     0,
+                     false,
+                     false};
+  AddVisit(&wrong_url, SOURCE_BROWSED);
+
+  {
+    base::Time last_visit;
+    EXPECT_TRUE(GetLastVisitToURL(GURL("https://foo.com/bar/baz"),
+                                  base::Time::FromTimeT(1000), &last_visit));
+    EXPECT_EQ(last_visit, base::Time::FromTimeT(200));
+  }
+  // Test getting the older visit using an |end_time| of 150.
+  {
+    base::Time last_visit;
+    EXPECT_TRUE(GetLastVisitToURL(GURL("https://foo.com/bar/baz"),
+                                  base::Time::FromTimeT(150), &last_visit));
+    EXPECT_EQ(last_visit, base::Time::FromTimeT(100));
+  }
+}
+
 TEST_F(VisitDatabaseTest, GetGoogleDomainVisitsFromSearchesInRange_NoVisits) {
   const auto begin_time = base::Time::Now();
   EXPECT_THAT(GetGoogleDomainVisitsFromSearchesInRange(

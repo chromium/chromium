@@ -169,7 +169,7 @@ class Dav1dVideoDecoderTest : public testing::Test {
   }
 
   void FrameReady(scoped_refptr<VideoFrame> frame) {
-    DCHECK(!frame->metadata()->end_of_stream);
+    DCHECK(!frame->metadata().end_of_stream);
     output_frames_.push_back(std::move(frame));
   }
 

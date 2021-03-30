@@ -44,12 +44,12 @@ mojom::ExternalPowerSource ConvertPowerSourceFromProto(
   }
 }
 
-base::string16 ConstructPowerTime(
+std::u16string ConstructPowerTime(
     mojom::BatteryState battery_state,
     const power_manager::PowerSupplyProperties& power_supply_props) {
   if (battery_state == mojom::BatteryState::kFull) {
     // Return an empty string if the battery is full.
-    return base::string16();
+    return std::u16string();
   }
 
   int64_t time_in_seconds;
@@ -68,7 +68,7 @@ base::string16 ConstructPowerTime(
     // If power manager is still calculating battery time or |time_in_seconds|
     // is negative (meaning power manager couldn't compute a reasonable time)
     // return an empty string.
-    return base::string16();
+    return std::u16string();
   }
 
   const base::TimeDelta as_time_delta =

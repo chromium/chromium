@@ -144,7 +144,7 @@ const url_pattern_index::flat::UrlRule* FilterTool::MatchImpl(
                           ParseRequestUrl(url), ParseType(type));
 
   *blocked = rule && !(rule->options() &
-                       url_pattern_index::flat::OptionFlag_IS_WHITELIST);
+                       url_pattern_index::flat::OptionFlag_IS_ALLOWLIST);
   return rule;
 }
 

@@ -18,7 +18,6 @@
 #include <string>
 
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/ntlm/ntlm_test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -107,8 +106,8 @@ TEST(NtlmTest, GenerateNtlmHashV1PasswordSpecTests) {
 }
 
 TEST(NtlmTest, GenerateNtlmHashV1PasswordChangesHash) {
-  base::string16 password1 = base::UTF8ToUTF16("pwd01");
-  base::string16 password2 = base::UTF8ToUTF16("pwd02");
+  std::u16string password1 = u"pwd01";
+  std::u16string password2 = u"pwd02";
   uint8_t hash1[kNtlmHashLen];
   uint8_t hash2[kNtlmHashLen];
 

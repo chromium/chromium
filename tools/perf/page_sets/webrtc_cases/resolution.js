@@ -16,7 +16,8 @@ const vgaButton = document.querySelector('#vga');
 const qvgaButton = document.querySelector('#qvga');
 const hdButton = document.querySelector('#hd');
 const fullHdButton = document.querySelector('#full-hd');
-const fourKButton = document.querySelector('#fourK');
+const cinemaFourKButton = document.querySelector('#cinemaFourK');
+const televisionFourKButton = document.querySelector('#televisionFourK');
 const eightKButton = document.querySelector('#eightK');
 
 const videoblock = document.querySelector('#videoblock');
@@ -46,8 +47,12 @@ fullHdButton.onclick = () => {
   getMedia(fullHdConstraints);
 };
 
-fourKButton.onclick = () => {
-  getMedia(fourKConstraints);
+televisionFourKButton.onclick = () => {
+  getMedia(televisionFourKConstraints);
+};
+
+cinemaFourKButton.onclick = () => {
+  getMedia(cinemaFourKConstraints);
 };
 
 eightKButton.onclick = () => {
@@ -70,7 +75,11 @@ const fullHdConstraints = {
   video: {width: {exact: 1920}, height: {exact: 1080}}
 };
 
-const fourKConstraints = {
+const televisionFourKConstraints = {
+  video: {width: {exact: 3840}, height: {exact: 2160}}
+};
+
+const cinemaFourKConstraints = {
   video: {width: {exact: 4096}, height: {exact: 2160}}
 };
 

@@ -7,12 +7,11 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 namespace chromeos {
 namespace shill_error {
 
-base::string16 GetShillErrorString(const std::string& error,
+std::u16string GetShillErrorString(const std::string& error,
                                    const std::string& network_id);
 
 // Returns true if |error| is known to be a configuration error.

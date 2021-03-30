@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -243,7 +242,8 @@ void ServiceWorkerRegistrationObjectHost::DelayUpdate(
     return;
   }
 
-  base::PostDelayedTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+  BrowserThread::GetTaskRunnerForThread(ServiceWorkerContext::GetCoreThreadId())
+      ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(std::move(update_function),
                                        blink::ServiceWorkerStatusCode::kOk),
                         delay);

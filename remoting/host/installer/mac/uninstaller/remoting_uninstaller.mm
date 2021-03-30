@@ -154,6 +154,7 @@ NSArray* convertToNSArray(const char** array) {
   [self sudoDelete:remoting::kHostLegacyBinaryPath usingAuth:authRef];
   [self sudoDelete:remoting::kOldHostHelperScriptPath usingAuth:authRef];
   [self sudoDelete:remoting::kHostConfigFilePath usingAuth:authRef];
+  [self sudoDelete:remoting::kHostSettingsFilePath usingAuth:authRef];
   [self sudoDelete:remoting::kLogFilePath usingAuth:authRef];
   [self sudoDelete:remoting::kLogFileConfigPath usingAuth:authRef];
   for (const char* path : remoting::kNativeMessagingManifestPaths) {

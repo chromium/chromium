@@ -22,13 +22,15 @@ source_set("common") {
     "it2me_confirmation_dialog.h",
     "it2me_confirmation_dialog_proxy.cc",
     "it2me_confirmation_dialog_proxy.h",
+    "it2me_constants.cc",
+    "it2me_constants.h",
     "it2me_host.cc",
     "it2me_host.h",
     "it2me_native_messaging_host.cc",
     "it2me_native_messaging_host.h",
   ]
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux && !is_chromeos_lacros) {
     sources += [ "it2me_confirmation_dialog_linux.cc" ]
   }
 
@@ -60,7 +62,7 @@ source_set("common") {
     "//remoting/resources",
     "//remoting/signaling",
   ]
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux && !is_chromeos_lacros) {
     deps += [
       "//build/config/linux/gtk",
 
@@ -72,20 +74,32 @@ source_set("common") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos_ash || is_chromeos_lacros) {
   source_set("chrome_os_host") {
     sources = [
-      "it2me_native_messaging_host_chromeos.cc",
-      "it2me_native_messaging_host_chromeos.h",
+      "it2me_native_messaging_host_allowed_origins.cc",
+      "it2me_native_messaging_host_allowed_origins.h",
     ]
 
-    deps = [
-      ":common",
-      "//skia",
-    ]
+    if (is_chromeos_lacros) {
+      sources += [
+        "it2me_native_messaging_host_lacros.cc",
+        "it2me_native_messaging_host_lacros.h",
+      ]
+    } else {
+      sources += [
+        "it2me_native_messaging_host_chromeos.cc",
+        "it2me_native_messaging_host_chromeos.h",
+      ]
 
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
+      deps = [
+        ":common",
+        "//skia",
+      ]
+
+      if (use_ozone) {
+        deps += [ "//ui/ozone" ]
+      }
     }
   }
 }
@@ -236,7 +250,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
         }
       }
 
-      if (is_linux || is_chromeos_lacros) {
+      if (is_linux && !is_chromeos_lacros) {
         deps += [ "//build/config/linux/gtk" ]
       }
     }

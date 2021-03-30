@@ -47,6 +47,7 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void RestoreTab() override;
   void ShowKeyboardShortcutViewer() override;
   void ShowTaskManager() override;
+  void OpenDiagnostics() override;
   void OpenFeedbackPage(bool from_assistant) override;
 
   // arc::OpenUrlDelegate:

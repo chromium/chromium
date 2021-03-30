@@ -271,10 +271,16 @@ VideoTrackRecorderImpl::Encoder::~Encoder() {
     origin_task_runner_->DeleteSoon(FROM_HERE,
                                     std::move(num_frames_in_encode_));
   }
+  if (encoder_thread_context_ &&
+      !encoding_task_runner_->RunsTasksInCurrentSequence()) {
+    encoding_task_runner_->DeleteSoon(FROM_HERE,
+                                      std::move(encoder_thread_context_));
+  }
 }
 
 void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
     scoped_refptr<media::VideoFrame> video_frame,
+    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_video_frames*/,
     base::TimeTicks capture_timestamp) {
   // Cache the thread sending frames on first frame arrival.
   if (!origin_task_runner_.get())
@@ -284,23 +290,19 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   if (paused_)
     return;
 
-  const bool is_format_supported =
-      video_frame->format() == media::PIXEL_FORMAT_I420 ||
-      video_frame->format() == media::PIXEL_FORMAT_ARGB ||
-      video_frame->format() == media::PIXEL_FORMAT_ABGR ||
-      video_frame->format() == media::PIXEL_FORMAT_I420A ||
-      video_frame->format() == media::PIXEL_FORMAT_NV12 ||
-      video_frame->format() == media::PIXEL_FORMAT_XRGB;
-
   if (num_frames_in_encode_->count() > kMaxNumberOfFramesInEncode) {
     DLOG(WARNING) << "Too many frames are queued up. Dropping this one.";
     return;
   }
 
-  if (!is_format_supported ||
-      (video_frame->HasTextures() &&
-       video_frame->storage_type() !=
-           media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
+  // The recorder currently does not consider scaled versions of the frame.
+  const bool is_format_supported =
+      (video_frame->format() == media::PIXEL_FORMAT_NV12 &&
+       video_frame->HasGpuMemoryBuffer()) ||
+      (video_frame->IsMappable() &&
+       (video_frame->format() == media::PIXEL_FORMAT_I420 ||
+        video_frame->format() == media::PIXEL_FORMAT_I420A));
+  if (!is_format_supported) {
     PostCrossThreadTask(
         *encoding_task_runner_.get(), FROM_HERE,
         CrossThreadBindOnce(&Encoder::RetrieveFrameOnEncodingTaskRunner,
@@ -311,7 +313,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   }
 
   scoped_refptr<media::VideoFrame> frame = video_frame;
-  if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (!video_frame->HasGpuMemoryBuffer()) {
     // Drop alpha channel if the encoder does not support it yet.
     if (!CanEncodeAlphaChannel() &&
         video_frame->format() == media::PIXEL_FORMAT_I420A) {
@@ -377,8 +379,10 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
     const gfx::Size& old_visible_size = video_frame->visible_rect().size();
     gfx::Size new_visible_size = old_visible_size;
 
-    media::VideoRotation video_rotation =
-        video_frame->metadata()->rotation.value_or(media::VIDEO_ROTATION_0);
+    media::VideoRotation video_rotation = media::VIDEO_ROTATION_0;
+    if (video_frame->metadata().transformation)
+      video_rotation = video_frame->metadata().transformation->rotation;
+
     if (video_rotation == media::VIDEO_ROTATION_90 ||
         video_rotation == media::VIDEO_ROTATION_270) {
       new_visible_size.SetSize(old_visible_size.height(),
@@ -480,20 +484,17 @@ bool VideoTrackRecorderImpl::Encoder::CanEncodeAlphaChannel() {
 scoped_refptr<media::VideoFrame>
 VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
     scoped_refptr<media::VideoFrame> frame) {
-  DCHECK_EQ(frame->storage_type(),
-            media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-  // NV12 is currently the only supported pixel format for GpuMemoryBuffer.
   DCHECK_EQ(frame->format(), media::VideoPixelFormat::PIXEL_FORMAT_NV12);
 
-  auto* gmb = frame->GetGpuMemoryBuffer();
-  if (!gmb->Map())
-    return frame;
+  if (frame->GetGpuMemoryBuffer())
+    frame = media::ConvertToMemoryMappedFrame(frame);
+
   scoped_refptr<media::VideoFrame> i420_frame = frame_pool_.CreateFrame(
       media::VideoPixelFormat::PIXEL_FORMAT_I420, frame->coded_size(),
       frame->visible_rect(), frame->natural_size(), frame->timestamp());
   auto ret = libyuv::NV12ToI420(
-      static_cast<const uint8_t*>(gmb->memory(0)), gmb->stride(0),
-      static_cast<const uint8_t*>(gmb->memory(1)), gmb->stride(1),
+      static_cast<const uint8_t*>(frame->data(0)), frame->stride(0),
+      static_cast<const uint8_t*>(frame->data(1)), frame->stride(1),
       i420_frame->data(media::VideoFrame::kYPlane),
       i420_frame->stride(media::VideoFrame::kYPlane),
       i420_frame->data(media::VideoFrame::kUPlane),
@@ -501,7 +502,6 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
       i420_frame->data(media::VideoFrame::kVPlane),
       i420_frame->stride(media::VideoFrame::kVPlane),
       frame->coded_size().width(), frame->coded_size().height());
-  gmb->Unmap();
   if (ret)
     return frame;
   return i420_frame;
@@ -599,10 +599,11 @@ void VideoTrackRecorderImpl::OnVideoFrameForTesting(
 
   if (!encoder_) {
     DCHECK(!initialize_encoder_cb_.is_null());
-    initialize_encoder_cb_.Run(true /* allow_vea_encoder */, frame, timestamp);
+    initialize_encoder_cb_.Run(/*allow_vea_encoder=*/true, frame, {},
+                               timestamp);
   }
 
-  encoder_->StartFrameEncode(std::move(frame), timestamp);
+  encoder_->StartFrameEncode(std::move(frame), {}, timestamp);
 }
 
 void VideoTrackRecorderImpl::InitializeEncoder(
@@ -610,15 +611,17 @@ void VideoTrackRecorderImpl::InitializeEncoder(
     const OnEncodedVideoCB& on_encoded_video_cb,
     int32_t bits_per_second,
     bool allow_vea_encoder,
-    scoped_refptr<media::VideoFrame> frame,
+    scoped_refptr<media::VideoFrame> video_frame,
+    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_video_frames*/,
     base::TimeTicks capture_time) {
-  DVLOG(3) << __func__ << frame->visible_rect().size().ToString();
+  DVLOG(3) << __func__ << video_frame->visible_rect().size().ToString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
+  // Scaled video frames are currently ignored.
   auto on_encoder_support_known_cb = WTF::Bind(
       &VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown,
       weak_factory_.GetWeakPtr(), codec_profile, on_encoded_video_cb,
-      bits_per_second, allow_vea_encoder, std::move(frame), capture_time);
+      bits_per_second, allow_vea_encoder, std::move(video_frame), capture_time);
 
   if (!allow_vea_encoder) {
     // If HW encoding is not being used, no need to wait for encoder

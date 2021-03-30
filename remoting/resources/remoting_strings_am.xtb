@@ -24,6 +24,7 @@
 «<ph name="SERVICE_SCRIPT_NAME" />» አስቀድሞ ምልክት ከተደረገበት ምልክቱን ያንሱትና እንደገና ምልክት ያድርጉበት።</translation>
 <translation id="225614027745146050">እንኳን ደህና መጡ</translation>
 <translation id="2320166752086256636">የቁልፍ ሰሌዳን ደብቅ</translation>
+<translation id="2333212046079545895">የቅጂ መብት 2021 Google LLC.። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2366718077645204424">አስተናጋጁን መድረስ አልተቻለም። ይሄ በሚጠቀሙት አውታረ መረብ ላይ ባለ ውቅር ምክንያት ሳይሆን አይቀርም።</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  ለመጨረሻ ጊዜ መስመር ላይ የታየው በ<ph name="RELATIVE_TIMESTAMP" />።</translation>
@@ -71,6 +72,7 @@
 <translation id="4405930547258349619">ዋና ቤተ መጽሐፍት</translation>
 <translation id="443560535555262820">የተደራሽነት ምርጫዎችን ክፈት</translation>
 <translation id="4450893287417543264">ዳግም አታሳይ</translation>
+<translation id="4512952200932940229">የቅጂ መብት 2021 የChromium አዘጋጆች። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="4513946894732546136">ግብረ መልስ</translation>
 <translation id="4563926062592110512">የደንበኛው ግንኙነት ተቋርጧል፦ <ph name="CLIENT_USERNAME" />።</translation>
 <translation id="4635770493235256822">የርቀት መሣሪያዎች</translation>
@@ -129,7 +131,6 @@
 <translation id="7067321367069083429">ማያ ገጽ እንደ ማያንካ ይሆናል</translation>
 <translation id="7116737094673640201">እንኳን ወደ Chrome የርቀት ዴስክቶፕ በደህና መጡ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
-<translation id="724402108658370587">የቅጂ መብት 2020 Google LLC. ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="7312846573060934304">አስተናጋጅ ከመስመር ውጪ ነው።</translation>
 <translation id="7319983568955948908">ማጋራት አቁም</translation>
 <translation id="7401733114166276557">Chrome የርቀት ዴስክቶፕ</translation>
@@ -155,7 +156,6 @@
 <translation id="8073845705237259513">Chrome የርቀት ዴስክቶፕን ለመጠቀም የአንድ የGoogle መለያ በመሣሪያዎ ላይ ማከል አለብዎት።</translation>
 <translation id="809687642899217504">የእኔ ኮምፒውተሮች</translation>
 <translation id="8116630183974937060">አንድ የአውታረ መረብ ስህተት ተከስቷል። እባክዎ የእርስዎ መሣሪያ መስመር ላይ መሆኑን ያረጋግጡና እንደገና ይሞክሩ።</translation>
-<translation id="8187079423890319756">የቅጂ መብት 2013 የChromium አዘጋጆች። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="8295077433896346116"><ph name="PRODUCT_NAME" />ን ለመጠቀም ከርቀት ማሽኑ የመጣ ግቤት ወደዚህ Mac እንዲገባ ለማድረግ የ«ተደራሽነት» ፈቃዱን መስጠት ይኖርብዎታል።
 
 ይህን ፈቃድ ለመስጠት ከታች የ«ተደራሽነት» መቃኑን የሚከፍተውን «<ph name="BUTTON_NAME" />»ን ጠቅ ያድርጉ፣ ከ«<ph name="SERVICE_SCRIPT_NAME" />» ቀጥሎ ያለውን ሳጥን ምልክት ያድርጉበት።
@@ -174,6 +174,7 @@
 <translation id="8743328882720071828"><ph name="CLIENT_USERNAME" /> የእርስዎን ኮምፒውተር እንዲመለከት እና እንዲቆጣጠር እንዲፈቀድለት ይፈልጋሉr?</translation>
 <translation id="8747048596626351634">ክፍለ ጊዜው ተበላሽቷል ወይም ለመጀመር አልቻለም። ~/.chrome-የርቀት-ዴስክቶፕ-ክፍለ ጊዜ በርቀት ኮምፒውተሩ ላይ የሚገኝ ከሆነ እንደ የዴስክቶፕ ድባብ ወይም የመስኮት አስተዳዳሪ የመሰለ ከፊት ገጽ የሚሄድ ሂደትን በመጠቀም እንደሚጀምር ያረጋግጡ።</translation>
 <translation id="8804164990146287819">የግላዊነት መመሪያ</translation>
+<translation id="8906511416443321782">ድምጽን ለመቅዳት እና ወደ Chrome የርቀት ዴስክቶፕ ደንበኛው ለማሰራጨት የማይክሮፎን መዳረሻ ያስፈልጋል።</translation>
 <translation id="9111855907838866522">ከርቀት መሣሪያዎ ጋር ተገናኝተዋል። ምናሌውን ለመክፈት እባክዎ ማያ ገጹን በአራት ጣቶች መታ ያድርጉት።</translation>
 <translation id="9126115402994542723">ከዚህ መሣሪያ ሆኜ ከዚህ አስተናጋጅ ጋር ስገናኝ ዳግም ፒን አትጠይቅ።</translation>
 <translation id="916856682307586697">ነባሪውን XSession አስጀምር</translation>

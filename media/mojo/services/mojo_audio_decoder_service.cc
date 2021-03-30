@@ -110,12 +110,15 @@ void MojoAudioDecoderService::OnInitialized(InitializeCallback callback,
 
   if (!status.is_ok()) {
     // Do not call decoder_->NeedsBitstreamConversion() if init failed.
-    std::move(callback).Run(std::move(status), false);
+    std::move(callback).Run(
+        std::move(status), false,
+        decoder_ ? decoder_->GetDecoderType() : AudioDecoderType::kUnknown);
     return;
   }
 
   std::move(callback).Run(std::move(status),
-                          decoder_->NeedsBitstreamConversion());
+                          decoder_->NeedsBitstreamConversion(),
+                          decoder_->GetDecoderType());
 }
 
 // The following methods are needed so that we can bind them with a weak pointer
@@ -133,7 +136,7 @@ void MojoAudioDecoderService::OnReadDone(DecodeCallback callback,
 
   decoder_->Decode(buffer,
                    base::BindOnce(&MojoAudioDecoderService::OnDecodeStatus,
-                                  weak_this_, base::Passed(&callback)));
+                                  weak_this_, std::move(callback)));
 }
 
 void MojoAudioDecoderService::OnReaderFlushDone(ResetCallback callback) {

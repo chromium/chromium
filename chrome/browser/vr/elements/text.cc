@@ -39,7 +39,7 @@ bool IsFixedWidthLayout(TextLayoutMode mode) {
 }
 
 void UpdateRenderText(gfx::RenderText* render_text,
-                      const base::string16& text,
+                      const std::u16string& text,
                       const gfx::FontList& font_list,
                       SkColor color,
                       TextAlignment text_alignment,
@@ -155,7 +155,7 @@ class TextTexture : public UiTexture {
     SetAndDirty(&font_height_dmms_, font_height_dmms);
   }
 
-  void SetText(const base::string16& text) { SetAndDirty(&text_, text); }
+  void SetText(const std::u16string& text) { SetAndDirty(&text_, text); }
 
   void SetColor(SkColor color) { SetAndDirty(&color_, color); }
 
@@ -220,22 +220,22 @@ class TextTexture : public UiTexture {
  private:
   void Draw(SkCanvas* sk_canvas, const gfx::Size& texture_size) override;
 
-  void PrepareDrawStringRect(const base::string16& text,
+  void PrepareDrawStringRect(const std::u16string& text,
                              const gfx::FontList& font_list,
                              gfx::Rect* bounds,
                              const TextRenderParameters& parameters);
-  void PrepareDrawWrapText(const base::string16& text,
+  void PrepareDrawWrapText(const std::u16string& text,
                            const gfx::FontList& font_list,
                            gfx::Rect* bounds,
                            const TextRenderParameters& parameters);
-  void PrepareDrawSingleLineText(const base::string16& text,
+  void PrepareDrawSingleLineText(const std::u16string& text,
                                  const gfx::FontList& font_list,
                                  gfx::Rect* bounds,
                                  const TextRenderParameters& parameters);
 
   gfx::SizeF size_;
   gfx::Vector2d texture_offset_;
-  base::string16 text_;
+  std::u16string text_;
   float font_height_dmms_ = 0;
   float text_width_ = 0;
   TextAlignment alignment_ = kTextAlignmentCenter;
@@ -271,7 +271,7 @@ void Text::SetFontHeightInDmm(float font_height_dmms) {
   texture_->SetFontHeightInDmm(font_height_dmms);
 }
 
-void Text::SetText(const base::string16& text) {
+void Text::SetText(const std::u16string& text) {
   texture_->SetText(text);
 }
 
@@ -463,7 +463,7 @@ void TextTexture::Draw(SkCanvas* sk_canvas, const gfx::Size& texture_size) {
 }
 
 void TextTexture::PrepareDrawStringRect(
-    const base::string16& text,
+    const std::u16string& text,
     const gfx::FontList& font_list,
     gfx::Rect* bounds,
     const TextRenderParameters& parameters) {
@@ -480,7 +480,7 @@ void TextTexture::PrepareDrawStringRect(
   }
 }
 
-void TextTexture::PrepareDrawWrapText(const base::string16& text,
+void TextTexture::PrepareDrawWrapText(const std::u16string& text,
                                       const gfx::FontList& font_list,
                                       gfx::Rect* bounds,
                                       const TextRenderParameters& parameters) {
@@ -488,7 +488,7 @@ void TextTexture::PrepareDrawWrapText(const base::string16& text,
   DCHECK(!parameters.cursor_enabled);
 
   gfx::Rect rect(*bounds);
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   gfx::ElideRectangleText(text, font_list, bounds->width(),
                           bounds->height() ? bounds->height() : INT_MAX,
                           gfx::WRAP_LONG_WORDS, &strings);
@@ -524,7 +524,7 @@ void TextTexture::PrepareDrawWrapText(const base::string16& text,
 }
 
 void TextTexture::PrepareDrawSingleLineText(
-    const base::string16& text,
+    const std::u16string& text,
     const gfx::FontList& font_list,
     gfx::Rect* bounds,
     const TextRenderParameters& parameters) {

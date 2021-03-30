@@ -93,6 +93,19 @@ void RecordActivationReason(Document* document,
   if (document && reason == DisplayLockActivationReason::kFindInPage)
     document->MarkHasFindInPageContentVisibilityActiveMatch();
 }
+
+ScrollableArea* GetScrollableArea(Node* node) {
+  if (!node)
+    return nullptr;
+
+  LayoutBoxModelObject* object =
+      DynamicTo<LayoutBoxModelObject>(node->GetLayoutObject());
+  if (!object)
+    return nullptr;
+
+  return object->GetScrollableArea();
+}
+
 }  // namespace
 
 DisplayLockContext::DisplayLockContext(Element* element)
@@ -229,6 +242,10 @@ void DisplayLockContext::UpdateActivationObservationIfNeeded() {
     return;
   is_observed_ = should_observe;
 
+  // Reset viewport intersection notification state, so that if we're observing
+  // again, the next observation will be synchronous.
+  had_any_viewport_intersection_notifications_ = false;
+
   if (should_observe) {
     document_->GetDisplayLockDocumentState()
         .RegisterDisplayLockActivationObservation(element_);
@@ -319,6 +336,12 @@ void DisplayLockContext::Lock() {
   if (!element_->GetLayoutObject())
     return;
 
+  // If this element is a scroller, then stash its current scroll offset, so
+  // that we can restore it when needed.
+  // Note that this only applies if the element itself is a scroller. Any
+  // subtree scrollers' scroll offsets are not affected.
+  StashScrollOffsetIfAvailable();
+
   MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
 }
 
@@ -364,6 +387,11 @@ void DisplayLockContext::DidLayoutChildren() {
   // Since we did layout on children already, we'll clear this.
   child_layout_was_blocked_ = false;
   had_lifecycle_update_since_last_unlock_ = true;
+
+  // If we're not locked and we laid out the children, then now is a good time
+  // to restore the scroll offset.
+  if (!is_locked_)
+    RestoreScrollOffsetIfStashed();
 }
 
 bool DisplayLockContext::ShouldPrePaintChildren() const {
@@ -555,6 +583,7 @@ void DisplayLockContext::Unlock() {
   MarkForLayoutIfNeeded();
   MarkAncestorsForPrePaintIfNeeded();
   MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
+  MarkNeedsCullRectUpdate();
 }
 
 void DisplayLockContext::AddToWhitespaceReattachSet(Element& element) {
@@ -640,13 +669,23 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
     // Forces the marking of ancestors to happen, even if
     // |DisplayLockContext::ShouldLayout()| returns false.
     base::AutoReset<int> scoped_force(&update_forced_, update_forced_ + 1);
-    if (child_layout_was_blocked_) {
+    if (child_layout_was_blocked_ || HasStashedScrollOffset()) {
       // We've previously blocked a child traversal when doing self-layout for
       // the locked element, so we're marking it with child-needs-layout so that
       // it will traverse to the locked element and do the child traversal
       // again. We don't need to mark it for self-layout (by calling
       // |LayoutObject::SetNeedsLayout()|) because the locked element itself
       // doesn't need to relayout.
+      //
+      // Note that we also make sure to visit the children when we have a
+      // stashed scroll offset. This is so that we can restore the offset after
+      // laying out the children. If we try to restore it before the layout, it
+      // will be ignored since the scroll area may think that it doesn't have
+      // enough contents.
+      // TODO(vmpstr): In the scroll offset case, we're doing this just so we
+      // can reach DisplayLockContext::DidLayoutChildren where we restore the
+      // offset. If performance becomes an issue, then we should think of a
+      // different time / opportunity to restore the offset.
       element_->GetLayoutObject()->SetChildNeedsLayout();
       child_layout_was_blocked_ = false;
     } else {
@@ -699,6 +738,18 @@ bool DisplayLockContext::MarkNeedsRepaintAndPaintArtifactCompositorUpdate() {
   if (auto* layout_object = element_->GetLayoutObject()) {
     layout_object->PaintingLayer()->SetNeedsRepaint();
     document_->View()->SetPaintArtifactCompositorNeedsUpdate();
+    return true;
+  }
+  return false;
+}
+
+bool DisplayLockContext::MarkNeedsCullRectUpdate() {
+  DCHECK(ConnectedToView());
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return false;
+
+  if (auto* layout_object = element_->GetLayoutObject()) {
+    layout_object->PaintingLayer()->SetForcesChildrenCullRectUpdate();
     return true;
   }
   return false;
@@ -766,8 +817,10 @@ bool DisplayLockContext::IsElementDirtyForStyleRecalc() const {
 }
 
 bool DisplayLockContext::IsElementDirtyForLayout() const {
-  if (auto* layout_object = element_->GetLayoutObject())
-    return layout_object->NeedsLayout() || child_layout_was_blocked_;
+  if (auto* layout_object = element_->GetLayoutObject()) {
+    return layout_object->NeedsLayout() || child_layout_was_blocked_ ||
+           HasStashedScrollOffset();
+  }
   return false;
 }
 
@@ -1114,6 +1167,33 @@ String DisplayLockContext::RenderAffectingStateToString() const {
     builder.Append("\n");
   }
   return builder.ToString();
+}
+
+void DisplayLockContext::StashScrollOffsetIfAvailable() {
+  if (auto* area = GetScrollableArea(element_)) {
+    const ScrollOffset& offset = area->GetScrollOffset();
+    // Only store the offset if it's non-zero. This is because scroll
+    // restoration has a small performance implication and restoring to a zero
+    // offset is the same as not restoring it.
+    if (!offset.IsZero())
+      stashed_scroll_offset_.emplace(offset);
+  }
+}
+
+void DisplayLockContext::RestoreScrollOffsetIfStashed() {
+  if (!stashed_scroll_offset_.has_value())
+    return;
+
+  // Restore the offset and reset the value.
+  if (auto* area = GetScrollableArea(element_)) {
+    area->SetScrollOffset(*stashed_scroll_offset_,
+                          mojom::blink::ScrollType::kAnchoring);
+    stashed_scroll_offset_.reset();
+  }
+}
+
+bool DisplayLockContext::HasStashedScrollOffset() const {
+  return stashed_scroll_offset_.has_value();
 }
 
 }  // namespace blink

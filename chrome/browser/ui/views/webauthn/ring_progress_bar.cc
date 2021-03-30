@@ -13,6 +13,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 constexpr float kStrokeWidth = 4;
@@ -72,3 +73,6 @@ void RingProgressBar::OnPaint(gfx::Canvas* canvas) {
 void RingProgressBar::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
+
+BEGIN_METADATA(RingProgressBar, views::View)
+END_METADATA

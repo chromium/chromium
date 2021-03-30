@@ -4,9 +4,10 @@
 
 #include "chrome/browser/chromeos/ui/gnubby_notification.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/location.h"
-#include "base/strings/string16.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -39,16 +40,16 @@ void GnubbyNotification::PromptUserAuth() {
 }
 
 void GnubbyNotification::CreateNotification() {
-  const base::string16 title =
+  const std::u16string title =
       l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_TITLE);
-  const base::string16 message =
+  const std::u16string message =
       l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_MESSAGE);
   const message_center::SystemNotificationWarningLevel colorType =
       message_center::SystemNotificationWarningLevel::NORMAL;
 
   GnubbyNotification::notification_prompt_ = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      GnubbyNotification::kNotificationID, title, message, base::string16(),
+      GnubbyNotification::kNotificationID, title, message, std::u16string(),
       GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(),
       new message_center::HandleNotificationClickDelegate(

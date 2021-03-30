@@ -20,9 +20,9 @@ class WebLocalFrame;
 namespace extensions {
 class MimeHandlerViewContainerManager;
 
-// This is a frame-based and light version of MimeHandlerViewContainer created
-// in the embedder process to support postMessage from the embedder side to the
-// corresponding MimeHandlerViewGuest. It is owned and managed by the
+// A container for loading an extension in a guest to handle a MIME type.
+// This is created in the embedder to support postMessage from the embedder side
+// to the corresponding MimeHandlerViewGuest. It is owned and managed by the
 // MimeHandlerViewContainerManager instance of the embedder frame.
 // To understand the role of MHVFC container consider the rough sketch:
 //

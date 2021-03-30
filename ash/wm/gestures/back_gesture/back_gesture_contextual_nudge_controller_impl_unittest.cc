@@ -42,6 +42,14 @@ class BackGestureContextualNudgeControllerTest : public NoSessionAshTestBase {
         {features::kContextualNudges, features::kHideShelfControlsInTabletMode},
         {});
   }
+  BackGestureContextualNudgeControllerTest(
+      base::test::TaskEnvironment::TimeSource time,
+      bool can_go_back = true)
+      : NoSessionAshTestBase(time), can_go_back_(can_go_back) {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kContextualNudges, features::kHideShelfControlsInTabletMode},
+        {});
+  }
   ~BackGestureContextualNudgeControllerTest() override = default;
 
   // NoSessionAshTestBase:
@@ -146,7 +154,17 @@ class BackGestureContextualNudgeControllerTestCantGoBack
 
 class BackGestureContextualNudgeControllerTestA11yPrefs
     : public BackGestureContextualNudgeControllerTest,
-      public ::testing::WithParamInterface<std::string> {};
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  BackGestureContextualNudgeControllerTestA11yPrefs()
+      : BackGestureContextualNudgeControllerTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  BackGestureContextualNudgeControllerTestA11yPrefs(
+      const BackGestureContextualNudgeControllerTestA11yPrefs&) = delete;
+  BackGestureContextualNudgeControllerTestA11yPrefs& operator=(
+      const BackGestureContextualNudgeControllerTestA11yPrefs&) = delete;
+  ~BackGestureContextualNudgeControllerTestA11yPrefs() override = default;
+};
 
 INSTANTIATE_TEST_SUITE_P(
     All,

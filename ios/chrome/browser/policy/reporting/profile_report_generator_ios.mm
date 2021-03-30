@@ -50,7 +50,7 @@ void ProfileReportGeneratorIOS::GetSigninUserInfo(
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
   signed_in_user_info->set_email(
       base::SysNSStringToUTF8(account_info.userEmail));
-  signed_in_user_info->set_obfudscated_gaia_id(
+  signed_in_user_info->set_obfuscated_gaia_id(
       base::SysNSStringToUTF8(account_info.hashedGaiaID));
 }
 

@@ -31,9 +31,9 @@ public class PasswordCheckDeletionDialogFragment extends PasswordCheckDialogFrag
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog
                 .Builder(getActivity(), R.style.Theme_Chromium_AlertDialog_NoActionBar)
-                .setTitle(R.string.password_check_delete_credential_dialog_title)
+                .setTitle(R.string.password_entry_edit_delete_credential_dialog_title)
                 .setPositiveButton(
-                        R.string.password_check_delete_credential_dialog_confirm, mHandler)
+                        R.string.password_entry_edit_delete_credential_dialog_confirm, mHandler)
                 .setNegativeButton(R.string.password_check_credential_dialog_cancel, mHandler)
                 .setMessage(
                         getString(R.string.password_check_delete_credential_dialog_body, mOrigin))

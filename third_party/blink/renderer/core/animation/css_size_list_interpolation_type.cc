@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/size_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/size_list_property_functions.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -116,10 +117,12 @@ InterpolationValue CSSSizeListInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSSizeListInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   return ConvertSizeList(
-      SizeListPropertyFunctions::GetInitialSizeList(CssProperty()), 1);
+      SizeListPropertyFunctions::GetInitialSizeList(
+          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle()),
+      1);
 }
 
 InterpolationValue CSSSizeListInterpolationType::MaybeConvertInherit(

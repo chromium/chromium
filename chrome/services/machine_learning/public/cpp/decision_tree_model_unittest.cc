@@ -11,7 +11,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/services/machine_learning/public/cpp/test_support/machine_learning_test_utils.h"
 #include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
-#include "components/optimization_guide/optimization_guide_test_util.h"
+#include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"

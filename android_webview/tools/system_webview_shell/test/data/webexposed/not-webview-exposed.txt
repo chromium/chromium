@@ -13,6 +13,8 @@ interface Notification : EventTarget
 
 # web payments api not enabled in webiew, crbug.com/667069
 interface PaymentAddress
+interface PaymentInstruments
+interface PaymentManager
 interface PaymentMethodChangeEvent : PaymentRequestUpdateEvent
 interface PaymentRequest : EventTarget
 interface PaymentRequestUpdateEvent : Event
@@ -62,24 +64,29 @@ interface HTMLMediaElement : HTMLElement
 
 # permissions API (crbug.com/490120), presentation API (crbug.com/521319),
 # share API (crbug.com/765923), custom scheme handlers (crbug.com/589502),
-# media session API (crbug.com/925997), and WebXr API (crbug.com/1012899)
-# are not supported in webview.
+# media session API (crbug.com/925997), Web Serial API (crbug.com/1164036),
+# WebXr API (crbug.com/1012899), and WebHID API (crbug.com/1164125) are not
+# supported in webview.
 interface Navigator
+    getter hid                         # crbug.com/1164125
     getter mediaSession                # crbug.com/925997
     getter permissions                 # crbug.com/490120
     getter presentation                # crbug.com/521319
+    getter serial                      # crbug.com/1164036
     getter xr                          # crbug.com/1012899
     method registerProtocolHandler     # crbug.com/589502
     method unregisterProtocolHandler   # crbug.com/589502
     method share                       # crbug.com/765923
-    method getInstalledRelatedApps     
+    method getInstalledRelatedApps
 
 # Media Session API is not enabled in Android WebView (crbug.com/925997)
 interface MediaMetadata
 interface MediaSession
 
 # notifications not yet supported in webview, crbug.com/551446
+# web payments api not enabled in webiew, crbug.com/667069
 interface ServiceWorkerRegistration : EventTarget
+    getter paymentManager
     getter pushManager
     method getNotifications
     method showNotification
@@ -88,7 +95,7 @@ interface ServiceWorkerRegistration : EventTarget
 interface HTMLInputElement : HTMLElement
     getter webkitEntries
 
-# Native File System API not supported on Android, crbug.com/1011535
+# File System Access API not supported on Android, crbug.com/1011535
 interface DataTransferItem
     method getAsFileSystemHandle
 interface StorageManager : EventTarget
@@ -140,6 +147,11 @@ interface PeriodicSyncManager
 interface ServiceWorkerRegistration : EventTarget
     getter periodicSync
 
+# User Agent Client Hints are not enabled in Android WebView, crbug.com/921655
+interface Navigator
+    getter userAgentData
+interface NavigatorUAData
+
 # WebXR dependent interfaces are not supported on WebView crbug.com/1012899
 interface XRView
 interface XRViewport
@@ -171,6 +183,25 @@ interface XRHitTestResult
 interface XRTransientInputHitTestSource
 interface XRAnchor
 interface XRAnchorSet
+interface XRLightEstimate
+interface XRLightProbe : EventTarget
+interface XRWebGLBinding
+    method getDepthInformation
+    method getReflectionCubeMap
+interface XRDepthInformation
+interface XRCPUDepthInformation : XRDepthInformation
+interface XRWebGLDepthInformation : XRDepthInformation
+
+# Web Serial API is not implemented on Android. If Bluetooth Classic support
+# were added this could change. https://crbug.com/1164036
+interface Serial : EventTarget
+interface SerialPort : EventTarget
+
+# WebHID API is not implemented on Android. crbug.com/1164125
+interface HIDDevice : EventTarget
+interface HIDInputReportEvent : Event
+interface HIDConnectionEvent : Event
+interface HID : EventTarget
 
 [GLOBAL OBJECT]
     method openDatabase
@@ -186,9 +217,9 @@ interface XRAnchorSet
     method gc                                # test only
     method webkitRequestFileSystem           # File System API, crbug.com/589843
     method webkitResolveLocalFileSystemURL   # File System API, crbug.com/589843
-    method showOpenFilePicker                # Native File System API, crbug.com/1011535
-    method showSaveFilePicker                # Native File System API, crbug.com/1011535
-    method showDirectoryPicker               # Native File System API, crbug.com/1011535
+    method showOpenFilePicker                # File System Access API, crbug.com/1011535
+    method showSaveFilePicker                # File System Access API, crbug.com/1011535
+    method showDirectoryPicker               # File System Access API, crbug.com/1011535
 
 # TODO(timvolodine): check screen orientation lock api
 # TODO(timvolodine): check notifications in service workers

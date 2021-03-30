@@ -37,8 +37,8 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
               GetInteractionsStats,
               (),
               (const override));
-  MOCK_METHOD(base::span<const CompromisedCredentials>,
-              GetCompromisedCredentials,
+  MOCK_METHOD(base::span<const InsecureCredential>,
+              GetInsecureCredentials,
               (),
               (const override));
   MOCK_METHOD(bool, IsBlocklisted, (), (const override));
@@ -48,11 +48,11 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
   MOCK_METHOD(void, Update, (const PasswordForm&), (override));
   MOCK_METHOD(void,
               OnUpdateUsernameFromPrompt,
-              (const base::string16&),
+              (const std::u16string&),
               (override));
   MOCK_METHOD(void,
               OnUpdatePasswordFromPrompt,
-              (const base::string16&),
+              (const std::u16string&),
               (override));
   MOCK_METHOD(void, OnNopeUpdateClicked, (), (override));
   MOCK_METHOD(void, OnNeverClicked, (), (override));

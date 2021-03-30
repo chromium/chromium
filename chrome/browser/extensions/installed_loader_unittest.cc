@@ -44,7 +44,8 @@ class InstalledLoaderUnitTest : public ExtensionServiceTestBase {
 const Extension* InstalledLoaderUnitTest::AddExtension() {
   // Metrics aren't recorded for unpacked extensions, so we need to make sure
   // the extension has an INTERNAL location.
-  constexpr Manifest::Location kManifestLocation = Manifest::INTERNAL;
+  constexpr mojom::ManifestLocation kManifestLocation =
+      mojom::ManifestLocation::kInternal;
   scoped_refptr<const Extension> extension = ExtensionBuilder("test")
                                                  .AddPermissions({"<all_urls>"})
                                                  .SetLocation(kManifestLocation)

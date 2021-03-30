@@ -95,9 +95,12 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
             clearHighlight();
             mDelegate.notifyStateChange(BookmarkItemsAdapter.this);
 
-            if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING
-                    && !TextUtils.equals(mSearchText, EMPTY_QUERY)) {
-                search(mSearchText);
+            if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING) {
+                if (!TextUtils.equals(mSearchText, EMPTY_QUERY)) {
+                    search(mSearchText);
+                } else {
+                    mDelegate.closeSearchUI();
+                }
             }
         }
     };
@@ -246,6 +249,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         description.setText(listItem.getHeaderDescription());
         description.setVisibility(
                 TextUtils.isEmpty(listItem.getHeaderDescription()) ? View.GONE : View.VISIBLE);
+        if (listItem.getSectionHeaderData().topPadding > 0) {
+            title.setPaddingRelative(title.getPaddingStart(),
+                    listItem.getSectionHeaderData().topPadding, title.getPaddingEnd(),
+                    title.getPaddingBottom());
+        }
     }
 
     @Override
@@ -500,8 +508,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     private int getBookmarkItemEndIndex() {
         int endIndex = mElements.size() - 1;
         BookmarkItem bookmarkItem = mElements.get(endIndex).getBookmarkItem();
-        assert bookmarkItem != null;
-        if (!bookmarkItem.isMovable()) {
+        if (bookmarkItem == null || !bookmarkItem.isMovable()) {
             endIndex--;
         }
         return endIndex;

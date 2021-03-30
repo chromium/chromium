@@ -62,7 +62,7 @@ int SBThreatTypeToJavaThreatType(const SBThreatType& sb_threat_type) {
       return safe_browsing::JAVA_THREAT_TYPE_POTENTIALLY_HARMFUL_APPLICATION;
     case SB_THREAT_TYPE_URL_UNWANTED:
       return safe_browsing::JAVA_THREAT_TYPE_UNWANTED_SOFTWARE;
-    case SB_THREAT_TYPE_CSD_WHITELIST:
+    case SB_THREAT_TYPE_CSD_ALLOWLIST:
       return safe_browsing::JAVA_THREAT_TYPE_CSD_ALLOWLIST;
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
       return safe_browsing::JAVA_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST;
@@ -255,7 +255,7 @@ void SafeBrowsingApiHandlerBridge::StartURLCheck(
 }
 
 bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {
-  return StartAllowlistCheck(url, safe_browsing::SB_THREAT_TYPE_CSD_WHITELIST);
+  return StartAllowlistCheck(url, safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST);
 }
 
 bool SafeBrowsingApiHandlerBridge::StartHighConfidenceAllowlistCheck(

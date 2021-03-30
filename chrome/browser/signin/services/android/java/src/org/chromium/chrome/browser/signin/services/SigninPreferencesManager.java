@@ -32,77 +32,12 @@ public class SigninPreferencesManager {
     }
 
     /**
-     * Sets the {@link ChromePreferenceKeys#SIGNIN_ACCOUNTS_CHANGED} to true.
-     */
-    public void markAccountsChangedPref() {
-        // The process may go away as soon as we return from onReceive but Android makes sure
-        // that in-flight disk writes from apply() complete before changing component states.
-        mManager.writeBoolean(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED, true);
-    }
-
-    /**
-     * @return The new account name of the current user. Null if it wasn't renamed.
-     */
-    public String getNewSignedInAccountName() {
-        return mManager.readString(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED, null);
-    }
-
-    /**
-     * Sets the new account name of the current user.
-     *
-     * @param newName the new name to write
-     */
-    public void setNewSignedInAccountName(@Nullable String newName) {
-        mManager.writeString(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED, newName);
-    }
-
-    /**
-     * Clears the new account name of the current user.
-     */
-    public void clearNewSignedInAccountName() {
-        setNewSignedInAccountName(null);
-    }
-
-    /**
-     * Sets the last read index of all the account changed events of the current signed in account.
-     *
-     * @param newIndex the new index to write
-     */
-    public void setLastAccountChangedEventIndex(int newIndex) {
-        mManager.writeInt(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX, newIndex);
-    }
-
-    /**
-     * @return the last read index of all the account changed events of the current signed in
-     *         account.
-     */
-    public int getLastAccountChangedEventIndex() {
-        return mManager.readInt(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX);
-    }
-
-    /**
-     * Gets the state of {@link ChromePreferenceKeys#SIGNIN_ACCOUNTS_CHANGED} and clears it.
-     *
-     * @return the state of {@link ChromePreferenceKeys#SIGNIN_ACCOUNTS_CHANGED} before the call.
-     */
-    public boolean checkAndClearAccountsChangedPref() {
-        if (mManager.readBoolean(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED, false)) {
-            // Clear the value in prefs.
-            mManager.writeBoolean(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED, false);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Clears the accounts state-related shared prefs.
      */
     @VisibleForTesting
-    public void clearAccountsStateSharedPrefsForTesting() {
-        mManager.removeKey(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX);
-        mManager.removeKey(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED);
-        mManager.removeKey(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED);
+    public void clearSigninPromoLastShownPrefsForTesting() {
+        mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION);
+        mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES);
     }
 
     /**
@@ -201,5 +136,28 @@ public class SigninPreferencesManager {
      */
     public int getAccountPickerBottomSheetShownCount() {
         return mManager.readInt(ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT);
+    }
+
+    /**
+     * Increments the active dismissal count for the account picker bottom sheet.
+     */
+    public void incrementAccountPickerBottomSheetActiveDismissalCount() {
+        mManager.incrementInt(
+                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT);
+    }
+
+    /**
+     * Returns the number of times account picker bottom sheet has been actively dismissed.
+     */
+    public int getAccountPickerBottomSheetActiveDismissalCount() {
+        return mManager.readInt(
+                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT);
+    }
+
+    /**
+     * Clears the active dismissal count for the account picker bottom sheet.
+     */
+    public void clearAccountPickerBottomSheetActiveDismissalCount() {
+        mManager.removeKey(ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT);
     }
 }

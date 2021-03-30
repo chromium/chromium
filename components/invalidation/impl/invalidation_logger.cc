@@ -13,8 +13,7 @@
 namespace invalidation {
 
 InvalidationLogger::InvalidationLogger()
-    : last_invalidator_state_(syncer::TRANSIENT_INVALIDATION_ERROR),
-      last_invalidator_state_timestamp_(base::Time::Now()) { }
+    : last_invalidator_state_timestamp_(base::Time::Now()) {}
 
 InvalidationLogger::~InvalidationLogger() = default;
 
@@ -37,8 +36,7 @@ void InvalidationLogger::EmitRegisteredHandlers() {
     observer.OnRegistrationChange(registered_handlers_);
 }
 
-void InvalidationLogger::OnStateChange(
-    const syncer::InvalidatorState& new_state) {
+void InvalidationLogger::OnStateChange(const InvalidatorState& new_state) {
   // Prevent spurious same state emissions from updating the timestamp.
   if (new_state != last_invalidator_state_)
     last_invalidator_state_timestamp_ = base::Time::Now();
@@ -54,7 +52,7 @@ void InvalidationLogger::EmitState() {
 }
 
 void InvalidationLogger::OnUpdatedTopics(
-    std::map<std::string, syncer::Topics> handler_updated_topics_map) {
+    std::map<std::string, Topics> handler_updated_topics_map) {
   for (const auto& updated_topics : handler_updated_topics_map) {
     handler_latest_topics_map_[updated_topics.first] = updated_topics.second;
   }
@@ -63,9 +61,9 @@ void InvalidationLogger::OnUpdatedTopics(
 
 void InvalidationLogger::EmitUpdatedTopics() {
   for (const auto& handler_name_and_topics : handler_latest_topics_map_) {
-    syncer::TopicCountMap per_handler_invalidation_count;
+    TopicCountMap per_handler_invalidation_count;
     for (const auto& topic_item : handler_name_and_topics.second) {
-      const syncer::Topic& topic = topic_item.first;
+      const Topic& topic = topic_item.first;
       per_handler_invalidation_count[topic] = invalidation_count_[topic];
     }
     for (auto& observer : observer_list_) {
@@ -81,7 +79,7 @@ void InvalidationLogger::OnDebugMessage(const base::DictionaryValue& details) {
 }
 
 void InvalidationLogger::OnInvalidation(
-    const syncer::TopicInvalidationMap& invalidations) {
+    const TopicInvalidationMap& invalidations) {
   for (const auto& topic : invalidations.GetTopics()) {
     invalidation_count_[topic] += invalidations.ForTopic(topic).GetSize();
   }
@@ -109,4 +107,5 @@ bool InvalidationLogger::IsObserverRegistered(
     const InvalidationLoggerObserver* debug_observer) const {
   return observer_list_.HasObserver(debug_observer);
 }
+
 }  // namespace invalidation

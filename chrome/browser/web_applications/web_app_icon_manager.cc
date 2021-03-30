@@ -148,14 +148,13 @@ bool WriteIcons(FileUtilsWrapper* utils,
 bool WriteShortcutsMenuIcons(
     FileUtilsWrapper* utils,
     const base::FilePath& shortcuts_menu_icons_dir,
-    const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps) {
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   DCHECK(utils->DirectoryExists(shortcuts_menu_icons_dir));
 
   int shortcut_index = -1;
-  for (const std::map<SquareSizePx, SkBitmap>& icon_bitmaps :
-       shortcuts_menu_icons_bitmaps) {
+  for (const IconBitmaps& icon_bitmaps : shortcuts_menu_icon_bitmaps) {
     ++shortcut_index;
-    if (icon_bitmaps.empty())
+    if (icon_bitmaps.any.empty())
       continue;
 
     const base::FilePath shortcuts_menu_icon_dir =
@@ -164,8 +163,9 @@ bool WriteShortcutsMenuIcons(
     if (!utils->CreateDirectory(shortcuts_menu_icon_dir))
       return false;
 
+    // TODO(crbug.com/1152661): Write maskable icons too.
     for (const std::pair<const SquareSizePx, SkBitmap>& icon_bitmap :
-         icon_bitmaps) {
+         icon_bitmaps.any) {
       if (!WriteIcon(utils, shortcuts_menu_icon_dir, icon_bitmap.second))
         return false;
     }
@@ -238,8 +238,8 @@ bool WriteShortcutsMenuIconsDataBlocking(
     const std::unique_ptr<FileUtilsWrapper>& utils,
     const base::FilePath& web_apps_directory,
     const AppId& app_id,
-    const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps) {
-  if (shortcuts_menu_icons_bitmaps.empty())
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
+  if (shortcuts_menu_icon_bitmaps.empty())
     return false;
 
   // Create the temp directory under the web apps root.
@@ -259,7 +259,7 @@ bool WriteShortcutsMenuIconsDataBlocking(
     return false;
 
   if (!WriteShortcutsMenuIcons(utils.get(), shortcuts_menu_icons_temp_dir,
-                               shortcuts_menu_icons_bitmaps))
+                               shortcuts_menu_icon_bitmaps))
     return false;
 
   base::FilePath manifest_resources_directory =
@@ -445,26 +445,27 @@ IconBitmaps ReadAllIconsBlocking(
 }
 
 // Performs blocking I/O. May be called on another thread.
-ShortcutsMenuIconsBitmaps ReadShortcutsMenuIconsBlocking(
+// TODO(crbug.com/1152661): Read maskable icons too.
+ShortcutsMenuIconBitmaps ReadShortcutsMenuIconsBlocking(
     FileUtilsWrapper* utils,
     const base::FilePath& web_apps_directory,
     const AppId& app_id,
     const std::vector<std::vector<SquareSizePx>>& shortcuts_menu_icons_sizes) {
-  ShortcutsMenuIconsBitmaps results;
+  ShortcutsMenuIconBitmaps results;
   int curr_index = 0;
   for (const auto& icon_sizes : shortcuts_menu_icons_sizes) {
-    std::map<SquareSizePx, SkBitmap> result;
+    IconBitmaps result;
     for (SquareSizePx icon_size_px : icon_sizes) {
       SkBitmap bitmap = ReadShortcutsMenuIconBlocking(
           utils, web_apps_directory, app_id, curr_index, icon_size_px);
       if (!bitmap.empty())
-        result[icon_size_px] = bitmap;
+        result.any[icon_size_px] = bitmap;
     }
     ++curr_index;
     // We always push_back (even when result is empty) to keep a given
     // std::map's index in sync with that of its corresponding shortcuts menu
     // item.
-    results.push_back(result);
+    results.push_back(std::move(result));
   }
   return results;
 }
@@ -524,7 +525,7 @@ void WebAppIconManager::WriteData(AppId app_id,
 
 void WebAppIconManager::WriteShortcutsMenuIconsData(
     AppId app_id,
-    ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps,
+    ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps,
     WriteDataCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -532,7 +533,7 @@ void WebAppIconManager::WriteShortcutsMenuIconsData(
       FROM_HERE, kTaskTraits,
       base::BindOnce(WriteShortcutsMenuIconsDataBlocking, utils_->Clone(),
                      web_apps_directory_, std::move(app_id),
-                     std::move(shortcuts_menu_icons_bitmaps)),
+                     std::move(shortcuts_menu_icon_bitmaps)),
       std::move(callback));
 }
 
@@ -644,7 +645,7 @@ void WebAppIconManager::ReadAllShortcutsMenuIcons(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const WebApp* web_app = registrar_.GetAppById(app_id);
   if (!web_app) {
-    std::move(callback).Run(ShortcutsMenuIconsBitmaps{});
+    std::move(callback).Run(ShortcutsMenuIconBitmaps{});
     return;
   }
 
@@ -699,7 +700,7 @@ void WebAppIconManager::ReadSmallestCompressedIcon(
       std::move(wrapped));
 }
 
-SkBitmap WebAppIconManager::GetFavicon(const web_app::AppId& app_id) const {
+SkBitmap WebAppIconManager::GetFavicon(const AppId& app_id) const {
   auto iter = favicon_cache_.find(app_id);
   if (iter == favicon_cache_.end())
     return SkBitmap();

@@ -47,8 +47,11 @@ void ProfileInfoWatcher::OnProfileAuthInfoChanged(
 std::string ProfileInfoWatcher::GetAuthenticatedUsername() const {
   std::string username;
   auto* identity_manager = GetIdentityManager();
-  if (identity_manager)
-    username = identity_manager->GetPrimaryAccountInfo().email;
+  if (identity_manager) {
+    username =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
+  }
   return username;
 }
 

@@ -65,51 +65,37 @@ class DetailsTest : public testing::Test {
 TEST_F(DetailsTest, UpdateFromParametersEmpty) {
   Details details;
   // Nothing has to be updated.
-  auto context = TriggerContext::CreateEmpty();
-  EXPECT_FALSE(details.UpdateFromParameters(*context));
+  EXPECT_FALSE(details.UpdateFromParameters({}));
 }
 
 TEST_F(DetailsTest, UpdateFromParametersShowInitialNoUpdate) {
-  std::map<std::string, std::string> parameters;
-  parameters["DETAILS_SHOW_INITIAL"] = "false";
-  auto context = TriggerContext::Create(parameters, "exps");
-
   Details details;
-  EXPECT_FALSE(details.UpdateFromParameters(*context));
+  EXPECT_FALSE(
+      details.UpdateFromParameters({{{"DETAILS_SHOW_INITIAL", "false"}}}));
 }
 
 TEST_F(DetailsTest, UpdateFromParametersSetsPlaceholderFlags) {
-  std::map<std::string, std::string> parameters;
-  parameters["DETAILS_SHOW_INITIAL"] = "true";
-
-  auto context = TriggerContext::Create(parameters, "exps");
-
   Details details;
-  details.UpdateFromParameters(*context);
+  details.UpdateFromParameters({{{"DETAILS_SHOW_INITIAL", "true"}}});
 
-  EXPECT_TRUE(details.animatePlaceholders());
-  EXPECT_TRUE(details.showImagePlaceholder());
+  EXPECT_TRUE(details.placeholders().show_image_placeholder());
 }
 
 TEST_F(DetailsTest, UpdateFromParametersUpdateFromDetails) {
-  std::map<std::string, std::string> parameters;
-  parameters["DETAILS_SHOW_INITIAL"] = "true";
-  parameters["DETAILS_TITLE"] = "title";
-  parameters["DETAILS_DESCRIPTION_LINE_1"] = "line1";
-  parameters["DETAILS_DESCRIPTION_LINE_2"] = "line2";
-  parameters["DETAILS_DESCRIPTION_LINE_3"] = "Est. total";
-  parameters["DETAILS_IMAGE_URL"] = "image";
-  parameters["DETAILS_IMAGE_ACCESSIBILITY_HINT"] = "hint";
-  parameters["DETAILS_IMAGE_CLICKTHROUGH_URL"] = "clickthrough";
-  parameters["DETAILS_TOTAL_PRICE_LABEL"] = "total";
-  parameters["DETAILS_TOTAL_PRICE"] = "12";
-
-  auto context = TriggerContext::Create(parameters, "exps");
-
   Details details;
-  EXPECT_TRUE(details.UpdateFromParameters(*context));
+  EXPECT_TRUE(details.UpdateFromParameters(
+      {{{"DETAILS_SHOW_INITIAL", "true"},
+        {"DETAILS_TITLE", "title"},
+        {"DETAILS_DESCRIPTION_LINE_1", "line1"},
+        {"DETAILS_DESCRIPTION_LINE_2", "line2"},
+        {"DETAILS_DESCRIPTION_LINE_3", "Est. total"},
+        {"DETAILS_IMAGE_URL", "image"},
+        {"DETAILS_IMAGE_ACCESSIBILITY_HINT", "hint"},
+        {"DETAILS_IMAGE_CLICKTHROUGH_URL", "clickthrough"},
+        {"DETAILS_TOTAL_PRICE_LABEL", "total"},
+        {"DETAILS_TOTAL_PRICE", "12"}}}));
 
-  EXPECT_TRUE(details.animatePlaceholders());
+  EXPECT_TRUE(details.placeholders().show_image_placeholder());
   EXPECT_THAT(details.title(), Eq("title"));
   EXPECT_THAT(details.descriptionLine1(), Eq("line1"));
   EXPECT_THAT(details.descriptionLine2(), Eq("line2"));
@@ -121,28 +107,6 @@ TEST_F(DetailsTest, UpdateFromParametersUpdateFromDetails) {
   EXPECT_THAT(details.imageClickthroughUrl(), Eq("clickthrough"));
   EXPECT_THAT(details.totalPriceLabel(), Eq("total"));
   EXPECT_THAT(details.totalPrice(), Eq("12"));
-}
-
-TEST_F(DetailsTest, UpdateFromParametersBackwardsCompatibility) {
-  base::test::ScopedRestoreICUDefaultLocale restore_locale;
-  base::i18n::SetICUDefaultLocale("en_US");
-
-  std::map<std::string, std::string> parameters;
-  parameters["MOVIES_MOVIE_NAME"] = "movie_name";
-  parameters["MOVIES_THEATER_NAME"] = "movie_theater";
-  parameters["MOVIES_SCREENING_DATETIME"] = "2019-09-26T16:40:02";
-
-  auto context = TriggerContext::Create(parameters, "exps");
-
-  Details details;
-  EXPECT_TRUE(details.UpdateFromParameters(*context));
-
-  EXPECT_TRUE(details.animatePlaceholders());
-  EXPECT_TRUE(details.showImagePlaceholder());
-  EXPECT_THAT(details.title(), Eq("movie_name"));
-  EXPECT_THAT(details.descriptionLine2(), Eq("movie_theater"));
-  EXPECT_THAT(details.descriptionLine1(),
-              Eq("4:40 PM \xE2\x80\xA2 Thu, Sep 26"));
 }
 
 TEST_F(DetailsTest, UpdateFromProtoNoDetails) {
@@ -287,42 +251,6 @@ TEST_F(DetailsTest, UpdateFromCreditCard) {
   EXPECT_FALSE(details.descriptionLine1().empty());
 }
 
-TEST_F(DetailsTest, GetTitleMaxLines) {
-  Details details;
-
-  ShowDetailsProto proto_no_description;
-  proto_no_description.mutable_details()->set_title("title");
-  EXPECT_TRUE(Details::UpdateFromProto(proto_no_description, &details));
-  EXPECT_THAT(details.titleMaxLines(), Eq(3));
-
-  ShowDetailsProto proto_description1;
-  proto_description1.mutable_details()->set_title("title");
-  proto_description1.mutable_details()->set_description_line_1("line 1");
-  EXPECT_TRUE(Details::UpdateFromProto(proto_description1, &details));
-  EXPECT_THAT(details.titleMaxLines(), Eq(2));
-
-  ShowDetailsProto proto_description2;
-  proto_description2.mutable_details()->set_title("title");
-  proto_description2.mutable_details()->set_description_line_2("line 2");
-  EXPECT_TRUE(Details::UpdateFromProto(proto_description2, &details));
-  EXPECT_THAT(details.titleMaxLines(), Eq(2));
-
-  ShowDetailsProto proto_description1_date;
-  proto_description1_date.mutable_details()->set_title("title");
-  SetDateTimeProto(
-      proto_description1_date.mutable_details()->mutable_datetime(), 2019, 9,
-      26, 16, 40, 2);
-  EXPECT_TRUE(Details::UpdateFromProto(proto_description1_date, &details));
-  EXPECT_THAT(details.titleMaxLines(), Eq(2));
-
-  ShowDetailsProto proto_both_descriptions;
-  proto_both_descriptions.mutable_details()->set_title("title");
-  proto_both_descriptions.mutable_details()->set_description_line_1("line 1");
-  proto_both_descriptions.mutable_details()->set_description_line_2("line 2");
-  EXPECT_TRUE(Details::UpdateFromProto(proto_both_descriptions, &details));
-  EXPECT_THAT(details.titleMaxLines(), Eq(1));
-}
-
 TEST_F(DetailsTest, GetDescriptionLine1) {
   base::test::ScopedRestoreICUDefaultLocale restore_locale;
 
@@ -443,14 +371,13 @@ TEST_F(DetailsTest, GetClickthroughData) {
   EXPECT_THAT(details.imageClickthroughUrl(), Eq("url"));
 }
 
-TEST_F(DetailsTest, GetPlaceholderFlags) {
+TEST_F(DetailsTest, GetPlaceholderConfiguration) {
   Details details;
   ShowDetailsProto proto;
-  proto.mutable_details()->set_show_image_placeholder(true);
-  proto.mutable_details()->set_animate_placeholders(true);
+  proto.mutable_details()->mutable_placeholders()->set_show_image_placeholder(
+      true);
   EXPECT_TRUE(Details::UpdateFromProto(proto, &details));
-  EXPECT_TRUE(details.showImagePlaceholder());
-  EXPECT_TRUE(details.animatePlaceholders());
+  EXPECT_TRUE(details.placeholders().show_image_placeholder());
 }
 
 TEST_F(DetailsTest, GetTotalPrice) {

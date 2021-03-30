@@ -42,6 +42,7 @@ class VaapiUtilsTest : public testing::Test {
     // Create a VaapiWrapper for testing.
     vaapi_wrapper_ =
         VaapiWrapper::Create(VaapiWrapper::kDecode, VAProfileJPEGBaseline,
+                             EncryptionScheme::kUnencrypted,
                              base::BindRepeating([](VaapiFunctions function) {
                                LOG(FATAL) << "Oh noes! Decoder failed";
                              }));

@@ -8,6 +8,7 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 WebFooterExperimentView::WebFooterExperimentView(Profile* profile)
     : WebView(profile), metrics_collector_(GetWebContents()) {
@@ -28,3 +29,6 @@ void WebFooterExperimentView::FirstPaintMetricsCollector::
   startup_metric_utils::RecordWebFooterDidFirstVisuallyNonEmptyPaint(
       base::TimeTicks::Now());
 }
+
+BEGIN_METADATA(WebFooterExperimentView, views::WebView)
+END_METADATA

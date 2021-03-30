@@ -46,10 +46,10 @@
 #include "services/network/public/mojom/websocket.mojom-blink.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -322,14 +323,15 @@ KURL UrlWithoutFragment(const KURL& url) {
   return result;
 }
 
-String MixedContentTypeForContextType(WebMixedContentContextType context_type) {
+String MixedContentTypeForContextType(
+    mojom::blink::MixedContentContextType context_type) {
   switch (context_type) {
-    case WebMixedContentContextType::kNotMixedContent:
+    case mojom::blink::MixedContentContextType::kNotMixedContent:
       return protocol::Security::MixedContentTypeEnum::None;
-    case WebMixedContentContextType::kBlockable:
+    case mojom::blink::MixedContentContextType::kBlockable:
       return protocol::Security::MixedContentTypeEnum::Blockable;
-    case WebMixedContentContextType::kOptionallyBlockable:
-    case WebMixedContentContextType::kShouldBeBlockable:
+    case mojom::blink::MixedContentContextType::kOptionallyBlockable:
+    case mojom::blink::MixedContentContextType::kShouldBeBlockable:
       return protocol::Security::MixedContentTypeEnum::OptionallyBlockable;
   }
 
@@ -371,8 +373,6 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
       return protocol::Network::BlockedReasonEnum::ContentType;
     case ResourceRequestBlockedReason::kOther:
       return protocol::Network::BlockedReasonEnum::Other;
-    case ResourceRequestBlockedReason::kCollapsedByClient:
-      return protocol::Network::BlockedReasonEnum::CollapsedByClient;
     case blink::ResourceRequestBlockedReason::kCoepFrameResourceNeedsCoepHeader:
       return protocol::Network::BlockedReasonEnum::
           CoepFrameResourceNeedsCoepHeader;
@@ -388,9 +388,31 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
           CorpNotSameOriginAfterDefaultedToSameOriginByCoep;
     case blink::ResourceRequestBlockedReason::kCorpNotSameSite:
       return protocol::Network::BlockedReasonEnum::CorpNotSameSite;
+    case ResourceRequestBlockedReason::kConversionRequest:
+      // This is actually never reached, as the conversion request
+      // is marked as successful and no blocking reason is reported.
+      NOTREACHED();
+      return protocol::Network::BlockedReasonEnum::Other;
   }
   NOTREACHED();
   return protocol::Network::BlockedReasonEnum::Other;
+}
+
+Maybe<String> BuildBlockedReason(const ResourceError& error) {
+  int error_code = error.ErrorCode();
+  if (error_code != net::ERR_BLOCKED_BY_CLIENT &&
+      error_code != net::ERR_BLOCKED_BY_RESPONSE) {
+    return Maybe<String>();
+  }
+
+  base::Optional<ResourceRequestBlockedReason> resource_request_blocked_reason =
+      error.GetResourceRequestBlockedReason();
+  if (resource_request_blocked_reason)
+    return BuildBlockedReason(*resource_request_blocked_reason);
+
+  // TODO(karandeepb): Embedder would know how to interpret the
+  // `error.extended_error_code_` in this case. For now just return Other.
+  return {protocol::Network::BlockedReasonEnum::Other};
 }
 
 String BuildCorsError(network::mojom::CorsError cors_error) {
@@ -480,7 +502,7 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
 }
 
 std::unique_ptr<protocol::Network::CorsErrorStatus> BuildCorsErrorStatus(
-    network::CorsErrorStatus status) {
+    const network::CorsErrorStatus& status) {
   return protocol::Network::CorsErrorStatus::create()
       .setCorsError(BuildCorsError(status.cors_error))
       .setFailedParameter(String::FromUTF8(status.failed_parameter))
@@ -633,6 +655,31 @@ String IPAddressToString(const net::IPAddress& address) {
   }
 
   return "[" + unbracketed + "]";
+}
+
+namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
+
+base::Optional<String> AcceptedEncodingFromProtocol(
+    const protocol::Network::ContentEncoding& encoding) {
+  base::Optional<String> result;
+  if (ContentEncodingEnum::Gzip == encoding ||
+      ContentEncodingEnum::Br == encoding ||
+      ContentEncodingEnum::Deflate == encoding) {
+    result = encoding;
+  }
+  return result;
+}
+
+using SourceTypeEnum = net::SourceStream::SourceType;
+SourceTypeEnum SourceTypeFromString(const String& type) {
+  if (type == ContentEncodingEnum::Gzip)
+    return SourceTypeEnum::TYPE_GZIP;
+  if (type == ContentEncodingEnum::Deflate)
+    return SourceTypeEnum::TYPE_DEFLATE;
+  if (type == ContentEncodingEnum::Br)
+    return SourceTypeEnum::TYPE_BROTLI;
+  NOTREACHED();
+  return SourceTypeEnum::TYPE_UNKNOWN;
 }
 
 }  // namespace
@@ -965,19 +1012,27 @@ void InspectorNetworkAgent::DidBlockRequest(
     const FetchInitiatorInfo& initiator_info,
     ResourceRequestBlockedReason reason,
     ResourceType resource_type) {
-  uint64_t identifier = request.InspectorId();
-  if (identifier == 0UL) {
-    NOTREACHED();
-    // Defensively create a valid identifier.
-    identifier = CreateUniqueIdentifier();
-  }
   InspectorPageAgent::ResourceType type =
       InspectorPageAgent::ToResourceType(resource_type);
 
-  WillSendRequestInternal(identifier, loader, fetch_context_url, request,
+  WillSendRequestInternal(loader, fetch_context_url, request,
                           ResourceResponse(), initiator_info, type);
 
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id =
+      IdentifiersFactory::RequestId(loader, request.InspectorId());
+
+  // Conversion Measurement API triggers recording of conversions
+  // as redirects to a `/.well-known/register-conversion` url.
+  // The redirect request is not actually executed
+  // but stored internally and then aborted. As the redirect is blocked using
+  // the ResourceRequestBlockedReason::kConversionRequest even when everything
+  // worked out fine, we mark the request as successful, as to not confuse devs.
+  if (reason == ResourceRequestBlockedReason::kConversionRequest) {
+    GetFrontend()->loadingFinished(
+        request_id, base::TimeTicks::Now().since_origin().InSecondsF(), 0);
+    return;
+  }
+
   String protocol_reason = BuildBlockedReason(reason);
   GetFrontend()->loadingFailed(
       request_id, base::TimeTicks::Now().since_origin().InSecondsF(),
@@ -997,16 +1052,15 @@ void InspectorNetworkAgent::DidChangeResourcePriority(
 }
 
 void InspectorNetworkAgent::WillSendRequestInternal(
-    uint64_t identifier,
     DocumentLoader* loader,
     const KURL& fetch_context_url,
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     const FetchInitiatorInfo& initiator_info,
     InspectorPageAgent::ResourceType type) {
-  CHECK_EQ(identifier, request.InspectorId());
   String loader_id = IdentifiersFactory::LoaderId(loader);
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id =
+      IdentifiersFactory::RequestId(loader, request.InspectorId());
   NetworkResourcesData::ResourceData const* data =
       resources_data_->Data(request_id);
   // Support for POST request redirect.
@@ -1021,10 +1075,14 @@ void InspectorNetworkAgent::WillSendRequestInternal(
 
   resources_data_->ResourceCreated(request_id, loader_id, request.Url(),
                                    post_data);
-  if (initiator_info.name == fetch_initiator_type_names::kXmlhttprequest)
+  if (initiator_info.name == fetch_initiator_type_names::kXmlhttprequest) {
     type = InspectorPageAgent::kXHRResource;
-  else if (initiator_info.name == fetch_initiator_type_names::kFetch)
+  } else if (initiator_info.name == fetch_initiator_type_names::kFetch) {
     type = InspectorPageAgent::kFetchResource;
+  } else if (initiator_info.name == fetch_initiator_type_names::kBeacon ||
+             initiator_info.name == fetch_initiator_type_names::kPing) {
+    type = InspectorPageAgent::kPingResource;
+  }
 
   if (pending_request_type_)
     type = *pending_request_type_;
@@ -1177,16 +1235,30 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
       request.SetDevToolsStackId(stack_id);
     }
   }
+  if (!accepted_encodings_.IsEmpty()) {
+    scoped_refptr<
+        base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>
+        accepted_stream_types = request.GetDevToolsAcceptedStreamTypes();
+    if (!accepted_stream_types) {
+      accepted_stream_types = base::MakeRefCounted<base::RefCountedData<
+          base::flat_set<net::SourceStream::SourceType>>>();
+    }
+    if (!accepted_encodings_.Get("none")) {
+      for (auto key : accepted_encodings_.Keys())
+        accepted_stream_types->data.insert(SourceTypeFromString(key));
+    }
+    request.SetDevToolsAcceptedStreamTypes(std::move(accepted_stream_types));
+  }
 }
 
 void InspectorNetworkAgent::WillSendRequest(
-    uint64_t identifier,
     DocumentLoader* loader,
     const KURL& fetch_context_url,
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     const FetchInitiatorInfo& initiator_info,
-    ResourceType resource_type) {
+    ResourceType resource_type,
+    RenderBlockingBehavior render_blocking_behavior) {
   // Ignore the request initiated internally.
   if (initiator_info.name == fetch_initiator_type_names::kInternal)
     return;
@@ -1194,8 +1266,8 @@ void InspectorNetworkAgent::WillSendRequest(
   InspectorPageAgent::ResourceType type =
       InspectorPageAgent::ToResourceType(resource_type);
 
-  WillSendRequestInternal(identifier, loader, fetch_context_url, request,
-                          redirect_response, initiator_info, type);
+  WillSendRequestInternal(loader, fetch_context_url, request, redirect_response,
+                          initiator_info, type);
 }
 
 void InspectorNetworkAgent::MarkResourceAsCached(DocumentLoader* loader,
@@ -1228,7 +1300,8 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
       saved_type == InspectorPageAgent::kXHRResource ||
       saved_type == InspectorPageAgent::kDocumentResource ||
       saved_type == InspectorPageAgent::kFetchResource ||
-      saved_type == InspectorPageAgent::kEventSourceResource) {
+      saved_type == InspectorPageAgent::kEventSourceResource ||
+      saved_type == InspectorPageAgent::kPingResource) {
     type = saved_type;
   }
 
@@ -1385,12 +1458,8 @@ void InspectorNetworkAgent::DidFailLoading(
   }
 
   bool canceled = error.IsCancellation();
-  base::Optional<ResourceRequestBlockedReason> resource_request_blocked_reason =
-      error.GetResourceRequestBlockedReason();
-  protocol::Maybe<String> blocked_reason;
-  if (resource_request_blocked_reason) {
-    blocked_reason = BuildBlockedReason(*resource_request_blocked_reason);
-  }
+
+  protocol::Maybe<String> blocked_reason = BuildBlockedReason(error);
   auto cors_error_status = error.CorsErrorStatus();
   protocol::Maybe<protocol::Network::CorsErrorStatus>
       protocol_cors_error_status;
@@ -1701,6 +1770,13 @@ void InspectorNetworkAgent::WebTransportCreated(
       std::move(initiator_object));
 }
 
+void InspectorNetworkAgent::WebTransportConnectionEstablished(
+    uint64_t transport_id) {
+  GetFrontend()->webTransportConnectionEstablished(
+      IdentifiersFactory::SubresourceRequestId(transport_id),
+      base::TimeTicks::Now().since_origin().InSecondsF());
+}
+
 void InspectorNetworkAgent::WebTransportClosed(uint64_t transport_id) {
   GetFrontend()->webTransportClosed(
       IdentifiersFactory::SubresourceRequestId(transport_id),
@@ -1734,6 +1810,7 @@ Response InspectorNetworkAgent::disable() {
   instrumenting_agents_->RemoveInspectorNetworkAgent(this);
   agent_state_.ClearAllFields();
   resources_data_->Clear();
+  clearAcceptedEncodingsOverride();
   return Response::Success();
 }
 
@@ -1785,8 +1862,7 @@ void InspectorNetworkAgent::GetResponseBodyBlob(
   InspectorFileReaderLoaderClient* client = new InspectorFileReaderLoaderClient(
       blob, context->GetTaskRunner(TaskType::kFileReading),
       WTF::Bind(ResponseBodyFileReaderLoaderDone, resource_data->MimeType(),
-                resource_data->TextEncodingName(),
-                WTF::Passed(std::move(callback))));
+                resource_data->TextEncodingName(), std::move(callback)));
   client->Start();
 }
 
@@ -1856,6 +1932,36 @@ Response InspectorNetworkAgent::canClearBrowserCache(bool* result) {
 
 Response InspectorNetworkAgent::canClearBrowserCookies(bool* result) {
   *result = true;
+  return Response::Success();
+}
+
+Response InspectorNetworkAgent::setAcceptedEncodings(
+    std::unique_ptr<protocol::Array<protocol::Network::ContentEncoding>>
+        encodings) {
+  HashSet<String> accepted_encodings;
+  for (const protocol::Network::ContentEncoding& encoding : *encodings) {
+    base::Optional<String> value = AcceptedEncodingFromProtocol(encoding);
+    if (!value) {
+      return Response::InvalidParams("Unknown encoding type: " +
+                                     encoding.Utf8());
+    }
+    accepted_encodings.insert(value.value());
+  }
+  // If invoked with an empty list, it means none of the encodings should be
+  // accepted. See InspectorNetworkAgent::PrepareRequest.
+  if (accepted_encodings.IsEmpty())
+    accepted_encodings.insert("none");
+
+  // Set the inspector state.
+  accepted_encodings_.Clear();
+  for (auto encoding : accepted_encodings)
+    accepted_encodings_.Set(encoding, true);
+
+  return Response::Success();
+}
+
+Response InspectorNetworkAgent::clearAcceptedEncodingsOverride() {
+  accepted_encodings_.Clear();
   return Response::Success();
 }
 
@@ -2097,7 +2203,9 @@ InspectorNetworkAgent::InspectorNetworkAgent(
                          /*default_value=*/kDefaultTotalBufferSize),
       resource_buffer_size_(&agent_state_,
                             /*default_value=*/kDefaultResourceBufferSize),
-      max_post_data_size_(&agent_state_, /*default_value=*/0) {
+      max_post_data_size_(&agent_state_, /*default_value=*/0),
+      accepted_encodings_(&agent_state_,
+                          /*default_value=*/false) {
   DCHECK((IsMainThread() && !worker_global_scope_) ||
          (!IsMainThread() && worker_global_scope_));
 }

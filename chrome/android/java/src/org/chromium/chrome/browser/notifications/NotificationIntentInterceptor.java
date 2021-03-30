@@ -4,17 +4,20 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -57,42 +60,58 @@ public class NotificationIntentInterceptor {
     }
 
     /**
-     * Receives the event when the user taps on the notification body, notification action, or
-     * dismiss notification.
-     * {@link Notification#contentIntent}, {@link Notification#deleteIntent}
-     * {@link Notification.Action#actionIntent} will be delivered to this broadcast receiver.
+     * Receives the event when the user dismisses notification. {@link Notification#deleteIntent}
+     * will be delivered to this broadcast receiver. Starting from Android S, the click events and
+     * action click events must be handled by activity. Starting from Android Q, the dismiss event
+     * can't be handled by {@link TrampolineActivity} due to background activity start restriction.
      */
     public static final class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            @IntentType
-            int intentType = intent.getIntExtra(EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
-            @NotificationUmaTracker.SystemNotificationType
-            int notificationType = intent.getIntExtra(
-                    EXTRA_NOTIFICATION_TYPE, NotificationUmaTracker.SystemNotificationType.UNKNOWN);
+            processIntent(context, intent);
+        }
+    }
 
-            long createTime = intent.getLongExtra(EXTRA_CREATE_TIME, INVALID_CREATE_TIME);
+    private static void processIntent(Context context, Intent intent) {
+        @IntentType
+        int intentType = intent.getIntExtra(EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
+        @NotificationUmaTracker.SystemNotificationType
+        int notificationType = intent.getIntExtra(
+                EXTRA_NOTIFICATION_TYPE, NotificationUmaTracker.SystemNotificationType.UNKNOWN);
 
-            switch (intentType) {
-                case IntentType.UNKNOWN:
-                    break;
-                case IntentType.CONTENT_INTENT:
-                    NotificationUmaTracker.getInstance().onNotificationContentClick(
-                            notificationType, createTime);
-                    break;
-                case IntentType.DELETE_INTENT:
-                    NotificationUmaTracker.getInstance().onNotificationDismiss(
-                            notificationType, createTime);
-                    break;
-                case IntentType.ACTION_INTENT:
-                    int actionType = intent.getIntExtra(
-                            EXTRA_ACTION_TYPE, NotificationUmaTracker.ActionType.UNKNOWN);
-                    NotificationUmaTracker.getInstance().onNotificationActionClick(
-                            actionType, notificationType, createTime);
-                    break;
-            }
+        long createTime = intent.getLongExtra(EXTRA_CREATE_TIME, INVALID_CREATE_TIME);
 
-            forwardPendingIntent(intent);
+        switch (intentType) {
+            case IntentType.UNKNOWN:
+                break;
+            case IntentType.CONTENT_INTENT:
+                NotificationUmaTracker.getInstance().onNotificationContentClick(
+                        notificationType, createTime);
+                break;
+            case IntentType.DELETE_INTENT:
+                NotificationUmaTracker.getInstance().onNotificationDismiss(
+                        notificationType, createTime);
+                break;
+            case IntentType.ACTION_INTENT:
+                int actionType = intent.getIntExtra(
+                        EXTRA_ACTION_TYPE, NotificationUmaTracker.ActionType.UNKNOWN);
+                NotificationUmaTracker.getInstance().onNotificationActionClick(
+                        actionType, notificationType, createTime);
+                break;
+        }
+
+        forwardPendingIntent(intent);
+    }
+
+    /**
+     * A trampoline activity that handles logging metrics for click events and action click events.
+     */
+    public static class TrampolineActivity extends Activity {
+        @Override
+        protected void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            processIntent(getApplicationContext(), getIntent());
+            finish();
         }
     }
 
@@ -112,13 +131,21 @@ public class NotificationIntentInterceptor {
             int intentId, NotificationMetadata metadata,
             @Nullable PendingIntentProvider pendingIntentProvider) {
         PendingIntent pendingIntent = null;
-        int flags = 0;
+        int flags = IntentUtils.getPendingIntentMutabilityFlag(false /* mutable */);
         if (pendingIntentProvider != null) {
             pendingIntent = pendingIntentProvider.getPendingIntent();
             flags = pendingIntentProvider.getFlags();
         }
+
+        // The delete intent needs to be handled by broadcast receiver from Q due to background
+        // activity start restriction.
+        boolean shouldUseBroadcast =
+                intentType == NotificationIntentInterceptor.IntentType.DELETE_INTENT;
         Context applicationContext = ContextUtils.getApplicationContext();
-        Intent intent = new Intent(applicationContext, Receiver.class);
+        Intent intent = shouldUseBroadcast
+                ? new Intent(applicationContext, Receiver.class)
+                : new Intent(applicationContext, TrampolineActivity.class);
+
         intent.setAction(INTENT_ACTION);
         intent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
         intent.putExtra(EXTRA_INTENT_TYPE, intentType);
@@ -130,12 +157,17 @@ public class NotificationIntentInterceptor {
 
         // This flag ensures the broadcast is delivered with foreground priority to speed up the
         // broadcast delivery.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (shouldUseBroadcast && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         }
         // Use request code to distinguish different PendingIntents on Android.
-        int requestCode = computeHashCode(metadata, intentType, intentId);
-        return PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags);
+        int originalRequestCode =
+                pendingIntentProvider != null ? pendingIntentProvider.getRequestCode() : 0;
+        int requestCode = computeHashCode(metadata, intentType, intentId, originalRequestCode);
+
+        return shouldUseBroadcast
+                ? PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags)
+                : PendingIntent.getActivity(applicationContext, requestCode, intent, flags);
     }
 
     /**
@@ -178,16 +210,18 @@ public class NotificationIntentInterceptor {
      * @param intentType The type of the {@link PendingIntent}.
      * @param intentId The unique ID of the {@link PendingIntent}, used to distinguish action
      *                 intents.
+     * @param requestCode The request code of the {@link PendingIntent}.
      * @return The hashcode for the intercept {@link PendingIntent}.
      */
-    private static int computeHashCode(
-            NotificationMetadata metadata, @IntentType int intentType, int intentId) {
+    private static int computeHashCode(NotificationMetadata metadata, @IntentType int intentType,
+            int intentId, int requestCode) {
         assert metadata != null;
         int hashcode = metadata.type;
         hashcode = hashcode * 31 + intentType;
         hashcode = hashcode * 31 + intentId;
         hashcode = hashcode * 31 + (metadata.tag == null ? 0 : metadata.tag.hashCode());
         hashcode = hashcode * 31 + metadata.id;
+        hashcode = hashcode * 31 + requestCode;
         return hashcode;
     }
 }

@@ -280,5 +280,108 @@ TEST_F(NGFragmentationTest, InkOverflowInline) {
             PhysicalRect(0, 0, 210, 15));
 }
 
+TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxColumnBox) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #columns {
+      column-width: 100px;
+      column-gap: 10px;
+      column-fill: auto;
+      width: 320px;
+      height: 500px;
+    }
+    </style>
+    <div id="columns" style="background: blue">
+      <div id="block" style="height: 1500px"></div>
+    </div>
+  )HTML");
+  const auto* columns = GetLayoutBoxByElementId("columns");
+  const auto* flow_thread = To<LayoutBox>(columns->SlowFirstChild());
+  EXPECT_EQ(flow_thread->PhysicalFragmentCount(), 3u);
+  const NGPhysicalBoxFragment* fragment0 = flow_thread->GetPhysicalFragment(0);
+  EXPECT_EQ(fragment0->OffsetFromOwnerLayoutBox(), PhysicalOffset());
+  const NGPhysicalBoxFragment* fragment1 = flow_thread->GetPhysicalFragment(1);
+  EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, 0));
+  const NGPhysicalBoxFragment* fragment2 = flow_thread->GetPhysicalFragment(2);
+  EXPECT_EQ(fragment2->OffsetFromOwnerLayoutBox(), PhysicalOffset(220, 0));
+
+  // Check running another layout does not crash.
+  GetElementById("block")->appendChild(GetDocument().createTextNode("a"));
+  RunDocumentLifecycle();
+}
+
+TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxFloat) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #columns {
+      column-width: 100px;
+      column-gap: 10px;
+      column-fill: auto;
+      width: 320px;
+      height: 500px;
+    }
+    #float {
+      float: left;
+      width: 50px;
+      height: 500px;
+      background: orange;
+    }
+    </style>
+    <div id="columns" style="background: blue">
+      <!-- A spacer to make `target` start at 2nd column. -->
+      <div style="height: 800px"></div>
+      <div id="float"></div>
+      Text
+    </div>
+  )HTML");
+  const auto* target = GetLayoutBoxByElementId("float");
+  EXPECT_EQ(target->PhysicalFragmentCount(), 2u);
+  const NGPhysicalBoxFragment* fragment0 = target->GetPhysicalFragment(0);
+  EXPECT_EQ(fragment0->OffsetFromOwnerLayoutBox(), PhysicalOffset());
+  const NGPhysicalBoxFragment* fragment1 = target->GetPhysicalFragment(1);
+  EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, -300));
+}
+
+TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxNested) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    html, body {
+      margin: 0;
+    }
+    #outer-columns {
+      column-width: 100px;
+      column-gap: 10px;
+      column-fill: auto;
+      width: 320px;
+      height: 500px;
+    }
+    #inner-columns {
+      column-width: 45px;
+      column-gap: 10px;
+      column-fill: auto;
+      width: 100px;
+      height: 800px;
+    }
+    </style>
+    <div id="outer-columns" style="background: blue">
+      <!-- A spacer to make `inner-columns` start at 2nd column. -->
+      <div style="height: 700px"></div>
+      <div id="inner-columns" style="height: 800px; background: purple">
+        <!-- A spacer to make `target` start at 2nd column. -->
+        <div style="height: 400px"></div>
+        <div id="target" style="background: orange; height: 1000px"></div>
+      </div>
+    </div>
+  )HTML");
+  const auto* target = GetLayoutBoxByElementId("target");
+  EXPECT_EQ(target->PhysicalFragmentCount(), 3u);
+  const NGPhysicalBoxFragment* fragment0 = target->GetPhysicalFragment(0);
+  EXPECT_EQ(fragment0->OffsetFromOwnerLayoutBox(), PhysicalOffset());
+  const NGPhysicalBoxFragment* fragment1 = target->GetPhysicalFragment(1);
+  EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(55, -300));
+  const NGPhysicalBoxFragment* fragment2 = target->GetPhysicalFragment(2);
+  EXPECT_EQ(fragment2->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, -300));
+}
+
 }  // anonymous namespace
 }  // namespace blink

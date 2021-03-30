@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests different types of search-and-replace in SourceFrame\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/search.js');
 

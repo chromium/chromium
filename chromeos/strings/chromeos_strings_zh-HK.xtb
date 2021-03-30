@@ -2,21 +2,30 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">無法開始掃瞄</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">偵測到防火牆</translation>
 <translation id="1075811647922107217">頁面大小</translation>
 <translation id="1124772482545689468">使用者</translation>
+<translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1204296502688602597">DNS 延遲時間</translation>
 <translation id="123124571410524056">可能有網絡入口</translation>
 <translation id="1238612778414822719">HTTPS 延遲時間</translation>
+<translation id="1270369111467284986">可疑的強制網絡入口</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="131461803491198646">家用網絡，非漫遊狀態</translation>
+<translation id="1327977588028644528">閘道</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">依掃瞄區大小自動調整</translation>
+<translation id="1387854245479784695">這是所有核心的彙整資料</translation>
 <translation id="1397738625398125236">可連線偵測的閘道</translation>
 <translation id="1398634363027580500">HTTPS 延遲時間非常長</translation>
 <translation id="1413240736185167732">失敗 - 篩選器發生錯誤</translation>
+<translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1468664791493211953">優惠</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> 會管理此裝置，並可能監察您的活動。</translation>
 <translation id="1478594628797167447">掃瞄器</translation>
@@ -24,30 +33,38 @@
 <translation id="150962533380566081">PUK 無效。</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒)</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
-<translation id="1743558184855585519">當電池到達上限時，即表示已耗盡電力</translation>
+<translation id="1717874160321062422">由 <ph name="FIRST_MANAGER" /> 和 <ph name="SECOND_MANAGER" /> 管理</translation>
+<translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">取消掃瞄中</translation>
+<translation id="1851218745569890714">視像會議</translation>
+<translation id="1887850431809612466">硬件版本</translation>
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
+<translation id="1908234395526491708">UDP 要求失敗</translation>
 <translation id="1930797645656624981">Chrome 作業系統輸入方法服務</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1979103255016296513">變更密碼已逾期</translation>
-<translation id="1980044825731880088">CPU 速度</translation>
 <translation id="1999615961760456652">強制網絡入口</translation>
 <translation id="2008685064673031089">尖峰搜尋</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2126937207024182736">可用空間：<ph name="AVAILABLE_MEMORY" /> GB (共 <ph name="TOTAL_MEMORY" /> GB)</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2157959690810728433">已排入序列</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
+<translation id="2217935453350629363">目前速度</translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
+<translation id="2230051135190148440">CHAP</translation>
+<translation id="225692081236532131">啟用狀態</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">開啟藍牙即可探索附近的裝置</translation>
 <translation id="2364498172489649528">已通過</translation>
-<translation id="2375079107209812402">剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /> 次</translation>
 <translation id="2391082728065870591">傳送意見反映報告</translation>
+<translation id="2418150275289244458">在設定中開啟</translation>
 <translation id="2446553403094072641">浮點準確性</translation>
 <translation id="2448312741937722512">類型</translation>
 <translation id="2461822463642141190">電流</translation>
@@ -57,7 +74,10 @@
 <translation id="2585245331261708204">Chrome 作業系統的新功能</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="2740531572673183784">確定</translation>
+<translation id="2751739896257479635">EAP 第 2 階段驗證</translation>
+<translation id="2789486458103222910">確定</translation>
 <translation id="2805756323405976993">應用程式</translation>
+<translation id="2862104018715411648">將文件放到掃瞄器上，並選取 [掃瞄] 以開始掃瞄</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878387241690264070">已在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -69,20 +89,29 @@
 <translation id="3102119246920354026">快取</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">流動數據</translation>
+<translation id="315738237743207937">已偵測到強制網絡入口</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
+<translation id="3226405216343213872">正在尋找掃瞄器</translation>
 <translation id="3246869037381808805">超過 1 天前的列印工作將被移除</translation>
 <translation id="3268178239013324452">失敗 - 機蓋未關</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS 延遲時間大幅超過允許的門檻</translation>
 <translation id="3328783797891415197">測試執行中</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369013195428705271">您確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3435738964857648380">安全性</translation>
 <translation id="3456078764689556234">印咗 <ph name="PRINTED_PAGES" /> 頁，總共有 <ph name="TOTAL_PAGES" /> 頁。</translation>
+<translation id="345898999683440380">掃瞄緊第 <ph name="PAGE_NUM" /> 頁。完成咗 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">列印</translation>
-<translation id="3515615323037921860">列印工作</translation>
+<translation id="3488065109653206955">部分已啟用</translation>
 <translation id="3527036260304016759">失敗 - 不明錯誤</translation>
+<translation id="3532980081107202182">大約尚餘 <ph name="MIN_REMAINING" /> 分鐘</translation>
 <translation id="357889014807611375">按用量收費的 Wi-Fi</translation>
+<translation id="3595596368722241419">電池已滿</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 個評論)</translation>
 <translation id="3748026146096797577">尚未連線</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
@@ -90,13 +119,17 @@
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="3838338534323494292">新密碼</translation>
 <translation id="3865414814144988605">解像度</translation>
+<translation id="387301095347517405">電池經過完整充電循環的次數</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
 <translation id="3942420633017001071">診斷</translation>
+<translation id="3967822245660637423">下載完成</translation>
+<translation id="397105322502079400">計算中…</translation>
 <translation id="39823212440917567">超過 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作將被移除</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
 <translation id="4034824040120875894">打印機</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
+<translation id="4155551848414053977">請確認掃瞄器已開啟，並可供透過網絡或直接連線使用</translation>
 <translation id="4170700058716978431">失敗</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4227825898293920515">密碼在 <ph name="TIME" />後到期</translation>
@@ -106,68 +139,97 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4429881212383817840">Kerberos 票證即將到期</translation>
+<translation id="4431821876790500265">查看報告</translation>
 <translation id="445059817448385655">舊密碼</translation>
+<translation id="4453205916657964690">子網絡遮罩</translation>
 <translation id="4454245904991689773">掃瞄儲存位置</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
 <translation id="4511264077854731334">入口網站</translation>
 <translation id="4548483925627140043">偵測不到訊號</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
+<translation id="4562494484721939086">不提供服務</translation>
 <translation id="458794348635939462">無法解析所有主機</translation>
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
 <translation id="4646949265910132906">安全 Wi-Fi 連線</translation>
+<translation id="4652335678334611408">儲存工作階段記錄</translation>
+<translation id="4665014895760275686">製造商</translation>
 <translation id="467510802200863975">密碼不相符</translation>
 <translation id="467715984478005772">可能有防火牆</translation>
 <translation id="4691278870498629773">已停止 - 沒有紙匣</translation>
 <translation id="469379815867856270">訊號強度</translation>
+<translation id="4707579418881001319">L2TP/IPsec + 使用者憑證</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4808449224298348341">取消咗列印工作 <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4813345808229079766">連線</translation>
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4835901797422965222">沒有使用中的網絡</translation>
 <translation id="4848429997038228357">執行中</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
+<translation id="4880328057631981605">接入點名稱 (APN)</translation>
+<translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4891842000192098784">壓力</translation>
+<translation id="4917385247580444890">強</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
 <translation id="4921665434385737356">已在 <ph name="NUM_SECONDS" /> 秒內充電 <ph name="RATE" />。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="498186245079027698">請檢查掃瞄器，然後再試一次。請確保本機有足夠空間儲存已掃瞄的檔案。</translation>
 <translation id="4985509611418653372">執行</translation>
+<translation id="4987769320337599931">防火牆</translation>
+<translation id="4999333166442584738">隱藏報告</translation>
 <translation id="500920857929044050">停止測試</translation>
+<translation id="5017508259293544172">LEAP</translation>
+<translation id="5050042263972837708">群組名稱</translation>
+<translation id="5088172560898466307">伺服器主機名稱</translation>
 <translation id="5089810972385038852">州</translation>
+<translation id="5142961317498132443">驗證</translation>
 <translation id="5154917547274118687">記憶體</translation>
 <translation id="5168185087976003268">電池狀態</translation>
-<translation id="520299634122159966">沒有可用的掃瞄器</translation>
 <translation id="5212543919916444558">系統在您的畫面上找不到任何可提供協助的內容。
 請嘗試輕按麥克風並發問。</translation>
 <translation id="5222676887888702881">登出</translation>
+<translation id="5252456968953390977">漫遊中</translation>
 <translation id="5264277876637023664">執行 CPU 測試</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">重新執行日常安排</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029">版本 <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5315873049536339193">身分</translation>
 <translation id="5317780077021120954">儲存</translation>
+<translation id="5318334351163689047">TCP 要求失敗</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">立即選擇新密碼</translation>
 <translation id="5333530671332546086">入口網站狀態不明</translation>
 <translation id="5372659122375744710">Wi-Fi 網絡不安全</translation>
 <translation id="5401938042319910061">執行所有日常安排</translation>
+<translation id="5423849171846380976">已啟用</translation>
 <translation id="5430931332414098647">即時網絡共享</translation>
 <translation id="5431318178759467895">顏色</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">以訪客身分瀏覽</translation>
 <translation id="54609108002486618">受管理</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩餘嘗試次數：{0} 次}other{剩餘嘗試次數：{0} 次}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">詳情請瀏覽說明中心</translation>
-<translation id="5635169860413004179">查看報告</translation>
-<translation id="5719918614880940190">此數據測量 CPU 使用情況，並且為所有核心的彙整資料</translation>
-<translation id="5781694279199921985">儲存工作階段記錄</translation>
+<translation id="554517032089923082">GTC</translation>
+<translation id="5669267381087807207">啟用</translation>
+<translation id="5670702108860320605">BSSID</translation>
+<translation id="5691511426247308406">家庭</translation>
+<translation id="5760715441271661976">入口網站狀態</translation>
 <translation id="5797428682393400134">成功</translation>
 <translation id="5832805196449965646">新增使用者</translation>
+<translation id="583281660410589416">不明</translation>
+<translation id="5849570051105887917">家庭網絡供應商代碼</translation>
+<translation id="5866840822086176774">非常強</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5916084858004523819">禁止</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>
 <translation id="5931523347251946569">找不到檔案</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">關閉</translation>
+<translation id="6040852767465482106">匿名身分</translation>
+<translation id="604124094241169006">自動</translation>
 <translation id="6048107060512778456">失敗 - 卡紙</translation>
 <translation id="6050189528197190982">灰階</translation>
 <translation id="6058625436358447366">如要完成變更，請輸入您的舊密碼和新密碼</translation>
@@ -175,75 +237,111 @@
 <translation id="6104112872696127344">掃瞄已取消</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入您的舊密碼</translation>
 <translation id="6108689792487843350">無法連接閘道</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6122191549521593678">線上</translation>
+<translation id="6137767437444130246">使用者憑證</translation>
 <translation id="6146993107019042706">如要完成變更，請輸入您的新密碼</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
+<translation id="6189418609903030344">電池容量會隨使用時間增加而下降</translation>
 <translation id="6191293864534840972">域名伺服器格式錯誤</translation>
+<translation id="6223752125779001553">沒有可用的掃瞄器</translation>
 <translation id="6232017090690406397">電池</translation>
+<translation id="6302401976930124515"><ph name="TEST_NAME" />測試已取消</translation>
 <translation id="6325525973963619867">失敗</translation>
 <translation id="636850387210749493">企業註冊</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{已儲存掃瞄的檔案}other{已儲存掃瞄的檔案}}</translation>
+<translation id="641081527798843608">主題比對</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6456394469623773452">良好</translation>
+<translation id="6472207088655375767">動態密碼</translation>
+<translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="649050271426829538">已停止 - 卡紙</translation>
+<translation id="6516990319416533844">如要測試充電速率，請讓電池耗電一小段時間</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全通訊協定</translation>
-<translation id="6532051501443766164">隱藏報告</translation>
 <translation id="65587193855025101">平台式</translation>
 <translation id="6564646048574748301">失敗 - 無法連接打印機</translation>
 <translation id="6618744767048954150">正在執行</translation>
 <translation id="6620487321149975369">除非您手動移除列印工作，否則列印工作會顯示在記錄中</translation>
 <translation id="6643016212128521049">清除</translation>
+<translation id="6657585470893396449">密碼</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6747215703636344499">已停止 - 輸出紙匣已滿</translation>
 <translation id="6756731097889387912">無法取消掃瞄</translation>
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">DNS 解析失敗率高</translation>
-<translation id="6839141349259399400">無法連接至掃瞄器嗎？</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6898743098396957679">無法完成掃瞄</translation>
+<translation id="6911383237894364323">無法連線至媒體伺服器</translation>
 <translation id="6957231940976260713">服務名稱</translation>
+<translation id="6977381486153291903">韌體版本</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
+<translation id="7040230719604914234">流動網絡供應商</translation>
+<translation id="7059230779847288458">充電中，<ph name="TIME_VALUE" />後完成充電</translation>
+<translation id="708426984172631313">已停止</translation>
 <translation id="7143207342074048698">正在連接</translation>
+<translation id="7144878232160441200">重試</translation>
 <translation id="714876143603641390">LAN 連接性</translation>
 <translation id="7162487448488904999">媒體庫</translation>
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理員可能會遠端設定裝置。</translation>
+<translation id="7216409898977639127">流動服務供應商</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">網絡裝置</translation>
 <translation id="7359657277149375382">檔案類型</translation>
+<translation id="7375053625150546623">EAP</translation>
+<translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{完成咗掃瞄。掃瞄咗 1 個頁面}other{完成咗掃瞄。掃瞄咗 {NUMBER_OF_PAGES} 個頁面}}</translation>
-<translation id="7441459999606975924">電池容量會隨使用時間增加而下降</translation>
 <translation id="7469648432129124067">已偵測到網絡入口</translation>
+<translation id="7487067081878637334">科技資訊</translation>
 <translation id="7490813197707563893">MAC 地址</translation>
+<translation id="7497215489070763236">伺服器 CA 憑證</translation>
+<translation id="7502658306369382406">IPv6 位址</translation>
+<translation id="7550715992156305117">日常診斷安排</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">剩餘 <ph name="TIME_VALUE" /></translation>
+<translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
+<translation id="7701040980221191251">沒有</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">週期數</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" />測試</translation>
+<translation id="7769672763586021400">型號識別碼</translation>
 <translation id="7805768142964895445">狀態</translation>
-<translation id="7928373994957558460">顯示檔案位置</translation>
+<translation id="7819857487979277519">PSK (WPA 或 RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
+<translation id="7882358943899516840">供應商類型</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
 <translation id="7960831585769876809">溫度</translation>
+<translation id="7994702968232966508">EAP 方法</translation>
+<translation id="802154636333426148">下載失敗</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
-<translation id="8160445423316272678">將文件放到掃瞄器上，並選取 [掃瞄]<ph name="SPAN_BEGIN" /><ph name="SPAN_END" /> 即可開始掃瞄</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
+<translation id="8246209727385807362">不明流動網絡供應商</translation>
+<translation id="8291967909914612644">家庭網絡供應商的國家/地區</translation>
 <translation id="8294431847097064396">來源</translation>
+<translation id="8297006494302853456">弱</translation>
 <translation id="8302368968391049045">HTTPS 防火牆</translation>
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議您只讓信任的帳戶使用這項功能。</translation>
 <translation id="8364946094152050673">域名伺服器空白</translation>
+<translation id="8372477600026034341">其他主機</translation>
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企業管理</translation>
 <translation id="8398927464629426868">裝置目前的充電或放電率</translation>
+<translation id="8461329675984532579">家庭網絡供應商名稱</translation>
 <translation id="8475690821716466388">已使用防護力較弱的通訊協定 WEP PSK 保護 Wi-Fi 網絡</translation>
 <translation id="8477551185774834963">DNS 延遲時間稍微超過允許的門檻</translation>
+<translation id="8483248364096924578">IP 位址</translation>
+<translation id="8503813439785031346">使用者名稱</translation>
+<translation id="8503836310948963452">只需多幾分鐘…</translation>
 <translation id="8576249514688522074">未初始化</translation>
+<translation id="8620617069779373398">漫遊狀態</translation>
+<translation id="8675354002693747642">預先共用密鑰</translation>
 <translation id="871560550817059752">失敗 - 墨水已用完</translation>
 <translation id="8723108084122415655">非預設網絡超過延遲門檻</translation>
 <translation id="8726019395068607495">已停止 - 機門未關</translation>
@@ -251,7 +349,9 @@
 <translation id="8747900814994928677">確認變更</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">預設</translation>
+<translation id="8798441408945964110">供應商名稱</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8818152010000655963">桌布</translation>
 <translation id="8845001906332463065">取得說明</translation>
 <translation id="8881098542468797602">已通過測試</translation>
 <translation id="8898840733695078011">訊號強度</translation>
@@ -259,14 +359,22 @@
 <translation id="8919837981463578619">失敗 - 沒有紙匣</translation>
 <translation id="8928727111548978589">失敗 - 紙張已用完</translation>
 <translation id="8930622219860340959">無線</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" />剩餘嘗試次數：<ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再執行一次</translation>
+<translation id="9003704114456258138">頻率</translation>
+<translation id="9039663905644212491">PEAP</translation>
+<translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9088306295921699330">目前使用量</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃瞄第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="9111102763498581341">解鎖</translation>
+<translation id="9137526406337347448">Google 服務</translation>
 <translation id="9149391708638971077">執行記憶體測試</translation>
+<translation id="9173638680043580060">尚餘不到 1 分鐘</translation>
+<translation id="9190063653747922532">L2TP/IPsec + 預先共用金鑰</translation>
+<translation id="939519157834106403">SSID</translation>
+<translation id="952992212772159698">未啟用</translation>
+<translation id="960719561871045870">流動網絡供應商代碼</translation>
 <translation id="982713511914535780">執行放電測試</translation>
 </translationbundle>

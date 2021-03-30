@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/process/process.h"
-#include "chrome/browser/chromeos/arc/process/arc_process.h"
-#include "chrome/browser/chromeos/arc/process/arc_process_service.h"
+#include "chrome/browser/ash/arc/process/arc_process.h"
+#include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/task_manager/providers/arc/arc_process_task.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 

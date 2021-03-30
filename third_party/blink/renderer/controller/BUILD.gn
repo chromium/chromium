@@ -128,6 +128,7 @@ test("blink_unittests") {
   data_deps = [
     ":blink_unittests_data",
     "//content/shell:pak",
+    "//testing/buildbot/filters:blink_unittests_filters",
   ]
 
   if (is_android) {
@@ -141,6 +142,15 @@ test("blink_unittests") {
     if (enable_chrome_android_internal) {
       data_deps += [ "//clank/build/bot/filters:blink_unittests_filters" ]
     }
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/font_capabilities.test-cmx",
+
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+    ]
   }
 }
 

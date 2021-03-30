@@ -10,24 +10,26 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/apps/app_service/arc_apps_factory.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_play_store_enabled_preference_handler.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/arc/test/fake_arc_session.h"
+#include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,15 +61,15 @@ std::vector<arc::mojom::ArcPackageInfoPtr> ArcAppTest::ClonePackages(
 
 ArcAppTest::ArcAppTest() {
   user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::make_unique<chromeos::FakeChromeUserManager>());
+      std::make_unique<ash::FakeChromeUserManager>());
   CreateFakeAppsAndPackages();
 }
 
 ArcAppTest::~ArcAppTest() {
 }
 
-chromeos::FakeChromeUserManager* ArcAppTest::GetUserManager() {
-  return static_cast<chromeos::FakeChromeUserManager*>(
+ash::FakeChromeUserManager* ArcAppTest::GetUserManager() {
+  return static_cast<ash::FakeChromeUserManager*>(
       user_manager::UserManager::Get());
 }
 
@@ -229,6 +231,12 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
 }
 
 void ArcAppTest::TearDown() {
+  if (intent_helper_instance_) {
+    arc_service_manager_->arc_bridge_service()->intent_helper()->CloseInstance(
+        intent_helper_instance_.get());
+    intent_helper_instance_.reset();
+    intent_helper_bridge_.reset();
+  }
   app_instance_.reset();
   arc_play_store_enabled_preference_handler_.reset();
   arc_session_manager_.reset();
@@ -256,6 +264,17 @@ void ArcAppTest::RestartArcInstance() {
   app_instance_ = std::make_unique<arc::FakeAppInstance>(arc_app_list_pref_);
   bridge_service->app()->SetInstance(app_instance_.get());
   WaitForInstanceReady(bridge_service->app());
+}
+
+void ArcAppTest::SetUpIntentHelper() {
+  DCHECK(profile_);
+  auto* arc_bridge_service = arc_service_manager_->arc_bridge_service();
+  intent_helper_bridge_ = std::make_unique<arc::ArcIntentHelperBridge>(
+      profile_, arc_bridge_service);
+  intent_helper_instance_ = std::make_unique<arc::FakeIntentHelperInstance>();
+  arc_bridge_service->intent_helper()->SetInstance(
+      intent_helper_instance_.get());
+  WaitForInstanceReady(arc_bridge_service->intent_helper());
 }
 
 const user_manager::User* ArcAppTest::CreateUserAndLogin() {

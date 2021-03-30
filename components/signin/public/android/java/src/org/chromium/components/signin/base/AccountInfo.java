@@ -17,14 +17,32 @@ import org.chromium.base.annotations.CalledByNative;
  * This class has a native counterpart called AccountInfo.
  */
 public class AccountInfo extends CoreAccountInfo {
+    private final String mFullName;
+    private final String mGivenName;
     private final @Nullable Bitmap mAccountImage;
 
     @VisibleForTesting
     @CalledByNative
-    public AccountInfo(
-            CoreAccountId id, String email, String gaiaId, @Nullable Bitmap accountImage) {
+    public AccountInfo(CoreAccountId id, String email, String gaiaId, String fullName,
+            String givenName, @Nullable Bitmap accountImage) {
         super(id, email, gaiaId);
+        mFullName = fullName;
+        mGivenName = givenName;
         mAccountImage = accountImage;
+    }
+
+    /**
+     * @return Full name of the account.
+     */
+    public String getFullName() {
+        return mFullName;
+    }
+
+    /**
+     * @return Given name of the account.
+     */
+    public String getGivenName() {
+        return mGivenName;
     }
 
     /**

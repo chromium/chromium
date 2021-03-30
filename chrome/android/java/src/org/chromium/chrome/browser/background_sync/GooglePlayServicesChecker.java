@@ -27,7 +27,7 @@ final class GooglePlayServicesChecker {
      */
     @CalledByNative
     @VisibleForTesting
-    protected static boolean shouldDisableBackgroundSync() {
+    static boolean shouldDisableBackgroundSync() {
         boolean isAvailable = true;
         if (!ExternalAuthUtils.getInstance().canUseGooglePlayServices()) {
             Log.i(TAG, "Disabling Background Sync because Play Services is not up to date.");

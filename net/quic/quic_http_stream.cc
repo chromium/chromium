@@ -8,14 +8,14 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -23,13 +23,13 @@
 #include "net/quic/quic_http_utils.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quiche/src/quic/core/http/spdy_utils.h"
 #include "net/third_party/quiche/src/quic/core/quic_stream_sequencer.h"
 #include "net/third_party/quiche/src/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_frame_builder.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -57,7 +57,8 @@ void NetLogQuicPushStream(const NetLogWithSource& net_log1,
 }  // namespace
 
 QuicHttpStream::QuicHttpStream(
-    std::unique_ptr<QuicChromiumClientSession::Handle> session)
+    std::unique_ptr<QuicChromiumClientSession::Handle> session,
+    std::vector<std::string> dns_aliases)
     : MultiplexedHttpStream(std::move(session)),
       next_state_(STATE_NONE),
       stream_(nullptr),
@@ -78,7 +79,8 @@ QuicHttpStream::QuicHttpStream(
       user_buffer_len_(0),
       session_error_(ERR_UNEXPECTED),
       found_promise_(false),
-      in_loop_(false) {}
+      in_loop_(false),
+      dns_aliases_(std::move(dns_aliases)) {}
 
 QuicHttpStream::~QuicHttpStream() {
   CHECK(!in_loop_);
@@ -101,6 +103,9 @@ HttpResponseInfo::ConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
     case quic::QUIC_VERSION_IETF_DRAFT_29:
       DCHECK(quic_version.UsesTls());
       return HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_29;
+    case quic::QUIC_VERSION_IETF_RFC_V1:
+      DCHECK(quic_version.UsesTls());
+      return HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1;
     case quic::QUIC_VERSION_RESERVED_FOR_NEGOTIATION:
       return HttpResponseInfo::CONNECTION_INFO_QUIC_999;
     case quic::QUIC_VERSION_51:
@@ -380,8 +385,12 @@ int64_t QuicHttpStream::GetTotalSentBytes() const {
 
 bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   bool is_first_stream = closed_is_first_stream_;
-  if (stream_)
+  if (stream_) {
     is_first_stream = stream_->IsFirstStream();
+    load_timing_info->first_early_hints_time =
+        stream_->first_early_hints_time();
+  }
+
   if (is_first_stream) {
     load_timing_info->socket_reused = false;
     load_timing_info->connect_timing = connect_timing_;
@@ -426,8 +435,16 @@ void QuicHttpStream::OnReadResponseHeadersComplete(int rv) {
 }
 
 const std::vector<std::string>& QuicHttpStream::GetDnsAliases() const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
-  return *emptyvector_result;
+  return dns_aliases_;
+}
+
+base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
+  if (!request_info_) {
+    return {};
+  }
+
+  const url::Origin origin = url::Origin::Create(request_info_->url);
+  return session()->GetAcceptChViaAlpsForOrigin(origin);
 }
 
 void QuicHttpStream::ReadTrailingHeaders() {
@@ -676,10 +693,20 @@ int QuicHttpStream::DoSendBodyComplete(int rv) {
 
 int QuicHttpStream::ProcessResponseHeaders(
     const spdy::Http2HeaderBlock& headers) {
-  if (!SpdyHeadersToHttpResponse(headers, response_info_)) {
+  const bool header_valid = SpdyHeadersToHttpResponse(headers, response_info_);
+  base::UmaHistogramBoolean("Net.QuicHttpStream.ProcessResponseHeaderSuccess",
+                            header_valid);
+  if (!header_valid) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;
   }
+
+  if (response_info_->headers->response_code() == HTTP_EARLY_HINTS) {
+    DCHECK(!response_headers_received_);
+    headers_bytes_received_ = 0;
+    return OK;
+  }
+
   // Put the peer's IP address and port into the response.
   IPEndPoint address;
   int rv = quic_session()->GetPeerAddress(&address);
@@ -788,11 +815,9 @@ int QuicHttpStream::ComputeResponseStatus() const {
   if (!response_info_)
     return ERR_CONNECTION_CLOSED;
 
-  // Explicit stream error are always fatal.
-  if (stream_->stream_error() != quic::QUIC_STREAM_NO_ERROR &&
-      stream_->stream_error() != quic::QUIC_STREAM_CONNECTION_ERROR) {
-    return ERR_QUIC_PROTOCOL_ERROR;
-  }
+  base::UmaHistogramEnumeration("Net.QuicHttpStream.ResponseStatus",
+                                stream_->stream_error(),
+                                quic::QUIC_STREAM_LAST_ERROR);
 
   return ERR_QUIC_PROTOCOL_ERROR;
 }

@@ -9,12 +9,12 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
@@ -63,25 +63,6 @@ const char kAdbScreenHeightField[] = "adbScreenHeight";
 const char kPortForwardingPorts[] = "ports";
 const char kPortForwardingBrowserId[] = "browserId";
 
-// CancelableTimer ------------------------------------------------------------
-
-class CancelableTimer {
- public:
-  CancelableTimer(base::Closure callback, base::TimeDelta delay)
-      : callback_(callback) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&CancelableTimer::Fire, weak_factory_.GetWeakPtr()),
-        delay);
-  }
-
- private:
-  void Fire() { callback_.Run(); }
-
-  base::Closure callback_;
-  base::WeakPtrFactory<CancelableTimer> weak_factory_{this};
-};
-
 // LocalTargetsUIHandler ---------------------------------------------
 
 class LocalTargetsUIHandler : public DevToolsTargetsUIHandler,
@@ -106,7 +87,7 @@ private:
 
  Profile* profile_;
  media_router::LocalPresentationManager* local_presentation_manager_;
- std::unique_ptr<CancelableTimer> timer_;
+ std::unique_ptr<base::OneShotTimer> timer_;
  base::WeakPtrFactory<LocalTargetsUIHandler> weak_factory_{this};
 };
 
@@ -143,11 +124,10 @@ void LocalTargetsUIHandler::ForceUpdate() {
 
 void LocalTargetsUIHandler::ScheduleUpdate() {
   const int kUpdateDelay = 100;
-  timer_.reset(
-      new CancelableTimer(
-          base::Bind(&LocalTargetsUIHandler::UpdateTargets,
-                     base::Unretained(this)),
-          base::TimeDelta::FromMilliseconds(kUpdateDelay)));
+  timer_ = std::make_unique<base::OneShotTimer>();
+  timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kUpdateDelay),
+                base::BindOnce(&LocalTargetsUIHandler::UpdateTargets,
+                               base::Unretained(this)));
 }
 
 void LocalTargetsUIHandler::UpdateTargets() {

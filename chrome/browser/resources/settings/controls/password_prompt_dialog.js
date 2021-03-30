@@ -19,8 +19,18 @@
  * </settings-password-prompt-dialog>
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '../settings_shared_css.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
   is: 'settings-password-prompt-dialog',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     /**

@@ -15,6 +15,7 @@
 #include "base/files/platform_file.h"
 #include "base/macros.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -250,7 +251,7 @@ TEST_F(DrmWindowTest, SetCursorImage) {
   const gfx::Size cursor_size(6, 4);
   screen_manager_->GetWindow(kDefaultWidgetHandle)
       ->SetCursor(std::vector<SkBitmap>(1, AllocateBitmap(cursor_size)),
-                  gfx::Point(4, 2), 0);
+                  gfx::Point(4, 2), base::TimeDelta());
 
   SkBitmap cursor;
   std::vector<sk_sp<SkSurface>> cursor_buffers = GetCursorBuffers(drm_);
@@ -276,7 +277,7 @@ TEST_F(DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
   const gfx::Size cursor_size(6, 4);
   screen_manager_->GetWindow(kDefaultWidgetHandle)
       ->SetCursor(std::vector<SkBitmap>(1, AllocateBitmap(cursor_size)),
-                  gfx::Point(4, 2), 0);
+                  gfx::Point(4, 2), base::TimeDelta());
 
   // Add another device.
   auto gbm_device = std::make_unique<ui::MockGbmDevice>();

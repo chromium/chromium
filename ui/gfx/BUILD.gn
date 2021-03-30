@@ -50,6 +50,10 @@ component("geometry_skia") {
     "skia_util.h",
     "transform.cc",
     "transform.h",
+    "transform_operation.cc",
+    "transform_operation.h",
+    "transform_operations.cc",
+    "transform_operations.h",
     "transform_util.cc",
     "transform_util.h",
   ]
@@ -71,6 +75,10 @@ component("gfx") {
     "color_transform.h",
     "decorated_text.cc",
     "decorated_text.h",
+    "delegated_ink_metadata.cc",
+    "delegated_ink_metadata.h",
+    "delegated_ink_point.cc",
+    "delegated_ink_point.h",
     "extension_set.cc",
     "extension_set.h",
     "favicon_size.cc",
@@ -115,6 +123,10 @@ component("gfx") {
     "overlay_transform_utils.cc",
     "overlay_transform_utils.h",
     "platform_font.h",
+    "rendering_pipeline.cc",
+    "rendering_pipeline.h",
+    "rendering_stage_scheduler.cc",
+    "rendering_stage_scheduler.h",
     "scrollbar_size.cc",
     "scrollbar_size.h",
     "selection_model.cc",
@@ -302,6 +314,7 @@ component("gfx") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//device/vr/buildflags",
+    "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",
   ]
@@ -633,9 +646,14 @@ static_library("test_support") {
   sources = [
     "animation/animation_test_api.cc",
     "animation/animation_test_api.h",
+    "animation/keyframe/test/animation_utils.cc",
+    "animation/keyframe/test/animation_utils.h",
     "animation/test_animation_delegate.h",
     "geometry/test/rect_test_util.cc",
     "geometry/test/rect_test_util.h",
+    "geometry/test/size_test_util.h",
+    "geometry/test/transform_test_util.cc",
+    "geometry/test/transform_test_util.h",
     "image/image_unittest_util.cc",
     "image/image_unittest_util.h",
     "test/font_fallback_test_data.cc",
@@ -660,6 +678,7 @@ static_library("test_support") {
     "//skia",
     "//testing/gtest",
     "//ui/gfx/animation",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
   ]
 
@@ -693,16 +712,21 @@ if (is_mac) {
 
 test("gfx_unittests") {
   sources = [
+    "animation/keyframe/keyframe_animation_unittest.cc",
+    "animation/keyframe/keyframed_animation_curve_unittest.cc",
     "font_names_testing.cc",
     "font_names_testing.h",
     "font_unittest.cc",
     "image/image_family_unittest.cc",
     "image/image_skia_unittest.cc",
     "image/image_unittest.cc",
+    "interpolated_transform_unittest.cc",
     "rrect_f_unittest.cc",
     "test/run_all_unittests.cc",
     "text_elider_unittest.cc",
     "text_utils_unittest.cc",
+    "transform_operations_unittest.cc",
+    "transform_unittest.cc",
   ]
   if (is_linux || is_chromeos) {
     sources += [
@@ -773,6 +797,7 @@ test("gfx_unittests") {
       "geometry/vector3d_unittest.cc",
       "half_float_unittest.cc",
       "icc_profile_unittest.cc",
+      "image/image_skia_operations_unittest.cc",
       "image/image_util_unittest.cc",
       "mojom/mojom_traits_unittest.cc",
       "nine_image_painter_unittest.cc",
@@ -814,6 +839,7 @@ test("gfx_unittests") {
     "//third_party/zlib",
     "//ui/base",
     "//ui/gfx/animation",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gfx/range",
   ]
@@ -834,13 +860,6 @@ test("gfx_unittests") {
 
   if (is_mac) {
     deps += [ ":gfx_io_surface_hdr_metadata" ]
-  }
-
-  if (!is_apple) {
-    sources += [
-      "interpolated_transform_unittest.cc",
-      "transform_unittest.cc",
-    ]
   }
 
   if (is_android) {
@@ -909,6 +928,7 @@ test("gfx_unittests") {
 if (is_android) {
   generate_jni("gfx_jni_headers") {
     sources = [
+      "../android/java/src/org/chromium/ui/gfx/AdpfRenderingStageScheduler.java",
       "../android/java/src/org/chromium/ui/gfx/Animation.java",
       "../android/java/src/org/chromium/ui/gfx/BitmapHelper.java",
       "../android/java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",

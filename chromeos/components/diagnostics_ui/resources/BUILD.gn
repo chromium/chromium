@@ -11,11 +11,14 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":battery_status_card",
+    ":connectivity_card",
     ":cpu_card",
     ":data_point",
     ":diagnostics_app",
+    ":diagnostics_browser_proxy",
     ":diagnostics_card",
     ":diagnostics_types",
+    ":diagnostics_utils",
     ":fake_data",
     ":fake_method_resolver",
     ":fake_observables",
@@ -49,6 +52,13 @@ js_library("battery_status_card") {
   ]
 }
 
+js_library("connectivity_card") {
+  deps = [
+    ":routine_section",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("cpu_card") {
   deps = [
     ":data_point",
@@ -68,7 +78,9 @@ js_library("data_point") {
 js_library("diagnostics_app") {
   deps = [
     ":battery_status_card",
+    ":connectivity_card",
     ":cpu_card",
+    ":diagnostics_browser_proxy",
     ":diagnostics_card",
     ":diagnostics_types",
     ":memory_card",
@@ -76,8 +88,14 @@ js_library("diagnostics_app") {
     ":overview_card",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
+}
+
+js_library("diagnostics_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("diagnostics_card") {
@@ -87,6 +105,9 @@ js_library("diagnostics_card") {
 }
 
 js_library("diagnostics_types") {
+}
+
+js_library("diagnostics_utils") {
 }
 
 js_library("fake_data") {
@@ -109,12 +130,20 @@ js_library("fake_system_routine_controller") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
+js_library("icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("memory_card") {
   deps = [
     ":data_point",
+    ":diagnostics_utils",
     ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -163,6 +192,7 @@ js_library("routine_list_executor") {
 
 js_library("routine_result_entry") {
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -193,12 +223,14 @@ js_library("text_badge") {
 html_to_js("web_components") {
   js_files = [
     "battery_status_card.js",
+    "connectivity_card.js",
     "cpu_card.js",
     "data_point.js",
     "diagnostics_app.js",
     "diagnostics_card.js",
     "diagnostics_fonts_css.js",
     "diagnostics_shared_css.js",
+    "icons.js",
     "memory_card.js",
     "overview_card.js",
     "percent_bar_chart.js",

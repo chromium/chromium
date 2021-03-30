@@ -130,6 +130,8 @@ struct CookieOptions {
   // The size of the isolation_info.party_context plus the top-frame site for
   // logging purposes.
   uint32 full_party_context_size = 0;
+  // Whether the site is a member of a nontrivial First-Party Set.
+  bool is_in_nontrivial_first_party_set = false;
 };
 
 // See net/cookies/canonical_cookie.{h,cc} for documentation.
@@ -165,6 +167,16 @@ struct CookieInclusionStatus {
 struct CookieAndLineWithAccessResult {
   CanonicalCookie? cookie;
   string cookie_string;
+  CookieAccessResult access_result;
+};
+
+union CookieOrLine {
+  CanonicalCookie cookie;
+  string cookie_string;
+};
+
+struct CookieOrLineWithAccessResult {
+  CookieOrLine cookie_or_line;
   CookieAccessResult access_result;
 };
 

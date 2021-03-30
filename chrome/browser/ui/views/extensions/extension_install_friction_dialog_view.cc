@@ -1,0 +1,169 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/extensions/extension_install_friction_dialog_view.h"
+#include <cstdint>
+
+#include "base/callback.h"
+#include "base/strings/strcat.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/constrained_window/constrained_window_views.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
+#include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/common/constants.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/native_theme_color_id.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
+
+namespace chrome {
+
+namespace {
+
+void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
+  switch (extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue()) {
+    case extensions::ScopedTestDialogAutoConfirm::ACCEPT:
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), true));
+      return;
+    case extensions::ScopedTestDialogAutoConfirm::CANCEL:
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), false));
+      return;
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
+void ShowExtensionInstallFrictionDialog(
+    content::WebContents* contents,
+    base::OnceCallback<void(bool)> callback) {
+  if (extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue() !=
+      extensions::ScopedTestDialogAutoConfirm::NONE) {
+    AutoConfirmDialog(std::move(callback));
+    return;
+  }
+
+  auto* view =
+      new ExtensionInstallFrictionDialogView(contents, std::move(callback));
+
+  constrained_window::CreateBrowserModalDialogViews(
+      view, contents->GetTopLevelNativeWindow())
+      ->Show();
+}
+
+}  // namespace chrome
+
+ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
+    content::PageNavigator* navigator,
+    base::OnceCallback<void(bool)> callback)
+    : navigator_(navigator), callback_(std::move(callback)) {
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 l10n_util::GetStringUTF16(
+                     IDS_EXTENSION_PROMPT_INSTALL_FRICTION_CONTINUE_BUTTON));
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 l10n_util::GetStringUTF16(IDS_CLOSE));
+
+  SetShowIcon(true);
+  SetTitle(
+      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_INSTALL_FRICTION_TITLE));
+
+  auto run_callback = [](ExtensionInstallFrictionDialogView* dialog,
+                         bool accept) {
+    // TODO(jeffcyr): Record UMA metric
+    std::move(dialog->callback_).Run(accept);
+  };
+  SetAcceptCallback(base::BindOnce(run_callback, base::Unretained(this), true));
+  SetCancelCallback(
+      base::BindOnce(run_callback, base::Unretained(this), false));
+
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+
+  set_margins(
+      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL));
+  set_draggable(true);
+
+  auto warning_label = CreateWarningLabel();
+  auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  scroll_view->SetContents(std::move(warning_label));
+  scroll_view->ClipHeightTo(
+      0, provider->GetDistanceMetric(
+             views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
+
+  chrome::RecordDialogCreation(
+      chrome::DialogIdentifier::EXTENSION_INSTALL_FRICTION);
+}
+
+std::unique_ptr<views::StyledLabel>
+ExtensionInstallFrictionDialogView::CreateWarningLabel() {
+  auto label = std::make_unique<views::StyledLabel>();
+
+  std::u16string warning_text = l10n_util::GetStringUTF16(
+      IDS_EXTENSION_PROMPT_INSTALL_FRICTION_WARNING_TEXT);
+  std::u16string learn_more_text = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+
+  std::u16string text = base::StrCat({warning_text, u" ", learn_more_text});
+
+  label->SetText(text);
+  gfx::Range details_range(warning_text.length() + 1, text.length());
+
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked,
+          base::Unretained(this)));
+
+  label->AddStyleRange(details_range, link_style);
+  return label;
+}
+
+ExtensionInstallFrictionDialogView::~ExtensionInstallFrictionDialogView() =
+    default;
+
+// override
+gfx::ImageSkia ExtensionInstallFrictionDialogView::GetWindowIcon() {
+  return gfx::CreateVectorIcon(
+      vector_icons::kGppMaybeIcon, extension_misc::EXTENSION_ICON_SMALL,
+      GetNativeTheme()->GetSystemColor(
+          ui::NativeTheme::kColorId_AlertSeverityMedium));
+}
+
+void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {
+  GURL url(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL);
+  content::OpenURLParams params(
+      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+
+  navigator_->OpenURL(params);
+  CancelDialog();
+
+  // TODO(jeffcyr): Record UMA metric
+}
+
+BEGIN_METADATA(ExtensionInstallFrictionDialogView,
+               views::BubbleDialogDelegateView)
+END_METADATA

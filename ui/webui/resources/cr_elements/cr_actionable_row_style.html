@@ -1,0 +1,38 @@
+<link rel="import" href="../html/polymer.html">
+
+<link rel="import" href="shared_vars_css.html">
+
+<!--
+  Styles dedicated to a single, actionable row where clicking anywhere on the
+  entire row will activate the row.
+-->
+<dom-module id="cr-actionable-row-style">
+  <template>
+    <style>
+      :host {
+        align-items: center;
+        align-self: stretch;
+        cursor: pointer;
+        display: flex;
+        margin: 0;
+        outline: none;
+      }
+
+      :host(:not([no-hover]):hover) {
+        background-color: var(--cr-hover-background-color);
+      }
+
+      :host(:not([no-hover]):active) {
+        background-color: var(--cr-active-background-color);
+      }
+
+      /* Do not show hover or active states for cr-icon-buttons that are
+       * embedded within the row to avoid showing multiple layers of
+       * backgrounds. */
+      :host(:not([no-hover])) cr-icon-button {
+        --cr-icon-button-hover-background-color: transparent;
+        --cr-icon-button-active-background-color: transparent;
+      }
+    </style>
+  </template>
+</dom-module>

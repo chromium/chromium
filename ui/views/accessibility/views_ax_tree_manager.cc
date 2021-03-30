@@ -59,7 +59,7 @@ void ViewsAXTreeManager::UnsetGeneratedEventCallbackForTesting() {
 
 ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
     const ui::AXTreeID tree_id,
-    const ui::AXNode::AXID node_id) const {
+    const ui::AXNodeID node_id) const {
   if (!widget_)
     return nullptr;
 
@@ -69,7 +69,7 @@ ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
 }
 
 ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
-    const ui::AXNode::AXID node_id) const {
+    const ui::AXNodeID node_id) const {
   if (!widget_)
     return nullptr;
 
@@ -149,7 +149,7 @@ void ViewsAXTreeManager::SerializeTreeUpdates() {
     modified_nodes_.insert(focused_wrapper->GetUniqueId());
 
   std::vector<ui::AXTreeUpdate> updates;
-  for (const ui::AXNode::AXID node_id : modified_nodes_) {
+  for (const ui::AXNodeID node_id : modified_nodes_) {
     AXAuraObjWrapper* wrapper = cache_.Get(node_id);
     if (!wrapper)
       continue;
@@ -157,8 +157,7 @@ void ViewsAXTreeManager::SerializeTreeUpdates() {
     ui::AXTreeUpdate update;
     if (!tree_serializer_.SerializeChanges(wrapper, &update)) {
       std::string error;
-      ui::AXTreeSourceChecker<AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData>
-          checker(&tree_source_);
+      ui::AXTreeSourceChecker<AXAuraObjWrapper*> checker(&tree_source_);
       checker.CheckAndGetErrorString(&error);
       NOTREACHED() << error << '\n' << update.ToString();
       return;

@@ -20,6 +20,8 @@ HTTP_CONNECTION = keep-alive
 HTTP_HOST = 127.0.0.1:8000
 HTTP_ORIGIN = http://127.0.0.1:8000
 HTTP_REFERER = http://127.0.0.1:8000/navigation/resources/page-that-posts.html
+HTTP_SEC_CH_UA = "content_shell";v="999"
+HTTP_SEC_CH_UA_MOBILE = ?0
 HTTP_SEC_FETCH_DEST = iframe
 HTTP_SEC_FETCH_MODE = navigate
 HTTP_SEC_FETCH_SITE = same-origin

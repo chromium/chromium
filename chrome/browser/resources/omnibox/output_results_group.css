@@ -83,11 +83,6 @@ table {
 }
 
 .body tr td pre.json {
-  /* Browsers base rem font sizes on 16px, except for monospace fonts which use
-   a base size of 13px. Whereas the rest of the table has size set to .75rem
-   (.75 * 16px = 12px), pre's must have size 12/13rem (12/13 * 13px = 12px) in
-   order to have a consistent 12px across the table. */
-  font-size: .9231rem;
   margin: 0;
   white-space: pre-wrap;
 }

@@ -68,6 +68,7 @@ component("views") {
     "animation/animation_delegate_views.h",
     "animation/bounds_animator.h",
     "animation/bounds_animator_observer.h",
+    "animation/bubble_slide_animator.h",
     "animation/compositor_animation_runner.h",
     "animation/flood_fill_ink_drop_ripple.h",
     "animation/ink_drop.h",
@@ -93,6 +94,7 @@ component("views") {
     "animation/slide_out_controller.h",
     "animation/slide_out_controller_delegate.h",
     "animation/square_ink_drop_ripple.h",
+    "animation/widget_fade_animator.h",
     "background.h",
     "border.h",
     "bubble/bubble_border.h",
@@ -120,6 +122,7 @@ component("views") {
     "controls/color_tracking_icon_view.h",
     "controls/combobox/combobox.h",
     "controls/combobox/combobox_util.h",
+    "controls/dot_indicator.h",
     "controls/editable_combobox/editable_combobox.h",
     "controls/focus_ring.h",
     "controls/focusable_border.h",
@@ -172,14 +175,17 @@ component("views") {
     "controls/table/table_utils.h",
     "controls/table/table_view.h",
     "controls/table/table_view_observer.h",
+    "controls/textarea/textarea.h",
     "controls/textfield/textfield.h",
     "controls/textfield/textfield_controller.h",
     "controls/textfield/textfield_model.h",
+    "controls/theme_tracking_image_view.h",
     "controls/throbber.h",
     "controls/tree/tree_view.h",
     "controls/tree/tree_view_controller.h",
     "controls/tree/tree_view_drawing_provider.h",
     "controls/views_text_services_context_menu.h",
+    "controls/views_text_services_context_menu_base.h",
     "debug_utils.h",
     "drag_controller.h",
     "drag_utils.h",
@@ -290,6 +296,7 @@ component("views") {
     "accessible_pane_view.cc",
     "animation/animation_delegate_views.cc",
     "animation/bounds_animator.cc",
+    "animation/bubble_slide_animator.cc",
     "animation/compositor_animation_runner.cc",
     "animation/flood_fill_ink_drop_ripple.cc",
     "animation/ink_drop.cc",
@@ -310,6 +317,7 @@ component("views") {
     "animation/scroll_animator.cc",
     "animation/slide_out_controller.cc",
     "animation/square_ink_drop_ripple.cc",
+    "animation/widget_fade_animator.cc",
     "background.cc",
     "border.cc",
     "bubble/bubble_border.cc",
@@ -338,6 +346,7 @@ component("views") {
     "controls/combobox/combobox_util.cc",
     "controls/combobox/empty_combobox_model.cc",
     "controls/combobox/empty_combobox_model.h",
+    "controls/dot_indicator.cc",
     "controls/editable_combobox/editable_combobox.cc",
     "controls/focus_ring.cc",
     "controls/focusable_border.cc",
@@ -378,15 +387,16 @@ component("views") {
     "controls/table/table_header.cc",
     "controls/table/table_utils.cc",
     "controls/table/table_view.cc",
+    "controls/textarea/textarea.cc",
     "controls/textfield/textfield.cc",
     "controls/textfield/textfield_controller.cc",
     "controls/textfield/textfield_model.cc",
+    "controls/theme_tracking_image_view.cc",
     "controls/throbber.cc",
     "controls/tree/tree_view.cc",
     "controls/tree/tree_view_controller.cc",
     "controls/tree/tree_view_drawing_provider.cc",
     "controls/views_text_services_context_menu_base.cc",
-    "controls/views_text_services_context_menu_base.h",
     "debug_utils.cc",
     "drag_utils.cc",
     "focus/external_focus_tracker.cc",
@@ -434,6 +444,7 @@ component("views") {
     "view_targeter.cc",
     "view_targeter_delegate.cc",
     "view_tracker.cc",
+    "view_utils.cc",
     "views_delegate.cc",
     "views_features.cc",
     "views_switches.cc",
@@ -487,18 +498,22 @@ component("views") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/paint",
+    "//components/url_formatter",
     "//mojo/public/cpp/bindings",
     "//skia",
     "//third_party/icu",
     "//ui/accessibility",
     "//ui/base/clipboard",
-    "//ui/base/dragdrop/mojom:mojom_shared",
+    "//ui/base/dragdrop/mojom",
+    "//ui/color",
+    "//ui/color:mixers",
     "//ui/display",
     "//ui/latency",
     "//ui/native_theme",
     "//ui/native_theme:native_theme_browser",
     "//ui/resources",
     "//ui/strings",
+    "//ui/views/debug:views_debug",
     "//ui/views/resources",
     "//url",
   ]
@@ -512,6 +527,7 @@ component("views") {
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/base/cursor:cursor_base",
+    "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime/init",
     "//ui/compositor",
@@ -528,6 +544,10 @@ component("views") {
 
   if (use_x11) {
     deps += [ "//ui/display/util" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//ui/base/ime/chromeos" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -562,6 +582,10 @@ component("views") {
 
   if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [ "controls/menu/menu_config_chromeos.cc" ]
+    if (!is_chromeos_lacros) {
+      public += [ "controls/views_text_services_context_menu_chromeos.h" ]
+      sources += [ "controls/views_text_services_context_menu_chromeos.cc" ]
+    }
   }
 
   if (is_mac) {
@@ -685,6 +709,7 @@ component("views") {
       "corewm/tooltip.h",
       "corewm/tooltip_aura.h",
       "corewm/tooltip_controller.h",
+      "corewm/tooltip_state_manager.h",
       "corewm/tooltip_win.h",
       "event_monitor_aura.h",
       "touchui/touch_selection_controller_impl.h",
@@ -713,6 +738,7 @@ component("views") {
       "controls/native/native_view_host_aura.cc",
       "corewm/tooltip_aura.cc",
       "corewm/tooltip_controller.cc",
+      "corewm/tooltip_state_manager.cc",
       "drag_utils_aura.cc",
       "event_monitor_aura.cc",
       "metrics_aura.cc",
@@ -818,6 +844,8 @@ component("views") {
           "widget/desktop_aura/desktop_drag_drop_client_ozone.h",
           "widget/desktop_aura/desktop_window_tree_host_platform.cc",
           "widget/desktop_aura/window_move_client_platform.cc",
+          "widget/desktop_aura/window_shape_updater.cc",
+          "widget/desktop_aura/window_shape_updater.h",
         ]
       }
       if (use_atk) {
@@ -975,6 +1003,8 @@ source_set("test_support") {
     "//ui/base",
     "//ui/base:test_support",
     "//ui/base/clipboard:clipboard_test_support",
+    "//ui/base/dragdrop:types",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime/init",
     "//ui/compositor",
     "//ui/compositor:test_support",
@@ -1055,6 +1085,7 @@ test("views_unittests") {
   sources = [
     "accessible_pane_view_unittest.cc",
     "animation/bounds_animator_unittest.cc",
+    "animation/bubble_slide_animator_unittest.cc",
     "animation/compositor_animation_runner_unittest.cc",
     "animation/flood_fill_ink_drop_ripple_unittest.cc",
     "animation/ink_drop_highlight_unittest.cc",
@@ -1068,6 +1099,7 @@ test("views_unittests") {
     "animation/installable_ink_drop_unittest.cc",
     "animation/slide_out_controller_unittest.cc",
     "animation/square_ink_drop_ripple_unittest.cc",
+    "animation/widget_fade_animator_unittest.cc",
     "border_unittest.cc",
     "bubble/bubble_border_unittest.cc",
     "bubble/bubble_dialog_delegate_view_unittest.cc",
@@ -1117,8 +1149,10 @@ test("views_unittests") {
     "controls/table/table_view_unittest.cc",
     "controls/table/test_table_model.cc",
     "controls/table/test_table_model.h",
+    "controls/textarea/textarea_unittest.cc",
     "controls/textfield/textfield_model_unittest.cc",
     "controls/textfield/textfield_unittest.cc",
+    "controls/textfield/textfield_unittest.h",
     "controls/tree/tree_view_unittest.cc",
     "event_monitor_unittest.cc",
     "focus/focus_manager_unittest.cc",
@@ -1185,7 +1219,8 @@ test("views_unittests") {
     "//ui/base:test_support",
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_test_support",
-    "//ui/base/dragdrop/mojom:mojom_shared",
+    "//ui/base/dragdrop:types",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime/init",
     "//ui/compositor:test_support",
     "//ui/display:test_support",

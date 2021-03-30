@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -25,13 +24,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseUtil {
 
   // Extract various information from a database vfs_file_name.  All return
   // parameters are optional.
-  static bool CrackVfsFileName(const base::string16& vfs_file_name,
+  static bool CrackVfsFileName(const std::u16string& vfs_file_name,
                                std::string* origin_identifier,
-                               base::string16* database_name,
-                               base::string16* sqlite_suffix);
+                               std::u16string* database_name,
+                               std::u16string* sqlite_suffix);
   static base::FilePath GetFullFilePathForVfsFile(
       DatabaseTracker* db_tracker,
-      const base::string16& vfs_file_name);
+      const std::u16string& vfs_file_name);
 };
 
 }  // namespace storage

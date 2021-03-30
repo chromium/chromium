@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_block.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
-#include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -35,10 +34,12 @@
 
 namespace blink {
 
-LayoutSVGBlock::LayoutSVGBlock(SVGElement* element)
+LayoutSVGBlock::LayoutSVGBlock(Element* element)
     : LayoutBlockFlow(element),
       needs_transform_update_(true),
-      transform_uses_reference_box_(false) {}
+      transform_uses_reference_box_(false) {
+  DCHECK(IsA<SVGElement>(element));
+}
 
 SVGElement* LayoutSVGBlock::GetElement() const {
   NOT_DESTROYED();
@@ -119,6 +120,11 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   LayoutBlock::StyleDidChange(diff, old_style);
 
+  // |HasTransformRelatedProperty| is used for compositing so ensure it was
+  // correctly set by the call to |StyleDidChange|.
+  DCHECK_EQ(HasTransformRelatedProperty(),
+            StyleRef().HasTransformRelatedProperty());
+
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
 
@@ -165,17 +171,6 @@ void LayoutSVGBlock::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
   SVGLayoutSupport::MapAncestorToLocal(*this, ancestor, transform_state, flags);
   // Convert from local SVG coordinates to local HTML coordinates.
   transform_state.Move(PhysicalLocation());
-}
-
-const LayoutObject* LayoutSVGBlock::PushMappingToContainer(
-    const LayoutBoxModelObject* ancestor_to_stop_at,
-    LayoutGeometryMap& geometry_map) const {
-  NOT_DESTROYED();
-  // Convert from local HTML coordinates to local SVG coordinates.
-  geometry_map.Push(this, PhysicalLocation());
-  // Apply other mappings on local SVG coordinates.
-  return SVGLayoutSupport::PushMappingToContainer(this, ancestor_to_stop_at,
-                                                  geometry_map);
 }
 
 PhysicalRect LayoutSVGBlock::VisualRectInDocument(VisualRectFlags flags) const {

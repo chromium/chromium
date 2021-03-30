@@ -152,17 +152,17 @@ bool Converter<std::string>::FromV8(Isolate* isolate,
   return true;
 }
 
-Local<Value> Converter<base::string16>::ToV8(Isolate* isolate,
-                                             const base::string16& val) {
+Local<Value> Converter<std::u16string>::ToV8(Isolate* isolate,
+                                             const std::u16string& val) {
   return String::NewFromTwoByte(isolate,
                                 reinterpret_cast<const uint16_t*>(val.data()),
                                 v8::NewStringType::kNormal, val.size())
       .ToLocalChecked();
 }
 
-bool Converter<base::string16>::FromV8(Isolate* isolate,
+bool Converter<std::u16string>::FromV8(Isolate* isolate,
                                        Local<Value> val,
-                                       base::string16* out) {
+                                       std::u16string* out) {
   if (!val->IsString())
     return false;
   Local<String> str = Local<String>::Cast(val);

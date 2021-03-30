@@ -6,3 +6,4 @@ different from the surrounding text.
 ¶
 Similarly, attributes such as bold and / or
 italics should not cause line breaks.
+¶

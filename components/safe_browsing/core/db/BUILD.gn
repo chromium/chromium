@@ -51,6 +51,7 @@ static_library("database_manager") {
     "//components/safe_browsing/core/common:thread_utils",
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 
@@ -72,6 +73,8 @@ static_library("hit_report") {
 
 static_library("test_database_manager") {
   sources = [
+    "fake_database_manager.cc",
+    "fake_database_manager.h",
     "test_database_manager.cc",
     "test_database_manager.h",
   ]
@@ -79,8 +82,10 @@ static_library("test_database_manager") {
     ":database_manager",
     ":v4_protocol_manager_util",
     "//base:base",
+    "//components/safe_browsing/core/common:thread_utils",
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -163,6 +168,7 @@ static_library("v4_local_database_manager") {
     "//crypto",
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 }
@@ -321,6 +327,7 @@ source_set("unit_tests_local_db") {
     ":v4_test_util",
     ":v4_update_protocol_manager",
     "//base",
+    "//build:branding_buildflags",
     "//components/prefs:test_support",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core:features",

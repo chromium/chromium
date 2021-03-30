@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/optimize_webui.gni")
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
@@ -16,6 +16,7 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_legacy") {
+  uses_legacy_modules = true
   deps = [
     ":audio_player",
     ":background",
@@ -26,7 +27,6 @@ js_type_check("closure_compile_legacy") {
 }
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
   deps = [
     ":background.m",
     ":error_util.m",
@@ -36,7 +36,12 @@ js_type_check("closure_compile_jsmodules") {
 
 js_type_check("closure_compile_polymer") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=../../ui/file_manager/file_manager/\"" ]
+  closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                  ]
+
   deps = [
     ":audio_player.m",
     ":main.m",
@@ -48,8 +53,8 @@ js_library("closure_compile_externs") {
   externs_list = [
     "$externs_path/chrome_extensions.js",
     "$externs_path/mediasession.js",
-    "//ui/file_manager/externs/audio_player_foreground.js",
-    "//ui/file_manager/externs/platform.js",
+    "//ui/file_manager/file_manager/externs/audio_player_foreground.js",
+    "//ui/file_manager/file_manager/externs/platform.js",
   ]
 }
 
@@ -57,9 +62,9 @@ js_library("audio_player") {
   deps = [
     "//ui/file_manager/audio_player/elements:audio_player",
     "//ui/file_manager/audio_player/elements:track_list",
-    "//ui/file_manager/base/js:app_util",
-    "//ui/file_manager/base/js:filtered_volume_manager",
-    "//ui/file_manager/base/js:mediasession_types",
+    "//ui/file_manager/file_manager/common/js:app_util",
+    "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
+    "//ui/file_manager/file_manager/common/js:mediasession_types",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js/metadata:content_metadata_provider",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
@@ -72,20 +77,20 @@ js_library("audio_player.m") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/audio_player/elements:audio_player.m",
-    "//ui/file_manager/base/js:app_util.m",
-    "//ui/file_manager/base/js:filtered_volume_manager.m",
-    "//ui/file_manager/base/js:mediasession_types.m",
-    "//ui/file_manager/base/js:volume_manager_types.m",
-    "//ui/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:app_util.m",
     "//ui/file_manager/file_manager/common/js:async_util.m",
+    "//ui/file_manager/file_manager/common/js:filtered_volume_manager.m",
+    "//ui/file_manager/file_manager/common/js:mediasession_types.m",
     "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:content_metadata_provider.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
     "//ui/webui/resources/js:load_time_data",
   ]
 
   externs_list = [
-    "//ui/file_manager/externs/audio_player_foreground.js",
+    "//ui/file_manager/file_manager/externs/audio_player_foreground.js",
     "$externs_path/mediasession.js",
   ]
 
@@ -179,6 +184,12 @@ preprocess_folder =
     rebase_path("$target_gen_dir/../../preprocessed/audio_player/js",
                 root_build_dir)
 
+files_app_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+                root_build_dir)
+image_loader_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
+                root_build_dir)
 optimize_webui("build") {
   host = "audio_player"
 
@@ -186,6 +197,11 @@ optimize_webui("build") {
   js_module_in_files = [ "main.m.js" ]
 
   js_out_files = [ "main.m.rollup.js" ]
+
+  external_paths = [
+    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
+  ]
 
   deps = [
     ":main.m",
@@ -203,6 +219,11 @@ optimize_webui("build_worker") {
 
   js_out_files = [ "metadata_worker.m.rollup.js" ]
 
+  external_paths = [
+    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
+  ]
+
   deps = [
     ":metadata_worker.m",
     "//ui/file_manager:preprocess_generated",
@@ -218,6 +239,11 @@ optimize_webui("build_background") {
   js_module_in_files = [ "main_background.m.js" ]
 
   js_out_files = [ "main_background.m.rollup.js" ]
+
+  external_paths = [
+    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
+  ]
 
   deps = [
     ":main_background.m",

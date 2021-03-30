@@ -30,6 +30,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -113,6 +114,11 @@ void IconLabelBubbleView::SeparatorView::UpdateOpacity() {
   layer()->SetOpacity(opacity);
 }
 
+using SeparatorView = IconLabelBubbleView::SeparatorView;
+
+BEGIN_METADATA(SeparatorView, views::View)
+END_METADATA
+
 class IconLabelBubbleView::HighlightPathGenerator
     : public views::HighlightPathGenerator {
  public:
@@ -154,6 +160,7 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
 
   auto alert_view = std::make_unique<views::AXVirtualView>();
   alert_view->GetCustomData().role = ax::mojom::Role::kAlert;
+  alert_view->GetCustomData().AddState(ax::mojom::State::kInvisible);
   alert_virtual_view_ = alert_view.get();
   GetViewAccessibility().AddVirtualChildView(std::move(alert_view));
 }
@@ -173,7 +180,7 @@ bool IconLabelBubbleView::ShouldShowLabel() const {
   return label()->GetVisible() && !label()->GetText().empty();
 }
 
-void IconLabelBubbleView::SetLabel(const base::string16& label_text) {
+void IconLabelBubbleView::SetLabel(const std::u16string& label_text) {
   SetAccessibleName(label_text);
   label()->SetText(label_text);
   separator_view_->SetVisible(ShouldShowSeparator());
@@ -439,10 +446,6 @@ int IconLabelBubbleView::GetEndPaddingWithSeparator() const {
   return end_padding;
 }
 
-const char* IconLabelBubbleView::GetClassName() const {
-  return "IconLabelBubbleView";
-}
-
 void IconLabelBubbleView::SetUpForAnimation() {
   SetInkDropMode(InkDropMode::ON);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -470,7 +473,7 @@ void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
     // included if visible.
     grow_animation_starting_width_ = GetVisible() ? width() : 0;
     if (string_id) {
-      base::string16 label = l10n_util::GetStringUTF16(string_id.value());
+      std::u16string label = l10n_util::GetStringUTF16(string_id.value());
       SetLabel(label);
 
       // Send an accessibility alert whose text is the label's text. Doing this
@@ -478,6 +481,8 @@ void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
       // which serves to announce it. This is done unconditionally here if there
       // is text because the animation is intended to draw attention to the
       // instance anyway.
+      alert_virtual_view_->GetCustomData().RemoveState(
+          ax::mojom::State::kInvisible);
       alert_virtual_view_->GetCustomData().SetName(label);
       alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
     }
@@ -489,6 +494,8 @@ void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
 void IconLabelBubbleView::AnimateOut() {
   if (label()->GetVisible()) {
     label()->SetVisible(false);
+    alert_virtual_view_->GetCustomData().AddState(ax::mojom::State::kInvisible);
+    alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kHide);
     HideAnimation();
   }
 }
@@ -566,3 +573,14 @@ void IconLabelBubbleView::UpdateBorder() {
       gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
                   GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left())));
 }
+
+BEGIN_METADATA(IconLabelBubbleView, views::LabelButton)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               ForegroundColor,
+                               views::metadata::SkColorConverter)
+ADD_READONLY_PROPERTY_METADATA(double, AnimationValue)
+ADD_READONLY_PROPERTY_METADATA(int, InternalSpacing)
+ADD_READONLY_PROPERTY_METADATA(int, ExtraInternalSpacing)
+ADD_READONLY_PROPERTY_METADATA(int, WidthBetweenIconAndSeparator)
+ADD_READONLY_PROPERTY_METADATA(int, EndPaddingWithSeparator)
+END_METADATA

@@ -246,7 +246,7 @@ static_library("remoting_lib_ps") {
 # Makes the .mc file from the .mc.jinja file.
 remoting_localize("messages_localizing") {
   sources = [ "host_messages.mc.jinja2" ]
-  locales = remoting_locales
+  locale_list = remoting_locales_without_pseudolocales
   locale_dir = resources_locale_dir
   encoding = "utf-16"
 
@@ -358,7 +358,6 @@ shared_library("remoting_core") {
     "$root_gen_dir/remoting/version.rc",
     "//remoting/host/desktop_process_main.cc",
     "//remoting/host/host_main.cc",
-    "//remoting/host/host_main.h",
     "//remoting/host/it2me/it2me_native_messaging_host_main.cc",
     "//remoting/host/it2me/it2me_native_messaging_host_main.h",
     "//remoting/host/setup/host_starter.cc",
@@ -369,35 +368,38 @@ shared_library("remoting_core") {
     "//remoting/host/setup/me2me_native_messaging_host_main.h",
     "//remoting/host/setup/start_host_main.cc",
     "//remoting/host/setup/start_host_main.h",
-    "//remoting/host/worker_process_ipc_delegate.h",
     "chromoting_lib.rc",
     "chromoting_module.cc",
     "chromoting_module.h",
     "core.cc",
     "core.h",
-    "core_resource.h",
     "elevated_native_messaging_host.cc",
     "elevated_native_messaging_host.h",
     "etw_trace_consumer.cc",
-    "etw_trace_consumer.h",
     "etw_trace_controller.cc",
     "etw_trace_controller.h",
     "event_trace_data.cc",
     "event_trace_data.h",
     "host_event_file_logger.cc",
-    "host_event_file_logger.h",
-    "host_event_logger.h",
     "host_event_windows_event_logger.cc",
-    "host_event_windows_event_logger.h",
     "host_service.cc",
-    "host_service.h",
     "launch_native_messaging_host_process.cc",
     "launch_native_messaging_host_process.h",
     "rdp_desktop_session.cc",
     "rdp_desktop_session.h",
     "unprivileged_process_delegate.cc",
-    "unprivileged_process_delegate.h",
     "wts_session_process_delegate.cc",
+
+    # TODO(crbug.com/1184893): These files are also listed in //remoting/host:common, so they should probably be moved to a shared target they can both depend on.
+    "//remoting/host/host_main.h",
+    "//remoting/host/worker_process_ipc_delegate.h",
+    "core_resource.h",
+    "etw_trace_consumer.h",
+    "host_event_file_logger.h",
+    "host_event_logger.h",
+    "host_event_windows_event_logger.h",
+    "host_service.h",
+    "unprivileged_process_delegate.h",
     "wts_session_process_delegate.h",
   ]
 
@@ -522,5 +524,5 @@ remoting_localize("remoting_windows_resources") {
 
   encoding = "utf-16"
 
-  locales = remoting_locales
+  locale_list = remoting_locales_without_pseudolocales
 }

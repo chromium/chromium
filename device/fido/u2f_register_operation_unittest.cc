@@ -89,7 +89,10 @@ TEST_F(U2fRegisterOperationTest, TestRegisterSuccess) {
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
             register_callback_receiver().status());
   ASSERT_TRUE(register_callback_receiver().value());
-  EXPECT_THAT(register_callback_receiver().value()->raw_credential_id(),
+  EXPECT_THAT(register_callback_receiver()
+                  .value()
+                  ->attestation_object()
+                  .GetCredentialId(),
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -107,8 +110,11 @@ TEST_F(U2fRegisterOperationTest, TestRegisterSuccessWithFake) {
             register_callback_receiver().status());
   // We don't verify the response from the fake, but do a quick sanity check.
   ASSERT_TRUE(register_callback_receiver().value());
-  EXPECT_EQ(32ul,
-            register_callback_receiver().value()->raw_credential_id().size());
+  EXPECT_EQ(32ul, register_callback_receiver()
+                      .value()
+                      ->attestation_object()
+                      .GetCredentialId()
+                      .size());
 }
 
 TEST_F(U2fRegisterOperationTest, TestDelayedSuccess) {
@@ -137,7 +143,10 @@ TEST_F(U2fRegisterOperationTest, TestDelayedSuccess) {
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
             register_callback_receiver().status());
   ASSERT_TRUE(register_callback_receiver().value());
-  EXPECT_THAT(register_callback_receiver().value()->raw_credential_id(),
+  EXPECT_THAT(register_callback_receiver()
+                  .value()
+                  ->attestation_object()
+                  .GetCredentialId(),
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -182,7 +191,10 @@ TEST_F(U2fRegisterOperationTest, TestRegistrationWithExclusionList) {
   ASSERT_TRUE(register_callback_receiver().value());
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
             register_callback_receiver().status());
-  EXPECT_THAT(register_callback_receiver().value()->raw_credential_id(),
+  EXPECT_THAT(register_callback_receiver()
+                  .value()
+                  ->attestation_object()
+                  .GetCredentialId(),
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -264,7 +276,7 @@ TEST_F(U2fRegisterOperationTest, TestIndividualAttestation) {
 
     EXPECT_EQ(CtapDeviceResponseCode::kSuccess, cb.status());
     ASSERT_TRUE(cb.value());
-    EXPECT_THAT(cb.value()->raw_credential_id(),
+    EXPECT_THAT(cb.value()->attestation_object().GetCredentialId(),
                 ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
   }
 }

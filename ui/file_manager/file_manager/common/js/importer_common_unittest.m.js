@@ -4,15 +4,15 @@
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {MockChromeStorageAPI, MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
-import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
-import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
-import {VolumeInfo} from '../../../externs/volume_info.m.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {VolumeInfo} from '../../externs/volume_info.m.js';
 
 import {importer} from './importer_common.m.js';
+import {MockChromeStorageAPI, MockCommandLinePrivate} from './mock_chrome.m.js';
 import {MockDirectoryEntry, MockFileEntry} from './mock_entry.m.js';
+import {reportPromise} from './test_error_reporting.m.js';
 import {importerTest} from './test_importer_common.m.js';
+import {VolumeManagerCommon} from './volume_manager_types.m.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;

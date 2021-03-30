@@ -5,7 +5,7 @@
 #ifndef CC_METRICS_UKM_SMOOTHNESS_DATA_H_
 #define CC_METRICS_UKM_SMOOTHNESS_DATA_H_
 
-#include "device/base/synchronization/one_writer_seqlock.h"
+#include "cc/metrics/shared_metrics_buffer.h"
 
 namespace cc {
 
@@ -15,16 +15,19 @@ namespace cc {
 struct UkmSmoothnessData {
   double avg_smoothness = 0.0;
   double worst_smoothness = 0.0;
+
+  // Values are set to -1 to help with recognizing when these metrics are not
+  // calculated.
+  double worst_smoothness_after1sec = -1.0;
+  double worst_smoothness_after2sec = -1.0;
+  double worst_smoothness_after5sec = -1.0;
+
   double above_threshold = 0.0;
   double percentile_95 = 0.0;
+  base::TimeDelta time_max_delta = base::TimeDelta::FromMilliseconds(1);
 };
 
-// The struct written in shared memory to transport UkmSmoothnessData across
-// processes. |data| is protected by the sequence-lock |seq_lock|.
-struct UkmSmoothnessDataShared {
-  device::OneWriterSeqLock seq_lock;
-  struct UkmSmoothnessData data;
-};
+using UkmSmoothnessDataShared = SharedMetricsBuffer<UkmSmoothnessData>;
 
 }  // namespace cc
 

@@ -542,8 +542,8 @@ static v8::Local<v8::Value> DeserializeIDBValueData(v8::Isolate* isolate,
   scoped_refptr<SerializedScriptValue> serialized_value =
       value->CreateSerializedValue();
 
-  serialized_value->NativeFileSystemTokens() =
-      std::move(const_cast<IDBValue*>(value)->NativeFileSystemTokens());
+  serialized_value->FileSystemAccessTokens() =
+      std::move(const_cast<IDBValue*>(value)->FileSystemAccessTokens());
 
   SerializedScriptValue::DeserializeOptions options;
   options.blob_info = &value->BlobInfo();

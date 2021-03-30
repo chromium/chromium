@@ -12,13 +12,11 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_AUTOGEN_H_
 
-void AssociateMailbox(GLuint64 device_client_id,
+void AssociateMailbox(GLuint device_id,
                       GLuint device_generation,
                       GLuint id,
                       GLuint generation,
                       GLuint usage,
                       const GLbyte* mailbox) override;
-void DissociateMailbox(GLuint64 device_client_id,
-                       GLuint texture_id,
-                       GLuint texture_generation) override;
+void DissociateMailbox(GLuint texture_id, GLuint texture_generation) override;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_AUTOGEN_H_

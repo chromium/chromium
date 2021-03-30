@@ -25,8 +25,16 @@
     display: flex;
     flex-direction: column;
     outline: none;
+    position: relative;
     text-decoration: none;
+  }
+
+  :host([shopping]) .task-item {
     width: 120px;
+  }
+
+  :host([recipe]) .task-item {
+    width: 165px;
   }
 
   :host-context(.focus-outline-visible) .task-item:focus {
@@ -38,18 +46,15 @@
   }
 
   .image-background {
-    border-radius: 4px;
-    margin-bottom: 8px;
-    width: 120px;
-  }
-
-  :host([shopping]) .image-background {
     /* Mixes to Google Grey 50 underneath .image-container. */
     background-color: rgb(22, 55, 88);
+    border-radius: 4px;
     height: 120px;
+    margin-bottom: 8px;
+    width: inherit;
   }
 
-  :host([shopping]) .image-container {
+  .image-container {
     background-color: white;
     border-radius: 4px;
     /* Using box-shadow mimics proper rendering,
@@ -57,27 +62,38 @@
      * after rounding edges. */
     box-shadow: 0 0 0 0.2px white;
     box-sizing: border-box;
+    height: 100%;
     opacity: 97%;
     padding: 10px;
   }
 
-  :host([recipe]) .image-background {
-    height: 100px;
-  }
-
-  .image-container,
-  img {
-    height: 100%;
-    width: 100%;
-  }
-
   :host([shopping]) img {
+    height: 100%;
     object-fit: contain;
+    width: 100%;
   }
 
   :host([recipe]) img {
     border-radius: 4px;
+    height: 136px;
+    margin-bottom: 8px;
     object-fit: cover;
+    width: inherit;
+  }
+
+  .tag {
+    background: rgba(var(--ntp-background-override-color-rgb), .9);
+    border-radius: 4px;
+    color: var(--cr-primary-text-color);
+    font-size: 9px;
+    margin: 8px;
+    padding:  8px;
+    position: absolute;
+    text-transform: uppercase;
+  }
+
+  :host-context([dir=rtl]) .tag {
+    right: 0;
   }
 
   .price {
@@ -109,7 +125,7 @@
     white-space: nowrap;
   }
 
-  .info {
+  .secondary {
     color: var(--cr-secondary-text-color);
     font-size: 11px;
     height: 13px;
@@ -183,8 +199,11 @@
   }
 </style>
 <ntp-module-header
+    dismiss-text="[[i18n('modulesDismissButtonText', dismissName_)]]"
+    disable-text="[[i18n('modulesDisableButtonText', disableName_)]]"
     show-info-button on-info-button-click="onInfoButtonClick_"
-    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_">
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    on-disable-button-click="onDisableButtonClick_">
   [[task.title]]
 </ntp-module-header>
 <div id="moduleContent">
@@ -193,14 +212,24 @@
         on-dom-change="onDomChange_">
       <a class="task-item" href="[[item.targetUrl.url]]"
           on-click="onTaskItemClick_" on-auxclick="onTaskItemClick_">
-        <div class="image-background">
-          <div class="image-container">
-            <img is="ntp-img" auto-src="[[item.imageUrl.url]]"></img>
+        <template is="dom-if" if="[[isShopping_(taskModuleType)]]">
+          <div class="image-background">
+            <div class="image-container">
+              <img is="ntp-img" auto-src="[[item.imageUrl.url]]"
+                  draggable="false"></img>
+            </div>
           </div>
-        </div>
-        <div class="price" hidden$="[[!item.price]]">[[item.price]]</div>
-        <div class="name" title="[[item.name]]">[[item.name]]</div>
-        <div class="info">[[item.info]]</div>
+          <div class="price" hidden$="[[!item.price]]">[[item.price]]</div>
+          <div class="name" title="[[item.name]]">[[item.name]]</div>
+          <div class="secondary">[[item.info]]</div>
+        </template>
+        <template is="dom-if" if="[[isRecipe_(taskModuleType)]]">
+          <img is="ntp-img" auto-src="[[item.imageUrl.url]]" draggable="false">
+          </img>
+          <div class="tag">[[item.info]]</div>
+          <div class="name" title="[[item.name]]">[[item.name]]</div>
+          <div class="secondary">[[item.siteName]]</div>
+        </template>
       </a>
     </template>
   </div>

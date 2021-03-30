@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,6 +28,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -34,10 +36,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install/extension_install_ui.h"
+#include "extensions/common/extension_features.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -48,10 +52,8 @@
 // flag to #if defined(OS_CHROMEOS)
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
@@ -62,7 +64,7 @@
 #include "extensions/common/extension_builder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif
 
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -72,6 +74,8 @@ namespace utils = extension_function_test_utils;
 namespace extensions {
 
 namespace {
+
+constexpr char kExtensionId[] = "enfkhcelefdadlmkffamgdlgplcionje";
 
 class WebstoreInstallListener : public WebstoreInstaller::Delegate {
  public:
@@ -185,7 +189,7 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
     extension_test_util::SetGalleryUpdateURL(crx_url);
 
     GURL page_url = GetTestServerURL(page);
-    return RunPageTest(page_url.spec());
+    return RunExtensionTest({.page_url = page_url.spec().c_str()});
   }
 
   content::WebContents* GetWebContents() {
@@ -311,12 +315,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, AppInstallBubble) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IsInIncognitoMode) {
   GURL page_url = GetTestServerURL("incognito.html");
-  ASSERT_TRUE(RunPageTest(page_url.spec(), kFlagNone, kFlagUseIncognito));
+  ASSERT_TRUE(RunExtensionTest(
+      {.page_url = page_url.spec().c_str(), .open_in_incognito = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IsNotInIncognitoMode) {
   GURL page_url = GetTestServerURL("not_incognito.html");
-  ASSERT_TRUE(RunPageTest(page_url.spec()));
+  ASSERT_TRUE(RunExtensionTest({.page_url = page_url.spec().c_str()}));
 }
 
 // Tests using the iconUrl parameter to the install function.
@@ -327,7 +332,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IconUrl) {
 // Tests that the Approvals are properly created in beginInstall.
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, BeginInstall) {
   std::string appId = "iladmdjkfniedhfhcfoefgojhgaiaccc";
-  std::string extensionId = "enfkhcelefdadlmkffamgdlgplcionje";
   ASSERT_TRUE(RunInstallTest("begin_install.html", "extension.crx"));
 
   std::unique_ptr<WebstoreInstaller::Approval> approval =
@@ -338,9 +342,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, BeginInstall) {
   EXPECT_EQ("2", approval->authuser);
   EXPECT_EQ(browser()->profile(), approval->profile);
 
-  approval = WebstorePrivateApi::PopApprovalForTesting(
-      browser()->profile(), extensionId);
-  EXPECT_EQ(extensionId, approval->extension_id);
+  approval = WebstorePrivateApi::PopApprovalForTesting(browser()->profile(),
+                                                       kExtensionId);
+  EXPECT_EQ(kExtensionId, approval->extension_id);
   EXPECT_FALSE(approval->use_app_installed_bubble);
   EXPECT_FALSE(approval->skip_post_install_ui);
   EXPECT_TRUE(approval->authuser.empty());
@@ -366,11 +370,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, EmptyCrx) {
 static constexpr char kTestChildEmail[] = "test_child_user@google.com";
 static constexpr char kTestChildGaiaId[] = "8u8tuw09sufncmnaos";
 
+static constexpr char kTestAppId[] = "iladmdjkfniedhfhcfoefgojhgaiaccc";
+static constexpr char kTestAppVersion[] = "0.1";
+
+// Test fixture for various cases of installation for child accounts.
 class ExtensionWebstorePrivateApiTestChild
-    : public ExtensionWebstorePrivateApiTest {
+    : public ExtensionWebstorePrivateApiTest,
+      public TestParentPermissionDialogViewObserver {
  public:
+  // The next dialog action to take.
+  enum class NextDialogAction {
+    kCancel,
+    kAccept,
+  };
+
   ExtensionWebstorePrivateApiTestChild()
-      : embedded_test_server_(std::make_unique<net::EmbeddedTestServer>()),
+      : TestParentPermissionDialogViewObserver(this),
+        embedded_test_server_(std::make_unique<net::EmbeddedTestServer>()),
         logged_in_user_mixin_(
             &mixin_host_,
             chromeos::LoggedInUserMixin::LogInType::kChild,
@@ -428,67 +444,6 @@ class ExtensionWebstorePrivateApiTestChild
         ->SetNextReAuthStatus(next_status);
   }
 
- protected:
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-
- private:
-  // Create another embedded test server to avoid starting the same one twice.
-  std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
-  chromeos::LoggedInUserMixin logged_in_user_mixin_;
-};
-
-class ExtensionWebstorePrivateApiTestChildInstallDisabled
-    : public ExtensionWebstorePrivateApiTestChild {
- public:
-  ExtensionWebstorePrivateApiTestChildInstallDisabled() {
-    feature_list_.InitWithFeatures(
-        {}, {supervised_users::kSupervisedUserInitiatedExtensionInstall});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that extension installation is blocked for child accounts when
-// the feature flag is disabled.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallDisabled,
-                       InstallBlocked) {
-  base::HistogramTester histogram_tester;
-  base::UserActionTester user_action_tester;
-  ASSERT_TRUE(RunInstallTest("install_blocked_child.html", "app.crx"));
-  histogram_tester.ExpectUniqueSample(
-      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
-      SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
-      1);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName, 1);
-  EXPECT_EQ(
-      1,
-      user_action_tester.GetActionCount(
-          SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName));
-}
-
-static constexpr char kTestAppId[] = "iladmdjkfniedhfhcfoefgojhgaiaccc";
-static constexpr char kTestAppVersion[] = "0.1";
-
-// Test fixture for various cases of installation for child accounts
-// when the feature flag is enabled.
-class ExtensionWebstorePrivateApiTestChildInstallEnabled
-    : public ExtensionWebstorePrivateApiTestChild,
-      public TestParentPermissionDialogViewObserver {
- public:
-  // The next dialog action to take.
-  enum class NextDialogAction {
-    kCancel,
-    kAccept,
-  };
-
-  ExtensionWebstorePrivateApiTestChildInstallEnabled()
-      : TestParentPermissionDialogViewObserver(this) {
-    feature_list_.InitWithFeatures(
-        {supervised_users::kSupervisedUserInitiatedExtensionInstall}, {});
-  }
-
   // TestParentPermissionDialogViewObserver override:
   void OnTestParentPermissionDialogViewCreated(
       ParentPermissionDialogView* view) override {
@@ -511,13 +466,18 @@ class ExtensionWebstorePrivateApiTestChildInstallEnabled
     next_dialog_action_ = action;
   }
 
+ protected:
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+
  private:
-  base::test::ScopedFeatureList feature_list_;
+  // Create another embedded test server to avoid starting the same one twice.
+  std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
+  chromeos::LoggedInUserMixin logged_in_user_mixin_;
   base::Optional<NextDialogAction> next_dialog_action_;
 };
 
 // Tests install for a child when parent permission is granted.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
                        ParentPermissionGranted) {
   WebstoreInstallListener listener;
   WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
@@ -543,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
 
 // Tests no install occurs for a child when the parent permission
 // dialog is canceled.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
                        ParentPermissionCanceled) {
   WebstoreInstallListener listener;
   set_next_dialog_action(NextDialogAction::kCancel);
@@ -565,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
 }
 
 // Tests that no parent permission is required for a child to install a theme.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
                        NoParentPermissionRequiredForTheme) {
   WebstoreInstallListener listener;
   WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
@@ -578,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
 // Tests that even if the kSupervisedUserInitiatedExtensionInstall feature flag
 // is enabled, supervised user extension installs are blocked if the
 // "Permissions for sites, apps and extensions" toggle is off.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChildInstallEnabled,
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
                        InstallBlockedWhenPermissionsToggleOff) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -674,7 +634,7 @@ class ExtensionWebstorePrivateGetReferrerChainApiTest
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateGetReferrerChainApiTest,
                        GetReferrerChain) {
   GURL page_url = GetTestServerURLWithReferrers("referrer_chain.html");
-  ASSERT_TRUE(RunPageTest(page_url.spec()));
+  ASSERT_TRUE(RunExtensionTest({.page_url = page_url.spec().c_str()}));
 }
 
 // Tests that the GetReferrerChain API returns an empty string for profiles
@@ -687,7 +647,57 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateGetReferrerChainApiTest,
   pref_service->SetBoolean(prefs::kSafeBrowsingEnabled, false);
 
   GURL page_url = GetTestServerURLWithReferrers("empty_referrer_chain.html");
-  ASSERT_TRUE(RunPageTest(page_url.spec()));
+  ASSERT_TRUE(RunExtensionTest({.page_url = page_url.spec().c_str()}));
+}
+
+class ExtensionWebstorePrivateApiAllowlistEnforcementTest
+    : public ExtensionWebstorePrivateApiTest {
+ public:
+  ExtensionWebstorePrivateApiAllowlistEnforcementTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kEnforceSafeBrowsingExtensionAllowlist);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
+                       EnhancedSafeBrowsingNotAllowlisted) {
+  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                                      safe_browsing::ENHANCED_PROTECTION);
+  ASSERT_TRUE(
+      RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
+  EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
+            extension_prefs->GetExtensionAllowlistState(kExtensionId));
+  EXPECT_EQ(
+      ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+      extension_prefs->GetExtensionAllowlistAcknowledgeState(kExtensionId));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
+                       EnhancedSafeBrowsingAllowlisted) {
+  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                                      safe_browsing::ENHANCED_PROTECTION);
+  ASSERT_TRUE(RunInstallTest("safebrowsing_allowlisted.html", "extension.crx"));
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
+  EXPECT_EQ(ALLOWLIST_UNDEFINED,
+            extension_prefs->GetExtensionAllowlistState(kExtensionId));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
+                       StandardSafeBrowsingNotAllowlisted) {
+  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                                      safe_browsing::STANDARD_PROTECTION);
+  ASSERT_TRUE(
+      RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
+  EXPECT_EQ(ALLOWLIST_UNDEFINED,
+            extension_prefs->GetExtensionAllowlistState(kExtensionId));
 }
 
 }  // namespace extensions

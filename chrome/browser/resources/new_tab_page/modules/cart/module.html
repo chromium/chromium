@@ -1,4 +1,4 @@
-<style include="cr-hidden-style">
+<style include="cr-hidden-style cr-icons">
   :host {
     display: flex;
     flex-direction: column;
@@ -6,27 +6,39 @@
     width: 100%;
   }
 
+  :host(:hover) .side-scroll-button {
+    visibility: visible;
+  }
+
   #moduleContent {
-    box-sizing: border-box;
     display: flex;
-    flex-direction: row;
-    float: left;
     height: 100%;
-    padding-inline-end: 15px;
-    padding-inline-start: 15px;
-    width: 100%;
+    position: relative;
+  }
+
+  #cartCarousel {
+    display: inline-block;
+    overflow-x: hidden;
+    white-space: nowrap;
+    z-index: 0;
   }
 
   .cart-item {
     border: 1px solid var(--ntp-border-color);
     border-radius: 4px;
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
-    height: 160px;
+    height: 140px;
     margin: 0 4px;
     outline: none;
+    position: relative;
     text-decoration: none;
-    width: 120px;
+    width: 118px;
+  }
+
+  .cart-item:hover cr-icon-button {
+    opacity: 1;
+    transition-delay: 400ms;
   }
 
   :host-context(.focus-outline-visible) .cart-item:focus {
@@ -34,27 +46,25 @@
   }
 
   .cart-title {
-    color: var(--ntp-theme-text-color);
-    display: block;
-    font-size: 12px;
+    color: var(--cr-primary-text-color);
+    display: flex;
+    flex-direction: row;
+    font-size: 13px;
     height: 20px;
-    margin-inline-end: auto;
-    margin-inline-start: auto;
-    margin-top: 6px;
+    justify-content: center;
+    margin: 4px 8px 0 8px;
     text-align: center;
-    width: 72px;
   }
 
-  .cart-title #merchant {
+  .cart-title .merchant {
     font-weight: 400;
-    max-width: 54px;
     overflow: hidden;
     text-overflow: ellipsis;
     text-shadow: var(--ntp-theme-text-shadow);
     white-space: nowrap;
   }
 
-  .cart-title #itemCount {
+  .cart-title .item-count {
     color: var(--cr-secondary-text-color);
   }
 
@@ -69,8 +79,7 @@
   }
 
   .thumbnail-container {
-    height: 100%;
-    margin-top: 12px;
+    margin-top: 4px;
     text-align: center;
     width: auto;
   }
@@ -87,55 +96,183 @@
   }
 
   .thumbnail-img {
-    border: 2px solid white;
+    border: 2px solid var(--ntp-background-override-color);
     border-radius: 50%;
-    height: 46px;
+    height: 44px;
     object-fit: cover;
-    width: 46px;
+    width: 44px;
   }
 
   .thumbnail-fallback {
     height: 48px;
+    margin-top: 8px;
     position: relative;
-    top: 50%;
-    transform: translateY(-50%);
     width: 102px;
   }
+
+  :host-context([dir=rtl]) cr-icon-button {
+    left: 0;
+    right: unset;
+  }
+
+  .cart-item cr-icon-button {
+    --cr-icon-button-fill-color: var(--ntp-icon-button-color);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    --cr-icon-button-transition: none;
+    margin: 4px 4px;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: opacity 100ms ease-in-out;
+  }
+
+  .cart-item cr-icon-button:hover {
+    --cr-icon-button-fill-color: var(--ntp-icon-button-color-active);
+  }
+
+  .side-scroll-shadow {
+    background-color: var(--ntp-background-override-color);
+    display: flex;
+    height: 160px;
+    opacity: 0.38;
+    pointer-events: none;
+    position: absolute;
+    width: 24px;
+    z-index: 1;
+  }
+
+  #leftScrollShadow {
+    left: 0;
+  }
+
+  #rightScrollShadow {
+    right: 0;
+  }
+
+  .side-scroll-button {
+    --cr-icon-button-fill-color: var(--ntp-icon-button-color);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-margin-end: 0;
+    --cr-icon-image: url(icons/chevron.svg);
+    background-color: var(--ntp-module-scroll-button-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 45%;
+    transform: translateY(-45%);
+    visibility: hidden;
+    z-index: 2;
+  }
+
+  .side-scroll-button:hover {
+    --cr-icon-button-fill-color: var(--ntp-icon-button-color-active);
+    background-color: var(--ntp-module-scroll-button-hover-color);
+  }
+
+  #leftScrollButton {
+    --cr-icon-image-transform: rotate(90deg);
+    left: 0;
+    margin-inline-start: 4px;
+  }
+
+  #rightScrollButton {
+    --cr-icon-image-transform: rotate(270deg);
+    margin-inline-end: 4px;
+    right: 0;
+  }
+
+  .probe {
+    display: inline-flex;
+    width: 12px;
+  }
 </style>
-<ntp-module-header chip-text="$i18n{modulesCartHeaderNew}"></ntp-module-header>
+<ntp-module-header
+    chip-text="[[headerChipText]]"
+    description-text="[[headerDescriptionText]]"
+    dismiss-text="[[i18nRecursive('',
+                                  'modulesDismissButtonText',
+                                  'modulesCartLowerThese')]]"
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesCartLower')]]"
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    on-disable-button-click="onDisableButtonClick_">
+  $i18n{modulesCartSentence}
+</ntp-module-header>
 <div id="moduleContent">
-  <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
-    <a class="cart-item" title="[[item.merchant]]"
-        href="[[item.cartUrl.url]]">
-      <img class="favicon-image" is="ntp-img"
-          auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
-      <div class="cart-title">
-        <span id="merchant">[[item.merchant]]</span>
-        <template is="dom-if" if="[[item.productImageUrls.length]]">
-          <span id="itemCount">
-            &nbsp•&nbsp[[item.productImageUrls.length]]
-          </span>
-        </template>
-      </div>
-      <div class="thumbnail-container">
-        <template is="dom-if"
-            if="[[item.productImageUrls.length]]">
-          <ul id="thumbnailList">
-            <template is="dom-repeat"
-                items="[[getImagesToShow_(item.productImageUrls)]]">
-              <li>
-                <img class="thumbnail-img" is="ntp-img"
-                    auto-src="[[item.url]]"></img>
-              </li>
-            </template>
-          </ul>
-        </template>
-        <template id="thumbnailFallback" is="dom-if"
-            if="[[!item.productImageUrls.length]]">
-          <img class="thumbnail-fallback"
-              src="chrome://new-tab-page/icons/cart_fallback.svg">
-        </template>
-      </div>
-    </a>
+  <template is="dom-if" if="[[showLeftScrollButton_]]">
+    <div id="leftScrollShadow" class="side-scroll-shadow"></div>
+    <cr-icon-button id="leftScrollButton"
+        class="side-scroll-button" on-click="onLeftScrollClick_">
+    </cr-icon-button>
+  </template>
+  <div id="cartCarousel">
+    <div id="leftProbe" class="probe"></div>
+    <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
+      <a class="cart-item" title="[[item.merchant]]"
+          href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
+          on-auxclick="onCartItemClick_">
+        <cr-icon-button class="icon-more-vert"
+            title="$i18n{moreActions}" on-click="onCartMenuButtonClick_">
+        </cr-icon-button>
+        <img class="favicon-image" is="ntp-img"
+            auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
+        <div class="cart-title">
+          <span class="merchant">[[item.merchant]]</span>
+          <template is="dom-if" if="[[item.productImageUrls.length]]">
+            <span class="item-count">
+              &nbsp•&nbsp[[item.productImageUrls.length]]
+            </span>
+          </template>
+        </div>
+        <div class="thumbnail-container">
+          <template is="dom-if"
+              if="[[item.productImageUrls.length]]">
+            <ul class="thumbnail-list">
+              <template is="dom-repeat"
+                  items="[[getImagesToShow_(item.productImageUrls)]]">
+                <li>
+                  <img class="thumbnail-img" is="ntp-img"
+                      auto-src="[[item.url]]"></img>
+                </li>
+              </template>
+            </ul>
+          </template>
+          <template id="thumbnailFallback" is="dom-if"
+              if="[[!item.productImageUrls.length]]">
+            <img class="thumbnail-fallback"
+                src="chrome://new-tab-page/icons/cart_fallback.svg">
+          </template>
+        </div>
+      </a>
+    </template>
+    <div id="rightProbe" class="probe"></div>
+  </div>
+  <cr-action-menu id="cartActionMenu">
+    <button id="hideCartButton" class="dropdown-item"
+        on-click="onCartHide_">
+      [[cartMenuHideItem_]]
+    </button>
+    <button id="removeCartButton" class="dropdown-item"
+        on-click="onCartRemove_">
+      [[cartMenuRemoveItem_]]
+    </button>
+  </cr-action-menu>
+  <template is="dom-if" if="[[showRightScrollButton_]]">
+    <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
+    <cr-icon-button id="rightScrollButton"
+        class="side-scroll-button" on-click="onRightScrollClick_">
+    </cr-icon-button>
   </template>
 </div>
+<cr-toast id="dismissCartToast" duration="10000">
+  <div id="dismissCartToastMessage">
+    [[dismissedCartData_.message]]
+  </div>
+  <cr-button id="undoDismissCartButton"
+      on-click="onUndoDismissCartButtonClick_">
+    $i18n{undo}
+  </cr-button>
+</cr-toast>

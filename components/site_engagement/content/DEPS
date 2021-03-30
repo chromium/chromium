@@ -1,0 +1,12 @@
+include_rules = [
+  "+components/browsing_data",
+  "+components/content_settings/core",
+  "+components/keyed_service",
+  "+components/permissions",
+  "+components/prefs",
+  "+components/user_prefs",
+  "+components/variations",
+  "+content/public/browser",
+  "+third_party/blink/public/mojom",
+  "+ui/base",
+]

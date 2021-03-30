@@ -17,7 +17,6 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -79,6 +78,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom_us_layout_data.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -92,6 +92,7 @@ namespace autofill {
 namespace {
 
 static const char kTestShippingFormString[] =
+    "An example of a shipping address form."
     "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
     " <input type=\"text\" id=\"firstname\"><br>"
@@ -122,6 +123,7 @@ static const char kTestShippingFormString[] =
     "</form>";
 
 static const char kTestBillingFormString[] =
+    "An example of a billing address form."
     "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname_billing\">First name:</label>"
     " <input type=\"text\" id=\"firstname_billing\"><br>"
@@ -172,6 +174,7 @@ static const char kTestEventFormString[] =
     "var selectchange = false;"
     "var selectblur = false;"
     "</script>"
+    "A form for testing events."
     "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
     " <input type=\"text\" id=\"firstname\"><br>"
@@ -212,6 +215,7 @@ static const char kTestEventFormString[] =
     "</form>";
 
 static const char kTestShippingFormWithCompanyString[] =
+    "An example of a shipping address form."
     "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
     " <input type=\"text\" id=\"firstname\"><br>"
@@ -255,9 +259,8 @@ content::RenderFrameHost* RenderFrameHostForName(
 
 // AutofillInteractiveTestBase ------------------------------------------------
 
-// Test fixtures derive from this class and indicate via constructor parameter
-// if feature kAutofillExpandedPopupViews is enabled. This class hierarchy
-// allows test fixtures to have distinct list of test parameters.
+// Test fixtures derive from this class. This class hierarchy allows test
+// fixtures to have distinct list of test parameters.
 //
 // TODO(crbug.com/832707): Parametrize this class to ensure that all tests in
 //                         this run with all possible valid combinations of
@@ -310,6 +313,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AutofillUiTest::SetUpCommandLine(command_line);
     cert_verifier_.SetUpCommandLine(command_line);
+    // Needed to allow input before commit on various builders.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -528,7 +533,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   void FillElementWithValue(const std::string& element_name,
                             const std::string& value) {
-    for (base::char16 character : value) {
+    for (char16_t character : value) {
       ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
       const ui::PrintableCodeEntry* code_entry = std::find_if(
           std::begin(ui::kPrintableCodeMap), std::end(ui::kPrintableCodeMap),
@@ -814,7 +819,14 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ClearTwoSection) {
 
 // Test that autofill doesn't refill a text field initially modified by the
 // user.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextFieldAndFill) {
+// TODO(https://crbug.com/1185439): This test is flaky on Mac, Linux, and
+// ChromeOS.
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_ModifyTextFieldAndFill DISABLED_ModifyTextFieldAndFill
+#else
+#define MAYBE_ModifyTextFieldAndFill ModifyTextFieldAndFill
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_ModifyTextFieldAndFill) {
   CreateTestProfile();
 
   // Load the test page.
@@ -1148,9 +1160,7 @@ class AutofillCompanyInteractiveTest
   AutofillCompanyInteractiveTest() = default;
   ~AutofillCompanyInteractiveTest() override = default;
 
-  void SetUp() override {
-    AutofillInteractiveTestBase::SetUp();
-  }
+  void SetUp() override { AutofillInteractiveTestBase::SetUp(); }
 };
 
 // Makes sure that the first click does or does not activate the autofill popup
@@ -1273,6 +1283,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnDeleteValueAfterAutofill) {
 // background color when choosing an option from the datalist suggestion list.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
   static const char kTestForm[] =
+      "<p>The text is some page content to paint</p>"
       "<form action=\"https://www.example.com/\" method=\"POST\">"
       "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
       "  <datalist id=\"dl\">"
@@ -1310,6 +1321,7 @@ IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTest,
     OnSelectOptionFromDatalistTurningToPasswordFieldAndBack) {
   static const char kTestForm[] =
+      "<p>The text is some page content to paint</p>"
       "<form action=\"https://www.example.com/\" method=\"POST\">"
       "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
       "  <datalist id=\"dl\">"
@@ -1691,6 +1703,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 // Test that we can Autofill dynamically generated forms.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
   static const char kDynamicForm[] =
+      "<p>Some text to paint</p>"
       "<form id=\"form\" action=\"https://www.example.com/\""
       "      method=\"POST\"></form>"
       "<script>"
@@ -1986,14 +1999,14 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_AutofillAfterTranslate) {
 // list, and commit to the profile to populate the form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ComparePhoneNumbers) {
   AutofillProfile profile;
-  profile.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Bob"));
-  profile.SetRawInfo(NAME_LAST, ASCIIToUTF16("Smith"));
-  profile.SetRawInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16("1234 H St."));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, ASCIIToUTF16("San Jose"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CA"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("95110"));
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("1-408-555-4567"));
+  profile.SetRawInfo(NAME_FIRST, u"Bob");
+  profile.SetRawInfo(NAME_LAST, u"Smith");
+  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"1234 H St.");
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"San Jose");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"95110");
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1-408-555-4567");
   SetTestProfile(browser()->profile(), profile);
 
   GURL url = embedded_test_server()->GetURL("/autofill/form_phones.html");
@@ -2039,15 +2052,15 @@ IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
   std::string company_name("Company X");
 
   AutofillProfile profile;
-  profile.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Bob"));
-  profile.SetRawInfo(NAME_LAST, ASCIIToUTF16("Smith"));
-  profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16("bsmith@gmail.com"));
+  profile.SetRawInfo(NAME_FIRST, u"Bob");
+  profile.SetRawInfo(NAME_LAST, u"Smith");
+  profile.SetRawInfo(EMAIL_ADDRESS, u"bsmith@gmail.com");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16(addr_line1));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, ASCIIToUTF16("San Jose"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CA"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("95110"));
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"San Jose");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"95110");
   profile.SetRawInfo(COMPANY_NAME, ASCIIToUTF16(company_name));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("408-871-4567"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"408-871-4567");
   SetTestProfile(browser()->profile(), profile);
 
   GURL url =
@@ -2098,15 +2111,15 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, NoAutofillForReadOnlyFields) {
   std::string addr_line1("1234 H St.");
 
   AutofillProfile profile;
-  profile.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Bob"));
-  profile.SetRawInfo(NAME_LAST, ASCIIToUTF16("Smith"));
-  profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16("bsmith@gmail.com"));
+  profile.SetRawInfo(NAME_FIRST, u"Bob");
+  profile.SetRawInfo(NAME_LAST, u"Smith");
+  profile.SetRawInfo(EMAIL_ADDRESS, u"bsmith@gmail.com");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16(addr_line1));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, ASCIIToUTF16("San Jose"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CA"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("95110"));
-  profile.SetRawInfo(COMPANY_NAME, ASCIIToUTF16("Company X"));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("408-871-4567"));
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"San Jose");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"95110");
+  profile.SetRawInfo(COMPANY_NAME, u"Company X");
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"408-871-4567");
   SetTestProfile(browser()->profile(), profile);
 
   GURL url =
@@ -2177,10 +2190,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   std::string email("bsmith@gmail.com");
 
   AutofillProfile profile;
-  profile.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Bob"));
-  profile.SetRawInfo(NAME_LAST, ASCIIToUTF16("Smith"));
+  profile.SetRawInfo(NAME_FIRST, u"Bob");
+  profile.SetRawInfo(NAME_LAST, u"Smith");
   profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16(email));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("4088714567"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"4088714567");
   SetTestProfile(browser()->profile(), profile);
 
   GURL url = embedded_test_server()->GetURL(
@@ -2215,21 +2228,21 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   std::vector<AutofillProfile> profiles;
   for (int i = 0; i < kNumProfiles; i++) {
     AutofillProfile profile;
-    base::string16 name(base::NumberToString16(i));
-    base::string16 email(name + ASCIIToUTF16("@example.com"));
-    base::string16 street =
+    std::u16string name(base::NumberToString16(i));
+    std::u16string email(name + u"@example.com");
+    std::u16string street =
         ASCIIToUTF16(base::NumberToString(base::RandInt(0, 10000)) + " " +
                      streets[base::RandInt(0, streets.size() - 1)]);
-    base::string16 city =
+    std::u16string city =
         ASCIIToUTF16(cities[base::RandInt(0, cities.size() - 1)]);
-    base::string16 zip(base::NumberToString16(base::RandInt(0, 10000)));
+    std::u16string zip(base::NumberToString16(base::RandInt(0, 10000)));
     profile.SetRawInfo(NAME_FIRST, name);
     profile.SetRawInfo(EMAIL_ADDRESS, email);
     profile.SetRawInfo(ADDRESS_HOME_LINE1, street);
     profile.SetRawInfo(ADDRESS_HOME_CITY, city);
-    profile.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CA"));
+    profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
     profile.SetRawInfo(ADDRESS_HOME_ZIP, zip);
-    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
     profiles.push_back(profile);
   }
   SetTestProfiles(browser()->profile(), &profiles);
@@ -2512,32 +2525,9 @@ IN_PROC_BROWSER_TEST_F(AutofillCreditCardInteractiveTest, FillLocalCreditCard) {
   ExpectFieldValue("CREDIT_CARD_EXP_4_DIGIT_YEAR", "2999");
 }
 
-// Test params:
-//  - bool restrict_unowned_fields_: whether autofill of unowned fields is
-//        restricted to checkout related pages.
-class AutofillRestrictUnownedFieldsTest
-    : public AutofillInteractiveTestBase,
-      public testing::WithParamInterface<bool> {
- protected:
-  AutofillRestrictUnownedFieldsTest() : restrict_unowned_fields_(GetParam()) {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
-    (restrict_unowned_fields_ ? enabled : disabled)
-        .push_back(features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-    scoped_feature_list_.InitWithFeatures(enabled, disabled);
-  }
-
-  const bool restrict_unowned_fields_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
-IN_PROC_BROWSER_TEST_P(AutofillRestrictUnownedFieldsTest, NoAutocomplete) {
-  SCOPED_TRACE(base::StringPrintf("restrict_unowned_fields_ = %d",
-                                  restrict_unowned_fields_));
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
   base::HistogramTester histogram;
 
   CreateTestProfile();
@@ -2546,22 +2536,7 @@ IN_PROC_BROWSER_TEST_P(AutofillRestrictUnownedFieldsTest, NoAutocomplete) {
       embedded_test_server()->GetURL("/autofill/formless_no_autocomplete.html");
   ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Of unowned forms are restricted, then there are no forms detected.
-  if (restrict_unowned_fields_) {
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    // We should only have samples saying that some elements were filtered.
-    auto buckets =
-        histogram.GetAllSamples("Autofill.UnownedFieldsWereFiltered");
-    ASSERT_EQ(1u, buckets.size());
-    EXPECT_EQ(1, buckets[0].min);  // The "true" bucket.
-
-    ASSERT_EQ(0U, GetAutofillManager()->NumFormsDetected());
-    return;
-  }
-
-  // If we reach this point, then unowned forms are not restricted. There
-  // should a form we can trigger fill on (using the firstname field)
-  ASSERT_FALSE(restrict_unowned_fields_);
+  // There should a form we can trigger fill on (using the firstname field).
   ASSERT_EQ(1U, GetAutofillManager()->NumFormsDetected());
   TriggerFormFill("firstname");
 
@@ -2569,15 +2544,14 @@ IN_PROC_BROWSER_TEST_P(AutofillRestrictUnownedFieldsTest, NoAutocomplete) {
   bool has_filled = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
                                                    "hasFilled()", &has_filled));
-  EXPECT_EQ(has_filled, !restrict_unowned_fields_);
+  EXPECT_TRUE(has_filled);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // If only some form fields are tagged with autocomplete types, then the
   // number of input elements will not match the number of fields when autofill
   // triees to preview or fill.
-  histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
-                               !restrict_unowned_fields_, 2);
+  histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields", true, 2);
 
   ExpectFieldValue("firstname", "Milton");
   ExpectFieldValue("address", "4120 Freidrich Lane");
@@ -2593,9 +2567,7 @@ IN_PROC_BROWSER_TEST_P(AutofillRestrictUnownedFieldsTest, NoAutocomplete) {
 // version of the the test in that at least one of the fields has an
 // autocomplete attribute, so autofill will always be aware of the existence
 // of the form.
-IN_PROC_BROWSER_TEST_P(AutofillRestrictUnownedFieldsTest, SomeAutocomplete) {
-  SCOPED_TRACE(base::StringPrintf("restrict_unowned_fields_ = %d",
-                                  restrict_unowned_fields_));
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
   CreateTestProfile();
 
   base::HistogramTester histogram;
@@ -2611,52 +2583,27 @@ IN_PROC_BROWSER_TEST_P(AutofillRestrictUnownedFieldsTest, SomeAutocomplete) {
   bool has_filled = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
                                                    "hasFilled()", &has_filled));
-  EXPECT_EQ(has_filled, !restrict_unowned_fields_);
+  EXPECT_TRUE(has_filled);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // If only some form fields are tagged with autocomplete types, then the
   // number of input elements will not match the number of fields when autofill
   // triees to preview or fill.
-  histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields",
-                               !restrict_unowned_fields_, 2);
+  histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields", true, 2);
 
-  // http://crbug.com/841784
-  // Formless fields with autocomplete attributes don't work because the
-  // extracted form and the form to be previewed/filled end up with a mismatched
-  // number of fields and early abort.
-  // This is fixed when !restrict_unowned_fields_
-  if (restrict_unowned_fields_) {
-    // We should only have samples saying that some elements were filtered.
-    auto buckets =
-        histogram.GetAllSamples("Autofill.UnownedFieldsWereFiltered");
-    ASSERT_EQ(1u, buckets.size());
-    EXPECT_EQ(1, buckets[0].min);  // The "true" bucket.
-
-    ExpectFieldValue("firstname", "M");
-    ExpectFieldValue("address", "");
-    ExpectFieldValue("state", "--");
-    ExpectFieldValue("city", "");
-    ExpectFieldValue("company", "");
-    ExpectFieldValue("email", "");
-    ExpectFieldValue("phone", "");
-  } else {
-    ExpectFieldValue("firstname", "Milton");
-    ExpectFieldValue("address", "4120 Freidrich Lane");
-    ExpectFieldValue("state", "TX");
-    ExpectFieldValue("city", "Austin");
-    ExpectFieldValue("company", "Initech");
-    ExpectFieldValue("email", "red.swingline@initech.com");
-    ExpectFieldValue("phone", "15125551234");
-  }
+  ExpectFieldValue("firstname", "Milton");
+  ExpectFieldValue("address", "4120 Freidrich Lane");
+  ExpectFieldValue("state", "TX");
+  ExpectFieldValue("city", "Austin");
+  ExpectFieldValue("company", "Initech");
+  ExpectFieldValue("email", "red.swingline@initech.com");
+  ExpectFieldValue("phone", "15125551234");
 }
 
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
-IN_PROC_BROWSER_TEST_P(AutofillRestrictUnownedFieldsTest,
-                       DISABLED_AllAutocomplete) {
-  SCOPED_TRACE(base::StringPrintf("restrict_unowned_fields_ = %d",
-                                  restrict_unowned_fields_));
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_AllAutocomplete) {
   CreateTestProfile();
 
   base::HistogramTester histogram;
@@ -2679,14 +2626,6 @@ IN_PROC_BROWSER_TEST_P(AutofillRestrictUnownedFieldsTest,
   // If all form fields are tagged with autocomplete types, we make them all
   // available to be filled.
   histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields", true, 2);
-
-  if (restrict_unowned_fields_) {
-    // We should only have samples saying that no elements were filtered.
-    auto buckets =
-        histogram.GetAllSamples("Autofill.UnownedFieldsWereFiltered");
-    ASSERT_EQ(1u, buckets.size());
-    EXPECT_EQ(0, buckets[0].min);  // The "false" bucket.
-  }
 
   ExpectFieldValue("firstname", "Milton");
   ExpectFieldValue("address", "4120 Freidrich Lane");
@@ -2720,7 +2659,14 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest, SimpleCrossSiteFill) {
+// Flaky on ChromeOS http://crbug.com/1175735
+#if defined(OS_CHROMEOS)
+#define MAYBE_SimpleCrossSiteFill DISABLED_SimpleCrossSiteFill
+#else
+#define MAYBE_SimpleCrossSiteFill SimpleCrossSiteFill
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
+                       MAYBE_SimpleCrossSiteFill) {
   CreateTestProfile();
 
   // Main frame is on a.com, iframe is on b.com.
@@ -2762,13 +2708,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest, SimpleCrossSiteFill) {
 
 // This test verifies that credit card (payment card list) popup works when the
 // form is inside an OOPIF.
-// Flaky on Windows http://crbug.com/728488
-#if defined(OS_WIN)
-#define MAYBE_CrossSitePaymentForms DISABLED_CrossSitePaymentForms
-#else
-#define MAYBE_CrossSitePaymentForms CrossSitePaymentForms
-#endif
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_CrossSitePaymentForms) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, CrossSitePaymentForms) {
   CreateTestCreditCart();
   // Main frame is on a.com, iframe is on b.com.
   GURL url = embedded_test_server()->GetURL(
@@ -2796,13 +2736,24 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_CrossSitePaymentForms) {
       "document.getElementById('CREDIT_CARD_NUMBER').focus();");
   ASSERT_TRUE(content::ExecuteScript(cross_frame, script_focus));
 
+  // Wait to make sure iframe is fully rendered. Without the wait, Chrome
+  // sometimes got the signal to render a dropdown at a time and coordinate
+  // where the trigger element was outside the view port of the website.
+  DoNothingAndWait(2);
+
   // Send an arrow dow keypress in order to trigger the autofill popup.
   SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
                        {ObservedUiEvents::kSuggestionShown});
 }
 
+// Flaky on ChromeOS http://crbug.com/1175735
+#if defined(OS_CHROMEOS)
+#define MAYBE_DeletingFrameUnderSuggestion DISABLED_DeletingFrameUnderSuggestion
+#else
+#define MAYBE_DeletingFrameUnderSuggestion DeletingFrameUnderSuggestion
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
-                       DeletingFrameUnderSuggestion) {
+                       MAYBE_DeletingFrameUnderSuggestion) {
   CreateTestProfile();
 
   // Main frame is on a.com, iframe is on b.com.
@@ -3517,7 +3468,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutofillDynamicFormReplacementInteractiveTest,
                          testing::Bool());
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AutofillRestrictUnownedFieldsTest,
-                         testing::Bool());
 }  // namespace autofill

@@ -45,7 +45,8 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
 
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  if (!policy->CanAccessDataForOrigin(frame->GetProcess()->GetID(), form_url)) {
+  if (!policy->CanAccessDataForOrigin(frame->GetProcess()->GetID(),
+                                      url::Origin::Create(form_url))) {
     SYSLOG(WARNING) << "Killing renderer: illegal password access. Reason: "
                     << static_cast<int>(reason);
     bad_message::ReceivedBadMessage(frame->GetProcess(), reason);

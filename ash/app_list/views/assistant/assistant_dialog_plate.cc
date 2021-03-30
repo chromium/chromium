@@ -104,7 +104,7 @@ AssistantDialogPlate::AssistantDialogPlate(AssistantViewDelegate* delegate)
   SetID(AssistantViewID::kDialogPlate);
   InitLayout();
 
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
   AssistantInteractionController::Get()->GetModel()->AddObserver(this);
   AssistantUiController::Get()->GetModel()->AddObserver(this);
 }
@@ -127,7 +127,7 @@ gfx::Size AssistantDialogPlate::CalculatePreferredSize() const {
 
 void AssistantDialogPlate::OnButtonPressed(AssistantButtonId button_id) {
   delegate_->OnDialogPlateButtonPressed(button_id);
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
 }
 
 bool AssistantDialogPlate::HandleKeyEvent(views::Textfield* textfield,
@@ -153,7 +153,7 @@ bool AssistantDialogPlate::HandleKeyEvent(views::Textfield* textfield,
             base::UTF16ToUTF8(trimmed_text));
       }
 
-      textfield_->SetText(base::string16());
+      textfield_->SetText(std::u16string());
 
       return true;
     }
@@ -174,7 +174,9 @@ bool AssistantDialogPlate::HandleKeyEvent(views::Textfield* textfield,
 void AssistantDialogPlate::OnAssistantControllerDestroying() {
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
   AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-  assistant_controller_observer_.Remove(AssistantController::Get());
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void AssistantDialogPlate::OnInputModalityChanged(
@@ -279,7 +281,7 @@ void AssistantDialogPlate::OnUiVisibilityChanged(
   } else {
     // When the Assistant UI is no longer visible we need to clear the dialog
     // plate so that text does not persist across Assistant launches.
-    textfield_->SetText(base::string16());
+    textfield_->SetText(std::u16string());
 
     HideKeyboardIfEnabled();
   }
@@ -297,7 +299,7 @@ views::View* AssistantDialogPlate::FindFirstFocusableView() {
     case InputModality::kKeyboard:
       return textfield_;
     case InputModality::kVoice:
-      return voice_layout_container_;
+      return animated_voice_input_toggle_;
   }
 }
 

@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -229,8 +229,8 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
                      const std::string& expected_version) {
     UpdateCheckResultCatcher catcher;
     EXPECT_TRUE(runtime_delegate_->CheckForUpdates(
-        id, base::Bind(&UpdateCheckResultCatcher::OnResult,
-                       base::Unretained(&catcher))));
+        id, base::BindOnce(&UpdateCheckResultCatcher::OnResult,
+                           base::Unretained(&catcher))));
     std::unique_ptr<RuntimeAPIDelegate::UpdateCheckResult> result =
         catcher.WaitForResult();
     ASSERT_NE(nullptr, result.get());
@@ -337,7 +337,7 @@ class ExtensionLoadWaiter : public ExtensionRegistryObserver {
  public:
   explicit ExtensionLoadWaiter(content::BrowserContext* context)
       : context_(context) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(context_));
+    extension_registry_observation_.Observe(ExtensionRegistry::Get(context_));
   }
 
   void WaitForReload() { run_loop_.Run(); }
@@ -367,8 +367,8 @@ class ExtensionLoadWaiter : public ExtensionRegistryObserver {
  private:
   base::RunLoop run_loop_;
   content::BrowserContext* context_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionLoadWaiter);
 };

@@ -46,6 +46,11 @@ bool TestAppRegistrar::WasInstalledByUser(const AppId& app_id) const {
   return false;
 }
 
+bool TestAppRegistrar::WasInstalledByOem(const AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 std::map<AppId, GURL> TestAppRegistrar::GetExternallyInstalledApps(
     ExternalInstallSource install_source) const {
   std::map<AppId, GURL> apps;
@@ -122,6 +127,16 @@ const apps::ShareTarget* TestAppRegistrar::GetAppShareTarget(
   return nullptr;
 }
 
+blink::mojom::CaptureLinks TestAppRegistrar::GetAppCaptureLinks(
+    const AppId& app_id) const {
+  return blink::mojom::CaptureLinks::kUndefined;
+}
+
+const apps::FileHandlers* TestAppRegistrar::GetAppFileHandlers(
+    const AppId& app_id) const {
+  return nullptr;
+}
+
 base::Optional<GURL> TestAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   const auto& result = installed_apps_.find(app_id);
@@ -145,6 +160,22 @@ std::vector<DisplayMode> TestAppRegistrar::GetAppDisplayModeOverride(
     const AppId& app_id) const {
   NOTIMPLEMENTED();
   return std::vector<DisplayMode>();
+}
+
+apps::UrlHandlers TestAppRegistrar::GetAppUrlHandlers(
+    const AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return std::vector<apps::UrlHandlerInfo>();
+}
+
+GURL TestAppRegistrar::GetAppManifestUrl(const AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return GURL::EmptyGURL();
+}
+
+base::Time TestAppRegistrar::GetAppLastBadgingTime(const AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return base::Time();
 }
 
 base::Time TestAppRegistrar::GetAppLastLaunchTime(const AppId& app_id) const {
@@ -185,7 +216,7 @@ TestAppRegistrar::GetAppDownloadedShortcutsMenuIconsSizes(
 RunOnOsLoginMode TestAppRegistrar::GetAppRunOnOsLoginMode(
     const AppId& app_id) const {
   NOTIMPLEMENTED();
-  return RunOnOsLoginMode::kUndefined;
+  return RunOnOsLoginMode::kNotRun;
 }
 
 std::vector<AppId> TestAppRegistrar::GetAppIds() const {

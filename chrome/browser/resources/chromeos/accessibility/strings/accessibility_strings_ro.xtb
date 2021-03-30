@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Element din listă</translation>
 <translation id="1013742170491673792">căutare</translation>
 <translation id="1014370462248694370">Glisează cu două degete la dreapta</translation>
-<translation id="1016393160682012902">Apasă o tastă qwerty, o tastă Braille actualizabilă sau un gest de atingere pentru a-i învăța funcția. Apasă tasta Control împreună cu W sau Esc pentru a ieși.</translation>
 <translation id="1022586497894531524">Folosești feedbackul rostit ChromeVox pentru prima dată? Acest tutorial rapid explică noțiunile de bază pentru a începe să folosești ChromeVox.</translation>
 <translation id="1025074108959230262">Modul persistent este dezactivat</translation>
 <translation id="1031961866430398710">apoi</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Nu există o comandă anterioară</translation>
 <translation id="2045606329038304310">Comandă pentru câmpurile din formular</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2074531330963286860">Acțiuni disponibile. Apasă Căutare + punct pentru a vedea.</translation>
 <translation id="2086961585857038472">Cuvântul următor</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ro</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Începe sau încheie selecția</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Salt la elementul focalizabil anterior</translation>
+<translation id="8279039817939141096">Apasă o tastă qwerty, o tastă Braille actualizabilă sau un gest de atingere pentru a-i învăța funcția. Apasă tasta Control + W, tasta de spațiu + Z, glisează spre stânga cu două degete sau apasă pe Escape pentru a ieși.</translation>
 <translation id="8283603667300770666">Câmpul următor din formular</translation>
 <translation id="8310185481635255431">Nu există un link următor</translation>
 <translation id="831207808878314375">Definiție</translation>

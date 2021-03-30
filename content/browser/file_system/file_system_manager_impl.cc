@@ -86,14 +86,14 @@ blink::mojom::FileSystemType ToMojoFileSystemType(
     case storage::FileSystemType::kFileSystemTypeUnknown:
     case storage::FileSystemType::kFileSystemInternalTypeEnumStart:
     case storage::FileSystemType::kFileSystemTypeTest:
-    case storage::FileSystemType::kFileSystemTypeNativeLocal:
-    case storage::FileSystemType::kFileSystemTypeRestrictedNativeLocal:
+    case storage::FileSystemType::kFileSystemTypeLocal:
+    case storage::FileSystemType::kFileSystemTypeRestrictedLocal:
     case storage::FileSystemType::kFileSystemTypeDragged:
-    case storage::FileSystemType::kFileSystemTypeNativeMedia:
+    case storage::FileSystemType::kFileSystemTypeLocalMedia:
     case storage::FileSystemType::kFileSystemTypeDeviceMedia:
     case storage::FileSystemType::kFileSystemTypeSyncable:
     case storage::FileSystemType::kFileSystemTypeSyncableForInternalSync:
-    case storage::FileSystemType::kFileSystemTypeNativeForPlatformApp:
+    case storage::FileSystemType::kFileSystemTypeLocalForPlatformApp:
     case storage::FileSystemType::kFileSystemTypeForTransientFile:
     case storage::FileSystemType::kFileSystemTypePluginPrivate:
     case storage::FileSystemType::kFileSystemTypeCloudDevice:
@@ -273,10 +273,10 @@ void FileSystemManagerImpl::Move(const GURL& src_path,
     return;
   }
 
-  operation_runner()->Move(
-      src_url, dest_url, storage::FileSystemOperation::OPTION_NONE,
-      base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                     base::Passed(&callback)));
+  operation_runner()->Move(src_url, dest_url,
+                           storage::FileSystemOperation::OPTION_NONE,
+                           base::BindOnce(&FileSystemManagerImpl::DidFinish,
+                                          GetWeakPtr(), std::move(callback)));
 }
 
 void FileSystemManagerImpl::Copy(const GURL& src_path,
@@ -303,7 +303,7 @@ void FileSystemManagerImpl::Copy(const GURL& src_path,
       FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperationRunner::CopyProgressCallback(),
       base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                     base::Passed(&callback)));
+                     std::move(callback)));
 }
 
 void FileSystemManagerImpl::Remove(const GURL& path,
@@ -321,10 +321,9 @@ void FileSystemManagerImpl::Remove(const GURL& path,
     return;
   }
 
-  operation_runner()->Remove(
-      url, recursive,
-      base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                     base::Passed(&callback)));
+  operation_runner()->Remove(url, recursive,
+                             base::BindOnce(&FileSystemManagerImpl::DidFinish,
+                                            GetWeakPtr(), std::move(callback)));
 }
 
 void FileSystemManagerImpl::ReadMetadata(const GURL& path,
@@ -348,7 +347,7 @@ void FileSystemManagerImpl::ReadMetadata(const GURL& path,
           FileSystemOperation::GET_METADATA_FIELD_SIZE |
           FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
       base::BindOnce(&FileSystemManagerImpl::DidGetMetadata, GetWeakPtr(),
-                     base::Passed(&callback)));
+                     std::move(callback)));
 }
 
 void FileSystemManagerImpl::Create(const GURL& path,
@@ -372,12 +371,12 @@ void FileSystemManagerImpl::Create(const GURL& path,
     operation_runner()->CreateDirectory(
         url, exclusive, recursive,
         base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                       base::Passed(&callback)));
+                       std::move(callback)));
   } else {
     operation_runner()->CreateFile(
         url, exclusive,
         base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                       base::Passed(&callback)));
+                       std::move(callback)));
   }
 }
 
@@ -399,11 +398,11 @@ void FileSystemManagerImpl::Exists(const GURL& path,
   if (is_directory) {
     operation_runner()->DirectoryExists(
         url, base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                            base::Passed(&callback)));
+                            std::move(callback)));
   } else {
     operation_runner()->FileExists(
         url, base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                            base::Passed(&callback)));
+                            std::move(callback)));
   }
 }
 
@@ -538,7 +537,7 @@ void FileSystemManagerImpl::Truncate(
   OperationID op_id = operation_runner()->Truncate(
       url, length,
       base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                     base::Passed(&callback)));
+                     std::move(callback)));
   cancellable_operations_.Add(
       std::make_unique<FileSystemCancellableOperationImpl>(op_id, this),
       std::move(op_receiver));
@@ -562,7 +561,7 @@ void FileSystemManagerImpl::TruncateSync(const GURL& file_path,
   operation_runner()->Truncate(
       url, length,
       base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                     base::Passed(&callback)));
+                     std::move(callback)));
 }
 
 void FileSystemManagerImpl::CreateSnapshotFile(
@@ -595,11 +594,11 @@ void FileSystemManagerImpl::CreateSnapshotFile(
             FileSystemOperation::GET_METADATA_FIELD_SIZE |
             FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
         base::BindOnce(&FileSystemManagerImpl::DidGetMetadataForStreaming,
-                       GetWeakPtr(), base::Passed(&callback)));
+                       GetWeakPtr(), std::move(callback)));
   } else {
     operation_runner()->CreateSnapshotFile(
         url, base::BindOnce(&FileSystemManagerImpl::DidCreateSnapshot,
-                            GetWeakPtr(), base::Passed(&callback), url));
+                            GetWeakPtr(), std::move(callback), url));
   }
 }
 
@@ -619,7 +618,7 @@ void FileSystemManagerImpl::Cancel(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   operation_runner()->Cancel(
       op_id, base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
-                            base::Passed(&callback)));
+                            std::move(callback)));
 }
 
 void FileSystemManagerImpl::DidReceiveSnapshotFile(int snapshot_id) {

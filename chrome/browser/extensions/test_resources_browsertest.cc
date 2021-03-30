@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   const Extension* extension =
       LoadExtensionAsComponent(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
-  EXPECT_EQ(Manifest::COMPONENT, extension->location());
+  EXPECT_EQ(mojom::ManifestLocation::kComponent, extension->location());
 
   ui_test_utils::NavigateToURL(browser(),
                                extension->GetResourceURL("page.html"));

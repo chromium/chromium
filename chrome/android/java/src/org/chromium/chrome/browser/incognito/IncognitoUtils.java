@@ -23,7 +23,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
@@ -109,6 +111,18 @@ public class IncognitoUtils {
     public static boolean doIncognitoTabsExist() {
         for (IncognitoTabHost host : IncognitoTabHostRegistry.getInstance().getHosts()) {
             if (host.hasIncognitoTabs()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine whether the incognito tab model is active.
+     */
+    public static boolean isIncognitoTabModelActive() {
+        for (IncognitoTabHost host : IncognitoTabHostRegistry.getInstance().getHosts()) {
+            if (host.isActiveModel()) {
                 return true;
             }
         }
@@ -232,6 +246,22 @@ public class IncognitoUtils {
 
         if (customTabIncognitoManager == null) return null;
         return customTabIncognitoManager.getProfile();
+    }
+
+    /**
+     * Returns the {@link ProfileKey} from given {@link OTRProfileID}. If OTRProfileID is null, it
+     * is the key of regular profile.
+     *
+     * @param otrProfileID The {@link OTRProfileID} of the profile. Null for regular profile.
+     * @return The {@link ProfileKey} of the key.
+     */
+    public static ProfileKey getProfileKeyFromOTRProfileID(OTRProfileID otrProfileID) {
+        // If off-the-record is not requested, the request might be before native initialization.
+        if (otrProfileID == null) return ProfileKey.getLastUsedRegularProfileKey();
+
+        return Profile.getLastUsedRegularProfile()
+                .getOffTheRecordProfile(otrProfileID)
+                .getProfileKey();
     }
 
     @VisibleForTesting

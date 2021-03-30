@@ -16,13 +16,13 @@
         <!-- Privileged app host contents. -->
         <include name="IDR_TELEMETRY_EXTENSION_INDEX_HTML" file="index.html" type="BINDATA" />
         <include name="IDR_TELEMETRY_EXTENSION_ICON_96" file="app_icon_96.png" type="BINDATA" />
-        <include name="IDR_TELEMETRY_EXTENSION_TRUSTED_SCRIPTS_JS" file="trusted_scripts.js" flattenhtml="true" type="BINDATA" compress="gzip" />
-        <include name="IDR_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom-lite.js" compress="gzip" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_TELEMETRY_EXTENSION_PROBE_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom-lite.js" compress="gzip" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_TELEMETRY_EXTENSION_SYSTEM_EVENTS_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom-lite.js" compress="gzip" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_TELEMETRY_EXTENSION_TRUSTED_SCRIPTS_JS" file="trusted_scripts.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_TELEMETRY_EXTENSION_DIAGNOSTICS_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom-lite.js" resource_path="diagnostics_service.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_TELEMETRY_EXTENSION_PROBE_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom-lite.js" resource_path="probe_service.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_TELEMETRY_EXTENSION_SYSTEM_EVENTS_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom-lite.js" resource_path= "system_events_service.mojom-lite.js" use_base_dir="false" type="BINDATA" />
 
         <!-- Untrusted app host contents. -->
-        <include name="IDR_TELEMETRY_EXTENSION_DPSL_JS" file="dpsl.js" flattenhtml="true" type="BINDATA" compress="gzip" />
+        <include name="IDR_TELEMETRY_EXTENSION_DPSL_JS" file="dpsl/dpsl.js" flattenhtml="true" type="BINDATA" />
       </if>
     </includes>
   </release>

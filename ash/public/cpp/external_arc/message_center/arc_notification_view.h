@@ -58,6 +58,7 @@ class ArcNotificationView : public message_center::MessageView,
   void OnContainerAnimationEnded() override;
   void OnSettingsButtonPressed(const ui::Event& event) override;
   void OnSnoozeButtonPressed(const ui::Event& event) override;
+  void OnThemeChanged() override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
 
   // views::SlideOutControllerDelegate:

@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -49,7 +48,7 @@ class PluginPrefs : public RefcountedKeyedService {
 
   // Returns whether there is a policy enabling or disabling plugins of the
   // given name.
-  PolicyStatus PolicyStatusForPlugin(const base::string16& name) const;
+  PolicyStatus PolicyStatusForPlugin(const std::u16string& name) const;
 
   // Returns whether the plugin is enabled or not.
   bool IsPluginEnabled(const content::WebPluginInfo& plugin) const;

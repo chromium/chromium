@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -59,15 +60,15 @@ class FileSystemOperationImplWriteTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
-    quota_manager_ =
-        new MockQuotaManager(false /* is_incognito */, dir_.GetPath(),
-                             base::ThreadTaskRunnerHandle::Get().get(),
-                             nullptr /* special storage policy */);
+    quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
+        /* is_incognito= */ false, dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get().get(),
+        /* special storage policy= */ nullptr);
     virtual_path_ = base::FilePath(FILE_PATH_LITERAL("temporary file"));
 
     file_system_context_ = CreateFileSystemContextForTesting(
         quota_manager_->proxy(), dir_.GetPath());
-    blob_storage_context_.reset(new BlobStorageContext);
+    blob_storage_context_ = std::make_unique<BlobStorageContext>();
 
     file_system_context_->operation_runner()->CreateFile(
         URLForPath(virtual_path_), true /* exclusive */,

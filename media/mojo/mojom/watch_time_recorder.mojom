@@ -18,6 +18,9 @@ struct PlaybackProperties {
   bool is_mse;
   bool is_eme;
   bool is_embedded_media_experience;  // Playback from 'Downloads' on Android.
+  // Type of played-back MediaStream, or kNone if the playback is not from a
+  // MediaStream.
+  MediaStreamType media_stream_type;
 };
 
 // Structure describing mutable properties for the current watch time report.
@@ -28,8 +31,8 @@ struct SecondaryPlaybackProperties {
   VideoCodec video_codec;  // playbacks (HLS, remoting, etc).
   AudioCodecProfile audio_codec_profile;
   VideoCodecProfile video_codec_profile;
-  string audio_decoder_name;
-  string video_decoder_name;
+  AudioDecoderType audio_decoder;
+  VideoDecoderType video_decoder;
   EncryptionScheme audio_encryption_scheme;
   EncryptionScheme video_encryption_scheme;
   gfx.mojom.Size natural_size;  // Size of video frame; (0, 0) if audio only.

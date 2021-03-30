@@ -8,7 +8,7 @@
 
 GEN('#include "chromeos/components/help_app_ui/test/help_app_ui_browsertest.h"');
 
-GEN('#include "chromeos/constants/chromeos_features.h"');
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const HOST_ORIGIN = 'chrome://help-app';
@@ -81,6 +81,11 @@ TEST_F('HelpAppUIBrowserTest', 'GuestHasLang', async () => {
 
 TEST_F('HelpAppUIBrowserTest', 'GuestCanSearchWithHeadings', async () => {
   await runTestInGuest('GuestCanSearchWithHeadings');
+  testDone();
+});
+
+TEST_F('HelpAppUIBrowserTest', 'GuestCanSearchWithCategories', async () => {
+  await runTestInGuest('GuestCanSearchWithCategories');
   testDone();
 });
 

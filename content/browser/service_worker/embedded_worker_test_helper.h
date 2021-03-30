@@ -12,13 +12,23 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
+#include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/fake_service_worker.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/url_loader_factory_getter.h"
+#include "content/test/fake_network_url_loader_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
+
+namespace network {
+class WeakWrapperSharedURLLoaderFactory;
+}  // namespace network
+
+namespace storage {
+class ServiceWorkerStorageControlImpl;
+}  // namespace storage
 
 namespace content {
 
@@ -81,6 +91,8 @@ class EmbeddedWorkerTestHelper {
   ServiceWorkerContextCore* context();
   ServiceWorkerContextWrapper* context_wrapper() { return wrapper_.get(); }
   void ShutdownContext();
+
+  void SimulateStorageRestartForTesting();
 
   int GetNextThreadId() { return next_thread_id_++; }
 
@@ -163,11 +175,23 @@ class EmbeddedWorkerTestHelper {
   virtual std::unique_ptr<FakeServiceWorker> CreateServiceWorker();
 
  private:
+  void BindStorageControl(
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
+          receiver);
+
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> render_process_host_;
   std::unique_ptr<MockRenderProcessHost> new_render_process_host_;
 
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
+
+  FakeNetworkURLLoaderFactory fake_loader_factory_;
+  scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
+      fake_loader_factory_wrapper_;
+
+  const base::FilePath user_data_directory_;
+  scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
+  std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
 
   base::queue<std::unique_ptr<FakeEmbeddedWorkerInstanceClient>>
       pending_embedded_worker_instance_clients_;

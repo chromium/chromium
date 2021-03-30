@@ -9,8 +9,8 @@ namespace tracing {
 
 namespace loader_lock_sampler_test {
 
-// wchar_t is used instead of base::char16 because this is included by
-// loader_lock_sampler_test_dll.cc, which doesn't depend on base.
+// wchar_t is used because this is included by loader_lock_sampler_test_dll.cc,
+// which calls native Windows APIs.
 extern const wchar_t kWaitForLockEventName[];
 extern const wchar_t kDropLockEventName[];
 

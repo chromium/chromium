@@ -38,6 +38,7 @@ source_set("web") {
     ":js_resources",
     ":message_js",
     ":navigation_resources",
+    ":plugin_placeholder_js",
     ":resources",
     ":threads",
     "//base",
@@ -165,6 +166,7 @@ test("ios_web_unittests") {
     ":ios_web_general_unittests",
     ":ios_web_navigation_unittests",
     ":ios_web_net_unittests",
+    ":ios_web_text_fragments_unittests",
     ":ios_web_web_state_js_unittests",
     ":ios_web_web_state_ui_unittests",
     ":ios_web_web_state_unittests",
@@ -175,6 +177,8 @@ test("ios_web_unittests") {
     "//ios/web/download:download_unittests",
     "//ios/web/favicon:unittests",
     "//ios/web/find_in_page:find_in_page_unittests",
+    "//ios/web/js_features/context_menu:unittests",
+    "//ios/web/js_features/window_error:unittests",
     "//ios/web/js_messaging:unittests",
     "//ios/web/public/web_view_only:unittests",
     "//ios/web/security:unittests",
@@ -235,8 +239,6 @@ source_set("ios_web_navigation_unittests") {
     ":web",
     "//base",
     "//base/test:test_support",
-    "//components/shared_highlighting/core/common",
-    "//components/ukm:test_support",
     "//components/url_formatter",
     "//ios/net",
     "//ios/testing:ocmock_support",
@@ -258,7 +260,6 @@ source_set("ios_web_navigation_unittests") {
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
     "//ios/web/web_state/ui:web_view_handler",
     "//net:test_support",
-    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -269,7 +270,6 @@ source_set("ios_web_navigation_unittests") {
     "navigation/crw_error_page_helper_unittest.mm",
     "navigation/crw_navigation_item_holder_unittest.mm",
     "navigation/crw_session_storage_unittest.mm",
-    "navigation/crw_text_fragments_handler_unittest.mm",
     "navigation/crw_wk_navigation_states_unittest.mm",
     "navigation/error_retry_state_machine_unittest.mm",
     "navigation/navigation_context_impl_unittest.mm",
@@ -339,6 +339,31 @@ source_set("test_support") {
   ]
 }
 
+source_set("ios_web_text_fragments_unittests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/shared_highlighting/core/common",
+    "//components/ukm:test_support",
+    "//ios/web/common:features",
+    "//ios/web/public/navigation:referrer",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//ios/web/text_fragments",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_view_handler",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//url",
+  ]
+
+  sources = [ "text_fragments/crw_text_fragments_handler_unittest.mm" ]
+}
+
 source_set("ios_web_web_state_unittests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -353,8 +378,10 @@ source_set("ios_web_web_state_unittests") {
     "//ios/testing:ocmock_support",
     "//ios/web",
     "//ios/web/common",
+    "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/find_in_page",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/navigation",
     "//ios/web/navigation:wk_navigation_util",
@@ -373,7 +400,6 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
     "//ios/web/web_state",
-    "//ios/web/web_state:context_menu",
     "//ios/web/web_state:page_viewport_state",
     "//ios/web/web_state:policy_decision_state_tracker",
     "//ios/web/web_state:web_view_internal_creation_util",
@@ -386,7 +412,6 @@ source_set("ios_web_web_state_unittests") {
   ]
 
   sources = [
-    "web_state/context_menu_params_utils_unittest.mm",
     "web_state/page_display_state_unittest.mm",
     "web_state/page_viewport_state_unittest.mm",
     "web_state/policy_decision_state_tracker_unittest.mm",
@@ -413,17 +438,16 @@ source_set("ios_web_web_state_js_unittests") {
     "//ios/net",
     "//ios/testing:ocmock_support",
     "//ios/web/common:web_view_creation_util",
-    "//ios/web/find_in_page",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//ios/web/test:mojo_bindings",
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
-    "//ios/web/web_state:context_menu",
+    "//ios/web/test/fakes",
     "//ios/web/web_state/js",
     "//net:test_support",
     "//testing/gmock",
@@ -434,9 +458,6 @@ source_set("ios_web_web_state_js_unittests") {
 
   sources = [
     "web_state/js/common_js_unittest.mm",
-    "web_state/js/context_menu_js_unittest.mm",
-    "web_state/js/crw_js_injection_manager_unittest.mm",
-    "web_state/js/find_in_page_js_unittest.mm",
     "web_state/js/message_js_unittest.mm",
   ]
 }
@@ -453,6 +474,8 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/net",
     "//ios/testing:ocmock_support",
     "//ios/web/common",
+    "//ios/web/common:uikit",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/navigation",
     "//ios/web/navigation:block_universal_links_buildflags",
@@ -460,6 +483,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/deprecated:test_doubles",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/session",
     "//ios/web/public/test",
     "//ios/web/security",
@@ -467,7 +491,6 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/test/fakes:fakes",
-    "//ios/web/web_state:context_menu",
     "//ios/web/web_state/js",
     "//ios/web/web_state/ui:crw_context_menu_controller",
     "//net:test_support",
@@ -478,12 +501,11 @@ source_set("ios_web_web_state_ui_unittests") {
   ]
 
   sources = [
+    "web_state/ui/crw_html_element_fetch_request_unittest.mm",
     "web_state/ui/crw_web_controller_unittest.mm",
     "web_state/ui/crw_web_view_content_view_unittest.mm",
     "web_state/ui/crw_web_view_proxy_impl_unittest.mm",
     "web_state/ui/crw_web_view_scroll_view_proxy_unittest.mm",
-    "web_state/ui/html_element_fetch_request_unittest.mm",
-    "web_state/ui/web_view_js_utils_unittest.mm",
     "web_state/ui/wk_content_rule_list_util_unittest.mm",
     "web_state/ui/wk_web_view_configuration_provider_unittest.mm",
   ]
@@ -527,6 +549,7 @@ test("ios_web_inttests") {
     ":web",
     "//base/test:test_support",
     "//ios/net",
+    "//ios/testing:block_swizzler",
     "//ios/testing:embedded_test_server_support",
     "//ios/testing:http_server_bundle_data",
     "//ios/web:resources_grit",
@@ -534,12 +557,14 @@ test("ios_web_inttests") {
     "//ios/web/common:web_view_creation_util",
     "//ios/web/download:download_inttests",
     "//ios/web/favicon:inttests",
+    "//ios/web/find_in_page",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging:inttests",
+    "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/js_messaging:java_script_feature_util",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/navigation:wk_navigation_util",
-    "//ios/web/public/deprecated",
-    "//ios/web/public/deprecated:test_doubles",
     "//ios/web/public/find_in_page",
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
@@ -554,6 +579,7 @@ test("ios_web_inttests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/web_state",
+    "//ios/web/web_state/ui:crw_context_menu_controller",
     "//mojo/core/embedder",
     "//net:test_support",
     "//services/network/public/cpp",
@@ -578,6 +604,7 @@ test("ios_web_inttests") {
     "web_state/error_page_inttest.mm",
     "web_state/http_auth_inttest.mm",
     "web_state/keep_render_process_alive_inttest.mm",
+    "web_state/ui/crw_context_menu_element_fetcher_inttest.mm",
     "web_state/web_state_observer_inttest.mm",
     "webui/web_ui_inttest.mm",
     "webui/web_ui_mojo_inttest.mm",
@@ -596,11 +623,8 @@ js_compile_bundle("main_frame_web_bundle") {
 
   sources = [
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
-    "web_state/js/resources/error.js",
-    "web_state/js/resources/main_frame_context_menu.js",
     "web_state/js/resources/main_frame_web_bundle.js",
     "web_state/js/resources/navigation.js",
-    "web_state/js/resources/scroll_workaround.js",
     "web_state/js/resources/text_fragments.js",
   ]
 }
@@ -610,10 +634,8 @@ js_compile_bundle("all_frames_web_bundle") {
   closure_entry_point = "__crWeb.allFramesWebBundle"
 
   sources = [
-    "web_state/js/resources/all_frames_context_menu.js",
     "web_state/js/resources/all_frames_web_bundle.js",
     "web_state/js/resources/cookie.js",
-    "web_state/js/resources/find_in_page.js",
     "web_state/js/resources/share_workaround.js",
   ]
 }
@@ -625,18 +647,14 @@ js_compile_bundle("all_frames_document_end_web_bundle") {
   sources = [
     "js_messaging/resources/setup_frame.js",
     "web_state/js/resources/all_frames_document_end_web_bundle.js",
-    "web_state/js/resources/plugin_placeholder.js",
   ]
 }
 
-js_compile_bundle("main_frame_document_end_web_bundle") {
-  visibility = [ ":js_resources" ]
-  closure_entry_point = "__crWeb.mainFrameDocumentEndWebBundle"
+js_compile_bundle("plugin_placeholder_js") {
+  visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.pluginPlaceholder"
 
-  sources = [
-    "favicon/resources/favicon.js",
-    "web_state/js/resources/main_frame_document_end_web_bundle.js",
-  ]
+  sources = [ "web_state/js/resources/plugin_placeholder.js" ]
 }
 
 js_compile_bundle("base_js") {
@@ -664,7 +682,6 @@ js_compile_checked("js_resources") {
   public_deps = [
     ":all_frames_document_end_web_bundle",
     ":all_frames_web_bundle",
-    ":main_frame_document_end_web_bundle",
     ":main_frame_web_bundle",
   ]
 

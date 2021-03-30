@@ -21,8 +21,7 @@ using testing::UnorderedElementsAre;
 
 namespace ui {
 
-using BasicAXTreeSerializer =
-    AXTreeSerializer<const AXNode*, AXNodeData, AXTreeData>;
+using BasicAXTreeSerializer = AXTreeSerializer<const AXNode*>;
 
 // The framework for these tests is that each test sets up |treedata0_|
 // and |treedata1_| and then calls GetTreeSerializer, which creates a
@@ -42,10 +41,8 @@ class AXTreeSerializerTest : public testing::Test {
   AXTreeUpdate treedata1_;
   std::unique_ptr<AXSerializableTree> tree0_;
   std::unique_ptr<AXSerializableTree> tree1_;
-  std::unique_ptr<AXTreeSource<const AXNode*, AXNodeData, AXTreeData>>
-      tree0_source_;
-  std::unique_ptr<AXTreeSource<const AXNode*, AXNodeData, AXTreeData>>
-      tree1_source_;
+  std::unique_ptr<AXTreeSource<const AXNode*>> tree0_source_;
+  std::unique_ptr<AXTreeSource<const AXNode*>> tree1_source_;
   std::unique_ptr<BasicAXTreeSerializer> serializer_;
 
  private:
@@ -241,8 +238,7 @@ TEST_F(AXTreeSerializerTest, ReparentingWithInvalidationUpdatesSubtree) {
 
 // A variant of AXTreeSource that returns true for IsValid() for one
 // particular id.
-class AXTreeSourceWithInvalidId
-    : public AXTreeSource<const AXNode*, AXNodeData, AXTreeData> {
+class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
  public:
   AXTreeSourceWithInvalidId(AXTree* tree, int invalid_id)
       : tree_(tree),
@@ -255,8 +251,8 @@ class AXTreeSourceWithInvalidId
     return true;
   }
   AXNode* GetRoot() const override { return tree_->root(); }
-  AXNode* GetFromId(int32_t id) const override { return tree_->GetFromId(id); }
-  int32_t GetId(const AXNode* node) const override { return node->id(); }
+  AXNode* GetFromId(AXNodeID id) const override { return tree_->GetFromId(id); }
+  AXNodeID GetId(const AXNode* node) const override { return node->id(); }
   void GetChildren(const AXNode* node,
                    std::vector<const AXNode*>* out_children) const override {
     *out_children = std::vector<const AXNode*>(node->children().cbegin(),
@@ -471,21 +467,19 @@ TEST_F(AXTreeSerializerTest, ResetWorksWithNewRootId) {
 
 // Wraps an AXTreeSource and provides access to the results of the
 // SerializerClearedNode callback.
-class AXTreeSourceTestWrapper
-    : public AXTreeSource<const AXNode*, AXNodeData, AXTreeData> {
+class AXTreeSourceTestWrapper : public AXTreeSource<const AXNode*> {
  public:
-  explicit AXTreeSourceTestWrapper(
-      AXTreeSource<const AXNode*, AXNodeData, AXTreeData>* tree_source)
+  explicit AXTreeSourceTestWrapper(AXTreeSource<const AXNode*>* tree_source)
       : tree_source_(tree_source) {}
   ~AXTreeSourceTestWrapper() override = default;
 
   // Override SerializerClearedNode and provide a way to access it.
-  void SerializerClearedNode(int32_t node_id) override {
+  void SerializerClearedNode(AXNodeID node_id) override {
     cleared_node_ids_.insert(node_id);
   }
 
   void ClearClearedNodeIds() { cleared_node_ids_.clear(); }
-  std::set<int32_t>& cleared_node_ids() { return cleared_node_ids_; }
+  std::set<AXNodeID>& cleared_node_ids() { return cleared_node_ids_; }
 
   // The rest of the AXTreeSource implementation just calls through to
   // tree_source_.
@@ -493,10 +487,10 @@ class AXTreeSourceTestWrapper
     return tree_source_->GetTreeData(data);
   }
   const AXNode* GetRoot() const override { return tree_source_->GetRoot(); }
-  const AXNode* GetFromId(int32_t id) const override {
+  const AXNode* GetFromId(AXNodeID id) const override {
     return tree_source_->GetFromId(id);
   }
-  int32_t GetId(const AXNode* node) const override {
+  AXNodeID GetId(const AXNode* node) const override {
     return tree_source_->GetId(node);
   }
   void GetChildren(const AXNode* node,
@@ -521,8 +515,8 @@ class AXTreeSourceTestWrapper
   }
 
  private:
-  AXTreeSource<const AXNode*, AXNodeData, AXTreeData>* tree_source_;
-  std::set<int32_t> cleared_node_ids_;
+  AXTreeSource<const AXNode*>* tree_source_;
+  std::set<AXNodeID> cleared_node_ids_;
 };
 
 TEST_F(AXTreeSerializerTest, TestClearedNodesWhenUpdatingRoot) {

@@ -4,10 +4,13 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
+<translation id="1302104331113804646">Narx kuzatuvi sozlamalari</translation>
+<translation id="1378979118429748177">Narxlar tushganda xabar olish</translation>
 <translation id="1657719826150349398">Varaqni pastga tushirish</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
 <translation id="2277224997687551299">Guruh nomini tahrirlash</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni guruhdan olib tashlash.}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni guruhdan olib tashlash.}}</translation>
+<translation id="2479148705183875116">Sozlamalarni ochish</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli guruhni yigʻish.}}</translation>
 <translation id="2569352796411618312">Bildirgi: <ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
 <translation id="257674075312929031">Guruh</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Guruhni ulashish</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yoyish.</translation>
 <translation id="2977480621796371840">Guruhdan chiqarish</translation>
+<translation id="3291470810748040983">Ochiq varaqda narx tushganda xabar olasiz</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yigʻish.}}</translation>
+<translation id="3882834874697329510">Ochiq varaqda narx tushganda xabar olish uchun Sozlamalar orqali bildirishnomalarni yoqing.</translation>
+<translation id="3940195383040445971">Narxlarni varaqlarda kuzatish</translation>
+<translation id="3996880007329611795">Xabardor qolish</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ta aloqador varaq bor. Ular guruhlansinmi?</translation>
 <translation id="4212246570487010370">Saytlarni kezishda davom etish</translation>
 <translation id="4450893287417543264">Boshqa ko‘rsatilmasin</translation>
 <translation id="4648718555153979859">Varaqlaringiz shu guruhda jamlanadi</translation>
-<translation id="4922064041913095674">Ochiq varaqlardagi qaysi narsalar narxi arzonlaganini bilish</translation>
 <translation id="492284538114688557">Narx pasayishi aniqlandi</translation>
 <translation id="5007392906805964215">Tekshirish</translation>
 <translation id="5073204694187207510">Butun ekranga chiqarilgan jadval shaklini yopish</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Keyinroq koʻrsatish</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yopish</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ta varaq guruhlandi</translation>
+<translation id="575494663145460764">Narxlar tushganda xabar qilinsinmi?</translation>
 <translation id="58326064309361797">Varaqlarni guruhlash uchun bir-birining ustiga torting</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yopish</translation>
 <translation id="6040143037577758943">Yopish</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Bir nechta variant tanlanadigan rejimni yopish</translation>
 <translation id="7151209024774799310">Varaqlarni guruhdan olib tashlash</translation>
 <translation id="7204204600596740190">Bir nechta elementni tanlash rejimi</translation>
+<translation id="7352298686197644113">Ochiq varaqlardagi qaysi narsalar narxi arzonlaganini bilish</translation>
 <translation id="753732157349120914">Varaq almashtirgich</translation>
 <translation id="7559245342362162951">Guruh varaqlarini butun ekranga jadval shaklida chiqarish</translation>
 <translation id="7792771145871471484">Batafsil.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Darchalar paneli boshqa chiqmasinmi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni yopish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni yopish}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yoyish.</translation>
+<translation id="860282621117673749">Narx tushishi signallari</translation>
+<translation id="8714939927607906138">Past narxda</translation>
 <translation id="8749939518995770034">Darchalar paneli yopildi</translation>
+<translation id="8820741577754260431">Narxlar tushishini varaqlarda kuzating</translation>
 <translation id="9150694013019234766">Ekranning quyi qismidagi varaqlar guruhidagi varaqlarni almashtirish</translation>
 <translation id="9169594135889675189">Guruhga yangi varaq kiritish</translation>
 <translation id="959682366969460160">Ishni tashkillash</translation>

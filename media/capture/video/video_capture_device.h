@@ -27,12 +27,12 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
-#include "media/base/video_frame_feedback.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/image_capture.mojom.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
+#include "media/capture/video_frame_feedback.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
@@ -65,6 +65,20 @@ class CAPTURE_EXPORT VideoFrameConsumerFeedbackObserver {
   // corresponds to.
   virtual void OnUtilizationReport(int frame_feedback_id,
                                    media::VideoFrameFeedback feedback) {}
+};
+
+struct CAPTURE_EXPORT CapturedExternalVideoBuffer {
+  CapturedExternalVideoBuffer(gfx::GpuMemoryBufferHandle handle,
+                              VideoCaptureFormat format,
+                              gfx::ColorSpace color_space);
+  CapturedExternalVideoBuffer(CapturedExternalVideoBuffer&& other);
+  ~CapturedExternalVideoBuffer();
+
+  CapturedExternalVideoBuffer& operator=(CapturedExternalVideoBuffer&& other);
+
+  gfx::GpuMemoryBufferHandle handle;
+  VideoCaptureFormat format;
+  gfx::ColorSpace color_space;
 };
 
 class CAPTURE_EXPORT VideoCaptureDevice
@@ -187,9 +201,8 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // gfx::ScopedInUseIOSurface is used to prevent reuse of buffers until all
     // consumers have consumed them.
     virtual void OnIncomingCapturedExternalBuffer(
-        gfx::GpuMemoryBufferHandle handle,
-        const VideoCaptureFormat& format,
-        const gfx::ColorSpace& color_space,
+        CapturedExternalVideoBuffer buffer,
+        std::vector<CapturedExternalVideoBuffer> scaled_buffers,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp) = 0;
 

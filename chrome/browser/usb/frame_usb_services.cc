@@ -8,7 +8,7 @@
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/usb/web_usb_chooser_android.h"
@@ -23,9 +23,9 @@ using content::WebContents;
 
 namespace {
 
-// The renderer performs its own feature policy checks so a request that gets
-// to the browser process indicates malicious code.
-const char kFeaturePolicyViolation[] =
+// The renderer performs its own permissions policy checks so a request that
+// gets to the browser process indicates malicious code.
+const char kPermissionsPolicyViolation[] =
     "Permissions policy blocks access to WebUSB.";
 
 }  // namespace
@@ -52,8 +52,8 @@ void FrameUsbServices::InitializeWebUsbChooser() {
 
 void FrameUsbServices::InitializeWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
-  if (!AllowedByFeaturePolicy()) {
-    mojo::ReportBadMessage(kFeaturePolicyViolation);
+  if (!AllowedByPermissionsPolicy()) {
+    mojo::ReportBadMessage(kPermissionsPolicyViolation);
     return;
   }
 
@@ -65,9 +65,9 @@ void FrameUsbServices::InitializeWebUsbService(
   web_usb_service_->BindReceiver(std::move(receiver));
 }
 
-bool FrameUsbServices::AllowedByFeaturePolicy() const {
+bool FrameUsbServices::AllowedByPermissionsPolicy() const {
   return render_frame_host_->IsFeatureEnabled(
-      blink::mojom::FeaturePolicyFeature::kUsb);
+      blink::mojom::PermissionsPolicyFeature::kUsb);
 }
 
 // static

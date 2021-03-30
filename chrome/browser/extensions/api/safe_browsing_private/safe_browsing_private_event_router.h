@@ -12,9 +12,12 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -38,7 +41,6 @@ class DeviceManagementService;
 }
 
 namespace safe_browsing {
-class BinaryUploadService;
 enum class DeepScanAccessPoint;
 }
 
@@ -91,6 +93,8 @@ class SafeBrowsingPrivateEventRouter
   static const char kKeyInterstitialEvent[];
   static const char kKeySensitiveDataEvent[];
   static const char kKeyUnscannedFileEvent[];
+  static const char* kAllEvents[6];
+
   static const char kKeyUnscannedReason[];
 
   // String constants for the "trigger" event field.  This corresponds to
@@ -117,6 +121,7 @@ class SafeBrowsingPrivateEventRouter
                                  const std::string& file_name,
                                  const std::string& download_digest_sha256,
                                  const std::string& mime_type,
+                                 const download::DownloadDangerType danger_type,
                                  const int64_t content_size);
 
   // Notifies listeners that the user saw a security interstitial.
@@ -175,6 +180,13 @@ class SafeBrowsingPrivateEventRouter
                                 const std::string& mime_type,
                                 const int64_t content_size,
                                 safe_browsing::EventResult event_result);
+  void OnDangerousDownloadEvent(const GURL& url,
+                                const std::string& file_name,
+                                const std::string& download_digest_sha256,
+                                const download::DownloadDangerType danger_type,
+                                const std::string& mime_type,
+                                const int64_t content_size,
+                                safe_browsing::EventResult event_result);
 
   // Notifies listeners that the user bypassed a download warning.
   // - |url| is the download URL
@@ -188,16 +200,21 @@ class SafeBrowsingPrivateEventRouter
       const std::string& threat_type,
       const std::string& mime_type,
       const int64_t content_size);
+  void OnDangerousDownloadWarningBypassed(
+      const GURL& url,
+      const std::string& file_name,
+      const std::string& download_digest_sha256,
+      const download::DownloadDangerType danger_type,
+      const std::string& mime_type,
+      const int64_t content_size);
 
   // Returns true if enterprise real-time reporting should be initialized,
-  // checking both the feature flag and whether the browser is managed.  This
-  // function is public so that it can called in tests.
+  // checking both the feature flag. This function is public so that it can
+  // called in tests.
   static bool ShouldInitRealtimeReportingClient();
 
-  void SetCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
-
-  void SetBinaryUploadServiceForTesting(
-      safe_browsing::BinaryUploadService* binary_upload_service);
+  void SetBrowserCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
+  void SetProfileCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
 
   void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
 
@@ -207,34 +224,41 @@ class SafeBrowsingPrivateEventRouter
   void OnRegistrationStateChanged(policy::CloudPolicyClient* client) override {}
 
  protected:
-  // Callback to report safe browsing event through real-time reporting channel,
-  // if the browser is authorized to do so. Declared as protected to be called
-  // directly by tests. Events are created lazily to avoid doing useless work if
-  // they are discarded.
-  using EventBuilder = base::OnceCallback<base::Value()>;
-  void ReportRealtimeEventCallback(const std::string& name,
-                                   EventBuilder event_builder,
-                                   bool authorized);
+  // Report safe browsing event through real-time reporting channel, if enabled.
+  // Declared as virtual for tests. Declared as protected to be called directly
+  // by tests.
+  virtual void ReportRealtimeEvent(
+      const std::string&,
+      const enterprise_connectors::ReportingSettings& settings,
+      base::Value event);
 
  private:
-  // Initialize the real-time report client if needed.  This client is used only
+  // Initialize a real-time report client if needed.  This client is used only
   // if real-time reporting is enabled, the machine is properly reigistered
   // with CBCM and the appropriate policies are enabled.
-  void InitRealtimeReportingClient();
+  void InitRealtimeReportingClient(
+      const enterprise_connectors::ReportingSettings& settings);
 
-  // Continues execution if the client is authorized to do so.
-  void IfAuthorized(base::OnceCallback<void(bool)> cont);
+  // Sub-methods called by InitRealtimeReportingClient to make appropriate
+  // verifications and initialize the corresponding client. Returns a policy
+  // client description and a client, which can be nullptr if it can't be
+  // initialized.
+  std::pair<std::string, policy::CloudPolicyClient*> InitBrowserReportingClient(
+      const std::string& dm_token);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  std::pair<std::string, policy::CloudPolicyClient*> InitProfileReportingClient(
+      const std::string& dm_token);
+#endif
 
   // Determines if the real-time reporting feature is enabled.
-  bool IsRealtimeReportingEnabled();
+  // Obtain settings to apply to a reporting event from ConnectorsService.
+  // base::nullopt represents that reporting should not be done.
+  base::Optional<enterprise_connectors::ReportingSettings>
+  GetReportingSettings();
 
   // Called whenever the real-time reporting policy changes.
   void RealtimeReportingPrefChanged(const std::string& pref);
-
-  // Report safe browsing event through real-time reporting channel, if enabled.
-  // Declared as virtual for tests.
-  virtual void ReportRealtimeEvent(const std::string&,
-                                   EventBuilder event_builder);
 
   // Create a privately owned cloud policy client for events routing.
   void CreatePrivateCloudPolicyClient(
@@ -287,16 +311,27 @@ class SafeBrowsingPrivateEventRouter
       const int64_t content_size,
       safe_browsing::EventResult event_result);
 
+  void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
+
   content::BrowserContext* context_;
   signin::IdentityManager* identity_manager_ = nullptr;
   EventRouter* event_router_ = nullptr;
-  safe_browsing::BinaryUploadService* binary_upload_service_ = nullptr;
-  // The cloud policy client used to upload events to the cloud. This client
-  // is never used to fetch policies. This pointer is not owned by the class.
-  policy::CloudPolicyClient* client_ = nullptr;
-  // The |private_client_| is used on platforms where we cannot just get a
-  // client and we create our own (used through |client_|).
-  std::unique_ptr<policy::CloudPolicyClient> private_client_;
+
+  // The cloud policy clients used to upload browser events and profile events
+  // to the cloud. These clients are never used to fetch policies. These
+  // pointers are not owned by the class.
+  policy::CloudPolicyClient* browser_client_ = nullptr;
+  policy::CloudPolicyClient* profile_client_ = nullptr;
+
+  // The private clients are used on platforms where we cannot just get a
+  // client and we create our own (used through the above client pointers).
+  std::unique_ptr<policy::CloudPolicyClient> browser_private_client_;
+  std::unique_ptr<policy::CloudPolicyClient> profile_private_client_;
+
+  // When a request is rejected for a given DM token, wait 24 hours before
+  // trying again for this specific DM Token.
+  base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
+      rejected_dm_token_timers_;
 
   base::WeakPtrFactory<SafeBrowsingPrivateEventRouter> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingPrivateEventRouter);

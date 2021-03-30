@@ -22,7 +22,7 @@
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/835115
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/835115
     ]
@@ -30,20 +30,19 @@
   "accessibilityPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "whitelist": [
+    "allowlist": [
       "0D209B5E4401BB8E7873B5AB5B1346A1CB067015",  // http://crbug.com/1039158
       "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E"
     ]
   },
   "activeTab": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "min_manifest_version": 2
+    "extension_types": ["extension", "legacy_packaged_app"]
   },
   "activityLogPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "whitelist": [
+    "allowlist": [
       "EE17C698905F7F2E6DDC87C9C30F11E164C829F4",  // For unit testing ALP
       "C50DC2AC31D826BC977032AF12DE4694CC8467DC",  // For unit testing ALP
       "AE27D69DBE571F4B1694F05C89B710C646792231",  // Published ADT.
@@ -58,7 +57,7 @@
   "autotestPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "05D1DBD6E8B9C4690FFA7D50E6F60C5290DC662A", // http://crbug.com/941107
       "0D209B5E4401BB8E7873B5AB5B1346A1CB067015", // http://crbug.com/654525
       "93CFDA3681E923AD7AB291CEDD98248396B5496C"  // http://crbug.com/803543
@@ -91,7 +90,7 @@
   "chromePrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "whitelist": [
+    "allowlist": [
       "2462D64ACB971A7E708757159C2B17761D4FF54A",  // Citrix Receiver
       "3010EF507AFEF487EEA9CDE2930EC94867C60936",  // Citrix Receiver Beta
       "ABAABC5F49E022A76CBB12972A53B58354C04AC6"   // Citrix Receiver Dev
@@ -101,7 +100,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/293683
       "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/293683
       "8C3741E3AF0B93B6E8E0DDD499BB0B74839EA578",  // http://crbug.com/234235
@@ -149,12 +148,6 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
-  "cloudPrintPrivate": {
-    "channel": "stable",
-    "extension_types": ["hosted_app"],
-    // CloudPrint
-    "whitelist": ["99060B01DE911EB85FD630C8BA6320C9186CA3AB"]
-  },
   "commandLinePrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
@@ -163,7 +156,7 @@
   "commands.accessibility": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "whitelist": [
+    "allowlist": [
       "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E",  // http://crbug.com/404768
       "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/404768
     ]
@@ -183,7 +176,7 @@
   "crashReportPrivate": {
     "channel": "dev",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "whitelist": [
+    "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // Secure Shell App (stable)
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B",  // Secure Shell App (dev)
       "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
@@ -195,15 +188,8 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "component",
-    "whitelist": [
+    "allowlist": [
       "E24F1786D842E91E74C27929B0B3715A4689A473"  // Cryptotoken
-    ]
-  },
-  "dataReductionProxy": {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "whitelist": [
-      "852290F2442EEE45EF673B8DA6090112079012A2"   // http://crbug.com/375484
     ]
   },
   "debugger": [
@@ -214,7 +200,7 @@
     {
       "channel": "stable",
       "extension_types": ["platform_app"],
-      "whitelist": [
+      "allowlist": [
         "AE27D69DBE571F4B1694F05C89B710C646792231" // Published ADT.
       ]
     }
@@ -222,7 +208,7 @@
   "developerPrivate": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "whitelist": [
+    "allowlist": [
         "AE27D69DBE571F4B1694F05C89B710C646792231", // Published ADT.
         "FA0501B579070BB9CBD4FCAEC8CB0EDF22BA2F04", // Apps Editor published.
         "4A4EA121622FCA3D78ED2AB534197F43D7189EE0", // Spark nightly build.
@@ -269,7 +255,7 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
     "location": "policy",
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],
@@ -296,7 +282,7 @@
   },
   "enterprise.platformKeys": [{
     "channel": "stable",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "extension_types": ["extension", "platform_app", "legacy_packaged_app"],
     "location": "policy"
   },
@@ -312,7 +298,7 @@
     "extension_types": ["extension"],
     "location": "external_component",
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "EC8EA268128FECE14CEC68B90686D87755D87083"  // http://crbug.com/854695
     ]
   }],
@@ -320,7 +306,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "657FEC7E77355CA205B0E226586621F86B33F611",  // http://crbug.com/246857
       "5894126C625EF31852F215ED301A5FF1F9B7D026",  // http://crbug.com/246857
       "8DAE23A10703C926B21862B2F318FB4E110B17BD",  // http://crbug.com/487455
@@ -332,8 +318,7 @@
   "enterprise.reportingPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "platforms" : ["win", "mac", "linux"],
-    "whitelist" : [
+    "allowlist" : [
       "86D63D90308742AA65B8B29AE2D39FED2D6DC310",  // https://crbug.com/882461 SecureConnect
       "031E5E4A54C39E4F46E11CE643584E9187915908",  // https://crbug.com/882461 SecureConnect
       "349E89FE0296161007623C0B4096B617D7CECD54",  // https://crbug.com/882461 SecureConnect
@@ -357,7 +342,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "74E2D32A61B08D29521A8C4E360F581DE78F5CA5",  // Image loader
       "A948368FC53BE437A55FEB414106E207925482F5",  // Files app
       "A13373C881097323F4DEF392474BE2E28DA6D4ED",  // Gallery
@@ -377,7 +362,7 @@
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/673004
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004
     ]
@@ -428,7 +413,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "2462D64ACB971A7E708757159C2B17761D4FF54A",  // Citrix Receiver
       "3010EF507AFEF487EEA9CDE2930EC94867C60936",  // Citrix Receiver Beta
       "ABAABC5F49E022A76CBB12972A53B58354C04AC6"   // Citrix Receiver Dev
@@ -447,7 +432,7 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "A948368FC53BE437A55FEB414106E207925482F5"  // File Manager
     ]
   },
@@ -456,7 +441,7 @@
     "component_extensions_auto_granted": false,
     "extension_types": ["extension"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "6A4A0389E8D47118E96E6221B0B7221CA3715801",  // Apitest extension
       "EC8EA268128FECE14CEC68B90686D87755D87083",  // Assessment Assistant
       "AA1C88257F51F7A9AFB947720AACE8CA7E9CF85C",  // Assessment Assistant (dev)
@@ -477,7 +462,7 @@
     "extension_types": ["extension","login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-sesesion test extension
     ]
@@ -500,7 +485,7 @@
     "extension_types": ["login_screen_extension"],
     "location": "policy",
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519" // Login screen APIs test extension
     ]
   }],
@@ -517,14 +502,14 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "EC3DE21E048B67319893889529354DFBFA96FD23"  // Smart Card Connector
     ]
   }],
   "webcamPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "whitelist": [
+    "allowlist": [
       "E703483CEF33DEC18B4B6DD84B5C776FB9182BDB",  // http://crbug.com/891460
       "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/891460
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/891460
@@ -540,7 +525,7 @@
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
     "platforms": ["chromeos", "mac", "win"],
-    "whitelist": [
+    "allowlist": [
       "63ED55E43214C211F82122ED56407FF1A807F2A3",  // http://crbug.com/588179
       "FA01E0B81978950F2BC5A50512FD769725F57510",  // http://crbug.com/588179
       "B11A93E7E5B541F8010245EBDE2C74647D6C14B9",  // http://crbug.com/588179
@@ -557,7 +542,7 @@
     {
       "channel": "stable",
       "extension_types": ["platform_app"],
-      "whitelist": [
+      "allowlist": [
         "AE27D69DBE571F4B1694F05C89B710C646792231", // Published ADT
         // TODO(grv): clean up once Apps developer tool is published.
         "5107DE9024C329EEA9C9A72D94C16723790C6422",  // Apps Developer Tool.
@@ -579,7 +564,7 @@
     {
       "channel": "stable",
       "extension_types": ["hosted_app"],
-      "whitelist": [
+      "allowlist": [
         "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
       ]
     },
@@ -602,7 +587,7 @@
   "mediaRouterPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
       "226CF815E39A363090A1E547D53063472B8279FA"   // Media Router Stable
     ]
@@ -610,7 +595,7 @@
   "mdns": [{
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
       "226CF815E39A363090A1E547D53063472B8279FA",  // Media Router Stable
       "1BFB3A47AA4A1E1C4714D919217602685CDD0FA7"   // http://crbug.com/574600
@@ -650,7 +635,7 @@
   "platformKeys": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],
@@ -682,14 +667,14 @@
   }, {
     "channel": "beta",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "7D7A4B147FE39908A5AF13F85E38989C54BBE41C",  // http://crbug.com/370700
       "0EEDFC0EED87871237213F34EBC7B4982A195C95"   // http://crbug.com/370700
     ]
   }, {
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "DF84F03F9B960409CCDE0D895B9650EBE81C0A8E",  // Hangout Services
       "80B9DC58E5210749F052F5B4DB239C50CF72AEB6",  // Hangouts test extension
       "7D7A4B147FE39908A5AF13F85E38989C54BBE41C",  // http://crbug.com/370700
@@ -707,7 +692,7 @@
   "imageWriterPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "whitelist": [
+    "allowlist": [
       // TODO(ntang): Remove these 2 hashes when the app is no longer active.
       "A291B26E088FA6BA53FFD72F0916F06EBA7C585A", // http://crbug.com/329088
       "D7986543275120831B39EF28D1327552FC343960", // http://crbug.com/329088
@@ -731,7 +716,7 @@
   "rtcPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "whitelist": [
+    "allowlist": [
       "53041A2FA309EECED01FFC751E7399186E860B2C",  // Google Talk prod
       "A74A4D44C7CFCD8844830E6140C8D763E12DD8F3",  // Google Talk beta
       "E7E2461CE072DF036CF9592740196159E2D7C089",  // Google Talk alpha
@@ -741,7 +726,7 @@
   "safeBrowsingPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "B281B98DDD6A379EF50D59BB1135419536C1C353",  // Report site to Safe Browsing Extension, crbug.com/932161
       "FD15C63ABA854733FDCBC1D4D34A71E963A12ABD",  // Chrome Reporting Extension
       "08455FA7CB8734168378F731B00B354CEEE0088F"   // Chrome Reporting Ext. Beta
@@ -768,7 +753,7 @@
   {
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
       "226CF815E39A363090A1E547D53063472B8279FA"   // Media Router Release
     ]
@@ -778,7 +763,7 @@
     "extension_types": ["platform_app"],
     "platforms": ["chromeos"],
     "session_types": ["kiosk"],
-    "whitelist": [
+    "allowlist": [
       "E703483CEF33DEC18B4B6DD84B5C776FB9182BDB",  // https://crbug.com/803362
       "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // https://crbug.com/803362
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // https://crbug.com/803362
@@ -794,7 +779,7 @@
     "channel": "trunk",
     "extension_types": ["extension"],
     "location": "component",
-    "whitelist": [
+    "allowlist": [
       // api_test extension "jjeoclcdfjddkdjokiejckgcildcflpp"
       // https://crbug.com/1015753
       "64B58C7B53E3E1447FD0DEA62C5E654206179F99"
@@ -810,7 +795,7 @@
     "location": "component"
   },
   "tabGroups": {
-    "channel": "dev",
+    "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },
@@ -822,7 +807,7 @@
     {
       "channel": "stable",
       "extension_types": ["platform_app"],
-      "whitelist": [
+      "allowlist": [
         "AE27D69DBE571F4B1694F05C89B710C646792231", // Published ADT.
         // TODO(grv): clean up once Apps developer tool is published.
         "5107DE9024C329EEA9C9A72D94C16723790C6422"  // Apps Developer Tool.
@@ -837,7 +822,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // Secure Shell App (stable)
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B",  // Secure Shell App (dev)
       "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
@@ -866,7 +851,7 @@
     "channel": "trunk",
     "platforms": ["chromeos"],
     "extension_types": ["extension", "platform_app"],
-    "whitelist": [
+    "allowlist": [
       // ChromeOS Autotest extension.
       "0D209B5E4401BB8E7873B5AB5B1346A1CB067015"
     ]
@@ -889,7 +874,7 @@
   "webrtcAudioPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       // Hangouts test extension
       "80B9DC58E5210749F052F5B4DB239C50CF72AEB6",
       // Hangout Services component extension.
@@ -901,7 +886,7 @@
   "webrtcDesktopCapturePrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       // Hangouts test extension
       "80B9DC58E5210749F052F5B4DB239C50CF72AEB6",
       // Hangout Services component extension.
@@ -913,7 +898,7 @@
   "webrtcLoggingPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "whitelist": [
+    "allowlist": [
       // Hangouts test extension
       "80B9DC58E5210749F052F5B4DB239C50CF72AEB6",
       // Hangout Services component extension.
@@ -934,7 +919,7 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     "component_extensions_auto_granted": false,
-    "whitelist": [
+    "allowlist": [
       // Extension used for API test.
       "ADFA45434ABA2F1A4647E673F53FF37F8F6047A3",
       // These apps are for internal Google use only.
@@ -947,7 +932,7 @@
   "webstorePrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "hosted_app"],
-    "whitelist": [
+    "allowlist": [
       "B44D08FD98F1523ED5837D78D0A606EA9D6206E5",  // Web Store
       "2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4"   // Enterprise Web Store
     ]

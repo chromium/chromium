@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 #include "testing/gtest/include/gtest/gtest.h"

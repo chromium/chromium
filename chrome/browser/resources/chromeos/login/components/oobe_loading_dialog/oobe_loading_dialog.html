@@ -1,0 +1,40 @@
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+
+<link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_content_dialog.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+
+<dom-module id="oobe-loading-dialog">
+  <template>
+    <style include="oobe-dialog-host">
+      paper-spinner-lite {
+        height: 38px;
+        margin-bottom: 28px;
+        width: 38px;
+      }
+
+      #comment {
+        color: #747474;
+      }
+    </style>
+    <oobe-content-dialog role="dialog" no-footer-padding no-buttons>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <paper-spinner-lite dir="ltr" active></paper-spinner-lite>
+        <div id="comment" aria-live="polite" class="focus-on-show"
+            aria-label$="[[i18nDynamic(locale, textKey)]]">
+          [[i18nDynamic(locale, textKey)]]
+        </div>
+      </div>
+    </oobe-content-dialog>
+  </template>
+  <script src="oobe_loading_dialog.js"></script>
+</dom-module>
+

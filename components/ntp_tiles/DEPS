@@ -8,7 +8,6 @@ include_rules = [
   "+components/image_fetcher",
   "+components/pref_registry",
   "+components/prefs",
-  "+components/rappor",
   "+components/search_engines",
   "+components/search",
   "+components/strings/grit/components_strings.h",

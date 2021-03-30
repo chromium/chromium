@@ -135,12 +135,9 @@ TEST(CertVerifierMojomTraitsTest, ConfigTrue) {
 TEST(CertVerifierMojomTraitsTest, ConfigCRLAndAdditionalCerts) {
   std::string crl_set;
 
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::ReadFileToString(
-        net::GetTestCertsDirectory().AppendASCII("crlset_by_leaf_spki.raw"),
-        &crl_set);
-  }
+  base::ReadFileToString(
+      net::GetTestCertsDirectory().AppendASCII("crlset_by_leaf_spki.raw"),
+      &crl_set);
 
   const base::FilePath certs_dir = net::GetTestCertsDirectory();
 

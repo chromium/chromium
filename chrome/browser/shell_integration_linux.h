@@ -68,12 +68,13 @@ std::string GetDesktopFileContents(const base::FilePath& chrome_exe_path,
                                    const std::string& app_name,
                                    const GURL& url,
                                    const std::string& extension_id,
-                                   const base::string16& title,
+                                   const std::u16string& title,
                                    const std::string& icon_name,
                                    const base::FilePath& profile_path,
                                    const std::string& categories,
                                    const std::string& mime_type,
-                                   bool no_display);
+                                   bool no_display,
+                                   const std::string& run_on_os_login_mode);
 
 // Returns contents for .desktop file that executes command_line. This is a more
 // general form of GetDesktopFileContents. If |no_display| is true, the shortcut
@@ -82,7 +83,7 @@ std::string GetDesktopFileContentsForCommand(
     const base::CommandLine& command_line,
     const std::string& app_name,
     const GURL& url,
-    const base::string16& title,
+    const std::u16string& title,
     const std::string& icon_name,
     const std::string& categories,
     const std::string& mime_type,
@@ -90,7 +91,7 @@ std::string GetDesktopFileContentsForCommand(
 
 // Returns contents for .directory file named |title| with icon |icon_name|. If
 // |icon_name| is empty, will use the Chrome icon.
-std::string GetDirectoryFileContents(const base::string16& title,
+std::string GetDirectoryFileContents(const std::u16string& title,
                                      const std::string& icon_name);
 
 // Returns the filename for a .xml file, corresponding to a given |app_id|,

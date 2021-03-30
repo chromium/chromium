@@ -117,13 +117,15 @@ class AppLauncherTabHelperTest : public PlatformTest {
 
   bool TestShouldAllowRequest(NSString* url_string,
                               bool target_frame_is_main,
+                              bool target_frame_is_cross_origin,
                               bool has_user_gesture,
                               ui::PageTransition transition_type =
                                   ui::PageTransition::PAGE_TRANSITION_LINK)
       WARN_UNUSED_RESULT {
     NSURL* url = [NSURL URLWithString:url_string];
     web::WebStatePolicyDecider::RequestInfo request_info(
-        transition_type, target_frame_is_main, has_user_gesture);
+        transition_type, target_frame_is_main, target_frame_is_cross_origin,
+        has_user_gesture);
     return tab_helper_
         ->ShouldAllowRequest([NSURLRequest requestWithURL:url], request_info)
         .ShouldAllowNavigation();
@@ -171,7 +173,8 @@ class AppLauncherTabHelperTest : public PlatformTest {
         URLWithString:@"itms-apps://itunes.apple.com/us/app/appname/id123"];
     web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type,
-        /*target_frame_is_main=*/true, /*has_user_gesture=*/true);
+        /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
+        /*has_user_gesture=*/true);
     EXPECT_TRUE(tab_helper_
                     ->ShouldAllowRequest([NSURLRequest requestWithURL:url],
                                          request_info)
@@ -193,10 +196,19 @@ class AppLauncherTabHelperTest : public PlatformTest {
 };
 
 // Tests that a valid URL launches app.
-TEST_F(AppLauncherTabHelperTest, AbuseDetectorPolicyAllowedForValidUrl) {
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_AbuseDetectorPolicyAllowedForValidUrl \
+  AbuseDetectorPolicyAllowedForValidUrl
+#else
+#define MAYBE_AbuseDetectorPolicyAllowedForValidUrl \
+  DISABLED_AbuseDetectorPolicyAllowedForValidUrl
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_AbuseDetectorPolicyAllowedForValidUrl) {
   abuse_detector_.policy = ExternalAppLaunchPolicyAllow;
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(1U, delegate_.app_launch_count());
   EXPECT_EQ(GURL("valid://1234"), delegate_.last_launched_app_url());
@@ -207,6 +219,7 @@ TEST_F(AppLauncherTabHelperTest, AbuseDetectorPolicyBlockedForValidUrl) {
   abuse_detector_.policy = ExternalAppLaunchPolicyBlock;
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.alert_shown_count());
   EXPECT_EQ(0U, delegate_.app_launch_count());
@@ -214,11 +227,18 @@ TEST_F(AppLauncherTabHelperTest, AbuseDetectorPolicyBlockedForValidUrl) {
 
 // Tests that a valid URL shows an alert and launches app when launch policy is
 // to prompt and user accepts.
-TEST_F(AppLauncherTabHelperTest, ValidUrlPromptUserAccepts) {
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ValidUrlPromptUserAccepts ValidUrlPromptUserAccepts
+#else
+#define MAYBE_ValidUrlPromptUserAccepts DISABLED_ValidUrlPromptUserAccepts
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_ValidUrlPromptUserAccepts) {
   abuse_detector_.policy = ExternalAppLaunchPolicyPrompt;
   delegate_.set_should_accept_prompt(true);
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
 
   EXPECT_EQ(1U, delegate_.alert_shown_count());
@@ -232,29 +252,40 @@ TEST_F(AppLauncherTabHelperTest, ValidUrlPromptUserRejects) {
   abuse_detector_.policy = ExternalAppLaunchPolicyPrompt;
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.app_launch_count());
 }
 
 // Tests that ShouldAllowRequest only launches apps for App Urls in main frame,
 // or iframe when there was a recent user interaction.
-TEST_F(AppLauncherTabHelperTest, ShouldAllowRequestWithAppUrl) {
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ShouldAllowRequestWithAppUrl ShouldAllowRequestWithAppUrl
+#else
+#define MAYBE_ShouldAllowRequestWithAppUrl DISABLED_ShouldAllowRequestWithAppUrl
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_ShouldAllowRequestWithAppUrl) {
   NSString* url_string = @"itms-apps://itunes.apple.com/us/app/appname/id123";
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(1U, delegate_.app_launch_count());
 
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/true));
   EXPECT_EQ(2U, delegate_.app_launch_count());
 
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/false,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(2U, delegate_.app_launch_count());
 
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/false,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/true));
   EXPECT_EQ(3U, delegate_.app_launch_count());
 }
@@ -264,18 +295,23 @@ TEST_F(AppLauncherTabHelperTest, ShouldAllowRequestWithAppUrl) {
 TEST_F(AppLauncherTabHelperTest, ShouldAllowRequestWithNonAppUrl) {
   EXPECT_TRUE(TestShouldAllowRequest(
       @"http://itunes.apple.com/us/app/appname/id123",
-      /*target_frame_is_main=*/true, /*has_user_gesture=*/false));
+      /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false));
   EXPECT_TRUE(TestShouldAllowRequest(@"file://a/b/c",
                                      /*target_frame_is_main=*/true,
+                                     /*target_frame_is_cross_origin=*/false,
                                      /*has_user_gesture=*/true));
   EXPECT_TRUE(TestShouldAllowRequest(@"about://test",
                                      /*target_frame_is_main=*/false,
+                                     /*target_frame_is_cross_origin=*/false,
                                      /*has_user_gesture=*/false));
   EXPECT_TRUE(TestShouldAllowRequest(@"data://test",
                                      /*target_frame_is_main=*/false,
+                                     /*target_frame_is_cross_origin=*/false,
                                      /*has_user_gesture=*/true));
   EXPECT_TRUE(TestShouldAllowRequest(@"blob://test",
                                      /*target_frame_is_main=*/false,
+                                     /*target_frame_is_cross_origin=*/false,
                                      /*has_user_gesture=*/true));
   EXPECT_EQ(0U, delegate_.app_launch_count());
 }
@@ -284,16 +320,24 @@ TEST_F(AppLauncherTabHelperTest, ShouldAllowRequestWithNonAppUrl) {
 TEST_F(AppLauncherTabHelperTest, InvalidUrls) {
   EXPECT_FALSE(TestShouldAllowRequest(/*url_string=*/@"",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_FALSE(TestShouldAllowRequest(@"invalid",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.app_launch_count());
 }
 
 // Tests that when the last committed URL is invalid, the URL is only opened
 // when the last committed item is nil.
-TEST_F(AppLauncherTabHelperTest, ValidUrlInvalidCommittedURL) {
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ValidUrlInvalidCommittedURL ValidUrlInvalidCommittedURL
+#else
+#define MAYBE_ValidUrlInvalidCommittedURL DISABLED_ValidUrlInvalidCommittedURL
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_ValidUrlInvalidCommittedURL) {
   NSString* url_string = @"itms-apps://itunes.apple.com/us/app/appname/id123";
   web_state_.SetCurrentURL(GURL());
 
@@ -303,12 +347,14 @@ TEST_F(AppLauncherTabHelperTest, ValidUrlInvalidCommittedURL) {
   navigation_manager_->SetLastCommittedItem(item.get());
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.app_launch_count());
 
   navigation_manager_->SetLastCommittedItem(nullptr);
   EXPECT_FALSE(TestShouldAllowRequest(url_string,
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(1U, delegate_.app_launch_count());
 }
@@ -317,15 +363,56 @@ TEST_F(AppLauncherTabHelperTest, ValidUrlInvalidCommittedURL) {
 TEST_F(AppLauncherTabHelperTest, InsecureUrls) {
   EXPECT_FALSE(TestShouldAllowRequest(@"app-settings://",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.app_launch_count());
+}
+
+// Tests that tel: URLs are blocked when the target frame is cross-origin
+// with respect to the source origin.
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_TelUrls TelUrls
+#else
+#define MAYBE_TelUrls DISABLED_TelUrls
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
+  EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
+                                      /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/true,
+                                      /*has_user_gesture=*/false));
+  EXPECT_EQ(0U, delegate_.app_launch_count());
+
+  EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
+                                      /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/true,
+                                      /*has_user_gesture=*/true));
+  EXPECT_EQ(0U, delegate_.app_launch_count());
+
+  EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
+                                      /*target_frame_is_main=*/false,
+                                      /*target_frame_is_cross_origin=*/true,
+                                      /*has_user_gesture=*/true));
+  EXPECT_EQ(0U, delegate_.app_launch_count());
+
+  EXPECT_FALSE(TestShouldAllowRequest(@"tel:+12345551212",
+                                      /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*has_user_gesture=*/false));
+  EXPECT_EQ(1U, delegate_.app_launch_count());
 }
 
 // Tests that URLs with U2F schemes are handled correctly.
 // This test is using https://chromeiostesting-dot-u2fdemo.appspot.com URL which
 // is a URL allowed for the purpose of testing, but the test doesn't send any
 // requests to the server.
-TEST_F(AppLauncherTabHelperTest, U2FUrls) {
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_U2FUrls U2FUrls
+#else
+#define MAYBE_U2FUrls DISABLED_U2FUrls
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_U2FUrls) {
   // Add required tab helpers for the U2F check.
   TabIdTabHelper::CreateForWebState(&web_state_);
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
@@ -337,6 +424,7 @@ TEST_F(AppLauncherTabHelperTest, U2FUrls) {
   navigation_manager_->SetLastCommittedItem(item.get());
   EXPECT_FALSE(TestShouldAllowRequest(@"u2f-x-callback://chromium.test",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.app_launch_count());
 
@@ -345,6 +433,7 @@ TEST_F(AppLauncherTabHelperTest, U2FUrls) {
   navigation_manager_->SetLastCommittedItem(item.get());
   EXPECT_FALSE(TestShouldAllowRequest(@"u2f://chromium.test",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.app_launch_count());
 
@@ -354,29 +443,39 @@ TEST_F(AppLauncherTabHelperTest, U2FUrls) {
   navigation_manager_->SetLastCommittedItem(item.get());
   EXPECT_FALSE(TestShouldAllowRequest(@"u2f://chromium.test",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(1U, delegate_.app_launch_count());
   EXPECT_TRUE(delegate_.last_launched_app_url().SchemeIs("u2f-x-callback"));
 }
 
 // Tests that URLs with Chrome Bundle schemes are blocked on iframes.
-TEST_F(AppLauncherTabHelperTest, ChromeBundleUrlScheme) {
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ChromeBundleUrlScheme ChromeBundleUrlScheme
+#else
+#define MAYBE_ChromeBundleUrlScheme DISABLED_ChromeBundleUrlScheme
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_ChromeBundleUrlScheme) {
   // Get the test bundle URL Scheme.
   NSString* scheme = [[ChromeAppConstants sharedInstance] bundleURLScheme];
   NSString* url = [NSString stringWithFormat:@"%@://www.google.com", scheme];
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/false,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.app_launch_count());
 
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/false,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/true));
   EXPECT_EQ(0U, delegate_.app_launch_count());
 
   // Chrome Bundle URL scheme is only allowed from main frames.
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(1U, delegate_.app_launch_count());
 }
@@ -384,7 +483,13 @@ TEST_F(AppLauncherTabHelperTest, ChromeBundleUrlScheme) {
 // Tests that ShouldAllowRequest updates the reading list correctly for non-link
 // transitions regardless of the app launching success when AppLauncherRefresh
 // flag is enabled.
-TEST_F(AppLauncherTabHelperTest, UpdatingTheReadingList) {
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_UpdatingTheReadingList UpdatingTheReadingList
+#else
+#define MAYBE_UpdatingTheReadingList DISABLED_UpdatingTheReadingList
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_UpdatingTheReadingList) {
   // Update reading list if the transition is not a link transition.
   EXPECT_TRUE(TestReadingListUpdate(/*is_app_blocked=*/true,
                                     /*is_link_transition*/ false,
@@ -410,13 +515,21 @@ TEST_F(AppLauncherTabHelperTest, UpdatingTheReadingList) {
 
 // Tests that launching a SMS URL via a JavaScript redirect in the main frame
 // is allowed. Covers the scenario for crbug.com/1058388
-TEST_F(AppLauncherTabHelperTest, LaunchSmsApp_JavaScriptRedirect) {
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_LaunchSmsApp_JavaScriptRedirect LaunchSmsApp_JavaScriptRedirect
+#else
+#define MAYBE_LaunchSmsApp_JavaScriptRedirect \
+  DISABLED_LaunchSmsApp_JavaScriptRedirect
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_LaunchSmsApp_JavaScriptRedirect) {
   NSString* sms_url_string = @"sms:?&body=Hello%20World";
   ui::PageTransition page_transition = ui::PageTransitionFromInt(
       ui::PageTransition::PAGE_TRANSITION_LINK |
       ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT);
   EXPECT_FALSE(
       TestShouldAllowRequest(sms_url_string, /*target_frame_is_main=*/true,
+                             /*target_frame_is_cross_origin=*/false,
                              /*has_user_gesture=*/false, page_transition));
   EXPECT_EQ(1U, delegate_.app_launch_count());
 }
@@ -475,13 +588,20 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
 
   NSString* url_string = @"itms-apps://itunes.apple.com/us/app/appname/id123";
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(0U, delegate_.app_launch_count());
 }
 
 // Tests that URLs to non-blocked domains are able to open native apps when
 // policy is blocking other domains.
-TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, AllowedUrl) {
+// TODO(crbug.com/1172516): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_AllowedUrl AllowedUrl
+#else
+#define MAYBE_AllowedUrl DISABLED_AllowedUrl
+#endif
+TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, MAYBE_AllowedUrl) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       /*enabled_features=*/{kURLBlocklistIOS,
@@ -490,6 +610,7 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, AllowedUrl) {
 
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(1U, delegate_.app_launch_count());
   EXPECT_EQ(GURL("valid://1234"), delegate_.last_launched_app_url());

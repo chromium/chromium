@@ -15,8 +15,6 @@ namespace media {
 TEST(VideoEncoderInfoStructTraitTest, RoundTrip) {
   ::media::VideoEncoderInfo input;
   input.implementation_name = "FakeVideoEncodeAccelerator";
-  // Scaling settings.
-  input.scaling_settings = ::media::ScalingSettings(12, 123);
   // FPS allocation.
   for (size_t i = 0; i < ::media::VideoEncoderInfo::kMaxSpatialLayers; ++i)
     input.fps_allocation[i] = {5, 5, 10};
@@ -70,7 +68,7 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
       kBaseBitrateBps, kBaseFramerate, base::nullopt, base::nullopt, false,
-      ::media::VideoEncodeAccelerator::Config::StorageType::kDmabuf,
+      ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       ::media::VideoEncodeAccelerator::Config::ContentType::kCamera,
       input_spatial_layers);
   DVLOG(4) << input_config.AsHumanReadableString();

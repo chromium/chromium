@@ -16,6 +16,7 @@ constexpr char kScreenshotRestriction[] = "SCREENSHOT";
 constexpr char kPrintingRestriction[] = "PRINTING";
 constexpr char kPrivacyScreenRestriction[] = "PRIVACY_SCREEN";
 constexpr char kScreenShareRestriction[] = "SCREEN_SHARE";
+constexpr char kFilesRestriction[] = "FILES";
 
 constexpr char kArc[] = "ARC";
 constexpr char kCrostini[] = "CROSTINI";
@@ -23,6 +24,7 @@ constexpr char kPluginVm[] = "PLUGIN_VM";
 
 constexpr char kAllowLevel[] = "ALLOW";
 constexpr char kBlockLevel[] = "BLOCK";
+constexpr char kWarnLevel[] = "WARN";
 
 }  // namespace dlp
 

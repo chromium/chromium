@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_H_
 
 #include <map>
+#include <string>
 
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -22,8 +22,13 @@
 
 class AutocompleteController;
 struct OmniboxLog;
+class PrefRegistrySimple;
 class Profile;
 class SearchPrefetchURLLoader;
+
+namespace network {
+struct ResourceRequest;
+}
 
 // Any updates to this class need to be propagated to enums.xml.
 enum class SearchPrefetchEligibilityReason {
@@ -69,7 +74,9 @@ enum class SearchPrefetchServingReason {
   kRequestFailed = 7,
   // The request wasn't served unexpectantly.
   kNotServedOtherReason = 8,
-  kMaxValue = kNotServedOtherReason,
+  // The navigation was a POST request, reload or link navigation.
+  kPostReloadOrLink = 9,
+  kMaxValue = kPostReloadOrLink,
 };
 
 class SearchPrefetchService : public KeyedService,
@@ -97,17 +104,37 @@ class SearchPrefetchService : public KeyedService,
   // Clear all prefetches from the service.
   void ClearPrefetches();
 
+  // Clear the disk cache entry for |url|.
+  void ClearCacheEntry(const GURL& navigation_url);
+
+  // Update the last serving time of |url|, so it's eviction priority is
+  // lowered.
+  void UpdateServeTime(const GURL& navigation_url);
+
   // Takes the response from this object if |url| matches a prefetched URL.
-  std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponse(
-      const GURL& url);
+  std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponseFromMemoryCache(
+      const network::ResourceRequest& tentative_resource_request);
+
+  // Creates a cache loader to serve a cache only response with fallback to
+  // network fetch.
+  std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponseFromDiskCache(
+      const GURL& navigation_url);
 
   // Reports the status of a prefetch for a given search term.
   base::Optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
-      base::string16 search_terms);
+      std::u16string search_terms);
+
+  // Calls |LoadFromPrefs()|.
+  bool LoadFromPrefsForTesting();
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
+  // Records a cache entry for a navigation that is being served.
+  void AddCacheEntry(const GURL& navigation_url, const GURL& prefetch_url);
+
   // Removes the prefetch and prefetch timers associated with |search_terms|.
-  void DeletePrefetch(base::string16 search_terms);
+  void DeletePrefetch(std::u16string search_terms);
 
   // Records the current time to prevent prefetches for a set duration.
   void ReportError();
@@ -117,14 +144,22 @@ class SearchPrefetchService : public KeyedService,
   // closes.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
+  // These methods serialize and deserialize |prefetch_cache_| to
+  // |profile_| pref service in a dictionary value.
+  //
+  // Returns true iff loading the prefs removed at least one entry, so the pref
+  // should be saved.
+  bool LoadFromPrefs();
+  void SaveToPrefs() const;
+
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old
   // prefetch expires.
-  std::map<base::string16, std::unique_ptr<BaseSearchPrefetchRequest>>
+  std::map<std::u16string, std::unique_ptr<BaseSearchPrefetchRequest>>
       prefetches_;
 
   // A group of timers to expire |prefetches_| based on the same key.
-  std::map<base::string16, std::unique_ptr<base::OneShotTimer>>
+  std::map<std::u16string, std::unique_ptr<base::OneShotTimer>>
       prefetch_expiry_timers_;
 
   // The time of the last prefetch network/server error.
@@ -141,6 +176,11 @@ class SearchPrefetchService : public KeyedService,
       observer_{this};
 
   Profile* profile_;
+
+  // A map of previously handled URLs that allows certain navigations to be
+  // served from cache. The value is the prefetch URL in cache and the latest
+  // serving time of the response.
+  std::map<GURL, std::pair<GURL, base::Time>> prefetch_cache_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_H_

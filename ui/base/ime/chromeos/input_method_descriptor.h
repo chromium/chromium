@@ -39,11 +39,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodDescriptor {
   const GURL& options_page_url() const { return options_page_url_; }
   const GURL& input_view_url() const { return input_view_url_; }
   const std::string& keyboard_layout() const { return keyboard_layout_; }
-
   bool is_login_keyboard() const { return is_login_keyboard_; }
 
-  // Returns the indicator text of this input method.
-  std::string GetIndicator() const;
+  std::u16string GetIndicator() const;
 
  private:
   // An ID that identifies an input method engine (e.g., "t:latn-post",

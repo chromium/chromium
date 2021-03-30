@@ -1,0 +1,29 @@
+From 07d012c94eba95ce6d43321086ff0d030815117e Mon Sep 17 00:00:00 2001
+From: Michael Crouse <mcrouse@chromium.org>
+Date: Thu, 28 Jan 2021 16:02:57 -0800
+Subject: [PATCH] update icu includes to chrome's third_party
+
+---
+ .../src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc
+index 81a72d918e54..5d9d0f965c7d 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc
+@@ -17,9 +17,9 @@
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/str_join.h"
+ #include "absl/strings/string_view.h"
+-#include "icu4c/source/common/unicode/schriter.h"
+-#include "icu4c/source/common/unicode/unistr.h"
+-#include "icu4c/source/common/unicode/utf8.h"
++#include "third_party/icu/source/common/unicode/schriter.h"
++#include "third_party/icu/source/common/unicode/unistr.h"
++#include "third_party/icu/source/common/unicode/utf8.h"
+ 
+ namespace tensorflow {
+ namespace text {
+-- 
+2.30.0.365.g02bc693789-goog
+

@@ -1,45 +1,18 @@
-<style include="throbber scanning-fonts scanning-shared">
-  #scanHelp {
-    @apply --scanning-no-scanners-help-text-font;
-    color: var(--scanning-no-scanners-help-text-color);
-  }
-
-  #scanHelpLink {
-    color: var(--google-blue-600);
-    text-decoration: none;
-  }
+<style include="scanning-shared">
 </style>
 <scan-settings-section>
   <span id="scannerLabel" slot="label" aria-hidden="true">
     [[i18n('scannerDropdownLabel')]]
   </span>
   <div slot="settings">
-    <div class="throbber-container" hidden$="[[loaded]]">
-      <div class="throbber"></div>
-    </div>
     <select id="scannerSelect" class="md-select"
-        value="{{selectedScannerId::change}}" hidden$="[[!loaded]]"
+        value="{{selectedScannerId::change}}"
         disabled="[[disabled]]" aria-labelledby="scannerLabel">
-      <!-- TODO(jschettler): Figure out why hiding/disabling the option doesn't
-          remove it from the dropdown. -->
-      <template is="dom-if" if="[[!scanners.length]]" restamp>
-        <option value="">
-          [[i18n('noScannersText')]]
-        </option>
-      </template>
       <template is="dom-repeat" items="[[scanners]]" as="scanner">
         <option value="[[getTokenAsString_(scanner)]]">
           [[getScannerDisplayName_(scanner)]]
         </option>
       </template>
     </select>
-  </div>
-  <div id="scanHelp" slot="error"
-      hidden$="[[shouldHideScanHelpLink_(loaded, scanners)]]">
-    [[i18n('noScannersHelpText')]]
-    <a id="scanHelpLink" target="_blank"
-        href="http://support.google.com/chromebook?p=chrome_scanning">
-      [[i18n('noScannersHelpLinkLabel')]]
-    </a>
   </div>
 </scan-settings-section>

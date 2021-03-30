@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(
+    () => {
+      setBluetoothManualChooser(true);
+
+      let requestDevicePromise =
+          setBluetoothFakeAdapter('DevicesRemovedAdapter')
+              .then(() => requestDeviceWithTrustedClick({
+                      filters:
+                          [{services: ['glucose']}, {services: ['heart_rate']}]
+                    }));
+      return assert_promise_rejects_with_message(
+          getBluetoothManualChooserEvents(5).then(events => {
+            assert_equals(events[0], 'chooser-opened(https://web-platform.test:8444)');
+            let idsByName = new AddDeviceEventSet();
+            idsByName.assert_add_device_event(events[1]);
+            assert_true(
+                idsByName.has('Connected Heart Rate Device'), events[1]);
+            assert_equals(events[2], 'discovering');
+            idsByName.assert_add_device_event(events[3]);
+            assert_true(idsByName.has('New Glucose Device'));
+            assert_equals(events[4], 'discovery-idle');
+            sendBluetoothManualChooserEvent(
+                'selected', idsByName.get('New Glucose Device'));
+            return requestDevicePromise;
+          }),
+          new DOMException(
+              'User selected a device that doesn\'t exist anymore.',
+              'NotFoundError'));
+      // TODO(crbug.com/654649): Chooser should receive a signal that the device
+      // was removed and grey out/disable the row.
+    },
+    'Devices are added and removed. Chooser should not get a signal that the ' +
+        'device was removed and promise should be rejected when a removed device ' +
+        'is selected.');
+</script>

@@ -5,16 +5,23 @@
 #include "chromeos/components/phonehub/user_action_recorder_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/components/phonehub/feature_status.h"
+#include "chromeos/components/phonehub/feature_status_provider.h"
 
 namespace chromeos {
 namespace phonehub {
 
-UserActionRecorderImpl::UserActionRecorderImpl() = default;
+UserActionRecorderImpl::UserActionRecorderImpl(
+    FeatureStatusProvider* feature_status_provider)
+    : feature_status_provider_(feature_status_provider) {}
 
 UserActionRecorderImpl::~UserActionRecorderImpl() = default;
 
 void UserActionRecorderImpl::RecordUiOpened() {
-  HandleUserAction(UserAction::kUiOpened);
+  if (feature_status_provider_->GetStatus() ==
+      FeatureStatus::kEnabledAndConnected) {
+    HandleUserAction(UserAction::kUiOpened);
+  }
 }
 
 void UserActionRecorderImpl::RecordTetherConnectionAttempt() {

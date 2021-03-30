@@ -325,21 +325,33 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
             ? SanitizeScriptErrors::kDoNotSanitize
             : SanitizeScriptErrors::kSanitize;
 
-    // Step 5.2: "Run the classic script script, with the rethrow errors
-    // argument set to true."
+    const KURL script_url =
+        ScriptSourceCode::UsePostRedirectURL() ? response_url : complete_url;
+
+    // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-classic-worker-imported-script
+    // Step 7: Let script be the result of creating a classic script given
+    // source text, settings object, response's url, the default classic script
+    // fetch options, and muted errors.
+    // TODO(crbug.com/1082086): Fix the base URL.
     SingleCachedMetadataHandler* handler(
         CreateWorkerScriptCachedMetadataHandler(complete_url,
                                                 std::move(cached_meta_data)));
+    ClassicScript* script = MakeGarbageCollected<ClassicScript>(
+        ScriptSourceCode(source_code, ScriptSourceLocationType::kUnknown,
+                         handler, script_url),
+        script_url /* base_url */, ScriptFetchOptions(),
+        sanitize_script_errors);
+
+    // Step 5.2: "Run the classic script script, with the rethrow errors
+    // argument set to true."
     ReportingProxy().WillEvaluateImportedClassicScript(
         source_code.length(), handler ? handler->GetCodeCacheSize() : 0);
     v8::HandleScope scope(isolate);
-    ScriptEvaluationResult result = ScriptController()->EvaluateAndReturnValue(
-        ScriptSourceCode(source_code, ScriptSourceLocationType::kUnknown,
-                         handler,
-                         ScriptSourceCode::UsePostRedirectURL() ? response_url
-                                                                : complete_url),
-        sanitize_script_errors,
-        V8ScriptRunner::RethrowErrorsOption::Rethrow(error_message));
+    ScriptEvaluationResult result =
+        script->RunScriptOnScriptStateAndReturnValue(
+            ScriptController()->GetScriptState(),
+            ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled,
+            V8ScriptRunner::RethrowErrorsOption::Rethrow(error_message));
 
     // Step 5.2: "If an exception was thrown or if the script was prematurely
     // aborted, then abort all these steps, letting the exception or aborting
@@ -523,8 +535,7 @@ void WorkerGlobalScope::ReceiveMessage(BlinkTransferableMessage message) {
 WorkerGlobalScope::WorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerThread* thread,
-    base::TimeTicks time_origin,
-    ukm::SourceId ukm_source_id)
+    base::TimeTicks time_origin)
     : WorkerOrWorkletGlobalScope(
           thread->GetIsolate(),
           CreateSecurityOrigin(creation_params.get(), GetExecutionContext()),
@@ -544,10 +555,12 @@ WorkerGlobalScope::WorkerGlobalScope(
       user_agent_(creation_params->user_agent),
       ua_metadata_(creation_params->ua_metadata),
       thread_(thread),
+      agent_group_scheduler_compositor_task_runner_(std::move(
+          creation_params->agent_group_scheduler_compositor_task_runner)),
       time_origin_(time_origin),
       font_selector_(MakeGarbageCollected<OffscreenFontSelector>(this)),
       script_eval_state_(ScriptEvalState::kPauseAfterFetch),
-      ukm_source_id_(ukm_source_id) {
+      ukm_source_id_(creation_params->ukm_source_id) {
   InstanceCounters::IncrementCounter(
       InstanceCounters::kWorkerGlobalScopeCounter);
 
@@ -557,8 +570,8 @@ WorkerGlobalScope::WorkerGlobalScope(
   https_state_ = CalculateHttpsState(GetSecurityOrigin(),
                                      creation_params->starter_https_state);
 
-  SetOutsideContentSecurityPolicyHeaders(
-      creation_params->outside_content_security_policy_headers);
+  SetOutsideContentSecurityPolicies(
+      std::move(creation_params->outside_content_security_policies));
   SetWorkerSettings(std::move(creation_params->worker_settings));
 
   // TODO(sammc): Require a valid |creation_params->browser_interface_broker|
@@ -571,11 +584,12 @@ WorkerGlobalScope::WorkerGlobalScope(
         GetTaskRunner(TaskType::kInternalDefault));
   }
 
-  // A FeaturePolicy is created by FeaturePolicy::CreateFromParentPolicy, even
-  // if the parent policy is null.
-  DCHECK(creation_params->worker_feature_policy);
-  GetSecurityContext().SetFeaturePolicy(
-      std::move(creation_params->worker_feature_policy));
+  // A PermissionsPolicy is created by
+  // PermissionsPolicy::CreateFromParentPolicy, even if the parent policy is
+  // null.
+  DCHECK(creation_params->worker_permissions_policy);
+  GetSecurityContext().SetPermissionsPolicy(
+      std::move(creation_params->worker_permissions_policy));
 }
 
 void WorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {

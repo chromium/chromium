@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace base {
 class DictionaryValue;
@@ -45,7 +46,7 @@ class Extension;
 // So if you change this, you also have to change GetScopeURLFromBookmarkApp().
 std::unique_ptr<base::DictionaryValue> CreateURLHandlersForBookmarkApp(
     const GURL& scope_url,
-    const base::string16& title);
+    const std::u16string& title);
 
 // Retrieves the scope URL from a Bookmark App's URL handlers.
 GURL GetScopeURLFromBookmarkApp(const Extension* extension);
@@ -74,7 +75,7 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
     const base::Time& create_time,
     const base::FilePath& extensions_dir,
     int extra_creation_flags,
-    Manifest::Location install_source);
+    mojom::ManifestLocation install_source);
 
 }  // namespace extensions
 

@@ -3,15 +3,21 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
+import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
 import './shared_css.js';
 import '../icons.js';
+import '../profile_picker_shared_css.js';
 
 import {Theme, ThemeType} from 'chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js';
+import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -25,7 +31,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [WebUIListenerBehavior],
+  behaviors: [I18nBehavior, WebUIListenerBehavior],
 
   properties: {
     /**
@@ -56,6 +62,34 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Colored default generic avatar in the format expected by
+     * 'cr-profile-avatar-selector'
+     * @private {AvatarIcon}
+     */
+    genericDefaultAvatar_: {
+      type: Object,
+      computed: 'getGenericDefaultAvatar_(profileThemeInfo.themeGenericAvatar)',
+      observer: 'onGenericDefaultAvatarChange_',
+    },
+
+    /**
+     * List of available profile icon Urls and labels.
+     * @private {!Array<!AvatarIcon>}
+     */
+    availableIcons_: {
+      type: Array,
+      value() {
+        return [];
+      },
+    },
+
+    /**
+     * The currently selected profile avatar, if any.
+     * @private {?AvatarIcon}
+     */
+    selectedAvatar_: Object,
 
     /**
      * The current profile name.
@@ -98,6 +132,12 @@ Polymer({
       type: String,
       value: '.*\\S.*',
     },
+
+    /** @private */
+    defaultAvatarIndex_: {
+      type: Number,
+      value: () => loadTimeData.getInteger('placeholderAvatarIndex'),
+    },
   },
 
   listeners: {
@@ -106,6 +146,9 @@ Polymer({
 
   /** @private {?ManageProfilesBrowserProxy} */
   manageProfilesBrowserProxy_: null,
+
+  /** @type {ResizeObserver} used to observer size changes to this element */
+  resizeObserver_: null,
 
   /** @override */
   created() {
@@ -118,12 +161,51 @@ Polymer({
     this.sanityCheck_();
     this.addWebUIListener(
         'create-profile-finished', () => this.handleCreateProfileFinished_());
+    this.manageProfilesBrowserProxy_.getAvailableIcons().then(
+        icons => this.setAvailableIcons_(icons));
+  },
+
+  /** @override */
+  attached() {
+    this.addResizeObserver_();
+  },
+
+  /** @override */
+  detached() {
+    this.resizeObserver_.disconnect();
+  },
+
+  /** @private */
+  addResizeObserver_() {
+    this.resizeObserver_ = new ResizeObserver(() => {
+      const wrapperContainer =
+          /** @type {!HTMLDivElement} */ (this.$$('#wrapperContainer'));
+      if (wrapperContainer.scrollHeight > wrapperContainer.clientHeight) {
+        this.$$('.footer').classList.add('division-line');
+      } else {
+        this.$$('.footer').classList.remove('division-line');
+      }
+    });
+    this.resizeObserver_.observe(
+        /** @type {!HTMLDivElement} */ (this.$$('#wrapperContainer')));
   },
 
   /** @private */
   onViewEnterStart_() {
+    if (this.profileName_.length === 0) {
+      this.$.nameInput.invalid = false;
+    }
     this.$.nameInput.focusInput();
     this.$.wrapper.scrollTop = 0;
+  },
+
+  /**
+   * @return {!string}
+   * @private
+   */
+  getBackButtonAriaLabel_() {
+    return this.i18n(
+        'backButtonAriaLabel', this.i18n('localProfileCreationTitle'));
   },
 
   /**
@@ -172,15 +254,61 @@ Polymer({
     this.createInProgress_ = true;
     const createShortcut =
         this.isProfileShortcutsEnabled_ && this.createShortcut_;
-    // TODO(crbug.com/1115056): Support avatar selection.
     this.manageProfilesBrowserProxy_.createProfile(
-        this.profileName_, this.profileThemeInfo.color, '', true,
-        createShortcut);
+        this.profileName_, this.profileThemeInfo.color,
+        this.selectedAvatar_.index, createShortcut);
   },
 
   /** @private */
   onClickBack_() {
     navigateToPreviousRoute();
+  },
+
+  /** @private */
+  onCustomizeAvatarClick_() {
+    this.$.selectAvatarDialog.showModal();
+  },
+
+  /** @private */
+  onDoneSelectAvatarClick_() {
+    this.$.selectAvatarDialog.close();
+  },
+
+  /**
+   * @return {AvatarIcon}
+   * @private
+   */
+  getGenericDefaultAvatar_() {
+    return /** @type {!AvatarIcon} */ ({
+      url: this.profileThemeInfo.themeGenericAvatar,
+      label: this.i18n('defaultAvatarLabel'),
+      index: this.defaultAvatarIndex_,
+      isGaiaAvatar: false,
+      selected: false,
+    });
+  },
+
+  /** @private */
+  onGenericDefaultAvatarChange_() {
+    this.setAvailableIcons_([...this.availableIcons_]);
+    if (!this.selectedAvatar_ ||
+        this.selectedAvatar_.index === this.defaultAvatarIndex_) {
+      this.selectedAvatar_ = this.genericDefaultAvatar_;
+    }
+  },
+
+  /**
+   * @param {!Array<!AvatarIcon>} icons
+   * @private
+   */
+  setAvailableIcons_(icons) {
+    if (!this.genericDefaultAvatar_) {
+      this.availableIcons_ = icons;
+      return;
+    }
+    const offset =
+        icons.length > 0 && icons[0].index === this.defaultAvatarIndex_ ? 1 : 0;
+    this.availableIcons_ = [this.genericDefaultAvatar_, ...icons.slice(offset)];
   },
 
   /** @private */
@@ -194,6 +322,7 @@ Polymer({
       info: {
         chromeThemeId: this.profileThemeInfo.colorId,
       },
+      isForced: false,
     };
   },
 

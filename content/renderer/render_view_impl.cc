@@ -13,18 +13,19 @@
 #include "base/strings/string_piece.h"
 #include "cc/trees/ukm_manager.h"
 #include "content/child/webthemeengine_impl_default.h"
+#include "content/common/agent_scheduling_group.mojom.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/public/renderer/render_view_observer.h"
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
@@ -64,11 +65,6 @@ static base::LazyInstance<RoutingIDViewMap>::Leaky g_routing_id_view_map =
 // better than having to wake up all renderers during shutdown.
 const int kDelaySecondsForContentStateSyncHidden = 5;
 const int kDelaySecondsForContentStateSync = 1;
-
-static RenderViewImpl* (*g_create_render_view_impl)(
-    AgentSchedulingGroup&,
-    CompositorDependencies*,
-    const mojom::CreateViewParams&) = nullptr;
 
 // static
 WindowOpenDisposition RenderViewImpl::NavigationPolicyToDisposition(
@@ -118,10 +114,7 @@ RenderViewImpl::RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
           params.renderer_wide_named_frame_lookup),
       widgets_never_composited_(params.never_composited),
       compositor_deps_(compositor_deps),
-      agent_scheduling_group_(agent_scheduling_group),
-      session_storage_namespace_id_(params.session_storage_namespace_id) {
-  DCHECK(!session_storage_namespace_id_.empty())
-      << "Session storage namespace must be populated.";
+      agent_scheduling_group_(agent_scheduling_group) {
   // Please put all logic in RenderViewImpl::Initialize().
 }
 
@@ -145,23 +138,28 @@ void RenderViewImpl::Initialize(
       /*compositing_enabled=*/true,
       opener_frame ? opener_frame->View() : nullptr,
       std::move(params->blink_page_broadcast),
-      agent_scheduling_group_.agent_group_scheduler());
+      agent_scheduling_group_.agent_group_scheduler(),
+      params->session_storage_namespace_id);
 
   g_view_map.Get().insert(std::make_pair(GetWebView(), this));
   g_routing_id_view_map.Get().insert(std::make_pair(GetRoutingID(), this));
 
-  bool local_main_frame = params->main_frame_routing_id != MSG_ROUTING_NONE;
+  bool local_main_frame = params->main_frame->is_local_params();
 
   webview_->SetWebPreferences(params->web_preferences);
 
   if (local_main_frame) {
     main_render_frame_ = RenderFrameImpl::CreateMainFrame(
-        agent_scheduling_group_, this, compositor_deps, opener_frame, &params);
+        agent_scheduling_group_, this, compositor_deps, opener_frame,
+        params->type != mojom::ViewWidgetType::kTopLevel,
+        std::move(params->replication_state), params->devtools_main_frame_token,
+        std::move(params->main_frame->get_local_params()));
   } else {
     RenderFrameProxy::CreateFrameProxy(
-        agent_scheduling_group_, params->proxy_routing_id, GetRoutingID(),
-        params->opener_frame_token, MSG_ROUTING_NONE,
-        params->replicated_frame_state, params->main_frame_frame_token,
+        agent_scheduling_group_, params->main_frame->get_remote_params()->token,
+        params->main_frame->get_remote_params()->routing_id,
+        params->opener_frame_token, GetRoutingID(), MSG_ROUTING_NONE,
+        std::move(params->replication_state),
         params->devtools_main_frame_token);
   }
 
@@ -198,11 +196,6 @@ RenderViewImpl::~RenderViewImpl() {
        it != routing_id_views->end(); ++it)
     DCHECK_NE(this, it->second) << "Failed to call Close?";
 #endif
-
-  for (auto& observer : observers_)
-    observer.RenderViewGone();
-  for (auto& observer : observers_)
-    observer.OnDestruct();
 }
 
 /*static*/
@@ -219,11 +212,6 @@ RenderViewImpl* RenderViewImpl::FromRoutingID(int32_t routing_id) {
   RoutingIDViewMap* views = g_routing_id_view_map.Pointer();
   auto it = views->find(routing_id);
   return it == views->end() ? NULL : it->second;
-}
-
-/*static*/
-RenderView* RenderView::FromRoutingID(int routing_id) {
-  return RenderViewImpl::FromRoutingID(routing_id);
 }
 
 /* static */
@@ -249,22 +237,11 @@ RenderViewImpl* RenderViewImpl::Create(
     bool was_created_by_renderer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(params->view_id != MSG_ROUTING_NONE);
-  // Frame and widget routing ids come together.
-  DCHECK_EQ(params->main_frame_routing_id == MSG_ROUTING_NONE,
-            params->main_frame_widget_routing_id == MSG_ROUTING_NONE);
-  // We have either a main frame or a proxy routing id.
-  DCHECK_NE(params->main_frame_routing_id != MSG_ROUTING_NONE,
-            params->proxy_routing_id != MSG_ROUTING_NONE);
+  DCHECK(!params->session_storage_namespace_id.empty())
+      << "Session storage namespace must be populated.";
 
-  RenderViewImpl* render_view;
-  if (g_create_render_view_impl) {
-    render_view = g_create_render_view_impl(agent_scheduling_group,
-                                            compositor_deps, *params);
-  } else {
-    render_view =
-        new RenderViewImpl(agent_scheduling_group, compositor_deps, *params);
-  }
-
+  RenderViewImpl* render_view =
+      new RenderViewImpl(agent_scheduling_group, compositor_deps, *params);
   render_view->Initialize(compositor_deps, std::move(params),
                           was_created_by_renderer, std::move(task_runner));
   return render_view;
@@ -281,39 +258,6 @@ void RenderViewImpl::Destroy() {
 
   delete this;
 }
-
-// static
-void RenderViewImpl::InstallCreateHook(RenderViewImpl* (
-    *create_render_view_impl)(AgentSchedulingGroup&,
-                              CompositorDependencies*,
-                              const mojom::CreateViewParams&)) {
-  CHECK(!g_create_render_view_impl);
-  g_create_render_view_impl = create_render_view_impl;
-}
-
-void RenderViewImpl::AddObserver(RenderViewObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void RenderViewImpl::RemoveObserver(RenderViewObserver* observer) {
-  observer->RenderViewGone();
-  observers_.RemoveObserver(observer);
-}
-
-// IPC message handlers -----------------------------------------
-
-void RenderViewImpl::OnSetHistoryOffsetAndLength(int history_offset,
-                                                 int history_length) {
-  // -1 <= history_offset < history_length <= kMaxSessionHistoryEntries(50).
-  DCHECK_LE(-1, history_offset);
-  DCHECK_LT(history_offset, history_length);
-  DCHECK_LE(history_length, kMaxSessionHistoryEntries);
-
-  history_list_offset_ = history_offset;
-  history_list_length_ = history_length;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 
 void RenderViewImpl::SendFrameStateUpdates() {
   // Tell each frame with pending state to send its UpdateState message.
@@ -345,7 +289,8 @@ WebView* RenderViewImpl::CreateView(
     WebNavigationPolicy policy,
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::SessionStorageNamespaceId& session_storage_namespace_id,
-    bool& consumed_user_gesture) {
+    bool& consumed_user_gesture,
+    const base::Optional<blink::WebImpression>& impression) {
   consumed_user_gesture = false;
   RenderFrameImpl* creator_frame = RenderFrameImpl::FromWebFrame(creator);
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
@@ -364,7 +309,7 @@ WebView* RenderViewImpl::CreateView(
       base::FeatureList::IsEnabled(
           blink::features::kCloneSessionStorageForNoOpener)) {
     params->clone_from_session_storage_namespace_id =
-        session_storage_namespace_id_;
+        GetWebView()->GetSessionStorageNamespaceId();
   }
 
   const std::string& frame_name_utf8 = frame_name.Utf8(
@@ -379,6 +324,10 @@ WebView* RenderViewImpl::CreateView(
         request.GetReferrerPolicy());
   }
   params->features = ConvertWebWindowFeaturesToMojoWindowFeatures(features);
+
+  if (impression) {
+    params->impression = blink::ConvertWebImpressionToImpression(*impression);
+  }
 
   // We preserve this information before sending the message since |params| is
   // moved on send.
@@ -407,7 +356,7 @@ WebView* RenderViewImpl::CreateView(
   DCHECK(reply);
   DCHECK_NE(MSG_ROUTING_NONE, reply->route_id);
   DCHECK_NE(MSG_ROUTING_NONE, reply->main_frame_route_id);
-  DCHECK_NE(MSG_ROUTING_NONE, reply->main_frame_widget_route_id);
+  DCHECK_NE(MSG_ROUTING_NONE, reply->widget_params->routing_id);
 
   // The browser allowed creation of a new window and consumed the user
   // activation.
@@ -434,28 +383,29 @@ WebView* RenderViewImpl::CreateView(
   view_params->renderer_preferences = GetRendererPreferences();
   view_params->web_preferences = webview_->GetWebPreferences();
   view_params->view_id = reply->route_id;
-  view_params->main_frame_frame_token = reply->main_frame_frame_token;
-  view_params->main_frame_routing_id = reply->main_frame_route_id;
-  view_params->frame_widget_host = std::move(reply->frame_widget_host);
-  view_params->frame_widget = std::move(reply->frame_widget);
-  view_params->widget_host = std::move(reply->widget_host);
-  view_params->widget = std::move(reply->widget),
-  view_params->blink_page_broadcast = std::move(reply->page_broadcast);
-  view_params->main_frame_interface_broker =
+
+  view_params->replication_state = blink::mojom::FrameReplicationState::New();
+  view_params->replication_state->frame_policy.sandbox_flags = sandbox_flags;
+  view_params->replication_state->name = frame_name_utf8;
+  view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
+
+  auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
+  main_frame_params->token = reply->main_frame_token;
+  main_frame_params->routing_id = reply->main_frame_route_id;
+  main_frame_params->frame = std::move(reply->frame);
+  main_frame_params->interface_broker =
       std::move(reply->main_frame_interface_broker);
-  view_params->main_frame_widget_routing_id = reply->main_frame_widget_route_id;
+  main_frame_params->policy_container = std::move(reply->policy_container);
+  main_frame_params->widget_params = std::move(reply->widget_params);
+  view_params->main_frame =
+      mojom::CreateMainFrameUnion::NewLocalParams(std::move(main_frame_params));
+  view_params->blink_page_broadcast = std::move(reply->page_broadcast);
   view_params->session_storage_namespace_id =
       reply->cloned_session_storage_namespace_id;
   DCHECK(!view_params->session_storage_namespace_id.empty())
       << "Session storage namespace must be populated.";
-  view_params->replicated_frame_state.frame_policy.sandbox_flags =
-      sandbox_flags;
-  view_params->replicated_frame_state.name = frame_name_utf8;
-  view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
   view_params->hidden = is_background_tab;
   view_params->never_composited = never_composited;
-  view_params->visual_properties = reply->visual_properties;
-  view_params->policy_container = std::move(reply->policy_container);
 
   RenderViewImpl* view = RenderViewImpl::Create(
       agent_scheduling_group_, compositor_deps_, std::move(view_params),
@@ -500,17 +450,14 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
       std::move(blink_popup_widget_host), std::move(blink_widget_host),
       std::move(blink_widget_receiver),
       agent_scheduling_group_.agent_group_scheduler().DefaultTaskRunner());
-  popup->InitializeCompositing(compositor_deps_->GetWebMainThreadScheduler(),
+  popup->InitializeCompositing(agent_scheduling_group_.agent_group_scheduler(),
                                compositor_deps_->GetTaskGraphRunner(),
-                               opener_widget->GetOriginalScreenInfo(),
+                               opener_widget->GetOriginalScreenInfos(),
                                compositor_deps_->CreateUkmRecorderFactory(),
-                               /*settings=*/nullptr);
+                               /*settings=*/nullptr,
+                               compositor_deps_->GetMainThreadPipeline(),
+                               compositor_deps_->GetCompositorThreadPipeline());
   return popup;
-}
-
-base::StringPiece RenderViewImpl::GetSessionStorageNamespaceId() {
-  CHECK(!session_storage_namespace_id_.empty());
-  return session_storage_namespace_id_;
 }
 
 void RenderViewImpl::PrintPage(WebLocalFrame* frame) {
@@ -519,17 +466,6 @@ void RenderViewImpl::PrintPage(WebLocalFrame* frame) {
       render_frame->GetLocalRootWebFrameWidget();
 
   render_frame->ScriptedPrint(frame_widget->HandlingInputEvent());
-}
-
-void RenderViewImpl::ZoomLevelChanged() {
-  for (auto& observer : observers_)
-    observer.OnZoomLevelChanged();
-}
-
-void RenderViewImpl::DidCommitCompositorFrameForLocalMainFrame(
-    base::TimeTicks commit_start_time) {
-  for (auto& observer : observers_)
-    observer.DidCommitCompositorFrame();
 }
 
 void RenderViewImpl::PropagatePageZoomToNewlyAttachedFrame(
@@ -571,11 +507,6 @@ bool RenderViewImpl::AcceptsLoadDrops() {
   return GetRendererPreferences().can_accept_load_drops;
 }
 
-void RenderViewImpl::DidUpdateMainFrameLayout() {
-  for (auto& observer : observers_)
-    observer.DidUpdateMainFrameLayout();
-}
-
 void RenderViewImpl::RegisterRendererPreferenceWatcher(
     mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {
   GetWebView()->RegisterRendererPreferenceWatcher(std::move(watcher));
@@ -586,20 +517,10 @@ const blink::RendererPreferences& RenderViewImpl::GetRendererPreferences()
   return webview_->GetRendererPreferences();
 }
 
-int RenderViewImpl::HistoryBackListCount() {
-  return history_list_offset_ < 0 ? 0 : history_list_offset_;
-}
-
-int RenderViewImpl::HistoryForwardListCount() {
-  return history_list_length_ - HistoryBackListCount() - 1;
-}
-
 void RenderViewImpl::OnPageVisibilityChanged(PageVisibilityState visibility) {
 #if defined(OS_ANDROID)
   SuspendVideoCaptureDevices(visibility != PageVisibilityState::kVisible);
 #endif
-  for (auto& observer : observers_)
-    observer.OnPageVisibilityChanged(visibility);
 }
 
 void RenderViewImpl::OnPageFrozenChanged(bool frozen) {
@@ -614,10 +535,6 @@ void RenderViewImpl::OnPageFrozenChanged(bool frozen) {
 
 bool RenderViewImpl::CanUpdateLayout() {
   return true;
-}
-
-blink::WebString RenderViewImpl::AcceptLanguages() {
-  return WebString::FromUTF8(GetRendererPreferences().accept_languages);
 }
 
 // RenderView implementation ---------------------------------------------------
@@ -670,9 +587,5 @@ void RenderViewImpl::SuspendVideoCaptureDevices(bool suspend) {
       video_devices, suspend);
 }
 #endif  // defined(OS_ANDROID)
-
-unsigned RenderViewImpl::GetLocalSessionHistoryLengthForTesting() const {
-  return history_list_length_;
-}
 
 }  // namespace content

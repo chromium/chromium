@@ -36,9 +36,21 @@ class JourneyLoggerAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
       jboolean jvalue);
-  void SetEventOccurred(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& jcaller,
-                        jint jevent);
+  void SetSkippedShow(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& jcaller);
+  void SetShown(JNIEnv* env,
+                const base::android::JavaParamRef<jobject>& jcaller);
+  void SetReceivedInstrumentDetails(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller);
+  void SetPayClicked(JNIEnv* env,
+                     const base::android::JavaParamRef<jobject>& jcaller);
+  void SetSelectedMethod(JNIEnv* env,
+                         const base::android::JavaParamRef<jobject>& jcaller,
+                         jint jPaymentMethodCategory);
+  void SetAvailableMethod(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& jcaller,
+                          jint jPaymentMethodCategory);
   void SetRequestedInformation(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
@@ -46,12 +58,10 @@ class JourneyLoggerAndroid {
       jboolean requested_email,
       jboolean requested_phone,
       jboolean requested_name);
-  void SetRequestedPaymentMethodTypes(
+  void SetRequestedPaymentMethods(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
-      jboolean requested_basic_card,
-      jboolean requested_method_google,
-      jboolean requested_method_other);
+      const base::android::JavaParamRef<jintArray>& jmethods);
   void SetCompleted(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& jcaller);
   void SetAborted(JNIEnv* env,

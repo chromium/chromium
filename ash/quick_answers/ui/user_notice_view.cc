@@ -5,12 +5,12 @@
 #include "ash/quick_answers/ui/user_notice_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_handler.h"
@@ -26,6 +26,8 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -60,6 +62,11 @@ constexpr gfx::Insets kButtonBarInsets = {8, 0, 0, 0};
 constexpr gfx::Insets kButtonInsets = {6, 16, 6, 16};
 constexpr int kButtonFontSizeDelta = 1;
 
+// Compact buttons layout.
+constexpr int kCompactButtonLayoutThreshold = 200;
+constexpr gfx::Insets kCompactButtonInsets = {6, 12, 6, 12};
+constexpr int kCompactButtonFontSizeDelta = 0;
+
 // Manage-Settings button.
 constexpr SkColor kSettingsButtonTextColor = gfx::kGoogleBlue600;
 
@@ -71,8 +78,17 @@ constexpr int kDogfoodButtonMarginDip = 4;
 constexpr int kDogfoodButtonSizeDip = 20;
 constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
 
+int GetActualLabelWidth(int anchor_view_width) {
+  return anchor_view_width - kMainViewInsets.width() - kContentInsets.width() -
+         kAssistantIconSizeDip;
+}
+
+bool ShouldUseCompactButtonLayout(int anchor_view_width) {
+  return GetActualLabelWidth(anchor_view_width) < kCompactButtonLayoutThreshold;
+}
+
 // Create and return a simple label with provided specs.
-std::unique_ptr<views::Label> CreateLabel(const base::string16& text,
+std::unique_ptr<views::Label> CreateLabel(const std::u16string& text,
                                           const SkColor color,
                                           int font_size_delta) {
   auto label = std::make_unique<views::Label>(text);
@@ -90,15 +106,18 @@ std::unique_ptr<views::Label> CreateLabel(const base::string16& text,
 class CustomizedLabelButton : public views::MdTextButton {
  public:
   CustomizedLabelButton(PressedCallback callback,
-                        const base::string16& text,
-                        const SkColor color)
+                        const std::u16string& text,
+                        const SkColor color,
+                        bool is_compact)
       : MdTextButton(std::move(callback), text) {
-    SetCustomPadding(kButtonInsets);
+    SetCustomPadding(is_compact ? kCompactButtonInsets : kButtonInsets);
     SetEnabledTextColors(color);
     label()->SetLineHeight(kLineHeightDip);
-    label()->SetFontList(views::Label::GetDefaultFontList()
-                             .DeriveWithSizeDelta(kButtonFontSizeDelta)
-                             .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
+    label()->SetFontList(
+        views::Label::GetDefaultFontList()
+            .DeriveWithSizeDelta(is_compact ? kCompactButtonFontSizeDelta
+                                            : kButtonFontSizeDelta)
+            .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   }
 
   // Disallow copy and assign.
@@ -117,8 +136,8 @@ class CustomizedLabelButton : public views::MdTextButton {
 // -------------------------------------------------------------
 
 UserNoticeView::UserNoticeView(const gfx::Rect& anchor_view_bounds,
-                               const base::string16& intent_type,
-                               const base::string16& intent_text,
+                               const std::u16string& intent_type,
+                               const std::u16string& intent_text,
                                QuickAnswersUiController* ui_controller)
     : anchor_view_bounds_(anchor_view_bounds),
       event_handler_(std::make_unique<QuickAnswersPreTargetHandler>(this)),
@@ -218,10 +237,10 @@ void UserNoticeView::InitLayout() {
   // Main-view Layout.
   main_view_ = AddChildView(std::make_unique<views::View>());
   auto* layout =
-      main_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, kMainViewInsets));
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
+      main_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetInteriorMargin(kMainViewInsets)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
   // Assistant icon.
   auto* assistant_icon =
@@ -242,13 +261,25 @@ void UserNoticeView::InitLayout() {
 void UserNoticeView::InitContent() {
   // Layout.
   content_ = main_view_->AddChildView(std::make_unique<views::View>());
-  content_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kContentInsets,
-      kContentSpacingDip));
+
+  auto* layout =
+      content_->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetInteriorMargin(kContentInsets)
+      .SetCollapseMargins(true)
+      .SetDefault(views::kMarginsKey, gfx::Insets(/*top=*/0, /*left=*/0,
+                                                  /*bottom=*/kContentSpacingDip,
+                                                  /*right=*/0));
 
   // Title.
-  content_->AddChildView(
+  auto* title = content_->AddChildView(
       CreateLabel(title_, kTitleTextColor, kTitleFontSizeDelta));
+  // Set the maximum width of the label to the width it would need to be for the
+  // UserNoticeView to be the same width as the anchor, so its preferred size
+  // will be calculated correctly.
+  int maximum_width = GetActualLabelWidth(anchor_view_bounds_.width());
+  title->SetMaximumWidthSingleLine(maximum_width);
 
   // Description.
   auto* desc = content_->AddChildView(
@@ -256,15 +287,8 @@ void UserNoticeView::InitContent() {
                       IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_DESC_TEXT),
                   kDescTextColor, kDescFontSizeDelta));
   desc->SetMultiLine(true);
-  // BoxLayout does not necessarily size the height of multi-line labels
-  // properly (crbug/682266). The label is thus explicitly sized to the width
-  // (and height) it would need to be for the UserNoticeView to be the
-  // same width as the anchor, so its preferred size will be calculated
-  // correctly.
-  int desc_desired_width = anchor_view_bounds_.width() -
-                           kMainViewInsets.width() - kContentInsets.width() -
-                           kAssistantIconSizeDip;
-  desc->SizeToFit(desc_desired_width);
+
+  desc->SetMaximumWidth(maximum_width);
 
   // Button bar.
   InitButtonBar();
@@ -274,10 +298,15 @@ void UserNoticeView::InitButtonBar() {
   // Layout.
   auto* button_bar = content_->AddChildView(std::make_unique<views::View>());
   auto* layout =
-      button_bar->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, kButtonBarInsets,
-          kButtonSpacingDip));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+      button_bar->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetInteriorMargin(kButtonBarInsets)
+      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+      .SetCollapseMargins(true)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
+                              /*right=*/kButtonSpacingDip));
 
   // Manage-Settings button.
   auto settings_button = std::make_unique<CustomizedLabelButton>(
@@ -286,7 +315,8 @@ void UserNoticeView::InitButtonBar() {
           base::Unretained(ui_controller_)),
       l10n_util::GetStringUTF16(
           IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_MANAGE_SETTINGS_BUTTON),
-      kSettingsButtonTextColor);
+      kSettingsButtonTextColor,
+      ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
   settings_button->GetViewAccessibility().OverrideDescription(
       l10n_util::GetStringUTF16(
           IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_SETTINGS_BUTTON_DESC_TEXT));
@@ -304,7 +334,8 @@ void UserNoticeView::InitButtonBar() {
           event_handler_.get(), ui_controller_),
       l10n_util::GetStringUTF16(
           IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_ACCEPT_BUTTON),
-      kAcceptButtonTextColor);
+      kAcceptButtonTextColor,
+      ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
   accept_button->SetProminent(true);
   accept_button->GetViewAccessibility().OverrideDescription(
       l10n_util::GetStringUTF16(

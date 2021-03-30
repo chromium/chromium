@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "fuchsia/engine/browser/frame_impl.h"
+#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using NavigationState = fuchsia::web::NavigationState;
@@ -23,7 +24,7 @@ NavigationState CreateNavigationState(const GURL& url,
   NavigationState navigation_state;
 
   navigation_state.set_url(url.spec());
-  navigation_state.set_title(title.as_string());
+  navigation_state.set_title(std::string(title));
   navigation_state.set_page_type(fuchsia::web::PageType(page_type));
   navigation_state.set_can_go_back(can_go_back);
   navigation_state.set_can_go_forward(can_go_forward);

@@ -44,6 +44,7 @@ bool IsDestTypeEligible(int dest_type) {
 
 TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
   constexpr char kName[] = "printer";
+  constexpr char kDescription[] = "description";
   cups_dest_t* printer = nullptr;
   ASSERT_EQ(
       1, cupsAddDest(kName, /*instance=*/nullptr, /*num_dests=*/0, &printer));
@@ -51,13 +52,18 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
   int num_options = 0;
   cups_option_t* options = nullptr;
 #if defined(OS_MAC)
+  constexpr char kInfo[] = "info";
   num_options =
-      cupsAddOption(kCUPSOptPrinterInfo, "info", num_options, &options);
-  num_options = cupsAddOption(kCUPSOptPrinterMakeAndModel, "description",
+      cupsAddOption(kCUPSOptPrinterInfo, kInfo, num_options, &options);
+  num_options = cupsAddOption(kCUPSOptPrinterMakeAndModel, kDescription,
                               num_options, &options);
+  ASSERT_EQ(2, num_options);
+  ASSERT_TRUE(options);
 #else
   num_options =
-      cupsAddOption(kCUPSOptPrinterInfo, "description", num_options, &options);
+      cupsAddOption(kCUPSOptPrinterInfo, kDescription, num_options, &options);
+  ASSERT_EQ(1, num_options);
+  ASSERT_TRUE(options);
 #endif
   printer->num_options = num_options;
   printer->options = options;
@@ -69,11 +75,33 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
 
   EXPECT_EQ(kName, printer_info.printer_name);
 #if defined(OS_MAC)
-  EXPECT_EQ("info", printer_info.display_name);
+  EXPECT_EQ(kInfo, printer_info.display_name);
 #else
   EXPECT_EQ(kName, printer_info.display_name);
 #endif
-  EXPECT_EQ("description", printer_info.printer_description);
+  EXPECT_EQ(kDescription, printer_info.printer_description);
+}
+
+TEST(PrintBackendCupsTest, PrinterDriverInfoFromCUPS) {
+  constexpr char kName[] = "test-printer-name";
+  constexpr char kDescription[] = "A test printer";
+  cups_dest_t* printer = nullptr;
+  ASSERT_EQ(
+      1, cupsAddDest(kName, /*instance=*/nullptr, /*num_dests=*/0, &printer));
+
+  int num_options = 0;
+  cups_option_t* options = nullptr;
+  num_options = cupsAddOption(kCUPSOptPrinterMakeAndModel, kDescription,
+                              num_options, &options);
+  ASSERT_EQ(1, num_options);
+  ASSERT_TRUE(options);
+  printer->num_options = num_options;
+  printer->options = options;
+
+  EXPECT_EQ(kDescription,
+            PrintBackendCUPS::PrinterDriverInfoFromCUPS(*printer));
+
+  cupsFreeDests(/*num_dests=*/1, printer);
 }
 
 TEST(PrintBackendCupsTest, EligibleDestTypes) {

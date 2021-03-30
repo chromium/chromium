@@ -105,7 +105,7 @@ void ServiceWorkerContextAdapter::RemoveObserver(
 void ServiceWorkerContextAdapter::RegisterServiceWorker(
     const GURL& script_url,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
-    ResultCallback callback) {
+    StatusCodeCallback callback) {
   NOTIMPLEMENTED();
 }
 
@@ -131,22 +131,16 @@ ServiceWorkerContextAdapter::FinishedExternalRequest(
   return content::ServiceWorkerExternalRequestResult::kOk;
 }
 
-void ServiceWorkerContextAdapter::CountExternalRequestsForTest(
-    const url::Origin& origin,
-    CountExternalRequestsCallback callback) {
+size_t ServiceWorkerContextAdapter::CountExternalRequestsForTest(
+    const url::Origin& origin) {
   NOTIMPLEMENTED();
+  return 0u;
 }
 
 bool ServiceWorkerContextAdapter::MaybeHasRegistrationForOrigin(
     const url::Origin& origin) {
   NOTIMPLEMENTED();
   return false;
-}
-
-void ServiceWorkerContextAdapter::GetInstalledRegistrationOrigins(
-    base::Optional<std::string> host_filter,
-    GetInstalledRegistrationOriginsCallback callback) {
-  NOTIMPLEMENTED();
 }
 
 void ServiceWorkerContextAdapter::GetAllOriginsInfo(
@@ -156,11 +150,6 @@ void ServiceWorkerContextAdapter::GetAllOriginsInfo(
 
 void ServiceWorkerContextAdapter::DeleteForOrigin(const url::Origin& origin_url,
                                                   ResultCallback callback) {
-  NOTIMPLEMENTED();
-}
-
-void ServiceWorkerContextAdapter::PerformStorageCleanup(
-    base::OnceClosure callback) {
   NOTIMPLEMENTED();
 }
 
@@ -184,7 +173,7 @@ void ServiceWorkerContextAdapter::ClearAllServiceWorkersForTest(
 void ServiceWorkerContextAdapter::StartWorkerForScope(
     const GURL& scope,
     StartWorkerCallback info_callback,
-    StartWorkerFailureCallback failure_callback) {
+    StatusCodeCallback status_callback) {
   NOTIMPLEMENTED();
 }
 

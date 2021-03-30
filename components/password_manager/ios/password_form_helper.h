@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/memory/ref_counted_memory.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #include "url/gurl.h"

@@ -37,10 +37,11 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
         } else if (StatusProperties.STATUS_ICON_RESOURCE.equals(propertyKey)) {
             StatusIconResource res = model.get(StatusProperties.STATUS_ICON_RESOURCE);
             if (res == null) {
-                view.setStatusIconResources(null);
+                view.setStatusIconResources(null, StatusView.IconTransitionType.CROSSFADE);
                 return;
             }
-            view.setStatusIconResources(res.getDrawable(view.getContext(), view.getResources()));
+            view.setStatusIconResources(res.getDrawable(view.getContext(), view.getResources()),
+                    res.getTransitionType());
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES.equals(propertyKey)) {
             view.setVerboseStatusTextColor(
                     model.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));

@@ -9,6 +9,7 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -23,7 +24,8 @@ class NGLayoutInputNode;
 // Define constraint classes for NGTableLayoutAlgorithm.
 class CORE_EXPORT NGTableTypes {
  public:
-  static constexpr LayoutUnit kTableMaxInlineSize = LayoutUnit::Max();
+  static constexpr LayoutUnit kTableMaxInlineSize =
+      LayoutUnit(static_cast<uint64_t>(1000000));
 
   // Inline constraint for a single cell.
   // Takes into account the cell style, and min/max content-sizes.
@@ -56,6 +58,36 @@ class CORE_EXPORT NGTableTypes {
   // Constraint for a column.
   struct Column {
     DISALLOW_NEW();
+    Column(const base::Optional<LayoutUnit>& min_inline_size,
+           const base::Optional<LayoutUnit>& max_inline_size,
+           const base::Optional<float>& percent,
+           LayoutUnit percent_border_padding,
+           bool is_constrained,
+           bool is_collapsed,
+           bool is_table_fixed,
+           bool is_mergeable)
+        : min_inline_size(min_inline_size),
+          max_inline_size(max_inline_size),
+          percent(percent),
+          percent_border_padding(percent_border_padding),
+          is_constrained(is_constrained),
+          is_collapsed(is_collapsed),
+          is_table_fixed(is_table_fixed),
+          is_mergeable(is_mergeable) {}
+    Column() = default;
+
+    bool operator==(const Column& other) const {
+      return min_inline_size == other.min_inline_size &&
+             max_inline_size == other.max_inline_size &&
+             percent == other.percent &&
+             percent_border_padding == other.percent_border_padding &&
+             is_constrained == other.is_constrained &&
+             is_collapsed == other.is_collapsed &&
+             is_table_fixed == other.is_table_fixed &&
+             is_mergeable == other.is_mergeable;
+    }
+    bool operator!=(const Column& other) const { return !(*this == other); }
+
     // These members are initialized from <col> and <colgroup>, then they
     // accumulate data from |CellInlineConstraint|s.
     base::Optional<LayoutUnit> min_inline_size;
@@ -67,6 +99,7 @@ class CORE_EXPORT NGTableTypes {
     bool is_constrained = false;
     bool is_collapsed = false;
     bool is_table_fixed = false;
+    bool is_mergeable = false;
 
     void Encompass(const base::Optional<NGTableTypes::CellInlineConstraint>&);
     LayoutUnit ResolvePercentInlineSize(
@@ -189,13 +222,13 @@ class CORE_EXPORT NGTableTypes {
       WritingMode table_writing_mode,
       bool is_fixed_layout,
       const NGBoxStrut& cell_border,
-      const NGBoxStrut& cell_padding,
-      bool has_collapsed_borders);
+      const NGBoxStrut& cell_padding);
 
   static Section CreateSection(const NGLayoutInputNode&,
                                wtf_size_t start_row,
                                wtf_size_t rowspan,
-                               LayoutUnit block_size);
+                               LayoutUnit block_size,
+                               bool treat_as_tbody);
 
   static CellBlockConstraint CreateCellBlockConstraint(
       const NGLayoutInputNode&,
@@ -239,9 +272,9 @@ struct NGTableGroupedChildren {
   Vector<NGBlockNode> captions;  // CAPTION
   Vector<NGBlockNode> columns;   // COLGROUP, COL
 
-  Vector<NGBlockNode> headers;  // THEAD
-  Vector<NGBlockNode> bodies;   // TBODY
-  Vector<NGBlockNode> footers;  // TFOOT
+  NGBlockNode header;          // first THEAD
+  Vector<NGBlockNode> bodies;  // TBODY/multiple THEAD/TFOOT
+  NGBlockNode footer;          // first TFOOT
 
   // Default iterators iterate over tbody-like (THEAD/TBODY/TFOOT) elements.
   NGTableGroupedChildrenIterator begin() const;
@@ -251,6 +284,8 @@ struct NGTableGroupedChildren {
 // Iterates table's sections in order:
 // thead, tbody, tfoot
 class NGTableGroupedChildrenIterator {
+  enum CurrentSection { kNone, kHead, kBody, kFoot, kEnd };
+
  public:
   explicit NGTableGroupedChildrenIterator(
       const NGTableGroupedChildren& grouped_children,
@@ -260,12 +295,14 @@ class NGTableGroupedChildrenIterator {
   NGBlockNode operator*() const;
   bool operator==(const NGTableGroupedChildrenIterator& rhs) const;
   bool operator!=(const NGTableGroupedChildrenIterator& rhs) const;
+  // True if section should be treated as tbody
+  bool TreatAsTBody() const { return current_section_ == kBody; }
 
  private:
   void AdvanceToNonEmptySection();
   const NGTableGroupedChildren& grouped_children_;
-  const Vector<NGBlockNode>* current_vector_;
-  Vector<NGBlockNode>::const_iterator current_iterator_;
+  Vector<NGBlockNode>::const_iterator body_iterator_;
+  CurrentSection current_section_{kNone};
 };
 
 }  // namespace blink

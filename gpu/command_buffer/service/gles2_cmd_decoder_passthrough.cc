@@ -1066,12 +1066,11 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
                    "missing  GL_ANGLE_request_extension");
   FAIL_INIT_IF_NOT(feature_info_->feature_flags().khr_debug,
                    "missing GL_KHR_debug");
-  FAIL_INIT_IF_NOT(
-      !IsWebGL2ComputeContextType(attrib_helper.context_type) ||
-          feature_info_->feature_flags().khr_robust_buffer_access_behavior,
-      "missing GL_KHR_robust_buffer_access_behavior");
   FAIL_INIT_IF_NOT(!attrib_helper.enable_oop_rasterization,
                    "oop rasterization not supported");
+  FAIL_INIT_IF_NOT(!IsES31ForTestingContextType(attrib_helper.context_type) ||
+                       feature_info_->gl_version_info().IsAtLeastGLES(3, 1),
+                   "ES 3.1 context type requires an ES 3.1 ANGLE context");
 
 #undef FAIL_INIT_IF_NOT
 
@@ -1576,7 +1575,9 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->feature_flags().ext_texture_format_dxt5;
   caps.texture_format_etc1 =
       feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture;
-  caps.texture_format_etc1_npot = caps.texture_format_etc1;
+  caps.texture_format_etc1_npot =
+      caps.texture_format_etc1 &&
+      !feature_info_->workarounds().etc1_power_of_two_only;
   caps.texture_rectangle = feature_info_->feature_flags().arb_texture_rectangle;
   caps.texture_usage = feature_info_->feature_flags().angle_texture_usage;
   caps.texture_storage = feature_info_->feature_flags().ext_texture_storage;
@@ -2853,6 +2854,21 @@ void GLES2DecoderPassthroughImpl::UpdateTextureSizeFromClientID(
       texture != nullptr) {
     UpdateTextureSizeFromTexturePassthrough(texture.get(), client_id);
   }
+}
+
+void GLES2DecoderPassthroughImpl::UpdateCurrentlyBoundElementArrayBuffer() {
+  GLint service_element_array_buffer = 0;
+  api_->glGetIntegervFn(GL_ELEMENT_ARRAY_BUFFER_BINDING,
+                        &service_element_array_buffer);
+
+  GLuint client_element_array_buffer = 0;
+  if (service_element_array_buffer != 0) {
+    GetClientID(&resources_->buffer_id_map,
+                static_cast<GLuint>(service_element_array_buffer),
+                &client_element_array_buffer);
+  }
+
+  bound_buffers_[GL_ELEMENT_ARRAY_BUFFER] = client_element_array_buffer;
 }
 
 error::Error GLES2DecoderPassthroughImpl::HandleSetActiveURLCHROMIUM(

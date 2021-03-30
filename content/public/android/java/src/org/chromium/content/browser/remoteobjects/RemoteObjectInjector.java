@@ -7,6 +7,7 @@ package org.chromium.content.browser.remoteobjects;
 import org.chromium.blink.mojom.RemoteObjectGateway;
 import org.chromium.blink.mojom.RemoteObjectGatewayFactory;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.content_public.browser.GlobalFrameRoutingId;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -47,7 +48,10 @@ public final class RemoteObjectInjector extends WebContentsObserver {
     private final Set<Object> mRetainingSet = new HashSet<>();
     private final Map<String, Pair<Object, Class<? extends Annotation>>> mInjectedObjects =
             new HashMap<>();
-    private final Map<RenderFrameHost, RemoteObjectGatewayHelper> mRemoteObjectGatewayHelpers =
+    // TODO(1191511): This is essentially implementing RenderDocumentHostUserData. Once a java
+    // equivalent of that is created, we should use it instead of managing RFH associated state
+    // here.
+    private final Map<GlobalFrameRoutingId, RemoteObjectGatewayHelper> mRemoteObjectGatewayHelpers =
             new HashMap<>();
     private boolean mAllowInspection = true;
 
@@ -56,14 +60,13 @@ public final class RemoteObjectInjector extends WebContentsObserver {
     }
 
     @Override
-    public void renderFrameCreated(int renderProcessId, int renderFrameId) {
+    public void renderFrameCreated(GlobalFrameRoutingId id) {
         if (mInjectedObjects.isEmpty()) return;
 
         WebContents webContents = mWebContents.get();
         if (webContents == null) return;
 
-        RenderFrameHost frameHost =
-                webContents.getRenderFrameHostFromId(renderProcessId, renderFrameId);
+        RenderFrameHost frameHost = webContents.getRenderFrameHostFromId(id);
         if (frameHost == null) return;
 
         for (Map.Entry<String, Pair<Object, Class<? extends Annotation>>> entry :
@@ -74,15 +77,8 @@ public final class RemoteObjectInjector extends WebContentsObserver {
     }
 
     @Override
-    public void renderFrameDeleted(int renderProcessId, int renderFrameId) {
-        WebContents webContents = mWebContents.get();
-        if (webContents == null) return;
-
-        RenderFrameHost frameHost =
-                webContents.getRenderFrameHostFromId(renderProcessId, renderFrameId);
-        if (frameHost == null) return;
-
-        mRemoteObjectGatewayHelpers.remove(frameHost);
+    public void renderFrameDeleted(GlobalFrameRoutingId id) {
+        mRemoteObjectGatewayHelpers.remove(id);
     }
 
     public void addInterface(
@@ -104,7 +100,11 @@ public final class RemoteObjectInjector extends WebContentsObserver {
 
         List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
         for (RenderFrameHost frame : frames) {
-            addInterfaceForFrame(frame, name, object, requiredAnnotation);
+            // If there's no renderer frame yet, we will add the interface when
+            // it is created.
+            if (frame.isRenderFrameCreated()) {
+                addInterfaceForFrame(frame, name, object, requiredAnnotation);
+            }
         }
     }
 
@@ -141,7 +141,8 @@ public final class RemoteObjectInjector extends WebContentsObserver {
     }
 
     private void removeInterfaceForFrame(RenderFrameHost frameHost, String name, Object object) {
-        RemoteObjectGatewayHelper helper = mRemoteObjectGatewayHelpers.get(frameHost);
+        RemoteObjectGatewayHelper helper =
+                mRemoteObjectGatewayHelpers.get(frameHost.getGlobalFrameRoutingId());
         if (helper == null) return;
 
         helper.gateway.removeNamedObject(name);
@@ -149,7 +150,8 @@ public final class RemoteObjectInjector extends WebContentsObserver {
     }
 
     private void setAllowInspectionForFrame(RenderFrameHost frameHost) {
-        RemoteObjectGatewayHelper helper = mRemoteObjectGatewayHelpers.get(frameHost);
+        RemoteObjectGatewayHelper helper =
+                mRemoteObjectGatewayHelpers.get(frameHost.getGlobalFrameRoutingId());
         if (helper == null) return;
 
         helper.host.setAllowInspection(mAllowInspection);
@@ -157,25 +159,26 @@ public final class RemoteObjectInjector extends WebContentsObserver {
 
     private RemoteObjectGatewayHelper getRemoteObjectGatewayHelperForFrame(
             RenderFrameHost frameHost) {
+        GlobalFrameRoutingId frameHostId = frameHost.getGlobalFrameRoutingId();
         // Only create one instance of RemoteObjectHostImpl per frame and store it in a map so it is
         // reused in future calls.
-        if (!mRemoteObjectGatewayHelpers.containsKey(frameHost)) {
+        if (!mRemoteObjectGatewayHelpers.containsKey(frameHostId)) {
             RemoteObjectRegistry registry = new RemoteObjectRegistry(mRetainingSet);
 
             // Construct a RemoteObjectHost implementation.
             RemoteObjectHostImpl host = new RemoteObjectHostImpl(
                     new RemoteObjectAuditorImpl(), registry, mAllowInspection);
 
-            RemoteObjectGatewayFactory factory = frameHost.getRemoteInterfaces().getInterface(
-                    RemoteObjectGatewayFactory.MANAGER);
+            RemoteObjectGatewayFactory factory =
+                    frameHost.getInterfaceToRendererFrame(RemoteObjectGatewayFactory.MANAGER);
 
             Pair<RemoteObjectGateway.Proxy, InterfaceRequest<RemoteObjectGateway>> result =
                     RemoteObjectGateway.MANAGER.getInterfaceRequest(CoreImpl.getInstance());
             factory.createRemoteObjectGateway(host, result.second);
             mRemoteObjectGatewayHelpers.put(
-                    frameHost, new RemoteObjectGatewayHelper(result.first, host, registry));
+                    frameHostId, new RemoteObjectGatewayHelper(result.first, host, registry));
         }
 
-        return mRemoteObjectGatewayHelpers.get(frameHost);
+        return mRemoteObjectGatewayHelpers.get(frameHostId);
     }
 }

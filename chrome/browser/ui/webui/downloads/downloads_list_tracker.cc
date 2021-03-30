@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/downloads/downloads_list_tracker.h"
 
 #include <iterator>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -123,7 +123,7 @@ void DownloadsListTracker::Reset() {
 
 bool DownloadsListTracker::SetSearchTerms(
     const std::vector<std::string>& search_terms) {
-  std::vector<base::string16> new_terms;
+  std::vector<std::u16string> new_terms;
   new_terms.resize(search_terms.size());
 
   for (const auto& t : search_terms)
@@ -253,7 +253,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->by_ext_name = by_ext_name;
 
   // Keep file names as LTR. TODO(dbeam): why?
-  base::string16 file_name =
+  std::u16string file_name =
       download_item->GetFileNameToReportUser().LossyDisplayName();
   file_name = base::i18n::GetDisplayStringInLTRDirectionality(file_name);
 
@@ -269,10 +269,10 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->otr = IsIncognito(*download_item);
 
   const char* danger_type = GetDangerTypeString(download_item->GetDangerType());
-  base::string16 last_reason_text;
+  std::u16string last_reason_text;
   // -2 is invalid, -1 means indeterminate, and 0-100 are in-progress.
   int percent = -2;
-  base::string16 progress_status_text;
+  std::u16string progress_status_text;
   bool retry = false;
   const char* state = nullptr;
 

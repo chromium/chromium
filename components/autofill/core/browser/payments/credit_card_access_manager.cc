@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -133,8 +132,8 @@ bool CreditCardAccessManager::DeleteCard(const CreditCard* card) {
 
 bool CreditCardAccessManager::GetDeletionConfirmationText(
     const CreditCard* card,
-    base::string16* title,
-    base::string16* body) {
+    std::u16string* title,
+    std::u16string* body) {
   if (!IsLocalCard(card))
     return false;
 
@@ -370,7 +369,7 @@ void CreditCardAccessManager::SignalCanFetchUnmaskDetails() {
 }
 
 void CreditCardAccessManager::CacheUnmaskedCardInfo(const CreditCard& card,
-                                                    const base::string16& cvc) {
+                                                    const std::u16string& cvc) {
   DCHECK_EQ(card.record_type(), CreditCard::FULL_SERVER_CARD);
   CachedServerCardInfo card_info = {card, cvc, 0};
   unmasked_card_cache_[card.server_id()] = card_info;
@@ -609,7 +608,7 @@ bool CreditCardAccessManager::UserOptedInToFidoFromSettingsPageOnMobile()
 void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     bool did_succeed,
     const CreditCard* card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
 #if !defined(OS_ANDROID)
   // Close the Webauthn verify pending dialog. If FIDO authentication succeeded,
   // card is filled to the form, otherwise fall back to CVC authentication which
@@ -642,7 +641,7 @@ void CreditCardAccessManager::OnFidoAuthorizationComplete(bool did_succeed) {
         unmask_auth_flow_type_);
   }
   unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
-  cvc_ = base::string16();
+  cvc_ = std::u16string();
 }
 #endif
 

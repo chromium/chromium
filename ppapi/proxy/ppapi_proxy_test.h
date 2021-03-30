@@ -353,7 +353,7 @@ class TwoWayTest : public testing::Test {
   // Post a task to the thread where the remote harness lives. This
   // is typically used to test the state of the var tracker on the plugin
   // thread. This runs the task synchronously for convenience.
-  void PostTaskOnRemoteHarness(const base::Closure& task);
+  void PostTaskOnRemoteHarness(base::OnceClosure task);
 
  private:
   TwoWayTestMode test_mode_;

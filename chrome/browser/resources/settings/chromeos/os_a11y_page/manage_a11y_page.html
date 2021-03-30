@@ -5,9 +5,10 @@
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="../../controls/settings_slider.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
@@ -38,6 +39,16 @@
         margin-inline-start: var(--cr-section-indent-padding);
         padding-inline-end: 0;
         padding-inline-start: 0;
+      }
+
+      .settings-box.indented,
+      settings-toggle-button.indented {
+        margin-inline-start: calc(var(--cr-section-indent-padding) +
+                                  var(--cr-section-indent-width));
+      }
+
+      #screenMagnifierZoomHintLabel {
+        white-space: pre-line;
       }
     </style>
     <template is="dom-if" if="[[!isKioskModeActive_]]">
@@ -92,22 +103,52 @@
         class="hr"
         pref="{{prefs.settings.a11y.screen_magnifier}}"
         label="$i18n{screenMagnifierLabel}"
+        sub-label="[[screenMagnifierHintLabel_]]"
         disabled="[[prefs.ash.docked_magnifier.enabled.value]]"
         deep-link-focus-id$="[[Setting.kFullscreenMagnifier]]">
     </settings-toggle-button>
     <template is="dom-if" if="[[prefs.settings.a11y.screen_magnifier.value]]">
-      <div class="sub-item">
+      <template is="dom-if" if="[[isMagnifierPanningImprovementsEnabled_]]">
+        <div class="settings-box continuation">
+          <settings-radio-group id="screenMagnifierMouseFollowingModeRadioGroup"
+              pref="{{prefs.settings.a11y.screen_magnifier_mouse_following_mode}}"
+              class="sub-item">
+            <template
+                is="dom-if"
+                if="[[isMagnifierContinuousMouseFollowingModeSettingEnabled_]]">
+              <controlled-radio-button
+                  id="screenMagnifierMouseFollowingModeContinuous"
+                  name="[[screenMagnifierMouseFollowingModePrefValues_.CONTINUOUS]]"
+                  pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+                  label="$i18n{screenMagnifierMouseFollowingModeContinuous}">
+              </controlled-radio-button>
+            </template>
+            <controlled-radio-button
+                id="screenMagnifierMouseFollowingModeCentered"
+                name="[[screenMagnifierMouseFollowingModePrefValues_.CENTERED]]"
+                pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+                label="$i18n{screenMagnifierMouseFollowingModeCentered}">
+            </controlled-radio-button>
+            <controlled-radio-button
+                id="screenMagnifierMouseFollowingModeEdge"
+                name="[[screenMagnifierMouseFollowingModePrefValues_.EDGE]]"
+                pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+                label="$i18n{screenMagnifierMouseFollowingModeEdge}">
+            </controlled-radio-button>
+          </settings-radio-group>
+        </div>
         <settings-toggle-button
-            class="sub-item"
+            class="indented hr"
             pref="{{prefs.settings.a11y.screen_magnifier_focus_following}}"
             label="$i18n{screenMagnifierFocusFollowingLabel}"
             deep-link-focus-id$=
                 "[[Setting.kFullscreenMagnifierFocusFollowing]]">
         </settings-toggle-button>
-      </div>
-      <div class="settings-box continuation">
-        <div class="start sub-item settings-box-text" aria-hidden="true">
-          $i18n{screenMagnifierZoomLabel}
+      </template>
+      <div class="settings-box indented">
+        <div class="flex start settings-box-text" id="labelWrapper">
+          <div class="label" aria-hidden="true">$i18n{screenMagnifierZoomLabel}</div>
+          <div class="secondary label" id="screenMagnifierZoomHintLabel">$i18n{screenMagnifierZoomHintLabel}</div>
         </div>
         <settings-dropdown-menu label="$i18n{screenMagnifierZoomLabel}"
             pref="{{prefs.settings.a11y.screen_magnifier_scale}}"
@@ -270,19 +311,17 @@
           label-max="$i18n{largeMouseCursorSizeLargeLabel}">
       </settings-slider>
     </div>
-    <template is="dom-if" if="[[shouldShowExperimentalCursorColor_]]">
-      <div class="settings-box">
-        <div class="start settings-box-text" id="cursorColorOptionsLabel">
-          $i18n{cursorColorOptionsLabel}
-        </div>
-        <settings-dropdown-menu aria-labeledby="cursorColorOptionsLabel"
-            pref="{{prefs.settings.a11y.cursor_color}}"
-            menu-options="[[cursorColorOptions_]]"
-            on-settings-control-change="onA11yCursorColorChange_"
-            deep-link-focus-id$="[[Setting.kEnableCursorColor]]">
-        </settings-dropdown-menu>
+    <div class="settings-box">
+      <div class="start settings-box-text" id="cursorColorOptionsLabel">
+        $i18n{cursorColorOptionsLabel}
       </div>
-    </template>
+      <settings-dropdown-menu aria-labeledby="cursorColorOptionsLabel"
+          pref="{{prefs.settings.a11y.cursor_color}}"
+          menu-options="[[cursorColorOptions_]]"
+          on-settings-control-change="onA11yCursorColorChange_"
+          deep-link-focus-id$="[[Setting.kEnableCursorColor]]">
+      </settings-dropdown-menu>
+    </div>
     <settings-toggle-button
         class="hr"
         pref="{{prefs.settings.a11y.cursor_highlight}}"
@@ -343,7 +382,7 @@
         if="[[shouldShowAdditionalFeaturesLink_(isGuest_, isKioskModeActive_)]]">
       <a class="settings-box inherit-color no-outline" tabindex="-1"
           id="additionalFeaturesLink" target="_blank"
-          href="https://chrome.google.com/webstore/category/collection/accessibility">
+          href="https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions">
         <div class="start settings-box-text">
           $i18n{additionalFeaturesTitle}
           <div class="secondary" id="moreFeaturesSecondary">

@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 class SkBitmap;
@@ -26,6 +27,7 @@ enum class ClipboardInternalFormat {
   kBitmap = 1 << 5,
   kCustom = 1 << 6,
   kWeb = 1 << 7,
+  kFilenames = 1 << 8,
 };
 
 // ClipboardData contains data copied to the Clipboard for a variety of formats.
@@ -100,6 +102,13 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
     format_ |= static_cast<int>(ClipboardInternalFormat::kWeb);
   }
 
+  const std::vector<ui::FileInfo>& filenames() const { return filenames_; }
+  void set_filenames(std::vector<ui::FileInfo> filenames) {
+    filenames_ = std::move(filenames);
+    if (!filenames_.empty())
+      format_ |= static_cast<int>(ClipboardInternalFormat::kFilenames);
+  }
+
   DataTransferEndpoint* source() const { return src_.get(); }
 
   void set_source(std::unique_ptr<DataTransferEndpoint> src) {
@@ -133,6 +142,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
 
   // Svg data.
   std::string svg_data_;
+
+  // text/uri-list filenames data.
+  std::vector<ui::FileInfo> filenames_;
 
   int format_;
 

@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 
-import org.chromium.base.Function;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -40,13 +40,10 @@ import org.chromium.ui.widget.ViewRectProvider;
 public class UserEducationHelper {
     private final Activity mActivity;
     private final Handler mHandler;
-    private final Function<Profile, Tracker> mTrackerFromProfileFactory;
 
-    public UserEducationHelper(Activity activity, Handler handler,
-            Function<Profile, Tracker> trackerFromProfileFactory) {
+    public UserEducationHelper(Activity activity, Handler handler) {
         mActivity = activity;
         mHandler = handler;
-        mTrackerFromProfileFactory = trackerFromProfileFactory;
     }
 
     /**
@@ -60,7 +57,7 @@ public class UserEducationHelper {
         // incognito profile) instead of always using regular profile. Currently always original
         // profile is used not to start popping IPH messages as soon as opening an incognito tab.
         Profile profile = Profile.getLastUsedRegularProfile();
-        final Tracker tracker = mTrackerFromProfileFactory.apply(profile);
+        final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
     }
 
@@ -95,7 +92,9 @@ public class UserEducationHelper {
         textBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
 
         if (iphCommand.shouldHighlight) {
-            if (iphCommand.circleHighlight) {
+            if (iphCommand.highlighter != null) {
+                ViewHighlighter.attachViewAsHighlight(anchorView, iphCommand.highlighter);
+            } else if (iphCommand.circleHighlight) {
                 ViewHighlighter.turnOnCircularHighlight(anchorView);
             } else {
                 ViewHighlighter.turnOnRectangularHighlight(anchorView);

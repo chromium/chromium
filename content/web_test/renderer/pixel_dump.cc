@@ -17,7 +17,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/web_test/renderer/web_test_runtime_flags.h"
+#include "content/web_test/common/web_test_runtime_flags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/metafile_skia.h"
 #include "printing/mojom/print.mojom.h"
@@ -44,20 +44,20 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame) {
   auto* frame_widget = web_frame->LocalRoot()->FrameWidget();
   frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
 
-  blink::WebSize page_size_in_pixels = frame_widget->Size();
+  gfx::Size page_size_in_pixels = frame_widget->Size();
 
   uint32_t page_count =
       web_frame->PrintBegin(page_size_in_pixels, blink::WebNode());
-  blink::WebSize spool_size =
+  gfx::Size spool_size =
       web_frame->SpoolSizeInPixelsForTesting(page_size_in_pixels, page_count);
 
   bool is_opaque = false;
 
   SkBitmap bitmap;
-  if (!bitmap.tryAllocN32Pixels(spool_size.width, spool_size.height,
+  if (!bitmap.tryAllocN32Pixels(spool_size.width(), spool_size.height(),
                                 is_opaque)) {
-    LOG(ERROR) << "Failed to create bitmap width=" << page_size_in_pixels.width
-               << " height=" << spool_size.height;
+    LOG(ERROR) << "Failed to create bitmap width=" << spool_size.width()
+               << " height=" << spool_size.height();
     return SkBitmap();
   }
 

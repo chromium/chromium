@@ -23,7 +23,7 @@ class WindowsSurfaceFactory : public SurfaceFactoryOzone {
 
   // SurfaceFactoryOzone:
   std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
-  GLOzone* GetGLOzone(gl::GLImplementation implementation) override;
+  GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
 
  private:
   std::unique_ptr<GLOzone> egl_implementation_;

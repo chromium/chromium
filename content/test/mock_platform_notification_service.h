@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "url/gurl.h"
@@ -39,7 +38,7 @@ class MockPlatformNotificationService : public PlatformNotificationService {
   // Must be called on the UI thread.
   void SimulateClick(const std::string& title,
                      const base::Optional<int>& action_index,
-                     const base::Optional<base::string16>& reply);
+                     const base::Optional<std::u16string>& reply);
 
   // Simulates the closing a notification titled |title|. Must be called on
   // the UI thread.

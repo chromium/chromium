@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/form_events.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
@@ -261,67 +262,34 @@ class AutofillMetrics {
     NUM_SAVE_CARD_PROMPT_RESULT_METRICS,
   };
 
-  // Metrics to measure user interaction with the save credit card prompt.
-  //
-  // SAVE_CARD_PROMPT_DISMISS_FOCUS is not stored explicitly, but can be
-  // inferred from the other metrics:
-  // SAVE_CARD_PROMPT_DISMISS_FOCUS = SHOW_REQUESTED - END_* - DISMISS_*
-  enum SaveCardPromptMetric {
-    // Prompt was requested to be shown due to:
-    // CC info being submitted (first show), or
-    // location bar icon being clicked while bubble is hidden (reshows).
-    SAVE_CARD_PROMPT_SHOW_REQUESTED,
-    // The prompt was shown successfully.
-    SAVE_CARD_PROMPT_SHOWN_DEPRECATED,
-    // The prompt was not shown because the legal message was invalid.
-    SAVE_CARD_PROMPT_END_INVALID_LEGAL_MESSAGE,
-    // The user explicitly accepted the prompt.
-    SAVE_CARD_PROMPT_END_ACCEPTED,
-    // The user explicitly denied the prompt.
-    SAVE_CARD_PROMPT_END_DENIED,
-    // The prompt and icon were removed because of navigation away from the
-    // page that caused the prompt to be shown. The navigation occurred while
-    // the prompt was showing.
-    SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING,
-    // The prompt and icon were removed because of navigation away from the
-    // page that caused the prompt to be shown. The navigation occurred while
-    // the prompt was hidden.
-    SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN,
-    // The prompt was dismissed because the user clicked the "Learn more" link.
-    // Deprecated.
-    DEPRECATED_SAVE_CARD_PROMPT_DISMISS_CLICK_LEARN_MORE,
-    // The prompt was dismissed because the user clicked a legal message link.
-    SAVE_CARD_PROMPT_DISMISS_CLICK_LEGAL_MESSAGE,
+  // Metrics to track event when the offer notification bubble is closed.
+  enum class OfferNotificationBubbleResultMetric {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
 
-    // The following _CVC_FIX_FLOW_ metrics are independent of the ones above,
-    // and were relevant when the CVC fix flow was active M62-M64. During that
-    // time, for instance, accepting the CVC fix flow would trigger both
-    // SAVE_CARD_PROMPT_CVC_FIX_FLOW_END_ACCEPTED as well as
-    // SAVE_CARD_PROMPT_END_ACCEPTED.  They were split apart in order to track
-    // acceptance/abandonment rates of the multi-stage dialog user experience.
-    // (SAVE_CARD_PROMPT_CVC_FIX_FLOW_END_DENIED was an impossible state because
-    // the CVC fix flow uses a close button instead of a cancel button.)
+    // The user explicitly acknowledged the bubble by clicking the ok button.
+    OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED = 0,
+    // The user explicitly closed the prompt with the close button or ESC.
+    OFFER_NOTIFICATION_BUBBLE_CLOSED = 1,
+    // The user did not interact with the prompt.
+    OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED = 2,
+    // The prompt lost focus and was deactivated.
+    OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS = 3,
+    kMaxValue = OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
+  };
 
-    // The prompt moved to a second stage that requested CVC from the user.
-    SAVE_CARD_PROMPT_CVC_FIX_FLOW_SHOWN,
-    // The user explicitly entered CVC and accepted the prompt.
-    SAVE_CARD_PROMPT_CVC_FIX_FLOW_END_ACCEPTED,
-    // The prompt and icon were removed because of navigation away from the page
-    // that caused the prompt to be shown.  The navigation occurred while the
-    // prompt was showing, at the CVC request stage.
-    SAVE_CARD_PROMPT_CVC_FIX_FLOW_END_NAVIGATION_SHOWING,
-    // The prompt and icon were removed because of navigation away from the page
-    // that caused the prompt to be shown.  The navigation occurred while the
-    // prompt was hidden, at the CVC request stage.
-    SAVE_CARD_PROMPT_CVC_FIX_FLOW_END_NAVIGATION_HIDDEN,
-    // The prompt was dismissed because the user clicked a legal message link.
-    SAVE_CARD_PROMPT_CVC_FIX_FLOW_DISMISS_CLICK_LEGAL_MESSAGE,
+  // Metrics to track event when the offer notification infobar is closed.
+  enum class OfferNotificationInfoBarResultMetric {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
 
-    // The save card bubble was not shown due to the card having too many
-    // offer-to-save strikes, but the omnibox icon was still displayed.
-    SAVE_CARD_ICON_SHOWN_WITHOUT_PROMPT,
-
-    NUM_SAVE_CARD_PROMPT_METRICS,
+    // User acknowledged the infobar by clicking the ok button.
+    OFFER_NOTIFICATION_INFOBAR_ACKNOWLEDGED = 0,
+    // User explicitly closed the infobar with the close button.
+    OFFER_NOTIFICATION_INFOBAR_CLOSED = 1,
+    // InfoBar was shown but user did not interact with the it.
+    OFFER_NOTIFICATION_INFOBAR_IGNORED = 2,
+    kMaxValue = OFFER_NOTIFICATION_INFOBAR_IGNORED,
   };
 
   enum CreditCardUploadFeedbackMetric {
@@ -541,23 +509,6 @@ class AutofillMetrics {
     // The bubble is actually shown to the user.
     LOCAL_CARD_MIGRATION_BUBBLE_SHOWN = 1,
     NUM_LOCAL_CARD_MIGRATION_BUBBLE_OFFER_METRICS,
-  };
-
-  // Metrics to track user interactions with the bubble.
-  // TODO(crbug.com/1070799): Remove this enum once the old logging is cleaned
-  // up.
-  enum LocalCardMigrationBubbleUserInteractionMetric {
-    // The user explicitly accepts the offer.
-    LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_ACCEPTED = 0,
-    // The user explicitly denies the offer (clicks the cancel button).
-    LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_DENIED = 1,
-    // The bubble is closed due to user navigating away from the page
-    // while the bubble was showing.
-    LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_NAVIGATED_WHILE_SHOWING = 2,
-    // The bubble is closed due to user navigating away from the page
-    // while the bubble was hidden.
-    LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_NAVIGATED_WHILE_HIDDEN = 3,
-    NUM_LOCAL_CARD_MIGRATION_BUBBLE_USER_INTERACTION_METRICS,
   };
 
   // Metrics to track user action result of the bubble when the bubble is
@@ -1059,12 +1010,12 @@ class AutofillMetrics {
                       ServerFieldType actual_type);
     void LogFormSubmitted(bool is_for_credit_card,
                           bool has_upi_vpa_field,
-                          const std::set<FormType>& form_types,
+                          const DenseSet<FormType>& form_types,
                           AutofillFormSubmittedState state,
                           const base::TimeTicks& form_parsed_timestamp,
                           FormSignature form_signature);
     void LogFormEvent(FormEvent form_event,
-                      const std::set<FormType>& form_types,
+                      const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
 
     // Log whether the autofill decided to skip or to fill each
@@ -1171,18 +1122,6 @@ class AutofillMetrics {
       int previous_save_credit_card_prompt_user_decision,
       security_state::SecurityLevel security_level,
       AutofillSyncSigninState sync_state);
-  static void LogSaveCardPromptMetric(
-      SaveCardPromptMetric metric,
-      bool is_uploading,
-      bool is_reshow,
-      AutofillClient::SaveCreditCardOptions options,
-      int previous_save_credit_card_prompt_user_decision,
-      security_state::SecurityLevel security_level,
-      AutofillSyncSigninState sync_state);
-  static void LogSaveCardPromptMetricBySecurityLevel(
-      SaveCardPromptMetric metric,
-      bool is_uploading,
-      security_state::SecurityLevel security_level);
   static void LogCreditCardUploadLegalMessageLinkClicked();
   static void LogCreditCardUploadFeedbackMetric(
       CreditCardUploadFeedbackMetric metric);
@@ -1193,11 +1132,6 @@ class AutofillMetrics {
       LocalCardMigrationDecisionMetric metric);
   static void LogLocalCardMigrationBubbleOfferMetric(
       LocalCardMigrationBubbleOfferMetric metric,
-      bool is_reshow);
-  // TODO(crbug.com/1070799): Delete the user interaction metrics when the
-  // experiment is fully launched.
-  static void LogLocalCardMigrationBubbleUserInteractionMetric(
-      LocalCardMigrationBubbleUserInteractionMetric metric,
       bool is_reshow);
   static void LogLocalCardMigrationBubbleResultMetric(
       LocalCardMigrationBubbleResultMetric metric,
@@ -1213,6 +1147,14 @@ class AutofillMetrics {
   static void LogLocalCardMigrationPromptMetric(
       LocalCardMigrationOrigin local_card_migration_origin,
       LocalCardMigrationPromptMetric metric);
+  static void LogOfferNotificationBubbleOfferMetric(bool is_reshow);
+  static void LogOfferNotificationBubbleResultMetric(
+      OfferNotificationBubbleResultMetric metric,
+      bool is_reshow);
+  static void LogOfferNotificationInfoBarDeepLinkClicked();
+  static void LogOfferNotificationInfoBarResultMetric(
+      OfferNotificationInfoBarResultMetric metric);
+  static void LogOfferNotificationInfoBarShown();
 
   // Should be called when credit card scan is finished. |duration| should be
   // the time elapsed between launching the credit card scanner and getting back
@@ -1252,7 +1194,7 @@ class AutofillMetrics {
 
   static void LogUserHappinessMetric(
       UserHappinessMetric metric,
-      const std::set<FormType>& form_types,
+      const DenseSet<FormType>& form_types,
       security_state::SecurityLevel security_level,
       uint32_t profile_form_bitmask);
 
@@ -1374,7 +1316,7 @@ class AutofillMetrics {
   // time elapsed between the initial form interaction and submission. This
   // metric is sliced by |form_type| and |used_autofill|.
   static void LogFormFillDurationFromInteraction(
-      const std::set<FormType>& form_types,
+      const DenseSet<FormType>& form_types,
       bool used_autofill,
       const base::TimeDelta& duration);
 
@@ -1507,7 +1449,7 @@ class AutofillMetrics {
       AutofillFormSubmittedState state,
       bool is_for_credit_card,
       bool has_upi_vpa_field,
-      const std::set<FormType>& form_types,
+      const DenseSet<FormType>& form_types,
       const base::TimeTicks& form_parsed_timestamp,
       FormSignature form_signature,
       FormInteractionsUkmLogger* form_interactions_ukm_logger);
@@ -1570,7 +1512,7 @@ class AutofillMetrics {
                                         ukm::SourceId source_id,
                                         const GURL& url,
                                         bool is_for_credit_card,
-                                        std::set<FormType> form_types,
+                                        DenseSet<FormType> form_types,
                                         int developer_engagement_metrics,
                                         FormSignature form_signature);
 
@@ -1579,7 +1521,7 @@ class AutofillMetrics {
   static void LogHiddenOrPresentationalSelectFieldsFilled();
 
   // Converts form type to bit vector to store in UKM.
-  static int64_t FormTypesToBitVector(const std::set<FormType>& form_types);
+  static int64_t FormTypesToBitVector(const DenseSet<FormType>& form_types);
 
   // Records the fact that the server card link was clicked with information
   // about the current sync state.

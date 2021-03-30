@@ -16,11 +16,11 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/sync/engine/nigori/keystore_keys_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/nigori/cryptographer_impl.h"
-#include "components/sync/nigori/keystore_keys_handler.h"
 #include "components/sync/nigori/nigori_local_change_processor.h"
 #include "components/sync/nigori/nigori_state.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
@@ -68,6 +68,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
       const std::vector<std::vector<uint8_t>>& keys) override;
   base::Time GetKeystoreMigrationTime() const override;
   KeystoreKeysHandler* GetKeystoreKeysHandler() override;
+  Cryptographer* GetCryptographer() override;
 
   // KeystoreKeysHandler implementation.
   bool NeedKeystoreKey() const override;
@@ -81,10 +82,8 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   std::unique_ptr<EntityData> GetData() override;
   void ApplyDisableSyncChanges() override;
 
-  // TODO(crbug.com/922900): investigate whether we need this getter outside of
-  // tests and decide whether this method should be a part of
-  // SyncEncryptionHandler interface.
-  const CryptographerImpl& GetCryptographerForTesting() const;
+  const CryptographerImpl& GetCryptographerImplForTesting() const;
+  // TODO(crbug.com/922900): Move these getters to SyncEncryptionHandler.
   sync_pb::NigoriSpecifics::PassphraseType GetPassphraseTypeForTesting() const;
   ModelTypeSet GetEncryptedTypesForTesting() const;
   bool HasPendingKeysForTesting() const;

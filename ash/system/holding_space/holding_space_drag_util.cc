@@ -39,10 +39,10 @@ namespace {
 constexpr int kDragImageItemViewCornerRadius = 8;
 constexpr int kDragImageItemViewElevation = 2;
 constexpr int kDragImageItemChipViewIconSize = 24;
-constexpr gfx::Insets kDragImageItemChipViewInsets(0, 13);
+constexpr gfx::Insets kDragImageItemChipViewInsets(8, 8, 8, /*right=*/12);
 constexpr gfx::Size kDragImageItemChipViewPreferredSize(160, 40);
-constexpr int kDragImageItemChipViewSpacing = 13;
-constexpr gfx::Size kDragImageItemScreenshotViewPreferredSize(104, 80);
+constexpr int kDragImageItemChipViewSpacing = 8;
+constexpr gfx::Size kDragImageItemScreenCaptureViewPreferredSize(104, 80);
 constexpr gfx::Insets kDragImageOverflowBadgeInsets = gfx::Insets(0, 8);
 constexpr gfx::Size kDragImageOverflowBadgeMinimumSize(24, 24);
 constexpr int kDragImageViewChildOffset = 8;
@@ -155,12 +155,18 @@ class DragImageItemView : public views::View {
   }
 
   void OnPaintBackground(gfx::Canvas* canvas) override {
+    // NOTE: The contents bounds are shrunk by a single pixel to avoid
+    // painting the background outside content bounds as might otherwise occur
+    // due to pixel rounding. Failure to do so could result in white paint
+    // artifacts.
+    gfx::RectF bounds(GetContentsBounds());
+    bounds.Inset(gfx::InsetsF(0.5f));
+
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(SK_ColorWHITE);
     flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
-    canvas->DrawRoundRect(GetContentsBounds(), kDragImageItemViewCornerRadius,
-                          flags);
+    canvas->DrawRoundRect(bounds, kDragImageItemViewCornerRadius, flags);
   }
 
  private:
@@ -204,7 +210,7 @@ class DragImageItemChipView : public DragImageItemView {
         RoundedImageView::Alignment::kCenter));
     icon->SetPreferredSize(gfx::Size(kDragImageItemChipViewIconSize,
                                      kDragImageItemChipViewIconSize));
-    icon->SetImage(item->image().image_skia(), icon->GetPreferredSize());
+    icon->SetImage(item->image().GetImageSkia(icon->GetPreferredSize()));
 
     // Label.
     ScopedLightModeAsDefault scoped_light_mode;
@@ -215,21 +221,21 @@ class DragImageItemChipView : public DragImageItemView {
   }
 };
 
-// DragImageItemScreenshotView -------------------------------------------------
+// DragImageItemScreenCaptureView ----------------------------------------------
 
-// A `DragImageItemView` which represents a single holding space screenshot
+// A `DragImageItemView` which represents a single holding space screen capture
 // `item` in the drag image for a collection of holding space item views.
-class DragImageItemScreenshotView : public DragImageItemView {
+class DragImageItemScreenCaptureView : public DragImageItemView {
  public:
-  explicit DragImageItemScreenshotView(const HoldingSpaceItem* item) {
-    DCHECK_EQ(item->type(), HoldingSpaceItem::Type::kScreenshot);
+  explicit DragImageItemScreenCaptureView(const HoldingSpaceItem* item) {
+    DCHECK(item->IsScreenCapture());
     InitLayout(item);
   }
 
  private:
   void InitLayout(const HoldingSpaceItem* item) {
     // NOTE: Enlarge `preferred_size` to accommodate the view's shadow.
-    gfx::Size preferred_size(kDragImageItemScreenshotViewPreferredSize);
+    gfx::Size preferred_size(kDragImageItemScreenCaptureViewPreferredSize);
     preferred_size.Enlarge(GetInsets().width(), GetInsets().height());
     SetPreferredSize(preferred_size);
 
@@ -239,8 +245,8 @@ class DragImageItemScreenshotView : public DragImageItemView {
     // Image.
     auto* image = AddChildView(std::make_unique<RoundedImageView>(
         kDragImageItemViewCornerRadius, RoundedImageView::Alignment::kCenter));
-    image->SetPreferredSize(kDragImageItemScreenshotViewPreferredSize);
-    image->SetImage(item->image().image_skia(), image->GetPreferredSize());
+    image->SetPreferredSize(kDragImageItemScreenCaptureViewPreferredSize);
+    image->SetImage(item->image().GetImageSkia(image->GetPreferredSize()));
   }
 };
 
@@ -393,19 +399,18 @@ class DragImageView : public views::View {
     container->SetLayoutManager(
         std::make_unique<DragImageLayoutManager>(kDragImageViewChildOffset));
 
-    const bool contains_only_screenshots = std::all_of(
-        items.begin(), items.end(), [](const HoldingSpaceItem* item) {
-          return item->type() == HoldingSpaceItem::Type::kScreenshot;
-        });
+    const bool contains_only_screen_captures = std::all_of(
+        items.begin(), items.end(),
+        [](const HoldingSpaceItem* item) { return item->IsScreenCapture(); });
 
     // Show at most `kDragImageViewMaxItemsToPaint` items in the drag image. If
     // more items exist, `drag_image_overflow_badge_` will be added to indicate
     // the total number of dragged items.
     const size_t count = std::min(items.size(), kDragImageViewMaxItemsToPaint);
     for (size_t i = 0; i < count; ++i) {
-      if (contains_only_screenshots) {
+      if (contains_only_screen_captures) {
         container->AddChildView(
-            std::make_unique<DragImageItemScreenshotView>(items[i]));
+            std::make_unique<DragImageItemScreenCaptureView>(items[i]));
       } else {
         container->AddChildView(
             std::make_unique<DragImageItemChipView>(items[i]));

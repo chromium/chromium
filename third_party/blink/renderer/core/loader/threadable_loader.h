@@ -163,7 +163,7 @@ class CORE_EXPORT ThreadableLoader final
   // Set via SetTimeout() by a user before Start().
   base::TimeDelta timeout_;
   // Used to detect |timeout_| is over.
-  TaskRunnerTimer<ThreadableLoader> timeout_timer_;
+  HeapTaskRunnerTimer<ThreadableLoader> timeout_timer_;
 
   // Time an asynchronous fetch request is started
   base::TimeTicks request_started_;

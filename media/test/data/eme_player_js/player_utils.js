@@ -141,8 +141,7 @@ PlayerUtils.registerEMEEventListeners = function(player) {
     }
 
     try {
-      if (player.testConfig.sessionToLoad &&
-          player.testConfig.sessionToLoad != 'PersistentUsageRecord') {
+      if (player.testConfig.sessionToLoad) {
         // Create a session to load using a new MediaKeys.
         // TODO(jrummell): Add a test that covers remove().
         player.access.createMediaKeys()
@@ -196,12 +195,7 @@ PlayerUtils.registerEMEEventListeners = function(player) {
             'Creating new media key session for initDataType: ' +
             message.initDataType + ', initData: ' +
             Utils.getHexString(new Uint8Array(message.initData)));
-        if (player.testConfig.sessionToLoad == 'PersistentUsageRecord') {
-          player.session =
-              message.target.mediaKeys.createSession('persistent-usage-record');
-        } else {
-          player.session = message.target.mediaKeys.createSession();
-        }
+        player.session = message.target.mediaKeys.createSession();
         addMediaKeySessionListeners(player.session);
         player.session.generateRequest(message.initDataType, message.initData)
             .catch(function(error) {
@@ -267,9 +261,6 @@ PlayerUtils.registerEMEEventListeners = function(player) {
       player.testConfig.keySystem == STORAGE_ID_TEST_KEYSYSTEM) {
     config.persistentState = 'required';
     config.sessionTypes = ['temporary', 'persistent-license'];
-    if (player.testConfig.sessionToLoad == 'PersistentUsageRecord') {
-      config.sessionTypes.push('persistent-usage-record');
-    }
   }
 
   return navigator
@@ -347,11 +338,6 @@ PlayerUtils.removeSession = async function(player) {
   const waitForMessagePromise = Utils.waitForEvent(
       player.session, 'message', function(e, resolve, reject) {
         Utils.timeLog(e.messageType);
-        if (e.messageType == 'license-release' &&
-            player.testConfig.sessionToLoad == 'PersistentUsageRecord') {
-          Utils.verifyUsageRecord(e.message, /* expectNullTime= */ false);
-        }
-        // TODO: verify license-release message for persistent-license session
         resolve();
       });
 

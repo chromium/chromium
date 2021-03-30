@@ -12,7 +12,6 @@
 
 #include "base/files/file.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/spellcheck/renderer/spellcheck_worditerator.h"
 
 namespace service_manager {
@@ -61,13 +60,13 @@ class SpellcheckLanguage {
   //   |*optional_suggestions|. If optional_suggestions is nullptr, suggested
   //   words will not be looked up. Note that doing suggest lookups can be slow.
   SpellcheckWordResult SpellCheckWord(
-      const base::char16* text_begin,
+      const char16_t* text_begin,
       size_t position_in_text,
       size_t text_length,
       int tag,
       size_t* skip_or_misspelling_start,
       size_t* skip_or_misspelling_len,
-      std::vector<base::string16>* optional_suggestions);
+      std::vector<std::u16string>* optional_suggestions);
 
   // Initialize |spellcheck_| if that hasn't happened yet.
   bool InitializeIfNeeded();
@@ -77,7 +76,7 @@ class SpellcheckLanguage {
 
   // Returns true if all the characters in a text string are in the script
   // associated with this spellcheck language.
-  bool IsTextInSameScript(const base::string16& text) const;
+  bool IsTextInSameScript(const std::u16string& text) const;
 
  private:
   friend class SpellCheckTest;
@@ -85,7 +84,7 @@ class SpellcheckLanguage {
 
   // Returns whether or not the given word is a contraction of valid words
   // (e.g. "word:word").
-  bool IsValidContraction(const base::string16& word, int tag);
+  bool IsValidContraction(const std::u16string& word, int tag);
 
   // Represents character attributes used for filtering out characters which
   // are not supported by this SpellCheck object.

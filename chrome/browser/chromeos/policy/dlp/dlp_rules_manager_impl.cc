@@ -16,8 +16,11 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -40,7 +43,8 @@ DlpRulesManager::Restriction GetClassMapping(const std::string& restriction) {
            {dlp::kPrivacyScreenRestriction,
             DlpRulesManager::Restriction::kPrivacyScreen},
            {dlp::kScreenShareRestriction,
-            DlpRulesManager::Restriction::kScreenShare}});
+            DlpRulesManager::Restriction::kScreenShare},
+           {dlp::kFilesRestriction, DlpRulesManager::Restriction::kFiles}});
 
   auto* it = kRestrictionsMap.find(restriction);
   return (it == kRestrictionsMap.end())
@@ -52,7 +56,8 @@ DlpRulesManager::Level GetLevelMapping(const std::string& level) {
   static constexpr auto kLevelsMap =
       base::MakeFixedFlatMap<base::StringPiece, DlpRulesManager::Level>(
           {{dlp::kAllowLevel, DlpRulesManager::Level::kAllow},
-           {dlp::kBlockLevel, DlpRulesManager::Level::kBlock}});
+           {dlp::kBlockLevel, DlpRulesManager::Level::kBlock},
+           {dlp::kWarnLevel, DlpRulesManager::Level::kWarn}});
   auto* it = kLevelsMap.find(level);
   return (it == kLevelsMap.end()) ? DlpRulesManager::Level::kNotSet
                                   : it->second;
@@ -75,8 +80,9 @@ uint8_t GetPriorityMapping(const DlpRulesManager::Level level) {
   static constexpr auto kPrioritiesMap =
       base::MakeFixedFlatMap<DlpRulesManager::Level, uint8_t>(
           {{DlpRulesManager::Level::kNotSet, 0},
-           {DlpRulesManager::Level::kBlock, 1},
-           {DlpRulesManager::Level::kAllow, 2}});
+           {DlpRulesManager::Level::kWarn, 1},
+           {DlpRulesManager::Level::kBlock, 2},
+           {DlpRulesManager::Level::kAllow, 3}});
   return kPrioritiesMap.at(level);
 }
 
@@ -117,6 +123,23 @@ std::set<DlpRulesManagerImpl::RuleId> MatchUrlAndGetRulesMapping(
   return rule_ids;
 }
 
+void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
+  if (response.has_error_message()) {
+    LOG(ERROR) << "Failed to set DLP Files policy and start DLP daemon, error: "
+               << response.error_message();
+  }
+}
+
+::dlp::DlpRuleLevel GetLevelProtoEnum(const DlpRulesManager::Level level) {
+  static constexpr auto kLevelsMap =
+      base::MakeFixedFlatMap<DlpRulesManager::Level, ::dlp::DlpRuleLevel>(
+          {{DlpRulesManager::Level::kNotSet, ::dlp::DlpRuleLevel::UNSPECIFIED},
+           {DlpRulesManager::Level::kWarn, ::dlp::DlpRuleLevel::UNSPECIFIED},
+           {DlpRulesManager::Level::kBlock, ::dlp::DlpRuleLevel::BLOCK},
+           {DlpRulesManager::Level::kAllow, ::dlp::DlpRuleLevel::ALLOW}});
+  return kLevelsMap.at(level);
+}
+
 }  // namespace
 
 DlpRulesManagerImpl::~DlpRulesManagerImpl() {
@@ -149,7 +172,8 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
     Restriction restriction) const {
   DCHECK(src_url_matcher_);
   DCHECK(dst_url_matcher_);
-  DCHECK(restriction == Restriction::kClipboard);
+  DCHECK(restriction == Restriction::kClipboard ||
+         restriction == Restriction::kFiles);
 
   // Allow copy/paste within the same document.
   if (url::Origin::Create(source).IsSameOriginWith(
@@ -210,7 +234,9 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   const base::ListValue* rules_list =
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
 
-  if (!rules_list) {
+  DlpBooleanHistogram(dlp::kDlpPolicyPresentUMA,
+                      rules_list && !rules_list->empty());
+  if (!rules_list || rules_list->empty()) {
     DataTransferDlpController::DeleteInstance();
     return;
   }
@@ -218,6 +244,9 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   RuleId rules_counter = 0;
   UrlConditionId src_url_condition_id = 0;
   UrlConditionId dst_url_condition_id = 0;
+
+  // Constructing request to send the policy to DLP Files daemon.
+  ::dlp::SetDlpFilesPolicyRequest request_to_daemon;
 
   for (const base::Value& rule : *rules_list) {
     DCHECK(rule.is_dict());
@@ -235,25 +264,24 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
                            rules_counter, src_url_rules_mapping_);
 
     const auto* destinations = rule.FindDictKey("destinations");
-    if (destinations) {
-      const auto* destinations_urls = destinations->FindListKey("urls");
-      if (destinations_urls) {
-        UrlConditionId prev_dst_url_condition_id = dst_url_condition_id;
-        url_util::AddFilters(dst_url_matcher_.get(), /* allowed= */ true,
-                             &dst_url_condition_id,
-                             &base::Value::AsListValue(*destinations_urls));
-        InsertUrlsRulesMapping(prev_dst_url_condition_id + 1,
-                               dst_url_condition_id, rules_counter,
-                               dst_url_rules_mapping_);
-      }
-      const auto* destinations_components =
-          destinations->FindListKey("components");
-      if (destinations_components) {
-        for (const auto& component : destinations_components->GetList()) {
-          DCHECK(component.is_string());
-          components_rules_[GetComponentMapping(component.GetString())].insert(
-              rules_counter);
-        }
+    const auto* destinations_urls =
+        destinations ? destinations->FindListKey("urls") : nullptr;
+    if (destinations_urls) {
+      UrlConditionId prev_dst_url_condition_id = dst_url_condition_id;
+      url_util::AddFilters(dst_url_matcher_.get(), /* allowed= */ true,
+                           &dst_url_condition_id,
+                           &base::Value::AsListValue(*destinations_urls));
+      InsertUrlsRulesMapping(prev_dst_url_condition_id + 1,
+                             dst_url_condition_id, rules_counter,
+                             dst_url_rules_mapping_);
+    }
+    const auto* destinations_components =
+        destinations ? destinations->FindListKey("components") : nullptr;
+    if (destinations_components) {
+      for (const auto& component : destinations_components->GetList()) {
+        DCHECK(component.is_string());
+        components_rules_[GetComponentMapping(component.GetString())].insert(
+            rules_counter);
       }
     }
 
@@ -273,6 +301,23 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
       if (rule_level == Level::kNotSet)
         continue;
 
+      // TODO(crbug.com/1172959): Implement Warn level for Files.
+      if (rule_restriction == Restriction::kFiles && destinations_urls &&
+          !destinations_urls->GetList().empty() && rule_level != Level::kWarn) {
+        ::dlp::DlpFilesRule files_rule;
+        for (const auto& url : sources_urls->GetList()) {
+          DCHECK(url.is_string());
+          files_rule.add_source_urls(url.GetString());
+        }
+        for (const auto& url : destinations_urls->GetList()) {
+          DCHECK(url.is_string());
+          files_rule.add_destination_urls(url.GetString());
+        }
+        files_rule.set_level(GetLevelProtoEnum(rule_level));
+        request_to_daemon.mutable_rules()->Add(std::move(files_rule));
+      }
+
+      DlpRestrictionConfiguredHistogram(rule_restriction);
       restrictions_map_[rule_restriction].emplace(rules_counter, rule_level);
     }
     ++rules_counter;
@@ -282,6 +327,13 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     DataTransferDlpController::Init(*this);
   } else {
     DataTransferDlpController::DeleteInstance();
+  }
+
+  // TODO(crbug.com/1174501) Shutdown the daemon when restrictions are empty.
+  if (request_to_daemon.rules_size() > 0) {
+    DlpBooleanHistogram(dlp::kFilesDaemonStartedUMA, true);
+    chromeos::DlpClient::Get()->SetDlpFilesPolicy(
+        request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
   }
 }
 

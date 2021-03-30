@@ -69,6 +69,7 @@ namespace {
 // Chrome channel display names.
 constexpr wchar_t kChromeChannelDev[] = L"dev";
 constexpr wchar_t kChromeChannelBeta[] = L"beta";
+constexpr wchar_t kChromeChannelExtended[] = L"extended";
 constexpr wchar_t kChromeChannelStableExplicit[] = L"stable";
 #endif
 
@@ -239,20 +240,16 @@ bool MatchPatternImpl(const std::wstring& source,
   return false;
 }
 
-// Defines the type of whitespace characters typically found in strings.
-constexpr char kWhiteSpaces[] = " \t\n\r\f\v";
-constexpr wchar_t kWhiteSpaces16[] = L" \t\n\r\f\v";
-
 // Define specializations for white spaces based on the type of the string.
 template <class StringType>
 StringType GetWhiteSpacesForType();
 template <>
 std::wstring GetWhiteSpacesForType() {
-  return kWhiteSpaces16;
+  return L" \t\n\r\f\v";
 }
 template <>
 std::string GetWhiteSpacesForType() {
-  return kWhiteSpaces;
+  return " \t\n\r\f\v";
 }
 
 // Trim whitespaces from left & right
@@ -313,17 +310,26 @@ std::wstring ChannelFromAdditionalParameters(const InstallConstants& mode,
 }
 
 bool GetChromeChannelNameFromString(const wchar_t* channel_test,
-                                    std::wstring& channel) {
+                                    std::wstring& channel,
+                                    bool& is_extended_stable) {
   if (!channel_test)
     return false;
-  if (!*channel_test || !lstrcmpiW(channel_test, kChromeChannelStableExplicit))
+  if (!*channel_test ||
+      !lstrcmpiW(channel_test, kChromeChannelStableExplicit)) {
     channel = std::wstring();
-  else if (!lstrcmpiW(channel_test, kChromeChannelBeta))
+    is_extended_stable = false;
+  } else if (!lstrcmpiW(channel_test, kChromeChannelExtended)) {
+    channel = std::wstring();
+    is_extended_stable = true;
+  } else if (!lstrcmpiW(channel_test, kChromeChannelBeta)) {
     channel = kChromeChannelBeta;
-  else if (!lstrcmpiW(channel_test, kChromeChannelDev))
+    is_extended_stable = false;
+  } else if (!lstrcmpiW(channel_test, kChromeChannelDev)) {
     channel = kChromeChannelDev;
-  else
+    is_extended_stable = false;
+  } else {
     return false;
+  }
   return true;
 }
 
@@ -590,9 +596,9 @@ bool IsProcessTypeInitialized() {
   return g_process_type != ProcessType::UNINITIALIZED;
 }
 
-bool IsNonBrowserProcess() {
+bool IsBrowserProcess() {
   assert(g_process_type != ProcessType::UNINITIALIZED);
-  return g_process_type != ProcessType::BROWSER_PROCESS;
+  return g_process_type == ProcessType::BROWSER_PROCESS;
 }
 
 bool IsCrashpadHandlerProcess() {
@@ -601,7 +607,7 @@ bool IsCrashpadHandlerProcess() {
 }
 
 bool ProcessNeedsProfileDir(const std::string& process_type) {
-  return ProcessNeedsProfileDir(GetProcessType(UTF8ToUTF16(process_type)));
+  return ProcessNeedsProfileDir(GetProcessType(UTF8ToWide(process_type)));
 }
 
 std::wstring GetCrashDumpLocation() {
@@ -616,11 +622,10 @@ std::wstring GetCrashDumpLocation() {
 }
 
 std::string GetEnvironmentString(const std::string& variable_name) {
-  return UTF16ToUTF8(
-      GetEnvironmentString16(UTF8ToUTF16(variable_name).c_str()));
+  return WideToUTF8(GetEnvironmentString(UTF8ToWide(variable_name).c_str()));
 }
 
-std::wstring GetEnvironmentString16(const wchar_t* variable_name) {
+std::wstring GetEnvironmentString(const wchar_t* variable_name) {
   DWORD value_length = ::GetEnvironmentVariableW(variable_name, nullptr, 0);
   if (!value_length)
     return std::wstring();
@@ -635,20 +640,19 @@ std::wstring GetEnvironmentString16(const wchar_t* variable_name) {
 
 bool SetEnvironmentString(const std::string& variable_name,
                           const std::string& new_value) {
-  return SetEnvironmentString16(UTF8ToUTF16(variable_name),
-                                UTF8ToUTF16(new_value));
+  return SetEnvironmentString(UTF8ToWide(variable_name), UTF8ToWide(new_value));
 }
 
-bool SetEnvironmentString16(const std::wstring& variable_name,
-                            const std::wstring& new_value) {
+bool SetEnvironmentString(const std::wstring& variable_name,
+                          const std::wstring& new_value) {
   return !!SetEnvironmentVariable(variable_name.c_str(), new_value.c_str());
 }
 
 bool HasEnvironmentVariable(const std::string& variable_name) {
-  return HasEnvironmentVariable16(UTF8ToUTF16(variable_name));
+  return HasEnvironmentVariable(UTF8ToWide(variable_name));
 }
 
-bool HasEnvironmentVariable16(const std::wstring& variable_name) {
+bool HasEnvironmentVariable(const std::wstring& variable_name) {
   return !!::GetEnvironmentVariable(variable_name.c_str(), nullptr, 0);
 }
 
@@ -684,12 +688,13 @@ void GetExecutableVersionDetails(const std::wstring& exe_path,
       GetValueFromVersionResource(data.get(), L"SpecialBuild", special_build);
     }
   }
-  *channel_name = GetChromeChannelName();
+  *channel_name = GetChromeChannelName(/*with_extended_stable=*/true);
 }
 
 version_info::Channel GetChromeChannel() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::wstring channel_name(GetChromeChannelName());
+  std::wstring channel_name(
+      GetChromeChannelName(/*with_extended_stable=*/false));
   if (channel_name.empty()) {
     return version_info::Channel::STABLE;
   }
@@ -707,8 +712,14 @@ version_info::Channel GetChromeChannel() {
   return version_info::Channel::UNKNOWN;
 }
 
-std::wstring GetChromeChannelName() {
+std::wstring GetChromeChannelName(bool with_extended_stable) {
+  if (with_extended_stable && IsExtendedStableChannel())
+    return L"extended";
   return InstallDetails::Get().channel();
+}
+
+bool IsExtendedStableChannel() {
+  return InstallDetails::Get().is_extended_stable_channel();
 }
 
 bool MatchPattern(const std::wstring& source, const std::wstring& pattern) {
@@ -716,7 +727,7 @@ bool MatchPattern(const std::wstring& source, const std::wstring& pattern) {
   return MatchPatternImpl(source, pattern, 0, 0);
 }
 
-std::string UTF16ToUTF8(const std::wstring& source) {
+std::string WideToUTF8(const std::wstring& source) {
   if (source.empty() ||
       static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
     return std::string();
@@ -734,7 +745,7 @@ std::string UTF16ToUTF8(const std::wstring& source) {
   return result;
 }
 
-std::wstring UTF8ToUTF16(const std::string& source) {
+std::wstring UTF8ToWide(const std::string& source) {
   if (source.empty() ||
       static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
     return std::wstring();
@@ -754,13 +765,13 @@ std::wstring UTF8ToUTF16(const std::string& source) {
 std::vector<std::string> TokenizeString(const std::string& str,
                                         char delimiter,
                                         bool trim_spaces) {
-  return TokenizeStringT<std::string>(str, delimiter, trim_spaces);
+  return TokenizeStringT(str, delimiter, trim_spaces);
 }
 
-std::vector<std::wstring> TokenizeString16(const std::wstring& str,
-                                           wchar_t delimiter,
-                                           bool trim_spaces) {
-  return TokenizeStringT<std::wstring>(str, delimiter, trim_spaces);
+std::vector<std::wstring> TokenizeString(const std::wstring& str,
+                                         wchar_t delimiter,
+                                         bool trim_spaces) {
+  return TokenizeStringT(str, delimiter, trim_spaces);
 }
 
 std::vector<std::wstring> TokenizeCommandLineToArray(
@@ -940,7 +951,8 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
                                         std::wstring* update_ap,
                                         std::wstring* update_cohort_name) {
 #if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
-  return {std::wstring(), ChannelOrigin::kInstallMode};
+  return {std::wstring(), ChannelOrigin::kInstallMode,
+          /*is_extended_stable=*/false};
 #else
   // Read the "ap" value and cache it if requested.
   std::wstring client_state(GetClientStateKeyPath(mode.app_guid));
@@ -964,17 +976,23 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
       break;
     case ChannelStrategy::ADDITIONAL_PARAMETERS: {
       std::wstring channel_override_value;
-      if (channel_override && GetChromeChannelNameFromString(
-                                  channel_override, channel_override_value)) {
-        return {std::move(channel_override_value), ChannelOrigin::kPolicy};
+      bool is_extended_stable = false;
+      if (channel_override &&
+          GetChromeChannelNameFromString(
+              channel_override, channel_override_value, is_extended_stable)) {
+        return {std::move(channel_override_value), ChannelOrigin::kPolicy,
+                is_extended_stable};
       }
       return {ChannelFromAdditionalParameters(mode, ap_value),
-              ChannelOrigin::kAdditionalParameters};
+              ChannelOrigin::kAdditionalParameters,
+              /*is_extended_stable=*/false};
     }
     case ChannelStrategy::FIXED:
-      return {mode.default_channel_name, ChannelOrigin::kInstallMode};
+      return {mode.default_channel_name, ChannelOrigin::kInstallMode,
+              /*is_extended_stable=*/false};
   }
-  return {std::wstring(), ChannelOrigin::kInstallMode};
+  return {std::wstring(), ChannelOrigin::kInstallMode,
+          /*is_extended_stable=*/false};
 #endif
 }
 

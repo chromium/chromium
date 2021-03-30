@@ -5,13 +5,9 @@
 #ifndef CC_TREES_TARGET_PROPERTY_H_
 #define CC_TREES_TARGET_PROPERTY_H_
 
-#include <bitset>
-
 #include "base/containers/flat_map.h"
 
 namespace cc {
-
-static constexpr size_t kMaxTargetPropertyIndex = 32u;
 
 namespace TargetProperty {
 
@@ -34,9 +30,6 @@ enum Type {
 };
 
 }  // namespace TargetProperty
-
-// A set of target properties.
-using TargetProperties = std::bitset<kMaxTargetPropertyIndex>;
 
 // A map of target property to ElementId.
 // flat_map was chosen because there are expected to be relatively few entries

@@ -282,12 +282,12 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
   stat_wrapper_t file_info;
   if (File::Lstat(path_str, &file_info) != 0) {
     // The Windows version defines this condition as success.
-    return (errno == ENOENT || errno == ENOTDIR);
+    return (errno == ENOENT);
   }
   if (!S_ISDIR(file_info.st_mode))
-    return (unlink(path_str) == 0);
+    return (unlink(path_str) == 0) || (errno == ENOENT);
   if (!recursive)
-    return (rmdir(path_str) == 0);
+    return (rmdir(path_str) == 0) || (errno == ENOENT);
 
   bool success = true;
   stack<std::string> directories;
@@ -300,13 +300,13 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
     if (traversal.GetInfo().IsDirectory())
       directories.push(current.value());
     else
-      success &= (unlink(current.value().c_str()) == 0);
+      success &= (unlink(current.value().c_str()) == 0) || (errno == ENOENT);
   }
 
   while (!directories.empty()) {
     FilePath dir = FilePath(directories.top());
     directories.pop();
-    success &= (rmdir(dir.value().c_str()) == 0);
+    success &= (rmdir(dir.value().c_str()) == 0) || (errno == ENOENT);
   }
   return success;
 }
@@ -317,7 +317,7 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
 // https://www.gnu.org/software/libc/manual/html_node/Opening-Streams.html for
 // details.
 std::string AppendModeCharacter(StringPiece mode, char mode_char) {
-  std::string result(mode.as_string());
+  std::string result(mode);
   size_t comma_pos = result.find(',');
   result.insert(comma_pos == std::string::npos ? result.length() : comma_pos, 1,
                 mode_char);
@@ -625,7 +625,8 @@ FilePath GetHomeDir() {
 File CreateAndOpenTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   // For call to close() inside ScopedFD.
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  return File(CreateAndOpenFdForTemporaryFileInDir(dir, temp_file));
+  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(dir, temp_file);
+  return fd.is_valid() ? File(std::move(fd)) : File(File::GetLastFileError());
 }
 
 bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
@@ -952,7 +953,7 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
 
   // Write starting at the next block boundary after the old file length.
   const int64_t extension_start =
-      base::bits::Align(original_file_len, block_size);
+      base::bits::AlignUp(original_file_len, block_size);
   for (int64_t i = extension_start; i < new_file_len; i += block_size) {
     char existing_byte;
     if (HANDLE_EINTR(pread(file->GetPlatformFile(), &existing_byte, 1, i)) !=

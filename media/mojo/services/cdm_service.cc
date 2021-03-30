@@ -66,16 +66,22 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
 
     auto* cdm_factory = GetCdmFactory();
     if (!cdm_factory) {
-      std::move(callback).Run(mojo::NullRemote(), base::nullopt,
-                              mojo::NullRemote(),
+      std::move(callback).Run(mojo::NullRemote(), nullptr,
                               "CDM Factory creation failed");
       return;
     }
 
-    MojoCdmService::Create(
-        cdm_factory, &cdm_service_context_, key_system, cdm_config,
-        base::BindOnce(&CdmFactoryImpl::OnCdmServiceCreated,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    auto mojo_cdm_service =
+        std::make_unique<MojoCdmService>(&cdm_service_context_);
+    auto* raw_mojo_cdm_service = mojo_cdm_service.get();
+    DCHECK(!pending_mojo_cdm_services_.count(raw_mojo_cdm_service));
+    pending_mojo_cdm_services_[raw_mojo_cdm_service] =
+        std::move(mojo_cdm_service);
+    raw_mojo_cdm_service->Initialize(
+        cdm_factory, key_system, cdm_config,
+        base::BindOnce(&CdmFactoryImpl::OnCdmServiceInitialized,
+                       weak_ptr_factory_.GetWeakPtr(), raw_mojo_cdm_service,
+                       std::move(callback)));
   }
 
   // DeferredDestroy<mojom::CdmFactory> implemenation.
@@ -100,22 +106,27 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
       std::move(destroy_cb_).Run();
   }
 
-  void OnCdmServiceCreated(CreateCdmCallback callback,
-                           std::unique_ptr<MojoCdmService> cdm_service,
-                           mojo::PendingRemote<mojom::Decryptor> decryptor,
-                           const std::string& error_message) {
-    if (!cdm_service) {
-      std::move(callback).Run(mojo::NullRemote(), base::nullopt,
-                              mojo::NullRemote(), error_message);
+  void OnCdmServiceInitialized(MojoCdmService* raw_mojo_cdm_service,
+                               CreateCdmCallback callback,
+                               mojom::CdmContextPtr cdm_context,
+                               const std::string& error_message) {
+    DCHECK(raw_mojo_cdm_service);
+
+    // Remove pending MojoCdmService from the mapping in all cases.
+    DCHECK(pending_mojo_cdm_services_.count(raw_mojo_cdm_service));
+    auto mojo_cdm_service =
+        std::move(pending_mojo_cdm_services_[raw_mojo_cdm_service]);
+    pending_mojo_cdm_services_.erase(raw_mojo_cdm_service);
+
+    if (!cdm_context) {
+      std::move(callback).Run(mojo::NullRemote(), nullptr, error_message);
       return;
     }
 
-    auto cdm_id = cdm_service->cdm_id();
     mojo::PendingRemote<mojom::ContentDecryptionModule> remote;
-    cdm_receivers_.Add(std::move(cdm_service),
+    cdm_receivers_.Add(std::move(mojo_cdm_service),
                        remote.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(std::move(remote), cdm_id, std::move(decryptor),
-                            "");
+    std::move(callback).Run(std::move(remote), std::move(cdm_context), "");
   }
 
   // Must be declared before the receivers below because the bound objects might
@@ -128,6 +139,10 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
   mojo::UniqueReceiverSet<mojom::ContentDecryptionModule> cdm_receivers_;
   std::unique_ptr<media::CdmFactory> cdm_factory_;
   base::OnceClosure destroy_cb_;
+
+  // MojoCdmServices pending initialization.
+  std::map<MojoCdmService*, std::unique_ptr<MojoCdmService>>
+      pending_mojo_cdm_services_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<CdmFactoryImpl> weak_ptr_factory_{this};

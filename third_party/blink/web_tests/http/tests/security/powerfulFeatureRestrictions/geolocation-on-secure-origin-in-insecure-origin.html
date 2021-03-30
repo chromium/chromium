@@ -51,7 +51,7 @@
            // A sandboxed iframe should use the frame's URL as the origin to
            // check.
            var iframe = document.createElement("iframe");
-           iframe.sandbox = "allow-scripts";
+           iframe.sandbox = "allow-scripts allow-same-origin";
            iframe.src = get_host_info().HTTP_ORIGIN +
                         "/security/powerfulFeatureRestrictions/resources/" +
                         "geolocation.html";
@@ -61,7 +61,7 @@
            // Insecure origin frames sandboxed secure origin frames secure
            // origin.
            var iframe = document.createElement("iframe");
-           iframe.sandbox = "allow-scripts";
+           iframe.sandbox = "allow-scripts allow-same-origin";
            iframe.src = get_host_info().HTTP_ORIGIN +
                         "/security/powerfulFeatureRestrictions/resources/" +
                         "geolocation-in-iframe.html";

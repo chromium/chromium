@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
 
+#include <string>
+
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/metrics/client_info.h"
@@ -39,7 +41,7 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
     PlatformTest::SetUp();
     metrics::MetricsService::RegisterPrefs(prefs_.registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &prefs_, &enabled_state_provider_, base::string16(),
+        &prefs_, &enabled_state_provider_, std::wstring(),
         base::BindRepeating(
             &IOSChromeMetricsServiceClientTest::FakeStoreClientInfoBackup,
             base::Unretained(this)),
@@ -72,9 +74,9 @@ TEST_F(IOSChromeMetricsServiceClientTest, FilterFiles) {
   base::ProcessId my_pid = base::GetCurrentProcId();
   base::FilePath active_dir(FILE_PATH_LITERAL("foo"));
   base::FilePath upload_dir(FILE_PATH_LITERAL("bar"));
-  base::FilePath upload_path;
-  base::GlobalHistogramAllocator::ConstructFilePathsForUploadDir(
-      active_dir, upload_dir, "TestMetrics", &upload_path, nullptr, nullptr);
+  base::FilePath upload_path =
+      base::GlobalHistogramAllocator::ConstructFilePathForUploadDir(
+          upload_dir, "TestMetrics");
   EXPECT_EQ(
       metrics::FileMetricsProvider::FILTER_ACTIVE_THIS_PID,
       IOSChromeMetricsServiceClient::FilterBrowserMetricsFiles(upload_path));

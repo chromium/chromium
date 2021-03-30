@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -59,7 +60,6 @@
 
 namespace blink {
 
-class ContentSecurityPolicy;
 class DocumentLoader;
 class LocalFrame;
 class Frame;
@@ -81,7 +81,7 @@ class CORE_EXPORT FrameLoader final {
   explicit FrameLoader(LocalFrame*);
   ~FrameLoader();
 
-  void Init();
+  void Init(std::unique_ptr<PolicyContainer> policy_container);
 
   ResourceRequest ResourceRequestForReload(
       WebFrameLoadType,
@@ -196,7 +196,7 @@ class CORE_EXPORT FrameLoader final {
   void DispatchUnloadEvent(SecurityOrigin* committing_origin,
                            base::Optional<Document::UnloadEventTiming>*);
 
-  bool AllowPlugins(ReasonForCallingAllowPlugins);
+  bool AllowPlugins();
 
   void SaveScrollAnchor();
   void SaveScrollState();
@@ -227,11 +227,14 @@ class CORE_EXPORT FrameLoader final {
 
   static bool NeedsHistoryItemRestore(WebFrameLoadType type);
 
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
   WebFrameLoadType DetermineFrameLoadType(const KURL& url,
                                           const AtomicString& http_method,
                                           bool has_origin_window,
+                                          bool is_client_reload,
                                           const KURL& failing_url,
                                           WebFrameLoadType);
 
@@ -254,7 +257,6 @@ class CORE_EXPORT FrameLoader final {
   void DetachDocumentLoader(Member<DocumentLoader>&,
                             bool flush_microtask_queue = false);
 
-  std::unique_ptr<TracedValue> ToTracedValue() const;
   void TakeObjectSnapshot() const;
 
   // Commits the given |document_loader|.
@@ -262,19 +264,6 @@ class CORE_EXPORT FrameLoader final {
                             const base::Optional<Document::UnloadEventTiming>&,
                             HistoryItem* previous_history_item,
                             CommitReason);
-
-  // Creates CSP for the initial empty document. They are inherited from the
-  // owner document (parent or opener).
-  ContentSecurityPolicy* CreateCSPForInitialEmptyDocument() const;
-
-  // Creates CSP based on |response| and checks that they allow loading |url|.
-  // Returns nullptr if the check fails.
-  ContentSecurityPolicy* CreateCSP(
-      const KURL& url,
-      const ResourceResponse& response,
-      const base::Optional<WebOriginPolicy>& origin_policy,
-      ContentSecurityPolicy* initiator_csp,
-      CommitReason);
 
   LocalFrameClient* Client() const;
 
@@ -310,11 +299,6 @@ class CORE_EXPORT FrameLoader final {
   EmptyDocumentStatus empty_document_status_ = EmptyDocumentStatus::kOnlyEmpty;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
-
-  // The CSP of the latest document that has initiated a navigation in this
-  // frame. TODO(arthursonzogni): This looks fragile. The FrameLoader might be
-  // confused by several navigations submitted in a row.
-  Member<ContentSecurityPolicy> last_origin_window_csp_;
 
   // The origins for which a legacy TLS version warning has been printed. The
   // size of this set is capped, after which no more warnings are printed.

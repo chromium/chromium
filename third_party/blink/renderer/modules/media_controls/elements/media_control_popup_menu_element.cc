@@ -33,6 +33,9 @@ class MediaControlPopupMenuElement::EventListener final
     popup_menu_->addEventListener(event_type_names::kKeydown, this, false);
 
     LocalDOMWindow* window = popup_menu_->GetDocument().domWindow();
+    if (!window)
+      return;
+
     window->addEventListener(event_type_names::kScroll, this, true);
     if (DOMWindow* outer_window = window->top()) {
       if (outer_window != window)
@@ -45,6 +48,9 @@ class MediaControlPopupMenuElement::EventListener final
     popup_menu_->removeEventListener(event_type_names::kKeydown, this, false);
 
     LocalDOMWindow* window = popup_menu_->GetDocument().domWindow();
+    if (!window)
+      return;
+
     window->removeEventListener(event_type_names::kScroll, this, true);
     if (DOMWindow* outer_window = window->top()) {
       if (outer_window != window) {

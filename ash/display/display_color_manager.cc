@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -13,7 +14,9 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
+#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
@@ -331,13 +334,64 @@ bool DisplayColorManager::LoadCalibrationForDisplay(
   if (!valid_product_code || !quirks::QuirksManager::HasInstance())
     return false;
 
-  quirks::QuirksManager::Get()->RequestIccProfilePath(
-      display->product_code(), display->display_name(),
-      base::BindOnce(&DisplayColorManager::FinishLoadCalibrationForDisplay,
-                     weak_ptr_factory_.GetWeakPtr(), display->display_id(),
-                     display->product_code(),
-                     display->has_color_correction_matrix(), display->type()));
+  // Look for calibrations for this display. Each calibration may overwrite the
+  // previous one.
+  // TODO(jchinlee): Consider collapsing queries.
+  QueryVpdForCalibration(display->display_id(), display->product_code(),
+                         display->has_color_correction_matrix(),
+                         display->type());
+  QueryQuirksForCalibration(
+      display->display_id(), display->display_name(), display->product_code(),
+      display->has_color_correction_matrix(), display->type());
   return true;
+}
+
+void DisplayColorManager::QueryVpdForCalibration(
+    int64_t display_id,
+    int64_t product_code,
+    bool has_color_correction_matrix,
+    display::DisplayConnectionType type) {
+  if (type != display::DISPLAY_CONNECTION_TYPE_INTERNAL)
+    return;
+
+  base::FilePath directory;
+  base::PathService::Get(chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD, &directory);
+  const std::string icc_name = quirks::IdToFileName(product_code);
+  const base::FilePath icc_path = directory.Append(icc_name);
+
+  sequenced_task_runner_.get()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, icc_path),
+      base::BindOnce(&DisplayColorManager::FinishQueryVpdForCalibration,
+                     weak_ptr_factory_.GetWeakPtr(), display_id, product_code,
+                     has_color_correction_matrix, type, icc_path));
+}
+
+void DisplayColorManager::FinishQueryVpdForCalibration(
+    int64_t display_id,
+    int64_t product_code,
+    bool has_color_correction_matrix,
+    display::DisplayConnectionType type,
+    const base::FilePath& expected_icc_path,
+    bool found_icc) {
+  if (!found_icc)
+    return;
+
+  DisplayColorManager::FinishLoadCalibrationForDisplay(
+      display_id, product_code, has_color_correction_matrix, type,
+      expected_icc_path, false);
+}
+
+void DisplayColorManager::QueryQuirksForCalibration(
+    int64_t display_id,
+    const std::string& display_name,
+    int64_t product_code,
+    bool has_color_correction_matrix,
+    display::DisplayConnectionType type) {
+  quirks::QuirksManager::Get()->RequestIccProfilePath(
+      product_code, display_name,
+      base::BindOnce(&DisplayColorManager::FinishLoadCalibrationForDisplay,
+                     weak_ptr_factory_.GetWeakPtr(), display_id, product_code,
+                     has_color_correction_matrix, type));
 }
 
 void DisplayColorManager::FinishLoadCalibrationForDisplay(

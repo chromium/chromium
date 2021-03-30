@@ -19,7 +19,6 @@
 #import "components/translate/ios/browser/translate_controller.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/navigation/navigation_context.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/navigation_manager.h"
@@ -59,9 +58,6 @@ IOSTranslateDriver::IOSTranslateDriver(
   language::IOSLanguageDetectionTabHelper* language_detection_tab_helper =
       language::IOSLanguageDetectionTabHelper::FromWebState(web_state_);
   language_detection_tab_helper->AddObserver(this);
-
-  CRWJSInjectionReceiver* receiver = web_state->GetJSInjectionReceiver();
-  DCHECK(receiver);
 
   // Create the language detection controller.
   language_detection_controller_ =

@@ -15,7 +15,6 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
-#include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace sequence_manager {

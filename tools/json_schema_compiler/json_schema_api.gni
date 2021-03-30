@@ -111,7 +111,9 @@ template("generated_json_strings") {
   root_target_name = target_name
 
   bundle_generator_schema_name = target_name + "_bundle_generator_schema"
-  action(bundle_generator_schema_name) {
+
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(bundle_generator_schema_name) {
     visibility = [ ":$root_target_name" ]
     script = compiler_script
     inputs = compiler_sources + invoker.sources
@@ -227,7 +229,9 @@ template("function_registration") {
 
   bundle_generator_registration_name =
       target_name + "_bundle_generator_registration"
-  action(bundle_generator_registration_name) {
+
+  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  python2_action(bundle_generator_registration_name) {
     visibility = [ ":$root_target_name" ]
     script = compiler_script
     inputs = compiler_sources + invoker.sources

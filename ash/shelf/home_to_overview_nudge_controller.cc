@@ -187,7 +187,7 @@ void HomeToOverviewNudgeController::SetNudgeAllowedForCurrentShelf(
 
 void HomeToOverviewNudgeController::OnWidgetDestroying(views::Widget* widget) {
   nudge_ = nullptr;
-  widget_observer_.RemoveAll();
+  widget_observations_.RemoveAllObservations();
 }
 
 void HomeToOverviewNudgeController::OnWidgetBoundsChanged(
@@ -233,8 +233,8 @@ void HomeToOverviewNudgeController::ShowNudge() {
 
   UpdateNudgeAnchorBounds();
 
-  widget_observer_.Add(nudge_->GetWidget());
-  widget_observer_.Add(hotseat_widget_);
+  widget_observations_.AddObservation(nudge_->GetWidget());
+  widget_observations_.AddObservation(hotseat_widget_);
 
   nudge_->GetWidget()->Show();
   nudge_->GetWidget()->GetLayer()->SetTransform(gfx::Transform());
@@ -355,7 +355,7 @@ void HomeToOverviewNudgeController::HideNudge(HideTransition transition) {
     nudge_->label()->layer()->SetOpacity(0.0f);
   }
 
-  widget_observer_.RemoveAll();
+  widget_observations_.RemoveAllObservations();
   nudge_ = nullptr;
 
   // Invalidated nudge tap handler callbacks.

@@ -25,7 +25,7 @@
     "contexts": ["blessed_extension"],
     "extension_types": ["extension"],
     "noparent": true,
-    "whitelist": [
+    "allowlist": [
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
       "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
       "12E618C3C6E97495AAECF2AC12DEB082353241C6"   // QO component extension
@@ -42,7 +42,7 @@
     "extension_types": ["extension"],
     "noparent": true,
     "component_extensions_auto_granted": false,
-    "whitelist": [
+    "allowlist": [
       "B9EF10DDFEA11EF77873CC5009809E5037FC4C7A",  // Google input tools
       "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // Official xkb extension
       "F94EE6AB36D6C6588670B2B01EB65212D9C64E33"   // Open source xkb extension
@@ -140,13 +140,6 @@
     "dependencies": ["permission:declarativeNetRequest"],
     "contexts": ["blessed_extension"]
   },
-  // TODO(crbug.com/1043200): Enable on Stable once implementation is complete.
-  "declarativeNetRequest.getSessionRules": {
-    "channel": "trunk"
-  },
-  "declarativeNetRequest.updateSessionRules": {
-    "channel": "trunk"
-  },
   "declarativeNetRequest.onRuleMatchedDebug": {
     "dependencies": ["permission:declarativeNetRequest", "permission:declarativeNetRequestFeedback"],
     "location": "unpacked"
@@ -158,10 +151,6 @@
   "diagnostics": {
     "dependencies": ["permission:diagnostics"],
     "extension_types": ["platform_app"],
-    "contexts": ["blessed_extension"]
-  },
-  "displaySource": {
-    "dependencies": ["permission:displaySource"],
     "contexts": ["blessed_extension"]
   },
   "dns": {
@@ -183,14 +172,33 @@
     "contexts": "all",
     "matches": ["<all_urls>"]
   },
-  "feedbackPrivate": {
-    "dependencies": ["permission:feedbackPrivate"],
-    "contexts": ["blessed_extension"]
-  },
-  "feedbackPrivate.readLogSource": {
-    "platforms": ["chromeos"],
-    "session_types": ["kiosk"]
-  },
+  "feedbackPrivate": [
+    {
+      "dependencies": ["permission:feedbackPrivate"],
+      "contexts": ["blessed_extension"],
+      "default_parent": true
+    },
+    {
+      "channel": "stable",
+      "contexts": ["webui"],
+      "matches": [
+        "chrome://feedback/*"
+      ]
+    }
+  ],
+  "feedbackPrivate.readLogSource": [
+    {
+      "platforms": ["chromeos"],
+      "session_types": ["kiosk"]
+    },
+    {
+      "channel": "stable",
+      "contexts": ["webui"],
+      "matches": [
+        "chrome://feedback/*"
+      ]
+    }
+  ],
   "fileSystem": {
     "dependencies": ["permission:fileSystem"],
     "contexts": ["blessed_extension"],
@@ -208,14 +216,13 @@
       "matches": [
         "chrome://add-supervision/*",
         "chrome://assistant-optin/*",
-        "chrome://cellular-setup/*",
         "chrome://discards/*",
         "chrome://extensions/*",
         "chrome://home/*",
         "chrome://chrome-signin/*",
-        "chrome://hats/*",
         "chrome://mobilesetup/*",
         "chrome://oobe/*",
+        "chrome://os-settings/*",
         "chrome://password-change/*",
         "chrome://lock-reauth/*"
       ]
@@ -235,7 +242,7 @@
     "contexts": ["blessed_extension"]
   },
   "idle.getAutoLockDelay": {
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "lockScreen.data": {
     "dependencies": ["permission:lockScreen"],
@@ -301,14 +308,17 @@
     "matches": [
       "chrome://bookmarks/*",
       "chrome://extensions/*",
+      "chrome://new-tab-page/*",
       "chrome://os-settings/*",
       "chrome://settings/*",
       "chrome://sync-confirmation/*",
-      "chrome://tab-search/*",
+      "chrome://read-later.top-chrome/*",
+      "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip/*",
       "chrome://welcome/*",
       "chrome://profile-picker/*",
-      "chrome://file-manager/*"
+      "chrome://file-manager/*",
+      "chrome://help-app/*"
     ]
   }, {
     "channel": "stable",
@@ -319,9 +329,9 @@
     ]
   }],
   "metricsPrivate.getIsCrashReportingEnabled": {
-    "whitelist": [
+    "allowlist": [
       // This function inherits the extension restrictions of metricsPrivate,
-      // but also requires whitelisting. New uses of this function should get
+      // but also requires allowlisting. New uses of this function should get
       // /tools/metrics/OWNERS approval of the usage before adding entries
       // below. See crbug.com/374199.
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
@@ -360,7 +370,7 @@
     "contexts": ["blessed_extension"],
     "channel": "stable",
     "extension_types": ["platform_app", "extension"],
-    "whitelist": [
+    "allowlist": [
       "63ED55E43214C211F82122ED56407FF1A807F2A3",   // Media Router Dev
       "226CF815E39A363090A1E547D53063472B8279FA",   // Media Router Stable
       "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",   // Chrome Camera App Dev
@@ -511,7 +521,8 @@
   },{
     "contexts": ["webui"],
     "matches": [
-      "chrome://password-change/*"
+      "chrome://password-change/*",
+      "chrome://file-manager/*"
     ]
   }],
   "runtime.sendNativeMessage": {
@@ -627,13 +638,12 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://assistant-optin/*",
-      "chrome://cellular-setup/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
-      "chrome://hats/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
+      "chrome://os-settings/*",
       "chrome://password-change/*",
       "chrome://lock-reauth/*"
     ]
@@ -649,13 +659,12 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://assistant-optin/*",
-      "chrome://cellular-setup/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
-      "chrome://hats/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
+      "chrome://os-settings/*",
       "chrome://password-change/*",
       "chrome://lock-reauth/*"
     ]
@@ -669,13 +678,12 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://assistant-optin/*",
-      "chrome://cellular-setup/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
-      "chrome://hats/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
-      "chrome://oobe/*"
+      "chrome://oobe/*",
+      "chrome://os-settings/*"
     ]
   }]
 }

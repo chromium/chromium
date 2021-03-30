@@ -4,8 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '../settings_shared_css.m.js';
-import '../controls/settings_toggle_button.m.js';
+import '../settings_shared_css.js';
+import '../controls/settings_toggle_button.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -38,6 +38,10 @@ enum class RulesetVerificationStatus {
   kMaxValue = kInvalidFile,
 };
 
+// The unique_ptr ensures that the file is always closed on the proper task
+// runner. See crbug.com/1182000
+using RulesetFilePtr = std::unique_ptr<base::File, base::OnTaskRunnerDeleter>;
+
 // This class is the same as RulesetDealer, but additionally does a one-time
 // integrity checking on the ruleset before handing it out from GetRuleset().
 //
@@ -58,9 +62,10 @@ class VerifiedRulesetDealer : public RulesetDealer {
   // Opens file and use it as ruleset file on success. Returns valid
   // |base::File| in the case of file opened and set. Returns invalid
   // |base::File| in the case of file open error. In the case of error
-  // ruleset dealer continues to use the previous file (if any).
-  base::File OpenAndSetRulesetFile(int expected_checksum,
-                                   const base::FilePath& file_path);
+  // ruleset dealer continues to use the previous file (if any). In both
+  // cases, the returned unique_ptr contains a non-null |base::File|.
+  RulesetFilePtr OpenAndSetRulesetFile(int expected_checksum,
+                                       const base::FilePath& file_path);
 
   // For tests only.
   RulesetVerificationStatus status() const { return status_; }
@@ -96,10 +101,12 @@ class VerifiedRulesetDealer::Handle {
   // Schedules file open to use as a new ruleset file. In the case of success,
   // the new and valid |base::File| is passed to |callback|. In the case of
   // error an invalid |base::File| is passed to |callback| and dealer continues
-  // to use previous ruleset file (if any).
-  void TryOpenAndSetRulesetFile(const base::FilePath& path,
-                                int expected_checksum,
-                                base::OnceCallback<void(base::File)> callback);
+  // to use previous ruleset file (if any). In either case, the unique_ptr
+  // supplied to the callback contains a non-null |base::File|.
+  void TryOpenAndSetRulesetFile(
+      const base::FilePath& path,
+      int expected_checksum,
+      base::OnceCallback<void(RulesetFilePtr)> callback);
 
  private:
   // Note: Raw pointer, |dealer_| already holds a reference to |task_runner_|.

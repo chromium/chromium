@@ -207,10 +207,8 @@ class AboutSigninInternals : public KeyedService,
   // IdentityManager::Observer implementations.
   void OnRefreshTokensLoaded() override;
   void OnEndBatchOfRefreshTokenStateChanges() override;
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   void NotifyTimedSigninFieldValueChanged(
       const signin_internals_util::TimedSigninStatusField& field,

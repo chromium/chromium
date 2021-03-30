@@ -37,7 +37,7 @@ namespace IPC {
 TEST(IPCMessageTest, BasicMessageTest) {
   int v1 = 10;
   std::string v2("foobar");
-  base::string16 v3(base::ASCIIToUTF16("hello world"));
+  std::u16string v3(u"hello world");
 
   IPC::Message m(0, 1, IPC::Message::PRIORITY_NORMAL);
   m.WriteInt(v1);
@@ -48,7 +48,7 @@ TEST(IPCMessageTest, BasicMessageTest) {
 
   int vi;
   std::string vs;
-  base::string16 vs16;
+  std::u16string vs16;
 
   EXPECT_TRUE(iter.ReadInt(&vi));
   EXPECT_EQ(v1, vi);
@@ -63,6 +63,44 @@ TEST(IPCMessageTest, BasicMessageTest) {
   EXPECT_FALSE(iter.ReadInt(&vi));
   EXPECT_FALSE(iter.ReadString(&vs));
   EXPECT_FALSE(iter.ReadString16(&vs16));
+}
+
+TEST(IPCMessageTest, Value) {
+  auto expect_value_equals = [](const base::Value& input) {
+    IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+    IPC::WriteParam(&msg, input);
+
+    base::Value output;
+    base::PickleIterator iter(msg);
+    EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output)) << input;
+    EXPECT_EQ(input, output);
+  };
+
+  expect_value_equals(base::Value("foo"));
+  expect_value_equals(base::Value(42));
+  expect_value_equals(base::Value(0.07));
+  expect_value_equals(base::Value(true));
+  expect_value_equals(base::Value(base::Value::BlobStorage({'a', 'b', 'c'})));
+
+  {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetIntKey("key1", 42);
+    dict.SetStringKey("key2", "hi");
+    expect_value_equals(dict);
+  }
+  {
+    base::Value list(base::Value::Type::LIST);
+    list.Append(42);
+    list.Append("hello");
+    expect_value_equals(list);
+  }
+
+  // Also test the corrupt case.
+  IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  bad_msg.WriteInt(99);
+  base::PickleIterator iter(bad_msg);
+  base::Value output;
+  EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
 }
 
 TEST(IPCMessageTest, ListValue) {

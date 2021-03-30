@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -23,6 +24,7 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/signing_service.h"
+#include "components/policy/core/common/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -277,11 +279,21 @@ void CloudPolicyClient::RegisterWithToken(const std::string& token,
 
   enterprise_management::RegisterBrowserRequest* request =
       config->request()->mutable_register_browser_request();
+#if !defined(OS_IOS)
+  // For iOS devices, the machine name is determined by server side logic using
+  // the client ID and / or the device model.
   request->set_machine_name(GetMachineName());
+
+  if (base::FeatureList::IsEnabled(features::kUploadBrowserDeviceIdentifier)) {
+    request->set_allocated_browser_device_identifier(
+        GetBrowserDeviceIdentifier().release());
+  }
+#endif  // !defined(OS_IOS)
   request->set_os_platform(GetOSPlatform());
   request->set_os_version(GetOSVersion());
 #if defined(OS_IOS)
   request->set_device_model(GetDeviceModel());
+  request->set_brand_name(GetDeviceManufacturer());
 #endif  // defined(OS_IOS)
 
   policy_fetch_request_job_ = service_->CreateJob(std::move(config));
@@ -373,6 +385,17 @@ void CloudPolicyClient::FetchPolicy() {
         fetch_request->set_invalidation_payload(invalidation_payload_);
       }
     }
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+    // Only set browser device identifier for CBCM Chrome cloud policy on
+    // desktop.
+    if (base::FeatureList::IsEnabled(
+            features::kUploadBrowserDeviceIdentifier) &&
+        type_to_fetch.first ==
+            dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
+      fetch_request->set_allocated_browser_device_identifier(
+          GetBrowserDeviceIdentifier().release());
+    }
+#endif
   }
 
   // Add device state keys.
@@ -596,6 +619,7 @@ void CloudPolicyClient::UploadChromeOsUserReport(
 
 void CloudPolicyClient::UploadSecurityEventReport(
     content::BrowserContext* context,
+    bool include_device_info,
     base::Value report,
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -603,7 +627,7 @@ void CloudPolicyClient::UploadSecurityEventReport(
   CreateNewRealtimeReportingJob(
       std::move(report),
       service()->configuration()->GetReportingConnectorServerUrl(context),
-      add_connector_url_params_, std::move(callback));
+      include_device_info, add_connector_url_params_, std::move(callback));
 }
 
 void CloudPolicyClient::UploadEncryptedReport(
@@ -636,7 +660,8 @@ void CloudPolicyClient::UploadAppInstallReport(base::Value report,
   app_install_report_request_job_ = CreateNewRealtimeReportingJob(
       std::move(report),
       service()->configuration()->GetRealtimeReportingServerUrl(),
-      /* add_connector_url_params=*/false, std::move(callback));
+      /* include_device_info */ true, /* add_connector_url_params=*/false,
+      std::move(callback));
   DCHECK(app_install_report_request_job_);
 }
 
@@ -657,6 +682,7 @@ void CloudPolicyClient::UploadExtensionInstallReport(base::Value report,
   extension_install_report_request_job_ = CreateNewRealtimeReportingJob(
       std::move(report),
       service()->configuration()->GetRealtimeReportingServerUrl(),
+      /* include_device_info */ true,
       /* add_connector_url_params=*/false, std::move(callback));
   DCHECK(extension_install_report_request_job_);
 }
@@ -702,11 +728,12 @@ void CloudPolicyClient::FetchRemoteCommands(
 DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
     base::Value report,
     const std::string& server_url,
+    bool include_device_info,
     bool add_connector_url_params,
     StatusCallback callback) {
   std::unique_ptr<RealtimeReportingJobConfiguration> config =
       std::make_unique<RealtimeReportingJobConfiguration>(
-          this, server_url, add_connector_url_params,
+          this, server_url, include_device_info, add_connector_url_params,
           base::BindOnce(&CloudPolicyClient::OnRealtimeReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 

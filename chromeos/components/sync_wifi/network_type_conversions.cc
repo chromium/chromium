@@ -11,6 +11,23 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
+namespace {
+
+bool IsAutoconnectEnabled(
+    sync_pb::WifiConfigurationSpecifics::AutomaticallyConnectOption
+        auto_connect) {
+  switch (auto_connect) {
+    case sync_pb::WifiConfigurationSpecifics::AUTOMATICALLY_CONNECT_DISABLED:
+      return false;
+
+    case sync_pb::WifiConfigurationSpecifics::AUTOMATICALLY_CONNECT_ENABLED:
+    case sync_pb::WifiConfigurationSpecifics::AUTOMATICALLY_CONNECT_UNSPECIFIED:
+      return true;
+  }
+}
+
+}  // namespace
+
 namespace chromeos {
 
 namespace sync_wifi {
@@ -261,14 +278,14 @@ network_config::mojom::ConfigPropertiesPtr MojoNetworkConfigFromProto(
   wifi->ssid = DecodeHexString(specifics.hex_ssid());
   wifi->security = MojoSecurityTypeFromProto(specifics.security_type());
   wifi->passphrase = specifics.passphrase();
+  wifi->hidden_ssid = network_config::mojom::HiddenSsidMode::kDisabled;
 
   config->type_config =
       network_config::mojom::NetworkTypeConfigProperties::NewWifi(
           std::move(wifi));
 
   config->auto_connect = network_config::mojom::AutoConnectConfig::New(
-      specifics.automatically_connect() ==
-      sync_pb::WifiConfigurationSpecifics::AUTOMATICALLY_CONNECT_ENABLED);
+      IsAutoconnectEnabled(specifics.automatically_connect()));
 
   config->priority = network_config::mojom::PriorityConfig::New(
       specifics.is_preferred() ==
@@ -276,17 +293,8 @@ network_config::mojom::ConfigPropertiesPtr MojoNetworkConfigFromProto(
           ? 1
           : 0);
 
-  if (specifics.has_metered() &&
-      specifics.metered() !=
-          sync_pb::
-              WifiConfigurationSpecifics_MeteredOption_METERED_OPTION_UNSPECIFIED &&
-      specifics.metered() !=
-          sync_pb::
-              WifiConfigurationSpecifics_MeteredOption_METERED_OPTION_AUTO) {
-    config->metered = network_config::mojom::MeteredConfig::New(
-        specifics.metered() ==
-        sync_pb::WifiConfigurationSpecifics_MeteredOption_METERED_OPTION_YES);
-  }
+  // TODO(crbug/1128692): Restore support for the metered property when mojo
+  // networks track the "Automatic" state.
 
   // For backwards compatibility, any available custom nameservers are still
   // applied when the dns_option is not set.

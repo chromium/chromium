@@ -21,12 +21,14 @@ void Advertisement::Unregister(UnregisterCallback callback) {
   if (!bluetooth_advertisement_)
     return;
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   bluetooth_advertisement_->Unregister(
       base::BindOnce(&Advertisement::OnUnregister,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&Advertisement::OnUnregisterError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void Advertisement::OnUnregister(UnregisterCallback callback) {

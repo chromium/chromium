@@ -72,7 +72,7 @@ void CommonPaletteTool::OnViewClicked(views::View* sender) {
   delegate()->EnableTool(GetToolId());
 }
 
-views::View* CommonPaletteTool::CreateDefaultView(const base::string16& name) {
+views::View* CommonPaletteTool::CreateDefaultView(const std::u16string& name) {
   SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
   gfx::ImageSkia icon =

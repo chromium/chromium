@@ -27,7 +27,7 @@ enum NavigationType {
   NAVIGATION_TYPE_PRERENDERED,
 };
 
-// Records histograms for PrerenderManager.
+// Records histograms for NoStatePrefetchManager.
 //
 // A few histograms are dynamically constructed to avoid binary size bloat from
 // histogram_macros.h. Such histograms require careful handling:
@@ -40,8 +40,8 @@ enum NavigationType {
 // const.
 class PrerenderHistograms {
  public:
-  // Owned by a PrerenderManager object for the lifetime of the
-  // PrerenderManager.
+  // Owned by a NoStatePrefetchManager object for the lifetime of the
+  // NoStatePrefetchManager.
   PrerenderHistograms();
 
   // Return the string to use as a prefix for histograms depending on the origin

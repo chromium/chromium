@@ -106,7 +106,7 @@ To run WPT on android against weblayer do the following:
     $ export WPT_TEST= test you want to run, relative to wpt directory.
     $ autoninja -C out/Default run_weblayer_shell weblayer_shell_wpt
     $ out/Default/bin/run_weblayer_shell
-    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product android_weblayer --isolated-script-test-output /tmp/weblayer_out.json --include ./third_party/blink/web_tests/external/wpt/$WPT_TEST
+    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product android_weblayer --isolated-script-test-output /tmp/weblayer_out.json --include $WPT_TEST
 ```
 
 `run_android_wpt.py` does not install `weblayer-shell`, you need to do that
@@ -117,11 +117,31 @@ To run against clank:
 ```
     $ autoninja -C out/Default monochrome_public_apk
     $ out/Default/bin/monochrome_public_apk install
-    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product chrome_android --package-name org.chromium.chrome --isolated-script-test-output /tmp/weblayer_out.json --include ./third_party/blink/web_tests/external/wpt/$WPT_TEST
+    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product chrome_android --chrome-package-name org.chromium.chrome --isolated-script-test-output /tmp/clank_out.json --include $WPT_TEST
 ```
 
 Passing in `-vvvv` may be useful if you want to see loads of information about
 test execution.
+
+A list of known test failures is in [`WeblayerWPTExpectations`](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/web_tests/android/WeblayerWPTExpectations).
+The values between the brackets at the end of each line list the expected
+result types that test can have. For example, a test marked as "[ Failure ]" is
+expected to fail, while a test marked as "[ Failure Pass ]" is expected to be
+flaky.
+
+Any failing tests should be removed from `WeblayerWPTExpectations` file once
+fixed.
+
+### Tips
+
+While many WPT tests fail due to features not being implemented in WebLayer,
+some may fail due to Features that aren't getting enabled or switches that
+aren't getting passed to the test as they would be for Clank. If a test is
+failing due to a missing Feature, check the test FieldTrial configuration
+in [`fieldtrial_testing_config.json`](https://source.chromium.org/chromium/chromium/src/+/master:testing/variations/fieldtrial_testing_config.json).
+A missing switch could have several causes, but the flags that get passed
+to the test originate from [`third_party/wpt_tools/wpt/tools/wpt/run.py`](https://source.chromium.org/chromium/chromium/src/+/master:third_party/wpt_tools/wpt/tools/wpt/run.py).
+
 
 ## Telemetry
 

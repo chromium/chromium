@@ -68,7 +68,9 @@ class CrostiniInstaller : public KeyedService,
     kUserCancelledStartLxd = 27,
     kErrorStartingLxd = 28,
 
-    kMaxValue = kErrorStartingLxd,
+    kNeedUpdate = 29,
+
+    kMaxValue = kNeedUpdate,
     // When adding a new value, check you've followed the steps in the comment
     // at the top of this enum.
   };

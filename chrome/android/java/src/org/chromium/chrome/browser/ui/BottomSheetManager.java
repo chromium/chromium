@@ -17,8 +17,6 @@ import org.chromium.chrome.browser.ActivityTabProvider.HintlessActivityTabObserv
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -55,9 +53,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
     /** A {@link VrModeObserver} that observers events of entering and exiting VR mode. */
     private final VrModeObserver mVrModeObserver;
 
-    /** A listener for fullscreen state changes. */
-    private final FullscreenManager.Observer mFullscreenObserver;
-
     /** A listener for browser controls offset changes. */
     private final BrowserControlsVisibilityManager.Observer mBrowserControlsObserver;
 
@@ -75,9 +70,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
 
     /** A browser controls manager for polling browser controls offsets. */
     private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
-
-    /** A fullscreen manager for listening to fullscreen events. */
-    private FullscreenManager mFullscreenManager;
 
     /** A token for suppressing app modal dialogs. */
     private int mAppModalToken = TokenHolder.INVALID_TOKEN;
@@ -127,7 +119,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
     public BottomSheetManager(ManagedBottomSheetController controller,
             ActivityTabProvider tabProvider,
             BrowserControlsVisibilityManager controlsVisibilityManager,
-            FullscreenManager fullscreenManager, Supplier<ModalDialogManager> dialogManager,
+            Supplier<ModalDialogManager> dialogManager,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             TabObscuringHandler obscuringDelegate,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
@@ -136,7 +128,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
         mSheetController = controller;
         mTabProvider = tabProvider;
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
-        mFullscreenManager = fullscreenManager;
         mDialogManager = dialogManager;
         mSnackbarManager = snackbarManagerSupplier;
         mTabObscuringHandler = obscuringDelegate;
@@ -224,35 +215,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
             }
         };
         mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);
-
-        mFullscreenObserver = new FullscreenManager.Observer() {
-            /** A token held while this object is suppressing the bottom sheet. */
-            private int mToken;
-
-            @Override
-            public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-                if (mOverlayPanelManager.get() != null
-                        && mOverlayPanelManager.get().getActivePanel() != null) {
-                    // TODO(mdjones): This should only apply to contextual search, but contextual
-                    //                search is the only implementation. Fix this to only apply to
-                    //                contextual search.
-                    mOverlayPanelManager.get().getActivePanel().closePanel(
-                            OverlayPanel.StateChangeReason.UNKNOWN, true);
-                }
-
-                if (mTabProvider.get() != tab) return;
-                int previousToken = mToken;
-                mToken = controller.suppressSheet(StateChangeReason.COMPOSITED_UI);
-                controller.unsuppressSheet(previousToken);
-            }
-
-            @Override
-            public void onExitFullscreen(Tab tab) {
-                if (mTabProvider.get() != tab) return;
-                controller.unsuppressSheet(mToken);
-            }
-        };
-        mFullscreenManager.addObserver(mFullscreenObserver);
 
         mOmniboxFocusObserver = new Callback<Boolean>() {
             /** A token held while this object is suppressing the bottom sheet. */
@@ -353,6 +315,12 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
             }
         }
 
+        if (mOverlayPanelManager.hasValue()
+                && mOverlayPanelManager.get().getActivePanel() != null) {
+            mOverlayPanelManager.get().getActivePanel().closePanel(
+                    OverlayPanel.StateChangeReason.UNKNOWN, true);
+        }
+
         BottomSheetContent content = mSheetController.getCurrentSheetContent();
         // Content with a custom scrim lifecycle should not obscure the tab. The feature
         // is responsible for adding itself to the list of obscuring views when applicable.
@@ -421,8 +389,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
 
     @Override
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-        if (mSnackbarManager.get() == null) return;
-        mSnackbarManager.get().dismissAllSnackbars();
+        if (mSnackbarManager.get() != null) {
+            mSnackbarManager.get().dismissAllSnackbars();
+        }
     }
 
     @Override
@@ -431,7 +400,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
         if (mLastActivityTab != null) mLastActivityTab.removeObserver(mTabObserver);
         mTabProvider.removeObserver(mActivityTabObserver);
         mSheetController.removeObserver(this);
-        mFullscreenManager.removeObserver(mFullscreenObserver);
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
         VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);

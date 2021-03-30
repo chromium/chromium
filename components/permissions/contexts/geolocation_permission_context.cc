@@ -18,9 +18,10 @@ namespace permissions {
 GeolocationPermissionContext::GeolocationPermissionContext(
     content::BrowserContext* browser_context,
     std::unique_ptr<Delegate> delegate)
-    : PermissionContextBase(browser_context,
-                            ContentSettingsType::GEOLOCATION,
-                            blink::mojom::FeaturePolicyFeature::kGeolocation),
+    : PermissionContextBase(
+          browser_context,
+          ContentSettingsType::GEOLOCATION,
+          blink::mojom::PermissionsPolicyFeature::kGeolocation),
       delegate_(std::move(delegate)) {}
 
 GeolocationPermissionContext::~GeolocationPermissionContext() = default;

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {eventToPromise, isChildVisible, whenAttributeIs} from '../test_util.m.js';
-// #import {assertDeepEquals, assertEquals, assertNotEquals, assertThrows, assertTrue, assertFalse} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from '../chai_assert.js';
+import {eventToPromise, isChildVisible, whenAttributeIs} from '../test_util.m.js';
 // clang-format on
 
 suite('cr-input', function() {
@@ -26,7 +28,7 @@ suite('cr-input', function() {
         /** @type {!CrInputElement} */ (document.createElement('cr-input'));
     document.body.appendChild(crInput);
     input = crInput.inputElement;
-    Polymer.dom.flush();
+    flush();
   }
 
   test('AttributesCorrectlySupported', function() {
@@ -69,7 +71,7 @@ suite('cr-input', function() {
     crInput =
         /** @type {!CrInputElement} */ (document.querySelector('cr-input'));
     input = crInput.$.input;
-    Polymer.dom.flush();
+    flush();
 
     assertEquals('14', crInput.getAttribute('tabindex'));
     assertEquals(14, input.tabIndex);
@@ -89,9 +91,9 @@ suite('cr-input', function() {
     crInput =
         /** @type {!CrInputElement} */ (document.querySelector('cr-input'));
     input = crInput.$.input;
-    Polymer.dom.flush();
+    flush();
 
-    return test_util.whenAttributeIs(input, 'tabindex', null).then(() => {
+    return whenAttributeIs(input, 'tabindex', null).then(() => {
       assertEquals(null, crInput.getAttribute('tabindex'));
       assertEquals(true, input.disabled);
       crInput.disabled = false;
@@ -103,7 +105,7 @@ suite('cr-input', function() {
   test('pointerDownAndTabIndex', function() {
     crInput.fire('pointerdown');
     assertEquals(null, crInput.getAttribute('tabindex'));
-    return test_util.whenAttributeIs(crInput, 'tabindex', '0').then(() => {
+    return whenAttributeIs(crInput, 'tabindex', '0').then(() => {
       assertEquals(0, input.tabIndex);
     });
   });
@@ -187,10 +189,10 @@ suite('cr-input', function() {
     /** @return {!Promise<!Array<!Event>>} */
     function waitForTransitions() {
       const events = [];
-      return test_util.eventToPromise('transitionend', underline)
+      return eventToPromise('transitionend', underline)
           .then(e => {
             events.push(e);
-            return test_util.eventToPromise('transitionend', underline);
+            return eventToPromise('transitionend', underline);
           })
           .then(e => {
             events.push(e);
@@ -246,11 +248,10 @@ suite('cr-input', function() {
     assertEquals(0, underline.offsetWidth);
     assertEquals('hidden', getComputedStyle(errorLabel).visibility);
 
-    const whenTransitionEnd =
-        test_util.eventToPromise('transitionend', underline);
+    const whenTransitionEnd = eventToPromise('transitionend', underline);
 
     crInput.invalid = true;
-    Polymer.dom.flush();
+    flush();
     assertTrue(crInput.hasAttribute('invalid'));
     assertEquals('alert', errorLabel.getAttribute('role'));
     assertEquals(crInput.errorMessage, errorLabel.textContent);
@@ -346,7 +347,7 @@ suite('cr-input', function() {
         crInput.setAttribute(attribute, attribute);
       });
       document.body.appendChild(crInput);
-      Polymer.dom.flush();
+      flush();
       // Assuming first attribute takes priority.
       assertEquals(
           attributes[0], crInput.inputElement.getAttribute('aria-label'));
@@ -380,7 +381,6 @@ suite('cr-input', function() {
   });
 
   test('slots', function() {
-    /* #ignore */ PolymerTest.clearBody();
     document.body.innerHTML = `
       <cr-input>
         <div slot="inline-prefix" id="inline-prefix">One</div>
@@ -388,11 +388,11 @@ suite('cr-input', function() {
         <div slot="inline-suffix" id="inline-suffix">Three</div>
       </cr-input>
     `;
-    Polymer.dom.flush();
+    flush();
     crInput =
         /** @type {!CrInputElement} */ (document.querySelector('cr-input'));
-    assertTrue(test_util.isChildVisible(crInput, '#inline-prefix', true));
-    assertTrue(test_util.isChildVisible(crInput, '#suffix', true));
-    assertTrue(test_util.isChildVisible(crInput, '#inline-suffix', true));
+    assertTrue(isChildVisible(crInput, '#inline-prefix', true));
+    assertTrue(isChildVisible(crInput, '#suffix', true));
+    assertTrue(isChildVisible(crInput, '#inline-suffix', true));
   });
 });

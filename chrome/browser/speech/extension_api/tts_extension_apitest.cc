@@ -57,8 +57,7 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
       content::TtsUtterance* utterance,
       const content::VoiceData& voice_data) override {}
 
-  bool LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override {
-    return false;
+  void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override {
   }
 
   void ClearError() override { error_ = ""; }
@@ -271,7 +270,7 @@ class TtsApiTest : public ExtensionApiTest {
         extensions::ExtensionSystem::Get(profile())->extension_service();
     service->component_loader()->AddNetworkSpeechSynthesisExtension();
     observer.Wait();
-    ASSERT_EQ(Manifest::COMPONENT,
+    ASSERT_EQ(mojom::ManifestLocation::kComponent,
               content::Source<const Extension>(observer.source())->location());
   }
 
@@ -491,8 +490,8 @@ IN_PROC_BROWSER_TEST_F(TtsApiTest, RegisterEngine) {
 
   // TODO(katie): Expect the deprecated gender warning rather than ignoring
   // warnings.
-  ASSERT_TRUE(RunExtensionTestWithFlags("tts_engine/register_engine",
-                                        kFlagIgnoreManifestWarnings, kFlagNone))
+  ASSERT_TRUE(RunExtensionTest({.name = "tts_engine/register_engine"},
+                               {.ignore_manifest_warnings = true}))
       << message_;
 }
 

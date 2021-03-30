@@ -39,6 +39,8 @@ void ManifestUmaUtil::ParseSucceeded(
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.name", !manifest->name.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.short_name",
                         !manifest->short_name.IsEmpty());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.description",
+                        !manifest->description.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.start_url",
                         !manifest->start_url.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN(
@@ -50,8 +52,12 @@ void ManifestUmaUtil::ParseSucceeded(
           device::mojom::blink::ScreenOrientationLockType::DEFAULT);
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.icons",
                         !manifest->icons.IsEmpty());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.screenshots",
+                        !manifest->screenshots.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.share_target",
                         manifest->share_target.get());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.protocol_handlers",
+                        !manifest->protocol_handlers.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.gcm_sender_id",
                         !manifest->gcm_sender_id.IsEmpty());
 }

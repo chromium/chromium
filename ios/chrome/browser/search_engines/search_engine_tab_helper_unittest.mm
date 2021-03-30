@@ -137,8 +137,8 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLByOpenSearch) {
     }
   }
   ASSERT_TRUE(new_url);
-  EXPECT_EQ(base::UTF8ToUTF16("chromium.test"), new_url->data().keyword());
-  EXPECT_EQ(base::UTF8ToUTF16("Chrooome"), new_url->data().short_name());
+  EXPECT_EQ(u"chromium.test", new_url->data().keyword());
+  EXPECT_EQ(u"Chrooome", new_url->data().short_name());
   EXPECT_EQ(
       "https://chromium.test/index.php?title=chrooome&search={searchTerms}",
       new_url->data().url());
@@ -186,8 +186,8 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLBySearchableURL) {
     }
   }
   ASSERT_TRUE(new_url);
-  EXPECT_EQ(base::UTF8ToUTF16("chromium.test"), new_url->data().keyword());
-  EXPECT_EQ(base::UTF8ToUTF16("chromium.test"), new_url->data().short_name());
+  EXPECT_EQ(u"chromium.test", new_url->data().keyword());
+  EXPECT_EQ(u"chromium.test", new_url->data().short_name());
   EXPECT_EQ(searchable_url.spec(), new_url->data().url());
   const GURL expected_favicon_url = GURL(page_url.spec() + "favicon.ico");
   EXPECT_EQ(expected_favicon_url, new_url->data().favicon_url);

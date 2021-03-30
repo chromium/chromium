@@ -15,11 +15,18 @@ namespace test {
 class FakePowerMonitorSource : public base::PowerMonitorSource {
  public:
   void Resume() { ProcessPowerEvent(RESUME_EVENT); }
-
   void Suspend() { ProcessPowerEvent(SUSPEND_EVENT); }
 
+  void SetOnBatteryPower(bool on_battery_power) {
+    on_battery_power_ = on_battery_power;
+    PowerMonitorSource::ProcessPowerEvent(POWER_STATE_EVENT);
+  }
+
   // base::PowerMonitorSource:
-  bool IsOnBatteryPowerImpl() override { return false; }
+  bool IsOnBatteryPower() override { return on_battery_power_; }
+
+ private:
+  bool on_battery_power_ = false;
 };
 
 // ScopedFakePowerMonitorSource implementation
@@ -39,6 +46,10 @@ void ScopedFakePowerMonitorSource::Resume() {
 
 void ScopedFakePowerMonitorSource::Suspend() {
   fake_power_monitor_source_->Suspend();
+}
+
+void ScopedFakePowerMonitorSource::SetOnBatteryPower(bool on_battery_power) {
+  fake_power_monitor_source_->SetOnBatteryPower(on_battery_power);
 }
 
 }  // namespace test

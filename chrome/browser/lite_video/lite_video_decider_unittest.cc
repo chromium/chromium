@@ -23,9 +23,9 @@
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/lite_video_metadata.pb.h"
-#include "components/optimization_guide/test_optimization_guide_decider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -147,14 +147,14 @@ class TestOptimizationGuideDecider
 class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
  public:
   explicit LiteVideoDeciderTest(bool allow_on_forward_back = false)
-      : allow_on_forward_back_(allow_on_forward_back) {}
-
-  void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
+      : allow_on_forward_back_(allow_on_forward_back) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kLiteVideo,
         {{"allow_on_forward_back", allow_on_forward_back_ ? "true" : "false"}});
+  }
 
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
     optimization_guide_decider_ =
         std::make_unique<TestOptimizationGuideDecider>();
 

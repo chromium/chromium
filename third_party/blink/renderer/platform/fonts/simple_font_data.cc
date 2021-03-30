@@ -179,13 +179,9 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   if (int units_per_em = face->getUnitsPerEm())
     font_metrics_.SetUnitsPerEm(units_per_em);
 
-  if (metrics_override.advance_override) {
-    advance_override_ =
-        *metrics_override.advance_override * platform_data_.size();
-  }
-
-  advance_proportional_override_ =
-      metrics_override.advance_proportional_override;
+  advance_override_ = metrics_override.advance_override;
+  advance_override_vertical_upright_ =
+      metrics_override.advance_override_vertical_upright;
 }
 
 void SimpleFontData::PlatformGlyphInit() {
@@ -324,7 +320,9 @@ void SimpleFontData::ComputeNormalizedTypoAscentAndDescent() const {
                                            font_metrics.FloatDescent())) {
     return;
   }
-  NOTREACHED();
+
+  // We shouldn't be here unless the height is zero or lower.
+  DCHECK_LE(font_metrics.Height(), 0);
 }
 
 bool SimpleFontData::TrySetNormalizedTypoAscentAndDescent(float ascent,

@@ -20,6 +20,7 @@ class Profile;
 class NetworkState;
 
 namespace chromeos {
+struct HatsConfig;
 class HatsDialog;
 
 // Happiness tracking survey (HaTS) notification controller is responsible for
@@ -30,10 +31,12 @@ class HatsNotificationController : public message_center::NotificationDelegate,
  public:
   static const char kNotificationId[];
 
-  explicit HatsNotificationController(Profile* profile);
+  explicit HatsNotificationController(Profile* profile,
+                                      const HatsConfig& config);
 
   // Returns true if the survey needs to be displayed for the given |profile|.
-  static bool ShouldShowSurveyToProfile(Profile* profile);
+  static bool ShouldShowSurveyToProfile(Profile* profile,
+                                        const HatsConfig& config);
 
  private:
   friend class HatsNotificationControllerTest;
@@ -69,7 +72,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void Initialize(bool is_new_device);
   void Close(bool by_user) override;
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 
   // NetworkPortalDetector::Observer override:
   void OnPortalDetectionCompleted(
@@ -79,6 +82,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void UpdateLastInteractionTime();
 
   Profile* const profile_;
+  const HatsConfig& hats_config_;
   std::unique_ptr<message_center::Notification> notification_;
   std::unique_ptr<HatsDialog> hats_dialog_;
 

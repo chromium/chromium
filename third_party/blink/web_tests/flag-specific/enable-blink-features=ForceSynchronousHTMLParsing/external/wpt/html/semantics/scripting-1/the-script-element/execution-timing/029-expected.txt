@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL  scheduler: javascript: URL in HREF assert_array_equals: expected property 2 to be "beforeunload event" but got "JS URL" (expected array ["inline script #1", "end script #1", "beforeunload event", "inline script #2"] got ["inline script #1", "end script #1", "JS URL", "inline script #2"])
+
+assert_array_equals: expected property 2 to be "inline script #2" but got "JS URL" (expected array ["inline script #1", "end script #1", "inline script #2", "beforeunload event"] got ["inline script #1", "end script #1", "JS URL", "inline script #2"])
+Harness: the test ran to completion.
+

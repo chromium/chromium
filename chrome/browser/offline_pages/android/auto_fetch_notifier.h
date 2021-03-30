@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 namespace offline_pages {
 
@@ -25,7 +24,7 @@ bool AutoFetchInProgressNotificationCanceled();
 void AutoFetchCancellationComplete();
 
 // Triggers the auto-fetch complete notification. See AutoFetchNotifier.java.
-void ShowAutoFetchCompleteNotification(const base::string16& page_title,
+void ShowAutoFetchCompleteNotification(const std::u16string& page_title,
                                        const std::string& original_url,
                                        const std::string& final_url,
                                        int android_tab_id,

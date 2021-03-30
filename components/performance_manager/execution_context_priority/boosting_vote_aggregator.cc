@@ -238,8 +238,7 @@ const char* BoostingVoteAggregator::EdgeData::GetActiveReason() const {
   return reasons_[0];
 }
 
-BoostingVoteAggregator::BoostingVoteAggregator()
-    : vote_consumer_default_impl_(this) {}
+BoostingVoteAggregator::BoostingVoteAggregator() = default;
 
 BoostingVoteAggregator::~BoostingVoteAggregator() {
   DCHECK(forward_edges_.empty());
@@ -249,14 +248,14 @@ BoostingVoteAggregator::~BoostingVoteAggregator() {
 VotingChannel BoostingVoteAggregator::GetVotingChannel() {
   DCHECK(nodes_.empty());
   DCHECK(!input_voter_id_);
-  DCHECK_GT(1u, vote_consumer_default_impl_.voting_channels_issued());
-  auto channel = vote_consumer_default_impl_.BuildVotingChannel();
+  DCHECK_GT(1u, voting_channel_factory_.voting_channels_issued());
+  auto channel = voting_channel_factory_.BuildVotingChannel();
   input_voter_id_ = channel.voter_id();
   return channel;
 }
 
-void BoostingVoteAggregator::SetUpstreamVotingChannel(VotingChannel&& channel) {
-  channel_.SetVotingChannel(std::move(channel));
+void BoostingVoteAggregator::SetUpstreamVotingChannel(VotingChannel channel) {
+  channel_ = std::move(channel);
 }
 
 bool BoostingVoteAggregator::IsSetup() const {
@@ -547,25 +546,25 @@ void BoostingVoteAggregator::UpstreamVoteIfNeeded(
   // specific higher votes.
   if (priority == base::TaskPriority::LOWEST) {
     if (node_data->HasOutgoingVote()) {
-      channel_.InvalidateVote(execution_context);
       node_data->CancelOutgoingVote();
+      channel_.InvalidateVote(execution_context);
     }
     return;
   }
 
-  // Get the reason for this vote.
-  const char* reason = GetVoteReason(node);
+  const Vote vote(priority, GetVoteReason(node));
 
-  // If the node already has a vote, then change it. This is a nop if the vote
-  // details are identical.
+  // Update the vote if the node already has one. If it changed, the new vote
+  // must be upstreamed.
   if (node_data->HasOutgoingVote()) {
-    channel_.ChangeVote(execution_context, Vote(priority, reason));
+    if (node_data->UpdateOutgoingVote(vote))
+      channel_.ChangeVote(execution_context, vote);
     return;
   }
 
   // Create an outgoing vote.
-  node_data->SetHasOutgoingVote();
-  channel_.SubmitVote(execution_context, Vote(priority, reason));
+  node_data->SetOutgoingVote(vote);
+  channel_.SubmitVote(execution_context, vote);
 }
 
 void BoostingVoteAggregator::UpstreamChanges(const NodeDataPtrSet& changes) {

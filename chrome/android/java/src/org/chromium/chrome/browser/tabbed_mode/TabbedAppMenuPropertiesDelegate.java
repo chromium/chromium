@@ -11,29 +11,36 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.app.appmenu.AppMenuIconRowFooter;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.datareduction.DataReductionMainMenuItem;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.favicon.LargeIconBridge;
 
 /**
  * An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity.
  */
 public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     AppMenuDelegate mAppMenuDelegate;
+    SnackbarManager mSnackbarManager;
+    WebFeedBridge mWebFeedBridge;
 
     public TabbedAppMenuPropertiesDelegate(Context context, ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
@@ -41,11 +48,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             AppMenuDelegate appMenuDelegate,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            ModalDialogManager modalDialogManager) {
+            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, overviewModeBehaviorSupplier, bookmarkBridgeSupplier,
-                modalDialogManager);
+                toolbarManager, decorView, overviewModeBehaviorSupplier, bookmarkBridgeSupplier);
         mAppMenuDelegate = appMenuDelegate;
+        mSnackbarManager = snackbarManager;
+        mWebFeedBridge = webFeedBridge;
     }
 
     private boolean shouldShowDataSaverMenuItem() {
@@ -53,17 +61,36 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 && DataReductionProxySettings.getInstance().shouldUseDataReductionMainMenuItem();
     }
 
+    private boolean shouldShowWebFeedMenuItem() {
+        if (!FeedFeatures.isWebFeedUIEnabled()) {
+            return false;
+        }
+        Tab tab = mActivityTabProvider.get();
+        if (tab == null || tab.isIncognito() || OfflinePageUtils.isOfflinePage(tab)) {
+            return false;
+        }
+        String url = tab.getOriginalUrl().getSpec();
+        return url.startsWith(UrlConstants.HTTP_URL_PREFIX)
+                || url.startsWith(UrlConstants.HTTPS_URL_PREFIX);
+    }
+
     @Override
     public int getFooterResourceId() {
-        return shouldShowDataSaverMenuItem() ? R.layout.data_reduction_main_menu_item : 0;
+        if (shouldShowWebFeedMenuItem()) {
+            return R.layout.web_feed_main_menu_item;
+        } else if (shouldShowDataSaverMenuItem()) {
+            return R.layout.data_reduction_main_menu_item;
+        }
+        return 0;
     }
 
     @Override
     public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {
-        if (view instanceof AppMenuIconRowFooter) {
-            ((AppMenuIconRowFooter) view)
-                    .initialize(appMenuHandler, mBookmarkBridge, mActivityTabProvider.get(),
-                            mAppMenuDelegate);
+        if (view instanceof WebFeedMainMenuItem) {
+            ((WebFeedMainMenuItem) view)
+                    .initialize(mActivityTabProvider.get().getOriginalUrl(), appMenuHandler,
+                            new LargeIconBridge(Profile.getLastUsedRegularProfile()),
+                            mSnackbarManager, mWebFeedBridge);
         }
     }
 
@@ -81,6 +108,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     @Override
     public boolean shouldShowFooter(int maxMenuHeight) {
+        if (shouldShowWebFeedMenuItem()) {
+            return true;
+        }
         if (shouldShowDataSaverMenuItem()) {
             return canShowDataReductionItem(maxMenuHeight);
         }
@@ -96,9 +126,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     @Override
     public boolean shouldShowIconBeforeItem() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS)
-                || CachedFeatureFlags.isEnabled(
-                        ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
+        return true;
     }
 
     private boolean canShowDataReductionItem(int maxMenuHeight) {

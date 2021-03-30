@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that style modification generates attribute updated event only when attribute is actually changed.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container">
@@ -26,8 +26,7 @@
   `);
 
   // Save time on style updates.
-  Elements.StylesSidebarPane.prototype.update = function() {};
-  Elements.MetricsSidebarPane.prototype.update = function() {};
+  ElementsTestRunner.ignoreSidebarUpdates();
 
   TestRunner.runTestSuite([
     function testSetUp(next) {

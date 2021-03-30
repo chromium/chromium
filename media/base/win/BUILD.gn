@@ -6,6 +6,7 @@ assert(is_win)
 
 config("delay_load_mf") {
   ldflags = [
+    "/DELAYLOAD:d3d11.dll",
     "/DELAYLOAD:mf.dll",
     "/DELAYLOAD:mfplat.dll",
     "/DELAYLOAD:mfreadwrite.dll",
@@ -15,6 +16,8 @@ config("delay_load_mf") {
 component("media_foundation_util") {
   defines = [ "MF_INITIALIZER_IMPLEMENTATION" ]
   sources = [
+    "dxgi_device_manager.cc",
+    "dxgi_device_manager.h",
     "mf_helpers.cc",
     "mf_helpers.h",
     "mf_initializer.cc",
@@ -31,9 +34,11 @@ component("media_foundation_util") {
     "//media:shared_memory_support",
   ]
   libs = [
+    "d3d11.lib",
     "mf.lib",
     "mfplat.lib",
     "mfreadwrite.lib",
+    "dxguid.lib",
   ]
 
   # MediaFoundation is not available on Windows N, so must be delay loaded.

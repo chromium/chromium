@@ -4,8 +4,8 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Default: '
 ++++++++++inlineTextBox name='Default: '
-++++++++textField name='Default:'
-++++++++++genericContainer
+++++++++textField editable name='Default:' editableRoot=true
+++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Button: '
 ++++++++++inlineTextBox name='Button: '
@@ -15,11 +15,13 @@ rootWebArea
 ++++++++staticText name='Color: '
 ++++++++++inlineTextBox name='Color: '
 ++++++++colorWell name='Color:' value='#000000'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
 ++++++labelText
 ++++++++staticText name='Email: '
 ++++++++++inlineTextBox name='Email: '
-++++++++textField name='Email:'
-++++++++++genericContainer
+++++++++textField editable name='Email:' editableRoot=true
+++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='File: '
 ++++++++++inlineTextBox name='File: '
@@ -27,6 +29,8 @@ rootWebArea
 ++++++++++button name='Choose File'
 ++++++++++++staticText name='Choose File'
 ++++++++++++++inlineTextBox name='Choose File'
+++++++++++genericContainer ignored invisible
+++++++++++++staticText ignored invisible name='No file chosen'
 ++++++labelText
 ++++++++staticText name='Image: '
 ++++++++++inlineTextBox name='Image: '
@@ -37,13 +41,16 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
-++++++++spinButton name='Number:'
-++++++++++genericContainer
+++++++++spinButton editable name='Number:' editableRoot=true
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++genericContainer ignored
 ++++++labelText
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox name='Password: '
-++++++++textField protected name='Password:'
-++++++++++genericContainer
+++++++++textField editable protected name='Password:' editableRoot=true
+++++++++++genericContainer editable
 ++++++radioButton name='Radio:' checkedState=false
 ++++++labelText
 ++++++++staticText name='Range: '
@@ -58,8 +65,11 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
-++++++++searchBox name='Search:'
-++++++++++genericContainer
+++++++++searchBox editable name='Search:' editableRoot=true
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++genericContainer ignored
 ++++++labelText
 ++++++++staticText name='Submit: '
 ++++++++++inlineTextBox name='Submit: '
@@ -69,15 +79,15 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Tel: '
 ++++++++++inlineTextBox name='Tel: '
-++++++++textField name='Tel:'
-++++++++++genericContainer
+++++++++textField editable name='Tel:' editableRoot=true
+++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Text: '
 ++++++++++inlineTextBox name='Text: '
-++++++++textField name='Text:'
-++++++++++genericContainer
+++++++++textField editable name='Text:' editableRoot=true
+++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Url: '
 ++++++++++inlineTextBox name='Url: '
-++++++++textField name='Url:'
-++++++++++genericContainer
+++++++++textField editable name='Url:' editableRoot=true
+++++++++++genericContainer editable

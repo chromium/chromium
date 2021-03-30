@@ -182,7 +182,7 @@ bool ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
           extensions::SocketPermission::CheckParam check_params(
               params->type, params->host, params->port);
           if (permissions_data->CheckAPIPermissionWithParam(
-                  extensions::APIPermission::kSocket, &check_params)) {
+                  extensions::mojom::APIPermissionID::kSocket, &check_params)) {
             return true;
           }
         } else if (permissions_data->HasAPIPermission(

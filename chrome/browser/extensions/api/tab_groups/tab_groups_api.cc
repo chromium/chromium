@@ -5,11 +5,11 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_api.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/strings/pattern.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
@@ -180,7 +180,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   if (params->update_properties.color != api::tab_groups::COLOR_NONE)
     color = tab_groups_util::ColorToColorId(params->update_properties.color);
 
-  base::string16 title = visual_data->title();
+  std::u16string title = visual_data->title();
   if (params->update_properties.title.get())
     title = base::UTF8ToUTF16(*params->update_properties.title);
 

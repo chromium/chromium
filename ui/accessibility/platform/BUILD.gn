@@ -59,6 +59,8 @@ source_set("platform") {
     "ax_platform_node_test_helper.h",
 
     # Used by DumpAccTree testsuite and a11y tools
+    "inspect/ax_event_recorder.cc",
+    "inspect/ax_event_recorder.h",
     "inspect/ax_inspect.cc",
     "inspect/ax_inspect.h",
     "inspect/ax_property_node.cc",
@@ -99,6 +101,8 @@ source_set("platform") {
         "ax_platform_relation_win.h",
         "ax_system_caret_win.cc",
         "ax_system_caret_win.h",
+        "inspect/ax_inspect_utils_win.cc",
+        "inspect/ax_inspect_utils_win.h",
         "uia_registrar_win.cc",
         "uia_registrar_win.h",
       ]
@@ -139,7 +143,11 @@ source_set("platform") {
         "ax_platform_atk_hyperlink.h",
         "ax_platform_node_auralinux.cc",
         "ax_platform_node_auralinux.h",
+        "inspect/ax_inspect_utils_auralinux.cc",
+        "inspect/ax_inspect_utils_auralinux.h",
       ]
+
+      configs += [ "//build/config/linux/atspi2" ]
 
       # ax_platform_text_boundary.h includes atk.h, so ATK is needed
       # as a public config to ensure anything that includes this is
@@ -148,10 +156,6 @@ source_set("platform") {
 
       if (use_glib) {
         configs += [ "//build/config/linux:glib" ]
-      }
-
-      if (use_x11) {
-        public_deps += [ "//ui/gfx/x" ]
       }
     }
   }

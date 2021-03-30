@@ -121,7 +121,14 @@ var TreeParserUtil = (function() {
     if (tokenStream.length == 0)
       throw new Error('Expected an identifier, but found end-of-stream.');
     var token = tokenStream.shift();
-    if (!token.match(/^[a-zA-Z0-9:.-]+$/))
+    // This regex includes slash, question mark, ampersand, and period in order
+    // to accommodate full URLs, which may be passed to
+    // cross_site_iframe_factory.html as leaf node locations. Colon is for port
+    // numbers, which may also be specified. Semicolon and equals are for cookie
+    // strings, which may sometimes be provided in URL query strings such as for
+    // the EmbeddedTestServer default handler /set-cookie.
+    const re = new RegExp('^[a-zA-Z0-9\\/_?&;:.=-]+$');
+    if (!token.match(re))
       throw new Error('Expected an identifier, but found "' + token + '".');
     return token;
   }
@@ -211,3 +218,5 @@ var TreeParserUtil = (function() {
     flatten: flatten
   };
 })();
+
+document.scriptExecuted = true;

@@ -61,12 +61,6 @@ int PrivacyContainerView::DoUpdate() {
     }
     suggested_content_info_view_->SetVisible(should_show_suggested_content);
   }
-
-  // If visible, set the maximum score so that the privacy notice is always at
-  // the top of the results list.
-  set_container_score(should_show_suggested_content
-                          ? AppListConfig::instance().privacy_container_score()
-                          : -1);
   return should_show_suggested_content ? 1 : 0;
 }
 

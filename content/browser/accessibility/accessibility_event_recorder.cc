@@ -4,46 +4,12 @@
 
 #include "content/browser/accessibility/accessibility_event_recorder.h"
 
-#include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "ui/base/buildflags.h"
 
 namespace content {
 
 AccessibilityEventRecorder::AccessibilityEventRecorder(
     BrowserAccessibilityManager* manager)
     : manager_(manager) {}
-
-AccessibilityEventRecorder::~AccessibilityEventRecorder() = default;
-
-#if !defined(OS_WIN) && !defined(OS_MAC) && !BUILDFLAG(USE_ATK)
-// static
-std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    const AXTreeSelector& selector) {
-  return std::make_unique<AccessibilityEventRecorder>(manager);
-}
-
-// static
-std::vector<AccessibilityEventRecorder::TestPass>
-AccessibilityEventRecorder::GetTestPasses() {
-#if defined(OS_ANDROID)
-  // Note: Android doesn't do a "blink" pass; the blink tree is different on
-  // Android because we exclude inline text boxes, for performance.
-  return {{"android", &AccessibilityEventRecorder::Create}};
-#else   // defined(OS_ANDROID)
-  return {
-      {"blink", &AccessibilityEventRecorder::Create},
-  };
-#endif  // defined(OS_ANDROID)
-}
-#endif
-
-void AccessibilityEventRecorder::OnEvent(const std::string& event) {
-  event_logs_.push_back(event);
-  if (callback_)
-    callback_.Run(event);
-}
 
 }  // namespace content

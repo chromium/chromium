@@ -21,3 +21,11 @@ export const BackgroundSelectionType = {
  * }}
  */
 export let BackgroundSelection;
+
+/** @enum {string} */
+export const CustomizeDialogPage = {
+  BACKGROUNDS: 'backgrounds',
+  SHORTCUTS: 'shortcuts',
+  MODULES: 'modules',
+  THEMES: 'themes',
+};

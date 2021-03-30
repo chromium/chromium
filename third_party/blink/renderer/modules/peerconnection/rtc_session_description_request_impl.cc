@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_init.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 
 namespace blink {
@@ -71,8 +72,13 @@ void RTCSessionDescriptionRequestImpl::RequestSucceeded(
       requester_ ? requester_->ShouldFireDefaultCallbacks() : false;
   if (should_fire_callback && success_callback_) {
     requester_->NoteSessionDescriptionRequestCompleted(operation_, true);
-    auto* description = RTCSessionDescription::Create(description_platform);
-    requester_->NoteSdpCreated(*description);
+    RTCSessionDescriptionInit* description =
+        RTCSessionDescriptionInit::Create();
+    description->setType(description_platform->GetType());
+    description->setSdp(description_platform->Sdp());
+
+    requester_->NoteSdpCreated(
+        *RTCSessionDescription::Create(description_platform));
     success_callback_->InvokeAndReportException(nullptr, description);
   }
   Clear();

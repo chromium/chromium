@@ -10,6 +10,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -18,7 +19,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -238,9 +238,10 @@ PasswordCheckDelegate::PasswordCheckDelegate(
           presenter,
           BulkLeakCheckServiceFactory::GetForProfile(profile_),
           profile_->GetPrefs()) {
-  observed_saved_passwords_presenter_.Add(saved_passwords_presenter_);
-  observed_insecure_credentials_manager_.Add(&insecure_credentials_manager_);
-  observed_bulk_leak_check_service_.Add(
+  observed_saved_passwords_presenter_.Observe(saved_passwords_presenter_);
+  observed_insecure_credentials_manager_.Observe(
+      &insecure_credentials_manager_);
+  observed_bulk_leak_check_service_.Observe(
       BulkLeakCheckServiceFactory::GetForProfile(profile_));
 
   // Instructs the provider to initialize and build its cache.
@@ -256,7 +257,7 @@ std::vector<api::passwords_private::InsecureCredential>
 PasswordCheckDelegate::GetCompromisedCredentials() {
   std::vector<CompromisedCredentialAndType>
       ordered_compromised_credential_and_types = OrderCompromisedCredentials(
-          insecure_credentials_manager_.GetCompromisedCredentials());
+          insecure_credentials_manager_.GetInsecureCredentials());
 
   std::vector<api::passwords_private::InsecureCredential>
       compromised_credentials;
@@ -347,14 +348,10 @@ void PasswordCheckDelegate::StartPasswordCheck(
     return;
   }
 
-  // In case the Weakness Check feature is enabled start the check, and notify
-  // observers once done.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordsWeaknessCheck)) {
-    insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
-        &PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck,
-        weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Start the weakness check, and notify observers once done.
+  insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
+      &PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck,
+      weak_ptr_factory_.GetWeakPtr()));
 
   auto progress = base::MakeRefCounted<PasswordCheckProgress>();
   for (const auto& password : saved_passwords_presenter_->GetSavedPasswords())
@@ -443,7 +440,7 @@ void PasswordCheckDelegate::OnSavedPasswordsChanged(SavedPasswordsView) {
   NotifyPasswordCheckStatusChanged();
 }
 
-void PasswordCheckDelegate::OnCompromisedCredentialsChanged(
+void PasswordCheckDelegate::OnInsecureCredentialsChanged(
     InsecureCredentialsView credentials) {
   if (auto* event_router =
           PasswordsPrivateEventRouterFactory::GetForProfile(profile_)) {
@@ -476,7 +473,7 @@ void PasswordCheckDelegate::OnCredentialDone(
     const LeakCheckCredential& credential,
     password_manager::IsLeaked is_leaked) {
   if (is_leaked) {
-    insecure_credentials_manager_.SaveCompromisedCredential(credential);
+    insecure_credentials_manager_.SaveInsecureCredential(credential);
   }
 
   // Update the progress in case there is one.

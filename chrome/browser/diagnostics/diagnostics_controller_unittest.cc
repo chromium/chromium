@@ -22,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_constants.h"
+#include "ash/constants/ash_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace diagnostics {
@@ -120,7 +120,7 @@ TEST_F(DiagnosticsControllerTest, RecoverAllOK) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DiagnosticsControllerTest, RecoverFromNssCertDbFailure) {
-  base::FilePath db_path = profile_dir_.Append(chromeos::kNssCertDbPath);
+  base::FilePath db_path = profile_dir_.Append(ash::kNssCertDbPath);
   EXPECT_TRUE(base::PathExists(db_path));
   CorruptDataFile(db_path);
   DiagnosticsController::GetInstance()->Run(cmdline_, writer_.get());
@@ -142,7 +142,7 @@ TEST_F(DiagnosticsControllerTest, RecoverFromNssCertDbFailure) {
 }
 
 TEST_F(DiagnosticsControllerTest, RecoverFromNssKeyDbFailure) {
-  base::FilePath db_path = profile_dir_.Append(chromeos::kNssKeyDbPath);
+  base::FilePath db_path = profile_dir_.Append(ash::kNssKeyDbPath);
   EXPECT_TRUE(base::PathExists(db_path));
   CorruptDataFile(db_path);
   DiagnosticsController::GetInstance()->Run(cmdline_, writer_.get());

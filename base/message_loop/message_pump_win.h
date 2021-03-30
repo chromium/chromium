@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
@@ -37,13 +38,15 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
 
  protected:
   struct RunState {
-    Delegate* delegate;
+    explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
+
+    Delegate* const delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
-    bool should_quit;
+    bool should_quit = false;
 
-    // Used to count how many Run() invocations are on the stack.
-    int run_depth;
+    // Set to true if this Run() is nested within another Run().
+    bool is_nested = false;
   };
 
   virtual void DoRunLoop() = 0;
@@ -71,8 +74,8 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   //     this is simpler than MessagePumpForUI.
   std::atomic_bool work_scheduled_{false};
 
-  // State for the current invocation of Run.
-  RunState* state_ = nullptr;
+  // State for the current invocation of Run(). null if not running.
+  RunState* run_state_ = nullptr;
 
   THREAD_CHECKER(bound_thread_);
 };
@@ -152,7 +155,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
                        LPARAM lparam,
                        LRESULT* result);
   void DoRunLoop() override;
-  void WaitForWork(Delegate::NextWorkInfo next_work_info);
+  NOINLINE void NOT_TAIL_CALLED
+  WaitForWork(Delegate::NextWorkInfo next_work_info);
   void HandleWorkMessage();
   void HandleTimerMessage();
   void ScheduleNativeTimer(Delegate::NextWorkInfo next_work_info);
@@ -269,17 +273,6 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   // succeeded, and false otherwise.
   bool RegisterJobObject(HANDLE job_handle, IOHandler* handler);
 
-  // Waits for the next IO completion that should be processed by |filter|, for
-  // up to |timeout| milliseconds. Return true if any IO operation completed,
-  // regardless of the involved handler, and false if the timeout expired. If
-  // the completion port received any message and the involved IO handler
-  // matches |filter|, the callback is called before returning from this code;
-  // if the handler is not the one that we are looking for, the callback will
-  // be postponed for another time, so reentrancy problems can be avoided.
-  // External use of this method should be reserved for the rare case when the
-  // caller is willing to allow pausing regular task dispatching on this thread.
-  bool WaitForIOCompletion(DWORD timeout, IOHandler* filter);
-
  private:
   struct IOItem {
     IOHandler* handler;
@@ -289,16 +282,18 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   };
 
   void DoRunLoop() override;
-  void WaitForWork(Delegate::NextWorkInfo next_work_info);
-  bool MatchCompletedIOItem(IOHandler* filter, IOItem* item);
+  NOINLINE void NOT_TAIL_CALLED
+  WaitForWork(Delegate::NextWorkInfo next_work_info);
   bool GetIOItem(DWORD timeout, IOItem* item);
   bool ProcessInternalIOItem(const IOItem& item);
+  // Waits for the next IO completion for up to |timeout| milliseconds.
+  // Return true if any IO operation completed, and false if the timeout
+  // expired. If the completion port received any messages, the associated
+  // handlers will have been invoked before returning from this code.
+  bool WaitForIOCompletion(DWORD timeout);
 
   // The completion port associated with this thread.
   win::ScopedHandle port_;
-  // This list will be empty almost always. It stores IO completions that have
-  // not been delivered yet because somebody was doing cleanup.
-  std::list<IOItem> completed_io_;
 };
 
 }  // namespace base

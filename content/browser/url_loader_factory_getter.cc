@@ -72,7 +72,6 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
@@ -83,8 +82,8 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
     if (!factory_getter_)
       return;
     factory_getter_->GetURLLoaderFactory(is_corb_enabled_)
-        ->CreateLoaderAndStart(std::move(receiver), routing_id, request_id,
-                               options, url_request, std::move(client),
+        ->CreateLoaderAndStart(std::move(receiver), request_id, options,
+                               url_request, std::move(client),
                                traffic_annotation);
   }
 

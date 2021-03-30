@@ -9,6 +9,7 @@ include_rules = [
     "+net/http/http_response_info.h",
     "+services/network/public/cpp",
     "+services/network/public/mojom",
+    "+storage/common/quota/padding_key.h",
     "+url/gurl.h",
 ]
 

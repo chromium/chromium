@@ -7,10 +7,30 @@
  * 'personalization-options' contains several toggles related to
  * personalizations.
  */
-(function() {
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '../controls/settings_toggle_button.js';
+import '../people_page/signout_dialog.js';
+import '../prefs/prefs.js';
+import '../settings_shared_css.js';
+// <if expr="not chromeos">
+import '//resources/cr_elements/cr_toast/cr_toast.m.js';
+// </if>
+
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+
+import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
 Polymer({
   is: 'settings-personalization-options',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [
     PrefsBehavior,
@@ -31,7 +51,7 @@ Polymer({
      */
     pageVisibility: Object,
 
-    /** @type {settings.SyncStatus} */
+    /** @type {SyncStatus} */
     syncStatus: Object,
 
     // <if expr="_google_chrome and not chromeos">
@@ -60,9 +80,17 @@ Polymer({
       value: false,
       computed: 'computeSyncFirstSetupInProgress_(syncStatus)',
     },
+
+    // <if expr="not chromeos">
+    /** @private */
+    signinAvailable_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('signinAvailable'),
+    },
+    // </if>
   },
 
-  /** @private {?settings.PrivacyPageBrowserProxy} */
+  /** @private {?PrivacyPageBrowserProxy} */
   browserProxy_: null,
 
   /**
@@ -75,7 +103,7 @@ Polymer({
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.PrivacyPageBrowserProxyImpl.getInstance();
+    this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
 
     // <if expr="_google_chrome and not chromeos">
     const setMetricsReportingPref = this.setMetricsReportingPref_.bind(this);
@@ -116,7 +144,7 @@ Polymer({
   },
 
   /**
-   * @param {!settings.MetricsReporting} metricsReporting
+   * @param {!MetricsReporting} metricsReporting
    * @private
    */
   setMetricsReportingPref_(metricsReporting) {
@@ -176,7 +204,7 @@ Polymer({
   shouldShowDriveSuggest_() {
     return loadTimeData.getBoolean('driveSuggestAvailable') &&
         !!this.syncStatus && !!this.syncStatus.signedIn &&
-        this.syncStatus.statusAction !== settings.StatusAction.REAUTHENTICATE;
+        this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE;
   },
 
   /** @private */
@@ -213,7 +241,6 @@ Polymer({
    */
   onRestartTap_(e) {
     e.stopPropagation();
-    settings.LifetimeBrowserProxyImpl.getInstance().restart();
+    LifetimeBrowserProxyImpl.getInstance().restart();
   },
 });
-})();

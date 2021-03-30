@@ -40,8 +40,7 @@ class TestMenuButton : public MenuButton {
       : TestMenuButton(base::BindRepeating(&TestMenuButton::ButtonPressed,
                                            base::Unretained(this))) {}
   explicit TestMenuButton(PressedCallback callback)
-      : MenuButton(std::move(callback),
-                   base::string16(ASCIIToUTF16("button"))) {}
+      : MenuButton(std::move(callback), std::u16string(u"button")) {}
   TestMenuButton(const TestMenuButton&) = delete;
   TestMenuButton& operator=(const TestMenuButton&) = delete;
   ~TestMenuButton() override = default;

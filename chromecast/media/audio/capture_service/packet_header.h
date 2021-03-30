@@ -23,8 +23,9 @@ struct __attribute__((__packed__)) PcmPacketHeader {
   int64_t timestamp_us;
 };
 
-// Memory block of a handshake packet. There is no size restriction for this
-// structure.
+// Memory block of a handshake packet. Audio packet may be sent after handshake
+// packet, and thus handshake packet must also have a multiple of 4 bytes, since
+// audio data must be aligned.
 struct __attribute__((__packed__)) HandshakePacket {
   uint16_t size;
   uint8_t message_type;
@@ -32,7 +33,9 @@ struct __attribute__((__packed__)) HandshakePacket {
   uint8_t audio_codec;
   uint8_t sample_format;
   uint8_t num_channels;
+  uint8_t padding_uint8;
   uint16_t num_frames;
+  uint16_t padding_uint16;
   uint32_t sample_rate;
 };
 

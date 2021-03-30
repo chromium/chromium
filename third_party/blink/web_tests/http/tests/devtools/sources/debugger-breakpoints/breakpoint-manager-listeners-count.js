@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that scripts panel does not create too many source frames.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/breakpoint-manager-listeners-count.html');

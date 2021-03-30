@@ -1,0 +1,82 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+
+<dom-module id="demo-preferences-element">
+  <template>
+    <style include="oobe-dialog-host">
+      :host {
+        --oobe-dialog-list-item-border: 1px solid rgb(235,235,235); /*#EBEBEB*/
+        --oobe-a11y-dialog-list-item-border: 1px solid var(--google-grey-200);
+      }
+      #demoPreferencesDialog .language-selection-entry {
+        border-top: var(--oobe-dialog-list-item-border);
+        min-height: 60px;
+      }
+      #demoPreferencesDialog .language-selection-entry:last-of-type {
+        border-bottom: var(--oobe-dialog-list-item-border);
+      }
+      #demoPreferencesDialog .language-selection-title {
+        color: var(--google-grey-900);
+        font-size: 13px;
+      }
+    </style>
+    <oobe-adaptive-dialog id="demoPreferencesDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:gear"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]
+      </h1>
+      <div slot="content" class="landscape-header-aligned">
+        <div id="languageDropdownContainer" class="flex layout center horizontal
+            justified language-selection-entry">
+          <div class="language-selection-title layout vertical
+              center-justified">
+            [[i18nDynamic(locale, 'languageDropdownTitle')]]
+          </div>
+          <oobe-i18n-dropdown id="languageSelect" items="[[languages]]"
+              label-for-aria="[[i18nDynamic(locale, 'languageDropdownLabel')]]"
+              on-select-item="onLanguageSelected_" class="focus-on-show">
+          </oobe-i18n-dropdown>
+        </div>
+        <div id="keyboardDropdownContainer" class="flex layout center horizontal
+            justified language-selection-entry">
+          <div class="language-selection-title layout vertical
+              center-justified">
+            [[i18nDynamic(locale, 'keyboardDropdownTitle')]]
+          </div>
+          <oobe-i18n-dropdown id="keyboardSelect" items="[[keyboards]]"
+              label-for-aria="[[i18nDynamic(locale, 'keyboardDropdownLabel')]]"
+              on-select-item="onKeyboardSelected_">
+          </oobe-i18n-dropdown>
+        </div>
+        <div id="countryDropdownContainer" class="flex layout center horizontal
+            justified language-selection-entry">
+          <div class="language-selection-title layout vertical
+              center-justified">
+            [[i18nDynamic(locale, 'countryDropdownTitle')]]
+          </div>
+          <oobe-i18n-dropdown id="countrySelect" items="[[countries]]"
+              label-for-aria="[[i18nDynamic(locale, 'countryDropdownLabel')]]"
+              on-select-item="onCountrySelected_">
+          </oobe-i18n-dropdown>
+        </div>
+      </div>
+      <div slot="back-navigation">
+        <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="nextButton" inverse on-click="onNextClicked_"
+            text-key="demoPreferencesNextButtonLabel"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+</dom-module>

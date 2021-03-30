@@ -40,11 +40,15 @@ int DataPipeElementReader::Init(net::CompletionOnceCallback callback) {
   weak_factory_.InvalidateWeakPtrs();
 
   // Get a new data pipe and start.
-  mojo::DataPipe data_pipe;
-  data_pipe_getter_->Read(std::move(data_pipe.producer_handle),
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  if (mojo::CreateDataPipe(nullptr, producer_handle, data_pipe_) !=
+      MOJO_RESULT_OK) {
+    return net::ERR_FAILED;
+  }
+
+  data_pipe_getter_->Read(std::move(producer_handle),
                           base::BindOnce(&DataPipeElementReader::ReadCallback,
                                          weak_factory_.GetWeakPtr()));
-  data_pipe_ = std::move(data_pipe.consumer_handle);
   handle_watcher_.Watch(
       data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       base::BindRepeating(&DataPipeElementReader::OnHandleReadable,

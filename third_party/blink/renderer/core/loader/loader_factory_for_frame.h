@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <utility>
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
@@ -28,7 +28,8 @@ class LoaderFactoryForFrame final : public ResourceFetcher::LoaderFactory {
       const ResourceRequest&,
       const ResourceLoaderOptions&,
       scoped_refptr<base::SingleThreadTaskRunner>,
-      scoped_refptr<base::SingleThreadTaskRunner>) override;
+      scoped_refptr<base::SingleThreadTaskRunner>,
+      WebBackForwardCacheLoaderHelper) override;
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
 
   std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
@@ -45,6 +46,8 @@ class LoaderFactoryForFrame final : public ResourceFetcher::LoaderFactory {
   const Member<LocalDOMWindow> window_;
   const Member<PrefetchedSignedExchangeManager>
       prefetched_signed_exchange_manager_;
+  HeapMojoRemote<blink::mojom::blink::KeepAliveHandleFactory>
+      keep_alive_handle_factory_;
 };
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 
 namespace ui {
@@ -39,12 +40,12 @@ HostCursorProxy::~HostCursorProxy() {
 void HostCursorProxy::CursorSet(gfx::AcceleratedWidget widget,
                                 const std::vector<SkBitmap>& bitmaps,
                                 const gfx::Point& location,
-                                int frame_delay_ms) {
+                                base::TimeDelta frame_delay) {
   if (ui_thread_ref_ == base::PlatformThread::CurrentRef()) {
-    main_cursor_->SetCursor(widget, bitmaps, location, frame_delay_ms);
+    main_cursor_->SetCursor(widget, bitmaps, location, frame_delay);
   } else {
     InitializeOnEvdevIfNecessary();
-    evdev_cursor_->SetCursor(widget, bitmaps, location, frame_delay_ms);
+    evdev_cursor_->SetCursor(widget, bitmaps, location, frame_delay);
   }
 }
 

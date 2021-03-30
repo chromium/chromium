@@ -24,6 +24,16 @@ constexpr size_t kMaxNodesPerUpdate = 16;
 // Error allowed for each edge when converting from gfx::RectF to gfx::Rect.
 constexpr float kRectConversionError = 0.5;
 
+// Returns the id of the offset container for |node|, or the root node id if
+// |node| does not specify an offset container.
+int32_t GetOffsetContainerId(const ui::AXTree* tree, const ui::AXNode* node) {
+  int32_t offset_container_id =
+      node->data().relative_bounds.offset_container_id;
+  if (offset_container_id == -1)
+    return tree->root()->id();
+  return offset_container_id;
+}
+
 }  // namespace
 
 AccessibilityBridge::AccessibilityBridge(
@@ -57,8 +67,12 @@ void AccessibilityBridge::TryCommit() {
 
   // Deletions come before updates because first the nodes are deleted, and
   // then we update the parents to no longer point at them.
-  if (!to_delete_.empty())
+  if (!to_delete_.empty()) {
+    for (uint32_t node_id : to_delete_) {
+      RemoveNodeFromOffsetContainerChildren(node_id);
+    }
     semantic_tree_->DeleteSemanticNodes(std::move(to_delete_));
+  }
 
   size_t start = 0;
   while (start < to_update_.size()) {
@@ -176,9 +190,14 @@ void AccessibilityBridge::OnAccessibilityActionRequested(
     action_data.scroll_behavior = ax::mojom::ScrollBehavior::kScrollIfVisible;
   }
 
-  web_contents_->GetMainFrame()
-      ->FromAXTreeID(ax_id->first)
-      ->AccessibilityPerformAction(action_data);
+  auto* frame = web_contents_->GetMainFrame()->FromAXTreeID(ax_id->first);
+  if (!frame) {
+    // Fuchsia targeted a tree that does not exist.
+    callback(false);
+    return;
+  }
+
+  frame->AccessibilityPerformAction(action_data);
   callback(true);
 
   if (event_received_callback_for_test_) {
@@ -242,6 +261,22 @@ void AccessibilityBridge::OnNodeDeleted(ui::AXTree* tree, int32_t node_id) {
       id_mapper_->ToFuchsiaNodeID(tree->GetAXTreeID(), node_id, false));
 }
 
+void AccessibilityBridge::OnNodeDataChanged(
+    ui::AXTree* tree,
+    const ui::AXNodeData& old_node_data,
+    const ui::AXNodeData& new_node_data) {
+  auto offset_container_children_it = offset_container_children_.find(
+      std::make_pair(tree->GetAXTreeID(), old_node_data.id));
+  // If any descendants have this node as their offset containers, and this
+  // node's bounds have changed, then we need to update those descendants'
+  // transforms to reflect the new bounds.
+  if (offset_container_children_it != offset_container_children_.end() &&
+      old_node_data.relative_bounds != new_node_data.relative_bounds) {
+    // TODO(https://fxbug.dev/62891): Update children's transforms.
+    ZX_LOG(ERROR, ZX_OK) << "Offset container moved: currently unsupported";
+  }
+}
+
 void AccessibilityBridge::OnAtomicUpdateFinished(
     ui::AXTree* tree,
     bool root_changed,
@@ -261,9 +296,19 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
   // |to_update_| are going to be executed after |to_delete_|.
   for (const ui::AXTreeObserver::Change& change : changes) {
     const auto& node = change.node->data();
+
+    int32_t offset_container_id = GetOffsetContainerId(tree, change.node);
+    const auto* container = tree->GetFromId(offset_container_id);
+    DCHECK(container);
+
+    offset_container_children_[std::make_pair(tree->GetAXTreeID(),
+                                              offset_container_id)]
+        .insert(std::make_pair(tree->GetAXTreeID(), node.id));
+
     const bool is_root = is_main_frame_tree ? node.id == root_id_ : false;
-    to_update_.push_back(AXNodeDataToSemanticNode(node, tree->GetAXTreeID(),
-                                                  is_root, id_mapper_.get()));
+    to_update_.push_back(AXNodeDataToSemanticNode(node, container->data(),
+                                                  tree->GetAXTreeID(), is_root,
+                                                  id_mapper_.get()));
     if (node.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
       const auto child_tree_id = ui::AXTreeID::FromString(
           node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
@@ -293,7 +338,32 @@ float AccessibilityBridge::GetDeviceScaleFactor() {
   return web_contents_->GetRenderWidgetHostView()->GetDeviceScaleFactor();
 }
 
-const ui::AXSerializableTree* AccessibilityBridge::ax_tree_for_test() {
+void AccessibilityBridge::RemoveNodeFromOffsetContainerChildren(
+    uint32_t node_id) {
+  auto ax_id = id_mapper_->ToAXNodeID(node_id);
+  if (!ax_id)
+    return;
+
+  offset_container_children_.erase(ax_id.value());
+
+  auto ax_tree_it = ax_trees_.find(ax_id->first);
+  if (ax_tree_it == ax_trees_.end())
+    return;
+
+  // Remove the mapping from the offset container to this node.
+  ui::AXNode* node = ax_tree_it->second->GetFromId(ax_id->second);
+  if (!node)
+    return;
+
+  int32_t offset_container_id =
+      GetOffsetContainerId(ax_tree_it->second.get(), node);
+  auto offset_container_children_it = offset_container_children_.find(
+      std::make_pair(ax_id->first, offset_container_id));
+  if (offset_container_children_it != offset_container_children_.end())
+    offset_container_children_it->second.erase(*ax_id);
+}
+
+ui::AXSerializableTree* AccessibilityBridge::ax_tree_for_test() {
   if (ax_trees_.empty())
     return nullptr;
 
@@ -344,8 +414,13 @@ void AccessibilityBridge::UpdateTreeConnections() {
     if (kv.second.is_connected)
       continue;  // No work to do, trees connected and present.
 
-    auto fuchsia_node = AXNodeDataToSemanticNode(
-        ax_node->data(), parent_ax_tree_id, false, id_mapper_.get());
+    int32_t offset_container_id = GetOffsetContainerId(parent_tree, ax_node);
+    const auto* container = parent_tree->GetFromId(offset_container_id);
+    DCHECK(container);
+
+    auto fuchsia_node =
+        AXNodeDataToSemanticNode(ax_node->data(), container->data(),
+                                 parent_ax_tree_id, false, id_mapper_.get());
 
     // Now, the connection really happens:
     // This node, from the parent tree, will have a child that points to the

@@ -20,10 +20,6 @@ gfx::Point PointFromPPPoint(const PP_Point& pp_point) {
   return gfx::Point(pp_point.x, pp_point.y);
 }
 
-PP_Point PPPointFromPoint(const gfx::Point& point) {
-  return PP_MakePoint(point.x(), point.y());
-}
-
 gfx::PointF PointFFromPPFloatPoint(const PP_FloatPoint& pp_point) {
   return gfx::PointF(pp_point.x, pp_point.y);
 }
@@ -37,11 +33,6 @@ PP_Rect PPRectFromRect(const gfx::Rect& rect) {
   return PP_MakeRectFromXYWH(rect.x(), rect.y(), rect.width(), rect.height());
 }
 
-gfx::RectF RectFFromPPFloatRect(const PP_FloatRect& pp_rect) {
-  return gfx::RectF(pp_rect.point.x, pp_rect.point.y, pp_rect.size.width,
-                    pp_rect.size.height);
-}
-
 PP_FloatRect PPFloatRectFromRectF(const gfx::RectF& rect) {
   return PP_MakeFloatRectFromXYWH(rect.x(), rect.y(), rect.width(),
                                   rect.height());
@@ -53,14 +44,6 @@ gfx::Size SizeFromPPSize(const PP_Size& pp_size) {
 
 PP_Size PPSizeFromSize(const gfx::Size& size) {
   return PP_MakeSize(size.width(), size.height());
-}
-
-gfx::Vector2d VectorFromPPPoint(const PP_Point& pp_point) {
-  return gfx::Vector2d(pp_point.x, pp_point.y);
-}
-
-PP_Point PPPointFromVector(const gfx::Vector2d& vector) {
-  return PP_MakePoint(vector.x(), vector.y());
 }
 
 }  // namespace chrome_pdf

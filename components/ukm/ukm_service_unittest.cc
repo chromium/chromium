@@ -1452,7 +1452,7 @@ TEST_F(UkmServiceTest, FilterCanRemoveMetrics) {
     // |filtered_metric_hashes|.
     bool FilterEntry(
         mojom::UkmEntry* entry,
-        base::flat_set<uint64_t>* filtered_metric_hashes) const override {
+        base::flat_set<uint64_t>* filtered_metric_hashes) override {
       EXPECT_FALSE(entry->metrics.empty());
       auto last_iter = --entry->metrics.end();
       filtered_metric_hashes->insert(last_iter->first);
@@ -1502,7 +1502,7 @@ TEST_F(UkmServiceTest, FilterRejectsEvent) {
     // This filter rejects all events that are not TestEvent1.
     bool FilterEntry(
         mojom::UkmEntry* entry,
-        base::flat_set<uint64_t>* filtered_metric_hashes) const override {
+        base::flat_set<uint64_t>* filtered_metric_hashes) override {
       if (entry->event_hash == kTestEvent1EntryNameHash)
         return true;
 

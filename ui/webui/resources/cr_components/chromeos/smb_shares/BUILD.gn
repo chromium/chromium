@@ -11,36 +11,11 @@ assert(is_chromeos, "SMB Shares is Chrome OS only.")
 # TODO(crbug.com/1031947): Fully convert this component to Polymer 3 once
 # chrome://os-settings has been migrated.
 
-js_type_check("closure_compile") {
-  deps = [
-    ":add_smb_share_dialog",
-    ":smb_browser_proxy",
-  ]
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":add_smb_share_dialog.m",
     ":smb_browser_proxy.m",
-  ]
-}
-
-js_library("smb_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("add_smb_share_dialog") {
-  deps = [
-    ":smb_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
 }
 

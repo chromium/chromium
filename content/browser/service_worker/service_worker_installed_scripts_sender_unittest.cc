@@ -675,7 +675,7 @@ TEST_F(ServiceWorkerInstalledScriptsSenderTest, RemoteStorageDisconnection) {
 
   sender->Start();
 
-  registry()->SimulateStorageRestartForTesting();
+  helper()->SimulateStorageRestartForTesting();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(sender->last_finished_reason(), FinishedReason::kConnectionError);

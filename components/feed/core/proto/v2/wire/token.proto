@@ -6,20 +6,14 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/content_id.proto";
 import "components/feed/core/proto/v2/wire/next_page_token.proto";
 
-// A structure containing client-opaque data relating to a request.
+option optimize_for = LITE_RUNTIME;
+
 message Token {
-  // The ContentId identifying the parent for this feature. Needed for tokens
-  // used in a data operation.
   optional ContentId parent_id = 2;
-
-  extensions 1001;  // REDACTED
   optional NextPageToken next_page_token = 1002;
-  extensions 1003;  // InPlaceUpdateToken
-
-  reserved 1, 194964015;
+  optional bytes in_place_update_token = 1003;
+  optional bytes story_token = 1004;
 }

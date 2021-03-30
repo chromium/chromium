@@ -107,7 +107,7 @@ const char* const kFilteredEventGroupNames[] = {
     "blink.user_timing",                     // 0x10000
     "media",                                 // 0x20000
     "loading",                               // 0x40000
-    "unused_bit_19",                         // 0x80000
+    "base",                                  // 0x80000
     "unused_bit_20",                         // 0x100000
     "unused_bit_21",                         // 0x200000
     "unused_bit_22",                         // 0x400000

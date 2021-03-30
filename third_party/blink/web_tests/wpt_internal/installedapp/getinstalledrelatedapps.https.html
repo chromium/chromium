@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<link rel="manifest" href="resources/manifest.json">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {assert_array_relatedapplication_equals, installedapp_test} from './resources/installedapp-test-helper.js';
+
+installedapp_test((t, mock) => {
+  // The expected input to the Mojo method FilterInstalledRelatedApps is the
+  // list of related_applications from this page's manifest. The mock service
+  // returns the empty list, implying that none are installed.
+  mock.pushExpectedCall(
+      [{platform: 'play', url: null, id: 'com.test', version: null},
+       {platform: 'itunes', url: 'https://itunes.apple.com/', id: null, version: null}],
+      []);
+  return navigator.getInstalledRelatedApps().then(result => {
+    assert_array_relatedapplication_equals(result, []);
+  });
+}, 'getInstalledRelatedApps with related apps, none installed');
+
+installedapp_test((t, mock) => {
+  // The expected input to the Mojo method FilterInstalledRelatedApps is the
+  // list of related_applications from this page's manifest. The mock service
+  // returns just the 'play' entry. Expect that result to be returned by
+  // getInstalledRelatedApps.
+  mock.pushExpectedCall(
+      [{platform: 'play', url: null, id: 'com.test'},
+       {platform: 'itunes', url: 'https://itunes.apple.com/', id: null}],
+      [{platform: 'play', url: null, id: 'com.test'}]);
+
+  return navigator.getInstalledRelatedApps().then(result => {
+    assert_array_relatedapplication_equals(
+        result, [{platform: 'play', id: 'com.test'}]);
+  });
+}, 'getInstalledRelatedApps with related and installed apps (no url)');
+
+installedapp_test((t, mock) => {
+  // The expected input to the Mojo method FilterInstalledRelatedApps is the
+  // list of related_applications from this page's manifest. The mock service
+  // returns both entries. Expect that result to be returned by
+  // getInstalledRelatedApps.
+  mock.pushExpectedCall(
+      [{platform: 'play', url: null, id: 'com.test'},
+       {platform: 'itunes', url: 'https://itunes.apple.com/', id: null}],
+      [{platform: 'play', url: null, id: 'com.test', version: '1.4.2'},
+       {platform: 'itunes', url: 'https://itunes.apple.com/', id: null, version: null}]);
+
+  return navigator.getInstalledRelatedApps().then(result => {
+    assert_array_relatedapplication_equals(
+        result,
+        [{platform: 'play', id: 'com.test', version: '1.4.2'},
+         {platform: 'itunes', url: 'https://itunes.apple.com/'}]);
+  });
+}, 'getInstalledRelatedApps with multiple related and installed apps');
+
+</script>

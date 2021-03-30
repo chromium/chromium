@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
@@ -56,7 +57,9 @@ AudioParamHandler::AudioParamHandler(BaseAudioContext& context,
       min_value_(min_value),
       max_value_(max_value),
       summing_bus_(
-          AudioBus::Create(1, audio_utilities::kRenderQuantumFrames, false)) {
+          AudioBus::Create(1,
+                           GetDeferredTaskHandler().RenderQuantumFrames(),
+                           false)) {
   // An AudioParam needs the destination handler to run the timeline.  But the
   // destination may have been destroyed (e.g. page gone), so the destination is
   // null.  However, if the destination is gone, the AudioParam will never get
@@ -163,7 +166,8 @@ float AudioParamHandler::Value() {
     bool has_value;
     float timeline_value;
     std::tie(has_value, timeline_value) = timeline_.ValueForContextTime(
-        DestinationHandler(), v, MinValue(), MaxValue());
+        DestinationHandler(), v, MinValue(), MaxValue(),
+        GetDeferredTaskHandler().RenderQuantumFrames());
 
     if (has_value)
       v = timeline_value;
@@ -192,7 +196,8 @@ bool AudioParamHandler::Smooth() {
   bool use_timeline_value = false;
   float value;
   std::tie(use_timeline_value, value) = timeline_.ValueForContextTime(
-      DestinationHandler(), IntrinsicValue(), MinValue(), MaxValue());
+      DestinationHandler(), IntrinsicValue(), MinValue(), MaxValue(),
+      GetDeferredTaskHandler().RenderQuantumFrames());
 
   float smoothed_value = timeline_.SmoothedValue();
   if (smoothed_value == value) {
@@ -235,6 +240,49 @@ void AudioParamHandler::CalculateSampleAccurateValues(
   CalculateFinalValues(values, number_of_values, IsAudioRate());
 }
 
+// Replace NaN values in |values| with |default_value|.
+static void HandleNaNValues(float* values,
+                            unsigned number_of_values,
+                            float default_value) {
+  unsigned k = 0;
+#if defined(ARCH_CPU_X86_FAMILY)
+  if (number_of_values >= 4) {
+    __m128 defaults = _mm_set1_ps(default_value);
+    for (k = 0; k < number_of_values; k += 4) {
+      __m128 v = _mm_loadu_ps(values + k);
+      // cmpuord returns all 1's if v is NaN for each elmeent of v.
+      __m128 isnan = _mm_cmpunord_ps(v, v);
+      // Replace NaN parts with default.
+      __m128 result = _mm_and_ps(isnan, defaults);
+      // Merge in the parts that aren't NaN
+      result = _mm_or_ps(_mm_andnot_ps(isnan, v), result);
+      _mm_storeu_ps(values + k, result);
+    }
+  }
+#elif defined(CPU_ARM_NEON)
+  if (number_of_values >= 4) {
+    uint32x4_t defaults = static_cast<uint32x4_t>(vdupq_n_f32(default_value));
+    for (k = 0; k < number_of_values; k += 4) {
+      float32x4_t v = vld1q_f32(values + k);
+      // Returns true (all ones) if v is not NaN
+      uint32x4_t is_not_nan = vceqq_f32(v, v);
+      // Get the parts that are not NaN
+      uint32x4_t result = vandq_u32(is_not_nan, v);
+      // Replace the parts that are NaN with the default and merge with previous
+      // result.  (Note: vbic_u32(x, y) = x and not y)
+      result = vorrq_u32(result, vbicq_u32(defaults, is_not_nan));
+      vst1q_f32(values + k, static_cast<float32x4_t>(result));
+    }
+  }
+#endif
+
+  for (; k < number_of_values; ++k) {
+    if (std::isnan(values[k])) {
+      values[k] = default_value;
+    }
+  }
+}
+
 void AudioParamHandler::CalculateFinalValues(float* values,
                                              unsigned number_of_values,
                                              bool sample_accurate) {
@@ -254,7 +302,8 @@ void AudioParamHandler::CalculateFinalValues(float* values,
     float value = IntrinsicValue();
     float timeline_value;
     std::tie(has_value, timeline_value) = timeline_.ValueForContextTime(
-        DestinationHandler(), value, MinValue(), MaxValue());
+        DestinationHandler(), value, MinValue(), MaxValue(),
+        GetDeferredTaskHandler().RenderQuantumFrames());
 
     if (has_value)
       value = timeline_value;
@@ -269,7 +318,7 @@ void AudioParamHandler::CalculateFinalValues(float* values,
   // together (unity-gain summing junction).  Note that connections would
   // normally be mono, but we mix down to mono if necessary.
   if (NumberOfRenderingConnections() > 0) {
-    DCHECK_LE(number_of_values, audio_utilities::kRenderQuantumFrames);
+    DCHECK_LE(number_of_values, GetDeferredTaskHandler().RenderQuantumFrames());
 
     // If we're not sample accurate, we only need one value, so make the summing
     // bus have length 1.  When the connections are added in, only the first
@@ -283,7 +332,7 @@ void AudioParamHandler::CalculateFinalValues(float* values,
 
       // Render audio from this output.
       AudioBus* connection_bus =
-          output->Pull(nullptr, audio_utilities::kRenderQuantumFrames);
+          output->Pull(nullptr, GetDeferredTaskHandler().RenderQuantumFrames());
 
       // Sum, with unity-gain.
       summing_bus_->SumFrom(*connection_bus);
@@ -297,9 +346,20 @@ void AudioParamHandler::CalculateFinalValues(float* values,
       }
     }
 
-    // Clamp the values now to the nominal range
     float min_value = MinValue();
     float max_value = MaxValue();
+
+    if (NumberOfRenderingConnections() > 0) {
+      // AudioParams by themselves don't produce NaN because of the finite min
+      // and max values.  But an input to an AudioParam could have NaNs.
+      //
+      // NaN values in AudioParams must be replaced by the AudioParam's
+      // defaultValue.  Then these values must be clamped to lie in the nominal
+      // range between the AudioParam's minValue and maxValue.
+      //
+      // See https://webaudio.github.io/web-audio-api/#computation-of-value.
+      HandleNaNValues(values, number_of_values, DefaultValue());
+    }
 
     vector_math::Vclip(values, 1, &min_value, &max_value, values, 1,
                        number_of_values);
@@ -310,7 +370,7 @@ void AudioParamHandler::CalculateTimelineValues(float* values,
                                                 unsigned number_of_values) {
   // Calculate values for this render quantum.  Normally
   // |numberOfValues| will equal to
-  // audio_utilities::kRenderQuantumFrames (the render quantum size).
+  // GetDeferredTaskHandler().RenderQuantumFrames() (the render quantum size).
   double sample_rate = DestinationHandler().SampleRate();
   size_t start_frame = DestinationHandler().CurrentSampleFrame();
   size_t end_frame = start_frame + number_of_values;
@@ -319,7 +379,8 @@ void AudioParamHandler::CalculateTimelineValues(float* values,
   // Pass in the current value as default value.
   SetIntrinsicValue(timeline_.ValuesForFrameRange(
       start_frame, end_frame, IntrinsicValue(), values, number_of_values,
-      sample_rate, sample_rate, MinValue(), MaxValue()));
+      sample_rate, sample_rate, MinValue(), MaxValue(),
+      GetDeferredTaskHandler().RenderQuantumFrames()));
 }
 
 // ----------------------------------------------------------------

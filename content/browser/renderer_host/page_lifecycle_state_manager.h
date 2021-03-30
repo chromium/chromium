@@ -71,6 +71,10 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   void SetIsLeavingBackForwardCache(base::OnceClosure done_cb);
 
+  bool DidReceiveBackForwardCacheAck() const {
+    return did_receive_back_forward_cache_ack_;
+  }
+
   // Whether the renderer is expected to send channel associated IPCs related to
   // this page. E.g. while a page is in the back-forward cache the page should
   // be performing no work and thus not sending any IPCs.
@@ -98,6 +102,8 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   bool is_in_back_forward_cache_ = false;
   bool eviction_enabled_ = false;
+
+  bool did_receive_back_forward_cache_ack_ = false;
 
   // This represents the visibility set by |SetVisibility|, which is web
   // contents visibility state. Effective visibility, i.e. per-page visibility

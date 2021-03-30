@@ -198,8 +198,8 @@ class NavigationManagerImpl : public NavigationManager {
   // matches |url|.  Applies the workaround for crbug.com/997182
   void SetWKWebViewNextPendingUrlNotSerializable(const GURL& url);
 
-  // Returns true if specific URL is blocked from session restore.
-  bool ShouldBlockUrlDuringRestore(const GURL& url);
+  // Returns true if URL was restored via session restoration cache.
+  bool RestoreSessionFromCache(const GURL& url);
 
   // Resets the transient url rewriter list.
   void RemoveTransientURLRewriters();

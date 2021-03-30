@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">ફાઇલ કે ડિરેક્ટરી ઉપયોગ યોગ્ય નથી.</translation>
 <translation id="1363028406613469049">ટ્રૅક</translation>
 <translation id="1378727793141957596">Google ડ્રાઇવ પર આપનું સ્વાગત છે!</translation>
+<translation id="1379911846207762492">તમે કોઈ ઇન્ટરનેટ કનેક્શન ધરાવતા ન હો, ત્યારના માટે તમે ફાઇલોનો ઍક્સેસ ઑફલાઇન ઉપલબ્ધ કરાવી શકો છો.</translation>
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="1395262318152388157">સ્લાઇડર શોધો</translation>
 <translation id="1404323374378969387">નૉર્વેજીયન</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">બધી ફાઇલો</translation>
 <translation id="1810764548349082891">કોઈ પ્રીવ્યૂ ઉપલબ્ધ નથી</translation>
 <translation id="1812302367230252929">એમ્હારિક લિપ્યંતર</translation>
+<translation id="1813278315230285598">સેવાઓ</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ચેતવણી:<ph name="END_BOLD" />  આ ફાઇલો અસ્થાયી છે અને બની શકે કે ડિસ્ક સ્થાન ખાલી કરવા માટે ઑટોમૅટિક રીતે કાઢી નાખવામાં આવે.  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">પેન્ગ્વિન</translation>
 <translation id="183183971458492120">માહિતી લોડ કરી રહ્યું છે...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">આ ફોલ્ડર Linux સાથે શેર થાય છે</translation>
 <translation id="1864756863218646478">ફાઇલ શોધી શકાઈ નથી.</translation>
 <translation id="1920670151694390848">મલયાલમ લિપ્યંતર</translation>
+<translation id="1920798810075583923">તરબૂચ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરી</translation>
 <translation id="1931134289871235022">સ્લોવૅક</translation>
 <translation id="1933345018156373194">ખસેડવું નિષ્ફળ થયું, અનપેક્ષિત ભૂલ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">ફિનિશ</translation>
 <translation id="1942765061641586207">છબી રિઝોલ્યુશન</translation>
-<translation id="1943097386230153518">નવી સેવા ઇન્સ્ટૉલ કરો</translation>
 <translation id="1972984168337863910">ફાઇલોના પ્રતિસાદની પૅનલ મોટી કરો</translation>
+<translation id="1984456723671657197">આ પ્રકારની ફાઇલ ચાલતી નથી. Chrome OS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">ફાઇલના સ્થાન પર જાઓ</translation>
 <translation id="2001796770603320721">ડ્રાઇવમાં મેનેજ કરો</translation>
 <translation id="2009067268969781306">ડ્રાઇવને ફોર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ડિલીટ થઈ જશે. આ છેલ્લા ફેરફારને રદ કરી શકાતો નથી.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">રેકોર્ડ પ્લેયર</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ફાઇલ ખુલી રહી છે.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ફાઇલ ખુલી રહી છે.</translation>
+<translation id="2304820083631266885">ગ્રહ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> બહાર કાઢવામાં આવ્યું છે.</translation>
 <translation id="2325650632570794183">આ ફાઇલ પ્રકાર સમર્થિત નથી. આ પ્રકારની ફાઇલ ખોલી શકે તે એપ્લિકેશનને શોધવા માટે કૃપા કરીને Chrome વેબ દુકાનની મુલાકાત લો.</translation>
 <translation id="2326539130272988168">બલ્ગેરિયન</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">યુએસ આંતરરાષ્ટ્રીય</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">દેડકો</translation>
-<translation id="2572501073504669105">તમારી પાસે ઇન્ટરનેટ કનેક્શન ન હોય, ત્યારે તમે ફાઇલોને ઍક્સેસ માટે ઑફલાઇન ઉપલબ્ધ કરી શકો છો.</translation>
 <translation id="2578394532502990878">તમિળ ફોનેટિક</translation>
 <translation id="2579959351793446050">ઉડિયા</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> વીડિયો</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">ફ્રેન્ચ (કેનેડા)</translation>
 <translation id="3003633581067744647">થંબનેલ દૃશ્ય પર સ્વિચ કરો</translation>
 <translation id="3007214526293698309">ગુણોત્તર ઠીક કરો</translation>
+<translation id="3029114385395636667">Google Docs ઑફલાઇનની સુવિધા ચાલુ કરો જેથી Docs, Sheets અને Slides ઑફલાઇન ઉપલબ્ધ રહી શકે.</translation>
 <translation id="303198083543495566">સ્થાન માહિતી</translation>
 <translation id="3047197340186497470">ચાઇનીઝ ડાયી</translation>
 <translation id="3057861065630527966">તમારા ફોટો અને વિડિઓઝનો બેકઅપ લો</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">રેકોર્ડ કર્યાનું વર્ષ</translation>
 <translation id="3353984535370177728">અપલોડ કરવા માટે એક ફોલ્ડર પસંદ કરો</translation>
 <translation id="3356580349448036450">પૂર્ણ</translation>
+<translation id="3358452157379365236">ગિટાર</translation>
 <translation id="3382143449143186018">નેપાળી, ઇનસ્ક્રિપ્ટ કીબોર્ડ સાથે</translation>
 <translation id="3408236822532681288">જર્મન (જર્મની), નીઓ 2 કીબોર્ડ સાથે</translation>
 <translation id="3414856743105198592">દૂર કરવા યોગ્ય મીડિયાને ફોર્મેટ કરવાથી તમામ ડેટા ભૂંસાઈ જાય છે. શું તમે ચાલુ રાખવા ઈચ્છો છો?</translation>
 <translation id="3437801641691368414">બનાવ્યાનો સમય</translation>
+<translation id="343907260260897561">ઇન્સ્ટન્ટ કૅમેરા</translation>
 <translation id="3455931012307786678">એસ્ટોનિયન</translation>
 <translation id="3466147780910026086">તમારા મીડિયા ઉપકરણને સ્કેન કરી રહ્યું છે...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" /> પર <ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
 <translation id="3475447146579922140">Google સ્પ્રેડશીટ</translation>
+<translation id="3479552764303398839">હમણાં નહીં</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ભૂલો.</translation>
 <translation id="3522708245912499433">પોર્ટુગીઝ</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલ ફોલ્ડરમાં કૉપિ કરો.</translation>
 <translation id="3556731189587832921">અંગ્રેજી (યુએસ), આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
 <translation id="357479282490346887">લિથુનિયન</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" />ને ઑફલાઇન ઉપલબ્ધ કરાવી શકાતી નથી</translation>
 <translation id="3603385196401704894">કેનેડિયન ફ્રેંચ</translation>
 <translation id="3606220979431771195">ટર્કિશ-F</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">યુનિકોર્ન - એક કાલ્પનિક પાંખવાળો ઘોડો</translation>
 <translation id="4158739975813877944">પ્લે લિસ્ટ ખોલો</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ખસેડી.</translation>
+<translation id="4186579485882418952">ઑફલાઇન સુવિધા ચાલુ કરો</translation>
 <translation id="4193154014135846272">Google દસ્તાવેજ</translation>
 <translation id="4197674956721858839">ઝિપ પસંદગી</translation>
 <translation id="4202378258276439759">સ્પેનિશ (લેટિન અમેરિકા)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">સામાન્ય માહિતી</translation>
 <translation id="432252891123397018">રોમાનિયન, માનક કીબોર્ડ સાથે</translation>
 <translation id="4325128273762811722">સ્લોવેનિયન</translation>
+<translation id="4326142238881453352">વનસ્પતિશાસ્ત્રી</translation>
 <translation id="4326192123064055915">કૉફી</translation>
 <translation id="4336032328163998280">કૉપિ ઑપરેશન નિષ્ફળ થયું. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">સોરાની કુર્દિશ, અરબી-આધારિત કીબોર્ડ સાથે</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">તમિળ, ટાઇપરાઇટર કીબોર્ડ સાથે</translation>
 <translation id="4711094779914110278">ટર્કીશ</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" ખોલી રહ્યાં છીએ</translation>
-<translation id="4713544552769165154">આ ફાઇલની રચના Macintosh સૉફ્ટવેરનો ઉપયોગ કરી રહેલ કમ્પ્યુટર માટે કરી છે. આ Chrome OS ચલાવે છે તેવા તમારા ડિવાઇસ સાથે સુસંગત નથી. કૃપા કરીને અનુકૂળ અવેજી ઍપ્લિકેશન માટે <ph name="BEGIN_LINK" />Chrome વેબ સ્ટોર<ph name="END_LINK" /> પર શોધ કરો.<ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
 <translation id="4725511304875193254">કોર્ગી - કૂતરાની એક પ્રજાતિ</translation>
 <translation id="4732760563705710320">માફ કરશો, આ વીડિયો તમારા કાસ્ટ ડિવાઇસ દ્વારા સમર્થિત નથી.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />એક જ સ્થાનમાં ફાઇલ શેર કરો, બનાવો<ph name="MARKUP_8" />
     અને અન્ય લોકો સાથે તેના પર સહયોગ કરો.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ડ્રાઇવમાંથી પુનર્પ્રાપ્ત ફાઇલો</translation>
+<translation id="5288441970121584418">બર્ગર</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318819489018851358">Linux સાથે શેર કરો</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">આ ફાઇલ આમતેમ ક્યાંક પડેલી છે. કૃપા કરીને તમારી ડાઉનલોડ સ્થાન સેટિંગ તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="5838451609423551646">પસંદગીમાંથી બધી એન્ટ્રી કાઢી નાખી.</translation>
 <translation id="5838825566232597749">US Workman આંતરરાષ્ટ્રિય</translation>
-<translation id="5850516540536751549">આ ફાઇલ પ્રકાર સમર્થિત નથી. આ પ્રકારની ફાઇલ ખોલી શકે તે એપ્લિકેશનને શોધવા માટે કૃપા કરીને <ph name="BEGIN_LINK" />Chrome વેબ દુકાન<ph name="END_LINK" />ની મુલાકાત લો.
-	      <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">અહીં જોવા માટે કંઇ નથી...</translation>
 <translation id="5911887972742538906">તમારી Linux ઍપ્લિકેશનના ઇન્સ્ટૉલેશન દરમિયાન ભૂલ આવી.</translation>
 <translation id="5912396950572065471">ફોર્મેટ</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">સબટાઇટલ ચાલુ કરો</translation>
 <translation id="6269630227984243955">મલય</translation>
 <translation id="6287852322318138013">આ ફાઇલ ખોલવા માટે એક ઍપ્લિકેશન પસંદ કરો</translation>
+<translation id="6321303798550928047">હાથ હલાવતું ચિહ્ન</translation>
 <translation id="6339145975392024142">US આંતરરાષ્ટ્રીય (PC)</translation>
 <translation id="6346310558342052870">ઍક્સેસ પ્રતિબંધિત</translation>
 <translation id="6356685157277930264">ફાઇલોનો પ્રતિસાદ આપતી વિંડો</translation>
 <translation id="6358884629796491903">ડ્રેગન</translation>
+<translation id="6367976544441405720">વેન</translation>
 <translation id="637062427944097960">આ ફાઇલને બીજા ડેસ્કટૉપ પર ખોલેલી. તેને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
 <translation id="6394388407447716302">ફક્ત વાંચવા માટે</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> આઇટમ</translation>
@@ -527,6 +537,7 @@
 <translation id="6650726141019353908">ગુલાબી પતંગિયું</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="6673674183150363784">ફ્રેન્ચ (ફ્રાન્સ), Bépo કીબોર્ડ સાથે</translation>
+<translation id="6710022688720561421">રોબોટ</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6751256176799620176">1 ફોલ્ડર પસંદ કર્યું</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6970230597523682626">બલ્ગેરિયન</translation>
 <translation id="6973630695168034713">ફોલ્ડર્સ</translation>
+<translation id="6976795442547527108">સિંહ</translation>
 <translation id="6978611942794658017">આ ફાઇલ Windows સોફ્ટવેરનો ઉપયોગ કરતા PC માટે ડિઝાઇન કરવામાં આવી છે. આ તમારું ડિવાઇસ જે Chrome OS પર ચાલે છે તેની સાથે સુસંગત નથી. કૃપા કરીને યોગ્ય અવેજી ઍપ્લિકેશન માટે Chrome વેબ સ્ટોરમાં શોધો.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">સ્વીડિશ</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">ફારસી લિપ્યંતર</translation>
 <translation id="7544830582642184299">Linux ઍપને તમારી Google Driveમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો. ફેરફારો તમારા બીજા ડિવાઇસ સાથે સિંક થશે.</translation>
 <translation id="7544853251252956727">શફલ કરો</translation>
+<translation id="7547009467130558110">સ્નીકર</translation>
 <translation id="7547780573915868306">લિથુએનિયન</translation>
 <translation id="7547811415869834682">ડચ</translation>
 <translation id="7551643184018910560">શેલ્ફ પર પિન કરો</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% પૂર્ણ.</translation>
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ખસેડી રહ્યું છે...</translation>
+<translation id="7655441028674523381">Google Photos સરળતાથી ઍક્સેસ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7663224033570512922">હિન્દી</translation>
 <translation id="7693909743393669729">ડ્રાઇવને ફૉર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ભૂંસાઈ જશે અને કદાચ દેખાતા ન હોય તેવા વિભાગો સહિત હાલના બધા વિભાગો કાઢી નખાશે. આ ક્રિયા રદ કરી શકાતી નથી.</translation>
@@ -649,7 +663,6 @@
 <translation id="7839804798877833423">આ ફાઇલોને આનયન કરવું લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ કરશે.</translation>
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
 <translation id="7853966320808728790">ફ્રેંચ BÉPO</translation>
-<translation id="7864662577698025113">નવી સેવા ઉમેરો</translation>
 <translation id="7868774406711971383">પોલિશ</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> પર સાચવી શકતા નથી. બધા ફેરફારો <ph name="DOWNLOADS_FOLDER" /> ડાઉનલોડ ફોલ્ડરમાં સાચવવામાં આવશે.</translation>
 <translation id="7874321682039004450">ફિલિપિનો</translation>
@@ -664,13 +677,13 @@
 <translation id="7972920761225148017">ફ્રેન્ચ (સ્વિટ્ઝર્લૅન્ડ)</translation>
 <translation id="7980421588063892270">અંગ્રેજી (યુએસ), Colemak કીબોર્ડ સાથે</translation>
 <translation id="7982283708762922719">ઊંચાઈ</translation>
+<translation id="79907182588096956">આ ફાઇલ Windows સૉફ્ટવેરનો ઉપયોગ કરતા PC માટે ડિઝાઇન કરવામાં આવી છે. Chrome OS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. Chrome OS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">કૂતરો</translation>
 <translation id="8028993641010258682">કદ</translation>
 <translation id="803771048473350947">ફાઇલ</translation>
 <translation id="8038111231936746805">(ડિફૉલ્ટ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ઑડિયો</translation>
 <translation id="8045462269890919536">રોમાનિયન</translation>
-<translation id="8052887694493382350">આ ફાઇલ Windows સૉફ્ટવેરનો ઉપયોગ કરતા PC માટે ડિઝાઇન કરવામાં આવી છે. Chrome OS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594"><ph name="DOWNLOADS_FOLDER" /> પર બધા ફેરફાર સાચવવામાં આવશે.</translation>
 <translation id="8079530767338315840">પુનરાવર્તન કરો</translation>
 <translation id="8106045200081704138">મારી સાથે શેર કરેલા</translation>
@@ -710,6 +723,7 @@
 <translation id="8466234950814670489">તાર આર્કાઇવ</translation>
 <translation id="8475647382427415476">Google ડ્રાઇવ "<ph name="FILENAME" />" ને અત્યારે જ સમન્વયિત કરવા અસમર્થ હતી. Google ડ્રાઇવ પછી ફરીથી પ્રયાસ કરશે.</translation>
 <translation id="8477649328507734757">સ્પિન</translation>
+<translation id="8484284835977497781">તમારા તાજેતરના ફોટામાંથી પસંદ કરો.</translation>
 <translation id="8487700953926739672">ઑફલાઇન ઉપલબ્ધ</translation>
 <translation id="8521441079177373948">યુકે</translation>
 <translation id="8525306231823319788">પૂર્ણ સ્ક્રીન</translation>
@@ -742,8 +756,10 @@
 <translation id="8860454412039442620">Excel સ્પ્રેડશીટ</translation>
 <translation id="8866284467018526531">અરબી લિપ્યંતર</translation>
 <translation id="8900820606136623064">હંગેરિયન</translation>
+<translation id="8903931173357132290">સ્નાતક</translation>
 <translation id="8919081441417203123">ડેનિશ</translation>
 <translation id="8965697826696209160">પર્યાપ્ત સ્થાન નથી.</translation>
+<translation id="8970501467542182729">આ ફાઇલ Macintosh સૉફ્ટવેરનો ઉપયોગ કરી રહેલા કમ્પ્યુટર માટે ડિઝાઇન કરવામાં આવી છે. Chrome OS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. Chrome OS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">ચાઇનીઝ (પરંપરાગત) પિનયિન</translation>
 <translation id="9017798300203431059">રશિયન ધ્વન્યાત્મક</translation>
 <translation id="9034924485347205037">Linux ફાઇલો</translation>

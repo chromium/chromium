@@ -26,39 +26,40 @@ ContactFormLabelFormatter::~ContactFormLabelFormatter() {}
 // Note that the order--name, phone, and email--in which parts of the label
 // are possibly added ensures that the label is formatted correctly for
 // |focused_group| and for this kind of formatter.
-base::string16 ContactFormLabelFormatter::GetLabelForProfile(
+std::u16string ContactFormLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
-  std::vector<base::string16> label_parts;
-  if (focused_group != NAME && data_util::ContainsName(groups())) {
+  std::vector<std::u16string> label_parts;
+  if (focused_group != FieldTypeGroup::kName &&
+      data_util::ContainsName(groups())) {
     AddLabelPartIfNotEmpty(
         GetLabelName(field_types_for_labels(), profile, app_locale()),
         &label_parts);
   }
 
-  if (focused_group != PHONE_HOME) {
+  if (focused_group != FieldTypeGroup::kPhoneHome) {
     AddLabelPartIfNotEmpty(MaybeGetPhone(profile), &label_parts);
   }
 
-  if (focused_group != EMAIL) {
+  if (focused_group != FieldTypeGroup::kEmail) {
     AddLabelPartIfNotEmpty(MaybeGetEmail(profile), &label_parts);
   }
 
   return ConstructLabelLine(label_parts);
 }
 
-base::string16 ContactFormLabelFormatter::MaybeGetEmail(
+std::u16string ContactFormLabelFormatter::MaybeGetEmail(
     const AutofillProfile& profile) const {
   return data_util::ContainsEmail(groups())
              ? GetLabelEmail(profile, app_locale())
-             : base::string16();
+             : std::u16string();
 }
 
-base::string16 ContactFormLabelFormatter::MaybeGetPhone(
+std::u16string ContactFormLabelFormatter::MaybeGetPhone(
     const AutofillProfile& profile) const {
   return data_util::ContainsPhone(groups())
              ? GetLabelPhone(profile, app_locale())
-             : base::string16();
+             : std::u16string();
 }
 
 }  // namespace autofill

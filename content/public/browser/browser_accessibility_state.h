@@ -14,6 +14,8 @@
 
 namespace content {
 
+struct FocusedNodeDetails;
+
 // The BrowserAccessibilityState class is used to determine if the browser
 // should be customized for users with assistive technology, such as screen
 // readers.
@@ -83,6 +85,14 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   virtual void SetImageLabelsModeForProfile(bool enabled,
                                             BrowserContext* profile) = 0;
 #endif
+
+  using FocusChangedCallback =
+      base::RepeatingCallback<void(const FocusedNodeDetails&)>;
+
+  // Registers a callback method that is called whenever the focused element
+  // has changed inside a WebContents.
+  virtual base::CallbackListSubscription RegisterFocusChangedCallback(
+      FocusChangedCallback callback) = 0;
 };
 
 }  // namespace content

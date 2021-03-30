@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_coordinate_system.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -84,18 +85,18 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Only text displayed on screen is included. Text from ARIA and HTML
   // attributes that is either not displayed on screen, or outside this node,
   // e.g. aria-label and HTML title, is not returned.
-  virtual base::string16 GetInnerText() const = 0;
+  virtual std::u16string GetInnerText() const = 0;
 
   // Returns the value of a control such as a text field, a slider, a <select>
   // element, a date picker or an ARIA combo box. In order to minimize
   // cross-process communication between the renderer and the browser, may
   // compute the value from the control's inner text in the case of a text
   // field.
-  virtual base::string16 GetValueForControl() const = 0;
+  virtual std::u16string GetValueForControl() const = 0;
 
   // Get the unignored selection from the tree, meaning the selection whose
   // endpoints are on unignored nodes. (An ignored node means that the node
-  // should not be exposed to platform APIs: See "IsInvisibleOrIgnored".)
+  // should not be exposed to platform APIs: See `IsInvisibleOrIgnored`.)
   virtual const AXTree::Selection GetUnignoredSelection() const = 0;
 
   // Creates a text position rooted at this object.
@@ -124,7 +125,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // should return the number of unignored children. All ignored nodes are
   // recursively removed from the children count. (An ignored node means that
   // the node should not be exposed to platform APIs: See
-  // "IsInvisibleOrIgnored".)
+  // `IsInvisibleOrIgnored`.)
   virtual int GetChildCount() const = 0;
 
   // Get a child of a node given a 0-based index.
@@ -132,7 +133,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Note that for accessibility trees that have ignored nodes, this method
   // returns only unignored children. All ignored nodes are recursively removed.
   // (An ignored node means that the node should not be exposed to platform
-  // APIs: See "IsInvisibleOrIgnored".)
+  // APIs: See `IsInvisibleOrIgnored`.)
   virtual gfx::NativeViewAccessible ChildAtIndex(int index) = 0;
 
   // Returns true if it has a modal dialog.
@@ -178,9 +179,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual bool IsToplevelBrowserWindow() = 0;
 
   // If this object is exposed to the platform's accessibility layer, returns
-  // this object. Otherwise, returns the platform leaf under which this object
-  // is found.
-  virtual gfx::NativeViewAccessible GetClosestPlatformObject() const = 0;
+  // this object. Otherwise, returns the platform leaf or lowest unignored
+  // ancestor under which this object is found.
+  //
+  // (An ignored node means that the node should not be exposed to platform
+  // APIs: See `IsInvisibleOrIgnored`.)
+  virtual gfx::NativeViewAccessible GetLowestPlatformAncestor() const = 0;
 
   class ChildIterator {
    public:
@@ -207,7 +211,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Returns the text of this node and represent the text of descendant nodes
   // with a special character in place of every embedded object. This represents
   // the concept of text in ATK and IA2 APIs.
-  virtual base::string16 GetHypertext() const = 0;
+  virtual std::u16string GetHypertext() const = 0;
 
   // Set the selection in the hypertext of this node. Depending on the
   // implementation, this may mean the new selection will span multiple nodes.
@@ -334,7 +338,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // any instance of the application, regardless of locale. The author ID should
   // be unique among sibling accessibility nodes and is best if unique across
   // the application, however, not meeting this requirement is non-fatal.
-  virtual base::string16 GetAuthorUniqueId() const = 0;
+  virtual std::u16string GetAuthorUniqueId() const = 0;
 
   virtual const AXUniqueId& GetUniqueId() const = 0;
 
@@ -413,6 +417,10 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual base::Optional<int> GetPosInSet() const = 0;
   virtual base::Optional<int> GetSetSize() const = 0;
 
+  // Computed colors, taking blending into account.
+  virtual SkColor GetColor() const = 0;
+  virtual SkColor GetBackgroundColor() const = 0;
+
   //
   // Events.
   //
@@ -433,13 +441,13 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Localized strings.
   //
 
-  virtual base::string16 GetLocalizedRoleDescriptionForUnlabeledImage()
+  virtual std::u16string GetLocalizedRoleDescriptionForUnlabeledImage()
       const = 0;
-  virtual base::string16 GetLocalizedStringForImageAnnotationStatus(
+  virtual std::u16string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const = 0;
-  virtual base::string16 GetLocalizedStringForLandmarkType() const = 0;
-  virtual base::string16 GetLocalizedStringForRoleDescription() const = 0;
-  virtual base::string16 GetStyleNameAttributeAsLocalizedString() const = 0;
+  virtual std::u16string GetLocalizedStringForLandmarkType() const = 0;
+  virtual std::u16string GetLocalizedStringForRoleDescription() const = 0;
+  virtual std::u16string GetStyleNameAttributeAsLocalizedString() const = 0;
 
   //
   // Testing.

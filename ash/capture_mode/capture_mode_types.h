@@ -20,6 +20,19 @@ enum class CaptureModeSource {
   kWindow,
 };
 
+// Specifies the capture mode allowance types.
+enum class CaptureAllowance {
+  // Capture mode is allowed.
+  kAllowed,
+  // Capture mode is blocked due to admin-enforced Data Leak Prevention policy.
+  kDisallowedByDlp,
+  // Capture mode is blocked due to admin-enforced device policy.
+  kDisallowedByPolicy,
+  // Video recording is blocked due to app- or content- enforced content
+  // protection. Applies only to video recording.
+  kDisallowedByHdcp
+};
+
 // The position of the press event during the fine tune phase of a region
 // capture session. This will determine what subsequent drag events do to the
 // select region.

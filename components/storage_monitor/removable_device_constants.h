@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_STORAGE_MONITOR_REMOVABLE_DEVICE_CONSTANTS_H_
 #define COMPONENTS_STORAGE_MONITOR_REMOVABLE_DEVICE_CONSTANTS_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 
 namespace storage_monitor {
@@ -21,7 +22,7 @@ extern const char kVendorModelVolumeStoragePrefix[];
 
 #if defined(OS_WIN)
 // Windows portable device interface GUID constant.
-extern const base::char16 kWPDDevInterfaceGUID[];
+extern const wchar_t kWPDDevInterfaceGUID[];
 #endif
 
 extern const base::FilePath::CharType kDCIMDirectoryName[];

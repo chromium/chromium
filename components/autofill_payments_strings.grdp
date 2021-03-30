@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
-  <message name="IDS_AUTOFILL_SYNC_PROMO_MESSAGE" desc="Promo message for Sign-in Promo bubble (shown after a local save) to get people to sync.">
-    To use your cards on all devices, turn on sync.
-  </message>
-
   <if expr="not use_titlecase">
     <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_LOCAL_SAVE" desc="The label for cancel button used in autofill credit card local save bubble on desktop.">
       No thanks
@@ -317,6 +313,9 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION" desc="Accessible description for the CVC image. It should describe where to find the CVC on a credit card.">
       The CVC is located behind your card.
     </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_GOOGLE_ISSUED_CARD" desc="Text explaining what the user should do in the card unmasking dialog for a GooglePay Plex card." formatter_data="android">
+      After you confirm, card details from your Google Account will be shared with this site. Find the CVC in your Plex Account details.
+    </message>
   </if>
   <if expr="is_ios">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
@@ -509,5 +508,26 @@
   <message name="IDS_AUTOFILL_OFFERS_CASHBACK" desc="Displays that a cashback offer will be rewarded if credit card is used on current page. Part of Autofill suggestions popup.">
     Cashback linked
   </message>
-
+  <message name="IDS_AUTOFILL_OFFERS_REMINDER_TITLE" desc="Title of the bubble/infobar shown on the merchant website when an offer is available to use.">
+    Google Pay offer available
+  </message>
+  <message name="IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL" desc="Label for the positive button for the bubble/infobar shown on the merchant website when an offer is available to use.">
+    Got it
+  </message>
+  <if expr="not is_ios and not is_android">
+    <message name="IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT" desc="Secondary explanatory text for the Desktop bubble shown on the merchant website when an offer is available to use.">
+      Pay with <ph name="CARD_DETAIL">$1<ex>Visa - 1234</ex></ph> at checkout
+    </message>
+    <message name="IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT" desc="The tooltip text for the offer icon in the location bar.">
+      Google Pay offer available
+    </message>
+  </if>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT" desc="Secondary explanatory text for the Clank infobar shown on the merchant website when an offer is available to use." formatter_data="android_java">
+      Pay with <ph name="CARD_DETAIL">%1$s<ex>Visa - 1234</ex></ph> at checkout.
+    </message>
+    <message name="IDS_AUTOFILL_OFFERS_REMINDER_DEEP_LINK_TEXT" desc="Text to be linked to take the user to the offer in the Google Pay app." formatter_data="android_java">
+      See details
+    </message>
+  </if>
 </grit-part>

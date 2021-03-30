@@ -10,6 +10,17 @@ from views_generator import ViewsStyleGenerator
 from base_generator import Modes
 
 
+def parseGeneratorOptionList(options):
+    result = {}
+    if options is None:
+        return result
+    for key_value_pair in options:
+        key, value = key_value_pair.split("=", 1)
+        key = key.strip()
+        result[key] = value
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Generate style variables from JSON5 color file.')
@@ -27,6 +38,12 @@ def main():
                         choices=Modes.ALL,
                         help='generates output for a single mode')
     parser.add_argument('--out-file', help='file to write output to')
+    parser.add_argument("--generator-option",
+                        metavar="KEY=VALUE",
+                        action="append",
+                        help="Set a option specific to the selected generator"
+                        "via a key value pair. See the README.md for a"
+                        "full list of generator specific options.")
     parser.add_argument('targets', nargs='+', help='source json5 color files')
 
     args = parser.parse_args()
@@ -40,6 +57,8 @@ def main():
 
     style_generator.generate_single_mode = args.generate_single_mode
     style_generator.out_file_path = args.out_file
+    style_generator.generator_options = parseGeneratorOptionList(
+        args.generator_option)
 
     if args.out_file:
         with open(args.out_file, 'w') as f:

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -62,7 +63,7 @@ double MediaValues::CalculateViewportHeight(LocalFrame* frame) {
 
 int MediaValues::CalculateDeviceWidth(LocalFrame* frame) {
   DCHECK(frame && frame->View() && frame->GetSettings() && frame->GetPage());
-  blink::ScreenInfo screen_info =
+  const ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
   int device_width = screen_info.rect.width();
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
@@ -74,7 +75,7 @@ int MediaValues::CalculateDeviceWidth(LocalFrame* frame) {
 
 int MediaValues::CalculateDeviceHeight(LocalFrame* frame) {
   DCHECK(frame && frame->View() && frame->GetSettings() && frame->GetPage());
-  blink::ScreenInfo screen_info =
+  const ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
   int device_height = screen_info.rect.height();
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
@@ -97,7 +98,7 @@ float MediaValues::CalculateDevicePixelRatio(LocalFrame* frame) {
 int MediaValues::CalculateColorBitsPerComponent(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetPage());
-  ScreenInfo screen_info =
+  const ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
   if (screen_info.is_monochrome)
     return 0;
@@ -107,7 +108,7 @@ int MediaValues::CalculateColorBitsPerComponent(LocalFrame* frame) {
 int MediaValues::CalculateMonochromeBitsPerComponent(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetPage());
-  ScreenInfo screen_info =
+  const ScreenInfo& screen_info =
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame);
   if (!screen_info.is_monochrome)
     return 0;
@@ -179,6 +180,19 @@ int MediaValues::CalculateAvailableHoverTypes(LocalFrame* frame) {
 ColorSpaceGamut MediaValues::CalculateColorGamut(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetPage());
+  if (const auto* overrides = frame->GetPage()->GetMediaFeatureOverrides()) {
+    MediaQueryExpValue value = overrides->GetOverride("color-gamut");
+    if (value.IsValid()) {
+      if (value.id == CSSValueID::kSRGB)
+        return ColorSpaceGamut::SRGB;
+      if (value.id == CSSValueID::kP3)
+        return ColorSpaceGamut::P3;
+      // Rec. 2020 is also known as ITU-R-Empfehlung BT.2020.
+      if (value.id == CSSValueID::kRec2020)
+        return ColorSpaceGamut::BT2020;
+      NOTREACHED();
+    }
+  }
   return color_space_utilities::GetColorSpaceGamut(
       frame->GetPage()->GetChromeClient().GetScreenInfo(*frame));
 }
@@ -244,28 +258,28 @@ ScreenSpanning MediaValues::CalculateScreenSpanning(LocalFrame* frame) {
   if (!frame->GetWidgetForLocalRoot())
     return ScreenSpanning::kNone;
 
-  WebVector<WebRect> window_segments =
+  WebVector<gfx::Rect> window_segments =
       frame->GetWidgetForLocalRoot()->WindowSegments();
 
   if (window_segments.size() == 2) {
     // If there are two segments and the y value of the segments is the same,
     // we have side-by-side segments which are represented as a single vertical
     // fold.
-    if (window_segments[0].y == window_segments[1].y)
+    if (window_segments[0].y() == window_segments[1].y())
       return ScreenSpanning::kSingleFoldVertical;
 
     // If the x value of the segments is the same, we have stacked segments
     // which are represented as a single horizontal fold.
-    if (window_segments[0].x == window_segments[1].x)
+    if (window_segments[0].x() == window_segments[1].x())
       return ScreenSpanning::kSingleFoldHorizontal;
   }
 
   return ScreenSpanning::kNone;
 }
 
-ScreenFoldPosture MediaValues::CalculateScreenFoldPosture(LocalFrame* frame) {
+DevicePosture MediaValues::CalculateDevicePosture(LocalFrame* frame) {
   // TODO(darktears): Retrieve information from the host.
-  return ScreenFoldPosture::kNoFold;
+  return DevicePosture::kNoFold;
 }
 
 bool MediaValues::ComputeLengthImpl(double value,

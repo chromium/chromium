@@ -1061,7 +1061,7 @@ void FakeShillManagerClient::CallNotifyObserversPropertyChanged(
     const std::string& property) {
   // Avoid unnecessary delayed task if we have no observers (e.g. during
   // initial setup).
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -1146,6 +1146,14 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
     }
   }
   return new_service_list;
+}
+
+void FakeShillManagerClient::ClearProfiles() {
+  if (GetListProperty(shill::kProfilesProperty)->empty()) {
+    return;
+  }
+  GetListProperty(shill::kProfilesProperty)->ClearList();
+  CallNotifyObserversPropertyChanged(shill::kProfilesProperty);
 }
 
 void FakeShillManagerClient::ScanCompleted(const std::string& device_path) {

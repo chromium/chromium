@@ -28,7 +28,8 @@ class FakeArCore : public ArCore {
           required_features,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           optional_features,
-      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images)
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+      base::Optional<ArCore::DepthSensingConfiguration> depth_sensing_config)
       override;
   MinMaxRange GetTargetFramerateRange() override;
   void SetCameraTexture(uint32_t texture) override;

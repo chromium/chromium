@@ -37,6 +37,8 @@ source_set("v4l2") {
     "v4l2_device_poller.h",
     "v4l2_h264_accelerator.cc",
     "v4l2_h264_accelerator.h",
+    "v4l2_h264_accelerator_chromium.cc",
+    "v4l2_h264_accelerator_chromium.h",
     "v4l2_h264_accelerator_legacy.cc",
     "v4l2_h264_accelerator_legacy.h",
     "v4l2_image_processor_backend.cc",
@@ -45,6 +47,8 @@ source_set("v4l2") {
     "v4l2_slice_video_decode_accelerator.h",
     "v4l2_stateful_workaround.cc",
     "v4l2_stateful_workaround.h",
+    "v4l2_utils.cc",
+    "v4l2_utils.h",
     "v4l2_vda_helpers.cc",
     "v4l2_vda_helpers.h",
     "v4l2_video_decode_accelerator.cc",
@@ -71,13 +75,6 @@ source_set("v4l2") {
     "EGL",
     "GLESv2",
   ]
-
-  if (current_cpu == "arm") {
-    sources += [
-      "tegra_v4l2_device.cc",
-      "tegra_v4l2_device.h",
-    ]
-  }
 
   if (use_v4l2_codec_aml) {
     sources += [

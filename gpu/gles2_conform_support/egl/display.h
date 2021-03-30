@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 
+namespace gles2_conform_support {
 namespace egl {
 
 class Config;
@@ -104,5 +105,6 @@ class Display {
 };
 
 }  // namespace egl
+}  // namespace gles2_conform_support
 
 #endif  // GPU_GLES2_CONFORM_SUPPORT_EGL_DISPLAY_H_

@@ -170,8 +170,10 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedWhenRendererIsKilled) {
   // Need to enable back-forward cache to make sure a page is put into the
   // cache.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kBackForwardCache}, {});
-
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kBackForwardCache, {}}},
+      // Allow BackForwardCache for all devices regardless of their memory.
+      {features::kBackForwardCacheMemoryControls});
   base::HistogramTester histogram_tester;
 
   const GURL url1("http://foo1");

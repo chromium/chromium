@@ -10,12 +10,12 @@ import {assert} from './chrome_util.js';
 export class OneShotTimer {
   /**
    * The parameters are same as the parameters of setTimeout().
-   * @param {function()} handler
+   * @param {function(): void} handler
    * @param {number} timeout
    */
   constructor(handler, timeout) {
     /**
-     * @type {function()}
+     * @type {function(): void}
      * @const
      * @private
      */

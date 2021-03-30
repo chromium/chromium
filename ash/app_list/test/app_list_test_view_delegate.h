@@ -62,16 +62,13 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   SearchModel* GetSearchModel() override;
   bool KeyboardTraversalEngaged() override;
   void StartAssistant() override {}
-  void StartSearch(const base::string16& raw_query) override {}
+  void StartSearch(const std::u16string& raw_query) override {}
   void OpenSearchResult(const std::string& result_id,
                         int event_flags,
                         ash::AppListLaunchedFrom launched_from,
                         ash::AppListLaunchType launch_type,
                         int suggestion_index,
                         bool launch_as_default) override;
-  void LogResultLaunchHistogram(SearchResultLaunchLocation launch_location,
-                                int suggestion_index) override {}
-  void LogSearchAbandonHistogram() override {}
   void InvokeSearchResultAction(const std::string& result_id,
                                 int action_index) override {}
   void GetSearchResultContextMenuModel(
@@ -98,7 +95,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override;
   void NotifySearchResultsForLogging(
-      const base::string16& raw_query,
+      const std::u16string& raw_query,
       const ash::SearchResultIdWithPositionIndices& results,
       int position_index) override;
   void MaybeIncreaseSuggestedContentInfoShownCount() override;

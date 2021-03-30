@@ -5,8 +5,10 @@
 #ifndef CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_
 #define CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_
 
+#include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
+#include "third_party/blink/public/platform/web_vector.h"
 
 namespace content {
 
@@ -15,13 +17,21 @@ namespace content {
 // in blink.
 // TODO(arthursonzogni): Remove this when BeginNavigation IPC will be called
 // directly from blink.
+CONTENT_EXPORT
 network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
     const blink::WebContentSecurityPolicy&);
 
-// TODO(arthursonzogni): Remove this when BeginNavigation IPC will be called
-// directly from blink.
-network::mojom::CSPSourcePtr BuildCSPSource(
-    const blink::WebContentSecurityPolicySourceExpression&);
+// Convert a ContentSecurityPolicy into a WebContentSecurityPolicy. These two
+// classes represent the exact same thing, but one is in content, the other is
+// in blink.
+CONTENT_EXPORT
+blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
+    network::mojom::ContentSecurityPolicyPtr);
+
+// Helper function to perform ToWebContentSecurityPolicy on an array.
+CONTENT_EXPORT
+blink::WebVector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(
+    std::vector<network::mojom::ContentSecurityPolicyPtr>);
 
 }  // namespace content
 

@@ -146,7 +146,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 
   // Align size as required by ashmem_create_region() API documentation. This
   // operation may overflow so check that the result doesn't decrease.
-  size_t rounded_size = bits::Align(size, GetPageSize());
+  size_t rounded_size = bits::AlignUp(size, GetPageSize());
   if (rounded_size < size ||
       rounded_size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};

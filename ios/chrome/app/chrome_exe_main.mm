@@ -7,11 +7,9 @@
 #include "base/at_exit.h"
 #include "base/debug/crash_logging.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/crash/core/common/crash_keys.h"
 #include "ios/chrome/app/startup/ios_chrome_main.h"
 #include "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
-#include "ios/chrome/common/channel_info.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/testing/perf/startupLoggers.h"
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -28,10 +26,7 @@ NSString* const kUIApplicationDelegateInfoKey = @"UIApplicationDelegate";
 
 void StartCrashController() {
   @autoreleasepool {
-    std::string channel_string = GetChannelString();
-    breakpad_helper::AddReportParameter(
-        @"channel", base::SysUTF8ToNSString(channel_string), false);
-    breakpad_helper::Start(channel_string);
+    crash_helper::Start();
   }
 }
 

@@ -7,6 +7,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/bits.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -168,68 +169,83 @@ TEST_F(AddressPoolManagerTest, DecommittedDataIsErased) {
 
 #else   // defined(PA_HAS_64_BITS_POINTERS)
 
-TEST_F(AddressPoolManagerTest, IsManagedByDirectMapPool) {
+TEST_F(AddressPoolManagerTest, IsManagedByNonBRPPool) {
   constexpr size_t kAllocCount = 8;
   static const size_t kNumPages[kAllocCount] = {1, 4, 7, 8, 13, 16, 31, 60};
   void* addrs[kAllocCount];
   for (size_t i = 0; i < kAllocCount; ++i) {
     addrs[i] = AddressPoolManager::GetInstance()->Reserve(
-        GetDirectMapPool(), nullptr,
-        PageAllocationGranularity() * kNumPages[i]);
+        GetNonBRPPool(), nullptr, PageAllocationGranularity() * kNumPages[i]);
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(
         !(reinterpret_cast<uintptr_t>(addrs[i]) & kSuperPageOffsetMask));
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
     const char* ptr = reinterpret_cast<const char*>(addrs[i]);
-    size_t num_pages = bits::Align(kNumPages[i] * PageAllocationGranularity(),
-                                   kSuperPageSize) /
+    size_t num_pages = bits::AlignUp(kNumPages[i] * PageAllocationGranularity(),
+                                     kSuperPageSize) /
                        PageAllocationGranularity();
     for (size_t j = 0; j < num_pages; ++j) {
       if (j < kNumPages[i]) {
-        EXPECT_TRUE(AddressPoolManager::IsManagedByDirectMapPool(ptr));
+        EXPECT_TRUE(AddressPoolManager::IsManagedByNonBRPPool(ptr));
       } else {
-        EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(ptr));
+        EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(ptr));
       }
-      EXPECT_FALSE(AddressPoolManager::IsManagedByNormalBucketPool(ptr));
+      EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(ptr));
       ptr += PageAllocationGranularity();
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
     AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-        GetDirectMapPool(), addrs[i],
-        PageAllocationGranularity() * kNumPages[i]);
-    EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(addrs[i]));
-    EXPECT_FALSE(AddressPoolManager::IsManagedByNormalBucketPool(addrs[i]));
+        GetNonBRPPool(), addrs[i], PageAllocationGranularity() * kNumPages[i]);
+    EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(addrs[i]));
+    EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
   }
 }
 
-TEST_F(AddressPoolManagerTest, IsManagedByNormalBucketPool) {
+TEST_F(AddressPoolManagerTest, IsManagedByBRPPool) {
   constexpr size_t kAllocCount = 4;
   // Totally (1+3+7+11) * 2MB = 44MB allocation
   static const size_t kNumPages[kAllocCount] = {1, 3, 7, 11};
   void* addrs[kAllocCount];
   for (size_t i = 0; i < kAllocCount; ++i) {
     addrs[i] = AddressPoolManager::GetInstance()->Reserve(
-        GetNormalBucketPool(), nullptr, kSuperPageSize * kNumPages[i]);
+        GetBRPPool(), nullptr, kSuperPageSize * kNumPages[i]);
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(
         !(reinterpret_cast<uintptr_t>(addrs[i]) & kSuperPageOffsetMask));
   }
+
+  constexpr size_t first_guard_size =
+      AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
+      AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap;
+  constexpr size_t last_guard_size =
+      AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
+      (AddressPoolManagerBitmap::kGuardBitsOfBRPPoolBitmap -
+       AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap);
+
   for (size_t i = 0; i < kAllocCount; ++i) {
-    const char* ptr = reinterpret_cast<const char*>(addrs[i]);
-    size_t num_system_pages = kNumPages[i] * kSuperPageSize / SystemPageSize();
+    const char* base_ptr = reinterpret_cast<const char*>(addrs[i]);
+    const char* ptr = base_ptr;
+    size_t num_allocated_size = kNumPages[i] * kSuperPageSize;
+    size_t num_system_pages = num_allocated_size / SystemPageSize();
     for (size_t j = 0; j < num_system_pages; ++j) {
-      EXPECT_TRUE(AddressPoolManager::IsManagedByNormalBucketPool(ptr));
-      EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(ptr));
+      size_t offset = ptr - base_ptr;
+      if (offset < first_guard_size ||
+          offset >= (num_allocated_size - last_guard_size)) {
+        EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(ptr));
+      } else {
+        EXPECT_TRUE(AddressPoolManager::IsManagedByBRPPool(ptr));
+      }
+      EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(ptr));
       ptr += SystemPageSize();
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
     AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-        GetNormalBucketPool(), addrs[i], kSuperPageSize * kNumPages[i]);
-    EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(addrs[i]));
-    EXPECT_FALSE(AddressPoolManager::IsManagedByNormalBucketPool(addrs[i]));
+        GetBRPPool(), addrs[i], kSuperPageSize * kNumPages[i]);
+    EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(addrs[i]));
+    EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
   }
 }
 #endif  // defined(PA_HAS_64_BITS_POINTERS)

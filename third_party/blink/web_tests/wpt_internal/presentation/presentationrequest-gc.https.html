@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+var presentationUrl = "https://example.com";
+var presentationUrls = [presentationUrl, "cast://google.com/app_id=deadbeef"];
+
+async_test(function(t) {
+  Promise.resolve().then(_ => { gc(); });
+  var request = new PresentationRequest(presentationUrl);
+  request.getAvailability().then(_ => { t.done(); });
+}, "Test that a PresentationRequest is not garbage collected while getAvailability() is pending.");
+
+var testGarbageCollection = function(requestArgument) {
+  navigator.presentation.defaultRequest = new PresentationRequest(requestArgument);
+  navigator.presentation.defaultRequest.onconnectionavailable = function() {  };
+  gc();
+  assert_not_equals(navigator.presentation.defaultRequest.onconnectionavailable, undefined);
+};
+
+test(function() {
+  testGarbageCollection(presentationUrl);
+}, "Test that navigator.presentation.defaultRequest.onconnectionavailable with one URL isn't reset after gc().");
+
+test(function() {
+  testGarbageCollection(presentationUrls);
+}, "Test that navigator.presentation.defaultRequest.onconnectionavailable with multiple URLs isn't reset after gc().");
+
+
+
+</script>
+</body>
+</html>

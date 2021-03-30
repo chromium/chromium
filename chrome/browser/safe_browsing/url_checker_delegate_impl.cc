@@ -9,12 +9,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/triggers/suspicious_site_trigger.h"
@@ -35,16 +35,19 @@
 namespace safe_browsing {
 namespace {
 
-// Destroys the prerender contents associated with the web_contents, if any.
-void DestroyPrerenderContents(
+// Destroys the NoStatePrefetch contents associated with the web_contents, if
+// any.
+void DestroyNoStatePrefetchContents(
     content::WebContents::OnceGetter web_contents_getter) {
   content::WebContents* web_contents = std::move(web_contents_getter).Run();
   if (web_contents) {
-    prerender::PrerenderContents* prerender_contents =
-        prerender::ChromePrerenderContentsDelegate::FromWebContents(
+    prerender::NoStatePrefetchContents* no_state_prefetch_contents =
+        prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
             web_contents);
-    if (prerender_contents)
-      prerender_contents->Destroy(prerender::FINAL_STATUS_SAFE_BROWSING);
+    if (no_state_prefetch_contents) {
+      no_state_prefetch_contents->Destroy(
+          prerender::FINAL_STATUS_SAFE_BROWSING);
+    }
   }
 }
 
@@ -56,7 +59,7 @@ void CreateSafeBrowsingUserInteractionObserver(
   content::WebContents* web_contents = web_contents_getter.Run();
   // Don't delay the interstitial for prerender pages and portals.
   if (!web_contents ||
-      prerender::ChromePrerenderContentsDelegate::FromWebContents(
+      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) ||
       web_contents->IsPortal()) {
     SafeBrowsingUIManager::StartDisplayingBlockingPage(ui_manager, resource);
@@ -95,11 +98,11 @@ UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
 
 UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
 
-void UrlCheckerDelegateImpl::MaybeDestroyPrerenderContents(
+void UrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
     content::WebContents::OnceGetter web_contents_getter) {
   // Destroy the prefetch with FINAL_STATUS_SAFE_BROWSING.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DestroyPrerenderContents,
+      FROM_HERE, base::BindOnce(&DestroyNoStatePrefetchContents,
                                 std::move(web_contents_getter)));
 }
 
@@ -130,13 +133,23 @@ bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   return false;
 }
 
+void UrlCheckerDelegateImpl::SetPolicyAllowlistDomains(
+    const std::vector<std::string>& allowlist_domains) {
+  allowlist_domains_ = allowlist_domains;
+}
+
 bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,
     int render_process_id,
     int render_frame_id,
     bool originated_from_service_worker) {
-  return false;
+  // Check for whether the URL matches the Safe Browsing allowlist domains
+  // (a.k. a prefs::kSafeBrowsingAllowlistDomains).
+  return std::find_if(allowlist_domains_.begin(), allowlist_domains_.end(),
+                      [&original_url](const std::string& domain) {
+                        return original_url.DomainIs(domain);
+                      }) != allowlist_domains_.end();
 }
 
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(

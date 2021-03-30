@@ -20,11 +20,11 @@ extern "C" {
 // clang-format on
 
 #include <string>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 #include "device/base/device_monitor_win.h"
 #include "services/device/hid/hid_service.h"

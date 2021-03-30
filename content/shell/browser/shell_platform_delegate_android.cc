@@ -107,7 +107,7 @@ void ShellPlatformDelegate::SetIsLoading(Shell* shell, bool loading) {
 }
 
 void ShellPlatformDelegate::SetTitle(Shell* shell,
-                                     const base::string16& title) {}
+                                     const std::u16string& title) {}
 
 void ShellPlatformDelegate::MainFrameCreated(Shell* shell) {}
 

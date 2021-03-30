@@ -5,15 +5,16 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -56,17 +57,17 @@ bool IsTrivialClassification(const ACMatchClassifications& classifications) {
 // in mind, hence the caller should not consider another URL like this one
 // but with a different scheme to be a duplicate.
 bool WordMatchesURLContent(
-    const std::vector<base::string16>& terms_prefixed_by_http_or_https,
+    const std::vector<std::u16string>& terms_prefixed_by_http_or_https,
     const GURL& url) {
   size_t prefix_length =
       url.scheme().length() + strlen(url::kStandardSchemeSeparator);
   DCHECK_GE(url.spec().length(), prefix_length);
-  const base::string16& formatted_url = url_formatter::FormatUrl(
-      url, url_formatter::kFormatUrlOmitNothing,
-      net::UnescapeRule::NORMAL, nullptr, nullptr, &prefix_length);
-  if (prefix_length == base::string16::npos)
+  const std::u16string& formatted_url = url_formatter::FormatUrl(
+      url, url_formatter::kFormatUrlOmitNothing, net::UnescapeRule::NORMAL,
+      nullptr, nullptr, &prefix_length);
+  if (prefix_length == std::u16string::npos)
     return false;
-  const base::string16& formatted_url_without_scheme =
+  const std::u16string& formatted_url_without_scheme =
       formatted_url.substr(prefix_length);
   for (const auto& term : terms_prefixed_by_http_or_https) {
     if (base::StartsWith(formatted_url_without_scheme, term,
@@ -78,7 +79,7 @@ bool WordMatchesURLContent(
 
 }  // namespace
 
-SplitAutocompletion::SplitAutocompletion(base::string16 display_text,
+SplitAutocompletion::SplitAutocompletion(std::u16string display_text,
                                          std::vector<gfx::Range> selections)
     : display_text(display_text), selections(selections) {}
 
@@ -121,12 +122,27 @@ const char* AutocompleteMatch::DocumentTypeString(DocumentType type) {
 }
 
 // static
-const base::char16 AutocompleteMatch::kInvalidChars[] = {
-  '\n', '\r', '\t',
-  0x2028,  // Line separator
-  0x2029,  // Paragraph separator
-  0
-};
+bool AutocompleteMatch::DocumentTypeFromInteger(int value,
+                                                DocumentType* result) {
+  DCHECK(result);
+
+  // The resulting value may still be invalid after the static_cast.
+  DocumentType document_type = static_cast<DocumentType>(value);
+  if (document_type >= DocumentType::NONE &&
+      document_type < DocumentType::DOCUMENT_TYPE_SIZE) {
+    *result = document_type;
+    return true;
+  }
+
+  return false;
+}
+
+// static
+const char16_t AutocompleteMatch::kInvalidChars[] = {
+    '\n',   '\r', '\t',
+    0x2028,  // Line separator
+    0x2029,  // Paragraph separator
+    0};
 
 // static
 const char AutocompleteMatch::kEllipsis[] = "... ";
@@ -150,8 +166,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       typed_count(match.typed_count),
       deletable(match.deletable),
       fill_into_edit(match.fill_into_edit),
-      fill_into_edit_additional_text(match.fill_into_edit_additional_text),
-      swapped_fill_into_edit(match.swapped_fill_into_edit),
+      additional_text(match.additional_text),
       inline_autocompletion(match.inline_autocompletion),
       rich_autocompletion_triggered(match.rich_autocompletion_triggered),
       prefix_autocompletion(match.prefix_autocompletion),
@@ -211,8 +226,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   typed_count = match.typed_count;
   deletable = match.deletable;
   fill_into_edit = match.fill_into_edit;
-  fill_into_edit_additional_text = match.fill_into_edit_additional_text;
-  swapped_fill_into_edit = match.swapped_fill_into_edit;
+  additional_text = match.additional_text;
   inline_autocompletion = match.inline_autocompletion;
   rich_autocompletion_triggered = match.rich_autocompletion_triggered;
   prefix_autocompletion = match.prefix_autocompletion;
@@ -262,6 +276,11 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark) const {
+  // TODO(https://crbug.com/1024114): Remove crash logging once fixed.
+  SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "type", type);
+  SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "provider_type",
+                          provider ? provider->type() : -1);
+
   if (is_bookmark)
     return omnibox::kBookmarkIcon;
   switch (type) {
@@ -351,7 +370,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
 }
 #endif
 
-base::string16 AutocompleteMatch::GetWhyThisSuggestionText() const {
+std::u16string AutocompleteMatch::GetWhyThisSuggestionText() const {
   // TODO(tommycli): Replace these placeholder strings with final ones from UX.
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:
@@ -372,7 +391,7 @@ base::string16 AutocompleteMatch::GetWhyThisSuggestionText() const {
           "what you typed.");
 
     case Type::SEARCH_WHAT_YOU_TYPED:
-      return base::ASCIIToUTF16("This search query is exactly what you typed.");
+      return u"This search query is exactly what you typed.";
 
     case Type::SEARCH_HISTORY:
       // TODO(tommycli): We may need to distinguish between matches sourced
@@ -414,13 +433,13 @@ base::string16 AutocompleteMatch::GetWhyThisSuggestionText() const {
     case Type::CLIPBOARD_URL:
     case Type::CLIPBOARD_TEXT:
     case Type::CLIPBOARD_IMAGE:
-      return base::ASCIIToUTF16("This match is from the system clipboard.");
+      return u"This match is from the system clipboard.";
 
     case Type::VOICE_SUGGEST:
-      return base::ASCIIToUTF16("This match is from voice.");
+      return u"This match is from voice.";
 
     case Type::DOCUMENT_SUGGESTION:
-      return base::ASCIIToUTF16("This match is from your documents.");
+      return u"This match is from your documents.";
 
     case Type::PEDAL:
       return base::ASCIIToUTF16(
@@ -436,7 +455,7 @@ base::string16 AutocompleteMatch::GetWhyThisSuggestionText() const {
     case Type::TILE_NAVSUGGEST:
     case Type::NUM_TYPES:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
@@ -473,6 +492,15 @@ bool AutocompleteMatch::BetterDuplicate(const AutocompleteMatch& match1,
   if (!match1.allowed_to_be_default_match && match2.allowed_to_be_default_match)
     return false;
 
+  // Prefer URL autocompleted default matches if the appropriate param is true.
+  if (OmniboxFieldTrial::
+          RichAutocompletionAutocompletePreferUrlsOverPrefixes()) {
+    if (match1.additional_text.empty() && !match2.additional_text.empty())
+      return true;
+    if (!match1.additional_text.empty() && match2.additional_text.empty())
+      return false;
+  }
+
   // Prefer live document suggestions. We check provider type instead of match
   // type in order to distinguish live suggestions from the document provider
   // from stale suggestions from the shortcuts providers, because the latter
@@ -499,8 +527,8 @@ bool AutocompleteMatch::BetterDuplicateByIterator(
 
 // static
 void AutocompleteMatch::ClassifyMatchInString(
-    const base::string16& find_text,
-    const base::string16& text,
+    const std::u16string& find_text,
+    const std::u16string& text,
     int style,
     ACMatchClassifications* classification) {
   ClassifyLocationInString(text.find(find_text), find_text.length(),
@@ -527,7 +555,7 @@ void AutocompleteMatch::ClassifyLocationInString(
   }
 
   // Mark matching portion of string.
-  if (match_location == base::string16::npos) {
+  if (match_location == std::u16string::npos) {
     // No match, above classification will suffice for whole string.
     return;
   }
@@ -635,10 +663,10 @@ bool AutocompleteMatch::HasMatchStyle(
 }
 
 // static
-base::string16 AutocompleteMatch::SanitizeString(const base::string16& text) {
+std::u16string AutocompleteMatch::SanitizeString(const std::u16string& text) {
   // NOTE: This logic is mirrored by |sanitizeString()| in
   // omnibox_custom_bindings.js.
-  base::string16 result;
+  std::u16string result;
   base::TrimWhitespace(text, base::TRIM_LEADING, &result);
   base::RemoveChars(result, kInvalidChars, &result);
   return result;
@@ -682,13 +710,14 @@ bool AutocompleteMatch::ShouldBeSkippedForGroupBySearchVsUrl(Type type) {
   return type == AutocompleteMatchType::CLIPBOARD_URL ||
          type == AutocompleteMatchType::CLIPBOARD_TEXT ||
          type == AutocompleteMatchType::CLIPBOARD_IMAGE ||
+         type == AutocompleteMatchType::TILE_NAVSUGGEST ||
          type == AutocompleteMatchType::TILE_SUGGESTION;
 }
 
 // static
 TemplateURL* AutocompleteMatch::GetTemplateURLWithKeyword(
     TemplateURLService* template_url_service,
-    const base::string16& keyword,
+    const std::u16string& keyword,
     const std::string& host) {
   return const_cast<TemplateURL*>(GetTemplateURLWithKeyword(
       static_cast<const TemplateURLService*>(template_url_service), keyword,
@@ -698,7 +727,7 @@ TemplateURL* AutocompleteMatch::GetTemplateURLWithKeyword(
 // static
 const TemplateURL* AutocompleteMatch::GetTemplateURLWithKeyword(
     const TemplateURLService* template_url_service,
-    const base::string16& keyword,
+    const std::u16string& keyword,
     const std::string& host) {
   if (template_url_service == nullptr)
     return nullptr;
@@ -714,7 +743,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
     const GURL& url,
     const AutocompleteInput& input,
     const TemplateURLService* template_url_service,
-    const base::string16& keyword) {
+    const std::u16string& keyword) {
   if (!url.is_valid())
     return url;
 
@@ -736,7 +765,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
   if (template_url != nullptr &&
       template_url->SupportsReplacement(
           template_url_service->search_terms_data())) {
-    base::string16 search_terms;
+    std::u16string search_terms;
     if (template_url->ExtractSearchTermsFromURL(
         stripped_destination_url,
         template_url_service->search_terms_data(),
@@ -876,25 +905,25 @@ void AutocompleteMatch::ComputeStrippedDestinationURL(
 
 void AutocompleteMatch::GetKeywordUIState(
     TemplateURLService* template_url_service,
-    base::string16* keyword,
+    std::u16string* keyword,
     bool* is_keyword_hint) const {
   *is_keyword_hint = associated_keyword != nullptr;
   keyword->assign(*is_keyword_hint ? associated_keyword->keyword :
       GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
 }
 
-base::string16 AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(
+std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(
     TemplateURLService* template_url_service) const {
   if (!ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_KEYWORD) ||
       template_url_service == nullptr) {
-    return base::string16();
+    return std::u16string();
   }
 
   const TemplateURL* t_url = GetTemplateURL(template_url_service, false);
   return (t_url &&
-          t_url->SupportsReplacement(
-              template_url_service->search_terms_data())) ?
-      keyword : base::string16();
+          t_url->SupportsReplacement(template_url_service->search_terms_data()))
+             ? keyword
+             : std::u16string();
 }
 
 TemplateURL* AutocompleteMatch::GetTemplateURL(
@@ -917,7 +946,7 @@ void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
 }
 
 void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
-                                             const base::string16& value) {
+                                             const std::u16string& value) {
   RecordAdditionalInfo(property, base::UTF16ToUTF8(value));
 }
 
@@ -1087,7 +1116,7 @@ void AutocompleteMatch::SetAllowedToBeDefault(const AutocompleteInput& input) {
   }
 }
 
-void AutocompleteMatch::InlineTailPrefix(const base::string16& common_prefix) {
+void AutocompleteMatch::InlineTailPrefix(const std::u16string& common_prefix) {
   // Prevent re-addition of prefix.
   if (type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL &&
       tail_suggest_common_prefix.empty()) {
@@ -1113,7 +1142,7 @@ size_t AutocompleteMatch::EstimateMemoryUsage() const {
   size_t res = 0;
 
   res += base::trace_event::EstimateMemoryUsage(fill_into_edit);
-  res += base::trace_event::EstimateMemoryUsage(fill_into_edit_additional_text);
+  res += base::trace_event::EstimateMemoryUsage(additional_text);
   res += base::trace_event::EstimateMemoryUsage(inline_autocompletion);
   res += base::trace_event::EstimateMemoryUsage(prefix_autocompletion);
   res += base::trace_event::EstimateMemoryUsage(destination_url);
@@ -1188,8 +1217,8 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 }
 
 bool AutocompleteMatch::TryRichAutocompletion(
-    const base::string16& primary_text,
-    const base::string16& secondary_text,
+    const std::u16string& primary_text,
+    const std::u16string& secondary_text,
     const AutocompleteInput& input,
     bool shortcut_provider) {
   if (!OmniboxFieldTrial::IsRichAutocompletionEnabled())
@@ -1197,25 +1226,17 @@ bool AutocompleteMatch::TryRichAutocompletion(
 
   bool counterfactual = OmniboxFieldTrial::RichAutocompletionCounterfactual();
 
-  // If the appropriate param is enabled, titles should be shown in the omnibox
-  // regardless of whether the suggestion can be the default. By default,
-  // secondary text should be displayed unless we autocomplete the secondary
-  // text, in which case |fill_into_edit_additional_text| will be overridden.
-  if (OmniboxFieldTrial::RichAutocompletionShowTitles() && !counterfactual)
-    fill_into_edit_additional_text = secondary_text;
-
   if (input.prevent_inline_autocomplete())
     return false;
 
-  const base::string16 primary_text_lower{base::i18n::ToLower(primary_text)};
-  const base::string16 secondary_text_lower{
+  const std::u16string primary_text_lower{base::i18n::ToLower(primary_text)};
+  const std::u16string secondary_text_lower{
       base::i18n::ToLower(secondary_text)};
-  const base::string16 input_text_lower{base::i18n::ToLower(input.text())};
+  const std::u16string input_text_lower{base::i18n::ToLower(input.text())};
 
   // Try matching the prefix of |primary_text|.
   if (base::StartsWith(primary_text_lower, input_text_lower,
                        base::CompareCase::SENSITIVE)) {
-    // |fill_into_edit| should already be set to |primary_text|.
     if (counterfactual)
       return false;
     // This case intentionally doesn't set |rich_autocompletion_triggered| to
@@ -1227,26 +1248,12 @@ bool AutocompleteMatch::TryRichAutocompletion(
     return true;
   }
 
+  // Check if title autocompletion is possible. I.e., the input must be longer
+  // than the threshold |...TitleMinChar|.
   const bool can_autocomplete_titles =
       OmniboxFieldTrial::RichAutocompletionAutocompleteTitles() &&
       input.text().size() >=
           OmniboxFieldTrial::RichAutocompletionAutocompleteTitlesMinChar();
-
-  // Try matching the prefix of |secondary_text|.
-  if (can_autocomplete_titles &&
-      base::StartsWith(secondary_text_lower, input_text_lower,
-                       base::CompareCase::SENSITIVE)) {
-    rich_autocompletion_triggered = true;
-    if (counterfactual)
-      return false;
-    fill_into_edit = secondary_text;
-    fill_into_edit_additional_text = primary_text;
-    swapped_fill_into_edit = true;
-    inline_autocompletion = secondary_text.substr(input_text_lower.length());
-    allowed_to_be_default_match = true;
-    RecordAdditionalInfo("autocompletion", "secondary & prefix");
-    return true;
-  }
 
   // Check if non-prefix autocompletion is possible. I.e., these 2 conditions
   // must be truthy:
@@ -1262,33 +1269,72 @@ bool AutocompleteMatch::TryRichAutocompletion(
       input.text().size() >=
           OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixMinChar();
 
-  // Try matching a non-prefix of |primary_text|.
+  // All else equal, prefer matching primary over secondary texts and prefixes
+  // over non-prefixes. |prefer_primary_non_prefix_over_secondary_prefix|
+  // determines whether to prefer matching primary text non-prefixes or
+  // secondary text prefixes.
+  bool prefer_primary_non_prefix_over_secondary_prefix =
+      OmniboxFieldTrial::RichAutocompletionAutocompletePreferUrlsOverPrefixes();
+
   size_t find_index;
-  if (can_autocomplete_non_prefix &&
-      (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
-          base::string16::npos) {
+
+  // A helper to avoid duplicate code. Depending on the
+  // |prefer_primary_non_prefix_over_secondary_prefix|, this may be invoked
+  // either before or after trying prefix secondary autocompletion.
+  auto NonPrefixPrimaryHelper = [&]() {
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
-    // |fill_into_edit| should already be set to |primary_text|.
     inline_autocompletion =
         primary_text.substr(find_index + input_text_lower.length());
     prefix_autocompletion = primary_text.substr(0, find_index);
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "primary & non-prefix");
     return true;
+  };
+
+  // Try matching a non-prefix of |primary_text| if
+  // |prefer_primary_non_prefix_over_secondary_prefix| is true; otherwise, we'll
+  // try this only after tying to match the prefix of |secondary_text|.
+  if (prefer_primary_non_prefix_over_secondary_prefix &&
+      can_autocomplete_non_prefix &&
+      (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
+          std::u16string::npos) {
+    return NonPrefixPrimaryHelper();
+  }
+
+  // Try matching the prefix of |secondary_text|.
+  if (can_autocomplete_titles &&
+      base::StartsWith(secondary_text_lower, input_text_lower,
+                       base::CompareCase::SENSITIVE)) {
+    rich_autocompletion_triggered = true;
+    if (counterfactual)
+      return false;
+    additional_text = primary_text;
+    inline_autocompletion = secondary_text.substr(input_text_lower.length());
+    allowed_to_be_default_match = true;
+    RecordAdditionalInfo("autocompletion", "secondary & prefix");
+    return true;
+  }
+
+  // Try matching a non-prefix of |primary_text|. If
+  // |prefer_primary_non_prefix_over_secondary_prefix| is false; otherwise, this
+  // was already tried above.
+  if (!prefer_primary_non_prefix_over_secondary_prefix &&
+      can_autocomplete_non_prefix &&
+      (find_index = FindAtWordbreak(primary_text_lower, input_text_lower)) !=
+          std::u16string::npos) {
+    return NonPrefixPrimaryHelper();
   }
 
   // Try matching a non-prefix of |secondary_text|.
   if (can_autocomplete_non_prefix && can_autocomplete_titles &&
       (find_index = FindAtWordbreak(secondary_text_lower, input_text_lower)) !=
-          base::string16::npos) {
+          std::u16string::npos) {
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
-    fill_into_edit = secondary_text;
-    fill_into_edit_additional_text = primary_text;
-    swapped_fill_into_edit = true;
+    additional_text = primary_text;
     inline_autocompletion =
         secondary_text.substr(find_index + input_text_lower.length());
     prefix_autocompletion = secondary_text.substr(0, find_index);
@@ -1312,7 +1358,6 @@ bool AutocompleteMatch::TryRichAutocompletion(
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
-    // |fill_into_edit| should already be set to |primary_text|.
     split_autocompletion = SplitAutocompletion(
         primary_text_lower,
         TermMatchesToSelections(primary_text_lower.length(), input_words));
@@ -1335,9 +1380,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
     rich_autocompletion_triggered = true;
     if (counterfactual)
       return false;
-    fill_into_edit = secondary_text;
-    fill_into_edit_additional_text = primary_text;
-    swapped_fill_into_edit = true;
+    additional_text = primary_text;
     split_autocompletion = SplitAutocompletion(
         secondary_text_lower,
         TermMatchesToSelections(secondary_text_lower.length(), input_words));
@@ -1366,7 +1409,7 @@ void AutocompleteMatch::Validate() const {
 
 // static
 void AutocompleteMatch::ValidateClassifications(
-    const base::string16& text,
+    const std::u16string& text,
     const ACMatchClassifications& classifications,
     const std::string& provider_name) {
   if (text.empty()) {

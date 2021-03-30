@@ -16,6 +16,7 @@
       /* Property lists are embedded; remove the padding. */
       .property-box {
         padding: 0;
+        width: var(--cr-property-box-width, inherit);
       }
 
       cr-input[readonly] {
@@ -53,7 +54,10 @@
               readonly="[[!isEditable_(item, editFieldTypes, propertyDict)]]"
               value="[[getPropertyValue_(item, prefix, propertyDict)]]"
               on-change="onValueChange_"
-              type="[[getEditInputType_(item, editFieldTypes)]]">
+              type="[[getEditInputType_(item, editFieldTypes)]]"
+              on-focus="onInputFocused_"
+              edited="false"
+              disabled="[[disabled]]">
           </cr-input>
         </template>
       </div>

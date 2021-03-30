@@ -26,16 +26,16 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path);
 // Verifies that policies make their corresponding preferences become managed,
 // and that the user can't override that setting.  Loads test cases from the
 // JSON file at |test_case_path| and updates policies using the given
-// |provider|.  Does not verify any prefs which start with
-// |skipped_pref_prefix|, if non-empty.
+// |provider|.
 // |local_state|, |user_prefs| or |signin_profile_prefs| can be nullptr, in
 // which case the mappings into the respective location are skipped.
+// TODO(https://crbug.com/809991) Policies mapping into CrosSettings are always
+// skipped.
 void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
                                 PrefService* local_state,
                                 PrefService* user_prefs,
                                 PrefService* signin_profile_prefs,
-                                MockConfigurationPolicyProvider* provider,
-                                const std::string& skipped_pref_prefix);
+                                MockConfigurationPolicyProvider* provider);
 
 }  // namespace policy
 

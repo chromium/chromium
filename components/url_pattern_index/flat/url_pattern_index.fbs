@@ -25,7 +25,7 @@ enum AnchorType : ubyte {
 // url_pattern_index::proto::UrlRule, but here, they are represented as flags
 // of the same bitmask to allow for compact storage.
 enum OptionFlag : ubyte (bit_flags) {
-  IS_WHITELIST,
+  IS_ALLOWLIST,
   APPLIES_TO_FIRST_PARTY,
   APPLIES_TO_THIRD_PARTY,
   IS_CASE_INSENSITIVE,

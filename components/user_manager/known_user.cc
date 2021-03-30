@@ -657,18 +657,22 @@ base::Time GetLastOnlineSignin(const AccountId& account_id) {
 }
 
 void SetOfflineSigninLimit(const AccountId& account_id,
-                           base::TimeDelta time_delta) {
-  SetPref(account_id, kOfflineSigninLimit, util::TimeDeltaToValue(time_delta));
+                           base::Optional<base::TimeDelta> time_delta) {
+  if (!time_delta) {
+    ClearPref(account_id, kOfflineSigninLimit);
+  } else {
+    SetPref(account_id, kOfflineSigninLimit,
+            util::TimeDeltaToValue(time_delta.value()));
+  }
 }
 
-base::TimeDelta GetOfflineSigninLimit(const AccountId& account_id) {
+base::Optional<base::TimeDelta> GetOfflineSigninLimit(
+    const AccountId& account_id) {
   const base::Value* value = nullptr;
   if (!GetPref(account_id, kOfflineSigninLimit, &value))
-    return base::TimeDelta();
+    return base::nullopt;
   base::Optional<base::TimeDelta> time_delta = util::ValueToTimeDelta(value);
-  if (!time_delta)
-    return base::TimeDelta();
-  return *time_delta;
+  return time_delta;
 }
 
 void SetIsEnterpriseManaged(const AccountId& account_id,

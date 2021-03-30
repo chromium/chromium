@@ -151,7 +151,7 @@ void ProcessEntryFile(net::CacheType cache_type,
 
   if (file_name.size() != kEntryFilesLength)
     return;
-  const base::StringPiece hash_string(
+  const auto hash_string = base::MakeStringPiece(
       file_name.begin(), file_name.begin() + kEntryFilesHashLength);
   uint64_t hash_key = 0;
   if (!simple_util::GetEntryHashKeyFromHexString(hash_string, &hash_key)) {

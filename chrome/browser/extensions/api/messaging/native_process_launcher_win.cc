@@ -7,11 +7,12 @@
 #include <windows.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,8 +37,8 @@ namespace {
 bool GetManifestPathWithFlagsFromSubkey(HKEY root_key,
                                         DWORD flags,
                                         const wchar_t* subkey,
-                                        const base::string16& host_name,
-                                        base::string16* result) {
+                                        const std::wstring& host_name,
+                                        std::wstring* result) {
   base::win::RegKey key;
 
   return key.Open(root_key, subkey, KEY_QUERY_VALUE | flags) == ERROR_SUCCESS &&
@@ -50,8 +51,8 @@ bool GetManifestPathWithFlagsFromSubkey(HKEY root_key,
 // false if the path isn't found.
 bool GetManifestPathWithFlags(HKEY root_key,
                               DWORD flags,
-                              const base::string16& host_name,
-                              base::string16* result) {
+                              const std::wstring& host_name,
+                              std::wstring* result) {
 #if BUILDFLAG(CHROMIUM_BRANDING)
   // Try to read the path using the Chromium-specific registry for Chromium.
   // If that fails, fallback to Chrome-specific registry key below.
@@ -67,8 +68,8 @@ bool GetManifestPathWithFlags(HKEY root_key,
 }
 
 bool GetManifestPath(HKEY root_key,
-                     const base::string16& host_name,
-                     base::string16* result) {
+                     const std::wstring& host_name,
+                     std::wstring* result) {
   // First check 32-bit registry and then try 64-bit.
   return GetManifestPathWithFlags(
              root_key, KEY_WOW64_32KEY, host_name, result) ||
@@ -83,11 +84,11 @@ base::FilePath NativeProcessLauncher::FindManifest(
     const std::string& host_name,
     bool allow_user_level_hosts,
     std::string* error_message) {
-  base::string16 host_name_wide = base::UTF8ToUTF16(host_name);
+  std::wstring host_name_wide = base::UTF8ToWide(host_name);
 
   // If permitted, look in HKEY_CURRENT_USER first. If the manifest isn't found
   // there, then try HKEY_LOCAL_MACHINE. https://crbug.com/1034919#c6
-  base::string16 path_str;
+  std::wstring path_str;
   bool found = false;
   if (allow_user_level_hosts)
     found = GetManifestPath(HKEY_CURRENT_USER, host_name_wide, &path_str);
@@ -129,9 +130,9 @@ bool NativeProcessLauncher::LaunchNativeProcess(
 
   uint64_t pipe_name_token;
   crypto::RandBytes(&pipe_name_token, sizeof(pipe_name_token));
-  base::string16 out_pipe_name = base::StringPrintf(
+  std::wstring out_pipe_name = base::StringPrintf(
       L"\\\\.\\pipe\\chrome.nativeMessaging.out.%llx", pipe_name_token);
-  base::string16 in_pipe_name = base::StringPrintf(
+  std::wstring in_pipe_name = base::StringPrintf(
       L"\\\\.\\pipe\\chrome.nativeMessaging.in.%llx", pipe_name_token);
 
   // Create the pipes to read and write from.
@@ -165,9 +166,9 @@ bool NativeProcessLauncher::LaunchNativeProcess(
   std::unique_ptr<wchar_t[]> comspec(new wchar_t[comspec_length]);
   ::GetEnvironmentVariable(L"COMSPEC", comspec.get(), comspec_length);
 
-  base::string16 command_line_string = command_line.GetCommandLineString();
+  std::wstring command_line_string = command_line.GetCommandLineString();
 
-  base::string16 command = base::StringPrintf(
+  std::wstring command = base::StringPrintf(
       L"%ls /d /c %ls < %ls > %ls", comspec.get(), command_line_string.c_str(),
       in_pipe_name.c_str(), out_pipe_name.c_str());
 

@@ -13,7 +13,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/util/android:java",
@@ -21,8 +20,8 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]

@@ -33,7 +33,7 @@ class SMILTimeContainerTest : public PageTestBase {
   }
 
   void Load(base::span<const char> data) {
-    auto params = WebNavigationParams::CreateWithHTMLString(
+    auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
         data, KURL("http://example.com"));
     GetFrame().Loader().CommitNavigation(std::move(params),
                                          nullptr /* extra_data */);
@@ -113,7 +113,7 @@ class SMILTimeContainerAnimationPolicyOnceTest : public PageTestBase {
   }
 
   void Load(base::span<const char> data) {
-    auto params = WebNavigationParams::CreateWithHTMLString(
+    auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
         data, KURL("http://example.com"));
     GetFrame().Loader().CommitNavigation(std::move(params),
                                          nullptr /* extra_data */);

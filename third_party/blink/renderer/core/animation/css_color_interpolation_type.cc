@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/css/css_color_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -68,12 +69,14 @@ CSSColorInterpolationType::CreateInterpolableColor(CSSValueID keyword) {
     case CSSValueID::kInternalQuirkInherit:
       return CreateInterpolableColorForIndex(kQuirkInherit);
     case CSSValueID::kWebkitFocusRingColor:
-      return CreateInterpolableColor(LayoutTheme::GetTheme().FocusRingColor());
+      // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
+      return CreateInterpolableColor(LayoutTheme::GetTheme().FocusRingColor(
+          mojom::blink::ColorScheme::kLight));
     default:
       DCHECK(StyleColor::IsColorKeyword(keyword));
       // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
       return CreateInterpolableColor(StyleColor::ColorFromKeyword(
-          keyword, ComputedStyle::InitialStyle().UsedColorScheme()));
+          keyword, mojom::blink::ColorScheme::kLight));
   }
 }
 
@@ -209,10 +212,10 @@ InterpolationValue CSSColorInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSColorInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  OptionalStyleColor initial_color =
-      ColorPropertyFunctions::GetInitialColor(CssProperty());
+  OptionalStyleColor initial_color = ColorPropertyFunctions::GetInitialColor(
+      CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle());
   if (initial_color.IsNull())
     return nullptr;
   return ConvertStyleColorPair(initial_color.Access(), initial_color.Access());

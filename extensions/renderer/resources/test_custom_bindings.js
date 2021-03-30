@@ -30,6 +30,7 @@ apiBridge.registerCustomHook(function(api) {
   var testCount = 1;
   var failureException = 'chrome.test.failure';
   var pendingCallbacks = 0;
+  var pendingPromiseRejections = 0;
 
   function safeFunctionApply(func, args) {
     try {
@@ -43,9 +44,10 @@ apiBridge.registerCustomHook(function(api) {
   }
 
   function runNextTest() {
-    // There may have been callbacks which were interrupted by failure
-    // exceptions.
+    // There may have been callbacks or promise rejections which were
+    // interrupted by failure exceptions.
     pendingCallbacks = 0;
+    pendingPromiseRejections = 0;
 
     lastTest = currentTest;
     currentTest = $Array.shift(chromeTest.tests);
@@ -148,6 +150,12 @@ apiBridge.registerCustomHook(function(api) {
   });
 
   apiFunctions.setHandleRequest('succeed', function() {
+    chromeTest.assertEq(
+        0, pendingPromiseRejections,
+        'Test had pending promise rejections. This is likely the result of ' +
+        'not waiting for the promise returned by `assertPromiseRejects()` to ' +
+        'resolve. Instead, use `await assertPromiseRejects(...)` or ' +
+        '`assertPromiseRejects(...).then(...).`.');
     console.log("[SUCCESS] " + testName(currentTest));
     chromeTest.log("(  SUCCESS )");
     testDone();
@@ -282,6 +290,32 @@ apiBridge.registerCustomHook(function(api) {
         }
       }
     }
+  });
+
+  apiFunctions.setHandleRequest('assertPromiseRejects',
+                                function(promise, expectedMessage) {
+    pendingPromiseRejections++;
+    return promise.then(
+        () => {
+          pendingPromiseRejections--;
+          chromeTest.assertTrue(pendingPromiseRejections >= 0,
+                                'Negative pending promise rejection count!');
+          chromeTest.fail(
+              'Promise did not reject. Expected error: ' + expectedMessage);
+        },
+        (e) => {
+          pendingPromiseRejections--;
+          chromeTest.assertTrue(pendingPromiseRejections >= 0,
+                                'Negative pending promise rejection count!');
+          if (expectedMessage instanceof RegExp) {
+            chromeTest.assertTrue(
+                expectedMessage.test(e.toString()),
+                `"${e.message}" should match "${expectedMessage}"`);
+          } else {
+            chromeTest.assertEq('string', typeof expectedMessage);
+            chromeTest.assertEq(expectedMessage, e.toString());
+          }
+        });
   });
 
   // Wrapper for generating test functions, that takes care of calling

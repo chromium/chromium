@@ -9,10 +9,10 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/audio/loopback_coordinator.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace audio {
 
@@ -20,8 +20,8 @@ class LoopbackGroupMember;
 
 // Mutes a group of streams, from construction time until destruction time. In
 // between, LocalMuter ensures new group members are also muted. Holds all
-// mojom::LocalMuter bindings.
-class LocalMuter final : public mojom::LocalMuter,
+// media::mojom::LocalMuter bindings.
+class LocalMuter final : public media::mojom::LocalMuter,
                          public LoopbackCoordinator::Observer {
  public:
   LocalMuter(LoopbackCoordinator* coordinator,
@@ -34,7 +34,8 @@ class LocalMuter final : public mojom::LocalMuter,
   // SetAllBindingsLostCallback() must be called before the first call to
   // AddBinding().
   void SetAllBindingsLostCallback(base::OnceClosure callback);
-  void AddReceiver(mojo::PendingAssociatedReceiver<mojom::LocalMuter> receiver);
+  void AddReceiver(
+      mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver);
 
   // LoopbackCoordinator::Observer implementation.
   void OnMemberJoinedGroup(LoopbackGroupMember* member) final;
@@ -47,7 +48,7 @@ class LocalMuter final : public mojom::LocalMuter,
   LoopbackCoordinator* const coordinator_;
   const base::UnguessableToken group_id_;
 
-  mojo::AssociatedReceiverSet<mojom::LocalMuter> receivers_;
+  mojo::AssociatedReceiverSet<media::mojom::LocalMuter> receivers_;
   base::OnceClosure all_bindings_lost_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);

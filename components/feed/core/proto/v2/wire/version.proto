@@ -8,15 +8,7 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-// Specification of an application or OS version.
-// A version string typically looks like: 'major.minor.build.revision'
 message Version {
-  optional int32 major = 1;
-  optional int32 minor = 2;
-  optional int32 build = 3;
-  optional int32 revision = 4;
-
-  // The CPU architecture that the native libraries support
   enum Architecture {
     UNKNOWN_ARCHITECTURE = 0;
     ARM = 1;
@@ -26,9 +18,6 @@ message Version {
     X86 = 5;
     X86_64 = 6;
   }
-  optional Architecture architecture = 5;
-
-  // The release stage of the build
   enum BuildType {
     UNKNOWN_BUILD_TYPE = 0;
     DEV = 1;
@@ -36,9 +25,11 @@ message Version {
     BETA = 3;
     RELEASE = 4;
   }
+  optional int32 major = 1;
+  optional int32 minor = 2;
+  optional int32 build = 3;
+  optional int32 revision = 4;
+  optional Architecture architecture = 5;
   optional BuildType build_type = 6;
-
-  // Specific to Android OS versions. Specifies the API version that the OS
-  // supports.
   optional int32 api_version = 7;
 }

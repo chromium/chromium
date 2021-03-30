@@ -87,7 +87,6 @@ if (is_android) {
     deps = [
       ":java_resources",
       "//base:base_java",
-      "//base:jni_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/image_fetcher:java",
       "//chrome/browser/profiles/android:java",
@@ -99,9 +98,10 @@ if (is_android) {
       "//components/thin_webview:java",
       "//content/public/android:content_java",
       "//services/media_session/public/cpp/android:media_session_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
-      "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
       "//third_party/gif_player:gif_player_java",
       "//ui/android:ui_java",
     ]
@@ -111,7 +111,6 @@ if (is_android) {
   }
 
   android_resources("java_resources") {
-    create_srcjar = false
     sources = [
       "android/java/res/drawable/circular_media_button_background.xml",
       "android/java/res/layout/language_card.xml",
@@ -188,12 +187,12 @@ if (is_android) {
       "//chrome/test/android:chrome_java_test_support",
       "//components/thin_webview:java",
       "//content/public/test/android:content_java_test_support",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
-      "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
-      "//third_party/android_deps:androidx_test_runner_java",
       "//third_party/android_deps:espresso_java",
       "//third_party/android_support_test_runner:rules_java",
       "//third_party/android_support_test_runner:runner_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/gif_player:gif_player_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/junit",

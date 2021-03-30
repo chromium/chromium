@@ -67,8 +67,11 @@ class InputEventBrowserTest : public ContentBrowserTest {
   ~InputEventBrowserTest() override = default;
 
   RenderWidgetHostImpl* GetWidgetHost() {
-    return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    return RenderWidgetHostImpl::From(shell()
+                                          ->web_contents()
+                                          ->GetMainFrame()
+                                          ->GetRenderViewHost()
+                                          ->GetWidget());
   }
 
  protected:
@@ -86,7 +89,7 @@ class InputEventBrowserTest : public ContentBrowserTest {
         host->render_frame_metadata_provider());
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 
@@ -105,9 +108,9 @@ class InputEventBrowserTest : public ContentBrowserTest {
   }
 
   bool URLLoaded() {
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    const base::string16 title = watcher.WaitAndGetTitle();
+    const std::u16string title = watcher.WaitAndGetTitle();
     return title == ready_title;
   }
 
@@ -129,7 +132,8 @@ class InputEventBrowserTest : public ContentBrowserTest {
     DCHECK(URLLoaded());
 
     std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver =
-        SyntheticPointerDriver::Create(SyntheticGestureParams::MOUSE_INPUT);
+        SyntheticPointerDriver::Create(
+            content::mojom::GestureSourceType::kMouseInput);
     RenderWidgetHostImpl* render_widget_host = GetWidgetHost();
     auto* root_view = render_widget_host->GetView()->GetRootView();
     std::unique_ptr<SyntheticGestureTarget> synthetic_gesture_target;
@@ -168,7 +172,8 @@ class InputEventBrowserTest : public ContentBrowserTest {
     DCHECK(URLLoaded());
 
     std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver =
-        SyntheticPointerDriver::Create(SyntheticGestureParams::TOUCH_INPUT);
+        SyntheticPointerDriver::Create(
+            content::mojom::GestureSourceType::kTouchInput);
     RenderWidgetHostImpl* render_widget_host = GetWidgetHost();
     auto* root_view = render_widget_host->GetView()->GetRootView();
     std::unique_ptr<SyntheticGestureTarget> synthetic_gesture_target;

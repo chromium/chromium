@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
 #include "base/strings/string_util.h"
+#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 namespace blink {
@@ -96,6 +97,16 @@ device::mojom::ScreenOrientationLockType WebScreenOrientationLockTypeFromString(
   if (base::LowerCaseEqualsASCII(orientation, "natural"))
     return device::mojom::ScreenOrientationLockType::NATURAL;
   return device::mojom::ScreenOrientationLockType::DEFAULT;
+}
+
+mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
+  if (base::LowerCaseEqualsASCII(capture_links, "none"))
+    return mojom::CaptureLinks::kNone;
+  if (base::LowerCaseEqualsASCII(capture_links, "new-client"))
+    return mojom::CaptureLinks::kNewClient;
+  if (base::LowerCaseEqualsASCII(capture_links, "existing-client-navigate"))
+    return mojom::CaptureLinks::kExistingClientNavigate;
+  return mojom::CaptureLinks::kUndefined;
 }
 
 }  // namespace blink

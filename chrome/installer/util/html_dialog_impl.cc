@@ -7,6 +7,7 @@
 #include <mshtmhst.h>
 #include <urlmon.h>
 
+#include "base/strings/string_util.h"
 #include "base/win/scoped_variant.h"
 #include "chrome/installer/util/html_dialog.h"
 
@@ -39,7 +40,7 @@ namespace installer {
 
 class HTMLDialogWin : public HTMLDialog {
  public:
-  HTMLDialogWin(const base::string16& url, const base::string16& param)
+  HTMLDialogWin(const std::wstring& url, const std::wstring& param)
       : url_(url), param_(param) {
     if (!mshtml_)
       mshtml_ = LoadLibrary(L"MSHTML.DLL");
@@ -53,22 +54,22 @@ class HTMLDialogWin : public HTMLDialog {
     return static_cast<DialogResult>(result);
   }
 
-  base::string16 GetExtraResult() override { return extra_result_; }
+  std::wstring GetExtraResult() override { return extra_result_; }
 
  private:
   bool InternalDoDialog(CustomizationCallback* callback, int* result);
   static LRESULT CALLBACK MsgFilter(int code, WPARAM wParam, LPARAM lParam);
 
-  base::string16 url_;
-  base::string16 param_;
+  std::wstring url_;
+  std::wstring param_;
   static HHOOK hook_;
   static HINSTANCE mshtml_;
   static CustomizationCallback* callback_;
-  base::string16 extra_result_;
+  std::wstring extra_result_;
 };
 
-HTMLDialog* CreateNativeHTMLDialog(const base::string16& url,
-                                   const base::string16& param) {
+HTMLDialog* CreateNativeHTMLDialog(const std::wstring& url,
+                                   const std::wstring& param) {
   return new HTMLDialogWin(url, param);
 }
 
@@ -165,8 +166,8 @@ void EulaHTMLDialog::Customizer::OnBeforeDisplay(void* window) {
                  reinterpret_cast<LPARAM>(ico));
 }
 
-EulaHTMLDialog::EulaHTMLDialog(const base::string16& file,
-                               const base::string16& param) {
+EulaHTMLDialog::EulaHTMLDialog(const std::wstring& file,
+                               const std::wstring& param) {
   dialog_ = CreateNativeHTMLDialog(file, param);
 }
 

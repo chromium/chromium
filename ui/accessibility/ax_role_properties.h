@@ -15,6 +15,13 @@ namespace ui {
 //
 // Please keep these functions in alphabetic order.
 
+// When using these functions in Blink, it's necessary to add the function names
+// to third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py, in
+// order to pass presubmit.
+
+// Returns true for text parents that can have inline text box children.
+AX_BASE_EXPORT bool CanHaveInlineTextBoxChildren(ax::mojom::Role role);
+
 // Returns true for object roles that have the attribute "Children
 // Presentational: True" as defined in the ARIA Specification.
 // https://www.w3.org/TR/wai-aria-1.1/#childrenArePresentational.
@@ -178,6 +185,9 @@ AX_BASE_EXPORT bool IsTableRow(ax::mojom::Role role);
 // Returns true if the provided role is text-related, e.g., static text, line
 // break, or inline text box.
 AX_BASE_EXPORT bool IsText(ax::mojom::Role role);
+
+// Returns true if the provided role is any of the combobox-related roles.
+AX_BASE_EXPORT bool IsComboBox(ax::mojom::Role role);
 
 // Returns true if the node should be read only by default
 AX_BASE_EXPORT bool ShouldHaveReadonlyStateByDefault(

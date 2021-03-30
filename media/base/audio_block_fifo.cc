@@ -116,13 +116,33 @@ void AudioBlockFifo::PushInternal(const void* source,
         std::min(block_frames_ - write_pos_, frames_to_push);
 
     if (source) {
-      // Deinterleave the content to the FIFO and update the |write_pos_|.
-      current_block->FromInterleavedPartial(source_ptr, write_pos_, push_frames,
-                                            bytes_per_sample);
+      // Deinterleave the content to the FIFO.
+      switch (bytes_per_sample) {
+        case 1:
+          current_block->FromInterleavedPartial<UnsignedInt8SampleTypeTraits>(
+              source_ptr, write_pos_, push_frames);
+          break;
+        case 2:
+          current_block->FromInterleavedPartial<SignedInt16SampleTypeTraits>(
+              reinterpret_cast<const int16_t*>(source_ptr), write_pos_,
+              push_frames);
+          break;
+        case 4:
+          current_block->FromInterleavedPartial<SignedInt32SampleTypeTraits>(
+              reinterpret_cast<const int32_t*>(source_ptr), write_pos_,
+              push_frames);
+          break;
+        default:
+          NOTREACHED() << "Unsupported bytes per sample encountered: "
+                       << bytes_per_sample;
+          current_block->ZeroFramesPartial(write_pos_, push_frames);
+      }
     } else {
       current_block->ZeroFramesPartial(write_pos_, push_frames);
     }
+
     write_pos_ = (write_pos_ + push_frames) % block_frames_;
+
     if (!write_pos_) {
       // The current block is completely filled, increment |write_block_| and
       // |available_blocks_|.

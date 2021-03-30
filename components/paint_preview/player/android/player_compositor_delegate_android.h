@@ -30,7 +30,8 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
 
   void OnCompositorReady(
       CompositorStatus compositor_status,
-      mojom::PaintPreviewBeginCompositeResponsePtr composite_response) override;
+      mojom::PaintPreviewBeginCompositeResponsePtr composite_response,
+      std::unique_ptr<ui::AXTreeUpdate> ax_tree) override;
 
   void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
                             memory_pressure_level) override;

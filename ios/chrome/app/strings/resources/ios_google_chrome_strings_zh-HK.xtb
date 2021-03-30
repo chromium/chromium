@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1282031177488366470">協助改善 Chrome 的功能和效能</translation>
+<translation id="1314663809820920746">您仍可在此裝置上查看自己的所有書籤、記錄、密碼和其他設定，但您作出的變更將不會同步到 Google 帳戶。</translation>
 <translation id="1479202195792305274">Chrome 可在您使用 Google 帳戶登入時檢查密碼。</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="1682483655351012182">同步處理 Chromium 資料</translation>
@@ -10,6 +11,7 @@
 <translation id="2009224836393115614">Chrome 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="2147651015520127414">Chrome 驗證到「<ph name="ISSUER" />」已發出此網站的憑證。</translation>
 <translation id="2199719347983604670">從 Chrome 同步的資料</translation>
+<translation id="2342919707875585281">Chrome 會與您允許的網站分享您的位置資訊。</translation>
 <translation id="2347208864470321755">開啟這項功能後，Chrome 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="2574249610672786438">如要在任何使用 Chrome 的裝置上查看分頁，請在所有裝置上登入</translation>
@@ -17,9 +19,9 @@
 <translation id="257708665678654955">您希望 Google Chrome 將來翻譯此網站的<ph name="LANGUAGE_NAME" />頁面嗎？</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼。請明天再試。</translation>
+<translation id="2740105938841089077">使用 Chrome 開啟連結</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
 <translation id="3030414234702425231">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chrome 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
-<translation id="3148688391461398285">讓應用程式根據您的位置資訊在 Chrome 中為您提供更優質的服務。</translation>
 <translation id="3167189358072330585">您的帳戶不適用於 Google Chrome。請聯絡網域管理員，或使用一般的 Google 帳戶登入。</translation>
 <translation id="3173834708294760622">Google Chrome 頁面</translation>
 <translation id="3196546062792660320">Chrome 允許您將帳戶同步至網路上，以節省時間。您可以在設定中新增或移除帳戶。</translation>
@@ -28,7 +30,9 @@
 <translation id="3522659714780527202">如要在任何使用 Chrome 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
 <translation id="3706101708757577809">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
+<translation id="3720541637541300822">關閉 Chrome 時鎖定無痕式分頁</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用您的相機</translation>
+<translation id="38949020760388809">選擇要從此裝置上清除 Chrome 資料，還是要保留資料。</translation>
 <translation id="3980220367029651214">您正在將同步處理帳戶從 <ph name="USER_EMAIL1" /> 切換為 <ph name="USER_EMAIL2" />。您現有的 Chrome 資料由 <ph name="DOMAIN" /> 管理。這會刪除此裝置上的資料，但這些資料仍會保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">您的機構要求您保持登出 Chrome。</translation>
 <translation id="3988789688219830639">Google Chrome 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
@@ -51,13 +55,15 @@
 <translation id="5854621639439811139">Chrome 提示。而家，有啲掣會喺螢幕底部，例如 [上一頁]、[下一頁] 同埋 [搜尋]。</translation>
 <translation id="6036420186814142909">Google Chrome 的功能可讓您輕鬆管理網際網路數據傳輸以及網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">切換至 Chrome</translation>
 <translation id="6238746320622508509">讓 Chrome 鎖定您的無痕式分頁。</translation>
 <translation id="6573431926118603307">您在其他裝置上開啟的 Chrome 分頁會在這裡顯示。</translation>
 <translation id="6600954340915313787">已複製至 Chrome</translation>
+<translation id="6634107063912726160">登出時，Chrome 將不會同步任何新資料至您的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="6648150602980899529">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>
 <translation id="6676840375528380067">要清除此裝置上的 Chrome 資料嗎？</translation>
-<translation id="6822363243974874813">登出 Chrome 後，系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。已同步的 Chrome 資料仍會儲存在 Google 帳戶中。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼。請稍後再試。</translation>
+<translation id="6964931465519938134">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="7124339256045485976">取得 Chrome 最新更新</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>
 <translation id="7165736900384873061">開始使用 Google Chrome 二維條碼掃描器</translation>
@@ -67,17 +73,22 @@
 <translation id="7265369419224458312">只要在電腦上開啟 Chrome 並前往選單中選取 [登入 Chrome...]，即可直接在這裡使用您在電腦上開啟的所有分頁。</translation>
 <translation id="7272930098487145294">如要儲存圖片，請輕按 [設定] 並允許 Chrome 新增您的相片</translation>
 <translation id="7400722733683201933">關於 Google Chrome</translation>
+<translation id="7501046334262221972">如要將 Chrome 設定為預設瀏覽器，請開啟 [設定]。輕按 [預設的瀏覽器應用程式]，然後選取 Chrome。</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7662994914830945754">如要在任何使用 Chrome 的裝置上查看分頁，請登入並開啟同步功能</translation>
 <translation id="766361182512894255">您的密碼因資料外洩而被洩露。Chrome 建議立即變更密碼。</translation>
 <translation id="7698568245838009292">Chrome 要求存取相機</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
-<translation id="8045508249136869751">如要將 Chrome 設定為預設瀏覽器，請開啟「設定」，然後輕按 [預設的瀏覽器應用程式] 並選取 Chrome。</translation>
+<translation id="8109233255338845204">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chrome 資料將會從此裝置上清除。</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
 <translation id="8459495907675268833">所選資料已從 Chrome 和已同步的裝置中移除。不過，您仍可前往 history.google.com 存取 Google 帳戶中保存的其他各種瀏覽紀錄，例如在其他 Google 服務中的搜尋和活動紀錄。</translation>
+<translation id="850555388806794946">如何將 Chrome 設定為預設瀏覽器：
+  1. 開啟「設定」
+  2. 輕按 [預設瀏覽器應用程式]
+  3. 選取 [Chrome]。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">如果您允許 Chrome 存取您的位置，Chrome 會將位置資料傳送至預設搜尋引擎及您允許的任何網站。當網站向您提供附近商家或新聞等本地資訊時，可能會要求您提供位置。</translation>
 </translationbundle>

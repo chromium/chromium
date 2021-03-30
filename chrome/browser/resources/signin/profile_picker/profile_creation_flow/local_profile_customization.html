@@ -1,4 +1,4 @@
-<style include="profile-creation-shared">
+<style include="profile-creation-shared profile-picker-shared cr-shared-style">
   :host {
     --vertical-gap: 24px;
   }
@@ -10,32 +10,58 @@
     text-align: center;
   }
 
+  #avatarContainer {
+    --edit-avatar-border: 3px;
+    --edit-avatar-size : 36px;
+  }
+
+  #customizeAvatarEllipse {
+    background-color: var(--md-background-color);
+    border-radius: 50%;
+    bottom: 0;
+    height: var(--edit-avatar-size);
+    margin: auto;
+    position: absolute;
+    right: 0;
+    width : var(--edit-avatar-size);
+    z-index: 2;
+  }
+
+  #customizeAvatarIcon {
+    --cr-icon-button-icon-size: 18px;
+    --cr-icon-button-size: calc(var(--edit-avatar-size) -
+      2 * var(--edit-avatar-border));
+    background-color: var(--md-background-color);
+    border-radius: 50%;
+    bottom: var(--edit-avatar-border);
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+    box-sizing: border-box;
+    margin: auto;
+    position: absolute;
+    right: var(--edit-avatar-border);
+    z-index: 3;
+  }
+
+  :host-context([dir='rtl']) #customizeAvatarEllipse {
+    left: 0;
+    right: initial;
+  }
+
+  :host-context([dir='rtl']) #customizeAvatarIcon {
+    left: var(--edit-avatar-border);
+    right: initial;
+  }
+
   #wrapperContainer {
     display: flex;
     height: calc(max(100vh, var(--view-min-size)) -
-      (var(--banner-height) + var(--avatar-size)/2 + var(--vertical-gap) +
-       var(--cr-button-height) + var(--footer-margin)));
+      (var(--banner-height) + var(--avatar-size)/2 + var(--cr-button-height) +
+       2 * var(--footer-spacing) + 4px));
     justify-content: center;
-    margin-bottom: var(--vertical-gap);
     margin-inline-end: 16px;
     margin-inline-start: 16px;
     margin-top: calc(var(--avatar-size)/2);
     overflow: auto;
-  }
-
-  #wrapperContainer::-webkit-scrollbar {
-    width: var(--scrollbar-width);
-  }
-
-  /* Track */
-  #wrapperContainer::-webkit-scrollbar-track {
-    border-radius: var(--scrollbar-width);
-  }
-
-  /* Handle */
-  #wrapperContainer::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-background);
-    border-radius: var(--scrollbar-width);
   }
 
   #wrapper > * {
@@ -56,7 +82,7 @@
     --cr-input-placeholder-color: rgba(var(--google-grey-900-rgb), .5);
     --cr-input-border-bottom: 1px solid var(--cr-secondary-text-color);
     height: 32px;
-    width: 300px;
+    width: 320px;
   }
 
   #colorPickerContainer {
@@ -65,6 +91,9 @@
     display: flex;
     flex-direction: column;
     padding: 15px 36px 23px;
+    /* Positions tooltips relatively to this container.
+       Fix for https://crbug.com/1182108 */
+    position: relative;
   }
 
   #colorPickerHeader {
@@ -96,14 +125,44 @@
 
   #save {
     display: flex;
-    margin-inline-end: var(--footer-margin);
+    margin-inline-end: var(--footer-spacing);
     margin-inline-start: auto;
     width: 111px;
+  }
+
+  cr-profile-avatar-selector {
+    --avatar-size: 72px;
+    --avatar-spacing: 18px;
+    --avatar-grid-columns: 5;
+    height: fit-content;
+    padding-bottom: 15px;
+    padding-inline-start: 15px;
+    padding-top: 15px;
+    width: fit-content;
+  }
+
+  #selectAvatarWrapper {
+    height: 394px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  #buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  #doneButton {
+    width : 32px;
   }
 
   @media (prefers-color-scheme: dark) {
     #nameInput {
       --cr-input-placeholder-color: rgba(var(--google-grey-200-rgb), .5);
+    }
+
+    #customizeAvatarIcon {
+      border: 1px solid var(--google-grey-refresh-500);
     }
 
     #colorPickerContainer {
@@ -117,14 +176,21 @@
             --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];
             --theme-shape-color:[[profileThemeInfo.themeShapeColor]]">
   <iron-icon class="banner" icon="profiles:customize-banner"></iron-icon>
-  <cr-icon-button id="backButton" class="icon-arrow-back"
-        on-click="onClickBack_" aria-label="$i18n{backButtonLabel}">
+  <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
+      on-click="onClickBack_" aria-label$="[[getBackButtonAriaLabel_()]]">
   </cr-icon-button>
   <h2 id="title">$i18n{localProfileCreationTitle}</h2>
-  <img class="avatar" alt="" src$="[[profileThemeInfo.themeGenericAvatar]]">
+  <div id="avatarContainer">
+    <img class="avatar" alt="" src$="[[selectedAvatar_.url]]">
+    <div id="customizeAvatarEllipse"></div>
+    <cr-icon-button id="customizeAvatarIcon"
+        iron-icon="profiles:create" on-click="onCustomizeAvatarClick_"
+        aria-label="$i18n{localProfileCreationCustomizeAvatarLabel}">
+    </cr-icon-button>
+  </div>
 </div>
 
-<div id="wrapperContainer">
+<div id="wrapperContainer" class="custom-scrollbar">
   <div id="wrapper">
     <cr-input id="nameInput" value="{{profileName_}}" pattern="[[pattern_]]"
         placeholder="$i18n{createProfileNamePlaceholder}"
@@ -145,11 +211,28 @@
 <div class="footer">
   <cr-checkbox checked="{{createShortcut_}}"
       hidden="[[!isProfileShortcutsEnabled_]]">
-      $i18n{createDesktopShortcutLabel}
+    $i18n{createDesktopShortcutLabel}
   </cr-checkbox>
 
   <cr-button id="save" class="action-button" on-click="onSaveClick_"
-            disabled="[[isSaveDisabled_(createInProgress_, profileName_)]]">
+      disabled="[[isSaveDisabled_(createInProgress_, profileName_)]]">
     $i18n{createProfileConfirm}
   </cr-button>
 </div>
+
+<cr-dialog id="selectAvatarDialog">
+  <div slot="title">$i18n{selectAnAvatarDialogTitle}</div>
+  <div slot="body">
+    <div id="selectAvatarWrapper" class="custom-scrollbar">
+      <cr-profile-avatar-selector avatars="[[availableIcons_]]"
+          selected-avatar="{{selectedAvatar_}}">
+      </cr-profile-avatar-selector>
+    </div>
+  </div>
+  <div id="buttonContainer" slot="footer">
+    <cr-button id="doneButton" class="action-button"
+        on-click="onDoneSelectAvatarClick_">
+      $i18n{selectAvatarDoneButtonLabel}
+    </cr-button>
+  </div>
+</cr-dialog>

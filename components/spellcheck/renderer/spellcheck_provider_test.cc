@@ -120,7 +120,7 @@ TestingSpellCheckProvider::~TestingSpellCheckProvider() {
 }
 
 void TestingSpellCheckProvider::RequestTextChecking(
-    const base::string16& text,
+    const std::u16string& text,
     std::unique_ptr<blink::WebTextCheckingCompletion> completion) {
   if (!receiver_.is_bound())
     SetSpellCheckHostForTesting(receiver_.BindNewPipeAndPassRemote());
@@ -130,19 +130,19 @@ void TestingSpellCheckProvider::RequestTextChecking(
 
 void TestingSpellCheckProvider::RequestDictionary() {}
 
-void TestingSpellCheckProvider::NotifyChecked(const base::string16& word,
+void TestingSpellCheckProvider::NotifyChecked(const std::u16string& word,
                                               bool misspelled) {}
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 void TestingSpellCheckProvider::CallSpellingService(
-    const base::string16& text,
+    const std::u16string& text,
     CallSpellingServiceCallback callback) {
   OnCallSpellingService(text);
   std::move(callback).Run(true, std::vector<SpellCheckResult>());
 }
 
 void TestingSpellCheckProvider::OnCallSpellingService(
-    const base::string16& text) {
+    const std::u16string& text) {
   ++spelling_service_call_count_;
   if (!text_check_completions_.Lookup(last_identifier_)) {
     ResetResult();
@@ -168,30 +168,24 @@ void TestingSpellCheckProvider::ResetResult() {
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void TestingSpellCheckProvider::RequestTextCheck(
-    const base::string16& text,
+    const std::u16string& text,
     int,
     RequestTextCheckCallback callback) {
   text_check_requests_.push_back(std::make_pair(text, std::move(callback)));
 }
 
-void TestingSpellCheckProvider::CheckSpelling(const base::string16&,
+void TestingSpellCheckProvider::CheckSpelling(const std::u16string&,
                                               int,
                                               CheckSpellingCallback) {
   NOTREACHED();
 }
 
-void TestingSpellCheckProvider::FillSuggestionList(const base::string16&,
+void TestingSpellCheckProvider::FillSuggestionList(const std::u16string&,
                                                    FillSuggestionListCallback) {
   NOTREACHED();
 }
 
 #if defined(OS_WIN)
-void TestingSpellCheckProvider::GetPerLanguageSuggestions(
-    const base::string16& word,
-    GetPerLanguageSuggestionsCallback callback) {
-  NOTREACHED();
-}
-
 void TestingSpellCheckProvider::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   if (base::FeatureList::IsEnabled(
@@ -213,14 +207,14 @@ void TestingSpellCheckProvider::DisconnectSessionBridge() {
 #endif
 
 void TestingSpellCheckProvider::SetLastResults(
-    const base::string16 last_request,
+    const std::u16string last_request,
     blink::WebVector<blink::WebTextCheckingResult>& last_results) {
   last_request_ = last_request;
   last_results_ = last_results;
 }
 
 bool TestingSpellCheckProvider::SatisfyRequestFromCache(
-    const base::string16& text,
+    const std::u16string& text,
     blink::WebTextCheckingCompletion* completion) {
   return SpellCheckProvider::SatisfyRequestFromCache(text, completion);
 }
@@ -237,7 +231,7 @@ int TestingSpellCheckProvider::AddCompletionForTest(
 
 void TestingSpellCheckProvider::OnRespondTextCheck(
     int identifier,
-    const base::string16& line,
+    const std::u16string& line,
     const std::vector<SpellCheckResult>& results) {
   SpellCheckProvider::OnRespondTextCheck(identifier, line, results);
   base::RunLoop().RunUntilIdle();

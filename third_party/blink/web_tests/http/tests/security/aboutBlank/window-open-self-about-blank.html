@@ -4,9 +4,9 @@ if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
     testRunner.setCanOpenWindows();
-    window.open("javascript:'<script>alert(opener.document.domain ? \"PASS\" : \"FAIL: Domain is undefined.\"); setTimeout(\"testRunner.notifyDone();\", 200)</scr" + "ipt>'");
+    window.open("javascript:'<script>console.log(opener.document.domain ? \"PASS\" : \"FAIL: Domain is undefined.\"); setTimeout(\"testRunner.notifyDone();\", 200)</scr" + "ipt>'");
 } else
-    alert("This test should redirect to about:blank without crashing. When run in automated mode, it also checks that the resulting document domain is correct.");
+    console.log("This test should redirect to about:blank without crashing. When run in automated mode, it also checks that the resulting document domain is correct.");
 
 window.open("about:blank", "_self");
 </script>

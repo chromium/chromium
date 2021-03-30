@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">Ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="125153950246128346">Натисніть, щоб побачити іншу вкладку</translation>
+<translation id="1302104331113804646">Налаштування відстеження цін</translation>
+<translation id="1378979118429748177">Отримуйте сповіщення, коли ціни знижуються</translation>
 <translation id="1657719826150349398">Перемістити вкладку вниз</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2277224997687551299">Змінити назву групи</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Видалити <ph name="TABS_COUNT_ONE" /> вибрану вкладку з групи}one{Видалити <ph name="TABS_COUNT_MANY" /> вибрану вкладку з групи}few{Видалити <ph name="TABS_COUNT_MANY" /> вибрані вкладки з групи}many{Видалити <ph name="TABS_COUNT_MANY" /> вибраних вкладок із групи}other{Видалити <ph name="TABS_COUNT_MANY" /> вибраної вкладки з групи}}</translation>
+<translation id="2479148705183875116">Перейти в налаштування</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згорнути <ph name="TABS_COUNT_ONE" /> вкладку}one{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою}few{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}many{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}other{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2569352796411618312">Пропозиція: ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
 <translation id="257674075312929031">Група</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Поділитися групою</translation>
 <translation id="2759453070259087442">Розгорнути групу "<ph name="TITLE_OF_GROUP" />" зі стількома вкладками: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2977480621796371840">Вилучити з групи</translation>
+<translation id="3291470810748040983">Коли на відкритій вкладці знизиться ціна, ви отримаєте сповіщення</translation>
 <translation id="3328308545011660196">Підказка: схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Згорнути <ph name="TABS_COUNT_ONE" /> вкладку}one{Згорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладкою}few{Згорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками}many{Згорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками}other{Згорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
+<translation id="3882834874697329510">Увімкніть їх у налаштуваннях, щоб дізнаватися, коли на відкритій вкладці знижуватиметься ціна.</translation>
+<translation id="3940195383040445971">Відстежувати ціни на вкладках</translation>
+<translation id="3996880007329611795">Отримувати сповіщення</translation>
 <translation id="4133493477912226187">Схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="4212246570487010370">Продовжити перегляд</translation>
 <translation id="4450893287417543264">Більше не показувати</translation>
 <translation id="4648718555153979859">Тут згруповано ваші вкладки</translation>
-<translation id="4922064041913095674">Дізнайтеся, який товар на відкритих вкладках має кращу ціну</translation>
 <translation id="492284538114688557">Виявлено зниження ціни</translation>
 <translation id="5007392906805964215">Переглянути</translation>
 <translation id="5073204694187207510">Сховати повноекранну сітку</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Показати пізніше</translation>
 <translation id="5558362125926932819">Закрити групу зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Згруповано стільки вкладок: <ph name="TAB_COUNT" /></translation>
+<translation id="575494663145460764">Хочете отримувати сповіщення про зниження цін?</translation>
 <translation id="58326064309361797">Перетягуйте вкладки, щоб групувати їх</translation>
 <translation id="5846292395804797011">Закрити групу "<ph name="TITLE_OF_GROUP" />" зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Вийти з режиму вибору кількох вкладок</translation>
 <translation id="7151209024774799310">Видалити вкладки з групи</translation>
 <translation id="7204204600596740190">Режим вибору кількох вкладок</translation>
+<translation id="7352298686197644113">Дізнайтеся, який товар на відкритих вкладках дешевший</translation>
 <translation id="753732157349120914">Перемикач вкладок</translation>
 <translation id="7559245342362162951">Показувати вкладки групи в повноекранній сітці</translation>
 <translation id="7792771145871471484">Переглянути ці вкладки.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Більше не показувати панель вкладок?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрити <ph name="TABS_COUNT_ONE" /> вибрану вкладку}one{Закрити <ph name="TABS_COUNT_MANY" /> вибрану вкладку}few{Закрити <ph name="TABS_COUNT_MANY" /> вибрані вкладки}many{Закрити <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Закрити <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
 <translation id="8557923272772633250">Розгорнути групу зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
+<translation id="860282621117673749">Сповіщення про зниження цін</translation>
+<translation id="8714939927607906138">Дешевше</translation>
 <translation id="8749939518995770034">Панель вкладок закрито</translation>
+<translation id="8820741577754260431">Переглядайте зниження цін на вкладках</translation>
 <translation id="9150694013019234766">Переходьте між вкладками в групі вкладок унизу екрана</translation>
 <translation id="9169594135889675189">Додати нову вкладку в групу</translation>
 <translation id="959682366969460160">Упорядковуйте свої дані</translation>

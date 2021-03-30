@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import androidx.core.app.NotificationCompat;
 
@@ -41,13 +40,12 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.PendingState;
-import org.chromium.components.url_formatter.SchemeDisplay;
-import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.url.GURL;
 
 /**
  * Creates and updates notifications related to downloads.
@@ -87,6 +85,7 @@ public final class DownloadNotificationFactory {
     public static Notification buildNotification(Context context,
             @DownloadNotificationService.DownloadStatus int downloadStatus,
             DownloadUpdate downloadUpdate, int notificationId) {
+        // TODO(xingliu): Write a unit test for this class.
         String channelId = ChromeChannelDefinitions.ChannelId.DOWNLOADS;
         if (LegacyHelpers.isLegacyDownload(downloadUpdate.getContentId())
                 && downloadStatus == DownloadNotificationService.DownloadStatus.COMPLETED
@@ -338,8 +337,8 @@ public final class DownloadNotificationFactory {
         if (!downloadUpdate.getIsTransient() && downloadUpdate.getNotificationId() != -1
                 && downloadStatus != DownloadNotificationService.DownloadStatus.COMPLETED
                 && downloadStatus != DownloadNotificationService.DownloadStatus.FAILED) {
-            Intent downloadHomeIntent = buildActionIntent(
-                    context, ACTION_NOTIFICATION_CLICKED, null, downloadUpdate.getIsOffTheRecord());
+            Intent downloadHomeIntent = buildActionIntent(context, ACTION_NOTIFICATION_CLICKED,
+                    downloadUpdate.getContentId(), downloadUpdate.getIsOffTheRecord());
             builder.setContentIntent(
                     PendingIntentProvider.getService(context, downloadUpdate.getNotificationId(),
                             downloadHomeIntent, PendingIntent.FLAG_UPDATE_CURRENT));
@@ -350,18 +349,11 @@ public final class DownloadNotificationFactory {
             setSubText(builder,
                     context.getResources().getString(
                             R.string.download_notification_incognito_subtext));
-        } else if (downloadUpdate.getShouldPromoteOrigin()
-                && !TextUtils.isEmpty(downloadUpdate.getOriginalUrl())) {
+        } else if (downloadUpdate.getShouldPromoteOrigin()) {
             // Always show the origin URL if available (for normal profiles).
-            String formattedUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                    downloadUpdate.getOriginalUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-
-            if (formattedUrl.length() > MAX_ORIGIN_LENGTH) {
-                // The origin is too long. Strip down to eTLD+1.
-                formattedUrl = UrlUtilities.getDomainAndRegistry(
-                        downloadUpdate.getOriginalUrl(), false /* includePrivateRegistries */);
-            }
-            setSubText(builder, formattedUrl);
+            String formattedUrl = DownloadUtils.formatUrlForDisplayInNotification(
+                    new GURL(downloadUpdate.getOriginalUrl()));
+            if (formattedUrl != null) setSubText(builder, formattedUrl);
         }
 
         return builder.build();

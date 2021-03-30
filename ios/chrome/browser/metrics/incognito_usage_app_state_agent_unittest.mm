@@ -86,6 +86,12 @@ class IncognitoUsageAppStateAgentTest : public PlatformTest {
                 sceneConnected:mock_scene_state2_];
   }
 
+  void TearDown() override {
+    SetScene1DisplaysIncognito(NO);
+    SetScene2DisplaysIncognito(NO);
+    PlatformTest::TearDown();
+  }
+
   base::HistogramTester histogram_tester_;
   base::ScopedMockClockOverride scoped_clock_;
   IncognitoUsageAppStateAgent* incognito_agent_;

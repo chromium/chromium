@@ -41,6 +41,7 @@ class CONTROLLER_EXPORT RendererResourceCoordinatorImpl final
                                     const HTMLFrameOwnerElement& owner) final;
   void OnBeforeContentFrameDetached(const Frame& frame,
                                     const HTMLFrameOwnerElement& owner) final;
+  void FireBackgroundTracingTrigger(const String& trigger_name) final;
 
  private:
   friend class RendererResourceCoordinatorImplTest;
@@ -57,6 +58,7 @@ class CONTROLLER_EXPORT RendererResourceCoordinatorImpl final
           iframe_attribution_data);
   void DispatchOnV8ContextDetached(const blink::V8ContextToken& token);
   void DispatchOnV8ContextDestroyed(const blink::V8ContextToken& token);
+  void DispatchFireBackgroundTracingTrigger(const String& trigger_name);
 
   mojo::Remote<performance_manager::mojom::blink::ProcessCoordinationUnit>
       service_;

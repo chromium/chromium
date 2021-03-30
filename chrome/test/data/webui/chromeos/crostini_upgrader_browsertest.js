@@ -7,7 +7,7 @@
  */
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
-GEN('#include "chromeos/constants/chromeos_features.h"');
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 function CrostiniUpgraderBrowserTest() {}
@@ -17,10 +17,6 @@ CrostiniUpgraderBrowserTest.prototype = {
 
   browsePreload:
       'chrome://crostini-upgrader/test_loader.html?module=chromeos/crostini_upgrader_app_test.js',
-
-  extraLibraries: [],
-
-  featureList: {enabled: ['chromeos::features::kCrostiniWebUIUpgrader']},
 };
 
 

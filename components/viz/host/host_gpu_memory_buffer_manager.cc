@@ -71,6 +71,7 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
     : gpu_service_provider_(gpu_service_provider),
       client_id_(client_id),
       gpu_memory_buffer_support_(std::move(gpu_memory_buffer_support)),
+      pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       task_runner_(std::move(task_runner)) {
   if (!WillGetGmbConfigFromGpu()) {
     native_configurations_ = gpu::GetNativeGpuMemoryBufferConfigurations(
@@ -238,7 +239,8 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       base::BindOnce(
           &OnGpuMemoryBufferDestroyed, task_runner_,
           base::BindOnce(&HostGpuMemoryBufferManager::DestroyGpuMemoryBuffer,
-                         weak_ptr_, id, client_id_)));
+                         weak_ptr_, id, client_id_)),
+      this, pool_);
 }
 
 void HostGpuMemoryBufferManager::SetDestructionSyncToken(
@@ -246,6 +248,27 @@ void HostGpuMemoryBufferManager::SetDestructionSyncToken(
     const gpu::SyncToken& sync_token) {
   static_cast<gpu::GpuMemoryBufferImpl*>(buffer)->set_destruction_sync_token(
       sync_token);
+}
+
+void HostGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  if (auto* gpu_service = GetGpuService()) {
+    gpu_service->CopyGpuMemoryBuffer(std::move(buffer_handle),
+                                     std::move(memory_region),
+                                     std::move(callback));
+  } else {
+    // GPU service failed to start. Run the callback with a null handle.
+    std::move(callback).Run(false);
+  }
+}
+
+bool HostGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool HostGpuMemoryBufferManager::OnMemoryDump(

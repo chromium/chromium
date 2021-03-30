@@ -9,11 +9,11 @@
 
 #include "extensions/browser/extension_function.h"
 
-namespace chromeos {
+namespace ash {
 namespace certificate_provider {
 struct CertificateInfo;
-}
-}
+}  // namespace certificate_provider
+}  // namespace ash
 
 namespace extensions {
 

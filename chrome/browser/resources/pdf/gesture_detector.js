@@ -102,7 +102,7 @@ export class GestureDetector {
 
     this.pinchStartEvent_ = event;
     this.lastEvent_ = event;
-    this.notify_('pinchstart', {center: GestureDetector.center_(event)});
+    this.notify_('pinchstart', {center: center(event)});
   }
 
   /**
@@ -120,27 +120,23 @@ export class GestureDetector {
     // Check if the pinch ends with the current event.
     if (event.touches.length < 2 ||
         lastEvent.touches.length !== event.touches.length) {
-      const startScaleRatio =
-          GestureDetector.pinchScaleRatio_(lastEvent, this.pinchStartEvent_);
-      const center = GestureDetector.center_(lastEvent);
+      const startScaleRatio = pinchScaleRatio(lastEvent, this.pinchStartEvent_);
       this.pinchStartEvent_ = null;
       this.lastEvent_ = null;
       this.notify_('pinchend', {
         startScaleRatio: startScaleRatio,
-        center: center,
+        center: center(lastEvent),
       });
       return;
     }
 
-    const scaleRatio = GestureDetector.pinchScaleRatio_(event, lastEvent);
-    const startScaleRatio =
-        GestureDetector.pinchScaleRatio_(event, this.pinchStartEvent_);
-    const center = GestureDetector.center_(event);
+    const scaleRatio = pinchScaleRatio(event, lastEvent);
+    const startScaleRatio = pinchScaleRatio(event, this.pinchStartEvent_);
     this.notify_('pinchupdate', {
       scaleRatio: scaleRatio,
       direction: scaleRatio > 1.0 ? 'in' : 'out',
       startScaleRatio: startScaleRatio,
-      center: center,
+      center: center(event),
     });
 
     this.lastEvent_ = event;
@@ -222,50 +218,47 @@ export class GestureDetector {
       e.preventDefault();
     }
   }
+}
 
-  /**
-   * Computes the change in scale between this touch event
-   * and a previous one.
-   * @param {!TouchEvent} event Latest touch event on the element.
-   * @param {!TouchEvent} prevEvent A previous touch event on the element.
-   * @return {?number} The ratio of the scale of this event and the
-   *     scale of the previous one.
-   * @private
-   */
-  static pinchScaleRatio_(event, prevEvent) {
-    const distance1 = GestureDetector.distance_(prevEvent);
-    const distance2 = GestureDetector.distance_(event);
-    return distance1 === 0 ? null : distance2 / distance1;
-  }
+/**
+ * Computes the change in scale between this touch event
+ * and a previous one.
+ * @param {!TouchEvent} event Latest touch event on the element.
+ * @param {!TouchEvent} prevEvent A previous touch event on the element.
+ * @return {?number} The ratio of the scale of this event and the
+ *     scale of the previous one.
+ */
+function pinchScaleRatio(event, prevEvent) {
+  const distance1 = distance(prevEvent);
+  const distance2 = distance(event);
+  return distance1 === 0 ? null : distance2 / distance1;
+}
 
-  /**
-   * Computes the distance between fingers.
-   * @param {!TouchEvent} event Touch event with at least 2 touch points.
-   * @return {number} Distance between touch[0] and touch[1].
-   * @private
-   */
-  static distance_(event) {
-    const touch1 = event.touches[0];
-    const touch2 = event.touches[1];
-    const dx = touch1.clientX - touch2.clientX;
-    const dy = touch1.clientY - touch2.clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
+/**
+ * Computes the distance between fingers.
+ * @param {!TouchEvent} event Touch event with at least 2 touch points.
+ * @return {number} Distance between touch[0] and touch[1].
+ */
+function distance(event) {
+  const touch1 = event.touches[0];
+  const touch2 = event.touches[1];
+  const dx = touch1.clientX - touch2.clientX;
+  const dy = touch1.clientY - touch2.clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
 
-  /**
-   * Computes the midpoint between fingers.
-   * @param {!TouchEvent} event Touch event with at least 2 touch points.
-   * @return {!Point} Midpoint between touch[0] and touch[1].
-   * @private
-   */
-  static center_(event) {
-    const touch1 = event.touches[0];
-    const touch2 = event.touches[1];
-    return {
-      x: (touch1.clientX + touch2.clientX) / 2,
-      y: (touch1.clientY + touch2.clientY) / 2
-    };
-  }
+/**
+ * Computes the midpoint between fingers.
+ * @param {!TouchEvent} event Touch event with at least 2 touch points.
+ * @return {!Point} Midpoint between touch[0] and touch[1].
+ */
+function center(event) {
+  const touch1 = event.touches[0];
+  const touch2 = event.touches[1];
+  return {
+    x: (touch1.clientX + touch2.clientX) / 2,
+    y: (touch1.clientY + touch2.clientY) / 2
+  };
 }
 
 // Export on |window| such that scripts injected from pdf_extension_test.cc can

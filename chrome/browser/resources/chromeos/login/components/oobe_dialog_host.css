@@ -35,41 +35,24 @@
   padding-top: 20px;
 }
 
-cr-input.oobe-input {
-  max-width: 560px;
-  padding-bottom: 8px;
+/* Center-align both vertically and horizontally */
+.content-centered {
+  margin: auto;
 }
 
-/* -- WebviewScrollShadowsHelper --
- * Variables that are used for displaying scroll shadows in OOBE.
- */
-:host {
-  --oobe-scroll-shadow-common: {
-    content: '';
-    height: 100%;
-    opacity: 0.3;
-    pointer-events: none;
-    position: absolute;
-    width: 100%;
-  };
+/* Center-align vertically in landscape mode */
+:host-context([orientation=horizontal]) .landscape-vertical-centered {
+  margin: auto 0;
+}
 
-  --oobe-scroll-shadow-bottom: {
-    @apply --oobe-scroll-shadow-common;
-    background: linear-gradient(0deg, var(--google-grey-400) 0,
-                                      transparent 8px);
-  };
+/* Align with header in landscape mode */
+:host-context([orientation=horizontal]) .landscape-header-aligned {
+  padding-top: calc(var(--oobe-adaptive-dialog-header-top-padding)
+      + var(--oobe-adaptive-dialog-title-top-padding)
+      + var(--oobe-adaptive-dialog-icon-size));
+}
 
-  --oobe-scroll-shadow-top-and-bottom: {
-    @apply --oobe-scroll-shadow-common;
-    background: linear-gradient(0deg,   var(--google-grey-400) 0,
-                                        transparent 8px),
-                linear-gradient(180deg, var(--google-grey-400) 0,
-                                        transparent 8px);
-  };
-
-  --oobe-scroll-shadow-top: {
-    @apply --oobe-scroll-shadow-common;
-    background: linear-gradient(180deg, var(--google-grey-400) 0,
-                                      transparent 8px);
-  };
+/* Center-align horizontally in portrait mode */
+:host-context([orientation=vertical]) .portrait-horizontal-centered {
+  margin: 0 auto;
 }

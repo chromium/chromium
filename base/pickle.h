@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -46,7 +45,7 @@ class BASE_EXPORT PickleIterator {
   bool ReadString(std::string* result) WARN_UNUSED_RESULT;
   // The StringPiece data will only be valid for the lifetime of the message.
   bool ReadStringPiece(StringPiece* result) WARN_UNUSED_RESULT;
-  bool ReadString16(string16* result) WARN_UNUSED_RESULT;
+  bool ReadString16(std::u16string* result) WARN_UNUSED_RESULT;
   // The StringPiece16 data will only be valid for the lifetime of the message.
   bool ReadStringPiece16(StringPiece16* result) WARN_UNUSED_RESULT;
 

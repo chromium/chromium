@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Filen eller katalogen kan inte användas.</translation>
 <translation id="1363028406613469049">Spår</translation>
 <translation id="1378727793141957596">Välkommen till Google Drive!</translation>
+<translation id="1379911846207762492">Du kan göra filer tillgängliga offline så att du kommer åt dem när du inte har någon internetanslutning.</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1395262318152388157">Sökningsreglage</translation>
 <translation id="1404323374378969387">norska</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Alla filer</translation>
 <translation id="1810764548349082891">Ingen förhandsgranskning</translation>
 <translation id="1812302367230252929">amhariska, translitterering</translation>
+<translation id="1813278315230285598">Tjänster</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Varning!<ph name="END_BOLD" />  De här filerna är tillfälliga och kan tas bort automatiskt för att frigöra utrymme på hårddisken.  <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Läser in information …</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Den här mappen delas med Linux</translation>
 <translation id="1864756863218646478">Filen hittades inte.</translation>
 <translation id="1920670151694390848">malayalam, translitterering</translation>
+<translation id="1920798810075583923">Vattenmelon</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> har formaterats</translation>
 <translation id="1931134289871235022">Slovakiska</translation>
 <translation id="1933345018156373194">Flytten misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">finska</translation>
 <translation id="1942765061641586207">Bildupplösning</translation>
-<translation id="1943097386230153518">Installera ny tjänst</translation>
 <translation id="1972984168337863910">Utöka panel med information om filåtgärder</translation>
+<translation id="1984456723671657197">Den här filtypen stöds inte. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="1995337122023280937">Gå till filens plats</translation>
 <translation id="2001796770603320721">Hantera i Drive</translation>
 <translation id="2009067268969781306">Om du formaterar en enhet raderas all data som lagras på den. Det går inte att ångra åtgärden.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Skivspelare</translation>
 <translation id="2291538123825441971">Öppnar <ph name="NUMBER_OF_FILES" /> filer.</translation>
 <translation id="2303301624314357662">Öppnar filen <ph name="FILE_NAME" /></translation>
+<translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> har tagits bort.</translation>
 <translation id="2325650632570794183">Filtypen stöds inte. Besök Chrome Web Store om du vill hitta en app som kan öppna den här filtypen.</translation>
 <translation id="2326539130272988168">bulgariska</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">USA (internationell)</translation>
 <translation id="2562685439590298522">Dokument</translation>
 <translation id="2563185590376525700">Groda</translation>
-<translation id="2572501073504669105">Du kan göra filer tillgängliga offline så att du kommer åt de, när du inte har internetanslutning.</translation>
 <translation id="2578394532502990878">tamil, fonetiskt</translation>
 <translation id="2579959351793446050">odia</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">franska (Kanada)</translation>
 <translation id="3003633581067744647">Byt till miniatyrvy</translation>
 <translation id="3007214526293698309">Fixera förhållande</translation>
+<translation id="3029114385395636667">Aktivera Google Dokument Offline om du vill komma åt Dokument, Kalkylark och Presentationer offline.</translation>
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3047197340186497470">kinesiska (dayi)</translation>
 <translation id="3057861065630527966">Säkerhetskopiera foton och videor</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Inspelningsår</translation>
 <translation id="3353984535370177728">Välj en mapp för uppladdning</translation>
 <translation id="3356580349448036450">Klart</translation>
+<translation id="3358452157379365236">Gitarr</translation>
 <translation id="3382143449143186018">nepali med InScript-tangentbord</translation>
 <translation id="3408236822532681288">tyska (Tyskland) med Neo 2-tangentbord</translation>
 <translation id="3414856743105198592">Om du formaterar det flyttbara mediet raderas alla data. Vill du fortsätta?</translation>
 <translation id="3437801641691368414">Skapades</translation>
+<translation id="343907260260897561">Direktbildskamera</translation>
 <translation id="3455931012307786678">estniska</translation>
 <translation id="3466147780910026086">Söker igenom mediaenheten ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> foton har säkerhetskopierats på <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Kalkylark i Google Dokument</translation>
+<translation id="3479552764303398839">Inte nu</translation>
 <translation id="3486821258960016770">mongoliska</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> fel.</translation>
 <translation id="3522708245912499433">portugisiska</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Om du vill öppna filer med <ph name="APP_NAME" /> måste du först kopiera dem till Windows-mappen.</translation>
 <translation id="3556731189587832921">engelska (USA) med internationellt PC-tangentbord</translation>
 <translation id="357479282490346887">litauiska</translation>
+<translation id="3592251141500063301">Det gick inte att göra <ph name="FILE_NAME" /> tillgänglig offline</translation>
 <translation id="3603385196401704894">Kanadensisk franska</translation>
 <translation id="3606220979431771195">Turkiska F</translation>
 <translation id="3616113530831147358">Ljud</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Enhörning</translation>
 <translation id="4158739975813877944">Öppna spellistan</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> har flyttats.</translation>
+<translation id="4186579485882418952">Aktivera offline</translation>
 <translation id="4193154014135846272">Google Dokument</translation>
 <translation id="4197674956721858839">Zippa markerade filer</translation>
 <translation id="4202378258276439759">spanska (Latinamerika)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Allmän information</translation>
 <translation id="432252891123397018">rumänskt standardtangentbord</translation>
 <translation id="4325128273762811722">slovenska</translation>
+<translation id="4326142238881453352">Botaniker</translation>
 <translation id="4326192123064055915">Kaffe</translation>
 <translation id="4336032328163998280">Kopieringen misslyckades. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">sorani/kurdiska med arabiskt tangentbord</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">tamilskt tangentbord (skrivmaskin)</translation>
 <translation id="4711094779914110278">turkiska</translation>
 <translation id="4712283082407695269">Öppnar <ph name="PATH" /></translation>
-<translation id="4713544552769165154">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med Chrome OS, det operativsystem som körs på din enhet. Sök på <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> efter en lämplig app att använda i stället.<ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foton har säkerhetskopierats</translation>
 <translation id="4725511304875193254">Welsh corgi</translation>
 <translation id="4732760563705710320">Den här videon stöds tyvärr inte av överföringsenheten.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Dela, skapa och jobba<ph name="MARKUP_8" />
     med filer tillsammans med andra på ett och samma ställe.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Återställda filer från Google Drive</translation>
+<translation id="5288441970121584418">Hamburgare</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5318819489018851358">Dela med Linux</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">Den här filen verkar ha gått sin väg. Kontrollera inställningen för nedladdade filer och försök igen.</translation>
 <translation id="5838451609423551646">Alla poster har avmarkerats.</translation>
 <translation id="5838825566232597749">US Workman (internationellt)</translation>
-<translation id="5850516540536751549">Filtypen stöds inte. Besök <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> om du vill hitta en app som kan öppna den här filen.
-    <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Det finns ingenting att se här ...</translation>
 <translation id="5911887972742538906">Ett fel uppstod under installationen av Linux-programmet.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">Aktivera undertexter</translation>
 <translation id="6269630227984243955">malajiska</translation>
 <translation id="6287852322318138013">Välj en app om du vill öppna filen</translation>
+<translation id="6321303798550928047">Vinkar</translation>
 <translation id="6339145975392024142">Internationellt för USA (PC)</translation>
 <translation id="6346310558342052870">Begränsad åtkomst</translation>
 <translation id="6356685157277930264">Feedback för filfönster</translation>
 <translation id="6358884629796491903">Drake</translation>
+<translation id="6367976544441405720">Skåpbil</translation>
 <translation id="637062427944097960">Filen öppnades på ett annat skrivbord. Byt till <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om du vill visa den.</translation>
 <translation id="6394388407447716302">Skrivskyddat</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> objekt</translation>
@@ -527,6 +537,7 @@
 <translation id="6650726141019353908">Rosa fjäril</translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6673674183150363784">franska (Frankrike) med Bépo-tangentbord</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="6751256176799620176">1 mapp har valts</translation>
 <translation id="6790428901817661496">Spela</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">bulgariska</translation>
 <translation id="6973630695168034713">Mappar</translation>
+<translation id="6976795442547527108">Lejon</translation>
 <translation id="6978611942794658017">Den här filen är avsedd för en dator med Windows-programvara. Den är inte kompatibel med din enhet, som har Chrome OS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">svenska</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">persisk translitterering</translation>
 <translation id="7544830582642184299">Ge Linux-appar behörighet att öppna filer på din Google Drive. Ändringarna synkroniseras med dina andra enheter.</translation>
 <translation id="7544853251252956727">Blanda</translation>
+<translation id="7547009467130558110">Gympasko</translation>
 <translation id="7547780573915868306">litauiska</translation>
 <translation id="7547811415869834682">nederländska</translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" /> % klart.</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> objekt flyttas ...</translation>
+<translation id="7655441028674523381">Kom enkelt åt Google Foto</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7663224033570512922">hindi</translation>
 <translation id="7693909743393669729">Om du formaterar en enhet raderas all data på den och alla partitioner tas bort, även sådana som inte visas. Det går inte att ångra åtgärden.</translation>
@@ -651,7 +665,6 @@
 <translation id="7839804798877833423">Att hämta dessa filer kräver ungefär <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Rensa val</translation>
 <translation id="7853966320808728790">franska (BÉPO)</translation>
-<translation id="7864662577698025113">Lägg till ny tjänst</translation>
 <translation id="7868774406711971383">polska</translation>
 <translation id="7873831373602885875">Det går inte att spara i <ph name="FOLDER_NAME" />. Alla ändringar sparas i <ph name="DOWNLOADS_FOLDER" /> i mappen Nedladdningar.</translation>
 <translation id="7874321682039004450">filipino</translation>
@@ -666,13 +679,13 @@
 <translation id="7972920761225148017">franska (Schweiz)</translation>
 <translation id="7980421588063892270">engelska (USA) med Colemak-tangentbord</translation>
 <translation id="7982283708762922719">Höjd</translation>
+<translation id="79907182588096956">Den här filen är avsedd för en Windows-dator. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="8008366997883261463">Hund</translation>
 <translation id="8028993641010258682">Storlek</translation>
 <translation id="803771048473350947">Arkiv</translation>
 <translation id="8038111231936746805">(standard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-ljud</translation>
 <translation id="8045462269890919536">rumänska</translation>
-<translation id="8052887694493382350">Den här filen är avsedd för en dator med Windows-programvara. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Alla ändringar sparas i <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Upprepa</translation>
 <translation id="8106045200081704138">Delade med mig</translation>
@@ -712,6 +725,7 @@
 <translation id="8466234950814670489">Tar-arkiv</translation>
 <translation id="8475647382427415476">Det gick inte att synkronisera <ph name="FILENAME" /> med Google Drive just nu. Ett nytt försök görs senare.</translation>
 <translation id="8477649328507734757">Snurra</translation>
+<translation id="8484284835977497781">Välj bland dina senaste foton.</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>
 <translation id="8521441079177373948">Storbritannien</translation>
 <translation id="8525306231823319788">Helskärm</translation>
@@ -744,8 +758,10 @@
 <translation id="8860454412039442620">Excel-kalkylark</translation>
 <translation id="8866284467018526531">arabiska, translitterering</translation>
 <translation id="8900820606136623064">ungerska</translation>
+<translation id="8903931173357132290">Kandidat</translation>
 <translation id="8919081441417203123">danska</translation>
 <translation id="8965697826696209160">Det finns inte tillräckligt med ledigt utrymme.</translation>
+<translation id="8970501467542182729">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="8997962250644902079">traditionell kinesiska (pinyin)</translation>
 <translation id="9017798300203431059">Ryska (fonetiskt)</translation>
 <translation id="9034924485347205037">Linux-filer</translation>

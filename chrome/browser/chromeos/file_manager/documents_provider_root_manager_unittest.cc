@@ -7,8 +7,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/chromeos/file_manager/documents_provider_root_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/arc_features.h"
@@ -65,8 +64,6 @@ class DocumentsProviderRootManagerTest : public testing::Test {
   ~DocumentsProviderRootManagerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        arc::kEnableDocumentsProviderInFilesAppFeature);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
     profile_ = std::make_unique<TestingProfile>();
     arc::ArcFileSystemBridge::GetForBrowserContextForTesting(profile_.get());
@@ -94,9 +91,12 @@ class DocumentsProviderRootManagerTest : public testing::Test {
   void AddFakeRoot(const std::string& authority,
                    const std::string& root_id,
                    const std::string& document_id,
-                   const std::string& title) {
+                   const std::string& title,
+                   int64_t available_bytes,
+                   int64_t capacity_bytes) {
     file_system_instance_.AddRoot(arc::FakeFileSystemInstance::Root(
-        authority, root_id, document_id, title));
+        authority, root_id, document_id, title, available_bytes,
+        capacity_bytes));
   }
 
   TestObserver& observer() { return observer_; }
@@ -111,14 +111,13 @@ class DocumentsProviderRootManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<arc::ArcFileSystemOperationRunner> runner_;
   TestObserver observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(DocumentsProviderRootManagerTest);
 };
 
 TEST_F(DocumentsProviderRootManagerTest, AddMultipleRoots) {
-  AddFakeRoot("authority1", "", "", "");
-  AddFakeRoot("authority2", "", "", "");
+  AddFakeRoot("authority1", "123", "", "", 10, 100);
+  AddFakeRoot("authority2", "456", "", "", 100, 1000);
   root_manager_->SetEnabled(true);
   base::RunLoop().RunUntilIdle();
 
@@ -129,11 +128,11 @@ TEST_F(DocumentsProviderRootManagerTest, AddMultipleRoots) {
 }
 
 TEST_F(DocumentsProviderRootManagerTest, ExcludeBlacklistedRoots) {
-  AddFakeRoot("authority1", "", "", "");
-  AddFakeRoot("com.android.externalstorage.documents", "", "", "");
-  AddFakeRoot("com.android.providers.downloads.documents", "", "", "");
-  AddFakeRoot("com.android.providers.media.documents", "", "", "");
-  AddFakeRoot("com.google.android.apps.docs.storage", "", "", "");
+  AddFakeRoot("authority1", "123", "", "", 10, 100);
+  AddFakeRoot("com.android.externalstorage.documents", "", "", "", -1, -1);
+  AddFakeRoot("com.android.providers.downloads.documents", "", "", "", -1, -1);
+  AddFakeRoot("com.android.providers.media.documents", "", "", "", -1, -1);
+  AddFakeRoot("com.google.android.apps.docs.storage", "", "", "", -1, -1);
   root_manager_->SetEnabled(true);
   base::RunLoop().RunUntilIdle();
 
@@ -144,8 +143,8 @@ TEST_F(DocumentsProviderRootManagerTest, ExcludeBlacklistedRoots) {
 }
 
 TEST_F(DocumentsProviderRootManagerTest, DisableRootManager) {
-  AddFakeRoot("authority1", "", "", "");
-  AddFakeRoot("authority2", "", "", "");
+  AddFakeRoot("authority1", "123", "", "", 10, 100);
+  AddFakeRoot("authority2", "456", "", "", 100, 1000);
   root_manager_->SetEnabled(true);
   base::RunLoop().RunUntilIdle();
 
@@ -163,8 +162,8 @@ TEST_F(DocumentsProviderRootManagerTest, DisableRootManager) {
 }
 
 TEST_F(DocumentsProviderRootManagerTest, DoNotNotifyUnchangedRoot) {
-  AddFakeRoot("authority1", "", "", "");
-  AddFakeRoot("authority2", "", "", "");
+  AddFakeRoot("authority1", "123", "", "", 10, 100);
+  AddFakeRoot("authority2", "456", "", "", 100, 1000);
   root_manager_->SetEnabled(true);
   base::RunLoop().RunUntilIdle();
 
@@ -173,7 +172,7 @@ TEST_F(DocumentsProviderRootManagerTest, DoNotNotifyUnchangedRoot) {
   EXPECT_EQ(0u, observer().removed_authorities().size());
   observer().Reset();
 
-  AddFakeRoot("authority3", "", "", "");
+  AddFakeRoot("authority3", "789", "", "", 1000, 10000);
   root_manager_->OnRootsChanged();
   base::RunLoop().RunUntilIdle();
 

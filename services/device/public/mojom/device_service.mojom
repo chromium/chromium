@@ -10,7 +10,6 @@ import "services/device/public/mojom/battery_monitor.mojom";
 import "services/device/public/mojom/geolocation_config.mojom";
 import "services/device/public/mojom/geolocation_context.mojom";
 import "services/device/public/mojom/geolocation_control.mojom";
-import "services/device/public/mojom/nfc_provider.mojom";
 import "services/device/public/mojom/power_monitor.mojom";
 import "services/device/public/mojom/public_ip_address_geolocation_provider.mojom";
 import "services/device/public/mojom/screen_orientation.mojom";
@@ -21,6 +20,9 @@ import "services/device/public/mojom/usb_manager.mojom";
 import "services/device/public/mojom/usb_manager_test.mojom";
 import "services/device/public/mojom/vibration_manager.mojom";
 import "services/device/public/mojom/wake_lock_provider.mojom";
+
+[EnableIf=is_android]
+import "services/device/public/mojom/nfc_provider.mojom";
 
 [EnableIf=is_chromeos]
 import "services/device/public/mojom/bluetooth_system.mojom";
@@ -57,6 +59,7 @@ interface DeviceService {
   BindBatteryMonitor(pending_receiver<BatteryMonitor> receiver);
 
   // Binds a NFCProvider endpoint.
+  [EnableIf=is_android]
   BindNFCProvider(pending_receiver<NFCProvider> receiver);
 
   // Binds a VibrationManager endpoint.

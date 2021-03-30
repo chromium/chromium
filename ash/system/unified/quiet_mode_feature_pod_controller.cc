@@ -126,7 +126,7 @@ void QuietModeFeaturePodController::OnNotifiersUpdated(
   }
 }
 
-base::string16 QuietModeFeaturePodController::GetQuietModeStateTooltip() {
+std::u16string QuietModeFeaturePodController::GetQuietModeStateTooltip() {
   return l10n_util::GetStringUTF16(
       MessageCenter::Get()->IsQuietMode()
           ? IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_ON_STATE

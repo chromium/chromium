@@ -32,17 +32,19 @@ namespace fido {
 namespace mac {
 
 // static
-bool TouchIdAuthenticator::IsAvailable(const AuthenticatorConfig& config) {
+void TouchIdAuthenticator::IsAvailable(
+    AuthenticatorConfig config,
+    base::OnceCallback<void(bool is_available)> callback) {
   if (__builtin_available(macOS 10.12.2, *)) {
-    return TouchIdContext::TouchIdAvailable(config);
+    TouchIdContext::TouchIdAvailable(std::move(config), std::move(callback));
+    return;
   }
-  return false;
+  std::move(callback).Run(false);
 }
 
 // static
 std::unique_ptr<TouchIdAuthenticator> TouchIdAuthenticator::Create(
     AuthenticatorConfig config) {
-  DCHECK(IsAvailable(config));
   return base::WrapUnique(
       new TouchIdAuthenticator(std::move(config.keychain_access_group),
                                std::move(config.metadata_secret)));
@@ -51,7 +53,7 @@ std::unique_ptr<TouchIdAuthenticator> TouchIdAuthenticator::Create(
 TouchIdAuthenticator::~TouchIdAuthenticator() = default;
 
 bool TouchIdAuthenticator::HasCredentialForGetAssertionRequest(
-    const CtapGetAssertionRequest& request) {
+    const CtapGetAssertionRequest& request) const {
   if (__builtin_available(macOS 10.12.2, *)) {
     if (request.allow_list.empty()) {
       base::Optional<std::list<Credential>> resident_credentials =
@@ -74,6 +76,33 @@ bool TouchIdAuthenticator::HasCredentialForGetAssertionRequest(
   }
   NOTREACHED();
   return false;
+}
+
+std::vector<PublicKeyCredentialUserEntity>
+TouchIdAuthenticator::GetResidentCredentialUsersForRequest(
+    const CtapGetAssertionRequest& request) const {
+  if (__builtin_available(macOS 10.12.2, *)) {
+    DCHECK(request.allow_list.empty());
+    base::Optional<std::list<Credential>> resident_credentials =
+        credential_store_.FindResidentCredentials(request.rp_id);
+    if (!resident_credentials) {
+      FIDO_LOG(ERROR) << "FindResidentCredentials() failed";
+      return {};
+    }
+    std::vector<PublicKeyCredentialUserEntity> result;
+    for (const auto& credential : *resident_credentials) {
+      base::Optional<CredentialMetadata> metadata =
+          credential_store_.UnsealMetadata(request.rp_id, credential);
+      if (!metadata) {
+        FIDO_LOG(ERROR) << "Could not unseal metadata from resident credential";
+        continue;
+      }
+      result.push_back(metadata->ToPublicKeyCredentialUserEntity());
+    }
+    return result;
+  }
+  NOTREACHED();
+  return {};
 }
 
 void TouchIdAuthenticator::InitializeAuthenticator(base::OnceClosure callback) {

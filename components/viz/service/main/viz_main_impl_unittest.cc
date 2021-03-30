@@ -49,12 +49,16 @@ class MockVizCompositorThreadRunner : public VizCompositorThreadRunner {
       base::SingleThreadTaskRunner* task_runner)
       : VizCompositorThreadRunner(), task_runner_(task_runner) {}
 
+  base::PlatformThreadId thread_id() override {
+    return base::PlatformThreadId();
+  }
   base::SingleThreadTaskRunner* task_runner() override { return task_runner_; }
   MOCK_METHOD1(CreateFrameSinkManager, void(mojom::FrameSinkManagerParamsPtr));
-  MOCK_METHOD3(CreateFrameSinkManager,
+  MOCK_METHOD4(CreateFrameSinkManager,
                void(mojom::FrameSinkManagerParamsPtr,
                     gpu::CommandBufferTaskExecutor*,
-                    GpuServiceImpl*));
+                    GpuServiceImpl*,
+                    gfx::RenderingPipeline*));
 #if BUILDFLAG(USE_VIZ_DEVTOOLS)
   MOCK_METHOD1(CreateVizDevTools, void(mojom::VizDevToolsParamsPtr));
 #endif
@@ -73,7 +77,7 @@ class MockPowerMonitorSource : public base::PowerMonitorSource {
 
   ~MockPowerMonitorSource() override { *leak_guard_ = false; }
 
-  bool IsOnBatteryPowerImpl() override { return false; }
+  bool IsOnBatteryPower() override { return false; }
 
  private:
   // An external flag to signal as to whether or not this object is still

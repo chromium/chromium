@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/win/windows_version.h"
@@ -34,8 +33,8 @@
 namespace {
 
 // Toolbar favorites are placed under this special folder name.
-const base::char16 kFavoritesBarTitle[] = L"_Favorites_Bar_";
-const base::char16 kSpartanDatabaseFile[] = L"spartan.edb";
+const char16_t kFavoritesBarTitle[] = u"_Favorites_Bar_";
+const wchar_t kSpartanDatabaseFile[] = L"spartan.edb";
 
 struct EdgeFavoriteEntry {
   EdgeFavoriteEntry()
@@ -44,7 +43,7 @@ struct EdgeFavoriteEntry {
         item_id(GUID_NULL),
         parent_id(GUID_NULL) {}
 
-  base::string16 title;
+  std::u16string title;
   GURL url;
   base::FilePath favicon_file;
   bool is_folder;
@@ -57,7 +56,7 @@ struct EdgeFavoriteEntry {
 
   ImportedBookmarkEntry ToBookmarkEntry(
       bool in_toolbar,
-      const std::vector<base::string16>& path) const {
+      const std::vector<std::u16string>& path) const {
     ImportedBookmarkEntry entry;
     entry.in_toolbar = in_toolbar;
     entry.is_folder = is_folder;
@@ -119,13 +118,13 @@ void BuildBookmarkEntries(const EdgeFavoriteEntry& current_entry,
                           bool is_toolbar,
                           std::vector<ImportedBookmarkEntry>* bookmarks,
                           favicon_base::FaviconUsageDataList* favicons,
-                          std::vector<base::string16>* path) {
+                          std::vector<std::u16string>* path) {
   for (const EdgeFavoriteEntry* entry : current_entry.children) {
     if (entry->is_folder) {
       // If the favorites bar then load all children as toolbar items.
       if (base::EqualsCaseInsensitiveASCII(entry->title, kFavoritesBarTitle)) {
         // Replace name with Links similar to IE.
-        path->push_back(L"Links");
+        path->push_back(u"Links");
         BuildBookmarkEntries(*entry, true, bookmarks, favicons, path);
         path->pop_back();
       } else {
@@ -177,7 +176,7 @@ void EdgeImporter::ImportFavorites() {
   ParseFavoritesDatabase(&bookmarks, &favicons);
 
   if (!bookmarks.empty() && !cancelled()) {
-    const base::string16& first_folder_name =
+    const std::u16string& first_folder_name =
         l10n_util::GetStringUTF16(IDS_BOOKMARK_GROUP_FROM_EDGE);
     bridge_->AddBookmarks(bookmarks, first_folder_name);
   }
@@ -218,8 +217,8 @@ void EdgeImporter::ParseFavoritesDatabase(
   // attribute, as the open database operation will fail in such cases.
   // The log folder will usually not be present when running the unit tests.
   if (base::PathExists(log_folder))
-    database.set_log_folder(log_folder.value());
-  if (!database.OpenDatabase(database_path.value())) {
+    database.set_log_folder(log_folder);
+  if (!database.OpenDatabase(database_path)) {
     DVLOG(1) << "Error opening database " << database.GetErrorMessage();
     return;
   }
@@ -248,7 +247,7 @@ void EdgeImporter::ParseFavoritesDatabase(
       continue;
     if (!enumerator->RetrieveColumn(L"IsFolder", &entry.is_folder))
       continue;
-    base::string16 url;
+    std::u16string url;
     if (!enumerator->RetrieveColumn(L"URL", &url))
       continue;
     entry.url = GURL(url);
@@ -256,11 +255,13 @@ void EdgeImporter::ParseFavoritesDatabase(
       continue;
     if (!enumerator->RetrieveColumn(L"Title", &entry.title))
       continue;
-    base::string16 favicon_file;
+    std::u16string favicon_file;
     if (!enumerator->RetrieveColumn(L"FaviconFile", &favicon_file))
       continue;
-    if (!favicon_file.empty())
-      entry.favicon_file = favicon_base.Append(favicon_file);
+    if (!favicon_file.empty()) {
+      entry.favicon_file =
+          favicon_base.Append(base::FilePath::FromUTF16Unsafe(favicon_file));
+    }
     if (!enumerator->RetrieveColumn(L"ParentId", &entry.parent_id))
       continue;
     if (!enumerator->RetrieveColumn(L"ItemId", &entry.item_id))
@@ -292,6 +293,6 @@ void EdgeImporter::ParseFavoritesDatabase(
     std::sort(entry.second.children.begin(), entry.second.children.end(),
               EdgeFavoriteEntryComparator());
   }
-  std::vector<base::string16> path;
+  std::vector<std::u16string> path;
   BuildBookmarkEntries(root_entry, false, bookmarks, favicons, &path);
 }

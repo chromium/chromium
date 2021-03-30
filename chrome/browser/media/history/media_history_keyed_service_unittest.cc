@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -211,7 +212,7 @@ class MediaHistoryKeyedServiceTest
     {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->type = media_feeds::mojom::MediaFeedItemType::kVideo;
-      item->name = base::ASCIIToUTF16("The Video");
+      item->name = u"The Video";
       item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
           base::TimeDelta::FromMinutes(20));
       item->is_family_friendly = media_feeds::mojom::IsFamilyFriendly::kNo;

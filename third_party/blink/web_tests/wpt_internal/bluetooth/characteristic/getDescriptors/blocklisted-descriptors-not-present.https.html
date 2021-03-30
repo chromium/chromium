@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'Make sure blocklisted descriptors are not reported.';
+
+bluetooth_test(() => getBlocklistExcludeWritesCharacteristic()
+    .then(({characteristic}) => characteristic.getDescriptors())
+    .then(descriptors => descriptors.forEach(descriptor =>
+        // |blocklist_test_descriptor_uuid| is a blocklisted UUID. It should
+        // never be present in a getDescriptors() result.
+        assert_true(descriptor.uuid !== blocklist_test_descriptor_uuid))),
+    test_desc);
+</script>

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console logging dumps proper messages with broken Unicode.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -45,7 +45,7 @@
     // opposed to some replacement character that came from transcoding to UTF8
     // and back to valid UTF16.
     TestRunner.assertEquals('\uD835', text[text.length - 1]);
-    TestRunner.assertEquals(8, countTextNodes(text), 'nodes count');
+    TestRunner.assertEquals(4, countTextNodes(text), 'nodes count');
     TestRunner.assertEquals(1, countTextNodes('"' + text + '"'), 'nodes with quoted text count');
     TestRunner.addResult('PASS: Found all nodes with the broken text');
     TestRunner.completeTest();

@@ -19,9 +19,11 @@ extern const char kLocalSearchServiceSyncMetricsDailySample[];
 // local_search_service::SearchMetricsReporter.
 extern const char kLocalSearchServiceMetricsCrosSettingsCount[];
 extern const char kLocalSearchServiceMetricsHelpAppCount[];
+extern const char kLocalSearchServiceMetricsHelpAppLauncherCount[];
 // TODO(thanhdng): clean this up after LSS is sandboxed.
 extern const char kLocalSearchServiceSyncMetricsCrosSettingsCount[];
 extern const char kLocalSearchServiceSyncMetricsHelpAppCount[];
+extern const char kLocalSearchServiceSyncMetricsHelpAppLauncherCount[];
 
 }  // namespace prefs
 }  // namespace local_search_service

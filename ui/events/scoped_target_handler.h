@@ -6,6 +6,7 @@
 #define UI_EVENTS_SCOPED_TARGET_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/events_export.h"
@@ -29,9 +30,6 @@ class EVENTS_EXPORT ScopedTargetHandler : public EventHandler {
   base::StringPiece GetLogContext() const override;
 
  private:
-  // If non-null the destructor sets this to true. This is set while handling
-  // an event and used to detect if |this| has been deleted.
-  bool* destroyed_flag_;
 
   // An EventTarget that has its target handler replaced with |this| for a life
   // time of |this|.
@@ -42,6 +40,10 @@ class EVENTS_EXPORT ScopedTargetHandler : public EventHandler {
 
   // A new handler that gets events in addition to the |original_handler_|.
   EventHandler* new_handler_;
+
+  // Used to detect if handling an event has caused |this| to be deleted. Must
+  // be last.
+  base::WeakPtrFactory<ScopedTargetHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScopedTargetHandler);
 };

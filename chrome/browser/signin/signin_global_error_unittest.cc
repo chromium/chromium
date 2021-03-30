@@ -51,8 +51,7 @@ class SigninGlobalErrorTest : public testing::Test {
 
     profile_ = profile_manager_.CreateTestingProfile(
         "Person 1", std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        base::UTF8ToUTF16("Person 1"), 0, std::string(),
-        std::move(testing_factories));
+        u"Person 1", 0, std::string(), std::move(testing_factories));
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
@@ -60,9 +59,10 @@ class SigninGlobalErrorTest : public testing::Test {
     AccountInfo account_info =
         identity_test_env_profile_adaptor_->identity_test_env()
             ->MakePrimaryAccountAvailable(kTestEmail);
-    ProfileAttributesEntry* entry;
-    ASSERT_TRUE(profile_manager_.profile_attributes_storage()->
-        GetProfileAttributesWithPath(profile()->GetPath(), &entry));
+    ProfileAttributesEntry* entry =
+        profile_manager_.profile_attributes_storage()
+            ->GetProfileAttributesWithPath(profile()->GetPath());
+    ASSERT_NE(entry, nullptr);
 
     entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(kTestEmail),
                        /*is_consented_primary_account=*/true);
@@ -83,7 +83,8 @@ class SigninGlobalErrorTest : public testing::Test {
     signin::IdentityTestEnvironment* identity_test_env =
         identity_test_env_profile_adaptor_->identity_test_env();
     CoreAccountId primary_account_id =
-        identity_test_env->identity_manager()->GetPrimaryAccountId();
+        identity_test_env->identity_manager()->GetPrimaryAccountId(
+            signin::ConsentLevel::kSync);
 
     signin::UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_test_env->identity_manager(), primary_account_id,
@@ -158,7 +159,5 @@ TEST_F(SigninGlobalErrorTest, AuthStatusEnumerateAllErrors) {
       histogram_tester.ExpectBucketCount("Signin.AuthError", entry.error_state,
                                          1);
     }
-    histogram_tester.ExpectBucketCount("Profile.NumberOfProfilesWithAuthErrors",
-                                       entry.is_error, 1);
   }
 }

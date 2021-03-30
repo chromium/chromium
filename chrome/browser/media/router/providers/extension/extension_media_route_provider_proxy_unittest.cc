@@ -228,18 +228,6 @@ TEST_F(ExtensionMediaRouteProviderProxyTest, UpdateMediaSinks) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(ExtensionMediaRouteProviderProxyTest, ProvideSinks) {
-  const std::string provider_name = "provider name";
-  MediaSinkInternal sink;
-  sink.sink().set_sink_id(kSinkId);
-  sink.sink().set_provider_id(MediaRouteProviderId::EXTENSION);
-  const std::vector<media_router::MediaSinkInternal> sinks = {sink};
-
-  EXPECT_CALL(mock_provider_, ProvideSinks(provider_name, ElementsAre(sink)));
-  provider_proxy_->ProvideSinks(provider_name, sinks);
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(ExtensionMediaRouteProviderProxyTest, CreateMediaRouteController) {
   EXPECT_CALL(mock_provider_,
               CreateMediaRouteControllerInternal(kRouteId, _, _, _))

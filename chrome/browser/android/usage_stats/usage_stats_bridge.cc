@@ -62,16 +62,10 @@ UsageStatsBridge::UsageStatsBridge(
       HistoryServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::IMPLICIT_ACCESS);
   if (history_service)
-    history_service->AddObserver(this);
+    scoped_history_service_observer_.Observe(history_service);
 }
 
-UsageStatsBridge::~UsageStatsBridge() {
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile_,
-                                           ServiceAccessType::IMPLICIT_ACCESS);
-  if (history_service)
-    history_service->RemoveObserver(this);
-}
+UsageStatsBridge::~UsageStatsBridge() = default;
 
 void UsageStatsBridge::Destroy(JNIEnv* env, const JavaRef<jobject>& j_this) {
   delete this;
@@ -344,6 +338,11 @@ void UsageStatsBridge::OnURLsDeleted(
 
     return;
   }
+}
+
+void UsageStatsBridge::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  scoped_history_service_observer_.Reset();
 }
 
 }  // namespace usage_stats

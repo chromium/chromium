@@ -182,6 +182,18 @@ CtapGetAssertionRequest MakeCredentialTask::NextSilentRequest() {
   request.allow_list = exclude_list_batches_.at(current_exclude_list_batch_);
   request.user_presence_required = false;
   request.user_verification = UserVerificationRequirement::kDiscouraged;
+
+  // If a pinUvAuthToken was obtained for the original request, the silent
+  // requests should carry one as well. This is to ensure that excluded
+  // credentials with credProtect-level uvRequired can be matched.
+  DCHECK_EQ(request_.pin_auth.has_value(),
+            request_.pin_token_for_exclude_list_probing.has_value());
+  if (request_.pin_token_for_exclude_list_probing) {
+    std::tie(request.pin_protocol, request.pin_auth) =
+        request_.pin_token_for_exclude_list_probing->PinAuth(
+            request.client_data_hash);
+  }
+
   return request;
 }
 

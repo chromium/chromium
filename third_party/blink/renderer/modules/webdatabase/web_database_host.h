@@ -47,14 +47,12 @@ class WebDatabaseHost {
   base::File OpenFile(const String& vfs_file_name, int desired_flags);
   int DeleteFile(const String& vfs_file_name, bool sync_dir);
   int32_t GetFileAttributes(const String& vfs_file_name);
-  int64_t GetFileSize(const String& vfs_file_name);
   bool SetFileSize(const String& vfs_file_name, int64_t size);
   int64_t GetSpaceAvailableForOrigin(const SecurityOrigin& origin);
 
   void DatabaseOpened(const SecurityOrigin& origin,
                       const String& database_name,
-                      const String& database_display_name,
-                      uint32_t estimated_size);
+                      const String& database_display_name);
   void DatabaseModified(const SecurityOrigin& origin,
                         const String& database_name);
   void DatabaseClosed(const SecurityOrigin& origin,

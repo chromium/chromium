@@ -43,6 +43,7 @@ void TimedCanvasDrawListener::RequestFrameTimerFired(TimerBase*) {
 }
 
 void TimedCanvasDrawListener::Trace(Visitor* visitor) const {
+  visitor->Trace(request_frame_timer_);
   OnRequestCanvasDrawListener::Trace(visitor);
 }
 

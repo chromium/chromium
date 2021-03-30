@@ -46,6 +46,8 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
 
   void CanvasSizeChanged();
 
+  bool DrawsBackgroundOntoContentLayer() const final;
+
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   const char* GetName() const override {

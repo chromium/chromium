@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/model/offline_page_model_taskified.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -13,7 +14,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string16.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -406,7 +406,7 @@ void OfflinePageModelTaskified::OnCreateArchiveDone(
     ArchiverResult archiver_result,
     const GURL& saved_url,
     const base::FilePath& file_path,
-    const base::string16& title,
+    const std::u16string& title,
     int64_t file_size,
     const std::string& digest) {
   if (archiver_result != ArchiverResult::SUCCESSFULLY_CREATED) {

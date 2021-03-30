@@ -89,7 +89,7 @@ Study CreateStudyWithFlagGroups(int default_group_probability,
 
 class TestOverrideStringCallback {
  public:
-  typedef std::map<uint32_t, base::string16> OverrideMap;
+  typedef std::map<uint32_t, std::u16string> OverrideMap;
 
   TestOverrideStringCallback()
       : callback_(base::BindRepeating(&TestOverrideStringCallback::Override,
@@ -104,7 +104,7 @@ class TestOverrideStringCallback {
   const OverrideMap& overrides() const { return overrides_; }
 
  private:
-  void Override(uint32_t hash, const base::string16& string) {
+  void Override(uint32_t hash, const std::u16string& string) {
     overrides_[hash] = string;
   }
 
@@ -157,7 +157,7 @@ class VariationsSeedProcessorTest : public ::testing::Test {
     if (processed_study.Init(&study, is_expired)) {
       VariationsSeedProcessor().CreateTrialFromStudy(
           processed_study, override_callback_.callback(),
-          override_entropy_provider, feature_list);
+          &override_entropy_provider, feature_list);
       return true;
     }
     return false;
@@ -178,7 +178,7 @@ class VariationsSeedProcessorTest : public ::testing::Test {
     VariationsSeedProcessor seed_processor;
     seed_processor.CreateTrialsFromSeed(
         seed, client_state, override_callback_.callback(),
-        mock_low_entropy_provider, &feature_list);
+        &mock_low_entropy_provider, &feature_list);
   }
 
  protected:
@@ -312,7 +312,7 @@ TEST_F(VariationsSeedProcessorTest,
     base::MockEntropyProvider mock_low_entropy_provider(0.9);
     seed_processor.CreateTrialsFromSeed(
         seed, client_state, override_callback_.callback(),
-        mock_low_entropy_provider, &feature_list);
+        &mock_low_entropy_provider, &feature_list);
     EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrialName));
   }
 
@@ -328,7 +328,7 @@ TEST_F(VariationsSeedProcessorTest,
     base::MockEntropyProvider mock_low_entropy_provider(0.9);
     seed_processor.CreateTrialsFromSeed(
         seed, client_state, override_callback_.callback(),
-        mock_low_entropy_provider, &feature_list);
+        &mock_low_entropy_provider, &feature_list);
     EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrialName));
   }
 }
@@ -363,7 +363,7 @@ TEST_F(VariationsSeedProcessorTest, OverrideUIStrings) {
 
   EXPECT_EQ(1u, overrides.size());
   auto it = overrides.find(1234);
-  EXPECT_EQ(base::ASCIIToUTF16("test"), it->second);
+  EXPECT_EQ(u"test", it->second);
 }
 
 TEST_F(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
@@ -384,7 +384,7 @@ TEST_F(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
       override_callback_.overrides();
   EXPECT_EQ(1u, overrides.size());
   auto it = overrides.find(1234);
-  EXPECT_EQ(base::ASCIIToUTF16("test"), it->second);
+  EXPECT_EQ(u"test", it->second);
 }
 
 TEST_F(VariationsSeedProcessorTest, ValidateStudy) {
@@ -585,7 +585,7 @@ TEST_F(VariationsSeedProcessorTest, StartsActive) {
   base::MockEntropyProvider mock_low_entropy_provider(0.9);
   seed_processor.CreateTrialsFromSeed(
       seed, client_state, override_callback_.callback(),
-      mock_low_entropy_provider, base::FeatureList::GetInstance());
+      &mock_low_entropy_provider, base::FeatureList::GetInstance());
 
   // Non-specified and ACTIVATE_ON_QUERY should not start active, but
   // ACTIVATE_ON_STARTUP should.

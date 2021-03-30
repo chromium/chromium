@@ -144,6 +144,8 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
 
   // Following fields are initialized and used only on the IO thread.
   // Non-owning ptr.
+  BrowserPpapiHostImpl* host_;
+  // Non-owning ptr.
   ppapi::host::PpapiHost* ppapi_host_;
   // Non-owning ptr.
   ContentBrowserPepperHostFactory* factory_;

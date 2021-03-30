@@ -18,11 +18,6 @@
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/feature_list.h"
-#include "printing/printing_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace printer = cloud_devices::printer;
 
 namespace cloud_print {
@@ -241,9 +236,7 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
   pin.set_value(semantic_info.pin_supported);
   pin.SaveTo(&description);
 
-  if (base::FeatureList::IsEnabled(
-          printing::features::kAdvancedPpdAttributes) &&
-      !semantic_info.advanced_capabilities.empty()) {
+  if (!semantic_info.advanced_capabilities.empty()) {
     printer::VendorCapabilities vendor_capabilities =
         GetVendorCapabilities(semantic_info);
     vendor_capabilities.SaveTo(&description);

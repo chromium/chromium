@@ -6,17 +6,17 @@
 
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/util/values/values_util.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/arc/arc_prefs.h"
@@ -44,6 +44,9 @@ constexpr char kLast[] = "last";
 constexpr char kBlockedUiReboot[] = "blocked_ui_reboot";
 constexpr char kStarted[] = "started";
 
+// Snapshot muss automatically expire in 30 days if not updated.
+constexpr base::TimeDelta kSnapshotMaxLifetime = base::TimeDelta::FromDays(30);
+
 // Returns true if the Chrome session is restored after crash.
 bool IsRestoredSession() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -52,13 +55,44 @@ bool IsRestoredSession() {
          !command_line->HasSwitch(chromeos::switches::kLoginManager);
 }
 
+// Returns true if it is the first Chrome start up after reboot.
+bool IsFirstExecAfterBoot() {
+  return user_manager::UserManager::Get() &&
+         user_manager::UserManager::Get()->IsFirstExecAfterBoot();
+}
+
+// Returns true if in ozone platform headless UI mode.
+bool IsInHeadlessMode() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->GetSwitchValueASCII(switches::kOzonePlatform) ==
+         kHeadless;
+}
+
 // Enables ozone platform headless via command line.
 void EnableHeadlessMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(switches::kOzonePlatform, "headless");
+  command_line->AppendSwitchASCII(switches::kOzonePlatform, kHeadless);
+}
+
+// Returns non-empty account ID string if a MGS is active.
+// Otherwise returns an empty string.
+std::string GetMgsCryptohomeAccountId() {
+  // Take snapshots only for MGSs.
+  if (user_manager::UserManager::Get() &&
+      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
+      user_manager::UserManager::Get()->GetActiveUser()) {
+    return cryptohome::Identification(user_manager::UserManager::Get()
+                                          ->GetActiveUser()
+                                          ->GetAccountId())
+        .id();
+  }
+  return std::string();
 }
 
 }  // namespace
+
+const char kHeadless[] = "headless";
+const char kRestartFreconEnv[] = "RESTART_FRECON=1";
 
 bool ArcDataSnapshotdManager::is_snapshot_enabled_for_testing_ = false;
 
@@ -68,8 +102,7 @@ static ArcDataSnapshotdManager* g_arc_data_snapshotd_manager = nullptr;
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(bool last)
     : is_last_(last) {
   os_version_ = base::SysInfo::OperatingSystemVersion();
-  creation_date_ =
-      base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(base::Time::Now()));
+  UpdateCreationDate(base::Time::Now());
 }
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
@@ -84,9 +117,11 @@ ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
       os_version_ = *found;
   }
   {
-    auto* found = dict->FindStringPath(kCreationDate);
-    if (found)
-      creation_date_ = *found;
+    auto* found = dict->FindPath(kCreationDate);
+    if (found && util::ValueToTime(found).has_value()) {
+      auto parsed_time = util::ValueToTime(found).value();
+      UpdateCreationDate(parsed_time);
+    }
   }
   {
     auto found = dict->FindBoolPath(kVerified);
@@ -107,7 +142,7 @@ ArcDataSnapshotdManager::SnapshotInfo::~SnapshotInfo() = default;
 std::unique_ptr<ArcDataSnapshotdManager::SnapshotInfo>
 ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
     const std::string& os_version,
-    const std::string& creation_date,
+    const base::Time& creation_date,
     bool verified,
     bool updated,
     bool last) {
@@ -121,7 +156,7 @@ void ArcDataSnapshotdManager::SnapshotInfo::Sync(base::Value* dict) {
 
   base::DictionaryValue value;
   value.SetStringKey(kOsVersion, os_version_);
-  value.SetStringKey(kCreationDate, creation_date_);
+  value.SetKey(kCreationDate, util::TimeToValue(creation_date_));
   value.SetBoolKey(kVerified, verified_);
   value.SetBoolKey(kUpdated, updated_);
 
@@ -129,7 +164,12 @@ void ArcDataSnapshotdManager::SnapshotInfo::Sync(base::Value* dict) {
 }
 
 bool ArcDataSnapshotdManager::SnapshotInfo::IsExpired() const {
-  // TODO(pbond): implement;
+  if (creation_date_ + kSnapshotMaxLifetime <= base::Time::Now()) {
+    VLOG(1) << GetDictPath() << " snapshot is expired. creation_date="
+            << base::UTF16ToUTF8(
+                   base::TimeFormatShortDateAndTime(creation_date_));
+    return true;
+  }
   return false;
 }
 
@@ -139,18 +179,43 @@ bool ArcDataSnapshotdManager::SnapshotInfo::IsOsVersionUpdated() const {
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(
     const std::string& os_version,
-    const std::string& creation_date,
+    const base::Time& creation_date,
     bool verified,
     bool updated,
     bool last)
     : is_last_(last),
       os_version_(os_version),
-      creation_date_(creation_date),
       verified_(verified),
-      updated_(updated) {}
+      updated_(updated) {
+  UpdateCreationDate(creation_date);
+}
 
 std::string ArcDataSnapshotdManager::SnapshotInfo::GetDictPath() const {
   return is_last_ ? kLast : kPrevious;
+}
+
+void ArcDataSnapshotdManager::SnapshotInfo::UpdateCreationDate(
+    const base::Time& creation_date) {
+  creation_date_ = creation_date;
+  if (lifetime_timer_.IsRunning()) {
+    LOG(ERROR) << "Updating a snapshot lifetime timer.";
+    lifetime_timer_.Stop();
+  }
+  // If the snapshot is expired on initialization, it is expected to be cleared
+  // soon in the flow.
+  if (IsExpired())
+    return;
+  base::TimeDelta delay =
+      creation_date_ + kSnapshotMaxLifetime - base::Time::Now();
+  lifetime_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&ArcDataSnapshotdManager::SnapshotInfo::OnSnapshotExpired,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcDataSnapshotdManager::SnapshotInfo::OnSnapshotExpired() {
+  DCHECK(ArcDataSnapshotdManager::Get());
+  ArcDataSnapshotdManager::Get()->OnSnapshotExpired();
 }
 
 ArcDataSnapshotdManager::Snapshot::Snapshot(PrefService* local_state)
@@ -259,25 +324,17 @@ ArcDataSnapshotdManager::Snapshot::Snapshot(
   DCHECK(local_state_);
 }
 
-// static
-ArcDataSnapshotdManager* ArcDataSnapshotdManager::Get() {
-  return g_arc_data_snapshotd_manager;
-}
-
 ArcDataSnapshotdManager::ArcDataSnapshotdManager(
     PrefService* local_state,
     std::unique_ptr<Delegate> delegate,
-    std::unique_ptr<ArcAppsTracker> apps_tracker,
     base::OnceClosure attempt_user_exit_callback)
     : policy_service_{local_state},
       snapshot_{local_state},
       delegate_(std::move(delegate)),
-      apps_tracker_(std::move(apps_tracker)),
       attempt_user_exit_callback_(std::move(attempt_user_exit_callback)) {
   DCHECK(!g_arc_data_snapshotd_manager);
   DCHECK(local_state);
   DCHECK(delegate_);
-  DCHECK(apps_tracker_);
 
   g_arc_data_snapshotd_manager = this;
 
@@ -286,14 +343,19 @@ ArcDataSnapshotdManager::ArcDataSnapshotdManager(
 
   if (IsRestoredSession()) {
     state_ = State::kRestored;
-  } else {
-    if (snapshot_.is_blocked_ui_mode() && IsSnapshotEnabled()) {
-      state_ = State::kBlockedUi;
-      EnableHeadlessMode();
-    }
+    DoClearSnapshots();
+    return;
   }
-  // Ensure the snapshot's info is up-to-date.
-  DoClearSnapshots();
+
+  if (local_state->GetAllPrefStoresInitializationStatus() !=
+      PrefService::INITIALIZATION_STATUS_SUCCESS) {
+    local_state->AddPrefInitObserver(
+        base::BindOnce(&ArcDataSnapshotdManager::OnLocalStateInitialized,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    // Ensure the snapshot's info is up-to-date.
+    OnLocalStateInitialized(true /* initialized */);
+  }
 }
 
 ArcDataSnapshotdManager::~ArcDataSnapshotdManager() {
@@ -308,6 +370,16 @@ ArcDataSnapshotdManager::~ArcDataSnapshotdManager() {
   EnsureDaemonStopped(base::DoNothing());
 }
 
+// static
+ArcDataSnapshotdManager* ArcDataSnapshotdManager::Get() {
+  return g_arc_data_snapshotd_manager;
+}
+
+// static
+base::TimeDelta ArcDataSnapshotdManager::snapshot_max_lifetime_for_testing() {
+  return kSnapshotMaxLifetime;
+}
+
 void ArcDataSnapshotdManager::EnsureDaemonStarted(base::OnceClosure callback) {
   if (bridge_) {
     std::move(callback).Run();
@@ -315,9 +387,11 @@ void ArcDataSnapshotdManager::EnsureDaemonStarted(base::OnceClosure callback) {
   }
   VLOG(1) << "Starting arc-data-snapshotd";
   daemon_weak_ptr_factory_.InvalidateWeakPtrs();
-  chromeos::UpstartClient::Get()->StartArcDataSnapshotd(base::BindOnce(
-      &ArcDataSnapshotdManager::OnDaemonStarted,
-      daemon_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  chromeos::UpstartClient::Get()->StartArcDataSnapshotd(
+      GetStartEnvVars(),
+      base::BindOnce(&ArcDataSnapshotdManager::OnDaemonStarted,
+                     daemon_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void ArcDataSnapshotdManager::EnsureDaemonStopped(base::OnceClosure callback) {
@@ -334,7 +408,7 @@ void ArcDataSnapshotdManager::StartLoadingSnapshot(base::OnceClosure callback) {
     std::move(callback).Run();
     return;
   }
-  std::string account_id = GetCryptohomeAccountId();
+  std::string account_id = GetMgsCryptohomeAccountId();
   if (!account_id.empty() && IsSnapshotEnabled() &&
       (snapshot_.last() || snapshot_.previous())) {
     state_ = State::kLoading;
@@ -376,6 +450,13 @@ bool ArcDataSnapshotdManager::IsAutoLoginAllowed() {
   }
 }
 
+bool ArcDataSnapshotdManager::IsBlockedUiScreenShown() {
+  return IsAutoLoginConfigured() && IsInHeadlessMode();
+}
+
+bool ArcDataSnapshotdManager::IsSnapshotInProgress() {
+  return state_ == State::kMgsLaunched;
+}
 void ArcDataSnapshotdManager::OnSnapshotSessionStarted() {
   if (state_ != State::kMgsToLaunch)
     return;
@@ -428,6 +509,23 @@ void ArcDataSnapshotdManager::OnSnapshotAppInstalled(int percent) {
   Update(percent);
 }
 
+void ArcDataSnapshotdManager::OnSnapshotSessionPolicyCompliant() {
+  if (state_ != State::kMgsLaunched)
+    return;
+  // Stop tracking apps, since ARC is compliant with policy.
+  // That means that 100% of required apps got installed and ARC is fully
+  // prepared to be snapshotted.
+  // If the policy changes or an app gets uninstalled, the compliance with the
+  // required apps list will be fixed automatically on the next session
+  // startup.
+  session_controller_->RemoveObserver(this);
+  session_controller_.reset();
+
+  delegate_->RequestStopArcInstance(
+      base::BindOnce(&ArcDataSnapshotdManager::OnArcInstanceStopped,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ArcDataSnapshotdManager::OnSnapshotsDisabled() {
   // Stop all ongoing flows.
   daemon_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -439,9 +537,11 @@ void ArcDataSnapshotdManager::OnSnapshotsDisabled() {
     case State::kMgsLaunched:
     case State::kMgsToLaunch:
       state_ = State::kStopping;
+      snapshot_.set_blocked_ui_mode(false);
       if (session_controller_)
         session_controller_->RemoveObserver(this);
       session_controller_.reset();
+      reboot_controller_.reset();
       break;
     // Otherwise, stop all flows, clear snapshots and do not restart browser.
     case State::kNone:
@@ -454,17 +554,71 @@ void ArcDataSnapshotdManager::OnSnapshotsDisabled() {
 }
 
 void ArcDataSnapshotdManager::OnSnapshotUpdateEndTimeChanged() {
-  if (policy_service_.snapshot_update_end_time().is_null())
+  if (policy_service_.snapshot_update_end_time().is_null()) {
+    // Process the end of the snapshot update interval.
+    if (reboot_controller_) {
+      // Stop the reboot process if already requested.
+      snapshot_.set_blocked_ui_mode(false);
+      snapshot_.Sync();
+    }
+    reboot_controller_.reset();
     return;
+  }
   if (!IsSnapshotEnabled())
     return;
-  // TODO(pbond): may be start a reboot process to update a snapshot.
+  // Snapshot can be updated if necessary. Inside the snapshot update interval.
+  // Do not request the reboot of device if already requested.
+  if (reboot_controller_)
+    return;
+  // Do not reboot if last and previous snapshots exist and should not be
+  // updated.
+  if (snapshot_.last() && !snapshot_.last()->updated() &&
+      snapshot_.previous() && !snapshot_.previous()->updated()) {
+    return;
+  }
+
+  switch (state_) {
+    case State::kNone:
+    case State::kLoading:
+    case State::kRestored:
+    case State::kRunning:
+      snapshot_.set_blocked_ui_mode(true);
+      snapshot_.Sync();
+
+      // Request  device to be reboot in a blocked UI mode.
+      reboot_controller_ = std::make_unique<SnapshotRebootController>(
+          delegate_->CreateRebootNotification());
+      return;
+    case State::kBlockedUi:
+    case State::kMgsToLaunch:
+    case State::kMgsLaunched:
+    case State::kStopping:
+      // Do not reboot the device if in blocked UI mode or in process of
+      // disabling the feature.
+      return;
+  }
 }
 
 bool ArcDataSnapshotdManager::IsSnapshotEnabled() {
   if (ArcDataSnapshotdManager::is_snapshot_enabled_for_testing())
     return true;
   return policy_service_.is_snapshot_enabled();
+}
+
+void ArcDataSnapshotdManager::OnLocalStateInitialized(bool initialized) {
+  if (!initialized)
+    LOG(ERROR) << "Local State intiialization failed.";
+
+  if (snapshot_.is_blocked_ui_mode() && IsFirstExecAfterBoot() &&
+      IsSnapshotEnabled()) {
+    if (!IsInHeadlessMode()) {
+      EnableHeadlessMode();
+      delegate_->RestartChrome(*base::CommandLine::ForCurrentProcess());
+      return;
+    }
+    state_ = State::kBlockedUi;
+  }
+  DoClearSnapshots();
 }
 
 void ArcDataSnapshotdManager::StopDaemon(base::OnceClosure callback) {
@@ -555,6 +709,28 @@ void ArcDataSnapshotdManager::UpdateUi(int percent) {
                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ArcDataSnapshotdManager::OnSnapshotExpired() {
+  switch (state_) {
+    case State::kBlockedUi:
+    case State::kMgsToLaunch:
+    case State::kMgsLaunched:
+    case State::kStopping:
+      LOG(WARNING) << "Expired snapshots are cleared in scope of this process.";
+      return;
+    case State::kLoading:
+      // The expired snapshot may be in the process of being loaded to the
+      // running MGS. Postpone the removal until the chrome session restart.
+      LOG(WARNING)
+          << "The snapshot is expired while might be in use. Postpone exire.";
+      return;
+    case State::kNone:
+    case State::kRestored:
+    case State::kRunning:
+      DoClearSnapshots();
+      return;
+  }
+}
+
 void ArcDataSnapshotdManager::OnSnapshotsCleared(bool success) {
   switch (state_) {
     case State::kBlockedUi:
@@ -584,7 +760,7 @@ void ArcDataSnapshotdManager::OnKeyPairGenerated(bool success) {
     VLOG(1) << "Managed Guest Session is ready to be started with blocked UI.";
     state_ = State::kMgsToLaunch;
     session_controller_ =
-        SnapshotSessionController::Create(apps_tracker_.get());
+        SnapshotSessionController::Create(delegate_->CreateAppsTracker());
     session_controller_->AddObserver(this);
 
     // Move last to previous snapshot:
@@ -641,20 +817,6 @@ void ArcDataSnapshotdManager::Update(int percent) {
 
   EnsureDaemonStarted(base::BindOnce(&ArcDataSnapshotdManager::UpdateUi,
                                      weak_ptr_factory_.GetWeakPtr(), percent));
-
-  if (percent == 100) {
-    // Stop tracking apps, 100% of required apps got installed.
-    // The snapshot can be taken right away.
-    // If the policy changes or an app gets uninstalled, the compliance with the
-    // required apps list will be fixed automatically on the next session
-    // startup.
-    session_controller_->RemoveObserver(this);
-    session_controller_.reset();
-
-    delegate_->RequestStopArcInstance(
-        base::BindOnce(&ArcDataSnapshotdManager::OnArcInstanceStopped,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void ArcDataSnapshotdManager::OnArcInstanceStopped(bool success) {
@@ -663,7 +825,7 @@ void ArcDataSnapshotdManager::OnArcInstanceStopped(bool success) {
     OnSnapshotTaken(false /* success */);
     return;
   }
-  std::string account_id = GetCryptohomeAccountId();
+  std::string account_id = GetMgsCryptohomeAccountId();
   if (account_id.empty() || state_ != State::kMgsLaunched) {
     LOG(ERROR) << "Cryptohome account ID is empty.";
     OnSnapshotTaken(false /* success */);
@@ -720,7 +882,8 @@ void ArcDataSnapshotdManager::OnSnapshotLoaded(base::OnceClosure callback,
   }
   EnsureDaemonStopped(base::DoNothing());
 
-  session_controller_ = SnapshotSessionController::Create(apps_tracker_.get());
+  session_controller_ =
+      SnapshotSessionController::Create(delegate_->CreateAppsTracker());
   session_controller_->AddObserver(this);
 
   std::move(callback).Run();
@@ -738,17 +901,11 @@ void ArcDataSnapshotdManager::OnUiUpdated(bool success) {
     LOG(ERROR) << "Failed to update UI progress bar.";
 }
 
-std::string ArcDataSnapshotdManager::GetCryptohomeAccountId() {
-  // Take snapshots only for MGSs.
-  if (user_manager::UserManager::Get() &&
-      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
-      user_manager::UserManager::Get()->GetActiveUser()) {
-    return cryptohome::Identification(user_manager::UserManager::Get()
-                                          ->GetActiveUser()
-                                          ->GetAccountId())
-        .id();
-  }
-  return "";
+std::vector<std::string> ArcDataSnapshotdManager::GetStartEnvVars() {
+  if (ArcDataSnapshotdManager::IsBlockedUiScreenShown())
+    return {kRestartFreconEnv};
+  else
+    return {};
 }
 
 }  // namespace data_snapshotd

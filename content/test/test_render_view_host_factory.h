@@ -31,6 +31,7 @@ class TestRenderViewHostFactory : public RenderViewHostFactory {
   virtual void set_render_process_host_factory(
       RenderProcessHostFactory* rph_factory);
   RenderViewHost* CreateRenderViewHost(
+      FrameTree* frame_tree,
       SiteInstance* instance,
       RenderViewHostDelegate* delegate,
       RenderWidgetHostDelegate* widget_delegate,

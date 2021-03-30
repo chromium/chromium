@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/buildflags.h"
-#include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_device_registration_result.h"
@@ -297,8 +296,6 @@ SharingDeviceRegistration::GetEnabledFeatures(bool supports_vapid) const {
 
 bool SharingDeviceRegistration::IsClickToCallSupported() const {
 #if defined(OS_ANDROID)
-  if (!base::FeatureList::IsEnabled(kClickToCallReceiver))
-    return false;
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_SharingJNIBridge_isTelephonySupported(env);
 #endif

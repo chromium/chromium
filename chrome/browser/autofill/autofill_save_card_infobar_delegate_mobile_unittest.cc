@@ -396,7 +396,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest,
 
 TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, LocalCardHasNickname) {
   CreditCard card = test::GetCreditCard();
-  card.SetNickname(base::ASCIIToUTF16("Nickname"));
+  card.SetNickname(u"Nickname");
   std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
       CreateDelegate(/*is_uploading=*/true,
                      prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE,

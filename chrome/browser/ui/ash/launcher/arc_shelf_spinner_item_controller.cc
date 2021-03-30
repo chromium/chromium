@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/ash/launcher/arc_shelf_spinner_item_controller.h"
 
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 
@@ -13,11 +14,11 @@ ArcShelfSpinnerItemController::ArcShelfSpinnerItemController(
     const std::string& arc_app_id,
     int event_flags,
     arc::UserInteractionType user_interaction_type,
-    int64_t display_id)
+    arc::mojom::WindowInfoPtr window_info)
     : ShelfSpinnerItemController(arc_app_id),
       event_flags_(event_flags),
       user_interaction_type_(user_interaction_type),
-      display_id_(display_id) {
+      window_info_(std::move(window_info)) {
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // arc::ArcSessionManager might not be set in tests.
   if (arc_session_manager)
@@ -59,7 +60,7 @@ void ArcShelfSpinnerItemController::OnAppStatesChanged(
 
   // Close() destroys this object, so start launching the app first.
   arc::LaunchApp(observed_profile_, arc_app_id, event_flags_,
-                 user_interaction_type_, display_id_);
+                 user_interaction_type_, std::move(window_info_));
   Close();
 }
 

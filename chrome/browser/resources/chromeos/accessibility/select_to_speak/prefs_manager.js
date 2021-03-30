@@ -5,7 +5,7 @@
 /**
  * Manages getting and storing user preferences.
  */
-class PrefsManager {
+export class PrefsManager {
   constructor() {
     /** @private {?string} */
     this.voiceNameFromPrefs_ = null;
@@ -57,13 +57,15 @@ class PrefsManager {
       }
 
       voices.forEach((voice) => {
-        if (!voice.eventTypes.includes('start') ||
-            !voice.eventTypes.includes('end') ||
-            !voice.eventTypes.includes('word') ||
-            !voice.eventTypes.includes('cancelled')) {
+        if (!voice.eventTypes.includes(chrome.tts.EventType.START) ||
+            !voice.eventTypes.includes(chrome.tts.EventType.END) ||
+            !voice.eventTypes.includes(chrome.tts.EventType.WORD) ||
+            !voice.eventTypes.includes(chrome.tts.EventType.CANCELLED)) {
           return;
         }
-        this.validVoiceNames_.add(voice.voiceName);
+        if (voice.voiceName) {
+          this.validVoiceNames_.add(voice.voiceName);
+        }
       });
 
       voices.sort(function(a, b) {
@@ -84,7 +86,10 @@ class PrefsManager {
         return score(b) - score(a);
       });
 
-      this.voiceNameFromLocale_ = voices[0].voiceName;
+      const firstVoiceName = voices[0].voiceName;
+      if (firstVoiceName) {
+        this.voiceNameFromLocale_ = firstVoiceName;
+      }
 
       chrome.storage.sync.get(['voice'], (prefs) => {
         if (!prefs['voice']) {
@@ -271,10 +276,10 @@ class PrefsManager {
   /**
    * Generates the basic speech options for Select-to-Speak based on user
    * preferences. Call for each chrome.tts.speak.
-   * @return {!TtsOptions} options The TTS options.
+   * @return {!chrome.tts.TtsOptions} options The TTS options.
    */
   speechOptions() {
-    const options = {enqueue: true};
+    const options = /** @type {!chrome.tts.TtsOptions} */ ({});
 
     // To use the default (system) voice: don't specify options['voiceName'].
     if (this.voiceNameFromPrefs_ === PrefsManager.SYSTEM_VOICE) {

@@ -8,7 +8,7 @@ aggregate_vector_icons("components_vector_icons") {
   icon_directory = "."
 
   sources = [
-    "accessibility.icon",
+    "add_cellular_network.icon",
     "ads.icon",
     "back_arrow.icon",
     "blocked_badge.icon",
@@ -39,6 +39,7 @@ aggregate_vector_icons("components_vector_icons") {
     "folder_touch.icon",
     "font_download.icon",
     "forward_arrow.icon",
+    "gpp_maybe.icon",
     "headset.icon",
     "help.icon",
     "help_outline.icon",
@@ -66,7 +67,6 @@ aggregate_vector_icons("components_vector_icons") {
     "open_in_new.icon",
     "page_info_content_paste.icon",
     "pause.icon",
-    "person.icon",
     "photo.icon",
     "play_arrow.icon",
     "protected_content.icon",
@@ -76,6 +76,7 @@ aggregate_vector_icons("components_vector_icons") {
     "save_original_file.icon",
     "screen_share.icon",
     "search.icon",
+    "select_window.icon",
     "sensors.icon",
     "serial_port.icon",
     "settings.icon",
@@ -88,7 +89,6 @@ aggregate_vector_icons("components_vector_icons") {
     "vr_headset.icon",
     "warning.icon",
     "wifi_add.icon",
-    "window_placement.icon",
   ]
 }
 

@@ -32,13 +32,13 @@ class BookmarkBottomSheetItemProperties {
     /**
      * The title of the bottom sheet item. e.g. Mobile bookmarks, reading list.
      */
-    static final PropertyModel.ReadableObjectPropertyKey<String> TITLE =
+    static final PropertyModel.ReadableObjectPropertyKey<CharSequence> TITLE =
             new PropertyModel.ReadableObjectPropertyKey<>();
 
     /**
      * The subtitle of the bottom sheet item. e.g. 4 bookmarks, 8 unread pages.
      */
-    static final PropertyModel.ReadableObjectPropertyKey<String> SUBTITLE =
+    static final PropertyModel.ReadableObjectPropertyKey<CharSequence> SUBTITLE =
             new PropertyModel.ReadableObjectPropertyKey<>();
 
     /**

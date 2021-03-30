@@ -18,7 +18,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -75,7 +76,7 @@ namespace views {
 
 namespace {
 
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
 bool AcceleratorShouldCancelMenu(const ui::Accelerator& accelerator) {
   // Since AcceleratorShouldCancelMenu() is called quite early in key
   // event handling, it is actually invoked for modifier keys themselves
@@ -147,17 +148,17 @@ constexpr base::TimeDelta kAlertAnimationThrobDuration =
     base::TimeDelta::FromMilliseconds(1000);
 
 // Returns true if the mnemonic of |menu| matches key.
-bool MatchesMnemonic(MenuItemView* menu, base::char16 key) {
+bool MatchesMnemonic(MenuItemView* menu, char16_t key) {
   return key != 0 && menu->GetMnemonic() == key;
 }
 
 // Returns true if |menu| doesn't have a mnemonic and first character of the its
 // title is |key|.
-bool TitleMatchesMnemonic(MenuItemView* menu, base::char16 key) {
+bool TitleMatchesMnemonic(MenuItemView* menu, char16_t key) {
   if (menu->GetMnemonic())
     return false;
 
-  base::string16 lower_title = base::i18n::ToLower(menu->title());
+  std::u16string lower_title = base::i18n::ToLower(menu->title());
   return !lower_title.empty() && lower_title[0] == key;
 }
 
@@ -340,31 +341,6 @@ static void RepostEventImpl(const ui::LocatedEvent* event,
 }
 #endif  // defined(OS_WIN)
 
-#if defined(OS_MAC)
-// Note: this just checks whether |widget| is *a* menu widget, not whether
-// it belongs to |weak_controller|. The only reason |weak_controller| is passed
-// in is so that we can guarantee that window activations are handled if they
-// come after the controller has been torn down.
-bool IsMenuWidget(base::WeakPtr<MenuController> weak_controller,
-                  Widget* widget) {
-  MenuController* controller = weak_controller.get();
-  if (!controller || !widget)
-    return false;
-  // TODO(ellyjones): It's surprising that a MenuController has no notion of
-  // which Widgets correspond to the menus it is currently showing. Perhaps
-  // refactor it so that it does?
-  if (strcmp(widget->GetRootView()->GetClassName(), "MenuHostRootView"))
-    return false;
-
-  return true;
-}
-
-bool IsNotMenuWidget(base::WeakPtr<MenuController> weak_controller,
-                     Widget* widget) {
-  return !IsMenuWidget(weak_controller, widget);
-}
-#endif
-
 }  // namespace
 
 // MenuScrollTask --------------------------------------------------------------
@@ -542,11 +518,9 @@ void MenuController::Run(Widget* parent,
     menu_pre_target_handler_ = MenuPreTargetHandler::Create(this, owner_);
   }
 
-#if defined(OS_MAC)
-  menu_cocoa_watcher_ = std::make_unique<MenuCocoaWatcherMac>(
-      base::BindRepeating(&IsNotMenuWidget, this->AsWeakPtr()),
-      base::BindOnce(&MenuController::Cancel, this->AsWeakPtr(),
-                     ExitType::kAll));
+#if defined(OS_APPLE)
+  menu_cocoa_watcher_ = std::make_unique<MenuCocoaWatcherMac>(base::BindOnce(
+      &MenuController::Cancel, this->AsWeakPtr(), ExitType::kAll));
 #endif
 
   // Reset current state.
@@ -576,7 +550,7 @@ void MenuController::Run(Widget* parent,
 }
 
 void MenuController::Cancel(ExitType type) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   menu_closure_animation_.reset();
 #endif
 
@@ -912,12 +886,12 @@ bool MenuController::OnMouseWheel(SubmenuView* source,
 void MenuController::OnGestureEvent(SubmenuView* source,
                                     ui::GestureEvent* event) {
   if (owner_ && send_gesture_events_to_owner()) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
     NOTIMPLEMENTED();
-#else   // !defined(OS_MAC)
+#else   // !defined(OS_APPLE)
     event->ConvertLocationToTarget(source->GetWidget()->GetNativeWindow(),
                                    owner()->GetNativeWindow());
-#endif  // defined(OS_MAC)
+#endif  // defined(OS_APPLE)
     owner()->OnGestureEvent(event);
     // Reset |send_gesture_events_to_owner_| when the first gesture ends.
     if (event->type() == ui::ET_GESTURE_END)
@@ -1087,8 +1061,9 @@ int MenuController::OnDragUpdated(SubmenuView* source,
       query_menu_item = menu_item->GetParentMenuItem();
       drop_position = MenuDelegate::DropPosition::kOn;
     }
-    drop_operation = menu_item->GetDelegate()->GetDropOperation(
-        query_menu_item, event, &drop_position);
+    drop_operation =
+        static_cast<int>(menu_item->GetDelegate()->GetDropOperation(
+            query_menu_item, event, &drop_position));
 
     // If the menu has a submenu, schedule the submenu to open.
     SetSelection(menu_item, menu_item->HasSubmenu() ? SELECTION_OPEN_SUBMENU
@@ -1114,8 +1089,9 @@ void MenuController::OnDragExited(SubmenuView* source) {
   }
 }
 
-int MenuController::OnPerformDrop(SubmenuView* source,
-                                  const ui::DropTargetEvent& event) {
+ui::mojom::DragOperation MenuController::OnPerformDrop(
+    SubmenuView* source,
+    const ui::DropTargetEvent& event) {
   DCHECK(drop_target_);
   // NOTE: the delegate may delete us after invoking OnPerformDrop, as such
   // we don't call cancel here.
@@ -1222,7 +1198,7 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
   base::WeakPtr<MenuController> this_ref = AsWeakPtr();
   if (event->type() == ui::ET_KEY_PRESSED) {
     bool key_handled = false;
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
     // Special handling for Option-Up and Option-Down, which should behave like
     // Home and End respectively in menus.
     if ((event->flags() & ui::EF_ALT_DOWN)) {
@@ -1256,7 +1232,7 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
           ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN;
       const int flags = event->flags();
       if (exit_type() == ExitType::kNone && (flags & kKeyFlagsMask) == 0) {
-        base::char16 c = event->GetCharacter();
+        char16_t c = event->GetCharacter();
         SelectByChar(c);
         // SelectByChar can lead to this being deleted.
         if (!this_ref) {
@@ -1269,7 +1245,7 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
 
   ui::Accelerator accelerator(*event);
 
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   if (AcceleratorShouldCancelMenu(accelerator)) {
     Cancel(ExitType::kAll);
     return ui::POST_DISPATCH_PERFORM_DEFAULT;
@@ -1335,7 +1311,7 @@ void MenuController::TurnOffMenuSelectionHoldForTest() {
 }
 
 void MenuController::OnMenuItemDestroying(MenuItemView* menu_item) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   if (menu_closure_animation_ && menu_closure_animation_->item() == menu_item)
     menu_closure_animation_.reset();
 #endif
@@ -1580,7 +1556,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       break;
 
 // On Mac, treat space the same as return.
-#if !defined(OS_MAC)
+#if !defined(OS_APPLE)
     case ui::VKEY_SPACE:
       SendAcceleratorToHotTrackedView(event.flags());
       break;
@@ -1592,7 +1568,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       // Fallthrough to accept or dismiss combobox menus on F4, like windows.
       FALLTHROUGH;
     case ui::VKEY_RETURN:
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
     case ui::VKEY_SPACE:
 #endif
       // An odd special case: if a prefix selection is in flight, space should
@@ -1636,7 +1612,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       CloseSubmenu();
       break;
 
-#if !defined(OS_MAC)
+#if !defined(OS_APPLE)
     case ui::VKEY_APPS: {
       Button* hot_view = GetFirstHotTrackedView(pending_state_.item);
       if (hot_view) {
@@ -1744,7 +1720,7 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& bounds,
 }
 
 void MenuController::Accept(MenuItemView* item, int event_flags) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   menu_closure_animation_ = std::make_unique<MenuClosureAnimationMac>(
       item, item->GetParentMenuItem()->GetSubmenu(),
       base::BindOnce(&MenuController::ReallyAccept, base::Unretained(this),
@@ -1758,7 +1734,7 @@ void MenuController::Accept(MenuItemView* item, int event_flags) {
 void MenuController::ReallyAccept(MenuItemView* item, int event_flags) {
   DCHECK(!for_drop_);
   result_ = item;
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   // Reset the closure animation since it's now finished - this also unblocks
   // input events for the menu.
   menu_closure_animation_.reset();
@@ -2481,14 +2457,33 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
           item->set_actual_menu_position(MenuPosition::kBelowBounds);
         }
       } else if (state_.anchor == MenuAnchorPosition::kBubbleBelow) {
-        y = y_for_menu_below;
-        item->set_actual_menu_position(MenuPosition::kBelowBounds);
-        if (y + menu_size.height() > monitor_bounds.bottom()) {
+        // Respect the previous MenuPosition. The menu contents could change
+        // while the menu is shown, the menu position should not change.
+        const bool able_to_show_menu_below =
+            (y_for_menu_below + menu_size.height() <= monitor_bounds.bottom());
+        const bool able_to_show_menu_above =
+            y_for_menu_above >= monitor_bounds.y();
+        if (item->actual_menu_position() == MenuPosition::kBelowBounds &&
+            able_to_show_menu_below) {
+          y = y_for_menu_below;
+        } else if (item->actual_menu_position() == MenuPosition::kAboveBounds &&
+                   able_to_show_menu_above) {
+          y = y_for_menu_above;
+        } else if (able_to_show_menu_below) {
+          y = y_for_menu_below;
+          item->set_actual_menu_position(MenuPosition::kBelowBounds);
+        } else if (able_to_show_menu_above) {
+          // No room below, but there is room above. Show above the anchor.
+          // Align the bottom of the menu with the bottom of the anchor.
           y = y_for_menu_above;
           item->set_actual_menu_position(MenuPosition::kAboveBounds);
+        } else {
+          // No room above or below. Show as low as possible. Align the bottom
+          // of the menu with the bottom of the screen.
+          y = monitor_bounds.bottom() - menu_size.height();
+          item->set_actual_menu_position(MenuPosition::kBestFit);
         }
       }
-
     } else if (state_.anchor == MenuAnchorPosition::kBubbleLeft ||
                state_.anchor == MenuAnchorPosition::kBubbleRight) {
       if (state_.anchor == MenuAnchorPosition::kBubbleLeft) {
@@ -2577,7 +2572,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
     const bool create_on_right = prefer_leading != layout_is_rtl;
 
     const int width_with_right_inset =
-        menu_config.touchable_menu_width + border_and_shadow_insets.right();
+        menu_config.touchable_menu_min_width + border_and_shadow_insets.right();
     const int x_max = monitor_bounds.right() - width_with_right_inset;
     const int x_left = item_bounds.x() - width_with_right_inset;
     const int x_right = item_bounds.right() - border_and_shadow_insets.left();
@@ -2774,8 +2769,8 @@ void MenuController::CloseSubmenu() {
 
 MenuController::SelectByCharDetails MenuController::FindChildForMnemonic(
     MenuItemView* parent,
-    base::char16 key,
-    bool (*match_function)(MenuItemView* menu, base::char16 mnemonic)) {
+    char16_t key,
+    bool (*match_function)(MenuItemView* menu, char16_t mnemonic)) {
   SubmenuView* submenu = parent->GetSubmenu();
   DCHECK(submenu);
   SelectByCharDetails details;
@@ -2823,15 +2818,15 @@ void MenuController::AcceptOrSelect(MenuItemView* parent,
   }
 }
 
-void MenuController::SelectByChar(base::char16 character) {
+void MenuController::SelectByChar(char16_t character) {
   // Do not process while performing drag-and-drop.
   if (for_drop_)
     return;
   if (!character)
     return;
 
-  base::char16 char_array[] = {character, 0};
-  base::char16 key = base::i18n::ToLower(char_array)[0];
+  char16_t char_array[] = {character, 0};
+  char16_t key = base::i18n::ToLower(char_array)[0];
   MenuItemView* item = pending_state_.item;
   if (!item->SubmenuIsShowing())
     item = item->GetParentMenuItem();
@@ -2911,7 +2906,7 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
     if (last_part.type != MenuPart::Type::kNone)
       exit_type = ExitType::kOutermost;
   }
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   // When doing a menu closure animation, target the deepest submenu - that way
   // MenuClosureAnimationMac will fade out all the menus in sync, rather than
   // the shallowest menu only.
@@ -3040,9 +3035,6 @@ void MenuController::ExitMenu() {
   bool nested = delegate_stack_.size() > 1;
   // ExitTopMostMenu unwinds nested delegates
   internal::MenuControllerDelegate* delegate = delegate_;
-  // MenuController may have been deleted when releasing ViewsDelegate ref.
-  // However as |delegate| can outlive this, it must still be notified of the
-  // menu closing so that it can perform teardown.
   int accept_event_flags = accept_event_flags_;
   base::WeakPtr<MenuController> this_ref = AsWeakPtr();
   MenuItemView* result = ExitTopMostMenu();
@@ -3054,15 +3046,12 @@ void MenuController::ExitMenu() {
 }
 
 MenuItemView* MenuController::ExitTopMostMenu() {
-  base::WeakPtr<MenuController> this_ref = AsWeakPtr();
-
   // Release the lock which prevents Chrome from shutting down while the menu is
   // showing.
-  ViewsDelegate::GetInstance()->ReleaseRef();
-
-  // Releasing the lock can result in Chrome shutting down, deleting this.
-  if (!this_ref)
-    return nullptr;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ViewsDelegate::ReleaseRef,
+                     base::Unretained(ViewsDelegate::GetInstance())));
 
   // Close any open menus.
   SetSelection(nullptr, SELECTION_UPDATE_IMMEDIATELY | SELECTION_EXIT);
@@ -3245,7 +3234,7 @@ void MenuController::UnregisterAlertedItem(MenuItemView* item) {
 }
 
 bool MenuController::CanProcessInputEvents() const {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   return !menu_closure_animation_;
 #else
   return true;

@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_NTP_SNIPPETS_CATEGORY_INFO_H_
 #define COMPONENTS_NTP_SNIPPETS_CATEGORY_INFO_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace ntp_snippets {
 
@@ -37,11 +38,11 @@ enum class ContentSuggestionsAdditionalAction {
 // Contains static meta information about a Category.
 class CategoryInfo {
  public:
-  CategoryInfo(const base::string16& title,
+  CategoryInfo(const std::u16string& title,
                ContentSuggestionsCardLayout card_layout,
                ContentSuggestionsAdditionalAction additional_action,
                bool show_if_empty,
-               const base::string16& no_suggestions_message);
+               const std::u16string& no_suggestions_message);
   CategoryInfo() = delete;
   CategoryInfo(CategoryInfo&&);
   CategoryInfo(const CategoryInfo&);
@@ -50,7 +51,7 @@ class CategoryInfo {
   ~CategoryInfo();
 
   // Localized title of the category.
-  const base::string16& title() const { return title_; }
+  const std::u16string& title() const { return title_; }
 
   // Layout of the cards to be used to display suggestions in this category.
   ContentSuggestionsCardLayout card_layout() const { return card_layout_; }
@@ -66,19 +67,19 @@ class CategoryInfo {
   // The message to show if there are no suggestions in this category. Note that
   // this matters even if |show_if_empty()| is false: The message still shows
   // up when the user dismisses all suggestions in the category.
-  const base::string16& no_suggestions_message() const {
+  const std::u16string& no_suggestions_message() const {
     return no_suggestions_message_;
   }
 
  private:
-  base::string16 title_;
+  std::u16string title_;
   ContentSuggestionsCardLayout card_layout_;
 
   ContentSuggestionsAdditionalAction additional_action_;
 
   // Whether to show the category if a fetch returns no suggestions.
   bool show_if_empty_;
-  base::string16 no_suggestions_message_;
+  std::u16string no_suggestions_message_;
 };
 
 }  // namespace ntp_snippets

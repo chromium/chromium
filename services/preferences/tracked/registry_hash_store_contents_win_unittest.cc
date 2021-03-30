@@ -4,9 +4,10 @@
 
 #include "services/preferences/tracked/registry_hash_store_contents_win.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/threading/thread.h"
@@ -16,8 +17,8 @@
 
 namespace {
 
-constexpr base::char16 kRegistryPath[] = L"Foo\\TestStore";
-constexpr base::char16 kStoreKey[] = L"test_store_key";
+constexpr wchar_t kRegistryPath[] = L"Foo\\TestStore";
+constexpr wchar_t kStoreKey[] = L"test_store_key";
 
 // Hex-encoded MACs are 64 characters long.
 constexpr char kTestStringA[] =
@@ -128,8 +129,8 @@ TEST(RegistryHashStoreContentsWinScopedTest, TestScopedDirsCleared) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  const base::string16 registry_path =
-      temp_dir.GetPath().DirName().BaseName().LossyDisplayName();
+  const std::wstring registry_path =
+      temp_dir.GetPath().DirName().BaseName().value();
 
   RegistryHashStoreContentsWin verifying_contents(registry_path, kStoreKey,
                                                   nullptr);
@@ -159,7 +160,7 @@ TEST(RegistryHashStoreContentsWinScopedTest, TestScopedDirsCleared) {
 }
 
 void OffThreadTempScopedDirDestructor(
-    base::string16 registry_path,
+    std::wstring registry_path,
     std::unique_ptr<HashStoreContents> contents) {
   std::string stored_mac;
 
@@ -179,8 +180,8 @@ TEST(RegistryHashStoreContentsWinScopedTest, TestScopedDirsClearedMultiThread) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  const base::string16 registry_path =
-      temp_dir.GetPath().DirName().BaseName().LossyDisplayName();
+  const std::wstring registry_path =
+      temp_dir.GetPath().DirName().BaseName().value();
 
   RegistryHashStoreContentsWin verifying_contents(registry_path, kStoreKey,
                                                   nullptr);

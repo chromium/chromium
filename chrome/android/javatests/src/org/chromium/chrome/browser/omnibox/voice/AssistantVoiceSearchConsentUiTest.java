@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.is;
 
+import static org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchConsentUi.CONSENT_OUTCOME_HISTOGRAM;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
 import android.support.test.runner.lifecycle.Stage;
@@ -18,6 +19,7 @@ import android.support.test.runner.lifecycle.Stage;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,17 +30,19 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchConsentUi.ConsentOutcome;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -46,6 +50,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests for AssistantVoiceSearchConsentDialog */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -58,6 +63,9 @@ public class AssistantVoiceSearchConsentUiTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
 
     final SharedPreferencesManager mSharedPreferencesManager =
             SharedPreferencesManager.getInstance();
@@ -77,7 +85,9 @@ public class AssistantVoiceSearchConsentUiTest {
         mBottomSheetController = cta.getRootUiCoordinatorForTesting().getBottomSheetController();
         mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
         mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(cta.getWindowAndroid(),
-                cta, mSharedPreferencesManager, new SettingsLauncherImpl(), mBottomSheetController);
+                cta, mSharedPreferencesManager,
+                () -> AutofillAssistantPreferenceFragment.launchSettings(cta),
+                mBottomSheetController);
     }
 
     @After
@@ -90,6 +100,15 @@ public class AssistantVoiceSearchConsentUiTest {
             mAssistantVoiceSearchConsentUi.show(mCallback);
             mBottomSheetTestSupport.endAllAnimations();
         });
+    }
+
+    @Test
+    @MediumTest
+    public void testNoBottomSheetControllerAvailable() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        AssistantVoiceSearchConsentUi.show(
+                cta.getWindowAndroid(), mSharedPreferencesManager, () -> {}, null, mCallback);
+        Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
     }
 
     @Test
@@ -110,6 +129,9 @@ public class AssistantVoiceSearchConsentUiTest {
         });
 
         Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(true);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.ACCEPTED_VIA_BUTTON));
     }
 
     @Test
@@ -130,6 +152,9 @@ public class AssistantVoiceSearchConsentUiTest {
         });
 
         Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.REJECTED_VIA_BUTTON));
     }
 
     @Test
@@ -165,5 +190,8 @@ public class AssistantVoiceSearchConsentUiTest {
                     is(false));
         });
         Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.REJECTED_VIA_DISMISS));
     }
 }

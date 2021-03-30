@@ -35,7 +35,7 @@ class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
 
   // KeywordExtensionsDelegate:
   void DeleteSuggestion(const TemplateURL* template_url,
-                        const base::string16& suggestion_text) override;
+                        const std::u16string& suggestion_text) override;
 
  private:
   // KeywordExtensionsDelegate:
@@ -44,7 +44,7 @@ class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
   bool Start(const AutocompleteInput& input,
              bool minimal_changes,
              const TemplateURL* template_url,
-             const base::string16& remaining_input) override;
+             const std::u16string& remaining_input) override;
   void EnterExtensionKeywordMode(const std::string& extension_id) override;
   void MaybeEndExtensionKeywordMode() override;
 

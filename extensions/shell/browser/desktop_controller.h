@@ -5,7 +5,13 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_DESKTOP_CONTROLLER_H_
 #define EXTENSIONS_SHELL_BROWSER_DESKTOP_CONTROLLER_H_
 
+#include <memory>
+
 #include "ui/gfx/native_widget_types.h"
+
+namespace base {
+class RunLoop;
+}
 
 namespace extensions {
 class AppWindow;
@@ -25,8 +31,11 @@ class DesktopController {
   // we need a singleton somewhere).
   static DesktopController* instance();
 
-  // Runs the desktop and quits when finished.
-  virtual void Run() = 0;
+  // Forwarded from BrowserMainParts.
+  virtual void PreMainMessageLoopRun() {}
+  virtual void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) {}
+  virtual void PostMainMessageLoopRun() {}
 
   // Attaches the window to our window hierarchy.
   virtual void AddAppWindow(AppWindow* app_window,

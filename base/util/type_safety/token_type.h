@@ -5,6 +5,8 @@
 #ifndef BASE_UTIL_TYPE_SAFETY_TOKEN_TYPE_H_
 #define BASE_UTIL_TYPE_SAFETY_TOKEN_TYPE_H_
 
+#include <type_traits>
+
 #include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
 
@@ -21,6 +23,9 @@ class TokenType : public base::StrongAlias<TypeMarker, base::UnguessableToken> {
 
  public:
   TokenType() : Super(base::UnguessableToken::Create()) {}
+  // The parameter |unused| is here to prevent multiple definitions of a
+  // single argument constructor. This is only needed during the migration to
+  // strongly typed frame tokens.
   explicit TokenType(const base::UnguessableToken& token) : Super(token) {}
   TokenType(const TokenType& token) : Super(token.value()) {}
   TokenType(TokenType&& token) noexcept : Super(token.value()) {}

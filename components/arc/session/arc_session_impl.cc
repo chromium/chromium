@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/default_scale_factor_retriever.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -28,7 +29,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/memory/memory.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
@@ -49,9 +49,6 @@
 namespace arc {
 
 namespace {
-
-constexpr char kArcBridgeSocketPath[] = "/run/chrome/arc_bridge.sock";
-constexpr char kArcBridgeSocketGroup[] = "arc-bridge";
 
 constexpr char kOn[] = "on";
 constexpr char kOff[] = "off";
@@ -102,13 +99,6 @@ bool WaitForSocketReadable(int raw_socket_fd, int raw_cancel_fd) {
 void ApplyDalvikMemoryProfile(
     ArcSessionImpl::SystemMemoryInfoCallback system_memory_info_callback,
     StartParams* params) {
-  // Check if enabled.
-  if (!base::FeatureList::IsEnabled(arc::kUseHighMemoryDalvikProfile)) {
-    VLOG(1) << "High-memory dalvik profile is not enabled, default low-memory "
-               "is used.";
-    return;
-  }
-
   base::SystemMemoryInfoKB mem_info;
   if (!system_memory_info_callback.Run(&mem_info)) {
     LOG(ERROR) << "Failed to get system memory info";
@@ -131,6 +121,45 @@ void ApplyDalvikMemoryProfile(
   }
   VLOG(1) << "Applied " << log_profile_name << " profile for the "
           << (mem_info.total / 1024) << "Mb device.";
+}
+
+// Applies USAP profile to the ARC mini instance start params.
+// Profile is determined based on enable feature and available memory on the
+// device. Possible profiles 16G,8G and 4G. For low memory devices USAP
+// profile is not overridden. If |memory_stat_file_for_testing| is set,
+// it specifies the file to read in tests instead of /proc/meminfo in
+// production.
+// Note: This is only used for VM. This profile does nothing for container.
+void ApplyUsapProfile(
+    ArcSessionImpl::SystemMemoryInfoCallback system_memory_info_callback,
+    StartParams* params) {
+  // Check if enabled.
+  if (!base::FeatureList::IsEnabled(arc::kEnableUsap)) {
+    VLOG(1) << "USAP profile is not enabled.";
+    return;
+  }
+
+  base::SystemMemoryInfoKB mem_info;
+  if (!system_memory_info_callback.Run(&mem_info)) {
+    LOG(ERROR) << "Failed to get system memory info";
+    return;
+  }
+
+  if (mem_info.total >= kClassify16GbDeviceInKb) {
+    params->usap_profile = StartParams::UsapProfile::M16G;
+  } else if (mem_info.total >= kClassify8GbDeviceInKb) {
+    params->usap_profile = StartParams::UsapProfile::M8G;
+  } else if (mem_info.total >= kClassify4GbDeviceInKb) {
+    params->usap_profile = StartParams::UsapProfile::M4G;
+  } else {
+    params->usap_profile = StartParams::UsapProfile::DEFAULT;
+  }
+}
+
+void ApplyDisableDownloadProvider(StartParams* params) {
+  params->disable_download_provider =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kArcDisableDownloadProvider);
 }
 
 // Real Delegate implementation to connect Mojo.
@@ -249,7 +278,27 @@ std::unique_ptr<ArcClientAdapter> ArcSessionDelegateImpl::CreateClient() {
 
 // static
 base::ScopedFD ArcSessionDelegateImpl::CreateSocketInternal() {
-  auto endpoint = mojo::NamedPlatformChannel({kArcBridgeSocketPath});
+  constexpr char kArcBridgeSocketPath[] = "/run/chrome/arc_bridge.sock";
+  constexpr char kArcVmBridgeSocketPath[] = "/run/chrome/arc/arc_bridge.sock";
+  constexpr char kArcBridgeSocketGroup[] = "arc-bridge";
+
+  const base::FilePath socket_path(IsArcVmEnabled() ? kArcVmBridgeSocketPath
+                                                    : kArcBridgeSocketPath);
+  if (IsArcVmEnabled()) {
+    base::File::Error error;
+    const base::FilePath socket_dir(socket_path.DirName());
+    if (!base::CreateDirectoryAndGetError(socket_dir, &error)) {
+      LOG(ERROR) << "Failed to create " << socket_dir << ": "
+                 << base::File::ErrorToString(error);
+      return base::ScopedFD();
+    }
+    if (!base::SetPosixFilePermissions(socket_dir, 0700)) {
+      PLOG(ERROR) << "Could not set permissions: " << socket_dir;
+      return base::ScopedFD();
+    }
+  }
+
+  auto endpoint = mojo::NamedPlatformChannel({socket_path.value()});
   // TODO(cmtm): use NamedPlatformChannel to bootstrap mojo connection after
   // libchrome uprev in android.
   base::ScopedFD socket_fd =
@@ -281,15 +330,15 @@ base::ScopedFD ArcSessionDelegateImpl::CreateSocketInternal() {
       return base::ScopedFD();
     }
 
-    if (chown(kArcBridgeSocketPath, -1, arc_bridge_group.gr_gid) < 0) {
+    if (chown(socket_path.value().c_str(), -1, arc_bridge_group.gr_gid) < 0) {
       PLOG(ERROR) << "chown failed";
       return base::ScopedFD();
     }
   }
 
-  if (!base::SetPosixFilePermissions(base::FilePath(kArcBridgeSocketPath),
+  if (!base::SetPosixFilePermissions(socket_path,
                                      IsArcVmEnabled() ? 0600 : 0660)) {
-    PLOG(ERROR) << "Could not set permissions: " << kArcBridgeSocketPath;
+    PLOG(ERROR) << "Could not set permissions: " << socket_path;
     return base::ScopedFD();
   }
 
@@ -460,12 +509,26 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   params.arc_disable_system_default_app =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kArcDisableSystemDefaultApps);
+  if (params.arc_disable_system_default_app)
+    VLOG(1) << "System default app(s) are disabled";
+
+  params.disable_media_store_maintenance =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kArcDisableMediaStoreMaintenance);
+  if (params.disable_media_store_maintenance)
+    VLOG(1) << "MediaStore maintenance task(s) are disabled";
+
+  params.arc_generate_play_auto_install =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kArcGeneratePlayAutoInstall);
 
   VLOG(1) << "Starting ARC mini instance with lcd_density="
           << params.lcd_density
           << ", num_cores_disabled=" << params.num_cores_disabled;
 
   ApplyDalvikMemoryProfile(system_memory_info_callback_, &params);
+  ApplyUsapProfile(system_memory_info_callback_, &params);
+  ApplyDisableDownloadProvider(&params);
 
   client_->StartMiniArc(std::move(params),
                         base::BindOnce(&ArcSessionImpl::OnMiniInstanceStarted,
@@ -824,6 +887,12 @@ void ArcSessionImpl::SetUserInfo(
     const std::string& serial_number) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   client_->SetUserInfo(cryptohome_id, hash, serial_number);
+}
+
+void ArcSessionImpl::SetDemoModeDelegate(
+    ArcClientAdapter::DemoModeDelegate* delegate) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  client_->SetDemoModeDelegate(delegate);
 }
 
 void ArcSessionImpl::OnConfigurationSet(bool success,

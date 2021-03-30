@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
@@ -95,8 +96,8 @@ void EqualPowerPanner::Pan(double azimuth,
     }
   }
 
-  desired_gain_l = std::cos(kPiOverTwoDouble * desired_pan_position);
-  desired_gain_r = std::sin(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
 
   int n = frames_to_process;
 
@@ -164,8 +165,8 @@ void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
     }
   }
 
-  desired_gain_l = std::cos(kPiOverTwoDouble * desired_pan_position);
-  desired_gain_r = std::sin(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
 }
 
 void EqualPowerPanner::PanWithSampleAccurateValues(

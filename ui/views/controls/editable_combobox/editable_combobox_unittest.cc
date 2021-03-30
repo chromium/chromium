@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -77,7 +77,7 @@ class EditableComboboxTest : public ViewsTestBase {
 
   // Initializes the combobox with the given items.
   void InitEditableCombobox(
-      const std::vector<base::string16>& items,
+      const std::vector<std::u16string>& items,
       bool filter_on_edit,
       bool show_on_empty = true,
       EditableCombobox::Type type = EditableCombobox::Type::kRegular);
@@ -137,7 +137,7 @@ void EditableComboboxTest::TearDown() {
 void EditableComboboxTest::InitEditableCombobox(const int item_count,
                                                 const bool filter_on_edit,
                                                 const bool show_on_empty) {
-  std::vector<base::string16> items;
+  std::vector<std::u16string> items;
   for (int i = 0; i < item_count; ++i)
     items.push_back(ASCIIToUTF16(base::StringPrintf("item[%i]", i)));
   InitEditableCombobox(items, filter_on_edit, show_on_empty);
@@ -145,7 +145,7 @@ void EditableComboboxTest::InitEditableCombobox(const int item_count,
 
 // Initializes the combobox with the given items.
 void EditableComboboxTest::InitEditableCombobox(
-    const std::vector<base::string16>& items,
+    const std::vector<std::u16string>& items,
     const bool filter_on_edit,
     const bool show_on_empty,
     const EditableCombobox::Type type) {
@@ -351,7 +351,7 @@ TEST_F(EditableComboboxTest, LeftOrRightKeysMoveInTextfield) {
   SendKeyEvent(ui::VKEY_B);
   SendKeyEvent(ui::VKEY_RIGHT);
   SendKeyEvent(ui::VKEY_D);
-  EXPECT_EQ(ASCIIToUTF16("abcde"), combobox_->GetText());
+  EXPECT_EQ(u"abcde", combobox_->GetText());
 }
 
 #if defined(OS_WIN)
@@ -372,7 +372,7 @@ TEST_F(EditableComboboxTest, MAYBE_UpOrDownKeysMoveInMenu) {
   SendKeyEvent(ui::VKEY_UP);
   SendKeyEvent(ui::VKEY_RETURN);
   WaitForMenuClosureAnimation();
-  EXPECT_EQ(ASCIIToUTF16("item[1]"), combobox_->GetText());
+  EXPECT_EQ(u"item[1]", combobox_->GetText());
 }
 
 TEST_F(EditableComboboxTest, EndOrHomeMovesToBeginningOrEndOfText) {
@@ -386,7 +386,7 @@ TEST_F(EditableComboboxTest, EndOrHomeMovesToBeginningOrEndOfText) {
   SendKeyEvent(ui::VKEY_X);
   SendKeyEvent(ui::VKEY_END);
   SendKeyEvent(ui::VKEY_Y);
-  EXPECT_EQ(ASCIIToUTF16("xabcy"), combobox_->GetText());
+  EXPECT_EQ(u"xabcy", combobox_->GetText());
 }
 
 #if defined(OS_APPLE)
@@ -395,7 +395,7 @@ TEST_F(EditableComboboxTest, AltLeftOrRightMovesToNextWords) {
   InitEditableCombobox();
   combobox_->GetTextfieldForTest()->RequestFocus();
 
-  combobox_->SetText(ASCIIToUTF16("foo bar foobar"));
+  combobox_->SetText(u"foo bar foobar");
   SendKeyEvent(ui::VKEY_LEFT, /*alt=*/true, /*shift=*/false,
                /*ctrl_cmd=*/false);
   SendKeyEvent(ui::VKEY_LEFT, /*alt=*/true, /*shift=*/false,
@@ -404,7 +404,7 @@ TEST_F(EditableComboboxTest, AltLeftOrRightMovesToNextWords) {
   SendKeyEvent(ui::VKEY_RIGHT, /*alt=*/true, /*shift=*/false,
                /*ctrl_cmd=*/false);
   SendKeyEvent(ui::VKEY_Y);
-  EXPECT_EQ(ASCIIToUTF16("foo xbary foobar"), combobox_->GetText());
+  EXPECT_EQ(u"foo xbary foobar", combobox_->GetText());
 }
 
 TEST_F(EditableComboboxTest, CtrlLeftOrRightMovesToBeginningOrEndOfText) {
@@ -420,7 +420,7 @@ TEST_F(EditableComboboxTest, CtrlLeftOrRightMovesToBeginningOrEndOfText) {
   SendKeyEvent(ui::VKEY_RIGHT, /*alt=*/false, /*shift=*/false,
                /*ctrl_cmd=*/true);
   SendKeyEvent(ui::VKEY_Y);
-  EXPECT_EQ(ASCIIToUTF16("xabcy"), combobox_->GetText());
+  EXPECT_EQ(u"xabcy", combobox_->GetText());
 }
 
 #else
@@ -439,14 +439,14 @@ TEST_F(EditableComboboxTest, AltLeftOrRightDoesNothing) {
   SendKeyEvent(ui::VKEY_RIGHT, /*alt=*/true, /*shift=*/false,
                /*ctrl_cmd=*/false);
   SendKeyEvent(ui::VKEY_Y);
-  EXPECT_EQ(ASCIIToUTF16("abcyx"), combobox_->GetText());
+  EXPECT_EQ(u"abcyx", combobox_->GetText());
 }
 
 TEST_F(EditableComboboxTest, CtrlLeftOrRightMovesToNextWords) {
   InitEditableCombobox();
   combobox_->GetTextfieldForTest()->RequestFocus();
 
-  combobox_->SetText(ASCIIToUTF16("foo bar foobar"));
+  combobox_->SetText(u"foo bar foobar");
   SendKeyEvent(ui::VKEY_LEFT, /*alt=*/false, /*shift=*/false,
                /*ctrl_cmd=*/true);
   SendKeyEvent(ui::VKEY_LEFT, /*alt=*/false, /*shift=*/false,
@@ -458,9 +458,9 @@ TEST_F(EditableComboboxTest, CtrlLeftOrRightMovesToNextWords) {
 #if defined(OS_WIN)
   // Matches Windows-specific logic in
   // RenderTextHarfBuzz::AdjacentWordSelectionModel.
-  EXPECT_EQ(ASCIIToUTF16("foo xbar yfoobar"), combobox_->GetText());
+  EXPECT_EQ(u"foo xbar yfoobar", combobox_->GetText());
 #else
-  EXPECT_EQ(ASCIIToUTF16("foo xbary foobar"), combobox_->GetText());
+  EXPECT_EQ(u"foo xbary foobar", combobox_->GetText());
 #endif
 }
 
@@ -481,7 +481,7 @@ TEST_F(EditableComboboxTest, ShiftLeftOrRightSelectsCharInTextfield) {
   SendKeyEvent(ui::VKEY_RIGHT, /*alt=*/false, /*shift=*/true,
                /*ctrl_cmd=*/false);
   SendKeyEvent(ui::VKEY_Y);
-  EXPECT_EQ(ASCIIToUTF16("ayx"), combobox_->GetText());
+  EXPECT_EQ(u"ayx", combobox_->GetText());
 }
 
 TEST_F(EditableComboboxTest, EnterClosesMenuWhileSelectingHighlightedMenuItem) {
@@ -493,7 +493,7 @@ TEST_F(EditableComboboxTest, EnterClosesMenuWhileSelectingHighlightedMenuItem) {
   SendKeyEvent(ui::VKEY_RETURN);
   WaitForMenuClosureAnimation();
   EXPECT_FALSE(IsMenuOpen());
-  EXPECT_EQ(ASCIIToUTF16("item[0]"), combobox_->GetText());
+  EXPECT_EQ(u"item[0]", combobox_->GetText());
 }
 
 #if defined(OS_WIN)
@@ -514,7 +514,7 @@ TEST_F(EditableComboboxTest,
   SendKeyEvent(ui::VKEY_F4);
   WaitForMenuClosureAnimation();
   EXPECT_FALSE(IsMenuOpen());
-  EXPECT_EQ(ASCIIToUTF16("item[0]"), combobox_->GetText());
+  EXPECT_EQ(u"item[0]", combobox_->GetText());
 }
 
 TEST_F(EditableComboboxTest, EscClosesMenuWithoutSelectingHighlightedMenuItem) {
@@ -526,7 +526,7 @@ TEST_F(EditableComboboxTest, EscClosesMenuWithoutSelectingHighlightedMenuItem) {
   SendKeyEvent(ui::VKEY_ESCAPE);
   WaitForMenuClosureAnimation();
   EXPECT_FALSE(IsMenuOpen());
-  EXPECT_EQ(ASCIIToUTF16("a"), combobox_->GetText());
+  EXPECT_EQ(u"a", combobox_->GetText());
 }
 
 TEST_F(EditableComboboxTest, TypingInTextfieldUnhighlightsMenuItem) {
@@ -537,7 +537,7 @@ TEST_F(EditableComboboxTest, TypingInTextfieldUnhighlightsMenuItem) {
   SendKeyEvent(ui::VKEY_DOWN);
   SendKeyEvent(ui::VKEY_C);
   SendKeyEvent(ui::VKEY_RETURN);
-  EXPECT_EQ(ASCIIToUTF16("abc"), combobox_->GetText());
+  EXPECT_EQ(u"abc", combobox_->GetText());
 }
 
 TEST_F(EditableComboboxTest, ClickOnMenuItemSelectsItAndClosesMenu) {
@@ -548,7 +548,7 @@ TEST_F(EditableComboboxTest, ClickOnMenuItemSelectsItAndClosesMenu) {
   ClickMenuItem(/*index=*/0);
   WaitForMenuClosureAnimation();
   EXPECT_FALSE(IsMenuOpen());
-  EXPECT_EQ(ASCIIToUTF16("item[0]"), combobox_->GetText());
+  EXPECT_EQ(u"item[0]", combobox_->GetText());
 }
 
 // This is different from the regular read-only Combobox, where SPACE
@@ -560,7 +560,7 @@ TEST_F(EditableComboboxTest, SpaceIsReflectedInTextfield) {
   SendKeyEvent(ui::VKEY_SPACE);
   SendKeyEvent(ui::VKEY_SPACE);
   SendKeyEvent(ui::VKEY_B);
-  EXPECT_EQ(ASCIIToUTF16("a  b"), combobox_->GetText());
+  EXPECT_EQ(u"a  b", combobox_->GetText());
 }
 
 #if defined(OS_WIN)
@@ -573,9 +573,7 @@ TEST_F(EditableComboboxTest, SpaceIsReflectedInTextfield) {
 // EditableCombobox with |filter_on_edit| set to true, which will change the
 // menu's content as the user types.
 TEST_F(EditableComboboxTest, MAYBE_MenuCanAdaptToContentChange) {
-  std::vector<base::string16> items = {ASCIIToUTF16("abc"), ASCIIToUTF16("abd"),
-                                       ASCIIToUTF16("bac"),
-                                       ASCIIToUTF16("bad")};
+  std::vector<std::u16string> items = {u"abc", u"abd", u"bac", u"bad"};
   InitEditableCombobox(items, /*filter_on_edit=*/true);
   ClickArrow();
   ASSERT_TRUE(IsMenuOpen());
@@ -583,7 +581,7 @@ TEST_F(EditableComboboxTest, MAYBE_MenuCanAdaptToContentChange) {
   SendKeyEvent(ui::VKEY_DOWN);
   SendKeyEvent(ui::VKEY_RETURN);
   WaitForMenuClosureAnimation();
-  EXPECT_EQ(ASCIIToUTF16("abc"), combobox_->GetText());
+  EXPECT_EQ(u"abc", combobox_->GetText());
 
   SendKeyEvent(ui::VKEY_BACK);
   SendKeyEvent(ui::VKEY_BACK);
@@ -594,7 +592,7 @@ TEST_F(EditableComboboxTest, MAYBE_MenuCanAdaptToContentChange) {
   SendKeyEvent(ui::VKEY_DOWN);
   SendKeyEvent(ui::VKEY_RETURN);
   WaitForMenuClosureAnimation();
-  EXPECT_EQ(ASCIIToUTF16("bac"), combobox_->GetText());
+  EXPECT_EQ(u"bac", combobox_->GetText());
 
   // Even though the items shown change, the menu runner shouldn't have been
   // reset, otherwise there could be a flicker when the menu closes and reopens.
@@ -602,9 +600,7 @@ TEST_F(EditableComboboxTest, MAYBE_MenuCanAdaptToContentChange) {
 }
 
 TEST_F(EditableComboboxTest, RefocusingReopensMenuBasedOnLatestContent) {
-  std::vector<base::string16> items = {ASCIIToUTF16("abc"), ASCIIToUTF16("abd"),
-                                       ASCIIToUTF16("bac"), ASCIIToUTF16("bad"),
-                                       ASCIIToUTF16("bac2")};
+  std::vector<std::u16string> items = {u"abc", u"abd", u"bac", u"bad", u"bac2"};
   InitEditableCombobox(items, /*filter_on_edit=*/true);
   combobox_->GetTextfieldForTest()->RequestFocus();
 
@@ -615,7 +611,7 @@ TEST_F(EditableComboboxTest, RefocusingReopensMenuBasedOnLatestContent) {
   SendKeyEvent(ui::VKEY_RETURN);
   WaitForMenuClosureAnimation();
   EXPECT_FALSE(IsMenuOpen());
-  EXPECT_EQ(ASCIIToUTF16("bac"), combobox_->GetText());
+  EXPECT_EQ(u"bac", combobox_->GetText());
 
   // Blur then focus to make the menu reopen. It should only show completions of
   // "bac", the selected item, instead of showing completions of "b", what we
@@ -627,124 +623,116 @@ TEST_F(EditableComboboxTest, RefocusingReopensMenuBasedOnLatestContent) {
 }
 
 TEST_F(EditableComboboxTest, GetItemsWithoutFiltering) {
-  std::vector<base::string16> items = {ASCIIToUTF16("item0"),
-                                       ASCIIToUTF16("item1")};
+  std::vector<std::u16string> items = {u"item0", u"item1"};
   InitEditableCombobox(items, /*filter_on_edit=*/false, /*show_on_empty=*/true);
 
-  combobox_->SetText(ASCIIToUTF16("z"));
+  combobox_->SetText(u"z");
   ASSERT_EQ(2, combobox_->GetItemCountForTest());
-  ASSERT_EQ(ASCIIToUTF16("item0"), combobox_->GetItemForTest(0));
-  ASSERT_EQ(ASCIIToUTF16("item1"), combobox_->GetItemForTest(1));
+  ASSERT_EQ(u"item0", combobox_->GetItemForTest(0));
+  ASSERT_EQ(u"item1", combobox_->GetItemForTest(1));
 }
 
 TEST_F(EditableComboboxTest, FilteringEffectOnGetItems) {
-  std::vector<base::string16> items = {ASCIIToUTF16("abc"), ASCIIToUTF16("abd"),
-                                       ASCIIToUTF16("bac"),
-                                       ASCIIToUTF16("bad")};
+  std::vector<std::u16string> items = {u"abc", u"abd", u"bac", u"bad"};
   InitEditableCombobox(items, /*filter_on_edit=*/true, /*show_on_empty=*/true);
 
   ASSERT_EQ(4, combobox_->GetItemCountForTest());
-  ASSERT_EQ(ASCIIToUTF16("abc"), combobox_->GetItemForTest(0));
-  ASSERT_EQ(ASCIIToUTF16("abd"), combobox_->GetItemForTest(1));
-  ASSERT_EQ(ASCIIToUTF16("bac"), combobox_->GetItemForTest(2));
-  ASSERT_EQ(ASCIIToUTF16("bad"), combobox_->GetItemForTest(3));
+  ASSERT_EQ(u"abc", combobox_->GetItemForTest(0));
+  ASSERT_EQ(u"abd", combobox_->GetItemForTest(1));
+  ASSERT_EQ(u"bac", combobox_->GetItemForTest(2));
+  ASSERT_EQ(u"bad", combobox_->GetItemForTest(3));
 
-  combobox_->SetText(ASCIIToUTF16("b"));
+  combobox_->SetText(u"b");
   ASSERT_EQ(2, combobox_->GetItemCountForTest());
-  ASSERT_EQ(ASCIIToUTF16("bac"), combobox_->GetItemForTest(0));
-  ASSERT_EQ(ASCIIToUTF16("bad"), combobox_->GetItemForTest(1));
+  ASSERT_EQ(u"bac", combobox_->GetItemForTest(0));
+  ASSERT_EQ(u"bad", combobox_->GetItemForTest(1));
 
-  combobox_->SetText(ASCIIToUTF16("bc"));
+  combobox_->SetText(u"bc");
   ASSERT_EQ(0, combobox_->GetItemCountForTest());
 
-  combobox_->SetText(base::string16());
+  combobox_->SetText(std::u16string());
   ASSERT_EQ(4, combobox_->GetItemCountForTest());
-  ASSERT_EQ(ASCIIToUTF16("abc"), combobox_->GetItemForTest(0));
-  ASSERT_EQ(ASCIIToUTF16("abd"), combobox_->GetItemForTest(1));
-  ASSERT_EQ(ASCIIToUTF16("bac"), combobox_->GetItemForTest(2));
-  ASSERT_EQ(ASCIIToUTF16("bad"), combobox_->GetItemForTest(3));
+  ASSERT_EQ(u"abc", combobox_->GetItemForTest(0));
+  ASSERT_EQ(u"abd", combobox_->GetItemForTest(1));
+  ASSERT_EQ(u"bac", combobox_->GetItemForTest(2));
+  ASSERT_EQ(u"bad", combobox_->GetItemForTest(3));
 }
 
 TEST_F(EditableComboboxTest, FilteringWithMismatchedCase) {
-  std::vector<base::string16> items = {
-      ASCIIToUTF16("AbCd"), ASCIIToUTF16("aBcD"), ASCIIToUTF16("xyz")};
+  std::vector<std::u16string> items = {u"AbCd", u"aBcD", u"xyz"};
   InitEditableCombobox(items, /*filter_on_edit=*/true, /*show_on_empty=*/true);
 
   ASSERT_EQ(3, combobox_->GetItemCountForTest());
-  ASSERT_EQ(ASCIIToUTF16("AbCd"), combobox_->GetItemForTest(0));
-  ASSERT_EQ(ASCIIToUTF16("aBcD"), combobox_->GetItemForTest(1));
-  ASSERT_EQ(ASCIIToUTF16("xyz"), combobox_->GetItemForTest(2));
+  ASSERT_EQ(u"AbCd", combobox_->GetItemForTest(0));
+  ASSERT_EQ(u"aBcD", combobox_->GetItemForTest(1));
+  ASSERT_EQ(u"xyz", combobox_->GetItemForTest(2));
 
-  combobox_->SetText(ASCIIToUTF16("abcd"));
+  combobox_->SetText(u"abcd");
   ASSERT_EQ(2, combobox_->GetItemCountForTest());
-  ASSERT_EQ(ASCIIToUTF16("AbCd"), combobox_->GetItemForTest(0));
-  ASSERT_EQ(ASCIIToUTF16("aBcD"), combobox_->GetItemForTest(1));
+  ASSERT_EQ(u"AbCd", combobox_->GetItemForTest(0));
+  ASSERT_EQ(u"aBcD", combobox_->GetItemForTest(1));
 
-  combobox_->SetText(ASCIIToUTF16("ABCD"));
+  combobox_->SetText(u"ABCD");
   ASSERT_EQ(2, combobox_->GetItemCountForTest());
-  ASSERT_EQ(ASCIIToUTF16("AbCd"), combobox_->GetItemForTest(0));
-  ASSERT_EQ(ASCIIToUTF16("aBcD"), combobox_->GetItemForTest(1));
+  ASSERT_EQ(u"AbCd", combobox_->GetItemForTest(0));
+  ASSERT_EQ(u"aBcD", combobox_->GetItemForTest(1));
 }
 
 TEST_F(EditableComboboxTest, DontShowOnEmpty) {
-  std::vector<base::string16> items = {ASCIIToUTF16("item0"),
-                                       ASCIIToUTF16("item1")};
+  std::vector<std::u16string> items = {u"item0", u"item1"};
   InitEditableCombobox(items, /*filter_on_edit=*/false,
                        /*show_on_empty=*/false);
 
   ASSERT_EQ(0, combobox_->GetItemCountForTest());
-  combobox_->SetText(ASCIIToUTF16("a"));
+  combobox_->SetText(u"a");
   ASSERT_EQ(2, combobox_->GetItemCountForTest());
-  ASSERT_EQ(ASCIIToUTF16("item0"), combobox_->GetItemForTest(0));
-  ASSERT_EQ(ASCIIToUTF16("item1"), combobox_->GetItemForTest(1));
+  ASSERT_EQ(u"item0", combobox_->GetItemForTest(0));
+  ASSERT_EQ(u"item1", combobox_->GetItemForTest(1));
 }
 
 TEST_F(EditableComboboxTest, NoFilteringNotifiesCallback) {
-  std::vector<base::string16> items = {ASCIIToUTF16("item0"),
-                                       ASCIIToUTF16("item1")};
+  std::vector<std::u16string> items = {u"item0", u"item1"};
   InitEditableCombobox(items, /*filter_on_edit=*/false, /*show_on_empty=*/true);
 
   ASSERT_EQ(0, change_count());
-  combobox_->SetText(ASCIIToUTF16("a"));
+  combobox_->SetText(u"a");
   ASSERT_EQ(1, change_count());
-  combobox_->SetText(ASCIIToUTF16("ab"));
+  combobox_->SetText(u"ab");
   ASSERT_EQ(2, change_count());
 }
 
 TEST_F(EditableComboboxTest, FilteringNotifiesCallback) {
-  std::vector<base::string16> items = {ASCIIToUTF16("item0"),
-                                       ASCIIToUTF16("item1")};
+  std::vector<std::u16string> items = {u"item0", u"item1"};
   InitEditableCombobox(items, /*filter_on_edit=*/true, /*show_on_empty=*/true);
 
   ASSERT_EQ(0, change_count());
-  combobox_->SetText(ASCIIToUTF16("i"));
+  combobox_->SetText(u"i");
   ASSERT_EQ(1, change_count());
-  combobox_->SetText(ASCIIToUTF16("ix"));
+  combobox_->SetText(u"ix");
   ASSERT_EQ(2, change_count());
-  combobox_->SetText(ASCIIToUTF16("ixy"));
+  combobox_->SetText(u"ixy");
   ASSERT_EQ(3, change_count());
 }
 
 TEST_F(EditableComboboxTest, PasswordCanBeHiddenAndRevealed) {
-  std::vector<base::string16> items = {ASCIIToUTF16("item0"),
-                                       ASCIIToUTF16("item1")};
+  std::vector<std::u16string> items = {u"item0", u"item1"};
   InitEditableCombobox(items, /*filter_on_edit=*/false, /*show_on_empty=*/true,
                        EditableCombobox::Type::kPassword);
 
   ASSERT_EQ(2, combobox_->GetItemCountForTest());
-  ASSERT_EQ(base::string16(5, gfx::RenderText::kPasswordReplacementChar),
+  ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
             combobox_->GetItemForTest(0));
-  ASSERT_EQ(base::string16(5, gfx::RenderText::kPasswordReplacementChar),
+  ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
             combobox_->GetItemForTest(1));
 
   combobox_->RevealPasswords(/*revealed=*/true);
-  ASSERT_EQ(ASCIIToUTF16("item0"), combobox_->GetItemForTest(0));
-  ASSERT_EQ(ASCIIToUTF16("item1"), combobox_->GetItemForTest(1));
+  ASSERT_EQ(u"item0", combobox_->GetItemForTest(0));
+  ASSERT_EQ(u"item1", combobox_->GetItemForTest(1));
 
   combobox_->RevealPasswords(/*revealed=*/false);
-  ASSERT_EQ(base::string16(5, gfx::RenderText::kPasswordReplacementChar),
+  ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
             combobox_->GetItemForTest(0));
-  ASSERT_EQ(base::string16(5, gfx::RenderText::kPasswordReplacementChar),
+  ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
             combobox_->GetItemForTest(1));
 }
 
@@ -762,8 +750,7 @@ TEST_F(EditableComboboxTest, ArrowButtonOpensAndClosesMenu) {
 }
 
 TEST_F(EditableComboboxTest, ShowContextMenuOnMouseRelease) {
-  std::vector<base::string16> items = {ASCIIToUTF16("item0"),
-                                       ASCIIToUTF16("item1")};
+  std::vector<std::u16string> items = {u"item0", u"item1"};
   InitEditableCombobox(items, /*filter_on_edit=*/false,
                        /*show_on_empty=*/true);
   EXPECT_FALSE(IsMenuOpen());
@@ -788,11 +775,10 @@ TEST_F(EditableComboboxTest, ShowContextMenuOnMouseRelease) {
 }
 
 TEST_F(EditableComboboxTest, DragToSelectDoesntOpenTheMenu) {
-  std::vector<base::string16> items = {ASCIIToUTF16("item0"),
-                                       ASCIIToUTF16("item1")};
+  std::vector<std::u16string> items = {u"item0", u"item1"};
   InitEditableCombobox(items, /*filter_on_edit=*/false,
                        /*show_on_empty=*/true);
-  combobox_->SetText(ASCIIToUTF16("abc"));
+  combobox_->SetText(u"abc");
   dummy_focusable_view_->RequestFocus();
   WaitForMenuClosureAnimation();
   EXPECT_FALSE(IsMenuOpen());
@@ -807,19 +793,16 @@ TEST_F(EditableComboboxTest, DragToSelectDoesntOpenTheMenu) {
   EXPECT_TRUE(combobox_->GetTextfieldForTest()->GetSelectedText().empty());
 
   DragMouseTo(end_point);
-  ASSERT_EQ(ASCIIToUTF16("abc"),
-            combobox_->GetTextfieldForTest()->GetSelectedText());
+  ASSERT_EQ(u"abc", combobox_->GetTextfieldForTest()->GetSelectedText());
   EXPECT_FALSE(IsMenuOpen());
 
   PerformMouseEvent(widget_, end_point, ui::ET_MOUSE_RELEASED);
-  ASSERT_EQ(ASCIIToUTF16("abc"),
-            combobox_->GetTextfieldForTest()->GetSelectedText());
+  ASSERT_EQ(u"abc", combobox_->GetTextfieldForTest()->GetSelectedText());
   EXPECT_FALSE(IsMenuOpen());
 }
 
 TEST_F(EditableComboboxTest, NoCrashWithoutWidget) {
-  std::vector<base::string16> items = {ASCIIToUTF16("item0"),
-                                       ASCIIToUTF16("item1")};
+  std::vector<std::u16string> items = {u"item0", u"item1"};
   auto combobox = std::make_unique<EditableCombobox>(
       std::make_unique<ui::SimpleComboboxModel>(items),
       /*filter_on_edit=*/false,
@@ -847,7 +830,7 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
 
   // ui::ComboboxModel:
   int GetItemCount() const override { return item_count_; }
-  base::string16 GetItemAt(int index) const override {
+  std::u16string GetItemAt(int index) const override {
     DCHECK_LT(index, item_count_);
     return base::NumberToString16(index);
   }

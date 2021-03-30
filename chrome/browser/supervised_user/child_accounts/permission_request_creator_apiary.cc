@@ -161,7 +161,7 @@ void PermissionRequestCreatorApiary::StartFetching(Request* request) {
               base::Unretained(this), request),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
           // This class doesn't care about browser sync consent.
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 void PermissionRequestCreatorApiary::OnAccessTokenFetchComplete(
@@ -263,8 +263,7 @@ void PermissionRequestCreatorApiary::OnSimpleLoaderComplete(
     scopes.insert(GetApiScope());
     // "Unconsented" because this class doesn't care about browser sync consent.
     identity_manager_->RemoveAccessTokenFromCache(
-        identity_manager_->GetPrimaryAccountId(
-            signin::ConsentLevel::kNotRequired),
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
         scopes, request->access_token);
     StartFetching(request);
     return;

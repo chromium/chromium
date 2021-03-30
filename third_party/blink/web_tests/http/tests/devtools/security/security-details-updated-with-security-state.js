@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the security details for an origin are updated if its security state changes.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   // Add a request without security details.

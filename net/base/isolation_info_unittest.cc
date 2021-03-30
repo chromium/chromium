@@ -5,8 +5,6 @@
 #include "net/base/isolation_info.h"
 
 #include "base/optional.h"
-#include "base/test/scoped_feature_list.h"
-#include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
@@ -339,73 +337,6 @@ TEST_F(IsolationInfoTest, CreatePartialEmpty) {
   EXPECT_FALSE(isolation_info.top_frame_origin());
   EXPECT_FALSE(isolation_info.frame_origin());
   EXPECT_EQ(NetworkIsolationKey(), isolation_info.network_isolation_key());
-  EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
-  EXPECT_FALSE(isolation_info.opaque_and_non_transient());
-  EXPECT_FALSE(isolation_info.party_context());
-
-  DuplicateAndCompare(isolation_info);
-}
-
-TEST_F(IsolationInfoTest, CreatePartialEmptyNoFrameOriginRequestTypeMainFrame) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAppendFrameOriginToNetworkIsolationKey);
-
-  const NetworkIsolationKey kNIK{SchemefulSite(kOrigin1),
-                                 SchemefulSite(kOrigin1)};
-  EXPECT_FALSE(kNIK.GetFrameSite());
-  IsolationInfo isolation_info = IsolationInfo::CreatePartial(
-      IsolationInfo::RequestType::kMainFrame, kNIK);
-  EXPECT_EQ(IsolationInfo::RequestType::kMainFrame,
-            isolation_info.request_type());
-  EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
-  EXPECT_EQ(kSite1, isolation_info.frame_origin());
-  EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
-  EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
-  EXPECT_FALSE(isolation_info.opaque_and_non_transient());
-  EXPECT_FALSE(isolation_info.party_context());
-
-  DuplicateAndCompare(isolation_info);
-}
-
-TEST_F(IsolationInfoTest, CreatePartialEmptyNoFrameOriginRequestTypeSubFrame) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAppendFrameOriginToNetworkIsolationKey);
-
-  const NetworkIsolationKey kNIK{SchemefulSite(kOrigin1),
-                                 SchemefulSite(kOrigin2)};
-  EXPECT_FALSE(kNIK.GetFrameSite());
-  IsolationInfo isolation_info =
-      IsolationInfo::CreatePartial(IsolationInfo::RequestType::kSubFrame, kNIK);
-  EXPECT_EQ(IsolationInfo::RequestType::kSubFrame,
-            isolation_info.request_type());
-  EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
-  ASSERT_TRUE(isolation_info.frame_origin());
-  EXPECT_TRUE(isolation_info.frame_origin()->opaque());
-  EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
-  EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
-  EXPECT_FALSE(isolation_info.opaque_and_non_transient());
-  EXPECT_FALSE(isolation_info.party_context());
-
-  DuplicateAndCompare(isolation_info);
-}
-
-TEST_F(IsolationInfoTest, CreatePartialEmptyNoFrameOriginRequestTypeOther) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAppendFrameOriginToNetworkIsolationKey);
-
-  const NetworkIsolationKey kNIK{SchemefulSite(kOrigin1),
-                                 SchemefulSite(kOrigin2)};
-  EXPECT_FALSE(kNIK.GetFrameSite());
-  IsolationInfo isolation_info =
-      IsolationInfo::CreatePartial(IsolationInfo::RequestType::kOther, kNIK);
-  EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
-  EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
-  ASSERT_TRUE(isolation_info.frame_origin());
-  EXPECT_TRUE(isolation_info.frame_origin()->opaque());
-  EXPECT_EQ(kNIK, isolation_info.network_isolation_key());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.opaque_and_non_transient());
   EXPECT_FALSE(isolation_info.party_context());

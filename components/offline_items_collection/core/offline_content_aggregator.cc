@@ -244,44 +244,27 @@ void OfflineContentAggregator::ChangeSchedule(
   it->second->ChangeSchedule(id, std::move(schedule));
 }
 
-void OfflineContentAggregator::AddObserver(
-    OfflineContentProvider::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  if (observers_.HasObserver(observer))
-    return;
-
-  observers_.AddObserver(observer);
-}
-
-void OfflineContentAggregator::RemoveObserver(
-    OfflineContentProvider::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  if (!observers_.HasObserver(observer))
-    return;
-
-  observers_.RemoveObserver(observer);
-}
-
 void OfflineContentAggregator::OnItemsAdded(const OfflineItemList& items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
-    observer.OnItemsAdded(items);
+  NotifyItemsAdded(items);
 }
 
 void OfflineContentAggregator::OnItemRemoved(const ContentId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(id);
+  NotifyItemRemoved(id);
 }
 
 void OfflineContentAggregator::OnItemUpdated(
     const OfflineItem& item,
     const base::Optional<UpdateDelta>& update_delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_)
-    observer.OnItemUpdated(item, update_delta);
+  NotifyItemUpdated(item, update_delta);
+}
+
+void OfflineContentAggregator::OnContentProviderGoingDown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Providers already call UnregisterProvider() manually for cleanup.
+  // TODO(nicolaso): Find a less error-prone way to do this.
 }
 
 }  // namespace offline_items_collection

@@ -8,12 +8,10 @@
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
@@ -21,7 +19,6 @@
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_responses.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
@@ -39,12 +36,9 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
       : callback_installer_(&callback_receiver_,
                             {InfobarBannerShowModalResponse::ResponseSupport(),
                              SaveCardMainAction::ResponseSupport()}) {
-    feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                   {kInfobarUIRebootOnlyiOS13});
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   MockOverlayRequestCallbackReceiver callback_receiver_;
   FakeOverlayRequestCallbackInstaller callback_installer_;
 };

@@ -141,12 +141,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // |SelectAccount| will never be called.
   virtual bool SupportsResidentKeys();
 
-  // SetMightCreateResidentCredential indicates whether activating an
-  // authenticator may cause a resident credential to be created. A resident
-  // credential may be discovered by someone with physical access to the
-  // authenticator and thus has privacy implications.
-  void SetMightCreateResidentCredential(bool v) override;
-
   // ConfigureCable optionally configures Cloud-assisted Bluetooth Low Energy
   // transports. |origin| is the origin of the calling site and
   // |pairings_from_extension| are caBLEv1 pairings that have been provided in
@@ -195,13 +189,12 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // Callback that should generate and return a unique request id.
   using ChromeOSGenerateRequestIdCallback = base::RepeatingCallback<uint32_t()>;
 
-  // Returns a callback to generate a request id for |render_frame_host|. The
-  // request id has two purposes: 1. ChromeOS UI will use the request id to
-  // find the source window and show a dialog accordingly; 2. The authenticator
-  // will include the request id when asking ChromeOS platform to cancel the
-  // request.
-  virtual ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
-      RenderFrameHost* render_frame_host);
+  // Returns a callback to generate a request id for the |RenderFrameHost|
+  // associated with this delegate. The request id has two purposes: 1. ChromeOS
+  // UI will use the request id to find the source window and show a dialog
+  // accordingly; 2. The authenticator will include the request id when asking
+  // ChromeOS platform to cancel the request.
+  virtual ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
@@ -218,6 +211,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   virtual void DisableUI();
 
   virtual bool IsWebAuthnUIEnabled();
+
+  // Set to true to enable a mode where a prominent UI is only show for
+  // discoverable platform credentials.
+  virtual void SetConditionalRequest(bool is_conditional);
 
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(
@@ -240,7 +237,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   bool SupportsPIN() const override;
   void CollectPIN(
       CollectPINOptions options,
-      base::OnceCallback<void(base::string16)> provide_pin_cb) override;
+      base::OnceCallback<void(std::u16string)> provide_pin_cb) override;
   void StartBioEnrollment(base::OnceClosure next_callback) override;
   void OnSampleCollected(int bio_samples_remaining) override;
   void FinishCollectToken() override;

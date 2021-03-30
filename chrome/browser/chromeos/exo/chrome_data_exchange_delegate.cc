@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/wm/window_util.h"
+#include "ash/public/cpp/app_types.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -17,7 +17,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
@@ -25,17 +28,19 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_files.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/arc/arc_util.h"
 #include "content/public/common/drop_data.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/aura/window.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 
@@ -45,61 +50,15 @@ namespace {
 
 constexpr char kMimeTypeArcUriList[] = "application/x-arc-uri-list";
 constexpr char kMimeTypeTextUriList[] = "text/uri-list";
-constexpr char kFileSchemePrefix[] = "file:";
 constexpr char kUriListSeparator[] = "\r\n";
 constexpr char kVmFileScheme[] = "vmfile";
 
-// We implement our own URLToPath() and PathToURL() rather than use
-// net::FileUrlToFilePath() or net::FilePathToFileURL() since //net code does
-// not support Windows network paths such as //ChromeOS/MyFiles on OS_CHROMEOS.
-bool URLToPath(const base::StringPiece& url, std::string* path) {
-  if (!base::StartsWith(url, kFileSchemePrefix, base::CompareCase::SENSITIVE))
-    return false;
-
-  // Skip slashes after 'file:' if needed:
-  //  file://host/path => //host/path
-  //  file:///path     => /path
-  int path_start = sizeof(kFileSchemePrefix) - 1;
-  if (url.size() > path_start + 2 && url[path_start] == '/' &&
-      url[path_start + 1] == '/' && url[path_start + 2] == '/') {
-    path_start += 2;
-  }
-
-  *path = base::UnescapeBinaryURLComponent(url.substr(path_start));
-  return true;
-}
-
-std::string PathToURL(const std::string& path) {
-  std::string url;
-  url.reserve(sizeof(kFileSchemePrefix) + 3 + (3 * path.size()));
-  url += kFileSchemePrefix;
-
-  // Add slashes after 'file:' if needed:
-  //  //host/path    => file://host/path
-  //  /absolute/path => file:///absolute/path
-  //  relative/path  => file:///relative/path
-  if (path.size() > 1 && path[0] == '/' && path[1] == '/') {
-    // Do nothing.
-  } else if (path.size() > 0 && path[0] == '/') {
-    url += "//";
-  } else {
-    url += "///";
-  }
-
-  // Escape special characters `%;#?\ `
-  for (auto c : path) {
-    if (c == '%' || c == ';' || c == '#' || c == '?' || c == '\\' || c <= ' ') {
-      static const char kHexChars[] = "0123456789ABCDEF";
-      url += '%';
-      url += kHexChars[(c >> 4) & 0xf];
-      url += kHexChars[c & 0xf];
-    } else {
-      url += c;
-    }
-  }
-
-  return url;
-}
+// Mime types used in FilesApp to copy/paste files to clipboard.
+constexpr char16_t kFilesAppMimeTag[] = u"fs/tag";
+constexpr char16_t kFilesAppTagExo[] = u"exo";
+constexpr char16_t kFilesAppMimeSources[] = u"fs/sources";
+constexpr char kFilesAppSeparator[] = "\n";
+constexpr char16_t kFilesAppSeparator16[] = u"\n";
 
 storage::FileSystemContext* GetFileSystemContext() {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
@@ -126,7 +85,7 @@ void GetFileSystemUrlsFromPickle(
     const storage::FileSystemURL file_system_url =
         file_system_context->CrackURL(file_system_file.url);
     if (file_system_url.is_valid())
-      file_system_urls->push_back(file_system_url);
+      file_system_urls->push_back(std::move(file_system_url));
   }
 }
 
@@ -136,10 +95,10 @@ void SendArcUrls(exo::DataExchangeDelegate::SendDataCallback callback,
   for (const GURL& url : urls) {
     if (!url.is_valid())
       continue;
-    lines.emplace_back(url.spec());
+    lines.push_back(url.spec());
   }
   // Arc requires UTF16 for data.
-  base::string16 data =
+  std::u16string data =
       base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator));
   std::move(callback).Run(base::RefCountedString16::TakeString(&data));
 }
@@ -160,17 +119,88 @@ struct FileInfo {
   storage::FileSystemURL url;
 };
 
-void ShareAndSend(aura::Window* target,
-                  std::vector<FileInfo> files,
-                  exo::DataExchangeDelegate::SendDataCallback callback) {
+// Returns true if path is shared with the specified VM, or for crostini if path
+// is homedir or dir within.
+bool IsPathShared(Profile* profile,
+                  std::string vm_name,
+                  bool is_crostini,
+                  base::FilePath path) {
+  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  if (share_path->IsPathShared(vm_name, path)) {
+    return true;
+  }
+  if (is_crostini) {
+    base::FilePath mount =
+        file_manager::util::GetCrostiniMountDirectory(profile);
+    return path == mount || mount.IsParent(path);
+  }
+  return false;
+}
+
+// Parse text/uri-list data into FilePath and FileSystemURL.
+std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
+                                  const std::vector<uint8_t>& data) {
+  std::vector<FileInfo> file_info;
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  aura::Window* toplevel = target->GetToplevelWindow();
-  bool is_crostini = crostini::IsCrostiniWindow(toplevel);
-  bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
+  bool is_crostini = source == ui::EndpointType::kCrostini;
+  bool is_plugin_vm = source == ui::EndpointType::kPluginVm;
 
   base::FilePath vm_mount;
   std::string vm_name;
   if (is_crostini) {
+    vm_mount = crostini::ContainerChromeOSBaseDirectory();
+    vm_name = crostini::kCrostiniDefaultVmName;
+  } else if (is_plugin_vm) {
+    vm_mount = plugin_vm::ChromeOSBaseDirectory();
+    vm_name = plugin_vm::kPluginVmName;
+  }
+
+  std::vector<ui::FileInfo> filenames =
+      ui::URIListToFileInfos(std::string(data.begin(), data.end()));
+
+  for (const ui::FileInfo& file : filenames) {
+    base::FilePath path = std::move(file.path);
+    storage::FileSystemURL url;
+
+    // Convert the VM path to a path in the host if possible (in homedir or
+    // /mnt/chromeos for crostini; in //ChromeOS for Plugin VM), otherwise
+    // prefix with 'vmfile:<vm_name>:' to avoid VMs spoofing host paths.
+    // E.g. crostini /etc/mime.types => vmfile:termina:/etc/mime.types.
+    if (is_crostini || is_plugin_vm) {
+      if (file_manager::util::ConvertPathInsideVMToFileSystemURL(
+              primary_profile, path, vm_mount,
+              /*map_crostini_home=*/is_crostini, &url)) {
+        path = url.path();
+        // Only allow write to clipboard for paths that are shared.
+        if (!IsPathShared(primary_profile, vm_name, is_crostini, path)) {
+          LOG(WARNING) << "Unshared file path: " << path;
+          continue;
+        }
+      } else {
+        path = base::FilePath(
+            base::StrCat({kVmFileScheme, ":", vm_name, ":", path.value()}));
+      }
+    }
+    file_info.push_back({std::move(path), std::move(url)});
+  }
+  return file_info;
+}
+
+void ShareAndSend(ui::EndpointType target,
+                  std::vector<FileInfo> files,
+                  exo::DataExchangeDelegate::SendDataCallback callback) {
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+  bool is_arc = target == ui::EndpointType::kArc;
+  bool is_crostini = target == ui::EndpointType::kCrostini;
+  bool is_plugin_vm = target == ui::EndpointType::kPluginVm;
+
+  base::FilePath vm_mount;
+  std::string vm_name;
+  if (is_arc) {
+    // For ARC, |share_required| below will always be false and |vm_name| will
+    // not be used. Setting it to arc::kArcVmName has no effect.
+    vm_name = arc::kArcVmName;
+  } else if (is_crostini) {
     vm_mount = crostini::ContainerChromeOSBaseDirectory();
     vm_name = crostini::kCrostiniDefaultVmName;
   } else if (is_plugin_vm) {
@@ -185,29 +215,52 @@ void ShareAndSend(aura::Window* target,
   std::vector<base::FilePath> paths_to_share;
 
   for (auto& info : files) {
-    base::FilePath path_to_send = info.path;
-    if (is_crostini || is_plugin_vm) {
+    std::string line_to_send;
+    bool share_required = false;
+    if (is_arc) {
+      GURL arc_url;
+      if (!file_manager::util::ConvertPathToArcUrl(info.path, &arc_url,
+                                                   &share_required)) {
+        LOG(WARNING) << "Could not convert arc path " << info.path;
+        continue;
+      }
+      line_to_send = arc_url.spec();
+    } else if (is_crostini || is_plugin_vm) {
+      base::FilePath path;
       // Check if it is a path inside the VM: 'vmfile:<vm_name>:'.
       if (base::StartsWith(info.path.value(), vm_prefix,
                            base::CompareCase::SENSITIVE)) {
-        path_to_send =
-            base::FilePath(info.path.value().substr(vm_prefix.size()));
+        line_to_send = ui::FilePathToFileURL(
+            base::FilePath(info.path.value().substr(vm_prefix.size())));
       } else if (file_manager::util::ConvertFileSystemURLToPathInsideVM(
                      primary_profile, info.url, vm_mount,
-                     /*map_crostini_home=*/is_crostini, &path_to_send)) {
-        // Convert to path inside the VM and check if the path needs sharing.
-        if (!share_path->IsPathShared(vm_name, info.path))
-          paths_to_share.emplace_back(info.path);
+                     /*map_crostini_home=*/is_crostini, &path)) {
+        // Convert to path inside the VM.
+        line_to_send = ui::FilePathToFileURL(path);
+        share_required = true;
       } else {
-        LOG(WARNING) << "Could not convert path " << info.path;
+        LOG(WARNING) << "Could not convert into VM path " << info.path;
         continue;
       }
+    } else {
+      // Use path without conversion as default.
+      line_to_send = ui::FilePathToFileURL(info.path);
     }
-    lines_to_send.emplace_back(PathToURL(path_to_send.value()));
+    lines_to_send.push_back(std::move(line_to_send));
+    if (share_required && !share_path->IsPathShared(vm_name, info.path))
+      paths_to_share.push_back(std::move(info.path));
   }
 
+  // Arc uses utf-16 data.
   std::string joined = base::JoinString(lines_to_send, kUriListSeparator);
-  auto data = base::RefCountedString::TakeString(&joined);
+  scoped_refptr<base::RefCountedMemory> data;
+  if (is_arc) {
+    std::u16string utf16 = base::UTF8ToUTF16(joined);
+    data = base::RefCountedString16::TakeString(&utf16);
+  } else {
+    data = base::RefCountedString::TakeString(&joined);
+  }
+
   if (!paths_to_share.empty()) {
     if (!is_plugin_vm) {
       share_path->SharePaths(
@@ -240,7 +293,7 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
     aura::Window* target) const {
   auto* top_level_window = target->GetToplevelWindow();
 
-  if (ash::window_util::IsArcWindow(top_level_window))
+  if (ash::IsArcWindow(top_level_window))
     return ui::EndpointType::kArc;
 
   if (borealis::BorealisWindowManager::IsBorealisWindow(top_level_window))
@@ -255,94 +308,25 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
   return ui::EndpointType::kUnknownVm;
 }
 
-void ChromeDataExchangeDelegate::SetSourceOnOSExchangeData(
-    aura::Window* target,
-    ui::OSExchangeData* os_exchange_data) const {
-  DCHECK(os_exchange_data);
-
-  os_exchange_data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
-      GetDataTransferEndpointType(target)));
-}
-
 std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(
-    aura::Window* source,
+    ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  aura::Window* toplevel = source->GetToplevelWindow();
-  bool is_crostini = crostini::IsCrostiniWindow(toplevel);
-  bool is_plugin_vm = plugin_vm::IsPluginVmAppWindow(toplevel);
-
-  base::FilePath vm_mount;
-  std::string vm_name;
-  if (is_crostini) {
-    vm_mount = crostini::ContainerChromeOSBaseDirectory();
-    vm_name = crostini::kCrostiniDefaultVmName;
-  } else if (is_plugin_vm) {
-    vm_mount = plugin_vm::ChromeOSBaseDirectory();
-    vm_name = plugin_vm::kPluginVmName;
-  }
-
-  std::string lines(data.begin(), data.end());
-  std::vector<ui::FileInfo> filenames;
-
-  base::FilePath path;
-  storage::FileSystemURL url;
-  for (const base::StringPiece& line :
-       base::SplitStringPiece(lines, kUriListSeparator, base::TRIM_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
-    if (line.empty() || line[0] == '#')
-      continue;
-    std::string path_str;
-    if (!URLToPath(line, &path_str)) {
-      LOG(WARNING) << "Invalid drop file path: " << line;
-      continue;
-    }
-    path = base::FilePath(path_str);
-
-    // Convert the VM path to a path in the host if possible (in homedir or
-    // /mnt/chromeos for crostini; in //ChromeOS for Plugin VM), otherwise
-    // prefix with 'vmfile:<vm_name>:' to avoid VMs spoofing host paths.
-    // E.g. crostini /etc/mime.types => vmfile:termina:/etc/mime.types.
-    if (is_crostini || is_plugin_vm) {
-      if (file_manager::util::ConvertPathInsideVMToFileSystemURL(
-              primary_profile, path, vm_mount,
-              /*map_crostini_home=*/is_crostini, &url)) {
-        path = url.path();
-      } else {
-        path = base::FilePath(
-            base::StrCat({kVmFileScheme, ":", vm_name, ":", path.value()}));
-      }
-    }
-    filenames.emplace_back(ui::FileInfo(path, base::FilePath()));
-  }
-  return filenames;
+  std::vector<ui::FileInfo> result;
+  for (const auto& info : GetFileInfo(source, data))
+    result.push_back(ui::FileInfo(std::move(info.path), base::FilePath()));
+  return result;
 }
 
 std::string ChromeDataExchangeDelegate::GetMimeTypeForUriList(
-    aura::Window* target) const {
-  return ash::window_util::IsArcWindow(target->GetToplevelWindow())
-             ? kMimeTypeArcUriList
-             : kMimeTypeTextUriList;
+    ui::EndpointType target) const {
+  return target == ui::EndpointType::kArc ? kMimeTypeArcUriList
+                                          : kMimeTypeTextUriList;
 }
 
 void ChromeDataExchangeDelegate::SendFileInfo(
-    aura::Window* target,
+    ui::EndpointType target,
     const std::vector<ui::FileInfo>& files,
     SendDataCallback callback) const {
-  // ARC converts to ArcUrl and uses utf-16.
-  if (ash::window_util::IsArcWindow(target->GetToplevelWindow())) {
-    std::vector<std::string> lines;
-    GURL url;
-    for (const auto& info : files) {
-      if (file_manager::util::ConvertPathToArcUrl(info.path, &url))
-        lines.emplace_back(url.spec());
-    }
-    base::string16 data =
-        base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator));
-    std::move(callback).Run(base::RefCountedString16::TakeString(&data));
-    return;
-  }
-
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   base::FilePath virtual_path;
@@ -368,28 +352,87 @@ bool ChromeDataExchangeDelegate::HasUrlsInPickle(
   return !file_system_urls.empty();
 }
 
-void ChromeDataExchangeDelegate::SendPickle(aura::Window* target,
+void ChromeDataExchangeDelegate::SendPickle(ui::EndpointType target,
                                             const base::Pickle& pickle,
                                             SendDataCallback callback) {
   std::vector<storage::FileSystemURL> file_system_urls;
   GetFileSystemUrlsFromPickle(pickle, &file_system_urls);
 
   // ARC FileSystemURLs are converted to Content URLs.
-  if (ash::window_util::IsArcWindow(target->GetToplevelWindow())) {
+  if (target == ui::EndpointType::kArc) {
     if (file_system_urls.empty()) {
       std::move(callback).Run(nullptr);
       return;
     }
-    file_manager::util::ConvertToContentUrls(
-        file_system_urls, base::BindOnce(&SendArcUrls, std::move(callback)));
+    arc::ConvertToContentUrlsAndShare(
+        ProfileManager::GetPrimaryUserProfile(), file_system_urls,
+        base::BindOnce(&SendArcUrls, std::move(callback)));
     return;
   }
 
   std::vector<FileInfo> list;
   for (const auto& url : file_system_urls)
-    list.push_back({url.path(), url});
+    list.push_back({url.path(), std::move(url)});
 
   ShareAndSend(target, std::move(list), std::move(callback));
+}
+
+base::Pickle ChromeDataExchangeDelegate::CreateClipboardFilenamesPickle(
+    ui::EndpointType source,
+    const std::vector<uint8_t>& data) const {
+  std::vector<std::string> filenames;
+  std::vector<FileInfo> file_info = GetFileInfo(source, data);
+  for (const auto& info : file_info) {
+    if (info.url.is_valid())
+      filenames.push_back(info.url.ToGURL().spec());
+  }
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(
+      std::unordered_map<std::u16string, std::u16string>(
+          {{kFilesAppMimeTag, kFilesAppTagExo},
+           {kFilesAppMimeSources, base::UTF8ToUTF16(base::JoinString(
+                                      filenames, kFilesAppSeparator))}}),
+      &pickle);
+  return pickle;
+}
+
+std::vector<ui::FileInfo>
+ChromeDataExchangeDelegate::ParseClipboardFilenamesPickle(
+    ui::EndpointType target,
+    const ui::Clipboard& data) const {
+  std::vector<ui::FileInfo> file_info;
+  // We only promote 'fs/sources' custom data pickle to be filenames which can
+  // be shared and read by clients if it came from the trusted FilesApp.
+  const ui::DataTransferEndpoint* data_src =
+      data.GetSource(ui::ClipboardBuffer::kCopyPaste);
+  if (!data_src || !data_src->IsSameOriginWith(ui::DataTransferEndpoint(
+                       file_manager::util::GetFilesAppOrigin()))) {
+    return file_info;
+  }
+
+  const ui::DataTransferEndpoint data_dst(target);
+  std::u16string file_system_url_list;
+  data.ReadCustomData(ui::ClipboardBuffer::kCopyPaste, kFilesAppMimeSources,
+                      &data_dst, &file_system_url_list);
+  if (file_system_url_list.empty())
+    return file_info;
+
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+
+  for (const base::StringPiece16& line : base::SplitStringPiece(
+           file_system_url_list, kFilesAppSeparator16, base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    if (line.empty() || line[0] == '#')
+      continue;
+    storage::FileSystemURL url = mount_points->CrackURL(GURL(line));
+    if (!url.is_valid()) {
+      LOG(WARNING) << "Invalid clipboard FileSystemURL: " << line;
+      continue;
+    }
+    file_info.push_back(ui::FileInfo(std::move(url.path()), base::FilePath()));
+  }
+  return file_info;
 }
 
 }  // namespace chromeos

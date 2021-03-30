@@ -26,8 +26,13 @@ class MediaCaptureObserver {
   // Called when media capture state has changed.
   virtual void OnMediaCaptureChanged(
       const base::flat_map<AccountId, MediaCaptureState>& capture_states) {}
-  // Called when a VM's media notifications have changed.
-  virtual void OnVmMediaNotificationChanged(bool camera, bool mic) {}
+  // Called when VMs' media capture notifications change. Each VM can have 0 or
+  // 1 media notification. It can either be a "camera", "mic", or "camera and
+  // mic" notification. Each of the argument is true if a notification of the
+  // corresponding type is active.
+  virtual void OnVmMediaNotificationChanged(bool camera,
+                                            bool mic,
+                                            bool camera_and_mic) {}
 
  protected:
   virtual ~MediaCaptureObserver() {}
@@ -57,7 +62,9 @@ class ASH_EXPORT MediaControllerImpl
   void SetForceMediaClientKeyHandling(bool enabled) override;
   void NotifyCaptureState(const base::flat_map<AccountId, MediaCaptureState>&
                               capture_states) override;
-  void NotifyVmMediaNotificationState(bool camera, bool mic) override;
+  void NotifyVmMediaNotificationState(bool camera,
+                                      bool mic,
+                                      bool camera_and_mic) override;
 
   // If media session accelerators are enabled then these methods will use the
   // media session service to control playback. Otherwise it will forward to

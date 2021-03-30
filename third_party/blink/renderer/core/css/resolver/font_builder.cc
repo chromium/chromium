@@ -319,15 +319,19 @@ void FontBuilder::UpdateSpecifiedSize(FontDescription& font_description,
 void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
                                      const ComputedStyle& style,
                                      FontSelector* font_selector) {
-  const float specified_size = font_description.SpecifiedSize();
-  if (!font_description.HasSizeAdjust() || !specified_size)
+  // Note: the computed_size has scale/zooming applied as well as text auto-
+  // sizing and Android font scaling. That means we operate on the used value
+  // without font-size-adjust applied and apply the font-size-adjust to end up
+  // at a new adjusted_size.
+  const float computed_size = font_description.ComputedSize();
+  if (!font_description.HasSizeAdjust() || !computed_size)
     return;
 
   // We need to create a temporal Font to get xHeight of a primary font.
   // The aspect value is based on the xHeight of the font for the computed font
-  // size, so we need to reset the adjustedSize to computedSize. See
+  // size, so we need to reset the adjusted_size to computed_size. See
   // FontDescription::EffectiveFontSize.
-  font_description.SetAdjustedSize(font_description.ComputedSize());
+  font_description.SetAdjustedSize(computed_size);
 
   Font font(font_description, font_selector);
 
@@ -337,13 +341,8 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
     return;
 
   const float size_adjust = font_description.SizeAdjust();
-  float aspect_value = font_data->GetFontMetrics().XHeight() / specified_size;
-  float adjusted_size = (size_adjust / aspect_value) * specified_size;
-  adjusted_size = GetComputedSizeFromSpecifiedSize(
-      font_description, style.EffectiveZoom(), adjusted_size);
-
-  adjusted_size = TextAutosizer::ComputeAutosizedFontSize(
-      adjusted_size, style.TextAutosizingMultiplier(), style.EffectiveZoom());
+  float aspect_value = font_data->GetFontMetrics().XHeight() / computed_size;
+  float adjusted_size = (size_adjust / aspect_value) * computed_size;
   font_description.SetAdjustedSize(adjusted_size);
 }
 
@@ -417,7 +416,13 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
 
 FontSelector* FontBuilder::FontSelectorFromTreeScope(
     const TreeScope* tree_scope) {
-  DCHECK(!tree_scope || tree_scope->GetDocument() == document_);
+  // TODO(crbug.com/437837): The tree_scope may be from a different Document in
+  // the case where we are resolving style for elements in a <svg:use> shadow
+  // tree.
+  DCHECK(!tree_scope || tree_scope->GetDocument() == document_ ||
+         tree_scope->GetDocument().IsSVGDocument());
+  // TODO(crbug.com/336876): Font selector should be based on tree_scope for
+  // tree-scoped references.
   return document_->GetStyleEngine().GetFontSelector();
 }
 

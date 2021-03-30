@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">सूची आयटम</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">दोन बोटांनी उजवीकडे स्वाइप करा</translation>
-<translation id="1016393160682012902">तिच्या फंक्शनविषयी जाणून घेण्यासाठी क्वेर्टी की, रिफ्रेश करण्यायोग्य ब्रेल की किंवा टच जेश्चर दाबा. बाहेर पडण्यासाठी कंट्रोलसह डब्ल्यू किंवा एस्केप दाबा.</translation>
 <translation id="1022586497894531524">तुम्ही ChromeVox वाचिक फीडबॅक पहिल्या वेळी वापरत आहात का? हे जलद ट्युटोरियल ChromeVox सोबत सुरुवात करण्यासाठी आवश्यक गोष्टी समजावून सांगते.</translation>
 <translation id="1025074108959230262">रोचक मोड अक्षम</translation>
 <translation id="1031961866430398710">नंतर</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">मागील नियंत्रण नाही</translation>
 <translation id="2045606329038304310">फॉर्म भाग नियंत्रण</translation>
 <translation id="2063539687800151747">बोधवाक्य</translation>
+<translation id="2074531330963286860">उपलब्ध क्रिया. पाहण्यासाठी Search+Period वापरा</translation>
 <translation id="2086961585857038472">पुढील शब्द</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">en</translation>
@@ -416,7 +416,7 @@
 <translation id="3935615366277838204">कॅप <ph name="LETTER" /></translation>
 <translation id="3936394396199829062">फिकट जांभळा</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
-<translation id="3962990492275676168">वर्तमान स्‍थानावरून वाचन प्रारंभ करा</translation>
+<translation id="3962990492275676168">वर्तमान स्‍थानावरून वाचन सुरू करा</translation>
 <translation id="3970951409746498040">पिवळसर तपकिरी</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">तपकिरी</translation>
@@ -807,7 +807,7 @@
 <translation id="7039555289296502784">ऑलिव्ह हिरवा</translation>
 <translation id="7041173719775863268">निवड समाप्त करा</translation>
 <translation id="7043850226734279132">गडद खाकी</translation>
-<translation id="7051308646573997571">लाल</translation>
+<translation id="7051308646573997571">Coral</translation>
 <translation id="7062635574500127092">हिरवट निळा</translation>
 <translation id="7086377898680121060">चकाकी वाढवा</translation>
 <translation id="7088743565397416204">ज्यावर फोकस केला आहे ते ॲक्टिव्हेट करण्यासाठी दोनदा टॅप करा</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">निवड सुरू करा किंवा संपवा</translation>
 <translation id="827422111966801947">नीळ</translation>
 <translation id="8276439074553447000">मागील फोकस करण्यायोग्य आयटमवर जा</translation>
+<translation id="8279039817939141096">त्यांच्या फंक्शनविषयी जाणून घेण्यासाठी QWERTY की, रिफ्रेश करण्यायोग्य ब्रेल की किंवा टच जेश्चर दाबा. control सह w, space सह Z दाबा, दोन बोटांनी डावीकडे स्वाइप करा किंवा बाहेर पडण्यासाठी Escape दाबा.</translation>
 <translation id="8283603667300770666">पुढील फॉर्म फील्‍ड</translation>
 <translation id="8310185481635255431">पुढील लिंक नाही</translation>
 <translation id="831207808878314375">परिभाषा</translation>
@@ -1044,7 +1045,7 @@
 <translation id="8882002077197914455">पंक्ती शीर्षलेख</translation>
 <translation id="8883850400338911892">8 बिंदूचा url बनवला</translation>
 <translation id="8896479570570613387">मध्यम जांभळा</translation>
-<translation id="8897030325301866860"><ph name="FONT_FAMILY" /> फॉन्ट</translation>
+<translation id="8897030325301866860"><ph name="FONT_FAMILY" /> फॉंट</translation>
 <translation id="8898516272131543774">विरामचिन्ह प्रतिध्वनी आवर्तन</translation>
 <translation id="8908714597367957477">colhdr</translation>
 <translation id="8937112856099038376">intlnk</translation>

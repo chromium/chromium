@@ -105,7 +105,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     wl_client_flush(client());
   }
 
-  void Commit(const base::string16& text) override {
+  void Commit(const std::u16string& text) override {
     zwp_text_input_v1_send_commit_string(
         text_input_,
         serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),

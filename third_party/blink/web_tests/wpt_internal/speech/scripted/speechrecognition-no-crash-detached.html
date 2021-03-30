@@ -1,0 +1,33 @@
+<!doctype html>
+<title>Accessing SpeechRecognition on a detached window should not crash.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockSpeechRecognizer} from '../resources/mock-speechrecognizer.js';
+
+const mock = new MockSpeechRecognizer();
+
+async_test(t => {
+  const w = window.open('../resources/window-postmessage-open-close.html');
+  let recognitionConstructor;
+  let recognition;
+
+  window.addEventListener('message', t.step_func(event => {
+    if (event.data == "opened") {
+      recognitionConstructor = w.webkitSpeechRecognition;
+      recognition = new recognitionConstructor();
+      w.close();
+    } else if (event.data == "closed") {
+      recognition.start();
+      recognition.stop();
+      recognition.abort();
+      recognition = new recognitionConstructor();
+      recognition.start();
+      recognition.stop();
+      recognition.abort();
+      t.done();
+    }
+  }), false);
+});
+
+</script>

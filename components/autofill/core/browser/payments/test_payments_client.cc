@@ -57,7 +57,7 @@ void TestPaymentsClient::GetUploadDetails(
     const std::vector<const char*>& active_experiments,
     const std::string& app_locale,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const base::string16&,
+                            const std::u16string&,
                             std::unique_ptr<base::Value>,
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
@@ -70,8 +70,8 @@ void TestPaymentsClient::GetUploadDetails(
   std::move(callback).Run(
       app_locale == "en-US" ? AutofillClient::SUCCESS
                             : AutofillClient::PERMANENT_FAILURE,
-      base::ASCIIToUTF16("this is a context token"),
-      TestPaymentsClient::LegalMessage(), supported_card_bin_ranges_);
+      u"this is a context token", TestPaymentsClient::LegalMessage(),
+      supported_card_bin_ranges_);
 }
 
 void TestPaymentsClient::UploadCard(

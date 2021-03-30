@@ -68,14 +68,15 @@ public class FormFieldData {
     // after the object instantiated.
     private String mServerType;
     private String mComputedType;
+    private String[] mServerPredictions;
     private AutofillId mAutofillId;
 
     private FormFieldData(String name, String label, String value, String autocompleteAttr,
             boolean shouldAutocomplete, String placeholder, String type, String id,
             String[] optionValues, String[] optionContents, boolean isCheckField, boolean isChecked,
-            int maxLength, String heuristicType, String serverType, String computedType, float left,
-            float top, float right, float bottom, String[] datalistValues, String[] datalistLabels,
-            boolean visible) {
+            int maxLength, String heuristicType, String serverType, String computedType,
+            String[] serverPredictions, float left, float top, float right, float bottom,
+            String[] datalistValues, String[] datalistLabels, boolean visible) {
         mName = name;
         mLabel = label;
         mValue = value;
@@ -101,6 +102,7 @@ public class FormFieldData {
         mMaxLength = maxLength;
         mHeuristicType = heuristicType;
         mServerType = serverType;
+        mServerPredictions = serverPredictions;
         mComputedType = computedType;
         mBounds = new RectF(left, top, right, bottom);
         mVisible = visible;
@@ -147,9 +149,11 @@ public class FormFieldData {
     }
 
     @CalledByNative
-    private void updateFieldTypes(String serverType, String computedType) {
+    private void updateFieldTypes(
+            String serverType, String computedType, String[] serverPredictions) {
         mServerType = serverType;
         mComputedType = computedType;
+        mServerPredictions = serverPredictions;
     }
 
     public String getServerType() {
@@ -158,6 +162,10 @@ public class FormFieldData {
 
     public String getComputedType() {
         return mComputedType;
+    }
+
+    public String[] getServerPredictions() {
+        return mServerPredictions;
     }
 
     @CalledByNative
@@ -188,11 +196,11 @@ public class FormFieldData {
             String autocompleteAttr, boolean shouldAutocomplete, String placeholder, String type,
             String id, String[] optionValues, String[] optionContents, boolean isCheckField,
             boolean isChecked, int maxLength, String heuristicType, String serverType,
-            String computedType, float left, float top, float right, float bottom,
-            String[] datalistValues, String[] datalistLabels, boolean visible) {
+            String computedType, String[] serverPredictions, float left, float top, float right,
+            float bottom, String[] datalistValues, String[] datalistLabels, boolean visible) {
         return new FormFieldData(name, label, value, autocompleteAttr, shouldAutocomplete,
                 placeholder, type, id, optionValues, optionContents, isCheckField, isChecked,
-                maxLength, heuristicType, serverType, computedType, left, top, right, bottom,
-                datalistValues, datalistLabels, visible);
+                maxLength, heuristicType, serverType, computedType, serverPredictions, left, top,
+                right, bottom, datalistValues, datalistLabels, visible);
     }
 }

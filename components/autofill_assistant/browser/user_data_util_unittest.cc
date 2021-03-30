@@ -4,24 +4,35 @@
 
 #include "components/autofill_assistant/browser/user_data_util.h"
 
+#include <string>
+
 #include "base/guid.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
+#include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 
 namespace autofill_assistant {
 namespace {
 
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Return;
 using ::testing::SizeIs;
 
 TEST(UserDataUtilTest, SortsCompleteContactsAlphabetically) {
@@ -773,6 +784,155 @@ TEST(UserDataUtilTest, EscapeDataFromProfile) {
   EXPECT_TRUE(
       GetFormattedAutofillValue(autofill_value, &user_data, &result).ok());
   EXPECT_EQ(result, "^Jo\\.h\\*n$");
+}
+
+class UserDataPasswordManagerValueTest
+    : public content::RenderViewHostTestHarness {
+ public:
+  UserDataPasswordManagerValueTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~UserDataPasswordManagerValueTest() override {}
+
+  void SetUp() override { RenderViewHostTestHarness::SetUp(); }
+
+  MOCK_METHOD2(OnResult, void(const ClientStatus&, const std::string&));
+
+ protected:
+  UserData user_data_;
+  MockWebsiteLoginManager mock_website_login_manager_;
+};
+
+TEST_F(UserDataPasswordManagerValueTest,
+       GetCredentialsFromDifferentDomainFails) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL("https://www.example.com"), "username");
+
+  ElementFinder::Result element;
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://www.other.com"), web_contents()->GetMainFrame());
+  element.container_frame_host = web_contents()->GetMainFrame();
+
+  EXPECT_CALL(*this,
+              OnResult(EqualsStatus(ClientStatus(PASSWORD_ORIGIN_MISMATCH)),
+                       std::string()))
+      .Times(2);
+
+  PasswordManagerValue password_value;
+  password_value.set_credential_type(PasswordManagerValue::PASSWORD);
+
+  GetPasswordManagerValue(
+      password_value, element, &user_data_, &mock_website_login_manager_,
+      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
+                     base::Unretained(this)));
+
+  PasswordManagerValue username_value;
+  username_value.set_credential_type(PasswordManagerValue::USERNAME);
+
+  GetPasswordManagerValue(
+      username_value, element, &user_data_, &mock_website_login_manager_,
+      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
+                     base::Unretained(this)));
+}
+
+TEST_F(UserDataPasswordManagerValueTest, GetUsernameFromSameDomain) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL("https://www.example.com"), "username");
+
+  ElementFinder::Result element;
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://www.example.com"), web_contents()->GetMainFrame());
+  element.container_frame_host = web_contents()->GetMainFrame();
+
+  PasswordManagerValue password_manager_value;
+  password_manager_value.set_credential_type(PasswordManagerValue::USERNAME);
+
+  EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "username"));
+
+  GetPasswordManagerValue(
+      password_manager_value, element, &user_data_,
+      &mock_website_login_manager_,
+      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
+                     base::Unretained(this)));
+}
+
+TEST_F(UserDataPasswordManagerValueTest, GetStoredPasswordFromSameDomain) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL("https://www.example.com"), "username");
+
+  ElementFinder::Result element;
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://www.example.com"), web_contents()->GetMainFrame());
+  element.container_frame_host = web_contents()->GetMainFrame();
+
+  PasswordManagerValue password_manager_value;
+  password_manager_value.set_credential_type(PasswordManagerValue::PASSWORD);
+
+  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
+      .WillOnce(RunOnceCallback<1>(true, "password"));
+  EXPECT_CALL(*this, OnResult(EqualsStatus(OkClientStatus()), "password"));
+
+  GetPasswordManagerValue(
+      password_manager_value, element, &user_data_,
+      &mock_website_login_manager_,
+      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
+                     base::Unretained(this)));
+}
+
+TEST_F(UserDataPasswordManagerValueTest, GetStoredPasswordFails) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL("https://www.example.com"), "username");
+
+  ElementFinder::Result element;
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://www.example.com"), web_contents()->GetMainFrame());
+  element.container_frame_host = web_contents()->GetMainFrame();
+
+  PasswordManagerValue password_manager_value;
+  password_manager_value.set_credential_type(PasswordManagerValue::PASSWORD);
+
+  EXPECT_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
+      .WillOnce(RunOnceCallback<1>(false, std::string()));
+  EXPECT_CALL(*this,
+              OnResult(EqualsStatus(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE)),
+                       std::string()));
+
+  GetPasswordManagerValue(
+      password_manager_value, element, &user_data_,
+      &mock_website_login_manager_,
+      base::BindOnce(&UserDataPasswordManagerValueTest::OnResult,
+                     base::Unretained(this)));
+}
+
+TEST(UserDataUtilTest, ClientMemoryKey) {
+  UserData user_data;
+  ValueProto value_proto;
+  value_proto.mutable_strings()->add_values("Hello World");
+  user_data.additional_values_["key"] = value_proto;
+
+  std::string result;
+
+  EXPECT_TRUE(GetClientMemoryStringValue("key", &user_data, &result).ok());
+  EXPECT_EQ(result, "Hello World");
+}
+
+TEST(UserDataUtilTest, EmptyClientMemoryKey) {
+  UserData user_data;
+  std::string result;
+
+  EXPECT_EQ(INVALID_ACTION,
+            GetClientMemoryStringValue(std::string(), &user_data, &result)
+                .proto_status());
+}
+
+TEST(UserDataUtilTest, NonExistingClientMemoryKey) {
+  UserData user_data;
+  std::string result;
+
+  EXPECT_EQ(
+      PRECONDITION_FAILED,
+      GetClientMemoryStringValue("key", &user_data, &result).proto_status());
 }
 
 }  // namespace

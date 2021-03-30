@@ -66,7 +66,7 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   // handling for partial words, as Blink guarantees that no request is made
   // when typing in the middle of a word.
   void RequestTextChecking(
-      const base::string16& text,
+      const std::u16string& text,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion);
 
   // The number of ongoing spell check host requests.
@@ -99,7 +99,7 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   // Tries to satisfy a spellcheck request from the cache in |last_request_|.
   // Returns true (and cancels/finishes the completion) if it can, false
   // if the provider should forward the query on.
-  bool SatisfyRequestFromCache(const base::string16& text,
+  bool SatisfyRequestFromCache(const std::u16string& text,
                                blink::WebTextCheckingCompletion* completion);
 
   // content::RenderFrameObserver:
@@ -118,28 +118,27 @@ class SpellCheckProvider : public content::RenderFrameObserver,
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   void OnRespondSpellingService(int identifier,
-                                const base::string16& text,
+                                const std::u16string& text,
                                 bool success,
                                 const std::vector<SpellCheckResult>& results);
 #endif
 
   // Returns whether |text| has word characters, i.e. whether a spellchecker
   // needs to check this text.
-  bool HasWordCharacters(const base::string16& text, size_t index) const;
+  bool HasWordCharacters(const std::u16string& text, size_t index) const;
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  void OnRespondTextCheck(
-      int identifier,
-      const base::string16& line,
-      const std::vector<SpellCheckResult>& results);
+  void OnRespondTextCheck(int identifier,
+                          const std::u16string& line,
+                          const std::vector<SpellCheckResult>& results);
 
   // Makes mojo calls to the browser process to perform platform spellchecking.
-  void RequestTextCheckingFromBrowser(const base::string16& text);
+  void RequestTextCheckingFromBrowser(const std::u16string& text);
 
 #if defined(OS_WIN)
   // Callback for when spellcheck service has been initialized on demand.
   void OnRespondInitializeDictionaries(
-      const base::string16& text,
+      const std::u16string& text,
       std::vector<spellcheck::mojom::SpellCheckBDictLanguagePtr> dictionaries,
       const std::vector<std::string>& custom_words,
       bool enable);
@@ -156,7 +155,7 @@ class SpellCheckProvider : public content::RenderFrameObserver,
 
   // The last text sent to the browser process for spellchecking, and its
   // spellcheck results and WebTextCheckCompletions identifier.
-  base::string16 last_request_;
+  std::u16string last_request_;
   blink::WebVector<blink::WebTextCheckingResult> last_results_;
   int last_identifier_;
 

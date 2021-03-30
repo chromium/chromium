@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 
 extern "C" int __llvm_profile_dump(void);
 
@@ -20,7 +21,11 @@ void WriteClangProfilingProfile() {
   // profiling counters.
   static base::NoDestructor<base::Lock> lock;
   base::AutoLock auto_lock(*lock);
+
+// Fuchsia's profile runtime does not handle profile dumping.
+#if !defined(OS_FUCHSIA)
   __llvm_profile_dump();
+#endif  // !defined(OS_FUCHSIA)
 }
 
 }  // namespace base

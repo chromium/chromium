@@ -15,10 +15,13 @@
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/hit_test_utils.h"
 
 #if defined(OS_WIN)
@@ -84,6 +87,7 @@ class WebAppToolbarButton : public BaseClass {
 
 class WebAppToolbarBackButton : public WebAppToolbarButton<BackForwardButton> {
  public:
+  METADATA_HEADER(WebAppToolbarBackButton);
   WebAppToolbarBackButton(PressedCallback callback, Browser* browser);
   WebAppToolbarBackButton(const WebAppToolbarBackButton&) = delete;
   WebAppToolbarBackButton& operator=(const WebAppToolbarBackButton&) = delete;
@@ -111,8 +115,12 @@ const gfx::VectorIcon* WebAppToolbarBackButton::GetAlternativeIcon() const {
   return nullptr;
 }
 
+BEGIN_METADATA(WebAppToolbarBackButton, BackForwardButton)
+END_METADATA
+
 class WebAppToolbarReloadButton : public WebAppToolbarButton<ReloadButton> {
  public:
+  METADATA_HEADER(WebAppToolbarReloadButton);
   using WebAppToolbarButton<ReloadButton>::WebAppToolbarButton;
   WebAppToolbarReloadButton(const WebAppToolbarReloadButton&) = delete;
   WebAppToolbarReloadButton& operator=(const WebAppToolbarReloadButton&) =
@@ -136,6 +144,9 @@ const gfx::VectorIcon* WebAppToolbarReloadButton::GetAlternativeIcon() const {
 #endif
   return nullptr;
 }
+
+BEGIN_METADATA(WebAppToolbarReloadButton, ReloadButton)
+END_METADATA
 
 }  // namespace
 
@@ -162,24 +173,28 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
           browser_),
       browser_));
   back_button_->set_tag(IDC_BACK);
-  reload_button_ = AddChildView(std::make_unique<WebAppToolbarReloadButton>(
-      browser_->command_controller()));
-  reload_button_->set_tag(IDC_RELOAD);
 
   const bool is_browser_focus_mode = browser_->is_focus_mode();
   SetInsetsForWebAppToolbarButton(back_button_, is_browser_focus_mode);
-  SetInsetsForWebAppToolbarButton(reload_button_, is_browser_focus_mode);
-
   views::SetHitTestComponent(back_button_, static_cast<int>(HTCLIENT));
-  views::SetHitTestComponent(reload_button_, static_cast<int>(HTCLIENT));
-
   chrome::AddCommandObserver(browser_, IDC_BACK, this);
-  chrome::AddCommandObserver(browser_, IDC_RELOAD, this);
+
+  const auto* app_controller = browser_->app_controller();
+  if (app_controller->HasReloadButton()) {
+    reload_button_ = AddChildView(std::make_unique<WebAppToolbarReloadButton>(
+        browser_->command_controller()));
+    reload_button_->set_tag(IDC_RELOAD);
+
+    SetInsetsForWebAppToolbarButton(reload_button_, is_browser_focus_mode);
+    views::SetHitTestComponent(reload_button_, static_cast<int>(HTCLIENT));
+    chrome::AddCommandObserver(browser_, IDC_RELOAD, this);
+  }
 }
 
 WebAppNavigationButtonContainer::~WebAppNavigationButtonContainer() {
   chrome::RemoveCommandObserver(browser_, IDC_BACK, this);
-  chrome::RemoveCommandObserver(browser_, IDC_RELOAD, this);
+  if (reload_button_)
+    chrome::RemoveCommandObserver(browser_, IDC_RELOAD, this);
 }
 
 BackForwardButton* WebAppNavigationButtonContainer::back_button() {
@@ -192,11 +207,8 @@ ReloadButton* WebAppNavigationButtonContainer::reload_button() {
 
 void WebAppNavigationButtonContainer::SetIconColor(SkColor icon_color) {
   back_button_->SetIconColor(icon_color);
-  reload_button_->SetIconColor(icon_color);
-}
-
-const char* WebAppNavigationButtonContainer::GetClassName() const {
-  return "WebAppNavigationButtonContainer";
+  if (reload_button_)
+    reload_button_->SetIconColor(icon_color);
 }
 
 void WebAppNavigationButtonContainer::EnabledStateChangedForCommand(
@@ -207,9 +219,13 @@ void WebAppNavigationButtonContainer::EnabledStateChangedForCommand(
       back_button_->SetEnabled(enabled);
       break;
     case IDC_RELOAD:
+      DCHECK(reload_button_);
       reload_button_->SetEnabled(enabled);
       break;
     default:
       NOTREACHED();
   }
 }
+
+BEGIN_METADATA(WebAppNavigationButtonContainer, views::View)
+END_METADATA

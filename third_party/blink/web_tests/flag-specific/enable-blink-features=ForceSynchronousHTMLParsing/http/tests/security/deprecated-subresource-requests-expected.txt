@@ -1,0 +1,6 @@
+CONSOLE WARNING: line 1: Subresource requests using legacy protocols (like `ftp:`) are blocked. Please deliver web-accessible resources over modern protocols like HTTPS. See https://www.chromestatus.com/feature/5709390967472128 for details.
+CONSOLE WARNING: line 1: Subresource requests whose URLs contain embedded credentials (e.g. `https://user:pass@host/`) are blocked. See https://www.chromestatus.com/feature/5669008342777856 for more details.
+This is a testharness.js-based test.
+PASS deprecated-subresource-requests
+Harness: the test ran to completion.
+

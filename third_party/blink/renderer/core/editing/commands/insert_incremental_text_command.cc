@@ -58,9 +58,25 @@ wtf_size_t ComputeCommonGraphemeClusterPrefixLength(
   const ContainerNode* selection_node =
       selection_start.ComputeContainerNode()->parentNode();
 
+  // Calculate offset from |selection_node| start to |selection_start|'s
+  // container node start.
+  CharacterIterator forward_iterator(
+      EphemeralRange::RangeOfContents(*selection_node),
+      TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
+  const Position selection_start_container_node_start(
+      selection_start.ComputeContainerNode(), 0);
+  int offset = 0;
+  while (!forward_iterator.AtEnd()) {
+    const Position& current_position = forward_iterator.StartPosition();
+    if (current_position == selection_start_container_node_start)
+      break;
+    forward_iterator.Advance(1);
+    offset++;
+  }
+
   // For grapheme cluster, we should adjust it for grapheme boundary.
   const EphemeralRange& range =
-      PlainTextRange(0, selection_offset + common_prefix_length)
+      PlainTextRange(offset, offset + selection_offset + common_prefix_length)
           .CreateRange(*selection_node);
   if (range.IsNull())
     return 0;

@@ -109,11 +109,10 @@ suite(destination_dialog_test.suiteName, function() {
     assertEquals(
         'rgb(32, 33, 36)',
         window.getComputedStyle(printerItems[0].$$('.name')).color);
-    // FooName will be second since it was updated by capabilities fetch.
-    assertEquals('FooName', getDisplayedName(printerItems[1]));
-    Array.from(printerItems).slice(2).forEach((item, index) => {
+    Array.from(printerItems).slice(1, 5).forEach((item, index) => {
       assertEquals(destinations[index].displayName, getDisplayedName(item));
     });
+    assertEquals('FooName', getDisplayedName(printerItems[5]));
   });
 
   // Test that clicking a provisional destination shows the provisional
@@ -212,8 +211,7 @@ suite(destination_dialog_test.suiteName, function() {
     cloudPrintInterface.setPrinter(getGoogleDriveDestination(user2));
     // Override so that privet printers will also be fetched, since we are
     // simulating the case where the enterprise override is enabled.
-    loadTimeData.overrideValues(
-        {'cloudPrintDeprecationWarningsSuppressed': true});
+    loadTimeData.overrideValues({'forceEnablePrivetPrinting': true});
     let userSelect = null;
 
     await finishSetup();

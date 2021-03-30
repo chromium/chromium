@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "cc/layers/solid_color_layer.h"
+#include "cc/test/property_tree_test_utils.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
@@ -59,6 +61,7 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
 
   // Enable auto-resize.
   VisualProperties visual_properties;
+  visual_properties.screen_infos = ScreenInfos(ScreenInfo());
   visual_properties.auto_resize_enabled = true;
   visual_properties.min_size_for_auto_resize = gfx::Size(100, 100);
   visual_properties.max_size_for_auto_resize = gfx::Size(200, 200);
@@ -68,7 +71,7 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
   WebView().MainFrameViewWidget()->UpdateSurfaceAndScreenInfo(
       visual_properties.local_surface_id.value(),
       visual_properties.compositor_viewport_pixel_rect,
-      visual_properties.screen_info);
+      visual_properties.screen_infos);
 
   EXPECT_EQ(allocator.GetCurrentLocalSurfaceId(),
             WebView().MainFrameViewWidget()->LocalSurfaceIdFromParent());
@@ -161,7 +164,8 @@ TEST_F(WebFrameWidgetImplRemoteFrameSimTest,
   cc::LayerTreeHost* layer_tree_host =
       LocalFrameRootWidget()->LayerTreeHostForTesting();
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
-  blink::VisualProperties visual_properties;
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = ScreenInfos(ScreenInfo());
 
   // Sync visual properties on a child widget.
   visual_properties.is_pinch_gesture_active = true;
@@ -468,14 +472,12 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     WebView().StopDeferringMainFrameUpdate();
     FrameWidgetBase()->UpdateCompositorViewportRect(gfx::Rect(200, 100));
 
-    auto root_layer = cc::SolidColorLayer::Create();
-    root_layer->SetBounds(gfx::Size(200, 100));
-    root_layer->SetBackgroundColor(SK_ColorGREEN);
-    FrameWidgetBase()->LayerTreeHostForTesting()->SetRootLayer(root_layer);
-
+    auto* root_layer =
+        FrameWidgetBase()->LayerTreeHostForTesting()->root_layer();
     auto color_layer = cc::SolidColorLayer::Create();
     color_layer->SetBounds(gfx::Size(100, 100));
-    root_layer->AddChild(color_layer);
+    cc::CopyProperties(root_layer, color_layer.get());
+    root_layer->SetChildLayerList(cc::LayerList({color_layer}));
     color_layer->SetBackgroundColor(SK_ColorRED);
   }
 
@@ -576,7 +578,8 @@ TEST_F(WebFrameWidgetSimTest, ActivePinchGestureUpdatesLayerTreeHost) {
   auto* layer_tree_host =
       WebView().MainFrameViewWidget()->LayerTreeHostForTesting();
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
-  blink::VisualProperties visual_properties;
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = ScreenInfos(ScreenInfo());
 
   // Sync visual properties on a mainframe RenderWidget.
   visual_properties.is_pinch_gesture_active = true;
@@ -650,28 +653,21 @@ TEST_F(WebFrameWidgetSimTest, PropagateScaleToRemoteFrames) {
 
       )HTML");
   base::RunLoop().RunUntilIdle();
-  class PageScaleRemoteFrameClient
-      : public frame_test_helpers::TestWebRemoteFrameClient {
-   public:
-    void PageScaleFactorChanged(float page_scale_factor,
-                                bool is_pinch_gesture_active) override {
-      page_scale_factor_changed_ = true;
-    }
-    bool page_scale_factor_changed_ = false;
-  };
-
-  PageScaleRemoteFrameClient page_scale_remote_frame_client;
   EXPECT_TRUE(WebView().MainFrame()->FirstChild());
   {
     WebFrame* grandchild = WebView().MainFrame()->FirstChild()->FirstChild();
     EXPECT_TRUE(grandchild);
     EXPECT_TRUE(grandchild->IsWebLocalFrame());
-    grandchild->Swap(
-        frame_test_helpers::CreateRemote(&page_scale_remote_frame_client));
+    grandchild->Swap(frame_test_helpers::CreateRemote());
   }
   auto* widget = WebView().MainFrameViewWidget();
   widget->SetPageScaleStateAndLimits(1.3f, true, 1.0f, 3.0f);
-  EXPECT_TRUE(page_scale_remote_frame_client.page_scale_factor_changed_);
+  EXPECT_EQ(
+      To<WebRemoteFrameImpl>(WebView().MainFrame()->FirstChild()->FirstChild())
+          ->GetFrame()
+          ->GetPendingVisualPropertiesForTesting()
+          .page_scale_factor,
+      1.3f);
   WebView().MainFrame()->FirstChild()->FirstChild()->Detach();
 }
 

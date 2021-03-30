@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that dataReceived is called on NetworkDispatcher for XHR with responseType="blob".\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   TestRunner.addSniffer(SDK.NetworkDispatcher.prototype, 'dataReceived', dataReceived);

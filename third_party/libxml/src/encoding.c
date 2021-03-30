@@ -1488,16 +1488,25 @@ xmlRegisterCharEncodingHandler(xmlCharEncodingHandlerPtr handler) {
     if ((handler == NULL) || (handlers == NULL)) {
         xmlEncodingErr(XML_I18N_NO_HANDLER,
 		"xmlRegisterCharEncodingHandler: NULL handler !\n", NULL);
-	return;
+        goto free_handler;
     }
 
     if (nbCharEncodingHandler >= MAX_ENCODING_HANDLERS) {
         xmlEncodingErr(XML_I18N_EXCESS_HANDLER,
 	"xmlRegisterCharEncodingHandler: Too many handler registered, see %s\n",
 	               "MAX_ENCODING_HANDLERS");
-	return;
+        goto free_handler;
     }
     handlers[nbCharEncodingHandler++] = handler;
+    return;
+
+free_handler:
+    if (handler != NULL) {
+        if (handler->name != NULL) {
+            xmlFree(handler->name);
+        }
+        xmlFree(handler);
+    }
 }
 
 /**
@@ -1858,7 +1867,7 @@ xmlIconvWrapper(iconv_t cd, unsigned char *out, int *outlen,
  * @outlen:  the length of @out
  * @in:  a pointer to an array of input bytes
  * @inlen:  the length of @in
- * @flush: if 1, indicates end of input
+ * @flush: if true, indicates end of input
  *
  * Returns 0 if success, or
  *     -1 by lack of space, or
@@ -1898,7 +1907,7 @@ xmlUconvWrapper(uconv_t *cd, int toUnicode, unsigned char *out, int *outlen,
     *inlen = ucv_in - (const char*) in;
     *outlen = ucv_out - (char *) out;
     if (U_SUCCESS(err)) {
-        /* reset pivot buf if this is the last call for input (flush==1) */
+        /* reset pivot buf if this is the last call for input (flush==TRUE) */
         if (flush)
             cd->pivot_source = cd->pivot_target = cd->pivot_buf;
         return 0;

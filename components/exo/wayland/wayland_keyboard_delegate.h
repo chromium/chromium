@@ -6,7 +6,6 @@
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_KEYBOARD_DELEGATE_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "components/exo/keyboard_delegate.h"
@@ -31,6 +30,8 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
  public:
   WaylandKeyboardDelegate(wl_resource* keyboard_resource,
                           SerialTracker* serial_tracker);
+  WaylandKeyboardDelegate(const WaylandKeyboardDelegate&) = delete;
+  WaylandKeyboardDelegate& operator=(const WaylandKeyboardDelegate) = delete;
   ~WaylandKeyboardDelegate() override;
 
   // Overridden from KeyboardDelegate:
@@ -49,9 +50,6 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   void OnKeyboardLayoutUpdated(base::StringPiece keymap) override;
 
  private:
-  // Returns the corresponding key given a dom code.
-  uint32_t DomCodeToKey(ui::DomCode code) const;
-
   // Sends the current modifiers to the client.
   void SendKeyboardModifiers();
 
@@ -66,8 +64,6 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
 
   // Tracks the latest modifiers.
   KeyboardModifiers current_modifiers_{};
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandKeyboardDelegate);
 #endif
 };
 

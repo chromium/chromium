@@ -32,6 +32,7 @@ source_set("advanced_settings_signin") {
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/settings/google_services",
     "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/common/ui/colors",
     "//ios/web/public",
     "//ui/base",
   ]

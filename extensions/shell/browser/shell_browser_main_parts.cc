@@ -49,8 +49,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/audio/audio_devices_pref_handler_impl.h"
-#include "chromeos/audio/cras_audio_handler.h"
+#include "ash/components/audio/audio_devices_pref_handler_impl.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/network/network_handler.h"
 #include "extensions/shell/browser/shell_audio_controller_chromeos.h"
@@ -164,7 +164,7 @@ int ShellBrowserMainParts::PreEarlyInitialization() {
 }
 
 int ShellBrowserMainParts::PreCreateThreads() {
-  // TODO(jamescook): Initialize chromeos::CrosSettings here?
+  // TODO(jamescook): Initialize ash::CrosSettings here?
 
   content::ChildProcessSecurityPolicy::GetInstance()->RegisterWebSafeScheme(
       kExtensionScheme);
@@ -173,7 +173,7 @@ int ShellBrowserMainParts::PreCreateThreads() {
   return 0;
 }
 
-void ShellBrowserMainParts::PreMainMessageLoopRun() {
+int ShellBrowserMainParts::PreMainMessageLoopRun() {
   extensions_client_ = std::make_unique<ShellExtensionsClient>();
   ExtensionsClient::Set(extensions_client_.get());
 
@@ -202,9 +202,9 @@ void ShellBrowserMainParts::PreMainMessageLoopRun() {
       media_controller_manager;
   content::GetMediaSessionService().BindMediaControllerManager(
       media_controller_manager.InitWithNewPipeAndPassReceiver());
-  chromeos::CrasAudioHandler::Initialize(
+  ash::CrasAudioHandler::Initialize(
       std::move(media_controller_manager),
-      base::MakeRefCounted<chromeos::AudioDevicesPrefHandlerImpl>(
+      base::MakeRefCounted<ash::AudioDevicesPrefHandlerImpl>(
           local_state_.get()));
   audio_controller_.reset(new ShellAudioController());
 #endif
@@ -255,17 +255,23 @@ void ShellBrowserMainParts::PreMainMessageLoopRun() {
   } else {
     browser_main_delegate_->Start(browser_context_.get());
   }
+
+  desktop_controller_->PreMainMessageLoopRun();
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-bool ShellBrowserMainParts::MainMessageLoopRun(int* result_code) {
-  if (!run_message_loop_)
-    return true;
-  desktop_controller_->Run();
-  *result_code = content::RESULT_CODE_NORMAL_EXIT;
-  return true;
+void ShellBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  if (run_message_loop_)
+    desktop_controller_->WillRunMainMessageLoop(run_loop);
+  else
+    run_loop.reset();
 }
 
 void ShellBrowserMainParts::PostMainMessageLoopRun() {
+  desktop_controller_->PostMainMessageLoopRun();
+
   // Close apps before shutting down browser context and extensions system.
   desktop_controller_->CloseAppWindows();
 
@@ -287,7 +293,7 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   audio_controller_.reset();
-  chromeos::CrasAudioHandler::Shutdown();
+  ash::CrasAudioHandler::Shutdown();
 #endif
 
   sessions::SessionIdGenerator::GetInstance()->Shutdown();

@@ -139,7 +139,7 @@ void MoveCursorTo(AshWindowTreeHost* ash_host,
   }
 }
 
-void ShowDisplayErrorNotification(const base::string16& message,
+void ShowDisplayErrorNotification(const std::u16string& message,
                                   bool allow_feedback) {
   // Always remove the notification to make sure the notification appears
   // as a popup in any situation.
@@ -156,9 +156,9 @@ void ShowDisplayErrorNotification(const base::string16& message,
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kDisplayErrorNotificationId,
-          base::string16(),  // title
+          std::u16string(),  // title
           message,
-          base::string16(),  // display_source
+          std::u16string(),  // display_source
           GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -175,7 +175,7 @@ void ShowDisplayErrorNotification(const base::string16& message,
       std::move(notification));
 }
 
-base::string16 ConvertRefreshRateToString16(float refresh_rate) {
+std::u16string ConvertRefreshRateToString16(float refresh_rate) {
   std::string str = base::StringPrintf("%.2f", refresh_rate);
 
   // Remove the mantissa for whole numbers.
@@ -185,14 +185,14 @@ base::string16 ConvertRefreshRateToString16(float refresh_rate) {
   return base::UTF8ToUTF16(str);
 }
 
-base::string16 GetDisplayErrorNotificationMessageForTest() {
+std::u16string GetDisplayErrorNotificationMessageForTest() {
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   for (auto* const notification : notifications) {
     if (notification->id() == kDisplayErrorNotificationId)
       return notification->message();
   }
-  return base::string16();
+  return std::u16string();
 }
 
 }  // namespace ash

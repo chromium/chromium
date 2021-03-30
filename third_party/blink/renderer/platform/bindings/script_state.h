@@ -130,7 +130,7 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
               ExecutionContext* execution_context);
   ~ScriptState();
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor*) const;
 
   static ScriptState* Current(v8::Isolate* isolate) {  // DEPRECATED
     return From(isolate->GetCurrentContext());
@@ -190,7 +190,7 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
   }
   void DetachGlobalObject();
 
-  V8PerContextData* PerContextData() const { return per_context_data_.get(); }
+  V8PerContextData* PerContextData() const { return per_context_data_.Get(); }
   void DisposePerContextData();
 
   // This method is expected to be called only from
@@ -217,7 +217,7 @@ class PLATFORM_EXPORT ScriptState final : public GarbageCollected<ScriptState> {
   // So you must explicitly clear the std::unique_ptr by calling
   // disposePerContextData() once you no longer need V8PerContextData.
   // Otherwise, the v8::Context will leak.
-  std::unique_ptr<V8PerContextData> per_context_data_;
+  Member<V8PerContextData> per_context_data_;
 
   // v8::Context has an internal field to this ScriptState* as a raw pointer,
   // which is out of scope of Blink GC, but it must be a strong reference.  We

@@ -6,11 +6,11 @@
 #define CHROME_SERVICES_UTIL_WIN_UTIL_WIN_IMPL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,11 +25,11 @@ class UtilWinImpl : public chrome::mojom::UtilWin {
   void IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) override;
   void CallExecuteSelectFile(ui::SelectFileDialog::Type type,
                              uint32_t owner,
-                             const base::string16& title,
+                             const std::u16string& title,
                              const base::FilePath& default_path,
                              const std::vector<ui::FileFilterSpec>& filter,
                              int32_t file_type_index,
-                             const base::string16& default_extension,
+                             const std::u16string& default_extension,
                              CallExecuteSelectFileCallback callback) override;
   void InspectModule(const base::FilePath& module_path,
                      InspectModuleCallback callback) override;

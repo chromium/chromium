@@ -48,6 +48,10 @@ struct ExactInfo {
 struct TaskInfo {
   TaskInfo(int task_id, const PeriodicInfo& timing_info);
   TaskInfo(int task_id, const OneOffInfo& timing_info);
+  // TODO(crbug.com/1190755): Either remove this or make sure it's compatible
+  // with Android S.
+  // Warning: This functionality might get removed, check with OWNERS before
+  // using this in new code: //components/background_task_scheduler/OWNERS.
   TaskInfo(int task_id, const ExactInfo& timing_info);
   ~TaskInfo();
 

@@ -17,7 +17,7 @@ namespace content {
 
 namespace {
 
-bool IsWhitelistedPermissionType(PermissionType permission) {
+bool IsAllowlistedPermissionType(PermissionType permission) {
   switch (permission) {
     case PermissionType::GEOLOCATION:
     case PermissionType::MIDI:
@@ -76,7 +76,7 @@ int ShellPermissionManager::RequestPermission(
     const GURL& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  std::move(callback).Run(IsWhitelistedPermissionType(permission)
+  std::move(callback).Run(IsAllowlistedPermissionType(permission)
                               ? blink::mojom::PermissionStatus::GRANTED
                               : blink::mojom::PermissionStatus::DENIED);
   return PermissionController::kNoPendingOperation;
@@ -91,7 +91,7 @@ int ShellPermissionManager::RequestPermissions(
         callback) {
   std::vector<blink::mojom::PermissionStatus> result;
   for (const auto& permission : permissions) {
-    result.push_back(IsWhitelistedPermissionType(permission)
+    result.push_back(IsAllowlistedPermissionType(permission)
                          ? blink::mojom::PermissionStatus::GRANTED
                          : blink::mojom::PermissionStatus::DENIED);
   }
@@ -117,7 +117,7 @@ blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
     return blink::mojom::PermissionStatus::GRANTED;
   }
 
-  return IsWhitelistedPermissionType(permission)
+  return IsAllowlistedPermissionType(permission)
              ? blink::mojom::PermissionStatus::GRANTED
              : blink::mojom::PermissionStatus::DENIED;
 }

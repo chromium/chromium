@@ -145,10 +145,36 @@
       ]
     },
   },
+  '11-x86-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--avd-config=../../tools/android/avd/proto/generic_android30.textpb',
+      ],
+    },
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'avd_generic_android30',
+          'path': '.android',
+        },
+        {
+          'name': 'system_images_android_30_google_apis_x86',
+          'path': '.emulator_sdk',
+        },
+      ]
+    },
+  },
   'android_q': {
     'swarming': {
       'dimensions': {
         'device_os': 'Q',
+      },
+    },
+  },
+  'android_r': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'R',
       },
     },
   },
@@ -307,6 +333,22 @@
       'enable': True,
     },
   },
+  'femu-additional-ram': {
+    '$mixin_append': {
+      'args': [
+        '--ram-size-mb=16384',
+      ],
+    },
+  },
+  'flame': {
+    # Pixel 4
+    'swarming': {
+      'dimensions': {
+        'device_type': 'flame',
+        'os': 'Android',
+      },
+    },
+  },
   'flounder': {
     # Nexus 9
     'swarming': {
@@ -324,6 +366,14 @@
         'device_type': 'foster',
         'os': 'Android',
       },
+    },
+  },
+  'fuchsia-code-coverage': {
+    '$mixin_append': {
+      'args': [
+        '--code-coverage',
+        '--code-coverage-dir=${ISOLATED_OUTDIR}'
+      ],
     },
   },
   'fuchsia_runner_logs': {
@@ -413,15 +463,6 @@
     'swarming': {
       'dimensions': {
         'os': 'Ubuntu-16.04',
-      },
-    },
-  },
-  'linux_amd_r7_240': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '1002:6613',
-        'os': 'Ubuntu',
-        'pool': 'chromium.tests.gpu',
       },
     },
   },
@@ -540,10 +581,17 @@
       },
     },
   },
-  'mac_11.0_beta': {
+  'mac_11': {
     'swarming': {
       'dimensions': {
-        'os': 'Mac-11.0|Mac-10.16',
+        'os': 'Mac-11|Mac-10.16',
+      },
+    },
+  },
+  'mac_11_beta': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Mac-11.3',
       },
     },
   },
@@ -551,7 +599,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'arm64',
-        'os': 'Mac-11.0',
+        'os': 'Mac-11',
         'pool': 'chromium.tests.mac-arm64',
       },
     },
@@ -605,7 +653,7 @@
     'swarming': {
       'dimensions': {
         'gpu': '8086:3e9b',
-        'os': 'Mac-10.15.5',
+        'os': 'Mac-10.15.7',
       },
     },
   },
@@ -681,7 +729,7 @@
         {
           "cipd_package": 'infra/tools/mac_toolchain/${platform}',
           'location': '.',
-          'revision': 'git_revision:796d2b92cff93fc2059623ce0a66284373ceea0a',
+          'revision': 'git_revision:8811b82233df02ee372cae1e19e379ca8c6a2776',
         },
       ],
     },
@@ -1017,23 +1065,6 @@
       },
     },
   },
-  # in use by ios-simulator-cronet
-  'xcode_11e146': {
-    '$mixin_append': {
-      'args': [
-        '--xcode-build-version',
-        '11e146'
-      ],
-    },
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'xcode_ios_11e146',
-          'path': 'Xcode.app',
-        },
-      ],
-    },
-  },
   # in use by ios-webkit-tot
   'xcode_11e608c': {
     '$mixin_append': {
@@ -1051,8 +1082,8 @@
       ],
     },
   },
-  # (default) xcode 12 gm seed
-  'xcode_12a7209': {
+  # (default in other projects) xcode 12.0 gm seed
+    'xcode_12a7209': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
@@ -1068,18 +1099,18 @@
       ],
     },
   },
-  # latest Xcode 12 beta version.
-  'xcode_12b5044c': {
+  # (default in Chromium iOS) xcode 12.4 gm seed
+  'xcode_12d4e': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '12b5044c'
+        '12d4e'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_12b5044c',
+          'name': 'xcode_ios_12d4e',
           'path': 'Xcode.app',
         },
       ],

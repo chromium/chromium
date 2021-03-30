@@ -6,7 +6,8 @@ import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/coverage/coverage.gni")
 
 declare_args() {
-  use_clang_profiling = use_clang_coverage || chrome_pgo_phase == 1
+  use_clang_profiling =
+      is_a_target_toolchain && (use_clang_coverage || chrome_pgo_phase == 1)
 }
 
 assert(!use_clang_profiling || is_clang,

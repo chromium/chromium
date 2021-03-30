@@ -92,7 +92,7 @@ class PpapiPluginSandboxedProcessLauncherDelegate
         return false;
     }
 #endif  // !defined(NACL_WIN64)
-    const base::string16& sid =
+    const std::wstring& sid =
         browser_client->GetAppContainerSidForSandboxType(GetSandboxType());
     if (!sid.empty())
       sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
@@ -125,6 +125,7 @@ class PpapiPluginSandboxedProcessLauncherDelegate
 
 #if defined(OS_MAC)
   bool DisclaimResponsibility() override { return true; }
+  bool EnableCpuSecurityMitigations() override { return true; }
 #endif
 
  private:
@@ -230,7 +231,7 @@ void PpapiPluginProcessHost::DidDeleteOutOfProcessInstance(
 
 // static
 void PpapiPluginProcessHost::FindByName(
-    const base::string16& name,
+    const std::u16string& name,
     std::vector<PpapiPluginProcessHost*>* hosts) {
   for (PpapiPluginProcessHostIterator iter; !iter.Done(); ++iter) {
     if (iter->process_.get() && iter->process_->GetData().name == name)

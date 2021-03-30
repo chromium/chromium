@@ -7,6 +7,8 @@
 
 #include "base/files/file_path.h"
 #include "base/pickle.h"
+#include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -210,7 +212,7 @@ TEST(ExtensionUserScriptTest, Pickle) {
       base::FilePath(FILE_PATH_LITERAL("c:\\foo\\")),
       base::FilePath(FILE_PATH_LITERAL("foo2.user.css")),
       GURL("chrome-extension://abc/foo2.user.css")));
-  script1.set_run_location(UserScript::DOCUMENT_START);
+  script1.set_run_location(mojom::RunLocation::kDocumentStart);
 
   script1.add_url_pattern(pattern1);
   script1.add_url_pattern(pattern2);
@@ -220,7 +222,7 @@ TEST(ExtensionUserScriptTest, Pickle) {
   const std::string kId = "_12";
   script1.set_id(kId);
   const std::string kExtensionId = "foo";
-  HostID id(HostID::EXTENSIONS, kExtensionId);
+  mojom::HostID id(mojom::HostID::HostType::kExtensions, kExtensionId);
   script1.set_host_id(id);
 
   base::Pickle pickle;
@@ -252,7 +254,7 @@ TEST(ExtensionUserScriptTest, Pickle) {
 
 TEST(ExtensionUserScriptTest, Defaults) {
   UserScript script;
-  ASSERT_EQ(UserScript::DOCUMENT_IDLE, script.run_location());
+  ASSERT_EQ(mojom::RunLocation::kDocumentIdle, script.run_location());
 }
 
 }  // namespace extensions

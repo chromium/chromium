@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "chrome/updater/policy_manager.h"
 
@@ -51,8 +50,8 @@ class GroupPolicyManager : public PolicyManagerInterface {
   bool GetProxyServer(std::string* proxy_server) const override;
 
  private:
-  bool ReadValue(const base::char16* name, std::string* value) const;
-  bool ReadValueDW(const base::char16* name, int* value) const;
+  bool ReadValue(const wchar_t* name, std::string* value) const;
+  bool ReadValueDW(const wchar_t* name, int* value) const;
 
   base::win::RegKey key_;
 };

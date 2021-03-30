@@ -4,6 +4,7 @@
 
 module subresource_filter.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 enum ActivationLevel {
@@ -82,6 +83,10 @@ interface SubresourceFilterHost {
   // ReadyToCommitNavigation time.
   FrameIsAdSubframe();
 
+  // Called when a RenderFrame is created with ad script on the v8 stack. The
+  // browser keeps track of this for deciding whether to tag subframes as ads.
+  SubframeWasCreatedByAdScript();
+
   // This is sent to a RenderFrameHost in the browser when a document load is
   // finished, just before the DidFinishLoad message, and contains statistics
   // collected by the DocumentSubresourceFilter up until that point: the number
@@ -93,4 +98,12 @@ interface SubresourceFilterHost {
   // Called when a render frame detects an ads violation. It is used to record
   // ads violations within the ads intervention manager.
   OnAdsViolationTriggered(AdsViolation violation);
+};
+
+// Subresource filter implemented by the renderer.
+interface SubresourceFilterRulesetObserver {
+  // Sends a read-only mode file handle with the ruleset data to a renderer
+  // process, containing the subresource filtering rules to be consulted for all
+  // subsequent document loads that have subresource filtering activated.
+  SetRulesetForProcess(mojo_base.mojom.File ruleset_file);
 };

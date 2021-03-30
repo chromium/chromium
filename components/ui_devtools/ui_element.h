@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/devtools_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -135,6 +136,8 @@ class UI_DEVTOOLS_EXPORT UIElement {
 
   // Get the sources for the element.
   std::vector<Source> GetSources();
+
+  virtual bool DispatchMouseEvent(protocol::DOM::MouseEvent* event);
 
  protected:
   UIElement(const UIElementType type,

@@ -8,7 +8,7 @@
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, IdleGetAutoLockDelay) {
   ASSERT_TRUE(RunExtensionTest("idle/get_auto_lock_delay")) << message_;
 }

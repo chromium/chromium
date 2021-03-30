@@ -54,6 +54,7 @@ source_set("internal") {
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/reporting/proto:record_proto",
     "//components/strings",
     "//components/url_formatter",
     "//components/url_matcher",
@@ -64,6 +65,14 @@ source_set("internal") {
     "//ui/base",
     "//url",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/policy_cache_updater_android.cc",
+      "android/policy_cache_updater_android.h",
+    ]
+    deps += [ "//components/policy/android:jni_headers" ]
+  }
 
   public_deps += [ "//components/policy/core/common:internal" ]
   deps += [
@@ -114,6 +123,7 @@ source_set("unit_tests") {
     "configuration_policy_handler_list_unittest.cc",
     "configuration_policy_handler_unittest.cc",
     "configuration_policy_pref_store_unittest.cc",
+    "policy_error_map_unittest.cc",
     "proxy_policy_handler_unittest.cc",
     "url_blocklist_manager_unittest.cc",
     "url_blocklist_policy_handler_unittest.cc",
@@ -131,6 +141,12 @@ source_set("unit_tests") {
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//url",
   ]
+
+  if (is_android) {
+    sources += [ "android/policy_cache_updater_android_unittest.cc" ]
+    deps += [ "//components/policy/android:test_jni_headers" ]
+  }
 }

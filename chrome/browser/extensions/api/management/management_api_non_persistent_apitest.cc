@@ -25,10 +25,9 @@ class ManagementApiNonPersistentApiTest
       public testing::WithParamInterface<ContextType> {
  protected:
   const Extension* LoadNonPersistentExtension(const char* relative_path) {
-    return LoadExtensionWithFlags(test_data_dir_.AppendASCII(relative_path),
-                                  GetParam() == ContextType::kEventPage
-                                      ? kFlagNone
-                                      : kFlagRunAsServiceWorkerBasedExtension);
+    return LoadExtension(
+        test_data_dir_.AppendASCII(relative_path),
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };
 
@@ -69,11 +68,11 @@ IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest, UninstallSelf) {
       extensions::ExtensionRegistry::Get(browser()->profile()));
 
   base::FilePath path = test_dir.Pack();
-  // Note: We pass kFlagDontWaitForExtensionRenderers because the extension
+  // Note: We set LoadOptions::wait_for_renderers to false because the extension
   // uninstalls itself, so the ExtensionHost never fully finishes loading. Since
   // we wait for the uninstall explicitly, this isn't racy.
   scoped_refptr<const Extension> extension =
-      LoadExtensionWithFlags(path, kFlagDontWaitForExtensionRenderers);
+      LoadExtension(path, {.wait_for_renderers = false});
 
   EXPECT_EQ(extension, observer.WaitForExtensionUninstalled());
 }

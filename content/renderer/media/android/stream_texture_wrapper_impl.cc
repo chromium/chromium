@@ -5,6 +5,7 @@
 #include "content/renderer/media/android/stream_texture_wrapper_impl.h"
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -79,14 +80,14 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   scoped_refptr<media::VideoFrame> new_frame =
       media::VideoFrame::WrapNativeTextures(
           media::PIXEL_FORMAT_ABGR, holders,
-          media::BindToLoop(
+          base::BindPostTask(
               main_task_runner_,
               base::BindOnce(&OnReleaseVideoFrame, factory_, mailbox)),
           coded_size, visible_rect, visible_rect.size(), base::TimeDelta());
   new_frame->set_ycbcr_info(ycbcr_info);
 
   if (enable_texture_copy_) {
-    new_frame->metadata()->copy_mode =
+    new_frame->metadata().copy_mode =
         media::VideoFrameMetadata::CopyMode::kCopyToNewTexture;
   }
 

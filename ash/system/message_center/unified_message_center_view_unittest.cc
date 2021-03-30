@@ -90,10 +90,9 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
     message_center::RichNotificationData data;
     data.pinned = pinned;
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id,
-        base::UTF8ToUTF16("test title"), base::UTF8ToUTF16("test message"),
-        gfx::Image(), base::string16() /* display_source */, GURL(),
-        message_center::NotifierId(), data,
+        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test title",
+        u"test message", gfx::Image(), std::u16string() /* display_source */,
+        GURL(), message_center::NotifierId(), data,
         new message_center::NotificationDelegate()));
     return id;
   }
@@ -522,7 +521,9 @@ TEST_F(UnifiedMessageCenterViewTest, StackingCounterMessageListScrolled) {
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
 }
 
-TEST_F(UnifiedMessageCenterViewTest, StackingCounterNotificationRemoval) {
+// Flaky: crbug.com/1163575
+TEST_F(UnifiedMessageCenterViewTest,
+       DISABLED_StackingCounterNotificationRemoval) {
   std::vector<std::string> ids = AddManyNotifications();
   CreateMessageCenterView();
   EXPECT_TRUE(message_center_view()->GetVisible());

@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "components/performance_manager/persistence/site_data/unittest_utils.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -121,7 +121,7 @@ class SiteDataImplTest : public ::testing::Test {
   const url::Origin kDummyOrigin = url::Origin::Create(GURL("foo.com"));
   const url::Origin kDummyOrigin2 = url::Origin::Create(GURL("bar.com"));
 
-  base::test::TaskEnvironment task_environment_{
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // Use a NiceMock as there's no need to add expectations in these tests,

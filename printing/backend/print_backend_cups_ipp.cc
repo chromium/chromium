@@ -32,7 +32,8 @@ bool PrintBackendCupsIpp::EnumeratePrinters(PrinterList* printer_list) {
   DCHECK(printer_list);
   printer_list->clear();
 
-  std::vector<CupsPrinter> printers = cups_connection_->GetDests();
+  std::vector<std::unique_ptr<CupsPrinter>> printers =
+      cups_connection_->GetDests();
   if (printers.empty()) {
     LOG(WARNING) << "CUPS: Error getting printers from CUPS server"
                  << ", server: " << cups_connection_->server_name()
@@ -44,7 +45,7 @@ bool PrintBackendCupsIpp::EnumeratePrinters(PrinterList* printer_list) {
 
   for (const auto& printer : printers) {
     PrinterBasicInfo basic_info;
-    if (printer.ToPrinterInfo(&basic_info)) {
+    if (printer->ToPrinterInfo(&basic_info)) {
       printer_list->push_back(basic_info);
     }
   }
@@ -53,10 +54,11 @@ bool PrintBackendCupsIpp::EnumeratePrinters(PrinterList* printer_list) {
 }
 
 std::string PrintBackendCupsIpp::GetDefaultPrinterName() {
-  std::vector<CupsPrinter> printers = cups_connection_->GetDests();
+  std::vector<std::unique_ptr<CupsPrinter>> printers =
+      cups_connection_->GetDests();
   for (const auto& printer : printers) {
-    if (printer.is_default()) {
-      return printer.GetName();
+    if (printer->is_default()) {
+      return printer->GetName();
     }
   }
 

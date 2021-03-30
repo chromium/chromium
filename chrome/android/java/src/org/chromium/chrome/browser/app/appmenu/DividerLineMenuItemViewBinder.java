@@ -29,17 +29,15 @@ class DividerLineMenuItemViewBinder implements CustomViewBinder {
 
     @Override
     public int getItemViewType(int id) {
-        return (id == R.id.divider_line_id || id == R.id.add_to_divider_line_id)
-                ? DIVIDER_LINE_ITEM_VIEW_TYPE
-                : CustomViewBinder.NOT_HANDLED;
+        return (id == R.id.divider_line_id) ? DIVIDER_LINE_ITEM_VIEW_TYPE
+                                            : CustomViewBinder.NOT_HANDLED;
     }
 
     @Override
     public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
             LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
             @Nullable Integer highlightedItemId) {
-        assert item.getItemId() == R.id.divider_line_id
-                || item.getItemId() == R.id.add_to_divider_line_id;
+        assert item.getItemId() == R.id.divider_line_id;
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.divider_line_menu_item, parent, false);

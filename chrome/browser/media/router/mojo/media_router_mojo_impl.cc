@@ -293,7 +293,7 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
       provider_id != MediaRouteProviderId::EXTENSION) {
     desktop_picker_.Show(
         MakeDesktopPickerParams(web_contents),
-        {content::DesktopMediaID::TYPE_SCREEN},
+        {DesktopMediaList::Type::kScreen},
         base::BindOnce(&MediaRouterMojoImpl::CreateRouteWithSelectedDesktop,
                        weak_factory_.GetWeakPtr(), provider_id, sink_id,
                        presentation_id, origin, web_contents, timeout,
@@ -495,7 +495,7 @@ bool MediaRouterMojoImpl::MediaSinksQuery::HasObserver(
 }
 
 bool MediaRouterMojoImpl::MediaSinksQuery::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 void MediaRouterMojoImpl::MediaRoutesQuery::SetRoutesForProvider(
@@ -567,7 +567,7 @@ bool MediaRouterMojoImpl::MediaRoutesQuery::HasObserver(
 }
 
 bool MediaRouterMojoImpl::MediaRoutesQuery::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 MediaRouterMojoImpl::ProviderSinkAvailability::ProviderSinkAvailability() =
@@ -763,7 +763,7 @@ void MediaRouterMojoImpl::RegisterRouteMessageObserver(
     DCHECK(!observer_list->HasObserver(observer));
   }
 
-  bool should_listen = !observer_list->might_have_observers();
+  bool should_listen = observer_list->empty();
   observer_list->AddObserver(observer);
   if (should_listen) {
     base::Optional<MediaRouteProviderId> provider_id =
@@ -786,7 +786,7 @@ void MediaRouterMojoImpl::UnregisterRouteMessageObserver(
     return;
 
   it->second->RemoveObserver(observer);
-  if (!it->second->might_have_observers()) {
+  if (it->second->empty()) {
     message_observers_.erase(route_id);
     base::Optional<MediaRouteProviderId> provider_id =
         GetProviderIdForRoute(route_id);
@@ -1089,6 +1089,7 @@ void MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
       }
       break;
     case MediaRouteProviderId::ANDROID_CAF:
+    case MediaRouteProviderId::TEST:
     case MediaRouteProviderId::UNKNOWN:
       break;
   }

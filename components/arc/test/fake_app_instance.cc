@@ -87,6 +87,13 @@ void FakeAppInstance::LaunchApp(const std::string& package_name,
   launch_requests_.push_back(std::make_unique<Request>(package_name, activity));
 }
 
+void FakeAppInstance::LaunchAppWithWindowInfo(
+    const std::string& package_name,
+    const std::string& activity,
+    arc::mojom::WindowInfoPtr window_info) {
+  launch_requests_.push_back(std::make_unique<Request>(package_name, activity));
+}
+
 void FakeAppInstance::LaunchAppShortcutItem(const std::string& package_name,
                                             const std::string& shortcut_id,
                                             int64_t display_id) {
@@ -151,7 +158,7 @@ void FakeAppInstance::SendTaskCreated(int32_t taskId,
                                       const mojom::AppInfo& app,
                                       const std::string& intent) {
   app_host_->OnTaskCreated(taskId, app.package_name, app.activity, app.name,
-                           intent);
+                           intent, 0 /* session_id */);
 }
 
 void FakeAppInstance::SendTaskDescription(
@@ -535,6 +542,12 @@ void FakeAppInstance::LaunchIntentDeprecated(
 
 void FakeAppInstance::LaunchIntent(const std::string& intent_uri,
                                    int64_t display_id) {
+  launch_intents_.push_back(intent_uri);
+}
+
+void FakeAppInstance::LaunchIntentWithWindowInfo(
+    const std::string& intent_uri,
+    arc::mojom::WindowInfoPtr window_info) {
   launch_intents_.push_back(intent_uri);
 }
 

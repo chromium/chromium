@@ -81,9 +81,14 @@ bool UserfaultFD::RegisterRange(RegisterMode mode,
     return false;
   }
 
-  // To be forward compatible we make sure that the ioctls we were expecting (at
-  // compile time) at minimum are in the ioctls returned from the kernel.
-  CHECK((reg.ioctls & UFFD_API_RANGE_IOCTLS) == UFFD_API_RANGE_IOCTLS);
+  // Make sure we're getting back at least the features we require, these
+  // features were all introduced with userfaultfd so they should remain
+  // supported indefinitely.
+  constexpr uint64_t kRequiredFeatures =
+      (static_cast<uint64_t>(1) << _UFFDIO_WAKE) |
+      (static_cast<uint64_t>(1) << _UFFDIO_COPY) |
+      (static_cast<uint64_t>(1) << _UFFDIO_ZEROPAGE);
+  CHECK((reg.ioctls & kRequiredFeatures) == kRequiredFeatures);
 
   return true;
 #else  // defined(HAS_USERFAULTFD)

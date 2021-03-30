@@ -20,8 +20,8 @@
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/browser/media/session/media_session_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -138,6 +138,12 @@ MediaSessionUserAction MediaSessionActionToUserAction(
       return MediaSessionUserAction::ExitPictureInPicture;
     case media_session::mojom::MediaSessionAction::kSwitchAudioDevice:
       return MediaSessionUserAction::SwitchAudioDevice;
+    case media_session::mojom::MediaSessionAction::kToggleMicrophone:
+      return MediaSessionUserAction::ToggleMicrophone;
+    case media_session::mojom::MediaSessionAction::kToggleCamera:
+      return MediaSessionUserAction::ToggleCamera;
+    case media_session::mojom::MediaSessionAction::kHangUp:
+      return MediaSessionUserAction::HangUp;
   }
   NOTREACHED();
   return MediaSessionUserAction::Play;
@@ -154,9 +160,22 @@ bool IsSizeAtLeast(const gfx::Size& size, int min_size) {
   return size.width() >= min_size || size.height() >= min_size;
 }
 
-base::string16 SanitizeMediaTitle(const base::string16 title) {
-  base::string16 out;
-  base::TrimString(title, base::ASCIIToUTF16(" "), &out);
+bool IsSizesAtLeast(const std::vector<gfx::Size>& sizes, int min_size) {
+  // If we haven't found an image based on size then we should check if there
+  // are any images that have no size data or have an "any" size which is
+  // denoted by a single empty gfx::Size value.
+  if (sizes.size() == 0 || (sizes.size() == 1 && sizes[0].IsEmpty()))
+    return true;
+
+  bool check_size = false;
+  for (auto& size : sizes)
+    check_size = check_size || IsSizeAtLeast(size, min_size);
+  return check_size;
+}
+
+std::u16string SanitizeMediaTitle(const std::u16string title) {
+  std::u16string out;
+  base::TrimString(title, u" ", &out);
   return out;
 }
 
@@ -204,6 +223,14 @@ WebContents* MediaSession::GetWebContentsFromRequestId(
 }
 
 // static
+const base::UnguessableToken& MediaSession::GetRequestIdFromWebContents(
+    WebContents* web_contents) {
+  DCHECK(web_contents);
+  MediaSessionImpl* session = MediaSessionImpl::FromWebContents(web_contents);
+  return session ? session->GetRequestId() : base::UnguessableToken::Null();
+}
+
+// static
 MediaSessionImpl* MediaSessionImpl::Get(WebContents* web_contents) {
   MediaSessionImpl* session = FromWebContents(web_contents);
   if (!session) {
@@ -227,12 +254,6 @@ void MediaSessionImpl::ClearMediaSessionAndroid() {
 }
 
 MediaSessionAndroid* MediaSessionImpl::GetMediaSessionAndroid() {
-  // |session_android_| can be null if a portal is activated, the java
-  // WebContents is destroyed and ClearMediaSessionAndroid is called.
-  // TODO(crbug.com/1091229): Remove this when we correctly support media
-  // sessions in portals.
-  if (!session_android_)
-    session_android_ = std::make_unique<MediaSessionAndroid>(this);
   return session_android_.get();
 }
 #endif
@@ -253,8 +274,9 @@ void MediaSessionImpl::WebContentsDestroyed() {
 }
 
 void MediaSessionImpl::RenderFrameDeleted(RenderFrameHost* rfh) {
-  if (services_.count(rfh))
-    OnServiceDestroyed(services_[rfh]);
+  const auto rfh_id = rfh->GetGlobalFrameRoutingId();
+  if (services_.count(rfh_id))
+    OnServiceDestroyed(services_[rfh_id]);
 }
 
 void MediaSessionImpl::DidFinishNavigation(
@@ -273,9 +295,10 @@ void MediaSessionImpl::DidFinishNavigation(
     origin_ = new_origin;
   }
 
-  RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
-  if (services_.count(rfh))
-    services_[rfh]->DidFinishNavigation();
+  const auto rfh_id =
+      navigation_handle->GetRenderFrameHost()->GetGlobalFrameRoutingId();
+  if (services_.count(rfh_id))
+    services_[rfh_id]->DidFinishNavigation();
 
   RebuildAndNotifyMetadataChanged();
 }
@@ -965,6 +988,14 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   if (shared_audio_device_id != media::AudioDeviceDescription::kDefaultDeviceId)
     info->audio_sink_id = shared_audio_device_id;
 
+  if (routed_service_) {
+    info->microphone_state = routed_service_->microphone_state();
+    info->camera_state = routed_service_->camera_state();
+  } else {
+    info->microphone_state = media_session::mojom::MicrophoneState::kUnknown;
+    info->camera_state = media_session::mojom::CameraState::kUnknown;
+  }
+
   return info;
 }
 
@@ -1038,17 +1069,33 @@ void MediaSessionImpl::SkipAd() {
 }
 
 void MediaSessionImpl::SeekTo(base::TimeDelta seek_time) {
-  DidReceiveAction(
-      media_session::mojom::MediaSessionAction::kSeekTo,
-      blink::mojom::MediaSessionActionDetails::NewSeekTo(
-          blink::mojom::MediaSessionSeekToDetails::New(seek_time, false)));
+  // If the site has registered an action handler for seek to then we
+  // should pass it to the site and let them handle it.
+  if (ShouldRouteAction(media_session::mojom::MediaSessionAction::kSeekTo)) {
+    DidReceiveAction(media_session::mojom::MediaSessionAction::kSeekTo,
+                     blink::mojom::MediaSessionActionDetails::NewSeekTo(
+                         blink::mojom::MediaSessionSeekToDetails::New(
+                             seek_time, /*fast_seek=*/false)));
+    return;
+  }
+
+  for (const auto& it : normal_players_)
+    it.first.observer->OnSeekTo(it.first.player_id, seek_time);
 }
 
 void MediaSessionImpl::ScrubTo(base::TimeDelta seek_time) {
-  DidReceiveAction(
-      media_session::mojom::MediaSessionAction::kSeekTo,
-      blink::mojom::MediaSessionActionDetails::NewSeekTo(
-          blink::mojom::MediaSessionSeekToDetails::New(seek_time, true)));
+  // If the site has registered an action handler for seek to then we
+  // should pass it to the site and let them handle it.
+  if (ShouldRouteAction(media_session::mojom::MediaSessionAction::kSeekTo)) {
+    DidReceiveAction(media_session::mojom::MediaSessionAction::kSeekTo,
+                     blink::mojom::MediaSessionActionDetails::NewSeekTo(
+                         blink::mojom::MediaSessionSeekToDetails::New(
+                             seek_time, /*fast_seek=*/true)));
+    return;
+  }
+
+  for (const auto& it : normal_players_)
+    it.first.observer->OnSeekTo(it.first.player_id, seek_time);
 }
 
 void MediaSessionImpl::EnterPictureInPicture() {
@@ -1089,6 +1136,18 @@ void MediaSessionImpl::SetAudioSinkId(const base::Optional<std::string>& id) {
   }
 }
 
+void MediaSessionImpl::ToggleMicrophone() {
+  DidReceiveAction(media_session::mojom::MediaSessionAction::kToggleMicrophone);
+}
+
+void MediaSessionImpl::ToggleCamera() {
+  DidReceiveAction(media_session::mojom::MediaSessionAction::kToggleCamera);
+}
+
+void MediaSessionImpl::HangUp() {
+  DidReceiveAction(media_session::mojom::MediaSessionAction::kHangUp);
+}
+
 void MediaSessionImpl::GetMediaImageBitmap(
     const media_session::MediaImage& image,
     int minimum_size_px,
@@ -1108,12 +1167,7 @@ void MediaSessionImpl::GetMediaImageBitmap(
     }
   }
 
-  // Check that |image.sizes| contains a size that is above the minimum size.
-  bool check_size = false;
-  for (auto& size : image.sizes)
-    check_size = check_size || IsSizeAtLeast(size, minimum_size_px);
-
-  if (!found || !check_size) {
+  if (!found || !IsSizesAtLeast(image.sizes, minimum_size_px)) {
     std::move(callback).Run(SkBitmap());
     return;
   }
@@ -1225,19 +1279,19 @@ bool MediaSessionImpl::AddOneShotPlayer(MediaSessionPlayerObserver* observer,
 // MediaSessionService-related methods
 
 void MediaSessionImpl::OnServiceCreated(MediaSessionServiceImpl* service) {
-  RenderFrameHost* rfh = service->GetRenderFrameHost();
-  if (!rfh)
-    return;
+  const auto rfh_id = service->GetRenderFrameHostId();
 
-  content::BackForwardCache::DisableForRenderFrameHost(
-      rfh, "MediaSessionImpl::OnServiceCreated");
+  BackForwardCache::DisableForRenderFrameHost(
+      rfh_id, BackForwardCacheDisable::DisabledReason(
+                  BackForwardCacheDisable::DisabledReasonId::
+                      kMediaSessionImplOnServiceCreated));
 
-  services_[rfh] = service;
+  services_[rfh_id] = service;
   UpdateRoutedService();
 }
 
 void MediaSessionImpl::OnServiceDestroyed(MediaSessionServiceImpl* service) {
-  services_.erase(service->GetRenderFrameHost());
+  services_.erase(service->GetRenderFrameHostId());
 
   if (routed_service_ == service)
     UpdateRoutedService();
@@ -1266,6 +1320,14 @@ void MediaSessionImpl::OnMediaSessionActionsChanged(
     return;
 
   RebuildAndNotifyActionsChanged();
+}
+
+void MediaSessionImpl::OnMediaSessionInfoChanged(
+    MediaSessionServiceImpl* service) {
+  if (service != routed_service_)
+    return;
+
+  RebuildAndNotifyMediaSessionInfoChanged();
 }
 
 void MediaSessionImpl::DidReceiveAction(
@@ -1318,7 +1380,7 @@ void MediaSessionImpl::DidReceiveAction(
 }
 
 bool MediaSessionImpl::IsServiceActiveForRenderFrameHost(RenderFrameHost* rfh) {
-  return services_.find(rfh) != services_.end();
+  return services_.find(rfh->GetGlobalFrameRoutingId()) != services_.end();
 }
 
 void MediaSessionImpl::UpdateRoutedService() {
@@ -1373,7 +1435,8 @@ MediaSessionServiceImpl* MediaSessionImpl::ComputeServiceForRouting() {
     min_depth = depth;
   }
 
-  return best_frame ? services_[best_frame] : nullptr;
+  return best_frame ? services_[best_frame->GetGlobalFrameRoutingId()]
+                    : nullptr;
 }
 
 void MediaSessionImpl::OnPictureInPictureAvailabilityChanged() {
@@ -1429,6 +1492,8 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
     actions.insert(media_session::mojom::MediaSessionAction::kPlay);
     actions.insert(media_session::mojom::MediaSessionAction::kPause);
     actions.insert(media_session::mojom::MediaSessionAction::kStop);
+    actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
+    actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -1445,12 +1510,6 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
       IsAudioOutputDeviceSwitchingSupported()) {
     actions.insert(
         media_session::mojom::MediaSessionAction::kSwitchAudioDevice);
-  }
-
-  // If we support kSeekTo then we support kScrubTo as well.
-  if (base::Contains(actions,
-                     media_session::mojom::MediaSessionAction::kSeekTo)) {
-    actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
   }
 
   if (actions_ == actions)
@@ -1482,7 +1541,7 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
   const GURL& url = web_contents()->GetLastCommittedURL();
 
   // If the url is a file then we should display a placeholder.
-  base::string16 formatted_origin =
+  std::u16string formatted_origin =
       url.SchemeIsFile()
           ? content_client->GetLocalizedString(IDS_MEDIA_SESSION_FILE_SOURCE)
           : url_formatter::FormatUrl(

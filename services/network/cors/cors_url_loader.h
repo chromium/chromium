@@ -40,7 +40,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   CorsURLLoader(
       mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
       int32_t process_id,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       DeleteCallback delete_callback,
@@ -51,11 +50,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* network_loader_factory,
       const OriginAccessList* origin_access_list,
-      const OriginAccessList* factory_bound_origin_access_list,
       PreflightController* preflight_controller,
       const base::flat_set<std::string>* allowed_exempt_headers,
       bool allow_any_cors_exempt_header,
-      const net::IsolationInfo& isolation_info);
+      const net::IsolationInfo& isolation_info,
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
 
   ~CorsURLLoader() override;
 
@@ -75,6 +74,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   void ResumeReadingBodyFromNet() override;
 
   // mojom::URLLoaderClient overrides:
+  void OnReceiveEarlyHints(mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr head) override;
@@ -118,8 +118,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   void SetCorsFlagIfNeeded();
 
-  // Returns true if request's origin has special access to the destination
-  // URL (via |origin_access_list_| and |factory_bound_origin_access_list_|).
+  // Returns true if request's origin has special access to the destination URL
+  // (via |origin_access_list_|).
   bool HasSpecialAccessToDestination() const;
 
   bool PassesTimingAllowOriginCheck(
@@ -133,7 +133,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // We need to save these for redirect, and DevTools.
   const int32_t process_id_;
-  const int32_t routing_id_;
   const int32_t request_id_;
   const uint32_t options_;
 
@@ -184,7 +183,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // Outlives |this|.
   const OriginAccessList* const origin_access_list_;
-  const OriginAccessList* const factory_bound_origin_access_list_;
   PreflightController* preflight_controller_;
   const base::flat_set<std::string>* allowed_exempt_headers_;
 
@@ -196,6 +194,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   net::IsolationInfo isolation_info_;
 
   bool has_cors_been_affected_by_isolated_world_origin_ = false;
+
+  mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
   // Used to run asynchronous class instance bound callbacks safely.
   base::WeakPtrFactory<CorsURLLoader> weak_factory_{this};

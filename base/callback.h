@@ -111,26 +111,27 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
   // Since this method generates a callback that is a replacement for `this`,
   // `this` will be consumed and reset to a null callback to ensure the
   // originally-bound functor can be run at most once.
-  template <typename U, typename R2 = internal::ExtractReturnType<U>>
-  OnceCallback<R2(Args...)> Then(OnceCallback<U> then) && {
-    using ThenCallbackArgs = internal::ExtractArgs<U>;
-    static_assert(
-        (std::is_void<R>::value &&
-         std::is_same<internal::TypeList<>, ThenCallbackArgs>::value) ||
-            std::is_same<internal::TypeList<R>, ThenCallbackArgs>::value,
-        "The |then| callback must accept the return value from the original "
-        "callback as its only parameter.");
+  template <typename ThenR, typename... ThenArgs>
+  OnceCallback<ThenR(Args...)> Then(OnceCallback<ThenR(ThenArgs...)> then) && {
     CHECK(then);
     return BindOnce(
-        internal::ThenHelper<OnceCallback, OnceCallback<U>, R, Args...>(),
+        internal::ThenHelper<
+            OnceCallback, OnceCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
         std::move(*this), std::move(then));
   }
-  template <typename U, typename R2 = internal::ExtractReturnType<U>>
-  OnceCallback<R2(Args...)> Then(RepeatingCallback<U> then) && {
-    // RepeatingCallback can convert to OnceCallback, but it does not implicitly
-    // convert to OnceCallback<U> for the above method, so we have to do that
-    // explicitly here.
-    return std::move(*this).Then(static_cast<OnceCallback<U>>(std::move(then)));
+
+  // This overload is required; even though RepeatingCallback is implicitly
+  // convertible to OnceCallback, that conversion will not used when matching
+  // for template argument deduction.
+  template <typename ThenR, typename... ThenArgs>
+  OnceCallback<ThenR(Args...)> Then(
+      RepeatingCallback<ThenR(ThenArgs...)> then) && {
+    CHECK(then);
+    return BindOnce(
+        internal::ThenHelper<
+            OnceCallback,
+            RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
+        std::move(*this), std::move(then));
   }
 };
 
@@ -190,35 +191,26 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
   // If called on an rvalue (e.g. std::move(cb).Then(...)), this method
   // generates a callback that is a replacement for `this`. Therefore, `this`
   // will be consumed and reset to a null callback to ensure the
-  // originally-bound functor can be run at most once.
-  template <typename U, typename R2 = internal::ExtractReturnType<U>>
-  RepeatingCallback<R2(Args...)> Then(RepeatingCallback<U> then) const& {
-    using ThenCallbackArgs = internal::ExtractArgs<U>;
-    static_assert(
-        (std::is_void<R>::value &&
-         std::is_same<internal::TypeList<>, ThenCallbackArgs>::value) ||
-            std::is_same<internal::TypeList<R>, ThenCallbackArgs>::value,
-        "The |then| callback must accept the return value from the original "
-        "callback as its only parameter.");
+  // originally-bound functor will be run at most once.
+  template <typename ThenR, typename... ThenArgs>
+  RepeatingCallback<ThenR(Args...)> Then(
+      RepeatingCallback<ThenR(ThenArgs...)> then) const& {
     CHECK(then);
     return BindRepeating(
-        internal::ThenHelper<RepeatingCallback, RepeatingCallback<U>, R,
-                             Args...>(),
+        internal::ThenHelper<
+            RepeatingCallback,
+            RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
         *this, std::move(then));
   }
-  template <typename U, typename R2 = internal::ExtractReturnType<U>>
-  RepeatingCallback<R2(Args...)> Then(RepeatingCallback<U> then) && {
-    using ThenCallbackArgs = internal::ExtractArgs<U>;
-    static_assert(
-        (std::is_void<R>::value &&
-         std::is_same<internal::TypeList<>, ThenCallbackArgs>::value) ||
-            std::is_same<internal::TypeList<R>, ThenCallbackArgs>::value,
-        "The |then| callback must accept the return value from the original "
-        "callback as its only parameter.");
+
+  template <typename ThenR, typename... ThenArgs>
+  RepeatingCallback<ThenR(Args...)> Then(
+      RepeatingCallback<ThenR(ThenArgs...)> then) && {
     CHECK(then);
     return BindRepeating(
-        internal::ThenHelper<RepeatingCallback, RepeatingCallback<U>, R,
-                             Args...>(),
+        internal::ThenHelper<
+            RepeatingCallback,
+            RepeatingCallback<ThenR(ThenArgs...)>>::CreateTrampoline(),
         std::move(*this), std::move(then));
   }
 };

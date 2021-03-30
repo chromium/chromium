@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
@@ -36,10 +37,10 @@ namespace task_manager {
 
 namespace {
 
-base::string16 GetLocalizedTitle(const base::string16& title,
+std::u16string GetLocalizedTitle(const std::u16string& title,
                                  int process_type,
                                  ChildProcessTask::ProcessSubtype subtype) {
-  base::string16 result_title = title;
+  std::u16string result_title = title;
   if (result_title.empty()) {
     switch (process_type) {
       case content::PROCESS_TYPE_PPAPI_PLUGIN:

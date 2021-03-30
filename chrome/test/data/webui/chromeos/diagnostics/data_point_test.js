@@ -27,8 +27,10 @@ export function dataPointTestSuite() {
    * @param {string} header
    * @param {string} value
    * @param {string=} tooltipText
+   * @param {boolean=} warningState
    */
-  function initializeDataPoint(header, value, tooltipText = '') {
+  function initializeDataPoint(
+      header, value, tooltipText = '', warningState = false) {
     assertFalse(!!dataPointElement);
 
     // Add the data point to the DOM.
@@ -38,6 +40,7 @@ export function dataPointTestSuite() {
     dataPointElement.header = header;
     dataPointElement.value = value;
     dataPointElement.tooltipText = tooltipText;
+    dataPointElement.warningState = warningState;
     document.body.appendChild(dataPointElement);
 
     return flushTasks();
@@ -65,6 +68,15 @@ export function dataPointTestSuite() {
       // Icon should be hidden when tooltip text is not provided.
       assertFalse(isVisible(
           /**@type {!HTMLElement} */ (dataPointElement.$$('#infoIcon'))));
+    });
+  });
+
+  test('InitializeDataPointWithWarningState', () => {
+    const header = 'Test header';
+    const value = 'Test value';
+    return initializeDataPoint(header, value, '', true).then(() => {
+      dx_utils.assertElementContainsText(
+          dataPointElement.$$('.text-red'), value);
     });
   });
 }

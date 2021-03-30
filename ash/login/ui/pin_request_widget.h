@@ -60,8 +60,8 @@ class ASH_EXPORT PinRequestWidget {
 
   // Toggles showing an error state and updates displayed strings.
   void UpdateState(PinRequestViewState state,
-                   const base::string16& title,
-                   const base::string16& description);
+                   const std::u16string& title,
+                   const std::u16string& description);
 
   // Enables or disables PIN input.
   void SetPinInputEnabled(bool enabled);

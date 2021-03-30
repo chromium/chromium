@@ -92,7 +92,7 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   ~ZoomBubbleView() override;
 
   // LocationBarBubbleDelegateView:
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   void OnFocus() override;
   void OnBlur() override;
   void OnGestureEvent(ui::GestureEvent* event) override;

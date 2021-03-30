@@ -61,7 +61,9 @@ void SigninStatusMetricsProvider::OnIdentityManagerCreated(
   // IdentityManager and the corresponding profile should be the only opened
   // profile.
   if (signin_status() == UNKNOWN_SIGNIN_STATUS) {
-    size_t signed_in_count = identity_manager->HasPrimaryAccount() ? 1 : 0;
+    size_t signed_in_count =
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ? 1
+                                                                         : 0;
     UpdateInitialSigninStatus(1, signed_in_count);
   }
 }
@@ -72,26 +74,30 @@ void SigninStatusMetricsProvider::OnIdentityManagerShutdown(
     scoped_observations_.RemoveObservation(identity_manager);
 }
 
-void SigninStatusMetricsProvider::OnPrimaryAccountSet(
-    const CoreAccountInfo& account_info) {
-  SigninStatus recorded_signin_status = signin_status();
-  if (recorded_signin_status == ALL_PROFILES_NOT_SIGNED_IN) {
-    UpdateSigninStatus(MIXED_SIGNIN_STATUS);
-  } else if (recorded_signin_status == UNKNOWN_SIGNIN_STATUS) {
-    // There should have at least one browser opened if the user can sign in, so
-    // signin_status_ value should not be unknown.
-    UpdateSigninStatus(ERROR_GETTING_SIGNIN_STATUS);
+void SigninStatusMetricsProvider::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
+    return;
   }
-}
 
-void SigninStatusMetricsProvider::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
   SigninStatus recorded_signin_status = signin_status();
-  if (recorded_signin_status == ALL_PROFILES_SIGNED_IN) {
-    UpdateSigninStatus(MIXED_SIGNIN_STATUS);
-  } else if (recorded_signin_status == UNKNOWN_SIGNIN_STATUS) {
-    // There should have at least one browser opened if the user can sign out,
-    // so signin_status_ value should not be unknown.
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      if (recorded_signin_status == ALL_PROFILES_NOT_SIGNED_IN)
+        UpdateSigninStatus(MIXED_SIGNIN_STATUS);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      if (recorded_signin_status == ALL_PROFILES_SIGNED_IN)
+        UpdateSigninStatus(MIXED_SIGNIN_STATUS);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      NOTREACHED() << "See return statement above";
+      break;
+  }
+  if (recorded_signin_status == UNKNOWN_SIGNIN_STATUS) {
+    // There should have at least one browser opened if the user can sign in or
+    // out, so signin_status_ value should not be unknown.
     UpdateSigninStatus(ERROR_GETTING_SIGNIN_STATUS);
   }
 }

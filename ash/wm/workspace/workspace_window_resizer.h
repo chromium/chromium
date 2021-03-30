@@ -174,6 +174,11 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // Set to true once Drag() is invoked and the bounds of the window change.
   bool did_move_or_resize_ = false;
 
+  // Tracks whether a window can be maximized depending on distance dragged.
+  // Set to true when Drag() has a vertical move more than
+  // kSnapTriggerVerticalMoveThreshold.
+  bool can_snap_to_maximize_ = false;
+
   // True if the window initially had |bounds_changed_by_user_| set in state.
   const bool initial_bounds_changed_by_user_;
 
@@ -194,11 +199,10 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // The edge to which the window should be snapped to at the end of the drag.
   SnapType snap_type_ = SnapType::kNone;
 
-  // Tracks whether a window can be maximized depending on distance dragged.
-  // This is false when a window's initial drag location is within the drag to
-  // snap region - it will become true once the window has been dragged out
-  // of the snap region once. Used to reduce accidental snaps.
-  bool can_snap_to_maximize_ = false;
+  // Timer for dwell time countdown.
+  base::OneShotTimer dwell_countdown_timer_;
+  // The location for drag maximize in screen.
+  gfx::PointF dwell_location_in_screen_;
 
   // The mouse location passed to Drag().
   gfx::PointF last_mouse_location_;

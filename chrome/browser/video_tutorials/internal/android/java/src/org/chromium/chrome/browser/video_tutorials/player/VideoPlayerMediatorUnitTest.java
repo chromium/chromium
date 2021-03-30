@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.video_tutorials.player;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -81,6 +83,7 @@ public class VideoPlayerMediatorUnitTest {
         mModel = new PropertyModel(VideoPlayerProperties.ALL_KEYS);
         mModel.addObserver(mPropertyObserver);
 
+        VideoPlayerMediator.sEnableShareForTesting = true;
         mTestVideoTutorialService = new TestVideoTutorialService();
         mMediator = new VideoPlayerMediator(mContext, mModel, mTestVideoTutorialService,
                 mLanguagePicker, mLanguageProvider, mWebContents, mPlaybackStateObserver,
@@ -95,7 +98,8 @@ public class VideoPlayerMediatorUnitTest {
 
         assertThat(mModel.get(VideoPlayerProperties.SHOW_LANGUAGE_PICKER), equalTo(true));
         Mockito.verify(mLanguagePicker, Mockito.times(1))
-                .showLanguagePicker(mLanguagePickerCallback.capture(), any());
+                .showLanguagePicker(
+                        eq(tutorial.featureType), mLanguagePickerCallback.capture(), any());
         ((Runnable) mLanguagePickerCallback.getValue()).run();
         Mockito.verify(mNavigationController).loadUrl(any());
     }
@@ -109,7 +113,7 @@ public class VideoPlayerMediatorUnitTest {
 
         assertThat(mModel.get(VideoPlayerProperties.SHOW_LANGUAGE_PICKER), equalTo(false));
         Mockito.verify(mLanguagePicker, Mockito.times(0))
-                .showLanguagePicker(mLanguagePickerCallback.capture(), any());
+                .showLanguagePicker(anyInt(), mLanguagePickerCallback.capture(), any());
     }
 
     @Test
@@ -119,7 +123,7 @@ public class VideoPlayerMediatorUnitTest {
         mMediator.playVideoTutorial(tutorial);
 
         assertThat(mModel.get(VideoPlayerProperties.SHOW_LANGUAGE_PICKER), equalTo(false));
-        Mockito.verify(mLanguagePicker, Mockito.never()).showLanguagePicker(any(), any());
+        Mockito.verify(mLanguagePicker, Mockito.never()).showLanguagePicker(anyInt(), any(), any());
         Mockito.verify(mNavigationController).loadUrl(any());
     }
 
@@ -171,7 +175,8 @@ public class VideoPlayerMediatorUnitTest {
         Mockito.when(mLanguageProvider.getLanguageInfo("en")).thenReturn(language);
         mModel.get(VideoPlayerProperties.CALLBACK_CHANGE_LANGUAGE).run();
         Mockito.verify(mLanguagePicker, Mockito.times(1))
-                .showLanguagePicker(mLanguagePickerCallback.capture(), any());
+                .showLanguagePicker(
+                        eq(tutorial.featureType), mLanguagePickerCallback.capture(), any());
         mTestVideoTutorialService.setPreferredLocale("en");
         ((Runnable) mLanguagePickerCallback.getValue()).run();
     }
@@ -191,7 +196,7 @@ public class VideoPlayerMediatorUnitTest {
 
         mModel.get(VideoPlayerProperties.CALLBACK_SHARE).run();
         mModel.get(VideoPlayerProperties.CALLBACK_CHANGE_LANGUAGE).run();
-        Mockito.verify(mLanguagePicker).showLanguagePicker(any(), any());
+        Mockito.verify(mLanguagePicker).showLanguagePicker(eq(tutorial.featureType), any(), any());
 
         WatchStateInfo watchStateInfo = new WatchStateInfo();
         watchStateInfo.videoLength = 10;
@@ -226,5 +231,23 @@ public class VideoPlayerMediatorUnitTest {
         Assert.assertTrue(VideoTutorialUtils.shouldShowTryNow(FeatureType.SEARCH));
         Assert.assertTrue(VideoTutorialUtils.shouldShowTryNow(FeatureType.VOICE_SEARCH));
         Assert.assertFalse(VideoTutorialUtils.shouldShowTryNow(99));
+    }
+
+    @Test
+    public void testVideoPlayerURL() {
+        String videoUrl = "https://example/video.mp4";
+        String posterUrl = "https://example/poster.png";
+        String animationUrl = "https://example/anim.gif";
+        String thumbnailUrl = "https://example/thumb.png";
+        String captionUrl = "https://example/caption.vtt";
+        String shareUrl = "https://example/share.mp4";
+        Tutorial testTutorial = new Tutorial(FeatureType.CHROME_INTRO, "title", videoUrl, posterUrl,
+                animationUrl, thumbnailUrl, captionUrl, shareUrl, 25);
+
+        assertThat(VideoPlayerURLBuilder.buildFromTutorial(testTutorial),
+                equalTo("chrome-untrusted://video-tutorials/"
+                        + "?video_url=https://example/video.mp4"
+                        + "&poster_url=https://example/poster.png"
+                        + "&caption_url=https://example/caption.vtt"));
     }
 }

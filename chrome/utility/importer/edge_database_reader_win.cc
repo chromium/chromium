@@ -44,11 +44,11 @@ bool ValidateAndConvertValue(const JET_COLTYP column_type,
 
 bool ValidateAndConvertValue(const JET_COLTYP column_type,
                              const std::vector<uint8_t>& column_data,
-                             base::string16* value) {
+                             std::u16string* value) {
   if ((column_type == JET_coltypLongText) &&
-      ((column_data.size() % sizeof(base::char16)) == 0)) {
-    base::string16& value_ref = *value;
-    size_t char_length = column_data.size() / sizeof(base::char16);
+      ((column_data.size() % sizeof(char16_t)) == 0)) {
+    std::u16string& value_ref = *value;
+    size_t char_length = column_data.size() / sizeof(char16_t);
     value_ref.resize(char_length);
     memcpy(&value_ref[0], &column_data[0], column_data.size());
     // Remove any trailing NUL characters.
@@ -100,7 +100,7 @@ bool ValidateAndConvertValue(const JET_COLTYP column_type,
 
 }  // namespace
 
-base::string16 EdgeErrorObject::GetErrorMessage() const {
+std::wstring EdgeErrorObject::GetErrorMessage() const {
   WCHAR error_message[kErrorMessageSize] = {};
   JET_API_PTR err = last_error_;
   JET_ERR result = JetGetSystemParameter(JET_instanceNil, JET_sesidNil,
@@ -118,7 +118,7 @@ bool EdgeErrorObject::SetLastError(JET_ERR error) {
 }
 
 EdgeDatabaseTableEnumerator::EdgeDatabaseTableEnumerator(
-    const base::string16& table_name,
+    const std::wstring& table_name,
     JET_SESID session_id,
     JET_TABLEID table_id)
     : table_id_(table_id), table_name_(table_name), session_id_(session_id) {}
@@ -138,7 +138,7 @@ bool EdgeDatabaseTableEnumerator::Next() {
 
 template <typename T>
 bool EdgeDatabaseTableEnumerator::RetrieveColumn(
-    const base::string16& column_name,
+    const std::wstring& column_name,
     T* value) {
   const JET_COLUMNBASE& column_base = GetColumnByName(column_name);
   if (column_base.cbMax == 0) {
@@ -174,23 +174,23 @@ bool EdgeDatabaseTableEnumerator::RetrieveColumn(
 }
 
 // Explicitly instantiate implementations of RetrieveColumn for various types.
-template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const base::string16&,
+template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
                                                           bool*);
-template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const base::string16&,
+template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
                                                           FILETIME*);
-template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const base::string16&,
+template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
                                                           GUID*);
-template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const base::string16&,
+template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
                                                           int32_t*);
-template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const base::string16&,
+template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
                                                           int64_t*);
-template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const base::string16&,
-                                                          base::string16*);
-template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const base::string16&,
+template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
+                                                          std::u16string*);
+template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
                                                           uint32_t*);
 
 const JET_COLUMNBASE& EdgeDatabaseTableEnumerator::GetColumnByName(
-    const base::string16& column_name) {
+    const std::wstring& column_name) {
   auto found_col = columns_by_name_.find(column_name);
   if (found_col == columns_by_name_.end()) {
     JET_COLUMNBASE column_base = {};
@@ -214,7 +214,7 @@ EdgeDatabaseReader::~EdgeDatabaseReader() {
     JetTerm(instance_id_);
 }
 
-bool EdgeDatabaseReader::OpenDatabase(const base::string16& database_file) {
+bool EdgeDatabaseReader::OpenDatabase(const base::FilePath& database_file) {
   if (IsOpen()) {
     SetLastError(JET_errOneDatabasePerSession);
     return false;
@@ -228,12 +228,12 @@ bool EdgeDatabaseReader::OpenDatabase(const base::string16& database_file) {
   if (!log_folder_.empty()) {
     if (!SetLastError(JetSetSystemParameter(&instance_id_, JET_sesidNil,
                                             JET_paramLogFilePath, 0,
-                                            log_folder_.c_str())))
+                                            log_folder_.value().c_str())))
       return false;
     // Set location of checkpoint file "edb.chk", which stores persistent state.
     if (!SetLastError(JetSetSystemParameter(&instance_id_, JET_sesidNil,
                                             JET_paramSystemPath, 0,
-                                            log_folder_.c_str()))) {
+                                            log_folder_.value().c_str()))) {
       return false;
     }
   } else {
@@ -246,17 +246,17 @@ bool EdgeDatabaseReader::OpenDatabase(const base::string16& database_file) {
   if (!SetLastError(
           JetBeginSession(instance_id_, &session_id_, nullptr, nullptr)))
     return false;
-  if (!SetLastError(JetAttachDatabase2(session_id_, database_file.c_str(), 0,
-                                       JET_bitDbReadOnly)))
+  if (!SetLastError(JetAttachDatabase2(
+          session_id_, database_file.value().c_str(), 0, JET_bitDbReadOnly)))
     return false;
-  if (!SetLastError(JetOpenDatabase(session_id_, database_file.c_str(), nullptr,
-                                    &db_id_, JET_bitDbReadOnly)))
+  if (!SetLastError(JetOpenDatabase(session_id_, database_file.value().c_str(),
+                                    nullptr, &db_id_, JET_bitDbReadOnly)))
     return false;
   return true;
 }
 
 std::unique_ptr<EdgeDatabaseTableEnumerator>
-EdgeDatabaseReader::OpenTableEnumerator(const base::string16& table_name) {
+EdgeDatabaseReader::OpenTableEnumerator(const std::wstring& table_name) {
   JET_TABLEID table_id;
 
   if (!IsOpen()) {

@@ -6,13 +6,19 @@
 
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
+#include "chrome/browser/spellchecker/spellcheck_factory.h"
+#include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/browser/spelling_service_client.h"
+#include "components/spellcheck/common/spellcheck_features.h"
+#include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +31,68 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
  public:
   SpellingMenuObserverTest();
 
-  void SetUpOnMainThread() override { Reset(false); }
+  void SetUpOnMainThread() override {
+    Reset(false);
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+    // Windows versions that don't support platform
+    // spellchecker fallback to Hunspell.
+    if (!spellcheck::WindowsVersionSupportsSpellchecker())
+      return;
+
+    base::ListValue dictionary;
+    dictionary.AppendString("en-US");
+    menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
+                            dictionary);
+    // Use SetTestingFactoryAndUse to force creation and initialization of
+    // SpellcheckService using the TestingProfile browser context.
+    SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        menu()->GetBrowserContext(),
+        base::BindRepeating(&SpellingMenuObserverTest::BuildSpellcheckService,
+                            base::Unretained(this)));
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  }
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  std::unique_ptr<KeyedService> BuildSpellcheckService(
+      content::BrowserContext* context) {
+    auto spellcheck_service = std::make_unique<SpellcheckService>(context);
+
+    // Call SetLanguage to assure that the platform spellchecker is initialized.
+    spellcheck_platform::SetLanguage(
+        spellcheck_service->platform_spell_checker(), "en-US",
+        base::BindOnce(&SpellingMenuObserverTest::OnSetLanguageComplete,
+                       base::Unretained(this)));
+
+    RunUntilCallbackReceived();
+
+    return spellcheck_service;
+  }
+
+  void OnSetLanguageComplete(bool result) {
+    ASSERT_TRUE(result);
+    callback_received_ = true;
+    if (quit_)
+      std::move(quit_).Run();
+  }
+
+  void OnSuggestionsComplete() {
+    callback_received_ = true;
+    if (quit_)
+      std::move(quit_).Run();
+  }
+
+  void RunUntilCallbackReceived() {
+    if (callback_received_)
+      return;
+    base::RunLoop run_loop;
+    quit_ = run_loop.QuitClosure();
+    run_loop.Run();
+
+    // Reset status.
+    callback_received_ = false;
+  }
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   void TearDownOnMainThread() override {
     observer_.reset();
@@ -46,7 +113,29 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     params.dictionary_suggestions.clear();
     if (suggestion)
       params.dictionary_suggestions.push_back(base::ASCIIToUTF16(suggestion));
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+    // Expect early return if word is spelled correctly.
+    if (params.misspelled_word.empty())
+      callback_received_ = true;
+
+    if (spellcheck::WindowsVersionSupportsSpellchecker()) {
+      observer_->RegisterSuggestionsCompleteCallbackForTesting(
+          base::BindOnce(&SpellingMenuObserverTest::OnSuggestionsComplete,
+                         base::Unretained(this)));
+    }
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
     observer_->InitMenu(params);
+
+    // Windows behavior needs this to be called as well to update placeholder
+    // menu items. Doesn't hurt for non-Windows platforms either.
+    observer_->OnContextMenuShown(params, gfx::Rect());
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+    if (spellcheck::WindowsVersionSupportsSpellchecker())
+      RunUntilCallbackReceived();
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   }
 
   void ForceSuggestMode() {
@@ -70,14 +159,32 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<SpellingMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  // Quits the RunLoop on receiving callbacks.
+  base::OnceClosure quit_;
+
+  // Flag used for early exit from RunLoop if callback already received.
+  bool callback_received_ = false;
+
+  base::test::ScopedFeatureList feature_list_;
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
   DISALLOW_COPY_AND_ASSIGN(SpellingMenuObserverTest);
 };
 
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 SpellingMenuObserverTest::SpellingMenuObserverTest() {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker,
+                            spellcheck::kWinRetrieveSuggestionsOnlyOnDemand},
+      /*disabled_features=*/{spellcheck::kWinDelaySpellcheckServiceInit});
 }
+#else
+SpellingMenuObserverTest::SpellingMenuObserverTest() = default;
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-SpellingMenuObserverTest::~SpellingMenuObserverTest() {
-}
+SpellingMenuObserverTest::~SpellingMenuObserverTest() = default;
 
 }  // namespace
 
@@ -90,7 +197,8 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, InitMenuWithCorrectWord) {
 // Tests that right-clicking a misspelled word adds two items:
 // "Add to dictionary", "Use enhanced spell check".
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, InitMenuWithMisspelledWord) {
-  InitMenu("wiimode", nullptr);
+  // Pick word that Windows platform spellcheck has no suggestions for.
+  InitMenu("missssspelling", nullptr);
   EXPECT_EQ(2U, menu()->GetMenuSize());
 
   // Read all the context-menu items added by this test and verify they are
@@ -110,9 +218,160 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, InitMenuWithMisspelledWord) {
   menu()->GetMenuItem(2, &item);
 }
 
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+// Tests that right-clicking a misspelled word that is identified as misspelled
+// by both Hunspell and Windows platform combines their suggestions.
+IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
+                       WinInitMenuWithMisspelledWordCombined) {
+  // Test invalid for Windows versions that don't support platform spellchecker.
+  if (!spellcheck::WindowsVersionSupportsSpellchecker())
+    return;
+
+  InitMenu("mispelled", "misspelling");
+  EXPECT_EQ(6U, menu()->GetMenuSize());
+
+  // Read all the context-menu items added by this test and verify they are
+  // expected ones.
+  MockRenderViewContextMenu::MockMenuItem item;
+  // First separator.
+  menu()->GetMenuItem(0, &item);
+  EXPECT_EQ(-1, item.command_id);
+  EXPECT_FALSE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  // First suggestion.
+  menu()->GetMenuItem(1, &item);
+  EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  EXPECT_EQ(u"misspelled", item.title);
+  // Second suggestion.
+  menu()->GetMenuItem(2, &item);
+  EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0 + 1, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  EXPECT_EQ(u"misspelling", item.title);
+  // Second separator.
+  menu()->GetMenuItem(3, &item);
+  EXPECT_EQ(-1, item.command_id);
+  EXPECT_FALSE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  // Add to dictionary.
+  menu()->GetMenuItem(4, &item);
+  EXPECT_EQ(IDC_SPELLCHECK_ADD_TO_DICTIONARY, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  // Enhanced spellcheck toggle.
+  menu()->GetMenuItem(5, &item);
+  EXPECT_EQ(IDC_CONTENT_CONTEXT_SPELLING_TOGGLE, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.checked);
+  EXPECT_FALSE(item.hidden);
+}
+
+// Tests that right-clicking a misspelled word that is identified as misspelled
+// by both Hunspell and Windows platform with the same suggestion leads to a
+// single suggestion.
+IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
+                       WinInitMenuWithMisspelledWordNoDuplicateSuggestions) {
+  // Test invalid for Windows versions that don't support platform spellchecker.
+  if (!spellcheck::WindowsVersionSupportsSpellchecker())
+    return;
+
+  InitMenu("mispelled", "misspelled");
+  EXPECT_EQ(5U, menu()->GetMenuSize());
+
+  // Read all the context-menu items added by this test and verify they are
+  // expected ones.
+  MockRenderViewContextMenu::MockMenuItem item;
+  // First separator.
+  menu()->GetMenuItem(0, &item);
+  EXPECT_EQ(-1, item.command_id);
+  EXPECT_FALSE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  // First and only suggestion.
+  menu()->GetMenuItem(1, &item);
+  EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  EXPECT_EQ(u"misspelled", item.title);
+  // Second separator.
+  menu()->GetMenuItem(2, &item);
+  EXPECT_EQ(-1, item.command_id);
+  EXPECT_FALSE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  // Add to dictionary.
+  menu()->GetMenuItem(3, &item);
+  EXPECT_EQ(IDC_SPELLCHECK_ADD_TO_DICTIONARY, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  // Enhanced spellcheck toggle.
+  menu()->GetMenuItem(4, &item);
+  EXPECT_EQ(IDC_CONTENT_CONTEXT_SPELLING_TOGGLE, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.checked);
+  EXPECT_FALSE(item.hidden);
+}
+
+// Tests that right-clicking a misspelled word that is identified as misspelled
+// by both Hunspell and Windows platform that has > 3 suggestions only displays
+// 3 suggestions.
+IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
+                       WinInitMenuWithMisspelledWordMaxSuggestions) {
+  // Test invalid for Windows versions that don't support platform spellchecker.
+  if (!spellcheck::WindowsVersionSupportsSpellchecker())
+    return;
+
+  InitMenu("wtree", "wee");
+  EXPECT_EQ(7U, menu()->GetMenuSize());
+
+  // Read all the context-menu items added by this test and verify they are
+  // expected ones.
+  MockRenderViewContextMenu::MockMenuItem item;
+  // First separator.
+  menu()->GetMenuItem(0, &item);
+  EXPECT_EQ(-1, item.command_id);
+  EXPECT_FALSE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  // First suggestion.
+  menu()->GetMenuItem(1, &item);
+  EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  EXPECT_EQ(u"tree", item.title);
+  // Second suggestion.
+  menu()->GetMenuItem(2, &item);
+  EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0 + 1, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  EXPECT_EQ(u"wee", item.title);
+  // Third suggestion.
+  menu()->GetMenuItem(3, &item);
+  EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0 + 2, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  EXPECT_EQ(u"were", item.title);
+  // Second separator.
+  menu()->GetMenuItem(4, &item);
+  EXPECT_EQ(-1, item.command_id);
+  EXPECT_FALSE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  // Add to dictionary.
+  menu()->GetMenuItem(5, &item);
+  EXPECT_EQ(IDC_SPELLCHECK_ADD_TO_DICTIONARY, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.hidden);
+  // Enhanced spellcheck toggle.
+  menu()->GetMenuItem(6, &item);
+  EXPECT_EQ(IDC_CONTENT_CONTEXT_SPELLING_TOGGLE, item.command_id);
+  EXPECT_TRUE(item.enabled);
+  EXPECT_FALSE(item.checked);
+  EXPECT_FALSE(item.hidden);
+}
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
 // Tests that right-clicking a correct word when we enable spelling-service
 // integration to verify an item "Use enhanced spell check" is checked. Even
-// though this meanu itself does not add this item, its sub-menu adds the item
+// though this menu itself does not add this item, its sub-menu adds the item
 // and calls SpellingMenuObserver::IsChecked() to check it.
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
                        EnableSpellingServiceWithCorrectWord) {
@@ -135,7 +394,8 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, EnableSpellingService) {
   menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
                           dictionary);
 
-  InitMenu("wiimode", nullptr);
+  // Pick word that Windows platform spellcheck has no suggestions for.
+  InitMenu("missssspelling", nullptr);
   EXPECT_EQ(2U, menu()->GetMenuSize());
 
   // To avoid duplicates, this test reads only the "Use enhanced spell check"

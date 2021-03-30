@@ -5,7 +5,7 @@
 #include "components/autofill/core/common/field_data_manager.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::FormFieldData;
@@ -18,14 +18,14 @@ class FieldDataManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     FormFieldData field1;
-    field1.id_attribute = ASCIIToUTF16("name1");
-    field1.value = ASCIIToUTF16("first");
+    field1.id_attribute = u"name1";
+    field1.value = u"first";
     field1.form_control_type = "text";
     field1.unique_renderer_id = FieldRendererId(1);
     control_elements_.push_back(field1);
 
     FormFieldData field2;
-    field2.id_attribute = ASCIIToUTF16("name2");
+    field2.id_attribute = u"name2";
     field2.form_control_type = "password";
     field2.unique_renderer_id = FieldRendererId(2);
     control_elements_.push_back(field2);
@@ -44,14 +44,14 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMap) {
       FieldPropertiesFlags::kUserTyped);
   const FieldRendererId id(control_elements_[0].unique_renderer_id);
   EXPECT_TRUE(field_data_manager->HasFieldData(id));
-  EXPECT_EQ(UTF8ToUTF16("first"), field_data_manager->GetUserTypedValue(id));
+  EXPECT_EQ(u"first", field_data_manager->GetUserInput(id));
   EXPECT_EQ(FieldPropertiesFlags::kUserTyped,
             field_data_manager->GetFieldPropertiesMask(id));
 
   field_data_manager->UpdateFieldDataMap(
-      control_elements_[0].unique_renderer_id, UTF8ToUTF16("newvalue"),
+      control_elements_[0].unique_renderer_id, u"newvalue",
       FieldPropertiesFlags::kAutofilled);
-  EXPECT_EQ(UTF8ToUTF16("newvalue"), field_data_manager->GetUserTypedValue(id));
+  EXPECT_EQ(u"newvalue", field_data_manager->GetUserInput(id));
   FieldPropertiesMask mask =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kAutofilled;
   EXPECT_EQ(mask, field_data_manager->GetFieldPropertiesMask(id));
@@ -75,14 +75,14 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMapWithNullValue) {
       FieldPropertiesFlags::kUserTyped);
   const FieldRendererId id(control_elements_[0].unique_renderer_id);
   EXPECT_TRUE(field_data_manager->HasFieldData(id));
-  EXPECT_EQ(base::string16(), field_data_manager->GetUserTypedValue(id));
+  EXPECT_EQ(std::u16string(), field_data_manager->GetUserInput(id));
   EXPECT_EQ(FieldPropertiesFlags::kUserTyped,
             field_data_manager->GetFieldPropertiesMask(id));
 
   field_data_manager->UpdateFieldDataMapWithNullValue(
       control_elements_[0].unique_renderer_id,
       FieldPropertiesFlags::kAutofilled);
-  EXPECT_EQ(base::string16(), field_data_manager->GetUserTypedValue(id));
+  EXPECT_EQ(std::u16string(), field_data_manager->GetUserInput(id));
   FieldPropertiesMask mask =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kAutofilled;
   EXPECT_EQ(mask, field_data_manager->GetFieldPropertiesMask(id));
@@ -90,7 +90,7 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMapWithNullValue) {
   field_data_manager->UpdateFieldDataMap(
       control_elements_[0].unique_renderer_id, control_elements_[0].value,
       FieldPropertiesFlags::kAutofilled);
-  EXPECT_EQ(UTF8ToUTF16("first"), field_data_manager->GetUserTypedValue(id));
+  EXPECT_EQ(u"first", field_data_manager->GetUserInput(id));
 }
 
 TEST_F(FieldDataManagerTest, FindMachedValue) {
@@ -99,29 +99,8 @@ TEST_F(FieldDataManagerTest, FindMachedValue) {
   field_data_manager->UpdateFieldDataMap(
       control_elements_[0].unique_renderer_id, control_elements_[0].value,
       FieldPropertiesFlags::kUserTyped);
-  EXPECT_TRUE(
-      field_data_manager->FindMachedValue(UTF8ToUTF16("first_element")));
-  EXPECT_FALSE(
-      field_data_manager->FindMachedValue(UTF8ToUTF16("second_element")));
-}
-
-TEST_F(FieldDataManagerTest, UpdateFieldDataMapWithAutofilledValue) {
-  const scoped_refptr<FieldDataManager> field_data_manager =
-      base::MakeRefCounted<FieldDataManager>();
-  const FieldRendererId id(control_elements_[0].unique_renderer_id);
-  // Add a typed value to make sure it will be cleared.
-  field_data_manager->UpdateFieldDataMap(id, ASCIIToUTF16("typedvalue"), 0);
-
-  field_data_manager->UpdateFieldDataWithAutofilledValue(
-      id, ASCIIToUTF16("autofilled"),
-      FieldPropertiesFlags::kAutofilledOnPageLoad);
-
-  EXPECT_TRUE(field_data_manager->HasFieldData(id));
-  EXPECT_EQ(base::string16(), field_data_manager->GetUserTypedValue(id));
-  EXPECT_EQ(UTF8ToUTF16("autofilled"),
-            field_data_manager->GetAutofilledValue(id));
-  EXPECT_EQ(FieldPropertiesFlags::kAutofilledOnPageLoad,
-            field_data_manager->GetFieldPropertiesMask(id));
+  EXPECT_TRUE(field_data_manager->FindMachedValue(u"first_element"));
+  EXPECT_FALSE(field_data_manager->FindMachedValue(u"second_element"));
 }
 
 }  // namespace autofill

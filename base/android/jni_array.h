@@ -13,7 +13,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 
 namespace base {
 namespace android {
@@ -70,6 +69,14 @@ BASE_EXPORT ScopedJavaLocalRef<jdoubleArray> ToJavaDoubleArray(
     JNIEnv* env,
     base::span<const double> doubles);
 
+// Returns a new Object[] with the content of |v|.
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
+    JNIEnv* env,
+    base::span<const ScopedJavaLocalRef<jobject>> v);
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
+    JNIEnv* env,
+    base::span<const ScopedJavaGlobalRef<jobject>> v);
+
 // Returns a array of Java byte array converted from |v|.
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
     JNIEnv* env,
@@ -85,17 +92,17 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
     JNIEnv* env,
-    base::span<const string16> v);
+    base::span<const std::u16string> v);
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
     JNIEnv* env,
-    base::span<const std::vector<string16>> v);
+    base::span<const std::vector<std::u16string>> v);
 
 // Converts a Java string array to a native array.
 BASE_EXPORT void AppendJavaStringArrayToStringVector(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array,
-    std::vector<string16>* out);
+    std::vector<std::u16string>* out);
 
 BASE_EXPORT void AppendJavaStringArrayToStringVector(
     JNIEnv* env,
@@ -177,7 +184,7 @@ BASE_EXPORT void JavaArrayOfByteArrayToBytesVector(
 BASE_EXPORT void Java2dStringArrayTo2dStringVector(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array,
-    std::vector<std::vector<string16>>* out);
+    std::vector<std::vector<std::u16string>>* out);
 
 // Assuming |array| is an int[][] (array of int arrays), replaces the
 // contents of |out| with the corresponding vectors of ints.

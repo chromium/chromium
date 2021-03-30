@@ -5,12 +5,12 @@
 #include "device/fido/win/type_conversions.h"
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/cbor/reader.h"
@@ -96,14 +96,14 @@ ToAuthenticatorGetAssertionResponse(
       std::move(*authenticator_data),
       std::vector<uint8_t>(assertion.pbSignature,
                            assertion.pbSignature + assertion.cbSignature));
-  response.SetCredential(PublicKeyCredentialDescriptor(
+  response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
       std::vector<uint8_t>(
           assertion.Credential.pbId,
-          assertion.Credential.pbId + assertion.Credential.cbId)));
+          assertion.Credential.pbId + assertion.Credential.cbId));
   if (assertion.cbUserId > 0) {
-    response.SetUserEntity(PublicKeyCredentialUserEntity(std::vector<uint8_t>(
-        assertion.pbUserId, assertion.pbUserId + assertion.cbUserId)));
+    response.user_entity = PublicKeyCredentialUserEntity(std::vector<uint8_t>(
+        assertion.pbUserId, assertion.pbUserId + assertion.cbUserId));
   }
   return response;
 }
@@ -196,7 +196,7 @@ std::vector<WEBAUTHN_CREDENTIAL_EX> ToWinCredentialExVector(
 }
 
 CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
-    const base::string16& error_name) {
+    const std::u16string& error_name) {
   // See WebAuthNGetErrorName in <webauthn.h> for these string literals.
   //
   // Note that the set of errors that browser are allowed to return in a
@@ -205,19 +205,18 @@ CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
   // permissible errors are "InvalidStateError" (aka CREDENTIAL_EXCLUDED in
   // Chromium code) and "NotAllowedError". Hence, we can collapse the set of
   // Windows errors to a smaller set of CtapDeviceResponseCodes.
-  static base::flat_map<base::string16, CtapDeviceResponseCode>
+  static base::flat_map<std::u16string, CtapDeviceResponseCode>
       kResponseCodeMap({
-          {STRING16_LITERAL("Success"), CtapDeviceResponseCode::kSuccess},
-          {STRING16_LITERAL("InvalidStateError"),
+          {u"Success", CtapDeviceResponseCode::kSuccess},
+          {u"InvalidStateError",
            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded},
-          {STRING16_LITERAL("ConstraintError"),
+          {u"ConstraintError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
-          {STRING16_LITERAL("NotSupportedError"),
+          {u"NotSupportedError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
-          {STRING16_LITERAL("NotAllowedError"),
+          {u"NotAllowedError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
-          {STRING16_LITERAL("UnknownError"),
-           CtapDeviceResponseCode::kCtap2ErrOperationDenied},
+          {u"UnknownError", CtapDeviceResponseCode::kCtap2ErrOperationDenied},
       });
   if (!base::Contains(kResponseCodeMap, error_name)) {
     FIDO_LOG(ERROR) << "Unexpected error name: " << error_name;

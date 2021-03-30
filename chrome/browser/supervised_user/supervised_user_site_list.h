@@ -19,7 +19,6 @@
 #include "base/hash/sha1.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -60,13 +59,13 @@ class SupervisedUserSiteList
   // Asynchronously loads the site list from |file| and calls |callback| with
   // the newly created object.
   static void Load(const std::string& id,
-                   const base::string16& title,
+                   const std::u16string& title,
                    const base::FilePath& large_icon_path,
                    const base::FilePath& file,
                    const LoadedCallback& callback);
 
   const std::string& id() const { return id_; }
-  const base::string16& title() const { return title_; }
+  const std::u16string& title() const { return title_; }
   const GURL& entry_point() const { return entry_point_; }
   const base::FilePath& large_icon_path() const { return large_icon_path_; }
   const std::vector<std::string>& patterns() const { return patterns_; }
@@ -82,14 +81,14 @@ class SupervisedUserSiteList
                            AllowlistsHostnameHashes);
 
   SupervisedUserSiteList(const std::string& id,
-                         const base::string16& title,
+                         const std::u16string& title,
                          const GURL& entry_point,
                          const base::FilePath& large_icon_path,
                          const base::ListValue* patterns,
                          const base::ListValue* hostname_hashes);
   // Used for testing.
   SupervisedUserSiteList(const std::string& id,
-                         const base::string16& title,
+                         const std::u16string& title,
                          const GURL& entry_point,
                          const base::FilePath& large_icon_path,
                          const std::vector<std::string>& patterns,
@@ -99,14 +98,14 @@ class SupervisedUserSiteList
   // Static private so it can access the private constructor.
   static void OnJsonLoaded(
       const std::string& id,
-      const base::string16& title,
+      const std::u16string& title,
       const base::FilePath& large_icon_path,
       const base::FilePath& path,
       const SupervisedUserSiteList::LoadedCallback& callback,
       std::unique_ptr<base::Value> value);
 
   std::string id_;
-  base::string16 title_;
+  std::u16string title_;
   GURL entry_point_;
   base::FilePath large_icon_path_;
 

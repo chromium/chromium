@@ -109,6 +109,15 @@ CaretPositionResolution TryResolveCaretPositionInTextFragment(
   if (offset < start_offset &&
       !mapping.HasBidiControlCharactersOnly(offset, start_offset))
     return CaretPositionResolution();
+  if (affinity == TextAffinity::kUpstream && offset == current_offset.end + 1 &&
+      cursor.Current().Style().NeedsTrailingSpace() &&
+      cursor.Current().Style().IsCollapsibleWhiteSpace(
+          mapping.GetText()[offset - 1])) {
+    // |offset| is after soft line wrap, e.g. "abc |xyz".
+    // See http://crbug.com/1183269 and |AdjustForSoftLineWrap()|
+    return {ResolutionType::kResolved,
+            {cursor, NGCaretPositionType::kAtTextOffset, offset - 1}};
+  }
   if (offset > current_offset.end &&
       !mapping.HasBidiControlCharactersOnly(end_offset, offset))
     return CaretPositionResolution();
@@ -239,8 +248,7 @@ bool IsUpstreamAfterLineBreak(const NGCaretPosition& caret_position) {
 
 NGCaretPosition BetterCandidateBetween(const NGCaretPosition& current,
                                        const NGCaretPosition& other,
-                                       unsigned offset,
-                                       TextAffinity affinity) {
+                                       unsigned offset) {
   DCHECK(!other.IsNull());
   if (current.IsNull())
     return other;
@@ -249,7 +257,10 @@ NGCaretPosition BetterCandidateBetween(const NGCaretPosition& current,
   // Make sure all of them are captured and handled here.
 
   // Only known case: either |current| or |other| is upstream after line break.
-  DCHECK_EQ(affinity, TextAffinity::kUpstream);
+  DCHECK(current.ToPositionInDOMTreeWithAffinity().Affinity() ==
+             TextAffinity::kUpstream ||
+         other.ToPositionInDOMTreeWithAffinity().Affinity() ==
+             TextAffinity::kUpstream);
   if (IsUpstreamAfterLineBreak(current)) {
     DCHECK(!IsUpstreamAfterLineBreak(other));
     return other;
@@ -289,8 +300,8 @@ NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
     }
 
     DCHECK_EQ(ResolutionType::kFoundCandidate, resolution.type);
-    candidate = BetterCandidateBetween(candidate, resolution.caret_position,
-                                       offset, affinity);
+    candidate =
+        BetterCandidateBetween(candidate, resolution.caret_position, offset);
   }
 
   return AdjustCaretPositionForBidiText(candidate);
@@ -313,9 +324,14 @@ NGCaretPosition ComputeNGCaretPosition(
   const base::Optional<unsigned> maybe_offset =
       mapping->GetTextContentOffset(position);
   if (!maybe_offset.has_value()) {
-    // TODO(xiaochengh): Investigate if we reach here.
-    NOTREACHED();
-    return NGCaretPosition();
+    // We can reach here with empty text nodes.
+    if (auto* data = DynamicTo<Text>(position.AnchorNode())) {
+      DCHECK_EQ(data->length(), 0u);
+    } else {
+      // TODO(xiaochengh): Investigate if we reach here.
+      NOTREACHED();
+      return NGCaretPosition();
+    }
   }
 
   const LayoutText* const layout_text =
@@ -324,7 +340,7 @@ NGCaretPosition ComputeNGCaretPosition(
                 *position.AnchorNode(), position.OffsetInContainerNode()))
           : nullptr;
 
-  const unsigned offset = *maybe_offset;
+  const unsigned offset = maybe_offset.value_or(0);
   const TextAffinity affinity = position_with_affinity.Affinity();
   // For upstream position, we use offset before ZWS to distinguish downstream
   // and upstream position when line breaking before ZWS.

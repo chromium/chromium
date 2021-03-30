@@ -125,8 +125,9 @@ void SpinLock::SlowLock() {
     // it as having a sleeper.
     if ((lock_value & kWaitTimeMask) == 0) {
       // Here, just "mark" that the thread is going to sleep.  Don't store the
-      // lock wait time in the lock as that will cause the current lock
-      // owner to think it experienced contention.
+      // lock wait time in the lock -- the lock word stores the amount of time
+      // that the current holder waited before acquiring the lock, not the wait
+      // time of any thread currently waiting to acquire it.
       if (lockword_.compare_exchange_strong(
               lock_value, lock_value | kSpinLockSleeper,
               std::memory_order_relaxed, std::memory_order_relaxed)) {
@@ -140,6 +141,14 @@ void SpinLock::SlowLock() {
         // this thread obtains the lock.
         lock_value = TryLockInternal(lock_value, wait_cycles);
         continue;   // Skip the delay at the end of the loop.
+      } else if ((lock_value & kWaitTimeMask) == 0) {
+        // The lock is still held, without a waiter being marked, but something
+        // else about the lock word changed, causing our CAS to fail. For
+        // example, a new lock holder may have acquired the lock with
+        // kSpinLockDisabledScheduling set, whereas the previous holder had not
+        // set that flag. In this case, attempt again to mark ourselves as a
+        // waiter.
+        continue;
       }
     }
 

@@ -4,10 +4,13 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="125153950246128346">Tryck för att visa en annan flik</translation>
+<translation id="1302104331113804646">Inställningar för prisbevakning</translation>
+<translation id="1378979118429748177">Få aviseringar om prissänkning</translation>
 <translation id="1657719826150349398">Flytta fliken nedåt</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flik}other{<ph name="TABS_COUNT_MANY" /> flikar}}</translation>
 <translation id="2277224997687551299">Redigera gruppnamn</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Ta bort <ph name="TABS_COUNT_ONE" /> markerad flik från gruppen.}other{Ta bort <ph name="TABS_COUNT_MANY" /> markerade flikar från gruppen.}}</translation>
+<translation id="2479148705183875116">Öppna inställningarna</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="2569352796411618312">Förslag: <ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
 <translation id="257674075312929031">Grupp</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Dela grupp</translation>
 <translation id="2759453070259087442">Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> flikar.</translation>
 <translation id="2977480621796371840">Ta bort från gruppen</translation>
+<translation id="3291470810748040983">Du får en avisering när det finns ett lägre pris på en öppen flik</translation>
 <translation id="3328308545011660196">Förslag: <ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
+<translation id="3882834874697329510">Aktivera aviseringar i inställningarna om du vill få en avisering när det finns ett lägre pris på en öppen flik.</translation>
+<translation id="3940195383040445971">Bevaka priser på flikar</translation>
+<translation id="3996880007329611795">Få aviseringar</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
 <translation id="4212246570487010370">Fortsätt surfa</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="4648718555153979859">Dina flikar samlas här</translation>
-<translation id="4922064041913095674">Se vilket objekt på dina öppna flikar som har det bästa priset</translation>
 <translation id="492284538114688557">Prissänkning upptäcktes</translation>
 <translation id="5007392906805964215">Granska</translation>
 <translation id="5073204694187207510">Dölj helskärmsrutnät</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Visa senare</translation>
 <translation id="5558362125926932819">Stäng flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> flikar har grupperats</translation>
+<translation id="575494663145460764">Vill du få aviseringar om sänkt pris?</translation>
 <translation id="58326064309361797">Gruppera flikar genom att dra dem</translation>
 <translation id="5846292395804797011">Stäng gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> flikar</translation>
 <translation id="6040143037577758943">Stäng</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Dölj flervalsläget</translation>
 <translation id="7151209024774799310">Ta bort flikar från gruppen</translation>
 <translation id="7204204600596740190">Flervalsläge</translation>
+<translation id="7352298686197644113">Se vilket objekt på dina öppna flikar som har ett lägre pris</translation>
 <translation id="753732157349120914">Flikbyte</translation>
 <translation id="7559245342362162951">Visa gruppens flikar i helskärmsrutnät</translation>
 <translation id="7792771145871471484">Granska förslagen.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Vill du sluta visa flikhuvudet?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Stäng <ph name="TABS_COUNT_ONE" /> vald flik}other{Stäng <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="8557923272772633250">Utöka flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar.</translation>
+<translation id="860282621117673749">Aviseringar om prissänkning</translation>
+<translation id="8714939927607906138">Lägre pris</translation>
 <translation id="8749939518995770034">Flikhuvudet har stängts</translation>
+<translation id="8820741577754260431">Se sänkta priser på flikar</translation>
 <translation id="9150694013019234766">Byt mellan flikarna i flikgruppen nära sidans nederkant</translation>
 <translation id="9169594135889675189">Lägg till ny flik i gruppen</translation>
 <translation id="959682366969460160">Håll ordning</translation>

@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
@@ -58,8 +59,8 @@ struct BulkLeakCheckImpl::CredentialHolder {
   std::unique_ptr<LeakDetectionRequestInterface> network_request_;
 };
 
-LeakCheckCredential::LeakCheckCredential(base::string16 username,
-                                         base::string16 password)
+LeakCheckCredential::LeakCheckCredential(std::u16string username,
+                                         std::u16string password)
     : username_(std::move(username)), password_(std::move(password)) {}
 
 LeakCheckCredential::LeakCheckCredential(LeakCheckCredential&&) = default;
@@ -76,7 +77,7 @@ BulkLeakCheckImpl::BulkLeakCheckImpl(
     : delegate_(delegate),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
-      encryption_key_(CreateNewKey()),
+      encryption_key_(CreateNewKey().value_or("")),
       payload_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {

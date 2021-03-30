@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+promise_test(async _ => {
+  await setMidiPermission({sysex: true}, 'granted');
+  const access = await navigator.requestMIDIAccess({sysex: true});
+  const output = access.outputs.values().next().value;
+
+  // Note on(off).
+  output.send([0xff, 0x90, 0x00, 0x00, 0x90, 0x07, 0x00]);
+
+  // Running status is not allowed in Web MIDI API.
+  assert_throws_js(TypeError, () => output.send([0x00, 0x01]));
+
+  // Unexpected End of Sysex.
+  assert_throws_js(TypeError, () => output.send([0xf7]));
+
+  // Unexpected reserved status bytes.
+  assert_throws_js(TypeError, () => output.send([0xf4]));
+  assert_throws_js(TypeError, () => output.send([0xf5]));
+  assert_throws_js(TypeError, () => output.send([0xf9]));
+  assert_throws_js(TypeError, () => output.send([0xfd]));
+
+  // Incomplete channel messages.
+  assert_throws_js(TypeError, () => output.send([0x80]));
+  assert_throws_js(TypeError, () => output.send([0x80, 0x00]));
+  assert_throws_js(TypeError, () => output.send([0x90]));
+  assert_throws_js(TypeError, () => output.send([0x90, 0x00]));
+  assert_throws_js(TypeError, () => output.send([0xa0]));
+  assert_throws_js(TypeError, () => output.send([0xa0, 0x00]));
+  assert_throws_js(TypeError, () => output.send([0xb0]));
+  assert_throws_js(TypeError, () => output.send([0xb0, 0x00]));
+  assert_throws_js(TypeError, () => output.send([0xc0]));
+  assert_throws_js(TypeError, () => output.send([0xd0]));
+  assert_throws_js(TypeError, () => output.send([0xe0]));
+  assert_throws_js(TypeError, () => output.send([0xe0, 0x00]));
+
+  // Incomplete system messages.
+  assert_throws_js(TypeError, () => output.send([0xf1]));
+  assert_throws_js(TypeError, () => output.send([0xf2]));
+  assert_throws_js(TypeError, () => output.send([0xf2, 0x00]));
+  assert_throws_js(TypeError, () => output.send([0xf3]));
+
+  // Invalid data bytes.
+  assert_throws_js(TypeError, () => output.send([0x80, 0x80, 0x00]));
+  assert_throws_js(TypeError, () => output.send([0x80, 0x00, 0x80]));
+
+  // Complete messages.
+  output.send([0x80, 0x00, 0x00]);
+  output.send([0x90, 0x00, 0x00]);
+  output.send([0xa0, 0x00, 0x00]);
+  output.send([0xb0, 0x00, 0x00]);
+  output.send([0xc0, 0x00]);
+  output.send([0xd0, 0x00]);
+  output.send([0xe0, 0x00, 0x00]);
+
+  // Real-Time messages.
+  output.send([0xf8]);
+  output.send([0xfa]);
+  output.send([0xfb]);
+  output.send([0xfc]);
+  output.send([0xfe]);
+  output.send([0xff]);
+
+  // Valid messages with Real-Time messages.
+  output.send([0x90, 0xff, 0xff, 0x00, 0xff, 0x01, 0xff, 0x80, 0xff, 0x00,
+               0xff, 0xff, 0x00, 0xff, 0xff]);
+
+  // Sysex messages.
+  output.send([0xf0, 0x00, 0x01, 0x02, 0x03, 0xf7]);
+  output.send([0xf0, 0xf8, 0xf7, 0xff]);
+  assert_throws_js(TypeError, () => output.send([0xf0, 0x80, 0xf7]));
+  assert_throws_js(TypeError, () => output.send([0xf0, 0xf0, 0xf7]));
+  assert_throws_js(TypeError, () => output.send([0xf0, 0xff, 0xf7, 0xf7]));
+
+  // Reserved status bytes.
+  assert_throws_js(TypeError, () => output.send([0xf4, 0x80, 0x00, 0x00]));
+  assert_throws_js(TypeError, () => output.send([0x80, 0xf4, 0x00, 0x00]));
+  assert_throws_js(TypeError, () => output.send([0x80, 0x00, 0xf4, 0x00]));
+  assert_throws_js(TypeError, () => output.send([0x80, 0x00, 0x00, 0xf4]));
+  assert_throws_js(TypeError, () => output.send([0xf0, 0xff, 0xf4, 0xf7]));
+
+  // Invalid timestamps.
+  assert_throws_js(TypeError, () => output.send([], NaN));
+  assert_throws_js(TypeError, () => output.send([], Infinity));
+  assert_throws_js(TypeError, () => output.send(new Uint8Array(), NaN));
+  assert_throws_js(TypeError, () => output.send(new Uint8Array(), Infinity));
+
+  if (window.SharedArrayBuffer) {
+      assert_throws_js(
+          TypeError,
+          () => output.send(new Uint8Array(new SharedArrayBuffer(4))));
+      assert_throws_js(
+          TypeError,
+          () => output.send(new Uint8Array(new SharedArrayBuffer(4), 0)));
+  }
+}, 'various MIDI messages can be validated');
+</script>
+</body>
+</html>

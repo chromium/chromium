@@ -4,27 +4,27 @@
 
 #include "components/no_state_prefetch/renderer/prerender_utils.h"
 
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
-#include "content/public/renderer/render_view_observer.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 
 namespace prerender {
 
 namespace {
 
 // Defers media player loading in background pages until they're visible.
-class MediaLoadDeferrer : public content::RenderViewObserver {
+class MediaLoadDeferrer : public blink::WebViewObserver {
  public:
-  MediaLoadDeferrer(content::RenderView* render_view,
+  MediaLoadDeferrer(blink::WebView* web_view,
                     base::OnceClosure continue_loading_cb)
-      : content::RenderViewObserver(render_view),
+      : blink::WebViewObserver(web_view),
         continue_loading_cb_(std::move(continue_loading_cb)) {}
   ~MediaLoadDeferrer() override = default;
 
-  // content::RenderFrameObserver implementation:
+  // blink::WebViewObserver implementation:
   void OnDestruct() override { delete this; }
   void OnPageVisibilityChanged(
       content::PageVisibilityState visibility_state) override {
@@ -49,12 +49,13 @@ bool DeferMediaLoad(content::RenderFrame* render_frame,
   // and has never played any media before.  We want to allow future loads even
   // when hidden to allow playlist-like functionality.
   //
-  // NOTE: This is also used to defer media loading for prerender.
-  if ((render_frame->GetRenderView()->GetWebView()->GetVisibilityState() !=
+  // NOTE: This is also used to defer media loading for NoStatePrefetch.
+  if ((render_frame->GetWebFrame()->View()->GetVisibilityState() !=
            content::PageVisibilityState::kVisible &&
        !has_played_media_before) ||
-      prerender::PrerenderHelper::IsPrerendering(render_frame)) {
-    new MediaLoadDeferrer(render_frame->GetRenderView(), std::move(closure));
+      prerender::NoStatePrefetchHelper::IsPrefetching(render_frame)) {
+    new MediaLoadDeferrer(render_frame->GetWebFrame()->View(),
+                          std::move(closure));
     return true;
   }
 

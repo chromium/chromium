@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -16,6 +17,7 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -42,6 +44,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   };
 
   CanvasResourceDispatcher(CanvasResourceDispatcherClient*,
+                           scoped_refptr<base::SingleThreadTaskRunner>
+                               agent_group_scheduler_compositor_task_runner,
                            uint32_t client_id,
                            uint32_t sink_id,
                            int placeholder_canvas_id,
@@ -79,6 +83,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void OnBeginFramePausedChanged(bool paused) final {}
   void ReclaimResources(
       const WTF::Vector<viz::ReturnedResource>& resources) final;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) final {}
 
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id);
@@ -90,7 +96,9 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
  private:
   friend class CanvasResourceDispatcherTest;
   struct FrameResource;
-  using ResourceMap = HashMap<unsigned, std::unique_ptr<FrameResource>>;
+
+  using ResourceMap =
+      HashMap<viz::ResourceId, std::unique_ptr<FrameResource>, ResourceIdHash>;
 
   bool PrepareFrame(scoped_refptr<CanvasResource>,
                     base::TimeTicks commit_start_time,
@@ -127,7 +135,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   int placeholder_canvas_id_;
 
-  unsigned next_resource_id_ = 0;
+  viz::ResourceIdGenerator id_generator_;
   ResourceMap resources_;
 
   viz::FrameTokenGenerator next_frame_token_;
@@ -141,6 +149,11 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   viz::BeginFrameAck current_begin_frame_ack_;
 
   CanvasResourceDispatcherClient* client_;
+
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner_;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 
   base::WeakPtrFactory<CanvasResourceDispatcher> weak_ptr_factory_{this};
 };

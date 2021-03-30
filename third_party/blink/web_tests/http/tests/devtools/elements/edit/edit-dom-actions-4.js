@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that user can mutate DOM by means of elements panel.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <div>
@@ -32,8 +32,7 @@
     `);
 
   // Save time on style updates.
-  Elements.StylesSidebarPane.prototype.update = function() {};
-  Elements.MetricsSidebarPane.prototype.update = function() {};
+  ElementsTestRunner.ignoreSidebarUpdates();
 
   TestRunner.runTestSuite([
     function testSetUp(next) {
@@ -48,9 +47,7 @@
         var treeOutline = ElementsTestRunner.firstElementsTreeOutline();
         var treeElement = treeOutline.findTreeElement(node);
         treeOutline.toggleEditAsHTML(node);
-        TestRunner.deprecatedRunAfterPendingDispatches(() => {
-          self.runtime.extension(UI.TextEditorFactory).instance().then(step2);
-        });
+        TestRunner.deprecatedRunAfterPendingDispatches(step2);
 
         function step2() {
           var editor = treeElement._editing.editor;

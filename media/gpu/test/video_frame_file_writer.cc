@@ -209,8 +209,8 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   // Convert the ARGB frame to PNG.
   std::vector<uint8_t> png_output;
   const bool png_encode_status = gfx::PNGCodec::Encode(
-      argb_out_frame->data(VideoFrame::kARGBPlane), gfx::PNGCodec::FORMAT_BGRA,
-      argb_out_frame->visible_rect().size(),
+      argb_out_frame->visible_data(VideoFrame::kARGBPlane),
+      gfx::PNGCodec::FORMAT_BGRA, argb_out_frame->visible_rect().size(),
       argb_out_frame->stride(VideoFrame::kARGBPlane),
       true, /* discard_transparency */
       std::vector<gfx::PNGCodec::Comment>(), &png_output);
@@ -266,7 +266,7 @@ void VideoFrameFileWriter::WriteVideoFrameYUV(
   const VideoPixelFormat pixel_format = out_frame->format();
   const size_t num_planes = VideoFrame::NumPlanes(pixel_format);
   for (size_t i = 0; i < num_planes; i++) {
-    const uint8_t* data = out_frame->data(i);
+    const uint8_t* data = out_frame->visible_data(i);
     const int stride = out_frame->stride(i);
     const size_t rows =
         VideoFrame::Rows(i, pixel_format, visible_size.height());

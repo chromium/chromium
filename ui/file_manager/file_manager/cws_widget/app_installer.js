@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {CWSWidgetContainerPlatformDelegate} from './cws_widget_container_platform_delegate.m.js';
+// clang-format on
+
 /**
  * Manage the installation of apps.
  */
-class AppInstaller {
+/* #export */ class AppInstaller {
   /**
    * @param {string} itemId Item id to be installed.
    * @param {!CWSWidgetContainerPlatformDelegate} delegate Delegate for

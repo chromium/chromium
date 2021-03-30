@@ -35,11 +35,11 @@ class ManagementUITest : public InProcessBrowserTest {
   }
 
   void VerifyTexts(base::Value* actual_values,
-                   std::map<std::string, base::string16>& expected_values) {
+                   std::map<std::string, std::u16string>& expected_values) {
     base::DictionaryValue* values_as_dict = NULL;
     actual_values->GetAsDictionary(&values_as_dict);
     for (const auto& val : expected_values) {
-      base::string16 actual_value;
+      std::u16string actual_value;
       values_as_dict->GetString(val.first, &actual_value);
       ASSERT_EQ(actual_value, val.second);
     }
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
 
   std::unique_ptr<base::Value> unmanaged_value_ptr =
       base::JSONReader::ReadDeprecated(unmanaged_json);
-  std::map<std::string, base::string16> expected_unmanaged_values{
+  std::map<std::string, std::u16string> expected_unmanaged_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
            IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
 
   std::unique_ptr<base::Value> managed_value_ptr =
       base::JSONReader::ReadDeprecated(managed_json);
-  std::map<std::string, base::string16> expected_managed_values{
+  std::map<std::string, std::u16string> expected_managed_values{
       {"browserManagementNotice",
        l10n_util::GetStringFUTF16(
            IDS_MANAGEMENT_BROWSER_NOTICE,

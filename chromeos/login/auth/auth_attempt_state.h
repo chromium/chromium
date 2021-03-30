@@ -23,17 +23,13 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthAttemptState
     : public base::SupportsWeakPtr<AuthAttemptState> {
  public:
   // Used to initialize for a login attempt.
-  AuthAttemptState(const UserContext& user_context,
-                   bool unlock,
-                   bool online_complete,
-                   bool user_is_new);
+  AuthAttemptState(const UserContext& user_context, bool unlock);
 
   virtual ~AuthAttemptState();
 
-  // Copy |user_context| and copy |outcome| into this object, so we can have
-  // a copy we're sure to own, and can make available on the UI thread.
+  // Deprecated legacy method, will be removed soon.
   // Must be called from the UI thread.
-  void RecordOnlineLoginStatus(const AuthFailure& outcome);
+  void RecordOnlineLoginComplete();
 
   // Copy |username_hash| into this object, so we can have
   // a copy we're sure to own, and can make available on the UI thread.
@@ -57,8 +53,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthAttemptState
   void ResetCryptohomeStatus();
 
   virtual bool online_complete();
-  virtual const AuthFailure& online_outcome();
-  virtual bool is_first_time_user();
 
   virtual bool cryptohome_complete();
   virtual cryptohome::MountError cryptohome_code();
@@ -78,24 +72,21 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthAttemptState
 
  protected:
   // Status of our online login attempt.
-  bool online_complete_;
-  AuthFailure online_outcome_;
-
-  bool is_first_time_user_;
+  bool online_complete_ = false;
 
   // Status of our cryptohome op attempt. Can only have one in flight at a time.
-  bool cryptohome_complete_;
-  cryptohome::MountError cryptohome_code_;
+  bool cryptohome_complete_ = false;
+  cryptohome::MountError cryptohome_code_ = cryptohome::MOUNT_ERROR_NONE;
 
  private:
   // Status of the crypthome GetSanitizedUsername() async call.
   // This gets initialized as being completed and those callers
   // that would explicitly request username hash would have to reset this.
-  bool username_hash_obtained_;
+  bool username_hash_obtained_ = true;
 
   // After the username hash request is completed, this marks whether
   // the request was successful.
-  bool username_hash_valid_;
+  bool username_hash_valid_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(AuthAttemptState);
 };

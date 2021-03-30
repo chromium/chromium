@@ -5,7 +5,11 @@ include_rules = [
     "+components/viz/common/resources/single_release_callback.h",
 
     "+gpu/command_buffer/client/shared_image_interface.h",
+    "+gpu/command_buffer/client/raster_interface.h",
+    "+gpu/config/gpu_feature_info.h",
+    "+gpu/GLES2/gl2extchromium.h",
 
+    "+media/audio",
     "+media/base",
     "+media/filters",
     "+media/formats/mp4/box_definitions.h",
@@ -16,6 +20,7 @@ include_rules = [
 
     "+third_party/libyuv",
     "+third_party/openh264",
+    "+third_party/opus",
 
     "+ui/gfx/color_space.h",
     "+ui/gfx/geometry/rect.h",
@@ -24,9 +29,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "video_track_reader_writer_test\.cc": [
-    "+base/run_loop.h",
-  ],
   "video_decoder_broker_test\.cc": [
     "+base/run_loop.h",
     "+base/threading/thread.h",
@@ -36,4 +38,7 @@ specific_include_rules = {
     "+base/run_loop.h",
     "+base/files/file_util.h",
   ],
+  "video_frame_test\.cc": [
+    "+components/viz/test/test_context_provider.h",
+  ]
 }

@@ -45,8 +45,8 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
     virtual void Show() = 0;
 
     // Ask to confirm a deletion. Triggers the callback upon confirmation.
-    virtual void ConfirmDeletion(const base::string16& confirmation_title,
-                                 const base::string16& confirmation_body,
+    virtual void ConfirmDeletion(const std::u16string& confirmation_title,
+                                 const std::u16string& confirmation_body,
                                  base::OnceClosure confirm_deletion) = 0;
   };
 
@@ -68,11 +68,11 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   void AcceptSuggestion(int index) override;
   int GetLineCount() const override;
   const autofill::Suggestion& GetSuggestionAt(int row) const override;
-  const base::string16& GetSuggestionValueAt(int row) const override;
-  const base::string16& GetSuggestionLabelAt(int row) const override;
+  const std::u16string& GetSuggestionValueAt(int row) const override;
+  const std::u16string& GetSuggestionLabelAt(int row) const override;
   bool GetRemovalConfirmationText(int index,
-                                  base::string16* title,
-                                  base::string16* body) override;
+                                  std::u16string* title,
+                                  std::u16string* body) override;
   bool RemoveSuggestion(int index) override;
   void SetSelectedLine(base::Optional<int> selected_line) override;
   base::Optional<int> selected_line() const override;
@@ -98,7 +98,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   std::unique_ptr<AutofillKeyboardAccessoryAdapter::AccessoryView> view_;
 
   // The labels to be used for the input chips.
-  std::vector<base::string16> labels_;
+  std::vector<std::u16string> labels_;
 
   // Position that the front element has in the suggestion list returned by
   // controller_. It is used to determine the offset suggestions.

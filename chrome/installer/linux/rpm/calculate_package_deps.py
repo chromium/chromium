@@ -7,6 +7,8 @@
 are satisfiable on all supported rpm-based distros.
 """
 
+from __future__ import print_function
+
 import argparse
 import json
 import os
@@ -25,20 +27,21 @@ dep_filename = args.dep_filename
 bundled_shlibs = [os.path.basename(file) for file in args.shlibs]
 distro_check = args.distro_check
 
-if os.stat(binary).st_mode & 0111 == 0:
-  print (('/usr/lib/rpm/elfdeps requires that binaries have an exectuable ' +
-          'bit set, but binary "%s" does not.') % os.path.basename(binary))
+if os.stat(binary).st_mode & 0o111 == 0:
+  print(('/usr/lib/rpm/elfdeps requires that binaries have an executable ' +
+         'bit set, but binary "%s" does not.') % os.path.basename(binary))
   sys.exit(1)
 
 proc = subprocess.Popen(['/usr/lib/rpm/find-requires'], stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-(stdout, stderr) = proc.communicate(binary + '\n')
+(stdout, stderr) = proc.communicate((binary + '\n').encode('utf8'))
 exit_code = proc.wait()
 if exit_code != 0:
-  print 'find-requires failed with exit code ' + str(exit_code)
-  print 'stderr was ' + stderr
+  print('find-requires failed with exit code ' + str(exit_code))
+  print('stderr was ' + stderr)
   sys.exit(1)
 
+stdout = stdout.decode('utf8')
 requires = set([] if stdout == '' else stdout.rstrip('\n').split('\n'))
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -54,9 +57,10 @@ if distro_check:
         remove_requires.add(requirement)
         continue
       if requirement not in distro_package_provides[distro]:
-        print >> sys.stderr, (
+        print(
             'Unexpected new dependency %s on distro %s caused by binary %s' % (
-                requirement, distro, os.path.basename(binary)))
+                requirement, distro, os.path.basename(binary)),
+            file=sys.stderr)
         ret_code = 1
         continue
 if ret_code == 0:

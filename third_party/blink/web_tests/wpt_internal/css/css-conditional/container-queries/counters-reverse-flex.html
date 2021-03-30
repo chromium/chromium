@@ -1,0 +1,35 @@
+<!doctype html>
+<title>Tests counter updates in flex-direction: column-reverse</title>
+<link rel="match" href="counters-ref.html">
+<style>
+  #flex {
+    width: 200px;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .item {
+    counter-increment: c 1;
+    height: 50px;
+  }
+  #container {
+    contain: size layout;
+  }
+  #last-item::before {
+    content: counter(c);
+  }
+  @container (min-width: 400px) {
+    span {
+      counter-increment: c 97;
+    }
+  }
+</style>
+<p>Pass if you see the number 100 below.</p>
+<div id="flex">
+  <div id="container" class="item"><span></span></div>
+  <div class="item"></div>
+  <div id="last-item" class="item"></div>
+</div>
+<script>
+  container.offestTop;
+  container.style.width = "400px";
+</script>

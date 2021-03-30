@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Popup light dismiss behavior</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel=help href="https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Popup/explainer.md">
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+
+<!-- This should be a WPT, but the test_driver.Actions()
+     system doesn't properly do keyDown/keyUp.
+     When that situation has changed, this should be
+     re-included with this WPT test:
+     external/wpt/html/semantics/interactive-elements/the-popup-element/popup-light-dismiss.tentative.html
+-->
+
+<button id=b1 onclick='p1.show()'>Popup 1</button>
+<popup id=p1 anchor=b1>Inside popup 1
+  <button id=b2 onclick='p2.show()'>Popup 2</button>
+</popup>
+<popup id=p2 anchor=b2>Inside popup 2</popup>
+
+<style>
+  #p1 { top:50px; }
+  #p2 { top:50px; left:250px; }
+  popup { border: 5px solid red; }
+</style>
+
+
+<script>
+  test(() => {
+    if (!window.eventSender)
+      assert_true(false, 'eventSender is required for this test');
+
+    const popup1 = document.querySelector('#p1');
+    const popup2 = document.querySelector('#p2');
+    popup1.show();
+    popup2.show();
+    eventSender.keyDown("Escape");
+    assert_true(popup1.open);
+    assert_false(popup2.open);
+    eventSender.keyDown("Escape");
+    assert_false(popup1.open);
+    assert_false(popup2.open);
+  },'Escape key should close top level popup');
+</script>

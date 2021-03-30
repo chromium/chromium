@@ -265,9 +265,6 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
     }
 
     @Override
-    public void mergeState() {}
-
-    @Override
     public void destroy() {
         removeObserver(mTabModelFilterProvider);
         mTabModelFilterProvider.destroy();
@@ -297,6 +294,16 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
     private void notifyNewTabCreated(Tab tab, @TabCreationState int creationState) {
         for (TabModelSelectorObserver listener : mObservers) {
             listener.onNewTabCreated(tab, creationState);
+        }
+    }
+
+    /**
+     * Notifies all the listeners that a tab has been hidden to switch to another.
+     * @param tab The tab that has been hidden.
+     */
+    protected void notifyTabHidden(Tab tab) {
+        for (TabModelSelectorObserver listener : mObservers) {
+            listener.onTabHidden(tab);
         }
     }
 

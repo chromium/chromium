@@ -12,4 +12,7 @@ const base::Feature kSendMouseLeaveEvents{"SendMouseLeaveEvents",
 const base::Feature kDontSendKeyEventsToJavascript{
     "DontSendKeyEventsToJavascript", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kReduceHorizontalFlingVelocity{
+    "ReduceHorizontalFlingVelocity", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

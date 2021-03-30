@@ -197,6 +197,10 @@ source_set("unit_tests") {
     "//chromeos/dbus/shill:test_support",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+    "//chromeos/dbus/u2f",
+    "//chromeos/dbus/u2f:u2f_proto",
+    "//chromeos/dbus/userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/tpm:test_support",
     "//components/account_id",
     "//dbus",
@@ -224,6 +228,11 @@ source_set("unit_tests") {
     "pipe_reader_unittest.cc",
     "tpm_manager/tpm_manager_client_unittest.cc",
     "update_engine_client_unittest.cc",
+    "userdataauth/arc_quota_client_unittest.cc",
+    "userdataauth/cryptohome_misc_client_unittest.cc",
+    "userdataauth/cryptohome_pkcs11_client_unittest.cc",
+    "userdataauth/install_attributes_client_unittest.cc",
+    "userdataauth/userdataauth_client_unittest.cc",
     "util/version_loader_unittest.cc",
   ]
 }

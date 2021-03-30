@@ -1,13 +1,20 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="plugin_vm_browser_proxy.html">
 <link rel="import" href="../browser_proxy.html">
 <link rel="import" href="../icons.html">
 <link rel="import" href="../permission_item.html">
 <link rel="import" href="../pin_to_shelf_item.html">
 <link rel="import" href="../shared_style.html">
 <link rel="import" href="../store_client.html">
+<link rel="import" href="../util.html">
+<link rel="import" href="../../../os_route.html">
+<link rel="import" href="../../../../router.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 
 <dom-module id="app-management-plugin-vm-detail-view">
   <template>
@@ -56,7 +63,7 @@
       <div class="permission-card-row separated-row header-text clickable"
           on-click="onSharedPathsClick_">
         <div id="sharedPathsLabel" class="header-text" aria-hidden="true">
-          $i18n{pluginVmSharedPaths}
+          $i18n{guestOsSharedPaths}
         </div>
         <div class="permission-row-controls">
           <cr-icon-button class="subpage-arrow app-management-item-arrow"
@@ -67,7 +74,7 @@
       <div class="permission-card-row separated-row header-text clickable"
           on-click="onSharedUsbDevicesClick_">
         <div id="sharedUsbDevicesLabel" class="header-text" aria-hidden="true">
-          $i18n{pluginVmSharedUsbDevicesLabel}
+          $i18n{guestOsSharedUsbDevicesLabel}
         </div>
         <div class="permission-row-controls">
           <cr-icon-button class="subpage-arrow app-management-item-arrow"

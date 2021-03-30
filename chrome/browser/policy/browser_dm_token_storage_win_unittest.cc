@@ -74,7 +74,7 @@ class BrowserDMTokenStorageWinTest : public testing::Test {
   bool SetDMToken(const std::string& dm_token,
                   InstallUtil::BrowserLocation browser_location) {
     base::win::RegKey key;
-    base::string16 dm_token_value_name;
+    std::wstring dm_token_value_name;
     std::tie(key, dm_token_value_name) =
         InstallUtil::GetCloudManagementDmTokenLocation(
             InstallUtil::ReadOnly(false), browser_location);

@@ -6,10 +6,8 @@
 
 #include "base/guid.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #include "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
@@ -21,7 +19,6 @@
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,8 +39,6 @@ class SaveCardInfobarBannerOverlayRequestCallbackInstallerTest
         card_(base::GenerateGUID(), "https://www.example.com/"),
         installer_(&mock_handler_),
         delegate_factory_() {
-    scoped_feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                          {kInfobarUIRebootOnlyiOS13});
     // Create the infobar and add it to the WebState's manager.
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
@@ -76,7 +71,6 @@ class SaveCardInfobarBannerOverlayRequestCallbackInstallerTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PrefService> prefs_;
   autofill::CreditCard card_;
   web::FakeWebState web_state_;

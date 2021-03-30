@@ -5,11 +5,11 @@
   </span>
   <div slot="settings">
     <select id="colorModeSelect" class="md-select"
-        value="{{selectedColorMode::change}}" disabled="[[disabled]]"
+        value="{{selectedOption::change}}" disabled="[[disabled]]"
         aria-labelledby="colorModeLabel">
-      <template is="dom-repeat" items="[[colorModes]]" as="colorMode">
+      <template is="dom-repeat" items="[[options]]" as="colorMode">
         <option value="[[colorMode]]"
-            selected$="[[isDefaultColorMode_(colorMode)]]">
+            selected$="[[isDefaultOption(colorMode)]]">
           [[getColorModeString_(colorMode)]]
         </option>
       </template>

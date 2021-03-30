@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests search in Summary view of detailed heap snapshots.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 200;

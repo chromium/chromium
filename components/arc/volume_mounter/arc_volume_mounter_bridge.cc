@@ -10,7 +10,6 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -231,7 +230,7 @@ void ArcVolumeMounterBridge::OnMountEvent(
       SendMountEventForRemovableMedia(event, mount_info.source_path,
                                       mount_info.mount_path, fs_uuid,
                                       device_label, device_type, visible);
-      delegate_->StopWatchingRemovableMedia(fs_uuid);
+      delegate_->StopWatchingRemovableMedia(mount_info.mount_path);
       break;
   }
 

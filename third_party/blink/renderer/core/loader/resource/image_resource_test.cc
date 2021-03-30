@@ -224,7 +224,8 @@ ResourceFetcher* CreateFetcher() {
       base::MakeRefCounted<scheduler::FakeTaskRunner>(),
       base::MakeRefCounted<scheduler::FakeTaskRunner>(),
       MakeGarbageCollected<TestLoaderFactory>(),
-      MakeGarbageCollected<MockContextLifecycleNotifier>()));
+      MakeGarbageCollected<MockContextLifecycleNotifier>(),
+      nullptr /* back_forward_cache_loader_helper */));
 }
 
 TEST_F(ImageResourceTest, MultipartImage) {
@@ -937,7 +938,8 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
   auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
       properties, context, task_runner, unfreezable_task_runner,
       MakeGarbageCollected<TestLoaderFactory>(),
-      page_holder->GetFrame().DomWindow()));
+      page_holder->GetFrame().DomWindow(),
+      nullptr /* back_forward_cache_loader_helper */));
   auto frame_scheduler = std::make_unique<scheduler::FakeFrameScheduler>();
   auto* scheduler = MakeGarbageCollected<ResourceLoadScheduler>(
       ResourceLoadScheduler::ThrottlingPolicy::kNormal,

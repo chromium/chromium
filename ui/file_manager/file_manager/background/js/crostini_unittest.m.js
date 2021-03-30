@@ -6,11 +6,11 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import { assertFalse,assertTrue} from 'chrome://test/chai_assert.js';
 
-import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
-import {Crostini} from '../../../externs/background/crostini.m.js';
-import {EntryLocation} from '../../../externs/entry_location.m.js';
-import {VolumeManager} from '../../../externs/volume_manager.m.js';
 import { MockDirectoryEntry, MockEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {Crostini} from '../../externs/background/crostini.m.js';
+import {EntryLocation} from '../../externs/entry_location.m.js';
+import {VolumeManager} from '../../externs/volume_manager.m.js';
 
 import {createCrostiniForTest} from './mock_crostini.m.js';
 // clang-format on

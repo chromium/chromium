@@ -23,7 +23,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -488,6 +487,9 @@ struct SSLSocketDataProvider {
 
   // Result for GetNegotiatedProtocol().
   NextProto next_proto;
+
+  // Result for GetPeerApplicationSettings().
+  base::Optional<std::string> peer_application_settings;
 
   // Result for GetSSLInfo().
   SSLInfo ssl_info;
@@ -978,6 +980,7 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
   int GetLocalAddress(IPEndPoint* address) const override;
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
+  base::Optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const override;
@@ -1088,6 +1091,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
 
   void set_source_port(uint16_t port) { source_port_ = port; }
   uint16_t source_port() const { return source_port_; }
+  void set_source_host(IPAddress addr) { source_host_ = addr; }
+  IPAddress source_host() const { return source_host_; }
 
   // Returns last tag applied to socket.
   SocketTag tag() const { return tag_; }
@@ -1109,6 +1114,7 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   int read_offset_;
   MockRead read_data_;
   bool need_read_data_;
+  IPAddress source_host_;
   uint16_t source_port_;  // Ephemeral source port.
 
   // Address of the "remote" peer we're connected to.

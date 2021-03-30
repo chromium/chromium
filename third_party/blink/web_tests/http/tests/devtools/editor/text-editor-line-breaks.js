@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test checks that line endings are inferred from the initial text content, not incremental editing.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   TestRunner.runTestSuite([

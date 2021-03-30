@@ -29,6 +29,7 @@
 
 namespace blink {
 
+class InlineTextBox;
 class IntRect;
 class LayoutObject;
 class LayoutText;
@@ -61,6 +62,14 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
   SelectionState ComputeSelectionStateForCursor(
       const NGInlineCursorPosition&) const;
 
+  // Compute the layout selection state relative to the InlineTextBox.
+  // E.g. a state of kStart means that the selection starts within the line
+  // (and ends elsewhere), where kStartAndEnd means the selection both starts
+  // and ends within the line. This information is used at paint time to
+  // determine the edges of the layout selection.
+  SelectionState ComputeSelectionStateForInlineTextBox(
+      const InlineTextBox&) const;
+
   static bool IsSelected(const LayoutObject&);
 
   void ContextDestroyed();
@@ -68,6 +77,10 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
   void Trace(Visitor*) const;
 
  private:
+  SelectionState ComputeSelectionStateFromOffsets(SelectionState state,
+                                                  unsigned start_offset,
+                                                  unsigned end_offset) const;
+
   void AssertIsValid() const;
 
   Member<FrameSelection> frame_selection_;

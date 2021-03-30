@@ -454,7 +454,7 @@ TEST_P(PaintAndRasterInvalidationTest, FullInvalidationWithHTMLTransform) {
   UpdateAllLifecyclePhasesForTest();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
-  GetDocument().View()->Resize(WebSize(500, 500));
+  GetDocument().View()->Resize(IntSize(500, 500));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
@@ -841,20 +841,23 @@ TEST_P(PaintAndRasterInvalidationTest, SVGHiddenContainer) {
   UpdateAllLifecyclePhasesForTest();
 
   // Should invalidate raster for real_rect only.
-  EXPECT_THAT(
-      GetRasterInvalidationTracking()->Invalidations(),
-      UnorderedElementsAre(
-          RasterInvalidationInfo{real_rect, real_rect->DebugName(),
-                                 IntRect(155, 166, 7, 8),
-                                 PaintInvalidationReason::kSVGResource},
-          RasterInvalidationInfo{real_rect, real_rect->DebugName(),
-                                 IntRect(154, 165, 9, 10),
-                                 PaintInvalidationReason::kSVGResource}));
+  EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
+              UnorderedElementsAre(
+                  RasterInvalidationInfo{real_rect, real_rect->DebugName(),
+                                         IntRect(155, 166, 7, 8),
+                                         PaintInvalidationReason::kSubtree},
+                  RasterInvalidationInfo{real_rect, real_rect->DebugName(),
+                                         IntRect(154, 165, 9, 10),
+                                         PaintInvalidationReason::kSubtree}));
 
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
 TEST_P(PaintAndRasterInvalidationTest, PaintPropertyChange) {
+  // TODO(wangxianzhu): See the TODO in CullRectUpdater::SetFragmentCullRects().
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return;
+
   SetUpHTML(*this);
   Element* target = GetDocument().getElementById("target");
   auto* object = target->GetLayoutObject();

@@ -13,6 +13,7 @@
 #include "android_webview/browser/aw_browser_terminator.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
+#include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
@@ -23,6 +24,7 @@
 #include "android_webview/common/crash_reporter/aw_crash_reporter_client.h"
 #include "base/android/apk_assets.h"
 #include "base/android/build_info.h"
+#include "base/android/bundle_utils.h"
 #include "base/android/memory_pressure_listener_android.h"
 #include "base/base_paths_android.h"
 #include "base/callback_helpers.h"
@@ -30,6 +32,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/task/current_thread.h"
@@ -37,9 +40,12 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/android/metrics/memory_metrics_logger.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
+#include "components/metrics/metrics_service.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
+#include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -118,10 +124,38 @@ int AwBrowserMainParts::PreCreateThreads() {
   crash_reporter::InitializeCrashKeys();
   variations::InitCrashKeys();
 
+  RegisterSyntheticTrials();
+
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void AwBrowserMainParts::PreMainMessageLoopRun() {
+void AwBrowserMainParts::RegisterSyntheticTrials() {
+  metrics::MetricsService* metrics =
+      AwMetricsServiceClient::GetInstance()->GetMetricsService();
+  metrics->synthetic_trial_registry()->AddSyntheticTrialObserver(
+      variations::VariationsIdsProvider::GetInstance());
+  metrics->synthetic_trial_registry()->AddSyntheticTrialObserver(
+      variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
+
+  static constexpr char kWebViewApkTypeTrial[] = "WebViewApkType";
+  ApkType apk_type = AwBrowserProcess::GetApkType();
+  std::string apk_type_string;
+  switch (apk_type) {
+    case ApkType::TRICHROME:
+      apk_type_string = "Trichrome";
+      break;
+    case ApkType::MONOCHROME:
+      apk_type_string = "Monochrome";
+      break;
+    case ApkType::STANDALONE:
+      apk_type_string = "Standalone";
+      break;
+  }
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, kWebViewApkTypeTrial, apk_type_string);
+}
+
+int AwBrowserMainParts::PreMainMessageLoopRun() {
   TRACE_EVENT0("startup", "AwBrowserMainParts::PreMainMessageLoopRun");
   AwBrowserProcess::GetInstance()->PreMainMessageLoopRun();
   browser_client_->InitBrowserContext();
@@ -129,12 +163,12 @@ void AwBrowserMainParts::PreMainMessageLoopRun() {
       AwWebUIControllerFactory::GetInstance());
   content::RenderFrameHost::AllowInjectingJavaScript();
   metrics_logger_ = std::make_unique<metrics::MemoryMetricsLogger>();
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-bool AwBrowserMainParts::MainMessageLoopRun(int* result_code) {
-  // Android WebView does not use default MessageLoop. It has its own
-  // Android specific MessageLoop.
-  return true;
+void AwBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  NOTREACHED();
 }
 
 void AwBrowserMainParts::PostCreateThreads() {

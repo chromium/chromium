@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+const httpsUrl = "https://example.com";
+const castUrl = "cast:deadbeef?param=true";
+const castDialUrl = "cast-dial:YouTube?param=true";
+const invalidUrl = "https://@";
+const unknownUrl = "unknown:foo";
+
+const assert_new_request = function(url_or_urls, description) {
+  assert_class_string(
+    new PresentationRequest(url_or_urls), "PresentationRequest", description);
+};
+
+test(() => {
+  assert_new_request(
+    httpsUrl,
+    "Test that a PresentationRequest can be constructed with https:");
+
+  assert_new_request(
+    castUrl,
+    "Test that a PresentationRequest can be constructed with cast:");
+
+  assert_new_request(
+    castDialUrl,
+    "Test that a PresentationRequest can be constructed with cast-dial:");
+
+  assert_new_request(
+    [castUrl, castDialUrl],
+    "Test that a PresentationRequest can be constructed with custom schemes");
+
+  assert_new_request(
+    [httpsUrl, castUrl, castDialUrl],
+    "Test that a PresentationRequest can be constructed with custom schemes and https:");
+
+  assert_new_request(
+    [unknownUrl, httpsUrl],
+    "Test that a PresentationRequest can be constructed with a unknown scheme and https:");
+
+  assert_new_request(
+    [unknownUrl, castUrl],
+    "Test that a PresentationRequest can be constructed with a unknown scheme and cast:");
+
+  assert_new_request(
+    [unknownUrl, httpsUrl, castUrl],
+    "Test that a PresentationRequest can be constructed with a unknown scheme, https:, and cast:");
+}, "Tests that a PresentationRequest can be constructed with non-https schemes");
+
+test(() => {
+  assert_throws_dom("SyntaxError", () => new PresentationRequest([unknownUrl, invalidUrl]));
+}, "Test that a PresentationRequest cannot be constructed with an unknown scheme and an invalid URL");
+
+test(() => {
+  assert_throws_dom("SyntaxError", () => new PresentationRequest([castUrl, invalidUrl]));
+}, "Test that a PresentationRequest cannot be constructed with a custom scheme and an invalid URL");
+
+test(() => {
+  assert_throws_dom("NotSupportedError", () => new PresentationRequest([unknownUrl]));
+}, "Test that a PresentationRequest cannot be constructed with only unknown schemes");
+
+</script>
+</body>
+</html>

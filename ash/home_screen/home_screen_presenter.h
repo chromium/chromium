@@ -16,8 +16,6 @@ class TimeDelta;
 
 namespace ash {
 
-class HomeScreenController;
-
 // Helper class to schedule Home Screen view animations.
 class ASH_EXPORT HomeScreenPresenter {
  public:
@@ -35,7 +33,7 @@ class ASH_EXPORT HomeScreenPresenter {
     kScaleHomeOut
   };
 
-  explicit HomeScreenPresenter(HomeScreenController* controller);
+  HomeScreenPresenter();
   ~HomeScreenPresenter();
 
   // Schedules animation for the home screen when overview mode starts or ends.
@@ -47,8 +45,6 @@ class ASH_EXPORT HomeScreenPresenter {
   // update will be animated.
   void SetFinalHomeTransformForTransition(TransitionType transition,
                                           base::TimeDelta animation_duration);
-
-  HomeScreenController* controller_;
 
   DISALLOW_COPY_AND_ASSIGN(HomeScreenPresenter);
 };

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests exception message from eval on worker context in console contains stack trace.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function startWorker()

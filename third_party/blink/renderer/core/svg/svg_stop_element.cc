@@ -85,7 +85,7 @@ Color SVGStopElement::StopColorIncludingOpacity() const {
     return Color::kBlack;
 
   Color base_color = style->VisitedDependentColor(GetCSSPropertyStopColor());
-  return base_color.CombineWithAlpha(style->SvgStyle().StopOpacity());
+  return base_color.CombineWithAlpha(style->StopOpacity());
 }
 
 }  // namespace blink

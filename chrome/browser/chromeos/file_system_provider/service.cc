@@ -417,8 +417,8 @@ void Service::OnWatcherChanged(const ProvidedFileSystemInfo& file_system_info,
                                const Watcher& watcher,
                                storage::WatcherManager::ChangeType change_type,
                                const Changes& changes,
-                               const base::Closure& callback) {
-  callback.Run();
+                               base::OnceClosure callback) {
+  std::move(callback).Run();
 }
 
 void Service::OnWatcherTagUpdated(

@@ -260,8 +260,7 @@ bool InterfaceEndpointClient::SendMessage(Message* message,
   // the corresponding associated interface pointer after sending this message.
   // That associated interface pointer has to join an associated group in order
   // to work properly.
-  if (!message->associated_endpoint_handles()->empty())
-    message->SerializeAssociatedEndpointHandles(handle_.group_controller());
+  message->SerializeHandles(handle_.group_controller());
 
   if (encountered_error_)
     return false;
@@ -292,8 +291,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   DCHECK(!handle_.pending_association());
 
   // Please see comments in Accept().
-  if (!message->associated_endpoint_handles()->empty())
-    message->SerializeAssociatedEndpointHandles(handle_.group_controller());
+  message->SerializeHandles(handle_.group_controller());
 
   if (encountered_error_)
     return false;
@@ -557,9 +555,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
     }
     std::unique_ptr<MessageReceiver> responder = std::move(it->second);
     async_responders_.erase(it);
-    bool rv = responder->Accept(message);
-    recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage #6 %d", rv);
-    return rv;
+
+    internal::MessageDispatchContext dispatch_context(message);
+    return responder->Accept(message);
   } else {
     if (mojo::internal::ControlMessageHandler::IsControlMessage(message)) {
       bool rv = control_message_handler_.Accept(message);

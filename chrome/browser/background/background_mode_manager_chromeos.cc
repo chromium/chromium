@@ -11,7 +11,7 @@ void BackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
 }
 
 void BackgroundModeManager::DisplayClientInstalledNotification(
-    const base::string16& name) {
+    const std::u16string& name) {
   // No need to display anything on ChromeOS because all extensions run all
   // the time anyway.
 }

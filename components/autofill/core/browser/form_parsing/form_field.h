@@ -6,11 +6,11 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
@@ -36,7 +36,7 @@ struct RegExLogging {
 // name, phone number, or address field.
 class FormField {
  public:
-  virtual ~FormField() {}
+  virtual ~FormField() = default;
 
   // Classifies each field in |fields| with its heuristically detected type.
   // Each field has a derived unique name that is used as the key into the
@@ -47,6 +47,14 @@ class FormField {
       bool is_form_tag,
       LogManager* log_manager = nullptr);
 
+#if defined(UNIT_TEST)
+  // Assign types to the fields for the testing purposes.
+  void AddClassificationsForTesting(
+      FieldCandidatesMap* field_candidates_for_testing) const {
+    AddClassifications(field_candidates_for_testing);
+  }
+#endif
+
  protected:
   // Initial values assigned to FieldCandidates by their corresponding parsers.
   static const float kBaseEmailParserScore;
@@ -56,6 +64,7 @@ class FormField {
   static const float kBaseCreditCardParserScore;
   static const float kBasePriceParserScore;
   static const float kBaseNameParserScore;
+  static const float kBaseMerchantPromoCodeParserScore;
   static const float kBaseSearchParserScore;
 
   // Only derived classes may instantiate.
@@ -64,7 +73,7 @@ class FormField {
   // Attempts to parse a form field with the given pattern.  Returns true on
   // success and fills |match| with a pointer to the field.
   static bool ParseField(AutofillScanner* scanner,
-                         const base::string16& pattern,
+                         const std::u16string& pattern,
                          AutofillField** match,
                          const RegExLogging& logging = {});
 
@@ -74,7 +83,7 @@ class FormField {
                          const RegExLogging& logging = {});
 
   static bool ParseField(AutofillScanner* scanner,
-                         const base::string16& pattern,
+                         const std::u16string& pattern,
                          const std::vector<MatchingPattern>& patterns,
                          AutofillField** match,
                          const RegExLogging& logging = {});
@@ -85,7 +94,7 @@ class FormField {
   // field, and the scanner would advance by one step. A |true| result is
   // returned in the case of a successful match, false otherwise.
   static bool ParseFieldSpecifics(AutofillScanner* scanner,
-                                  const base::string16& pattern,
+                                  const std::u16string& pattern,
                                   int match_type,
                                   AutofillField** match,
                                   const RegExLogging& logging = {});
@@ -98,7 +107,7 @@ class FormField {
   // The same as ParseFieldSpecifics but with splitted match_types into
   // MatchAttributes and MatchFieldTypes.
   static bool ParseFieldSpecifics(AutofillScanner* scanner,
-                                  const base::string16& pattern,
+                                  const std::u16string& pattern,
                                   int match_field_attributes,
                                   int match_field_input_types,
                                   AutofillField** match,
@@ -110,7 +119,7 @@ class FormField {
   };
 
   static bool ParseFieldSpecifics(AutofillScanner* scanner,
-                                  const base::string16& pattern,
+                                  const std::u16string& pattern,
                                   int match_type,
                                   const std::vector<MatchingPattern>& patterns,
                                   AutofillField** match,
@@ -143,6 +152,7 @@ class FormField {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FormFieldTest, Match);
+  FRIEND_TEST_ALL_PREFIXES(FormFieldTest, TestParseableLabels);
 
   // Function pointer type for the parsing function that should be passed to the
   // ParseFormFieldsPass() helper function.
@@ -156,7 +166,7 @@ class FormField {
   // Returns |true| if a match is found according to |match_type|, and |false|
   // otherwise.
   static bool MatchAndAdvance(AutofillScanner* scanner,
-                              const base::string16& pattern,
+                              const std::u16string& pattern,
                               int match_type,
                               AutofillField** match,
                               const RegExLogging& logging = {});
@@ -164,7 +174,7 @@ class FormField {
   // The same as MatchAndAdvance but with splitted match_types into
   // MatchAttributes and MatchFieldTypes.
   static bool MatchAndAdvance(AutofillScanner* scanner,
-                              const base::string16& pattern,
+                              const std::u16string& pattern,
                               int match_field_attributes,
                               int match_field_input_types,
                               AutofillField** match,
@@ -173,14 +183,14 @@ class FormField {
   // Matches the regular expression |pattern| against the components of
   // |field| as specified in the |match_type| bit field (see |MatchType|).
   static bool Match(const AutofillField* field,
-                    const base::string16& pattern,
+                    const std::u16string& pattern,
                     int match_type,
                     const RegExLogging& logging = {});
 
   // The same as Match but with splitted match_types into MatchAttributes
   // and MatchFieldTypes.
   static bool Match(const AutofillField* field,
-                    const base::string16& pattern,
+                    const std::u16string& pattern,
                     int match_field_attributes,
                     int match_field_input_types,
                     const RegExLogging& logging = {});

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -62,6 +61,7 @@ class SSLBlockingPage : public SSLBlockingPageBase {
       const GURL& support_url,
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       bool overrideable,
+      bool can_show_enhanced_protection_message,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);

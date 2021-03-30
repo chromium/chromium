@@ -15,7 +15,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -36,6 +35,7 @@
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
@@ -111,9 +111,7 @@ class ToplevelWindowEventHandlerTest : public AshTestBase {
  protected:
   aura::Window* CreateWindow(int hittest_code) {
     TestWindowDelegate* d1 = new TestWindowDelegate(hittest_code);
-    aura::Window* w1 =
-        window_factory::NewWindow(d1, aura::client::WINDOW_TYPE_NORMAL)
-            .release();
+    aura::Window* w1 = new aura::Window(d1, aura::client::WINDOW_TYPE_NORMAL);
     w1->set_id(1);
     w1->Init(ui::LAYER_TEXTURED);
     aura::Window* parent = Shell::GetContainer(
@@ -1096,7 +1094,15 @@ TEST_F(ToplevelWindowEventHandlerTest, DragSnappedWindowToExternalDisplay) {
 
   // Drag the window to the secondary display.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w1.get());
-  generator.DragMouseTo(472, -462);
+  // To determine the state, WindowWorkspaceResizer determines the display by
+  // checking the CursorManager for the correct display. EventGenerator does not
+  // update the display in the CursorManager, so we manually do it here.
+  // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
+  // without having to call |CursorManager::SetDisplay|.
+  const gfx::Point drag_location = gfx::Point(472, -462);
+  Shell::Get()->cursor_manager()->SetDisplay(
+      display::Screen::GetScreen()->GetDisplayNearestPoint(drag_location));
+  generator.DragMouseTo(drag_location);
 
   // Expect the window is no longer snapped and its size was restored to the
   // initial size.
@@ -1217,6 +1223,43 @@ TEST_F(ToplevelWindowEventHandlerDragTest,
 
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   EXPECT_FALSE(overview_controller->InOverviewSession());
+}
+
+// Test that if window destroyed during resize/dragging, no crash should happen.
+TEST_F(ToplevelWindowEventHandlerDragTest, WindowDestroyedDuringDragging) {
+  SendGestureEvent(gfx::Point(0, 0), 0, 5, ui::ET_GESTURE_SCROLL_BEGIN);
+  SendGestureEvent(gfx::Point(700, 500), 700, 500,
+                   ui::ET_GESTURE_SCROLL_UPDATE);
+  EXPECT_TRUE(WindowState::Get(dragged_window_.get())->is_dragged());
+  ToplevelWindowEventHandler* event_handler =
+      Shell::Get()->toplevel_window_event_handler();
+  EXPECT_TRUE(event_handler->is_drag_in_progress());
+
+  dragged_window_.reset();
+  EXPECT_FALSE(event_handler->is_drag_in_progress());
+}
+
+// Test that if window destroyed during resize/dragging in tablet mode, no crash
+// should happen.
+TEST_F(ToplevelWindowEventHandlerDragTest,
+       WindowDestroyedDuringDraggingInTabletMode) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  SendGestureEvent(gfx::Point(0, 0), 0, 5, ui::ET_GESTURE_SCROLL_BEGIN);
+  SendGestureEvent(gfx::Point(700, 500), 700, 500,
+                   ui::ET_GESTURE_SCROLL_UPDATE);
+  EXPECT_TRUE(WindowState::Get(dragged_window_.get())->is_dragged());
+  ToplevelWindowEventHandler* event_handler =
+      Shell::Get()->toplevel_window_event_handler();
+  EXPECT_TRUE(event_handler->is_drag_in_progress());
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(overview_controller->overview_session()->IsWindowInOverview(
+      dragged_window_.get()));
+
+  dragged_window_.reset();
+  EXPECT_FALSE(event_handler->is_drag_in_progress());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
 }
 
 // Showing the resize shadows when the mouse is over the window edges is

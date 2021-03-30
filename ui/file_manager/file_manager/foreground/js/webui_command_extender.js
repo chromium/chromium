@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {dispatchPropertyChange} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /**
  * Sets 'hidden' property of a cr.ui.Command instance and dispatches
  * 'hiddenChange' event manually so that associated cr.ui.MenuItem can handle

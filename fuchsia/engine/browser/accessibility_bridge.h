@@ -10,8 +10,9 @@
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
-#include <base/containers/flat_map.h>
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "content/public/browser/ax_event_notification_details.h"
@@ -53,7 +54,7 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   AccessibilityBridge(const AccessibilityBridge&) = delete;
   AccessibilityBridge& operator=(const AccessibilityBridge&) = delete;
 
-  const ui::AXSerializableTree* ax_tree_for_test();
+  ui::AXSerializableTree* ax_tree_for_test();
 
   void set_event_received_callback_for_test(base::OnceClosure callback) {
     event_received_callback_for_test_ = std::move(callback);
@@ -67,6 +68,10 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   FRIEND_TEST_ALL_PREFIXES(AccessibilityBridgeTest, OnSemanticsModeChanged);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityBridgeTest,
                            TreeModificationsAreForwarded);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityBridgeTest,
+                           UpdateTransformWhenContainerBoundsChange);
+
+  using AXNodeID = std::pair<ui::AXTreeID, int32_t>;
 
   // Represents a connection between two AXTrees that are in different frames.
   struct TreeConnection {
@@ -110,6 +115,10 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // in tests.
   float GetDeviceScaleFactor();
 
+  // Update |offset_container_children_| when node with id |node_id| is
+  // deleted.
+  void RemoveNodeFromOffsetContainerChildren(uint32_t node_id);
+
   // content::WebContentsObserver implementation.
   void AccessibilityEventReceived(
       const content::AXEventNotificationDetails& details) override;
@@ -131,6 +140,9 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
       ui::AXTree* tree,
       bool root_changed,
       const std::vector<ui::AXTreeObserver::Change>& changes) override;
+  void OnNodeDataChanged(ui::AXTree* tree,
+                         const ui::AXNodeData& old_node_data,
+                         const ui::AXNodeData& new_node_data) override;
 
   fuchsia::accessibility::semantics::SemanticTreePtr semantic_tree_;
   fidl::Binding<fuchsia::accessibility::semantics::SemanticListener> binding_;
@@ -149,6 +161,10 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // tree.
   base::flat_map<ui::AXTreeID, TreeConnection> tree_connections_;
 
+  // Maintain a map of callbacks as multiple hit test events can happen at
+  // once. These are keyed by the request_id field of ui::AXActionData.
+  base::flat_map<int, HitTestCallback> pending_hit_test_callbacks_;
+
   // Whether semantic updates are enabled.
   bool enable_semantic_updates_ = false;
 
@@ -157,9 +173,9 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   std::vector<fuchsia::accessibility::semantics::Node> to_update_;
   bool commit_inflight_ = false;
 
-  // Maintain a map of callbacks as multiple hit test events can happen at
-  // once. These are keyed by the request_id field of ui::AXActionData.
-  base::flat_map<int, HitTestCallback> pending_hit_test_callbacks_;
+  // Maintain a map from AXNode IDs to a list of the AXNode IDs of descendant
+  // nodes that have the key node ID as their offset containers.
+  std::map<AXNodeID, base::flat_set<AXNodeID>> offset_container_children_;
 
   // Run in the case of an internal error that cannot be recovered from. This
   // will cause the frame |this| is owned by to be torn down.

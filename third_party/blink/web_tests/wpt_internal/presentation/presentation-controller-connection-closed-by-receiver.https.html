@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<button>click me</button>
+<script type="module">
+import {PresentationServiceMock, waitForClick} from './resources/presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
+const button = document.querySelector('button');
+
+promise_test(async _ => {
+  let controllerConnectionClosed = false;
+  await waitForClick(button);
+  const connection =
+      await new PresentationRequest("https://example.com/").start();
+  connection.onclose = closeEvent => {
+    assert_equals(closeEvent.reason, "closed");
+    assert_equals(closeEvent.message, "");
+    assert_equals(connection.state, "closed");
+    controllerConnectionClosed = true;
+  };
+
+  // Open a receiver page and pass controller connection's
+  // controllerConnectionPtr and receiverConnectionRequest to it.
+  const w =
+      window.open("resources/presentation-receiver-close-connection.html");
+  w.controllerConnectionPtr = mock.getControllerConnectionPtr();
+  w.receiverConnectionRequest = mock.getReceiverConnectionRequest();
+  w.shouldCallClose = true;
+
+  return new Promise(resolve => {
+    window.addEventListener("message", e => {
+      if (e.data == "receiver connection closed") {
+        assert_true(controllerConnectionClosed);
+        resolve();
+      }
+    });
+  });
+}, "receiver connection.close() should fire both controller's and receiver's onclose event handler");
+
+</script>
+</body>
+</html>

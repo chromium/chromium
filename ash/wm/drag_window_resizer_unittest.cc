@@ -11,7 +11,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "ash/wm/cursor_manager_test_api.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_controller.h"
@@ -23,6 +22,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_delegate.h"
@@ -77,13 +77,13 @@ class DragWindowResizerTest : public AshTestBase {
     gfx::Rect root_bounds(root->bounds());
     EXPECT_EQ(kRootHeight, root_bounds.height());
     EXPECT_EQ(800, root_bounds.width());
-    window_ = window_factory::NewWindow(&delegate_);
+    window_ = std::make_unique<aura::Window>(&delegate_);
     window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window_.get());
     window_->set_id(1);
 
-    always_on_top_window_ = window_factory::NewWindow(&delegate2_);
+    always_on_top_window_ = std::make_unique<aura::Window>(&delegate2_);
     always_on_top_window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     always_on_top_window_->SetProperty(aura::client::kZOrderingKey,
                                        ui::ZOrderLevel::kFloatingWindow);
@@ -91,7 +91,7 @@ class DragWindowResizerTest : public AshTestBase {
     ParentWindowInPrimaryRootWindow(always_on_top_window_.get());
     always_on_top_window_->set_id(2);
 
-    system_modal_window_ = window_factory::NewWindow(&delegate3_);
+    system_modal_window_ = std::make_unique<aura::Window>(&delegate3_);
     system_modal_window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     system_modal_window_->SetProperty(aura::client::kModalKey,
                                       ui::MODAL_TYPE_SYSTEM);
@@ -99,13 +99,13 @@ class DragWindowResizerTest : public AshTestBase {
     ParentWindowInPrimaryRootWindow(system_modal_window_.get());
     system_modal_window_->set_id(3);
 
-    transient_child_ = window_factory::NewWindow(&delegate4_).release();
+    transient_child_ = new aura::Window(&delegate4_);
     transient_child_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     transient_child_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(transient_child_);
     transient_child_->set_id(4);
 
-    transient_parent_ = window_factory::NewWindow(&delegate5_);
+    transient_parent_ = std::make_unique<aura::Window>(&delegate5_);
     transient_parent_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     transient_parent_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(transient_parent_.get());
@@ -320,7 +320,8 @@ TEST_F(DragWindowResizerTest, WindowDragWithMultiDisplaysActiveRoot) {
   ASSERT_EQ(2U, root_windows.size());
 
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window = window_factory::NewWindow(&delegate);
+  std::unique_ptr<aura::Window> window =
+      std::make_unique<aura::Window>(&delegate);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
   ParentWindowInPrimaryRootWindow(window.get());

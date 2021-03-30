@@ -108,7 +108,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                    int quad_height,
                    int quad_width) {
     bool needs_blending = false;
-    ResourceId resource_id = 1;
+    ResourceId resource_id(1);
     bool premultiplied_alpha = true;
     gfx::PointF uv_top_left(0, 0);
     gfx::PointF uv_bottom_right(1, 1);

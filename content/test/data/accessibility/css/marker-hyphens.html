@@ -1,0 +1,44 @@
+<!--
+# This copies content from a web test with the same file name.
+# Workaround for platform differences in hyphen inline text box names -- the
+# hyphens will appear in the output as an InlineTextBox with no name.
+@BLINK-DENY:name*
+@BLINK-ALLOW:name='foo*
+@BLINK-ALLOW:name='bar*
+-->
+<style>
+li {
+  list-style-position: inside;
+  width: 0;
+}
+.hyphens-manual.explicit ::marker,
+.hyphens-manual.inherit {
+  hyphens: manual;
+}
+.hyphens-none.explicit ::marker,
+.hyphens-none.inherit {
+  hyphens: none;
+}
+.marker-string {
+  list-style-type: "foo\AD bar";  /* \AD is a soft hyphen. */
+}
+.marker-content::marker {
+  content: "foo\AD bar";  /* \AD is a soft hyphen. */
+}
+</style>
+<ol class="hyphens-manual explicit">
+  <li class="marker-string"></li>
+  <li class="marker-content"></li>
+</ol>
+<ol class="hyphens-manual inherit">
+  <li class="marker-string"></li>
+  <li class="marker-content"></li>
+</ol>
+<ol class="hyphens-none explicit">
+  <li class="marker-string"></li>
+  <li class="marker-content"></li>
+</ol>
+<ol class="hyphens-none inherit">
+  <li class="marker-string"></li>
+  <li class="marker-content"></li>
+</ol>

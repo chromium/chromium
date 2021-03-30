@@ -15,8 +15,9 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/controls/button/button.h"
@@ -70,6 +71,7 @@ class ASH_EXPORT DragHandle : public views::Button,
   void OnGestureEvent(ui::GestureEvent* event) override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // OverviewObserver:
   void OnOverviewModeStarting() override;
@@ -177,16 +179,17 @@ class ASH_EXPORT DragHandle : public views::Button,
 
   base::ScopedClosureRunner force_show_hotseat_resetter_;
 
-  ScopedObserver<SplitViewController, SplitViewObserver> split_view_observer_{
-      this};
+  base::ScopedObservation<SplitViewController, SplitViewObserver>
+      split_view_observation_{this};
 
-  ScopedObserver<OverviewController, OverviewObserver> overview_observer_{this};
+  base::ScopedObservation<OverviewController, OverviewObserver>
+      overview_observation_{this};
 
-  ScopedObserver<Shell,
-                 ShellObserver,
-                 &Shell::AddShellObserver,
-                 &Shell::RemoveShellObserver>
-      shell_observer_{this};
+  base::ScopedObservation<Shell,
+                          ShellObserver,
+                          &Shell::AddShellObserver,
+                          &Shell::RemoveShellObserver>
+      shell_observation_{this};
 
   base::WeakPtrFactory<DragHandle> weak_factory_{this};
 };

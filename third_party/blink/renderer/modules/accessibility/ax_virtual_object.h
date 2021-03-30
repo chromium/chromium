@@ -21,7 +21,6 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
 
   // AXObject overrides.
   void Detach() override;
-  AXObject* ComputeParent() const override { return parent_; }
   bool IsVirtualObject() const override { return true; }
   void AddChildren() override;
   void ChildrenChanged() override;
@@ -36,6 +35,8 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
                          ax::mojom::NameFrom&,
                          AXRelatedObjectVector*,
                          NameSources*) const override;
+  Document* GetDocument() const override;
+  ax::mojom::blink::Role DetermineAccessibilityRole() override;
 
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;

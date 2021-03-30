@@ -66,7 +66,7 @@ ScopedJavaLocalRef<jobject> FormDataAndroid::GetNextFormFieldData(JNIEnv* env) {
 }
 
 void FormDataAndroid::OnFormFieldDidChange(size_t index,
-                                           const base::string16& value) {
+                                           const std::u16string& value) {
   form_.fields[index].value = value;
   fields_[index]->OnFormFieldDidChange(value);
 }
@@ -101,10 +101,15 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
   auto form_field_data_android = fields_.begin();
   for (const auto& autofill_field : form_structure) {
     DCHECK(form_field_data_android->get()->SimilarFieldAs(*autofill_field));
+    std::vector<AutofillType> server_predictions;
+    for (const auto& prediction : autofill_field->server_predictions()) {
+      server_predictions.emplace_back(
+          static_cast<ServerFieldType>(prediction.type()));
+    }
     form_field_data_android->get()->UpdateAutofillTypes(
         AutofillType(autofill_field->heuristic_type()),
         AutofillType(autofill_field->server_type()),
-        autofill_field->ComputedType());
+        autofill_field->ComputedType(), server_predictions);
     if (++form_field_data_android == fields_.end())
       break;
   }

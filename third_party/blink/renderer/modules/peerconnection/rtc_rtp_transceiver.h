@@ -22,6 +22,7 @@
 namespace blink {
 
 class RTCPeerConnection;
+class RTCRtpHeaderExtensionCapability;
 class RTCRtpReceiver;
 class RTCRtpSender;
 
@@ -67,6 +68,15 @@ class RTCRtpTransceiver final : public ScriptWrappable {
   bool DirectionHasSend() const;
   bool DirectionHasRecv() const;
   bool FiredDirectionHasRecv() const;
+
+  void setOfferedRtpHeaderExtensions(
+      const HeapVector<Member<RTCRtpHeaderExtensionCapability>>&
+          header_extensions_to_offer,
+      ExceptionState& exception_state);
+  HeapVector<Member<RTCRtpHeaderExtensionCapability>> headerExtensionsToOffer()
+      const;
+  HeapVector<Member<RTCRtpHeaderExtensionCapability>>
+  headerExtensionsNegotiated() const;
 
   void Trace(Visitor*) const override;
 

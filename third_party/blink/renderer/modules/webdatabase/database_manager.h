@@ -70,7 +70,6 @@ class DatabaseManager {
                          const String& name,
                          const String& expected_version,
                          const String& display_name,
-                         uint32_t estimated_size,
                          V8DatabaseCallback*,
                          DatabaseError&,
                          String& error_message);
@@ -94,7 +93,6 @@ class DatabaseManager {
                                  const String& name,
                                  const String& expected_version,
                                  const String& display_name,
-                                 uint32_t estimated_size,
                                  V8DatabaseCallback*,
                                  bool set_version_in_new_database,
                                  DatabaseError&,

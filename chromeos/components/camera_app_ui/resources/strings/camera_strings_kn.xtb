@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">ಟೈಮರ್ ಅವಧಿ</translation>
 <translation id="2050339315714019657">ಪೋರ್ಟ್ರೇಟ್</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ಸಕ್ರಿಯ</translation>
+<translation id="2144806332417375165">ಕಸ್ಟಮ್ ವೀಡಿಯೊ ಪ್ಯಾರಾಮೀಟರ್‌ಗಳು</translation>
 <translation id="229579744168541441">ಡಿಸ್ಕ್‌ಗೆ ರಫ್ತು ಮಾಡಿ</translation>
 <translation id="2501278716633472235">ಹಿಂದಿರುಗಿ</translation>
 <translation id="2501853267655415902">ರೆಕಾರ್ಡಿಂಗ್ ನಿಂತಿದೆ</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">ಕ್ಯಾಮರಾ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="3517926952904427380">ಪೋರ್ಟ್ರೇಟ್ ಫೋಟೋ ತೆಗೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="3569311554794739032">ನೀವು ನಿಜವಾಗಿಯೂ <ph name="FILE" /> ತೆಗೆದುಹಾಕಲು ಬಯಸುವಿರಾ?</translation>
-<translation id="3750315947605636967">ಬೇರೊಂದು ಆ್ಯಪ್ ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="3810838688059735925">ವೀಡಿಯೊ</translation>
 <translation id="3838931309141338733">ಬಾರ್‌ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="3892148308691398805">ಪಠ್ಯ ನಕಲಿಸಿ</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">ಫೈಲ್ ಸಿಸ್ಟಂ ದೋಷಗಳು.</translation>
 <translation id="7450541714075000668">ಪಠ್ಯವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7557677699350329807">ಮುಂದಿನ ಕ್ಯಾಮರಾಗೆ ಬದಲಿಸಿ</translation>
+<translation id="7607002721634913082">ವಿರಾಮದಲ್ಲಿದೆ</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">ಪ್ಯಾನ್ ಟಿಲ್ಟ್ ಝೂಮ್ ಆಯ್ಕೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="7983668134180549431">ಪಠ್ಯ ಪತ್ತೆಯಾಗಿದೆ.</translation>
 <translation id="8067883171444229417">ವೀಡಿಯೊ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>

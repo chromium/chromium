@@ -10,7 +10,12 @@ shared_library("chromeexts") {
     "chromeexts.def",
     "commands/hwnd_command.cc",
     "commands/hwnd_command.h",
+    "commands/view_command.cc",
+    "commands/view_command.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/views/debug:views_debug",
+  ]
 }

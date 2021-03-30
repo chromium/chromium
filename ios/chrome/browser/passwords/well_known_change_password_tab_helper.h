@@ -13,6 +13,8 @@
 
 namespace password_manager {
 
+class AffiliationService;
+
 // This TabHelper checks whether a site supports the .well-known/change-password
 // url. To check whether a site supports the change-password url the TabHelper
 // also request a .well-known path that is defined to return a 404. When that
@@ -81,7 +83,8 @@ class WellKnownChangePasswordTabHelper
   web::WebStatePolicyDecider::PolicyDecisionCallback response_policy_callback_;
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
-  ChangePasswordUrlService* change_password_url_service_;
+  ChangePasswordUrlService* change_password_url_service_ = nullptr;
+  password_manager::AffiliationService* affiliation_service_ = nullptr;
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 

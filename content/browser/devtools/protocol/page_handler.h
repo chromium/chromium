@@ -84,15 +84,15 @@ class PageHandler : public DevToolsDomainHandler,
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
   void DidRunJavaScriptDialog(const GURL& url,
-                              const base::string16& message,
-                              const base::string16& default_prompt,
+                              const std::u16string& message,
+                              const std::u16string& default_prompt,
                               JavaScriptDialogType dialog_type,
                               bool has_non_devtools_handlers,
                               JavaScriptDialogCallback callback);
   void DidRunBeforeUnloadConfirm(const GURL& url,
                                  bool has_non_devtools_handlers,
                                  JavaScriptDialogCallback callback);
-  void DidCloseJavaScriptDialog(bool success, const base::string16& user_input);
+  void DidCloseJavaScriptDialog(bool success, const std::u16string& user_input);
   void NavigationReset(NavigationRequest* navigation_request);
   void DownloadWillBegin(FrameTreeNode* ftn, download::DownloadItem* item);
 
@@ -244,6 +244,7 @@ class PageHandler : public DevToolsDomainHandler,
   base::ScopedObservation<RenderWidgetHost, RenderWidgetHostObserver>
       observation_{this};
   JavaScriptDialogCallback pending_dialog_;
+  // Maps DevTools navigation tokens to pending NavigateCallbacks.
   base::flat_map<base::UnguessableToken, std::unique_ptr<NavigateCallback>>
       navigate_callbacks_;
   base::flat_set<download::DownloadItem*> pending_downloads_;

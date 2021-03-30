@@ -13,6 +13,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "content/browser/cache_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -28,8 +30,6 @@ class BlobStorageContext;
 }  // namespace storage
 
 namespace content {
-
-enum class CacheStorageOwner;
 
 // The state needed to pass when writing to a cache.
 struct PutContext {
@@ -119,7 +119,7 @@ class CONTENT_EXPORT CacheStorageCacheEntryHandler {
                                    blink::mojom::FetchAPIRequest* request) = 0;
 
   static std::unique_ptr<CacheStorageCacheEntryHandler> CreateCacheEntryHandler(
-      CacheStorageOwner owner,
+      storage::mojom::CacheStorageOwner owner,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
 
   void InvalidateDiskCacheBlobEntrys();

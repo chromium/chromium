@@ -121,6 +121,7 @@ class DevToolsClientImpl : public DevToolsClient {
   Status HandleReceivedEvents() override;
   void SetDetached() override;
   void SetOwner(WebViewImpl* owner) override;
+  WebViewImpl* GetOwner() const override;
   DevToolsClient* GetRootClient() override;
 
  private:

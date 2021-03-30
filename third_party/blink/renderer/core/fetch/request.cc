@@ -10,8 +10,8 @@
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -536,12 +536,12 @@ Request* Request::CreateRequestWithRequestOrString(
     if ((params.type == TrustTokenOperationType::kRedemption ||
          params.type == TrustTokenOperationType::kSigning) &&
         !execution_context->IsFeatureEnabled(
-            mojom::blink::FeaturePolicyFeature::kTrustTokenRedemption)) {
+            mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
       exception_state.ThrowTypeError(
           "trustToken: Redemption ('token-redemption') and signing "
           "('send-redemption-record') operations require that the "
           "trust-token-redemption "
-          "Feature Policy feature be enabled.");
+          "Permissions Policy feature be enabled.");
       return nullptr;
     }
 

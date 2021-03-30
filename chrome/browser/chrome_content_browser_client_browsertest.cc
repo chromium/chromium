@@ -16,9 +16,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/search.h"
@@ -149,11 +151,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
   scoped_refptr<content::SiteInstance> site_instance =
       content::SiteInstance::CreateForURL(context, isolated_url);
   EXPECT_TRUE(site_instance->RequiresDedicatedProcess());
+  // Verify the isolated origin does not receive an NTP site URL scheme.
+  EXPECT_FALSE(
+      site_instance->GetSiteURL().SchemeIs(chrome::kChromeSearchScheme));
 
   // The site URL for the NTP URL should resolve to a chrome-search:// URL via
   // GetEffectiveURL(), even if the NTP URL matches an isolated origin.
-  GURL site_url(content::SiteInstance::GetSiteForURL(context, ntp_url));
-  EXPECT_TRUE(site_url.SchemeIs(chrome::kChromeSearchScheme));
+  scoped_refptr<content::SiteInstance> ntp_site_instance =
+      content::SiteInstance::CreateForURL(context, ntp_url);
+  EXPECT_TRUE(
+      ntp_site_instance->GetSiteURL().SchemeIs(chrome::kChromeSearchScheme));
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.
@@ -164,12 +171,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
       contents->GetMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance()->GetSiteURL(),
+            ntp_site_instance->GetSiteURL());
 
   // Navigating to a non-NTP URL on ntp.com should not result in an Instant
   // process.
   ui_test_utils::NavigateToURL(browser(), isolated_url);
   EXPECT_FALSE(instant_service->IsInstantProcess(
       contents->GetMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance()->GetSiteURL(),
+            site_instance->GetSiteURL());
 }
 
 // Helper class to test window creation from NTP.
@@ -299,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorScheme) {
       ui_test_utils::GetTestUrl(
           base::FilePath(base::FilePath::kCurrentDirectory),
           base::FilePath(FILE_PATH_LITERAL("prefers-color-scheme.html"))));
-  base::string16 tab_title;
+  std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(base::ASCIIToUTF16(ExpectedColorScheme()), tab_title);
 }
@@ -418,7 +429,7 @@ IN_PROC_BROWSER_TEST_P(PrefersContrastTest, PrefersContrast) {
       ui_test_utils::GetTestUrl(
           base::FilePath(base::FilePath::kCurrentDirectory),
           base::FilePath(FILE_PATH_LITERAL("prefers-contrast.html"))));
-  base::string16 tab_title;
+  std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(base::ASCIIToUTF16(ExpectedPrefersContrast()), tab_title);
 }
@@ -465,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, CustomHandler) {
 
   ui_test_utils::NavigateToURL(browser(), GURL("news:something"));
 
-  base::string16 expected_title = base::ASCIIToUTF16("abc.xyz");
+  std::u16string expected_title = u"abc.xyz";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -478,9 +489,9 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, HandlersIgnoredWhenDisabled) {
 
   ui_test_utils::NavigateToURL(browser(), GURL("bitcoin:something"));
 
-  base::string16 tab_title;
+  std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
-  EXPECT_EQ(base::ASCIIToUTF16("about:blank"), tab_title);
+  EXPECT_EQ(u"about:blank", tab_title);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -493,13 +504,61 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
   // If an external program (Chrome) was launched, it will result in a second
   // tab being opened.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-
   // Make sure the protocol handler redirected the navigation.
-  base::string16 expected_title = base::ASCIIToUTF16("mail.google.com");
+  std::u16string expected_title = u"mail.google.com";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 #endif
+
+#if !defined(OS_ANDROID)
+class KeepaliveDurationOnShutdownTest : public InProcessBrowserTest,
+                                        public InstantTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    client_ = static_cast<ChromeContentBrowserClient*>(
+        content::SetBrowserClientForTesting(nullptr));
+    content::SetBrowserClientForTesting(client_);
+  }
+  void TearDownOnMainThread() override {
+    client_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  ChromeContentBrowserClient* client_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DefaultValue) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::TimeDelta());
+}
+
+IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, PolicySettings) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
+
+  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile),
+            base::TimeDelta::FromSeconds(2));
+}
+
+IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
+
+  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile),
+            base::TimeDelta::FromSeconds(2));
+
+  profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 3);
+
+  EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile),
+            base::TimeDelta::FromSeconds(3));
+}
+
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace

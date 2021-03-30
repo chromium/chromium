@@ -165,7 +165,7 @@ bool GpuMemoryBufferImplSharedMemory::IsUsageSupported(gfx::BufferUsage usage) {
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
     case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
     case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
-    case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
       return false;
   }
   NOTREACHED();
@@ -225,7 +225,11 @@ base::OnceClosure GpuMemoryBufferImplSharedMemory::AllocateForTesting(
 }
 
 bool GpuMemoryBufferImplSharedMemory::Map() {
-  DCHECK(!mapped_);
+  base::AutoLock auto_lock(map_lock_);
+  if (map_count_++) {
+    DCHECK(shared_memory_mapping_.IsValid());
+    return true;
+  }
 
   // Map the buffer first time Map() is called then keep it mapped for the
   // lifetime of the buffer. This avoids mapping the buffer unless necessary.
@@ -240,20 +244,20 @@ bool GpuMemoryBufferImplSharedMemory::Map() {
     if (!shared_memory_mapping_.IsValid())
       base::TerminateBecauseOutOfMemory(map_size);
   }
-  mapped_ = true;
   return true;
 }
 
 void* GpuMemoryBufferImplSharedMemory::memory(size_t plane) {
-  DCHECK(mapped_);
+  AssertMapped();
   DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
   return static_cast<uint8_t*>(shared_memory_mapping_.memory()) + offset_ +
          gfx::BufferOffsetForBufferFormat(size_, format_, plane);
 }
 
 void GpuMemoryBufferImplSharedMemory::Unmap() {
-  DCHECK(mapped_);
-  mapped_ = false;
+  base::AutoLock auto_lock(map_lock_);
+  DCHECK_GT(map_count_, 0u);
+  --map_count_;
 }
 
 int GpuMemoryBufferImplSharedMemory::stride(size_t plane) const {

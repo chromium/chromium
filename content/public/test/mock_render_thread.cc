@@ -12,11 +12,13 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/common/associated_interfaces.mojom.h"
+#include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
+#include "content/test/test_render_frame.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_sync_message.h"
 #include "ipc/message_filter.h"
@@ -49,7 +51,7 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
   void GenerateFrameRoutingID(
       GenerateFrameRoutingIDCallback callback) override {
     int routing_id;
-    base::UnguessableToken frame_token;
+    blink::LocalFrameToken frame_token;
     base::UnguessableToken devtools_frame_token;
     RenderThread::Get()->GenerateFrameRoutingID(routing_id, frame_token,
                                                 devtools_frame_token);
@@ -133,6 +135,10 @@ void MockRenderThread::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
 
 void MockRenderThread::AddRoute(int32_t routing_id, IPC::Listener* listener) {}
 
+void MockRenderThread::AttachTaskRunnerToRoute(
+    int32_t routing_id,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {}
+
 void MockRenderThread::RemoveRoute(int32_t routing_id) {}
 
 int MockRenderThread::GenerateRoutingID() {
@@ -141,10 +147,10 @@ int MockRenderThread::GenerateRoutingID() {
 
 bool MockRenderThread::GenerateFrameRoutingID(
     int32_t& routing_id,
-    base::UnguessableToken& frame_token,
+    blink::LocalFrameToken& frame_token,
     base::UnguessableToken& devtools_frame_token) {
   routing_id = GetNextRoutingID();
-  frame_token = base::UnguessableToken::Create();
+  frame_token = blink::LocalFrameToken();
   devtools_frame_token = base::UnguessableToken::Create();
   return true;
 }
@@ -176,9 +182,8 @@ void MockRenderThread::RemoveObserver(RenderThreadObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void MockRenderThread::SetResourceDispatcherDelegate(
-    ResourceDispatcherDelegate* delegate) {
-}
+void MockRenderThread::SetResourceRequestSenderDelegate(
+    blink::WebResourceRequestSenderDelegate* delegate) {}
 
 void MockRenderThread::RecordAction(const base::UserMetricsAction& action) {
 }
@@ -201,10 +206,6 @@ base::WaitableEvent* MockRenderThread::GetShutdownEvent() {
 
 int32_t MockRenderThread::GetClientId() {
   return 1;
-}
-
-bool MockRenderThread::IsOnline() {
-  return true;
 }
 
 void MockRenderThread::SetRendererProcessType(
@@ -244,20 +245,22 @@ int32_t MockRenderThread::GetNextRoutingID() {
 mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
 MockRenderThread::TakeInitialBrowserInterfaceBrokerReceiverForFrame(
     int32_t routing_id) {
-  auto it =
-      frame_routing_id_to_initial_browser_broker_receivers_.find(routing_id);
-  if (it == frame_routing_id_to_initial_browser_broker_receivers_.end())
-    return mojo::NullReceiver();
-  auto browser_broker_receiver = std::move(it->second);
-  frame_routing_id_to_initial_browser_broker_receivers_.erase(it);
-  return browser_broker_receiver;
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+      broker_from_create_child_frame_request;
+  auto it = frame_routing_id_to_initial_browser_brokers_.find(routing_id);
+  if (it != frame_routing_id_to_initial_browser_brokers_.end()) {
+    broker_from_create_child_frame_request = std::move(it->second);
+    frame_routing_id_to_initial_browser_brokers_.erase(it);
+  }
+  return broker_from_create_child_frame_request;
 }
 
 void MockRenderThread::OnCreateChildFrame(
     int32_t child_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker) {
-  frame_routing_id_to_initial_browser_broker_receivers_.emplace(
+  frame_routing_id_to_initial_browser_brokers_.emplace(
       child_routing_id, std::move(browser_interface_broker));
 }
 
@@ -280,36 +283,36 @@ void MockRenderThread::OnCreateWindow(
     const mojom::CreateNewWindowParams& params,
     mojom::CreateNewWindowReply* reply) {
   reply->route_id = GetNextRoutingID();
+  reply->frame = TestRenderFrame::CreateStubFrameReceiver();
   reply->main_frame_route_id = GetNextRoutingID();
-  frame_routing_id_to_initial_browser_broker_receivers_.emplace(
+  frame_routing_id_to_initial_browser_brokers_.emplace(
       reply->main_frame_route_id,
       reply->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
-
-  reply->main_frame_frame_token = base::UnguessableToken::Create();
-  reply->main_frame_widget_route_id = GetNextRoutingID();
   reply->cloned_session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();
 
+  auto widget_params = mojom::CreateFrameWidgetParams::New();
+  widget_params->routing_id = GetNextRoutingID();
   mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
       blink_frame_widget_receiver =
           blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
-
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
   ignore_result(
       blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
-
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
       blink_widget.BindNewEndpointAndPassDedicatedReceiver();
-
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
   ignore_result(blink_widget_host.BindNewEndpointAndPassDedicatedReceiver());
 
-  reply->frame_widget = std::move(blink_frame_widget_receiver);
-  reply->frame_widget_host = blink_frame_widget_host.Unbind();
-  reply->widget = std::move(blink_widget_receiver);
-  reply->widget_host = blink_widget_host.Unbind();
+  widget_params->frame_widget = std::move(blink_frame_widget_receiver);
+  widget_params->frame_widget_host = blink_frame_widget_host.Unbind();
+  widget_params->widget = std::move(blink_widget_receiver);
+  widget_params->widget_host = blink_widget_host.Unbind();
+  widget_params->visual_properties.screen_infos =
+      blink::ScreenInfos(blink::ScreenInfo());
+  reply->widget_params = std::move(widget_params);
 }
 
 }  // namespace content

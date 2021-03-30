@@ -31,7 +31,7 @@ PluginPlaceholderBase::PluginPlaceholderBase(
     const std::string& html_data)
     : content::RenderFrameObserver(render_frame),
       plugin_params_(params),
-      plugin_(WebViewPlugin::Create(render_frame->GetRenderView(),
+      plugin_(WebViewPlugin::Create(render_frame->GetWebFrame()->View(),
                                     this,
                                     render_frame
                                         ? render_frame->GetBlinkPreferences()

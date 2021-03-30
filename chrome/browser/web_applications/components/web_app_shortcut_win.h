@@ -17,7 +17,7 @@ namespace internals {
 
 // Sanitizes |name| and returns a version of it that is safe to use as an
 // on-disk file name.
-base::FilePath GetSanitizedFileName(const base::string16& name);
+base::FilePath GetSanitizedFileName(const std::u16string& name);
 
 // Returns the Windows user-level shortcut paths that are specified in
 // |creation_locations|.
@@ -41,10 +41,10 @@ bool CheckAndSaveIcon(const base::FilePath& icon_file,
 std::vector<base::FilePath> FindAppShortcutsByProfileAndTitle(
     const base::FilePath& shortcut_path,
     const base::FilePath& profile_path,
-    const base::string16& shortcut_name);
+    const std::u16string& shortcut_name);
 
 base::FilePath GetIconFilePath(const base::FilePath& web_app_path,
-                               const base::string16& title);
+                               const std::u16string& title);
 
 void OnShortcutInfoLoadedForSetRelaunchDetails(
     HWND hwnd,

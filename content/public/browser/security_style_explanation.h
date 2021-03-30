@@ -10,7 +10,7 @@
 
 #include "content/common/content_export.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
 
 namespace content {
 
@@ -30,7 +30,7 @@ struct CONTENT_EXPORT SecurityStyleExplanation {
       std::string summary,
       std::string description,
       scoped_refptr<net::X509Certificate> certificate,
-      blink::WebMixedContentContextType mixed_content_type);
+      blink::mojom::MixedContentContextType mixed_content_type);
   SecurityStyleExplanation(std::string title,
                            std::string summary,
                            std::string description,
@@ -51,7 +51,7 @@ struct CONTENT_EXPORT SecurityStyleExplanation {
   // type of mixed content. A value of kNotMixedContent means that the
   // explanation does not relate to mixed content. UI surfaces can use this to
   // customize the display of mixed content explanations.
-  blink::WebMixedContentContextType mixed_content_type;
+  blink::mojom::MixedContentContextType mixed_content_type;
   // |recommendations| contains a list of recommendations for the server to
   // follow.
   std::vector<std::string> recommendations;

@@ -44,7 +44,7 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
           sources,
       content::WebContents* web_contents,
       const GURL& origin,
-      const base::string16 target_name);
+      const std::u16string target_name);
 
   // Returns the calling application name to show in the picker.
   std::string GetCallerDisplayName() const;

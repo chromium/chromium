@@ -10,9 +10,9 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/caption.mojom.h"
@@ -53,6 +53,13 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     if (!controller_)
       controller_ = std::make_unique<CaptionBubbleControllerViews>(browser());
     return controller_.get();
+  }
+
+  CaptionHostImpl* GetCaptionHostImpl() {
+    if (!caption_host_impl_)
+      caption_host_impl_ = std::make_unique<CaptionHostImpl>(
+          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+    return caption_host_impl_.get();
   }
 
   CaptionBubble* GetBubble() {
@@ -146,32 +153,35 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     EXPECT_EQ(bubble_bounds.bottom(), anchor_bounds.bottom() - 20);
   }
 
-  bool OnPartialTranscription(std::string text, int tab_index = 0) {
+  bool OnPartialTranscription(std::string text) {
+    return OnPartialTranscription(text, GetCaptionHostImpl());
+  }
+
+  bool OnPartialTranscription(std::string text,
+                              CaptionHostImpl* caption_host_impl) {
     return GetController()->OnTranscription(
-        chrome::mojom::TranscriptionResult::New(text, false),
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index));
+        caption_host_impl,
+        chrome::mojom::TranscriptionResult::New(text, false));
   }
 
-  bool OnFinalTranscription(std::string text, int tab_index = 0) {
+  bool OnFinalTranscription(std::string text) {
+    return OnFinalTranscription(text, GetCaptionHostImpl());
+  }
+
+  bool OnFinalTranscription(std::string text,
+                            CaptionHostImpl* caption_host_impl) {
     return GetController()->OnTranscription(
-        chrome::mojom::TranscriptionResult::New(text, true),
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index));
+        caption_host_impl, chrome::mojom::TranscriptionResult::New(text, true));
   }
 
-  void ActivateTabAt(int index) {
-    browser()->tab_strip_model()->ActivateTabAt(index);
+  void OnError() { OnError(GetCaptionHostImpl()); }
+
+  void OnError(CaptionHostImpl* caption_host_impl) {
+    GetController()->OnError(caption_host_impl);
   }
 
-  void InsertNewTab() { chrome::AddTabAt(browser(), GURL(), -1, true); }
-
-  void CloseTabAt(int index) {
-    browser()->tab_strip_model()->CloseWebContentsAt(index,
-                                                     TabStripModel::CLOSE_NONE);
-  }
-
-  void OnError(int tab_index = 0) {
-    GetController()->OnError(
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index));
+  void OnAudioStreamEnd() {
+    GetController()->OnAudioStreamEnd(GetCaptionHostImpl());
   }
 
   std::vector<std::string> GetAXLineText() {
@@ -189,6 +199,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<CaptionBubbleControllerViews> controller_;
+  std::unique_ptr<CaptionHostImpl> caption_host_impl_;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsCaptionInBubble) {
@@ -420,28 +431,19 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {
   // Set the error again.
   OnError();
 
-  // The error should not be visible on a new tab.
-  InsertNewTab();
-  ActivateTabAt(1);
-  OnPartialTranscription("Elephants are vegetarians.", 1);
+  // The error should not be visible on a different media stream.
+  auto media_1 = std::make_unique<CaptionHostImpl>(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+  OnPartialTranscription("Elephants are vegetarians.", media_1.get());
   EXPECT_TRUE(GetTitle()->GetVisible());
   EXPECT_TRUE(GetLabel()->GetVisible());
   EXPECT_FALSE(GetErrorMessage()->GetVisible());
 
-  // The error should still be visible when switching back to the tab.
-  ActivateTabAt(0);
+  // The error should still be visible when switching back to the first stream.
+  OnError();
   EXPECT_FALSE(GetTitle()->GetVisible());
   EXPECT_FALSE(GetLabel()->GetVisible());
   EXPECT_TRUE(GetErrorMessage()->GetVisible());
-
-  // The error should disappear when the tab refreshes.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  OnPartialTranscription("Elephants can communicate through seismic signals.");
-  EXPECT_TRUE(GetTitle()->GetVisible());
-  EXPECT_TRUE(GetLabel()->GetVisible());
-  EXPECT_FALSE(GetErrorMessage()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, CloseButtonCloses) {
@@ -457,6 +459,17 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, CloseButtonCloses) {
       "Elephants wander 35 miles a day in search of water");
   EXPECT_FALSE(success);
   EXPECT_EQ("", GetLabelText());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       ClosesOnAudioStreamEnd) {
+  OnPartialTranscription("Giraffes have black tongues that grow to 53 cm.");
+  EXPECT_TRUE(GetCaptionWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  OnAudioStreamEnd();
+  EXPECT_TRUE(GetCaptionWidget());
+  EXPECT_FALSE(IsWidgetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -574,72 +587,253 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, FocusableInTabOrder) {
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       UpdateCaptionTextSize) {
-  int textSize = 16;
-  int lineHeight = 24;
-  int bubbleHeight = 48;
-  int errorIconHeight = 20;
+                       UpdateCaptionStyleTextSize) {
+  int text_size = 16;
+  int line_height = 24;
+  int bubble_height = 48;
+  int error_icon_height = 20;
+  ui::CaptionStyle caption_style;
 
   GetController()->UpdateCaptionStyle(base::nullopt);
   OnPartialTranscription("Hamsters' teeth never stop growing");
-  EXPECT_EQ(textSize, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight);
+  EXPECT_EQ(text_size, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
 
   // Set the text size to 200%.
-  ui::CaptionStyle caption_style;
   caption_style.text_size = "200%";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(textSize * 2, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize * 2, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight * 2, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight * 2, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight * 2);
+  EXPECT_EQ(text_size * 2, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size * 2, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height * 2, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height * 2, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height * 2);
 
   // Set the text size to the empty string.
   caption_style.text_size = "";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(textSize, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight);
+  EXPECT_EQ(text_size, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
 
   // Set the text size to 50% !important.
   caption_style.text_size = "50% !important";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(textSize / 2, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize / 2, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight / 2, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight / 2, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight / 2);
+  EXPECT_EQ(text_size / 2, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size / 2, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height / 2, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height / 2, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height / 2);
 
   // Set the text size to a bad string.
   caption_style.text_size = "Ostriches can run up to 45mph";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(textSize, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight);
+  EXPECT_EQ(text_size, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
 
-  // Set the caption style to nullopt.
-  GetController()->UpdateCaptionStyle(base::nullopt);
-  EXPECT_EQ(textSize, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight);
+  // Set the caption style to a floating point percent.
+  caption_style.text_size = "62.5%";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(text_size * 0.625, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size * 0.625, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height * 0.625, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height * 0.625, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height * 0.625);
 
   // Set the error message.
   caption_style.text_size = "50%";
   GetController()->UpdateCaptionStyle(caption_style);
   OnError();
-  EXPECT_EQ(lineHeight / 2, GetErrorText()->GetLineHeight());
-  EXPECT_EQ(errorIconHeight / 2, GetErrorIcon()->GetImageBounds().height());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), lineHeight / 2);
+  EXPECT_EQ(line_height / 2, GetErrorText()->GetLineHeight());
+  EXPECT_EQ(error_icon_height / 2, GetErrorIcon()->GetImageBounds().height());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), line_height / 2);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       UpdateCaptionStyleFontFamily) {
+#if defined(OS_MAC) || defined(OS_WIN)
+  std::string default_font = "Roboto";
+#else
+  // Testing framework doesn't load all fonts, so Roboto is mapped to sans.
+  std::string default_font = "sans";
+#endif
+
+  ui::CaptionStyle caption_style;
+
+  GetController()->UpdateCaptionStyle(base::nullopt);
+  OnPartialTranscription("Koalas aren't bears: they are marsupials.");
+  EXPECT_EQ(default_font,
+            GetLabel()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ(default_font,
+            GetTitle()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ(default_font,
+            GetErrorText()->font_list().GetPrimaryFont().GetFontName());
+
+  // Set the font family to Helvetica.
+  caption_style.font_family = "Helvetica";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ("Helvetica",
+            GetLabel()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ("Helvetica",
+            GetTitle()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ("Helvetica",
+            GetErrorText()->font_list().GetPrimaryFont().GetFontName());
+
+  // Set the font family to the empty string.
+  caption_style.font_family = "";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_font,
+            GetLabel()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ(default_font,
+            GetTitle()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ(default_font,
+            GetErrorText()->font_list().GetPrimaryFont().GetFontName());
+
+  // Set the font family to Helvetica !important.
+  caption_style.font_family = "Helvetica !important";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ("Helvetica",
+            GetLabel()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ("Helvetica",
+            GetTitle()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ("Helvetica",
+            GetErrorText()->font_list().GetPrimaryFont().GetFontName());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       UpdateCaptionStyleTextColor) {
+  SkColor default_color = SK_ColorWHITE;
+  ui::CaptionStyle caption_style;
+
+  GetController()->UpdateCaptionStyle(base::nullopt);
+  OnPartialTranscription(
+      "Marsupials first evolved in South America about 100 million years ago.");
+  EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to red.
+  caption_style.text_color = "rgba(255,0,0,1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorRED, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorRED, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorRED, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to the empty string.
+  caption_style.text_color = "";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to blue !important with 0.5 opacity.
+  caption_style.text_color = "rgba(0,0,255,0.5) !important";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetLabel()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetTitle()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetErrorText()->GetEnabledColor());
+
+  // Set the text color to a bad string.
+  caption_style.text_color = "green";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to green with spaces between the commas.
+  caption_style.text_color = "rgba(0, 255, 0, 1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorGREEN, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorGREEN, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorGREEN, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to magenta with 0 opacity.
+  caption_style.text_color = "rgba(255,0,255,0)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       UpdateCaptionStyleBackgroundColor) {
+  SkColor default_color = SkColorSetA(gfx::kGoogleGrey900, 230);
+  ui::CaptionStyle caption_style;
+
+  GetController()->UpdateCaptionStyle(base::nullopt);
+  OnPartialTranscription("Most marsupials are nocturnal.");
+  EXPECT_EQ(default_color, GetBubble()->color());
+
+  // Set the window color to red with 0.5 opacity.
+  caption_style.window_color = "rgba(255,0,0,0.5)";
+  caption_style.background_color = "";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SkColorSetA(SK_ColorRED, 127), GetBubble()->color());
+
+  // Set the background color to blue. When no window color is supplied, the
+  // background color is applied to the caption bubble color.
+  caption_style.window_color = "";
+  caption_style.background_color = "rgba(0,0,255,1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorBLUE, GetBubble()->color());
+
+  // Set both to the empty string.
+  caption_style.window_color = "";
+  caption_style.background_color = "";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetBubble()->color());
+
+  // Set the window color to green and the background color to majenta. The
+  // window color is applied to the caption bubble.
+  caption_style.window_color = "rgba(0,255,0,1)";
+  caption_style.background_color = "rgba(255,0,255,1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorGREEN, GetBubble()->color());
+
+  // Set the window color to transparent and the background color to majenta.
+  // The non-transparent color is applied to the caption bubble.
+  caption_style.window_color = "rgba(0,255,0,0)";
+  caption_style.background_color = "rgba(255,0,255,1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorMAGENTA, GetBubble()->color());
+
+  // Set the window color to yellow and the background color to transparent.
+  // The non-transparent color is applied to the caption bubble.
+  caption_style.window_color = "rgba(255,255,0,1)";
+  caption_style.background_color = "rgba(0,0,0,0)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorYELLOW, GetBubble()->color());
+
+  // Set both to transparent.
+  caption_style.window_color = "rgba(255,0,0,0)";
+  caption_style.background_color = "rgba(0,255,0,0)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetBubble()->color());
+
+  // Set the background color to blue !important.
+  caption_style.window_color = "";
+  caption_style.background_color = "rgba(0,0,255,1.0) !important";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorBLUE, GetBubble()->color());
+
+  // Set the background color to a bad string.
+  caption_style.window_color = "";
+  caption_style.background_color = "green";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetBubble()->color());
+
+  // Set the window color to green with spaces between the commas.
+  caption_style.window_color = "";
+  caption_style.background_color = "rgba(0, 255, 0, 1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorGREEN, GetBubble()->color());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -665,14 +859,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesBubble) {
   GetController();
   EXPECT_FALSE(IsWidgetVisible());
 
-  // It is shown if there is an error, and hidden when the page refreshes and
-  // that error goes away.
+  // It is shown if there is an error.
   OnError();
   EXPECT_TRUE(IsWidgetVisible());
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_FALSE(IsWidgetVisible());
 
   // It is shown if there is text, and hidden if the text is removed.
   OnPartialTranscription("Newborn kangaroos are less than 1 in long");
@@ -707,68 +896,42 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesBubble) {
   EXPECT_FALSE(IsWidgetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ChangeActiveTab) {
-  // This test will have three tabs.
-  // Tab 0 will have the text "Polar bears are the largest carnivores on land".
-  // Tab 1 will have the text "A snail can sleep for three years".
-  // Tab 2 will have the text "A rhino's horn is made of hair".
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ChangeMedia) {
+  // This test has two medias.
+  // Media 0 has the text "Polar bears are the largest carnivores on land".
+  // Media 1 has the text "A snail can sleep for two years".
+  CaptionHostImpl* media_0 = GetCaptionHostImpl();
+  auto media_1 = std::make_unique<CaptionHostImpl>(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
 
-  OnPartialTranscription("Polar bears are the largest carnivores on land", 0);
+  // Send final transcription from media 0.
+  OnPartialTranscription("Polar bears are the largest", media_0);
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ("Polar bears are the largest", GetLabelText());
+
+  // Send transcriptions from media 1. Check that the caption bubble now shows
+  // text from media 1.
+  OnPartialTranscription("A snail can sleep", media_1.get());
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ("A snail can sleep", GetLabelText());
+
+  // Send transcription from media 0 again. Check that the caption bubble now
+  // shows text from media 0 and that the final transcription was saved.
+  OnFinalTranscription("Polar bears are the largest carnivores on land",
+                       media_0);
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Polar bears are the largest carnivores on land", GetLabelText());
 
-  // Insert a new tab and switch to it.
-  InsertNewTab();
-  ActivateTabAt(1);
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_EQ("", GetLabelText());
-
-  // Switch back to tab 0.
-  ActivateTabAt(0);
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Polar bears are the largest carnivores on land", GetLabelText());
-
-  // Switch back to tab 1 and send transcriptions.
-  ActivateTabAt(1);
-  OnFinalTranscription("A snail can sleep", 1);
-  OnPartialTranscription("for two years", 1);
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("A snail can sleep for two years", GetLabelText());
-
-  // Send a transcription to tab 2 before activating it.
-  InsertNewTab();
-  OnPartialTranscription("A rhino's horn is made of hair", 2);
-  ActivateTabAt(2);
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("A rhino's horn is made of hair", GetLabelText());
-
-  // Switch back to tab 1 and check that the partial transcription was saved.
-  ActivateTabAt(1);
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("A snail can sleep for two years", GetLabelText());
-
-  // Add a new final transcription.
-  OnFinalTranscription("for three years", 1);
-  EXPECT_EQ("A snail can sleep for three years", GetLabelText());
-
-  // Close tab 1 and check that the bubble is still visible on tabs 0 and 2.
-  CloseTabAt(1);
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("A rhino's horn is made of hair", GetLabelText());
-  ActivateTabAt(0);
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Polar bears are the largest carnivores on land", GetLabelText());
-
-  // Close caption bubble on tab 0 and verify that it is still visible on tab 1.
+  // Close the bubble. Check that the bubble is still visible with media 1.
   ClickButton(GetCloseButton());
   EXPECT_FALSE(IsWidgetVisible());
-  ActivateTabAt(1);
+  OnPartialTranscription("A snail can sleep for two years", media_1.get());
   EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("A rhino's horn is made of hair", GetLabelText());
-  ActivateTabAt(0);
-  EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_EQ("A snail can sleep for two years", GetLabelText());
 
-  // TODO(1055150): Test tab switching when there is an error message.
+  // Send a transcription from media 0. Check that the bubble is still closed.
+  OnPartialTranscription("carnivores on land", media_0);
+  EXPECT_FALSE(IsWidgetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, TruncatesFinalText) {
@@ -788,83 +951,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, TruncatesFinalText) {
   OnFinalTranscription("a ");
   EXPECT_EQ(text.substr(11000, 15000) + "a ", GetLabelText());
   EXPECT_EQ(9u, GetNumLinesInLabel());
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, TabNavigation) {
-  ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com"));
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  OnPartialTranscription("Elephant calves");
-  OnFinalTranscription("Elephant calves can stand within 20 minutes of birth");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Elephant calves can stand within 20 minutes of birth",
-            GetLabelText());
-
-  // The caption bubble disappears when the tab navigates to a new page.
-  ui_test_utils::NavigateToURL(browser(), GURL("http://www.youtube.com"));
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // The caption bubble reappears when a transcription is received on the new
-  // page.
-  OnFinalTranscription("A group of toads is called a knot");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("A group of toads is called a knot", GetLabelText());
-
-  // The caption bubble disappears when the tab refreshes.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // The caption bubble reappears when a transcription is received.
-  OnFinalTranscription("Lemurs, like dogs, have wet noses");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Lemurs, like dogs, have wet noses", GetLabelText());
-
-  // The caption bubble disappears when the tab goes back.
-  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // The caption bubble reappears when a transcription is received.
-  OnFinalTranscription("A blue whale's tongue weighs more than most elephants");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("A blue whale's tongue weighs more than most elephants",
-            GetLabelText());
-
-  // The caption bubble disappears when the tab goes forward.
-  chrome::GoForward(browser(), WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // The caption bubble reappears when a transcription is received.
-  OnFinalTranscription("All polar bears are left-pawed");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("All polar bears are left-pawed", GetLabelText());
-
-  // The caption bubble disappears after being closed, and reappears when a
-  // transcription is received after a navigation.
-  ClickButton(GetCloseButton());
-  EXPECT_FALSE(IsWidgetVisible());
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_FALSE(IsWidgetVisible());
-  OnFinalTranscription("Rats laugh when they are tickled");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Rats laugh when they are tickled", GetLabelText());
-
-  // The caption bubble is not affected if a navigation occurs on a different
-  // tab.
-  chrome::Reload(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Rats laugh when they are tickled", GetLabelText());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -891,12 +977,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_FALSE(GetExpandButton()->GetVisible());
   EXPECT_EQ(7 * line_height, GetLabel()->GetBoundsInScreen().height());
 
-  // Switch tabs. The bubble should remain expanded.
-  InsertNewTab();
-  ActivateTabAt(1);
-  EXPECT_FALSE(IsWidgetVisible());
-
-  OnPartialTranscription("Nearly all ants are female.", 1);
+  // Switch media. The bubble should remain expanded.
+  auto media_1 = std::make_unique<CaptionHostImpl>(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+  OnPartialTranscription("Nearly all ants are female.", media_1.get());
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
   EXPECT_FALSE(GetExpandButton()->GetVisible());
   EXPECT_EQ(7 * line_height, GetLabel()->GetBoundsInScreen().height());
@@ -907,12 +991,13 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_EQ(line_height, GetLabel()->GetBoundsInScreen().height());
 
   // The expand and collapse buttons are not visible when there is an error.
-  OnError(1);
+  OnError(media_1.get());
   EXPECT_FALSE(GetCollapseButton()->GetVisible());
   EXPECT_FALSE(GetExpandButton()->GetVisible());
 
   // Clear the error message. The expand button should appear.
-  OnPartialTranscription("An ant can lift 20 times its own body weight.", 1);
+  OnPartialTranscription("An ant can lift 20 times its own body weight.",
+                         media_1.get());
   EXPECT_TRUE(GetExpandButton()->GetVisible());
   EXPECT_FALSE(GetCollapseButton()->GetVisible());
   EXPECT_EQ(line_height, GetLabel()->GetBoundsInScreen().height());
@@ -978,31 +1063,21 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       AccessibleTextClearsWhenTabRefreshes) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  OnPartialTranscription("Newfoundlands are amazing lifeguards.");
-  EXPECT_EQ(1u, GetAXLineText().size());
-  EXPECT_EQ("Newfoundlands are amazing lifeguards.", GetAXLineText()[0]);
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_EQ(0u, GetAXLineText().size());
-}
+                       AccessibleTextChangesWhenMediaChanges) {
+  CaptionHostImpl* media_0 = GetCaptionHostImpl();
+  auto media_1 = std::make_unique<CaptionHostImpl>(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
 
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       AccessibleTextChangesWhenTabChanges) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  OnPartialTranscription("3 dogs survived the Titanic sinking.");
+  OnPartialTranscription("3 dogs survived the Titanic sinking.", media_0);
   EXPECT_EQ(1u, GetAXLineText().size());
   EXPECT_EQ("3 dogs survived the Titanic sinking.", GetAXLineText()[0]);
 
-  InsertNewTab();
-  ActivateTabAt(1);
-  OnFinalTranscription("30% of Dalmations are deaf in one ear.", 1);
+  OnFinalTranscription("30% of Dalmations are deaf in one ear.", media_1.get());
   EXPECT_EQ(1u, GetAXLineText().size());
   EXPECT_EQ("30% of Dalmations are deaf in one ear.", GetAXLineText()[0]);
 
-  ActivateTabAt(0);
+  OnPartialTranscription("3 dogs survived the Titanic sinking.", media_0);
   EXPECT_EQ(1u, GetAXLineText().size());
   EXPECT_EQ("3 dogs survived the Titanic sinking.", GetAXLineText()[0]);
 }

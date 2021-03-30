@@ -183,7 +183,7 @@ bool WriteConfig(const std::string& content) {
   // Extract the unprivileged fields from the configuration.
   base::DictionaryValue unprivileged_config_dict;
   for (const char* key : kUnprivilegedConfigKeys) {
-    base::string16 value;
+    std::u16string value;
     if (config_dict->GetString(key, &value)) {
       unprivileged_config_dict.SetString(key, value);
     }

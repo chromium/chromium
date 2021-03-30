@@ -16,6 +16,7 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/account_id/account_id.h"
@@ -47,6 +48,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
     // observers have been notified with this.
     virtual void OnDeskRemoved(const Desk* desk) = 0;
 
+    // Called when the desk at |old_index| is reordered to |new_index|.
+    virtual void OnDeskReordered(int old_index, int new_index) = 0;
+
     // Called when the |activated| desk gains activation from the |deactivated|
     // desk.
     virtual void OnDeskActivationChanged(const Desk* activated,
@@ -70,11 +74,15 @@ class ASH_EXPORT DesksController : public DesksHelper,
   static DesksController* Get();
 
   // Returns the default name for a desk at |desk_index|.
-  static base::string16 GetDeskDefaultName(size_t desk_index);
+  static std::u16string GetDeskDefaultName(size_t desk_index);
 
   const std::vector<std::unique_ptr<Desk>>& desks() const { return desks_; }
 
   const Desk* active_desk() const { return active_desk_; }
+
+  const base::flat_set<aura::Window*>& visible_on_all_desks_windows() const {
+    return visible_on_all_desks_windows_;
+  }
 
   DeskAnimationBase* animation() const { return animation_.get(); }
 
@@ -82,10 +90,20 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // switch animation is in progress.
   const Desk* GetTargetActiveDesk() const;
 
+  // Returns the visible on all desks windows that reside on |root_window|.
+  base::flat_set<aura::Window*> GetVisibleOnAllDesksWindowsOnRoot(
+      aura::Window* root_window) const;
+
   // Restores the primary user's activate desk at active_desk_index.
   void RestorePrimaryUserActiveDeskIndex(int active_desk_index);
 
-  // Destroys any pending animations in preparation for shutdown.
+  // Restacks the visible on all desks windows on the active desks and notifies
+  // all desks of content change. Should be called during user switch when the
+  // new user's windows have been shown.
+  void OnNewUserShown();
+
+  // Destroys any pending animations in preparation for shutdown and save desk
+  // metrics.
   void Shutdown();
 
   void AddObserver(Observer* observer);
@@ -103,11 +121,11 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // there is at least one single desk at any time.
   bool CanRemoveDesks() const;
 
-  // Returns the next / previous desks to the currently active desk. Returns
-  // nullptr if the active desk is the first on the left or the last on the
-  // right, and previous and next desks are requested respectively.
-  Desk* GetNextDesk() const;
-  Desk* GetPreviousDesk() const;
+  // Returns the next / previous desks to the target / currently active desk.
+  // Returns nullptr if the active desk is the first on the left or the last on
+  // the right, and previous and next desks are requested respectively.
+  Desk* GetNextDesk(bool use_target_active_desk = true) const;
+  Desk* GetPreviousDesk(bool use_target_active_desk = true) const;
 
   // Creates a new desk. CanCreateDesks() must be checked before calling this.
   void NewDesk(DesksCreationRemovalSource source);
@@ -117,6 +135,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // This will trigger the `DeskRemovalAnimation` if the active desk is being
   // removed outside of overview.
   void RemoveDesk(const Desk* desk, DesksCreationRemovalSource source);
+
+  // Reorder the desk at |old_index| to |new_index|.
+  void ReorderDesk(int old_index, int new_index);
 
   // Performs the desk switch animation on all root windows to activate the
   // given |desk| and to deactivate the currently active one. |desk| has to be
@@ -145,24 +166,45 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // |target_root| is provided if |window| is desired to be moved to another
   // desk on another display, otherwise, you can just provide
   // |window->GetRootWindow()| if the window should stay on the same display.
-  // If |window| is minimized, it will be unminimized after it's moved to
-  // |target_desk|.
-  // Returns true on success, false otherwise (e.g. if |window| doesn't belong
-  // to the active desk).
+  // If |window| is minimized and isn't visible on all desks, it will be
+  // unminimized after it's moved to |target_desk|. Returns true on success,
+  // false otherwise (e.g. if |window| doesn't belong to the active desk or
+  // |window| is visible on all desks and user is manually moving it). If
+  // |window| is visible on all desks and |source| is kShortcut, it will be made
+  // not visible on all desks.
   bool MoveWindowFromActiveDeskTo(aura::Window* window,
                                   Desk* target_desk,
                                   aura::Window* target_root,
                                   DesksMoveWindowFromActiveDeskSource source);
+
+  // Adds |window| to |visible_on_all_desks_windows_|.
+  void AddVisibleOnAllDesksWindow(aura::Window* window);
+
+  // Removes |window| if it is in |visible_on_all_desks_windows_|.
+  void MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window);
+
+  // Notifies each desk in |desks_| that their contents has changed.
+  void NotifyAllDesksForContentChanged();
 
   // Reverts the name of the given |desk| to the default value (i.e. "Desk 1",
   // "Desk 2", ... etc.) according to its position in the |desks_| list, as if
   // it was never modified by users.
   void RevertDeskNameToDefault(Desk* desk);
 
-  // Restores the desk at |index| to the given |name|. This is only for user-
-  // modified desk names, and hence |name| should never be empty since users are
-  // not allowed to set empty names.
-  void RestoreNameOfDeskAtIndex(base::string16 name, size_t index);
+  // Restores the desk at |index| to the given |name|. This is only for
+  // user-modified desk names, and hence |name| should never be empty since
+  // users are not allowed to set empty names.
+  void RestoreNameOfDeskAtIndex(std::u16string name, size_t index);
+
+  // Restores the creation time of the desk at |index|.
+  void RestoreCreationTimeOfDeskAtIndex(base::Time creation_time, size_t index);
+
+  // Restores the visited metrics of the desk at |index|. If it has been more
+  // than one day since |last_day_visited|, record and reset the consecutive
+  // daily visits metrics.
+  void RestoreVisitedMetricsOfDeskAtIndex(int first_day_visited,
+                                          int last_day_visited,
+                                          size_t index);
 
   // Called explicitly by the RootWindowController when a root window has been
   // added or about to be removed in order to update all the available desks.
@@ -171,12 +213,21 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   int GetDeskIndex(const Desk* desk) const;
 
+  // Gets the container of the desk at |desk_index| in a specific screen with a
+  // |target_root|. If desk_index is invalid, it returns nullptr.
+  aura::Window* GetDeskContainer(aura::Window* target_root, int desk_index);
+
   // DesksHelper:
   bool BelongsToActiveDesk(aura::Window* window) override;
   int GetActiveDeskIndex() const override;
-  base::string16 GetDeskName(int index) const override;
+  std::u16string GetDeskName(int index) const override;
   int GetNumberOfDesks() const override;
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
+
+  // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
+  // desks. This is called when desks are added, removed or reordered to update
+  // the names based on the desks order.
+  void UpdateDesksDefaultNames();
 
   // ::wm::ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,
@@ -189,6 +240,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnFirstSessionStarted() override;
+
+  // Fires the timer used for recording desk traversals immediately.
+  void FireMetricsTimerForTesting();
 
  private:
   class DeskTraversalsMetricsHelper;
@@ -214,6 +268,15 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // Removes `desk` without animation.
   void RemoveDeskInternal(const Desk* desk, DesksCreationRemovalSource source);
 
+  // Moves all the windows that are visible on all desks that currently
+  // reside on |active_desk_| to |new_desk|.
+  void MoveVisibleOnAllDesksWindowsFromActiveDeskTo(Desk* new_desk);
+
+  // Iterates through the visible on all desks windows on the active desk
+  // and restacks them based on their position in the global MRU tracker. This
+  // should be called after desk activation.
+  void RestackVisibleOnAllDesksWindowsOnActiveDesk();
+
   // Returns the desk to which |window| belongs or nullptr if it doesn't belong
   // to any desk.
   const Desk* FindDeskOfWindow(aura::Window* window) const;
@@ -224,11 +287,6 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   void ReportDesksCountHistogram() const;
 
-  // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
-  // desks. This is called when desks are added or removed to update the names
-  // based on the desks order.
-  void UpdateDesksDefaultNames();
-
   std::vector<std::unique_ptr<Desk>> desks_;
 
   Desk* active_desk_ = nullptr;
@@ -238,6 +296,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   // Stores the per-user last active desk index.
   base::flat_map<AccountId, int> user_to_active_desk_index_;
+
+  // Stores the visible on all desks windows.
+  base::flat_set<aura::Window*> visible_on_all_desks_windows_;
 
   // True when desks addition, removal, or activation change are in progress.
   // This can be checked when overview mode is active to avoid exiting overview

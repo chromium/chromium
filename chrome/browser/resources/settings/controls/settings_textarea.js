@@ -6,8 +6,16 @@
  * @fileoverview 'settings-textarea' is a component similar to native textarea,
  * and inherits styling from cr-input.
  */
+import '//resources/cr_elements/hidden_style_css.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_input/cr_input_style_css.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
   is: 'settings-textarea',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     /**

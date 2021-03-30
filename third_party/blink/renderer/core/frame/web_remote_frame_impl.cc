@@ -6,11 +6,10 @@
 
 #include <utility>
 
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 #include "third_party/blink/public/web/web_performance.h"
@@ -19,12 +18,13 @@
 #include "third_party/blink/renderer/core/execution_context/remote_security_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
-#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client_impl.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_owner.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
@@ -48,7 +48,7 @@ WebRemoteFrame* WebRemoteFrame::Create(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token) {
+    const RemoteFrameToken& frame_token) {
   return MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
       frame_token);
@@ -59,11 +59,12 @@ WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener) {
   return WebRemoteFrameImpl::CreateMainFrame(
       web_view, client, interface_registry, associated_interface_provider,
-      frame_token, opener);
+      frame_token, devtools_frame_token, opener);
 }
 
 WebRemoteFrame* WebRemoteFrame::CreateForPortal(
@@ -71,11 +72,12 @@ WebRemoteFrame* WebRemoteFrame::CreateForPortal(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     const WebElement& portal_element) {
-  return WebRemoteFrameImpl::CreateForPortal(scope, client, interface_registry,
-                                             associated_interface_provider,
-                                             frame_token, portal_element);
+  return WebRemoteFrameImpl::CreateForPortal(
+      scope, client, interface_registry, associated_interface_provider,
+      frame_token, devtools_frame_token, portal_element);
 }
 
 // static
@@ -84,7 +86,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener) {
   WebRemoteFrameImpl* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
       mojom::blink::TreeScopeType::kDocument, client, interface_registry,
@@ -101,7 +104,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
   frame->InitializeCoreFrame(
       page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
       g_null_atom,
-      opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr);
+      opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
+      devtools_frame_token);
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
   ToCoreFrame(*frame)->SetOpenerDoNotNotify(opener_frame);
   return frame;
@@ -112,7 +116,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortal(
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     const WebElement& portal_element) {
   auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
@@ -126,7 +131,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortal(
   LocalFrame* host_frame = portal->GetDocument().GetFrame();
   frame->InitializeCoreFrame(*host_frame->GetPage(), portal, nullptr, nullptr,
                              FrameInsertType::kInsertInConstructor, g_null_atom,
-                             &host_frame->window_agent_factory());
+                             &host_frame->window_agent_factory(),
+                             devtools_frame_token);
 
   return frame;
 }
@@ -174,13 +180,13 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     const WebString& name,
     const FramePolicy& frame_policy,
     WebLocalFrameClient* client,
-    blink::InterfaceRegistry* interface_registry,
+    InterfaceRegistry* interface_registry,
     WebFrame* previous_sibling,
     const WebFrameOwnerProperties& frame_owner_properties,
     mojom::blink::FrameOwnerElementType frame_owner_element_type,
-    const base::UnguessableToken& frame_token,
+    const LocalFrameToken& frame_token,
     WebFrame* opener,
-    std::unique_ptr<blink::WebPolicyContainer> policy_container) {
+    std::unique_ptr<WebPolicyContainer> policy_container) {
   auto* child = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
       frame_token);
@@ -209,14 +215,41 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
     WebFrame* previous_sibling,
     FrameInsertType insert_type,
     const AtomicString& name,
-    WindowAgentFactory* window_agent_factory) {
+    WindowAgentFactory* window_agent_factory,
+    const base::UnguessableToken& devtools_frame_token) {
   Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
   Frame* previous_sibling_frame =
       previous_sibling ? ToCoreFrame(*previous_sibling) : nullptr;
+
+  // If this is not a top-level frame, we need to send FrameVisualProperties to
+  // the remote renderer process. Some of the properties are inherited from the
+  // WebFrameWidget containing this frame, and this is true for regular frames
+  // in the frame tree as well as for portals, which are not in the frame tree;
+  // hence the code to traverse up through FrameOwner.
+  WebFrameWidget* ancestor_widget = nullptr;
+  if (parent) {
+    if (parent->IsWebLocalFrame()) {
+      ancestor_widget =
+          To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidget();
+    }
+  } else if (owner && owner->IsLocal()) {
+    // Never gets to this point without |owner| being a portal element.
+    auto* owner_element = To<HTMLFrameOwnerElement>(owner);
+    DCHECK(owner_element->IsHTMLPortalElement());
+    LocalFrame& local_frame =
+        owner_element->GetDocument().GetFrame()->LocalFrameRoot();
+    ancestor_widget = WebLocalFrameImpl::FromFrame(local_frame)->FrameWidget();
+  }
+
   SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
       frame_client_.Get(), page, owner, parent_frame, previous_sibling_frame,
-      insert_type, GetFrameToken(), window_agent_factory, interface_registry_,
-      associated_interface_provider_));
+      insert_type, GetRemoteFrameToken(), window_agent_factory,
+      interface_registry_, associated_interface_provider_, ancestor_widget,
+      devtools_frame_token));
+
+  if (ancestor_widget)
+    InitializeFrameVisualProperties(ancestor_widget, View());
+
   GetFrame()->CreateView();
   frame_->Tree().SetName(name);
 }
@@ -227,9 +260,10 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
     const FramePolicy& frame_policy,
     mojom::blink::FrameOwnerElementType frame_owner_element_type,
     WebRemoteFrameClient* client,
-    blink::InterfaceRegistry* interface_registry,
+    InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token,
+    const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener) {
   auto* child = MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
@@ -245,21 +279,32 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
 
   child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, this, LastChild(),
                              FrameInsertType::kInsertInConstructor, name,
-                             window_agent_factory);
+                             window_agent_factory, devtools_frame_token);
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
   ToCoreFrame(*child)->SetOpenerDoNotNotify(opener_frame);
   return child;
 }
 
-void WebRemoteFrameImpl::SetCcLayer(cc::Layer* layer,
-                                    bool prevent_contents_opaque_changes,
-                                    bool is_surface_layer) {
-  GetFrame()->SetCcLayer(layer, prevent_contents_opaque_changes,
-                         is_surface_layer);
-}
-
 void WebRemoteFrameImpl::SetCoreFrame(RemoteFrame* frame) {
   frame_ = frame;
+}
+
+void WebRemoteFrameImpl::InitializeFrameVisualProperties(
+    WebFrameWidget* ancestor_widget,
+    WebView* web_view) {
+  FrameVisualProperties visual_properties;
+  visual_properties.zoom_level = web_view->ZoomLevel();
+  visual_properties.page_scale_factor = ancestor_widget->PageScaleInMainFrame();
+  visual_properties.is_pinch_gesture_active =
+      ancestor_widget->PinchGestureActiveInMainFrame();
+  visual_properties.screen_info = ancestor_widget->GetOriginalScreenInfo();
+  visual_properties.visible_viewport_size =
+      ancestor_widget->VisibleViewportSizeInDIPs();
+  const WebVector<gfx::Rect>& window_segments =
+      ancestor_widget->WindowSegments();
+  visual_properties.root_widget_window_segments.assign(window_segments.begin(),
+                                                       window_segments.end());
+  GetFrame()->InitializeFrameVisualProperties(visual_properties);
 }
 
 WebRemoteFrameImpl* WebRemoteFrameImpl::FromFrame(RemoteFrame& frame) {
@@ -290,24 +335,10 @@ void WebRemoteFrameImpl::SetReplicatedName(const WebString& name,
   GetFrame()->SetReplicatedName(name, unique_name);
 }
 
-void WebRemoteFrameImpl::SetReplicatedFeaturePolicyHeader(
-    const ParsedFeaturePolicy& parsed_header) {
+void WebRemoteFrameImpl::SetReplicatedPermissionsPolicyHeader(
+    const ParsedPermissionsPolicy& parsed_header) {
   DCHECK(GetFrame());
-  GetFrame()->SetReplicatedFeaturePolicyHeader(parsed_header);
-}
-
-void WebRemoteFrameImpl::AddReplicatedContentSecurityPolicyHeader(
-    const WebString& header_value,
-    network::mojom::ContentSecurityPolicyType type,
-    network::mojom::ContentSecurityPolicySource source) {
-  GetFrame()
-      ->GetSecurityContext()
-      ->GetContentSecurityPolicy()
-      ->AddPolicyFromHeaderValue(header_value, type, source);
-}
-
-void WebRemoteFrameImpl::ResetReplicatedContentSecurityPolicy() {
-  GetFrame()->ResetReplicatedContentSecurityPolicy();
+  GetFrame()->SetReplicatedPermissionsPolicyHeader(parsed_header);
 }
 
 void WebRemoteFrameImpl::SetReplicatedInsecureRequestPolicy(
@@ -326,11 +357,6 @@ void WebRemoteFrameImpl::SetReplicatedAdFrameType(
     mojom::blink::AdFrameType ad_frame_type) {
   DCHECK(GetFrame());
   GetFrame()->SetReplicatedAdFrameType(ad_frame_type);
-}
-
-void WebRemoteFrameImpl::SetVisualProperties(
-    const blink::FrameVisualProperties& properties) {
-  GetFrame()->SetVisualProperties(properties);
 }
 
 void WebRemoteFrameImpl::DidStartLoading() {
@@ -358,8 +384,16 @@ v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
       ->GlobalProxyIfNotDetached();
 }
 
-WebRect WebRemoteFrameImpl::GetCompositingRect() {
+gfx::Rect WebRemoteFrameImpl::GetCompositingRect() {
   return GetFrame()->View()->GetCompositingRect();
+}
+
+void WebRemoteFrameImpl::SynchronizeVisualProperties() {
+  GetFrame()->SynchronizeVisualProperties();
+}
+
+void WebRemoteFrameImpl::ResendVisualProperties() {
+  GetFrame()->ResendVisualProperties();
 }
 
 float WebRemoteFrameImpl::GetCompositingScaleFactor() {
@@ -370,12 +404,21 @@ WebString WebRemoteFrameImpl::UniqueName() const {
   return GetFrame()->UniqueName();
 }
 
+const FrameVisualProperties&
+WebRemoteFrameImpl::GetPendingVisualPropertiesForTesting() const {
+  return GetFrame()->GetPendingVisualPropertiesForTesting();
+}
+
+bool WebRemoteFrameImpl::IsAdSubframe() const {
+  return GetFrame()->IsAdSubframe();
+}
+
 WebRemoteFrameImpl::WebRemoteFrameImpl(
     mojom::blink::TreeScopeType scope,
     WebRemoteFrameClient* client,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    const base::UnguessableToken& frame_token)
+    const RemoteFrameToken& frame_token)
     : WebRemoteFrame(scope, frame_token),
       client_(client),
       frame_client_(MakeGarbageCollected<RemoteFrameClientImpl>(this)),

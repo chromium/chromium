@@ -36,7 +36,7 @@ void PowerMonitorBroadcastSource::Init(
   }
 }
 
-bool PowerMonitorBroadcastSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorBroadcastSource::IsOnBatteryPower() {
   return client_->last_reported_on_battery_power_state();
 }
 
@@ -46,39 +46,21 @@ PowerMonitorBroadcastSource::Client::~Client() {}
 
 void PowerMonitorBroadcastSource::Client::Init(
     mojo::PendingRemote<mojom::PowerMonitor> remote_monitor) {
-  base::AutoLock auto_lock(is_shutdown_lock_);
-  if (is_shutdown_)
-    return;
   mojo::Remote<mojom::PowerMonitor> power_monitor(std::move(remote_monitor));
   power_monitor->AddClient(receiver_.BindNewPipeAndPassRemote());
 }
 
-void PowerMonitorBroadcastSource::Client::Shutdown() {
-  base::AutoLock auto_lock(is_shutdown_lock_);
-  DCHECK(!is_shutdown_);
-  is_shutdown_ = true;
-}
-
 void PowerMonitorBroadcastSource::Client::PowerStateChange(
     bool on_battery_power) {
-  base::AutoLock auto_lock(is_shutdown_lock_);
-  if (is_shutdown_)
-    return;
   last_reported_on_battery_power_state_ = on_battery_power;
   ProcessPowerEvent(PowerMonitorSource::POWER_STATE_EVENT);
 }
 
 void PowerMonitorBroadcastSource::Client::Suspend() {
-  base::AutoLock auto_lock(is_shutdown_lock_);
-  if (is_shutdown_)
-    return;
   ProcessPowerEvent(PowerMonitorSource::SUSPEND_EVENT);
 }
 
 void PowerMonitorBroadcastSource::Client::Resume() {
-  base::AutoLock auto_lock(is_shutdown_lock_);
-  if (is_shutdown_)
-    return;
   ProcessPowerEvent(PowerMonitorSource::RESUME_EVENT);
 }
 

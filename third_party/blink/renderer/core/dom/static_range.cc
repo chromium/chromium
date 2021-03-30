@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/static_range.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_static_range_init.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -38,6 +39,27 @@ StaticRange* StaticRange::Create(const EphemeralRange& range) {
       range.StartPosition().ComputeOffsetInContainerNode(),
       range.EndPosition().ComputeContainerNode(),
       range.EndPosition().ComputeOffsetInContainerNode());
+}
+
+StaticRange* StaticRange::Create(Document& document,
+                                 const StaticRangeInit* static_range_init,
+                                 ExceptionState& exception_state) {
+  DCHECK(static_range_init);
+
+  if (static_range_init->startContainer()->IsDocumentTypeNode() ||
+      static_range_init->startContainer()->IsAttributeNode() ||
+      static_range_init->endContainer()->IsDocumentTypeNode() ||
+      static_range_init->endContainer()->IsAttributeNode()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidNodeTypeError,
+        "Neither startContainer nor endContainer can be a DocumentType or "
+        "Attribute node.");
+  }
+
+  return MakeGarbageCollected<StaticRange>(
+      document, static_range_init->startContainer(),
+      static_range_init->startOffset(), static_range_init->endContainer(),
+      static_range_init->endOffset());
 }
 
 void StaticRange::setStart(Node* container, unsigned offset) {

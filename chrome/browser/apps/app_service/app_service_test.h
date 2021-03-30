@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -23,6 +22,8 @@ class AppServiceProxy;
 class AppServiceTest {
  public:
   AppServiceTest();
+  AppServiceTest(const AppServiceTest&) = delete;
+  AppServiceTest& operator=(const AppServiceTest&) = delete;
   ~AppServiceTest();
 
   void SetUp(Profile* profile);
@@ -49,8 +50,6 @@ class AppServiceTest {
   AppServiceProxy* app_service_proxy_ = nullptr;
 
   Profile* profile_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceTest);
 };
 
 }  // namespace apps

@@ -18,6 +18,14 @@ class MockDynamicTriggerConditions : public DynamicTriggerConditions {
   MOCK_CONST_METHOD1(GetSelectorMatches,
                      base::Optional<bool>(const Selector& selector));
 
+  MOCK_METHOD1(SetURL, void(const GURL& url));
+
+  MOCK_CONST_METHOD1(GetPathPatternMatches,
+                     bool(const std::string& path_pattern));
+
+  MOCK_CONST_METHOD1(GetDomainAndSchemeMatches,
+                     bool(const GURL& domain_with_scheme));
+
   void Update(WebController* web_controller,
               base::OnceCallback<void(void)> callback) override {
     OnUpdate(web_controller, callback);

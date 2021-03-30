@@ -16,7 +16,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
 #include "ui/resources/grit/webui_generated_resources.h"
-#include "ui/resources/grit/webui_resources.h"
 
 namespace webui {
 
@@ -59,7 +58,7 @@ void AppendJsTemplateSourceHtml(std::string* output) {
   // fetch and cache the pointer of the jstemplate resource source text.
   std::string jstemplate_src =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_WEBUI_JS_JSTEMPLATE_COMPILED_JS);
+          IDR_JSTEMPLATE_JSTEMPLATE_COMPILED_JS);
 
   if (jstemplate_src.empty()) {
     NOTREACHED() << "Unable to get jstemplate src";

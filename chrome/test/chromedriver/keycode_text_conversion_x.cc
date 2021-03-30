@@ -104,7 +104,7 @@ int KeyboardCodeToXKeyCode(ui::KeyboardCode key_code) {
 bool GetXModifierMask(x11::Connection* connection,
                       int modifier,
                       x11::KeyButMask* x_modifier) {
-  auto mod_map = connection->GetModifierMapping({}).Sync();
+  auto mod_map = connection->GetModifierMapping().Sync();
   if (!mod_map)
     return false;
   bool found = false;
@@ -178,11 +178,11 @@ bool ConvertKeyCodeToText(ui::KeyboardCode key_code,
   if (!character)
     *text = std::string();
   else
-    *text = base::UTF16ToUTF8(base::string16(1, character));
+    *text = base::UTF16ToUTF8(std::u16string(1, character));
   return true;
 }
 
-bool ConvertCharToKeyCode(base::char16 key,
+bool ConvertCharToKeyCode(char16_t key,
                           ui::KeyboardCode* key_code,
                           int* necessary_modifiers,
                           std::string* error_msg) {
@@ -191,7 +191,7 @@ bool ConvertCharToKeyCode(base::char16 key,
                                      error_msg);
   }
 
-  std::string key_string(base::UTF16ToUTF8(base::string16(1, key)));
+  std::string key_string(base::UTF16ToUTF8(std::u16string(1, key)));
   bool found = false;
   ui::KeyboardCode test_code;
   int test_modifiers;

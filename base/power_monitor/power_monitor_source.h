@@ -14,8 +14,6 @@
 
 namespace base {
 
-class PowerMonitor;
-
 // Communicates power state changes to the power monitor.
 class BASE_EXPORT PowerMonitorSource {
  public:
@@ -29,15 +27,17 @@ class BASE_EXPORT PowerMonitorSource {
     RESUME_EVENT        // The system is being resumed.
   };
 
-  // Is the computer currently on battery power. Can be called on any thread.
-  bool IsOnBatteryPower();
-
   // Reads the current DeviceThermalState, if available on the platform.
   // Otherwise, returns kUnknown.
-  virtual PowerObserver::DeviceThermalState GetCurrentThermalState();
+  virtual PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
 
   // Update the result of thermal state.
-  virtual void SetCurrentThermalState(PowerObserver::DeviceThermalState state);
+  virtual void SetCurrentThermalState(
+      PowerThermalObserver::DeviceThermalState state);
+
+  // Platform-specific method to check whether the system is currently
+  // running on battery power.
+  virtual bool IsOnBatteryPower() = 0;
 
 #if defined(OS_ANDROID)
   // Read and return the current remaining battery capacity (microampere-hours).
@@ -45,7 +45,7 @@ class BASE_EXPORT PowerMonitorSource {
 #endif  // defined(OS_ANDROID)
 
   static const char* DeviceThermalStateToString(
-      PowerObserver::DeviceThermalState state);
+      PowerThermalObserver::DeviceThermalState state);
 
  protected:
   friend class PowerMonitorTest;
@@ -57,26 +57,9 @@ class BASE_EXPORT PowerMonitorSource {
   // the UI thread or, in child processes, the IO thread.
   static void ProcessPowerEvent(PowerEvent event_id);
   static void ProcessThermalEvent(
-      PowerObserver::DeviceThermalState new_thermal_state);
-
-  // Platform-specific method to check whether the system is currently
-  // running on battery power.  Returns true if running on batteries,
-  // false otherwise.
-  virtual bool IsOnBatteryPowerImpl() = 0;
-
-  // Sets the initial state for |on_battery_power_|, which defaults to false
-  // since not all implementations can provide the value at construction. May
-  // only be called before a base::PowerMonitor has been created.
-  void SetInitialOnBatteryPowerState(bool on_battery_power);
+      PowerThermalObserver::DeviceThermalState new_thermal_state);
 
  private:
-  bool on_battery_power_ GUARDED_BY(battery_lock_) = false;
-  bool suspended_ = false;
-
-  // This lock guards access to on_battery_power_, to ensure that
-  // IsOnBatteryPower can be called from any thread.
-  Lock battery_lock_;
-
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorSource);
 };
 

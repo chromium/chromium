@@ -1,22 +1,14 @@
-# https://crbug.com/ : Fix this failed and crashed tests.
+# Tests that cannot work on Wayland.
 
-# Failed tests.
+# Tests activation of windows.  Wayland doesn't allow the client to activate its
+# windows so this test makes no sense.
 -DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura
+
+# Tests behaviour that is specific for X11.
 -DesktopWidgetTest.GetWindowPlacement
--EditableComboboxTest.AltLeftOrRightDoesNothing
--EditableComboboxTest.CtrlLeftOrRightMovesToNextWords
--EditableComboboxTest.EndOrHomeMovesToBeginningOrEndOfText
--EditableComboboxTest.EnterClosesMenuWhileSelectingHighlightedMenuItem
--EditableComboboxTest.EscClosesMenuWithoutSelectingHighlightedMenuItem
--EditableComboboxTest.F4ClosesMenuWhileSelectingHighlightedMenuItem
--EditableComboboxTest.LeftOrRightKeysMoveInTextfield
--EditableComboboxTest.MenuCanAdaptToContentChange
--EditableComboboxTest.RefocusingReopensMenuBasedOnLatestContent
--EditableComboboxTest.ShiftLeftOrRightSelectsCharInTextfield
--EditableComboboxTest.SpaceIsReflectedInTextfield
+
+# crbug.com/1186996: tests below require XKB.
 -EditableComboboxTest.TypingInTextfieldUnhighlightsMenuItem
--EditableComboboxTest.UpOrDownKeysMoveInMenu
--MenuRunnerTest.LatinMnemonic
 -TextfieldTest.ContextMenuDisplayTest
 -TextfieldTest.ControlAndSelectTest
 -TextfieldTest.CursorMovement
@@ -38,17 +30,3 @@
 -TextfieldTest.TextInputType_InsertionTest
 -TextfieldTest.TextfieldBoundsChangeTest
 -TextfieldTest.UndoRedoTest
--TooltipControllerTest.DontShowTooltipOnTouch
--TooltipControllerTest.EnableOrDisableTooltips
--TooltipControllerTest.HideEmptyTooltip
--TooltipControllerTest.HideOnExit
--TooltipControllerTest.ReshowOnClickAfterEnterExit
--TooltipControllerTest.TooltipHidesOnKeyPressAndStaysHiddenUntilChange
--TooltipControllerTest.TooltipHidesOnTimeoutAndStaysHiddenUntilChange
--TooltipControllerTest.TooltipsInMultipleViews
--TooltipControllerTest.ViewTooltip
-
-# Crashed tests.
--DesktopWidgetTest.MinimumSizeConstraints
--TooltipControllerTest.Capture
-

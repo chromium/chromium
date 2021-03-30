@@ -15,6 +15,7 @@
 namespace chromeos {
 namespace phonehub {
 class Notification;
+class NotificationInteractionHandler;
 class PhoneHubManager;
 class PhoneModel;
 }  // namespace phonehub
@@ -45,7 +46,7 @@ class ASH_EXPORT PhoneHubNotificationController
   // notifications.
   void SetManager(chromeos::phonehub::PhoneHubManager* phone_hub_manager);
 
-  const base::string16 GetPhoneName() const;
+  const std::u16string GetPhoneName() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
@@ -73,8 +74,9 @@ class ASH_EXPORT PhoneHubNotificationController
   // Callbacks for user interactions.
   void OpenSettings();
   void DismissNotification(int64_t notification_id);
+  void HandleNotificationBodyClick(int64_t notification_id);
   void SendInlineReply(int64_t notification_id,
-                       const base::string16& inline_reply_text);
+                       const std::u16string& inline_reply_text);
 
   // Logs the number of PhoneHub notifications.
   void LogNotificationCount();
@@ -100,6 +102,8 @@ class ASH_EXPORT PhoneHubNotificationController
       base::WeakPtr<PhoneHubNotificationController> notification_controller,
       const message_center::Notification& notification);
 
+  chromeos::phonehub::NotificationInteractionHandler*
+      notification_interaction_handler_ = nullptr;
   chromeos::phonehub::NotificationManager* manager_ = nullptr;
   chromeos::phonehub::FeatureStatusProvider* feature_status_provider_ = nullptr;
   chromeos::phonehub::TetherController* tether_controller_ = nullptr;

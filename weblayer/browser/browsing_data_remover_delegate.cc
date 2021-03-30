@@ -8,6 +8,8 @@
 #include "build/build_config.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
+#include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -16,8 +18,9 @@
 #include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/favicon/favicon_service_impl.h"
 #include "weblayer/browser/favicon/favicon_service_impl_factory.h"
+#include "weblayer/browser/heavy_ad_service_factory.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 
 namespace weblayer {
@@ -64,7 +67,7 @@ void BrowsingDataRemoverDelegate::RemoveEmbedderData(
 
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_CACHE) {
     browsing_data::RemovePrerenderCacheData(
-        PrerenderManagerFactory::GetForBrowserContext(browser_context_));
+        NoStatePrefetchManagerFactory::GetForBrowserContext(browser_context_));
   }
 
   if (remove_mask & DATA_TYPE_FAVICONS) {
@@ -74,6 +77,15 @@ void BrowsingDataRemoverDelegate::RemoveEmbedderData(
       // The favicon database doesn't track enough information to remove
       // favicons in a time range. Delete everything.
       service->DeleteAndRecreateDatabase(CreateTaskCompletionClosure());
+    }
+  }
+
+  if (remove_mask & DATA_TYPE_AD_INTERVENTIONS) {
+    heavy_ad_intervention::HeavyAdService* heavy_ad_service =
+        HeavyAdServiceFactory::GetForBrowserContext(browser_context_);
+    if (heavy_ad_service->heavy_ad_blocklist()) {
+      heavy_ad_service->heavy_ad_blocklist()->ClearBlockList(delete_begin,
+                                                             delete_end);
     }
   }
 

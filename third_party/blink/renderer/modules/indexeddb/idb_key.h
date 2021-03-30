@@ -90,6 +90,10 @@ class MODULES_EXPORT IDBKey {
 
   static std::unique_ptr<IDBKey> Clone(const IDBKey* rkey);
 
+  // Disallow copy and assign.
+  IDBKey(const IDBKey&) = delete;
+  IDBKey& operator=(const IDBKey&) = delete;
+
   ~IDBKey();
 
   mojom::IDBKeyType GetType() const { return type_; }
@@ -138,10 +142,8 @@ class MODULES_EXPORT IDBKey {
       std::unique_ptr<IDBKey> array_key);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(IDBKey);
-
   IDBKey();
-  IDBKey(mojom::IDBKeyType type);
+  explicit IDBKey(mojom::IDBKeyType type);
   IDBKey(mojom::IDBKeyType type, double number);
   explicit IDBKey(const String& value);
   explicit IDBKey(scoped_refptr<SharedBuffer> value);

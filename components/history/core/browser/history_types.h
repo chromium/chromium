@@ -18,7 +18,6 @@
 #include "base/containers/stack_container.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_context.h"
@@ -105,7 +104,7 @@ class VisitRow {
   // (https://github.com/WICG/floc) is an API that intends to provide callers
   // with coarse-grained information about the user’s browsing interests. The
   // history URL visits is a main source of computation, but some visits are
-  // ineligible to be included, so we use this bit to represent its eligiblity.
+  // ineligible to be included, so we use this bit to represent its eligibility.
   //
   // Currently this bit is "true" if the IP of this url visit was publicly
   // routable, i.e. the IP is NOT within the ranges reserved for "private"
@@ -130,7 +129,7 @@ class VisitRow {
     return visit_time < other.visit_time;
   }
 
-  // We allow the implicit copy constuctor and operator=.
+  // We allow the implicit copy constructor and operator=.
 };
 
 // We pass around vectors of visits a lot
@@ -301,7 +300,7 @@ struct QueryURLResult {
   QueryURLResult& operator=(QueryURLResult&&) noexcept;
   ~QueryURLResult();
 
-  // Indicates whether the call to HistoryBackend::QueryURL was successfull
+  // Indicates whether the call to HistoryBackend::QueryURL was successful
   // or not. If false, then both |row| and |visits| fields are undefined.
   bool success = false;
   URLRow row;
@@ -326,7 +325,7 @@ struct VisibleVisitCountToHostResult {
 // Holds the per-URL information of the most visited query.
 struct MostVisitedURL {
   MostVisitedURL();
-  MostVisitedURL(const GURL& url, const base::string16& title);
+  MostVisitedURL(const GURL& url, const std::u16string& title);
   MostVisitedURL(const MostVisitedURL& other);
   MostVisitedURL(MostVisitedURL&& other) noexcept;
   ~MostVisitedURL();
@@ -338,7 +337,7 @@ struct MostVisitedURL {
   }
 
   GURL url;
-  base::string16 title;
+  std::u16string title;
 };
 
 // FilteredURL -----------------------------------------------------------------
@@ -363,7 +362,7 @@ struct FilteredURL {
   ~FilteredURL();
 
   GURL url;
-  base::string16 title;
+  std::u16string title;
   double score = 0.0;
   ExtendedInfo extended_info;
 };
@@ -392,7 +391,7 @@ struct HistoryAddPageArgs {
                      bool did_replace_entry,
                      bool consider_for_ntp_most_visited,
                      bool floc_allowed,
-                     base::Optional<base::string16> title = base::nullopt);
+                     base::Optional<std::u16string> title = base::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
   ~HistoryAddPageArgs();
 
@@ -414,7 +413,7 @@ struct HistoryAddPageArgs {
   // Indicates whether this URL visit can be included in FLoC computation. See
   // VisitRow::floc_allowed for details.
   bool floc_allowed;
-  base::Optional<base::string16> title;
+  base::Optional<std::u16string> title;
 };
 
 // TopSites -------------------------------------------------------------------
@@ -502,9 +501,9 @@ enum DomainMetricType : DomainMetricBitmaskType {
   kEnableLast28DayMetric = 1 << 2
 };
 
-// HistoryLastVisitToHostResult encapsulates the result of a call to
-// HistoryBackend::GetLastVisitToHost().
-struct HistoryLastVisitToHostResult {
+// HistoryLastVisitResult encapsulates the result HistoryBackend calls to find
+// the last visit to a host or URL.
+struct HistoryLastVisitResult {
   // Indicates whether the call was successful or not. This can happen if there
   // are internal database errors or the query was called with invalid
   // arguments. |success| will be true and |last_visit| will be null if

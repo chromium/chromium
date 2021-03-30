@@ -128,7 +128,7 @@ void CvcUnmaskViewController::OnUnmaskVerificationResult(
   dialog()->HideProcessingSpinner();
 }
 
-base::string16 CvcUnmaskViewController::GetSheetTitle() {
+std::u16string CvcUnmaskViewController::GetSheetTitle() {
   return l10n_util::GetStringFUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE,
                                     credit_card_.NetworkAndLastFourDigits());
 }
@@ -264,11 +264,11 @@ void CvcUnmaskViewController::FillContentView(views::View* content_view) {
   layout->AddView(std::move(error_label));
 }
 
-base::string16 CvcUnmaskViewController::GetPrimaryButtonLabel() {
+std::u16string CvcUnmaskViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_CONFIRM);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 CvcUnmaskViewController::GetPrimaryButtonCallback() {
   return base::BindRepeating(&CvcUnmaskViewController::CvcConfirmed,
                              base::Unretained(this));
@@ -288,7 +288,7 @@ bool CvcUnmaskViewController::ShouldShowSecondaryButton() {
 }
 
 void CvcUnmaskViewController::CvcConfirmed() {
-  const base::string16& cvc = cvc_field_->GetText();
+  const std::u16string& cvc = cvc_field_->GetText();
   if (unmask_delegate_) {
     autofill::CardUnmaskDelegate::UserProvidedUnmaskDetails details;
     details.cvc = cvc;
@@ -307,7 +307,7 @@ void CvcUnmaskViewController::CvcConfirmed() {
   }
 }
 
-void CvcUnmaskViewController::DisplayError(base::string16 error) {
+void CvcUnmaskViewController::DisplayError(std::u16string error) {
   views::Label* error_label = static_cast<views::Label*>(
       dialog()->GetViewByID(static_cast<int>(DialogViewID::CVC_ERROR_LABEL)));
   error_label->SetText(error);
@@ -319,7 +319,7 @@ void CvcUnmaskViewController::DisplayError(base::string16 error) {
 }
 
 void CvcUnmaskViewController::UpdatePayButtonState() {
-  base::string16 trimmed_text;
+  std::u16string trimmed_text;
   base::TrimWhitespace(cvc_field_->GetText(), base::TRIM_ALL, &trimmed_text);
   bool cvc_valid = autofill::IsValidCreditCardSecurityCode(
       trimmed_text, credit_card_.network());
@@ -384,7 +384,7 @@ void CvcUnmaskViewController::BackButtonPressed() {
 
 void CvcUnmaskViewController::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   UpdatePayButtonState();
 }
 

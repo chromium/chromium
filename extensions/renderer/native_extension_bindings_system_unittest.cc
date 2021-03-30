@@ -674,7 +674,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
     connectable_extension =
         ExtensionBuilder()
             .SetManifest(manifest.Build())
-            .SetLocation(Manifest::INTERNAL)
+            .SetLocation(mojom::ManifestLocation::kInternal)
             .SetID(crx_file::id_util::GenerateId("connectable"))
             .Build();
   }
@@ -863,8 +863,8 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUpdatingPermissions) {
   {
     // Add back the `idle` permission, and also add `power`.
     APIPermissionSet apis;
-    apis.insert(APIPermission::kPower);
-    apis.insert(APIPermission::kIdle);
+    apis.insert(mojom::APIPermissionID::kPower);
+    apis.insert(mojom::APIPermissionID::kIdle);
     extension->permissions_data()->SetPermissions(
         std::make_unique<PermissionSet>(std::move(apis),
                                         ManifestPermissionSet(),

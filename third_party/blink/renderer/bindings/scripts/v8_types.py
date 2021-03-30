@@ -415,7 +415,10 @@ IdlNullableType.is_traceable = property(
 
 INCLUDES_FOR_TYPE = {
     'object':
-    set(['bindings/core/v8/script_value.h']),
+    set([
+        'bindings/core/v8/script_value.h', 'bindings/core/v8/idl_types.h',
+        'bindings/core/v8/native_value_traits_impl.h'
+    ]),
     'ArrayBufferView':
     set([
         'bindings/core/v8/v8_array_buffer_view.h',

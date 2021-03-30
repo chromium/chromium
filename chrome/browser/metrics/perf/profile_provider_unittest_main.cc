@@ -5,14 +5,17 @@
 #include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/test_suite.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/metrics/perf/collection_params.h"
 #include "chrome/browser/metrics/perf/metric_provider.h"
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
@@ -166,6 +169,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     StopSpinningCPU();
 
     profile_provider_.reset();
+    TestingBrowserProcess::DeleteInstance();
     chromeos::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
@@ -247,7 +251,13 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(ProfileProviderRealCollectionTest);
 };
 
-TEST_F(ProfileProviderRealCollectionTest, SuspendDone) {
+// Flaky on chromeos: crbug.com/1184119
+#if defined(OS_CHROMEOS)
+#define MAYBE_SuspendDone DISABLED_SuspendDone
+#else
+#define MAYBE_SuspendDone SuspendDone
+#endif
+TEST_F(ProfileProviderRealCollectionTest, MAYBE_SuspendDone) {
   // Trigger a resume from suspend.
   profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
 
@@ -267,7 +277,13 @@ TEST_F(ProfileProviderRealCollectionTest, SessionRestoreDone) {
   AssertProfileData(SampledProfile::RESTORE_SESSION);
 }
 
-TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
+// Flaky on Chrome OS: crbug.com/1188498.
+#if defined(OS_CHROMEOS)
+#define MAYBE_OnJankStarted DISABLED_OnJankStarted
+#else
+#define MAYBE_OnJankStarted OnJankStarted
+#endif
+TEST_F(ProfileProviderRealCollectionTest, MAYBE_OnJankStarted) {
   // Trigger a resume from suspend.
   profile_provider_->OnJankStarted();
 
@@ -277,7 +293,8 @@ TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
   AssertProfileData(SampledProfile::JANKY_TASK);
 }
 
-TEST_F(ProfileProviderRealCollectionTest, OnJankStopped) {
+// TODO(crbug.com/1177150) Re-enable test
+TEST_F(ProfileProviderRealCollectionTest, DISABLED_OnJankStopped) {
   profile_provider_->OnJankStarted();
 
   // Call ProfileProvider::OnJankStopped() halfway through the collection
@@ -304,5 +321,5 @@ TEST_F(ProfileProviderRealCollectionTest, OnJankStopped) {
 
 int main(int argc, char* argv[]) {
   base::CommandLine::Init(argc, argv);
-  base::RunUnitTestsUsingBaseTestSuite(argc, argv);
+  return base::RunUnitTestsUsingBaseTestSuite(argc, argv);
 }

@@ -80,13 +80,15 @@ RenderFrameMetadataProviderImpl::LastRenderFrameMetadata() {
 
 void RenderFrameMetadataProviderImpl::
     OnRenderFrameMetadataChangedAfterActivation(
-        cc::RenderFrameMetadata metadata) {
+        cc::RenderFrameMetadata metadata,
+        base::TimeTicks activation_time) {
   last_render_frame_metadata_ = std::move(metadata);
   for (Observer& observer : observers_)
-    observer.OnRenderFrameMetadataChangedAfterActivation();
+    observer.OnRenderFrameMetadataChangedAfterActivation(activation_time);
 }
 
-void RenderFrameMetadataProviderImpl::OnFrameTokenFrameSubmissionForTesting() {
+void RenderFrameMetadataProviderImpl::OnFrameTokenFrameSubmissionForTesting(
+    base::TimeTicks activation_time) {
   for (Observer& observer : observers_)
     observer.OnRenderFrameSubmission();
 }

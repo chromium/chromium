@@ -4,15 +4,18 @@
 
 #include "chromeos/components/diagnostics_ui/backend/diagnostics_manager.h"
 
+#include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 #include "chromeos/components/diagnostics_ui/backend/system_data_provider.h"
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
 
 namespace chromeos {
 namespace diagnostics {
 
-DiagnosticsManager::DiagnosticsManager()
-    : system_data_provider_(std::make_unique<SystemDataProvider>()),
-      system_routine_controller_(std::make_unique<SystemRoutineController>()) {}
+DiagnosticsManager::DiagnosticsManager(SessionLogHandler* session_log_handler)
+    : system_data_provider_(std::make_unique<SystemDataProvider>(
+          session_log_handler->GetTelemetryLog())),
+      system_routine_controller_(std::make_unique<SystemRoutineController>(
+          session_log_handler->GetRoutineLog())) {}
 
 DiagnosticsManager::~DiagnosticsManager() = default;
 

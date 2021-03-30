@@ -1091,13 +1091,13 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   HRESULT GetPropertyValueImpl(PROPERTYID property_id, VARIANT* result);
 
   // Helper to return the runtime id (without going through a SAFEARRAY)
-  using RuntimeIdArray = std::array<int, 2>;
+  using RuntimeIdArray = std::array<int, 4>;
   void GetRuntimeIdArray(RuntimeIdArray& runtime_id);
 
   // Updates the active composition range and fires UIA text edit event about
   // composition (active or committed)
   void OnActiveComposition(const gfx::Range& range,
-                           const base::string16& active_composition_text,
+                           const std::u16string& active_composition_text,
                            bool is_composition_committed);
   // Returns true if there is an active composition
   bool HasActiveComposition() const;
@@ -1128,7 +1128,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // This is hard-coded; all products based on the Chromium engine will have the
   // same framework name, so that assistive technology can detect any
   // Chromium-based product.
-  static constexpr const base::char16* FRAMEWORK_ID = L"Chrome";
+  static constexpr const wchar_t* FRAMEWORK_ID = L"Chrome";
 
   AXPlatformNodeWin();
 
@@ -1140,11 +1140,11 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   int32_t ComputeIA2Role();
 
-  std::vector<base::string16> ComputeIA2Attributes();
+  std::vector<std::wstring> ComputeIA2Attributes();
 
-  base::string16 UIAAriaRole();
+  std::wstring UIAAriaRole();
 
-  base::string16 ComputeUIAProperties();
+  std::wstring ComputeUIAProperties();
 
   LONG ComputeUIAControlType();
 
@@ -1220,49 +1220,51 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   HRESULT GetNameAsBstr(BSTR* value_bstr) const;
 
+  HRESULT ComputeListItemNameAsBstr(BSTR* value_bstr) const;
+
   // Sets the selection given a start and end offset in IA2 Hypertext.
   void SetIA2HypertextSelection(LONG start_offset, LONG end_offset);
 
   // Escapes characters in string attributes as required by the UIA Aria
   // Property Spec. It's okay for input to be the same as output.
   static void SanitizeStringAttributeForUIAAriaProperty(
-      const base::string16& input,
-      base::string16* output);
+      const std::wstring& input,
+      std::wstring* output);
 
   // If the string attribute |attribute| is present, add its value as a
   // UIA AriaProperties Property with the name |uia_aria_property|.
-  void StringAttributeToUIAAriaProperty(std::vector<base::string16>& properties,
+  void StringAttributeToUIAAriaProperty(std::vector<std::wstring>& properties,
                                         ax::mojom::StringAttribute attribute,
                                         const char* uia_aria_property);
 
   // If the bool attribute |attribute| is present, add its value as a
   // UIA AriaProperties Property with the name |uia_aria_property|.
-  void BoolAttributeToUIAAriaProperty(std::vector<base::string16>& properties,
+  void BoolAttributeToUIAAriaProperty(std::vector<std::wstring>& properties,
                                       ax::mojom::BoolAttribute attribute,
                                       const char* uia_aria_property);
 
   // If the int attribute |attribute| is present, add its value as a
   // UIA AriaProperties Property with the name |uia_aria_property|.
-  void IntAttributeToUIAAriaProperty(std::vector<base::string16>& properties,
+  void IntAttributeToUIAAriaProperty(std::vector<std::wstring>& properties,
                                      ax::mojom::IntAttribute attribute,
                                      const char* uia_aria_property);
 
   // If the float attribute |attribute| is present, add its value as a
   // UIA AriaProperties Property with the name |uia_aria_property|.
-  void FloatAttributeToUIAAriaProperty(std::vector<base::string16>& properties,
+  void FloatAttributeToUIAAriaProperty(std::vector<std::wstring>& properties,
                                        ax::mojom::FloatAttribute attribute,
                                        const char* uia_aria_property);
 
   // If the state |state| exists, set the
   // UIA AriaProperties Property with the name |uia_aria_property| to "true".
   // Otherwise set the AriaProperties Property to "false".
-  void StateToUIAAriaProperty(std::vector<base::string16>& properties,
+  void StateToUIAAriaProperty(std::vector<std::wstring>& properties,
                               ax::mojom::State state,
                               const char* uia_aria_property);
 
   // If the Html attribute |html_attribute_name| is present, add its value as a
   // UIA AriaProperties Property with the name |uia_aria_property|.
-  void HtmlAttributeToUIAAriaProperty(std::vector<base::string16>& properties,
+  void HtmlAttributeToUIAAriaProperty(std::vector<std::wstring>& properties,
                                       const char* html_attribute_name,
                                       const char* uia_aria_property);
 
@@ -1435,7 +1437,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // Fires UIA text edit event about composition (active or committed)
   void FireUiaTextEditTextChangedEvent(
       const gfx::Range& range,
-      const base::string16& active_composition_text,
+      const std::wstring& active_composition_text,
       bool is_composition_committed);
 
   // Return true if the given element is valid enough to be returned as a value

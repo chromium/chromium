@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -25,6 +26,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -60,20 +63,29 @@ constexpr int kMediaButtonIconSize = 20;
 // An image view with a rounded rectangle vignette
 class MediaArtworkView : public views::ImageView {
  public:
+  METADATA_HEADER(MediaArtworkView);
   explicit MediaArtworkView(float corner_radius)
       : corner_radius_(corner_radius) {}
 
   void SetVignetteColor(const SkColor& vignette_color) {
+    if (vignette_color_ == vignette_color)
+      return;
     vignette_color_ = vignette_color;
+    OnPropertyChanged(&vignette_color_, views::kPropertyEffectsPaint);
   }
+  SkColor GetVignetteColor() const { return vignette_color_; }
 
   // ImageView
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
-  SkColor vignette_color_;
+  SkColor vignette_color_ = gfx::kPlaceholderColor;
   float corner_radius_;
 };
+
+BEGIN_METADATA(MediaArtworkView, views::ImageView)
+ADD_PROPERTY_METADATA(SkColor, VignetteColor)
+END_METADATA
 
 void MediaArtworkView::OnPaint(gfx::Canvas* canvas) {
   views::ImageView::OnPaint(canvas);
@@ -116,6 +128,9 @@ const gfx::VectorIcon* GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kSeekTo:
     case MediaSessionAction::kScrubTo:
     case MediaSessionAction::kSwitchAudioDevice:
+    case MediaSessionAction::kToggleMicrophone:
+    case MediaSessionAction::kToggleCamera:
+    case MediaSessionAction::kHangUp:
       NOTREACHED();
       break;
   }
@@ -522,7 +537,7 @@ void MediaNotificationViewModernImpl::UpdateActionButtonsVisibility() {
 void MediaNotificationViewModernImpl::CreateMediaButton(
     views::View* parent_view,
     MediaSessionAction action,
-    const base::string16& accessible_name) {
+    const std::u16string& accessible_name) {
   auto button =
       views::CreateVectorImageButton(views::Button::PressedCallback());
   button->SetCallback(
@@ -600,5 +615,8 @@ void MediaNotificationViewModernImpl::ButtonPressed(views::Button* button) {
   if (item_)
     item_->OnMediaSessionActionButtonPressed(GetActionFromButtonTag(*button));
 }
+
+BEGIN_METADATA(MediaNotificationViewModernImpl, views::View)
+END_METADATA
 
 }  // namespace media_message_center

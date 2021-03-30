@@ -1,0 +1,25 @@
+[
+  {
+    "namespace": "redundantDefaultAttribute",
+    "description": "Invalid schema, due to specifying a redundant attribute value.",
+    "functions": [
+      {
+        "name": "optionalFalse",
+        "type": "function",
+        "description": "Specifies a returns_async as optional false.",
+        "parameters": [
+          {
+            "type": "any",
+            "name": "anyName",
+            "optional": true
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": false,
+          "parameters": []
+        }
+      }
+    ]
+  }
+]

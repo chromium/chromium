@@ -146,10 +146,13 @@ public class BottomSheetControllerTest {
         });
         requestContentInSheet(mLowPriorityContent, true);
         int callCount = hideCallbackHelper.getCallCount();
+        int lowPriorityDestroyCalls = mLowPriorityContent.destroyCallbackHelper.getCallCount();
         requestContentInSheet(mHighPriorityContent, true);
         hideCallbackHelper.waitForCallback(callCount);
         assertEquals("The bottom sheet is showing incorrect content.", mHighPriorityContent,
                 mSheetController.getCurrentSheetContent());
+        assertEquals("The low priority content should not have been destroyed!",
+                lowPriorityDestroyCalls, mLowPriorityContent.destroyCallbackHelper.getCallCount());
     }
 
     @Test
@@ -215,7 +218,17 @@ public class BottomSheetControllerTest {
     @Feature({"BottomSheetController"})
     public void testSheetPeekAfterTabSwitcher() throws TimeoutException {
         requestContentInSheet(mLowPriorityContent, true);
+        CallbackHelper peekCallbackHelper = new CallbackHelper();
+        mSheetController.addObserver(new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetStateChanged(int newState) {
+                if (newState == BottomSheetController.SheetState.PEEK) {
+                    peekCallbackHelper.notifyCalled();
+                }
+            }
+        });
         enterAndExitTabSwitcher();
+        peekCallbackHelper.waitForCallback(0);
         assertEquals("The bottom sheet should be peeking.", BottomSheetController.SheetState.PEEK,
                 mSheetController.getSheetState());
         assertEquals("The bottom sheet is showing incorrect content.", mLowPriorityContent,
@@ -233,6 +246,14 @@ public class BottomSheetControllerTest {
 
         requestContentInSheet(mLowPriorityContent, true);
 
+        CallbackHelper contentChangeHelper = new CallbackHelper();
+        mSheetController.addObserver(new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetContentChanged(BottomSheetContent newContent) {
+                contentChangeHelper.notifyCalled();
+            }
+        });
+
         // Enter the tab switcher and select a different tab.
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mActivity.getLayoutManager().showOverview(false);
@@ -245,6 +266,7 @@ public class BottomSheetControllerTest {
             mTestSupport.endAllAnimations();
         });
 
+        contentChangeHelper.waitForCallback(0);
         assertEquals("The bottom sheet still should be hidden.",
                 BottomSheetController.SheetState.HIDDEN, mSheetController.getSheetState());
         assertEquals("The bottom sheet is showing incorrect content.", null,
@@ -452,8 +474,7 @@ public class BottomSheetControllerTest {
 
         expandSheet();
 
-        int computedOffset = (int) (customHalfHeight
-                * (mSheetController.getContainerHeight() + mSheetController.getTopShadowHeight()));
+        int computedOffset = (int) (customHalfHeight * mSheetController.getContainerHeight());
         assertEquals("Half height is incorrect for custom ratio.", computedOffset,
                 mSheetController.getCurrentOffset());
     }
@@ -467,8 +488,7 @@ public class BottomSheetControllerTest {
 
         maximizeSheet();
 
-        int computedOffset = (int) (customFullHeight
-                * (mSheetController.getContainerHeight() + mSheetController.getTopShadowHeight()));
+        int computedOffset = (int) (customFullHeight * mSheetController.getContainerHeight());
         assertEquals("Full height is incorrect for custom ratio.", computedOffset,
                 mSheetController.getCurrentOffset());
     }

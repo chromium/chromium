@@ -22,12 +22,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -71,6 +69,7 @@ const char kMethodNotify[] = "Notify";
 // DBus signals.
 const char kSignalActionInvoked[] = "ActionInvoked";
 const char kSignalNotificationClosed[] = "NotificationClosed";
+const char kSignalNotificationReplied[] = "NotificationReplied";
 
 // Capabilities.
 const char kCapabilityActionIcons[] = "action-icons";
@@ -81,13 +80,17 @@ const char kCapabilityBodyImages[] = "body-images";
 const char kCapabilityBodyMarkup[] = "body-markup";
 const char kCapabilityIconMulti[] = "icon-multi";
 const char kCapabilityIconStatic[] = "icon-static";
+const char kCapabilityInlineReply[] = "inline-reply";
 const char kCapabilityPersistence[] = "persistence";
 const char kCapabilitySound[] = "sound";
 const char kCapabilityXKdeOriginName[] = "x-kde-origin-name";
+const char kCapabilityXKdeReplyPlaceholderText[] =
+    "x-kde-reply-placeholder-text";
 
 // Button IDs.
 const char kCloseButtonId[] = "close";
 const char kDefaultButtonId[] = "default";
+const char kInlineReplyButtonId[] = "inline-reply";
 const char kSettingsButtonId[] = "settings";
 
 // Max image size; specified in the FDO notification specification.
@@ -120,12 +123,12 @@ enum class ConnectionInitializationStatusCode {
   NUM_ITEMS
 };
 
-base::string16 CreateNotificationTitle(
+std::u16string CreateNotificationTitle(
     const message_center::Notification& notification) {
-  base::string16 title;
+  std::u16string title;
   if (notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS) {
     title += base::FormatPercent(notification.progress());
-    title += base::UTF8ToUTF16(" - ");
+    title += u" - ";
   }
   title += notification.title();
   return title;
@@ -199,6 +202,7 @@ void ForwardNotificationOperationOnUiThread(
     const std::string& notification_id,
     const base::Optional<int>& action_index,
     const base::Optional<bool>& by_user,
+    const base::Optional<std::u16string>& reply,
     const std::string& profile_id,
     bool is_incognito) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -214,7 +218,7 @@ void ForwardNotificationOperationOnUiThread(
       profile_id, is_incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      operation, notification_type, origin, notification_id,
-                     action_index, base::nullopt /* reply */, by_user));
+                     action_index, reply, by_user));
 }
 
 class ResourceFile {
@@ -518,18 +522,25 @@ class NotificationPlatformBridgeLinuxImpl
     DCHECK(!connect_signals_in_progress_);
     connect_signals_in_progress_ = true;
     connected_signals_barrier_ = base::BarrierClosure(
-        2, base::BindOnce(&NotificationPlatformBridgeLinuxImpl::
+        3, base::BindOnce(&NotificationPlatformBridgeLinuxImpl::
                               OnConnectionInitializationFinishedOnTaskRunner,
                           this, ConnectionInitializationStatusCode::SUCCESS));
     notification_proxy_->ConnectToSignal(
         kFreedesktopNotificationsName, kSignalActionInvoked,
-        base::Bind(&NotificationPlatformBridgeLinuxImpl::OnActionInvoked, this),
+        base::BindRepeating(
+            &NotificationPlatformBridgeLinuxImpl::OnActionInvoked, this),
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        this));
     notification_proxy_->ConnectToSignal(
         kFreedesktopNotificationsName, kSignalNotificationClosed,
-        base::Bind(&NotificationPlatformBridgeLinuxImpl::OnNotificationClosed,
-                   this),
+        base::BindRepeating(
+            &NotificationPlatformBridgeLinuxImpl::OnNotificationClosed, this),
+        base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
+                       this));
+    notification_proxy_->ConnectToSignal(
+        kFreedesktopNotificationsName, kSignalNotificationReplied,
+        base::BindRepeating(
+            &NotificationPlatformBridgeLinuxImpl::OnNotificationReplied, this),
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        this));
   }
@@ -678,14 +689,34 @@ class NotificationPlatformBridgeLinuxImpl
     // Even-indexed elements in this vector are action IDs passed back to
     // us in OnActionInvoked().  Odd-indexed ones contain the button text.
     std::vector<std::string> actions;
+    base::Optional<std::u16string> inline_reply_placeholder;
     if (base::Contains(capabilities_, kCapabilityActions)) {
+      const bool has_support_for_inline_reply =
+          base::Contains(capabilities_, kCapabilityInlineReply);
+
       data->action_start = data->action_end;
+
       for (const auto& button_info : notification->buttons()) {
+        const std::string label = base::UTF16ToUTF8(button_info.title);
+
+        if (has_support_for_inline_reply &&
+            connected_to_notification_replied_signal_ &&
+            button_info.placeholder) {
+          // There can only be one inline-reply action
+          if (inline_reply_placeholder) {
+            continue;
+          }
+
+          actions.push_back(kInlineReplyButtonId);
+          actions.push_back(label);
+
+          inline_reply_placeholder = button_info.placeholder;
+          continue;
+        }
         // FDO notification buttons can contain either an icon or a label,
         // but not both, and the type of all buttons must be the same (all
         // labels or all icons), so always use labels.
         const std::string id = base::NumberToString(data->action_end++);
-        const std::string label = base::UTF16ToUTF8(button_info.title);
         actions.push_back(id);
         actions.push_back(label);
       }
@@ -758,6 +789,15 @@ class NotificationPlatformBridgeLinuxImpl
       kde_origin_name_writer.AppendString(kCapabilityXKdeOriginName);
       kde_origin_name_writer.AppendVariantOfString(context_display_text);
       hints_writer.CloseContainer(&kde_origin_name_writer);
+    }
+
+    if (inline_reply_placeholder) {
+      dbus::MessageWriter inline_reply_writer(nullptr);
+      hints_writer.OpenDictEntry(&inline_reply_writer);
+      inline_reply_writer.AppendString(kCapabilityXKdeReplyPlaceholderText);
+      inline_reply_writer.AppendVariantOfString(
+          base::UTF16ToUTF8(inline_reply_placeholder.value()));
+      hints_writer.CloseContainer(&inline_reply_writer);
     }
 
     writer.CloseContainer(&hints_writer);
@@ -850,17 +890,19 @@ class NotificationPlatformBridgeLinuxImpl
     return nullptr;
   }
 
-  void ForwardNotificationOperation(const base::Location& location,
-                                    NotificationData* data,
-                                    NotificationCommon::Operation operation,
-                                    const base::Optional<int>& action_index,
-                                    const base::Optional<bool>& by_user) {
+  void ForwardNotificationOperation(
+      const base::Location& location,
+      NotificationData* data,
+      NotificationCommon::Operation operation,
+      const base::Optional<int>& action_index,
+      const base::Optional<bool>& by_user,
+      const base::Optional<std::u16string>& reply) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    base::PostTask(
-        location, {content::BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        location,
         base::BindOnce(ForwardNotificationOperationOnUiThread, operation,
                        data->notification_type, data->origin_url,
-                       data->notification_id, action_index, by_user,
+                       data->notification_id, action_index, by_user, reply,
                        data->profile_id, data->is_incognito));
   }
 
@@ -881,15 +923,18 @@ class NotificationPlatformBridgeLinuxImpl
     if (action == kDefaultButtonId) {
       ForwardNotificationOperation(
           FROM_HERE, data, NotificationCommon::OPERATION_CLICK,
-          base::nullopt /* action_index */, base::nullopt /* by_user */);
+          base::nullopt /* action_index */, base::nullopt /* by_user */,
+          base::nullopt /* reply */);
     } else if (action == kSettingsButtonId) {
       ForwardNotificationOperation(
           FROM_HERE, data, NotificationCommon::OPERATION_SETTINGS,
-          base::nullopt /* action_index */, base::nullopt /* by_user */);
+          base::nullopt /* action_index */, base::nullopt /* by_user */,
+          base::nullopt /* reply */);
     } else if (action == kCloseButtonId) {
       ForwardNotificationOperation(
           FROM_HERE, data, NotificationCommon::OPERATION_CLOSE,
-          base::nullopt /* action_index */, true /* by_user */);
+          base::nullopt /* action_index */, true /* by_user */,
+          base::nullopt /* reply */);
       CloseOnTaskRunner(data->profile_id, data->notification_id);
     } else {
       size_t id;
@@ -899,10 +944,30 @@ class NotificationPlatformBridgeLinuxImpl
       size_t id_zero_based = id - data->action_start;
       if (id_zero_based >= n_buttons)
         return;
-      ForwardNotificationOperation(FROM_HERE, data,
-                                   NotificationCommon::OPERATION_CLICK,
-                                   id_zero_based, base::nullopt /* by_user */);
+      ForwardNotificationOperation(
+          FROM_HERE, data, NotificationCommon::OPERATION_CLICK, id_zero_based,
+          base::nullopt /* by_user */, base::nullopt /* reply */);
     }
+  }
+
+  void OnNotificationReplied(dbus::Signal* signal) {
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    dbus::MessageReader reader(signal);
+    uint32_t dbus_id;
+    if (!reader.PopUint32(&dbus_id) || !dbus_id)
+      return;
+    std::string reply;
+    if (!reader.PopString(&reply))
+      return;
+
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
+    if (!data)
+      return;
+
+    ForwardNotificationOperation(
+        FROM_HERE, data, NotificationCommon::OPERATION_CLICK,
+        base::nullopt /* action_index */, base::nullopt /* by_user */,
+        base::UTF8ToUTF16(reply));
   }
 
   void OnNotificationClosed(dbus::Signal* signal) {
@@ -917,9 +982,10 @@ class NotificationPlatformBridgeLinuxImpl
       return;
 
     // TODO(peter): Can we support |by_user| appropriately here?
-    ForwardNotificationOperation(
-        FROM_HERE, data, NotificationCommon::OPERATION_CLOSE,
-        base::nullopt /* action_index */, true /* by_user */);
+    ForwardNotificationOperation(FROM_HERE, data,
+                                 NotificationCommon::OPERATION_CLOSE,
+                                 base::nullopt /* action_index */,
+                                 true /* by_user */, base::nullopt /* reply */);
     notifications_.erase(data);
   }
 
@@ -963,7 +1029,11 @@ class NotificationPlatformBridgeLinuxImpl
                          const std::string& signal_name,
                          bool success) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    if (!success) {
+    const bool isNotificationRepliedSignal =
+        (signal_name == kSignalNotificationReplied);
+    if (isNotificationRepliedSignal) {
+      connected_to_notification_replied_signal_ = success;
+    } else if (!success) {
       OnConnectionInitializationFinishedOnTaskRunner(
           ConnectionInitializationStatusCode::COULD_NOT_CONNECT_TO_SIGNALS);
       return;
@@ -1002,6 +1072,9 @@ class NotificationPlatformBridgeLinuxImpl
     UMA_HISTOGRAM_BOOLEAN("Notifications.Freedesktop.Capabilities.IconStatic",
                           base::Contains(capabilities_, kCapabilityIconStatic));
     UMA_HISTOGRAM_BOOLEAN(
+        "Notifications.Freedesktop.Capabilities.InlineReply",
+        base::Contains(capabilities_, kCapabilityInlineReply));
+    UMA_HISTOGRAM_BOOLEAN(
         "Notifications.Freedesktop.Capabilities.Persistence",
         base::Contains(capabilities_, kCapabilityPersistence));
     UMA_HISTOGRAM_BOOLEAN("Notifications.Freedesktop.Capabilities.Sound",
@@ -1020,7 +1093,7 @@ class NotificationPlatformBridgeLinuxImpl
     if (!product_logo_file_watcher_->Watch(
             product_logo_file_->file_path(),
             base::FilePathWatcher::Type::kNonRecursive,
-            base::Bind(
+            base::BindRepeating(
                 &NotificationPlatformBridgeLinuxImpl::OnProductLogoFileChanged,
                 this))) {
       product_logo_file_.reset();
@@ -1060,6 +1133,10 @@ class NotificationPlatformBridgeLinuxImpl
 
   // Whether ConnectToSignal() is in progress.
   bool connect_signals_in_progress_ = false;
+
+  // Whether the NotificationReplied signal could be connected to
+  // and as such whether inline-reply support should be checked.
+  bool connected_to_notification_replied_signal_ = false;
 
   // Calling CleanUp() while ConnectToSignal() is in progress leads to a crash.
   // This flag is used to defer the cleanup task until signals are connected.

@@ -82,7 +82,11 @@ source_set("cells_constants") {
     "table_view_cells_constants.h",
     "table_view_cells_constants.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/util",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

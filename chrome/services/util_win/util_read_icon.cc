@@ -6,8 +6,9 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/win/dpi.h"
 #include "ui/gfx/geometry/size.h"
@@ -70,7 +71,7 @@ void UtilReadIcon::ReadIcon(const base::FilePath& filename,
                                      nullptr, 0, 0);
 
   if (nIcons == 0) {
-    std::move(callback).Run(std::move(image_ret), filename.value());
+    std::move(callback).Run(std::move(image_ret), filename.AsUTF16Unsafe());
     return;
   }
 
@@ -80,7 +81,7 @@ void UtilReadIcon::ReadIcon(const base::FilePath& filename,
                                   nIcons, 0);
 
   if (ret != nIcons) {
-    std::move(callback).Run(std::move(image_ret), filename.value());
+    std::move(callback).Run(std::move(image_ret), filename.AsUTF16Unsafe());
     return;
   }
 
@@ -102,5 +103,5 @@ void UtilReadIcon::ReadIcon(const base::FilePath& filename,
     image_ret = std::move(image_skia);
   }
 
-  std::move(callback).Run(std::move(image_ret), filename.value());
+  std::move(callback).Run(std::move(image_ret), filename.AsUTF16Unsafe());
 }

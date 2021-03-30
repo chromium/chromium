@@ -1,0 +1,12 @@
+<html>
+<body>
+  <script src="common.js"></script>
+  <script>
+    function checkSubframeImage() {
+      return imageLoadedPromise(window.frames[0].document.images[0]);
+    }
+  </script>
+  <img src="image.png?mainframe"/>
+  <iframe src="image_delayed_load.html"></iframe>
+</body>
+</html>

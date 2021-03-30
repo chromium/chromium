@@ -298,7 +298,7 @@ TEST_F(CookieBlockingTest, CookiesBlockedUndeletable) {
     return web_state()->GetWebFramesManager()->GetAllWebFrames().size() == 2;
   }));
 
-  web_state()->ExecuteJavaScript(base::UTF8ToUTF16("delete docuemnt.cookie"));
+  web_state()->ExecuteJavaScript(u"delete docuemnt.cookie");
 
   WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
   EXPECT_TRUE(web::test::SetCookie(main_frame, @"x", @"value"));
@@ -414,7 +414,7 @@ TEST_F(CookieBlockingTest, LocalStorageBlockedUndeletable) {
     return web_state()->GetWebFramesManager()->GetAllWebFrames().size() == 2;
   }));
 
-  web_state()->ExecuteJavaScript(base::UTF8ToUTF16("delete localStorage"));
+  web_state()->ExecuteJavaScript(u"delete localStorage");
 
   WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
 
@@ -537,7 +537,7 @@ TEST_F(CookieBlockingTest, SessionStorageBlockedUndeletable) {
     return web_state()->GetWebFramesManager()->GetAllWebFrames().size() == 2;
   }));
 
-  web_state()->ExecuteJavaScript(base::UTF8ToUTF16("delete sessionStorage"));
+  web_state()->ExecuteJavaScript(u"delete sessionStorage");
 
   NSString* error_message;
   WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();

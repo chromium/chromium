@@ -4,12 +4,17 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/browser_context.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 // static
 OptimizationGuideKeyedService*
@@ -38,6 +43,18 @@ OptimizationGuideKeyedServiceFactory::~OptimizationGuideKeyedServiceFactory() =
 
 KeyedService* OptimizationGuideKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Do not build the OptimizationGuideKeyedService if it's a sign-in profile
+  // since it basically is an ephemeral profile anyway and we cannot provide
+  // hints or models to it anyway. Additionally, sign in profiles do not go
+  // through the standard profile initialization flow, so a lot of things that
+  // are required are not available when the browser context for the signin
+  // profile is created.
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+    return nullptr;
+#endif
+
   return new OptimizationGuideKeyedService(context);
 }
 

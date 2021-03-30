@@ -31,7 +31,7 @@ class MediaInternalsMessageHandler : public WebUIMessageHandler {
   void OnGetEverything(const base::ListValue* list);
 
   // MediaInternals message handlers.
-  void OnUpdate(const base::string16& update);
+  void OnUpdate(const std::u16string& update);
 
  private:
   scoped_refptr<MediaInternalsProxy> proxy_;

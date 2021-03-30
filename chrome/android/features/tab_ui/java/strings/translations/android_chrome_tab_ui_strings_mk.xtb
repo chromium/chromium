@@ -4,10 +4,13 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ваши картички не се користени во последно време. Дали да се затворат?</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="125153950246128346">Допрете за да видите друга картичка</translation>
+<translation id="1302104331113804646">Поставки за следењето цени</translation>
+<translation id="1378979118429748177">Добивајте известувања кога ќе има попусти</translation>
 <translation id="1657719826150349398">Премести ја картичката надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
 <translation id="2277224997687551299">Изменете го името на групата</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Отстрани <ph name="TABS_COUNT_ONE" /> избрана картичка од групата.}one{Отстрани <ph name="TABS_COUNT_MANY" /> избрана картичка од групата.}other{Отстрани <ph name="TABS_COUNT_MANY" /> избрани картички од групата.}}</translation>
+<translation id="2479148705183875116">Одете во „Поставки“</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Собери <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата со <ph name="TABS_COUNT_MANY" /> картичка.}other{Собери ја групата со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
 <translation id="2569352796411618312">Предлог: <ph name="NUMBER_OF_TABS" /> ваши картички не се користени во последно време. Дали да се затворат?</translation>
 <translation id="257674075312929031">Група</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Сподели ја групата</translation>
 <translation id="2759453070259087442">Проширете ја групата картички <ph name="TITLE_OF_GROUP" /> со <ph name="NUMBER_OF_TABS" /> картички.</translation>
 <translation id="2977480621796371840">Отстрани од групата</translation>
+<translation id="3291470810748040983">Ќе добиете известување ако има пониска цена во некоја отворена картичка</translation>
 <translation id="3328308545011660196">Предлог: <ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Собери <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картичкa.}other{Собери ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
+<translation id="3882834874697329510">За да добиете известување ако има пониска цена во некоја отворена картичка, вклучете ги известувањата во „Поставки“.</translation>
+<translation id="3940195383040445971">Следете ги цените на картичките</translation>
+<translation id="3996880007329611795">Добивајте известувања</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="4212246570487010370">Продолжете да прелистувате</translation>
 <translation id="4450893287417543264">Не прикажувај повторно</translation>
 <translation id="4648718555153979859">Картичките тука се групирани заедно</translation>
-<translation id="4922064041913095674">Видете кој производ во отворените картички има подобра цена</translation>
 <translation id="492284538114688557">Забележано е намалување на цената</translation>
 <translation id="5007392906805964215">Прегледајте</translation>
 <translation id="5073204694187207510">Сокриј ја табелата на цел екран</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Прикажи подоцна</translation>
 <translation id="5558362125926932819">Затвори ја групата со <ph name="NUMBER_OF_TABS" /> картички</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> картички се групирани</translation>
+<translation id="575494663145460764">Дали сакате да добивате известувања за попусти?</translation>
 <translation id="58326064309361797">Повлечете ги картичките за ги групирате</translation>
 <translation id="5846292395804797011">Затвори ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="NUMBER_OF_TABS" /> картички</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Сокриј го режимот на повеќекратен избор</translation>
 <translation id="7151209024774799310">Отстранете картички од групата</translation>
 <translation id="7204204600596740190">Режим на повеќекратен избор</translation>
+<translation id="7352298686197644113">Видете која ставка на отворените картички има пониска цена</translation>
 <translation id="753732157349120914">Менувач на картички</translation>
 <translation id="7559245342362162951">Прикажи ги картичките од групата во табела на цел екран</translation>
 <translation id="7792771145871471484">Прегледајте ги предлозите.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Да не се прикажува лентата за картички повторно?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затвори <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Затвори <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Затвори <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="8557923272772633250">Прошири ја групата со <ph name="NUMBER_OF_TABS" /> картички.</translation>
+<translation id="860282621117673749">Известувања за попусти</translation>
+<translation id="8714939927607906138">Пониска цена</translation>
 <translation id="8749939518995770034">Лентата за картички е затворена</translation>
+<translation id="8820741577754260431">Гледајте ги попустите на вашите картички</translation>
 <translation id="9150694013019234766">Префрлајте се од една на друга картичка во групата со картички најдолу на екранот</translation>
 <translation id="9169594135889675189">Додај нова картичка во групата</translation>
 <translation id="959682366969460160">Организирајте се</translation>

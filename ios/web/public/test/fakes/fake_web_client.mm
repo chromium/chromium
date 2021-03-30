@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#import "ios/web/common/uikit_ui_util.h"
 #include "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -35,16 +36,11 @@ bool FakeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kTestWebUIScheme) || url.SchemeIs(kTestAppSpecificScheme);
 }
 
-bool FakeWebClient::ShouldBlockUrlDuringRestore(const GURL& url,
-                                                WebState* web_state) const {
-  return false;
-}
-
 void FakeWebClient::AddSerializableData(
     web::SerializableUserDataManager* user_data_manager,
     web::WebState* web_state) {}
 
-base::string16 FakeWebClient::GetPluginNotSupportedText() const {
+std::u16string FakeWebClient::GetPluginNotSupportedText() const {
   return plugin_not_supported_text_;
 }
 
@@ -62,6 +58,11 @@ base::RefCountedMemory* FakeWebClient::GetDataResourceBytes(
       resource_id);
 }
 
+std::vector<JavaScriptFeature*> FakeWebClient::GetJavaScriptFeatures(
+    BrowserState* browser_state) const {
+  return java_script_features_;
+}
+
 NSString* FakeWebClient::GetDocumentStartScriptForMainFrame(
     BrowserState* browser_state) const {
   return early_page_script_ ? early_page_script_ : @"";
@@ -72,35 +73,17 @@ NSString* FakeWebClient::GetDocumentStartScriptForAllFrames(
   return web::test::GetPageScript(@"all_frames_web_test_bundle");
 }
 
-void FakeWebClient::SetPluginNotSupportedText(const base::string16& text) {
+void FakeWebClient::SetPluginNotSupportedText(const std::u16string& text) {
   plugin_not_supported_text_ = text;
+}
+
+void FakeWebClient::SetJavaScriptFeatures(
+    std::vector<JavaScriptFeature*> features) {
+  java_script_features_ = features;
 }
 
 void FakeWebClient::SetEarlyPageScript(NSString* page_script) {
   early_page_script_ = [page_script copy];
-}
-
-void FakeWebClient::AllowCertificateError(
-    WebState* web_state,
-    int cert_error,
-    const net::SSLInfo& ssl_info,
-    const GURL& request_url,
-    bool overridable,
-    int64_t navigation_id,
-    base::OnceCallback<void(bool)> callback) {
-  last_cert_error_code_ = cert_error;
-  last_cert_error_ssl_info_ = ssl_info;
-  last_cert_error_request_url_ = request_url;
-  last_cert_error_overridable_ = overridable;
-
-  // Embedder should consult the user, so reply is asynchronous.
-  base::PostTask(
-      FROM_HERE, {WebThread::UI},
-      base::BindOnce(std::move(callback), allow_certificate_errors_));
-}
-
-void FakeWebClient::SetAllowCertificateErrors(bool flag) {
-  allow_certificate_errors_ = flag;
 }
 
 void FakeWebClient::PrepareErrorPage(
@@ -118,7 +101,7 @@ void FakeWebClient::PrepareErrorPage(
 }
 
 UIView* FakeWebClient::GetWindowedContainer() {
-  return UIApplication.sharedApplication.keyWindow.rootViewController.view;
+  return GetAnyKeyWindow().rootViewController.view;
 }
 
 UserAgentType FakeWebClient::GetDefaultUserAgent(

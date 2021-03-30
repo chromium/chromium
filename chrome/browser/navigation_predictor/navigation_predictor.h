@@ -15,7 +15,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,7 +32,7 @@ class RenderFrameHost;
 }  // namespace content
 
 namespace prerender {
-class PrerenderManager;
+class NoStatePrefetchManager;
 }
 
 class TemplateURLService;
@@ -42,7 +42,7 @@ class TemplateURLService;
 // are the most likely anchor elements that the user will click.
 class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
                             public content::WebContentsObserver,
-                            public prerender::PrerenderHandle::Observer {
+                            public prerender::NoStatePrefetchHandle::Observer {
  public:
   explicit NavigationPredictor(content::WebContents* web_contents);
   ~NavigationPredictor() override;
@@ -112,10 +112,10 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // prerender::PrerenderHandle::Observer:
-  void OnPrerenderStop(prerender::PrerenderHandle* handle) override;
-  void OnPrerenderNetworkBytesChanged(
-      prerender::PrerenderHandle* handle) override {}
+  // prerender::NoStatePrefetchHandle::Observer:
+  void OnPrefetchStop(prerender::NoStatePrefetchHandle* handle) override;
+  void OnPrefetchNetworkBytesChanged(
+      prerender::NoStatePrefetchHandle* handle) override {}
 
   // Returns true if the anchor element metric from the renderer process is
   // valid.
@@ -155,10 +155,11 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
   // Decides whether to prefetch a URL and, if yes, calls Prefetch.
   void MaybePrefetch();
 
-  // Given a url to prefetch, uses PrerenderManager to start a NoStatePrefetch
-  // of that URL.
-  virtual void Prefetch(prerender::PrerenderManager* prerender_manager,
-                        const GURL& url_to_prefetch);
+  // Given a url to prefetch, uses NoStatePrefetchManager to start a
+  // NoStatePrefetch of that URL.
+  virtual void Prefetch(
+      prerender::NoStatePrefetchManager* no_state_prefetch_manager,
+      const GURL& url_to_prefetch);
 
   // Returns a collection of URLs that can be prefetched. Only one should be
   // prefetched at a time.
@@ -267,7 +268,7 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
   // they are not comparable.
   const int prefetch_url_score_threshold_;
 
-  // True if |this| should use the PrerenderManager to prefetch.
+  // True if |this| should use the NoStatePrefetchManager to prefetch.
   const bool prefetch_enabled_;
 
   // True by default, otherwise navigation scores will not be normalized
@@ -289,8 +290,8 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
   // Current visibility state of the web contents.
   content::Visibility current_visibility_;
 
-  // Current prerender handle.
-  std::unique_ptr<prerender::PrerenderHandle> prerender_handle_;
+  // Current prefetch handle.
+  std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
 
   // URL that we decided to prefetch, and are currently prefetching.
   base::Optional<GURL> prefetch_url_;

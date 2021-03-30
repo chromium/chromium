@@ -27,11 +27,12 @@ NullExecutionContext::NullExecutionContext()
 NullExecutionContext::~NullExecutionContext() {}
 
 void NullExecutionContext::SetUpSecurityContextForTesting() {
+  SetPolicyContainer(PolicyContainer::CreateEmpty());
   auto* policy = MakeGarbageCollected<ContentSecurityPolicy>();
   GetSecurityContext().SetSecurityOriginForTesting(
       SecurityOrigin::Create(url_));
   policy->BindToDelegate(GetContentSecurityPolicyDelegate());
-  GetSecurityContext().SetContentSecurityPolicy(policy);
+  SetContentSecurityPolicy(policy);
 }
 
 FrameOrWorkerScheduler* NullExecutionContext::GetScheduler() {

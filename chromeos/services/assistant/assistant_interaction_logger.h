@@ -47,7 +47,7 @@ class AssistantInteractionLogger : public AssistantInteractionSubscriber {
 
   void OnOpenUrlResponse(const GURL& url, bool in_background) override;
 
-  bool OnOpenAppResponse(const AndroidAppInfo& app_info) override;
+  void OnOpenAppResponse(const AndroidAppInfo& app_info) override;
 
   void OnSpeechRecognitionStarted() override;
 

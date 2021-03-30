@@ -31,12 +31,12 @@ class TransportHoverListModel : public HoverListModel {
 
   // HoverListModel:
   bool ShouldShowPlaceholderForEmptyList() const override;
-  base::string16 GetPlaceholderText() const override;
+  std::u16string GetPlaceholderText() const override;
   const gfx::VectorIcon* GetPlaceholderIcon() const override;
   std::vector<int> GetThrobberTags() const override;
   std::vector<int> GetButtonTags() const override;
-  base::string16 GetItemText(int item_tag) const override;
-  base::string16 GetDescriptionText(int item_tag) const override;
+  std::u16string GetItemText(int item_tag) const override;
+  std::u16string GetDescriptionText(int item_tag) const override;
   const gfx::VectorIcon* GetItemIcon(int item_tag) const override;
   void OnListItemSelected(int item_tag) override;
   size_t GetPreferredItemCount() const override;

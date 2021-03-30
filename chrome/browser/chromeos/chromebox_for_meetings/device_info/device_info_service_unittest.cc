@@ -12,12 +12,12 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
 #include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
@@ -37,6 +37,8 @@ namespace chromeos {
 namespace cfm {
 namespace {
 
+constexpr char kReleaseVersion[] = "13671.0.2020";
+
 class CfmDeviceInfoServiceTest : public ::testing::Test {
  public:
   CfmDeviceInfoServiceTest() = default;
@@ -48,7 +50,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
         new ownership::MockOwnerKeyUtil());
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
-    chromeos::DeviceSettingsService::Get()->SetSessionManager(
+    ash::DeviceSettingsService::Get()->SetSessionManager(
         &session_manager_client_, owner_key_util_);
 
     CfmHotlineClient::InitializeFake();
@@ -60,7 +62,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
   void TearDown() override {
     DeviceInfoService::Shutdown();
     CfmHotlineClient::Shutdown();
-    chromeos::DeviceSettingsService::Get()->UnsetSessionManager();
+    ash::DeviceSettingsService::Get()->UnsetSessionManager();
   }
 
   FakeCfmHotlineClient* GetClient() {
@@ -78,7 +80,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
     device_policy_.policy_data().set_gaia_id(base::NumberToString(gaia_id));
     device_policy_.Build();
     session_manager_client_.set_device_policy(device_policy_.GetBlob());
-    chromeos::DeviceSettingsService::Get()->Load();
+    ash::DeviceSettingsService::Get()->Load();
     content::RunAllTasksUntilIdle();
   }
 
@@ -129,7 +131,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
   mojo::Remote<mojom::MeetDevicesInfo> device_info_remote_;
   mojo::ReceiverSet<mojom::CfmServiceContext> context_receiver_set_;
   mojo::Remote<mojom::CfmServiceAdaptor> adaptor_remote_;
-  chromeos::ScopedTestDeviceSettingsService scoped_device_settings_service_;
+  ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
   chromeos::FakeSessionManagerClient session_manager_client_;
   FakeServiceConnectionImpl fake_service_connection_;
   policy::DevicePolicyBuilder device_policy_;
@@ -183,13 +185,19 @@ TEST_F(CfmDeviceInfoServiceTest, TestPolicyInfo) {
 
 TEST_F(CfmDeviceInfoServiceTest, TestSysInfo) {
   base::RunLoop run_loop;
+
+  base::SysInfo::SetChromeOSVersionInfoForTest(
+      base::StringPrintf("CHROMEOS_RELEASE_VERSION=%s\n", kReleaseVersion),
+      base::Time::Now());
+
   const auto& details_remote = GetDeviceInfoRemote();
   run_loop.RunUntilIdle();
 
   base::RunLoop mojo_loop;
   details_remote->GetSysInfo(
       base::BindLambdaForTesting([&](mojom::SysInfoPtr info_ptr) {
-        ASSERT_GE(info_ptr->num_proc, 1);
+        ASSERT_FALSE(info_ptr.is_null());
+        EXPECT_EQ(info_ptr->release_version, kReleaseVersion);
         mojo_loop.Quit();
       }));
   mojo_loop.Run();

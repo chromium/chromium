@@ -28,9 +28,8 @@ export function percentBarChartTestSuite() {
    * @param {string} header
    * @param {number} value
    * @param {number} max
-   * @param {string=} headerIcon
    */
-  function initializePercentBarChart(header, value, max, headerIcon) {
+  function initializePercentBarChart(header, value, max) {
     assertFalse(!!percentBarChartElement);
 
     // Add the element to the DOM.
@@ -40,7 +39,6 @@ export function percentBarChartTestSuite() {
     percentBarChartElement.header = header;
     percentBarChartElement.value = value;
     percentBarChartElement.max = max;
-    percentBarChartElement.headerIcon = headerIcon || '';
     document.body.appendChild(percentBarChartElement);
 
     return flushTasks();
@@ -58,23 +56,6 @@ export function percentBarChartTestSuite() {
 
       assertEquals(
           header, percentBarChartElement.$$('#chartName').textContent.trim());
-      dx_utils.assertElementContainsText(
-          /** @type {!HTMLElement} */ (
-              percentBarChartElement.$$('#percentageLabel')),
-          `${percent}`);
-
-      assertFalse(!!percentBarChartElement.$$('#headerIcon'));
-    });
-  });
-
-  test('WithHeaderIcon', () => {
-    const header = 'Test header';
-    const value = 10;
-    const max = 30;
-    const icon = 'cr:warning';
-    return initializePercentBarChart(header, value, max, icon).then(() => {
-      assertEquals(icon, percentBarChartElement.headerIcon);
-      assertTrue(!!percentBarChartElement.$$('#headerIcon'));
     });
   });
 

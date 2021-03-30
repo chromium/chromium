@@ -39,17 +39,23 @@ if (enable_extensions) {
     disable_variants = true
 
     sources = [
+      "mojom/action_type.mojom",
+      "mojom/api_permission_id.mojom",
       "mojom/app_window.mojom",
       "mojom/channel.mojom",
+      "mojom/css_origin.mojom",
       "mojom/feature_session_type.mojom",
+      "mojom/frame.mojom",
       "mojom/guest_view.mojom",
+      "mojom/host_id.mojom",
+      "mojom/injection_type.mojom",
       "mojom/keep_alive.mojom",
+      "mojom/manifest.mojom",
       "mojom/renderer.mojom",
+      "mojom/run_location.mojom",
+      "mojom/url_pattern_set.mojom",
+      "mojom/view_type.mojom",
     ]
-
-    if (proprietary_codecs && enable_wifi_display) {
-      sources += [ "mojo/wifi_display_session_service.mojom" ]
-    }
 
     public_deps = [
       "//content/public/common:interfaces",
@@ -69,6 +75,22 @@ if (enable_extensions) {
         ]
         traits_headers = [ "//extensions/common/mojom/channel_mojom_traits.h" ]
         traits_public_deps = [ "//components/version_info:channel" ]
+      },
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.URLPattern"
+            cpp = "::URLPattern"
+          },
+          {
+            mojom = "extensions.mojom.URLPatternSet"
+            cpp = "::extensions::URLPatternSet"
+          },
+        ]
+        traits_headers =
+            [ "//extensions/common/mojom/url_pattern_set_mojom_traits.h" ]
+        traits_sources =
+            [ "//extensions/common/mojom/url_pattern_set_mojom_traits.cc" ]
       },
     ]
     overridden_deps = [ "//content/public/common:interfaces" ]
@@ -101,8 +123,6 @@ if (enable_extensions) {
       "api/declarative_net_request/dnr_manifest_data.h",
       "api/declarative_net_request/dnr_manifest_handler.cc",
       "api/declarative_net_request/dnr_manifest_handler.h",
-      "api/declarative_net_request/utils.cc",
-      "api/declarative_net_request/utils.h",
       "api/extension_action/action_info.cc",
       "api/extension_action/action_info.h",
       "api/messaging/message.h",
@@ -198,8 +218,6 @@ if (enable_extensions) {
       "guest_view/extensions_guest_view_messages.h",
       "hashed_extension_id.cc",
       "hashed_extension_id.h",
-      "host_id.cc",
-      "host_id.h",
       "identifiability_metrics.cc",
       "identifiability_metrics.h",
       "image_util.cc",
@@ -319,14 +337,16 @@ if (enable_extensions) {
       "url_pattern_set.h",
       "user_script.cc",
       "user_script.h",
+      "utils/base_string.cc",
+      "utils/base_string.h",
       "value_builder.cc",
       "value_builder.h",
       "value_counter.cc",
       "value_counter.h",
       "verifier_formats.cc",
       "verifier_formats.h",
-      "view_type.cc",
-      "view_type.h",
+      "view_type_util.cc",
+      "view_type_util.h",
     ]
 
     configs += [
@@ -422,8 +442,6 @@ if (enable_extensions) {
       "api/extension_action/action_info_test_util.h",
       "file_test_util.cc",
       "file_test_util.h",
-      "scoped_worker_based_extensions_channel.cc",
-      "scoped_worker_based_extensions_channel.h",
     ]
 
     deps = [
@@ -480,6 +498,7 @@ if (enable_extensions) {
       "manifest_handlers/web_app_shortcut_icons_handler_unittest.cc",
       "manifest_unittest.cc",
       "message_bundle_unittest.cc",
+      "mojom/url_pattern_set_mojom_traits_unittest.cc",
       "permissions/api_permission_set_unittest.cc",
       "permissions/api_permission_unittest.cc",
       "permissions/base_set_operators_unittest.cc",
@@ -506,6 +525,7 @@ if (enable_extensions) {
       "//extensions:extensions_resources",
       "//extensions/common:mojom",
       "//extensions/common/api",
+      "//mojo/public/cpp/test_support:test_utils",
       "//tools/json_schema_compiler:generated_api_util",
 
       # TODO(brettw) these tests should not be including headers from browser.

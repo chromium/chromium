@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
       command_line.GetSwitchValueNative(kSwitchInputFilterlistFiles);
 
 #if defined(OS_WIN)
-  base::CommandLine::StringType separator = base::ASCIIToUTF16(",");
+  base::CommandLine::StringType separator = L",";
 #else
   base::CommandLine::StringType separator(",");
 #endif

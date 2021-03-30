@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FakeChromeEvent} from '../../fake_chrome_event.m.js';
+// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * @fileoverview Fake implementation of chrome.system.display for testing.
  */
@@ -11,7 +17,7 @@ cr.define('settings', function() {
    * @constructor
    * @implements {SystemDisplay}
    */
-  function FakeSystemDisplay() {
+  /* #export */ function FakeSystemDisplay() {
     /** @type {!Array<!chrome.system.display.DisplayUnitInfo>} */
     this.fakeDisplays = [];
     this.fakeLayouts = [];
@@ -156,5 +162,6 @@ cr.define('settings', function() {
     }
   };
 
+  // #cr_define_end
   return {FakeSystemDisplay: FakeSystemDisplay};
 });

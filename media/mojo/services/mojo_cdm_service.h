@@ -35,25 +35,23 @@ class CdmFactory;
 class MEDIA_MOJO_EXPORT MojoCdmService final
     : public mojom::ContentDecryptionModule {
  public:
-  using CdmServiceCreatedCB =
-      base::OnceCallback<void(std::unique_ptr<MojoCdmService> mojo_cdm_service,
-                              mojo::PendingRemote<mojom::Decryptor> decryptor,
+  // Callback for Initialize(). Non-null `cdm_context` indicates success. Null
+  // `cdm_context` indicates failure and the `error_message` provides a reason.
+  using InitializeCB =
+      base::OnceCallback<void(mojom::CdmContextPtr cdm_context,
                               const std::string& error_message)>;
 
-  // Creates a MojoCdmService. Callback will have |mojo_cdm_service| be non-null
-  // on success, on failure it will be null and the |error_message| will
-  // indicate a reason.
-  // - |cdm_factory| is used to create CDM instances. Must not be null.
-  // - |context| is used to keep track of all CDM instances such that we can
-  //   connect the CDM with a media player (e.g. decoder). Can be null if the
-  //   CDM does not need to be connected with any media player in this process.
-  static void Create(CdmFactory* cdm_factory,
-                     MojoCdmServiceContext* context,
-                     const std::string& key_system,
-                     const CdmConfig& cdm_config,
-                     CdmServiceCreatedCB callback);
-
+  explicit MojoCdmService(MojoCdmServiceContext* context);
   ~MojoCdmService() final;
+
+  // Initialize the MojoCdmService, including creating the real CDM using the
+  // `cdm_factory`, which must not be null. The MojoCdmService should NOT be
+  // used before the `init_cb` is returned.
+  void Initialize(CdmFactory* cdm_factory,
+                  const std::string& key_system,
+                  const CdmConfig& cdm_config,
+                  InitializeCB init_cb);
+
   // mojom::ContentDecryptionModule implementation.
   void SetClient(
       mojo::PendingAssociatedRemote<mojom::ContentDecryptionModuleClient>
@@ -82,14 +80,11 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   scoped_refptr<::media::ContentDecryptionModule> GetCdm();
 
   // Gets the remote ID of the CDM this is holding.
-  base::Optional<base::UnguessableToken> cdm_id() const { return cdm_id_; }
+  base::UnguessableToken cdm_id() const { return cdm_id_.value(); }
 
  private:
-  MojoCdmService(CdmFactory* cdm_factory, MojoCdmServiceContext* context);
-
   // Callback for CdmFactory::Create().
-  void OnCdmCreated(std::unique_ptr<MojoCdmService> mojo_cdm_service,
-                    CdmServiceCreatedCB callback,
+  void OnCdmCreated(InitializeCB callback,
                     const scoped_refptr<::media::ContentDecryptionModule>& cdm,
                     const std::string& error_message);
 
@@ -107,8 +102,7 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   // Callback for when |decryptor_| loses connectivity.
   void OnDecryptorConnectionError();
 
-  CdmFactory* cdm_factory_;
-  MojoCdmServiceContext* const context_ = nullptr;
+  MojoCdmServiceContext* const context_;
   scoped_refptr<::media::ContentDecryptionModule> cdm_;
 
   // MojoDecryptorService is passed the Decryptor from |cdm_|, so

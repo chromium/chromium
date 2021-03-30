@@ -48,7 +48,7 @@ void SpellCheckHostMetrics::RecordEnabledStats(bool enabled) {
     RecordCustomWordCountStats(static_cast<size_t>(-1));
 }
 
-void SpellCheckHostMetrics::RecordCheckedWordStats(const base::string16& word,
+void SpellCheckHostMetrics::RecordCheckedWordStats(const std::u16string& word,
                                                    bool misspell) {
   spellchecked_word_count_++;
   if (misspell) {
@@ -60,13 +60,10 @@ void SpellCheckHostMetrics::RecordCheckedWordStats(const base::string16& word,
       RecordReplacedWordStats(0);
   }
 
-  int percentage = (100 * misspelled_word_count_) / spellchecked_word_count_;
-  UMA_HISTOGRAM_PERCENTAGE("SpellCheck.MisspellRatio", percentage);
-
   // Collects actual number of checked words, excluding duplication.
   base::MD5Digest digest;
   base::MD5Sum(reinterpret_cast<const unsigned char*>(word.c_str()),
-         word.size() * sizeof(base::char16), &digest);
+               word.size() * sizeof(char16_t), &digest);
   checked_word_hashes_.insert(base::MD5DigestToBase16(digest));
 
   RecordWordCounts();
@@ -100,14 +97,6 @@ void SpellCheckHostMetrics::RecordSuggestionStats(int delta) {
 
 void SpellCheckHostMetrics::RecordReplacedWordStats(int delta) {
   replaced_word_count_ += delta;
-
-  if (misspelled_word_count_) {
-    // zero |misspelled_word_count_| is possible when an extension
-    // gives the misspelling, which is not recorded as a part of this
-    // metrics.
-    int percentage = (100 * replaced_word_count_) / misspelled_word_count_;
-    UMA_HISTOGRAM_PERCENTAGE("SpellCheck.ReplaceRatio", percentage);
-  }
 
   if (suggestion_show_count_) {
     int percentage = (100 * replaced_word_count_) / suggestion_show_count_;

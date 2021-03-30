@@ -9,16 +9,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "weblayer/browser/no_state_prefetch/prerender_link_manager_factory.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/prerender_controller.h"
@@ -88,7 +88,7 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
   }
 
   void NavigateToPageAndWaitForTitleChange(const GURL& navigate_to,
-                                           base::string16 expected_title) {
+                                           std::u16string expected_title) {
     content::TitleWatcher title_watcher(
         static_cast<TabImpl*>(shell()->tab())->web_contents(), expected_title);
     NavigateAndWaitForCompletion(navigate_to, shell());
@@ -114,16 +114,19 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
 #endif
 };
 
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, CreatePrerenderManager) {
-  auto* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(GetBrowserContext());
-  EXPECT_TRUE(prerender_manager);
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       CreateNoStatePrefetchManager) {
+  auto* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(GetBrowserContext());
+  EXPECT_TRUE(no_state_prefetch_manager);
 }
 
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, CreatePrerenderLinkManager) {
-  auto* prerender_link_manager =
-      PrerenderLinkManagerFactory::GetForBrowserContext(GetBrowserContext());
-  EXPECT_TRUE(prerender_link_manager);
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       CreateNoStatePrefetchLinkManager) {
+  auto* no_state_prefetch_link_manager =
+      NoStatePrefetchLinkManagerFactory::GetForBrowserContext(
+          GetBrowserContext());
+  EXPECT_TRUE(no_state_prefetch_link_manager);
 }
 
 // Test that adding a link-rel prerender tag causes a fetch.
@@ -135,8 +138,15 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
 }
 
 // Test that only render blocking resources are loaded during NoStatePrefetch.
+// TODO(https://crbug.com/1144282): Fix failures on Asan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NSPLoadsRenderBlockingResource \
+  DISABLED_NSPLoadsRenderBlockingResource
+#else
+#define MAYBE_NSPLoadsRenderBlockingResource NSPLoadsRenderBlockingResource
+#endif
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       NSPLoadsRenderBlockingResource) {
+                       MAYBE_NSPLoadsRenderBlockingResource) {
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
                                shell());
   script_resource_fetched_->Run();
@@ -146,7 +156,14 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
 
 // Test that navigating to a no-state-prefetched page executes JS and reuses
 // prerendered resources.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, NavigateToPrerenderedPage) {
+// TODO(https://crbug.com/1144282): Fix failures on Asan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NavigateToPrerenderedPage DISABLED_NavigateToPrerenderedPage
+#else
+#define MAYBE_NavigateToPrerenderedPage NavigateToPrerenderedPage
+#endif
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       MAYBE_NavigateToPrerenderedPage) {
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
                                shell());
   script_resource_fetched_->Run();
@@ -154,8 +171,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, NavigateToPrerenderedPage) {
   // Navigate to the prerendered page and wait for its title to change.
   script_fetched_ = false;
   NavigateToPageAndWaitForTitleChange(
-      GURL(https_server_->GetURL("/prerendered_page.html")),
-      base::ASCIIToUTF16("Prefetch Page"));
+      GURL(https_server_->GetURL("/prerendered_page.html")), u"Prefetch Page");
 
   EXPECT_FALSE(script_fetched_);
   EXPECT_TRUE(script_executed_);
@@ -170,8 +186,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, UKMRecorded) {
   script_resource_fetched_->Run();
 
   NavigateToPageAndWaitForTitleChange(
-      GURL(https_server_->GetURL("/prerendered_page.html")),
-      base::ASCIIToUTF16("Prefetch Page"));
+      GURL(https_server_->GetURL("/prerendered_page.html")), u"Prefetch Page");
 
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::NoStatePrefetch::kEntryName);
@@ -222,8 +237,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, MAYBE_ExternalPrerender) {
   // Navigate to the prerendered page and wait for its title to change.
   script_fetched_ = false;
   NavigateToPageAndWaitForTitleChange(
-      GURL(https_server_->GetURL("/prerendered_page.html")),
-      base::ASCIIToUTF16("Prefetch Page"));
+      GURL(https_server_->GetURL("/prerendered_page.html")), u"Prefetch Page");
   EXPECT_FALSE(script_fetched_);
 }
 

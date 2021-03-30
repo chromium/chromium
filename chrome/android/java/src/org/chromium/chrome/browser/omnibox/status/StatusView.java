@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
-import static org.chromium.chrome.browser.toolbar.top.ToolbarPhone.URL_FOCUS_CHANGE_ANIMATION_DURATION_MS;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RotateDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
@@ -20,33 +19,35 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.widget.Toast;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * StatusView is a location bar's view displaying status (icons and/or text).
  */
 public class StatusView extends LinearLayout {
-    @VisibleForTesting
-    static class StatusViewDelegate {
-        /** @see {@link SearchEngineLogoUtils#shouldShowSearchEngineLogo} */
-        boolean shouldShowSearchEngineLogo(boolean isIncognito) {
-            return SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito);
-        }
-
-        /** @see {@link SearchEngineLogoUtils#isSearchEngineLogoEnabled()} */
-        boolean isSearchEngineLogoEnabled() {
-            return SearchEngineLogoUtils.isSearchEngineLogoEnabled();
-        }
+    @IntDef({IconTransitionType.CROSSFADE, IconTransitionType.ROTATE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IconTransitionType {
+        int CROSSFADE = 0;
+        int ROTATE = 1;
     }
+    public static final int ICON_ANIMATION_DURATION_MS = 225;
+    public static final int ICON_ROTATION_DURATION_MS = 250;
+    private static final int ICON_ROTATION_DEGREES = 180;
 
     private @Nullable View mIncognitoBadge;
     private int mIncognitoBadgeEndPaddingWithIcon;
@@ -69,16 +70,15 @@ public class StatusView extends LinearLayout {
 
     private TouchDelegate mTouchDelegate;
     private CompositeTouchDelegate mCompositeTouchDelegate;
-    private StatusViewDelegate mDelegate;
 
     private boolean mLastTouchDelegateRtlness;
     private Rect mLastTouchDelegateRect;
 
     private LocationBarDataProvider mLocationBarDataProvider;
+    private SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     public StatusView(Context context, AttributeSet attributes) {
         super(context, attributes);
-        mDelegate = new StatusViewDelegate();
     }
 
     @Override
@@ -97,38 +97,39 @@ public class StatusView extends LinearLayout {
         mLocationBarDataProvider = toolbarCommonPropertiesModel;
     }
 
+    void setSearchEngineLogoUtils(SearchEngineLogoUtils searchEngineLogoUtils) {
+        mSearchEngineLogoUtils = searchEngineLogoUtils;
+    }
+
     /**
-     * @see {@link org.chromium.chrome.browser.omnibox.LocationBar#updateSearchEngineStatusIcon}.
+     * Update information required to display the search engine icon.
      */
-    public void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
-            boolean isSearchEngineGoogle, String searchEngineUrl) {
-        if (mLocationBarDataProvider != null
-                && mDelegate.shouldShowSearchEngineLogo(mLocationBarDataProvider.isIncognito())) {
-            LinearLayout.LayoutParams layoutParams =
-                    new LinearLayout.LayoutParams(mIconView.getLayoutParams());
-            layoutParams.setMarginEnd(0);
-            layoutParams.width =
-                    getResources().getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
-            mIconView.setLayoutParams(layoutParams);
-            // Setup the padding once we're loaded, the other padding changes will happen with post-
-            // layout positioning.
-            setPaddingRelative(getPaddingStart(), getPaddingTop(),
-                    getResources().getDimensionPixelOffset(
-                            R.dimen.sei_location_bar_icon_end_padding),
-                    getPaddingBottom());
-            // Note: the margins and implicit padding were removed from the status view for the
-            // dse icon experiment. Moving padding values that were there to the verbose status
-            // text view and the verbose text extra space.
-            mVerboseStatusTextView.setPaddingRelative(
-                    getResources().getDimensionPixelSize(
-                            R.dimen.sei_location_bar_verbose_start_padding_verbose_text),
-                    mVerboseStatusTextView.getPaddingTop(), mVerboseStatusTextView.getPaddingEnd(),
-                    mVerboseStatusTextView.getPaddingBottom());
-            layoutParams = new LinearLayout.LayoutParams(mStatusExtraSpace.getLayoutParams());
-            layoutParams.width = getResources().getDimensionPixelSize(
-                    R.dimen.sei_location_bar_status_extra_padding_width);
-            mStatusExtraSpace.setLayoutParams(layoutParams);
-        }
+    public void updateSearchEngineStatusIcon() {
+        if (!mSearchEngineLogoUtils.isSearchEngineLogoEnabled()) return;
+
+        LinearLayout.LayoutParams layoutParams =
+                new LinearLayout.LayoutParams(mIconView.getLayoutParams());
+        layoutParams.setMarginEnd(0);
+        layoutParams.width =
+                getResources().getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
+        mIconView.setLayoutParams(layoutParams);
+        // Setup the padding once we're loaded, the other padding changes will happen with post-
+        // layout positioning.
+        setPaddingRelative(getPaddingStart(), getPaddingTop(),
+                getResources().getDimensionPixelOffset(R.dimen.sei_location_bar_icon_end_padding),
+                getPaddingBottom());
+        // Note: the margins and implicit padding were removed from the status view for the
+        // dse icon experiment. Moving padding values that were there to the verbose status
+        // text view and the verbose text extra space.
+        mVerboseStatusTextView.setPaddingRelative(
+                getResources().getDimensionPixelSize(
+                        R.dimen.sei_location_bar_verbose_start_padding_verbose_text),
+                mVerboseStatusTextView.getPaddingTop(), mVerboseStatusTextView.getPaddingEnd(),
+                mVerboseStatusTextView.getPaddingBottom());
+        layoutParams = new LinearLayout.LayoutParams(mStatusExtraSpace.getLayoutParams());
+        layoutParams.width = getResources().getDimensionPixelSize(
+                R.dimen.sei_location_bar_status_extra_padding_width);
+        mStatusExtraSpace.setLayoutParams(layoutParams);
     }
 
     /**
@@ -153,7 +154,8 @@ public class StatusView extends LinearLayout {
         // explicitly in setStatusIconShown. The visibility should only be set here through code not
         // related to the dse icon.
         if (mLocationBarDataProvider != null
-                && mDelegate.shouldShowSearchEngineLogo(mLocationBarDataProvider.isIncognito())) {
+                && mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
@@ -167,7 +169,7 @@ public class StatusView extends LinearLayout {
             updateIncognitoBadgeEndPadding();
             mIconView.animate()
                     .alpha(1.0f)
-                    .setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS)
+                    .setDuration(ICON_ANIMATION_DURATION_MS)
                     .withEndAction(() -> {
                         mAnimatingStatusIconShow = false;
                         // Wait until the icon is visible so the bounds will be properly set.
@@ -186,7 +188,7 @@ public class StatusView extends LinearLayout {
             // back and forth between secure and insecure sites, which seems like a glitch.
             // See bug: crbug.com/919449
             mIconView.animate()
-                    .setDuration(mAnimationsEnabled ? URL_FOCUS_CHANGE_ANIMATION_DURATION_MS : 0)
+                    .setDuration(mAnimationsEnabled ? ICON_ANIMATION_DURATION_MS : 0)
                     .alpha(0.0f)
                     .withEndAction(() -> {
                         mIconView.setVisibility(View.GONE);
@@ -205,7 +207,7 @@ public class StatusView extends LinearLayout {
     /**
      * Start animating transition of status icon.
      */
-    private void animateStatusIcon() {
+    private void animateStatusIcon(@IconTransitionType int transitionType) {
         Drawable targetIcon = mStatusIconDrawable;
         boolean wantIconHidden = mStatusIconDrawable == null;
 
@@ -242,15 +244,32 @@ public class StatusView extends LinearLayout {
                         && ((TransitionDrawable) existingDrawable).getNumberOfLayers() == 2) {
                     existingDrawable = ((TransitionDrawable) existingDrawable).getDrawable(1);
                 }
-                TransitionDrawable newImage =
-                        new TransitionDrawable(new Drawable[] {existingDrawable, targetIcon});
+
+                TransitionDrawable newImage = new TransitionDrawable(new Drawable[] {
+                        existingDrawable,
+                        transitionType == IconTransitionType.ROTATE ? getRotatedIcon(targetIcon)
+                                                                    : targetIcon});
 
                 mIconView.setImageDrawable(newImage);
 
                 // Note: crossfade controls blending, not animation.
                 newImage.setCrossFadeEnabled(true);
-                newImage.startTransition(
-                        mAnimationsEnabled ? URL_FOCUS_CHANGE_ANIMATION_DURATION_MS : 0);
+
+                if (transitionType == IconTransitionType.CROSSFADE) {
+                    newImage.startTransition(mAnimationsEnabled ? ICON_ANIMATION_DURATION_MS : 0);
+                } else {
+                    mIconView.animate()
+                            .setDuration(ICON_ROTATION_DURATION_MS)
+                            .rotationBy(ICON_ROTATION_DEGREES)
+                            .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
+                            .withStartAction(
+                                    () -> { newImage.startTransition(ICON_ANIMATION_DURATION_MS); })
+                            .withEndAction(() -> {
+                                mIconView.setRotation(0);
+                                mIconView.setImageDrawable(targetIcon);
+                            })
+                            .start();
+                }
 
                 // Update the touch delegate only if the icons are swapped without animating the
                 // image view.
@@ -259,6 +278,16 @@ public class StatusView extends LinearLayout {
                 mIconView.setImageDrawable(targetIcon);
             }
         }
+    }
+
+    /** Returns a rotated version of the icon passed in. */
+    private Drawable getRotatedIcon(@NonNull Drawable icon) {
+        RotateDrawable rotated = new RotateDrawable();
+        rotated.setDrawable(icon);
+        rotated.setToDegrees(ICON_ROTATION_DEGREES);
+        // Jump drawable to its target state.
+        rotated.setLevel(10000);
+        return rotated;
     }
 
     /**
@@ -294,9 +323,10 @@ public class StatusView extends LinearLayout {
         mAnimationsEnabled = enabled;
     }
 
-    void setStatusIconResources(Drawable statusIconDrawable) {
+    void setStatusIconResources(
+            @Nullable Drawable statusIconDrawable, @IconTransitionType int transitionType) {
         mStatusIconDrawable = statusIconDrawable;
-        animateStatusIcon();
+        animateStatusIcon(transitionType);
     }
 
     /** Specify the status icon alpha. */
@@ -313,7 +343,8 @@ public class StatusView extends LinearLayout {
         // implicitly in animateStatusIcon. The visibility should only be set here through code
         // related to the dse icon.
         if (mLocationBarDataProvider != null
-                && !mDelegate.shouldShowSearchEngineLogo(mLocationBarDataProvider.isIncognito())) {
+                && !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito())) {
             // Let developers know that they shouldn't use this code-path.
             assert false : "Only DSE icon code should set the status icon visibility manually.";
             return;
@@ -410,7 +441,7 @@ public class StatusView extends LinearLayout {
         if (mIncognitoBadge == null) return;
 
         int endPadding = -1;
-        if (mDelegate.isSearchEngineLogoEnabled()) {
+        if (mSearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
             endPadding = 0;
         } else {
             endPadding = isIconVisible() ? mIncognitoBadgeEndPaddingWithIcon
@@ -498,9 +529,5 @@ public class StatusView extends LinearLayout {
 
     TouchDelegate getTouchDelegateForTesting() {
         return mTouchDelegate;
-    }
-
-    void setDelegateForTesting(StatusViewDelegate delegate) {
-        mDelegate = delegate;
     }
 }

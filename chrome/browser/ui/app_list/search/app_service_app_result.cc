@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -22,7 +23,7 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -129,6 +130,7 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
       return ash::CROSTINI_APP;
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
       return ash::EXTENSION_APP;
     case apps::mojom::AppType::kLacros:
       return ash::LACROS;
@@ -189,7 +191,7 @@ void AppServiceAppResult::Launch(int event_flags,
         controller()->GetAppListDisplayId());
   } else {
     proxy->Launch(app_id(), event_flags, launch_source,
-                  controller()->GetAppListDisplayId());
+                  apps::MakeWindowInfo(controller()->GetAppListDisplayId()));
   }
 }
 
@@ -204,8 +206,9 @@ void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {
             : apps::mojom::IconType::kUncompressed;
     icon_loader_releaser_ = icon_loader_->LoadIcon(
         app_type_, app_id(), icon_type,
-        chip ? ash::AppListConfig::instance().suggestion_chip_icon_dimension()
-             : ash::AppListConfig::instance().GetPreferredIconDimension(
+        chip ? ash::SharedAppListConfig::instance()
+                   .suggestion_chip_icon_dimension()
+             : ash::SharedAppListConfig::instance().GetPreferredIconDimension(
                    display_type()),
         allow_placeholder_icon,
         base::BindOnce(&AppServiceAppResult::OnLoadIcon,
@@ -250,7 +253,7 @@ void AppServiceAppResult::HandleSuggestionChip(Profile* profile) {
 
 void AppServiceAppResult::UpdateContinueReadingFavicon(
     bool continue_to_google_server) {
-  base::string16 title;
+  std::u16string title;
   GURL url;
   if (app_list::HasRecommendableForeignTab(profile(), &title, &url,
                                            /*test_delegate=*/nullptr)) {

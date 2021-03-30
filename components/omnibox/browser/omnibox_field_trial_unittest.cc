@@ -5,12 +5,12 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -361,11 +361,11 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
   // The default value can be overridden.
   scoped_feature_list_.InitWithFeaturesAndParameters(
       {{omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-        {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "7"}}}},
+        {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "3"}}}},
       {});
   base::Time age_threshold =
       OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(7, base::TimeDelta(base::Time::Now() - age_threshold).InDays());
+  EXPECT_EQ(3, base::TimeDelta(base::Time::Now() - age_threshold).InDays());
 
   // If the age threshold is not parsable to an unsigned integer, the default
   // value is used.
@@ -375,8 +375,7 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
         {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "j"}}}},
       {});
   age_threshold = OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(history::kLowQualityMatchAgeLimitInDays,
-            base::TimeDelta(base::Time::Now() - age_threshold).InDays());
+  EXPECT_EQ(7, base::TimeDelta(base::Time::Now() - age_threshold).InDays());
 }
 
 TEST_F(OmniboxFieldTrialTest, HUPNewScoringFieldTrial) {

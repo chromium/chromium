@@ -6,6 +6,7 @@ assert(is_fuchsia)
 
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/symbol_archive.gni")
+import("//build/config/locales.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
@@ -30,7 +31,6 @@ mojom("mojom") {
 repack("web_engine_pak") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/components/strings/components_strings_en-US.pak",
     "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
@@ -39,15 +39,11 @@ repack("web_engine_pak") {
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
-    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
-    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 
   deps = [
     "//components/resources:components_resources",
-    "//components/strings",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
     "//content/app/resources",
@@ -57,13 +53,37 @@ repack("web_engine_pak") {
     "//net:net_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
-    "//third_party/blink/public/strings",
     "//ui/resources",
-    "//ui/strings",
   ]
 
-  output = "$root_out_dir/web_engine.pak"
+  # TODO(crbug.com/1092804): Move this into ${target_gen_dir} and have a
+  # GN SDK fuchsia_resource() rule map it into place in the web_engine package.
+  output = "$root_gen_dir/common_resources.pak"
   visibility = [ ":*" ]
+}
+
+foreach(locale, locales_with_pseudolocales) {
+  repack("web_engine_locale_${locale}_pak") {
+    # WebEngine requires the following locale-specific resources:
+    # 1. Locale settings (e.g. default encoding, accept-languages per locale).
+    # 2. Blink strings for UI elements, e.g. drop-down lists.
+    # 3. //ui strings used to configure e.g. preferred font family.
+
+    sources = [
+      "$root_gen_dir/components/strings/components_locale_settings_${locale}.pak",
+      "$root_gen_dir/third_party/blink/public/strings/blink_strings_${locale}.pak",
+      "$root_gen_dir/ui/strings/app_locale_settings_${locale}.pak",
+    ]
+
+    deps = [
+      "//components/strings:components_locale_settings",
+      "//third_party/blink/public/strings",
+      "//ui/strings:app_locale_settings",
+    ]
+
+    output = "$root_gen_dir/locales/${locale}.pak"
+    visibility = [ ":*" ]
+  }
 }
 
 component("web_engine_core") {
@@ -80,6 +100,8 @@ component("web_engine_core") {
     "//components/on_load_script_injector/browser",
     "//components/on_load_script_injector/renderer",
     "//components/policy/content:safe_sites_navigation_throttle",
+    "//components/site_isolation",
+    "//components/strings:components_locale_settings",
     "//components/version_info",
     "//content/public/app",
     "//content/public/browser",
@@ -91,6 +113,7 @@ component("web_engine_core") {
     "//fuchsia/base:message_port",
     "//fuchsia/base:modular",
     "//fuchsia/cast_streaming",
+    "//google_apis",
     "//gpu/command_buffer/service",
     "//media",
     "//media/fuchsia/cdm/service",
@@ -124,13 +147,24 @@ component("web_engine_core") {
     "//ui/wm",
     "//ui/wm/public",
   ]
-  data_deps = [ ":web_engine_pak" ]
+
+  # Technically the PAK files are only data dependencies, but specifying them
+  # as |data_deps| causes metadata (.info) files to also be pulled-in to the
+  # package.
+  deps += [ ":web_engine_pak" ]
+  data = [ "$root_gen_dir/common_resources.pak" ]
+  foreach(locale, locales_with_pseudolocales) {
+    deps += [ ":web_engine_locale_${locale}_pak" ]
+    data += [ "$root_gen_dir/locales/${locale}.pak" ]
+  }
+
   public_deps = [
     "//content/public/browser",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
-  data = [ "$root_out_dir/web_engine.pak" ]
+
   configs += [ ":web_engine_implementation" ]
+
   sources = [
     "browser/accessibility_bridge.cc",
     "browser/accessibility_bridge.h",
@@ -196,6 +230,7 @@ component("web_engine_core") {
     "context_provider_impl.h",
     "context_provider_main.cc",
     "context_provider_main.h",
+    "features.h",
     "renderer/cast_streaming_demuxer.cc",
     "renderer/cast_streaming_demuxer.h",
     "renderer/cast_streaming_receiver.cc",
@@ -242,25 +277,25 @@ source_set("webui_resources") {
   deps = [ "//ui/resources" ]
 }
 
-template("web_engine_package") {
-  cr_fuchsia_package(target_name) {
-    binary = ":web_engine_exe"
-    manifest = "context_provider.cmx"
-    component_name_override = "context_provider"
+_web_engine_excluded_files = [
+  # TODO(1022542): Swiftshader is never used under Fuchsia.
+  "lib/libswiftshader_libEGL.so",
+  "lib/libswiftshader_libGLESv2.so",
+]
 
-    if (invoker.include_webui_resources_pak) {
-      deps = [ ":webui_resources" ]
-    }
+# Definitions for the main web_engine package. The package contains the
+# context_provider component definition, and its dependencies.  An installer
+# script is declared for the package, for ease of development.
 
-    excluded_files = [
-      "lib/libswiftshader_libEGL.so",
-      "lib/libswiftshader_libGLESv2.so",
-    ]
-  }
+fuchsia_component("context_provider_component") {
+  manifest = "context_provider.cmx"
+  data_deps = [ ":web_engine_exe" ]
+  visibility = [ ":*" ]
 }
 
-web_engine_package("web_engine") {
-  include_webui_resources_pak = false
+fuchsia_package("web_engine") {
+  deps = [ ":context_provider_component" ]
+  excluded_files = _web_engine_excluded_files
 }
 
 fuchsia_package_runner("web_engine_installer") {
@@ -268,9 +303,16 @@ fuchsia_package_runner("web_engine_installer") {
   install_only = true
 }
 
-# Build a WebEngine package that contains WebUI static resources.
-web_engine_package("web_engine_with_webui") {
-  include_webui_resources_pak = true
+# Definitions for a variant of the web_engine package that bundles the WebUI
+# resources, to allow e.g. chrome://gpu to be used.  An installer script is
+# defined, for ease of development.
+
+fuchsia_package("web_engine_with_webui") {
+  deps = [
+    ":context_provider_component",
+    ":webui_resources",
+  ]
+  excluded_files = _web_engine_excluded_files
 }
 
 fuchsia_package_runner("web_engine_with_webui_installer") {
@@ -320,6 +362,7 @@ test("web_engine_browsertests") {
     "browser/media_browsertest.cc",
     "browser/navigation_policy_browsertest.cc",
     "browser/theme_manager_browsertest.cc",
+    "browser/virtual_keyboard_browsertest.cc",
   ]
 
   # TODO(crbug.com/1157909): Move to the list above when the bug is fixed.
@@ -332,6 +375,7 @@ test("web_engine_browsertests") {
     ":switches",
     ":web_engine_core",
     "//base/test:test_support",
+    "//components/cast/message_port:message_port",
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/safe_search_api:safe_search_api",
     "//components/safe_search_api:test_support",
@@ -339,13 +383,23 @@ test("web_engine_browsertests") {
     "//content/test:test_support",
     "//fuchsia/base",
     "//fuchsia/base:test_support",
+    "//fuchsia/cast_streaming",
+    "//fuchsia/cast_streaming:cast_streaming_test_sender",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.input.virtualkeyboard",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/gfx",
     "//ui/ozone",
+  ]
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+    "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
   ]
 }
 
@@ -384,10 +438,18 @@ test("web_engine_unittests") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
   ]
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/access_test_data_dir.test-cmx",
+
+    # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+    "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+    "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+  ]
 }
 
 test("web_engine_integration_tests") {
-  manifest = "web_engine_integration_tests.cmx"
   sources = [
     "test_debug_listener.cc",
     "test_debug_listener.h",
@@ -415,6 +477,12 @@ test("web_engine_integration_tests") {
         ":web_engine",
         "web_engine",
       ] ]
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    "//build/config/fuchsia/test/read_debug_data.test-cmx",
+    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+  ]
 }
 
 cr_fuchsia_package("web_engine_shell_pkg") {

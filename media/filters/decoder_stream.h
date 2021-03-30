@@ -46,13 +46,6 @@ class MEDIA_EXPORT DecoderStream {
   using Output = typename StreamTraits::OutputType;
   using DecoderConfig = typename StreamTraits::DecoderConfigType;
 
-  enum ReadStatus {
-    OK,                    // Everything went as planned.
-    ABORTED,               // Read aborted due to Reset() during pending read.
-    DEMUXER_READ_ABORTED,  // Demuxer returned aborted read.
-    DECODE_ERROR,          // Decoder returned decode error.
-  };
-
   // Callback to create a list of decoders.
   using CreateDecodersCB =
       base::RepeatingCallback<std::vector<std::unique_ptr<Decoder>>()>;
@@ -61,7 +54,8 @@ class MEDIA_EXPORT DecoderStream {
   using InitCB = base::OnceCallback<void(bool success)>;
 
   // Indicates completion of a DecoderStream read.
-  using ReadCB = base::OnceCallback<void(ReadStatus, scoped_refptr<Output>)>;
+  using ReadResult = StatusOr<scoped_refptr<Output>>;
+  using ReadCB = base::OnceCallback<void(ReadResult)>;
 
   DecoderStream(std::unique_ptr<DecoderStreamTraits<StreamType>> traits,
                 scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -186,8 +180,8 @@ class MEDIA_EXPORT DecoderStream {
       std::unique_ptr<Decoder> selected_decoder,
       std::unique_ptr<DecryptingDemuxerStream> decrypting_demuxer_stream);
 
-  // Satisfy pending |read_cb_| with |status| and |output|.
-  void SatisfyRead(ReadStatus status, scoped_refptr<Output> output);
+  // Satisfy pending |read_cb_| with |result|.
+  void SatisfyRead(ReadResult result);
 
   // Decodes |buffer| and returns the result via OnDecodeOutputReady().
   // Saves |buffer| into |pending_buffers_| if appropriate.

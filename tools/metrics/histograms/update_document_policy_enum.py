@@ -21,7 +21,7 @@ if __name__ == '__main__':
     sys.stderr.write(__doc__)
     sys.exit(1)
 
-  source_file = 'third_party/blink/public/mojom/feature_policy/' \
+  source_file = 'third_party/blink/public/mojom/permissions_policy/' \
                 'document_policy_feature.mojom'
   UpdateHistogramEnum(
       histogram_enum_name='DocumentPolicyFeature',

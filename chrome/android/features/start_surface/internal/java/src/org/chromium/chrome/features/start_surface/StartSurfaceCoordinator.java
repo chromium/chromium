@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -11,9 +13,12 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ntp.ScrollListener;
+import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.TasksSurface;
@@ -26,12 +31,15 @@ import org.chromium.chrome.start_surface.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Root coordinator that is responsible for showing start surfaces, like a grid of Tabs, explore
@@ -44,6 +52,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final @SurfaceMode int mSurfaceMode;
     private final BottomSheetController mBottomSheetController;
     private final Supplier<Tab> mParentTabSupplier;
+    private final WindowAndroid mWindowAndroid;
 
     // Non-null in SurfaceMode.TASKS_ONLY, SurfaceMode.TWO_PANES and SurfaceMode.SINGLE_PANE modes.
     @Nullable
@@ -93,16 +102,56 @@ public class StartSurfaceCoordinator implements StartSurface {
     private boolean mIsSecondaryTaskInitPending;
     private FeedLoadingCoordinator mFeedLoadingCoordinator;
 
+    // Listeners used by the contained surfaces (e.g., Explore) to listen to the scroll changes on
+    // the main scrollable container of the start surface.
+    private final ObserverList<ScrollListener> mScrollListeners =
+            new ObserverList<ScrollListener>();
+
+    @Nullable
+    private AppBarLayout.OnOffsetChangedListener mOffsetChangedListenerToGenerateScrollEvents;
+
+    private class ScrollableContainerDelegateImpl implements ScrollableContainerDelegate {
+        @Override
+        public void addScrollListener(ScrollListener listener) {
+            mScrollListeners.addObserver(listener);
+        }
+        @Override
+        public void removeScrollListener(ScrollListener listener) {
+            mScrollListeners.removeObserver(listener);
+        }
+
+        @Override
+        public int getVerticalScrollOffset() {
+            // Always return a zero dummy value because the offset is directly provided
+            // by the observer.
+            return 0;
+        }
+
+        @Override
+        public int getRootViewHeight() {
+            return mActivity.getCompositorViewHolder().getHeight();
+        }
+
+        @Override
+        public int getTopPositionRelativeToContainerView(View childView) {
+            int[] pos = new int[2];
+            ViewUtils.getRelativeLayoutPosition(
+                    mActivity.getCompositorViewHolder(), childView, pos);
+            return pos[1];
+        }
+    }
+
     // TODO(http://crbug.com/1093421): Remove dependency on ChromeActivity.
     public StartSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             BottomSheetController sheetController,
             OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
-            Supplier<Tab> parentTabSupplier, boolean hadWarmStart) {
+            Supplier<Tab> parentTabSupplier, boolean hadWarmStart, WindowAndroid windowAndroid) {
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
         mSurfaceMode = computeSurfaceMode();
         mBottomSheetController = sheetController;
         mParentTabSupplier = parentTabSupplier;
+        mWindowAndroid = windowAndroid;
 
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
                 || mSurfaceMode == SurfaceMode.OMNIBOX_ONLY
@@ -125,7 +174,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                                                         : null,
                 mSurfaceMode, mActivity, mActivity.getBrowserControlsManager(),
                 this::isActivityFinishingOrDestroyed, excludeMVTiles,
-                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
                 startSurfaceOneshotSupplier, hadWarmStart);
 
         // Show feed loading image.
@@ -135,11 +183,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             mFeedLoadingCoordinator.setUpLoadingView();
         }
         startSurfaceOneshotSupplier.set(this);
-    }
-
-    boolean isShowingTabSwitcher() {
-        assert StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled();
-        return mStartSurfaceMediator.isShowingTabSwitcher();
     }
 
     // Implements StartSurface.
@@ -162,6 +205,10 @@ public class StartSurfaceCoordinator implements StartSurface {
     public void destroy() {
         if (mTasksSurface != null) {
             mTasksSurface.removeFakeSearchBoxShrinkAnimation();
+        }
+        if (mOffsetChangedListenerToGenerateScrollEvents != null) {
+            removeHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
+            mOffsetChangedListenerToGenerateScrollEvents = null;
         }
     }
 
@@ -221,10 +268,10 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mSurfaceMode == SurfaceMode.SINGLE_PANE ? mTasksSurface.getBodyViewContainer()
                                                             : mActivity.getCompositorViewHolder(),
                     mPropertyModel, mSurfaceMode == SurfaceMode.SINGLE_PANE, mBottomSheetController,
-                    mParentTabSupplier);
+                    mParentTabSupplier, new ScrollableContainerDelegateImpl());
         }
         mStartSurfaceMediator.initWithNative(mSurfaceMode != SurfaceMode.NO_START_SURFACE
-                        ? mActivity.getToolbarManager().getFakeboxDelegate()
+                        ? mActivity.getToolbarManager().getOmniboxStub()
                         : null,
                 mExploreSurfaceCoordinator != null
                         ? mExploreSurfaceCoordinator.getFeedSurfaceCreator()
@@ -238,7 +285,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
         if (mTasksSurface != null) {
             mTasksSurface.onFinishNativeInitialization(
-                    mActivity, mActivity.getToolbarManager().getFakeboxDelegate());
+                    mActivity, mActivity.getToolbarManager().getOmniboxStub());
         }
 
         if (mIsInitPending) {
@@ -248,7 +295,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mIsSecondaryTaskInitPending) {
             mIsSecondaryTaskInitPending = false;
             mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mActivity.getToolbarManager().getFakeboxDelegate());
+                    mActivity, mActivity.getToolbarManager().getOmniboxStub());
             mSecondaryTasksSurface.initialize();
         }
     }
@@ -311,6 +358,11 @@ public class StartSurfaceCoordinator implements StartSurface {
         return mIsSecondaryTaskInitPending;
     }
 
+    @VisibleForTesting
+    public void showTabSelectionEditorForTesting(List<Tab> tabs) {
+        mStartSurfaceMediator.getSecondaryTasksSurfaceController().showTabSelectionEditor(tabs);
+    }
+
     private @SurfaceMode int computeSurfaceMode() {
         // Check the cached flag before getting the parameter to be consistent with the other
         // places. Note that the cached flag may have been set before native initialization.
@@ -355,9 +407,18 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
         mTasksSurface = TabManagementModuleProvider.getDelegate().createTasksSurface(mActivity,
                 mScrimCoordinator, mPropertyModel, tabSwitcherType, mParentTabSupplier,
-                !excludeMVTiles, hasTrendyTerms);
+                !excludeMVTiles, hasTrendyTerms, mWindowAndroid);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
         mTasksSurface.addFakeSearchBoxShrinkAnimation();
+        mOffsetChangedListenerToGenerateScrollEvents = new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                for (ScrollListener scrollListener : mScrollListeners) {
+                    scrollListener.onHeaderOffsetChanged(verticalOffset);
+                }
+            }
+        };
+        addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
 
         mTasksSurfacePropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel,
@@ -385,14 +446,11 @@ public class StartSurfaceCoordinator implements StartSurface {
         PropertyModel propertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
         mStartSurfaceMediator.setSecondaryTasksSurfacePropertyModel(propertyModel);
         mSecondaryTasksSurface = TabManagementModuleProvider.getDelegate().createTasksSurface(
-                mActivity, mScrimCoordinator, propertyModel,
-                StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled()
-                        ? TabSwitcherType.NONE
-                        : TabSwitcherType.GRID,
-                mParentTabSupplier, false, false);
+                mActivity, mScrimCoordinator, propertyModel, TabSwitcherType.GRID,
+                mParentTabSupplier, false, false, mWindowAndroid);
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mActivity.getToolbarManager().getFakeboxDelegate());
+                    mActivity, mActivity.getToolbarManager().getOmniboxStub());
             mSecondaryTasksSurface.initialize();
         } else {
             mIsSecondaryTaskInitPending = true;

@@ -252,18 +252,23 @@ size_t VideoRendererAlgorithm::RemoveExpiredFrames(base::TimeTicks deadline) {
 
   DCHECK_GT(average_frame_duration_, base::TimeDelta());
 
-  // Finds and removes all frames which are too old to be used.
-  size_t frames_dropped_without_rendering = 0;
-  size_t frames_to_expire = std::min(
-      frame_queue_.size() - 1, frame_queue_.size() - effective_frames_queued_);
-
+  // Expire everything before the first good frame or everything but the last
+  // frame if there is no good frame.
+  const int first_good_frame = FindFirstGoodFrame();
+  const size_t frames_to_expire =
+      first_good_frame < 0 ? frame_queue_.size() - 1 : first_good_frame;
   if (!frames_to_expire)
     return 0;
 
+  size_t frames_dropped_without_rendering = 0;
   for (size_t i = 0; i < frames_to_expire; ++i) {
     const ReadyFrame& frame = frame_queue_[i];
-    if (frame.render_count == frame.drop_count)
+
+    // Don't count frames that are intentionally dropped by cadence as dropped.
+    if (frame.render_count == frame.drop_count &&
+        (!cadence_estimator_.has_cadence() || frame.ideal_render_count)) {
       ++frames_dropped_without_rendering;
+    }
   }
 
   cadence_frame_counter_ += frames_to_expire;
@@ -322,12 +327,12 @@ int64_t VideoRendererAlgorithm::GetMemoryUsage() const {
 
 void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
   DCHECK(frame);
-  DCHECK(!frame->metadata()->end_of_stream);
+  DCHECK(!frame->metadata().end_of_stream);
 
   // Note: Not all frames have duration. E.g., this class is used with WebRTC
   // which does not provide duration information for its frames.
   base::TimeDelta metadata_frame_duration =
-      frame->metadata()->frame_duration.value_or(base::TimeDelta());
+      frame->metadata().frame_duration.value_or(base::TimeDelta());
   auto timestamp = frame->timestamp();
   ReadyFrame ready_frame(std::move(frame));
   auto it = frame_queue_.empty()
@@ -394,7 +399,7 @@ void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
     wallclock_duration = ready_frame.end_time - ready_frame.start_time;
   }
 
-  ready_frame.frame->metadata()->wallclock_frame_duration = wallclock_duration;
+  ready_frame.frame->metadata().wallclock_frame_duration = wallclock_duration;
 
   // The vast majority of cases should always append to the back, but in rare
   // circumstance we get out of order timestamps, http://crbug.com/386551.
@@ -476,7 +481,7 @@ void VideoRendererAlgorithm::UpdateFrameStatistics() {
   {
     const auto& last_frame = frame_queue_.back().frame;
     base::TimeDelta metadata_frame_duration =
-        last_frame->metadata()->frame_duration.value_or(base::TimeDelta());
+        last_frame->metadata().frame_duration.value_or(base::TimeDelta());
     if (metadata_frame_duration > base::TimeDelta()) {
       have_metadata_duration = true;
       media_timestamps.push_back(last_frame->timestamp() +
@@ -749,33 +754,38 @@ void VideoRendererAlgorithm::UpdateEffectiveFramesQueued() {
       std::max(min_frames_queued, CountEffectiveFramesQueued());
 }
 
-size_t VideoRendererAlgorithm::CountEffectiveFramesQueued() const {
-  // If we don't have cadence, subtract off any frames which are before
-  // the last rendered frame or are past their expected rendering time.
-  if (!cadence_estimator_.has_cadence()) {
-    size_t expired_frames = 0;
-    for (; expired_frames < frame_queue_.size(); ++expired_frames) {
-      const ReadyFrame& frame = frame_queue_[expired_frames];
-      if (frame.end_time.is_null() || frame.end_time > last_deadline_max_)
-        break;
+int VideoRendererAlgorithm::FindFirstGoodFrame() const {
+  const auto minimum_start_time =
+      cadence_estimator_.has_cadence()
+          ? last_deadline_max_ - max_acceptable_drift_
+          : last_deadline_max_;
+
+  size_t start_index = 0;
+  for (; start_index < frame_queue_.size(); ++start_index) {
+    const ReadyFrame& frame = frame_queue_[start_index];
+    if ((!cadence_estimator_.has_cadence() ||
+         frame.render_count < frame.ideal_render_count) &&
+        (frame.end_time.is_null() || frame.end_time > minimum_start_time)) {
+      break;
     }
-    return frame_queue_.size() - expired_frames;
   }
 
-  // Find the first usable frame to start counting from.
-  const int start_index = FindBestFrameByCadence();
+  return start_index == frame_queue_.size() ? -1 : start_index;
+}
+
+size_t VideoRendererAlgorithm::CountEffectiveFramesQueued() const {
+  const int start_index = FindFirstGoodFrame();
   if (start_index < 0)
     return 0;
 
-  const base::TimeTicks minimum_start_time =
-      last_deadline_max_ - max_acceptable_drift_;
+  if (!cadence_estimator_.has_cadence())
+    return frame_queue_.size() - start_index;
+
+  // We should ignore zero cadence frames in our effective frame count.
   size_t renderable_frame_count = 0;
   for (size_t i = start_index; i < frame_queue_.size(); ++i) {
-    const ReadyFrame& frame = frame_queue_[i];
-    if (frame.render_count < frame.ideal_render_count &&
-        (frame.end_time.is_null() || frame.end_time > minimum_start_time)) {
+    if (frame_queue_[i].ideal_render_count)
       ++renderable_frame_count;
-    }
   }
   return renderable_frame_count;
 }

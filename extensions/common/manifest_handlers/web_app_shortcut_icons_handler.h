@@ -6,9 +6,9 @@
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_WEB_APP_SHORTCUT_ICONS_HANDLER_H_
 
 #include <map>
+#include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_resource.h"
@@ -42,7 +42,7 @@ class WebAppShortcutIconsHandler : public ManifestHandler {
   ~WebAppShortcutIconsHandler() override;
 
   // ManifestHandler:
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   // ManifestHandler:

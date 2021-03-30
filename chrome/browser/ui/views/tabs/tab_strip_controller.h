@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -127,7 +127,7 @@ class TabStripController {
   // Creates a new tab, and loads |location| in the tab. If |location| is a
   // valid URL, then simply loads the URL, otherwise this can open a
   // search-result page for |location|.
-  virtual void CreateNewTabWithLocation(const base::string16& location) = 0;
+  virtual void CreateNewTabWithLocation(const std::u16string& location) = 0;
 
   // Invoked if the stacked layout (on or off) might have changed.
   virtual void StackedLayoutMaybeChanged() = 0;
@@ -147,11 +147,11 @@ class TabStripController {
   virtual void OnKeyboardFocusedTabChanged(base::Optional<int> index) = 0;
 
   // Returns the title of the given |group|.
-  virtual base::string16 GetGroupTitle(
+  virtual std::u16string GetGroupTitle(
       const tab_groups::TabGroupId& group) const = 0;
 
   // Returns the string describing the contents of the given |group|.
-  virtual base::string16 GetGroupContentString(
+  virtual std::u16string GetGroupContentString(
       const tab_groups::TabGroupId& group) const = 0;
 
   // Returns the color ID of the given |group|.
@@ -222,7 +222,7 @@ class TabStripController {
       BrowserFrameActiveState active_state) const = 0;
 
   // Returns the accessible tab name.
-  virtual base::string16 GetAccessibleTabName(const Tab* tab) const = 0;
+  virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
 
   // Returns the profile associated with the Tabstrip.
   virtual Profile* GetProfile() const = 0;

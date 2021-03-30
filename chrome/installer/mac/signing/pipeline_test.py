@@ -46,6 +46,10 @@ def _last_written_plist():
     return _write_plist.contents
 
 
+def _run_command_output_lipo(b):
+    return 'x86_64,arm64'
+
+
 def _read_file(p):
     if p == '/$I/Product Packaging/pkg_postinstall.in':
         return """app dir is '@APP_DIR@'
@@ -260,6 +264,9 @@ class TestPipelineHelpers(unittest.TestCase):
             mock.call(
                 '/$W/App Product.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (GPU).app'
             ),
+            mock.call(
+                '/$W/App Product.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app'
+            ),
             mock.call('/$W/App Product.app')
         ])
 
@@ -290,6 +297,9 @@ class TestPipelineHelpers(unittest.TestCase):
             ),
             mock.call(
                 '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (GPU).app'
+            ),
+            mock.call(
+                '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app'
             ),
             mock.call('/$W/App Product Canary.app')
         ])
@@ -346,7 +356,8 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
             'BundleIsRelocatable': False
         }])
 
-    @mock.patch('signing.commands.plistlib.readPlist', _read_plist)
+    @mock.patch('signing.commands.read_plist', _read_plist)
+    @mock.patch('signing.commands.run_command_output', _run_command_output_lipo)
     def test_productbuild_distribution_path(self, **kwargs):
         manager = mock.Mock()
         for attr in kwargs:
@@ -809,6 +820,72 @@ class TestSignAll(unittest.TestCase):
             mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
             mock.call._staple_chrome(
                 self.paths.replace_work('/$W_1/stable'), mock.ANY),
+
+            # Make the DMG.
+            mock.call._package_and_sign_dmg(mock.ANY, mock.ANY),
+
+            # Notarize the DMG.
+            mock.call.submit('/$O/AppProduct-99.0.9999.99.dmg', mock.ANY),
+            mock.call.wait_for_results({dmg_uuid: None}.keys(), mock.ANY),
+            mock.call.staple('/$O/AppProduct-99.0.9999.99.dmg'),
+            mock.call.shutil.rmtree('/$W_1'),
+
+            # Package the installer tools.
+            mock.call._package_installer_tools(mock.ANY, mock.ANY),
+        ])
+
+    def test_sign_inflated_distribution_dmg(self, **kwargs):
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        app_uuid = 'f38ee49c-c55b-4a10-a4f5-aaaa17636b76'
+        dmg_uuid = '9f49067e-a13d-436a-8016-3a22a4f6ef92'
+        kwargs['submit'].side_effect = [app_uuid, dmg_uuid]
+        kwargs['wait_for_results'].side_effect = [
+            iter([app_uuid]), iter([dmg_uuid])
+        ]
+        kwargs[
+            '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
+
+        class Config(test_config.TestConfig):
+
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(
+                        inflation_kilobytes=5000,
+                        package_as_dmg=True,
+                        package_as_pkg=False),
+                ]
+
+        config = Config()
+
+        pipeline.sign_all(self.paths, config)
+
+        self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
+
+        manager.assert_has_calls([
+            # First customize the distribution and sign it.
+            mock.call._customize_and_sign_chrome(mock.ANY, mock.ANY,
+                                                 '/$W_1/stable-5000', mock.ANY),
+
+            # Prepare the app for notarization.
+            mock.call.run_command([
+                'zip', '--recurse-paths', '--symlinks', '--quiet',
+                '/$W_1/AppProduct-99.0.9999.99.zip', 'App Product.app'
+            ],
+                                  cwd='/$W_1/stable-5000'),
+            mock.call.submit('/$W_1/AppProduct-99.0.9999.99.zip', mock.ANY),
+            mock.call.shutil.rmtree('/$W_2'),
+            mock.call.wait_for_results({app_uuid: None}.keys(), mock.ANY),
+            mock.call._staple_chrome(
+                self.paths.replace_work('/$W_1/stable-5000'), mock.ANY),
+            mock.call.run_command([
+                'dd', 'if=/dev/urandom',
+                'of=/$I/Product Packaging/inflation.bin', 'bs=1000',
+                'count=5000'
+            ]),
 
             # Make the DMG.
             mock.call._package_and_sign_dmg(mock.ANY, mock.ANY),

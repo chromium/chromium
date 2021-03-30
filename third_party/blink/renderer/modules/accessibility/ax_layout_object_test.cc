@@ -74,17 +74,17 @@ TEST_F(AXLayoutObjectTest, IsEditableOutsideListmarker) {
   EXPECT_TRUE(ax_list_marker->IsRichlyEditable());
 }
 
-TEST_F(AXLayoutObjectTest, StringValueTextTransform) {
+TEST_F(AXLayoutObjectTest, GetValueForControlWithTextTransform) {
   SetBodyInnerHTML(
       "<select id='t' style='text-transform:uppercase'>"
       "<option>abc</select>");
   const AXObject* ax_select = GetAXObjectByElementId("t");
   ASSERT_NE(nullptr, ax_select);
   EXPECT_TRUE(IsA<AXLayoutObject>(ax_select));
-  EXPECT_EQ("ABC", ax_select->StringValue());
+  EXPECT_EQ("ABC", ax_select->GetValueForControl());
 }
 
-TEST_F(AXLayoutObjectTest, StringValueTextSecurity) {
+TEST_F(AXLayoutObjectTest, GetValueForControlWithTextSecurity) {
   SetBodyInnerHTML(
       "<select id='t' style='-webkit-text-security:disc'>"
       "<option>abc</select>");
@@ -93,7 +93,7 @@ TEST_F(AXLayoutObjectTest, StringValueTextSecurity) {
   EXPECT_TRUE(IsA<AXLayoutObject>(ax_select));
   // U+2022 -> \xE2\x80\xA2 in UTF-8
   EXPECT_EQ("\xE2\x80\xA2\xE2\x80\xA2\xE2\x80\xA2",
-            ax_select->StringValue().Utf8());
+            ax_select->GetValueForControl().Utf8());
 }
 
 // Test AX hit test for user-agent shadow DOM, which should ignore the shadow
@@ -164,6 +164,56 @@ TEST_F(AXLayoutObjectTest, AccessibilityHitTestShadowDOM) {
 
   run_test(ShadowRootType::kOpen);
   run_test(ShadowRootType::kClosed);
+}
+
+// https://crbug.com/1167596
+TEST_F(AXLayoutObjectTest, GetListStyleDecimalLeadingZero) {
+  ScopedCSSAtRuleCounterStyleForTest scope(false);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <ul>
+    <li id="target" style="list-style-type: decimal-leading-zero"></li>
+  </ul>
+  )HTML");
+
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("target")->GetListStyle());
+}
+
+// https://crbug.com/1167596
+TEST_F(AXLayoutObjectTest, GetListStyleDecimalLeadingZeroAsCustomCounterStyle) {
+  ScopedCSSAtRuleCounterStyleForTest scope(true);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <ul>
+    <li id="target" style="list-style-type: decimal-leading-zero"></li>
+  </ul>
+  )HTML");
+
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("target")->GetListStyle());
+}
+// https://crbug.com/1167596
+TEST_F(AXLayoutObjectTest, GetListStyleOverriddenDecimalLeadingZero) {
+  ScopedCSSAtRuleCounterStyleForTest scope(true);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <style>
+  @counter-style decimal-leading-zero { system: extends upper-roman; }
+  </style>
+  <ul>
+    <li id="target" style="list-style-type: decimal-leading-zero"></li>
+  </ul>
+  )HTML");
+
+  EXPECT_EQ(ListStyle::kOther,
+            GetAXObjectByElementId("target")->GetListStyle());
 }
 
 }  // namespace blink

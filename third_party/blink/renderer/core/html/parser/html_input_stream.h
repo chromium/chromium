@@ -113,9 +113,9 @@ class InsertionPointRecord {
 
  public:
   explicit InsertionPointRecord(HTMLInputStream& input_stream)
-      : input_stream_(&input_stream) {
-    line_ = input_stream_->Current().CurrentLine();
-    column_ = input_stream_->Current().CurrentColumn();
+      : input_stream_(&input_stream),
+        line_(input_stream_->Current().CurrentLine()),
+        column_(input_stream_->Current().CurrentColumn()) {
     input_stream_->SplitInto(next_);
     // We 'fork' current position and use it for the generated script part. This
     // is a bit weird, because generated part does not have positions within an

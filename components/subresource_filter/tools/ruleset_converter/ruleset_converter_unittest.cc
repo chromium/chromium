@@ -35,7 +35,7 @@ std::vector<std::string> GetSomeRules() {
 
 base::CommandLine::StringType AsciiToNativeString(std::string ascii) {
 #if defined(OS_WIN)
-  return base::ASCIIToUTF16(ascii);
+  return base::ASCIIToWide(ascii);
 #else
   return ascii;
 #endif

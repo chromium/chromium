@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -50,6 +51,9 @@ TEST_F(ApplyBlockElementCommandTest, selectionCrossingOverBody) {
   command->Apply();
 
   EXPECT_EQ(
+      "<head>"
+      "<style> .CLASS13 { -webkit-user-modify: read-write; }</style>"
+      "</head>foo"
       "<body contenteditable=\"false\">\n"
       "<pre><var id=\"va\" class=\"CLASS13\">\nC\n</var></pre><input></body>",
       GetDocument().documentElement()->innerHTML());
@@ -106,7 +110,7 @@ TEST_F(ApplyBlockElementCommandTest, IndentHeadingIntoBlockquote) {
       "<h6><button></button></h6>"
       "<h6><button><table></table></button></h6>"
       "</blockquote>"
-      "<h6><button></button></h6><br>"
+      "<br>"
       "<object></object>"
       "</div>",
       GetDocument().body()->innerHTML());
@@ -164,6 +168,50 @@ TEST_F(ApplyBlockElementCommandTest,
       "<table>^</table>"
       "<kbd style=\"-webkit-user-modify:read-only\"><button>|</button></kbd>",
       GetSelectionTextFromBody());
+}
+
+// https://crbug.com/1172656
+TEST_F(ApplyBlockElementCommandTest, FormatBlockWithDirectChildrenOfRoot) {
+  GetDocument().setDesignMode("on");
+  DocumentFragment* fragment = DocumentFragment::Create(GetDocument());
+  Element* root = GetDocument().documentElement();
+  fragment->ParseXML("a<div>b</div>c", root);
+  root->setTextContent("");
+  root->appendChild(fragment);
+  UpdateAllLifecyclePhasesForTest();
+
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().SelectAllChildren(*root).Build(),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
+                                                           html_names::kPreTag);
+  // Shouldn't crash here.
+  EXPECT_FALSE(command->Apply());
+  const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
+  EXPECT_EQ("^a<div>b</div>c|",
+            SelectionSample::GetSelectionText(*root, selection));
+}
+
+// This is a regression test for https://crbug.com/1180699
+TEST_F(ApplyBlockElementCommandTest, OutdentEmptyBlockquote) {
+  Vector<std::string> selection_texts = {
+      "<blockquote style='padding:5px'>|</blockquote>",
+      "a<blockquote style='padding:5px'>|</blockquote>",
+      "<blockquote style='padding:5px'>|</blockquote>b",
+      "a<blockquote style='padding:5px'>|</blockquote>b"};
+  Vector<std::string> expectations = {"|", "a|<br>", "|<br>b", "a<br>|b"};
+
+  GetDocument().setDesignMode("on");
+  for (unsigned i = 0; i < selection_texts.size(); ++i) {
+    Selection().SetSelection(SetSelectionTextToBody(selection_texts[i]),
+                             SetSelectionOptions());
+    auto* command = MakeGarbageCollected<IndentOutdentCommand>(
+        GetDocument(), IndentOutdentCommand::kOutdent);
+
+    // Shouldn't crash here.
+    command->Apply();
+    EXPECT_EQ(expectations[i], GetSelectionTextFromBody());
+  }
 }
 
 }  // namespace blink

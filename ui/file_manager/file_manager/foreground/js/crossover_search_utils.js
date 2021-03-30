@@ -3,6 +3,16 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {NavigationModelItemType, NavigationListModel, NavigationModelFakeItem, NavigationModelVolumeItem} from './navigation_list_model.m.js';
+// clang-format on
+
+/**
  * Namespace for crossover search utility functions.
  * @namespace
  */
@@ -50,11 +60,13 @@ crossoverSearchUtils.findQueryMatchedDirectoryEntry =
 
     const scanner = dirModel.createScannerFactory(dirEntry, searchQuery)();
     await new Promise(
-        resolve => scanner.scan(
-            entriesCallback.bind(this), resolve, errorCallback.bind(this)));
+        resolve => scanner.scan(entriesCallback, resolve, errorCallback));
     if (isMatchedEntryFound) {
       return dirEntry;
     }
   }
   return null;
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {crossoverSearchUtils};

@@ -169,9 +169,9 @@ void SyntheticGestureTargetAura::DispatchWebMouseEventToPlatform(
     return;
 }
 
-SyntheticGestureParams::GestureSourceType
+content::mojom::GestureSourceType
 SyntheticGestureTargetAura::GetDefaultSyntheticGestureSourceType() const {
-  return SyntheticGestureParams::MOUSE_INPUT;
+  return content::mojom::GestureSourceType::kMouseInput;
 }
 
 float SyntheticGestureTargetAura::GetTouchSlopInDips() const {

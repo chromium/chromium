@@ -11,7 +11,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_infobar_delegate_android.h"
 #include "components/infobars/android/infobar_android.h"
 

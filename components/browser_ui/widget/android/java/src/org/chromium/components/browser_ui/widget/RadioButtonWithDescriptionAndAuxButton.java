@@ -54,7 +54,6 @@ import androidx.annotation.VisibleForTesting;
  * }</pre>
  * </p>
  *
- * TODO(crbug.com/1097310): Add render tests in RadioButtonRenderTest.java for this widget.
  */
 public class RadioButtonWithDescriptionAndAuxButton extends RadioButtonWithDescription {
     /**

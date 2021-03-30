@@ -5,17 +5,23 @@
 #include "chrome/updater/configurator.h"
 
 #include <utility>
+
+#include "base/numerics/ranges.h"
+#include "base/rand_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/activity.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/crx_downloader_factory.h"
 #include "chrome/updater/external_constants.h"
-#include "chrome/updater/patcher.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/unzipper.h"
+#include "chrome/updater/updater_scope.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/network.h"
+#include "components/update_client/patch/in_process_patcher.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/protocol_handler.h"
+#include "components/update_client/unzip/in_process_unzipper.h"
 #include "components/update_client/unzipper.h"
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
@@ -41,12 +47,21 @@ namespace updater {
 Configurator::Configurator(std::unique_ptr<UpdaterPrefs> prefs)
     : prefs_(std::move(prefs)),
       external_constants_(CreateExternalConstants()),
-      unzip_factory_(base::MakeRefCounted<UnzipperFactory>()),
-      patch_factory_(base::MakeRefCounted<PatcherFactory>()) {}
+      activity_data_service_(
+          std::make_unique<ActivityDataService>(GetProcessScope())),
+      unzip_factory_(
+          base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
+      patch_factory_(
+          base::MakeRefCounted<update_client::InProcessPatcherFactory>()) {}
 Configurator::~Configurator() = default;
 
-int Configurator::InitialDelay() const {
-  return 0;
+double Configurator::InitialDelay() const {
+  return base::RandDouble() * external_constants_->InitialDelay();
+}
+
+int Configurator::ServerKeepAliveSeconds() const {
+  return base::ClampToRange(external_constants_->ServerKeepAliveSeconds(), 1,
+                            kServerKeepAliveSeconds);
 }
 
 int Configurator::NextCheckDelay() const {
@@ -149,7 +164,7 @@ PrefService* Configurator::GetPrefService() const {
 
 update_client::ActivityDataService* Configurator::GetActivityDataService()
     const {
-  return nullptr;
+  return activity_data_service_.get();
 }
 
 bool Configurator::IsPerUserInstall() const {

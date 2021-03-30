@@ -39,7 +39,7 @@ const char kRequestIDKey[] = "requestId";
 
 // Generates the JS string to be injected onto the web page to send FIDO U2F
 // requests' results from the U2F callback URL.
-- (base::string16)JSStringFromReponseURL:(const GURL&)URL;
+- (std::u16string)JSStringFromReponseURL:(const GURL&)URL;
 
 // Checks if the source URL has Google domain or allow-listed test domain.
 - (BOOL)shouldAllowSourceURL:(const GURL&)sourceURL;
@@ -141,10 +141,10 @@ const char kRequestIDKey[] = "requestId";
 
 #pragma mark - Helper method
 
-- (base::string16)JSStringFromReponseURL:(const GURL&)URL {
+- (std::u16string)JSStringFromReponseURL:(const GURL&)URL {
   std::string requestID;
   if (!net::GetValueForKeyInQuery(URL, kRequestIDKey, &requestID)) {
-    return base::string16();
+    return std::u16string();
   }
 
   std::string JSString;

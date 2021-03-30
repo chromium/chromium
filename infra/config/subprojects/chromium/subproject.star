@@ -7,6 +7,7 @@ load("//lib/branches.star", "branches")
 exec("./ci.star")
 exec("./try.star")
 exec("./gpu.try.star")
+exec("./angle.try.star")
 exec("./swangle.try.star")
 
 # TODO(gbeaty) external_console_view uses new fields/types that aren't present

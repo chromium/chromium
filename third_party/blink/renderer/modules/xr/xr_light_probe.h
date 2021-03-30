@@ -56,6 +56,8 @@ class XRLightProbe : public EventTargetWithInlineData {
   ExecutionContext* GetExecutionContext() const override;
   const AtomicString& InterfaceName() const override;
 
+  bool IsStationary() const { return true; }
+
   void Trace(Visitor* visitor) const override;
 
  private:

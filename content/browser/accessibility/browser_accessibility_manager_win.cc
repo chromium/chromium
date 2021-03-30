@@ -23,6 +23,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_utils_win.h"
+#include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/win/atl_module.h"
 
@@ -133,14 +134,16 @@ void BrowserAccessibilityManagerWin::FireBlinkEvent(
     case ax::mojom::Event::kEndOfTest:
       // Event tests use kEndOfTest as a sentinel to mark the end of the test.
       FireUiaAccessibilityEvent(
-          ui::UiaRegistrarWin::GetInstance().GetUiaTestCompleteEventId(), node);
+          ui::UiaRegistrarWin::GetInstance().GetTestCompleteEventId(), node);
       break;
     case ax::mojom::Event::kLocationChanged:
       FireWinAccessibilityEvent(IA2_EVENT_VISIBLE_DATA_CHANGED, node);
       break;
-    case ax::mojom::Event::kScrolledToAnchor:
+    case ax::mojom::Event::kScrolledToAnchor: {
       FireWinAccessibilityEvent(EVENT_SYSTEM_SCROLLINGSTART, node);
+      FireUiaActiveTextPositionChangedEvent(node);
       break;
+    }
     case ax::mojom::Event::kTextChanged:
       // TODO(crbug.com/1049261) Remove when Views are exposed in the AXTree
       // which will fire generated text-changed events.
@@ -235,7 +238,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       // Fire the event on the object where the focus of the selection is. This
       // is because the focus is the only endpoint that can move, and because
       // the caret (if present) is at the focus.
-      ui::AXNode::AXID focus_id =
+      ui::AXNodeID focus_id =
           ax_tree()->GetUnignoredSelection().focus_object_id;
       BrowserAccessibility* focus_object = GetFromID(focus_id);
       if (focus_object) {
@@ -514,7 +517,7 @@ void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
   // state may show / hide a popup by exposing it to the tree or not.
   // Also include focus events since a node may become visible at the same time
   // it receives focus It's never good to suppress a po
-  if (base::Contains(ignored_changed_nodes_, node)) {
+  if (IsIgnoredChangedNode(node)) {
     switch (win_event_type) {
       case EVENT_OBJECT_HIDE:
       case EVENT_OBJECT_SHOW:
@@ -541,6 +544,12 @@ void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
   ::NotifyWinEvent(win_event_type, hwnd, OBJID_CLIENT, child_id);
 }
 
+bool BrowserAccessibilityManagerWin::IsIgnoredChangedNode(
+    const BrowserAccessibility* node) const {
+  return base::Contains(ignored_changed_nodes_,
+                        const_cast<BrowserAccessibility*>(node));
+}
+
 void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
     LONG uia_event,
     BrowserAccessibility* node) {
@@ -551,7 +560,7 @@ void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
   // Suppress events when |IGNORED_CHANGED| except for MenuClosed / MenuOpen
   // since a change in the ignored state may show / hide a popup by exposing
   // it to the tree or not.
-  if (base::Contains(ignored_changed_nodes_, node)) {
+  if (IsIgnoredChangedNode(node)) {
     switch (uia_event) {
       case UIA_MenuClosedEventId:
       case UIA_MenuOpenedEventId:
@@ -577,7 +586,7 @@ void BrowserAccessibilityManagerWin::FireUiaPropertyChangedEvent(
   // Suppress events when |IGNORED_CHANGED| with the exception for firing
   // UIA_AriaPropertiesPropertyId-hidden event on non-text node marked as
   // ignored.
-  if (node->IsIgnored() || base::Contains(ignored_changed_nodes_, node)) {
+  if (node->IsIgnored() || IsIgnoredChangedNode(node)) {
     if (uia_property != UIA_AriaPropertiesPropertyId || node->IsText())
       return;
   }
@@ -603,7 +612,7 @@ void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
   if (!ShouldFireEventForNode(node))
     return;
   // Suppress events when |IGNORED_CHANGED| except for related structure changes
-  if (base::Contains(ignored_changed_nodes_, node)) {
+  if (IsIgnoredChangedNode(node)) {
     switch (change_type) {
       case StructureChangeType_ChildRemoved:
       case StructureChangeType_ChildAdded:
@@ -641,6 +650,46 @@ void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
       UiaRaiseStructureChangedEvent(provider_com, change_type, nullptr, 0);
     }
   }
+}
+
+// static
+bool BrowserAccessibilityManagerWin::
+    IsUiaActiveTextPositionChangedEventSupported() {
+  return GetUiaActiveTextPositionChangedEventFunction();
+}
+
+// static
+UiaRaiseActiveTextPositionChangedEventFunction
+BrowserAccessibilityManagerWin::GetUiaActiveTextPositionChangedEventFunction() {
+  // This API is only supported from Win8.1 onwards. On older platforms (such as
+  // Windows 7), we will return nullptr for the querying result for the address
+  // of the method "UiaRaiseActiveTextPositionChangedEvent" in
+  // uiautomationcore.dll.
+  return reinterpret_cast<UiaRaiseActiveTextPositionChangedEventFunction>(
+      ::GetProcAddress(::GetModuleHandle(L"uiautomationcore.dll"),
+                       "UiaRaiseActiveTextPositionChangedEvent"));
+}
+
+void BrowserAccessibilityManagerWin::FireUiaActiveTextPositionChangedEvent(
+    BrowserAccessibility* node) {
+  if (!ShouldFireEventForNode(node))
+    return;
+
+  UiaRaiseActiveTextPositionChangedEventFunction
+      active_text_position_changed_func =
+          GetUiaActiveTextPositionChangedEventFunction();
+
+  if (!active_text_position_changed_func)
+    return;
+
+  // Create the text range contained by the target node.
+  auto* target_node = ToBrowserAccessibilityWin(node)->GetCOM();
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range =
+      ui::AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
+          target_node);
+
+  // Fire the UiaRaiseActiveTextPositionChangedEvent.
+  active_text_position_changed_func(target_node, text_range.Get());
 }
 
 bool BrowserAccessibilityManagerWin::CanFireEvents() const {

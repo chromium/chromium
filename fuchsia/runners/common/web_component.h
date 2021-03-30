@@ -120,8 +120,7 @@ class WebComponent : public fuchsia::sys::ComponentController,
   fuchsia::modular::ModuleContextPtr module_context_;
 
   // Objects used for binding and exporting the ViewProvider service.
-  std::unique_ptr<
-      base::fuchsia::ScopedServiceBinding<fuchsia::ui::app::ViewProvider>>
+  std::unique_ptr<base::ScopedServiceBinding<fuchsia::ui::app::ViewProvider>>
       view_provider_binding_;
 
   // Termination reason and exit-code to be reported via the

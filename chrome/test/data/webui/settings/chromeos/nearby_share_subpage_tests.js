@@ -44,12 +44,8 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy {
 suite('NearbyShare', function() {
   /** @type {?SettingsNearbyShareSubpage} */
   let subpage = null;
-  /** @type {?HTMLElement} */
-  let onOffText = null;
   /** @type {?SettingsToggleButtonElement} */
   let featureToggleButton = null;
-  /** @type {?HTMLElement} */
-  let toggleRow = null;
   /** @type {?FakeReceiveManager} */
   let fakeReceiveManager = null;
   /** @type {nearby_share.AccountManagerBrowserProxy} */
@@ -93,9 +89,7 @@ suite('NearbyShare', function() {
     document.body.appendChild(subpage);
     Polymer.dom.flush();
 
-    onOffText = subpage.$$('#onOff');
     featureToggleButton = subpage.$$('#featureToggleButton');
-    toggleRow = subpage.$$('#toggleRow');
   });
 
   teardown(function() {
@@ -104,27 +98,42 @@ suite('NearbyShare', function() {
   });
 
   test('feature toggle button controls preference', function() {
+    // Ensure that these controls are enabled/disabled when the Nearby is
+    // enabled/disabled.
+    const highVizToggle = subpage.$$('#highVisibilityToggle');
+    const editDeviceNameButton = subpage.$$('#editDeviceNameButton');
+    const editVisibilityButton = subpage.$$('#editVisibilityButton');
+    const editDataUsageButton = subpage.$$('#editDataUsageButton');
+
     assertEquals(true, featureToggleButton.checked);
     assertEquals(true, subpage.prefs.nearby_sharing.enabled.value);
-    assertEquals('On', onOffText.textContent.trim());
+    assertEquals('On', featureToggleButton.label.trim());
+    assertFalse(highVizToggle.disabled);
+    assertFalse(editDeviceNameButton.disabled);
+    assertFalse(editVisibilityButton.disabled);
+    assertFalse(editDataUsageButton.disabled);
 
     featureToggleButton.click();
 
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
-    assertEquals('Off', onOffText.textContent.trim());
+    assertEquals('Off', featureToggleButton.label.trim());
+    assertTrue(highVizToggle.disabled);
+    assertTrue(editDeviceNameButton.disabled);
+    assertTrue(editVisibilityButton.disabled);
+    assertTrue(editDataUsageButton.disabled);
   });
 
   test('toggle row controls preference', function() {
     assertEquals(true, featureToggleButton.checked);
     assertEquals(true, subpage.prefs.nearby_sharing.enabled.value);
-    assertEquals('On', onOffText.textContent.trim());
+    assertEquals('On', featureToggleButton.label.trim());
 
-    toggleRow.click();
+    featureToggleButton.click();
 
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
-    assertEquals('Off', onOffText.textContent.trim());
+    assertEquals('Off', featureToggleButton.label.trim());
   });
 
   suite('Deeplinking', () => {
@@ -336,5 +345,10 @@ suite('NearbyShare', function() {
 
     // Restore mock
     performance.now = originalNow;
+  });
+
+  test('download contacts on attach', () => {
+    // Ensure contacts download occurs when the subpage is attached.
+    assertTrue(fakeContactManager.downloadContactsCalled);
   });
 });

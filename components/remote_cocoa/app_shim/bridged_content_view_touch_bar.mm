@@ -62,7 +62,7 @@ NSString* const kTouchBarCancelId = @"com.google.chrome-CANCEL";
     return nil;
 
   bool buttonExists = false;
-  base::string16 buttonLabel;
+  std::u16string buttonLabel;
   bool isButtonEnabled = false;
   bool isButtonDefault = false;
   _bridge->host()->GetDialogButtonInfo(type, &buttonExists, &buttonLabel,

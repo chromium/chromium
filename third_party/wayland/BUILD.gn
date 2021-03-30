@@ -8,6 +8,7 @@ import("//tools/generate_stubs/rules.gni")
 if (!use_system_libwayland) {
   config("wayland_config") {
     include_dirs = [
+      "include",
       "include/src",
       "include/protocol",
       "src/src",
@@ -120,6 +121,23 @@ if (!use_system_libwayland) {
 
     public_configs = [ ":wayland_config" ]
   }
+
+  static_library("wayland_cursor") {
+    sources = [
+      "src/cursor/cursor-data.h",
+      "src/cursor/os-compatibility.c",
+      "src/cursor/os-compatibility.h",
+      "src/cursor/wayland-cursor.c",
+      "src/cursor/wayland-cursor.h",
+      "src/cursor/xcursor.c",
+      "src/cursor/xcursor.h",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    public_configs = [ ":wayland_config" ]
+  }
 }
 
 if (!use_system_wayland_scanner) {
@@ -153,6 +171,10 @@ if (use_system_libwayland) {
     packages = [ "wayland-client" ]
   }
 
+  pkg_config("wayland_cursor_config") {
+    packages = [ "wayland-cursor" ]
+  }
+
   pkg_config("wayland_server_config") {
     packages = [ "wayland-server" ]
   }
@@ -163,6 +185,10 @@ if (use_system_libwayland) {
 
   group("wayland_client") {
     public_configs = [ ":wayland_client_config" ]
+  }
+
+  group("wayland_cursor") {
+    public_configs = [ ":wayland_cursor_config" ]
   }
 
   group("wayland_server") {
@@ -183,6 +209,7 @@ if (use_system_libwayland) {
     extra_header = "stubs/libwayland.fragment"
     sigs = [
       "stubs/libwayland-client.sigs",
+      "stubs/libwayland-cursor.sigs",
       "stubs/libwayland-egl.sigs",
     ]
 

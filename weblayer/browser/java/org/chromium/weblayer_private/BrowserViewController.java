@@ -6,6 +6,7 @@ package org.chromium.weblayer_private;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.RemoteException;
 import android.util.AndroidRuntimeException;
 import android.view.View;
@@ -21,6 +22,9 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.content_capture.ContentCaptureConsumer;
+import org.chromium.components.content_capture.ContentCaptureConsumerImpl;
+import org.chromium.components.content_capture.ExperimentContentCaptureConsumer;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -29,6 +33,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode;
+
+import java.util.ArrayList;
 
 /**
  * BrowserViewController controls the set of Views needed to show the WebContents.
@@ -81,6 +88,16 @@ public final class BrowserViewController
      */
     private boolean mCachedDoBrowserControlsShrinkRendererSize;
 
+    /**
+     * ContentCaptureConsumer could be null in some cases, e.g. when the platform decided to not
+     * capture data for different apps. Therefore checking if |mContentCaptureConsumers| is empty is
+     * not enough to determine if this is the first time we are trying to create
+     * ContentCaptureConsumer. Having the flag below is to create ContentCaptureConsumers only once.
+     */
+    private boolean mShouldCreateContentCaptureConsumer = true;
+    // TODO: (crbug.com/1119663) Move consumers out of this class while support multiple consumers.
+    private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers = new ArrayList<>();
+
     public BrowserViewController(FragmentWindowAndroid windowAndroid,
             View.OnAttachStateChangeListener listener, @Nullable State savedState,
             boolean recreateForConfigurationChange) {
@@ -91,7 +108,7 @@ public final class BrowserViewController
         mContentViewRenderView.addOnAttachStateChangeListener(listener);
 
         mContentViewRenderView.onNativeLibraryLoaded(
-                mWindowAndroid, ContentViewRenderView.MODE_SURFACE_VIEW);
+                mWindowAndroid, BrowserEmbeddabilityMode.UNSUPPORTED);
         mTopControlsContainerView =
                 new BrowserControlsContainerView(context, mContentViewRenderView, this, true,
                         (savedState == null) ? null : savedState.mTopControlsState);
@@ -134,6 +151,7 @@ public final class BrowserViewController
     public void destroy() {
         mWindowAndroid.setModalDialogManager(null);
         setActiveTab(null);
+        mContentCaptureConsumers.clear();
         mContentViewRenderView.removeOnAttachStateChangeListener(mOnAttachedStateChangeListener);
         mTopControlsContainerView.destroy();
         mBottomControlsContainerView.destroy();
@@ -208,6 +226,24 @@ public final class BrowserViewController
                     mBottomControlsContainerView.getNativeHandle());
             mContentView.requestFocus();
         }
+
+        if (mShouldCreateContentCaptureConsumer) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ContentCaptureConsumer consumer = ContentCaptureConsumerImpl.create(
+                        mWindowAndroid.getContext().get(), mContentViewRenderView, webContents);
+                if (consumer != null) mContentCaptureConsumers.add(consumer);
+            }
+            // ExperimentContentCaptureConsumer is used to verify the content capture integration
+            // manually. We also use it for experiment later. It is not depending on the system API
+            // and it is controlled by its own flag in the ContentCapture component.
+            ContentCaptureConsumer consumer = ExperimentContentCaptureConsumer.create(webContents);
+            if (consumer != null) mContentCaptureConsumers.add(consumer);
+            mShouldCreateContentCaptureConsumer = false;
+        } else {
+            for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+                consumer.onWebContentsChanged(webContents);
+            }
+        }
     }
 
     public TabImpl getTab() {
@@ -230,6 +266,12 @@ public final class BrowserViewController
         mTopControlsContainerView.setOnlyExpandControlsAtPageTop(onlyExpandControlsAtPageTop);
         if (mTab == null) return;
         mTab.setOnlyExpandTopControlsAtPageTop(onlyExpandControlsAtPageTop);
+    }
+
+    public void addContentCaptureConsumerForTesting(ContentCaptureConsumer consumer) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return;
+        mShouldCreateContentCaptureConsumer = false;
+        mContentCaptureConsumers.add(consumer);
     }
 
     public void setTopControlsAnimationsEnabled(boolean animationsEnabled) {
@@ -303,8 +345,6 @@ public final class BrowserViewController
     }
 
     private void onDialogVisibilityChanged(boolean showing) {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 82) return;
-
         if (mModalDialogManager.getCurrentType() == ModalDialogType.TAB) {
             // This shouldn't be called when |mTab| is null and the modal dialog type is TAB. OTOH,
             // when an app-modal is displayed for a javascript dialog, this method can be called
@@ -329,10 +369,9 @@ public final class BrowserViewController
                 + mBottomControlsContainerView.getContentHeightDelta());
     }
 
-    public void setSupportsEmbedding(boolean enable, ValueCallback<Boolean> callback) {
-        mContentViewRenderView.requestMode(enable ? ContentViewRenderView.MODE_TEXTURE_VIEW
-                                                  : ContentViewRenderView.MODE_SURFACE_VIEW,
-                callback);
+    public void setEmbeddabilityMode(
+            @BrowserEmbeddabilityMode int mode, ValueCallback<Boolean> callback) {
+        mContentViewRenderView.requestMode(mode, callback);
     }
 
     public void setMinimumSurfaceSize(int width, int height) {

@@ -55,14 +55,14 @@ export class DesktopNode extends BasicRootNode {
     // Set the new instance of that child to be the focused node.
     for (const child of this.children) {
       if (child.isEquivalentTo(focusedChild)) {
-        Navigator.instance.forceFocusedNode(child);
+        Navigator.byItem.forceFocusedNode(child);
         return;
       }
     }
 
     // If the previously focused node no longer exists, focus the first node in
     // the group.
-    Navigator.instance.forceFocusedNode(this.children[0]);
+    Navigator.byItem.forceFocusedNode(this.children[0]);
   }
 
   // ================= Static methods =================

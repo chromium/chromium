@@ -36,7 +36,7 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
-  base::string16 GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void Initialize() override;

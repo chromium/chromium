@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  setBluetoothManualChooser(true);
+
+  // Open the chooser, looking for a Heart Rate device.
+  let requestDevicePromise = setBluetoothFakeAdapter('DeviceEventAdapter')
+                                 .then(() => requestDeviceWithTrustedClick({
+                                         filters: [{services: ['heart_rate']}]
+                                       }));
+
+  // The connected Heart Rate Device is added to the chooser.
+  return getBluetoothManualChooserEvents(4)
+      .then(events => {
+        assert_equals(events.length, 4, events);
+        assert_equals(events[0], 'chooser-opened(https://web-platform.test:8444)');
+        let idsByName = new AddDeviceEventSet();
+        idsByName.assert_add_device_event(events[1]);
+        assert_true(idsByName.has('Connected Heart Rate Device'));
+        assert_equals(events[2], 'discovering');
+        assert_equals(events[3], 'discovery-idle');
+
+        // After restarting a scan the connected device should be added to the
+        // chooser.
+        sendBluetoothManualChooserEvent('rescan', '');
+        return getBluetoothManualChooserEvents(3);
+      })
+      .then(events => {
+        let idsByName = new AddDeviceEventSet();
+        assert_equals(events.length, 3, events);
+        idsByName.assert_add_device_event(events[0]);
+        assert_true(idsByName.has('Connected Heart Rate Device'));
+        assert_equals(events[1], 'discovering', events[1]);
+        assert_equals(events[2], 'discovery-idle');
+
+        // Select it and let the test complete.
+        sendBluetoothManualChooserEvent(
+            'selected', idsByName.get('Connected Heart Rate Device'));
+        return requestDevicePromise;
+      })
+      .then(
+          device => assert_equals(device.name, 'Connected Heart Rate Device'));
+}, 'The chooser shows previously connected devices.');
+</script>

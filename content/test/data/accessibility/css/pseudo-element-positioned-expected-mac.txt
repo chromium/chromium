@@ -1,0 +1,9 @@
+AXWebArea
+++AXStaticText AXValue='Empty before and after'
+++AXGroup
+++++AXStaticText AXValue='Empty positioned before and after'
+++AXGroup
+++++AXStaticText AXValue='pseudo'
+++AXStaticText AXValue='Positioned before and after with content'
+++AXGroup
+++++AXStaticText AXValue='pseudo'

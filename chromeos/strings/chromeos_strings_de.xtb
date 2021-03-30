@@ -2,21 +2,30 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1018656279737460067">Abgebrochen</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
 <translation id="1075811647922107217">Seitengröße</translation>
 <translation id="1124772482545689468">Nutzer</translation>
+<translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
 <translation id="1204296502688602597">DNS-Latenz</translation>
 <translation id="123124571410524056">Verdacht auf Portal</translation>
 <translation id="1238612778414822719">HTTPS-Latenz</translation>
+<translation id="1270369111467284986">Verdacht auf Captive Portal</translation>
 <translation id="1290331692326790741">Schwaches Signal</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="131461803491198646">Heimnetzwerk, kein Roaming</translation>
+<translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">An Scanbereich anpassen</translation>
+<translation id="1387854245479784695">Alle Kerne zusammengerechnet</translation>
 <translation id="1397738625398125236">Gateway kann kontaktiert werden</translation>
 <translation id="1398634363027580500">Sehr hohe HTTPS-Latenz</translation>
 <translation id="1413240736185167732">Fehlgeschlagen – Filter funktioniert nicht</translation>
+<translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> verwaltet dieses Gerät und kann möglicherweise deine Aktivitäten überwachen.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -24,40 +33,51 @@
 <translation id="150962533380566081">Ungültiger PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1621067168122174824">Ladetest ausführen</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads)</translation>
 <translation id="1641857168437328880">Dokumenteneinzug (einseitig)</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
-<translation id="1743558184855585519">Der Akku gilt als verbraucht, wenn er das Limit erreicht hat</translation>
+<translation id="1717874160321062422">Verwaltet von <ph name="FIRST_MANAGER" /> und <ph name="SECOND_MANAGER" /></translation>
+<translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Scannen wird abgebrochen</translation>
+<translation id="1851218745569890714">Videokonferenz</translation>
+<translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
+<translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
 <translation id="1930797645656624981">Dienst für die Chrome OS-Eingabemethoden</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
 <translation id="1979103255016296513">Passwortänderung überfällig</translation>
-<translation id="1980044825731880088">CPU-Geschwindigkeit</translation>
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2008685064673031089">Primzahlensuche</translation>
 <translation id="2080070583977670716">Weitere Einstellungen</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB von <ph name="TOTAL_MEMORY" /> GB sind verfügbar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="2157959690810728433">IN WARTESCHLANGE</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
+<translation id="2217935453350629363">Momentane Geschwindigkeit</translation>
 <translation id="2224337661447660594">Kein Internet</translation>
+<translation id="2230051135190148440">CHAP</translation>
+<translation id="225692081236532131">Aktivierungsstatus</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivieren Sie Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2364498172489649528">Bestanden</translation>
-<translation id="2375079107209812402">Noch <ph name="ATTEMPTS_LEFT" /> Versuche</translation>
 <translation id="2391082728065870591">Feedbackbericht senden</translation>
+<translation id="2418150275289244458">In den Einstellungen öffnen</translation>
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
 <translation id="2448312741937722512">Art</translation>
 <translation id="2461822463642141190">Aktuell</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2517472476991765520">Suchen</translation>
+<translation id="2517472476991765520">Scannen</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
 <translation id="2585245331261708204">Neues bei Chrome OS</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2740531572673183784">Ok</translation>
+<translation id="2751739896257479635">EAP-Phase 2-Authentifizierung</translation>
+<translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2862104018715411648">Legen Sie das Dokument in den Scanner und wählen Sie „Scannen“ aus</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
@@ -69,20 +89,29 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Mobile Daten</translation>
+<translation id="315738237743207937">Captive Portal erkannt</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
+<translation id="3226405216343213872">Suche nach Scannern läuft</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
 <translation id="3268178239013324452">Fehlgeschlagen – Druckerklappe offen</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Die DNS-Latenz liegt deutlich über dem zulässigen Grenzwert</translation>
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369013195428705271">Möchten Sie den gesamten Druckverlauf wirklich löschen? Ihre laufenden Druckaufträge werden nicht gelöscht.</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="3435738964857648380">Sicherheit</translation>
 <translation id="3456078764689556234">Seite <ph name="PRINTED_PAGES" /> von <ph name="TOTAL_PAGES" /> wird gedruckt.</translation>
+<translation id="345898999683440380">Seite <ph name="PAGE_NUM" /> wird gescannt. <ph name="PERCENTAGE_VALUE" /> % sind abgeschlossen.</translation>
 <translation id="3459509316159669723">Drucken</translation>
-<translation id="3515615323037921860">Druckaufträge</translation>
+<translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
+<translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
+<translation id="3595596368722241419">Akku voll</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> Rezensionen)</translation>
 <translation id="3748026146096797577">Nicht verbunden</translation>
 <translation id="3749289110408117711">Dateiname</translation>
@@ -90,13 +119,17 @@
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
 <translation id="3865414814144988605">Auflösung</translation>
+<translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="3942420633017001071">Diagnose</translation>
+<translation id="3967822245660637423">Download abgeschlossen</translation>
+<translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="4003384961948020559">Fehlgeschlagen – Ausgabefach ist voll</translation>
 <translation id="4034824040120875894">Drucker</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
 <translation id="4145784616224233563">HTTP-Firewall</translation>
+<translation id="4155551848414053977">Achte darauf, dass der Scanner eingeschaltet und entweder über das Netzwerk oder direkt verbunden ist</translation>
 <translation id="4170700058716978431">FEHLGESCHLAGEN</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
@@ -106,68 +139,97 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
 <translation id="4429881212383817840">Kerberos-Ticket läuft bald ab</translation>
+<translation id="4431821876790500265">Bericht ansehen</translation>
 <translation id="445059817448385655">Altes Passwort</translation>
+<translation id="4453205916657964690">Subnetzmaske</translation>
 <translation id="4454245904991689773">Speichern unter</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4548483925627140043">Signal nicht gefunden</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />-mAh-Akku</translation>
+<translation id="4562494484721939086">Dienst nicht verfügbar</translation>
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
+<translation id="4652335678334611408">Sitzungsprotokoll speichern</translation>
+<translation id="4665014895760275686">Hersteller</translation>
 <translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
 <translation id="467715984478005772">Verdacht auf Firewall</translation>
 <translation id="4691278870498629773">Angehalten – Fach fehlt</translation>
 <translation id="469379815867856270">Signalstärke</translation>
+<translation id="4707579418881001319">L2TP/IPSec + Nutzerzertifikat</translation>
 <translation id="4731797938093519117">Elternfreigabe</translation>
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4808449224298348341">Druckauftrag für "<ph name="DOCUMENT_TITLE" />" wurde abgebrochen</translation>
+<translation id="4813345808229079766">Verbindung</translation>
 <translation id="4832079907277790330">Ordner in der Dateimanager-App auswählen...</translation>
 <translation id="4835901797422965222">Keine aktiven Netzwerke</translation>
 <translation id="4848429997038228357">LÄUFT</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Noch {0} Versuch}other{<ph name="ERROR_MESSAGE" /> Noch {0} Versuche}}</translation>
+<translation id="4880328057631981605">Name des Zugangspunkts</translation>
+<translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Legen Sie so schnell wie möglich ein neues fest</translation>
 <translation id="4891842000192098784">Belastung</translation>
+<translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Prüfe den Scanner und versuche es noch einmal. Sieh nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
 <translation id="4985509611418653372">Ausführen</translation>
+<translation id="4987769320337599931">Firewall</translation>
+<translation id="4999333166442584738">Bericht ausblenden</translation>
 <translation id="500920857929044050">Test beenden</translation>
+<translation id="5017508259293544172">LEAP</translation>
+<translation id="5050042263972837708">Gruppenname</translation>
+<translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
+<translation id="5142961317498132443">Authentifizierung</translation>
 <translation id="5154917547274118687">Speicher</translation>
 <translation id="5168185087976003268">Akkuzustand</translation>
-<translation id="520299634122159966">Keine Scanner verfügbar</translation>
 <translation id="5212543919916444558">Ich finde nichts auf deinem Display, wobei ich dir helfen könnte.
 Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5222676887888702881">Abmelden</translation>
+<translation id="5252456968953390977">Roaming</translation>
 <translation id="5264277876637023664">CPU-Test ausführen</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Abläufe wiederholen</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029">Version <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5315873049536339193">Identität</translation>
 <translation id="5317780077021120954">Speichern</translation>
+<translation id="5318334351163689047">Fehlgeschlagene TCP-Anfragen</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Bitte legen Sie jetzt ein neues fest</translation>
 <translation id="5333530671332546086">Unbekannter Portal-Status</translation>
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
 <translation id="5401938042319910061">Alle Abläufe ausführen</translation>
+<translation id="5423849171846380976">Aktiviert</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Als Gast nutzen</translation>
 <translation id="54609108002486618">Verwaltet</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Noch {0} Versuch}other{Noch {0} Versuche}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Weitere Informationen finden Sie in der Hilfe</translation>
-<translation id="5635169860413004179">Bericht ansehen</translation>
-<translation id="5719918614880940190">Hier wird die CPU-Auslastung angezeigt (alle Kerne zusammengerechnet)</translation>
-<translation id="5781694279199921985">Sitzungsprotokoll speichern</translation>
+<translation id="554517032089923082">GTC</translation>
+<translation id="5669267381087807207">Wird aktiviert</translation>
+<translation id="5670702108860320605">BSSID</translation>
+<translation id="5691511426247308406">Familie</translation>
+<translation id="5760715441271661976">Portal-Status</translation>
 <translation id="5797428682393400134">FERTIG</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
+<translation id="583281660410589416">Unbekannt</translation>
+<translation id="5849570051105887917">Code des Homepageanbieters</translation>
+<translation id="5866840822086176774">Sehr stark</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Ihre Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Ihre Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Schließen</translation>
+<translation id="6040852767465482106">Anonyme Identität</translation>
+<translation id="604124094241169006">Automatisch</translation>
 <translation id="6048107060512778456">Fehlgeschlagen – Papierstau</translation>
 <translation id="6050189528197190982">Graustufen</translation>
 <translation id="6058625436358447366">Geben Sie zum Schluss Ihr altes und Ihr neues Passwort ein</translation>
@@ -175,75 +237,111 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
 <translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" /> GHz/<ph name="MAX" /> GHz</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6137767437444130246">Nutzerzertifikat</translation>
 <translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
+<translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
+<translation id="6223752125779001553">Keine Scanner verfügbar</translation>
 <translation id="6232017090690406397">Akku</translation>
+<translation id="6302401976930124515">Test „<ph name="TEST_NAME" />“ wurde abgebrochen</translation>
 <translation id="6325525973963619867">Fehlgeschlagen</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Gescannte Datei gespeichert}other{Gescannte Dateien gespeichert}}</translation>
+<translation id="641081527798843608">subject-match</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6456394469623773452">In Ordnung</translation>
+<translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Angehalten – Papierstau</translation>
+<translation id="6516990319416533844">Wenn Sie die Aufladegeschwindigkeit Ihres Akkus testen möchten, warten Sie zuerst, bis er ein wenig entladen ist</translation>
 <translation id="6517239166834772319">Entdecken</translation>
 <translation id="6527081081771465939">Unbekanntes WLAN-Sicherheitsprotokoll</translation>
-<translation id="6532051501443766164">Bericht ausblenden</translation>
 <translation id="65587193855025101">Flachbett</translation>
 <translation id="6564646048574748301">Fehlgeschlagen – Drucker nicht erreichbar</translation>
 <translation id="6618744767048954150">Läuft</translation>
 <translation id="6620487321149975369">Druckaufträge erscheinen im Verlauf, solange sie nicht manuell gelöscht werden</translation>
 <translation id="6643016212128521049">Löschen</translation>
+<translation id="6657585470893396449">Passwort</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
 <translation id="6756731097889387912">Scannen konnte nicht abgebrochen werden</translation>
 <translation id="6766275201586212568">Fehlgeschlagene DNS-Auflösungen</translation>
 <translation id="6768237774506518020">Hohe Fehlerrate bei der DNS-Auflösung</translation>
-<translation id="6839141349259399400">Verbindung mit Scanner nicht möglich?</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
 <translation id="6898743098396957679">Scan konnte nicht abgeschlossen werden</translation>
+<translation id="6911383237894364323">Verbindung zu Medienservern kann nicht hergestellt werden</translation>
 <translation id="6957231940976260713">Name des Dienstes</translation>
+<translation id="6977381486153291903">Firmware-Version</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
+<translation id="7040230719604914234">Operator</translation>
+<translation id="7059230779847288458">Vollständig geladen in <ph name="TIME_VALUE" /></translation>
+<translation id="708426984172631313">ABGEBROCHEN</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
+<translation id="7144878232160441200">Wiederholen</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
+<translation id="7216409898977639127">Mobilfunkanbieter</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Netzwerkgeräte</translation>
 <translation id="7359657277149375382">Dateityp</translation>
+<translation id="7375053625150546623">EAP</translation>
+<translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scan abgeschlossen. 1 Seite gescannt.}other{Scan abgeschlossen. {NUMBER_OF_PAGES} Seiten gescannt.}}</translation>
-<translation id="7441459999606975924">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="7469648432129124067">Portal erkannt</translation>
+<translation id="7487067081878637334">Technik</translation>
 <translation id="7490813197707563893">MAC-Adresse</translation>
+<translation id="7497215489070763236">CA-Serverzertifikat</translation>
+<translation id="7502658306369382406">IPv6-Adresse</translation>
+<translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7561454561030345039">Diese Aktion wird von Ihrem Administrator verwaltet</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Noch <ph name="TIME_VALUE" /></translation>
+<translation id="7620771111601174153">Weitere Informationen in der Hilfe</translation>
 <translation id="7648838807254605802">Hohe HTTPS-Latenz</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7690294790491645610">Neues Passwort bestätigen</translation>
+<translation id="7701040980221191251">Keine</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Anzahl der Ladezyklen</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" />-Test</translation>
+<translation id="7769672763586021400">Modell-ID</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7928373994957558460">Speicherort der Datei anzeigen</translation>
+<translation id="7819857487979277519">PSK (WPA oder RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
+<translation id="7882358943899516840">Providertyp</translation>
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="7960831585769876809">Temperatur</translation>
+<translation id="7994702968232966508">EAP-Methode</translation>
+<translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8075838845814659848">Akkustand</translation>
 <translation id="808894953321890993">Passwort ändern</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">Lege das Dokument in den Scanner und wähle <ph name="SPAN_BEGIN" />Scannen<ph name="SPAN_END" /> aus</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
+<translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
+<translation id="8291967909914612644">Land des Homepageanbieters</translation>
 <translation id="8294431847097064396">Quelle</translation>
+<translation id="8297006494302853456">Schwach</translation>
 <translation id="8302368968391049045">HTTPS-Firewall</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="8352772353338965963">Fügen Sie ein Konto für die Mehrfachanmeldung hinzu. Sie können auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwenden Sie diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
 <translation id="8364946094152050673">Kein Nameserver</translation>
+<translation id="8372477600026034341">Zusätzliche Hosts</translation>
 <translation id="8395584934117017006">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von einem Unternehmen verwaltet</translation>
 <translation id="8398927464629426868">Die Stromstärke, mit der das Gerät momentan geladen oder entladen wird</translation>
+<translation id="8461329675984532579">Name des Homepageanbieters</translation>
 <translation id="8475690821716466388">Das WLAN ist mit dem schwachen Protokoll WEP PSK gesichert</translation>
 <translation id="8477551185774834963">Die DNS-Latenz liegt etwas über dem zulässigen Grenzwert</translation>
+<translation id="8483248364096924578">IP-Adresse</translation>
+<translation id="8503813439785031346">Nutzername</translation>
+<translation id="8503836310948963452">Nur noch ein paar Minuten…</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
+<translation id="8620617069779373398">Roaming-Status</translation>
+<translation id="8675354002693747642">Vorinstallierter Schlüssel</translation>
 <translation id="871560550817059752">Fehlgeschlagen – Keine Tinte</translation>
 <translation id="8723108084122415655">Das nicht standardmäßige Netzwerk hat den Latenzgrenzwert überschritten</translation>
 <translation id="8726019395068607495">Angehalten – Druckerklappe offen</translation>
@@ -251,7 +349,9 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8747900814994928677">Änderung bestätigen</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
+<translation id="8798441408945964110">Name des Anbieters</translation>
 <translation id="8814190375133053267">WLAN</translation>
+<translation id="8818152010000655963">Hintergrund</translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>
 <translation id="8898840733695078011">Signalstärke</translation>
@@ -259,14 +359,22 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>
 <translation id="8930622219860340959">Drahtlos</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> verbleibende Versuche</translation>
 <translation id="8968751544471797276">Ladestrom</translation>
 <translation id="8970109610781093811">Erneut ausführen</translation>
+<translation id="9003704114456258138">Frequenz</translation>
+<translation id="9039663905644212491">PEAP</translation>
+<translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
 <translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>
+<translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>
+<translation id="9173638680043580060">Nur noch wenige Sekunden</translation>
+<translation id="9190063653747922532">L2TP/IPSec + vorinstallierter Schlüssel</translation>
+<translation id="939519157834106403">SSID</translation>
+<translation id="952992212772159698">Nicht aktiviert</translation>
+<translation id="960719561871045870">Betreibercode</translation>
 <translation id="982713511914535780">Entladetest ausführen</translation>
 </translationbundle>

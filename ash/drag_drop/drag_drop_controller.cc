@@ -23,6 +23,8 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
@@ -79,6 +81,17 @@ void DispatchGestureEndToWindow(aura::Window* window) {
     ui::GestureEvent gesture_end(0, 0, 0, ui::EventTimeForNow(), details);
     window->delegate()->OnGestureEvent(&gesture_end);
   }
+}
+
+bool IsDragDropAllowed(const ui::OSExchangeData* drag_data,
+                       aura::client::DragUpdateInfo& drag_info,
+                       bool is_drop) {
+  DCHECK(drag_data);
+
+  return ui::DataTransferPolicyController::HasInstance()
+             ? ui::DataTransferPolicyController::Get()->IsDragDropAllowed(
+                   drag_data->GetSource(), &drag_info.data_endpoint, is_drop)
+             : true;
 }
 
 }  // namespace
@@ -185,7 +198,7 @@ int DragDropController::StartDragAndDrop(
 
   drag_data_ = std::move(data);
   drag_operation_ = operation;
-  current_drag_actions_ = 0;
+  current_drag_info_ = aura::client::DragUpdateInfo();
 
   start_location_ = screen_location;
   current_location_ = screen_location;
@@ -432,7 +445,12 @@ gfx::LinearAnimation* DragDropController::CreateCancelAnimation(
 
 void DragDropController::DragUpdate(aura::Window* target,
                                     const ui::LocatedEvent& event) {
-  int op = ui::DragDropTypes::DRAG_NONE;
+  ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
+                        event.root_location_f(), drag_operation_);
+  e.set_flags(event.flags());
+  ui::Event::DispatcherApi(&e).set_target(target);
+
+  aura::client::DragUpdateInfo drag_info;
   if (target != drag_window_) {
     if (drag_window_) {
       aura::client::DragDropDelegate* delegate =
@@ -448,40 +466,38 @@ void DragDropController::DragUpdate(aura::Window* target,
       drag_window_->AddObserver(this);
     aura::client::DragDropDelegate* delegate =
         aura::client::GetDragDropDelegate(drag_window_);
-    if (delegate) {
-      ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
-                            event.root_location_f(), drag_operation_);
-      e.set_flags(event.flags());
-      ui::Event::DispatcherApi(&e).set_target(target);
+    if (delegate)
       delegate->OnDragEntered(e);
-    }
   } else {
     aura::client::DragDropDelegate* delegate =
         aura::client::GetDragDropDelegate(drag_window_);
     if (delegate) {
-      ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
-                            event.root_location_f(), drag_operation_);
-      e.set_flags(event.flags());
-      ui::Event::DispatcherApi(&e).set_target(target);
-      op = delegate->OnDragUpdated(e);
+      drag_info = delegate->OnDragUpdated(e);
+      bool is_drop_allowed = IsDragDropAllowed(drag_data_.get(), drag_info,
+                                               /*is_drop=*/false);
       gfx::NativeCursor cursor = ui::mojom::CursorType::kNoDrop;
-      if (op & ui::DragDropTypes::DRAG_COPY)
-        cursor = ui::mojom::CursorType::kCopy;
-      else if (op & ui::DragDropTypes::DRAG_LINK)
-        cursor = ui::mojom::CursorType::kAlias;
-      else if (op & ui::DragDropTypes::DRAG_MOVE)
-        cursor = ui::mojom::CursorType::kGrabbing;
-
+      if (is_drop_allowed) {
+        if (drag_info.drag_operation & ui::DragDropTypes::DRAG_COPY)
+          cursor = ui::mojom::CursorType::kCopy;
+        else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_LINK)
+          cursor = ui::mojom::CursorType::kAlias;
+        else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_MOVE)
+          cursor = ui::mojom::CursorType::kGrabbing;
+      } else {
+        drag_info.drag_operation = ui::DragDropTypes::DRAG_NONE;
+      }
       Shell::Get()->cursor_manager()->SetCursor(cursor);
     }
   }
 
-  if (op != current_drag_actions_) {
-    current_drag_actions_ = op;
+  for (aura::client::DragDropClientObserver& observer : observers_)
+    observer.OnDragUpdated(e);
 
+  if (drag_info.drag_operation != current_drag_info_.drag_operation) {
     for (aura::client::DragDropClientObserver& observer : observers_)
-      observer.OnDragActionsChanged(op);
+      observer.OnDragActionsChanged(drag_info.drag_operation);
   }
+  current_drag_info_ = drag_info;
 
   gfx::Point root_location_in_screen = event.root_location();
   ::wm::ConvertPointToScreen(target->GetRootWindow(), &root_location_in_screen);
@@ -492,7 +508,7 @@ void DragDropController::DragUpdate(aura::Window* target,
   if (drag_image->GetVisible()) {
     current_location_ = root_location_in_screen;
     drag_image->SetScreenPosition(root_location_in_screen - drag_image_offset_);
-    drag_image->SetTouchDragOperation(op);
+    drag_image->SetTouchDragOperation(drag_info.drag_operation);
   }
 
   if (tab_drag_drop_delegate_) {
@@ -507,14 +523,20 @@ void DragDropController::DragUpdate(aura::Window* target,
 
 void DragDropController::Drop(aura::Window* target,
                               const ui::LocatedEvent& event) {
-  Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kPointer);
-
   // We must guarantee that a target gets a OnDragEntered before Drop. WebKit
   // depends on not getting a Drop without DragEnter. This behavior is
   // consistent with drag/drop on other platforms.
   if (target != drag_window_)
     DragUpdate(target, event);
   DCHECK(target == drag_window_);
+
+  if (!IsDragDropAllowed(drag_data_.get(), current_drag_info_,
+                         /*is_drop=*/true)) {
+    DragCancel();
+    return;
+  }
+
+  Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kPointer);
 
   aura::client::DragDropDelegate* delegate =
       aura::client::GetDragDropDelegate(target);
@@ -525,7 +547,8 @@ void DragDropController::Drop(aura::Window* target,
     ui::Event::DispatcherApi(&e).set_target(target);
 
     ui::OSExchangeData copied_data(drag_data_->provider().Clone());
-    drag_operation_ = delegate->OnPerformDrop(e, std::move(drag_data_));
+    drag_operation_ =
+        static_cast<int>(delegate->OnPerformDrop(e, std::move(drag_data_)));
     if (drag_operation_ == 0 && tab_drag_drop_delegate_) {
       gfx::Point location_in_screen = event.root_location();
       ::wm::ConvertPointToScreen(target->GetRootWindow(), &location_in_screen);

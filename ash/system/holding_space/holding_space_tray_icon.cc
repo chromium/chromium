@@ -7,6 +7,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -25,6 +26,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -34,6 +36,16 @@ namespace {
 // incrementally. This is the delay increment.
 constexpr base::TimeDelta kPreviewItemUpdateDelayIncrement =
     base::TimeDelta::FromMilliseconds(50);
+
+// Helpers ---------------------------------------------------------------------
+
+// Returns the size of previews given the current shelf configuration.
+int GetPreviewSize() {
+  ShelfConfig* const shelf_config = ShelfConfig::Get();
+  return shelf_config->in_tablet_mode() && shelf_config->is_in_app()
+             ? kHoldingSpaceTrayIconSmallPreviewSize
+             : kHoldingSpaceTrayIconDefaultPreviewSize;
+}
 
 }  // namespace
 
@@ -52,7 +64,9 @@ class HoldingSpaceTrayIcon::ResizeAnimation
         previews_container_(previews_container),
         initial_size_(initial_size),
         target_size_(target_size),
-        animation_(this) {
+        animation_(this),
+        animation_throughput_tracker_(
+            icon->GetWidget()->GetCompositor()->RequestNewThroughputTracker()) {
     animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     animation_.SetSlideDuration(
         ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
@@ -66,6 +80,9 @@ class HoldingSpaceTrayIcon::ResizeAnimation
   void AnimationEnded(const gfx::Animation* animation) override {
     icon_->SetPreferredSize(target_size_);
     previews_container_->SetTransform(gfx::Transform());
+
+    // Record animation smoothness.
+    animation_throughput_tracker_.Stop();
   }
 
   void AnimationProgressed(const gfx::Animation* animation) override {
@@ -90,6 +107,10 @@ class HoldingSpaceTrayIcon::ResizeAnimation
   }
 
   void Start() {
+    animation_throughput_tracker_.Start(
+        metrics_util::ForSmoothness(base::BindRepeating(
+            holding_space_metrics::RecordPodResizeAnimationSmoothness)));
+
     animation_.Show();
     AnimationProgressed(&animation_);
   }
@@ -103,6 +124,7 @@ class HoldingSpaceTrayIcon::ResizeAnimation
   const gfx::Size target_size_;
 
   gfx::SlideAnimation animation_;
+  ui::ThroughputTracker animation_throughput_tracker_;
 };
 
 // HoldingSpaceTrayIcon --------------------------------------------------------
@@ -110,24 +132,19 @@ class HoldingSpaceTrayIcon::ResizeAnimation
 HoldingSpaceTrayIcon::HoldingSpaceTrayIcon(Shelf* shelf) : shelf_(shelf) {
   SetID(kHoldingSpaceTrayPreviewsIconId);
   InitLayout();
-  shell_observer_.Add(Shell::Get());
+
+  shell_observer_.Observe(Shell::Get());
+  shelf_config_observer_.Observe(ShelfConfig::Get());
 }
 
 HoldingSpaceTrayIcon::~HoldingSpaceTrayIcon() = default;
 
 void HoldingSpaceTrayIcon::Clear() {
   previews_update_weak_factory_.InvalidateWeakPtrs();
+  item_ids_.clear();
   previews_by_id_.clear();
   removed_previews_.clear();
-}
-
-void HoldingSpaceTrayIcon::OnLocaleChanged() {
-  TooltipTextChanged();
-}
-
-base::string16 HoldingSpaceTrayIcon::GetTooltipText(
-    const gfx::Point& point) const {
-  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
+  SetPreferredSize(CalculatePreferredSize());
 }
 
 int HoldingSpaceTrayIcon::GetHeightForWidth(int width) const {
@@ -142,10 +159,11 @@ gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize() const {
   const int num_visible_previews =
       std::min(kHoldingSpaceTrayIconMaxVisiblePreviews,
                static_cast<int>(previews_by_id_.size()));
+  const int preview_size = GetPreviewSize();
 
-  int primary_axis_size = kTrayItemSize;
+  int primary_axis_size = preview_size;
   if (num_visible_previews > 1)
-    primary_axis_size += (num_visible_previews - 1) * kTrayItemSize / 2;
+    primary_axis_size += (num_visible_previews - 1) * preview_size / 2;
 
   return shelf_->PrimaryAxisValue(
       /*horizontal=*/gfx::Size(primary_axis_size, kTrayItemSize),
@@ -154,7 +172,9 @@ gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize() const {
 
 void HoldingSpaceTrayIcon::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+
+  const int preview_size = GetPreviewSize();
+  SetPreferredSize(gfx::Size(preview_size, preview_size));
 
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   layer()->SetFillsBoundsOpaquely(false);
@@ -228,12 +248,43 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
   }
 }
 
+void HoldingSpaceTrayIcon::OnShellDestroying() {
+  shell_observer_.Reset();
+}
+
 void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
     aura::Window* root_window,
     ShelfAlignment old_alignment) {
-  removed_previews_.clear();
+  // Each display has its own shelf. The shelf undergoing an alignment change
+  // may not be the `shelf_` associated with this holding space tray icon.
+  if (shelf_ != Shelf::ForWindow(root_window))
+    return;
+
+  if (!removed_previews_.empty()) {
+    removed_previews_.clear();
+    OnOldItemsRemoved();
+  }
+
   for (const auto& preview : previews_by_id_)
     preview.second->OnShelfAlignmentChanged(old_alignment, shelf_->alignment());
+
+  if (resize_animation_) {
+    resize_animation_->AdvanceToEnd();
+    resize_animation_.reset();
+  }
+
+  SetPreferredSize(CalculatePreferredSize());
+  previews_container_->SetTransform(gfx::Transform());
+}
+
+void HoldingSpaceTrayIcon::OnShelfConfigUpdated() {
+  if (!removed_previews_.empty()) {
+    removed_previews_.clear();
+    OnOldItemsRemoved();
+  }
+
+  for (const auto& preview : previews_by_id_)
+    preview.second->OnShelfConfigChanged();
 
   if (resize_animation_) {
     resize_animation_->AdvanceToEnd();

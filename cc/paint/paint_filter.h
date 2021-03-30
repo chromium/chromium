@@ -17,10 +17,6 @@
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkPoint3.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
-#include "third_party/skia/include/effects/SkDisplacementMapEffect.h"
-#include "third_party/skia/include/effects/SkDropShadowImageFilter.h"
-#include "third_party/skia/include/effects/SkMatrixConvolutionImageFilter.h"
 
 namespace viz {
 class GLRenderer;
@@ -70,7 +66,7 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   };
 
   using MapDirection = SkImageFilter::MapDirection;
-  using CropRect = SkImageFilter::CropRect;
+  using CropRect = SkRect;
 
   PaintFilter(const PaintFilter&) = delete;
   ~PaintFilter() override;
@@ -186,11 +182,10 @@ class CC_PAINT_EXPORT ColorFilterPaintFilter final : public PaintFilter {
 
 class CC_PAINT_EXPORT BlurPaintFilter final : public PaintFilter {
  public:
-  using TileMode = SkBlurImageFilter::TileMode;
   static constexpr Type kType = Type::kBlur;
   BlurPaintFilter(SkScalar sigma_x,
                   SkScalar sigma_y,
-                  TileMode tile_mode,
+                  SkTileMode tile_mode,
                   sk_sp<PaintFilter> input,
                   const CropRect* crop_rect = nullptr);
   ~BlurPaintFilter() override;
@@ -199,7 +194,7 @@ class CC_PAINT_EXPORT BlurPaintFilter final : public PaintFilter {
 
   SkScalar sigma_x() const { return sigma_x_; }
   SkScalar sigma_y() const { return sigma_y_; }
-  TileMode tile_mode() const { return tile_mode_; }
+  SkTileMode tile_mode() const { return tile_mode_; }
 
   size_t SerializedSize() const override;
   bool operator==(const BlurPaintFilter& other) const;
@@ -211,13 +206,17 @@ class CC_PAINT_EXPORT BlurPaintFilter final : public PaintFilter {
  private:
   SkScalar sigma_x_;
   SkScalar sigma_y_;
-  TileMode tile_mode_;
+  SkTileMode tile_mode_;
   sk_sp<PaintFilter> input_;
 };
 
 class CC_PAINT_EXPORT DropShadowPaintFilter final : public PaintFilter {
  public:
-  using ShadowMode = SkDropShadowImageFilter::ShadowMode;
+  enum class ShadowMode {
+    kDrawShadowAndForeground,
+    kDrawShadowOnly,
+    kMaxValue = kDrawShadowOnly
+  };
   static constexpr Type kType = Type::kDropShadow;
   DropShadowPaintFilter(SkScalar dx,
                         SkScalar dy,
@@ -396,14 +395,13 @@ class CC_PAINT_EXPORT ArithmeticPaintFilter final : public PaintFilter {
 
 class CC_PAINT_EXPORT MatrixConvolutionPaintFilter final : public PaintFilter {
  public:
-  using TileMode = SkMatrixConvolutionImageFilter::TileMode;
   static constexpr Type kType = Type::kMatrixConvolution;
   MatrixConvolutionPaintFilter(const SkISize& kernel_size,
                                const SkScalar* kernel,
                                SkScalar gain,
                                SkScalar bias,
                                const SkIPoint& kernel_offset,
-                               TileMode tile_mode,
+                               SkTileMode tile_mode,
                                bool convolve_alpha,
                                sk_sp<PaintFilter> input,
                                const CropRect* crop_rect = nullptr);
@@ -414,7 +412,7 @@ class CC_PAINT_EXPORT MatrixConvolutionPaintFilter final : public PaintFilter {
   SkScalar gain() const { return gain_; }
   SkScalar bias() const { return bias_; }
   SkIPoint kernel_offset() const { return kernel_offset_; }
-  TileMode tile_mode() const { return tile_mode_; }
+  SkTileMode tile_mode() const { return tile_mode_; }
   bool convolve_alpha() const { return convolve_alpha_; }
   const sk_sp<PaintFilter>& input() const { return input_; }
 
@@ -431,7 +429,7 @@ class CC_PAINT_EXPORT MatrixConvolutionPaintFilter final : public PaintFilter {
   SkScalar gain_;
   SkScalar bias_;
   SkIPoint kernel_offset_;
-  TileMode tile_mode_;
+  SkTileMode tile_mode_;
   bool convolve_alpha_;
   sk_sp<PaintFilter> input_;
 };
@@ -439,18 +437,17 @@ class CC_PAINT_EXPORT MatrixConvolutionPaintFilter final : public PaintFilter {
 class CC_PAINT_EXPORT DisplacementMapEffectPaintFilter final
     : public PaintFilter {
  public:
-  using ChannelSelectorType = SkDisplacementMapEffect::ChannelSelectorType;
   static constexpr Type kType = Type::kDisplacementMapEffect;
-  DisplacementMapEffectPaintFilter(ChannelSelectorType channel_x,
-                                   ChannelSelectorType channel_y,
+  DisplacementMapEffectPaintFilter(SkColorChannel channel_x,
+                                   SkColorChannel channel_y,
                                    SkScalar scale,
                                    sk_sp<PaintFilter> displacement,
                                    sk_sp<PaintFilter> color,
                                    const CropRect* crop_rect = nullptr);
   ~DisplacementMapEffectPaintFilter() override;
 
-  ChannelSelectorType channel_x() const { return channel_x_; }
-  ChannelSelectorType channel_y() const { return channel_y_; }
+  SkColorChannel channel_x() const { return channel_x_; }
+  SkColorChannel channel_y() const { return channel_y_; }
   SkScalar scale() const { return scale_; }
   const sk_sp<PaintFilter>& displacement() const { return displacement_; }
   const sk_sp<PaintFilter>& color() const { return color_; }
@@ -463,8 +460,8 @@ class CC_PAINT_EXPORT DisplacementMapEffectPaintFilter final
       ImageProvider* image_provider) const override;
 
  private:
-  ChannelSelectorType channel_x_;
-  ChannelSelectorType channel_y_;
+  SkColorChannel channel_x_;
+  SkColorChannel channel_y_;
   SkScalar scale_;
   sk_sp<PaintFilter> displacement_;
   sk_sp<PaintFilter> color_;

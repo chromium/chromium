@@ -19,6 +19,7 @@
 #include "base/threading/thread_checker.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/managed_memory_policy.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
@@ -115,6 +116,8 @@ class SynchronousLayerTreeFrameSink
   void ReclaimResources(
       const Vector<viz::ReturnedResource>& resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   // viz::ExternalBeginFrameSourceClient overrides.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
@@ -129,7 +132,8 @@ class SynchronousLayerTreeFrameSink
                         const Vector<viz::ReturnedResource>& resources);
   void DemandDrawHw(const gfx::Size& viewport_size,
                     const gfx::Rect& viewport_rect_for_tile_priority,
-                    const gfx::Transform& transform_for_tile_priority);
+                    const gfx::Transform& transform_for_tile_priority,
+                    bool need_new_local_surface_id);
   void DemandDrawSw(SkCanvas* canvas);
   void DemandDrawSwZeroCopy();
   void WillSkipDraw();
@@ -221,6 +225,8 @@ class SynchronousLayerTreeFrameSink
   bool begin_frames_paused_ = false;
   bool needs_begin_frames_ = false;
   const bool use_zero_copy_sw_draw_;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 
   DISALLOW_COPY_AND_ASSIGN(SynchronousLayerTreeFrameSink);
 };

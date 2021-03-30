@@ -24,8 +24,9 @@ class ImageSlicePropertyFunctions {
   STATIC_ONLY(ImageSlicePropertyFunctions);
 
  public:
-  static ImageSlice GetInitialImageSlice(const CSSProperty& property) {
-    return GetImageSlice(property, ComputedStyle::InitialStyle());
+  static ImageSlice GetInitialImageSlice(const CSSProperty& property,
+                                         const ComputedStyle& initial_style) {
+    return GetImageSlice(property, initial_style);
   }
 
   static ImageSlice GetImageSlice(const CSSProperty& property,

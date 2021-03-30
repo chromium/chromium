@@ -22,9 +22,8 @@ class Profile;
 
 class DevToolsTargetsUIHandler {
  public:
-  typedef base::RepeatingCallback<void(const std::string&,
-                                       const base::ListValue&)>
-      Callback;
+  using Callback =
+      base::RepeatingCallback<void(const std::string&, const base::ListValue&)>;
 
   DevToolsTargetsUIHandler(const std::string& source_id, Callback callback);
   virtual ~DevToolsTargetsUIHandler();
@@ -68,7 +67,7 @@ class DevToolsTargetsUIHandler {
 class PortForwardingStatusSerializer
     : private DevToolsAndroidBridge::PortForwardingListener {
  public:
-  typedef base::Callback<void(base::Value)> Callback;
+  using Callback = base::RepeatingCallback<void(base::Value)>;
 
   PortForwardingStatusSerializer(const Callback& callback, Profile* profile);
   ~PortForwardingStatusSerializer() override;

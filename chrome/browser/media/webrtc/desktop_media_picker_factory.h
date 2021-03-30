@@ -13,6 +13,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/web_contents.h"
 
 // Interface for factory creating DesktopMediaList and DesktopMediaPicker
 // instances.
@@ -22,8 +23,10 @@ class DesktopMediaPickerFactory {
 
   virtual std::unique_ptr<DesktopMediaPicker> CreatePicker(
       const content::MediaStreamRequest* request) = 0;
+
   virtual std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
-      const std::vector<content::DesktopMediaID::Type>& types) = 0;
+      const std::vector<DesktopMediaList::Type>& types,
+      content::WebContents* web_contents) = 0;
 
  protected:
   DesktopMediaPickerFactory();

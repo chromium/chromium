@@ -5,6 +5,11 @@
     justify-content: flex-end;
   }
 
+  #readLaterList {
+    max-height: 800px;
+    overflow: auto;
+  }
+
   #header {
     align-items: center;
     color: var(--cr-primary-text-color);
@@ -74,11 +79,11 @@
       hidden="[[isReadingListEmpty_(unreadItems_, readItems_)]]">$i18n{title}
   </div>
   <cr-icon-button id="closeButton" aria-label="$i18n{tooltipClose}"
-      disable-ripple iron-icon="cr:close" on-click="onCloseClick_"
-      title="$i18n{tooltipClose}">
+      iron-icon="cr:close" noink="[[!buttonRipples]]" no-ripple-on-focus
+      on-click="onCloseClick_" title="$i18n{tooltipClose}">
   </cr-icon-button>
 </div>
-<div id="read-later-list">
+<div id="readLaterList">
   <iron-selector id="selector" on-keydown="onItemKeyDown_"
       attr-for-selected="data-url" selectable="read-later-item">
     <div hidden="[[!unreadItems_.length]]" class="sub-heading">
@@ -86,7 +91,8 @@
     </div>
     <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
       <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-          class="mwb-list-item" data="[[item]]" tabindex="0">
+          aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
+          data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
       </read-later-item>
     </template>
     <div hidden="[[!readItems_.length]]" class="sub-heading">
@@ -94,7 +100,8 @@
     </div>
     <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
       <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-          class="mwb-list-item" data="[[item]]" tabindex="0">
+          aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
+          data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
       </read-later-item>
     </template>
   </iron-selector>

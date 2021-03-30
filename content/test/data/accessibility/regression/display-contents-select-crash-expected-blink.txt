@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++popUpButton collapsed
+++++++++menuListPopup invisible
+++++++++++menuListOption selected=true

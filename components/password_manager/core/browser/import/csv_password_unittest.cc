@@ -32,8 +32,8 @@ TEST(CSVPasswordTest, Construction) {
   const GURL expected_origin("http://example.com");
   EXPECT_EQ(expected_origin, result.url);
   EXPECT_EQ(expected_origin.GetOrigin().spec(), result.signon_realm);
-  EXPECT_EQ(base::ASCIIToUTF16("user"), result.username_value);
-  EXPECT_EQ(base::ASCIIToUTF16("password"), result.password_value);
+  EXPECT_EQ(u"user", result.username_value);
+  EXPECT_EQ(u"password", result.password_value);
   EXPECT_EQ(base::Time::Now(), result.date_created);
 }
 

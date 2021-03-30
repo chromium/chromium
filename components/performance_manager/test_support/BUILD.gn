@@ -34,6 +34,8 @@ source_set("test_support") {
     "mock_graphs.h",
     "performance_manager_test_harness.cc",
     "performance_manager_test_harness.h",
+    "test_worker_node_factory.cc",
+    "test_worker_node_factory.h",
   ]
 
   deps = [

@@ -53,8 +53,8 @@ bool MediaSink::CompareUsingCollator(const MediaSink& other,
     return icon_type_ < other.icon_type_;
 
   if (collator) {
-    base::string16 this_name = base::UTF8ToUTF16(name_);
-    base::string16 other_name = base::UTF8ToUTF16(other.name_);
+    std::u16string this_name = base::UTF8ToUTF16(name_);
+    std::u16string other_name = base::UTF8ToUTF16(other.name_);
     UCollationResult result = base::i18n::CompareString16WithCollator(
         *collator, this_name, other_name);
     if (result != UCOL_EQUAL)

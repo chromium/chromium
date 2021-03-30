@@ -5,11 +5,6 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <!-- TODO(crbug.com/971791): Copied over this TextView for empty state because there are minor
-         UI differences between it and the built-in android.R.id.empty view in support library
-         preferences, but we should later investigate whether we can remove this and take advantage
-         of the default implementation instead. -->
     <TextView
         android:id="@+id/empty_storage"
         android:layout_width="match_parent"

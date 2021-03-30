@@ -16,9 +16,9 @@
 
 namespace extensions {
 
-bool IsSourceFromAnExtension(const base::string16& source) {
+bool IsSourceFromAnExtension(const std::u16string& source) {
   return GURL(source).SchemeIs(kExtensionScheme) ||
-         base::StartsWith(source, base::ASCIIToUTF16("extensions::"),
+         base::StartsWith(source, u"extensions::",
                           base::CompareCase::SENSITIVE);
 }
 

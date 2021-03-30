@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
-import {browserProxy} from '../../../browser_proxy/browser_proxy.js';
 import {assert, assertString} from '../../../chrome_util.js';
+import * as dom from '../../../dom.js';
+// eslint-disable-next-line no-unused-vars
+import {EncoderParameters} from '../../../h264.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {
   VideoSaver,  // eslint-disable-line no-unused-vars
@@ -13,6 +15,7 @@ import * as sound from '../../../sound.js';
 import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
 import {
+  CanceledError,
   Facing,  // eslint-disable-line no-unused-vars
   PerfEvent,
   Resolution,
@@ -26,10 +29,41 @@ import {PhotoResult} from './photo.js';  // eslint-disable-line no-unused-vars
 import {RecordTime} from './record_time.js';
 
 /**
- * Video recording MIME type. Mkv with AVC1 is the only preferred format.
- * @type {string}
+ * @type {?EncoderParameters}
  */
-const VIDEO_MIMETYPE = 'video/x-matroska;codecs=avc1,pcm';
+let avc1Parameters = null;
+
+/**
+ * Sets avc1 parameter used in video recording.
+ * @param {?EncoderParameters} params
+ */
+export function setAvc1Parameters(params) {
+  avc1Parameters = params;
+}
+
+/**
+ * Gets video recording MIME type. Mkv with AVC1 is the only preferred format.
+ * @return {string} Video recording MIME type.
+ */
+function getVideoMimeType() {
+  let suffix = '';
+  if (avc1Parameters !== null) {
+    const {profile, level} = avc1Parameters;
+    suffix = '.' + profile.toString(16).padStart(2, '0') +
+        level.toString(16).padStart(4, '0');
+  }
+  return `video/x-matroska;codecs=avc1${suffix},pcm`;
+}
+
+/**
+ * The 'beforeunload' listener which will show confirm dialog when trying to
+ * close window.
+ * @param {!Event} event The 'beforeunload' event.
+ */
+function beforeUnloadListener(event) {
+  event.preventDefault();
+  event.returnValue = '';
+}
 
 /**
  * Contains video recording result.
@@ -132,13 +166,6 @@ export class Video extends ModeBase {
     this.handler_ = handler;
 
     /**
-     * Promise for play start sound delay.
-     * @type {?{promise: !Promise, cancel: function()}}
-     * @private
-     */
-    this.startSound_ = null;
-
-    /**
      * MediaRecorder object to record motion pictures.
      * @type {?MediaRecorder}
      * @private
@@ -221,7 +248,9 @@ export class Video extends ModeBase {
     };
     const playEffect = async () => {
       state.set(state.State.RECORDING_UI_PAUSED, toBePaused);
-      await sound.play(toBePaused ? '#sound-rec-pause' : '#sound-rec-start');
+      await sound.play(dom.get(
+          toBePaused ? '#sound-rec-pause' : '#sound-rec-start',
+          HTMLAudioElement));
     };
 
     this.mediaRecorder_.addEventListener(toggledEvent, onToggled);
@@ -244,25 +273,28 @@ export class Video extends ModeBase {
   async start_() {
     this.snapshots_ = new AsyncJobQueue();
     this.togglePaused_ = null;
-    this.startSound_ = sound.play('#sound-rec-start');
     this.everPaused_ = false;
-    try {
-      await this.startSound_.promise;
-    } finally {
-      this.startSound_ = null;
+
+    const isSoundEnded =
+        await sound.play(dom.get('#sound-rec-start', HTMLAudioElement));
+    if (!isSoundEnded) {
+      throw new CanceledError('Recording sound is canceled');
     }
 
-    if (this.mediaRecorder_ === null) {
-      try {
-        if (!MediaRecorder.isTypeSupported(VIDEO_MIMETYPE)) {
-          throw new Error('The preferred mimeType is not supported.');
-        }
-        this.mediaRecorder_ =
-            new MediaRecorder(this.stream_, {mimeType: VIDEO_MIMETYPE});
-      } catch (e) {
-        toast.show('error_msg_record_start_failed');
-        throw e;
+    try {
+      const mimeType = getVideoMimeType();
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        throw new Error(
+            `The preferred mimeType "${mimeType}" is not supported.`);
       }
+      const option = {mimeType};
+      if (avc1Parameters !== null) {
+        option.videoBitsPerSecond = avc1Parameters.bitrate;
+      }
+      this.mediaRecorder_ = new MediaRecorder(this.stream_, option);
+    } catch (e) {
+      toast.show('error_msg_record_start_failed');
+      throw e;
     }
 
     this.recordTime_.start({resume: false});
@@ -276,7 +308,7 @@ export class Video extends ModeBase {
     } finally {
       duration = this.recordTime_.stop({pause: false});
     }
-    sound.play('#sound-rec-end');
+    sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
 
     const settings = this.stream_.getVideoTracks()[0].getSettings();
     const resolution = new Resolution(settings.width, settings.height);
@@ -300,14 +332,13 @@ export class Video extends ModeBase {
    * @override
    */
   stop_() {
-    if (this.startSound_ !== null) {
-      this.startSound_.cancel();
-    }
+    sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
+
     if (this.mediaRecorder_ &&
         (this.mediaRecorder_.state === 'recording' ||
          this.mediaRecorder_.state === 'paused')) {
       this.mediaRecorder_.stop();
-      browserProxy.setBeforeUnloadListenerEnabled(false);
+      window.removeEventListener('beforeunload', beforeUnloadListener);
     }
   }
 
@@ -353,7 +384,7 @@ export class Video extends ModeBase {
       this.mediaRecorder_.addEventListener('stop', onstop);
       this.mediaRecorder_.addEventListener('start', onstart);
 
-      browserProxy.setBeforeUnloadListenerEnabled(true);
+      window.addEventListener('beforeunload', beforeUnloadListener);
 
       this.mediaRecorder_.start(100);
       state.set(state.State.RECORDING_PAUSED, false);

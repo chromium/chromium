@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Adicionar www. e .com à entrada na barra de endereço e depois abrir a página</translation>
+<translation id="1768987374400973299">Fazer uma captura/gravação da tela</translation>
 <translation id="1872219238824176091">Remover o espaço de trabalho atual</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e depois <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> ou <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Ir para a próxima guia</translation>
 <translation id="2010818616644390445">Ir para a última guia da janela</translation>
 <translation id="2040706009561734834">Abrir/fechar o acesso rápido</translation>
+<translation id="2086334242442703436">Abrir seletor de emojis</translation>
 <translation id="2088054208777350526">Procurar atalhos do teclado</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> ou <ph name="F" /></translation>
 <translation id="2145908266289632567">Edição de texto</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Abrir o Google Assistente</translation>
 <translation id="2488661730534396940">Ativar o espaço de trabalho à esquerda</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Abrir app de diagnóstico</translation>
 <translation id="2530339807289914946">Rolar a página da Web para baixo</translation>
 <translation id="2530896289327917474">Ativar ou desativar Caret Browsing</translation>
 <translation id="2574014812750545982">Redefinir nível de zoom na página</translation>
@@ -59,7 +62,7 @@
 <translation id="2830827904629746450">Ancorar uma janela à direita</translation>
 <translation id="2840766858109427815">Avançar para a próxima página</translation>
 <translation id="2872353916818027657">Trocar monitor primário</translation>
-<translation id="2914313326123580426">Mostrar ou ocultar o painel Ferramentas do desenvolvedor</translation>
+<translation id="2914313326123580426">Mostrar ou ocultar o painel Ferramentas para desenvolvedores</translation>
 <translation id="292495055542441795">Alternar para tela cheia</translation>
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3084301071537457911">Destacar o próximo item na estante</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Mover para o fim da próxima palavra</translation>
 <translation id="4866066940972151697">Ativar o espaço de trabalho à direita</translation>
 <translation id="4916163929714267752">Abrir o link em uma nova janela</translation>
+<translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="5030659775136592441">Mostrar gerenciador de favoritos</translation>
 <translation id="5034421018520995080">Ir para a parte superior da página</translation>
 <translation id="5042305953558921026">Tecla do modo de visão geral</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Mostrar ou ocultar o console das Ferramentas para Desenvolvedores</translation>
 <translation id="5919628958418675842">Ativar ou desativar a tela de privacidade</translation>
 <translation id="5921745308587794300">Girar janela</translation>
+<translation id="5926306472221400972">Fazer uma captura de tela cheia</translation>
 <translation id="6022924867608035986">Limpar texto da caixa de pesquisa</translation>
 <translation id="6045998054441862242">Ativar o modo de alto contraste</translation>
 <translation id="6052614013050385269">Clicar com o botão direito do mouse em um link</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Voltar a guia para a posição original</translation>
 <translation id="6474744297082284761">Diminuir zoom (quando encaixado na base OU se a lupa de tela cheia estiver ativada)</translation>
 <translation id="649811797655257835">Selecione o arquivo e pressione <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Fazer uma captura/gravação de tela parcial</translation>
 <translation id="6556040137485212400">Abrir a janela que ficou sem ser usada há mais tempo</translation>
 <translation id="666343722268997814">Abrir menu de clique com o botão direito para o item destacado</translation>
 <translation id="6671538777808758331">Ir para a próxima correspondência da sua pesquisa</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Mover o foco para pop-ups e caixas de diálogo</translation>
 <translation id="7635348532214572995">Mover um ícone de app pela grade de apps</translation>
 <translation id="766326951329901120">Colar conteúdo da área de transferência como texto simples</translation>
+<translation id="7673453620027697230">Fazer uma captura/gravação de tela da janela</translation>
 <translation id="7703010453515335249">colchete esquerdo</translation>
 <translation id="7724603315864178912">Recortar</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e depois <ph name="SPACE" /> ou <ph name="ENTER" /></translation>

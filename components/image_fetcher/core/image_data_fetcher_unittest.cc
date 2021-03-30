@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/image_fetcher/core/request_metadata.h"
+#include "net/base/data_url.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -108,14 +109,16 @@ TEST_F(ImageDataFetcherTest, FetchImageData) {
 }
 
 TEST_F(ImageDataFetcherTest, FetchImageDataWithDataUrl) {
-  std::string data =
+  std::string data_url =
+      "data:image/png;base64,"
       "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQYlWNk+M/"
       "wn4GBgYGJAQoAHhgCAh6X4CYAAAAASUVORK5CYII=";
-  std::string data_url = "data:image/png;base64," + data;
 
   RequestMetadata expected_metadata;
-  std::string expected;
-  base::Base64Decode(data, &expected);
+  expected_metadata.mime_type = "image/png";
+  std::string mime_type, expected, charset;
+  EXPECT_TRUE(
+      net::DataURL::Parse(GURL(data_url), &mime_type, &charset, &expected));
   EXPECT_CALL(*this, OnImageDataFetched(expected, expected_metadata));
 
   image_data_fetcher_.FetchImageData(

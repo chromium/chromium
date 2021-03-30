@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.suggestions.mostvisited;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
@@ -15,13 +17,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.io.File;
@@ -30,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Instrumentation tests for {@link MostVisitedSitesMetadataUtils}.
@@ -40,17 +46,18 @@ public class MostVisitedSitesMetadataUtilsTest {
     @Rule
     public ChromeTabbedActivityTestRule mTestSetupRule = new ChromeTabbedActivityTestRule();
 
-    private List<SiteSuggestion> mExpectedSiteSuggestions;
+    private MostVisitedSitesMetadataUtils mMostVisitedSitesMetadataUtils;
 
     @Before
     public void setUp() {
         mTestSetupRule.startMainActivityOnBlankPage();
+        mMostVisitedSitesMetadataUtils = MostVisitedSitesMetadataUtils.getInstance();
     }
 
     @Test
     @SmallTest
     public void testSaveRestoreConsistency() throws InterruptedException, IOException {
-        mExpectedSiteSuggestions = createFakeSiteSuggestions();
+        List<Tile> expectedSuggestionTiles = createFakeSiteSuggestionTiles1();
 
         // Get old file and ensure to delete it.
         File oldFile = MostVisitedSitesMetadataUtils.getOrCreateTopSitesDirectory();
@@ -59,17 +66,20 @@ public class MostVisitedSitesMetadataUtilsTest {
         // Save suggestion lists to file.
         final CountDownLatch latch = new CountDownLatch(1);
         MostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
-                mExpectedSiteSuggestions, latch::countDown);
+                expectedSuggestionTiles, latch::countDown);
 
         // Wait util the file has been saved.
         latch.await();
 
         // Restore list from file after saving finished.
-        List<SiteSuggestion> sitesAfterRestore =
-                MostVisitedSitesMetadataUtils.restoreFileToSuggestionLists();
+        List<Tile> sitesAfterRestore = MostVisitedSitesMetadataUtils.restoreFileToSuggestionLists();
 
         // Ensure that the new list equals to old list.
-        assertEquals(mExpectedSiteSuggestions, sitesAfterRestore);
+        assertEquals(expectedSuggestionTiles.size(), sitesAfterRestore.size());
+        for (int i = 0; i < expectedSuggestionTiles.size(); i++) {
+            assertEquals(
+                    expectedSuggestionTiles.get(i).getData(), sitesAfterRestore.get(i).getData());
+        }
     }
 
     @Test(expected = IOException.class)
@@ -83,15 +93,78 @@ public class MostVisitedSitesMetadataUtilsTest {
         MostVisitedSitesMetadataUtils.restoreFileToSuggestionLists();
     }
 
-    private static List<SiteSuggestion> createFakeSiteSuggestions() {
-        List<SiteSuggestion> siteSuggestions = new ArrayList<>();
-        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
+    /**
+     * Test when current task is not finished, all coming tasks will be set as the pending task.
+     * Besides, the latest task will override the old one.
+     */
+    @Test
+    @SmallTest
+    public void testCurrentNotNull() {
+        mMostVisitedSitesMetadataUtils.setCurrentTaskForTesting(() -> {});
+
+        Runnable task1 = ()
+                -> mMostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
+                        createFakeSiteSuggestionTiles1());
+
+        List<Tile> task2Tiles = createFakeSiteSuggestionTiles2();
+        Runnable task2 = () -> mMostVisitedSitesMetadataUtils.saveSuggestionListsToFile(task2Tiles);
+
+        // If current task is not null, all saving tasks should be set as pending task.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            task1.run();
+            task2.run();
+        });
+
+        // newTopSites1 should be skipped and newTopSites2 should be the pending task.
+        assertEquals(task2Tiles.size(),
+                mMostVisitedSitesMetadataUtils.getPendingTaskTilesNumForTesting());
+    }
+
+    /**
+     * Test when current task is finished, the pending task should be set as current task and run.
+     */
+    @Test
+    @SmallTest
+    public void testTasksContinuity() {
+        AtomicBoolean isPendingRun = new AtomicBoolean(false);
+
+        // Set and run current task.
+        assertNull(mMostVisitedSitesMetadataUtils.getCurrentTaskForTesting());
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mMostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
+                                createFakeSiteSuggestionTiles1()));
+
+        // When current task is not finished, set pending task.
+        assertNotNull(mMostVisitedSitesMetadataUtils.getCurrentTaskForTesting());
+        mMostVisitedSitesMetadataUtils.setPendingTaskForTesting(() -> isPendingRun.set(true));
+
+        // isPendingRun should eventually become true.
+        CriteriaHelper.pollInstrumentationThread(isPendingRun::get);
+    }
+
+    private static List<Tile> createFakeSiteSuggestionTiles1() {
+        List<Tile> suggestionTiles = new ArrayList<>();
+        SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
                 TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
-                new Date()));
-        siteSuggestions.add(new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"), "",
+                new Date());
+        suggestionTiles.add(new Tile(data, 0));
+
+        data = new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"), "",
                 TileTitleSource.UNKNOWN, TileSource.ALLOWLIST, TileSectionType.PERSONALIZED,
-                new Date()));
-        siteSuggestions.get(1).faviconId = 1;
-        return siteSuggestions;
+                new Date());
+        suggestionTiles.add(new Tile(data, 1));
+
+        return suggestionTiles;
+    }
+
+    private static List<Tile> createFakeSiteSuggestionTiles2() {
+        List<Tile> suggestionTiles = new ArrayList<>();
+        SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.baz.com"), "",
+                TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
+                new Date());
+        suggestionTiles.add(new Tile(data, 0));
+
+        return suggestionTiles;
     }
 }

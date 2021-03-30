@@ -4,8 +4,10 @@
 
 source_set("crash_report") {
   sources = [
-    "breakpad_helper.h",
-    "breakpad_helper.mm",
+    "chrome_crash_reporter_client.cc",
+    "chrome_crash_reporter_client.h",
+    "crash_helper.h",
+    "crash_helper.mm",
     "crash_keys_helper.h",
     "crash_keys_helper.mm",
     "crash_loop_detection_util.h",
@@ -29,8 +31,11 @@ source_set("crash_report") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":constants",
     "//base",
+    "//build:branding_buildflags",
+    "//components/breadcrumbs/core",
+    "//components/crash/core/app",
+    "//components/crash/core/browser",
     "//components/crash/core/common",
     "//components/previous_session_info",
     "//components/upload_list",
@@ -39,13 +44,10 @@ source_set("crash_report") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/crash_report/breadcrumbs:feature_flags",
+    "//ios/chrome/common",
     "//ios/web",
     "//third_party/breakpad:client",
   ]
-}
-
-source_set("constants") {
-  sources = [ "crash_reporter_breadcrumb_constants.h" ]
 }
 
 source_set("crash_report_internal") {
@@ -61,6 +63,8 @@ source_set("crash_report_internal") {
   deps = [
     ":crash_report",
     "//base",
+    "//components/breadcrumbs/core",
+    "//components/crash/core/common:crash_key_lib",
     "//components/infobars/core",
     "//components/previous_session_info",
     "//components/sessions",
@@ -78,7 +82,6 @@ source_set("crash_report_internal") {
     "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
@@ -91,7 +94,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "breakpad_helper_unittest.mm",
+    "crash_helper_unittest.mm",
     "crash_loop_detection_util_unittest.mm",
     "crash_reporter_breadcrumb_observer_unittest.mm",
     "crash_reporter_url_observer_unittest.mm",
@@ -99,11 +102,11 @@ source_set("unit_tests") {
     "synthetic_crash_report_util_unittest.mm",
   ]
   deps = [
-    ":constants",
     ":crash_report",
     ":crash_report_internal",
     "//base",
     "//base/test:test_support",
+    "//components/breadcrumbs/core",
     "//components/previous_session_info",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:test_support",
@@ -111,7 +114,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/sessions:session_service",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/test/ocmock",

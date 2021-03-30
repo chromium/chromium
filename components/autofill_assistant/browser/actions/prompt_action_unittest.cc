@@ -186,7 +186,7 @@ TEST_F(PromptActionTest, SelectButtons) {
           Property(&ProcessedActionProto::prompt_choice,
                    Property(&PromptProto::Result::server_payload, "ok"))))));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
-  (*user_actions_)[0].Call(TriggerContext::CreateEmpty());
+  (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
 }
 
 TEST_F(PromptActionTest, ReportDirectAction) {
@@ -274,7 +274,7 @@ TEST_F(PromptActionTest, TimingStatsUserAction) {
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
-  (*user_actions_)[0].Call(TriggerContext::CreateEmpty());
+  (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
   EXPECT_EQ(capture.timing_stats().active_time_ms(), 700);
   EXPECT_EQ(capture.timing_stats().wait_time_ms(), 2500);
 }
@@ -403,7 +403,7 @@ TEST_F(PromptActionTest, Terminate) {
   // Chips pointing to a deleted action do nothing.
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
-  (*user_actions_)[0].Call(TriggerContext::CreateEmpty());
+  (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
 }
 
 TEST_F(PromptActionTest, NoMessageSet) {
@@ -572,7 +572,7 @@ TEST_F(PromptActionTest, TimingStatsEndActionOnNavigation) {
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
   action.ProcessAction(callback_.Get());
   EXPECT_TRUE(task_env_.NextTaskIsDelayed());
-  task_env_.DescribePendingMainThreadTasks();
+  task_env_.DescribeCurrentTasks();
   task_env_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(capture.timing_stats().wait_time_ms(), 1000);
 }

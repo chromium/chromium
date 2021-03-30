@@ -1,7 +1,5 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++staticText
-++++++++genericContainer invisible
+rootWebArea htmlTag='#document'
+++genericContainer ignored htmlTag='html'
+++++genericContainer htmlTag='body'
 ++++++staticText name='done'
 ++++++++inlineTextBox name='done'

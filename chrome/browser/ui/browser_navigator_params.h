@@ -17,11 +17,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/was_activated_option.mojom.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
@@ -94,7 +95,7 @@ struct NavigateParams {
   // drop), and the frame with the corresponding frame token may have been
   // deleted before the navigation begins. It is defined if and only if
   // |initiator_process_id| below is.
-  base::Optional<base::UnguessableToken> initiator_frame_token;
+  base::Optional<blink::LocalFrameToken> initiator_frame_token;
 
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token| above is, and it is
@@ -306,7 +307,14 @@ struct NavigateParams {
   // Optional impression associated with this navigation. Only set on
   // navigations that originate from links with impression attributes. Used for
   // conversion measurement.
-  base::Optional<content::Impression> impression;
+  base::Optional<blink::Impression> impression;
+
+  // True if the navigation was initiated by typing in the omnibox but the typed
+  // text didn't have a scheme such as http or https (e.g. google.com), and
+  // https was used as the default scheme for the navigation. This is used by
+  // TypedNavigationUpgradeThrottle to determine if the navigation should be
+  // observed and fall back to using http scheme if necessary.
+  bool is_using_https_as_default_scheme = false;
 
  private:
   NavigateParams();

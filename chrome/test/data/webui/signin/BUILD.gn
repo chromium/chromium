@@ -16,8 +16,10 @@ js_type_check("closure_compile") {
   deps = [
     ":dice_web_signin_intercept_test",
     ":local_profile_customization_test",
+    ":profile_card_menu_test",
     ":profile_customization_test",
     ":profile_picker_app_test",
+    ":profile_switch_test",
     ":profile_type_choice_test",
     ":test_dice_web_signin_intercept_browser_proxy",
     ":test_manage_profiles_browser_proxy",
@@ -80,6 +82,26 @@ js_library("profile_picker_app_test") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("profile_card_menu_test") {
+  deps = [
+    "..:chai_assert",
+    "..:test_browser_proxy.m",
+    "..:test_util.m",
+    "//chrome/browser/resources/signin/profile_picker:profile_card_menu",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("profile_switch_test") {
+  deps = [
+    "..:chai_assert",
+    "..:test_browser_proxy.m",
+    "..:test_util.m",
+    "//chrome/browser/resources/signin/profile_picker:profile_switch",
+    "//ui/webui/resources/js:promise_resolver.m",
+  ]
 }
 
 js_library("test_dice_web_signin_intercept_browser_proxy") {

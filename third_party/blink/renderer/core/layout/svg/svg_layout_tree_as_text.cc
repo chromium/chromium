@@ -270,7 +270,6 @@ static bool WriteSVGPaint(WTF::TextStream& ts,
 
 static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
   const ComputedStyle& style = object.StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
 
   if (!object.LocalSVGTransform().IsIdentity())
     WriteNameValuePair(ts, "transform", object.LocalSVGTransform());
@@ -280,23 +279,22 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
   WriteIfNotDefault(ts, "opacity", style.Opacity(),
                     ComputedStyleInitialValues::InitialOpacity());
   if (object.IsSVGShape()) {
-    if (WriteSVGPaint(ts, object, svg_style.StrokePaint(),
-                      GetCSSPropertyStroke(), "stroke")) {
+    if (WriteSVGPaint(ts, object, style.StrokePaint(), GetCSSPropertyStroke(),
+                      "stroke")) {
       const LayoutSVGShape& shape = static_cast<const LayoutSVGShape&>(object);
       DCHECK(shape.GetElement());
       SVGLengthContext length_context(shape.GetElement());
       double dash_offset =
-          length_context.ValueForLength(svg_style.StrokeDashOffset(), style);
-      double stroke_width =
-          length_context.ValueForLength(svg_style.StrokeWidth());
+          length_context.ValueForLength(style.StrokeDashOffset(), style);
+      double stroke_width = length_context.ValueForLength(style.StrokeWidth());
       DashArray dash_array = SVGLayoutSupport::ResolveSVGDashArray(
-          *svg_style.StrokeDashArray(), style, length_context);
+          *style.StrokeDashArray(), style, length_context);
 
-      WriteIfNotDefault(ts, "opacity", svg_style.StrokeOpacity(), 1.0f);
+      WriteIfNotDefault(ts, "opacity", style.StrokeOpacity(), 1.0f);
       WriteIfNotDefault(ts, "stroke width", stroke_width, 1.0);
-      WriteIfNotDefault(ts, "miter limit", svg_style.StrokeMiterLimit(), 4.0f);
-      WriteIfNotDefault(ts, "line cap", svg_style.CapStyle(), kButtCap);
-      WriteIfNotDefault(ts, "line join", svg_style.JoinStyle(), kMiterJoin);
+      WriteIfNotDefault(ts, "miter limit", style.StrokeMiterLimit(), 4.0f);
+      WriteIfNotDefault(ts, "line cap", style.CapStyle(), kButtCap);
+      WriteIfNotDefault(ts, "line join", style.JoinStyle(), kMiterJoin);
       WriteIfNotDefault(ts, "dash offset", dash_offset, 0.0);
       if (!dash_array.IsEmpty())
         WriteNameValuePair(ts, "dash array", dash_array);
@@ -304,21 +302,21 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
       ts << "}]";
     }
 
-    if (WriteSVGPaint(ts, object, svg_style.FillPaint(), GetCSSPropertyFill(),
+    if (WriteSVGPaint(ts, object, style.FillPaint(), GetCSSPropertyFill(),
                       "fill")) {
-      WriteIfNotDefault(ts, "opacity", svg_style.FillOpacity(), 1.0f);
-      WriteIfNotDefault(ts, "fill rule", svg_style.FillRule(), RULE_NONZERO);
+      WriteIfNotDefault(ts, "opacity", style.FillOpacity(), 1.0f);
+      WriteIfNotDefault(ts, "fill rule", style.FillRule(), RULE_NONZERO);
       ts << "}]";
     }
-    WriteIfNotDefault(ts, "clip rule", svg_style.ClipRule(), RULE_NONZERO);
+    WriteIfNotDefault(ts, "clip rule", style.ClipRule(), RULE_NONZERO);
   }
 
   TreeScope& tree_scope = object.GetDocument();
-  WriteSVGResourceIfNotNull(ts, "start marker", svg_style.MarkerStartResource(),
+  WriteSVGResourceIfNotNull(ts, "start marker", style.MarkerStartResource(),
                             tree_scope);
-  WriteSVGResourceIfNotNull(ts, "middle marker", svg_style.MarkerMidResource(),
+  WriteSVGResourceIfNotNull(ts, "middle marker", style.MarkerMidResource(),
                             tree_scope);
-  WriteSVGResourceIfNotNull(ts, "end marker", svg_style.MarkerEndResource(),
+  WriteSVGResourceIfNotNull(ts, "end marker", style.MarkerEndResource(),
                             tree_scope);
 }
 
@@ -337,14 +335,13 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   DCHECK(svg_element);
   SVGLengthContext length_context(svg_element);
   const ComputedStyle& style = shape.StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
 
   if (IsA<SVGRectElement>(*svg_element)) {
-    WriteNameValuePair(ts, "x",
-                       length_context.ValueForLength(svg_style.X(), style,
-                                                     SVGLengthMode::kWidth));
+    WriteNameValuePair(
+        ts, "x",
+        length_context.ValueForLength(style.X(), style, SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "y",
-                       length_context.ValueForLength(svg_style.Y(), style,
+                       length_context.ValueForLength(style.Y(), style,
                                                      SVGLengthMode::kHeight));
     WriteNameValuePair(ts, "width",
                        length_context.ValueForLength(style.Width(), style,
@@ -363,34 +360,33 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
                        element->y2()->CurrentValue()->Value(length_context));
   } else if (IsA<SVGEllipseElement>(*svg_element)) {
     WriteNameValuePair(ts, "cx",
-                       length_context.ValueForLength(svg_style.Cx(), style,
+                       length_context.ValueForLength(style.Cx(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "cy",
-                       length_context.ValueForLength(svg_style.Cy(), style,
+                       length_context.ValueForLength(style.Cy(), style,
                                                      SVGLengthMode::kHeight));
     WriteNameValuePair(ts, "rx",
-                       length_context.ValueForLength(svg_style.Rx(), style,
+                       length_context.ValueForLength(style.Rx(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "ry",
-                       length_context.ValueForLength(svg_style.Ry(), style,
+                       length_context.ValueForLength(style.Ry(), style,
                                                      SVGLengthMode::kHeight));
   } else if (IsA<SVGCircleElement>(*svg_element)) {
     WriteNameValuePair(ts, "cx",
-                       length_context.ValueForLength(svg_style.Cx(), style,
+                       length_context.ValueForLength(style.Cx(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "cy",
-                       length_context.ValueForLength(svg_style.Cy(), style,
+                       length_context.ValueForLength(style.Cy(), style,
                                                      SVGLengthMode::kHeight));
-    WriteNameValuePair(ts, "r",
-                       length_context.ValueForLength(svg_style.R(), style,
-                                                     SVGLengthMode::kOther));
+    WriteNameValuePair(
+        ts, "r",
+        length_context.ValueForLength(style.R(), style, SVGLengthMode::kOther));
   } else if (auto* svg_poly_element = DynamicTo<SVGPolyElement>(svg_element)) {
     WriteNameAndQuotedValue(
         ts, "points",
         svg_poly_element->Points()->CurrentValue()->ValueAsString());
   } else if (IsA<SVGPathElement>(*svg_element)) {
-    const StylePath& path =
-        svg_style.D() ? *svg_style.D() : *StylePath::EmptyPath();
+    const StylePath& path = style.D() ? *style.D() : *StylePath::EmptyPath();
     WriteNameAndQuotedValue(
         ts, "data",
         BuildStringFromByteStream(path.ByteStream(), kNoTransformation));
@@ -435,7 +431,7 @@ static inline void WriteSVGInlineTextBox(WTF::TextStream& ts,
   LineLayoutSVGInlineText text_line_layout =
       LineLayoutSVGInlineText(text_box->GetLineLayoutItem());
 
-  const SVGComputedStyle& svg_style = text_line_layout.StyleRef().SvgStyle();
+  const ComputedStyle& style = text_line_layout.StyleRef();
   String text = text_box->GetLineLayoutItem().GetText();
 
   unsigned fragments_size = fragments.size();
@@ -449,15 +445,14 @@ static inline void WriteSVGInlineTextBox(WTF::TextStream& ts,
     // FIXME: Remove this hack, once the new text layout engine is completly
     // landed. We want to preserve the old web test results for now.
     ts << "chunk 1 ";
-    ETextAnchor anchor = svg_style.TextAnchor();
-    bool is_vertical_text =
-        !text_line_layout.StyleRef().IsHorizontalWritingMode();
-    if (anchor == TA_MIDDLE) {
+    ETextAnchor anchor = style.TextAnchor();
+    bool is_vertical_text = !style.IsHorizontalWritingMode();
+    if (anchor == ETextAnchor::kMiddle) {
       ts << "(middle anchor";
       if (is_vertical_text)
         ts << ", vertical";
       ts << ") ";
-    } else if (anchor == TA_END) {
+    } else if (anchor == ETextAnchor::kEnd) {
       ts << "(end anchor";
       if (is_vertical_text)
         ts << ", vertical";
@@ -747,21 +742,23 @@ void WriteResources(WTF::TextStream& ts,
   if (!client)
     return;
   if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, style.SvgStyle().MaskerResource())) {
+          *client, style.MaskerResource())) {
     WriteSVGResourceReferencePrefix(ts, "masker", masker,
-                                    style.SvgStyle().MaskerResource()->Url(),
-                                    tree_scope, indent);
+                                    style.MaskerResource()->Url(), tree_scope,
+                                    indent);
     ts << " " << masker->ResourceBoundingBox(reference_box, 1) << "\n";
   }
-  if (LayoutSVGResourceClipper* clipper =
-          GetSVGResourceAsType(*client, style.ClipPath())) {
-    DCHECK(style.ClipPath());
-    DCHECK_EQ(style.ClipPath()->GetType(), ClipPathOperation::REFERENCE);
-    const auto& clip_path_reference =
-        To<ReferenceClipPathOperation>(*style.ClipPath());
-    WriteSVGResourceReferencePrefix(
-        ts, "clipPath", clipper, clip_path_reference.Url(), tree_scope, indent);
-    ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
+  if (const ClipPathOperation* clip_path = style.ClipPath()) {
+    if (LayoutSVGResourceClipper* clipper =
+            GetSVGResourceAsType(*client, clip_path)) {
+      DCHECK_EQ(clip_path->GetType(), ClipPathOperation::REFERENCE);
+      const auto& clip_path_reference =
+          To<ReferenceClipPathOperation>(*clip_path);
+      WriteSVGResourceReferencePrefix(ts, "clipPath", clipper,
+                                      clip_path_reference.Url(), tree_scope,
+                                      indent);
+      ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
+    }
   }
   // TODO(fs): Only handles the single url(...) case. Do we care?
   if (LayoutSVGResourceFilter* filter =

@@ -11,7 +11,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProxyControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibReflectionUtil.java",
-    "java/src/org/chromium/support_lib_glue/SupportLibScriptReferenceAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibScriptHandlerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerClientAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerSettingsAdapter.java",
@@ -37,6 +37,6 @@ android_library("support_lib_glue_java") {
     "//base:base_java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

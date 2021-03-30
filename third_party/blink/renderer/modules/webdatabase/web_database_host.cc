@@ -63,12 +63,6 @@ int32_t WebDatabaseHost::GetFileAttributes(const String& vfs_file_name) {
   return rv;
 }
 
-int64_t WebDatabaseHost::GetFileSize(const String& vfs_file_name) {
-  int64_t rv = 0LL;
-  GetWebDatabaseHost().GetFileSize(vfs_file_name, &rv);
-  return rv;
-}
-
 bool WebDatabaseHost::SetFileSize(const String& vfs_file_name, int64_t size) {
   bool rv = false;
   GetWebDatabaseHost().SetFileSize(vfs_file_name, size, &rv);
@@ -84,11 +78,9 @@ int64_t WebDatabaseHost::GetSpaceAvailableForOrigin(
 
 void WebDatabaseHost::DatabaseOpened(const SecurityOrigin& origin,
                                      const String& database_name,
-                                     const String& database_display_name,
-                                     uint32_t estimated_size) {
+                                     const String& database_display_name) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  GetWebDatabaseHost().Opened(&origin, database_name, database_display_name,
-                              estimated_size);
+  GetWebDatabaseHost().Opened(&origin, database_name, database_display_name);
 }
 
 void WebDatabaseHost::DatabaseModified(const SecurityOrigin& origin,

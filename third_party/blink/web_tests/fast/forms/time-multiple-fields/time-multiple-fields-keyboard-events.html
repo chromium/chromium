@@ -23,7 +23,7 @@ Test following keys:
 <script>
 description("Multiple fields UI of time input type with keyboard events");
 if (window.internals)
-    internals.settings.setLangAttributeAwareFormControlUIEnabled(true);
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
 var input = document.getElementById("input");
 
 function shadowPseudoIdOfFocusedSubField(host)

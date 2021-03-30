@@ -2,19 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
+import {reportError} from './error.js';
 import * as filesystem from './models/file_system.js';
 import {
-  AbstractDirectoryEntry,  // eslint-disable-line no-unused-vars
-  AbstractFileEntry,       // eslint-disable-line no-unused-vars
-} from './models/file_system_entry.js';
+  DirectoryAccessEntry,  // eslint-disable-line no-unused-vars
+  FileAccessEntry,       // eslint-disable-line no-unused-vars
+} from './models/file_system_access_entry.js';
 // eslint-disable-next-line no-unused-vars
 import {ResultSaver} from './models/result_saver.js';
 import {VideoSaver} from './models/video_saver.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
-import * as util from './util.js';
+import {scaleImage, scaleVideo} from './thumbnailer.js';
+import {
+  ErrorLevel,
+  ErrorType,
+} from './type.js';
 
 /**
  * Width of thumbnail used by cover photo of gallery button.
@@ -27,12 +31,12 @@ const THUMBNAIL_WIDTH = 240;
  */
 class CoverPhoto {
   /**
-   * @param {!AbstractFileEntry} file File entry of cover photo.
+   * @param {!FileAccessEntry} file File entry of cover photo.
    * @param {string} thumbnailUrl Url to its thumbnail.
    */
   constructor(file, thumbnailUrl) {
     /**
-     * @type {!AbstractFileEntry}
+     * @type {!FileAccessEntry}
      * @const
      */
     this.file = file;
@@ -61,13 +65,23 @@ class CoverPhoto {
 
   /**
    * Creates CoverPhoto objects from photo file.
-   * @param {!AbstractFileEntry} file
-   * @return {!Promise<!CoverPhoto>}
+   * @param {!FileAccessEntry} file
+   * @return {!Promise<?CoverPhoto>}
    */
   static async create(file) {
-    const isVideo = filesystem.hasVideoPrefix(file);
-    const thumbnail =
-        await util.scalePicture(await file.file(), isVideo, THUMBNAIL_WIDTH);
+    const blob = await file.file();
+    if (blob.size === 0) {
+      reportError(
+          ErrorType.EMPTY_FILE,
+          ErrorLevel.ERROR,
+          new Error('The file to generate cover photo is empty'),
+      );
+      return null;
+    }
+
+    const thumbnail = filesystem.hasVideoPrefix(file) ?
+        await scaleVideo(blob, THUMBNAIL_WIDTH) :
+        await scaleImage(blob, THUMBNAIL_WIDTH);
     return new CoverPhoto(file, URL.createObjectURL(thumbnail));
   }
 }
@@ -96,7 +110,7 @@ export class GalleryButton {
 
     /**
      * Directory holding saved pictures showing in gallery.
-     * @type {?AbstractDirectoryEntry}
+     * @type {?DirectoryAccessEntry}
      * @private
      */
     this.directory_ = null;
@@ -107,14 +121,15 @@ export class GalleryButton {
       // TODO(yuli): Remove this workaround for unable watching changed-files.
       await this.checkCover_();
       if (this.cover_ !== null) {
-        await browserProxy.openGallery(this.cover_.file);
+        await ChromeHelper.getInstance().openFileInGallery(
+            this.cover_.file.name);
       }
     });
   }
 
   /**
    * Initializes the gallery button.
-   * @param {!AbstractDirectoryEntry} dir Directory holding saved pictures
+   * @param {!DirectoryAccessEntry} dir Directory holding saved pictures
    *     showing in gallery.
    */
   async initialize(dir) {
@@ -123,7 +138,7 @@ export class GalleryButton {
   }
 
   /**
-   * @param {?AbstractFileEntry} file File to be set as cover photo.
+   * @param {?FileAccessEntry} file File to be set as cover photo.
    * @return {!Promise}
    * @private
    */
@@ -191,9 +206,9 @@ export class GalleryButton {
   /**
    * @override
    */
-  async startSaveVideo() {
+  async startSaveVideo(videoRotation) {
     const file = await filesystem.createVideoFile();
-    return VideoSaver.createForFile(file);
+    return VideoSaver.createForFile(file, videoRotation);
   }
 
   /**

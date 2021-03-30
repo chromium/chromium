@@ -172,7 +172,8 @@ template("python2_action_foreach") {
 #   }
 template("action_with_pydeps") {
   action(target_name) {
-    # Forward all variables. Ensure that testonly and visibility are forwarded
+    # Forward all variables except run_under_python2.
+    # Ensure that testonly and visibility are forwarded
     # explicitly, since this performs recursive scope lookups, which is
     # required to ensure their definition from scopes above the caller are
     # properly handled. All other variables are forwarded with "*", which
@@ -185,6 +186,7 @@ template("action_with_pydeps") {
     forward_variables_from(invoker,
                            "*",
                            [
+                             "run_under_python2",
                              "testonly",
                              "visibility",
                            ])
@@ -207,7 +209,8 @@ template("action_with_pydeps") {
     _script_dir = get_path_info(_pydeps_file, "dir")
     inputs += rebase_path(_pydeps_entries, ".", _script_dir)
 
-    if (defined(run_under_python2) && run_under_python2 && !_is_python2) {
+    if (defined(invoker.run_under_python2) && invoker.run_under_python2 &&
+        !_is_python2) {
       inputs += [ invoker.script ]
       _args = args
       args = []
@@ -219,7 +222,8 @@ template("action_with_pydeps") {
 
 template("action_foreach_with_pydeps") {
   action_foreach(target_name) {
-    # Forward all variables. Ensure that testonly and visibility are forwarded
+    # Forward all variables execept run_under_python2.
+    # Ensure that testonly and visibility are forwarded
     # explicitly, since this performs recursive scope lookups, which is
     # required to ensure their definition from scopes above the caller are
     # properly handled. All other variables are forwarded with "*", which
@@ -232,6 +236,7 @@ template("action_foreach_with_pydeps") {
     forward_variables_from(invoker,
                            "*",
                            [
+                             "run_under_python2",
                              "testonly",
                              "visibility",
                            ])
@@ -256,7 +261,8 @@ template("action_foreach_with_pydeps") {
     _script_dir = get_path_info(script, "dir")
     inputs += rebase_path(_pydeps_entries, ".", _script_dir)
 
-    if (defined(run_under_python2) && run_under_python2 && !_is_python2) {
+    if (defined(invoker.run_under_python2) && invoker.run_under_python2 &&
+        !_is_python2) {
       inputs += [ invoker.script ]
       _args = args
       args = []

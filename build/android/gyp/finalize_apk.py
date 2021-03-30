@@ -7,6 +7,7 @@ import argparse
 import logging
 import shutil
 import subprocess
+import sys
 import tempfile
 
 from util import build_utils
@@ -70,4 +71,8 @@ def FinalizeApk(apksigner_path,
                             print_stdout=True,
                             fail_on_output=warnings_as_errors)
     shutil.move(staging_file.name, final_apk_path)
-    staging_file.delete = False
+    # TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
+    if sys.version_info.major == 2:
+      staging_file.delete = False
+    else:
+      staging_file._closer.delete = False

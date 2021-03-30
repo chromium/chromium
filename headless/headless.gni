@@ -11,4 +11,7 @@ declare_args() {
 
   # Use Prefs component to access Local State and other preferences.
   headless_use_prefs = true
+
+  # Use Policy component to manage preferences.
+  headless_use_policy = true
 }

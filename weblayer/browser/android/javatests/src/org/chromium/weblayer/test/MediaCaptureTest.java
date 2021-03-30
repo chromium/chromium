@@ -242,10 +242,16 @@ public final class MediaCaptureTest {
      */
     @TargetApi(Build.VERSION_CODES.M)
     private Notification getMediaCaptureNotification() {
-        StatusBarNotification notifications[] =
-                ((NotificationManager) mActivity.getApplicationContext().getSystemService(
-                         Context.NOTIFICATION_SERVICE))
-                        .getActiveNotifications();
+        StatusBarNotification notifications[];
+        try {
+            // Workaround for Android bug fixed in 34a80841cb8fa8cdbe6c584831f0e531618d331d.
+            notifications =
+                    ((NotificationManager) mActivity.getApplicationContext().getSystemService(
+                             Context.NOTIFICATION_SERVICE))
+                            .getActiveNotifications();
+        } catch (NullPointerException e) {
+            return null;
+        }
         Notification notification = null;
         for (StatusBarNotification statusBarNotification : notifications) {
             if (statusBarNotification.getTag().equals("org.chromium.weblayer.webrtc.avstream")) {

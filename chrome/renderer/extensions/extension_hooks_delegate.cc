@@ -9,7 +9,8 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
+#include "extensions/common/view_type_util.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
@@ -162,16 +163,6 @@ void ExtensionHooksDelegate::InitializeTemplate(
     v8::Isolate* isolate,
     v8::Local<v8::ObjectTemplate> object_template,
     const APITypeReferenceMap& type_refs) {
-  static constexpr const char* kAliases[] = {
-      "connect",   "connectNative",     "sendMessage", "sendNativeMessage",
-      "onConnect", "onConnectExternal", "onMessage",   "onMessageExternal",
-  };
-
-  for (const auto* alias : kAliases) {
-    object_template->SetAccessor(gin::StringToSymbol(isolate, alias),
-                                 &GetAliasedFeature);
-  }
-
   bool is_incognito = ExtensionsRendererClient::Get()->IsIncognitoProcess();
   object_template->Set(isolate, "inIncognitoContext",
                        v8::Boolean::New(isolate, is_incognito));
@@ -180,17 +171,37 @@ void ExtensionHooksDelegate::InitializeTemplate(
 void ExtensionHooksDelegate::InitializeInstance(
     v8::Local<v8::Context> context,
     v8::Local<v8::Object> instance) {
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
+
   // Throw access errors for deprecated sendRequest-related properties. This
   // isn't terribly efficient, but is only done for certain unpacked extensions
   // and only if they access the chrome.extension module.
-  if (messaging_util::IsSendRequestDisabled(
-          GetScriptContextFromV8ContextChecked(context))) {
+  if (messaging_util::IsSendRequestDisabled(script_context)) {
     static constexpr const char* kDeprecatedSendRequestProperties[] = {
         "sendRequest", "onRequest", "onRequestExternal"};
     for (const char* property : kDeprecatedSendRequestProperties) {
+      v8::Maybe<bool> success =
+          instance->SetAccessor(context, gin::StringToV8(isolate, property),
+                                &ThrowDeprecatedAccessError);
+      DCHECK(success.IsJust());
+      DCHECK(success.FromJust());
+    }
+  }
+
+  constexpr int kMaxManifestVersionForAliases = 2;
+
+  if (script_context->extension() &&
+      script_context->extension()->manifest_version() <=
+          kMaxManifestVersionForAliases) {
+    static constexpr const char* kAliases[] = {
+        "connect",   "connectNative",     "sendMessage", "sendNativeMessage",
+        "onConnect", "onConnectExternal", "onMessage",   "onMessageExternal",
+    };
+
+    for (const auto* alias : kAliases) {
       v8::Maybe<bool> success = instance->SetAccessor(
-          context, gin::StringToV8(context->GetIsolate(), property),
-          &ThrowDeprecatedAccessError);
+          context, gin::StringToV8(isolate, alias), &GetAliasedFeature);
       DCHECK(success.IsJust());
       DCHECK(success.FromJust());
     }
@@ -251,7 +262,7 @@ APIBindingHooks::RequestResult ExtensionHooksDelegate::HandleGetViews(
   const Extension* extension = script_context->extension();
   DCHECK(extension);
 
-  ViewType view_type = VIEW_TYPE_INVALID;
+  mojom::ViewType view_type = mojom::ViewType::kInvalid;
   int window_id = extension_misc::kUnknownWindowId;
   int tab_id = extension_misc::kUnknownTabId;
 
@@ -303,7 +314,7 @@ RequestResult ExtensionHooksDelegate::HandleGetExtensionTabs(
   const Extension* extension = script_context->extension();
   DCHECK(extension);
 
-  ViewType view_type = VIEW_TYPE_TAB_CONTENTS;
+  mojom::ViewType view_type = mojom::ViewType::kTabContents;
   int window_id = extension_misc::kUnknownWindowId;
   int tab_id = extension_misc::kUnknownTabId;
 

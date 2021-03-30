@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_PROMPT_VIEW_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_PROMPT_VIEW_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace autofill {
 
@@ -18,7 +19,7 @@ class CardUnmaskPromptView {
   virtual void Show() = 0;
   virtual void ControllerGone() = 0;
   virtual void DisableAndWaitForVerification() = 0;
-  virtual void GotVerificationResult(const base::string16& error_message,
+  virtual void GotVerificationResult(const std::u16string& error_message,
                                      bool allow_retry) = 0;
 
  protected:

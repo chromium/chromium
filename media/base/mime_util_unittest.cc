@@ -563,7 +563,6 @@ TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {
         switch (codec) {
           // These codecs are never supported by the Android platform.
           case MimeUtil::INVALID_CODEC:
-          case MimeUtil::AV1:
           case MimeUtil::MPEG_H_AUDIO:
           case MimeUtil::THEORA:
             EXPECT_FALSE(result);
@@ -611,6 +610,10 @@ TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {
           case MimeUtil::EAC3:
             EXPECT_EQ(HasEac3Support(), result);
             break;
+
+          case MimeUtil::AV1:
+            EXPECT_EQ(BUILDFLAG(ENABLE_AV1_DECODER), result);
+            break;
         }
       });
 }
@@ -630,7 +633,6 @@ TEST(IsCodecSupportedOnAndroidTest, ClearCodecBehavior) {
           case MimeUtil::INVALID_CODEC:
           case MimeUtil::MPEG_H_AUDIO:
           case MimeUtil::THEORA:
-          case MimeUtil::AV1:
             EXPECT_FALSE(result);
             break;
 
@@ -670,6 +672,10 @@ TEST(IsCodecSupportedOnAndroidTest, ClearCodecBehavior) {
           case MimeUtil::AC3:
           case MimeUtil::EAC3:
             EXPECT_EQ(HasEac3Support(), result);
+            break;
+
+          case MimeUtil::AV1:
+            EXPECT_EQ(BUILDFLAG(ENABLE_AV1_DECODER), result);
             break;
         }
       });

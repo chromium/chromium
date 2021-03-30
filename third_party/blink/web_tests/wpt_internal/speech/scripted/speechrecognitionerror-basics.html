@@ -1,0 +1,12 @@
+<!doctype html>
+<title>Tests the basics of the SpeechRecognitionError interface</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+test(() => {
+  assert_true('webkitSpeechRecognitionError' in window);
+  assert_false(webkitSpeechRecognitionError == null);
+}, "Check availability of constructor");
+
+</script>

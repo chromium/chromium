@@ -5,6 +5,7 @@
 #include "media/gpu/vaapi/vaapi_video_decode_accelerator.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"

@@ -11,20 +11,17 @@
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
+#include "chromecast/media/cma/backend/proxy/audio_decoder_pipeline_node.h"
 
 namespace chromecast {
 namespace media {
 
 // This class is used to decrypt then proxy audio data to an external
 // CmaBackend::AudioDecoder over gRPC.
-class MultizoneAudioDecoderProxy : public CmaBackend::AudioDecoder {
+class MultizoneAudioDecoderProxy : public AudioDecoderPipelineNode {
  public:
-  using BufferStatus = CmaBackend::Decoder::BufferStatus;
-  using Delegate = CmaBackend::Decoder::Delegate;
-  using Observer = CmaBackend::AudioDecoder::Observer;
-  using RenderingDelay = CmaBackend::AudioDecoder::RenderingDelay;
-  using Statistics = CmaBackend::AudioDecoder::Statistics;
-
+  MultizoneAudioDecoderProxy(CmaBackend::AudioDecoder* decoder)
+      : AudioDecoderPipelineNode(decoder) {}
   ~MultizoneAudioDecoderProxy() override = default;
 
   virtual void Initialize() = 0;

@@ -35,47 +35,37 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [
-    "array_data_model.js",
-    "bubble_button.js",
-    "bubble.js",
-    "card_slider.js",
-    "command.js",
-    "context_menu_handler.js",
-    "dialogs.js",
-    "drag_wrapper.js",
-    "focus_grid.js",
-    "focus_manager.js",
-    "focus_outline_manager.js",
-    "focus_row.js",
-    "keyboard_shortcut_list.js",
-    "list_item.js",
-    "list.js",
-    "list_selection_controller.js",
-    "list_selection_model.js",
-    "list_single_selection_model.js",
-    "menu_button.js",
-    "menu_item.js",
-    "menu.js",
-    "overlay.js",
-    "position_util.js",
-    "splitter.js",
-    "store_client.js",
-    "store.js",
-    "tabs.js",
-    "touch_handler.js",
-    "tree.js",
-  ]
-
-  if (!is_android) {
-    in_files += [
-      "focus_row_behavior.js",
-      "focus_without_ink.js",
-    ]
-  }
+  in_files = [ "focus_outline_manager.js" ]
 
   if (is_chromeos_ash) {
-    in_files += [ "grid.js" ]
+    in_files += [
+      "array_data_model.js",
+      "command.js",
+      "context_menu_handler.js",
+      "dialogs.js",
+      "drag_wrapper.js",
+      "focus_grid.js",
+      "focus_manager.js",
+      "focus_row.js",
+      "focus_row_behavior.js",
+      "focus_without_ink.js",
+      "grid.js",
+      "keyboard_shortcut_list.js",
+      "list_item.js",
+      "list.js",
+      "list_selection_controller.js",
+      "list_selection_model.js",
+      "list_single_selection_model.js",
+      "menu_button.js",
+      "menu_item.js",
+      "menu.js",
+      "position_util.js",
+      "splitter.js",
+      "store_client.js",
+      "store.js",
+      "tabs.js",
+      "tree.js",
+    ]
   }
 }
 
@@ -85,11 +75,17 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
+    "array_data_model.m.js",
     "drag_wrapper.m.js",
     "focus_grid.m.js",
     "focus_outline_manager.m.js",
     "focus_row.m.js",
     "keyboard_shortcut_list.m.js",
+    "list_item.m.js",
+    "list.m.js",
+    "list_selection_controller.m.js",
+    "list_selection_model.m.js",
+    "splitter.m.js",
     "store_client.m.js",
     "store.m.js",
     "tabs.m.js",
@@ -98,28 +94,22 @@ preprocess_if_expr("preprocess_generated") {
 
   if (!is_android) {
     in_files += [
+      "command.m.js",
+      "context_menu_handler.m.js",
       "focus_row_behavior.m.js",
       "focus_without_ink.m.js",
+      "menu_button.m.js",
+      "menu_item.m.js",
+      "menu.m.js",
+      "position_util.m.js",
     ]
   }
 
   if (is_chromeos_ash) {
     in_files += [
-      "array_data_model.m.js",
-      "command.m.js",
-      "context_menu_handler.m.js",
       "dialogs.m.js",
       "grid.m.js",
-      "list_item.m.js",
-      "list.m.js",
-      "list_selection_controller.m.js",
-      "list_selection_model.m.js",
       "list_single_selection_model.m.js",
-      "menu_button.m.js",
-      "menu_item.m.js",
-      "menu.m.js",
-      "position_util.m.js",
-      "splitter.m.js",
     ]
   }
 }
@@ -132,6 +122,7 @@ group("closure_compile") {
 }
 
 js_type_check("ui_resources") {
+  uses_legacy_modules = true
   deps = [
     ":array_data_model",
     ":command",
@@ -153,7 +144,6 @@ js_type_check("ui_resources") {
     ":menu",
     ":menu_button",
     ":menu_item",
-    ":overlay",
     ":position_util",
     ":splitter",
     ":store",
@@ -171,14 +161,6 @@ js_library("array_data_model") {
   deps = [
     "..:event_target",
     "../..:cr",
-  ]
-}
-
-js_library("bubble") {
-  deps = [
-    "..:ui",
-    "../..:cr",
-    "../..:event_tracker",
   ]
 }
 
@@ -317,13 +299,6 @@ js_library("menu") {
     "..:ui",
     "../..:assert",
     "../..:cr",
-  ]
-}
-
-js_library("overlay") {
-  deps = [
-    "../..:cr",
-    "../..:util",
   ]
 }
 

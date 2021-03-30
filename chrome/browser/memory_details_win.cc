@@ -36,7 +36,7 @@ MemoryDetails::MemoryDetails() {
 
   ProcessData process;
   process.name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  process.process_name = browser_process_path.BaseName().value();
+  process.process_name = browser_process_path.BaseName().AsUTF16Unsafe();
   process_data_.push_back(process);
 }
 
@@ -69,7 +69,7 @@ void MemoryDetails::CollectProcessData(
         PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid));
     if (!process_handle.IsValid())
       continue;
-    if (_wcsicmp(process_data_[0].process_name.c_str(),
+    if (_wcsicmp(base::as_wcstr(process_data_[0].process_name),
                  process_entry.szExeFile) != 0) {
       continue;
     }

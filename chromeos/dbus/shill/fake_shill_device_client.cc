@@ -96,6 +96,11 @@ void FakeShillDeviceClient::SetProperty(const dbus::ObjectPath& device_path,
   SetPropertyInternal(device_path, name, value, std::move(callback),
                       std::move(error_callback),
                       /*notify_changed=*/true);
+
+  if (simulate_uninhibit_scanning_ && name == shill::kInhibitedProperty &&
+      !value.GetBool()) {
+    SimulateUninhibitScanning(device_path);
+  }
 }
 
 void FakeShillDeviceClient::SetPropertyInternal(
@@ -495,6 +500,11 @@ void FakeShillDeviceClient::SetUsbEthernetMacAddressSourceError(
   set_usb_ethernet_mac_address_source_error_names_[device_path] = error_name;
 }
 
+void FakeShillDeviceClient::SetSimulateUninhibitScanning(
+    bool simulate_uninhibit_scanning) {
+  simulate_uninhibit_scanning_ = simulate_uninhibit_scanning;
+}
+
 // Private Methods -------------------------------------------------------------
 
 FakeShillDeviceClient::SimLockStatus FakeShillDeviceClient::GetSimLockStatus(
@@ -654,6 +664,24 @@ FakeShillDeviceClient::GetObserverList(const dbus::ObjectPath& device_path) {
   PropertyObserverList* observer_list = new PropertyObserverList();
   observer_list_[device_path] = base::WrapUnique(observer_list);
   return *observer_list;
+}
+
+void FakeShillDeviceClient::SimulateUninhibitScanning(
+    const dbus::ObjectPath& device_path) {
+  SetPropertyInternal(
+      device_path, shill::kScanningProperty, base::Value(true),
+      base::BindOnce(&FakeShillDeviceClient::StopUninhibitScanning,
+                     base::Unretained(this), device_path),
+      /*error_callback=*/base::DoNothing(),
+      /*notify_changed=*/true);
+}
+
+void FakeShillDeviceClient::StopUninhibitScanning(
+    const dbus::ObjectPath& device_path) {
+  SetPropertyInternal(device_path, shill::kScanningProperty, base::Value(false),
+                      /*callback=*/base::DoNothing(),
+                      /*error_callback=*/base::DoNothing(),
+                      /*notify_changed=*/true);
 }
 
 }  // namespace chromeos

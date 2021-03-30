@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Window.name is reset after navigating to a different origin assert_unreached: Stash result does not equal expected result. Reached unreachable code
+Harness: the test ran to completion.
+

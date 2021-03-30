@@ -12,7 +12,7 @@ namespace task_manager {
 
 namespace {
 
-base::string16 GetTitle(int tool_name) {
+std::u16string GetTitle(int tool_name) {
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TOOL_PREFIX,
                                     l10n_util::GetStringUTF16(tool_name));
 }

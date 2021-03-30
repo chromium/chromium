@@ -4,10 +4,11 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -73,15 +74,15 @@ class TextCallbackWaiter {
 
   void Wait() { run_loop_.Run(); }
 
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
 
-  void GetText(const base::string16& text) {
+  void GetText(const std::u16string& text) {
     text_ = text;
     run_loop_.Quit();
   }
 
  private:
-  base::string16 text_;
+  std::u16string text_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(TextCallbackWaiter);
@@ -108,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, GetPageTextForSpeech) {
       base::BindOnce(&TextCallbackWaiter::GetText, base::Unretained(&waiter)));
   waiter.Wait();
 
-  EXPECT_EQ(base::ASCIIToUTF16("Hello\nWorld"), waiter.text());
+  EXPECT_EQ(u"Hello\nWorld", waiter.text());
 }
 
 // Test that -firstRectForCharacterRange:actualRange: works when the range

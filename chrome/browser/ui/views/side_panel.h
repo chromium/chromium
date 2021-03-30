@@ -8,17 +8,19 @@
 #include <memory>
 
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
 class SidePanel : public views::View, public views::ViewObserver {
  public:
+  METADATA_HEADER(SidePanel);
   SidePanel();
+  SidePanel(const SidePanel&) = delete;
+  SidePanel& operator=(const SidePanel&) = delete;
   ~SidePanel() override;
 
-  // TODO(pbos): Remove need for this when BDDV is not set_owned_by_client().
-  void AddContent(std::unique_ptr<views::BubbleDialogDelegateView> view);
-  void RemoveContent(views::BubbleDialogDelegateView* view);
+  void SetPanelWidth(int width);
 
  private:
   void UpdateVisibility();

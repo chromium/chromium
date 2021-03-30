@@ -32,7 +32,6 @@ class TestSharedURLLoaderFactory : public SharedURLLoaderFactory {
 
   // URLLoaderFactory implementation:
   void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> loader,
-                            int32_t routing_id,
                             int32_t request_id,
                             uint32_t options,
                             const ResourceRequest& request,

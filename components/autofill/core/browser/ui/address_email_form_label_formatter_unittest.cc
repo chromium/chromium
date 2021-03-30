@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/guid.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -72,10 +71,8 @@ TEST(AddressEmailFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
 
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("333 Washington St"),
-                                      base::ASCIIToUTF16("jfk@gmail.com")}),
-                  base::ASCIIToUTF16("151 Irving Ave"),
-                  base::ASCIIToUTF16("paul1775@gmail.com"), base::string16()));
+      ElementsAre(ConstructLabelLine({u"333 Washington St", u"jfk@gmail.com"}),
+                  u"151 Irving Ave", u"paul1775@gmail.com", std::u16string()));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -109,10 +106,8 @@ TEST(AddressEmailFormLabelFormatterTest,
 
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("John F Kennedy"),
-                                      base::ASCIIToUTF16("jfk@gmail.com")}),
-                  base::ASCIIToUTF16("Jackie Kennedy"),
-                  base::ASCIIToUTF16("paul1775@gmail.com"), base::string16()));
+      ElementsAre(ConstructLabelLine({u"John F Kennedy", u"jfk@gmail.com"}),
+                  u"Jackie Kennedy", u"paul1775@gmail.com", std::u16string()));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -146,10 +141,8 @@ TEST(AddressEmailFormLabelFormatterTest,
 
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("333 Washington St"),
-                                      base::ASCIIToUTF16("jfk@gmail.com")}),
-                  base::ASCIIToUTF16("151 Irving Ave"),
-                  base::ASCIIToUTF16("paul1775@gmail.com"), base::string16()));
+      ElementsAre(ConstructLabelLine({u"333 Washington St", u"jfk@gmail.com"}),
+                  u"151 Irving Ave", u"paul1775@gmail.com", std::u16string()));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -182,10 +175,8 @@ TEST(AddressEmailFormLabelFormatterTest,
 
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("John F Kennedy"),
-                                      base::ASCIIToUTF16("333 Washington St")}),
-                  base::ASCIIToUTF16("Jackie Kennedy"), base::string16(),
-                  base::ASCIIToUTF16("141 Franklin St")));
+      ElementsAre(ConstructLabelLine({u"John F Kennedy", u"333 Washington St"}),
+                  u"Jackie Kennedy", std::u16string(), u"141 Franklin St"));
 }
 
 TEST(AddressEmailFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {
@@ -207,14 +198,11 @@ TEST(AddressEmailFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", NAME_BILLING_FULL, GetFieldTypes());
 
-  EXPECT_THAT(
-      formatter->GetLabels(),
-      ElementsAre(
-          ConstructLabelLine(
-              {base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301"),
-               base::ASCIIToUTF16("tarsila@aol.com")}),
-          ConstructLabelLine({base::ASCIIToUTF16("Estr. Dona Castorina, 110"),
-                              base::ASCIIToUTF16("aavila@uol.com.br")})));
+  EXPECT_THAT(formatter->GetLabels(),
+              ElementsAre(ConstructLabelLine({u"Av. Pedro Álvares Cabral, 1301",
+                                              u"tarsila@aol.com"}),
+                          ConstructLabelLine({u"Estr. Dona Castorina, 110",
+                                              u"aavila@uol.com.br"})));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -240,10 +228,8 @@ TEST(AddressEmailFormLabelFormatterTest,
   EXPECT_THAT(
       formatter->GetLabels(),
       ElementsAre(
-          ConstructLabelLine({base::ASCIIToUTF16("Tarsila do Amaral"),
-                              base::ASCIIToUTF16("tarsila@aol.com")}),
-          ConstructLabelLine({base::ASCIIToUTF16("Artur Avila"),
-                              base::ASCIIToUTF16("aavila@uol.com.br")})));
+          ConstructLabelLine({u"Tarsila do Amaral", u"tarsila@aol.com"}),
+          ConstructLabelLine({u"Artur Avila", u"aavila@uol.com.br"})));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -266,14 +252,11 @@ TEST(AddressEmailFormLabelFormatterTest,
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", ADDRESS_BILLING_DEPENDENT_LOCALITY, GetFieldTypes());
 
-  EXPECT_THAT(
-      formatter->GetLabels(),
-      ElementsAre(
-          ConstructLabelLine(
-              {base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301"),
-               base::ASCIIToUTF16("tarsila@aol.com")}),
-          ConstructLabelLine({base::ASCIIToUTF16("Estr. Dona Castorina, 110"),
-                              base::ASCIIToUTF16("aavila@uol.com.br")})));
+  EXPECT_THAT(formatter->GetLabels(),
+              ElementsAre(ConstructLabelLine({u"Av. Pedro Álvares Cabral, 1301",
+                                              u"tarsila@aol.com"}),
+                          ConstructLabelLine({u"Estr. Dona Castorina, 110",
+                                              u"aavila@uol.com.br"})));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -298,12 +281,10 @@ TEST(AddressEmailFormLabelFormatterTest,
 
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(ConstructLabelLine(
-                      {base::ASCIIToUTF16("Tarsila do Amaral"),
-                       base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301")}),
-                  ConstructLabelLine(
-                      {base::ASCIIToUTF16("Artur Avila"),
-                       base::ASCIIToUTF16("Estr. Dona Castorina, 110")})));
+      ElementsAre(
+          ConstructLabelLine(
+              {u"Tarsila do Amaral", u"Av. Pedro Álvares Cabral, 1301"}),
+          ConstructLabelLine({u"Artur Avila", u"Estr. Dona Castorina, 110"})));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -323,8 +304,7 @@ TEST(AddressEmailFormLabelFormatterTest,
   // Checks that only address fields in the form are shown in the label.
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("John F Kennedy"),
-                                      base::ASCIIToUTF16("Brookline, MA")})));
+      ElementsAre(ConstructLabelLine({u"John F Kennedy", u"Brookline, MA"})));
 }
 
 TEST(AddressEmailFormLabelFormatterTest, GetLabelsForFormWithoutName) {
@@ -340,8 +320,7 @@ TEST(AddressEmailFormLabelFormatterTest, GetLabelsForFormWithoutName) {
       {ADDRESS_BILLING_LINE1, ADDRESS_BILLING_ZIP, EMAIL_ADDRESS});
 
   // Checks that the name does not appear in the labels.
-  EXPECT_THAT(formatter->GetLabels(),
-              ElementsAre(base::ASCIIToUTF16("sarah.revere@aol.com")));
+  EXPECT_THAT(formatter->GetLabels(), ElementsAre(u"sarah.revere@aol.com"));
 }
 
 }  // namespace

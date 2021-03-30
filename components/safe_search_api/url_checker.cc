@@ -47,11 +47,7 @@ URLChecker::Check::Check(const GURL& url, CheckCallback callback) : url(url) {
   callbacks.push_back(std::move(callback));
 }
 
-URLChecker::Check::~Check() {
-  for (const CheckCallback& callback : callbacks) {
-    DCHECK(!callback);
-  }
-}
+URLChecker::Check::~Check() = default;
 
 URLChecker::CheckResult::CheckResult(Classification classification,
                                      bool uncertain)
@@ -118,7 +114,7 @@ bool URLChecker::CheckURL(const GURL& url, CheckCallback callback) {
       std::make_unique<Check>(url, std::move(callback)));
   async_checker_->CheckURL(url,
                            base::BindOnce(&URLChecker::OnAsyncCheckComplete,
-                                          base::Unretained(this), it));
+                                          weak_factory_.GetWeakPtr(), it));
 
   return false;
 }

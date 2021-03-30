@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,6 +25,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
@@ -532,6 +534,12 @@ void HttpNetworkTransaction::SetRequestHeadersCallback(
   request_headers_callback_ = std::move(callback);
 }
 
+void HttpNetworkTransaction::SetEarlyResponseHeadersCallback(
+    ResponseHeadersCallback callback) {
+  DCHECK(!stream_);
+  early_response_headers_callback_ = std::move(callback);
+}
+
 void HttpNetworkTransaction::SetResponseHeadersCallback(
     ResponseHeadersCallback callback) {
   DCHECK(!stream_);
@@ -541,6 +549,11 @@ void HttpNetworkTransaction::SetResponseHeadersCallback(
 int HttpNetworkTransaction::ResumeNetworkStart() {
   DCHECK_EQ(next_state_, STATE_CREATE_STREAM);
   return DoLoop(OK);
+}
+
+void HttpNetworkTransaction::ResumeAfterConnected(int result) {
+  DCHECK_EQ(next_state_, STATE_CONNECTED_CALLBACK_COMPLETE);
+  OnIOComplete(result);
 }
 
 void HttpNetworkTransaction::CloseConnectionOnDestruction() {
@@ -637,7 +650,7 @@ void HttpNetworkTransaction::OnNeedsProxyAuth(
   response_.auth_challenge = proxy_response.auth_challenge;
   response_.did_use_http_auth = proxy_response.did_use_http_auth;
 
-  if (response_.headers.get() && !ContentEncodingsValid()) {
+  if (!ContentEncodingsValid()) {
     DoCallback(ERR_CONTENT_DECODING_FAILED);
     return;
   }
@@ -725,6 +738,9 @@ int HttpNetworkTransaction::DoLoop(int result) {
         break;
       case STATE_INIT_STREAM_COMPLETE:
         rv = DoInitStreamComplete(rv);
+        break;
+      case STATE_CONNECTED_CALLBACK_COMPLETE:
+        rv = DoConnectedCallbackComplete(rv);
         break;
       case STATE_GENERATE_PROXY_AUTH_TOKEN:
         DCHECK_EQ(OK, rv);
@@ -883,16 +899,24 @@ int HttpNetworkTransaction::DoInitStreamComplete(int result) {
     return result;
   }
 
+  next_state_ = STATE_CONNECTED_CALLBACK_COMPLETE;
+
   // Fire off notification that we have successfully connected.
   if (!connected_callback_.is_null()) {
     TransportType type = TransportType::kDirect;
     if (!proxy_info_.is_direct()) {
       type = TransportType::kProxied;
     }
-    result = connected_callback_.Run(TransportInfo(type, remote_endpoint_));
-    DCHECK_NE(result, ERR_IO_PENDING);
+    result = connected_callback_.Run(
+        TransportInfo(type, remote_endpoint_),
+        base::BindOnce(&HttpNetworkTransaction::ResumeAfterConnected,
+                       base::Unretained(this)));
   }
 
+  return result;
+}
+
+int HttpNetworkTransaction::DoConnectedCallbackComplete(int result) {
   if (result == OK) {
     // Only transition if we succeeded. Otherwise stop at STATE_NONE.
     next_state_ = STATE_GENERATE_PROXY_AUTH_TOKEN;
@@ -1111,15 +1135,36 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
 
   DCHECK(response_.headers.get());
 
-  if (response_.headers.get() && !ContentEncodingsValid())
+  // Check for a 103 Early Hints response.
+  if (response_.headers->response_code() == HTTP_EARLY_HINTS) {
+    NetLogResponseHeaders(
+        net_log_,
+        NetLogEventType::HTTP_TRANSACTION_READ_EARLY_HINTS_RESPONSE_HEADERS,
+        response_.headers.get());
+
+    // Early Hints does not make sense for a WebSocket handshake.
+    if (ForWebSocketHandshake())
+      return ERR_FAILED;
+
+    // TODO(crbug.com/671310): Validate headers? It seems that
+    // "Content-Encoding" etc should not appear.
+
+    if (early_response_headers_callback_)
+      early_response_headers_callback_.Run(std::move(response_.headers));
+
+    response_.headers =
+        base::MakeRefCounted<HttpResponseHeaders>(std::string());
+    next_state_ = STATE_READ_HEADERS;
+    return OK;
+  }
+
+  if (!ContentEncodingsValid())
     return ERR_CONTENT_DECODING_FAILED;
 
   // On a 408 response from the server ("Request Timeout") on a stale socket,
   // retry the request for HTTP/1.1 but not HTTP/2 or QUIC because those
   // multiplex requests and have no need for 408.
-  // Headers can be NULL because of http://crbug.com/384554.
-  if (response_.headers.get() &&
-      response_.headers->response_code() == HTTP_REQUEST_TIMEOUT &&
+  if (response_.headers->response_code() == HTTP_REQUEST_TIMEOUT &&
       HttpResponseInfo::ConnectionInfoToCoarse(response_.connection_info) ==
           HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP1 &&
       stream_->IsConnectionReused()) {
@@ -1149,7 +1194,7 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
       return ERR_METHOD_NOT_SUPPORTED;
   }
 
-  if (can_send_early_data_ && response_.headers.get() &&
+  if (can_send_early_data_ &&
       response_.headers->response_code() == HTTP_TOO_EARLY) {
     return HandleIOError(ERR_EARLY_DATA_REJECTED);
   }
@@ -1201,6 +1246,9 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   // reports generated before the NEL header is processed here will just be
   // dropped by the NetworkErrorLoggingService.
   ProcessReportToHeader();
+  if (base::FeatureList::IsEnabled(net::features::kDocumentReporting)) {
+    ProcessReportingEndpointsHeader();
+  }
   ProcessNetworkErrorLoggingHeader();
 
   // Generate NEL report here if we have to report an HTTP error (4xx or 5xx
@@ -1333,6 +1381,26 @@ int HttpNetworkTransaction::DoDrainBodyForAuthRestartComplete(int result) {
 }
 
 #if BUILDFLAG(ENABLE_REPORTING)
+void HttpNetworkTransaction::ProcessReportingEndpointsHeader() {
+  std::string value;
+  if (!response_.headers->GetNormalizedHeader("Reporting-Endpoints", &value))
+    return;
+
+  ReportingService* service = session_->reporting_service();
+  if (!service)
+    return;
+
+  // Only accept Reporting-Endpoints headers on HTTPS connections that have no
+  // certificate errors.
+  if (!response_.ssl_info.is_valid())
+    return;
+  if (IsCertStatusError(response_.ssl_info.cert_status))
+    return;
+
+  service->ProcessReportingEndpointsHeader(url::Origin::Create(url_),
+                                           network_isolation_key_, value);
+}
+
 void HttpNetworkTransaction::ProcessReportToHeader() {
   std::string value;
   if (!response_.headers->GetNormalizedHeader("Report-To", &value))
@@ -1349,8 +1417,8 @@ void HttpNetworkTransaction::ProcessReportToHeader() {
   if (IsCertStatusError(response_.ssl_info.cert_status))
     return;
 
-  reporting_service->ProcessHeader(url_.GetOrigin(), network_isolation_key_,
-                                   value);
+  reporting_service->ProcessReportToHeader(url_.GetOrigin(),
+                                           network_isolation_key_, value);
 }
 
 void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {
@@ -1469,12 +1537,17 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
   // proxy.
   //
   // Origin errors are handled here, while most proxy errors are handled in the
-  // HttpStreamFactory and below. However, if the request is not tunneled (i.e.
-  // the origin is HTTP, so there is no HTTPS connection) and the proxy does not
-  // report a bad client certificate until after the TLS handshake completes.
-  // The latter occurs in TLS 1.3 or TLS 1.2 with False Start (disabled for
-  // proxies). The error will then surface out of Read() rather than Connect()
-  // and ultimately surfaced out of DoReadHeadersComplete().
+  // HttpStreamFactory and below, while handshaking with the proxy. However, in
+  // TLS 1.2 with False Start, or TLS 1.3, client certificate errors are
+  // reported immediately after the handshake. The error will then surface out
+  // of the first Read() rather than Connect().
+  //
+  // If the request is tunneled (i.e. the origin is HTTPS), this first Read()
+  // occurs while establishing the tunnel and HttpStreamFactory handles the
+  // proxy error. However, if the request is not tunneled (i.e. the origin is
+  // HTTP), this first Read() happens late and is ultimately surfaced out of
+  // DoReadHeadersComplete(). This method will then be responsible for both
+  // origin and proxy errors.
   //
   // See https://crbug.com/828965.
   bool is_server = !UsingHttpProxyWithoutTunnel();

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 class Clock;
@@ -55,6 +56,7 @@ class CORE_EXPORT DocumentLoadTiming final {
   void MarkNavigationStart();
   void SetNavigationStart(base::TimeTicks);
   void MarkBackForwardCacheRestoreNavigationStart(base::TimeTicks);
+  void MarkCommitNavigationEnd();
 
   void SetInputStart(base::TimeTicks);
 
@@ -77,8 +79,8 @@ class CORE_EXPORT DocumentLoadTiming final {
   void MarkLoadEventStart();
   void MarkLoadEventEnd();
 
-  void SetHasSameOriginAsPreviousDocument(bool value) {
-    has_same_origin_as_previous_document_ = value;
+  void SetCanRequestFromPreviousDocument(bool value) {
+    can_request_from_previous_document_ = value;
   }
 
   base::TimeTicks InputStart() const { return input_start_; }
@@ -87,6 +89,7 @@ class CORE_EXPORT DocumentLoadTiming final {
       const {
     return bfcache_restore_navigation_starts_;
   }
+  base::TimeTicks CommitNavigationEnd() const { return commit_navigation_end_; }
   base::TimeTicks UnloadEventStart() const { return unload_event_start_; }
   base::TimeTicks UnloadEventEnd() const { return unload_event_end_; }
   base::TimeTicks RedirectStart() const { return redirect_start_; }
@@ -97,8 +100,8 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks LoadEventStart() const { return load_event_start_; }
   base::TimeTicks LoadEventEnd() const { return load_event_end_; }
   bool HasCrossOriginRedirect() const { return has_cross_origin_redirect_; }
-  bool HasSameOriginAsPreviousDocument() const {
-    return has_same_origin_as_previous_document_;
+  bool CanRequestFromPreviousDocument() const {
+    return can_request_from_previous_document_;
   }
 
   base::TimeTicks ReferenceMonotonicTime() const {
@@ -115,12 +118,14 @@ class CORE_EXPORT DocumentLoadTiming final {
   void NotifyDocumentTimingChanged();
   void EnsureReferenceTimesSet();
   LocalFrame* GetFrame() const;
-  std::unique_ptr<TracedValue> GetNavigationStartTracingData() const;
+  void WriteNavigationStartDataIntoTracedValue(
+      perfetto::TracedValue context) const;
 
   base::TimeTicks reference_monotonic_time_;
   base::TimeDelta reference_wall_time_;
   base::TimeTicks input_start_;
   base::TimeTicks navigation_start_;
+  base::TimeTicks commit_navigation_end_;
   WTF::Vector<base::TimeTicks> bfcache_restore_navigation_starts_;
   base::TimeTicks unload_event_start_;
   base::TimeTicks unload_event_end_;
@@ -132,7 +137,7 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks load_event_start_;
   base::TimeTicks load_event_end_;
   bool has_cross_origin_redirect_;
-  bool has_same_origin_as_previous_document_;
+  bool can_request_from_previous_document_;
 
   const base::Clock* clock_;
   const base::TickClock* tick_clock_;

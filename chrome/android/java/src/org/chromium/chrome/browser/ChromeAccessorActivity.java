@@ -14,6 +14,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.share.ShareHelper;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 /**
  * {@code ChromeActivityAccessor} is the base class for share options, which
@@ -34,7 +35,8 @@ public abstract class ChromeAccessorActivity extends AppCompatActivity {
             ChromeActivity triggeringActivity = getTriggeringActivity();
             if (triggeringActivity == null) return;
 
-            handleAction(triggeringActivity);
+            handleAction(/* triggeringActivity= */ triggeringActivity,
+                    /* menuOrKeyboardActionController= */ triggeringActivity);
         } finally {
             finish();
         }
@@ -56,8 +58,13 @@ public abstract class ChromeAccessorActivity extends AppCompatActivity {
 
     /**
      * Completes the share action.
-     * Override this activity to implement desired share functionality.  The activity
+     *
+     * Override this activity to implement desired share functionality.  This activity
      * will be destroyed immediately after this method is called.
+     *
+     * @param triggeringActivity The {@link Activity} that triggered the share.
+     * @param menuOrKeyboardActionController Handles menu or keyboard actions.
      */
-    protected abstract void handleAction(ChromeActivity triggeringActivity);
+    protected abstract void handleAction(Activity triggeringActivity,
+            MenuOrKeyboardActionController menuOrKeyboardActionController);
 }

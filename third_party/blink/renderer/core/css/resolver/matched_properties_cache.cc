@@ -45,11 +45,9 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
                                   sizeof(MatchedProperties) * vector.size());
 }
 
-void CachedMatchedProperties::Set(
-    const ComputedStyle& style,
-    const ComputedStyle& parent_style,
-    const MatchedPropertiesVector& properties,
-    const HashSet<CSSPropertyName>& new_dependencies) {
+void CachedMatchedProperties::Set(const ComputedStyle& style,
+                                  const ComputedStyle& parent_style,
+                                  const MatchedPropertiesVector& properties) {
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
     matched_properties_types.push_back(new_matched_properties.types_);
@@ -60,24 +58,6 @@ void CachedMatchedProperties::Set(
   // for the substructures and never used as-is.
   this->computed_style = ComputedStyle::Clone(style);
   this->parent_computed_style = ComputedStyle::Clone(parent_style);
-
-  DCHECK(
-      RuntimeEnabledFeatures::CSSMatchedPropertiesCacheDependenciesEnabled() ||
-      new_dependencies.IsEmpty());
-  if (new_dependencies.size()) {
-    DCHECK(new_dependencies.size() <= StyleResolverState::kMaxDependencies);
-    // Plus one for g_null_atom.
-    dependencies =
-        std::make_unique<AtomicString[]>(new_dependencies.size() + 1);
-
-    size_t index = 0;
-    for (const CSSPropertyName& name : new_dependencies) {
-      DCHECK_LT(index, new_dependencies.size());
-      dependencies[index++] = name.ToAtomicString();
-    }
-    DCHECK_EQ(index, new_dependencies.size());
-    dependencies[index] = g_null_atom;
-  }
 }
 
 void CachedMatchedProperties::Clear() {
@@ -85,7 +65,6 @@ void CachedMatchedProperties::Clear() {
   matched_properties_types.clear();
   computed_style = nullptr;
   parent_computed_style = nullptr;
-  dependencies.reset();
 }
 
 bool CachedMatchedProperties::DependenciesEqual(
@@ -104,12 +83,15 @@ bool CachedMatchedProperties::DependenciesEqual(
     return false;
   }
 
-  for (const AtomicString* name = dependencies.get(); name && !name->IsNull();
-       name++) {
-    CSSPropertyRef ref(*name, state.GetDocument());
-    DCHECK(ref.IsValid());
-    if (!ref.GetProperty().ComputedValuesEqual(*parent_computed_style,
-                                               *state.ParentStyle())) {
+  if (parent_computed_style->GetWritingMode() !=
+      state.ParentStyle()->GetWritingMode()) {
+    return false;
+  }
+  if (parent_computed_style->Direction() != state.ParentStyle()->Direction())
+    return false;
+  if (computed_style->HasVariableReferenceFromNonInheritedProperty()) {
+    if (parent_computed_style->InheritedVariables() !=
+        state.ParentStyle()->InheritedVariables()) {
       return false;
     }
   }
@@ -174,8 +156,7 @@ bool CachedMatchedProperties::operator!=(
 
 void MatchedPropertiesCache::Add(const Key& key,
                                  const ComputedStyle& style,
-                                 const ComputedStyle& parent_style,
-                                 const HashSet<CSSPropertyName>& dependencies) {
+                                 const ComputedStyle& parent_style) {
   DCHECK(key.IsValid());
   Cache::AddResult add_result = cache_.insert(key.hash_, nullptr);
   if (add_result.is_new_entry || !add_result.stored_value->value) {
@@ -187,8 +168,7 @@ void MatchedPropertiesCache::Add(const Key& key,
   if (!add_result.is_new_entry)
     cache_item->Clear();
 
-  cache_item->Set(style, parent_style, key.result_.GetMatchedProperties(),
-                  dependencies);
+  cache_item->Set(style, parent_style, key.result_.GetMatchedProperties());
 }
 
 void MatchedPropertiesCache::Clear() {
@@ -222,18 +202,6 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
     return false;
   if (style.TextAutosizingMultiplier() != 1)
     return false;
-  if (!RuntimeEnabledFeatures::CSSMatchedPropertiesCacheDependenciesEnabled()) {
-    if (style.GetWritingMode() !=
-            ComputedStyleInitialValues::InitialWritingMode() ||
-        style.Direction() != ComputedStyleInitialValues::InitialDirection()) {
-      return false;
-    }
-
-    // styles with non inherited properties that reference variables are not
-    // cacheable.
-    if (style.HasVariableReferenceFromNonInheritedProperty())
-      return false;
-  }
   // -internal-light-dark() values in UA sheets have different computed values
   // based on the used value of color-scheme.
   if (style.HasNonInheritedLightDarkValue())
@@ -248,16 +216,13 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   if (!IsStyleCacheable(style))
     return false;
 
-  if (!RuntimeEnabledFeatures::CSSMatchedPropertiesCacheDependenciesEnabled()) {
-    // The cache assumes static knowledge about which properties are inherited.
-    // Without a flat tree parent, StyleBuilder::ApplyProperty will not
-    // SetChildHasExplicitInheritance on the parent style.
-    if (!state.ParentNode() || parent_style.ChildHasExplicitInheritance())
-      return false;
-    return true;
-  }
+  // The cache assumes static knowledge about which properties are inherited.
+  // Without a flat tree parent, StyleBuilder::ApplyProperty will not
+  // SetChildHasExplicitInheritance on the parent style.
+  if (!state.ParentNode() || parent_style.ChildHasExplicitInheritance())
+    return false;
 
-  return state.HasValidDependencies() && !state.HasIncomparableDependency();
+  return true;
 }
 
 void MatchedPropertiesCache::Trace(Visitor* visitor) const {

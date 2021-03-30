@@ -46,18 +46,13 @@ namespace {
 
 struct VisualOrdering;
 
-// See also InlineBidiResolver::NeedsTrailingSpace()
-bool NeedsTrailingSpace(const ComputedStyle& style) {
-  return style.BreakOnlyAfterWhiteSpace() && style.AutoWrap();
-}
-
 static PositionWithAffinity AdjustForSoftLineWrap(
     const NGInlineCursorPosition& line_box,
     const PositionWithAffinity& position) {
   DCHECK(line_box.IsLineBox());
   if (position.IsNull())
     return PositionWithAffinity();
-  if (!NeedsTrailingSpace(line_box.Style()) ||
+  if (!line_box.Style().NeedsTrailingSpace() ||
       !line_box.HasSoftWrapToNextLine())
     return position;
   // Returns a position after first space causing soft line wrap for editable.
@@ -76,7 +71,6 @@ static PositionWithAffinity AdjustForSoftLineWrap(
   const Position adjusted_position = mapping->GetFirstPosition(*offset + 1);
   if (adjusted_position.IsNull())
     return position;
-  DCHECK(IsA<Text>(adjusted_position.AnchorNode())) << adjusted_position;
   if (!IsA<Text>(adjusted_position.AnchorNode()))
     return position;
   if (!adjusted_position.AnchorNode()
@@ -84,6 +78,8 @@ static PositionWithAffinity AdjustForSoftLineWrap(
            ->StyleRef()
            .IsCollapsibleWhiteSpace(mapping->GetText()[*offset]))
     return position;
+  // See |TryResolveCaretPositionInTextFragment()| to locate upstream position
+  // of caret after soft line wrap space.
   return PositionWithAffinity(adjusted_position,
                               TextAffinity::kUpstreamIfPossible);
 }

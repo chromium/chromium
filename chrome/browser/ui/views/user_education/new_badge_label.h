@@ -28,12 +28,12 @@ class NewBadgeLabel : public views::Label {
 
   // Constructs a new badge label. Designed to be argument-compatible with the
   // views::Label constructor so they can be substituted.
-  explicit NewBadgeLabel(const base::string16& text = base::string16(),
+  explicit NewBadgeLabel(const std::u16string& text = std::u16string(),
                          int text_context = views::style::CONTEXT_LABEL,
                          int text_style = views::style::STYLE_PRIMARY,
                          gfx::DirectionalityMode directionality_mode =
                              gfx::DirectionalityMode::DIRECTIONALITY_FROM_TEXT);
-  NewBadgeLabel(const base::string16& text, const CustomFont& font);
+  NewBadgeLabel(const std::u16string& text, const CustomFont& font);
   ~NewBadgeLabel() override;
 
   bool GetPadAfterNewBadge() const { return pad_after_new_badge_; }

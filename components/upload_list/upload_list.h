@@ -16,6 +16,8 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 
+class CombiningUploadList;
+
 // An UploadList is an abstraction over a list of client-side data files that
 // are uploaded to a server. The UploadList allows accessing the UploadInfo
 // for these files, usually to display in a UI.
@@ -41,7 +43,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
     UploadInfo(const std::string& local_id,
                const base::Time& capture_time,
                State state,
-               const base::string16& file_size);
+               const std::u16string& file_size);
     UploadInfo(const std::string& upload_id, const base::Time& upload_time);
     UploadInfo(const UploadInfo& upload_info);
     ~UploadInfo();
@@ -63,7 +65,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
     std::string source;
 
     // Formatted file size for locally stored data.
-    base::string16 file_size;
+    std::u16string file_size;
   };
 
   UploadList();
@@ -105,6 +107,9 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
 
  private:
   friend class base::RefCountedThreadSafe<UploadList>;
+  // CombiningUploadList needs to be able to call the callback functions
+  // (LoadUploadList, ClearUploadList) in its callback functions.
+  friend class CombiningUploadList;
 
   // When LoadUploadList() finishes, the results are reported in |uploads|
   // and the |load_callback_| is run.

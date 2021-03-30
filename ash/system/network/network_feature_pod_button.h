@@ -31,10 +31,11 @@ class NetworkFeaturePodButton : public FeaturePodButton,
   void ActiveNetworkStateChanged() override;
 
   // views::Button:
+  void OnThemeChanged() override;
   const char* GetClassName() const override;
 
  private:
-  void UpdateTooltip(const base::string16& connection_state_message);
+  void UpdateTooltip(const std::u16string& connection_state_message);
 
   DISALLOW_COPY_AND_ASSIGN(NetworkFeaturePodButton);
 };

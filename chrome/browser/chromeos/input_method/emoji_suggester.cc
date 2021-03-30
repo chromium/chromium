@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/input_method/emoji_suggester.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/field_trial_params.h"
@@ -19,8 +21,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/services/ime/constants.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
@@ -131,11 +131,10 @@ void EmojiSuggester::OnEmojiDataLoaded(const std::string& emoji_data) {
     const auto comma_pos = line.find_first_of(",");
     DCHECK(comma_pos != std::string::npos);
     std::string word = line.substr(0, comma_pos);
-    base::string16 emojis = base::UTF8ToUTF16(line.substr(comma_pos + 1));
+    std::u16string emojis = base::UTF8ToUTF16(line.substr(comma_pos + 1));
     // Build emoji_map_ from splitting the string of emojis.
-    emoji_map_[word] =
-        base::SplitString(emojis, base::UTF8ToUTF16(";"), base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+    emoji_map_[word] = base::SplitString(emojis, u";", base::TRIM_WHITESPACE,
+                                         base::SPLIT_WANT_NONEMPTY);
     // TODO(crbug/1093179): Implement arrow to indicate more emojis available.
     // Only loads 5 emojis for now until arrow is implemented.
     if (emoji_map_[word].size() > kMaxCandidateSize)
@@ -203,7 +202,7 @@ SuggestionStatus EmojiSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
   return SuggestionStatus::kNotHandled;
 }
 
-bool EmojiSuggester::ShouldShowSuggestion(const base::string16& text) {
+bool EmojiSuggester::ShouldShowSuggestion(const std::u16string& text) {
   if (text[text.length() - 1] != kSpaceChar)
     return false;
 
@@ -215,7 +214,7 @@ bool EmojiSuggester::ShouldShowSuggestion(const base::string16& text) {
   return false;
 }
 
-bool EmojiSuggester::Suggest(const base::string16& text) {
+bool EmojiSuggester::Suggest(const std::u16string& text) {
   if (emoji_map_.empty() || text[text.length() - 1] != kSpaceChar)
     return false;
   std::string last_word =

@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "components/metrics/stability_metrics_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -28,6 +29,7 @@ class StabilityMetricsProviderTest : public testing::Test {
 };
 
 TEST_F(StabilityMetricsProviderTest, ProvideStabilityMetrics) {
+  base::HistogramTester histogram_tester;
   StabilityMetricsProvider stability_provider(&prefs_);
   MetricsProvider* provider = &stability_provider;
   SystemProfileProto system_profile;
@@ -38,23 +40,23 @@ TEST_F(StabilityMetricsProviderTest, ProvideStabilityMetrics) {
   EXPECT_FALSE(stability.has_launch_count());
   EXPECT_FALSE(stability.has_crash_count());
   EXPECT_FALSE(stability.has_incomplete_shutdown_count());
-  EXPECT_FALSE(stability.has_breakpad_registration_success_count());
-  EXPECT_FALSE(stability.has_breakpad_registration_failure_count());
-  EXPECT_FALSE(stability.has_debugger_present_count());
-  EXPECT_FALSE(stability.has_debugger_not_present_count());
+
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kLaunch, 0);
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kBrowserCrash, 0);
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", StabilityEventType::kIncompleteShutdown, 0);
 }
 
 TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
+  base::HistogramTester histogram_tester;
   {
     StabilityMetricsProvider recorder(&prefs_);
     recorder.LogLaunch();
     recorder.LogCrash(base::Time());
     recorder.MarkSessionEndCompleted(false);
     recorder.CheckLastSessionEndCompleted();
-    recorder.RecordBreakpadRegistration(true);
-    recorder.RecordBreakpadRegistration(false);
-    recorder.RecordBreakpadHasDebugger(true);
-    recorder.RecordBreakpadHasDebugger(false);
   }
 
   {
@@ -68,10 +70,13 @@ TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
     EXPECT_EQ(1, stability.launch_count());
     EXPECT_EQ(1, stability.crash_count());
     EXPECT_EQ(1, stability.incomplete_shutdown_count());
-    EXPECT_EQ(1, stability.breakpad_registration_success_count());
-    EXPECT_EQ(1, stability.breakpad_registration_failure_count());
-    EXPECT_EQ(1, stability.debugger_present_count());
-    EXPECT_EQ(1, stability.debugger_not_present_count());
+
+    histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                       StabilityEventType::kLaunch, 1);
+    histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                       StabilityEventType::kBrowserCrash, 1);
+    histogram_tester.ExpectBucketCount(
+        "Stability.Counts2", StabilityEventType::kIncompleteShutdown, 1);
   }
 }
 
@@ -96,6 +101,7 @@ class TestingStabilityMetricsProvider : public StabilityMetricsProvider {
 }  // namespace
 
 TEST_F(StabilityMetricsProviderTest, RecordSystemCrashMetrics) {
+  base::HistogramTester histogram_tester;
   {
     base::Time unclean_time = base::Time::Now();
     TestingStabilityMetricsProvider recorder(&prefs_, unclean_time);
@@ -114,14 +120,14 @@ TEST_F(StabilityMetricsProviderTest, RecordSystemCrashMetrics) {
     MetricsProvider* provider = &stability_provider;
     SystemProfileProto system_profile;
 
-    base::HistogramTester histogram_tester;
-
     provider->ProvideStabilityMetrics(&system_profile);
 
     const SystemProfileProto_Stability& stability = system_profile.stability();
     // Two crashes, one system crash.
     EXPECT_EQ(2, stability.crash_count());
 
+    histogram_tester.ExpectUniqueSample("Stability.Counts2",
+                                        StabilityEventType::kBrowserCrash, 2);
     histogram_tester.ExpectTotalCount("Stability.Internals.SystemCrashCount",
                                       1);
   }

@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
+<translation id="1302104331113804646">ဈေးနှုန်းစောင့်ကြည့်ခြင်း ဆက်တင်များ</translation>
+<translation id="1378979118429748177">ဈေးကျသည့်အခါ အကြောင်းကြားချက်ရယူနိုင်သည်</translation>
 <translation id="1657719826150349398">တဘ်ကို အောက်သို့ ရွှေ့ရန်</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="2277224997687551299">အဖွဲ့အမည်ကို တည်းဖြတ်ရန်</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ရွေးထားသော တဘ် <ph name="TABS_COUNT_ONE" /> ခုအား အုပ်စုမှ ဖယ်ရှားပါ။}other{ရွေးထားသော တဘ် <ph name="TABS_COUNT_MANY" /> ခုအား အုပ်စုမှ ဖယ်ရှားပါ။}}</translation>
+<translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်ကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုဖြင့် တဘ်အုပ်စု လျှော့ပြပါ။}}</translation>
 <translation id="2569352796411618312">အကြံပြုချက်- သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို အခုတစ်လော အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
 <translation id="257674075312929031">အုပ်စု</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">အုပ်စုကို မျှဝေရန်</translation>
 <translation id="2759453070259087442">တဘ် <ph name="NUMBER_OF_TABS" /> ခုဖြင့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ချဲ့ပါ။</translation>
 <translation id="2977480621796371840">အဖွဲ့မှ ဖယ်ရှားပါ</translation>
+<translation id="3291470810748040983">ဖွင့်ထားသောတဘ်တွင် ဈေးကျသွားသည့်အခါ သတိပေးချက် ရရှိပါမည်</translation>
 <translation id="3328308545011660196">အကြံပြုချက်- တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်ကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုဖြင့် အုပ်စုဖွဲ့ထားသည့် <ph name="TITLE_OF_GROUP" /> တဘ်ကို ပြန်ခေါက်ပါ။}}</translation>
+<translation id="3882834874697329510">ဖွင့်ထားသောတဘ်တွင် ဈေးကျသွားသည့်အခါ သတိပေးချက်ရရှိရန် ‘ဆက်တင်များ’ တွင် အကြောင်းကြားချက်များကို ဖွင့်ပါ။</translation>
+<translation id="3940195383040445971">တဘ်များတွင် ဈေးနှုန်းများစောင့်ကြည့်ရန်</translation>
+<translation id="3996880007329611795">အကြောင်းကြားချက် ရယူရန်</translation>
 <translation id="4133493477912226187">တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
 <translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
 <translation id="4648718555153979859">သင့်တဘ်များကို ဤနေရာတွင် အုပ်စုဖွဲ့ထားသည်</translation>
-<translation id="4922064041913095674">သင်ဖွင့်ထားသောတဘ်များတွင် ဘယ်အရာကဈေးပိုသက်သာကြောင်း ကြည့်နိုင်သည်</translation>
 <translation id="492284538114688557">ဈေးကျသွားသည်ကို တွေ့သည်</translation>
 <translation id="5007392906805964215">ပြန်ကြည့်ရန်</translation>
 <translation id="5073204694187207510">မျက်နှာပြင်ပြည့် ဇယားကွက်ကို ဝှက်ရန်</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">နောက်မှ ပြရန်</translation>
 <translation id="5558362125926932819">တဘ် <ph name="NUMBER_OF_TABS" /> ခုပါသော တဘ်အုပ်စုကို ပိတ်ရန်</translation>
 <translation id="5580090775658607195">တဘ် <ph name="TAB_COUNT" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
+<translation id="575494663145460764">ဈေးကျသွားသည်များအတွက် သတိပေးချက် ရယူမလား။</translation>
 <translation id="58326064309361797">တဘ်များကို အုပ်စုဖွဲ့ရန် ၎င်းတို့ကို ဖိဆွဲပါ</translation>
 <translation id="5846292395804797011">တဘ် <ph name="NUMBER_OF_TABS" /> ခုဖြင့် <ph name="TITLE_OF_GROUP" /> အုပ်စုကို ပိတ်ရန်</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">မျိုးစုံရွေးမုဒ်ကို ဝှက်ရန်</translation>
 <translation id="7151209024774799310">အုပ်စုမှ တဘ်များကို ဖယ်ရှားရန်</translation>
 <translation id="7204204600596740190">မျိုးစုံရွေးမုဒ်</translation>
+<translation id="7352298686197644113">သင်ဖွင့်ထားသောတဘ်များတွင် မည်သည့်အရာက ဈေးကျသွားကြောင်း ကြည့်နိုင်သည်</translation>
 <translation id="753732157349120914">တဘ်ပြောင်းခလုတ်</translation>
 <translation id="7559245342362162951">မျက်နှာပြင်ပြည့် ဇယားကွက်အတွင်း အုပ်စု၏ တဘ်များကို ပြရန်</translation>
 <translation id="7792771145871471484">အကြံပြုချက်များကို စစ်ဆေးရန်။</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">တဘ်ဘားတန်း ထပ်ပြရမလား။</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ရွေးထားသည့် တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ပိတ်ရန်}other{ရွေးထားသည့် တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ပိတ်ရန်}}</translation>
 <translation id="8557923272772633250">တဘ် <ph name="NUMBER_OF_TABS" /> ခုဖြင့် တဘ်အုပ်စုကို ချဲ့ပါ။</translation>
+<translation id="860282621117673749">ဈေးကျသွားကြောင်း သတိပေးချက်များ</translation>
+<translation id="8714939927607906138">ကျသွားသော ဈေးနှုန်း</translation>
 <translation id="8749939518995770034">တဘ်ဘားတန်း ပိတ်ထားသည်</translation>
+<translation id="8820741577754260431">သင့်တဘ်များတွင် ဈေးကျသွားသည်များကို ကြည့်နိုင်သည်</translation>
 <translation id="9150694013019234766">မျက်နှာပြင်အောက်ခြေနားရှိ သင်၏ တဘ်အုပ်စုအတွင်း တဘ်တစ်ခုမှတစ်ခုသို့ ပြောင်းပါ</translation>
 <translation id="9169594135889675189">တဘ်အသစ်ကို အုပ်စုသို့ ထည့်ရန်</translation>
 <translation id="959682366969460160">စုစုစည်းစည်းဖြစ်အောင် ပြုလုပ်ပါ</translation>

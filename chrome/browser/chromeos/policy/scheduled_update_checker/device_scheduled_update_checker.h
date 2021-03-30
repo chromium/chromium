@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/scheduled_update_checker/os_and_policies_update_checker.h"
 #include "chrome/browser/chromeos/policy/scheduled_update_checker/scoped_wake_lock.h"
 #include "chrome/browser/chromeos/policy/scheduled_update_checker/task_executor_with_retries.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/dbus/power/native_timer.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/settings/timezone_settings.h"
@@ -31,7 +31,7 @@ class DeviceScheduledUpdateChecker
     : public chromeos::system::TimezoneSettings::Observer {
  public:
   DeviceScheduledUpdateChecker(
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       chromeos::NetworkStateHandler* network_state_handler);
   ~DeviceScheduledUpdateChecker() override;
 
@@ -127,7 +127,7 @@ class DeviceScheduledUpdateChecker
   virtual const icu::TimeZone& GetTimeZone();
 
   // Used to retrieve Chrome OS settings. Not owned.
-  chromeos::CrosSettings* const cros_settings_;
+  ash::CrosSettings* const cros_settings_;
 
   // Subscription for callback when settings change.
   base::CallbackListSubscription cros_settings_subscription_;

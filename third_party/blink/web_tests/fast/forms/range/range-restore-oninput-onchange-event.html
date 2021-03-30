@@ -1,0 +1,68 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+    const RANGE_MAX = "256";
+    const RANGE_MIN = "1";
+
+    var seenOnInput = false;
+    var seenOnChange = false;
+
+    var restorationEventTest = async_test('Range control restoration: event firing');
+
+    function runTest() {
+        var beenHere = document.getElementById("been-here");
+        var rangeInput1 = document.getElementById("range-input-1");
+        var rangeInput2 = document.getElementById("range-input-2");
+
+        if (!beenHere.value) {
+            setRangeValue(rangeInput1, RANGE_MAX);
+            setRangeValue(rangeInput2, RANGE_MIN);
+            beenHere.value = "visited";
+            var form = document.getElementById("form");
+
+            // Submit form in a timeout to make sure that we create a new back/forward list item.
+            setTimeout(function() {form.submit();}, 0);
+        } else {
+            restorationEventTest.step(function() {
+                assert_true(seenOnInput);
+                assert_true(seenOnChange);
+            });
+            restorationEventTest.done();
+        }
+    }
+
+    function setRangeValue(input, value) {
+        input.value = value;
+        var inputEvent = new Event('input');
+        input.dispatchEvent(inputEvent);
+        var changeEvent = new Event('change');
+        input.dispatchEvent(changeEvent);
+    }
+
+    function onInputHandler() {
+        var beenHere = document.getElementById("been-here");
+        if (beenHere.value) {
+            seenOnInput = true;
+        }
+    }
+
+    function onChangeHandler() {
+        var beenHere = document.getElementById("been-here");
+        if (beenHere.value) {
+            seenOnChange = true;
+        }
+    }
+
+</script>
+<body onload="setTimeout(runTest, 0)">
+    <p>
+        This test checks whether oninput() and onchange() events are fired or not in range control restoration. Duplicating tabs and navigating back-forwards are the related scenarios. The detailed path is in <i><a href="crbug.com/1131234">crbug.com/1131234</a></i>.
+    </p>
+    OnInput: <br>
+    <input type="range" oninput=onInputHandler() value="128" id="range-input-1" min="1" max="256"><br>
+    OnChange:<br>
+    <input type="range" onchange=onChangeHandler() value="128" id="range-input-2" min="1" max="256"><br>
+    <input id="been-here">
+    <form action="../../../resources/back.html" method="POST" id="form"></form>
+</body>

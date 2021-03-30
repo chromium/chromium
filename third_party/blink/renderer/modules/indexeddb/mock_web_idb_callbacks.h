@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_MOCK_WEB_IDB_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_MOCK_WEB_IDB_CALLBACKS_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -24,7 +26,11 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   MockWebIDBCallbacks();
   ~MockWebIDBCallbacks() override;
 
-  void SetState(base::WeakPtr<WebIDBCursorImpl>, int64_t);
+  // Disallow copy and assign.
+  MockWebIDBCallbacks(const MockWebIDBCallbacks&) = delete;
+  MockWebIDBCallbacks& operator=(const MockWebIDBCallbacks&) = delete;
+
+  void SetState(base::WeakPtr<WebIDBCursorImpl>, int64_t) override;
 
   MOCK_METHOD2(Error, void(mojom::blink::IDBException, const String&));
 
@@ -91,9 +97,6 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
                     const IDBDatabaseMetadata&));
 
   MOCK_METHOD0(DetachRequestFromCallback, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWebIDBCallbacks);
 };
 
 }  // namespace blink

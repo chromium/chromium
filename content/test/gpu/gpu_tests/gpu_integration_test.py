@@ -553,6 +553,9 @@ class GpuIntegrationTest(
       skia_renderer = gpu_helper.GetSkiaRenderer(gpu_info.feature_status,
                                                  startup_args)
       tags.append(skia_renderer)
+    display_server = gpu_helper.GetDisplayServer()
+    if display_server:
+      tags.append(display_server)
     return tags
 
   @classmethod
@@ -601,12 +604,15 @@ class GpuIntegrationTest(
         'qualcomm-adreno-(tm)-418',  # android-nexus-5x
         'qualcomm-adreno-(tm)-420',  # android-nexus-6
         'qualcomm-adreno-(tm)-540',  # android-pixel-2
+        'qualcomm-adreno-(tm)-640',  # android-pixel-4
         'nvidia-nvidia-tegra',  # android-nexus-9 and android-shield-android-tv
-        'vmware',  # VMs
+        'vmware,',  # VMs
         'vmware,-0x1050',  # ChromeOS VMs
         # Fuchsia VMs
         ('google-angle-(vulkan-1.1.0(swiftshader-device-('
          'llvm-7.0.1)-(0x0000c0de)))'),
+        ('google-angle-(vulkan-1.1.0(swiftshader-device-('
+         'llvm-10.0.0)-(0x0000c0de)))'),
         # These browsers are analogous to a particular OS, and specifying the
         # OS name is clearer.
         'cros-chrome',  # ChromeOS
@@ -622,6 +628,9 @@ class GpuIntegrationTest(
         # make a difference to these tests anyways.
         'chromeos-local',
         'chromeos-remote',
+        # "exact" is a valid browser type in Telemetry, but should never be used
+        # on the bots.
+        'exact',
     ]
 
 

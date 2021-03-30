@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/ozone/common/egl_util.h"
 
 namespace ui {

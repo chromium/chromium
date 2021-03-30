@@ -2,8 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="102360288709523007">Хэрэглээний статистик мэдээлэл, алдааны тайланг Google-д автоматаар илгээж, Google Chrome-г сайжруулахад тусална уу.</translation>
+<translation id="1043245583918962542">Chromium-н өгөгдлөө энэ төхөөрөмжөөс арилгах эсвэл хадгалах эсэхээ сонгоно уу.</translation>
 <translation id="1185134272377778587">Chromium-ийн тухай</translation>
 <translation id="1257458525759135959">Зургуудыг хадгалахын тулд Тохиргоон дээр товшиж, таны зургуудад нэмэхийг Chromium-д зөвшөөрнө үү</translation>
+<translation id="1289216811211435351">Chromium руу сэлгэх</translation>
 <translation id="1361748954329991663">Chromium хуучирсан байна. <ph name="BEGIN_LINK" />Апп дэлгүүр<ph name="END_LINK" />-т шинэчлэлт байхгүй бол таны төхөөрөмж Chromium-н шинэ хувилбарыг цаашид дэмжихгүй байж болзошгүй.</translation>
 <translation id="1431818719585918472">Chromium-д таны Нууцлалтай табуудыг түгжихийг зөвшөөрнө үү.</translation>
 <translation id="1472013873724362412">Таны бүртгэл Chromium-д ажилладаггүй. Нэвтрэхийн тулд та домайн админдаа хандах, эсвэл Google Бүртгэлийн энгийн хувилбарыг ашиглах боломжтой.</translation>
@@ -30,9 +32,11 @@
 <translation id="3472200483164753384">Chromium Канар дээр дэмжихгүй</translation>
 <translation id="3639997914391704523">Chromium нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгнүүдийг шалгах боломжтой.</translation>
 <translation id="3805899903892079518">Chromium-д таны зураг, видеонд хандах зөвшөөрөл байхгүй байна. Хандалтыг iOS Тохиргоо &gt; Нууцлал &gt; Зураг хэсэгт идэвхжүүлээрэй.</translation>
-<translation id="4099085513035183040">Chromium Бэта дээр дэмжихгүй</translation>
+<translation id="3946918322491238254">Та энэ төхөөрөмж дээр бүх хавчуурга, түүх, нууц үг болон бусад тохиргоогоо харах боломжтой хэвээр байна. Хэрэв та өөрчлөлт хийвэл тэдгээрийг таны бүртгэлд синк хийхгүй.</translation>
+<translation id="4099085513035183040">Chromium Бета дээр дэмжихгүй</translation>
 <translation id="4166206055865952171">Chromium-г өгөгдмөлөө болгох</translation>
 <translation id="4555020257205549924">Энэ онцлог асаалттай үед Chromium бусад хэл дээрх хуудсыг Google Орчуулагчаар орчуулахыг санал болгоно. <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">Та одоо Chromium-г хэзээд ч мессеж, документ болон бусад аппын холбоосон дээр товшин ашиглах боломжтой.</translation>
 <translation id="4681781466797808448">Chromium сканнерыг асаах</translation>
 <translation id="4787850887676698916">Таны бусад төхөөрөмжийн Chromium-д нээсэн таб энд харагдана.</translation>
 <translation id="4828317641996116749">Chromium бүх нууц үгийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
@@ -43,13 +47,17 @@
 <translation id="5521125884468363740">Та Chromium-г хаанаас ч ашигласан табуудаа харахын тулд нэвтрээд, синк хийхийг асаана уу</translation>
 <translation id="5573014823074921752">Chromium-н зөвлөгөө. Табын бусад сонголтыг харахын тулд дэлгэцийнхээ доод эсвэл дээд хэсэгт байрлах самбараас Табыг харуулах товчлуурыг удаан дарна уу.</translation>
 <translation id="5700709190537129682">Chromium таны нууц үгнүүдийг шалгах боломжгүй байна</translation>
+<translation id="5742135483959137648">Холбоос нээхийн тулд Chromium-г ашиглана уу</translation>
 <translation id="5777187867430702742">Chromium-н хуудас</translation>
 <translation id="5862307444128926510">Chromium-д тавтай морил</translation>
 <translation id="5945387852661427312">Та <ph name="DOMAIN" />-с удирддаг бүртгэлээр нэвтэрч байгаа бөгөөд үүнд таны Chromium-н өгөгдлийг удирдах админ эрхийг олгож байна. Таны өгөгдөл энэ бүртгэлтэй бүрмөсөн холбоотой болно. Chromium-с гарснаар таны бүх өгөгдлийг энэ төхөөрөмжөөс устгах бөгөөд тэдгээр өгөгдөл таны Google бүртгэлд хэвээр үлдэнэ.</translation>
 <translation id="602807004951640891">Chromium-г суулгаснаар та <ph name="BEGIN_LINK_TOS" />Үйлчилгээний нөхцөлийг<ph name="END_LINK_TOS" /> зөвшөөрч байна.</translation>
+<translation id="6119647025869519954">Chromium-г өгөгдмөлөө болгохын тулд:
+1. Тохиргоог нээнэ үү
+2. Өгөгдмөл хөтчийн аппыг товшино уу
+3. Chromium-г сонгоно уу.</translation>
 <translation id="6268381023930128611">Chromium-с гарах уу?</translation>
 <translation id="6424492062988593837">Chromium-ыг сайжрууллаа! Одоо шинэ хувилбарыг ашиглах боломжтой.</translation>
-<translation id="6604711459180487467">Өөрийн байршилд тулгуурлан Chromium-н хэрэглээгээ сайжруулна уу.</translation>
 <translation id="6820823224820483452">Chromium бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдоно уу.</translation>
 <translation id="7018284295775193585">Chromium-г шинэчлэх боломжгүй байна</translation>
 <translation id="7099326575020694068">Chromium таны камерыг хувааж харах горимд ашиглах боломжгүй</translation>
@@ -57,6 +65,7 @@
 <translation id="7208566199746267865">Chromium таны бүртгэлийг вебэд оруулснаар таны цагийг хэмнэдэг. Та тохиргоо хэсэгт бүртгэл нэмэх, эсвэл устгах боломжтой.</translation>
 <translation id="725427773388857052">Chromium нь таныг өгөгдлийн зөрчил, аюултай вебсайт болон бусад зүйлээс хамгаалахад туслах боломжтой.</translation>
 <translation id="7269362888766543920">Зарим нэмэлт онцлог нь Chromium-г эвдрэхэд хүргэдэг. Тэдгээрийг устгана уу.</translation>
+<translation id="7313655110045230863">Chromium-г өгөгдмөл хөтчөө болгохын тулд Тохиргоог нээнэ үү. Өгөгдмөл хөтөч аппыг товшиж, дараа нь Chromium-г сонгоно уу.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Сонгосон өгөгдлийг Chromium болон синк хийсэн төхөөрөмжөөс устгaлаа. Tаны Google Бүртгэл history.google.com-д Google-н бусад үйлчилгээнээс авсан үйл ажиллагаа, хайлт зэрэг өөр хэлбэрийн хайлтын түүхтэй байж болно.</translation>
 <translation id="7400689562045506105">Chromium-г хүссэн газраа ашиглаарай</translation>
@@ -65,18 +74,20 @@
 <translation id="7746854981345936341">Chromium-н зөвлөгөө. Буцаах, Урагшлуулах болон Хайх зэрэг зарим товчлуур таны дэлгэцийн доод хэсэгт байрладаг боллоо.</translation>
 <translation id="786327964234957808">Та синк хийх бүртгэлийг <ph name="USER_EMAIL1" />-с <ph name="USER_EMAIL2" /> рүү шилжүүлж байна. Таны одоогийн Chromium-н өгөгдлийг <ph name="DOMAIN" />-с удирддаг. Энэ нь таны өгөгдлийг энэ төхөөрөмжөөс устгах хэдий ч эдгээр нь <ph name="USER_EMAIL1" />-д хэвээр үлдэнэ.</translation>
 <translation id="7890287942691234100">Chromium сканнерыг ашиглаж эхлэх</translation>
+<translation id="7931842119211730154">Таныг Chromium-г хаах үед Нууцлалтай табыг түгжинэ</translation>
+<translation id="7980860476903281594">Chromium таны байршлыг таны зөвшөөрсөн сайтуудтай хуваалцана.</translation>
 <translation id="8013573822802650211">Та Chromium-г хаанаас ч ашигласан бай табуудаа харахын тулд бүх төхөөрөмж дээрээ нэвтэрнэ үү</translation>
 <translation id="8073677936375100957">Энэ төхөөрөмжөөс Chromium-н өгөгдлөө устгах уу?</translation>
 <translation id="8175055321229419309">Зөвлөгөө: <ph name="BEGIN_LINK" />Chromium-г апп-н мөр рүү зөөнө үү<ph name="END_LINK" /></translation>
-<translation id="8235785158661376110">Chromium-г өгөгдмөлөө болгохын тулд Тохиргоог нээж Өгөгдмөл хөтөч апп дээр товшоод Chromium-г сонгоно уу.</translation>
 <translation id="8240981428553046115">Chromium-н шинэчлэлтийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="8252885722420466166">Өөрийн байршилд тулгуурлан Chromium-г илүү сайн ашиглаж сураарай.</translation>
 <translation id="8586442755830160949">Chromium-ийн зохиогчийн эрх <ph name="YEAR" />. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="8663480472502753423">Chromium-г хамгийн шинэ байлгаарай</translation>
 <translation id="8776843108004031667">Энэ бүртгэл болон хадгалаагүй аливаа өгөгдлийг Chromium-с хасна.</translation>
+<translation id="894437814105052438">Та гарсан үед Chromium таны Google Бүртгэлд ямар ч шинэ өгөгдөл синк хийхгүй. Өмнө нь синк хийсэн өгөгдөл бүртгэлд үлдэнэ.</translation>
 <translation id="9022552996538154597">Chromium дансандаа нэвтрэх</translation>
 <translation id="9089354809943900324">Chromium хуучирсан байна</translation>
-<translation id="912386518501777532">Таныг Chromium-с гарсан үед таны хавчуурга, түүх, нууц үг болон бусад тохиргоог энэ төхөөрөмжөөс арилгасан байна. Таны синк хийсэн өгөгдлийг бүртгэлд тань хадгалсан хэвээр байна.</translation>
 <translation id="921174536258924340">Chromium бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдох буюу эсхүл <ph name="BEGIN_LINK" />Google Бүртгэлдээ байгаа нууц үгнүүдийг шалгана уу.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium-ыг бүтээгчид</translation>
+<translation id="994708389219151914">Таны бүртгэлийг <ph name="HOSTED_DOMAIN" /> удирддаг тул таны Chromium-н өгөгдлийг энэ төхөөрөмжөөс арилгах болно.</translation>
 </translationbundle>

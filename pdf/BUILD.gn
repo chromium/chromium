@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//pdf/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/pdfium/pdfium.gni")
 import("//v8/gni/v8.gni")
@@ -12,7 +13,10 @@ import("//v8/gni/v8.gni")
 # Generate a buildflag header for compile-time checking of PDF support.
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_PDF=$enable_pdf" ]
+  flags = [
+    "ENABLE_PDF=$enable_pdf",
+    "ENABLE_PDF_UNSEASONED=$enable_pdf_unseasoned",
+  ]
 }
 
 if (enable_pdf) {
@@ -48,7 +52,6 @@ if (enable_pdf) {
       ":internal",
       ":out_of_process_instance",
       ":pdf",
-      ":pdf_view_web_plugin",
       "//base",
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
@@ -77,6 +80,7 @@ if (enable_pdf) {
       "accessibility.cc",
       "accessibility.h",
       "chunk_stream.h",
+      "content_restriction.h",
       "document_attachment_info.cc",
       "document_attachment_info.h",
       "document_layout.cc",
@@ -103,6 +107,8 @@ if (enable_pdf) {
       "pdf_init.h",
       "pdf_transform.cc",
       "pdf_transform.h",
+      "pdf_utils/dates.cc",
+      "pdf_utils/dates.h",
       "pdf_view_plugin_base.cc",
       "pdf_view_plugin_base.h",
       "pdfium/pdfium_api_string_buffer_adapter.cc",
@@ -133,14 +139,20 @@ if (enable_pdf) {
       "preview_mode_client.h",
       "range_set.cc",
       "range_set.h",
-      "thumbnail.cc",
-      "thumbnail.h",
+      "ui/document_properties.cc",
+      "ui/document_properties.h",
+      "ui/file_name.cc",
+      "ui/file_name.h",
+      "ui/thumbnail.cc",
+      "ui/thumbnail.h",
       "url_loader_wrapper.h",
       "url_loader_wrapper_impl.cc",
       "url_loader_wrapper_impl.h",
     ]
 
     configs += [ ":pdf_common_config" ]
+
+    public_deps = [ "//skia" ]
 
     deps = [
       ":accessibility_structs",
@@ -149,15 +161,17 @@ if (enable_pdf) {
       "//base",
       "//base:i18n",
       "//build:chromeos_buildflags",
+      "//components/strings",
       "//gin",
       "//net",
       "//pdf/pdfium/fuzzers",
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
       "//printing",
-      "//skia",
+      "//third_party/icu",
       "//third_party/pdfium",
       "//ui/base",
+      "//ui/base/cursor/mojom:cursor_type",
       "//ui/gfx/range",
     ]
 
@@ -191,13 +205,18 @@ if (enable_pdf) {
     visibility = [ ":*" ]
 
     sources = [
+      "accessibility_helper.cc",
+      "accessibility_helper.h",
       "accessibility_structs.cc",
       "accessibility_structs.h",
     ]
 
     configs += [ ":pdf_common_config" ]
 
-    deps = [ "//ui/gfx/geometry" ]
+    deps = [
+      "//base",
+      "//ui/gfx/geometry",
+    ]
   }
 
   source_set("ppapi_migration") {
@@ -232,6 +251,7 @@ if (enable_pdf) {
       "//skia",
       "//third_party/blink/public:blink",
       "//ui/base",
+      "//ui/base/cursor/mojom:cursor_type",
     ]
   }
 
@@ -249,37 +269,53 @@ if (enable_pdf) {
 
     deps = [
       ":accessibility_structs",
-      ":features",
       ":internal",
       ":ppapi_migration",
       "//base",
+      "//base:i18n",
       "//build:chromeos_buildflags",
       "//net",
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
+      "//skia",
       "//ui/base",
+      "//ui/base/cursor/mojom:cursor_type",
     ]
   }
 
   # Eventual replacement for out_of_process_instance.
-  source_set("pdf_view_web_plugin") {
-    visibility = [ ":*" ]
+  static_library("pdf_view_web_plugin") {
+    visibility = [
+      ":*",
+      "//chrome/renderer",
+    ]
 
     sources = [
       "pdf_view_web_plugin.cc",
-      "pdf_view_web_plugin.h",
+      "post_message_receiver.cc",
+      "post_message_receiver.h",
+      "post_message_sender.cc",
+      "post_message_sender.h",
     ]
 
     configs += [ ":pdf_common_config" ]
 
+    public = [ "pdf_view_web_plugin.h" ]
+
     deps = [
+      ":accessibility_structs",
       ":internal",
       ":ppapi_migration",
       "//base",
       "//cc/paint",
+      "//content/public/renderer",
+      "//gin",
       "//ppapi/cpp:objects",  # TODO(crbug.com/1114263): PDFEngine::Client only.
+      "//skia",
       "//third_party/blink/public:blink_headers",
       "//ui/base/cursor:cursor_base",
+      "//ui/base/cursor/mojom:cursor_type",
+      "//v8",
     ]
   }
 
@@ -315,9 +351,10 @@ if (enable_pdf) {
       "document_layout_unittest.cc",
       "document_loader_impl_unittest.cc",
       "draw_utils/coordinates_unittest.cc",
-      "out_of_process_instance_unittest.cc",
       "page_orientation_unittest.cc",
       "pdf_transform_unittest.cc",
+      "pdf_utils/dates_unittest.cc",
+      "pdf_view_plugin_base_unittest.cc",
       "pdfium/accessibility_unittest.cc",
       "pdfium/findtext_unittest.cc",
       "pdfium/pdfium_engine_exports_unittest.cc",
@@ -333,7 +370,9 @@ if (enable_pdf) {
       "ppapi_migration/url_loader_unittest.cc",
       "range_set_unittest.cc",
       "test/run_all_unittests.cc",
-      "thumbnail_unittest.cc",
+      "ui/document_properties_unittest.cc",
+      "ui/file_name_unittest.cc",
+      "ui/thumbnail_unittest.cc",
     ]
 
     configs += [
@@ -351,10 +390,13 @@ if (enable_pdf) {
       ":out_of_process_instance",
       ":pdf",
       ":pdf_test_utils",
+      ":pdf_view_web_plugin",
       ":ppapi_migration",
       "//base",
+      "//base:i18n",
       "//base/test:test_support",
       "//cc:test_support",
+      "//components/strings",
       "//gin",
       "//ppapi/c",
       "//ppapi/cpp:objects",
@@ -364,6 +406,7 @@ if (enable_pdf) {
       "//testing/gtest",
       "//third_party/blink/public:blink",
       "//third_party/pdfium",
+      "//ui/base:test_support",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
       "//ui/gfx/range",
@@ -373,6 +416,15 @@ if (enable_pdf) {
       data += [ "$root_out_dir/snapshot_blob.bin" ]
     }
   }
+
+  fuzzer_test("pdf_dates_fuzzer") {
+    sources = [ "pdf_utils/dates_fuzzer.cc" ]
+
+    deps = [
+      ":internal",
+      "//base",
+    ]
+  }
 } else {
   # Dummy groups when PDF support is disabled so targets can unconditionally
   # depend on it.
@@ -381,5 +433,7 @@ if (enable_pdf) {
   group("pdf") {
   }
   group("pdf_ppapi") {
+  }
+  group("pdf_view_web_plugin") {
   }
 }

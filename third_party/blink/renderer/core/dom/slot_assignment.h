@@ -56,6 +56,9 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   void RecalcAssignment();
   bool UpdateCandidateNodeAssignedSlot(Node&, HTMLSlotElement&);
   void ClearCandidateNodes(const HeapLinkedHashSet<Member<Node>>& candidates);
+  HeapHashSet<Member<Node>>& GetCandidateDirectionality() {
+    return candidate_directionality_set_;
+  }
 
  private:
   enum class SlotMutationType {
@@ -84,6 +87,7 @@ class SlotAssignment final : public GarbageCollected<SlotAssignment> {
   // TODO: (1067157) Ensure references inside the map are GCed.
   HeapHashMap<Member<Node>, Member<HTMLSlotElement>>
       candidate_assigned_slot_map_;
+  HeapHashSet<Member<Node>> candidate_directionality_set_;
 };
 
 }  // namespace blink

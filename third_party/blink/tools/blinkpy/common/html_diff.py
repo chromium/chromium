@@ -10,8 +10,13 @@ Note, in the standard library module difflib, there is also a HtmlDiff class,
 although it outputs a larger and more complex HTML table than we need.
 """
 
-import cgi
 import difflib
+
+try:
+    from cgi import escape
+except ImportError:
+    # cgi.escape is deprecated in Python3
+    from html import escape
 
 _TEMPLATE = """<html>
 <head>
@@ -94,14 +99,14 @@ class HtmlDiffGenerator(object):
         self.a_line_no += 1
         self.b_line_no += 1
         return '<tr><th>%d<th>%d<td>%s</tr>' % (self.a_line_no, self.b_line_no,
-                                                cgi.escape(line))
+                                                escape(line))
 
     def _format_insert(self, chunk):
         output = ''
         for line in chunk:
             self.b_line_no += 1
             output += '<tr><th><th>%d<td class="add">%s</tr>' % (
-                self.b_line_no, cgi.escape(line))
+                self.b_line_no, escape(line))
         return output
 
     def _format_delete(self, chunk):
@@ -109,5 +114,5 @@ class HtmlDiffGenerator(object):
         for line in chunk:
             self.a_line_no += 1
             output += '<tr><th>%d<th><td class="del">%s</tr>' % (
-                self.a_line_no, cgi.escape(line))
+                self.a_line_no, escape(line))
         return output

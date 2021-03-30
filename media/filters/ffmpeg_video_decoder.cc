@@ -83,6 +83,30 @@ bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
   return avcodec_find_decoder(VideoCodecToCodecID(codec)) != nullptr;
 }
 
+// static
+SupportedVideoDecoderConfigs FFmpegVideoDecoder::SupportedConfigsForWebRTC() {
+  SupportedVideoDecoderConfigs supported_configs;
+
+  if (IsCodecSupported(kCodecH264)) {
+    supported_configs.emplace_back(/*profile_min=*/H264PROFILE_BASELINE,
+                                   /*profile_max=*/H264PROFILE_HIGH,
+                                   /*coded_size_min=*/kDefaultSwDecodeSizeMin,
+                                   /*coded_size_max=*/kDefaultSwDecodeSizeMax,
+                                   /*allow_encrypted=*/false,
+                                   /*require_encrypted=*/false);
+  }
+  if (IsCodecSupported(kCodecVP8)) {
+    supported_configs.emplace_back(/*profile_min=*/VP8PROFILE_ANY,
+                                   /*profile_max=*/VP8PROFILE_ANY,
+                                   /*coded_size_min=*/kDefaultSwDecodeSizeMin,
+                                   /*coded_size_max=*/kDefaultSwDecodeSizeMax,
+                                   /*allow_encrypted=*/false,
+                                   /*require_encrypted=*/false);
+  }
+
+  return supported_configs;
+}
+
 FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
     : media_log_(media_log), state_(kUninitialized), decode_nalus_(false) {
   DVLOG(1) << __func__;
@@ -161,6 +185,13 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
     if (codec_context->color_range == AVCOL_RANGE_JPEG) {
       video_frame->set_color_space(gfx::ColorSpace::CreateJpeg());
     }
+  } else if (codec_context->codec_id == AV_CODEC_ID_H264 &&
+             codec_context->colorspace == AVCOL_SPC_RGB &&
+             format == PIXEL_FORMAT_I420) {
+    // Some H.264 videos contain a VUI that specifies a color matrix of GBR,
+    // when they are actually ordinary YUV. Only 4:2:0 formats are checked,
+    // because GBR is reasonable for 4:4:4 content. See crbug.com/1067377.
+    video_frame->set_color_space(gfx::ColorSpace::CreateREC709());
   } else if (codec_context->color_primaries != AVCOL_PRI_UNSPECIFIED ||
              codec_context->color_trc != AVCOL_TRC_UNSPECIFIED ||
              codec_context->colorspace != AVCOL_SPC_UNSPECIFIED) {
@@ -196,8 +227,8 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   return 0;
 }
 
-std::string FFmpegVideoDecoder::GetDisplayName() const {
-  return "FFmpegVideoDecoder";
+VideoDecoderType FFmpegVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kFFmpeg;
 }
 
 void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -334,7 +365,7 @@ bool FFmpegVideoDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
       return false;
     case FFmpegDecodingLoop::DecodeStatus::kDecodeFrameFailed:
       MEDIA_LOG(DEBUG, media_log_)
-          << GetDisplayName() << " failed to decode a video frame: "
+          << GetDecoderType() << " failed to decode a video frame: "
           << AVErrorToString(decoding_loop_->last_averror_code()) << ", at "
           << buffer.AsHumanReadableString();
       return false;
@@ -359,7 +390,7 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
       reinterpret_cast<VideoFrame*>(av_buffer_get_opaque(frame->buf[0]));
   video_frame->set_timestamp(
       base::TimeDelta::FromMicroseconds(frame->reordered_opaque));
-  video_frame->metadata()->power_efficient = false;
+  video_frame->metadata().power_efficient = false;
   output_cb_.Run(video_frame);
   return true;
 }

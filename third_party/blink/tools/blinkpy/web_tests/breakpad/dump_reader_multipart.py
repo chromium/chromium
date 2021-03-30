@@ -29,7 +29,8 @@
 import cgi
 import logging
 import threading
-import Queue
+
+from six.moves import queue as Queue
 
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.breakpad.dump_reader import DumpReader

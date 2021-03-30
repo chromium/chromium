@@ -9,12 +9,14 @@
     {
       "name": "LayoutNGBlockFlow DIV class='blur'",
       "position": [8, 8],
-      "bounds": [200, 200]
+      "bounds": [200, 200],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow DIV class='accelerated'",
       "position": [-14, -14],
       "bounds": [214, 260],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 214, 260]
       ],

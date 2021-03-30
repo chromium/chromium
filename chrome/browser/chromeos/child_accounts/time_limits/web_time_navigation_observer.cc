@@ -21,10 +21,8 @@ namespace app_time {
 void WebTimeNavigationObserver::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  if (!AppTimeController::ArePerAppTimeLimitsEnabled() ||
-      !WebTimeLimitEnforcer::IsEnabled()) {
+  if (!WebTimeLimitEnforcer::IsEnabled())
     return;
-  }
 
   if (!FromWebContents(web_contents)) {
     web_contents->SetUserData(

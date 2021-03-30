@@ -11,6 +11,7 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -53,6 +54,10 @@ class AccessibilityTest : public RenderingTest {
   std::ostringstream& PrintAXTreeHelper(std::ostringstream&,
                                         const AXObject* root,
                                         size_t level) const;
+
+  ScopedAccessibilityExposeHTMLElementForTest expose_html_element{true};
+  ScopedAccessibilityUseAXPositionForDocumentMarkersForTest use_ax_position{
+      true};
 };
 
 class ParameterizedAccessibilityTest : public testing::WithParamInterface<bool>,

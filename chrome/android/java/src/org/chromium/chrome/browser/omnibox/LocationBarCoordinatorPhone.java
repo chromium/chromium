@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 import java.util.List;
 
@@ -32,11 +34,19 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     }
 
     /**
-     * Returns width of child views before the first view that would be visible when location
-     * bar is focused. The first visible, focused view should be either url bar or status icon.
+     * Returns the total width of child views before the first view that would be visible when
+     * location bar is focused. The first visible, focused view should be either url bar or status
+     * icon.
      */
     public int getOffsetOfFirstVisibleFocusedView() {
-        return mLocationBarPhone.getOffsetOfFirstVisibleFocusedView();
+        int visibleWidth = 0;
+        for (int i = 0; i < mLocationBarPhone.getChildCount(); i++) {
+            View child = mLocationBarPhone.getChildAt(i);
+            if (child == mLocationBarPhone.getFirstVisibleFocusedView()) break;
+            if (child.getVisibility() == View.GONE) continue;
+            visibleWidth += child.getMeasuredWidth();
+        }
+        return visibleWidth;
     }
 
     /**
@@ -49,25 +59,14 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
      */
     public void populateFadeAnimations(
             List<Animator> animators, long startDelayMs, long durationMs, float targetAlpha) {
-        mLocationBarPhone.populateFadeAnimations(animators, startDelayMs, durationMs, targetAlpha);
-    }
-
-    /**
-     * Handles any actions to be performed after all other actions triggered by the URL focus
-     * change. This will be called after any animations are performed to transition from one
-     * focus state to the other.
-     *
-     * @param hasFocus Whether the URL field has gained focus.
-     * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
-     *         as hasFocus by default.
-     * @param shouldShowInOverviewMode Whether the location bar should be shown when in overview
-     *         mode.
-     */
-    public void finishUrlFocusChange(
-            boolean hasFocus, boolean shouldShowKeyboard, boolean shouldShowInOverviewMode) {
-        mLocationBarPhone.finishUrlFocusChange(hasFocus, shouldShowKeyboard);
-        if (shouldShowInOverviewMode) {
-            mStatusCoordinator.onSecurityStateChanged();
+        for (int i = 0; i < mLocationBarPhone.getChildCount(); i++) {
+            View child = mLocationBarPhone.getChildAt(i);
+            if (child == mLocationBarPhone.getFirstVisibleFocusedView()) break;
+            Animator animator = ObjectAnimator.ofFloat(child, View.ALPHA, targetAlpha);
+            animator.setStartDelay(startDelayMs);
+            animator.setDuration(durationMs);
+            animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+            animators.add(animator);
         }
     }
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service.h"
@@ -24,6 +25,7 @@ class UpdateClient;
 }  // namespace update_client
 
 namespace updater {
+class CheckForUpdatesTask;
 class PersistedData;
 struct RegistrationRequest;
 struct RegistrationResponse;
@@ -39,6 +41,7 @@ class UpdateServiceImpl : public UpdateService {
   void RegisterApp(
       const RegistrationRequest& request,
       base::OnceCallback<void(const RegistrationResponse&)> callback) override;
+  void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,
@@ -50,12 +53,22 @@ class UpdateServiceImpl : public UpdateService {
  private:
   ~UpdateServiceImpl() override;
 
+  // Runs the task at the head of `tasks_`, if any.
+  void TaskStart();
+
+  // Run `callback`, pops `tasks_`, and calls TaskStart.
+  void TaskDone(base::OnceClosure callback);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<update_client::Configurator> config_;
   scoped_refptr<PersistedData> persisted_data_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<update_client::UpdateClient> update_client_;
+
+  // The queue prevents multiple Task instances from running simultaneously and
+  // processes them sequentially.
+  base::queue<scoped_refptr<CheckForUpdatesTask>> tasks_;
 };
 
 }  // namespace updater

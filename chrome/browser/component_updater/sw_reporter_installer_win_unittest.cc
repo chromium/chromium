@@ -126,7 +126,7 @@ class SwReporterInstallerTest : public ::testing::Test {
   // combinations of multiple arguments and switches in this function.)
   void ExpectInvocationFromManifest(
       const std::string& expected_suffix,
-      const base::string16& expected_additional_argument) {
+      const std::wstring& expected_additional_argument) {
     EXPECT_EQ(default_version_, extracted_invocations_.version());
     ASSERT_EQ(1U, extracted_invocations_.container().size());
 
@@ -419,7 +419,7 @@ TEST_F(SwReporterInstallerTest, EmptySuffixAndArgs) {
                         base::DictionaryValue::From(
                             base::JSONReader::ReadDeprecated(kTestManifest)));
 
-  ExpectInvocationFromManifest("", L"");
+  ExpectInvocationFromManifest("", {});
 }
 
 TEST_F(SwReporterInstallerTest, EmptySuffixAndArgsWithEmptyString) {
@@ -436,7 +436,7 @@ TEST_F(SwReporterInstallerTest, EmptySuffixAndArgsWithEmptyString) {
                         base::DictionaryValue::From(
                             base::JSONReader::ReadDeprecated(kTestManifest)));
 
-  ExpectInvocationFromManifest("", L"");
+  ExpectInvocationFromManifest("", {});
 }
 
 TEST_F(SwReporterInstallerTest, MissingArguments) {
@@ -469,7 +469,7 @@ TEST_F(SwReporterInstallerTest, EmptyArguments) {
                         base::DictionaryValue::From(
                             base::JSONReader::ReadDeprecated(kTestManifest)));
 
-  ExpectInvocationFromManifest("TestSuffix", L"");
+  ExpectInvocationFromManifest("TestSuffix", {});
 }
 
 TEST_F(SwReporterInstallerTest, EmptyArgumentsWithEmptyString) {
@@ -486,7 +486,7 @@ TEST_F(SwReporterInstallerTest, EmptyArgumentsWithEmptyString) {
                         base::DictionaryValue::From(
                             base::JSONReader::ReadDeprecated(kTestManifest)));
 
-  ExpectInvocationFromManifest("TestSuffix", L"");
+  ExpectInvocationFromManifest("TestSuffix", {});
 }
 
 TEST_F(SwReporterInstallerTest, EmptyManifest) {

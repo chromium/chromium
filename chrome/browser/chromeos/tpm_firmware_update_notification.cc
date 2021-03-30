@@ -4,11 +4,12 @@
 
 #include "chrome/browser/chromeos/tpm_firmware_update_notification.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -47,7 +48,7 @@ class TPMFirmwareUpdateNotificationDelegate
     }
   }
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     // Show the about page which contains the line item allowing the user to
     // trigger TPM firmware update installation.
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
@@ -78,7 +79,7 @@ void OnAvailableUpdateModes(Profile* profile,
           l10n_util::GetStringFUTF16(
               IDS_TPM_FIRMWARE_UPDATE_NOTIFICATION_MESSAGE,
               ui::GetChromeOSDeviceName()),
-          base::string16(), GURL(kTPMFirmwareUpdateNotificationId),
+          std::u16string(), GURL(kTPMFirmwareUpdateNotificationId),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kTPMFirmwareUpdateNotificationId),

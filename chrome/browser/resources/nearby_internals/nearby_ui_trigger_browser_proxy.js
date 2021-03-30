@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {StatusCode} from './types.js';
+import {NearbyShareStates, StatusCode} from './types.js';
 
 /**
  * JavaScript hooks into the native WebUI handler to pass information to the
@@ -109,6 +109,14 @@ export class NearbyUiTriggerBrowserProxy {
    */
   unregisterReceiveSurface() {
     return sendWithPromise('unregisterReceiveSurface');
+  }
+
+  /**
+   * Requests states of Nearby Share booleans.
+   * @return {!Promise<!NearbyShareStates>}
+   */
+  getState() {
+    return sendWithPromise('getStates');
   }
 }
 

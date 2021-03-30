@@ -20,7 +20,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
@@ -44,6 +43,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBi
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.query_tiles.QueryTile;
@@ -72,7 +72,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull UrlBarEditingTextStateProvider urlBarEditingTextProvider,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable ActivityTabProvider activityTabProvider,
+            @NonNull Supplier<Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull LocationBarDataProvider locationBarDataProvider) {
         mParent = parent;
@@ -88,7 +88,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         mQueryTileCoordinator = new OmniboxQueryTileCoordinator(context, this::onTileSelected);
         mMediator = new AutocompleteMediator(context, delegate, urlBarEditingTextProvider,
                 new AutocompleteController(), listModel, new Handler(), lifecycleDispatcher,
-                modalDialogManagerSupplier, activityTabProvider, shareDelegateSupplier,
+                modalDialogManagerSupplier, activityTabSupplier, shareDelegateSupplier,
                 locationBarDataProvider);
         mMediator.initDefaultProcessors(mQueryTileCoordinator::setTiles);
 

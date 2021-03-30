@@ -5,6 +5,7 @@
 #include "net/cert/internal/ocsp.h"
 
 #include "base/base64.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/cert/internal/test_helpers.h"
 #include "net/der/encode_values.h"
@@ -126,7 +127,7 @@ struct PrintTestName {
     base::StringPiece name(info.param.file_name);
     // Strip ".pem" from the end as GTest names cannot contain period.
     name.remove_suffix(4);
-    return name.as_string();
+    return std::string(name);
   }
 };
 

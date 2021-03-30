@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -243,9 +245,12 @@ public class LocationBarModelTest {
         private String mUrl;
 
         public TestLocationBarModel() {
+            // clang-format off
             super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
                     DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
-                    window -> null, new LocationBarModel.OfflineStatus() {});
+                    window -> null, new LocationBarModel.OfflineStatus() {},
+                    SearchEngineLogoUtils.getInstance());
+            // clang-format on
             initializeWithNative();
 
             Tab tab = new MockTab(0, false) {

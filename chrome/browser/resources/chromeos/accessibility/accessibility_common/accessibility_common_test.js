@@ -20,7 +20,7 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
     `);
@@ -33,12 +33,12 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
     // the extension to load. Extension load is required for this test suite to
     // have a place to be injected.
     GEN(`
-  base::Closure load_cb =
-      base::Bind(&chromeos::AccessibilityManager::EnableAutoclick,
-          base::Unretained(chromeos::AccessibilityManager::Get()),
+  base::OnceClosure load_cb =
+      base::BindOnce(&ash::AccessibilityManager::EnableAutoclick,
+          base::Unretained(ash::AccessibilityManager::Get()),
           true);
-  WaitForExtension(extension_misc::kAccessibilityCommonExtensionId, load_cb);
     `);
+    super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
   }
 
   async getPref(name) {

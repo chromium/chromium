@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
+#include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -252,6 +253,9 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
 
   if (frame->GetFrameScheduler())
     frame->GetFrameScheduler()->OnFirstContentfulPaint();
+
+  if (auto* mf_checker = frame->View()->GetMobileFriendlinessChecker())
+    mf_checker->NotifyFirstContentfulPaint();
 }
 
 void PaintTiming::RegisterNotifyPresentationTime(PaintEvent event) {
@@ -337,7 +341,7 @@ void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
 void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
   DCHECK(first_contentful_paint_presentation_.is_null());
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP0("benchmark,loading",
-                                      "FirstContentfulPaint",
+                                      "GlobalFirstContentfulPaint",
                                       TRACE_EVENT_SCOPE_GLOBAL, stamp);
   first_contentful_paint_presentation_ = stamp;
   probe::PaintTiming(

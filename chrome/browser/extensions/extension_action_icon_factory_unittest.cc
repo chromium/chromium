@@ -34,9 +34,11 @@
 #include "ui/gfx/skia_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 namespace {
@@ -97,7 +99,7 @@ class ExtensionActionIconFactoryTest
   }
 
   scoped_refptr<Extension> CreateExtension(const char* name,
-                                           Manifest::Location location) {
+                                           ManifestLocation location) {
     // Create and load an extension.
     base::FilePath test_file;
     if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_file)) {
@@ -167,8 +169,8 @@ class ExtensionActionIconFactoryTest
   ExtensionService* extension_service_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionActionIconFactoryTest);
@@ -180,7 +182,7 @@ TEST_F(ExtensionActionIconFactoryTest, NoIcons) {
   // Load an extension that has browser action without default icon set in the
   // manifest and does not call |SetIcon| by default.
   scoped_refptr<Extension> extension(
-      CreateExtension("browser_action/no_icon", Manifest::UNPACKED));
+      CreateExtension("browser_action/no_icon", ManifestLocation::kUnpacked));
   ASSERT_TRUE(extension.get() != nullptr);
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -202,8 +204,8 @@ TEST_F(ExtensionActionIconFactoryTest, NoIcons) {
 TEST_F(ExtensionActionIconFactoryTest, InvisibleIcon) {
   // Load an extension that has browser action with a default icon set in the
   // manifest, but that icon is not sufficiently visible.
-  scoped_refptr<Extension> extension(
-      CreateExtension("browser_action/invisible_icon", Manifest::INTERNAL));
+  scoped_refptr<Extension> extension(CreateExtension(
+      "browser_action/invisible_icon", ManifestLocation::kInternal));
 
   // Check that the default icon is not sufficiently visible.
   ASSERT_TRUE(extension);
@@ -247,7 +249,7 @@ TEST_F(ExtensionActionIconFactoryTest, AfterSetIcon) {
   // manifest and does not call |SetIcon| by default (but has an browser action
   // icon resource).
   scoped_refptr<Extension> extension(
-      CreateExtension("browser_action/no_icon", Manifest::UNPACKED));
+      CreateExtension("browser_action/no_icon", ManifestLocation::kUnpacked));
   ASSERT_TRUE(extension.get() != nullptr);
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -285,7 +287,7 @@ TEST_F(ExtensionActionIconFactoryTest, DefaultIcon) {
   // manifest and does not call |SetIcon| by default (but has an browser action
   // icon resource).
   scoped_refptr<Extension> extension(
-      CreateExtension("browser_action/no_icon", Manifest::UNPACKED));
+      CreateExtension("browser_action/no_icon", ManifestLocation::kUnpacked));
   ASSERT_TRUE(extension.get() != nullptr);
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -293,7 +295,7 @@ TEST_F(ExtensionActionIconFactoryTest, DefaultIcon) {
   ASSERT_TRUE(action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
 
   scoped_refptr<const Extension> extension_with_icon =
-      CreateExtension("browser_action_with_icon", Manifest::UNPACKED);
+      CreateExtension("browser_action_with_icon", ManifestLocation::kUnpacked);
   ASSERT_TRUE(extension_with_icon);
 
   int icon_size = ExtensionAction::ActionIconSize();

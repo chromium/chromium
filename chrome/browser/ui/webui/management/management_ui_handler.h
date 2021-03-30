@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/common/url_constants.h"
@@ -35,6 +34,7 @@ extern const char kManagementReportNetworkInterfaces[];
 extern const char kManagementReportUsers[];
 extern const char kManagementReportCrashReports[];
 extern const char kManagementReportAppInfoAndActivity[];
+extern const char kManagementReportPrintJobs[];
 extern const char kManagementPrinting[];
 extern const char kManagementCrostini[];
 extern const char kManagementCrostiniContainerConfiguration[];
@@ -42,7 +42,6 @@ extern const char kManagementReportExtensions[];
 extern const char kManagementReportAndroidApplications[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-extern const char kCloudReportingExtensionId[];
 extern const char kOnPremReportingExtensionStableId[];
 extern const char kOnPremReportingExtensionBetaId[];
 
@@ -51,7 +50,6 @@ extern const char kManagementExtensionReportMachineNameAddress[];
 extern const char kManagementExtensionReportUsername[];
 extern const char kManagementExtensionReportVersion[];
 extern const char kManagementExtensionReportExtensionsPlugin[];
-extern const char kManagementExtensionReportSafeBrowsingWarnings[];
 extern const char kManagementExtensionReportPerfCrash[];
 extern const char kManagementExtensionReportUserBrowsingData[];
 
@@ -76,7 +74,6 @@ extern const char kPolicyKeyReportUserIdData[];
 extern const char kPolicyKeyReportVersionData[];
 extern const char kPolicyKeyReportPolicyData[];
 extern const char kPolicyKeyReportExtensionsData[];
-extern const char kPolicyKeyReportSafeBrowsingData[];
 extern const char kPolicyKeyReportSystemTelemetryData[];
 extern const char kPolicyKeyReportUserBrowsingData[];
 
@@ -126,8 +123,8 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   // be the email address of the admin of the FlexOrg (ie user@foo.com). If
   // DMServer does not provide this information, this method defaults to
   // |GetAccountDomain|. If unmanaged, an empty string is returned.
-  // TODO(crbug.com/1081272): refactor localization hints for all strings that
-  // depend on this method
+  // TODO(crbug.com/1188594): Remove this function and replace all call sites
+  // with chrome::GetAccountManagerIdentity().
   static std::string GetAccountManager(Profile* profile);
 
   void OnJavascriptAllowed() override;
@@ -143,8 +140,6 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   base::Value GetContextualManagedData(Profile* profile);
   base::Value GetThreatProtectionInfo(Profile* profile) const;
   virtual policy::PolicyService* GetPolicyService() const;
-  virtual const extensions::Extension* GetEnabledExtension(
-      const std::string& extensionId) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Protected for testing.

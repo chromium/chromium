@@ -126,8 +126,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", false, 1);
   histogram_tester.ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 1);
 
   // Revisit and expect a 0 days-ago entry.
   NavigateToOriginPath("/index.html");
@@ -139,8 +137,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", false, 1);
   histogram_tester.ExpectUniqueSample(
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0, 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
@@ -151,8 +147,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies", false, 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.CookiesQueryTime", 1);
 
   VerifyNoUKM();
 }
@@ -167,8 +161,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies", false, 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.CookiesQueryTime", 1);
 
   using UkmEntry = ukm::builders::PrefetchProxy;
   VerifyUKMEntry(UkmEntry::kmainpage_request_had_cookiesName, 0);
@@ -190,8 +182,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
   // From the first page load.
   histogram_tester.ExpectBucketCount(
       "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies", false, 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.CookiesQueryTime", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
@@ -210,8 +200,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
   // From the first page load.
   histogram_tester.ExpectBucketCount(
       "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies", false, 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.CookiesQueryTime", 3);
 }
 
 namespace {
@@ -257,8 +245,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
   // From the first page load.
   histogram_tester.ExpectBucketCount(
       "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies", false, 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.CookiesQueryTime", 3);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
@@ -271,13 +257,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderPageLoadMetricsObserverBrowserTest,
 
   VerifyNoUKM();
   histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.CookiesQueryTime", 0);
-  histogram_tester.ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0);
   histogram_tester.ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", 0);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.HistoryQueryTime", 0);
   histogram_tester.ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0);
   histogram_tester.ExpectTotalCount(

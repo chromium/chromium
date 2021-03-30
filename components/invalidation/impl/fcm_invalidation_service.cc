@@ -114,8 +114,7 @@ bool FCMInvalidationService::IsReadyToStart() {
   // and token is available). As currently observed, FCMInvalidationService
   // isn't always notified on Android when token is available.
   if (base::FeatureList::IsEnabled(
-          invalidation::switches::
-              kFCMInvalidationsStartOnceActiveAccountAvailable)) {
+          switches::kFCMInvalidationsStartOnceActiveAccountAvailable)) {
     valid_account_info_available =
         !identity_provider_->GetActiveAccountId().empty();
   }

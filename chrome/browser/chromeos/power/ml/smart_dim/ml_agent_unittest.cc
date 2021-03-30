@@ -6,14 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
@@ -53,13 +52,11 @@ base::FilePath GetTestDataPath(const std::string& file_name) {
 void LoadDownloadableSmartDimComponent(const double& threshold) {
   const char json_string_template[] =
       "{"
-      "\"input_names\": [\"x\", \"y\"],"
-      "\"input_nodes\": [3, 4],"
-      "\"output_names\": [\"z\"],"
+      "\"input_nodes\": [3],"
       "\"output_nodes\": [5],"
       "\"threshold\": %f,"
       "\"expected_feature_size\": 343,"
-      "\"metrics_model_name\": \"smart_dim_model\""
+      "\"metrics_model_name\": \"SmartDimModel\""
       "}";
   const std::string json_string =
       base::StringPrintf(json_string_template, threshold);
@@ -137,6 +134,7 @@ class SmartDimMlAgentTest : public testing::Test {
     MachineLearningClient::InitializeFake();
     machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
+    machine_learning::ServiceConnection::GetInstance()->Initialize();
     fake_service_connection_.SetOutputValue(
         std::vector<int64_t>{1L}, std::vector<double>{kTestInactivityScore});
   }
@@ -163,10 +161,6 @@ class SmartDimMlAgentTest : public testing::Test {
 TEST_F(SmartDimMlAgentTest, SwitchBetweenWorkers) {
   auto* agent = SmartDimMlAgent::GetInstance();
   agent->ResetForTesting();
-  base::test::ScopedFeatureList feature_list;
-  // Enable kSmartDimModelV3, this makes builtin worker use
-  // k20190521ModelDefaultDimThreshold, a relatively high threshold.
-  feature_list.InitAndEnableFeature(features::kSmartDimModelV3);
 
   // Without LoadDownloadableSmartDimComponent, download_worker_ is not ready.
   EXPECT_FALSE(agent->IsDownloadWorkerReady());

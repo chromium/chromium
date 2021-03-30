@@ -117,7 +117,7 @@ public class ReparentingTask implements UserData {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_REPARENTING)) {
             // Add the tab to AsyncTabParamsManager before removing it from the current model to
             // ensure the global count of tabs is correct. See https://crbug.com/611806.
-            intent.putExtra(IntentHandler.EXTRA_TAB_ID, mTab.getId());
+            IntentHandler.setTabId(intent, mTab.getId());
             AsyncTabParamsManagerSingleton.getInstance().add(
                     mTab.getId(), new TabReparentingParams(mTab, finalizeCallback));
 

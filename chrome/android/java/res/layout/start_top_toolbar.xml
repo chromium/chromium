@@ -10,21 +10,30 @@
     android:id="@+id/tab_switcher_toolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
+    android:paddingStart="8dp"
     android:clickable="true"
     android:visibility="gone">
 
-    <Switch
-        tools:ignore="UseSwitchCompatOrMaterialXml"
-        android:id="@+id/incognito_switch"
+    <org.chromium.chrome.browser.toolbar.HomeButton
+        android:id="@+id/home_button_on_tab_switcher"
+        style="@style/ToolbarButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
-        android:paddingStart="16dp"
+        android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        android:thumb="@drawable/incognito_switch"
-        android:track="@drawable/incognito_switch_track"
-        android:visibility="gone"/>
+        android:contentDescription="@string/accessibility_toolbar_btn_home"
+        android:src="@drawable/btn_toolbar_home"
+        android:visibility="gone"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <ViewStub
+        android:id="@+id/incognito_tabs_stub"
+        android:inflatedId="@+id/incognito_toggle_tabs"
+        android:layout="@layout/incognito_toggle_tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"/>
 
     <ImageView
         android:id="@+id/logo"

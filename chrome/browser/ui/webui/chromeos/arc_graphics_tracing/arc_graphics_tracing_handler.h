@@ -130,7 +130,7 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   std::unique_ptr<arc::ArcGraphicsJankDetector> jank_detector_;
 
   // Collects system stat runtime.
-  std::unique_ptr<arc::ArcSystemStatCollector> system_stat_colletor_;
+  std::unique_ptr<arc::ArcSystemStatCollector> system_stat_collector_;
 
   // Information about active task, title and icon.
   std::string active_task_title_;

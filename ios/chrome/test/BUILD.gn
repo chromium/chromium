@@ -16,6 +16,8 @@ group("all_tests") {
   deps = [
     ":ios_chrome_perftests",
     ":ios_chrome_unittests",
+    "//ios/chrome/test/xcuitest:ios_chrome_device_check_xcuitests_module",
+    "//ios/chrome/test/xcuitest:ios_chrome_xcuitests",
   ]
 }
 
@@ -57,7 +59,7 @@ source_set("test_support") {
     "//ios/chrome/browser/policy:policy",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/safe_browsing:test_support",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
+    "//ios/chrome/browser/ui/util",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser:test_support",
@@ -136,8 +138,8 @@ test("ios_chrome_perftests") {
     # Ensure that all perf tests are run, use fake hooks and pack resources.
     ":run_all_unittests",
     "//ios/chrome/app:tests_fake_hook",
+    "//ios/chrome/app/resources:packed_resources",
     "//ios/chrome/browser/ui/main",
-    ios_packed_resources_target,
 
     # Add perf_tests target here.
     "//ios/chrome/browser/ui/ntp:perf_tests",
@@ -153,16 +155,13 @@ bundle_data_ib_file("base_scene_storyboard") {
 }
 
 test("ios_chrome_unittests") {
-  # Use the plist with the scene manifest if either multiwindow flag is enabled
-  if (ios_enable_multi_window || ios_enable_scene_startup) {
-    info_plist = "//ios/chrome/test/unittest-scene-lifecycle-Info.plist"
-  }
+  info_plist = "//ios/chrome/test/unittest-scene-lifecycle-Info.plist"
 
   deps = [
     # Ensure that all unit tests are run, use fake hooks and pack resources.
     ":run_all_unittests",
     "//ios/chrome/app:tests_fake_hook",
-    ios_packed_resources_target,
+    "//ios/chrome/app/resources:packed_resources",
 
     # Add unit_tests target here.
     "//ios/chrome/app:unit_tests",
@@ -191,6 +190,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common:unit_tests",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/confirm:unit_tests",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords:unit_tests",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_address_profile:unit_tests",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card:unit_tests",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate:unit_tests",
     "//ios/chrome/browser/itunes_urls:unit_tests",
@@ -253,6 +253,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/content_suggestions:unit_tests",
     "//ios/chrome/browser/ui/content_suggestions/cells:unit_tests",
     "//ios/chrome/browser/ui/content_suggestions/identifier:unit_tests",
+    "//ios/chrome/browser/ui/default_promo:unit_tests",
     "//ios/chrome/browser/ui/dialogs:unit_tests",
     "//ios/chrome/browser/ui/dialogs:unit_tests_internal",
     "//ios/chrome/browser/ui/download:unit_tests",
@@ -283,6 +284,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/overlays/infobar_banner:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner/confirm:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner/passwords:unit_tests",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/save_address_profile:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner/save_card:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner/translate:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_modal:unit_tests",
@@ -330,6 +332,9 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/voice:unit_tests",
     "//ios/chrome/browser/web:unit_tests",
     "//ios/chrome/browser/web:unit_tests_internal",
+    "//ios/chrome/browser/web/font_size:unit_tests",
+    "//ios/chrome/browser/web/java_script_console:unit_tests",
+    "//ios/chrome/browser/web/print:unit_tests",
     "//ios/chrome/browser/web_state_list:unit_tests",
     "//ios/chrome/browser/web_state_list/web_usage_enabler:unit_tests",
     "//ios/chrome/browser/webui:unit_tests",

@@ -17,7 +17,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/apps/intent_helper/chromeos_intent_picker_helpers.h"
+#include "chrome/browser/ash/apps/intent_helper/ash_intent_picker_helpers.h"
 #elif defined(OS_MAC)
 #include "chrome/browser/apps/intent_helper/mac_intent_picker_helpers.h"
 #endif
@@ -87,7 +87,7 @@ void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
 // intent_picker_tab_helper and update the icon visibility and apps if there is
 // app installed or uninstalled.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  MaybeShowIntentPickerChromeOs(navigation_handle);
+  MaybeShowIntentPickerAsh(navigation_handle);
 #else
   const GURL& url = navigation_handle->GetURL();
   std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
@@ -98,7 +98,7 @@ void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
 void ShowIntentPickerBubble(content::WebContents* web_contents,
                             const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ShowIntentPickerBubbleChromeOs(web_contents, url);
+  ShowIntentPickerBubbleAsh(web_contents, url);
 #else
   std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
 

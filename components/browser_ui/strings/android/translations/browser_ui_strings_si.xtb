@@ -13,15 +13,17 @@
 <translation id="1272079795634619415">නවතන්න</translation>
 <translation id="1289742167380433257">ඔබේ දත්ත සුරැකීමට, මෙම පිටුවේ රූප Google මගින් ප්‍රශස්ත කර ඇත.</translation>
 <translation id="129382876167171263">වෙබ් අඩවිවලින් සුරකින ලද ගොනු මෙහි දිස් වෙති</translation>
+<translation id="1317194122196776028">මෙම අඩවිය අමතක කරන්න</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" />, <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">අඩවි <ph name="SITE_NAME" /> එක් කරන ලදී</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1384959399684842514">බාගැනීම විරාමයි</translation>
 <translation id="1415402041810619267">URL කපන ලදි</translation>
-<translation id="1431402976894535801">ඔබ සිටින විට දැන ගැනීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="1446450296470737166">MIDI උපාංගවල සම්පූර්ණ පාලනයට ඉඩ දෙන්න</translation>
 <translation id="1509960214886564027">බොහෝ වෙබ් අඩවි මත විශේෂාංග කැඩී ගිය හැක</translation>
 <translation id="1620510694547887537">කැමරාව</translation>
+<translation id="1644574205037202324">ඉතිහාසය</translation>
+<translation id="1647582022260550163">ඔබට අවසර යළි සැකසීමට සහ කුකී සහ අඩවි දත්ත ඉවත් කිරීමට අවශ්‍ය බව විශ්වාසද?</translation>
 <translation id="1660204651932907780">අඩවිවලට ශබ්දය වාදනය කිරීමට ඉඩ දෙන්න (නිර්දේශිතයි)</translation>
 <translation id="1677097821151855053">ඔබව මතක තබා ගැනීමට කුකි සහ වෙනත් අඩවි දත්ත භාවිත කරයි, උදාහරණයක් ලෙස ඔබව පිරීමට හෝ වෙළඳ දැන්වීම් පුද්ගලිකකරණය කිරීමට. සියලුම වෙබ් අඩවි සඳහා කුකී කළමනාකරණය කිරීමට, <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> බලන්න.</translation>
 <translation id="1688867105868176567">අඩවි දත්ත හිස් කරන්නද?</translation>
@@ -39,7 +41,6 @@
 <translation id="1994173015038366702">අඩවි URL</translation>
 <translation id="2025115093177348061">ආවර්ධිත යථාර්ථය</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> වෙත ආපසු යාමට තට්ටු කරන්න</translation>
-<translation id="2054665754582400095">ඔබගේ සිටීම</translation>
 <translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="2091887806945687916">හඬ</translation>
 <translation id="2107397443965016585">වෙබ් අඩවිවලට ආරක්‍ෂිත අන්තර්ගත ධාවන කිරීමට ඉඩ දීමට පෙර විමසන්න (නිර්දේශිතයි)</translation>
@@ -82,7 +83,6 @@
 <translation id="3114012059975132928">වීඩියෝ ධාවකය</translation>
 <translation id="3115898365077584848">තතු පෙන්වන්න</translation>
 <translation id="3123473560110926937">සමහර වෙබ් අඩවිවල අවහිර කෙරේ</translation>
-<translation id="3165371858310906303">ඔබ සිටින විට වෙබ් අඩවියකට දැන ගැනීමට අවශ්‍ය විට විමසන්න</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ගබඩා කළ දත්ත</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> හට ඔබට දැනුම්දීම් එවීමට ඉඩ දීමට <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ දැනුම්දීම්ද ක්‍රියාත්මක කරන්න.</translation>
 <translation id="3227137524299004712">මයික්‍රෆෝනය:</translation>
@@ -93,7 +93,6 @@
 <translation id="3386292677130313581">අඩවි වලට ඔබගේ ස්ථානය දැන ගැනීමට ඉඩ දීමට පෙර විමසන්න (නිර්දේශිතයි)</translation>
 <translation id="3538390592868664640">වෙබ් අඩවිය ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමෙන් හෝ කැමරා ස්ථානය හඹා යෑමෙන් අවහිර කරන්න</translation>
 <translation id="3586500876634962664">කැමරා සහ මයික්‍රොෆෝන භාවිතය</translation>
-<translation id="3587482841069643663">සියළු</translation>
 <translation id="358794129225322306">වෙබ් අඩවියකට ගොනු කිහිපයක් ස්වයංක්‍රීයව බාගැනීමට ඉඩ දෙන්න.</translation>
 <translation id="3594780231884063836">වීඩියෝව නිහඬ කරන්න</translation>
 <translation id="3596414637720633074">අප්‍රසිද්ධය තුළ තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
@@ -101,9 +100,11 @@
 <translation id="3744111561329211289">පසුබිමෙහි සමමුහුර්තකරණය</translation>
 <translation id="3763247130972274048">ත. 10 ක් මඟ හැරීමට වීඩියෝවේ වමට හෝ දකුණට දෙවරක් තට්ටු කරන්න</translation>
 <translation id="381841723434055211">දුරකථන අංක</translation>
+<translation id="3835233591525155343">ඔබගේ උපාංග භාවිතය</translation>
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3859306556332390985">ඉදිරියට සොයන්න</translation>
 <translation id="3955193568934677022">අඩවිවලට ආරක්ෂිත අන්තර්ගතය වාදනය කිරීමට ඉඩ දෙන්න (නිර්දේශිතයි)</translation>
+<translation id="3967822245660637423">බාගැනීම සම්පූර්ණයි</translation>
 <translation id="3987993985790029246">සබැඳිය පිටපත් කරන්න</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">සිරස්තලය</translation>
@@ -117,6 +118,7 @@
 <translation id="429312253194641664">වෙබ් අඩවියක් මාධ්‍ය ධාවන කරයි</translation>
 <translation id="42981349822642051">දිගහරින්න</translation>
 <translation id="4336434711095810371">සියලු දත්ත හිස් කරන්න</translation>
+<translation id="4402755511846832236">ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන විට දැන ගැනීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="4433925000917964731">Google විසින් දෙනු ලබන සැහැල්ලු පිටුව</translation>
 <translation id="4434045419905280838">උත්පතන සහ හරවා යැවීම්</translation>
 <translation id="445467742685312942">මෙම වෙබ් අඩවියට ආරක්‍ෂිත අන්තර්ගතය ධාවන කිරීමට ඉඩ දෙන්න.</translation>
@@ -129,6 +131,7 @@
 <translation id="4670064810192446073">අතත්‍ය යථාර්ථය</translation>
 <translation id="4708011789095599544">මෙම වෙබ් අඩවිය සඳහා කුකි සහ වෙනත් අඩවි දත්ත ඉවත් කිරීමට ඔබට අවශ්‍ය බව ඔබට විශ්වාසද?</translation>
 <translation id="4751476147751820511">චලිත හෝ ආලෝක සංවේදක</translation>
+<translation id="4836046166855586901">ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන අවස්ථාව අඩවියකට දැන ගැනීමට අවශ්‍ය විට විමසන්න</translation>
 <translation id="4883854917563148705">කළමනා කෙරෙන සැකසීම් යළි සැකසිය නොහැක</translation>
 <translation id="4887024562049524730">වෙබ් අඩවිවලට ඔබේ අතත්‍ය යථාර්ථ උපාංගය සහ දත්ත භාවිත කිරීමට ඉඩ දීමට පෙර අසන්න (නිර්දේශිතයි)</translation>
 <translation id="4962975101802056554">උපාංගය සඳහා සියලුම අවසර අහෝසි කරන්න</translation>
@@ -279,6 +282,7 @@
 <translation id="8447861592752582886">උපාංගයේ අවසර අහෝසි කරන්න</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{කුකි 1ක් භාවිතයේ ඇත}one{කුකි #ක් භාවිතයේ ඇත}other{කුකි #ක් භාවිතයේ ඇත}}</translation>
 <translation id="8463851957836045671">අඩවිය වේගවත් ය</translation>
+<translation id="8487700953926739672">නොබැඳිව ලද  හැක</translation>
 <translation id="851751545965956758">අඩවි උපාංගවලට සම්බන්ධ වීම අවහිර කරන්න</translation>
 <translation id="8525306231823319788">සම්පුර්ණ තිරය</translation>
 <translation id="857943718398505171">ඉඩ දේ (නිර්දේශිතයි)</translation>
@@ -301,10 +305,12 @@
 <translation id="894871326938397531">අප්‍රසිද්ධ ප්‍රකාරය හැර යන්නද?</translation>
 <translation id="8958424370300090006">නිශ්චිත අඩවියක් සඳහා කුකී අවහිර කරන්න.</translation>
 <translation id="8959122750345127698">සංචාලනය වෙත ළඟා විය නොහැකිය: <ph name="URL" /></translation>
+<translation id="8986362086234534611">අමතක</translation>
 <translation id="9019902583201351841">ඔබේ දෙමව්පියන් පාලනය කරයි</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> සඳහා අවසර <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ ක්‍රියාත්මක කරන්න.</translation>
+<translation id="930525582205581608">මෙම අඩවිය අමතක කරන්නද?</translation>
 <translation id="965817943346481315">වෙබ් අඩවිය ආක්‍රමණශීලී හෝ නොමඟ යවන දැන්වීම් පෙන්වන්නේ නම් අවහිර කරන්න (නිර්දේශිතයි)</translation>
 <translation id="967624055006145463">දත්ත ගබඩා කර ඇත</translation>
 </translationbundle>

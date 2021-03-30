@@ -372,15 +372,6 @@ TEST(TranslateBrowserMetricsTest, ReportedLocalesOnDisabledByPrefs) {
   EXPECT_EQ(1, recorder.GetCount(ENGLISH));
 }
 
-TEST(TranslateBrowserMetricsTest, ReportedUndisplayableLanguage) {
-  const int ENGLISH = 25966;
-
-  MetricsRecorder recorder("Translate.UndisplayableLanguage");
-  EXPECT_EQ(0, recorder.GetTotalCount());
-  translate::TranslateBrowserMetrics::ReportUndisplayableLanguage("en");
-  EXPECT_EQ(1, recorder.GetCount(ENGLISH));
-}
-
 TEST(TranslateBrowserMetricsTest, ReportedUnsupportedLanguageAtInitiation) {
   const int ENGLISH = 25966;
 

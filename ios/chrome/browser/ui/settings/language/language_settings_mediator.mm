@@ -218,6 +218,7 @@
   _acceptLanguagesPrefObserverBridge.reset();
   _fluentLanguagesPrefObserverBridge.reset();
   _prefChangeRegistrar.reset();
+  _translatePrefs.reset();
 }
 
 #pragma mark - LanguageSettingsCommands

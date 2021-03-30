@@ -132,9 +132,26 @@ bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect(
          is_tiling_wm;
 }
 
+void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
+    ui::PlatformWindowState new_window_show_state) {
+  ui::PlatformWindowState old_window_show_state = window_show_state();
+
+  DesktopWindowTreeHostLinux::OnWindowStateChanged(new_window_show_state);
+
+  bool fullscreen_changed =
+      new_window_show_state == ui::PlatformWindowState::kFullScreen ||
+      old_window_show_state == ui::PlatformWindowState::kFullScreen;
+  if (old_window_show_state != new_window_show_state && fullscreen_changed) {
+    // If the browser view initiated this state change,
+    // BrowserView::ProcessFullscreen will no-op, so this call is harmless.
+    browser_view_->FullscreenStateChanging();
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHost, public:
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 BrowserDesktopWindowTreeHost*
 BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
@@ -146,3 +163,4 @@ BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
                                                desktop_native_widget_aura,
                                                browser_view, browser_frame);
 }
+#endif

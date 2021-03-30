@@ -7,6 +7,10 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
 
+if (is_chromeos) {
+  import("//chromeos/components/sensors/buildflags.gni")
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -131,6 +135,7 @@ source_set("tests") {
     "generic_sensor/fake_platform_sensor_fusion.cc",
     "generic_sensor/fake_platform_sensor_fusion.h",
     "generic_sensor/generic_sensor_service_unittest.cc",
+    "generic_sensor/gravity_fusion_algorithm_using_accelerometer_unittest.cc",
     "generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer_unittest.cc",
     "generic_sensor/orientation_euler_angles_fusion_algorithm_using_quaternion_unittest.cc",
     "generic_sensor/orientation_quaternion_fusion_algorithm_using_euler_angles_unittest.cc",
@@ -140,6 +145,7 @@ source_set("tests") {
     "generic_sensor/platform_sensor_util_unittest.cc",
     "generic_sensor/relative_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_gyroscope_unittest.cc",
     "generic_sensor/relative_orientation_euler_angles_fusion_algorithm_using_accelerometer_unittest.cc",
+    "generic_sensor/sensor_fusion_algorithm_using_accelerometer_unittest.cc",
     "geolocation/geolocation_provider_impl_unittest.cc",
     "geolocation/geolocation_service_unittest.cc",
     "geolocation/location_arbitrator_unittest.cc",
@@ -197,7 +203,16 @@ source_set("tests") {
     ]
   }
 
-  if ((is_linux || is_chromeos_lacros) && use_udev) {
+  if (is_chromeos && use_iioservice) {
+    sources += [
+      "generic_sensor/platform_sensor_chromeos_unittest.cc",
+      "generic_sensor/platform_sensor_provider_chromeos_unittest.cc",
+    ]
+    deps += [
+      "//chromeos/components/sensors:sensors",
+      "//chromeos/components/sensors:test_support",
+    ]
+  } else if ((is_linux || is_chromeos) && use_udev) {
     sources +=
         [ "generic_sensor/platform_sensor_and_provider_unittest_linux.cc" ]
   }
@@ -211,18 +226,10 @@ source_set("tests") {
   }
 
   if (is_chromeos_ash) {
-    sources += [
-      "fingerprint/fingerprint_chromeos_unittest.cc",
-      "generic_sensor/platform_sensor_chromeos_unittest.cc",
-      "generic_sensor/platform_sensor_provider_chromeos_unittest.cc",
-      "usb/usb_service_linux_unittest.cc",
-    ]
+    sources += [ "fingerprint/fingerprint_chromeos_unittest.cc" ]
     deps += [
-      "//chromeos/components/sensors:sensors",
-      "//chromeos/components/sensors:test_support",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/biod:test_support",
-      "//chromeos/dbus/permission_broker",
       "//chromeos/network:test_support",
       "//services/device/bluetooth:bluetooth_system_tests",
       "//services/device/fingerprint",
@@ -265,7 +272,10 @@ source_set("tests") {
         "public/cpp/hid/hid_report_descriptor_unittest.cc",
       ]
       if (is_linux || is_chromeos) {
-        sources += [ "hid/input_service_linux_unittest.cc" ]
+        sources += [
+          "hid/hid_service_linux_unittest.cc",
+          "hid/input_service_linux_unittest.cc",
+        ]
       }
       if (!is_fuchsia) {
         # Fuchsia does not currently implement HidService.
@@ -390,6 +400,7 @@ source_set("test_support") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",
+    "//services/device/public/cpp:test_support",
     "//services/device/public/cpp/geolocation",
     "//services/device/public/mojom:device_service",
     "//services/network:test_support",

@@ -72,8 +72,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(end, kEndEvent)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(repeat, kRepeatEvent)
 
-  virtual SMILAnimationValue CreateAnimationValue(
-      bool needs_underlying_value) const = 0;
+  virtual SMILAnimationValue CreateAnimationValue() const = 0;
   void ApplyAnimation(SMILAnimationValue&);
   virtual void ApplyResultsToTarget(const SMILAnimationValue&) = 0;
 

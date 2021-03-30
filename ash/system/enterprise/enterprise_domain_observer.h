@@ -12,6 +12,8 @@ class EnterpriseDomainObserver {
   virtual ~EnterpriseDomainObserver() {}
 
   virtual void OnEnterpriseDomainChanged() = 0;
+
+  virtual void OnEnterpriseAccountDomainChanged() = 0;
 };
 
 }  // namespace ash

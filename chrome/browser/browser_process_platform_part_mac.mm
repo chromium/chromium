@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/common/chrome_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart() {
 }
@@ -74,6 +75,11 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   // domain socket will cause the just-created socket to be unlinked.
   DCHECK(!app_shim_listener_.get());
   app_shim_listener_ = new AppShimListener;
+
+  if (!location_permission_manager_) {
+    location_permission_manager_ =
+        device::GeolocationSystemPermissionManager::Create();
+  }
 }
 
 apps::AppShimManager* BrowserProcessPlatformPart::app_shim_manager() {
@@ -84,10 +90,13 @@ AppShimListener* BrowserProcessPlatformPart::app_shim_listener() {
   return app_shim_listener_.get();
 }
 
-GeolocationSystemPermissionManager*
+device::GeolocationSystemPermissionManager*
 BrowserProcessPlatformPart::location_permission_manager() {
-  if (!location_permission_manager_)
-    location_permission_manager_ = GeolocationSystemPermissionManager::Create();
-
   return location_permission_manager_.get();
+}
+
+void BrowserProcessPlatformPart::SetGeolocationManagerForTesting(
+    std::unique_ptr<device::GeolocationSystemPermissionManager>
+        fake_location_manager) {
+  location_permission_manager_ = std::move(fake_location_manager);
 }

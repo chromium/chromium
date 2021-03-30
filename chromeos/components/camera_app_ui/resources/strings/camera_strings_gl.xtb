@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Duración do temporizador</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> (dispositivo activado)</translation>
+<translation id="2144806332417375165">Parámetros personalizados de vídeo</translation>
 <translation id="229579744168541441">Exportar ao disco</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2501853267655415902">Detívose a gravación</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Resolución da cámara</translation>
 <translation id="3517926952904427380">Non se puido facer a foto de retrato</translation>
 <translation id="3569311554794739032">Seguro que queres eliminar <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Outra aplicación está usando a cámara</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Escanear código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -76,10 +76,12 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="7337660886763914220">Producíronse erros relacionados co sistema de ficheiros.</translation>
 <translation id="7450541714075000668">Copiouse o texto</translation>
 <translation id="7557677699350329807">Cambiar á seguinte cámara</translation>
+<translation id="7607002721634913082">En pausa</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670511624014457267">60 fps</translation>
+<translation id="7974782136796202581">Mostrar opcións de panorámica, inclinación e zoom</translation>
 <translation id="7983668134180549431">Detectouse texto.</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>
 <translation id="8131740175452115882">Confirmar</translation>

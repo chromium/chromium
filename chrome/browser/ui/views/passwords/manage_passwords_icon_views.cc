@@ -13,8 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-
-const char ManagePasswordsIconViews::kClassName[] = "ManagePasswordsIconViews";
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 ManagePasswordsIconViews::ManagePasswordsIconViews(
     CommandUpdater* updater,
@@ -78,7 +77,7 @@ const gfx::VectorIcon& ManagePasswordsIconViews::GetVectorIcon() const {
   return kKeyIcon;
 }
 
-base::string16 ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
+std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     const {
   switch (state_) {
     case password_manager::ui::INACTIVE_STATE:
@@ -90,7 +89,6 @@ base::string16 ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     case password_manager::ui::MANAGE_STATE:
     case password_manager::ui::PASSWORD_UPDATED_SAFE_STATE:
     case password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX:
-    case password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE);
     case password_manager::ui::PENDING_PASSWORD_UPDATE_STATE:
     case password_manager::ui::PENDING_PASSWORD_STATE:
@@ -99,7 +97,7 @@ base::string16 ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MOVE);
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 void ManagePasswordsIconViews::AboutToRequestFocusFromTabTraversal(
@@ -108,6 +106,5 @@ void ManagePasswordsIconViews::AboutToRequestFocusFromTabTraversal(
     PasswordBubbleViewBase::ActivateBubble();
 }
 
-const char* ManagePasswordsIconViews::GetClassName() const {
-  return kClassName;
-}
+BEGIN_METADATA(ManagePasswordsIconViews, PageActionIconView)
+END_METADATA

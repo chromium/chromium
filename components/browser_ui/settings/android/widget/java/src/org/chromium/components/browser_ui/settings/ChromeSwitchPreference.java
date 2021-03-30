@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
 import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SwitchPreferenceCompat;
 
@@ -18,6 +19,11 @@ import androidx.preference.SwitchPreferenceCompat;
  */
 public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     private ManagedPreferenceDelegate mManagedPrefDelegate;
+    /** The View for this preference. */
+    private View mView;
+    /** The color resource ID for tinting of the view's background. */
+    @ColorRes
+    private int mBackgroundColorRes;
 
     public ChromeSwitchPreference(Context context) {
         super(context);
@@ -50,12 +56,29 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
             summary.setVisibility(View.GONE);
         }
 
-        ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, holder.itemView);
+        mView = holder.itemView;
+        updateBackground();
+        ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, mView);
     }
 
     @Override
     protected void onClick() {
         if (ManagedPreferencesUtils.onClickPreference(mManagedPrefDelegate, this)) return;
         super.onClick();
+    }
+
+    /**
+     * Sets the Color resource ID which will be used to set the color of the view.
+     * @param colorRes
+     */
+    public void setBackgroundColor(@ColorRes int colorRes) {
+        if (mBackgroundColorRes == colorRes) return;
+        mBackgroundColorRes = colorRes;
+        updateBackground();
+    }
+
+    private void updateBackground() {
+        if (mView == null) return;
+        mView.setBackgroundColor(mBackgroundColorRes);
     }
 }

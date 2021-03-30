@@ -18,15 +18,6 @@ import java.util.Map;
 public interface JavascriptInjector {
     /**
      * @param webContents {@link WebContents} object.
-     * @return {@link JavascriptInjector} object used for the give WebContents.
-     *         Creates one if not present.
-     */
-    static JavascriptInjector fromWebContents(WebContents webContents) {
-        return fromWebContents(webContents, false);
-    }
-
-    /**
-     * @param webContents {@link WebContents} object.
      * @param useMojo Whether to use {@link RemoteObjectInjector} methods
      * @return {@link JavascriptInjector} object used for the give WebContents.
      *         Creates one if not present.

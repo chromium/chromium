@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -5332,4 +5333,110 @@ TEST_F(DiskCacheBackendTest, BlockFileDelayedWriteFailureRecovery) {
   ASSERT_EQ(net::ERR_FAILED, ReadSparseData(entry, 4, buffer.get(), 4));
 
   entry->Close();
+}
+
+TEST_F(DiskCacheBackendTest, BlockFileInsertAliasing) {
+  // Test for not having rankings corruption due to aliasing between iterator
+  // and other ranking list copies during insertion operations.
+  //
+  // https://crbug.com/1156288
+
+  // Need to disable weird extra sync behavior to hit the bug.
+  CreateBackend(disk_cache::kNone);
+  SetNewEviction();  // default, but integrity check doesn't realize that.
+
+  const char kKey[] = "Key0";
+  const char kKeyA[] = "KeyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA41";
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry(kKey, &entry), IsOk());
+
+  const int kBufSize = 61188;
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBuffer>(kBufSize);
+  CacheTestFillBuffer(buffer->data(), kBufSize, true);
+
+  net::TestCompletionCallback cb_write64;
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            entry->WriteSparseData(8, buffer.get(), 64, cb_write64.callback()));
+
+  net::TestCompletionCallback cb_write61k;
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            entry->WriteSparseData(16773118, buffer.get(), 61188,
+                                   cb_write61k.callback()));
+
+  EXPECT_EQ(64, cb_write64.WaitForResult());
+  EXPECT_EQ(61188, cb_write61k.WaitForResult());
+
+  EXPECT_EQ(4128, WriteSparseData(entry, 2147479550, buffer.get(), 4128));
+
+  std::unique_ptr<TestIterator> iter = CreateIterator();
+  EXPECT_EQ(4128, WriteSparseData(entry, 2147479550, buffer.get(), 4128));
+  EXPECT_EQ(64, WriteSparseData(entry, 8, buffer.get(), 64));
+
+  disk_cache::Entry* itEntry1 = nullptr;
+  ASSERT_EQ(net::OK, iter->OpenNextEntry(&itEntry1));
+  // These are actually child nodes for range.
+
+  entry->Close();
+
+  disk_cache::Entry* itEntry2 = nullptr;
+  ASSERT_EQ(net::OK, iter->OpenNextEntry(&itEntry2));
+
+  net::TestCompletionCallback doom_cb;
+  EXPECT_EQ(net::ERR_IO_PENDING, cache_->DoomAllEntries(doom_cb.callback()));
+
+  TestEntryResultCompletionCallback cb_create1;
+  disk_cache::EntryResult result =
+      cache_->CreateEntry(kKey, net::HIGHEST, cb_create1.callback());
+  EXPECT_EQ(net::OK, doom_cb.WaitForResult());
+  result = cb_create1.WaitForResult();
+  EXPECT_EQ(net::OK, result.net_error());
+  entry = result.ReleaseEntry();
+
+  disk_cache::Entry* entryA = nullptr;
+  ASSERT_THAT(CreateEntry(kKeyA, &entryA), IsOk());
+  entryA->Close();
+
+  disk_cache::Entry* itEntry3 = nullptr;
+  EXPECT_EQ(net::OK, iter->OpenNextEntry(&itEntry3));
+
+  EXPECT_EQ(net::OK, DoomEntry(kKeyA));
+  itEntry1->Close();
+  entry->Close();
+  itEntry2->Close();
+  if (itEntry3)
+    itEntry3->Close();
+}
+
+TEST_F(DiskCacheBackendTest, MemCacheBackwardsClock) {
+  // Test to make sure that wall clock going backwards is tolerated.
+
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+
+  SetMemoryOnlyMode();
+  InitCache();
+  mem_cache_->SetClockForTesting(&clock);
+
+  const int kBufSize = 4 * 1024;
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBuffer>(kBufSize);
+  CacheTestFillBuffer(buffer->data(), kBufSize, true);
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("key1", &entry), IsOk());
+  EXPECT_EQ(kBufSize, WriteData(entry, 0, 0, buffer.get(), kBufSize, false));
+  entry->Close();
+
+  clock.Advance(-base::TimeDelta::FromHours(1));
+
+  ASSERT_THAT(CreateEntry("key2", &entry), IsOk());
+  EXPECT_EQ(kBufSize, WriteData(entry, 0, 0, buffer.get(), kBufSize, false));
+  entry->Close();
+
+  EXPECT_LE(2 * kBufSize,
+            CalculateSizeOfEntriesBetween(base::Time(), base::Time::Max()));
+  EXPECT_EQ(net::OK, DoomEntriesBetween(base::Time(), base::Time::Max()));
+  EXPECT_EQ(0, CalculateSizeOfEntriesBetween(base::Time(), base::Time::Max()));
+  EXPECT_EQ(0, CalculateSizeOfAllEntries());
 }

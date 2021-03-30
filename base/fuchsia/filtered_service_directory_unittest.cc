@@ -11,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace fuchsia {
 
 class FilteredServiceDirectoryTest : public ServiceDirectoryTestBase {
  public:
@@ -29,7 +28,7 @@ class FilteredServiceDirectoryTest : public ServiceDirectoryTestBase {
   std::unique_ptr<sys::ServiceDirectory> filtered_client_;
 };
 
-// Verify that we can connect to a whitelisted service.
+// Verify that we can connect to an allowed service.
 TEST_F(FilteredServiceDirectoryTest, Connect) {
   filtered_service_directory_->AddService(testfidl::TestInterface::Name_);
 
@@ -47,7 +46,7 @@ TEST_F(FilteredServiceDirectoryTest, ConnectMultiple) {
   VerifyTestInterface(&stub2, ZX_OK);
 }
 
-// Verify that non-whitelisted services are blocked.
+// Verify that non-allowed services are blocked.
 TEST_F(FilteredServiceDirectoryTest, ServiceBlocked) {
   auto stub = filtered_client_->Connect<testfidl::TestInterface>();
   VerifyTestInterface(&stub, ZX_ERR_PEER_CLOSED);
@@ -85,5 +84,4 @@ TEST_F(FilteredServiceDirectoryTest, AdditionalService) {
   VerifyTestInterface(&stub, ZX_OK);
 }
 
-}  // namespace fuchsia
 }  // namespace base

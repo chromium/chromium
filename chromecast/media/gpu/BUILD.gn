@@ -1,0 +1,32 @@
+import("//chromecast/chromecast.gni")
+
+cast_source_set("gpu") {
+  sources = [ "cast_gpu_factory.h" ]
+  deps = [
+    "//base",
+    "//services/viz/public/cpp/gpu",
+  ]
+
+  if (enable_video_capture_service) {
+    sources += [
+      "cast_gpu_factory_impl.cc",
+      "cast_gpu_factory_impl.h",
+    ]
+    deps += [
+      "//chromecast/mojo",
+      "//components/viz/common",
+      "//media/gpu",
+      "//media/gpu/ipc/client:client",
+      "//media/gpu/ipc/common",
+      "//media/mojo/clients:clients",
+      "//media/mojo/mojom",
+      "//ui/gfx/geometry/mojom",
+    ]
+  } else {
+    sources += [
+      "cast_gpu_factory_dummy.cc",
+      "cast_gpu_factory_dummy.h",
+    ]
+    deps += [ "//media" ]
+  }
+}

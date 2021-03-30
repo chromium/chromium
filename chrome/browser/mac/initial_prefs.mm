@@ -23,11 +23,13 @@ const NSSearchPathDirectory kSearchPath = NSLibraryDirectory;
 // so changing this filename will require some care.
 // See https://crbug.com/1097204 for details.
 const char kInitialPreferencesDirectory[] = "Google";
+const char kInitialPreferencesFileName[] = "Google Chrome Initial Preferences";
 const char kLegacyInitialPreferencesFileName[] =
     "Google Chrome Master Preferences";
 #else
 const NSSearchPathDirectory kSearchPath = NSApplicationSupportDirectory;
 const char kInitialPreferencesDirectory[] = "Chromium";
+const char kInitialPreferencesFileName[] = "Chromium Initial Preferences";
 const char kLegacyInitialPreferencesFileName[] = "Chromium Master Preferences";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -50,10 +52,15 @@ base::FilePath InitialPrefsPath() {
   // This intentionally doesn't use eventual --user-data-dir overrides.
   base::FilePath user_application_support_path;
   if (chrome::GetDefaultUserDataDirectory(&user_application_support_path)) {
-    user_application_support_path =
+    base::FilePath new_path =
+        user_application_support_path.Append(kInitialPreferencesFileName);
+    if (base::PathExists(new_path))
+      return new_path;
+
+    base::FilePath old_path =
         user_application_support_path.Append(kLegacyInitialPreferencesFileName);
-    if (base::PathExists(user_application_support_path))
-      return user_application_support_path;
+    if (base::PathExists(old_path))
+      return old_path;
   }
 
   // On official builds, try /Library/Google/Google Chrome Master Preferences
@@ -62,6 +69,11 @@ base::FilePath InitialPrefsPath() {
   base::FilePath search_path;
   if (!base::mac::GetLocalDirectory(kSearchPath, &search_path))
     return base::FilePath();
+
+  base::FilePath new_path = search_path.Append(kInitialPreferencesDirectory)
+                                .Append(kInitialPreferencesFileName);
+  if (base::PathExists(new_path))
+    return new_path;
 
   return search_path.Append(kInitialPreferencesDirectory)
       .Append(kLegacyInitialPreferencesFileName);

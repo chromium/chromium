@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/oobe_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="oobe_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <structures>
+      <!-- Resources in this section still depend on flattenhtml -->
+      <structure name="IDR_MD_LOGIN_HTML" file="md_login.html" flattenhtml="true" type="chrome_html" variables="OOBE=login" expand_variables="true" />
+      <structure name="IDR_MD_LOGIN_JS" file="md_login.js" flattenhtml="true" type="chrome_html" />
+      <structure name="IDR_OOBE_HTML" file="oobe.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe" expand_variables="true" />
+      <structure name="IDR_OOBE_JS" file="oobe.js" flattenhtml="true" type="chrome_html" />
+
+      <structure name="IDR_CUSTOM_ELEMENTS_OOBE_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_OOBE_JS" file="structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=oobe" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_LOGIN_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=login" expand_variables="true" />
+      <structure name="IDR_CUSTOM_ELEMENTS_LOGIN_JS" file="structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=login" expand_variables="true" />
+
+      <structure name="IDR_OOBE_DEBUGGER_JS" file="debug\debug.js" flattenhtml="true" type="chrome_html" />
+      <structure name="IDR_OOBE_DEBUGGER_STUB_JS" file="debug\no_debug.js" flattenhtml="true" type="chrome_html" />
+
+      <structure name="IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML" file="components/common_styles/common_styles.html" type="chrome_html" flattenhtml="true"/>
+    </structures>
+    <includes>
+      <!-- Resources that are served under fixed paths -->
+
+      <part file="oobe_image_resources.grdp" />
+      <part file="oobe_animation_resources.grdp" />
+      <part file="oobe_components_resources.grdp" />
+
+      <!-- Resources that are dynamically chosen to be served in runtime -->
+
+      <!-- New layout (oobe_adaptive_dialog and oobe_content_dialog) corresponds OOBE redesign which has happened in November 2020 -->
+      <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML" file="components/oobe_adaptive_dialog/oobe_adaptive_dialog.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS" file="components/oobe_adaptive_dialog/oobe_adaptive_dialog.js" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_HTML" file="components/oobe_adaptive_dialog/oobe_adaptive_dialog_old.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_JS" file="components/oobe_adaptive_dialog/oobe_adaptive_dialog_old.js" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_HTML" file="components/oobe_content_dialog/oobe_content_dialog.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_JS" file="components/oobe_content_dialog/oobe_content_dialog.js" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_OLD_HTML" file="components/oobe_content_dialog/oobe_content_dialog_old.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_OLD_JS" file="components/oobe_content_dialog/oobe_content_dialog_old.js" type="chrome_html" />
+
+      <!-- OOBE CSS Vars -->
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_old_css.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_css.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_remora_css.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_SHARED_VARS_CSS_HTML" file="components/oobe_vars/oobe_shared_vars_css.html" type="chrome_html" />
+
+      <!-- OOBE Test API -->
+      <include name="IDR_OOBE_TEST_API_JS" file="test_api\test_api.js" type="chrome_html" />
+      <include name="IDR_OOBE_TEST_API_STUB_JS" file="test_api\no_test_api.js" type="chrome_html" />
+    </includes>
+  </release>
+</grit>

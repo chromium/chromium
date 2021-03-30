@@ -18,7 +18,7 @@
 namespace {
 
 using bookmarks_helper::AddFolder;
-using bookmarks_helper::ModelMatchesVerifier;
+using bookmarks_helper::ServerBookmarksEqualityChecker;
 using syncer::SyncCycleSnapshot;
 
 class SyncExponentialBackoffTest : public SyncTest {
@@ -34,18 +34,6 @@ class SyncExponentialBackoffTest : public SyncTest {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SyncExponentialBackoffTest);
-};
-
-class SyncExponentialBackoffTestWithVerifier
-    : public SyncExponentialBackoffTest {
- public:
-  SyncExponentialBackoffTestWithVerifier() = default;
-  ~SyncExponentialBackoffTestWithVerifier() override = default;
-
-  bool UseVerifier() override {
-    // TODO(crbug.com/1137787): rewrite test to not use verifier.
-    return true;
-  }
 };
 
 // Helper class that checks if a sync client has successfully gone through
@@ -79,22 +67,40 @@ class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
   DISALLOW_COPY_AND_ASSIGN(ExponentialBackoffChecker);
 };
 
-IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTestWithVerifier,
-                       OfflineToOnline) {
+// Flaky on ChromeOS, crbug.com/1170609
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_OfflineToOnline DISABLED_OfflineToOnline
+#else
+#define MAYBE_OfflineToOnline OfflineToOnline
+#endif
+IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, MAYBE_OfflineToOnline) {
+  const std::string kFolderTitle1 = "folder1";
+  const std::string kFolderTitle2 = "folder2";
+
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Add an item and ensure that sync is successful.
-  ASSERT_TRUE(AddFolder(0, 0, "folder1"));
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(AddFolder(0, 0, kFolderTitle1));
+  std::vector<ServerBookmarksEqualityChecker::ExpectedBookmark>
+      expected_bookmarks = {{kFolderTitle1, GURL()}};
+  ASSERT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
+                                             expected_bookmarks,
+                                             /*cryptographer=*/nullptr)
+                  .Wait());
 
   fake_server::FakeServerHttpPostProvider::DisableNetwork();
 
   // Add a new item to trigger another sync cycle.
-  ASSERT_TRUE(AddFolder(0, 0, "folder2"));
+  ASSERT_TRUE(AddFolder(0, 0, kFolderTitle2));
 
   // Verify that the client goes into exponential backoff while it is unable to
   // reach the sync server.
   ASSERT_TRUE(ExponentialBackoffChecker(GetSyncService(0)).Wait());
+
+  // Double check that the folder hasn't been committed.
+  ASSERT_EQ(
+      1u,
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::BOOKMARKS).size());
 
   // Trigger network change notification and remember time when it happened.
   // Ensure that scheduler runs canary job immediately.
@@ -106,15 +112,18 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTestWithVerifier,
   base::Time network_notification_time = base::Time::Now();
 
   // Verify that sync was able to recover.
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  ASSERT_TRUE(ModelMatchesVerifier(0));
+  expected_bookmarks.push_back({kFolderTitle2, GURL()});
+  EXPECT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
+                                             expected_bookmarks,
+                                             /*cryptographer=*/nullptr)
+                  .Wait());
 
   // Verify that recovery time is short. Without canary job recovery time would
   // be more than 5 seconds.
   base::TimeDelta recovery_time =
       GetSyncService(0)->GetLastCycleSnapshotForDebugging().sync_start_time() -
       network_notification_time;
-  ASSERT_LE(recovery_time, base::TimeDelta::FromSeconds(2));
+  EXPECT_LE(recovery_time, base::TimeDelta::FromSeconds(2));
 }
 
 IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, ServerRedirect) {

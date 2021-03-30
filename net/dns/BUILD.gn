@@ -107,7 +107,12 @@ source_set("dns") {
       ]
     }
 
-    if (is_posix) {
+    if (is_android) {
+      sources += [
+        "dns_config_service_android.cc",
+        "dns_config_service_android.h",
+      ]
+    } else if (is_posix) {
       sources += [
         "dns_config_service_posix.cc",
         "dns_config_service_posix.h",
@@ -418,7 +423,9 @@ source_set("tests") {
     sources += [ "dns_config_service_win_unittest.cc" ]
   }
 
-  if (is_posix) {
+  if (is_android) {
+    sources += [ "dns_config_service_android_unittest.cc" ]
+  } else if (is_posix) {
     sources += [ "dns_config_service_posix_unittest.cc" ]
   }
 

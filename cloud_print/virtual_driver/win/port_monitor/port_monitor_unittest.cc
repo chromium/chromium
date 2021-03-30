@@ -7,10 +7,11 @@
 #include <stddef.h>
 #include <winspool.h>
 
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "cloud_print/virtual_driver/win/port_monitor/spooler_win.h"
@@ -112,7 +113,7 @@ TEST_F(PortMonitorTest, GetChromeExePathTest) {
 }
 
 TEST_F(PortMonitorTest, GetPrintCommandTemplateTest) {
-  base::string16 print_command = cloud_print::GetPrintCommandTemplate();
+  std::wstring print_command = cloud_print::GetPrintCommandTemplate();
   EXPECT_FALSE(print_command.empty());
   EXPECT_EQ(print_command, kTestPrintCommand);
   DeleteChromeExeRegistry();

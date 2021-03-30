@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -64,7 +65,7 @@ CompositingReasonFinder::PotentialCompositingReasonsFromStyle(
           (!style.HasAutoClip() && style.HasOutOfFlowPosition()) ||
           style.HasIsolation()) == layout_object.CreatesGroup());
 
-  if (style.HasMask() || style.ClipPath())
+  if (style.HasMask() || style.HasClipPath())
     reasons |= CompositingReason::kMaskWithCompositedDescendants;
 
   if (style.HasFilterInducingProperty())
@@ -121,6 +122,9 @@ static CompositingReasons BackfaceInvisibility3DAncestorReason(
 
 CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     const LayoutObject& object) {
+  if (object.GetDocument().Printing())
+    return CompositingReason::kNone;
+
   // TODO(wangxianzhu): Don't depend on PaintLayer for CompositeAfterPaint.
   if (!object.HasLayer()) {
     if (object.IsSVGChild())
@@ -150,6 +154,9 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   if (RequiresCompositingForScrollDependentPosition(*layer))
     reasons |= CompositingReason::kScrollDependentPosition;
 
+  if (RequiresCompositingForAffectedByOuterViewportBoundsDelta(object))
+    reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
+
   if (style.HasBackdropFilter())
     reasons |= CompositingReason::kBackdropFilter;
 
@@ -165,18 +172,19 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
           (object.IsLayoutView() &&
            ShouldPreferCompositingForLayoutView(To<LayoutView>(object)));
 
-      if (scrollable_area->ComputeNeedsCompositedScrolling(
-              force_prefer_compositing_to_lcd_text)) {
-        reasons |= CompositingReason::kOverflowScrolling;
-      }
-    } else if (scrollable_area->NeedsCompositedScrolling()) {
-      // For pre-CompositeAfterPaint, just let |reasons| reflect the current
-      // composited scrolling status.
-      reasons |= CompositingReason::kOverflowScrolling;
+      scrollable_area->UpdateNeedsCompositedScrolling(
+          force_prefer_compositing_to_lcd_text);
     }
+    if (scrollable_area->NeedsCompositedScrolling())
+      reasons |= CompositingReason::kOverflowScrolling;
   }
 
   reasons |= BackfaceInvisibility3DAncestorReason(*layer);
+
+  if (auto* element = DynamicTo<Element>(object.GetNode())) {
+    if (element->ShouldCompositeForDocumentTransition())
+      reasons |= CompositingReason::kDocumentTransitionSharedElement;
+  }
 
   if (object.CanHaveAdditionalCompositingReasons())
     reasons |= object.AdditionalCompositingReasons();
@@ -201,7 +209,29 @@ CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(
   reasons &= ~CompositingReason::kWillChangeOther;
   if (style.HasBackdropFilter())
     reasons |= CompositingReason::kBackdropFilter;
+  // Though SVG doesn't support 3D transforms, they are frequently used as a
+  // compositing trigger for historical reasons.
+  reasons |= CompositingReasonsFor3DTransform(object);
   return reasons;
+}
+
+CompositingReasons
+CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(
+    const ComputedStyle& style) {
+  // Don't composite "trivial" 3D transforms such as translateZ(0).
+  if (Platform::Current()->IsLowEndDevice()) {
+    return style.HasNonTrivial3DTransformOperation()
+               ? CompositingReason::k3DTransform
+               : CompositingReason::kNone;
+  }
+
+  if (style.Has3DTransformOperation()) {
+    return style.HasNonTrivial3DTransformOperation()
+               ? CompositingReason::k3DTransform
+               : CompositingReason::kTrivial3DTransform;
+  }
+
+  return CompositingReason::kNone;
 }
 
 CompositingReasons CompositingReasonFinder::CompositingReasonsFor3DTransform(
@@ -211,21 +241,7 @@ CompositingReasons CompositingReasonFinder::CompositingReasonsFor3DTransform(
   // doesn't support them.
   if (!layout_object.HasTransformRelatedProperty())
     return CompositingReason::kNone;
-
-  // Don't composite "trivial" 3D transforms such as translateZ(0).
-  if (Platform::Current()->IsLowEndDevice()) {
-    return layout_object.StyleRef().HasNonTrivial3DTransformOperation()
-               ? CompositingReason::k3DTransform
-               : CompositingReason::kNone;
-  }
-
-  if (layout_object.StyleRef().Has3DTransformOperation()) {
-    return layout_object.StyleRef().HasNonTrivial3DTransformOperation()
-               ? CompositingReason::k3DTransform
-               : CompositingReason::kTrivial3DTransform;
-  }
-
-  return CompositingReason::kNone;
+  return PotentialCompositingReasonsFor3DTransform(layout_object.StyleRef());
 }
 
 CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
@@ -260,6 +276,9 @@ CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
   if (RequiresCompositingForScrollDependentPosition(layer))
     direct_reasons |= CompositingReason::kScrollDependentPosition;
 
+  if (RequiresCompositingForAffectedByOuterViewportBoundsDelta(layout_object))
+    direct_reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
+
   // Video is special. It's the only PaintLayer type that can both have
   // PaintLayer children and whose children can't use its backing to render
   // into. These children (the controls) always need to be promoted into their
@@ -283,6 +302,11 @@ CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
   if (layout_object.CanHaveAdditionalCompositingReasons())
     direct_reasons |= layout_object.AdditionalCompositingReasons();
 
+  if (auto* element = DynamicTo<Element>(layout_object.GetNode())) {
+    if (element->ShouldCompositeForDocumentTransition())
+      direct_reasons |= CompositingReason::kDocumentTransitionSharedElement;
+  }
+
   direct_reasons |= BackfaceInvisibility3DAncestorReason(layer);
 
   DCHECK(
@@ -292,8 +316,13 @@ CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
 
 static bool ObjectTypeSupportsCompositedTransformAnimation(
     const LayoutObject& object) {
-  if (object.IsSVGChild())
-    return RuntimeEnabledFeatures::CompositeSVGEnabled();
+  if (object.IsSVGChild()) {
+    if (!RuntimeEnabledFeatures::CompositeSVGEnabled())
+      return false;
+    // Transforms are not supported on hidden containers, inlines, or text.
+    return !object.IsSVGHiddenContainer() && !object.IsLayoutInline() &&
+           !object.IsText();
+  }
   // Transforms don't apply on non-replaced inline elements.
   return object.IsBox();
 }
@@ -356,25 +385,51 @@ bool CompositingReasonFinder::RequiresCompositingForRootScroller(
 
 bool CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
     const PaintLayer& layer) {
-  const auto& layout_object = layer.GetLayoutObject();
-  if (!layout_object.StyleRef().HasViewportConstrainedPosition() &&
-      !layout_object.StyleRef().HasStickyConstrainedPosition())
-    return false;
-
   // Don't promote fixed position elements that are descendants of a non-view
   // container, e.g. transformed elements.  They will stay fixed wrt the
   // container rather than the enclosing frame.
-  EPosition position = layout_object.StyleRef().GetPosition();
-  if (position == EPosition::kFixed) {
-    return layer.FixedToViewport() &&
-           layout_object.GetFrameView()->LayoutViewport()->ScrollsOverflow();
+  if (layer.FixedToViewport()) {
+    // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure fixed
+    // position elements are composited under overflow: hidden, which can still
+    // have smooth scroll animations.
+    LocalFrameView* frame_view = layer.GetLayoutObject().GetFrameView();
+    return frame_view->LayoutViewport()->HasOverflow();
   }
-  DCHECK_EQ(position, EPosition::kSticky);
 
   // Don't promote sticky position elements that cannot move with scrolls.
-  if (!layer.SticksToScroller())
+  if (layer.SticksToScroller()) {
+    // We check for |HasOverflow| instead of |ScrollsOverflow| to ensure sticky
+    // position elements are composited under overflow: hidden, which can still
+    // have smooth scroll animations.
+    return layer.AncestorScrollContainerLayer()
+        ->GetScrollableArea()
+        ->HasOverflow();
+  }
+
+  return false;
+}
+
+bool CompositingReasonFinder::
+    RequiresCompositingForAffectedByOuterViewportBoundsDelta(
+        const LayoutObject& layout_object) {
+  if (!layout_object.IsBox())
     return false;
-  return layer.AncestorScrollContainerLayer()->ScrollsOverflow();
+
+  if (layout_object.StyleRef().GetPosition() != EPosition::kFixed ||
+      !layout_object.StyleRef().IsFixedToBottom())
+    return false;
+
+  // Objects inside an iframe that's the root scroller should get the same
+  // "pushed by top controls" behavior as for the main frame.
+  auto& controller =
+      layout_object.GetFrame()->GetPage()->GlobalRootScrollerController();
+  if (!layout_object.GetFrame()->IsMainFrame() &&
+      layout_object.GetFrame()->GetDocument() !=
+          controller.GlobalRootScroller())
+    return false;
+
+  // It's affected by viewport only if the container is the LayoutView.
+  return IsA<LayoutView>(layout_object.Container());
 }
 
 }  // namespace blink

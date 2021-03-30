@@ -27,12 +27,23 @@ class ExternalConstants {
   // True if client update protocol signing of update checks is enabled.
   virtual bool UseCUP() const = 0;
 
+  // Number of seconds to delay the start of the automated background tasks
+  // such as update checks.
+  virtual double InitialDelay() const = 0;
+
+  // Minimum number of of seconds the server needs to stay alive.
+  virtual int ServerKeepAliveSeconds() const = 0;
+
  protected:
   std::unique_ptr<ExternalConstants> next_provider_;
 };
 
 // Sets up an external constants chain of responsibility. May block.
 std::unique_ptr<ExternalConstants> CreateExternalConstants();
+
+// Sets up an external constants provider yielding only default values.
+// Intended only for testing of other constants providers.
+std::unique_ptr<ExternalConstants> CreateDefaultExternalConstantsForTesting();
 
 }  // namespace updater
 

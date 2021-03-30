@@ -33,38 +33,38 @@ BubbleBorder::Arrow arrows[] = {
     BubbleBorder::BOTTOM_LEFT,  BubbleBorder::LEFT_BOTTOM,
     BubbleBorder::LEFT_CENTER,  BubbleBorder::LEFT_TOP};
 
-base::string16 GetArrowName(BubbleBorder::Arrow arrow) {
+std::u16string GetArrowName(BubbleBorder::Arrow arrow) {
   switch (arrow) {
     case BubbleBorder::TOP_LEFT:
-      return ASCIIToUTF16("TOP_LEFT");
+      return u"TOP_LEFT";
     case BubbleBorder::TOP_RIGHT:
-      return ASCIIToUTF16("TOP_RIGHT");
+      return u"TOP_RIGHT";
     case BubbleBorder::BOTTOM_LEFT:
-      return ASCIIToUTF16("BOTTOM_LEFT");
+      return u"BOTTOM_LEFT";
     case BubbleBorder::BOTTOM_RIGHT:
-      return ASCIIToUTF16("BOTTOM_RIGHT");
+      return u"BOTTOM_RIGHT";
     case BubbleBorder::LEFT_TOP:
-      return ASCIIToUTF16("LEFT_TOP");
+      return u"LEFT_TOP";
     case BubbleBorder::RIGHT_TOP:
-      return ASCIIToUTF16("RIGHT_TOP");
+      return u"RIGHT_TOP";
     case BubbleBorder::LEFT_BOTTOM:
-      return ASCIIToUTF16("LEFT_BOTTOM");
+      return u"LEFT_BOTTOM";
     case BubbleBorder::RIGHT_BOTTOM:
-      return ASCIIToUTF16("RIGHT_BOTTOM");
+      return u"RIGHT_BOTTOM";
     case BubbleBorder::TOP_CENTER:
-      return ASCIIToUTF16("TOP_CENTER");
+      return u"TOP_CENTER";
     case BubbleBorder::BOTTOM_CENTER:
-      return ASCIIToUTF16("BOTTOM_CENTER");
+      return u"BOTTOM_CENTER";
     case BubbleBorder::LEFT_CENTER:
-      return ASCIIToUTF16("LEFT_CENTER");
+      return u"LEFT_CENTER";
     case BubbleBorder::RIGHT_CENTER:
-      return ASCIIToUTF16("RIGHT_CENTER");
+      return u"RIGHT_CENTER";
     case BubbleBorder::NONE:
-      return ASCIIToUTF16("NONE");
+      return u"NONE";
     case BubbleBorder::FLOAT:
-      return ASCIIToUTF16("FLOAT");
+      return u"FLOAT";
   }
-  return ASCIIToUTF16("INVALID");
+  return u"INVALID";
 }
 
 class ExampleBubble : public BubbleDialogDelegateView {
@@ -95,26 +95,24 @@ void BubbleExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
 
+  no_shadow_legacy_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &no_shadow_legacy_, BubbleBorder::NO_SHADOW_LEGACY,
+                          false),
+      u"No Shadow Legacy"));
+  standard_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
+      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
+                          &standard_shadow_, BubbleBorder::STANDARD_SHADOW,
+                          false),
+      u"Standard Shadow"));
   no_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
                           &no_shadow_, BubbleBorder::NO_SHADOW, false),
-      ASCIIToUTF16("No Shadow")));
-  big_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
-      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &big_shadow_, BubbleBorder::BIG_SHADOW, false),
-      ASCIIToUTF16("Big Shadow")));
-  small_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
-      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &small_shadow_, BubbleBorder::SMALL_SHADOW, false),
-      ASCIIToUTF16("Small Shadow")));
-  no_assets_ = container->AddChildView(std::make_unique<LabelButton>(
-      base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &no_assets_, BubbleBorder::NO_ASSETS, false),
-      ASCIIToUTF16("No Assets")));
+      u"No Shadow"));
   persistent_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
-                          &persistent_, BubbleBorder::NO_SHADOW, true),
-      ASCIIToUTF16("Persistent")));
+                          &persistent_, BubbleBorder::NO_SHADOW_LEGACY, true),
+      u"Persistent"));
 }
 
 void BubbleExample::ShowBubble(Button** button,

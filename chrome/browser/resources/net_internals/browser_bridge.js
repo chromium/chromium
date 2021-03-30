@@ -2,159 +2,65 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+
 /**
  * This class provides a "bridge" for communicating between the javascript and
  * the browser.
  */
-const BrowserBridge = (function() {
-  'use strict';
+export class BrowserBridge {
+  constructor() {}
 
-  /**
-   * @constructor
-   */
-  function BrowserBridge() {
-    assertFirstConstructorCall(BrowserBridge);
-
-    // List of observers for various bits of browser state.
-    this.hstsObservers_ = [];
-    this.expectCTObservers_ = [];
-    this.setNetworkDebugModeObservers_ = [];
+  //--------------------------------------------------------------------------
+  // Messages sent to the browser
+  //--------------------------------------------------------------------------
+  sendReloadProxySettings() {
+    chrome.send('reloadProxySettings');
   }
 
-  cr.addSingletonGetter(BrowserBridge);
+  sendClearBadProxies() {
+    chrome.send('clearBadProxies');
+  }
 
-  BrowserBridge.prototype = {
+  sendClearHostResolverCache() {
+    chrome.send('clearHostResolverCache');
+  }
 
-    //--------------------------------------------------------------------------
-    // Messages sent to the browser
-    //--------------------------------------------------------------------------
+  sendHSTSQuery(domain) {
+    return sendWithPromise('hstsQuery', domain);
+  }
 
-    /**
-     * Wraps |chrome.send|.
-     * TODO(mattm): remove this and switch things to use chrome.send directly.
-     */
-    send(value1, value2) {
-      if (arguments.length == 1) {
-        chrome.send(value1);
-      } else if (arguments.length == 2) {
-        chrome.send(value1, value2);
-      } else {
-        throw 'Unsupported number of arguments.';
-      }
-    },
+  sendHSTSAdd(domain, sts_include_subdomains) {
+    chrome.send('hstsAdd', [domain, sts_include_subdomains]);
+  }
 
-    sendReloadProxySettings() {
-      this.send('reloadProxySettings');
-    },
+  sendDomainSecurityPolicyDelete(domain) {
+    chrome.send('domainSecurityPolicyDelete', [domain]);
+  }
 
-    sendClearBadProxies() {
-      this.send('clearBadProxies');
-    },
+  sendExpectCTQuery(domain) {
+    return sendWithPromise('expectCTQuery', domain);
+  }
 
-    sendClearHostResolverCache() {
-      this.send('clearHostResolverCache');
-    },
+  sendExpectCTAdd(domain, report_uri, enforce) {
+    chrome.send('expectCTAdd', [domain, report_uri, enforce]);
+  }
 
-    sendHSTSQuery(domain) {
-      this.send('hstsQuery', [domain]);
-    },
+  sendExpectCTTestReport(report_uri) {
+    return sendWithPromise('expectCTTestReport', report_uri);
+  }
 
-    sendHSTSAdd(domain, sts_include_subdomains) {
-      this.send('hstsAdd', [domain, sts_include_subdomains]);
-    },
+  sendCloseIdleSockets() {
+    chrome.send('closeIdleSockets');
+  }
 
-    sendDomainSecurityPolicyDelete(domain) {
-      this.send('domainSecurityPolicyDelete', [domain]);
-    },
+  sendFlushSocketPools() {
+    chrome.send('flushSocketPools');
+  }
 
-    sendExpectCTQuery(domain) {
-      this.send('expectCTQuery', [domain]);
-    },
+  setNetworkDebugMode(subsystem) {
+    chrome.send('setNetworkDebugMode', [subsystem]);
+  }
+}
 
-    sendExpectCTAdd(domain, report_uri, enforce) {
-      this.send('expectCTAdd', [domain, report_uri, enforce]);
-    },
-
-    sendExpectCTTestReport(report_uri) {
-      this.send('expectCTTestReport', [report_uri]);
-    },
-
-    sendCloseIdleSockets() {
-      this.send('closeIdleSockets');
-    },
-
-    sendFlushSocketPools() {
-      this.send('flushSocketPools');
-    },
-
-    setNetworkDebugMode(subsystem) {
-      this.send('setNetworkDebugMode', [subsystem]);
-    },
-
-    //--------------------------------------------------------------------------
-    // Messages received from the browser.
-    //--------------------------------------------------------------------------
-
-    receive(command, params) {
-      this[command](params);
-    },
-
-    receivedHSTSResult(info) {
-      for (let i = 0; i < this.hstsObservers_.length; i++) {
-        this.hstsObservers_[i].onHSTSQueryResult(info);
-      }
-    },
-
-    receivedExpectCTResult(info) {
-      for (let i = 0; i < this.expectCTObservers_.length; i++) {
-        this.expectCTObservers_[i].onExpectCTQueryResult(info);
-      }
-    },
-
-    receivedExpectCTTestReportResult(result) {
-      for (let i = 0; i < this.expectCTObservers_.length; i++) {
-        this.expectCTObservers_[i].onExpectCTTestReportResult(result);
-      }
-    },
-
-    receivedSetNetworkDebugMode(status) {
-      for (let i = 0; i < this.setNetworkDebugModeObservers_.length; i++) {
-        this.setNetworkDebugModeObservers_[i].onSetNetworkDebugMode(status);
-      }
-    },
-
-    //--------------------------------------------------------------------------
-
-    /**
-     * Adds a listener for the results of HSTS (HTTPS Strict Transport Security)
-     * queries. The observer will be called back with:
-     *
-     *   observer.onHSTSQueryResult(result);
-     */
-    addHSTSObserver(observer) {
-      this.hstsObservers_.push(observer);
-    },
-
-    /**
-     * Adds a listener for the results of Expect-CT queries. The observer will
-     * be called back with:
-     *
-     *   observer.onExpectCTQueryResult(result);
-     */
-    addExpectCTObserver(observer) {
-      this.expectCTObservers_.push(observer);
-    },
-
-    /**
-     * Adds a listener for network debugging mode status. The observer
-     * will be called back with:
-     *
-     *   observer.onSetNetworkDebugMode(status);
-     */
-    addSetNetworkDebugModeObserver(observer) {
-      this.setNetworkDebugModeObservers_.push(observer);
-    },
-  };
-
-  return BrowserBridge;
-})();
+addSingletonGetter(BrowserBridge);

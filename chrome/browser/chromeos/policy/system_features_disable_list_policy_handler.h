@@ -18,13 +18,16 @@ namespace policy {
 // A system feature that can be disabled by SystemFeaturesDisableList policy.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum SystemFeature {
+enum SystemFeature : int {
   kUnknownSystemFeature = 0,
   kCamera = 1,           // The camera chrome app on Chrome OS.
   kBrowserSettings = 2,  // Browser settings.
   kOsSettings = 3,       // The settings feature on Chrome OS.
   kScanning = 4,         // The scan SWA on Chrome OS.
-  kMaxValue = kScanning
+  kWebStore = 5,         // The web store chrome app on Chrome OS.
+  kCanvas = 6,           // The canvas web app on Chrome OS.
+  kGoogleNews = 7,       // The Google news web app on Chrome OS.
+  kMaxValue = kGoogleNews
 };
 
 // A disabling mode that decides the user experience when a system feature is
@@ -40,6 +43,9 @@ extern const char kCameraFeature[];
 extern const char kBrowserSettingsFeature[];
 extern const char kOsSettingsFeature[];
 extern const char kScanningFeature[];
+extern const char kWebStoreFeature[];
+extern const char kCanvasFeature[];
+extern const char kGoogleNewsFeature[];
 
 extern const char kBlockedDisableMode[];
 extern const char kHiddenDisableMode[];
@@ -53,6 +59,7 @@ class SystemFeaturesDisableListPolicyHandler
   ~SystemFeaturesDisableListPolicyHandler() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
+  static SystemFeature GetSystemFeatureFromAppId(const std::string& app_id);
 
  protected:
   // ListPolicyHandler:

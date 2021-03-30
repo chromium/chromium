@@ -73,8 +73,15 @@ XlibDisplay::XlibDisplay(const std::string& address) {
 
 DISABLE_CFI_ICALL
 XlibDisplay::~XlibDisplay() {
-  if (display_)
-    GetXlibLoader()->XCloseDisplay(display_);
+  if (!display_)
+    return;
+
+  auto* loader = GetXlibLoader();
+  // Events are not processed on |display_|, so if any client asks to receive
+  // events, they will just queue up and leak memory.  This check makes sure
+  // |display_| never had any pending events before it is closed.
+  CHECK(!loader->XPending(display_));
+  loader->XCloseDisplay(display_);
 }
 
 DISABLE_CFI_ICALL

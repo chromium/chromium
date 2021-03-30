@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.photo_picker;
 
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
@@ -140,7 +141,6 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     @After
     public void tearDown() throws Exception {
-        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> { return mDismissed; }));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
     }
 
@@ -272,9 +272,9 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
                 TestThreadUtils.runOnUiThreadBlocking(new Callable<PhotoPickerDialog>() {
                     @Override
                     public PhotoPickerDialog call() {
-                        final PhotoPickerDialog dialog =
-                                new PhotoPickerDialog(mWindowAndroid, contentResolver,
-                                        PhotoPickerDialogTest.this, multiselect, mimeTypes);
+                        final PhotoPickerDialog dialog = new PhotoPickerDialog(mWindowAndroid,
+                                contentResolver, PhotoPickerDialogTest.this, multiselect,
+                                /* animatedThumbnailsSupported = */ true, mimeTypes);
                         dialog.show();
                         return dialog;
                     }
@@ -329,6 +329,7 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         TouchCommon.singleClickView(done);
         mOnActionCallback.waitForCallback(callCount, 1);
         Assert.assertEquals(PhotoPickerAction.PHOTOS_SELECTED, mLastActionRecorded);
+        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> { return mDismissed; }));
     }
 
     private void clickCancel() throws Exception {
@@ -340,6 +341,7 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         categoryView.onClick(cancel);
         mOnActionCallback.waitForCallback(callCount, 1);
         Assert.assertEquals(PhotoPickerAction.CANCEL, mLastActionRecorded);
+        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> { return mDismissed; }));
     }
 
     private void playVideo(Uri uri) throws Exception {
@@ -350,7 +352,10 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
     }
 
     private void dismissDialog() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mDialog.dismiss());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDialog.dismiss();
+            Assert.assertTrue(mDismissed);
+        });
     }
 
     /**
@@ -459,7 +464,7 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     @Test
     @LargeTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.N) // Video is only supported on N+.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     public void testVideoPlayerPlayAndRestart() throws Throwable {
         // Requesting to play a video is not a case of an accidental disk read on the UI thread.
         StrictMode.ThreadPolicy oldPolicy = TestThreadUtils.runOnUiThreadBlocking(
@@ -525,7 +530,7 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
     @Test
     @LargeTest
     @DisableAnimationsTestRule.EnsureAnimationsOn
-    @MinAndroidSdkLevel(Build.VERSION_CODES.N) // Video is only supported on N+.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1092104")
     public void testVideoPlayerAnimations() throws Throwable {
         PickerVideoPlayer.setShortAnimationTimesForTesting(true);
@@ -610,6 +615,30 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         } finally {
             TestThreadUtils.runOnUiThreadBlocking(() -> { StrictMode.setThreadPolicy(oldPolicy); });
         }
+    }
+
+    @Test
+    @LargeTest
+    public void testOrientationChanges() throws Throwable {
+        setupTestFiles();
+        createDialog(true, Arrays.asList("image/*")); // Multi-select = true.
+        Assert.assertTrue(mDialog.isShowing());
+
+        // Simulate an early configuration change for the photo grid.
+        Configuration configuration = getActivity().getResources().getConfiguration();
+        PickerCategoryView categoryView = mDialog.getCategoryViewForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { categoryView.onConfigurationChanged(configuration); });
+
+        waitForDecoder();
+
+        // Simulate an early configuration change for the video player (before showing).
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PickerVideoPlayer videoPlayer = categoryView.getVideoPlayerForTesting();
+            videoPlayer.onConfigurationChanged(configuration);
+        });
+
+        dismissDialog();
     }
 
     @Test

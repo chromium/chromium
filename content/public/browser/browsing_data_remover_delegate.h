@@ -61,6 +61,13 @@ class BrowsingDataRemoverDelegate {
       BrowsingDataFilterBuilder* filter_builder,
       uint64_t origin_type_mask,
       base::OnceCallback<void(/*failed_data_types=*/uint64_t)> callback) = 0;
+
+  // Called when the BrowsingDataRemover starts executing a task.
+  virtual void OnStartRemoving() {}
+
+  // Called when the BrowsingDataRemover is done executing all the tasks in its
+  // queue.
+  virtual void OnDoneRemoving() {}
 };
 
 }  // namespace content

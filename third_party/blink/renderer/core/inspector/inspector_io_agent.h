@@ -25,10 +25,9 @@ class CORE_EXPORT InspectorIOAgent final
     : public InspectorBaseAgent<protocol::IO::Metainfo> {
  public:
   InspectorIOAgent(v8::Isolate*, v8_inspector::V8InspectorSession*);
-
- private:
   ~InspectorIOAgent() override;
 
+ private:
   void Restore() override {}
 
   // Called from the front-end.

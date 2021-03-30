@@ -30,7 +30,7 @@ class ASH_EXPORT PrivacyScreenToastView : public views::View,
   void SetPrivacyScreenEnabled(bool enabled, bool managed);
 
   // Returns the accessible name for the view.
-  base::string16 GetAccessibleName();
+  std::u16string GetAccessibleName();
 
   // Returns true if the toggle button is focused.
   bool IsButtonFocused() const;

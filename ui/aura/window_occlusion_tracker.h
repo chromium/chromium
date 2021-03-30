@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/window.h"
@@ -381,7 +381,8 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   int num_pause_occlusion_tracking_ = 0;
 
   // Tracks the observed windows.
-  ScopedObserver<Window, WindowObserver> window_observer_{this};
+  base::ScopedMultiSourceObservation<Window, WindowObserver>
+      window_observations_{this};
 
   // Callback to be invoked for additional window has content check.
   WindowHasContentCallback window_has_content_callback_;

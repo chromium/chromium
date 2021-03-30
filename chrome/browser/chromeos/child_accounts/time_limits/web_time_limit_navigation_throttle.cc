@@ -184,7 +184,7 @@ WebTimeLimitNavigationThrottle::WillStartOrRedirectRequest() {
 
     app_time::WebTimeNavigationObserver* observer =
         app_time::WebTimeNavigationObserver::FromWebContents(web_contents);
-    const base::Optional<base::string16>& prev_title =
+    const base::Optional<std::u16string>& prev_title =
         observer ? observer->previous_title() : base::nullopt;
 
     return NavigationThrottle::ThrottleCheckResult(

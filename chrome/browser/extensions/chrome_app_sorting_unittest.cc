@@ -15,6 +15,8 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace keys = manifest_keys;
@@ -586,17 +588,17 @@ class ChromeAppSortingPreinstalledAppsBase : public PrefsPrepopulatedTestBase {
     simple_dict.SetString(keys::kLaunchLocalPath, "fake.html");
 
     std::string error;
-    app1_scoped_ = Extension::Create(
-        prefs_.temp_dir().AppendASCII("app1_"), Manifest::EXTERNAL_PREF,
-        simple_dict, Extension::NO_FLAGS, &error);
+    app1_scoped_ = Extension::Create(prefs_.temp_dir().AppendASCII("app1_"),
+                                     ManifestLocation::kExternalPref,
+                                     simple_dict, Extension::NO_FLAGS, &error);
     prefs()->OnExtensionInstalled(app1_scoped_.get(),
                                   Extension::ENABLED,
                                   syncer::StringOrdinal(),
                                   std::string());
 
-    app2_scoped_ = Extension::Create(
-        prefs_.temp_dir().AppendASCII("app2_"), Manifest::EXTERNAL_PREF,
-        simple_dict, Extension::NO_FLAGS, &error);
+    app2_scoped_ = Extension::Create(prefs_.temp_dir().AppendASCII("app2_"),
+                                     ManifestLocation::kExternalPref,
+                                     simple_dict, Extension::NO_FLAGS, &error);
     prefs()->OnExtensionInstalled(app2_scoped_.get(),
                                   Extension::ENABLED,
                                   syncer::StringOrdinal(),
@@ -756,7 +758,7 @@ class ChromeAppSortingDefaultOrdinalsBase : public ExtensionPrefsTest {
 
     std::string errors;
     scoped_refptr<Extension> app = Extension::Create(
-        prefs_.temp_dir().AppendASCII(name), Manifest::EXTERNAL_PREF,
+        prefs_.temp_dir().AppendASCII(name), ManifestLocation::kExternalPref,
         simple_dict, Extension::NO_FLAGS, &errors);
     EXPECT_TRUE(app.get()) << errors;
     EXPECT_TRUE(crx_file::id_util::IdIsValid(app->id()));

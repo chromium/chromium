@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -58,7 +57,7 @@ void AddSearchEngine(int profile_index, const std::string& keyword);
 // to the verifier, if it is used.
 void EditSearchEngine(int profile_index,
                       const std::string& keyword,
-                      const base::string16& short_name,
+                      const std::u16string& short_name,
                       const std::string& new_keyword,
                       const std::string& url);
 
@@ -111,7 +110,7 @@ class HasSearchEngineChecker : public StatusChangeChecker,
 
  private:
   TemplateURLService* const service_;
-  const base::string16 keyword_;
+  const std::u16string keyword_;
   ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
       this};
 };

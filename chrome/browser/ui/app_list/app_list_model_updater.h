@@ -12,11 +12,10 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater_observer.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 
-class ChromeAppListItem;
 class ChromeSearchResult;
 
 namespace ui {
@@ -61,7 +60,7 @@ class AppListModelUpdater {
   virtual void SetStatus(ash::AppListModelStatus status) {}
   // For SearchModel:
   virtual void SetSearchEngineIsGoogle(bool is_google) {}
-  virtual void UpdateSearchBox(const base::string16& text,
+  virtual void UpdateSearchBox(const std::u16string& text,
                                bool initiated_by_user) {}
   virtual void PublishSearchResults(
       const std::vector<ChromeSearchResult*>& results) {}
@@ -79,6 +78,8 @@ class AppListModelUpdater {
   virtual void SetItemIsPersistent(const std::string& id, bool is_persistent) {}
   virtual void SetItemFolderId(const std::string& id,
                                const std::string& folder_id) {}
+  virtual void SetNotificationBadgeColor(const std::string& id,
+                                         const SkColor color) {}
 
   virtual void SetSearchResultMetadata(
       const std::string& id,
@@ -100,6 +101,8 @@ class AppListModelUpdater {
   virtual void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) {
   }
   virtual syncer::StringOrdinal GetFirstAvailablePosition() const = 0;
+  // Returns a position which is before the first item in the item list.
+  virtual syncer::StringOrdinal GetPositionBeforeFirstItem() const = 0;
 
   // Methods for AppListSyncableService:
   virtual void AddItemToOemFolder(
@@ -144,6 +147,11 @@ class AppListModelUpdater {
   // items without parents. Note that all items in |top_level_items| should have
   // valid position.
   static syncer::StringOrdinal GetFirstAvailablePositionInternal(
+      const std::vector<ChromeAppListItem*>& top_level_items);
+
+  // Returns a position which is before the first item in the app list. If
+  // |top_level_items| is empty, creates an initial position instead.
+  static syncer::StringOrdinal GetPositionBeforeFirstItemInternal(
       const std::vector<ChromeAppListItem*>& top_level_items);
 
  private:

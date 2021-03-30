@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

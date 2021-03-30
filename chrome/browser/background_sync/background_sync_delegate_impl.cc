@@ -5,10 +5,12 @@
 #include "chrome/browser/background_sync/background_sync_delegate_impl.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/background_sync_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -34,6 +36,31 @@ BackgroundSyncDelegateImpl::BackgroundSyncDelegateImpl(Profile* profile)
 }
 
 BackgroundSyncDelegateImpl::~BackgroundSyncDelegateImpl() = default;
+
+#if !defined(OS_ANDROID)
+BackgroundSyncDelegateImpl::BackgroundSyncEventKeepAliveImpl::
+    BackgroundSyncEventKeepAliveImpl(Profile* profile) {
+  keepalive_ = std::unique_ptr<ScopedKeepAlive,
+                               content::BrowserThread::DeleteOnUIThread>(
+      new ScopedKeepAlive(KeepAliveOrigin::BACKGROUND_SYNC,
+                          KeepAliveRestartOption::DISABLED));
+  profile_keepalive_ =
+      std::unique_ptr<ScopedProfileKeepAlive,
+                      content::BrowserThread::DeleteOnUIThread>(
+          new ScopedProfileKeepAlive(profile,
+                                     ProfileKeepAliveOrigin::kBackgroundSync));
+}
+
+BackgroundSyncDelegateImpl::BackgroundSyncEventKeepAliveImpl::
+    ~BackgroundSyncEventKeepAliveImpl() = default;
+
+std::unique_ptr<content::BackgroundSyncController::BackgroundSyncEventKeepAlive>
+BackgroundSyncDelegateImpl::CreateBackgroundSyncEventKeepAlive() {
+  if (!KeepAliveRegistry::GetInstance()->IsShuttingDown())
+    return std::make_unique<BackgroundSyncEventKeepAliveImpl>(profile_);
+  return nullptr;
+}
+#endif  // !defined(OS_ANDROID)
 
 void BackgroundSyncDelegateImpl::GetUkmSourceId(
     const url::Origin& origin,
@@ -119,7 +146,7 @@ void BackgroundSyncDelegateImpl::OnEngagementEvent(
     content::WebContents* web_contents,
     const GURL& url,
     double score,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
+    site_engagement::EngagementType engagement_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (score == 0.0)
@@ -132,7 +159,7 @@ void BackgroundSyncDelegateImpl::OnEngagementEvent(
 
   suspended_periodic_sync_origins_.erase(iter);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
       profile_, url, /* can_create= */ false);
   if (!storage_partition)
     return;

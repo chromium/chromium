@@ -41,7 +41,6 @@ constexpr char kExpectedParentDisconnectedSwitch[] =
 
 const base::FilePath kBadFilePath(L"/path/to/bad.dll");
 const std::wstring kBadRegistryKey(L"HKCU:32\\Software\\ugly-uws\\nasty");
-const std::wstring kExtensionId(L"expected-extension-id");
 
 // Possible moments when the parent process can disconnect from the IPC to
 // check connection error handling in the child process.
@@ -114,7 +113,7 @@ class MockChromePrompt : public mojom::ChromePrompt {
 
   void DisableExtensions(const std::vector<std::wstring>& extension_ids,
                          DisableExtensionsCallback callback) override {
-    FAIL() << "No tests include UwE so DisableExtensions should not be called.";
+    FAIL() << "DisableExtensions is deprecated and should not be called.";
   }
 
   // Close the IPC connection on the parent process depending on the value of
@@ -204,11 +203,6 @@ class ChromePromptIPCChildProcess : public ChildProcess {
       PromptUserResponse::PromptAcceptance prompt_acceptance) {
     CHECK_EQ(expected_prompt_acceptance(), prompt_acceptance);
     // Unblocks the main thread.
-    std::move(done).Run();
-  }
-
-  void ReceiveDisableExtensionsResult(base::OnceClosure done, bool completed) {
-    CHECK(completed);
     std::move(done).Run();
   }
 

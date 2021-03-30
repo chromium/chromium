@@ -50,8 +50,8 @@ class PasswordBubbleBrowserTest
       ExecuteManagePasswordsCommand();
     } else if (StartsWith(name, "AutoSignin", base::CompareCase::SENSITIVE)) {
       test_form()->url = GURL("https://example.com");
-      test_form()->display_name = base::ASCIIToUTF16("Peter");
-      test_form()->username_value = base::ASCIIToUTF16("pet12@gmail.com");
+      test_form()->display_name = u"Peter";
+      test_form()->username_value = u"pet12@gmail.com";
       std::vector<std::unique_ptr<password_manager::PasswordForm>>
           local_credentials;
       local_credentials.push_back(
@@ -67,8 +67,6 @@ class PasswordBubbleBrowserTest
     } else if (StartsWith(name, "MoreToFixState",
                           base::CompareCase::SENSITIVE)) {
       SetupMoreToFixState();
-    } else if (StartsWith(name, "UnsafeState", base::CompareCase::SENSITIVE)) {
-      SetupUnsafeState();
     } else {
       ADD_FAILURE() << "Unknown dialog type";
       return;
@@ -105,10 +103,6 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_SafeState) {
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_UnsafeState) {
   ShowAndVerifyUi();
 }
 

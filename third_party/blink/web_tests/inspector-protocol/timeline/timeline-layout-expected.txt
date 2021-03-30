@@ -7,7 +7,11 @@ InvalidateLayout frames match: true
 Layout frames match: true
 dirtyObjects > 0: true
 totalObjects > 0: true
-has rootNode id: true
-has root quad: true
+has layoutRoots: true
+layoutRoots is not empty: true
+layoutRoots[0] has nodeId: true
+layoutRoots[0] has depth: true
+layoutRoots[0] has quads: true
+layoutRoots[0].quads is not empty: true
 SUCCESS: found all expected events.
 

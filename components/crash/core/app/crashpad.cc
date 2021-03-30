@@ -160,6 +160,7 @@ void InitializeCrashpadImpl(bool initial_client,
 
   crashpad::AnnotationList::Register();
 
+#if !defined(OS_IOS)
   static crashpad::StringAnnotation<24> ptype_key("ptype");
   ptype_key.Set(browser_process ? base::StringPiece("browser")
                                 : base::StringPiece(process_type));
@@ -173,6 +174,11 @@ void InitializeCrashpadImpl(bool initial_client,
 
   static crashpad::StringAnnotation<24> osarch_key("osarch");
   osarch_key.Set(base::SysInfo::OperatingSystemArchitecture());
+#else
+  // "platform" is used to determine device_model on the crash server.
+  static crashpad::StringAnnotation<24> platform("platform");
+  platform.Set(base::SysInfo::HardwareModelName());
+#endif  // OS_IOS
 
   logging::SetLogMessageHandler(LogMessageHandler);
 
@@ -262,23 +268,19 @@ void SetUploadConsent(bool consent) {
                               crash_reporter_client->GetCollectStatsInSample());
 }
 
-bool GetUploadsEnabled() {
-  if (g_database) {
-    crashpad::Settings* settings = g_database->GetSettings();
-    bool enable_uploads;
-    if (settings->GetUploadsEnabled(&enable_uploads)) {
-      return enable_uploads;
-    }
-  }
-
-  return false;
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
 void DumpWithoutCrashing() {
   CRASHPAD_SIMULATE_CRASH();
 }
+
+#if defined(OS_IOS)
+void DumpWithoutCrashAndDeferProcessing() {
+  CRASHPAD_SIMULATE_CRASH_AND_DEFER_PROCESSING();
+}
+#endif
+
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)

@@ -101,7 +101,9 @@ SyncError::Severity SyncError::GetSeverity() const {
     case UNREADY_ERROR:
     case DATATYPE_POLICY_ERROR:
       return SYNC_ERROR_SEVERITY_INFO;
-    default:
+    case UNSET:
+    case DATATYPE_ERROR:
+    case CRYPTO_ERROR:
       return SYNC_ERROR_SEVERITY_ERROR;
   }
 }

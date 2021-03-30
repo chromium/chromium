@@ -56,14 +56,14 @@ class TestDialog : public DialogDelegateView {
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
     return should_handle_escape_;
   }
-  base::string16 GetWindowTitle() const override { return title_; }
+  std::u16string GetWindowTitle() const override { return title_; }
   View* GetInitiallyFocusedView() override { return input_; }
 
   void TearDown() {
     GetWidget()->Close();
   }
 
-  void set_title(const base::string16& title) { title_ = title; }
+  void set_title(const std::u16string& title) { title_ = title; }
   void set_show_close_button(bool show_close) {
     show_close_button_ = show_close;
   }
@@ -75,7 +75,7 @@ class TestDialog : public DialogDelegateView {
 
  private:
   views::Textfield* input_;
-  base::string16 title_;
+  std::u16string title_;
   bool show_close_button_ = true;
   bool should_handle_escape_ = false;
 
@@ -162,10 +162,10 @@ TEST_F(DialogTest, OkButtonAccepts) {
   EXPECT_TRUE(accepted_);
 }
 
-TEST_F(DialogTest, EscButtonCloses) {
-  EXPECT_FALSE(closed_);
+TEST_F(DialogTest, EscButtonCancels) {
+  EXPECT_FALSE(cancelled_);
   SimulateKeyPress(ui::VKEY_ESCAPE);
-  EXPECT_TRUE(closed_);
+  EXPECT_TRUE(cancelled_);
 }
 
 TEST_F(DialogTest, ReturnDirectedToOkButtonPlatformStyle) {
@@ -274,7 +274,7 @@ TEST_F(DialogTest, HitTest_WithTitle) {
   // Ensure that BubbleFrameView hit-tests as expected when the title is shown
   // and the modal type is something other than not modal.
   const NonClientView* view = dialog()->GetWidget()->non_client_view();
-  dialog()->set_title(base::ASCIIToUTF16("Title"));
+  dialog()->set_title(u"Title");
   dialog()->GetWidget()->UpdateWindowTitle();
   dialog()->GetWidget()->LayoutRootViewIfNecessary();
   BubbleFrameView* frame = static_cast<BubbleFrameView*>(view->frame_view());
@@ -309,7 +309,7 @@ TEST_F(DialogTest, HitTest_CloseButton) {
 
 TEST_F(DialogTest, BoundsAccommodateTitle) {
   TestDialog* dialog2(new TestDialog());
-  dialog2->set_title(base::ASCIIToUTF16("Title"));
+  dialog2->set_title(u"Title");
   CreateDialogWidget(dialog2);
 
   // Remove the close button so it doesn't influence the bounds if it's taller
@@ -329,7 +329,7 @@ TEST_F(DialogTest, BoundsAccommodateTitle) {
             frame2->GetPreferredSize().height());
 
   // Giving the default test dialog a title will yield the same bounds.
-  dialog()->set_title(base::ASCIIToUTF16("Title"));
+  dialog()->set_title(u"Title");
   EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
 
   dialog()->GetWidget()->UpdateWindowTitle();

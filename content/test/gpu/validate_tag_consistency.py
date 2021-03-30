@@ -12,7 +12,7 @@ import sys
 TAG_HEADER = """\
 # OS
 # tags: [ android android-lollipop android-marshmallow android-nougat
-#             android-pie
+#             android-pie android-r
 #         chromeos
 #         fuchsia
 #         linux ubuntu
@@ -21,7 +21,7 @@ TAG_HEADER = """\
 #         win win7 win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
-#             android-pixel-2 android-shield-android-tv
+#             android-pixel-2 android-pixel-4 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
@@ -33,9 +33,9 @@ TAG_HEADER = """\
 #         release release-x64 ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x7340
-#         apple apple-apple-a12z
+#         apple apple-apple-m1 apple-metal-renderer:-apple-m1
 #         arm
-#         google google-0xffff google-angle-(metal-renderer:-apple-a12z)
+#         google google-0xffff
 #         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x3e9b
 #               intel-0x5912
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
@@ -64,6 +64,8 @@ TAG_HEADER = """\
 #         mesa_lt_19.1 mesa_ge_20.1 ]
 # ASan
 # tags: [ asan no-asan ]
+# Display Server
+# tags: [ display-server-wayland display-server-x ]
 # results: [ Failure RetryOnFailure Skip ]
 """
 

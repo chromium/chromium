@@ -1,4 +1,20 @@
-# File: ../../third_party/android_deps/androidx_mediarouter.flags
+# File: ../../third_party/androidx/androidx_fragment.flags
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Help R8 to remove debug related coded. All of these static constants are
+# initialized to: Log.isLoggable(DEBUG, TAG).
+
+-assumevalues class androidx.fragment.** {
+  static boolean DEBUG return false;
+}
+
+-assumenosideeffects class androidx.fragment.app.FragmentManager {
+  static boolean isLoggingEnabled(...) return false;
+}
+
+# File: ../../third_party/androidx/androidx_mediarouter.flags
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -241,15 +257,6 @@
   @org.chromium.base.annotations.RemovableInRelease *;
 }
 
-# File: ../../base/android/proguard/enable_obfuscation.flags
-# Copyright 2016 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-# As of August 11, 2016, obfuscation was found to save 660kb on our .dex size
-# and 53kb memory/process (through shrinking method/string counts).
--repackageclasses ''
-
 # File: ../../chrome/android/proguard/main.flags
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -459,7 +466,7 @@
   public boolean requiresSignIn();
 }
 
-# File: obj/third_party/android_deps/androidx_annotation_annotation_experimental_java/proguard.txt
+# File: obj/third_party/androidx/androidx_annotation_annotation_experimental_java/proguard.txt
 # Copyright (C) 2020 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -476,13 +483,15 @@
 
 # Ignore missing Kotlin meta-annotations so that this library can be used
 # without adding a compileOnly dependency on the Kotlin standard library.
+-dontwarn kotlin.Deprecated
 -dontwarn kotlin.Metadata
+-dontwarn kotlin.ReplaceWith
 -dontwarn kotlin.annotation.AnnotationRetention
 -dontwarn kotlin.annotation.AnnotationTarget
 -dontwarn kotlin.annotation.Retention
 -dontwarn kotlin.annotation.Target
 
-# File: obj/third_party/android_deps/androidx_appcompat_appcompat_java/proguard.txt
+# File: obj/third_party/androidx/androidx_appcompat_appcompat_java/proguard.txt
 # Copyright (C) 2018 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -506,7 +515,28 @@
   <methods>;
 }
 
-# File: obj/third_party/android_deps/androidx_lifecycle_lifecycle_viewmodel_savedstate_java/proguard.txt
+# File: obj/third_party/androidx/androidx_fragment_fragment_java/proguard.txt
+# Copyright (C) 2020 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# The default FragmentFactory creates Fragment instances using reflection
+-if public class ** extends androidx.fragment.app.Fragment
+-keepclasseswithmembers,allowobfuscation public class <1> {
+    public <init>();
+}
+
+# File: obj/third_party/androidx/androidx_lifecycle_lifecycle_viewmodel_savedstate_java/proguard.txt
 -keepclassmembers,allowobfuscation class * extends androidx.lifecycle.ViewModel {
     <init>(androidx.lifecycle.SavedStateHandle);
 }
@@ -515,7 +545,7 @@
     <init>(android.app.Application,androidx.lifecycle.SavedStateHandle);
 }
 
-# File: obj/third_party/android_deps/androidx_media_media_java/proguard.txt
+# File: obj/third_party/androidx/androidx_media_media_java/proguard.txt
 # Copyright (C) 2017 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -540,7 +570,7 @@
     public static final android.os.Parcelable$Creator *;
 }
 
-# File: obj/third_party/android_deps/androidx_mediarouter_mediarouter_java/proguard.txt
+# File: obj/third_party/androidx/androidx_mediarouter_mediarouter_java/proguard.txt
 # Copyright 2019 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -558,7 +588,7 @@
 # Prevent MediaRouteActionProvider from being removed or renamed.
 -keep class androidx.mediarouter.app.MediaRouteActionProvider { public <init>(...); }
 
-# File: obj/third_party/android_deps/androidx_recyclerview_recyclerview_java/proguard.txt
+# File: obj/third_party/androidx/androidx_recyclerview_recyclerview_java/proguard.txt
 # Copyright (C) 2015 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -585,7 +615,7 @@
     public boolean isLayoutSuppressed();
 }
 
-# File: obj/third_party/android_deps/androidx_savedstate_savedstate_java/proguard.txt
+# File: obj/third_party/androidx/androidx_savedstate_savedstate_java/proguard.txt
 # Copyright (C) 2019 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -604,7 +634,7 @@
     <init>();
 }
 
-# File: obj/third_party/android_deps/androidx_transition_transition_java/proguard.txt
+# File: obj/third_party/androidx/androidx_transition_transition_java/proguard.txt
 # Copyright (C) 2017 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -624,7 +654,7 @@
   androidx.transition.ChangeBounds$ViewBounds mViewBounds;
 }
 
-# File: obj/third_party/android_deps/androidx_vectordrawable_vectordrawable_animated_java/proguard.txt
+# File: obj/third_party/androidx/androidx_vectordrawable_vectordrawable_animated_java/proguard.txt
 # Copyright (C) 2016 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -645,8 +675,8 @@
    *** get*();
 }
 
-# File: obj/third_party/android_deps/androidx_versionedparcelable_versionedparcelable_java/proguard.txt
--keep public class * implements androidx.versionedparcelable.VersionedParcelable
+# File: obj/third_party/androidx/androidx_versionedparcelable_versionedparcelable_java/proguard.txt
+-keep class * implements androidx.versionedparcelable.VersionedParcelable
 -keep public class android.support.**Parcelizer { *; }
 -keep public class androidx.**Parcelizer { *; }
 -keep public class androidx.versionedparcelable.ParcelImpl
@@ -700,6 +730,27 @@
     @com.google.vr.dynamite.client.UsedByReflection *;
 }
 
+# File: obj/third_party/android_deps/google_android_datatransport_transport_api_java/proguard.txt
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.auto.value.AutoValue$Builder
+
+# File: obj/third_party/android_deps/google_firebase_firebase_common_java/proguard.txt
+-dontwarn com.google.firebase.platforminfo.KotlinDetector
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.auto.value.AutoValue$Builder
+
+# File: obj/third_party/android_deps/google_firebase_firebase_components_java/proguard.txt
+-dontwarn com.google.firebase.components.Component$Instantiation
+-dontwarn com.google.firebase.components.Component$ComponentType
+
+-keep class * implements com.google.firebase.components.ComponentRegistrar
+
+# File: obj/third_party/android_deps/google_firebase_firebase_messaging_java/proguard.txt
+# Analytics library is optional.
+# Access to this class is protected by try/catch(NoClassDefFoundError e)
+# b/35686744 Don't fail during proguard if the class is missing from the APK.
+-dontwarn com.google.android.gms.measurement.AppMeasurement*
+
 # File: obj/third_party/android_deps/google_play_services_base_java/proguard.txt
 # b/35135904 Ensure that proguard will not strip the mResultGuardian.
 -keepclassmembers class com.google.android.gms.common.api.internal.BasePendingResult {
@@ -725,12 +776,12 @@
 
 # Keep the classes/members we need for client functionality.
 -keep @interface android.support.annotation.Keep
--keep @androidx.annotation.Keep class *
+-keep @android.support.annotation.Keep class *
 -keepclasseswithmembers class * {
-  @androidx.annotation.Keep <fields>;
+  @android.support.annotation.Keep <fields>;
 }
 -keepclasseswithmembers class * {
-  @androidx.annotation.Keep <methods>;
+  @android.support.annotation.Keep <methods>;
 }
 
 # Keep androidX equivalent of above android.support to allow Jetification.
@@ -814,7 +865,9 @@
 }
 
 # File: //build/android/gyp/proguard.py (generated rules)
+-ignorewarnings
 # THIS LINE WAS OMITTED
+-repackageclasses ''
 -keep @interface org.chromium.base.annotations.VerifiesOnNMR1
 -if @org.chromium.base.annotations.VerifiesOnNMR1 class * {
     *** *(...);
@@ -874,4 +927,14 @@
 }
 -keepclassmembers,allowobfuscation class ** {
   @org.chromium.base.annotations.VerifiesOnR <methods>;
+}
+-keep @interface org.chromium.base.annotations.VerifiesOnS
+-if @org.chromium.base.annotations.VerifiesOnS class * {
+    *** *(...);
+}
+-keep,allowobfuscation class <1> {
+    *** <2>(...);
+}
+-keepclassmembers,allowobfuscation class ** {
+  @org.chromium.base.annotations.VerifiesOnS <methods>;
 }

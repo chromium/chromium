@@ -53,7 +53,7 @@ class FreezingVoteDecorator : public GraphOwnedDefaultImpl,
   void OnVoteInvalidated(freezing::FreezingVoterId voter_id,
                          const PageNode* page_node) override;
 
-  freezing::FreezingVoteConsumerDefaultImpl vote_consumer_default_impl_{this};
+  freezing::FreezingVotingChannelFactory freezing_voting_channel_factory_{this};
   freezing::FreezingVoteAggregator freezing_vote_aggregator_;
 };
 

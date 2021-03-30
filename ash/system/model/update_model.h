@@ -5,10 +5,11 @@
 #ifndef ASH_SYSTEM_MODEL_UPDATE_MODEL_H_
 #define ASH_SYSTEM_MODEL_UPDATE_MODEL_H_
 
+#include <string>
+
 #include "ash/public/cpp/update_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 
 namespace ash {
 
@@ -42,8 +43,8 @@ class UpdateModel {
   // The |notification_body| changes the text of the notification, as it
   // contains a countdown until the required reboot.
   void SetUpdateNotificationState(NotificationStyle style,
-                                  const base::string16& notification_title,
-                                  const base::string16& notification_body);
+                                  const std::u16string& notification_title,
+                                  const std::u16string& notification_body);
 
   // If |available| is true, a software update is available but user's agreement
   // is required as current connection is cellular. If |available| is false, the
@@ -58,10 +59,10 @@ class UpdateModel {
   bool rollback() const { return rollback_; }
   UpdateType update_type() const { return update_type_; }
   NotificationStyle notification_style() const { return notification_style_; }
-  const base::string16& notification_title() const {
+  const std::u16string& notification_title() const {
     return notification_title_;
   }
-  const base::string16& notification_body() const { return notification_body_; }
+  const std::u16string& notification_body() const { return notification_body_; }
   bool update_over_cellular_available() const {
     return update_over_cellular_available_;
   }
@@ -76,9 +77,9 @@ class UpdateModel {
   UpdateType update_type_ = UpdateType::kSystem;
   NotificationStyle notification_style_ = NotificationStyle::kDefault;
   // Custom title for an OS update, usually due to RelaunchNotification policy.
-  base::string16 notification_title_;
+  std::u16string notification_title_;
   // Custom body for an OS update, usually due to RelaunchNotification policy.
-  base::string16 notification_body_;
+  std::u16string notification_body_;
   bool update_over_cellular_available_ = false;
 
   base::ObserverList<UpdateObserver>::Unchecked observers_;

@@ -26,8 +26,8 @@ class PasswordSaveUnsyncedCredentialsLocallyViewTest
         .WillByDefault(ReturnRef(unsynced_credentials_));
 
     unsynced_credentials_.resize(1);
-    unsynced_credentials_[0].username_value = ASCIIToUTF16("user");
-    unsynced_credentials_[0].password_value = ASCIIToUTF16("password");
+    unsynced_credentials_[0].username_value = u"user";
+    unsynced_credentials_[0].password_value = u"password";
   }
   ~PasswordSaveUnsyncedCredentialsLocallyViewTest() override = default;
 

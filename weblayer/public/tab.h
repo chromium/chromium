@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -73,7 +72,7 @@ class Tab {
   // first-party scripts in the page, and injected scripts. Use with caution,
   // only pass false for this argument if you know this isn't an issue or you
   // need to interact with first-party scripts.
-  virtual void ExecuteScript(const base::string16& script,
+  virtual void ExecuteScript(const std::u16string& script,
                              bool use_separate_isolate,
                              JavaScriptResultCallback callback) = 0;
 
@@ -105,14 +104,14 @@ class Tab {
   //
   // Returns an empty string on success. On failure, the return string gives
   // an error message.
-  virtual base::string16 AddWebMessageHostFactory(
+  virtual std::u16string AddWebMessageHostFactory(
       std::unique_ptr<WebMessageHostFactory> factory,
-      const base::string16& js_object_name,
+      const std::u16string& js_object_name,
       const std::vector<std::string>& allowed_origin_rules) = 0;
 
   // Removes the WebMessageHostFactory registered under |js_object_name|.
   virtual void RemoveWebMessageHostFactory(
-      const base::string16& js_object_name) = 0;
+      const std::u16string& js_object_name) = 0;
 
   // Creates a FaviconFetcher that notifies a FaviconFetcherDelegate when
   // the favicon changes.

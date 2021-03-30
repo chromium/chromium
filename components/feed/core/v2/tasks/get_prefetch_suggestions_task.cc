@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "components/feed/core/proto/v2/wire/stream_structure.pb.h"
 #include "components/feed/core/v2/feed_store.h"
@@ -50,13 +51,15 @@ GetPrefetchSuggestionsTask::GetPrefetchSuggestionsTask(
 GetPrefetchSuggestionsTask::~GetPrefetchSuggestionsTask() = default;
 
 void GetPrefetchSuggestionsTask::Run() {
-  if (stream_->GetModel()) {
-    PullSuggestionsFromModel(*stream_->GetModel());
+  if (stream_->GetModel(kForYouStream)) {
+    PullSuggestionsFromModel(*stream_->GetModel(kForYouStream));
     return;
   }
 
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      LoadStreamFromStoreTask::LoadType::kFullLoad, stream_->GetStore(),
+      LoadStreamFromStoreTask::LoadType::kFullLoad, kForYouStream,
+      stream_->GetStore(),
+      /*missed_last_refresh=*/false,
       base::BindOnce(&GetPrefetchSuggestionsTask::LoadStreamComplete,
                      base::Unretained(this)));
 

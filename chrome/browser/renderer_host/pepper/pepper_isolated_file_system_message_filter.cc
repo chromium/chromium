@@ -112,9 +112,7 @@ PepperIsolatedFileSystemMessageFilter::CreateCrxFileSystem(Profile* profile) {
   // First level directory for isolated filesystem to lookup.
   std::string kFirstLevelDirectory("crxfs");
   return storage::IsolatedContext::GetInstance()->RegisterFileSystemForPath(
-      storage::kFileSystemTypeNativeLocal,
-      std::string(),
-      extension->path(),
+      storage::kFileSystemTypeLocal, std::string(), extension->path(),
       &kFirstLevelDirectory);
 #else
   return storage::IsolatedContext::ScopedFSHandle();

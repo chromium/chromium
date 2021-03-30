@@ -16,6 +16,8 @@ namespace ash {
 
 class WmHighlightItemBorder;
 
+// TODO(minch): Remove NewDeskButton once Bento feature is fully launched. Since
+// ExpandedStateNewDeskButton will be used instead.
 // A button view that shows up in the top-right corner of the screen when
 // overview mode is on, which is used to create a new virtual desk.
 class ASH_EXPORT NewDeskButton
@@ -49,14 +51,13 @@ class ASH_EXPORT NewDeskButton
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   SkColor GetInkDropBaseColor() const override;
-  std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
-      const override;
   void OnThemeChanged() override;
 
   // OverviewHighlightController::OverviewHighlightableView:
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
   void MaybeCloseHighlightedView() override;
+  void MaybeSwapHighlightedView(bool right) override;
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;
 

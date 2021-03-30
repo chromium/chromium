@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Autoclick} from './autoclick/autoclick.js';
+import {Dictation} from './dictation/dictation.js';
 import {Magnifier} from './magnifier/magnifier.js';
 
 /**
@@ -15,6 +16,8 @@ export class AccessibilityCommon {
     this.autoclick_ = null;
     /** @private {Magnifier} */
     this.magnifier_ = null;
+    /** @private {Dictation} */
+    this.dictation_ = null;
 
     this.init_();
   }
@@ -52,6 +55,11 @@ export class AccessibilityCommon {
         {}, this.onMagnifierUpdated_.bind(this, Magnifier.Type.DOCKED));
     chrome.accessibilityFeatures.dockedMagnifier.onChange.addListener(
         this.onMagnifierUpdated_.bind(this, Magnifier.Type.DOCKED));
+
+    chrome.accessibilityFeatures.dictation.get(
+        {}, this.onDictationUpdated_.bind(this));
+    chrome.accessibilityFeatures.dictation.onChange.addListener(
+        this.onDictationUpdated_.bind(this));
   }
 
   /**
@@ -83,6 +91,19 @@ export class AccessibilityCommon {
         !details.value && this.magnifier_ && this.magnifier_.type === type) {
       this.magnifier_.onMagnifierDisabled();
       this.magnifier_ = null;
+    }
+  }
+
+  /**
+   * Called when the dictation feature is enabled or disabled.
+   * @param {*} details
+   * @private
+   */
+  onDictationUpdated_(details) {
+    if (details.value && !this.dictation_) {
+      this.dictation_ = new Dictation();
+    } else if (!details.value && this.dictation_) {
+      this.dictation_ = null;
     }
   }
 }

@@ -68,6 +68,8 @@ class MultiDeviceSection
   // Nearby Share enabled pref change observer.
   void OnNearbySharingEnabledChanged();
 
+  bool IsFeatureSupported(multidevice_setup::mojom::Feature feature);
+
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   phonehub::PhoneHubManager* phone_hub_manager_;
   android_sms::AndroidSmsService* android_sms_service_;

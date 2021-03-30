@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {CustomElement} from './custom_element.js';
 import {TabAlertState} from './tabs_api_proxy.js';
 
 /** @const {string} */

@@ -5,66 +5,39 @@
 #include "chrome/browser/sharing/sms/sms_remote_fetcher.h"
 
 #include "base/check.h"
-#include "chrome/browser/sharing/sharing_constants.h"
-#include "chrome/browser/sharing/sharing_service.h"
-#include "chrome/browser/sharing/sharing_service_factory.h"
+#include "build/build_config.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
-#include "components/sync_device_info/device_info.h"
-#include "content/public/browser/browser_context.h"
+#include "chrome/browser/sharing/sms/sms_remote_fetcher_ui_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
-namespace {
-const uint32_t kDefaultTimeoutSeconds = 60;
-}  // namespace
-
-void FetchRemoteSms(
-    content::BrowserContext* context,
+base::OnceClosure FetchRemoteSms(
+    content::WebContents* web_contents,
     const url::Origin& origin,
-    base::OnceCallback<void(base::Optional<std::string>)> callback) {
+    base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
+                            base::Optional<std::string>,
+                            base::Optional<content::SmsFetchFailureType>)>
+        callback) {
+  // TODO(crbug.com/1015645): We should have a new failure type when the feature
+  // is disabled or no device is available.
   if (!base::FeatureList::IsEnabled(kWebOTPCrossDevice)) {
-    std::move(callback).Run(base::nullopt);
-    return;
+    std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
+    // kWebOTPCrossDevice will be disabled for a large number of users. There's
+    // no need to call any cancel callback in such case.
+    return base::NullCallback();
   }
 
-  SharingService* sharing_service =
-      SharingServiceFactory::GetForBrowserContext(context);
-  SharingService::SharingDeviceList devices =
-      sharing_service->GetDeviceCandidates(
-          sync_pb::SharingSpecificFields::SMS_FETCHER);
-
-  if (devices.empty()) {
-    // No devices available to call.
-    std::move(callback).Run(base::nullopt);
-    return;
-  }
-
-  // Sends to the first device that has the capability enabled.
-  // TODO(crbug.com/1015645): figure out the routing strategy, possibly
-  // requiring UX to allow the users to specify the device.
-  const std::unique_ptr<syncer::DeviceInfo>& device = devices.front();
-
-  chrome_browser_sharing::SharingMessage request;
-
-  request.mutable_sms_fetch_request()->set_origin(origin.Serialize());
-
-  sharing_service->SendMessageToDevice(
-      *device.get(), base::TimeDelta::FromSeconds(kDefaultTimeoutSeconds),
-      std::move(request),
-      base::BindOnce(
-          [](base::OnceCallback<void(base::Optional<std::string>)> callback,
-             SharingSendMessageResult result,
-             std::unique_ptr<chrome_browser_sharing::ResponseMessage>
-                 response) {
-            if (result != SharingSendMessageResult::kSuccessful) {
-              std::move(callback).Run(base::nullopt);
-              return;
-            }
-
-            DCHECK(response);
-            DCHECK(response->has_sms_fetch_response());
-
-            std::move(callback).Run(
-                response->sms_fetch_response().one_time_code());
-          },
-          std::move(callback)));
+// The current distinction of local fetcher being non-Android and remote fetcher
+// being Android is a simplification we have made at this point and not a
+// fundamental limitation. This may be relaxed in the future. e.g. allows
+// tablets that run Android fetch a remote sms.
+#if !defined(OS_ANDROID)
+  auto* ui_controller =
+      SmsRemoteFetcherUiController::GetOrCreateFromWebContents(web_contents);
+  return ui_controller->FetchRemoteSms(origin, std::move(callback));
+#else
+  std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
+  return base::NullCallback();
+#endif
 }

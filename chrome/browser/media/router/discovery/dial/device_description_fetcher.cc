@@ -59,7 +59,7 @@ void DeviceDescriptionFetcher::ProcessResponse(const std::string& response) {
       !response_info->headers->GetNormalizedHeader(kApplicationUrlHeaderName,
                                                    &app_url_header) ||
       app_url_header.empty()) {
-    ReportError(net::Error::OK, "Missing or empty Application-URL:");
+    ReportError("Missing or empty Application-URL:");
     return;
   }
 
@@ -72,8 +72,7 @@ void DeviceDescriptionFetcher::ProcessResponse(const std::string& response) {
   if (!device_ip.AssignFromIPLiteral(
           device_description_url_.HostNoBracketsPiece()) ||
       !DialDeviceData::IsValidDialAppUrl(app_url, device_ip)) {
-    ReportError(net::Error::OK,
-                base::StringPrintf("Invalid Application-URL: %s",
+    ReportError(base::StringPrintf("Invalid Application-URL: %s",
                                    app_url_header.c_str()));
     return;
   }
@@ -86,8 +85,8 @@ void DeviceDescriptionFetcher::ProcessResponse(const std::string& response) {
   std::move(success_cb_).Run(DialDeviceDescriptionData(response, app_url));
 }
 
-void DeviceDescriptionFetcher::ReportError(int response_code,
-                                           const std::string& message) {
+void DeviceDescriptionFetcher::ReportError(const std::string& message,
+                                           base::Optional<int> response_code) {
   std::move(error_cb_).Run(message);
 }
 

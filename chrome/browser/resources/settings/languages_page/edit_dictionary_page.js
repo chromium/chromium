@@ -13,18 +13,18 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../prefs/prefs.m.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../prefs/prefs.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.m.js';
+import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
 
-import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.m.js';
+import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 
 // Max valid word size defined in
 // https://cs.chromium.org/chromium/src/components/spellcheck/common/spellcheck_common.h?l=28

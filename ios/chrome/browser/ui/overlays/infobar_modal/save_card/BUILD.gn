@@ -41,7 +41,6 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/infobars/core",
-    "//components/infobars/core:feature_flags",
     "//components/prefs",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",

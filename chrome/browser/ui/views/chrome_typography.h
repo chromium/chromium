@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -110,11 +111,9 @@ int GetFontSizeDeltaBoundedByAvailableHeight(int available_height,
 // out any font size changes made to account for locale or user settings.
 int GetFontSizeDeltaIgnoringUserOrLocaleSettings(int desired_font_size);
 
-// Sets the |size_delta| and |font_weight| for text that should not be affected
-// by the Harmony spec.
+// Sets the |details| for text that should not be affected by the Harmony spec.
 void ApplyCommonFontStyles(int context,
                            int style,
-                           int* size_delta,
-                           gfx::Font::Weight* weight);
+                           ui::ResourceBundle::FontDetails& details);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_H_

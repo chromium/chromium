@@ -205,11 +205,6 @@ inline void NoBarrier_Store(volatile AtomicWord *ptr, AtomicWord value) {
       reinterpret_cast<volatile AtomicWordCastType*>(ptr), value);
 }
 
-inline void Acquire_Store(volatile AtomicWord* ptr, AtomicWord value) {
-  return base::subtle::Acquire_Store(
-      reinterpret_cast<volatile AtomicWordCastType*>(ptr), value);
-}
-
 inline void Release_Store(volatile AtomicWord* ptr, AtomicWord value) {
   return base::subtle::Release_Store(
       reinterpret_cast<volatile AtomicWordCastType*>(ptr), value);
@@ -222,11 +217,6 @@ inline AtomicWord NoBarrier_Load(volatile const AtomicWord *ptr) {
 
 inline AtomicWord Acquire_Load(volatile const AtomicWord* ptr) {
   return base::subtle::Acquire_Load(
-      reinterpret_cast<volatile const AtomicWordCastType*>(ptr));
-}
-
-inline AtomicWord Release_Load(volatile const AtomicWord* ptr) {
-  return base::subtle::Release_Load(
       reinterpret_cast<volatile const AtomicWordCastType*>(ptr));
 }
 
@@ -268,11 +258,9 @@ Atomic32 Release_CompareAndSwap(volatile Atomic32* ptr,
                                 Atomic32 old_value,
                                 Atomic32 new_value);
 void NoBarrier_Store(volatile Atomic32* ptr, Atomic32 value);
-void Acquire_Store(volatile Atomic32* ptr, Atomic32 value);
 void Release_Store(volatile Atomic32* ptr, Atomic32 value);
 Atomic32 NoBarrier_Load(volatile const Atomic32* ptr);
 Atomic32 Acquire_Load(volatile const Atomic32* ptr);
-Atomic32 Release_Load(volatile const Atomic32* ptr);
 
 // Corresponding operations on Atomic64
 Atomic64 NoBarrier_CompareAndSwap(volatile Atomic64* ptr,
@@ -289,11 +277,9 @@ Atomic64 Release_CompareAndSwap(volatile Atomic64* ptr,
                                 Atomic64 old_value,
                                 Atomic64 new_value);
 void NoBarrier_Store(volatile Atomic64* ptr, Atomic64 value);
-void Acquire_Store(volatile Atomic64* ptr, Atomic64 value);
 void Release_Store(volatile Atomic64* ptr, Atomic64 value);
 Atomic64 NoBarrier_Load(volatile const Atomic64* ptr);
 Atomic64 Acquire_Load(volatile const Atomic64* ptr);
-Atomic64 Release_Load(volatile const Atomic64* ptr);
 }  // namespace base::subtle
 }  // namespace base
 
@@ -321,20 +307,12 @@ inline AtomicWord Release_CompareAndSwap(volatile AtomicWord* ptr,
   return base::subtle::Release_CompareAndSwap(ptr, old_value, new_value);
 }
 
-inline void Acquire_Store(volatile AtomicWord* ptr, AtomicWord value) {
-  return base::subtle::Acquire_Store(ptr, value);
-}
-
 inline void Release_Store(volatile AtomicWord* ptr, AtomicWord value) {
   return base::subtle::Release_Store(ptr, value);
 }
 
 inline AtomicWord Acquire_Load(volatile const AtomicWord* ptr) {
   return base::subtle::Acquire_Load(ptr);
-}
-
-inline AtomicWord Release_Load(volatile const AtomicWord* ptr) {
-  return base::subtle::Release_Load(ptr);
 }
 #endif  // AtomicWordCastType
 
@@ -350,17 +328,11 @@ inline Atomic32 Release_CompareAndSwap(volatile Atomic32* ptr,
                                        Atomic32 new_value) {
   return base::subtle::Release_CompareAndSwap(ptr, old_value, new_value);
 }
-inline void Acquire_Store(volatile Atomic32* ptr, Atomic32 value) {
-  base::subtle::Acquire_Store(ptr, value);
-}
 inline void Release_Store(volatile Atomic32* ptr, Atomic32 value) {
   return base::subtle::Release_Store(ptr, value);
 }
 inline Atomic32 Acquire_Load(volatile const Atomic32* ptr) {
   return base::subtle::Acquire_Load(ptr);
-}
-inline Atomic32 Release_Load(volatile const Atomic32* ptr) {
-  return base::subtle::Release_Load(ptr);
 }
 
 #ifdef BASE_HAS_ATOMIC64
@@ -377,10 +349,6 @@ inline base::subtle::Atomic64 Release_CompareAndSwap(
     base::subtle::Atomic64 old_value, base::subtle::Atomic64 new_value) {
   return base::subtle::Release_CompareAndSwap(ptr, old_value, new_value);
 }
-inline void Acquire_Store(
-    volatile base::subtle::Atomic64* ptr, base::subtle::Atomic64 value) {
-  base::subtle::Acquire_Store(ptr, value);
-}
 inline void Release_Store(
     volatile base::subtle::Atomic64* ptr, base::subtle::Atomic64 value) {
   return base::subtle::Release_Store(ptr, value);
@@ -388,10 +356,6 @@ inline void Release_Store(
 inline base::subtle::Atomic64 Acquire_Load(
     volatile const base::subtle::Atomic64* ptr) {
   return base::subtle::Acquire_Load(ptr);
-}
-inline base::subtle::Atomic64 Release_Load(
-    volatile const base::subtle::Atomic64* ptr) {
-  return base::subtle::Release_Load(ptr);
 }
 
 #endif  // BASE_HAS_ATOMIC64

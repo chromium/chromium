@@ -48,11 +48,6 @@ class MEDIA_EXPORT KeySystemProperties {
   // sessions.
   virtual EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const = 0;
 
-  // Returns the support this key system provides for persistent-usage-record
-  // sessions.
-  virtual EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport()
-      const = 0;
-
   // Returns the support this key system provides for persistent state.
   virtual EmeFeatureSupport GetPersistentStateSupport() const = 0;
 

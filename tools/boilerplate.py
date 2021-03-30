@@ -22,9 +22,15 @@ LINES = [
     'found in the LICENSE file.'
 ]
 
+NO_COMPILE_LINES = [
+    'This is a "No Compile Test" suite.',
+    'https://dev.chromium.org/developers/testing/no-compile-tests'
+]
+
 EXTENSIONS_TO_COMMENTS = {
     'h': '//',
     'cc': '//',
+    'nc': '//',
     'mm': '//',
     'js': '//',
     'py': '#',
@@ -34,11 +40,21 @@ EXTENSIONS_TO_COMMENTS = {
     'typemap': '#',
 }
 
-def _GetHeader(filename):
+
+def _GetHeaderImpl(filename, lines):
   _, ext = os.path.splitext(filename)
   ext = ext[1:]
   comment = EXTENSIONS_TO_COMMENTS[ext] + ' '
-  return '\n'.join([comment + line for line in LINES])
+  return '\n'.join([comment + line for line in lines])
+
+
+def _GetHeader(filename):
+  return _GetHeaderImpl(filename, LINES)
+
+
+def _GetNoCompileHeader(filename):
+  assert (filename.endswith(".nc"))
+  return '\n' + _GetHeaderImpl(filename, NO_COMPILE_LINES)
 
 
 def _CppHeader(filename):
@@ -111,6 +127,9 @@ def _CreateFile(filename):
   if filename.endswith('.h'):
     contents += _CppHeader(filename)
   elif filename.endswith('.cc'):
+    contents += _CppImplementation(filename)
+  elif filename.endswith('.nc'):
+    contents += _GetNoCompileHeader(filename) + '\n'
     contents += _CppImplementation(filename)
   elif filename.endswith('.mm'):
     contents += _ObjCppImplementation(filename)

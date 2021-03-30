@@ -5,7 +5,6 @@
 #include "chrome/browser/apps/platform_apps/install_chrome_app.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/webstore_install_with_prompt.h"
@@ -49,14 +48,16 @@ class WebstoreInstallWithPromptAppsOnly
             profile,
             parent_window,
             extensions::WebstoreStandaloneInstaller::Callback()) {}
+  WebstoreInstallWithPromptAppsOnly(const WebstoreInstallWithPromptAppsOnly&) =
+      delete;
+  WebstoreInstallWithPromptAppsOnly& operator=(
+      const WebstoreInstallWithPromptAppsOnly&) = delete;
 
  private:
   ~WebstoreInstallWithPromptAppsOnly() override {}
 
   // extensions::WebstoreStandaloneInstaller overrides:
   void OnManifestParsed() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstoreInstallWithPromptAppsOnly);
 };
 
 void WebstoreInstallWithPromptAppsOnly::OnManifestParsed() {

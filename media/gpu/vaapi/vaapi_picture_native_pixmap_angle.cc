@@ -26,7 +26,7 @@ x11::Pixmap CreatePixmap(const gfx::Size& size) {
   auto root = connection->default_root();
 
   uint8_t depth = 0;
-  if (auto reply = connection->GetGeometry({root}).Sync())
+  if (auto reply = connection->GetGeometry(root).Sync())
     depth = reply->depth;
   else
     return x11::Pixmap::None;

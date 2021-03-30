@@ -102,7 +102,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
 
   // Parses the blocked permission settings.
   const base::ListValue* list_value = nullptr;
-  base::string16 error;
+  std::u16string error;
 
   // Set default blocked permissions, or replace with extension specific blocks.
   APIPermissionSet parsed_blocked_permissions;

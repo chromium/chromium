@@ -19,14 +19,14 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "chrome/browser/safe_browsing/download_protection/file_analyzer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
-#include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -44,24 +44,14 @@ namespace safe_browsing {
 
 class CheckClientDownloadRequestBase {
  public:
-  // URL and referrer of the window the download was started from.
-  struct TabUrls {
-    GURL url;
-    GURL referrer;
-  };
-
   CheckClientDownloadRequestBase(
       GURL source_url,
       base::FilePath target_file_path,
-      base::FilePath full_path,
-      TabUrls tab_urls,
-      std::string mime_type,
-      std::string hash,
       content::BrowserContext* browser_context,
       CheckDownloadCallback callback,
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
+      std::unique_ptr<DownloadRequestMaker> download_request_maker);
   virtual ~CheckClientDownloadRequestBase();
 
   void Start();
@@ -69,11 +59,6 @@ class CheckClientDownloadRequestBase {
   DownloadProtectionService* service() const { return service_; }
 
  protected:
-  // Prepares URLs to be put into a ping message. Currently this just shortens
-  // data: URIs, other URLs are included verbatim. If this is a sampled binary,
-  // we'll send a light-ping which strips PII from the URL.
-  std::string SanitizeUrl(const GURL& url) const;
-
   // Subclasses can call this method to mark the request as finished (for
   // example because the download was cancelled) before the safe browsing
   // check has completed. This method can end up deleting |this|.
@@ -84,34 +69,22 @@ class CheckClientDownloadRequestBase {
   using ArchivedBinaries =
       google::protobuf::RepeatedPtrField<ClientDownloadRequest_ArchivedBinary>;
 
-  bool ShouldSampleWhitelistedDownload();
+  bool ShouldSampleAllowlistedDownload();
   bool ShouldSampleUnsupportedFile(const base::FilePath& filename);
-  bool IsDownloadManuallyBlacklisted(const ClientDownloadRequest& request);
+  bool IsDownloadManuallyBlocklisted(const ClientDownloadRequest& request);
 
-  void OnUrlWhitelistCheckDone(bool is_whitelisted);
-  // Performs file feature extraction and SafeBrowsing ping for downloads that
-  // don't match the URL whitelist.
-  void AnalyzeFile();
-  void OnFileFeatureExtractionDone(FileAnalyzer::Results results);
+  void OnUrlAllowlistCheckDone(bool is_allowlisted);
+  void OnRequestBuilt(std::unique_ptr<ClientDownloadRequest> request_proto);
+
   void StartTimeout();
-  void OnCertificateWhitelistCheckDone(bool is_whitelisted);
-  void GetTabRedirects();
-  void OnGotTabRedirects(history::RedirectList redirect_list);
+  void OnCertificateAllowlistCheckDone(bool is_allowlisted);
   void SendRequest();
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
 
-  virtual bool IsSupportedDownload(
-      DownloadCheckResultReason* reason,
-      ClientDownloadRequest::DownloadType* type) = 0;
+  virtual bool IsSupportedDownload(DownloadCheckResultReason* reason) = 0;
   virtual content::BrowserContext* GetBrowserContext() const = 0;
   virtual bool IsCancelled() = 0;
   virtual base::WeakPtr<CheckClientDownloadRequestBase> GetWeakPtr() = 0;
-
-  // Called to populate any data in the request that is specific for the type of
-  // check being done. Most importantly this method is expected to set the hash
-  // and size of the download, add DOWNLOAD_URL and DOWNLOAD_REDIRECT
-  // resources to the request, and set the referrer chain.
-  virtual void PopulateRequest(ClientDownloadRequest* request) = 0;
 
   // Called right before a network request is send to the server.
   virtual void NotifySendRequest(const ClientDownloadRequest* request) = 0;
@@ -153,23 +126,20 @@ class CheckClientDownloadRequestBase {
       DownloadCheckResultReason reason) const = 0;
 
   // Called when |token_fetcher_| has finished fetching the access token.
-  void OnGotAccessToken(
-      base::Optional<signin::AccessTokenInfo> access_token_info);
+  void OnGotAccessToken(const std::string& access_token);
 
   // Called at the request start to determine if we should bailout due to the
-  // file being whitelisted by policy
-  virtual bool IsWhitelistedByPolicy() const = 0;
+  // file being allowlisted by policy
+  virtual bool IsAllowlistedByPolicy() const = 0;
+
+  // For sampled unsupported file types, replaces all URLs in
+  // |client_download_request_| with their origin.
+  void SanitizeRequest();
 
   // Source URL being downloaded from. This shuold always be set, but could be
   // for example an artificial blob: URL if there is no source URL.
   const GURL source_url_;
   const base::FilePath target_file_path_;
-  const base::FilePath full_path_;
-  // URL and referrer of the window the download was started from.
-  const GURL tab_url_;
-  const GURL tab_referrer_url_;
-  // URL chain of redirects leading to (but not including) |tab_url|.
-  std::vector<GURL> tab_redirects_;
 
   CheckDownloadCallback callback_;
 
@@ -179,51 +149,23 @@ class CheckClientDownloadRequestBase {
   base::CancelableOnceClosure timeout_closure_;
 
   std::unique_ptr<network::SimpleURLLoader> loader_;
+  std::unique_ptr<ClientDownloadRequest> client_download_request_;
   std::string client_download_request_data_;
 
-  bool archived_executable_ = false;
-  FileAnalyzer::ArchiveValid archive_is_valid_ =
-      FileAnalyzer::ArchiveValid::UNSET;
-
-#if defined(OS_MAC)
-  std::unique_ptr<std::vector<uint8_t>> disk_image_signature_;
-  google::protobuf::RepeatedPtrField<
-      ClientDownloadRequest_DetachedCodeSignature>
-      detached_code_signatures_;
-#endif
-
-  ClientDownloadRequest_SignatureInfo signature_info_;
-  std::unique_ptr<ClientDownloadRequest_ImageHeaders> image_headers_;
-  ArchivedBinaries archived_binaries_;
-
   DownloadProtectionService* const service_;
-  const scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
   const scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   const bool pingback_enabled_;
-  const std::unique_ptr<FileAnalyzer> file_analyzer_ =
-      std::make_unique<FileAnalyzer>(binary_feature_extractor_);
-  ClientDownloadRequest::DownloadType type_ =
-      ClientDownloadRequest::WIN_EXECUTABLE;
   base::CancelableTaskTracker request_tracker_;  // For HistoryService lookup.
   base::TimeTicks start_time_ = base::TimeTicks::Now();  // Used for stats.
   base::TimeTicks timeout_start_time_;
   base::TimeTicks request_start_time_;
   bool skipped_url_whitelist_ = false;
   bool skipped_certificate_whitelist_ = false;
+  bool sampled_unsupported_file_ = false;
 
   bool is_extended_reporting_ = false;
   bool is_incognito_ = false;
-  bool is_under_advanced_protection_ = false;
   bool is_enhanced_protection_ = false;
-
-  int file_count_;
-  int directory_count_;
-
-  // The mime type of the download, if known.
-  std::string mime_type_;
-
-  // The hash of the download, if known.
-  std::string hash_;
 
   // The token fetcher used to attach OAuth access tokens to requests for
   // appropriately consented users.
@@ -231,6 +173,9 @@ class CheckClientDownloadRequestBase {
 
   // The OAuth access token for the user profile, if needed in the request.
   std::string access_token_;
+
+  // Used to create the download request proto.
+  std::unique_ptr<DownloadRequestMaker> download_request_maker_;
 
   DISALLOW_COPY_AND_ASSIGN(CheckClientDownloadRequestBase);
 };  // namespace safe_browsing

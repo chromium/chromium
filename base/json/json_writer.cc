@@ -36,7 +36,8 @@ bool JSONWriter::WriteWithOptions(const Value& node,
                                   size_t max_depth) {
   json->clear();
   // Is there a better way to estimate the size of the output?
-  json->reserve(1024);
+  if (json->capacity() < 1024)
+    json->reserve(1024);
 
   JSONWriter writer(options, json, max_depth);
   bool result = writer.BuildJSONString(node, 0U);

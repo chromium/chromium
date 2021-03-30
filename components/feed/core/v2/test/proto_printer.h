@@ -12,6 +12,7 @@
 #include "components/feed/core/proto/v2/ui.pb.h"
 
 namespace feedwire {
+class ActionPayload;
 class ClientInfo;
 class ContentId;
 class DisplayInfo;
@@ -19,75 +20,34 @@ class Version;
 }  // namespace feedwire
 namespace feed {
 struct StreamModelUpdateRequest;
+#define DECLARE_PRINTER(PROTO_TYPE)                                        \
+  std::string ToTextProto(const PROTO_TYPE& v);                            \
+  inline std::ostream& operator<<(std::ostream& os, const PROTO_TYPE& v) { \
+    return os << ToTextProto(v);                                           \
+  }
 
-std::string ToTextProto(const feedwire::ContentId& v);
-std::string ToTextProto(const feedwire::Version& v);
-std::string ToTextProto(const feedwire::DisplayInfo& v);
-std::string ToTextProto(const feedwire::ClientInfo& v);
-std::string ToTextProto(const feedstore::StreamData& v);
-std::string ToTextProto(const feedstore::Metadata& v);
-std::string ToTextProto(const feedstore::StreamStructureSet& v);
-std::string ToTextProto(const feedstore::StreamStructure& v);
-std::string ToTextProto(const feedstore::Content& v);
-std::string ToTextProto(const feedstore::StreamSharedState& v);
-std::string ToTextProto(const feedstore::StoredAction& v);
-std::string ToTextProto(const feedstore::Record& v);
-std::string ToTextProto(const feedstore::DataOperation& v);
-std::string ToTextProto(const feedui::StreamUpdate& v);
+DECLARE_PRINTER(feedwire::ContentId)
+DECLARE_PRINTER(feedwire::Version)
+DECLARE_PRINTER(feedwire::DisplayInfo)
+DECLARE_PRINTER(feedwire::ClientInfo)
+DECLARE_PRINTER(feedwire::ActionPayload)
+DECLARE_PRINTER(feedstore::StreamData)
+DECLARE_PRINTER(feedstore::Metadata)
+DECLARE_PRINTER(feedstore::StreamStructureSet)
+DECLARE_PRINTER(feedstore::StreamStructure)
+DECLARE_PRINTER(feedstore::Content)
+DECLARE_PRINTER(feedstore::StreamSharedState)
+DECLARE_PRINTER(feedstore::StoredAction)
+DECLARE_PRINTER(feedstore::Record)
+DECLARE_PRINTER(feedstore::DataOperation)
+DECLARE_PRINTER(feedstore::WebFeedInfo)
+DECLARE_PRINTER(feedstore::RecommendedWebFeedIndex)
+DECLARE_PRINTER(feedstore::SubscribedWebFeeds)
+DECLARE_PRINTER(feedstore::Image)
+DECLARE_PRINTER(feedstore::UriMatcher)
+DECLARE_PRINTER(feedui::StreamUpdate)
 
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedwire::ContentId& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedwire::DisplayInfo& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os, const feedwire::Version& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedwire::ClientInfo& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedstore::StreamData& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedstore::Metadata& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedstore::StreamStructureSet& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedstore::StreamStructure& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os, const feedstore::Content& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedstore::StreamSharedState& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedstore::StoredAction& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os, const feedstore::Record& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedstore::DataOperation& v) {
-  return os << ToTextProto(v);
-}
-inline std::ostream& operator<<(std::ostream& os,
-                                const feedui::StreamUpdate& v) {
-  return os << ToTextProto(v);
-}
+#undef DECLARE_PRINTER
 
 std::ostream& operator<<(std::ostream& os, const StreamModelUpdateRequest& v);
 

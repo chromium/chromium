@@ -25,7 +25,7 @@ import androidx.browser.trusted.Token;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -63,7 +63,7 @@ public class TrustedWebActivityPermissionManager {
     private final Lazy<NotificationChannelPreserver> mPermissionPreserver;
 
     public static TrustedWebActivityPermissionManager get() {
-        return ChromeApplication.getComponent().resolveTwaPermissionManager();
+        return ChromeApplicationImpl.getComponent().resolveTwaPermissionManager();
     }
 
     @Inject

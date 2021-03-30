@@ -12,12 +12,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -26,18 +28,25 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-
-import java.net.URL;
+import org.chromium.url.GURL;
 
 /**
  * Tests for the ContextualSearchPolicy class.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class ContextualSearchPolicyTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Mock
     private ContextualSearchFakeServer mMockServer;
@@ -47,7 +56,6 @@ public class ContextualSearchPolicyTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mActivityTestRule.startMainActivityOnBlankPage();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> mPolicy = new ContextualSearchPolicy(null, mMockServer));
     }
@@ -58,7 +66,7 @@ public class ContextualSearchPolicyTest {
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                 Profile.getLastUsedRegularProfile(), true);
         try {
-            when(mMockServer.getBasePageUrl()).thenReturn(new URL("https://someUrl"));
+            when(mMockServer.getBasePageUrl()).thenReturn(new GURL("https://someUrl"));
         } catch (Exception e) {
             Assert.fail("Exception raised building a sample URL");
         }
@@ -114,7 +122,7 @@ public class ContextualSearchPolicyTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             setupAllConditionsToSendUrl();
             try {
-                when(mMockServer.getBasePageUrl()).thenReturn(new URL("ftp://someSource"));
+                when(mMockServer.getBasePageUrl()).thenReturn(new GURL("ftp://someSource"));
             } catch (Exception e) {
                 Assert.fail("Exception building FTP Uri");
             }
@@ -127,9 +135,14 @@ public class ContextualSearchPolicyTest {
     @Feature({"ContextualSearch"})
     public void testDoSendBasePageUrlWhenNonGoogleSearchEngine() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TemplateUrl defaultSearchEngine =
+                    TemplateUrlServiceFactory.get().getDefaultSearchEngineTemplateUrl();
             setupAllConditionsToSendUrl();
             TemplateUrlServiceFactory.get().setSearchEngine("yahoo.com");
             Assert.assertFalse(mPolicy.doSendBasePageUrl());
+            // Set default search engine back to default to prevent cross-talk from
+            // this test which sets it to Yahoo
+            TemplateUrlServiceFactory.get().setSearchEngine(defaultSearchEngine.getShortName());
         });
     }
 

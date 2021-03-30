@@ -65,6 +65,7 @@
       probes: [
         "CharacterDataModified",
         "DidCommitLoad",
+        'DidRestoreFromBackForwardCache',
         "DidInsertDOMNode",
         "DidInvalidateStyleAttr",
         "DidModifyDOMAttr",
@@ -172,6 +173,7 @@
         "ShouldBypassServiceWorker",
         "ShouldForceCorsPreflight",
         "WebTransportCreated",
+        "WebTransportConnectionEstablished",
         "WebTransportClosed",
         "WillDispatchEventSourceEvent",
         "WillLoadXHR",
@@ -185,11 +187,12 @@
     },
     InspectorPageAgent: {
       probes: [
-        "ConsumeCompilationCache",
+        "ApplyCompilationModeOverride",
         "DidChangeViewport",
         "DidClearDocumentOfWindowObject",
         "DidNavigateWithinDocument",
         "WillCommitLoad",
+        "DidRestoreFromBackForwardCache",
         "DidResizeMainFrame",
         "DidRunJavaScriptDialog",
         "DomContentLoadedEventFired",
@@ -205,7 +208,7 @@
         "LifecycleEvent",
         "LoadEventFired",
         "PaintTiming",
-        "ProduceCompilationCache",
+        "DidProduceCompilationCache",
         "RecalculateStyle",
         "UpdateLayout",
         "WillRunJavaScriptDialog",
@@ -234,6 +237,11 @@
         "V8Compile",
         "WillStartDebuggerTask",
         "DidFinishDebuggerTask",
+      ]
+    },
+    InspectorPerformanceTimelineAgent: {
+      probes: [
+        "PerformanceEntryAdded",
       ]
     },
     InspectorTraceEvents: {

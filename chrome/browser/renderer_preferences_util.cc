@@ -12,6 +12,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#endif
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -91,6 +94,22 @@ std::vector<std::string> GetLocalIpsAllowedUrls(
   return ret;
 }
 
+std::string GetLanguageListForProfile(Profile* profile,
+                                      const std::string& language_list) {
+  if (profile->IsOffTheRecord()) {
+    // In incognito mode return only the first language.
+    return language::GetFirstLanguage(language_list);
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Chrome OS, if in demo mode, add the demo mode private language list.
+  if (chromeos::DemoSession::IsDeviceInDemoMode()) {
+    return language_list + "," +
+           chromeos::DemoSession::GetAdditionalLanguageList();
+  }
+#endif
+  return language_list;
+}
+
 }  // namespace
 
 namespace renderer_preferences_util {
@@ -98,14 +117,8 @@ namespace renderer_preferences_util {
 void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
                               Profile* profile) {
   const PrefService* pref_service = profile->GetPrefs();
-  if (profile->IsOffTheRecord()) {
-    // In incognito mode return only the first language.
-    prefs->accept_languages = language::GetFirstLanguage(
-        pref_service->GetString(language::prefs::kAcceptLanguages));
-  } else {
-    prefs->accept_languages =
-        pref_service->GetString(language::prefs::kAcceptLanguages);
-  }
+  prefs->accept_languages = GetLanguageListForProfile(
+      profile, pref_service->GetString(language::prefs::kAcceptLanguages));
   prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
   prefs->enable_do_not_track =
       pref_service->GetBoolean(prefs::kEnableDoNotTrack);

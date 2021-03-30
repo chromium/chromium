@@ -20,10 +20,6 @@ namespace onc {
 
 namespace {
 
-// Cellular Service EID property.
-// TODO(crbug.com/1093185): Use dbus-constants when property is added in shill.
-const char kCellularEidProperty[] = "Cellular.EID";
-
 const FieldTranslationEntry eap_fields[] = {
     {::onc::eap::kAnonymousIdentity, shill::kEapAnonymousIdentityProperty},
     // This field is converted during translation, see onc_translator_*.
@@ -157,7 +153,6 @@ const FieldTranslationEntry wifi_fields[] = {
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::wifi::kSecurity, shill::kSecurityClassProperty },
     {::onc::wifi::kSignalStrength, shill::kSignalStrengthProperty},
-    {::onc::wifi::kTetheringState, shill::kTetheringProperty},
     {nullptr}};
 
 const FieldTranslationEntry cellular_apn_fields[] = {
@@ -168,6 +163,7 @@ const FieldTranslationEntry cellular_apn_fields[] = {
     {::onc::cellular_apn::kAuthentication, shill::kApnAuthenticationProperty},
     {::onc::cellular_apn::kLocalizedName, shill::kApnLocalizedNameProperty},
     {::onc::cellular_apn::kLanguage, shill::kApnLanguageProperty},
+    {::onc::cellular_apn::kAttach, shill::kApnAttachProperty},
     {nullptr}};
 
 const FieldTranslationEntry cellular_found_network_fields[] = {
@@ -203,7 +199,7 @@ const FieldTranslationEntry cellular_fields[] = {
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::cellular::kActivationState, shill::kActivationStateProperty},
     {::onc::cellular::kAutoConnect, shill::kAutoConnectProperty},
-    {::onc::cellular::kEID, kCellularEidProperty},
+    {::onc::cellular::kEID, shill::kEidProperty},
     {::onc::cellular::kICCID, shill::kIccidProperty},
     {::onc::cellular::kIMSI, shill::kImsiProperty},
     // This field is converted during translation, see onc_translator_*.
@@ -388,15 +384,6 @@ const StringTranslationEntry kNetworkTechnologyTable[] = {
 const StringTranslationEntry kRoamingStateTable[] = {
     {::onc::cellular::kRoamingHome, shill::kRoamingStateHome},
     {::onc::cellular::kRoamingRoaming, shill::kRoamingStateRoaming},
-    {nullptr}};
-
-const StringTranslationEntry kTetheringStateTable[] = {
-    {::onc::tethering_state::kTetheringConfirmedState,
-     shill::kTetheringConfirmedState},
-    {::onc::tethering_state::kTetheringNotDetectedState,
-     shill::kTetheringNotDetectedState},
-    {::onc::tethering_state::kTetheringSuspectedState,
-     shill::kTetheringSuspectedState},
     {nullptr}};
 
 const StringTranslationEntry kOpenVpnCompressionAlgorithmTable[] = {

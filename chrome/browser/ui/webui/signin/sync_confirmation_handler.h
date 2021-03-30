@@ -23,7 +23,7 @@ class IdentityManager;
 }
 
 // WebUI message handler for the sync confirmation dialog. IdentityManager calls
-// in this class use signin::ConsentLevel::kNotRequired because the user hasn't
+// in this class use signin::ConsentLevel::kSignin because the user hasn't
 // consented to sync yet.
 class SyncConfirmationHandler : public content::WebUIMessageHandler,
                                 public signin::IdentityManager::Observer,

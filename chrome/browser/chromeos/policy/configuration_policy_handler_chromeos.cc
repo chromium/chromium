@@ -21,7 +21,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/accessibility/magnifier_type.h"
+#include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -42,8 +42,9 @@
 #include "url/gurl.h"
 
 namespace policy {
-
 namespace {
+
+using ::ash::MagnifierType;
 
 const char kSubkeyURL[] = "url";
 const char kSubkeyHash[] = "hash";
@@ -335,8 +336,8 @@ void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value filtered_list,
 
 ScreenMagnifierPolicyHandler::ScreenMagnifierPolicyHandler()
     : IntRangePolicyHandlerBase(key::kScreenMagnifierType,
-                                chromeos::MAGNIFIER_DISABLED,
-                                chromeos::MAGNIFIER_DOCKED,
+                                static_cast<int>(MagnifierType::kDisabled),
+                                static_cast<int>(MagnifierType::kDocked),
                                 false) {}
 
 ScreenMagnifierPolicyHandler::~ScreenMagnifierPolicyHandler() {
@@ -349,9 +350,10 @@ void ScreenMagnifierPolicyHandler::ApplyPolicySettings(
   int value_in_range;
   if (value && EnsureInRange(value, &value_in_range, nullptr)) {
     prefs->SetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled,
-                      value_in_range == chromeos::MAGNIFIER_FULL);
-    prefs->SetBoolean(ash::prefs::kDockedMagnifierEnabled,
-                      value_in_range == chromeos::MAGNIFIER_DOCKED);
+                      value_in_range == static_cast<int>(MagnifierType::kFull));
+    prefs->SetBoolean(
+        ash::prefs::kDockedMagnifierEnabled,
+        value_in_range == static_cast<int>(MagnifierType::kDocked));
   }
 }
 

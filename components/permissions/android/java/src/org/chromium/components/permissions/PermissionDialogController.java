@@ -12,7 +12,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -47,6 +51,23 @@ public class PermissionDialogController
         int REQUEST_ANDROID_PERMISSIONS = 5;
     }
 
+    /**
+     * Interface for a class that wants to receive updates from this controller.
+     */
+    public interface Observer {
+        /**
+         * Notifies the observer that the user has just completed a permissions prompt.
+         * @param window The {@link WindowAndroid} for the prompt that just finished.
+         * @param permissions An array of ContentSettingsType, indicating the last dialog
+         *         permissions.
+         * @param result A ContentSettingValues type, indicating the last dialog result.
+         */
+        void onDialogResult(WindowAndroid window, @ContentSettingsType int[] permissions,
+                @ContentSettingValues int result);
+    }
+
+    private final ObserverList<Observer> mObservers;
+
     private PropertyModel mDialogModel;
     private PropertyModel mOverlayDetectedDialogModel;
     private PermissionDialogDelegate mDialogDelegate;
@@ -77,6 +98,7 @@ public class PermissionDialogController
     private PermissionDialogController() {
         mRequestQueue = new LinkedList<>();
         mState = State.NOT_SHOWING;
+        mObservers = new ObserverList<>();
     }
 
     /**
@@ -87,6 +109,20 @@ public class PermissionDialogController
     @CalledByNative
     private static void createDialog(PermissionDialogDelegate delegate) {
         PermissionDialogController.getInstance().queueDialog(delegate);
+    }
+
+    /**
+     * @param observer An observer to be notified of changes.
+     */
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /**
+     * @param observer The observer to remove.
+     */
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
     }
 
     /**
@@ -115,7 +151,7 @@ public class PermissionDialogController
             mState = State.NOT_SHOWING;
         } else {
             mDialogDelegate.onAccept();
-            destroyDelegate();
+            destroyDelegate(ContentSettingValues.ALLOW);
         }
         scheduleDisplay();
     }
@@ -129,7 +165,9 @@ public class PermissionDialogController
             mState = State.NOT_SHOWING;
         } else {
             mDialogDelegate.onDismiss();
-            destroyDelegate();
+            // The user accepted the site-level prompt but denied the app-level prompt.
+            // No content setting should be set.
+            destroyDelegate(ContentSettingValues.DEFAULT);
         }
         scheduleDisplay();
     }
@@ -152,7 +190,7 @@ public class PermissionDialogController
             // TODO(timloh): This probably doesn't work, as this happens synchronously when creating
             // the PermissionPromptAndroid, so the PermissionRequestManager won't be ready yet.
             mDialogDelegate.onDismiss();
-            destroyDelegate();
+            destroyDelegate(ContentSettingValues.DEFAULT);
             return;
         }
 
@@ -256,11 +294,12 @@ public class PermissionDialogController
             // schedule the next dialog.
             if (mState == State.PROMPT_DENIED) {
                 mDialogDelegate.onCancel();
+                destroyDelegate(ContentSettingValues.BLOCK);
             } else {
                 assert mState == State.PROMPT_OPEN;
                 mDialogDelegate.onDismiss();
+                destroyDelegate(ContentSettingValues.DEFAULT);
             }
-            destroyDelegate();
             scheduleDisplay();
         }
     }
@@ -284,7 +323,14 @@ public class PermissionDialogController
         }
     }
 
-    private void destroyDelegate() {
+    private void destroyDelegate(@ContentSettingValues int result) {
+        if (result != ContentSettingValues.DEFAULT) {
+            WindowAndroid currentWindow = mDialogDelegate.getWindow();
+            for (Observer obs : mObservers) {
+                obs.onDialogResult(
+                        currentWindow, mDialogDelegate.getContentSettingsTypes().clone(), result);
+            }
+        }
         mDialogDelegate.destroy();
         mDialogDelegate = null;
         mState = State.NOT_SHOWING;

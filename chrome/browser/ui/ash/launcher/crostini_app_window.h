@@ -9,22 +9,17 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "chrome/browser/ui/app_icon_loader.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
-
-namespace gfx {
-class ImageSkia;
-}
 
 namespace views {
 class Widget;
 }
 
-class AppServiceAppIconLoader;
 class Profile;
 
 // A ui::BaseWindow for a chromeos launcher to control Crostini applications.
-class CrostiniAppWindow : public AppWindowBase, public AppIconLoaderDelegate {
+// Also handles loading the window icon and app icon for the application.
+class CrostiniAppWindow : public AppWindowBase {
  public:
   CrostiniAppWindow(Profile* profile,
                     const ash::ShelfID& shelf_id,
@@ -35,13 +30,16 @@ class CrostiniAppWindow : public AppWindowBase, public AppIconLoaderDelegate {
   CrostiniAppWindow(const CrostiniAppWindow&) = delete;
   CrostiniAppWindow& operator=(const CrostiniAppWindow&) = delete;
 
-  // AppIconLoaderDelegate:
-  void OnAppImageUpdated(const std::string& app_id,
-                         const gfx::ImageSkia& image) override;
-
  private:
-  // Loads the app icon to the window icon key.
-  std::unique_ptr<AppServiceAppIconLoader> app_icon_loader_;
+  class IconLoader;
+
+  // Loads the app icon to the window's app icon key. The app icon is larger
+  // than the window icon, and is used for things like Alt-Tab.
+  std::unique_ptr<IconLoader> app_icon_loader_;
+
+  // Loads the window icon to the window icon key. The window icon is smaller
+  // than the app icon, and is used for things like shelf app menus.
+  std::unique_ptr<IconLoader> window_icon_loader_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_CROSTINI_APP_WINDOW_H_

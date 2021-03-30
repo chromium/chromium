@@ -12,6 +12,7 @@
 #include "gpu/gles2_conform_support/egl/thread_state.h"
 #include "ui/gl/init/gl_factory.h"
 
+namespace gles2_conform_support {
 namespace egl {
 
 Display::Display()
@@ -63,7 +64,7 @@ const char* Display::QueryString(ThreadState* ts, EGLint name) {
     case EGL_EXTENSIONS:
       return ts->ReturnSuccess("");
     case EGL_VENDOR:
-      return ts->ReturnSuccess("Google Inc.");
+      return ts->ReturnSuccess("Google LLC");
     case EGL_VERSION:
       return ts->ReturnSuccess("1.4");
     default:
@@ -394,3 +395,4 @@ Context* Display::GetContext(EGLContext context) {
 }
 
 }  // namespace egl
+}  // namespace gles2_conform_support

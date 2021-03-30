@@ -19,6 +19,10 @@
 
 class GURL;
 
+namespace ui {
+struct AXTreeUpdate;
+}
+
 namespace content {
 
 class WebContentsImpl;
@@ -97,7 +101,7 @@ class CONTENT_EXPORT WebContentsAndroid {
                          const base::android::JavaParamRef<jobject>& obj);
   jint GetBackgroundColor(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj);
-  base::android::ScopedJavaLocalRef<jstring> GetLastCommittedURL(
+  base::android::ScopedJavaLocalRef<jobject> GetLastCommittedURL(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&) const;
   jboolean IsIncognito(JNIEnv* env,
@@ -202,7 +206,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   int DownloadImage(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
-                    const base::android::JavaParamRef<jstring>& url,
+                    const base::android::JavaParamRef<jobject>& url,
                     jboolean is_fav_icon,
                     jint max_bitmap_size,
                     jboolean bypass_cache,
@@ -294,6 +298,10 @@ class CONTENT_EXPORT WebContentsAndroid {
   void SelectWordAroundCaretAck(bool did_select,
                                 int start_adjust,
                                 int end_adjust);
+  // Walks over the AXTreeUpdate and creates a light weight snapshot.
+  void AXTreeSnapshotCallback(
+      const base::android::ScopedJavaGlobalRef<jobject>& callback,
+      const ui::AXTreeUpdate& result);
 
   WebContentsImpl* web_contents_;
 

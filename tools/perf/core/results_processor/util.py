@@ -5,9 +5,11 @@
 import calendar
 import datetime
 import logging
+
 import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool
 
+import sys
 
 TELEMETRY_TEST_PATH_FORMAT = 'telemetry'
 GTEST_TEST_PATH_FORMAT = 'gtest'
@@ -28,6 +30,11 @@ def ApplyInParallel(function, work_list, on_failure=None):
     # Note that this is speculatively halved as an attempt to fix
     # crbug.com/953365.
     cpu_count = multiprocessing.cpu_count() / 2
+    if sys.platform == 'win32':
+      # TODO(crbug.com/1190269) - we can't use more than 56
+      # cores on Windows or Python3 may hang.
+      cpu_count = min(cpu_count, 56)
+
   except NotImplementedError:
     # Some platforms can raise a NotImplementedError from cpu_count()
     logging.warning('cpu_count() not implemented.')

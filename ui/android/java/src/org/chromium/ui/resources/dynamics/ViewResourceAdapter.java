@@ -4,20 +4,35 @@
 
 package org.chromium.ui.resources.dynamics;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.RenderNode;
+import android.media.ImageReader;
+import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.SystemClock;
+import android.view.Surface;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.SequencedTaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 import org.chromium.ui.resources.statics.NinePatchData;
+
+import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An adapter that exposes a {@link View} as a {@link DynamicResource}. In order to properly use
@@ -33,15 +48,303 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
     private Rect mViewSize = new Rect();
     protected float mScale = 1;
     private long mLastGetBitmapTimestamp;
+    private AcceleratedImageReader mReader;
+    private boolean mUseHardwareBitmapDraw;
+    // Incremented each time we enqueue a Hardware drawn Bitmap. Only used if
+    // |mUseHardwareBitmapDraw| is true.
+    protected AtomicInteger mCurrentBitmapRequestId;
+
+    // When using Hardware Acceleration the conversion from canvas to Bitmap occurs on a different
+    // thread.
+    protected static Handler sHandler;
+    // AcceleratedImageReader starts in NEW, and on the first request for an Bitmap we move into
+    // INITIALIZING, until we complete the first Bitmap when we move to UPDATED. We then on
+    // future requests return the current Bitmap to prevent us blocking but send a new request
+    // and move into RUNNING which prevents future requests from being queued. Once the request
+    // is finished we move back to UPDATED and repeat.
+    public enum ImageReaderStatus { NEW, INITIALIZING, UPDATED, RUNNING }
+    private ThreadUtils.ThreadChecker mAdapterThreadChecker = new ThreadUtils.ThreadChecker();
+
+    // RenderNode was added in API level 29 (Android 10). So restrict AcceleratedImageReader as
+    // well.
+    @TargetApi(Build.VERSION_CODES.Q)
+    private class AcceleratedImageReader implements ImageReader.OnImageAvailableListener {
+        // Track the last BitmapRequestId so we only return one image per request (in case of
+        // animations during that draw).
+        private int mLastBitmapRequestId;
+        private ImageReader mReaderDelegate;
+        private ImageReaderStatus mImageReaderStatus;
+        // To prevent having to take synchronized locks on the UI thread the hardware acceleration
+        // code writes to mSnapshot and then atomically writes the reference into mHardwareBitmap.
+        // This allows the UI thread to just grab the reference which will eventually update to the
+        // new value.
+        private State mState;
+        private SequencedTaskRunner mTaskRunner;
+        // Simple holder of the current State, this includes if a new bitmap is needed (i.e. no
+        // ongoing requests), and the conditions the bitmap were taken with.
+        private class State {
+            public int mWidth;
+            public int mHeight;
+            public int mRowPaddingInPixels;
+            public Bitmap mHardwareBitmap;
+            public boolean mRequestNewDraw;
+
+            State(int width, int height, int padding, Bitmap bitmap) {
+                mWidth = width;
+                mHeight = height;
+                mRowPaddingInPixels = padding;
+                mHardwareBitmap = bitmap;
+                mRequestNewDraw = true;
+            }
+        }
+
+        AcceleratedImageReader(int width, int height) {
+            mImageReaderStatus = ImageReaderStatus.NEW;
+            mTaskRunner = PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
+            init(width, height);
+        }
+
+        // This needs PixelFormat.RGBA_8888, because the |mBitmap| uses Bitmap.Config.ARGB_888
+        // this is supported by the android docs which states " This must be one of the
+        // ImageFormat or PixelFormat constants.". It does state that not all formats are
+        // supported, but this seems to work and has worked for quite awhile. This comment
+        // exists because of a lint error that we suppress below.
+        @SuppressWarnings("WrongConstant")
+        private void init(int width, int height) {
+            // Due to how ImageReader works, it is an error to attempt to acquire more than
+            // |maxBitmapsToAcquire|. We need 1 acquire to convert to a bitmap, and 2 to acquire
+            // and discard any images that are queued (by animations).
+            final int maxBitmapsToAcquire = 3;
+            mReaderDelegate = ImageReader.newInstance(
+                    width, height, PixelFormat.RGBA_8888, maxBitmapsToAcquire);
+            mReaderDelegate.setOnImageAvailableListener(this, sHandler);
+            mState = new State(0, 0, 0, null);
+        }
+
+        public void onLayoutChange(int width, int height) {
+            // We want to prevent destroying mReaderDelegate if its going to be used so we use our
+            // sequenced TaskRunner which will run after we finish with it.
+            mTaskRunner.postTask(() -> { init(width, height); });
+        }
+
+        public ImageReaderStatus currentStatus() {
+            return mImageReaderStatus;
+        }
+
+        public State currentState() {
+            return mState;
+        }
+
+        // Should only be called directly after calling currentState() and seeing |requestNeeded|
+        // being true. By requiring this we can avoid taking a lock to check the state before
+        // posting the renderNode.
+        public void requestDraw(RenderNode renderNode) {
+            mAdapterThreadChecker.assertOnValidThread();
+            switch (mImageReaderStatus) {
+                case NEW:
+                    mImageReaderStatus = ImageReaderStatus.INITIALIZING;
+                    break;
+                case UPDATED:
+                    mImageReaderStatus = ImageReaderStatus.RUNNING;
+                    break;
+                case INITIALIZING:
+                case RUNNING:
+                    return;
+            }
+
+            assert renderNode != null;
+            mTaskRunner.postTask(() -> {
+                try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::requestDraw")) {
+                    mCurrentBitmapRequestId.incrementAndGet();
+                    Surface s = mReaderDelegate.getSurface();
+                    Canvas hwCanvas = s.lockHardwareCanvas();
+                    hwCanvas.drawRenderNode(renderNode);
+                    s.unlockCanvasAndPost(hwCanvas);
+                }
+            });
+        }
+
+        @Override
+        public void onImageAvailable(ImageReader reader) {
+            try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::onImageAvailable")) {
+                // acquireLatestImage will discard any images in the queue up to the most recent
+                // one.
+                android.media.Image image = reader.acquireLatestImage();
+                if (image == null) {
+                    return;
+                }
+
+                int request = mCurrentBitmapRequestId.get();
+                if (request == mLastBitmapRequestId) {
+                    // If there was an animation when we requested a draw, we will receive each
+                    // frame of the animation. For now we just take the first one (though the last
+                    // would be better there is no good way to know when its the last of the frame).
+                    //
+                    // TODO(nuskos): We should either a) not grab a bitmap with an animation at all
+                    //               (likely the image we had before the animation is actually
+                    //               correct and we're just doing extra work). Or we should figure
+                    //               out how to get the last one.
+                    image.close();
+                    return;
+                }
+                mLastBitmapRequestId = request;
+
+                android.media.Image.Plane[] planes = image.getPlanes();
+                assert planes.length != 0;
+                ByteBuffer buffer = planes[0].getBuffer();
+                assert buffer != null;
+
+                mTaskRunner.postTask(() -> {
+                    try (TraceEvent e2 = TraceEvent.scoped(
+                                 "AcceleratedImageReader::onImageAvailable::postTask")) {
+                        final int width = image.getWidth();
+                        final int height = image.getHeight();
+                        final int pixelStride = planes[0].getPixelStride();
+                        final int rowPaddingInBytes =
+                                planes[0].getRowStride() - pixelStride * width;
+                        final int rowPaddingInPixels = rowPaddingInBytes / pixelStride;
+                        // Set |mHardwareBitmap| to use the correct padding so it will copy from the
+                        // buffer.
+                        Bitmap snapshot = createBitmap(width + rowPaddingInPixels, height);
+                        snapshot.copyPixelsFromBuffer(buffer);
+                        image.close();
+                        // Update the bitmap the UI reads.
+                        mState = new State(width, height, rowPaddingInPixels, snapshot);
+                    }
+                });
+            }
+        }
+
+        public boolean validateCurrentBitmap(State state, int width, int height) {
+            mAdapterThreadChecker.assertOnValidThread();
+            if (state.mHardwareBitmap == null || state.mWidth != width || state.mHeight != height) {
+                // The current image isn't for our layout.
+                return false;
+            }
+            // The bitmap that we have computed will now be used and we can stop returning "true"
+            // for isDirty() until the next bitmap is requested.
+            mImageReaderStatus = ImageReaderStatus.UPDATED;
+
+            if (state.mRowPaddingInPixels == 0) {
+                return true;
+            }
+            // Crop out the row padding that the android.media.Image contained. Since this state is
+            // a reference this update will be there the next time and we won't recreate this bitmap
+            // we'll just return true and use it as stored in the state object.
+            Bitmap src = state.mHardwareBitmap;
+            state.mHardwareBitmap = Bitmap.createBitmap(src, 0, 0, width, height);
+            state.mHardwareBitmap.setHasAlpha(true);
+            state.mRowPaddingInPixels = 0;
+            src.recycle();
+            return true;
+        }
+    }
+
+    /**
+     * Builds a {@link ViewResourceAdapter} instance around {@code view}.
+     * @param view The {@link View} to expose as a {@link Resource}.
+     *
+     * @param useHardwareBitmapDraw controls if we should software draw bitmaps or use a
+     * RenderNode and hardware acceleration.
+     */
+    public ViewResourceAdapter(View view, boolean useHardwareBitmapDraw) {
+        mView = view;
+        mView.addOnLayoutChangeListener(this);
+        mDirtyRect.set(0, 0, mView.getWidth(), mView.getHeight());
+        mUseHardwareBitmapDraw = useHardwareBitmapDraw;
+        if (mUseHardwareBitmapDraw) {
+            if (sHandler == null) {
+                HandlerThread thread = new HandlerThread("ViewResourceAdapterThread");
+                thread.start();
+                sHandler = new Handler(thread.getLooper());
+            }
+            mCurrentBitmapRequestId = new AtomicInteger(0);
+            // We can't set up |mReader| here because |mView| might not have had its first layout
+            // yet and image reader needs to know the width and the height.
+        }
+    }
 
     /**
      * Builds a {@link ViewResourceAdapter} instance around {@code view}.
      * @param view The {@link View} to expose as a {@link Resource}.
      */
     public ViewResourceAdapter(View view) {
-        mView = view;
-        mView.addOnLayoutChangeListener(this);
-        mDirtyRect.set(0, 0, mView.getWidth(), mView.getHeight());
+        this(view, false);
+    }
+
+    private Bitmap createBitmap(int width, int height) {
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        bitmap.setHasAlpha(true);
+        return bitmap;
+    }
+
+    // Software or hardware draw will both need to follow this pattern.
+    //
+    // Note that this method restricts the captured area to the rectangle defined by |mDirtyRect|.
+    private void captureCommon(Canvas canvas) {
+        onCaptureStart(canvas, mDirtyRect.isEmpty() ? null : mDirtyRect);
+        if (!mDirtyRect.isEmpty()) canvas.clipRect(mDirtyRect);
+        capture(canvas);
+        onCaptureEnd();
+    }
+
+    // This uses a RecordingNode to store all the required draw instructions without doing
+    // them upfront. And then on a threadpool task we grab a hardware canvas (required to use a
+    // RenderNode) and draw it using the hardware accelerated canvas.
+    @TargetApi(Build.VERSION_CODES.Q)
+    private void captureWithHardwareDraw() {
+        try (TraceEvent e = TraceEvent.scoped("ViewResourceAdapter:captureWithHardwareDraw")) {
+            if (mView.getWidth() == 0 || mView.getHeight() == 0) {
+                // We haven't actually laid out this view yet no point in requesting a screenshot.
+                return;
+            }
+
+            // Since state is replaced with a whole new object on a different thread if we grab a
+            // reference (which is atomic in java) we can ensure the only thread that is going to
+            // modify this state object is the UI thread. So grab it all up front.
+            AcceleratedImageReader.State currentState = mReader.currentState();
+
+            // If we have a new Bitmap update our |mBitmap| to the newest version. Since we update
+            // one check late we might serve a slightly stale result but not for long. If the bitmap
+            // is not there we'll end up just showing a blank toolbar without any icons or text.
+            // However this is preferred over blocking the main thread waiting for the image
+            // potentially during user input.
+            int scaledWidth = (int) (mView.getWidth() * mScale);
+            int scaledHeight = (int) (mView.getHeight() * mScale);
+            if (mReader.validateCurrentBitmap(currentState, scaledWidth, scaledHeight)
+                    && currentState.mHardwareBitmap != null) {
+                mBitmap = currentState.mHardwareBitmap;
+            }
+
+            // If we didn't have a bitmap to return and there isn't an ongoing request already we
+            // will start a bitmap copy which will be done Async on a different thread.
+            RenderNode renderNode = null;
+            if (currentState.mRequestNewDraw && !mDirtyRect.isEmpty()) {
+                // TODO(nuskos): There are potential optimizations here.
+                //                   1) We could save the RenderNode if nothing has changed and all
+                //                      we need is a new draw.
+                //                   2) Instead of using mScale we could just do
+                //                      renderNode.setScaleX & setScaleY, again reusing the
+                //                      RenderNode because really it was just a redraw that was
+                //                      needed.
+                renderNode = new RenderNode("bitmapRenderNode");
+                renderNode.setPosition(0, 0, mView.getWidth(), mView.getHeight());
+
+                Canvas canvas = renderNode.beginRecording();
+                captureCommon(canvas);
+
+                renderNode.endRecording();
+                currentState.mRequestNewDraw = false;
+                mReader.requestDraw(renderNode);
+            }
+        }
+    }
+
+    private void captureWithSoftwareDraw() {
+        try (TraceEvent e = TraceEvent.scoped("ViewResourceAdapter:captureWithSoftwareDraw")) {
+            Canvas canvas = new Canvas(mBitmap);
+            captureCommon(canvas);
+        }
     }
 
     /**
@@ -52,6 +355,8 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
      */
     @Override
     public Bitmap getBitmap() {
+        mAdapterThreadChecker.assertOnValidThread();
+        TraceEvent.begin("ViewResourceAdapter:getBitmap");
         super.getBitmap();
 
         if (mLastGetBitmapTimestamp > 0) {
@@ -59,26 +364,25 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
                     SystemClock.elapsedRealtime() - mLastGetBitmapTimestamp);
         }
 
-        TraceEvent.begin("ViewResourceAdapter:getBitmap");
-        if (validateBitmap()) {
-            Canvas canvas = new Canvas(mBitmap);
-
-            onCaptureStart(canvas, mDirtyRect.isEmpty() ? null : mDirtyRect);
-
-            if (!mDirtyRect.isEmpty()) canvas.clipRect(mDirtyRect);
-            capture(canvas);
-
-            onCaptureEnd();
+        if (mUseHardwareBitmapDraw) {
+            captureWithHardwareDraw();
+        } else if (validateBitmap()) {
+            captureWithSoftwareDraw();
         } else {
             assert mBitmap.getWidth() == 1 && mBitmap.getHeight() == 1;
             mBitmap.setPixel(0, 0, Color.TRANSPARENT);
         }
 
         mDirtyRect.setEmpty();
-        TraceEvent.end("ViewResourceAdapter:getBitmap");
 
         mLastGetBitmapTimestamp = SystemClock.elapsedRealtime();
+        TraceEvent.end("ViewResourceAdapter:getBitmap");
         return mBitmap;
+    }
+
+    @Override
+    public boolean shouldRemoveResourceOnNullBitmap() {
+        return mUseHardwareBitmapDraw;
     }
 
     @Override
@@ -113,7 +417,12 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
 
     @Override
     public boolean isDirty() {
-        return !mDirtyRect.isEmpty();
+        // The bitmap is dirty if some part of it has changed, or in hardware mode we're waiting for
+        // the results of a previous request (null mBitmap or RUNNING).
+        return !mDirtyRect.isEmpty()
+                || (mUseHardwareBitmapDraw
+                        && (mBitmap == null
+                                || mReader.currentStatus() == ImageReaderStatus.RUNNING));
     }
 
     @Override
@@ -124,7 +433,24 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
         final int oldWidth = oldRight - oldLeft;
         final int oldHeight = oldBottom - oldTop;
 
-        if (width != oldWidth || height != oldHeight) mDirtyRect.set(0, 0, width, height);
+        if (width != oldWidth || height != oldHeight) {
+            mViewSize.set(0, 0, width, height);
+            mDirtyRect.set(0, 0, width, height);
+            if (mUseHardwareBitmapDraw) {
+                // Wait for a new image before returning anything.
+                if (mBitmap != null) {
+                    mBitmap.recycle();
+                    mBitmap = null;
+                }
+                int scaledWidth = (int) (mView.getWidth() * mScale);
+                int scaledHeight = (int) (mView.getHeight() * mScale);
+                if (mReader == null) {
+                    mReader = new AcceleratedImageReader(scaledWidth, scaledHeight);
+                } else {
+                    mReader.onLayoutChange(scaledWidth, scaledHeight);
+                }
+            }
+        }
     }
 
     /**
@@ -197,8 +523,7 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
         }
 
         if (mBitmap == null) {
-            mBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_8888);
-            mBitmap.setHasAlpha(true);
+            mBitmap = createBitmap(viewWidth, viewHeight);
             mViewSize.set(0, 0, mView.getWidth(), mView.getHeight());
             mDirtyRect.set(mViewSize);
         }

@@ -5,15 +5,19 @@
 #ifndef CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_IMAGE_H_
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_IMAGE_H_
 
+#include <stdint.h>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/token.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
@@ -24,21 +28,46 @@ class TimeTicks;
 // uncompressed image to observers.
 class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
  public:
+  // Describes the readiness of the source page for thumbnail capture.
+  enum class CaptureReadiness : int {
+    // The page is not ready for capturing.
+    kNotReady = 0,
+    // Thumbnails can be captured, but the page might change. Captured frames
+    // should not be used as the final thumbnail.
+    kReadyForInitialCapture,
+    // The page is fully loaded and a thumbnail can be captured that should be
+    // representative of the page's final state. Dynamic elements might not be
+    // in final position yet, but should settle fairly quickly (on the order of
+    // a few seconds).
+    kReadyForFinalCapture,
+  };
+
   // Smart pointer to reference-counted compressed image data; in this case
   // JPEG format.
   using CompressedThumbnailData =
       scoped_refptr<base::RefCountedData<std::vector<uint8_t>>>;
 
-  // Observes uncompressed and/or compressed versions of the thumbnail image as
-  // they are available.
-  class Observer : public base::CheckedObserver {
+  class Subscription {
    public:
-    // Receives uncompressed thumbnail image data. Default is no-op.
-    virtual void OnThumbnailImageAvailable(gfx::ImageSkia thumbnail_image);
+    Subscription() = delete;
+    ~Subscription();
 
-    // Receives compressed thumbnail image data. Default is no-op.
-    virtual void OnCompressedThumbnailDataAvailable(
-        CompressedThumbnailData thumbnail_data);
+    using UncompressedImageCallback =
+        base::RepeatingCallback<void(gfx::ImageSkia)>;
+    using CompressedImageCallback =
+        base::RepeatingCallback<void(CompressedThumbnailData)>;
+
+    // Set callbacks to receive image data. Subscribers are not allowed
+    // to unsubscribe (by destroying |this|) from the callback. If
+    // necessary, post a task to destroy it soon after.
+
+    void SetUncompressedImageCallback(UncompressedImageCallback callback) {
+      uncompressed_image_callback_ = std::move(callback);
+    }
+
+    void SetCompressedImageCallback(CompressedImageCallback callback) {
+      compressed_image_callback_ = std::move(callback);
+    }
 
     // Provides a desired aspect ratio and minimum size that the observer will
     // accept. If not specified, or if available thumbnail data is smaller in
@@ -54,7 +83,20 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
     // image passed to OnThumbnailImageAvailable fits the needs of the observer
     // for display purposes, without the observer having to further crop the
     // image. The default is unspecified.
-    virtual base::Optional<gfx::Size> GetThumbnailSizeHint() const;
+    void SetSizeHint(const base::Optional<gfx::Size>& size_hint) {
+      size_hint_ = size_hint;
+    }
+
+   private:
+    friend class ThumbnailImage;
+
+    explicit Subscription(scoped_refptr<ThumbnailImage> thumbnail);
+
+    scoped_refptr<ThumbnailImage> thumbnail_;
+    base::Optional<gfx::Size> size_hint_;
+
+    UncompressedImageCallback uncompressed_image_callback_;
+    CompressedImageCallback compressed_image_callback_;
   };
 
   // Represents the endpoint
@@ -64,6 +106,10 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
     // Because updating the thumbnail could be an expensive operation, it's
     // useful to track when there are no observers. Default behavior is no-op.
     virtual void ThumbnailImageBeingObservedChanged(bool is_being_observed) = 0;
+
+    // Requests the backing tab's capture readiness from the delegate.
+    // The default implementation returns kUnknown.
+    virtual CaptureReadiness GetCaptureReadiness() const;
 
    protected:
     virtual ~Delegate();
@@ -77,12 +123,21 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
   bool has_data() const { return data_.get(); }
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-  bool HasObserver(const Observer* observer) const;
+  // Gets the capture readiness of the backing tab.
+  CaptureReadiness GetCaptureReadiness() const;
+
+  // Subscribe to thumbnail updates. See |Subscription| to set a
+  // callback and conigure additional options.
+  //
+  // Even if a callback is not set, the subscription influences
+  // thumbnail capture. It should be destroyed when updates are not
+  // needed. It is designed to be stored in base::Optional, created and
+  // destroyed as needed.
+  std::unique_ptr<Subscription> Subscribe();
 
   // Sets the SkBitmap data and notifies observers with the resulting image.
-  void AssignSkBitmap(SkBitmap bitmap);
+  void AssignSkBitmap(SkBitmap bitmap,
+                      base::Optional<uint64_t> frame_id = base::nullopt);
 
   // Clears the currently set |data_|, for when the current thumbnail is no
   // longer valid to display.
@@ -116,13 +171,17 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
   virtual ~ThumbnailImage();
 
-  void AssignJPEGData(base::TimeTicks assign_sk_bitmap_time,
+  void AssignJPEGData(base::Token thumbnail_id,
+                      base::TimeTicks assign_sk_bitmap_time,
+                      base::Optional<uint64_t> frame_id_for_trace,
                       std::vector<uint8_t> data);
   bool ConvertJPEGDataToImageSkiaAndNotifyObservers();
-  void NotifyUncompressedDataObservers(gfx::ImageSkia image);
+  void NotifyUncompressedDataObservers(base::Token thumbnail_id,
+                                       gfx::ImageSkia image);
   void NotifyCompressedDataObservers(CompressedThumbnailData data);
 
-  static std::vector<uint8_t> CompressBitmap(SkBitmap bitmap);
+  static std::vector<uint8_t> CompressBitmap(SkBitmap bitmap,
+                                             base::Optional<uint64_t> frame_id);
   static gfx::ImageSkia UncompressImage(CompressedThumbnailData compressed);
 
   // Crops and returns a preview from a thumbnail of an entire web page. Uses
@@ -130,11 +189,26 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
   static gfx::ImageSkia CropPreviewImage(const gfx::ImageSkia& source_image,
                                          const gfx::Size& minimum_size);
 
+  void HandleSubscriptionDestroyed(Subscription* subscription);
+
   Delegate* delegate_;
 
+  // This is a scoped_refptr to immutable data. Once set, the wrapped
+  // data must not be modified; it is referenced by other threads.
+  // |data_| itself can be changed as this does not affect references to
+  // the old data.
   CompressedThumbnailData data_;
 
-  base::ObserverList<Observer> observers_;
+  // A randomly generated ID associated with each image assigned by
+  // AssignSkBitmap().
+  base::Token thumbnail_id_;
+
+  // Subscriptions are inserted on |Subscribe()| calls and removed when
+  // they are destroyed via callback. The order of subscriber
+  // notification doesn't matter, so don't maintain any ordering. Since
+  // the number of subscribers for a given thumbnail is expected to be
+  // small, doing a linear search to remove a subscriber is fine.
+  std::vector<Subscription*> subscribers_;
 
   // Called when an asynchronous operation (such as encoding image data upon
   // assignment or decoding image data for observers) finishes or fails.

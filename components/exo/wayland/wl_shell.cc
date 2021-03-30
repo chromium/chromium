@@ -103,7 +103,7 @@ void shell_surface_set_title(wl_client* client,
                              wl_resource* resource,
                              const char* title) {
   GetUserDataAs<ShellSurface>(resource)->SetTitle(
-      base::string16(base::UTF8ToUTF16(title)));
+      std::u16string(base::UTF8ToUTF16(title)));
 }
 
 void shell_surface_set_class(wl_client* client,

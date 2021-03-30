@@ -78,17 +78,14 @@ const char* GetPrepareTraceString<DemuxerStream::AUDIO>() {
   return "AudioDecoderStream::PrepareOutput";
 }
 
-template <DemuxerStream::Type StreamType>
-const char* GetStatusString(
-    typename DecoderStream<StreamType>::ReadStatus status) {
-  switch (status) {
-    case DecoderStream<StreamType>::OK:
+const char* GetStatusString(const Status& status) {
+  // TODO(crbug.com/1129662): Replace this with generic Status-to-string.
+  switch (status.code()) {
+    case StatusCode::kOk:
       return "okay";
-    case DecoderStream<StreamType>::ABORTED:
+    case StatusCode::kAborted:
       return "aborted";
-    case DecoderStream<StreamType>::DEMUXER_READ_ABORTED:
-      return "demuxer_read_aborted";
-    case DecoderStream<StreamType>::DECODE_ERROR:
+    default:
       return "decode_error";
   }
 
@@ -130,7 +127,7 @@ DecoderStream<StreamType>::~DecoderStream() {
   }
   if (read_cb_) {
     read_cb_ = BindToCurrentLoop(std::move(read_cb_));
-    SatisfyRead(ABORTED, nullptr);
+    SatisfyRead(StatusCode::kAborted);
   }
   if (reset_cb_)
     task_runner_->PostTask(FROM_HERE, std::move(reset_cb_));
@@ -189,20 +186,22 @@ void DecoderStream<StreamType>::Read(ReadCB read_cb) {
   TRACE_EVENT_ASYNC_BEGIN0("media", GetReadTraceString<StreamType>(), this);
   if (state_ == STATE_ERROR) {
     read_cb_ = BindToCurrentLoop(std::move(read_cb));
-    SatisfyRead(DECODE_ERROR, nullptr);
+    // TODO(crbug.com/1129662): Consider attaching a caused-by of the original
+    // error as well.
+    SatisfyRead(StatusCode::kDecoderStreamInErrorState);
     return;
   }
 
   if (state_ == STATE_END_OF_STREAM && ready_outputs_.empty() &&
       unprepared_outputs_.empty()) {
     read_cb_ = BindToCurrentLoop(std::move(read_cb));
-    SatisfyRead(OK, StreamTraits::CreateEOSOutput());
+    SatisfyRead(StreamTraits::CreateEOSOutput());
     return;
   }
 
   if (!ready_outputs_.empty()) {
     read_cb_ = BindToCurrentLoop(std::move(read_cb));
-    SatisfyRead(OK, ready_outputs_.front());
+    SatisfyRead(ready_outputs_.front());
     ready_outputs_.pop_front();
     MaybePrepareAnotherOutput();
   } else {
@@ -224,7 +223,7 @@ void DecoderStream<StreamType>::Reset(base::OnceClosure closure) {
 
   if (read_cb_) {
     read_cb_ = BindToCurrentLoop(std::move(read_cb_));
-    SatisfyRead(ABORTED, nullptr);
+    SatisfyRead(StatusCode::kAborted);
   }
 
   ClearOutputs();
@@ -351,8 +350,9 @@ void DecoderStream<StreamType>::OnDecoderSelected(
     std::unique_ptr<Decoder> selected_decoder,
     std::unique_ptr<DecryptingDemuxerStream> decrypting_demuxer_stream) {
   FUNCTION_DVLOG(1) << ": "
-                    << (selected_decoder ? selected_decoder->GetDisplayName()
-                                         : "No decoder selected.");
+                    << (selected_decoder
+                            ? GetDecoderName(selected_decoder->GetDecoderType())
+                            : "No decoder selected.");
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ == STATE_INITIALIZING || state_ == STATE_REINITIALIZING_DECODER)
       << state_;
@@ -411,7 +411,7 @@ void DecoderStream<StreamType>::OnDecoderSelected(
   media_log_->SetProperty<StreamTraits::kIsDecryptingDemuxerStream>(
       !!decrypting_demuxer_stream_);
   media_log_->SetProperty<StreamTraits::kDecoderName>(
-      decoder_->GetDisplayName());
+      decoder_->GetDecoderType());
   media_log_->SetProperty<StreamTraits::kIsPlatformDecoder>(
       decoder_->IsPlatformDecoder());
 
@@ -423,7 +423,7 @@ void DecoderStream<StreamType>::OnDecoderSelected(
   }
 
   MEDIA_LOG(INFO, media_log_)
-      << "Selected " << decoder_->GetDisplayName() << " for "
+      << "Selected " << decoder_->GetDecoderType() << " for "
       << GetStreamTypeString() << " decoding, config: "
       << traits_->GetDecoderConfig(stream_).AsHumanReadableString();
 
@@ -440,12 +440,11 @@ void DecoderStream<StreamType>::OnDecoderSelected(
 }
 
 template <DemuxerStream::Type StreamType>
-void DecoderStream<StreamType>::SatisfyRead(ReadStatus status,
-                                            scoped_refptr<Output> output) {
+void DecoderStream<StreamType>::SatisfyRead(ReadResult result) {
   DCHECK(read_cb_);
   TRACE_EVENT_ASYNC_END1("media", GetReadTraceString<StreamType>(), this,
-                         "status", GetStatusString<StreamType>(status));
-  std::move(read_cb_).Run(status, std::move(output));
+                         "status", GetStatusString(result.code()));
+  std::move(read_cb_).Run(std::move(result));
 }
 
 template <DemuxerStream::Type StreamType>
@@ -505,7 +504,7 @@ void DecoderStream<StreamType>::DecodeInternal(
       std::move(buffer),
       base::BindOnce(&DecoderStream<StreamType>::OnDecodeDone,
                      fallback_weak_factory_.GetWeakPtr(), buffer_size,
-                     decoding_eos_, base::Passed(&trace_event)));
+                     decoding_eos_, std::move(trace_event)));
 }
 
 template <DemuxerStream::Type StreamType>
@@ -567,7 +566,7 @@ void DecoderStream<StreamType>::OnDecodeDone(
         if (end_of_stream) {
           state_ = STATE_END_OF_STREAM;
           if (ready_outputs_.empty() && unprepared_outputs_.empty() && read_cb_)
-            SatisfyRead(OK, StreamTraits::CreateEOSOutput());
+            SatisfyRead(StreamTraits::CreateEOSOutput());
           return;
         }
 
@@ -591,17 +590,18 @@ void DecoderStream<StreamType>::OnDecodeDone(
         // from being called back.
         fallback_weak_factory_.InvalidateWeakPtrs();
         pending_decode_requests_ = 0;
+        decoding_eos_ = false;
         state_ = STATE_REINITIALIZING_DECODER;
         SelectDecoder();
       } else {
-        media_log_->NotifyError(std::move(status));
+        media_log_->NotifyError(status);
         MEDIA_LOG(ERROR, media_log_)
             << GetStreamTypeString() << " decode error!";
 
         state_ = STATE_ERROR;
         ClearOutputs();
         if (read_cb_)
-          SatisfyRead(DECODE_ERROR, nullptr);
+          SatisfyRead(std::move(status));
       }
       return;
   }
@@ -653,7 +653,7 @@ void DecoderStream<StreamType>::OnDecodeOutputReady(
     // If |ready_outputs_| was non-empty, the read would have already been
     // satisifed by Read().
     DCHECK(ready_outputs_.empty());
-    SatisfyRead(OK, std::move(output));
+    SatisfyRead(std::move(output));
     return;
   }
 
@@ -743,7 +743,7 @@ void DecoderStream<StreamType>::OnBufferReady(
     pending_buffers_.clear();
     ClearOutputs();
     if (read_cb_)
-      SatisfyRead(DECODE_ERROR, nullptr);
+      SatisfyRead(StatusCode::kDecoderStreamDemuxerError);
   }
 
   // Decoding has been stopped.
@@ -819,7 +819,7 @@ void DecoderStream<StreamType>::OnBufferReady(
 
   if (status == DemuxerStream::kAborted) {
     if (read_cb_)
-      SatisfyRead(DEMUXER_READ_ABORTED, nullptr);
+      SatisfyRead(StatusCode::kAborted);
     return;
   }
 
@@ -862,7 +862,7 @@ void DecoderStream<StreamType>::CompleteDecoderReinitialization(bool success) {
   if (state_ == STATE_ERROR) {
     MEDIA_LOG(ERROR, media_log_)
         << GetStreamTypeString() << " decoder reinitialization failed";
-    SatisfyRead(DECODE_ERROR, nullptr);
+    SatisfyRead(StatusCode::kDecoderStreamReinitFailed);
     return;
   }
 
@@ -981,7 +981,7 @@ void DecoderStream<StreamType>::OnPreparedOutputReady(
   if (!read_cb_)
     ready_outputs_.emplace_back(std::move(output));
   else
-    SatisfyRead(OK, std::move(output));
+    SatisfyRead(std::move(output));
 
   MaybePrepareAnotherOutput();
 

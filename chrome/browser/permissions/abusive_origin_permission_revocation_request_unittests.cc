@@ -5,6 +5,8 @@
 #include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -63,7 +65,7 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
   }
 
   void ClearSafeBrowsingBlocklist() {
-    fake_database_manager_->RemoveAllBlacklistedUrls();
+    fake_database_manager_->RemoveAllBlocklistedUrls();
   }
 
   void AddToPreloadDataBlocklist(
@@ -81,12 +83,14 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
   void QueryAndExpectDecisionForUrl(const GURL& origin,
                                     Outcome expected_result) {
     base::MockOnceCallback<void(Outcome)> mock_callback_receiver;
-    permission_revocation_ =
+    base::RunLoop run_loop;
+    auto permission_revocation =
         std::make_unique<AbusiveOriginPermissionRevocationRequest>(
             testing_profile_.get(), origin, mock_callback_receiver.Get());
-    EXPECT_CALL(mock_callback_receiver, Run(expected_result));
-    task_environment_.RunUntilIdle();
-    permission_revocation_.reset();
+    EXPECT_CALL(mock_callback_receiver, Run(expected_result))
+        .WillOnce(
+            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
   }
 
   void SetPermission(const GURL& origin, const ContentSetting value) {
@@ -109,13 +113,18 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
 
   TestingProfile* GetTestingProfile() { return testing_profile_.get(); }
 
+ protected:
+  // This needs to be declared before |task_environment_|, so that it will be
+  // destroyed after |task_environment_|. This avoids tsan race errors with
+  // tasks running on other threads checking if features are enabled while
+  // |feature_list_| is being destroyed.
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   base::ScopedTempDir profile_dir_;
   content::BrowserTaskEnvironment task_environment_;
   testing::ScopedCrowdDenyPreloadDataOverride testing_preload_data_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  std::unique_ptr<AbusiveOriginPermissionRevocationRequest>
-      permission_revocation_;
   scoped_refptr<CrowdDenyFakeSafeBrowsingDatabaseManager>
       fake_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
@@ -133,9 +142,6 @@ class AbusiveOriginPermissionRevocationRequestTest
   }
 
   ~AbusiveOriginPermissionRevocationRequestTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AbusiveOriginPermissionRevocationRequestTest,
@@ -229,6 +235,117 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest) {
   QueryAndExpectDecisionForUrl(acceptable_origin,
                                Outcome::PERMISSION_NOT_REVOKED);
   QueryAndExpectDecisionForUrl(unknown_origin, Outcome::PERMISSION_NOT_REVOKED);
+}
+
+TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataAsyncTest) {
+  auto* instance = CrowdDenyPreloadData::GetInstance();
+  // From this point on CrowdDenyPreloadData is not usable for origins
+  // verification.
+  instance->set_is_ready_to_use_for_testing(false);
+
+  const GURL abusive_content_origin_to_revoke =
+      GURL("https://abusive-content.com/");
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_1;
+  auto permission_revocation_1 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), abusive_content_origin_to_revoke,
+          mock_callback_receiver_1.Get());
+
+  const GURL abusive_prompts_origin_to_revoke =
+      GURL("https://abusive-prompts.com/");
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_2;
+  auto permission_revocation_2 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), abusive_prompts_origin_to_revoke,
+          mock_callback_receiver_2.Get());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_callback_receiver_1,
+              Run(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE));
+
+  EXPECT_CALL(mock_callback_receiver_2,
+              Run(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  SetPermission(abusive_content_origin_to_revoke, CONTENT_SETTING_ALLOW);
+  SetPermission(abusive_prompts_origin_to_revoke, CONTENT_SETTING_ALLOW);
+
+  AddToSafeBrowsingBlocklist(abusive_content_origin_to_revoke);
+  AddToSafeBrowsingBlocklist(abusive_prompts_origin_to_revoke);
+
+  // At this point CrowdDenyPreloadData will be reactivated by a new data set.
+  AddToPreloadDataBlocklist(abusive_content_origin_to_revoke,
+                            SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
+  AddToPreloadDataBlocklist(abusive_prompts_origin_to_revoke,
+                            SiteReputation::ABUSIVE_PROMPTS,
+                            /*has_warning=*/false);
+  run_loop.Run();
+}
+
+TEST_F(AbusiveOriginPermissionRevocationRequestTest,
+       PreloadDataAsyncHistogramTest) {
+  base::HistogramTester histograms;
+  // The Crowd Deny component is ready to use, there should be no
+  // DelayedPushNotification recording.
+  {
+    const GURL origin_1 = GURL("https://not-abusive-origin-1.com/");
+    SetPermission(origin_1, CONTENT_SETTING_ALLOW);
+    base::MockOnceCallback<void(Outcome)> mock_callback_receiver_1;
+    AddToPreloadDataBlocklist(origin_1, SiteReputation::ACCEPTABLE,
+                              /*has_warning=*/false);
+    auto permission_revocation_1 =
+        std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+            GetTestingProfile(), origin_1, mock_callback_receiver_1.Get());
+
+    EXPECT_CALL(mock_callback_receiver_1, Run(Outcome::PERMISSION_NOT_REVOKED));
+    base::RunLoop().RunUntilIdle();
+    histograms.ExpectTotalCount(
+        "Permissions.CrowdDeny.PreloadData.DelayedPushNotification", 0);
+  }
+
+  auto* crowd_deny = CrowdDenyPreloadData::GetInstance();
+  // From this point on CrowdDenyPreloadData is not usable for origin
+  // verification. DelayedPushNotification should be tracked for non-abusive
+  // origins.
+  crowd_deny->set_is_ready_to_use_for_testing(false);
+
+  const GURL origin_1 = GURL("https://not-abusive-origin-1.com/");
+  SetPermission(origin_1, CONTENT_SETTING_ALLOW);
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_1;
+  auto permission_revocation_1 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), origin_1, mock_callback_receiver_1.Get());
+  EXPECT_CALL(mock_callback_receiver_1, Run(Outcome::PERMISSION_NOT_REVOKED));
+
+  const GURL origin_2 = GURL("https://not-abusive-origin-2.com/");
+  SetPermission(origin_2, CONTENT_SETTING_ALLOW);
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_2;
+  auto permission_revocation_2 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), origin_2, mock_callback_receiver_2.Get());
+  EXPECT_CALL(mock_callback_receiver_2, Run(Outcome::PERMISSION_NOT_REVOKED));
+
+  const GURL abusive_origin = GURL("https://abusive-origin.com/");
+  SetPermission(abusive_origin, CONTENT_SETTING_ALLOW);
+  AddToSafeBrowsingBlocklist(abusive_origin);
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_3;
+  auto permission_revocation_3 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), abusive_origin, mock_callback_receiver_3.Get());
+  EXPECT_CALL(mock_callback_receiver_3,
+              Run(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(3, crowd_deny->get_pending_origins_queue_size_for_testing());
+  // Set Crowd Deny reputation only for abusive origin. Non-abusive origins will
+  // have default reputation.
+  AddToPreloadDataBlocklist(abusive_origin, SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectTotalCount(
+      "Permissions.CrowdDeny.PreloadData.DelayedPushNotification", 2);
 }
 
 TEST_F(AbusiveOriginPermissionRevocationRequestTest,

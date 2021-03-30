@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/gtk_ui_delegate_wayland.h"
 
-#include <gdk/gdkwayland.h>
 #include <gtk/gtk.h>
 
 #include <memory>
@@ -21,9 +20,15 @@
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
+#if BUILDFLAG(GTK_VERSION) >= 4
+#include <gdk/wayland/gdkwayland.h>
+#else
+#include <gdk/gdkwayland.h>
+
 #define WEAK_GTK_FN(x) extern "C" __attribute__((weak)) decltype(x) x
 
 WEAK_GTK_FN(gdk_wayland_window_set_transient_for_exported);
+#endif
 
 namespace ui {
 
@@ -38,7 +43,7 @@ GtkUiDelegateWayland::GtkUiDelegateWayland(WaylandConnection* connection)
 
 GtkUiDelegateWayland::~GtkUiDelegateWayland() = default;
 
-void GtkUiDelegateWayland::OnInitialized() {
+void GtkUiDelegateWayland::OnInitialized(GtkWidget* widget) {
   // Nothing to do upon initialization for Wayland.
 }
 
@@ -53,15 +58,17 @@ GdkWindow* GtkUiDelegateWayland::GetGdkWindow(
   return nullptr;
 }
 
-bool GtkUiDelegateWayland::SetGdkWindowTransientFor(
-    GdkWindow* window,
+bool GtkUiDelegateWayland::SetGtkWidgetTransientFor(
+    GtkWidget* widget,
     gfx::AcceleratedWidget parent) {
+#if BUILDFLAG(GTK_VERSION) < 4
   if (!gdk_wayland_window_set_transient_for_exported) {
     LOG(WARNING) << "set_transient_for_exported not supported in GTK version "
                  << GTK_MAJOR_VERSION << '.' << GTK_MINOR_VERSION << '.'
                  << GTK_MICRO_VERSION;
     return false;
   }
+#endif
 
   auto* parent_window =
       connection_->wayland_window_manager()->GetWindow(parent);
@@ -73,7 +80,7 @@ bool GtkUiDelegateWayland::SetGdkWindowTransientFor(
 
   foreign->ExportSurfaceToForeign(
       parent_window, base::BindOnce(&GtkUiDelegateWayland::OnHandle,
-                                    weak_factory_.GetWeakPtr(), window));
+                                    weak_factory_.GetWeakPtr(), widget));
   return true;
 }
 
@@ -92,10 +99,17 @@ int GtkUiDelegateWayland::GetGdkKeyState() {
   return connection_->event_source()->keyboard_modifiers();
 }
 
-void GtkUiDelegateWayland::OnHandle(GdkWindow* window,
+void GtkUiDelegateWayland::OnHandle(GtkWidget* widget,
                                     const std::string& handle) {
-  gdk_wayland_window_set_transient_for_exported(
-      window, const_cast<char*>(handle.c_str()));
+  char* parent = const_cast<char*>(handle.c_str());
+#if BUILDFLAG(GTK_VERSION) >= 4
+  auto* toplevel =
+      GDK_TOPLEVEL(gtk_native_get_surface(gtk_widget_get_native(widget)));
+  gdk_wayland_toplevel_set_transient_for_exported(toplevel, parent);
+#else
+  gdk_wayland_window_set_transient_for_exported(gtk_widget_get_window(widget),
+                                                parent);
+#endif
 }
 
 }  // namespace ui

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  setBluetoothManualChooser(true);
+
+  let requestDevicePromise =
+      setBluetoothFakeAdapter('DeviceEventAdapter')
+          .then(() => requestDeviceWithTrustedClick({
+                  filters: [
+                    {services: ['heart_rate']}, {services: ['battery_service']},
+                    {services: ['tx_power']}, {services: ['generic_access']},
+                    {services: ['glucose']}
+                  ]
+                }));
+  return getBluetoothManualChooserEvents(7).then(events => {
+    assert_equals(events[0], 'chooser-opened(https://web-platform.test:8444)');
+    let idsByName = new AddDeviceEventSet();
+    idsByName.assert_add_device_event(events[1]);
+    assert_true(idsByName.has('Connected Heart Rate Device'));
+    assert_equals(events[2], 'discovering');
+    idsByName.assert_add_device_event(events[3]);
+    idsByName.assert_add_device_event(events[4]);
+    idsByName.assert_add_device_event(events[5]);
+    assert_true(idsByName.has('New Glucose Device'), 'Glucose Device');
+    assert_true(idsByName.has('Changing Battery Device'), 'Battery Device');
+    assert_true(idsByName.has(
+        'Discovery Generic Access Device', 'Generic Access Device'));
+    assert_equals(events[6], 'discovery-idle');
+    sendBluetoothManualChooserEvent(
+        'selected', idsByName.get('Connected Heart Rate Device'));
+    return requestDevicePromise;
+  });
+});
+</script>

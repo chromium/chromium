@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -106,6 +107,10 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   // Get the underlying platform specific surface "handle".
   virtual void* GetHandle() = 0;
+
+  // Android SurfaceControl specific, notifies that we should not detach child
+  // surface controls during destruction.
+  virtual void PreserveChildSurfaceControls() {}
 
   // Returns whether or not the surface supports SwapBuffersWithBounds
   virtual bool SupportsSwapBuffersWithBounds();
@@ -257,6 +262,10 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   virtual bool IsSurfaceless() const;
 
+  // Returns true if this surface permits scheduling an isothetic sub-rectangle
+  // (i.e. viewport) of its contents for display.
+  virtual bool SupportsViewporter() const;
+
   virtual gfx::SurfaceOrigin GetOrigin() const;
 
   // Returns true if SwapBuffers or PostSubBuffers causes a flip, such that
@@ -266,6 +275,10 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   virtual bool SupportsDCLayers() const;
 
   virtual bool SupportsProtectedVideo() const;
+
+  // Returns true if we are allowed to adopt a size different from the
+  // platform's proposed surface size.
+  virtual bool SupportsOverridePlatformSize() const;
 
   // Set the rectangle that will be drawn into on the surface, returning
   // success. If failed, it is possible that the context is no longer current.
@@ -308,6 +321,10 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   virtual bool IsCurrent();
 
   static bool ExtensionsContain(const char* extensions, const char* name);
+
+  virtual bool SupportsDelegatedInk();
+  virtual void SetDelegatedInkTrailStartPoint(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {}
 
  protected:
   virtual ~GLSurface();
@@ -383,10 +400,12 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool ScheduleDCLayer(const ui::DCRendererLayerParams& params) override;
   bool SetEnableDCLayers(bool enable) override;
   bool IsSurfaceless() const override;
+  bool SupportsViewporter() const override;
   gfx::SurfaceOrigin GetOrigin() const override;
   bool BuffersFlipped() const override;
   bool SupportsDCLayers() const override;
   bool SupportsProtectedVideo() const override;
+  bool SupportsOverridePlatformSize() const override;
   bool SetDrawRectangle(const gfx::Rect& rect) override;
   gfx::Vector2d GetDrawOffset() const override;
   void SetRelyOnImplicitSync() override;
@@ -401,6 +420,10 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   void SetFrameRate(float frame_rate) override;
   void SetCurrent() override;
   bool IsCurrent() override;
+
+  bool SupportsDelegatedInk() override;
+  void SetDelegatedInkTrailStartPoint(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
 
   GLSurface* surface() const { return surface_.get(); }
 

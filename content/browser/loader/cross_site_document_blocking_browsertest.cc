@@ -22,6 +22,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -47,6 +48,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/cross_origin_read_blocking.h"
@@ -207,6 +209,10 @@ class RequestInterceptor {
         network::mojom::URLResponseHead::New(), "",
         network::URLLoaderCompletionStatus(net::ERR_NOT_IMPLEMENTED));
   }
+
+  // No copy constructor or assignment operator.
+  RequestInterceptor(const RequestInterceptor&) = delete;
+  RequestInterceptor& operator=(const RequestInterceptor&) = delete;
 
   // Waits until a request gets intercepted and completed.
   void WaitForRequestCompletion() {
@@ -387,14 +393,17 @@ class RequestInterceptor {
     if (status.error_code == net::OK) {
       original_client_->OnReceiveResponse(std::move(response_head));
 
-      mojo::DataPipe empty_data_pipe(response_body.size() + 1);
-      original_client_->OnStartLoadingResponseBody(
-          std::move(empty_data_pipe.consumer_handle));
+      mojo::ScopedDataPipeProducerHandle producer_handle;
+      mojo::ScopedDataPipeConsumerHandle consumer_handle;
+      ASSERT_EQ(mojo::CreateDataPipe(response_body.size() + 1, producer_handle,
+                                     consumer_handle),
+                MOJO_RESULT_OK);
+      original_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
       uint32_t num_bytes = response_body.size();
-      EXPECT_EQ(MOJO_RESULT_OK, empty_data_pipe.producer_handle->WriteData(
-                                    response_body.data(), &num_bytes,
-                                    MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+      EXPECT_EQ(MOJO_RESULT_OK,
+                producer_handle->WriteData(response_body.data(), &num_bytes,
+                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
     }
     original_client_->OnComplete(status);
 
@@ -428,8 +437,6 @@ class RequestInterceptor {
   mojo::Remote<network::mojom::URLLoaderClient> test_client_remote_;
   std::unique_ptr<mojo::Receiver<network::mojom::URLLoaderClient>>
       test_client_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestInterceptor);
 };
 
 }  // namespace
@@ -444,6 +451,12 @@ class CrossSiteDocumentBlockingTestBase : public ContentBrowserTest {
  public:
   CrossSiteDocumentBlockingTestBase() = default;
   ~CrossSiteDocumentBlockingTestBase() override = default;
+
+  // No copy constructor or assignment.
+  CrossSiteDocumentBlockingTestBase(const CrossSiteDocumentBlockingTestBase&) =
+      delete;
+  CrossSiteDocumentBlockingTestBase& operator=(
+      const CrossSiteDocumentBlockingTestBase&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // EmbeddedTestServer::InitializeAndListen() initializes its |base_url_|
@@ -463,6 +476,35 @@ class CrossSiteDocumentBlockingTestBase : public ContentBrowserTest {
         "MAP * " + embedded_test_server()->host_port_pair().ToString() +
             ",EXCLUDE localhost");
   }
+};
+
+enum class TestMode {
+  kWithCORBProtectionSniffing,
+  kWithoutCORBProtectionSniffing,
+};
+struct ImgTestParams {
+  const char* resource;
+  CorbExpectations expectations;
+  TestMode mode;
+};
+class CrossSiteDocumentBlockingImgElementTest
+    : public CrossSiteDocumentBlockingTestBase,
+      public testing::WithParamInterface<ImgTestParams> {
+ public:
+  CrossSiteDocumentBlockingImgElementTest() {
+    switch (GetParam().mode) {
+      case TestMode::kWithCORBProtectionSniffing:
+        scoped_feature_list_.InitAndEnableFeature(
+            network::features::kCORBProtectionSniffing);
+        break;
+      case TestMode::kWithoutCORBProtectionSniffing:
+        scoped_feature_list_.InitAndDisableFeature(
+            network::features::kCORBProtectionSniffing);
+        break;
+    }
+  }
+
+  ~CrossSiteDocumentBlockingImgElementTest() override = default;
 
   void VerifyImgRequest(std::string resource, CorbExpectations expectations) {
     // Test from a http: origin.
@@ -507,13 +549,96 @@ class CrossSiteDocumentBlockingTestBase : public ContentBrowserTest {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(CrossSiteDocumentBlockingTestBase);
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-enum class TestMode {
-  kWithCORBProtectionSniffing,
-  kWithoutCORBProtectionSniffing,
-};
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingImgElementTest, Test) {
+  embedded_test_server()->StartAcceptingConnections();
+
+  const char* resource = GetParam().resource;
+  CorbExpectations expectations = GetParam().expectations;
+
+  VerifyImgRequest(resource, expectations);
+}
+
+#define IMG_TEST(tag, resource, expectations)                                  \
+  INSTANTIATE_TEST_SUITE_P(                                                    \
+      ProtectionSniffingOn##tag, CrossSiteDocumentBlockingImgElementTest,      \
+      ::testing::Values(ImgTestParams{                                         \
+          resource, expectations, TestMode::kWithoutCORBProtectionSniffing})); \
+  INSTANTIATE_TEST_SUITE_P(                                                    \
+      ProtectionSniffingOff##tag, CrossSiteDocumentBlockingImgElementTest,     \
+      ::testing::Values(ImgTestParams{                                         \
+          resource, expectations, TestMode::kWithCORBProtectionSniffing}));
+
+// The following are files under content/test/data/site_isolation. All
+// should be disallowed for cross site XHR under the document blocking policy.
+//   valid.*        - Correctly labeled HTML/XML/JSON files.
+//   *.txt          - Plain text that sniffs as HTML, XML, or JSON.
+//   htmlN_dtd.*    - Various HTML templates to test.
+//   json-prefixed* - parser-breaking prefixes
+IMG_TEST(valid_html, "valid.html", kShouldBeSniffedAndBlocked)
+IMG_TEST(valid_xml, "valid.xml", kShouldBeSniffedAndBlocked)
+IMG_TEST(valid_json, "valid.json", kShouldBeSniffedAndBlocked)
+IMG_TEST(html_txt, "html.txt", kShouldBeSniffedAndBlocked)
+IMG_TEST(xml_txt, "xml.txt", kShouldBeSniffedAndBlocked)
+IMG_TEST(json_txt, "json.txt", kShouldBeSniffedAndBlocked)
+IMG_TEST(comment_valid_html, "comment_valid.html", kShouldBeSniffedAndBlocked)
+IMG_TEST(html4_dtd_html, "html4_dtd.html", kShouldBeSniffedAndBlocked)
+IMG_TEST(html4_dtd_txt, "html4_dtd.txt", kShouldBeSniffedAndBlocked)
+IMG_TEST(html5_dtd_html, "html5_dtd.html", kShouldBeSniffedAndBlocked)
+IMG_TEST(html5_dtd_txt, "html5_dtd.txt", kShouldBeSniffedAndBlocked)
+IMG_TEST(json_js, "json.js", kShouldBeSniffedAndBlocked)
+IMG_TEST(json_prefixed_1_js, "json-prefixed-1.js", kShouldBeSniffedAndBlocked)
+IMG_TEST(json_prefixed_2_js, "json-prefixed-2.js", kShouldBeSniffedAndBlocked)
+IMG_TEST(json_prefixed_3_js, "json-prefixed-3.js", kShouldBeSniffedAndBlocked)
+IMG_TEST(json_prefixed_4_js, "json-prefixed-4.js", kShouldBeSniffedAndBlocked)
+IMG_TEST(nosniff_json_js, "nosniff.json.js", kShouldBeSniffedAndBlocked)
+IMG_TEST(nosniff_json_prefixed_js,
+         "nosniff.json-prefixed.js",
+         kShouldBeSniffedAndBlocked)
+
+// These files should be disallowed without sniffing.
+//   nosniff.*   - Won't sniff correctly, but blocked because of nosniff.
+IMG_TEST(nosniff_html, "nosniff.html", kShouldBeBlockedWithoutSniffing)
+IMG_TEST(nosniff_xml, "nosniff.xml", kShouldBeBlockedWithoutSniffing)
+IMG_TEST(nosniff_json, "nosniff.json", kShouldBeBlockedWithoutSniffing)
+IMG_TEST(nosniff_txt, "nosniff.txt", kShouldBeBlockedWithoutSniffing)
+IMG_TEST(fake_pdf, "fake.pdf", kShouldBeBlockedWithoutSniffing)
+IMG_TEST(fake_zip, "fake.zip", kShouldBeBlockedWithoutSniffing)
+
+// These files are allowed for XHR under the document blocking policy because
+// the sniffing logic determines they are not actually documents.
+//   *js.*   - JavaScript mislabeled as a document.
+//   jsonp.* - JSONP (i.e., script) mislabeled as a document.
+//   img.*   - Contents that won't match the document label.
+//   valid.* - Correctly labeled responses of non-document types.
+IMG_TEST(html_prefix_txt, "html-prefix.txt", kShouldBeSniffedAndAllowed)
+IMG_TEST(js_html, "js.html", kShouldBeSniffedAndAllowed)
+IMG_TEST(comment_js_html, "comment_js.html", kShouldBeSniffedAndAllowed)
+IMG_TEST(js_xml, "js.xml", kShouldBeSniffedAndAllowed)
+IMG_TEST(js_json, "js.json", kShouldBeSniffedAndAllowed)
+IMG_TEST(js_txt, "js.txt", kShouldBeSniffedAndAllowed)
+IMG_TEST(jsonp_html, "jsonp.html", kShouldBeSniffedAndAllowed)
+IMG_TEST(jsonp_xml, "jsonp.xml", kShouldBeSniffedAndAllowed)
+IMG_TEST(jsonp_json, "jsonp.json", kShouldBeSniffedAndAllowed)
+IMG_TEST(jsonp_txt, "jsonp.txt", kShouldBeSniffedAndAllowed)
+IMG_TEST(img_html, "img.html", kShouldBeSniffedAndAllowed)
+IMG_TEST(img_xml, "img.xml", kShouldBeSniffedAndAllowed)
+IMG_TEST(img_json, "img.json", kShouldBeSniffedAndAllowed)
+IMG_TEST(img_txt, "img.txt", kShouldBeSniffedAndAllowed)
+IMG_TEST(valid_js, "valid.js", kShouldBeSniffedAndAllowed)
+IMG_TEST(json_list_js, "json-list.js", kShouldBeSniffedAndAllowed)
+IMG_TEST(nosniff_json_list_js,
+         "nosniff.json-list.js",
+         kShouldBeSniffedAndAllowed)
+IMG_TEST(js_html_polyglot_html,
+         "js-html-polyglot.html",
+         kShouldBeSniffedAndAllowed)
+IMG_TEST(js_html_polyglot2_html,
+         "js-html-polyglot2.html",
+         kShouldBeSniffedAndAllowed)
+
 class CrossSiteDocumentBlockingTest
     : public CrossSiteDocumentBlockingTestBase,
       public testing::WithParamInterface<TestMode> {
@@ -534,84 +659,7 @@ class CrossSiteDocumentBlockingTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrossSiteDocumentBlockingTest);
 };
-
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, BlockImagesWithSniffing) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  // The following are files under content/test/data/site_isolation. All
-  // should be disallowed for cross site XHR under the document blocking policy.
-  //   valid.*        - Correctly labeled HTML/XML/JSON files.
-  //   *.txt          - Plain text that sniffs as HTML, XML, or JSON.
-  //   htmlN_dtd.*    - Various HTML templates to test.
-  //   json-prefixed* - parser-breaking prefixes
-  const char* blocked_resources[] = {"valid.html",
-                                     "valid.xml",
-                                     "valid.json",
-                                     "html.txt",
-                                     "xml.txt",
-                                     "json.txt",
-                                     "comment_valid.html",
-                                     "html4_dtd.html",
-                                     "html4_dtd.txt",
-                                     "html5_dtd.html",
-                                     "html5_dtd.txt",
-                                     "json.js",
-                                     "json-prefixed-1.js",
-                                     "json-prefixed-2.js",
-                                     "json-prefixed-3.js",
-                                     "json-prefixed-4.js",
-                                     "nosniff.json.js",
-                                     "nosniff.json-prefixed.js"};
-  for (const char* resource : blocked_resources)
-    VerifyImgRequest(resource, kShouldBeSniffedAndBlocked);
-}
-
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, BlockImagesNoSniffing) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  // These files should be disallowed without sniffing.
-  //   nosniff.*   - Won't sniff correctly, but blocked because of nosniff.
-  const char* nosniff_blocked_resources[] = {"nosniff.html", "nosniff.xml",
-                                             "nosniff.json", "nosniff.txt",
-                                             "fake.pdf",     "fake.zip"};
-  for (const char* resource : nosniff_blocked_resources)
-    VerifyImgRequest(resource, kShouldBeBlockedWithoutSniffing);
-}
-
-IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, AllowImagesWithSniffing) {
-  embedded_test_server()->StartAcceptingConnections();
-
-  // These files are allowed for XHR under the document blocking policy because
-  // the sniffing logic determines they are not actually documents.
-  //   *js.*   - JavaScript mislabeled as a document.
-  //   jsonp.* - JSONP (i.e., script) mislabeled as a document.
-  //   img.*   - Contents that won't match the document label.
-  //   valid.* - Correctly labeled responses of non-document types.
-  const char* sniff_allowed_resources[] = {"html-prefix.txt",
-                                           "js.html",
-                                           "comment_js.html",
-                                           "js.xml",
-                                           "js.json",
-                                           "js.txt",
-                                           "jsonp.html",
-                                           "jsonp.xml",
-                                           "jsonp.json",
-                                           "jsonp.txt",
-                                           "img.html",
-                                           "img.xml",
-                                           "img.json",
-                                           "img.txt",
-                                           "valid.js",
-                                           "json-list.js",
-                                           "nosniff.json-list.js",
-                                           "js-html-polyglot.html",
-                                           "js-html-polyglot2.html"};
-  for (const char* resource : sniff_allowed_resources)
-    VerifyImgRequest(resource, kShouldBeSniffedAndAllowed);
-}
 
 // This test covers an aspect of Cross-Origin-Resource-Policy (CORP, different
 // from CORB) that cannot be covered by wpt/fetch/cross-origin-resource-policy:
@@ -1112,7 +1160,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   GURL main_url = app_cache_content_server.GetURL(
       "/appcache/simple_page_with_manifest.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = u"AppCache updated";
   content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1179,7 +1227,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   GURL main_url = embedded_test_server()->GetURL(
       "/site_isolation/appcached_cross_origin_resource.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = u"AppCache updated";
   content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -1220,7 +1268,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   GURL main_url = embedded_test_server()->GetURL(
       "/appcache/simple_page_with_manifest.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = u"AppCache updated";
   content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1274,7 +1322,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   GURL main_url = embedded_test_server()->GetURL(
       "/appcache/simple_page_with_manifest.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = u"AppCache updated";
   content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1428,6 +1476,12 @@ class CrossSiteDocumentBlockingServiceWorkerTest : public ContentBrowserTest {
         cross_origin_https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
   ~CrossSiteDocumentBlockingServiceWorkerTest() override {}
 
+  // No copy constructor or assignment operator.
+  CrossSiteDocumentBlockingServiceWorkerTest(
+      const CrossSiteDocumentBlockingServiceWorkerTest&) = delete;
+  CrossSiteDocumentBlockingServiceWorkerTest& operator=(
+      const CrossSiteDocumentBlockingServiceWorkerTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
     ContentBrowserTest::SetUpCommandLine(command_line);
@@ -1505,8 +1559,6 @@ class CrossSiteDocumentBlockingServiceWorkerTest : public ContentBrowserTest {
   //    be a https server to avoid hitting the mixed content error.
   net::EmbeddedTestServer service_worker_https_server_;
   net::EmbeddedTestServer cross_origin_https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrossSiteDocumentBlockingServiceWorkerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingServiceWorkerTest,
@@ -1566,9 +1618,6 @@ class CrossSiteDocumentBlockingDisableWebSecurityTest
     command_line->AppendSwitch(switches::kDisableWebSecurity);
     CrossSiteDocumentBlockingTestBase::SetUpCommandLine(command_line);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrossSiteDocumentBlockingDisableWebSecurityTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingDisableWebSecurityTest,
@@ -1596,9 +1645,6 @@ class CrossSiteDocumentBlockingIsolatedOriginTest
                                     "http://bar.com");
     CrossSiteDocumentBlockingTestBase::SetUpCommandLine(command_line);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrossSiteDocumentBlockingIsolatedOriginTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingIsolatedOriginTest,
@@ -1630,6 +1676,122 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {
       BrowserContext::GetDefaultStoragePartition(browser_context);
   ASSERT_EQ(net::OK,
             LoadBasicRequest(partition->GetNetworkContext(), test_url));
+}
+
+// This test class sets up a link element for webbundle subresource loading.
+// e.g. <link rel=webbundle href=".../foo.wbn" resources="...">.
+class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
+ public:
+  CrossSiteDocumentBlockingWebBundleTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
+  }
+  ~CrossSiteDocumentBlockingWebBundleTest() override = default;
+
+  CrossSiteDocumentBlockingWebBundleTest(
+      const CrossSiteDocumentBlockingWebBundleTest&) = delete;
+  CrossSiteDocumentBlockingWebBundleTest& operator=(
+      const CrossSiteDocumentBlockingWebBundleTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        "MAP * " + https_server_.host_port_pair().ToString() +
+            ",EXCLUDE localhost");
+  }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ protected:
+  void SetupLinkWebBundleElementAndImgElement(const GURL& bundle_url,
+                                              const GURL subresource_url) {
+    // Navigate to the test page.
+    ASSERT_TRUE(
+        NavigateToURL(shell(), GURL("https://same-origin.test/title1.html")));
+
+    const char kScriptTemplate[] = R"(
+      const link = document.createElement('link');
+      link.rel = 'webbundle';
+      link.href = $1;
+      link.resources.add($2);
+      document.body.appendChild(link);
+
+      const img = document.createElement('img');
+      img.src = $2;
+      document.body.appendChild(img);
+)";
+    // Insert a <link> element for webbundle subresoruce loading, and insert an
+    // <img> element which loads a resource from the webbundle.
+    ASSERT_TRUE(ExecJs(
+        shell(), JsReplace(kScriptTemplate, bundle_url, subresource_url)));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_{
+      net::EmbeddedTestServer::Type::TYPE_HTTPS};
+};
+
+// CrossSiteDocumentBlockingWebBundleTest has 4 tests; a cartesian product of
+// 1) cross-origin bundle, 2) same-origin bundle
+// X
+// A). CORB-protected MIME type (e.g. text/json), B) other type (e.g. image/png)
+IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
+                       CrossOriginWebBundleSubresoruceJson) {
+  https_server()->StartAcceptingConnections();
+  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin.wbn");
+  GURL subresource_url("https://cross-origin.test/web_bundle/resource.json");
+  RequestInterceptor interceptor(subresource_url);
+  SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
+  interceptor.WaitForRequestCompletion();
+
+  EXPECT_EQ(0, interceptor.completion_status().error_code);
+  EXPECT_EQ("", interceptor.response_body())
+      << "JSON in a cross-origin webbundle should be blocked by CORB";
+}
+
+IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
+                       CrossOriginWebBundleSubresorucePng) {
+  https_server()->StartAcceptingConnections();
+  GURL bundle_url("https://cross-origin.test/web_bundle/cross_origin.wbn");
+  GURL subresource_url("https://cross-origin.test/web_bundle/resource.png");
+  RequestInterceptor interceptor(subresource_url);
+  SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
+  interceptor.WaitForRequestCompletion();
+
+  EXPECT_EQ(0, interceptor.completion_status().error_code);
+  EXPECT_EQ("broken png", interceptor.response_body())
+      << "PNG in a cross-origin webbundle should not be blocked";
+}
+
+IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
+                       SameOriginWebBundleSubresoruceJson) {
+  https_server()->StartAcceptingConnections();
+  GURL bundle_url("https://same-origin.test/web_bundle/same_origin.wbn");
+  GURL subresource_url("https://same-origin.test/web_bundle/resource.json");
+  RequestInterceptor interceptor(subresource_url);
+  SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
+  interceptor.WaitForRequestCompletion();
+
+  EXPECT_EQ(0, interceptor.completion_status().error_code);
+  EXPECT_EQ("{ secret: 1 }", interceptor.response_body())
+      << "JSON in a same-origin webbundle should not be blocked";
+}
+
+IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
+                       SameOriginWebBundleSubresorucePng) {
+  https_server()->StartAcceptingConnections();
+  GURL bundle_url("https://same-origin.test/web_bundle/same_origin.wbn");
+  GURL subresource_url("https://same-origin.test/web_bundle/resource.png");
+  RequestInterceptor interceptor(subresource_url);
+  SetupLinkWebBundleElementAndImgElement(bundle_url, subresource_url);
+  interceptor.WaitForRequestCompletion();
+
+  EXPECT_EQ(0, interceptor.completion_status().error_code);
+  EXPECT_EQ("broken png", interceptor.response_body())
+      << "PNG in a same-origin webbundle should not be blocked";
 }
 
 }  // namespace content

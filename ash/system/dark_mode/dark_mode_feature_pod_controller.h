@@ -5,7 +5,7 @@
 #ifndef ASH_SYSTEM_DARK_MODE_DARK_MODE_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_DARK_MODE_DARK_MODE_FEATURE_POD_CONTROLLER_H_
 
-#include "ash/system/dark_mode/color_mode_observer.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/macros.h"
 

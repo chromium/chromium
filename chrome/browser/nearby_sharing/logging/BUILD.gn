@@ -11,7 +11,10 @@ source_set("logging") {
     "logging.cc",
     "logging.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/browser/nearby_sharing/common",
+  ]
 }
 
 source_set("unit_tests") {

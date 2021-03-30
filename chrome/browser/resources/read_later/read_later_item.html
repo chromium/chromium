@@ -18,6 +18,15 @@
     width: auto;
   }
 
+  .favicon {
+    background-repeat: no-repeat;
+    background-size: var(--mwb-icon-size);
+    flex-shrink: 0;
+    height: var(--mwb-icon-size);
+    margin-inline-end: var(--mwb-list-item-horizontal-margin);
+    width: var(--mwb-icon-size);
+  }
+
   .text-container {
     flex-grow: 1;
     overflow: hidden;
@@ -65,6 +74,8 @@
   }
 </style>
 
+<div class="favicon" style="background-image:[[getFaviconUrl_(data.url.url)]]">
+</div>
 <div class="text-container">
   <div class="primary-text">[[data.title]]</div>
   <div class="secondary-text">
@@ -77,12 +88,13 @@
           '$i18n{tooltipMarkAsRead}', data.read)]]"
       iron-icon="[[getUpdateStatusButtonIcon_('cr:check-circle',
           'read-later:check-circle-outline', data.read)]]"
+      noink="[[!buttonRipples]]" no-ripple-on-focus
+      on-click="onUpdateStatusClick_"
       title="[[getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
-          '$i18n{tooltipMarkAsRead}', data.read)]]"
-      on-click="onUpdateStatusClick_">
+          '$i18n{tooltipMarkAsRead}', data.read)]]">
   </cr-icon-button>
   <cr-icon-button id="deleteButton" aria-label="$i18n{tooltipDelete}"
-      disable-ripple iron-icon="cr:close" title="$i18n{tooltipDelete}"
-      on-click="onItemDeleteClick_">
+      iron-icon="cr:close" noink="[[!buttonRipples]]" no-ripple-on-focus
+      on-click="onItemDeleteClick_" title="$i18n{tooltipDelete}">
   </cr-icon-button>
 </div>

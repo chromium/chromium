@@ -265,7 +265,7 @@ Additional details:
   <message name="IDS_POLICY_LEVEL_ERROR" desc="Text displayed in the status column when a policy is set at an unsupported level.">
     Policy level is not supported.
   </message>
-  <message name="IDS_POLICY_OK" desc="Text displayed in the status column when a valid value is set for a policy.">
+  <message name="IDS_POLICY_OK" desc="Text displayed in the status column when a valid value is set for a policy." meaning="Policy is working as expected.">
     OK
   </message>
   <message name="IDS_POLICY_UNSET" desc="Text displayed in the status column when no value is set for a policy.">
@@ -277,6 +277,9 @@ Additional details:
   <message name="IDS_POLICY_PROTO_PARSING_ERROR" desc="Text displayed when error is encountered during policy parsing/decoding.">
     Policy parsing error: <ph name="ERROR">$1<ex>Invalid JSON string: Line: 1, column: 14</ex></ph>
   </message>
+    <message name="IDS_POLICY_HEX_COLOR_ERROR" desc="Error message in the policy summary page for the BrowserThemeColor policy when the policy value is an invalid hex color.">
+      Value "<ph name="VALUE">$1<ex>#zzzzzz</ex></ph>" is an invalid hex color.
+    </message>
 
   <!-- chrome://policy -->
   <message name="IDS_POLICY_TITLE" desc="Page title and the title of the section that lists policies.">
@@ -287,6 +290,12 @@ Additional details:
   </message>
   <message name="IDS_POLICY_RELOAD_POLICIES" desc="Label for the button that reloads policies.">
     Reload policies
+  </message>
+  <message name="IDS_POLICY_LOADING_POLICIES" desc="Screen reader message indicates policies are being loaded.">
+    Loading policies
+  </message>
+  <message name="IDS_POLICY_LOAD_POLICIES_DONE" desc="Screen reader message indicates policies have been loaded.">
+    Policies is loaded
   </message>
   <message name="IDS_EXPORT_POLICIES_JSON" desc="Label for the button that exports policies in JSON format.">
     Export to JSON
@@ -310,9 +319,6 @@ Additional details:
  </if>
   <message name="IDS_POLICY_LABEL_ENTERPRISE_ENROLLMENT_DOMAIN" desc="Label for the enrollment domain in the device policy status box.">
     Enrollment domain:
-  </message>
-  <message name="IDS_POLICY_LABEL_ENTERPRISE_DISPLAY_DOMAIN" desc="Label for the display domain in the device policy status box.">
-    Display domain:
   </message>
   <message name="IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DOMAIN" desc="Label for the enrollment domain in the machine policy status box.">
     Enrollment domain:
@@ -344,6 +350,9 @@ Additional details:
   <message name="IDS_POLICY_LABEL_DIRECTORY_API_ID" desc="Label for the directory API ID in the device policy status box.">
     Directory API ID:
   </message>
+  <message name="IDS_POLICY_LABEL_MANAGED_BY" desc="Label for the manager in the policy status boxes. Manager can be a domain or an email address.">
+    Managed by:
+  </message>
   <message name="IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH" desc="Label for the time since the last refresh in the policy status boxes.">
     Last fetched:
   </message>
@@ -365,8 +374,17 @@ Additional details:
   <message name="IDS_POLICY_LABEL_REFRESH_INTERVAL" desc="Label for the refresh interval in the policy status boxes.">
     Fetch interval:
   </message>
-  <message name="IDS_POLICY_LABEL_CONFLICT" desc="Label for the conflict row in the policy table.">
+  <message name="IDS_POLICY_LABEL_CONFLICT" desc="Label for the conflict status column in the policy table.">
     Conflict
+  </message>
+  <message name="IDS_POLICY_LABEL_SUPERSEDING" desc="Label for the superseding status column in the policy table.">
+    Superseding
+  </message>
+  <message name="IDS_POLICY_LABEL_CONFLICT_VALUE" desc="Label for the conflict row in the policy table.">
+    Value (conflict)
+  </message>
+  <message name="IDS_POLICY_LABEL_SUPERSEDED_VALUE" desc="Label for the superseded row in the policy table.">
+    Value (superseded)
   </message>
   <message name="IDS_POLICY_LABEL_ERROR" desc="Label for the error row in the policy table.">
     Error
@@ -388,6 +406,9 @@ Additional details:
   </message>
   <message name="IDS_POLICY_LABEL_STATUS" desc="Label for the actual status in the policy status boxes.">
     Status:
+  </message>
+  <message name="IDS_POLICY_LABEL_INFO" desc="Label for the info row in the policy table.">
+    Info
   </message>
   <message name="IDS_POLICY_SHOW_UNSET" desc="Label for the checkbox that determines whether policies whose value has not been set are shown.">
     Show policies with no value set
@@ -505,10 +526,10 @@ Additional details:
     Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.
   </message>
   <message name="IDS_POLICY_CONFLICT_SAME_VALUE" desc="Text explaining that a policy had conflicting sources, but with the same values.">
-    More than one source is present for the policy, but the values are the same.
+    This policy is working as intended but the same value is set elsewhere and is superseded by this policy.
   </message>
   <message name="IDS_POLICY_CONFLICT_DIFF_VALUE" desc="Text explaining that a policy had conflicting sources and values.">
-    More than one source with conflicting values is present for this policy!
+    This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.
   </message>
   <message name="IDS_POLICY_MIGRATED_OLD_POLICY" desc="Text explaining that a policy is deprecated, and that admins should use the new policy instead">
     This policy is deprecated. You should use the <ph name="NEW_POLICY">$1<ex>AllowDinosaurEasterEgg</ex></ph> policy instead.
@@ -579,7 +600,7 @@ Additional details:
   </message>
 
   <!-- Strings for Data Leak Prevention -->
-  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE" desc="A toast informing the user that paste is blocked.">
+  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE" desc="A notification informing the user that paste is blocked.">
     Pasting from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to this location is blocked by administrator policy
   </message>
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
@@ -591,23 +612,35 @@ Additional details:
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCK_DISMISS_BUTTON" desc="Dismiss dialog button label for disabled paste notification.">
     Got it
   </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE" desc="A notification warning the user that paste is not recommended.">
+    Pasting from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to this location is not recommended by administrator policy
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_PROCEED_BUTTON" desc="Proceed dialog button label for warning before paste.">
+    Paste anyway
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_DISMISS_BUTTON" desc="Dismiss dialog button label for warning before paste.">
+    Cancel
+  </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_ON_COPY_VM" desc="A toast informing the user that pasting the clipboard data to VMs is not recommended.">
+    Copying and pasting this content to <ph name="VM_NAME">$1<ex>Linux</ex></ph> is not recommended by administrator policy
+  </message>
   <message name="IDS_POLICY_DLP_PRINTING_BLOCKED_TITLE" desc="The title for notification informing the user that printing is blocked.">
     Printing is blocked
   </message>
   <message name="IDS_POLICY_DLP_PRINTING_BLOCKED_MESSAGE" desc="The message for notification informing the user that printing is blocked.">
-    Printing of this content is blocked by your administrator.
+    Printing this content is blocked by administrator policy
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_TITLE" desc="The title for notification informing the user that screen capture is paused.">
     Screen capture paused
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_MESSAGE" desc="The message for notification informing the user that screen capture is paused.">
-    Screen capture was paused by your administrator due to content on your screen.
+    Administrator policy disables screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> when confidential content is visible
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_TITLE" desc="The title for notification informing the user that screen capture is resumed.">
     Screen capture resumed
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_MESSAGE" desc="The message for notification informing the user that screen capture is resumed.">
-    Screen capture was resumed.
+    Screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> was resumed
   </message>
 
 </grit-part>

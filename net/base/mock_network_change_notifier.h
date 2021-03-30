@@ -53,6 +53,30 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
 
   void SetConnectionTypeAndNotifyObservers(ConnectionType connection_type);
 
+  // Sets the cached value of the connection cost. If
+  // use_default_connection_cost_implementation is set to true, this value gets
+  // ignored.
+  void SetConnectionCost(ConnectionCost connection_cost) {
+    connection_cost_ = connection_cost;
+  }
+
+  // Tells this class to ignore its cached connection cost value and instead
+  // call the base class's implementation. This is intended to allow tests to
+  // mock the product code's fallback to the default implementation in certain
+  // situations. For example, the APIs to support this functionality exist on
+  // Win10 only so it falls back to the default on Win7, so this function allows
+  // tests to validate the default implementation's behavior on Win10 machines.
+  void SetUseDefaultConnectionCostImplementation(
+      bool use_default_connection_cost_implementation) {
+    use_default_connection_cost_implementation_ =
+        use_default_connection_cost_implementation;
+  }
+
+  // Returns either the cached connection cost value or the default
+  // implementation's result, depending on whether
+  // use_default_connection_cost_implementation is set to true.
+  ConnectionCost GetCurrentConnectionCost() override;
+
  private:
   // Create using MockNetworkChangeNotifier::Create().
   MockNetworkChangeNotifier(
@@ -60,6 +84,8 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
 
   bool force_network_handles_supported_;
   ConnectionType connection_type_;
+  ConnectionCost connection_cost_;
+  bool use_default_connection_cost_implementation_ = false;
   NetworkChangeNotifier::NetworkList connected_networks_;
   std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier_;
 };

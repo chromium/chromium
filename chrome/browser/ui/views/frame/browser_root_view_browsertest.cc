@@ -10,6 +10,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 
 class BrowserRootViewBrowserTest : public InProcessBrowserTest {
@@ -29,7 +30,7 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
 // Clear drop info after performing drop. http://crbug.com/838791
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
   ui::OSExchangeData data;
-  data.SetURL(GURL("http://www.chromium.org/"), base::string16());
+  data.SetURL(GURL("http://www.chromium.org/"), std::u16string());
   ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
                             ui::DragDropTypes::DRAG_COPY);
 
@@ -42,20 +43,20 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
 // Make sure plain string is droppable. http://crbug.com/838794
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, PlainString) {
   ui::OSExchangeData data;
-  data.SetString(base::ASCIIToUTF16("Plain string"));
+  data.SetString(u"Plain string");
   ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
                             ui::DragDropTypes::DRAG_COPY);
 
   BrowserRootView* root_view = browser_root_view();
   EXPECT_NE(ui::DragDropTypes::DRAG_NONE, root_view->OnDragUpdated(event));
-  EXPECT_NE(ui::DragDropTypes::DRAG_NONE, root_view->OnPerformDrop(event));
+  EXPECT_NE(ui::mojom::DragOperation::kNone, root_view->OnPerformDrop(event));
 }
 
 // Clear drop target when the widget is being destroyed.
 // http://crbug.com/1001942
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropTarget) {
   ui::OSExchangeData data;
-  data.SetURL(GURL("http://www.chromium.org/"), base::string16());
+  data.SetURL(GURL("http://www.chromium.org/"), std::u16string());
   ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
                             ui::DragDropTypes::DRAG_COPY);
 

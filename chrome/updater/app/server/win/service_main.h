@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 
@@ -66,7 +68,7 @@ class ServiceMain {
   static void WINAPI ServiceControlHandler(DWORD control);
 
   // The main service entry point.
-  static void WINAPI ServiceMainEntry(DWORD argc, base::char16* argv[]);
+  static void WINAPI ServiceMainEntry(DWORD argc, wchar_t* argv[]);
 
   // Calls ::SetServiceStatus().
   void SetServiceStatus(DWORD state);

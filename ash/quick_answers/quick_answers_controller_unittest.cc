@@ -4,6 +4,7 @@
 
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_view.h"
 #include "ash/quick_answers/ui/user_notice_view.h"
@@ -11,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_notice.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 namespace ash {
@@ -33,8 +33,8 @@ gfx::Rect BoundsWithXPosition(int x) {
 class QuickAnswersControllerTest : public AshTestBase {
  protected:
   QuickAnswersControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kQuickAnswers);
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kQuickAnswersTextAnnotator);
   }
   QuickAnswersControllerTest(const QuickAnswersControllerTest&) = delete;
   QuickAnswersControllerTest& operator=(const QuickAnswersControllerTest&) =
@@ -132,7 +132,8 @@ TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenClosed) {
   // The UI is closed and session is inactive, nothing should be shown.
   EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kClosed);
 }
 
 TEST_F(QuickAnswersControllerTest,
@@ -148,7 +149,8 @@ TEST_F(QuickAnswersControllerTest,
   // quick answer query should show.
   EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kVisible);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kVisible);
 }
 
 TEST_F(QuickAnswersControllerTest, UserNoticeAlreadyAccepted) {
@@ -159,7 +161,8 @@ TEST_F(QuickAnswersControllerTest, UserNoticeAlreadyAccepted) {
   // show.
   EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kVisible);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kVisible);
 }
 
 TEST_F(QuickAnswersControllerTest,
@@ -186,7 +189,8 @@ TEST_F(QuickAnswersControllerTest, DismissUserNoticeView) {
   DismissQuickAnswers();
 
   EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kClosed);
 }
 
 TEST_F(QuickAnswersControllerTest, DismissQuickAnswersView) {
@@ -195,7 +199,8 @@ TEST_F(QuickAnswersControllerTest, DismissQuickAnswersView) {
 
   controller()->DismissQuickAnswers(true);
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kClosed);
 }
 
 TEST_F(QuickAnswersControllerTest,

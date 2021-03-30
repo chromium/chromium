@@ -168,6 +168,9 @@
                        }];
 }
 
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+
+// TODO(crbug.com/1131852): Preview depracted is iOS13+
 - (BOOL)webView:(WKWebView*)webView
     shouldPreviewElement:(WKPreviewElementInfo*)elementInfo {
   return self.webStateImpl->ShouldPreviewLink(
@@ -207,9 +210,11 @@
   web::ContextMenuParams params;
   params.link_url = net::GURLWithNSURL(elementInfo.linkURL);
 
-  delegate->ContextMenuConfiguration(self.webStateImpl, params,
-                                     completionHandler);
+  delegate->ContextMenuConfiguration(
+      self.webStateImpl, params, /*preview_provider=*/nil, completionHandler);
 }
+
+#endif  // End of >iOS13 deprecated block.
 
 - (void)webView:(WKWebView*)webView
     contextMenuDidEndForElement:(WKContextMenuElementInfo*)elementInfo

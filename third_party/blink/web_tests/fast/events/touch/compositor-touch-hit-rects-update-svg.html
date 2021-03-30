@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!--
+This test verifies correctness of touch regions produced by SVG elements after
+their parent update.
+-->
+<style>
+* {
+  margin: 0px;
+  padding: 0px;
+}
+svg {
+  width: 100px;
+  height: 100px;
+}
+.container {
+  width: 100px;
+  height: 100px;
+}
+</style>
+</head>
+<body>
+<div id="svg-root">
+  <div class="container">
+    <svg>
+      <rect width="50" height="50" id="rect"></rect>
+    </svg>
+  </div>
+  <div class="container">
+    <svg>
+      <!-- This is a 4 5x5 blocks of solid color, taken from image/pixelated-svg-image.html -->
+      <image width="20" height="20" id='image' xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQIHWP4z8DwHwyBNJDN8B8AQNEG+t5Ik2kAAAAASUVORK5CYII="/>
+    </svg>
+  </div>
+</div>
+
+<div id="console" style='display:none;'></div>
+
+<script src="../../../resources/js-test.js"></script>
+<script src="resources/compositor-touch-hit-rects.js"></script>
+<script>
+jsTestIsAsync = true;
+
+window.onload = () => {
+  const rect = document.getElementById("rect");
+  rect.addEventListener('touchstart', () => {}, false);
+  const image = document.getElementById("image");
+  image.addEventListener('touchstart', () => {}, false);
+
+  window.requestAnimationFrame(() => {
+    const svgRoot = document.getElementById('svg-root');
+    logRects(svgRoot, true);
+    svgRoot.style.transform = "translate(100px)";
+
+    window.requestAnimationFrame(() => {
+      logRects(svgRoot, true);
+      document.getElementById('console').style.display = 'block';
+      finishJSTest();
+    });
+   });
+};
+</script>
+</body>

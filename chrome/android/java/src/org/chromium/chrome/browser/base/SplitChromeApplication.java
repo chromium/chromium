@@ -9,29 +9,18 @@ import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAM
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.SystemClock;
-
-import dalvik.system.DexFile;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
-import org.chromium.base.Log;
-import org.chromium.base.PackageUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
-
-import java.lang.reflect.Field;
 
 /**
  * Application class to use for Chrome when //chrome code is in an isolated split. This class will
@@ -51,7 +40,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
 
     public SplitChromeApplication() {
         this(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.ChromeApplication$ChromeApplicationImpl"));
+                "org.chromium.chrome.browser.ChromeApplicationImpl"));
     }
 
     public SplitChromeApplication(String chromeApplicationClassName) {
@@ -68,13 +57,15 @@ public class SplitChromeApplication extends SplitCompatApplication {
     protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
         if (isBrowserProcess()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                DexFixer.setHasIsolatedSplits(true);
+            }
             setImplSupplier(() -> {
                 Context chromeContext = SplitCompatUtils.createChromeContext(this);
                 return (Impl) SplitCompatUtils.newInstance(
                         chromeContext, mChromeApplicationClassName);
             });
             applyActivityClassLoaderWorkaround();
-            applyDexCompileWorkaround();
         } else {
             setImplSupplier(() -> createNonBrowserApplication());
         }
@@ -87,7 +78,10 @@ public class SplitChromeApplication extends SplitCompatApplication {
             // class loader cache (b/172602571).
             finishPreload(name);
             long startTime = SystemClock.uptimeMillis();
-            Context context = super.createContextForSplit(name);
+            Context context;
+            synchronized (BundleUtils.getSplitContextLock()) {
+                context = super.createContextForSplit(name);
+            }
             RecordHistogram.recordTimesHistogram("Android.IsolatedSplits.ContextCreateTime." + name,
                     SystemClock.uptimeMillis() - startTime);
             return context;
@@ -103,15 +97,44 @@ public class SplitChromeApplication extends SplitCompatApplication {
         // If the chrome module is not enabled or isolated splits are not supported (e.g. in Android
         // N), the onComplete function will run immediately so it must handle the case where the
         // base context of the application has not been set yet.
-        sSplitPreloader.preload(CHROME_SPLIT_NAME, (chromeContext) -> {
-            // When installed, the vr module is always loaded on startup, so preload here.
-            sSplitPreloader.preload("vr", null);
-            // If the chrome module is not enabled or isolated splits are not supported,
-            // chromeContext will have the same ClassLoader as the base context, so no need to
-            // replace the ClassLoaders here.
-            if (!context.getClassLoader().equals(chromeContext.getClassLoader())) {
-                replaceClassLoader(this, chromeContext.getClassLoader());
-                JNIUtils.setClassLoader(chromeContext.getClassLoader());
+        sSplitPreloader.preload(CHROME_SPLIT_NAME, new SplitPreloader.OnComplete() {
+            @Override
+            public void runImmediatelyInBackgroundThread(Context chromeContext) {
+                // A new thread is started here because we do not want to delay returning the chrome
+                // Context, since that slows down startup. This thread must be a HandlerThread
+                // because AsyncInitializationActivity (a base class of ChromeTabbedActivity)
+                // creates a Handler, so needs to have a Looper prepared.
+                HandlerThread thread = new HandlerThread("ActivityPreload");
+                thread.start();
+                new Handler(thread.getLooper()).post(() -> {
+                    try {
+                        // Create a throwaway instance of ChromeTabbedActivity. This will warm up
+                        // the chrome ClassLoader, and perform loading of classes used early in
+                        // startup in the background.
+                        chromeContext.getClassLoader()
+                                .loadClass(
+                                        "org.chromium.chrome.browser.ChromeTabbedActivity$Preload")
+                                .newInstance();
+                    } catch (ReflectiveOperationException e) {
+                        throw new RuntimeException(e);
+                    }
+                    thread.quit();
+                });
+            }
+
+            @Override
+            public void runInUiThread(Context chromeContext) {
+                // If the chrome module is not enabled or isolated splits are not supported,
+                // chromeContext will have the same ClassLoader as the base context, so no need to
+                // replace the ClassLoaders here.
+                if (!context.getClassLoader().equals(chromeContext.getClassLoader())) {
+                    // Replace the application Context's ClassLoader with the chrome ClassLoader,
+                    // because the application ClassLoader is expected to be able to access all
+                    // chrome classes.
+                    BundleUtils.replaceClassLoader(
+                            SplitChromeApplication.this, chromeContext.getClassLoader());
+                    JNIUtils.setClassLoader(chromeContext.getClassLoader());
+                }
             }
         });
     }
@@ -142,6 +165,11 @@ public class SplitChromeApplication extends SplitCompatApplication {
                     @Override
                     public void onActivityStateChange(
                             Activity activity, @ActivityState int newState) {
+                        // Some tests pass an activity without a base context.
+                        if (activity.getBaseContext() == null) {
+                            return;
+                        }
+
                         if (newState != ActivityState.CREATED) {
                             return;
                         }
@@ -152,89 +180,9 @@ public class SplitChromeApplication extends SplitCompatApplication {
                             return;
                         }
 
-                        replaceClassLoader(
+                        BundleUtils.replaceClassLoader(
                                 activity.getBaseContext(), activity.getClass().getClassLoader());
                     }
                 });
-    }
-
-    /**
-     * Android OMR1 has a bug where bg-dexopt-job will break optimized dex files for splits. This
-     * leads to *very* slow startup on those devices. To mitigate this, we attempt to force a dex
-     * compile if necessary.
-     */
-    private void applyDexCompileWorkaround() {
-        // This bug only happens in OMR1. Skip the workaround on local builds to avoid affecting
-        // perf bots.
-        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O_MR1
-                || ChromeVersionInfo.isLocalBuild()) {
-            return;
-        }
-        // Wait until startup completes so this doesn't slow down early startup or mess with
-        // compiled dex files before they get loaded initially.
-        DeferredStartupHandler.getInstance().addDeferredTask(() -> {
-            // BEST_EFFORT will only affect when the task runs, the dexopt will run with
-            // normal priority (but in a separate process, due to using Runtime.exec()).
-            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-                try {
-                    // If the app has just been updated, it will be compiled with
-                    // quicken. The next time bg-dexopt-job runs it will break the
-                    // optimized dex for splits. If we force compile now, then
-                    // bg-dexopt-job won't mess up the splits, and we save the user a
-                    // slow startup.
-                    if (needsDexCompileAfterUpdate()) {
-                        performDexCompile();
-                        return;
-                    }
-
-                    // Make sure all splits are compiled correclty, and if not force a
-                    // compile.
-                    String[] splitNames = ApiHelperForO.getSplitNames(getApplicationInfo());
-                    for (int i = 0; i < splitNames.length; i++) {
-                        // Ignore config splits like "config.en".
-                        if (splitNames[i].contains(".")) {
-                            continue;
-                        }
-                        if (DexFile.isDexOptNeeded(getApplicationInfo().splitSourceDirs[i])) {
-                            performDexCompile();
-                            return;
-                        }
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error compiling dex.", e);
-                }
-            });
-        });
-    }
-
-    /** Returns whether the dex has been compiled since the last app update. */
-    private boolean needsDexCompileAfterUpdate() {
-        return SharedPreferencesManager.getInstance().readInt(
-                       ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION)
-                != PackageUtils.getPackageVersion(this, getPackageName());
-    }
-
-    /** Compiles dex for the app, and sets the pref key tracking the latest compiled version. */
-    private void performDexCompile() throws Exception {
-        Runtime.getRuntime().exec(
-                new String[] {"cmd", "package", "compile", "-r", "shared", getPackageName()});
-        SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
-                PackageUtils.getPackageVersion(this, getPackageName()));
-    }
-
-    private static void replaceClassLoader(Context baseContext, ClassLoader classLoader) {
-        while (baseContext instanceof ContextWrapper) {
-            baseContext = ((ContextWrapper) baseContext).getBaseContext();
-        }
-
-        try {
-            // baseContext should now be an instance of ContextImpl.
-            Field classLoaderField = baseContext.getClass().getDeclaredField("mClassLoader");
-            classLoaderField.setAccessible(true);
-            classLoaderField.set(baseContext, classLoader);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Error setting ClassLoader.", e);
-        }
     }
 }

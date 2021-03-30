@@ -52,7 +52,7 @@ void SaveUnsyncedCredentialsLocallyBubbleController::ReportInteractions() {
     metrics_recorder_->RecordUIDismissalReason(dismissal_reason_);
 }
 
-base::string16 SaveUnsyncedCredentialsLocallyBubbleController::GetTitle()
+std::u16string SaveUnsyncedCredentialsLocallyBubbleController::GetTitle()
     const {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_TITLE);

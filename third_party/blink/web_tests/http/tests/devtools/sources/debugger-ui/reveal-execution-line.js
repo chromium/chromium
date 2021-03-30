@@ -4,7 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that execution line is revealed and highlighted when debugger is paused.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()

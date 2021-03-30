@@ -178,6 +178,19 @@ class FileManagerPrivateInternalGetDownloadUrlFunction
   std::unique_ptr<google_apis::AuthService> auth_service_;
 };
 
+// Implements the chrome.fileManagerPrivate.notifyDriveDialogResult method.
+class FileManagerPrivateNotifyDriveDialogResultFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.notifyDriveDialogResult",
+                             FILEMANAGERPRIVATE_NOTIFYDRIVEDIALOGRESULT)
+
+ protected:
+  ~FileManagerPrivateNotifyDriveDialogResultFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_DRIVE_H_

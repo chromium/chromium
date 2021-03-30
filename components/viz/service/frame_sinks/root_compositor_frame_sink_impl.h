@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "build/build_config.h"
@@ -24,6 +25,10 @@
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+
+namespace gfx {
+class RenderingPipeline;
+}
 
 namespace viz {
 
@@ -47,7 +52,8 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
       OutputSurfaceProvider* output_surface_provider,
       uint32_t restart_id,
       bool run_all_compositor_stages_before_draw,
-      const DebugRendererSettings* debug_settings);
+      const DebugRendererSettings* debug_settings,
+      gfx::RenderingPipeline* gpu_pipeline);
 
   ~RootCompositorFrameSinkImpl() override;
 
@@ -69,6 +75,7 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
   void UpdateRefreshRate(float refresh_rate) override;
   void SetSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override;
+  void PreserveChildSurfaceControls() override;
 #endif
   void AddVSyncParameterObserver(
       mojo::PendingRemote<mojom::VSyncParameterObserver> observer) override;
@@ -113,8 +120,7 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
       std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
       std::unique_ptr<Display> display,
       bool use_preferred_interval_for_video,
-      bool hw_support_for_multiple_refresh_rates,
-      size_t num_of_frames_to_toggle_interval);
+      bool hw_support_for_multiple_refresh_rates);
 
   // DisplayClient:
   void DisplayOutputSurfaceLost() override;

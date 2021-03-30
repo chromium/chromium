@@ -8,9 +8,9 @@ class {{union.name}}DataView {
 
   {{union.name}}DataView(
       internal::{{union.name}}_Data* data,
-      mojo::internal::SerializationContext* context)
+      mojo::Message* message)
 {%- if union|requires_context_for_data_view %}
-      : data_(data), context_(context) {}
+      : data_(data), message_(message) {}
 {%- else %}
       : data_(data) {}
 {%- endif %}
@@ -37,7 +37,7 @@ class {{union.name}}DataView {
     {{struct_macros.assert_nullable_output_type_if_necessary(kind, name)}}
     DCHECK(is_{{name}}());
     return mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
-        data_->data.f_{{name}}.Get(), output, context_);
+        data_->data.f_{{name}}.Get(), output, message_);
   }
 
 {%-   elif kind|is_enum_kind %}
@@ -48,11 +48,14 @@ class {{union.name}}DataView {
         data_->data.f_{{name}}, output);
   }
 
+{%-     if not kind|is_typemapped_kind %}
   {{kind|cpp_data_view_type}} {{name}}() const {
     DCHECK(is_{{name}}());
-    return static_cast<{{kind|cpp_data_view_type}}>(
-        data_->data.f_{{name}});
+    // TODO(dcheng): This seems incorrect, as it bypasses enum traits.
+    return ::mojo::internal::ToKnownEnumValueHelper(
+        static_cast<{{kind|unmapped_type_for_serializer}}>(data_->data.f_{{name}}));
   }
+{%-     endif %}
 
 {%-   elif kind|is_any_handle_kind %}
   {{kind|cpp_data_view_type}} Take{{name|under_to_camel}}() {
@@ -60,7 +63,7 @@ class {{union.name}}DataView {
     {{kind|cpp_data_view_type}} result;
     bool ret =
         mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
-            &data_->data.f_{{name}}, &result, context_);
+            &data_->data.f_{{name}}, &result, message_);
     DCHECK(ret);
     return result;
   }
@@ -72,7 +75,7 @@ class {{union.name}}DataView {
     UserType result;
     bool ret =
         mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
-            &data_->data.f_{{name}}, &result, context_);
+            &data_->data.f_{{name}}, &result, message_);
     DCHECK(ret);
     return result;
   }
@@ -89,7 +92,7 @@ class {{union.name}}DataView {
  private:
   internal::{{union.name}}_Data* data_ = nullptr;
 {%- if union|requires_context_for_data_view %}
-  mojo::internal::SerializationContext* context_ = nullptr;
+  mojo::Message* message_ = nullptr;
 {%- endif %}
 };
 

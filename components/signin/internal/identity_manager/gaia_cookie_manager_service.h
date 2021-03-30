@@ -223,7 +223,6 @@ class GaiaCookieManagerService
   ~GaiaCookieManagerService() override;
 
   void InitCookieListener();
-  void Shutdown();
 
   void AddAccountToCookie(
       const CoreAccountId& account_id,
@@ -350,7 +349,8 @@ class GaiaCookieManagerService
 
   // Overridden from signin::AccountsCookieMutator::PartitionDelegate.
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcherForPartition(
-      GaiaAuthConsumer* consumer) override;
+      GaiaAuthConsumer* consumer,
+      const gaia::GaiaSource& source) override;
   network::mojom::CookieManager* GetCookieManagerForPartition() override;
 
   // Helper method to initialize listed accounts ids.

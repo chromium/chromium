@@ -70,9 +70,9 @@ TEST_F(PostSaveCompromisedBubbleControllerTest, SafeState_Content) {
   EXPECT_EQ(PostSaveCompromisedBubbleController::BubbleType::
                 kPasswordUpdatedSafeState,
             controller()->type());
-  EXPECT_NE(base::string16(), controller()->GetBody());
+  EXPECT_NE(std::u16string(), controller()->GetBody());
   EXPECT_NE(gfx::Range(), controller()->GetSettingLinkRange());
-  EXPECT_EQ(base::string16(), controller()->GetButtonText());
+  EXPECT_EQ(std::u16string(), controller()->GetButtonText());
   EXPECT_EQ(IDR_SAVED_PASSWORDS_SAFE_STATE_DARK,
             controller()->GetImageID(true));
   EXPECT_EQ(IDR_SAVED_PASSWORDS_SAFE_STATE, controller()->GetImageID(false));
@@ -109,9 +109,9 @@ TEST_F(PostSaveCompromisedBubbleControllerTest, MoreToFix_Content) {
   EXPECT_EQ(PostSaveCompromisedBubbleController::BubbleType::
                 kPasswordUpdatedWithMoreToFix,
             controller()->type());
-  EXPECT_NE(base::string16(), controller()->GetBody());
+  EXPECT_NE(std::u16string(), controller()->GetBody());
   EXPECT_EQ(gfx::Range(), controller()->GetSettingLinkRange());
-  EXPECT_NE(base::string16(), controller()->GetButtonText());
+  EXPECT_NE(std::u16string(), controller()->GetButtonText());
   EXPECT_EQ(IDR_SAVED_PASSWORDS_NEUTRAL_STATE_DARK,
             controller()->GetImageID(true));
   EXPECT_EQ(IDR_SAVED_PASSWORDS_NEUTRAL_STATE, controller()->GetImageID(false));
@@ -124,47 +124,6 @@ TEST_F(PostSaveCompromisedBubbleControllerTest, MoreToFix_Click) {
   EXPECT_CALL(*delegate(),
               NavigateToPasswordCheckup(
                   password_manager::PasswordCheckReferrer::kMoreToFixBubble));
-  controller()->OnAccepted();
-  ResetController();
-  histogram_tester.ExpectUniqueSample(kCheckedHistogram, true, 1);
-}
-
-TEST_F(PostSaveCompromisedBubbleControllerTest, Unsafe_Destroy) {
-  base::HistogramTester histogram_tester;
-  CreateController(password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE);
-
-  EXPECT_CALL(*delegate(), OnBubbleHidden());
-  controller()->OnBubbleClosing();
-  histogram_tester.ExpectUniqueSample(kTypeHistogram, BubbleType::kUnsafeState,
-                                      1);
-  histogram_tester.ExpectUniqueSample(kCheckedHistogram, false, 1);
-}
-
-TEST_F(PostSaveCompromisedBubbleControllerTest, Unsafe_DestroyImplicictly) {
-  CreateController(password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE);
-
-  EXPECT_CALL(*delegate(), OnBubbleHidden());
-}
-
-TEST_F(PostSaveCompromisedBubbleControllerTest, Unsafe_Content) {
-  CreateController(password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE);
-  EXPECT_EQ(PostSaveCompromisedBubbleController::BubbleType::kUnsafeState,
-            controller()->type());
-  EXPECT_NE(base::string16(), controller()->GetBody());
-  EXPECT_EQ(gfx::Range(), controller()->GetSettingLinkRange());
-  EXPECT_NE(base::string16(), controller()->GetButtonText());
-  EXPECT_EQ(IDR_SAVED_PASSWORDS_WARNING_STATE_DARK,
-            controller()->GetImageID(true));
-  EXPECT_EQ(IDR_SAVED_PASSWORDS_WARNING_STATE, controller()->GetImageID(false));
-}
-
-TEST_F(PostSaveCompromisedBubbleControllerTest, Unsafe_Click) {
-  base::HistogramTester histogram_tester;
-  CreateController(password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE);
-
-  EXPECT_CALL(*delegate(),
-              NavigateToPasswordCheckup(
-                  password_manager::PasswordCheckReferrer::kUnsafeStateBubble));
   controller()->OnAccepted();
   ResetController();
   histogram_tester.ExpectUniqueSample(kCheckedHistogram, true, 1);

@@ -5,8 +5,9 @@
 #ifndef CONTENT_TEST_MOCK_CLIPBOARD_HOST_H_
 #define CONTENT_TEST_MOCK_CLIPBOARD_HOST_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
@@ -41,31 +42,33 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
                ReadRtfCallback callback) override;
   void ReadImage(ui::ClipboardBuffer clipboard_buffer,
                  ReadImageCallback callback) override;
+  void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
+                 ReadFilesCallback callback) override;
   void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
-                      const base::string16& type,
+                      const std::u16string& type,
                       ReadCustomDataCallback callback) override;
-  void WriteText(const base::string16& text) override;
-  void WriteHtml(const base::string16& markup, const GURL& url) override;
-  void WriteSvg(const base::string16& markup) override;
+  void WriteText(const std::u16string& text) override;
+  void WriteHtml(const std::u16string& markup, const GURL& url) override;
+  void WriteSvg(const std::u16string& markup) override;
   void WriteSmartPasteMarker() override;
   void WriteCustomData(
-      const base::flat_map<base::string16, base::string16>& data) override;
+      const base::flat_map<std::u16string, std::u16string>& data) override;
   void WriteBookmark(const std::string& url,
-                     const base::string16& title) override;
+                     const std::u16string& title) override;
   void WriteImage(const SkBitmap& bitmap) override;
   void CommitWrite() override;
 #if defined(OS_MAC)
-  void WriteStringToFindPboard(const base::string16& text) override;
+  void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
  private:
   mojo::ReceiverSet<blink::mojom::ClipboardHost> receivers_;
   uint64_t sequence_number_ = 0;
-  base::string16 plain_text_;
-  base::string16 html_text_;
-  base::string16 svg_text_;
+  std::u16string plain_text_;
+  std::u16string html_text_;
+  std::u16string svg_text_;
   GURL url_;
   SkBitmap image_;
-  std::map<base::string16, base::string16> custom_data_;
+  std::map<std::u16string, std::u16string> custom_data_;
   bool write_smart_paste_ = false;
   bool needs_reset_ = false;
 

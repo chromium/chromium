@@ -201,19 +201,6 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
     virtual ~Delegate() = default;
   };
 
-  // The space between the starting and ending desks screenshots in dips.
-  static constexpr int kDesksSpacing = 50;
-
-  // The animation layer has extra padding at its two edges. The width in dips
-  // is a ratio of the root window width. This padding is to notify users there
-  // are no more desks on that side by showing a black region as we swipe
-  // continuously.
-  static constexpr float kEdgePaddingRatio = 0.15f;
-
-  // In touchpad units, a touchpad swipe of this length will correspond to a
-  // full desk change.
-  static constexpr int kTouchpadSwipeLengthForDeskChange = 420;
-
   RootWindowDeskSwitchAnimator(aura::Window* root,
                                int starting_desk_index,
                                int ending_desk_index,
@@ -272,8 +259,10 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   void PrepareForEndingDeskScreenshot(int new_ending_desk_index);
 
   // Called when a user ends a touchpad swipe. This will animate to the most
-  // visible desk, whose index is also returned.
-  int EndSwipeAnimation();
+  // visible desk, whose index is also returned. If |is_fast_swipe| is true, we
+  // will use a different logic to determine which ending desk index we want to
+  // end at.
+  int EndSwipeAnimation(bool is_fast_swipe);
 
   // Gets the index of the desk whose screenshot of the animation layer is most
   // visible to the user. That desk screenshot is the one which aligns the most

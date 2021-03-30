@@ -99,6 +99,6 @@ void ItemsBubbleController::ReportInteractions() {
     metrics_recorder_->RecordUIDismissalReason(dismissal_reason_);
 }
 
-base::string16 ItemsBubbleController::GetTitle() const {
+std::u16string ItemsBubbleController::GetTitle() const {
   return title_;
 }

@@ -7,7 +7,6 @@
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 
 namespace cc {
-
 SaveCountingCanvas::SaveCountingCanvas() : SkNoDrawCanvas(100, 100) {}
 
 SkCanvas::SaveLayerStrategy SaveCountingCanvas::getSaveLayerStrategy(

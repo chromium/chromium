@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
+#include "media/base/decoder.h"
 #include "media/base/media_serializers_base.h"
 #include "media/base/status.h"
 #include "media/base/status_codes.h"
@@ -130,6 +131,22 @@ template <>
 struct MediaSerializer<base::TimeDelta> {
   static inline base::Value Serialize(const base::TimeDelta value) {
     return MediaSerializer<double>::Serialize(value.InSecondsF());
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<VideoDecoderType> {
+  static inline base::Value Serialize(VideoDecoderType value) {
+    return base::Value(GetDecoderName(value));
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<AudioDecoderType> {
+  static inline base::Value Serialize(AudioDecoderType value) {
+    return base::Value(GetDecoderName(value));
   }
 };
 

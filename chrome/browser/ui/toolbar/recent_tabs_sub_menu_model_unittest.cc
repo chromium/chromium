@@ -201,7 +201,7 @@ TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
   EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
 
   std::string url;
-  base::string16 title;
+  std::u16string title;
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
@@ -256,7 +256,7 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
   EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
 
   std::string url;
-  base::string16 title;
+  std::u16string title;
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
@@ -377,7 +377,7 @@ TEST_F(RecentTabsSubMenuModelTest,
   EXPECT_EQ(NULL, model.GetLabelFontListAt(7));
 
   std::string url;
-  base::string16 title;
+  std::u16string title;
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
@@ -402,7 +402,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   recent_tabs_builder.AddWindow(0);
   for (int i = 0; i < 3; ++i) {
     timestamp -= time_delta;
-    recent_tabs_builder.AddTabWithInfo(0, 0, timestamp, base::string16());
+    recent_tabs_builder.AddTabWithInfo(0, 0, timestamp, std::u16string());
   }
 
   // Create 2nd session : 2 windows, 1 tab in 1st window, 2 tabs in 2nd window
@@ -410,11 +410,11 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   recent_tabs_builder.AddWindow(1);
   recent_tabs_builder.AddWindow(1);
   timestamp -= time_delta;
-  recent_tabs_builder.AddTabWithInfo(1, 0, timestamp, base::string16());
+  recent_tabs_builder.AddTabWithInfo(1, 0, timestamp, std::u16string());
   timestamp -= time_delta;
-  recent_tabs_builder.AddTabWithInfo(1, 1, timestamp, base::string16());
+  recent_tabs_builder.AddTabWithInfo(1, 1, timestamp, std::u16string());
   timestamp -= time_delta;
-  recent_tabs_builder.AddTabWithInfo(1, 1, timestamp, base::string16());
+  recent_tabs_builder.AddTabWithInfo(1, 1, timestamp, std::u16string());
 
   RegisterRecentTabs(&recent_tabs_builder);
 
@@ -476,7 +476,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   EXPECT_EQ(NULL, model.GetLabelFontListAt(12));
 
   std::string url;
-  base::string16 title;
+  std::u16string title;
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
@@ -505,7 +505,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   // Create one session with one window and one tab.
   recent_tabs_builder.AddSession();
   recent_tabs_builder.AddWindow(0);
-  recent_tabs_builder.AddTabWithInfo(0, 0, update_timestamp, base::string16());
+  recent_tabs_builder.AddTabWithInfo(0, 0, update_timestamp, std::u16string());
 
   RegisterRecentTabs(&recent_tabs_builder);
 
@@ -530,7 +530,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
 
   std::string url;
-  base::string16 title;
+  std::u16string title;
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
 
   // Enable synchronization and notify menu that synchronization was enabled.
@@ -572,7 +572,7 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   update_timestamp = base::Time::Now() - base::TimeDelta::FromMinutes(5);
 
   // Add tab to the only window.
-  recent_tabs_builder.AddTabWithInfo(0, 0, update_timestamp, base::string16());
+  recent_tabs_builder.AddTabWithInfo(0, 0, update_timestamp, std::u16string());
 
   RegisterRecentTabs(&recent_tabs_builder);
 
@@ -640,7 +640,7 @@ TEST_F(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
   int num_items = model.GetItemCount();
   EXPECT_EQ(12, num_items);
 
-  std::vector<base::string16> tab_titles =
+  std::vector<std::u16string> tab_titles =
       recent_tabs_builder.GetTabTitlesSortedByRecency();
   EXPECT_EQ(tab_titles[0], model.GetLabelAt(5));
   EXPECT_EQ(tab_titles[1], model.GetLabelAt(8));
@@ -677,7 +677,7 @@ TEST_F(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
   int num_items = model.GetItemCount();
   EXPECT_EQ(9, num_items);
 
-  std::vector<base::string16> tab_titles =
+  std::vector<std::u16string> tab_titles =
       recent_tabs_builder.GetTabTitlesSortedByRecency();
   for (int i = 0; i < 4; ++i)
     EXPECT_EQ(tab_titles[i], model.GetLabelAt(i + 5));

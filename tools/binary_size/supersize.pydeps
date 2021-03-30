@@ -35,7 +35,7 @@
 ../grit/grit/node/structure.py
 ../grit/grit/node/variant.py
 ../grit/grit/pseudo.py
-../grit/grit/pseudo_rtl.py
+../grit/grit/pseudolocales.py
 ../grit/grit/tclib.py
 ../grit/grit/util.py
 ../grit/grit/xtb_reader.py
@@ -46,6 +46,7 @@ libsupersize/archive.py
 libsupersize/bcanalyzer.py
 libsupersize/canned_queries.py
 libsupersize/console.py
+libsupersize/data_quality.py
 libsupersize/demangle.py
 libsupersize/describe.py
 libsupersize/diff.py

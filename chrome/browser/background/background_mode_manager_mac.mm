@@ -154,7 +154,7 @@ void BackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
 }
 
 void BackgroundModeManager::DisplayClientInstalledNotification(
-    const base::string16& name) {
+    const std::u16string& name) {
   // TODO(atwilson): Display a platform-appropriate notification here.
   // http://crbug.com/74970
 }

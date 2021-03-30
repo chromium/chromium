@@ -1,0 +1,39 @@
+{
+    "archives": {
+        "download_shelf:1file": {
+            "DEFAULT": "desktop_ui_73656f4868.wprgo"
+        },
+        "download_shelf:5file": {
+            "DEFAULT": "desktop_ui_73656f4868.wprgo"
+        },
+        "tab_search:close_and_open:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "tab_search:close_and_open:loading:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "tab_search:scroll_up_and_down:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "tab_search:top100:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "tab_search:top100:loading:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "tab_search:top10:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "tab_search:top10:loading:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "tab_search:top50:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "tab_search:top50:loading:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        }
+    },
+    "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
+    "platform_specific": true
+}

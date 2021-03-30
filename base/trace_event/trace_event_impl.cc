@@ -21,6 +21,51 @@
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+// Define static storage for trace event categories (see
+// PERFETTO_DEFINE_CATEGORIES).
+PERFETTO_TRACK_EVENT_STATIC_STORAGE();
+
+namespace perfetto {
+namespace legacy {
+
+template <>
+bool ConvertThreadId(const ::base::PlatformThreadId& thread,
+                     uint64_t* track_uuid_out,
+                     int32_t* pid_override_out,
+                     int32_t* tid_override_out) {
+  // Only support threads in the current process.
+  *track_uuid_out = perfetto::ThreadTrack::ForThread(
+                        static_cast<base::PlatformThreadId>(thread))
+                        .uuid;
+  return true;
+}
+
+}  // namespace legacy
+
+template <>
+TraceTimestamp ConvertTimestampToTraceTimeNs(const ::base::TimeTicks& ticks) {
+  return {TrackEvent::GetTraceClockId(), ticks.since_origin().InNanoseconds()};
+}
+
+namespace internal {
+
+void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
+                          ::base::TimeTicks ticks) {
+  annotation->set_uint_value(ticks.since_origin().InMilliseconds());
+}
+
+void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
+                          ::base::Time time) {
+  annotation->set_uint_value(time.since_origin().InMilliseconds());
+}
+
+}  // namespace internal
+}  // namespace perfetto
+
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
 namespace base {
 namespace trace_event {
 

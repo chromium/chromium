@@ -46,6 +46,11 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   media_session::MediaSessionService* GetMediaSessionService() override;
   std::unique_ptr<ash::NearbyShareDelegate> CreateNearbyShareDelegate(
       ash::NearbyShareController* controller) const override;
+  bool IsSessionRestoreInProgress() const override;
+  bool IsUiDevToolsStarted() const override;
+  void StartUiDevTools() override;
+  void StopUiDevTools() override;
+  int GetUiDevToolsPort() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ChromeShellDelegate);

@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/pdf/common/pdf.mojom.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -106,7 +105,7 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
                                     const std::string& message,
                                     const std::string& default_answer);
   int32_t OnHostMsgSetSelectedText(ppapi::host::HostMessageContext* context,
-                                   const base::string16& selected_text);
+                                   const std::u16string& selected_text);
   int32_t OnHostMsgSetLinkUnderCursor(ppapi::host::HostMessageContext* context,
                                       const std::string& url);
   int32_t OnHostMsgSetAccessibilityViewportInfo(

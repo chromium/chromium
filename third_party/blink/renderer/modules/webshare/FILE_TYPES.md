@@ -8,7 +8,7 @@ The following list should be kept in sync with
 # Audio
                     "flac"  -  audio/flac
                     "m4a"  -  audio/x-m4a
-                    "mp3"  -  audio/mp3
+                    "mp3"  -  audio/mpeg audio/mp3
                     "oga"  -  audio/ogg
                     "ogg"  -  audio/ogg
                     "opus"  -  audio/ogg

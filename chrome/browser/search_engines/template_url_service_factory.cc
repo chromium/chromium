@@ -41,9 +41,9 @@ TemplateURLServiceFactory* TemplateURLServiceFactory::GetInstance() {
 // static
 std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
     content::BrowserContext* context) {
-  base::Closure dsp_change_callback;
+  base::RepeatingClosure dsp_change_callback;
 #if BUILDFLAG(ENABLE_RLZ)
-  dsp_change_callback = base::Bind(
+  dsp_change_callback = base::BindRepeating(
       base::IgnoreResult(&rlz::RLZTracker::RecordProductEvent), rlz_lib::CHROME,
       rlz::RLZTracker::ChromeOmnibox(), rlz_lib::SET_TO_GOOGLE);
 #endif

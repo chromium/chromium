@@ -39,7 +39,6 @@ class X11ClipboardOzone : public PlatformClipboard, public x11::EventObserver {
   void RequestClipboardData(
       ClipboardBuffer buffer,
       const std::string& mime_type,
-      PlatformClipboard::DataMap* data_map,
       PlatformClipboard::RequestDataClosure callback) override;
   void GetAvailableMimeTypes(
       ClipboardBuffer buffer,

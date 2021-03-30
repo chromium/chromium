@@ -54,13 +54,13 @@ NSString* kLocalCardExpirationYear =
 // Unicode characters used in card number:
 //  - 0x0020 - Space.
 //  - 0x2060 - WORD-JOINER (makes string undivisible).
-constexpr base::char16 separator[] = {0x2060, 0x0020, 0};
-constexpr base::char16 kMidlineEllipsis[] = {
+constexpr char16_t separator[] = {0x2060, 0x0020, 0};
+constexpr char16_t kMidlineEllipsis[] = {
     0x2022, 0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0x2022,
     0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0};
 NSString* kObfuscatedNumberPrefix = base::SysUTF16ToNSString(
-    kMidlineEllipsis + base::string16(separator) + kMidlineEllipsis +
-    base::string16(separator) + kMidlineEllipsis + base::string16(separator));
+    kMidlineEllipsis + std::u16string(separator) + kMidlineEllipsis +
+    std::u16string(separator) + kMidlineEllipsis + std::u16string(separator));
 
 NSString* kLocalNumberObfuscated =
     [NSString stringWithFormat:@"%@1111", kObfuscatedNumberPrefix];
@@ -74,21 +74,6 @@ const char kFormHTMLFile[] = "/multi_field_form.html";
 id<GREYMatcher> NotSecureWebsiteAlert() {
   return StaticTextWithAccessibilityLabelId(
       IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
-}
-
-// Polls the JavaScript query |java_script_condition| until the returned
-// |boolValue| is YES with a kWaitForActionTimeout timeout.
-BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
-  auto verify_block = ^BOOL {
-    id value = [ChromeEarlGrey executeJavaScript:java_script_condition];
-    return [value isEqual:@YES];
-  };
-  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout;
-  NSString* condition_name = [NSString
-      stringWithFormat:@"Wait for JS condition: %@", java_script_condition];
-  GREYCondition* condition = [GREYCondition conditionWithName:condition_name
-                                                        block:verify_block];
-  return [condition waitWithTimeout:timeout];
 }
 
 // Waits for the keyboard to appear. Returns NO on timeout.
@@ -282,6 +267,10 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the "Add Credit Cards..." action works on OTR.
 - (void)testOTRAddCreditCardsActionOpensAddCreditCardSettings {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1163116): Fails for ios14-beta/sdk-simulator.
+  EARL_GREY_TEST_DISABLED(@"Test disabled on simulator.");
+#endif
   // TODO(crbug.com/1162354): Re-enable this test for iPad after fixing this
   // issue.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -623,7 +612,7 @@ BOOL WaitForKeyboardToAppear() {
   NSString* javaScriptCondition = [NSString
       stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
                        kFormElementUsername, result];
-  XCTAssertTrue(WaitForJavaScriptCondition(javaScriptCondition));
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
 @end

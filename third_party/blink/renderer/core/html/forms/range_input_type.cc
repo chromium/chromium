@@ -36,6 +36,7 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -194,12 +195,8 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
       std::max((step_range.Maximum() - step_range.Minimum()) / 10, step);
 
   TextDirection dir = TextDirection::kLtr;
-  bool is_vertical = false;
   if (GetElement().GetLayoutObject()) {
     dir = ComputedTextDirection();
-    ControlPart part =
-        GetElement().GetLayoutObject()->Style()->EffectiveAppearance();
-    is_vertical = part == kSliderVerticalPart;
   }
 
   Decimal new_value;
@@ -208,19 +205,17 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
   } else if (key == "ArrowDown") {
     new_value = current - step;
   } else if (key == "ArrowLeft") {
-    new_value = (is_vertical || dir == TextDirection::kRtl) ? current + step
-                                                            : current - step;
+    new_value = dir == TextDirection::kRtl ? current + step : current - step;
   } else if (key == "ArrowRight") {
-    new_value = (is_vertical || dir == TextDirection::kRtl) ? current - step
-                                                            : current + step;
+    new_value = dir == TextDirection::kRtl ? current - step : current + step;
   } else if (key == "PageUp") {
     new_value = current + big_step;
   } else if (key == "PageDown") {
     new_value = current - big_step;
   } else if (key == "Home") {
-    new_value = is_vertical ? step_range.Maximum() : step_range.Minimum();
+    new_value = step_range.Minimum();
   } else if (key == "End") {
-    new_value = is_vertical ? step_range.Minimum() : step_range.Maximum();
+    new_value = step_range.Maximum();
   } else {
     return;  // Did not match any key binding.
   }
@@ -255,14 +250,6 @@ void RangeInputType::CreateShadowSubtree() {
   GetElement().UserAgentShadowRoot()->AppendChild(container);
 }
 
-bool RangeInputType::TypeShouldForceLegacyLayout() const {
-  if (RuntimeEnabledFeatures::LayoutNGForControlsEnabled())
-    return false;
-  UseCounter::Count(GetElement().GetDocument(),
-                    WebFeature::kLegacyLayoutBySlider);
-  return true;
-}
-
 LayoutObject* RangeInputType::CreateLayoutObject(const ComputedStyle& style,
                                                  LegacyLayout legacy) const {
   // TODO(crbug.com/1131352): input[type=range] should not use
@@ -283,11 +270,10 @@ String RangeInputType::Serialize(const Decimal& value) const {
 
 // FIXME: Could share this with KeyboardClickableInputTypeView and
 // BaseCheckableInputType if we had a common base class.
-void RangeInputType::AccessKeyAction(bool send_mouse_events) {
-  InputTypeView::AccessKeyAction(send_mouse_events);
-
-  GetElement().DispatchSimulatedClick(
-      nullptr, send_mouse_events ? kSendMouseUpDownEvents : kSendNoEvents);
+void RangeInputType::AccessKeyAction(
+    SimulatedClickCreationScope creation_scope) {
+  InputTypeView::AccessKeyAction(creation_scope);
+  GetElement().DispatchSimulatedClick(nullptr, creation_scope);
 }
 
 void RangeInputType::SanitizeValueInResponseToMinOrMaxAttributeChange() {

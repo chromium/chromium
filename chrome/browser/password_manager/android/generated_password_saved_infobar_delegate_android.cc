@@ -33,7 +33,7 @@ void GeneratedPasswordSavedInfoBarDelegateAndroid::OnInlineLinkClicked() {
 GeneratedPasswordSavedInfoBarDelegateAndroid::
     GeneratedPasswordSavedInfoBarDelegateAndroid()
     : button_label_(l10n_util::GetStringUTF16(IDS_OK)) {
-  base::string16 link = l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_LINK);
+  std::u16string link = l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_LINK);
 
   size_t offset = 0;
   message_text_ =

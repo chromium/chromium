@@ -31,8 +31,8 @@ enum UserActivationNotificationType {
   // A media API caused the notification call.
   kMedia,
 
-  // An NFS API caused the notification call.
-  kNativeFileSystem,
+  // A File System Access API caused the notification call.
+  kFileSystemAccess,
 
   // A plugin API caused the notification call.  Deprecated, preserved only for
   // UMA consistency.

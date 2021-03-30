@@ -93,6 +93,8 @@ Polymer({
     },
   },
 
+  listeners: {'onboarding-cancelled': 'onOnboardingCancelled_'},
+
   /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
   receiveObserver_: null,
 
@@ -112,17 +114,11 @@ Polymer({
         });
     this.receiveObserver_ = nearby_share.observeReceiveManager(
         /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
-  },
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onEnableTap_(event) {
-    this.setPrefValue(
-        'nearby_sharing.enabled',
-        !this.getPref('nearby_sharing.enabled').value);
-    event.stopPropagation();
+    // Trigger a contact sync whenever the Nearby subpage is opened to improve
+    // consistency. This should help avoid scenarios where a share is attempted
+    // and contacts are stale on the receiver.
+    nearby_share.getContactManager().downloadContacts();
   },
 
   /** @private */
@@ -209,6 +205,20 @@ Polymer({
     // Note: Intentionally left empty.
   },
 
+  /**
+   * Mojo callback when the Nearby utility process stops.
+   */
+  onNearbyProcessStopped() {
+    // Note: Intentionally left empty.
+  },
+
+  /**
+   * Mojo callback when advertising fails to start.
+   */
+  onStartAdvertisingFailure() {
+    // Note: Intentionally left empty.
+  },
+
   /** @private */
   onInHighVisibilityToggledByUser_() {
     if (this.inHighVisibility_) {
@@ -282,8 +292,10 @@ Polymer({
   getHighVisibilityToggleText_(inHighVisibility) {
     // TODO(crbug.com/1154830): Add logic to show how much time the user
     // actually has left.
-    return inHighVisibility ? this.i18n('nearbyShareHighVisibilityOn', 5) :
-                              this.i18nAdvanced('nearbyShareHighVisibilityOff');
+    return inHighVisibility ?
+        this.i18n('nearbyShareHighVisibilityOn', 5) :
+        this.i18nAdvanced(
+            'nearbyShareHighVisibilityOff', {substitutions: ['5']});
   },
 
   /**
@@ -392,5 +404,11 @@ Polymer({
    */
   getAccountRowLabel(profileName, profileLabel) {
     return this.i18n('nearbyShareAccountRowLabel', profileName, profileLabel);
+  },
+
+  /** @private */
+  onOnboardingCancelled_() {
+    // Return to main settings page multidevice section
+    settings.Router.getInstance().navigateTo(settings.routes.MULTIDEVICE);
   },
 });

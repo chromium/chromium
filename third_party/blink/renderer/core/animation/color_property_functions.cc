@@ -9,8 +9,9 @@
 namespace blink {
 
 OptionalStyleColor ColorPropertyFunctions::GetInitialColor(
-    const CSSProperty& property) {
-  return GetUnvisitedColor(property, ComputedStyle::InitialStyle());
+    const CSSProperty& property,
+    const ComputedStyle& initial_style) {
+  return GetUnvisitedColor(property, initial_style);
 }
 
 OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(

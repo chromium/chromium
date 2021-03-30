@@ -10,6 +10,7 @@ mojom_component("mojom") {
 
   sources = [
     "background_tracing_agent.mojom",
+    "system_tracing_service.mojom",
     "traced_process.mojom",
     "tracing_service.mojom",
   ]

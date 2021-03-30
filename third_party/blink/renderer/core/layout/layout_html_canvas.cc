@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -66,6 +67,23 @@ void LayoutHTMLCanvas::CanvasSizeChanged() {
 
   SetIntrinsicLogicalWidthsDirty();
   SetNeedsLayout(layout_invalidation_reason::kSizeChanged);
+}
+
+bool LayoutHTMLCanvas::DrawsBackgroundOntoContentLayer() const {
+  auto* canvas = To<HTMLCanvasElement>(GetNode());
+  if (canvas->SurfaceLayerBridge())
+    return false;
+  CanvasRenderingContext* context = canvas->RenderingContext();
+  if (!context || !context->IsComposited() || !context->CcLayer())
+    return false;
+  if (StyleRef().HasBoxDecorations() || StyleRef().HasBackgroundImage())
+    return false;
+  // If there is no background, there is nothing to support.
+  if (!StyleRef().HasBackground())
+    return true;
+  // Simple background that is contained within the contents rect.
+  return ReplacedContentRect().Contains(
+      PhysicalBackgroundRect(kBackgroundClipRect));
 }
 
 void LayoutHTMLCanvas::InvalidatePaint(

@@ -431,10 +431,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
             profile_,
             base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->SetCloudPolicyClientForTesting(client_.get());
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->SetBinaryUploadServiceForTesting(
-            download_protection_service_.GetFakeBinaryUploadService());
+        ->SetBrowserCloudPolicyClientForTesting(client_.get());
     identity_test_environment_.MakePrimaryAccountAvailable(kUserName);
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->SetIdentityManagerForTesting(
@@ -448,7 +445,7 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
 
   void TearDown() override {
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->SetCloudPolicyClientForTesting(nullptr);
+        ->SetBrowserCloudPolicyClientForTesting(nullptr);
     DeepScanningRequestTest::TearDown();
   }
 
@@ -904,7 +901,7 @@ TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
 
   // With the old malware policy list set, the item should be uploaded since
   // DeepScanningRequest ignores that policy.
-  AddUrlToProfilePrefList(prefs::kSafeBrowsingWhitelistDomains, download_url_);
+  AddUrlToProfilePrefList(prefs::kSafeBrowsingAllowlistDomains, download_url_);
   ValidateDefaultSettings(settings());
 
   // With the new malware policy list set, the item should not be uploaded since

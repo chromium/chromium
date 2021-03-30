@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -35,7 +34,25 @@ struct DISPLAY_MANAGER_EXPORT DisplayConfigureRequest {
   gfx::Point origin;
 };
 
-// Applies the display configuration asynchronously.
+using RequestAndStatusList = std::pair<DisplayConfigureRequest, bool>;
+
+// ConfigureDisplaysTask is in charge of applying the display configuration as
+// requested by Ash. If the original request fails, the task will attempt to
+// modify the request by downgrading the resolution of one or more of the
+// displays and try again until it either succeeds a modeset or exhaust all
+// available options.
+//
+// Displays are bandwidth constrained in 2 ways: (1) system memory bandwidth
+// (ie: scanning pixels from memory), and (2) link bandwidth (ie: scanning
+// pixels from the SoC to the display). Naturally all displays share (1),
+// however with DisplayPort Multi-stream Transport (DP MST), displays may also
+// share (2). The introduction of MST support drastically increases the
+// likelihood of modeset failures due to (2) since multiple displays will all be
+// sharing the same physical connection.
+//
+// If we're constrained by (1), reducing the resolution of any display will
+// relieve pressure. However if we're constrained by (2), only those displays on
+// the saturated link can relieve pressure.
 class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
     : public NativeDisplayObserver {
  public:
@@ -52,6 +69,8 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   };
 
   using ResponseCallback = base::OnceCallback<void(Status)>;
+  using PartitionedRequestsQueue =
+      std::queue<std::vector<DisplayConfigureRequest>>;
 
   ConfigureDisplaysTask(NativeDisplayDelegate* delegate,
                         const std::vector<DisplayConfigureRequest>& requests,
@@ -66,11 +85,48 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   void OnDisplaySnapshotsInvalidated() override;
 
  private:
-  void OnConfigured(const base::flat_map<int64_t, bool>& statuses);
+  // Deals with the aftermath of the initial configuration, which attempts to
+  // configure all displays together.
+  // Upon failure, partitions the original request from Ash into smaller
+  // requests where the displays are grouped by the physical connector they
+  // connect to and initiates the retry sequence.
+  void OnFirstAttemptConfigured(bool config_status);
+
+  // Deals with the aftermath of a configuration retry, which attempts to
+  // configure a subset of the displays grouped together by the physical
+  // connector they connect to.
+  // Upon success, initiates the retry sequence on the next group of displays.
+  // Otherwise, downgrades the display with the largest bandwidth requirement
+  // and tries again.
+  // If any of the display groups entirely fail to modeset (i.e. exhaust all
+  // available modes during retry), the configuration will fail as a whole, but
+  // will continue to try to modeset the remaining display groups.
+  void OnRetryConfigured(bool config_status);
+
+  // Partition |requests_| by their base connector id (i.e. the physical
+  // connector the displays are connected to) and populate the result in
+  // |pending_display_group_requests_|. We assume the order of requests
+  // submitted by Ash is important, so the partitioning is done in order.
+  void PartitionRequests();
+
+  // Downgrade the request with the highest bandwidth requirement AND
+  // alternative modes in |requests_| (excluding internal displays and disable
+  // requests). Return false if no request was downgraded.
+  bool DowngradeLargestRequestWithAlternativeModes();
 
   NativeDisplayDelegate* delegate_;  // Not owned.
 
+  // Initially, |requests_| holds the configuration request submitted by Ash.
+  // During retry, |requests_| will represent a group of displays that are
+  // currently attempting configuration.
   std::vector<DisplayConfigureRequest> requests_;
+
+  // A queue of display requests grouped by their
+  // |requests_[index]->display->base_connector_id()|.
+  PartitionedRequestsQueue pending_display_group_requests_;
+
+  // The final requests and their configuration status for UMA.
+  std::vector<RequestAndStatusList> final_requests_status_;
 
   // When the task finishes executing it runs the callback to notify that the
   // task is done and the task status.

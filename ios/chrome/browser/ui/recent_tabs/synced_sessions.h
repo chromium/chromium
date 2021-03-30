@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_session.h"
@@ -34,7 +33,7 @@ struct DistantTab {
   // Uniquely identifies this tab in its distant session.
   SessionID tab_id;
   // The title of the page shown in this DistantTab.
-  base::string16 title;
+  std::u16string title;
   // The url shown in this DistantTab.
   GURL virtual_url;
   // Returns a hash the fields |virtual_url| and |title|.

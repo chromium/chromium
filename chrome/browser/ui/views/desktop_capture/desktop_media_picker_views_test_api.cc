@@ -87,7 +87,7 @@ void DesktopMediaPickerViewsTestApi::DoubleTapSourceAtIndex(size_t index) {
 }
 
 void DesktopMediaPickerViewsTestApi::SelectTabForSourceType(
-    content::DesktopMediaID::Type source_type) {
+    DesktopMediaList::Type source_type) {
   const auto& source_types = picker_->dialog_->source_types_;
   const auto i =
       std::find(source_types.cbegin(), source_types.cend(), source_type);
@@ -120,6 +120,10 @@ views::View* DesktopMediaPickerViewsTestApi::GetSelectedListView() {
 
 views::Checkbox* DesktopMediaPickerViewsTestApi::GetAudioShareCheckbox() {
   return picker_->dialog_->audio_share_checkbox_;
+}
+
+views::Checkbox* DesktopMediaPickerViewsTestApi::GetPresenterToolsCheckbox() {
+  return picker_->dialog_->presenter_tools_checkbox_;
 }
 
 const views::View* DesktopMediaPickerViewsTestApi::GetSourceAtIndex(

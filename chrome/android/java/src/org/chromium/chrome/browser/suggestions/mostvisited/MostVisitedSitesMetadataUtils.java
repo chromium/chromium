@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.suggestions.mostvisited;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
 
 import org.chromium.base.ContextUtils;
@@ -14,6 +15,7 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.url.GURL;
 
 import java.io.ByteArrayInputStream;
@@ -33,6 +35,13 @@ import java.util.List;
  */
 public class MostVisitedSitesMetadataUtils {
     private static final String TAG = "TopSites";
+
+    /** The singleton helper class for this class. */
+    private static class SingletonHelper {
+        private static final MostVisitedSitesMetadataUtils INSTANCE =
+                new MostVisitedSitesMetadataUtils();
+    }
+
     /** Prevents two state directories from getting created simultaneously. */
     private static final Object DIR_CREATION_LOCK = new Object();
 
@@ -46,18 +55,86 @@ public class MostVisitedSitesMetadataUtils {
     private static String sStateDirName = "top_sites";
     private static String sStateFileName = "top_sites";
 
+    private Runnable mCurrentTask;
+    private Runnable mPendingTask;
+
+    private int mPendingTaskTilesNumForTesting;
+
+    /**
+     * @return The singleton instance.
+     */
+    public static MostVisitedSitesMetadataUtils getInstance() {
+        return SingletonHelper.INSTANCE;
+    }
+
+    /**
+     * Save new suggestion tiles to the disk. If there is already a task running, save this new
+     * saving task as |mPendingTask|.
+     * @param suggestionTiles The site suggestion tiles.
+     */
+    public void saveSuggestionListsToFile(List<Tile> suggestionTiles) {
+        Runnable newTask =
+                () -> saveSuggestionListsToFile(suggestionTiles, this::updatePendingToCurrent);
+
+        if (mCurrentTask != null) {
+            // Skip last mPendingTask which is not necessary to run.
+            mPendingTask = newTask;
+            mPendingTaskTilesNumForTesting = suggestionTiles.size();
+        } else {
+            // Assign newTask to mCurrentTask and run this task.
+            mCurrentTask = newTask;
+            // Skip any pending task.
+            mPendingTask = null;
+
+            Log.i(TAG, "Start a new task.");
+            mCurrentTask.run();
+        }
+    }
+
+    /**
+     * Restore the suggestion lists from the disk and deserialize them.
+     * @return Suggestion lists
+     * IOException: If there is any problem when restoring file or deserialize data, remove the
+     * stale files and throw an exception, then the UI thread will know there is no cache file and
+     * show something else.
+     */
+    public static List<Tile> restoreFileToSuggestionLists() throws IOException {
+        List<Tile> tiles;
+        try {
+            byte[] listData = restoreFileToBytes(getOrCreateTopSitesDirectory(), sStateFileName);
+            tiles = deserializeTopSitesData(listData);
+        } catch (IOException e) {
+            getOrCreateTopSitesDirectory().delete();
+            throw e;
+        }
+        return tiles;
+    }
+
+    /**
+     * Restore the suggestion lists from the disk and deserialize them on UI thread.
+     * @return Suggestion lists
+     * IOException: If there is any problem when restoring file or deserialize data, remove the
+     * stale files and throw an exception, then the UI thread will know there is no cache file and
+     * show something else.
+     */
+    public static List<Tile> restoreFileToSuggestionListsOnUiThread() throws IOException {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            return restoreFileToSuggestionLists();
+        }
+    }
+
     /**
      * Asynchronously serialize the suggestion lists and save it into the disk.
-     * @param topSitesInfo Suggestion lists.
+     * @param suggestionTiles The site suggestion tiles.
      * @param callback Callback function after saving file.
      */
-    public static void saveSuggestionListsToFile(
-            List<SiteSuggestion> topSitesInfo, Runnable callback) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void saveSuggestionListsToFile(List<Tile> suggestionTiles, Runnable callback) {
         new AsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
                 try {
-                    byte[] listData = serializeTopSitesData(topSitesInfo);
+                    byte[] listData = serializeTopSitesData(suggestionTiles);
                     saveSuggestionListsToFile(
                             getOrCreateTopSitesDirectory(), sStateFileName, listData);
                 } catch (IOException e) {
@@ -75,42 +152,8 @@ public class MostVisitedSitesMetadataUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    /**
-     * Restore the suggestion lists from the disk and deserialize them.
-     * @return Suggestion lists
-     * IOException: If there is any problem when restoring file or deserialize data, remove the
-     * stale files and throw an exception, then the UI thread will know there is no cache file and
-     * show something else.
-     */
-    public static List<SiteSuggestion> restoreFileToSuggestionLists() throws IOException {
-        List<SiteSuggestion> suggestions;
-        try {
-            byte[] listData =
-                    restoreFileToSuggestionLists(getOrCreateTopSitesDirectory(), sStateFileName);
-            suggestions = deserializeTopSitesData(listData);
-        } catch (IOException e) {
-            getOrCreateTopSitesDirectory().delete();
-            throw e;
-        }
-        return suggestions;
-    }
-
-    /**
-     * Restore the suggestion lists from the disk and deserialize them on UI thread.
-     * @return Suggestion lists
-     * IOException: If there is any problem when restoring file or deserialize data, remove the
-     * stale files and throw an exception, then the UI thread will know there is no cache file and
-     * show something else.
-     */
-    public static List<SiteSuggestion> restoreFileToSuggestionListsOnUiThread() throws IOException {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return restoreFileToSuggestionLists();
-        }
-    }
-
-    private static byte[] serializeTopSitesData(List<SiteSuggestion> topSitesInfo)
-            throws IOException {
-        int topSitesCount = topSitesInfo.size();
+    private static byte[] serializeTopSitesData(List<Tile> suggestionTiles) throws IOException {
+        int topSitesCount = suggestionTiles.size();
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         DataOutputStream stream = new DataOutputStream(output);
@@ -118,34 +161,30 @@ public class MostVisitedSitesMetadataUtils {
         // Save the count of the list of top sites to restore.
         stream.writeInt(topSitesCount);
 
-        Log.d(TAG, "Serializing top sites lists; count: " + topSitesCount);
-
         // Save top sites.
         for (int i = 0; i < topSitesCount; i++) {
             stream.writeInt(CACHE_VERSION);
-            stream.writeInt(topSitesInfo.get(i).faviconId);
-            stream.writeUTF(topSitesInfo.get(i).title);
-            stream.writeUTF(topSitesInfo.get(i).url.serialize());
-            stream.writeUTF(topSitesInfo.get(i).allowlistIconPath);
-            stream.writeInt(topSitesInfo.get(i).titleSource);
-            stream.writeInt(topSitesInfo.get(i).source);
-            stream.writeInt(topSitesInfo.get(i).sectionType);
-            stream.writeLong(topSitesInfo.get(i).dataGenerationTime.getTime());
+            stream.writeInt(suggestionTiles.get(i).getIndex());
+            SiteSuggestion suggestionInfo = suggestionTiles.get(i).getData();
+            stream.writeUTF(suggestionInfo.title);
+            stream.writeUTF(suggestionInfo.url.serialize());
+            stream.writeUTF(suggestionInfo.allowlistIconPath);
+            stream.writeInt(suggestionInfo.titleSource);
+            stream.writeInt(suggestionInfo.source);
+            stream.writeInt(suggestionInfo.sectionType);
+            stream.writeLong(suggestionInfo.dataGenerationTime.getTime());
         }
         stream.close();
-        Log.d(TAG, "Serializing top sites lists finished");
+        Log.i(TAG, "Serializing top sites lists finished; count: " + topSitesCount);
         return output.toByteArray();
     }
 
-    private static List<SiteSuggestion> deserializeTopSitesData(byte[] listData)
-            throws IOException {
+    private static List<Tile> deserializeTopSitesData(byte[] listData) throws IOException {
         if (listData == null || listData.length == 0) {
             return null;
         }
 
         DataInputStream stream = new DataInputStream(new ByteArrayInputStream(listData));
-
-        Log.d(TAG, "Deserializing top sites lists");
 
         Date dataGenerationTime;
 
@@ -153,13 +192,13 @@ public class MostVisitedSitesMetadataUtils {
         final int count = stream.readInt();
 
         // Restore top sites.
-        List<SiteSuggestion> suggestions = new ArrayList<>();
+        List<Tile> tiles = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             int version = stream.readInt();
             if (version > CACHE_VERSION) {
                 throw new IOException("Cache version not supported.");
             }
-            int faviconId = stream.readInt();
+            int index = stream.readInt();
             String title = stream.readUTF();
             GURL url = GURL.deserialize(stream.readUTF());
             if (url.isEmpty()) throw new IOException("GURL deserialization failed.");
@@ -171,11 +210,11 @@ public class MostVisitedSitesMetadataUtils {
             dataGenerationTime = new Date(stream.readLong());
             SiteSuggestion newSite = new SiteSuggestion(title, url, allowlistIconPath, titleSource,
                     source, sectionType, dataGenerationTime);
-            newSite.faviconId = faviconId;
-            suggestions.add(newSite);
+            Tile newTile = new Tile(newSite, index);
+            tiles.add(newTile);
         }
-        Log.d(TAG, "Deserializing top sites lists finished");
-        return suggestions;
+        Log.i(TAG, "Deserializing top sites lists finished");
+        return tiles;
     }
 
     /**
@@ -209,7 +248,7 @@ public class MostVisitedSitesMetadataUtils {
      * @param stateFileName  File name to save top sites data into.
      * @return  Top sites data in the form of a serialized byte array.
      */
-    private static byte[] restoreFileToSuggestionLists(File stateDirectory, String stateFileName)
+    private static byte[] restoreFileToBytes(File stateDirectory, String stateFileName)
             throws IOException {
         FileInputStream stream;
         byte[] data;
@@ -225,7 +264,8 @@ public class MostVisitedSitesMetadataUtils {
         return data;
     }
 
-    protected static File getOrCreateTopSitesDirectory() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static File getOrCreateTopSitesDirectory() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             synchronized (DIR_CREATION_LOCK) {
                 if (sStateDirectory == null) {
@@ -237,7 +277,32 @@ public class MostVisitedSitesMetadataUtils {
         }
     }
 
-    protected static File getStateDirectory() {
-        return sStateDirectory;
+    private void updatePendingToCurrent() {
+        mCurrentTask = mPendingTask;
+        mPendingTask = null;
+        if (mCurrentTask != null) {
+            Log.i(TAG, "Start a new task.");
+            mCurrentTask.run();
+        }
+    }
+
+    @VisibleForTesting
+    public Runnable getCurrentTaskForTesting() {
+        return mCurrentTask;
+    }
+
+    @VisibleForTesting
+    public void setCurrentTaskForTesting(Runnable currentTask) {
+        mCurrentTask = currentTask;
+    }
+
+    @VisibleForTesting
+    public void setPendingTaskForTesting(Runnable pendingTask) {
+        mPendingTask = pendingTask;
+    }
+
+    @VisibleForTesting
+    public int getPendingTaskTilesNumForTesting() {
+        return mPendingTaskTilesNumForTesting;
     }
 }

@@ -17,11 +17,10 @@
 
 namespace blink {
 
-class LocalDOMWindow;
 class ScriptState;
 class ExceptionState;
 
-// The implementation of Performance.measureMemory() Web API.
+// The implementation of performance.measureUserAgentSpecificMemory() Web API.
 // It is responsible for:
 // 1. Starting an asynchronous memory measurement of the main V8 isolate.
 // 2. Starting an asynchronous memory measurement of dedicated workers.
@@ -44,7 +43,6 @@ class MeasureMemoryController final
   void Trace(Visitor* visitor) const;
 
  private:
-  static bool IsMeasureMemoryAvailable(LocalDOMWindow* window);
   // Invoked when the memory of the main V8 isolate is measured.
   void MeasurementComplete(
       performance_manager::mojom::blink::WebMemoryMeasurementPtr);

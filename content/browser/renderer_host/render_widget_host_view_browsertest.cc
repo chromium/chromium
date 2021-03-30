@@ -385,10 +385,10 @@ namespace {
 
 std::unique_ptr<net::test_server::HttpResponse> HandleSlowStyleSheet(
     const net::test_server::HttpRequest& request) {
-  auto response = std::make_unique<SlowHttpResponse>(request.relative_url);
-  if (!response->IsHandledUrl())
+  // The CSS stylesheet we want to be slow will have this path.
+  if (request.relative_url != "/slow-response")
     return nullptr;
-  return std::move(response);
+  return std::make_unique<SlowHttpResponse>(SlowHttpResponse::NoResponse());
 }
 
 class DOMContentLoadedObserver : public WebContentsObserver {

@@ -336,7 +336,7 @@ public class TabbedPaintPreviewTest {
                 parcel.setDataPosition(0);
                 UnguessableToken token = UnguessableToken.CREATOR.createFromParcel(parcel);
                 compositorListener.onCompositorReady(token, new UnguessableToken[] {token},
-                        new int[] {500, 500}, new int[] {0, 0}, new int[] {0}, null, null);
+                        new int[] {500, 500}, new int[] {0, 0}, new int[] {0}, null, null, 0);
             }, 250);
         }
 
@@ -408,5 +408,10 @@ public class TabbedPaintPreviewTest {
 
         @Override
         public void onLinkClick(GURL url) {}
+
+        @Override
+        public boolean isAccessibilityEnabled() {
+            return false;
+        }
     }
 }

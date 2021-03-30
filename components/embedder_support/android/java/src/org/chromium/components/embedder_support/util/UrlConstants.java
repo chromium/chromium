@@ -66,6 +66,9 @@ public class UrlConstants {
     public static final String HISTORY_URL = "chrome://history/";
     public static final String NATIVE_HISTORY_URL = "chrome-native://history/";
 
+    public static final String LAUNCHPAD_HOST = "apps";
+    public static final String LAUNCHPAD_URL = "chrome://apps/";
+
     public static final String INTERESTS_HOST = "interests";
     public static final String INTERESTS_URL = "chrome-native://interests/";
 

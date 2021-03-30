@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/stream_model.h"
 
 namespace feedui {
@@ -22,13 +22,11 @@ class StreamUpdate;
 namespace feed {
 class MetricsReporter;
 
-// Keeps the UI up to date by calling |SurfaceInterface::StreamUpdate()|.
+// Keeps the UI up to date by calling |FeedStreamSurface::StreamUpdate()|.
 // Updates are triggered when |StreamModel| changes, or when loading state
 // changes (for spinners and zero-state).
 class SurfaceUpdater : public StreamModel::Observer {
  public:
-  using SurfaceInterface = FeedStreamApi::SurfaceInterface;
-
   explicit SurfaceUpdater(MetricsReporter* metrics_reporter);
   ~SurfaceUpdater() override;
   SurfaceUpdater(const SurfaceUpdater&) = delete;
@@ -45,8 +43,8 @@ class SurfaceUpdater : public StreamModel::Observer {
   void OnUiUpdate(const StreamModel::UiUpdate& update) override;
 
   // Signals from |FeedStream|.
-  void SurfaceAdded(SurfaceInterface* surface);
-  void SurfaceRemoved(SurfaceInterface* surface);
+  void SurfaceAdded(FeedStreamSurface* surface);
+  void SurfaceRemoved(FeedStreamSurface* surface);
   // Called to indicate the initial model load is in progress.
   void LoadStreamStarted();
   void LoadStreamComplete(bool success, LoadStreamStatus load_stream_status);
@@ -81,7 +79,7 @@ class SurfaceUpdater : public StreamModel::Observer {
   void SendStreamUpdateIfNeeded();
   void SendStreamUpdate(
       const std::vector<std::string>& updated_shared_state_ids);
-  void SendUpdateToSurface(SurfaceInterface* surface,
+  void SendUpdateToSurface(FeedStreamSurface* surface,
                            const feedui::StreamUpdate& update);
   void InsertDatastoreEntry(const std::string& key, const std::string& value);
   void RemoveDatastoreEntry(const std::string& key);
@@ -109,7 +107,7 @@ class SurfaceUpdater : public StreamModel::Observer {
   MetricsReporter* metrics_reporter_;
 
   // Attached surfaces.
-  base::ObserverList<SurfaceInterface> surfaces_;
+  base::ObserverList<FeedStreamSurface> surfaces_;
 };
 }  // namespace feed
 

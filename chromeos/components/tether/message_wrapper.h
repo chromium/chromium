@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef CHROMEOS_COMPONENTS_TETHER_MESSAGE_WRAPPER_H_
+#define CHROMEOS_COMPONENTS_TETHER_MESSAGE_WRAPPER_H_
+
 #include <google/protobuf/message_lite.h>
 #include <memory>
 
@@ -58,3 +61,5 @@ class MessageWrapper {
 }  // namespace tether
 
 }  // namespace chromeos
+
+#endif  // CHROMEOS_COMPONENTS_TETHER_MESSAGE_WRAPPER_H_

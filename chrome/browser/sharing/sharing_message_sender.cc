@@ -22,7 +22,7 @@ SharingMessageSender::SharingMessageSender(
 
 SharingMessageSender::~SharingMessageSender() = default;
 
-void SharingMessageSender::SendMessageToDevice(
+base::OnceClosure SharingMessageSender::SendMessageToDevice(
     const syncer::DeviceInfo& device,
     base::TimeDelta response_timeout,
     chrome_browser_sharing::SharingMessage message,
@@ -42,15 +42,13 @@ void SharingMessageSender::SendMessageToDevice(
   chrome_browser_sharing::MessageType message_type =
       SharingPayloadCaseToMessageType(message.payload_case());
   SharingDevicePlatform receiver_device_platform = GetDevicePlatform(device);
-  base::TimeDelta last_updated_age =
-      base::Time::Now() - device.last_updated_timestamp();
 
   auto inserted = base::InsertOrAssign(
       message_metadata_, message_guid,
-      SentMessageMetadata(
-          std::move(callback), base::TimeTicks::Now(), message_type,
-          receiver_device_platform, last_updated_age, trace_id,
-          SharingChannelType::kUnknown, device.pulse_interval()));
+      SentMessageMetadata(std::move(callback), base::TimeTicks::Now(),
+                          message_type, receiver_device_platform, trace_id,
+                          SharingChannelType::kUnknown,
+                          device.pulse_interval()));
   DCHECK(inserted.second);
 
   auto delegate_iter = send_delegates_.find(delegate_type);
@@ -58,7 +56,7 @@ void SharingMessageSender::SendMessageToDevice(
     InvokeSendMessageCallback(message_guid,
                               SharingSendMessageResult::kInternalError,
                               /*response=*/nullptr);
-    return;
+    return base::NullCallback();
   }
   SendMessageDelegate* delegate = delegate_iter->second.get();
   DCHECK(delegate);
@@ -72,7 +70,7 @@ void SharingMessageSender::SendMessageToDevice(
     InvokeSendMessageCallback(message_guid,
                               SharingSendMessageResult::kInternalError,
                               /*response=*/nullptr);
-    return;
+    return base::NullCallback();
   }
 
   content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
@@ -84,9 +82,6 @@ void SharingMessageSender::SendMessageToDevice(
                          /*response=*/nullptr),
           response_timeout);
 
-  LogSharingDeviceLastUpdatedAge(message_type, last_updated_age);
-  LogSharingVersionComparison(message_type, device.chrome_version());
-
   message.set_sender_guid(local_device_info->guid());
   message.set_sender_device_name(
       send_tab_to_self::GetSharingDeviceNames(local_device_info).full_name);
@@ -97,6 +92,10 @@ void SharingMessageSender::SendMessageToDevice(
       device, response_timeout, std::move(message),
       base::BindOnce(&SharingMessageSender::OnMessageSent,
                      weak_ptr_factory_.GetWeakPtr(), message_guid));
+
+  return base::BindOnce(&SharingMessageSender::InvokeSendMessageCallback,
+                        weak_ptr_factory_.GetWeakPtr(), message_guid,
+                        SharingSendMessageResult::kCancelled, nullptr);
 }
 
 void SharingMessageSender::OnMessageSent(const std::string& message_guid,
@@ -184,7 +183,6 @@ void SharingMessageSender::InvokeSendMessageCallback(
   LogSendSharingMessageResult(metadata.type, metadata.receiver_device_platform,
                               metadata.channel_type,
                               metadata.receiver_pulse_interval, result);
-  LogSharingDeviceLastUpdatedAgeWithResult(result, metadata.last_updated_age);
   TRACE_EVENT_NESTABLE_ASYNC_END1("sharing", "SharingMessageSender.SendMessage",
                                   TRACE_ID_LOCAL(metadata.trace_id), "result",
                                   SharingSendMessageResultToString(result));
@@ -195,7 +193,6 @@ SharingMessageSender::SentMessageMetadata::SentMessageMetadata(
     base::TimeTicks timestamp,
     chrome_browser_sharing::MessageType type,
     SharingDevicePlatform receiver_device_platform,
-    base::TimeDelta last_updated_age,
     int trace_id,
     SharingChannelType channel_type,
     base::TimeDelta receiver_pulse_interval)
@@ -203,7 +200,6 @@ SharingMessageSender::SentMessageMetadata::SentMessageMetadata(
       timestamp(timestamp),
       type(type),
       receiver_device_platform(receiver_device_platform),
-      last_updated_age(last_updated_age),
       trace_id(trace_id),
       channel_type(channel_type),
       receiver_pulse_interval(receiver_pulse_interval) {}

@@ -14,7 +14,6 @@
 #include "base/synchronization/lock.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -27,6 +26,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -1073,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentVersion) {
   const GURL gurl = accept_ch_with_lifetime_url();
 
-  blink::UserAgentMetadata ua = ::GetUserAgentMetadata();
+  blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
 
   // Navigate to a page that opts-into the header: the value should end with
   // the major version, and not contain the full version.
@@ -1095,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentVersion) {
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UAHintsTabletMode) {
   const GURL gurl = accept_ch_with_lifetime_url();
 
-  blink::UserAgentMetadata ua = ::GetUserAgentMetadata();
+  blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
 
   // First request: only minimal hints, no tablet override.
   SetClientHintExpectationsOnMainFrame(false);
@@ -1202,7 +1202,7 @@ void ClientHintsBrowserTest::TestProfilesIndependent(Browser* browser_a,
                                                      Browser* browser_b) {
   const GURL gurl = accept_ch_with_lifetime_url();
 
-  blink::UserAgentMetadata ua = ::GetUserAgentMetadata();
+  blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
 
   // Navigate |browser_a| to a page that opts-into the header: the value should
   // end with the major version, and not contain the full version.

@@ -73,8 +73,8 @@ class TetherDisconnectorImplTest : public testing::Test {
         tether_network_guid,
         base::BindOnce(&TetherDisconnectorImplTest::SuccessCallback,
                        base::Unretained(this)),
-        base::Bind(&TetherDisconnectorImplTest::ErrorCallback,
-                   base::Unretained(this)),
+        base::BindOnce(&TetherDisconnectorImplTest::ErrorCallback,
+                       base::Unretained(this)),
         session_completion_reason);
   }
 

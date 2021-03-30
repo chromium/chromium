@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
@@ -26,7 +27,6 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -535,6 +535,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // here.
 - (void)shareButtonPressed {
   RecordAction(UserMetricsAction("MobileToolbarShareMenu"));
+  [self.delegate recordShareButtonPressed];
 }
 
 // Updates the cached clipboard content type and calls |completion| when the
@@ -597,12 +598,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                action:@selector(searchCopiedText:)]);
 
     BOOL updateSuccessful = [self updateCachedClipboardStateWithCompletion:^() {
-      if (@available(iOS 13, *)) {
-        [menu showMenuFromView:self.view rect:self.locationBarSteadyView.frame];
-      } else {
-        [menu setTargetRect:self.locationBarSteadyView.frame inView:self.view];
-        [menu setMenuVisible:YES animated:YES];
-      }
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+      [menu setTargetRect:self.locationBarSteadyView.frame inView:self.view];
+      [menu setMenuVisible:YES animated:YES];
+#else
+      [menu showMenuFromView:self.view rect:self.locationBarSteadyView.frame];
+#endif
       // When the menu is manually presented, it doesn't get focused by
       // Voiceover. This notification forces voiceover to select the
       // presented menu.
@@ -667,10 +668,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.VisitCopiedLink"));
   ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
       base::BindOnce(^(base::Optional<GURL> optionalURL) {
-        NSString* url;
-        if (optionalURL) {
-          url = base::SysUTF8ToNSString(optionalURL.value().spec());
+        if (!optionalURL) {
+          return;
         }
+        NSString* url = base::SysUTF8ToNSString(optionalURL.value().spec());
         dispatch_async(dispatch_get_main_queue(), ^{
           [self.dispatcher loadQuery:url immediately:YES];
           [self.dispatcher cancelOmniboxEdit];
@@ -684,11 +685,11 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   LogLikelyInterestedDefaultBrowserUserActivity();
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
-      base::BindOnce(^(base::Optional<base::string16> optionalText) {
-        NSString* query;
-        if (optionalText) {
-          query = base::SysUTF16ToNSString(optionalText.value());
+      base::BindOnce(^(base::Optional<std::u16string> optionalText) {
+        if (!optionalText) {
+          return;
         }
+        NSString* query = base::SysUTF16ToNSString(optionalText.value());
         dispatch_async(dispatch_get_main_queue(), ^{
           [self.dispatcher loadQuery:query immediately:YES];
           [self.dispatcher cancelOmniboxEdit];

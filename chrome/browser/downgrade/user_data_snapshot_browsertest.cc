@@ -271,16 +271,14 @@ class BookmarksSnapshotTest : public UserDataSnapshotBrowserTestBase {
   const GURL that_other_url_{"https://www.thatotherul.com"};
   const GURL mobile_url_{"https://www.mobile.com"};
 
-  const base::string16 folder_title_ = base::ASCIIToUTF16("Folder");
-  const base::string16 sub_folder_title_ = base::ASCIIToUTF16("Sub Folder");
-  const base::string16 sub_folder_url_title_ =
-      base::ASCIIToUTF16("Sub Folder URL");
-  const base::string16 that_url_title_ = base::ASCIIToUTF16("That URL");
-  const base::string16 folder_url_title_ = base::ASCIIToUTF16("Folder URL");
-  const base::string16 other_url_title_ = base::ASCIIToUTF16("Other URL");
-  const base::string16 that_other_url_title_ =
-      base::ASCIIToUTF16("That Other URL");
-  const base::string16 mobile_url_title_ = base::ASCIIToUTF16("Mobile URL");
+  const std::u16string folder_title_ = u"Folder";
+  const std::u16string sub_folder_title_ = u"Sub Folder";
+  const std::u16string sub_folder_url_title_ = u"Sub Folder URL";
+  const std::u16string that_url_title_ = u"That URL";
+  const std::u16string folder_url_title_ = u"Folder URL";
+  const std::u16string other_url_title_ = u"Other URL";
+  const std::u16string that_other_url_title_ = u"That Other URL";
+  const std::u16string mobile_url_title_ = u"Mobile URL";
 };
 
 IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, PRE_PRE_PRE_Test) {}
@@ -300,7 +298,7 @@ class HistorySnapshotTest : public UserDataSnapshotBrowserTestBase {
           source(source) {}
     ~HistoryEntry() = default;
     GURL url;
-    base::string16 title;
+    std::u16string title;
     base::Time time;
     history::VisitSource source;
   };
@@ -323,7 +321,7 @@ class HistorySnapshotTest : public UserDataSnapshotBrowserTestBase {
     base::RunLoop run_loop;
     base::CancelableTaskTracker tracker;
     history_service->QueryHistory(
-        base::string16(), history::QueryOptions(),
+        std::u16string(), history::QueryOptions(),
         base::BindOnce(&HistorySnapshotTest::SetQueryResults,
                        base::Unretained(this), run_loop.QuitClosure()),
         &tracker);

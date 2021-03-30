@@ -43,10 +43,4 @@ public interface ContextMenuUi {
      * Dismiss the context menu.
      */
     void dismiss();
-
-    /**
-     * @return Whether the menu is dismissed. It may be dismissed but still be visible, e.g. hiding
-     *         with an animation.
-     */
-    boolean isDismissed();
 }

@@ -26,9 +26,8 @@ FakeDeviceCloudPolicyManager::~FakeDeviceCloudPolicyManager() {
   Shutdown();
 }
 
-void FakeDeviceCloudPolicyManager::Unregister(
-    const UnregisterCallback& callback) {
-  callback.Run(unregister_result_);
+void FakeDeviceCloudPolicyManager::Unregister(UnregisterCallback callback) {
+  std::move(callback).Run(unregister_result_);
 }
 
 void FakeDeviceCloudPolicyManager::Disconnect() {

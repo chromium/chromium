@@ -18,6 +18,7 @@
 #include "base/optional.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/userdataauth/install_attributes_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 namespace chromeos {
@@ -59,7 +60,8 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
   static void SetForTesting(InstallAttributes* test_instance);
   static void ShutdownForTesting();
 
-  explicit InstallAttributes(CryptohomeClient* cryptohome_client);
+  explicit InstallAttributes(
+      InstallAttributesClient* install_attributes_client);
   ~InstallAttributes();
 
   // Tries to read install attributes from |cache_file| to work around slow
@@ -78,8 +80,10 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
   // Updates the firmware management parameters from TPM, storing the devmode
   // flag according to |block_devmode|. Invokes |callback| when done. Must be
   // called before LockDevice is done. Used to update TPM on enrollment.
-  void SetBlockDevmodeInTpm(bool block_devmode,
-                            DBusMethodCallback<cryptohome::BaseReply> callback);
+  void SetBlockDevmodeInTpm(
+      bool block_devmode,
+      DBusMethodCallback<user_data_auth::SetFirmwareManagementParametersReply>
+          callback);
 
   // Locks the device into |device_mode|.  Depending on |device_mode|, a
   // specific subset of |domain|, |realm| and |device_id| must be set.  Can also
@@ -188,17 +192,19 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
       const std::map<std::string, std::string>& attr_map);
 
   // Helper for ReadImmutableAttributes.
-  void ReadAttributesIfReady(base::OnceClosure callback,
-                             base::Optional<bool> response);
+  void ReadAttributesIfReady(
+      base::OnceClosure callback,
+      base::Optional<user_data_auth::InstallAttributesGetStatusReply> reply);
 
   // Helper for LockDevice(). Handles the result of InstallAttributesIsReady()
   // and continue processing LockDevice if the result is true.
-  void LockDeviceIfAttributesIsReady(policy::DeviceMode device_mode,
-                                     const std::string& domain,
-                                     const std::string& realm,
-                                     const std::string& device_id,
-                                     LockResultCallback callback,
-                                     base::Optional<bool> response);
+  void LockDeviceIfAttributesIsReady(
+      policy::DeviceMode device_mode,
+      const std::string& domain,
+      const std::string& realm,
+      const std::string& device_id,
+      LockResultCallback callback,
+      base::Optional<user_data_auth::InstallAttributesGetStatusReply> reply);
 
   // Confirms the registered user and invoke the callback.
   void OnReadImmutableAttributes(policy::DeviceMode mode,
@@ -223,7 +229,7 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
   void OnClearStoredOwnerPassword(
       const ::tpm_manager::ClearStoredOwnerPasswordReply& reply);
 
-  CryptohomeClient* cryptohome_client_;
+  InstallAttributesClient* install_attributes_client_;
 
   base::WeakPtrFactory<InstallAttributes> weak_ptr_factory_{this};
 

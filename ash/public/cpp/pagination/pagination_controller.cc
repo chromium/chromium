@@ -13,7 +13,7 @@ namespace ash {
 namespace {
 
 // Constants for dealing with scroll events.
-const int kMinScrollToSwitchPage = 20;
+const int kMinScrollToSwitchPage = 10;
 const int kMinHorizVelocityToSwitchPage = 800;
 
 const double kFinishTransitionThreshold = 0.33;

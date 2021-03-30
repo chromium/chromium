@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "base/json/json_file_value_serializer.h"
@@ -20,9 +21,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/chromeos/arc/icon_decode_request.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
@@ -39,7 +40,6 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -250,8 +250,8 @@ class AppContextMenuTest : public AppListTestBase {
     value.GetAsDictionary(&dictionary_manifest);
     std::string error;
     return extensions::Extension::Create(
-        path.DirName(), extensions::Manifest::INTERNAL, *dictionary_manifest,
-        extensions::Extension::NO_FLAGS, app_id, &error);
+        path.DirName(), extensions::mojom::ManifestLocation::kInternal,
+        *dictionary_manifest, extensions::Extension::NO_FLAGS, app_id, &error);
   }
 
   void TestExtensionApp(const std::string& app_id,
@@ -299,7 +299,7 @@ class AppContextMenuTest : public AppListTestBase {
     value.SetString("version", "0.0");
     value.SetString("app.launch.web_url", "http://google.com");
     scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
-        base::FilePath(), extensions::Manifest::INTERNAL, value,
+        base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
         extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
         extension_misc::kChromeAppId, &err);
     EXPECT_EQ(err, "");
@@ -675,7 +675,7 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
 
   // testing::Test:
   void SetUp() override {
-    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     auto* fake_user_manager = user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));

@@ -27,6 +27,12 @@ const char kDisableFrameRateLimit[] = "disable-frame-rate-limit";
 // Sets the number of max pending frames in the GL buffer queue to 1.
 const char kDoubleBufferCompositing[] = "double-buffer-compositing";
 
+const char kDraw1Point12Ms[] = "1-pt-12ms";
+const char kDraw2Points6Ms[] = "2-pt-6ms";
+const char kDraw1Point6Ms[] = "1-pt-6ms";
+const char kDraw2Points3Ms[] = "2-pt-3ms";
+const char kDrawPredictedInkPoint[] = "draw-predicted-ink-point";
+
 // Experimental de-jelly support.
 const char kEnableDeJelly[] = "enable-de-jelly";
 
@@ -43,7 +49,7 @@ const char kEnableVizDevTools[] = "enable-viz-devtools";
 // Enables hit-test debug logging.
 const char kEnableVizHitTestDebug[] = "enable-viz-hit-test-debug";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // ChromeOS uses one of two VideoDecoder implementations based on SoC/board
 // specific configurations that are signalled via this command line flag.
 // TODO(b/159825227): remove when the "old" video decoder is fully launched.

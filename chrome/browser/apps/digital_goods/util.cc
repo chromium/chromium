@@ -5,7 +5,7 @@
 #include "chrome/browser/apps/digital_goods/util.h"
 
 #include "base/optional.h"
-#include "chrome/browser/chromeos/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -33,7 +33,7 @@ std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host) {
     return "";
   }
 
-  auto* apk_web_app_service = chromeos::ApkWebAppService::Get(profile);
+  auto* apk_web_app_service = ash::ApkWebAppService::Get(profile);
   if (!apk_web_app_service) {
     return "";
   }

@@ -150,6 +150,32 @@ video {
     object-fit: contain;
 }
 
+video:-webkit-full-page-media {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+audio:not([controls]) {
+  display: none !important;
+}
+
+/** TODO(crbug.com/985623): Remove these hard-coded audio tag size.
+ * This fixed audio tag width/height leads to fail the wpt tests below.
+ * crbug.com/955170 external/wpt/css/css-contain/contain-size-replaced-003a.html
+ * crbug.com/955163 external/wpt/css/css-contain/contain-size-replaced-003b.html
+ * crbug.com/955163 external/wpt/css/css-contain/contain-size-replaced-003c.html
+ */
+audio {
+  width: 300px;
+  height: 54px;
+}
+
 /* heading elements */
 
 h1 {
@@ -557,7 +583,7 @@ input[type="password" i]::-internal-input-suggested {
 }
 
 input[type="hidden" i], input[type="image" i], input[type="file" i] {
-    -webkit-appearance: initial; /* AutoAppearanceFor() should match to this. */
+    appearance: none;
     padding: initial;
     background-color: initial;
     border: initial;
@@ -582,7 +608,7 @@ input[type="image" i] {
 input:-internal-autofill-previewed,
 textarea:-internal-autofill-previewed,
 select:-internal-autofill-previewed {
-  -webkit-appearance:menulist-button;
+  appearance: menulist-button;
   background-color: #E8F0FE !important;
   background-image:none !important;
   color: -internal-light-dark(black, white) !important;
@@ -591,7 +617,7 @@ select:-internal-autofill-previewed {
 input:-internal-autofill-selected,
 textarea:-internal-autofill-selected,
 select:-internal-autofill-selected {
-  -webkit-appearance:menulist-button;
+  appearance: menulist-button;
   background-color: #E8F0FE !important;
   background-image:none !important;
   color: -internal-light-dark(black, white) !important;
@@ -633,7 +659,7 @@ input[type="button" i], input[type="submit" i], input[type="reset" i], input[typ
 }
 
 input[type="range" i] {
-    appearance: auto; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     padding: initial;
     border: initial;
     margin: 2px;
@@ -755,7 +781,7 @@ input[type="color" i]::-webkit-color-swatch {
 }
 
 input[type="color" i][list] {
-    -webkit-appearance: menulist; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     width: 88px;
     height: 23px
 }
@@ -812,7 +838,7 @@ input[readonly]::-webkit-calendar-picker-indicator {
 }
 
 select {
-    -webkit-appearance: menulist; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     box-sizing: border-box;
     align-items: center;
     border: 1px solid;
@@ -828,7 +854,7 @@ select:not(:-internal-list-box) {
 }
 
 select:-internal-list-box {
-    -webkit-appearance: listbox; /* AutoAppearanceFor() should match to this. */
+    appearance: auto;
     align-items: flex-start;
     border: 1px inset gray;
     border-radius: initial;
@@ -885,9 +911,22 @@ select:-internal-list-box hr {
     margin-block-end: 0;
 }
 
-select:-internal-list-box:focus option:-internal-multi-select-focus {
+select:-internal-list-box:focus-visible option:-internal-multi-select-focus {
     outline: auto 1px -webkit-focus-ring-color;
     outline-offset: -1px;
+}
+
+/* selectmenu */
+
+/* TODO(crbug.com/1121840) It's deliberate for now that this provides styles
+for <option> but not other element types with part="option".  Could this
+be a mechanism for allowing authors to specify their own styles for
+option parts by using e.g. <div part="option">, while authors that
+want the default styles can instead just use <option>? */
+selectmenu option:hover {
+    background-color: lightgray;
+    cursor: default;
+    user-select: none;
 }
 
 output {
@@ -1053,31 +1092,31 @@ nobr {
     box-shadow: none !important
 }
 
-:focus {
+:focus-visible {
     outline: auto 1px -webkit-focus-ring-color
 }
 
-html:focus, body:focus {
+html:focus-visible, body:focus-visible {
     outline: none
 }
 
-embed:focus, iframe:focus, object:focus {
+embed:focus-visible, iframe:focus-visible, object:focus-visible {
     outline: none
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus-visible, textarea:focus-visible, select:focus-visible {
     outline-offset: -2px
 }
 
-input[type="button" i]:focus,
-input[type="checkbox" i]:focus,
-input[type="file" i]:focus,
-input[type="hidden" i]:focus,
-input[type="image" i]:focus,
-input[type="radio" i]:focus,
-input[type="reset" i]:focus,
-input[type="submit" i]:focus,
-input[type="file" i]:focus::-webkit-file-upload-button {
+input[type="button" i]:focus-visible,
+input[type="checkbox" i]:focus-visible,
+input[type="file" i]:focus-visible,
+input[type="hidden" i]:focus-visible,
+input[type="image" i]:focus-visible,
+input[type="radio" i]:focus-visible,
+input[type="reset" i]:focus-visible,
+input[type="submit" i]:focus-visible,
+input[type="file" i]:focus-visible::-webkit-file-upload-button {
     outline-offset: 0
 }
 
@@ -1142,11 +1181,23 @@ summary {
     display: block
 }
 
-summary::-webkit-details-marker {
-    display: inline-block;
-    width: 0.66em;
-    height: 0.66em;
-    margin-inline-end: 0.4em;
+/*
+ * https://html.spec.whatwg.org/C/#the-details-and-summary-elements
+ * The specification doesn't have |details >| and |:first-of-type|.
+ * We add them because:
+ *   - We had provided |summary { display: block }| for a long time,
+ *     there are sites using <summary> without details, and they
+ *     expect that <summary> is not a list-item.
+ *   - Firefox does so.
+ */
+details > summary:first-of-type {
+    display: list-item;
+    counter-increment: list-item 0;
+    list-style: disclosure-closed inside;
+}
+
+details[open] > summary:first-of-type {
+    list-style-type: disclosure-open;
 }
 
 template {
@@ -1154,7 +1205,7 @@ template {
 }
 
 bdi, output {
-    unicode-bidi: -webkit-isolate;
+    unicode-bidi: isolate;
 }
 
 bdo {
@@ -1162,7 +1213,7 @@ bdo {
 }
 
 textarea[dir=auto i] {
-    unicode-bidi: -webkit-plaintext;
+    unicode-bidi: plaintext;
 }
 
 dialog:not([open]) {
@@ -1202,6 +1253,26 @@ dialog::backdrop {
     bottom: 0;
     left: 0;
     background: rgba(0,0,0,0.1)
+}
+
+popup:not(:-internal-popup-open) {
+    display: none !important;
+}
+popup {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* The rest here is copied from dialog, perhaps these shouldn't
+       apply to popup. At least the background color is nice, because
+       it obscures the backdrop. And the foreground color/border
+       help to set off the popup from the rest of the page. */
+    width: fit-content;
+    height: fit-content;
+    border: 1px solid;
+    padding: 1em;
+    background: -internal-light-dark(white, black);
+    color: -internal-light-dark(black, white);
 }
 
 slot {

@@ -11,8 +11,10 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
@@ -58,8 +60,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
                   ProfileOAuth2TokenService* token_service,
                   AccountTrackerService* account_tracker_service,
                   std::unique_ptr<image_fetcher::ImageDecoder> image_decoder);
-
-  void Shutdown();
 
   // Indicates if all user information has been fetched. If the result is false,
   // there are still unfininshed fetchers.
@@ -147,7 +147,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   bool network_fetches_enabled_ = false;
   bool network_initialized_ = false;
   bool refresh_tokens_loaded_ = false;
-  bool shutdown_called_ = false;
   bool enable_account_removal_for_test_ = false;
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
@@ -159,6 +158,11 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // Holds references to account info fetchers keyed by account_id.
   std::unordered_map<CoreAccountId, std::unique_ptr<AccountInfoFetcher>>
       user_info_requests_;
+
+  // CoreAccountId and the corresponding fetch start time. These two member
+  // variables are only used to record account information fetch duration.
+  base::flat_map<CoreAccountId, base::TimeTicks> user_info_fetch_start_times_;
+  base::flat_map<CoreAccountId, base::TimeTicks> user_avatar_fetch_start_times_;
 
   // Used for fetching the account images.
   std::unique_ptr<image_fetcher::ImageFetcherImpl> image_fetcher_;

@@ -80,6 +80,8 @@ enum Subpage {
   // Note: Value 502 was for deprecated kAmbientModePhotos. Do not reuse.
   kAmbientModeGooglePhotosAlbum = 503,
   kAmbientModeArtGalleryAlbum = 504,
+  // 505 was used for kWallpaper. Do not reuse.
+  // 506 was used for kWallpaperImages. Do not reuse.
 
   // Search and Assistant section.
   kAssistant = 600,
@@ -146,6 +148,7 @@ const string kEthernetDetailsSubpagePath = "networkDetail";
 const string kWifiNetworksSubpagePath = "networks?type=WiFi";
 const string kWifiDetailsSubpagePath = "networkDetail";
 const string kKnownNetworksSubpagePath = "knownNetworks";
+const string kCellularNetworksSubpagePath = "networks?type=Cellular";
 const string kMobileDataNetworksSubpagePath = "networks?type=Tether";
 const string kCellularDetailsSubpagePath = "networkDetail";
 const string kTetherDetailsSubpagePath = "networkDetail";

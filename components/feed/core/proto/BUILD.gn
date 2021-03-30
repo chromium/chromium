@@ -8,39 +8,32 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-proto_library("proto") {
-  proto_in_dir = "../../../../"
-  sources = [
-    "content_storage.proto",
-    "journal_storage.proto",
-  ]
-}
-
 proto_library("proto_v2") {
   proto_in_dir = "../../../../"
   sources = [
-    #UNUSED_IN_CHROME "v2/wire/feed_id.proto",
-    #UNUSED_IN_CHROME "v2/wire/in_place_update_handle.proto",
-    #UNUSED_IN_CHROME "v2/wire/response_status_code.proto",
-    #UNUSED_IN_CHROME "v2/wire/templates.proto",
+    "v2/keyvalue_store.proto",
     "v2/packing.proto",
     "v2/store.proto",
     "v2/ui.proto",
+    "v2/wire/action_diagnostic_info.proto",
     "v2/wire/action_payload.proto",
     "v2/wire/capability.proto",
     "v2/wire/chrome_client_info.proto",
     "v2/wire/chrome_feed_response_metadata.proto",
     "v2/wire/chrome_fulfillment_info.proto",
     "v2/wire/client_info.proto",
+    "v2/wire/color.proto",
     "v2/wire/consistency_token.proto",
     "v2/wire/content_id.proto",
     "v2/wire/data_operation.proto",
-    "v2/wire/discover_actions_service.proto",
+    "v2/wire/device.proto",
+    "v2/wire/diagnostic_info.proto",
     "v2/wire/display_info.proto",
     "v2/wire/duration.proto",
     "v2/wire/expiration_info.proto",
     "v2/wire/feature.proto",
     "v2/wire/feed_action.proto",
+    "v2/wire/feed_entry_point_data.proto",
     "v2/wire/feed_query.proto",
     "v2/wire/feed_request.proto",
     "v2/wire/feed_response.proto",
@@ -50,75 +43,22 @@ proto_library("proto_v2") {
     "v2/wire/request.proto",
     "v2/wire/request_schedule.proto",
     "v2/wire/response.proto",
+    "v2/wire/server_experiment_data.proto",
     "v2/wire/stream_structure.proto",
     "v2/wire/there_and_back_again_data.proto",
     "v2/wire/token.proto",
+    "v2/wire/upload_actions_request.proto",
+    "v2/wire/upload_actions_response.proto",
     "v2/wire/version.proto",
+    "v2/wire/web_feeds.proto",
+    "v2/wire/wrappers.proto",
+    "v2/wire/xsurface_container.proto",
+    "v2/wire/xsurface_content.proto",
     "v2/xsurface.proto",
   ]
 }
 
 if (is_android) {
-  proto_java_library("proto_java") {
-    proto_path = "../../../../"
-    sources = [
-      "libraries/api/internal/stream_data.proto",
-      "libraries/basicstream/internal/stream_saved_instance_state.proto",
-      "libraries/sharedstream/scroll_state.proto",
-      "libraries/sharedstream/ui_refresh_reason.proto",
-      "libraries/testing/ui_context_for_test.proto",
-      "ui/action/feed_action_payload.proto",
-      "ui/action/piet_extensions.proto",
-      "ui/action/ui_feed_action.proto",
-      "ui/piet/accessibility.proto",
-      "ui/piet/actions.proto",
-      "ui/piet/binding_refs.proto",
-      "ui/piet/elements.proto",
-      "ui/piet/errors.proto",
-      "ui/piet/form_fields.proto",
-      "ui/piet/gradients.proto",
-      "ui/piet/images.proto",
-      "ui/piet/log_data.proto",
-      "ui/piet/media_queries.proto",
-      "ui/piet/piet.proto",
-      "ui/piet/piet_android_support.proto",
-      "ui/piet/rounded_corners.proto",
-      "ui/piet/shadows.proto",
-      "ui/piet/styles.proto",
-      "ui/piet/text.proto",
-      "ui/stream/stream_offline_extension.proto",
-      "ui/stream/stream_structure.proto",
-      "ui/stream/stream_swipe_extension.proto",
-      "wire/action_payload.proto",
-      "wire/action_payload_for_test.proto",
-      "wire/action_request.proto",
-      "wire/action_type.proto",
-      "wire/capability.proto",
-      "wire/chrome_fulfillment_info.proto",
-      "wire/client_info.proto",
-      "wire/consistency_token.proto",
-      "wire/content_id.proto",
-      "wire/data_operation.proto",
-      "wire/display_info.proto",
-      "wire/feature.proto",
-      "wire/feed_action.proto",
-      "wire/feed_action_query_data.proto",
-      "wire/feed_action_request.proto",
-      "wire/feed_action_response.proto",
-      "wire/feed_query.proto",
-      "wire/feed_request.proto",
-      "wire/feed_response.proto",
-      "wire/mockserver/mock_server.proto",
-      "wire/payload_metadata.proto",
-      "wire/piet_shared_state_item.proto",
-      "wire/request.proto",
-      "wire/response.proto",
-      "wire/semantic_properties.proto",
-      "wire/token.proto",
-      "wire/version.proto",
-    ]
-  }
-
   proto_java_library("proto_java_v2") {
     proto_path = "../../../../"
     sources = [ "v2/ui.proto" ]

@@ -4,11 +4,10 @@
 
 #include "ash/home_screen/drag_window_from_shelf_controller.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/home_screen/drag_window_from_shelf_controller_test_api.h"
-#include "ash/home_screen/home_screen_controller.h"
-#include "ash/home_screen/home_screen_delegate.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -52,6 +51,11 @@ int IndexOf(aura::Window* child, aura::Window* parent) {
 }
 
 }  // namespace
+
+// This definition is needed because this constant is odr-used.
+// https://en.cppreference.com/w/cpp/language/static#Constant_static_members
+const float kVelocityToRestoreBoundsThreshold =
+    DragWindowFromShelfController::kVelocityToRestoreBoundsThreshold;
 
 class DragWindowFromShelfControllerTest : public AshTestBase {
  public:
@@ -224,7 +228,7 @@ TEST_F(DragWindowFromShelfControllerTest, HideHomeLauncherDuringDraggingTest) {
   StartDrag(window.get(), shelf_bounds.CenterPoint());
   Drag(gfx::Point(0, 200), 0.f, 1.f);
   aura::Window* home_screen_window =
-      Shell::Get()->home_screen_controller()->delegate()->GetHomeScreenWindow();
+      Shell::Get()->app_list_controller()->GetHomeScreenWindow();
   EXPECT_TRUE(home_screen_window);
   EXPECT_FALSE(home_screen_window->IsVisible());
 
@@ -409,13 +413,22 @@ TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
   auto window = CreateTestWindow();
 
-  // If fling velocity is smaller than kVelocityToHomeScreenThreshold, decide
-  // where the window should go based on the release position.
+  // If downward fling velocity is equal or larger than
+  // kVelocityToRestoreBoundsThreshold.
+  StartDrag(window.get(), shelf_bounds.CenterPoint());
+  Drag(gfx::Point(200, 200), 0.f, 1.f);
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EndDrag(gfx::Point(200, 200), kVelocityToRestoreBoundsThreshold);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
+
+  // If upward fling velocity is smaller than kVelocityToHomeScreenThreshold,
+  // decide where the window should go based on the release position.
   StartDrag(window.get(), shelf_bounds.CenterPoint());
   Drag(gfx::Point(200, 200), 0.f, 1.f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EndDrag(
       gfx::Point(0, 350),
@@ -425,7 +438,8 @@ TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
 
-  // If fling velocity is equal or larger than kVelocityToHomeScreenThreshold
+  // If upward fling velocity is equal or larger than
+  // kVelocityToHomeScreenThreshold.
   StartDrag(window.get(), shelf_bounds.CenterPoint());
   Drag(gfx::Point(200, 200), 0.f, 1.f);
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -881,9 +895,9 @@ TEST_F(DragWindowFromShelfControllerTest, DragToSnapMinDistance) {
                                      2);
 }
 
-// Test that if overview is invisible when drag ends, the window will be taken
-// to the home screen.
-TEST_F(DragWindowFromShelfControllerTest, GoHomeIfOverviewInvisible) {
+// Test that if overview is invisible when drag ends, the window will either be
+// restored or taken to the home screen.
+TEST_F(DragWindowFromShelfControllerTest, TestOverviewInvisible) {
   UpdateDisplay("400x400");
 
   const gfx::Rect shelf_bounds =
@@ -908,12 +922,28 @@ TEST_F(DragWindowFromShelfControllerTest, GoHomeIfOverviewInvisible) {
   // fling, the window should be taken to home screen.
   EndDrag(gfx::Point(200, 200), base::nullopt);
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
+
+  wm::ActivateWindow(window.get());
+  StartDrag(window.get(), shelf_bounds.left_center());
+  Drag(gfx::Point(200, 200), 0.f, 10.f);
+  // At this moment overview should be invisible. End the drag with upward
+  // velocity, the window should be taken to home screen.
+  EndDrag(gfx::Point(200, 200), -1.f);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
+
+  wm::ActivateWindow(window.get());
+  StartDrag(window.get(), shelf_bounds.left_center());
+  Drag(gfx::Point(200, 200), 0.f, 10.f);
+  // At this moment overview should be invisible. End the drag with downward
+  // velocity, the window should be restored.
+  EndDrag(gfx::Point(200, 200), 1.f);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
 }
 
 // Test that if overview is invisible when drag ends, the window will be taken
 // to the home screen, even if drag satisfied min snap distance.
 TEST_F(DragWindowFromShelfControllerTest,
-       GoHomeIfOverviewInvisibleWithMinSnapDistance) {
+       TestOverviewInvisibleWithMinSnapDistance) {
   UpdateDisplay("400x400");
 
   const gfx::Rect shelf_bounds =

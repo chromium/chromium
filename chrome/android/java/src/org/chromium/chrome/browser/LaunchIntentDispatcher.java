@@ -6,13 +6,16 @@ package org.chromium.chrome.browser;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -52,6 +55,7 @@ import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * Dispatches incoming intents to the appropriate activity based on the current configuration and
@@ -65,6 +69,12 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             "com.google.android.apps.chrome.EXTRA_LAUNCH_MODE";
 
     private static final String TAG = "ActivitiyDispatcher";
+
+    // Typically the number of tasks returned by getRecentTasks will be around 3 or less - the
+    // Chrome Launcher Activity, a Tabbed Activity task, and the home screen on older Android
+    // versions. However, theoretically this task list could be unbounded, so limit it to a number
+    // that won't cause Chrome to blow up in degenerate cases.
+    private static final int MAX_NUM_TASKS = 100;
 
     private final Activity mActivity;
     private final Intent mIntent;
@@ -145,8 +155,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         PartnerBrowserCustomizations.getInstance().initializeAsync(
                 mActivity.getApplicationContext());
 
-        int tabId = IntentUtils.safeGetIntExtra(
-                mIntent, IntentHandler.TabOpenType.BRING_TAB_TO_FRONT_STRING, Tab.INVALID_TAB_ID);
+        int tabId = IntentHandler.getBringTabToFrontId(mIntent);
         boolean incognito =
                 mIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
 
@@ -348,7 +357,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     }
 
     private static SessionDataHolder getSessionDataHolder() {
-        return ChromeApplication.getComponent().resolveSessionDataHolder();
+        return ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
     }
 
     /**
@@ -408,6 +417,17 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         maybeAuthenticateFirstPartyTranslateIntent(mIntent);
 
         Intent newIntent = new Intent(mIntent);
+
+        if (Intent.ACTION_VIEW.equals(newIntent.getAction())
+                && !IntentHandler.wasIntentSenderChrome(newIntent)) {
+            long time = SystemClock.elapsedRealtime();
+            if (!chromeTabbedTaskExists()) {
+                newIntent.putExtra(IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, true);
+            }
+            RecordHistogram.recordTimesHistogram("Startup.Android.ChromeTabbedTaskExistsTime",
+                    SystemClock.elapsedRealtime() - time);
+        }
+
         String targetActivityClassName = MultiWindowUtils.getInstance()
                                                  .getTabbedActivityForIntent(newIntent, mActivity)
                                                  .getName();
@@ -448,6 +468,43 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         }
 
         return Action.FINISH_ACTIVITY;
+    }
+
+    private boolean chromeTabbedTaskExists() {
+        // Fast check for a running Chrome instance.
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (activity instanceof ChromeTabbedActivity) return true;
+        }
+        // Slightly slower check for an existing task (One IPC, usually ~2ms).
+        final ActivityManager activityManager =
+                (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        try {
+            boolean chromeTaskExists = false;
+            // getRecentTasks is deprecated, but still returns your app's tasks, and does so
+            // without needing an extra IPC for each task you want to get the info for. It also
+            // includes some known-safe tasks like the home screen on older Android versions, but
+            // that's fine for this purpose.
+            List<ActivityManager.RecentTaskInfo> tasks =
+                    activityManager.getRecentTasks(MAX_NUM_TASKS, 0);
+            if (tasks != null) {
+                for (ActivityManager.RecentTaskInfo task : tasks) {
+                    // Note that Android documentation lies, and TaskInfo#origActivity does not
+                    // actually return the target of an alias, so we have to explicitly check
+                    // for the target component of the base intent, which will have been set to
+                    // the Activity that launched, in order to make this check more robust.
+                    ComponentName component = task.baseIntent.getComponent();
+                    if (component == null) continue;
+                    if (ChromeTabbedActivity.isTabbedModeComponentName(component.getClassName())) {
+                        return true;
+                    }
+                }
+            }
+        } catch (SecurityException ex) {
+            // If we can't query task status, assume a Chrome task exists so this doesn't
+            // mistakenly lead to a Chrome task being removed.
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -460,7 +460,7 @@ TEST_F(CookiesTreeModelTest, RemoveAll) {
 
   // Make sure the nodes are also deleted from the model's cache.
   // http://crbug.com/43249
-  cookies_model->UpdateSearchResults(base::string16());
+  cookies_model->UpdateSearchResults(std::u16string());
 
   {
     // 2 nodes - root and app
@@ -1559,19 +1559,19 @@ TEST_F(CookiesTreeModelTest, FileSystemFilter) {
   std::unique_ptr<CookiesTreeModel> cookies_model(
       CreateCookiesTreeModelWithInitialSample());
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("fshost1"));
+  cookies_model->UpdateSearchResults(u"fshost1");
   EXPECT_EQ("http://fshost1:1/",
             GetDisplayedFileSystems(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("fshost2"));
+  cookies_model->UpdateSearchResults(u"fshost2");
   EXPECT_EQ("http://fshost2:2/",
             GetDisplayedFileSystems(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("fshost3"));
+  cookies_model->UpdateSearchResults(u"fshost3");
   EXPECT_EQ("http://fshost3:3/",
             GetDisplayedFileSystems(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::string16());
+  cookies_model->UpdateSearchResults(std::u16string());
   EXPECT_EQ("http://fshost1:1/,http://fshost2:2/,http://fshost3:3/",
             GetDisplayedFileSystems(cookies_model.get()));
 }
@@ -1580,18 +1580,18 @@ TEST_F(CookiesTreeModelTest, ServiceWorkerFilter) {
   std::unique_ptr<CookiesTreeModel> cookies_model(
       CreateCookiesTreeModelWithInitialSample());
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("swhost1"));
+  cookies_model->UpdateSearchResults(u"swhost1");
   EXPECT_EQ("https://swhost1:1/",
             GetDisplayedServiceWorkers(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("swhost2"));
+  cookies_model->UpdateSearchResults(u"swhost2");
   EXPECT_EQ("https://swhost2:2/",
             GetDisplayedServiceWorkers(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("swhost3"));
+  cookies_model->UpdateSearchResults(u"swhost3");
   EXPECT_EQ("", GetDisplayedServiceWorkers(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::string16());
+  cookies_model->UpdateSearchResults(std::u16string());
   EXPECT_EQ("https://swhost1:1/,https://swhost2:2/",
             GetDisplayedServiceWorkers(cookies_model.get()));
 }
@@ -1600,18 +1600,18 @@ TEST_F(CookiesTreeModelTest, SharedWorkerFilter) {
   std::unique_ptr<CookiesTreeModel> cookies_model(
       CreateCookiesTreeModelWithInitialSample());
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("sharedworkerhost1"));
+  cookies_model->UpdateSearchResults(u"sharedworkerhost1");
   EXPECT_EQ("https://sharedworkerhost1:1/app/worker.js",
             GetDisplayedSharedWorkers(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("sharedworkerhost2"));
+  cookies_model->UpdateSearchResults(u"sharedworkerhost2");
   EXPECT_EQ("https://sharedworkerhost2:2/worker.js",
             GetDisplayedSharedWorkers(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("sharedworkerhost3"));
+  cookies_model->UpdateSearchResults(u"sharedworkerhost3");
   EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::string16());
+  cookies_model->UpdateSearchResults(std::u16string());
   EXPECT_EQ(
       "https://sharedworkerhost1:1/app/worker.js,"
       "https://sharedworkerhost2:2/worker.js",
@@ -1622,18 +1622,18 @@ TEST_F(CookiesTreeModelTest, CacheStorageFilter) {
   std::unique_ptr<CookiesTreeModel> cookies_model(
       CreateCookiesTreeModelWithInitialSample());
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("cshost1"));
+  cookies_model->UpdateSearchResults(u"cshost1");
   EXPECT_EQ("https://cshost1:1/",
             GetDisplayedCacheStorages(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("cshost2"));
+  cookies_model->UpdateSearchResults(u"cshost2");
   EXPECT_EQ("https://cshost2:2/",
             GetDisplayedCacheStorages(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::ASCIIToUTF16("cshost3"));
+  cookies_model->UpdateSearchResults(u"cshost3");
   EXPECT_EQ("", GetDisplayedCacheStorages(cookies_model.get()));
 
-  cookies_model->UpdateSearchResults(base::string16());
+  cookies_model->UpdateSearchResults(std::u16string());
   EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
             GetDisplayedCacheStorages(cookies_model.get()));
 }
@@ -1664,16 +1664,16 @@ TEST_F(CookiesTreeModelTest, CookiesFilter) {
   mock_browsing_data_cookie_helper_->Notify();
   EXPECT_EQ("A,B,C,D", GetDisplayedCookies(&cookies_model));
 
-  cookies_model.UpdateSearchResults(base::string16(base::ASCIIToUTF16("foo")));
+  cookies_model.UpdateSearchResults(std::u16string(u"foo"));
   EXPECT_EQ("B,C,D", GetDisplayedCookies(&cookies_model));
 
-  cookies_model.UpdateSearchResults(base::string16(base::ASCIIToUTF16("2")));
+  cookies_model.UpdateSearchResults(std::u16string(u"2"));
   EXPECT_EQ("A,C", GetDisplayedCookies(&cookies_model));
 
-  cookies_model.UpdateSearchResults(base::string16(base::ASCIIToUTF16("foo3")));
+  cookies_model.UpdateSearchResults(std::u16string(u"foo3"));
   EXPECT_EQ("D", GetDisplayedCookies(&cookies_model));
 
-  cookies_model.UpdateSearchResults(base::string16());
+  cookies_model.UpdateSearchResults(std::u16string());
   EXPECT_EQ("A,B,C,D", GetDisplayedCookies(&cookies_model));
 }
 
@@ -1722,8 +1722,7 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
 
   // Check that all the above example.com cookies go on the example.com
   // host node.
-  cookies_model.UpdateSearchResults(
-      base::string16(base::ASCIIToUTF16("example.com")));
+  cookies_model.UpdateSearchResults(std::u16string(u"example.com"));
   EXPECT_EQ("B,C,D,E,F,G,H,I", GetDisplayedCookies(&cookies_model));
 
   TestingProfile profile;
@@ -1735,29 +1734,25 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
   // should create a host node for http://example2.com and thus content
   // settings set on that host node should apply to http://example2.com.
 
-  cookies_model.UpdateSearchResults(
-      base::string16(base::ASCIIToUTF16("file://")));
+  cookies_model.UpdateSearchResults(std::u16string(u"file://"));
   EXPECT_EQ("", GetDisplayedCookies(&cookies_model));
   CheckContentSettingsUrlForHostNodes(
       cookies_model.GetRoot(), CookieTreeNode::DetailedInfo::TYPE_ROOT,
       cookie_settings, GURL("file:///test/tmp.html"));
 
-  cookies_model.UpdateSearchResults(
-      base::string16(base::ASCIIToUTF16("example2.com")));
+  cookies_model.UpdateSearchResults(std::u16string(u"example2.com"));
   EXPECT_EQ("J", GetDisplayedCookies(&cookies_model));
   CheckContentSettingsUrlForHostNodes(
       cookies_model.GetRoot(), CookieTreeNode::DetailedInfo::TYPE_ROOT,
       cookie_settings, GURL("http://example2.com"));
 
-  cookies_model.UpdateSearchResults(
-      base::string16(base::ASCIIToUTF16("example3.com")));
+  cookies_model.UpdateSearchResults(std::u16string(u"example3.com"));
   EXPECT_EQ("K", GetDisplayedCookies(&cookies_model));
   CheckContentSettingsUrlForHostNodes(
       cookies_model.GetRoot(), CookieTreeNode::DetailedInfo::TYPE_ROOT,
       cookie_settings, GURL("http://example3.com"));
 
-  cookies_model.UpdateSearchResults(
-      base::string16(base::ASCIIToUTF16("example4.com")));
+  cookies_model.UpdateSearchResults(std::u16string(u"example4.com"));
   EXPECT_EQ("L", GetDisplayedCookies(&cookies_model));
   CheckContentSettingsUrlForHostNodes(
       cookies_model.GetRoot(), CookieTreeNode::DetailedInfo::TYPE_ROOT,
@@ -1791,8 +1786,7 @@ TEST_F(CookiesTreeModelTest, MediaLicensesFilter) {
   std::unique_ptr<CookiesTreeModel> cookies_model(
       CreateCookiesTreeModelWithInitialSample());
 
-  cookies_model->UpdateSearchResults(
-      base::string16(base::ASCIIToUTF16("media1")));
+  cookies_model->UpdateSearchResults(std::u16string(u"media1"));
   {
     SCOPED_TRACE("Search for 'media1'");
     EXPECT_EQ("", GetDisplayedCookies(cookies_model.get()));
@@ -1808,8 +1802,7 @@ TEST_F(CookiesTreeModelTest, MediaLicensesFilter) {
               GetDisplayedMediaLicenses(cookies_model.get()));
   }
 
-  cookies_model->UpdateSearchResults(
-      base::string16(base::ASCIIToUTF16("media")));
+  cookies_model->UpdateSearchResults(std::u16string(u"media"));
   {
     SCOPED_TRACE("Search for 'media'");
     EXPECT_EQ("", GetDisplayedCookies(cookies_model.get()));
@@ -1826,7 +1819,7 @@ TEST_F(CookiesTreeModelTest, MediaLicensesFilter) {
   }
 
   // Search for everything.
-  cookies_model->UpdateSearchResults(base::string16());
+  cookies_model->UpdateSearchResults(std::u16string());
   {
     SCOPED_TRACE("Search for everything");
     EXPECT_EQ("A,B,C", GetDisplayedCookies(cookies_model.get()));
@@ -1854,7 +1847,7 @@ TEST_F(CookiesTreeModelTest, MediaLicensesFilter) {
   }
 
   // Search for any domain containing '1'.
-  cookies_model->UpdateSearchResults(base::string16(base::ASCIIToUTF16("1")));
+  cookies_model->UpdateSearchResults(std::u16string(u"1"));
   {
     SCOPED_TRACE("Search for '1'");
     EXPECT_EQ("A", GetDisplayedCookies(cookies_model.get()));
@@ -1879,7 +1872,7 @@ TEST_F(CookiesTreeModelTest, MediaLicensesFilter) {
   }
 
   // Search for any domain containing 'i'.
-  cookies_model->UpdateSearchResults(base::string16(base::ASCIIToUTF16("i")));
+  cookies_model->UpdateSearchResults(std::u16string(u"i"));
   {
     SCOPED_TRACE("Search for 'i'");
     EXPECT_EQ("", GetDisplayedCookies(cookies_model.get()));

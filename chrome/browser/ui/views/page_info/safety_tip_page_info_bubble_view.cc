@@ -43,6 +43,7 @@ int GetSafetyTipBannerId(security_state::SafetyTipStatus safety_tip_status,
                      : IDR_SAFETY_TIP_ILLUSTRATION_LIGHT;
     case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kBadKeyword:
     case security_state::SafetyTipStatus::kUnknown:
     case security_state::SafetyTipStatus::kNone:
@@ -73,7 +74,7 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
   // created over it, etc).
   set_close_on_deactivate(false);
 
-  const base::string16 title_text =
+  const std::u16string title_text =
       GetSafetyTipTitle(safety_tip_status, suggested_url);
   SetTitle(title_text);
 

@@ -4,15 +4,16 @@
 
 #include "chrome/browser/chromeos/fileapi/file_change_service.h"
 
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_observer.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -54,7 +55,7 @@ mojo::ScopedDataPipeConsumerHandle CreateStream(const std::string& contents) {
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
   options.capacity_num_bytes = 16;
-  mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle);
+  mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
   CHECK(producer_handle.is_valid());
   auto producer =
       std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
@@ -113,7 +114,7 @@ class TempFileSystem {
 
     ASSERT_TRUE(
         storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-            name_, storage::kFileSystemTypeNativeLocal,
+            name_, storage::kFileSystemTypeLocal,
             storage::FileSystemMountOption(), temp_dir_.GetPath()));
 
     GetFileSystemContext(profile_)
@@ -131,7 +132,7 @@ class TempFileSystem {
   // Returns a file system URL for the specified path relative to `temp_dir_`.
   storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
     return GetFileSystemContext(profile_)->CreateCrackedFileSystemURL(
-        origin_, storage::kFileSystemTypeNativeLocal,
+        origin_, storage::kFileSystemTypeLocal,
         temp_dir_.GetPath().Append(base::FilePath::FromUTF8Unsafe(path)));
   }
 
@@ -228,7 +229,7 @@ class TempFileSystem {
 class FileChangeServiceTest : public BrowserWithTestWindowTest {
  public:
   FileChangeServiceTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager),
+      : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
   FileChangeServiceTest(const FileChangeServiceTest& other) = delete;
@@ -250,7 +251,7 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
     return CreateProfileWithName(kPrimaryProfileName);
   }
 
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 
@@ -276,6 +277,61 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstancesPerProfile) {
 
   // Per-profile services should be unique.
   ASSERT_NE(primary_profile_service, secondary_profile_service);
+}
+
+// Verifies service instances are *not* created for OTR profiles.
+TEST_F(FileChangeServiceTest, DoesntCreateServiceInstanceForOTRProfile) {
+  auto* factory = FileChangeServiceFactory::GetInstance();
+  ASSERT_TRUE(factory);
+
+  // `FileChangeService` should be created for non-OTR profile.
+  auto* profile = GetProfile();
+  ASSERT_TRUE(profile);
+  ASSERT_FALSE(profile->IsOffTheRecord());
+  ASSERT_TRUE(factory->GetService(profile));
+
+  // `FileChangeService` should *not* be created for OTR profile.
+  auto* otr_profile =
+      TestingProfile::Builder().BuildIncognito(profile->AsTestingProfile());
+  ASSERT_TRUE(otr_profile);
+  ASSERT_TRUE(otr_profile->IsOffTheRecord());
+  ASSERT_FALSE(factory->GetService(otr_profile));
+}
+
+// Verifies service instance *are* created for guest OTR profiles.
+TEST_F(FileChangeServiceTest, CreatesServiceInstanceForOTRGuestProfile) {
+  auto* factory = FileChangeServiceFactory::GetInstance();
+  ASSERT_TRUE(factory);
+
+  // Construct a guest profile.
+  TestingProfile::Builder guest_profile_builder;
+  guest_profile_builder.SetGuestSession();
+  guest_profile_builder.SetProfileName("guest_profile");
+  std::unique_ptr<TestingProfile> guest_profile = guest_profile_builder.Build();
+
+  // Service instances should be created for guest profiles.
+  ASSERT_TRUE(guest_profile);
+  ASSERT_FALSE(guest_profile->IsOffTheRecord());
+  FileChangeService* const guest_profile_service =
+      factory->GetService(guest_profile.get());
+  ASSERT_TRUE(guest_profile_service);
+
+  // Construct an OTR profile from `guest_profile`.
+  TestingProfile::Builder otr_guest_profile_builder;
+  otr_guest_profile_builder.SetGuestSession();
+  otr_guest_profile_builder.SetProfileName(guest_profile->GetProfileUserName());
+  Profile* const otr_guest_profile =
+      otr_guest_profile_builder.BuildIncognito(guest_profile.get());
+  ASSERT_TRUE(otr_guest_profile);
+  ASSERT_TRUE(otr_guest_profile->IsOffTheRecord());
+
+  // Service instances *should* be created for OTR guest profiles.
+  FileChangeService* const otr_guest_profile_service =
+      factory->GetService(otr_guest_profile);
+  ASSERT_TRUE(otr_guest_profile_service);
+
+  // OTR service instances should be distinct from non-OTR service instances.
+  ASSERT_NE(otr_guest_profile_service, guest_profile_service);
 }
 
 // Verifies `OnFileCopied` events are propagated to observers.

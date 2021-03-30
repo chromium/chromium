@@ -1,15 +1,6 @@
 {%- set mojom_type = enum|get_qualified_name_for_kind(
         flatten_nested_kind=True) %}
 
-template <>
-struct EnumTraits<{{mojom_type}}, {{mojom_type}}> {
-  static {{mojom_type}} ToMojom({{mojom_type}} input) { return input; }
-  static bool FromMojom({{mojom_type}} input, {{mojom_type}}* output) {
-    *output = input;
-    return true;
-  }
-};
-
 namespace internal {
 
 template <typename MaybeConstUserType>
@@ -22,7 +13,8 @@ struct Serializer<{{mojom_type}}, MaybeConstUserType> {
   }
 
   static bool Deserialize(int32_t input, UserType* output) {
-    return Traits::FromMojom(static_cast<{{mojom_type}}>(input), output);
+    return Traits::FromMojom(::mojo::internal::ToKnownEnumValueHelper(
+        static_cast<{{mojom_type}}>(input)), output);
   }
 };
 

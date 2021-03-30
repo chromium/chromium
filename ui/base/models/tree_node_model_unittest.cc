@@ -5,10 +5,10 @@
 #include "ui/base/models/tree_node_model.h"
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -246,12 +246,11 @@ TEST_F(TreeNodeModelTest, GetTotalNodeCount) {
 // Makes sure that we are notified when the node is renamed,
 // also makes sure the node is properly renamed.
 TEST_F(TreeNodeModelTest, SetTitle) {
-  TreeNodeModel<TestNode> model(
-      std::make_unique<TestNode>(ASCIIToUTF16("root"), 0));
+  TreeNodeModel<TestNode> model(std::make_unique<TestNode>(u"root", 0));
   TestNode* root = model.GetRoot();
   model.AddObserver(this);
 
-  const base::string16 title(ASCIIToUTF16("root2"));
+  const std::u16string title(u"root2");
   model.SetTitle(root, title);
   EXPECT_EQ("added=0 removed=0 changed=1", GetObserverCountStateAndClear());
   EXPECT_EQ(title, root->GetTitle());

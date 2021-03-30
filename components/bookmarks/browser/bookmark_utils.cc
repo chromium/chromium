@@ -81,8 +81,8 @@ bool MoreRecentlyModified(const BookmarkNode* n1, const BookmarkNode* n2) {
 
 // Returns true if |text| contains each string in |words|. This is used when
 // searching for bookmarks.
-bool DoesBookmarkTextContainWords(const base::string16& text,
-                                  const std::vector<base::string16>& words) {
+bool DoesBookmarkTextContainWords(const std::u16string& text,
+                                  const std::vector<std::u16string>& words) {
   for (size_t i = 0; i < words.size(); ++i) {
     if (!base::i18n::StringSearchIgnoringCaseAndAccents(words[i], text, nullptr,
                                                         nullptr)) {
@@ -91,7 +91,6 @@ bool DoesBookmarkTextContainWords(const base::string16& text,
   }
   return true;
 }
-
 
 // This is used with a tree iterator to skip subtrees which are not visible.
 bool PruneInvisibleFolders(const BookmarkNode* node) {
@@ -144,7 +143,7 @@ std::string TruncateUrl(const std::string& url) {
 // Returns the URL from the clipboard. If there is no URL an empty URL is
 // returned.
 GURL GetUrlFromClipboard(bool notify_if_restricted) {
-  base::string16 url_text;
+  std::u16string url_text;
 #if !defined(OS_IOS)
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, notify_if_restricted);
@@ -177,7 +176,7 @@ void GetBookmarksMatchingPropertiesImpl(
     type& iterator,
     BookmarkModel* model,
     const QueryFields& query,
-    const std::vector<base::string16>& query_words,
+    const std::vector<std::u16string>& query_words,
     size_t max_count,
     std::vector<const BookmarkNode*>* nodes) {
   while (iterator.has_next()) {
@@ -258,9 +257,9 @@ void CopyToClipboard(BookmarkModel* model,
 void MakeTitleUnique(const BookmarkModel* model,
                      const BookmarkNode* parent,
                      const GURL& url,
-                     base::string16* title) {
-  std::unordered_set<base::string16> titles;
-  base::string16 original_title_lower = base::i18n::ToLower(*title);
+                     std::u16string* title) {
+  std::unordered_set<std::u16string> titles;
+  std::u16string original_title_lower = base::i18n::ToLower(*title);
   for (const auto& node : parent->children()) {
     if (node->is_url() && (url == node->url()) &&
         base::StartsWith(base::i18n::ToLower(node->GetTitle()),
@@ -274,7 +273,7 @@ void MakeTitleUnique(const BookmarkModel* model,
     return;
 
   for (size_t i = 0; i < titles.size(); i++) {
-    const base::string16 new_title(*title +
+    const std::u16string new_title(*title +
                                    base::ASCIIToUTF16(base::StringPrintf(
                                        " (%lu)", (unsigned long)(i + 1))));
     if (titles.find(new_title) == titles.end()) {
@@ -392,7 +391,7 @@ void GetBookmarksMatchingProperties(BookmarkModel* model,
                                     const QueryFields& query,
                                     size_t max_count,
                                     std::vector<const BookmarkNode*>* nodes) {
-  std::vector<base::string16> query_words = ParseBookmarkQuery(query);
+  std::vector<std::u16string> query_words = ParseBookmarkQuery(query);
   if (query.word_phrase_query && query_words.empty())
     return;
 
@@ -414,22 +413,21 @@ void GetBookmarksMatchingProperties(BookmarkModel* model,
 }
 
 // Parses the provided query and returns a vector of query words.
-std::vector<base::string16> ParseBookmarkQuery(
+std::vector<std::u16string> ParseBookmarkQuery(
     const bookmarks::QueryFields& query) {
-  std::vector<base::string16> query_words;
-  query_parser::QueryParser parser;
+  std::vector<std::u16string> query_words;
   if (query.word_phrase_query) {
-    parser.ParseQueryWords(base::i18n::ToLower(*query.word_phrase_query),
-                           query_parser::MatchingAlgorithm::DEFAULT,
-                           &query_words);
+    query_parser::QueryParser::ParseQueryWords(
+        base::i18n::ToLower(*query.word_phrase_query),
+        query_parser::MatchingAlgorithm::DEFAULT, &query_words);
   }
   return query_words;
 }
 
 // Returns true if |node|s title or url contains the strings in |words|.
-bool DoesBookmarkContainWords(const base::string16& title,
+bool DoesBookmarkContainWords(const std::u16string& title,
                               const GURL& url,
-                              const std::vector<base::string16>& words) {
+                              const std::vector<std::u16string>& words) {
   return DoesBookmarkTextContainWords(title, words) ||
          DoesBookmarkTextContainWords(base::UTF8ToUTF16(url.spec()), words) ||
          DoesBookmarkTextContainWords(
@@ -448,6 +446,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kShowAppsShortcutInBookmarkBar,
       true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kShowReadingListInBookmarkBar, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kShowManagedBookmarksInBookmarkBar,
@@ -502,7 +503,7 @@ void DeleteBookmarkFolders(BookmarkModel* model,
 
 void AddIfNotBookmarked(BookmarkModel* model,
                         const GURL& url,
-                        const base::string16& title) {
+                        const std::u16string& title) {
   if (IsBookmarkedByUser(model, url))
     return;  // Nothing to do, a user bookmark with that url already exists.
   model->client()->RecordAction(base::UserMetricsAction("BookmarkAdded"));
@@ -523,7 +524,7 @@ void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {
   }
 }
 
-base::string16 CleanUpUrlForMatching(
+std::u16string CleanUpUrlForMatching(
     const GURL& gurl,
     base::OffsetAdjuster::Adjustments* adjustments) {
   base::OffsetAdjuster::Adjustments tmp_adjustments;
@@ -535,7 +536,7 @@ base::string16 CleanUpUrlForMatching(
       nullptr, nullptr, adjustments ? adjustments : &tmp_adjustments));
 }
 
-base::string16 CleanUpTitleForMatching(const base::string16& title) {
+std::u16string CleanUpTitleForMatching(const std::u16string& title) {
   return base::i18n::ToLower(title.substr(0u, kCleanedUpTitleMaxLength));
 }
 

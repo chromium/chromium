@@ -2,21 +2,30 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> уялдаат, <ph name="CPU_MAX_CLOCK_SPEED" />Гц)</translation>
 <translation id="1059913517121127803">Скан хийхийг эхлүүлж чадсангүй</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Галт хана илрүүлсэн</translation>
 <translation id="1075811647922107217">Хуудасны хэмжээ</translation>
 <translation id="1124772482545689468">Хэрэглэгч</translation>
+<translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг.</translation>
 <translation id="1195447618553298278">Үл танигдах алдаа гаргасан байна</translation>
 <translation id="1204296502688602597">DNS-н хоцролт</translation>
 <translation id="123124571410524056">Портал байж магадгүй</translation>
 <translation id="1238612778414822719">HTTPS хоцролт</translation>
+<translation id="1270369111467284986">Дамжих портал гэж таамагласан</translation>
 <translation id="1290331692326790741">Муу дохио</translation>
+<translation id="1314565355471455267">Андройд VPN</translation>
+<translation id="131461803491198646">Үндсэн сүлжээ, роуминг биш</translation>
+<translation id="1327977588028644528">Гэйтвэй</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скан хийх хэсэгт тааруулах</translation>
+<translation id="1387854245479784695">Энэ нь бүх цөмийн хуримтлал юм</translation>
 <translation id="1397738625398125236">Гэйтвэйд пин илгээх боломжтой</translation>
 <translation id="1398634363027580500">Маш өндөр HTTPS хоцролт</translation>
 <translation id="1413240736185167732">Амжилтгүй болсон - Шүүж чадсангүй</translation>
+<translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1468664791493211953">Саналууд</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд таны үйл ажиллагааг хянах боломжтой байж болзошгүй.</translation>
 <translation id="1478594628797167447">Скан хийгч</translation>
@@ -24,30 +33,38 @@
 <translation id="150962533380566081">PUK буруу байна.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> уялдаат)</translation>
 <translation id="1641857168437328880">Документыг дамжуулах тавиур (Нэг талаар нь)</translation>
 <translation id="1644574205037202324">Түүх</translation>
 <translation id="1662989795263954667">Зогссон - Хэвлэгчийн хор дууссан</translation>
 <translation id="1703835215927279855">Захидал</translation>
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
-<translation id="1743558184855585519">Батарейг хязгаарт хүрмэгц хэрэглэсэн гэж үзнэ</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> болон <ph name="SECOND_MANAGER" />-р удирддаг</translation>
+<translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Скан хийхийг цуцалж байна</translation>
+<translation id="1851218745569890714">Видео хурал</translation>
+<translation id="1887850431809612466">Техник хангамжийн шалгалт</translation>
 <translation id="1905710495812624430">Оролдлогын тоо дээд хэмжээнээс хэтэрсэн.</translation>
+<translation id="1908234395526491708">UDP хүсэлтийн алдаа</translation>
 <translation id="1930797645656624981">Chrome OS-н оруулах аргын үйлчилгээ</translation>
 <translation id="1947737735496445907">Хэвлэсэн</translation>
 <translation id="1979103255016296513">Нууц үг солих хугацаа хэтэрсэн</translation>
-<translation id="1980044825731880088">Төв процессорын нэгжийн хурд</translation>
 <translation id="1999615961760456652">Дамжих портал</translation>
 <translation id="2008685064673031089">Үндсэн хайлт</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-р хувилбар</translation>
+<translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ГБ-аас <ph name="AVAILABLE_MEMORY" /> ГБ боломжтой</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2157959690810728433">ЖАГСААСАН</translation>
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
+<translation id="2217935453350629363">Одоогийн хурд</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
+<translation id="2230051135190148440">CHAP</translation>
+<translation id="225692081236532131">Идэвхжүүлэх статус</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ойролцоох төхөөрөмж хайхын тулд Bluetooth-г асаана уу</translation>
 <translation id="2364498172489649528">Давсан</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> оролдлого үлдсэн</translation>
 <translation id="2391082728065870591">Санал хүсэлтийн тайлан илгээх</translation>
+<translation id="2418150275289244458">Тохиргоонд нээх</translation>
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
 <translation id="2448312741937722512">Төрөл</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
@@ -57,7 +74,10 @@
 <translation id="2585245331261708204">Chrome OS-н шинэ зүйлс</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2751739896257479635">EAP 2-р шатны баталгаажуулалт</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Програм</translation>
+<translation id="2862104018715411648">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулж, скан хийхийг сонгоно уу</translation>
 <translation id="2872961005593481000">Унтраах</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэггүй болсон.</translation>
 <translation id="3008341117444806826">ДАХИН ШИНЭЧЛЭХ</translation>
@@ -69,20 +89,29 @@
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
+<translation id="315738237743207937">Дамжих портал илэрсэн</translation>
 <translation id="3188257591659621405">Миний файл</translation>
 <translation id="3199982728237701504">Документыг дамжуулах тавиур (Хоёр талаар нь)</translation>
+<translation id="3226405216343213872">Сканнерыг хайж байна</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" />Гц</translation>
 <translation id="3310640316857623290">DNS-н хоцролт зөвшөөрөгдөх хязгаараас нэлээд өндөр байна</translation>
 <translation id="3328783797891415197">Туршилтыг ажиллуулж байна</translation>
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3369013195428705271">Та хэвлэлийн бүх түүхийг арилгахдаа итгэлтэй байна уу? Таны хийж буй хэвлэлийн ажлуудыг арилгахгүй.</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />-с <ph name="PRINTED_PAGES" /> хуудсыг хэвлэсэн.</translation>
+<translation id="345898999683440380"><ph name="PAGE_NUM" />-р хуудсыг скан хийж байна. <ph name="PERCENTAGE_VALUE" />% дууссан.</translation>
 <translation id="3459509316159669723">Хэвлэж байна</translation>
-<translation id="3515615323037921860">Хэвлэх ажлууд</translation>
+<translation id="3488065109653206955">Хагас идэвхжсэн</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
+<translation id="3532980081107202182"><ph name="MIN_REMAINING" /> орчим минут үлдсэн байна</translation>
 <translation id="357889014807611375">хязгаартай Wi-Fi</translation>
+<translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> шүүмж)</translation>
 <translation id="3748026146096797577">Холбогдоогүй</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
@@ -90,13 +119,17 @@
 <translation id="3820172043799983114">ПИН буруу байна.</translation>
 <translation id="3838338534323494292">Шинэ нууц үг</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
+<translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
 <translation id="3941014780699102620">Хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="3942420633017001071">Оношилгоо</translation>
+<translation id="3967822245660637423">Татаж авч дууслаа</translation>
+<translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="4003384961948020559">Амжилтгүй болсон - Гаралт дүүрсэн</translation>
 <translation id="4034824040120875894">Хэвлэгч</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
 <translation id="4145784616224233563">HTTP галт хана</translation>
+<translation id="4155551848414053977">Сканнер асаалттай бөгөөд таны сүлжээ эсвэл шууд холболтоор боломжтой эсэхийг шалгана уу</translation>
 <translation id="4170700058716978431">АМЖИЛТГҮЙ БОЛЛОО</translation>
 <translation id="4176463684765177261">Хаасан</translation>
 <translation id="4227825898293920515">Нууц үгний хугацаа <ph name="TIME" />-н дотор дуусна</translation>
@@ -106,68 +139,97 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Миний Драйв</translation>
 <translation id="4429881212383817840">Kerberos тасалбарын хугацаа удахгүй дуусна</translation>
+<translation id="4431821876790500265">Тайланг харах</translation>
 <translation id="445059817448385655">Хуучин нууц үг</translation>
+<translation id="4453205916657964690">Дэд сүлжээний маск</translation>
 <translation id="4454245904991689773">Дараах руу скан хийх</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Сүлжээний өгөгдмөл бус гэйтвэйд пин илгээж чадсангүй</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4548483925627140043">Дохио илэрсэнгүй</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh батарей</translation>
+<translation id="4562494484721939086">Үйлчилгээ байхгүй</translation>
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />-с <ph name="PRINTED_PAGE_NUMBER" />. Хэвлэх ажлыг цуцлахын тулд enter дээр дарна уу.</translation>
 <translation id="4646949265910132906">Аюулгүй Wi-Fi холболт</translation>
+<translation id="4652335678334611408">Харилцан үйлдлийн логийг хадгалах</translation>
+<translation id="4665014895760275686">Үйлдвэрлэгч</translation>
 <translation id="467510802200863975">Нууц үг таарахгүй байна</translation>
 <translation id="467715984478005772">Галт хана байж магадгүй</translation>
 <translation id="4691278870498629773">Зогссон - Цаасны тэвш алга</translation>
 <translation id="469379815867856270">Дохионы хүч</translation>
+<translation id="4707579418881001319">L2TP/IPsec + хэрэглэгчийн гэрчилгээ</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="4773299976671772492">Зогссон</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> хэвлэх ажлыг цуцалсан</translation>
+<translation id="4813345808229079766">Холболт</translation>
 <translation id="4832079907277790330">Файлс аппаас фолдер сонгох...</translation>
 <translation id="4835901797422965222">Идэвхтэй сүлжээ байхгүй байна</translation>
 <translation id="4848429997038228357">АЖИЛЛУУЛЖ БАЙНА</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}other{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}}</translation>
+<translation id="4880328057631981605">Нэвтрэх цэгийн нэр</translation>
+<translation id="4885705234041587624">MSCHAPV2</translation>
 <translation id="4890353053343094602">Нэн даруй шинийг сонгоно уу</translation>
 <translation id="4891842000192098784">Стресс</translation>
+<translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4917889632206600977">Зогссон - Цаас дууссан</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэглэсэн.</translation>
 <translation id="4932733599132424254">Огноо</translation>
 <translation id="498186245079027698">Сканнерыг шалгаад дахин оролдоно уу. Скан хийсэн файлуудыг хадгалах хангалттай дотоод зай байгаа эсэхийг шалгана уу.</translation>
 <translation id="4985509611418653372">Ажиллуулах</translation>
+<translation id="4987769320337599931">Галт хана</translation>
+<translation id="4999333166442584738">Тайланг нуух</translation>
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
+<translation id="5017508259293544172">LEAP</translation>
+<translation id="5050042263972837708">Бүлгийн нэр</translation>
+<translation id="5088172560898466307">Серверийн хостын нэр</translation>
 <translation id="5089810972385038852">Муж</translation>
+<translation id="5142961317498132443">Баталгаажуулалт</translation>
 <translation id="5154917547274118687">Санах ойн</translation>
 <translation id="5168185087976003268">Батарей барилт</translation>
-<translation id="520299634122159966">Боломжтой скан хийгч алга</translation>
 <translation id="5212543919916444558">Би таны дэлгэцээс туслах боломжтой зүйл олсонгүй.
 Асуух зүйл байвал микрофоныг товшиж үзнэ үү.</translation>
 <translation id="5222676887888702881">Гарах</translation>
+<translation id="5252456968953390977">Роуминг</translation>
 <translation id="5264277876637023664">Төв процессорын нэгжийн туршилтыг ажиллуулах</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Хэвшлийг дахин ажиллуулах</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029"><ph name="MILESTONE_VERSION" />-р хувилбар</translation>
+<translation id="5315873049536339193">Таниулбар</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
+<translation id="5318334351163689047">TCP хүсэлтийн алдаа</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Одоо шинийг сонгоно уу</translation>
 <translation id="5333530671332546086">Порталын тодорхойгүй төлөв</translation>
 <translation id="5372659122375744710">Wi-Fi сүлжээ аюулгүй биш байна</translation>
 <translation id="5401938042319910061">Бүх хэвшлийг ажиллуулах</translation>
+<translation id="5423849171846380976">Идэвхжүүлсэн байна</translation>
 <translation id="5430931332414098647">Шуурхай модем болгох</translation>
 <translation id="5431318178759467895">Өнгө</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Зочны хувиар хайлт хийх</translation>
 <translation id="54609108002486618">Удирдсан</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} оролдлого үлдсэн}other{{0} оролдлого үлдсэн}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
-<translation id="5635169860413004179">Тайланг харах</translation>
-<translation id="5719918614880940190">Энэ нь CPU-н ашиглалтыг хэмждэг бөгөөд бүх цөмийн хуримтлал юм</translation>
-<translation id="5781694279199921985">Харилцан үйлдлийн логийг хадгалах</translation>
+<translation id="554517032089923082">GTC</translation>
+<translation id="5669267381087807207">Идэвхжиж байна</translation>
+<translation id="5670702108860320605">BSSID</translation>
+<translation id="5691511426247308406">Гэр бүл</translation>
+<translation id="5760715441271661976">Порталын төлөв</translation>
 <translation id="5797428682393400134">АМЖИЛТТАЙ</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
+<translation id="583281660410589416">Үл мэдэгдэх</translation>
+<translation id="5849570051105887917">Нүүр хуудас бэлтгэх код</translation>
+<translation id="5866840822086176774">Маш хүчтэй</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5916084858004523819">Хориглосон</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Таны файлыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}other{Таны файлуудыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}}</translation>
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, хувилбар <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Хаах</translation>
+<translation id="6040852767465482106">Нэрээ нууцалсан байдал</translation>
+<translation id="604124094241169006">Автомат</translation>
 <translation id="6048107060512778456">Амжилтгүй болсон - Цаас гацсан</translation>
 <translation id="6050189528197190982">Хараас цагаан өнгө</translation>
 <translation id="6058625436358447366">Дуусгахын тулд хуучин болон шинэ нууц үгээ оруулна уу</translation>
@@ -175,75 +237,111 @@
 <translation id="6104112872696127344">Скан хийхийг цуцалсан</translation>
 <translation id="6106186594183574873">Дуусгахын тулд хуучин нууц үгээ оруулна уу</translation>
 <translation id="6108689792487843350">Гэйтвэйд холбогдох боломжгүй байна</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" />ГГц / <ph name="MAX" />ГГц</translation>
 <translation id="6122191549521593678">Онлайн</translation>
+<translation id="6137767437444130246">Хэрэглэгчийн сертификат</translation>
 <translation id="6146993107019042706">Дуусгахын тулд шинэ нууц үгээ оруулна уу</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
+<translation id="6189418609903030344">Батарейн хүчин чадлыг ашиглалт бууруулдаг</translation>
 <translation id="6191293864534840972">DNS алдаатай байна</translation>
+<translation id="6223752125779001553">Боломжтой сканнер байхгүй</translation>
 <translation id="6232017090690406397">Баттерей</translation>
+<translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
 <translation id="6325525973963619867">Амжилтгүй боллоо</translation>
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Скан хийсэн файлыг хадгалсан}other{Скан хийсэн файлуудыг хадгалсан}}</translation>
+<translation id="641081527798843608">Субъект тохируулах</translation>
+<translation id="6423239382391657905">VPN-г нээх</translation>
+<translation id="6456394469623773452">Сайн</translation>
+<translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> удирддаг</translation>
 <translation id="649050271426829538">Зогссон - Цаас гацсан</translation>
+<translation id="6516990319416533844">Батарейн цэнэглэх хурдыг туршихын тулд батарейгаа богино хугацаанд зарцуулна уу</translation>
 <translation id="6517239166834772319">Судлах</translation>
 <translation id="6527081081771465939">WiFi-н аюулгүй байдлын үл мэдэгдэх протокол</translation>
-<translation id="6532051501443766164">Тайланг нуух</translation>
 <translation id="65587193855025101">Тавцант</translation>
 <translation id="6564646048574748301">Амжилтгүй болсон - Хэвлэгчид холбогдох боломжгүй</translation>
 <translation id="6618744767048954150">Ажиллуулж байна</translation>
 <translation id="6620487321149975369">Хэвлэлийн ажлыг гараар хасахгүй бол түүхэнд харагдана</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
+<translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6704062477274546131">DNS-н тайлал</translation>
 <translation id="6747215703636344499">Зогссон - Гаралт дүүрсэн</translation>
 <translation id="6756731097889387912">Скан хийхийг цуцалж чадсангүй</translation>
 <translation id="6766275201586212568">DNS-н тайлал амжилтгүй</translation>
 <translation id="6768237774506518020">DNS-н тайллын алдааны өндөр хувь</translation>
-<translation id="6839141349259399400">Сканнертай холбогдож чадахгүй байна уу?</translation>
 <translation id="6853312040151791195">Цэнэггүй болох хурд</translation>
 <translation id="6898743098396957679">Скан хийхийг гүйцээж чадсангүй</translation>
+<translation id="6911383237894364323">Медиа серверт холбогдох боломжгүй</translation>
 <translation id="6957231940976260713">Үйлчилгээний нэр</translation>
+<translation id="6977381486153291903">Жижиг программын шалгалт</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
+<translation id="7040230719604914234">Оператор</translation>
+<translation id="7059230779847288458">Цэнэглэж байна. Дүүрэх хүртэл <ph name="TIME_VALUE" /> үлдсэн байна</translation>
+<translation id="708426984172631313">ЗОГСООСОН</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
+<translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7177485034254901881">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг. Администраторууд төхөөрөмжийг алсаас тохируулж магадгүй.</translation>
+<translation id="7216409898977639127">Үүрэн холбооны үйлчилгээ үзүүлэгч</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Сүлжээний төхөөрөмжүүд</translation>
 <translation id="7359657277149375382">Файлын төрөл</translation>
+<translation id="7375053625150546623">EAP</translation>
+<translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скан хийж дууссан. 1 хуудсыг скан хийсэн}other{Скан хийж дууссан. {NUMBER_OF_PAGES} хуудсыг скан хийсэн}}</translation>
-<translation id="7441459999606975924">Батарейн хүчин чадлыг ашиглалт бууруулдаг</translation>
 <translation id="7469648432129124067">Портал илэрсэн</translation>
+<translation id="7487067081878637334">Технологи</translation>
 <translation id="7490813197707563893">MAC хаяг</translation>
+<translation id="7497215489070763236">Серверийн CA сертификат</translation>
+<translation id="7502658306369382406">IPv6 хаяг</translation>
+<translation id="7550715992156305117">Оношилгооны хэвшил</translation>
 <translation id="7561454561030345039">Энэ үйлдлийг таны администратор удирддаг</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> үлдсэн</translation>
+<translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
 <translation id="7648838807254605802">Өндөр HTTPS хоцролт</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
+<translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Мөчлөгийн тоо</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> туршилт</translation>
+<translation id="7769672763586021400">Загварын ID</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
-<translation id="7928373994957558460">Файлын байршлыг харуулах</translation>
+<translation id="7819857487979277519">PSK (WPA эсвэл RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
+<translation id="7882358943899516840">Нийлүүлэгчийн төрөл</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
 <translation id="7960831585769876809">Температур</translation>
+<translation id="7994702968232966508">EAP арга</translation>
+<translation id="802154636333426148">Татаж чадсангүй</translation>
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
-<translation id="8160445423316272678">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулж, <ph name="SPAN_BEGIN" />Скан хийхийг<ph name="SPAN_END" /> сонгоно уу</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
+<translation id="8246209727385807362">Тодорхойгүй оператор компани</translation>
+<translation id="8291967909914612644">Нүүр хуудас бэлтгэх хост</translation>
 <translation id="8294431847097064396">Эх сурвалж</translation>
+<translation id="8297006494302853456">Сул</translation>
 <translation id="8302368968391049045">HTTPS галт хана</translation>
 <translation id="8347227221149377169">Хэвлэх ажлууд</translation>
 <translation id="8352772353338965963">Олон хэрэглэгч бүхий нэвтрэх хэсэгт бүртгэл нэмж оруулах. Бүх нэвтэрсэн бүртгэлүүд нууц үггүйгээр нэвтрэх боломжтой учраас энэ горимыг зөвхөн итгэл хүлээсэн бүртгэлүүдэд ашиглахыг зөвлөж байна.</translation>
 <translation id="8364946094152050673">DNS хоосон байна</translation>
+<translation id="8372477600026034341">Нэмэлт хост</translation>
 <translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
 <translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
+<translation id="8461329675984532579">Нүүр хуудас бэлтгэх нэр</translation>
 <translation id="8475690821716466388">WiFi сүлжээ WEP PSK-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>
+<translation id="8483248364096924578">IP хаяг</translation>
+<translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
+<translation id="8503836310948963452">Цөөн хэдэн минут хүлээнэ үү...</translation>
 <translation id="8576249514688522074">Бэлтгэгдээгүй</translation>
+<translation id="8620617069779373398">Роумингийн төлөв</translation>
+<translation id="8675354002693747642">Урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="871560550817059752">Амжилтгүй болсон - Бэх дууссан</translation>
 <translation id="8723108084122415655">Өгөгдмөл бус сүлжээ хоцролтын хязгаараас дээш байна</translation>
 <translation id="8726019395068607495">Зогссон - Таг нээлттэй</translation>
@@ -251,7 +349,9 @@
 <translation id="8747900814994928677">Өөрчлөлтийг баталгаажуулах</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
+<translation id="8798441408945964110">Үйлчилгээ үзүүлэгчийн нэр</translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>
+<translation id="8818152010000655963">Дэлгэцийн зураг</translation>
 <translation id="8845001906332463065">Тусламж авах</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>
 <translation id="8898840733695078011">Дохионы хүч</translation>
@@ -259,14 +359,22 @@
 <translation id="8919837981463578619">Амжилтгүй болсон - Тавиур алга байна</translation>
 <translation id="8928727111548978589">Амжилтгүй болсон - Цаас дууссан</translation>
 <translation id="8930622219860340959">Утасгүй</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> оролдлого үлдлээ</translation>
 <translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
+<translation id="9003704114456258138">Давтамж</translation>
+<translation id="9039663905644212491">PEAP /Хамгаалагдсан өргөжих боломжтой таниулах протокол/</translation>
+<translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>
 <translation id="9111102763498581341">Нээх</translation>
+<translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9149391708638971077">Санах ойн туршилтыг ажиллуулах</translation>
+<translation id="9173638680043580060">Минут хүрэхгүй хугацаа үлдлээ</translation>
+<translation id="9190063653747922532">L2TP/IPsec + урьдчилан хуваалцсан түлхүүр</translation>
+<translation id="939519157834106403">SSID</translation>
+<translation id="952992212772159698">Идэвхжээгүй байна</translation>
+<translation id="960719561871045870">Операторын код</translation>
 <translation id="982713511914535780">Цэнэггүй болгох туршилтыг ажиллуулах</translation>
 </translationbundle>

@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_TRANSLATE_CONTENT_COMMON_TRANSLATE_MOJOM_TRAITS_H_
 #define COMPONENTS_TRANSLATE_CONTENT_COMMON_TRANSLATE_MOJOM_TRAITS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/time/time.h"
 #include "components/translate/content/common/translate.mojom-shared.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -62,9 +63,19 @@ struct StructTraits<translate::mojom::LanguageDetectionDetailsDataView,
     return r.adopted_language;
   }
 
-  static const base::string16& contents(
+  static const std::u16string& contents(
       const translate::LanguageDetectionDetails& r) {
     return r.contents;
+  }
+
+  static float model_reliability_score(
+      const translate::LanguageDetectionDetails& r) {
+    return r.model_reliability_score;
+  }
+
+  static const std::string& detection_model_version(
+      const translate::LanguageDetectionDetails& r) {
+    return r.detection_model_version;
   }
 
   static bool Read(translate::mojom::LanguageDetectionDetailsDataView data,

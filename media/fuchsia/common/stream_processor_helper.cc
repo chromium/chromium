@@ -169,17 +169,6 @@ void StreamProcessorHelper::OnInputConstraints(
   // generation as required by StreamProcessor.
   input_buffer_lifetime_ordinal_ += 2;
 
-  // Default settings are used in CompleteInputBuffersAllocation to finish
-  // StreamProcessor input buffers setup.
-  if (!constraints.has_default_settings() ||
-      !constraints.default_settings().has_packet_count_for_server() ||
-      !constraints.default_settings().has_packet_count_for_client()) {
-    DLOG(ERROR)
-        << "Received OnInputConstraints() with missing required fields.";
-    OnError();
-    return;
-  }
-
   DCHECK(input_packets_.empty());
   input_buffer_constraints_ = std::move(constraints);
 
@@ -342,7 +331,6 @@ void StreamProcessorHelper::CompleteInputBuffersAllocation(
   settings.set_buffer_lifetime_ordinal(input_buffer_lifetime_ordinal_);
   settings.set_buffer_constraints_version_ordinal(
       input_buffer_constraints_.buffer_constraints_version_ordinal());
-  settings.set_single_buffer_mode(false);
   settings.set_sysmem_token(std::move(sysmem_token));
   processor_->SetInputBufferPartialSettings(std::move(settings));
 }

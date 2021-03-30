@@ -51,6 +51,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
 
  public:
   ShadowRoot(Document&, ShadowRootType);
+  ~ShadowRoot() override;
   ShadowRoot(const ShadowRoot&) = delete;
   ShadowRoot& operator=(const ShadowRoot&) = delete;
 
@@ -87,6 +88,11 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   bool IsOpen() const { return GetType() == ShadowRootType::kOpen; }
   bool IsUserAgent() const { return GetType() == ShadowRootType::kUserAgent; }
 
+  // TODO(crbug.com/1179356) This tracks adding name based slot assignment
+  // support for user-agent Shadow DOM.
+  void EnableNameBasedSlotAssignment();
+  bool SupportsNameBasedSlotAssignment() const;
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -97,6 +103,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned ChildShadowRootCount() const { return child_shadow_root_count_; }
 
   void RebuildLayoutTree(WhitespaceAttacher&);
+  void DetachLayoutTree(bool performing_reattach) override;
 
   void RegisterScopedHTMLStyleChild();
   void UnregisterScopedHTMLStyleChild();
@@ -154,6 +161,13 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
     return available_to_element_internals_;
   }
 
+  void SetNeedsDirAutoAttributeUpdate(bool flag) {
+    needs_dir_auto_attribute_update_ = flag;
+  }
+  bool NeedsDirAutoAttributeUpdate() const {
+    return needs_dir_auto_attribute_update_;
+  }
+
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   StyleSheetList& StyleSheets();
@@ -164,8 +178,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   void Trace(Visitor*) const override;
 
  private:
-  ~ShadowRoot() override;
-
   void ChildrenChanged(const ChildrenChange&) override;
 
   SlotAssignment& EnsureSlotAssignment();
@@ -185,7 +197,9 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned slot_assignment_mode_ : 1;
   unsigned is_declarative_shadow_root_ : 1;
   unsigned available_to_element_internals_ : 1;
-  unsigned unused_ : 9;
+  unsigned needs_dir_auto_attribute_update_ : 1;
+  unsigned supports_name_based_slot_assignment_ : 1;
+  unsigned unused_ : 7;
 };
 
 inline Element* ShadowRoot::ActiveElement() const {

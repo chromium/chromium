@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -52,7 +53,7 @@ float GetWidth(const std::string& utf8,
                const gfx::FontList& font_list = gfx::FontList()) {
   return gfx::GetStringWidthF(base::UTF8ToUTF16(utf8), font_list);
 }
-float GetWidth(const base::string16& utf16,
+float GetWidth(const std::u16string& utf16,
                const gfx::FontList& font_list = gfx::FontList()) {
   return gfx::GetStringWidthF(utf16, font_list);
 }
@@ -95,8 +96,8 @@ void RunProgressiveElisionTest(
     const int kMaxConsecutiveMismatches = 3;
     for (size_t i = 0; i < testcase.output.size(); i++) {
       const auto& expected = testcase.output[i];
-      base::string16 expected_utf16 = base::UTF8ToUTF16(expected);
-      base::string16 elided = url_formatter::ElideUrl(url, font_list, width);
+      std::u16string expected_utf16 = base::UTF8ToUTF16(expected);
+      std::u16string elided = url_formatter::ElideUrl(url, font_list, width);
       if (expected_utf16 != elided) {
         if (i > 0 && i < testcase.output.size() - 1 &&
             mismatches < kMaxConsecutiveMismatches) {
@@ -234,7 +235,7 @@ TEST(TextEliderTest, TestTrailingEllipsisSlashEllipsisHack) {
   ASSERT_GT(GetWidth(kEllipsisStr + "/" + kEllipsisStr, font_list),
             GetWidth("d" + kEllipsisStr, font_list));
   GURL long_url("http://battersbox.com/directorynameisreallylongtoforcetrunc");
-  base::string16 expected =
+  std::u16string expected =
       url_formatter::ElideUrl(long_url, font_list, available_width);
   // Ensure that the expected result still contains part of the directory name.
   ASSERT_GT(expected.length(), std::string("battersbox.com/d").length());
@@ -385,15 +386,13 @@ TEST(TextEliderTest, TestHostEliding) {
   }
 
   // Trying to elide to a really short length will still keep the full TLD+1
-  EXPECT_EQ(
-      base::ASCIIToUTF16("google.com"),
-      url_formatter::ElideHost(GURL("http://google.com"), gfx::FontList(), 2));
+  EXPECT_EQ(u"google.com", url_formatter::ElideHost(GURL("http://google.com"),
+                                                    gfx::FontList(), 2));
   EXPECT_EQ(base::UTF8ToUTF16(kEllipsisStr + ".google.com"),
             url_formatter::ElideHost(GURL("http://subdomain.google.com"),
                                      gfx::FontList(), 2));
-  EXPECT_EQ(
-      base::ASCIIToUTF16("foo.bar"),
-      url_formatter::ElideHost(GURL("http://foo.bar"), gfx::FontList(), 2));
+  EXPECT_EQ(u"foo.bar", url_formatter::ElideHost(GURL("http://foo.bar"),
+                                                 gfx::FontList(), 2));
 }
 
 #endif  // !defined(OS_ANDROID)
@@ -481,12 +480,12 @@ const OriginTestData common_tests[] = {
 
 TEST(TextEliderTest, FormatUrlForSecurityDisplay) {
   for (size_t i = 0; i < base::size(common_tests); ++i) {
-    base::string16 formatted =
+    std::u16string formatted =
         url_formatter::FormatUrlForSecurityDisplay(GURL(common_tests[i].input));
     EXPECT_EQ(base::WideToUTF16(common_tests[i].output), formatted)
         << common_tests[i].description;
 
-    base::string16 formatted_omit_web_scheme =
+    std::u16string formatted_omit_web_scheme =
         url_formatter::FormatUrlForSecurityDisplay(
             GURL(common_tests[i].input),
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
@@ -494,7 +493,7 @@ TEST(TextEliderTest, FormatUrlForSecurityDisplay) {
               formatted_omit_web_scheme)
         << common_tests[i].description;
 
-    base::string16 formatted_omit_cryptographic_scheme =
+    std::u16string formatted_omit_cryptographic_scheme =
         url_formatter::FormatUrlForSecurityDisplay(
             GURL(common_tests[i].input),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
@@ -554,12 +553,12 @@ TEST(TextEliderTest, FormatUrlForSecurityDisplay) {
        L"4d4ff040-6d61-4446-86d3-13ca07ec9ab9"}};
 
   for (size_t i = 0; i < base::size(tests); ++i) {
-    base::string16 formatted =
+    std::u16string formatted =
         url_formatter::FormatUrlForSecurityDisplay(GURL(tests[i].input));
     EXPECT_EQ(base::WideToUTF16(tests[i].output), formatted)
         << tests[i].description;
 
-    base::string16 formatted_omit_web_scheme =
+    std::u16string formatted_omit_web_scheme =
         url_formatter::FormatUrlForSecurityDisplay(
             GURL(tests[i].input),
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
@@ -567,7 +566,7 @@ TEST(TextEliderTest, FormatUrlForSecurityDisplay) {
               formatted_omit_web_scheme)
         << tests[i].description;
 
-    base::string16 formatted_omit_cryptographic_scheme =
+    std::u16string formatted_omit_cryptographic_scheme =
         url_formatter::FormatUrlForSecurityDisplay(
             GURL(tests[i].input),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
@@ -576,30 +575,30 @@ TEST(TextEliderTest, FormatUrlForSecurityDisplay) {
         << tests[i].description;
   }
 
-  base::string16 formatted = url_formatter::FormatUrlForSecurityDisplay(GURL());
-  EXPECT_EQ(base::string16(), formatted)
+  std::u16string formatted = url_formatter::FormatUrlForSecurityDisplay(GURL());
+  EXPECT_EQ(std::u16string(), formatted)
       << "Explicitly test the 0-argument GURL constructor";
 
-  base::string16 formatted_omit_scheme =
+  std::u16string formatted_omit_scheme =
       url_formatter::FormatUrlForSecurityDisplay(
           GURL(), url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  EXPECT_EQ(base::string16(), formatted_omit_scheme)
+  EXPECT_EQ(std::u16string(), formatted_omit_scheme)
       << "Explicitly test the 0-argument GURL constructor";
 
   formatted_omit_scheme = url_formatter::FormatUrlForSecurityDisplay(
       GURL(), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-  EXPECT_EQ(base::string16(), formatted_omit_scheme)
+  EXPECT_EQ(std::u16string(), formatted_omit_scheme)
       << "Explicitly test the 0-argument GURL constructor";
 }
 
 TEST(TextEliderTest, FormatOriginForSecurityDisplay) {
   for (size_t i = 0; i < base::size(common_tests); ++i) {
-    base::string16 formatted = url_formatter::FormatOriginForSecurityDisplay(
+    std::u16string formatted = url_formatter::FormatOriginForSecurityDisplay(
         url::Origin::Create(GURL(common_tests[i].input)));
     EXPECT_EQ(base::WideToUTF16(common_tests[i].output), formatted)
         << common_tests[i].description;
 
-    base::string16 formatted_omit_web_scheme =
+    std::u16string formatted_omit_web_scheme =
         url_formatter::FormatOriginForSecurityDisplay(
             url::Origin::Create(GURL(common_tests[i].input)),
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
@@ -607,7 +606,7 @@ TEST(TextEliderTest, FormatOriginForSecurityDisplay) {
               formatted_omit_web_scheme)
         << common_tests[i].description;
 
-    base::string16 formatted_omit_cryptographic_scheme =
+    std::u16string formatted_omit_cryptographic_scheme =
         url_formatter::FormatOriginForSecurityDisplay(
             url::Origin::Create(GURL(common_tests[i].input)),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
@@ -644,12 +643,12 @@ TEST(TextEliderTest, FormatOriginForSecurityDisplay) {
        L"http://www.html5rocks.com"}};
 
   for (size_t i = 0; i < base::size(tests); ++i) {
-    base::string16 formatted = url_formatter::FormatOriginForSecurityDisplay(
+    std::u16string formatted = url_formatter::FormatOriginForSecurityDisplay(
         url::Origin::Create(GURL(tests[i].input)));
     EXPECT_EQ(base::WideToUTF16(tests[i].output), formatted)
         << tests[i].description;
 
-    base::string16 formatted_omit_web_scheme =
+    std::u16string formatted_omit_web_scheme =
         url_formatter::FormatOriginForSecurityDisplay(
             url::Origin::Create(GURL(tests[i].input)),
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
@@ -657,7 +656,7 @@ TEST(TextEliderTest, FormatOriginForSecurityDisplay) {
               formatted_omit_web_scheme)
         << tests[i].description;
 
-    base::string16 formatted_omit_cryptographic_scheme =
+    std::u16string formatted_omit_cryptographic_scheme =
         url_formatter::FormatOriginForSecurityDisplay(
             url::Origin::Create(GURL(tests[i].input)),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
@@ -666,22 +665,22 @@ TEST(TextEliderTest, FormatOriginForSecurityDisplay) {
         << tests[i].description;
   }
 
-  base::string16 formatted = url_formatter::FormatOriginForSecurityDisplay(
+  std::u16string formatted = url_formatter::FormatOriginForSecurityDisplay(
       url::Origin::Create(GURL()));
-  EXPECT_EQ(base::string16(), formatted)
+  EXPECT_EQ(std::u16string(), formatted)
       << "Explicitly test the url::Origin which takes an empty, invalid URL";
 
-  base::string16 formatted_omit_scheme =
+  std::u16string formatted_omit_scheme =
       url_formatter::FormatOriginForSecurityDisplay(
           url::Origin::Create(GURL()),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  EXPECT_EQ(base::string16(), formatted_omit_scheme)
+  EXPECT_EQ(std::u16string(), formatted_omit_scheme)
       << "Explicitly test the url::Origin which takes an empty, invalid URL";
 
   formatted_omit_scheme = url_formatter::FormatOriginForSecurityDisplay(
       url::Origin::Create(GURL()),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-  EXPECT_EQ(base::string16(), formatted_omit_scheme)
+  EXPECT_EQ(std::u16string(), formatted_omit_scheme)
       << "Explicitly test the url::Origin which takes an empty, invalid URL";
 }
 

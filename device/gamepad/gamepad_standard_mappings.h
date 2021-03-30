@@ -68,6 +68,12 @@ enum CanonicalButtonIndex {
   BUTTON_INDEX_COUNT
 };
 
+// Xbox Series X has an extra share button.
+enum XboxSeriesXButtons {
+  XBOX_SERIES_X_BUTTON_SHARE = CanonicalButtonIndex::BUTTON_INDEX_COUNT,
+  XBOX_SERIES_X_BUTTON_COUNT
+};
+
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.device.gamepad
 // GENERATED_JAVA_PREFIX_TO_STRIP: AXIS_INDEX_

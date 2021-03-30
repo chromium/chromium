@@ -6,7 +6,9 @@
 <link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
+<link rel="import" href="/components/oobe_shared_vars_css.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_dialog.html">
 
@@ -60,9 +62,177 @@
 
 <dom-module id="oobe-welcome-dialog">
   <template>
-    <style include="cr-shared-style oobe-dialog-host"></style>
+    <style include="cr-shared-style oobe-dialog-host">
+      :host([is-new-layout_]) {
+        box-sizing: border-box;
+        height: var(--oobe-adaptive-dialog-height);
+        padding-bottom: var(--oobe-adaptive-dialog-buttons-vertical-padding);
+        padding-inline-end: 40px;
+        padding-inline-start: 40px;
+        padding-top: calc(var(--cr-button-height) +
+          2*var(--oobe-adaptive-dialog-back-button-vertical-padding));
+        width: var(--oobe-adaptive-dialog-width);
+      }
+
+      #newDialog {
+        box-sizing: border-box;
+        height: 100%;
+      }
+
+      #newContent {
+        display: grid;
+        flex-grow: 1;
+        min-height: 0;
+      }
+      :host-context([orientation=vertical]) #newContent {
+        grid-template-columns: auto;
+        grid-template-rows: auto auto auto;
+      }
+      :host-context([orientation=horizontal]) #newContent {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+      }
+
+      #newButtons {
+        grid-column: 1 / span 1;
+        grid-row: 1 / span 1;
+      }
+      :host-context([orientation=vertical]) #newButtons {
+        align-items: center;
+        align-self: center;
+        justify-self: center;
+      }
+      :host-context([orientation=horizontal]) #newButtons {
+        align-self: start;
+        justify-self: start;
+      }
+
+      :host-context([orientation=vertical]) #getStarted {
+        align-self: end;
+        grid-column: 1 / span 1;
+        grid-row: 3 / span 1;
+        justify-self: center;
+      }
+      :host-context([orientation=horizontal]) #getStarted {
+        align-self: end;
+        grid-column: 1 / span 1;
+        grid-row: 2 / span 1;
+        justify-self: start;
+      }
+
+      #newWelcomeAnimation {
+        min-height: 0;
+        min-width: 0;
+      }
+      :host-context([orientation=vertical]) #newWelcomeAnimationSlot {
+        align-self: end;
+        grid-column: 1 / span 1;
+        grid-row: 2 / span 1;
+        justify-self: stretch;
+      }
+      :host-context([orientation=horizontal]) #newWelcomeAnimationSlot {
+        align-self: stretch;
+        grid-column: 2 / span 1;
+        grid-row: 1 / span 2;
+      }
+
+      #newAccessibilitySettingsButton,
+      #newTimezoneSettingsButton {
+        margin-top: 16px;
+      }
+
+      #newTitle {
+        color: var(--google-grey-900);
+        font-family: var(--oobe-header-font-family);
+        font-size: 36px;
+        line-height: 44px;
+        margin-bottom: 0;
+      }
+
+      :host-context([orientation=horizontal]) #newTitle {
+        margin-top: 48px;
+      }
+
+      :host-context([orientation=vertical]) #newTitle {
+        margin-top: 40px;
+      }
+
+      #newSubtitle {
+        color: var(--google-grey-refresh-500);
+        font-family: var(--oobe-header-font-family);
+        font-size: 24px;
+        line-height: 32px;
+        margin-top: 16px;
+      }
+
+      :host-context([orientation=horizontal]) #newSubtitle {
+        margin-bottom: 64px;
+      }
+
+      :host-context([orientation=vertical]) #newSubtitle {
+        margin-bottom: 40px;
+      }
+
+      .new-welcome-header-text {
+        font-weight: var(--oobe-welcome-header-font-weight);
+      }
+      :host-context([orientation=vertical]) .new-welcome-header-text {
+        align-self: center;
+        text-align: center;
+      }
+      :host-context([orientation=horizontal]) .new-welcome-header-text {
+        text-align: start;
+      }
+    </style>
     <link rel="stylesheet" href="oobe_welcome_dialog.css">
-    <oobe-dialog has-buttons footer-shrinkable>
+    <div id="newDialog" class="layout vertical" hidden="[[!isNewLayout_]]">
+      <h1 id="newTitle" class="new-welcome-header-text">
+        [[i18nDynamic(locale, 'newWelcomeScreenGreeting')]]
+      </h1>
+      <div id="newSubtitle" class="new-welcome-header-text">
+        [[i18nDynamic(locale, 'newWelcomeScreenGreetingSubtitle')]]
+      </div>
+      <div id="newContent">
+        <div id="newButtons" class="layout vertical">
+          <oobe-welcome-secondary-button id="newLanguageSelectionButton"
+              icon1x="oobe-welcome-dialog-20:language"
+              icon2x="oobe-welcome-dialog-40:language"
+              on-click="onLanguageClicked_"
+              label-for-aria="[[i18nDynamic(locale, 'languageButtonLabel',
+                  currentLanguage)]]">
+            <div slot="text">[[currentLanguage]]</div>
+          </oobe-welcome-secondary-button>
+          <oobe-welcome-secondary-button id="newAccessibilitySettingsButton"
+              text-key="accessibilityLink"
+              icon1x="oobe-welcome-dialog-20:accessibility"
+              icon2x="oobe-welcome-dialog-40:accessibility"
+              on-click="onAccessibilityClicked_">
+          </oobe-welcome-secondary-button>
+          <oobe-welcome-secondary-button id="newTimezoneSettingsButton"
+              text-key="timezoneButtonText"
+              icon1x="oobe-32:timezone"
+              icon2x="oobe-32:timezone"
+              on-click="onTimezoneClicked_"
+              hidden="[[!timezoneButtonVisible]]">
+          </oobe-welcome-secondary-button>
+        </div>
+        <oobe-text-button id="getStarted"
+            inverse on-click="onNextClicked_"
+            disabled="[[!isNewLayout_]]"
+            text-key="welcomeScreenGetStarted">
+        </oobe-text-button>
+        <div id="newWelcomeAnimationSlot">
+          <cr-lottie id="newWelcomeAnimation" hidden="[[isMeet_]]"
+              animation-url="welcome_screen_animation.json">
+          </cr-lottie>
+          <img src="images/cfm/welcome.svg" id="remoraWelcomeImage"
+              class="oobe-illustration" hidden="[[!isMeet_]]">
+        </div>
+      </div>
+    </div>
+
+    <oobe-dialog id="oldDialog" has-buttons footer-shrinkable
+                 hidden="[[isNewLayout_]]">
       <h1 slot="title" id="title">
         [[i18nDynamic(locale, 'welcomeScreenGreeting')]]
       </h1>
@@ -142,15 +312,16 @@
             on-click="onAccessibilityClicked_"></oobe-welcome-secondary-button>
         <oobe-welcome-secondary-button id="timezoneSettingsButton"
             text-key="timezoneButtonText"
-            icon1x="oobe-welcome-32:timezone"
-            icon2x="oobe-welcome-64:timezone"
+            icon1x="oobe-32:timezone"
+            icon2x="oobe-32:timezone"
             on-click="onTimezoneClicked_"
             hidden="[[!timezoneButtonVisible]]"></oobe-welcome-secondary-button>
       </div>
       <div slot="bottom-buttons">
         <oobe-next-button id="welcomeNextButton"
-            inverse on-click="onNextClicked_" text-key="welcomeNextButtonText">
-        </oobe-text-button>
+            inverse on-click="onNextClicked_" text-key="welcomeNextButtonText"
+            disabled="[[isNewLayout_]]">
+        </oobe-next-button>
       </div>
     </oobe-dialog>
     <oobe-modal-dialog id="chromeVoxHint">

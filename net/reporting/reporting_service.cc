@@ -12,10 +12,12 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/http/structured_headers.h"
 #include "net/reporting/reporting_browsing_data_remover.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
@@ -30,6 +32,7 @@ namespace {
 
 constexpr int kMaxJsonSize = 16 * 1024;
 constexpr int kMaxJsonDepth = 5;
+constexpr int kMaxSHSize = 16 * 1024;
 
 // If constructed with a PersistentReportingStore, the first call to any of
 // QueueReport(), ProcessHeader(), RemoveBrowsingData(), or
@@ -82,9 +85,9 @@ class ReportingServiceImpl : public ReportingService {
         depth, queued_ticks));
   }
 
-  void ProcessHeader(const GURL& url,
-                     const NetworkIsolationKey& network_isolation_key,
-                     const std::string& header_string) override {
+  void ProcessReportToHeader(const GURL& url,
+                             const NetworkIsolationKey& network_isolation_key,
+                             const std::string& header_string) override {
     if (header_string.size() > kMaxJsonSize)
       return;
 
@@ -96,9 +99,34 @@ class ReportingServiceImpl : public ReportingService {
 
     DVLOG(1) << "Received Reporting policy for " << url.GetOrigin();
     DoOrBacklogTask(base::BindOnce(
-        &ReportingServiceImpl::DoProcessHeader, base::Unretained(this),
+        &ReportingServiceImpl::DoProcessReportToHeader, base::Unretained(this),
         FixupNetworkIsolationKey(network_isolation_key), url,
         std::move(header_value)));
+  }
+
+  void ProcessReportingEndpointsHeader(
+      const url::Origin& origin,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& header_string) override {
+    if (header_string.size() == 0 || header_string.size() > kMaxSHSize)
+      return;
+
+    base::Optional<structured_headers::Dictionary> header_dict =
+        structured_headers::ParseDictionary(header_string);
+    if (!header_dict) {
+      DVLOG(1) << "Error processing Reporting-Endpoints header string: "
+               << header_string;
+      return;
+    }
+    std::unique_ptr<structured_headers::Dictionary> header_value =
+        std::make_unique<structured_headers::Dictionary>(
+            std::move(*header_dict));
+
+    DVLOG(1) << "Received Reporting-Endpoints header policy for " << origin;
+    DoOrBacklogTask(base::BindOnce(
+        &ReportingServiceImpl::DoProcessReportingEndpointsHeader,
+        base::Unretained(this), FixupNetworkIsolationKey(network_isolation_key),
+        origin, std::move(header_value)));
   }
 
   void RemoveBrowsingData(uint64_t data_type_mask,
@@ -165,12 +193,21 @@ class ReportingServiceImpl : public ReportingService {
                                  depth, queued_ticks, 0 /* attempts */);
   }
 
-  void DoProcessHeader(const NetworkIsolationKey& network_isolation_key,
-                       const GURL& url,
-                       std::unique_ptr<base::Value> header_value) {
+  void DoProcessReportToHeader(const NetworkIsolationKey& network_isolation_key,
+                               const GURL& url,
+                               std::unique_ptr<base::Value> header_value) {
     DCHECK(initialized_);
-    ReportingHeaderParser::ParseHeader(context_.get(), network_isolation_key,
-                                       url, std::move(header_value));
+    ReportingHeaderParser::ParseReportToHeader(
+        context_.get(), network_isolation_key, url, std::move(header_value));
+  }
+
+  void DoProcessReportingEndpointsHeader(
+      const NetworkIsolationKey& network_isolation_key,
+      const url::Origin& origin,
+      std::unique_ptr<structured_headers::Dictionary> header_value) {
+    DCHECK(initialized_);
+    ReportingHeaderParser::ParseReportingEndpointsHeader(
+        context_.get(), network_isolation_key, origin, std::move(header_value));
   }
 
   void DoRemoveBrowsingData(

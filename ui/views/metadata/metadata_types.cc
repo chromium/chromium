@@ -137,9 +137,17 @@ void ClassMetaData::SetTypeName(const std::string& type_name) {
   type_name_ = type_name;
 }
 
-void MemberMetaDataBase::SetValueAsString(void* obj,
-                                          const base::string16& new_value) {
+void MemberMetaDataBase::SetValueAsString(View* obj,
+                                          const std::u16string& new_value) {
   NOTREACHED();
+}
+
+const char* MemberMetaDataBase::GetMemberNamePrefix() const {
+  return "";
+}
+
+MemberMetaDataBase::ValueStrings MemberMetaDataBase::GetValidValues() const {
+  return ValueStrings();
 }
 
 }  // namespace metadata

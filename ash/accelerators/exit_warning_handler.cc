@@ -79,8 +79,8 @@ class ExitWarningWidgetDelegateView : public views::WidgetDelegateView {
   }
 
  private:
-  base::string16 text_;
-  base::string16 accessible_name_;
+  std::u16string text_;
+  std::u16string accessible_name_;
   int text_width_;
 
   DISALLOW_COPY_AND_ASSIGN(ExitWarningWidgetDelegateView);

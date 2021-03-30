@@ -7,6 +7,7 @@ package org.chromium.media;
 import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -73,6 +74,22 @@ public class MediaPlayerBridge {
     @CalledByNative
     protected void setSurface(Surface surface) {
         getLocalPlayer().setSurface(surface);
+    }
+
+    @SuppressLint("NewApi")
+    @CalledByNative
+    protected void setPlaybackRate(double speed) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) return;
+
+        Log.w(TAG, "Unexpectedly setting playback speed to 0.");
+        try {
+            MediaPlayer player = getLocalPlayer();
+            player.setPlaybackParams(player.getPlaybackParams().setSpeed((float) speed));
+        } catch (IllegalStateException ise) {
+            Log.e(TAG, "Unable to set playback rate", ise);
+        } catch (IllegalArgumentException iae) {
+            Log.e(TAG, "Unable to set playback rate", iae);
+        }
     }
 
     @CalledByNative

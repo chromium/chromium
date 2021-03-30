@@ -17,6 +17,8 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/policy/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
@@ -24,9 +26,6 @@
 #include "chrome/browser/chromeos/policy/device_local_account_policy_provider.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
 #include "chrome/browser/chromeos/policy/fake_affiliated_invalidation_service_provider.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -45,6 +44,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
@@ -88,7 +88,7 @@ void ConstructAvatarPolicy(const std::string& file_name,
 }  // namespace
 
 class CloudExternalDataPolicyObserverTest
-    : public chromeos::DeviceSettingsTestBase,
+    : public ash::DeviceSettingsTestBase,
       public CloudExternalDataPolicyObserver::Delegate {
  public:
   typedef std::pair<std::string, std::string> FetchedCall;
@@ -96,7 +96,7 @@ class CloudExternalDataPolicyObserverTest
   CloudExternalDataPolicyObserverTest();
   ~CloudExternalDataPolicyObserverTest() override;
 
-  // chromeos::DeviceSettingsTestBase:
+  // ash::DeviceSettingsTestBase:
   void SetUp() override;
   void TearDown() override;
 
@@ -138,7 +138,7 @@ class CloudExternalDataPolicyObserverTest
   std::string avatar_policy_1_;
   std::string avatar_policy_2_;
 
-  std::unique_ptr<chromeos::CrosSettings> cros_settings_;
+  std::unique_ptr<ash::CrosSettings> cros_settings_;
   std::unique_ptr<DeviceLocalAccountPolicyService>
       device_local_account_policy_service_;
   FakeAffiliatedInvalidationServiceProvider
@@ -163,6 +163,7 @@ class CloudExternalDataPolicyObserverTest
   ExternalDataFetcher::FetchCallback fetch_callback_;
 
   TestingProfileManager profile_manager_;
+  session_manager::SessionManager session_manager_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CloudExternalDataPolicyObserverTest);
@@ -178,13 +179,13 @@ CloudExternalDataPolicyObserverTest::~CloudExternalDataPolicyObserverTest() {
 }
 
 void CloudExternalDataPolicyObserverTest::SetUp() {
-  chromeos::DeviceSettingsTestBase::SetUp();
+  ash::DeviceSettingsTestBase::SetUp();
 
   ASSERT_TRUE(profile_manager_.SetUp());
   shared_url_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &url_loader_factory_);
-  cros_settings_ = std::make_unique<chromeos::CrosSettings>(
+  cros_settings_ = std::make_unique<ash::CrosSettings>(
       device_settings_service_.get(),
       TestingBrowserProcess::GetGlobal()->local_state());
   device_local_account_policy_service_.reset(
@@ -222,7 +223,7 @@ void CloudExternalDataPolicyObserverTest::TearDown() {
   device_local_account_policy_service_->Shutdown();
   device_local_account_policy_service_.reset();
   cros_settings_.reset();
-  chromeos::DeviceSettingsTestBase::TearDown();
+  ash::DeviceSettingsTestBase::TearDown();
 }
 
 
@@ -330,7 +331,7 @@ void CloudExternalDataPolicyObserverTest::RefreshDeviceLocalAccountPolicy(
 
 void CloudExternalDataPolicyObserverTest::LogInAsDeviceLocalAccount(
     const AccountId& account_id) {
-  user_manager_->AddUser(account_id);
+  user_manager::User* user = user_manager_->AddUser(account_id);
 
   device_local_account_policy_provider_.reset(
       new DeviceLocalAccountPolicyProvider(
@@ -350,10 +351,9 @@ void CloudExternalDataPolicyObserverTest::LogInAsDeviceLocalAccount(
   profile_ = builder.Build();
   profile_->set_profile_name(account_id.GetUserEmail());
 
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources(),
-      content::Details<Profile>(profile_.get()));
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                               profile_.get());
+  session_manager_.NotifyUserProfileLoaded(account_id);
 }
 
 void CloudExternalDataPolicyObserverTest::SetRegularUserAvatarPolicy(
@@ -369,7 +369,8 @@ void CloudExternalDataPolicyObserverTest::SetRegularUserAvatarPolicy(
 }
 
 void CloudExternalDataPolicyObserverTest::LogInAsRegularUser() {
-  user_manager_->AddUser(AccountId::FromUserEmail(kRegularUserID));
+  AccountId account_id = AccountId::FromUserEmail(kRegularUserID);
+  user_manager::User* user = user_manager_->AddUser(account_id);
 
   PolicyServiceImpl::Providers providers;
   providers.push_back(&user_policy_provider_);
@@ -384,10 +385,9 @@ void CloudExternalDataPolicyObserverTest::LogInAsRegularUser() {
   profile_ = builder.Build();
   profile_->set_profile_name(kRegularUserID);
 
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources(),
-      content::Details<Profile>(profile_.get()));
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                               profile_.get());
+  session_manager_.NotifyUserProfileLoaded(account_id);
 }
 
 // Verifies that when an external data reference is set for a device-local
@@ -963,10 +963,8 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserLogoutTest) {
 
   // Now simulate log back the user.
   CreateObserver();
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-      content::NotificationService::AllSources(),
-      content::Details<Profile>(profile_.get()));
+  session_manager_.NotifyUserProfileLoaded(
+      AccountId::FromUserEmail(kRegularUserID));
 
   // Test that clear notification is emitted.
   EXPECT_TRUE(set_calls_.empty());

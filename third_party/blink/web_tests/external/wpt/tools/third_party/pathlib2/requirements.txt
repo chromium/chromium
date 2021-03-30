@@ -1,3 +1,0 @@
-six
-scandir; python_version < '3.5'
-mock; python_version < '3.3'

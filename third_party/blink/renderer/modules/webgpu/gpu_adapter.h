@@ -28,22 +28,32 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
              scoped_refptr<DawnControlClientHolder> dawn_control_client);
 
   const String& name() const;
-  Vector<String> extensions(ScriptState* script_state) const;
+  Vector<String> features() const;
+  Vector<String> extensions(ExecutionContext* execution_context);
 
   ScriptPromise requestDevice(ScriptState* script_state,
-                              const GPUDeviceDescriptor* descriptor);
+                              GPUDeviceDescriptor* descriptor);
 
  private:
   void OnRequestDeviceCallback(ScriptPromiseResolver* resolver,
                                const GPUDeviceDescriptor* descriptor,
-                               bool is_request_device_success,
-                               uint64_t device_client_id);
-  void InitializeExtensionNameList();
+                               WGPUDevice dawn_device);
+  void InitializeFeatureNameList();
+
+  // Console warnings should generally be attributed to a GPUDevice, but in
+  // cases where there is no device warnings can be surfaced here. It's expected
+  // that very few warning will need to be shown for a given adapter, and as a
+  // result the maximum allowed warnings is lower than the per-device count.
+  void AddConsoleWarning(ExecutionContext* execution_context,
+                         const char* message);
 
   String name_;
   uint32_t adapter_service_id_;
   WGPUDeviceProperties adapter_properties_;
-  Vector<String> extension_name_list_;
+  Vector<String> feature_name_list_;
+
+  static constexpr int kMaxAllowedConsoleWarnings = 50;
+  int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;
 
   DISALLOW_COPY_AND_ASSIGN(GPUAdapter);
 };

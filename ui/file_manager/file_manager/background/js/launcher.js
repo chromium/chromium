@@ -3,6 +3,14 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// #import {AppWindowWrapper} from './app_window_wrapper.m.js';
+// #import {util} from '../../common/js/util.m.js';
+
+/**
  * @type {!Object}
  */
 // eslint-disable-next-line no-var
@@ -12,7 +20,7 @@ var launcher = {};
  * Type of a Files app's instance launch.
  * @enum {number}
  */
-const LaunchType = {
+/* #export */ const LaunchType = {
   ALWAYS_CREATE: 0,
   FOCUS_ANY_OR_CREATE: 1,
   FOCUS_SAME_OR_CREATE: 2
@@ -28,7 +36,7 @@ const FILES_ID_PREFIX = 'files#';
  * Value of the next file manager window ID.
  * @type {number}
  */
-let nextFileManagerWindowID = 0;
+/* #export */ let nextFileManagerWindowID = 0;
 
 /**
  * File manager window create options.
@@ -52,7 +60,8 @@ const FILE_MANAGER_WINDOW_CREATE_OPTIONS = {
  * Regexp matching a file manager window ID.
  * @const {!RegExp}
  */
-const FILES_ID_PATTERN = new RegExp('^' + FILES_ID_PREFIX + '(\\d*)$');
+/* #export */ const FILES_ID_PATTERN =
+    new RegExp('^' + FILES_ID_PREFIX + '(\\d*)$');
 
 /**
  * Promise to serialize asynchronous calls.
@@ -164,8 +173,11 @@ launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
     FILE_MANAGER_WINDOW_CREATE_OPTIONS.frame.color = '#ffffff';
   }
 
-  const appWindow = new AppWindowWrapper(
-      'main.html', appId, FILE_MANAGER_WINDOW_CREATE_OPTIONS);
+  const htmlFile =
+      util.isFilesJsModulesEnabled() ? 'main_modules.html' : 'main.html';
+  const appWindow =
+      new AppWindowWrapper(htmlFile, appId, FILE_MANAGER_WINDOW_CREATE_OPTIONS);
+
   await appWindow.launch(opt_appState || {}, false);
   if (!appWindow.rawAppWindow) {
     return null;
@@ -174,3 +186,6 @@ launcher.launchFileManager = async (opt_appState, opt_id, opt_type) => {
   appWindow.rawAppWindow.focus();
   return appId;
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {launcher};

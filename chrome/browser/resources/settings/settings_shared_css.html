@@ -1,14 +1,4 @@
-<if expr="chromeos">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/cros_color_overrides.html">
-</if>
-<link rel="import" href="chrome://resources/cr_elements/search_highlight_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="settings_vars_css.html">
-
-
-<!-- Common styles for Material Design settings. -->
-<dom-module id="settings-shared">
+  <!-- Common styles for Material Design settings. -->
   <template>
     <style include="cr-shared-style search-highlight-style
 <if expr='chromeos'>
@@ -216,12 +206,6 @@
         min-height: var(--settings-row-two-line-min-height);
       }
 
-      /* A row with three lines of text. Often the lower lines will be
-       * .secondary. */
-      .three-line {
-        min-height: var(--settings-row-three-line-min-height);
-      }
-
       /* A settings-box is a horizontal row of text or controls within a
        * setting section (page or subpage). */
       .settings-box {
@@ -246,10 +230,6 @@
 
       .settings-box.two-line {
         min-height: var(--settings-row-two-line-min-height);
-      }
-
-      .settings-box.three-line {
-        min-height: var(--settings-row-three-line-min-height);
       }
 
       .settings-box-text {
@@ -393,4 +373,3 @@
       }
     </style>
   </template>
-</dom-module>

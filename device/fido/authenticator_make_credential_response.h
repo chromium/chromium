@@ -17,7 +17,6 @@
 #include "device/fido/attestation_object.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "device/fido/response_data.h"
 
 namespace device {
 
@@ -25,8 +24,7 @@ namespace device {
 // data, and attestation statement returned by the authenticator as a response
 // to MakeCredential request.
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticatorMakeCredential
-class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
-    : public ResponseData {
+class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
  public:
   static base::Optional<AuthenticatorMakeCredentialResponse>
   CreateFromU2fRegisterResponse(
@@ -41,7 +39,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
       AuthenticatorMakeCredentialResponse&& that);
   AuthenticatorMakeCredentialResponse& operator=(
       AuthenticatorMakeCredentialResponse&& other);
-  ~AuthenticatorMakeCredentialResponse() override;
+  ~AuthenticatorMakeCredentialResponse();
 
   std::vector<uint8_t> GetCBOREncodedAttestationObject() const;
 
@@ -60,8 +58,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
   // not intended to be trackable.)
   bool IsAttestationCertificateInappropriatelyIdentifying();
 
-  // ResponseData:
-  const std::array<uint8_t, kRpIdHashLength>& GetRpIdHash() const override;
+  const std::array<uint8_t, kRpIdHashLength>& GetRpIdHash() const;
 
   const AttestationObject& attestation_object() const {
     return attestation_object_;
@@ -69,13 +66,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
 
   base::Optional<FidoTransportProtocol> transport_used() const {
     return transport_used_;
-  }
-
-  const base::Optional<std::vector<uint8_t>>& android_client_data_ext() const {
-    return android_client_data_ext_;
-  }
-  void set_android_client_data_ext(const std::vector<uint8_t>& data) {
-    android_client_data_ext_ = data;
   }
 
   base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key()
@@ -96,16 +86,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
   // but the authenticator may have created one anyway.
   base::Optional<bool> is_resident_key;
 
+  // attestation_should_be_filtered is true iff a filter indicated that the
+  // attestation should not be returned. This is acted upon by
+  // |AuthenticatorCommon| based on enterprise policy.
+  bool attestation_should_be_filtered = false;
+
  private:
   AttestationObject attestation_object_;
 
   // Contains the transport used to register the credential in this case. It is
   // nullopt for cases where we cannot determine the transport (Windows).
   base::Optional<FidoTransportProtocol> transport_used_;
-
-  // If not base::nullopt, the content of the googleAndroidClientData extension
-  // authenticator output.
-  base::Optional<std::vector<uint8_t>> android_client_data_ext_;
 
   // The large blob key associated to the credential. This value is only
   // returned if the credential is created with the largeBlobKey extension on a

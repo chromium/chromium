@@ -74,7 +74,7 @@ void DidHasMultipleDisplays(ScriptPromiseResolver* resolver,
 }  // namespace
 
 // static
-ScriptPromise GlobalScreenEnumeration::getScreens(
+ScriptPromise GlobalScreenEnumeration::getScreensDeprecated(
     ScriptState* script_state,
     LocalDOMWindow&,
     ExceptionState& exception_state) {

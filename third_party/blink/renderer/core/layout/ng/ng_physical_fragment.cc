@@ -103,6 +103,7 @@ class FragmentTreeDumper {
 
     bool has_content = false;
     if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(fragment)) {
+      const LayoutObject* layout_object = box->GetLayoutObject();
       if (flags_ & NGPhysicalFragment::DumpType) {
         builder_->Append("Box");
         String box_type = StringForBoxType(*fragment);
@@ -121,11 +122,10 @@ class FragmentTreeDumper {
       }
       has_content = AppendOffsetAndSize(fragment, fragment_offset, has_content);
 
-      if (flags_ & NGPhysicalFragment::DumpNodeName &&
-          fragment->GetLayoutObject()) {
+      if (flags_ & NGPhysicalFragment::DumpNodeName && layout_object) {
         if (has_content)
           builder_->Append(" ");
-        builder_->Append(fragment->GetLayoutObject()->DebugName());
+        builder_->Append(layout_object->DebugName());
       }
       builder_->Append("\n");
 
@@ -138,6 +138,12 @@ class FragmentTreeDumper {
         }
       }
       if (flags_ & NGPhysicalFragment::DumpSubtree) {
+        if (flags_ & NGPhysicalFragment::DumpLegacyDescendants &&
+            layout_object && !layout_object->IsLayoutNGObject()) {
+          DCHECK(box->Children().empty());
+          AppendLegacySubtree(*layout_object, indent);
+          return;
+        }
         for (auto& child : box->Children()) {
           if (has_fragment_items && child->IsLineBox())
             continue;
@@ -169,6 +175,42 @@ class FragmentTreeDumper {
     }
     has_content = AppendOffsetAndSize(fragment, fragment_offset, has_content);
     builder_->Append("\n");
+  }
+
+  void AppendLegacySubtree(const LayoutObject& layout_object,
+                           unsigned indent = 0) {
+    for (const LayoutObject* descendant = &layout_object; descendant;) {
+      if (!descendant->IsLayoutNGObject()) {
+        if (const auto* block = DynamicTo<LayoutBlock>(descendant)) {
+          if (const auto* positioned_descendants = block->PositionedObjects()) {
+            for (const auto* positioned_object : *positioned_descendants) {
+              if (positioned_object->IsLayoutNGObject())
+                AppendNGRootInLegacySubtree(*positioned_object, indent);
+              else
+                AppendLegacySubtree(*positioned_object, indent);
+            }
+          }
+        }
+        if (descendant->IsOutOfFlowPositioned() && descendant != &layout_object)
+          descendant = descendant->NextInPreOrderAfterChildren(&layout_object);
+        else
+          descendant = descendant->NextInPreOrder(&layout_object);
+        continue;
+      }
+      AppendNGRootInLegacySubtree(*descendant, indent);
+      descendant = descendant->NextInPreOrderAfterChildren(&layout_object);
+    }
+  }
+
+  void AppendNGRootInLegacySubtree(const LayoutObject& layout_object,
+                                   unsigned indent) {
+    if (flags_ & NGPhysicalFragment::DumpHeaderText) {
+      AppendIndentation(indent + 2);
+      builder_->Append("(NG fragment root inside legacy subtree:)\n");
+    }
+    const LayoutBox& box_descendant = To<LayoutBox>(layout_object);
+    DCHECK_EQ(box_descendant.PhysicalFragmentCount(), 1u);
+    Append(box_descendant.GetPhysicalFragment(0), base::nullopt, indent + 4);
   }
 
  private:
@@ -309,6 +351,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       include_border_bottom_(other.include_border_bottom_),
       include_border_left_(other.include_border_left_),
       has_layout_overflow_(other.has_layout_overflow_),
+      ink_overflow_type_(other.ink_overflow_type_),
       has_borders_(other.has_borders_),
       has_padding_(other.has_padding_),
       has_inflow_bounds_(other.has_inflow_bounds_),
@@ -352,6 +395,10 @@ void NGPhysicalFragment::Destroy() const {
 
 bool NGPhysicalFragment::IsBlockFlow() const {
   return !IsLineBox() && layout_object_->IsLayoutBlockFlow();
+}
+
+bool NGPhysicalFragment::IsTextControlContainer() const {
+  return blink::IsTextControlContainer(layout_object_->GetNode());
 }
 
 bool NGPhysicalFragment::IsTextControlPlaceholder() const {
@@ -600,10 +647,33 @@ String NGPhysicalFragment::DumpFragmentTree(
   return string_builder.ToString();
 }
 
+String NGPhysicalFragment::DumpFragmentTree(const LayoutObject& root,
+                                            DumpFlags flags) {
+  if (root.IsLayoutNGObject()) {
+    const LayoutBox& root_box = To<LayoutBox>(root);
+    DCHECK_EQ(root_box.PhysicalFragmentCount(), 1u);
+    return root_box.GetPhysicalFragment(0)->DumpFragmentTree(flags);
+  }
+  StringBuilder string_builder;
+  if (flags & DumpHeaderText) {
+    string_builder.Append(
+        ".:: LayoutNG Physical Fragment Tree at legacy root ");
+    string_builder.Append(root.DebugName());
+    string_builder.Append(" ::.\n");
+  }
+  FragmentTreeDumper(&string_builder, flags).AppendLegacySubtree(root);
+  return string_builder.ToString();
+}
+
 #if DCHECK_IS_ON()
 void NGPhysicalFragment::ShowFragmentTree() const {
   DumpFlags dump_flags = DumpAll;
   LOG(INFO) << "\n" << DumpFragmentTree(dump_flags).Utf8();
+}
+
+void NGPhysicalFragment::ShowFragmentTree(const LayoutObject& root) {
+  DumpFlags dump_flags = DumpAll;
+  LOG(INFO) << "\n" << DumpFragmentTree(root, dump_flags).Utf8();
 }
 #endif
 

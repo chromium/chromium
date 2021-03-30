@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from '../browser_proxy/browser_proxy.js';
+import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 // eslint-disable-next-line no-unused-vars
 import {ResolutionList, VideoConfig} from '../type.js';
@@ -65,13 +65,6 @@ export class DeviceInfoUpdater {
     this.devicesInfo_ = this.enumerateDevices_();
 
     /**
-     * Got the permission to run enumerateDevices() or not.
-     * @type {boolean}
-     * @private
-     */
-    this.canEnumerateDevices_ = false;
-
-    /**
      * Camera3DeviceInfo of all available video devices. Is null on HALv1 device
      * without mojo api support.
      * @type {!Promise<?Array<!Camera3DeviceInfo>>}
@@ -85,7 +78,7 @@ export class DeviceInfoUpdater {
      * @private
      */
     this.videoConfigFilter_ = (async () => {
-      const board = await browserProxy.getBoard();
+      const board = loadTimeData.getBoard();
       return board === 'grunt' ? ({height}) => height < 720 : () => true;
     })();
 
@@ -156,13 +149,6 @@ export class DeviceInfoUpdater {
    * @private
    */
   async enumerateDevices_() {
-    if (!this.canEnumerateDevices_) {
-      this.canEnumerateDevices_ =
-          await browserProxy.requestEnumerateDevicesPermission();
-      if (!this.canEnumerateDevices_) {
-        throw new Error('Failed to get the permission for enumerateDevices()');
-      }
-    }
     const devices = (await navigator.mediaDevices.enumerateDevices())
                         .filter((device) => device.kind === 'videoinput');
     if (devices.length === 0) {
@@ -192,7 +178,7 @@ export class DeviceInfoUpdater {
 
   /**
    * Registers listener to be called when state of available devices changes.
-   * @param {function(!DeviceInfoUpdater)} listener
+   * @param {function(!DeviceInfoUpdater): !Promise} listener
    */
   addDeviceChangeListener(listener) {
     this.deviceChangeListeners_.push(listener);

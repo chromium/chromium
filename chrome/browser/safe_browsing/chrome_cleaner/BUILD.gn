@@ -58,7 +58,7 @@ static_library("chrome_cleaner") {
     # TODO(crbug.com/925153): Break dependency cycles with //chrome/browser
     ":public",
     "//chrome/browser:browser_process",
-    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
     "//chrome/common",
@@ -66,12 +66,10 @@ static_library("chrome_cleaner") {
     "//components/chrome_cleaner/public/constants",
     "//components/chrome_cleaner/public/proto",
     "//components/component_updater",
-    "//components/crx_file",
     "//components/pref_registry",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//content/public/browser",
-    "//extensions/browser",
     "//third_party/protobuf:protobuf_lite",
   ]
 }

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -49,6 +50,14 @@ class CORE_EXPORT LargestContentfulPaint final : public PerformanceEntry {
   AtomicString id_;
   String url_;
   WeakMember<Element> element_;
+};
+
+template <>
+struct DowncastTraits<LargestContentfulPaint> {
+  static bool AllowFrom(const PerformanceEntry& entry) {
+    return entry.EntryTypeEnum() ==
+           PerformanceEntry::EntryType::kLargestContentfulPaint;
+  }
 };
 
 }  // namespace blink

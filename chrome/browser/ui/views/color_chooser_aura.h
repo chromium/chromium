@@ -9,14 +9,14 @@
 #include "base/macros.h"
 #include "content/public/browser/color_chooser.h"
 #include "ui/views/color_chooser/color_chooser_listener.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace content {
 class WebContents;
 }
 
 namespace views {
-class ColorChooserView;
-class Widget;
+class ColorChooser;
 }
 
 // TODO(mukai): rename this as -Ash and move to c/b/ui/ash after Linux-aura
@@ -29,6 +29,7 @@ class ColorChooserAura : public content::ColorChooser,
 
  private:
   ColorChooserAura(content::WebContents* web_contents, SkColor initial_color);
+  ~ColorChooserAura() override;
 
   // content::ColorChooser overrides:
   void End() override;
@@ -40,13 +41,8 @@ class ColorChooserAura : public content::ColorChooser,
 
   void DidEndColorChooser();
 
-  // The actual view of the color chooser.  No ownership because its parent
-  // view will take care of its lifetime.
-  views::ColorChooserView* view_;
-
-  // The widget for the color chooser.  No ownership because it's released
-  // automatically when closed.
-  views::Widget* widget_;
+  std::unique_ptr<views::ColorChooser> chooser_;
+  views::UniqueWidgetPtr chooser_widget_;
 
   // The web contents invoking the color chooser.  No ownership because it will
   // outlive this class.

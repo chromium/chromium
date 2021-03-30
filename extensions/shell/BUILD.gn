@@ -40,6 +40,7 @@ source_set("app_shell_lib") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/feedback",
+    "//components/feedback/content:factory",
     "//components/guest_view/browser",
     "//components/guest_view/renderer",
     "//components/keep_alive_registry",
@@ -60,13 +61,15 @@ source_set("app_shell_lib") {
     "//extensions:shell_and_test_pak",
     "//extensions/browser",
     "//extensions/browser:core_api_provider",
+    "//extensions/browser/api/messaging",
+    "//extensions/browser/api/system_display",
     "//extensions/browser/kiosk",
+    "//extensions/browser/updater",
     "//extensions/common",
     "//extensions/common:core_api_provider",
     "//extensions/common/api",
     "//extensions/renderer",
     "//extensions/shell/browser/system_logs",
-    "//extensions/shell/common/api",
     "//extensions/shell/common/api:extensions_features",
     "//services/network/public/mojom",
     "//third_party/blink/public:blink",
@@ -92,8 +95,6 @@ source_set("app_shell_lib") {
     "app/shell_main_delegate.h",
     "browser/api/feedback_private/shell_feedback_private_delegate.cc",
     "browser/api/feedback_private/shell_feedback_private_delegate.h",
-    "browser/api/identity/identity_api.cc",
-    "browser/api/identity/identity_api.h",
     "browser/api/runtime/shell_runtime_api_delegate.cc",
     "browser/api/runtime/shell_runtime_api_delegate.h",
     "browser/default_shell_browser_main_delegate.cc",
@@ -131,8 +132,6 @@ source_set("app_shell_lib") {
     "browser/shell_extension_web_contents_observer.h",
     "browser/shell_extensions_api_client.cc",
     "browser/shell_extensions_api_client.h",
-    "browser/shell_extensions_browser_api_provider.cc",
-    "browser/shell_extensions_browser_api_provider.h",
     "browser/shell_extensions_browser_client.cc",
     "browser/shell_extensions_browser_client.h",
     "browser/shell_keep_alive_requester.cc",
@@ -231,8 +230,8 @@ source_set("app_shell_lib") {
       "browser/shell_screen.h",
     ]
     deps += [
-      "//chromeos/audio",
-      "//chromeos/constants",
+      "//ash/components/audio",
+      "//ash/constants",
       "//chromeos/dbus",
       "//chromeos/dbus/audio",
       "//chromeos/dbus/power",
@@ -293,7 +292,6 @@ test("app_shell_unittests") {
 
   sources = [
     "../test/extensions_unittests_main.cc",
-    "browser/api/identity/identity_api_unittest.cc",
     "browser/shell_content_browser_client_unittest.cc",
     "browser/shell_extension_loader_unittest.cc",
     "browser/shell_keep_alive_requester_unittest.cc",
@@ -360,8 +358,7 @@ test("app_shell_unittests") {
       "browser/shell_screen_unittest.cc",
     ]
     deps += [
-      "//chromeos/audio",
-      "//chromeos/constants",
+      "//ash/components/audio",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/audio",
       "//chromeos/dbus/power",
@@ -434,10 +431,7 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [
-      "//chromeos/constants",
-      "//components/keyed_service/content",
-    ]
+    deps += [ "//components/keyed_service/content" ]
   }
 }
 

@@ -499,7 +499,7 @@ TEST_F(CertNetFetcherURLLoaderTest,
     request1->WaitForResult(&error, &body);
   }
 
-  EXPECT_GE(2, NumCreatedRequests());
+  EXPECT_LE(2, NumCreatedRequests());
 
   ResetTestURLLoaderFactory();
 

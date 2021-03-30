@@ -14,5 +14,6 @@ how various product names and the like should be referenced.
 * Lacros: `<ph name="LACROS_NAME">Lacros</ph>`
 * Android: `<ph name="ANDROID_NAME">Android</ph>`
 * macOS: `<ph name="MAC_OS_NAME">macOS</ph>`
+* iOS: `<ph name="IOS_NAME">iOS</ph>`
 * Windows: `<ph name="MS_WIN_NAME">Microsoft® Windows®</ph>`
 * Microsoft ActiveDirectory: `<ph name="MS_AD_NAME">Microsoft® Active Directory®</ph>`

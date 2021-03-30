@@ -16,7 +16,7 @@ package sync_pb;
 
 // Properties of Autofill wallet offer related objects.
 
-// Next tag: 9
+// Next tag: 11
 message AutofillOfferSpecifics {
   // The id for this offer data. Will be used as the client tag.
   optional int64 id = 1;
@@ -35,6 +35,7 @@ message AutofillOfferSpecifics {
   // client.
   optional int64 offer_expiry_date = 5;
 
+  // Proto containing data specific to a card-linked offer.
   message CardLinkedOfferData {
     reserved 1, 2;
 
@@ -42,10 +43,48 @@ message AutofillOfferSpecifics {
     repeated int64 instrument_id = 3;
   }
 
+  // Proto containing data specific to a promo code offer.
+  message PromoCodeOfferData {
+    // The actual promo code which can be applied at checkout.
+    optional string promo_code = 1;
+  }
+
   // The unique offer data for different offer types.
   oneof type_specific_offer_data {
     CardLinkedOfferData card_linked_offer_data = 6;
+    PromoCodeOfferData promo_code_offer_data = 9;
   }
+
+  // Strings to be shown in client UI, based on the offer type and details.
+  message DisplayStrings {
+    // A message translated in the user's GPay app locale, explaining the value
+    // of the offer. For example, a promo code offer might display
+    // "$5 off on shoes, up to $50."
+    optional string value_prop_text = 1;
+
+    // A message translated in the user's GPay app locale and shown on mobile as
+    // a link, prompting the user to click it to learn more about the offer.
+    // Generally, "See details".
+    optional string see_details_text_mobile = 2;
+
+    // A message translated in the user's GPay app locale and shown on desktop
+    // (not as a link), informing the user that exclusions and restrictions may
+    // apply to the value prop text. Generally, "Terms apply."
+    optional string see_details_text_desktop = 3;
+
+    // A message translated in the user's GPay app locale and shown on mobile,
+    // instructing them on how to redeem the offer. For example, a promo code
+    // offer might display "Tap the promo code field at checkout to autofill
+    // it."
+    optional string usage_instructions_text_mobile = 4;
+
+    // A message translated in the user's GPay app locale and shown on desktop,
+    // instructing them on how to redeem the offer. For example, a promo code
+    // offer might display "Click the promo code field at checkout to autofill
+    // it."
+    optional string usage_instructions_text_desktop = 5;
+  }
+  optional DisplayStrings display_strings = 10;
 
   // This value will be shown in the offer text template as "XXX% cashback".
   // Percentage has a range of (0, 100].

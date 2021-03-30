@@ -6,6 +6,7 @@
 #include <lib/vfs/cpp/pseudo_dir.h>
 #include <lib/vfs/cpp/vmo_file.h>
 
+#include "base/strings/string_piece.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 
 #include "base/files/file_path.h"
@@ -45,7 +46,7 @@ void AddFileToPseudoDir(base::StringPiece data,
 // Serves |dir| as a ContentDirectory under the path |name|.
 void ServePseudoDir(base::StringPiece name, vfs::PseudoDir* dir) {
   fuchsia::web::ContentDirectoryProvider provider;
-  provider.set_name(name.as_string());
+  provider.set_name(std::string(name));
   fidl::InterfaceHandle<fuchsia::io::Directory> directory_channel;
   dir->Serve(
       fuchsia::io::OPEN_FLAG_DIRECTORY | fuchsia::io::OPEN_RIGHT_READABLE,

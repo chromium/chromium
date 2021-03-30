@@ -1,6 +1,10 @@
 <link rel="import" href="../../../html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="../../../cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="../../../cr_elements/icons.html">
 <link rel="import" href="../../../cr_elements/policy/cr_policy_indicator.html">
@@ -11,7 +15,6 @@
 <link rel="import" href="cr_policy_network_behavior_mojo.html">
 <link rel="import" href="network_icon.html">
 <link rel="import" href="network_list_types.html">
-<link rel="import" href="mojo_interface_provider.html">
 <link rel="import" href="onc_mojo.html">
 
 <dom-module id="network-list-item">
@@ -20,14 +23,38 @@
       :host {
         display: inline-flex;
         outline: none;
+        --network-list-item-disabled-opacity: 0.4;
       }
 
       #divOuter {
-        margin-bottom: 8px;
-        margin-top: 8px;
-        min-height: 48px;
+        height: var(--cr-network-row-height, 48px);
         overflow: auto;
+        padding-bottom: var(--cr-network-row-padding-bottom, 0);
         padding-inline-end: var(--cr-icon-ripple-padding);
+        padding-top: var(--cr-network-row-padding-bottom, 0);
+      }
+
+      :host([disabled_]) {
+        cursor: auto;
+        pointer-events: none;
+      }
+
+      :host([disabled_]) #networkIconContainer,
+      :host([disabled_]) #networkStateText,
+      :host([disabled_]) #divText,
+      :host([is-e-sim-pending-profile_]) #divText,
+      :host([is-e-sim-pending-profile_]) #divIcon {
+        opacity: var(--network-list-item-disabled-opacity);
+      }
+
+      :host(:not([is-e-sim-pending-profile_])) #divIcon {
+        height: 24px;
+        width: 24px;
+      }
+
+      :host([is-e-sim-pending-profile_]) #divIcon {
+        height: 20px;
+        width: 20px;
       }
 
       #divDetail {
@@ -52,22 +79,12 @@
         color: var(--google-green-500);
       }
 
-      iron-icon :not(.esim-pending-profile) {
-        height: 24px;
-        width: 24px;
-      }
-
-      iron-icon .esim-pending-profile {
-        height: 20px;
-        width: 20px;
+      .locked {
+        color: var(--google-yellow-700);
       }
 
       cr-policy-indicator {
         padding: 0 var(--cr-controlled-by-spacing);
-      }
-
-      .esim-pending-profile {
-        opacity: 0.4;
       }
 
       #wrapper {
@@ -75,8 +92,21 @@
       }
 
       cr-button iron-icon {
-        --iron-icon-fill-color: #1A73E8;
         margin-inline-end: 8px;
+      }
+
+      :host(:not([disabled_])) cr-button iron-icon {
+        --iron-icon-fill-color: #1A73E8;
+      }
+
+      :host([disabled_]) cr-button iron-icon {
+        --iron-icon-fill-color: var(--google-grey-600);
+      }
+
+      paper-spinner-lite {
+        height: 20px;
+        margin-inline-end: 16px;
+        width: 20px;
       }
     </style>
     <div id="wrapper" focus-row-container
@@ -92,16 +122,18 @@
            focus-type="rowWrapper"
            on-keydown="onKeydown_"
            on-click="onSelected_">
-        <template is="dom-if" if="[[networkState]]">
-          <network-icon is-list-item
-              show-technology-badge="[[showTechnologyBadge]]"
-              network-state="[[networkState]]">
-          </network-icon>
-        </template>
+        <div id="networkIconContainer">
+          <template is="dom-if" if="[[networkState]]">
+            <network-icon is-list-item
+                show-technology-badge="[[showTechnologyBadge]]"
+                network-state="[[networkState]]">
+            </network-icon>
+          </template>
+        </div>
         <template is="dom-if" if="[[item.polymerIcon]]">
-          <iron-icon icon="[[item.polymerIcon]]" class$="[[getItemClassName_(item)]]"></iron-icon>
+          <iron-icon id="divIcon" icon="[[item.polymerIcon]]"></iron-icon>
         </template>
-        <div id="divText" class$="layout horizontal flex [[getItemClassName_(item)]]">
+        <div id="divText" class="layout horizontal flex">
           <div id="networkName" aria-hidden="true">
             [[getItemName_(item)]]
           </div>
@@ -111,11 +143,11 @@
             [[getSubtitle(subtitle_)]]
           </div>
           <div id="networkStateText"
-              class="cr-secondary-text"
-              hidden$="[[!isStateTextVisible_(networkState)]]"
-              active$="[[isStateTextActive_(networkState,
+              class$="[[getNetworkStateTextClass_(networkState.*)]]"
+              hidden$="[[!isStateTextVisible_(networkState.*)]]"
+              active$="[[isStateTextActive_(networkState.*,
                            activationUnavailable)]]">
-            [[getNetworkStateText_(networkState, activationUnavailable)]]
+            [[getNetworkStateText_(networkState.*, activationUnavailable)]]
           </div>
         </div>
         <template is="dom-if" if="[[isPolicySource(networkState.source)]]">
@@ -123,7 +155,9 @@
               networkState.source)]]">
           </cr-policy-indicator>
         </template>
-        <template is="dom-if" if="[[isSubpageButtonVisible_(networkState, showButtons)]]" restamp>
+        <template is="dom-if"
+            if="[[isSubpageButtonVisible_(networkState, showButtons, disabled_)]]"
+            restamp>
           <div>
             <cr-icon-button class="subpage-arrow"
                 id="subpage-button"
@@ -135,13 +169,31 @@
             </cr-icon-button>
           </div>
         </template>
-        <template is="dom-if" if="[[isESimPendingProfile_(item)]]" restamp>
-          <!-- TODO(crbug.com/1093185): Download profile when clicked. -->
-          <cr-button id="downloadButton"
-              aria-label$="[[getItemName_(item)]], $i18n{networkListItemDownload}">
-            <iron-icon icon="network:download"></iron-icon>
-            $i18n{networkListItemDownload}
+        <template is="dom-if" if="[[shouldShowUnlockButton_(networkState)]]" restamp>
+          <cr-button id="unlockButton"
+              aria-label$="[[getUnlockBtnA11yLabel_(item)]]"
+              on-click="onUnlockButtonClick_">
+              [[i18n('networkListItemUnlock')]]
           </cr-button>
+        </template>
+        <template is="dom-if" if="[[isCellularUnlockDialogOpen_]]" restamp>
+          <sim-lock-dialogs
+              is-dialog-open="{{isCellularUnlockDialogOpen_}}"
+              device-state="[[deviceState]]">
+          </sim-lock-dialogs>
+        </template>
+        <template is="dom-if" if="[[isESimPendingProfile_]]" restamp>
+          <cr-button id="installButton"
+              aria-label$="[[getInstallBtnA11yLabel_(item)]]"
+              on-click="onInstallButtonClick_"
+              disabled="[[disabled_]]">
+            <iron-icon icon="network:download"></iron-icon>
+            [[i18n('networkListItemDownload')]]
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[isESimInstallingProfile_(item, item.customItemType)]]" restamp>
+          <paper-spinner-lite active></paper-spinner-lite>
+          [[i18n('networkListItemAddingProfile')]]
         </template>
       </div>
     </div>

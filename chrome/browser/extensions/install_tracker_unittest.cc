@@ -31,7 +31,7 @@ const char kExtensionId3[] = "ladmcjmmmmgonboiadnaindoekpbljde";
 
 scoped_refptr<const Extension> CreateDummyExtension(const std::string& id) {
   return extensions::ExtensionBuilder("Dummy name")
-      .SetLocation(extensions::Manifest::INTERNAL)
+      .SetLocation(extensions::mojom::ManifestLocation::kInternal)
       .SetID(id)
       .Build();
 }

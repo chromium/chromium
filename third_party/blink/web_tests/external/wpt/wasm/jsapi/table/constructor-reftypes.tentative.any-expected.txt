@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL initialize externref table with default value WebAssembly.Table(): Descriptor property 'element' must be a WebAssembly reference type
+PASS initialize table with a wrong element value
+FAIL initialize anyfunc table with default value assert_equals: expected (function) function "function 0() { [native code] }" but got (object) null
+FAIL initialize anyfunc table with a bad default value assert_throws_js: function "() => new WebAssembly.Table(argument, {})" did not throw
+Harness: the test ran to completion.
+

@@ -7,10 +7,17 @@
 
 #include <memory>
 
+#include "base/process/process_handle.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
 namespace content {
+
+// TODO: we shouldn't leak internal data types outside of the content module,
+// event recorders can use native platform APIs and avoid dealing
+// with BrowserAccessibilityManager, see crbug.com/1133330.
+class BrowserAccessibilityManager;
 
 // Accessibility tree formatters and event recorders factory.
 class CONTENT_EXPORT AXInspectFactory {
@@ -19,13 +26,14 @@ class CONTENT_EXPORT AXInspectFactory {
   // running on, since each platform has its own specific accessibility tree.
   // For example, this would be MSAA/IAccessible2 tree on Windows, AT-SPI tree
   // on Linux or NSAccessibility tree on macOS.
-  // TODO(crbug.com/1133330): CreateDefaultFormatter method for each platform
-  // are implemented in conrresponding AccessibilityTreeFormatter, for example,
-  // macOS version is implemented in
-  // content/browser/accessibility/accessibility_tree_formatter_mac.h file.
-  // All implementation should be moved into ax_inspect_factory.cc eventually
-  // when tree formatters are moved under ui/accessibility/platform umbrella.
   static std::unique_ptr<ui::AXTreeFormatter> CreatePlatformFormatter();
+
+  // Creates the appropriate event recorder for the platform we are currently
+  // running on.
+  static std::unique_ptr<ui::AXEventRecorder> CreatePlatformRecorder(
+      BrowserAccessibilityManager* manager = nullptr,
+      base::ProcessId pid = 0,
+      const ui::AXTreeSelector& selector = {});
 
   // Creates the internal accessibility tree formatter, AKA the Blink tree
   // formatter, which is used to dump the Blink accessibility tree to a string
@@ -55,6 +63,13 @@ class CONTENT_EXPORT AXInspectFactory {
 
   // Creates a tree formatter of a given inspect type if supported by platform.
   static std::unique_ptr<ui::AXTreeFormatter> CreateFormatter(Type);
+
+  // Creates an event recorder of a given inspect type if supported by platform.
+  static std::unique_ptr<ui::AXEventRecorder> CreateRecorder(
+      Type,
+      BrowserAccessibilityManager* manager = nullptr,
+      base::ProcessId pid = 0,
+      const ui::AXTreeSelector& selector = {});
 };
 
 }  // namespace content

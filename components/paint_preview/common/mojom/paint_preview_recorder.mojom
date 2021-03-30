@@ -97,6 +97,7 @@ struct PaintPreviewCaptureResponse {
   uint64 serialized_size;
 
   // Scroll offsets of the frame at capture time.
+  // TODO(crbug.com/738465): This should likely be a gfx.mojom.ScrollOffset.
   gfx.mojom.Size scroll_offsets;
 
   // The serialized skia picture. See |SerializedRecording| for details on

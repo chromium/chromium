@@ -15,6 +15,7 @@
 #include "components/permissions/permission_result.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
 namespace performance_manager {
@@ -48,6 +49,10 @@ void UnfreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* const content = contents_proxy.Get();
   if (!content)
+    return;
+
+  // A visible page is automatically unfrozen.
+  if (content->GetVisibility() == content::Visibility::VISIBLE)
     return;
 
   content->SetPageFrozen(false);

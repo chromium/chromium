@@ -13,6 +13,7 @@
 namespace blink {
 
 class IntSize;
+class UseCounter;
 
 class PLATFORM_EXPORT BitmapImageMetrics {
   STATIC_ONLY(BitmapImageMetrics);
@@ -55,6 +56,10 @@ class PLATFORM_EXPORT BitmapImageMetrics {
 
   // |type| is the return value of ImageDecoder::FilenameExtension().
   static void CountDecodedImageType(const String& type);
+  // |type| is the return value of ImageDecoder::FilenameExtension().
+  // |use_counter| may be a null pointer.
+  static void CountDecodedImageType(const String& type,
+                                    UseCounter* use_counter);
   // Report the JPEG compression density in 0.01 bits per pixel for an image
   // with a smallest side (width or length) of |image_min_side| and total size
   // in bytes |image_size_bytes|.

@@ -19,6 +19,24 @@ source_set("messaging") {
     "message_service.h",
     "messaging_delegate.cc",
     "messaging_delegate.h",
+  ]
+
+  deps = [
+    ":native_messaging",
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/browser/api",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
+
+  public_deps = [ "//extensions/browser:browser_sources" ]
+}
+
+# Split up from messaging to avoid circular dependency.
+source_set("native_messaging") {
+  sources = [
     "native_message_host.cc",
     "native_message_host.h",
     "native_messaging_channel.h",
@@ -26,11 +44,6 @@ source_set("messaging") {
 
   deps = [
     "//base",
-    "//content/public/browser",
-    "//content/public/common",
-    "//extensions/common",
-    "//extensions/common/api",
+    "//ui/gfx:native_widget_types",
   ]
-
-  public_deps = [ "//extensions/browser:browser_sources" ]
 }

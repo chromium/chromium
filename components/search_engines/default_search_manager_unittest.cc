@@ -103,8 +103,8 @@ TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
   DefaultSearchManager manager(pref_service(),
                                DefaultSearchManager::ObserverCallback());
   TemplateURLData data;
-  data.SetShortName(base::UTF8ToUTF16("name1"));
-  data.SetKeyword(base::UTF8ToUTF16("key1"));
+  data.SetShortName(u"name1");
+  data.SetKeyword(u"key1");
   data.SetURL("http://foo1/{searchTerms}");
   data.suggestions_url = "http://sugg1";
   data.alternate_urls.push_back("http://foo1/alt");

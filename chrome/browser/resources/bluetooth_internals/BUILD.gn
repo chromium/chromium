@@ -7,63 +7,206 @@ import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 js_type_check("closure_compile") {
-  deps = [ ":bluetooth_internals" ]
+  deps = [
+    ":adapter_broker",
+    ":adapter_page",
+    ":bluetooth_internals",
+    ":characteristic_list",
+    ":debug_log_page",
+    ":descriptor_list",
+    ":device_broker",
+    ":device_collection",
+    ":device_details_page",
+    ":device_table",
+    ":devices_page",
+    ":expandable_list",
+    ":object_fieldset",
+    ":page",
+    ":page_manager",
+    ":service_list",
+    ":sidebar",
+    ":snackbar",
+    ":value_control",
+  ]
 }
 
 js_library("bluetooth_internals") {
-  sources = [
-    "adapter_broker.js",
-    "adapter_page.js",
-    "bluetooth_internals.js",
-    "characteristic_list.js",
-    "debug_log_page.js",
-    "descriptor_list.js",
-    "device_broker.js",
-    "device_collection.js",
-    "device_details_page.js",
-    "device_table.js",
-    "devices_page.js",
-    "expandable_list.js",
-    "object_fieldset.js",
-    "service_list.js",
-    "sidebar.js",
-    "snackbar.js",
-    "value_control.js",
-  ]
-
   deps = [
-    ":node_utils",
-    ":page",
+    ":adapter_broker",
+    ":adapter_page",
+    ":debug_log_page",
+    ":device_collection",
+    ":device_details_page",
+    ":devices_page",
     ":page_manager",
+    ":sidebar",
+    ":snackbar",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:array_data_model",
-    "//ui/webui/resources/js/cr/ui:list",
-    "//ui/webui/resources/js/cr/ui:list_item",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
-js_library("node_utils") {
-  deps = [ "//ui/webui/resources/js:cr" ]
+js_library("adapter_broker") {
+  deps = [
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+}
+
+js_library("adapter_page") {
+  deps = [
+    ":object_fieldset",
+    ":page",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("characteristic_list") {
+  deps = [
+    ":descriptor_list",
+    ":device_broker",
+    ":expandable_list",
+    ":object_fieldset",
+    ":snackbar",
+    ":value_control",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+  ]
+}
+
+js_library("debug_log_page") {
+  deps = [
+    ":page",
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("descriptor_list") {
+  deps = [
+    ":device_broker",
+    ":expandable_list",
+    ":object_fieldset",
+    ":snackbar",
+    ":value_control",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+  ]
+}
+
+js_library("device_broker") {
+  deps = [
+    ":adapter_broker",
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
+  ]
+}
+
+js_library("device_collection") {
+  deps = [
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+  ]
+}
+
+js_library("device_details_page") {
+  deps = [
+    ":device_broker",
+    ":device_collection",
+    ":object_fieldset",
+    ":page",
+    ":service_list",
+    ":snackbar",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("device_table") {
+  deps = [
+    ":device_collection",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_library("devices_page") {
+  deps = [
+    ":device_collection",
+    ":device_table",
+    ":page",
+  ]
+}
+
+js_library("expandable_list") {
+  deps = [
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:list.m",
+    "//ui/webui/resources/js/cr/ui:list_item.m",
+  ]
+}
+
+js_library("object_fieldset") {
+  deps = [
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
 }
 
 js_library("page") {
   deps = [
-    ":node_utils",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr:event_target",
-    "//ui/webui/resources/js/cr/ui:bubble",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager",
-    "//ui/webui/resources/js/cr/ui:overlay",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
 js_library("page_manager") {
   deps = [
     ":page",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
+  ]
+}
+
+js_library("service_list") {
+  deps = [
+    ":characteristic_list",
+    ":device_broker",
+    ":expandable_list",
+    ":object_fieldset",
+    ":snackbar",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+  ]
+}
+
+js_library("sidebar") {
+  deps = [
+    ":page_manager",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+js_library("snackbar") {
+  deps = [
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_library("value_control") {
+  deps = [
+    ":device_broker",
+    ":snackbar",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:ui.m",
   ]
 }
 
@@ -117,7 +260,7 @@ generate_grd("build_grd") {
     "bluetooth_internals.html",
     "bluetooth_internals.js",
     "menu.svg",
-    "node_utils.js",
+    "main.js",
     "object_fieldset.js",
     "page_manager.js",
     "page.js",

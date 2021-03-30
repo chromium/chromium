@@ -83,4 +83,13 @@ TEST_F(ImageButtonFactoryWidgetTest, CreateVectorImageButtonWithNativeTheme) {
                 ui::NativeTheme::kColorId_DefaultIconColor),
             button()->GetInkDropBaseColor());
 }
+
+TEST_F(ImageButtonFactoryWidgetTest,
+       CreateVectorImageButtonWithNativeThemeWithSize) {
+  constexpr int kSize = 15;
+  AddImageButton(CreateVectorImageButtonWithNativeTheme(
+      Button::PressedCallback(), vector_icons::kEditIcon, kSize));
+  EXPECT_EQ(kSize, button()->GetImage(Button::STATE_NORMAL).width());
+}
+
 }  // namespace views

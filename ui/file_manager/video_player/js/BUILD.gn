@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/optimize_webui.gni")
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
@@ -18,7 +18,12 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                  ]
   deps = [
     ":background.m",
     ":error_util.m",
@@ -31,6 +36,7 @@ js_type_check("closure_compile_jsmodules") {
 }
 
 js_type_check("closure_compile_module") {
+  uses_legacy_modules = true
   deps = [
     ":background",
     ":closure_compile_externs",
@@ -48,8 +54,8 @@ js_library("closure_compile_externs") {
     "$externs_path/media_player_private.js",
     "$externs_path/metrics_private.js",
     "$externs_path/picture_in_picture.js",
-    "//ui/file_manager/externs/chrome_cast.js",
-    "//ui/file_manager/externs/platform.js",
+    "//ui/file_manager/file_manager/externs/chrome_cast.js",
+    "//ui/file_manager/file_manager/externs/platform.js",
   ]
 }
 
@@ -64,10 +70,10 @@ js_library("background") {
 js_library("background.m") {
   sources = [ "$root_gen_dir/ui/file_manager/video_player/js/background.m.js" ]
   deps = [
-    "//ui/file_manager/externs/background:background_base.m",
     "//ui/file_manager/file_manager/background/js:app_window_wrapper.m",
     "//ui/file_manager/file_manager/background/js:background_base.m",
     "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/externs/background:background_base.m",
     "//ui/webui/resources/js:assert.m",
   ]
 
@@ -98,24 +104,25 @@ js_library("test_util.m") {
 
 js_library("video_player_native_controls") {
   deps = [
-    "//ui/file_manager/base/js:app_util",
-    "//ui/file_manager/externs:file_manager_private",
+    "//ui/file_manager/file_manager/common/js:app_util",
+    "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:util",
   ]
-  externs_list = [ "//ui/file_manager/externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
 }
 
 js_library("video_player_native_controls.m") {
   sources = [ "$root_gen_dir/ui/file_manager/video_player/js/video_player_native_controls.m.js" ]
   deps = [
-    "//ui/file_manager/base/js:app_util.m",
+    "//ui/file_manager/file_manager/common/js:app_util.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",
   ]
 
-  externs_list = [ "//ui/file_manager/externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
 
   extra_deps = [ ":modulize" ]
 }
@@ -124,7 +131,7 @@ js_unittest("video_player_native_controls_unittest.m") {
   deps = [
     ":video_player_native_controls.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:mock_chrome.m",
+    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
   ]
 }
 
@@ -133,8 +140,8 @@ js_library("video_player") {
     ":error_util",
     ":video_player_metrics",
     ":video_player_native_controls",
-    "//ui/file_manager/base/js:app_util",
-    "//ui/file_manager/base/js:filtered_volume_manager",
+    "//ui/file_manager/file_manager/common/js:app_util",
+    "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
     "//ui/file_manager/file_manager/common/js:metrics_base",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js/cr/ui:menu",
@@ -149,10 +156,10 @@ js_library("video_player.m") {
     ":error_util.m",
     ":video_player_metrics.m",
     ":video_player_native_controls.m",
-    "//ui/file_manager/base/js:app_util.m",
-    "//ui/file_manager/base/js:filtered_volume_manager.m",
-    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:app_util.m",
+    "//ui/file_manager/file_manager/common/js:filtered_volume_manager.m",
     "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -175,15 +182,18 @@ js_library("video_player_metrics.m") {
 
 js_test_gen_html("js_test_gen_html_modules") {
   deps = [ ":video_player_native_controls_unittest.m" ]
-  js_module = true
+  is_polymer3 = true
 
-  closure_flags =
-      strict_error_checking_closure_args + [
-        "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
-        "hide_warnings_for=third_party/",
-      ]
+  closure_flags = strict_error_checking_closure_args + [
+                    "generate_exports=false",
+                    "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=./gen/ui",
+                    "js_module_root=../../ui",
+                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                    "hide_warnings_for=third_party/",
+                  ]
 }
 
 js_library("main.m") {
@@ -214,6 +224,13 @@ preprocess_folder =
     rebase_path("$target_gen_dir/../../preprocessed/video_player/js",
                 root_build_dir)
 
+files_app_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+                root_build_dir)
+image_loader_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
+                root_build_dir)
+
 optimize_webui("build") {
   host = "video_player"
 
@@ -221,6 +238,11 @@ optimize_webui("build") {
   js_module_in_files = [ "main.m.js" ]
 
   js_out_files = [ "main.m.rollup.js" ]
+
+  external_paths = [
+    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
+  ]
 
   deps = [
     ":main.m",
@@ -237,6 +259,11 @@ optimize_webui("build_background") {
   js_module_in_files = [ "main_background.m.js" ]
 
   js_out_files = [ "main_background.m.rollup.js" ]
+
+  external_paths = [
+    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
+  ]
 
   deps = [
     ":main_background.m",

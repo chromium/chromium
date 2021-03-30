@@ -41,7 +41,7 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   bool SupportsDecryption() const override;
 
   // VideoDecoder implementation.
-  std::string GetDisplayName() const override;
+  VideoDecoderType GetDecoderType() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,

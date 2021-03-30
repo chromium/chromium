@@ -112,11 +112,12 @@ public class ArCoreJavaUtils {
         return false;
     }
 
-    public void onDrawingSurfaceReady(Surface surface, int rotation, int width, int height) {
+    public void onDrawingSurfaceReady(
+            Surface surface, WindowAndroid rootWindow, int rotation, int width, int height) {
         if (DEBUG_LOGS) Log.i(TAG, "onDrawingSurfaceReady");
         if (mNativeArCoreJavaUtils == 0) return;
-        ArCoreJavaUtilsJni.get().onDrawingSurfaceReady(
-                mNativeArCoreJavaUtils, ArCoreJavaUtils.this, surface, rotation, width, height);
+        ArCoreJavaUtilsJni.get().onDrawingSurfaceReady(mNativeArCoreJavaUtils, ArCoreJavaUtils.this,
+                surface, rootWindow, rotation, width, height);
     }
 
     public void onDrawingSurfaceTouch(
@@ -146,7 +147,7 @@ public class ArCoreJavaUtils {
     @NativeMethods
     interface Natives {
         void onDrawingSurfaceReady(long nativeArCoreJavaUtils, ArCoreJavaUtils caller,
-                Surface surface, int rotation, int width, int height);
+                Surface surface, WindowAndroid rootWindow, int rotation, int width, int height);
         void onDrawingSurfaceTouch(long nativeArCoreJavaUtils, ArCoreJavaUtils caller,
                 boolean primary, boolean touching, int pointerId, float x, float y);
         void onDrawingSurfaceDestroyed(long nativeArCoreJavaUtils, ArCoreJavaUtils caller);

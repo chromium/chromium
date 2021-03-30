@@ -2,8 +2,8 @@
 <title>Try opening a protected file test</title>
 <script>
   async function createAndCloseFile() {
-    if (nativeIO) {
-      const test_file = await nativeIO.open('test_file');
+    if (storageFoundation) {
+      const test_file = await storageFoundation.open('test_file');
       await test_file.close();
       return true;
     } else {
@@ -12,7 +12,7 @@
   }
   async function tryOpeningFile() {
     try {
-      await nativeIO.open('test_file');
+      await storageFoundation.open('test_file');
     } catch (e) {
       return e.name;
     }

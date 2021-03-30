@@ -16,6 +16,7 @@
 #include "chrome/browser/nearby_sharing/nearby_share_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/ash/back_gesture_contextual_nudge_delegate.h"
 #include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
@@ -32,9 +33,11 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
+#include "components/ui_devtools/devtools_server.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/render_widget_host.h"
@@ -211,4 +214,27 @@ std::unique_ptr<ash::NearbyShareDelegate>
 ChromeShellDelegate::CreateNearbyShareDelegate(
     ash::NearbyShareController* controller) const {
   return std::make_unique<NearbyShareDelegateImpl>(controller);
+}
+
+bool ChromeShellDelegate::IsSessionRestoreInProgress() const {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  return SessionRestore::IsRestoring(profile);
+}
+
+bool ChromeShellDelegate::IsUiDevToolsStarted() const {
+  return ChromeBrowserMainExtraPartsViews::Get()->GetUiDevToolsServerInstance();
+}
+
+void ChromeShellDelegate::StartUiDevTools() {
+  ChromeBrowserMainExtraPartsViews::Get()->CreateUiDevTools();
+}
+
+void ChromeShellDelegate::StopUiDevTools() {
+  ChromeBrowserMainExtraPartsViews::Get()->DestroyUiDevTools();
+}
+
+int ChromeShellDelegate::GetUiDevToolsPort() const {
+  return ChromeBrowserMainExtraPartsViews::Get()
+      ->GetUiDevToolsServerInstance()
+      ->port();
 }

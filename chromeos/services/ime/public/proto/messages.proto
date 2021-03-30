@@ -164,10 +164,19 @@ message OnSurroundingTextChanged {
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message OnCompositionCanceled {}
 
+// Protobuf version of InputEngine::CommitTextCursorBehavior in
+// chromeos/services/ime/public/mojom/input_engine.mojom
+enum CommitTextCursorBehavior {
+  COMMIT_TEXT_CURSOR_BEHAVIOR_UNSPECIFIED = 0;  // Reserved
+  COMMIT_TEXT_CURSOR_BEHAVIOR_MOVE_CURSOR_AFTER_TEXT = 1;
+  COMMIT_TEXT_CURSOR_BEHAVIOR_MOVE_CURSOR_BEFORE_TEXT = 2;
+}
+
 // Protobuf version of InputEngine::CommitText in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 message CommitText {
   optional string text = 1;
+  optional CommitTextCursorBehavior cursor_behavior = 2;
 }
 
 // Protobuf version of InputEngine::SetComposition in

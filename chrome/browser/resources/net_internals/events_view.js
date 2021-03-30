@@ -7,24 +7,18 @@
  * help users migrate to using net-export and the catapult netlog_viewer.
  */
 
-const EventsView = (function() {
-  'use strict';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
-  // This is defined in index.html, but for all intents and purposes is part
-  // of this view.
-  const LOAD_LOG_FILE_DROP_TARGET_ID = 'events-view-drop-target';
+import {DivView} from './view.js';
 
-  // We inherit from DivView.
-  const superClass = DivView;
+// This is defined in index.html, but for all intents and purposes is part
+// of this view.
+const LOAD_LOG_FILE_DROP_TARGET_ID = 'events-view-drop-target';
 
-  /**
-   *  @constructor
-   */
-  function EventsView() {
-    assertFirstConstructorCall(EventsView);
-
-    // Call superclass's constructor.
-    superClass.call(this, EventsView.MAIN_BOX_ID);
+export class EventsView extends DivView {
+  constructor() {
+    super(EventsView.MAIN_BOX_ID);
 
     const dropTarget = $(LOAD_LOG_FILE_DROP_TARGET_ID);
     dropTarget.ondragenter = this.onDrag.bind(this);
@@ -32,42 +26,35 @@ const EventsView = (function() {
     dropTarget.ondrop = this.onDrop.bind(this);
   }
 
-  EventsView.TAB_ID = 'tab-handle-events';
-  EventsView.TAB_NAME = 'Events';
-  EventsView.TAB_HASH = '#events';
-
-  // ID for special HTML element in events_view.html
-  EventsView.MAIN_BOX_ID = 'events-view-tab-content';
-
-  cr.addSingletonGetter(EventsView);
-
-  EventsView.prototype = {
-    // Inherit the superclass's methods.
-    __proto__: superClass.prototype,
-
-    /**
-     * Prevent default browser behavior when a file is dragged over the page to
-     * allow our onDrop() handler to handle the drop.
-     */
-    onDrag(event) {
-      if (event.dataTransfer.types.includes('Files')) {
-        event.preventDefault();
-      }
-    },
-
-    /**
-     * If a single file is dropped, redirect to the events tab to show the
-     * deprecation message.
-     */
-    onDrop(event) {
-      if (event.dataTransfer.files.length !== 1) {
-        return;
-      }
+  /**
+   * Prevent default browser behavior when a file is dragged over the page to
+   * allow our onDrop() handler to handle the drop.
+   */
+  onDrag(event) {
+    if (event.dataTransfer.types.includes('Files')) {
       event.preventDefault();
+    }
+  }
 
-      document.location.hash = 'events';
-    },
-  };
+  /**
+   * If a single file is dropped, redirect to the events tab to show the
+   * deprecation message.
+   */
+  onDrop(event) {
+    if (event.dataTransfer.files.length !== 1) {
+      return;
+    }
+    event.preventDefault();
 
-  return EventsView;
-})();
+    document.location.hash = 'events';
+  }
+}
+
+EventsView.TAB_ID = 'tab-handle-events';
+EventsView.TAB_NAME = 'Events';
+EventsView.TAB_HASH = '#events';
+
+// ID for special HTML element in events_view.html
+EventsView.MAIN_BOX_ID = 'events-view-tab-content';
+
+addSingletonGetter(EventsView);

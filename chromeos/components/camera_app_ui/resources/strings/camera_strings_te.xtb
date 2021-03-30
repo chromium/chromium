@@ -3,7 +3,7 @@
 <translationbundle lang="te">
 <translation id="1175958423215084756">లింక్ గుర్తించబడింది. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">గ్యాలరీ చిత్రాలు</translation>
-<translation id="1430915738399379752">ముద్రించు</translation>
+<translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1473110567575736769">3 సెకన్ల టైమర్</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">టైమర్ వ్యవధి</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> యాక్టివ్‌గా ఉంది</translation>
+<translation id="2144806332417375165">అనుకూల వీడియో పారామీటర్‌లు</translation>
 <translation id="229579744168541441">డిస్క్‌కు ఎగుమతి చేయి</translation>
 <translation id="2501278716633472235">వెనుకకు వెళ్ళు</translation>
 <translation id="2501853267655415902">రికార్డింగ్ ఆపివేయబడింది</translation>
@@ -33,13 +34,12 @@
 <translation id="3259149966178251584">కెమెరా రిజల్యూషన్</translation>
 <translation id="3517926952904427380">పోర్ట్రెయిట్ ఫోటోను తీయలేకపోయింది</translation>
 <translation id="3569311554794739032">మీరు <ph name="FILE" />ను ఖచ్చితంగా తీసివేయాలనుకుంటున్నారా?</translation>
-<translation id="3750315947605636967">మరొక యాప్ మీ కెమెరాను ఉపయోగిస్తోంది</translation>
 <translation id="3810838688059735925">వీడియో</translation>
 <translation id="3838931309141338733">బార్‌కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="3892148308691398805">టెక్స్ట్‌ను కాపీ చేయి</translation>
 <translation id="4000398125663085899">కొత్త ఫోటోలు, వీడియోలు ఇప్పుడు Files యాప్‌లోని ఫోల్డర్‌లో సేవ్ చేయబడతాయి: నా ఫైల్‌లు &gt; కెమెరా</translation>
 <translation id="4118525110028899586">రికార్డింగ్‌ను పాజ్ చేయి</translation>
-<translation id="4269820728363426813">లింక్ చిరునామాను కాపీ చేయి</translation>
+<translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
 <translation id="4279490309300973883">మిర్రరింగ్</translation>
 <translation id="4329152592498422850">చతురస్ర ఆకారంలో ఫోటోను తీసేలా మార్చు</translation>
 <translation id="4383571725254449280">పనితీరు లాగ్‌లను ప్రింట్ చేయండి</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">ఫైల్ సిస్టమ్ ఎర్రర్‌లు.</translation>
 <translation id="7450541714075000668">టెక్స్ట్ కాపీ చేయబడింది</translation>
 <translation id="7557677699350329807">తర్వాతి కెమెరాకు మార్చు</translation>
+<translation id="7607002721634913082">పాజ్ చెయ్యబడింది</translation>
 <translation id="7608223098072244877">4 బై 4</translation>
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">ప్యాన్/టిల్ట్/జూమ్ ఆప్షన్‌లను చూపించు</translation>
 <translation id="7983668134180549431">టెక్స్ట్ గుర్తించబడింది.</translation>
 <translation id="8067883171444229417">వీడియోను ప్లే చేయి</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>

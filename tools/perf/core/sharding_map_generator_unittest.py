@@ -104,3 +104,33 @@ class TestShardingMapGenerator(unittest.TestCase):
     for shard in results:
       shards_timing.append(results[shard]['full_time'])
     self.assertTrue(max(shards_timing) - min(shards_timing) < 600)
+
+  def testGenerateAndTestShardingMapWithCrossDeviceTargetCap(self):
+    benchmarks_data, timing_data, = self._generate_test_data(
+        [[10, 20, 30], [45, 35, 25, 15], [50, 40, 30, 42, 10]])
+    target_devices = {'benchmark_2': {'story_0': 5}}
+    sharding_map = sharding_map_generator.generate_sharding_map(
+        benchmarks_data, timing_data, 3, None, target_devices)
+    self.assertIn('benchmark_2', sharding_map['0']['benchmarks'])
+    self.assertIn('benchmark_2', sharding_map['1']['benchmarks'])
+    self.assertIn('benchmark_2', sharding_map['2']['benchmarks'])
+
+  def testGenerateAndTestShardingMapWithCrossDevice(self):
+    benchmarks_data, timing_data, = self._generate_test_data(
+        [[10, 20, 30], [45, 35, 25, 15], [50, 40, 30, 20, 10]])
+    target_devices = {
+        'benchmark_0': {
+            'story_1': 2
+        },
+        'benchmark_1': {
+            'story_2': 3
+        }
+    }
+    sharding_map = sharding_map_generator.generate_sharding_map(
+        benchmarks_data, timing_data, 3, None, target_devices)
+    self.assertIn('benchmark_0', sharding_map['0']['benchmarks'])
+    self.assertIn('benchmark_0', sharding_map['1']['benchmarks'])
+    self.assertNotIn('benchmark_0', sharding_map['2']['benchmarks'])
+    self.assertIn('benchmark_1', sharding_map['0']['benchmarks'])
+    self.assertIn('benchmark_1', sharding_map['1']['benchmarks'])
+    self.assertIn('benchmark_1', sharding_map['2']['benchmarks'])

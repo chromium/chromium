@@ -6,6 +6,7 @@
 #define UI_VIEWS_STYLE_TYPOGRAPHY_H_
 
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -106,6 +107,8 @@ enum TextStyle {
 // current LayoutProvider. |view| is the View requesting the property. |context|
 // can be an enum value from TextContext, or a value understood by the
 // embedder's TypographyProvider. Similarly, |style| corresponds to TextStyle.
+VIEWS_EXPORT ui::ResourceBundle::FontDetails GetFontDetails(int context,
+                                                            int style);
 VIEWS_EXPORT const gfx::FontList& GetFont(int context, int style);
 VIEWS_EXPORT SkColor GetColor(const views::View& view, int context, int style);
 VIEWS_EXPORT int GetLineHeight(int context, int style);

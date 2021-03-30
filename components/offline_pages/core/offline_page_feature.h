@@ -15,10 +15,7 @@ extern const base::Feature kOfflinePagesCTFeature;
 extern const base::Feature kOfflinePagesLivePageSharingFeature;
 extern const base::Feature kBackgroundLoaderForDownloadsFeature;
 extern const base::Feature kPrefetchingOfflinePagesFeature;
-extern const base::Feature kOfflinePagesLoadSignalCollectingFeature;
 extern const base::Feature kOfflinePagesCTV2Feature;
-extern const base::Feature kOfflinePagesRenovationsFeature;
-extern const base::Feature kOfflinePagesResourceBasedSnapshotFeature;
 extern const base::Feature kOfflinePagesDescriptivePendingStatusFeature;
 extern const base::Feature kOfflinePagesInDownloadHomeOpenInCctFeature;
 extern const base::Feature kOfflinePagesDescriptiveFailStatusFeature;
@@ -27,6 +24,7 @@ extern const base::Feature kOfflinePagesShowAlternateDinoPageFeature;
 extern const base::Feature kOfflineIndicatorFeature;
 extern const base::Feature kOfflineIndicatorAlwaysHttpProbeFeature;
 extern const base::Feature kOnTheFlyMhtmlHashComputationFeature;
+extern const base::Feature kOfflinePagesNetworkStateLikelyUnknown;
 
 // The parameter name used to find the experiment tag for prefetching offline
 // pages.
@@ -43,18 +41,6 @@ bool IsOfflinePagesLivePageSharingEnabled();
 
 // Returns true if prefetching offline pages is enabled.
 bool IsPrefetchingOfflinePagesEnabled();
-
-// Returns true if we enable load timing signals to be collected.
-bool IsOfflinePagesLoadSignalCollectingEnabled();
-
-// Returns true if we should use the "page renovation" framework in
-// the BackgroundLoaderOffliner.
-bool IsOfflinePagesRenovationsEnabled();
-
-// Returns true if we should use the "Resource percentage signal" for taking
-// snapshots instead of a time delay after the document is loaded in the main
-// frame.
-bool IsOfflinePagesResourceBasedSnapshotEnabled();
 
 // Returns true if a command line for test has been set that shortens the
 // snapshot delay.
@@ -100,6 +86,11 @@ bool IsOfflineIndicatorAlwaysHttpProbeEnabled();
 // Returns true if we are saving MHTML files to the target location and
 // calculating their content digests in one step.
 bool IsOnTheFlyMhtmlHashComputationEnabled();
+
+// Returns true if the network state returned by Android device APIs can't be
+// trusted. See https://crbug.com/1120144. In such cases, we want to disable
+// offline pages to avoid showing them even when the device is online.
+bool IsOfflinePagesNetworkStateLikelyUnknown();
 
 }  // namespace offline_pages
 

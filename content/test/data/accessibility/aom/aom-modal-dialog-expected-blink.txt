@@ -1,0 +1,11 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='Content outside modal dialog. '
+++++++++++inlineTextBox name='Content outside modal dialog. '
+++++++++button name='Button outside modal dialog.'
+++++++++++staticText name='Button outside modal dialog.'
+++++++++++++inlineTextBox name='Button outside modal dialog.'
+++++++dialog name='Modal dialog.' modal=true
+++++++++button name='Button inside modal dialog.'

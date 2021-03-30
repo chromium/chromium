@@ -57,8 +57,9 @@ LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::CreateAnonymous(
   LayoutMultiColumnFlowThread* layout_object =
       new LayoutMultiColumnFlowThread(needs_paint_layer);
   layout_object->SetDocumentForAnonymous(&document);
-  layout_object->SetStyle(ComputedStyle::CreateAnonymousStyleWithDisplay(
-      parent_style, EDisplay::kBlock));
+  layout_object->SetStyle(
+      document.GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          parent_style, EDisplay::kBlock));
   return layout_object;
 }
 
@@ -734,13 +735,8 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::PendingColumnSetForNG()
 
 void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupFromNG() {
   NOT_DESTROYED();
-  // TODO(mstensho): This nullptr check shouldn't be here, but we need it for
-  // now. If we have no column set at this point, something has gone wrong, but
-  // NG nested column balancing sometimes acts up when doubly nested (or more),
-  // making the legacy write-back machinery call FinishLayoutFromNG()
-  // prematurely. See e.g. fast/multicol/client-rect-nested.html
-  if (last_set_worked_on_)
-    last_set_worked_on_->AppendNewFragmentainerGroup();
+  DCHECK(last_set_worked_on_);
+  last_set_worked_on_->AppendNewFragmentainerGroup();
 }
 
 void LayoutMultiColumnFlowThread::SetCurrentColumnBlockSizeFromNG(

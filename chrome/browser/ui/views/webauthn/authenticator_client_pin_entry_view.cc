@@ -18,6 +18,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 
 namespace {
@@ -102,7 +103,7 @@ void AuthenticatorClientPinEntryView::RequestFocus() {
 
 void AuthenticatorClientPinEntryView::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   DCHECK(sender == pin_text_field_ || sender == confirmation_text_field_);
 
   if (sender == pin_text_field_) {
@@ -119,3 +120,6 @@ bool AuthenticatorClientPinEntryView::HandleKeyEvent(
   // be further processed.
   return false;
 }
+
+BEGIN_METADATA(AuthenticatorClientPinEntryView, views::View)
+END_METADATA

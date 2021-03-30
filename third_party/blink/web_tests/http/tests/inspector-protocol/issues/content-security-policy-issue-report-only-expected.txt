@@ -11,6 +11,7 @@ Inspector issue: {
                 sourceCodeLocation : {
                     columnNumber : 0
                     lineNumber : 2
+                    scriptId : 0
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
                 }
                 violatedDirective : style-src-elem
@@ -28,6 +29,7 @@ Inspector issue: {
                 sourceCodeLocation : {
                     columnNumber : 13
                     lineNumber : 4
+                    scriptId : 4
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
                 }
                 violatedDirective : script-src
@@ -45,6 +47,7 @@ Inspector issue: {
                 sourceCodeLocation : {
                     columnNumber : 0
                     lineNumber : 5
+                    scriptId : 0
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
                 }
                 violatedDirective : style-src-attr

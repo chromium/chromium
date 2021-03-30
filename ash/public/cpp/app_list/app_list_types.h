@@ -12,8 +12,8 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/sync/model/string_ordinal.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -36,11 +36,6 @@ ASH_PUBLIC_EXPORT extern const char kOemFolderId[];
 
 // App list config types supported by AppListConfig.
 enum class AppListConfigType {
-  // Config type used for all screens when app_list_features::ScalableAppList
-  // feature is disabled. (Note that two configs having this type can differ, in
-  // case one of them is scaled down).
-  kShared,
-
   // Config used on large screens when app_list_features::ScalableAppList
   // feature is enabled.
   kLarge,
@@ -68,7 +63,7 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
 
   AppStatus app_status = AppStatus::kReady;  // App status.
 
-  std::string folder_id;   // Id of folder where the item resides.
+  std::string folder_id;           // Id of folder where the item resides.
   syncer::StringOrdinal position;  // Position of the item.
   bool is_folder = false;          // Whether this item is a folder.
   bool is_persistent = false;  // Whether this folder is allowed to contain only
@@ -149,14 +144,16 @@ enum class AppListSearchResultType {
   kPlayStoreReinstallApp,  // Reinstall recommendations from PlayStore.
   kArcAppShortcut,         // ARC++ app shortcuts.
   kZeroStateFile,          // Zero state local file results.
-  kDriveQuickAccess,       // Drive QuickAccess results.
+  kZeroStateDrive,         // Drive QuickAccess results.
   kFileChip,               // Local file results in suggestion chips.
-  kDriveQuickAccessChip,   // Drive file results in suggestion chips.
+  kDriveChip,              // Drive file results in suggestion chips.
   kAssistantChip,          // Assistant results in suggestion chips.
   kOsSettings,             // OS settings results.
   kInternalPrivacyInfo,    // Result used internally by privacy notices.
   kAssistantText,          // Assistant text results.
   kHelpApp,                // Help App (aka Explore) results.
+  kFileSearch,             // Local file search results.
+  kDriveSearch,            // Drive file search results.
   // Add new values here.
 };
 
@@ -182,6 +179,14 @@ enum SearchResultDisplayIndex {
   kFifthIndex,
   kSixthIndex,
   kUndefined,
+};
+
+// The rich entity subtype of Omnibox results.
+enum SearchResultOmniboxType {
+  kDefault,
+  kAnswer,
+  kRichImage,
+  kOmniboxTypeMax,  // Do not use.
 };
 
 // Actions for OmniBox zero state suggestion.
@@ -224,13 +229,13 @@ using SearchResultTags = std::vector<SearchResultTag>;
 struct ASH_PUBLIC_EXPORT SearchResultAction {
   SearchResultAction();
   SearchResultAction(const gfx::ImageSkia& image,
-                     const base::string16& tooltip_text,
+                     const std::u16string& tooltip_text,
                      bool visible_on_hover);
   SearchResultAction(const SearchResultAction& other);
   ~SearchResultAction();
 
   gfx::ImageSkia image;
-  base::string16 tooltip_text;
+  std::u16string tooltip_text;
   // Visible when button or its parent row in hover state.
   bool visible_on_hover;
 };
@@ -247,13 +252,13 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   std::string id;
 
   // The title of the result, e.g. an app's name, an autocomplete query, etc.
-  base::string16 title;
+  std::u16string title;
 
   // A detail string of this result.
-  base::string16 details;
+  std::u16string details;
 
   // An text to be announced by a screen reader app.
-  base::string16 accessible_name;
+  std::u16string accessible_name;
 
   // How the title matches the query. See the SearchResultTag section for more
   // details.
@@ -272,7 +277,7 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   float rating = -1.0;
 
   // A formatted price string, e.g. "$7.09", "HK$3.94", etc.
-  base::string16 formatted_price;
+  std::u16string formatted_price;
 
   // The type of this result.
   AppListSearchResultType result_type = AppListSearchResultType::kUnknown;
@@ -293,6 +298,9 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // Which index in the UI container should the result be placed in.
   SearchResultDisplayIndex display_index = SearchResultDisplayIndex::kUndefined;
 
+  // The rich entity subtype of Omnibox results.
+  SearchResultOmniboxType omnibox_type = SearchResultOmniboxType::kDefault;
+
   // A score to settle conflicts between two apps with the same requested
   // |display_index|.
   float position_priority = 0.0f;
@@ -308,10 +316,6 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // Whether this result is a recommendation.
   bool is_recommendation = false;
-
-  // Whether this result is an answer. Answer results should originate from
-  // base::SuggestionAnswer.
-  bool is_answer = false;
 
   // A query URL associated with this result. The meaning and treatment of the
   // URL (e.g. displaying inline web contents) is dependent on the result type.
@@ -331,7 +335,11 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // The badge icon of this result that indicates its type, e.g. installable
   // from PlayStore, installable from WebStore, etc.
-  gfx::ImageSkia badge_icon;
+  ui::ImageModel badge_icon;
+
+  // Flag indicating whether the `badge_icon` should be painted atop a circle
+  // background image.
+  bool use_badge_icon_background = false;
 
   // If set to true, whether or not to send visibility updates through to to
   // the chrome side when this result is set visible/invisible.

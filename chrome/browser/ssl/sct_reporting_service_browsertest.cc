@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -171,20 +172,29 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   net::EmbeddedTestServer* report_server() { return &report_server_; }
 
   void WaitForRequests(size_t num_requests) {
-    if (requests_seen_ >= num_requests)
-      return;
-
-    requests_expected_ = num_requests;
-
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
+    // Each loop iteration will account for one request being processed. (This
+    // simplifies the request handler code below, and reduces the state that
+    // must be tracked and handled under locks.)
+    while (true) {
+      base::RunLoop run_loop;
+      {
+        base::AutoLock auto_lock(requests_lock_);
+        if (requests_seen_ >= num_requests)
+          return;
+        requests_closure_ = run_loop.QuitClosure();
+      }
+      run_loop.Run();
+    }
   }
 
-  size_t requests_seen() { return requests_seen_; }
+  size_t requests_seen() {
+    base::AutoLock auto_lock(requests_lock_);
+    return requests_seen_;
+  }
 
-  sct_auditing::TLSConnectionReport GetLastSeenReport() {
-    sct_auditing::TLSConnectionReport auditing_report;
+  sct_auditing::SCTClientReport GetLastSeenReport() {
+    base::AutoLock auto_lock(requests_lock_);
+    sct_auditing::SCTClientReport auditing_report;
     if (last_seen_request_.has_content)
       auditing_report.ParseFromString(last_seen_request_.content);
     return auditing_report;
@@ -202,18 +212,21 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
         https_server()->GetURL("flush-and-check-zero-reports.test", "/"));
     WaitForRequests(1);
     return (1u == requests_seen() &&
-            "flush-and-check-zero-reports.test" ==
-                GetLastSeenReport().context().origin().hostname());
+            "flush-and-check-zero-reports.test" == GetLastSeenReport()
+                                                       .certificate_report(0)
+                                                       .context()
+                                                       .origin()
+                                                       .hostname());
   }
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleReportRequest(
       const net::test_server::HttpRequest& request) {
+    base::AutoLock auto_lock(requests_lock_);
     last_seen_request_ = request;
     ++requests_seen_;
-    if (!quit_closure_.is_null() && requests_seen_ >= requests_expected_) {
-      std::move(quit_closure_).Run();
-    }
+    if (requests_closure_)
+      std::move(requests_closure_).Run();
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
@@ -225,10 +238,12 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   net::EmbeddedTestServer report_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // `requests_lock_` is used to force sequential access to these variables to
+  // avoid races that can cause test flakes.
+  base::Lock requests_lock_;
   net::test_server::HttpRequest last_seen_request_;
   size_t requests_seen_ = 0;
-  size_t requests_expected_ = 0;
-  base::OnceClosure quit_closure_;
+  base::OnceClosure requests_closure_;
 };
 
 // Tests that reports should not be sent when extended reporting is not opted
@@ -258,7 +273,9 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
   // Check that one report was sent and contains the expected details.
   EXPECT_EQ(1u, requests_seen());
-  EXPECT_EQ("a.test", GetLastSeenReport().context().origin().hostname());
+  EXPECT_EQ(
+      "a.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
 }
 
 // Tests that disabling Safe Browsing entirely should cause reports to not get
@@ -312,7 +329,9 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
   // Check that one report was sent.
   EXPECT_EQ(1u, requests_seen());
-  EXPECT_EQ("a.test", GetLastSeenReport().context().origin().hostname());
+  EXPECT_EQ(
+      "a.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
 
   // Disable Extended Reporting which should clear the underlying cache.
   SetExtendedReportingEnabled(false);
@@ -324,7 +343,9 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
                                https_server()->GetURL("a.test", "/"));
   WaitForRequests(2);
   EXPECT_EQ(2u, requests_seen());
-  EXPECT_EQ("a.test", GetLastSeenReport().context().origin().hostname());
+  EXPECT_EQ(
+      "a.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
 }
 
 // Tests that reports are still sent for opted-in profiles after the network
@@ -377,7 +398,9 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 
   // Check that one report was enqueued.
   EXPECT_EQ(1u, requests_seen());
-  EXPECT_EQ("a.test", GetLastSeenReport().context().origin().hostname());
+  EXPECT_EQ(
+      "a.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
 }
 
 // Tests that invalid SCTs don't get reported when the overall result is
@@ -421,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   EXPECT_EQ(1u, requests_seen());
 
   auto report = GetLastSeenReport();
-  EXPECT_EQ(3, report.included_scts_size());
+  EXPECT_EQ(3, report.certificate_report(0).included_sct_size());
 }
 
 // Tests that invalid SCTs don't get included when the overall result is
@@ -461,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   EXPECT_EQ(1u, requests_seen());
 
   auto report = GetLastSeenReport();
-  EXPECT_EQ(1, report.included_scts_size());
+  EXPECT_EQ(1, report.certificate_report(0).included_sct_size());
 }
 
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, NoValidSCTsNoReport) {

@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,11 +26,32 @@ public class FaviconHelper {
     private final RoundedIconGenerator mIconGenerator;
     private final int mDesiredSize;
 
+    /** Factory used to create this helper or a mock in tests. */
+    @VisibleForTesting
+    public interface CreationStrategy {
+        /**
+         * Creates a non-null favicon helper or returns a static mock in tests.
+         * @return A {@link FaviconHelper}.
+         */
+        FaviconHelper create(Context context);
+    }
+
+    private static CreationStrategy sCreationStrategy = FaviconHelper::new;
+
+    public static FaviconHelper create(Context context) {
+        return sCreationStrategy.create(context);
+    }
+
+    @VisibleForTesting
+    public static void setCreationStrategy(CreationStrategy strategy) {
+        sCreationStrategy = strategy;
+    }
+
     /**
      * Creates a new helper.
      * @param context The {@link Context} used to fetch resources and create Drawables.
      */
-    public FaviconHelper(Context context) {
+    protected FaviconHelper(Context context) {
         mResources = context.getResources();
         mDesiredSize =
                 mResources.getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_icon_size);

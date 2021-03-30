@@ -7,8 +7,9 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"
@@ -26,7 +27,7 @@ class SplashScreen : public CAxDialogImpl<SplashScreen>,
  public:
   static constexpr int IDD = IDD_PROGRESS;
 
-  explicit SplashScreen(const base::string16& bundle_name);
+  explicit SplashScreen(const std::u16string& bundle_name);
   SplashScreen(const SplashScreen&) = delete;
   SplashScreen& operator=(const SplashScreen&) = delete;
   ~SplashScreen() override;
@@ -84,7 +85,7 @@ class SplashScreen : public CAxDialogImpl<SplashScreen>,
   int alpha_index_;
 
   // Dialog title.
-  base::string16 title_;
+  std::wstring title_;
 
   WTL::CFont default_font_;
   WTL::CFont font_;

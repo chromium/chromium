@@ -47,6 +47,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/lookup_string_in_fixed_set.h"
@@ -225,10 +226,9 @@ void AppendInvalidString(base::StringPiece16 str, url::CanonOutput* output) {
 }
 
 // Backend for PermissiveGetHostRegistryLength that handles both UTF-8 and
-// UTF-16 input. The template type is the std::string type to use (it makes the
-// typedefs easier than using the character type).
-template <typename Str>
-size_t DoPermissiveGetHostRegistryLength(base::BasicStringPiece<Str> host,
+// UTF-16 input.
+template <typename CharT>
+size_t DoPermissiveGetHostRegistryLength(base::BasicStringPiece<CharT> host,
                                          UnknownRegistryFilter unknown_filter,
                                          PrivateRegistryFilter private_filter) {
   std::string canonical_host;  // Do not modify outside of canon_output.
@@ -348,13 +348,13 @@ bool SameDomainOrHost(base::StringPiece host1,
 
 std::string GetDomainAndRegistry(const GURL& gurl,
                                  PrivateRegistryFilter filter) {
-  return GetDomainAndRegistryAsStringPiece(gurl.host_piece(), filter)
-      .as_string();
+  return std::string(
+      GetDomainAndRegistryAsStringPiece(gurl.host_piece(), filter));
 }
 
 std::string GetDomainAndRegistry(const url::Origin& origin,
                                  PrivateRegistryFilter filter) {
-  return GetDomainAndRegistryAsStringPiece(origin.host(), filter).as_string();
+  return std::string(GetDomainAndRegistryAsStringPiece(origin.host(), filter));
 }
 
 std::string GetDomainAndRegistry(base::StringPiece host,
@@ -363,7 +363,7 @@ std::string GetDomainAndRegistry(base::StringPiece host,
   const std::string canon_host(CanonicalizeHost(host, &host_info));
   if (canon_host.empty() || host_info.IsIPAddress())
     return std::string();
-  return GetDomainAndRegistryImpl(canon_host, filter).as_string();
+  return std::string(GetDomainAndRegistryImpl(canon_host, filter));
 }
 
 bool SameDomainOrHost(
@@ -444,15 +444,15 @@ size_t GetCanonicalHostRegistryLength(base::StringPiece canon_host,
 size_t PermissiveGetHostRegistryLength(base::StringPiece host,
                                        UnknownRegistryFilter unknown_filter,
                                        PrivateRegistryFilter private_filter) {
-  return DoPermissiveGetHostRegistryLength<std::string>(host, unknown_filter,
-                                                        private_filter);
+  return DoPermissiveGetHostRegistryLength(host, unknown_filter,
+                                           private_filter);
 }
 
 size_t PermissiveGetHostRegistryLength(base::StringPiece16 host,
                                        UnknownRegistryFilter unknown_filter,
                                        PrivateRegistryFilter private_filter) {
-  return DoPermissiveGetHostRegistryLength<base::string16>(host, unknown_filter,
-                                                           private_filter);
+  return DoPermissiveGetHostRegistryLength(host, unknown_filter,
+                                           private_filter);
 }
 
 void SetFindDomainGraph() {

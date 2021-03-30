@@ -288,6 +288,15 @@ void DeviceDataManager::RemoveObserver(InputDeviceEventObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void DeviceDataManager::ResetDeviceListsForTest() {
+  touchscreen_devices_.clear();
+  keyboard_devices_.clear();
+  mouse_devices_.clear();
+  touchpad_devices_.clear();
+  uncategorized_devices_.clear();
+  device_lists_complete_ = false;
+}
+
 void DeviceDataManager::SetTouchscreensEnabled(bool enabled) {
   touch_screens_enabled_ = enabled;
 }

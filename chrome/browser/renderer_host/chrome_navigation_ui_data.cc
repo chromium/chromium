@@ -4,8 +4,8 @@
 
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/buildflags/buildflags.h"
@@ -35,13 +35,14 @@ ChromeNavigationUIData::ChromeNavigationUIData(
       navigation_handle, tab_id, window_id);
 #endif
 
-  auto* prerender_contents =
-      prerender::ChromePrerenderContentsDelegate::FromWebContents(web_contents);
-  if (prerender_contents) {
-    prerender_mode_ = prerender_contents->prerender_mode();
+  auto* no_state_prefetch_contents =
+      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          web_contents);
+  if (no_state_prefetch_contents) {
+    is_no_state_prefetching_ = true;
     prerender_histogram_prefix_ =
         prerender::PrerenderHistograms::GetHistogramPrefix(
-            prerender_contents->origin());
+            no_state_prefetch_contents->origin());
   }
 }
 
@@ -51,9 +52,12 @@ ChromeNavigationUIData::~ChromeNavigationUIData() {}
 std::unique_ptr<ChromeNavigationUIData>
 ChromeNavigationUIData::CreateForMainFrameNavigation(
     content::WebContents* web_contents,
-    WindowOpenDisposition disposition) {
+    WindowOpenDisposition disposition,
+    bool is_using_https_as_default_scheme) {
   auto navigation_ui_data = std::make_unique<ChromeNavigationUIData>();
   navigation_ui_data->disposition_ = disposition;
+  navigation_ui_data->is_using_https_as_default_scheme_ =
+      is_using_https_as_default_scheme;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   int tab_id = extension_misc::kUnknownTabId;
@@ -76,6 +80,7 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
   auto copy = std::make_unique<ChromeNavigationUIData>();
 
   copy->disposition_ = disposition_;
+  copy->is_using_https_as_default_scheme_ = is_using_https_as_default_scheme_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (extension_data_)
@@ -87,7 +92,7 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
     copy->SetOfflinePageNavigationUIData(offline_page_data_->DeepCopy());
 #endif
 
-  copy->prerender_mode_ = prerender_mode_;
+  copy->is_no_state_prefetching_ = is_no_state_prefetching_;
   copy->prerender_histogram_prefix_ = prerender_histogram_prefix_;
 
   return std::move(copy);

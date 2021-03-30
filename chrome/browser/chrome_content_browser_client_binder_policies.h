@@ -8,10 +8,10 @@
 #include "content/public/browser/mojo_binder_policy_map.h"
 
 // Intended to be called only by
-// ChromeContentBrowserClient::RegisterMojoBinderPoliciesForPrerendering(). It
-// is in its own file so that security review can be required by the OWNERS
+// ChromeContentBrowserClient::RegisterMojoBinderPoliciesForSameOriginPrerendering().
+// It is in its own file so that security review can be required by the OWNERS
 // file.
-void RegisterChromeMojoBinderPoliciesForPrerendering(
+void RegisterChromeMojoBinderPoliciesForSameOriginPrerendering(
     content::MojoBinderPolicyMap& policy_map);
 
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_BINDER_POLICIES_H_

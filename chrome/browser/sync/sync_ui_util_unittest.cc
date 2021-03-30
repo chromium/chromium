@@ -19,8 +19,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #endif
 
 namespace sync_ui_util {
@@ -115,10 +115,12 @@ StatusLabels SetUpDistinctCase(
 
       // Make sure to fail authentication with an error in this case.
       CoreAccountId account_id =
-          test_environment->identity_manager()->GetPrimaryAccountId();
+          test_environment->identity_manager()->GetPrimaryAccountId(
+              signin::ConsentLevel::kSync);
       test_environment->SetRefreshTokenForPrimaryAccount();
       service->SetAuthenticatedAccountInfo(
-          test_environment->identity_manager()->GetPrimaryAccountInfo());
+          test_environment->identity_manager()->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSync));
       test_environment->UpdatePersistentErrorOfRefreshTokenForAccount(
           account_id,
           GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));

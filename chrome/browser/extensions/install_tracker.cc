@@ -19,7 +19,8 @@ InstallTracker::InstallTracker(content::BrowserContext* browser_context,
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_UPDATE_DISABLED,
                  content::Source<content::BrowserContext>(browser_context));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
 
   // Prefs may be null in tests.
   if (prefs) {

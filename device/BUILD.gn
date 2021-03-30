@@ -99,6 +99,7 @@ test("device_unittests") {
       "bluetooth/bluetooth_task_manager_win_unittest.cc",
       "bluetooth/test/bluetooth_test_win.cc",
       "bluetooth/test/bluetooth_test_win.h",
+      "gamepad/wgi_data_fetcher_win_unittest.cc",
     ]
   }
 
@@ -168,6 +169,7 @@ test("device_unittests") {
       "fido/fido_device_discovery_unittest.cc",
       "fido/fido_parsing_utils_unittest.cc",
       "fido/fido_request_handler_unittest.cc",
+      "fido/filter_unittest.cc",
       "fido/get_assertion_handler_unittest.cc",
       "fido/get_assertion_task_unittest.cc",
       "fido/hid/fido_hid_message_unittest.cc",
@@ -235,7 +237,7 @@ test("device_unittests") {
 
   if (is_chromeos_ash) {
     sources += [ "bluetooth/chromeos/bluetooth_utils_unittest.cc" ]
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 
   if ((is_chromeos || is_linux) && use_dbus) {
@@ -372,6 +374,7 @@ test("device_unittests") {
     deps += [
       "//device/vr",
       "//device/vr:vr_fakes",
+      "//device/vr:vr_util",
       "//device/vr/orientation",
       "//device/vr/public/mojom:isolated_xr_service",
       "//services/device/public/cpp/generic_sensor",
@@ -390,6 +393,10 @@ test("device_unittests") {
       "//services/device/hid",
       "//services/device/hid:mocks",
     ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/dbus/u2f" ]
   }
 }
 
@@ -411,15 +418,18 @@ if (is_android) {
       "//base:base_java",
       "//components/location/android:location_java",
       "//device/bluetooth:java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
       "//third_party/android_sdk:android_test_mock_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
 
     srcjar_deps = [ ":bluetooth_test_javagen" ]
   }
 
   junit_binary("device_junit_tests") {
-    sources = [ "gamepad/android/junit/src/org/chromium/device/gamepad/GamepadMappingsTest.java" ]
+    sources = [
+      "gamepad/android/junit/src/org/chromium/device/gamepad/GamepadDeviceTest.java",
+      "gamepad/android/junit/src/org/chromium/device/gamepad/GamepadMappingsTest.java",
+    ]
     deps = [
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
@@ -429,7 +439,7 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//device/gamepad:java",
       "//mojo/public/java:bindings_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/hamcrest:hamcrest_java",
     ]
     srcjar_deps = [ "//device/gamepad:java_enums_srcjar" ]

@@ -120,7 +120,8 @@ class StandaloneTrustedVaultBackend
   void MaybeRegisterDevice(const std::string& gaia_id);
 
   // Called when device registration for |gaia_id| is completed (either
-  // successfully or not).
+  // successfully or not). |data_| must contain LocalTrustedVaultPerUser for
+  // given |gaia_id|.
   void OnDeviceRegistered(const std::string& gaia_id,
                           TrustedVaultRequestStatus status);
 

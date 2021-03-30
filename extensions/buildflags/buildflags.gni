@@ -5,10 +5,6 @@
 declare_args() {
   enable_extensions = !is_android && !is_ios && !is_fuchsia
 
-  # Enables Wi-Fi Display functionality
-  # WARNING: This enables MPEG Transport Stream (MPEG-TS) encoding!
-  enable_wifi_display = false
-
   # Compile time flag for the Autofill Assistant API.
   # WARNING: This must not be enabled in official builds.
   enable_autofill_assistant_api = false

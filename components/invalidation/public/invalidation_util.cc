@@ -14,7 +14,7 @@
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_handler.h"
 
-namespace syncer {
+namespace invalidation {
 
 bool InvalidationVersionLessThan::operator()(const Invalidation& a,
                                              const Invalidation& b) const {
@@ -61,4 +61,4 @@ HandlerOwnerType OwnerNameToHandlerType(const std::string& owner_name) {
   return HandlerOwnerType::kUnknown;
 }
 
-}  // namespace syncer
+}  // namespace invalidation

@@ -12,7 +12,6 @@
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_factory_impl.h"
-#include "content/browser/indexed_db/indexed_db_observer.h"
 #include "content/browser/indexed_db/indexed_db_origin_state.h"
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
@@ -65,7 +64,6 @@ leveldb::Status IndexedDBConnection::AbortTransactionsAndClose(
     return leveldb::Status::OK();
 
   DCHECK(database_);
-  active_observers_.clear();
   callbacks_ = nullptr;
 
   // Finish up any transaction, in case there were any running.
@@ -83,7 +81,6 @@ leveldb::Status IndexedDBConnection::AbortTransactionsAndClose(
 
   std::move(on_close_).Run(this);
   origin_state_handle_.Release();
-  active_observers_.clear();
   return status;
 }
 
@@ -107,39 +104,6 @@ void IndexedDBConnection::VersionChangeIgnored() {
 bool IndexedDBConnection::IsConnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return callbacks_.get();
-}
-
-// The observers begin listening to changes only once they are activated.
-void IndexedDBConnection::ActivatePendingObservers(
-    std::vector<std::unique_ptr<IndexedDBObserver>> pending_observers) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : pending_observers) {
-    active_observers_.push_back(std::move(observer));
-  }
-  pending_observers.clear();
-}
-
-void IndexedDBConnection::RemoveObservers(
-    const std::vector<int32_t>& observer_ids_to_remove) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<int32_t> pending_observer_ids;
-  for (int32_t id_to_remove : observer_ids_to_remove) {
-    const auto& it = std::find_if(
-        active_observers_.begin(), active_observers_.end(),
-        [&id_to_remove](const std::unique_ptr<IndexedDBObserver>& o) {
-          return o->id() == id_to_remove;
-        });
-    if (it != active_observers_.end())
-      active_observers_.erase(it);
-    else
-      pending_observer_ids.push_back(id_to_remove);
-  }
-  if (pending_observer_ids.empty())
-    return;
-
-  for (const auto& it : transactions_) {
-    it.second->RemovePendingObservers(pending_observer_ids);
-  }
 }
 
 IndexedDBTransaction* IndexedDBConnection::CreateTransaction(
@@ -230,7 +194,6 @@ void IndexedDBConnection::RemoveTransaction(int64_t id) {
 
 void IndexedDBConnection::ClearStateAfterClose() {
   callbacks_ = nullptr;
-  active_observers_.clear();
   origin_state_handle_.Release();
 }
 

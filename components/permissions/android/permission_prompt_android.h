@@ -6,10 +6,10 @@
 #define COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_ANDROID_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/permissions/permission_prompt.h"
@@ -31,7 +31,7 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   ~PermissionPromptAndroid() override;
 
   // permissions::PermissionPrompt:
-  void UpdateAnchorPosition() override;
+  void UpdateAnchor() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
@@ -45,8 +45,8 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   size_t PermissionCount() const;
   ContentSettingsType GetContentSettingType(size_t position) const;
   int GetIconId() const;
-  base::string16 GetTitleText() const;
-  base::string16 GetMessageText() const;
+  std::u16string GetTitleText() const;
+  std::u16string GetMessageText() const;
 
   const content::WebContents* web_contents() { return web_contents_; }
 

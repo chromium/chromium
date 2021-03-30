@@ -12,17 +12,18 @@ FileAccessPermissions::FileAccessPermissions() {}
 
 FileAccessPermissions::~FileAccessPermissions() {}
 
-void FileAccessPermissions::GrantAccessPermission(
-    const std::string& extension_id, const base::FilePath& path) {
+void FileAccessPermissions::GrantAccessPermission(const std::string& origin,
+                                                  const base::FilePath& path) {
   DCHECK(!path.empty());
   base::AutoLock locker(lock_);
-  path_map_[extension_id].insert(path);
+  path_map_[origin].insert(path);
 }
 
 bool FileAccessPermissions::HasAccessPermission(
-    const std::string& extension_id, const base::FilePath& path) const {
+    const std::string& origin,
+    const base::FilePath& path) const {
   base::AutoLock locker(lock_);
-  PathAccessMap::const_iterator path_map_iter = path_map_.find(extension_id);
+  PathAccessMap::const_iterator path_map_iter = path_map_.find(origin);
   if (path_map_iter == path_map_.end())
     return false;
   const PathSet& path_set = path_map_iter->second;

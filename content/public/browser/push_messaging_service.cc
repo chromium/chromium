@@ -88,7 +88,7 @@ void StorePushSubscriptionOnIOForTesting(
 scoped_refptr<ServiceWorkerContextWrapper> GetServiceWorkerContext(
     BrowserContext* browser_context, const GURL& origin) {
   StoragePartition* partition =
-      BrowserContext::GetStoragePartitionForSite(browser_context, origin);
+      BrowserContext::GetStoragePartitionForUrl(browser_context, origin);
   return base::WrapRefCounted(static_cast<ServiceWorkerContextWrapper*>(
       partition->GetServiceWorkerContext()));
 }

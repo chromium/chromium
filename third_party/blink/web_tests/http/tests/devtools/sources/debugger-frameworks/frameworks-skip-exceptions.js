@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that framework black-boxing skips exceptions, including those that happened deeper inside V8 native script.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" onclick="testFunction()" value="Test">

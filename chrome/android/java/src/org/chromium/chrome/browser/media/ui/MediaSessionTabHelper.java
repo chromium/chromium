@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.media.ui;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.document.ChromeIntentUtil;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -19,6 +20,7 @@ import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A tab helper that wraps {@link MediaSessionHelper} and is responsible for Chrome-specific
@@ -51,6 +53,11 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
             mTab.removeObserver(this);
             mTab = null;
         }
+
+        @Override
+        public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+            // Intentionally do nothing to prevent automatic observer removal on detachment.
+        }
     };
 
     @VisibleForTesting
@@ -78,7 +85,8 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
 
     @Override
     public Intent createBringTabToFrontIntent() {
-        return ChromeIntentUtil.createBringTabToFrontIntent(mTab.getId());
+        return IntentHandler.createTrustedBringTabToFrontIntent(
+                mTab.getId(), IntentHandler.BringToFrontSource.NOTIFICATION);
     }
 
     @Override

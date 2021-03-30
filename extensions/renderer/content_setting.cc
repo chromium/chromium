@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/content_setting.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
@@ -27,13 +28,24 @@ namespace extensions {
 namespace {
 
 // Content settings that are deprecated.
-const char* const kDeprecatedTypes[] = {
-    "fullscreen", "mouselock",
+const char* const kDeprecatedTypesToAllow[] = {
+    "fullscreen",
+    "mouselock",
+};
+const char* const kDeprecatedTypesToBlock[] = {
+    "plugins",
 };
 
+const char* GetForcedValueForDeprecatedSetting(base::StringPiece type) {
+  if (base::Contains(kDeprecatedTypesToAllow, type))
+    return "allow";
+  DCHECK(base::Contains(kDeprecatedTypesToBlock, type));
+  return "block";
+}
+
 bool IsDeprecated(base::StringPiece type) {
-  return std::find(std::begin(kDeprecatedTypes), std::end(kDeprecatedTypes),
-                   type) != std::end(kDeprecatedTypes);
+  return base::Contains(kDeprecatedTypesToAllow, type) ||
+         base::Contains(kDeprecatedTypesToBlock, type);
 }
 
 }  // namespace
@@ -163,12 +175,12 @@ void ContentSetting::HandleFunction(const std::string& method_name,
     if (!parse_result.callback.IsEmpty()) {
       std::vector<v8::Local<v8::Value>> args;
       if (method_name == "get") {
-        // Deprecated settings are always set to "allow". Populate the result to
-        // avoid breaking extensions.
+        // Populate the result to avoid breaking extensions.
         v8::Local<v8::Object> object = v8::Object::New(isolate);
         v8::Maybe<bool> result = object->CreateDataProperty(
             context, gin::StringToSymbol(isolate, "setting"),
-            gin::StringToSymbol(isolate, "allow"));
+            gin::StringToSymbol(
+                isolate, GetForcedValueForDeprecatedSetting(pref_name_)));
         // Since we just defined this object, CreateDataProperty() should never
         // fail.
         CHECK(result.ToChecked());

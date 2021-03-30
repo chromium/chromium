@@ -31,7 +31,6 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
 
  private:
   // AccountReconcilorDelegate:
-  bool IsAccountConsistencyEnforced() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
   bool ShouldAbortReconcileIfPrimaryHasError() const override;
   ConsentLevel GetConsentLevelForPrimaryAccount() const override;
@@ -50,12 +49,7 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
       const gaia::MultiloginMode mode) const override;
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& unconsented_primary_account_info) override;
+  void OnPrimaryAccountChanged(const PrimaryAccountChangeEvent& event) override;
 
   void UpdateReconcilorStatus();
 

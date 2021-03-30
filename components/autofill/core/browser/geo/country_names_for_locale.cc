@@ -5,10 +5,10 @@
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
 
 #include <map>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -22,7 +22,7 @@ namespace {
 // effect. |buffer_size| should specify the |buffer|'s size, and is updated if
 // the |buffer| is resized.
 const std::string GetSortKey(const icu::Collator& collator,
-                             const base::string16& str,
+                             const std::u16string& str,
                              std::unique_ptr<uint8_t[]>* buffer,
                              int32_t* buffer_size) {
   DCHECK(buffer);
@@ -77,7 +77,7 @@ std::map<std::string, std::string> GetLocalizedNames(
 
   for (const std::string& country_code :
        CountryDataMap::GetInstance()->country_codes()) {
-    base::string16 country_name =
+    std::u16string country_name =
         l10n_util::GetDisplayNameForCountry(country_code, locale);
     std::string sort_key =
         GetSortKey(*collator, country_name, &buffer, &buffer_size);
@@ -102,7 +102,7 @@ CountryNamesForLocale::CountryNamesForLocale(CountryNamesForLocale&& source)
       localized_names_(std::move(source.localized_names_)) {}
 
 const std::string CountryNamesForLocale::GetCountryCode(
-    const base::string16& country_name) const {
+    const std::u16string& country_name) const {
   // As recommended[1] by ICU, initialize the buffer size to four times the
   // source string length.
   // [1] http://userguide.icu-project.org/collation/api#TOC-Examples

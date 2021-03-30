@@ -53,8 +53,8 @@ class ProfileOAuth2TokenServiceIOSDelegate
   // Subsequent calls to |RefreshTokenIsAvailable| will return |false|.
   void RevokeAllCredentials() override;
 
-  void ReloadAllAccountsFromSystem() override;
-
+  void ReloadAllAccountsFromSystemWithPrimaryAccount(
+      const base::Optional<CoreAccountId>& primary_account_id) override;
   void ReloadAccountFromSystem(const CoreAccountId& account_id) override;
 
   // Adds |account_id| to |accounts_| if it does not exist or udpates
@@ -69,16 +69,6 @@ class ProfileOAuth2TokenServiceIOSDelegate
 
  private:
   friend class ProfileOAuth2TokenServiceIOSDelegateTest;
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           LoadRevokeCredentialsClearsExcludedAccounts);
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           ReloadCredentials);
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           ReloadCredentialsWithPrimaryAccountId);
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           UpdateAuthErrorAfterRevokeCredentials);
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceIOSDelegateTest,
-                           GetAuthError);
 
   struct AccountStatus {
     GoogleServiceAuthError last_auth_error;
@@ -91,7 +81,7 @@ class ProfileOAuth2TokenServiceIOSDelegate
   // Reloads accounts from the provider. Fires |OnRefreshTokenAvailable| for
   // each new account. Fires |OnRefreshTokenRevoked| for each account that was
   // removed.
-  void ReloadCredentials();
+  void ReloadCredentials(const CoreAccountId& primary_account_id);
 
   // Info about the existing accounts.
   AccountStatusMap accounts_;

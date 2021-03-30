@@ -9,8 +9,9 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/assistant_manager_service.h"
+#include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/cpp/features.h"
 
 // A macro which ensures we are running on the main thread.
@@ -35,10 +36,8 @@ const char kAudioFocusSourceName[] = "assistant";
 
 }  // namespace
 
-AssistantMediaSession::AssistantMediaSession(
-    AssistantManagerService* assistant_manager_service)
-    : assistant_manager_service_(assistant_manager_service),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+AssistantMediaSession::AssistantMediaSession(MediaHost* host)
+    : host_(host), main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
 AssistantMediaSession::~AssistantMediaSession() {
   AbandonAudioFocusIfNeeded();
@@ -81,16 +80,14 @@ void AssistantMediaSession::Suspend(SuspendType suspend_type) {
     return;
   SetAudioFocusInfo(MediaSessionInfo::SessionState::kSuspended,
                     audio_focus_type_);
-  assistant_manager_service_->UpdateInternalMediaPlayerStatus(
-      media_session::mojom::MediaSessionAction::kPause);
+  host_->PauseInternalMediaPlayer();
 }
 
 void AssistantMediaSession::Resume(SuspendType suspend_type) {
   if (!IsSessionStateSuspended())
     return;
   SetAudioFocusInfo(MediaSessionInfo::SessionState::kActive, audio_focus_type_);
-  assistant_manager_service_->UpdateInternalMediaPlayerStatus(
-      media_session::mojom::MediaSessionAction::kPlay);
+  host_->ResumeInternalMediaPlayer();
 }
 
 void AssistantMediaSession::RequestAudioFocus(AudioFocusType audio_focus_type) {
@@ -142,22 +139,20 @@ void AssistantMediaSession::AbandonAudioFocusIfNeeded() {
 }
 
 void AssistantMediaSession::NotifyMediaSessionMetadataChanged(
-    const assistant_client::MediaStatus& status) {
-  ENSURE_MAIN_THREAD(&AssistantMediaSession::NotifyMediaSessionMetadataChanged,
-                     status);
+    const chromeos::libassistant::mojom::MediaState& status) {
   media_session::MediaMetadata metadata;
 
-  metadata.title = base::UTF8ToUTF16(status.metadata.title);
-  metadata.artist = base::UTF8ToUTF16(status.metadata.artist);
-  metadata.album = base::UTF8ToUTF16(status.metadata.album);
+  if (!status.metadata.is_null()) {
+    metadata.title = base::UTF8ToUTF16(status.metadata->title);
+    metadata.artist = base::UTF8ToUTF16(status.metadata->artist);
+    metadata.album = base::UTF8ToUTF16(status.metadata->album);
+  }
 
   bool metadata_changed = metadata_ != metadata;
   if (!metadata_changed)
     return;
 
   metadata_ = metadata;
-
-  current_track_ = status.track_type;
 
   for (auto& observer : observers_)
     observer->MediaSessionMetadataChanged(this->metadata_);
@@ -181,6 +176,11 @@ bool AssistantMediaSession::IsSessionStateSuspended() const {
 
 bool AssistantMediaSession::IsSessionStateInactive() const {
   return session_info_.state == MediaSessionInfo::SessionState::kInactive;
+}
+
+void AssistantMediaSession::SetInternalAudioFocusIdForTesting(
+    const base::UnguessableToken& token) {
+  internal_audio_focus_id_ = token;
 }
 
 void AssistantMediaSession::EnsureServiceConnection() {

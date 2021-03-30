@@ -38,8 +38,8 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
 
   for (tab_groups::TabGroupId group : GetOrderedTabGroupsInSubMenu()) {
     const TabGroup* tab_group = model->group_model()->GetTabGroup(group);
-    const base::string16 group_title = tab_group->visual_data()->title();
-    const base::string16 displayed_title =
+    const std::u16string group_title = tab_group->visual_data()->title();
+    const std::u16string displayed_title =
         group_title.empty() ? tab_group->GetContentString() : group_title;
     const int color_id =
         GetTabGroupContextMenuColorId(tab_group->visual_data()->color());
@@ -48,6 +48,7 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
     ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
         kTabGroupIcon, tp.GetColor(color_id), kIconSize);
     menu_item_infos.emplace_back(MenuItemInfo{displayed_title, image_model});
+    menu_item_infos.back().may_have_mnemonics = false;
   }
   Build(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP, menu_item_infos);
 }
@@ -60,7 +61,7 @@ ExistingTabGroupSubMenuModel::GetOrderedTabGroupsInSubMenu() {
     base::Optional<tab_groups::TabGroupId> new_group =
         model()->GetTabGroupForTab(i);
     if (new_group.has_value() && new_group != current_group &&
-        ShouldShowGroup(model(), context_index(), new_group.value())) {
+        ShouldShowGroup(model(), GetContextIndex(), new_group.value())) {
       ordered_groups.push_back(new_group.value());
     }
     current_group = new_group;
@@ -88,8 +89,11 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int command_index) {
   DCHECK_LT(size_t{command_index},
             model()->group_model()->ListTabGroups().size());
   base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
+
+  if (!model()->ContainsIndex(GetContextIndex()))
+    return;
   model()->ExecuteAddToExistingGroupCommand(
-      context_index(), GetOrderedTabGroupsInSubMenu()[command_index]);
+      GetContextIndex(), GetOrderedTabGroupsInSubMenu()[command_index]);
 }
 
 // static

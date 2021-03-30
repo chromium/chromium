@@ -26,17 +26,14 @@ void FidoTouchIdDiscovery::Start() {
     return;
   }
 
-  // Start() is currently invoked synchronously in the
-  // FidoRequestHandler ctor. Invoke AddAuthenticator() asynchronously
-  // to avoid hairpinning FidoRequestHandler::AuthenticatorAdded()
-  // before the request handler has an observer.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&FidoTouchIdDiscovery::AddAuthenticator,
-                                weak_factory_.GetWeakPtr()));
+  TouchIdAuthenticator::IsAvailable(
+      authenticator_config_,
+      base::BindOnce(&FidoTouchIdDiscovery::OnAuthenticatorAvailable,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void FidoTouchIdDiscovery::AddAuthenticator() {
-  if (!TouchIdAuthenticator::IsAvailable(authenticator_config_)) {
+void FidoTouchIdDiscovery::OnAuthenticatorAvailable(bool is_available) {
+  if (!is_available) {
     observer()->DiscoveryStarted(this, /*success=*/false);
     return;
   }

@@ -34,14 +34,14 @@ class AnimationEffectStackTest : public PageTestBase {
 
   Animation* Play(KeyframeEffect* effect, double start_time) {
     Animation* animation = timeline->Play(effect);
-    animation->setStartTime(start_time * 1000);
+    animation->setStartTime(CSSNumberish::FromDouble(start_time * 1000));
     animation->Update(kTimingUpdateOnDemand);
     return animation;
   }
 
   void UpdateTimeline(base::TimeDelta time) {
     GetDocument().GetAnimationClock().UpdateTime(
-        GetDocument().Timeline().ZeroTime() + time);
+        GetDocument().Timeline().CalculateZeroTime() + time);
     timeline->ServiceAnimations(kTimingUpdateForAnimationFrame);
   }
 
@@ -68,8 +68,8 @@ class AnimationEffectStackTest : public PageTestBase {
   InertEffect* MakeInertEffect(KeyframeEffectModelBase* effect) {
     Timing timing;
     timing.fill_mode = Timing::FillMode::BOTH;
-    return MakeGarbageCollected<InertEffect>(effect, timing, false, 0,
-                                             base::nullopt);
+    return MakeGarbageCollected<InertEffect>(
+        effect, timing, false, AnimationTimeDelta(), base::nullopt);
   }
 
   KeyframeEffect* MakeKeyframeEffect(KeyframeEffectModelBase* effect,

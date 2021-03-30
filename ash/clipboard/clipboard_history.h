@@ -27,11 +27,16 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
     // Called when a ClipboardHistoryItem has been added.
     virtual void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item,
                                              bool is_duplicate) {}
+
     // Called when a ClipboardHistoryItem has been removed.
     virtual void OnClipboardHistoryItemRemoved(
         const ClipboardHistoryItem& item) {}
+
     // Called when ClipboardHistory is Clear()-ed.
     virtual void OnClipboardHistoryCleared() {}
+
+    // Called when the operation on clipboard data is confirmed.
+    virtual void OnOperationConfirmed(bool copy) {}
   };
 
   ClipboardHistory();
@@ -56,8 +61,9 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // do nothing.
   void RemoveItemForId(const base::UnguessableToken& id);
 
-  // ClipboardMonitor:
+  // ui::ClipboardObserver:
   void OnClipboardDataChanged() override;
+  void OnClipboardDataRead() override;
 
   base::WeakPtr<ClipboardHistory> GetWeakPtr();
 
@@ -73,8 +79,17 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   void Pause();
   void Resume();
 
+  // Keeps track of consecutive clipboard operations and records metrics.
+  void OnClipboardOperation(bool copy);
+
   // The count of pauses.
   size_t num_pause_ = 0;
+
+  // The number of consecutive copies, reset after a paste.
+  int consecutive_copies_ = 0;
+
+  // The number of consecutive pastes, reset after a copy.
+  int consecutive_pastes_ = 0;
 
   // The history of data copied to the Clipboard. Items of the list are sorted
   // by recency.
@@ -84,8 +99,13 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // ClipboardHistory.
   mutable base::ObserverList<Observer> observers_;
 
-  // Factory to create WeakPtrs used to debounce calls to CommitData().
+  // Factory to create WeakPtrs used to debounce calls to `CommitData()`.
   base::WeakPtrFactory<ClipboardHistory> commit_data_weak_factory_{this};
+
+  // Factory to create WeakPtrs used to debounce calls to
+  // `OnClipboardOperation()`.
+  base::WeakPtrFactory<ClipboardHistory> clipboard_histogram_weak_factory_{
+      this};
 
   // Factory to create WeakPtrs for ClipboardHistory.
   base::WeakPtrFactory<ClipboardHistory> weak_factory_{this};

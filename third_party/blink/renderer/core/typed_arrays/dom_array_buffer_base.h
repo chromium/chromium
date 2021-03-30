@@ -33,10 +33,15 @@ class CORE_EXPORT DOMArrayBufferBase : public ScriptWrappable {
 
   bool IsShared() const { return contents_.IsShared(); }
 
+  // ScriptWrappable overrides:
   v8::Local<v8::Value> Wrap(v8::Isolate*,
                             v8::Local<v8::Object> creation_context) override {
     NOTREACHED();
     return v8::Local<v8::Object>();
+  }
+  v8::MaybeLocal<v8::Value> WrapV2(ScriptState*) override {
+    NOTREACHED();
+    return v8::MaybeLocal<v8::Value>();
   }
 
  protected:

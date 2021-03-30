@@ -153,6 +153,10 @@ class TrustTokenStore {
   WARN_UNUSED_RESULT virtual int CountTokens(
       const SuitableTrustTokenOrigin& issuer);
 
+  // Returns the number of stored tokens per issuer.
+  WARN_UNUSED_RESULT virtual base::flat_map<SuitableTrustTokenOrigin, int>
+  GetStoredTrustTokenCounts();
+
   // Returns all signed tokens from |issuer| signed by keys matching
   // the given predicate.
   WARN_UNUSED_RESULT virtual std::vector<TrustToken> RetrieveMatchingTokens(
@@ -199,6 +203,12 @@ class TrustTokenStore {
   // Returns whether any data was deleted.
   WARN_UNUSED_RESULT virtual bool ClearDataForFilter(
       mojom::ClearDataFilterPtr filter);
+
+  // Deletes all stored tokens issued by |issuer| but leaves other stored
+  // data, including the issuer's Redemption Records (RRs), intact.
+  // Returns whether any data was deleted.
+  WARN_UNUSED_RESULT virtual bool DeleteStoredTrustTokens(
+      const SuitableTrustTokenOrigin& issuer);
 
  private:
   std::unique_ptr<TrustTokenPersister> persister_;

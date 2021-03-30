@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ui/base/models/table_model.h"
 
@@ -42,7 +41,7 @@ class TemplateURLTableModel : public ui::TableModel,
 
   // ui::TableModel overrides.
   int RowCount() override;
-  base::string16 GetText(int row, int column) override;
+  std::u16string GetText(int row, int column) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // Removes the entry at the specified index.
@@ -50,14 +49,14 @@ class TemplateURLTableModel : public ui::TableModel,
 
   // Adds a new entry at the specified index.
   void Add(int index,
-           const base::string16& short_name,
-           const base::string16& keyword,
+           const std::u16string& short_name,
+           const std::u16string& keyword,
            const std::string& url);
 
   // Update the entry at the specified index.
   void ModifyTemplateURL(int index,
-                         const base::string16& title,
-                         const base::string16& keyword,
+                         const std::u16string& title,
+                         const std::u16string& keyword,
                          const std::string& url);
 
   // Reloads the icon at the specified index.

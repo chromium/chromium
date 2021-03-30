@@ -58,8 +58,9 @@ void ReportGenerator::CreateBasicRequest(
         policy::GetBrowserDeviceIdentifier().release());
 #if defined(OS_IOS)
     basic_request->set_device_model(policy::GetDeviceModel());
+    basic_request->set_brand_name(policy::GetDeviceManufacturer());
 #endif  // defined(OS_IOS)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   browser_report_generator_.Generate(
@@ -87,7 +88,7 @@ std::string ReportGenerator::GetOSUserName() {
 
 std::string ReportGenerator::GetSerialNumber() {
 #if defined(OS_WIN)
-  return base::UTF16ToUTF8(
+  return base::WideToUTF8(
       base::win::WmiComputerSystemInfo::Get().serial_number());
 #else
   return std::string();

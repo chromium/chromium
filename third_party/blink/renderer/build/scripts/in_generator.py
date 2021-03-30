@@ -32,9 +32,14 @@ import os
 import os.path
 import shlex
 import shutil
+import sys
 import optparse
 
 from in_file import InFile
+
+# TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
+if sys.version_info.major != 2:
+    basestring = str
 
 
 #########################################################

@@ -21,11 +21,11 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/cors_origin_pattern.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #if !defined(OS_ANDROID)
 #include "content/public/browser/zoom_level_delegate.h"
@@ -43,10 +43,6 @@ class InProgressDownloadManager;
 
 namespace storage {
 class ExternalMountPoints;
-}
-
-namespace url {
-class Origin;
 }
 
 namespace media {
@@ -77,7 +73,7 @@ class DownloadManager;
 class ClientHintsControllerDelegate;
 class ContentIndexProvider;
 class DownloadManagerDelegate;
-class NativeFileSystemPermissionContext;
+class FileSystemAccessPermissionContext;
 class PermissionController;
 class PermissionControllerDelegate;
 class PushMessagingService;
@@ -126,12 +122,12 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   // Deprecated. Do not add new callers. Use the SiteInstance or
   // StoragePartitionConfig methods above instead.
-  // Returns a StoragePartition for the given site URL. By default this will
+  // Returns a StoragePartition for the given URL. By default this will
   // create a new StoragePartition if it doesn't exist, unless |can_create| is
   // false.
-  static StoragePartition* GetStoragePartitionForSite(
+  static StoragePartition* GetStoragePartitionForUrl(
       BrowserContext* browser_context,
-      const GURL& site,
+      const GURL& url,
       bool can_create = true);
 
   using StoragePartitionCallback =
@@ -219,11 +215,19 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   static void SetDownloadManagerForTesting(
       BrowserContext* browser_context,
-      std::unique_ptr<content::DownloadManager> download_manager);
+      std::unique_ptr<DownloadManager> download_manager);
 
   static void SetPermissionControllerForTesting(
       BrowserContext* browser_context,
       std::unique_ptr<PermissionController> permission_controller);
+
+  // The list of CORS exemptions.  This list needs to be 1) replicated when
+  // creating or re-creating new network::mojom::NetworkContexts (see
+  // network::mojom::NetworkContextParams::cors_origin_access_list) and 2)
+  // consulted by CORS-aware factories (e.g. passed when constructing
+  // FileURLLoaderFactory).
+  static SharedCorsOriginAccessList* GetSharedCorsOriginAccessList(
+      BrowserContext* context);
 
   BrowserContext();
 
@@ -311,16 +315,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // called once per context. It's valid to return nullptr.
   virtual BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() = 0;
 
-  // Sets CORS origin access lists.
-  virtual void SetCorsOriginAccessListForOrigin(
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure);
-
-  // Returns a SharedCorsOriginAccessList instance.
-  virtual SharedCorsOriginAccessList* GetSharedCorsOriginAccessList();
-
   // Returns a unique string associated with this browser context.
   virtual const std::string& UniqueId();
 
@@ -352,10 +346,10 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   virtual download::InProgressDownloadManager*
   RetriveInProgressDownloadManager();
 
-  // Returns the NativeFileSystemPermissionContext associated with this context
+  // Returns the FileSystemAccessPermissionContext associated with this context
   // if any, nullptr otherwise.
-  virtual NativeFileSystemPermissionContext*
-  GetNativeFileSystemPermissionContext();
+  virtual FileSystemAccessPermissionContext*
+  GetFileSystemAccessPermissionContext();
 
   // Returns the ContentIndexProvider associated with that context if any,
   // nullptr otherwise.
@@ -373,6 +367,9 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns the VariationsClient associated with the context if any, or
   // nullptr if there isn't one.
   virtual variations::VariationsClient* GetVariationsClient();
+
+  // Write a representation of this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context);
 
  private:
   const std::string unique_id_;

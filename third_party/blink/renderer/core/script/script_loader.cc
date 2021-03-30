@@ -26,10 +26,10 @@
 
 #include "base/feature_list.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -58,6 +58,8 @@
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -69,11 +71,13 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
@@ -81,8 +85,7 @@ ScriptLoader::ScriptLoader(ScriptElementBase* element,
                            const CreateElementFlags flags)
     : element_(element),
       will_be_parser_executed_(false),
-      will_execute_when_document_finished_parsing_(false),
-      force_deferred_(false) {
+      will_execute_when_document_finished_parsing_(false) {
   // <spec href="https://html.spec.whatwg.org/C/#already-started">... The
   // cloning steps for script elements must set the "already started" flag on
   // the copy if it is set on the element being cloned.</spec>
@@ -228,8 +231,12 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     return ScriptTypeAtPrepare::kModule;
   }
 
-  if (type == "importmap") {
+  if (EqualIgnoringASCIICase(type, "importmap")) {
     return ScriptTypeAtPrepare::kImportMap;
+  }
+
+  if (EqualIgnoringASCIICase(type, "speculationrules")) {
+    return ScriptTypeAtPrepare::kSpeculationRules;
   }
 
   // <spec step="7">... If neither of the above conditions are true, then
@@ -273,9 +280,10 @@ bool ShouldBlockSyncScriptForDocumentPolicy(
     return false;
   }
 
-  // Module scripts and import maps never block parsing.
+  // Non-classic scripts don't block parsing.
   if (script_type == ScriptLoader::ScriptTypeAtPrepare::kModule ||
       script_type == ScriptLoader::ScriptTypeAtPrepare::kImportMap ||
+      script_type == ScriptLoader::ScriptTypeAtPrepare::kSpeculationRules ||
       !parser_inserted)
     return false;
 
@@ -347,6 +355,11 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         return false;
       break;
 
+    case ScriptTypeAtPrepare::kSpeculationRules:
+      if (!RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window))
+        return false;
+      break;
+
     case ScriptTypeAtPrepare::kClassic:
     case ScriptTypeAtPrepare::kModule:
       break;
@@ -397,8 +410,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   const bool is_in_document_write = element_document.IsInDocumentWrite();
 
   // Reset line numbering for nested writes.
-  TextPosition position =
-      is_in_document_write ? TextPosition() : script_start_position;
+  TextPosition position = is_in_document_write ? TextPosition::MinimumPosition()
+                                               : script_start_position;
 
   // <spec step="13">If the script element does not have a src content
   // attribute, and the Should element's inline behavior be blocked by Content
@@ -487,13 +500,17 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
   DCHECK(!prepared_pending_script_);
 
+  RenderBlockingBehavior render_blocking_behavior =
+      non_blocking_ ? RenderBlockingBehavior::kNonBlocking
+                    : RenderBlockingBehavior::kBlocking;
+
   // <spec step="22">Let options be a script fetch options whose cryptographic
   // nonce is cryptographic nonce, integrity metadata is integrity metadata,
   // parser metadata is parser metadata, credentials mode is module script
   // credentials mode, and referrer policy is referrer policy.</spec>
   ScriptFetchOptions options(nonce, integrity_metadata, integrity_attr,
                              parser_state, credentials_mode, referrer_policy,
-                             importance);
+                             importance, render_blocking_behavior);
 
   // <spec step="23">Let settings object be the element's node document's
   // relevant settings object.</spec>
@@ -505,22 +522,44 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   auto* fetch_client_settings_object_fetcher = context_window->Fetcher();
 
   // https://wicg.github.io/import-maps/#integration-prepare-a-script
-  // If the script’s type is "importmap" and the element’s node document’s
-  // acquiring import maps is false, then queue a task to fire an event named
-  // error at the element, and return. [spec text]
+  // If the script’s type is "importmap": [spec text]
   if (GetScriptType() == ScriptTypeAtPrepare::kImportMap) {
     Modulator* modulator =
         Modulator::From(ToScriptStateForMainWorld(context_window->GetFrame()));
-    if (!modulator->IsAcquiringImportMaps()) {
-      element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kError,
-          "An import map is added after module script load was triggered."));
-      element_document.GetTaskRunner(TaskType::kDOMManipulation)
-          ->PostTask(FROM_HERE,
-                     WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
-                               WrapPersistent(element_.Get())));
-      return false;
+    auto aquiring_state = modulator->GetAcquiringImportMapsState();
+    switch (aquiring_state) {
+      case Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad:
+      case Modulator::AcquiringImportMapsState::kMultipleImportMaps:
+        // 1. If the element’s node document's acquiring import maps is false,
+        // then queue a task to fire an event named error at the element, and
+        // return. [spec text]
+        element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            aquiring_state ==
+                    Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad
+                ? "An import map is added after module script load was "
+                  "triggered."
+                : "Multiple import maps are not yet supported. "
+                  "https://crbug.com/927119"));
+        element_document.GetTaskRunner(TaskType::kDOMManipulation)
+            ->PostTask(FROM_HERE,
+                       WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
+                                 WrapPersistent(element_.Get())));
+        return false;
+
+      case Modulator::AcquiringImportMapsState::kAcquiring:
+        // 2. Set the element’s node document's acquiring import maps to false.
+        // [spec text]
+        modulator->SetAcquiringImportMapsState(
+            Modulator::AcquiringImportMapsState::kMultipleImportMaps);
+
+        // 3. Assert: the element’s node document's pending import map script is
+        // null. [spec text]
+        //
+        // TODO(crbug.com/922212): Currently there are no implementation for
+        // "pending import map script" as we don't support external import maps.
+        break;
     }
   }
 
@@ -575,6 +614,14 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
             ->PostTask(FROM_HERE,
                        WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
                                  WrapPersistent(element_.Get())));
+        return false;
+
+      case ScriptTypeAtPrepare::kSpeculationRules:
+        // TODO(crbug.com/1182803): Implement external speculation rules.
+        element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "External speculation rules are not yet supported."));
         return false;
 
       case ScriptTypeAtPrepare::kClassic: {
@@ -680,6 +727,21 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         return false;
       }
 
+      case ScriptTypeAtPrepare::kSpeculationRules: {
+        // https://jeremyroman.github.io/alternate-loading-modes/#speculation-rules-prepare-a-script-patch
+        // Let result be the result of parsing speculation rules given source
+        // text and base URL.
+        // Set the script’s result to result.
+        // If the script’s result is not null, append it to the element’s node
+        // document's list of speculation rule sets.
+        DCHECK(RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window));
+        if (auto* rule_set =
+                SpeculationRuleSet::ParseInline(source_text, base_url)) {
+          DocumentSpeculationRules::From(element_document).AddRuleSet(rule_set);
+        }
+        return false;
+      }
+
         // <spec step="25.2.A">"classic"</spec>
       case ScriptTypeAtPrepare::kClassic: {
         // <spec step="25.2.A.1">Let script be the result of creating a classic
@@ -728,7 +790,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         ModuleScriptCreationParams params(
             source_url, base_url, ScriptSourceLocationType::kInline,
             ModuleType::kJavaScript, ParkableString(source_text.Impl()),
-            nullptr, options.CredentialsMode());
+            nullptr);
         ModuleScript* module_script =
             JSModuleScript::Create(params, modulator, options, position);
 
@@ -787,25 +849,6 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
     // - HTMLParserScriptRunner::requestDeferredScript(), and
     // - TODO(hiroshige): Investigate XMLDocumentParser::endElementNs()
     will_execute_when_document_finished_parsing_ = true;
-    will_be_parser_executed_ = true;
-
-    return true;
-  }
-
-  // Check for external script that should be force deferred.
-  if (GetScriptType() == ScriptTypeAtPrepare::kClassic &&
-      element_->HasSourceAttribute() &&
-      context_window->GetFrame()->ShouldForceDeferScript() &&
-      IsA<HTMLDocument>(context_window->document()) && parser_inserted_ &&
-      !element_->AsyncAttributeValue()) {
-    // In terms of ScriptLoader flags, force deferred scripts behave like
-    // parser-blocking scripts, except that |force_deferred_| is set.
-    // The caller of PrepareScript()
-    // - Force-defers such scripts if the caller supports force-defer
-    //   (i.e., HTMLParserScriptRunner); or
-    // - Ignores the |force_deferred_| flag and handles such scripts as
-    //   parser-blocking scripts (e.g., XMLParserScriptRunner).
-    force_deferred_ = true;
     will_be_parser_executed_ = true;
 
     return true;
@@ -888,14 +931,6 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   DCHECK_EQ(GetScriptType(), ScriptTypeAtPrepare::kClassic);
   DCHECK(!is_external_script_);
 
-  // Check for inline script that should be force deferred.
-  if (context_window->GetFrame()->ShouldForceDeferScript() &&
-      IsA<HTMLDocument>(context_window->document()) && parser_inserted_) {
-    force_deferred_ = true;
-    will_be_parser_executed_ = true;
-    return true;
-  }
-
   // <spec step="26.E">If the element does not have a src attribute, and the
   // element has been flagged as "parser-inserted", and either the parser that
   // created the script is an XML parser or it's an HTML parser whose script
@@ -947,9 +982,9 @@ void ScriptLoader::FetchClassicScript(const KURL& url,
                                       const WTF::TextEncoding& encoding) {
   FetchParameters::DeferOption defer = FetchParameters::kNoDefer;
   if (!parser_inserted_ || element_->AsyncAttributeValue() ||
-      element_->DeferAttributeValue())
+      element_->DeferAttributeValue()) {
     defer = FetchParameters::kLazyLoad;
-
+  }
   ClassicPendingScript* pending_script = ClassicPendingScript::Fetch(
       url, document, options, cross_origin, encoding, element_, defer);
   prepared_pending_script_ = pending_script;
@@ -968,7 +1003,8 @@ void ScriptLoader::FetchModuleScriptTree(
   // options.</spec>
   auto* module_tree_client =
       MakeGarbageCollected<ModulePendingScriptTreeClient>();
-  modulator->FetchTree(url, fetch_client_settings_object_fetcher,
+  modulator->FetchTree(url, ModuleType::kJavaScript,
+                       fetch_client_settings_object_fetcher,
                        mojom::blink::RequestContextType::SCRIPT,
                        network::mojom::RequestDestination::kScript, options,
                        ModuleScriptCustomFetchType::kNone, module_tree_client);
@@ -980,7 +1016,6 @@ PendingScript* ScriptLoader::TakePendingScript(
     ScriptSchedulingType scheduling_type) {
   CHECK(prepared_pending_script_);
 
-  UMA_HISTOGRAM_ENUMERATION("Blink.Script.SchedulingType", scheduling_type);
   PendingScript* pending_script = prepared_pending_script_;
   prepared_pending_script_ = nullptr;
   pending_script->SetSchedulingType(scheduling_type);

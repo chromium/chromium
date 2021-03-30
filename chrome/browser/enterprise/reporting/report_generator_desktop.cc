@@ -11,8 +11,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/enterprise/reporting/android_app_info_generator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
@@ -52,6 +53,11 @@ class MockNetworkSender : public ConversionReporterImpl::NetworkSender {
   int64_t last_sent_report_id() { return last_sent_report_id_; }
 
   size_t num_reports_sent() { return num_reports_sent_; }
+
+  void Reset() {
+    num_reports_sent_ = 0u;
+    last_sent_report_id_ = -1;
+  }
 
  private:
   size_t num_reports_sent_ = 0u;
@@ -220,6 +226,66 @@ TEST_F(ConversionReporterImplTest, EmbedderDisallowsConversions_ReportNotSent) {
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(0u, sender_->num_reports_sent());
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+TEST_F(ConversionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
+  ConfigurableConversionTestBrowserClient browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&browser_client);
+
+  browser_client.BlockConversionMeasurementInContext(
+      base::make_optional(
+          url::Origin::Create(GURL("https://impression.example"))),
+      base::make_optional(
+          url::Origin::Create(GURL("https://conversion.example"))),
+      base::make_optional(
+          url::Origin::Create(GURL("https://reporting.example"))));
+
+  struct {
+    GURL impression_origin;
+    GURL conversion_origin;
+    GURL reporting_origin;
+    bool report_allowed;
+  } kTestCases[] = {
+      {GURL("https://impression.example"), GURL("https://conversion.example"),
+       GURL("https://reporting.example"), false},
+      {GURL("https://conversion.example"), GURL("https://impression.example"),
+       GURL("https://reporting.example"), true},
+      {GURL("https://impression.example"), GURL("https://conversion.example"),
+       GURL("https://other.example"), true},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    auto impression =
+        ImpressionBuilder(base::Time())
+            .SetImpressionOrigin(
+                url::Origin::Create(test_case.impression_origin))
+            .SetConversionOrigin(
+                url::Origin::Create(test_case.conversion_origin))
+            .SetReportingOrigin(url::Origin::Create(test_case.reporting_origin))
+            .Build();
+    std::vector<ConversionReport> reports{
+        ConversionReport(std::move(impression),
+                         /*conversion_data=*/"", clock().Now(), clock().Now(),
+                         /*conversion_id=*/1)};
+    reporter_->AddReportsToQueue(std::move(reports),
+                                 base::BindRepeating([](int64_t conversion_id) {
+                                   EXPECT_EQ(1L, conversion_id);
+                                 }));
+
+    // Fast forward by 0, as we yield the thread when a report is scheduled to
+    // be sent.
+    task_environment_.FastForwardBy(base::TimeDelta());
+    EXPECT_EQ(static_cast<size_t>(test_case.report_allowed),
+              sender_->num_reports_sent())
+        << "impression_origin; " << test_case.impression_origin
+        << ", conversion_origin: " << test_case.conversion_origin
+        << ", reporting_origin: " << test_case.reporting_origin;
+
+    sender_->Reset();
+  }
+
   SetBrowserClientForTesting(old_browser_client);
 }
 

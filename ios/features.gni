@@ -8,6 +8,10 @@ declare_args() {
   # gn args to build correctly).
   is_cronet_build = false
 
+  # Control whether only WebKit is build. This is used by bots building
+  # WebKit for mac but incorrectly setting `target_os="ios"`.
+  is_webkit_only_build = false
+
   # Controls whether universal links are blocked from opening native apps
   # when the user is browsing in off the record mode.
   block_universal_links_in_off_the_record_mode = true

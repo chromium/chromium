@@ -87,11 +87,15 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "VerifyDidCommit-browser_suh",
     "VerifyDidCommit-renderer_suh",
 
+    "VerifyDidCommit-browser_gesture",
+    "VerifyDidCommit-renderer_gesture",
+
     "VerifyDidCommit-is_same_document",
     "VerifyDidCommit-is_history_api",
     "VerifyDidCommit-renderer_initiated",
     "VerifyDidCommit-is_subframe",
     "VerifyDidCommit-is_form_submission",
+    "VerifyDidCommit-is_error_page",
     "VerifyDidCommit-net_error",
 
     "VerifyDidCommit-is_server_redirect",

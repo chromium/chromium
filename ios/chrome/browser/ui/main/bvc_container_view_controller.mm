@@ -7,15 +7,25 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+@interface BVCContainerViewController ()
+
+// The thumb strip's pan gesture handler that will be added to the toolbar and
+// tab strip.
+@property(nonatomic, weak)
+    ViewRevealingVerticalPanHandler* thumbStripPanHandler;
+
+@end
+
 @implementation BVCContainerViewController
 
-#pragma mark - public property implementation
+#pragma mark - Public
 
 - (UIViewController*)currentBVC {
   return [self.childViewControllers firstObject];
@@ -25,7 +35,7 @@
   // When the thumb strip is enabled, the BVC container stays around all the
   // time. When on a tab grid page with no tabs or the recent tab page, the
   // currentBVC will be set to nil.
-  DCHECK(bvc || IsThumbStripEnabled());
+  DCHECK(bvc || self.isThumbStripEnabled);
   if (self.currentBVC == bvc) {
     return;
   }
@@ -51,12 +61,6 @@
     bvc.view.transform = oldTransform;
     [self.view addSubview:bvc.view];
     [bvc didMoveToParentViewController:self];
-
-    if (IsThumbStripEnabled()) {
-      // The background needs to be clear to allow the thumb strip to be seen
-      // during the enter/exit thumb strip animation.
-      self.currentBVC.view.backgroundColor = [UIColor clearColor];
-    }
   }
 
   DCHECK(self.currentBVC == bvc);
@@ -94,6 +98,70 @@
 - (BOOL)shouldAutorotate {
   return self.currentBVC ? [self.currentBVC shouldAutorotate]
                          : [super shouldAutorotate];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+  if (self.thumbStripEnabled) {
+    DCHECK(self.thumbStripPanHandler);
+    CGFloat baseViewHeight = size.height;
+    self.thumbStripPanHandler.baseViewHeight = baseViewHeight;
+    // On rotation, reposition the BVC container if the state is currently
+    // Revealed.
+    if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed) {
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.revealedHeight);
+    }
+  }
+}
+
+#pragma mark - ThumbStripSupporting
+
+- (BOOL)isThumbStripEnabled {
+  return self.thumbStripPanHandler != nil;
+}
+
+- (void)thumbStripEnabledWithPanHandler:
+    (ViewRevealingVerticalPanHandler*)panHandler {
+  DCHECK(!self.thumbStripEnabled);
+  self.thumbStripPanHandler = panHandler;
+  [panHandler addAnimatee:self];
+}
+
+- (void)thumbStripDisabled {
+  DCHECK(self.thumbStripEnabled);
+  self.view.transform = CGAffineTransformIdentity;
+  self.thumbStripPanHandler = nil;
+}
+
+#pragma mark - ViewRevealingAnimatee
+
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState {
+  // No-op.
+}
+
+- (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  DCHECK(self.thumbStripPanHandler);
+  switch (nextViewRevealState) {
+    case ViewRevealState::Hidden:
+      self.view.transform = CGAffineTransformIdentity;
+      break;
+    case ViewRevealState::Peeked:
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.peekedHeight);
+      break;
+    case ViewRevealState::Revealed:
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.revealedHeight);
+      break;
+  }
+}
+
+- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+  // No-op.
 }
 
 @end

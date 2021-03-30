@@ -52,8 +52,8 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
 
   void SetView(const SuggestionDetails& details);
 
-  void SetViewWithIndex(const base::string16& index,
-                        const base::string16& text);
+  void SetViewWithIndex(const std::u16string& index,
+                        const std::u16string& text);
 
   void SetHighlighted(bool highlighted);
   void SetMinWidth(int width);
@@ -71,7 +71,7 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
   // Views created in the class will be part of tree of |this|, so these
   // child views will be deleted when |this| is deleted.
 
-  void SetSuggestionText(const base::string16& text,
+  void SetSuggestionText(const std::u16string& text,
                          const size_t confirmed_length);
 
   views::Label* index_label_ = nullptr;

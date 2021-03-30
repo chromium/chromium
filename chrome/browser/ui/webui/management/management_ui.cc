@@ -17,7 +17,6 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,6 +66,7 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
     {kManagementReportAppInfoAndActivity,
      IDS_MANAGEMENT_REPORT_APP_INFO_AND_ACTIVITY},
     {kManagementPrinting, IDS_MANAGEMENT_REPORT_PRINTING},
+    {kManagementReportPrintJobs, IDS_MANAGEMENT_REPORT_PRINT_JOBS},
     {kManagementCrostini, IDS_MANAGEMENT_CROSTINI},
     {kManagementCrostiniContainerConfiguration,
      IDS_MANAGEMENT_CROSTINI_CONTAINER_CONFIGURATION},
@@ -123,12 +123,8 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
      IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA},
   };
 
-  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
-  source->AddString(kManagementExtensionReportSafeBrowsingWarnings,
-                    l10n_util::GetStringFUTF16(
-                        IDS_MANAGEMENT_EXTENSION_REPORT_SAFE_BROWSING_WARNINGS,
-                        base::UTF8ToUTF16(safe_browsing::kSafeBrowsingUrl)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString("managementDeviceLearnMoreUrl",
                     chrome::kLearnMoreEnterpriseURL);
@@ -161,7 +157,7 @@ base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
 }
 
 // static
-base::string16 ManagementUI::GetManagementPageSubtitle(Profile* profile) {
+std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();

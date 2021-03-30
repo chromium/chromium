@@ -248,6 +248,32 @@
         ]
       },
       {
+        "name": "assertPromiseRejects",
+        "type": "function",
+        "nocompile": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "promise",
+            "isInstanceOf": "Promise",
+            "description": "The promise to evaluate, which is expected to reject."
+          },
+          {
+            "choices": [
+              {"type": "string"},
+              {"type": "object", "isInstanceOf": "RegExp"}
+            ],
+            "name": "expectedMessage",
+            "description": "The expected error message from the promise rejection, either as a string or a regular expression."
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "isInstanceOf": "Promise",
+          "description": "A promise that will be resolved once the assertion is complete. The promise is rejected if the passed-in promise resolves unexpectedly or rejects with an unexpected error."
+        }
+      },
+      {
         "name": "callback",
         "type": "function",
         "nocompile": true,

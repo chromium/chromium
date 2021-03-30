@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/optional.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"

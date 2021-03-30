@@ -37,12 +37,13 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
 
  protected:
   void SetUpOnMainThread() override {
+    component_context_.emplace(
+        base::TestComponentContextForProcess::InitialState::kCloneAll);
+    display_binding_.emplace(component_context_->additional_services(), this);
+
     ASSERT_TRUE(embedded_test_server()->Start());
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
 
-    component_context_.emplace(
-        base::TestComponentContextForProcess::InitialState::kEmpty);
-    display_binding_.emplace(component_context_->additional_services(), this);
     frame_ = WebEngineBrowserTest::CreateFrame(&navigation_listener_);
     base::RunLoop().RunUntilIdle();
     frame_->GetNavigationController(controller_.NewRequest());
@@ -119,8 +120,7 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
   void NotImplemented_(const std::string&) final {}
 
   base::Optional<base::TestComponentContextForProcess> component_context_;
-  base::Optional<
-      base::fuchsia::ScopedServiceBinding<fuchsia::settings::Display>>
+  base::Optional<base::ScopedServiceBinding<fuchsia::settings::Display>>
       display_binding_;
   cr_fuchsia::TestNavigationListener navigation_listener_;
   fuchsia::web::NavigationControllerPtr controller_;

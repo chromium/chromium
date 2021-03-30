@@ -53,10 +53,10 @@ bool ShouldDisplayInNewTabPage(const Extension* extension,
       !IsBlockedByPolicy(extension, context);
 }
 
-base::string16 GetEnabledExtensionNameForUrl(const GURL& url,
+std::u16string GetEnabledExtensionNameForUrl(const GURL& url,
                                              content::BrowserContext* context) {
   if (!url.SchemeIs(extensions::kExtensionScheme))
-    return base::string16();
+    return std::u16string();
 
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(context);
@@ -64,7 +64,7 @@ base::string16 GetEnabledExtensionNameForUrl(const GURL& url,
       extension_registry->enabled_extensions().GetByID(url.host());
   return extension ? base::CollapseWhitespace(
                          base::UTF8ToUTF16(extension->name()), false)
-                   : base::string16();
+                   : std::u16string();
 }
 
 bool IsRenderedIconSufficientlyVisibleForBrowserContext(

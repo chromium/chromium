@@ -6,7 +6,6 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
-#include "android_webview/common/render_view_messages.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -27,7 +26,7 @@ namespace {
 
 void ShouldOverrideUrlLoadingOnUI(
     content::WebContents* web_contents,
-    const base::string16& url,
+    const std::u16string& url,
     bool has_user_gesture,
     bool is_redirect,
     bool is_main_frame,
@@ -207,7 +206,7 @@ void AwRenderViewHostExt::ContentsSizeChanged(const gfx::Size& contents_size) {
 }
 
 void AwRenderViewHostExt::ShouldOverrideUrlLoading(
-    const base::string16& url,
+    const std::u16string& url,
     bool has_user_gesture,
     bool is_redirect,
     bool is_main_frame,

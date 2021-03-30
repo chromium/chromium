@@ -4,13 +4,13 @@
 
 #include "chrome/browser/chromeos/sync/turn_sync_on_helper.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -150,6 +150,25 @@ TEST_F(TurnSyncOnHelperTest, UserClicksCancel) {
 
   // Simulate the user clicking "Cancel".
   helper.OnSyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
+
+  // Setup is not complete and we didn't show settings.
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
+  EXPECT_FALSE(sync_service_->GetUserSettings()->IsFirstSetupComplete());
+  EXPECT_EQ(0, delegate->show_sync_settings_count_);
+}
+
+TEST_F(TurnSyncOnHelperTest, UserClosesUI) {
+  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable("user@gmail.com");
+
+  auto test_delegate = std::make_unique<TestDelegate>();
+  TestDelegate* delegate = test_delegate.get();
+  TurnSyncOnHelper helper(profile(), std::move(test_delegate));
+
+  // Simulate the first browser window becoming active.
+  BrowserList::SetLastActive(browser());
+
+  // Simulate the user closing the consent UI.
+  helper.OnSyncConfirmationUIClosed(LoginUIService::UI_CLOSED);
 
   // Setup is not complete and we didn't show settings.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));

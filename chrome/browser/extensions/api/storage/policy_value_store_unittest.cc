@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -26,6 +27,7 @@
 
 using testing::_;
 using testing::Mock;
+using testing::NiceMock;
 
 namespace extensions {
 
@@ -34,12 +36,30 @@ namespace {
 const char kTestExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kDatabaseUMAClientName[] = "Test";
 
+std::string ValueToJson(const base::Value& changes) {
+  std::string json;
+  bool success = base::JSONWriter::Write(changes, &json);
+  DCHECK(success);
+  return json;
+}
+
+std::string ValueStoreChangeToJson(ValueStoreChangeList changes) {
+  return ValueToJson(ValueStoreChange::ToValue(std::move(changes)));
+}
+
 class MockSettingsObserver : public SettingsObserver {
  public:
-  MOCK_METHOD3(OnSettingsChanged, void(
-      const std::string& extension_id,
-      settings_namespace::Namespace settings_namespace,
-      const std::string& changes_json));
+  MOCK_METHOD3(OnSettingsChangedJSON,
+               void(const std::string& extension_id,
+                    settings_namespace::Namespace settings_namespace,
+                    const std::string& changes_json));
+
+  void OnSettingsChanged(const std::string& extension_id,
+                         settings_namespace::Namespace settings_namespace,
+                         const base::Value& changes) override {
+    OnSettingsChangedJSON(extension_id, settings_namespace,
+                          ValueToJson(changes));
+  }
 };
 
 // Extends PolicyValueStore by overriding the mutating methods, so that the
@@ -128,7 +148,7 @@ class PolicyValueStoreTest : public testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PolicyValueStore> store_;
-  MockSettingsObserver observer_;
+  NiceMock<MockSettingsObserver> observer_;
   scoped_refptr<SettingsObserverList> observers_;
 };
 
@@ -175,10 +195,9 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange("aaa", base::nullopt, value.Clone()));
-    EXPECT_CALL(observer_,
-                OnSettingsChanged(kTestExtensionId,
-                                  settings_namespace::MANAGED,
-                                  ValueStoreChange::ToJson(changes)));
+    EXPECT_CALL(observer_, OnSettingsChangedJSON(
+                               kTestExtensionId, settings_namespace::MANAGED,
+                               ValueStoreChangeToJson(std::move(changes))));
   }
 
   policy::PolicyMap policies;
@@ -191,10 +210,9 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange("bbb", base::nullopt, value.Clone()));
-    EXPECT_CALL(observer_,
-                OnSettingsChanged(kTestExtensionId,
-                                  settings_namespace::MANAGED,
-                                  ValueStoreChange::ToJson(changes)));
+    EXPECT_CALL(observer_, OnSettingsChangedJSON(
+                               kTestExtensionId, settings_namespace::MANAGED,
+                               ValueStoreChangeToJson(std::move(changes))));
   }
 
   policies.Set("bbb", policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -208,10 +226,9 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
     ValueStoreChangeList changes;
     changes.push_back(
         ValueStoreChange("bbb", value.Clone(), new_value.Clone()));
-    EXPECT_CALL(observer_,
-                OnSettingsChanged(kTestExtensionId,
-                                  settings_namespace::MANAGED,
-                                  ValueStoreChange::ToJson(changes)));
+    EXPECT_CALL(observer_, OnSettingsChangedJSON(
+                               kTestExtensionId, settings_namespace::MANAGED,
+                               ValueStoreChangeToJson(std::move(changes))));
   }
 
   policies.Set("bbb", policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -224,10 +241,9 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
     ValueStoreChangeList changes;
     changes.push_back(
         ValueStoreChange("bbb", new_value.Clone(), base::nullopt));
-    EXPECT_CALL(observer_,
-                OnSettingsChanged(kTestExtensionId,
-                                  settings_namespace::MANAGED,
-                                  ValueStoreChange::ToJson(changes)));
+    EXPECT_CALL(observer_, OnSettingsChangedJSON(
+                               kTestExtensionId, settings_namespace::MANAGED,
+                               ValueStoreChangeToJson(std::move(changes))));
   }
 
   policies.Erase("bbb");
@@ -235,7 +251,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   Mock::VerifyAndClearExpectations(&observer_);
 
   // Don't notify when there aren't any changes.
-  EXPECT_CALL(observer_, OnSettingsChanged(_, _, _)).Times(0);
+  EXPECT_CALL(observer_, OnSettingsChangedJSON(_, _, _)).Times(0);
   SetCurrentPolicy(policies);
   Mock::VerifyAndClearExpectations(&observer_);
 }

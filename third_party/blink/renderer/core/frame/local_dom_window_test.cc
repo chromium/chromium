@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
 #include "base/strings/stringprintf.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -41,14 +42,29 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
 using network::mojom::ContentSecurityPolicySource;
 using network::mojom::ContentSecurityPolicyType;
+using network::mojom::WebSandboxFlags;
 
-class LocalDOMWindowTest : public PageTestBase {};
+class LocalDOMWindowTest : public PageTestBase {
+ protected:
+  void NavigateWithSandbox(
+      const KURL& url,
+      WebSandboxFlags sandbox_flags = WebSandboxFlags::kAll) {
+    auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
+        /*html=*/"", url);
+    params->sandbox_flags = sandbox_flags;
+    GetFrame().Loader().CommitNavigation(std::move(params),
+                                         /*extra_data=*/nullptr);
+    test::RunPendingTasks();
+    ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());
+  }
+};
 
 TEST_F(LocalDOMWindowTest, AttachExecutionContext) {
   auto* scheduler = GetFrame().GetFrameScheduler();
@@ -153,49 +169,57 @@ TEST_F(LocalDOMWindowTest, OutgoingReferrer) {
 }
 
 TEST_F(LocalDOMWindowTest, OutgoingReferrerWithUniqueOrigin) {
-  NavigateTo(KURL("https://www.example.com/hoge#fuga?piyo"),
-             {{http_names::kContentSecurityPolicy, "sandbox allow-scripts"}});
+  NavigateWithSandbox(
+      KURL("https://www.example.com/hoge#fuga?piyo"),
+      ~WebSandboxFlags::kAutomaticFeatures & ~WebSandboxFlags::kScripts);
   EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
   EXPECT_EQ(String(), GetFrame().DomWindow()->OutgoingReferrer());
 }
 
 TEST_F(LocalDOMWindowTest, EnforceSandboxFlags) {
-  NavigateTo(KURL("http://example.test/"), {{http_names::kContentSecurityPolicy,
-                                             "sandbox allow-same-origin"}});
+  NavigateWithSandbox(KURL("http://example.test/"), ~WebSandboxFlags::kOrigin);
   EXPECT_FALSE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
   EXPECT_FALSE(
       GetFrame().DomWindow()->GetSecurityOrigin()->IsPotentiallyTrustworthy());
 
-  NavigateTo(KURL("http://example.test/"),
-             {{http_names::kContentSecurityPolicy, "sandbox"}});
+  NavigateWithSandbox(KURL("http://example.test/"));
   EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
   EXPECT_FALSE(
       GetFrame().DomWindow()->GetSecurityOrigin()->IsPotentiallyTrustworthy());
 
   // A unique origin does not bypass secure context checks unless it
   // is also potentially trustworthy.
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme("very-special-scheme", url::SCHEME_WITH_HOST);
-  SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(
-      "very-special-scheme");
-  NavigateTo(KURL("very-special-scheme://example.test"),
-             {{http_names::kContentSecurityPolicy, "sandbox"}});
-  EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
-  EXPECT_FALSE(
-      GetFrame().DomWindow()->GetSecurityOrigin()->IsPotentiallyTrustworthy());
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddStandardScheme("very-special-scheme", url::SCHEME_WITH_HOST);
+    SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(
+        "very-special-scheme");
+    NavigateWithSandbox(KURL("very-special-scheme://example.test"));
+    EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
+    EXPECT_FALSE(GetFrame()
+                     .DomWindow()
+                     ->GetSecurityOrigin()
+                     ->IsPotentiallyTrustworthy());
+  }
 
-  SchemeRegistry::RegisterURLSchemeAsSecure("very-special-scheme");
-  NavigateTo(KURL("very-special-scheme://example.test"),
-             {{http_names::kContentSecurityPolicy, "sandbox"}});
-  EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
-  EXPECT_TRUE(
-      GetFrame().DomWindow()->GetSecurityOrigin()->IsPotentiallyTrustworthy());
+  {
+    url::ScopedSchemeRegistryForTests scoped_registry;
+    url::AddStandardScheme("very-special-scheme", url::SCHEME_WITH_HOST);
+    url::AddSecureScheme("very-special-scheme");
+    NavigateWithSandbox(KURL("very-special-scheme://example.test"));
+    EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
+    EXPECT_TRUE(GetFrame()
+                    .DomWindow()
+                    ->GetSecurityOrigin()
+                    ->IsPotentiallyTrustworthy());
 
-  NavigateTo(KURL("https://example.test"),
-             {{http_names::kContentSecurityPolicy, "sandbox"}});
-  EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
-  EXPECT_TRUE(
-      GetFrame().DomWindow()->GetSecurityOrigin()->IsPotentiallyTrustworthy());
+    NavigateWithSandbox(KURL("https://example.test"));
+    EXPECT_TRUE(GetFrame().DomWindow()->GetSecurityOrigin()->IsOpaque());
+    EXPECT_TRUE(GetFrame()
+                    .DomWindow()
+                    ->GetSecurityOrigin()
+                    ->IsPotentiallyTrustworthy());
+  }
 }
 
 // Tests ExecutionContext::GetContentSecurityPolicyForCurrentWorld().
@@ -205,8 +229,11 @@ TEST_F(PageTestBase, CSPForWorld) {
   // Set a CSP for the main world.
   const char* kMainWorldCSP = "connect-src https://google.com;";
   GetFrame().DomWindow()->GetContentSecurityPolicy()->DidReceiveHeader(
-      kMainWorldCSP, ContentSecurityPolicyType::kEnforce,
-      ContentSecurityPolicySource::kHTTP);
+      kMainWorldCSP, *(GetFrame().DomWindow()->GetSecurityOrigin()),
+      ContentSecurityPolicyType::kEnforce, ContentSecurityPolicySource::kHTTP);
+  const Vector<
+      network::mojom::blink::ContentSecurityPolicyPtr>& parsed_main_world_csp =
+      GetFrame().DomWindow()->GetContentSecurityPolicy()->GetParsedPolicies();
 
   LocalFrame* frame = &GetFrame();
   ScriptState* main_world_script_state = ToScriptStateForMainWorld(frame);
@@ -231,18 +258,17 @@ TEST_F(PageTestBase, CSPForWorld) {
       SecurityOrigin::Create(KURL("chrome-extension://123")));
 
   // Returns the csp headers being used for the current world.
-  auto get_csp_headers = [this]() {
+  auto get_csp = [this]()
+      -> const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& {
     auto* csp =
         GetFrame().DomWindow()->GetContentSecurityPolicyForCurrentWorld();
-    return csp->Headers();
+    return csp->GetParsedPolicies();
   };
 
   {
     SCOPED_TRACE("In main world.");
     ScriptState::Scope scope(main_world_script_state);
-    EXPECT_THAT(get_csp_headers(),
-                ElementsAre(CSPHeaderAndType(
-                    {kMainWorldCSP, ContentSecurityPolicyType::kEnforce})));
+    EXPECT_EQ(get_csp(), parsed_main_world_csp);
   }
 
   {
@@ -251,18 +277,14 @@ TEST_F(PageTestBase, CSPForWorld) {
 
     // If we are in an isolated world with no CSP defined, we use the main world
     // CSP.
-    EXPECT_THAT(get_csp_headers(),
-                ElementsAre(CSPHeaderAndType(
-                    {kMainWorldCSP, ContentSecurityPolicyType::kEnforce})));
+    EXPECT_EQ(get_csp(), parsed_main_world_csp);
   }
 
   {
     SCOPED_TRACE("In isolated world with csp.");
     ScriptState::Scope scope(isolated_world_with_csp_script_state);
     // We use the isolated world's CSP if it specified one.
-    EXPECT_THAT(get_csp_headers(),
-                ElementsAre(CSPHeaderAndType(
-                    {kIsolatedWorldCSP, ContentSecurityPolicyType::kEnforce})));
+    EXPECT_EQ(get_csp()[0]->header->header_value, kIsolatedWorldCSP);
   }
 }
 

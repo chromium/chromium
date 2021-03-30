@@ -16,13 +16,9 @@
 
 namespace aura_extra {
 
-ImageWindowDelegate::ImageWindowDelegate()
-    : background_color_(SK_ColorWHITE),
-      size_mismatch_(false) {
-}
+ImageWindowDelegate::ImageWindowDelegate() = default;
 
-ImageWindowDelegate::~ImageWindowDelegate() {
-}
+ImageWindowDelegate::~ImageWindowDelegate() = default;
 
 void ImageWindowDelegate::SetImage(const gfx::Image& image) {
   image_ = image;

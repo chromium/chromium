@@ -5,26 +5,27 @@
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
 
 #include "base/logging.h"
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/web/web_view.h"
 
 namespace prerender {
 
-NoStatePrefetchClient::NoStatePrefetchClient(content::RenderView* render_view)
-    : content::RenderViewObserver(render_view) {
-  DCHECK(render_view);
+NoStatePrefetchClient::NoStatePrefetchClient(blink::WebView* web_view)
+    : blink::WebViewObserver(web_view) {
+  DCHECK(web_view);
   DVLOG(5) << "NoStatePrefetchClient::NoStatePrefetchClient()";
-  render_view->GetWebView()->SetNoStatePrefetchClient(this);
+  web_view->SetNoStatePrefetchClient(this);
 }
 
 NoStatePrefetchClient::~NoStatePrefetchClient() = default;
 
 bool NoStatePrefetchClient::IsPrefetchOnly() {
-  return PrerenderHelper::GetPrerenderMode(
-             render_view()->GetMainRenderFrame()) ==
-         prerender::mojom::PrerenderMode::kPrefetchOnly;
+  blink::WebFrame* main_frame = GetWebView()->MainFrame();
+  if (!main_frame->IsWebLocalFrame())
+    return false;
+  return NoStatePrefetchHelper::IsPrefetching(
+      content::RenderFrame::FromWebFrame(main_frame->ToWebLocalFrame()));
 }
 
 void NoStatePrefetchClient::OnDestruct() {

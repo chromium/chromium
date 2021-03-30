@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -63,7 +64,7 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
               ModelReadyToSync,
               (std::unique_ptr<MetadataBatch> batch),
               (override));
-  MOCK_METHOD(bool, IsTrackingMetadata, (), (override));
+  MOCK_METHOD(bool, IsTrackingMetadata, (), (const override));
   MOCK_METHOD(std::string, TrackedAccountId, (), (override));
   MOCK_METHOD(std::string, TrackedCacheGuid, (), (override));
   MOCK_METHOD(void, ReportError, (const ModelError& error), (override));

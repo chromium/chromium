@@ -22,7 +22,6 @@ goog.require('PhoneticData');
 goog.require('Spannable');
 goog.require('TextLog');
 goog.require('TtsCategory');
-goog.require('UserAnnotationHandler');
 goog.require('ValueSelectionSpan');
 goog.require('ValueSpan');
 goog.require('constants');
@@ -32,6 +31,7 @@ goog.require('cursors.Unit');
 goog.require('goog.i18n.MessageFormat');
 
 goog.scope(function() {
+const AriaCurrentState = chrome.automation.AriaCurrentState;
 const AutomationNode = chrome.automation.AutomationNode;
 const DescriptionFromType = chrome.automation.DescriptionFromType;
 const Dir = constants.Dir;
@@ -51,10 +51,14 @@ const StateType = chrome.automation.StateType;
  * $ prefix: used to substitute either an attribute or a specialized value from
  *     an AutomationNode. Specialized values include role and state.
  *     For example, $value $role $enabled
- * @ prefix: used to substitute a message. Note the ability to specify params to
- *     the message.  For example, '@tag_html' '@selected_index($text_sel_start,
+ *
+ * Note: (@) means @ to avoid Closure mistaking it for an annotation.
+ *
+ * (@) prefix: used to substitute a message. Note the ability to specify params
+ * to the message.  For example, '@tag_html' '@selected_index($text_sel_start,
  *     $text_sel_end').
- * @@ prefix: similar to @, used to substitute a message, but also pulls the
+ *
+ * (@@) prefix: similar to @, used to substitute a message, but also pulls the
  *     localized string through goog.i18n.MessageFormat to support locale
  *     aware plural handling.  The first argument should be a number which will
  *     be passed as a COUNT named parameter to MessageFormat.
@@ -148,7 +152,8 @@ Output = class {
       case 'checked':
         return node.checked && node.checked !== 'false';
       case 'hasPopup':
-        return node.hasPopup && node.hasPopup !== 'false';
+        return node.hasPopup &&
+            node.hasPopup !== chrome.automation.HasPopup.FALSE;
 
       // Chrome automatically calculates these attributes.
       case 'posInSet':
@@ -662,11 +667,11 @@ Output = class {
    * @private
    */
   format_(params) {
-    let node = params['node'];
+    const node = params['node'];
     let format = params['outputFormat'];
     const buff = params['outputBuffer'];
     const ruleStr = params['outputRuleString'];
-    let prevNode = params['opt_prevNode'];
+    const prevNode = params['opt_prevNode'];
     let speechProps = params['opt_speechProps'];
 
     let tokens = [];
@@ -676,16 +681,13 @@ Output = class {
     if (typeof (format) === 'string') {
       format = format.replace(/([,:])\s+/gm, '$1');
       tokens = format.split(' ');
+      // Ignore empty tokens.
+      tokens.filter(token => !!token);
     } else {
-      tokens = [format];
+      tokens = format ? [format] : [];
     }
 
     tokens.forEach(function(token) {
-      // Ignore empty tokens.
-      if (!token) {
-        return;
-      }
-
       // Parse the token.
       let tree;
       if (typeof (token) === 'string') {
@@ -716,500 +718,69 @@ Output = class {
         }
 
         if (token === 'value') {
-          const text = node.value || '';
-          if (!node.state[StateType.EDITABLE] && node.name === text) {
-            return;
-          }
-
-          let selectedText = '';
-          if (node.textSelStart !== undefined) {
-            options.annotation.push(new Output.SelectionSpan(
-                node.textSelStart || 0, node.textSelEnd || 0));
-
-            if (node.value) {
-              selectedText = node.value.substring(
-                  node.textSelStart || 0, node.textSelEnd || 0);
-            }
-          }
-          options.annotation.push(token);
-          if (selectedText && !this.formatOptions_.braille &&
-              node.state[StateType.FOCUSED]) {
-            this.append_(buff, selectedText, options);
-            this.append_(buff, Msgs.getMsg('selected'));
-            ruleStr.writeTokenWithValue(token, selectedText);
-            ruleStr.write('selected\n');
-          } else {
-            this.append_(buff, text, options);
-            ruleStr.writeTokenWithValue(token, text);
-          }
+          this.formatValue_(node, token, buff, options, ruleStr);
         } else if (token === 'name') {
-          options.annotation.push(token);
-          const earcon = node ? this.findEarcon_(node, prevNode) : null;
-          if (earcon) {
-            options.annotation.push(earcon);
-          }
-
-          // Place the selection on the first character of the name if the
-          // node is the active descendant. This ensures the braille window is
-          // panned appropriately.
-          if (node.activeDescendantFor && node.activeDescendantFor.length > 0) {
-            options.annotation.push(new Output.SelectionSpan(0, 0));
-          }
-
-          const nameOrAnnotation =
-              UserAnnotationHandler.getAnnotationForNode(node) || node.name;
-          if (localStorage['languageSwitching'] === 'true') {
-            this.assignLocaleAndAppend_(nameOrAnnotation, node, buff, options);
-          } else {
-            this.append_(buff, nameOrAnnotation || '', options);
-          }
-
-          ruleStr.writeTokenWithValue(token, node.name);
+          this.formatName_(node, prevNode, token, buff, options, ruleStr);
         } else if (token === 'description') {
-          if (node.name === node.description) {
-            return;
-          }
-
-          options.annotation.push(token);
-          this.append_(buff, node.description || '', options);
-          ruleStr.writeTokenWithValue(token, node.description);
+          this.formatDescription_(node, token, buff, options, ruleStr);
         } else if (token === 'urlFilename') {
-          options.annotation.push('name');
-          const url = node.url || '';
-          let filename = '';
-          if (url.substring(0, 4) !== 'data') {
-            filename =
-                url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
-
-            // Hack to not speak the filename if it's ridiculously long.
-            if (filename.length >= 30) {
-              filename = filename.substring(0, 16) + '...';
-            }
-          }
-          this.append_(buff, filename, options);
-          ruleStr.writeTokenWithValue(token, filename);
+          this.formatUrlFilename_(node, token, buff, options, ruleStr);
         } else if (token === 'nameFromNode') {
-          if (node.nameFrom === NameFromType.CONTENTS) {
-            return;
-          }
-
-          options.annotation.push('name');
-          this.append_(buff, node.name || '', options);
-          ruleStr.writeTokenWithValue(token, node.name);
+          this.formatNameFromNode_(node, token, buff, options, ruleStr);
         } else if (token === 'nameOrDescendants') {
           // This token is similar to nameOrTextContent except it gathers rich
           // output for descendants. It also lets name from contents override
           // the descendants text if |node| has only static text children.
-          options.annotation.push(token);
-          if (node.name &&
-              (node.nameFrom !== NameFromType.CONTENTS ||
-               node.children.every(function(child) {
-                 return child.role === RoleType.STATIC_TEXT;
-               }))) {
-            this.append_(buff, node.name || '', options);
-            ruleStr.writeTokenWithValue(token, node.name);
-          } else {
-            ruleStr.writeToken(token);
-            this.format_({
-              node,
-              outputFormat: '$descendants',
-              outputBuffer: buff,
-              outputRuleString: ruleStr
-            });
-          }
+          this.formatNameOrDescendants_(node, token, buff, options, ruleStr);
         } else if (token === 'indexInParent') {
-          if (node.parent) {
-            options.annotation.push(token);
-            let roles;
-            if (tree.firstChild) {
-              roles = this.createRoles_(tree);
-            } else {
-              roles = new Set();
-              roles.add(node.role);
-            }
-
-            let count = 0;
-            for (let i = 0, child; child = node.parent.children[i]; i++) {
-              if (roles.has(child.role)) {
-                count++;
-              }
-              if (node === child) {
-                break;
-              }
-            }
-            this.append_(buff, String(count));
-            ruleStr.writeTokenWithValue(token, String(count));
-          }
+          this.formatIndexInParent_(node, token, tree, buff, options, ruleStr);
         } else if (token === 'restriction') {
-          const msg = Output.RESTRICTION_STATE_MAP[node.restriction];
-          if (msg) {
-            ruleStr.writeToken(token);
-            this.format_({
-              node,
-              outputFormat: '@' + msg,
-              outputBuffer: buff,
-              outputRuleString: ruleStr
-            });
-          }
+          this.formatRestriction_(node, token, buff, ruleStr);
         } else if (token === 'checked') {
-          const msg = Output.CHECKED_STATE_MAP[node.checked];
-          if (msg) {
-            ruleStr.writeToken(token);
-            this.format_({
-              node,
-              outputFormat: '@' + msg,
-              outputBuffer: buff,
-              outputRuleString: ruleStr
-            });
-          }
+          this.formatChecked_(node, token, buff, ruleStr);
         } else if (token === 'pressed') {
-          const msg = Output.PRESSED_STATE_MAP[node.checked];
-          if (msg) {
-            ruleStr.writeToken(token);
-            this.format_({
-              node,
-              outputFormat: '@' + msg,
-              outputBuffer: buff,
-              outputRuleString: ruleStr
-            });
-          }
+          this.formatPressed_(node, token, buff, ruleStr);
         } else if (token === 'state') {
-          if (node.state) {
-            Object.getOwnPropertyNames(node.state).forEach(function(s) {
-              const stateInfo = Output.STATE_INFO_[s];
-              if (stateInfo && !stateInfo.isRoleSpecific && stateInfo.on) {
-                ruleStr.writeToken(token);
-                this.format_({
-                  node,
-                  outputFormat: '$' + s,
-                  outputBuffer: buff,
-                  outputRuleString: ruleStr
-                });
-              }
-            }.bind(this));
-          }
+          this.formatState_(node, token, buff, ruleStr);
         } else if (token === 'find') {
-          // Find takes two arguments: JSON query string and format string.
-          if (tree.firstChild) {
-            const jsonQuery = tree.firstChild.value;
-            node = node.find(
-                /** @type {chrome.automation.FindParams}*/ (
-                    JSON.parse(jsonQuery)));
-            const formatString = tree.firstChild.nextSibling;
-            if (node) {
-              ruleStr.writeToken(token);
-              this.format_({
-                node,
-                outputFormat: formatString,
-                outputBuffer: buff,
-                outputRuleString: ruleStr
-              });
-            }
-          }
+          this.formatFind_(node, token, tree, buff, ruleStr);
         } else if (token === 'descendants') {
-          if (!node) {
-            return;
-          }
-
-          let leftmost = node;
-          let rightmost = node;
-          if (AutomationPredicate.leafOrStaticText(node)) {
-            // Find any deeper leaves, if any, by starting from one level
-            // down.
-            leftmost = node.firstChild;
-            rightmost = node.lastChild;
-            if (!leftmost || !rightmost) {
-              return;
-            }
-          }
-
-          // Construct a range to the leftmost and rightmost leaves. This
-          // range gets rendered below which results in output that is the
-          // same as if a user navigated through the entire subtree of |node|.
-          leftmost = AutomationUtil.findNodePre(
-              leftmost, Dir.FORWARD, AutomationPredicate.leafOrStaticText);
-          rightmost = AutomationUtil.findNodePre(
-              rightmost, Dir.BACKWARD, AutomationPredicate.leafOrStaticText);
-          if (!leftmost || !rightmost) {
-            return;
-          }
-
-          const subrange = new cursors.Range(
-              new cursors.Cursor(leftmost, cursors.NODE_INDEX),
-              new cursors.Cursor(rightmost, cursors.NODE_INDEX));
-          let prev = null;
-          if (node) {
-            prev = cursors.Range.fromNode(node);
-          }
-          ruleStr.writeToken(token);
-          this.render_(
-              subrange, prev, Output.EventType.NAVIGATE, buff, ruleStr);
+          this.formatDescendants_(node, token, buff, ruleStr);
         } else if (token === 'joinedDescendants') {
-          const unjoined = [];
-          ruleStr.write('joinedDescendants {');
-          this.format_({
-            node,
-            outputFormat: '$descendants',
-            outputBuffer: unjoined,
-            outputRuleString: ruleStr
-          });
-          this.append_(buff, unjoined.join(' '), options);
-          ruleStr.write(
-              '}: ' + (unjoined.length ? unjoined.join(' ') : 'EMPTY') + '\n');
+          this.formatJoinedDescendants_(node, token, buff, options, ruleStr);
         } else if (token === 'role') {
           if (localStorage['useVerboseMode'] === 'false') {
             return;
           }
-
           if (this.formatOptions_.auralStyle) {
             speechProps = new Output.SpeechProperties();
             speechProps.properties['relativePitch'] = -0.3;
           }
-          options.annotation.push(token);
-          let msg = node.role;
-          const info = Output.ROLE_INFO_[node.role];
-          if (node.roleDescription) {
-            msg = node.roleDescription;
-          } else if (info) {
-            if (this.formatOptions_.braille) {
-              msg = Msgs.getMsg(info.msgId + '_brl');
-            } else if (info.msgId) {
-              msg = Msgs.getMsg(info.msgId);
-            }
-          } else {
-            // We can safely ignore this role. ChromeVox output tests cover
-            // message id validity.
-            return;
-          }
-          this.append_(buff, msg || '', options);
-          ruleStr.writeTokenWithValue(token, msg);
+
+          this.formatRole_(node, token, buff, options, ruleStr);
         } else if (token === 'inputType') {
-          if (!node.inputType) {
-            return;
-          }
-          options.annotation.push(token);
-          let msgId = Output.INPUT_TYPE_MESSAGE_IDS_[node.inputType] ||
-              'input_type_text';
-          if (this.formatOptions_.braille) {
-            msgId = msgId + '_brl';
-          }
-          this.append_(buff, Msgs.getMsg(msgId), options);
-          ruleStr.writeTokenWithValue(token, Msgs.getMsg(msgId));
+          this.formatInputType_(node, token, buff, options, ruleStr);
         } else if (
             token === 'tableCellRowIndex' || token === 'tableCellColumnIndex') {
-          let value = node[token];
-          if (value === undefined) {
-            return;
-          }
-          value = String(value + 1);
-          options.annotation.push(token);
-          this.append_(buff, value, options);
-          ruleStr.writeTokenWithValue(token, value);
+          this.formatTableCellIndex_(node, token, buff, options, ruleStr);
         } else if (token === 'cellIndexText') {
-          if (node.htmlAttributes['aria-coltext']) {
-            let value = node.htmlAttributes['aria-coltext'];
-            let row = node;
-            while (row && row.role !== RoleType.ROW) {
-              row = row.parent;
-            }
-            if (!row || !row.htmlAttributes['aria-rowtext']) {
-              return;
-            }
-            value += row.htmlAttributes['aria-rowtext'];
-            this.append_(buff, value, options);
-            ruleStr.writeTokenWithValue(token, value);
-          } else {
-            ruleStr.write(token);
-            this.format_({
-              node,
-              outputFormat: ` @cell_summary($if($tableCellAriaRowIndex,
-                        $tableCellAriaRowIndex, $tableCellRowIndex),
-                      $if($tableCellAriaColumnIndex, $tableCellAriaColumnIndex,
-                        $tableCellColumnIndex))`,
-              outputBuffer: buff,
-              outputRuleString: ruleStr
-            });
-          }
+          this.formatCellIndexText_(node, token, buff, options, ruleStr);
         } else if (token === 'node') {
-          if (!tree.firstChild) {
-            return;
-          }
-
-          const relationName = tree.firstChild.value;
-          if (relationName === 'tableCellColumnHeaders') {
-            // Skip output when previous position falls on the same column.
-            while (prevNode && !AutomationPredicate.cellLike(prevNode)) {
-              prevNode = prevNode.parent;
-            }
-            if (prevNode &&
-                prevNode.tableCellColumnIndex === node.tableCellColumnIndex) {
-              return;
-            }
-
-            const headers = node.tableCellColumnHeaders;
-            if (headers) {
-              for (let i = 0; i < headers.length; i++) {
-                const header = headers[i].name;
-                if (header) {
-                  this.append_(buff, header, options);
-                  ruleStr.writeTokenWithValue(token, header);
-                }
-              }
-            }
-          } else if (relationName === 'tableCellRowHeaders') {
-            const headers = node.tableCellRowHeaders;
-            if (headers) {
-              for (let i = 0; i < headers.length; i++) {
-                const header = headers[i].name;
-                if (header) {
-                  this.append_(buff, header, options);
-                  ruleStr.writeTokenWithValue(token, header);
-                }
-              }
-            }
-          } else if (node[relationName]) {
-            const related = node[relationName];
-            this.node_(
-                related, related, Output.EventType.NAVIGATE, buff, ruleStr);
-          }
+          this.formatNode_(node, prevNode, token, tree, buff, options, ruleStr);
         } else if (token === 'nameOrTextContent' || token === 'textContent') {
-          if (node.name && token === 'nameOrTextContent') {
-            ruleStr.writeToken(token);
-            this.format_({
-              node,
-              outputFormat: '$name',
-              outputBuffer: buff,
-              outputRuleString: ruleStr
-            });
-            return;
-          }
-
-          if (!node.firstChild) {
-            return;
-          }
-
-          const root = node;
-          const walker = new AutomationTreeWalker(node, Dir.FORWARD, {
-            visit: AutomationPredicate.leafOrStaticText,
-            leaf: (n) => {
-              // The root might be a leaf itself, but we still want to descend
-              // into it.
-              return n !== root && AutomationPredicate.leafOrStaticText(n);
-            },
-            root: (r) => r === root
-          });
-          const outputStrings = [];
-          while (walker.next().node) {
-            if (walker.node.name) {
-              outputStrings.push(walker.node.name);
-            }
-          }
-          const finalOutput = outputStrings.join(' ');
-          this.append_(buff, finalOutput, options);
-          ruleStr.writeTokenWithValue(token, finalOutput);
+          this.formatTextContent_(node, token, buff, options, ruleStr);
         } else if (node[token] !== undefined) {
-          options.annotation.push(token);
-          let value = node[token];
-          if (typeof value === 'number') {
-            value = String(value);
-          }
-          this.append_(buff, value, options);
-          ruleStr.writeTokenWithValue(token, value);
+          this.formatAsFieldAccessor_(node, token, buff, options, ruleStr);
         } else if (Output.STATE_INFO_[token]) {
-          options.annotation.push('state');
-          const stateInfo = Output.STATE_INFO_[token];
-          let resolvedInfo = {};
-          resolvedInfo = node.state[token] ? stateInfo.on : stateInfo.off;
-          if (!resolvedInfo) {
-            return;
-          }
-          if (this.formatOptions_.speech && resolvedInfo.earconId) {
-            options.annotation.push(
-                new Output.EarconAction(resolvedInfo.earconId),
-                node.location || undefined);
-          }
-          const msgId = this.formatOptions_.braille ?
-              resolvedInfo.msgId + '_brl' :
-              resolvedInfo.msgId;
-          const msg = Msgs.getMsg(msgId);
-          this.append_(buff, msg, options);
-          ruleStr.writeTokenWithValue(token, msg);
+          this.formatAsStateValue_(node, token, buff, options, ruleStr);
         } else if (token === 'posInSet') {
-          if (node.posInSet !== undefined) {
-            this.append_(buff, String(node.posInSet));
-            ruleStr.writeTokenWithValue(token, String(node.posInSet));
-          } else {
-            ruleStr.writeToken(token);
-            this.format_({
-              node,
-              outputFormat: '$indexInParent',
-              outputBuffer: buff,
-              outputRuleString: ruleStr
-            });
-          }
+          this.formatPosInSetFallback_(node, token, buff, ruleStr);
         } else if (token === 'setSize') {
-          const size = node.setSize ? node.setSize : 0;
-          this.append_(buff, String(size));
-          ruleStr.writeTokenWithValue(token, String(node.setSize));
+          this.formatSetSizeFallback_(node, token, buff, ruleStr);
         } else if (token === 'phoneticReading') {
-          const text =
-              PhoneticData.forText(node.name, chrome.i18n.getUILanguage());
-          this.append_(buff, text);
+          this.formatPhoneticReading_(node, buff);
         } else if (tree.firstChild) {
-          // Custom functions.
-          if (token === 'if') {
-            ruleStr.writeToken(token);
-            const cond = tree.firstChild;
-            const attrib = cond.value.slice(1);
-            if (Output.isTruthy(node, attrib)) {
-              ruleStr.write(attrib + '==true => ');
-              this.format_({
-                node,
-                outputFormat: cond.nextSibling,
-                outputBuffer: buff,
-                outputRuleString: ruleStr
-              });
-            } else if (Output.isFalsey(node, attrib)) {
-              ruleStr.write(attrib + '==false => ');
-              this.format_({
-                node,
-                outputFormat: cond.nextSibling.nextSibling,
-                outputBuffer: buff,
-                outputRuleString: ruleStr
-              });
-            }
-          } else if (token === 'nif') {
-            ruleStr.writeToken(token);
-            const cond = tree.firstChild;
-            const attrib = cond.value.slice(1);
-            if (Output.isFalsey(node, attrib)) {
-              ruleStr.write(attrib + '==false => ');
-              this.format_({
-                node,
-                outputFormat: cond.nextSibling,
-                outputBuffer: buff,
-                outputRuleString: ruleStr
-              });
-            } else if (Output.isTruthy(node, attrib)) {
-              ruleStr.write(attrib + '==true => ');
-              this.format_({
-                node,
-                outputFormat: cond.nextSibling.nextSibling,
-                outputBuffer: buff,
-                outputRuleString: ruleStr
-              });
-            }
-          } else if (token === 'earcon') {
-            // Ignore unless we're generating speech output.
-            if (!this.formatOptions_.speech) {
-              return;
-            }
-
-            options.annotation.push(new Output.EarconAction(
-                tree.firstChild.value, node.location || undefined));
-            this.append_(buff, '', options);
-            ruleStr.writeTokenWithValue(token, tree.firstChild.value);
-          }
+          this.formatCustomFunction_(node, token, tree, buff, options, ruleStr);
         }
       } else if (prefix === '@') {
         ruleStr.write(' @');
@@ -1334,6 +905,712 @@ Output = class {
         }
       }
     }.bind(this));
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatValue_(node, token, buff, options, ruleStr) {
+    const text = node.value || '';
+    if (!node.state[StateType.EDITABLE] && node.name === text) {
+      return;
+    }
+
+    let selectedText = '';
+    if (node.textSelStart !== undefined) {
+      options.annotation.push(new Output.SelectionSpan(
+          node.textSelStart || 0, node.textSelEnd || 0));
+
+      if (node.value) {
+        selectedText =
+            node.value.substring(node.textSelStart || 0, node.textSelEnd || 0);
+      }
+    }
+    options.annotation.push(token);
+    if (selectedText && !this.formatOptions_.braille &&
+        node.state[StateType.FOCUSED]) {
+      this.append_(buff, selectedText, options);
+      this.append_(buff, Msgs.getMsg('selected'));
+      ruleStr.writeTokenWithValue(token, selectedText);
+      ruleStr.write('selected\n');
+    } else {
+      this.append_(buff, text, options);
+      ruleStr.writeTokenWithValue(token, text);
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param prevNode {!AutomationNode|undefined}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatName_(node, prevNode, token, buff, options, ruleStr) {
+    options.annotation.push(token);
+    const earcon = node ? this.findEarcon_(node, prevNode) : null;
+    if (earcon) {
+      options.annotation.push(earcon);
+    }
+
+    // Place the selection on the first character of the name if the
+    // node is the active descendant. This ensures the braille window is
+    // panned appropriately.
+    if (node.activeDescendantFor && node.activeDescendantFor.length > 0) {
+      options.annotation.push(new Output.SelectionSpan(0, 0));
+    }
+
+    if (localStorage['languageSwitching'] === 'true') {
+      this.assignLocaleAndAppend_(node.name, node, buff, options);
+    } else {
+      this.append_(buff, node.name || '', options);
+    }
+
+    ruleStr.writeTokenWithValue(token, node.name);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatDescription_(node, token, buff, options, ruleStr) {
+    if (node.name === node.description) {
+      return;
+    }
+
+    options.annotation.push(token);
+    this.append_(buff, node.description || '', options);
+    ruleStr.writeTokenWithValue(token, node.description);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatUrlFilename_(node, token, buff, options, ruleStr) {
+    options.annotation.push('name');
+    const url = node.url || '';
+    let filename = '';
+    if (url.substring(0, 4) !== 'data') {
+      filename = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
+
+      // Hack to not speak the filename if it's ridiculously long.
+      if (filename.length >= 30) {
+        filename = filename.substring(0, 16) + '...';
+      }
+    }
+    this.append_(buff, filename, options);
+    ruleStr.writeTokenWithValue(token, filename);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatNameFromNode_(node, token, buff, options, ruleStr) {
+    if (node.nameFrom === NameFromType.CONTENTS) {
+      return;
+    }
+
+    options.annotation.push('name');
+    this.append_(buff, node.name || '', options);
+    ruleStr.writeTokenWithValue(token, node.name);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatNameOrDescendants_(node, token, buff, options, ruleStr) {
+    options.annotation.push(token);
+    if (node.name &&
+        (node.nameFrom !== NameFromType.CONTENTS ||
+         node.children.every(function(child) {
+           return child.role === RoleType.STATIC_TEXT;
+         }))) {
+      this.append_(buff, node.name || '', options);
+      ruleStr.writeTokenWithValue(token, node.name);
+    } else {
+      ruleStr.writeToken(token);
+      this.format_({
+        node,
+        outputFormat: '$descendants',
+        outputBuffer: buff,
+        outputRuleString: ruleStr
+      });
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param tree {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatIndexInParent_(node, token, tree, buff, options, ruleStr) {
+    if (node.parent) {
+      options.annotation.push(token);
+      let roles;
+      if (tree.firstChild) {
+        roles = this.createRoles_(tree);
+      } else {
+        roles = new Set();
+        roles.add(node.role);
+      }
+
+      let count = 0;
+      for (let i = 0, child; child = node.parent.children[i]; i++) {
+        if (roles.has(child.role)) {
+          count++;
+        }
+        if (node === child) {
+          break;
+        }
+      }
+      this.append_(buff, String(count));
+      ruleStr.writeTokenWithValue(token, String(count));
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatRestriction_(node, token, buff, ruleStr) {
+    const msg = Output.RESTRICTION_STATE_MAP[node.restriction];
+    if (msg) {
+      ruleStr.writeToken(token);
+      this.format_({
+        node,
+        outputFormat: '@' + msg,
+        outputBuffer: buff,
+        outputRuleString: ruleStr
+      });
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatChecked_(node, token, buff, ruleStr) {
+    const msg = Output.CHECKED_STATE_MAP[node.checked];
+    if (msg) {
+      ruleStr.writeToken(token);
+      this.format_({
+        node,
+        outputFormat: '@' + msg,
+        outputBuffer: buff,
+        outputRuleString: ruleStr
+      });
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatPressed_(node, token, buff, ruleStr) {
+    const msg = Output.PRESSED_STATE_MAP[node.checked];
+    if (msg) {
+      ruleStr.writeToken(token);
+      this.format_({
+        node,
+        outputFormat: '@' + msg,
+        outputBuffer: buff,
+        outputRuleString: ruleStr
+      });
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatState_(node, token, buff, ruleStr) {
+    if (node.state) {
+      Object.getOwnPropertyNames(node.state).forEach(function(s) {
+        const stateInfo = Output.STATE_INFO_[s];
+        if (stateInfo && !stateInfo.isRoleSpecific && stateInfo.on) {
+          ruleStr.writeToken(token);
+          this.format_({
+            node,
+            outputFormat: '$' + s,
+            outputBuffer: buff,
+            outputRuleString: ruleStr
+          });
+        }
+      }.bind(this));
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param tree {Object}
+   * @param buff {!Array<Spannable>}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatFind_(node, token, tree, buff, ruleStr) {
+    // Find takes two arguments: JSON query string and format string.
+    if (tree.firstChild) {
+      const jsonQuery = tree.firstChild.value;
+      node = node.find(
+          /** @type {chrome.automation.FindParams}*/ (JSON.parse(jsonQuery)));
+      const formatString = tree.firstChild.nextSibling;
+      if (node) {
+        ruleStr.writeToken(token);
+        this.format_({
+          node,
+          outputFormat: formatString,
+          outputBuffer: buff,
+          outputRuleString: ruleStr
+        });
+      }
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatDescendants_(node, token, buff, ruleStr) {
+    if (!node) {
+      return;
+    }
+
+    let leftmost = node;
+    let rightmost = node;
+    if (AutomationPredicate.leafOrStaticText(node)) {
+      // Find any deeper leaves, if any, by starting from one level
+      // down.
+      leftmost = node.firstChild;
+      rightmost = node.lastChild;
+      if (!leftmost || !rightmost) {
+        return;
+      }
+    }
+
+    // Construct a range to the leftmost and rightmost leaves. This
+    // range gets rendered below which results in output that is the
+    // same as if a user navigated through the entire subtree of |node|.
+    leftmost = AutomationUtil.findNodePre(
+        leftmost, Dir.FORWARD, AutomationPredicate.leafOrStaticText);
+    rightmost = AutomationUtil.findNodePre(
+        rightmost, Dir.BACKWARD, AutomationPredicate.leafOrStaticText);
+    if (!leftmost || !rightmost) {
+      return;
+    }
+
+    const subrange = new cursors.Range(
+        new cursors.Cursor(leftmost, cursors.NODE_INDEX),
+        new cursors.Cursor(rightmost, cursors.NODE_INDEX));
+    let prev = null;
+    if (node) {
+      prev = cursors.Range.fromNode(node);
+    }
+    ruleStr.writeToken(token);
+    this.render_(subrange, prev, Output.EventType.NAVIGATE, buff, ruleStr);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatJoinedDescendants_(node, token, buff, options, ruleStr) {
+    const unjoined = [];
+    ruleStr.write('joinedDescendants {');
+    this.format_({
+      node,
+      outputFormat: '$descendants',
+      outputBuffer: unjoined,
+      outputRuleString: ruleStr
+    });
+    this.append_(buff, unjoined.join(' '), options);
+    ruleStr.write(
+        '}: ' + (unjoined.length ? unjoined.join(' ') : 'EMPTY') + '\n');
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatRole_(node, token, buff, options, ruleStr) {
+    options.annotation.push(token);
+    let msg = node.role;
+    const info = Output.ROLE_INFO_[node.role];
+    if (node.roleDescription) {
+      msg = node.roleDescription;
+    } else if (info) {
+      if (this.formatOptions_.braille) {
+        msg = Msgs.getMsg(info.msgId + '_brl');
+      } else if (info.msgId) {
+        msg = Msgs.getMsg(info.msgId);
+      }
+    } else {
+      // We can safely ignore this role. ChromeVox output tests cover
+      // message id validity.
+      return;
+    }
+    this.append_(buff, msg || '', options);
+    ruleStr.writeTokenWithValue(token, msg);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatInputType_(node, token, buff, options, ruleStr) {
+    if (!node.inputType) {
+      return;
+    }
+    options.annotation.push(token);
+    let msgId =
+        Output.INPUT_TYPE_MESSAGE_IDS_[node.inputType] || 'input_type_text';
+    if (this.formatOptions_.braille) {
+      msgId = msgId + '_brl';
+    }
+    this.append_(buff, Msgs.getMsg(msgId), options);
+    ruleStr.writeTokenWithValue(token, Msgs.getMsg(msgId));
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatTableCellIndex_(node, token, buff, options, ruleStr) {
+    let value = node[token];
+    if (value === undefined) {
+      return;
+    }
+    value = String(value + 1);
+    options.annotation.push(token);
+    this.append_(buff, value, options);
+    ruleStr.writeTokenWithValue(token, value);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatCellIndexText_(node, token, buff, options, ruleStr) {
+    if (node.htmlAttributes['aria-coltext']) {
+      let value = node.htmlAttributes['aria-coltext'];
+      let row = node;
+      while (row && row.role !== RoleType.ROW) {
+        row = row.parent;
+      }
+      if (!row || !row.htmlAttributes['aria-rowtext']) {
+        return;
+      }
+      value += row.htmlAttributes['aria-rowtext'];
+      this.append_(buff, value, options);
+      ruleStr.writeTokenWithValue(token, value);
+    } else {
+      ruleStr.write(token);
+      this.format_({
+        node,
+        outputFormat: ` @cell_summary($if($tableCellAriaRowIndex,
+                  $tableCellAriaRowIndex, $tableCellRowIndex),
+                $if($tableCellAriaColumnIndex, $tableCellAriaColumnIndex,
+                  $tableCellColumnIndex))`,
+        outputBuffer: buff,
+        outputRuleString: ruleStr
+      });
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param prevNode {!AutomationNode|undefined}
+   * @param token {Object}
+   * @param tree {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatNode_(node, prevNode, token, tree, buff, options, ruleStr) {
+    if (!tree.firstChild) {
+      return;
+    }
+
+    const relationName = tree.firstChild.value;
+    if (relationName === 'tableCellColumnHeaders') {
+      // Skip output when previous position falls on the same column.
+      while (prevNode && !AutomationPredicate.cellLike(prevNode)) {
+        prevNode = prevNode.parent;
+      }
+      if (prevNode &&
+          prevNode.tableCellColumnIndex === node.tableCellColumnIndex) {
+        return;
+      }
+
+      const headers = node.tableCellColumnHeaders;
+      if (headers) {
+        for (let i = 0; i < headers.length; i++) {
+          const header = headers[i].name;
+          if (header) {
+            this.append_(buff, header, options);
+            ruleStr.writeTokenWithValue(token, header);
+          }
+        }
+      }
+    } else if (relationName === 'tableCellRowHeaders') {
+      const headers = node.tableCellRowHeaders;
+      if (headers) {
+        for (let i = 0; i < headers.length; i++) {
+          const header = headers[i].name;
+          if (header) {
+            this.append_(buff, header, options);
+            ruleStr.writeTokenWithValue(token, header);
+          }
+        }
+      }
+    } else if (node[relationName]) {
+      const related = node[relationName];
+      this.node_(related, related, Output.EventType.NAVIGATE, buff, ruleStr);
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatTextContent_(node, token, buff, options, ruleStr) {
+    if (node.name && token === 'nameOrTextContent') {
+      ruleStr.writeToken(token);
+      this.format_({
+        node,
+        outputFormat: '$name',
+        outputBuffer: buff,
+        outputRuleString: ruleStr
+      });
+      return;
+    }
+
+    if (!node.firstChild) {
+      return;
+    }
+
+    const root = node;
+    const walker = new AutomationTreeWalker(node, Dir.FORWARD, {
+      visit: AutomationPredicate.leafOrStaticText,
+      leaf: (n) => {
+        // The root might be a leaf itself, but we still want to descend
+        // into it.
+        return n !== root && AutomationPredicate.leafOrStaticText(n);
+      },
+      root: (r) => r === root
+    });
+    const outputStrings = [];
+    while (walker.next().node) {
+      if (walker.node.name) {
+        outputStrings.push(walker.node.name);
+      }
+    }
+    const finalOutput = outputStrings.join(' ');
+    this.append_(buff, finalOutput, options);
+    ruleStr.writeTokenWithValue(token, finalOutput);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatAsFieldAccessor_(node, token, buff, options, ruleStr) {
+    options.annotation.push(token);
+    let value = node[token];
+    if (typeof value === 'number') {
+      value = String(value);
+    }
+    this.append_(buff, value, options);
+    ruleStr.writeTokenWithValue(token, value);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatAsStateValue_(node, token, buff, options, ruleStr) {
+    options.annotation.push('state');
+    const stateInfo = Output.STATE_INFO_[token];
+    let resolvedInfo = {};
+    resolvedInfo = node.state[token] ? stateInfo.on : stateInfo.off;
+    if (!resolvedInfo) {
+      return;
+    }
+    if (this.formatOptions_.speech && resolvedInfo.earconId) {
+      options.annotation.push(
+          new Output.EarconAction(resolvedInfo.earconId),
+          node.location || undefined);
+    }
+    const msgId = this.formatOptions_.braille ? resolvedInfo.msgId + '_brl' :
+                                                resolvedInfo.msgId;
+    const msg = Msgs.getMsg(msgId);
+    this.append_(buff, msg, options);
+    ruleStr.writeTokenWithValue(token, msg);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatPosInSetFallback_(node, token, buff, ruleStr) {
+    if (node.posInSet !== undefined) {
+      // Unexpected case.
+      this.append_(buff, String(node.posInSet));
+      ruleStr.writeTokenWithValue(token, String(node.posInSet));
+    } else {
+      ruleStr.writeToken(token);
+      this.format_({
+        node,
+        outputFormat: '$indexInParent',
+        outputBuffer: buff,
+        outputRuleString: ruleStr
+      });
+    }
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param buff {!Array<Spannable>}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatSetSizeFallback_(node, token, buff, ruleStr) {
+    // Size is always expected to be 0.
+    const size = node.setSize ? node.setSize : 0;
+    this.append_(buff, String(size));
+    ruleStr.writeTokenWithValue(token, String(node.setSize));
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param buff {!Array<Spannable>}
+   */
+  formatPhoneticReading_(node, buff) {
+    const text = PhoneticData.forText(node.name, chrome.i18n.getUILanguage());
+    this.append_(buff, text);
+  }
+
+  /**
+   * @param node {AutomationNode}
+   * @param token {Object}
+   * @param tree {Object}
+   * @param buff {!Array<Spannable>}
+   * @param options {Object}
+   * @param ruleStr {!OutputRuleStr}
+   */
+  formatCustomFunction_(node, token, tree, buff, options, ruleStr) {
+    // Custom functions.
+    if (token === 'if') {
+      ruleStr.writeToken(token);
+      const cond = tree.firstChild;
+      const attrib = cond.value.slice(1);
+      if (Output.isTruthy(node, attrib)) {
+        ruleStr.write(attrib + '==true => ');
+        this.format_({
+          node,
+          outputFormat: cond.nextSibling,
+          outputBuffer: buff,
+          outputRuleString: ruleStr
+        });
+      } else if (Output.isFalsey(node, attrib)) {
+        ruleStr.write(attrib + '==false => ');
+        this.format_({
+          node,
+          outputFormat: cond.nextSibling.nextSibling,
+          outputBuffer: buff,
+          outputRuleString: ruleStr
+        });
+      }
+    } else if (token === 'nif') {
+      ruleStr.writeToken(token);
+      const cond = tree.firstChild;
+      const attrib = cond.value.slice(1);
+      if (Output.isFalsey(node, attrib)) {
+        ruleStr.write(attrib + '==false => ');
+        this.format_({
+          node,
+          outputFormat: cond.nextSibling,
+          outputBuffer: buff,
+          outputRuleString: ruleStr
+        });
+      } else if (Output.isTruthy(node, attrib)) {
+        ruleStr.write(attrib + '==true => ');
+        this.format_({
+          node,
+          outputFormat: cond.nextSibling.nextSibling,
+          outputBuffer: buff,
+          outputRuleString: ruleStr
+        });
+      }
+    } else if (token === 'earcon') {
+      // Ignore unless we're generating speech output.
+      if (!this.formatOptions_.speech) {
+        return;
+      }
+
+      options.annotation.push(new Output.EarconAction(
+          tree.firstChild.value, node.location || undefined));
+      this.append_(buff, '', options);
+      ruleStr.writeTokenWithValue(token, tree.firstChild.value);
+    }
   }
 
   /**
@@ -1740,7 +2017,7 @@ Output = class {
       return;
     }
 
-    const msgs = Output.computeHints_(node);
+    const msgs = Output.computeHints_(node, uniqueAncestors);
     const delayedMsgs =
         Output.computeDelayedHints_(node, uniqueAncestors, type);
     if (delayedMsgs.length > 0) {
@@ -1775,13 +2052,14 @@ Output = class {
   /**
    * Internal helper to |hint_|. Returns a list of message hints.
    * @param {!AutomationNode} node
+   * @param {!Array<AutomationNode>} uniqueAncestors
    * @return {!Array<{text: (string|undefined),
    *           msgId: (string|undefined),
    *           outputFormat: (string|undefined)}>} Note that the above caller
    * expects one and only one key be set.
    * @private
    */
-  static computeHints_(node) {
+  static computeHints_(node, uniqueAncestors) {
     const ret = [];
     if (node.errorMessage) {
       ret.push({outputFormat: '$node(errorMessage)'});
@@ -1804,6 +2082,19 @@ Output = class {
       }
       break;
     }
+
+    let currentNode = node;
+    let ancestorIndex = 0;
+    do {
+      if (currentNode.ariaCurrentState &&
+          Output.ARIA_CURRENT_STATE_INFO_[currentNode.ariaCurrentState]) {
+        ret.push({
+          msgId: Output.ARIA_CURRENT_STATE_INFO_[currentNode.ariaCurrentState]
+        });
+        break;
+      }
+      currentNode = uniqueAncestors[ancestorIndex++];
+    } while (currentNode);
 
     return ret;
   }
@@ -1873,6 +2164,9 @@ Output = class {
     }
     if (node.autoComplete === 'inline' || node.autoComplete === 'both') {
       ret.push({msgId: 'hint_autocomplete_inline'});
+    }
+    if (node.customActions && node.customActions.length > 0) {
+      ret.push({msgId: 'hint_action'});
     }
     if (node.accessKey) {
       ret.push({text: Msgs.getMsg('access_key', [node.accessKey])});
@@ -2324,6 +2618,7 @@ Output.ROLE_INFO_ = {
     inherits: 'abstractRange',
     earconId: 'LISTBOX'
   },
+  splitter: {msgId: 'role_separator'},
   status: {msgId: 'role_status', inherits: 'abstractNameFromContents'},
   suggestion: {msgId: 'role_suggestion', inherits: 'abstractContainer'},
   tab: {msgId: 'role_tab'},
@@ -2359,6 +2654,20 @@ Output.STATE_INFO_ = {
   multiselectable: {on: {msgId: 'aria_multiselectable_true'}},
   required: {on: {msgId: 'aria_required_true'}},
   visited: {on: {msgId: 'visited_state'}}
+};
+
+/**
+ * Maps aria-current state types to message IDs.
+ * @const {Object<string>}
+ * @private
+ */
+Output.ARIA_CURRENT_STATE_INFO_ = {
+  [AriaCurrentState.TRUE]: 'aria_current_true',
+  [AriaCurrentState.PAGE]: 'aria_current_page',
+  [AriaCurrentState.STEP]: 'aria_current_step',
+  [AriaCurrentState.LOCATION]: 'aria_current_location',
+  [AriaCurrentState.DATE]: 'aria_current_date',
+  [AriaCurrentState.TIME]: 'aria_current_time'
 };
 
 /**

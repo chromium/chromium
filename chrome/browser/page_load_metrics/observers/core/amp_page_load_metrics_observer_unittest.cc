@@ -398,7 +398,7 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 0.5, 0, 0, 0,
-                                                              0, {});
+                                                              0, {}, {});
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 
   // Navigate the main frame to trigger metrics recording.
@@ -419,6 +419,100 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {
       entry.get(),
       "SubFrame.LayoutInstability.CumulativeShiftScore.BeforeInputOrScroll",
       50);
+}
+
+TEST_F(AMPPageLoadMetricsObserverTest,
+       SubFrameMetrics_Layout_Shift_Normalization) {
+  GURL amp_url("https://ampviewer.com/page");
+
+  NavigationSimulator::CreateRendererInitiated(GURL("https://ampviewer.com/"),
+                                               main_rfh())
+      ->Commit();
+
+  NavigationSimulator::CreateRendererInitiated(amp_url, main_rfh())
+      ->CommitSameDocument();
+
+  content::RenderFrameHost* subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://ampsubframe.com/page"
+               "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage"),
+          content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe"));
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.behavior_flags =
+      blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
+  tester()->SimulateMetadataUpdate(metadata, subframe);
+
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(
+      0.65, 0.65, 0, 0, 0, 0, {},
+      {current_time - base::TimeDelta::FromMilliseconds(2500)});
+
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::TimeDelta::FromMilliseconds(4000), 0.1));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::TimeDelta::FromMilliseconds(3000), 0.1));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::TimeDelta::FromMilliseconds(2000), 0.2));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::TimeDelta::FromMilliseconds(200), 0.1));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::TimeDelta::FromMilliseconds(100), 0.15));
+
+  tester()->SimulateRenderDataUpdate(render_data, subframe);
+
+  // Navigate the main frame to trigger metrics recording.
+  NavigationSimulator::CreateRendererInitiated(
+      GURL("https://ampviewer.com/other"), main_rfh())
+      ->CommitSameDocument();
+
+  ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
+  ASSERT_NE(nullptr, entry.get());
+  tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry.get(), amp_url);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(), "SubFrame.LayoutInstability.CumulativeShiftScore", 65);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.LayoutInstability.CumulativeShiftScore.BeforeInputOrScroll",
+      65);
+  // Layout Shift Normalization UKM.
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.LayoutInstability.AverageCumulativeShiftScore.SessionWindow."
+      "Gap5000ms",
+      65);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
+      "Gap1000ms",
+      40);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
+      "Gap1000ms.Max5000ms",
+      40);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow."
+      "Duration1000ms",
+      30);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow."
+      "Duration300ms",
+      25);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.LayoutInstability.MaxCumulativeShiftScore."
+      "SessionWindowByInputs."
+      "Gap1000ms.Max5000ms",
+      25);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {

@@ -13,6 +13,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -251,17 +252,6 @@ OverviewController::GetWindowsListInOverviewGridsForTest() {
   return windows;
 }
 
-std::vector<aura::Window*>
-OverviewController::GetItemWindowListInOverviewGridsForTest() {
-  std::vector<aura::Window*> windows;
-  for (const std::unique_ptr<OverviewGrid>& grid :
-       overview_session_->grid_list()) {
-    for (const auto& overview_item : grid->window_list())
-      windows.push_back(overview_item->item_widget()->GetNativeWindow());
-  }
-  return windows;
-}
-
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   // Hide the virtual keyboard as it obstructs the overview mode.
   // Don't need to hide if it's the a11y keyboard, as overview mode
@@ -467,6 +457,25 @@ bool OverviewController::CanEnterOverview() {
   // Prevent entering overview while the divider is dragged or animated.
   if (IsSplitViewDividerDraggedOrAnimated())
     return false;
+
+  // Prevent entering overview if a desk animation is underway. The overview
+  // animation would be completely covered anyway, and doing so could put us in
+  // a strange state. Note that exiting overview is allowed as it is part of the
+  // animation.
+  if (DesksController::Get()->animation()) {
+    // The one exception to this rule is in tablet mode, having a window snapped
+    // to one side. Moving to this desk, we will want to open overview on the
+    // other side. For clamshell we don't need to enter overview as having a
+    // window snapped to one side and showing the wallpaper on the other is
+    // fine.
+    auto* split_view_controller =
+        SplitViewController::Get(Shell::GetPrimaryRootWindow());
+    if (!split_view_controller->InTabletSplitViewMode() ||
+        split_view_controller->state() ==
+            SplitViewController::State::kBothSnapped) {
+      return false;
+    }
+  }
 
   // Don't allow a window overview if the user session is not active (e.g.
   // locked or in user-adding screen) or a modal dialog is open or running in

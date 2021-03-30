@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
@@ -17,7 +18,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/search_result_ranker.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/prefs/pref_service.h"
 
@@ -83,7 +82,7 @@ void SearchController::InitializeRankers() {
   mixer_->InitializeRankers(profile_, this);
 }
 
-void SearchController::Start(const base::string16& query) {
+void SearchController::Start(const std::u16string& query) {
   dispatching_query_ = true;
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
   if (query.length() > 0) {
@@ -161,8 +160,8 @@ void SearchController::OnResultsChanged() {
 
   size_t num_max_results =
       query_for_recommendation_
-          ? ash::AppListConfig::instance().num_start_page_tiles()
-          : ash::AppListConfig::instance().max_search_results();
+          ? ash::SharedAppListConfig::instance().num_start_page_tiles()
+          : ash::SharedAppListConfig::instance().max_search_results();
   mixer_->MixAndPublish(num_max_results, last_query_);
 }
 
@@ -177,14 +176,10 @@ ChromeSearchResult* SearchController::FindSearchResult(
   return nullptr;
 }
 
-void SearchController::OnSearchResultsDisplayed(
-    const base::string16& trimmed_query,
+void SearchController::OnSearchResultsImpressionMade(
+    const std::u16string& trimmed_query,
     const ash::SearchResultIdWithPositionIndices& results,
     int launched_index) {
-  // Log the impression.
-  mixer_->search_result_ranker()->LogSearchResults(trimmed_query, results,
-                                                   launched_index);
-
   if (trimmed_query.empty()) {
     mixer_->search_result_ranker()->ZeroStateResultsDisplayed(results);
 
@@ -199,7 +194,7 @@ void SearchController::OnSearchResultsDisplayed(
 
 ChromeSearchResult* SearchController::GetResultByTitleForTest(
     const std::string& title) {
-  base::string16 target_title = base::ASCIIToUTF16(title);
+  std::u16string target_title = base::ASCIIToUTF16(title);
   for (const auto& provider : providers_) {
     for (const auto& result : provider->results()) {
       if (result->title() == target_title &&
@@ -233,6 +228,7 @@ void SearchController::Train(AppLaunchData&& app_launch_data) {
         .SetSearchQueryLength(last_query_.size())
         .SetProviderType(static_cast<int>(app_launch_data.ranking_item_type))
         .SetHour(now_exploded.hour)
+        .SetScore(app_launch_data.score)
         .Record();
 
     // Only record the last launched app if the hashed logging feature flag is

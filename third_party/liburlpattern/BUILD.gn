@@ -9,6 +9,7 @@ component("liburlpattern") {
   deps = [
     "//base:base",
     "//third_party/abseil-cpp:absl",
+    "//third_party/icu:icu",
   ]
 
   # Note, also update the local modifications in README.chromium.
@@ -30,6 +31,7 @@ test("liburlpattern_unittests") {
     ":liburlpattern",
     "//base/test:run_all_unittests",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
 
   # Note, also update the local modifications in README.chromium.

@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/symbols.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/ios/ios_sdk.gni")
-import("//build/config/mac/symbols.gni")
 
-# Xcode 12.0 or higher is required to build Chromium on iOS. This file should
+# Xcode 12.2 or higher is required to build Chromium on iOS. This file should
 # only be included when building Chromium, not other related projects (cronet,
 # webrtc, ...).
-assert(xcode_version_int >= 1200, "Xcode 12.0 or higher is required.")
+assert(xcode_version_int >= 1220, "Xcode 12.2 or higher is required.")
 
 declare_args() {
   # Enable widget extensions.
@@ -28,14 +28,6 @@ declare_args() {
   # Label of the target providing implementation for AccountVerificationProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
-
-  # Enable use of SceneDelegate-driven startup flow in
-  # Info.plist.
-  ios_enable_scene_startup = false
-
-  # Enable multi-window configuration in Info.plist. Includes all the effects of
-  # setting |ios_enable_scene_startup| to |true|.
-  ios_enable_multi_window = true
 
   # Controls whether ScreenTime API is used.
   ios_enable_screen_time = true
@@ -100,7 +92,7 @@ if (breakpad_enabled) {
   is_official_release = false
 }
 
-chromium_bundle_id = "chrome.ios.herebedragons"
+chromium_bundle_id = "chrome.ios.dev"
 chromium_handoff_id = "$ios_app_bundle_id_prefix.chrome.handoff"
 ios_move_tab_activity_type = "$ios_app_bundle_id_prefix.chrome.move-tab"
 

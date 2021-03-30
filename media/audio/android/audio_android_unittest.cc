@@ -203,7 +203,8 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
     // sufficient data remaining in the file to fill up the complete frame.
     int frames = max_size / (dest->channels() * kBytesPerSample);
     if (max_size) {
-      dest->FromInterleaved(file_->data() + pos_, frames, kBytesPerSample);
+      auto* source = reinterpret_cast<const int16_t*>(file_->data() + pos_);
+      dest->FromInterleaved<SignedInt16SampleTypeTraits>(source, frames);
       pos_ += max_size;
     }
 

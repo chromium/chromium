@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
@@ -70,6 +71,10 @@ content::BrowserContext* ChromeMediaRouterFactory::GetBrowserContextToUse(
 
 KeyedService* ChromeMediaRouterFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
+  if (!MediaRouterEnabled(context)) {
+    NOTREACHED();
+    return nullptr;
+  }
   MediaRouterBase* media_router = nullptr;
 #if defined(OS_ANDROID)
   media_router = new MediaRouterAndroid();

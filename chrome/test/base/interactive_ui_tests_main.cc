@@ -20,6 +20,7 @@
 #if defined(USE_OZONE) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/views/test/ui_controls_factory_desktop_aura_ozone.h"
 #endif
 #if defined(USE_X11)
@@ -44,9 +45,6 @@ class InteractiveUITestSuite : public ChromeTestSuite {
  protected:
   // ChromeTestSuite overrides:
   void Initialize() override {
-    // Browser tests are expected not to tear-down various globals.
-    base::TestSuite::DisableCheckForLeakedGlobals();
-
     ChromeTestSuite::Initialize();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -58,6 +56,10 @@ class InteractiveUITestSuite : public ChromeTestSuite {
 #elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if defined(USE_OZONE)
     if (features::IsUsingOzonePlatform()) {
+      // Notifies the platform that test config is needed. For Wayland, for
+      // example, makes it possible to use emulated input.
+      ui::test::EnableTestConfigForPlatformWindows();
+
       ui::OzonePlatform::InitParams params;
       params.single_process = true;
       ui::OzonePlatform::InitializeForUI(params);
@@ -148,7 +150,8 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
 class InteractiveUITestSuiteRunner : public ChromeTestSuiteRunner {
  public:
   int RunTestSuite(int argc, char** argv) override {
-    return InteractiveUITestSuite(argc, argv).Run();
+    InteractiveUITestSuite test_suite(argc, argv);
+    return RunTestSuiteInternal(&test_suite);
   }
 };
 

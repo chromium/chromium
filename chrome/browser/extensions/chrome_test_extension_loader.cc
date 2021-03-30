@@ -7,13 +7,12 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/run_loop.h"
-#include "base/scoped_observer.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/notification_details.h"
@@ -25,51 +24,19 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/notification_types.h"
-#include "extensions/browser/shared_user_script_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_notification_observer.h"
+#include "extensions/test/test_content_script_load_waiter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
-
-namespace {
-
-// A single-use class to wait for content scripts to be loaded.
-class ContentScriptLoadWaiter : public UserScriptLoader::Observer {
- public:
-  ContentScriptLoadWaiter(UserScriptLoader* loader, const HostID& host_id)
-      : host_id_(host_id), loader_(loader), scoped_observer_(this) {
-    scoped_observer_.Add(loader_);
-  }
-  ~ContentScriptLoadWaiter() = default;
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // UserScriptLoader::Observer:
-  void OnScriptsLoaded(UserScriptLoader* loader,
-                       content::BrowserContext* browser_context) override {
-    if (loader_->HasLoadedScripts(host_id_)) {
-      // Quit when idle in order to allow other observers to run.
-      run_loop_.QuitWhenIdle();
-    }
-  }
-  void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override {}
-
-  const HostID host_id_;
-  UserScriptLoader* const loader_;
-  base::RunLoop run_loop_;
-  ScopedObserver<UserScriptLoader, UserScriptLoader::Observer> scoped_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentScriptLoadWaiter);
-};
-
-}  // namespace
 
 ChromeTestExtensionLoader::ChromeTestExtensionLoader(
     content::BrowserContext* browser_context)
@@ -160,15 +127,19 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
 
 bool ChromeTestExtensionLoader::WaitForExtensionReady(
     const Extension& extension) {
-  SharedUserScriptManager* user_script_manager =
-      ExtensionSystem::Get(browser_context_)->shared_user_script_manager();
+  UserScriptManager* user_script_manager =
+      ExtensionSystem::Get(browser_context_)->user_script_manager();
   // Note: |user_script_manager| can be null in tests.
   if (user_script_manager &&
       !ContentScriptsInfo::GetContentScripts(&extension).empty()) {
-    UserScriptLoader* user_script_loader = user_script_manager->script_loader();
-    HostID host_id(HostID::EXTENSIONS, extension_id_);
-    if (!user_script_loader->HasLoadedScripts(host_id))
-      ContentScriptLoadWaiter(user_script_loader, host_id).Wait();
+    UserScriptLoader* user_script_loader =
+        user_script_manager->manifest_script_loader();
+    mojom::HostID host_id(mojom::HostID::HostType::kExtensions, extension_id_);
+    if (!user_script_loader->HasLoadedScripts(host_id)) {
+      ContentScriptLoadWaiter waiter(user_script_loader);
+      waiter.RestrictToHostID(host_id);
+      waiter.Wait();
+    }
   }
 
   const int num_processes =
@@ -347,13 +318,12 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
   if (install_param_.has_value()) {
     installer->set_install_param(*install_param_);
   }
+  LoadErrorWaiter waiter;
   installer->Load(file_path);
   if (!should_fail_) {
     extension = registry_observer.WaitForExtensionLoaded();
   } else {
-    EXPECT_TRUE(ExtensionTestNotificationObserver(browser_context_)
-                    .WaitForExtensionLoadError())
-        << "No load error observed";
+    EXPECT_TRUE(waiter.Wait()) << "No load error observed";
   }
 
   return extension;

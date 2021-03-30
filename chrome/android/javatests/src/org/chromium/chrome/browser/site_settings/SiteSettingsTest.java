@@ -21,16 +21,21 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
@@ -38,14 +43,15 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.R;
@@ -61,6 +67,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.location.LocationUtils;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -80,22 +87,47 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})
+@Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
 public class SiteSettingsTest {
+    public static final String SITE_SETTINGS_BATCH_NAME = "site_settings";
+
+    @ClassRule
+    public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
+
     @Rule
-    public PermissionTestRule mPermissionRule = new PermissionTestRule(true);
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(mPermissionRule, false);
 
     private PermissionUpdateWaiter mPermissionUpdateWaiter;
 
-    @Before
-    public void setUp() throws Exception {
-        mPermissionRule.startMainActivityOnBlankPage();
-    }
-
     @After
-    public void tearDown() {
+    public void tearDown() throws TimeoutException {
         if (mPermissionUpdateWaiter != null) {
             mPermissionRule.getActivity().getActivityTab().removeObserver(mPermissionUpdateWaiter);
         }
+
+        // Clean up default content setting and system settings.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            for (int t = 0; t < SiteSettingsCategory.Type.NUM_ENTRIES; t++) {
+                if (SiteSettingsCategory.contentSettingsType(t) >= 0) {
+                    WebsitePreferenceBridge.setContentSetting(getBrowserContextHandle(),
+                            SiteSettingsCategory.contentSettingsType(t),
+                            ContentSettingValues.DEFAULT);
+                }
+            }
+        });
+        LocationUtils.setFactory(null);
+        LocationProviderOverrider.setLocationProviderImpl(null);
+        NfcSystemLevelSetting.resetNfcForTesting();
+
+        // Clean up cookies and permissions.
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(helper::notifyCalled,
+                    new int[] {BrowsingDataType.COOKIES, BrowsingDataType.SITE_SETTINGS},
+                    TimePeriod.ALL_TIME);
+        });
+        helper.waitForCallback(0);
     }
 
     private void initializeUpdateWaiter(final boolean expectGranted) {
@@ -233,7 +265,7 @@ public class SiteSettingsTest {
                     (FourStateCookieSettingsPreference) preferences.findPreference(
                             SingleCategorySettings.FOUR_STATE_COOKIE_TOGGLE_KEY);
             Assert.assertEquals(state + " button should be " + (expected ? "enabled" : "disabled"),
-                    fourStateCookieToggle.isButtonEnabledForTesting(state), expected);
+                    expected, fourStateCookieToggle.isButtonEnabledForTesting(state));
         });
     }
 
@@ -241,9 +273,9 @@ public class SiteSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(
                     "Default Cookie Setting should be " + (expected ? "managed" : "unmanaged"),
+                    expected,
                     WebsitePreferenceBridge.isContentSettingManaged(
-                            getBrowserContextHandle(), ContentSettingsType.COOKIES),
-                    expected);
+                            getBrowserContextHandle(), ContentSettingsType.COOKIES));
         });
     }
 
@@ -251,9 +283,9 @@ public class SiteSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(
                     "Third Party Cookie Blocking should be " + (expected ? "managed" : "unmanaged"),
+                    expected,
                     UserPrefs.get(Profile.getLastUsedRegularProfile())
-                            .isManagedPreference(COOKIE_CONTROLS_MODE),
-                    expected);
+                            .isManagedPreference(COOKIE_CONTROLS_MODE));
         });
     }
 
@@ -1181,8 +1213,9 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisableIf.
+    Build(message = "Flaky, see crbug.com/1170671", sdk_is_less_than = Build.VERSION_CODES.Q)
     public void testEmbargoedNotificationSiteSettings() throws Exception {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         final String url = mPermissionRule.getURLWithHostName(
                 "example.com", "/chrome/test/data/notifications/notification_tester.html");
 
@@ -1327,7 +1360,9 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableIf.Build(message = "EME not working before M", sdk_is_less_than = Build.VERSION_CODES.M)
+    //@DisableIf.Build(message = "EME not working before M", sdk_is_less_than =
+    // Build.VERSION_CODES.M)
+    @DisabledTest(message = "Flaky test.  https://crbug.com/1167452")
     public void testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(true /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,

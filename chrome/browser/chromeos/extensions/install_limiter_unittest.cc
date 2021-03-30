@@ -5,9 +5,9 @@
 #include "chrome/browser/chromeos/extensions/install_limiter.h"
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_mode_test_helper.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,8 +28,7 @@ class InstallLimiterTest
     : public testing::TestWithParam<chromeos::DemoSession::DemoModeConfig> {
  public:
   InstallLimiterTest()
-      : scoped_user_manager_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ~InstallLimiterTest() override = default;
 
  private:
@@ -45,7 +44,7 @@ TEST_P(InstallLimiterTest, ShouldDeferInstall) {
       extension_misc::kScreensaverAppId, extension_misc::kScreensaverEveAppId,
       extension_misc::kScreensaverNocturneAppId,
       extension_misc::kScreensaverAtlasAppId,
-      extension_misc::kScreensaverKukuiAppId};
+      extension_misc::kScreensaverKraneZdksAppId};
 
   chromeos::DemoModeTestHelper demo_mode_test_helper;
   if (GetParam() != chromeos::DemoSession::DemoModeConfig::kNone)

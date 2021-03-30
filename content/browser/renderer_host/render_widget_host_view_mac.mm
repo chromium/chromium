@@ -85,8 +85,10 @@ SkColor RenderWidgetHostViewMac::BrowserCompositorMacGetGutterColor() const {
   return last_frame_root_background_color_;
 }
 
-void RenderWidgetHostViewMac::OnFrameTokenChanged(uint32_t frame_token) {
-  OnFrameTokenChangedForView(frame_token);
+void RenderWidgetHostViewMac::OnFrameTokenChanged(
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
+  OnFrameTokenChangedForView(frame_token, activation_time);
 }
 
 void RenderWidgetHostViewMac::DestroyCompositorForShutdown() {
@@ -425,6 +427,15 @@ void RenderWidgetHostViewMac::GetScreenInfo(blink::ScreenInfo* screen_info) {
   browser_compositor_->GetRendererScreenInfo(screen_info);
 }
 
+void RenderWidgetHostViewMac::OnSynchronizedDisplayPropertiesChanged(
+    bool rotation) {
+  // Update cached screen information when the current display changes.
+  const auto& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow([NSApp keyWindow]);
+  if (display != display_)
+    OnDisplayChanged(display);
+}
+
 void RenderWidgetHostViewMac::Show() {
   is_visible_ = true;
   ns_view_->SetVisible(is_visible_);
@@ -445,9 +456,6 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
 
   browser_compositor_->SetRenderWidgetHostIsHidden(false);
 
-  DelegatedFrameHost* delegated_frame_host =
-      browser_compositor_->GetDelegatedFrameHost();
-
   bool has_saved_frame =
       browser_compositor_->has_saved_frame_before_state_transition();
 
@@ -458,17 +466,18 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
                        ? tab_switch_start_state.Clone()
                        : blink::mojom::RecordContentToVisibleTimeRequestPtr());
 
-  if (delegated_frame_host) {
-    // If the frame for the renderer is already available, then the
-    // tab-switching time is the presentation time for the browser-compositor.
-    const bool record_presentation_time = has_saved_frame;
-    delegated_frame_host->WasShown(
-        browser_compositor_->GetRendererLocalSurfaceId(),
-        browser_compositor_->GetRendererSize(),
-        record_presentation_time
-            ? std::move(tab_switch_start_state)
-            : blink::mojom::RecordContentToVisibleTimeRequestPtr());
-  }
+  // If the frame for the renderer is already available, then the
+  // tab-switching time is the presentation time for the browser-compositor.
+  DelegatedFrameHost* delegated_frame_host =
+      browser_compositor_->GetDelegatedFrameHost();
+  DCHECK(delegated_frame_host);
+  const bool record_presentation_time = has_saved_frame;
+  delegated_frame_host->WasShown(
+      browser_compositor_->GetRendererLocalSurfaceId(),
+      browser_compositor_->GetRendererSize(),
+      record_presentation_time
+          ? std::move(tab_switch_start_state)
+          : blink::mojom::RecordContentToVisibleTimeRequestPtr());
 }
 
 void RenderWidgetHostViewMac::WasOccluded() {
@@ -672,7 +681,8 @@ void RenderWidgetHostViewMac::OnGestureEvent(
   }
 }
 
-void RenderWidgetHostViewMac::OnRenderFrameMetadataChangedAfterActivation() {
+void RenderWidgetHostViewMac::OnRenderFrameMetadataChangedAfterActivation(
+    base::TimeTicks activation_time) {
   last_frame_root_background_color_ = host()
                                           ->render_frame_metadata_provider()
                                           ->LastRenderFrameMetadata()
@@ -720,12 +730,12 @@ void RenderWidgetHostViewMac::Destroy() {
 }
 
 void RenderWidgetHostViewMac::SetTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   GetCursorManager()->SetTooltipTextForView(this, tooltip_text);
 }
 
 void RenderWidgetHostViewMac::DisplayTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   ns_view_->SetTooltipText(tooltip_text);
 }
 
@@ -755,7 +765,7 @@ namespace {
 // and needs to be recursive, and that's crazy difficult to do with a lambda.
 // TODO(avi): Move this to be a lambda when P0839R0 lands in C++.
 void AddTextNodesToVector(const ui::AXNode* node,
-                          std::vector<base::string16>* strings) {
+                          std::vector<std::u16string>* strings) {
   const ui::AXNodeData& node_data = node->data();
 
   if (node_data.role == ax::mojom::Role::kStaticText) {
@@ -770,26 +780,28 @@ void AddTextNodesToVector(const ui::AXNode* node,
     AddTextNodesToVector(child, strings);
 }
 
-using SpeechCallback = base::OnceCallback<void(const base::string16&)>;
+using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;
 void CombineTextNodesAndMakeCallback(SpeechCallback callback,
                                      const ui::AXTreeUpdate& update) {
-  std::vector<base::string16> text_node_contents;
+  std::vector<std::u16string> text_node_contents;
   text_node_contents.reserve(update.nodes.size());
 
   ui::AXTree tree(update);
 
   AddTextNodesToVector(tree.root(), &text_node_contents);
 
-  std::move(callback).Run(
-      base::JoinString(text_node_contents, base::ASCIIToUTF16("\n")));
+  std::move(callback).Run(base::JoinString(text_node_contents, u"\n"));
 }
 
 }  // namespace
 
 void RenderWidgetHostViewMac::GetPageTextForSpeech(SpeechCallback callback) {
-  // Note that the WebContents::RequestAXTreeSnapshot() call has a limit on the
-  // number of nodes returned. For large pages, this call might hit that limit.
-  // This is a reasonable thing. The "Start Speaking" call dates back to the
+  // Note that we are calling WebContents::RequestAXTreeSnapshot() with a limit
+  // of 5000 nodes returned. For large pages, this call might hit that limit
+  // (and in practice it may return slightly more than 5000 to ensure a
+  // well-formed tree).
+  //
+  // This is a reasonable limit. The "Start Speaking" call dates back to the
   // earliest days of the Mac, before accessibility. It was designed to show off
   // the speech capabilities of the Mac, which is fine, but is mostly
   // inapplicable nowadays. Is it useful to have the Mac read megabytes of text
@@ -802,7 +814,10 @@ void RenderWidgetHostViewMac::GetPageTextForSpeech(SpeechCallback callback) {
 
   GetWebContents()->RequestAXTreeSnapshot(
       base::BindOnce(CombineTextNodesAndMakeCallback, std::move(callback)),
-      ui::AXMode::kWebContents);
+      ui::AXMode::kWebContents,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 5000,
+      /* timeout= */ {});
 }
 
 void RenderWidgetHostViewMac::SpeakSelection() {
@@ -1101,7 +1116,7 @@ blink::mojom::PointerLockResult RenderWidgetHostViewMac::LockMouse(
   ns_view_->SetCursorLocked(true);
 
   // Clear the tooltip window.
-  ns_view_->SetTooltipText(base::string16());
+  ns_view_->SetTooltipText(std::u16string());
 
   return blink::mojom::PointerLockResult::kSuccess;
 }
@@ -1397,6 +1412,16 @@ MouseWheelPhaseHandler* RenderWidgetHostViewMac::GetMouseWheelPhaseHandler() {
   return &mouse_wheel_phase_handler_;
 }
 
+void RenderWidgetHostViewMac::ShowSharePicker(
+    const std::string& title,
+    const std::string& text,
+    const std::string& url,
+    const std::vector<std::string>& file_paths,
+    blink::mojom::ShareService::ShareCallback callback) {
+  ns_view_->ShowSharingServicePicker(title, text, url, file_paths,
+                                     std::move(callback));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostNSViewHostHelper and mojom::RenderWidgetHostNSViewHost
 // implementation:
@@ -1495,6 +1520,7 @@ void RenderWidgetHostViewMac::OnWindowFrameInScreenChanged(
 void RenderWidgetHostViewMac::OnDisplayChanged(
     const display::Display& display) {
   display_ = display;
+  // TODO(crbug.com/1169291): Unify per-platform DisplayObserver instances.
   UpdateNSViewAndDisplayProperties();
 }
 
@@ -1594,7 +1620,7 @@ void RenderWidgetHostViewMac::ForwardMouseEvent(
     host()->ForwardMouseEvent(web_event);
 
   if (web_event.GetType() == WebInputEvent::Type::kMouseLeave)
-    ns_view_->SetTooltipText(base::string16());
+    ns_view_->SetTooltipText(std::u16string());
 }
 
 void RenderWidgetHostViewMac::ForwardWheelEvent(
@@ -1666,7 +1692,7 @@ void RenderWidgetHostViewMac::SmartMagnify(
 }
 
 void RenderWidgetHostViewMac::ImeSetComposition(
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int selection_start,
@@ -1678,7 +1704,7 @@ void RenderWidgetHostViewMac::ImeSetComposition(
 }
 
 void RenderWidgetHostViewMac::ImeCommitText(
-    const base::string16& text,
+    const std::u16string& text,
     const gfx::Range& replacement_range) {
   if (auto* widget_host = GetWidgetForIme()) {
     widget_host->ImeCommitText(text, std::vector<ui::ImeTextSpan>(),
@@ -2065,7 +2091,7 @@ void RenderWidgetHostViewMac::OnGotStringForDictionaryOverlay(
     // selected.
     // https://crbug.com/830906
     if (auto* selection = GetTextSelection()) {
-      const base::string16& selected_text = selection->selected_text();
+      const std::u16string& selected_text = selection->selected_text();
       NSString* ns_selected_text = base::SysUTF16ToNSString(selected_text);
       if ([ns_selected_text length] == 0)
         return;

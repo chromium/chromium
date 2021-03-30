@@ -27,6 +27,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -56,9 +57,29 @@ public class CriticalPersistedTabDataTest {
     private static final String OPENER_APP_ID = "OpenerAppId";
     private static final int THEME_COLOR = 5;
     private static final Integer LAUNCH_TYPE_AT_CREATION = 3;
+    private static final String TITLE_A = "original title";
+    private static final String TITLE_B = "new title";
+    private static final GURL URL_A = new GURL("https://a.com");
+    private static final GURL URL_B = new GURL("https://b.com");
+    private static final int ROOT_ID_A = 42;
+    private static final int ROOT_ID_B = 1;
+    private static final int PARENT_ID_A = 43;
+    private static final int PARENT_ID_B = 2;
+    private static final long TIMESTAMP_A = 44;
+    private static final long TIMESTAMP_B = 3;
+    private static final @TabLaunchType Integer TAB_LAUNCH_TYPE_A = TabLaunchType.FROM_LINK;
+    private static final @TabLaunchType Integer TAB_LAUNCH_TYPE_B = TabLaunchType.FROM_EXTERNAL_APP;
+    private static final byte[] WEB_CONTENTS_STATE_A_BYTES = {4};
+    private static final byte[] WEB_CONTENTS_STATE_B_BYTES = {5, 6};
+    private static final WebContentsState WEB_CONTENTS_STATE_A =
+            new WebContentsState(ByteBuffer.allocateDirect(WEB_CONTENTS_STATE_A_BYTES.length));
+    private static final WebContentsState WEB_CONTENTS_STATE_B =
+            new WebContentsState(ByteBuffer.allocateDirect(WEB_CONTENTS_STATE_B_BYTES.length));
 
     static {
         WEB_CONTENTS_STATE.buffer().put(WEB_CONTENTS_STATE_BYTES);
+        WEB_CONTENTS_STATE_A.buffer().put(WEB_CONTENTS_STATE_A_BYTES);
+        WEB_CONTENTS_STATE_B.buffer().put(WEB_CONTENTS_STATE_B_BYTES);
     }
 
     private CriticalPersistedTabData mCriticalPersistedTabData;
@@ -130,7 +151,7 @@ public class CriticalPersistedTabDataTest {
         Assert.assertEquals(mCriticalPersistedTabData.getThemeColor(), THEME_COLOR);
         Assert.assertEquals(
                 mCriticalPersistedTabData.getTabLaunchTypeAtCreation(), LAUNCH_TYPE_AT_CREATION);
-        Assert.assertArrayEquals(CriticalPersistedTabData.getContentStateByteArray(
+        Assert.assertArrayEquals(getByteArrayFromByteBuffer(
                                          mCriticalPersistedTabData.getWebContentsState().buffer()),
                 WEB_CONTENTS_STATE_BYTES);
         Semaphore deleteSemaphore = new Semaphore(0);
@@ -235,7 +256,7 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
                 "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
                 OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
-        byte[] serialized = criticalPersistedTabData.serialize();
+        byte[] serialized = criticalPersistedTabData.getSerializeSupplier().get();
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         CriticalPersistedTabData deserialized =
@@ -249,7 +270,214 @@ public class CriticalPersistedTabDataTest {
         Assert.assertEquals(THEME_COLOR, deserialized.getThemeColor());
         Assert.assertEquals(LAUNCH_TYPE_AT_CREATION, deserialized.getTabLaunchTypeAtCreation());
         Assert.assertArrayEquals(WEB_CONTENTS_STATE_BYTES,
-                CriticalPersistedTabData.getContentStateByteArray(
-                        deserialized.getWebContentsState().buffer()));
+                getByteArrayFromByteBuffer(deserialized.getWebContentsState().buffer()));
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testOpenerAppIdNull() {
+        Tab tab = mockTab(TAB_ID, false);
+        CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
+                "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, null,
+                THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
+        byte[] serialized = criticalPersistedTabData.getSerializeSupplier().get();
+        PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
+                ShoppingPersistedTabData.class, tab.isIncognito());
+        CriticalPersistedTabData deserialized =
+                new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
+        Assert.assertEquals(null, deserialized.getOpenerAppId());
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testUrlSavedWhenNecessary() {
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
+        spyCriticalPersistedTabData.setUrl(URL_A);
+        Assert.assertEquals(URL_A, spyCriticalPersistedTabData.getUrl());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setUrl(URL_A);
+        Assert.assertEquals(URL_A, spyCriticalPersistedTabData.getUrl());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setUrl(URL_B);
+        Assert.assertEquals(URL_B, spyCriticalPersistedTabData.getUrl());
+        verify(spyCriticalPersistedTabData, times(2)).save();
+
+        spyCriticalPersistedTabData.setUrl(URL_A);
+        Assert.assertEquals(URL_A, spyCriticalPersistedTabData.getUrl());
+        verify(spyCriticalPersistedTabData, times(3)).save();
+
+        spyCriticalPersistedTabData.setUrl(null);
+        Assert.assertNull(spyCriticalPersistedTabData.getUrl());
+        verify(spyCriticalPersistedTabData, times(4)).save();
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testTitleSavedWhenNecessary() {
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
+        spyCriticalPersistedTabData.setTitle(TITLE_A);
+        Assert.assertEquals(TITLE_A, spyCriticalPersistedTabData.getTitle());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setTitle(TITLE_A);
+        Assert.assertEquals(TITLE_A, spyCriticalPersistedTabData.getTitle());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setTitle(TITLE_B);
+        Assert.assertEquals(TITLE_B, spyCriticalPersistedTabData.getTitle());
+        verify(spyCriticalPersistedTabData, times(2)).save();
+
+        spyCriticalPersistedTabData.setTitle(TITLE_A);
+        Assert.assertEquals(TITLE_A, spyCriticalPersistedTabData.getTitle());
+        verify(spyCriticalPersistedTabData, times(3)).save();
+
+        spyCriticalPersistedTabData.setTitle(null);
+        Assert.assertNull(spyCriticalPersistedTabData.getTitle());
+        verify(spyCriticalPersistedTabData, times(4)).save();
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testRootIdSavedWhenNecessary() {
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
+        spyCriticalPersistedTabData.setRootId(ROOT_ID_A);
+        Assert.assertEquals(ROOT_ID_A, spyCriticalPersistedTabData.getRootId());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setRootId(ROOT_ID_A);
+        Assert.assertEquals(ROOT_ID_A, spyCriticalPersistedTabData.getRootId());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setRootId(ROOT_ID_B);
+        Assert.assertEquals(ROOT_ID_B, spyCriticalPersistedTabData.getRootId());
+        verify(spyCriticalPersistedTabData, times(2)).save();
+
+        spyCriticalPersistedTabData.setRootId(ROOT_ID_A);
+        Assert.assertEquals(ROOT_ID_A, spyCriticalPersistedTabData.getRootId());
+        verify(spyCriticalPersistedTabData, times(3)).save();
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testParentIdSavedWhenNecessary() {
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
+        spyCriticalPersistedTabData.setParentId(PARENT_ID_A);
+        Assert.assertEquals(PARENT_ID_A, spyCriticalPersistedTabData.getParentId());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setParentId(PARENT_ID_A);
+        Assert.assertEquals(PARENT_ID_A, spyCriticalPersistedTabData.getParentId());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setParentId(PARENT_ID_B);
+        Assert.assertEquals(PARENT_ID_B, spyCriticalPersistedTabData.getParentId());
+        verify(spyCriticalPersistedTabData, times(2)).save();
+
+        spyCriticalPersistedTabData.setParentId(PARENT_ID_A);
+        Assert.assertEquals(PARENT_ID_A, spyCriticalPersistedTabData.getParentId());
+        verify(spyCriticalPersistedTabData, times(3)).save();
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testTimestampMillisSavedWhenNecessary() {
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
+        spyCriticalPersistedTabData.setTimestampMillis(TIMESTAMP_A);
+        Assert.assertEquals(TIMESTAMP_A, spyCriticalPersistedTabData.getTimestampMillis());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setTimestampMillis(TIMESTAMP_A);
+        Assert.assertEquals(TIMESTAMP_A, spyCriticalPersistedTabData.getTimestampMillis());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setTimestampMillis(TIMESTAMP_B);
+        Assert.assertEquals(TIMESTAMP_B, spyCriticalPersistedTabData.getTimestampMillis());
+        verify(spyCriticalPersistedTabData, times(2)).save();
+
+        spyCriticalPersistedTabData.setTimestampMillis(TIMESTAMP_A);
+        Assert.assertEquals(TIMESTAMP_A, spyCriticalPersistedTabData.getTimestampMillis());
+        verify(spyCriticalPersistedTabData, times(3)).save();
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testLaunchTypeSavedWhenNecessary() {
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
+        spyCriticalPersistedTabData.setLaunchTypeAtCreation(TAB_LAUNCH_TYPE_A);
+        Assert.assertEquals(
+                TAB_LAUNCH_TYPE_A, spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setLaunchTypeAtCreation(TAB_LAUNCH_TYPE_A);
+        Assert.assertEquals(
+                TAB_LAUNCH_TYPE_A, spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setLaunchTypeAtCreation(TAB_LAUNCH_TYPE_B);
+        Assert.assertEquals(
+                TAB_LAUNCH_TYPE_B, spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
+        verify(spyCriticalPersistedTabData, times(2)).save();
+
+        spyCriticalPersistedTabData.setLaunchTypeAtCreation(TAB_LAUNCH_TYPE_A);
+        Assert.assertEquals(
+                TAB_LAUNCH_TYPE_A, spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
+        verify(spyCriticalPersistedTabData, times(3)).save();
+
+        spyCriticalPersistedTabData.setLaunchTypeAtCreation(null);
+        Assert.assertNull(spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
+        verify(spyCriticalPersistedTabData, times(4)).save();
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testWebContentsStateSavedWhenNecessary() {
+        CriticalPersistedTabData spyCriticalPersistedTabData =
+                spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
+        spyCriticalPersistedTabData.setWebContentsState(WEB_CONTENTS_STATE_A);
+        Assert.assertEquals(
+                WEB_CONTENTS_STATE_A, spyCriticalPersistedTabData.getWebContentsState());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setWebContentsState(WEB_CONTENTS_STATE_A);
+        Assert.assertEquals(
+                WEB_CONTENTS_STATE_A, spyCriticalPersistedTabData.getWebContentsState());
+        verify(spyCriticalPersistedTabData, times(1)).save();
+
+        spyCriticalPersistedTabData.setWebContentsState(WEB_CONTENTS_STATE_B);
+        Assert.assertEquals(
+                WEB_CONTENTS_STATE_B, spyCriticalPersistedTabData.getWebContentsState());
+        verify(spyCriticalPersistedTabData, times(2)).save();
+
+        spyCriticalPersistedTabData.setWebContentsState(WEB_CONTENTS_STATE_A);
+        Assert.assertEquals(
+                WEB_CONTENTS_STATE_A, spyCriticalPersistedTabData.getWebContentsState());
+        verify(spyCriticalPersistedTabData, times(3)).save();
+
+        spyCriticalPersistedTabData.setWebContentsState(null);
+        Assert.assertNull(spyCriticalPersistedTabData.getWebContentsState());
+        verify(spyCriticalPersistedTabData, times(4)).save();
+    }
+
+    private static final byte[] getByteArrayFromByteBuffer(ByteBuffer buffer) {
+        byte[] contentsStateBytes = new byte[buffer.limit()];
+        buffer.rewind();
+        buffer.get(contentsStateBytes);
+        return contentsStateBytes;
     }
 }

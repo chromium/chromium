@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <tuple>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -20,7 +21,6 @@
 #include "base/version.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/ml_agent.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -53,7 +53,6 @@ const uint8_t kSmartDimPublicKeySHA256[32] = {
     0x19, 0xad, 0x26, 0x6e, 0xd0, 0x33, 0x03, 0xb3, 0xe5, 0xff};
 
 const char kMLSmartDimManifestName[] = "Smart Dim";
-
 
 // Read files from the component to strings, should be called from a blocking
 // task runner.
@@ -186,15 +185,7 @@ SmartDimComponentInstallerPolicy::GetInstallerAttributes() const {
   return attrs;
 }
 
-std::vector<std::string> SmartDimComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 void RegisterSmartDimComponent(ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kSmartDimNewMlAgent))
-    return;
-
   DVLOG(1) << "Registering smart dim component.";
   const std::string expected_version = kVersion.Get();
 

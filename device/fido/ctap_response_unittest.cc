@@ -499,7 +499,7 @@ TEST(CTAPResponseTest, TestReadMakeCredentialResponse) {
       certificate.GetArray()[0].GetBytestring(),
       ::testing::ElementsAreArray(test_data::kCtap2MakeCredentialCertificate));
   EXPECT_THAT(
-      make_credential_response->raw_credential_id(),
+      make_credential_response->attestation_object().GetCredentialId(),
       ::testing::ElementsAreArray(test_data::kCtap2MakeCredentialCredentialId));
 }
 
@@ -520,14 +520,14 @@ TEST(CTAPResponseTest, TestReadGetAssertionResponse) {
   auto get_assertion_response = ReadCTAPGetAssertionResponse(
       DecodeCBOR(test_data::kDeviceGetAssertionResponse));
   ASSERT_TRUE(get_assertion_response);
-  ASSERT_TRUE(get_assertion_response->num_credentials());
-  EXPECT_EQ(*get_assertion_response->num_credentials(), 1u);
+  ASSERT_TRUE(get_assertion_response->num_credentials);
+  EXPECT_EQ(*get_assertion_response->num_credentials, 1u);
 
   EXPECT_THAT(
-      get_assertion_response->auth_data().SerializeToByteArray(),
+      get_assertion_response->authenticator_data.SerializeToByteArray(),
       ::testing::ElementsAreArray(test_data::kCtap2GetAssertionAuthData));
   EXPECT_THAT(
-      get_assertion_response->signature(),
+      get_assertion_response->signature,
       ::testing::ElementsAreArray(test_data::kCtap2GetAssertionSignature));
 }
 
@@ -539,7 +539,7 @@ TEST(CTAPResponseTest, TestParseRegisterResponseData) {
           test_data::kApplicationParameter,
           test_data::kTestU2fRegisterResponse);
   ASSERT_TRUE(response);
-  EXPECT_THAT(response->raw_credential_id(),
+  EXPECT_THAT(response->attestation_object().GetCredentialId(),
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
   EXPECT_EQ(GetTestAttestationObjectBytes(),
             response->GetCBOREncodedAttestationObject());
@@ -647,11 +647,11 @@ TEST(CTAPResponseTest, TestParseSignResponseData) {
       test_data::kApplicationParameter, GetTestSignResponse(),
       GetTestCredentialRawIdBytes());
   ASSERT_TRUE(response);
-  EXPECT_EQ(GetTestCredentialRawIdBytes(), response->raw_credential_id());
+  EXPECT_EQ(GetTestCredentialRawIdBytes(), response->credential->id());
   EXPECT_THAT(
-      response->auth_data().SerializeToByteArray(),
+      response->authenticator_data.SerializeToByteArray(),
       ::testing::ElementsAreArray(test_data::kTestSignAuthenticatorData));
-  EXPECT_THAT(response->signature(),
+  EXPECT_THAT(response->signature,
               ::testing::ElementsAreArray(test_data::kU2fSignature));
 }
 

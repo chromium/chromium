@@ -9,11 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_submission_observer.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
@@ -43,13 +42,24 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void OnPasswordFormSubmitted(PasswordManagerDriver* driver,
                                        const autofill::FormData& form_data) = 0;
 
+  // Handles a password form being cleared by page scripts.
+  virtual void OnPasswordFormCleared(PasswordManagerDriver* driver,
+                                     const autofill::FormData& form_data) = 0;
+
+  // Update the `generation_element` and `type` for `form_id`.
+  virtual void SetGenerationElementAndTypeForForm(
+      PasswordManagerDriver* driver,
+      autofill::FormRendererId form_id,
+      autofill::FieldRendererId generation_element,
+      autofill::password_generation::PasswordGenerationType type) = 0;
+
 #if defined(OS_IOS)
-  // Handles a password form being submitted, assumes that submission is
-  // successful and does not do any checks on success of submission. For
-  // example, this is called if |password_form| was filled upon in-page
-  // navigation. This often means history.pushState being called from
-  // JavaScript.
-  virtual void OnPasswordFormSubmittedNoChecksForiOS(
+  // Handles a subframe form submission. In contrast to OnPasswordFormSubmitted
+  // this method does not wait for OnPasswordFormsRendered before invoking
+  // OnLoginSuccessful), but rather invokes ProvisionallySave immediately and
+  // then calls OnLoginSuccessful if applicable. It is the iOS pendant to
+  // PasswordManager::OnDynamicFormSubmission.
+  virtual void OnSubframeFormSubmission(
       PasswordManagerDriver* driver,
       const autofill::FormData& form_data) = 0;
 
@@ -60,7 +70,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void PresaveGeneratedPassword(
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
-      const base::string16& generated_password,
+      const std::u16string& generated_password,
       autofill::FieldRendererId generation_element) = 0;
 
   // Updates the state if the PasswordFormManager which corresponds to the form
@@ -69,7 +79,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void UpdateStateOnUserInput(PasswordManagerDriver* driver,
                                       autofill::FormRendererId form_id,
                                       autofill::FieldRendererId field_id,
-                                      const base::string16& field_value) = 0;
+                                      const std::u16string& field_value) = 0;
 
   // Stops treating a password as generated. |driver| corresponds to the
   // form parent frame.
@@ -79,7 +89,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   // the form was submitted.
   virtual void OnPasswordFormRemoved(
       PasswordManagerDriver* driver,
-      const autofill::FieldDataManager* field_data_manager,
+      const autofill::FieldDataManager& field_data_manager,
       autofill::FormRendererId form_id) = 0;
 
   // Checks if there is a submitted PasswordFormManager for a form from the
@@ -87,7 +97,13 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void OnIframeDetach(
       const std::string& frame_id,
       PasswordManagerDriver* driver,
-      const autofill::FieldDataManager* field_data_manager) = 0;
+      const autofill::FieldDataManager& field_data_manager) = 0;
+
+  // Propagates all available field data manager info to existing form managers
+  // and provisionally saves them if the relevant data is retrieved.
+  virtual void PropagateFieldDataManagerInfo(
+      const autofill::FieldDataManager& field_data_manager,
+      const PasswordManagerDriver* driver) = 0;
 #endif
 };
 

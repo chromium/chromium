@@ -208,13 +208,14 @@
       <div id="menuContainer">
         <div id="menu">
           <iron-selector id="menuSelector" selected-attribute="selected"
-              attr-for-selected="page-name" selected="{{selectedPage_}}"
-              on-keydown="onMenuItemKeyDown_">
+              attr-for-selected="page-name" selected="{{selectedPage}}"
+              on-keydown="onMenuItemKeyDown_" fallback-selection="backgrounds">
             <div class="menu-item" page-name="backgrounds" tabindex="0">
               <div id="backgroundsIcon" class="menu-item-icon"></div>
               $i18n{backgroundsMenuItem}
             </div>
-            <div class="menu-item" page-name="shortcuts" tabindex="0">
+            <div class="menu-item" page-name="shortcuts" tabindex="0"
+                hidden$="[[!shortcutsEnabled_]]">
               <div id="shortcutsIcon" class="menu-item-icon"></div>
               $i18n{shortcutsMenuItem}
             </div>
@@ -232,7 +233,7 @@
       </div>
       <div id="pagesContainer">
         <div id="pages">
-          <iron-pages selected="[[selectedPage_]]"
+          <iron-pages selected="[[selectedPage]]"
               attr-for-selected="page-name">
             <ntp-customize-backgrounds id="backgrounds" page-name="backgrounds"
                 selected-collection="{{selectedCollection_}}" theme="[[theme]]"

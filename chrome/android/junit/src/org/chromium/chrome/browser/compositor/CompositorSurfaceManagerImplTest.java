@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -218,7 +220,7 @@ public class CompositorSurfaceManagerImplTest {
         verify(mCallback, times(0)).surfaceCreated(ArgumentMatchers.<Surface>any());
         verify(mCallback, times(0))
                 .surfaceChanged(ArgumentMatchers.<Surface>any(), anyInt(), anyInt(), anyInt());
-        verify(mCallback, times(0)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(0)).surfaceDestroyed(any(), anyBoolean());
 
         // Check that there's an opaque SurfaceView .
         assertEquals(1, mLayout.getChildCount());
@@ -227,7 +229,7 @@ public class CompositorSurfaceManagerImplTest {
         // Verify that we are notified when the surface is created.
         callbackFor(opaque).surfaceCreated(opaque.getHolder());
         verify(mCallback, times(1)).surfaceCreated(eq(opaque.getHolder().getSurface()));
-        verify(mCallback, times(0)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(0)).surfaceDestroyed(any(), anyBoolean());
 
         // Verify that we are notified when the surface is changed.
         sendSurfaceChanged(opaque, PixelFormat.OPAQUE, 320, 240);
@@ -235,14 +237,14 @@ public class CompositorSurfaceManagerImplTest {
         verify(mCallback, times(1))
                 .surfaceChanged(eq(opaque.getHolder().getSurface()), eq(mActualFormat), eq(mWidth),
                         eq(mHeight));
-        verify(mCallback, times(0)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(0)).surfaceDestroyed(any(), anyBoolean());
 
         // Verify that we are notified when the surface is destroyed.
         callbackFor(opaque).surfaceDestroyed(opaque.getHolder());
         verify(mCallback, times(1)).surfaceCreated(eq(opaque.getHolder().getSurface()));
         verify(mCallback, times(1))
                 .surfaceChanged(eq(opaque.getHolder().getSurface()), anyInt(), anyInt(), anyInt());
-        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), true);
     }
 
     @Test
@@ -254,7 +256,7 @@ public class CompositorSurfaceManagerImplTest {
         SurfaceView translucent = requestThenCreateSurface(PixelFormat.TRANSLUCENT);
 
         // Verify that we received a destroy for |opaque| and created / changed for |translucent|.
-        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), false);
         verify(mCallback, times(1)).surfaceCreated(translucent.getHolder().getSurface());
         verify(mCallback, times(1))
                 .surfaceChanged(
@@ -280,7 +282,7 @@ public class CompositorSurfaceManagerImplTest {
         verify(mCallback, times(1)).surfaceCreated(eq(opaque.getHolder().getSurface()));
         verify(mCallback, times(1))
                 .surfaceChanged(eq(opaque.getHolder().getSurface()), anyInt(), anyInt(), anyInt());
-        verify(mCallback, times(0)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(0)).surfaceDestroyed(any(), anyBoolean());
 
         // Surface is currently valid.  Request again.  We should get back a destroy and create.
         assertEquals(opaque, requestSurface(PixelFormat.OPAQUE));
@@ -288,7 +290,7 @@ public class CompositorSurfaceManagerImplTest {
         verify(mCallback, times(2))
                 .surfaceChanged(eq(opaque.getHolder().getSurface()), eq(mActualFormat), eq(mWidth),
                         eq(mHeight));
-        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), false);
         assertEquals(1, mLayout.getChildCount());
     }
 
@@ -301,14 +303,14 @@ public class CompositorSurfaceManagerImplTest {
         verify(mCallback, times(0)).surfaceCreated(opaque.getHolder().getSurface());
         verify(mCallback, times(0))
                 .surfaceChanged(eq(opaque.getHolder().getSurface()), anyInt(), anyInt(), anyInt());
-        verify(mCallback, times(0)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(0)).surfaceDestroyed(any(), anyBoolean());
 
         // Request again.  We shouldn't get any callbacks, since the surface is still pending.
         assertEquals(opaque, requestSurface(PixelFormat.OPAQUE));
         verify(mCallback, times(0)).surfaceCreated(opaque.getHolder().getSurface());
         verify(mCallback, times(0))
                 .surfaceChanged(eq(opaque.getHolder().getSurface()), anyInt(), anyInt(), anyInt());
-        verify(mCallback, times(0)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(0)).surfaceDestroyed(any(), anyBoolean());
 
         // Only the opaque view should be attached.
         assertEquals(1, mLayout.getChildCount());
@@ -321,7 +323,7 @@ public class CompositorSurfaceManagerImplTest {
         verify(mCallback, times(1))
                 .surfaceChanged(eq(opaque.getHolder().getSurface()), eq(mActualFormat), eq(mWidth),
                         eq(mHeight));
-        verify(mCallback, times(0)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(0)).surfaceDestroyed(any(), anyBoolean());
     }
 
     @Test
@@ -333,7 +335,7 @@ public class CompositorSurfaceManagerImplTest {
         verify(mCallback, times(0)).surfaceCreated(opaque.getHolder().getSurface());
         verify(mCallback, times(0))
                 .surfaceChanged(eq(opaque.getHolder().getSurface()), anyInt(), anyInt(), anyInt());
-        verify(mCallback, times(0)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(0)).surfaceDestroyed(any(), anyBoolean());
 
         // Request translucent.  We should get no callbacks, but both views should be attached.
         SurfaceView translucent = requestSurface(PixelFormat.TRANSLUCENT);
@@ -348,7 +350,7 @@ public class CompositorSurfaceManagerImplTest {
         assertEquals(1, mLayout.getChildCount());
         verify(mCallback, times(0)).surfaceCreated(opaque.getHolder().getSurface());
         verify(mCallback, times(0)).surfaceCreated(translucent.getHolder().getSurface());
-        verify(mCallback, times(0)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(0)).surfaceDestroyed(any(), anyBoolean());
 
         // When we create the translucent surface, we should be notified.
         callbackFor(translucent).surfaceCreated(translucent.getHolder());
@@ -375,7 +377,7 @@ public class CompositorSurfaceManagerImplTest {
         // synthetic 'created'.
         assertEquals(opaque, requestSurface(PixelFormat.OPAQUE));
         verify(mCallback, times(2)).surfaceCreated(opaque.getHolder().getSurface());
-        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), false);
         verify(mCallback, times(0))
                 .surfaceChanged(eq(opaque.getHolder().getSurface()), anyInt(), anyInt(), anyInt());
 
@@ -400,20 +402,20 @@ public class CompositorSurfaceManagerImplTest {
         // surface should be detached.
         mManager.recreateSurface();
         verify(mCallback, times(1)).surfaceCreated(opaque.getHolder().getSurface());
-        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), true);
         assertEquals(0, mLayout.getChildCount());
 
         // When the surface really is destroyed, it should be re-attached.  We should not be
         // notified again, though.
         callbackFor(opaque).surfaceDestroyed(opaque.getHolder());
         verify(mCallback, times(1)).surfaceCreated(opaque.getHolder().getSurface());
-        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), true);
         assertEquals(1, mLayout.getChildCount());
 
         // When the surface is re-created, we should be notified.
         callbackFor(opaque).surfaceCreated(opaque.getHolder());
         verify(mCallback, times(2)).surfaceCreated(opaque.getHolder().getSurface());
-        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
+        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), true);
         assertEquals(1, mLayout.getChildCount());
     }
 
@@ -443,15 +445,15 @@ public class CompositorSurfaceManagerImplTest {
         callbackFor(opaque).surfaceDestroyed(opaque.getHolder());
         assertEquals(2, mLayout.getChildCount());
         verify(mCallback, times(1)).surfaceCreated(opaque.getHolder().getSurface());
-        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
-        verify(mCallback, times(0)).surfaceDestroyed(translucent.getHolder().getSurface());
+        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), false);
+        verify(mCallback, times(0)).surfaceDestroyed(translucent.getHolder().getSurface(), true);
 
         // When the opaque surface becomes available, we'll get the synthetic destroy for the
         // translucent one that we lost ownership of, and the real create for the opaque one.
         callbackFor(opaque).surfaceCreated(opaque.getHolder());
         assertEquals(2, mLayout.getChildCount());
         verify(mCallback, times(2)).surfaceCreated(opaque.getHolder().getSurface());
-        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface());
-        verify(mCallback, times(1)).surfaceDestroyed(translucent.getHolder().getSurface());
+        verify(mCallback, times(1)).surfaceDestroyed(translucent.getHolder().getSurface(), false);
+        verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), false);
     }
 }

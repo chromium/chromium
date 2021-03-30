@@ -26,9 +26,13 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
   // Stub function for OS's which don't register file handlers with the OS.
 }
 
-void UnregisterFileHandlersWithOs(const AppId& app_id, Profile* profile) {
+void UnregisterFileHandlersWithOs(const AppId& app_id,
+                                  Profile* profile,
+                                  std::unique_ptr<ShortcutInfo> info,
+                                  base::OnceCallback<void()> callback) {
   DCHECK(ShouldRegisterFileHandlersWithOs());
   // Stub function for OS's which don't register file handlers with the OS.
+  std::move(callback).Run();
 }
 #endif
 

@@ -80,8 +80,6 @@ void AutofillWalletModelTypeController::Stop(
 syncer::DataTypeController::PreconditionState
 AutofillWalletModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  // TODO(https://crbug.com/819729): Add integration tests for web signout and
-  // other persistent auth errors.
   bool preconditions_met =
       pref_service_->GetBoolean(
           autofill::prefs::kAutofillWalletImportEnabled) &&

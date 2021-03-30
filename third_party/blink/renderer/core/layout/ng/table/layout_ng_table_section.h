@@ -39,6 +39,8 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGMixin<LayoutBlock>,
 
   void RemoveChild(LayoutObject*) override;
 
+  void WillBeRemovedFromTree() override;
+
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) override;
 
@@ -46,6 +48,16 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGMixin<LayoutBlock>,
       const LayoutObject* parent) const override;
 
   bool AllowsNonVisibleOverflow() const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
+  // Whether a section has opaque background depends on many factors, e.g.
+  // border spacing, border collapsing, missing cells, etc. For simplicity,
+  // just conservatively assume all table sections are not opaque.
+  // Copied from LayoutTableSection,
+  bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
+                                         unsigned) const override {
     NOT_DESTROYED();
     return false;
   }

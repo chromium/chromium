@@ -22,7 +22,6 @@ bool NativeUnwinderWin::CanUnwindFrom(const Frame& current_frame) const {
 // returns false.
 UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
                                           uintptr_t stack_top,
-                                          ModuleCache* module_cache,
                                           std::vector<Frame>* stack) const {
   // We expect the frame correponding to the |thread_context| register state to
   // exist within |stack|.
@@ -86,7 +85,7 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
     // Record the frame to which we just unwound.
     stack->emplace_back(
         ContextPC(thread_context),
-        module_cache->GetModuleForAddress(ContextPC(thread_context)));
+        module_cache()->GetModuleForAddress(ContextPC(thread_context)));
   }
 
   NOTREACHED();

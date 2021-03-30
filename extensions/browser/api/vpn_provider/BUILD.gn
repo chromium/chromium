@@ -25,6 +25,9 @@ source_set("vpn_provider") {
     "//chromeos/dbus",
     "//chromeos/login/login_state",
     "//chromeos/network",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 

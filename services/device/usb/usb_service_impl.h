@@ -11,13 +11,13 @@
 
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "services/device/usb/scoped_libusb_device_ref.h"
 #include "services/device/usb/usb_context.h"
@@ -48,8 +48,7 @@ class UsbServiceImpl final :
 
  private:
   // device::UsbService implementation
-  void GetDevices(bool allow_restricted_devices,
-                  GetDevicesCallback callback) override;
+  void GetDevices(GetDevicesCallback callback) override;
 
 #if defined(OS_WIN)
   // device::DeviceMonitorWin::Observer implementation

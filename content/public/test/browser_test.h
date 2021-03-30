@@ -70,13 +70,13 @@
       ::testing::UnitTest::GetInstance()                                       \
           ->parameterized_test_registry()                                      \
           .GetTestCasePatternHolder<test_case_name>(                           \
-               #test_case_name,                                                \
-               ::testing::internal::CodeLocation(__FILE__, __LINE__))          \
-          ->AddTestPattern(                                                    \
               #test_case_name,                                                 \
-              #test_name,                                                      \
+              ::testing::internal::CodeLocation(__FILE__, __LINE__))           \
+          ->AddTestPattern(                                                    \
+              #test_case_name, #test_name,                                     \
               new ::testing::internal::TestMetaFactory<GTEST_TEST_CLASS_NAME_( \
-                  test_case_name, test_name)>());                              \
+                  test_case_name, test_name)>(),                               \
+              ::testing::internal::CodeLocation(__FILE__, __LINE__));          \
       return 0;                                                                \
     }                                                                          \
     static int gtest_registering_dummy_;                                       \

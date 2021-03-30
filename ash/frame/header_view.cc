@@ -76,7 +76,7 @@ HeaderView::HeaderView(views::Widget* target_widget,
   UpdateBackButton();
 
   frame_header_->UpdateFrameColors();
-  window_observer_.Add(window);
+  window_observation_.Observe(window);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
@@ -213,7 +213,8 @@ void HeaderView::OnWindowPropertyChanged(aura::Window* window,
 }
 
 void HeaderView::OnWindowDestroying(aura::Window* window) {
-  window_observer_.Remove(window);
+  DCHECK(window_observation_.IsObservingSource(window));
+  window_observation_.Reset();
   // A HeaderView may outlive the target widget.
   target_widget_ = nullptr;
 }

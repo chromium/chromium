@@ -212,8 +212,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
   WARN_UNUSED_RESULT v8::Local<v8::Object> AssociateWithWrapper(
-      v8::Isolate*,
-      const WrapperTypeInfo*,
+      v8::Isolate* isolate,
+      const WrapperTypeInfo* wrapper_type_info,
       v8::Local<v8::Object> wrapper) override;
 
  private:

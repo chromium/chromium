@@ -56,10 +56,6 @@ struct X11ClipboardOzone::SelectionState {
   // the clipboard.
   PlatformClipboard::DataMap offer_data_map;
 
-  // DataMap from |RequestClipboardData| that we write remote clipboard
-  // contents to before calling the completion callback.
-  PlatformClipboard::DataMap* request_data_map = nullptr;
-
   // Mime types supported by remote clipboard.
   std::vector<std::string> mime_types;
 
@@ -222,7 +218,7 @@ void X11ClipboardOzone::OnSelectionNotify(
 
   // RequestClipboardData.
   if (static_cast<x11::Atom>(event.property) == x_property_) {
-    x11::Atom type;
+    x11::Atom type = x11::Atom::None;
     std::vector<uint8_t> data;
     GetArrayProperty(x_window_, x_property_, &data, &type);
     x11::DeleteProperty(x_window_, x_property_);
@@ -234,8 +230,6 @@ void X11ClipboardOzone::OnSelectionNotify(
     // and we have already saved |data_| for the next call to
     // |RequestClipboardData|.
     if (selection_state.request_clipboard_data_callback) {
-      selection_state.request_data_map->emplace(selection_state.data_mime_type,
-                                                selection_state.data);
       std::move(selection_state.request_clipboard_data_callback)
           .Run(selection_state.data);
     }
@@ -338,7 +332,6 @@ void X11ClipboardOzone::OfferClipboardData(
 void X11ClipboardOzone::RequestClipboardData(
     ClipboardBuffer buffer,
     const std::string& mime_type,
-    PlatformClipboard::DataMap* data_map,
     PlatformClipboard::RequestDataClosure callback) {
   const x11::Atom selection = SelectionAtomForBuffer(buffer);
   auto& selection_state = GetSelectionState(selection);
@@ -350,12 +343,18 @@ void X11ClipboardOzone::RequestClipboardData(
   if (!using_xfixes_ ||
       (selection_state.data_mime_type == mime_type && selection_state.data &&
        !selection_state.data->data().empty())) {
-    data_map->emplace(mime_type, selection_state.data);
     std::move(callback).Run(selection_state.data);
     return;
   }
+
+  // If we know the available mime types, and it is not this, send empty now.
+  if (!selection_state.mime_types.empty() &&
+      !Contains(selection_state.mime_types, mime_type)) {
+    std::move(callback).Run(PlatformClipboard::Data());
+    return;
+  }
+
   selection_state.data_mime_type = mime_type;
-  selection_state.request_data_map = data_map;
   DCHECK(selection_state.request_clipboard_data_callback.is_null());
   selection_state.request_clipboard_data_callback = std::move(callback);
   ReadRemoteClipboard(selection);

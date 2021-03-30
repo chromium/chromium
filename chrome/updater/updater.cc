@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/optional.h"
 #include "base/task/single_thread_task_executor.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
@@ -53,9 +54,12 @@ namespace {
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_APP_DATA.
 void InitLogging(const base::CommandLine& command_line) {
   logging::LoggingSettings settings;
-  base::FilePath log_dir;
-  GetBaseDirectory(&log_dir);
-  const auto log_file = log_dir.Append(FILE_PATH_LITERAL("updater.log"));
+  base::Optional<base::FilePath> log_dir = GetBaseDirectory();
+  if (!log_dir) {
+    LOG(ERROR) << "Error getting base dir.";
+    return;
+  }
+  const auto log_file = log_dir->Append(FILE_PATH_LITERAL("updater.log"));
   settings.log_file_path = log_file.value().c_str();
   settings.logging_dest = logging::LOG_TO_ALL;
   logging::InitLogging(settings);
@@ -109,10 +113,13 @@ int HandleUpdaterCommands(const base::CommandLine* command_line) {
 #endif  // OS_WIN
 
   if (command_line->HasSwitch(kInstallSwitch) ||
-      command_line->HasSwitch(kTagSwitch))
+      command_line->HasSwitch(kTagSwitch)) {
     return MakeAppInstall()->Run();
+  }
 
-  if (command_line->HasSwitch(kUninstallSwitch))
+  if (command_line->HasSwitch(kUninstallSwitch) ||
+      command_line->HasSwitch(kUninstallSelfSwitch) ||
+      command_line->HasSwitch(kUninstallIfUnusedSwitch))
     return MakeAppUninstall()->Run();
 
   if (command_line->HasSwitch(kWakeSwitch)) {

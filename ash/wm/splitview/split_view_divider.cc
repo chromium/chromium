@@ -380,8 +380,8 @@ void SplitViewDivider::OnWindowBoundsChanged(aura::Window* window,
     return;
 
   // We only care about the bounds change of windows in
-  // |transient_windows_observer_|.
-  if (!transient_windows_observer_.IsObserving(window))
+  // |transient_windows_observations_|.
+  if (!transient_windows_observations_.IsObservingSource(window))
     return;
 
   // |window|'s transient parent must be one of the windows in
@@ -456,12 +456,12 @@ void SplitViewDivider::StartObservingTransientChild(aura::Window* transient) {
 
   // At this moment, the transient window may not have the valid bounds yet.
   // Start observe the transient window.
-  transient_windows_observer_.Add(transient);
+  transient_windows_observations_.AddObservation(transient);
 }
 
 void SplitViewDivider::StopObservingTransientChild(aura::Window* transient) {
-  if (transient_windows_observer_.IsObserving(transient))
-    transient_windows_observer_.Remove(transient);
+  if (transient_windows_observations_.IsObservingSource(transient))
+    transient_windows_observations_.RemoveObservation(transient);
 }
 
 }  // namespace ash

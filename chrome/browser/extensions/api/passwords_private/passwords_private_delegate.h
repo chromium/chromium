@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
 #include "chrome/browser/ui/passwords/settings/password_ui_view.h"
@@ -36,7 +35,7 @@ namespace extensions {
 class PasswordsPrivateDelegate : public KeyedService {
  public:
   using PlaintextPasswordCallback =
-      base::OnceCallback<void(base::Optional<base::string16>)>;
+      base::OnceCallback<void(base::Optional<std::u16string>)>;
 
   using StartPasswordCheckCallback =
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
@@ -62,8 +61,8 @@ class PasswordsPrivateDelegate : public KeyedService {
   // |new_username|: The new username.
   // |new_password|: The new password.
   virtual bool ChangeSavedPassword(const std::vector<int>& ids,
-                                   const base::string16& new_username,
-                                   const base::string16& new_password) = 0;
+                                   const std::u16string& new_username,
+                                   const std::u16string& new_password) = 0;
 
   // Removes the saved password entries corresponding to the |ids| generated for
   // each entry of the password list. Any invalid id will be ignored.

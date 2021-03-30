@@ -8,16 +8,25 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 
+namespace ui {
+class DropTargetEvent;
+}  // namespace ui
+
 namespace aura {
 namespace client {
 
 class AURA_EXPORT DragDropClientObserver {
  public:
+  virtual ~DragDropClientObserver() = default;
+
   // Called when dragging started.
-  virtual void OnDragStarted() = 0;
+  virtual void OnDragStarted() {}
+
+  // Called when dragging is updated.
+  virtual void OnDragUpdated(const ui::DropTargetEvent& event) {}
 
   // Called when dragging ended.
-  virtual void OnDragEnded() = 0;
+  virtual void OnDragEnded() {}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called when the set of currently selected drag operation changes during the
@@ -26,9 +35,6 @@ class AURA_EXPORT DragDropClientObserver {
   // the operation returned from StartDragAndDrop.
   virtual void OnDragActionsChanged(int actions) {}
 #endif
-
- protected:
-  virtual ~DragDropClientObserver() = default;
 };
 
 }  // namespace client

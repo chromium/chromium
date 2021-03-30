@@ -260,7 +260,8 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardCrashed) {
                                       usage_clock_.get(), web_contents_,
                                       tab_strip_model_.get());
 
-  web_contents_->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, 0);
+  auto* tester = content::WebContentsTester::For(web_contents_);
+  tester->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, 0);
   ExpectCanDiscardFalseTrivialAllReasons(&tab_lifecycle_unit);
 }
 

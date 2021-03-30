@@ -168,23 +168,14 @@ GURL PingManager::SafeBrowsingHitUrl(
 
   std::string threat_source = "none";
   switch (hit_report.threat_source) {
-    case safe_browsing::ThreatSource::DATA_SAVER:
-      threat_source = "ds";
-      break;
     case safe_browsing::ThreatSource::REMOTE:
       threat_source = "rem";
-      break;
-    case safe_browsing::ThreatSource::LOCAL_PVER3:
-      threat_source = "l3";
       break;
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       threat_source = "l4";
       break;
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
       threat_source = "csd";
-      break;
-    case safe_browsing::ThreatSource::PASSWORD_PROTECTION_SERVICE:
-      threat_source = "pps";
       break;
     case safe_browsing::ThreatSource::REAL_TIME_CHECK:
       threat_source = "rt";

@@ -377,7 +377,7 @@ void CrostiniPackageService::CreateQueuedInstall(
           profile_,
           CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
           PackageOperationStatus::QUEUED, container_id,
-          /*app_name=*/base::string16(), GetUniqueNotificationId(), this));
+          /*app_name=*/std::u16string(), GetUniqueNotificationId(), this));
 }
 
 void CrostiniPackageService::UpdatePackageOperationStatus(

@@ -1,7 +1,7 @@
 [
     {
         "duration": "95.0",
-        "name": "v8.browsing_desktop/browse:media:googleplaystore:2018"
+        "name": "v8.browsing_desktop/browse:media:googleplaystore:2021"
     },
     {
         "duration": "53.0",
@@ -29,19 +29,7 @@
     },
     {
         "duration": "53.0",
-        "name": "v8.browsing_desktop/browse:news:cnn:2020"
-    },
-    {
-        "duration": "111.0",
-        "name": "v8.browsing_desktop/browse:news:flipboard:2018"
-    },
-    {
-        "duration": "53.0",
         "name": "v8.browsing_desktop/browse:news:nytimes:2020"
-    },
-    {
-        "duration": "85.0",
-        "name": "v8.browsing_desktop/browse:search:google_india:2018"
     },
     {
         "duration": "143.0",

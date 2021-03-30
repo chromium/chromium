@@ -85,13 +85,6 @@ bool IsGraphemeBreak(UChar32 prev_code_point, UChar32 next_code_point) {
       Character::IsRegionalIndicator(next_code_point))
     NOTREACHED() << "Do not use this function for regional indicators.";
 
-  // This is an exception for Myanmar IMEs that uses zwnj character as base
-  // character during a composition to avoid merging the actively composed text
-  // into the previous character. We intentionally diverge from UAX#29.
-  // Please see crbug.com/1027695 for more details.
-  if (next_code_point == kZeroWidthNonJoinerCharacter)
-    return true;
-
   // Rule GB9, x (Extend | ZWJ)
   // Rule GB9a, x SpacingMark
   if (next_prop == U_GCB_EXTEND ||

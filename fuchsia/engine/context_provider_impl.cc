@@ -133,16 +133,15 @@ void AppendFeature(base::StringPiece features_flag,
                    base::StringPiece feature_string,
                    base::CommandLine* command_line) {
   if (!command_line->HasSwitch(features_flag)) {
-    command_line->AppendSwitchNative(features_flag.as_string(),
-                                     feature_string.as_string());
+    command_line->AppendSwitchNative(std::string(features_flag),
+                                     feature_string);
     return;
   }
 
-  std::string new_feature_string =
-      command_line->GetSwitchValueASCII(features_flag);
-  new_feature_string.append(",").append(feature_string.as_string());
+  std::string new_feature_string = base::StrCat(
+      {command_line->GetSwitchValueASCII(features_flag), ",", feature_string});
   command_line->RemoveSwitch(features_flag);
-  command_line->AppendSwitchNative(features_flag.as_string(),
+  command_line->AppendSwitchNative(std::string(features_flag),
                                    new_feature_string);
 }
 
@@ -156,8 +155,8 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
   static const base::StringPiece kAllowedArgs[] = {
       blink::switches::kGpuRasterizationMSAASampleCount,
       blink::switches::kMinHeightForGpuRasterTile,
-      cc::switches::kEnableGpuBenchmarking,
       cc::switches::kEnableClippedImageScaling,
+      cc::switches::kEnableGpuBenchmarking,
       switches::kDisableFeatures,
       switches::kDisableGpuWatchdog,
       switches::kDisableMipmapGeneration,
@@ -168,12 +167,15 @@ bool MaybeAddCommandLineArgsFromConfig(const base::Value& config,
       switches::kForceGpuMemAvailableMb,
       switches::kForceGpuMemDiscardableLimitMb,
       switches::kForceMaxTextureSize,
+      switches::kGoogleApiKey,
       switches::kMaxDecodedImageSizeMb,
       switches::kRendererProcessLimit,
-      switches::kWebglAntialiasingMode,
-      switches::kWebglMSAASampleCount,
+      switches::kUseCmdDecoder,
+      switches::kVModule,
       switches::kVulkanHeapMemoryLimitMb,
       switches::kVulkanSyncCpuMemoryLimitMb,
+      switches::kWebglAntialiasingMode,
+      switches::kWebglMSAASampleCount,
   };
 
   for (const auto& arg : args->DictItems()) {

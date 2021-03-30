@@ -54,6 +54,7 @@ class NearbyShareHttpStatus {
  public:
   NearbyShareHttpStatus(const int net_error,
                         const network::mojom::URLResponseHead* head);
+  NearbyShareHttpStatus(const NearbyShareHttpStatus& status);
   ~NearbyShareHttpStatus();
 
   bool IsSuccess() const;

@@ -48,7 +48,7 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
   std::string GetAppId() const;
 
   // Gets accessible name for this app shortcut.
-  base::string16 ComputeAccessibleName() const;
+  std::u16string ComputeAccessibleName() const;
 
   arc::mojom::AppShortcutItemPtr data_;
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;

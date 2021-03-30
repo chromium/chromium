@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1175958423215084756">लिंक डिटेक्ट केली. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">गॅलरी इमेज</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1473110567575736769">तीन सेकंदांचा टायमर</translation>
@@ -14,6 +15,7 @@
 <translation id="2036868001356139588">टायमरचा कालावधी</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> अ‍ॅक्टिव्ह</translation>
+<translation id="2144806332417375165">कस्टम व्हिडिओ पॅरामीटर</translation>
 <translation id="229579744168541441">डिस्कवर एक्सपोर्ट करा</translation>
 <translation id="2501278716633472235">परत जा</translation>
 <translation id="2501853267655415902">रेकॉर्डिंग थांबवले आहे</translation>
@@ -32,7 +34,6 @@
 <translation id="3259149966178251584">कॅमेरा रिझोल्यूशन</translation>
 <translation id="3517926952904427380">पोर्ट्रेट फोटो काढता आला नाही</translation>
 <translation id="3569311554794739032">तुम्हाला <ph name="FILE" /> खरोखर काढायची आहे का?</translation>
-<translation id="3750315947605636967">दुसरे अ‍ॅप तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="3810838688059735925">व्हिडिओ</translation>
 <translation id="3838931309141338733">बारकोड स्कॅन करा</translation>
 <translation id="3892148308691398805">मजकूर कॉपी करा</translation>
@@ -75,10 +76,13 @@
 <translation id="7337660886763914220">फाइल सिस्टम एरर.</translation>
 <translation id="7450541714075000668">मजकूर कॉपी केला</translation>
 <translation id="7557677699350329807">पुढील कॅमेर्‍यावर स्विच करा</translation>
+<translation id="7607002721634913082">विराम द्या</translation>
 <translation id="7608223098072244877">४ बाय ४</translation>
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7670511624014457267">६० FPS</translation>
+<translation id="7974782136796202581">पॅन/टिल्ट/झूम पर्याय दाखवा</translation>
+<translation id="7983668134180549431">मजकूर डिटेक्ट केला.</translation>
 <translation id="8067883171444229417">व्हिडिओ प्ले करा</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8145038249676204903">फोटो घेण्यासाठी स्विच करा</translation>

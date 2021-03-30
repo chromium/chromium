@@ -9,12 +9,12 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/font_list.h"
@@ -66,7 +66,7 @@ class VIEWS_EXPORT StyledLabel : public View {
     Link::ClickedCallback callback;
 
     // Tooltip for the range.
-    base::string16 tooltip;
+    std::u16string tooltip;
 
     // If set, the whole range will be put on a single line.
     bool disable_line_wrapping = false;
@@ -103,8 +103,8 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   // Sets the text to be displayed, and clears any previous styling.  Trailing
   // whitespace is trimmed from the text.
-  const base::string16& GetText() const;
-  void SetText(base::string16 text);
+  const std::u16string& GetText() const;
+  void SetText(std::u16string text);
 
   // Returns the FontList that should be used. |style_info| is an optional
   // argument that takes precedence over the default values.
@@ -204,7 +204,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   void CalculateLayout(int width) const;
 
   // Creates a Label for a given |text|, |style_info|, and |range|.
-  std::unique_ptr<Label> CreateLabel(const base::string16& text,
+  std::unique_ptr<Label> CreateLabel(const std::u16string& text,
                                      const RangeStyleInfo& style_info,
                                      const gfx::Range& range) const;
 
@@ -217,7 +217,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   void RemoveOrDeleteAllChildViews();
 
   // The text to display.
-  base::string16 text_;
+  std::u16string text_;
 
   int text_context_ = style::CONTEXT_LABEL;
   int default_text_style_ = style::STYLE_PRIMARY;

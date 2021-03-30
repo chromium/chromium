@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
@@ -43,14 +45,14 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_mode_test_helper.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -79,7 +81,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -89,7 +91,7 @@
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/test/test_system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_constants.h"
@@ -101,13 +103,13 @@
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -115,6 +117,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/model/fake_sync_change_processor.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
@@ -155,8 +158,10 @@ using base::ASCIIToUTF16;
 using extensions::Extension;
 using extensions::Manifest;
 using extensions::UnloadedExtensionReason;
+using extensions::mojom::ManifestLocation;
 
 namespace {
+
 constexpr char kOfflineGmailUrl[] = "https://mail.google.com/mail/mu/u";
 constexpr char kGmailUrl[] = "https://mail.google.com/mail/u";
 constexpr char kGmailLaunchURL[] = "https://mail.google.com/mail/ca";
@@ -168,6 +173,22 @@ constexpr char kCrxAppPrefix[] = "_crx_";
 // Dummy app id is used to put at least one pin record to prevent initializing
 // pin model with default apps that can affect some tests.
 constexpr char kDummyAppId[] = "dummyappid_dummyappid_dummyappid";
+
+std::unique_ptr<KeyedService> BuildTestSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+
+std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  arc::mojom::AppInfoPtr app(arc::mojom::AppInfo::New());
+  app->name = "settings";
+  app->package_name = "com.android.settings";
+  app->activity = "com.android.settings.Settings";
+  app->sticky = true;
+  apps.push_back(std::move(app));
+  return apps;
+}
 
 // Test implementation of AppIconLoader.
 class TestAppIconLoaderImpl : public AppIconLoader {
@@ -283,7 +304,8 @@ bool IsWindowOnDesktopOfUser(aura::Window* window,
 void UpdateAppRegistryCache(Profile* profile,
                             const std::string& app_id,
                             bool block,
-                            bool pause) {
+                            bool pause,
+                            apps::mojom::OptionalBool show_in_shelf) {
   std::vector<apps::mojom::AppPtr> apps;
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_type = apps::mojom::AppType::kExtension;
@@ -299,11 +321,15 @@ void UpdateAppRegistryCache(Profile* profile,
   else
     app->paused = apps::mojom::OptionalBool::kFalse;
 
+  if (show_in_shelf != apps::mojom::OptionalBool::kUnknown)
+    app->show_in_shelf = show_in_shelf;
+
   apps.push_back(std::move(app));
 
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .OnApps(std::move(apps));
+      .OnApps(std::move(apps), apps::mojom::AppType::kExtension,
+              false /* should_notify_initialized */);
 }
 
 }  // namespace
@@ -322,6 +348,8 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kUseFirstDisplayAsInternal);
+
+    chromeos::DBusThreadManager::Initialize();
 
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
@@ -356,6 +384,9 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
         extensions::manifest_keys::kPlatformAppBackgroundScripts,
         std::move(scripts));
 
+    ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildTestSyncService));
+
     extensions::TestExtensionSystem* extension_system(
         static_cast<extensions::TestExtensionSystem*>(
             extensions::ExtensionSystem::Get(profile())));
@@ -387,33 +418,33 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     StartAppSyncService(app_list_syncable_service_->GetAllSyncDataForTesting());
 
     std::string error;
-    extension_chrome_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                          manifest, Extension::NO_FLAGS,
-                                          extension_misc::kChromeAppId, &error);
-    extension1_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", &error);
-    extension2_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", &error);
-    extension5_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "cccccccccccccccccccccccccccccccc", &error);
-    extension6_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "dddddddddddddddddddddddddddddddd", &error);
-    extension7_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", &error);
-    extension8_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "ffffffffffffffffffffffffffffffff", &error);
+    extension_chrome_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, extension_misc::kChromeAppId, &error);
+    extension1_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", &error);
+    extension2_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", &error);
+    extension5_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "cccccccccccccccccccccccccccccccc", &error);
+    extension6_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "dddddddddddddddddddddddddddddddd", &error);
+    extension7_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", &error);
+    extension8_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "ffffffffffffffffffffffffffffffff", &error);
     extension_platform_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest_platform_app,
+        base::FilePath(), ManifestLocation::kUnpacked, manifest_platform_app,
         Extension::NO_FLAGS, "gggggggggggggggggggggggggggggggg", &error);
-    arc_support_host_ =
-        Extension::Create(base::FilePath(), Manifest::UNPACKED, manifest,
-                          Extension::NO_FLAGS, arc::kPlayStoreAppId, &error);
+    arc_support_host_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, arc::kPlayStoreAppId, &error);
     extension_service_->AddExtension(extension_chrome_.get());
 
     // Fake Gmail app.
@@ -431,22 +462,22 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     manifest_gmail.Set(extensions::manifest_keys::kWebURLs, std::move(list));
 
     extension_gmail_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest_gmail,
+        base::FilePath(), ManifestLocation::kUnpacked, manifest_gmail,
         Extension::NO_FLAGS, extension_misc::kGmailAppId, &error);
     // Fake Google Doc app.
     extension_doc_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
-        extension_misc::kGoogleDocAppId, &error);
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, extension_misc::kGoogleDocAppId, &error);
 
     // Fake Youtube app.
     extension_youtube_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
-        extension_misc::kYoutubeAppId, &error);
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, extension_misc::kYoutubeAppId, &error);
 
     // Fake File Manager app.
     extension_files_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
-        extension_misc::kFilesManagerAppId, &error);
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, extension_misc::kFilesManagerAppId, &error);
 
     MaybeStartWebAppProvider();
   }
@@ -518,6 +549,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     arc_test_.TearDown();
     launcher_controller_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
+    chromeos::DBusThreadManager::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
   }
 
@@ -536,6 +568,9 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   ChromeLauncherController* CreateLauncherController() {
     launcher_controller_ =
         std::make_unique<ChromeLauncherController>(profile(), model_.get());
+    launcher_controller_->SetProfileForTest(profile());
+    launcher_controller_->SetLauncherControllerHelperForTest(
+        std::make_unique<LauncherControllerHelper>(profile()));
     return launcher_controller_.get();
   }
 
@@ -827,6 +862,8 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
             result += "Play Store";
           } else if (app == crostini::kCrostiniTerminalSystemAppId) {
             result += "Terminal";
+          } else if (app == arc::kSettingsAppId) {
+            result += "Android Settings";
           } else {
             bool arc_app_found = false;
             for (const auto& arc_app : arc_test_.fake_apps()) {
@@ -941,7 +978,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
                            int32_t task_id) {
     ArcAppListPrefs* const prefs = arc_test_.arc_app_list_prefs();
     prefs->OnTaskCreated(task_id, appinfo.package_name, appinfo.activity,
-                         appinfo.name, std::string());
+                         appinfo.name, std::string(), /*session_id=*/0);
   }
 
   // Creates a window with TYPE_APP shelf item type and the given app_id.
@@ -1079,7 +1116,7 @@ class ChromeLauncherControllerLacrosTest : public ChromeLauncherControllerTest {
   // testing::Test:
   void SetUp() override {
     // Checking to see if Lacros is allowed requires a user.
-    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     auto* fake_user_manager = user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
@@ -1145,8 +1182,8 @@ class ChromeLauncherControllerExtendedShelfTest
       manifest.SetString(extensions::manifest_keys::kName,
                          extension_id_name.second);
       scoped_refptr<Extension> extension = Extension::Create(
-          base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
-          extension_id_name.first, &error);
+          base::FilePath(), ManifestLocation::kUnpacked, manifest,
+          Extension::NO_FLAGS, extension_id_name.first, &error);
       extension_service_->AddExtension(extension.get());
       extra_extensions_.emplace_back(extension);
     }
@@ -1192,8 +1229,8 @@ class V2App {
       : creator_web_contents_(
             content::WebContentsTester::CreateTestWebContents(profile,
                                                               nullptr)) {
-    window_ = new extensions::AppWindow(profile, new ChromeAppDelegate(true),
-                                        extension);
+    window_ = new extensions::AppWindow(
+        profile, new ChromeAppDelegate(profile, true), extension);
     extensions::AppWindow::CreateParams params;
     params.window_type = window_type;
     // Note: normally, the creator RFH is the background page of the
@@ -1243,14 +1280,14 @@ class MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest
   void SetUp() override {
     // Initialize the UserManager singleton to a fresh FakeUserManager instance.
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
 
     // Initialize the rest.
     ChromeLauncherControllerTest::SetUp();
 
-    // Initialize WallpaperControllerClient.
+    // Initialize WallpaperControllerClientImpl.
     wallpaper_controller_client_ =
-        std::make_unique<WallpaperControllerClient>();
+        std::make_unique<WallpaperControllerClientImpl>();
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
     // Ensure there are multiple profiles. User 0 is created during setup.
@@ -1332,7 +1369,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest
                             const std::string& url) {
     V1App* v1_app = new V1App(profile, app_name);
     NavigateAndCommitActiveTabWithTitle(v1_app->browser(), GURL(url),
-                                        base::string16());
+                                        std::u16string());
     return v1_app;
   }
 
@@ -1344,14 +1381,14 @@ class MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest
  private:
   typedef std::map<Profile*, std::string> ProfileToNameMap;
 
-  chromeos::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
-  std::unique_ptr<WallpaperControllerClient> wallpaper_controller_client_;
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 
   TestWallpaperController test_wallpaper_controller_;
 
@@ -1523,6 +1560,24 @@ TEST_F(ChromeLauncherControllerExtendedShelfTest, NoUpgradeFromNonDefault) {
   AddExtension(extension1_.get());
 
   EXPECT_EQ("Chrome, Files, Gmail, Doc, Play Store", GetPinnedAppStatus());
+}
+
+TEST_F(ChromeLauncherControllerWithArcTest,
+       ArcAppsHiddenFromLaunchCanBePinned) {
+  InitLauncherController();
+
+  // Register Android Settings.
+  arc::mojom::AppHost* app_host = arc_test_.arc_app_list_prefs();
+  app_host->OnAppListRefreshed(GetArcSettingsAppInfo());
+  app_service_test().WaitForAppService();
+
+  // Pin Android settings.
+  launcher_controller_->PinAppWithID(arc::kSettingsAppId);
+  EXPECT_EQ("Chrome, Android Settings", GetPinnedAppStatus());
+
+  // The pin should remain after syncing prefs. Play Store should now appear.
+  StartPrefSyncService(syncer::SyncDataList());
+  EXPECT_EQ("Chrome, Play Store, Android Settings", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeLauncherControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
@@ -3239,7 +3294,7 @@ TEST_F(ChromeLauncherControllerTest, PendingInsertionOrder) {
 void CheckAppMenu(ChromeLauncherController* controller,
                   const ash::ShelfItem& item,
                   size_t expected_item_count,
-                  base::string16 expected_item_titles[]) {
+                  std::u16string expected_item_titles[]) {
   auto items = controller->GetAppMenuItemsForTesting(item);
   ASSERT_EQ(expected_item_count, items.size());
   for (size_t i = 0; i < expected_item_count; i++)
@@ -3261,9 +3316,9 @@ TEST_F(ChromeLauncherControllerTest, BrowserMenuGeneration) {
 
   // Now make the created browser() visible by showing its browser window.
   browser()->window()->Show();
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("http://test1"), title1);
-  base::string16 one_menu_item[] = {title1};
+  std::u16string one_menu_item[] = {title1};
 
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, one_menu_item);
 
@@ -3272,13 +3327,13 @@ TEST_F(ChromeLauncherControllerTest, BrowserMenuGeneration) {
       CreateBrowserWithTestWindowForProfile(profile()));
   chrome::NewTab(browser2.get());
   browser2->window()->Show();
-  base::string16 title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser2.get(), GURL("http://test2"),
                                       title2);
 
   // Check that the list contains now two entries - make furthermore sure that
   // the active item is the first entry.
-  base::string16 two_menu_items[] = {title1, title2};
+  std::u16string two_menu_items[] = {title1, title2};
   CheckAppMenu(launcher_controller_.get(), item_browser, 2, two_menu_items);
 
   // Apparently we have to close all tabs we have.
@@ -3301,9 +3356,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
 
   // Show the created |browser()| by showing its window.
   browser()->window()->Show();
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("http://test1"), title1);
-  base::string16 one_menu_item1[] = {title1};
+  std::u16string one_menu_item1[] = {title1};
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, one_menu_item1);
 
   // Create a browser for another user and check that it is not included in the
@@ -3314,7 +3369,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
       multi_user_util::GetAccountIdFromProfile(profile2));
   std::unique_ptr<Browser> browser2(
       CreateBrowserAndTabWithProfile(profile2, user2, "http://test2"));
-  base::string16 one_menu_item2[] = {ASCIIToUTF16(user2)};
+  std::u16string one_menu_item2[] = {ASCIIToUTF16(user2)};
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, one_menu_item1);
 
   // Switch to the other user and make sure that only that browser window gets
@@ -3362,27 +3417,27 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuGeneration) {
   CheckAppMenu(launcher_controller_.get(), item_gmail, 0, nullptr);
 
   // Set the gmail URL to a new tab.
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
 
-  base::string16 one_menu_item[] = {title1};
+  std::u16string one_menu_item[] = {title1};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 1, one_menu_item);
 
   // Create one empty tab.
   chrome::NewTab(browser());
-  base::string16 title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("https://bla"), title2);
 
   // and another one with another gmail instance.
   chrome::NewTab(browser());
-  base::string16 title3 = ASCIIToUTF16("Test3");
+  std::u16string title3 = u"Test3";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title3);
-  base::string16 two_menu_items[] = {title1, title3};
+  std::u16string two_menu_items[] = {title1, title3};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 2, two_menu_items);
 
   // Even though the item is in the V1 app list, it should also be in the
   // browser list.
-  base::string16 browser_menu_item[] = {title3};
+  std::u16string browser_menu_item[] = {title3};
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, browser_menu_item);
 
   // Test that closing of (all) the item(s) does work (and all menus get
@@ -3390,7 +3445,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuGeneration) {
   launcher_controller_->Close(item_gmail.id);
 
   CheckAppMenu(launcher_controller_.get(), item_gmail, 0, nullptr);
-  base::string16 browser_menu_item2[] = {title2};
+  std::u16string browser_menu_item2[] = {title2};
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, browser_menu_item2);
 }
 
@@ -3419,10 +3474,10 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
   CheckAppMenu(launcher_controller_.get(), item_gmail, 0, nullptr);
 
   // Set the gmail URL to a new tab.
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
 
-  base::string16 one_menu_item[] = {title1};
+  std::u16string one_menu_item[] = {title1};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 1, one_menu_item);
 
   // Create a second profile and switch to that user.
@@ -3855,10 +3910,10 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuExecution) {
   const ash::ShelfID gmail_id(extension_gmail_app_->id());
   AddExtension(extension_gmail_app_.get());
   launcher_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
   chrome::NewTab(browser());
-  base::string16 title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title2);
   app_service_test().WaitForAppService();
 
@@ -3866,7 +3921,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuExecution) {
   ash::ShelfItem item_gmail;
   item_gmail.type = ash::TYPE_PINNED_APP;
   item_gmail.id = gmail_id;
-  base::string16 two_menu_items[] = {title1, title2};
+  std::u16string two_menu_items[] = {title1, title2};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 2, two_menu_items);
   ash::ShelfItemDelegate* item_delegate =
       model_->GetShelfItemDelegate(gmail_id);
@@ -3876,7 +3931,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuExecution) {
   // this shouldn't do anything since that item is already the active tab.
   {
     ash::ShelfApplicationMenuModel menu(
-        base::string16(),
+        std::u16string(),
         launcher_controller_->GetAppMenuItemsForTesting(item_gmail),
         item_delegate);
     menu.ActivatedAt(2);
@@ -3887,7 +3942,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuExecution) {
   // this should activate the other tab.
   {
     ash::ShelfApplicationMenuModel menu(
-        base::string16(),
+        std::u16string(),
         launcher_controller_->GetAppMenuItemsForTesting(item_gmail),
         item_delegate);
     menu.ActivatedAt(1);
@@ -3904,10 +3959,10 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuDeletionExecution) {
   const ash::ShelfID gmail_id(extension_gmail_app_->id());
   AddExtension(extension_gmail_app_.get());
   launcher_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
   chrome::NewTab(browser());
-  base::string16 title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title2);
   app_service_test().WaitForAppService();
 
@@ -3915,7 +3970,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuDeletionExecution) {
   ash::ShelfItem item_gmail;
   item_gmail.type = ash::TYPE_PINNED_APP;
   item_gmail.id = gmail_id;
-  base::string16 two_menu_items[] = {title1, title2};
+  std::u16string two_menu_items[] = {title1, title2};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 2, two_menu_items);
 
   ash::ShelfItemDelegate* item_delegate =
@@ -3947,7 +4002,7 @@ TEST_F(ChromeLauncherControllerTest, GmailMatching) {
 
   // Create a Gmail browser tab.
   chrome::NewTab(browser());
-  base::string16 title = ASCIIToUTF16("Test");
+  std::u16string title = u"Test";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title);
   content::WebContents* content =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -3979,7 +4034,7 @@ TEST_F(ChromeLauncherControllerTest, GmailOfflineMatching) {
 
   // Create a Gmail browser tab.
   chrome::NewTab(browser());
-  base::string16 title = ASCIIToUTF16("Test");
+  std::u16string title = u"Test";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kOfflineGmailUrl), title);
   content::WebContents* content =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -4431,6 +4486,7 @@ TEST_F(ChromeLauncherControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
       model_->GetShelfItemDelegate(ash::ShelfID(arc::kPlayStoreAppId));
   EXPECT_TRUE(item_delegate);
   SelectItem(item_delegate);
+  app_service_test().FlushMojoCalls();
   EXPECT_TRUE(launcher_controller_->IsAppPinned(arc::kPlayStoreAppId));
   EXPECT_TRUE(launcher_controller_->GetShelfSpinnerController()->HasApp(
       arc::kPlayStoreAppId));
@@ -4922,7 +4978,8 @@ TEST_F(ChromeLauncherControllerTest, DoNotShowInShelf) {
   apps.push_back(std::move(app));
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->AppRegistryCache()
-      .OnApps(std::move(apps));
+      .OnApps(std::move(apps), apps::mojom::AppType::kExtension,
+              false /* should_notify_initialized */);
 
   InitLauncherController();
   EXPECT_EQ("Chrome, App2", GetPinnedAppStatus());
@@ -5086,8 +5143,9 @@ TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForPausedApp) {
   AddExtension(extension1_.get());
 
   // Set the app as paused
-  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         true /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, true /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
 
   InitLauncherController();
 
@@ -5096,29 +5154,33 @@ TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForPausedApp) {
   EXPECT_EQ(ash::AppStatus::kPaused, model_->items()[1].app_status);
 
   // Set the app as blocked
-  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         true /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), true /* block */, true /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as ready, but still paused;
-  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         true /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, true /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kPaused, model_->items()[1].app_status);
 
   // Set the app as ready, and not paused;
-  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 
-// Test the app status when the blocked app is paused, un-blocked, and
-// un-blocked
+// Test the app status when the blocked app is paused, un-paused, hidden,
+// visible and un-blocked
 TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForBlockedApp) {
   AddExtension(extension1_.get());
 
   // Set the app as blocked
-  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         false /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), true /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
 
   InitLauncherController();
 
@@ -5127,19 +5189,72 @@ TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForBlockedApp) {
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as paused
-  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         true /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), true /* block */, true /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
-  // Set the app as blocked, but un-paused;
-  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         false /* pause */);
+  // Set the app as blocked, but un-paused
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), true /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
-  // Set the app as ready, and not paused;
-  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */);
+  // Set the app as ready, and not paused
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
+
+  // Set the app as blocked and hidden
+  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
+                         false /* pause */,
+                         apps::mojom::OptionalBool::kFalse /* show_in_shelf */);
+  EXPECT_FALSE(launcher_controller_->IsAppPinned(extension1_->id()));
+
+  // Set the app as blocked and visible
+  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
+                         false /* pause */,
+                         apps::mojom::OptionalBool::kTrue /* show_in_shelf */);
+  EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
+  EXPECT_TRUE(launcher_controller_->IsAppPinned(extension1_->id()));
+
+  // Set the app as ready
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
+  EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
+}
+
+TEST_F(ChromeLauncherControllerTest, NotificationBadgeColorTest) {
+  InitLauncherController();
+  const int width = 64;
+  const int height = 64;
+
+  SkBitmap all_black_icon;
+  all_black_icon.allocN32Pixels(width, height);
+  all_black_icon.eraseColor(SK_ColorBLACK);
+
+  SkColor test_color =
+      launcher_controller_->CalculateNotificationBadgeColorForApp(
+          "app_id1", gfx::ImageSkia::CreateFrom1xBitmap(all_black_icon));
+
+  // For an all black icon, a white notification badge is expected, since there
+  // is no other light vibrant color to get from the icon.
+  EXPECT_EQ(test_color, SK_ColorWHITE);
+
+  // Create an icon that is half kGoogleRed300 and half kGoogleRed600.
+  SkBitmap red_icon;
+  red_icon.allocN32Pixels(width, height);
+  red_icon.eraseColor(gfx::kGoogleRed300);
+  red_icon.erase(gfx::kGoogleRed600, {0, 0, width, height / 2});
+
+  test_color = launcher_controller_->CalculateNotificationBadgeColorForApp(
+      "app_id2", gfx::ImageSkia::CreateFrom1xBitmap(red_icon));
+
+  // For the red icon, the notification badge should calculate and use the
+  // kGoogleRed300 color as the light vibrant color taken from the icon.
+  EXPECT_EQ(gfx::kGoogleRed300, test_color);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

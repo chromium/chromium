@@ -54,7 +54,7 @@ ConfiguratorImpl::ConfiguratorImpl(
 
 ConfiguratorImpl::~ConfiguratorImpl() = default;
 
-int ConfiguratorImpl::InitialDelay() const {
+double ConfiguratorImpl::InitialDelay() const {
   if (initial_delay_)
     return initial_delay_;
   return fast_update_ ? 10 : kDelayOneMinute;

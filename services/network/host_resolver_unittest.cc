@@ -659,7 +659,7 @@ TEST_F(HostResolverTest, IncludeCanonicalName) {
   auto inner_resolver = std::make_unique<net::MockHostResolver>();
   inner_resolver->rules()->AddRuleWithFlags("example.com", "123.0.12.24",
                                             net::HOST_RESOLVER_CANONNAME,
-                                            "canonicalexample.com");
+                                            {"canonicalexample.com"});
 
   HostResolver resolver(inner_resolver.get(), net::NetLog::Get());
 

@@ -117,7 +117,7 @@ void BluetoothFeaturePodController::UpdateButton() {
   } else if (connected_devices.size() == 1) {
     const device::mojom::BluetoothDeviceInfoPtr& device =
         connected_devices.back();
-    const base::string16 device_name =
+    const std::u16string device_name =
         device::GetBluetoothDeviceNameForDisplay(device);
     button_->SetVectorIcon(kUnifiedMenuBluetoothConnectedIcon);
     button_->SetLabel(device_name);
@@ -143,7 +143,7 @@ void BluetoothFeaturePodController::UpdateButton() {
 }
 
 void BluetoothFeaturePodController::SetTooltipState(
-    const base::string16& tooltip_state) {
+    const std::u16string& tooltip_state) {
   if (button_->GetEnabled()) {
     button_->SetIconTooltip(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, tooltip_state));

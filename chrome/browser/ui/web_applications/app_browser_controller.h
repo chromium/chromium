@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -18,6 +17,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRegion.h"
 
 class Browser;
 class BrowserThemePack;
@@ -58,7 +58,7 @@ class AppBrowserController : public TabStripModelObserver,
   static bool IsForWebApp(const Browser* browser, const AppId& app_id);
 
   // Renders |url|'s origin as Unicode.
-  static base::string16 FormatUrlOrigin(
+  static std::u16string FormatUrlOrigin(
       const GURL& url,
       url_formatter::FormatUrlTypes format_types =
           url_formatter::kFormatUrlOmitUsernamePassword |
@@ -74,7 +74,7 @@ class AppBrowserController : public TabStripModelObserver,
   const ui::ThemeProvider* GetThemeProvider() const;
 
   // Returns the text to flash in the title bar on app launch.
-  base::string16 GetLaunchFlashText() const;
+  std::u16string GetLaunchFlashText() const;
 
   // Returns whether this controller was created for an installed PWA.
   virtual bool IsHostedApp() const;
@@ -113,14 +113,14 @@ class AppBrowserController : public TabStripModelObserver,
   virtual base::Optional<SkColor> GetBackgroundColor() const;
 
   // Returns the title to be displayed in the window title bar.
-  virtual base::string16 GetTitle() const;
+  virtual std::u16string GetTitle() const;
 
   // Gets the short name of the app.
-  virtual base::string16 GetAppShortName() const = 0;
+  virtual std::u16string GetAppShortName() const = 0;
 
   // Gets the origin of the app start url suitable for display (e.g
   // example.com.au).
-  virtual base::string16 GetFormattedUrlOrigin() const = 0;
+  virtual std::u16string GetFormattedUrlOrigin() const = 0;
 
   // Gets the start_url for the app.
   virtual GURL GetAppStartUrl() const = 0;
@@ -142,6 +142,9 @@ class AppBrowserController : public TabStripModelObserver,
   virtual std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const;
 
   virtual bool IsWindowControlsOverlayEnabled() const;
+
+  // Whether the browser should show the reload button in the toolbar.
+  virtual bool HasReloadButton() const;
 
   // Updates the custom tab bar's visibility based on whether it should be
   // currently visible or not. If |animate| is set, the change will be
@@ -190,6 +193,13 @@ class AppBrowserController : public TabStripModelObserver,
   // BrowserThemeProviderDelegate:
   CustomThemeSupplier* GetThemeSupplier() const override;
 
+  void UpdateDraggableRegion(const SkRegion& region);
+  const base::Optional<SkRegion>& draggable_region() const {
+    return draggable_region_;
+  }
+
+  void SetOnUpdateDraggableRegionForTesting(base::OnceClosure done);
+
  protected:
   explicit AppBrowserController(Browser* browser,
                                 base::Optional<web_app::AppId> app_id);
@@ -223,6 +233,9 @@ class AppBrowserController : public TabStripModelObserver,
 
   const bool has_tab_strip_;
 
+  base::Optional<SkRegion> draggable_region_ = base::nullopt;
+
+  base::OnceClosure on_draggable_region_set_for_testing_;
 };
 
 }  // namespace web_app

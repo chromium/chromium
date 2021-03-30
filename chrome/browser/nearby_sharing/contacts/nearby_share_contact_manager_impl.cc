@@ -8,9 +8,11 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
@@ -137,6 +139,28 @@ std::vector<nearby_share::mojom::ContactRecordPtr> ProtoToMojo(
   return mojo_contacts;
 }
 
+void RecordAllowlistMetrics(size_t num_contacts,
+                            size_t num_allowed_contacts,
+                            PrefService* pref_service) {
+  // Only record metrics if the user is in selected-contacts visibility mode.
+  // Note: We should really use NearbyShareSettings to get the visibility.
+  // Because this is just for metrics, we read the pref directly for simplicity.
+  nearby_share::mojom::Visibility visibility =
+      static_cast<nearby_share::mojom::Visibility>(pref_service->GetInteger(
+          prefs::kNearbySharingBackgroundVisibilityName));
+  if (visibility != nearby_share::mojom::Visibility::kSelectedContacts)
+    return;
+
+  base::UmaHistogramCounts10000("Nearby.Share.Contacts.NumContacts.Selected",
+                                num_allowed_contacts);
+
+  if (num_contacts != 0) {
+    base::UmaHistogramPercentage(
+        "Nearby.Share.Contacts.PercentSelected",
+        std::lround(100.0f * num_allowed_contacts / num_contacts));
+  }
+}
+
 }  // namespace
 
 // static
@@ -149,15 +173,15 @@ NearbyShareContactManagerImpl::Factory::Create(
     PrefService* pref_service,
     NearbyShareClientFactory* http_client_factory,
     NearbyShareLocalDeviceDataManager* local_device_data_manager,
-    const std::string& profile_user_name) {
+    NearbyShareProfileInfoProvider* profile_info_provider) {
   if (test_factory_) {
     return test_factory_->CreateInstance(pref_service, http_client_factory,
                                          local_device_data_manager,
-                                         profile_user_name);
+                                         profile_info_provider);
   }
   return base::WrapUnique(new NearbyShareContactManagerImpl(
       pref_service, http_client_factory, local_device_data_manager,
-      profile_user_name));
+      profile_info_provider));
 }
 
 // static
@@ -172,11 +196,11 @@ NearbyShareContactManagerImpl::NearbyShareContactManagerImpl(
     PrefService* pref_service,
     NearbyShareClientFactory* http_client_factory,
     NearbyShareLocalDeviceDataManager* local_device_data_manager,
-    const std::string& profile_user_name)
+    NearbyShareProfileInfoProvider* profile_info_provider)
     : pref_service_(pref_service),
       http_client_factory_(http_client_factory),
       local_device_data_manager_(local_device_data_manager),
-      profile_user_name_(profile_user_name),
+      profile_info_provider_(profile_info_provider),
       periodic_contact_upload_scheduler_(
           NearbyShareSchedulerFactory::CreatePeriodicScheduler(
               kContactUploadPeriod,
@@ -281,6 +305,8 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
 
   // Notify observers that the contact list was downloaded.
   std::set<std::string> allowed_contact_ids = GetAllowedContacts();
+  RecordAllowlistMetrics(contacts.size(), allowed_contact_ids.size(),
+                         pref_service_);
   NotifyContactsDownloaded(allowed_contact_ids, contacts,
                            num_unreachable_contacts_filtered_out);
   NotifyMojoObserverContactsDownloaded(allowed_contact_ids, contacts,
@@ -291,11 +317,14 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
 
   // Enable cross-device self-share by adding your account to the list of
   // contacts. It is also marked as a selected contact.
-  if (profile_user_name_.empty()) {
-    NS_LOG(WARNING) << __func__ << ": Profile user name is empty; could not "
+  base::Optional<std::string> user_name =
+      profile_info_provider_->GetProfileUserName();
+  if (!user_name) {
+    NS_LOG(WARNING) << __func__
+                    << ": Profile user name is not valid; could not "
                     << "add self to list of contacts to upload.";
   } else {
-    contacts_to_upload.push_back(CreateLocalContact(profile_user_name_));
+    contacts_to_upload.push_back(CreateLocalContact(*user_name));
   }
 
   std::string contact_upload_hash = ComputeHash(contacts_to_upload);

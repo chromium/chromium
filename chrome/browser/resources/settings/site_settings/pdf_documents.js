@@ -8,8 +8,8 @@
  * settings for viewing PDF documents under Site Settings.
  */
 
-import '../controls/settings_toggle_button.m.js';
-import '../settings_shared_css.m.js';
+import '../controls/settings_toggle_button.js';
+import '../settings_shared_css.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

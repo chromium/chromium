@@ -82,6 +82,9 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   // with.
   const int64_t navigation_id_;
 
+  // The time a throttle started deferring the navigation.
+  base::Time defer_start_time_;
+
   // The event currently being processed.
   Event current_event_ = Event::NoEvent;
   base::WeakPtrFactory<NavigationThrottleRunner> weak_factory_{this};

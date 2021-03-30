@@ -112,6 +112,17 @@ constexpr char kDragMaximizeSmoothness[] =
 constexpr base::TimeDelta kCrossFadeDuration =
     base::TimeDelta::FromMilliseconds(120);
 
+// The amount of pixels that needs to be moved during a top screen drag to reset
+// dwell time.
+constexpr int kSnapDragDwellTimeResetThreshold = 8;
+
+// Dwell time before snap to maximize. The countdown starts when window dragged
+// into snap region.
+constexpr base::TimeDelta kDwellTime = base::TimeDelta::FromMilliseconds(800);
+// The min amount of vertical movement needed for to trigger a snap to
+// maximize.
+constexpr int kSnapTriggerVerticalMoveThreshold = 64;
+
 // Current instance for use by the WorkspaceWindowResizerTest.
 WorkspaceWindowResizer* instance = nullptr;
 
@@ -552,7 +563,6 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
       return;
     }
   }
-
   last_mouse_location_ = location_in_parent;
 
   int sticky_size;
@@ -602,14 +612,48 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
 
   gfx::PointF location_in_screen = location_in_parent;
   ::wm::ConvertPointToScreen(GetTarget()->parent(), &location_in_screen);
+  SnapType snap_type = ::ash::GetSnapType(GetDisplay(), location_in_screen);
   if (!can_snap_to_maximize_) {
-    // Check if |location_in_screen| is outside the snap region. If it is,
-    // update |can_snap_to_maximize_| and skip this check on subsequent drags.
+    gfx::PointF initial_location_in_screen =
+        details().initial_location_in_parent;
+    ::wm::ConvertPointToScreen(GetTarget()->parent(),
+                               &initial_location_in_screen);
+    // When repositioning windows across the top of the screen, only trigger a
+    // snap when there is significant vertical movement.
     can_snap_to_maximize_ =
-        ::ash::GetSnapType(GetDisplay(), location_in_screen) !=
-        SnapType::kMaximize;
+        std::abs(initial_location_in_screen.y() - location_in_screen.y()) >
+        kSnapTriggerVerticalMoveThreshold;
   }
-  UpdateSnapPhantomWindow(location_in_screen, bounds);
+
+  // Start dwell countdown if move window to the top of screen.
+  if (snap_type == SnapType::kMaximize) {
+    bool drag_passed_threshold =
+        (location_in_screen - dwell_location_in_screen_).Length() >
+        kSnapDragDwellTimeResetThreshold;
+    if (!dwell_countdown_timer_.IsRunning() || drag_passed_threshold) {
+      // Do not show snap window if not pass dwell time.
+      // Restart timer if user moves the window significantly.
+      dwell_countdown_timer_.Start(
+          FROM_HERE, kDwellTime,
+          base::BindOnce(&WorkspaceWindowResizer::UpdateSnapPhantomWindow,
+                         weak_ptr_factory_.GetWeakPtr(), location_in_screen,
+                         bounds));
+      // Cancel maximization if drag passed threshold.
+      // Window can still be maximized in next dwell cycle if stays at top of
+      // display.
+      if (drag_passed_threshold) {
+        snap_type_ = SnapType::kNone;
+        snap_phantom_window_controller_.reset();
+      }
+      dwell_location_in_screen_ = location_in_screen;
+    }
+  } else {
+    UpdateSnapPhantomWindow(location_in_screen, bounds);
+    if (dwell_countdown_timer_.IsRunning()) {
+      dwell_countdown_timer_.Stop();
+    }
+    dwell_location_in_screen_ = gfx::PointF();
+  }
 
   if (tab_dragging_recorder_) {
     // The recorder only works with a single ui::Compositor. ui::Compositor is
@@ -651,9 +695,13 @@ void WorkspaceWindowResizer::CompleteDrag() {
   // Update window state if the window has been snapped.
   if (snap_type_ != SnapType::kNone) {
     if (!window_state()->HasRestoreBounds()) {
-      gfx::Rect bounds = details().restore_bounds_in_parent.IsEmpty()
-                             ? details().initial_bounds_in_parent
-                             : details().restore_bounds_in_parent;
+      // Use `restore_bounds_for_gesture_` for touch dragging which is inside
+      // parent's bounds and would not put window to different display.
+      gfx::Rect bounds = details().source == ::wm::WINDOW_MOVE_SOURCE_TOUCH
+                             ? restore_bounds_for_gesture_
+                             : details().restore_bounds_in_parent.IsEmpty()
+                                   ? details().initial_bounds_in_parent
+                                   : details().restore_bounds_in_parent;
       window_state()->SetRestoreBoundsInParent(bounds);
     }
 
@@ -888,6 +936,14 @@ WorkspaceWindowResizer::WorkspaceWindowResizer(
   } else {
     restore_bounds_for_gesture_ = details().restore_bounds_in_parent;
   }
+
+  // Ensures |restore_bounds_for_gesture_| touches parent's local bounds so
+  // that fling maximize does not move the window to a different display
+  // and clear gesture states. See https://crbug.com/1162541.
+  const gfx::Rect parent_local_bounds(
+      window_state->window()->parent()->bounds().size());
+  if (!parent_local_bounds.Intersects(restore_bounds_for_gesture_))
+    restore_bounds_for_gesture_.AdjustToFit(parent_local_bounds);
 
   window_state->OnDragStarted(details().window_component);
   StartDragForAttachedWindows();

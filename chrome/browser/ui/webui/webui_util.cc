@@ -21,11 +21,17 @@
 #include "base/enterprise_util.h"
 #endif
 
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/views/widget/widget.h"
+#endif  // defined(TOOLKIT_VIEWS)
+
 namespace webui {
 
-namespace {
-
-void SetupPolymer3Defaults(content::WebUIDataSource* source) {
+void SetJSModuleDefaults(content::WebUIDataSource* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
@@ -34,37 +40,17 @@ void SetupPolymer3Defaults(content::WebUIDataSource* source) {
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("test_loader_util.js",
+                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 }
 
-}  // namespace
-
 void SetupWebUIDataSource(content::WebUIDataSource* source,
-                          base::span<const GritResourceMap> resources,
+                          base::span<const ResourcePath> resources,
                           int default_resource) {
-  SetupPolymer3Defaults(source);
-  for (const GritResourceMap& resource : resources) {
-    source->AddResourcePath(resource.name, resource.value);
-  }
+  SetJSModuleDefaults(source);
+  source->AddResourcePaths(resources);
   source->AddResourcePath("", default_resource);
-}
-
-void AddLocalizedStringsBulk(content::WebUIDataSource* html_source,
-                             base::span<const LocalizedString> strings) {
-  for (const auto& str : strings)
-    html_source->AddLocalizedString(str.name, str.id);
-}
-
-void AddResourcePathsBulk(content::WebUIDataSource* source,
-                          base::span<const ResourcePath> paths) {
-  for (const auto& path : paths)
-    source->AddResourcePath(path.path, path.id);
-}
-
-void AddResourcePathsBulk(content::WebUIDataSource* source,
-                          base::span<const GritResourceMap> resources) {
-  for (const auto& resource : resources)
-    source->AddResourcePath(resource.name, resource.value);
 }
 
 bool IsEnterpriseManaged() {
@@ -78,5 +64,38 @@ bool IsEnterpriseManaged() {
   return false;
 #endif
 }
+
+#if defined(TOOLKIT_VIEWS)
+ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents) {
+  ui::NativeTheme* native_theme = nullptr;
+
+  if (web_contents) {
+    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+
+    if (browser) {
+      // Find for WebContents hosted in a tab.
+      native_theme = browser->window()->GetNativeTheme();
+    }
+
+    if (!native_theme) {
+      // Find for WebContents hosted in a widget, but not directly in a
+      // Browser. e.g. Tab Search, Read Later.
+      views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+          web_contents->GetContentNativeView());
+      if (widget)
+        native_theme = widget->GetNativeTheme();
+    }
+  }
+
+  if (!native_theme) {
+    // Find for isolated WebContents, e.g. in tests.
+    // Or when |web_contents| is nullptr, because the renderer is not ready.
+    // TODO(crbug/1056916): Remove global accessor to NativeTheme.
+    native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  }
+
+  return native_theme;
+}
+#endif  // !defined(TOOLKIT_VIEWS)
 
 }  // namespace webui

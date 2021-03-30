@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/test/mock_raw_clipboard_host.h"
-#include "base/strings/string16.h"
+
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/test/mock_clipboard_host.h"
@@ -38,13 +40,13 @@ void MockRawClipboardHost::Reset() {
 
 void MockRawClipboardHost::ReadAvailableFormatNames(
     ReadAvailableFormatNamesCallback callback) {
-  std::vector<base::string16> format_names;
+  std::vector<std::u16string> format_names;
   for (const auto& item : raw_data_map_)
     format_names.emplace_back(item.first);
   std::move(callback).Run(format_names);
 }
 
-void MockRawClipboardHost::Read(const base::string16& format,
+void MockRawClipboardHost::Read(const std::u16string& format,
                                 ReadCallback callback) {
   const auto it = raw_data_map_.find(format);
   if (it == raw_data_map_.end())
@@ -55,7 +57,7 @@ void MockRawClipboardHost::Read(const base::string16& format,
   std::move(callback).Run(std::move(buffer));
 }
 
-void MockRawClipboardHost::Write(const base::string16& format,
+void MockRawClipboardHost::Write(const std::u16string& format,
                                  mojo_base::BigBuffer data) {
   if (needs_reset_)
     Reset();
@@ -77,7 +79,7 @@ void MockRawClipboardHost::Write(const base::string16& format,
 
   if (format == base::ASCIIToUTF16(kPlatformTextFormat)) {
     EXPECT_TRUE(mock_clipboard_host_);
-    base::string16 text = base::UTF8ToUTF16(base::StringPiece(
+    std::u16string text = base::UTF8ToUTF16(base::StringPiece(
         reinterpret_cast<const char*>(data_copy.data()), data_copy.size()));
     mock_clipboard_host_->WriteText(text);
   }

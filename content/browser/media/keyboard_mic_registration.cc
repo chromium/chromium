@@ -4,7 +4,7 @@
 
 #include "content/browser/media/keyboard_mic_registration.h"
 
-#include "chromeos/audio/cras_audio_handler.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -19,13 +19,13 @@ KeyboardMicRegistration::~KeyboardMicRegistration() {
 void KeyboardMicRegistration::Register() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (++register_count_ == 1)
-    chromeos::CrasAudioHandler::Get()->SetKeyboardMicActive(true);
+    ash::CrasAudioHandler::Get()->SetKeyboardMicActive(true);
 }
 
 void KeyboardMicRegistration::Deregister() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (--register_count_ == 0)
-    chromeos::CrasAudioHandler::Get()->SetKeyboardMicActive(false);
+    ash::CrasAudioHandler::Get()->SetKeyboardMicActive(false);
 }
 
 }  // namespace content

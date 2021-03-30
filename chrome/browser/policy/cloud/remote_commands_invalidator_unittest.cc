@@ -40,9 +40,9 @@ class MockRemoteCommandInvalidator : public RemoteCommandsInvalidator {
   MOCK_METHOD0(OnShutdown, void());
   MOCK_METHOD0(OnStart, void());
   MOCK_METHOD0(OnStop, void());
-  MOCK_METHOD1(DoRemoteCommandsFetch, void(const syncer::Invalidation&));
+  MOCK_METHOD1(DoRemoteCommandsFetch, void(const invalidation::Invalidation&));
 
-  void SetInvalidationTopic(const syncer::Topic& topic) {
+  void SetInvalidationTopic(const invalidation::Topic& topic) {
     em::PolicyData policy_data;
     policy_data.set_command_invalidation_topic(topic);
     ReloadPolicyData(&policy_data);
@@ -63,29 +63,33 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
       : kTestingTopic1("abcdef"), kTestingTopic2("defabc") {}
 
   void EnableInvalidationService() {
-    invalidation_service_.SetInvalidatorState(syncer::INVALIDATIONS_ENABLED);
+    invalidation_service_.SetInvalidatorState(
+        invalidation::INVALIDATIONS_ENABLED);
   }
 
   void DisableInvalidationService() {
     invalidation_service_.SetInvalidatorState(
-        syncer::TRANSIENT_INVALIDATION_ERROR);
+        invalidation::TRANSIENT_INVALIDATION_ERROR);
   }
 
-  syncer::Invalidation CreateInvalidation(const syncer::Topic& topic) {
-    return syncer::Invalidation::InitUnknownVersion(topic);
+  invalidation::Invalidation CreateInvalidation(
+      const invalidation::Topic& topic) {
+    return invalidation::Invalidation::InitUnknownVersion(topic);
   }
 
-  syncer::Invalidation FireInvalidation(const syncer::Topic& topic) {
-    const syncer::Invalidation invalidation = CreateInvalidation(topic);
+  invalidation::Invalidation FireInvalidation(
+      const invalidation::Topic& topic) {
+    const invalidation::Invalidation invalidation = CreateInvalidation(topic);
     invalidation_service_.EmitInvalidationForTest(invalidation);
     return invalidation;
   }
 
-  bool IsInvalidationSent(const syncer::Invalidation& invalidation) {
+  bool IsInvalidationSent(const invalidation::Invalidation& invalidation) {
     return !invalidation_service_.GetMockAckHandler()->IsUnsent(invalidation);
   }
 
-  bool IsInvalidationAcknowledged(const syncer::Invalidation& invalidation) {
+  bool IsInvalidationAcknowledged(
+      const invalidation::Invalidation& invalidation) {
     return invalidation_service_.GetMockAckHandler()->IsAcknowledged(
         invalidation);
   }
@@ -123,22 +127,22 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
   }
 
   // Fire an invalidation to verify that invalidation is not working.
-  void VerifyInvalidationDisabled(const syncer::Topic& topic) {
-    const syncer::Invalidation invalidation = FireInvalidation(topic);
+  void VerifyInvalidationDisabled(const invalidation::Topic& topic) {
+    const invalidation::Invalidation invalidation = FireInvalidation(topic);
 
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(IsInvalidationSent(invalidation));
   }
 
   // Fire an invalidation to verify that invalidation works.
-  void VerifyInvalidationEnabled(const syncer::Topic& topic) {
+  void VerifyInvalidationEnabled(const invalidation::Topic& topic) {
     EXPECT_TRUE(invalidator_.invalidations_enabled());
 
     EXPECT_CALL(
         invalidator_,
         DoRemoteCommandsFetch(InvalidationsEqual(CreateInvalidation(topic))))
         .Times(1);
-    const syncer::Invalidation invalidation = FireInvalidation(topic);
+    const invalidation::Invalidation invalidation = FireInvalidation(topic);
 
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(IsInvalidationSent(invalidation));
@@ -146,8 +150,8 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
     VerifyExpectations();
   }
 
-  syncer::Topic kTestingTopic1;
-  syncer::Topic kTestingTopic2;
+  invalidation::Topic kTestingTopic1;
+  invalidation::Topic kTestingTopic2;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -175,7 +179,8 @@ TEST_F(RemoteCommandsInvalidatorTest, FiredInvalidation) {
 
   // Fire an invalidation with different object id, no invalidation will be
   // received.
-  const syncer::Invalidation invalidation1 = FireInvalidation(kTestingTopic2);
+  const invalidation::Invalidation invalidation1 =
+      FireInvalidation(kTestingTopic2);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsInvalidationSent(invalidation1));
@@ -186,7 +191,8 @@ TEST_F(RemoteCommandsInvalidatorTest, FiredInvalidation) {
   EXPECT_CALL(invalidator_, DoRemoteCommandsFetch(InvalidationsEqual(
                                 CreateInvalidation(kTestingTopic1))))
       .Times(1);
-  const syncer::Invalidation invalidation2 = FireInvalidation(kTestingTopic1);
+  const invalidation::Invalidation invalidation2 =
+      FireInvalidation(kTestingTopic1);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsInvalidationSent(invalidation2));

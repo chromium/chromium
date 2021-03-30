@@ -87,7 +87,7 @@ class CONTENT_EXPORT ServiceWorkerHost {
   ServiceWorkerVersion* const version_;
 
   BrowserInterfaceBrokerImpl<ServiceWorkerHost, const ServiceWorkerVersionInfo&>
-      broker_{this, /*policy_applier=*/nullptr};
+      broker_{this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_APP_LAUNCHER_PAGE_UI_H_
 
 #include "base/macros.h"
-#include "content/public/browser/url_data_source.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/base/layout.h"
 
@@ -31,32 +31,10 @@ class AppLauncherPageUI : public content::WebUIController {
                                   const base::ListValue& args) override;
 
  private:
-  class HTMLSource : public content::URLDataSource {
-   public:
-    explicit HTMLSource(Profile* profile);
-    ~HTMLSource() override;
-
-    // content::URLDataSource implementation.
-    std::string GetSource() override;
-    void StartDataRequest(
-        const GURL& url,
-        const content::WebContents::Getter& wc_getter,
-        content::URLDataSource::GotDataCallback callback) override;
-    std::string GetMimeType(const std::string&) override;
-    bool ShouldReplaceExistingSource() override;
-    bool AllowCaching() override;
-    std::string GetContentSecurityPolicy(
-        network::mojom::CSPDirectiveName directive) override;
-
-   private:
-
-    // Pointer back to the original profile.
-    Profile* profile_;
-
-    DISALLOW_COPY_AND_ASSIGN(HTMLSource);
-  };
+  void OnHideWebStoreIconChanged();
 
   Profile* GetProfile() const;
+  PrefChangeRegistrar pref_change_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(AppLauncherPageUI);
 };

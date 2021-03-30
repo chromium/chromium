@@ -18,6 +18,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/abseil_string_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -48,6 +49,7 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socket.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/spdy/alps_decoder.h"
 #include "net/spdy/header_coalescer.h"
 #include "net/spdy/spdy_buffer_producer.h"
 #include "net/spdy/spdy_http_utils.h"
@@ -121,6 +123,16 @@ enum PushedStreamVaryResponseHeaderValues {
   kVaryHasNoAcceptEncoding = 5,
   // The number of entries above.
   kNumberOfVaryEntries = 6
+};
+
+// These values are persisted to logs. Entries should not be renumbered, and
+// numeric values should never be reused.
+enum class SpdyAcceptChEntries {
+  kNoEntries = 0,
+  kOnlyValidEntries = 1,
+  kOnlyInvalidEntries = 2,
+  kBothValidAndInvalidEntries = 3,
+  kMaxValue = kBothValidAndInvalidEntries,
 };
 
 // String literals for parsing the Vary header in a pushed response.
@@ -221,6 +233,10 @@ bool IsPushEnabled(const spdy::SettingsMap& initial_settings) {
     return true;
 
   return it->second == 1;
+}
+
+void LogSpdyAcceptChForOriginHistogram(bool value) {
+  base::UmaHistogramBoolean("Net.SpdySession.AcceptChForOrigin", value);
 }
 
 base::Value NetLogSpdyHeadersSentParams(const spdy::Http2HeaderBlock* headers,
@@ -926,6 +942,7 @@ SpdySession::SpdySession(
     const base::Optional<SpdySessionPool::GreasedHttp2Frame>&
         greased_http2_frame,
     bool http2_end_stream_with_data_frame,
+    bool enable_priority_update,
     TimeFunc time_func,
     ServerPushDelegate* push_delegate,
     NetworkQualityEstimator* network_quality_estimator,
@@ -953,6 +970,9 @@ SpdySession::SpdySession(
       initial_settings_(initial_settings),
       greased_http2_frame_(greased_http2_frame),
       http2_end_stream_with_data_frame_(http2_end_stream_with_data_frame),
+      enable_priority_update_(enable_priority_update),
+      deprecate_http2_priorities_(false),
+      settings_frame_received_(false),
       in_confirm_handshake_(false),
       max_concurrent_streams_(kInitialMaxConcurrentStreams),
       max_concurrent_pushed_streams_(
@@ -1112,6 +1132,73 @@ void SpdySession::InitializeWithSocket(
   InitializeInternal(pool);
 }
 
+int SpdySession::ParseAlps() {
+  auto alps_data = socket_->GetPeerApplicationSettings();
+  if (!alps_data) {
+    return OK;
+  }
+
+  AlpsDecoder alps_decoder;
+  AlpsDecoder::Error error = alps_decoder.Decode(alps_data.value());
+  base::UmaHistogramEnumeration("Net.SpdySession.AlpsDecoderStatus", error);
+  if (error != AlpsDecoder::Error::kNoError) {
+    DoDrainSession(
+        ERR_HTTP2_PROTOCOL_ERROR,
+        base::StrCat({"Error parsing ALPS: ",
+                      base::NumberToString(static_cast<int>(error))}));
+    return ERR_HTTP2_PROTOCOL_ERROR;
+  }
+
+  base::UmaHistogramCounts100("Net.SpdySession.AlpsSettingParameterCount",
+                              alps_decoder.GetSettings().size());
+  for (const auto& setting : alps_decoder.GetSettings()) {
+    spdy::SpdySettingsId identifier = setting.first;
+    uint32_t value = setting.second;
+    net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_SETTING, [&] {
+      return NetLogSpdyRecvSettingParams(identifier, value);
+    });
+    HandleSetting(identifier, value);
+  }
+
+  bool has_valid_entry = false;
+  bool has_invalid_entry = false;
+  for (const auto& entry : alps_decoder.GetAcceptCh()) {
+    // |entry.origin| must be a valid origin.
+    GURL url(entry.origin);
+    if (!url.is_valid()) {
+      has_invalid_entry = true;
+      continue;
+    }
+    const url::Origin origin = url::Origin::Create(url);
+    std::string serialized = origin.Serialize();
+    if (serialized.empty() || entry.origin != serialized) {
+      has_invalid_entry = true;
+      continue;
+    }
+    has_valid_entry = true;
+    accept_ch_entries_received_via_alps_.insert(
+        std::make_pair(std::move(origin), entry.value));
+  }
+
+  SpdyAcceptChEntries value;
+  if (has_valid_entry) {
+    if (has_invalid_entry) {
+      value = SpdyAcceptChEntries::kBothValidAndInvalidEntries;
+    } else {
+      value = SpdyAcceptChEntries::kOnlyValidEntries;
+    }
+  } else {
+    if (has_invalid_entry) {
+      value = SpdyAcceptChEntries::kOnlyInvalidEntries;
+    } else {
+      value = SpdyAcceptChEntries::kNoEntries;
+    }
+  }
+  base::UmaHistogramEnumeration("Net.SpdySession.AlpsAcceptChEntries", value);
+
+  return OK;
+}
+
 bool SpdySession::VerifyDomainAuthentication(const std::string& domain) const {
   if (availability_state_ == STATE_DRAINING)
     return false;
@@ -1156,6 +1243,18 @@ void SpdySession::EnqueueGreasedFrame(const base::WeakPtr<SpdyStream>& stream) {
       std::make_unique<GreasedBufferProducer>(
           stream, &greased_http2_frame_.value(), buffered_spdy_framer_.get()),
       stream, stream->traffic_annotation());
+}
+
+bool SpdySession::ShouldSendHttp2Priority() const {
+  return !enable_priority_update_ || !deprecate_http2_priorities_;
+}
+
+bool SpdySession::ShouldSendPriorityUpdate() const {
+  if (!enable_priority_update_) {
+    return false;
+  }
+
+  return settings_frame_received_ ? deprecate_http2_priorities_ : true;
 }
 
 int SpdySession::ConfirmHandshake(CompletionOnceCallback callback) {
@@ -1408,6 +1507,18 @@ bool SpdySession::GetRemoteEndpoint(IPEndPoint* endpoint) {
 
 bool SpdySession::GetSSLInfo(SSLInfo* ssl_info) const {
   return socket_->GetSSLInfo(ssl_info);
+}
+
+base::StringPiece SpdySession::GetAcceptChViaAlpsForOrigin(
+    const url::Origin& origin) const {
+  auto it = accept_ch_entries_received_via_alps_.find(origin);
+  if (it == accept_ch_entries_received_via_alps_.end()) {
+    LogSpdyAcceptChForOriginHistogram(false);
+    return {};
+  }
+
+  LogSpdyAcceptChForOriginHistogram(true);
+  return it->second;
 }
 
 bool SpdySession::WasAlpnNegotiated() const {
@@ -2663,6 +2774,26 @@ void SpdySession::HandleSetting(uint32_t id, uint32_t value) {
         support_websocket_ = true;
       }
       break;
+    case spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES:
+      if (value != 0 && value != 1) {
+        DoDrainSession(
+            ERR_HTTP2_PROTOCOL_ERROR,
+            "Invalid value for spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES.");
+        return;
+      }
+      if (settings_frame_received_) {
+        if (value != (deprecate_http2_priorities_ ? 1 : 0)) {
+          DoDrainSession(ERR_HTTP2_PROTOCOL_ERROR,
+                         "spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES value "
+                         "changed after first SETTINGS frame.");
+          return;
+        }
+      } else {
+        if (value == 1) {
+          deprecate_http2_priorities_ = true;
+        }
+      }
+      break;
   }
 }
 
@@ -3307,6 +3438,10 @@ void SpdySession::OnSetting(spdy::SpdySettingsId id, uint32_t value) {
   // Log the setting.
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_SETTING,
                     [&] { return NetLogSpdyRecvSettingParams(id, value); });
+}
+
+void SpdySession::OnSettingsEnd() {
+  settings_frame_received_ = true;
 }
 
 void SpdySession::OnWindowUpdate(spdy::SpdyStreamId stream_id,

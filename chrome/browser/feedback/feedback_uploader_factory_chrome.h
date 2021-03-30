@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_FEEDBACK_FEEDBACK_UPLOADER_FACTORY_CHROME_H_
 
 #include "base/macros.h"
-#include "components/feedback/feedback_uploader_factory.h"
+#include "components/feedback/content/feedback_uploader_factory.h"
 
 namespace feedback {
 

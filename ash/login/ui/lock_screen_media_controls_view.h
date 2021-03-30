@@ -41,7 +41,7 @@ class ASH_EXPORT LockScreenMediaControlsView
     : public views::View,
       public media_session::mojom::MediaControllerObserver,
       public media_session::mojom::MediaControllerImageObserver,
-      public base::PowerObserver,
+      public base::PowerSuspendObserver,
       public ui::ImplicitAnimationObserver {
  public:
   METADATA_HEADER(LockScreenMediaControlsView);
@@ -106,6 +106,7 @@ class ASH_EXPORT LockScreenMediaControlsView
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnThemeChanged() override;
 
   // media_session::mojom::MediaControllerObserver:
   void MediaSessionInfoChanged(
@@ -131,7 +132,7 @@ class ASH_EXPORT LockScreenMediaControlsView
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // base::PowerObserver:
+  // base::PowerSuspendObserver:
   void OnSuspend() override;
 
   void ButtonPressed(media_session::mojom::MediaSessionAction action);
@@ -197,6 +198,8 @@ class ASH_EXPORT LockScreenMediaControlsView
   // Animates |contents_view_| to its original position.
   void RunResetControlsAnimation();
 
+  void UpdateColors();
+
   // Used to control the active session.
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
 
@@ -230,7 +233,7 @@ class ASH_EXPORT LockScreenMediaControlsView
 
   // Caches the text to be read by screen readers describing the media controls
   // view.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;

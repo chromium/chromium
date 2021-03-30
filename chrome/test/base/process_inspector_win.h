@@ -8,8 +8,7 @@
 #include <windows.h>
 
 #include <memory>
-
-#include "base/strings/string16.h"
+#include <string>
 
 namespace base {
 class Process;
@@ -31,7 +30,7 @@ class ProcessInspector {
   virtual DWORD GetParentPid() const = 0;
 
   // Returns the command line of the process.
-  virtual const base::string16& command_line() const = 0;
+  virtual const std::wstring& command_line() const = 0;
 
  protected:
   ProcessInspector() = default;

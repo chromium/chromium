@@ -168,8 +168,8 @@ void IndexedDBCursor::Continue(
       task_type_,
       BindWeakOperation<IndexedDBCursor>(
           &IndexedDBCursor::CursorContinueOperation, ptr_factory_.GetWeakPtr(),
-          std::move(dispatcher_host), base::Passed(&key),
-          base::Passed(&primary_key), std::move(aborting_callback)));
+          std::move(dispatcher_host), std::move(key), std::move(primary_key),
+          std::move(aborting_callback)));
 }
 
 leveldb::Status IndexedDBCursor::CursorContinueOperation(

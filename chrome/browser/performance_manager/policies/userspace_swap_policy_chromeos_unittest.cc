@@ -10,6 +10,7 @@
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/common/performance_manager/mojom/tcmalloc.mojom.h"
 #include "chromeos/memory/userspace_swap/userspace_swap.h"
+#include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -65,10 +66,6 @@ class MockUserspaceSwapPolicy : public UserspaceSwapPolicy {
     return UserspaceSwapPolicy::SwapNodesOnGraph();
   }
 
-  base::MemoryPressureListener& listener() {
-    return memory_pressure_listener_.value();
-  }
-
   base::TimeTicks get_last_graph_walk() { return last_graph_walk_; }
   void set_last_graph_walk(base::TimeTicks t) { last_graph_walk_ = t; }
 
@@ -114,6 +111,8 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
     page_node_ = CreateNode<PageNodeImpl>();
     frame_node_ =
         graph()->CreateFrameNodeAutoId(process_node().get(), page_node().get());
+    system_node_ = std::make_unique<TestNodeWrapper<SystemNodeImpl>>(
+        TestNodeWrapper<SystemNodeImpl>::Create(graph()));
   }
 
   void AttachProcess() {
@@ -128,6 +127,7 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
     frame_node_.reset();
     page_node_.reset();
     process_node_.reset();
+    system_node_.reset();
     graph_.TearDown();
   }
 
@@ -153,6 +153,9 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
   TestNodeWrapper<ProcessNodeImpl>& process_node() { return process_node_; }
   TestNodeWrapper<PageNodeImpl>& page_node() { return page_node_; }
   TestNodeWrapper<FrameNodeImpl>& frame_node() { return frame_node_; }
+  TestNodeWrapper<SystemNodeImpl>& system_node() {
+    return *(system_node_.get());
+  }
 
   void FastForwardBy(base::TimeDelta delta) {
     browser_env()->FastForwardBy(delta);
@@ -168,6 +171,7 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
   TestNodeWrapper<ProcessNodeImpl> process_node_;
   TestNodeWrapper<PageNodeImpl> page_node_;
   TestNodeWrapper<FrameNodeImpl> frame_node_;
+  std::unique_ptr<TestNodeWrapper<SystemNodeImpl>> system_node_;
 
   DISALLOW_COPY_AND_ASSIGN(UserspaceSwapPolicyTest);
 };
@@ -211,7 +215,7 @@ TEST_F(UserspaceSwapPolicyTest, ValidateGraphWalkFrequencyModeratePressure) {
 
   // Triger memory pressure and we should observe the walk since we've never
   // walked before.
-  policy()->listener().SimulatePressureNotification(
+  system_node()->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   auto initial_walk_time = base::TimeTicks::Now();
   FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -221,7 +225,7 @@ TEST_F(UserspaceSwapPolicyTest, ValidateGraphWalkFrequencyModeratePressure) {
   // don't walk again even when we receive another moderate pressure
   // notification.
   FastForwardBy(base::TimeDelta::FromSeconds(1));
-  policy()->listener().SimulatePressureNotification(
+  system_node()->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   // Since it's been less than the graph walk frequency we don't expect to walk.
   ASSERT_EQ(initial_walk_time, policy()->get_last_graph_walk());
@@ -229,7 +233,7 @@ TEST_F(UserspaceSwapPolicyTest, ValidateGraphWalkFrequencyModeratePressure) {
   // Finally we will advance by a graph walk frequency and confirm we walk
   // again.
   FastForwardBy(policy()->config().graph_walk_frequency);
-  policy()->listener().SimulatePressureNotification(
+  system_node()->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -254,7 +258,7 @@ TEST_F(UserspaceSwapPolicyTest, OnlySwapWhenEligibleToSwap) {
   EXPECT_CALL(*policy(), SwapProcessNode(process_node().get())).Times(0);
 
   // Trigger moderate memory pressure to start the graph walk.
-  policy()->listener().SimulatePressureNotification(
+  system_node()->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
@@ -274,7 +278,7 @@ TEST_F(UserspaceSwapPolicyTest, OnlySwapWhenEligibleToSwapTrue) {
   EXPECT_CALL(*policy(), SwapProcessNode(process_node().get())).Times(1);
 
   // Trigger moderate memory pressure to start the graph walk.
-  policy()->listener().SimulatePressureNotification(
+  system_node()->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
@@ -382,7 +386,7 @@ TEST_F(UserspaceSwapPolicyTest, ValidateProcessSwapFrequency) {
   // swap.
   for (int i = 0; i < 3; ++i) {
     FastForwardBy(policy()->config().graph_walk_frequency);
-    policy()->listener().SimulatePressureNotification(
+    system_node()->OnMemoryPressureForTesting(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   }
 }

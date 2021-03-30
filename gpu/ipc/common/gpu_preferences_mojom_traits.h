@@ -195,7 +195,7 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
     out->enable_native_gpu_memory_buffers =
         prefs.enable_native_gpu_memory_buffers();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     out->enable_chromeos_direct_video_decoder =
         prefs.enable_chromeos_direct_video_decoder();
 #endif
@@ -397,7 +397,7 @@ struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
       const gpu::GpuPreferences& prefs) {
     return prefs.enable_native_gpu_memory_buffers;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   static bool enable_chromeos_direct_video_decoder(
       const gpu::GpuPreferences& prefs) {
     return prefs.enable_chromeos_direct_video_decoder;

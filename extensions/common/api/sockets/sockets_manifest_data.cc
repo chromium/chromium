@@ -39,7 +39,7 @@ bool SocketsManifestData::CheckRequest(
 // static
 std::unique_ptr<SocketsManifestData> SocketsManifestData::FromValue(
     const base::Value& value,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<SocketsManifestPermission> permission =
       SocketsManifestPermission::FromValue(value, error);
   if (!permission)

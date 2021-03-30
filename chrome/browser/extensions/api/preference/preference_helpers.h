@@ -9,6 +9,7 @@
 
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_scope.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 
 class Profile;
@@ -40,7 +41,7 @@ void DispatchEventToExtensions(Profile* profile,
                                events::HistogramValue histogram_value,
                                const std::string& event_name,
                                base::ListValue* args,
-                               extensions::APIPermission::ID permission,
+                               mojom::APIPermissionID permission,
                                bool incognito,
                                const std::string& browser_pref);
 

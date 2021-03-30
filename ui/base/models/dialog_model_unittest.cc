@@ -21,7 +21,7 @@ TEST_F(DialogModelButtonTest, UsesParamsUniqueId) {
   // are supported.
   std::unique_ptr<DialogModel> model =
       DialogModel::Builder()
-          .AddOkButton(base::OnceClosure(), base::string16(),
+          .AddOkButton(base::OnceClosure(), std::u16string(),
                        DialogModelButton::Params().SetUniqueId(kUniqueId))
           .Build();
   EXPECT_EQ(kUniqueId,
@@ -36,7 +36,7 @@ TEST_F(DialogModelButtonTest, UsesParamsAccelerators) {
   // are supported.
   std::unique_ptr<DialogModel> model =
       DialogModel::Builder()
-          .AddOkButton(base::OnceClosure(), base::string16(),
+          .AddOkButton(base::OnceClosure(), std::u16string(),
                        DialogModelButton::Params()
                            .AddAccelerator(accelerator_1)
                            .AddAccelerator(accelerator_2))
@@ -58,7 +58,7 @@ TEST_F(DialogModelButtonTest, UsesCallback) {
                 ++callback_count;
                 last_event = std::make_unique<KeyEvent>(*event.AsKeyEvent());
               }),
-              base::string16())
+              std::u16string())
           .Build();
   DialogModelButton* const button =
       model->extra_button(TestDialogModelHost::GetPassKey());
@@ -92,7 +92,7 @@ class DialogModelDialogButtonTest : public testing::Test {
         &callback_called);
 
     // Label to verify the second parameter.
-    base::string16 label = base::ASCIIToUTF16("my cool button");
+    std::u16string label = u"my cool button";
 
     // The presence of an accelerator in |params| will be used to verify that
     // |params| are forwarded correctly to the DialogModelButton constructor.

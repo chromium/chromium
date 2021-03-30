@@ -99,9 +99,10 @@ TEST_P(StoreMetricsReporterTestWithParams, StoreDependentMetrics) {
   const bool is_under_advanced_protection = std::get<1>(GetParam());
 
   auto store = base::MakeRefCounted<MockPasswordStore>();
-  const auto sync_state = syncing_with_passphrase
-                              ? password_manager::SYNCING_WITH_CUSTOM_PASSPHRASE
-                              : password_manager::SYNCING_NORMAL_ENCRYPTION;
+  const auto sync_state =
+      syncing_with_passphrase
+          ? password_manager::SyncState::kSyncingWithCustomPassphrase
+          : password_manager::SyncState::kSyncingNormalEncryption;
   EXPECT_CALL(client_, GetPasswordSyncState())
       .WillRepeatedly(Return(sync_state));
   EXPECT_CALL(client_, GetProfilePasswordStore())
@@ -129,8 +130,8 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   account_store->Init(&prefs_);
 
   EXPECT_CALL(client_, GetPasswordSyncState())
-      .WillRepeatedly(
-          Return(password_manager::ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION));
+      .WillRepeatedly(Return(password_manager::SyncState::
+                                 kAccountPasswordsActiveNormalEncryption));
   EXPECT_CALL(client_, IsUnderAdvancedProtection())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(client_, GetProfilePasswordStore())

@@ -170,11 +170,13 @@ void WebOTPService::Receive(ReceiveCallback callback) {
   fetcher_->Subscribe(origin_list_, this, render_frame_host());
 }
 
-void WebOTPService::OnReceive(const std::string& one_time_code,
+void WebOTPService::OnReceive(const OriginList& origin_list,
+                              const std::string& one_time_code,
                               UserConsent consent_requirement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!one_time_code_);
   DCHECK(!start_time_.is_null());
+  DCHECK(!origin_list.empty());
 
   receive_time_ = base::TimeTicks::Now();
   RecordSmsReceiveTime(receive_time_ - start_time_,
@@ -231,6 +233,7 @@ void WebOTPService::OnFailure(FailureType failure_type) {
     case FailureType::kPromptTimeout:
     case FailureType::kPromptCancelled:
     case FailureType::kBackendNotAvailable:
+    case FailureType::kNoFailure:
       NOTREACHED();
       break;
   }
@@ -246,15 +249,12 @@ void WebOTPService::Abort() {
 void WebOTPService::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
   switch (load_details.type) {
-    case NavigationType::NAVIGATION_TYPE_NEW_PAGE:
+    case NavigationType::NAVIGATION_TYPE_NEW_ENTRY:
       RecordDestroyedReason(WebOTPServiceDestroyedReason::kNavigateNewPage);
       break;
-    case NavigationType::NAVIGATION_TYPE_EXISTING_PAGE:
+    case NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY:
       RecordDestroyedReason(
           WebOTPServiceDestroyedReason::kNavigateExistingPage);
-      break;
-    case NavigationType::NAVIGATION_TYPE_SAME_PAGE:
-      RecordDestroyedReason(WebOTPServiceDestroyedReason::kNavigateSamePage);
       break;
     default:
       // Ignore cases we don't care about.
@@ -265,7 +265,6 @@ void WebOTPService::NavigationEntryCommitted(
 void WebOTPService::CompleteRequest(blink::mojom::SmsStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RecordMetrics(status);
   base::Optional<std::string> code = base::nullopt;
   if (status == SmsStatus::kSuccess) {
     DCHECK(one_time_code_);
@@ -273,6 +272,7 @@ void WebOTPService::CompleteRequest(blink::mojom::SmsStatus status) {
   }
 
   if (callback_) {
+    RecordMetrics(status);
     std::move(callback_).Run(status, code);
   }
 
@@ -305,12 +305,8 @@ UserConsentHandler* WebOTPService::CreateConsentHandler(
     return consent_handler_for_test_;
 
   if (consent_requirement == UserConsent::kNotObtained) {
-    // If WebOTP is used in a cross-origin iframe then the first origin in the
-    // list is the one who calls the WebOTP API. We show it to users in the
-    // prompt to make sure that they are aware of which frame / origin they are
-    // granting OTP access.
     consent_handler_ = std::make_unique<PromptBasedUserConsentHandler>(
-        render_frame_host(), origin_list_[0]);
+        render_frame_host(), origin_list_);
   } else {
     consent_handler_ = std::make_unique<NoopUserConsentHandler>();
   }

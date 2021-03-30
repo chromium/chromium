@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -96,8 +95,9 @@ class DialogClientViewTest : public test::WidgetTest,
     DialogModelChanged();
   }
 
-  void SetDialogButtonLabel(ui::DialogButton button, const std::string& label) {
-    DialogDelegate::SetButtonLabel(button, base::UTF8ToUTF16(label));
+  void SetDialogButtonLabel(ui::DialogButton button,
+                            const std::u16string& label) {
+    DialogDelegate::SetButtonLabel(button, label);
     DialogModelChanged();
   }
 
@@ -130,12 +130,12 @@ class DialogClientViewTest : public test::WidgetTest,
   // exceeded. The resulting width is around 160 pixels, but depends on system
   // fonts.
   void SetLongCancelLabel() {
-    DialogDelegate::SetButtonLabel(
-        ui::DIALOG_BUTTON_CANCEL, base::ASCIIToUTF16("Cancel Cancel Cancel"));
+    DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                                   u"Cancel Cancel Cancel");
     DialogModelChanged();
   }
 
-  Button* GetButtonByAccessibleName(View* root, const base::string16& name) {
+  Button* GetButtonByAccessibleName(View* root, const std::u16string& name) {
     Button* button = Button::AsButton(root);
     if (button && button->GetAccessibleName() == name)
       return button;
@@ -147,9 +147,8 @@ class DialogClientViewTest : public test::WidgetTest,
     return nullptr;
   }
 
-  Button* GetButtonByAccessibleName(const std::string& label) {
-    return GetButtonByAccessibleName(widget_->GetRootView(),
-                                     base::UTF8ToUTF16(label));
+  Button* GetButtonByAccessibleName(const std::u16string& name) {
+    return GetButtonByAccessibleName(widget_->GetRootView(), name);
   }
 
   DialogClientView* client_view() {
@@ -399,7 +398,7 @@ TEST_F(DialogClientViewTest, LinkedWidthDoesLink) {
 
   // The extra view should also match, if it's a matching button type.
   View* extra_button = SetExtraView(std::make_unique<LabelButton>(
-      Button::PressedCallback(), base::string16()));
+      Button::PressedCallback(), std::u16string()));
   CheckContentsIsSetToPreferredSize();
   EXPECT_EQ(cancel_button_width, extra_button->width());
 }
@@ -444,7 +443,7 @@ TEST_F(DialogClientViewTest, LinkedWidthDoesntLink) {
 
   // Checkbox extends LabelButton, but it should not participate in linking.
   View* extra_button =
-      SetExtraView(std::make_unique<Checkbox>(base::string16()));
+      SetExtraView(std::make_unique<Checkbox>(std::u16string()));
   CheckContentsIsSetToPreferredSize();
   EXPECT_NE(cancel_button_width, extra_button->width());
 }
@@ -580,16 +579,16 @@ TEST_F(DialogClientViewTest, ButtonLayoutWithExtra) {
   // Note that cancel & ok may swap order depending on
   // PlatformStyle::kIsOkButtonLeading; these invariants hold for either order.
   SetDialogButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  SetDialogButtonLabel(ui::DIALOG_BUTTON_OK, "ok");
-  SetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL, "cancel");
-  SetExtraView(std::make_unique<LabelButton>(Button::PressedCallback(),
-                                             base::UTF8ToUTF16("extra")));
+  SetDialogButtonLabel(ui::DIALOG_BUTTON_OK, u"ok");
+  SetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL, u"cancel");
+  SetExtraView(
+      std::make_unique<LabelButton>(Button::PressedCallback(), u"extra"));
 
   widget()->Show();
 
-  Button* ok = GetButtonByAccessibleName("ok");
-  Button* cancel = GetButtonByAccessibleName("cancel");
-  Button* extra = GetButtonByAccessibleName("extra");
+  Button* ok = GetButtonByAccessibleName(u"ok");
+  Button* cancel = GetButtonByAccessibleName(u"cancel");
+  Button* extra = GetButtonByAccessibleName(u"extra");
 
   ASSERT_NE(ok, cancel);
   ASSERT_NE(ok, extra);

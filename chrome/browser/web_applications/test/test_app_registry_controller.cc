@@ -20,10 +20,14 @@ void TestAppRegistryController::SetAppUserDisplayMode(const AppId& app_id,
 
 void TestAppRegistryController::SetAppIsDisabled(const AppId& app_id,
                                                  bool is_disabled) {}
+void TestAppRegistryController::UpdateAppsDisableMode() {}
 
 void TestAppRegistryController::SetAppIsLocallyInstalled(
     const AppId& app_id,
     bool is_locally_installed) {}
+
+void TestAppRegistryController::SetAppLastBadgingTime(const AppId& app_id,
+                                                      const base::Time& time) {}
 
 void TestAppRegistryController::SetAppLastLaunchTime(const AppId& app_id,
                                                      const base::Time& time) {}

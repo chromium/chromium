@@ -54,6 +54,8 @@ std::string GetHistogramSuffixForSafetyTipStatus(
       return "SafetyTip_BadReputationIgnored";
     case security_state::SafetyTipStatus::kLookalikeIgnored:
       return "SafetyTip_LookalikeIgnored";
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
+      return "SafetyTip_DigitalAssetLinkMatch";
     case security_state::SafetyTipStatus::kBadKeyword:
       return "SafetyTip_BadKeyword";
   }
@@ -79,6 +81,7 @@ bool ShouldSetSecurityLevelFromSafetyTip(security_state::SafetyTipStatus status,
     case security_state::SafetyTipStatus::kBadKeyword:
       // TODO(crbug/1012982): Decide whether to degrade the indicator once the
       // UI lands.
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kUnknown:
     case security_state::SafetyTipStatus::kNone:
       return false;
@@ -163,14 +166,6 @@ SecurityLevel GetSecurityLevel(
     return NONE;
   }
 
-  // Downgrade the security level for pages loaded over legacy TLS versions.
-  if (base::FeatureList::IsEnabled(
-          security_state::features::kLegacyTLSWarnings) &&
-      visible_security_state.connection_used_legacy_tls &&
-      !visible_security_state.should_suppress_legacy_tls_warning) {
-    return WARNING;
-  }
-
   // Downgrade the security level for pages that trigger a Safety Tip.
   SecurityLevel safety_tip_level;
   if (ShouldSetSecurityLevelFromSafetyTip(
@@ -245,8 +240,6 @@ VisibleSecurityState::VisibleSecurityState()
       is_view_source(false),
       is_devtools(false),
       is_reader_mode(false),
-      connection_used_legacy_tls(false),
-      should_suppress_legacy_tls_warning(false),
       should_treat_displayed_mixed_forms_as_secure(false) {}
 
 VisibleSecurityState::VisibleSecurityState(const VisibleSecurityState& other) =
@@ -278,22 +271,6 @@ std::string GetSecurityLevelHistogramName(
 std::string GetSafetyTipHistogramName(const std::string& prefix,
                                       SafetyTipStatus safety_tip_status) {
   return prefix + "." + GetHistogramSuffixForSafetyTipStatus(safety_tip_status);
-}
-
-bool GetLegacyTLSWarningStatus(
-    const VisibleSecurityState& visible_security_state) {
-  return visible_security_state.connection_used_legacy_tls &&
-         !visible_security_state.should_suppress_legacy_tls_warning;
-}
-
-std::string GetLegacyTLSHistogramName(
-    const std::string& prefix,
-    const VisibleSecurityState& visible_security_state) {
-  if (GetLegacyTLSWarningStatus(visible_security_state)) {
-    return prefix + "." + "LegacyTLS_Triggered";
-  } else {
-    return prefix + "." + "LegacyTLS_NotTriggered";
-  }
 }
 
 bool IsSHA1InChain(const VisibleSecurityState& visible_security_state) {

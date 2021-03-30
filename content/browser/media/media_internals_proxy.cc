@@ -60,7 +60,7 @@ void MediaInternalsProxy::GetEverythingOnIOThread() {
 // static
 void MediaInternalsProxy::UpdateUIOnUIThread(
     MediaInternalsMessageHandler* handler,
-    const base::string16& update) {
+    const std::u16string& update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   handler->OnUpdate(update);
 }

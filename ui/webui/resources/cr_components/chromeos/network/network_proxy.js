@@ -75,6 +75,15 @@ Polymer({
       value: ['Direct', 'PAC', 'WPAD', 'Manual'],
       readOnly: true
     },
+
+    /**
+     * The current value of the proxy exclusion input.
+     * @private
+     */
+    proxyExclusionInputValue_: {
+      type: String,
+      value: '',
+    },
   },
 
   /**
@@ -439,13 +448,11 @@ Polymer({
 
   /** @private */
   onAddProxyExclusionTap_() {
-    const value = this.$.proxyExclusion.value;
-    if (!value) {
-      return;
-    }
-    this.push('proxy_.excludeDomains.activeValue', value);
+    assert(this.proxyExclusionInputValue_);
+    this.push(
+        'proxy_.excludeDomains.activeValue', this.proxyExclusionInputValue_);
     // Clear input.
-    this.$.proxyExclusion.value = '';
+    this.proxyExclusionInputValue_ = '';
     this.proxyIsUserModified_ = true;
   },
 
@@ -459,6 +466,15 @@ Polymer({
     }
     event.stopPropagation();
     this.onAddProxyExclusionTap_();
+  },
+
+  /**
+   * @param {string} proxyExclusionInputValue
+   * @return {boolean}
+   * @private
+   */
+  shouldProxyExclusionButtonBeDisabled_(proxyExclusionInputValue) {
+    return !proxyExclusionInputValue;
   },
 
   /**

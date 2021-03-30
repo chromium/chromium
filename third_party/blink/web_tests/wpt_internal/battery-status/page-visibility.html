@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockBatteryMonitor} from './resources/mock-battery-monitor.js';
+
+const mock = new MockBatteryMonitor();
+
+function setMainWindowHidden(hidden) {
+  return new Promise(resolve => {
+    document.addEventListener('visibilitychange', resolve, {once: true});
+    testRunner.setMainWindowHidden(hidden);
+  });
+}
+
+promise_test(async _ => {
+  mock.setBatteryStatus(false, 10, 20, 0.5);
+  const battery = await navigator.getBattery();
+
+  mock.verifyBatteryStatus(battery);
+
+  const fail = () => { throw new Error('unexpected levelchange event'); };
+  battery.addEventListener('levelchange', fail);
+  await setMainWindowHidden(true);
+  mock.setBatteryStatus(false, 10, 20, 0.55);
+  battery.removeEventListener('levelchange', fail);
+
+  const change =
+      new Promise(resolve => battery.addEventListener('levelchange', resolve));
+  await setMainWindowHidden(false);
+  mock.setBatteryStatus(false, 10, 20, 0.6);
+  await change;
+
+  mock.verifyBatteryStatus(battery);
+}, 'battery status events only fire on visible pages');
+</script>
+</body>
+</html>

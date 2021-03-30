@@ -36,9 +36,10 @@ ACTION_P(VerifyNotOn, task_runner) {
 class MockOffloadableVideoDecoder : public OffloadableVideoDecoder {
  public:
   // OffloadableVideoDecoder implementation.
-  std::string GetDisplayName() const override {
-    return "MockOffloadableVideoDecoder";
+  VideoDecoderType GetDecoderType() const override {
+    return VideoDecoderType::kTesting;
   }
+
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
@@ -111,8 +112,8 @@ class OffloadingVideoDecoderTest : public testing::Test {
 
   void TestNoOffloading(const VideoDecoderConfig& config) {
     // Display name should be a simple passthrough.
-    EXPECT_EQ(offloading_decoder_->GetDisplayName(),
-              decoder_->GetDisplayName());
+    EXPECT_EQ(offloading_decoder_->GetDecoderType(),
+              decoder_->GetDecoderType());
 
     // When offloading decodes should not be parallelized.
     EXPECT_EQ(offloading_decoder_->GetMaxDecodeRequests(), 1);
@@ -147,8 +148,8 @@ class OffloadingVideoDecoderTest : public testing::Test {
 
   void TestOffloading(const VideoDecoderConfig& config, bool detach = false) {
     // Display name should be a simple passthrough.
-    EXPECT_EQ(offloading_decoder_->GetDisplayName(),
-              decoder_->GetDisplayName());
+    EXPECT_EQ(offloading_decoder_->GetDecoderType(),
+              decoder_->GetDecoderType());
 
     // Prior to Initialize() max decode requests is still 1.
     EXPECT_EQ(offloading_decoder_->GetMaxDecodeRequests(), 1);

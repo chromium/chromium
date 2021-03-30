@@ -157,5 +157,7 @@ HEADLESS_COMPOSITOR_TEST(RendererOpacityAnimation,
                          "sanity/renderer-opacity-animation.js")
 HEADLESS_COMPOSITOR_TEST(ScreenshotAfterMetricsOverride,
                          "sanity/screenshot-after-metrics-override.js")
+HEADLESS_COMPOSITOR_TEST(ScreenshotDeviceScaleFactor,
+                         "emulation/screenshot-device-scale-factor.js")
 
 }  // namespace headless

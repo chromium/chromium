@@ -17,21 +17,14 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
-
-namespace blink {
-namespace mojom {
-enum class ResourceType;
-}  // namespace mojom
-}  // namespace blink
 
 namespace content {
 class WebContents;
 }
 
 namespace safe_browsing {
-
-enum class ResourceType;
 
 class UrlCheckerDelegate;
 
@@ -43,7 +36,7 @@ class RealTimeUrlLookupServiceBase;
 // queries from the browser. In that case, the public methods are called
 // directly instead of through Mojo.
 //
-// To be considered "safe", a URL must not appear in the SafeBrowsing blacklists
+// To be considered "safe", a URL must not appear in the SafeBrowsing blocklists
 // (see SafeBrowsingService for details).
 //
 // Note that the SafeBrowsing check takes at most kCheckUrlTimeoutMs
@@ -79,7 +72,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   SafeBrowsingUrlCheckerImpl(
       const net::HttpRequestHeaders& headers,
       int load_flags,
-      blink::mojom::ResourceType resource_type,
+      network::mojom::RequestDestination request_destination,
       bool has_user_gesture,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&
@@ -89,11 +82,11 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       bool can_check_db,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui);
 
-  // Constructor that takes only a ResourceType, a UrlCheckerDelegate, and
+  // Constructor that takes only a RequestDestination, a UrlCheckerDelegate, and
   // real-time lookup-related arguments, omitting other arguments that never
   // have non-default values on iOS.
   SafeBrowsingUrlCheckerImpl(
-      ResourceType resource_type,
+      network::mojom::RequestDestination request_destination,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<web::WebState*()>& web_state_getter,
       bool real_time_lookup_enabled,
@@ -248,7 +241,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
 
   const net::HttpRequestHeaders headers_;
   const int load_flags_;
-  const ResourceType resource_type_;
+  const network::mojom::RequestDestination request_destination_;
   const bool has_user_gesture_;
   // TODO(crbug.com/1069047): |web_state_getter| is only used on iOS, and
   // |web_contents_getter| is used on all other platforms.  This class should

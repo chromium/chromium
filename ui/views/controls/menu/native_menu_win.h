@@ -6,10 +6,10 @@
 #define UI_VIEWS_CONTROLS_MENU_NATIVE_MENU_WIN_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
 
@@ -62,7 +62,7 @@ class VIEWS_EXPORT NativeMenuWin {
   // Sets the label of the item at the specified index.
   void SetMenuItemLabel(int menu_index,
                         int model_index,
-                        const base::string16& label);
+                        const std::u16string& label);
 
   // Updates the local data structure with the correctly formatted version of
   // |label| at the specified model_index, and adds string data to |mii| if
@@ -70,7 +70,7 @@ class VIEWS_EXPORT NativeMenuWin {
   // of the peculiarities of the Windows menu API.
   void UpdateMenuItemInfoForString(MENUITEMINFO* mii,
                                    int model_index,
-                                   const base::string16& label);
+                                   const std::u16string& label);
 
   // Resets the native menu stored in |menu_| by destroying any old menu then
   // creating a new empty one.
@@ -99,11 +99,6 @@ class VIEWS_EXPORT NativeMenuWin {
 
   // If we're a submenu, this is our parent.
   NativeMenuWin* parent_;
-
-  // If non-null the destructor sets this to true. This is set to non-null while
-  // the menu is showing. It is used to detect if the menu was deleted while
-  // running.
-  bool* destroyed_flag_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeMenuWin);
 };

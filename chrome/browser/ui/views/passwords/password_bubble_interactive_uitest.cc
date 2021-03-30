@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
   EXPECT_EQ(1, samples->GetCount(metrics_util::MANUAL_MANAGE_PASSWORDS));
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnClick) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnClick) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   EXPECT_FALSE(PasswordBubbleViewBase::manage_password_bubble()
@@ -238,7 +238,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnClick) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnEsc) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+                       DontCloseOnEscWithoutFocus) {
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
@@ -246,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnEsc) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnKey) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnKey) {
   content::WindowedNotificationObserver focus_observer(
       content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
       content::NotificationService::AllSources());
@@ -265,6 +266,14 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnKey) {
   EXPECT_TRUE(web_contents->IsFocusedElementEditable());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_K, false,
                                               false, false, false));
+  EXPECT_TRUE(IsBubbleShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnNavigation) {
+  SetupPendingPassword();
+  EXPECT_TRUE(IsBubbleShowing());
+  ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html;charset=utf-8,<body>Welcome!</body>"));
   EXPECT_TRUE(IsBubbleShowing());
 }
 
@@ -343,8 +352,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSignin) {
       &PasswordBubbleInteractiveUiTest::HandleRequest, base::Unretained(this)));
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
   test_form()->url = GURL("https://example.com");
-  test_form()->display_name = base::ASCIIToUTF16("Peter");
-  test_form()->username_value = base::ASCIIToUTF16("pet12@gmail.com");
+  test_form()->display_name = u"Peter";
+  test_form()->username_value = u"pet12@gmail.com";
   test_form()->icon_url = embedded_test_server()->GetURL("/icon.png");
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials;
@@ -369,8 +378,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSignin) {
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   test_form()->url = GURL("https://example.com");
-  test_form()->display_name = base::ASCIIToUTF16("Peter");
-  test_form()->username_value = base::ASCIIToUTF16("pet12@gmail.com");
+  test_form()->display_name = u"Peter";
+  test_form()->username_value = u"pet12@gmail.com";
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials;
   local_credentials.push_back(

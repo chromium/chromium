@@ -157,10 +157,10 @@ void PaymentRequestSpec::Retry(
   current_update_reason_ = UpdateReason::NONE;
 }
 
-base::string16 PaymentRequestSpec::GetShippingAddressError(
+std::u16string PaymentRequestSpec::GetShippingAddressError(
     autofill::ServerFieldType type) {
   if (!details_->shipping_address_errors)
-    return base::string16();
+    return std::u16string();
 
   if (type == autofill::ADDRESS_HOME_STREET_ADDRESS)
     return base::UTF8ToUTF16(details_->shipping_address_errors->address_line);
@@ -193,13 +193,13 @@ base::string16 PaymentRequestSpec::GetShippingAddressError(
   if (type == autofill::ADDRESS_HOME_SORTING_CODE)
     return base::UTF8ToUTF16(details_->shipping_address_errors->sorting_code);
 
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 PaymentRequestSpec::GetPayerError(
+std::u16string PaymentRequestSpec::GetPayerError(
     autofill::ServerFieldType type) {
   if (!payer_errors_)
-    return base::string16();
+    return std::u16string();
 
   if (type == autofill::EMAIL_ADDRESS)
     return base::UTF8ToUTF16(payer_errors_->email);
@@ -210,7 +210,7 @@ base::string16 PaymentRequestSpec::GetPayerError(
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER)
     return base::UTF8ToUTF16(payer_errors_->phone);
 
-  return base::string16();
+  return std::u16string();
 }
 
 bool PaymentRequestSpec::has_shipping_address_error() const {
@@ -296,7 +296,7 @@ bool PaymentRequestSpec::IsMethodSupportedThroughBasicCard(
   return basic_card_specified_networks_.count(method_name) > 0;
 }
 
-base::string16 PaymentRequestSpec::GetFormattedCurrencyAmount(
+std::u16string PaymentRequestSpec::GetFormattedCurrencyAmount(
     const mojom::PaymentCurrencyAmountPtr& currency_amount) {
   CurrencyFormatter* formatter =
       GetOrCreateCurrencyFormatter(currency_amount->currency, app_locale_);

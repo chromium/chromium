@@ -52,7 +52,7 @@ public class ServicificationBackgroundService extends ChromeBackgroundServiceImp
             }
         };
 
-        ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+        ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
         ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
     }
 

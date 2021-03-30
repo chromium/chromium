@@ -15,7 +15,7 @@ PendingCastComponent::PendingCastComponent(
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         controller_request,
     base::StringPiece app_id)
-    : delegate_(delegate), app_id_(app_id.as_string()) {
+    : delegate_(delegate), app_id_(app_id) {
   DCHECK(startup_context);
   DCHECK(controller_request);
 
@@ -34,7 +34,7 @@ PendingCastComponent::PendingCastComponent(
     delegate_->CancelPendingComponent(this);
   });
   application_config_manager_->GetConfig(
-      app_id.as_string(),
+      std::string(app_id),
       fit::bind_member(this,
                        &PendingCastComponent::OnApplicationConfigReceived));
 

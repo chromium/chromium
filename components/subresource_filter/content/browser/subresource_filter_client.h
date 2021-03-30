@@ -6,21 +6,14 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_CLIENT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
-#include "components/subresource_filter/core/common/activation_decision.h"
-#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
-
-namespace content {
-class NavigationHandle;
-}  // namespace content
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
 }
 
 namespace subresource_filter {
+
+class ProfileInteractionManager;
 
 class SubresourceFilterClient {
  public:
@@ -30,33 +23,18 @@ class SubresourceFilterClient {
   // blocked. This method will be called at most once per main-frame navigation.
   virtual void ShowNotification() = 0;
 
-  // Called when the activation decision is otherwise completely computed by the
-  // subresource filter. At this point, the embedder still has a chance to
-  // alter the effective activation. Returns the effective activation for this
-  // navigation.
-  //
-  // Note: |decision| is guaranteed to be non-nullptr, and can be modified by
-  // the embedder if any decision changes.
-  //
-  // Precondition: The navigation must be a main frame navigation.
-  virtual mojom::ActivationLevel OnPageActivationComputed(
-      content::NavigationHandle* navigation_handle,
-      mojom::ActivationLevel initial_activation_level,
-      subresource_filter::ActivationDecision* decision) = 0;
-
-  // Called on the subresource filter client when an ads violation is detected.
-  virtual void OnAdsViolationTriggered(
-      content::RenderFrameHost* rfh,
-      mojom::AdsViolation triggered_violation) = 0;
-
   // Returns the SafeBrowsingDatabaseManager instance associated with this
   // client, or null if there is no such instance.
   virtual const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() = 0;
 
-  // Invoked when the user has requested a reload of a page with blocked ads
-  // (e.g., via an infobar).
-  virtual void OnReloadRequested() = 0;
+  // Returns the ProfileInteractionManager instance associated with this
+  // client, or null if there is no such instance.
+  // TODO(crbug.com/1116095): Have ContentSubresourceFilterThrottleManager
+  // create and own this object internally once ChromeSubresourceFilterClient no
+  // longer calls into it, replacing this method with a getter for
+  // SubresourceFilterProfileContext.
+  virtual ProfileInteractionManager* GetProfileInteractionManager() = 0;
 };
 
 }  // namespace subresource_filter

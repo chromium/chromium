@@ -15,10 +15,6 @@ static_library("phonehub") {
     "browser_tabs_model_controller.h",
     "browser_tabs_model_provider.cc",
     "browser_tabs_model_provider.h",
-    "connection_manager.cc",
-    "connection_manager.h",
-    "connection_manager_impl.cc",
-    "connection_manager_impl.h",
     "connection_scheduler.h",
     "connection_scheduler_impl.cc",
     "connection_scheduler_impl.h",
@@ -59,10 +55,17 @@ static_library("phonehub") {
     "notification_access_manager_impl.h",
     "notification_access_setup_operation.cc",
     "notification_access_setup_operation.h",
+    "notification_click_handler.h",
+    "notification_interaction_handler.cc",
+    "notification_interaction_handler.h",
+    "notification_interaction_handler_impl.cc",
+    "notification_interaction_handler_impl.h",
     "notification_manager.cc",
     "notification_manager.h",
     "notification_manager_impl.cc",
     "notification_manager_impl.h",
+    "notification_processor.cc",
+    "notification_processor.h",
     "onboarding_ui_tracker.cc",
     "onboarding_ui_tracker.h",
     "onboarding_ui_tracker_impl.cc",
@@ -92,6 +95,7 @@ static_library("phonehub") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
@@ -99,6 +103,7 @@ static_library("phonehub") {
     "//chromeos/dbus/power",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/multidevice_setup/public/cpp",
+    "//chromeos/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/services/network_config",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/secure_channel/public/cpp/client",
@@ -108,6 +113,7 @@ static_library("phonehub") {
     "//components/session_manager/core",
     "//device/bluetooth",
     "//net",
+    "//services/data_decoder/public/cpp",
     "//ui/gfx",
     "//url",
   ]
@@ -128,6 +134,8 @@ static_library("debug") {
     "fake_find_my_device_controller.h",
     "fake_notification_access_manager.cc",
     "fake_notification_access_manager.h",
+    "fake_notification_interaction_handler.cc",
+    "fake_notification_interaction_handler.h",
     "fake_notification_manager.cc",
     "fake_notification_manager.h",
     "fake_onboarding_ui_tracker.cc",
@@ -142,7 +150,10 @@ static_library("debug") {
 
   public_deps = [ ":phonehub" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+  ]
 }
 
 static_library("test_support") {
@@ -153,8 +164,6 @@ static_library("test_support") {
     "fake_browser_tabs_metadata_fetcher.h",
     "fake_browser_tabs_model_provider.cc",
     "fake_browser_tabs_model_provider.h",
-    "fake_connection_manager.cc",
-    "fake_connection_manager.h",
     "fake_message_receiver.h",
     "fake_message_sender.cc",
     "fake_message_sender.h",
@@ -179,7 +188,6 @@ source_set("unit_tests") {
   sources = [
     "browser_tabs_model_controller_unittest.cc",
     "browser_tabs_model_unittest.cc",
-    "connection_manager_impl_unittest.cc",
     "connection_scheduler_impl_unittest.cc",
     "cros_state_sender_unittest.cc",
     "do_not_disturb_controller_impl_unittest.cc",
@@ -191,7 +199,9 @@ source_set("unit_tests") {
     "multidevice_setup_state_updater_unittest.cc",
     "mutable_phone_model_unittest.cc",
     "notification_access_manager_impl_unittest.cc",
+    "notification_interaction_handler_impl_unittest.cc",
     "notification_manager_impl_unittest.cc",
+    "notification_processor_unittest.cc",
     "onboarding_ui_tracker_impl_unittest.cc",
     "phone_status_model_unittest.cc",
     "phone_status_processor_unittest.cc",
@@ -214,6 +224,7 @@ source_set("unit_tests") {
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/device_sync/public/cpp:test_support",
     "//chromeos/services/multidevice_setup/public/cpp",
+    "//chromeos/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp:test_support",
@@ -223,5 +234,6 @@ source_set("unit_tests") {
     "//device/bluetooth:mocks",
     "//testing/gtest",
     "//ui/gfx",
+    "//ui/gfx:test_support",
   ]
 }

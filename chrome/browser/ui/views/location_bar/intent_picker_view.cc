@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace content {
 class WebContents;
@@ -35,7 +36,7 @@ IntentPickerView::~IntentPickerView() = default;
 void IntentPickerView::UpdateImpl() {
   bool was_visible = GetVisible();
 
-  SetVisible(ShouldShowIcon());
+  SetVisible(GetShowIcon());
 
   if (was_visible && !GetVisible())
     IntentPickerBubbleView::CloseCurrentBubble();
@@ -43,7 +44,7 @@ void IntentPickerView::UpdateImpl() {
 
 void IntentPickerView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  DCHECK(ShouldShowIcon());
+  DCHECK(GetShowIcon());
   content::WebContents* web_contents = GetWebContents();
   const GURL& url = chrome::GetURLToBookmark(web_contents);
   apps::ShowIntentPickerBubble(web_contents, url);
@@ -53,14 +54,8 @@ views::BubbleDialogDelegate* IntentPickerView::GetBubble() const {
   return IntentPickerBubbleView::intent_picker_bubble();
 }
 
-bool IntentPickerView::IsIncognitoMode() const {
-  DCHECK(browser_);
-
-  return browser_->profile()->IsOffTheRecord();
-}
-
-bool IntentPickerView::ShouldShowIcon() const {
-  if (IsIncognitoMode())
+bool IntentPickerView::GetShowIcon() const {
+  if (browser_->profile()->IsOffTheRecord())
     return false;
 
   content::WebContents* web_contents = GetWebContents();
@@ -69,21 +64,17 @@ bool IntentPickerView::ShouldShowIcon() const {
 
   IntentPickerTabHelper* tab_helper =
       IntentPickerTabHelper::FromWebContents(web_contents);
-
-  if (!tab_helper)
-    return false;
-
-  return tab_helper->should_show_icon();
+  return tab_helper && tab_helper->should_show_icon();
 }
 
 const gfx::VectorIcon& IntentPickerView::GetVectorIcon() const {
   return vector_icons::kOpenInNewIcon;
 }
 
-base::string16 IntentPickerView::GetTextForTooltipAndAccessibleName() const {
+std::u16string IntentPickerView::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringUTF16(IDS_TOOLTIP_INTENT_PICKER_ICON);
 }
 
-const char* IntentPickerView::GetClassName() const {
-  return "IntentPickerView";
-}
+BEGIN_METADATA(IntentPickerView, PageActionIconView)
+ADD_READONLY_PROPERTY_METADATA(bool, ShowIcon)
+END_METADATA

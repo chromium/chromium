@@ -16,6 +16,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -60,7 +61,7 @@ bool CrostiniAnsibleSoftwareConfigView::Accept() {
   return true;
 }
 
-base::string16 CrostiniAnsibleSoftwareConfigView::GetSubtextLabel() const {
+std::u16string CrostiniAnsibleSoftwareConfigView::GetSubtextLabel() const {
   switch (state_) {
     case State::CONFIGURING:
       return l10n_util::GetStringUTF16(
@@ -95,7 +96,7 @@ void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
-base::string16
+std::u16string
 CrostiniAnsibleSoftwareConfigView::GetSubtextLabelStringForTesting() {
   return subtext_label_->GetText();
 }
@@ -147,7 +148,7 @@ CrostiniAnsibleSoftwareConfigView::~CrostiniAnsibleSoftwareConfigView() {
 }
 
 // static
-base::string16 CrostiniAnsibleSoftwareConfigView::GetWindowTitleForState(
+std::u16string CrostiniAnsibleSoftwareConfigView::GetWindowTitleForState(
     State state) {
   switch (state) {
     case State::CONFIGURING:
@@ -182,3 +183,8 @@ void CrostiniAnsibleSoftwareConfigView::OnStateChanged() {
   if (GetWidget())
     GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
 }
+
+BEGIN_METADATA(CrostiniAnsibleSoftwareConfigView,
+               views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, SubtextLabel)
+END_METADATA

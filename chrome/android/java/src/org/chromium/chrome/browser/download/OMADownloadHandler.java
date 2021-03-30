@@ -48,7 +48,6 @@ import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
-import org.chromium.ui.UiUtils;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -298,8 +297,11 @@ public class OMADownloadHandler extends BroadcastReceiver {
                     if (fileDescriptor > 0) {
                         fd = ParcelFileDescriptor.fromFd(fileDescriptor);
                     }
-                } else {
+                } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     fd = manager.openDownloadedFile(mDownloadId);
+                } else {
+                    fd = ParcelFileDescriptor.open(new File(mDownloadInfo.getFilePath()),
+                            ParcelFileDescriptor.MODE_READ_ONLY);
                 }
                 if (fd != null) {
                     omaInfo = parseDownloadDescriptor(new FileInputStream(fd.getFileDescriptor()));
@@ -326,7 +328,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 OfflineContentAggregatorFactory.get().removeItem(mDownloadInfo.getContentId());
             } else {
                 DownloadManagerService.getDownloadManagerService().removeDownload(
-                        mDownloadInfo.getDownloadGuid(), mDownloadInfo.isOffTheRecord(),
+                        mDownloadInfo.getDownloadGuid(), mDownloadInfo.getOTRProfileId(),
                         false /* externallyRemoved */);
             }
 
@@ -578,7 +580,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 activity.startActivity(intent);
             }
         };
-        new UiUtils.CompatibleAlertDialogBuilder(activity)
+        new AlertDialog.Builder(activity)
                 .setTitle(R.string.open_url_post_oma_download)
                 .setPositiveButton(R.string.ok, clickListener)
                 .setNegativeButton(R.string.cancel, clickListener)
@@ -864,7 +866,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
     private void showDownloadOnInfoBar(DownloadItem downloadItem, int downloadStatus) {
         DownloadInfoBarController infobarController =
                 DownloadManagerService.getDownloadManagerService().getInfoBarController(
-                        downloadItem.getDownloadInfo().isOffTheRecord());
+                        downloadItem.getDownloadInfo().getOTRProfileId());
         if (infobarController == null) return;
         OfflineItem offlineItem = DownloadItem.createOfflineItem(downloadItem);
         offlineItem.id.namespace = LegacyHelpers.LEGACY_ANDROID_DOWNLOAD_NAMESPACE;

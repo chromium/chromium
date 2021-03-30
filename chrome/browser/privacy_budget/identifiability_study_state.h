@@ -68,24 +68,41 @@ class IdentifiabilityStudyState {
 
   // Should be called from unit-tests if multiple IdentifiabilityStudyState
   // instances are to be constructed.
-  static void ResetStateForTesting();
+  static void ResetGlobalStudySettingsForTesting();
 
   // Returns true if tracking metrics should be recorded for this
   // source_id/surface combination.
   bool ShouldReportEncounteredSurface(uint64_t source_id,
                                       blink::IdentifiableSurface surface);
 
-  // Clear the sampled surface state from the state tracker. Ideally this would
-  // be called each time a UKM report generated.
-  void ResetRecordedSurfaces();
+  // Resets the state associated with a single report.
+  //
+  // It should be called each time the UKM service constructs a UKM client
+  // report.
+  void ResetPerReportState();
+
+  // Resets state that is not persisted across sessions. Currently these are
+  // things like MRU caches. Invoked prior to reading in or resetting persisted
+  // state.
+  //
+  // It should be called each time persisted state is refreshed.
+  void ResetEphemeralState();
+
+  // Clears all persisted and ephemeral state.
+  //
+  // It should be called when the UKM client ID changes or if the experiment
+  // generation changes.
+  void ResetClientState();
+
+  // Initializes from fields persisted in `pref_service_`.
+  void InitFromPrefs();
 
   // A knob that we can use to split data sets from different versions of the
   // implementation where the differences could have material effects on the
   // data distribution.
   //
-  // Should be incremented whenever a non-backwards-compatible change is made in
-  // the code. This value is independent of any server controlled study
-  // parameters.
+  // Increment this whenever a non-backwards-compatible change is made in the
+  // code. This value is independent of any server controlled study parameters.
   static constexpr int kGeneratorVersion = 1;
 
  private:
@@ -111,11 +128,13 @@ class IdentifiabilityStudyState {
   // expensive. Noop otherwise.
   void CheckInvariants() const;
 
-  // Initialize from fields persisted in `pref_service_`.
-  void InitFromPrefs();
-
-  // Write active and retired lists to `pref_service_`.
+  // Writes persisted state to `pref_service_`.
   void WriteToPrefs();
+
+  // Checks whether `previous_value` is a valid PRNG seed. If not generates
+  // a new PRNG seed and stores it in prefs. In either case the caller can
+  // assume that `prng_seed_` is a valid seed upon return.
+  void CheckAndResetPrngSeed(uint64_t previous_value = 0);
 
   // Invoked at the start of the session after loading persisted active and
   // retired lists. It verifies the following:
@@ -124,10 +143,6 @@ class IdentifiabilityStudyState {
   // * The active list should conform to the restrictions on the number of
   //   allowed surfaces.
   void ReconcileLoadedPrefs();
-
-  // Clears all client-side persisted state. This should only be invoked when
-  // the experiment generation changes, or if the UKM client ID has been reset.
-  void ResetClientState();
 
   // Contains all the logic for determining whether a newly observed surface
   // should be added to the active list or not.
@@ -225,11 +240,11 @@ class IdentifiabilityStudyState {
   //
   // Invariants:
   //
-  //   * tracked_surfaces_ ∩ settings_.blocked_surfaces() = Ø.
+  //   * surface_encounters_ ∩ settings_.blocked_surfaces() = Ø.
   //
-  //   * tracked_surfaces_.GetType() ∩ settings_.blocked_types() = Ø.
+  //   * surface_encounters_.GetType() ∩ settings_.blocked_types() = Ø.
   //
-  EncounteredSurfaceTracker tracked_surfaces_;
+  EncounteredSurfaceTracker surface_encounters_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

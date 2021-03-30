@@ -5,16 +5,16 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_MANAGER_FOR_UI_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_MANAGER_FOR_UI_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace password_manager {
 
-struct CompromisedCredentials;
 struct InteractionsStats;
 struct PasswordForm;
 class PasswordFormMetricsRecorder;
@@ -51,8 +51,8 @@ class PasswordFormManagerForUI {
   // Statistics for recent password bubble usage.
   virtual base::span<const InteractionsStats> GetInteractionsStats() const = 0;
 
-  // List of compromised passwords for the current site.
-  virtual base::span<const CompromisedCredentials> GetCompromisedCredentials()
+  // List of insecure passwords for the current site.
+  virtual base::span<const InsecureCredential> GetInsecureCredentials()
       const = 0;
 
   // Determines if the user opted to 'never remember' passwords for this form.
@@ -80,13 +80,13 @@ class PasswordFormManagerForUI {
   // the save button. Updates the username and modifies internal state
   // accordingly.
   virtual void OnUpdateUsernameFromPrompt(
-      const base::string16& new_username) = 0;
+      const std::u16string& new_username) = 0;
 
   // Updates the password value. Called when user selects a password from the
   // password selection dropdown and clicks the save button. Updates the
   // password and modifies internal state accordingly.
   virtual void OnUpdatePasswordFromPrompt(
-      const base::string16& new_password) = 0;
+      const std::u16string& new_password) = 0;
 
   // Called when the user chose not to update password.
   virtual void OnNopeUpdateClicked() = 0;

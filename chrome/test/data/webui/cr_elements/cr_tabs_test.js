@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.m.js';
-// #import {eventToPromise, flushTasks} from '../test_util.m.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
+import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {eventToPromise, flushTasks} from '../test_util.m.js';
 // clang-format on
 
 suite('cr_tabs_test', function() {
@@ -19,7 +21,7 @@ suite('cr_tabs_test', function() {
     tabs = /** @type {!CrTabsElement} */ (document.createElement('cr-tabs'));
     tabs.tabNames = ['tab1', 'tab2', 'tab3'];
     document.body.appendChild(tabs);
-    return test_util.flushTasks();
+    return flushTasks();
   });
 
   /**
@@ -41,7 +43,7 @@ suite('cr_tabs_test', function() {
     if (initialSelection === expectedSelection) {
       uiChange();
     } else {
-      const wait = test_util.eventToPromise('selected-changed', tabs);
+      const wait = eventToPromise('selected-changed', tabs);
       uiChange();
       await wait;
     }
@@ -65,8 +67,7 @@ suite('cr_tabs_test', function() {
    */
   async function checkKey(key, initialSelection, expectedSelection) {
     await checkUiChange(
-        () => MockInteractions.keyDownOn(tabs, 0, [], key), initialSelection,
-        expectedSelection);
+        () => keyDownOn(tabs, 0, [], key), initialSelection, expectedSelection);
   }
 
   /**
@@ -132,10 +133,10 @@ suite('cr_tabs_test', function() {
     tabs.tabNames = ['tab1', 'tab2'];
     assertEquals(undefined, tabs.selected);
     tabs.selected = 0;
-    await test_util.flushTasks();
+    await flushTasks();
     assertNotEquals(fullyExpanded, underline.style.transform);
     underline.style.transform = fullyExpanded;
-    const wait = test_util.eventToPromise('transitionend', underline);
+    const wait = eventToPromise('transitionend', underline);
     tabs.selected = 1;
     await wait;
   });

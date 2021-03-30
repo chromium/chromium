@@ -32,7 +32,7 @@ class ClipboardProvider : public AutocompleteProvider {
   // Returns a new AutocompleteMatch clipboard match that will search for the
   // given copied text. Used to construct a match later when the text is not
   // available at match creation time (e.g. iOS 14).
-  base::Optional<AutocompleteMatch> NewClipboardTextMatch(base::string16 text);
+  base::Optional<AutocompleteMatch> NewClipboardTextMatch(std::u16string text);
 
   using ClipboardImageMatchCallback =
       base::OnceCallback<void(base::Optional<AutocompleteMatch>)>;

@@ -55,7 +55,7 @@ void TranslateInfobarModalInteractionHandler::ToggleAlwaysTranslate(
   bool enabling_always_translate = !delegate->ShouldAlwaysTranslate();
   delegate->ToggleAlwaysTranslate();
   RecordLanguageDataHistogram(kLanguageHistogramAlwaysTranslate,
-                              delegate->original_language_code());
+                              delegate->source_language_code());
   if (enabling_always_translate) {
     StartTranslation(infobar);
   }
@@ -67,7 +67,7 @@ void TranslateInfobarModalInteractionHandler::ToggleNeverTranslateLanguage(
   bool should_remove_infobar = delegate->IsTranslatableLanguageByPrefs();
   delegate->ToggleTranslatableLanguageByPrefs();
   RecordLanguageDataHistogram(kLanguageHistogramNeverTranslate,
-                              delegate->original_language_code());
+                              delegate->source_language_code());
   // Remove infobar if turning it on.
   if (should_remove_infobar)
     infobar->RemoveSelf();
@@ -97,8 +97,8 @@ void TranslateInfobarModalInteractionHandler::UpdateLanguages(
   if (source_language_index != -1) {
     std::string source_language_code =
         delegate->language_code_at(source_language_index);
-    if (delegate->original_language_code() != source_language_code) {
-      delegate->UpdateOriginalLanguage(source_language_code);
+    if (delegate->source_language_code() != source_language_code) {
+      delegate->UpdateSourceLanguage(source_language_code);
     }
   }
 

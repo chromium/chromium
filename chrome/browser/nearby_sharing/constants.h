@@ -28,10 +28,10 @@ constexpr base::TimeDelta kOutgoingDisconnectionDelay =
 constexpr base::TimeDelta kIncomingRejectionDelay =
     base::TimeDelta::FromSeconds(2);
 
-// The delay before the receiver will disconnect from the sender after canceling
-// an in progress share. The sender is expected to disconnect immediately after
-// reading the rejection frame.
-constexpr base::TimeDelta kIncomingCancelDelay =
+// The delay before the initiator of the cancellation will disconnect from the
+// other device. The device that did not initiate the cancellation is expected
+// to disconnect immediately after reading the cancellation frame.
+constexpr base::TimeDelta kInitiatorCancelDelay =
     base::TimeDelta::FromSeconds(5);
 
 // Timeout for reading a frame from remote device.
@@ -44,10 +44,6 @@ constexpr base::TimeDelta kInvalidateDelay =
 // Time between successive progress updates.
 constexpr base::TimeDelta kMinProgressUpdateFrequency =
     base::TimeDelta::FromMilliseconds(100);
-
-// If total size of all attachments is larger than this limit, online share will
-// be disabled even if it would be allowed by the user.
-constexpr int64_t kOnlineFileSizeLimitBytes = 25 * 1024 * 1024;  // 25MB
 
 // TODO(crbug.com/1129069): Set this to true when WiFi LAN is supported to
 // enable logic that checks for an internet connection for managing surfaces and

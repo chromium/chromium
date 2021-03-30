@@ -29,13 +29,14 @@
         </div>
       </div>
       <cr-button on-click="onScanTap_"
-          disabled="[[!getEnableScanButton_(managedProperties, deviceState)]]">
+          disabled="[[!getEnableScanButton_(managedProperties,
+              deviceState, disabled)]]">
         [[i18n('networkCellularScan')]]
       </cr-button>
       <select class="md-select" on-change="onChange_"
           value="[[selectedMobileNetworkId_]]"
           disabled="[[!getEnableSelectNetwork_(managedProperties,
-              deviceState)]]"
+              deviceState, disabled)]]"
           aria-label="[[i18n('networkChooseMobile')]]">
         <template is="dom-repeat" items="[[mobileNetworkList_]]">
           <option value="[[item.networkId]]"

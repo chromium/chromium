@@ -77,6 +77,7 @@ class SmartLockMetricsRecorder {
     kMaxValue = kPrimaryUserAbsent
   };
 
+  // TODO(crbug.com/1171972): Deprecate the AuthMethodChoice metric.
   static void RecordSmartLockUnlockAuthMethodChoice(
       SmartLockAuthMethodChoice auth_method_choice);
   static void RecordSmartLockSignInAuthMethodChoice(

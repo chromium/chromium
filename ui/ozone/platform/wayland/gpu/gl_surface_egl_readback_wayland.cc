@@ -116,8 +116,9 @@ void GLSurfaceEglReadbackWayland::SwapBuffersAsync(
   CHECK(next_buffer->shm_mapping_.memory());
   ReadPixels(next_buffer->shm_mapping_.memory());
 
-  buffer_manager_->CommitBuffer(widget_, next_buffer->buffer_id_,
-                                {{0, 0}, GetSize()});
+  const auto bounds = gfx::Rect(GetSize());
+  buffer_manager_->CommitBuffer(widget_, next_buffer->buffer_id_, bounds,
+                                bounds);
 }
 
 gfx::SurfaceOrigin GLSurfaceEglReadbackWayland::GetOrigin() const {

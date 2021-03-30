@@ -24,8 +24,8 @@
 
 struct UiaAccessibilityWaiterInfo {
   HWND hwnd;
-  base::string16 role;
-  base::string16 name;
+  std::wstring role;
+  std::wstring name;
   ax::mojom::Event event;
 };
 

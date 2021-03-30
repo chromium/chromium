@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,7 +17,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/l10n_util_win.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 using message_center::Notification;
@@ -70,7 +69,7 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
         message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
         base::UTF8ToUTF16(kNotificationTitle),
         base::UTF8ToUTF16(kNotificationMessage), gfx::Image() /* icon */,
-        base::string16() /* display_source */, origin_url,
+        std::u16string() /* display_source */, origin_url,
         NotifierId(origin_url), RichNotificationData(), nullptr /* delegate */);
     // Set a fixed timestamp, to avoid having to test against current timestamp.
     notification.set_timestamp(FixedTime());
@@ -82,10 +81,10 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
   // Converts the notification data to XML and verifies it is as expected. Calls
   // must be wrapped in ASSERT_NO_FATAL_FAILURE().
   void VerifyXml(const message_center::Notification& notification,
-                 const base::string16& expected_xml_template) {
+                 const std::wstring& expected_xml_template) {
     FakeNotificationImageRetainer image_retainer;
     NotificationLaunchId launch_id(kEncodedId);
-    base::string16 xml_template =
+    std::wstring xml_template =
         BuildNotificationTemplate(&image_retainer, launch_id, notification);
     EXPECT_EQ(xml_template, expected_xml_template);
   }
@@ -118,8 +117,8 @@ TEST_F(NotificationTemplateBuilderTest, Buttons) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  buttons.emplace_back(base::ASCIIToUTF16("Button1"));
-  buttons.emplace_back(base::ASCIIToUTF16("Button2"));
+  buttons.emplace_back(u"Button1");
+  buttons.emplace_back(u"Button2");
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
@@ -146,10 +145,10 @@ TEST_F(NotificationTemplateBuilderTest, InlineReplies) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  message_center::ButtonInfo button1(base::ASCIIToUTF16("Button1"));
-  button1.placeholder = base::ASCIIToUTF16("Reply here");
+  message_center::ButtonInfo button1(u"Button1");
+  button1.placeholder = u"Reply here";
   buttons.emplace_back(button1);
-  buttons.emplace_back(base::ASCIIToUTF16("Button2"));
+  buttons.emplace_back(u"Button2");
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
@@ -177,11 +176,11 @@ TEST_F(NotificationTemplateBuilderTest, InlineRepliesDoubleInput) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  message_center::ButtonInfo button1(base::ASCIIToUTF16("Button1"));
-  button1.placeholder = base::ASCIIToUTF16("Reply here");
+  message_center::ButtonInfo button1(u"Button1");
+  button1.placeholder = u"Reply here";
   buttons.emplace_back(button1);
-  message_center::ButtonInfo button2(base::ASCIIToUTF16("Button2"));
-  button2.placeholder = base::ASCIIToUTF16("Should not appear");
+  message_center::ButtonInfo button2(u"Button2");
+  button2.placeholder = u"Should not appear";
   buttons.emplace_back(button2);
   notification.set_buttons(buttons);
 
@@ -210,9 +209,9 @@ TEST_F(NotificationTemplateBuilderTest, InlineRepliesTextTypeNotFirst) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  buttons.emplace_back(base::ASCIIToUTF16("Button1"));
-  message_center::ButtonInfo button2(base::ASCIIToUTF16("Button2"));
-  button2.placeholder = base::ASCIIToUTF16("Reply here");
+  buttons.emplace_back(u"Button1");
+  message_center::ButtonInfo button2(u"Button2");
+  button2.placeholder = u"Reply here";
   buttons.emplace_back(button2);
   notification.set_buttons(buttons);
 
@@ -264,7 +263,7 @@ TEST_F(NotificationTemplateBuilderTest, RequireInteraction) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  buttons.emplace_back(base::ASCIIToUTF16("Button1"));
+  buttons.emplace_back(u"Button1");
   notification.set_buttons(buttons);
   notification.set_never_timeout(true);
 
@@ -356,9 +355,9 @@ TEST_F(NotificationTemplateBuilderTest, LocalizedContextMenu) {
 </toast>
 )";
 
-  base::string16 settings_msg = l10n_util::GetStringUTF16(
+  std::wstring settings_msg = l10n_util::GetWideString(
       IDS_WIN_NOTIFICATION_SETTINGS_CONTEXT_MENU_ITEM_NAME);
-  base::string16 expected_xml =
+  std::wstring expected_xml =
       base::StringPrintf(kExpectedXmlTemplate, settings_msg.c_str());
 
   ASSERT_NO_FATAL_FAILURE(VerifyXml(notification, expected_xml));
@@ -375,8 +374,8 @@ TEST_F(NotificationTemplateBuilderTest, Images) {
   notification.set_image(gfx::Image::CreateFrom1xBitmap(icon));
 
   std::vector<message_center::ButtonInfo> buttons;
-  message_center::ButtonInfo button(base::ASCIIToUTF16("Button1"));
-  button.placeholder = base::ASCIIToUTF16("Reply here");
+  message_center::ButtonInfo button(u"Button1");
+  button.placeholder = u"Reply here";
   button.icon = gfx::Image::CreateFrom1xBitmap(icon);
   buttons.emplace_back(button);
   notification.set_buttons(buttons);
@@ -406,7 +405,7 @@ TEST_F(NotificationTemplateBuilderTest, Images) {
 TEST_F(NotificationTemplateBuilderTest, ContextMessage) {
   message_center::Notification notification = BuildNotification();
 
-  notification.set_context_message(L"context_message");
+  notification.set_context_message(u"context_message");
 
   const wchar_t kExpectedXml[] =
       LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
@@ -509,11 +508,11 @@ TEST_F(NotificationTemplateBuilderTest, ListEntries) {
 
   notification.set_type(message_center::NOTIFICATION_TYPE_MULTIPLE);
   std::vector<message_center::NotificationItem> items;
-  items.push_back({L"title1", L"message1"});
-  items.push_back({L"title2", L"message2"});
-  items.push_back({L"title3", L"message3"});
-  items.push_back({L"title4", L"message4"});
-  items.push_back({L"title5", L"message5"});  // Will be truncated.
+  items.push_back({u"title1", u"message1"});
+  items.push_back({u"title2", u"message2"});
+  items.push_back({u"title3", u"message3"});
+  items.push_back({u"title4", u"message4"});
+  items.push_back({u"title5", u"message5"});  // Will be truncated.
   notification.set_items(items);
 
   const wchar_t kExpectedXml[] =

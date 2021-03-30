@@ -32,7 +32,7 @@ class LoginPinInput;
 //
 class ASH_EXPORT LoginPinInputView : public views::View {
  public:
-  using OnPinSubmit = base::RepeatingCallback<void(const base::string16& pin)>;
+  using OnPinSubmit = base::RepeatingCallback<void(const std::u16string& pin)>;
   using OnPinChanged = base::RepeatingCallback<void(bool is_empty)>;
 
   static const int kDefaultLength;
@@ -65,6 +65,13 @@ class ASH_EXPORT LoginPinInputView : public views::View {
   // Updates the length of the field. Used when switching users.
   void UpdateLength(const size_t pin_length);
 
+  // Updates the palette use by the view.
+  void UpdatePalette(const LoginPalette& palette);
+
+  // Updates the view. This can be called when either the length or the
+  // palette is updated.
+  void UpdateView();
+
   // When set, hitting return will attempt an unlock with an empty PIN.
   // LoginAuthUserView interprets such attempts as a SmartLock unlock.
   void SetAuthenticateWithEmptyPinOnReturnKey(bool enabled);
@@ -76,7 +83,6 @@ class ASH_EXPORT LoginPinInputView : public views::View {
   // Sets the field as read only. The field is made read only during an
   // authentication request.
   void SetReadOnly(bool read_only);
-
   // views::View
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
@@ -84,7 +90,7 @@ class ASH_EXPORT LoginPinInputView : public views::View {
 
  private:
   // The code input will call this when all digits are in.
-  void SubmitPin(const base::string16& pin);
+  void SubmitPin(const std::u16string& pin);
 
   // Called by the inner view whenever the fields change.
   void OnChanged(bool is_empty);

@@ -4,10 +4,10 @@
 
 #include "chromeos/services/ime/decoder/system_engine.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 #include "chromeos/services/ime/mock_input_channel.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"
@@ -229,9 +229,16 @@ TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
   ASSERT_TRUE(engine.BindRequest(kImeSpec, client.BindNewPipeAndPassReceiver(),
                                  mock_channel.CreatePendingRemote(), {}));
   ime::Wrapper proto;
-  proto.mutable_public_message()->mutable_commit_text()->set_text("hello");
 
-  EXPECT_CALL(mock_channel, CommitText("hello"));
+  proto.mutable_public_message()->mutable_commit_text()->set_text("hello");
+  proto.mutable_public_message()->mutable_commit_text()->set_cursor_behavior(
+      ime::CommitTextCursorBehavior::
+          COMMIT_TEXT_CURSOR_BEHAVIOR_MOVE_CURSOR_BEFORE_TEXT);
+
+  EXPECT_CALL(
+      mock_channel,
+      CommitText("hello",
+                 mojom::CommitTextCursorBehavior::kMoveCursorBeforeText));
 
   const std::string serialized = proto.SerializeAsString();
   decoder_entry_points_.delegate()->Process(

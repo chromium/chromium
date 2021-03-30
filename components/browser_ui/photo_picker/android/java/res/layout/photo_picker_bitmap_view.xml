@@ -72,20 +72,20 @@
 
     <ImageView
         android:id="@+id/selected"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginTop="2dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp"
         tools:ignore="ContentDescription"
         android:visibility="gone"
         app:srcCompat="@drawable/checkmark_blue" />
 
     <ImageView
         android:id="@+id/unselected"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="6dp"
         android:background="@drawable/circle_white"
         tools:ignore="ContentDescription"
         android:visibility="gone" />

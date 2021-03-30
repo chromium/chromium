@@ -52,7 +52,7 @@ void CheckRepositionedCorrectly(const TestCase& test_case) {
       gfx::Quaternion({0, 1, 0}, test_case.head_up_vector));
 
   repositioner->set_laser_direction(test_case.laser_direction);
-  scene.OnBeginFrame(MsToTicks(0), head_pose);
+  scene.OnBeginFrame(gfx::MsToTicks(0), head_pose);
   repositioner->SetEnabled(false);
 
   gfx::Point3F center = element->GetCenter();

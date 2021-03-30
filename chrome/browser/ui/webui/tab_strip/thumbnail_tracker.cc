@@ -8,21 +8,24 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 
 // Handles requests for a given tab's thumbnail and watches for thumbnail
 // updates for the lifetime of the tab.
-class ThumbnailTracker::ContentsData : public content::WebContentsObserver,
-                                       public ThumbnailImage::Observer {
+class ThumbnailTracker::ContentsData : public content::WebContentsObserver {
  public:
   ContentsData(ThumbnailTracker* parent, content::WebContents* contents)
       : content::WebContentsObserver(contents), parent_(parent) {
     thumbnail_ = parent_->thumbnail_getter_.Run(contents);
-    if (thumbnail_)
-      observer_.Add(thumbnail_.get());
+    if (!thumbnail_)
+      return;
+
+    subscription_ = thumbnail_->Subscribe();
+    subscription_->SetCompressedImageCallback(base::BindRepeating(
+        &ContentsData::ThumbnailImageCallback, base::Unretained(this)));
   }
 
   void RequestThumbnail() {
@@ -35,7 +38,7 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver,
     // We must un-observe each ThumbnailImage when the WebContents it came from
     // closes.
     if (thumbnail_) {
-      observer_.Remove(thumbnail_.get());
+      subscription_.reset();
       thumbnail_.reset();
     }
 
@@ -43,16 +46,14 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver,
     parent_->ContentsClosed(web_contents());
   }
 
-  // ThumbnailImage::Observer:
-  void OnCompressedThumbnailDataAvailable(
-      CompressedThumbnailData thumbnail_image) override {
-    parent_->ThumbnailUpdated(web_contents(), thumbnail_image);
+ private:
+  void ThumbnailImageCallback(CompressedThumbnailData image) {
+    parent_->ThumbnailUpdated(web_contents(), image);
   }
 
- private:
   ThumbnailTracker* parent_;
   scoped_refptr<ThumbnailImage> thumbnail_;
-  ScopedObserver<ThumbnailImage, ThumbnailImage::Observer> observer_{this};
+  std::unique_ptr<ThumbnailImage::Subscription> subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentsData);
 };

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -114,22 +115,21 @@ DevToolsAndroidBridge::GetBrowserAgentHost(
   return DevToolsDeviceDiscovery::CreateBrowserAgentHost(it->second, browser);
 }
 
-void DevToolsAndroidBridge::SendJsonRequest(
-    const std::string& browser_id_str,
-    const std::string& url,
-    const JsonRequestCallback& callback) {
+void DevToolsAndroidBridge::SendJsonRequest(const std::string& browser_id_str,
+                                            const std::string& url,
+                                            JsonRequestCallback callback) {
   std::string serial;
   std::string browser_id;
   if (!BrowserIdFromString(browser_id_str, &serial, &browser_id)) {
-    callback.Run(net::ERR_FAILED, std::string());
+    std::move(callback).Run(net::ERR_FAILED, std::string());
     return;
   }
   auto it = device_map_.find(serial);
   if (it == device_map_.end()) {
-    callback.Run(net::ERR_FAILED, std::string());
+    std::move(callback).Run(net::ERR_FAILED, std::string());
     return;
   }
-  it->second->SendJsonRequest(browser_id, url, callback);
+  it->second->SendJsonRequest(browser_id, url, std::move(callback));
 }
 
 void DevToolsAndroidBridge::OpenRemotePage(scoped_refptr<RemoteBrowser> browser,
@@ -156,15 +156,18 @@ DevToolsAndroidBridge::DevToolsAndroidBridge(Profile* profile)
       port_forwarding_controller_(new PortForwardingController(profile)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(prefs::kDevToolsDiscoverUsbDevicesEnabled,
-      base::Bind(&DevToolsAndroidBridge::CreateDeviceProviders,
-                 base::Unretained(this)));
-  pref_change_registrar_.Add(prefs::kDevToolsTCPDiscoveryConfig,
-      base::Bind(&DevToolsAndroidBridge::CreateDeviceProviders,
-                 base::Unretained(this)));
-  pref_change_registrar_.Add(prefs::kDevToolsDiscoverTCPTargetsEnabled,
-      base::Bind(&DevToolsAndroidBridge::CreateDeviceProviders,
-                 base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kDevToolsDiscoverUsbDevicesEnabled,
+      base::BindRepeating(&DevToolsAndroidBridge::CreateDeviceProviders,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kDevToolsTCPDiscoveryConfig,
+      base::BindRepeating(&DevToolsAndroidBridge::CreateDeviceProviders,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kDevToolsDiscoverTCPTargetsEnabled,
+      base::BindRepeating(&DevToolsAndroidBridge::CreateDeviceProviders,
+                          base::Unretained(this)));
   base::Value target_discovery(base::Value::Type::LIST);
   target_discovery.Append(kChromeDiscoveryURL);
   target_discovery.Append(kNodeDiscoveryURL);
@@ -237,9 +240,10 @@ DevToolsAndroidBridge::~DevToolsAndroidBridge() {
 }
 
 void DevToolsAndroidBridge::StartDeviceListPolling() {
-  device_discovery_.reset(new DevToolsDeviceDiscovery(device_manager_.get(),
-      base::Bind(&DevToolsAndroidBridge::ReceivedDeviceList,
-                 base::Unretained(this))));
+  device_discovery_ = std::make_unique<DevToolsDeviceDiscovery>(
+      device_manager_.get(),
+      base::BindRepeating(&DevToolsAndroidBridge::ReceivedDeviceList,
+                          base::Unretained(this)));
   if (!task_scheduler_.is_null())
     device_discovery_->SetScheduler(task_scheduler_);
 }
@@ -279,8 +283,8 @@ void DevToolsAndroidBridge::ReceivedDeviceList(
 }
 
 void DevToolsAndroidBridge::StartDeviceCountPolling() {
-  device_count_callback_.Reset(
-      base::Bind(&DevToolsAndroidBridge::ReceivedDeviceCount, AsWeakPtr()));
+  device_count_callback_.Reset(base::BindRepeating(
+      &DevToolsAndroidBridge::ReceivedDeviceCount, AsWeakPtr()));
   RequestDeviceCount(device_count_callback_.callback());
 }
 
@@ -289,13 +293,13 @@ void DevToolsAndroidBridge::StopDeviceCountPolling() {
 }
 
 void DevToolsAndroidBridge::RequestDeviceCount(
-    const base::Callback<void(int)>& callback) {
+    base::RepeatingCallback<void(int)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (device_count_listeners_.empty() || callback.IsCancelled())
     return;
 
-  device_manager_->CountDevices(callback);
+  device_manager_->CountDevices(std::move(callback));
 }
 
 void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
@@ -395,7 +399,7 @@ void DevToolsAndroidBridge::CreateDeviceProviders() {
 
 void DevToolsAndroidBridge::set_tcp_provider_callback_for_test(
     TCPProviderCallback callback) {
-  tcp_provider_callback_ = callback;
+  tcp_provider_callback_ = std::move(callback);
   CreateDeviceProviders();
 }
 

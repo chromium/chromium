@@ -9,9 +9,9 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -273,7 +273,7 @@ bool TabLoadTracker::IsUiTab(content::WebContents* web_contents) {
   // tabstrip UI or use a platform-independent tabstrip observer interface to
   // learn about |web_contents| associated with the tabstrip, rather than
   // checking for specific cases where |web_contents| is not a ui tab.
-  if (prerender::ChromePrerenderContentsDelegate::FromWebContents(
+  if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) != nullptr)
     return false;
   if (web_contents->GetOuterWebContents())

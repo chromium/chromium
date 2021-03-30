@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class DragSelector {
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+
+/* #export */ class DragSelector {
   /**
    * Drag selector used on the file list or the grid table.
    */

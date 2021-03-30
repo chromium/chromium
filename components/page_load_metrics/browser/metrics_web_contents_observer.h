@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <queue>
 #include <vector>
 
 #include "base/macros.h"
@@ -14,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -38,7 +40,9 @@ class RenderFrameHost;
 
 namespace page_load_metrics {
 
+struct MemoryUpdate;
 class PageLoadMetricsEmbedderInterface;
+class PageLoadMetricsMemoryTracker;
 class PageLoadTracker;
 
 // MetricsWebContentsObserver tracks page loads and loading metrics
@@ -48,6 +52,7 @@ class MetricsWebContentsObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<MetricsWebContentsObserver>,
       public content::RenderWidgetHost::InputEventObserver,
+      public base::SupportsWeakPtr<MetricsWebContentsObserver>,
       public mojom::PageLoadMetrics {
  public:
   // TestingObserver allows tests to observe MetricsWebContentsObserver state
@@ -73,8 +78,9 @@ class MetricsWebContentsObserver
     virtual void OnRestoredFromBackForwardCache(PageLoadTracker* tracker) {}
 
     // Returns the observer delegate for the committed load associated with
-    // the MetricsWebContentsObserver.
-    const PageLoadMetricsObserverDelegate& GetDelegateForCommittedLoad();
+    // the MetricsWebContentsObserver, or null if the observer has gone away
+    // (via MetricsWebContentsObserver::WebContentsDestroyed).
+    const PageLoadMetricsObserverDelegate* GetDelegateForCommittedLoad();
 
    private:
     page_load_metrics::MetricsWebContentsObserver* observer_;
@@ -169,18 +175,29 @@ class MetricsWebContentsObserver
       mojom::InputTimingPtr input_timing_delta,
       const blink::MobileFriendliness& mobile_friendliness);
 
-  // Informs the observers of the currently committed load that the event
-  // corresponding to |event_key| has occurred. This should not be called within
+  // Informs the observers of the currently committed load that |event| has
+  // occurred. This should not be called within
   // WebContentsObserver::DidFinishNavigation methods.
-  // This method is subject to change and may be removed in the future.
-  void BroadcastEventToObservers(const void* const event_key);
+  void BroadcastEventToObservers(PageLoadMetricsEvent event);
+
+  // Called when V8 per-frame memory usage updates are available. Virtual for
+  // test classes to override.
+  virtual void OnV8MemoryChanged(
+      const std::vector<MemoryUpdate>& memory_updates);
+
+ protected:
+  // Protected rather than private so that derived test classes can call
+  // constructor.
+  MetricsWebContentsObserver(
+      content::WebContents* web_contents,
+      std::unique_ptr<PageLoadMetricsEmbedderInterface> embedder_interface);
 
  private:
   friend class content::WebContentsUserData<MetricsWebContentsObserver>;
 
-  MetricsWebContentsObserver(
-      content::WebContents* web_contents,
-      std::unique_ptr<PageLoadMetricsEmbedderInterface> embedder_interface);
+  // Gets the memory tracker for the BrowserContext if it exists, or nullptr
+  // otherwise. The tracker measures per-frame memory usage by V8.
+  PageLoadMetricsMemoryTracker* GetMemoryTracker() const;
 
   void WillStartNavigationRequestImpl(
       content::NavigationHandle* navigation_handle);
@@ -292,6 +309,11 @@ class MetricsWebContentsObserver
   std::vector<std::unique_ptr<PageLoadTracker>> aborted_provisional_loads_;
 
   std::unique_ptr<PageLoadTracker> committed_load_;
+
+  // Memory updates that are accumulated while there is no `committed_load_`.
+  // Will be sent in HandleCommittedNavigationForTrackedLoad, unless the
+  // render process is gone and/or web contents is destroyed.
+  std::queue<std::vector<MemoryUpdate>> queued_memory_updates_;
 
   // This is currently set only for the main frame.
   base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;

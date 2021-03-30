@@ -37,7 +37,7 @@ class CustomizationWallpaperDownloader {
       const GURL& wallpaper_url,
       const base::FilePath& wallpaper_dir,
       const base::FilePath& wallpaper_downloaded_file,
-      base::Callback<void(bool success, const GURL&)>
+      base::OnceCallback<void(bool success, const GURL&)>
           on_wallpaper_fetch_completed);
 
   ~CustomizationWallpaperDownloader();
@@ -99,7 +99,8 @@ class CustomizationWallpaperDownloader {
   base::TimeDelta retry_current_delay_;
 
   // Callback supplied by caller.
-  base::Callback<void(bool success, const GURL&)> on_wallpaper_fetch_completed_;
+  base::OnceCallback<void(bool success, const GURL&)>
+      on_wallpaper_fetch_completed_;
 
   base::WeakPtrFactory<CustomizationWallpaperDownloader> weak_factory_{this};
 

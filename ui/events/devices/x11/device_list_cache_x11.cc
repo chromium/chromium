@@ -22,8 +22,8 @@ DeviceListCacheX11* DeviceListCacheX11::GetInstance() {
 }
 
 void DeviceListCacheX11::UpdateDeviceList(x11::Connection* connection) {
-  auto x_future = connection->xinput().ListInputDevices({});
-  auto xi_future = connection->xinput().XIQueryDevice({});
+  auto x_future = connection->xinput().ListInputDevices();
+  auto xi_future = connection->xinput().XIQueryDevice();
   connection->Flush();
   if (auto reply = x_future.Sync())
     x_dev_list_ = reply->devices;

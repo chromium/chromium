@@ -13,8 +13,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/devtools_listener.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,8 +59,11 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test runs in tablet mode.
     bool tablet_mode = false;
 
-    // Whether test requires Android documents providers.
-    bool documents_provider = false;
+    // Whether test requires a generic Android documents provider.
+    bool generic_documents_provider = false;
+
+    // Whether test requires Android documents provider for Google Photos.
+    bool photos_documents_provider = false;
 
     // Whether test requires ARC++.
     bool arc = false;
@@ -109,8 +112,14 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test needs the single partition format feature.
     bool single_partition_format = false;
 
+    // Whether test should enable trash.
+    bool enable_trash = false;
+
     // Whether test should enable holding space.
     bool enable_holding_space = false;
+
+    // Whether test should run Files app UI as JS modules.
+    bool enable_js_modules = true;
   };
 
  protected:
@@ -198,7 +207,10 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   std::unique_ptr<RemovableTestVolume> partition_1_;
   std::unique_ptr<RemovableTestVolume> partition_2_;
   std::unique_ptr<RemovableTestVolume> partition_3_;
-  std::unique_ptr<DocumentsProviderTestVolume> documents_provider_volume_;
+  std::unique_ptr<DocumentsProviderTestVolume>
+      generic_documents_provider_volume_;
+  std::unique_ptr<DocumentsProviderTestVolume>
+      photos_documents_provider_volume_;
   std::unique_ptr<MediaViewTestVolume> media_view_images_;
   std::unique_ptr<MediaViewTestVolume> media_view_videos_;
   std::unique_ptr<MediaViewTestVolume> media_view_audio_;

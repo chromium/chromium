@@ -95,9 +95,10 @@ std::string AwProxyConfigMonitor::SetProxyOverride(
     const std::vector<net::ProxyConfigServiceAndroid::ProxyOverrideRule>&
         proxy_rules,
     const std::vector<std::string>& bypass_rules,
+    const bool reverse_bypass,
     base::OnceClosure callback) {
   return proxy_config_service_android_->SetProxyOverride(
-      proxy_rules, bypass_rules,
+      proxy_rules, bypass_rules, reverse_bypass,
       base::BindOnce(&AwProxyConfigMonitor::FlushProxyConfig,
                      base::Unretained(this), std::move(callback)));
 }

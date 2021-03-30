@@ -280,7 +280,7 @@ void Location::SetLocation(const String& url,
              ->AllowInline(ContentSecurityPolicy::InlineType::kNavigation,
                            nullptr /* element */, script_source,
                            String() /* nonce */, incumbent_window->Url(),
-                           OrdinalNumber())) {
+                           OrdinalNumber::First())) {
       return;
     }
   }

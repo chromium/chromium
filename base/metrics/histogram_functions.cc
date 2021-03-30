@@ -25,16 +25,16 @@ void UmaHistogramBoolean(const char* name, bool sample) {
 
 void UmaHistogramExactLinear(const std::string& name,
                              int sample,
-                             int value_max) {
+                             int exclusive_max) {
   HistogramBase* histogram =
-      LinearHistogram::FactoryGet(name, 1, value_max, value_max + 1,
+      LinearHistogram::FactoryGet(name, 1, exclusive_max, exclusive_max + 1,
                                   HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }
 
-void UmaHistogramExactLinear(const char* name, int sample, int value_max) {
+void UmaHistogramExactLinear(const char* name, int sample, int exclusive_max) {
   HistogramBase* histogram =
-      LinearHistogram::FactoryGet(name, 1, value_max, value_max + 1,
+      LinearHistogram::FactoryGet(name, 1, exclusive_max, exclusive_max + 1,
                                   HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }

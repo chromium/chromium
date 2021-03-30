@@ -21,6 +21,8 @@ can be the result of one of the following cases:
 * Navigating to a fragment within an existing document (e.g.
   `https://foo.com/1.html#fragment`).
 * A document calling the `history.pushState()` or `history.replaceState()` APIs.
+* A new document created via `document.open()`, which may change the URL to
+  match the document that initiated the call (possibly from another frame).
 * A session history navigation that stays in the same document, such as going
   back/forward to an existing entry for the same document.
 

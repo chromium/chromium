@@ -6,14 +6,15 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/app_types.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/ime/arc_ime_bridge_impl.h"
@@ -24,6 +25,9 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -41,6 +45,17 @@ namespace {
 
 base::Optional<double> g_override_default_device_scale_factor;
 
+// Return true when a rich text editing is available on a text field with the
+// given type.
+bool IsTextInputActive(ui::TextInputType type) {
+  return type != ui::TEXT_INPUT_TYPE_NONE && type != ui::TEXT_INPUT_TYPE_NULL;
+}
+
+// Return true if the given key event generats a visible character.
+bool IsCharacterKeyEvent(const ui::KeyEvent* event) {
+  return !IsControlChar(event) && !ui::IsSystemKeyModifier(event->flags());
+}
+
 class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
  public:
   explicit ArcWindowDelegateImpl(ArcImeService* ime_service)
@@ -54,7 +69,13 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
       return false;
     aura::Window* active = exo::WMHelper::GetInstance()->GetActiveWindow();
     for (; window; window = window->parent()) {
-      if (IsArcAppWindow(window))
+      if (ash::IsArcWindow(window))
+        return true;
+
+      // TODO(crbug.com/1168334): Find a correct way to detect the ARC++
+      // notifications. It should be okay for now because only the ARC++ windows
+      // have kSkipImeProcessing.
+      if (window->GetProperty(aura::client::kSkipImeProcessing))
         return true;
 
       // IsArcAppWindow returns false for a window of ARC++ Kiosk app, so we
@@ -366,7 +387,7 @@ void ArcImeService::ShowVirtualKeyboardIfEnabled() {
 void ArcImeService::OnCursorRectChangedWithSurroundingText(
     const gfx::Rect& rect,
     const gfx::Range& text_range,
-    const base::string16& text_in_range,
+    const std::u16string& text_in_range,
     const gfx::Range& selection_range,
     bool is_screen_coordinates) {
   if (!ShouldSendUpdateToInputMethod())
@@ -434,11 +455,11 @@ void ArcImeService::ClearCompositionText() {
   InvalidateSurroundingTextAndSelectionRange();
   if (has_composition_text_) {
     has_composition_text_ = false;
-    ime_bridge_->SendInsertText(base::string16());
+    ime_bridge_->SendInsertText(std::u16string());
   }
 }
 
-void ArcImeService::InsertText(const base::string16& text,
+void ArcImeService::InsertText(const std::u16string& text,
                                InsertTextCursorBehavior cursor_behavior) {
   // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   InvalidateSurroundingTextAndSelectionRange();
@@ -452,12 +473,10 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
     return;
 
   // According to the document in text_input_client.h, InsertChar() is called
-  // even when the text input type is NONE. We ignore such events, since for
-  // ARC we are only interested in the event as a method of text input.
-  if (ime_type_ == ui::TEXT_INPUT_TYPE_NONE ||
-      ime_type_ == ui::TEXT_INPUT_TYPE_NULL) {
+  // even when the text editing is not available. We ignore such events, since
+  // for ARC we are only interested in the event as a method of text input.
+  if (!IsTextInputActive(ime_type_))
     return;
-  }
 
   InvalidateSurroundingTextAndSelectionRange();
 
@@ -467,19 +486,19 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
   if (!HasModifier(&event) && !ShouldEnableKeyEventForwarding()) {
     if (event.key_code() ==  ui::VKEY_RETURN) {
       has_composition_text_ = false;
-      ime_bridge_->SendInsertText(base::ASCIIToUTF16("\n"));
+      ime_bridge_->SendInsertText(u"\n");
       return;
     }
     if (event.key_code() ==  ui::VKEY_BACK) {
       has_composition_text_ = false;
-      ime_bridge_->SendInsertText(base::ASCIIToUTF16("\b"));
+      ime_bridge_->SendInsertText(u"\b");
       return;
     }
   }
 
-  if (!IsControlChar(&event) && !ui::IsSystemKeyModifier(event.flags())) {
+  if (IsCharacterKeyEvent(&event)) {
     has_composition_text_ = false;
-    ime_bridge_->SendInsertText(base::string16(1, event.GetText()));
+    ime_bridge_->SendInsertText(std::u16string(1, event.GetText()));
   }
 }
 
@@ -508,7 +527,7 @@ bool ArcImeService::GetEditableSelectionRange(gfx::Range* range) const {
 }
 
 bool ArcImeService::GetTextFromRange(const gfx::Range& range,
-                                     base::string16* text) const {
+                                     std::u16string* text) const {
   // It's supposed that this method is called only from
   // InputMethod::OnCaretBoundsChanged(). In that method, the range obtained
   // from GetTextRange() is used as the argument of this method. To prevent an
@@ -632,6 +651,18 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
   if (!range.is_empty()) {
     base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
                                   TextInputClient::SubClass::kArcImeService);
+
+    auto* input_method_manager =
+        chromeos::input_method::InputMethodManager::Get();
+    if (input_method_manager &&
+        chromeos::extension_ime_util::IsExperimentalMultilingual(
+            input_method_manager->GetActiveIMEState()
+                ->GetCurrentInputMethod()
+                .id())) {
+      base::UmaHistogramEnumeration(
+          "InputMethod.MultilingualExperiment.Autocorrect.Count",
+          TextInputClient::SubClass::kArcImeService);
+    }
   }
   // TODO(https:://crbug.com/1091088): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
@@ -639,10 +670,33 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
 }
 
 void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
-  if (ShouldEnableKeyEventForwarding() && receiver_->HasCallback()) {
+  if (!ShouldEnableKeyEventForwarding())
+    return;
+
+  if (receiver_->HasCallback()) {
     receiver_->DispatchKeyEventPostIME(event);
     event->SetHandled();
+    return;
   }
+
+  // Do not forward the key event from virtual keyboard if it's sent via
+  // InsertChar(). By the special logic in
+  // ui::InputMethodChromeOS::DispatchKeyEvent, both of InsertChar() and
+  // DispatchKeyEventPostIME() are called for a key event injected by the
+  // virtual keyboard. The below logic stops key event propagation through
+  // DispatchKeyEventPostIME() to prevent from inputting two characters.
+  const bool from_vk =
+      event->properties() && (event->properties()->find(ui::kPropertyFromVK) !=
+                              event->properties()->end());
+  if (from_vk && IsCharacterKeyEvent(event) && IsTextInputActive(ime_type_))
+    event->SetHandled();
+
+  // Do no forward a fabricated key event which is not originated from a
+  // physical key event. Such a key event is a signal from IME to show they are
+  // going to insert/delete text. ARC apps should not see any key event caused
+  // by it.
+  if (event->key_code() == ui::VKEY_PROCESSKEY && IsTextInputActive(ime_type_))
+    event->SetHandled();
 }
 
 // static
@@ -653,7 +707,7 @@ void ArcImeService::SetOverrideDefaultDeviceScaleFactorForTesting(
 
 void ArcImeService::InvalidateSurroundingTextAndSelectionRange() {
   text_range_ = gfx::Range::InvalidRange();
-  text_in_range_ = base::string16();
+  text_in_range_ = std::u16string();
   selection_range_ = gfx::Range::InvalidRange();
 }
 

@@ -39,6 +39,10 @@
 #include "chrome/browser/upgrade_detector/build_state.h"
 #endif
 
+#if defined(OS_ANDROID)
+#include "base/android/application_status_listener.h"
+#endif  // defined(OS_ANDROID)
+
 class BatteryMetrics;
 class ChromeMetricsServicesManagerClient;
 class DevToolsAutoOpener;
@@ -133,7 +137,6 @@ class BrowserProcessImpl : public BrowserProcess,
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* metrics_service() override;
-  rappor::RapporServiceImpl* rappor_service() override;
   // TODO(qinmin): Remove this method as callers can retrieve the global
   // instance from SystemNetworkContextManager directly.
   SystemNetworkContextManager* system_network_context_manager() override;
@@ -167,16 +170,16 @@ class BrowserProcessImpl : public BrowserProcess,
   DownloadStatusUpdater* download_status_updater() override;
   DownloadRequestLimiter* download_request_limiter() override;
   BackgroundModeManager* background_mode_manager() override;
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   void set_background_mode_manager_for_test(
       std::unique_ptr<BackgroundModeManager> manager) override;
+#endif
   StatusTray* status_tray() override;
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
   federated_learning::FlocSortingLshClustersService*
   floc_sorting_lsh_clusters_service() override;
-  optimization_guide::OptimizationGuideService* optimization_guide_service()
-      override;
 
   StartupData* startup_data() override;
 
@@ -305,7 +308,7 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<StatusTray> status_tray_;
 
-#if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
+#if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
   bool created_notification_bridge_ = false;
 #endif
 
@@ -329,10 +332,6 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<federated_learning::FlocSortingLshClustersService>
       floc_sorting_lsh_clusters_service_;
-
-  bool created_optimization_guide_service_ = false;
-  std::unique_ptr<optimization_guide::OptimizationGuideService>
-      optimization_guide_service_;
 
   bool shutting_down_ = false;
 
@@ -405,6 +404,10 @@ class BrowserProcessImpl : public BrowserProcess,
   base::OnceClosure quit_closure_;
 
   BuildState build_state_;
+#endif
+
+#if defined(OS_ANDROID)
+  std::unique_ptr<base::android::ApplicationStatusListener> app_state_listener_;
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);

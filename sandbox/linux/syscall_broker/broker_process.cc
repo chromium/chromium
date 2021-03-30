@@ -71,10 +71,6 @@ bool BrokerProcess::ForkSignalBasedBroker(
     return false;
 
   if (child_pid) {
-    // This string is referenced in a ChromeOS integration test; do not change.
-    // TODO(crbug.com/1044502): If we can fix setproctitle, the integration
-    // test not longer needs to look for this message.
-    VLOG(3) << "BrokerProcess::Init(), in parent, child is " << child_pid;
     // We are the parent and we have just forked our broker process.
     ipc_reader.reset();
     broker_pid_ = child_pid;
@@ -86,11 +82,6 @@ bool BrokerProcess::ForkSignalBasedBroker(
     initialized_ = true;
     return true;
   }
-
-  // This string is referenced in a ChromeOS integration test; do not change.
-  // TODO(crbug.com/1044502): If we can fix setproctitle, the integration test
-  // not longer needs to look for this message.
-  VLOG(3) << "BrokerProcess::Init(), in child";
 
   // We are the broker process. Make sure to close the writer's end so that
   // we get notified if the client disappears.

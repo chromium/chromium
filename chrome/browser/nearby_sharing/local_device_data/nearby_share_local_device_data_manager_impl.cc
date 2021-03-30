@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -11,12 +12,17 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater_impl.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace {
 
@@ -38,6 +44,19 @@ constexpr base::TimeDelta kUpdateDeviceDataTimeout =
 constexpr base::TimeDelta kDeviceDataDownloadPeriod =
     base::TimeDelta::FromHours(12);
 
+// Returns a truncated version of |name| that is |overflow_length| characters
+// too long. For example, name="Reallylongname" with overflow_length=5 will
+// return "Really...".
+std::string GetTruncatedName(std::string name, size_t overflow_length) {
+  std::string ellipsis("...");
+  size_t max_name_length = name.length() - overflow_length - ellipsis.length();
+  DCHECK_GT(max_name_length, 0u);
+  std::string truncated;
+  base::TruncateUTF8ToByteSize(name, max_name_length, &truncated);
+  truncated.append(ellipsis);
+  return truncated;
+}
+
 }  // namespace
 
 // static
@@ -49,14 +68,14 @@ std::unique_ptr<NearbyShareLocalDeviceDataManager>
 NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
     PrefService* pref_service,
     NearbyShareClientFactory* http_client_factory,
-    const std::string& default_device_name) {
+    NearbyShareProfileInfoProvider* profile_info_provider) {
   if (test_factory_) {
     return test_factory_->CreateInstance(pref_service, http_client_factory,
-                                         default_device_name);
+                                         profile_info_provider);
   }
 
   return base::WrapUnique(new NearbyShareLocalDeviceDataManagerImpl(
-      pref_service, http_client_factory, default_device_name));
+      pref_service, http_client_factory, profile_info_provider));
 }
 
 // static
@@ -70,8 +89,9 @@ NearbyShareLocalDeviceDataManagerImpl::Factory::~Factory() = default;
 NearbyShareLocalDeviceDataManagerImpl::NearbyShareLocalDeviceDataManagerImpl(
     PrefService* pref_service,
     NearbyShareClientFactory* http_client_factory,
-    const std::string& default_device_name)
+    NearbyShareProfileInfoProvider* profile_info_provider)
     : pref_service_(pref_service),
+      profile_info_provider_(profile_info_provider),
       device_data_updater_(NearbyShareDeviceDataUpdaterImpl::Factory::Create(
           GetId(),
           kUpdateDeviceDataTimeout,
@@ -85,11 +105,7 @@ NearbyShareLocalDeviceDataManagerImpl::NearbyShareLocalDeviceDataManagerImpl(
               pref_service_,
               base::BindRepeating(&NearbyShareLocalDeviceDataManagerImpl::
                                       OnDownloadDeviceDataRequested,
-                                  base::Unretained(this)))) {
-  DCHECK(!default_device_name.empty());
-  if (GetDeviceName().empty())
-    SetDeviceName(default_device_name);
-}
+                                  base::Unretained(this)))) {}
 
 NearbyShareLocalDeviceDataManagerImpl::
     ~NearbyShareLocalDeviceDataManagerImpl() = default;
@@ -109,7 +125,9 @@ std::string NearbyShareLocalDeviceDataManagerImpl::GetId() {
 }
 
 std::string NearbyShareLocalDeviceDataManagerImpl::GetDeviceName() const {
-  return pref_service_->GetString(prefs::kNearbySharingDeviceNamePrefName);
+  std::string device_name =
+      pref_service_->GetString(prefs::kNearbySharingDeviceNamePrefName);
+  return device_name.empty() ? GetDefaultDeviceName() : device_name;
 }
 
 base::Optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetFullName()
@@ -198,6 +216,27 @@ void NearbyShareLocalDeviceDataManagerImpl::OnStart() {
 
 void NearbyShareLocalDeviceDataManagerImpl::OnStop() {
   download_device_data_scheduler_->Stop();
+}
+
+std::string NearbyShareLocalDeviceDataManagerImpl::GetDefaultDeviceName()
+    const {
+  std::u16string device_type = ui::GetChromeOSDeviceName();
+  base::Optional<std::u16string> given_name =
+      profile_info_provider_->GetGivenName();
+  if (!given_name)
+    return base::UTF16ToUTF8(device_type);
+
+  std::string device_name = l10n_util::GetStringFUTF8(
+      IDS_NEARBY_DEFAULT_DEVICE_NAME, *given_name, device_type);
+  if (device_name.length() <= kNearbyShareDeviceNameMaxLength)
+    return device_name;
+
+  std::string truncated_name =
+      GetTruncatedName(base::UTF16ToUTF8(*given_name),
+                       device_name.length() - kNearbyShareDeviceNameMaxLength);
+  return l10n_util::GetStringFUTF8(IDS_NEARBY_DEFAULT_DEVICE_NAME,
+                                   base::UTF8ToUTF16(truncated_name),
+                                   device_type);
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataRequested() {

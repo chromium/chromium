@@ -28,6 +28,7 @@
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_histograms.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/download/public/common/quarantine_connection.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -133,10 +134,12 @@ content::WebContents* GetWebContentsFromFrameTreeNodeID(
 }  // namespace
 
 MediaFileSystemBackend::MediaFileSystemBackend(
-    const base::FilePath& profile_path)
+    const base::FilePath& profile_path,
+    download::QuarantineConnectionCallback quarantine_connection_callback)
     : profile_path_(profile_path),
       media_copy_or_move_file_validator_factory_(
-          std::make_unique<MediaFileValidatorFactory>()),
+          std::make_unique<MediaFileValidatorFactory>(
+              std::move(quarantine_connection_callback))),
       native_media_file_util_(
           std::make_unique<NativeMediaFileUtil>(g_media_task_runner.Get()))
 #if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -216,7 +219,7 @@ bool MediaFileSystemBackend::AttemptAutoMountForURLRequest(
 
 bool MediaFileSystemBackend::CanHandleType(storage::FileSystemType type) const {
   switch (type) {
-    case storage::kFileSystemTypeNativeMedia:
+    case storage::kFileSystemTypeLocalMedia:
     case storage::kFileSystemTypeDeviceMedia:
       return true;
     default:
@@ -241,7 +244,7 @@ storage::AsyncFileUtil* MediaFileSystemBackend::GetAsyncFileUtil(
   // We count file system usages here, because we want to count (per session)
   // when the file system is actually used for I/O, rather than merely present.
   switch (type) {
-    case storage::kFileSystemTypeNativeMedia:
+    case storage::kFileSystemTypeLocalMedia:
       return native_media_file_util_.get();
 #if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
     case storage::kFileSystemTypeDeviceMedia:
@@ -265,7 +268,7 @@ MediaFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   DCHECK(error_code);
   *error_code = base::File::FILE_OK;
   switch (type) {
-    case storage::kFileSystemTypeNativeMedia:
+    case storage::kFileSystemTypeLocalMedia:
     case storage::kFileSystemTypeDeviceMedia:
       if (!media_copy_or_move_file_validator_factory_) {
         *error_code = base::File::FILE_ERROR_SECURITY;
@@ -283,8 +286,8 @@ storage::FileSystemOperation* MediaFileSystemBackend::CreateFileSystemOperation(
     FileSystemContext* context,
     base::File::Error* error_code) const {
   std::unique_ptr<storage::FileSystemOperationContext> operation_context(
-      new storage::FileSystemOperationContext(context,
-                                              MediaTaskRunner().get()));
+      std::make_unique<storage::FileSystemOperationContext>(
+          context, MediaTaskRunner().get()));
   return storage::FileSystemOperation::Create(url, context,
                                               std::move(operation_context));
 }
@@ -301,7 +304,7 @@ bool MediaFileSystemBackend::SupportsStreaming(
 
 bool MediaFileSystemBackend::HasInplaceCopyImplementation(
     storage::FileSystemType type) const {
-  DCHECK(type == storage::kFileSystemTypeNativeMedia ||
+  DCHECK(type == storage::kFileSystemTypeLocalMedia ||
          type == storage::kFileSystemTypeDeviceMedia);
   return true;
 }

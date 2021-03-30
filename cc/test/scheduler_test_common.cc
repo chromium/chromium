@@ -154,7 +154,9 @@ TestScheduler::TestScheduler(
                 scheduler_settings,
                 layer_tree_host_id,
                 task_runner,
-                std::move(compositor_timing_history)),
+                std::move(compositor_timing_history),
+                nullptr,
+                nullptr),
       now_src_(now_src) {}
 
 base::TimeTicks TestScheduler::Now() const {

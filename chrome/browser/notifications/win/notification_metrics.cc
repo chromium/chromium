@@ -4,74 +4,79 @@
 
 #include "chrome/browser/notifications/win/notification_metrics.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace notifications_uma {
 
 void LogDisplayHistogram(DisplayStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.DisplayStatus", status,
-                            DisplayStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.DisplayStatus", status);
 }
 
 void LogCloseHistogram(CloseStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.CloseStatus", status,
-                            CloseStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.CloseStatus", status);
 }
 
 void LogHistoryHistogram(HistoryStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.HistoryStatus", status,
-                            HistoryStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.HistoryStatus", status);
 }
 
 void LogGetDisplayedStatus(GetDisplayedStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.GetDisplayedStatus", status,
-                            GetDisplayedStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.GetDisplayedStatus",
+                                status);
 }
 
 void LogGetDisplayedLaunchIdStatus(GetDisplayedLaunchIdStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.GetDisplayedLaunchIdStatus",
-                            status, GetDisplayedLaunchIdStatus::COUNT);
+  base::UmaHistogramEnumeration(
+      "Notifications.Windows.GetDisplayedLaunchIdStatus", status);
 }
 
 void LogGetNotificationLaunchIdStatus(GetNotificationLaunchIdStatus status) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Notifications.Windows.GetNotificationLaunchIdStatus", status,
-      GetNotificationLaunchIdStatus::COUNT);
+  base::UmaHistogramEnumeration(
+      "Notifications.Windows.GetNotificationLaunchIdStatus", status);
 }
 
 void LogGetSettingPolicy(GetSettingPolicy policy) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.GetSettingPolicy", policy,
-                            GetSettingPolicy::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.GetSettingPolicy",
+                                policy);
 }
 
 void LogGetSettingStatus(GetSettingStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.GetSettingStatus", status,
-                            GetSettingStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.GetSettingStatus",
+                                status);
+}
+
+void LogGetSettingPolicyStartup(GetSettingPolicy policy) {
+  base::UmaHistogramEnumeration("Notifications.Windows.GetSettingPolicyStartup",
+                                policy);
+}
+
+void LogGetSettingStatusStartup(GetSettingStatus status) {
+  base::UmaHistogramEnumeration("Notifications.Windows.GetSettingStatusStartup",
+                                status);
 }
 
 void LogHandleEventStatus(HandleEventStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.HandleEventStatus", status,
-                            HandleEventStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.HandleEventStatus",
+                                status);
 }
 
 void LogActivationStatus(ActivationStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.ActivationStatus", status,
-                            ActivationStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.ActivationStatus",
+                                status);
 }
 
 void LogSetReadyCallbackStatus(SetReadyCallbackStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.SetReadyCallbackStatus2",
-                            status, SetReadyCallbackStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.SetReadyCallbackStatus2",
+                                status);
 }
 
 void LogOnDismissedStatus(OnDismissedStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.OnDismissedStatus", status,
-                            OnDismissedStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.OnDismissedStatus",
+                                status);
 }
 
 void LogOnFailedStatus(OnFailedStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.OnFailedStatus", status,
-                            OnFailedStatus::COUNT);
+  base::UmaHistogramEnumeration("Notifications.Windows.OnFailedStatus", status);
 }
 
 }  // namespace notifications_uma

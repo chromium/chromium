@@ -84,14 +84,14 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
   // This construct pairs together a |bool| (denoting whether the list contains
   // a priority_handler at the front) with the list of AcceleratorTargets.
   using AcceleratorTargets = std::pair<bool, AcceleratorTargetList>;
-  using AcceleratorMap = std::map<Accelerator, AcceleratorTargets>;
+  using AcceleratorTargetsMap = std::map<Accelerator, AcceleratorTargets>;
 
   // Implementation of Unregister(). |map_iter| points to the accelerator to
   // remove, and |target| the AcceleratorTarget to remove.
-  void UnregisterImpl(AcceleratorMap::iterator map_iter,
+  void UnregisterImpl(AcceleratorTargetsMap::iterator map_iter,
                       AcceleratorTarget* target);
 
-  AcceleratorMap accelerators_;
+  AcceleratorTargetsMap accelerators_;
 
   DISALLOW_COPY_AND_ASSIGN(AcceleratorManager);
 };

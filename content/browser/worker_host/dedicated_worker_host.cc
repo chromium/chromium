@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/loader/content_security_notifier.h"
@@ -34,6 +35,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 
@@ -44,30 +46,44 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     const blink::DedicatedWorkerToken& token,
     RenderProcessHost* worker_process_host,
     base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+    base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
     GlobalFrameRoutingId ancestor_render_frame_host_id,
     const url::Origin& creator_origin,
     const net::IsolationInfo& isolation_info,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter)
+        coep_reporter,
+    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host)
     : service_(service),
       token_(token),
       worker_process_host_(worker_process_host),
       creator_render_frame_host_id_(creator_render_frame_host_id),
+      creator_worker_token_(creator_worker_token),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_origin),
       // TODO(https://crbug.com/1058759): Calculate the worker origin based on
       // the worker script URL.
       worker_origin_(creator_origin),
       isolation_info_(isolation_info),
-      cross_origin_embedder_policy_(cross_origin_embedder_policy),
+      creator_cross_origin_embedder_policy_(cross_origin_embedder_policy),
+      host_receiver_(this, std::move(host)),
       coep_reporter_(std::move(coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(worker_process_host_);
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
   DCHECK(coep_reporter_);
+  DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
+         (!creator_render_frame_host_id_ && creator_worker_token_));
 
   scoped_process_host_observation_.Observe(worker_process_host_);
+
+  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
+    // This is a workaround to make the worker's COEP have a value when
+    // PlzDedicatedWorker is disabled. When the feature is enabled, The value is
+    // initialized in DedicatedWorkerHost::DidStartScriptLoad().
+    worker_cross_origin_embedder_policy_ =
+        creator_cross_origin_embedder_policy_;
+  }
 
   service_->NotifyWorkerCreated(this);
 }
@@ -190,16 +206,28 @@ void DedicatedWorkerHost::StartScriptLoad(
   // See https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
   if (script_url.SchemeIsBlob()) {
     if (creator_render_frame_host_id_) {
+      // The creator of this worker is a frame.
       base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
           RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value())
               ->GetLastCommittedServiceWorkerHost();
 
       service_worker_handle_->set_parent_container_host(creator_container_host);
     } else {
-      // TODO(https://crbug.com/1017034): When this worker is nested, the worker
-      // should inherit the active service worker from the parent worker host.
-      // Implement this behavior.
-      NOTIMPLEMENTED();
+      // The creator of this worker is a dedicated worker.
+      DCHECK(creator_worker_token_);
+
+      DedicatedWorkerHost* creator_worker =
+          service_->GetDedicatedWorkerHostFromToken(
+              creator_worker_token_.value());
+      if (!creator_worker) {
+        client_->OnScriptLoadStartFailed();
+        return;
+      }
+
+      base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
+          creator_worker->service_worker_handle()->container_host();
+
+      service_worker_handle_->set_parent_container_host(creator_container_host);
     }
   }
 
@@ -260,6 +288,32 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   RenderFrameHostImpl* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   if (!ancestor_render_frame_host) {
+    client_->OnScriptLoadStartFailed();
+    return;
+  }
+
+  // https://html.spec.whatwg.org/C/#run-a-worker
+  worker_cross_origin_embedder_policy_ = network::CrossOriginEmbedderPolicy();
+  if (final_response_url.SchemeIsBlob() ||
+      final_response_url.SchemeIs(url::kAboutScheme) ||
+      final_response_url.SchemeIs(url::kDataScheme)) {
+    // > 14.5 If response's url's scheme is a local scheme, then set worker
+    // global scope's embedder policy to owner's embedder policy.
+    worker_cross_origin_embedder_policy_ =
+        creator_cross_origin_embedder_policy_;
+  } else if (main_script_load_params->response_head->parsed_headers) {
+    // > 14.6 Otherwise, set worker global scope's embedder policy to the result
+    // of obtaining an embedder policy from response.
+    worker_cross_origin_embedder_policy_ =
+        main_script_load_params->response_head->parsed_headers
+            ->cross_origin_embedder_policy;
+  }
+
+  // > 14.8 If the result of checking a global object's embedder policy with
+  // worker global scope, owner, and response is false, then set response to a
+  // network error.
+  if (!CheckCrossOriginEmbedderPolicy(creator_cross_origin_embedder_policy_,
+                                      cross_origin_embedder_policy())) {
     client_->OnScriptLoadStartFailed();
     return;
   }
@@ -333,7 +387,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           ancestor_render_frame_host->BuildClientSecurityState(),
           std::move(coep_reporter), worker_process_host_,
           ancestor_render_frame_host->IsFeatureEnabled(
-              blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)
+              blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
               ? network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit
               : network::mojom::TrustTokenRedemptionPolicy::kForbid,
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");
@@ -355,6 +409,36 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       std::move(default_factory_receiver), std::move(factory_params));
 
   return pending_default_factory;
+}
+
+// The implementation of the following algorithm:
+// https://html.spec.whatwg.org/C/#check-a-global-object's-embedder-policy
+bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
+    network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
+    network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy) {
+  // > 4. If ownerPolicy's report-only value is "require-corp" and policy's
+  // value is "unsafe-none", then queue a cross-origin embedder policy
+  // inheritance violation with response, "worker initialization", owner's
+  // policy's report only reporting endpoint, "reporting", and owner.
+  // TODO(crbug.com/1060837): Queue a report if the report-only value is not
+  // valid.
+
+  // > 5. If ownerPolicy's value is "unsafe-none" or policy's value is
+  // "require-corp", then return true.
+  if (creator_cross_origin_embedder_policy.value ==
+          network::mojom::CrossOriginEmbedderPolicyValue::kNone ||
+      worker_cross_origin_embedder_policy.value ==
+          network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
+    return true;
+  }
+
+  // > 6. Queue a cross-origin embedder policy inheritance violation with
+  // response, "worker initialization", owner's policy's reporting endpoint,
+  // "enforce", and owner.
+  // TODO(crbug.com/1060837): Queue this report.
+
+  // > 7. Return false.
+  return false;
 }
 
 void DedicatedWorkerHost::CreateWebUsbService(
@@ -415,7 +499,7 @@ void DedicatedWorkerHost::BindCacheStorage(
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
   coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
-  worker_process_host_->BindCacheStorage(cross_origin_embedder_policy_,
+  worker_process_host_->BindCacheStorage(cross_origin_embedder_policy(),
                                          std::move(coep_reporter),
                                          worker_origin_, std::move(receiver));
 }
@@ -426,14 +510,16 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
   coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
-  // There is no creator frame when the worker is nested.
+  // Set this worker as the creator of the new worker and inherit the ancestor
+  // render frame.
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_host_->GetID(),
           /*creator_render_frame_host_id_=*/base::nullopt,
-          ancestor_render_frame_host_id_, worker_origin_, isolation_info_,
-          cross_origin_embedder_policy_, std::move(coep_reporter)),
+          /*creator_worker_token=*/token_, ancestor_render_frame_host_id_,
+          worker_origin_, isolation_info_, cross_origin_embedder_policy(),
+          std::move(coep_reporter)),
       std::move(receiver));
 }
 
@@ -543,6 +629,31 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
 
   subresource_loader_updater_->UpdateSubresourceLoaderFactories(
       std::move(subresource_loader_factories));
+}
+
+void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (!ancestor_render_frame_host)
+    return;
+
+  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+      ancestor_render_frame_host->GetLastCommittedServiceWorkerHost();
+  if (!container_host)
+    return;
+
+  // Count the number of dedicated workers that are controlled by the service
+  // worker that is inherited from a controlled document, and will not be
+  // controlled after PlzDedicatedWorker is enabled.
+  if (container_host->controller_registration() &&
+      !blink::ServiceWorkerScopeMatches(
+          container_host->controller_registration()->scope(), script_url)) {
+    container_host->CountFeature(
+        blink::mojom::WebFeature::kWorkerControlledByServiceWorkerOutOfScope);
+  }
 }
 
 }  // namespace content

@@ -4,7 +4,6 @@
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_row.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/mojo/mojo/public/mojom/base/string16.mojom.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
@@ -13,6 +12,7 @@
 <link rel="import" href="../search_handler.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../router.html">
+<link rel="import" href="../os_route.html">
 
 <dom-module id="os-settings-search-box">
   <template>
@@ -56,8 +56,12 @@
         --cr-toolbar-search-field-term-margin: 0;
         --cr-toolbar-search-field-border-radius: 20px;
         --cr-toolbar-search-field-paper-spinner-margin: 0 12px;
+        --cr-toolbar-search-field-input-icon-color:
+            var(--cr-form-field-label-color);
         --cr-toolbar-search-field-input-text-color:
             var(--cr-primary-text-color);
+        --cr-toolbar-icon-button-focus-outline-color:
+            var(--cr-focus-outline-color);
         font-size: 13px;
       }
 

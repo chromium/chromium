@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/audio/cras_audio_handler.h"
+#include "chromeos/assistant/test_support/expect_utils.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/service.h"
@@ -16,8 +17,10 @@
 
 namespace chromeos {
 namespace assistant {
-
 namespace {
+
+using ::ash::CrasAudioHandler;
+
 // Please remember to set auth token when running in |kProxy| mode.
 constexpr auto kMode = FakeS3Mode::kReplay;
 // Update this when you introduce breaking changes to existing tests.
@@ -35,6 +38,8 @@ constexpr int kStartBrightnessPercent = 50;
   })
 
 }  // namespace
+
+using chromeos::assistant::test::ExpectResult;
 
 class AssistantBrowserTest : public MixinBasedInProcessBrowserTest {
  public:
@@ -64,7 +69,7 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest {
     chromeos::PowerManagerClient::Get()->SetScreenBrightness(request);
 
     // Wait for the initial value to settle.
-    tester()->ExpectResult(
+    ExpectResult(
         true, base::BindLambdaForTesting([&]() {
           constexpr double kEpsilon = 0.1;
           auto current_brightness = tester()->SyncCall(base::BindOnce(
@@ -79,7 +84,7 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest {
   void ExpectBrightnessUp() {
     auto* power_manager = chromeos::PowerManagerClient::Get();
     // Check the brightness changes
-    tester()->ExpectResult(
+    ExpectResult(
         true, base::BindLambdaForTesting([&]() {
           constexpr double kEpsilon = 1;
           auto current_brightness = tester()->SyncCall(base::BindOnce(
@@ -94,7 +99,7 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest {
   void ExpectBrightnessDown() {
     auto* power_manager = chromeos::PowerManagerClient::Get();
     // Check the brightness changes
-    tester()->ExpectResult(
+    ExpectResult(
         true, base::BindLambdaForTesting([&]() {
           constexpr double kEpsilon = 1;
           auto current_brightness = tester()->SyncCall(base::BindOnce(
@@ -156,19 +161,19 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnUpVolume) {
 
   ASSERT_TRUE(tester()->IsVisible());
 
-  auto* cras = chromeos::CrasAudioHandler::Get();
+  auto* cras = CrasAudioHandler::Get();
   constexpr int kStartVolumePercent = 50;
   cras->SetOutputVolumePercent(kStartVolumePercent);
   EXPECT_EQ(kStartVolumePercent, cras->GetOutputVolumePercent());
 
   tester()->SendTextQuery("turn up volume");
 
-  tester()->ExpectResult(true, base::BindRepeating(
-                                   [](chromeos::CrasAudioHandler* cras) {
-                                     return cras->GetOutputVolumePercent() >
-                                            kStartVolumePercent;
-                                   },
-                                   cras));
+  ExpectResult(true, base::BindRepeating(
+                         [](CrasAudioHandler* cras) {
+                           return cras->GetOutputVolumePercent() >
+                                  kStartVolumePercent;
+                         },
+                         cras));
 }
 
 IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnDownVolume) {
@@ -178,19 +183,19 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnDownVolume) {
 
   ASSERT_TRUE(tester()->IsVisible());
 
-  auto* cras = chromeos::CrasAudioHandler::Get();
+  auto* cras = CrasAudioHandler::Get();
   constexpr int kStartVolumePercent = 50;
   cras->SetOutputVolumePercent(kStartVolumePercent);
   EXPECT_EQ(kStartVolumePercent, cras->GetOutputVolumePercent());
 
   tester()->SendTextQuery("turn down volume");
 
-  tester()->ExpectResult(true, base::BindRepeating(
-                                   [](chromeos::CrasAudioHandler* cras) {
-                                     return cras->GetOutputVolumePercent() <
-                                            kStartVolumePercent;
-                                   },
-                                   cras));
+  ExpectResult(true, base::BindRepeating(
+                         [](CrasAudioHandler* cras) {
+                           return cras->GetOutputVolumePercent() <
+                                  kStartVolumePercent;
+                         },
+                         cras));
 }
 
 IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldTurnUpBrightness) {

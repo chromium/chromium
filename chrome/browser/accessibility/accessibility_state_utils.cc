@@ -7,7 +7,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #else
 #include <stdint.h>
 #include "content/public/browser/browser_accessibility_state.h"
@@ -15,10 +15,14 @@
 
 namespace accessibility_state_utils {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using ::ash::AccessibilityManager;
+#endif
+
 bool IsScreenReaderEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::AccessibilityManager::Get() &&
-         chromeos::AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
+  return AccessibilityManager::Get() &&
+         AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
 #else
   // TODO(katie): Can we use AXMode in Chrome OS as well? May need to stop
   // Switch Access and Select-to-Speak from setting kScreenReader.

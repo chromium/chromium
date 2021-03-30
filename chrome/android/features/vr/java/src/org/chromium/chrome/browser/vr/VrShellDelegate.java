@@ -35,6 +35,7 @@ import com.google.vr.ndk.base.GvrUiLayout;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
@@ -243,8 +244,10 @@ public class VrShellDelegate
                     launchIntent = VrModuleProvider.getIntentDelegate().setupVrIntent(launchIntent);
                     sInstance.mInternalIntentUsedToStartVr = true;
                     sInstance.setExpectingIntent(true);
-                    getVrDaydreamApi().launchInVr(PendingIntent.getActivity(
-                            activity, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                    getVrDaydreamApi().launchInVr(
+                            PendingIntent.getActivity(activity, 0, launchIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT
+                                            | IntentUtils.getPendingIntentMutabilityFlag(false)));
                 } else {
                     // We start the Activity with a custom animation that keeps it hidden while
                     // starting up to avoid Android showing stale 2D screenshots when the user is in

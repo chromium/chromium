@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -149,8 +150,22 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
 TEST_F(FidoMakeCredentialHandlerTest, TransportAvailabilityInfo) {
   auto request_handler = CreateMakeCredentialHandler();
 
-  EXPECT_EQ(FidoRequestHandlerBase::RequestType::kMakeCredential,
-            request_handler->transport_availability_info().request_type);
+  EXPECT_EQ(request_handler->transport_availability_info().request_type,
+            FidoRequestHandlerBase::RequestType::kMakeCredential);
+}
+
+TEST_F(FidoMakeCredentialHandlerTest, TransportAvailabilityInfoRk) {
+  for (const auto rk : {ResidentKeyRequirement::kDiscouraged,
+                        ResidentKeyRequirement::kPreferred,
+                        ResidentKeyRequirement::kRequired}) {
+    auto request_handler =
+        CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
+            AuthenticatorAttachment::kAny, rk,
+            UserVerificationRequirement::kPreferred));
+    EXPECT_EQ(
+        request_handler->transport_availability_info().resident_key_requirement,
+        rk);
+  }
 }
 
 TEST_F(FidoMakeCredentialHandlerTest, TestCtap2MakeCredential) {
@@ -245,9 +260,15 @@ TEST_F(FidoMakeCredentialHandlerTest, CrossPlatformAttachment) {
                                      UserVerificationRequirement::kPreferred));
 
   // kCloudAssistedBluetoothLowEnergy not yet supported for MakeCredential.
-  ExpectAllowedTransportsForRequestAre(
-      request_handler.get(), {FidoTransportProtocol::kNearFieldCommunication,
-                              FidoTransportProtocol::kUsbHumanInterfaceDevice});
+  ExpectAllowedTransportsForRequestAre(request_handler.get(), {
+    FidoTransportProtocol::kNearFieldCommunication,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        // CrOS tries to instantiate a platform authenticator for cross-platform
+        // requests if enabled via enterprise policy.
+        FidoTransportProtocol::kInternal,
+#endif
+        FidoTransportProtocol::kUsbHumanInterfaceDevice
+  });
 }
 
 TEST_F(FidoMakeCredentialHandlerTest, PlatformAttachment) {
@@ -499,8 +520,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
       ::testing::UnorderedElementsAre(FidoTransportProtocol::kInternal));
 }
 
-// A cross-platform authenticator claiming to be a platform authenticator as per
-// its GetInfo response is rejected.
+// A platform authenticator is ignored for cross-platform requests.
 TEST_F(FidoMakeCredentialHandlerTest,
        CrossPlatformAuthenticatorPretendingToBePlatform) {
   auto request_handler = CreateMakeCredentialHandler(
@@ -511,10 +531,21 @@ TEST_F(FidoMakeCredentialHandlerTest,
 
   auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation(
       test_data::kTestGetInfoResponsePlatformDevice);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // CrOS will dispatch to a platform authenticator and one can be
+  // instantiated in such cases if enabled via enterprise policy.
+  device->ExpectCtap2CommandAndRespondWithError(
+      CtapRequestCommand::kAuthenticatorMakeCredential,
+      CtapDeviceResponseCode::kCtap2ErrOperationDenied);
+#endif
   discovery()->AddDevice(std::move(device));
 
   task_environment_.FastForwardUntilNoTasksRemain();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(callback().was_called());
+#else
   EXPECT_FALSE(callback().was_called());
+#endif
 }
 
 // A platform authenticator claiming to be a cross-platform authenticator as per

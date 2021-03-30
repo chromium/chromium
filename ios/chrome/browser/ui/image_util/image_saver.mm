@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 
+#import <Photos/Photos.h>
+
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
+#include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -25,6 +29,15 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Kill switch guarding a workaround for TCC violations before iOS14.  In case
+// iOS14 starts triggering violations too.  See crbug.com/1159431 for details.
+const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
+}  // namespace
 
 @interface ImageSaver ()
 // Base view controller for the alerts.
@@ -69,6 +82,8 @@
       return;
     }
 
+    // Use -imageWithData to validate |data|, but continue to pass the raw
+    // |data| to -savePhoto to ensure no data loss occurs.
     UIImage* savedImage = [UIImage imageWithData:data];
     if (!savedImage) {
       [strongSelf
@@ -77,9 +92,30 @@
       return;
     }
 
-    UIImageWriteToSavedPhotosAlbum(
-        savedImage, weakSelf,
-        @selector(image:didFinishSavingWithError:contextInfo:), nullptr);
+    if (base::FeatureList::IsEnabled(kPhotoLibrarySaveImage) &&
+        base::ios::IsRunningOnIOS14OrLater()) {
+      // Dump |data| into the photo library. Requires the usage of
+      // NSPhotoLibraryAddUsageDescription.
+      [[PHPhotoLibrary sharedPhotoLibrary]
+          performChanges:^{
+            PHAssetResourceCreationOptions* options =
+                [[PHAssetResourceCreationOptions alloc] init];
+            [[PHAssetCreationRequest creationRequestForAsset]
+                addResourceWithType:PHAssetResourceTypePhoto
+                               data:data
+                            options:options];
+          }
+          completionHandler:^(BOOL success, NSError* error) {
+            [weakSelf image:savedImage
+                didFinishSavingWithError:error
+                             contextInfo:nil];
+          }];
+    } else {
+      // Fallback for pre-iOS14.
+      UIImageWriteToSavedPhotosAlbum(
+          savedImage, weakSelf,
+          @selector(image:didFinishSavingWithError:contextInfo:), nullptr);
+    }
   });
 }
 

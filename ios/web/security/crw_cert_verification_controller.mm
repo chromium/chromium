@@ -252,8 +252,10 @@ using web::WebThread;
   // Check if user has decided to proceed with this bad cert.
   scoped_refptr<net::X509Certificate> leafCert =
       net::x509_util::CreateX509CertificateFromSecCertificate(
-          SecTrustGetCertificateAtIndex(trust, 0),
-          std::vector<SecCertificateRef>());
+          base::ScopedCFTypeRef<SecCertificateRef>(
+              SecTrustGetCertificateAtIndex(trust, 0),
+              base::scoped_policy::RETAIN),
+          {});
   if (!leafCert)
     return web::CERT_ACCEPT_POLICY_NON_RECOVERABLE_ERROR;
 

@@ -21,10 +21,8 @@ constexpr StaticOobeScreenId ActiveDirectoryPasswordChangeView::kScreenId;
 
 ActiveDirectoryPasswordChangeScreenHandler::
     ActiveDirectoryPasswordChangeScreenHandler(
-        JSCallsContainer* js_calls_container,
-        CoreOobeView* core_oobe_view)
-    : BaseScreenHandler(kScreenId, js_calls_container),
-      core_oobe_view_(core_oobe_view) {
+        JSCallsContainer* js_calls_container)
+    : BaseScreenHandler(kScreenId, js_calls_container) {
   set_user_acted_method_path(
       "login.ActiveDirectoryPasswordChangeScreen.userActed");
 }
@@ -67,8 +65,8 @@ void ActiveDirectoryPasswordChangeScreenHandler::Unbind() {
 
 void ActiveDirectoryPasswordChangeScreenHandler::ShowSignInError(
     const std::string& error_text) {
-  core_oobe_view_->ShowSignInError(0, error_text, std::string(),
-                                   HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+  CallJS("login.ActiveDirectoryPasswordChangeScreen.showErrorDialog",
+         error_text);
 }
 
 void ActiveDirectoryPasswordChangeScreenHandler::HandleComplete(

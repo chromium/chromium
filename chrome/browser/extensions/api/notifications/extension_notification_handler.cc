@@ -7,7 +7,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
@@ -87,7 +86,7 @@ void ExtensionNotificationHandler::OnClick(
     const GURL& origin,
     const std::string& notification_id,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   DCHECK(!reply.has_value());
 

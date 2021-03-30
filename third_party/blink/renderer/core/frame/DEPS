@@ -2,6 +2,13 @@ specific_include_rules = {
   "ad_tracker_test\.cc": [
     "+base/run_loop.h",
   ],
+  "child_frame_compositing_helper\.h": [
+    "+components/viz/common/surfaces/surface_id.h",
+  ],
+  "child_frame_compositing_helper\.cc": [
+    "+cc/paint/paint_image.h",
+    "+cc/paint/paint_image_builder.h"
+  ],
   "coop_access_violation_report_body\.cc": [
     "+services/network/public/cpp/cross_origin_opener_policy.h"
   ],
@@ -25,11 +32,21 @@ specific_include_rules = {
     "+cc/tiles/frame_viewer_instrumentation.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
   ],
+  "mhtml_archive_test\.cc": [
+    "+services/network/public/cpp/is_potentially_trustworthy.h",
+  ],
+  "remote_frame\.h": [
+    "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
+  ],
+  "remote_frame\.cc": [
+    "+ui/base/window_open_disposition.h",
+  ],
   "remote_frame_view\.cc": [
     "+cc/base/math_util.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
     "+printing/buildflags/buildflags.h",
     "+printing/metafile_skia.h",
+    "+ui/gfx/transform_util.h",
   ],
   "visual_viewport\.cc": [
     "+cc/layers/solid_color_scrollbar_layer.h",

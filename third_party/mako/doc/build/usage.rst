@@ -355,7 +355,7 @@ exception-handling utilities.
 Pygments
 --------
 
-A `Pygments <http://pygments.pocoo.org>`_-compatible syntax
+A `Pygments <https://pygments.org/>`_-compatible syntax
 highlighting module is included under :mod:`mako.ext.pygmentplugin`.
 This module is used in the generation of Mako documentation and
 also contains various `setuptools` entry points under the heading

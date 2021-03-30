@@ -13,9 +13,9 @@
 #include "ui/gfx/paint_vector_icon.h"
 
 AccountHoverListModel::AccountHoverListModel(
-    const std::vector<device::AuthenticatorGetAssertionResponse>* response_list,
+    const std::vector<device::PublicKeyCredentialUserEntity>* users_list,
     Delegate* delegate)
-    : response_list_(response_list), delegate_(delegate) {}
+    : users_list_(users_list), delegate_(delegate) {}
 
 AccountHoverListModel::~AccountHoverListModel() = default;
 
@@ -23,8 +23,8 @@ bool AccountHoverListModel::ShouldShowPlaceholderForEmptyList() const {
   return false;
 }
 
-base::string16 AccountHoverListModel::GetPlaceholderText() const {
-  return base::string16();
+std::u16string AccountHoverListModel::GetPlaceholderText() const {
+  return std::u16string();
 }
 
 const gfx::VectorIcon* AccountHoverListModel::GetPlaceholderIcon() const {
@@ -36,22 +36,22 @@ std::vector<int> AccountHoverListModel::GetThrobberTags() const {
 }
 
 std::vector<int> AccountHoverListModel::GetButtonTags() const {
-  std::vector<int> tag_list(response_list_->size());
-  for (size_t i = 0; i < response_list_->size(); ++i)
+  std::vector<int> tag_list(users_list_->size());
+  for (size_t i = 0; i < users_list_->size(); ++i)
     tag_list[i] = i;
   return tag_list;
 }
 
-base::string16 AccountHoverListModel::GetItemText(int item_tag) const {
-  auto user = (*response_list_)[item_tag].user_entity();
-  if (user->display_name && !user->display_name->empty())
-    return base::UTF8ToUTF16(user->display_name.value());
+std::u16string AccountHoverListModel::GetItemText(int item_tag) const {
+  const device::PublicKeyCredentialUserEntity& user = users_list_->at(item_tag);
+  if (user.display_name && !user.display_name->empty())
+    return base::UTF8ToUTF16(user.display_name.value());
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_UNKNOWN_ACCOUNT);
 }
 
-base::string16 AccountHoverListModel::GetDescriptionText(int item_tag) const {
-  auto user = (*response_list_)[item_tag].user_entity();
-  return base::UTF8ToUTF16(user->name.value_or(""));
+std::u16string AccountHoverListModel::GetDescriptionText(int item_tag) const {
+  const device::PublicKeyCredentialUserEntity& user = users_list_->at(item_tag);
+  return base::UTF8ToUTF16(user.name.value_or(""));
 }
 
 const gfx::VectorIcon* AccountHoverListModel::GetItemIcon(int item_tag) const {
@@ -63,7 +63,7 @@ void AccountHoverListModel::OnListItemSelected(int item_tag) {
 }
 
 size_t AccountHoverListModel::GetPreferredItemCount() const {
-  return response_list_->size();
+  return users_list_->size();
 }
 
 bool AccountHoverListModel::StyleForTwoLines() const {

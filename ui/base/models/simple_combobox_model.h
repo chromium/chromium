@@ -17,17 +17,17 @@ namespace ui {
 // An empty string will be a separator.
 class COMPONENT_EXPORT(UI_BASE) SimpleComboboxModel : public ComboboxModel {
  public:
-  explicit SimpleComboboxModel(std::vector<base::string16> items);
+  explicit SimpleComboboxModel(std::vector<std::u16string> items);
   ~SimpleComboboxModel() override;
 
   // ui::ComboboxModel:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) const override;
+  std::u16string GetItemAt(int index) const override;
   bool IsItemSeparatorAt(int index) const override;
   int GetDefaultIndex() const override;
 
  private:
-  const std::vector<base::string16> items_;
+  const std::vector<std::u16string> items_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleComboboxModel);
 };

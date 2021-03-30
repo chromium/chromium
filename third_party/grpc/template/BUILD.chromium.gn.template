@@ -35,6 +35,10 @@
       "HAVE_CONFIG_H",
       "PB_FIELD_16BIT",
       "GRPC_NO_XDS",
+
+      # This is defaulted to true in google3. See:
+      # go/grpc-callback-codelab#advanced-topics
+      "GRPC_CALLBACK_API_NONEXPERIMENTAL",
     ]
 
     cflags = [

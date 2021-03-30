@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockBatteryMonitor} from './resources/mock-battery-monitor.js';
+
+const mock = new MockBatteryMonitor();
+
+promise_test(async _ => {
+  mock.setBatteryStatus(false, 10, 20, 0.5);
+  const battery = await navigator.getBattery();
+
+  assert_not_equals(battery, undefined);
+  assert_equals(typeof battery.charging, 'boolean');
+  assert_equals(typeof battery.chargingTime, 'number');
+  assert_equals(typeof battery.dischargingTime, 'number');
+  assert_equals(typeof battery.level, 'number');
+
+  mock.verifyBatteryStatus(battery);
+
+  assert_equals(typeof battery.onchargingchange, 'object');
+  assert_equals(typeof battery.onchargingtimechange, 'object');
+  assert_equals(typeof battery.ondischargingtimechange, 'object');
+  assert_equals(typeof battery.onlevelchange, 'object');
+}, 'verify basic getBattery API support');
+</script>
+</body>
+</html>

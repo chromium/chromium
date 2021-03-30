@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_EDIT_CONTEXT_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_input_mode.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
@@ -159,13 +158,13 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   WebTextInputType TextInputType() override;
   int TextInputFlags() const;
   WebRange CompositionRange() override;
-  bool GetCompositionCharacterBounds(WebVector<WebRect>& bounds) override;
+  bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) override;
   WebRange GetSelectionOffsets() const override;
 
   // Populate |control_bounds| and |selection_bounds| with the bounds fetched
   // from the active EditContext.
-  void GetLayoutBounds(WebRect* web_control_bounds,
-                       WebRect* web_selection_bounds) override;
+  void GetLayoutBounds(gfx::Rect* control_bounds,
+                       gfx::Rect* selection_bounds) override;
 
   // Sets the composition range from the already existing text
   // This is used for reconversion scenarios in JPN IME.
@@ -173,6 +172,9 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
       int composition_start,
       int composition_end,
       const WebVector<ui::ImeTextSpan>& ime_text_spans);
+
+  // For English typing.
+  bool InsertText(const WebString& text);
 
   bool IsVirtualKeyboardPolicyManual() const override;
   bool IsEditContextActive() const override;
@@ -244,8 +246,8 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   ui::TextInputAction enter_key_hint_ = ui::TextInputAction::kEnter;
   EditContextInputPanelPolicy input_panel_policy_ =
       EditContextInputPanelPolicy::kManual;
-  WebRect control_bounds_;
-  WebRect selection_bounds_;
+  gfx::Rect control_bounds_;
+  gfx::Rect selection_bounds_;
   // This flag is set when the input method controller receives a
   // composition event from the IME. It keeps track of the start and
   // end composition events and fires JS events accordingly.

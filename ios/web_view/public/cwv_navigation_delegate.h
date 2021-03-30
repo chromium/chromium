@@ -48,7 +48,11 @@ FOUNDATION_EXPORT CWV_EXPORT NSErrorUserInfoKey CWVCertStatusKey;
                       forMainFrame:(BOOL)forMainFrame;
 
 // Notifies the delegate that main frame navigation has started.
+// Deprecated, use |webViewDidStartNavigation| instead.
 - (void)webViewDidStartProvisionalNavigation:(CWVWebView*)webView;
+
+// Notifies the delegate that main frame navigation has started.
+- (void)webViewDidStartNavigation:(CWVWebView*)webView;
 
 // Notifies the delegate that response data started arriving for
 // the main frame.

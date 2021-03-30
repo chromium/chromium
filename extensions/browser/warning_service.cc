@@ -17,7 +17,7 @@ WarningService::WarningService(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (browser_context_) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(
+    extension_registry_observation_.Observe(ExtensionRegistry::Get(
         ExtensionsBrowserClient::Get()->GetOriginalContext(browser_context_)));
   }
 }

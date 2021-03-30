@@ -7,19 +7,29 @@
 #include <memory>
 #include <utility>
 
-#include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_base_view.h"
 #include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_highlight_item_border.h"
+#include "ash/wm/workspace/backdrop_controller.h"
+#include "ash/wm/workspace/workspace_layout_manager.h"
+#include "ash/wm/workspace_controller.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/skia_paint_util.h"
@@ -33,11 +43,13 @@ namespace {
 constexpr int kDeskPreviewHeightInCompactLayout = 48;
 
 // In non-compact layouts, the height of the preview is a percentage of the
-// total display height (divided by |kRootHeightDivider|), with a max of
-// |kDeskPreviewMaxHeight| dips.
+// total display height, with a max of |kDeskPreviewMaxHeight| dips and a min of
+// |kDeskPreviewMinHeight| dips.
 constexpr int kRootHeightDivider = 12;
+constexpr int kRootHeightDividerForSmallScreen = 8;
 constexpr int kDeskPreviewMaxHeight = 140;
 constexpr int kDeskPreviewMinHeight = 48;
+constexpr int kUseSmallerHeightDividerWidthThreshold = 600;
 
 // The corner radius of the border in dips.
 constexpr int kBorderCornerRadius = 6;
@@ -47,6 +59,15 @@ constexpr int kCornerRadius = 4;
 constexpr gfx::RoundedCornersF kCornerRadii(kCornerRadius);
 
 constexpr int kShadowElevation = 4;
+
+int GetHeightDivider(const int root_width) {
+  if (!features::IsBentoEnabled())
+    return kRootHeightDivider;
+
+  return root_width <= kUseSmallerHeightDividerWidthThreshold
+             ? kRootHeightDividerForSmallScreen
+             : kRootHeightDivider;
+}
 
 // Holds data about the original desk's layers to determine what we should do
 // when we attempt to mirror those layers.
@@ -63,45 +84,114 @@ struct LayerData {
   // should always be visible (even for inactive desks) to be able to see their
   // contents in the mini_views.
   bool should_force_mirror_visible = false;
+
+  // If true, transformations will be cleared for this layer. This is used,
+  // for example, for visible on all desk windows to clear their overview
+  // transformation since they don't belong to inactive desks.
+  bool should_clear_transform = false;
 };
 
 // Returns true if |window| can be shown in the desk's preview according to its
 // multi-profile ownership status (i.e. can only be shown if it belongs to the
 // active user).
 bool CanShowWindowForMultiProfile(aura::Window* window) {
-  MultiUserWindowManager* multi_user_window_manager =
-      MultiUserWindowManagerImpl::Get();
-  if (!multi_user_window_manager)
-    return true;
+  aura::Window* window_to_check = window;
+  // If |window| is a backdrop, check the window which has this backdrop
+  // instead.
+  WorkspaceController* workspace_controller =
+      GetWorkspaceControllerForContext(window_to_check);
+  if (workspace_controller) {
+    BackdropController* backdrop_controller =
+        workspace_controller->layout_manager()->backdrop_controller();
+    if (backdrop_controller->backdrop_window() == window_to_check)
+      window_to_check = backdrop_controller->window_having_backdrop();
+  }
 
-  const AccountId account_id =
-      multi_user_window_manager->GetUserPresentingWindow(window);
-  // An empty account ID is returned if the window is presented for all users.
-  if (!account_id.is_valid())
-    return true;
+  return window_util::ShouldShowForCurrentUser(window_to_check);
+}
 
-  return account_id == multi_user_window_manager->CurrentAccountId();
+// Returns the LayerData entry for |target_layer| in |layer_data|. Returns an
+// empty LayerData struct if not found.
+const LayerData GetLayerDataEntry(
+    const base::flat_map<ui::Layer*, LayerData>& layers_data,
+    ui::Layer* target_layer) {
+  const auto iter = layers_data.find(target_layer);
+  return iter == layers_data.end() ? LayerData{} : iter->second;
+}
+
+// Appends clones of all the visible on all desks windows' layers to
+// |out_desk_container_children|. Should only be called if
+// |visible_on_all_desks_windows| is not empty.
+void AppendVisibleOnAllDesksWindowsToDeskLayer(
+    const base::flat_set<aura::Window*>& visible_on_all_desks_windows,
+    const base::flat_map<ui::Layer*, LayerData>& layers_data,
+    std::vector<ui::Layer*>* out_desk_container_children) {
+  DCHECK(!visible_on_all_desks_windows.empty());
+  auto mru_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
+
+  for (auto* window : visible_on_all_desks_windows) {
+    const LayerData layer_data =
+        GetLayerDataEntry(layers_data, window->layer());
+    if (layer_data.should_skip_layer)
+      continue;
+
+    auto window_iter =
+        std::find(mru_windows.begin(), mru_windows.end(), window);
+    if (window_iter == mru_windows.end())
+      continue;
+
+    auto closest_window_below_iter = std::next(window_iter);
+    while (closest_window_below_iter != mru_windows.end() &&
+           !base::Contains(*out_desk_container_children,
+                           (*closest_window_below_iter)->layer())) {
+      // Find the closest window to |window| in the MRU tracker whose layer also
+      // is in |out_desk_container_children|. This window will be used to
+      // determine the stacking order of the visible on all desks window in the
+      // preview view.
+      closest_window_below_iter = std::next(closest_window_below_iter);
+    }
+
+    auto insertion_point_iter =
+        closest_window_below_iter == mru_windows.end()
+            ? out_desk_container_children->begin()
+            : std::next(std::find(out_desk_container_children->begin(),
+                                  out_desk_container_children->end(),
+                                  (*closest_window_below_iter)->layer()));
+    out_desk_container_children->insert(insertion_point_iter, window->layer());
+  }
 }
 
 // Recursively mirrors |source_layer| and its children and adds them as children
-// of |parent|, taking into account the given |layers_data|.
-// The transforms of the mirror layers of the direct children of
-// |desk_container_layer| will be reset to identity.
-void MirrorLayerTree(ui::Layer* desk_container_layer,
-                     ui::Layer* source_layer,
+// of |parent|, taking into account the given |layers_data|. If the layer data
+// of |source_layer| has |should_clear_transform| set to true, the transforms of
+// its mirror layers will be reset to identity.
+void MirrorLayerTree(ui::Layer* source_layer,
                      ui::Layer* parent,
-                     const base::flat_map<ui::Layer*, LayerData>& layers_data) {
-  const auto iter = layers_data.find(source_layer);
-  const LayerData layer_data =
-      iter == layers_data.end() ? LayerData{} : iter->second;
+                     const base::flat_map<ui::Layer*, LayerData>& layers_data,
+                     const base::flat_set<aura::Window*>&
+                         visible_on_all_desks_windows_to_mirror) {
+  const LayerData layer_data = GetLayerDataEntry(layers_data, source_layer);
   if (layer_data.should_skip_layer)
     return;
 
   auto* mirror = source_layer->Mirror().release();
   parent->Add(mirror);
 
-  for (auto* child : source_layer->children())
-    MirrorLayerTree(desk_container_layer, child, mirror, layers_data);
+  std::vector<ui::Layer*> children = source_layer->children();
+  if (!visible_on_all_desks_windows_to_mirror.empty()) {
+    // Windows that are visible on all desks should show up in each desk
+    // preview so for inactive desks, we need to append the layers of visible on
+    // all desks windows.
+    AppendVisibleOnAllDesksWindowsToDeskLayer(
+        visible_on_all_desks_windows_to_mirror, layers_data, &children);
+  }
+  for (auto* child : children) {
+    // Visible on all desks windows only needed to be added to the subtree once
+    // so use an empty set for subsequent calls.
+    MirrorLayerTree(child, mirror, layers_data,
+                    base::flat_set<aura::Window*>());
+  }
 
   mirror->set_sync_bounds_with_source(true);
   if (layer_data.should_force_mirror_visible) {
@@ -110,10 +200,7 @@ void MirrorLayerTree(ui::Layer* desk_container_layer,
     mirror->set_sync_visibility_with_source(false);
   }
 
-  // Windows in overview mode are transformed into their positions in the grid,
-  // but we want to show a preview of the windows in their untransformed state
-  // outside of overview mode.
-  if (source_layer->parent() == desk_container_layer)
+  if (layer_data.should_clear_transform)
     mirror->SetTransform(gfx::Transform());
 }
 
@@ -149,6 +236,15 @@ void GetLayersData(aura::Window* window,
   // identity.
   if (window->GetProperty(kForceVisibleInMiniViewKey))
     layer_data.should_force_mirror_visible = true;
+
+  // Visible on all desks windows aren't children of inactive desk's container
+  // so mark them explicitly to clear overview transforms. Additionally, windows
+  // in overview mode are transformed into their positions in the grid, but we
+  // want to show a preview of the windows in their untransformed state.
+  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey) ||
+      desks_util::IsDeskContainer(window->parent())) {
+    layer_data.should_clear_transform = true;
+  }
 
   for (auto* child : window->children())
     GetLayersData(child, out_layers_data);
@@ -263,7 +359,8 @@ int DeskPreviewView::GetHeight(aura::Window* root, bool compact) {
   DCHECK(root->IsRootWindow());
   return std::min(kDeskPreviewMaxHeight,
                   std::max(kDeskPreviewMinHeight,
-                           root->bounds().height() / kRootHeightDivider));
+                           root->bounds().height() /
+                               GetHeightDivider(root->bounds().width())));
 }
 
 void DeskPreviewView::SetBorderColor(SkColor color) {
@@ -289,9 +386,23 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   mirrored_content_root_layer->SetName("mirrored contents root layer");
   base::flat_map<ui::Layer*, LayerData> layers_data;
   GetLayersData(desk_container, &layers_data);
+
+  base::flat_set<aura::Window*> visible_on_all_desks_windows_to_mirror;
+  if (features::IsBentoEnabled() &&
+      !desks_util::IsActiveDeskContainer(desk_container)) {
+    // Since visible on all desks windows reside on the active desk, only mirror
+    // them in the layer tree if |this| is not the preview view for the active
+    // desk.
+    visible_on_all_desks_windows_to_mirror =
+        Shell::Get()->desks_controller()->GetVisibleOnAllDesksWindowsOnRoot(
+            mini_view_->root_window());
+    for (auto* window : visible_on_all_desks_windows_to_mirror)
+      GetLayersData(window, &layers_data);
+  }
+
   auto* desk_container_layer = desk_container->layer();
-  MirrorLayerTree(desk_container_layer, desk_container_layer,
-                  mirrored_content_root_layer.get(), layers_data);
+  MirrorLayerTree(desk_container_layer, mirrored_content_root_layer.get(),
+                  layers_data, visible_on_all_desks_windows_to_mirror);
 
   // Add the root of the mirrored layer tree as a child of the
   // |desk_mirrored_contents_view_|'s layer.
@@ -332,6 +443,57 @@ void DeskPreviewView::Layout() {
   desk_mirrored_contents_layer->SetTransform(transform);
 
   Button::Layout();
+}
+
+bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {
+  if (features::IsBentoEnabled())
+    mini_view_->owner_bar()->HandlePressEvent(mini_view_, event);
+
+  return Button::OnMousePressed(event);
+}
+
+bool DeskPreviewView::OnMouseDragged(const ui::MouseEvent& event) {
+  if (features::IsBentoEnabled())
+    mini_view_->owner_bar()->HandleDragEvent(mini_view_, event);
+
+  return Button::OnMouseDragged(event);
+}
+
+void DeskPreviewView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (!mini_view_->owner_bar()->HandleReleaseEvent(mini_view_, event))
+    Button::OnMouseReleased(event);
+}
+
+void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
+  if (!features::IsBentoEnabled()) {
+    Button::OnGestureEvent(event);
+    return;
+  }
+
+  DesksBarView* owner_bar = mini_view_->owner_bar();
+
+  switch (event->type()) {
+    // Only long press can trigger drag & drop.
+    case ui::ET_GESTURE_LONG_PRESS:
+      owner_bar->HandleLongPressEvent(mini_view_, *event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      FALLTHROUGH;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      owner_bar->HandleDragEvent(mini_view_, *event);
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_END:
+      if (owner_bar->HandleReleaseEvent(mini_view_, *event))
+        event->SetHandled();
+      break;
+    default:
+      break;
+  }
+
+  if (!event->handled())
+    Button::OnGestureEvent(event);
 }
 
 }  // namespace ash

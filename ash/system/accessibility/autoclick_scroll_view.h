@@ -5,7 +5,7 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_AUTOCLICK_SCROLL_VIEW_H_
 #define ASH_SYSTEM_ACCESSIBILITY_AUTOCLICK_SCROLL_VIEW_H_
 
-#include "ash/autoclick/autoclick_controller.h"
+#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ui/views/controls/button/button.h"
 

@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
 
   OmniboxViewViews* const omnibox =
       browser_view->toolbar()->location_bar()->omnibox_view();
-  omnibox->SetUserText(base::ASCIIToUTF16(""));
+  omnibox->SetUserText(u"");
 
   container->SetVisibleForTesting(true);
   browser_view->Layout();
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
                                               false, false, false));
-  EXPECT_EQ(base::ASCIIToUTF16("a"), omnibox->GetText());
+  EXPECT_EQ(u"a", omnibox->GetText());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,

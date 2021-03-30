@@ -79,7 +79,7 @@ export class EditableTextNode extends BasicNode {
   performAction(action) {
     switch (action) {
       case SwitchAccessMenuAction.KEYBOARD:
-        Navigator.instance.enterKeyboard();
+        Navigator.byItem.enterKeyboard();
         return SAConstants.ActionResponse.CLOSE_MENU;
       case SwitchAccessMenuAction.DICTATION:
         if (this.automationNode.state[chrome.automation.StateType.FOCUSED]) {

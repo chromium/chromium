@@ -9,8 +9,4 @@
 <resources>
     <!-- The size of the bounding box for favicons. -->
     <dimen name="compositor_tab_title_favicon_size">18dp</dimen>
-
-    <!-- TabSwitcher -->
-    <dimen name="tabswitcher_border_frame_padding_left">5.5dp</dimen>
-    <dimen name="tabswitcher_border_frame_padding_top">49.5dp</dimen>
 </resources>

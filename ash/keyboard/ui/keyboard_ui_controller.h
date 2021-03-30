@@ -24,7 +24,7 @@
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ime/input_method.h"
@@ -418,7 +418,8 @@ class KEYBOARD_EXPORT KeyboardUIController
   std::unique_ptr<KeyboardUI> ui_;
   std::unique_ptr<ui::VirtualKeyboardController> virtual_keyboard_controller_;
   KeyboardLayoutDelegate* layout_delegate_ = nullptr;
-  ScopedObserver<ui::InputMethod, ui::InputMethodObserver> ime_observer_{this};
+  base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
+      ime_observation_{this};
 
   // Container window that the keyboard window is a child of.
   aura::Window* parent_container_ = nullptr;

@@ -12,18 +12,17 @@
       /* Remove 300ms delay for 'click' event, when using touch interface. */
       touch-action: manipulation;
     }
-    html.loading::before {
-      background-color: var(--md-toolbar-color);
-      border-bottom: var(--md-toolbar-border);
-      box-sizing: border-box;
-      content: '';
-      display: block;
-      height: var(--md-toolbar-height);
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
     }
   </style>
 </head>
 <body>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   <script type="module" src="chromeos/os_settings.js"></script>
+  <os-settings-ui></os-settings-ui>
 </body>
 </html>

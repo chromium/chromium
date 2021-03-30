@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_DIALOGS_H_
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -37,6 +37,12 @@ class LockScreenStartReauthDialog : public BaseLockDialog {
   void Show();
   void Dismiss();
   bool IsRunning();
+
+ private:
+  void OnProfileCreated(Profile* profile, Profile::CreateStatus status);
+  void OnDialogClosed(const std::string& json_retval) override;
+
+  base::WeakPtrFactory<LockScreenStartReauthDialog> weak_factory_{this};
 };
 
 }  // namespace chromeos

@@ -13,11 +13,6 @@ constexpr UwSId kGoogleTestAUwSID = 341;
 constexpr UwSId kGoogleTestBUwSID = 342;
 constexpr UwSId kGoogleTestCUwSID = 343;
 
-extern const char kGoogleTestAUwEID[];
-extern const char kGoogleTestBUwEID[];
-extern const char kGoogleTestExtensionInvalid1[];
-extern const char kGoogleTestExtensionInvalid2[];
-
 extern const char kTestUwsAFileContents[];
 extern const int kTestUwsAFileContentsSize;
 extern const wchar_t kTestUwsAFilename[];

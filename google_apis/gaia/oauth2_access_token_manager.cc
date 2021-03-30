@@ -219,6 +219,9 @@ class OAuth2AccessTokenManager::Fetcher : public OAuth2AccessTokenConsumer {
   std::string client_id_;
   std::string client_secret_;
 
+  // Ensures that the fetcher is deleted only once.
+  bool scheduled_for_deletion_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(Fetcher);
 };
 
@@ -280,6 +283,7 @@ void OAuth2AccessTokenManager::Fetcher::Start() {
 
 void OAuth2AccessTokenManager::Fetcher::OnGetTokenSuccess(
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
+  CHECK(fetcher_);
   fetcher_.reset();
 
   RecordOAuth2TokenFetchResult(GoogleServiceAuthError::NONE);
@@ -299,6 +303,7 @@ void OAuth2AccessTokenManager::Fetcher::OnGetTokenSuccess(
 
 void OAuth2AccessTokenManager::Fetcher::OnGetTokenFailure(
     const GoogleServiceAuthError& error) {
+  CHECK(fetcher_);
   fetcher_.reset();
 
   if (ShouldRetry(error) && RetryIfPossible(error))
@@ -361,6 +366,9 @@ void OAuth2AccessTokenManager::Fetcher::InformWaitingRequests() {
 }
 
 void OAuth2AccessTokenManager::Fetcher::InformWaitingRequestsAndDelete() {
+  CHECK(!scheduled_for_deletion_);
+  scheduled_for_deletion_ = true;
+
   // Deregisters itself from the manager to prevent more waiting requests to
   // be added when it calls back the waiting requests.
   oauth2_access_token_manager_->OnFetchComplete(this);
@@ -696,8 +704,6 @@ void OAuth2AccessTokenManager::OnFetchComplete(
     OAuth2AccessTokenManager::Fetcher* fetcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  delegate_->OnAccessTokenFetched(fetcher->GetAccountId(), fetcher->error());
-
   // Note |fetcher| is recorded in |pending_fetcher_| mapped from its
   // combination of client ID, account ID, and scope set. This is guaranteed as
   // follows; here a Fetcher is said to be uncompleted if it has not finished
@@ -729,6 +735,19 @@ void OAuth2AccessTokenManager::OnFetchComplete(
   RequestParameters request_param(
       fetcher->GetClientId(), fetcher->GetAccountId(), fetcher->GetScopeSet());
 
+  auto iter = pending_fetchers_.find(request_param);
+  DCHECK(iter != pending_fetchers_.end());
+  DCHECK_EQ(fetcher, iter->second.get());
+
+  // The Fetcher deletes itself.
+  iter->second.release();
+  pending_fetchers_.erase(iter);
+
+  // `delegate_` might cancel all pending fetchers, so it's important to call it
+  // only after `fetcher` was removed from the map. See
+  // https://crbug.com/1186630.
+  delegate_->OnAccessTokenFetched(fetcher->GetAccountId(), fetcher->error());
+
   const OAuth2AccessTokenConsumer::TokenResponse* entry =
       GetCachedTokenResponse(request_param);
   for (const base::WeakPtr<RequestImpl>& req : fetcher->waiting_requests()) {
@@ -740,14 +759,6 @@ void OAuth2AccessTokenManager::OnFetchComplete(
       }
     }
   }
-
-  auto iter = pending_fetchers_.find(request_param);
-  DCHECK(iter != pending_fetchers_.end());
-  DCHECK_EQ(fetcher, iter->second.get());
-
-  // The Fetcher deletes itself.
-  iter->second.release();
-  pending_fetchers_.erase(iter);
 }
 
 void OAuth2AccessTokenManager::CancelFetchers(

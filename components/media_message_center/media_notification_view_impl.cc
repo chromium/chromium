@@ -26,6 +26,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -100,6 +101,9 @@ const gfx::VectorIcon* GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kSeekTo:
     case MediaSessionAction::kScrubTo:
     case MediaSessionAction::kSwitchAudioDevice:
+    case MediaSessionAction::kToggleMicrophone:
+    case MediaSessionAction::kToggleCamera:
+    case MediaSessionAction::kHangUp:
       NOTREACHED();
       break;
   }
@@ -126,7 +130,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
     MediaNotificationContainer* container,
     base::WeakPtr<MediaNotificationItem> item,
     std::unique_ptr<views::View> header_row_controls_view,
-    const base::string16& default_app_name,
+    const std::u16string& default_app_name,
     int notification_width,
     bool should_show_icon,
     base::Optional<NotificationTheme> theme)
@@ -163,7 +167,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   title_artist_row_ = main_row_->AddChildView(std::move(title_artist_row));
 
   auto title_label = std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL,
+      std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_PRIMARY);
   const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
   title_label->SetFontList(base_font_list.Derive(
@@ -174,7 +178,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   title_label_ = title_artist_row_->AddChildView(std::move(title_label));
 
   auto artist_label = std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL,
+      std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_PRIMARY);
   artist_label->SetLineHeight(is_cros_ ? kCrOSArtistLineHeight
                                        : kTitleArtistLineHeight);
@@ -344,7 +348,7 @@ void MediaNotificationViewImpl::SetForcedExpandedState(
   }
 
   if (header_row_)
-    header_row_->SetExpandButtonEnabled(IsExpandable());
+    header_row_->SetExpandButtonEnabled(GetExpandable());
   UpdateViewForExpandedState();
 }
 
@@ -443,7 +447,7 @@ void MediaNotificationViewImpl::UpdateWithMediaActions(
   enabled_actions_ = actions;
 
   if (header_row_)
-    header_row_->SetExpandButtonEnabled(IsExpandable());
+    header_row_->SetExpandButtonEnabled(GetExpandable());
   UpdateViewForExpandedState();
 
   PreferredSizeChanged();
@@ -507,7 +511,7 @@ views::Button* MediaNotificationViewImpl::GetHeaderRowForTesting() const {
   return header_row_;
 }
 
-base::string16 MediaNotificationViewImpl::GetSourceTitleForTesting() const {
+std::u16string MediaNotificationViewImpl::GetSourceTitleForTesting() const {
   return header_row_ ? header_row_->app_name_for_testing()  // IN-TEST
                      : cros_header_label_->GetText();
 }
@@ -520,7 +524,7 @@ void MediaNotificationViewImpl::UpdateActionButtonsVisibility() {
 
   base::flat_set<MediaSessionAction> visible_actions =
       GetTopVisibleActions(enabled_actions_, ignored_actions,
-                           GetMaxNumActions(IsActuallyExpanded()));
+                           GetMaxNumActions(GetActuallyExpanded()));
 
   for (auto* view : GetButtons()) {
     views::Button* action_button = views::Button::AsButton(view);
@@ -549,7 +553,7 @@ void MediaNotificationViewImpl::UpdateActionButtonsVisibility() {
 }
 
 void MediaNotificationViewImpl::UpdateViewForExpandedState() {
-  bool expanded = IsActuallyExpanded();
+  bool expanded = GetActuallyExpanded();
 
   // Adjust the layout of the |main_row_| based on the expanded state. If the
   // notification is expanded then the buttons should be below the title/artist
@@ -610,7 +614,7 @@ void MediaNotificationViewImpl::UpdateViewForExpandedState() {
 
 void MediaNotificationViewImpl::CreateMediaButton(
     MediaSessionAction action,
-    const base::string16& accessible_name) {
+    const std::u16string& accessible_name) {
   auto button =
       views::CreateVectorImageButton(views::Button::PressedCallback());
   button->SetCallback(
@@ -690,7 +694,7 @@ MediaNotificationViewImpl::GetMediaNotificationBackground() {
   return static_cast<MediaNotificationBackground*>(background());
 }
 
-bool MediaNotificationViewImpl::IsExpandable() const {
+bool MediaNotificationViewImpl::GetExpandable() const {
   if (forced_expanded_state_.has_value())
     return false;
 
@@ -706,10 +710,10 @@ bool MediaNotificationViewImpl::IsExpandable() const {
              .size() > kMediaNotificationActionsCount;
 }
 
-bool MediaNotificationViewImpl::IsActuallyExpanded() const {
+bool MediaNotificationViewImpl::GetActuallyExpanded() const {
   if (forced_expanded_state_.has_value())
     return forced_expanded_state_.value();
-  return expanded_ && IsExpandable();
+  return expanded_ && GetExpandable();
 }
 
 void MediaNotificationViewImpl::UpdateForegroundColor() {
@@ -819,5 +823,10 @@ std::vector<views::View*> MediaNotificationViewImpl::GetButtons() {
       buttons.end());
   return buttons;
 }
+
+BEGIN_METADATA(MediaNotificationViewImpl, views::View)
+ADD_READONLY_PROPERTY_METADATA(bool, Expandable)
+ADD_READONLY_PROPERTY_METADATA(bool, ActuallyExpanded)
+END_METADATA
 
 }  // namespace media_message_center

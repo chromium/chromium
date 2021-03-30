@@ -5,14 +5,16 @@
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/arc/fake_arc_data_snapshotd_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
@@ -20,6 +22,7 @@
 #include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "components/arc/enterprise/snapshot_session_controller.h"
 #include "components/arc/test/fake_apps_tracker.h"
+#include "components/arc/test/fake_snapshot_reboot_notification.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -29,6 +32,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 using testing::_;
+using testing::Eq;
 using testing::Invoke;
 using testing::WithArgs;
 
@@ -46,7 +50,8 @@ class TestUpstartClient : public chromeos::FakeUpstartClient {
   // FakeUpstartClient overrides:
   MOCK_METHOD(void,
               StartArcDataSnapshotd,
-              (chromeos::VoidDBusMethodCallback),
+              (const std::vector<std::string>&,
+               chromeos::VoidDBusMethodCallback),
               (override));
 
   MOCK_METHOD(void,
@@ -72,6 +77,19 @@ class FakeDelegate : public ArcDataSnapshotdManager::Delegate {
 
   PrefService* GetProfilePrefService() override { return &pref_service_; }
 
+  std::unique_ptr<ArcSnapshotRebootNotification> CreateRebootNotification()
+      override {
+    return std::make_unique<FakeSnapshotRebootNotification>();
+  }
+
+  std::unique_ptr<ArcAppsTracker> CreateAppsTracker() override {
+    return std::make_unique<FakeAppsTracker>();
+  }
+
+  void RestartChrome(const base::CommandLine& cmd) override {
+    EXPECT_EQ(cmd.GetSwitchValueASCII(switches::kOzonePlatform), kHeadless);
+  }
+
   bool stopped_callback_num() const { return stopped_callback_num_; }
 
  private:
@@ -82,9 +100,10 @@ class FakeDelegate : public ArcDataSnapshotdManager::Delegate {
 
 class FakeSnapshotSessionController : public SnapshotSessionController {
  public:
-  explicit FakeSnapshotSessionController(ArcAppsTracker* apps_tracker)
-      : apps_tracker_(apps_tracker) {}
-  ~FakeSnapshotSessionController() override { apps_tracker_->StopTracking(); }
+  explicit FakeSnapshotSessionController(
+      std::unique_ptr<ArcAppsTracker> apps_tracker)
+      : apps_tracker_(std::move(apps_tracker)) {}
+  ~FakeSnapshotSessionController() override = default;
 
   void AddObserver(Observer* observer) override {
     EXPECT_FALSE(observer_);
@@ -96,9 +115,13 @@ class FakeSnapshotSessionController : public SnapshotSessionController {
   }
 
   void StartSession() {
-    apps_tracker_->StartTracking(base::BindRepeating(
-        &FakeSnapshotSessionController::NotifySnapshotAppInstalled,
-        base::Unretained(this)));
+    apps_tracker_->StartTracking(
+        base::BindRepeating(
+            &FakeSnapshotSessionController::NotifySnapshotAppInstalled,
+            base::Unretained(this)),
+        base::BindOnce(
+            &FakeSnapshotSessionController::NotifySnapshotPolicyCompliant,
+            base::Unretained(this)));
     NotifySnapshotSessionStarted();
   }
 
@@ -126,9 +149,13 @@ class FakeSnapshotSessionController : public SnapshotSessionController {
     EXPECT_TRUE(observer_);
     observer_->OnSnapshotAppInstalled(percent);
   }
+  void NotifySnapshotPolicyCompliant() {
+    EXPECT_TRUE(observer_);
+    observer_->OnSnapshotSessionPolicyCompliant();
+  }
 
+  std::unique_ptr<ArcAppsTracker> apps_tracker_;
   // Owned by manager.
-  ArcAppsTracker* const apps_tracker_;
   Observer* observer_ = nullptr;
 };
 
@@ -147,11 +174,17 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
     upstart_client_ = std::make_unique<TestUpstartClient>();
 
     arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
+    local_state_.SetInitializationCompleted();
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        chromeos::switches::kFirstExecAfterBoot);
   }
 
   void SetUp() override { SetDBusClientAvailability(true /* is_available */); }
 
   void TearDown() override {
+    ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(
+        false /* enabled */);
     manager_.reset();
     apps_tracker_ = nullptr;
     delegate_ = nullptr;
@@ -162,9 +195,10 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
     chromeos::DBusThreadManager::Shutdown();
   }
 
-  void ExpectStartDaemon(bool success) {
-    EXPECT_CALL(*upstart_client(), StartArcDataSnapshotd(_))
-        .WillOnce(WithArgs<0>(
+  void ExpectStartDaemon(bool success,
+                         const std::vector<std::string>& env = {}) {
+    EXPECT_CALL(*upstart_client(), StartArcDataSnapshotd(Eq(env), _))
+        .WillOnce(WithArgs<1>(
             Invoke([success](chromeos::VoidDBusMethodCallback callback) {
               std::move(callback).Run(success);
             })));
@@ -193,8 +227,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
   ArcDataSnapshotdManager* CreateManager(
       base::OnceClosure attempt_exit_callback = base::DoNothing()) {
     manager_ = std::make_unique<ArcDataSnapshotdManager>(
-        local_state(), MakeDelegate(), MakeAppsTracker(),
-        std::move(attempt_exit_callback));
+        local_state(), MakeDelegate(), std::move(attempt_exit_callback));
     manager_->set_session_controller_for_testing(MakeSessionController());
     session_controller_->AddObserver(manager_.get());
     return manager_.get();
@@ -231,11 +264,6 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
     EXPECT_FALSE(apps_tracker()->update_callback().is_null());
   }
 
-  void ExpectStopTrackingApps() {
-    EXPECT_EQ(1, apps_tracker()->stop_tracking_num());
-    EXPECT_TRUE(apps_tracker()->update_callback().is_null());
-  }
-
   void LoginAsPublicSession() {
     auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
     user_manager()->AddPublicAccountUser(account_id);
@@ -252,10 +280,10 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
   // mode.
   void SetupLocalState(bool blocked_ui_mode) {
     auto last = ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
-        base::SysInfo::OperatingSystemVersion(), "" /* creation_date */,
+        base::SysInfo::OperatingSystemVersion(), base::Time::Now(),
         false /* verified */, false /* updated */, true /* last */);
     auto previous = ArcDataSnapshotdManager::SnapshotInfo::CreateForTesting(
-        base::SysInfo::OperatingSystemVersion(), "" /* creation_date */,
+        base::SysInfo::OperatingSystemVersion(), base::Time::Now(),
         false /* verified */, false /* updated */, false /* last */);
     auto snapshot = ArcDataSnapshotdManager::Snapshot::CreateForTesting(
         local_state(), blocked_ui_mode, false /* started */, std::move(last),
@@ -294,7 +322,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
 
   std::unique_ptr<FakeSnapshotSessionController> MakeSessionController() {
     auto session_controller =
-        std::make_unique<FakeSnapshotSessionController>(apps_tracker());
+        std::make_unique<FakeSnapshotSessionController>(MakeAppsTracker());
     session_controller_ = session_controller.get();
     return session_controller;
   }
@@ -329,6 +357,13 @@ class ArcDataSnapshotdManagerStateTest
       public ::testing::WithParamInterface<ArcDataSnapshotdManager::State> {
  public:
   ArcDataSnapshotdManager::State expected_state() { return GetParam(); }
+
+  // Expire snapshots in max lifetime.
+  void ExpireSnapshots() {
+    task_environment_.FastForwardBy(
+        ArcDataSnapshotdManager::snapshot_max_lifetime_for_testing());
+    task_environment_.RunUntilIdle();
+  }
 };
 
 // Tests flows in ArcDataSnapshotdManager:
@@ -345,10 +380,9 @@ class ArcDataSnapshotdManagerFlowTest
 
   bool is_dbus_client_available() { return GetParam(); }
 
-  void CheckHeadlessMode() {
+  void EnableHeadlessMode() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
-    EXPECT_EQ(command_line->GetSwitchValueASCII(switches::kOzonePlatform),
-              "headless");
+    command_line->AppendSwitchASCII(switches::kOzonePlatform, kHeadless);
   }
 
   void RunUntilIdle() override {
@@ -551,15 +585,22 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotSuccess) {
   EXPECT_TRUE(manager->bridge());
 
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
+  // Installed 100% of tracking apps.
+  apps_tracker()->update_callback().Run(100 /* percent */);
+  // Need to run until idle to ensure D-Bus bridge is set up and available.
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(manager->bridge());
+
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
+
   // Expect to stop ARC.
   // Expect daemon to stop once the snapshot is taken.
   ExpectStopDaemon(true /* success */);
-  // Finished ARC tracking.
-  apps_tracker()->update_callback().Run(100);
+  // Finish ARC tracking.
+  std::move(apps_tracker()->finish_callback()).Run();
   // Attempt user exit callback must be called.
   run_loop.Run();
 
-  ExpectStopTrackingApps();
   EXPECT_EQ(1, delegate()->stopped_callback_num());
 
   CheckSnapshots(1 /* expected_snapshots_number */,
@@ -585,12 +626,11 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotDataRemoval) {
   ExpectStartTrackingApps();
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kMgsLaunched);
   RequestArcDataRemoval();
-  // Installed 10% of tracking apps.
-  apps_tracker()->update_callback().Run(100 /* percent */);
+  // ARC snapshot is compliant with policy.
+  std::move(apps_tracker()->finish_callback()).Run();
   // Finished ARC tracking.
   run_loop.Run();
 
-  ExpectStopTrackingApps();
   EXPECT_EQ(1, delegate()->stopped_callback_num());
   CheckSnapshots(0 /* expected_snapshots_number */,
                  false /* expected_blocked_ui_mode */);
@@ -621,7 +661,6 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, TakeSnapshotMgsFailure) {
 
   // Attempt user exit callback must be called.
   run_loop.Run();
-  ExpectStopTrackingApps();
   // No ARC stop callback is called, because of invalid state.
   EXPECT_EQ(0, delegate()->stopped_callback_num());
   CheckSnapshots(0 /* expected_snapshots_number */,
@@ -685,6 +724,69 @@ TEST_F(ArcDataSnapshotdManagerBasicTest, OnSnapshotSessionFailedTake) {
 
   // No snapshot is generated.
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+}
+
+// Test that if the snapshot update interval is not started (end time is null),
+// the device is not rebooted.
+TEST_F(ArcDataSnapshotdManagerBasicTest, OnSnapshotUpdateEndTimeNullFailure) {
+  SetupLocalState(false /* blocked_ui_mode */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+  ExpectStopDaemon(false /* success */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_FALSE(manager->get_reboot_controller_for_testing());
+}
+
+// Test that if snapshot feature is not enabled, the device is not rebooted.
+TEST_F(ArcDataSnapshotdManagerBasicTest,
+       OnSnapshotUpdateEndTimeDisabledFailure) {
+  SetupLocalState(false /* blocked_ui_mode */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time::Now());
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_FALSE(manager->get_reboot_controller_for_testing());
+}
+
+// Test that if both snapshots exist and no need to update them, the device is
+// not rebooted.
+TEST_F(ArcDataSnapshotdManagerBasicTest, OnSnapshotUpdateEndTimeExistsFailure) {
+  SetupLocalState(false /* blocked_ui_mode */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+  ExpectStopDaemon(false /* success */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time::Now());
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_FALSE(manager->get_reboot_controller_for_testing());
+}
+
+// Test the end time changed twice in a raw scenario.
+TEST_F(ArcDataSnapshotdManagerBasicTest, OnSnapshotUpdateEndTimeChanged) {
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+  ExpectStopDaemon(false /* success */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time::Now());
+  // Request reboot in blocked UI mode.
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_TRUE(manager->get_reboot_controller_for_testing());
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 true /* expected_blocked_ui_mode */);
+
+  // The reboot is requested above.
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_TRUE(manager->get_reboot_controller_for_testing());
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 true /* expected_blocked_ui_mode */);
+
+  // Stop requesting a reboot if not inside the snapshot update interval.
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time());
+  manager->OnSnapshotUpdateEndTimeChanged();
+  EXPECT_FALSE(manager->get_reboot_controller_for_testing());
   CheckSnapshots(0 /* expected_snapshots_number */,
                  false /* expected_blocked_ui_mode */);
 }
@@ -774,6 +876,72 @@ TEST_P(ArcDataSnapshotdManagerStateTest, OnSnapshotsDisabled) {
                  false /* expected_blocked_ui_mode */);
 }
 
+TEST_P(ArcDataSnapshotdManagerStateTest, OnSnapshotUpdateEndTimeChanged) {
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+  ExpectStopDaemon(false /* success */);
+  auto* manager = CreateManager(base::DoNothing());
+  manager->policy_service()->set_snapshot_update_end_time_for_testing(
+      base::Time::Now());
+  manager->set_state_for_testing(expected_state());
+  manager->OnSnapshotUpdateEndTimeChanged();
+
+  switch (expected_state()) {
+    case ArcDataSnapshotdManager::State::kNone:
+    case ArcDataSnapshotdManager::State::kLoading:
+    case ArcDataSnapshotdManager::State::kRestored:
+    case ArcDataSnapshotdManager::State::kRunning:
+      EXPECT_TRUE(manager->get_reboot_controller_for_testing());
+      CheckSnapshots(0 /* expected_snapshots_number */,
+                     true /* expected_blocked_ui_mode */);
+      break;
+    case ArcDataSnapshotdManager::State::kBlockedUi:
+    case ArcDataSnapshotdManager::State::kMgsToLaunch:
+    case ArcDataSnapshotdManager::State::kMgsLaunched:
+    case ArcDataSnapshotdManager::State::kStopping:
+      EXPECT_FALSE(manager->get_reboot_controller_for_testing());
+      CheckSnapshots(0 /* expected_snapshots_number */,
+                     false /* expected_blocked_ui_mode */);
+      break;
+  }
+}
+
+TEST_P(ArcDataSnapshotdManagerStateTest, ExpireSnapshots) {
+  SetupLocalState(false /* blocked_ui_mode */);
+  ExpectStopDaemon(true /* success */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+
+  auto* manager = CreateManager();
+  manager->set_state_for_testing(expected_state());
+  EXPECT_EQ(manager->state(), expected_state());
+  EXPECT_FALSE(manager->bridge());
+
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+
+  int expected_snapshots_num;
+  switch (expected_state()) {
+    case ArcDataSnapshotdManager::State::kBlockedUi:
+    case ArcDataSnapshotdManager::State::kMgsToLaunch:
+    case ArcDataSnapshotdManager::State::kMgsLaunched:
+    case ArcDataSnapshotdManager::State::kLoading:
+    case ArcDataSnapshotdManager::State::kStopping:
+      // Do not expire snapshots if in these states. The expectation is that
+      // they are cleared during the flow or on the next session start up.
+      expected_snapshots_num = 2;
+      break;
+    case ArcDataSnapshotdManager::State::kNone:
+    case ArcDataSnapshotdManager::State::kRestored:
+    case ArcDataSnapshotdManager::State::kRunning:
+      // Expect snapshots to be cleared.
+      ExpectStartDaemon(true /* success */);
+      ExpectStopDaemon(true /* success */);
+      expected_snapshots_num = 0;
+      break;
+  }
+  ExpireSnapshots();
+  CheckSnapshots(expected_snapshots_num, false /* expected_blocked_ui_mode */);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ArcDataSnapshotdManagerTest,
     ArcDataSnapshotdManagerStateTest,
@@ -823,15 +991,15 @@ TEST_P(ArcDataSnapshotdManagerFlowTest, BlockedUiBasic) {
   // Once |manager| is created, it tries to clear both snapshots, because the
   // mechanism is disabled by default, and stop the daemon.
   // Start to clear snapshots.
-  ExpectStartDaemon(true /*success */);
+  ExpectStartDaemon(true /*success */, {kRestartFreconEnv});
   // Stop once finished clearing.
   ExpectStopDaemon(true /*success */);
   bool is_attempt_user_exit_called = false;
+  EnableHeadlessMode();
   auto* manager = CreateManager(
       base::BindLambdaForTesting([&is_attempt_user_exit_called]() {
         is_attempt_user_exit_called = true;
       }));
-  CheckHeadlessMode();
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kBlockedUi);
   EXPECT_TRUE(manager->IsAutoLoginConfigured());
   EXPECT_FALSE(manager->IsAutoLoginAllowed());

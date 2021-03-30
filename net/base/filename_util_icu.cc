@@ -4,9 +4,10 @@
 
 #include "net/base/filename_util.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/filename_util_internal.h"
 
@@ -15,7 +16,7 @@ class GURL;
 namespace net {
 
 bool IsSafePortablePathComponent(const base::FilePath& component) {
-  base::string16 component16;
+  std::u16string component16;
   base::FilePath::StringType sanitized = component.value();
   SanitizeGeneratedFileName(&sanitized, true);
   base::FilePath::StringType extension = component.Extension();
@@ -44,7 +45,7 @@ bool IsSafePortableRelativePath(const base::FilePath& path) {
   return IsSafePortablePathComponent(path.BaseName());
 }
 
-base::string16 GetSuggestedFilename(const GURL& url,
+std::u16string GetSuggestedFilename(const GURL& url,
                                     const std::string& content_disposition,
                                     const std::string& referrer_charset,
                                     const std::string& suggested_name,

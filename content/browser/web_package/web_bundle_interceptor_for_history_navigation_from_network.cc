@@ -4,8 +4,8 @@
 
 #include "content/browser/web_package/web_bundle_interceptor_for_history_navigation_from_network.h"
 
+#include "components/web_package/web_bundle_utils.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
-#include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/browser/web_package/web_bundle_interceptor_for_history_navigation.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_redirect_url_loader.h"
@@ -96,7 +96,7 @@ bool WebBundleInterceptorForHistoryNavigationFromNetwork::
         "Unexpected content type.");
     return true;
   }
-  if (!signed_exchange_utils::HasNoSniffHeader(**response_head)) {
+  if (!web_package::HasNoSniffHeader(**response_head)) {
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         std::move(forwarding_client_), frame_tree_node_id_,
         web_bundle_utils::kNoSniffErrorMessage);

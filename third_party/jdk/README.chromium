@@ -1,8 +1,8 @@
 Name: Java Development Kit
 Short Name: JDK
-URL: https://www.java.com/
+URL: https://openjdk.java.net/
 Version: 11.0.4
-CPEPrefix: cpe:/a:oracle:jdk:11.0.4
+CPEPrefix: cpe:/a:oracle:openjdk:11.0.4
 License: GPL v2
 License File: NOT_SHIPPED
 Security Critical: no
@@ -12,22 +12,27 @@ The Java Development Kit (JDK) is a software development environment used for
 developing Java applications and applets. (linux-x64)
 
 How to update:
-For the `current` subdirectory:
+For the `jdk` directory:
 1. Find the specific version you want to update from
-   https://www.oracle.com/technetwork/java/javase/downloads/index.html
-2. Click DOWNLOAD for specific version
-3. Accept License Agreement
-4. Download "Linux" version
-5. Unzip compressed files to //third_party/jdk/current
-6. Run "cipd create --pkg-def cipd.yaml" to create cipd package and get instance ID
+   https://wiki.openjdk.java.net/display/JDKUpdates/JDK11u#JDK11u-Releases
+2. Click the link "[Binaries]" for the specific version.
+3. Copy the link address of the asset "OpenJDK11U-jre_x64_linux_<specific_version>.tar.gz"
+4. Update the "download_url" and "version" in 3pp/3pp.pb with the desired values.
+5. Upload and land the CL.
+6. Wait for the 3pp packager (https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager)
+   to create the new instance at https://chrome-infra-packages.appspot.com/p/chromium/third_party/jdk/+/
 7. Update instance ID in //DEPS
 
-For the `extras` subdirectory:
-1. Find the rt.jar file that you want to update to, the current one is from
-   /usr/lib/jvm/java-1.8.0-openjdk-amd64/jre/lib/rt.jar, for java 1.8.0.
-2. Replace the rt.jar file under `extras`.
-3. Run `cipd create --pkg-def cipd_extras.yaml` to get instance ID.
-4. Update instance ID in //DEPS.
+For the `jdk/extras` subdirectory:
+1. Find the specific version you want to update from
+   https://wiki.openjdk.java.net/display/jdk8u#Main-Releases
+2. Click the link "[Binaries]" for the specific version.
+3. Copy the link address of the asset "OpenJDK8U-jdk_x64_linux_<specific_version>.tar.gz"
+4. Update the "download_url" and "version" in 3pp/3pp.pb with the desired values.
+5. Upload and land the CL.
+6. Wait for the 3pp packager (https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager)
+   to create the new instance at https://chrome-infra-packages.appspot.com/p/chromium/third_party/jdk/extras/+/
+7. Update instance ID in //DEPS
 
 Local Modifications:
 None

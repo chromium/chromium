@@ -8,16 +8,34 @@ const red_dot = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA" +
     "AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO" +
     "9TXL0Y4OHwAAAABJRU5ErkJggg==";
 
-function createBigImageUrl() {
+// An image URL larger than the max size allowed for a notification image.
+// This was generated using the function that follows. Should we increase
+// the max size of an image, update the function to increase the width and
+// height and run the function again to log the URL.
+const bigImageUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA" +
+    "AGQAAABkCAYAAABw4pVUAAABZUlEQVR4Xu3TQREAAAiEQK9/aWvsAxMw4O06" +
+    "ysAommCuINgTFKQgmAEMp4UUBDOA4bSQgmAGMJwWUhDMAIbTQgqCGcBwWkhB" +
+    "MAMYTgspCGYAw2khBcEMYDgtpCCYAQynhRQEM4DhtJCCYAYwnBZSEMwAhtNC" +
+    "CoIZwHBaSEEwAxhOCykIZgDDaSEFwQxgOC2kIJgBDKeFFAQzgOG0kIJgBjCc" +
+    "FlIQzACG00IKghnAcFpIQTADGE4LKQhmAMNpIQXBDGA4LaQgmAEMp4UUBDOA" +
+    "4bSQgmAGMJwWUhDMAIbTQgqCGcBwWkhBMAMYTgspCGYAw2khBcEMYDgtpCCY" +
+    "AQynhRQEM4DhtJCCYAYwnBZSEMwAhtNCCoIZwHBaSEEwAxhOCykIZgDDaSEF" +
+    "wQxgOC2kIJgBDKeFFAQzgOG0kIJgBjCcFlIQzACG00IKghnAcFpIQTADGE4L" +
+    "KQhmAMNpIQXBDGA4LQQL8oTPAGUY76lBAAAAAElFTkSuQmCC";
+
+// Used to generate a data URL with an image that's too large. This
+// will not run using a Service Worker-based extension.
+function logBigImageUrl() {
   var canvas = document.createElement('canvas');
-  canvas.width = 1000;
-  canvas.height = 1000;
+  // This is just enough to be took large for an icon. See
+  // message_center::kNotificationIconSize.
+  canvas.width = 100;
+  canvas.height = 100;
   var ctx = canvas.getContext('2d');
   ctx.fillStyle = "rgb(200, 0, 0)";
   ctx.fillRect(10, 20, 30, 40);
-
-  return canvas.toDataURL();
-};
+  console.log(canvas.toDataURL());
+}
 
 var basicNotificationOptions = {
   type: "basic",
@@ -335,7 +353,7 @@ function testLargeImage() {
     type: "basic",
     title: "Basic title",
     message: "Basic message",
-    iconUrl: createBigImageUrl(),
+    iconUrl: bigImageUrl,
   };
   create("largeImage", options).then(succeed, fail);
 }

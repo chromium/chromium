@@ -6,6 +6,7 @@ package org.chromium.components.payments;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.url.GURL;
 
 /** URL validity checker for web payment APIs. */
 @JNINamespace("payments::android")
@@ -15,7 +16,7 @@ public class UrlUtil {
      * @param url The URL to check.
      * @return Whether the page is allowed to use web payment APIs.
      */
-    public static boolean isOriginAllowedToUseWebPaymentApis(String url) {
+    public static boolean isOriginAllowedToUseWebPaymentApis(GURL url) {
         return UrlUtilJni.get().isOriginAllowedToUseWebPaymentApis(url);
     }
 
@@ -25,14 +26,14 @@ public class UrlUtil {
      * @param url The URL to check.
      * @return Whether this is a local development URL.
      */
-    public static boolean isLocalDevelopmentUrl(String url) {
+    public static boolean isLocalDevelopmentUrl(GURL url) {
         return UrlUtilJni.get().isLocalDevelopmentUrl(url);
     }
 
     /** The interface implemented by the automatically generated JNI bindings class UrlUtilJni. */
     @NativeMethods
     /* package */ interface Natives {
-        boolean isOriginAllowedToUseWebPaymentApis(String url);
-        boolean isLocalDevelopmentUrl(String url);
+        boolean isOriginAllowedToUseWebPaymentApis(GURL url);
+        boolean isLocalDevelopmentUrl(GURL url);
     }
 }

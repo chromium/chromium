@@ -40,6 +40,9 @@ This file contains the strings for //device/fido.
       <output filename="fido_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="fido_strings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="fido_strings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="fido_strings_am.pak" type="data_package" lang="am" />
     <output filename="fido_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="fido_strings_bg.pak" type="data_package" lang="bg" />
@@ -55,7 +58,6 @@ This file contains the strings for //device/fido.
     <output filename="fido_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="fido_strings_et.pak" type="data_package" lang="et" />
     <output filename="fido_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="fido_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="fido_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="fido_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="fido_strings_fr.pak" type="data_package" lang="fr" />
@@ -96,6 +98,10 @@ This file contains the strings for //device/fido.
     <output filename="fido_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="fido_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="fido_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="fido_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="fido_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/fido_strings_af.xtb" lang="af" />
@@ -180,7 +186,7 @@ This file contains the strings for //device/fido.
     <file path="strings/fido_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/fido_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
     <if expr="is_macosx">
       <message name="IDS_WEBAUTHN_TOUCH_ID_PROMPT_REASON" desc="Sentence fragment (lower case). Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message asking the user to confirm or cancel this action.">

@@ -33,7 +33,7 @@ namespace proxy {
 
 class RawVarData;
 
-typedef base::Callback<void(base::Pickle*, const SerializedHandle&)>
+typedef base::RepeatingCallback<void(base::Pickle*, const SerializedHandle&)>
     HandleWriter;
 
 // Contains the data associated with a graph of connected PP_Vars. Useful for

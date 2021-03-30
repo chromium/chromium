@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
@@ -29,7 +28,7 @@ void LogErrors(std::unique_ptr<PolicyErrorMap> errors,
                PoliciesSet future_policies) {
   DCHECK(errors->IsReady());
   for (auto& pair : *errors) {
-    base::string16 policy = base::ASCIIToUTF16(pair.first);
+    std::u16string policy = base::ASCIIToUTF16(pair.first);
     DLOG(WARNING) << "Policy " << policy << ": " << pair.second;
   }
   for (const auto& policy : deprecated_policies) {
@@ -70,7 +69,7 @@ void ConfigurationPolicyPrefStore::RemoveObserver(
 }
 
 bool ConfigurationPolicyPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 bool ConfigurationPolicyPrefStore::IsInitializationComplete() const {

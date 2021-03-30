@@ -107,10 +107,9 @@ class HistoryChecker(object):
             return 1
         _log.info("Total test files discovered: %d", len(files))
 
-        pool = multiprocessing.Pool(
-            processes=multiprocessing.cpu_count(),
-            initializer=_init,
-            initargs=(self, ))
+        pool = multiprocessing.Pool(processes=self.executive.cpu_count(),
+                                    initializer=_init,
+                                    initargs=(self, ))
 
         # Capture SIGTERM/INT to exit gracefully without leaving workers behind.
         def _handler(signum, _):

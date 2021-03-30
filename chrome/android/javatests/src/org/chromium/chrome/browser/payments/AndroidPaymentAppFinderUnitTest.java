@@ -15,6 +15,7 @@ import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +29,8 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
@@ -38,8 +41,12 @@ import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.WebAppManifestSection;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -51,7 +58,7 @@ import java.util.Map;
 /** Tests for the native Android payment app finder. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(AndroidPaymentAppFinderUnitTest.PAYMENTS_BROWSER_UNIT_TESTS)
-public class AndroidPaymentAppFinderUnitTest {
+public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
     // Collection of payments unit tests that require the browser process to be initialized.
     static final String PAYMENTS_BROWSER_UNIT_TESTS = "PaymentsBrowserUnitTests";
     private static final IntentArgumentMatcher sPayIntentArgumentMatcher =
@@ -69,11 +76,21 @@ public class AndroidPaymentAppFinderUnitTest {
     @Mock
     private PackageManagerDelegate mPackageManagerDelegate;
 
+    private WindowAndroid mWindowAndroid;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return new ActivityWindowAndroid(getActivity()); });
+
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
     }
 
     /**
@@ -108,7 +125,12 @@ public class AndroidPaymentAppFinderUnitTest {
             methodData.put(methodName, data);
         }
         PaymentAppFactoryParams params = Mockito.mock(PaymentAppFactoryParams.class);
-        Mockito.when(params.getWebContents()).thenReturn(Mockito.mock(WebContents.class));
+        WebContents webContents = Mockito.mock(WebContents.class);
+        TabModelSelector tabModelSelector = Mockito.mock(TabModelSelector.class);
+        TabModelSelectorSupplier.setInstanceForTesting(tabModelSelector);
+        Mockito.when(tabModelSelector.isIncognitoSelected()).thenReturn(false);
+        Mockito.when(webContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        Mockito.when(params.getWebContents()).thenReturn(webContents);
         Mockito.when(params.getId()).thenReturn("id");
         Mockito.when(params.getMethodData()).thenReturn(methodData);
         Mockito.when(params.getTopLevelOrigin()).thenReturn("https://chromium.org");

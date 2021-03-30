@@ -20,8 +20,8 @@ TEST_F(LabelPerfTest, GetPreferredSize) {
   Label label;
 
   // Alternate between two strings to ensure caches are cleared.
-  base::string16 string1 = base::ASCIIToUTF16("boring ascii string");
-  base::string16 string2 = base::ASCIIToUTF16("another uninteresting sequence");
+  std::u16string string1 = u"boring ascii string";
+  std::u16string string2 = u"another uninteresting sequence";
 
   constexpr int kLaps = 5000;  // Aim to run in under 3 seconds.
   constexpr int kWarmupLaps = 5;

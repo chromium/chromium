@@ -131,7 +131,7 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
   DCHECK(element.isConnected());
   Document& document = element.GetDocument();
 
-  const ContentSecurityPolicy* csp =
+  ContentSecurityPolicy* csp =
       element.GetExecutionContext()
           ? element.GetExecutionContext()
                 ->GetContentSecurityPolicyForCurrentWorld()

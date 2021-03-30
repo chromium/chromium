@@ -57,8 +57,8 @@ class UiDelegate {
   // Returns the current bubble / tooltip message.
   virtual std::string GetBubbleMessage() const = 0;
 
-  // Returns the current contextual information. May be null if empty.
-  virtual const Details* GetDetails() const = 0;
+  // Returns the current contextual information. May be empty.
+  virtual std::vector<Details> GetDetails() const = 0;
 
   // Returns the current info box data. May be null if empty.
   virtual const InfoBox* GetInfoBox() const = 0;
@@ -98,7 +98,8 @@ class UiDelegate {
   // Returns true if the action was triggered, false if the index did not
   // correspond to any enabled actions.
   bool PerformUserAction(int index) {
-    return PerformUserActionWithContext(index, TriggerContext::CreateEmpty());
+    return PerformUserActionWithContext(index,
+                                        std::make_unique<TriggerContext>());
   }
 
   // If the controller is waiting for user data, this field contains a non-null
@@ -179,6 +180,7 @@ class UiDelegate {
 
   // Reports a fatal error to Autofill Assistant, which should then stop.
   virtual void OnFatalError(const std::string& error_message,
+                            bool show_feedback_chip,
                             Metrics::DropOutReason reason) = 0;
 
   // Reports that Autofill Assistant should be Stopped.
@@ -259,9 +261,6 @@ class UiDelegate {
 
   // Notifies the UI delegate that it should shut down.
   virtual void ShutdownIfNecessary() = 0;
-
-  // Returns whether the UI delegate is currently running a lite script or not.
-  virtual bool IsRunningLiteScript() const = 0;
 
   // Called when the visibility of the keyboard has changed.
   virtual void OnKeyboardVisibilityChanged(bool visible) = 0;

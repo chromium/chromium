@@ -34,7 +34,7 @@ base::ProcessId DetermineProcessId(base::ProcessHandle handle,
 
 }  // namespace
 
-Task::Task(const base::string16& title,
+Task::Task(const std::u16string& title,
            const gfx::ImageSkia* icon,
            base::ProcessHandle handle,
            base::ProcessId process_id)
@@ -53,20 +53,17 @@ Task::Task(const base::string16& title,
 Task::~Task() = default;
 
 // static
-base::string16 Task::GetProfileNameFromProfile(Profile* profile) {
+std::u16string Task::GetProfileNameFromProfile(Profile* profile) {
   DCHECK(profile);
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()->GetProfileAttributesStorage().
-      GetProfileAttributesWithPath(profile->GetOriginalProfile()->GetPath(),
-                                   &entry)) {
-    return entry->GetName();
-  }
-
-  return base::string16();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(
+              profile->GetOriginalProfile()->GetPath());
+  return entry ? entry->GetName() : std::u16string();
 }
 
-void Task::Activate() {
-}
+void Task::Activate() {}
 
 bool Task::IsKillable() {
   // Protects from trying to kill a task that doesn't have an accurate process
@@ -140,8 +137,8 @@ void Task::GetTerminationStatus(base::TerminationStatus* out_status,
   *out_error_code = 0;
 }
 
-base::string16 Task::GetProfileName() const {
-  return base::string16();
+std::u16string Task::GetProfileName() const {
+  return std::u16string();
 }
 
 SessionID Task::GetTabId() const {
@@ -186,6 +183,14 @@ int Task::GetKeepaliveCount() const {
 
 bool Task::IsRunningInVM() const {
   return false;
+}
+
+int64_t Task::GetNetworkUsageRate() const {
+  return network_sent_rate_ + network_read_rate_;
+}
+
+int64_t Task::GetCumulativeNetworkUsage() const {
+  return cumulative_bytes_sent_ + cumulative_bytes_read_;
 }
 
 // static

@@ -36,7 +36,7 @@ class ManagePasswordsUIControllerMock : public ManagePasswordsUIController {
   MOCK_METHOD0(NeverSavePassword, void());
   MOCK_METHOD1(UpdatePassword, void(const password_manager::PasswordForm&));
   MOCK_METHOD2(SavePassword,
-               void(const base::string16&, const base::string16&));
+               void(const std::u16string&, const std::u16string&));
   MOCK_METHOD2(ChooseCredential,
                void(const password_manager::PasswordForm&,
                     password_manager::CredentialType));

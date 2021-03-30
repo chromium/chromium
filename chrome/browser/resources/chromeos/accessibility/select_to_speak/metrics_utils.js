@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PrefsManager} from './prefs_manager.js';
+
 // Utilities for UMA metrics.
 
-class MetricsUtils {
+export class MetricsUtils {
   constructor() {}
 
   /**
@@ -70,6 +72,30 @@ class MetricsUtils {
     chrome.metricsPrivate.recordEnumerationValue(
         MetricsUtils.STATE_CHANGE_METRIC.METRIC_NAME, changeType,
         MetricsUtils.STATE_CHANGE_METRIC.EVENT_COUNT);
+  }
+
+  /**
+   * Converts the speech multiplier into an enum based on
+   * tools/metrics/histograms/enums.xml.
+   * The value returned by this function is persisted to logs. Log entries
+   * should not be renumbered and numeric values should never be reused, so this
+   * function should not be changed.
+   * @param {number} speechRate The current speech rate.
+   * @return {number} The current speech rate as an int for metrics.
+   * @private
+   */
+  static speechMultiplierToSparseHistogramInt_(speechRate) {
+    return Math.floor(speechRate * 100);
+  }
+
+  /**
+   * Records the speed override chosen by the user.
+   * @param {number} rate
+   */
+  static recordSpeechRateOverrideMultiplier(rate) {
+    chrome.metricsPrivate.recordSparseValue(
+        MetricsUtils.OVERRIDE_SPEECH_RATE_MULTIPLIER_METRIC,
+        MetricsUtils.speechMultiplierToSparseHistogramInt_(rate));
   }
 }
 
@@ -164,3 +190,10 @@ MetricsUtils.BACKGROUND_SHADING_METRIC =
  */
 MetricsUtils.NAVIGATION_CONTROLS_METRIC =
     'Accessibility.CrosSelectToSpeak.NavigationControls';
+
+/**
+ * The speech rate override histogram metric name.
+ * @type {string}
+ */
+MetricsUtils.OVERRIDE_SPEECH_RATE_MULTIPLIER_METRIC =
+    'Accessibility.CrosSelectToSpeak.OverrideSpeechRateMultiplier';

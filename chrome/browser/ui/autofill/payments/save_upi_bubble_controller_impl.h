@@ -30,7 +30,7 @@ class SaveUPIBubbleControllerImpl
       base::OnceCallback<void(bool accept)> save_upi_prompt_callback);
 
   // autofill::SaveUPIBubbleController:
-  base::string16 GetUpiId() const override;
+  std::u16string GetUpiId() const override;
   void OnAccept() override;
   void OnBubbleClosed() override;
 

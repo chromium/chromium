@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "base/util/type_safety/id_type.h"
@@ -30,6 +29,7 @@
 #include "tools/ipc_fuzzer/message_lib/message_cracker.h"
 #include "tools/ipc_fuzzer/message_lib/message_file.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/latency/latency_info.h"
 
 #if defined(OS_POSIX)
 #include <unistd.h>
@@ -212,8 +212,8 @@ struct FuzzTraits<std::string> {
 };
 
 template <>
-struct FuzzTraits<base::string16> {
-  static bool Fuzz(base::string16* p, Fuzzer* fuzzer) {
+struct FuzzTraits<std::u16string> {
+  static bool Fuzz(std::u16string* p, Fuzzer* fuzzer) {
     fuzzer->FuzzString16(p);
     return true;
   }
@@ -438,20 +438,6 @@ struct FuzzTraits<base::File::Info> {
     p->last_modified = base::Time::FromDoubleT(last_modified);
     p->last_accessed = base::Time::FromDoubleT(last_accessed);
     p->creation_time = base::Time::FromDoubleT(creation_time);
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<base::NullableString16> {
-  static bool Fuzz(base::NullableString16* p, Fuzzer* fuzzer) {
-    base::string16 string = p->string();
-    bool is_null = p->is_null();
-    if (!FuzzParam(&string, fuzzer))
-      return false;
-    if (!FuzzParam(&is_null, fuzzer))
-      return false;
-    *p = base::NullableString16(string, is_null);
     return true;
   }
 };
@@ -1267,20 +1253,6 @@ struct FuzzTraits<GURL> {
   }
 };
 
-template <>
-struct FuzzTraits<HostID> {
-  static bool Fuzz(HostID* p, Fuzzer* fuzzer) {
-    HostID::HostType type = p->type();
-    std::string id = p->id();
-    if (!FuzzParam(&type, fuzzer))
-      return false;
-    if (!FuzzParam(&id, fuzzer))
-      return false;
-    *p = HostID(type, id);
-    return true;
-  }
-};
-
 #if defined(OS_WIN)
 template <>
 struct FuzzTraits<HWND> {
@@ -1656,51 +1628,6 @@ struct FuzzTraits<SkBitmap> {
   static bool Fuzz(SkBitmap* p, Fuzzer* fuzzer) {
     // TODO(mbarbella): This should actually do something.
     return true;
-  }
-};
-
-template <>
-struct FuzzTraits<network::DataElement> {
-  static bool Fuzz(network::DataElement* p, Fuzzer* fuzzer) {
-    // TODO(mbarbella): Support mutation.
-    if (!fuzzer->ShouldGenerate())
-      return true;
-
-    switch (RandInRange(2)) {
-      case 0: {
-        // network::DataElement::Type::TYPE_BYTES
-        if (RandEvent(2)) {
-          p->SetToEmptyBytes();
-        } else {
-          char data[256];
-          int data_len = RandInRange(sizeof(data));
-          fuzzer->FuzzBytes(&data[0], data_len);
-          p->SetToBytes(&data[0], data_len);
-        }
-        return true;
-      }
-      case 1: {
-        // network::DataElement::Type::TYPE_FILE
-        base::FilePath path;
-        uint64_t offset;
-        uint64_t length;
-        base::Time modification_time;
-        if (!FuzzParam(&path, fuzzer))
-          return false;
-        if (!FuzzParam(&offset, fuzzer))
-          return false;
-        if (!FuzzParam(&length, fuzzer))
-          return false;
-        if (!FuzzParam(&modification_time, fuzzer))
-          return false;
-        p->SetToFilePathRange(path, offset, length, modification_time);
-        return true;
-      }
-      default: {
-        NOTREACHED();
-        return false;
-      }
-    }
   }
 };
 

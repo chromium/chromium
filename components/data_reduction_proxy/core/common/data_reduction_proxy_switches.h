@@ -11,14 +11,9 @@ namespace switches {
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
 
-extern const char kDataReductionPingbackURL[];
 extern const char kDataReductionProxy[];
-extern const char kDataReductionProxyConfigURL[];
 extern const char kDataReductionProxyExperiment[];
-extern const char kDataReductionProxyFallback[];
-extern const char kDataReductionProxyHttpProxies[];
 extern const char kDataReductionProxyKey[];
-extern const char kDataReductionProxySecureProxyCheckURL[];
 extern const char kDataReductionProxyServerExperimentsDisabled[];
 extern const char kDataReductionProxyServerAlternative1[];
 extern const char kDataReductionProxyServerAlternative2[];
@@ -33,7 +28,6 @@ extern const char kDataReductionProxyServerAlternative10[];
 extern const char kDataReductionProxyServerClientConfig[];
 extern const char kEnableDataReductionProxy[];
 extern const char kEnableDataReductionProxyBypassWarning[];
-extern const char kEnableDataReductionProxyForcePingback[];
 extern const char kEnableDataReductionProxySavingsPromo[];
 extern const char kOverrideHttpsImageCompressionInfobar[];
 

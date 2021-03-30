@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('indexeddb', function() {
-  'use strict';
+import 'chrome://resources/js/jstemplate_compiled.js';
 
-  function initialize() {
-    chrome.send('getAllOrigins');
-  }
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+function initialize() {
+  addWebUIListener('origins-ready', onOriginsReady);
+
+  chrome.send('getAllOrigins');
+}
 
   function progressNodeFor(link) {
     return link.parentNode.querySelector('.download-status');
@@ -16,15 +20,22 @@ cr.define('indexeddb', function() {
   function downloadOriginData(event) {
     const link = event.target;
     progressNodeFor(link).style.display = 'inline';
-    chrome.send(
-        'downloadOriginData', [link.idb_partition_path, link.idb_origin_url]);
+    const path = link.idb_partition_path;
+    const origin = link.idb_origin_url;
+    sendWithPromise('downloadOriginData', path, origin)
+        .then(count => onOriginDownloadReady(path, origin, count), () => {
+          console.error('Error downloading data for origin ' + origin);
+        });
     return false;
   }
 
   function forceClose(event) {
     const link = event.target;
     progressNodeFor(link).style.display = 'inline';
-    chrome.send('forceClose', [link.idb_partition_path, link.idb_origin_url]);
+    const path = link.idb_partition_path;
+    const origin = link.idb_origin_url;
+    sendWithPromise('forceClose', path, origin)
+        .then(count => onForcedClose(path, origin, count));
     return false;
   }
 
@@ -78,12 +89,4 @@ cr.define('indexeddb', function() {
     }
   }
 
-  return {
-    initialize: initialize,
-    onForcedClose: onForcedClose,
-    onOriginDownloadReady: onOriginDownloadReady,
-    onOriginsReady: onOriginsReady,
-  };
-});
-
-document.addEventListener('DOMContentLoaded', indexeddb.initialize);
+  document.addEventListener('DOMContentLoaded', initialize);

@@ -4,12 +4,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/common/chrome_paths.h"
@@ -27,6 +26,8 @@
 class ArcAppsPrivateApiTest : public extensions::ExtensionApiTest {
  public:
   ArcAppsPrivateApiTest() = default;
+  ArcAppsPrivateApiTest(const ArcAppsPrivateApiTest&) = delete;
+  ArcAppsPrivateApiTest& operator=(const ArcAppsPrivateApiTest&) = delete;
   ~ArcAppsPrivateApiTest() override = default;
 
  protected:
@@ -75,8 +76,6 @@ class ArcAppsPrivateApiTest : public extensions::ExtensionApiTest {
 
  private:
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppsPrivateApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
@@ -88,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
   app_instance()->SendRefreshAppList({launchable_app});
   static_cast<arc::mojom::AppHost*>(prefs)->OnTaskCreated(
       0 /* task_id */, "Package_1", "Dummy_activity_1", "App_1",
-      base::nullopt /* intent */);
+      base::nullopt /* intent */, 0 /* session_id */);
 
   // Stopping the service makes the app non-ready.
   arc::ArcServiceManager::Get()->arc_bridge_service()->app()->CloseInstance(
@@ -96,8 +95,9 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
   EXPECT_EQ(0u, app_instance()->launch_requests().size());
   // Verify |chrome.arcAppsPrivate.getLaunchableApps| returns the package name
   // of the launchable app only. The JS test will attempt to launch the app.
-  EXPECT_TRUE(
-      RunPlatformAppTestWithArg("arc_app_launcher/launch_app", "Package_0"))
+  EXPECT_TRUE(RunExtensionTest({.name = "arc_app_launcher/launch_app",
+                                .custom_arg = "Package_0",
+                                .launch_as_platform_app = true}))
       << message_;
 
   // Verify the app is not launched because it's not ready.
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {
   app_instance()->SendRefreshAppList({launchable_app});
   static_cast<arc::mojom::AppHost*>(prefs)->OnTaskCreated(
       0 /* task_id */, "Package_1", "Dummy_activity_1", "App_1",
-      base::nullopt /* intent */);
+      base::nullopt /* intent */, 0 /* session_id */);
   // Verify the JS test receives the onInstalled event for the launchable app
   // only, and the app is launched successfully.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -158,8 +158,9 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest,
   CreateAppInstance(prefs);
   arc::mojom::AppInfo launchable_app("App_0", "Package_0", "Dummy_activity_0");
   app_instance()->SendRefreshAppList({launchable_app});
-  EXPECT_TRUE(
-      RunPlatformAppTestWithArg("arc_app_launcher/launch_app", "Package_0"))
+  EXPECT_TRUE(RunExtensionTest({.name = "arc_app_launcher/launch_app",
+                                .custom_arg = "Package_0",
+                                .launch_as_platform_app = true}))
       << message_;
 
   // Should still see no apps launched in the histogram.
@@ -183,8 +184,9 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, DemoModeAppLaunchSourceReported) {
   CreateAppInstance(prefs);
   arc::mojom::AppInfo launchable_app("App_0", "Package_0", "Dummy_activity_0");
   app_instance()->SendRefreshAppList({launchable_app});
-  EXPECT_TRUE(
-      RunPlatformAppTestWithArg("arc_app_launcher/launch_app", "Package_0"))
+  EXPECT_TRUE(RunExtensionTest({.name = "arc_app_launcher/launch_app",
+                                .custom_arg = "Package_0",
+                                .launch_as_platform_app = true}))
       << message_;
 
   // Should see 1 app launched from the highlights app in the histogram.

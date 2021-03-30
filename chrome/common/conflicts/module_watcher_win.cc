@@ -115,7 +115,7 @@ constexpr char kLdrUnregisterDllNotification[] = "LdrUnregisterDllNotification";
 // Helper function for converting a UNICODE_STRING to a FilePath.
 base::FilePath ToFilePath(const UNICODE_STRING* str) {
   return base::FilePath(
-      base::StringPiece16(str->Buffer, str->Length / sizeof(wchar_t)));
+      base::WStringPiece(str->Buffer, str->Length / sizeof(wchar_t)));
 }
 
 template <typename NotificationDataType>

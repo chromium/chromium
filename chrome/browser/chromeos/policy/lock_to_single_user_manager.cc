@@ -7,15 +7,15 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -23,10 +23,9 @@
 using RebootOnSignOutPolicy =
     enterprise_management::DeviceRebootOnUserSignoutProto;
 using RebootOnSignOutRequest =
-    cryptohome::LockToSingleUserMountUntilRebootRequest;
-using RebootOnSignOutReply = cryptohome::LockToSingleUserMountUntilRebootReply;
-using RebootOnSignOutResult =
-    cryptohome::LockToSingleUserMountUntilRebootResult;
+    user_data_auth::LockToSingleUserMountUntilRebootRequest;
+using RebootOnSignOutReply =
+    user_data_auth::LockToSingleUserMountUntilRebootReply;
 
 namespace policy {
 
@@ -34,26 +33,6 @@ namespace {
 
 chromeos::ConciergeClient* GetConciergeClient() {
   return chromeos::DBusThreadManager::Get()->GetConciergeClient();
-}
-
-// The result of locking the device to single user.
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "LockToSingleUserResult" in src/tools/metrics/histograms/enums.xml.
-enum class LockToSingleUserResult {
-  // Successfully locked to single user.
-  kSuccess = 0,
-  // No response from DBus call.
-  kNoResponse = 1,
-  // Request failed on Chrome OS side.
-  kFailedToLock = 2,
-  // Expected device to already be locked to a single user
-  kUnexpectedLockState = 3,
-  kMaxValue = kUnexpectedLockState,
-};
-
-void RecordDBusResult(LockToSingleUserResult result) {
-  base::UmaHistogramEnumeration("Enterprise.LockToSingleUserResult", result);
 }
 
 LockToSingleUserManager* g_lock_to_single_user_manager_instance;
@@ -84,11 +63,19 @@ void LockToSingleUserManager::DbusNotifyVmStarting() {
 }
 
 void LockToSingleUserManager::ActiveUserChanged(user_manager::User* user) {
-  if (user->IsAffiliated())
+  user->IsAffiliatedAsync(
+      base::BindOnce(&LockToSingleUserManager::OnUserAffiliationEstablished,
+                     weak_factory_.GetWeakPtr(), user));
+}
+
+void LockToSingleUserManager::OnUserAffiliationEstablished(
+    user_manager::User* user,
+    bool is_affiliated) {
+  if (is_affiliated)
     return;
 
   int policy_value = -1;
-  if (!chromeos::CrosSettings::Get()->GetInteger(
+  if (!ash::CrosSettings::Get()->GetInteger(
           chromeos::kDeviceRebootOnUserSignout, &policy_value)) {
     return;
   }
@@ -156,7 +143,7 @@ void LockToSingleUserManager::LockToSingleUser() {
           user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   RebootOnSignOutRequest request;
   request.mutable_account_id()->CopyFrom(account_id);
-  chromeos::CryptohomeClient::Get()->LockToSingleUserMountUntilReboot(
+  chromeos::CryptohomeMiscClient::Get()->LockToSingleUserMountUntilReboot(
       request,
       base::BindOnce(
           &LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone,
@@ -164,35 +151,24 @@ void LockToSingleUserManager::LockToSingleUser() {
 }
 
 void LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone(
-    base::Optional<cryptohome::BaseReply> reply) {
-  if (!reply || !reply->HasExtension(RebootOnSignOutReply::reply)) {
+    base::Optional<RebootOnSignOutReply> reply) {
+  if (!reply.has_value()) {
     LOG(ERROR) << "Signing out user: no reply from "
                   "LockToSingleUserMountUntilReboot D-Bus call.";
-    RecordDBusResult(LockToSingleUserResult::kNoResponse);
     chrome::AttemptUserExit();
     return;
   }
 
   // Force user logout if failed to lock the device to single user mount.
-  const RebootOnSignOutReply extension =
-      reply->GetExtension(RebootOnSignOutReply::reply);
-
-  if (extension.result() == RebootOnSignOutResult::SUCCESS ||
-      extension.result() == RebootOnSignOutResult::PCR_ALREADY_EXTENDED) {
+  if (reply->error() ==
+          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET ||
+      reply->error() == user_data_auth::CRYPTOHOME_ERROR_PCR_ALREADY_EXTENDED) {
     // The device is locked to single user on TPM level. Update the cache in
     // SessionTerminationManager, so that it triggers reboot on sign out.
     chromeos::SessionTerminationManager::Get()->SetDeviceLockedToSingleUser();
-
-    if (expect_to_be_locked_ &&
-        extension.result() != RebootOnSignOutResult::PCR_ALREADY_EXTENDED) {
-      RecordDBusResult(LockToSingleUserResult::kUnexpectedLockState);
-    } else {
-      RecordDBusResult(LockToSingleUserResult::kSuccess);
-    }
   } else {
     LOG(ERROR) << "Signing out user: failed to lock device to single user: "
-               << extension.result();
-    RecordDBusResult(LockToSingleUserResult::kFailedToLock);
+               << reply->error();
     chrome::AttemptUserExit();
   }
 }

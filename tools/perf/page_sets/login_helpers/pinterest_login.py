@@ -59,6 +59,13 @@ def LoginMobileAccount(action_runner, credential,
     exceptions.Error: See ExecuteJavaScript()
     for a detailed list of possible exceptions.
   """
+  wait_for_local_storage = """
+  (function() {
+    try {
+      const state = JSON.parse(window.localStorage.REDUX_STATE);
+      return state.users[state.session.userId].login_state;
+    } catch(e) { return false; }
+  })()
+  """
   _LoginAccount(action_runner, credential, credentials_path)
-  action_runner.WaitForElement(selector='svg[aria-label="Search"]')
-
+  action_runner.WaitForJavaScriptCondition(wait_for_local_storage, timeout=20)

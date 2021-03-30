@@ -24,6 +24,7 @@ div.box {
 
 var PointerEventAttributeCount = 1321; // Comes from enum Feature in UseCounter.h
 var PointerEventAddListenerCount = 1347; // Comes from enum Feature in UseCounter.h
+var PointerId = 3866; // Comes from enum WebFeature in web_feature.mojom
 
 promise_test(async () => {
 
@@ -44,11 +45,15 @@ promise_test(async () => {
 
   assert_false(internals.isUseCounted(document, PointerEventAttributeCount));
 
+  assert_false(internals.isUseCounted(document, PointerId));
+
   await mouseClickOn(x1, y1);
 
   await waitUntil( () => { return pid>0; } );
 
   assert_true(internals.isUseCounted(document, PointerEventAttributeCount));
+
+  assert_true(internals.isUseCounted(document, PointerId));
 
 }, "Verifies that use of pointerEvents is measured by use counters.");
 

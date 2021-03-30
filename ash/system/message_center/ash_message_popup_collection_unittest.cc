@@ -127,10 +127,10 @@ class AshMessagePopupCollectionTest : public AshTestBase {
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id) {
     return std::make_unique<message_center::Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id,
-        base::UTF8ToUTF16("test_title"), base::UTF8ToUTF16("test message"),
-        gfx::Image(), base::string16() /* display_source */, GURL(),
-        message_center::NotifierId(), message_center::RichNotificationData(),
+        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test_title",
+        u"test message", gfx::Image(), std::u16string() /* display_source */,
+        GURL(), message_center::NotifierId(),
+        message_center::RichNotificationData(),
         new message_center::NotificationDelegate());
   }
 

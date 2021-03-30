@@ -7,8 +7,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_installer.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class BoxLayout;
@@ -24,6 +25,7 @@ class Profile;
 class PluginVmInstallerView : public views::BubbleDialogDelegateView,
                               public plugin_vm::PluginVmInstaller::Observer {
  public:
+  METADATA_HEADER(PluginVmInstallerView);
   explicit PluginVmInstallerView(Profile* profile);
 
   static PluginVmInstallerView* GetActiveViewForTesting();
@@ -48,8 +50,8 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
   void OnCancelFinished() override;
 
   // Public for testing purposes.
-  base::string16 GetTitle() const;
-  base::string16 GetMessage() const;
+  std::u16string GetTitle() const;
+  std::u16string GetMessage() const;
 
   void SetFinishedCallbackForTesting(
       base::OnceCallback<void(bool success)> callback);
@@ -68,14 +70,14 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
   ~PluginVmInstallerView() override;
 
   int GetCurrentDialogButtons() const;
-  base::string16 GetCurrentDialogButtonLabel(ui::DialogButton button) const;
+  std::u16string GetCurrentDialogButtonLabel(ui::DialogButton button) const;
 
   void OnStateUpdated();
   void OnLinkClicked();
   // views::BubbleDialogDelegateView implementation.
   void AddedToWidget() override;
 
-  base::string16 GetDownloadProgressMessage(uint64_t bytes_downloaded,
+  std::u16string GetDownloadProgressMessage(uint64_t bytes_downloaded,
                                             int64_t content_length) const;
   void SetTitleLabel();
   void SetMessageLabel();
@@ -84,7 +86,7 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
   void StartInstallation();
 
   Profile* profile_ = nullptr;
-  base::string16 app_name_;
+  std::u16string app_name_;
   plugin_vm::PluginVmInstaller* plugin_vm_installer_ = nullptr;
   views::Label* title_label_ = nullptr;
   views::Label* message_label_ = nullptr;

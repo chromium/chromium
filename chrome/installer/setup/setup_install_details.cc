@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_details.h"
@@ -73,8 +72,8 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
 
   // Cache the ap and cohort name values found in the registry for use in crash
   // keys.
-  base::string16 update_ap;
-  base::string16 update_cohort_name;
+  std::wstring update_ap;
+  std::wstring update_cohort_name;
 
   auto channel_from_cmd_line =
       command_line.GetSwitchValueNative(installer::switches::kChannel);
@@ -87,6 +86,9 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
       &update_ap, &update_cohort_name);
   details->set_channel(channel.channel_name);
   details->set_channel_origin(channel.origin);
+  if (channel.origin == install_static::ChannelOrigin::kPolicy)
+    details->set_channel_override(channel_from_cmd_line);
+  details->set_is_extended_stable_channel(channel.is_extended_stable);
   details->set_update_ap(update_ap);
   details->set_update_cohort_name(update_cohort_name);
 

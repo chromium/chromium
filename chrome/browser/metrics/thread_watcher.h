@@ -218,7 +218,7 @@ class ThreadWatcher {
   const std::string thread_name_;
 
   // Used to post messages to watched thread.
-  scoped_refptr<base::SingleThreadTaskRunner> watched_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner> watched_runner_;
 
   // It is the sleep time between the receipt of a pong message back, and the
   // sending of another ping message.

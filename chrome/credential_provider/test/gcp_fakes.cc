@@ -13,11 +13,12 @@
 #include <atlcomcli.h>
 #include <atlconv.h>
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -364,7 +365,7 @@ HRESULT FakeOSUserManager::RemoveUser(const wchar_t* username,
 
 HRESULT FakeOSUserManager::GetUserFullname(const wchar_t* domain,
                                            const wchar_t* username,
-                                           base::string16* fullname) {
+                                           std::wstring* fullname) {
   DCHECK(domain);
   DCHECK(username);
   DCHECK(fullname);
@@ -432,24 +433,24 @@ HRESULT FakeOSUserManager::CreateNewSID(PSID* sid) {
 }
 
 // Creates a test OS user using the local domain.
-HRESULT FakeOSUserManager::CreateTestOSUser(const base::string16& username,
-                                            const base::string16& password,
-                                            const base::string16& fullname,
-                                            const base::string16& comment,
-                                            const base::string16& gaia_id,
-                                            const base::string16& email,
+HRESULT FakeOSUserManager::CreateTestOSUser(const std::wstring& username,
+                                            const std::wstring& password,
+                                            const std::wstring& fullname,
+                                            const std::wstring& comment,
+                                            const std::wstring& gaia_id,
+                                            const std::wstring& email,
                                             BSTR* sid) {
   return CreateTestOSUser(username, password, fullname, comment, gaia_id, email,
                           OSUserManager::GetLocalDomain(), sid);
 }
 
-HRESULT FakeOSUserManager::CreateTestOSUser(const base::string16& username,
-                                            const base::string16& password,
-                                            const base::string16& fullname,
-                                            const base::string16& comment,
-                                            const base::string16& gaia_id,
-                                            const base::string16& email,
-                                            const base::string16& domain,
+HRESULT FakeOSUserManager::CreateTestOSUser(const std::wstring& username,
+                                            const std::wstring& password,
+                                            const std::wstring& fullname,
+                                            const std::wstring& comment,
+                                            const std::wstring& gaia_id,
+                                            const std::wstring& email,
+                                            const std::wstring& domain,
                                             BSTR* sid) {
   DWORD error;
   HRESULT hr = AddUser(username.c_str(), password.c_str(), fullname.c_str(),
@@ -476,9 +477,9 @@ HRESULT FakeOSUserManager::CreateTestOSUser(const base::string16& username,
   return S_OK;
 }
 
-std::vector<std::pair<base::string16, base::string16>>
-FakeOSUserManager::GetUsers() const {
-  std::vector<std::pair<base::string16, base::string16>> users;
+std::vector<std::pair<std::wstring, std::wstring>> FakeOSUserManager::GetUsers()
+    const {
+  std::vector<std::pair<std::wstring, std::wstring>> users;
 
   for (auto& kv : username_to_info_)
     users.emplace_back(std::make_pair(kv.second.sid, kv.first));
@@ -546,13 +547,13 @@ bool FakeScopedLsaPolicy::PrivateDataExists(const wchar_t* key) {
 
 HRESULT FakeScopedLsaPolicy::AddAccountRights(
     PSID sid,
-    const std::vector<base::string16>& rights) {
+    const std::vector<std::wstring>& rights) {
   return S_OK;
 }
 
 HRESULT FakeScopedLsaPolicy::RemoveAccountRights(
     PSID sid,
-    const std::vector<base::string16>& rights) {
+    const std::vector<std::wstring>& rights) {
   return S_OK;
 }
 
@@ -573,18 +574,18 @@ FakeScopedUserProfileFactory::~FakeScopedUserProfileFactory() {
 }
 
 std::unique_ptr<ScopedUserProfile> FakeScopedUserProfileFactory::Create(
-    const base::string16& sid,
-    const base::string16& domain,
-    const base::string16& username,
-    const base::string16& password) {
+    const std::wstring& sid,
+    const std::wstring& domain,
+    const std::wstring& username,
+    const std::wstring& password) {
   return std::unique_ptr<ScopedUserProfile>(
       new FakeScopedUserProfile(sid, domain, username, password));
 }
 
-FakeScopedUserProfile::FakeScopedUserProfile(const base::string16& sid,
-                                             const base::string16& domain,
-                                             const base::string16& username,
-                                             const base::string16& password) {
+FakeScopedUserProfile::FakeScopedUserProfile(const std::wstring& sid,
+                                             const std::wstring& domain,
+                                             const std::wstring& username,
+                                             const std::wstring& password) {
   is_valid_ = OSUserManager::Get()->IsWindowsPasswordValid(
                   domain.c_str(), username.c_str(), password.c_str()) == S_OK;
 }
@@ -595,11 +596,11 @@ HRESULT FakeScopedUserProfile::SaveAccountInfo(const base::Value& properties) {
   if (!is_valid_)
     return E_INVALIDARG;
 
-  base::string16 sid;
-  base::string16 id;
-  base::string16 email;
-  base::string16 token_handle;
-  base::string16 last_successful_online_login_millis;
+  std::wstring sid;
+  std::wstring id;
+  std::wstring email;
+  std::wstring token_handle;
+  std::wstring last_successful_online_login_millis;
 
   HRESULT hr = ExtractAssociationInformation(properties, &sid, &id, &email,
                                              &token_handle);
@@ -909,7 +910,7 @@ EVT_HANDLE FakeEventLoggingApiManager::EvtOpenPublisherMetadata(
     LCID locale,
     DWORD flags) {
   EXPECT_EQ(session, nullptr);
-  EXPECT_EQ(base::string16(publisher_id), base::string16(L"GCPW"));
+  EXPECT_EQ(std::wstring(publisher_id), std::wstring(L"GCPW"));
   EXPECT_EQ(log_file_path, nullptr);
   EXPECT_EQ(locale, DWORD(0));  // local locale.
   EXPECT_EQ(flags, DWORD(0));
@@ -925,10 +926,10 @@ EVT_HANDLE FakeEventLoggingApiManager::EvtCreateRenderContext(
     DWORD flags) {
   EXPECT_TRUE(value_paths_count >= 2);
   DCHECK(value_paths);
-  EXPECT_TRUE(base::string16(value_paths[0]).find(L"EventRecordID") !=
-              base::string16::npos);
-  EXPECT_TRUE(base::string16(value_paths[1]).find(L"TimeCreated") !=
-              base::string16::npos);
+  EXPECT_TRUE(std::wstring(value_paths[0]).find(L"EventRecordID") !=
+              std::wstring::npos);
+  EXPECT_TRUE(std::wstring(value_paths[1]).find(L"TimeCreated") !=
+              std::wstring::npos);
   EXPECT_EQ(flags, EvtRenderContextValues);
 
   render_context_ = reinterpret_cast<EVT_HANDLE>(&render_context_);
@@ -1057,7 +1058,7 @@ BOOL FakeEventLoggingApiManager::EvtFormatMessage(EVT_HANDLE publisher_metadata,
 
   size_t idx = handle_to_index_map_.find(event)->second;
 
-  base::string16 data;
+  std::wstring data;
   if (flags == EvtFormatMessageEvent) {
     data = logs_[idx].data;
   } else if (flags == EvtFormatMessageLevel) {
@@ -1084,7 +1085,7 @@ BOOL FakeEventLoggingApiManager::EvtFormatMessage(EVT_HANDLE publisher_metadata,
   }
 
   const size_t mem_needed =
-      sizeof(base::string16::value_type) * (data.size() + 1);
+      sizeof(std::wstring::value_type) * (data.size() + 1);
 
   *buffer_used = mem_needed;
   if (buffer_size < mem_needed) {
@@ -1094,7 +1095,7 @@ BOOL FakeEventLoggingApiManager::EvtFormatMessage(EVT_HANDLE publisher_metadata,
 
   DCHECK(buffer);
   ::memcpy(buffer, data.c_str(),
-           data.size() * sizeof(base::string16::value_type));
+           data.size() * sizeof(std::wstring::value_type));
   last_error_ = ERROR_SUCCESS;
 
   return TRUE;
@@ -1187,7 +1188,7 @@ FakeUserPoliciesManager::~FakeUserPoliciesManager() {
 }
 
 HRESULT FakeUserPoliciesManager::FetchAndStoreCloudUserPolicies(
-    const base::string16& sid,
+    const std::wstring& sid,
     const std::string& access_token) {
   ++num_times_fetch_called_;
   fetch_status_ =
@@ -1195,13 +1196,13 @@ HRESULT FakeUserPoliciesManager::FetchAndStoreCloudUserPolicies(
   return fetch_status_;
 }
 
-void FakeUserPoliciesManager::SetUserPolicies(const base::string16& sid,
+void FakeUserPoliciesManager::SetUserPolicies(const std::wstring& sid,
                                               const UserPolicies& policies) {
   user_policies_[sid] = policies;
   user_policies_stale_[sid] = false;
 }
 
-bool FakeUserPoliciesManager::GetUserPolicies(const base::string16& sid,
+bool FakeUserPoliciesManager::GetUserPolicies(const std::wstring& sid,
                                               UserPolicies* policies) const {
   if (user_policies_.find(sid) != user_policies_.end()) {
     *policies = user_policies_.at(sid);
@@ -1212,13 +1213,13 @@ bool FakeUserPoliciesManager::GetUserPolicies(const base::string16& sid,
 }
 
 void FakeUserPoliciesManager::SetUserPolicyStaleOrMissing(
-    const base::string16& sid,
+    const std::wstring& sid,
     bool status) {
   user_policies_stale_[sid] = status;
 }
 
 bool FakeUserPoliciesManager::IsUserPolicyStaleOrMissing(
-    const base::string16& sid) const {
+    const std::wstring& sid) const {
   if (user_policies_stale_.find(sid) != user_policies_stale_.end())
     return user_policies_stale_.at(sid);
 
@@ -1274,7 +1275,7 @@ FakeGCPWFiles::GetEffectiveInstallFiles() {
   std::vector<base::FilePath::StringType> sanitized_files;
   for (auto& install_file : effective_files) {
     size_t found = install_file.find_last_of('\\');
-    if (found != base::string16::npos) {
+    if (found != std::wstring::npos) {
       sanitized_files.push_back(install_file.substr(found + 1));
     } else {
       sanitized_files.push_back(install_file);

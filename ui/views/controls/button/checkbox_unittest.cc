@@ -51,7 +51,7 @@ class CheckboxTest : public ViewsTestBase {
 };
 
 TEST_F(CheckboxTest, AccessibilityTest) {
-  const base::string16 label_text = base::ASCIIToUTF16("Some label");
+  const std::u16string label_text = u"Some label";
   StyledLabel label;
   label.SetText(label_text);
   checkbox()->SetAssociatedLabel(&label);

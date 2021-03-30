@@ -160,7 +160,7 @@ struct TestEnvironment {
   StrictMock<MockAudioOutputStreamProviderClient> provider_client;
   std::unique_ptr<AudioOutputStreamBroker> broker;
   MockStreamFactory stream_factory;
-  mojo::Remote<audio::mojom::StreamFactory> factory_ptr{
+  mojo::Remote<media::mojom::AudioStreamFactory> factory_ptr{
       stream_factory.MakeRemote()};
 };
 

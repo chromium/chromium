@@ -14,7 +14,6 @@ namespace content {
 
 CONTENT_EXPORT mojom::CommonNavigationParamsPtr CreateCommonNavigationParams();
 CONTENT_EXPORT mojom::CommitNavigationParamsPtr CreateCommitNavigationParams();
-CONTENT_EXPORT mojom::InitiatorCSPInfoPtr CreateInitiatorCSPInfo();
 
 }  // namespace content
 

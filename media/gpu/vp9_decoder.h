@@ -157,8 +157,10 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   // Current stream buffer id; to be assigned to pictures decoded from it.
   int32_t stream_id_ = -1;
 
-  // Current frame header to be used in decoding the next picture.
+  // Current frame header and decrypt config to be used in decoding the next
+  // picture.
   std::unique_ptr<Vp9FrameHeader> curr_frame_hdr_;
+  std::unique_ptr<DecryptConfig> decrypt_config_;
   // Current frame size that is necessary to decode |curr_frame_hdr_|.
   gfx::Size curr_frame_size_;
 

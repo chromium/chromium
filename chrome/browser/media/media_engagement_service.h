@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -28,10 +30,6 @@ class Clock;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace history {
-class HistoryService;
-}
 
 namespace url {
 class Origin;
@@ -90,6 +88,9 @@ class MediaEngagementService : public KeyedService,
   MediaEngagementContentsObserver* GetContentsObserverFor(
       content::WebContents* web_contents) const;
 
+  // Sets the |history| service to observe.
+  void SetHistoryServiceForTesting(history::HistoryService* history);
+
   Profile* profile() const;
 
   const base::Clock* clock() const { return clock_; }
@@ -129,6 +130,10 @@ class MediaEngagementService : public KeyedService,
   void RemoveOriginsWithNoVisits(
       const std::set<url::Origin>& deleted_origins,
       const history::OriginCountAndLastVisitMap& origin_data);
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaEngagementService);
 };

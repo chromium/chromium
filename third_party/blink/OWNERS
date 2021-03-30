@@ -1,3 +1,5 @@
+set noparent
+
 # Top-level owners for cases where there's nobody available with
 # specific context
 bratell.d@gmail.com

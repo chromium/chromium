@@ -55,7 +55,7 @@ class ContextFeatures final : public GarbageCollected<ContextFeatures>,
   static bool MutationEventsEnabled(Document*);
 
   explicit ContextFeatures(std::unique_ptr<ContextFeaturesClient> client)
-      : client_(std::move(client)) {}
+      : Supplement(nullptr), client_(std::move(client)) {}
 
   bool IsEnabled(Document*, FeatureType, bool) const;
   void UrlDidChange(Document*);

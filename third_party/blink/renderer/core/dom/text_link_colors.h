@@ -30,7 +30,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TEXT_LINK_COLORS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TEXT_LINK_COLORS_H_
 
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -48,14 +48,14 @@ class TextLinkColors {
 
   void SetTextColor(const Color& color);
   Color TextColor() const;
-  Color TextColor(mojom::ColorScheme color_scheme) const;
+  Color TextColor(mojom::blink::ColorScheme color_scheme) const;
 
   const Color& LinkColor() const;
-  const Color& LinkColor(mojom::ColorScheme color_scheme) const;
+  const Color& LinkColor(mojom::blink::ColorScheme color_scheme) const;
   const Color& VisitedLinkColor() const;
-  const Color& VisitedLinkColor(mojom::ColorScheme color_scheme) const;
+  const Color& VisitedLinkColor(mojom::blink::ColorScheme color_scheme) const;
   const Color& ActiveLinkColor() const;
-  const Color& ActiveLinkColor(mojom::ColorScheme color_scheme) const;
+  const Color& ActiveLinkColor(mojom::blink::ColorScheme color_scheme) const;
   void SetLinkColor(const Color& color);
   void SetVisitedLinkColor(const Color& color);
   void SetActiveLinkColor(const Color& color);
@@ -64,7 +64,7 @@ class TextLinkColors {
   void ResetActiveLinkColor() { has_custom_active_link_color_ = false; }
   Color ColorFromCSSValue(const CSSValue&,
                           Color current_color,
-                          mojom::ColorScheme color_scheme,
+                          mojom::blink::ColorScheme color_scheme,
                           bool for_visited_link = false) const;
 
  private:

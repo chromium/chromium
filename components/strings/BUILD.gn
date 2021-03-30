@@ -33,12 +33,11 @@ grit("components_strings") {
     "enable_arcore=$enable_arcore",
     "enable_plugins=$enable_plugins",
     "enable_print_preview=$enable_print_preview",
-    "enable_feed_v1=$enable_feed_v1",
     "enable_vr=$enable_vr",
   ]
 
   outputs = [ "grit/components_strings.h" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "components_strings_$locale.pak" ]
   }
 
@@ -57,14 +56,9 @@ if (is_android) {
 }
 
 grit("components_chromium_strings") {
-  # TODO(crbug.com/1112471). For reasons I don't understand,
-  # IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM is not defined
-  # on desktop linux when this is run under Python3. Fix this.
-  run_under_python2 = true
-
   source = "../components_chromium_strings.grd"
   outputs = [ "grit/components_chromium_strings.h" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "components_chromium_strings_$locale.pak" ]
   }
 }
@@ -72,7 +66,7 @@ grit("components_chromium_strings") {
 grit("components_google_chrome_strings") {
   source = "../components_google_chrome_strings.grd"
   outputs = [ "grit/components_google_chrome_strings.h" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "components_google_chrome_strings_$locale.pak" ]
   }
 }
@@ -88,7 +82,7 @@ if (is_android) {
 grit("components_locale_settings") {
   source = "../components_locale_settings.grd"
   outputs = [ "grit/components_locale_settings.h" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "components_locale_settings_$locale.pak" ]
   }
 

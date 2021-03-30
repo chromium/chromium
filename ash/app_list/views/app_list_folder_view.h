@@ -13,10 +13,10 @@
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
@@ -30,14 +30,18 @@ class AppListModel;
 class FolderHeaderView;
 class PageSwitcher;
 
-class APP_LIST_EXPORT AppListFolderView : public views::View,
-                                          public FolderHeaderViewDelegate,
-                                          public AppListModelObserver,
-                                          public AppsGridViewFolderDelegate {
+class ASH_EXPORT AppListFolderView : public views::View,
+                                     public FolderHeaderViewDelegate,
+                                     public AppListModelObserver,
+                                     public AppsGridViewFolderDelegate {
  public:
+  METADATA_HEADER(AppListFolderView);
+
   AppListFolderView(AppsContainerView* container_view,
                     AppListModel* model,
                     ContentsView* contents_view);
+  AppListFolderView(const AppListFolderView&) = delete;
+  AppListFolderView& operator=(const AppListFolderView&) = delete;
   ~AppListFolderView() override;
 
   // An interface for the folder opening and closing animations.
@@ -69,7 +73,6 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  const char* GetClassName() const override;
 
   // AppListModelObserver
   void OnAppListItemWillBeDeleted(AppListItem* item) override;
@@ -85,10 +88,6 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
   // Returns true if this view's child views are in animation for opening or
   // closing the folder.
   bool IsAnimationRunning() const;
-
-  // Helper for getting current app list config from the parents in the app list
-  // view hierarchy.
-  const AppListConfig& GetAppListConfig() const;
 
   AppsGridView* items_grid_view() { return items_grid_view_; }
 
@@ -116,21 +115,11 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);
 
- private:
-  void CalculateIdealBounds();
-
-  // Starts setting up drag in root level apps grid view for re-parenting a
-  // folder item.
-  // |drag_point_in_root_grid| is in the coordinates of root level AppsGridView.
-  void StartSetupDragInRootLevelAppsGridView(
-      AppListItemView* original_drag_view,
-      const gfx::Point& drag_point_in_root_grid,
-      bool has_native_drag);
-
   // Overridden from views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Overridden from FolderHeaderViewDelegate:
+  const AppListConfig& GetAppListConfig() const override;
   void NavigateBack(AppListFolderItem* item,
                     const ui::Event& event_flags) override;
   void GiveBackFocusToSearchBox() override;
@@ -145,11 +134,22 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
       const gfx::Point& drag_point_in_folder_grid) override;
   void DispatchEndDragEventForReparent(bool events_forwarded_to_drag_drop_host,
                                        bool cancel_drag) override;
-  bool IsPointOutsideOfFolderBoundary(const gfx::Point& point) override;
+  bool IsViewOutsideOfFolder(AppListItemView* view) override;
   bool IsOEMFolder() const override;
   void SetRootLevelDragViewVisible(bool visible) override;
   void HandleKeyboardReparent(AppListItemView* reparented_view,
                               ui::KeyboardCode key_code) override;
+
+ private:
+  void CalculateIdealBounds();
+
+  // Starts setting up drag in root level apps grid view for re-parenting a
+  // folder item. `drag_point_in_root_grid` is in the coordinates of root
+  // level AppsGridView.
+  void StartSetupDragInRootLevelAppsGridView(
+      AppListItemView* original_drag_view,
+      const gfx::Point& drag_point_in_root_grid,
+      bool has_native_drag);
 
   // Returns the compositor associated to the widget containing this view.
   // Returns nullptr if there isn't one associated with this widget.
@@ -193,8 +193,6 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
 
   // Records smoothness of the folder show/hide animation.
   base::Optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListFolderView);
 };
 
 }  // namespace ash

@@ -65,7 +65,7 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
 
   // Texture that corresponds to an IOSurface to set as the content of the
   // CALayer. If this is 0 then the CALayer is a solid color.
-  unsigned contents_resource_id = 0;
+  ResourceId contents_resource_id = kInvalidResourceId;
   // Mailbox from contents_resource_id. It is used by SkiaRenderer.
   gpu::Mailbox mailbox;
   // The contents rect property for the CALayer.
@@ -93,6 +93,19 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
  public:
   CALayerOverlayProcessor() = default;
   virtual ~CALayerOverlayProcessor() = default;
+
+  bool AreClipSettingsValid(const CALayerOverlay& ca_layer_overlay,
+                            CALayerOverlayList* ca_layer_overlay_list) const;
+  void PutHDRContentInSeparateOverlay(
+      DisplayResourceProvider* resource_provider,
+      AggregatedRenderPass* render_pass,
+      const gfx::RectF& display_rect,
+      QuadList* quad_list,
+      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+          render_pass_filters,
+      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+          render_pass_backdrop_filters,
+      CALayerOverlayList* ca_layer_overlays) const;
 
   // Returns true if all quads in the root render pass have been replaced by
   // CALayerOverlays. Virtual for testing.

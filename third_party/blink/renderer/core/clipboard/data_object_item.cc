@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 
 #include "base/time/time.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -63,12 +63,12 @@ DataObjectItem* DataObjectItem::CreateFromFile(File* file) {
 DataObjectItem* DataObjectItem::CreateFromFileWithFileSystemId(
     File* file,
     const String& file_system_id,
-    scoped_refptr<NativeFileSystemDropData> native_file_entry) {
+    scoped_refptr<FileSystemAccessDropData> file_system_access_entry) {
   DataObjectItem* item =
       MakeGarbageCollected<DataObjectItem>(kFileKind, file->type());
   item->file_ = file;
   item->file_system_id_ = file_system_id;
-  item->native_file_system_entry_ = native_file_entry;
+  item->file_system_access_entry_ = file_system_access_entry;
   return item;
 }
 
@@ -225,18 +225,19 @@ String DataObjectItem::FileSystemId() const {
   return file_system_id_;
 }
 
-bool DataObjectItem::HasNativeFileSystemEntry() const {
-  return static_cast<bool>(native_file_system_entry_);
+bool DataObjectItem::HasFileSystemAccessEntry() const {
+  return static_cast<bool>(file_system_access_entry_);
 }
 
-mojo::PendingRemote<mojom::blink::NativeFileSystemDragDropToken>
-DataObjectItem::CloneNativeFileSystemEntryToken() const {
-  DCHECK(HasNativeFileSystemEntry());
-  mojo::Remote<mojom::blink::NativeFileSystemDragDropToken> token_cloner(
-      std::move(native_file_system_entry_->data));
-  mojo::PendingRemote<mojom::blink::NativeFileSystemDragDropToken> token_clone;
+mojo::PendingRemote<mojom::blink::FileSystemAccessDataTransferToken>
+DataObjectItem::CloneFileSystemAccessEntryToken() const {
+  DCHECK(HasFileSystemAccessEntry());
+  mojo::Remote<mojom::blink::FileSystemAccessDataTransferToken> token_cloner(
+      std::move(file_system_access_entry_->data));
+  mojo::PendingRemote<mojom::blink::FileSystemAccessDataTransferToken>
+      token_clone;
   token_cloner->Clone(token_clone.InitWithNewPipeAndPassReceiver());
-  native_file_system_entry_->data = token_cloner.Unbind();
+  file_system_access_entry_->data = token_cloner.Unbind();
   return token_clone;
 }
 

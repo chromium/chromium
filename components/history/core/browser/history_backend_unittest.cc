@@ -25,7 +25,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -145,7 +144,7 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                       KeywordID keyword_id,
-                                      const base::string16& term) override;
+                                      const std::u16string& term) override;
   void NotifyKeywordSearchTermDeleted(URLID url_id) override;
   void DBLoaded() override;
 
@@ -236,7 +235,7 @@ class HistoryBackendTestBase : public testing::Test {
 
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                       KeywordID keyword_id,
-                                      const base::string16& term) {
+                                      const std::u16string& term) {
     mem_backend_->OnKeywordSearchTermUpdated(nullptr, row, keyword_id, term);
   }
 
@@ -319,7 +318,7 @@ void HistoryBackendTestDelegate::NotifyURLsDeleted(DeletionInfo deletion_info) {
 void HistoryBackendTestDelegate::NotifyKeywordSearchTermUpdated(
     const URLRow& row,
     KeywordID keyword_id,
-    const base::string16& term) {
+    const std::u16string& term) {
   test_->NotifyKeywordSearchTermUpdated(row, keyword_id, term);
 }
 
@@ -394,6 +393,36 @@ class HistoryBackendTest : public HistoryBackendTestBase {
 
     if (transition2)
       *transition2 = GetTransition(url2);
+  }
+
+  // Adds SERVER_REDIRECT page transition.
+  // |url1| is the source URL and |url2| is the destination.
+  // |did_replace| is true if the transition is non-user initiated and the
+  // navigation entry for |url2| has replaced that for |url1|. The possibly
+  // updated transition code of the visit records for |url1| and |url2| is
+  // returned by filling in |*transition1| and |*transition2|, respectively,
+  // unless null. |time| is a time of the redirect.
+  void AddServerRedirect(const GURL& url1,
+                         const GURL& url2,
+                         bool did_replace,
+                         base::Time time,
+                         const std::u16string& page2_title,
+                         int& transition1,
+                         int& transition2) {
+    ContextID dummy_context_id = reinterpret_cast<ContextID>(0x87654321);
+    history::RedirectList redirects;
+    redirects.push_back(url1);
+    redirects.push_back(url2);
+    ui::PageTransition redirect_transition = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_FORM_SUBMIT | ui::PAGE_TRANSITION_SERVER_REDIRECT);
+    HistoryAddPageArgs request(
+        url2, time, dummy_context_id, 0, url1, redirects, redirect_transition,
+        false, history::SOURCE_BROWSED, did_replace, true, false,
+        base::Optional<std::u16string>(page2_title));
+    backend_->AddPage(request);
+
+    transition1 = GetTransition(url1);
+    transition2 = GetTransition(url2);
   }
 
   int GetTransition(const GURL& url) {
@@ -493,7 +522,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
   }
 
   size_t GetNumberOfMatchingSearchTerms(const int keyword_id,
-                                        const base::string16& prefix) {
+                                        const std::u16string& prefix) {
     std::vector<KeywordSearchTermVisit> matching_terms;
     mem_backend_->db()->GetMostRecentKeywordSearchTerms(
         keyword_id, prefix, 1, &matching_terms);
@@ -503,7 +532,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
   static URLRow CreateTestTypedURL() {
     URLRow url_row(GURL("https://www.google.com/"));
     url_row.set_id(10);
-    url_row.set_title(base::UTF8ToUTF16("Google Search"));
+    url_row.set_title(u"Google Search");
     url_row.set_typed_count(1);
     url_row.set_visit_count(1);
     url_row.set_last_visit(base::Time::Now() - base::TimeDelta::FromHours(1));
@@ -513,7 +542,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
   static URLRow CreateAnotherTestTypedURL() {
     URLRow url_row(GURL("https://maps.google.com/"));
     url_row.set_id(20);
-    url_row.set_title(base::UTF8ToUTF16("Google Maps"));
+    url_row.set_title(u"Google Maps");
     url_row.set_typed_count(2);
     url_row.set_visit_count(3);
     url_row.set_last_visit(base::Time::Now() - base::TimeDelta::FromHours(2));
@@ -523,7 +552,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
   static URLRow CreateTestNonTypedURL() {
     URLRow url_row(GURL("https://news.google.com/"));
     url_row.set_id(30);
-    url_row.set_title(base::UTF8ToUTF16("Google News"));
+    url_row.set_title(u"Google News");
     url_row.set_visit_count(5);
     url_row.set_last_visit(base::Time::Now() - base::TimeDelta::FromHours(3));
     return url_row;
@@ -531,8 +560,8 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
 
   void PopulateTestURLsAndSearchTerms(URLRow* row1,
                                       URLRow* row2,
-                                      const base::string16& term1,
-                                      const base::string16& term2);
+                                      const std::u16string& term1,
+                                      const std::u16string& term2);
 
   void TestAddingAndChangingURLRows(
       const SimulateNotificationCallback& callback);
@@ -785,7 +814,7 @@ TEST_F(HistoryBackendTest, DeleteAllThenAddData) {
   ASSERT_EQ(0U, all_visits.size());
 
   // Try and set the title.
-  backend_->SetPageTitle(url, base::UTF8ToUTF16("Title"));
+  backend_->SetPageTitle(url, u"Title");
 
   // The row should still be deleted.
   EXPECT_FALSE(backend_->db_->GetRowForURL(url, &outrow));
@@ -970,6 +999,45 @@ TEST_F(HistoryBackendTest, ClientRedirect) {
                     &transition1, &transition2);
   EXPECT_FALSE(transition1 & ui::PAGE_TRANSITION_CHAIN_END);
   EXPECT_TRUE(transition2 & ui::PAGE_TRANSITION_CHAIN_END);
+}
+
+// Do not update original URL on form submission redirect
+TEST_F(HistoryBackendTest, FormSubmitRedirect) {
+  ASSERT_TRUE(backend_.get());
+  const std::u16string page1_title = u"Form";
+  const std::u16string page2_title = u"New Page";
+
+  // User goes to form page.
+  GURL url_a("http://www.google.com/a");
+  HistoryAddPageArgs request(url_a, base::Time::Now(), nullptr, 0, GURL(),
+                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                             false, history::SOURCE_BROWSED, false, true, false,
+                             base::Optional<std::u16string>(page1_title));
+  backend_->AddPage(request);
+
+  // Check that URL was added.
+  ASSERT_EQ(1, num_url_visited_notifications());
+  const URLVisitedList& visited_url_list = url_visited_notifications();
+  ASSERT_EQ(1u, visited_url_list.size());
+  const URLRow& visited_url = visited_url_list[0].second;
+  EXPECT_EQ(page1_title, visited_url.title());
+  ClearBroadcastedNotifications();
+
+  // User submits form and is redirected.
+  int transition1;
+  int transition2;
+  GURL url_b("http://google.com/b");
+  AddServerRedirect(url_a, url_b, false, base::Time::Now(), page2_title,
+                    transition1, transition2);
+  EXPECT_TRUE(transition1 & ui::PAGE_TRANSITION_CHAIN_START);
+  EXPECT_TRUE(transition2 & ui::PAGE_TRANSITION_CHAIN_END);
+
+  // Check that first URL did not change, but the second did.
+  ASSERT_EQ(1, num_url_visited_notifications());
+  const URLVisitedList& visited_url_list2 = url_visited_notifications();
+  ASSERT_EQ(1u, visited_url_list2.size());
+  const URLRow& visited_url2 = visited_url_list2[0].second;
+  EXPECT_EQ(page2_title, visited_url2.title());
 }
 
 TEST_F(HistoryBackendTest, AddPagesWithDetails) {
@@ -1464,6 +1532,90 @@ TEST_F(HistoryBackendTest, AddPageArgsSource) {
   ASSERT_EQ(1U, visit_sources.size());
   EXPECT_EQ(history::SOURCE_SYNCED, visit_sources.begin()->second);
 }
+
+TEST_F(HistoryBackendTest, SetFlocAllowed) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://test-set-floc-allowed.com");
+  ContextID context_id = reinterpret_cast<ContextID>(1);
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), history::RedirectList(),
+                             ui::PAGE_TRANSITION_TYPED, false,
+                             history::SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitRow visit = visits[0];
+  EXPECT_FALSE(visit.floc_allowed);
+
+  backend_->SetFlocAllowed(context_id, nav_entry_id, url);
+
+  id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  visit = visits[0];
+  EXPECT_TRUE(visit.floc_allowed);
+}
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+TEST_F(HistoryBackendTest, AddContentAnnotations) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://pagewithvisit.com");
+  ContextID context_id = reinterpret_cast<ContextID>(1);
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), history::RedirectList(),
+                             ui::PAGE_TRANSITION_TYPED, false,
+                             history::SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitID visit_id = visits[0].visit_id;
+
+  VisitContentAnnotations content_annotations(
+      0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123);
+  backend_->AddContentAnnotationsForVisit(visit_id, content_annotations);
+
+  base::Optional<VisitContentAnnotations> got_content_annotations =
+      backend_->db()->GetContentAnnotationsForVisit(visit_id);
+  ASSERT_TRUE(got_content_annotations);
+  EXPECT_EQ(0.5f, got_content_annotations->floc_protected_score);
+  EXPECT_THAT(
+      got_content_annotations->categories,
+      ElementsAre(VisitContentAnnotations::Category(/*id=*/1, /*weight=*/1),
+                  VisitContentAnnotations::Category(/*id=*/2, /*weight=*/1)));
+  EXPECT_EQ(123, got_content_annotations->page_topics_model_version);
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
+
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_TRUE(results[0].content_annotations());
+  EXPECT_EQ(0.5f, results[0].content_annotations()->floc_protected_score);
+  EXPECT_THAT(
+      results[0].content_annotations()->categories,
+      ElementsAre(VisitContentAnnotations::Category(/*id=*/1, /*weight=*/1),
+                  VisitContentAnnotations::Category(/*id=*/2, /*weight=*/1)));
+  EXPECT_EQ(123, results[0].content_annotations()->page_topics_model_version);
+
+  // Now, delete the URL. Content Annotations should be deleted.
+  backend_->DeleteURL(url);
+  ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(visit_id));
+}
+#endif
 
 TEST_F(HistoryBackendTest, AddVisitsSource) {
   ASSERT_TRUE(backend_.get());
@@ -2238,7 +2390,7 @@ TEST_F(HistoryBackendTest, AddPageNoVisitForBookmark) {
   ASSERT_TRUE(backend_.get());
 
   GURL url("http://www.google.com");
-  base::string16 title(base::UTF8ToUTF16("Bookmark title"));
+  std::u16string title(u"Bookmark title");
   backend_->AddPageNoVisitForBookmark(url, title);
 
   URLRow row;
@@ -2248,7 +2400,7 @@ TEST_F(HistoryBackendTest, AddPageNoVisitForBookmark) {
   EXPECT_EQ(0, row.visit_count());
 
   backend_->DeleteURL(url);
-  backend_->AddPageNoVisitForBookmark(url, base::string16());
+  backend_->AddPageNoVisitForBookmark(url, std::u16string());
   backend_->GetURL(url, &row);
   EXPECT_EQ(url, row.url());
   EXPECT_EQ(base::UTF8ToUTF16(url.spec()), row.title());
@@ -2381,7 +2533,7 @@ TEST_F(HistoryBackendTest, DeleteMatchingUrlsForKeyword) {
   EXPECT_NE(0, url1_id);
 
   KeywordID keyword_id = 1;
-  base::string16 keyword = base::UTF8ToUTF16("bar");
+  std::u16string keyword = u"bar";
   ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(
       url1_id, keyword_id, keyword));
 
@@ -2741,7 +2893,7 @@ TEST_F(HistoryBackendTest, FlocAllowedFieldInQueryResult) {
 
   QueryOptions options;
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
-  base::string16 text_query = {};
+  std::u16string text_query = {};
   QueryResults results;
 
   results = backend_->QueryHistory(text_query, options);
@@ -2753,7 +2905,7 @@ TEST_F(HistoryBackendTest, FlocAllowedFieldInQueryResult) {
   EXPECT_EQ(results[2].url(), url1);
   EXPECT_FALSE(results[2].floc_allowed());
 
-  text_query = base::UTF8ToUTF16("foo");
+  text_query = u"foo";
   results = backend_->QueryHistory(text_query, options);
   ASSERT_EQ(results.size(), 3u);
   EXPECT_EQ(results[0].url(), url1);
@@ -2860,8 +3012,8 @@ TEST_F(InMemoryHistoryBackendTest, OnURLsDeletedEnMasse) {
 void InMemoryHistoryBackendTest::PopulateTestURLsAndSearchTerms(
     URLRow* row1,
     URLRow* row2,
-    const base::string16& term1,
-    const base::string16& term2) {
+    const std::u16string& term1,
+    const std::u16string& term2) {
   // Add a typed and a non-typed URLRow to the in-memory database. This time,
   // though, do it through the history backend...
   URLRows rows;
@@ -2881,8 +3033,8 @@ void InMemoryHistoryBackendTest::PopulateTestURLsAndSearchTerms(
 TEST_F(InMemoryHistoryBackendTest, SetKeywordSearchTerms) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
-  base::string16 term1(base::UTF8ToUTF16(kTestSearchTerm1));
-  base::string16 term2(base::UTF8ToUTF16(kTestSearchTerm2));
+  std::u16string term1(base::UTF8ToUTF16(kTestSearchTerm1));
+  std::u16string term2(base::UTF8ToUTF16(kTestSearchTerm2));
   PopulateTestURLsAndSearchTerms(&row1, &row2, term1, term2);
 
   // Both URLs now have associated search terms, so the in-memory database
@@ -2904,8 +3056,8 @@ TEST_F(InMemoryHistoryBackendTest, SetKeywordSearchTerms) {
 TEST_F(InMemoryHistoryBackendTest, DeleteKeywordSearchTerms) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
-  base::string16 term1(base::UTF8ToUTF16(kTestSearchTerm1));
-  base::string16 term2(base::UTF8ToUTF16(kTestSearchTerm2));
+  std::u16string term1(base::UTF8ToUTF16(kTestSearchTerm1));
+  std::u16string term2(base::UTF8ToUTF16(kTestSearchTerm2));
   PopulateTestURLsAndSearchTerms(&row1, &row2, term1, term2);
 
   // Delete both search terms. This should be reflected in the in-memory DB.
@@ -2929,8 +3081,8 @@ TEST_F(InMemoryHistoryBackendTest, DeleteKeywordSearchTerms) {
 TEST_F(InMemoryHistoryBackendTest, DeleteAllSearchTermsForKeyword) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
-  base::string16 term1(base::UTF8ToUTF16(kTestSearchTerm1));
-  base::string16 term2(base::UTF8ToUTF16(kTestSearchTerm2));
+  std::u16string term1(base::UTF8ToUTF16(kTestSearchTerm1));
+  std::u16string term2(base::UTF8ToUTF16(kTestSearchTerm2));
   PopulateTestURLsAndSearchTerms(&row1, &row2, term1, term2);
 
   // Delete all corresponding search terms from the in-memory database.
@@ -2954,8 +3106,8 @@ TEST_F(InMemoryHistoryBackendTest, DeleteAllSearchTermsForKeyword) {
 TEST_F(InMemoryHistoryBackendTest, OnURLsDeletedWithSearchTerms) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
-  base::string16 term1(base::UTF8ToUTF16(kTestSearchTerm1));
-  base::string16 term2(base::UTF8ToUTF16(kTestSearchTerm2));
+  std::u16string term1(base::UTF8ToUTF16(kTestSearchTerm1));
+  std::u16string term2(base::UTF8ToUTF16(kTestSearchTerm2));
   PopulateTestURLsAndSearchTerms(&row1, &row2, term1, term2);
 
   // Notify the in-memory database that the second typed URL has been deleted.
@@ -2992,7 +3144,7 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
 
   MostVisitedURLList most_visited = backend_->QueryMostVisitedURLs(100, 100);
 
-  const base::string16 kSomeTitle;  // Ignored by equality operator.
+  const std::u16string kSomeTitle;  // Ignored by equality operator.
   EXPECT_THAT(
       most_visited,
       ElementsAre(MostVisitedURL(GURL("http://example1.com"), kSomeTitle),
@@ -3011,7 +3163,7 @@ TEST_F(HistoryBackendTest, AddPageWithRedirectsAndFromApi3IsNotVisible) {
   backend_->AddPage(args);
 
   QueryResults results =
-      backend_->QueryHistory(base::string16(), QueryOptions());
+      backend_->QueryHistory(std::u16string(), QueryOptions());
   EXPECT_TRUE(results.empty());
 }
 
@@ -3019,18 +3171,15 @@ TEST(FormatUrlForRedirectComparisonTest, TestUrlFormatting) {
   // Tests that the formatter removes HTTPS scheme, port, username/password,
   // and trivial "www." subdomain. Domain and path are left unchanged.
   GURL url1("https://foo:bar@www.baz.com:4443/path1.html");
-  EXPECT_EQ(base::ASCIIToUTF16("baz.com/path1.html"),
-            FormatUrlForRedirectComparison(url1));
+  EXPECT_EQ(u"baz.com/path1.html", FormatUrlForRedirectComparison(url1));
 
   // Tests that the formatter removes the HTTP scheme.
   GURL url2("http://www.baz.com");
-  EXPECT_EQ(base::ASCIIToUTF16("baz.com/"),
-            FormatUrlForRedirectComparison(url2));
+  EXPECT_EQ(u"baz.com/", FormatUrlForRedirectComparison(url2));
 
   // Tests that the formatter only removes the first subdomain.
   GURL url3("http://www.www.baz.com/");
-  EXPECT_EQ(base::ASCIIToUTF16("www.baz.com/"),
-            FormatUrlForRedirectComparison(url3));
+  EXPECT_EQ(u"www.baz.com/", FormatUrlForRedirectComparison(url3));
 }
 
 }  // namespace history

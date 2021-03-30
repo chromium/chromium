@@ -37,7 +37,7 @@ const kTextureUsageExp = {
   COPY_DST: 0x02,
   SAMPLED: 0x04,
   STORAGE: 0x08,
-  OUTPUT_ATTACHMENT: 0x10,
+  RENDER_ATTACHMENT: 0x10,
 };
 
 g.test('TextureUsage,count').fn(t => {

@@ -5,7 +5,8 @@
 #ifndef ASH_HUD_DISPLAY_GRID_H_
 #define ASH_HUD_DISPLAY_GRID_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
@@ -36,8 +37,8 @@ class Grid : public views::View {
        float top,
        float right,
        float bottom,
-       const base::string16& x_unit,
-       const base::string16& y_unit,
+       const std::u16string& x_unit,
+       const std::u16string& y_unit,
        int horizontal_points_number,
        int horizontal_ticks_interval,
        float vertical_ticks_interval);
@@ -68,8 +69,8 @@ class Grid : public views::View {
   float right_ = 0;
   float bottom_ = 0;
 
-  base::string16 x_unit_;
-  base::string16 y_unit_;
+  std::u16string x_unit_;
+  std::u16string y_unit_;
 
   // horizontal ticks
   int horizontal_points_number_ = 0;

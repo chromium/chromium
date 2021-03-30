@@ -7,10 +7,8 @@
 
 #include <stddef.h>
 
-#include <set>
-#include <vector>
-
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 
 namespace ui {
 
@@ -28,8 +26,7 @@ namespace ui {
 // active index correspond to the same thing.
 class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
  public:
-  using SelectedIndices = std::vector<int>;
-  using SelectedIndicesSet = std::set<int>;
+  using SelectedIndices = base::flat_set<int>;
 
   // Used to identify no selection.
   static constexpr int kUnselectedIndex = -1;
@@ -116,13 +113,7 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
   const SelectedIndices& selected_indices() const { return selected_indices_; }
 
  private:
-  void add_index(int index);
-  void reset_index_set();
-  void clear_indices();
-  // TODO(crbug.com/1159585): Refactor to only use one backing store for
-  // selections.
   SelectedIndices selected_indices_;
-  SelectedIndicesSet selected_indices_set_;
 
   int active_ = kUnselectedIndex;
 

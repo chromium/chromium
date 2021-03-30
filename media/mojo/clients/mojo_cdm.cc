@@ -36,21 +36,24 @@ void RecordConnectionError(bool connection_error_happened) {
 }  // namespace
 
 MojoCdm::MojoCdm(mojo::Remote<mojom::ContentDecryptionModule> remote_cdm,
-                 const base::Optional<base::UnguessableToken>& cdm_id,
-                 mojo::PendingRemote<mojom::Decryptor> decryptor_remote,
+                 media::mojom::CdmContextPtr cdm_context,
                  const SessionMessageCB& session_message_cb,
                  const SessionClosedCB& session_closed_cb,
                  const SessionKeysChangeCB& session_keys_change_cb,
                  const SessionExpirationUpdateCB& session_expiration_update_cb)
     : remote_cdm_(std::move(remote_cdm)),
-      cdm_id_(cdm_id),
-      decryptor_remote_(std::move(decryptor_remote)),
+      cdm_id_(cdm_context->cdm_id),
+      decryptor_remote_(std::move(cdm_context->decryptor)),
+#if defined(OS_WIN)
+      requires_media_foundation_renderer_(
+          cdm_context->requires_media_foundation_renderer),
+#endif  // defined(OS_WIN)
       session_message_cb_(session_message_cb),
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb),
       session_expiration_update_cb_(session_expiration_update_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(cdm_id);
+  DCHECK(cdm_id_);
   DVLOG(2) << __func__ << " cdm_id: "
            << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id_));
   DCHECK(session_message_cb_);
@@ -83,7 +86,7 @@ MojoCdm::~MojoCdm() {
   }
 
   // Reject any outstanding promises and close all the existing sessions.
-  cdm_promise_adapter_.Clear();
+  cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kDestruction);
   cdm_session_tracker_.CloseRemainingSessions(session_closed_cb_);
 }
 
@@ -103,7 +106,7 @@ void MojoCdm::OnConnectionError(uint32_t custom_reason,
 
   // As communication with the remote CDM is broken, reject any outstanding
   // promises and close all the existing sessions.
-  cdm_promise_adapter_.Clear();
+  cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kConnectionError);
   cdm_session_tracker_.CloseRemainingSessions(session_closed_cb_);
 }
 
@@ -267,10 +270,19 @@ Decryptor* MojoCdm::GetDecryptor() {
 base::Optional<base::UnguessableToken> MojoCdm::GetCdmId() const {
   // Can be called on a different thread.
   base::AutoLock auto_lock(lock_);
-  DVLOG(2) << __func__ << ": cdm_id = "
+  DVLOG(2) << __func__ << ": cdm_id="
            << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id_));
   return cdm_id_;
 }
+
+#if defined(OS_WIN)
+bool MojoCdm::RequiresMediaFoundationRenderer() {
+  base::AutoLock auto_lock(lock_);
+  DVLOG(2) << __func__ << ": requires_media_foundation_renderer_="
+           << requires_media_foundation_renderer_;
+  return requires_media_foundation_renderer_;
+}
+#endif  // defined(OS_WIN)
 
 void MojoCdm::OnSessionMessage(const std::string& session_id,
                                MessageType message_type,

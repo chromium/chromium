@@ -22,6 +22,8 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -82,7 +84,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void Flush(FlushCallback callback) override;
   void PurgeMemory() override;
   void ApplyPolicyUpdates(
-      std::vector<mojom::LocalStoragePolicyUpdatePtr> policy_updates) override;
+      std::vector<mojom::StoragePolicyUpdatePtr> policy_updates) override;
   void ForceKeepSessionState() override;
 
   // base::trace_event::MemoryDumpProvider implementation.
@@ -90,7 +92,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Converts a string from the old storage format to the new storage format.
-  static std::vector<uint8_t> MigrateString(const base::string16& input);
+  static std::vector<uint8_t> MigrateString(const std::u16string& input);
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.
@@ -134,7 +136,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                      std::vector<DomStorageDatabase::KeyValuePair> data);
 
   void OnGotStorageUsageForShutdown(
-      std::vector<mojom::LocalStorageUsageInfoPtr> usage);
+      std::vector<mojom::StorageUsageInfoPtr> usage);
   void OnOriginsDeleted(leveldb::Status status);
   void OnShutdownComplete();
 

@@ -233,7 +233,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     agent_scheduling_group_host_root_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_host_root_);
     widget_host_root_ = RenderWidgetHostImpl::Create(
-        &delegate_, *agent_scheduling_group_host_root_,
+        /*frame_tree=*/nullptr, &delegate_, *agent_scheduling_group_host_root_,
         process_host_root_->GetNextRoutingID(),
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
@@ -291,7 +291,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     child.agent_scheduling_group_host =
         std::make_unique<AgentSchedulingGroupHost>(*child.process_host);
     child.widget_host = RenderWidgetHostImpl::Create(
-        &delegate_, *child.agent_scheduling_group_host,
+        /*frame_tree=*/nullptr, &delegate_, *child.agent_scheduling_group_host,
         child.process_host->GetNextRoutingID(),
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());

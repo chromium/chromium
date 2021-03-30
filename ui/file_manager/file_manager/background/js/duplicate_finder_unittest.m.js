@@ -4,13 +4,13 @@
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {installMockChrome, MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
-import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
-import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
-import {duplicateFinderInterfaces} from '../../../externs/background/duplicate_finder.m.js';
-import {VolumeInfo} from '../../../externs/volume_info.m.js';
 import {importer} from '../../common/js/importer_common.m.js';
+import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.m.js';
 import {MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {reportPromise} from '../../common/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
+import {VolumeInfo} from '../../externs/volume_info.m.js';
 
 import {duplicateFinder} from './duplicate_finder.m.js';
 import {MockVolumeManager} from './mock_volume_manager.m.js';

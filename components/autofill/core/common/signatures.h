@@ -6,11 +6,11 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_SIGNATURES_H_
 
 #include <stddef.h>
-
 #include <stdint.h>
+
 #include <string>
 
-#include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/util/type_safety/id_type.h"
 
 namespace autofill {
@@ -19,13 +19,8 @@ struct FormData;
 struct FormFieldData;
 
 namespace internal {
-
-using FormSignatureType =
-    ::util::IdType<class FormSignatureMarker, uint64_t, 0>;
-
-using FieldSignatureType =
-    ::util::IdType<class FieldSignatureMarker, uint32_t, 0>;
-
+using FormSignatureType = ::util::IdTypeU64<class FormSignatureMarker>;
+using FieldSignatureType = ::util::IdTypeU32<class FieldSignatureMarker>;
 }  // namespace internal
 
 // The below strong aliases are defined as subclasses instead of typedefs in
@@ -45,18 +40,18 @@ FormSignature CalculateFormSignature(const FormData& form_data);
 
 // Calculates field signature based on |field_name| and |field_type|.
 FieldSignature CalculateFieldSignatureByNameAndType(
-    const base::string16& field_name,
-    const std::string& field_type);
+    base::StringPiece16 field_name,
+    base::StringPiece field_type);
 
 // Calculates field signature based on |field_data|. This function is a proxy to
 // |CalculateFieldSignatureByNameAndType|.
 FieldSignature CalculateFieldSignatureForField(const FormFieldData& field_data);
 
 // Returns 64-bit hash of the string.
-uint64_t StrToHash64Bit(const std::string& str);
+uint64_t StrToHash64Bit(base::StringPiece str);
 
 // Returns 32-bit hash of the string.
-uint32_t StrToHash32Bit(const std::string& str);
+uint32_t StrToHash32Bit(base::StringPiece str);
 
 // Reduce FieldSignature space (in UKM) to a small range for privacy reasons.
 int64_t HashFormSignature(autofill::FormSignature form_signature);

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/demo_setup_screen.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/login/localized_values_builder.h"
 
 namespace chromeos {
@@ -47,7 +47,7 @@ void DemoSetupScreenHandler::OnSetupFailed(
   CallJS("login.DemoSetupScreen.onSetupFailed",
          base::JoinString({error.GetLocalizedErrorMessage(),
                            error.GetLocalizedRecoveryMessage()},
-                          base::UTF8ToUTF16(" ")),
+                          u" "),
          error.recovery_method() ==
              DemoSetupController::DemoSetupError::RecoveryMethod::kPowerwash);
 }
@@ -83,10 +83,6 @@ void DemoSetupScreenHandler::DeclareLocalizedValues(
 
 void DemoSetupScreenHandler::GetAdditionalParameters(
     base::DictionaryValue* parameters) {
-  parameters->SetBoolKey(
-      "showStepsInDemoModeSetup",
-      base::FeatureList::IsEnabled(features::kShowStepsInDemoModeSetup));
-
   parameters->SetPath("demoSetupSteps",
                       DemoSetupController::GetDemoSetupSteps());
 }

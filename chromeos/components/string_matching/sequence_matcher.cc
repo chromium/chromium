@@ -30,15 +30,19 @@ SequenceMatcher::Match::Match(int pos_first, int pos_second, int len)
   DCHECK_GE(length, 0);
 }
 
-SequenceMatcher::SequenceMatcher(const base::string16& first_string,
-                                 const base::string16& second_string,
+SequenceMatcher::SequenceMatcher(const std::u16string& first_string,
+                                 const std::u16string& second_string,
                                  bool use_edit_distance,
                                  double num_matching_blocks_penalty)
     : first_string_(first_string),
       second_string_(second_string),
       num_matching_blocks_penalty_(num_matching_blocks_penalty),
       dp_common_string_(second_string.size() + 1, 0) {
-  DCHECK(!first_string_.empty() || !second_string_.empty());
+  if (first_string_.empty() && second_string_.empty()) {
+    edit_distance_ = 0;
+    edit_distance_ratio_ = 0;
+    block_matching_ratio_ = 0;
+  }
 
   for (size_t i = 0; i < second_string_.size(); i++) {
     char_to_positions_[second_string_[i]].emplace_back(i);

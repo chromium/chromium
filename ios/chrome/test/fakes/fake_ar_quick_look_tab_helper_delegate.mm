@@ -26,8 +26,10 @@
 }
 
 - (void)ARQuickLookTabHelper:(ARQuickLookTabHelper*)tabHelper
-    didFinishDowloadingFileWithURL:(NSURL*)fileURL {
+    didFinishDowloadingFileWithURL:(NSURL*)fileURL
+              allowsContentScaling:(BOOL)allowsScaling {
   [_fileURLs addObject:fileURL];
+  _allowsContentScaling = allowsScaling;
 }
 
 @end

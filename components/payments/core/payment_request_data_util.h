@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/mojom/payment_request_data.mojom.h"
 #include "url/gurl.h"
@@ -36,7 +35,7 @@ mojom::PaymentAddressPtr GetPaymentAddressFromAutofillProfile(
 // credit card.
 std::unique_ptr<BasicCardResponse> GetBasicCardResponseFromAutofillCreditCard(
     const autofill::CreditCard& card,
-    const base::string16& cvc,
+    const std::u16string& cvc,
     const autofill::AutofillProfile& billing_profile,
     const std::string& app_locale);
 
@@ -63,7 +62,7 @@ void ParseSupportedMethods(
 // Formats |card_number| for display. For example, "4111111111111111" is
 // formatted into "4111 1111 1111 1111". This method does not format masked card
 // numbers, which start with a letter.
-base::string16 FormatCardNumberForDisplay(const base::string16& card_number);
+std::u16string FormatCardNumberForDisplay(const std::u16string& card_number);
 
 // Returns the subset of |stringified_method_data| map where the keys are in the
 // |supported_payment_method_names| set. Used for ensuring that a payment app

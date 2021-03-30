@@ -30,7 +30,6 @@
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/text_input_manager.h"
-#include "content/common/input_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_types.h"
@@ -320,28 +319,51 @@ id MockSmartMagnifyEvent() {
 
 class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
  public:
-  ~MockRenderWidgetHostImpl() override {}
+  MockRenderWidgetHostImpl(
+      RenderWidgetHostDelegate* delegate,
+      AgentSchedulingGroupHost& agent_scheduling_group_host,
+      int32_t routing_id,
+      bool for_frame_widget)
+      : RenderWidgetHostImpl(/*frame_tree=*/nullptr,
+                             /*self_owned=*/false,
+                             delegate,
+                             agent_scheduling_group_host,
+                             routing_id,
+                             /*hidden=*/false,
+                             /*renderer_initiated_creation=*/false,
+                             std::make_unique<FrameTokenMessageQueue>()) {
+    mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
+    BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+                         TestRenderWidgetHost::CreateStubWidgetRemote());
+    if (for_frame_widget) {
+      mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
+      BindFrameWidgetInterfaces(
+          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+          TestRenderWidgetHost::CreateStubFrameWidgetRemote());
+    }
+    RendererWidgetCreated(for_frame_widget);
 
-  // Extracts |latency_info| and stores it in |lastWheelEventLatencyInfo|.
-  void ForwardWheelEventWithLatencyInfo (
-        const blink::WebMouseWheelEvent& wheel_event,
-        const ui::LatencyInfo& ui_latency) override {
-    RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo (
-        wheel_event, ui_latency);
-    lastWheelEventLatencyInfo = ui::LatencyInfo(ui_latency);
+    ON_CALL(*this, Focus())
+        .WillByDefault(
+            testing::Invoke(this, &MockRenderWidgetHostImpl::FocusImpl));
+    ON_CALL(*this, Blur())
+        .WillByDefault(
+            testing::Invoke(this, &MockRenderWidgetHostImpl::BlurImpl));
+  }
+
+  ~MockRenderWidgetHostImpl() override = default;
+
+  // Extracts |latency_info| and stores it in |last_wheel_event_latency_info_|.
+  void ForwardWheelEventWithLatencyInfo(
+      const blink::WebMouseWheelEvent& wheel_event,
+      const ui::LatencyInfo& ui_latency) override {
+    RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(wheel_event,
+                                                           ui_latency);
+    last_wheel_event_latency_info_ = ui::LatencyInfo(ui_latency);
   }
 
   MOCK_METHOD0(Focus, void());
   MOCK_METHOD0(Blur, void());
-
-  ui::LatencyInfo lastWheelEventLatencyInfo;
-  static std::unique_ptr<MockRenderWidgetHostImpl> Create(
-      RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group_host,
-      int32_t routing_id) {
-    return base::WrapUnique(new MockRenderWidgetHostImpl(
-        delegate, agent_scheduling_group_host, routing_id));
-  }
 
   MockWidgetInputHandler* input_handler() { return &input_handler_; }
   MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
@@ -352,36 +374,15 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     return &input_handler_;
   }
 
- private:
-  MockRenderWidgetHostImpl(
-      RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group_host,
-      int32_t routing_id)
-      : RenderWidgetHostImpl(/*self_owned=*/false,
-                             delegate,
-                             agent_scheduling_group_host,
-                             routing_id,
-                             /*hidden=*/false,
-                             /*renderer_initiated_creation=*/false,
-                             std::make_unique<FrameTokenMessageQueue>()) {
-    mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
-    BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-                         TestRenderWidgetHost::CreateStubWidgetRemote());
-
-    SetRendererWidgetCreatedForInactiveRenderView();
-    lastWheelEventLatencyInfo = ui::LatencyInfo();
-
-    ON_CALL(*this, Focus())
-        .WillByDefault(
-            testing::Invoke(this, &MockRenderWidgetHostImpl::FocusImpl));
-    ON_CALL(*this, Blur())
-        .WillByDefault(
-            testing::Invoke(this, &MockRenderWidgetHostImpl::BlurImpl));
+  const ui::LatencyInfo& LastWheelEventLatencyInfo() const {
+    return last_wheel_event_latency_info_;
   }
 
+ private:
   void FocusImpl() { RenderWidgetHostImpl::Focus(); }
   void BlurImpl() { RenderWidgetHostImpl::Blur(); }
 
+  ui::LatencyInfo last_wheel_event_latency_info_;
   MockWidgetInputHandler input_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(MockRenderWidgetHostImpl);
@@ -490,14 +491,10 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     process_host_->Init();
     agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_host_);
-    host_ = MockRenderWidgetHostImpl::Create(&delegate_,
-                                             *agent_scheduling_group_host_,
-                                             process_host_->GetNextRoutingID());
-    // MockRenderWidgetHostImpl already bound the Widget mojom interfaces.
-    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-    host_->BindFrameWidgetInterfaces(
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-        TestRenderWidgetHost::CreateStubFrameWidgetRemote());
+    host_ = std::make_unique<MockRenderWidgetHostImpl>(
+        &delegate_, *agent_scheduling_group_host_,
+        process_host_->GetNextRoutingID(),
+        /*for_frame_widget=*/true);
     host_->set_owner_delegate(&mock_owner_delegate_);
     rwhv_mac_ = new RenderWidgetHostViewMac(host_.get());
     rwhv_cocoa_.reset([rwhv_mac_->GetInProcessNSView() retain]);
@@ -582,8 +579,7 @@ TEST_F(RenderWidgetHostViewMacTest, AcceptsFirstResponder) {
 TEST_F(RenderWidgetHostViewMacTest, NSTextInputClientConformance) {
   EXPECT_NSEQ(NSMakeRange(0, 0), [rwhv_cocoa_ selectedRange]);
 
-  rwhv_mac_->SelectionChanged(base::UTF8ToUTF16("llo, world!"), 2,
-                              gfx::Range(5, 10));
+  rwhv_mac_->SelectionChanged(u"llo, world!", 2, gfx::Range(5, 10));
   EXPECT_NSEQ(NSMakeRange(5, 5), [rwhv_cocoa_ selectedRange]);
 
   NSRange actualRange = NSMakeRange(1u, 2u);
@@ -652,7 +648,7 @@ TEST_F(RenderWidgetHostViewMacTest, InvalidKeyCode) {
 }
 
 TEST_F(RenderWidgetHostViewMacTest, GetFirstRectForCharacterRangeCaretCase) {
-  const base::string16 kDummyString = base::UTF8ToUTF16("hogehoge");
+  const std::u16string kDummyString = u"hogehoge";
   const size_t kDummyOffset = 0;
 
   gfx::Rect caret_rect(10, 11, 0, 10);
@@ -949,7 +945,7 @@ TEST_F(RenderWidgetHostViewMacTest, LastWheelEventLatencyInfoExists) {
   // properly in scrollWheel function.
   NSEvent* wheelEvent1 = MockScrollWheelEventWithPhase(@selector(phaseBegan),3);
   [rwhv_mac_->GetInProcessNSView() scrollWheel:wheelEvent1];
-  ASSERT_TRUE(host_->lastWheelEventLatencyInfo.FindLatency(
+  ASSERT_TRUE(host_->LastWheelEventLatencyInfo().FindLatency(
       ui::INPUT_EVENT_LATENCY_UI_COMPONENT, nullptr));
 
   MockWidgetInputHandler::MessageVector events =
@@ -964,7 +960,7 @@ TEST_F(RenderWidgetHostViewMacTest, LastWheelEventLatencyInfoExists) {
   // in scrollWheel.
   NSEvent* wheelEvent2 = MockScrollWheelEventWithPhase(@selector(phaseEnded),0);
   [rwhv_mac_->GetInProcessNSView() scrollWheel:wheelEvent2];
-  ASSERT_TRUE(host_->lastWheelEventLatencyInfo.FindLatency(
+  ASSERT_TRUE(host_->LastWheelEventLatencyInfo().FindLatency(
       ui::INPUT_EVENT_LATENCY_UI_COMPONENT, nullptr));
 
   events = host_->GetAndResetDispatchedMessages();
@@ -985,7 +981,7 @@ TEST_F(RenderWidgetHostViewMacTest, SourceEventTypeExistsInLatencyInfo) {
   events[0]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultState::kConsumed);
 
-  ASSERT_TRUE(host_->lastWheelEventLatencyInfo.source_event_type() ==
+  ASSERT_TRUE(host_->LastWheelEventLatencyInfo().source_event_type() ==
               ui::SourceEventType::WHEEL);
 }
 
@@ -1322,9 +1318,9 @@ TEST_F(RenderWidgetHostViewMacTest,
   AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
-  std::unique_ptr<MockRenderWidgetHostImpl> host =
-      MockRenderWidgetHostImpl::Create(&delegate, agent_scheduling_group_host,
-                                       routing_id);
+  auto host = std::make_unique<MockRenderWidgetHostImpl>(
+      &delegate, agent_scheduling_group_host, routing_id,
+      /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
@@ -1385,9 +1381,9 @@ TEST_F(RenderWidgetHostViewMacTest,
   AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
-  std::unique_ptr<MockRenderWidgetHostImpl> host =
-      MockRenderWidgetHostImpl::Create(&delegate, agent_scheduling_group_host,
-                                       routing_id);
+  auto host = std::make_unique<MockRenderWidgetHostImpl>(
+      &delegate, agent_scheduling_group_host, routing_id,
+      /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
@@ -1444,9 +1440,9 @@ TEST_F(RenderWidgetHostViewMacTest,
   MockRenderWidgetHostDelegate delegate;
   AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
   int32_t routing_id = process_host.GetNextRoutingID();
-  std::unique_ptr<MockRenderWidgetHostImpl> host =
-      MockRenderWidgetHostImpl::Create(&delegate, agent_scheduling_group_host,
-                                       routing_id);
+  auto host = std::make_unique<MockRenderWidgetHostImpl>(
+      &delegate, agent_scheduling_group_host, routing_id,
+      /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
@@ -1717,7 +1713,7 @@ TEST_F(RenderWidgetHostViewMacTest, EventLatencyOSMouseWheelHistogram) {
 // This test verifies that |selected_text_| is updated accordingly with
 // different variations of RWHVMac::SelectChanged updates.
 TEST_F(RenderWidgetHostViewMacTest, SelectedText) {
-  base::string16 sample_text;
+  std::u16string sample_text;
   base::UTF8ToUTF16("hello world!", 12, &sample_text);
   gfx::Range range(6, 11);
 
@@ -1753,9 +1749,9 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
     child_process_host_->Init();
     child_agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*child_process_host_);
-    child_widget_ = MockRenderWidgetHostImpl::Create(
+    child_widget_ = std::make_unique<MockRenderWidgetHostImpl>(
         &delegate_, *child_agent_scheduling_group_host_,
-        child_process_host_->GetNextRoutingID());
+        child_process_host_->GetNextRoutingID(), /*for_frame_widget=*/false);
     child_view_ = new TestRenderWidgetHostView(child_widget_.get());
     base::RunLoop().RunUntilIdle();
   }
@@ -2095,7 +2091,7 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsReplacement) {
         [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
                               replacementString:@"foo"];
 
-    const base::string16 kOriginalString = base::UTF8ToUTF16("abcxxxghi");
+    const std::u16string kOriginalString = u"abcxxxghi";
 
     // Change the selection once; requests completions from the spell checker.
     tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
@@ -2151,7 +2147,7 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsNotRequestedForPasswords) {
     EXPECT_NSNE(nil, candidate_list_item());
     candidate_list_item().allowsCollapsing = NO;
 
-    const base::string16 kOriginalString = base::UTF8ToUTF16("abcxxxghi");
+    const std::u16string kOriginalString = u"abcxxxghi";
 
     // Change the selection once; completions should *not* be requested.
     tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
@@ -2183,7 +2179,7 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsInvalidSelection) {
         [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
                               replacementString:@"foo"];
 
-    const base::string16 kOriginalString = base::UTF8ToUTF16("abcxxxghi");
+    const std::u16string kOriginalString = u"abcxxxghi";
 
     tab_view()->SelectionChanged(kOriginalString, 3,
                                  gfx::Range::InvalidRange());

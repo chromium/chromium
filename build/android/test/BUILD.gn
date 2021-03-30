@@ -1,0 +1,30 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/android_nocompile.gni")
+import("nocompile_gn/nocompile_sources.gni")
+
+if (enable_java_templates) {
+  android_nocompile_test_suite("android_lint_test") {
+    # Depend on lint Python script so that the action is re-run whenever the lint script is
+    # modified.
+    pydeps = [ "//build/android/gyp/lint.pydeps" ]
+    tests = [
+      {
+        target = "nocompile_gn:default_locale_lint_test"
+        nocompile_sources =
+            rebase_path(default_locale_lint_test_nocompile_sources,
+                        "",
+                        "nocompile_gn")
+        expected_compile_output_regex = "Warning:.*DefaultLocale"
+      },
+      {
+        target = "nocompile_gn:new_api_lint_test"
+        nocompile_sources =
+            rebase_path(new_api_lint_test_nocompile_sources, "", "nocompile_gn")
+        expected_compile_output_regex = "Error:.*NewApi"
+      },
+    ]
+  }
+}

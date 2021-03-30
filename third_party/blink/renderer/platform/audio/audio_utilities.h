@@ -42,10 +42,6 @@ enum SampleFrameRounding {
   kRoundUp
 };
 
-// Rendering quantum size.  This is how many frames are processed at a time for
-// each node in the audio graph.
-static const unsigned kRenderQuantumFrames = 128;
-
 // Standard functions for converting to and from decibel values from linear.
 PLATFORM_EXPORT float LinearToDecibels(float);
 PLATFORM_EXPORT float DecibelsToLinear(float);

@@ -161,7 +161,7 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
     const int y_pos = rect.Y() + (rect.Height() * percent);
 
     FloatRect tick_rect(rect.X(), y_pos, rect.Width(), 3);
-    context.FillRect(tick_rect, Color(0xCC, 0xAA, 0x00, 0xFF));
+    context.FillRect(tick_rect, Color(0xB0, 0x60, 0x00, 0xFF));
 
     FloatRect tick_stroke(rect.X() + TickmarkBorderWidth(), y_pos + 1,
                           rect.Width() - 2 * TickmarkBorderWidth(), 1);

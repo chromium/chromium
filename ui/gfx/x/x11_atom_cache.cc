@@ -134,6 +134,7 @@ constexpr const char* kAtomsToCache[] = {
     "_NET_WM_USER_TIME",
     "_NET_WM_WINDOW_OPACITY",
     "_NET_WM_WINDOW_TYPE",
+    "_NET_WM_WINDOW_TYPE_DIALOG",
     "_NET_WM_WINDOW_TYPE_DND",
     "_NET_WM_WINDOW_TYPE_MENU",
     "_NET_WM_WINDOW_TYPE_NORMAL",
@@ -163,6 +164,9 @@ constexpr const char* kAtomsToCache[] = {
     "text/rtf",
     "text/uri-list",
     "text/x-moz-url",
+    "xwayland-pointer",
+    "xwayland-keyboard",
+    "xwayland-touch",
 };
 
 constexpr int kCacheCount = base::size(kAtomsToCache);

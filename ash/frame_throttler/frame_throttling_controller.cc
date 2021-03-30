@@ -16,15 +16,16 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 
 namespace ash {
 
 namespace {
 
 void CollectFrameSinkIds(const aura::Window* window,
-                         std::vector<viz::FrameSinkId>* frame_sink_ids) {
+                         base::flat_set<viz::FrameSinkId>* frame_sink_ids) {
   if (window->GetFrameSinkId().is_valid()) {
-    frame_sink_ids->push_back(window->GetFrameSinkId());
+    frame_sink_ids->insert(window->GetFrameSinkId());
     return;
   }
   for (auto* child : window->children()) {
@@ -32,14 +33,26 @@ void CollectFrameSinkIds(const aura::Window* window,
   }
 }
 
-void CollectBrowserFrameSinkIds(const std::vector<aura::Window*>& windows,
-                                std::vector<viz::FrameSinkId>* frame_sink_ids) {
-  for (auto* window : windows) {
-    if (ash::AppType::BROWSER == static_cast<ash::AppType>(window->GetProperty(
-                                     aura::client::kAppType))) {
-      CollectFrameSinkIds(window, frame_sink_ids);
-    }
+// Recursively walks through all descendents of |window| and collects those
+// belonging to a browser and with their frame sink ids being a member of |ids|.
+// |inside_browser| indicates if the |window| already belongs to a browser.
+// |browser_ids| is the output containing the result frame sinks ids.
+void CollectBrowserFrameSinkIdsInWindow(
+    const aura::Window* window,
+    bool inside_browser,
+    const base::flat_set<viz::FrameSinkId>& ids,
+    base::flat_set<viz::FrameSinkId>* browser_ids) {
+  if (inside_browser || ash::AppType::BROWSER ==
+                            static_cast<ash::AppType>(
+                                window->GetProperty(aura::client::kAppType))) {
+    const auto& id = window->GetFrameSinkId();
+    if (id.is_valid() && ids.contains(id))
+      browser_ids->insert(id);
+    inside_browser = true;
   }
+
+  for (auto* child : window->children())
+    CollectBrowserFrameSinkIdsInWindow(child, inside_browser, ids, browser_ids);
 }
 
 }  // namespace
@@ -63,8 +76,11 @@ FrameThrottlingController::~FrameThrottlingController() {
 
 void FrameThrottlingController::StartThrottling(
     const std::vector<aura::Window*>& windows) {
-  if (windows_throttled_)
+  if (windows_manually_throttled_)
     EndThrottling();
+
+  if (windows.empty())
+    return;
 
   auto all_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
@@ -77,8 +93,6 @@ void FrameThrottlingController::StartThrottling(
                             window->GetProperty(aura::client::kAppType));
                });
 
-  std::vector<aura::Window*> browser_windows;
-  browser_windows.reserve(windows.size());
   std::vector<aura::Window*> arc_windows;
   arc_windows.reserve(windows.size());
   for (auto* window : windows) {
@@ -86,7 +100,7 @@ void FrameThrottlingController::StartThrottling(
         static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
     switch (type) {
       case ash::AppType::BROWSER:
-        browser_windows.push_back(window);
+        CollectFrameSinkIds(window, &manually_throttled_ids_);
         break;
       case ash::AppType::ARC_APP:
         arc_windows.push_back(window);
@@ -96,36 +110,15 @@ void FrameThrottlingController::StartThrottling(
     }
   }
 
-  if (!browser_windows.empty()) {
-    std::vector<viz::FrameSinkId> frame_sink_ids;
-    frame_sink_ids.reserve(browser_windows.size());
-    CollectBrowserFrameSinkIds(browser_windows, &frame_sink_ids);
-    if (!frame_sink_ids.empty())
-      StartThrottlingFrameSinks(frame_sink_ids);
+  // Throttle browser frame sinks.
+  if (!manually_throttled_ids_.empty()) {
+    UpdateThrottlingOnBrowserWindows();
+    windows_manually_throttled_ = true;
   }
-
-  std::vector<aura::Window*> all_windows_to_throttle(browser_windows);
-
   // Do not throttle arc if at least one arc window should not be throttled.
   if (!arc_windows.empty() && (arc_windows.size() == all_arc_windows.size())) {
     StartThrottlingArc(arc_windows);
-    all_windows_to_throttle.insert(all_windows_to_throttle.end(),
-                                   arc_windows.begin(), arc_windows.end());
-  }
-
-  if (!all_windows_to_throttle.empty()) {
-    windows_throttled_ = true;
-    for (auto& observer : observers_)
-      observer.OnThrottlingStarted(all_windows_to_throttle, throttled_fps_);
-  }
-}
-
-void FrameThrottlingController::StartThrottlingFrameSinks(
-    const std::vector<viz::FrameSinkId>& frame_sink_ids) {
-  DCHECK(!frame_sink_ids.empty());
-  if (context_factory_) {
-    context_factory_->GetHostFrameSinkManager()->StartThrottling(
-        frame_sink_ids, base::TimeDelta::FromSeconds(1) / throttled_fps_);
+    windows_manually_throttled_ = true;
   }
 }
 
@@ -136,11 +129,6 @@ void FrameThrottlingController::StartThrottlingArc(
   }
 }
 
-void FrameThrottlingController::EndThrottlingFrameSinks() {
-  if (context_factory_)
-    context_factory_->GetHostFrameSinkManager()->EndThrottling();
-}
-
 void FrameThrottlingController::EndThrottlingArc() {
   for (auto& arc_observer : arc_observers_) {
     arc_observer.OnThrottlingEnded();
@@ -148,22 +136,59 @@ void FrameThrottlingController::EndThrottlingArc() {
 }
 
 void FrameThrottlingController::EndThrottling() {
-  EndThrottlingFrameSinks();
-  EndThrottlingArc();
+  if (windows_manually_throttled_) {
+    manually_throttled_ids_.clear();
+    UpdateThrottlingOnBrowserWindows();
+    EndThrottlingArc();
 
-  for (auto& observer : observers_) {
-    observer.OnThrottlingEnded();
+    windows_manually_throttled_ = false;
   }
-  windows_throttled_ = false;
 }
 
-void FrameThrottlingController::AddObserver(FrameThrottlingObserver* observer) {
-  observers_.AddObserver(observer);
+void FrameThrottlingController::OnCompositingFrameSinksToThrottleUpdated(
+    const aura::WindowTreeHost* window_tree_host,
+    const base::flat_set<viz::FrameSinkId>& ids) {
+  base::flat_set<viz::FrameSinkId>& browser_ids =
+      host_to_ids_map_[window_tree_host];
+  browser_ids.clear();
+  CollectBrowserFrameSinkIdsInWindow(window_tree_host->window(), false, ids,
+                                     &browser_ids);
+  UpdateThrottlingOnBrowserWindows();
 }
 
-void FrameThrottlingController::RemoveObserver(
-    FrameThrottlingObserver* observer) {
-  observers_.RemoveObserver(observer);
+void FrameThrottlingController::OnWindowDestroying(aura::Window* window) {
+  DCHECK(window->IsRootWindow());
+  host_to_ids_map_.erase(window->GetHost());
+  UpdateThrottlingOnBrowserWindows();
+  window->RemoveObserver(this);
+}
+
+void FrameThrottlingController::OnWindowTreeHostCreated(
+    aura::WindowTreeHost* host) {
+  host->AddObserver(this);
+  host->window()->AddObserver(this);
+}
+
+std::vector<viz::FrameSinkId>
+FrameThrottlingController::GetFrameSinkIdsToThrottle() const {
+  std::vector<viz::FrameSinkId> ids_to_throttle;
+  // Add frame sink ids gathered from compositing.
+  for (const auto& pair : host_to_ids_map_) {
+    ids_to_throttle.insert(ids_to_throttle.end(), pair.second.begin(),
+                           pair.second.end());
+  }
+  // Add frame sink ids from special ui modes.
+  if (!manually_throttled_ids_.empty()) {
+    ids_to_throttle.insert(ids_to_throttle.end(),
+                           manually_throttled_ids_.begin(),
+                           manually_throttled_ids_.end());
+  }
+  return ids_to_throttle;
+}
+
+void FrameThrottlingController::UpdateThrottlingOnBrowserWindows() {
+  context_factory_->GetHostFrameSinkManager()->Throttle(
+      GetFrameSinkIdsToThrottle(), base::TimeDelta::FromHz(throttled_fps_));
 }
 
 void FrameThrottlingController::AddArcObserver(

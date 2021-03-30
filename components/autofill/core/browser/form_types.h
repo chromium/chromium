@@ -9,17 +9,15 @@
 
 namespace autofill {
 
-enum FormType : int {
-  UNKNOWN_FORM_TYPE,
-  ADDRESS_FORM,
-  CREDIT_CARD_FORM,
-  PASSWORD_FORM
+enum class FormType : int {
+  kUnknownFormType,
+  kAddressForm,
+  kCreditCardForm,
+  kPasswordForm,
+  kMaxValue = kPasswordForm
 };
 
-class FormTypes {
- public:
-  static FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group);
-};
+FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group);
 
 }  // namespace autofill
 

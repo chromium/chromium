@@ -160,7 +160,8 @@ void ZipFileInstaller::ManifestParsed(
     return;
   }
 
-  Manifest manifest(Manifest::INTERNAL, std::move(manifest_dictionary));
+  Manifest::Type manifest_type =
+      Manifest::GetTypeFromManifestValue(*manifest_dictionary);
 
   unzip::UnzipFilterCallback filter = base::BindRepeating(
       [](bool is_theme, const base::FilePath& file_path) -> bool {
@@ -169,7 +170,7 @@ void ZipFileInstaller::ManifestParsed(
         return ZipFileInstaller::ShouldExtractFile(is_theme, file_path) &&
                !ZipFileInstaller::IsManifestFile(file_path);
       },
-      manifest.is_theme());
+      manifest_type == Manifest::TYPE_THEME);
 
   // TODO(crbug.com/645263): This silently ignores blocked file types.
   //                         Add install warnings.

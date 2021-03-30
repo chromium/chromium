@@ -33,16 +33,15 @@ class GIN_EXPORT ArrayBuffer {
   ~ArrayBuffer();
   ArrayBuffer& operator=(const ArrayBuffer& other);
 
-  void* bytes() const { return bytes_; }
-  size_t num_bytes() const { return num_bytes_; }
+  void* bytes() const {
+    return backing_store_ ? backing_store_->Data() : nullptr;
+  }
+  size_t num_bytes() const {
+    return backing_store_ ? backing_store_->ByteLength() : 0;
+  }
 
  private:
-  class Private;
-
-  scoped_refptr<Private> private_;
-  void* bytes_;
-  size_t num_bytes_;
-
+  std::shared_ptr<v8::BackingStore> backing_store_;
   DISALLOW_COPY(ArrayBuffer);
 };
 

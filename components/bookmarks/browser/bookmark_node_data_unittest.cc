@@ -5,10 +5,11 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 
 #include <memory>
+#include <string>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
+#include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -89,7 +90,7 @@ TEST_F(BookmarkNodeDataTest, BogusRead) {
 // read it.
 TEST_F(BookmarkNodeDataTest, JustURL) {
   const GURL url("http://google.com");
-  const base::string16 title(ASCIIToUTF16("google.com"));
+  const std::u16string title(u"google.com");
 
   ui::OSExchangeData data;
   data.SetURL(url, title);
@@ -110,7 +111,7 @@ TEST_F(BookmarkNodeDataTest, URL) {
   // Write a single node representing a URL to the clipboard.
   const BookmarkNode* root = model()->bookmark_bar_node();
   GURL url(GURL("http://foo.com"));
-  const base::string16 title(ASCIIToUTF16("foo.com"));
+  const std::u16string title(u"foo.com");
   const BookmarkNode* node = model()->AddURL(root, 0, title, url);
   BookmarkNodeData drag_data(node);
   EXPECT_TRUE(drag_data.is_valid());
@@ -145,7 +146,7 @@ TEST_F(BookmarkNodeDataTest, URL) {
 
   // Writing should also put the URL and title on the clipboard.
   GURL read_url;
-  base::string16 read_title;
+  std::u16string read_title;
   EXPECT_TRUE(data2.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
                                    &read_url, &read_title));
   EXPECT_EQ(url, read_url);
@@ -155,9 +156,9 @@ TEST_F(BookmarkNodeDataTest, URL) {
 // Tests writing a folder to the clipboard.
 TEST_F(BookmarkNodeDataTest, Folder) {
   const BookmarkNode* root = model()->bookmark_bar_node();
-  const BookmarkNode* g1 = model()->AddFolder(root, 0, ASCIIToUTF16("g1"));
-  model()->AddFolder(g1, 0, ASCIIToUTF16("g11"));
-  const BookmarkNode* g12 = model()->AddFolder(g1, 0, ASCIIToUTF16("g12"));
+  const BookmarkNode* g1 = model()->AddFolder(root, 0, u"g1");
+  model()->AddFolder(g1, 0, u"g11");
+  const BookmarkNode* g12 = model()->AddFolder(g1, 0, u"g12");
 
   BookmarkNodeData drag_data(g12);
   EXPECT_TRUE(drag_data.is_valid());
@@ -196,10 +197,10 @@ TEST_F(BookmarkNodeDataTest, Folder) {
 // Tests reading/writing a folder with children.
 TEST_F(BookmarkNodeDataTest, FolderWithChild) {
   const BookmarkNode* root = model()->bookmark_bar_node();
-  const BookmarkNode* folder = model()->AddFolder(root, 0, ASCIIToUTF16("g1"));
+  const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
 
   GURL url(GURL("http://foo.com"));
-  const base::string16 title(ASCIIToUTF16("blah2"));
+  const std::u16string title(u"blah2");
 
   model()->AddURL(folder, 0, title, url);
 
@@ -233,10 +234,10 @@ TEST_F(BookmarkNodeDataTest, FolderWithChild) {
 // Tests reading/writing of multiple nodes.
 TEST_F(BookmarkNodeDataTest, MultipleNodes) {
   const BookmarkNode* root = model()->bookmark_bar_node();
-  const BookmarkNode* folder = model()->AddFolder(root, 0, ASCIIToUTF16("g1"));
+  const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
 
   GURL url(GURL("http://foo.com"));
-  const base::string16 title(ASCIIToUTF16("blah2"));
+  const std::u16string title(u"blah2");
 
   const BookmarkNode* url_node = model()->AddURL(folder, 0, title, url);
 
@@ -260,7 +261,7 @@ TEST_F(BookmarkNodeDataTest, MultipleNodes) {
 
   const BookmarkNodeData::Element& read_folder = read_data.elements[0];
   EXPECT_FALSE(read_folder.is_url);
-  EXPECT_EQ(ASCIIToUTF16("g1"), read_folder.title);
+  EXPECT_EQ(u"g1", read_folder.title);
   EXPECT_EQ(1u, read_folder.children.size());
 
   const BookmarkNodeData::Element& read_url = read_data.elements[1];
@@ -283,13 +284,13 @@ TEST_F(BookmarkNodeDataTest, MultipleNodes) {
 TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardURL) {
   BookmarkNodeData data;
   GURL url(GURL("http://foo.com"));
-  const base::string16 title(ASCIIToUTF16("blah"));
+  const std::u16string title(u"blah");
 
   data.ReadFromTuple(url, title);
   data.WriteToClipboard();
 
   // Now read the data back in.
-  base::string16 clipboard_result;
+  std::u16string clipboard_result;
   clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
                        /* data_dst = */ nullptr, &clipboard_result);
   EXPECT_EQ(base::UTF8ToUTF16(url.spec()), clipboard_result);
@@ -304,9 +305,9 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
   BookmarkNodeData data;
   const BookmarkNode* root = model()->bookmark_bar_node();
   GURL url(GURL("http://foo.com"));
-  const base::string16 title(ASCIIToUTF16("blah"));
+  const std::u16string title(u"blah");
   GURL url2(GURL("http://bar.com"));
-  const base::string16 title2(ASCIIToUTF16("blah2"));
+  const std::u16string title2(u"blah2");
   const BookmarkNode* url_node = model()->AddURL(root, 0, title, url);
   const BookmarkNode* url_node2 = model()->AddURL(root, 1, title2, url2);
   std::vector<const BookmarkNode*> nodes;
@@ -317,15 +318,15 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
   data.WriteToClipboard();
 
   // Now read the data back in.
-  base::string16 combined_text;
+  std::u16string combined_text;
 #if defined(OS_WIN)
-  base::string16 new_line = base::ASCIIToUTF16("\r\n");
+  std::u16string new_line = u"\r\n";
 #else
-  base::string16 new_line = base::ASCIIToUTF16("\n");
+  std::u16string new_line = u"\n";
 #endif
   combined_text = base::UTF8ToUTF16(url.spec()) + new_line
     + base::UTF8ToUTF16(url2.spec());
-  base::string16 clipboard_result;
+  std::u16string clipboard_result;
   clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
                        /* data_dst = */ nullptr, &clipboard_result);
   EXPECT_EQ(combined_text, clipboard_result);
@@ -340,7 +341,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
 TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   BookmarkNodeData data;
   const BookmarkNode* root = model()->bookmark_bar_node();
-  const BookmarkNode* folder = model()->AddFolder(root, 0, ASCIIToUTF16("g1"));
+  const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(folder);
 
@@ -348,18 +349,18 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   data.WriteToClipboard();
 
   // Now read the data back in.
-  base::string16 clipboard_result;
+  std::u16string clipboard_result;
   clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
                        /* data_dst = */ nullptr, &clipboard_result);
-  EXPECT_EQ(base::ASCIIToUTF16("g1"), clipboard_result);
+  EXPECT_EQ(u"g1", clipboard_result);
 }
 
 TEST_F(BookmarkNodeDataTest, WriteToClipboardFolderWithChildren) {
   BookmarkNodeData data;
   const BookmarkNode* root = model()->bookmark_bar_node();
-  const BookmarkNode* folder = model()->AddFolder(root, 0, ASCIIToUTF16("g1"));
+  const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
   GURL url(GURL("http://foo.com"));
-  const base::string16 title(ASCIIToUTF16("blah"));
+  const std::u16string title(u"blah");
   model()->AddURL(folder, 0, title, url);
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(folder);
@@ -368,10 +369,10 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardFolderWithChildren) {
   data.WriteToClipboard();
 
   // Now read the data back in.
-  base::string16 clipboard_result;
+  std::u16string clipboard_result;
   clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
                        /* data_dst = */ nullptr, &clipboard_result);
-  EXPECT_EQ(base::ASCIIToUTF16("g1"), clipboard_result);
+  EXPECT_EQ(u"g1", clipboard_result);
 }
 
 // TODO(https://crbug.com/1010415): This test is flaky on various platforms, fix
@@ -379,10 +380,10 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardFolderWithChildren) {
 TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardFolderAndURL) {
   BookmarkNodeData data;
   GURL url(GURL("http://foo.com"));
-  const base::string16 title(ASCIIToUTF16("blah"));
+  const std::u16string title(u"blah");
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* url_node = model()->AddURL(root, 0, title, url);
-  const BookmarkNode* folder = model()->AddFolder(root, 0, ASCIIToUTF16("g1"));
+  const BookmarkNode* folder = model()->AddFolder(root, 0, u"g1");
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(url_node);
   nodes.push_back(folder);
@@ -391,15 +392,15 @@ TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardFolderAndURL) {
   data.WriteToClipboard();
 
   // Now read the data back in.
-  base::string16 combined_text;
+  std::u16string combined_text;
 #if defined(OS_WIN)
-  base::string16 new_line = base::ASCIIToUTF16("\r\n");
+  std::u16string new_line = u"\r\n";
 #else
-  base::string16 new_line = base::ASCIIToUTF16("\n");
+  std::u16string new_line = u"\n";
 #endif
-  base::string16 folder_title = ASCIIToUTF16("g1");
+  std::u16string folder_title = u"g1";
   combined_text = base::ASCIIToUTF16(url.spec()) + new_line + folder_title;
-  base::string16 clipboard_result;
+  std::u16string clipboard_result;
   clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste,
                        /* data_dst = */ nullptr, &clipboard_result);
   EXPECT_EQ(combined_text, clipboard_result);
@@ -408,10 +409,8 @@ TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardFolderAndURL) {
 // Tests reading/writing of meta info.
 TEST_F(BookmarkNodeDataTest, MetaInfo) {
   // Create a node containing meta info.
-  const BookmarkNode* node = model()->AddURL(model()->other_node(),
-                                             0,
-                                             ASCIIToUTF16("foo bar"),
-                                             GURL("http://www.google.com"));
+  const BookmarkNode* node = model()->AddURL(
+      model()->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
   model()->SetNodeMetaInfo(node, "somekey", "somevalue");
   model()->SetNodeMetaInfo(node, "someotherkey", "someothervalue");
 

@@ -38,7 +38,7 @@ const char kArcDataRemoveRequested[] = "arc.data.remove_requested";
 // TODO(hidehiko): For historical reason, now the preference name does not
 // directly reflect "Google Play Store". We should get and set the values via
 // utility methods (IsArcPlayStoreEnabledForProfile() and
-// SetArcPlayStoreEnabledForProfile()) in chrome/browser/chromeos/arc/arc_util.
+// SetArcPlayStoreEnabledForProfile()) in chrome/browser/ash/arc/arc_util.h.
 const char kArcEnabled[] = "arc.enabled";
 // A preference to control if ARC can access removable media on the host side.
 // TODO(fukino): Remove this pref once "Play Store applications can't access

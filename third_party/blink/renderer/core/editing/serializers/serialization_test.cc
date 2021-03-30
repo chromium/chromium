@@ -4,11 +4,31 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
-class SerializationTest : public EditingTestBase {};
+// See third_party/googletest/src/googletest/docs/advanced.md for supported
+// regexp operators.
+using ::testing::MatchesRegex;
+
+class SerializationTest : public EditingTestBase {
+ protected:
+  std::string SerailizeToHTMLText(const Node& node) {
+    // We use same |CreateMarkupOptions| used in
+    // |FrameSelection::SelectedHTMLForClipboard()|
+    return CreateMarkup(Position::BeforeNode(node), Position::AfterNode(node),
+                        CreateMarkupOptions::Builder()
+                            .SetShouldAnnotateForInterchange(true)
+                            .SetShouldResolveURLs(kResolveNonLocalURLs)
+                            .Build())
+        .Utf8();
+  }
+};
 
 // Regression test for https://crbug.com/1032673
 TEST_F(SerializationTest, CantCreateFragmentCrash) {
@@ -27,6 +47,58 @@ TEST_F(SerializationTest, CantCreateFragmentCrash) {
   DocumentFragment* sanitized = CreateSanitizedFragmentFromMarkupWithContext(
       GetDocument(), html, 0, html.length(), KURL());
   EXPECT_FALSE(sanitized);
+}
+
+// http://crbug.com/938590
+TEST_F(SerializationTest, Link) {
+  InsertStyleElement(
+      "a { color: #010101; }"
+      "a:link { color: #020202; }"
+      "a:visited { color: #030303; }");
+  SetBodyContent(
+      "<a id=a1>text</a>"
+      "<a id=a2 href=''>visited</a>"
+      "<a id=a3 href='https://1.1.1.1/'>unvisited</a>");
+
+  const auto& a1 = *GetElementById("a1");
+  const auto& style1 = a1.ComputedStyleRef();
+  const auto& a2 = *GetElementById("a2");
+  const auto& style2 = a2.ComputedStyleRef();
+  const auto& a3 = *GetElementById("a3");
+  const auto& style3 = a3.ComputedStyleRef();
+
+  // a1
+  ASSERT_THAT(style1.InsideLink(), EInsideLink::kNotInsideLink);
+  ASSERT_THAT(style1.VisitedDependentColor(GetCSSPropertyColor()),
+              MakeRGB(1, 1, 1))
+      << "should not be :visited/:link color";
+  EXPECT_THAT(
+      SerailizeToHTMLText(a1),
+      MatchesRegex(
+          R"re(<a id="a1" style=".*;? ?color: rgb\(1, 1, 1\);.*">text</a>)re"));
+
+  // a2
+  // Note: Because href="" means current document URI, it is visited.
+  // We should have :link color instead of :visited color not to expose
+  // visited/unvisited state of link for privacy reason.
+  ASSERT_THAT(style2.InsideLink(), EInsideLink::kInsideVisitedLink);
+  ASSERT_THAT(style2.VisitedDependentColor(GetCSSPropertyColor()),
+              MakeRGB(3, 3, 3))
+      << "should be :visited color";
+  EXPECT_THAT(
+      SerailizeToHTMLText(a2),
+      MatchesRegex(
+          R"re(<a id="a2" href="" style=".*;? ?color: rgb\(2, 2, 2\);.*">visited</a>)re"));
+
+  // a3
+  ASSERT_THAT(style3.InsideLink(), EInsideLink::kInsideUnvisitedLink);
+  ASSERT_THAT(style3.VisitedDependentColor(GetCSSPropertyColor()),
+              MakeRGB(2, 2, 2))
+      << "should be :link color";
+  EXPECT_THAT(
+      SerailizeToHTMLText(a3),
+      MatchesRegex(
+          R"re(<a id="a3" href="https://1.1.1.1/" style=".*;? ?color: rgb\(2, 2, 2\);.*">unvisited</a>)re"));
 }
 
 // Regression test for https://crbug.com/1032389

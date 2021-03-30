@@ -60,7 +60,7 @@ bool CreateStreamDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
   // TODO(ricea): Find an appropriate value for capacity_num_bytes.
   options.capacity_num_bytes = 0;
 
-  MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
+  MojoResult result = mojo::CreateDataPipe(&options, *producer, *consumer);
   if (result != MOJO_RESULT_OK) {
     // Probably out of resources.
     exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
@@ -106,10 +106,9 @@ class QuicTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
         return ScriptPromise();
       }
 
-      return SendDatagram(
-          {static_cast<const uint8_t*>(data.View()->buffer()->Data()) +
-               data.View()->byteOffset(),
-           data.View()->byteLength()});
+      return SendDatagram({static_cast<const uint8_t*>(data->buffer()->Data()) +
+                               data->byteOffset(),
+                           data->byteLength()});
     }
 
     exception_state.ThrowTypeError(
@@ -525,7 +524,8 @@ void QuicTransport::OnConnectionEstablished(
   DVLOG(1) << "QuicTransport::OnConnectionEstablished() this=" << this;
   handshake_client_receiver_.reset();
 
-  // TODO(ricea): Report to devtools.
+  probe::WebTransportConnectionEstablished(GetExecutionContext(),
+                                           inspector_transport_id_);
 
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking);

@@ -5,6 +5,7 @@
 #include "chrome/services/sharing/nearby/nearby_connections.h"
 
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -28,7 +29,8 @@ namespace {
 // delete the pointer it is provided without deleting the shared instance.
 class ServiceControllerProxy : public ServiceController {
  public:
-  explicit ServiceControllerProxy(ServiceController* inner_service_controller)
+  explicit ServiceControllerProxy(
+      std::unique_ptr<ServiceController>& inner_service_controller)
       : inner_service_controller_(inner_service_controller) {}
   ~ServiceControllerProxy() override = default;
 
@@ -37,11 +39,15 @@ class ServiceControllerProxy : public ServiceController {
                           const std::string& service_id,
                           const ConnectionOptions& options,
                           const ConnectionRequestInfo& info) override {
+    if (!inner_service_controller_)
+      return {Status::kError};
     return inner_service_controller_->StartAdvertising(client, service_id,
                                                        options, info);
   }
 
   void StopAdvertising(ClientProxy* client) override {
+    if (!inner_service_controller_)
+      return;
     inner_service_controller_->StopAdvertising(client);
   }
 
@@ -49,17 +55,23 @@ class ServiceControllerProxy : public ServiceController {
                         const std::string& service_id,
                         const ConnectionOptions& options,
                         const DiscoveryListener& listener) override {
+    if (!inner_service_controller_)
+      return {Status::kError};
     return inner_service_controller_->StartDiscovery(client, service_id,
                                                      options, listener);
   }
 
   void StopDiscovery(ClientProxy* client) override {
+    if (!inner_service_controller_)
+      return;
     inner_service_controller_->StopDiscovery(client);
   }
 
   void InjectEndpoint(ClientProxy* client,
                       const std::string& service_id,
                       const OutOfBandConnectionMetadata& metadata) override {
+    if (!inner_service_controller_)
+      return;
     inner_service_controller_->InjectEndpoint(client, service_id, metadata);
   }
 
@@ -67,6 +79,8 @@ class ServiceControllerProxy : public ServiceController {
                            const std::string& endpoint_id,
                            const ConnectionRequestInfo& info,
                            const ConnectionOptions& options) override {
+    if (!inner_service_controller_)
+      return {Status::kError};
     return inner_service_controller_->RequestConnection(client, endpoint_id,
                                                         info, options);
   }
@@ -80,33 +94,53 @@ class ServiceControllerProxy : public ServiceController {
 
   Status RejectConnection(ClientProxy* client,
                           const std::string& endpoint_id) override {
+    if (!inner_service_controller_)
+      return {Status::kError};
     return inner_service_controller_->RejectConnection(client, endpoint_id);
   }
 
   void InitiateBandwidthUpgrade(ClientProxy* client,
                                 const std::string& endpoint_id) override {
+    if (!inner_service_controller_)
+      return;
     inner_service_controller_->InitiateBandwidthUpgrade(client, endpoint_id);
   }
 
   void SendPayload(ClientProxy* client,
                    const std::vector<std::string>& endpoint_ids,
                    Payload payload) override {
+    if (!inner_service_controller_)
+      return;
     inner_service_controller_->SendPayload(client, endpoint_ids,
                                            std::move(payload));
   }
 
   Status CancelPayload(ClientProxy* client, Payload::Id payload_id) override {
+    if (!inner_service_controller_)
+      return {Status::kError};
     return inner_service_controller_->CancelPayload(client,
                                                     std::move(payload_id));
   }
 
   void DisconnectFromEndpoint(ClientProxy* client,
                               const std::string& endpoint_id) override {
+    if (!inner_service_controller_)
+      return;
     inner_service_controller_->DisconnectFromEndpoint(client, endpoint_id);
   }
 
+  void Stop() override {
+    // TODO(https://crbug.com/1182428): we purposefully do nothing here so we
+    // don't shutdown the share OfflineServiceController.
+  }
+
  private:
-  ServiceController* inner_service_controller_ = nullptr;
+  // This is intentionally a reference to the unique_ptr owned by
+  // NearbyConnections. During the shutdown flow, NearbyConnection will clean up
+  // it's service controller before this proxy is destroyed. The reference
+  // allows us to stop forwarding calls if NearbyConnections has already cleaned
+  // it up.
+  std::unique_ptr<ServiceController>& inner_service_controller_;
 };
 
 ConnectionRequestInfo CreateConnectionRequestInfo(
@@ -179,21 +213,21 @@ NearbyConnections::NearbyConnections(
     mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
     mojom::NearbyConnectionsDependenciesPtr dependencies,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    base::OnceClosure on_disconnect,
-    std::unique_ptr<ServiceController> service_controller)
+    base::OnceClosure on_disconnect)
     : nearby_connections_(this, std::move(nearby_connections)),
       on_disconnect_(std::move(on_disconnect)),
-      service_controller_(std::move(service_controller)),
       thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   nearby_connections_.set_disconnect_handler(base::BindOnce(
-      &NearbyConnections::OnDisconnect, weak_ptr_factory_.GetWeakPtr()));
+      &NearbyConnections::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
+      MojoDependencyName::kNearbyConnections));
 
   if (dependencies->bluetooth_adapter) {
     bluetooth_adapter_.Bind(std::move(dependencies->bluetooth_adapter),
                             io_task_runner);
     bluetooth_adapter_.set_disconnect_handler(
         base::BindOnce(&NearbyConnections::OnDisconnect,
-                       weak_ptr_factory_.GetWeakPtr()),
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MojoDependencyName::kBluetoothAdapter),
         base::SequencedTaskRunnerHandle::Get());
   }
 
@@ -202,15 +236,17 @@ NearbyConnections::NearbyConnections(
       io_task_runner);
   socket_manager_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     MojoDependencyName::kSocketManager),
       base::SequencedTaskRunnerHandle::Get());
 
-  mdns_responder_.Bind(
-      std::move(dependencies->webrtc_dependencies->mdns_responder),
+  mdns_responder_factory_.Bind(
+      std::move(dependencies->webrtc_dependencies->mdns_responder_factory),
       io_task_runner);
-  mdns_responder_.set_disconnect_handler(
+  mdns_responder_factory_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     MojoDependencyName::kMdnsResponder),
       base::SequencedTaskRunnerHandle::Get());
 
   ice_config_fetcher_.Bind(
@@ -218,40 +254,90 @@ NearbyConnections::NearbyConnections(
       io_task_runner);
   ice_config_fetcher_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     MojoDependencyName::kIceConfigFetcher),
       base::SequencedTaskRunnerHandle::Get());
 
   webrtc_signaling_messenger_.Bind(
       std::move(dependencies->webrtc_dependencies->messenger), io_task_runner);
   webrtc_signaling_messenger_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     MojoDependencyName::kWebRtcSignalingMessenger),
       base::SequencedTaskRunnerHandle::Get());
 
   // There should only be one instance of NearbyConnections in a process.
   DCHECK(!g_instance);
   g_instance = this;
-
-  // Note: Some tests pass a value for |service_controller_|, but this value is
-  // expected to be null during normal operation.
-  if (!service_controller_) {
-    // OfflineServiceController indirectly invokes
-    // NearbyConnections::GetInstance(), so it must be initialized after
-    // |g_instance| is set.
-    service_controller_ = std::make_unique<OfflineServiceController>();
-  }
 }
 
 NearbyConnections::~NearbyConnections() {
+  // We need to clean up the shared OfflineServiceController before cleaning up
+  // Core objects. This ensures that any tasks queued up on threads get run
+  // before the ClientProxy owned by Core is deleted. The ServiceControllerProxy
+  // for each Core uses a reference to the unique_ptr so it will understand that
+  // it can no longer forward calls once it is reset here.
+  // See http://b/177336457 and https://crbug.com/1149773 for more details.
+
+  // We call StopAllEndpoints() for each Core which is the same as
+  // ClientDisconnecting() to simulate what happens when the
+  // ServiceControllerRouter shuts down.
+  CountDownLatch latch(service_id_to_core_map_.size());
+  for (auto& pair : service_id_to_core_map_) {
+    pair.second->StopAllEndpoints(
+        {.result_cb = [&latch](Status status) { latch.CountDown(); }});
+  }
+  VLOG(1) << "Nearby Connections: waiting for Core objects to finish stopping "
+          << "all endpoints.";
+  if (!latch.Await(absl::Seconds(5)).result()) {
+    LOG(FATAL) << __func__ << ": Failed to stop all endpoints on each Core in "
+               << "time. Look for deadlocks in the threads tab of this crash.";
+  }
+
+  VLOG(1) << "Nearby Connections: shutting down the shared service controller "
+          << "prior to taking down Core objects";
+  service_controller_.reset();
+
   // Note that deleting active Core objects invokes their shutdown flows. This
   // is required to ensure that Nearby cleans itself up.
+  VLOG(1) << "Nearby Connections: cleaning up Core objects";
   service_id_to_core_map_.clear();
   g_instance = nullptr;
+
+  VLOG(1) << "Nearby Connections: shutdown complete";
 }
 
-void NearbyConnections::OnDisconnect() {
-  if (on_disconnect_)
-    std::move(on_disconnect_).Run();
+std::string NearbyConnections::GetMojoDependencyName(
+    MojoDependencyName dependency_name) {
+  switch (dependency_name) {
+    case MojoDependencyName::kNearbyConnections:
+      return "Nearby Connections";
+    case MojoDependencyName::kBluetoothAdapter:
+      return "Bluetooth Adapter";
+    case MojoDependencyName::kSocketManager:
+      return "Socket Manager";
+    case MojoDependencyName::kMdnsResponder:
+      return "MDNS Responder";
+    case MojoDependencyName::kIceConfigFetcher:
+      return "ICE Config Fetcher";
+    case MojoDependencyName::kWebRtcSignalingMessenger:
+      return "WebRTC Signaling Messenger";
+  }
+}
+
+void NearbyConnections::OnDisconnect(MojoDependencyName dependency_name) {
+  if (!on_disconnect_) {
+    return;
+  }
+
+  LOG(WARNING) << "Nearby dependency mojo disconnected: ["
+               << GetMojoDependencyName(dependency_name) << "]";
+  base::UmaHistogramEnumeration(
+      "Nearby.Connections.UtilityProcessShutdownReason."
+      "DisconnectedMojoDependency",
+      dependency_name);
+
+  std::move(on_disconnect_).Run();
   // Note: |this| might be destroyed here.
 }
 
@@ -619,15 +705,29 @@ Core* NearbyConnections::GetCore(const std::string& service_id) {
   std::unique_ptr<Core>& core = service_id_to_core_map_[service_id];
 
   if (!core) {
+    // Note: Some tests will use SetServiceControllerForTesting to set a
+    // |service_controller| instance, but this value is expected to be null for
+    // the first GetCore() call during normal operation.
+    if (!service_controller_) {
+      service_controller_ = std::make_unique<OfflineServiceController>();
+    }
+
     core = std::make_unique<Core>([&]() {
       // Core expects to take ownership of the pointer provided, but since we
       // share a single ServiceController among all Core objects created, we
-      // provide a delegate which calls into our shared instance.
-      return new ServiceControllerProxy(service_controller_.get());
+      // provide a proxy which calls into our shared instance.
+      // The |service_controller_| is passed by reference to the unique_ptr so
+      // the proxy knows if |service_controller_| has been reset.
+      return new ServiceControllerProxy(service_controller_);
     });
   }
 
   return core.get();
+}
+
+void NearbyConnections::SetServiceControllerForTesting(
+    std::unique_ptr<ServiceController> service_controller) {
+  service_controller_ = std::move(service_controller);
 }
 
 }  // namespace connections

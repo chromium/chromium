@@ -12,8 +12,11 @@ namespace draw_fn {
 
 namespace {
 
+bool g_use_vulkan = false;
+
 AwDrawFnRenderMode QueryRenderMode() {
-  return AW_DRAW_FN_RENDER_MODE_OPENGL_ES;
+  return g_use_vulkan ? AW_DRAW_FN_RENDER_MODE_VULKAN
+                      : AW_DRAW_FN_RENDER_MODE_OPENGL_ES;
 }
 
 int CreateFunctor(void* data, AwDrawFnFunctorCallbacks* functor_callbacks) {
@@ -34,12 +37,26 @@ void ReleaseFunctor(int functor) {
 
 }  // namespace
 
+void SetDrawFnUseVulkan(bool use_vulkan) {
+  g_use_vulkan = use_vulkan;
+}
+
 AwDrawFnFunctionTable* GetDrawFnFunctionTable() {
   static AwDrawFnFunctionTable table{kAwDrawFnVersion, &QueryRenderMode,
                                      &CreateFunctor, &ReleaseFunctor,
                                      &CreateFunctor_v3};
   return &table;
 }
+
+FunctorData::FunctorData() = default;
+FunctorData::~FunctorData() = default;
+FunctorData::FunctorData(FunctorData&&) = default;
+FunctorData& FunctorData::operator=(FunctorData&&) = default;
+
+FunctorData::FunctorData(int functor,
+                         void* data,
+                         AwDrawFnFunctorCallbacks* functor_callbacks)
+    : functor(functor), data(data), functor_callbacks(functor_callbacks) {}
 
 // static
 Allocator* Allocator::Get() {
@@ -54,11 +71,11 @@ int Allocator::allocate(void* data,
                         AwDrawFnFunctorCallbacks* functor_callbacks) {
   base::AutoLock lock(lock_);
   int functor = next_functor_++;
-  map_.emplace(functor, FunctorData{functor, data, functor_callbacks});
+  map_.emplace(functor, FunctorData(functor, data, functor_callbacks));
   return functor;
 }
 
-FunctorData Allocator::get(int functor) {
+FunctorData& Allocator::get(int functor) {
   base::AutoLock lock(lock_);
   auto itr = map_.find(functor);
   DCHECK(itr != map_.end());

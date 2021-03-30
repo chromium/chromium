@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Zamanlayıcı süresi</translation>
 <translation id="2050339315714019657">Dikey</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> etkin</translation>
+<translation id="2144806332417375165">Özel video parametreleri</translation>
 <translation id="229579744168541441">Diske aktar</translation>
 <translation id="2501278716633472235">Geri dön</translation>
 <translation id="2501853267655415902">Kayıt durduruldu</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Kamera çözünürlüğü</translation>
 <translation id="3517926952904427380">Portre fotoğrafı çekilemiyor</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> dosyasını kaldırmak istediğinizden emin misiniz?</translation>
-<translation id="3750315947605636967">Kameranız başka bir uygulama tarafından kullanılıyor</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Barkodu tara</translation>
 <translation id="3892148308691398805">Metni kopyala</translation>
@@ -76,10 +76,12 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="7337660886763914220">Dosya sistemi hataları.</translation>
 <translation id="7450541714075000668">Metin kopyalandı</translation>
 <translation id="7557677699350329807">Sonraki kameraya geç</translation>
+<translation id="7607002721634913082">Duraklatıldı</translation>
 <translation id="7608223098072244877">4'e 4</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Kaydırma, eğme, yakınlaştırma seçeneklerini göster</translation>
 <translation id="7983668134180549431">Metin algılandı.</translation>
 <translation id="8067883171444229417">Videoyu oynat</translation>
 <translation id="8131740175452115882">Onayla</translation>

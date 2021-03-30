@@ -1,0 +1,130 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
+
+js_library("realbox") {
+  deps = [
+    ":realbox_browser_proxy",
+    ":realbox_dropdown",
+    ":realbox_icon",
+    "../:utils",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("realbox_browser_proxy") {
+  deps = [
+    "//chrome/browser/ui/webui/realbox:mojo_bindings_js_library_for_compile",
+  ]
+}
+
+js_library("realbox_dropdown") {
+  deps = [
+    ":realbox_browser_proxy",
+    ":realbox_match",
+    "../:utils",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("realbox_icon") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("realbox_match") {
+  deps = [
+    ":realbox_icon",
+    "../:utils",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+html_to_js("web_components_local") {
+  js_files = [
+    "realbox_dropdown.js",
+    "realbox_icon.js",
+    "realbox_match.js",
+    "realbox.js",
+  ]
+}
+
+group("web_components") {
+  public_deps = [ ":web_components_local" ]
+}
+
+# Up one folder to get to the root NTP gen dir, where files need to live
+# for bundling.
+preprocess_folder = "../preprocessed/realbox"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+preprocess_if_expr("preprocess") {
+  defines = [ "is_official_build=$is_official_build" ]
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [ "realbox_browser_proxy.js" ]
+}
+
+preprocess_if_expr("preprocess_gen") {
+  defines = [ "is_official_build=$is_official_build" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "realbox_dropdown.js",
+    "realbox_icon.js",
+    "realbox_match.js",
+    "realbox.js",
+  ]
+  deps = [ ":web_components" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "new_tab_page"
+  resource_path_prefix = "realbox"
+  out_grd = "$target_gen_dir/resources.grdp"
+  manifest_files = [
+    "$target_gen_dir/preprocessed_manifest.json",
+    "$target_gen_dir/preprocessed_gen_manifest.json",
+  ]
+  deps = [
+    ":preprocess",
+    ":preprocess_gen",
+  ]
+}
+
+generate_grd("build_realbox_mojo_grdp") {
+  grd_prefix = "new_tab_page"
+  resource_path_prefix = "realbox"
+  out_grd = "$target_gen_dir/realbox_mojo_resources.grdp"
+  input_files = [ "realbox.mojom-lite.js" ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/browser/ui/webui/realbox",
+                  root_build_dir)
+}
+
+generate_grd("build_search_mojo_grdp") {
+  grd_prefix = "new_tab_page"
+  resource_path_prefix = "realbox"
+  out_grd = "$target_gen_dir/search_mojo_resources.grdp"
+  input_files = [ "omnibox.mojom-lite.js" ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/common/search", root_build_dir)
+}

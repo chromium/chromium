@@ -19,8 +19,6 @@ class SharedModuleInfo : public Extension::ManifestData {
   SharedModuleInfo();
   ~SharedModuleInfo() override;
 
-  bool Parse(const Extension* extension, base::string16* error);
-
   struct ImportInfo {
     std::string extension_id;
     std::string minimum_version;
@@ -34,6 +32,7 @@ class SharedModuleInfo : public Extension::ManifestData {
 
   // Functions relating to exporting resources.
   static bool IsSharedModule(const Extension* extension);
+
   // Check against the shared module's allowlist to see if |other_id| can import
   // its resources. If no allowlist is specified, all extensions can import this
   // extension.
@@ -45,6 +44,14 @@ class SharedModuleInfo : public Extension::ManifestData {
                                    const std::string& other_id);
   static bool ImportsModules(const Extension* extension);
   static const std::vector<ImportInfo>& GetImports(const Extension* extension);
+
+  void set_export_allowlist(std::set<std::string> allowlist) {
+    export_allowlist_ = std::move(allowlist);
+  }
+
+  void set_imports(std::vector<ImportInfo> imports) {
+    imports_ = std::move(imports);
+  }
 
  private:
   // Optional list of extensions from which importing is allowed.
@@ -60,7 +67,7 @@ class SharedModuleHandler : public ManifestHandler {
   SharedModuleHandler();
   ~SharedModuleHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool Validate(const Extension* extension,
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;

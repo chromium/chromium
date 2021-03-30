@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_split.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -22,6 +21,15 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
+
+class AXTreeID;
+
+// Defines the type used for AXNode IDs.
+using AXNodeID = int32_t;
+
+// If a node is not yet or no longer valid, its ID should have a value of
+// kInvalidAXNodeID.
+static constexpr AXNodeID kInvalidAXNodeID = 0;
 
 // Return true if |attr| should be interpreted as the id of another node
 // in the same tree.
@@ -36,11 +44,11 @@ AX_BASE_EXPORT bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr);
 // one process to another.
 struct AX_BASE_EXPORT AXNodeData {
   // Defines the type used for AXNode IDs.
-  using AXID = int32_t;
+  using AXID = AXNodeID;
 
   // If a node is not yet or no longer valid, its ID should have a value of
   // kInvalidAXID.
-  static constexpr AXID kInvalidAXID = 0;
+  static constexpr AXID kInvalidAXID = kInvalidAXNodeID;
 
   AXNodeData();
   virtual ~AXNodeData();
@@ -62,7 +70,7 @@ struct AX_BASE_EXPORT AXNodeData {
   // need to distinguish between the default value and a missing attribute),
   // and another that returns the default value for that type if the
   // attribute is not present. In addition, strings can be returned as
-  // either std::string or base::string16, for convenience.
+  // either std::string or std::u16string, for convenience.
 
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const;
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const;
@@ -84,8 +92,8 @@ struct AX_BASE_EXPORT AXNodeData {
                           std::string* value) const;
 
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            base::string16* value) const;
-  base::string16 GetString16Attribute(
+                            std::u16string* value) const;
+  std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
 
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
@@ -100,7 +108,7 @@ struct AX_BASE_EXPORT AXNodeData {
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
 
-  bool GetHtmlAttribute(const char* attribute, base::string16* value) const;
+  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
   bool GetHtmlAttribute(const char* attribute, std::string* value) const;
 
   //
@@ -111,8 +119,11 @@ struct AX_BASE_EXPORT AXNodeData {
   // have wanted or what existing code already assumes.
   //
 
+  // This method cannot be used to set kChildTreeId due to a common
+  // misuse of base::UnguessableToken serialization. Use AddChildTreeId instead.
   void AddStringAttribute(ax::mojom::StringAttribute attribute,
                           const std::string& value);
+  void AddChildTreeId(const ui::AXTreeID& tree_id);
   void AddIntAttribute(ax::mojom::IntAttribute attribute, int32_t value);
   void AddFloatAttribute(ax::mojom::FloatAttribute attribute, float value);
   void AddBoolAttribute(ax::mojom::BoolAttribute attribute, bool value);
@@ -144,18 +155,18 @@ struct AX_BASE_EXPORT AXNodeData {
   // Adds the name attribute or replaces it if already present. Also sets the
   // NameFrom attribute if not already set.
   void SetName(const std::string& name);
-  void SetName(const base::string16& name);
+  void SetName(const std::u16string& name);
 
   // Allows nameless objects to pass accessibility checks.
   void SetNameExplicitlyEmpty();
 
   // Adds the description attribute or replaces it if already present.
   void SetDescription(const std::string& description);
-  void SetDescription(const base::string16& description);
+  void SetDescription(const std::u16string& description);
 
   // Adds the value attribute or replaces it if already present.
   void SetValue(const std::string& value);
-  void SetValue(const base::string16& value);
+  void SetValue(const std::u16string& value);
 
   // Returns true if the given enum bit is 1.
   bool HasState(ax::mojom::State state) const;
@@ -206,6 +217,10 @@ struct AX_BASE_EXPORT AXNodeData {
   // clicked, such as a text field or a native HTML list box.
   bool IsActivatable() const;
 
+  // Helper to determine if the data belongs to a node that is at the root of an
+  // ARIA live region that is active, i.e. its status is not set to "off".
+  bool IsActiveLiveRegionRoot() const;
+
   // Helper to determine if the data belongs to a node that is a native button
   // or ARIA role="button" in a pressed state.
   bool IsButtonPressed() const;
@@ -213,6 +228,10 @@ struct AX_BASE_EXPORT AXNodeData {
   // Helper to determine if the data belongs to a node that can respond to
   // clicks.
   bool IsClickable() const;
+
+  // Helper to determine if the data belongs to a node that is part of an active
+  // ARIA live region, and for which live announcements should be made.
+  bool IsContainedInActiveLiveRegion() const;
 
   // Helper to determine if the object is selectable.
   bool IsSelectable() const;
@@ -278,10 +297,10 @@ struct AX_BASE_EXPORT AXNodeData {
 
   // As much as possible this should behave as a simple, serializable,
   // copyable struct.
-  int32_t id = -1;
+  AXNodeID id = kInvalidAXNodeID;
   ax::mojom::Role role;
-  uint32_t state;
-  uint64_t actions;
+  uint32_t state = 0U;
+  uint64_t actions = 0ULL;
   std::vector<std::pair<ax::mojom::StringAttribute, std::string>>
       string_attributes;
   std::vector<std::pair<ax::mojom::IntAttribute, int32_t>> int_attributes;

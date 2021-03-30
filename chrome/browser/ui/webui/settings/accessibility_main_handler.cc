@@ -40,10 +40,9 @@ void AccessibilityMainHandler::RegisterMessages() {
 void AccessibilityMainHandler::OnJavascriptAllowed() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   accessibility_subscription_ =
-      chromeos::AccessibilityManager::Get()->RegisterCallback(
-          base::BindRepeating(
-              &AccessibilityMainHandler::OnAccessibilityStatusChanged,
-              base::Unretained(this)));
+      ash::AccessibilityManager::Get()->RegisterCallback(base::BindRepeating(
+          &AccessibilityMainHandler::OnAccessibilityStatusChanged,
+          base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -65,7 +64,7 @@ void AccessibilityMainHandler::HandleCheckAccessibilityImageLabels(
   // dialog will disable the feature again if it is not accepted.
   content::WebContents* web_contents = web_ui()->GetWebContents();
   content::RenderWidgetHostView* view =
-      web_contents->GetRenderViewHost()->GetWidget()->GetView();
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->GetView();
   gfx::Rect rect = view->GetViewBounds();
   auto model = std::make_unique<AccessibilityLabelsBubbleModel>(
       Profile::FromWebUI(web_ui()), web_contents, true /* enable always */);
@@ -81,9 +80,9 @@ void AccessibilityMainHandler::SendScreenReaderStateChanged() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AccessibilityMainHandler::OnAccessibilityStatusChanged(
-    const chromeos::AccessibilityStatusEventDetails& details) {
+    const ash::AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
-      chromeos::ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK) {
+      ash::AccessibilityNotificationType::kToggleSpokenFeedback) {
     SendScreenReaderStateChanged();
   }
 }

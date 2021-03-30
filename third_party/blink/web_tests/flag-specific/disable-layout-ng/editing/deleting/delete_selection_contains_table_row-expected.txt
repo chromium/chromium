@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Empties the second row which should be removed
+FAIL Empties the second row which should NOT be removed because contains the selection resources/testharness.js:2092:25)
+	 expected <div contenteditable><table><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>|<br></td><td></td><td><br></td></tr><tr><td>7</td><td>8</td><td>9</td></tr></tbody></table></div>,
+	 but got  <div contenteditable><table><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>|<br></td><td></td><td></td></tr><tr><td>7</td><td>8</td><td>9</td></tr></tbody></table></div>,
+	 sameupto <div contenteditable><table><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>|<br></td><td></td><td><
+PASS Empties the first row which should be removed
+Harness: the test ran to completion.
+

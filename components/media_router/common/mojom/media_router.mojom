@@ -297,6 +297,7 @@ interface MediaRouteProvider {
     CAST,
     DIAL,
     ANDROID_CAF,
+    TEST,
   };
 
   // Creates a media route from |media_source| to the sink given by |sink_id|.
@@ -479,11 +480,6 @@ interface MediaRouteProvider {
   // TODO(https://crbug.com/698940): Rename this to OnUserGesture and remove the
   // |media_source| parameter.
   UpdateMediaSinks(string media_source);
-
-  // Called when the list of MediaSinks discovered by Media Router has been
-  // updated. The sinks are supplied to the MediaRouteProvider so that they can
-  // be used for other operations, such as route creation.
-  ProvideSinks(string provider_name, array<MediaSink> sinks);
 
   // Creates a controller for the media route with given |route_id| and binds it
   // to |media_controller| for receiving media commands. This method returns

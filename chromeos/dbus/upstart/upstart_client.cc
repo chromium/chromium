@@ -102,8 +102,9 @@ class UpstartClientImpl : public UpstartClient {
     StopJob(kWilcoDtcDispatcherJob, {}, std::move(callback));
   }
 
-  void StartArcDataSnapshotd(VoidDBusMethodCallback callback) override {
-    StartJob(kArcDataSnapshotdJob, {}, std::move(callback));
+  void StartArcDataSnapshotd(const std::vector<std::string>& upstart_env,
+                             VoidDBusMethodCallback callback) override {
+    StartJob(kArcDataSnapshotdJob, upstart_env, std::move(callback));
   }
 
   void StopArcDataSnapshotd(VoidDBusMethodCallback callback) override {

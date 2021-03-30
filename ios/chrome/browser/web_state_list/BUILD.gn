@@ -69,6 +69,7 @@ source_set("agents") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:restoration_observer",
+    "//ios/chrome/browser/ui/util",
     "//ios/web/public",
   ]
   frameworks = [ "Foundation.framework" ]

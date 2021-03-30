@@ -281,8 +281,8 @@ class ContentSuggestionsService : public KeyedService,
       const ContentSuggestion::ID& suggestion_id) override;
 
   // signin::IdentityManager::Observer implementation.
-  void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
-  void OnPrimaryAccountCleared(const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // history::HistoryServiceObserver implementation.
   void OnURLsDeleted(history::HistoryService* history_service,

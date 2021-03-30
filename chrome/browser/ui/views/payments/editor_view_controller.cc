@@ -37,7 +37,7 @@ namespace payments {
 namespace {
 
 std::unique_ptr<views::View> CreateErrorLabelView(
-    const base::string16& error,
+    const std::u16string& error,
     autofill::ServerFieldType type) {
   std::unique_ptr<views::View> view = std::make_unique<views::View>();
 
@@ -80,7 +80,7 @@ EditorViewController::~EditorViewController() {}
 
 void EditorViewController::DisplayErrorMessageForField(
     autofill::ServerFieldType type,
-    const base::string16& error_message) {
+    const std::u16string& error_message) {
   AddOrUpdateErrorMessageForField(type, error_message);
   RelayoutPane();
 }
@@ -99,7 +99,7 @@ std::unique_ptr<views::View> EditorViewController::CreateCustomFieldView(
     autofill::ServerFieldType type,
     views::View** focusable_field,
     bool* valid,
-    base::string16* error_message) {
+    std::u16string* error_message) {
   return nullptr;
 }
 
@@ -120,11 +120,11 @@ bool EditorViewController::ValidateInputFields() {
   return true;
 }
 
-base::string16 EditorViewController::GetPrimaryButtonLabel() {
+std::u16string EditorViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_DONE);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 EditorViewController::GetPrimaryButtonCallback() {
   return base::BindRepeating(&EditorViewController::SaveButtonPressed,
                              base::Unretained(this));
@@ -175,7 +175,7 @@ views::View* EditorViewController::GetFirstFocusedView() {
 
 std::unique_ptr<ValidatingCombobox>
 EditorViewController::CreateComboboxForField(const EditorField& field,
-                                             base::string16* error_message) {
+                                             std::u16string* error_message) {
   std::unique_ptr<ValidationDelegate> delegate =
       CreateValidationDelegate(field);
   ValidationDelegate* delegate_ptr = delegate.get();
@@ -184,7 +184,7 @@ EditorViewController::CreateComboboxForField(const EditorField& field,
                                            std::move(delegate));
   combobox->SetAccessibleName(field.label);
 
-  base::string16 initial_value = GetInitialValueForType(field.type);
+  std::u16string initial_value = GetInitialValueForType(field.type);
   if (!initial_value.empty())
     combobox->SelectValue(initial_value);
   if (IsEditingExistingItem()) {
@@ -202,7 +202,7 @@ EditorViewController::CreateComboboxForField(const EditorField& field,
 }
 
 void EditorViewController::ContentsChanged(views::Textfield* sender,
-                                           const base::string16& new_contents) {
+                                           const std::u16string& new_contents) {
   ValidatingTextfield* sender_cast = static_cast<ValidatingTextfield*>(sender);
   sender_cast->OnContentsChanged();
   primary_button()->SetEnabled(ValidateInputFields());
@@ -356,7 +356,7 @@ views::View* EditorViewController::CreateInputField(views::GridLayout* layout,
                               views::GridLayout::kFixedSize, kInputRowSpacing);
 
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
-      field.required ? field.label + base::ASCIIToUTF16("*") : field.label);
+      field.required ? field.label + u"*" : field.label);
 
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -365,7 +365,7 @@ views::View* EditorViewController::CreateInputField(views::GridLayout* layout,
   views::View* focusable_field = nullptr;
   constexpr int kInputFieldHeight = 28;
 
-  base::string16 error_message;
+  std::u16string error_message;
   switch (field.control_type) {
     case EditorField::ControlType::TEXTFIELD:
     case EditorField::ControlType::TEXTFIELD_NUMBER: {
@@ -373,7 +373,7 @@ views::View* EditorViewController::CreateInputField(views::GridLayout* layout,
           CreateValidationDelegate(field);
       ValidationDelegate* delegate_ptr = validation_delegate.get();
 
-      base::string16 initial_value = GetInitialValueForType(field.type);
+      std::u16string initial_value = GetInitialValueForType(field.type);
       auto text_field =
           std::make_unique<ValidatingTextfield>(std::move(validation_delegate));
       // Set the initial value and validity state.
@@ -476,7 +476,7 @@ int EditorViewController::ComputeWidestExtraViewWidth(
 
 void EditorViewController::AddOrUpdateErrorMessageForField(
     autofill::ServerFieldType type,
-    const base::string16& error_message) {
+    const std::u16string& error_message) {
   const auto& label_view_it = error_labels_.find(type);
   DCHECK(label_view_it != error_labels_.end());
 

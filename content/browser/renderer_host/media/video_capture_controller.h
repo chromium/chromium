@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/video_capture_device_launcher.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
@@ -115,12 +116,8 @@ class CONTENT_EXPORT VideoCaptureController
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
   void OnFrameReadyInBuffer(
-      int buffer_id,
-      int frame_feedback_id,
-      std::unique_ptr<
-          media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-          buffer_read_permission,
-      media::mojom::VideoFrameInfoPtr frame_info) override;
+      media::ReadyFrameInBuffer frame,
+      std::vector<media::ReadyFrameInBuffer> scaled_frames) override;
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
@@ -237,6 +234,14 @@ class CONTENT_EXPORT VideoCaptureController
       int buffer_context_id);
   std::vector<BufferContext>::iterator FindUnretiredBufferContextFromBufferId(
       int buffer_id);
+
+  ReadyBuffer MakeReadyBufferAndSetContextFeedbackId(
+      int buffer_id,
+      int frame_feedback_id,
+      media::mojom::VideoFrameInfoPtr frame_info,
+      BufferContext** out_buffer_context);
+  void MakeClientUseBufferContext(BufferContext* frame_context,
+                                  ControllerClient* client);
 
   void OnClientFinishedConsumingBuffer(
       ControllerClient* client,

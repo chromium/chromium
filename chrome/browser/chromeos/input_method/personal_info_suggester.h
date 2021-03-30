@@ -31,7 +31,7 @@ const char kPersonalInfoSuggesterShowSettingCount[] =
     "personal_info_suggester_show_setting_count";
 const int kMaxShowSettingCount = 10;
 
-AssistiveType ProposePersonalInfoAssistiveAction(const base::string16& text);
+AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text);
 
 // An agent to suggest personal information when the user types, and adopt or
 // dismiss the suggestion according to the user action.
@@ -52,7 +52,7 @@ class PersonalInfoSuggester : public Suggester {
   void OnFocus(int context_id) override;
   void OnBlur() override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
-  bool Suggest(const base::string16& text) override;
+  bool Suggest(const std::u16string& text) override;
   // index defaults to 0 as not required for this suggester.
   bool AcceptSuggestion(size_t index = 0) override;
   void DismissSuggestion() override;
@@ -60,9 +60,9 @@ class PersonalInfoSuggester : public Suggester {
 
  private:
   // Get the suggestion according to |text|.
-  base::string16 GetSuggestion(const base::string16& text);
+  std::u16string GetSuggestion(const std::u16string& text);
 
-  void ShowSuggestion(const base::string16& text,
+  void ShowSuggestion(const std::u16string& text,
                       const size_t confirmed_length);
 
   int GetPrefValue(const std::string& pref_name);
@@ -99,7 +99,7 @@ class PersonalInfoSuggester : public Suggester {
   bool first_shown_ = false;
 
   // The current suggestion text shown.
-  base::string16 suggestion_;
+  std::u16string suggestion_;
 
   std::vector<ui::ime::AssistiveWindowButton> buttons_;
   int highlighted_index_;

@@ -25,7 +25,6 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -79,14 +78,7 @@ class PageCaptureSaveAsMHTMLDelegate
 class ExtensionPageCaptureApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
- public:
-  ExtensionPageCaptureApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
+ protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
@@ -97,35 +89,18 @@ class ExtensionPageCaptureApiTest
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
-  bool RunTest(const std::string& extension_name) {
-    return RunTestWithArg(extension_name, nullptr);
+  bool RunTest(const char* extension_name,
+               const char* custom_arg = nullptr,
+               bool allow_file_access = false) {
+    return RunExtensionTest({.name = extension_name, .custom_arg = custom_arg},
+                            {.allow_file_access = allow_file_access});
   }
-
-  bool RunTestWithArg(const std::string& extension_name,
-                      const char* custom_arg) {
-    return RunTestWithFlagsAndArg(extension_name, custom_arg,
-                                  kFlagEnableFileAccess);
-  }
-
-  bool RunTestWithFlagsAndArg(const std::string& extension_name,
-                              const char* custom_arg,
-                              int browser_test_flags) {
-    if (GetParam() == ContextType::kServiceWorker)
-      browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
-
-    return RunExtensionTestWithFlagsAndArg(extension_name, custom_arg,
-                                           browser_test_flags, kFlagNone);
-  }
-
   void WaitForFileCleanup(PageCaptureSaveAsMHTMLDelegate* delegate) {
     // Garbage collection in SW-based extensions doesn't clean up the temp
     // file.
     if (GetParam() != ContextType::kServiceWorker)
       delegate->WaitForFinalRelease();
   }
-
- private:
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -135,13 +110,11 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionPageCaptureApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// Flaky on all platforms: https://crbug.com/1156323
 IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       DISABLED_SaveAsMHTMLWithoutFileAccess) {
+                       SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
-  ASSERT_TRUE(RunTestWithFlagsAndArg("page_capture",
-                                     "ONLY_PAGE_CAPTURE_PERMISSION", kFlagNone))
+  ASSERT_TRUE(RunTest("page_capture", "ONLY_PAGE_CAPTURE_PERMISSION"))
       << message_;
   WaitForFileCleanup(&delegate);
 }
@@ -149,7 +122,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
 IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, SaveAsMHTMLWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
-  ASSERT_TRUE(RunTest("page_capture")) << message_;
+  ASSERT_TRUE(RunTest("page_capture", /*custom_arg=*/nullptr,
+                      /*allow_file_access=*/true))
+      << message_;
   WaitForFileCleanup(&delegate);
 }
 
@@ -172,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
   chromeos::ScopedTestPublicSessionLoginState login_state;
   // Resolve Permission dialog with Deny.
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::CANCEL);
-  ASSERT_TRUE(RunTestWithArg("page_capture", "REQUEST_DENIED")) << message_;
+  ASSERT_TRUE(RunTest("page_capture", "REQUEST_DENIED")) << message_;
   EXPECT_EQ(0, delegate.temp_file_count());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

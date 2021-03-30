@@ -51,9 +51,8 @@ bool DXGIFormatToVizFormat(
       return true;
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       DCHECK_EQ(textures_per_picture, 1u);
-      if (pixel_format != PIXEL_FORMAT_ARGB) {
+      if (pixel_format != PIXEL_FORMAT_RGBAF16)
         return false;
-      }
       texture_formats[0] = viz::RGBA_F16;
       return true;
     default:  // Unsupported
@@ -118,8 +117,7 @@ Status DefaultTexture2DWrapper::ProcessTexture(
   // from some previous operation.
   // TODO(liberato): Return the error.
   if (received_error_)
-    return Status(StatusCode::kProcessTextureFailed)
-        .AddCause(std::move(*received_error_));
+    return Status(StatusCode::kProcessTextureFailed);
 
   // TODO(liberato): make sure that |mailbox_holders_| is zero-initialized in
   // case we don't use all the planes.
@@ -166,10 +164,10 @@ Status DefaultTexture2DWrapper::Init(
   // device for decoding.  Sharing seems not to work very well.  Otherwise, we
   // would create the texture with KEYED_MUTEX and NTHANDLE, then send along
   // a handle that we get from |texture| as an IDXGIResource1.
-  gpu_resources_.Post(FROM_HERE, &GpuResources::Init, std::move(get_helper_cb),
-                      std::move(mailboxes), GL_TEXTURE_EXTERNAL_OES, size_,
-                      textures_per_picture, texture_formats, pixel_format_,
-                      texture, array_slice);
+  gpu_resources_.AsyncCall(&GpuResources::Init)
+      .WithArgs(std::move(get_helper_cb), std::move(mailboxes),
+                GL_TEXTURE_EXTERNAL_OES, size_, textures_per_picture,
+                texture_formats, pixel_format_, texture, array_slice);
   return OkStatus();
 }
 

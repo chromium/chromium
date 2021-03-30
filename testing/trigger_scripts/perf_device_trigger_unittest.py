@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env vpython
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -16,7 +16,7 @@ class Args(object):
     self.dump_json = ''
     self.multiple_trigger_configs = None
     self.multiple_dimension_script_verbose = False
-    self.use_swarming_go = False
+    self.use_dynamic_shards = False
 
 
 class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
@@ -53,7 +53,8 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     del verbose #unused
     self._swarming_runs.append(args)
 
-  def run_swarming_go(self, args, verbose):
+  def run_swarming_go(self, args, verbose, _json_path, _shard_index, _shard,
+                      _merged_json=None):
     self._triggered_with_swarming_go += 1
     self.run_swarming(args, verbose)
 
@@ -62,18 +63,17 @@ class UnitTest(unittest.TestCase):
                         previous_task_assignment_map,
                         alive_bots,
                         dead_bots,
-                        use_swarming_go=False):
+                        use_dynamic_shards=False):
     args = Args()
     args.shards = len(previous_task_assignment_map)
     args.dump_json = 'output.json'
     args.multiple_dimension_script_verbose = True
-    args.use_swarming_go = use_swarming_go
+    if use_dynamic_shards:
+      args.use_dynamic_shards = True
     swarming_args = [
         'trigger',
         '--swarming',
         'http://foo_server',
-        '--auth-service-account-json',
-        '/creds/test_service_account',
         '--dimension',
         'pool',
         'chrome-perf-fyi',
@@ -114,18 +114,11 @@ class UnitTest(unittest.TestCase):
       file_index = file_index + 1
     for i in xrange(num_shards):
       task = {
-        'base_task_name': 'webgl_conformance_tests',
-        'request': {
-          'expiration_secs': 3600,
-          'properties': {
-            'execution_timeout_secs': 3600,
-          },
-        },
-        'tasks': {
-          'webgl_conformance_tests on NVIDIA GPU on Windows': {
+        'tasks': [{
+          'request': {
             'task_id': 'f%d' % i,
           },
-        },
+        }],
       }
       files['base_trigger_dimensions%d.json' % file_index] = task
       file_index = file_index + 1
@@ -165,26 +158,30 @@ class UnitTest(unittest.TestCase):
     return any(sub_list == main_list[offset:offset + len(sub_list)]
                for offset in xrange(len(main_list) - (len(sub_list) - 1)))
 
-  def assert_query_swarming_args(self, triggerer, num_shards):
+  def assert_query_swarming_args(
+      self, triggerer, num_shards, use_dynamic_shards):
     # Assert the calls to query swarming send the right args
-    # First call is to get eligible bots and then one query
-    # per shard
-    for i in range(num_shards + 1):
+    # First call is to get eligible bots. With device affinity, we need one
+    # query per shard for the previous bot id; with dynamic sharding, no further
+    # qeury is needed.
+    total_queries = 1 if use_dynamic_shards else num_shards + 1
+    for i in range(total_queries):
       self.assertTrue('query' in triggerer._swarming_runs[i])
       self.assertTrue(self.list_contains_sublist(
         triggerer._swarming_runs[i], ['-S', 'foo_server']))
-      self.assertTrue(self.list_contains_sublist(
-        triggerer._swarming_runs[i], ['--auth-service-account-json',
-                                      '/creds/test_service_account']))
 
-  def get_triggered_shard_to_bot(self, triggerer, num_shards):
-    self.assert_query_swarming_args(triggerer, num_shards)
+  def get_triggered_shard_to_bot(
+      self, triggerer, num_shards, use_dynamic_shards=False):
+    self.assert_query_swarming_args(triggerer, num_shards, use_dynamic_shards)
     triggered_map = {}
     for run in triggerer._swarming_runs:
       if not 'trigger' in run:
         continue
       bot_id = run[(run.index('id') + 1)]
-      shard = int(run[(run.index('GTEST_SHARD_INDEX') + 1)])
+
+      g = 'GTEST_SHARD_INDEX='
+      shard = [int(r[len(g):]) for r in run if r.startswith(g)][0]
+
       triggered_map[shard] = bot_id
     return triggered_map
 
@@ -300,15 +297,33 @@ class UnitTest(unittest.TestCase):
     self.assertEquals(set(expected_task_assignment.values()),
         {'build3', 'build4', 'build5', 'build7'})
 
-  def test_use_swarming_go_to_trigger(self):
+  def test_dynamic_sharding(self):
     triggerer = self.setup_and_trigger(
-        previous_task_assignment_map={0: 'build1'},
-        alive_bots=['build1'],
+        # The previous map should not matter.
+        previous_task_assignment_map={
+            0: 'build301', 1: 'build1--', 2: 'build-blah'},
+        alive_bots=['build1', 'build2', 'build3', 'build4', 'build5'],
         dead_bots=[],
-        use_swarming_go=True)
+        use_dynamic_shards=True)
+    expected_task_assignment = self.get_triggered_shard_to_bot(
+        triggerer, num_shards=123, use_dynamic_shards=True)
 
-    self.assertEquals(triggerer._triggered_with_swarming_go, 1)
+    self.assertEquals(set(expected_task_assignment.values()),
+                      {'build1', 'build2', 'build3', 'build4', 'build5'})
 
+  def test_dynamic_sharding_with_dead_bots(self):
+    triggerer = self.setup_and_trigger(
+        # The previous map should not matter.
+        previous_task_assignment_map={
+            0: 'build301', 1: 'build1--', 2: 'build-blah'},
+        alive_bots=['build2', 'build5', 'build3'],
+        dead_bots=['build1', 'build4'],
+        use_dynamic_shards=True)
+    expected_task_assignment = self.get_triggered_shard_to_bot(
+        triggerer, num_shards=789, use_dynamic_shards=True)
+
+    self.assertEquals(set(expected_task_assignment.values()),
+                      {'build2', 'build3', 'build5'})
 
 if __name__ == '__main__':
   unittest.main()

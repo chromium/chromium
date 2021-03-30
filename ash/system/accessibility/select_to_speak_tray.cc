@@ -56,7 +56,7 @@ void SelectToSpeakTray::Initialize() {
   CheckStatusAndUpdateIcon();
 }
 
-base::string16 SelectToSpeakTray::GetAccessibleNameForTray() {
+std::u16string SelectToSpeakTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_SELECT_TO_SPEAK_TRAY_ACCESSIBLE_NAME);
 }

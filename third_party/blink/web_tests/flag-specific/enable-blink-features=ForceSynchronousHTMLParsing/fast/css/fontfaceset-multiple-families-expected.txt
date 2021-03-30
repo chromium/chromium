@@ -1,0 +1,26 @@
+CONSOLE WARNING: line 91: Failed to decode downloaded font: data:application/x-truetype-font,
+Test load events for fonts.loadFont() with multiple font families.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS event.fontfaces.length is 2
+PASS event.fontfaces[0].status is "loaded"
+PASS event.fontfaces[1].status is "loaded"
+PASS loadedFonts is ['TestFont1', 'TestFont2']
+PASS document.fonts.check('10px TestFont1') is true
+PASS document.fonts.check('10px TestFont2') is true
+PASS document.fonts.check('10px TestFont1, TestFont2') is true
+PASS document.fonts.check('10px Times') is true
+PASS document.fonts.check('10px TestFont1, Times') is true
+PASS event.fontfaces.length is 2
+PASS event.fontfaces[0].status is "error"
+PASS event.fontfaces[1].status is "error"
+PASS failedFonts is ['TestFont3', 'TestFont4']
+PASS document.fonts.check('10px TestFont3') is false
+PASS document.fonts.check('10px TestFont4') is false
+PASS document.fonts.check('10px TestFont4, Times') is false
+PASS firedEvents is ['loading', 'loadingdone', 'loadingerror']
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

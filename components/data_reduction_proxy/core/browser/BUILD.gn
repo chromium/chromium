@@ -9,8 +9,6 @@ if (is_android) {
 browser_sources = [
   "data_reduction_proxy_compression_stats.cc",
   "data_reduction_proxy_compression_stats.h",
-  "data_reduction_proxy_config_service_client.cc",
-  "data_reduction_proxy_config_service_client.h",
   "data_reduction_proxy_data.cc",
   "data_reduction_proxy_data.h",
   "data_reduction_proxy_metrics.h",
@@ -44,14 +42,9 @@ if (is_android) {
       "//components/data_use_measurement/core:ascriber",
       "//components/pref_registry",
       "//components/prefs",
-      "//components/previews/core:core",
-      "//components/variations",
-      "//components/variations/net",
-      "//content/public/browser",
       "//crypto",
       "//google_apis",
       "//net:net",
-      "//services/network/public/cpp",
       "//url:url",
     ]
   }
@@ -78,10 +71,6 @@ static_library("browser") {
     "//components/data_use_measurement/core:ascriber",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/previews/core:core",
-    "//components/variations",
-    "//components/variations/net",
-    "//content/public/browser",
     "//crypto",
     "//google_apis",
     "//net",
@@ -100,8 +89,6 @@ static_library("browser") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "data_reduction_proxy_config_service_client_test_utils.cc",
-    "data_reduction_proxy_config_service_client_test_utils.h",
     "data_reduction_proxy_settings_test_utils.cc",
     "data_reduction_proxy_settings_test_utils.h",
     "data_reduction_proxy_test_utils.cc",
@@ -118,7 +105,6 @@ static_library("test_support") {
     "//components/data_use_measurement/core",
     "//components/data_use_measurement/core:ascriber",
     "//components/prefs:test_support",
-    "//components/previews/core:core",
     "//net",
     "//net:test_support",
     "//services/network:test_support",
@@ -148,13 +134,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "data_reduction_proxy_compression_stats_unittest.cc",
-    "data_reduction_proxy_config_service_client_unittest.cc",
     "data_reduction_proxy_data_unittest.cc",
     "data_reduction_proxy_prefs_unittest.cc",
     "data_reduction_proxy_request_options_unittest.cc",
-    "data_reduction_proxy_service_unittest.cc",
     "data_reduction_proxy_settings_unittest.cc",
-    "data_reduction_proxy_util_unittest.cc",
     "data_usage_store_unittest.cc",
   ]
 
@@ -171,13 +154,9 @@ source_set("unit_tests") {
     "//components/data_reduction_proxy/proto:data_reduction_proxy_proto",
     "//components/data_use_measurement/core:ascriber",
     "//components/prefs:test_support",
-    "//components/previews/core",
-    "//components/variations",
-    "//content/public/browser",
-    "//content/test:test_support",
     "//net:test_support",
-    "//services/network:network_service",
     "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

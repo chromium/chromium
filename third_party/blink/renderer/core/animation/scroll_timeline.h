@@ -53,7 +53,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // https://github.com/WICG/scroll-animations/issues/31
   bool IsActive() const override;
   base::Optional<base::TimeDelta> InitialStartTimeForAnimations() override;
-  double ZeroTimeInSeconds() override { return 0; }
+  AnimationTimeDelta ZeroTime() override { return AnimationTimeDelta(); }
 
   void ServiceAnimations(TimingUpdateReason) override;
   void ScheduleNextService() override;
@@ -129,6 +129,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   size_t AttachedAnimationsCount() const { return scroll_animations_.size(); }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
   // Snapshots scroll timeline current time and phase.
   // Called once per animation frame.

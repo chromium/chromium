@@ -36,10 +36,13 @@ class CORE_EXPORT IntersectionGeometry {
     kShouldUseReplacedContentRect = 1 << 3,
     kShouldConvertToCSSPixels = 1 << 4,
     kShouldUseCachedRects = 1 << 5,
+    // Applies to boxes. If true, OverflowClipRect() is used if necessary
+    // instead of BorderBoundingBox().
+    kUseOverflowClipEdge = 1 << 6,
 
     // These flags will be computed
-    kRootIsImplicit = 1 << 6,
-    kIsVisible = 1 << 7
+    kRootIsImplicit = 1 << 7,
+    kIsVisible = 1 << 8
   };
 
   struct RootGeometry {

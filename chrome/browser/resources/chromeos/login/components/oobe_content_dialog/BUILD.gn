@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  uses_legacy_modules = true
+  deps = [
+    ":oobe_content_dialog",
+    ":oobe_content_dialog_old",
+  ]
+}
+
+js_library("oobe_content_dialog") {
+  deps = [
+    "../oobe_focus_behavior:oobe_focus_behavior",
+    "../oobe_scrollable_behavior:oobe_scrollable_behavior",
+    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
+  ]
+}
+
+js_library("oobe_content_dialog_old") {
+  deps = [
+    "../oobe_dialog:oobe_dialog",
+    "../oobe_focus_behavior:oobe_focus_behavior",
+    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
+  ]
+}

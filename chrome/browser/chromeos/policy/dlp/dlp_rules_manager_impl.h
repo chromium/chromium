@@ -41,7 +41,6 @@ class DlpRulesManagerImpl : public DlpRulesManager {
 
  protected:
   friend class DlpRulesManagerFactory;
-  friend class DlpRulesManagerImplTest;
 
   explicit DlpRulesManagerImpl(PrefService* local_state);
 

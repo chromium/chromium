@@ -10,6 +10,7 @@
 #include "chromeos/components/camera_app_ui/camera_app_helper_impl.h"
 #include "chromeos/components/camera_app_ui/resources.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
+#include "chromeos/grit/chromeos_camera_app_resources_map.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
@@ -25,6 +26,7 @@
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/js/grit/mojo_bindings_resources.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/webui/webui_allowlist.h"
@@ -41,14 +43,11 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
   source->DisableTrustedTypesCSP();
 
   // Add all settings resources.
-  for (size_t i = 0; i < kChromeosCameraAppResourcesSize; i++) {
-    source->AddResourcePath(kChromeosCameraAppResources[i].name,
-                            kChromeosCameraAppResources[i].value);
-  }
+  source->AddResourcePaths(base::make_span(kChromeosCameraAppResources,
+                                           kChromeosCameraAppResourcesSize));
 
-  for (const auto& res : kGritResourceMap) {
-    source->AddResourcePath(res.path, res.id);
-  }
+  source->AddResourcePath("js/mojo/mojo_bindings_lite.js",
+                          IDR_MOJO_MOJO_BINDINGS_LITE_JS);
 
   delegate->PopulateLoadTimeData(source);
 
@@ -62,8 +61,11 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
       network::mojom::CSPDirectiveName::WorkerSrc,
       std::string("worker-src 'self';"));
   source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameAncestors,
+      std::string("frame-ancestors 'self';"));
+  source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      std::string("frame-src ") + kChromeUIUntrustedCameraAppURL + ";");
+      std::string("frame-src 'self' ") + kChromeUIUntrustedCameraAppURL + ";");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc,
       std::string("object-src 'self';"));
@@ -75,8 +77,8 @@ content::WebUIDataSource* CreateUntrustedCameraAppUIHTMLSource() {
   content::WebUIDataSource* untrusted_source =
       content::WebUIDataSource::Create(kChromeUIUntrustedCameraAppURL);
   for (size_t i = 0; i < kChromeosCameraAppResourcesSize; i++) {
-    untrusted_source->AddResourcePath(kChromeosCameraAppResources[i].name,
-                                      kChromeosCameraAppResources[i].value);
+    untrusted_source->AddResourcePath(kChromeosCameraAppResources[i].path,
+                                      kChromeosCameraAppResources[i].id);
   }
   untrusted_source->AddFrameAncestor(GURL(kChromeUICameraAppURL));
 
@@ -222,6 +224,8 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
                                            ContentSettingsType::IDLE_DETECTION);
 
   delegate_->SetLaunchDirectory();
+
+  window()->SetProperty(ash::kMinimizeOnBackKey, false);
 
   // Set up the data source.
   content::WebUIDataSource::Add(browser_context,

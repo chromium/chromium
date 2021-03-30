@@ -34,9 +34,10 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -52,7 +53,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class StatusViewTest extends DummyUiActivityTestCase {
     @Mock
-    private StatusView.StatusViewDelegate mStatusViewDelegate;
+    private SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
@@ -75,11 +76,13 @@ public class StatusViewTest extends DummyUiActivityTestCase {
                                   .getLayoutInflater()
                                   .inflate(R.layout.location_status, view, true)
                                   .findViewById(R.id.location_bar_status);
-            mStatusView.setDelegateForTesting(mStatusViewDelegate);
             mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
-            mStatusView.setLocationBarDataProvider(
-                    new LocationBarModel(mStatusView.getContext(), NewTabPageDelegate.EMPTY,
-                            url -> url, window -> null, ToolbarTestUtils.OFFLINE_STATUS));
+            // clang-format off
+            mStatusView.setLocationBarDataProvider(new LocationBarModel(
+                    mStatusView.getContext(), NewTabPageDelegate.EMPTY, (url) -> url.getSpec(),
+                    (window) -> null, ToolbarTestUtils.OFFLINE_STATUS, mSearchEngineLogoUtils));
+            // clang-format on
+            mStatusView.setSearchEngineLogoUtils(mSearchEngineLogoUtils);
             mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
             mStatusMCP = PropertyModelChangeProcessor.create(
                     mStatusModel, mStatusView, new StatusViewBinder());
@@ -178,12 +181,13 @@ public class StatusViewTest extends DummyUiActivityTestCase {
     @Feature({"Omnibox"})
     @EnableFeatures("OmniboxSearchEngineLogo")
     public void testSearchEngineLogo_noIncognito_statusDimensions() {
-        doReturn(true).when(mStatusViewDelegate).shouldShowSearchEngineLogo(false);
+        doReturn(true).when(mSearchEngineLogoUtils).isSearchEngineLogoEnabled();
+        doReturn(true).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(false);
         runOnUiThreadBlocking(() -> {
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
                     new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0));
             mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
-            mStatusView.updateSearchEngineStatusIcon(true, true, "");
+            mStatusView.updateSearchEngineStatusIcon();
         });
         int expectedWidth = getActivity().getResources().getDimensionPixelSize(
                 R.dimen.location_bar_status_icon_width);

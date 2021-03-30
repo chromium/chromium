@@ -9,12 +9,17 @@
 
 class BookmarkBar {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum State {
     // The bookmark bar is not visible.
-    HIDDEN,
+    HIDDEN = 0,
 
     // The bookmark bar is visible.
-    SHOW
+    SHOW = 1,
+
+    // Constant used by the histogram macros.
+    kMaxValue = SHOW
   };
 
   // Used when the state changes to indicate if the transition should be

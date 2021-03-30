@@ -25,7 +25,8 @@ class SnapshotSessionControllerImpl final
     : public SnapshotSessionController,
       public session_manager::SessionManagerObserver {
  public:
-  explicit SnapshotSessionControllerImpl(ArcAppsTracker* apps_tracker);
+  explicit SnapshotSessionControllerImpl(
+      std::unique_ptr<ArcAppsTracker> apps_tracker);
   SnapshotSessionControllerImpl(const SnapshotSessionControllerImpl&) = delete;
   SnapshotSessionControllerImpl& operator=(
       const SnapshotSessionControllerImpl&) = delete;
@@ -49,8 +50,9 @@ class SnapshotSessionControllerImpl final
   void StartSession();
   void StopSession();
 
-  // Callback to be passed to |apps_tracker_|.
+  // Callbacks to be passed to |apps_tracker_|.
   void OnAppInstalled(int percent);
+  void OnPolicyCompliant();
   // Called back once the session duration exceeds the maximum duration.
   void OnTimerFired();
 
@@ -58,17 +60,17 @@ class SnapshotSessionControllerImpl final
   void NotifySnapshotSessionStopped();
   void NotifySnapshotSessionFailed();
   void NotifySnapshotAppInstalled(int percent);
+  void NotifySnapshotSessionPolicyCompliant();
 
-  // Owned by ArcDataSnapshotdManager.
-  ArcAppsTracker* apps_tracker_;
+  // Should be non-null when tracking apps.
+  std::unique_ptr<ArcAppsTracker> apps_tracker_;
 
   base::OneShotTimer duration_timer_;
   base::ObserverList<Observer> observers_;
 
-  // True, if |apps_tracker_| notified 100% of required apps installed.
+  // True, if ARC is compliant with policy report received.
   // Note: the value never flips back to false.
-  bool all_apps_installed_ = false;
-
+  bool is_policy_compliant_ = false;
   base::WeakPtrFactory<SnapshotSessionControllerImpl> weak_ptr_factory_{this};
 };
 
@@ -76,8 +78,9 @@ class SnapshotSessionControllerImpl final
 
 // static
 std::unique_ptr<SnapshotSessionController> SnapshotSessionController::Create(
-    ArcAppsTracker* apps_tracker) {
-  return std::make_unique<SnapshotSessionControllerImpl>(apps_tracker);
+    std::unique_ptr<ArcAppsTracker> apps_tracker) {
+  return std::make_unique<SnapshotSessionControllerImpl>(
+      std::move(apps_tracker));
 }
 
 const base::OneShotTimer* SnapshotSessionController::get_timer_for_testing()
@@ -88,8 +91,8 @@ const base::OneShotTimer* SnapshotSessionController::get_timer_for_testing()
 SnapshotSessionController::~SnapshotSessionController() = default;
 
 SnapshotSessionControllerImpl::SnapshotSessionControllerImpl(
-    ArcAppsTracker* apps_tracker)
-    : apps_tracker_(apps_tracker) {
+    std::unique_ptr<ArcAppsTracker> apps_tracker)
+    : apps_tracker_(std::move(apps_tracker)) {
   session_manager::SessionManager::Get()->AddObserver(this);
   // Start tracking apps for active MGS.
   ignore_result(MaybeStartSession());
@@ -122,43 +125,49 @@ bool SnapshotSessionControllerImpl::MaybeStartSession() {
 }
 void SnapshotSessionControllerImpl::StartSession() {
   DCHECK(!duration_timer_.IsRunning());
+  DCHECK(apps_tracker_);
 
   duration_timer_.Start(
       FROM_HERE, kDuration,
       base::BindOnce(&SnapshotSessionControllerImpl::OnTimerFired,
                      weak_ptr_factory_.GetWeakPtr()));
+
   apps_tracker_->StartTracking(
       base::BindRepeating(&SnapshotSessionControllerImpl::OnAppInstalled,
-                          weak_ptr_factory_.GetWeakPtr()));
-
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&SnapshotSessionControllerImpl::OnPolicyCompliant,
+                     weak_ptr_factory_.GetWeakPtr()));
   NotifySnapshotSessionStarted();
 }
 
 void SnapshotSessionControllerImpl::StopSession() {
-  if (all_apps_installed_) {
+  if (is_policy_compliant_) {
     NotifySnapshotSessionStopped();
   } else {
     DCHECK(duration_timer_.IsRunning());
     duration_timer_.Stop();
-
-    apps_tracker_->StopTracking();
+    apps_tracker_.reset();
     NotifySnapshotSessionFailed();
   }
 }
 
 void SnapshotSessionControllerImpl::OnAppInstalled(int percent) {
-  if (percent == 100) {
-    all_apps_installed_ = true;
-    apps_tracker_->StopTracking();
-    duration_timer_.Stop();
-  }
   NotifySnapshotAppInstalled(percent);
 }
 
-void SnapshotSessionControllerImpl::OnTimerFired() {
-  DCHECK(!all_apps_installed_);
+void SnapshotSessionControllerImpl::OnPolicyCompliant() {
+  DCHECK(duration_timer_.IsRunning());
+  is_policy_compliant_ = true;
+  apps_tracker_.reset();
+  duration_timer_.Stop();
 
-  apps_tracker_->StopTracking();
+  NotifySnapshotSessionPolicyCompliant();
+}
+
+void SnapshotSessionControllerImpl::OnTimerFired() {
+  DCHECK(!is_policy_compliant_);
+
+  apps_tracker_.reset();
   NotifySnapshotSessionFailed();
 }
 
@@ -180,6 +189,11 @@ void SnapshotSessionControllerImpl::NotifySnapshotSessionFailed() {
 void SnapshotSessionControllerImpl::NotifySnapshotAppInstalled(int percent) {
   for (auto& observer : observers_)
     observer.OnSnapshotAppInstalled(percent);
+}
+
+void SnapshotSessionControllerImpl::NotifySnapshotSessionPolicyCompliant() {
+  for (auto& observer : observers_)
+    observer.OnSnapshotSessionPolicyCompliant();
 }
 
 }  // namespace data_snapshotd

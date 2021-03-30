@@ -8,12 +8,12 @@ import android.app.Application;
 import android.content.Context;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildConfig;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
+import org.chromium.build.BuildConfig;
 
 /**
  * An {@link android.app.Application} for running native browser tests.

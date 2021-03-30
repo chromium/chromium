@@ -56,7 +56,6 @@ class ImageInputType final : public BaseButtonInputType {
   void AltAttributeChanged() override;
   void SrcAttributeChanged() override;
   void ValueAttributeChanged() override;
-  void StartResourceLoading() override;
   void OnAttachWithLayoutObject() override;
   bool ShouldRespectAlignAttribute() override;
   bool CanBeSuccessfulSubmitButton() override;

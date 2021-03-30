@@ -18,7 +18,7 @@ android_library("version_constants_java") {
   deps = [
     ":generate_version_constants",
     "//base:base_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [ ":channel_enum_srcjar" ]
 }

@@ -8,10 +8,6 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-// Information about the client performing the request, relevant only to Chrome
-// surfaces.
 message ChromeClientInfo {
-  // The signed-out session identifier (Zwieback) token, for clients which embed
-  // this information in-band instead of using an HTTP Cookie.
   optional string session_id = 3;
 }

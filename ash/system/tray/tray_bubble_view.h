@@ -56,7 +56,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
     // Called from GetAccessibleNodeData(); should return the appropriate
     // accessible name for the bubble.
-    virtual base::string16 GetAccessibleNameForBubble();
+    virtual std::u16string GetAccessibleNameForBubble();
 
     // Should return true if extra keyboard accessibility is enabled.
     // TrayBubbleView will put focus on the default item if extra keyboard
@@ -93,8 +93,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     int preferred_width = 0;
     int max_height = 0;
     bool close_on_deactivate = true;
-    // Indicates whether tray bubble view is shown by click on the tray view.
-    bool show_by_click = false;
+    // Indicates whether tray bubble view should add a pre target event handler.
+    bool reroute_event_handler = false;
     // If not provided, the bg color will be derived from the NativeTheme.
     base::Optional<SkColor> bg_color;
     base::Optional<int> corner_radius;
@@ -164,7 +164,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
       views::Widget* widget) override;
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
   // views::BubbleDialogDelegateView:
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,

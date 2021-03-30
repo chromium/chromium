@@ -73,7 +73,7 @@ void ChromeBrowserCloudManagementRegistrar::
       enrollment_token, client_id,
       base::BindOnce(&ChromeBrowserCloudManagementRegistrar::
                          CallCloudManagementRegistrationCallback,
-                     base::Unretained(this), base::Passed(&policy_client),
+                     base::Unretained(this), std::move(policy_client),
                      callback));
 }
 

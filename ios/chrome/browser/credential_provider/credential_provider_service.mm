@@ -267,14 +267,18 @@ void CredentialProviderService::OnGetPasswordStoreResults(
   }
 }
 
-void CredentialProviderService::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  RequestSyncAllCredentials();
-}
-
-void CredentialProviderService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  RequestSyncAllCredentials();
+void CredentialProviderService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  // The service uses the account consented for Sync, only process
+  // an update if the consent has changed.
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      RequestSyncAllCredentials();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 void CredentialProviderService::OnLoginsChanged(

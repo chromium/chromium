@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 
 namespace blink {
 
@@ -15,6 +16,8 @@ class CORE_EXPORT ContainerQuery final
  public:
   explicit ContainerQuery(scoped_refptr<MediaQuerySet>);
   ContainerQuery(const ContainerQuery&);
+
+  PhysicalAxes QueriedAxes() const { return queried_axes_; }
 
   String ToString() const;
 
@@ -26,6 +29,7 @@ class CORE_EXPORT ContainerQuery final
 
   // TODO(crbug.com/1145970): Refactor to avoid internal MediaQuerySet.
   scoped_refptr<MediaQuerySet> media_queries_;
+  PhysicalAxes queried_axes_{kPhysicalAxisNone};
 };
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
@@ -20,6 +21,7 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
+#include "services/network/public/mojom/url_request.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -146,6 +148,50 @@ bool EnumTraits<network::mojom::URLRequestReferrerPolicy, net::ReferrerPolicy>::
   return false;
 }
 
+network::mojom::SourceType
+EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::ToMojom(
+    net::SourceStream::SourceType type) {
+  switch (type) {
+    case net::SourceStream::SourceType::TYPE_BROTLI:
+      return network::mojom::SourceType::kBrotli;
+    case net::SourceStream::SourceType::TYPE_DEFLATE:
+      return network::mojom::SourceType::kDeflate;
+    case net::SourceStream::SourceType::TYPE_GZIP:
+      return network::mojom::SourceType::kGzip;
+    case net::SourceStream::SourceType::TYPE_NONE:
+      return network::mojom::SourceType::kNone;
+    case net::SourceStream::SourceType::TYPE_UNKNOWN:
+      return network::mojom::SourceType::kUnknown;
+  }
+  NOTREACHED();
+  return static_cast<network::mojom::SourceType>(type);
+}
+
+bool EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::
+    FromMojom(network::mojom::SourceType in,
+              net::SourceStream::SourceType* out) {
+  switch (in) {
+    case network::mojom::SourceType::kBrotli:
+      *out = net::SourceStream::SourceType::TYPE_BROTLI;
+      return true;
+    case network::mojom::SourceType::kDeflate:
+      *out = net::SourceStream::SourceType::TYPE_DEFLATE;
+      return true;
+    case network::mojom::SourceType::kGzip:
+      *out = net::SourceStream::SourceType::TYPE_GZIP;
+      return true;
+    case network::mojom::SourceType::kNone:
+      *out = net::SourceStream::SourceType::TYPE_NONE;
+      return true;
+    case network::mojom::SourceType::kUnknown:
+      *out = net::SourceStream::SourceType::TYPE_UNKNOWN;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
 bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
                   network::ResourceRequest::TrustedParams>::
     Read(network::mojom::TrustedUrlRequestParamsDataView data,
@@ -157,6 +203,10 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
   out->has_user_activation = data.has_user_activation();
   out->cookie_observer = data.TakeCookieObserver<
       mojo::PendingRemote<network::mojom::CookieAccessObserver>>();
+  out->url_loader_network_observer = data.TakeUrlLoaderNetworkObserver<
+      mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>>();
+  out->devtools_observer = data.TakeDevtoolsObserver<
+      mojo::PendingRemote<network::mojom::DevToolsObserver>>();
   if (!data.ReadClientSecurityState(&out->client_security_state)) {
     return false;
   }
@@ -167,11 +217,15 @@ bool StructTraits<network::mojom::WebBundleTokenParamsDataView,
                   network::ResourceRequest::WebBundleTokenParams>::
     Read(network::mojom::WebBundleTokenParamsDataView data,
          network::ResourceRequest::WebBundleTokenParams* out) {
+  if (!data.ReadBundleUrl(&out->bundle_url)) {
+    return false;
+  }
   if (!data.ReadToken(&out->token)) {
     return false;
   }
   out->handle = data.TakeWebBundleHandle<
       mojo::PendingRemote<network::mojom::WebBundleHandle>>();
+  out->render_process_id = data.render_process_id();
   return true;
 }
 
@@ -217,7 +271,9 @@ bool StructTraits<
       !data.ReadDevtoolsRequestId(&out->devtools_request_id) ||
       !data.ReadDevtoolsStackId(&out->devtools_stack_id) ||
       !data.ReadRecursivePrefetchToken(&out->recursive_prefetch_token) ||
-      !data.ReadWebBundleTokenParams(&out->web_bundle_token_params)) {
+      !data.ReadWebBundleTokenParams(&out->web_bundle_token_params) ||
+      !data.ReadDevtoolsAcceptedStreamTypes(
+          &out->devtools_accepted_stream_types)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }
@@ -245,7 +301,6 @@ bool StructTraits<
   out->enable_load_timing = data.enable_load_timing();
   out->enable_upload_progress = data.enable_upload_progress();
   out->do_not_prompt_for_login = data.do_not_prompt_for_login();
-  out->render_frame_id = data.render_frame_id();
   out->is_main_frame = data.is_main_frame();
   out->transition_type = data.transition_type();
   out->report_raw_headers = data.report_raw_headers();
@@ -255,6 +310,7 @@ bool StructTraits<
   out->is_signed_exchange_prefetch_cache_enabled =
       data.is_signed_exchange_prefetch_cache_enabled();
   out->is_fetch_like_api = data.is_fetch_like_api();
+  out->is_favicon = data.is_favicon();
   out->obey_origin_policy = data.obey_origin_policy();
   return true;
 }
@@ -274,35 +330,98 @@ bool StructTraits<network::mojom::URLRequestBodyDataView,
   return true;
 }
 
-bool StructTraits<network::mojom::DataElementDataView, network::DataElement>::
-    Read(network::mojom::DataElementDataView data, network::DataElement* out) {
-  if (!data.ReadPath(&out->path_)) {
-    network::debug::SetDeserializationCrashKeyString("data_element_path");
+bool StructTraits<network::mojom::DataElementBytesDataView,
+                  network::DataElementBytes>::
+    Read(network::mojom::DataElementBytesDataView data,
+         network::DataElementBytes* out) {
+  mojo_base::BigBufferView big_buffer_view;
+  if (!data.ReadData(&big_buffer_view)) {
     return false;
   }
-  if (!data.ReadExpectedModificationTime(&out->expected_modification_time_)) {
-    return false;
-  }
-  if (data.type() == network::mojom::DataElementType::kBytes) {
-    mojo_base::BigBufferView big_buffer;
-    if (!data.ReadBuf(&big_buffer))
-      return false;
-    // TODO(yoichio): Fix DataElementDataView::ReadBuf issue
-    // (crbug.com/1152664).
-    if (data.length() != big_buffer.data().size())
-      return false;
-    out->buf_.clear();
-    out->buf_.insert(out->buf_.end(), big_buffer.data().begin(),
-                     big_buffer.data().end());
-  }
-  out->type_ = data.type();
-  out->data_pipe_getter_ = data.TakeDataPipeGetter<
-      mojo::PendingRemote<network::mojom::DataPipeGetter>>();
-  out->chunked_data_pipe_getter_ = data.TakeChunkedDataPipeGetter<
-      mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>>();
-  out->offset_ = data.offset();
-  out->length_ = data.length();
+  *out = network::DataElementBytes(std::vector<uint8_t>(
+      big_buffer_view.data().begin(), big_buffer_view.data().end()));
   return true;
+}
+
+bool StructTraits<network::mojom::DataElementDataPipeDataView,
+                  network::DataElementDataPipe>::
+    Read(network::mojom::DataElementDataPipeDataView data,
+         network::DataElementDataPipe* out) {
+  auto data_pipe_getter = data.TakeDataPipeGetter<
+      mojo::PendingRemote<network::mojom::DataPipeGetter>>();
+  *out = network::DataElementDataPipe(std::move(data_pipe_getter));
+  return true;
+}
+
+bool StructTraits<network::mojom::DataElementChunkedDataPipeDataView,
+                  network::DataElementChunkedDataPipe>::
+    Read(network::mojom::DataElementChunkedDataPipeDataView data,
+         network::DataElementChunkedDataPipe* out) {
+  auto data_pipe_getter = data.TakeDataPipeGetter<
+      mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>>();
+  *out = network::DataElementChunkedDataPipe(
+      std::move(data_pipe_getter),
+      network::DataElementChunkedDataPipe::ReadOnlyOnce(data.read_only_once()));
+  return true;
+}
+
+bool StructTraits<network::mojom::DataElementFileDataView,
+                  network::DataElementFile>::
+    Read(network::mojom::DataElementFileDataView data,
+         network::DataElementFile* out) {
+  base::FilePath path;
+  if (!data.ReadPath(&path)) {
+    return false;
+  }
+  base::Time expected_modification_time;
+  if (!data.ReadExpectedModificationTime(&expected_modification_time)) {
+    return false;
+  }
+  *out = network::DataElementFile(path, data.offset(), data.length(),
+                                  expected_modification_time);
+  return true;
+}
+
+bool UnionTraits<network::mojom::DataElementDataView, network::DataElement>::
+    Read(network::mojom::DataElementDataView data, network::DataElement* out) {
+  using Tag = network::mojom::DataElementDataView::Tag;
+  DCHECK(!data.is_null());
+
+  switch (data.tag()) {
+    case Tag::kBytes: {
+      network::DataElementBytes bytes;
+      if (!data.ReadBytes(&bytes)) {
+        return false;
+      }
+      *out = network::DataElement(std::move(bytes));
+      return true;
+    }
+    case Tag::kDataPipe: {
+      network::DataElementDataPipe data_pipe;
+      if (!data.ReadDataPipe(&data_pipe)) {
+        return false;
+      }
+      *out = network::DataElement(std::move(data_pipe));
+      return true;
+    }
+    case Tag::kChunkedDataPipe: {
+      network::DataElementChunkedDataPipe chunked_data_pipe;
+      if (!data.ReadChunkedDataPipe(&chunked_data_pipe)) {
+        return false;
+      }
+      *out = network::DataElement(std::move(chunked_data_pipe));
+      return true;
+    }
+    case Tag::kFile: {
+      network::DataElementFile file;
+      if (!data.ReadFile(&file)) {
+        return false;
+      }
+      *out = network::DataElement(std::move(file));
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace mojo

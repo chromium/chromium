@@ -131,11 +131,12 @@ QuicClientMessageLooplNetworkHelper::CreateQuicPacketWriter() {
       socket_.get(), base::ThreadTaskRunnerHandle::Get().get());
 }
 
-void QuicClientMessageLooplNetworkHelper::OnReadError(
+bool QuicClientMessageLooplNetworkHelper::OnReadError(
     int result,
     const DatagramClientSocket* socket) {
   LOG(ERROR) << "QuicSimpleClient read failed: " << ErrorToShortString(result);
   client_->Disconnect();
+  return false;
 }
 
 quic::QuicSocketAddress

@@ -13,8 +13,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -78,29 +76,14 @@ ChromeContentRulesRegistry::EvaluationScope::~EvaluationScope() {
 ChromeContentRulesRegistry::ChromeContentRulesRegistry(
     content::BrowserContext* browser_context,
     RulesCacheDelegate* cache_delegate,
-    const PredicateEvaluatorsFactory& evaluators_factory)
+    PredicateEvaluatorsFactory evaluators_factory)
     : ContentRulesRegistry(browser_context,
                            declarative_content_constants::kOnPageChanged,
                            content::BrowserThread::UI,
                            cache_delegate,
                            RulesRegistryService::kDefaultRulesRegistryID),
-      evaluators_(evaluators_factory.Run(this)),
-      evaluation_disposition_(EVALUATE_REQUESTS) {
-  registrar_.Add(this,
-                 content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-}
-
-void ChromeContentRulesRegistry::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_DESTROYED, type);
-
-  // Note that neither non-tab WebContents nor tabs from other browser
-  // contexts will be in the map.
-  active_rules_.erase(content::Source<content::WebContents>(source).ptr());
-}
+      evaluators_(std::move(evaluators_factory).Run(this)),
+      evaluation_disposition_(EVALUATE_REQUESTS) {}
 
 void ChromeContentRulesRegistry::RequestEvaluation(
     content::WebContents* contents) {
@@ -142,6 +125,11 @@ void ChromeContentRulesRegistry::DidFinishNavigation(
          evaluators_)
       evaluator->OnWebContentsNavigation(contents, navigation_handle);
   }
+}
+
+void ChromeContentRulesRegistry::WebContentsDestroyed(
+    content::WebContents* web_contents) {
+  active_rules_.erase(web_contents);
 }
 
 ChromeContentRulesRegistry::ContentRule::ContentRule(

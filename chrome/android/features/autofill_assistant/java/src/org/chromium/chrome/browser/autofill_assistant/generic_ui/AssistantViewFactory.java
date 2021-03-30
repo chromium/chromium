@@ -146,7 +146,8 @@ public class AssistantViewFactory {
                 EditorFieldModel.createTextInput(type, hint, /* suggestions = */ null,
                         /* formatter = */ null, /* validator = */ null,
                         /* valueIconGenerator = */ null, /* requiredErrorMessage = */ null,
-                        /* invalidErrorMessage = */ null, ""),
+                        /* invalidErrorMessage = */ null,
+                        EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, ""),
                 (v, actionId, event)
                         -> false,
                 /* filter = */ null, new TextWatcher() {

@@ -1,0 +1,67 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# WARNING: if you wish to disable a tast test that runs in a ChromeOS SDK
+# build, this is the wrong file to edit. You need to mark those tests as
+# "informational" in their source .go files.
+
+# To disable a specific test in chrome_all_tast_tests, add it the following
+# list and cite a bug.
+tast_disabled_tests_from_chrome_all = [
+  # crbug.com/1170669
+  "hwsec.ChapsRSAPSS",
+
+  # crbug.com/1167243
+  "ui.ChromeLogin",
+
+  # crbug.com/1115622
+  "ui.ChromeLoginGAIA",
+
+  # crbug.com/1099695
+  "platform.Drivefs",
+
+  # crbug.com/1131496
+  "apps.LaunchHelpApp.clamshell_oobe_stable",
+  "apps.LaunchHelpApp.tablet_oobe_stable",
+
+  # crbug.com/1148036
+  "ui.ExistingUserLogin",
+  "ui.SigninProfileExtension",
+
+  # crbug.com/1154794
+  "policy.DefaultGeolocationSetting",
+
+  # crbug.com/1115622
+  "inputs.VirtualKeyboardOOBE",
+
+  # crbug.com/1156006
+  "filemanager.DragDrop",
+
+  # crbug.com/1183238
+  "filemanager.DrivefsUI",
+
+  # crbug.com/1171146
+  "session.LogoutCleanup",
+
+  # crbug.com/1181243
+  "network.ConfigureServiceForUserProfile.normal",
+
+  # crbug.com/1181283
+  "ui.QuickSettingsLockScreen.no_battery",
+
+  # crbug.com/1185176
+  "arc.Optin",
+
+  # crbug.com/1185654
+  "arc.Optin.vm",
+
+  # crbug.com/1184931
+  "health.ProbeBatteryMetrics",
+
+  # crbug.com/1185030
+  "inputs.VirtualKeyboardJapaneseInputs.stable",
+
+  # crbug.com/1185031
+  "inputs.VirtualKeyboardInputFields.jp_us_stable",
+]

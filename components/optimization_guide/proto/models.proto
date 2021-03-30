@@ -202,13 +202,23 @@ message ModelInfo {
   // If in the request, this represents the set of features that the client
   // understands how to evaluate. If in the response, this represents the set
   // of features referenced by the model.
-  repeated ClientModelFeature supported_model_features = 3;
+  //
+  // New use cases should use the model_metadata field instead.
+  repeated ClientModelFeature supported_model_features = 3 [deprecated = true];
   // The set of model types the requesting client can use to make predictions.
   repeated ModelType supported_model_types = 4;
   // The set of host model features that are referenced by the model.
   //
   // Note that this should only be populated if part of the response.
   repeated string supported_host_model_features = 5;
+  // Mechanism used for model owners to attach metadata to the request or
+  // response.
+  //
+  // In practice, we expect this to be used as a way to negotiate capabilities.
+  // The client can provide the model features they can evaluate if this field
+  // is part of the request, and the server can provide the model features that
+  // are actually present in the model.
+  optional Any model_metadata = 6;
 }
 
 // The scenarios for which the optimization guide has models for.
@@ -218,6 +228,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
   // Target for supplying the language detection model via the model downloader.
   OPTIMIZATION_TARGET_LANGUAGE_DETECTION = 2;
+  // Target for determining topics present on a page.
+  OPTIMIZATION_TARGET_PAGE_TOPICS = 3;
 }
 
 // The features that only the client can compute during prediction and also

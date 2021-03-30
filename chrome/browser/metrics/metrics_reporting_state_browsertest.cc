@@ -28,7 +28,7 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/device_settings_cache.h"
+#include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #endif
@@ -116,10 +116,10 @@ void ChromeBrowserMainExtraPartsChecker::PostEarlyInitialization() {
 
 // Callback from changing whether reporting is enabled.
 void OnMetricsReportingStateChanged(bool* new_state_ptr,
-                                    base::Closure run_loop_closure,
+                                    base::OnceClosure run_loop_closure,
                                     bool new_state) {
   *new_state_ptr = new_state;
-  run_loop_closure.Run();
+  std::move(run_loop_closure).Run();
 }
 
 IN_PROC_BROWSER_TEST_P(MetricsReportingStateTest, ChangeMetricsReportingState) {

@@ -11,9 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Consumer;
-import org.chromium.base.Function;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
@@ -21,9 +18,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -41,17 +36,11 @@ public class HistoryNavigationCoordinator
     private InsetObserverView mInsetObserverView;
     private ActivityTabTabObserver mActivityTabObserver;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private Function<Tab, Boolean> mBackShouldCloseTab;
-    private Runnable mOnBackPressed;
-    private Consumer<Tab> mShowHistoryManager;
-    private String mHistoryMenu;
-    private Supplier<BottomSheetController> mBottomSheetControllerSupplier;
+    private BackActionDelegate mBackActionDelegate;
     private Tab mTab;
     private boolean mEnabled;
 
     private NavigationHandler mNavigationHandler;
-    private HistoryNavigationDelegate mDelegate;
-    private NavigationSheet mNavigationSheet;
 
     private OverscrollGlowOverlay mOverscrollGlowOverlay;
 
@@ -65,26 +54,18 @@ public class HistoryNavigationCoordinator
      * @param tabProvider Activity tab provider.
      * @param insetObserverView View that provides information about the inset and inset
      *        capabilities of the device.
-     * @param backShouldCloseTab Boolean function that returns true if back button press
-     *        will close the tab.
-     * @param onBackPressed Runnable that performs an action when back button is pressed.
+     * @param backActionDelegate Delegate handling actions for back gesture.
      * @param layoutManager LayoutManager for handling overscroll glow effect as scene layer.
-     * @param showHistoryManager Function that shows full navigation history UI.
-     * @param historyMenu UI string for full history UI in its header.
-     * @param bottomSheetControllerSupplier Supplier for {@link BottomSheetController}.
      * @return HistoryNavigationCoordinator object or null if not enabled via feature flag.
      */
     public static HistoryNavigationCoordinator create(WindowAndroid window,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CompositorViewHolder compositorViewHolder, ActivityTabProvider tabProvider,
-            InsetObserverView insetObserverView, Function<Tab, Boolean> backShouldCloseTab,
-            Runnable onBackPressed, LayoutManagerImpl layoutManager,
-            Consumer<Tab> showHistoryManager, String historyMenu,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier) {
+            InsetObserverView insetObserverView, BackActionDelegate backActionDelegate,
+            LayoutManagerImpl layoutManager) {
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
         coordinator.init(window, lifecycleDispatcher, compositorViewHolder, tabProvider,
-                insetObserverView, backShouldCloseTab, onBackPressed, layoutManager,
-                showHistoryManager, historyMenu, bottomSheetControllerSupplier);
+                insetObserverView, backActionDelegate, layoutManager);
         return coordinator;
     }
 
@@ -98,23 +79,17 @@ public class HistoryNavigationCoordinator
      */
     private void init(WindowAndroid window, ActivityLifecycleDispatcher lifecycleDispatcher,
             CompositorViewHolder compositorViewHolder, ActivityTabProvider tabProvider,
-            InsetObserverView insetObserverView, Function<Tab, Boolean> backShouldCloseTab,
-            Runnable onBackPressed, LayoutManagerImpl layoutManager,
-            Consumer<Tab> showHistoryManager, String historyMenu,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier) {
+            InsetObserverView insetObserverView, BackActionDelegate backActionDelegate,
+            LayoutManagerImpl layoutManager) {
         mOverscrollGlowOverlay = new OverscrollGlowOverlay(window, compositorViewHolder,
                 () -> compositorViewHolder.getLayoutManager().getActiveLayout().requestUpdate());
         mNavigationLayout = new HistoryNavigationLayout(compositorViewHolder.getContext(),
-                this::isNativePage, mOverscrollGlowOverlay, this::getNavigationSheet,
+                this::isNativePage, mOverscrollGlowOverlay,
                 (direction) -> mNavigationHandler.navigate(direction));
 
         mParentView = compositorViewHolder;
         mActivityLifecycleDispatcher = lifecycleDispatcher;
-        mBackShouldCloseTab = backShouldCloseTab;
-        mOnBackPressed = onBackPressed;
-        mShowHistoryManager = showHistoryManager;
-        mHistoryMenu = historyMenu;
-        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
+        mBackActionDelegate = backActionDelegate;
         lifecycleDispatcher.register(this);
 
         compositorViewHolder.addView(mNavigationLayout);
@@ -137,6 +112,7 @@ public class HistoryNavigationCoordinator
             @Override
             public void onDestroyed(Tab tab) {
                 mTab = null;
+                updateNavigationHandler();
             }
         };
 
@@ -170,35 +146,8 @@ public class HistoryNavigationCoordinator
     }
 
     private static boolean isDetached(Tab tab) {
-        return tab.getWebContents() == null
+        return tab == null || tab.getWebContents() == null
                 || tab.getWebContents().getTopLevelNativeWindow() == null;
-    }
-
-    /**
-     * Creates {@link HistoryNavigationDelegate} for native/rendered pages on Tab.
-     */
-    private static HistoryNavigationDelegate createDelegate(Tab tab,
-            Function<Tab, Boolean> backShouldCloseTab, Runnable onBackPressed,
-            Consumer<Tab> showHistoryManager, String historyMenu,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier) {
-        if (isDetached(tab)) return HistoryNavigationDelegate.DEFAULT;
-
-        return new HistoryNavigationDelegate() {
-            @Override
-            public NavigationHandler.ActionDelegate createActionDelegate() {
-                return new TabbedActionDelegate(tab, backShouldCloseTab, onBackPressed);
-            }
-
-            @Override
-            public NavigationSheet.Delegate createSheetDelegate() {
-                return new TabbedSheetDelegate(tab, showHistoryManager, historyMenu);
-            }
-
-            @Override
-            public Supplier<BottomSheetController> getBottomSheetController() {
-                return isDetached(tab) ? () -> null : bottomSheetControllerSupplier;
-            }
-        };
     }
 
     /**
@@ -239,11 +188,8 @@ public class HistoryNavigationCoordinator
 
             // Also updates NavigationHandler when tab == null (going into TabSwitcher).
             if (mTab == null || webContents != null) {
-                HistoryNavigationDelegate delegate = webContents != null
-                        ? createDelegate(mTab, mBackShouldCloseTab, mOnBackPressed,
-                                mShowHistoryManager, mHistoryMenu, mBottomSheetControllerSupplier)
-                        : HistoryNavigationDelegate.DEFAULT;
-                initNavigationHandler(delegate, webContents);
+                if (mNavigationHandler == null) initNavigationHandler();
+                mNavigationHandler.setTab(isDetached(mTab) ? null : mTab);
             }
         }
         if (mTab != null) SwipeRefreshHandler.from(mTab).setNavigationCoordinator(this);
@@ -251,38 +197,14 @@ public class HistoryNavigationCoordinator
 
     /**
      * Initialize {@link NavigationHandler} object.
-     * @param delegate {@link HistoryNavigationDelegate} providing info and a factory method.
-     * @param webContents A new WebContents object.
      */
-    private void initNavigationHandler(
-            HistoryNavigationDelegate delegate, WebContents webContents) {
-        if (mNavigationHandler == null) {
-            PropertyModel model =
-                    new PropertyModel.Builder(GestureNavigationProperties.ALL_KEYS).build();
-
-            PropertyModelChangeProcessor.create(
-                    model, mNavigationLayout, GestureNavigationViewBinder::bind);
-
-            mNavigationHandler = new NavigationHandler(model, mNavigationLayout, this::isNativePage,
-                    () -> mNavigationSheet.isExpanded());
-            mInitRunnable.run();
-        }
-        if (mDelegate != delegate) {
-            mNavigationHandler.setDelegate(delegate);
-            mDelegate = delegate;
-
-            Profile profile = webContents != null ? Profile.fromWebContents(webContents)
-                                                  : Profile.getLastUsedRegularProfile();
-            mNavigationSheet = NavigationSheet.isEnabled()
-                    ? NavigationSheet.create(mNavigationLayout, mNavigationLayout.getContext(),
-                            mDelegate.getBottomSheetController(), profile)
-                    : NavigationSheet.DUMMY;
-            mNavigationSheet.setDelegate(mDelegate.createSheetDelegate());
-        }
-    }
-
-    private NavigationSheet getNavigationSheet() {
-        return mNavigationSheet;
+    private void initNavigationHandler() {
+        PropertyModel model =
+                new PropertyModel.Builder(GestureNavigationProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(
+                model, mNavigationLayout, GestureNavigationViewBinder::bind);
+        mNavigationHandler = new NavigationHandler(model, mNavigationLayout, mBackActionDelegate);
+        mInitRunnable.run();
     }
 
     @Override
@@ -361,9 +283,8 @@ public class HistoryNavigationCoordinator
             mOverscrollGlowOverlay.destroy();
             mOverscrollGlowOverlay = null;
         }
-        mDelegate = HistoryNavigationDelegate.DEFAULT;
         if (mNavigationHandler != null) {
-            mNavigationHandler.setDelegate(mDelegate);
+            mNavigationHandler.setTab(null);
             mNavigationHandler.destroy();
             mNavigationHandler = null;
         }

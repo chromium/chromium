@@ -174,7 +174,7 @@ public class AppMenuAdapterRenderTest extends DummyUiActivityTestCase {
         MenuItem item = buildIconRow(1, 2, TITLE_1, icon1, 3, TITLE_2, icon2, 4, TITLE_3, icon3, 0,
                 "", null, 0, "", null, enabled);
 
-        mRenderTestRule.render(createView(item, false), "iconrow_three_icons");
+        mRenderTestRule.render(createView(item, false), "tinted_iconrow_three_icons");
     }
 
     @Test
@@ -193,7 +193,7 @@ public class AppMenuAdapterRenderTest extends DummyUiActivityTestCase {
         MenuItem item = buildIconRow(1, 2, TITLE_1, icon1, 3, TITLE_2, icon2, 4, TITLE_3, icon3, 5,
                 TITLE_4, icon4, 0, "", null, true);
 
-        mRenderTestRule.render(createView(item, false), "iconrow_four_icons");
+        mRenderTestRule.render(createView(item, false), "tinted_iconrow_four_icons");
     }
 
     @Test
@@ -214,7 +214,7 @@ public class AppMenuAdapterRenderTest extends DummyUiActivityTestCase {
         MenuItem item = buildIconRow(1, 2, TITLE_1, icon1, 3, TITLE_2, icon2, 4, TITLE_3, icon3, 5,
                 TITLE_4, icon4, 6, TITLE_5, icon5, true);
 
-        mRenderTestRule.render(createView(item, false), "iconrow_five_icons");
+        mRenderTestRule.render(createView(item, false), "tinted_iconrow_five_icons");
     }
 
     private void setRenderTestPrefix(boolean enabled) {

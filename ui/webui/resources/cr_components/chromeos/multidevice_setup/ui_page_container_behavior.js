@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+// clang-format on
+
 /** @polymerBehavior */
 const UiPageContainerBehaviorImpl = {
   properties: {
@@ -45,7 +49,7 @@ const UiPageContainerBehaviorImpl = {
 };
 
 /** @polymerBehavior */
-const UiPageContainerBehavior = [
+/* #export */ const UiPageContainerBehavior = [
   I18nBehavior,
   UiPageContainerBehaviorImpl,
 ];

@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Tests for shared Polymer components. */
+/**
+ * @fileoverview Polymer2 tests for components shared with OOBE. All Chrome OS
+ * WebUI elements have been converted to Polymer3 except for OOBE, which uses a
+ * polyfill for HTML imports.
+ *
+ * All remaining elements are tested on "chrome://oobe/login".
+ */
 
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 // Polymer 2 test list format:
@@ -15,97 +22,51 @@ GEN('#include "content/public/test/browser_test.h"');
 //   [<module.js dependency source list>]
 // ]
 // clang-format off
-[
-  ['CrPolicyNetworkBehaviorMojo', 'network/cr_policy_network_behavior_mojo_tests.js',
-    ['../../cr_elements/cr_policy_strings.js']
-  ],
-  ['CrPolicyNetworkIndicatorMojo', 'network/cr_policy_network_indicator_mojo_tests.js',
-    ['../../cr_elements/cr_policy_strings.js']
-  ],
-  ['NetworkApnlist', 'network/network_apnlist_test.js', []],
-  ['NetworkChooseMobile', 'network/network_choose_mobile_test.js', []],
-  ['NetworkConfig', 'network/network_config_test.js',
-    [
-      '//ui/webui/resources/js/assert.js',
-      '//ui/webui/resources/js/promise_resolver.js',
-      '../../fake_chrome_event.js',
-      '../../chromeos/networking_private_constants.js',
-      '../../chromeos/fake_network_config_mojom.js',
-    ]
-  ],
-  ['NetworkConfigElementBehavior', 'network/network_config_element_behavior_test.js', []],
-  ['NetworkConfigInput', 'network/network_config_input_test.js', []],
-  ['NetworkConfigSelect', 'network/network_config_select_test.js', []],
-  ['NetworkConfigToggle', 'network/network_config_toggle_test.js', []],
-  ['NetworkIpConfig', 'network/network_ip_config_test.js', []],
-  ['NetworkList', 'network/network_list_test.js', []],
-  ['NetworkListItem', 'network/network_list_item_test.js',
-    [
-      '//ui/webui/resources/js/assert.js',
-      '//ui/webui/resources/js/promise_resolver.js',
-      '../../chromeos/fake_network_config_mojom.js',
-    ]
-  ],
-  ['NetworkNameservers', 'network/network_nameservers_test.js', []],
-  ['NetworkPasswordInput', 'network/network_password_input_test.js', []],
-  ['NetworkPropertyListMojo', 'network/network_property_list_mojo_test.js', []],
-  ['NetworkProxyExclusions', 'network/network_proxy_exclusions_test.js', []],
-  ['NetworkProxyInput', 'network/network_proxy_input_test.js', []],
-  ['NetworkProxy', 'network/network_proxy_test.js', []],
-  ['NetworkSiminfo', 'network/network_siminfo_test.js', []],
-].forEach(test => registerTest('NetworkComponents', 'os-settings', ...test));
 
 [
   ['NetworkSelect', 'network/network_select_test.js', []],
-].forEach(test => registerTest('NetworkComponents', 'network', ...test));
+].forEach(test => registerTest('NetworkComponents', ...test));
 
 [
-  ['RoutineGroup', 'network_health/routine_group_test.js', []],
-].forEach(test => registerTest('NetworkHealth', 'network', ...test));
+  ['Integration', 'multidevice_setup/integration_test.js', [
+    '../../test_browser_proxy.js',
+    '../../fake_chrome_event.js',  // Necessary for
+                                // fake_quick_unlock_private.js
+    '../../settings/chromeos/fake_quick_unlock_private.js',
+    '../../test_util.js',
+    'multidevice_setup/setup_succeeded_page_test.js',
+  ]],
+  ['SetupSucceededPage', 'multidevice_setup/setup_succeeded_page_test.js', [
+    '../../test_browser_proxy.js',
+  ]],
+  ['StartSetupPage', 'multidevice_setup/start_setup_page_test.js', [
+    '../../test_browser_proxy.js',
+    '../../test_util.js',
+  ]],
+].forEach(test => registerTest('MultiDeviceSetup', ...test));
 
-[
-  ['ActivationCodePage', 'cellular_setup/activation_code_page_test.js',[
-    './cellular_setup/fake_media_devices.js',
-  ]],
-  ['BasePage', 'cellular_setup/base_page_test.js', []],
-  ['ButtonBar', 'cellular_setup/button_bar_test.js',[]],
-  ['CellularSetup', 'cellular_setup/cellular_setup_test.js', [
-    './cellular_setup/fake_cellular_setup_delegate.js',
-  ]],
-  ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.js',[
-    './cellular_setup/fake_cellular_setup_delegate.js',
-    './cellular_setup/fake_esim_manager_remote.js',
-  ]],
-  ['FinalPage', 'cellular_setup/final_page_test.js', [
-    './cellular_setup/fake_cellular_setup_delegate.js',
-  ]],
-  ['ProvisioningPage', 'cellular_setup/provisioning_page_test.js',[
-    './cellular_setup/fake_cellular_setup_delegate.js',
-  ]],
-  ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.js',[
-    './cellular_setup/fake_cellular_setup_delegate.js',
-    './cellular_setup/fake_cellular_setup_remote.js',
-  ]],
-  ['SetupSelectionFlow', 'cellular_setup/setup_selection_flow_test.js',[
-    './cellular_setup/fake_cellular_setup_delegate.js',
-  ]],
-  ['SetupLoadingPage', 'cellular_setup/setup_loading_page_test.js', [
-    './cellular_setup/fake_cellular_setup_delegate.js',
-  ]],
-].forEach(test => registerTest('CellularSetup', 'cellular-setup', ...test));
 // clang-format on
 
-function registerTest(componentName, webuiHost, testName, module, deps) {
+function registerTest(componentName, testName, module, deps) {
   const className = `${componentName}${testName}Test`;
   this[className] = class extends Polymer2DeprecatedTest {
     /** @override */
     get browsePreload() {
-      return `chrome://${webuiHost}/`;
+      return 'chrome://oobe/login';
     }
 
     /** @override */
     get extraLibraries() {
-      return super.extraLibraries.concat(module).concat(deps);
+      return super.extraLibraries.concat(deps).concat(module);
+    }
+
+    /** @override */
+    get featureList() {
+      return {
+        enabled: [
+          'chromeos::features::kUpdatedCellularActivationUi',
+        ],
+      };
     }
   };
 

@@ -6,11 +6,12 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/message_window.h"
@@ -166,7 +167,7 @@ void ClipboardWin::InjectClipboardEvent(
     return;
   }
 
-  base::string16 text = base::UTF8ToUTF16(ReplaceLfByCrLf(event.data()));
+  std::u16string text = base::UTF8ToUTF16(ReplaceLfByCrLf(event.data()));
 
   ScopedClipboard clipboard;
   if (!clipboard.Init(window_->hwnd())) {
@@ -196,7 +197,7 @@ void ClipboardWin::OnClipboardUpdate() {
   DCHECK(window_);
 
   if (::IsClipboardFormatAvailable(CF_UNICODETEXT)) {
-    base::string16 text;
+    std::wstring text;
     // Add a scope, so that we keep the clipboard open for as short a time as
     // possible.
     {
@@ -223,7 +224,7 @@ void ClipboardWin::OnClipboardUpdate() {
 
     protocol::ClipboardEvent event;
     event.set_mime_type(kMimeTypeTextUtf8);
-    event.set_data(ReplaceCrLfByLf(base::UTF16ToUTF8(text)));
+    event.set_data(ReplaceCrLfByLf(base::WideToUTF8(text)));
 
     if (client_clipboard_.get()) {
       client_clipboard_->InjectClipboardEvent(event);

@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Időzítés hossza</translation>
 <translation id="2050339315714019657">Álló</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktív</translation>
+<translation id="2144806332417375165">Egyedi videóparaméterek</translation>
 <translation id="229579744168541441">Exportálás lemezre</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="2501853267655415902">A felvétel leállt</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Kamera felbontása</translation>
 <translation id="3517926952904427380">Nem sikerült álló fényképet készíteni</translation>
 <translation id="3569311554794739032">Biztosan eltávolítja a következő fájlt: <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">A kamerát egy másik alkalmazás használja</translation>
 <translation id="3810838688059735925">Videó</translation>
 <translation id="3838931309141338733">Vonalkód beolvasása</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
@@ -76,10 +76,12 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="7337660886763914220">Fájlrendszerbeli hibák.</translation>
 <translation id="7450541714075000668">Szöveg vágólapra másolva</translation>
 <translation id="7557677699350329807">Váltás a következő kamerára</translation>
+<translation id="7607002721634913082">Szünet</translation>
 <translation id="7608223098072244877">Négyszer négyes</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Pásztázás-billentés-nagyítás beállításainak megjelenítése</translation>
 <translation id="7983668134180549431">Szöveg észlelve.</translation>
 <translation id="8067883171444229417">Videó lejátszása</translation>
 <translation id="8131740175452115882">Megerősítés</translation>

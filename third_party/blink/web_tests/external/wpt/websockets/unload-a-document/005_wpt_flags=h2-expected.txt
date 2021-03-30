@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: navigating nested browsing context with a websocket in top-level assert_unreached: Got unexpected event error Reached unreachable code
+Harness: the test ran to completion.
+

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests public interface of WebInspector Extensions API\n`);
-  await TestRunner.loadModule('extensions_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
 
   await ExtensionsTestRunner.runExtensionTests([
     function extension_testAPI(nextTest) {

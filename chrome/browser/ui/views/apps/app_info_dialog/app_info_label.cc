@@ -5,15 +5,16 @@
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_label.h"
 
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
-AppInfoLabel::AppInfoLabel(const base::string16& text)
+AppInfoLabel::AppInfoLabel(const std::u16string& text)
     : AppInfoLabel(text,
                    views::style::CONTEXT_LABEL,
                    views::style::STYLE_PRIMARY) {}
 
 AppInfoLabel::~AppInfoLabel() = default;
 
-AppInfoLabel::AppInfoLabel(const base::string16& text,
+AppInfoLabel::AppInfoLabel(const std::u16string& text,
                            int text_context,
                            int text_style,
                            gfx::DirectionalityMode directionality_mode)
@@ -25,3 +26,6 @@ AppInfoLabel::AppInfoLabel(const base::string16& text,
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   views::FocusRing::Install(this);
 }
+
+BEGIN_METADATA(AppInfoLabel, views::Label)
+END_METADATA

@@ -141,12 +141,8 @@ class MarginInfo {
   void SetDeterminedMarginBeforeQuirk(bool b) {
     determined_margin_before_quirk_ = b;
   }
-  void SetPositiveMargin(LayoutUnit p) {
-    positive_margin_ = p;
-  }
-  void SetNegativeMargin(LayoutUnit n) {
-    negative_margin_ = n;
-  }
+  void SetPositiveMargin(LayoutUnit p) { positive_margin_ = p; }
+  void SetNegativeMargin(LayoutUnit n) { negative_margin_ = n; }
   void SetPositiveMarginIfLarger(LayoutUnit p) {
     if (p > positive_margin_)
       positive_margin_ = p;
@@ -2485,8 +2481,18 @@ void LayoutBlockFlow::AbsoluteQuads(Vector<FloatQuad>& quads,
   LayoutBoxModelObject::AbsoluteQuads(quads, mode);
 }
 
+void LayoutBlockFlow::LocalQuadsForSelf(Vector<FloatQuad>& quads) const {
+  return QuadsForSelfInternal(quads, 0, false);
+}
+
 void LayoutBlockFlow::AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
                                            MapCoordinatesFlags mode) const {
+  return QuadsForSelfInternal(quads, mode, true);
+}
+
+void LayoutBlockFlow::QuadsForSelfInternal(Vector<FloatQuad>& quads,
+                                           MapCoordinatesFlags mode,
+                                           bool map_to_absolute) const {
   NOT_DESTROYED();
   // For blocks inside inlines, we go ahead and include margins so that we run
   // right up to the inline boxes above and below us (thus getting merged with
@@ -2495,7 +2501,10 @@ void LayoutBlockFlow::AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
   // https://bugs.webkit.org/show_bug.cgi?id=46781
   PhysicalRect local_rect = PhysicalBorderBoxRect();
   local_rect.Expand(CollapsedMarginBoxLogicalOutsets());
-  quads.push_back(LocalRectToAbsoluteQuad(local_rect, mode));
+  if (map_to_absolute)
+    quads.push_back(LocalRectToAbsoluteQuad(local_rect, mode));
+  else
+    quads.push_back(FloatQuad(FloatRect(local_rect)));
 }
 
 LayoutObject* LayoutBlockFlow::HoverAncestor() const {
@@ -4600,6 +4609,11 @@ void LayoutBlockFlow::RecalcFloatingDescendantsVisualOverflow(
 PositionWithAffinity LayoutBlockFlow::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+  // NG codepath requires |kPrePaintClean|.
+  // |SelectionModifier| calls this only in legacy codepath.
+  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
+                                    DocumentLifecycle::kPrePaintClean);
+
   if (IsAtomicInlineLevel()) {
     PositionWithAffinity position =
         PositionForPointIfOutsideAtomicInlineLevel(point);

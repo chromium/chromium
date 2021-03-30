@@ -21,7 +21,8 @@ class NET_EXPORT_PRIVATE DnsConfigServiceFuchsia : public DnsConfigService {
 
  protected:
   // DnsConfigService overrides.
-  void ReadNow() override;
+  void ReadConfigNow() override;
+  void ReadHostsNow() override;
   bool StartWatching() override;
 
  private:

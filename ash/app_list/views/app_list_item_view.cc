@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -49,6 +50,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -81,32 +83,6 @@ constexpr float kNotificationIndicatorWidthRatio = 14.0f / 64.0f;
 // The size of the notification indicator circle padding over the size of the
 // icon.
 constexpr float kNotificationIndicatorPaddingRatio = 4.0f / 64.0f;
-
-constexpr SkColor kDefaultIndicatorColor = SK_ColorWHITE;
-
-// Uses the icon image to calculate the light vibrant color to be used for
-// the notification indicator.
-base::Optional<SkColor> CalculateNotificationColor(gfx::ImageSkia image) {
-  const SkBitmap* source = image.bitmap();
-  if (!source || source->empty() || source->isNull())
-    return base::nullopt;
-
-  std::vector<color_utils::ColorProfile> color_profiles;
-  color_profiles.push_back(color_utils::ColorProfile(
-      color_utils::LumaRange::LIGHT, color_utils::SaturationRange::VIBRANT));
-
-  std::vector<color_utils::Swatch> best_swatches =
-      color_utils::CalculateProminentColorsOfBitmap(
-          *source, color_profiles, nullptr /* bitmap region */,
-          color_utils::ColorSwatchFilter());
-
-  // If the best swatch color is transparent, then
-  // CalculateProminentColorsOfBitmap() failed to find a suitable color.
-  if (best_swatches.empty() || best_swatches[0].color == SK_ColorTRANSPARENT)
-    return base::nullopt;
-
-  return best_swatches[0].color;
-}
 
 // The class clips the provided folder icon image.
 class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
@@ -180,8 +156,6 @@ class AppListItemView::AppNotificationIndicatorView : public views::View {
     indicator_color_ = new_color;
     SchedulePaint();
   }
-
-  SkColor GetColorForTest() { return indicator_color_; }
 
  private:
   const gfx::ShadowValues shadow_values_;
@@ -281,9 +255,6 @@ class AppListItemView::IconImageView : public views::ImageView {
   DISALLOW_COPY_AND_ASSIGN(IconImageView);
 };
 
-// static
-const char AppListItemView::kViewClassName[] = "ui/app_list/AppListItemView";
-
 AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
                                  AppListItem* item,
                                  AppListViewDelegate* delegate,
@@ -318,8 +289,9 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
   }
 
   if (is_notification_indicator_enabled_ && !is_folder_) {
-    notification_indicator_ = AddChildView(
-        std::make_unique<AppNotificationIndicatorView>(kDefaultIndicatorColor));
+    notification_indicator_ =
+        AddChildView(std::make_unique<AppNotificationIndicatorView>(
+            item->notification_badge_color()));
     notification_indicator_->SetPaintToLayer();
     notification_indicator_->layer()->SetFillsBoundsOpaquely(false);
     notification_indicator_->SetVisible(item->has_notification_badge());
@@ -364,13 +336,6 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
       icon, skia::ImageOperations::RESIZE_BEST, icon_bounds);
   icon_->SetImage(resized);
 
-  if (is_notification_indicator_enabled_ && notification_indicator_) {
-    base::Optional<SkColor> notification_color =
-        CalculateNotificationColor(icon_image_);
-    notification_indicator_->SetColor(
-        notification_color.value_or(kDefaultIndicatorColor));
-  }
-
   Layout();
 }
 
@@ -388,6 +353,8 @@ void AppListItemView::RefreshIcon() {
 }
 
 void AppListItemView::ScaleIconImmediatly(float scale_factor) {
+  if (icon_scale_ == scale_factor)
+    return;
   icon_scale_ = scale_factor;
   SetIcon(icon_image_);
   layer()->SetTransform(gfx::Transform());
@@ -400,25 +367,15 @@ void AppListItemView::SetUIState(UIState ui_state) {
   switch (ui_state) {
     case UI_STATE_NORMAL:
       title_->SetVisible(true);
-      if (ui_state_ == UI_STATE_DRAGGING) {
+      if (ui_state_ == UI_STATE_DRAGGING)
         ScaleAppIcon(false);
-      } else if (ui_state_ == UI_STATE_CARDIFY) {
-        title_->SetFontList(GetAppListConfig().app_title_font());
-        ScaleIconImmediatly(1.0f);
-      }
       break;
     case UI_STATE_DRAGGING:
       title_->SetVisible(false);
-      if (ui_state_ == UI_STATE_NORMAL)
+      if (ui_state_ == UI_STATE_NORMAL && !in_cardified_grid_)
         ScaleAppIcon(true);
       break;
     case UI_STATE_DROPPING_IN_FOLDER:
-      break;
-    case UI_STATE_CARDIFY:
-      gfx::FontList font_size = GetAppListConfig().app_title_font();
-      const int size_delta = font_size.GetFontSize() * (1 - kCardifyIconScale);
-      title_->SetFontList(font_size.DeriveWithSizeDelta(-size_delta));
-      ScaleIconImmediatly(kCardifyIconScale);
       break;
   }
   ui_state_ = ui_state;
@@ -486,7 +443,7 @@ void AppListItemView::SetTouchDragging(bool touch_dragging) {
 
   // EndDrag may delete |this|.
   if (!touch_dragging)
-    apps_grid_view_->EndDrag(false);
+    apps_grid_view_->EndDrag(/*cancel=*/false);
 }
 
 void AppListItemView::SetMouseDragging(bool mouse_dragging) {
@@ -546,9 +503,9 @@ const AppListConfig& AppListItemView::GetAppListConfig() const {
   return apps_grid_view_->GetAppListConfig();
 }
 
-void AppListItemView::SetItemName(const base::string16& display_name,
-                                  const base::string16& full_name) {
-  const base::string16 folder_name_placeholder =
+void AppListItemView::SetItemName(const std::u16string& display_name,
+                                  const std::u16string& full_name) {
+  const std::u16string folder_name_placeholder =
       ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
           IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
   if (is_folder_ && display_name.empty())
@@ -556,7 +513,7 @@ void AppListItemView::SetItemName(const base::string16& display_name,
   else
     title_->SetText(display_name);
 
-  tooltip_text_ = display_name == full_name ? base::string16() : full_name;
+  tooltip_text_ = display_name == full_name ? std::u16string() : full_name;
 
   // Use full name for accessibility.
   SetAccessibleName(
@@ -680,16 +637,19 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     if (delegate_->KeyboardTraversalEngaged()) {
-      flags.setColor(
-          apps_grid_view_->is_in_folder()
-              ? AppListColorProvider::Get()->GetFolderItemFocusRingColor()
-              : AppListColorProvider::Get()->GetFocusRingColor());
+      flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kFocusRingWidth);
     } else {
-      // If a context menu is open, we should instead use a grey selection.
-      flags.setColor(AppListColorProvider::Get()->GetContextMenuHighlightColor(
-          apps_grid_view_->is_in_folder()));
+      const AppListColorProvider* color_provider = AppListColorProvider::Get();
+      const SkColor bg_color = apps_grid_view_->is_in_folder()
+                                   ? color_provider->GetFolderBackgroundColor(
+                                         apps_grid_view_->GetAppListConfig()
+                                             .folder_background_color())
+                                   : gfx::kPlaceholderColor;
+      flags.setColor(SkColorSetA(
+          color_provider->GetRippleAttributesBaseColor(bg_color),
+          color_provider->GetRippleAttributesHighlightOpacity(bg_color) * 255));
       flags.setStyle(cc::PaintFlags::kFill_Style);
     }
     gfx::Rect selection_highlight_bounds = GetContentsBounds();
@@ -727,10 +687,6 @@ bool AppListItemView::OnMousePressed(const ui::MouseEvent& event) {
         this, &AppListItemView::OnMouseDragTimer);
   }
   return true;
-}
-
-const char* AppListItemView::GetClassName() const {
-  return kViewClassName;
 }
 
 void AppListItemView::Layout() {
@@ -890,14 +846,21 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
     Button::OnGestureEvent(event);
 }
 
-base::string16 AppListItemView::GetTooltipText(const gfx::Point& p) const {
+void AppListItemView::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  title_->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
+      apps_grid_view_->is_in_folder()));
+  SchedulePaint();
+}
+
+std::u16string AppListItemView::GetTooltipText(const gfx::Point& p) const {
   // Use the label to generate a tooltip, so that it will consider its text
   // truncation in making the tooltip. We do not want the label itself to have a
   // tooltip, so we only temporarily enable it to get the tooltip text from the
   // label, then disable it again.
   title_->SetHandlesTooltips(true);
   title_->SetTooltipText(tooltip_text_);
-  base::string16 tooltip = title_->GetTooltipText(p);
+  std::u16string tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
   return tooltip;
 }
@@ -955,10 +918,6 @@ bool AppListItemView::FireTouchDragTimerForTest() {
 
 bool AppListItemView::IsNotificationIndicatorShownForTest() const {
   return notification_indicator_ && notification_indicator_->GetVisible();
-}
-
-SkColor AppListItemView::GetNotificationIndicatorColorForTest() const {
-  return notification_indicator_->GetColorForTest();
 }
 
 void AppListItemView::AnimationProgressed(const gfx::Animation* animation) {
@@ -1026,8 +985,18 @@ void AppListItemView::SetDragUIState() {
   SetUIState(UI_STATE_DRAGGING);
 }
 
-void AppListItemView::SetCardifyUIState() {
-  SetUIState(UI_STATE_CARDIFY);
+void AppListItemView::EnterCardifyState() {
+  in_cardified_grid_ = true;
+  gfx::FontList font_size = GetAppListConfig().app_title_font();
+  const int size_delta = font_size.GetFontSize() * (1 - kCardifyIconScale);
+  title_->SetFontList(font_size.DeriveWithSizeDelta(-size_delta));
+  ScaleIconImmediatly(kCardifyIconScale);
+}
+
+void AppListItemView::ExitCardifyState() {
+  title_->SetFontList(GetAppListConfig().app_title_font());
+  ScaleIconImmediatly(1.0f);
+  in_cardified_grid_ = false;
 }
 
 void AppListItemView::SetNormalUIState() {
@@ -1068,10 +1037,9 @@ gfx::Rect AppListItemView::GetTitleBoundsForTargetViewBounds(
 }
 
 void AppListItemView::ItemIconChanged(AppListConfigType config_type) {
-  if (config_type != AppListConfigType::kShared &&
-      config_type != GetAppListConfig().type()) {
+  if (config_type != GetAppListConfig().type())
     return;
-  }
+
   DCHECK(item_weak_);
   SetIcon(item_weak_->GetIcon(GetAppListConfig().type()));
 }
@@ -1084,6 +1052,11 @@ void AppListItemView::ItemNameChanged() {
 void AppListItemView::ItemBadgeVisibilityChanged() {
   if (is_notification_indicator_enabled_ && notification_indicator_ && icon_)
     notification_indicator_->SetVisible(item_weak_->has_notification_badge());
+}
+
+void AppListItemView::ItemBadgeColorChanged() {
+  if (notification_indicator_)
+    notification_indicator_->SetColor(item_weak_->notification_badge_color());
 }
 
 void AppListItemView::ItemBeingDestroyed() {
@@ -1117,5 +1090,8 @@ void AppListItemView::AdaptBoundsForSelectionHighlight(gfx::Rect* bounds) {
   // match the grid focus size set in the app list config.
   bounds->Inset(gfx::Insets(kFocusRingWidth / 2));
 }
+
+BEGIN_METADATA(AppListItemView, views::Button)
+END_METADATA
 
 }  // namespace ash

@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 #include <map>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace tab_groups {
@@ -39,7 +39,7 @@ enum class TabGroupColorId {
   // Next value: 8
 };
 
-using ColorLabelMap = base::flat_map<TabGroupColorId, base::string16>;
+using ColorLabelMap = base::flat_map<TabGroupColorId, std::u16string>;
 
 // Returns a map of TabGroupColorIds to their string labels.
 // When reading color IDs from disk, always verify against the keys in this

@@ -27,6 +27,7 @@ source_set("bluetooth") {
     "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//content/public/browser",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 

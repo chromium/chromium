@@ -94,7 +94,7 @@ void UrlIndex::SetUrl(BookmarkNode* node, const GURL& url) {
   AddImpl(node);
 }
 
-void UrlIndex::SetTitle(BookmarkNode* node, const base::string16& title) {
+void UrlIndex::SetTitle(BookmarkNode* node, const std::u16string& title) {
   // Acquiring the lock is necessary to avoid races with
   // UrlIndex::GetBookmarks().
   base::AutoLock url_lock(url_lock_);

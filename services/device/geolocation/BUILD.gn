@@ -82,12 +82,13 @@ source_set("geolocation") {
   }
 
   if (is_mac) {
-    frameworks = [ "CoreLocation.framework" ]
+    frameworks = [
+      "CoreLocation.framework",
+      "Security.framework",
+    ]
     sources += [
       "core_location_provider.h",
       "core_location_provider.mm",
-      "mac_location_permission_delegate.h",
-      "mac_location_permission_delegate.mm",
     ]
   }
 
@@ -161,11 +162,10 @@ if (is_android) {
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_location_java",
       "//base:base_java",
-      "//base:jni_java",
       "//components/location/android:location_java",
       "//services/device/public/java:geolocation_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }

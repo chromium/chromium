@@ -73,7 +73,7 @@ struct ContextualSearchContext {
   void SetBasePageUrl(const GURL& base_page_url);
 
   // Gets the encoding of the base page.  This is not very important, since
-  // the surrounding text stored here in a base::string16 is implicitly encoded
+  // the surrounding text stored here in a std::u16string is implicitly encoded
   // in UTF-16 (see http://www.chromium.org/developers/chromium-string-usage).
   const std::string GetBasePageEncoding() const;
   void SetBasePageEncoding(const std::string& base_page_encoding);
@@ -84,10 +84,10 @@ struct ContextualSearchContext {
   // Sets the selection and surroundings.
   void SetSelectionSurroundings(int start_offset,
                                 int end_offset,
-                                const base::string16& surrounding_text);
+                                const std::u16string& surrounding_text);
 
   // Gets the text surrounding the selection (including the selection).
-  const base::string16 GetSurroundingText() const;
+  const std::u16string GetSurroundingText() const;
 
   // Gets the start offset of the selection within the surrounding text (in
   // characters).
@@ -148,17 +148,17 @@ struct ContextualSearchContext {
  private:
   // Gets the reliable language of the given |contents| using CLD, or an empty
   // string if none can reliably be determined.
-  std::string GetReliableLanguage(const base::string16& contents) const;
+  std::string GetReliableLanguage(const std::u16string& contents) const;
 
   // Gets the selection, or an empty string if none.
-  base::string16 GetSelection() const;
+  std::u16string GetSelection() const;
 
   bool can_resolve_ = false;
   bool can_send_base_page_url_ = false;
   std::string home_country_;
   GURL base_page_url_;
   std::string base_page_encoding_;
-  base::string16 surrounding_text_;
+  std::u16string surrounding_text_;
   int start_offset_ = 0;
   int end_offset_ = 0;
   int64_t previous_event_id_ = 0L;

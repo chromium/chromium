@@ -52,7 +52,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
     // This implements the "get a copy of the bytes held by the buffer source"
     // algorithm (https://heycam.github.io/webidl/#dfn-get-buffer-source-copy).
     if (bufferSource.IsArrayBufferView()) {
-      const auto* view = bufferSource.GetAsArrayBufferView().View();
+      const auto* view = bufferSource.GetAsArrayBufferView().Get();
       const char* start = static_cast<const char*>(view->BaseAddress());
       size_t length = view->byteLength();
       if (length > std::numeric_limits<uint32_t>::max()) {

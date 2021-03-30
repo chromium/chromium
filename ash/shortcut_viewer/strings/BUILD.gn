@@ -2,65 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 
 grit("strings") {
   source = "../shortcut_viewer_strings.grd"
-  outputs = [
-    "grit/shortcut_viewer_strings.h",
-    "shortcut_viewer_strings_am.pak",
-    "shortcut_viewer_strings_ar.pak",
-    "shortcut_viewer_strings_bg.pak",
-    "shortcut_viewer_strings_bn.pak",
-    "shortcut_viewer_strings_ca.pak",
-    "shortcut_viewer_strings_cs.pak",
-    "shortcut_viewer_strings_da.pak",
-    "shortcut_viewer_strings_de.pak",
-    "shortcut_viewer_strings_el.pak",
-    "shortcut_viewer_strings_en-GB.pak",
-    "shortcut_viewer_strings_en-US.pak",
-    "shortcut_viewer_strings_es-419.pak",
-    "shortcut_viewer_strings_es.pak",
-    "shortcut_viewer_strings_et.pak",
-    "shortcut_viewer_strings_fake-bidi.pak",
-    "shortcut_viewer_strings_fa.pak",
-    "shortcut_viewer_strings_fil.pak",
-    "shortcut_viewer_strings_fi.pak",
-    "shortcut_viewer_strings_fr.pak",
-    "shortcut_viewer_strings_gu.pak",
-    "shortcut_viewer_strings_he.pak",
-    "shortcut_viewer_strings_hi.pak",
-    "shortcut_viewer_strings_hr.pak",
-    "shortcut_viewer_strings_hu.pak",
-    "shortcut_viewer_strings_id.pak",
-    "shortcut_viewer_strings_it.pak",
-    "shortcut_viewer_strings_ja.pak",
-    "shortcut_viewer_strings_kn.pak",
-    "shortcut_viewer_strings_ko.pak",
-    "shortcut_viewer_strings_lt.pak",
-    "shortcut_viewer_strings_lv.pak",
-    "shortcut_viewer_strings_ml.pak",
-    "shortcut_viewer_strings_mr.pak",
-    "shortcut_viewer_strings_ms.pak",
-    "shortcut_viewer_strings_nb.pak",
-    "shortcut_viewer_strings_nl.pak",
-    "shortcut_viewer_strings_pl.pak",
-    "shortcut_viewer_strings_pt-BR.pak",
-    "shortcut_viewer_strings_pt-PT.pak",
-    "shortcut_viewer_strings_ro.pak",
-    "shortcut_viewer_strings_ru.pak",
-    "shortcut_viewer_strings_sk.pak",
-    "shortcut_viewer_strings_sl.pak",
-    "shortcut_viewer_strings_sr.pak",
-    "shortcut_viewer_strings_sv.pak",
-    "shortcut_viewer_strings_sw.pak",
-    "shortcut_viewer_strings_ta.pak",
-    "shortcut_viewer_strings_te.pak",
-    "shortcut_viewer_strings_th.pak",
-    "shortcut_viewer_strings_tr.pak",
-    "shortcut_viewer_strings_uk.pak",
-    "shortcut_viewer_strings_vi.pak",
-    "shortcut_viewer_strings_zh-CN.pak",
-    "shortcut_viewer_strings_zh-TW.pak",
-  ]
+  outputs = [ "grit/shortcut_viewer_strings.h" ] +
+            process_file_template(
+                locales_with_pseudolocales,
+                [ "shortcut_viewer_strings_{{source_name_part}}.pak" ])
 }

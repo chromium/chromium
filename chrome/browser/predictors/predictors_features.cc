@@ -5,6 +5,7 @@
 #include "chrome/browser/predictors/predictors_features.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace features {
 
@@ -32,15 +33,31 @@ const base::Feature kLoadingPredictorDisregardAlwaysAccessesNetwork{
     "LoadingPredictorDisregardAlwaysAccessesNetwork",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::FeatureState
+    kLoadingPredictorUseOptimizationGuideDefaultFeatureState =
+#if defined(OS_ANDROID)
+        base::FEATURE_ENABLED_BY_DEFAULT;
+#else   // !defined(OS_ANDROID)
+        base::FEATURE_DISABLED_BY_DEFAULT;
+#endif  // defined(OS_ANDROID)
+
 // Modifies loading predictor so that it can also use predictions coming from
 // the optimization guide.
 const base::Feature kLoadingPredictorUseOptimizationGuide{
-    "LoadingPredictorUseOptimizationGuide", base::FEATURE_DISABLED_BY_DEFAULT};
+    "LoadingPredictorUseOptimizationGuide",
+    kLoadingPredictorUseOptimizationGuideDefaultFeatureState};
+
+const base::FeatureState kLoadingPredictorPrefetchDefaultFeatureState =
+#if defined(OS_ANDROID)
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#else   // !defined(OS_ANDROID)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#endif  // defined(OS_ANDROID)
 
 // Modifies loading predictor so that it does prefetches of subresources instead
 // of preconnects.
 const base::Feature kLoadingPredictorPrefetch{
-    "LoadingPredictorPrefetch", base::FEATURE_DISABLED_BY_DEFAULT};
+    "LoadingPredictorPrefetch", kLoadingPredictorPrefetchDefaultFeatureState};
 
 const base::FeatureParam<PrefetchSubresourceType>::Option
     kPrefetchSubresourceTypeParamOptions[] = {

@@ -103,7 +103,9 @@ class VideoCaptureClientTest : public ::testing::Test,
     // Expects to return the buffer after the frame is consumed.
     EXPECT_CALL(*host_impl_, ReleaseBuffer(_, 0, kFeedback))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    client_->OnBufferReady(buffer_id, GetVideoFrameInfo(frame_size));
+    client_->OnBufferReady(media::mojom::ReadyBuffer::New(
+                               buffer_id, GetVideoFrameInfo(frame_size)),
+                           {});
     run_loop.Run();
     task_environment_.RunUntilIdle();
   }

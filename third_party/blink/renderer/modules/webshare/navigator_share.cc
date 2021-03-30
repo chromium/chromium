@@ -7,9 +7,10 @@
 #include <stdint.h>
 #include <utility>
 
+#include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_share_data.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -32,6 +33,14 @@ namespace {
 
 constexpr size_t kMaxSharedFileCount = 10;
 constexpr uint32_t kMaxSharedFileBytes = 50U * 1024 * 1024;
+
+constexpr uint32_t kMaxTitleLength = 16U * 1024;
+#if defined(OS_ANDROID)
+constexpr uint32_t kMaxTextLength = 120U * 1024;
+#else
+constexpr uint32_t kMaxTextLength = 1U * 1024 * 1024;
+#endif
+constexpr uint32_t kMaxUrlLength = 16U * 1024;
 
 // Gets the human-friendly error message for a ShareError. |error| must not be
 // ShareError::OK.
@@ -211,10 +220,10 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   ExecutionContext* const execution_context =
       ExecutionContext::From(script_state);
 
-  // The feature policy is currently not enforced.
+  // The permissions policy is currently not enforced.
   LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
   window->CountUse(execution_context->IsFeatureEnabled(
-                       mojom::blink::FeaturePolicyFeature::kWebShare)
+                       mojom::blink::PermissionsPolicyFeature::kWebShare)
                        ? WebFeature::kWebSharePolicyAllow
                        : WebFeature::kWebSharePolicyDisallow);
 
@@ -246,6 +255,17 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     service_remote_.set_disconnect_handler(WTF::Bind(
         &NavigatorShare::OnConnectionError, WrapWeakPersistent(this)));
     DCHECK(service_remote_.is_bound());
+  }
+
+  if ((data->hasTitle() && data->title().length() > kMaxTitleLength) ||
+      (data->hasText() && data->text().length() > kMaxTextLength) ||
+      (data->hasUrl() && data->url().length() > kMaxUrlLength)) {
+    execution_context->AddConsoleMessage(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning, "Share too large");
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      "Permission denied");
+    return ScriptPromise();
   }
 
   bool has_files = HasFiles(*data);

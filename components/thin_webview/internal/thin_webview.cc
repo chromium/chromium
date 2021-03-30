@@ -47,6 +47,14 @@ void ThinWebView::Destroy(JNIEnv* env, const JavaParamRef<jobject>& object) {
   delete this;
 }
 
+void ThinWebView::DocumentAvailableInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
+  // Disable browser controls when used for thin webview.
+  web_contents_->GetMainFrame()->UpdateBrowserControlsState(
+      cc::BrowserControlsState::kHidden, cc::BrowserControlsState::kHidden,
+      false);
+}
+
 void ThinWebView::SetWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -65,6 +73,7 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
                                  WebContentsDelegateAndroid* delegate) {
   DCHECK(web_contents);
   web_contents_ = web_contents;
+  Observe(web_contents_);
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
   if (view_android->parent() != window_android_) {
     window_android_->AddChild(view_android);
@@ -77,11 +86,6 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
     web_contents->SetDelegate(delegate);
 
   ThinWebViewInitializer::GetInstance()->AttachTabHelpers(web_contents);
-
-  // Disable browser controls when used for thin webview.
-  web_contents->GetMainFrame()->UpdateBrowserControlsState(
-      cc::BrowserControlsState::kHidden, cc::BrowserControlsState::kHidden,
-      false);
 }
 
 void ThinWebView::SizeChanged(JNIEnv* env,

@@ -19,8 +19,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/mock_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -96,7 +96,7 @@ TEST_P(WebAppUtilsTest, AreWebAppsEnabled) {
   EXPECT_FALSE(AreWebAppsEnabled(lock_screen_profile));
   EXPECT_FALSE(AreWebAppsEnabled(lock_screen_profile->GetPrimaryOTRProfile()));
 
-  using MockUserManager = testing::NiceMock<chromeos::MockUserManager>;
+  using MockUserManager = testing::NiceMock<ash::MockUserManager>;
   {
     auto user_manager = std::make_unique<MockUserManager>();
     user_manager::ScopedUserManager enabler(std::move(user_manager));

@@ -30,6 +30,10 @@ ExceptionOr<ByteArray> InputFile::Read(std::int64_t size) {
   if (!file_.IsValid())
     return Exception::kIo;
 
+  if (size == 0) {
+    return ExceptionOr<ByteArray>(ByteArray());
+  }
+
   char buf[size];
   int num_bytes_read = file_.ReadAtCurrentPos(buf, size);
 

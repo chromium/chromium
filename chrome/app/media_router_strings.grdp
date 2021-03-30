@@ -145,7 +145,7 @@ video files, instead of all files.">
     Soon this option will no longer be supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
   </message>
   <message name="IDS_MEDIA_ROUTER_CAST_TO_MEETING_REMOVED" desc="Used in the Cast dialog to inform the user that starting a presentation from the Cast dialog is not longer supported, and using meet.google.com is the only option.">
-    This option is no longer to supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
+    This option is no longer supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
   </message>
 
   <!-- Cloud Services Dialog -->

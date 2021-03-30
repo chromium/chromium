@@ -16,5 +16,7 @@ PASS Fetch with POST with ReadableStream containing null
 PASS Fetch with POST with ReadableStream containing number
 PASS Fetch with POST with ReadableStream containing ArrayBuffer
 PASS Fetch with POST with ReadableStream containing Blob
+PASS Fetch with POST with text body on 421 response should be retried once on new connection.
+FAIL Fetch with POST with ReadableStream on 421 response should return the response and not retry. promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
 Harness: the test ran to completion.
 

@@ -641,7 +641,7 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   // Handlers for JS functions.
   static void DeleteAutocompleteMatch(int line);
   static void Paste(const std::string& text);
-  static void QueryAutocomplete(const base::string16& input,
+  static void QueryAutocomplete(const std::u16string& input,
                                 bool prevent_inline_autocomplete);
   static void StopAutocomplete(bool clear_result);
   static void LogCharTypedToRepaintLatency(uint32_t latency_ms);
@@ -757,7 +757,7 @@ void SearchBoxBindings::Paste(const std::string& text) {
 }
 
 // static
-void SearchBoxBindings::QueryAutocomplete(const base::string16& input,
+void SearchBoxBindings::QueryAutocomplete(const std::u16string& input,
                                           bool prevent_inline_autocomplete) {
   SearchBox* search_box = GetSearchBoxForCurrentContext();
   if (!search_box)
@@ -941,9 +941,16 @@ gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
                  &NewTabPageBindings::SetCustomBackgroundInfo)
       .SetMethod("selectLocalBackgroundImage",
                  &NewTabPageBindings::SelectLocalBackgroundImage)
+      // These methods have been renamed to match BlocklistSearchSuggestion*
+      // below, but are kept until JavaScript calls can be migrated.
+      // TODO: Remove the following two additions per guidance in b/179534247
       .SetMethod("blacklistSearchSuggestion",
                  &NewTabPageBindings::BlocklistSearchSuggestion)
       .SetMethod("blacklistSearchSuggestionWithHash",
+                 &NewTabPageBindings::BlocklistSearchSuggestionWithHash)
+      .SetMethod("blocklistSearchSuggestion",
+                 &NewTabPageBindings::BlocklistSearchSuggestion)
+      .SetMethod("blocklistSearchSuggestionWithHash",
                  &NewTabPageBindings::BlocklistSearchSuggestionWithHash)
       .SetMethod("searchSuggestionSelected",
                  &NewTabPageBindings::SearchSuggestionSelected)
@@ -1043,8 +1050,7 @@ bool NewTabPageBindings::GetIsCustomLinks() {
 // static
 bool NewTabPageBindings::GetIsUsingMostVisited() {
   const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !(HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)) ||
-                       HasOrigin(GURL(chrome::kChromeSearchLocalNtpUrl)))) {
+  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl))) {
     return false;
   }
 
@@ -1054,8 +1060,7 @@ bool NewTabPageBindings::GetIsUsingMostVisited() {
 // static
 bool NewTabPageBindings::GetAreShortcutsVisible() {
   const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !(HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)) ||
-                       HasOrigin(GURL(chrome::kChromeSearchLocalNtpUrl)))) {
+  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl))) {
     return true;
   }
 
@@ -1134,7 +1139,7 @@ void NewTabPageBindings::UpdateCustomLink(int rid,
 
   // Limit the title to |kMaxCustomLinkTitleLength| characters. If truncated,
   // adds an ellipsis.
-  base::string16 truncated_title =
+  std::u16string truncated_title =
       gfx::TruncateString(base::UTF8ToUTF16(title), kMaxCustomLinkTitleLength,
                           gfx::CHARACTER_BREAK);
 

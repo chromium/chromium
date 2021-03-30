@@ -25,7 +25,7 @@ class TestAppListClient : public AppListClient {
 
   // AppListClient:
   void OnAppListControllerDestroyed() override {}
-  void StartSearch(const base::string16& trimmed_query) override {}
+  void StartSearch(const std::u16string& trimmed_query) override {}
   void OpenSearchResult(const std::string& result_id,
                         int event_flags,
                         AppListLaunchedFrom launched_from,
@@ -60,7 +60,7 @@ class TestAppListClient : public AppListClient {
       const std::string& setting_name,
       const std::map<std::string, int>& values) override {}
   void NotifySearchResultsForLogging(
-      const base::string16& trimmed_query,
+      const std::u16string& trimmed_query,
       const SearchResultIdWithPositionIndices& results,
       int position_index) override {}
   AppListNotifier* GetNotifier() override;

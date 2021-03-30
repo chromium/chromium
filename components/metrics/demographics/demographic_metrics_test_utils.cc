@@ -9,7 +9,7 @@
 #include "base/time/default_tick_clock.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/log_decoder.h"
-#include "components/sync/engine_impl/loopback_server/persistent_unique_client_entity.h"
+#include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 

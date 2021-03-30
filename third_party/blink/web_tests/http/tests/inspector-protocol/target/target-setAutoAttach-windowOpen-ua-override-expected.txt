@@ -1,0 +1,5 @@
+Tests that browser.Target.setAutoAttach() attaches to window.open targets.
+Opened the window
+Attached to window, waitingForDebugger=true
+got: User-Agent: Lynx v0.1
+

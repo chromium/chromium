@@ -41,7 +41,7 @@ static constexpr char kAnswerJsonImage[] = "i";
 static constexpr char kAnswerJsonImageData[] = "d";
 
 void AppendWithSpace(const SuggestionAnswer::TextField* text,
-                     base::string16* output) {
+                     std::u16string* output) {
   if (!text)
     return;
   if (!output->empty() && !text->text().empty())
@@ -209,8 +209,8 @@ bool SuggestionAnswer::ImageLine::Equals(const ImageLine& line) const {
 
 // TODO(jdonnelly): When updating the display of answers in RTL languages,
 // modify this to be consistent.
-base::string16 SuggestionAnswer::ImageLine::AccessibleText() const {
-  base::string16 result;
+std::u16string SuggestionAnswer::ImageLine::AccessibleText() const {
+  std::u16string result;
   for (const TextField& text_field : text_fields_)
     AppendWithSpace(&text_field, &result);
   AppendWithSpace(additional_text(), &result);
@@ -272,7 +272,7 @@ SuggestionAnswer::~SuggestionAnswer() = default;
 
 // static
 bool SuggestionAnswer::ParseAnswer(const base::Value& answer_json,
-                                   const base::string16& answer_type_str,
+                                   const std::u16string& answer_type_str,
                                    SuggestionAnswer* result) {
   DCHECK(answer_json.is_dict());
   int answer_type = 0;

@@ -74,4 +74,10 @@ public interface ActivityLifecycleDispatcher {
 
     /** @return Whether native initialization is complete. */
     boolean isNativeInitializationFinished();
+
+    /**
+     * @return Whether the current activity associated with this dispatcher has been destroyed or is
+     *         in the process of finishing.
+     */
+    boolean isActivityFinishingOrDestroyed();
 }

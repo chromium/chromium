@@ -10,23 +10,39 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
 
 <dom-module id="fingerprint-setup-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="fingerprint_setup.css">
-    <oobe-dialog id="setupFingerprint" role="dialog" for-step="start"
-        has-buttons footer-shrinkable
-        title-key="setupFingerprintScreenTitle"
-        subtitle-key="setupFingerprintScreenDescription"
+    <style include="oobe-dialog-host">
+      #sensorLocationContainer {
+        height: 242px;
+        width: 352px;
+      }
+
+      #sensorLocation {
+        background-image:
+            url(chrome://oobe/fingerprint_scanner_illustration.svg);
+        background-size: 352px 242px;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+    <oobe-adaptive-dialog id="setupFingerprint" role="dialog" for-step="start"
+        footer-shrinkable
         aria-label$="[[i18nDynamic(locale, 'setupFingerprintScreenAriaLabel')]]">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:fingerprint" icon2x="oobe-64:fingerprint">
-      </hd-iron-icon>
-      <div slot="footer" class="flex layout vertical center center-justified">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'setupFingerprintScreenTitle')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'setupFingerprintScreenDescription')]]
+      </p>
+      <iron-icon slot="icon" icon="oobe-32:fingerprint"></iron-icon>
+      <div slot="content" class="flex layout vertical center center-justified">
         <div id="sensorLocationContainer" class="oobe-illustration">
           <template is="dom-if" if="[[shouldUseLottieAnimation_]]">
             <cr-lottie id="scannerLocationLottie"
@@ -37,23 +53,18 @@
             <div id="sensorLocation"></div>
           </template>
         </div>
-        <div id="footer-text" class="content self-stretch" >
-          [[i18nDynamic(locale, 'setupFingerprintScreenFooter')]]
-        </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="skipStart"
             text-key="skipFingerprintSetup"
-            on-click="onSkip_" class="focus-on-show">
+            on-click="onSkipOnStart_" class="focus-on-show">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
-    <oobe-dialog id="startFingerprintEnroll" role="dialog" for-step="progress"
-        has-buttons footer-shrinkable
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="startFingerprintEnroll" role="dialog" for-step="progress"
+        footer-shrinkable
         aria-label$="[[i18nDynamic(locale, 'enrollmentProgressScreenTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:fingerprint" icon2x="oobe-64:fingerprint">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:fingerprint"></iron-icon>
       <h1 slot="title" hidden="[[complete_]]">
         [[i18nDynamic(locale, 'enrollmentProgressScreenTitle')]]
       </h1>
@@ -69,13 +80,13 @@
       <div slot="subtitle" hidden="[[!isProblemOther_(scanResult_)]]">
         [[i18nDynamic(locale, 'setupFingerprintScanTryAgain')]]
       </div>
-      <div slot="footer" class="flex layout vertical center center-justified">
+      <div slot="content" class="flex layout vertical center center-justified">
         <cr-fingerprint-progress-arc id="arc">
         </cr-fingerprint-progress-arc>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="skipProgress"
-            on-click="onSkip_" class="focus-on-show"
+            on-click="onSkipInProgress_" class="focus-on-show"
             text-key="skipFingerprintSetup"
             hidden="[[complete_]]">
         </oobe-text-button>
@@ -91,6 +102,6 @@
             on-click="onDone_" class="focus-on-show" inverse>
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

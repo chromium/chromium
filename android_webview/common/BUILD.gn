@@ -7,8 +7,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 source_set("common") {
   sources = [
-    "android_webview_message_generator.cc",
-    "android_webview_message_generator.h",
     "aw_content_client.cc",
     "aw_content_client.h",
     "aw_descriptors.h",
@@ -29,8 +27,6 @@ source_set("common") {
     "crash_reporter/crash_keys.cc",
     "crash_reporter/crash_keys.h",
     "devtools_instrumentation.h",
-    "render_view_messages.cc",
-    "render_view_messages.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -40,6 +36,7 @@ source_set("common") {
     "//components/cdm/common",
     "//components/crash/core/app",
     "//components/crash/core/common:crash_key",
+    "//components/embedder_support/origin_trials",
     "//components/gwp_asan/common",
     "//components/services/heap_profiling/public/cpp",
     "//components/version_info",
@@ -64,6 +61,7 @@ mojom("mojom") {
 
   sources = [
     "mojom/frame.mojom",
+    "mojom/render_message_filter.mojom",
     "mojom/renderer.mojom",
   ]
 

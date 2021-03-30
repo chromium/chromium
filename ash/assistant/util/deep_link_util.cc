@@ -471,7 +471,7 @@ GURL GetChromeSettingsUrl(const base::Optional<std::string>& page) {
   // chromeos.
   static const std::map<std::string, std::string> kAllowedOsPages = {
       {/*page=*/"googleAssistant", /*os_page=*/"googleAssistant"},
-      {/*page=*/"languages", /*os_page=*/"osLanguages/details"}};
+      {/*page=*/"languages", /*os_page=*/"osLanguages/languages"}};
 
   return page && base::Contains(kAllowedOsPages, page.value())
              ? GURL(kChromeOsSettingsUrl + kAllowedOsPages.at(page.value()))

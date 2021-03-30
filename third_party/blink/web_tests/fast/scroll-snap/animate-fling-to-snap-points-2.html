@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+div {
+  position: absolute;
+}
+#scroller {
+  width: 500px;
+  height: 500px;
+  overflow: scroll;
+  scroll-snap-type: both mandatory;
+  border: solid black 5px;
+}
+#space {
+  width: 2000px;
+  height: 2000px;
+}
+.target {
+  width: 200px;
+  height: 200px;
+  scroll-snap-align: start;
+  background-color: blue;
+}
+</style>
+
+<div id="scroller">
+  <div id="space"></div>
+  <div class="target" style="left: 0px; top: 0px;"></div>
+  <div class="target" style="left: 80px; top: 80px;"></div>
+  <div class="target" style="left: 200px; top: 200px;"></div>
+</div>
+
+<script>
+if (window.internals) {
+  internals.runtimeFlags.implicitRootScrollerEnabled = true;
+  // Jump directly to the snap position.
+  internals.settings.setScrollAnimatorEnabled(false);
+}
+
+var body = document.body;
+var scroller = document.getElementById("scroller");
+var space = document.getElementById("space");
+
+function scrollLeft() {
+  return scroller.scrollLeft;
+}
+
+function MakeUnscrollable() {
+  scroller.removeChild(space);
+}
+function MakeScrollable() {
+  scroller.appendChild(space);
+}
+promise_test (async () => {
+  scroller.scrollTo(0, 0);
+  const scrollPromise = waitForScrollEvent(scroller);
+  await swipe(100, 200, 200, 'upleft', 1000);
+  await scrollPromise;
+  MakeUnscrollable();
+  await waitForAnimationEndTimeBased(scrollLeft);
+  MakeScrollable();
+}, "Should not crash if the scroller becomes unscrollable during fling.");
+
+promise_test (async () => {
+  scroller.scrollTo(0, 0);
+  const scrollPromise = waitForScrollEvent(scroller);
+  await swipe(100, 200, 200, 'upleft', 1000);
+  await scrollPromise;
+  body.removeChild(scroller);
+  await waitForAnimationEndTimeBased(scrollLeft);
+  body.appendChild(scroller);
+}, "Should not crash if the scroller is removed during fling.");
+</script>

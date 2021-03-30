@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
@@ -46,12 +47,13 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
  public:
   // Creates a BookmarkMenuController showing the children of |node| starting
   // at |start_child_index|.
-  BookmarkMenuController(Browser* browser,
-                         content::PageNavigator* page_navigator,
-                         views::Widget* parent,
-                         const bookmarks::BookmarkNode* node,
-                         size_t start_child_index,
-                         bool for_drop);
+  BookmarkMenuController(
+      Browser* browser,
+      base::RepeatingCallback<content::PageNavigator*()> get_navigator,
+      views::Widget* parent,
+      const bookmarks::BookmarkNode* node,
+      size_t start_child_index,
+      bool for_drop);
 
   void RunMenuAt(BookmarkBarView* bookmark_bar);
 
@@ -69,15 +71,12 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   // Returns the context menu, or nullptr if the context menu isn't showing.
   views::MenuItemView* context_menu() const;
 
-  // Sets the page navigator.
-  void SetPageNavigator(content::PageNavigator* navigator);
-
   void set_observer(BookmarkMenuControllerObserver* observer) {
     observer_ = observer;
   }
 
   // views::MenuDelegate:
-  base::string16 GetTooltipText(int id, const gfx::Point& p) const override;
+  std::u16string GetTooltipText(int id, const gfx::Point& p) const override;
   bool IsTriggerableEvent(views::MenuItemView* view,
                           const ui::Event& e) override;
   void ExecuteCommand(int id, int mouse_event_flags) override;
@@ -89,12 +88,13 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   bool AreDropTypesRequired(views::MenuItemView* menu) override;
   bool CanDrop(views::MenuItemView* menu,
                const ui::OSExchangeData& data) override;
-  int GetDropOperation(views::MenuItemView* item,
-                       const ui::DropTargetEvent& event,
-                       DropPosition* position) override;
-  int OnPerformDrop(views::MenuItemView* menu,
-                    DropPosition position,
-                    const ui::DropTargetEvent& event) override;
+  ui::mojom::DragOperation GetDropOperation(views::MenuItemView* item,
+                                            const ui::DropTargetEvent& event,
+                                            DropPosition* position) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      views::MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event) override;
   bool ShowContextMenu(views::MenuItemView* source,
                        int id,
                        const gfx::Point& p,

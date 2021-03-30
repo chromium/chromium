@@ -53,8 +53,8 @@ CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
   CreateGrid(
       /*left=*/static_cast<int>(-data_width * refresh_interval.InSecondsF()),
       /*top=*/100, /*right=*/0, /*bottom=*/0,
-      /*x_unit=*/base::ASCIIToUTF16("s"),
-      /*y_unit=*/base::ASCIIToUTF16("%"),
+      /*x_unit=*/u"s",
+      /*y_unit=*/u"%",
       /*horizontal_points_number=*/data_width,
       /*horizontal_ticks_interval=*/10 / refresh_interval.InSecondsF(),
       vertical_ticks_interval);
@@ -65,18 +65,17 @@ CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
   });
 
   const std::vector<Legend::Entry> legend(
-      {{cpu_idle_, base::ASCIIToUTF16("Idle"),
-        base::ASCIIToUTF16("Total amount of CPU time spent\nin idle mode."),
+      {{cpu_idle_, u"Idle", u"Total amount of CPU time spent\nin idle mode.",
         formatter},
-       {cpu_user_, base::ASCIIToUTF16("User"),
+       {cpu_user_, u"User",
         base::ASCIIToUTF16(
             "Total amount of CPU time spent\n running user processes."),
         formatter},
-       {cpu_system_, base::ASCIIToUTF16("System"),
+       {cpu_system_, u"System",
         base::ASCIIToUTF16(
             "Total amount of CPU time spent\nrunning system processes."),
         formatter},
-       {cpu_other_, base::ASCIIToUTF16("Other"),
+       {cpu_other_, u"Other",
         base::ASCIIToUTF16(
             "Total amount of CPU time spent\nrunning other tasks.\nThis "
             "includes IO wait, IRQ, guest OS, etc."),

@@ -407,10 +407,10 @@ bool FillLayer::ImageTilesLayer() const {
   // TODO(schenney) We could relax the repeat mode requirement if we also knew
   // the rect we had to fill, and the portion of the image we need to use, and
   // know that the latter covers the former.
-  return (static_cast<EFillRepeat>(repeat_x_) == EFillRepeat::kRepeatFill ||
-          static_cast<EFillRepeat>(repeat_x_) == EFillRepeat::kRoundFill) &&
-         (static_cast<EFillRepeat>(repeat_y_) == EFillRepeat::kRepeatFill ||
-          static_cast<EFillRepeat>(repeat_y_) == EFillRepeat::kRoundFill);
+  return (RepeatX() == EFillRepeat::kRepeatFill ||
+          RepeatX() == EFillRepeat::kRoundFill) &&
+         (RepeatY() == EFillRepeat::kRepeatFill ||
+          RepeatY() == EFillRepeat::kRoundFill);
 }
 
 bool FillLayer::ImageOccludesNextLayers(const Document& document,
@@ -424,8 +424,8 @@ bool FillLayer::ImageOccludesNextLayers(const Document& document,
     case kCompositeCopy:
       return ImageTilesLayer();
     case kCompositeSourceOver:
-      return (blend_mode_ == static_cast<unsigned>(BlendMode::kNormal)) &&
-             ImageTilesLayer() && ImageIsOpaque(document, style);
+      return GetBlendMode() == BlendMode::kNormal && ImageTilesLayer() &&
+             ImageIsOpaque(document, style);
     default: {}
   }
 

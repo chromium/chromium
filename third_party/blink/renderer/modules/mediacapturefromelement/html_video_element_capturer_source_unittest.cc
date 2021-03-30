@@ -20,12 +20,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using base::test::RunOnceClosure;
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::SaveArg;
@@ -53,11 +53,14 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   void SetVolume(double) override {}
   void SetLatencyHint(double) override {}
   void SetPreservesPitch(bool) override {}
+  void SetAutoplayInitiated(bool) override {}
   void OnRequestPictureInPicture() override {}
   WebTimeRanges Buffered() const override { return WebTimeRanges(); }
   WebTimeRanges Seekable() const override { return WebTimeRanges(); }
-  void SetSinkId(const WebString& sinkId,
-                 WebSetSinkIdCompleteCallback) override {}
+  bool SetSinkId(const WebString& sinkId,
+                 WebSetSinkIdCompleteCallback) override {
+    return false;
+  }
   bool HasVideo() const override { return true; }
   bool HasAudio() const override { return false; }
   gfx::Size NaturalSize() const override { return size_; }
@@ -82,14 +85,14 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   unsigned CorruptedFrameCount() const override { return 0; }
   uint64_t AudioDecodedByteCount() const override { return 0; }
   uint64_t VideoDecodedByteCount() const override { return 0; }
+  void SetVolumeMultiplier(double multiplier) override {}
+  void SuspendForFrameClosed() override {}
 
   void SetWouldTaintOrigin(bool taint) { would_taint_origin_ = taint; }
 
   void Paint(cc::PaintCanvas* canvas,
-             const WebRect& rect,
-             cc::PaintFlags&,
-             int already_uploaded_id,
-             VideoFrameUploadMetadata* out_metadata) override {
+             const gfx::Rect& rect,
+             cc::PaintFlags&) override {
     return;
   }
 
@@ -129,8 +132,10 @@ class HTMLVideoElementCapturerSourceTest : public testing::TestWithParam<bool> {
   // Necessary callbacks and MOCK_METHODS for them.
   MOCK_METHOD2(DoOnDeliverFrame,
                void(scoped_refptr<media::VideoFrame>, base::TimeTicks));
-  void OnDeliverFrame(scoped_refptr<media::VideoFrame> video_frame,
-                      base::TimeTicks estimated_capture_time) {
+  void OnDeliverFrame(
+      scoped_refptr<media::VideoFrame> video_frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+      base::TimeTicks estimated_capture_time) {
     DoOnDeliverFrame(std::move(video_frame), estimated_capture_time);
   }
 

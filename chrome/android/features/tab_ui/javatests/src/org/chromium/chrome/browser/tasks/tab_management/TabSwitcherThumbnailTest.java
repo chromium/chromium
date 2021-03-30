@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -75,7 +77,7 @@ public class TabSwitcherThumbnailTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS})
+    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/1.0"})
     public void testThumbnailAspectRatio_one() {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
@@ -90,7 +92,7 @@ public class TabSwitcherThumbnailTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.85"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testThumbnailAspectRatio_point85() {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
@@ -105,7 +107,7 @@ public class TabSwitcherThumbnailTest {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        verifyAllThumbnailHeightWithAspectRatio(tabCounts, 1.f);
+        verifyAllThumbnailHeightWithAspectRatio(tabCounts, .85f);
 
         // With soft cleanup.
         TabUiTestHelper.leaveTabSwitcher(mActivityTestRule.getActivity());
@@ -113,7 +115,7 @@ public class TabSwitcherThumbnailTest {
         // There is a chance this will fail without the current changes. Soft cleanup sets the
         // fetcher to null, which triggers TabGridViewBinder#releaseThumbnail. If the view still
         // under measuring, then its height can be zero after measurement.
-        verifyAllThumbnailHeightWithAspectRatio(tabCounts, 1.f);
+        verifyAllThumbnailHeightWithAspectRatio(tabCounts, .85f);
     }
 
     private void verifyAllThumbnailHeightWithAspectRatio(int tabCounts, float ratio) {
@@ -121,7 +123,8 @@ public class TabSwitcherThumbnailTest {
         // There is a higher chance for the test to fail with backward counting, because after the
         // view being recycled, its height might have the correct measurement.
         for (int i = tabCounts - 1; i >= 0; i--) {
-            onView(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view))
+            onView(allOf(withParent(withId(org.chromium.chrome.tab_ui.R.id.compositor_view_holder)),
+                           withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                     .perform(scrollToPosition(i))
                     .check(ThumbnailHeightAssertion.notZeroAt(i))
                     .check(ThumbnailAspectRatioAssertion.havingAspectRatioAt(ratio, i));

@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -80,7 +80,7 @@ PlatformKeysCertificateSelector::~PlatformKeysCertificateSelector() {
 }
 
 void PlatformKeysCertificateSelector::Init() {
-  const base::string16 name = base::ASCIIToUTF16(extension_name_);
+  const std::u16string name = base::ASCIIToUTF16(extension_name_);
 
   auto label = std::make_unique<views::StyledLabel>();
   size_t offset;

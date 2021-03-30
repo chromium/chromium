@@ -43,6 +43,8 @@ constexpr std::array<const char*, 11> kBootEvents{
     "boot_progress_ams_ready",
     "boot_progress_enable_screen"};
 
+constexpr const char kBootProgressArcUpgraded[] = "boot_progress_arc_upgraded";
+
 class ArcMetricsServiceTest : public testing::Test {
  protected:
   ArcMetricsServiceTest() {
@@ -287,6 +289,36 @@ TEST_F(ArcMetricsServiceTest, RecordNothingNonArcWindowFocusAction) {
   tester.ExpectBucketCount(
       "Arc.UserInteraction",
       static_cast<int>(UserInteractionType::APP_CONTENT_WINDOW_INTERACTION), 1);
+}
+
+TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents) {
+  constexpr uint64_t kArcStartTimeMs = 10;
+  std::vector<mojom::BootProgressEventPtr> events(
+      GetBootProgressEvents(kArcStartTimeMs, 1 /* step_in_ms */));
+  events.emplace_back(
+      mojom::BootProgressEvent::New(kBootProgressArcUpgraded, kArcStartTimeMs));
+
+  base::Optional<base::TimeTicks> arc_start_time =
+      service()->GetArcStartTimeFromEvents(events);
+  EXPECT_TRUE(arc_start_time.has_value());
+  EXPECT_EQ(*arc_start_time,
+            base::TimeDelta::FromMilliseconds(10) + base::TimeTicks());
+
+  // Check that the upgrade event was removed from events.
+  EXPECT_TRUE(std::none_of(
+      events.begin(), events.end(), [](const mojom::BootProgressEventPtr& ev) {
+        return ev->event.compare(kBootProgressArcUpgraded) == 0;
+      }));
+}
+
+TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents_NoArcUpgradedEvent) {
+  constexpr uint64_t kArcStartTimeMs = 10;
+  std::vector<mojom::BootProgressEventPtr> events(
+      GetBootProgressEvents(kArcStartTimeMs, 1 /* step_in_ms */));
+
+  base::Optional<base::TimeTicks> arc_start_time =
+      service()->GetArcStartTimeFromEvents(events);
+  EXPECT_FALSE(arc_start_time.has_value());
 }
 
 }  // namespace

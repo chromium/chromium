@@ -20,12 +20,13 @@
 #include "components/invalidation/public/invalidation.h"
 #include "components/sync/base/system_encryptor.h"
 #include "components/sync/driver/glue/sync_engine_impl.h"
+#include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine/sync_status_observer.h"
-#include "components/sync/engine_impl/cancelation_signal.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 namespace syncer {
@@ -40,6 +41,28 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   using AllNodesCallback =
       base::OnceCallback<void(const ModelType,
                               std::unique_ptr<base::ListValue>)>;
+
+  // Struct that allows passing back data upon init, for data previously
+  // produced by SyncEngineBackend (which doesn't itself have the ability to
+  // persist data).
+  struct RestoredLocalTransportData {
+    RestoredLocalTransportData();
+    RestoredLocalTransportData(RestoredLocalTransportData&&);
+    RestoredLocalTransportData(const RestoredLocalTransportData&) = delete;
+    ~RestoredLocalTransportData();
+
+    std::string encryption_bootstrap_token;
+    std::string keystore_encryption_bootstrap_token;
+    std::map<ModelType, int64_t> invalidation_versions;
+
+    // Initial authoritative values (usually read from prefs).
+    std::string cache_guid;
+    std::string birthday;
+    std::string bag_of_chips;
+
+    // Define the polling interval. Must not be zero.
+    base::TimeDelta poll_interval;
+  };
 
   SyncEngineBackend(const std::string& name,
                     const base::FilePath& sync_data_folder,
@@ -62,10 +85,11 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void OnSyncStatusChanged(const SyncStatus& status) override;
 
   // Forwards an invalidation state change to the sync manager.
-  void DoOnInvalidatorStateChange(InvalidatorState state);
+  void DoOnInvalidatorStateChange(invalidation::InvalidatorState state);
 
   // Forwards an invalidation to the sync manager.
-  void DoOnIncomingInvalidation(const TopicInvalidationMap& invalidation_map);
+  void DoOnIncomingInvalidation(
+      const invalidation::TopicInvalidationMap& invalidation_map);
 
   // Note:
   //
@@ -75,7 +99,8 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   //
   // Called to perform initialization of the syncapi on behalf of
   // SyncEngine::Initialize.
-  void DoInitialize(SyncEngine::InitParams params);
+  void DoInitialize(SyncEngine::InitParams params,
+                    RestoredLocalTransportData restored_transport_data);
 
   // Called to perform credential update on behalf of
   // SyncEngine::UpdateCredentials.
@@ -153,8 +178,12 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   bool HasUnsyncedItemsForTest() const;
 
   // Called on each device infos change and might be called more than once with
-  // the same |active_devices|.
-  void DoOnActiveDevicesChanged(size_t active_devices);
+  // the same |active_devices|. |fcm_registration_tokens| contains a list of
+  // tokens for all known active devices (if available and excluding the local
+  // device if reflections are disabled).
+  void DoOnActiveDevicesChanged(
+      size_t active_devices,
+      std::vector<std::string> fcm_registration_tokens);
 
  private:
   friend class base::RefCountedThreadSafe<SyncEngineBackend>;
@@ -163,8 +192,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   // For the olg tango based invalidations method returns true if the
   // invalidation has version lower than last seen version for this datatype.
-  bool ShouldIgnoreRedundantInvalidation(const Invalidation& invalidation,
-                                         ModelType Type);
+  bool ShouldIgnoreRedundantInvalidation(
+      const invalidation::Invalidation& invalidation,
+      ModelType Type);
 
   void LoadAndConnectNigoriController();
 

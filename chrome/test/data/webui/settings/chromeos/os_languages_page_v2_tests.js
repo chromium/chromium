@@ -8,8 +8,8 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getFakeLanguagePrefs} from '../fake_language_settings_private.m.js'
-// #import {FakeSettingsPrivate} from '../fake_settings_private.m.js';
+// #import {getFakeLanguagePrefs} from '../fake_language_settings_private.js'
+// #import {FakeSettingsPrivate} from '../fake_settings_private.js';
 // #import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.m.js';
 // #import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.m.js';
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
@@ -526,7 +526,19 @@ suite('languages page', () => {
       const searchInput = dialog.$$('cr-search-field');
 
       const getItems = function() {
-        return dialog.$.dialog.querySelectorAll('.list-item:not([hidden])');
+        // If an element (the <iron-list> in this case) is hidden in Polymer,
+        // Polymer will intelligently not update the DOM of the hidden element
+        // to prevent DOM updates that the user can't see. However, this means
+        // that when the <iron-list> is hidden (due to no results), the list
+        // items still exist in the DOM.
+        // This function should return the *visible* items that the user can
+        // select, so if the <iron-list> is hidden we should return an empty
+        // list instead.
+        const dialogEl = dialog.$.dialog;
+        if (dialogEl.querySelector('iron-list').hidden) {
+          return [];
+        }
+        return dialogEl.querySelectorAll('.list-item:not([hidden])');
       };
 
       // Expecting a few languages to be displayed when no query exists.

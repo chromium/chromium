@@ -47,19 +47,21 @@ public class Fido2ApiHandler {
     }
 
     protected void makeCredential(PublicKeyCredentialCreationOptions options,
-            RenderFrameHost frameHost, Origin origin, HandlerResponseCallback callback) {
+            RenderFrameHost frameHost, Origin origin, MakeCredentialResponseCallback callback,
+            FidoErrorResponseCallback errorCallback) {
         new Fido2CredentialRequest().handleMakeCredentialRequest(
-                options, frameHost, origin, callback);
+                options, frameHost, origin, callback, errorCallback);
     }
 
     protected void getAssertion(PublicKeyCredentialRequestOptions options,
-            RenderFrameHost frameHost, Origin origin, HandlerResponseCallback callback) {
+            RenderFrameHost frameHost, Origin origin, GetAssertionResponseCallback callback,
+            FidoErrorResponseCallback errorCallback) {
         new Fido2CredentialRequest().handleGetAssertionRequest(
-                options, frameHost, origin, callback);
+                options, frameHost, origin, callback, errorCallback);
     }
 
     protected void isUserVerifyingPlatformAuthenticatorAvailable(
-            RenderFrameHost frameHost, HandlerResponseCallback callback) {
+            RenderFrameHost frameHost, IsUvpaaResponseCallback callback) {
         new Fido2CredentialRequest().handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
                 frameHost, callback);
     }

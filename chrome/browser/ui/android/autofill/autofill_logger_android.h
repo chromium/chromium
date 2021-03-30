@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_LOGGER_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_LOGGER_ANDROID_H_
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace autofill {
 
@@ -18,8 +19,8 @@ class AutofillLoggerAndroid {
  public:
   // Called when a field containing |autofilled_value| has been filled
   // with data from |profile_full_name|.
-  static void DidFillOrPreviewField(const base::string16& autofilled_value,
-                                    const base::string16& profile_full_name);
+  static void DidFillOrPreviewField(const std::u16string& autofilled_value,
+                                    const std::u16string& profile_full_name);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AutofillLoggerAndroid);

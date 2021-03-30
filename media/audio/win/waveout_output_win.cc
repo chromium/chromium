@@ -344,8 +344,10 @@ void PCMWaveOutAudioOutputStream::QueueNextPacket(WAVEHDR *buffer) {
     // Note: If this ever changes to output raw float the data must be clipped
     // and sanitized since it may come from an untrusted source such as NaCl.
     audio_bus_->Scale(volume_);
-    audio_bus_->ToInterleaved(
-        frames_filled, format_.Format.wBitsPerSample / 8, buffer->lpData);
+
+    DCHECK_EQ(format_.Format.wBitsPerSample, 16);
+    audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(
+        frames_filled, reinterpret_cast<int16_t*>(buffer->lpData));
 
     buffer->dwBufferLength = used * format_.Format.nChannels / channels_;
   } else {

@@ -20,16 +20,14 @@ import java.util.Arrays;
  * This class provides the resource bundle related methods for the native
  * library.
  *
- * IMPORTANT: Clients that use {@link ResourceBundle} and/or
- * {@link org.chromium.ui.resources.ResourceExtractor} MUST call either
+ * IMPORTANT: Clients that use {@link ResourceBundle} MUST call either
  * {@link ResourceBundle#setAvailablePakLocales(String[], String[])} or
  * {@link ResourceBundle#setNoAvailableLocalePaks()} before calling the getters in this class.
  */
 @JNINamespace("ui")
 public final class ResourceBundle {
     private static final String TAG = "ResourceBundle";
-    private static String[] sCompressedLocales;
-    private static String[] sUncompressedLocales;
+    private static String[] sAvailableLocales;
 
     private ResourceBundle() {}
 
@@ -38,53 +36,46 @@ public final class ResourceBundle {
      */
     @CalledByNative
     public static void setNoAvailableLocalePaks() {
-        assert sCompressedLocales == null && sUncompressedLocales == null;
-        sCompressedLocales = new String[] {};
-        sUncompressedLocales = new String[] {};
+        assert sAvailableLocales == null;
+        sAvailableLocales = new String[] {};
     }
 
     /**
-     * Sets the available compressed and uncompressed locale pak files.
-     * @param compressed Locales that have compressed pak files.
-     * @param uncompressed Locales that have uncompressed pak files.
+     * Sets the available locale pak files.
+     * @param uncompressed Locales that have pak files.
      */
-    public static void setAvailablePakLocales(String[] compressed, String[] uncompressed) {
-        assert sCompressedLocales == null && sUncompressedLocales == null;
-        sCompressedLocales = compressed;
-        sUncompressedLocales = uncompressed;
+    public static void setAvailablePakLocales(String[] locales) {
+        assert sAvailableLocales == null;
+        sAvailableLocales = locales;
     }
 
     /**
-     * Return the array of locales that have compressed pak files. Do not modify the array.
-     * @return The locales that have compressed pak files.
+     * Return the list of available locales.
+     * @return The correct locale list for this build.
      */
-    public static String[] getAvailableCompressedPakLocales() {
-        assert sCompressedLocales != null;
-        return sCompressedLocales;
+    public static String[] getAvailableLocales() {
+        assert sAvailableLocales != null;
+        return sAvailableLocales;
     }
 
     /**
-     * Return the location of a locale-specific uncompress .pak file asset.
+     * Return the location of a locale-specific .pak file asset.
      *
      * @param locale Chromium locale name.
      * @param inBundle If true, return the path of the uncompressed .pak file
      *                 containing Chromium UI strings within app bundles. If
-     *                 false, return the path of the uncompressed WebView UI
-     *                 strings instead. Note that APK .pak files are stored
-     *                 compressed and handled differently.
+     *                 false, return the path of the WebView UI strings instead.
      * @param logError Logs if the file is not found.
-     * @return Asset path to uncompressed .pak file, or null if the locale is
-     *         not supported by this version of Chromium, or the file is
-     *         missing.
+     * @return Asset path to .pak file, or null if the locale is not supported.
      */
     @CalledByNative
     private static String getLocalePakResourcePath(
             String locale, boolean inBundle, boolean logError) {
-        if (sUncompressedLocales == null) {
+        if (sAvailableLocales == null) {
             // Locales may be null in unit tests.
             return null;
         }
-        if (Arrays.binarySearch(sUncompressedLocales, locale) < 0) {
+        if (Arrays.binarySearch(sAvailableLocales, locale) < 0) {
             // This locale is not supported by Chromium.
             return null;
         }
@@ -105,6 +96,13 @@ public final class ResourceBundle {
         try (AssetFileDescriptor afd = manager.openNonAssetFd(assetPath)) {
             return assetPath;
         } catch (IOException e) {
+            // Fallback for apk targets.
+            // TODO(crbug.com/1176290): Remove the need for this fallback logic.
+            String fallbackPath = "assets/locales/" + locale + ".pak";
+            try (AssetFileDescriptor afd = manager.openNonAssetFd(fallbackPath)) {
+                return fallbackPath;
+            } catch (IOException e2) {
+            }
             if (logError) {
                 Log.e(TAG, "path=%s", assetPath, e);
             }

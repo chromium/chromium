@@ -5,8 +5,10 @@
 
 #include "components/soda/constants.h"
 
+#include <string>
+
 #include "base/files/file_enumerator.h"
-#include "base/notreached.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "components/component_updater/component_updater_paths.h"
 
@@ -25,12 +27,6 @@ constexpr base::FilePath::CharType kSodaInstallationRelativePath[] =
 
 constexpr base::FilePath::CharType kSodaLanguagePacksRelativePath[] =
     FILE_PATH_LITERAL("SODALanguagePacks");
-
-constexpr base::FilePath::CharType kSodaEnUsInstallationRelativePath[] =
-    FILE_PATH_LITERAL("SODALanguagePacks/en-US");
-
-constexpr base::FilePath::CharType kSodaJaJpInstallationRelativePath[] =
-    FILE_PATH_LITERAL("SODALanguagePacks/ja-JP");
 
 constexpr base::FilePath::CharType kSodaLanguagePackDirectoryRelativePath[] =
     FILE_PATH_LITERAL("SODAModels");
@@ -74,36 +70,27 @@ const base::FilePath GetSodaBinaryPath() {
                           : soda_dir.Append(kSodaBinaryRelativePath);
 }
 
-LanguageCode GetLanguageCode(std::string language) {
-  if (language.empty()) {
-    return LanguageCode::kNone;
+base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+    LanguageCode language_code) {
+  for (const SodaLanguagePackComponentConfig& config :
+       kLanguageComponentConfigs) {
+    if (config.language_code == language_code) {
+      return config;
+    }
   }
 
-  if (language == "en-US") {
-    return LanguageCode::kEnUs;
-  }
-
-  if (language == "ja-JP") {
-    return LanguageCode::kJaJp;
-  }
-
-  NOTREACHED();
-  return LanguageCode::kNone;
+  return base::nullopt;
 }
 
-std::vector<base::FilePath> GetSodaLanguagePackDirectories() {
-  std::vector<base::FilePath> paths;
-
-  base::FilePath components_dir;
-  base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                         &components_dir);
-
-  if (!components_dir.empty()) {
-    paths.push_back(components_dir.Append(kSodaEnUsInstallationRelativePath));
-    paths.push_back(components_dir.Append(kSodaJaJpInstallationRelativePath));
+base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+    const std::string& language_name) {
+  for (const SodaLanguagePackComponentConfig& config :
+       kLanguageComponentConfigs) {
+    if (config.language_name == language_name) {
+      return config;
+    }
   }
 
-  return paths;
+  return base::nullopt;
 }
-
 }  // namespace speech

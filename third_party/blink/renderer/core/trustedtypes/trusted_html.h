@@ -19,6 +19,7 @@ class CORE_EXPORT TrustedHTML final : public ScriptWrappable {
 
   // TrustedHTML.idl
   const String& toString() const;
+  const String& toJSON() const { return toString(); }
 
  private:
   const String html_;

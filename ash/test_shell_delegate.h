@@ -47,9 +47,11 @@ class TestShellDelegate : public ShellDelegate {
       override;
   std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const override;
+  bool IsSessionRestoreInProgress() const override;
 
   void SetCanGoBack(bool can_go_back);
   void SetShouldWaitForTouchAck(bool should_wait_for_touch_ack);
+  void SetSessionRestoreInProgress(bool in_progress);
 
  private:
   // True if the current top window can go back.
@@ -63,6 +65,9 @@ class TestShellDelegate : public ShellDelegate {
   // |BackGestureEventHandler::should_wait_for_touch_ack_| for detailed
   // description.
   bool should_wait_for_touch_ack_ = false;
+
+  // True if window browser sessions are restoring.
+  bool session_restore_in_progress_ = false;
 
   MultiDeviceSetupBinder multidevice_setup_binder_;
 

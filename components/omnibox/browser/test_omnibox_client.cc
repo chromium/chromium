@@ -38,7 +38,7 @@ TestOmniboxClient::CreateAutocompleteProviderClient() {
   std::unique_ptr<MockAutocompleteProviderClient> provider_client(
       new MockAutocompleteProviderClient());
   EXPECT_CALL(*provider_client, GetBuiltinURLs())
-      .WillRepeatedly(testing::Return(std::vector<base::string16>()));
+      .WillRepeatedly(testing::Return(std::vector<std::u16string>()));
   EXPECT_CALL(*provider_client, GetSchemeClassifier())
       .WillRepeatedly(testing::ReturnRef(scheme_classifier_));
 
@@ -60,7 +60,7 @@ TestOmniboxClient::CreateAutocompleteProviderClient() {
 
 std::unique_ptr<OmniboxNavigationObserver>
 TestOmniboxClient::CreateOmniboxNavigationObserver(
-    const base::string16& text,
+    const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternate_nav_match) {
   alternate_nav_match_ = alternate_nav_match;
@@ -96,6 +96,14 @@ const AutocompleteSchemeClassifier& TestOmniboxClient::GetSchemeClassifier()
 
 AutocompleteClassifier* TestOmniboxClient::GetAutocompleteClassifier() {
   return &autocomplete_classifier_;
+}
+
+bool TestOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
+  return false;
+}
+
+int TestOmniboxClient::GetHttpsPortForTesting() const {
+  return 0;
 }
 
 gfx::Image TestOmniboxClient::GetSizedIcon(

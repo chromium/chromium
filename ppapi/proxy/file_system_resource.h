@@ -61,7 +61,8 @@ class PPAPI_PROXY_EXPORT FileSystemResource : public PluginResource,
 
   int32_t InitIsolatedFileSystem(const std::string& fsid,
                                  PP_IsolatedFileSystemType_Private type,
-                                 const base::Callback<void(int32_t)>& callback);
+                                 base::OnceCallback<void(int32_t)> callback);
+
  private:
   struct QuotaRequest {
     QuotaRequest(int64_t amount,
@@ -79,9 +80,10 @@ class PPAPI_PROXY_EXPORT FileSystemResource : public PluginResource,
                     const ResourceMessageReplyParams& params);
 
   // Called when the host has responded to our InitIsolatedFileSystem request.
+  void InitIsolatedFileSystemReply(base::OnceClosure callback,
+                                   const ResourceMessageReplyParams& params);
   void InitIsolatedFileSystemComplete(
-      const base::Callback<void(int32_t)>& callback,
-      const ResourceMessageReplyParams& params);
+      base::OnceCallback<void(int32_t)> callback);
 
   void ReserveQuota(int64_t amount);
   typedef std::map<int32_t, int64_t> OffsetMap;

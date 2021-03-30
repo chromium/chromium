@@ -139,19 +139,28 @@ TEST(RangesTest, ForEach) {
 
   auto result = ranges::for_each(array, array + 3, times_two);
   EXPECT_EQ(result.in, array + 3);
-  EXPECT_EQ(result.fun, times_two);
+  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // EXPECT_EQ.
+  EXPECT_TRUE(result.fun == times_two);
   EXPECT_THAT(array, ElementsAre(0, 2, 4, 3, 4, 5));
 
   ranges::for_each(array + 3, array + 6, times_two);
   EXPECT_EQ(result.in, array + 3);
-  EXPECT_EQ(result.fun, times_two);
+  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // EXPECT_EQ.
+  EXPECT_TRUE(result.fun == times_two);
   EXPECT_THAT(array, ElementsAre(0, 2, 4, 6, 8, 10));
 
-  EXPECT_EQ(times_two, ranges::for_each(array, times_two).fun);
+  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // EXPECT_EQ.
+  EXPECT_TRUE(times_two == ranges::for_each(array, times_two).fun);
   EXPECT_THAT(array, ElementsAre(0, 4, 8, 12, 16, 20));
 
   Int values[] = {0, 2, 4, 5};
-  EXPECT_EQ(times_two, ranges::for_each(values, times_two, &Int::value).fun);
+  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // EXPECT_EQ.
+  EXPECT_TRUE(times_two ==
+              ranges::for_each(values, times_two, &Int::value).fun);
   EXPECT_THAT(values,
               ElementsAre(Field(&Int::value, 0), Field(&Int::value, 4),
                           Field(&Int::value, 8), Field(&Int::value, 10)));
@@ -163,12 +172,16 @@ TEST(RangesTest, ForEachN) {
 
   auto result = ranges::for_each_n(array, 3, times_two);
   EXPECT_EQ(result.in, array + 3);
-  EXPECT_EQ(result.fun, times_two);
+  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // EXPECT_EQ.
+  EXPECT_TRUE(result.fun == times_two);
   EXPECT_THAT(array, ElementsAre(0, 2, 4, 3, 4, 5));
 
   Int values[] = {0, 2, 4, 5};
-  EXPECT_EQ(times_two,
-            ranges::for_each_n(values, 4, times_two, &Int::value).fun);
+  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // EXPECT_EQ.
+  EXPECT_TRUE(times_two ==
+              ranges::for_each_n(values, 4, times_two, &Int::value).fun);
   EXPECT_THAT(values,
               ElementsAre(Field(&Int::value, 0), Field(&Int::value, 4),
                           Field(&Int::value, 8), Field(&Int::value, 10)));

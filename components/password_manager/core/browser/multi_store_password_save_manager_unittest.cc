@@ -7,7 +7,7 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -53,15 +53,15 @@ class MockFormSaver : public StubFormSaver {
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD3(Update,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD4(UpdateReplace,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password,
+                    const std::u16string& old_password,
                     const PasswordForm& old_unique_key));
   MOCK_METHOD1(Remove, void(const PasswordForm&));
 
@@ -85,26 +85,26 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
 
     observed_form_.url = origin;
     observed_form_.action = action;
-    observed_form_.name = ASCIIToUTF16("sign-in");
+    observed_form_.name = u"sign-in";
     observed_form_.unique_renderer_id = autofill::FormRendererId(1);
     observed_form_.is_form_tag = true;
 
     FormFieldData field;
-    field.name = ASCIIToUTF16("firstname");
+    field.name = u"firstname";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = "text";
     field.unique_renderer_id = autofill::FieldRendererId(1);
     observed_form_.fields.push_back(field);
 
-    field.name = ASCIIToUTF16("username");
+    field.name = u"username";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = "text";
     field.unique_renderer_id = autofill::FieldRendererId(2);
     observed_form_.fields.push_back(field);
 
-    field.name = ASCIIToUTF16("password");
+    field.name = u"password";
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = "password";
@@ -112,16 +112,16 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
     observed_form_.fields.push_back(field);
 
     submitted_form_ = observed_form_;
-    submitted_form_.fields[kUsernameFieldIndex].value = ASCIIToUTF16("user1");
-    submitted_form_.fields[kPasswordFieldIndex].value = ASCIIToUTF16("secret1");
+    submitted_form_.fields[kUsernameFieldIndex].value = u"user1";
+    submitted_form_.fields[kPasswordFieldIndex].value = u"secret1";
 
     saved_match_.url = origin;
     saved_match_.action = action;
     saved_match_.signon_realm = "https://accounts.google.com/";
-    saved_match_.username_value = ASCIIToUTF16("test@gmail.com");
-    saved_match_.username_element = ASCIIToUTF16("field1");
-    saved_match_.password_value = ASCIIToUTF16("test1");
-    saved_match_.password_element = ASCIIToUTF16("field2");
+    saved_match_.username_value = u"test@gmail.com";
+    saved_match_.username_element = u"field1";
+    saved_match_.password_value = u"test1";
+    saved_match_.password_element = u"field2";
     saved_match_.is_public_suffix_match = false;
     saved_match_.scheme = PasswordForm::Scheme::kHtml;
 
@@ -194,7 +194,7 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
     federated.type = PasswordForm::Type::kApi;
     federated.federation_origin =
         url::Origin::Create(GURL("https://google.com/"));
-    federated.username_value = ASCIIToUTF16("federated_username");
+    federated.username_value = u"federated_username";
     return federated;
   }
 
@@ -477,8 +477,8 @@ class MultiStorePasswordSaveManagerTestGenerationConflictWithAccountStoreEnabled
 
   // Returns a password form using |saved_match_| with |username|, |password|
   // and |in_store|.
-  PasswordForm CreateSavedMatch(const base::string16& username,
-                                const base::string16& password,
+  PasswordForm CreateSavedMatch(const std::u16string& username,
+                                const std::u16string& password,
                                 const PasswordForm::Store in_store) const {
     PasswordForm form = saved_match_;
     form.username_value = username;
@@ -491,22 +491,20 @@ class MultiStorePasswordSaveManagerTestGenerationConflictWithAccountStoreEnabled
   // username value as |username|, or an empty one.
   // The test parameters determine which of the conflicts should be included.
   std::vector<PasswordForm> CreateProfileStoreMatchesForTestParameters(
-      const base::string16& username) const {
+      const std::u16string& username) const {
     bool add_same_username_match, add_empty_username_match;
     std::tie(add_same_username_match, add_empty_username_match) = GetParam();
 
     std::vector<PasswordForm> profile_store_matches;
     if (add_same_username_match) {
       profile_store_matches.push_back(CreateSavedMatch(
-          username,
-          base::ASCIIToUTF16("password_for_same_username_match_in_profile"),
+          username, u"password_for_same_username_match_in_profile",
           PasswordForm::Store::kProfileStore));
     }
     if (add_empty_username_match) {
-      profile_store_matches.push_back(CreateSavedMatch(
-          ASCIIToUTF16(""),
-          base::ASCIIToUTF16("password_for_empty_username_match_in_profile"),
-          PasswordForm::Store::kProfileStore));
+      profile_store_matches.push_back(
+          CreateSavedMatch(u"", u"password_for_empty_username_match_in_profile",
+                           PasswordForm::Store::kProfileStore));
     }
     return profile_store_matches;
   }
@@ -549,20 +547,19 @@ TEST_P(
   std::vector<PasswordForm> matches =
       CreateProfileStoreMatchesForTestParameters(
           parsed_submitted_form_.username_value);
-  matches.push_back(CreateSavedMatch(
-      parsed_submitted_form_.username_value,
-      base::ASCIIToUTF16("password_for_same_username_conflict_in_account"),
-      PasswordForm::Store::kAccountStore));
+  matches.push_back(
+      CreateSavedMatch(parsed_submitted_form_.username_value,
+                       u"password_for_same_username_conflict_in_account",
+                       PasswordForm::Store::kAccountStore));
   SetNonFederatedAndNotifyFetchCompleted(GetFormPointers(matches));
 
   EXPECT_CALL(*mock_profile_form_saver(), Save(_, _, _)).Times(0);
   // Presaving found an entry in the account store with the same username, so
   // stores the form with an empty username instead.
-  EXPECT_CALL(
-      *mock_account_form_saver(),
-      Save(MatchesUsernameAndPassword(base::ASCIIToUTF16(""),
-                                      parsed_submitted_form_.password_value),
-           _, _));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(MatchesUsernameAndPassword(
+                       u"", parsed_submitted_form_.password_value),
+                   _, _));
 
   password_save_manager()->PresaveGeneratedPassword(parsed_submitted_form_);
 }
@@ -573,10 +570,9 @@ TEST_P(
   std::vector<PasswordForm> matches =
       CreateProfileStoreMatchesForTestParameters(
           parsed_submitted_form_.username_value);
-  matches.push_back(CreateSavedMatch(
-      base::ASCIIToUTF16(""),
-      base::ASCIIToUTF16("password_for_empty_username_conflict_in_account"),
-      PasswordForm::Store::kAccountStore));
+  matches.push_back(
+      CreateSavedMatch(u"", u"password_for_empty_username_conflict_in_account",
+                       PasswordForm::Store::kAccountStore));
   SetNonFederatedAndNotifyFetchCompleted(GetFormPointers(matches));
 
   EXPECT_CALL(*mock_profile_form_saver(), Save(_, _, _)).Times(0);
@@ -686,7 +682,7 @@ TEST_F(MultiStorePasswordSaveManagerTest, UpdateVsPSLMatch) {
 
   PasswordForm profile_saved_match(saved_match_);
   profile_saved_match.username_value = parsed_submitted_form_.username_value;
-  profile_saved_match.password_value = base::ASCIIToUTF16("old_password");
+  profile_saved_match.password_value = u"old_password";
   profile_saved_match.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm account_psl_saved_match(psl_saved_match_);
@@ -817,8 +813,7 @@ TEST_F(
   saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_in_profile_store});
   PasswordForm credentials_with_diffrent_username(saved_match_in_profile_store);
-  credentials_with_diffrent_username.username_value =
-      ASCIIToUTF16("different_username");
+  credentials_with_diffrent_username.username_value = u"different_username";
   password_save_manager()->CreatePendingCredentials(
       credentials_with_diffrent_username, &observed_form_, submitted_form_,
       /*is_http_auth=*/false,
@@ -906,10 +901,10 @@ TEST_F(
     MoveCredentialsFromProfileToAccountStoreWhenExistsInBothStoresWithDifferentPassword) {
   PasswordForm saved_match_in_profile_store(saved_match_);
   saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
-  saved_match_in_profile_store.password_value = ASCIIToUTF16("password1");
+  saved_match_in_profile_store.password_value = u"password1";
   PasswordForm saved_match_in_account_store(saved_match_);
   saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
-  saved_match_in_account_store.password_value = ASCIIToUTF16("password2");
+  saved_match_in_account_store.password_value = u"password2";
   SetNonFederatedAndNotifyFetchCompleted(
       {&saved_match_in_profile_store, &saved_match_in_account_store});
 

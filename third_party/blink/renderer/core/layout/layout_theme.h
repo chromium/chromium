@@ -128,7 +128,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
                                 bool in_forced_colors_mode,
                                 mojom::blink::ColorScheme color_scheme) const;
 
-  virtual Color FocusRingColor() const;
+  virtual Color FocusRingColor(mojom::blink::ColorScheme color_scheme) const;
   virtual Color PlatformFocusRingColor() const { return Color(0, 0, 0); }
   void SetCustomFocusRingColor(const Color&);
   static Color TapHighlightColor();

@@ -6,10 +6,10 @@
 #define CHROME_INSTALLER_SETUP_INSTALLER_STATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/version.h"
 #include "base/win/windows_types.h"
 #include "build/build_config.h"
@@ -75,7 +75,7 @@ class InstallerState {
   HKEY root_key() const { return root_key_; }
 
   // The ClientState key by which we interact with Google Update.
-  const base::string16& state_key() const { return state_key_; }
+  const std::wstring& state_key() const { return state_key_; }
 
   // Returns the currently installed version in |target_path|.
   // Use IsValid() predicate to detect if product not installed.
@@ -107,7 +107,7 @@ class InstallerState {
   // non-empty, is written to the InstallerSuccessLaunchCmdLine value.
   void WriteInstallerResult(InstallStatus status,
                             int string_resource_id,
-                            const base::string16* launch_cmd) const;
+                            const std::wstring* launch_cmd) const;
 
   // Returns true if this install needs to register an Active Setup command.
   bool RequiresActiveSetup() const;
@@ -121,7 +121,7 @@ class InstallerState {
 
   Operation operation_;
   base::FilePath target_path_;
-  base::string16 state_key_;
+  std::wstring state_key_;
   base::Version critical_update_version_;
   ProgressCalculator progress_calculator_;
   Level level_;

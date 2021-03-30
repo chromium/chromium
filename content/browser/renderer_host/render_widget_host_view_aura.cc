@@ -46,7 +46,6 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/ui_events_helper.h"
-#include "content/common/input_messages.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
@@ -123,6 +122,11 @@
 
 #if defined(OS_FUCHSIA)
 #include "ui/base/ime/virtual_keyboard_controller.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
 #endif
 
 using gfx::RectToSkIRect;
@@ -302,6 +306,11 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
       device_scale_factor_(0.0f),
       event_handler_(new RenderWidgetHostViewEventHandler(host(), this, this)),
       frame_sink_id_(host()->GetFrameSinkId()) {
+  // CreateDelegatedFrameHostClient() and CreateAuraWindow() assume that the
+  // FrameSinkId is valid. RenderWidgetHostImpl::GetFrameSinkId() always returns
+  // a valid FrameSinkId.
+  DCHECK(frame_sink_id_.is_valid());
+
   CreateDelegatedFrameHostClient();
 
   host()->SetView(this);
@@ -312,6 +321,9 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
     GetTextInputManager()->AddObserver(this);
 
   cursor_manager_.reset(new CursorManager(this));
+
+  SetOverscrollControllerEnabled(
+      base::FeatureList::IsEnabled(features::kOverscrollHistoryNavigation));
 
   selection_controller_client_.reset(
       new TouchSelectionControllerClientAura(this));
@@ -398,17 +410,7 @@ void RenderWidgetHostViewAura::InitAsPopup(
 }
 
 void RenderWidgetHostViewAura::Show() {
-  // If the viz::LocalSurfaceId is invalid, we may have been evicted,
-  // and no other visual properties have since been changed. Allocate a new id
-  // and start synchronizing.
-  if (!window_->GetLocalSurfaceId().is_valid()) {
-    window_->AllocateLocalSurfaceId();
-    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                window_->GetLocalSurfaceId());
-  }
-
-  window_->Show();
-  WasUnOccluded();
+  ShowWithVisibility(Visibility::VISIBLE);
 }
 
 void RenderWidgetHostViewAura::Hide() {
@@ -480,8 +482,7 @@ ui::TextInputClient* RenderWidgetHostViewAura::GetTextInputClient() {
 }
 
 RenderFrameHostImpl* RenderWidgetHostViewAura::GetFocusedFrame() const {
-  FrameTreeNode* focused_frame =
-      host()->delegate()->GetFrameTree()->GetFocusedFrame();
+  FrameTreeNode* focused_frame = host()->frame_tree()->GetFocusedFrame();
   if (!focused_frame)
     return nullptr;
   return focused_frame->current_frame_host();
@@ -524,8 +525,7 @@ bool RenderWidgetHostViewAura::HasFocus() {
 }
 
 bool RenderWidgetHostViewAura::IsSurfaceAvailableForCopy() {
-  if (!delegated_frame_host_)
-    return false;
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
   return delegated_frame_host_->CanCopyFromCompositingSurface();
 }
 
@@ -540,6 +540,8 @@ bool RenderWidgetHostViewAura::IsShowing() {
 }
 
 void RenderWidgetHostViewAura::WasUnOccluded() {
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+
   const Visibility old_visibility = visibility_;
   visibility_ = Visibility::VISIBLE;
 
@@ -555,8 +557,7 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
   }
 
   auto tab_switch_start_state = TakeRecordContentToVisibleTimeRequest();
-  bool has_saved_frame =
-      delegated_frame_host_ ? delegated_frame_host_->HasSavedFrame() : false;
+  bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
 
   bool show_reason_bfcache_restore =
       tab_switch_start_state
@@ -579,14 +580,12 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
       NotifyRendererOfCursorVisibilityState(cursor_client->IsCursorVisible());
   }
 
-  if (delegated_frame_host_) {
-    // If the frame for the renderer is already available, then the
-    // tab-switching time is the presentation time for the browser-compositor.
-    delegated_frame_host_->WasShown(
-        GetLocalSurfaceId(), window_->bounds().size(),
-        has_saved_frame ? std::move(tab_switch_start_state)
-                        : blink::mojom::RecordContentToVisibleTimeRequestPtr());
-  }
+  // If the frame for the renderer is already available, then the
+  // tab-switching time is the presentation time for the browser-compositor.
+  delegated_frame_host_->WasShown(
+      GetLocalSurfaceId(), window_->bounds().size(),
+      has_saved_frame ? std::move(tab_switch_start_state)
+                      : blink::mojom::RecordContentToVisibleTimeRequestPtr());
 
 #if defined(OS_WIN)
   UpdateLegacyWin();
@@ -594,13 +593,13 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
 }
 
 void RenderWidgetHostViewAura::HideImpl() {
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
   DCHECK(visibility_ == Visibility::HIDDEN ||
          visibility_ == Visibility::OCCLUDED);
 
   if (!host()->is_hidden()) {
     host()->WasHidden();
     aura::WindowTreeHost* host = window_->GetHost();
-    if (delegated_frame_host_) {
       aura::Window* parent = window_->parent();
       aura::Window::OcclusionState parent_occl_state =
           parent ? parent->occlusion_state()
@@ -617,7 +616,6 @@ void RenderWidgetHostViewAura::HideImpl() {
         cause = DelegatedFrameHost::HiddenCause::kOther;
       }
       delegated_frame_host_->WasHidden(cause);
-    }
 #if defined(OS_WIN)
     if (host) {
       // We reparent the legacy Chrome_RenderWidgetHostHWND window to the global
@@ -669,10 +667,9 @@ void RenderWidgetHostViewAura::SetDisplayFeatureForTesting(
 }
 
 void RenderWidgetHostViewAura::WindowTitleChanged() {
-  if (delegated_frame_host_) {
-    delegated_frame_host_->WindowTitleChanged(
-        base::UTF16ToUTF8(window_->GetTitle()));
-  }
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+  delegated_frame_host_->WindowTitleChanged(
+      base::UTF16ToUTF8(window_->GetTitle()));
 }
 
 bool RenderWidgetHostViewAura::IsMouseLocked() {
@@ -726,6 +723,27 @@ void RenderWidgetHostViewAura::RenderProcessGone() {
   Destroy();
 }
 
+void RenderWidgetHostViewAura::ShowWithVisibility(
+    Visibility web_contents_visibility) {
+  // If the viz::LocalSurfaceId is invalid, we may have been evicted,
+  // and no other visual properties have since been changed. Allocate a new id
+  // and start synchronizing.
+  if (!window_->GetLocalSurfaceId().is_valid()) {
+    window_->AllocateLocalSurfaceId();
+    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                window_->GetLocalSurfaceId());
+  }
+
+  window_->Show();
+  WasUnOccluded();
+#if defined(OS_WIN)
+  if (web_contents_visibility == Visibility::HIDDEN &&
+      legacy_render_widget_host_HWND_) {
+    legacy_render_widget_host_HWND_->Hide();
+  }
+#endif  // defined(OS_WIN)
+}
+
 void RenderWidgetHostViewAura::Destroy() {
   // Beware, this function is not called on all destruction paths. If |window_|
   // has been created, then it will implicitly end up calling
@@ -740,19 +758,19 @@ void RenderWidgetHostViewAura::Destroy() {
 }
 
 void RenderWidgetHostViewAura::SetTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   GetCursorManager()->SetTooltipTextForView(this, tooltip_text);
 }
 
 void RenderWidgetHostViewAura::DisplayTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   tooltip_ = tooltip_text;
   aura::Window* root_window = window_->GetRootWindow();
   wm::TooltipClient* tooltip_client = wm::GetTooltipClient(root_window);
   if (tooltip_client) {
     tooltip_client->UpdateTooltip(window_);
     // Content tooltips should be visible indefinitely.
-    tooltip_client->SetTooltipShownTimeout(window_, 0);
+    tooltip_client->SetHideTooltipTimeout(window_, {});
   }
 }
 
@@ -814,8 +832,8 @@ RenderWidgetHostViewAura::GetParentNativeViewAccessible() {
 }
 
 void RenderWidgetHostViewAura::ResetFallbackToFirstNavigationSurface() {
-  if (delegated_frame_host_)
-    delegated_frame_host_->ResetFallbackToFirstNavigationSurface();
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+  delegated_frame_host_->ResetFallbackToFirstNavigationSurface();
 }
 
 bool RenderWidgetHostViewAura::RequestRepaintForTesting() {
@@ -1137,12 +1155,12 @@ void RenderWidgetHostViewAura::ClearCompositionText() {
 }
 
 void RenderWidgetHostViewAura::InsertText(
-    const base::string16& text,
+    const std::u16string& text,
     InsertTextCursorBehavior cursor_behavior) {
   DCHECK_NE(GetTextInputType(), ui::TEXT_INPUT_TYPE_NONE);
 
   if (text_input_manager_ && text_input_manager_->GetActiveWidget()) {
-    if (text.length()) {
+    if (text.length() > 0 || !has_composition_text_) {
       const int relative_cursor_position =
           cursor_behavior == InsertTextCursorBehavior::kMoveCursorBeforeText
               ? -text.length()
@@ -1150,7 +1168,8 @@ void RenderWidgetHostViewAura::InsertText(
       text_input_manager_->GetActiveWidget()->ImeCommitText(
           text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(),
           relative_cursor_position);
-    } else if (has_composition_text_) {
+    } else {
+      DCHECK(has_composition_text_);
       text_input_manager_->GetActiveWidget()->ImeFinishComposingText(false);
     }
   }
@@ -1341,9 +1360,8 @@ bool RenderWidgetHostViewAura::DeleteRange(const gfx::Range& range) {
   return false;
 }
 
-bool RenderWidgetHostViewAura::GetTextFromRange(
-    const gfx::Range& range,
-    base::string16* text) const {
+bool RenderWidgetHostViewAura::GetTextFromRange(const gfx::Range& range,
+                                                std::u16string* text) const {
   if (!text_input_manager_ || !GetFocusedWidget())
     return false;
 
@@ -1454,22 +1472,7 @@ bool RenderWidgetHostViewAura::SetCompositionFromExistingText(
 gfx::Range RenderWidgetHostViewAura::GetAutocorrectRange() const {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return gfx::Range();
-
-  const std::vector<ui::mojom::ImeTextSpanInfoPtr>& ime_text_spans_info =
-      text_input_manager_->GetTextInputState()->ime_text_spans_info;
-
-  unsigned autocorrect_span_found = 0;
-  gfx::Range range;
-  for (const auto& ime_text_span_info : ime_text_spans_info) {
-    if (ime_text_span_info->span.type == ui::ImeTextSpan::Type::kAutocorrect) {
-      range = gfx::Range(ime_text_span_info->span.start_offset,
-                         ime_text_span_info->span.end_offset);
-      autocorrect_span_found++;
-    }
-  }
-  // Assuming there is only one autocorrect span at any point in time.
-  DCHECK_LE(autocorrect_span_found, 1u);
-  return range;
+  return text_input_manager_->GetAutocorrectRange();
 }
 
 gfx::Rect RenderWidgetHostViewAura::GetAutocorrectCharacterBounds() const {
@@ -1498,6 +1501,20 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
     base::UmaHistogramEnumeration(
         "InputMethod.Assistive.Autocorrect.Count",
         TextInputClient::SubClass::kRenderWidgetHostViewAura);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto* input_method_manager =
+        chromeos::input_method::InputMethodManager::Get();
+    if (input_method_manager &&
+        chromeos::extension_ime_util::IsExperimentalMultilingual(
+            input_method_manager->GetActiveIMEState()
+                ->GetCurrentInputMethod()
+                .id())) {
+      base::UmaHistogramEnumeration(
+          "InputMethod.MultilingualExperiment.Autocorrect.Count",
+          TextInputClient::SubClass::kRenderWidgetHostViewAura);
+    }
+#endif
   }
 
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
@@ -1552,7 +1569,7 @@ void RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds(
 
 void RenderWidgetHostViewAura::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
-    const base::string16& active_composition_text,
+    const std::u16string& active_composition_text,
     bool is_composition_committed) {
   BrowserAccessibilityManager* manager =
       host()->GetRootBrowserAccessibilityManager();
@@ -1738,14 +1755,17 @@ void RenderWidgetHostViewAura::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 bool RenderWidgetHostViewAura::HasFallbackSurface() const {
-  return delegated_frame_host_ && delegated_frame_host_->HasFallbackSurface();
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+  return delegated_frame_host_->HasFallbackSurface();
 }
 
 bool RenderWidgetHostViewAura::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
     RenderWidgetHostViewBase* target_view,
     gfx::PointF* transformed_point) {
-  if (target_view == this || !delegated_frame_host_) {
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+
+  if (target_view == this) {
     *transformed_point = point;
     return true;
   }
@@ -1765,8 +1785,8 @@ viz::FrameSinkId RenderWidgetHostViewAura::GetRootFrameSinkId() {
 }
 
 viz::SurfaceId RenderWidgetHostViewAura::GetCurrentSurfaceId() const {
-  return delegated_frame_host_ ? delegated_frame_host_->GetCurrentSurfaceId()
-                               : viz::SurfaceId();
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+  return delegated_frame_host_->GetCurrentSurfaceId();
 }
 
 void RenderWidgetHostViewAura::FocusedNodeChanged(
@@ -1907,7 +1927,8 @@ void RenderWidgetHostViewAura::OnHostMovedInPixels(
 ////////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostViewAura, RenderFrameMetadataProvider::Observer
 // implementation:
-void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation() {
+void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation(
+    base::TimeTicks activation_time) {
   const cc::RenderFrameMetadata& metadata =
       host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
   SetContentBackgroundColor(metadata.root_background_color);
@@ -1996,14 +2017,10 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
                                                   : SK_ColorWHITE);
   // This needs to happen only after |window_| has been initialized using
   // Init(), because it needs to have the layer.
-  if (frame_sink_id_.is_valid())
-    window_->SetEmbedFrameSinkId(frame_sink_id_);
+  window_->SetEmbedFrameSinkId(frame_sink_id_);
 }
 
 void RenderWidgetHostViewAura::CreateDelegatedFrameHostClient() {
-  if (!frame_sink_id_.is_valid())
-    return;
-
   delegated_frame_host_client_ =
       std::make_unique<DelegatedFrameHostClientAura>(this);
   delegated_frame_host_ = std::make_unique<DelegatedFrameHost>(
@@ -2085,16 +2102,17 @@ bool RenderWidgetHostViewAura::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
     const base::Optional<viz::LocalSurfaceId>& child_local_surface_id) {
   DCHECK(window_);
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+
   window_->UpdateLocalSurfaceIdFromEmbeddedClient(child_local_surface_id);
   // If the viz::LocalSurfaceId is invalid, we may have been evicted,
   // allocate a new one to establish bounds.
   if (!GetLocalSurfaceId().is_valid())
     window_->AllocateLocalSurfaceId();
 
-  if (delegated_frame_host_) {
-    delegated_frame_host_->EmbedSurface(
-        GetLocalSurfaceId(), window_->bounds().size(), deadline_policy);
-  }
+  delegated_frame_host_->EmbedSurface(
+      GetLocalSurfaceId(), window_->bounds().size(), deadline_policy);
+
   return host()->SynchronizeVisualProperties();
 }
 
@@ -2144,8 +2162,7 @@ void RenderWidgetHostViewAura::Shutdown() {
 
 bool RenderWidgetHostViewAura::ShouldVirtualKeyboardOverlayContent() const {
   // overlaycontent flag can only be set from main frame.
-  RenderFrameHostImpl* frame =
-      host()->delegate()->GetFrameTree()->GetMainFrame();
+  RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
   if (!frame)
     return false;
 
@@ -2156,8 +2173,7 @@ void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
   // geometrychange event can only be fired on main frame and not focused frame
   // which could be an iframe.
-  RenderFrameHostImpl* frame =
-      host()->delegate()->GetFrameTree()->GetMainFrame();
+  RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
   if (!frame)
     return;
   frame->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
@@ -2269,6 +2285,8 @@ void RenderWidgetHostViewAura::UpdateLegacyWin() {
 #endif
 
 void RenderWidgetHostViewAura::AddedToRootWindow() {
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+
   window_->GetHost()->AddObserver(this);
   UpdateScreenInfo(window_);
 
@@ -2288,11 +2306,12 @@ void RenderWidgetHostViewAura::AddedToRootWindow() {
   UpdateLegacyWin();
 #endif
 
-  if (delegated_frame_host_)
     delegated_frame_host_->AttachToCompositor(window_->GetHost()->compositor());
 }
 
 void RenderWidgetHostViewAura::RemovingFromRootWindow() {
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(window_->GetRootWindow());
   if (cursor_client)
@@ -2301,7 +2320,6 @@ void RenderWidgetHostViewAura::RemovingFromRootWindow() {
   DetachFromInputMethod(true);
 
   window_->GetHost()->RemoveObserver(this);
-  if (delegated_frame_host_)
     delegated_frame_host_->DetachFromCompositor();
 
 #if defined(OS_WIN)
@@ -2386,9 +2404,10 @@ void RenderWidgetHostViewAura::CreateSelectionController() {
 }
 
 void RenderWidgetHostViewAura::OnDidNavigateMainFrameToNewPage() {
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+
   // Invalidate the surface so that we don't attempt to evict it multiple times.
   window_->InvalidateLocalSurfaceId();
-  if (delegated_frame_host_)
     delegated_frame_host_->OnNavigateToNewPage();
   CancelActiveTouches();
 }
@@ -2419,22 +2438,15 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
   // Show the virtual keyboard if needed.
   if (state && state->type != ui::TEXT_INPUT_TYPE_NONE &&
       state->mode != ui::TEXT_INPUT_MODE_NONE) {
-    bool show_virtual_keyboard = true;
-#if defined(OS_FUCHSIA)
-    show_virtual_keyboard =
-        GetLastPointerType() == ui::EventPointerType::kTouch;
-#endif
-
 #if !defined(OS_WIN)
     if (state->show_ime_if_needed &&
-        GetInputMethod()->GetTextInputClient() == this &&
-        show_virtual_keyboard) {
+        GetInputMethod()->GetTextInputClient() == this) {
       GetInputMethod()->ShowVirtualKeyboardIfEnabled();
     }
 // TODO(crbug.com/1031786): Remove this once TSF fix for input pane policy
 // is serviced
 #elif defined(OS_WIN)
-    if (GetInputMethod() && show_virtual_keyboard) {
+    if (GetInputMethod()) {
       if (!virtual_keyboard_controller_win_) {
         virtual_keyboard_controller_win_.reset(
             new VirtualKeyboardControllerWin(this, GetInputMethod()));
@@ -2531,7 +2543,8 @@ void RenderWidgetHostViewAura::ScrollFocusedEditableNodeIntoRect(
   input_handler->ScrollFocusedEditableNodeIntoRect(node_rect);
 }
 
-void RenderWidgetHostViewAura::OnSynchronizedDisplayPropertiesChanged() {
+void RenderWidgetHostViewAura::OnSynchronizedDisplayPropertiesChanged(
+    bool rotation) {
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                               base::nullopt);
 }
@@ -2546,6 +2559,8 @@ RenderWidgetHostViewAura::DidUpdateVisualProperties(
 }
 
 void RenderWidgetHostViewAura::DidNavigate() {
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+
   if (!IsShowing()) {
     // Navigating while hidden should not allocate a new LocalSurfaceID. Once
     // sizes are ready, or we begin to Show, we can then allocate the new
@@ -2562,7 +2577,6 @@ void RenderWidgetHostViewAura::DidNavigate() {
                                   base::nullopt);
     }
   }
-  if (delegated_frame_host_)
     delegated_frame_host_->DidNavigate();
   is_first_navigation_ = false;
 }
@@ -2577,14 +2591,12 @@ void RenderWidgetHostViewAura::TakeFallbackContentFrom(
               ->IsRenderWidgetHostViewChildFrame());
   RenderWidgetHostViewAura* view_aura =
       static_cast<RenderWidgetHostViewAura*>(view);
-  base::Optional<SkColor> color = view_aura->GetBackgroundColor();
-  if (color)
-    SetBackgroundColor(*color);
+  CopyBackgroundColorIfPresentFrom(*view);
 
-  if (delegated_frame_host_ && view_aura->delegated_frame_host_) {
-    delegated_frame_host_->TakeFallbackContentFrom(
-        view_aura->delegated_frame_host_.get());
-  }
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+  DCHECK(view_aura->delegated_frame_host_);
+  delegated_frame_host_->TakeFallbackContentFrom(
+      view_aura->delegated_frame_host_.get());
   host()->GetContentRenderingTimeoutFrom(view_aura->host());
 }
 
@@ -2617,6 +2629,7 @@ void RenderWidgetHostViewAura::InvalidateLocalSurfaceIdOnEviction() {
 }
 
 void RenderWidgetHostViewAura::ProcessDisplayMetricsChanged() {
+  // TODO(crbug.com/1169291): Unify per-platform DisplayObserver instances.
   needs_to_update_display_metrics_ = false;
   UpdateScreenInfo(window_);
   current_cursor_.SetDisplayInfo(

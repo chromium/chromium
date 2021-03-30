@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -19,7 +20,6 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/multiprocess_test.h"
@@ -103,7 +103,7 @@ MULTIPROCESS_TEST_MAIN(ProcessSingletonTestProcessMain) {
   if (user_data_dir.empty())
     return kErrorResultCode;
 
-  base::string16 ready_event_name =
+  std::wstring ready_event_name =
       cmd_line->GetSwitchValueNative(kReadyEventNameFlag);
 
   base::win::ScopedHandle ready_event(
@@ -111,7 +111,7 @@ MULTIPROCESS_TEST_MAIN(ProcessSingletonTestProcessMain) {
   if (!ready_event.IsValid())
     return kErrorResultCode;
 
-  base::string16 continue_event_name =
+  std::wstring continue_event_name =
       cmd_line->GetSwitchValueNative(kContinueEventNameFlag);
 
   base::win::ScopedHandle continue_event(
@@ -247,8 +247,8 @@ class ProcessSingletonTest : public base::MultiProcessTest {
     return allow_kill;
   }
 
-  base::string16 ready_event_name_;
-  base::string16 continue_event_name_;
+  std::wstring ready_event_name_;
+  std::wstring continue_event_name_;
 
   WindowOption window_option_;
   base::ScopedTempDir user_data_dir_;

@@ -228,9 +228,9 @@ void PageAggregator::OnHadFormInteractionChanged(const FrameNode* frame_node) {
 }
 
 void PageAggregator::OnPassedToGraph(Graph* graph) {
-  // This observer presumes that it's been added before any nodes exist in the
-  // graph.
-  DCHECK(GraphImpl::FromGraph(graph)->nodes().empty());
+  // This observer presumes that it's been added before any frame nodes exist in
+  // the graph.
+  DCHECK(graph->GetAllFrameNodes().empty());
   graph->AddFrameNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);

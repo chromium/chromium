@@ -47,6 +47,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Windows.CetEnabled" enum="BooleanEnabled"
+    expires_after="2021-12-01">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records if CET (Control-flow Enforcement Technology / Hardware Enforced
+    Shadow Stack) is enabled or if it has been disabled by IFEO. Reported only
+    if CetAvailable is true, once per browser session, on startup.
+  </summary>
+</histogram>
+
 <histogram name="Windows.ChromeDllPrefetchResult" enum="FilePrefetchResult"
     expires_after="2021-07-01">
   <owner>brucedawson@chromium.org</owner>
@@ -102,7 +113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>brucedawson@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -112,8 +123,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
-    expires_after="M81">
-  <owner>stanisc@chromium.org</owner>
+    expires_after="2022-02-12">
+  <owner>olivierli@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
   <summary>
     Percentage of elapsed time the high resolution timer is activated. The usage
     is reported by each of Chrome processes individually (without aggregation)
@@ -122,7 +134,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.HypervPresent" enum="BooleanEnabled"
-    expires_after="2021-05-02">
+    expires_after="2021-08-01">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -310,7 +322,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
-    expires_after="2021-05-02">
+    expires_after="2021-07-27">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -322,12 +334,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
-    enum="BooleanEnabled" expires_after="2021-05-02">
+    enum="BooleanEnabled" expires_after="2021-07-27">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
     Whether virtualization has been enabled in the system firmware. Logged
     shortly after startup. This metric will only be logged on Windows 10+.
+  </summary>
+</histogram>
+
+<histogram name="Windows.ServiceStatus.SSP" units="WindowsServiceStatus"
+    expires_after="2021-08-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>ajgo@chromium.org</owner>
+  <summary>
+    This records whether any SSP/AD providers are registered on the system. If
+    there are any then this typically means the network sandbox cannot
+    successfully engage. Recorded each time the browser attempts to start the
+    network service process. This metric is only recorded on Windows 10+.
   </summary>
 </histogram>
 
@@ -337,7 +361,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.TmpFileDeleter.FailCount" units="files"
-    expires_after="2021-05-02">
+    expires_after="2021-08-09">
   <owner>grt@chromium.org</owner>
   <owner>etiennep@chromium.org</owner>
   <summary>
@@ -351,7 +375,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.TmpFileDeleter.SuccessCount" units="files"
-    expires_after="2021-05-02">
+    expires_after="2021-08-09">
   <owner>grt@chromium.org</owner>
   <owner>etiennep@chromium.org</owner>
   <summary>
@@ -364,7 +388,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.TouchDrag.Success" units="BooleanSuccess"
-    expires_after="2021-03-01">
+    expires_after="2021-08-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>

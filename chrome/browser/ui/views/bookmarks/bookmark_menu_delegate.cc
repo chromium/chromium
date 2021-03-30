@@ -27,6 +27,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
@@ -68,12 +69,13 @@ SkColor TextColorForMenu(MenuItemView* menu, views::Widget* widget) {
 
 }  // namespace
 
-BookmarkMenuDelegate::BookmarkMenuDelegate(Browser* browser,
-                                           PageNavigator* navigator,
-                                           views::Widget* parent)
+BookmarkMenuDelegate::BookmarkMenuDelegate(
+    Browser* browser,
+    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
+    views::Widget* parent)
     : browser_(browser),
       profile_(browser->profile()),
-      page_navigator_(navigator),
+      get_navigator_(std::move(get_navigator)),
       parent_(parent),
       menu_(nullptr),
       parent_menu_item_(nullptr),
@@ -127,12 +129,6 @@ void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
   }
 }
 
-void BookmarkMenuDelegate::SetPageNavigator(PageNavigator* navigator) {
-  page_navigator_ = navigator;
-  if (context_menu_.get())
-    context_menu_->SetPageNavigator(navigator);
-}
-
 const BookmarkModel* BookmarkMenuDelegate::GetBookmarkModel() const {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
@@ -150,14 +146,14 @@ void BookmarkMenuDelegate::SetActiveMenu(const BookmarkNode* node,
   menu_ = node_to_menu_map_[node];
 }
 
-base::string16 BookmarkMenuDelegate::GetTooltipText(
+std::u16string BookmarkMenuDelegate::GetTooltipText(
     int id,
     const gfx::Point& screen_loc) const {
   auto i = menu_id_to_node_map_.find(id);
   // When removing bookmarks it may be possible to end up here without a node.
   if (i == menu_id_to_node_map_.end()) {
     DCHECK(is_mutating_model_);
-    return base::string16();
+    return std::u16string();
   }
 
   const BookmarkNode* node = i->second;
@@ -167,7 +163,7 @@ base::string16 BookmarkMenuDelegate::GetTooltipText(
         tooltip_manager->GetMaxWidth(screen_loc),
         tooltip_manager->GetFontList(), node->url(), node->GetTitle());
   }
-  return base::string16();
+  return std::u16string();
 }
 
 bool BookmarkMenuDelegate::IsTriggerableEvent(views::MenuItemView* menu,
@@ -184,18 +180,15 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
 
   RecordBookmarkLaunch(location_,
                        ProfileMetrics::GetBrowserProfileType(profile_));
-  chrome::OpenAll(parent_->GetNativeWindow(), page_navigator_, selection,
-                  ui::DispositionFromEventFlags(mouse_event_flags),
-                  profile_);
-  // NOTE: |this| may be deleted.
+  chrome::OpenAllIfAllowed(browser_, get_navigator_, selection,
+                           ui::DispositionFromEventFlags(mouse_event_flags));
 }
 
 bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
     int id,
     const ui::Event& event) {
-  if ((event.flags() & ui::EF_LEFT_MOUSE_BUTTON) &&
-      ui::DispositionFromEventFlags(event.flags()) ==
-          WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (ui::DispositionFromEventFlags(event.flags()) ==
+      WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
     const BookmarkNode* node = menu_id_to_node_map_[id];
     // Close the menu before opening a folder since this may pop up a dialog
@@ -253,7 +246,7 @@ bool BookmarkMenuDelegate::CanDrop(MenuItemView* menu,
   return (drop_node == NULL);
 }
 
-int BookmarkMenuDelegate::GetDropOperation(
+ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
     MenuItemView* item,
     const ui::DropTargetEvent& event,
     views::MenuDelegate::DropPosition* position) {
@@ -293,7 +286,7 @@ int BookmarkMenuDelegate::GetDropOperation(
       profile_, event, drop_data_, drop_parent, index_to_drop_at);
 }
 
-int BookmarkMenuDelegate::OnPerformDrop(
+ui::mojom::DragOperation BookmarkMenuDelegate::OnPerformDrop(
     MenuItemView* menu,
     views::MenuDelegate::DropPosition position,
     const ui::DropTargetEvent& event) {
@@ -341,7 +334,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
   const BookmarkNode* node = menu_id_to_node_map_[id];
   std::vector<const BookmarkNode*> nodes(1, node);
   context_menu_.reset(
-      new BookmarkContextMenu(parent_, browser_, profile_, page_navigator_,
+      new BookmarkContextMenu(parent_, browser_, profile_, get_navigator_,
                               BOOKMARK_LAUNCH_LOCATION_APP_MENU, node->parent(),
                               nodes, ShouldCloseOnRemove(node)));
   context_menu_->set_observer(this);
@@ -581,7 +574,7 @@ void BookmarkMenuDelegate::AddMenuToMaps(MenuItemView* menu,
   node_to_menu_map_[node] = menu;
 }
 
-base::string16 BookmarkMenuDelegate::MaybeEscapeLabel(
-    const base::string16& label) {
+std::u16string BookmarkMenuDelegate::MaybeEscapeLabel(
+    const std::u16string& label) {
   return menu_uses_mnemonics_ ? ui::EscapeMenuLabelAmpersands(label) : label;
 }

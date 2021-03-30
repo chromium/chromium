@@ -20,6 +20,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -29,22 +30,24 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       customize_themes_factory_receiver_(this) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIProfileCustomizationHost);
+  webui::SetJSModuleDefaults(source);
   source->SetDefaultResource(IDR_PROFILE_CUSTOMIZATION_HTML);
-  source->AddResourcePath("profile_customization_app.js",
-                          IDR_PROFILE_CUSTOMIZATION_APP_JS);
-  source->AddResourcePath("profile_customization_browser_proxy.js",
-                          IDR_PROFILE_CUSTOMIZATION_BROWSER_PROXY_JS);
-  source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
-  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
+  static constexpr webui::ResourcePath kResources[] = {
+      {"profile_customization_app.js", IDR_PROFILE_CUSTOMIZATION_APP_JS},
+      {"profile_customization_browser_proxy.js",
+       IDR_PROFILE_CUSTOMIZATION_BROWSER_PROXY_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+  };
+  source->AddResourcePaths(kResources);
 
   // Localized strings.
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"profileCustomizationDoneLabel",
        IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL},
       {"profileCustomizationPickThemeTitle",
        IDS_PROFILE_CUSTOMIZATION_PICK_THEME_TITLE},
+      {"profileCustomizationInputLabel", IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL},
 
       // Color picker strings:
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
@@ -52,24 +55,16 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
   };
-  webui::AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   // loadTimeData.
   Profile* profile = Profile::FromWebUI(web_ui);
-  ProfileAttributesEntry* entry = nullptr;
-  g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .GetProfileAttributesWithPath(profile->GetPath(), &entry);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
   source->AddString("profileName",
                     base::UTF16ToUTF8(entry->GetLocalProfileName()));
-
-  // Resources for testing.
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
-  source->DisableTrustedTypesCSP();
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 
   content::WebUIDataSource::Add(profile, source);
 }

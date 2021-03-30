@@ -21,8 +21,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -43,6 +44,7 @@ import java.util.concurrent.TimeoutException;
  * 3. TestTrustedWebActivityService notify the result with TrustedWebActivityCallback.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class TrustedWebActivityClientLocationDelegationTest {
     private static final Uri SCOPE = Uri.parse("https://www.example.com/notifications");
     private static final Origin ORIGIN = Origin.create(SCOPE);
@@ -56,7 +58,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
 
     @Before
     public void setUp() throws TimeoutException, RemoteException {
-        ChromeAppComponent component = ChromeApplication.getComponent();
+        ChromeAppComponent component = ChromeApplicationImpl.getComponent();
         mClient = component.resolveTrustedWebActivityClient();
 
         // TestTrustedWebActivityService is in the test support apk.

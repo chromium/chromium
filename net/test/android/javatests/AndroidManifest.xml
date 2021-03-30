@@ -15,7 +15,16 @@
 
         <uses-library android:name="android.test.runner" />
 
+        <!-- The android:requestLegacyExternalStorage setting is necessary to
+             work on Q+. If the target SDK version of this APK is ever updated
+             to 30 or higher, that workaround will stop working and the more
+             complicated one used by the test APKs (using app compatibility
+             changes) will need to be used instead. Note that this setting is
+             usually applied at the application level, but those do not
+             propagate to child services and the service is the thing that
+             actually reads from external storage. -->
         <service android:name="org.chromium.net.test.EmbeddedTestServerService"
+                android:requestLegacyExternalStorage="true"
                 android:exported="true"
                 tools:ignore="ExportedService">
             <intent-filter>

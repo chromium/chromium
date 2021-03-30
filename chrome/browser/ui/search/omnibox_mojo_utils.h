@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/common/search/omnibox.mojom-forward.h"
 
 class AutocompleteResult;
@@ -50,7 +49,7 @@ std::vector<search::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     bookmarks::BookmarkModel* bookmark_model);
 
 search::mojom::AutocompleteResultPtr CreateAutocompleteResult(
-    const base::string16& input,
+    const std::u16string& input,
     const AutocompleteResult& result,
     bookmarks::BookmarkModel* bookmark_model,
     PrefService* prefs);

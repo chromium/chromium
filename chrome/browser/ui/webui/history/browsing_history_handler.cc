@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
@@ -37,6 +38,7 @@
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/memories/core/memories_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
 #include "components/strings/grit/components_strings.h"
@@ -108,7 +110,7 @@ void SetHistoryEntryUrlAndTitle(
   result->SetStringKey("url", entry.url.spec());
 
   bool using_url_as_the_title = false;
-  base::string16 title_to_set(entry.title);
+  std::u16string title_to_set(entry.title);
   if (entry.title.empty()) {
     using_url_as_the_title = true;
     title_to_set = base::UTF8ToUTF16(entry.url.spec());
@@ -131,6 +133,21 @@ void SetHistoryEntryUrlAndTitle(
     title_to_set.resize(kShortTitleLength);
 
   result->SetStringKey("title", title_to_set);
+}
+
+// Helper function to check if entry is present in local database (local-side
+// history).
+bool IsUrlInLocalDatabase(const BrowsingHistoryService::HistoryEntry& entry) {
+  switch (entry.entry_type) {
+    case BrowsingHistoryService::HistoryEntry::EntryType::EMPTY_ENTRY:
+    case BrowsingHistoryService::HistoryEntry::EntryType::REMOTE_ENTRY:
+      return false;
+    case BrowsingHistoryService::HistoryEntry::EntryType::LOCAL_ENTRY:
+    case BrowsingHistoryService::HistoryEntry::EntryType::COMBINED_ENTRY:
+      return true;
+  }
+  NOTREACHED();
+  return false;
 }
 
 // Helper function to check if entry is present in user remote data (server-side
@@ -159,7 +176,7 @@ base::Value HistoryEntryToValue(
   base::Value result(base::Value::Type::DICTIONARY);
   SetHistoryEntryUrlAndTitle(entry, &result);
 
-  base::string16 domain = url_formatter::IDNToUnicode(entry.url.host());
+  std::u16string domain = url_formatter::IDNToUnicode(entry.url.host());
   // When the domain is empty, use the scheme instead. This allows for a
   // sensible treatment of e.g. file: URLs when group by domain is on.
   if (domain.empty())
@@ -188,9 +205,9 @@ base::Value HistoryEntryToValue(
   // the monthly view.
   result.SetStringKey("dateShort", base::TimeFormatShortDate(entry.time));
 
-  base::string16 snippet_string;
-  base::string16 date_relative_day;
-  base::string16 date_time_of_day;
+  std::u16string snippet_string;
+  std::u16string date_relative_day;
+  std::u16string date_time_of_day;
   bool is_blocked_visit = false;
   int host_filtering_behavior = -1;
 
@@ -201,7 +218,7 @@ base::Value HistoryEntryToValue(
     snippet_string = entry.snippet;
   } else {
     base::Time midnight = clock->Now().LocalMidnight();
-    base::string16 date_str =
+    std::u16string date_str =
         ui::TimeFormat::RelativeDate(entry.time, &midnight);
     if (date_str.empty()) {
       date_str = base::TimeFormatFriendlyDate(entry.time);
@@ -246,6 +263,16 @@ base::Value HistoryEntryToValue(
   result.SetBoolKey("isUrlInRemoteUserData", IsEntryInRemoteUserData(entry));
   result.SetStringKey("remoteIconUrlForUma",
                       entry.remote_icon_url_for_uma.spec());
+
+  // Additional debugging fields that are only shown if the memories::kDebug
+  // feature is enabled.
+  if (base::FeatureList::IsEnabled(memories::kDebug)) {
+    base::Value debug(base::Value::Type::DICTIONARY);
+    debug.SetBoolKey("isUrlInLocalDatabase", IsUrlInLocalDatabase(entry));
+    debug.SetIntKey("visitCount", entry.visit_count);
+    debug.SetIntKey("typedCount", entry.typed_count);
+    result.SetKey("debug", std::move(debug));
+  }
 
   return result;
 }
@@ -319,7 +346,7 @@ void BrowsingHistoryHandler::StartQueryHistory() {
       this, local_history, sync_service);
 
   // 150 = RESULTS_PER_PAGE from chrome/browser/resources/history/constants.js
-  SendHistoryQuery(150, base::string16());
+  SendHistoryQuery(150, std::u16string());
 }
 
 void BrowsingHistoryHandler::HandleQueryHistory(const base::ListValue* args) {
@@ -359,7 +386,7 @@ void BrowsingHistoryHandler::HandleQueryHistory(const base::ListValue* args) {
 }
 
 void BrowsingHistoryHandler::SendHistoryQuery(int max_count,
-                                              const base::string16& query) {
+                                              const std::u16string& query) {
   history::QueryOptions options;
   options.max_count = max_count;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
@@ -437,7 +464,7 @@ void BrowsingHistoryHandler::HandleClearBrowsingData(
 }
 
 void BrowsingHistoryHandler::HandleRemoveBookmark(const base::ListValue* args) {
-  base::string16 url = ExtractStringValue(args);
+  std::u16string url = ExtractStringValue(args);
   Profile* profile = GetProfile();
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
   bookmarks::RemoveAllBookmarks(model, GURL(url));

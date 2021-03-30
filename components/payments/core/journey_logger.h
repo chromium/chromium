@@ -55,6 +55,8 @@ class JourneyLogger {
     EVENT_INITIATED = 0,
     // PaymentRequest was triggered via .show() and a native UI was shown.
     EVENT_SHOWN = 1 << 0,
+    // A payment app was invoked, regardless of whether the UI was skipped or
+    // the pay button was actually clicked.
     EVENT_PAY_CLICKED = 1 << 1,
     EVENT_RECEIVED_INSTRUMENT_DETAILS = 1 << 2,
     // PaymentRequest was triggered via .show() and no UI was shown because we
@@ -116,6 +118,64 @@ class JourneyLogger {
     EVENT_ENUM_MAX = EVENT_SELECTED_SECURE_PAYMENT_CONFIRMATION,
   };
 
+  // A new version of Event. Some basic-card/autofill related bits are
+  // removed to free up more bits for new future payment methods.
+  enum class Event2 {
+    // Initiated means the PaymentRequest object was constructed.
+    kInitiated = 0,
+    // PaymentRequest was triggered via .show() and a native UI was shown.
+    kShown = 1 << 0,
+    // A payment app was invoked.
+    kPayClicked = 1 << 1,
+    // Whether any payer data (i.e., name, email, phone)
+    // was requested.
+    kRequestPayerData = 1 << 2,
+    // PaymentRequest was triggered via .show() and no UI was shown because we
+    // skipped directly to the payment app.
+    kSkippedShow = 1 << 3,
+    // .complete() was called by the merchant, completing the flow.
+    kCompleted = 1 << 4,
+    // The user aborted the flow by either dismissing it explicitly, or
+    // navigating away (if possible).
+    kUserAborted = 1 << 5,
+    // Other reasons for aborting include the merchant calling .abort(), the
+    // merchant triggering a navigation, the tab closing, the browser closing,
+    // etc. See implementation for details.
+    kOtherAborted = 1 << 6,
+    // Whether or not any requested method is available.
+    kHadInitialFormOfPayment = 1 << 7,
+
+    // Correspond to the merchant specifying requestShipping,
+    // requestPayerName,
+    // requestPayerEmail, requestPayerPhone.
+    kRequestShipping = 1 << 11,
+
+    // The merchant requested a Play Billing payment method.
+    kRequestMethodPlayBilling = 1 << 14,
+    // The merchant requested at least one basic-card method.
+    kRequestMethodBasicCard = 1 << 15,
+    // The merchant requested a Google payment method.
+    kRequestMethodGoogle = 1 << 16,
+    // The merchant requested a non-Google, non-basic-card payment method.
+    kRequestMethodOther = 1 << 17,
+    // The user initiated the transaction using a saved credit card, a Google
+    // payment app (e.g., Android Pay), or another payment instrument,
+    // respectively.
+    kSelectedCreditCard = 1 << 18,
+    kSelectedGoogle = 1 << 19,
+    kSelectedOther = 1 << 20,
+    kSelectedPlayBilling = 1 << 21,
+
+    // True when a NotShownReason is set.
+    kCouldNotShow = 1 << 23,
+
+    // Bits for secure-payment-confirmation method.
+    kRequestMethodSecurePaymentConfirmation = 1 << 30,
+    kSelectedSecurePaymentConfirmation = 1 << 31,
+
+    kEnumMax = kSelectedSecurePaymentConfirmation,
+  };
+
   // The reason why the Payment Request was aborted.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AbortReason
@@ -155,6 +215,18 @@ class JourneyLogger {
     // Transaction value > 1$.
     kRegularTransaction = 2,
     kMaxValue = kRegularTransaction,
+  };
+
+  // The categories of the payment methods.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: PaymentMethodCategory
+  enum class PaymentMethodCategory {
+    kBasicCard = 0,
+    kGoogle = 1,
+    kPlayBilling = 2,
+    kSecurePaymentConfirmation = 3,
+    kOther = 4,
+    kMaxValue = kOther,
   };
 
   // Records different checkout steps for payment requests. The difference
@@ -197,8 +269,24 @@ class JourneyLogger {
   // its return value.
   void SetHasEnrolledInstrumentValue(bool value);
 
-  // Records that an event occurred.
-  void SetEventOccurred(Event event);
+  // Records that a payment app has been shown without payment UIs being shown
+  // before that.
+  void SetSkippedShow();
+
+  // Records that a payment UI has been shown.
+  void SetShown();
+
+  // Records that the instrument details have been received.
+  void SetReceivedInstrumentDetails();
+
+  // Records that a payment app was invoked.
+  void SetPayClicked();
+
+  // Records the category of the selected app.
+  void SetSelectedMethod(PaymentMethodCategory category);
+
+  // Records the method that is supported by the available payment apps.
+  void SetAvailableMethod(PaymentMethodCategory category);
 
   // Records the user information requested by the merchant.
   void SetRequestedInformation(bool requested_shipping,
@@ -211,11 +299,8 @@ class JourneyLogger {
   // method, secure payment confirmation method or other url-based payment
   // method, respectively) is requested.
   // TODO(crbug.com/754811): Add support for non-basic-card, non-URL methods.
-  void SetRequestedPaymentMethodTypes(
-      bool requested_basic_card,
-      bool requested_method_google,
-      bool requested_method_secure_payment_confirmation,
-      bool requested_method_other);
+  void SetRequestedPaymentMethods(
+      const std::vector<PaymentMethodCategory>& methods);
 
   // Records that the Payment Request was completed successfully, and starts the
   // logging of all the journey metrics.
@@ -245,6 +330,15 @@ class JourneyLogger {
   void SetPaymentAppUkmSourceId(ukm::SourceId payment_app_source_id);
 
  private:
+  // Records that an event occurred.
+  void SetEventOccurred(Event event);
+
+  // Records that an event occurred.
+  void SetEvent2Occurred(Event2 event);
+
+  // Whether the given event was occurred.
+  bool WasOccurred(Event2 event) const;
+
   static const int NUMBER_OF_SECTIONS = 3;
 
   // Note: These constants should always be in sync with their counterpart in
@@ -287,6 +381,9 @@ class JourneyLogger {
   // Validates the recorded event sequence during the Payment Request.
   void ValidateEventBits() const;
 
+  // Asserts that the given bits in events_ and events2_ are equal.
+  void AssertOccurredTogether(Event event, Event2 event2) const;
+
   // Returns whether this Payment Request was triggered (shown or skipped show).
   bool WasPaymentRequestTriggered();
 
@@ -299,6 +396,9 @@ class JourneyLogger {
 
   // Accumulates the many events that have happened during the Payment Request.
   int events_;
+
+  // The 2.0 version of event_.
+  int events2_;
 
   // Keeps track of whether transaction amounts are recorded or not to catch
   // multiple recording. Triggered is the first index and Completed the second.

@@ -4,7 +4,7 @@
 
 // https://wicg.github.io/performance-measure-memory/#dictdef-memorymeasurement
 
-// The result of performance.measureMemory().
+// The result of performance.measureUserAgentSpecificMemory().
 dictionary MemoryMeasurement {
   required unsigned long long bytes;
   required sequence<MemoryBreakdownEntry> breakdown;

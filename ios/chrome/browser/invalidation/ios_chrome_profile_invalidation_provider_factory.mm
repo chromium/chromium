@@ -74,17 +74,17 @@ IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
       std::make_unique<invalidation::FCMInvalidationService>(
           identity_provider.get(),
           base::BindRepeating(
-              &syncer::FCMNetworkHandler::Create,
+              &invalidation::FCMNetworkHandler::Create,
               IOSChromeGCMProfileServiceFactory::GetForBrowserState(
                   browser_state)
                   ->driver(),
               IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
                   browser_state)
                   ->driver()),
-          base::BindRepeating(&syncer::PerUserTopicSubscriptionManager::Create,
-                              identity_provider.get(),
-                              browser_state->GetPrefs(),
-                              browser_state->GetURLLoaderFactory()),
+          base::BindRepeating(
+              &invalidation::PerUserTopicSubscriptionManager::Create,
+              identity_provider.get(), browser_state->GetPrefs(),
+              browser_state->GetURLLoaderFactory()),
           IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
               browser_state)
               ->driver(),

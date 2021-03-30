@@ -148,7 +148,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   request.Request(
       env->host_port_pair, version, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
       SocketTag(), NetworkIsolationKey(), false /* disable_secure_dns */,
-      kCertVerifyFlags, GURL(kUrl), env->net_log, &net_error_details,
+      true /* use_dns_aliases */, kCertVerifyFlags, GURL(kUrl), env->net_log,
+      &net_error_details,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       callback.callback());
 
@@ -157,7 +158,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       request.ReleaseSessionHandle();
   if (!session)
     return 0;
-  std::unique_ptr<HttpStream> stream(new QuicHttpStream(std::move(session)));
+  auto dns_aliases = session->GetDnsAliasesForSessionKey(request.session_key());
+  auto stream = std::make_unique<QuicHttpStream>(std::move(session),
+                                                 std::move(dns_aliases));
 
   HttpRequestInfo request_info;
   request_info.method = kMethod;

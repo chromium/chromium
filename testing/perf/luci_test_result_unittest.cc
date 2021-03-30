@@ -165,10 +165,20 @@ class LuciTestResultParameterizedTest
 TEST_P(LuciTestResultParameterizedTest, Variant) {
   LuciTestResult result = LuciTestResult::CreateForGTest();
 
+  // 2019/9/11 12:30 UTC
+  base::Time start_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCExploded({2019, 9, 3, 11, 12, 30, 0}, &start_time));
+  result.set_start_time(start_time);
+
+  result.set_duration(base::TimeDelta::FromMilliseconds(1500));
+
   const std::string json_template =
       R"({
            "testResult":{
              "expected":true,
+             "runDuration":"1.50s",
+             "startTime":"2019-09-11T12:30:00.000Z",
              "status":"PASS",
              "testPath":
                  "ZeroToFiveSequence/LuciTestResultParameterizedTest.Variant",
@@ -197,6 +207,14 @@ TYPED_TEST_SUITE_P(LuciTestResultTypedTest);
 TYPED_TEST_P(LuciTestResultTypedTest, Variant) {
   LuciTestResult result = LuciTestResult::CreateForGTest();
 
+  // 2019/9/11 12:30 UTC
+  base::Time start_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCExploded({2019, 9, 3, 11, 12, 30, 0}, &start_time));
+  result.set_start_time(start_time);
+
+  result.set_duration(base::TimeDelta::FromMilliseconds(1500));
+
   std::string test_suite_name =
       testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();
   auto pos = test_suite_name.rfind('/');
@@ -207,6 +225,8 @@ TYPED_TEST_P(LuciTestResultTypedTest, Variant) {
       R"({
            "testResult":{
              "expected":true,
+             "runDuration":"1.50s",
+             "startTime":"2019-09-11T12:30:00.000Z",
              "status":"PASS",
              "testPath":"SomeTypes/LuciTestResultTypedTest/%s.Variant",
              "variant":{"param/instantiation":"%s"}

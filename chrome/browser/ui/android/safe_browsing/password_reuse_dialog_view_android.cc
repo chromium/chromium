@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/SafeBrowsingPasswordReuseDialogBridge_jni.h"
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
@@ -30,10 +31,10 @@ void PasswordReuseDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
       env, window_android->GetJavaObject(), reinterpret_cast<intptr_t>(this)));
 
   std::vector<size_t> placeholder_offsets;
-  base::string16 warning_detail_text =
+  std::u16string warning_detail_text =
       controller_->GetWarningDetailText(&placeholder_offsets);
 
-  const std::vector<base::string16> placeholders =
+  const std::vector<std::u16string> placeholders =
       controller_->GetPlaceholdersForSavedPasswordWarningText();
 
   DCHECK_EQ(placeholder_offsets.size(), placeholders.size());

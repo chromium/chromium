@@ -39,6 +39,13 @@ public class AutocompleteController {
     // Maximum number of voice suggestions to show.
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
+    // The delay between the Omnibox being opened and a spare renderer being started. Starting a
+    // spare renderer is a very expensive operation, so this value must always be great enough for
+    // the Omnibox to be fully rendered and otherwise not doing anything important but not so great
+    // that the user navigates before it occurs. Experimentation between 1s, 2s, 3s found that 1s
+    // was the most ideal.
+    private static final int OMNIBOX_SPARE_RENDERER_DELAY_MS = 1000;
+
     private long mNativeAutocompleteControllerAndroid;
     private long mCurrentNativeAutocompleteResult;
     private OnSuggestionsReceivedListener mListener;
@@ -47,6 +54,7 @@ public class AutocompleteController {
     private boolean mUseCachedZeroSuggestResults;
     private boolean mEnableNativeVoiceSuggestProvider;
     private boolean mWaitingForSuggestionsToCache;
+    private Profile mProfile;
 
     /**
      * Listener for receiving OmniboxSuggestions.
@@ -71,7 +79,8 @@ public class AutocompleteController {
     }
 
     /**
-     * Resets the underlying autocomplete controller based on the specified profile.
+     * Resets the underlying autocomplete controller based on the specified profile. This function
+     * returns early if there are no profile changes.
      *
      * <p>This will implicitly stop the autocomplete suggestions, so
      * {@link #start(Profile, String, String, boolean)} must be called again to start them flowing
@@ -82,6 +91,13 @@ public class AutocompleteController {
      */
     public void setProfile(Profile profile) {
         assert mListener != null : "Ensure a listener is set prior to calling.";
+        if (mProfile == profile) {
+            mNativeAutocompleteControllerAndroid =
+                    AutocompleteControllerJni.get().init(AutocompleteController.this, profile);
+            return;
+        }
+
+        mProfile = profile;
         stop(true);
         if (profile == null) {
             mNativeAutocompleteControllerAndroid = 0;
@@ -127,8 +143,8 @@ public class AutocompleteController {
                 TextUtils.isEmpty(url));
         if (profile == null || TextUtils.isEmpty(url)) return;
 
-        mNativeAutocompleteControllerAndroid =
-                AutocompleteControllerJni.get().init(AutocompleteController.this, profile);
+        setProfile(profile);
+
         // Initializing the native counterpart might still fail.
         if (mNativeAutocompleteControllerAndroid != 0) {
             AutocompleteControllerJni.get().start(mNativeAutocompleteControllerAndroid,
@@ -184,18 +200,21 @@ public class AutocompleteController {
         // spare renderer will probably get used anyways by a later navigation.
         if (!profile.isOffTheRecord() && !UrlUtilities.isNTPUrl(url)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SPARE_RENDERER)) {
+            // It is ok for this to get called multiple times since all the requests will get
+            // de-duplicated to the first one.
             PostTask.postDelayedTask(UiThreadTaskTraits.BEST_EFFORT,
-                    ()
-                            -> {
+                    // clang-format off
+                    () -> {
                         ThreadUtils.assertOnUiThread();
                         WarmupManager.getInstance().createSpareRenderProcessHost(profile);
                     },
+                    // clang-format on
                     ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                             ChromeFeatureList.OMNIBOX_SPARE_RENDERER,
-                            "omnibox_spare_renderer_delay_ms", 0));
+                            "omnibox_spare_renderer_delay_ms", OMNIBOX_SPARE_RENDERER_DELAY_MS));
         }
-        mNativeAutocompleteControllerAndroid =
-                AutocompleteControllerJni.get().init(AutocompleteController.this, profile);
+        setProfile(profile);
+
         if (mNativeAutocompleteControllerAndroid != 0) {
             if (mUseCachedZeroSuggestResults) mWaitingForSuggestionsToCache = true;
             AutocompleteControllerJni.get().onOmniboxFocused(mNativeAutocompleteControllerAndroid,
@@ -341,7 +360,14 @@ public class AutocompleteController {
     @CalledByNative
     private static boolean isEquivalentOmniboxSuggestion(
             AutocompleteMatch suggestion, int hashCode) {
-        return suggestion.hashCode() == hashCode;
+        if (suggestion.hashCode() == hashCode) return true;
+
+        // Note: these are only logged on development builds.
+        // clang-format off
+        Log.d(TAG, "Checked suggestion not valid: " + suggestion.getFillIntoEdit() + " ("
+                   + suggestion.getType() + ")");
+        // clang-format on
+        return false;
     }
 
     /**
@@ -404,20 +430,6 @@ public class AutocompleteController {
                 mNativeAutocompleteControllerAndroid, AutocompleteController.this, url);
     }
 
-    /**
-     * Group native suggestions in specified range by Search vs URL.
-     *
-     * TODO(crbug.com/1138587): move this to AutocompleteResult when the class is ready to interface
-     * with native code.
-     *
-     * @param firstIndex Index of the first suggestion for grouping.
-     * @param lastIndex Index of the last suggestion for grouping.
-     */
-    public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {
-        AutocompleteControllerJni.get().groupSuggestionsBySearchVsURL(
-                mNativeAutocompleteControllerAndroid, firstIndex, lastIndex);
-    }
-
     @NativeMethods
     interface Natives {
         long init(AutocompleteController caller, Profile profile);
@@ -447,8 +459,6 @@ public class AutocompleteController {
                 String newQueryText, String[] newQueryParams);
         Tab findMatchingTabWithUrl(
                 long nativeAutocompleteControllerAndroid, AutocompleteController caller, GURL url);
-        void groupSuggestionsBySearchVsURL(
-                long nativeAutocompleteControllerAndroid, int firstIndex, int lastIndex);
         void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,
                 float[] confidenceScores);
         /**

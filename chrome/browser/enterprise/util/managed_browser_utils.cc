@@ -10,6 +10,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 #if defined(OS_ANDROID)
 #include <jni.h>
@@ -20,9 +21,9 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -64,6 +65,17 @@ bool HasBrowserPoliciesApplied(Profile* profile) {
 #endif
 
   return false;
+}
+
+std::string GetDomainFromEmail(const std::string& email) {
+  size_t email_separator_pos = email.find('@');
+  bool is_email = email_separator_pos != std::string::npos &&
+                  email_separator_pos < email.length() - 1;
+
+  if (!is_email)
+    return std::string();
+
+  return gaia::ExtractDomainName(email);
 }
 
 }  // namespace enterprise_util

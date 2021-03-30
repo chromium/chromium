@@ -37,6 +37,7 @@
 <translation id="1358735829858566124">Το αρχείο ή ο κατάλογος δεν μπορούν να χρησιμοποιηθούν.</translation>
 <translation id="1363028406613469049">Κομμάτι</translation>
 <translation id="1378727793141957596">Καλώς ήρθατε στο Google Drive!</translation>
+<translation id="1379911846207762492">Μπορείτε να καταστήσετε τα αρχεία διαθέσιμα εκτός σύνδεσης για να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1395262318152388157">Ρυθμιστικό αναζήτησης</translation>
 <translation id="1404323374378969387">Νορβηγικά</translation>
@@ -77,6 +78,7 @@
 <translation id="1807938677607439181">Όλα τα αρχεία</translation>
 <translation id="1810764548349082891">Δεν υπάρχει διαθέσιμη προεπισκόπηση</translation>
 <translation id="1812302367230252929">Μεταγραφή σε Αμχαρικά</translation>
+<translation id="1813278315230285598">Υπηρεσίες</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Προσοχή:<ph name="END_BOLD" /> Αυτά τα αρχεία είναι προσωρινά και ενδέχεται να διαγραφούν αυτόματα για να απελευθερωθεί χώρος στη μονάδα δίσκου. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Πιγκουίνος</translation>
 <translation id="183183971458492120">Γίνεται φόρτωση των πληροφοριών…</translation>
@@ -86,14 +88,15 @@
 <translation id="1853795129690976061">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Linux.</translation>
 <translation id="1864756863218646478">Δεν ήταν δυνατή η εύρεση του αρχείου.</translation>
 <translation id="1920670151694390848">Μεταγραφή στα Μαλαγιαλαμικά</translation>
+<translation id="1920798810075583923">Καρπούζι</translation>
 <translation id="1924372192547904021">Έγινε μορφοποίηση της συσκευής <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Σλοβακικά</translation>
 <translation id="1933345018156373194">Αποτυχία μετακίνησης, μη αναμενόμενο σφάλμα: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Φινλανδικά
 </translation>
 <translation id="1942765061641586207">Ανάλυση εικόνας</translation>
-<translation id="1943097386230153518">Εγκατάσταση νέας υπηρεσίας</translation>
 <translation id="1972984168337863910">Ανάπτυξη πλαισίων σχολίων αρχείων</translation>
+<translation id="1984456723671657197">Δεν υποστηρίζεται αυτός ο τύπος αρχείου. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="1995337122023280937">Μετάβαση στην τοποθεσία αρχείου</translation>
 <translation id="2001796770603320721">Διαχείριση στο Drive</translation>
 <translation id="2009067268969781306">Η διαμόρφωση ενός δίσκου θα διαγράψει όλα τα δεδομένα που έχουν αποθηκευτεί σε αυτόν. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
@@ -120,6 +123,7 @@
 <translation id="2288278176040912387">Πικάπ</translation>
 <translation id="2291538123825441971">Άνοιγμα <ph name="NUMBER_OF_FILES" /> αρχείων.</translation>
 <translation id="2303301624314357662">Άνοιγμα αρχείου <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Πλανήτης</translation>
 <translation id="2305020378527873881">Το στοιχείο <ph name="VOLUME_NAME" /> καταργήθηκε.</translation>
 <translation id="2325650632570794183">Αυτός ο τύπος αρχείου δεν υποστηρίζεται. Επισκεφτείτε το Chrome Web Store για να εντοπίσετε μια εφαρμογή που να μπορεί να ανοίξει αυτόν τον τύπο αρχείου.</translation>
 <translation id="2326539130272988168">Βουλγαρικά</translation>
@@ -144,7 +148,6 @@
 <translation id="255937426064304553">Διεθνές ΗΠΑ</translation>
 <translation id="2562685439590298522">Έγγραφα</translation>
 <translation id="2563185590376525700">Βάτραχος</translation>
-<translation id="2572501073504669105">Μπορείτε να καταστήσετε τα αρχεία διαθέσιμα εκτός σύνδεσης για να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
 <translation id="2578394532502990878">Φωνητική εισαγωγή Ταμίλ</translation>
 <translation id="2579959351793446050">Όντια</translation>
 <translation id="2614589611416690597">Βίντεο <ph name="VIDEO_TYPE" /></translation>
@@ -190,6 +193,7 @@
 <translation id="299638574917407533">Γαλλικά (Καναδά)</translation>
 <translation id="3003633581067744647">Εναλλαγή σε προβολή μικρογραφιών</translation>
 <translation id="3007214526293698309">Επιδιόρθωση αναλογίας</translation>
+<translation id="3029114385395636667">Ενεργοποιήστε τα Έγγραφα Google εκτός σύνδεσης για να κάνετε τα Έγγραφα, τα Υπολογιστικά φύλλα και τις Παρουσιάσεις διαθέσιμα εκτός σύνδεσης.</translation>
 <translation id="303198083543495566">Γεωγραφία</translation>
 <translation id="3047197340186497470">Κινεζικά Dayi</translation>
 <translation id="3057861065630527966">Δημιουργία αντιγράφων ασφαλείας για τις φωτογραφίες και τα βίντεό σας</translation>
@@ -222,14 +226,17 @@
 <translation id="3335337277364016868">Έτος ηχογράφησης</translation>
 <translation id="3353984535370177728">Επιλέξτε έναν φάκελο για μεταφόρτωση</translation>
 <translation id="3356580349448036450">Ολοκληρώθηκε</translation>
+<translation id="3358452157379365236">Κιθάρα</translation>
 <translation id="3382143449143186018">Νεπαλικά με πληκτρολόγιο InScript</translation>
 <translation id="3408236822532681288">Γερμανικά (Γερμανίας) με πληκτρολόγιο Neo 2</translation>
 <translation id="3414856743105198592">Η μορφοποίηση του αφαιρούμενου μέσου θα διαγράψει όλα τα δεδομένα. Θέλετε να συνεχίσετε;</translation>
 <translation id="3437801641691368414">Ώρα δημιουργίας</translation>
+<translation id="343907260260897561">Στιγμιαία φωτογραφική μηχανή</translation>
 <translation id="3455931012307786678">Εσθονικά</translation>
 <translation id="3466147780910026086">Σάρωση της συσκευής μέσων σας…</translation>
 <translation id="3468522857997926824">Δημιουργήθηκαν αντίγραφα ασφαλείας για <ph name="FILE_COUNT" /> φωτογραφίες στο <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Υπολογιστικό φύλλο Google</translation>
+<translation id="3479552764303398839">Όχι τώρα</translation>
 <translation id="3486821258960016770">Μογγολικά</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> σφάλματα.</translation>
 <translation id="3522708245912499433">Πορτογαλικά</translation>
@@ -240,6 +247,7 @@
 <translation id="3556731189587832921">Αγγλικά (ΗΠΑ) με Διεθνές πληκτρολόγιο υπολογιστή</translation>
 <translation id="357479282490346887">Λιθουανικά
 </translation>
+<translation id="3592251141500063301">Το αρχείο <ph name="FILE_NAME" /> δεν μπορεί να γίνει διαθέσιμο εκτός σύνδεσης.</translation>
 <translation id="3603385196401704894">Γαλλικά Καναδά</translation>
 <translation id="3606220979431771195">Τουρκικά-F</translation>
 <translation id="3616113530831147358">Ήχος</translation>
@@ -287,6 +295,7 @@
 <translation id="4124935795427217608">Μονόκερος</translation>
 <translation id="4158739975813877944">Άνοιγμα playlist</translation>
 <translation id="4159731583141908892">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε.</translation>
+<translation id="4186579485882418952">Ενεργοποίηση πρόσβασης εκτός σύνδεσης</translation>
 <translation id="4193154014135846272">Έγγραφο Google</translation>
 <translation id="4197674956721858839">Επιλογή για δημιουργία συμπιεσμένου αρχείου</translation>
 <translation id="4202378258276439759">Ισπανικά (Λατινική Αμερική)</translation>
@@ -300,6 +309,7 @@
 <translation id="4309915981827077375">Γενικές πληροφορίες</translation>
 <translation id="432252891123397018">Ρουμανικά με βασικό πληκτρολόγιο</translation>
 <translation id="4325128273762811722">Σλοβενικά</translation>
+<translation id="4326142238881453352">Βοτανολόγος</translation>
 <translation id="4326192123064055915">Καφές</translation>
 <translation id="4336032328163998280">Αποτυχία λειτουργίας αντιγραφής. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Σορανί Κουρδικά με πληκτρολόγιο βασισμένο στα Αραβικά</translation>
@@ -336,7 +346,6 @@
 <translation id="4711094779914110278">Τουρκικά
 </translation>
 <translation id="4712283082407695269">Άνοιγμα "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστές που χρησιμοποιούν λογισμικό για υπολογιστές Macintosh. Δεν είναι συμβατό με τη συσκευή σας η οποία εκτελεί Chrome OS. Αναζητήστε μια εφαρμογή κατάλληλη για να το αντικαταστήσει στο <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Δημιουργήθηκαν αντίγραφα ασφαλείας για <ph name="FILE_COUNT" /> φωτογραφίες</translation>
 <translation id="4725511304875193254">Κόργκι</translation>
 <translation id="4732760563705710320">Δυστυχώς, αυτό το βίντεο δεν υποστηρίζεται από τη συσκευή μετάδοσης σας.</translation>
@@ -420,6 +429,7 @@
     <ph name="MARKUP_7" />Κοινή χρήση, δημιουργία και συνεργασία<ph name="MARKUP_8" />
     σε αρχεία με άλλους χρήστες σε ένα μέρος.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Ανακτημένα αρχεία από το Google Drive</translation>
+<translation id="5288441970121584418">Μπέργκερ</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318819489018851358">Κοινοποίηση σε Linux</translation>
@@ -474,8 +484,6 @@
 <translation id="5833610766403489739">Αυτό το αρχείο χάθηκε κάπου. Ελέγξτε τη ρύθμιση της τοποθεσίας λήψης σας και δοκιμάστε ξανά.</translation>
 <translation id="5838451609423551646">Καταργήθηκαν όλες οι καταχωρίσεις από την επιλογή.</translation>
 <translation id="5838825566232597749">Διεθνές ΗΠΑ Workman</translation>
-<translation id="5850516540536751549">Αυτός ο τύπος αρχείου δεν υποστηρίζεται. Επισκεφτείτε το <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> για να εντοπίσετε μια εφαρμογή που μπορεί να ανοίξει αυτόν τον τύπο αρχείου.
-    <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Δεν υπάρχει κάτι εδώ…</translation>
 <translation id="5911887972742538906">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής σας Linux.</translation>
 <translation id="5912396950572065471">Διαμόρφωση</translation>
@@ -513,10 +521,12 @@
 <translation id="6248400709929739064">Ενεργοποίηση υπότιτλων</translation>
 <translation id="6269630227984243955">Μαλαισιανά</translation>
 <translation id="6287852322318138013">Επιλέξτε μια εφαρμογή για να ανοίξετε αυτό το αρχείο</translation>
+<translation id="6321303798550928047">Χαιρετισμός</translation>
 <translation id="6339145975392024142">Διεθνές ΗΠΑ (PC)</translation>
 <translation id="6346310558342052870">Περιορισμένη πρόσβαση</translation>
 <translation id="6356685157277930264">Παράθυρο πληροφοριών αρχείων</translation>
 <translation id="6358884629796491903">Δράκος</translation>
+<translation id="6367976544441405720">Βαν</translation>
 <translation id="637062427944097960">Αυτό το αρχείο άνοιξε σε διαφορετικό προφίλ. Μεταβείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να το δείτε.</translation>
 <translation id="6394388407447716302">Μόνο για ανάγνωση</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> στοιχεία</translation>
@@ -540,6 +550,7 @@
 <translation id="6650726141019353908">Ροζ πεταλούδα</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6673674183150363784">Γαλλικά (Γαλλίας) με πληκτρολόγιο BÉPO</translation>
+<translation id="6710022688720561421">Ρομπότ</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="6751256176799620176">Επιλέχθηκε 1 φάκελος</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
@@ -574,6 +585,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Βουλγαρικά</translation>
 <translation id="6973630695168034713">Φάκελοι</translation>
+<translation id="6976795442547527108">Λιοντάρι</translation>
 <translation id="6978611942794658017">Αυτό το αρχείο έχει σχεδιαστεί για έναν υπολογιστή ο οποίος χρησιμοποιεί λογισμικό Windows. Δεν είναι συμβατό με τη συσκευή σας η οποία χρησιμοποιεί Chrome OS. Αναζήτηστε μια κατάλληλη εφαρμογή αντικατάστασης στο Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Σουηδικά</translation>
@@ -622,6 +634,7 @@
 <translation id="7532029025027028521">Μεταγραφή σε Περσικά</translation>
 <translation id="7544830582642184299">Δώστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στο Google Drive σας. Οι αλλαγές θα συγχρονιστούν με τις άλλες συσκευές σας.</translation>
 <translation id="7544853251252956727">Τυχαία αναπαραγωγή</translation>
+<translation id="7547009467130558110">Αθλητικό παπούτσι</translation>
 <translation id="7547780573915868306">Λιθουανικά</translation>
 <translation id="7547811415869834682">Ολλανδικά
 </translation>
@@ -637,6 +650,7 @@
 <translation id="7628656427739290098">Ολοκληρώθηκε <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7654209398114106148">Μετακίνηση <ph name="NUMBER_OF_ITEMS" /> στοιχείων...</translation>
+<translation id="7655441028674523381">Εύκολη πρόσβαση στις Φωτογραφίες Google</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7663224033570512922">Χίντι</translation>
 <translation id="7693909743393669729">Η μορφοποίηση ενός δίσκου θα διαγράψει όλα τα δεδομένα που είναι αποθηκευμένα σε αυτόν και θα καταργήσει τα υπάρχοντα διαμερίσματα, συμπεριλαμβανομένων των διαμερισμάτων που μπορεί να μην είναι ορατά. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
@@ -668,7 +682,6 @@
 <translation id="7839804798877833423">Για την ανάκτηση αυτών των αρχείων θα χρησιμοποιηθούν περίπου <ph name="FILE_SIZE" /> δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>
 <translation id="7853966320808728790">Γαλλικά BÉPO</translation>
-<translation id="7864662577698025113">Προσθήκη νέας υπηρεσίας</translation>
 <translation id="7868774406711971383">Πολωνικά</translation>
 <translation id="7873831373602885875">Δεν είναι δυνατή η αποθήκευση στο <ph name="FOLDER_NAME" />. Όλες οι τροποποιήσεις θα αποθηκεύονται στο <ph name="DOWNLOADS_FOLDER" />, στον φάκελο Λήψεις.</translation>
 <translation id="7874321682039004450">Φιλιππινέζικα</translation>
@@ -683,6 +696,7 @@
 <translation id="7972920761225148017">Γαλλικά (Ελβετία)</translation>
 <translation id="7980421588063892270">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Colemak</translation>
 <translation id="7982283708762922719">Ύψος</translation>
+<translation id="79907182588096956">Αυτό το αρχείο έχει σχεδιαστεί για έναν υπολογιστή ο οποίος χρησιμοποιεί λογισμικό Windows. Δεν είναι συμβατό με τη συσκευή σας η οποία εκτελεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="8008366997883261463">Τεριέ Τζακ Ράσελ</translation>
 <translation id="8028993641010258682">Μέγεθος</translation>
 <translation id="803771048473350947">Αρχείο</translation>
@@ -690,7 +704,6 @@
 <translation id="8042602468072383151">Ήχος <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Ρουμανικά
 </translation>
-<translation id="8052887694493382350">Αυτό το αρχείο έχει σχεδιαστεί για έναν υπολογιστή ο οποίος χρησιμοποιεί λογισμικό Windows. Δεν είναι συμβατό με τη συσκευή σας η οποία χρησιμοποιεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Όλες οι τροποποιήσεις θα αποθηκευτούν στο <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Επανάληψη</translation>
 <translation id="8106045200081704138">Κοινόχρηστο με εμένα</translation>
@@ -731,6 +744,7 @@
 <translation id="8466234950814670489">Αρχείο Tar</translation>
 <translation id="8475647382427415476">Το Google Drive δεν ήταν δυνατό να συγχρονίσει το "<ph name="FILENAME" />" αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="8477649328507734757">Έλικας</translation>
+<translation id="8484284835977497781">Επιλέξτε από τις πρόσφατες φωτογραφίες σας.</translation>
 <translation id="8487700953926739672">Διαθέσιμο εκτός σύνδεσης</translation>
 <translation id="8521441079177373948">ΗΒ</translation>
 <translation id="8525306231823319788">Πλήρης οθόνη</translation>
@@ -766,9 +780,11 @@
 <translation id="8866284467018526531">Μεταγραφή σε Αραβικά</translation>
 <translation id="8900820606136623064">Ουγγρικά
 </translation>
+<translation id="8903931173357132290">Απόφοιτος</translation>
 <translation id="8919081441417203123">Δανικά
 </translation>
 <translation id="8965697826696209160">Δεν υπάρχει αρκετός χώρος.</translation>
+<translation id="8970501467542182729">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστές που χρησιμοποιούν λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας η οποία εκτελεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="8997962250644902079">Κινεζικά (Παραδοσιακά) Pinyin</translation>
 <translation id="9017798300203431059">Φωνητικό Ρωσικά</translation>
 <translation id="9034924485347205037">Αρχεία Linux</translation>

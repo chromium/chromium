@@ -22,6 +22,16 @@
       const trace = await profiler.stop();
       assert_equals(trace.samples.length, 2);
     }, 'max buffer size is not exceeded');
+
+    promise_test(async t => {
+    const profiler = await performance.profile({
+      sampleInterval: 10,
+      maxBufferSize: 1,
+    });
+
+    const watcher = new EventWatcher(t, profiler, ['samplebufferfull']);
+    return watcher.wait_for('samplebufferfull');
+    }, 'executed samplebufferfull function');
   </script>
 </body>
 </html>

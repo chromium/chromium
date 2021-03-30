@@ -53,6 +53,8 @@ class RootFrameSink::ChildCompositorFrameSink
     owner_->ReturnResources(frame_sink_id_, layer_tree_frame_sink_id_,
                             resources);
   }
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   const viz::FrameSinkId frame_sink_id() { return frame_sink_id_; }
 
@@ -68,6 +70,11 @@ class RootFrameSink::ChildCompositorFrameSink
     size_ = frame.size_in_pixels();
     support()->SubmitCompositorFrame(local_surface_id, std::move(frame),
                                      std::move(hit_test_region_list));
+  }
+
+  void EvictSurface(viz::SurfaceId surface_id) {
+    if (surface_id.frame_sink_id() == frame_sink_id_)
+      support_->EvictSurface(surface_id.local_surface_id());
   }
 
  private:
@@ -103,6 +110,39 @@ viz::FrameSinkManagerImpl* RootFrameSink::GetFrameSinkManager() {
   // FrameSinkManagerImpl is global and not owned by this class, which is
   // per-AwContents.
   return VizCompositorThreadRunnerWebView::GetInstance()->GetFrameSinkManager();
+}
+
+const viz::LocalSurfaceId& RootFrameSink::SubmitRootCompositorFrame(
+    viz::CompositorFrame frame) {
+  frame.metadata.frame_token = ++next_root_frame_token_;
+
+  if (!root_local_surface_id_allocator_.HasValidLocalSurfaceId() ||
+      root_surface_size_ != frame.size_in_pixels() ||
+      root_device_scale_factor_ != frame.device_scale_factor()) {
+    root_local_surface_id_allocator_.GenerateId();
+    root_surface_size_ = frame.size_in_pixels();
+    root_device_scale_factor_ = frame.device_scale_factor();
+  }
+
+  const auto& local_surface_id =
+      root_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
+  support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
+  return local_surface_id;
+}
+
+void RootFrameSink::EvictRootSurface(
+    const viz::LocalSurfaceId& local_surface_id) {
+  const auto& current_local_surface_id =
+      root_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
+
+  DLOG_IF(FATAL, !current_local_surface_id.IsSameOrNewerThan(local_surface_id))
+      << "Evicting newer surface: " << local_surface_id.ToString()
+      << " old: " << current_local_surface_id.ToString();
+  if (current_local_surface_id == local_surface_id) {
+    root_surface_size_ = gfx::Size();
+    root_device_scale_factor_ = 0.0f;
+  }
+  support_->EvictSurface(local_surface_id);
 }
 
 void RootFrameSink::DidReceiveCompositorFrameAck(
@@ -227,6 +267,11 @@ gfx::Size RootFrameSink::GetChildFrameSize() {
     return child_sink_support_->size();
   }
   return gfx::Size();
+}
+
+void RootFrameSink::EvictChildSurface(const viz::SurfaceId& surface_id) {
+  DCHECK(child_sink_support_);
+  child_sink_support_->EvictSurface(surface_id);
 }
 
 }  // namespace android_webview

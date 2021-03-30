@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/browser/ui/views/hung_renderer_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "content/public/browser/web_contents.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -55,17 +56,17 @@ void TabDialogsViews::HideHungRendererDialog(
 }
 
 bool TabDialogsViews::IsShowingHungRendererDialog() {
-  return HungRendererDialogView::GetInstance();
+  return HungRendererDialogView::IsShowingForWebContents(web_contents_);
 }
 
 void TabDialogsViews::ShowProfileSigninConfirmation(
     Browser* browser,
-    Profile* profile,
     const std::string& username,
+    bool prompt_for_new_profile,
     std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfileSigninConfirmationDialogViews::ShowDialog(browser, profile, username,
-                                                   std::move(delegate));
+  ProfileSigninConfirmationDialogViews::Show(
+      browser, username, std::move(delegate), prompt_for_new_profile);
 #else
   NOTREACHED();
 #endif

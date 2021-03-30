@@ -24,16 +24,49 @@
 #include "components/paint_preview/common/test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "url/gurl.h"
 
 namespace paint_preview {
+
+class NoOpPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
+ public:
+  NoOpPaintPreviewRecorder() = default;
+  ~NoOpPaintPreviewRecorder() override = default;
+
+  NoOpPaintPreviewRecorder(const NoOpPaintPreviewRecorder&) = delete;
+  NoOpPaintPreviewRecorder& operator=(const NoOpPaintPreviewRecorder&) = delete;
+
+  void SetRequestedClosure(base::OnceClosure requested) {
+    requested_ = std::move(requested);
+  }
+
+  void CapturePaintPreview(
+      mojom::PaintPreviewCaptureParamsPtr params,
+      mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback)
+      override {
+    callback_ = std::move(callback);
+    std::move(requested_).Run();
+  }
+
+  void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
+    binding_.Bind(mojo::PendingAssociatedReceiver<mojom::PaintPreviewRecorder>(
+        std::move(handle)));
+  }
+
+ private:
+  base::OnceClosure requested_;
+  mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback_;
+  mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};
+};
 
 // Test harness for a integration test of paint previews. In this test:
 // - Each RenderFrame has an instance of PaintPreviewRecorder attached.
@@ -42,6 +75,10 @@ namespace paint_preview {
 class PaintPreviewBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<RecordingPersistence> {
+ public:
+  PaintPreviewBrowserTest(const PaintPreviewBrowserTest&) = delete;
+  PaintPreviewBrowserTest& operator=(const PaintPreviewBrowserTest&) = delete;
+
  protected:
   PaintPreviewBrowserTest() = default;
   ~PaintPreviewBrowserTest() override = default;
@@ -92,6 +129,15 @@ class PaintPreviewBrowserTest
     return params;
   }
 
+  void OverrideInterface(NoOpPaintPreviewRecorder* service) {
+    blink::AssociatedInterfaceProvider* remote_interfaces =
+        GetWebContents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
+    remote_interfaces->OverrideBinderForTesting(
+        mojom::PaintPreviewRecorder::Name_,
+        base::BindRepeating(&NoOpPaintPreviewRecorder::BindRequest,
+                            base::Unretained(service)));
+  }
+
   void WaitForLoadStopWithoutSuccessCheck() {
     // In many cases, the load may have finished before we get here.  Only wait
     // if the tab still has a pending navigation.
@@ -134,10 +180,6 @@ class PaintPreviewBrowserTest
   base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer http_server_;
   net::EmbeddedTestServer http_server_different_origin_;
-
- private:
-  PaintPreviewBrowserTest(const PaintPreviewBrowserTest&) = delete;
-  PaintPreviewBrowserTest& operator=(const PaintPreviewBrowserTest&) = delete;
 };
 
 IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, CaptureFrame) {
@@ -322,6 +364,79 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
           },
           loop.QuitClosure(), params));
   loop.Run();
+}
+
+// https://crbug.com/1146573 reproduction. If a renderer crashes,
+// WebContentsObserver::RenderFrameDeleted. Paint preview implements this in an
+// observer which in turn calls DecrementCapturerCount which can cause the
+// WebContents to be reloaded on Android where we have auto-reload. This reload
+// occurs *during* crash handling, leaving the frame in an invalid state and
+// leading to a crash when it subsequently unloaded.
+// This is fixed by deferring it to a PostTask.
+IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
+  // In the FileSystem variant of this test, blocking needs to be permitted to
+  // allow cleanup to work during the crash.
+  base::ScopedAllowBlockingForTesting scope;
+  LoadPage(http_server_.GetURL("a.com", "/title1.html"));
+
+  content::WebContents* web_contents = GetWebContents();
+
+  // Override remote interfaces with a no-op.
+  base::RunLoop started_loop;
+  NoOpPaintPreviewRecorder noop_recorder;
+  noop_recorder.SetRequestedClosure(started_loop.QuitClosure());
+  OverrideInterface(&noop_recorder);
+
+  CreateClient();
+  auto* client = PaintPreviewClient::FromWebContents(web_contents);
+  // Do this twice to simulate conditions for crash.
+  web_contents->IncrementCapturerCount(gfx::Size(), true);
+  web_contents->IncrementCapturerCount(gfx::Size(), true);
+
+  // A callback that causes the frame to reload and end up in an invalid state
+  // if it is allowed to run during crash handling.
+  base::RunLoop finished_loop;
+  auto params = MakeParams();
+  bool did_run = false;
+  client->CapturePaintPreview(
+      params, web_contents->GetMainFrame(),
+      // This callback is now posted so it shouldn't cause a crash.
+      base::BindOnce(
+          [](content::WebContents* web_contents, bool* did_run_ptr,
+             base::UnguessableToken guid, mojom::PaintPreviewStatus status,
+             std::unique_ptr<CaptureResult> result) {
+            EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
+            EXPECT_EQ(result, nullptr);
+            // On Android crashed frames are marked as needing reload.
+            web_contents->GetController().SetNeedsReload();
+            web_contents->DecrementCapturerCount(true);
+            web_contents->DecrementCapturerCount(true);
+            *did_run_ptr = true;
+          },
+          web_contents, &did_run)
+          .Then(finished_loop.QuitClosure()));
+  // Wait for the request to execute before crashing the renderer. Otherwise in
+  // the FileSystem variant it is possible there will be a race during creation
+  // of the file with the renderer crash. If this happens the callback for
+  // `finished_loop` will not be run as no request to capture succeeded leading
+  // to a timeout.
+  started_loop.Run();
+
+  // Crash the renderer.
+  content::RenderProcessHost* process =
+      GetWebContents()->GetMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(0);
+  crash_observer.Wait();
+
+  // The browser would have crashed before the loop exited if the callback was
+  // not posted.
+  if (!did_run)
+    finished_loop.Run();
+
+  // Now navigate away and ensure that the frame unloads successfully.
+  LoadPage(http_server_.GetURL("a.com", "/title2.html"));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

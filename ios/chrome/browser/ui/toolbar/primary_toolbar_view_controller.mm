@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
@@ -52,7 +53,7 @@
   __weak PrimaryToolbarViewController* weakSelf = self;
   [self.view.progressBar setProgress:0];
   [self.view.progressBar setHidden:NO
-                          animated:[self areAnimationsEnabled]
+                          animated:YES
                         completion:^(BOOL finished) {
                           [weakSelf stopProgressBar];
                         }];
@@ -66,6 +67,7 @@
   UIPanGestureRecognizer* panGestureRecognizer = [[UIPanGestureRecognizer alloc]
       initWithTarget:panGestureHandler
               action:@selector(handlePanGesture:)];
+  panGestureRecognizer.delegate = panGestureHandler;
   panGestureRecognizer.maximumNumberOfTouches = 1;
   [self.view addGestureRecognizer:panGestureRecognizer];
 
@@ -74,7 +76,8 @@
 
 #pragma mark - viewRevealingAnimatee
 
-- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState {
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
@@ -309,6 +312,9 @@
         locationBarHeightForFullscreenProgress:self.previousFullscreenProgress];
     self.view.locationBarContainer.layer.cornerRadius =
         self.view.locationBarHeight.constant / 2;
+  }
+  if (!ShowThumbStripInTraitCollection(self.traitCollection)) {
+    self.view.topCornersRounded = NO;
   }
 }
 

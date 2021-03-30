@@ -15,11 +15,7 @@
 // chrome://test/ data source only exists in a testing context, so using this
 // script in production will result in a failed network request.
 
-(function() {
-const params = new URLSearchParams(window.location.search);
-const module = params.get('module');
-const script = document.createElement('script');
-script.type = 'module';
-script.src = `chrome://test/${module}`;
-document.body.appendChild(script);
-})();
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTestModule} from './test_loader_util.js';
+
+assert(loadTestModule());

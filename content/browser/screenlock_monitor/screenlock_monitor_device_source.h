@@ -40,6 +40,18 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
   ScreenlockMonitorDeviceSource();
   ~ScreenlockMonitorDeviceSource() override;
 
+#if defined(OS_WIN)
+  // Fake session notification registration/unregistration APIs allow us to test
+  // receiving and handling messages that look as if they are sent by other
+  // sessions, without having to create a session host and a second session.
+  using WTSRegisterSessionNotificationFunction = bool (*)(HWND hwnd,
+                                                          DWORD flags);
+  using WTSUnRegisterSessionNotificationFunction = bool (*)(HWND hwnd);
+  static void SetFakeNotificationAPIsForTesting(
+      WTSRegisterSessionNotificationFunction register_function,
+      WTSUnRegisterSessionNotificationFunction unregister_function);
+#endif  // defined(OS_WIN)
+
  private:
 #if defined(OS_WIN)
   // Represents a message-only window for screenlock message handling on Win.
@@ -49,10 +61,18 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
     SessionMessageWindow();
     ~SessionMessageWindow();
 
+    static void SetFakeNotificationAPIsForTesting(
+        WTSRegisterSessionNotificationFunction register_function,
+        WTSUnRegisterSessionNotificationFunction unregister_function);
+
    private:
     bool OnWndProc(UINT message, WPARAM wparam, LPARAM lparam, LRESULT* result);
     void ProcessWTSSessionLockMessage(WPARAM event_id);
 
+    static WTSRegisterSessionNotificationFunction
+        register_session_notification_function_;
+    static WTSUnRegisterSessionNotificationFunction
+        unregister_session_notification_function_;
     std::unique_ptr<base::win::MessageWindow> window_;
 
     DISALLOW_COPY_AND_ASSIGN(SessionMessageWindow);

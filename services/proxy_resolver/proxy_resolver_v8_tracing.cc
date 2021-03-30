@@ -134,7 +134,7 @@ class Job : public base::RefCountedThreadSafe<Job>,
   struct AlertOrError {
     bool is_alert;
     int line_number;
-    base::string16 message;
+    std::u16string message;
   };
 
   ~Job() override;
@@ -166,8 +166,8 @@ class Job : public base::RefCountedThreadSafe<Job>,
                   net::ProxyResolveDnsOperation op,
                   std::string* output,
                   bool* terminate) override;
-  void Alert(const base::string16& message) override;
-  void OnError(int line_number, const base::string16& error) override;
+  void Alert(const std::u16string& message) override;
+  void OnError(int line_number, const std::u16string& error) override;
 
   bool ResolveDnsBlocking(const std::string& host,
                           net::ProxyResolveDnsOperation op,
@@ -205,11 +205,11 @@ class Job : public base::RefCountedThreadSafe<Job>,
 
   void HandleAlertOrError(bool is_alert,
                           int line_number,
-                          const base::string16& message);
+                          const std::u16string& message);
   void DispatchBufferedAlertsAndErrors();
   void DispatchAlertOrErrorOnOriginThread(bool is_alert,
                                           int line_number,
-                                          const base::string16& message);
+                                          const std::u16string& message);
 
   // The thread which called into ProxyResolverV8TracingImpl, and on which the
   // completion callback is expected to run.
@@ -629,11 +629,11 @@ bool Job::ResolveDns(const std::string& host,
                        : ResolveDnsNonBlocking(host, op, output, terminate);
 }
 
-void Job::Alert(const base::string16& message) {
+void Job::Alert(const std::u16string& message) {
   HandleAlertOrError(true, -1, message);
 }
 
-void Job::OnError(int line_number, const base::string16& error) {
+void Job::OnError(int line_number, const std::u16string& error) {
   HandleAlertOrError(false, line_number, error);
 }
 
@@ -862,7 +862,7 @@ std::string Job::MakeDnsCacheKey(const std::string& host,
 
 void Job::HandleAlertOrError(bool is_alert,
                              int line_number,
-                             const base::string16& message) {
+                             const std::u16string& message) {
   CheckIsOnWorkerThread();
 
   if (cancelled_.IsSet())
@@ -907,7 +907,7 @@ void Job::DispatchBufferedAlertsAndErrors() {
 
 void Job::DispatchAlertOrErrorOnOriginThread(bool is_alert,
                                              int line_number,
-                                             const base::string16& message) {
+                                             const std::u16string& message) {
   CheckIsOnOriginThread();
 
   if (cancelled_.IsSet())

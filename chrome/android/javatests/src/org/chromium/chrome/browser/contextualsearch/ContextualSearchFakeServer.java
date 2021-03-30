@@ -16,9 +16,8 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContent;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.url.GURL;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +58,7 @@ class ContextualSearchFakeServer
     private String mSearchTermRequested;
     private boolean mIsOnline = true;
     private boolean mIsExactResolve;
+    private ContextualSearchContext mSearchContext;
 
     private boolean mDidEverCallWebContentsOnShow;
 
@@ -489,6 +489,7 @@ class ContextualSearchFakeServer
         mLoadedUrlCount = 0;
         mUseInvalidLowPriorityPath = false;
         mIsExactResolve = false;
+        mSearchContext = null;
     }
 
     /**
@@ -512,6 +513,11 @@ class ContextualSearchFakeServer
         return mIsExactResolve;
     }
 
+    @VisibleForTesting
+    ContextualSearchContext getSearchContext() {
+        return mSearchContext;
+    }
+
     //============================================================================================
     // History Removal Helpers
     //============================================================================================
@@ -529,10 +535,12 @@ class ContextualSearchFakeServer
     //============================================================================================
 
     @Override
-    public void startSearchTermResolutionRequest(String selection, boolean isExactResolve) {
+    public void startSearchTermResolutionRequest(
+            String selection, boolean isExactResolve, ContextualSearchContext searchContext) {
         mLoadedUrl = null;
         mSearchTermRequested = selection;
         mIsExactResolve = isExactResolve;
+        mSearchContext = searchContext;
 
         if (mActiveResolveSearch != null) {
             mActiveResolveSearch.notifySearchTermResolutionStarted();
@@ -558,17 +566,12 @@ class ContextualSearchFakeServer
 
     @Override
     @Nullable
-    public URL getBasePageUrl() {
-        URL baseUrl = mBaseManager.getBasePageUrl();
+    public GURL getBasePageUrl() {
+        GURL baseUrl = mBaseManager.getBasePageUrl();
         if (baseUrl != null) {
-            try {
-                // Return plain HTTP URLs so we can test that we don't give them our legacy privacy
-                // exceptions.
-                return new URL(baseUrl.toString().replace("https://", "http://"));
-            } catch (MalformedURLException e) {
-                // TODO(donnd): Replace Auto-generated catch block
-                e.printStackTrace();
-            }
+            // Return plain HTTP URLs so we can test that we don't give them our legacy privacy
+            // exceptions.
+            return new GURL(baseUrl.getSpec().replace("https://", "http://"));
         }
         return baseUrl;
     }
@@ -588,7 +591,6 @@ class ContextualSearchFakeServer
         registerFakeNonResolveSearch(new FakeNonResolveSearch("term", "Term"));
         registerFakeNonResolveSearch(new FakeNonResolveSearch("resolution", "Resolution"));
 
-        registerFakeResolveSearch(new FakeResolveSearch("intelligence", "Intelligence"));
         registerFakeResolveSearch(new FakeResolveSearch("states", "States"));
         //     registerFakeResolveSearch(new FakeResolveSearch("states-near""StatesNear"));
         registerFakeResolveSearch(new FakeResolveSearch("search", "Search"));
@@ -602,7 +604,14 @@ class ContextualSearchFakeServer
         FakeResolveSearch germanFakeTapSearch = new FakeResolveSearch("german", germanSearchTerm);
         registerFakeResolveSearch(germanFakeTapSearch);
 
-        registerFakeResolveSearch(new FakeResolveSearch("intelligence", "Intelligence"));
+        // Setup the "intelligence" node to return Related Searches along with the usual result.
+        ResolvedSearchTerm intelligenceWithRelatedSearches =
+                new ResolvedSearchTerm.Builder(false, 200, "Intelligence", "Intelligence")
+                        .setRelatedSearches(new String[] {"Related Search 1", "Related Search 2"})
+                        .build();
+        FakeResolveSearch fakeSearchWithRelatedSearches =
+                new FakeResolveSearch("intelligence", intelligenceWithRelatedSearches);
+        registerFakeResolveSearch(fakeSearchWithRelatedSearches);
 
         // Register a fake tap search that will fake a logged event ID from the server, when
         // a fake tap is done on the intelligence-logged-event-id element in the test file.

@@ -28,6 +28,7 @@ EXPORTS
 
   ; From chrome/install_static
   GetInstallDetailsPayload
+  IsBrowserProcess
 
   ; From chrome/chrome_elf/third_party_dlls/logs.cc
   DrainLog

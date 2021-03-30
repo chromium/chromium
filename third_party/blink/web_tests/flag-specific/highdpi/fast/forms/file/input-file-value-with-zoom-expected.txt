@@ -1,0 +1,15 @@
+This tests the value attribute in file input forms with page zoom in
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL file.value should be C:\fakepath\foo.txt. Was .
+FAIL file.files.length should be 1. Was 0.
+PASS file.value = 'foo' threw exception InvalidStateError: Failed to set the 'value' property on 'HTMLInputElement': This input element accepts a filename, which may only be programmatically set to the empty string..
+FAIL file.value should be C:\fakepath\foo.txt. Was .
+FAIL file.files.length should be 1. Was 0.
+PASS file.value is ""
+PASS file.files.length is 0
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

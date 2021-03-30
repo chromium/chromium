@@ -34,8 +34,9 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
+#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 #include "third_party/blink/public/mojom/locks/lock_manager.mojom-forward.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if defined(OS_ANDROID)
@@ -90,10 +92,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
                                          public base::SupportsUserData {
  public:
   using iterator = base::IDMap<RenderProcessHost*>::iterator;
-
-  // The priority of a frame added to the RenderProcessHost.
-  // TODO(ericrobinson): Move to RenderProcessHostImpl after Mock refactor.
-  enum class FramePriority { kLow, kNormal };
 
   // Priority (or on Android, the importance) that a client contributes to this
   // RenderProcessHost. Eg a RenderProcessHost with a visible client has higher
@@ -168,15 +166,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Recompute Priority state. PriorityClient should call this when their
   // individual priority changes.
   virtual void UpdateClientPriority(PriorityClient* client) = 0;
-
-  // Update the total and low priority count as indicated by the previous and
-  // new priorities of the underlying document.  The nullopt option is used when
-  // there is no previous/subsequent navigation (when the frame is added/removed
-  // from the RenderProcessHost).
-  // TODO(ericrobinson): Move to RenderProcessHostImpl after Mock refactor.
-  virtual void UpdateFrameWithPriority(
-      base::Optional<FramePriority> previous_priority,
-      base::Optional<FramePriority> new_priority) = 0;
 
   // Number of visible (ie |!is_hidden|) PriorityClients.
   virtual int VisibleClientCount() = 0;
@@ -352,11 +341,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       bool outgoing,
       WebRtcRtpPacketCallback packet_callback) = 0;
 
-  // Start/stop event log output from WebRTC on this RPH for the peer connection
-  // identified locally within the RPH using the ID |lid|.
-  virtual void EnableWebRtcEventLogOutput(int lid, int output_period_ms) = 0;
-  virtual void DisableWebRtcEventLogOutput(int lid) = 0;
-
   // Asks the renderer process to bind |receiver|. |receiver| arrives in the
   // renderer process and is carried through the following flow, stopping if any
   // step decides to bind it:
@@ -485,9 +469,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void BindFileSystemManager(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver) = 0;
-  virtual void BindNativeFileSystemManager(
+  virtual void BindFileSystemAccessManager(
       const url::Origin& origin,
-      mojo::PendingReceiver<blink::mojom::NativeFileSystemManager>
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessManager>
           receiver) = 0;
 
   // |render_frame_id| is the frame associated with |receiver|, or
@@ -495,6 +479,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void BindIndexedDB(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) = 0;
+  virtual void BindBucketManagerHost(
+      const url::Origin& origin,
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) = 0;
   virtual void BindRestrictedCookieManagerForServiceWorker(
       const url::Origin& origin,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
@@ -557,6 +544,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // the BrowserContext they are associated with.
   virtual std::string GetInfoForBrowserContextDestructionCrashReporting() = 0;
 
+  // Write a representation of this object into a trace.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   // Ask the renderer process to dump its profiling data to disk. Invokes
   // |callback| once this has completed.
@@ -608,6 +598,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // This also calls out to ContentBrowserClient::GetApplicationLocale and
   // modifies the current process' command line.
   static void SetRunRendererInProcess(bool value);
+
+  // This forces a renderer that is running "in process" to shut down.
+  static void ShutDownInProcessRenderer();
 
   // Allows iteration over all the RenderProcessHosts in the browser. Note
   // that each host may not be active, and therefore may have nullptr channels.

@@ -203,21 +203,23 @@ void SingleClientVideoCaptureHost::OnNewBuffer(
 }
 
 void SingleClientVideoCaptureHost::OnFrameReadyInBuffer(
-    int buffer_id,
-    int frame_feedback_id,
-    std::unique_ptr<Buffer::ScopedAccessPermission> buffer_read_permission,
-    media::mojom::VideoFrameInfoPtr frame_info) {
+    media::ReadyFrameInBuffer frame,
+    std::vector<media::ReadyFrameInBuffer> scaled_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(3) << __func__ << ": buffer_id=" << buffer_id;
+  DVLOG(3) << __func__ << ": buffer_id=" << frame.buffer_id;
   DCHECK(observer_);
-  const auto id_iter = id_map_.find(buffer_id);
+  const auto id_iter = id_map_.find(frame.buffer_id);
   DCHECK(id_iter != id_map_.end());
   const int buffer_context_id = id_iter->second;
-  const auto insert_result = buffer_context_map_.emplace(std::make_pair(
-      buffer_context_id,
-      std::make_pair(frame_feedback_id, std::move(buffer_read_permission))));
+  const auto insert_result = buffer_context_map_.emplace(
+      std::make_pair(buffer_context_id,
+                     std::make_pair(frame.frame_feedback_id,
+                                    std::move(frame.buffer_read_permission))));
   DCHECK(insert_result.second);
-  observer_->OnBufferReady(buffer_context_id, std::move(frame_info));
+  // This implementation does not forward scaled frames.
+  observer_->OnBufferReady(media::mojom::ReadyBuffer::New(
+                               buffer_context_id, std::move(frame.frame_info)),
+                           {});
 }
 
 void SingleClientVideoCaptureHost::OnBufferRetired(int buffer_id) {

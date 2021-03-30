@@ -8,7 +8,6 @@ import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
   deps = [
     ":exif_encoder.m",
     ":image_encoder.m",
@@ -18,6 +17,7 @@ js_type_check("closure_compile_jsmodules") {
 }
 
 js_type_check("closure_compile_module") {
+  uses_legacy_modules = true
   deps = [
     ":commands",
     ":exif_encoder",
@@ -56,7 +56,7 @@ js_library("exif_encoder") {
     "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item",
   ]
-  externs_list = [ "//ui/file_manager/externs/exif_entry.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/exif_entry.js" ]
 }
 
 js_library("exif_encoder.m") {
@@ -65,7 +65,7 @@ js_library("exif_encoder.m") {
   ]
   deps = [
     ":image_encoder.m",
-    "//ui/file_manager/externs:exif_entry.m",
+    "//ui/file_manager/file_manager/externs:exif_entry.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item.m",
     "//ui/webui/resources/js:assert.m",
@@ -80,7 +80,7 @@ js_unittest("exif_encoder_unittest.m") {
     ":image_encoder.m",
     ":test_util.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/externs:metadata_worker_window.m",
+    "//ui/file_manager/file_manager/externs:metadata_worker_window.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:byte_reader.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:exif_parser.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item.m",
@@ -136,7 +136,7 @@ js_library("image_editor_toolbar") {
     "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
     "//ui/file_manager/gallery/js/:gallery_util",
   ]
-  externs_list = [ "//ui/file_manager/externs/paper_elements.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/paper_elements.js" ]
 }
 
 js_library("image_encoder") {
@@ -165,10 +165,11 @@ js_unittest("image_encoder_unittest.m") {
     ":image_encoder.m",
     ":test_util.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item.m",
   ]
-  externs_list = [ "//ui/file_manager/externs/metadata_worker_window.js" ]
+  externs_list =
+      [ "//ui/file_manager/file_manager/externs/metadata_worker_window.js" ]
 }
 
 js_library("image_loader") {

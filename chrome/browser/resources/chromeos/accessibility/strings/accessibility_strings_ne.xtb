@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">सूची वस्तु</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">दुई औँलाले दायाँ स्वाइप गर्नुहोस्</translation>
-<translation id="1016393160682012902">कुनै qwerty कुञ्जी, रिफ्रेस गर्न मिल्ने ब्रेल कुञ्जी वा टच जेस्सरमा थिचेर यो कुञ्जी वा टच जेस्सरले के काम गर्छ थाह पाउनुहोस्। यो मोडबाट बाहिरिन control बटन र w वा escape बटन सँगै थिच्नुहोस्।</translation>
 <translation id="1022586497894531524">तपाईं ChromeVox को बोली प्रतिक्रिया पहिलो पटक प्रयोग गर्दै हुनुहुन्छ? यो द्रुत ट्युटोरियलले ChromeVox सुरु गर्नका लागि आवश्यक पर्ने कुराहरू स्पष्ट पार्छ।</translation>
 <translation id="1025074108959230262">टाँसिने मोड असक्षम गरिएको</translation>
 <translation id="1031961866430398710">त्यसपछि</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">अघिल्लो कुनै पनि नियन्त्रण छैन</translation>
 <translation id="2045606329038304310">फारमको क्षेत्र नियन्त्रण गर्ने क्षमता</translation>
 <translation id="2063539687800151747">शिलालेख</translation>
+<translation id="2074531330963286860">कारबाहीहरू उपलब्ध छन्। कारबाहीहरू हेर्न Search+Period थिच्नुहोस्</translation>
 <translation id="2086961585857038472">अर्को शब्द</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ने</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">सुरु वा अन्त्यको छनोट</translation>
 <translation id="827422111966801947">इन्डिगो</translation>
 <translation id="8276439074553447000">अधिल्लो ध्यान दिन सकिने वस्तुमा जानुहोस्</translation>
+<translation id="8279039817939141096">कुनै qwerty कुञ्जी, रिफ्रेस गर्न मिल्ने ब्रेल कुञ्जी वा टच इसारामा थिचेर यो कुञ्जी वा टच इसाराले के काम गर्छ थाह पाउनुहोस्। यो मोडबाट बाहिरिन control बटन र w वा space बटन र Z सँगै थिच्नुहोस्, दुईवटा औँलाले बायाँतिर स्वाइप गर्नुहोस् वा escape बटन थिच्नुहोस्।</translation>
 <translation id="8283603667300770666">अर्को फाराम क्षेत्र</translation>
 <translation id="8310185481635255431">अर्को कुनै पनि लिंक छैन</translation>
 <translation id="831207808878314375">परिभाषा</translation>

@@ -54,19 +54,50 @@ struct Network {
   // considered potentially problematic for the connection. See
   // src/platform2/shill/doc/service-api.txt for more details.
   UInt32Value? signal_strength;
+  // Optional string for the network's ipv4_address. This is only intended to be
+  // used for display and is not meant to be parsed.
+  string? ipv4_address;
+  // Optional list of strings for the network's ipv6_addresses. A single network
+  // can have multiple addresses (local, global, temporary etc.). This is only
+  // intended to be used for display and is not meant to be parsed.
+  array<string> ipv6_addresses;
+  // An enum of the network's captive portal state. This information is
+  // supplementary to the NetworkState.
+  chromeos.network_config.mojom.PortalState portal_state = kUnknown;
 };
 
 // Aggregate structure for all of the network health state.
 struct NetworkHealthState {
+  // This is a list of networking devices and any associated connections. Only
+  // networking technologies that are present on the device are included.
   // Networks will be sorted with active connections listed first.
   array<Network> networks;
 };
 
+// Implemented by clients who desire network notifications. An expected client
+// is cros_healthd, which listens to the network events and in turn, sends them
+// out to its clients. A network guid uniquely identifies a network. For more
+// information, see the definition of "NetworkStateProperties" at
+// //chromeos/services/network_config/public/mojom/cros_network_config.mojom.
+interface NetworkEventsObserver {
+  // Fired when a network’s connection state changes.
+  OnConnectionStateChanged(string guid, NetworkState state);
+  // Fired when a wireless network’s signal strength changes by ten or more
+  // percent. See the definition of |signal_strength| under the "Network"
+  // struct.
+  OnSignalStrengthChanged(string guid, UInt32Value signal_strength);
+};
+
 // Interface for retrieving aggregated information about the current network
-// state and health.
+// state and health from the browser process.
 interface NetworkHealthService {
-  // Returns a list of all the networks. Networks will be sorted with active
-  // connections listed first.
+  // Adds an observer to be notified on network events. The caller can remove
+  // the observer created by this call by closing their end of the message
+  // pipe.
+  AddObserver(pending_remote<NetworkEventsObserver> observer);
+
+  // Returns a list of networks. See NetworkHealthState.networks for more
+  // details.
   GetNetworkList() => (array<Network> networks);
 
   // Returns the current network health state.

@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/synchronization/lock.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "components/nacl/common/buildflags.h"
@@ -30,7 +31,7 @@ class OriginTrialPolicyImpl;
 
 class ChromeContentClient : public content::ContentClient {
  public:
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // |kNotPresent| is a placeholder plugin location for plugins that are not
   // currently present in this installation of Chrome, but which can be fetched
   // on-demand and therefore should still appear in navigator.plugins.
@@ -85,13 +86,18 @@ class ChromeContentClient : public content::ContentClient {
       std::vector<content::CdmInfo>* cdms,
       std::vector<media::CdmHostFilePath>* cdm_host_file_paths) override;
   void AddAdditionalSchemes(Schemes* schemes) override;
-  base::string16 GetLocalizedString(int message_id) override;
-  base::string16 GetLocalizedString(int message_id,
-                                    const base::string16& replacement) override;
+  std::u16string GetLocalizedString(int message_id) override;
+  std::u16string GetLocalizedString(int message_id,
+                                    const std::u16string& replacement) override;
   base::StringPiece GetDataResource(int resource_id,
                                     ui::ScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
   gfx::Image& GetNativeImageNamed(int resource_id) override;
+#if defined(OS_MAC)
+  base::FilePath GetChildProcessPath(
+      int child_flags,
+      const base::FilePath& helpers_path) override;
+#endif  // OS_MAC
   std::string GetProcessTypeNameInEnglish(int type) override;
   blink::OriginTrialPolicy* GetOriginTrialPolicy() override;
 #if defined(OS_ANDROID)

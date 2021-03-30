@@ -88,13 +88,3 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
 
   return identity_manager;
 }
-
-void IdentityManagerFactory::BrowserStateShutdown(web::BrowserState* context) {
-  auto* identity_manager = static_cast<signin::IdentityManager*>(
-      GetServiceForBrowserState(context, false));
-  if (identity_manager) {
-    for (auto& observer : observer_list_)
-      observer.IdentityManagerShutdown(identity_manager);
-  }
-  BrowserStateKeyedServiceFactory::BrowserStateShutdown(context);
-}

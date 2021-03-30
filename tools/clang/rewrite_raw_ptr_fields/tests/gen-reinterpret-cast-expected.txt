@@ -1,0 +1,12 @@
+==== BEGIN EDITS ====
+include-user-header:::gen-reinterpret-cast-actual.cc:::-1:::-1:::base/memory/checked_ptr.h
+r:::gen-reinterpret-cast-actual.cc:::1048:::5:::CheckedPtr<int> 
+r:::gen-reinterpret-cast-actual.cc:::1327:::5:::CheckedPtr<int> 
+r:::gen-reinterpret-cast-actual.cc:::1445:::5:::CheckedPtr<int> 
+r:::gen-reinterpret-cast-actual.cc:::976:::5:::CheckedPtr<int> 
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+ReinterpretedClass1::ptr2_  # reinterpret-cast-struct
+ReinterpretedClass1::ptr_  # reinterpret-cast-struct
+ReinterpretedClass2::ptr_  # reinterpret-cast-struct
+==== END FIELD FILTERS ====

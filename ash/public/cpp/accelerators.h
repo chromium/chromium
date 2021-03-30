@@ -14,10 +14,10 @@
 
 namespace ui {
 class Accelerator;
-class AcceleratorHistory;
 }
 
 namespace ash {
+class AcceleratorHistory;
 
 // See documentation in ash/accelerators/accelerator_table.h.
 
@@ -26,8 +26,10 @@ enum AcceleratorAction {
   BRIGHTNESS_UP,
   CYCLE_BACKWARD_MRU,
   CYCLE_FORWARD_MRU,
-  DESKS_ACTIVATE_DESK,
-  DESKS_MOVE_ACTIVE_ITEM,
+  DESKS_ACTIVATE_DESK_LEFT,
+  DESKS_ACTIVATE_DESK_RIGHT,
+  DESKS_MOVE_ACTIVE_ITEM_LEFT,
+  DESKS_MOVE_ACTIVE_ITEM_RIGHT,
   DESKS_NEW_DESK,
   DESKS_REMOVE_CURRENT_DESK,
   DEV_ADD_REMOVE_DISPLAY,
@@ -67,6 +69,7 @@ enum AcceleratorAction {
   NEW_TAB,
   NEW_WINDOW,
   OPEN_CROSH,
+  OPEN_DIAGNOSTICS,
   OPEN_FEEDBACK_PAGE,
   OPEN_FILE_MANAGER,
   OPEN_GET_HELP,
@@ -80,6 +83,7 @@ enum AcceleratorAction {
   SCALE_UI_DOWN,
   SCALE_UI_RESET,
   SCALE_UI_UP,
+  SHOW_EMOJI_PICKER,
   SHOW_IME_MENU_BUBBLE,
   SHOW_SHORTCUT_VIEWER,
   SHOW_STYLUS_TOOLS,
@@ -207,11 +211,19 @@ class ASH_PUBLIC_EXPORT AcceleratorController {
   virtual bool IsRegistered(const ui::Accelerator& accelerator) const = 0;
 
   // Returns the accelerator histotry.
-  virtual ui::AcceleratorHistory* GetAcceleratorHistory() = 0;
+  virtual AcceleratorHistory* GetAcceleratorHistory() = 0;
 
  protected:
   AcceleratorController();
   virtual ~AcceleratorController();
+};
+
+// The public facing interface for AcceleratorHistory, which is implemented in
+// ash.
+class ASH_PUBLIC_EXPORT AcceleratorHistory {
+ public:
+  // Stores |accelerator| if it's different than the currently stored one.
+  virtual void StoreCurrentAccelerator(const ui::Accelerator& accelerator) = 0;
 };
 
 }  // namespace ash

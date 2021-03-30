@@ -9,10 +9,14 @@
 namespace storage {
 namespace test {
 
-const std::vector<std::string> kStorageTypes{
-    "Cookie",         "LocalStorage", "FileSystem", "FileSystemAccess",
-    "SessionStorage", "IndexedDb",    "WebSql",     "CacheStorage",
-    "ServiceWorker",  "CookieStore"};
+const std::vector<std::string> kStorageTypesForFrame{
+    "Cookie",         "LocalStorage", "FileSystem",       "FileSystemAccess",
+    "SessionStorage", "IndexedDb",    "WebSql",           "CacheStorage",
+    "ServiceWorker",  "CookieStore",  "StorageFoundation"};
+
+const std::vector<std::string> kStorageTypesForWorker{
+    "WorkerFileSystemAccess", "WorkerCacheStorage", "WorkerIndexedDb",
+    "WorkerStorageFoundation"};
 
 const std::vector<std::string> kCrossTabCommunicationTypes{
     "SharedWorker",
@@ -47,20 +51,38 @@ void ExpectCookiesOnHost(content::BrowserContext* context,
 }
 
 void SetStorageForFrame(content::RenderFrameHost* frame) {
-  for (const auto& data_type : kStorageTypes) {
+  for (const auto& data_type : kStorageTypesForFrame) {
     bool data = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
         frame, "set" + data_type + "()", &data));
-    EXPECT_TRUE(data) << data_type;
+    EXPECT_TRUE(data) << "SetStorageForFrame for " << data_type;
+  }
+}
+
+void SetStorageForWorker(content::RenderFrameHost* frame) {
+  for (const auto& data_type : kStorageTypesForWorker) {
+    bool data = false;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+        frame, "set" + data_type + "()", &data));
+    EXPECT_TRUE(data) << "SetStorageForWorker for " << data_type;
   }
 }
 
 void ExpectStorageForFrame(content::RenderFrameHost* frame, bool expected) {
-  for (const auto& data_type : kStorageTypes) {
+  for (const auto& data_type : kStorageTypesForFrame) {
     bool data = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
         frame, "has" + data_type + "();", &data));
-    EXPECT_EQ(expected, data) << data_type;
+    EXPECT_EQ(expected, data) << "ExpectStorageForFrame for " << data_type;
+  }
+}
+
+void ExpectStorageForWorker(content::RenderFrameHost* frame, bool expected) {
+  for (const auto& data_type : kStorageTypesForWorker) {
+    bool data = false;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+        frame, "has" + data_type + "();", &data));
+    EXPECT_EQ(expected, data) << "ExpectStorageForWorker for " << data_type;
   }
 }
 

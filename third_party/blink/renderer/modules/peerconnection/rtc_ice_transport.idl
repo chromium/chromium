@@ -32,8 +32,6 @@ enum RTCIceGatheringState {
    Exposed=Window,
    SecureContext
 ] interface RTCIceTransport : EventTarget {
-    // Constructor from https://w3c.github.io/webrtc-ice/#rtcicetransport*
-    [CallWith=ExecutionContext, Measure] constructor();
     // TODO(github.com/w3c/webrtc-ice/issues/4): role is non-null in the
     // WebRTC-PC specification.
     [Measure] readonly attribute RTCIceRole? role;

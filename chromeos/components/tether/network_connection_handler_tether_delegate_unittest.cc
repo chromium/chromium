@@ -78,10 +78,12 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
       base::OnceClosure success_callback,
       network_handler::ErrorCallback error_callback) override {}
 
-  void Init(NetworkStateHandler* network_state_handler,
-            NetworkConfigurationHandler* network_configuration_handler,
-            ManagedNetworkConfigurationHandler*
-                managed_network_configuration_handler) override {}
+  void Init(
+      NetworkStateHandler* network_state_handler,
+      NetworkConfigurationHandler* network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularESimConnectionHandler* cellular_esim_connection_handler)
+      override {}
 };
 
 }  // namespace
@@ -116,8 +118,8 @@ class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
         guid,
         base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnSuccess,
                        base::Unretained(this)),
-        base::Bind(&NetworkConnectionHandlerTetherDelegateTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnError,
+                       base::Unretained(this)));
   }
 
   void CallTetherDisconnect(const std::string& guid) {
@@ -125,8 +127,8 @@ class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
         guid,
         base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnSuccess,
                        base::Unretained(this)),
-        base::Bind(&NetworkConnectionHandlerTetherDelegateTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnError,
+                       base::Unretained(this)));
   }
 
   void OnSuccess() { result_ = kSuccessResult; }

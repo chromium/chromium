@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/util/timer/wall_clock_timer.h"
 #include "base/version.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "chromeos/network/network_state_handler_observer.h"
@@ -132,7 +132,7 @@ class MinimumVersionPolicyHandler
   };
 
   explicit MinimumVersionPolicyHandler(Delegate* delegate,
-                                       chromeos::CrosSettings* cros_settings);
+                                       ash::CrosSettings* cros_settings);
   ~MinimumVersionPolicyHandler() override;
 
   // BuildStateObserver:
@@ -295,7 +295,7 @@ class MinimumVersionPolicyHandler
 
   // Non-owning reference to CrosSettings. This class have shorter lifetime than
   // CrosSettings.
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
 
   base::Clock* const clock_;
 

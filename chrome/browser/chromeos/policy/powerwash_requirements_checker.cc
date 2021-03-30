@@ -10,11 +10,11 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,7 +56,7 @@ constexpr mc::SystemNotificationWarningLevel kNotificationLevel =
 const char kNotificationLearnMoreLink[] =
     "https://support.google.com/chromebook?p=factory_reset";
 
-base::string16 GetEnterpriseManager() {
+std::u16string GetEnterpriseManager() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   return base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
@@ -143,7 +143,7 @@ PowerwashRequirementsChecker::State PowerwashRequirementsChecker::GetState()
 
 bool PowerwashRequirementsChecker::IsPolicySet() const {
   int policy_value = RebootOnSignOutPolicy::NEVER;
-  if (!chromeos::CrosSettings::Get()->GetInteger(
+  if (!ash::CrosSettings::Get()->GetInteger(
           chromeos::kDeviceRebootOnUserSignout, &policy_value)) {
     return false;
   }
@@ -206,7 +206,7 @@ void PowerwashRequirementsChecker::ShowNotification() {
       mc::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(IDS_POWERWASH_REQUEST_TITLE),
       l10n_util::GetStringFUTF16(message_id, GetEnterpriseManager()),
-      base::string16{}, GURL{},
+      std::u16string{}, GURL{},
       mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id),
       std::move(rich_data), std::move(delegate), kNotificationIcon,
       kNotificationLevel);
@@ -244,7 +244,7 @@ void PowerwashRequirementsChecker::ShowCryptohomeErrorNotification() {
       mc::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(
           IDS_POWERWASH_REQUEST_UNDEFINED_STATE_ERROR_TITLE),
-      l10n_util::GetStringUTF16(message_id), base::string16{}, GURL{},
+      l10n_util::GetStringUTF16(message_id), std::u16string{}, GURL{},
       mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id), {},
       std::move(delegate), kNotificationIcon, kNotificationLevel);
 

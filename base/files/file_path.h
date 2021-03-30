@@ -13,7 +13,7 @@
 // Encoding          unspecified*     UTF-16
 // Separator         /                \, tolerant of /
 // Drive letters     no               case-insensitive A-Z followed by :
-// Alternate root    // (surprise!)   \\, for UNC paths
+// Alternate root    // (surprise!)   \\ (2 Separators), for UNC paths
 //
 // * The encoding need not be specified on POSIX systems, although some
 //   POSIX-compliant systems do specify an encoding.  Mac OS X uses UTF-8.
@@ -111,9 +111,8 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
+#include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
 // Windows-style drive letter support and pathname separator characters can be
@@ -161,8 +160,8 @@ class BASE_EXPORT FilePath {
   typedef std::string StringType;
 #endif  // OS_WIN
 
-  typedef BasicStringPiece<StringType> StringPieceType;
   typedef StringType::value_type CharType;
+  typedef BasicStringPiece<CharType> StringPieceType;
 
   // Null-terminated array of separators used to separate components in
   // hierarchical paths.  Each character in this array is a valid separator,
@@ -340,6 +339,10 @@ class BASE_EXPORT FilePath {
   // platforms, an absolute path begins with a separator character.
   bool IsAbsolute() const;
 
+  // Returns true if this FilePath is a network path which starts with 2 path
+  // separators. See class documentation for 'Alternate root'.
+  bool IsNetwork() const;
+
   // Returns true if the patch ends with a path separator character.
   bool EndsWithSeparator() const WARN_UNUSED_RESULT;
 
@@ -358,8 +361,8 @@ class BASE_EXPORT FilePath {
   // Return a Unicode human-readable version of this path.
   // Warning: you can *not*, in general, go from a display name back to a real
   // path.  Only use this when displaying paths to users, not just when you
-  // want to stuff a string16 into some other API.
-  string16 LossyDisplayName() const;
+  // want to stuff a std::u16string into some other API.
+  std::u16string LossyDisplayName() const;
 
   // Return the path as ASCII, or the empty string if the path is not ASCII.
   // This should only be used for cases where the FilePath is representing a
@@ -382,7 +385,7 @@ class BASE_EXPORT FilePath {
   std::string AsUTF8Unsafe() const;
 
   // Similar to AsUTF8Unsafe, but returns UTF-16 instead.
-  string16 AsUTF16Unsafe() const;
+  std::u16string AsUTF16Unsafe() const;
 
   // Returns a FilePath object from a path name in UTF-8. This function
   // should only be used for cases where you are sure that the input
@@ -426,6 +429,9 @@ class BASE_EXPORT FilePath {
                                     StringPieceType string2) {
     return CompareIgnoreCase(string1, string2) < 0;
   }
+
+  // Serialise this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
 #if defined(OS_APPLE)
   // Returns the string in the special canonical decomposed form as defined for

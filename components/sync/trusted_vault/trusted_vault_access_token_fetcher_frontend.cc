@@ -50,25 +50,14 @@ void TrustedVaultAccessTokenFetcherFrontend::FetchAccessToken(
   }
 }
 
-void TrustedVaultAccessTokenFetcherFrontend::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  UpdatePrimaryAccountIfNeeded();
-}
-
-void TrustedVaultAccessTokenFetcherFrontend::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  UpdatePrimaryAccountIfNeeded();
-}
-
-void TrustedVaultAccessTokenFetcherFrontend::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
+void TrustedVaultAccessTokenFetcherFrontend::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
   UpdatePrimaryAccountIfNeeded();
 }
 
 void TrustedVaultAccessTokenFetcherFrontend::UpdatePrimaryAccountIfNeeded() {
   CoreAccountInfo primary_account_info =
-      identity_manager_->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_account_info.account_id == primary_account_) {
     return;
   }
@@ -90,7 +79,7 @@ void TrustedVaultAccessTokenFetcherFrontend::StartAccessTokenFetch() {
           &TrustedVaultAccessTokenFetcherFrontend::OnAccessTokenFetchCompleted,
           base::Unretained(this)),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-      signin::ConsentLevel::kNotRequired);
+      signin::ConsentLevel::kSignin);
 }
 
 void TrustedVaultAccessTokenFetcherFrontend::OnAccessTokenFetchCompleted(

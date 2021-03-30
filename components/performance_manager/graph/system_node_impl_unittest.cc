@@ -4,6 +4,9 @@
 
 #include "components/performance_manager/graph/system_node_impl.h"
 
+#include "base/memory/memory_pressure_listener.h"
+#include "base/run_loop.h"
+#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -58,6 +61,10 @@ class LenientMockObserver : public SystemNodeImpl::Observer {
   MOCK_METHOD1(OnSystemNodeAdded, void(const SystemNode*));
   MOCK_METHOD1(OnBeforeSystemNodeRemoved, void(const SystemNode*));
   MOCK_METHOD1(OnProcessMemoryMetricsAvailable, void(const SystemNode*));
+  MOCK_METHOD1(OnMemoryPressure,
+               void(base::MemoryPressureListener::MemoryPressureLevel));
+  MOCK_METHOD1(OnBeforeMemoryPressure,
+               void(base::MemoryPressureListener::MemoryPressureLevel));
 
   void SetNotifiedSystemNode(const SystemNode* system_node) {
     notified_system_node_ = system_node;
@@ -77,6 +84,7 @@ using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
 using testing::_;
 using testing::Invoke;
+using testing::InvokeWithoutArgs;
 
 }  // namespace
 
@@ -95,7 +103,69 @@ TEST_F(SystemNodeImplTest, ObserverWorks) {
   SystemNodeImpl::FromNode(system_node)->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(system_node, obs.TakeNotifiedSystemNode());
 
+  EXPECT_CALL(obs, OnBeforeMemoryPressure(
+                       base::MemoryPressureListener::MemoryPressureLevel::
+                           MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(
+      obs, OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel::
+                                MEMORY_PRESSURE_LEVEL_CRITICAL));
+  SystemNodeImpl::FromNode(system_node)
+      ->OnMemoryPressureForTesting(
+          base::MemoryPressureListener::MemoryPressureLevel::
+              MEMORY_PRESSURE_LEVEL_CRITICAL);
+
   // Release the system node and expect a call to "OnBeforeSystemNodeRemoved".
+  EXPECT_CALL(obs, OnBeforeSystemNodeRemoved(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedSystemNode));
+  graph()->ReleaseSystemNodeForTesting();
+  EXPECT_EQ(system_node, obs.TakeNotifiedSystemNode());
+
+  graph()->RemoveSystemNodeObserver(&obs);
+}
+
+TEST_F(SystemNodeImplTest, MemoryPressureNotifiation) {
+  MockObserver obs;
+  graph()->AddSystemNodeObserver(&obs);
+
+  EXPECT_CALL(obs, OnSystemNodeAdded(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedSystemNode));
+  const SystemNode* system_node = graph()->FindOrCreateSystemNode();
+  EXPECT_EQ(system_node, obs.TakeNotifiedSystemNode());
+
+  util::test::FakeMemoryPressureMonitor mem_pressure_monitor;
+
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    EXPECT_CALL(obs, OnBeforeMemoryPressure(
+                         base::MemoryPressureListener::MemoryPressureLevel::
+                             MEMORY_PRESSURE_LEVEL_CRITICAL))
+        .WillOnce(InvokeWithoutArgs([&]() { std::move(quit_closure).Run(); }));
+    EXPECT_CALL(obs, OnMemoryPressure(
+                         base::MemoryPressureListener::MemoryPressureLevel::
+                             MEMORY_PRESSURE_LEVEL_CRITICAL));
+    mem_pressure_monitor.SetAndNotifyMemoryPressure(
+        base::MemoryPressureListener::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_CRITICAL);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    EXPECT_CALL(obs, OnBeforeMemoryPressure(
+                         base::MemoryPressureListener::MemoryPressureLevel::
+                             MEMORY_PRESSURE_LEVEL_MODERATE))
+        .WillOnce(InvokeWithoutArgs([&]() { std::move(quit_closure).Run(); }));
+    EXPECT_CALL(obs, OnMemoryPressure(
+                         base::MemoryPressureListener::MemoryPressureLevel::
+                             MEMORY_PRESSURE_LEVEL_MODERATE));
+    mem_pressure_monitor.SetAndNotifyMemoryPressure(
+        base::MemoryPressureListener::MemoryPressureLevel::
+            MEMORY_PRESSURE_LEVEL_MODERATE);
+    run_loop.Run();
+  }
+
   EXPECT_CALL(obs, OnBeforeSystemNodeRemoved(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedSystemNode));
   graph()->ReleaseSystemNodeForTesting();

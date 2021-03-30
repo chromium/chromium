@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/process/process_handle.h"
@@ -12,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -48,7 +51,7 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     testing::Test::SetUp();
     metrics::MetricsService::RegisterPrefs(prefs_.registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &prefs_, &enabled_state_provider_, base::string16(),
+        &prefs_, &enabled_state_provider_, std::wstring(),
         base::BindRepeating(
             &ChromeMetricsServiceClientTest::FakeStoreClientInfoBackup,
             base::Unretained(this)),
@@ -109,9 +112,9 @@ TEST_F(ChromeMetricsServiceClientTest, FilterFiles) {
   base::ProcessId my_pid = base::GetCurrentProcId();
   base::FilePath active_dir(FILE_PATH_LITERAL("foo"));
   base::FilePath upload_dir(FILE_PATH_LITERAL("bar"));
-  base::FilePath upload_path;
-  base::GlobalHistogramAllocator::ConstructFilePathsForUploadDir(
-      active_dir, upload_dir, "TestMetrics", &upload_path, nullptr, nullptr);
+  base::FilePath upload_path =
+      base::GlobalHistogramAllocator::ConstructFilePathForUploadDir(
+          upload_dir, "TestMetrics");
   EXPECT_EQ(metrics::FileMetricsProvider::FILTER_ACTIVE_THIS_PID,
             ChromeMetricsServiceClient::FilterBrowserMetricsFiles(upload_path));
 
@@ -130,15 +133,16 @@ TEST_F(ChromeMetricsServiceClientTest, FilterFiles) {
 }  // namespace
 
 TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
-  // Test that UKM service has initialized its metrics providers.
-  // Currently there are 5 providers for all platform except ChromeOS.
+  // Test that UKM service has initialized its metrics providers. Currently
+  // there are 6 providers for all platform except ChromeOS.
   // NetworkMetricsProvider, GPUMetricsProvider, CPUMetricsProvider
-  // and ScreenInfoMetricsProvider.
-  size_t expected_providers = 5;
-
+  // ScreenInfoMetricsProvider, FieldTrialsProvider, and
+  // PrivacyBudgetMetricsProvider.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  expected_providers++;  // ChromeOSMetricsProvider
-#endif                   // BUILDFLAG(IS_CHROMEOS_ASH)
+  const size_t expected_providers = 7;  // ChromeOSMetricsProvider
+#else
+  const size_t expected_providers = 6;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       ChromeMetricsServiceClient::Create(metrics_state_manager_.get());
@@ -158,7 +162,14 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   size_t expected_providers = 2;
 
   // This is the number of metrics providers that are outside any #if macros.
-  expected_providers += 21;
+  expected_providers += 20;
+
+  int sample_rate;
+  if (ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(
+          &sample_rate)) {
+    // SamplingMetricsProvider.
+    expected_providers++;
+  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   expected_providers++;  // ExtensionsMetricsProvider.
@@ -189,9 +200,9 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // AmbientModeMetricsProvider, AssistantServiceMetricsProvider,
   // CrosHealthdMetricsProvider, ChromeOSMetricsProvider,
   // SigninStatusMetricsProviderChromeOS, PrinterMetricsProvider,
-  // HashedLoggingMetricsProvider, FamilyUserMetricsProvider, and
-  // FamilyLinkUserMetricsProvider.
-  expected_providers += 9;
+  // HashedLoggingMetricsProvider, FamilyUserMetricsProvider,
+  // FamilyLinkUserMetricsProvider, and UserTypeByDeviceTypeMetricsProvider.
+  expected_providers += 10;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

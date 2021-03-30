@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
 class Profile;
+class GURL;
 
 namespace content {
 class WebContents;
@@ -67,6 +68,9 @@ class WebAppUiManager {
   virtual void ReparentAppTabToWindow(content::WebContents* contents,
                                       const AppId& app_id,
                                       bool shortcut_created) = 0;
+
+  virtual content::WebContents* NavigateExistingWindow(const AppId& app_id,
+                                                       const GURL& url) = 0;
 };
 
 }  // namespace web_app

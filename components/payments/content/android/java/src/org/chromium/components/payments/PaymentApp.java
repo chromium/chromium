@@ -26,6 +26,9 @@ import java.util.Set;
  * The base class for a single payment app, e.g., a payment handler.
  */
 public abstract class PaymentApp extends EditableOption {
+    /** Arbitrarily chosen maximum length of a payment app name. */
+    private static final int APP_NAME_ELIDE_LENGTH = 64;
+
     /**
      * Whether complete and valid autofill data for merchant's request is available, e.g., if
      * merchant specifies `requestPayerEmail: true`, then this variable is true only if the autofill
@@ -74,12 +77,33 @@ public abstract class PaymentApp extends EditableOption {
     }
 
     protected PaymentApp(String id, String label, String sublabel, Drawable icon) {
-        super(id, label, sublabel, icon);
+        super(id, maybeElide(removeLineTerminators(label)), sublabel, icon);
     }
 
     protected PaymentApp(
             String id, String label, String sublabel, String tertiarylabel, Drawable icon) {
-        super(id, label, sublabel, tertiarylabel, icon);
+        super(id, maybeElide(removeLineTerminators(label)), sublabel, tertiarylabel, icon);
+    }
+
+    private static String removeLineTerminators(String text) {
+        // '\n' - A newline (line feed) character.
+        // '\f' - A form feed character.
+        // '\r' - A carriage-return character.
+        // '\u0085' - A next-line character.
+        // '\u2028' - A line-separator character.
+        // '\u2029' - A paragraph-separator character.
+        // [abc] - a, b, or c (simple character class).
+        // X+ - X, one or more times, a greedy quantifier.
+        // See: https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
+        return text.replaceAll("[\n\f\r\u0085\u2028\u2029]+", "");
+    }
+
+    private static String maybeElide(String text) {
+        // 2026 is the unicode horizontal ellipsis.
+        // See https://util.unicode.org/UnicodeJsps/character.jsp?a=2026.
+        return text.length() <= APP_NAME_ELIDE_LENGTH
+                ? text
+                : text.substring(0, APP_NAME_ELIDE_LENGTH) + "\u2026";
     }
 
     /**
@@ -97,14 +121,6 @@ public abstract class PaymentApp extends EditableOption {
      * @return The method names for this app.
      */
     public abstract Set<String> getInstrumentMethodNames();
-
-    /**
-     * @return Whether this is an autofill app. All autofill apps are sorted below all non-autofill
-     *         apps.
-     */
-    public boolean isAutofillInstrument() {
-        return false;
-    }
 
     /** @return Whether this is a server autofill app. */
     public boolean isServerAutofillInstrument() {

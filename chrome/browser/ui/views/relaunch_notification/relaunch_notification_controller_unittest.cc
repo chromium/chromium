@@ -31,7 +31,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -167,7 +167,7 @@ class FakeUpgradeDetector : public UpgradeDetector {
 class StubPowerMonitorSource : public base::PowerMonitorSource {
  public:
   // base::PowerMonitorSource:
-  bool IsOnBatteryPowerImpl() override { return false; }
+  bool IsOnBatteryPower() override { return false; }
 };
 
 }  // namespace
@@ -767,6 +767,49 @@ TEST_F(RelaunchNotificationControllerTest, OverriddenToRequired) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 }
 
+// Tests that the required notification is shown all three times when the clock
+// moves along with the elevations.
+TEST_F(RelaunchNotificationControllerTest, NotifyAllWithShortestPeriod) {
+  SetNotificationPref(2);
+
+  ::testing::StrictMock<MockControllerDelegate> mock_controller_delegate;
+  FakeRelaunchNotificationController controller(
+      upgrade_detector(), GetMockClock(), GetMockTickClock(),
+      &mock_controller_delegate);
+
+  // Advance to the low threshold and raise the annoyance level.
+  const auto delta = fake_upgrade_detector().high_threshold() / 3;
+  FastForwardBy(delta);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
+  EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRequired());
+  fake_upgrade_detector().BroadcastLevelChange(
+      UpgradeDetector::UPGRADE_ANNOYANCE_LOW);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
+
+  // Advance to the elevated threshold and raise the annoyance level.
+  FastForwardBy(fake_upgrade_detector().high_threshold() - delta * 2);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
+  EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRequired());
+  fake_upgrade_detector().BroadcastLevelChange(
+      UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
+
+  // Advance to the deadline and raise the annoyance level.
+  FastForwardBy(delta);
+  ASSERT_EQ(GetMockClock()->Now(),
+            upgrade_detector()->GetHighAnnoyanceDeadline());
+  ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
+  EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRequired());
+  fake_upgrade_detector().BroadcastLevelChange(
+      UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
+
+  // Advance past the grace period to the restart.
+  EXPECT_CALL(mock_controller_delegate, OnRelaunchDeadlineExpired());
+  FastForwardBy(FakeRelaunchNotificationController::kRelaunchGracePeriod);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
@@ -781,7 +824,7 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
     init_params.start_session = false;
     ash_test_helper_.SetUp(std::move(init_params));
 
-    user_manager_ = new chromeos::FakeChromeUserManager();
+    user_manager_ = new ash::FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(user_manager_));
 
@@ -828,7 +871,7 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
   RelaunchNotificationControllerPlatformImpl impl_;
   ash::AshTestHelper ash_test_helper_;
   session_manager::SessionManager session_manager_;
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<display::test::ActionLogger> logger_;
   display::NativeDisplayDelegate* native_display_delegate_;
@@ -916,7 +959,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
   ::testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
-#else  // (!OS_CHROMEOS)
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class RelaunchNotificationControllerPlatformImplTest
     : public TestWithBrowserView {
@@ -998,4 +1041,4 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest, DeferredDeadline) {
   ::testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

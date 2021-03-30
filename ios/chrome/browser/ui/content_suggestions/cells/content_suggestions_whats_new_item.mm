@@ -161,33 +161,22 @@ const CGFloat kIconTopMargin = 10;
   promoLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   promoLabel.numberOfLines = 0;
 
-  NSRange linkRange;
-  NSString* strippedText = ParseStringWithLink(text, &linkRange);
-  DCHECK_NE(NSNotFound, static_cast<NSInteger>(linkRange.location));
-  DCHECK_NE(0u, linkRange.length);
-
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:strippedText];
-
-  // Sets the styling to mimic a link.
-  UIColor* linkColor = [UIColor colorNamed:kBlueColor];
-  [attributedText addAttribute:NSForegroundColorAttributeName
-                         value:linkColor
-                         range:linkRange];
-  [attributedText addAttribute:NSUnderlineStyleAttributeName
-                         value:@(NSUnderlineStyleSingle)
-                         range:linkRange];
-  [attributedText addAttribute:NSUnderlineColorAttributeName
-                         value:linkColor
-                         range:linkRange];
-
   // Sets the line spacing on the attributed string.
-  NSInteger strLength = [strippedText length];
   NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
   [style setLineSpacing:kLabelLineSpacing];
-  [attributedText addAttribute:NSParagraphStyleAttributeName
-                         value:style
-                         range:NSMakeRange(0, strLength)];
+  NSDictionary* textAttributes = @{
+    NSParagraphStyleAttributeName : style,
+  };
+
+  // Sets the styling to mimic a link.
+  NSDictionary* linkAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
+    NSUnderlineColorAttributeName : [UIColor colorNamed:kBlueColor],
+  };
+
+  NSAttributedString* attributedText =
+      AttributedStringFromStringWithLink(text, textAttributes, linkAttributes);
 
   [promoLabel setAttributedText:attributedText];
 }

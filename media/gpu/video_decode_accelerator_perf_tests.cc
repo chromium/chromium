@@ -386,7 +386,7 @@ int main(int argc, char** argv) {
   // Print the help message if requested. This needs to be done before
   // initializing gtest, to overwrite the default gtest help message.
   base::CommandLine::Init(argc, argv);
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   LOG_ASSERT(cmd_line);
   if (cmd_line->HasSwitch("help")) {
     std::cout << media::test::usage_msg << "\n" << media::test::help_msg;
@@ -437,10 +437,16 @@ int main(int argc, char** argv) {
 
   testing::InitGoogleTest(&argc, argv);
 
+  // Add the command line flag for HEVC testing which will be checked by the
+  // video decoder to allow clear HEVC decoding.
+  cmd_line->AppendSwitch("enable-clear-hevc-for-testing");
+
   // Set up our test environment.
   media::test::VideoPlayerTestEnvironment* test_environment =
       media::test::VideoPlayerTestEnvironment::Create(
-          video_path, video_metadata_path, false, implementation,
+          video_path, video_metadata_path, /*validator_type=*/
+          media::test::VideoPlayerTestEnvironment::ValidatorType::kNone,
+          implementation,
           base::FilePath(output_folder));
   if (!test_environment)
     return EXIT_FAILURE;

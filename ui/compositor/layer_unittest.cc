@@ -39,6 +39,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -220,10 +221,13 @@ class LayerWithRealCompositorTest : public testing::TestWithParam<bool> {
     ReadbackHolder() : run_loop_(std::make_unique<base::RunLoop>()) {}
 
     void OutputRequestCallback(std::unique_ptr<viz::CopyOutputResult> result) {
-      if (result->IsEmpty())
+      if (result->IsEmpty()) {
         result_.reset();
-      else
-        result_ = std::make_unique<SkBitmap>(result->AsSkBitmap());
+      } else {
+        auto scoped_bitmap = result->ScopedAccessSkBitmap();
+        result_ =
+            std::make_unique<SkBitmap>(scoped_bitmap.GetOutScopedBitmap());
+      }
       run_loop_->Quit();
     }
 
@@ -755,6 +759,7 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   layer->SetClipRect(clip_rect);
   layer->SetRoundedCornerRadius({1, 2, 4, 5});
   layer->SetIsFastRoundedCorner(true);
+  layer->SetSubtreeCaptureId(viz::SubtreeCaptureId(1));
 
   auto clone = layer->Clone();
 
@@ -772,6 +777,10 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   EXPECT_EQ(clip_rect, clone->clip_rect());
   EXPECT_EQ(layer->rounded_corner_radii(), clone->rounded_corner_radii());
   EXPECT_EQ(layer->is_fast_rounded_corner(), clone->is_fast_rounded_corner());
+
+  // However, the SubtreeCaptureId is not cloned.
+  EXPECT_TRUE(layer->GetSubtreeCaptureId().is_valid());
+  EXPECT_FALSE(clone->GetSubtreeCaptureId().is_valid());
 
   layer->SetTransform(gfx::Transform());
   layer->SetColor(SK_ColorGREEN);
@@ -1018,6 +1027,8 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   constexpr gfx::RoundedCornersF kCornerRadii(1, 2, 3, 4);
   l1->SetRoundedCornerRadius(kCornerRadii);
   l1->SetIsFastRoundedCorner(true);
+  constexpr viz::SubtreeCaptureId kSubtreeCaptureId(22);
+  l1->SetSubtreeCaptureId(kSubtreeCaptureId);
 
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
   EXPECT_TRUE(l1->cc_layer_for_testing()->DrawsContent());
@@ -1027,6 +1038,9 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_TRUE(l1->cc_layer_for_testing()->HasRoundedCorner());
   EXPECT_EQ(l1->cc_layer_for_testing()->corner_radii(), kCornerRadii);
   EXPECT_TRUE(l1->cc_layer_for_testing()->is_fast_rounded_corner());
+  EXPECT_EQ(kSubtreeCaptureId,
+            l1->cc_layer_for_testing()->subtree_capture_id());
+  EXPECT_EQ(kSubtreeCaptureId, l1->GetSubtreeCaptureId());
 
   cc::Layer* before_layer = l1->cc_layer_for_testing();
 
@@ -1050,6 +1064,9 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_TRUE(l1->cc_layer_for_testing()->HasRoundedCorner());
   EXPECT_EQ(l1->cc_layer_for_testing()->corner_radii(), kCornerRadii);
   EXPECT_TRUE(l1->cc_layer_for_testing()->is_fast_rounded_corner());
+  EXPECT_EQ(kSubtreeCaptureId,
+            l1->cc_layer_for_testing()->subtree_capture_id());
+  EXPECT_EQ(kSubtreeCaptureId, l1->GetSubtreeCaptureId());
   EXPECT_FALSE(callback1_run);
 
   bool callback2_run = false;
@@ -1867,7 +1884,13 @@ TEST_P(LayerWithRealCompositorTest, ModifyHierarchy) {
 }
 
 // Checks that basic background blur is working.
-TEST_P(LayerWithRealCompositorTest, BackgroundBlur) {
+// TODO(crbug.com/1174372) Flaky on Windows
+#if defined(OS_WIN)
+#define MAYBE_BackgroundBlur DISABLED_BackgroundBlur
+#else
+#define MAYBE_BackgroundBlur BackgroundBlur
+#endif
+TEST_P(LayerWithRealCompositorTest, MAYBE_BackgroundBlur) {
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   GetCompositor()->SetScaleAndSize(1.0f, gfx::Size(200, 200),

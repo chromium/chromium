@@ -7,10 +7,11 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 
 namespace content {
@@ -48,7 +49,7 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
   void Show() override;
   void ControllerGone() override;
   void DisableAndWaitForVerification() override;
-  void GotVerificationResult(const base::string16& error_message,
+  void GotVerificationResult(const std::u16string& error_message,
                              bool allow_retry) override;
 
  private:

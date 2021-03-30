@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import org.chromium.build.BuildConfig;
+
 /**
  * Exposes native library loading status.
  */
@@ -20,7 +22,7 @@ public class NativeLibraryLoadedStatus {
 
     public static void checkLoaded(boolean isMainDex) {
         // Necessary to make sure all of these calls are stripped in release builds.
-        if (!BuildConfig.DCHECK_IS_ON) return;
+        if (!BuildConfig.ENABLE_ASSERTS) return;
 
         if (sProvider == null) return;
 

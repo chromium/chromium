@@ -22,8 +22,8 @@ test(() => {
   assert_equals(computedStyle.webkitTransitionDelay, '0s');
 
   style.transitionDelay = "0s";
-  assert_not_equals(Object.keys(style).indexOf('transitionDelay'), -1);
-  assert_not_equals(Object.keys(style).indexOf('webkitTransitionDelay'), -1);
+  assert_true('transitionDelay' in style);
+  assert_true('webkitTransitionDelay' in style);
   assert_equals(style.transitionDelay, '0s');
   assert_equals(computedStyle.transitionDelay, '0s');
   assert_equals(style.webkitTransitionDelay, '0s');

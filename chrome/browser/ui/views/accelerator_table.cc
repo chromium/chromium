@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
@@ -241,6 +242,16 @@ const AcceleratorMapping kEnableWithNewMappingAcceleratorMap[] = {
 };
 #endif
 
+constexpr int kDebugModifier =
+    ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
+
+// Accelerators to enable if features::UIDebugTools is true.
+constexpr AcceleratorMapping kUIDebugAcceleratorMap[] = {
+    {ui::VKEY_T, kDebugModifier, IDC_DEBUG_TOGGLE_TABLET_MODE},
+    {ui::VKEY_V, kDebugModifier, IDC_DEBUG_PRINT_VIEW_TREE},
+    {ui::VKEY_M, kDebugModifier, IDC_DEBUG_PRINT_VIEW_TREE_DETAILS},
+};
+
 const int kRepeatableCommandIds[] = {
   IDC_FIND_NEXT,
   IDC_FIND_PREVIOUS,
@@ -273,6 +284,12 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
                            std::end(kDisableWithNewMappingAcceleratorMap));
     }
 #endif
+
+    if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
+      accelerators->insert(accelerators->begin(),
+                           std::begin(kUIDebugAcceleratorMap),
+                           std::end(kUIDebugAcceleratorMap));
+    }
   }
 
   return *accelerators;

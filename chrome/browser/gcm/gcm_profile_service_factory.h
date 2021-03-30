@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/gcm_driver/system_encryptor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -35,7 +35,7 @@ class GCMProfileServiceFactory : public BrowserContextKeyedServiceFactory {
   };
 
  private:
-  friend struct base::DefaultSingletonTraits<GCMProfileServiceFactory>;
+  friend base::NoDestructor<GCMProfileServiceFactory>;
 
   GCMProfileServiceFactory();
   ~GCMProfileServiceFactory() override;

@@ -40,12 +40,8 @@ class IdleManager final : public GarbageCollected<IdleManager>,
   void OnPermissionRequestComplete(ScriptPromiseResolver*,
                                    mojom::blink::PermissionStatus);
 
-  HeapMojoRemote<mojom::blink::IdleManager,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      idle_service_;
-  HeapMojoRemote<mojom::blink::PermissionService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      permission_service_;
+  HeapMojoRemote<mojom::blink::IdleManager> idle_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };
 
 }  // namespace blink

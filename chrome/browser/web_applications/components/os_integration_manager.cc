@@ -10,9 +10,12 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,6 +26,7 @@
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 #if defined(OS_MAC)
@@ -30,7 +34,7 @@
 #endif
 
 namespace {
-// Used to  disable os hooks globally when OsIntegrationManager::SuppressOsHooks
+// Used to disable os hooks globally when OsIntegrationManager::SuppressOsHooks
 // can't be easily used.
 bool g_suppress_os_hooks_for_testing_ = false;
 }  // namespace
@@ -81,11 +85,13 @@ OsIntegrationManager::OsIntegrationManager(
     Profile* profile,
     std::unique_ptr<AppShortcutManager> shortcut_manager,
     std::unique_ptr<FileHandlerManager> file_handler_manager,
-    std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager)
+    std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
+    std::unique_ptr<UrlHandlerManager> url_handler_manager)
     : profile_(profile),
       shortcut_manager_(std::move(shortcut_manager)),
       file_handler_manager_(std::move(file_handler_manager)),
-      protocol_handler_manager_(std::move(protocol_handler_manager)) {}
+      protocol_handler_manager_(std::move(protocol_handler_manager)),
+      url_handler_manager_(std::move(url_handler_manager)) {}
 
 OsIntegrationManager::~OsIntegrationManager() = default;
 
@@ -98,6 +104,8 @@ void OsIntegrationManager::SetSubsystems(AppRegistrar* registrar,
   shortcut_manager_->SetSubsystems(icon_manager, registrar);
   if (protocol_handler_manager_)
     protocol_handler_manager_->SetSubsystems(registrar);
+  if (url_handler_manager_)
+    url_handler_manager_->SetSubsystems(registrar);
 }
 
 void OsIntegrationManager::Start() {
@@ -169,7 +177,6 @@ void OsIntegrationManager::UninstallAllOsHooks(
 void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
                                             const OsHooksResults& os_hooks,
                                             UninstallOsHooksCallback callback) {
-
   if (g_suppress_os_hooks_for_testing_) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), os_hooks));
@@ -205,13 +212,17 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
   }
   // TODO(https://crbug.com/1108109) we should return the result of file handler
   // unregistration and record errors during unregistration.
+  // TODO(crbug.com/1076688): Retrieve shortcuts before they're unregistered.
   if (os_hooks[OsHookType::kFileHandlers])
-    UnregisterFileHandlers(app_id);
+    UnregisterFileHandlers(app_id, nullptr, base::DoNothing());
 
   // TODO(https://crbug.com/1108109) we should return the result of protocol
   // handler unregistration and record errors during unregistration.
   if (os_hooks[OsHookType::kProtocolHandlers])
     UnregisterProtocolHandlers(app_id);
+
+  if (os_hooks[OsHookType::kUrlHandlers])
+    UnregisterUrlHandlers(app_id);
 
   // There is a chance uninstallation point was created with feature flag
   // enabled so we need to clean it up regardless of feature flag state.
@@ -222,25 +233,15 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
 void OsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
+    std::unique_ptr<ShortcutInfo> old_shortcut,
     const WebApplicationInfo& web_app_info) {
-  DCHECK(shortcut_manager_);
-
   if (g_suppress_os_hooks_for_testing_)
     return;
 
-  // TODO(crbug.com/1079439): Update file handlers.
-  shortcut_manager_->UpdateShortcuts(app_id, old_name);
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu) &&
-      !web_app_info.shortcuts_menu_item_infos.empty()) {
-    shortcut_manager_->RegisterShortcutsMenuWithOs(
-        app_id, web_app_info.shortcuts_menu_item_infos,
-        web_app_info.shortcuts_menu_icons_bitmaps);
-  } else {
-    // Unregister shortcuts menu when feature is disabled or
-    // shortcuts_menu_item_infos is empty.
-    shortcut_manager_->UnregisterShortcutsMenuWithOs(app_id);
-  }
+  UpdateFileHandlers(app_id, std::move(old_shortcut));
+  UpdateShortcuts(app_id, old_name);
+  UpdateShortcutsMenu(app_id, web_app_info);
+  UpdateUrlHandlers(app_id, base::DoNothing());
 }
 
 void OsIntegrationManager::GetShortcutInfoForApp(
@@ -294,6 +295,11 @@ FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
   return *file_handler_manager_;
 }
 
+UrlHandlerManager& OsIntegrationManager::url_handler_manager_for_testing() {
+  DCHECK(url_handler_manager_);
+  return *url_handler_manager_;
+}
+
 ScopedOsHooksSuppress OsIntegrationManager::ScopedSuppressOsHooksForTesting() {
 // Creating OS hooks on ChromeOS doesn't write files to disk, so it's
 // unnecessary to suppress and it provides better crash coverage.
@@ -340,18 +346,29 @@ void OsIntegrationManager::RegisterProtocolHandlers(
     return;
   }
 
-  // TODO(crbug.com/1019239): Call protocol_handler_manager_ implementation.
+  protocol_handler_manager_->RegisterOsProtocolHandlers(app_id);
 
   // TODO(crbug.com/1087219): callback should be run after all hooks are
   // deployed, need to refactor protocol_handler_manager to allow this.
   std::move(callback).Run(true);
 }
 
+void OsIntegrationManager::RegisterUrlHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool success)> callback) {
+  if (!url_handler_manager_) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  url_handler_manager_->RegisterUrlHandlers(app_id, std::move(callback));
+}
+
 void OsIntegrationManager::RegisterShortcutsMenu(
     const AppId& app_id,
     const std::vector<WebApplicationShortcutsMenuItemInfo>&
         shortcuts_menu_item_infos,
-    const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps,
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
     base::OnceCallback<void(bool success)> callback) {
   if (!ShouldRegisterShortcutsMenuWithOs()) {
     std::move(callback).Run(true);
@@ -360,7 +377,7 @@ void OsIntegrationManager::RegisterShortcutsMenu(
 
   DCHECK(shortcut_manager_);
   shortcut_manager_->RegisterShortcutsMenuWithOs(
-      app_id, shortcuts_menu_item_infos, shortcuts_menu_icons_bitmaps);
+      app_id, shortcuts_menu_item_infos, shortcuts_menu_icon_bitmaps);
 
   // TODO(https://crbug.com/1098471): fix RegisterShortcutsMenuWithOs to
   // take callback.
@@ -384,7 +401,7 @@ void OsIntegrationManager::RegisterRunOnOsLogin(
     RegisterRunOnOsLoginCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  shortcut_manager_->GetShortcutInfoForApp(
+  GetShortcutInfoForApp(
       app_id,
       base::BindOnce(
           &OsIntegrationManager::OnShortcutInfoRetrievedRegisterRunOnOsLogin,
@@ -422,7 +439,7 @@ bool OsIntegrationManager::UnregisterShortcutsMenu(const AppId& app_id) {
 void OsIntegrationManager::UnregisterRunOnOsLogin(
     const AppId& app_id,
     const base::FilePath& profile_path,
-    const base::string16& shortcut_title,
+    const std::u16string& shortcut_title,
     UnregisterRunOnOsLoginCallback callback) {
   ScheduleUnregisterRunOnOsLogin(app_id, profile_path, shortcut_title,
                                  std::move(callback));
@@ -433,28 +450,97 @@ void OsIntegrationManager::DeleteShortcuts(
     const base::FilePath& shortcuts_data_dir,
     std::unique_ptr<ShortcutInfo> shortcut_info,
     DeleteShortcutsCallback callback) {
-  internals::ScheduleDeletePlatformShortcuts(
-      shortcuts_data_dir, std::move(shortcut_info),
-      base::BindOnce(&OsIntegrationManager::OnShortcutsDeleted,
-                     weak_ptr_factory_.GetWeakPtr(), app_id,
-                     std::move(callback)));
+  if (shortcut_manager_->CanCreateShortcuts()) {
+    auto shortcuts_callback = base::BindOnce(
+        &OsIntegrationManager::OnShortcutsDeleted,
+        weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback));
+
+    shortcut_manager_->DeleteShortcuts(app_id, shortcuts_data_dir,
+                                       std::move(shortcut_info),
+                                       std::move(shortcuts_callback));
+  } else {
+    std::move(callback).Run(false);
+  }
 }
 
-void OsIntegrationManager::UnregisterFileHandlers(const AppId& app_id) {
-  file_handler_manager_->DisableAndUnregisterOsFileHandlers(app_id);
+void OsIntegrationManager::UnregisterFileHandlers(
+    const AppId& app_id,
+    std::unique_ptr<ShortcutInfo> info,
+    base::OnceCallback<void()> callback) {
+  DCHECK(file_handler_manager_);
+
+  file_handler_manager_->DisableAndUnregisterOsFileHandlers(
+      app_id, std::move(info), std::move(callback));
 }
 
 void OsIntegrationManager::UnregisterProtocolHandlers(const AppId& app_id) {
   if (!protocol_handler_manager_)
     return;
 
-  // TODO(crbug.com/1019239): Call protocol_handler_manager_ implementation.
+  // TODO(https://crbug.com/1019239) Make this take a callback, and return bool
+  // success or a single/list of enum errors.
+  protocol_handler_manager_->UnregisterOsProtocolHandlers(app_id);
+}
+
+void OsIntegrationManager::UnregisterUrlHandlers(const AppId& app_id) {
+  if (!url_handler_manager_)
+    return;
+
+  url_handler_manager_->UnregisterUrlHandlers(app_id);
 }
 
 void OsIntegrationManager::UnregisterWebAppOsUninstallation(
     const AppId& app_id) {
   if (ShouldRegisterUninstallationViaOsSettingsWithOs())
     UnegisterUninstallationViaOsSettingsWithOs(app_id, profile_);
+}
+
+void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,
+                                           base::StringPiece old_name) {
+  DCHECK(shortcut_manager_);
+  shortcut_manager_->UpdateShortcuts(app_id, old_name);
+}
+
+void OsIntegrationManager::UpdateShortcutsMenu(
+    const AppId& app_id,
+    const WebApplicationInfo& web_app_info) {
+  DCHECK(shortcut_manager_);
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsAppIconShortcutsMenu) &&
+      !web_app_info.shortcuts_menu_item_infos.empty()) {
+    shortcut_manager_->RegisterShortcutsMenuWithOs(
+        app_id, web_app_info.shortcuts_menu_item_infos,
+        web_app_info.shortcuts_menu_icon_bitmaps);
+  } else {
+    // Unregister shortcuts menu when feature is disabled or
+    // shortcuts_menu_item_infos is empty.
+    shortcut_manager_->UnregisterShortcutsMenuWithOs(app_id);
+  }
+}
+
+void OsIntegrationManager::UpdateUrlHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool success)> callback) {
+  if (!url_handler_manager_)
+    return;
+
+  url_handler_manager_->UpdateUrlHandlers(app_id, std::move(callback));
+}
+
+void OsIntegrationManager::UpdateFileHandlers(
+    const AppId& app_id,
+    std::unique_ptr<ShortcutInfo> info) {
+  if (!IsFileHandlingAPIAvailable(app_id))
+    return;
+
+  // Update file handlers via complete uninstallation, then reinstallation.
+  auto callback = base::BindOnce(&OsIntegrationManager::RegisterFileHandlers,
+                                 weak_ptr_factory_.GetWeakPtr(), app_id,
+                                 base::DoNothing::Once<bool>());
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OsIntegrationManager::UnregisterFileHandlers,
+                                weak_ptr_factory_.GetWeakPtr(), app_id,
+                                std::move(info), std::move(callback)));
 }
 
 std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
@@ -487,6 +573,11 @@ void OsIntegrationManager::OnShortcutsCreated(
                                          OsHookType::kProtocolHandlers));
   }
 
+  if (options.os_hooks[OsHookType::kUrlHandlers]) {
+    RegisterUrlHandlers(app_id, barrier->CreateBarrierCallbackForType(
+                                    OsHookType::kUrlHandlers));
+  }
+
   if (options.os_hooks[OsHookType::kShortcuts] &&
       options.add_to_quick_launch_bar) {
     AddAppToQuickLaunchBar(app_id);
@@ -497,7 +588,7 @@ void OsIntegrationManager::OnShortcutsCreated(
     if (web_app_info) {
       RegisterShortcutsMenu(
           app_id, web_app_info->shortcuts_menu_item_infos,
-          web_app_info->shortcuts_menu_icons_bitmaps,
+          web_app_info->shortcuts_menu_icon_bitmaps,
           barrier->CreateBarrierCallbackForType(OsHookType::kShortcutsMenu));
     } else {
       ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
@@ -508,7 +599,7 @@ void OsIntegrationManager::OnShortcutsCreated(
 
   if (options.os_hooks[OsHookType::kRunOnOsLogin] &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    // TODO(crbug.com/897302): Implement Run on OS Login mode selection.
+    // TODO(crbug.com/1091964): Implement Run on OS Login mode selection.
     // Currently it is set to be the default: RunOnOsLoginMode::kWindowed
     RegisterRunOnOsLogin(app_id, barrier->CreateBarrierCallbackForType(
                                      OsHookType::kRunOnOsLogin));

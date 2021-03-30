@@ -42,7 +42,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gtest_util.h"
 #include "base/test/gtest_xml_util.h"
@@ -1260,9 +1260,8 @@ bool LoadFilterFile(const FilePath& file_path,
     }
 
     // Strip comments and whitespace from each line.
-    std::string trimmed_line =
-        TrimWhitespaceASCII(filter_line.substr(0, hash_pos), TRIM_ALL)
-            .as_string();
+    std::string trimmed_line(
+        TrimWhitespaceASCII(filter_line.substr(0, hash_pos), TRIM_ALL));
 
     if (trimmed_line.substr(0, 2) == "//") {
       LOG(ERROR) << "Line " << line_num << " in " << file_path
@@ -1743,7 +1742,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
 
     // Tests with the name XYZ will cause tests with the name PRE_XYZ to run. We
     // should bucket all of these tests together.
-    if (Hash(prefix_stripped_name) % total_shards_ !=
+    if (PersistentHash(prefix_stripped_name) % total_shards_ !=
         static_cast<uint32_t>(shard_index_)) {
       continue;
     }

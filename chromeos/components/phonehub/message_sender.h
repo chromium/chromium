@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string16.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -40,7 +39,7 @@ class MessageSender {
   // |notification_id|.
   virtual void SendNotificationInlineReplyRequest(
       int64_t notification_id,
-      const base::string16& reply_text) = 0;
+      const std::u16string& reply_text) = 0;
 
   // Requests that the phone should show the notification access set up.
   virtual void SendShowNotificationAccessSetupRequest() = 0;

@@ -49,6 +49,32 @@ using media_gpu_v4l2::StubPathMap;
 
 namespace media {
 
+namespace {
+
+uint32_t V4L2PixFmtToDrmFormat(uint32_t format) {
+  switch (format) {
+    case V4L2_PIX_FMT_NV12:
+    case V4L2_PIX_FMT_NV12M:
+      return DRM_FORMAT_NV12;
+
+    case V4L2_PIX_FMT_YUV420:
+    case V4L2_PIX_FMT_YUV420M:
+      return DRM_FORMAT_YUV420;
+
+    case V4L2_PIX_FMT_YVU420:
+      return DRM_FORMAT_YVU420;
+
+    case V4L2_PIX_FMT_RGB32:
+      return DRM_FORMAT_ARGB8888;
+
+    default:
+      DVLOGF(1) << "Unrecognized format " << FourccToString(format);
+      return 0;
+  }
+}
+
+}  // namespace
+
 GenericV4L2Device::GenericV4L2Device() {
 #if BUILDFLAG(USE_LIBV4L2)
   use_libv4l2_ = false;

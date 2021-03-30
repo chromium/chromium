@@ -227,9 +227,12 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // Returns true if all its window grids don't have any window item.
   bool IsEmpty() const;
 
-  // If |focus| is true, restores focus to |restore_focus_window_|. Sets
-  // |restore_focus_window_| to null regardless of |focus|.
-  void ResetFocusRestoreWindow(bool focus);
+  // If |restore| is true, activate window |active_window_before_overview_|.
+  // This is usually called when exiting overview to restore window activation
+  // to the window that was active before entering overview. If |restore| is
+  // false, reset |active_window_before_overview_| to nullptr so that window
+  // activation will not be restore when overview is ended.
+  void RestoreWindowActivation(bool restore);
 
   // Handles requests to active or close the currently highlighted |item|.
   void OnHighlightedItemActivated(OverviewItem* item);
@@ -260,6 +263,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // does not matter.
   bool CanProcessEvent() const;
   bool CanProcessEvent(OverviewItem* sender, bool from_touch_gesture) const;
+
+  // Returns true if |window| is not nullptr and equals
+  // |active_window_before_overview_|.
+  bool IsWindowActiveWindowBeforeOverview(aura::Window* window) const;
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& display) override;
@@ -317,7 +324,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
  private:
   friend class DesksAcceleratorsTest;
   friend class OverviewSessionTest;
-  class AccessibilityFocusAnnotator;
 
   // Helper function that moves the highlight forward or backward on the
   // corresponding window grid.
@@ -337,13 +343,18 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   void OnItemAdded(aura::Window* window);
 
+  // Updates the focusable overview widgets so that they point to the correct
+  // next and previous widgets for a11y purposes. Needs to be updated when an
+  // overview item is added or removed.
+  void UpdateAccessibilityFocus();
+
   // Weak pointer to the overview delegate which will be called when a selection
   // is made.
   OverviewDelegate* delegate_;
 
-  // A weak pointer to the window which was focused on starting overview. If
-  // overview is canceled the focus should be restored to this window.
-  aura::Window* restore_focus_window_ = nullptr;
+  // A weak pointer to the window which was active on starting overview. If
+  // overview is canceled the activation should be restored to this window.
+  aura::Window* active_window_before_overview_ = nullptr;
 
   // A hidden window that receives focus while in overview mode. It is needed
   // because accessibility needs something focused for it to work and we cannot
@@ -398,10 +409,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   std::unique_ptr<ScopedOverviewHideWindows> hide_overview_windows_;
 
   std::unique_ptr<OverviewHighlightController> highlight_controller_;
-
-  // Updates accessibility with the correct focus order among all overview
-  // widgets.
-  std::unique_ptr<AccessibilityFocusAnnotator> accessibility_focus_annotator_;
 
   DISALLOW_COPY_AND_ASSIGN(OverviewSession);
 };

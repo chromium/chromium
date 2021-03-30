@@ -87,7 +87,7 @@ void WebViewFindHelper::EndFindSession(int session_request_id, bool canceled) {
 
 void WebViewFindHelper::Find(
     content::WebContents* guest_web_contents,
-    const base::string16& search_text,
+    const std::u16string& search_text,
     blink::mojom::FindOptionsPtr options,
     scoped_refptr<WebViewInternalFindFunction> find_function) {
   // Need a new request_id for each new find request.
@@ -107,7 +107,7 @@ void WebViewFindHelper::Find(
       insert_result.first->second->options().Clone();
 
   if (current_find_session_) {
-    const base::string16& current_search_text =
+    const std::u16string& current_search_text =
         current_find_session_->search_text();
     bool current_match_case = current_find_session_->options()->match_case;
     full_options->new_session = current_search_text.empty() ||
@@ -223,9 +223,8 @@ void WebViewFindHelper::FindResults::PrepareResults(
 }
 
 WebViewFindHelper::FindUpdateEvent::FindUpdateEvent(
-    const base::string16& search_text)
-    : search_text_(search_text) {
-}
+    const std::u16string& search_text)
+    : search_text_(search_text) {}
 
 WebViewFindHelper::FindUpdateEvent::~FindUpdateEvent() {
 }
@@ -247,7 +246,7 @@ void WebViewFindHelper::FindUpdateEvent::PrepareResults(
 
 WebViewFindHelper::FindInfo::FindInfo(
     int request_id,
-    const base::string16& search_text,
+    const std::u16string& search_text,
     blink::mojom::FindOptionsPtr options,
     scoped_refptr<WebViewInternalFindFunction> find_function)
     : request_id_(request_id),

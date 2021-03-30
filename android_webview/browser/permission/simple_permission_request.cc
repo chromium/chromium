@@ -9,10 +9,9 @@
 
 namespace android_webview {
 
-SimplePermissionRequest::SimplePermissionRequest(
-    const GURL& origin,
-    int64_t resources,
-    base::OnceCallback<void(bool)> callback)
+SimplePermissionRequest::SimplePermissionRequest(const GURL& origin,
+                                                 int64_t resources,
+                                                 PermissionCallback callback)
     : origin_(origin), resources_(resources), callback_(std::move(callback)) {}
 
 SimplePermissionRequest::~SimplePermissionRequest() {}

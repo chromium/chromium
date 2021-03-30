@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
+#include "third_party/skia/include/core/SkTileMode.h"
 
 namespace blink {
 
@@ -51,8 +51,7 @@ class CORE_EXPORT FilterEffectBuilder final {
                       float zoom,
                       const PaintFlags* fill_flags = nullptr,
                       const PaintFlags* stroke_flags = nullptr,
-                      SkBlurImageFilter::TileMode blur_tile_mode =
-                          SkBlurImageFilter::kClampToBlack_TileMode);
+                      SkTileMode blur_tile_mode = SkTileMode::kDecal);
 
   Filter* BuildReferenceFilter(const ReferenceFilterOperation&,
                                FilterEffect* previous_effect,
@@ -73,7 +72,7 @@ class CORE_EXPORT FilterEffectBuilder final {
   float shorthand_scale_;  // Scale factor for shorthand filter functions.
   const PaintFlags* fill_flags_;
   const PaintFlags* stroke_flags_;
-  const SkBlurImageFilter::TileMode blur_tile_mode_;
+  const SkTileMode blur_tile_mode_;
 };
 
 }  // namespace blink

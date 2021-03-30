@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -149,7 +148,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
   //     the same parameter of a WM_IME_COMPOSITION message handler.
   //     This parameter is used for checking if the ongoing composition has
   //     its result string,
-  //   * result [out] (base::string16)
+  //   * result [out] (std::u16string)
   //     Represents the object contains the composition result.
   // Return values
   //   * true
@@ -159,7 +158,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
   // Remarks
   //   This function is designed for being called from WM_IME_COMPOSITION
   //   message handlers.
-  bool GetResult(HWND window_handle, LPARAM lparam, base::string16* result);
+  bool GetResult(HWND window_handle, LPARAM lparam, std::u16string* result);
 
   // Retrieves the current composition status of the ongoing composition.
   // Parameters
@@ -262,7 +261,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
   bool GetString(HIMC imm_context,
                  WPARAM lparam,
                  int type,
-                 base::string16* result);
+                 std::u16string* result);
 
  private:
   // Represents whether or not there is an ongoing composition in a browser

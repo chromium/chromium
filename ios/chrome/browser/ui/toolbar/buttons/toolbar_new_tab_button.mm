@@ -54,13 +54,11 @@ const CGFloat kSpotlightHeight = 36.0f;
       .active = YES;
   self.spotlightView = spotlightView;
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       // Customize the pointer highlight tomatch the spotlight view.
       self.pointerInteractionEnabled = YES;
       self.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
   }
-#endif  // defined(__IPHONE_13_4)
 }
 
 @end

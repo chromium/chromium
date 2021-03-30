@@ -9,6 +9,7 @@
 #include "content/browser/mojo_binder_policy_applier.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 
 namespace content {
@@ -22,18 +23,16 @@ namespace content {
 // By default, BrowserInterfaceBrokerImpl runs the binder that was registered
 // for a given interface when the interface is requested. However, in some cases
 // such as prerendering pages, it may be desirable to defer running the binder,
-// or take another action. BrowserInterfaceBrokerImpl can be initialized with a
-// non-null `MojoBinderPolicyApplier` to enable this behavior.
+// or take another action. Setting a non-null `MojoBinderPolicyApplier` enables
+// this behavior.
 //
 // Note: BrowserInterfaceBrokerImpl will eventually replace the usage of
 // InterfaceProvider and browser manifests, as well as DocumentInterfaceBroker.
 template <typename ExecutionContextHost, typename InterfaceBinderContext>
 class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
  public:
-  BrowserInterfaceBrokerImpl(
-      ExecutionContextHost* host,
-      std::unique_ptr<MojoBinderPolicyApplier> policy_applier)
-      : host_(host), policy_applier_(std::move(policy_applier)) {
+  explicit BrowserInterfaceBrokerImpl(ExecutionContextHost* host)
+      : host_(host) {
     internal::PopulateBinderMap(host, &binder_map_);
     internal::PopulateBinderMapWithContext(host, &binder_map_with_context_);
   }
@@ -58,6 +57,30 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
           base::BindOnce(&BrowserInterfaceBrokerImpl::BindInterface,
                          base::Unretained(this), std::move(receiver)));
     }
+  }
+
+  // Sets MojoBinderPolicyApplier to control when to bind interfaces.
+  void ApplyMojoBinderPolicies(
+      std::unique_ptr<MojoBinderPolicyApplier> policy_applier) {
+    DCHECK(blink::features::IsPrerender2Enabled());
+    DCHECK(policy_applier);
+    DCHECK(!policy_applier_);
+    policy_applier_ = std::move(policy_applier);
+  }
+
+  // Resolves requests that were previously deferred and stops applying policies
+  // to binding requests.
+  void ReleaseMojoBinderPolicies() {
+    DCHECK(blink::features::IsPrerender2Enabled());
+    DCHECK(policy_applier_);
+    policy_applier_->GrantAll();
+    // Reset `policy_applier_` to disable capability control.
+    policy_applier_.reset();
+  }
+
+  MojoBinderPolicyApplier* GetMojoBinderPolicyApplier() {
+    DCHECK(blink::features::IsPrerender2Enabled());
+    return policy_applier_.get();
   }
 
  private:

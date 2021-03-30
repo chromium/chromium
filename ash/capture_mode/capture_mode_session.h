@@ -7,12 +7,13 @@
 
 #include <memory>
 
+#include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -31,6 +32,8 @@ namespace ash {
 
 class CaptureModeBarView;
 class CaptureModeController;
+class CaptureModeSettingsView;
+class CaptureModeSessionFocusCycler;
 class CaptureWindowObserver;
 class WindowDimmer;
 
@@ -62,8 +65,23 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   static constexpr int kCaptureButtonDistanceFromRegionDp = 24;
 
   aura::Window* current_root() const { return current_root_; }
+  views::Widget* capture_mode_bar_widget() {
+    return capture_mode_bar_widget_.get();
+  }
   bool is_selecting_region() const { return is_selecting_region_; }
   bool is_drag_in_progress() const { return is_drag_in_progress_; }
+  void set_a11y_alert_on_session_exit(bool value) {
+    a11y_alert_on_session_exit_ = value;
+  }
+  bool is_shutting_down() const { return is_shutting_down_; }
+
+  // Initializes the capture mode session. This should be called right after the
+  // object is created.
+  void Initialize();
+
+  // Shuts down the capture mode session. This should be called right before the
+  // object is destroyed.
+  void Shutdown();
 
   // Gets the current window selected for |kWindow| capture source. Returns
   // nullptr if no window is available for selection.
@@ -72,6 +90,12 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Called when either the capture source or type changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
+
+  // Called when the settings menu is toggled.
+  void SetSettingsMenuShown(bool shown);
+
+  // Called when the record microphone setting is toggled.
+  void OnMicrophoneChanged(bool microphone_enabled);
 
   // Called when the user performs a capture. Records histograms related to this
   // session.
@@ -102,8 +126,21 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
                                uint32_t metrics) override;
 
  private:
+  friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;
   class CursorSetter;
+  class ScopedA11yOverrideWindowSetter;
+
+  enum class CaptureLabelAnimation {
+    // No animation on the capture label.
+    kNone,
+    // The animation on the capture label when the user has finished selecting a
+    // region and is moving to the fine tune phase.
+    kRegionPhaseChange,
+    // The animation on the capture label when the user has clicked record and
+    // the capture label animates into a countdown label.
+    kCountdownStart,
+  };
 
   // Gets the bounds of current window selected for |kWindow| capture source.
   gfx::Rect GetSelectedWindowBounds() const;
@@ -131,9 +168,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Handles updating the select region UI.
   void OnLocatedEventPressed(const gfx::Point& location_in_root,
                              bool is_touch,
-                             bool is_event_on_capture_bar);
+                             bool is_event_on_capture_bar_or_menu);
   void OnLocatedEventDragged(const gfx::Point& location_in_root);
-  void OnLocatedEventReleased(bool is_event_on_capture_bar,
+  void OnLocatedEventReleased(bool is_event_on_capture_bar_or_menu,
                               bool region_intersects_capture_bar);
 
   // Updates the capture region and the capture region widgets depending on the
@@ -169,11 +206,14 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // anchor points if |position| is an edge.
   std::vector<gfx::Point> GetAnchorPointsForPosition(FineTunePosition position);
 
-  // Updates the capture label widget's icon/text and bounds.
-  void UpdateCaptureLabelWidget();
-  // Updates the capture label widget's bounds. If |animate| is true, do bounds
-  // animation.
-  void UpdateCaptureLabelWidgetBounds(bool animate);
+  // Updates the capture label widget's icon/text and bounds. The capture label
+  // widget may be animated depending on |animation_type|.
+  void UpdateCaptureLabelWidget(CaptureLabelAnimation animation_type);
+
+  // Updates the capture label widget's bounds. The capture label
+  // widget may be animated depending on |animation_type|.
+  void UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation animation_type);
+
   // Calculates the targeted capture label widget bounds in screen coordinates.
   gfx::Rect CalculateCaptureLabelWidgetBounds();
 
@@ -216,7 +256,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // Ends a region selection. Cleans up internal state and updates the cursor,
   // capture bar opacity and magnifier glass.
-  void EndSelection(bool is_event_on_capture_bar,
+  void EndSelection(bool is_event_on_capture_bar_or_menu,
                     bool region_intersects_capture_bar);
 
   // Schedules a paint on the region and enough inset around it so that the
@@ -228,9 +268,14 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void SelectDefaultRegion();
 
   // Updates the region either horizontally or vertically. Called when the arrow
-  // keys are pressed.
-  void UpdateRegionHorizontally(bool left, bool is_shift_down);
-  void UpdateRegionVertically(bool up, bool is_shift_down);
+  // keys are pressed. |event_flags| are the flags from the event that triggers
+  // these calls. Different modifiers will move the region more or less.
+  void UpdateRegionHorizontally(bool left, int event_flags);
+  void UpdateRegionVertically(bool up, int event_flags);
+
+  // Returns true if the event is on a visible settings menu. This includes the
+  // space between the capture bar and the menu.
+  bool IsEventInSettingsMenuBounds(const gfx::Point& location_in_screen);
 
   CaptureModeController* const controller_;
 
@@ -243,6 +288,11 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // The content view of the above widget and owned by its views hierarchy.
   CaptureModeBarView* capture_mode_bar_view_ = nullptr;
+
+  views::UniqueWidgetPtr capture_mode_settings_widget_;
+
+  // The content view of the above widget and owned by its views hierarchy.
+  CaptureModeSettingsView* capture_mode_settings_view_ = nullptr;
 
   // Widget which displays capture region size during a region capture session.
   views::UniqueWidgetPtr dimensions_label_widget_;
@@ -302,9 +352,22 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // changed. Used for metrics collection.
   bool capture_source_changed_ = false;
 
-  // The current focused fine tune position. This changes as user tabs while a
-  // in capture region mode.
-  FineTunePosition focused_fine_tune_position_ = FineTunePosition::kNone;
+  // The window which had input capture prior to entering the session. It may be
+  // null if no such window existed.
+  aura::Window* input_capture_window_ = nullptr;
+
+  // False only when we end the session to start recording.
+  bool a11y_alert_on_session_exit_ = true;
+
+  // True once Shutdown() is called.
+  bool is_shutting_down_ = false;
+
+  // The object which handles tab focus while in a capture session.
+  std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
+
+  // Accessibility features will focus on the capture bar widget while this
+  // object is alive.
+  std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 };
 
 }  // namespace ash

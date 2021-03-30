@@ -11,7 +11,6 @@
 
 #include "apps/switches.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"
@@ -41,17 +40,19 @@ namespace {
 class TestAppShimHostBootstrap : public AppShimHostBootstrap {
  public:
   TestAppShimHostBootstrap() : AppShimHostBootstrap(getpid()) {}
+  TestAppShimHostBootstrap(const TestAppShimHostBootstrap&) = delete;
+  TestAppShimHostBootstrap& operator=(const TestAppShimHostBootstrap&) = delete;
   using AppShimHostBootstrap::OnShimConnected;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAppShimHostBootstrap);
 };
 
 // Starts an app without a browser window using --load_and_launch_app and
 // --silent_launch.
 class AppShimQuitTest : public PlatformAppBrowserTest {
+  AppShimQuitTest(const AppShimQuitTest&) = delete;
+  AppShimQuitTest& operator=(const AppShimQuitTest&) = delete;
+
  protected:
-  AppShimQuitTest() {}
+  AppShimQuitTest() = default;
 
   void SetUpAppShim() {
     ASSERT_EQ(0u, [[NSApp windows] count]);
@@ -100,10 +101,8 @@ class AppShimQuitTest : public PlatformAppBrowserTest {
   }
 
   base::FilePath app_path_;
-  AppShimManager* manager_;
+  AppShimManager* manager_ = nullptr;
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppShimQuitTest);
 };
 
 }  // namespace

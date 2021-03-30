@@ -5,8 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_FOLDER_DELEGATE_H_
 #define ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_FOLDER_DELEGATE_H_
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/apps_grid_view.h"
+#include "ash/ash_export.h"
 
 namespace gfx {
 class Point;
@@ -17,7 +17,7 @@ namespace ash {
 class AppListItemView;
 
 // A delegate which allows an AppsGridView to communicate with its host folder.
-class APP_LIST_EXPORT AppsGridViewFolderDelegate {
+class ASH_EXPORT AppsGridViewFolderDelegate {
  public:
   // Called when a folder item is dragged out of the folder to be re-parented.
   // |original_drag_view| is the |drag_view_| inside the folder's grid view.
@@ -42,8 +42,9 @@ class APP_LIST_EXPORT AppsGridViewFolderDelegate {
       bool events_forwarded_to_drag_drop_host,
       bool cancel_drag) = 0;
 
-  // Returns true if |point| falls outside of the folder container ink bubble.
-  virtual bool IsPointOutsideOfFolderBoundary(const gfx::Point& point) = 0;
+  // Returns whether the |view| is within the folder view's bounds.
+  // The |view| is expected to be in the folder's apps grid view hierarchy.
+  virtual bool IsViewOutsideOfFolder(AppListItemView* view) = 0;
 
   // Returns true if the associated folder item is an OEM folder.
   virtual bool IsOEMFolder() const = 0;

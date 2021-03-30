@@ -35,7 +35,7 @@ MockCastAppDiscoveryService::StartObservingMediaSinks(
 }
 scoped_refptr<base::SequencedTaskRunner>
 MockCastAppDiscoveryService::task_runner() {
-  return base::CreateSingleThreadTaskRunner({content::BrowserThread::IO});
+  return content::GetIOThreadTaskRunner({});
 }
 
 MockDialAppDiscoveryService::MockDialAppDiscoveryService() = default;

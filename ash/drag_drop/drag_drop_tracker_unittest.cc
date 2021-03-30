@@ -9,7 +9,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ui/aura/test/test_windows.h"
+#include "ash/test/test_window_builder.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -20,10 +20,11 @@ namespace ash {
 class DragDropTrackerTest : public AshTestBase {
  public:
   aura::Window* CreateTestWindow(const gfx::Rect& bounds) {
-    static int window_id = 0;
-    return CreateTestWindowInShellWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-        window_id++, bounds);
+    return TestWindowBuilder()
+        .SetBounds(bounds)
+        .SetTestWindowDelegate()
+        .Build()
+        .release();
   }
 
   static aura::Window* GetTarget(const gfx::Point& location) {

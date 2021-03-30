@@ -7,15 +7,22 @@
 
 #include <string>
 
+#include "ash/components/account_manager/account_manager.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_modal_delegate.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
 class GURL;
+
+namespace ash {
+class AccountManagerUIImpl;
+}
 
 namespace chromeos {
 
@@ -25,8 +32,6 @@ namespace chromeos {
 class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
                                   public web_modal::WebContentsModalDialogHost {
  public:
-  static const char kAccountAdditionSource[];
-
   // Represents the last reached step in the flow.
   // Keep in sync with
   // chrome/browser/resources/chromeos/edu_login/edu_login_util.js
@@ -75,23 +80,20 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   gfx::Point GetDialogPosition(const gfx::Size& size) override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+
   void SetEduCoexistenceFlowResult(EduCoexistenceFlowResult result);
 
  protected:
-  // |is_arc_source| parameter is used to specify whether the dialog is opened
-  // from ARC. It's used to display the correct error message for Child users.
-  explicit InlineLoginDialogChromeOS(bool is_arc_source);
-  InlineLoginDialogChromeOS(const GURL& url, bool is_arc_source);
+  InlineLoginDialogChromeOS();
+  explicit InlineLoginDialogChromeOS(const GURL& url);
 
   InlineLoginDialogChromeOS(const GURL& url,
-                            bool is_arc_source,
                             base::OnceClosure close_dialog_closure);
   ~InlineLoginDialogChromeOS() override;
 
   // ui::WebDialogDelegate overrides
   void GetDialogSize(gfx::Size* size) const override;
   ui::ModalType GetDialogModalType() const override;
-  std::string GetDialogArgs() const override;
   bool ShouldShowDialogTitle() const override;
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;
@@ -99,7 +101,7 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
  private:
   // `Show` method can be called directly only by `AccountManagerUIImpl` class.
   // To show the dialog, use `AccountManagerFacade`.
-  friend class AccountManagerUIImpl;
+  friend class ash::AccountManagerUIImpl;
 
   // Displays the dialog. |close_dialog_closure| will be called when the dialog
   // is closed.
@@ -113,14 +115,14 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
 
   static void ShowInternal(
       const std::string& email,
-      bool is_arc_source,
       base::OnceClosure close_dialog_closure = base::DoNothing());
 
   InlineLoginHandlerModalDelegate delegate_;
-  const bool is_arc_source_;
   const GURL url_;
   base::Optional<EduCoexistenceFlowResult> edu_coexistence_flow_result_;
   base::OnceClosure close_dialog_closure_;
+  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+      modal_dialog_host_observer_list_;
 
   DISALLOW_COPY_AND_ASSIGN(InlineLoginDialogChromeOS);
 };

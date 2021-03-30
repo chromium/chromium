@@ -54,7 +54,8 @@ class MockNodeChannelDelegate
               OnAcceptBrokerClient,
               (const NodeName& from_node,
                const NodeName& broker_name,
-               PlatformHandle broker_channel),
+               PlatformHandle broker_channel,
+               const uint64_t capabilities),
               (override));
   MOCK_METHOD(void,
               OnEventMessage,
@@ -74,7 +75,8 @@ class MockNodeChannelDelegate
               OnIntroduce,
               (const NodeName& from_node,
                const NodeName& name,
-               PlatformHandle channel_handle),
+               PlatformHandle channel_handle,
+               const uint64_t remote_capabilites),
               (override));
   MOCK_METHOD(void,
               OnBroadcast,

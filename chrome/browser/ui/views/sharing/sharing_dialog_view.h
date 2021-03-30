@@ -34,7 +34,7 @@ class SharingDialogView : public SharingDialog,
 
   // LocationBarBubbleDelegateView:
   bool ShouldShowCloseButton() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   void WebContentsDestroyed() override;
   void AddedToWidget() override;

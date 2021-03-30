@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -165,6 +165,11 @@ class WebstoreInstaller : public content::NotificationObserver,
     // the empty string, in which case no authuser parameter is used.
     std::string authuser;
 
+    // Whether the user clicked through the install friction dialog when the
+    // extension is not included in the Enhanced Safe Browsing CRX allowlist and
+    // the user has enabled Enhanced Protection.
+    bool bypassed_safebrowsing_friction = false;
+
    private:
     Approval();
   };
@@ -262,8 +267,8 @@ class WebstoreInstaller : public content::NotificationObserver,
   void RecordInterrupt(const download::DownloadItem* download) const;
 
   content::NotificationRegistrar registrar_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
   Profile* profile_;
   Delegate* delegate_;
   std::string id_;

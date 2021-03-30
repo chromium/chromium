@@ -11,6 +11,8 @@
 
 #include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/optional.h"
+#include "base/timer/timer.h"
 #include "chromecast/media/cma/backend/system_volume_control.h"
 #include "media/audio/alsa/alsa_wrapper.h"
 
@@ -33,6 +35,8 @@ class AlsaVolumeControl : public SystemVolumeControl,
   void SetPowerSave(bool power_save_on) override;
   void SetLimit(float limit) override;
 
+  void CheckPowerSave();
+
  private:
   class ScopedAlsaMixer;
 
@@ -50,6 +54,9 @@ class AlsaVolumeControl : public SystemVolumeControl,
                                         unsigned int mask);
 
   bool SetElementMuted(ScopedAlsaMixer* mixer, bool muted);
+  // Returns true if all channels are muted, returns base::nullopt if element
+  // state is not accessible.
+  base::Optional<bool> IsElementAllMuted(ScopedAlsaMixer* mixer);
 
   void RefreshMixerFds(ScopedAlsaMixer* mixer);
 
@@ -76,6 +83,9 @@ class AlsaVolumeControl : public SystemVolumeControl,
   std::unique_ptr<ScopedAlsaMixer> mute_mixer_;
   ScopedAlsaMixer* mute_mixer_ptr_;
   std::vector<std::unique_ptr<ScopedAlsaMixer>> amp_mixers_;
+
+  bool last_power_save_on_ = false;
+  base::OneShotTimer power_save_timer_;
 
   std::vector<std::unique_ptr<base::MessagePumpForIO::FdWatchController>>
       file_descriptor_watchers_;

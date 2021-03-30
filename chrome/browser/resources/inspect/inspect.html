@@ -10,9 +10,7 @@ found in the LICENSE file.
 <title>Inspect with Chrome Developer Tools</title>
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="inspect.css">
-<script src="chrome://resources/js/assert.js"></script>
-<script src="chrome://resources/js/util.js"></script>
-<script src="inspect.js"></script>
+<script type="module" src="inspect.js"></script>
 </head>
 
 <body>
@@ -47,12 +45,12 @@ found in the LICENSE file.
           Open dedicated DevTools for Node
         </div>
       </div>
-      <div id="devices-help" hidden="true">No devices detected. Please read the
+      <div id="devices-help" hidden>No devices detected. Please read the
         <a href="https://developers.google.com/chrome-developer-tools/docs/remote-debugging">
         remote debugging documentation</a> to verify your device is enabled for
         USB debugging.
       </div>
-      <div id="devices-incognito" hidden="true">
+      <div id="devices-incognito" hidden>
         Remote debugging is not available in Incognito mode.
       </div>
       <div id="devices-list"></div>
@@ -76,6 +74,18 @@ found in the LICENSE file.
     <div id="service-workers">
       <div class="content-header">Service workers</div>
       <div id="service-workers-list" class="list"></div>
+    </div>
+    <div id="native-ui" hidden>
+      <div class="content-header">Native UI</div>
+        <div class="settings-bar">
+          <button id="launch-ui-devtools" hidden>
+            Inspect Native UI</button>
+        </div>
+        <div id="ui-devtools-disabled-text" hidden>
+          The following front-end is running:</div>
+        <div id="ui-devtools-enabled-text" hidden>
+          Click to start a single-use session for native UI inspection.</div>
+        <div id="native-ui-list" class="list"></div>
     </div>
     <div id="other">
       <div class="content-header">Other</div>

@@ -72,7 +72,7 @@ TEST_F(TestComponentContextForProcessTest, NoServices) {
 
 TEST_F(TestComponentContextForProcessTest, InjectTestInterface) {
   // Publish a fake TestInterface for the process' ComponentContext to expose.
-  base::fuchsia::ScopedServiceBinding<testfidl::TestInterface> service_binding(
+  base::ScopedServiceBinding<testfidl::TestInterface> service_binding(
       test_context_.additional_services(), this);
 
   // Verify that the TestInterface is accessible & usable.
@@ -81,7 +81,7 @@ TEST_F(TestComponentContextForProcessTest, InjectTestInterface) {
 
 TEST_F(TestComponentContextForProcessTest, PublishTestInterface) {
   // Publish TestInterface to the process' outgoing-directory.
-  base::fuchsia::ScopedServiceBinding<testfidl::TestInterface> service_binding(
+  base::ScopedServiceBinding<testfidl::TestInterface> service_binding(
       ComponentContextForProcess()->outgoing().get(), this);
 
   // Attempt to use the TestInterface from the outgoing-directory.

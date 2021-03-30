@@ -13,6 +13,7 @@
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -26,7 +27,7 @@ class TabListModel : public ui::TableModel,
 
   // ui::TableModel:
   int RowCount() override;
-  base::string16 GetText(int row, int column) override;
+  std::u16string GetText(int row, int column) override;
   gfx::ImageSkia GetIcon(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
@@ -52,7 +53,7 @@ int TabListModel::RowCount() {
   return base::checked_cast<int>(controller_->GetSourceCount());
 }
 
-base::string16 TabListModel::GetText(int row, int column) {
+std::u16string TabListModel::GetText(int row, int column) {
   return controller_->GetSource(row).name;
 }
 
@@ -115,7 +116,7 @@ void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {
 }  // namespace
 
 DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
-                                         const base::string16& accessible_name)
+                                         const std::u16string& accessible_name)
     : controller_(controller) {
   // The thumbnail size isn't allowed to be smaller than gfx::kFaviconSize by
   // the underlying media list. TableView requires that the icon size be exactly
@@ -147,10 +148,6 @@ DesktopMediaTabList::~DesktopMediaTabList() {
   child_->SetModel(nullptr);
 }
 
-const char* DesktopMediaTabList::GetClassName() const {
-  return "DesktopMediaTabList";
-}
-
 gfx::Size DesktopMediaTabList::CalculatePreferredSize() const {
   // The picker should have a fixed height of 10 rows.
   return gfx::Size(0, child_->GetRowHeight() * 10);
@@ -176,3 +173,6 @@ DesktopMediaListController::SourceListListener*
 DesktopMediaTabList::GetSourceListListener() {
   return model_.get();
 }
+
+BEGIN_METADATA(DesktopMediaTabList, DesktopMediaListController::ListView)
+END_METADATA

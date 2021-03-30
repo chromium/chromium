@@ -417,7 +417,6 @@ var GetStandardActions = natives.GetStandardActions;
  */
 var GetDefaultActionVerb = natives.GetDefaultActionVerb;
 
-
 /**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
@@ -425,6 +424,12 @@ var GetDefaultActionVerb = natives.GetDefaultActionVerb;
  */
 var GetHasPopup = natives.GetHasPopup;
 
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {automation.AriaCurrentState}
+ */
+var GetAriaCurrentState = natives.GetAriaCurrentState;
 
 /**
  * @param {string} axTreeID The id of the accessibility tree.
@@ -439,8 +444,6 @@ var GetNextTextMatch = natives.GetNextTextMatch;
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?Array<number>} A list of column header ids.
-
- * @return {?number} The id of the column header, if it exists.
  */
 var GetTableCellColumnHeaders = natives.GetTableCellColumnHeaders;
 
@@ -581,6 +584,13 @@ var CreateAutomationPosition = natives.CreateAutomationPosition;
  */
 var GetSortDirection = natives.GetSortDirection;
 
+/**
+ * @param {string} axTreeId The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {string} .
+ */
+var GetValue = natives.GetValue;
+
 var logging = requireNative('logging');
 var utils = require('utils');
 
@@ -685,6 +695,10 @@ AutomationNodeImpl.prototype = {
 
   get sortDirection() {
     return GetSortDirection(this.treeID, this.id);
+  },
+
+  get value() {
+    return GetValue(this.treeID, this.id);
   },
 
   get unclippedLocation() {
@@ -818,6 +832,10 @@ AutomationNodeImpl.prototype = {
 
   get hasPopup() {
     return GetHasPopup(this.treeID, this.id);
+  },
+
+  get ariaCurrentState() {
+    return GetAriaCurrentState(this.treeID, this.id);
   },
 
   get tableCellColumnHeaders() {
@@ -1106,7 +1124,8 @@ AutomationNodeImpl.prototype = {
              attributes: this.attributes };
   },
 
-  dispatchEvent: function(eventType, eventFrom, mouseX, mouseY, intents) {
+  dispatchEvent: function(
+      eventType, eventFrom, eventFromAction, mouseX, mouseY, intents) {
     var path = [];
     var parent = this.parent;
     while (parent) {
@@ -1114,8 +1133,9 @@ AutomationNodeImpl.prototype = {
       parent = parent.parent;
     }
 
-    var event = new AutomationEvent(eventType, this.wrapper, eventFrom, mouseX,
-                                    mouseY, intents);
+    var event = new AutomationEvent(
+        eventType, this.wrapper, eventFrom, eventFromAction, mouseX, mouseY,
+        intents);
 
     // Dispatch the event through the propagation path in three phases:
     // - capturing: starting from the root and going down to the target's parent
@@ -1319,28 +1339,28 @@ AutomationNodeImpl.prototype = {
 };
 
 var stringAttributes = [
-    'accessKey',
-    'ariaInvalidValue',
-    'autoComplete',
-    'checkedStateDescription',
-    'className',
-    'containerLiveRelevant',
-    'containerLiveStatus',
-    'description',
-    'display',
-    'fontFamily',
-    'htmlTag',
-    'imageDataUrl',
-    'innerHtml',
-    'language',
-    'liveRelevant',
-    'liveStatus',
-    'placeholder',
-    'roleDescription',
-    'textInputType',
-    'tooltip',
-    'url',
-    'value'];
+  'accessKey',
+  'ariaInvalidValue',
+  'autoComplete',
+  'checkedStateDescription',
+  'className',
+  'containerLiveRelevant',
+  'containerLiveStatus',
+  'description',
+  'display',
+  'fontFamily',
+  'htmlTag',
+  'imageDataUrl',
+  'innerHtml',
+  'language',
+  'liveRelevant',
+  'liveStatus',
+  'placeholder',
+  'roleDescription',
+  'textInputType',
+  'tooltip',
+  'url'
+];
 
 var boolAttributes = [
   'busy', 'clickable', 'containerLiveAtomic', 'containerLiveBusy',
@@ -1783,8 +1803,8 @@ AutomationRootNodeImpl.prototype = {
     if (targetNode) {
       var targetNodeImpl = privates(targetNode).impl;
       targetNodeImpl.dispatchEvent(
-          eventParams.eventType,
-          eventParams.eventFrom, eventParams.mouseX, eventParams.mouseY,
+          eventParams.eventType, eventParams.eventFrom,
+          eventParams.eventFromAction, eventParams.mouseX, eventParams.mouseY,
           eventParams.intents);
 
       if (eventParams.actionRequestID != -1) {
@@ -1899,6 +1919,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
   readonly: $Array.concat(
       publicAttributes,
       [
+        'ariaCurrentState',
         'bold',
         'checked',
         'children',
@@ -1943,6 +1964,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
         'tableRowCount',
         'unclippedLocation',
         'underline',
+        'value',
       ]),
 });
 

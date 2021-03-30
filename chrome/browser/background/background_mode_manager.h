@@ -200,11 +200,11 @@ class BackgroundModeManager : public content::NotificationObserver,
 
     // Set the name associated with this background mode data for displaying in
     // the status tray.
-    void SetName(const base::string16& new_profile_name);
+    void SetName(const std::u16string& new_profile_name);
 
     // The name associated with this background mode data. This should match
     // the name in the ProfileAttributesStorage for this profile.
-    base::string16 name();
+    std::u16string name();
 
     // Used for sorting BackgroundModeData*s.
     static bool BackgroundModeDataCompare(const BackgroundModeData* bmd1,
@@ -236,7 +236,7 @@ class BackgroundModeManager : public content::NotificationObserver,
     std::unique_ptr<BackgroundApplicationListModel> applications_;
 
     // Name associated with this profile which is used to label its submenu.
-    base::string16 name_;
+    std::u16string name_;
 
     // The profile associated with this background app data.
     Profile* profile_;
@@ -279,7 +279,7 @@ class BackgroundModeManager : public content::NotificationObserver,
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnProfileWillBeRemoved(const base::FilePath& profile_path) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
-                            const base::string16& old_profile_name) override;
+                            const std::u16string& old_profile_name) override;
 
   // Overrides from StatusIconMenuModel::Delegate implementation.
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -292,11 +292,11 @@ class BackgroundModeManager : public content::NotificationObserver,
   // the ProfileAttributesStorage if needed. If |new_client_names| is not empty
   // the user will be notified about the added client(s).
   void OnClientsChanged(const Profile* profile,
-                        const std::vector<base::string16>& new_client_names);
+                        const std::vector<std::u16string>& new_client_names);
 
   // Invoked when a background client is installed so we can ensure that
   // launch-on-startup is enabled if appropriate.
-  void OnBackgroundClientInstalled(const base::string16& name);
+  void OnBackgroundClientInstalled(const std::u16string& name);
 
   // Update whether Chrome should be launched on startup, depending on whether
   // |this| has any persistent background clients.
@@ -308,7 +308,7 @@ class BackgroundModeManager : public content::NotificationObserver,
 
   // Invoked when a client is installed so we can display a platform-specific
   // notification.
-  virtual void DisplayClientInstalledNotification(const base::string16& name);
+  virtual void DisplayClientInstalledNotification(const std::u16string& name);
 
   // Invoked to put Chrome in KeepAlive mode - chrome runs in the background
   // and has a status bar icon.
@@ -361,7 +361,7 @@ class BackgroundModeManager : public content::NotificationObserver,
   // This should not be used to iterate over the background mode data. It is
   // used to efficiently delete an item from the background mode data map.
   BackgroundModeInfoMap::iterator GetBackgroundModeIterator(
-      const base::string16& profile_name);
+      const std::u16string& profile_name);
 
   // Returns true if the "Let chrome run in the background" pref is checked.
   // (virtual to allow overriding in tests).

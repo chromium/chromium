@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox.mojom.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -64,7 +64,7 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
   // Looks up whether the hostname is a typed host (i.e., has received
   // typed visits).  Return true if the lookup succeeded; if so, the
   // value of |is_typed_host| is set appropriately.
-  bool LookupIsTypedHost(const base::string16& host, bool* is_typed_host) const;
+  bool LookupIsTypedHost(const std::u16string& host, bool* is_typed_host) const;
 
   // Re-initializes the AutocompleteController in preparation for the
   // next query.
@@ -90,8 +90,9 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
 
   mojo::Receiver<mojom::OmniboxPageHandler> receiver_;
 
-  ScopedObserver<OmniboxControllerEmitter, AutocompleteController::Observer>
-      observer_;
+  base::ScopedObservation<OmniboxControllerEmitter,
+                          AutocompleteController::Observer>
+      observation_{this};
 
   base::WeakPtrFactory<OmniboxPageHandler> weak_factory_{this};
 

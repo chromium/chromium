@@ -70,7 +70,7 @@ class ViewsAXTreeManagerTest : public ViewsTestBase,
                                 const std::string& name_or_value) const;
   void OnGeneratedEvent(Widget* widget,
                         ui::AXEventGenerator::Event event,
-                        ui::AXNode::AXID node_id);
+                        ui::AXNodeID node_id);
 
   Widget* widget_ = nullptr;
   Button* button_ = nullptr;
@@ -178,7 +178,7 @@ ui::AXNode* ViewsAXTreeManagerTest::FindNodeInSubtree(
 
 void ViewsAXTreeManagerTest::OnGeneratedEvent(Widget* widget,
                                               ui::AXEventGenerator::Event event,
-                                              ui::AXNode::AXID node_id) {
+                                              ui::AXNodeID node_id) {
   ASSERT_NE(nullptr, manager()) << "Should not be called after TearDown().";
   if (loop_runner_ && event == event_to_wait_for_)
     loop_runner_->Quit();

@@ -7,8 +7,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/borealis/borealis_installer.h"
-#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_installer.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -21,10 +22,12 @@ class ProgressBar;
 class Profile;
 
 // The front end for the Borealis installation process, works closely with
-// "chrome/browser/chromeos/borealis/borealis_installer.h".
+// "chrome/browser/ash/borealis/borealis_installer.h".
 class BorealisInstallerView : public views::DialogDelegateView,
                               public borealis::BorealisInstaller::Observer {
  public:
+  METADATA_HEADER(BorealisInstallerView);
+
   using InstallingState = borealis::BorealisInstaller::InstallingState;
 
   explicit BorealisInstallerView(Profile* profile);
@@ -50,8 +53,8 @@ class BorealisInstallerView : public views::DialogDelegateView,
   void OnCancelInitiated() override {}
 
   // Public for testing purposes.
-  base::string16 GetPrimaryMessage() const;
-  base::string16 GetSecondaryMessage() const;
+  std::u16string GetPrimaryMessage() const;
+  std::u16string GetSecondaryMessage() const;
 
   void SetInstallingStateForTesting(InstallingState new_state);
 
@@ -69,9 +72,10 @@ class BorealisInstallerView : public views::DialogDelegateView,
   // Returns the dialog buttons that should be displayed, based on the current
   // |state_| and error |reason_| (if relevant).
   int GetCurrentDialogButtons() const;
+
   // Returns the label for a dialog |button|, based on the current |state_|
   // and error |reason_| (if relevant).
-  base::string16 GetCurrentDialogButtonLabel(ui::DialogButton button) const;
+  std::u16string GetCurrentDialogButtonLabel(ui::DialogButton button) const;
 
   void OnStateUpdated();
 
@@ -84,7 +88,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
 
   void StartInstallation();
 
-  base::string16 app_name_;
+  std::u16string app_name_;
   Profile* profile_ = nullptr;
   views::Label* primary_message_label_ = nullptr;
   views::Label* secondary_message_label_ = nullptr;

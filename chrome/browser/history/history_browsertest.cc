@@ -80,10 +80,10 @@ class HistoryBrowserTest : public InProcessBrowserTest {
   }
 
   void LoadAndWaitForURL(const GURL& url) {
-    base::string16 expected_title(base::ASCIIToUTF16("OK"));
+    std::u16string expected_title(u"OK");
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+    title_watcher.AlsoWaitForTitle(u"FAIL");
     ui_test_utils::NavigateToURL(browser(), url);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
@@ -395,11 +395,10 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, DISABLED_HistorySearchXSS) {
   // so that we're not susceptible (less susceptible?) to a race condition.
   // Should a race condition ever trigger, it won't result in flakiness.
   int num = ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      base::ASCIIToUTF16("<img"), true,
-      true, NULL, NULL);
+      browser()->tab_strip_model()->GetActiveWebContents(), u"<img", true, true,
+      NULL, NULL);
   EXPECT_GT(num, 0);
-  EXPECT_EQ(base::ASCIIToUTF16("History"),
+  EXPECT_EQ(u"History",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 
@@ -506,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, HistoryRemovalRemovesTemplateURL) {
   // Creating keyword shortcut manually.
   TemplateURLData data;
   data.SetShortName(base::ASCIIToUTF16(origin));
-  data.SetKeyword(base::ASCIIToUTF16("keyword"));
+  data.SetKeyword(u"keyword");
   data.SetURL(url.spec());
   data.safe_for_autoreplace = true;
 
@@ -741,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, PushStateSetsTitle) {
   ui_test_utils::NavigateToURL(browser(), url);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::string16 title = web_contents->GetTitle();
+  std::u16string title = web_contents->GetTitle();
 
   // Do a pushState to create a new navigation entry and a new history entry.
   ASSERT_TRUE(content::ExecuteScript(web_contents,
@@ -770,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BeforeUnloadCommitDuringPending) {
   ui_test_utils::NavigateToURL(browser(), url1);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::string16 title1 = web_contents->GetTitle();
+  std::u16string title1 = web_contents->GetTitle();
 
   // Create a beforeunload handler that does a replaceState during navigation,
   // unrelated to the destination URL (similar to Twitter).
@@ -802,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BeforeUnloadCommitDuringPending) {
   // should be another row with the new URL and title.
   manager.WaitForNavigationFinished();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  base::string16 title3 = web_contents->GetTitle();
+  std::u16string title3 = web_contents->GetTitle();
   EXPECT_NE(title1, title3);
   {
     std::vector<GURL> urls(GetHistoryContents());
@@ -833,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, SubmitFormAddsTargetPage) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::string16 expected_title(base::ASCIIToUTF16("Target Page"));
+  std::u16string expected_title(u"Target Page");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   ASSERT_TRUE(content::ExecuteScript(
@@ -855,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, OneHistoryTabPerWindow) {
   // 'Loading...' for a brief time while the history page loads.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::string16 expected_title(base::ASCIIToUTF16("History"));
+  std::u16string expected_title(u"History");
   content::TitleWatcher title_watcher(web_contents, expected_title);
   chrome::ExecuteCommand(browser(), IDC_SHOW_HISTORY);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());

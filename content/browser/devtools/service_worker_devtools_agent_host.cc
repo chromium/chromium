@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/devtools_session.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
 #include "content/browser/devtools/protocol/inspector_handler.h"
 #include "content/browser/devtools/protocol/io_handler.h"
@@ -20,10 +21,10 @@
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
@@ -75,6 +76,7 @@ ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
                                                    : base::Time()),
       cross_origin_embedder_policy_(std::move(cross_origin_embedder_policy)),
       coep_reporter_(std::move(coep_reporter)) {
+  UpdateProcessHost();
   NotifyCreated();
 }
 
@@ -173,6 +175,7 @@ void ServiceWorkerDevToolsAgentHost::WorkerRestarted(int worker_process_id,
   state_ = WORKER_NOT_READY;
   worker_process_id_ = worker_process_id;
   worker_route_id_ = worker_route_id;
+  UpdateProcessHost();
 }
 
 void ServiceWorkerDevToolsAgentHost::WorkerStopped() {
@@ -191,6 +194,25 @@ void ServiceWorkerDevToolsAgentHost::UpdateIsAttached(bool attached) {
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(&SetDevToolsAttachedOnCoreThread, context_wrapper_,
                      version_id_, attached));
+}
+
+void ServiceWorkerDevToolsAgentHost::UpdateProcessHost() {
+  process_observation_.Reset();
+  if (auto* rph = RenderProcessHost::FromID(worker_process_id_))
+    process_observation_.Observe(rph);
+}
+
+// TODO(caseq): this is only relevant for shutdown, where a RPH may
+// go along with StoragePartition and we won't receive any signals from
+// the DevToolsWorkerManager, so agents would be still attached and
+// may access the storage partition. This is meant to be a temporary
+// workaround, the proper fix is likely to have ServiceWorkerInstance
+// deleted in such case.
+void ServiceWorkerDevToolsAgentHost::RenderProcessHostDestroyed(
+    RenderProcessHost* host) {
+  GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
+                                    ChildProcessHost::kInvalidUniqueID);
+  process_observation_.Reset();
 }
 
 void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
@@ -216,18 +238,20 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
   // |cross_origin_embedder_policy_| is nullopt. It's acceptable because the
   // factory bundles are updated with correct COEP value before any subresource
   // requests in that case.
-  auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
+  auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_route_id_, origin,
       cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
                                     : network::CrossOriginEmbedderPolicy(),
       std::move(coep_reporter_for_script_loader),
-      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript);
-  auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
+      GetId());
+  auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_route_id_, origin,
       cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
                                     : network::CrossOriginEmbedderPolicy(),
       std::move(coep_reporter_for_subresource_loader),
-      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource);
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
+      GetId());
 
   auto* version = context_wrapper_->GetLiveVersion(version_id_);
   if (!version)
@@ -248,6 +272,9 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
                                  origin, origin,
                                  net::SiteForCookies::FromOrigin(origin)),
       /*coep_reporter=*/mojo::NullRemote(),
+      static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
+          ->CreateAuthCertObserverForServiceWorker(),
+      NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),
       /*debug_tag=*/"SWDTAH::CreateNetworkFactoryParamsForDevTools");
   return {url::Origin::Create(GetURL()), net::SiteForCookies::FromUrl(GetURL()),
           std::move(factory)};

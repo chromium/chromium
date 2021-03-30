@@ -201,12 +201,14 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
   return true;
 }
 
-bool MediaRecorderHandler::Initialize(MediaRecorder* recorder,
-                                      MediaStreamDescriptor* media_stream,
-                                      const String& type,
-                                      const String& codecs,
-                                      int32_t audio_bits_per_second,
-                                      int32_t video_bits_per_second) {
+bool MediaRecorderHandler::Initialize(
+    MediaRecorder* recorder,
+    MediaStreamDescriptor* media_stream,
+    const String& type,
+    const String& codecs,
+    int32_t audio_bits_per_second,
+    int32_t video_bits_per_second,
+    AudioTrackRecorder::BitrateMode audio_bitrate_mode) {
   DCHECK(IsMainThread());
   // Save histogram data so we can see how much MediaStream Recorder is used.
   // The histogram counts the number of calls to the JS API.
@@ -244,7 +246,12 @@ bool MediaRecorderHandler::Initialize(MediaRecorder* recorder,
 
   audio_bits_per_second_ = audio_bits_per_second;
   video_bits_per_second_ = video_bits_per_second;
+  audio_bitrate_mode_ = audio_bitrate_mode;
   return true;
+}
+
+AudioTrackRecorder::BitrateMode MediaRecorderHandler::AudioBitrateMode() {
+  return audio_bitrate_mode_;
 }
 
 bool MediaRecorderHandler::Start(int timeslice) {
@@ -345,7 +352,8 @@ bool MediaRecorderHandler::Start(int timeslice) {
                   WrapWeakPersistent(this)));
     audio_recorders_.emplace_back(std::make_unique<AudioTrackRecorder>(
         audio_codec_id_, audio_tracks_[0], std::move(on_encoded_audio_cb),
-        std::move(on_track_source_changed_cb), audio_bits_per_second_));
+        std::move(on_track_source_changed_cb), audio_bits_per_second_,
+        audio_bitrate_mode_));
   }
 
   recording_ = true;

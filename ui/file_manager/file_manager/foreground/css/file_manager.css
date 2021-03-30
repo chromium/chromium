@@ -784,6 +784,10 @@ body.check-select .dialog-header #delete-button > .icon {
   background-image: url(../images/files/ui/delete.svg);
 }
 
+.dialog-header #move-to-trash-button > .icon {
+  -webkit-mask-image: url(../images/files/ui/delete_ng.svg);
+}
+
 .dialog-header #restore-from-trash-button > .icon {
   -webkit-mask-image: url(../images/files/ui/restore.svg);
 }
@@ -1698,7 +1702,8 @@ body:not(.files-ng) .downloads-warning {
   transition: height 70ms linear;
 }
 
-body.files-ng .downloads-warning {
+body.files-ng .downloads-warning,
+body.files-ng .trash-warning {
   align-items: center;
   border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
   display: flex;
@@ -2596,12 +2601,6 @@ html[dir='rtl'] #tasks-menu cr-menu-item:not(.change-default) {
   background-image: -webkit-image-set(
       url(../images/files/ui/person_add.png) 1x,
       url(../images/files/ui/2x/person_add.png) 2x);
-}
-
-cr-menu-item[command='#install-new-extension'] .icon.start {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/store.png) 1x,
-      url(../images/files/ui/2x/store.png) 2x);
 }
 
 #action-bar {

@@ -462,7 +462,7 @@ TEST_F(VisibleSelectionTest, ShadowCrossing) {
 
   EXPECT_EQ(Position(host, PositionAnchorType::kBeforeAnchor),
             selection.Start());
-  EXPECT_EQ(Position(host, PositionAnchorType::kBeforeAnchor), selection.End());
+  EXPECT_EQ(Position(one->firstChild(), 0), selection.End());
   EXPECT_EQ(PositionInFlatTree(one->firstChild(), 0),
             selection_in_flat_tree.Start());
   EXPECT_EQ(PositionInFlatTree(six->firstChild(), 2),
@@ -510,7 +510,7 @@ TEST_F(VisibleSelectionTest, ShadowNested) {
 
   EXPECT_EQ(Position(host, PositionAnchorType::kBeforeAnchor),
             selection.Start());
-  EXPECT_EQ(Position(host, PositionAnchorType::kBeforeAnchor), selection.End());
+  EXPECT_EQ(Position(one->firstChild(), 0), selection.End());
   EXPECT_EQ(PositionInFlatTree(eight->firstChild(), 2),
             selection_in_flat_tree.Start());
   EXPECT_EQ(PositionInFlatTree(eight->firstChild(), 2),

@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
@@ -135,6 +136,11 @@ public class PackageManagerDelegate {
         } catch (NameNotFoundException e) {
             return null;
         }
-        return resources == null ? null : resources.getStringArray(resourceId);
+        if (resources == null) return null;
+        try {
+            return resources.getStringArray(resourceId);
+        } catch (NotFoundException e) {
+            return null;
+        }
     }
 }

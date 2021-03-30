@@ -19,7 +19,7 @@ class CookieControlsIconView;
 class FindBarIcon;
 class IntentPickerView;
 class ManagePasswordsIconViews;
-class NativeFileSystemAccessIconView;
+class FileSystemAccessIconView;
 class PageActionIconContainer;
 struct PageActionIconParams;
 class PwaInstallView;
@@ -27,10 +27,13 @@ class ReaderModeIconView;
 class SharingIconView;
 class StarView;
 class TranslateIconView;
+class WebAuthnIconView;
 class ZoomView;
 
 namespace autofill {
 class LocalCardMigrationIconView;
+class OfferNotificationIconView;
+class SaveAddressProfileIconView;
 class SavePaymentIconView;
 }  // namespace autofill
 
@@ -87,15 +90,19 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
   IntentPickerView* intent_picker_icon_ = nullptr;
   autofill::LocalCardMigrationIconView* local_card_migration_icon_ = nullptr;
   ManagePasswordsIconViews* manage_passwords_icon_ = nullptr;
-  NativeFileSystemAccessIconView* native_file_system_access_icon_ = nullptr;
+  FileSystemAccessIconView* file_system_access_icon_ = nullptr;
+  autofill::OfferNotificationIconView* offer_notification_icon_ = nullptr;
   PwaInstallView* pwa_install_icon_ = nullptr;
   qrcode_generator::QRCodeGeneratorIconView* qrcode_generator_icon_view_ =
       nullptr;
   ReaderModeIconView* reader_mode_icon_ = nullptr;
+  autofill::SaveAddressProfileIconView* save_autofill_address_icon_ = nullptr;
   autofill::SavePaymentIconView* save_payment_icon_ = nullptr;
   send_tab_to_self::SendTabToSelfIconView* send_tab_to_self_icon_ = nullptr;
   SharingIconView* shared_clipboard_icon_ = nullptr;
+  SharingIconView* sms_remote_fetcher_icon_ = nullptr;
   TranslateIconView* translate_icon_ = nullptr;
+  WebAuthnIconView* webauthn_icon_ = nullptr;
   ZoomView* zoom_icon_ = nullptr;
 
   std::vector<PageActionIconView*> page_action_icons_;

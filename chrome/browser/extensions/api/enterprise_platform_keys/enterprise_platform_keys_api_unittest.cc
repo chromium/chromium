@@ -10,8 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/attestation/mock_tpm_challenge_key.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
@@ -34,16 +34,15 @@ namespace {
 
 const char kUserEmail[] = "test@google.com";
 
-void FakeRunCheckNotRegister(
-    chromeos::attestation::AttestationKeyType key_type,
-    Profile* profile,
-    chromeos::attestation::TpmChallengeKeyCallback callback,
-    const std::string& challenge,
-    bool register_key,
-    const std::string& key_name_for_spkac) {
+void FakeRunCheckNotRegister(chromeos::attestation::AttestationKeyType key_type,
+                             Profile* profile,
+                             ash::attestation::TpmChallengeKeyCallback callback,
+                             const std::string& challenge,
+                             bool register_key,
+                             const std::string& key_name_for_spkac) {
   EXPECT_FALSE(register_key);
   std::move(callback).Run(
-      chromeos::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+      ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
           "response"));
 }
 
@@ -51,7 +50,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
  protected:
   EPKChallengeKeyTestBase()
       : extension_(ExtensionBuilder("Test").Build()),
-        fake_user_manager_(new chromeos::FakeChromeUserManager),
+        fake_user_manager_(new ash::FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
     stub_install_attributes_.SetCloudManaged("google.com", "device_id");
   }
@@ -63,13 +62,13 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   void SetMockTpmChallenger() {
-    auto mock_tpm_challenge_key = std::make_unique<
-        NiceMock<chromeos::attestation::MockTpmChallengeKey>>();
+    auto mock_tpm_challenge_key =
+        std::make_unique<NiceMock<ash::attestation::MockTpmChallengeKey>>();
     // Will be used with EXPECT_CALL.
     mock_tpm_challenge_key_ = mock_tpm_challenge_key.get();
     mock_tpm_challenge_key->EnableFake();
     // transfer ownership inside factory
-    chromeos::attestation::TpmChallengeKeyFactory::SetForTesting(
+    ash::attestation::TpmChallengeKeyFactory::SetForTesting(
         std::move(mock_tpm_challenge_key));
   }
 
@@ -123,10 +122,10 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> extension_;
   chromeos::StubInstallAttributes stub_install_attributes_;
   // fake_user_manager_ is owned by user_manager_enabler_.
-  chromeos::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
   PrefService* prefs_ = nullptr;
-  chromeos::attestation::MockTpmChallengeKey* mock_tpm_challenge_key_ = nullptr;
+  ash::attestation::MockTpmChallengeKey* mock_tpm_challenge_key_ = nullptr;
 };
 
 class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
@@ -167,9 +166,9 @@ TEST_F(EPKChallengeMachineKeyTest, ExtensionNotAllowed) {
   base::ListValue empty_allowlist;
   prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
-  EXPECT_EQ(chromeos::attestation::TpmChallengeKeyResult::
-                kExtensionNotAllowedErrorMsg,
-            RunFunctionAndReturnError(func_.get(), CreateArgs(), browser()));
+  EXPECT_EQ(
+      ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
+      RunFunctionAndReturnError(func_.get(), CreateArgs(), browser()));
 }
 
 TEST_F(EPKChallengeMachineKeyTest, Success) {
@@ -240,9 +239,9 @@ TEST_F(EPKChallengeUserKeyTest, ExtensionNotAllowed) {
   base::ListValue empty_allowlist;
   prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
-  EXPECT_EQ(chromeos::attestation::TpmChallengeKeyResult::
-                kExtensionNotAllowedErrorMsg,
-            RunFunctionAndReturnError(func_.get(), CreateArgs(), browser()));
+  EXPECT_EQ(
+      ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
+      RunFunctionAndReturnError(func_.get(), CreateArgs(), browser()));
 }
 
 }  // namespace

@@ -17,7 +17,7 @@ class MockMutatorHost : public MutatorHost {
   MockMutatorHost();
   ~MockMutatorHost();
 
-  MOCK_CONST_METHOD1(CreateImplInstance, std::unique_ptr<MutatorHost>(bool));
+  MOCK_CONST_METHOD0(CreateImplInstance, std::unique_ptr<MutatorHost>());
   MOCK_METHOD0(ClearMutators, void());
   MOCK_METHOD1(UpdateRegisteredElementIds, void(ElementListType changed_list));
   MOCK_METHOD0(InitClientAnimationState, void());
@@ -28,8 +28,6 @@ class MockMutatorHost : public MutatorHost {
   MOCK_METHOD1(SetLayerTreeMutator,
                void(std::unique_ptr<LayerTreeMutator> mutator));
   MOCK_METHOD1(PushPropertiesTo, void(MutatorHost* host_impl));
-  MOCK_METHOD1(SetSupportsScrollAnimations,
-               void(bool supports_scroll_animations));
   MOCK_METHOD1(SetScrollAnimationDurationForTesting,
                void(base::TimeDelta duration));
   MOCK_CONST_METHOD0(NeedsTickAnimations, bool());
@@ -70,11 +68,8 @@ class MockMutatorHost : public MutatorHost {
                      bool(ElementId element_id, TargetProperty::Type property));
   MOCK_CONST_METHOD1(AnimationsPreserveAxisAlignment,
                      bool(ElementId element_id));
-  MOCK_CONST_METHOD4(GetAnimationScales,
-                     void(ElementId element_id,
-                          ElementListType list_type,
-                          float* maximum_scale,
-                          float* starting_scale));
+  MOCK_CONST_METHOD2(MaximumScale,
+                     float(ElementId element_id, ElementListType list_type));
   MOCK_CONST_METHOD1(IsElementAnimating, bool(ElementId element_id));
   MOCK_CONST_METHOD1(HasTickingKeyframeModelForTesting,
                      bool(ElementId element_id));
@@ -105,6 +100,7 @@ class MockMutatorHost : public MutatorHost {
                PendingThroughputTrackerInfos());
   MOCK_CONST_METHOD0(HasCanvasInvalidation, bool());
   MOCK_CONST_METHOD0(HasJSAnimation, bool());
+  MOCK_CONST_METHOD0(MinimumTickInterval, base::TimeDelta());
 };
 
 }  // namespace cc

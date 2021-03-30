@@ -74,10 +74,11 @@ void FakeCompositorFrameReportingController::DidSubmitCompositorFrame(
     uint32_t frame_token,
     const viz::BeginFrameId& current_frame_id,
     const viz::BeginFrameId& last_activated_frame_id,
-    EventMetricsSet events_metrics) {
+    EventMetricsSet events_metrics,
+    bool has_missing_content) {
   CompositorFrameReportingController::DidSubmitCompositorFrame(
       frame_token, current_frame_id, last_activated_frame_id,
-      std::move(events_metrics));
+      std::move(events_metrics), has_missing_content);
 
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = base::TimeTicks::Now();

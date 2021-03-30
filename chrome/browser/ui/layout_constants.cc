@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 
 #include "base/notreached.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
 #if defined(OS_MAC)
@@ -55,9 +55,6 @@ int GetLayoutConstant(LayoutConstant constant) {
     case LOCATION_BAR_ELEMENT_PADDING:
       return touch_ui ? 3 : 2;
     case LOCATION_BAR_HEIGHT:
-      if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText() &&
-          OmniboxFieldTrial::RichAutocompletionTwoLineOmnibox())
-        return touch_ui ? 52 : 40;
       return touch_ui ? 36 : 28;
     case LOCATION_BAR_ICON_SIZE:
       return touch_ui ? 20 : 16;
@@ -76,6 +73,10 @@ int GetLayoutConstant(LayoutConstant constant) {
     case TABSTRIP_REGION_VIEW_CONTROL_PADDING:
       return 8;
     case TABSTRIP_TOOLBAR_OVERLAP:
+      // Because tab scrolling puts the tabstrip on a separate layer,
+      // changing paint order, this overlap isn't compatible with scrolling.
+      if (base::FeatureList::IsEnabled(features::kScrollableTabStrip))
+        return 0;
       return 1;
     case TOOLBAR_BUTTON_HEIGHT:
       return touch_ui ? 48 : 28;

@@ -16,7 +16,6 @@ const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
           State{
               FloatSize(), &ScrollPaintPropertyNode::Root(),
               State::Flags{false /* flattens_inherited_transform */,
-                           false /* affected_by_outer_viewport_bounds_delta */,
                            false /* in_subtree_of_page_scale */}})));
   return *root;
 }

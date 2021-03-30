@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that when Geolocation permission has been denied prior to a call to a Geolocation method, the error callback is invoked with code PERMISSION_DENIED, when the Geolocation service encounters an error.");
+
+let error;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(false);
+mock.setGeolocationPosition(51.478, -0.166, 100);
+
+navigator.geolocation.getCurrentPosition(function(p) {
+    testFailed('Success callback invoked unexpectedly');
+    finishJSTest();
+}, function(e) {
+    error = e;
+    assert_equals(error.code, error.PERMISSION_DENIED);
+    assert_equals(error.message, "User denied Geolocation");
+    continueTest();
+});
+
+function continueTest()
+{
+    // Make another request, with permission already denied.
+    mock.setGeolocationPositionUnavailableError('test');
+
+    navigator.geolocation.getCurrentPosition(function(p) {
+        testFailed('Success callback invoked unexpectedly');
+        finishJSTest();
+    }, function(e) {
+        error = e;
+        assert_equals(error.code, error.PERMISSION_DENIED);
+        assert_equals(error.message, "User denied Geolocation");
+        finishJSTest();
+    });
+}
+</script>
+</body>
+</html>

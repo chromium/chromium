@@ -546,6 +546,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
                                              LayoutBox&);
   void AbsoluteQuads(Vector<FloatQuad>&,
                      MapCoordinatesFlags mode = 0) const override;
+  void LocalQuadsForSelf(Vector<FloatQuad>& quads) const override;
   void AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
                             MapCoordinatesFlags mode = 0) const override;
   LayoutObject* HoverAncestor() const final;
@@ -596,6 +597,10 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   PhysicalOffset AccumulateRelativePositionOffsets() const override;
 
  private:
+  void QuadsForSelfInternal(Vector<FloatQuad>& quads,
+                            MapCoordinatesFlags mode,
+                            bool map_to_absolute) const;
+
   void ResetLayout();
   void LayoutChildren(bool relayout_children, SubtreeLayoutScope&);
   void AddOverhangingFloatsFromChildren(LayoutUnit unconstrained_height);

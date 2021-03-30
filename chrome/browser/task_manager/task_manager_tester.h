@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "components/sessions/core/session_id.h"
 
@@ -38,7 +38,7 @@ class TaskManagerTester {
   int GetRowCount();
 
   // Get the title text of a particular |row|.
-  base::string16 GetRowTitle(int row);
+  std::u16string GetRowTitle(int row);
 
   // Hide or show a column. If a column is not visible its stats are not
   // necessarily gathered.

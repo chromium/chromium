@@ -22,18 +22,18 @@
 
 namespace {
 
-base::string16 GetTimeLimitMessage(base::TimeDelta time_limit) {
+std::u16string GetTimeLimitMessage(base::TimeDelta time_limit) {
   return ui::TimeFormat::Detailed(ui::TimeFormat::Format::FORMAT_DURATION,
                                   ui::TimeFormat::Length::LENGTH_LONG,
                                   /* cutoff */ 3, time_limit);
 }
 
 std::string GetWebTimeLimitErrorPage(
-    base::string16 block_header,
-    base::string16 block_message,
+    std::u16string block_header,
+    std::u16string block_message,
     base::TimeDelta time_limit,
     const std::string& app_locale,
-    const base::Optional<base::string16>& title) {
+    const base::Optional<std::u16string>& title) {
   base::DictionaryValue strings;
 
   if (!title.has_value()) {
@@ -48,7 +48,7 @@ std::string GetWebTimeLimitErrorPage(
   strings.SetString("blockPageHeader", block_header);
   strings.SetString(
       "blockPageMessage",
-      base::StrCat({block_message, base::UTF8ToUTF16(" "),
+      base::StrCat({block_message, u" ",
                     l10n_util::GetStringFUTF16(
                         IDS_WEB_TIME_LIMIT_ERROR_PAGE_NEXT_ACCESS_TIME,
                         GetTimeLimitMessage(time_limit))}));
@@ -66,7 +66,7 @@ std::string GetWebTimeLimitErrorPage(
 
 std::string GetWebTimeLimitChromeErrorPage(
     const std::string& domain,
-    const base::Optional<base::string16>& title,
+    const base::Optional<std::u16string>& title,
     base::TimeDelta time_limit,
     const std::string& app_locale) {
   auto block_header = l10n_util::GetStringFUTF16(

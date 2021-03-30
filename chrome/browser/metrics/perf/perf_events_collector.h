@@ -96,6 +96,27 @@ class PerfCollector : public internal::MetricCollector {
     kMaxValue = kAllZeroCPUFrequencies,
   };
 
+  // Annotations on the collected sampled_profile, including adding process
+  // types and PSI CPU data.
+  static void PostCollectionProfileAnnotation(SampledProfile* sampled_profile,
+                                              bool has_cycles);
+
+  // Collect PSI CPU data and add to sampled_profile.
+  static void CollectPSICPU(SampledProfile* sampled_profile,
+                            const std::string& psi_cpu_path);
+
+  // Enumeration representing success and various failure modes for parsing PSI
+  // CPU data. These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  enum class ParsePSICPUStatus {
+    kSuccess,
+    kReadFileFailed,
+    kUnexpectedDataFormat,
+    kParsePSIValueFailed,
+    // Magic constant used by the histogram macros.
+    kMaxValue = kParsePSIValueFailed,
+  };
+
   SampledProfile::TriggerEvent current_trigger_ =
       SampledProfile::UNKNOWN_TRIGGER_EVENT;
 

@@ -10,10 +10,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace extensions {
@@ -44,9 +44,6 @@ class AppBannerManagerDesktop
   virtual TestAppBannerManagerDesktop*
   AsTestAppBannerManagerDesktopForTesting();
 
-  // AppBannerManager overrides.
-  bool IsExternallyInstalledWebApp() override;
-
  protected:
   explicit AppBannerManagerDesktop(content::WebContents* web_contents);
 
@@ -59,10 +56,14 @@ class AppBannerManagerDesktop
   base::WeakPtr<AppBannerManager> GetWeakPtr() override;
   void InvalidateWeakPtrs() override;
   bool IsSupportedNonWebAppPlatform(
-      const base::string16& platform) const override;
+      const std::u16string& platform) const override;
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
   bool IsWebAppConsideredInstalled() const override;
+
+  // content::WebContentsObserver override.
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
 
   // Called when the web app install initiated by a banner has completed.
   virtual void DidFinishCreatingWebApp(const web_app::AppId& app_id,
@@ -78,16 +79,11 @@ class AppBannerManagerDesktop
   bool ShouldAllowWebAppReplacementInstall() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
 
-  // content::WebContentsObserver override.
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
-
   // SiteEngagementObserver override.
-  void OnEngagementEvent(
-      content::WebContents* web_contents,
-      const GURL& url,
-      double score,
-      site_engagement::SiteEngagementService::EngagementType type) override;
+  void OnEngagementEvent(content::WebContents* web_contents,
+                         const GURL& url,
+                         double score,
+                         site_engagement::EngagementType type) override;
 
   // web_app::AppRegistrarObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;

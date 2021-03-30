@@ -268,9 +268,8 @@ ScriptPromise BackgroundFetchManager::fetch(
     loader->Start(
         bridge_.Get(), execution_context, options->icons(),
         WTF::Bind(&BackgroundFetchManager::DidLoadIcons, WrapPersistent(this),
-                  id, WTF::Passed(std::move(fetch_api_requests)),
-                  std::move(options_ptr), WrapPersistent(resolver),
-                  WrapWeakPersistent(loader)));
+                  id, std::move(fetch_api_requests), std::move(options_ptr),
+                  WrapPersistent(resolver), WrapWeakPersistent(loader)));
     return promise;
   }
 

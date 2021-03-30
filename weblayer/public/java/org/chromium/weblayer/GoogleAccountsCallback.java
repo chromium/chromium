@@ -8,8 +8,6 @@ import androidx.annotation.NonNull;
 
 /**
  * Used to intercept interaction with GAIA accounts.
- *
- * @since 86
  */
 public abstract class GoogleAccountsCallback {
     /**

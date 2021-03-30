@@ -68,6 +68,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   using Predicate = base::RepeatingCallback<bool(const HoldingSpaceItem*)>;
   void RemoveIf(Predicate predicate);
 
+  // Invalidates image representations for items for which the specified
+  // `predicate` returns true.
+  void InvalidateItemImageIf(Predicate predicate);
+
   // Removes all the items from the model.
   void RemoveAll();
 

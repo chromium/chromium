@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {launcher, LaunchType} from './launcher.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {volumeManagerFactory} from './volume_manager_factory.m.js';
+
 /**
  * Provides drive search results to chrome launcher.
  */
-class LauncherSearch {
+/* #export */ class LauncherSearch {
   constructor() {
     // Launcher search provider is restricted to dev channel at now.
     if (!chrome.launcherSearchProvider) {

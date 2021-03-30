@@ -48,25 +48,24 @@ void CrashReporterClient::SetCrashReporterClientIdFromGUID(
 
 #if defined(OS_WIN)
 bool CrashReporterClient::ShouldCreatePipeName(
-    const base::string16& process_type) {
+    const std::wstring& process_type) {
   return process_type == L"browser";
 }
 
 bool CrashReporterClient::GetAlternativeCrashDumpLocation(
-    base::string16* crash_dir) {
+    std::wstring* crash_dir) {
   return false;
 }
 
-void CrashReporterClient::GetProductNameAndVersion(
-    const base::string16& exe_path,
-    base::string16* product_name,
-    base::string16* version,
-    base::string16* special_build,
-    base::string16* channel_name) {
+void CrashReporterClient::GetProductNameAndVersion(const std::wstring& exe_path,
+                                                   std::wstring* product_name,
+                                                   std::wstring* version,
+                                                   std::wstring* special_build,
+                                                   std::wstring* channel_name) {
 }
 
-bool CrashReporterClient::ShouldShowRestartDialog(base::string16* title,
-                                                  base::string16* message,
+bool CrashReporterClient::ShouldShowRestartDialog(std::wstring* title,
+                                                  std::wstring* message,
                                                   bool* is_rtl_locale) {
   return false;
 }
@@ -108,7 +107,7 @@ bool CrashReporterClient::HandleCrashDump(const char* crashdump_filename,
 #endif
 
 #if defined(OS_WIN)
-bool CrashReporterClient::GetCrashDumpLocation(base::string16* crash_dir) {
+bool CrashReporterClient::GetCrashDumpLocation(std::wstring* crash_dir) {
 #else
 bool CrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
 #endif
@@ -116,7 +115,7 @@ bool CrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
 }
 
 #if defined(OS_WIN)
-bool CrashReporterClient::GetCrashMetricsLocation(base::string16* crash_dir) {
+bool CrashReporterClient::GetCrashMetricsLocation(std::wstring* crash_dir) {
 #else
 bool CrashReporterClient::GetCrashMetricsLocation(base::FilePath* crash_dir) {
 #endif

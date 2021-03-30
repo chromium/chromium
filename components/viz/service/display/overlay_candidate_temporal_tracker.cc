@@ -6,6 +6,8 @@
 
 namespace viz {
 
+OverlayCandidateTemporalTracker::OverlayCandidateTemporalTracker() = default;
+
 void OverlayCandidateTemporalTracker::Reset() {
   ratio_rate_category = 0;
 }
@@ -40,9 +42,10 @@ bool OverlayCandidateTemporalTracker::IsActivelyChanging(
 void OverlayCandidateTemporalTracker::AddRecord(
     uint64_t curr_frame,
     float damage_area_ratio,
-    unsigned resource_id,
-    const OverlayCandidateTemporalTracker::Config& config) {
-  if (prev_resource_id != resource_id &&
+    ResourceId resource_id,
+    const OverlayCandidateTemporalTracker::Config& config,
+    bool force_resource_update) {
+  if ((prev_resource_id != resource_id || force_resource_update) &&
       frame_record[(next_index + kNumRecords - 1) % kNumRecords] !=
           curr_frame) {
     frame_record[next_index] = curr_frame;

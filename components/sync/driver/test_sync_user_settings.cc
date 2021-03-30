@@ -33,21 +33,6 @@ void TestSyncUserSettings::SetSyncRequested(bool requested) {
   service_->SetDisableReasons(disable_reasons);
 }
 
-bool TestSyncUserSettings::IsSyncAllowedByPlatform() const {
-  return !service_->HasDisableReason(
-      SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
-}
-
-void TestSyncUserSettings::SetSyncAllowedByPlatform(bool allowed) {
-  SyncService::DisableReasonSet disable_reasons = service_->GetDisableReasons();
-  if (allowed) {
-    disable_reasons.Remove(SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
-  } else {
-    disable_reasons.Put(SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
-  }
-  service_->SetDisableReasons(disable_reasons);
-}
-
 bool TestSyncUserSettings::IsFirstSetupComplete() const {
   return first_setup_complete_;
 }
@@ -167,6 +152,14 @@ bool TestSyncUserSettings::IsPassphraseRequired() const {
 
 bool TestSyncUserSettings::IsPassphraseRequiredForPreferredDataTypes() const {
   return passphrase_required_for_preferred_data_types_;
+}
+
+bool TestSyncUserSettings::IsPassphrasePromptMutedForCurrentProductVersion()
+    const {
+  return false;
+}
+
+void TestSyncUserSettings::MarkPassphrasePromptMutedForCurrentProductVersion() {
 }
 
 bool TestSyncUserSettings::IsTrustedVaultKeyRequired() const {

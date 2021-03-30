@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -58,6 +59,13 @@ base::Optional<std::string> GetStringAttribute(
   return base::nullopt;
 }
 
+std::string FormatColor(int argb) {
+  // Don't output the alpha component; only the red, green and blue
+  // actually matter.
+  int rgb = (static_cast<uint32_t>(argb) & 0xffffff);
+  return base::StringPrintf("%06x", rgb);
+}
+
 std::string IntAttrToString(const ui::AXNode& node,
                             ax::mojom::IntAttribute attr,
                             int32_t value) {
@@ -67,7 +75,30 @@ std::string IntAttrToString(const ui::AXNode& node,
     ui::AXNode* target = ui::AXTreeManagerMap::GetInstance()
                              .GetManager(tree_id)
                              ->GetNodeFromTree(tree_id, value);
-    return target ? ui::ToString(target->data().role) : std::string("null");
+    if (!target)
+      return "null";
+
+    std::string result = ui::ToString(target->data().role);
+    // Provide some extra info about the related object via the name or
+    // possibly the class (if an element).
+    // TODO(accessibility) Include all relational attributes here.
+    // TODO(accessibility) Consider using line numbers from the results instead.
+    if (attr == ax::mojom::IntAttribute::kNextOnLineId ||
+        attr == ax::mojom::IntAttribute::kPreviousOnLineId) {
+      if (target->data().HasStringAttribute(
+              ax::mojom::StringAttribute::kName)) {
+        result += ":\"";
+        result += target->data().GetStringAttribute(
+            ax::mojom::StringAttribute::kName);
+        result += "\"";
+      } else if (target->data().HasStringAttribute(
+                     ax::mojom::StringAttribute::kClassName)) {
+        result += ".";
+        result += target->data().GetStringAttribute(
+            ax::mojom::StringAttribute::kClassName);
+      }
+    }
+    return result;
   }
 
   switch (attr) {
@@ -105,6 +136,10 @@ std::string IntAttrToString(const ui::AXNode& node,
       return ui::ToString(static_cast<ax::mojom::TextPosition>(value));
     case ax::mojom::IntAttribute::kImageAnnotationStatus:
       return ui::ToString(static_cast<ax::mojom::ImageAnnotationStatus>(value));
+    case ax::mojom::IntAttribute::kBackgroundColor:
+      return FormatColor(node.ComputeBackgroundColor());
+    case ax::mojom::IntAttribute::kColor:
+      return FormatColor(node.ComputeColor());
     // No pretty printing necessary for these:
     case ax::mojom::IntAttribute::kActivedescendantId:
     case ax::mojom::IntAttribute::kAriaCellColumnIndex:
@@ -113,8 +148,6 @@ std::string IntAttrToString(const ui::AXNode& node,
     case ax::mojom::IntAttribute::kAriaCellColumnSpan:
     case ax::mojom::IntAttribute::kAriaCellRowSpan:
     case ax::mojom::IntAttribute::kAriaRowCount:
-    case ax::mojom::IntAttribute::kBackgroundColor:
-    case ax::mojom::IntAttribute::kColor:
     case ax::mojom::IntAttribute::kColorValue:
     case ax::mojom::IntAttribute::kDOMNodeId:
     case ax::mojom::IntAttribute::kErrormessageId:
@@ -194,6 +227,7 @@ void AccessibilityTreeFormatterBlink::AddDefaultFilters(
                     AXPropertyFilter::DENY);  // Don't show false value
   AddPropertyFilter(property_filters, "roleDescription=*");
   AddPropertyFilter(property_filters, "errormessageId=*");
+  AddPropertyFilter(property_filters, "virtualContent=*");
 }
 
 const char* const TREE_DATA_ATTRIBUTES[] = {"TreeData.textSelStartOffset",
@@ -229,6 +263,14 @@ base::Value AccessibilityTreeFormatterBlink::BuildTreeForNode(
   base::Value dict(base::Value::Type::DICTIONARY);
   RecursiveBuildTree(*node, &dict);
   return dict;
+}
+
+base::Value AccessibilityTreeFormatterBlink::BuildNode(
+    ui::AXPlatformNodeDelegate* node) const {
+  CHECK(node);
+  base::DictionaryValue dict;
+  AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
+  return std::move(dict);
 }
 
 std::string AccessibilityTreeFormatterBlink::DumpInternalAccessibilityTree(

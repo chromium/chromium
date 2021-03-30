@@ -326,13 +326,13 @@ class PrintRenderFrameHelper
                            const base::DictionaryValue& passed_job_settings);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-  // Get final print settings from the user.
+  // Returns final print settings from the user.
   // WARNING: |this| may be gone after this method returns.
-  void GetPrintSettingsFromUser(blink::WebLocalFrame* frame,
-                                const blink::WebNode& node,
-                                uint32_t expected_pages_count,
-                                PrintRequestType print_request_type,
-                                mojom::PrintPagesParams* print_settings);
+  mojom::PrintPagesParamsPtr GetPrintSettingsFromUser(
+      blink::WebLocalFrame* frame,
+      const blink::WebNode& node,
+      uint32_t expected_pages_count,
+      PrintRequestType print_request_type);
 
   // Page Printing / Rendering ------------------------------------------------
 
@@ -376,13 +376,12 @@ class PrintRenderFrameHelper
   void IPCProcessed();
 
   // Helper method to get page layout in points and fit to page if needed.
-  static void ComputePageLayoutInPointsForCss(
+  static mojom::PageSizeMarginsPtr ComputePageLayoutInPointsForCss(
       blink::WebLocalFrame* frame,
       uint32_t page_index,
       const mojom::PrintParams& default_params,
       bool ignore_css_margins,
-      double* scale_factor,
-      mojom::PageSizeMargins* page_layout_in_points);
+      double* scale_factor);
 
   // Return an array of pages to print given the print |params| and an expected
   // |page_count|. Page numbers are zero-based.

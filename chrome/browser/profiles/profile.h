@@ -11,16 +11,11 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
-#include "url/gurl.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -31,6 +26,7 @@ class ChromeZoomLevelPrefs;
 #endif
 
 class ExtensionSpecialStoragePolicy;
+class GURL;
 class PrefService;
 class PrefStore;
 class ProfileDestroyer;
@@ -38,10 +34,13 @@ class ProfileKey;
 class TestingProfile;
 
 namespace base {
+class FilePath;
 class SequencedTaskRunner;
+class Time;
 }
 
 namespace content {
+class ResourceContext;
 class WebUI;
 }
 
@@ -148,6 +147,10 @@ class Profile : public content::BrowserContext {
         JNIEnv* env,
         const base::android::JavaRef<jobject>& j_otr_profile_id);
 
+    // Constructs an OTRProfileID based on the string passed in. Should only be
+    // called with values previously returned by Serialize().
+    static OTRProfileID Deserialize(const std::string& value);
+
     // Constructs a string that represents OTRProfileID from the provided
     // OTRProfileID.
     // TODO(crbug.com/1161104): Use one serialize function for both java and
@@ -165,8 +168,6 @@ class Profile : public content::BrowserContext {
     // Returns this OTRProfileID in a string format that can be used for debug
     // message.
     const std::string& ToString() const;
-
-    static int first_unused_index_;
 
     const std::string profile_id_;
   };
@@ -224,6 +225,8 @@ class Profile : public content::BrowserContext {
 
   variations::VariationsClient* GetVariationsClient() override;
 
+  content::ResourceContext* GetResourceContext() override;
+
   // Returns the creation time of this profile. This will either be the creation
   // time of the profile directory or, for ephemeral off-the-record profiles,
   // the creation time of the profile object instance.
@@ -242,18 +245,19 @@ class Profile : public content::BrowserContext {
 
   // Return an OffTheRecord version of this profile with the given
   // |otr_profile_id|. The returned pointer is owned by the receiving profile.
+  // If an OffTheRecord with |otr_profile_id| profile id does not exist, a new
+  // profile is created and returned if |create_if_needed| is true or a nullptr
+  // is returned if it is false.
   // If the receiving profile is OffTheRecord, the owner would be its original
   // profile.
   //
-  // WARNING I: This will create the OffTheRecord profile if it doesn't already
-  // exist. If this isn't what you want, you need to check
-  // HasOffTheRecordProfile() first.
-  //
-  // WARNING II: Once a profile is no longer used, use
+  // WARNING: Once a profile is no longer used, use
   // ProfileDestroyer::DestroyProfileWhenAppropriate or
   // ProfileDestroyer::DestroyOffTheRecordProfileNow to destroy it.
-  virtual Profile* GetOffTheRecordProfile(
-      const OTRProfileID& otr_profile_id) = 0;
+  // TODO(https://crbug.com/1191315): Remove default value after auditing and
+  // updating use cases.
+  virtual Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
+                                          bool create_if_needed = true) = 0;
 
   // Returns all OffTheRecord profiles.
   virtual std::vector<Profile*> GetAllOffTheRecordProfiles() = 0;
@@ -287,8 +291,6 @@ class Profile : public content::BrowserContext {
   virtual bool IsSupervised() const = 0;
   // Returns whether the profile is associated with a child account.
   virtual bool IsChild() const = 0;
-  // Returns whether the profile is a legacy supervised user profile.
-  virtual bool IsLegacySupervised() const = 0;
 
   // Returns whether opening browser windows is allowed in this profile. For
   // example, browser windows are not allowed in Sign-in profile on Chrome OS.
@@ -499,8 +501,7 @@ class Profile : public content::BrowserContext {
 
   // Returns whether the profile is new.  A profile is new if the browser has
   // not been shut down since the profile was created.
-  // This method is virtual in order to be overridden for tests.
-  virtual bool IsNewProfile() const;
+  virtual bool IsNewProfile() const = 0;
 
   // Notify observers of |OnProfileWillBeDestroyed| for this profile, if it has
   // not already been called. It is necessary because most Profiles are
@@ -529,9 +530,7 @@ class Profile : public content::BrowserContext {
     is_system_profile_ = is_system_profile;
   }
 
-  // Creates an OffTheRecordProfile which points to this Profile. The caller is
-  // responsible for sending a NOTIFICATION_PROFILE_CREATED when the profile is
-  // correctly assigned to its owner.
+  // Creates an OffTheRecordProfile which points to this Profile.
   static std::unique_ptr<Profile> CreateOffTheRecordProfile(
       Profile* parent,
       const OTRProfileID& otr_profile_id);
@@ -547,6 +546,12 @@ class Profile : public content::BrowserContext {
   virtual bool IsSignedIn() = 0;
 
  private:
+  // Created on the UI thread, and returned by GetResourceContext(), but
+  // otherwise lives on and is destroyed on the IO thread.
+  //
+  // TODO(https://crbug.com/908955): Get rid of ResourceContext.
+  std::unique_ptr<content::ResourceContext> resource_context_;
+
   bool restored_last_session_ = false;
 
   // Used to prevent the notification that this Profile is destroyed from

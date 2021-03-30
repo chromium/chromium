@@ -255,6 +255,8 @@ void FuchsiaAudioRenderer::SetLatencyHint(
 
 void FuchsiaAudioRenderer::SetPreservesPitch(bool preserves_pitch) {}
 
+void FuchsiaAudioRenderer::SetAutoplayInitiated(bool autoplay_initiated) {}
+
 void FuchsiaAudioRenderer::StartTicking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -285,14 +287,27 @@ void FuchsiaAudioRenderer::StopTicking() {
   audio_consumer_->Stop();
 
   base::AutoLock lock(timeline_lock_);
+  UpdateTimelineOnStop();
   SetPlaybackState(PlaybackState::kStopped);
-  media_pos_ = CurrentMediaTimeLocked();
 }
 
 void FuchsiaAudioRenderer::SetPlaybackRate(double playback_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   audio_consumer_->SetRate(playback_rate);
+
+  // AudioConsumer will update media timeline asynchronously. That update is
+  // processed in OnAudioConsumerStatusChanged(). This might cause the clock to
+  // go back. It's not desirable, e.g. because VideoRenderer could drop some
+  // video frames that should be shown when the stream is resumed. To avoid this
+  // issue update the timeline synchronously. OnAudioConsumerStatusChanged()
+  // will still process the update from AudioConsumer to save the position when
+  // the stream was actually paused, but that update would not move the clock
+  // backward.
+  if (playback_rate == 0.0) {
+    base::AutoLock lock(timeline_lock_);
+    UpdateTimelineOnStop();
+  }
 }
 
 void FuchsiaAudioRenderer::SetMediaTime(base::TimeDelta time) {
@@ -302,6 +317,12 @@ void FuchsiaAudioRenderer::SetMediaTime(base::TimeDelta time) {
   {
     base::AutoLock lock(timeline_lock_);
     media_pos_ = time;
+
+    // Reset reference timestamp. This is necessary to ensure that the correct
+    // value is returned from GetWallClockTimes() until playback is resumed:
+    // GetWallClockTimes() is required to return 0 wall clock between
+    // SetMediaTime() and StartTicking().
+    reference_time_ = base::TimeTicks();
   }
 
   FlushInternal();
@@ -310,10 +331,8 @@ void FuchsiaAudioRenderer::SetMediaTime(base::TimeDelta time) {
 
 base::TimeDelta FuchsiaAudioRenderer::CurrentMediaTime() {
   base::AutoLock lock(timeline_lock_);
-  if (state_ != PlaybackState::kPlaying &&
-      state_ != PlaybackState::kEndOfStream) {
+  if (!IsTimeMoving())
     return media_pos_;
-  }
 
   return CurrentMediaTimeLocked();
 }
@@ -326,12 +345,10 @@ bool FuchsiaAudioRenderer::GetWallClockTimes(
 
   base::AutoLock lock(timeline_lock_);
 
-  const bool is_time_moving = (state_ == PlaybackState::kPlaying ||
-                               state_ == PlaybackState::kEndOfStream) &&
-                              (media_delta_ > 0);
+  const bool is_time_moving = IsTimeMoving();
 
   if (media_timestamps.empty()) {
-    wall_clock_times->push_back(is_time_moving ? now : base::TimeTicks());
+    wall_clock_times->push_back(is_time_moving ? now : reference_time_);
     return is_time_moving;
   }
 
@@ -453,7 +470,7 @@ void FuchsiaAudioRenderer::ScheduleReadDemuxerStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!demuxer_stream_ || read_timer_.IsRunning() || is_demuxer_read_pending_ ||
-      GetPlaybackState() == PlaybackState::kEndOfStream ||
+      is_at_end_of_stream_ ||
       num_pending_packets_ >= stream_sink_buffers_.size()) {
     return;
   }
@@ -518,11 +535,14 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
   }
 
   if (buffer->end_of_stream()) {
-    {
-      base::AutoLock lock(timeline_lock_);
-      SetPlaybackState(PlaybackState::kEndOfStream);
-    }
+    is_at_end_of_stream_ = true;
     stream_sink_->EndOfStream();
+
+    // No more data is going to be buffered. Update buffering state to ensure
+    // RendererImpl starts playback in case it was waiting for buffering to
+    // finish.
+    SetBufferState(BUFFERING_HAVE_ENOUGH);
+
     return;
   }
 
@@ -595,13 +615,13 @@ void FuchsiaAudioRenderer::SetBufferState(BufferingState buffer_state) {
 
 void FuchsiaAudioRenderer::FlushInternal() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(GetPlaybackState() == PlaybackState::kStopped ||
-         GetPlaybackState() == PlaybackState::kEndOfStream);
+  DCHECK(GetPlaybackState() == PlaybackState::kStopped || is_at_end_of_stream_);
 
   stream_sink_->DiscardAllPacketsNoReply();
   SetBufferState(BUFFERING_HAVE_NOTHING);
   last_packet_timestamp_ = base::TimeDelta::Min();
   read_timer_.Stop();
+  is_at_end_of_stream_ = false;
 
   if (is_demuxer_read_pending_) {
     drop_next_demuxer_read_result_ = true;
@@ -613,7 +633,22 @@ void FuchsiaAudioRenderer::OnEndOfStream() {
   client_->OnEnded();
 }
 
+bool FuchsiaAudioRenderer::IsTimeMoving() {
+  return state_ == PlaybackState::kPlaying && media_delta_ > 0;
+}
+
+void FuchsiaAudioRenderer::UpdateTimelineOnStop() {
+  if (!IsTimeMoving())
+    return;
+
+  media_pos_ = CurrentMediaTimeLocked();
+  reference_time_ = base::TimeTicks::Now();
+  media_delta_ = 0;
+}
+
 base::TimeDelta FuchsiaAudioRenderer::CurrentMediaTimeLocked() {
+  DCHECK(IsTimeMoving());
+
   // Calculate media position using formula specified by the TimelineFunction.
   // See https://fuchsia.dev/reference/fidl/fuchsia.media#formulas .
   return media_pos_ + (base::TimeTicks::Now() - reference_time_) *

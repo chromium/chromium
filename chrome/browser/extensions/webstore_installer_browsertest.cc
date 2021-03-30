@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerBrowserTest, SimultaneousInstall) {
   // Simulate another mechanism installing the same extension.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(kTestExtensionId)
           .SetManifest(std::move(manifest))
           .Build();

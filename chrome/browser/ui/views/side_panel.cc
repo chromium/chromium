@@ -9,34 +9,29 @@
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
+
+namespace {
+
+// TODO(pbos): Figure out what our preferred width should be.
+constexpr int kDefaultWidth = 320;
+
+}  // namespace
 
 SidePanel::SidePanel() {
   AddObserver(this);
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetPanelWidth(kDefaultWidth);
+}
 
-  // TODO(pbos): Figure out what our preferred size should be. Note that only
-  // the width is used by BrowserViewLayout.
-  SetPreferredSize(gfx::Size(320, 16));
+void SidePanel::SetPanelWidth(int width) {
+  // Only the width is used by BrowserViewLayout.
+  SetPreferredSize(gfx::Size(width, 1));
 }
 
 SidePanel::~SidePanel() {
   RemoveObserver(this);
-}
-
-void SidePanel::AddContent(
-    std::unique_ptr<views::BubbleDialogDelegateView> view) {
-  // TODO(pbos): When this is false, use AddChildView(std::move(view)) instead.
-  DCHECK(view->owned_by_client());
-  AddChildView(view.get());
-  owned_children_.push_back(std::move(view));
-}
-
-void SidePanel::RemoveContent(views::BubbleDialogDelegateView* view) {
-  DCHECK(Contains(view));
-  base::EraseIf(owned_children_,
-                [view](const auto& c) { return c.get() == view; });
-  DCHECK(!Contains(view));
 }
 
 void SidePanel::OnThemeChanged() {
@@ -76,3 +71,6 @@ void SidePanel::UpdateVisibility() {
   }
   SetVisible(false);
 }
+
+BEGIN_METADATA(SidePanel, views::View)
+END_METADATA

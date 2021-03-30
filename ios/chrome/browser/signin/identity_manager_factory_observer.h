@@ -21,10 +21,6 @@ class IdentityManagerFactoryObserver : public base::CheckedObserver {
   // Called when an IdentityManager instance is created.
   virtual void IdentityManagerCreated(signin::IdentityManager* manager) {}
 
-  // Called when a IdentityManager instance is being shut down. Observers
-  // of |manager| should remove themselves at this point.
-  virtual void IdentityManagerShutdown(signin::IdentityManager* manager) {}
-
  private:
   DISALLOW_COPY_AND_ASSIGN(IdentityManagerFactoryObserver);
 };

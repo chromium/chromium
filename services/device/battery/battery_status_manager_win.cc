@@ -5,11 +5,11 @@
 #include "services/device/battery/battery_status_manager_win.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string16.h"
 #include "base/win/message_window.h"
 #include "services/device/battery/battery_status_manager.h"
 

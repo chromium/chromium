@@ -169,8 +169,7 @@ TEST_F(HTMLSelectElementTest, RestoreUnmatchedFormControlState) {
   // Restore
   select->RestoreFormControlState(select_state);
   EXPECT_EQ(-1, To<HTMLSelectElement>(element)->selectedIndex());
-  EXPECT_EQ(nullptr,
-            To<HTMLSelectElement>(element)->OptionToBeShownForTesting());
+  EXPECT_EQ(nullptr, To<HTMLSelectElement>(element)->OptionToBeShown());
 }
 
 TEST_F(HTMLSelectElementTest, VisibleBoundsInVisualViewport) {
@@ -607,6 +606,20 @@ TEST_F(HTMLSelectElementTest, AddingNotOwnedOption) {
       ->appendChild(optgroup);
   optgroup->appendChild(doc.CreateRawElement(html_names::kOptionTag));
   // This test passes if the above appendChild() doesn't cause a DCHECK failure.
+}
+
+TEST_F(HTMLSelectElementTest, ChangeRenderingCrash) {
+  SetHtmlInnerHTML(R"HTML(
+    <select id="sel">
+      <option id="opt"></option>
+    </select>
+  )HTML");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  // Make the option element the style recalc root.
+  GetElementById("opt")->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+  // Changing the size attribute changes the rendering. This should not trigger
+  // a DCHECK failure updating the style recalc root.
+  GetElementById("sel")->setAttribute(html_names::kSizeAttr, AtomicString("2"));
 }
 
 }  // namespace blink

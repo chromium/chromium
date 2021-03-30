@@ -15,6 +15,8 @@ import './mojo/nearby_share.mojom-lite.js';
 
 /** @type {?nearbyShare.mojom.DiscoveryManagerInterface} */
 let discoveryManager = null;
+/** @type {boolean} */
+let isTesting = false;
 
 /**
  * @param {!nearbyShare.mojom.DiscoveryManagerInterface}
@@ -22,6 +24,7 @@ let discoveryManager = null;
  */
 export function setDiscoveryManagerForTesting(testDiscoveryManager) {
   discoveryManager = testDiscoveryManager;
+  isTesting = true;
 }
 
 /**
@@ -35,4 +38,22 @@ export function getDiscoveryManager() {
   discoveryManager = nearbyShare.mojom.DiscoveryManager.getRemote();
   discoveryManager.onConnectionError.addListener(() => discoveryManager = null);
   return discoveryManager;
+}
+
+/**
+ * @param {!nearbyShare.mojom.DiscoveryObserverInterface} observer
+ * @return {?nearbyShare.mojom.DiscoveryObserverReceiver} The mojo
+ *     receiver or null when testing.
+ */
+export function observeDiscoveryManager(observer) {
+  if (isTesting) {
+    getDiscoveryManager().addDiscoveryObserver(
+        /** @type {!nearbyShare.mojom.DiscoveryObserverRemote} */ (observer));
+    return null;
+  }
+
+  const receiver = new nearbyShare.mojom.DiscoveryObserverReceiver(observer);
+  getDiscoveryManager().addDiscoveryObserver(
+      receiver.$.bindNewPipeAndPassRemote());
+  return receiver;
 }

@@ -38,6 +38,7 @@ class ModuleRecordResolver;
 class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
+enum class ModuleType;
 
 // A SingleModuleClient is notified when single module script node (node as in a
 // module tree graph) load is complete and its corresponding entry is created in
@@ -129,6 +130,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // ResourceFetcher represents "fetch client settings object"
   // used in the "fetch a module worker script graph" algorithm.
   virtual void FetchTree(const KURL&,
+                         ModuleType,
                          ResourceFetcher* fetch_client_settings_object_fetcher,
                          mojom::blink::RequestContextType context_type,
                          network::mojom::RequestDestination destination,
@@ -161,7 +163,11 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // entry.
   // Note: returns nullptr if the module map entry doesn't exist, or
   // is still "fetching".
-  virtual ModuleScript* GetFetchedModuleScript(const KURL&) = 0;
+  // ModuleType indicates the resource type of the module script, e.g.
+  // JavaScript, JSON, or CSS. This is used as part of the module map cache key
+  // alongside the URL, so both are needed to retrieve the correct module. See
+  // https://github.com/whatwg/html/pull/5883
+  virtual ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) = 0;
 
   // https://html.spec.whatwg.org/C/#resolve-a-module-specifier
   virtual KURL ResolveModuleSpecifier(const String& module_request,
@@ -169,7 +175,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
                                       String* failure_reason = nullptr) = 0;
 
   // https://tc39.github.io/proposal-dynamic-import/#sec-hostimportmoduledynamically
-  virtual void ResolveDynamically(const String& specifier,
+  virtual void ResolveDynamically(const ModuleRequest& module_request,
                                   const KURL&,
                                   const ReferrerScriptInfo&,
                                   ScriptPromiseResolver*) = 0;
@@ -178,11 +184,25 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   virtual ScriptValue CreateSyntaxError(const String& message) const = 0;
 
   // Import maps. https://github.com/WICG/import-maps
+
+  // https://wicg.github.io/import-maps/#register-an-import-map
   virtual void RegisterImportMap(const ImportMap*,
                                  ScriptValue error_to_rethrow) = 0;
-  virtual bool IsAcquiringImportMaps() const = 0;
-  virtual void ClearIsAcquiringImportMaps() = 0;
   virtual const ImportMap* GetImportMapForTest() const = 0;
+
+  // https://wicg.github.io/import-maps/#document-acquiring-import-maps
+  enum class AcquiringImportMapsState {
+    // The flag is true.
+    kAcquiring,
+
+    // The flag is false, due to multiple import maps.
+    kMultipleImportMaps,
+
+    // The flag is false, because module script loading is already started.
+    kAfterModuleScriptLoad
+  };
+  virtual AcquiringImportMapsState GetAcquiringImportMapsState() const = 0;
+  virtual void SetAcquiringImportMapsState(AcquiringImportMapsState) = 0;
 
   // https://html.spec.whatwg.org/C/#hostgetimportmetaproperties
   virtual ModuleImportMeta HostGetImportMetaProperties(
@@ -194,6 +214,9 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
 
   virtual Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
       v8::Local<v8::Module>) = 0;
+
+  virtual ModuleType ModuleTypeFromRequest(
+      const ModuleRequest& module_request) const = 0;
 
   virtual ModuleScriptFetcher* CreateModuleScriptFetcher(
       ModuleScriptCustomFetchType,

@@ -236,14 +236,23 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kRegExpReplaceCalledOnSlowRegExp:
       blink_feature = WebFeature::kV8RegExpReplaceCalledOnSlowRegExp;
       break;
-    case v8::Isolate::kSharedArrayBufferConstructed:
-      if (!CurrentExecutionContext(isolate)->CrossOriginIsolatedCapability()) {
+    case v8::Isolate::kSharedArrayBufferConstructed: {
+      ExecutionContext* current_execution_context =
+          CurrentExecutionContext(isolate);
+      if (!current_execution_context->CrossOriginIsolatedCapability()) {
+        // It is performance critical to only file the issue once per context.
+        if (!current_execution_context
+                 ->has_filed_shared_array_buffer_creation_issue()) {
+          current_execution_context->FileSharedArrayBufferCreationIssue();
+        }
         blink_feature =
             WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation;
+        deprecated = true;
       } else {
         blink_feature = WebFeature::kV8SharedArrayBufferConstructed;
       }
       break;
+    }
     case v8::Isolate::kArrayPrototypeHasElements:
       blink_feature = WebFeature::kV8ArrayPrototypeHasElements;
       break;
@@ -336,6 +345,9 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kWasmMultiValue:
       blink_feature = WebFeature::kV8WasmMultiValue;
+      break;
+    case v8::Isolate::kWasmExceptionHandling:
+      blink_feature = WebFeature::kV8WasmExceptionHandling;
       break;
 
     default:

@@ -74,7 +74,7 @@ class StartupBrowserPolicyUnitTest : public testing::Test {
     size_t num_profiles = storage.GetNumberOfProfiles();
     base::FilePath path = temp_dir_.GetPath().AppendASCII(profile_name);
     storage.AddProfile(path, base::ASCIIToUTF16(profile_name.c_str()),
-                       std::string(), base::string16(), false, 0, std::string(),
+                       std::string(), std::u16string(), false, 0, std::string(),
                        EmptyAccountId());
     EXPECT_EQ(num_profiles + 1u, storage.GetNumberOfProfiles());
     return profile_manager->GetProfile(path);
@@ -82,11 +82,11 @@ class StartupBrowserPolicyUnitTest : public testing::Test {
 
   // Helper function to set profile ephemeral.
   void SetProfileEphemeral(Profile* profile, bool val) {
-    ProfileAttributesEntry* entry;
     ProfileAttributesStorage& storage =
         g_browser_process->profile_manager()->GetProfileAttributesStorage();
-    EXPECT_TRUE(
-        storage.GetProfileAttributesWithPath(profile->GetPath(), &entry));
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile->GetPath());
+    ASSERT_NE(entry, nullptr);
     entry->SetIsEphemeral(val);
   }
 

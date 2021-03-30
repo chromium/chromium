@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
@@ -21,7 +21,7 @@ namespace cert_provisioning {
 
 class CertificateProvisioningUiHandler
     : public content::WebUIMessageHandler,
-      public CertProvisioningSchedulerObserver {
+      public ash::cert_provisioning::CertProvisioningSchedulerObserver {
  public:
   // Creates a CertificateProvisioningUiHandler for |user_profile|, which uses:
   // (*) The CertProvisioningScheduler associated with |user_profile|, if any.
@@ -41,8 +41,8 @@ class CertificateProvisioningUiHandler
   // is useful for unit-testing the affiliation detection logic.
   CertificateProvisioningUiHandler(
       Profile* user_profile,
-      CertProvisioningScheduler* scheduler_for_user,
-      CertProvisioningScheduler* scheduler_for_device);
+      ash::cert_provisioning::CertProvisioningScheduler* scheduler_for_user,
+      ash::cert_provisioning::CertProvisioningScheduler* scheduler_for_device);
 
   CertificateProvisioningUiHandler(
       const CertificateProvisioningUiHandler& other) = delete;
@@ -89,11 +89,12 @@ class CertificateProvisioningUiHandler
 
   // The user-specific CertProvisioningScheduler. Can be nullptr.
   // Unowned.
-  CertProvisioningScheduler* const scheduler_for_user_;
+  ash::cert_provisioning::CertProvisioningScheduler* const scheduler_for_user_;
 
   // The device-wide CertProvisioningScheduler. Can be nullptr.
   // Unowned.
-  CertProvisioningScheduler* const scheduler_for_device_;
+  ash::cert_provisioning::CertProvisioningScheduler* const
+      scheduler_for_device_;
 
   // When this timer is running, updates provided by the schedulers should not
   // be forwarded to the UI until it fires. Used to prevent spamming the UI if
@@ -109,7 +110,9 @@ class CertificateProvisioningUiHandler
 
   // Keeps track of the CertProvisioningSchedulers that this UI handler
   // observes.
-  ScopedObserver<CertProvisioningScheduler, CertProvisioningSchedulerObserver>
+  base::ScopedMultiSourceObservation<
+      ash::cert_provisioning::CertProvisioningScheduler,
+      ash::cert_provisioning::CertProvisioningSchedulerObserver>
       observed_schedulers_{this};
 
   base::WeakPtrFactory<CertificateProvisioningUiHandler> weak_ptr_factory_{

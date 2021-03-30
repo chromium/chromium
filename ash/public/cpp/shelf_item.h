@@ -5,11 +5,11 @@
 #ifndef ASH_PUBLIC_CPP_SHELF_ITEM_H_
 #define ASH_PUBLIC_CPP_SHELF_ITEM_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -31,7 +31,9 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   ShelfID id;
 
   // The title to display for tooltips, etc.
-  base::string16 title;
+  std::u16string title;
+
+  SkColor notification_badge_color = SK_ColorWHITE;
 
   // App status.
   AppStatus app_status = AppStatus::kReady;

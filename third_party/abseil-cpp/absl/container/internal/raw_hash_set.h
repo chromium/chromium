@@ -468,8 +468,16 @@ inline size_t NormalizeCapacity(size_t n) {
   return n ? ~size_t{} >> countl_zero(n) : 1;
 }
 
-// We use 7/8th as maximum load factor.
-// For 16-wide groups, that gives an average of two empty slots per group.
+// General notes on capacity/growth methods below:
+// - We use 7/8th as maximum load factor. For 16-wide groups, that gives an
+//   average of two empty slots per group.
+// - For (capacity+1) >= Group::kWidth, growth is 7/8*capacity.
+// - For (capacity+1) < Group::kWidth, growth == capacity. In this case, we
+//   never need to probe (the whole table fits in one group) so we don't need a
+//   load factor less than 1.
+
+// Given `capacity` of the table, returns the size (i.e. number of full slots)
+// at which we should grow the capacity.
 inline size_t CapacityToGrowth(size_t capacity) {
   assert(IsValidCapacity(capacity));
   // `capacity*7/8`
@@ -480,7 +488,7 @@ inline size_t CapacityToGrowth(size_t capacity) {
   return capacity - capacity / 8;
 }
 // From desired "growth" to a lowerbound of the necessary capacity.
-// Might not be a valid one and required NormalizeCapacity().
+// Might not be a valid one and requires NormalizeCapacity().
 inline size_t GrowthToLowerboundCapacity(size_t growth) {
   // `growth*8/7`
   if (Group::kWidth == 8 && growth == 7) {

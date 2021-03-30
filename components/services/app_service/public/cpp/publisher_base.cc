@@ -61,7 +61,39 @@ void PublisherBase::Publish(
   for (auto& subscriber : subscribers) {
     std::vector<apps::mojom::AppPtr> apps;
     apps.push_back(app.Clone());
-    subscriber->OnApps(std::move(apps));
+    subscriber->OnApps(std::move(apps), apps::mojom::AppType::kUnknown,
+                       false /* should_notify_initialized */);
+  }
+}
+
+void PublisherBase::ModifyCapabilityAccess(
+    const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers,
+    const std::string& app_id,
+    base::Optional<bool> accessing_camera,
+    base::Optional<bool> accessing_microphone) {
+  if (!accessing_camera.has_value() && !accessing_microphone.has_value()) {
+    return;
+  }
+
+  for (auto& subscriber : subscribers) {
+    std::vector<apps::mojom::CapabilityAccessPtr> capability_accesses;
+    auto capability_access = apps::mojom::CapabilityAccess::New();
+    capability_access->app_id = app_id;
+
+    if (accessing_camera.has_value()) {
+      capability_access->camera = accessing_camera.value()
+                                      ? apps::mojom::OptionalBool::kTrue
+                                      : apps::mojom::OptionalBool::kFalse;
+    }
+
+    if (accessing_microphone.has_value()) {
+      capability_access->microphone = accessing_microphone.value()
+                                          ? apps::mojom::OptionalBool::kTrue
+                                          : apps::mojom::OptionalBool::kFalse;
+    }
+
+    capability_accesses.push_back(std::move(capability_access));
+    subscriber->OnCapabilityAccesses(std::move(capability_accesses));
   }
 }
 
@@ -73,11 +105,12 @@ void PublisherBase::LaunchAppWithFiles(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
-void PublisherBase::LaunchAppWithIntent(const std::string& app_id,
-                                        int32_t event_flags,
-                                        apps::mojom::IntentPtr intent,
-                                        apps::mojom::LaunchSource launch_source,
-                                        int64_t display_id) {
+void PublisherBase::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info) {
   NOTIMPLEMENTED();
 }
 
@@ -128,6 +161,11 @@ void PublisherBase::OnPreferredAppSet(
     apps::mojom::IntentFilterPtr intent_filter,
     apps::mojom::IntentPtr intent,
     apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) {
+  NOTIMPLEMENTED();
+}
+
+void PublisherBase::SetResizeLocked(const std::string& app_id,
+                                    apps::mojom::OptionalBool locked) {
   NOTIMPLEMENTED();
 }
 

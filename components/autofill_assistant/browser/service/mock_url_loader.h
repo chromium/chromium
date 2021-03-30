@@ -77,6 +77,7 @@ class MockURLLoader : public ::network::SimpleURLLoader {
   MOCK_CONST_METHOD0(GetFinalURL, const GURL&());
   MOCK_CONST_METHOD0(LoadedFromCache, bool());
   MOCK_CONST_METHOD0(GetContentSize, int64_t());
+  MOCK_CONST_METHOD0(GetNumRetries, int());
 };
 
 }  // namespace autofill_assistant

@@ -294,7 +294,8 @@ class TestGetContentCallback {
 
  private:
   void OnGetContent(google_apis::DriveApiErrorCode error,
-                    std::unique_ptr<std::string> data);
+                    std::unique_ptr<std::string> data,
+                    bool first_chunk);
 
   const GetContentCallback callback_;
   std::vector<std::unique_ptr<std::string>> data_;

@@ -201,6 +201,13 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
   std::unique_ptr<ui::TouchEvent> event = std::make_unique<ui::TouchEvent>(
       event_type, point, event_time, pointer_details,
       flags | ui::GetModifiersFromKeyState());
+  if (pointer_info.PerformanceCount) {
+    ui::ComputeEventLatencyOSWinFromPerformanceCounter(
+        event_type, pointer_info.PerformanceCount, event_time);
+  } else {
+    ui::ComputeEventLatencyOSWinFromTickCount(event_type, pointer_info.dwTime,
+                                              event_time);
+  }
   event->set_hovering(event_type == ui::ET_TOUCH_RELEASED);
   event->latency()->AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, event_time);

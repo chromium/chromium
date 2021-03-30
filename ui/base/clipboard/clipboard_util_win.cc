@@ -33,6 +33,9 @@ namespace ui {
 
 namespace {
 
+constexpr STGMEDIUM kNullStorageMedium = {.tymed = TYMED_NULL,
+                                          .pUnkForRelease = nullptr};
+
 bool HasData(IDataObject* data_object, const ClipboardFormatType& format) {
   FORMATETC format_etc = format.ToFormatEtc();
   return SUCCEEDED(data_object->QueryGetData(&format_etc));
@@ -47,7 +50,7 @@ bool GetData(IDataObject* data_object,
 
 bool GetUrlFromHDrop(IDataObject* data_object,
                      GURL* url,
-                     base::string16* title) {
+                     std::u16string* title) {
   DCHECK(data_object && url && title);
 
   bool success = false;
@@ -79,14 +82,14 @@ bool GetUrlFromHDrop(IDataObject* data_object,
   return success;
 }
 
-void SplitUrlAndTitle(const base::string16& str,
+void SplitUrlAndTitle(const std::u16string& str,
                       GURL* url,
-                      base::string16* title) {
+                      std::u16string* title) {
   DCHECK(url && title);
   size_t newline_pos = str.find('\n');
-  if (newline_pos != base::string16::npos) {
-    *url = GURL(base::string16(str, 0, newline_pos));
-    title->assign(str, newline_pos + 1, base::string16::npos);
+  if (newline_pos != std::u16string::npos) {
+    *url = GURL(std::u16string(str, 0, newline_pos));
+    title->assign(str, newline_pos + 1, std::u16string::npos);
   } else {
     *url = GURL(str);
     title->assign(str);
@@ -489,7 +492,7 @@ bool ClipboardUtil::HasPlainText(IDataObject* data_object) {
 
 bool ClipboardUtil::GetUrl(IDataObject* data_object,
                            GURL* url,
-                           base::string16* title,
+                           std::u16string* title,
                            bool convert_filenames) {
   DCHECK(data_object && url && title);
   if (!HasUrl(data_object, convert_filenames))
@@ -584,6 +587,53 @@ bool ClipboardUtil::GetFilenames(IDataObject* data_object,
   return false;
 }
 
+STGMEDIUM ClipboardUtil::CreateStorageForFileNames(
+    const std::vector<FileInfo>& filenames) {
+  // CF_HDROP clipboard format consists of DROPFILES structure, a series of file
+  // names including the terminating null character and the additional null
+  // character at the tail to terminate the array.
+  // For example,
+  //| DROPFILES | FILENAME 1 | NULL | ... | FILENAME n | NULL | NULL |
+  // For more details, please refer to
+  // https://docs.microsoft.com/en-us/windows/desktop/shell/clipboard#cf_hdrop
+
+  if (filenames.empty())
+    return kNullStorageMedium;
+
+  const size_t kDropFilesHeaderSizeInBytes = sizeof(DROPFILES);
+  size_t total_bytes = kDropFilesHeaderSizeInBytes;
+  for (const auto& filename : filenames) {
+    // Allocate memory of the filename's length including the null
+    // character.
+    total_bytes += (filename.path.value().length() + 1) * sizeof(wchar_t);
+  }
+  // |data| needs to be terminated by an additional null character.
+  total_bytes += sizeof(wchar_t);
+
+  // GHND combines GMEM_MOVEABLE and GMEM_ZEROINIT, and GMEM_ZEROINIT
+  // initializes memory contents to zero.
+  HANDLE hdata = GlobalAlloc(GHND, total_bytes);
+
+  base::win::ScopedHGlobal<DROPFILES*> locked_mem(hdata);
+  DROPFILES* drop_files = locked_mem.get();
+  drop_files->pFiles = sizeof(DROPFILES);
+  drop_files->fWide = TRUE;
+
+  wchar_t* data = reinterpret_cast<wchar_t*>(
+      reinterpret_cast<BYTE*>(drop_files) + kDropFilesHeaderSizeInBytes);
+
+  size_t next_filename_offset = 0;
+  for (const auto& filename : filenames) {
+    wcscpy(data + next_filename_offset, filename.path.value().c_str());
+    // Skip the terminating null character of the filename.
+    next_filename_offset += filename.path.value().length() + 1;
+  }
+
+  STGMEDIUM storage = {
+      .tymed = TYMED_HGLOBAL, .hGlobal = hdata, .pUnkForRelease = nullptr};
+  return storage;
+}
+
 bool ClipboardUtil::GetVirtualFilenames(
     IDataObject* data_object,
     std::vector<base::FilePath>* filenames) {
@@ -636,7 +686,7 @@ bool ClipboardUtil::GetVirtualFilesAsTempFiles(
 }
 
 bool ClipboardUtil::GetPlainText(IDataObject* data_object,
-                                 base::string16* plain_text) {
+                                 std::u16string* plain_text) {
   DCHECK(data_object && plain_text);
   if (!HasPlainText(data_object))
     return false;
@@ -665,7 +715,7 @@ bool ClipboardUtil::GetPlainText(IDataObject* data_object,
   // If a file is dropped on the window, it does not provide either of the
   // plain text formats, so here we try to forcibly get a url.
   GURL url;
-  base::string16 title;
+  std::u16string title;
   if (GetUrl(data_object, &url, &title, false)) {
     *plain_text = base::UTF8ToUTF16(url.spec());
     return true;
@@ -674,7 +724,8 @@ bool ClipboardUtil::GetPlainText(IDataObject* data_object,
 }
 
 bool ClipboardUtil::GetHtml(IDataObject* data_object,
-                            base::string16* html, std::string* base_url) {
+                            std::u16string* html,
+                            std::string* base_url) {
   DCHECK(data_object && html && base_url);
 
   STGMEDIUM store;
@@ -746,7 +797,7 @@ bool ClipboardUtil::GetFileContents(IDataObject* data_object,
 
 bool ClipboardUtil::GetWebCustomData(
     IDataObject* data_object,
-    std::unordered_map<base::string16, base::string16>* custom_data) {
+    std::unordered_map<std::u16string, std::u16string>* custom_data) {
   DCHECK(data_object && custom_data);
 
   if (!HasData(data_object, ClipboardFormatType::GetWebCustomDataType()))
@@ -764,7 +815,6 @@ bool ClipboardUtil::GetWebCustomData(
   }
   return false;
 }
-
 
 // HtmlToCFHtml and CFHtmlToHtml are based on similar methods in
 // WebCore/platform/win/ClipboardUtilitiesWin.cpp.

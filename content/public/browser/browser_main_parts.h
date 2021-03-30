@@ -5,8 +5,14 @@
 #ifndef CONTENT_PUBLIC_BROWSER_BROWSER_MAIN_PARTS_H_
 #define CONTENT_PUBLIC_BROWSER_BROWSER_MAIN_PARTS_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "content/common/content_export.h"
+
+namespace base {
+class RunLoop;
+}
 
 namespace content {
 
@@ -21,15 +27,69 @@ namespace content {
 //    code to be called after the common code.
 //
 // Stages:
+//
 //  - EarlyInitialization: things which should be done as soon as possible on
-//    program start (such as setting up signal handlers) and things to be done
-//    at some generic time before the start of the main message loop.
-//  - MainMessageLoopStart: things beginning with the start of the main message
-//    loop and ending with initialization of the main thread; platform-specific
-//    things which should be done immediately before the start of the main
-//    message loop should go in |PreMainMessageLoopStart()|.
-//  - RunMainMessageLoopParts:  things to be done before and after invoking the
-//    main message loop run method (e.g. CurrentUIThread::Get()->Run()).
+//    program start (such as setting up signal handlers)
+//
+//  - ToolkitInitialized: similar to EarlyInitialization but for the UI toolkit.
+//    Allows an embedder to do any extra toolkit initialization.
+//
+//  - PreMainMessageLoopStart: things to be done at some generic time before the
+//    creation of the main message loop.
+//
+//  - PostMainMessageLoopStart: things that should be done as early as possible
+//    but need the main message loop to be around (i.e. APIs like
+//    ThreadTaskRunnerHandle, BrowserThread::UI are up).
+//
+//  - PreCreateThreads: things that don't need to happen super early but still
+//    need to happen during single-threaded initialization (e.g. immutable
+//    Singletons that are initialized once and read-only from all threads
+//    thereafter).
+//    Note: other threads might exist before this point but no child threads
+//    owned by content. As such, this is still "single-threaded" initialization
+//    as far as content and its embedders are concerned and the right place to
+//    initialize thread-compatible objects:
+//    https://chromium.googlesource.com/chromium/src/+/master/docs/threading_and_tasks.md#threading-lexicon
+//
+//  - PostCreateThreads: things that should be done as early as possible but
+//    need browser process threads to be alive (i.e. APIs like base::ThreadPool
+//    and BrowserThread::IO are up). In other words, core things that must be
+//    initialized before PreMainMessageLoopRun.
+//
+//  - PreMainMessageLoopRun: in doubt, put things here. At this stage all core
+//    APIs have been initialized. Services that must be initialized before the
+//    browser is considered functional can be initialized from here. Ideally
+//    only the frontend is initialized here while the backend takes advantage of
+//    a base::ThreadPool worker to come up asynchronously. Things that must
+//    happen on the main thread eventually but don't need to block startup
+//    should post a BEST_EFFORT task from this stage.
+//
+//  ** End of cross-platform startup stages **
+//    Stages above are run as part of startup stages in
+//    BrowserMainLoop::CreateStartupTasks() and can even be run eagerly (e.g.
+//    Android app warmup attempts to run these async.
+//
+//  - WillRunMainMessageLoop: The main thread's RunLoop will be run
+//    *immediately* upon returning from this method. While PreMainMessageLoopRun
+//    gives that impression, in practice it's part of initialization phases
+//    which are triggered independently from MainMessageLoopRun (and can even
+//    happen async). In browser tests, PreMainMessageLoopRun() will run before
+//    entering test bodies whereas WillRunMainMessageLoop() won't (the control
+//    is given to the test rather running the loop). Furthermore, this is only
+//    called on platforms where BrowserMainLoop::RunMainMessageLoop is called.
+//    Thus, very few things should be done at this stage. It's mostly intended
+//    as a way for embedders to override or cancel the default RunLoop if
+//    needed.
+//
+//  - PostMainMessageLoopRun: stop and cleanup things that can/should be cleaned
+//    up while base::ThreadPool and BrowserThread::IO are still running.
+//    Note: Also see BrowserMainLoop::ShutdownThreadsAndCleanUp() which is often
+//    a good fit to stop services (PostMainMessageLoopRun() is called from it).
+//
+//  - PostDestroyThreads: stop and cleanup things that need to be cleaned up in
+//    the single-threaded teardown phase (i.e. typically things that had to
+//    created in PreCreateThreads()).
+//
 //
 // How to add stuff (to existing parts):
 //  - Figure out when your new code should be executed. What must happen
@@ -37,7 +97,7 @@ namespace content {
 //    running your code at a particular time? Document these things!
 //  - Split out any platform-specific bits. Please avoid #ifdefs it at all
 //    possible. You have two choices for platform-specific code: (1) Execute it
-//    from one of the |Pre/Post...()| methods in a embedder's platform-specific
+//    from one of the |Pre/Post...()| methods in an embedder's platform-specific
 //    override (e.g., ChromeBrowserMainPartsWin::PreMainMessageLoopStart()); do
 //    this if the code is unique to an embedder and platform type. Or (2)
 //    execute it from one of the "stages" (e.g.,
@@ -54,50 +114,26 @@ class CONTENT_EXPORT BrowserMainParts {
   BrowserMainParts() {}
   virtual ~BrowserMainParts() {}
 
-  // A return value other than RESULT_CODE_NORMAL_EXIT indicates error and is
-  // used as the exit status.
-  virtual int PreEarlyInitialization();
-
-  virtual void PostEarlyInitialization() {}
-
-  virtual void PreMainMessageLoopStart() {}
-
-  virtual void PostMainMessageLoopStart() {}
-
-  // Allows an embedder to do any extra toolkit initialization.
-  virtual void ToolkitInitialized() {}
-
-  // Called just before any child threads owned by the content
-  // framework are created.
+  // See class comment above for a description of each phase.
   //
-  // The main message loop has been started at this point (but has not
-  // been run), and the toolkit has been initialized. Returns the error code
-  // (or 0 if no error).
+  // A return value other than RESULT_CODE_NORMAL_EXIT on any of these methods
+  // indicates an error, aborts startup, and is used as the exit status.
+  virtual int PreEarlyInitialization();
+  virtual void PostEarlyInitialization() {}
+  virtual void ToolkitInitialized() {}
+  virtual void PreMainMessageLoopStart() {}
+  virtual void PostMainMessageLoopStart() {}
   virtual int PreCreateThreads();
-
-  // This is called right after all child threads owned by the content framework
-  // are created.
   virtual void PostCreateThreads() {}
+  virtual int PreMainMessageLoopRun();
 
-  // This is called just before the main message loop is run.  The
-  // various browser threads have all been created at this point
-  virtual void PreMainMessageLoopRun() {}
+  // This gives BrowserMainParts one last opportunity to tweak the upcoming main
+  // message loop run. The embedder may replace |run_loop| to alter the default
+  // RunLoop about to be run or even reset() it to cancel the upcoming run.
+  virtual void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) {}
 
-  // Returns true if the message loop was run, false otherwise.
-  // If this returns false, the default implementation will be run.
-  // May set |result_code|, which will be returned by |BrowserMain()|.
-  virtual bool MainMessageLoopRun(int* result_code);
-
-  // Provides an embedder with a Closure which will quit the default main
-  // message loop. This is call only if MainMessageLoopRun returns false.
-  virtual void PreDefaultMainMessageLoopRun(base::OnceClosure quit_closure) {}
-
-  // This happens after the main message loop has stopped, but before
-  // threads are stopped.
   virtual void PostMainMessageLoopRun() {}
-
-  // Called as the very last part of shutdown, after threads have been
-  // stopped and destroyed.
   virtual void PostDestroyThreads() {}
 };
 

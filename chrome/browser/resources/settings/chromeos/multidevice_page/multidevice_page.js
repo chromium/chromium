@@ -70,14 +70,14 @@ Polymer({
     },
 
     /**
-     * The value of the Nearby Share feature flag which controls if the
-     * Nearby Share settings and subpage are accessible.
+     * Whether or not Nearby Share is supported which controls if the Nearby
+     * Share settings and subpage are accessible.
      * @private {boolean}
      */
-    nearbySharingFeatureEnabled_: {
+    isNearbyShareSupported_: {
       type: Boolean,
       value: function() {
-        return loadTimeData.getBoolean('nearbySharingFeatureFlag');
+        return loadTimeData.getBoolean('isNearbyShareSupported');
       }
     },
 
@@ -516,6 +516,8 @@ Polymer({
   handleNearbySetUpClick_() {
     const params = new URLSearchParams();
     params.set('onboarding', '');
+    // Set by metrics to determine entrypoint for onboarding
+    params.set('entrypoint', 'settings');
     settings.Router.getInstance().navigateTo(
         settings.routes.NEARBY_SHARE, params);
   },

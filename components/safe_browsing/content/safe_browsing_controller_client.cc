@@ -31,7 +31,7 @@ SafeBrowsingControllerClient::~SafeBrowsingControllerClient() {}
 
 void SafeBrowsingControllerClient::Proceed() {
   // With committed interstitials the site has already
-  // been added to the whitelist, so reload will proceed.
+  // been added to the allowlist, so reload will proceed.
   Reload();
   return;
 }

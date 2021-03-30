@@ -7,8 +7,8 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 component("login_state") {
   defines = [ "IS_LOGIN_STATE_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
-    "//chromeos/constants",
     "//components/device_event_log",
   ]
   sources = [
@@ -36,8 +36,8 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":login_state",
+    "//ash/constants",
     "//base",
-    "//chromeos/constants",
     "//testing/gmock",
     "//testing/gtest",
   ]

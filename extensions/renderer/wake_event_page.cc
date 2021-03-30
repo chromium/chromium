@@ -79,8 +79,7 @@ class WakeEventPage::WakeEventPageNativeHandler
     make_request_.Run(
         extension_id,
         base::BindOnce(&WakeEventPageNativeHandler::OnEventPageIsAwake,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::Passed(&callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void OnEventPageIsAwake(v8::Global<v8::Function> callback, bool success) {

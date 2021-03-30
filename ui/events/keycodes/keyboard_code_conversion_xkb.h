@@ -7,7 +7,8 @@
 
 // These functions are used by X11 targets and by Ozone/XKBcommon targets.
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/xkb_keysym.h"
 
@@ -21,10 +22,10 @@ DomKey NonPrintableXKeySymToDomKey(xkb_keysym_t keysym);
 // TODO(kpschoedel) crbug.com/442757
 // Returns the dead key combining character associated with an xkb_keysym_t,
 // or 0 if the keysym is not recognized.
-// base::char16 DeadXKeySymToCombiningCharacter(xkb_keysym_t keysym);
+// char16_t DeadXKeySymToCombiningCharacter(xkb_keysym_t keysym);
 
 // Return the DomKey determined by the XKB layout result (keysym, character).
-DomKey XKeySymToDomKey(xkb_keysym_t keysym, base::char16 character);
+DomKey XKeySymToDomKey(xkb_keysym_t keysym, char16_t character);
 
 }  // namespace ui
 

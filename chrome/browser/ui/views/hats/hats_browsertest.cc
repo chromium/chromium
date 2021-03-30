@@ -5,16 +5,15 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -22,201 +21,46 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/hats/hats_bubble_view.h"
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
-#include "chrome/browser/ui/views/hats/hats_web_dialog.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "url/gurl.h"
 
-class HatsBubbleTest : public DialogBrowserTest {
- public:
-  HatsBubbleTest() {}
+namespace {
 
-  // DialogBrowserTest:
-  void ShowUi(const std::string& name) override {
-    ASSERT_TRUE(browser()->is_type_normal());
-    BrowserView::GetBrowserViewForBrowser(InProcessBrowserTest::browser())
-        ->ShowHatsBubble("test_site_id", base::DoNothing(), base::DoNothing());
-  }
+// The product specific data expected by the test survey. The boolean values are
+// checked in hats_next_mock.html.
+const std::map<std::string, bool> kHatsNextTestSurveyProductSpecificData{
+    {"Test Field 1", true},
+    {"Test Field 2", false},
+    {"Test Field 3", true}};
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HatsBubbleTest);
-};
-
-class TestHatsWebDialog : public HatsWebDialog {
- public:
-  TestHatsWebDialog(Browser* browser,
-                    const base::TimeDelta& timeout,
-                    const GURL& url)
-      : HatsWebDialog(browser, "fake_id_not_used"),
-        loading_timeout_(timeout),
-        content_url_(url) {}
-
-  // ui::WebDialogDelegate implementation.
-  GURL GetDialogContentURL() const override {
-    if (content_url_.is_valid()) {
-      // When we have a valid overridden url, use it instead.
-      return content_url_;
-    }
-    return HatsWebDialog::GetDialogContentURL();
-  }
-
-  void OnMainFrameResourceLoadComplete(
-      const blink::mojom::ResourceLoadInfo& resource_load_info) {
-    if (resource_load_info.net_error == net::Error::OK &&
-        resource_load_info.original_url == resource_url_) {
-      // The resource is loaded successfully.
-      resource_loaded_ = true;
-    }
-  }
-
-  void set_resource_url(const GURL& url) { resource_url_ = url; }
-  bool resource_loaded() { return resource_loaded_; }
-
-  MOCK_METHOD0(OnWebContentsFinishedLoad, void());
-  MOCK_METHOD0(OnLoadTimedOut, void());
-
- private:
-  const base::TimeDelta ContentLoadingTimeout() const override {
-    return loading_timeout_;
-  }
-
-  base::TimeDelta loading_timeout_;
-  GURL content_url_;
-  GURL resource_url_;
-};
-
-class HatsWebDialogBrowserTest : public InProcessBrowserTest {
- public:
-  HatsWebDialogBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kHappinessTrackingSurveysForDesktopMigration);
-  }
-
-  TestHatsWebDialog* Create(Browser* browser,
-                            const base::TimeDelta& timeout,
-                            const GURL& url = GURL()) {
-    auto* hats_dialog = new TestHatsWebDialog(browser, timeout, url);
-    hats_dialog->CreateWebDialog(browser);
-    return hats_dialog;
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test that calls ShowUi("default").
-IN_PROC_BROWSER_TEST_F(HatsBubbleTest, InvokeUi_Default) {
-  ShowAndVerifyUi();
-}
-
-// Test time out of preloading works.
-IN_PROC_BROWSER_TEST_F(HatsWebDialogBrowserTest, Timeout) {
-  TestHatsWebDialog* dialog = Create(browser(), base::TimeDelta());
-  EXPECT_CALL(*dialog, OnLoadTimedOut).Times(1);
-}
-
-// Test preloading content works.
-IN_PROC_BROWSER_TEST_F(HatsWebDialogBrowserTest, ContentPreloading) {
-  base::FilePath test_data_dir;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-  std::string contents;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::ReadFileToString(test_data_dir.AppendASCII("simple.html"),
-                                       &contents));
-  }
-
-  TestHatsWebDialog* dialog =
-      Create(browser(), base::TimeDelta::FromSeconds(100),
-             GURL("data:text/html;charset=utf-8," + contents));
-  base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, OnWebContentsFinishedLoad)
-      .WillOnce(testing::Invoke(&run_loop, &base::RunLoop::Quit));
-  run_loop.Run();
-}
-
-// Test the correct state will be set when the resource fails to load.
-// Load with_inline_js.html which has an inline javascript that points to a
-// nonexistent file.
-IN_PROC_BROWSER_TEST_F(HatsWebDialogBrowserTest, LoadFailureInPreloading) {
-  base::FilePath test_data_dir;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-  std::string contents;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::ReadFileToString(
-        test_data_dir.AppendASCII("hats").AppendASCII("with_inline_js.html"),
-        &contents));
-  }
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  constexpr char kJSPath[] = "/hats/nonexistent.js";
-  constexpr char kSrcPlaceholder[] = "$JS_SRC";
-  GURL url = embedded_test_server()->GetURL(kJSPath);
-  size_t pos = contents.find(kSrcPlaceholder);
-  EXPECT_NE(pos, std::string::npos);
-  contents.replace(pos, strlen(kSrcPlaceholder), url.spec());
-
-  TestHatsWebDialog* dialog =
-      Create(browser(), base::TimeDelta::FromSeconds(100),
-             GURL("data:text/html;charset=utf-8," + contents));
-  dialog->set_resource_url(url);
-  base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, OnWebContentsFinishedLoad)
-      .WillOnce(testing::Invoke([dialog, &run_loop]() {
-        EXPECT_FALSE(dialog->resource_loaded());
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
-// Test cookies aren't blocked.
-IN_PROC_BROWSER_TEST_F(HatsWebDialogBrowserTest, Cookies) {
-  auto* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  settings_map->SetDefaultContentSetting(ContentSettingsType::COOKIES,
-                                         CONTENT_SETTING_BLOCK);
-
-  TestHatsWebDialog* dialog =
-      Create(browser(), base::TimeDelta::FromSeconds(100));
-
-  settings_map = HostContentSettingsMapFactory::GetForProfile(
-      dialog->otr_profile_for_testing());
-  GURL url1("https://survey.google.com/");
-  GURL url2("https://survey.g.doubleclick.net/");
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            settings_map->GetContentSetting(url1, url1,
-                                            ContentSettingsType::COOKIES));
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            settings_map->GetContentSetting(url2, url2,
-                                            ContentSettingsType::COOKIES));
-}
+}  // namespace
 
 class MockHatsNextWebDialog : public HatsNextWebDialog {
  public:
-  MockHatsNextWebDialog(Browser* browser,
-                        const std::string& trigger_id,
-                        const GURL& hats_survey_url,
-                        const base::TimeDelta& timeout,
-                        base::OnceClosure success_callback,
-                        base::OnceClosure failure_callback)
+  MockHatsNextWebDialog(
+      Browser* browser,
+      const std::string& trigger_id,
+      const GURL& hats_survey_url,
+      const base::TimeDelta& timeout,
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const std::map<std::string, bool>& product_specific_data)
       : HatsNextWebDialog(browser,
                           trigger_id,
                           hats_survey_url,
                           timeout,
                           std::move(success_callback),
-                          std::move(failure_callback)) {}
+                          std::move(failure_callback),
+                          product_specific_data) {}
 
   MOCK_METHOD0(ShowWidget, void());
   MOCK_METHOD0(CloseWidget, void());
@@ -242,11 +86,6 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
 
 class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
  public:
-  HatsNextWebDialogBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kHappinessTrackingSurveysForDesktopMigration);
-  }
-
   void SetUpOnMainThread() override {
     hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -278,7 +117,6 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
   int failure_count = 0;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   MockHatsService* hats_service_;
 };
 
@@ -297,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
       browser(), kHatsNextSurveyTriggerIDTesting,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
-      GetFailureClosure());
+      GetFailureClosure(), kHatsNextTestSurveyProductSpecificData);
 
   // Check that no record of a survey being shown is present.
   const base::DictionaryValue* pref_data =
@@ -346,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
       browser(), "close_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
-      GetFailureClosure());
+      GetFailureClosure(), {});
 
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey window should be closed.
@@ -372,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoadedThenClosed) {
       browser(), kHatsNextSurveyTriggerIDTesting,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
-      GetFailureClosure());
+      GetFailureClosure(), kHatsNextTestSurveyProductSpecificData);
   dialog->WaitForClose();
 
   EXPECT_EQ(1, success_count);
@@ -395,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyTimeout) {
       browser(), "invalid_test",
       embedded_test_server()->GetURL("/hats/non_existent.html"),
       base::TimeDelta::FromMilliseconds(1), GetSuccessClosure(),
-      GetFailureClosure());
+      GetFailureClosure(), {});
 
   dialog->WaitForClose();
 
@@ -416,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, UnknownURLFragment) {
       browser(), "invalid_url_fragment_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
-      GetFailureClosure());
+      GetFailureClosure(), {});
 
   dialog->WaitForClose();
   EXPECT_EQ(0, success_count);
@@ -429,7 +267,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "open_new_web_contents_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
+      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing(),
+      {});
 
   // The mock hats dialog will push a close state after it has attempted to
   // open another web contents.
@@ -454,7 +293,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
   auto* dialog = new MockHatsNextWebDialog(
       devtools_browser, "open_new_web_contents_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
+      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing(),
+      {});
 
   // The mock hats dialog will push a close state after it has attempted to
   // open another web contents.
@@ -474,7 +314,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "resize_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
+      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing(),
+      {});
 
   // Check that the dialog reports a preferred size the same as the size defined
   // in hats_next_mock.html.
@@ -498,7 +339,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "resize_to_large_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
+      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing(),
+      {});
 
   // Check that the maximum size of the dialog is bounded appropriately by the
   // dialogs maximum size. Depending on renderer warm-up, an initial empty size
@@ -522,7 +364,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
   auto* dialog = new MockHatsNextWebDialog(
       browser(), kHatsNextSurveyTriggerIDTesting,
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
-      base::TimeDelta::FromSeconds(100), base::DoNothing(), base::DoNothing());
+      base::TimeDelta::FromSeconds(100), GetSuccessClosure(),
+      GetFailureClosure(), kHatsNextTestSurveyProductSpecificData);
 
   // Allow the dialog to open before checking the zoom level of the contents.
   base::RunLoop run_loop;

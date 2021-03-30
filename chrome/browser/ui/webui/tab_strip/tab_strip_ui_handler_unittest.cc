@@ -54,6 +54,9 @@ class StubTabStripUIEmbedder : public TabStripUIEmbedder {
   }
   TabStripUILayout GetLayout() override { return TabStripUILayout(); }
   SkColor GetColor(int id) const override { return SK_ColorWHITE; }
+  SkColor GetSystemColor(ui::NativeTheme::ColorId id) const override {
+    return SK_ColorWHITE;
+  }
 };
 
 }  // namespace
@@ -139,7 +142,7 @@ TEST_F(TabStripUIHandlerTest, GetGroupVisualData) {
   tab_groups::TabGroupId group1 =
       browser()->tab_strip_model()->AddToNewGroup({0});
   const tab_groups::TabGroupVisualData group1_visuals(
-      base::ASCIIToUTF16("Group 1"), tab_groups::TabGroupColorId::kGreen);
+      u"Group 1", tab_groups::TabGroupColorId::kGreen);
   browser()
       ->tab_strip_model()
       ->group_model()
@@ -148,7 +151,7 @@ TEST_F(TabStripUIHandlerTest, GetGroupVisualData) {
   tab_groups::TabGroupId group2 =
       browser()->tab_strip_model()->AddToNewGroup({1});
   const tab_groups::TabGroupVisualData group2_visuals(
-      base::ASCIIToUTF16("Group 2"), tab_groups::TabGroupColorId::kCyan);
+      u"Group 2", tab_groups::TabGroupColorId::kCyan);
   browser()
       ->tab_strip_model()
       ->group_model()
@@ -181,7 +184,7 @@ TEST_F(TabStripUIHandlerTest, GroupVisualDataChangedEvent) {
   tab_groups::TabGroupId expected_group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
   const tab_groups::TabGroupVisualData new_visual_data(
-      base::ASCIIToUTF16("My new title"), tab_groups::TabGroupColorId::kGreen);
+      u"My new title", tab_groups::TabGroupColorId::kGreen);
   browser()
       ->tab_strip_model()
       ->group_model()
@@ -259,7 +262,7 @@ TEST_F(TabStripUIHandlerTest, MoveGroupAcrossWindows) {
 
   // Create some visual data to make sure it gets transferred.
   const tab_groups::TabGroupVisualData visual_data(
-      base::ASCIIToUTF16("My group"), tab_groups::TabGroupColorId::kGreen);
+      u"My group", tab_groups::TabGroupColorId::kGreen);
   new_browser.get()
       ->tab_strip_model()
       ->group_model()

@@ -42,7 +42,7 @@ TEST(VectorIcon, SmokeTest) {
   icon->SetIcon(vector_icons::kCloseRoundedIcon);
   UiTexture* texture = icon->GetTexture();
   scene.AddUiElement(kRoot, std::move(icon));
-  base::TimeTicks start_time = MsToTicks(1);
+  base::TimeTicks start_time = gfx::MsToTicks(1);
   scene.OnBeginFrame(start_time, kStartHeadPose);
 
   InSequence scope;

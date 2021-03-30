@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -19,10 +20,10 @@
 #include "base/sequenced_task_runner.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -32,7 +33,6 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_url_handlers.h"
@@ -151,8 +151,10 @@ void ExtensionAssetsManagerChromeOS::InstallExtension(
     const base::FilePath& unpacked_extension_root,
     const base::FilePath& local_install_dir,
     Profile* profile,
-    InstallExtensionCallback callback) {
-  if (!CanShareAssets(extension, unpacked_extension_root)) {
+    InstallExtensionCallback callback,
+    bool updates_from_webstore_or_empty_update_url) {
+  if (!CanShareAssets(extension, unpacked_extension_root,
+                      updates_from_webstore_or_empty_update_url)) {
     InstallLocalExtension(extension->id(), extension->VersionString(),
                           unpacked_extension_root, local_install_dir,
                           std::move(callback));
@@ -247,17 +249,18 @@ void ExtensionAssetsManagerChromeOS::SetSharedInstallDirForTesting(
 // static
 bool ExtensionAssetsManagerChromeOS::CanShareAssets(
     const Extension* extension,
-    const base::FilePath& unpacked_extension_root) {
+    const base::FilePath& unpacked_extension_root,
+    bool updates_from_webstore_or_empty_update_url) {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kEnableExtensionAssetsSharing)) {
     return false;
   }
 
-  GURL update_url = ManifestURL::GetUpdateURL(extension);
-  if (!update_url.is_empty() &&
-      !extension_urls::IsWebstoreUpdateUrl(update_url)) {
+  // TODO(crbug.com/1166539): Investigate why do we allow sharing assets in case
+  // of empty update URL and if the empty update URL is not required, update
+  // this to consider only the updates from webstore.
+  if (!updates_from_webstore_or_empty_update_url)
     return false;
-  }
 
   // Chrome caches crx files for installed by default apps so sharing assets is
   // also possible. User specific apps should be excluded to not expose apps

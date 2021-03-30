@@ -54,7 +54,9 @@ void StartLeakingMemory() {
 // separate function so it will show up in stack traces. If a delay parameter is
 // present, the main thread will be frozen for that number of seconds. If a
 // crash parameter is "true" (which is the default value), the browser will
-// crash after this delay. Any other value will not trigger a crash.
+// crash after this delay. If a crash parameter is "later", the browser will
+// crash in another thread (nsexception only).  Any other value will not
+// trigger a crash.
 NOINLINE void InduceBrowserCrash(const GURL& url) {
   std::string delay_string;
   if (net::GetValueForKeyInQuery(url, "delay", &delay_string)) {
@@ -69,8 +71,27 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
   if (net::GetValueForKeyInQuery(url, "leak", &leak_string) &&
       (leak_string == "" || leak_string == "true")) {
     StartLeakingMemory();
+    return;
   }
 #endif
+
+  std::string exception;
+  if (net::GetValueForKeyInQuery(url, "nsexception", &exception) &&
+      (exception == "" || exception == "true")) {
+    NSArray* empty_array = @[];
+    [empty_array objectAtIndex:42];
+    return;
+  }
+
+  if (net::GetValueForKeyInQuery(url, "nsexception", &exception) &&
+      exception == "later") {
+    dispatch_async(
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+          NSArray* empty_array = @[];
+          [empty_array objectAtIndex:42];
+        });
+    return;
+  }
 
   std::string crash_string;
   if (!net::GetValueForKeyInQuery(url, "crash", &crash_string) ||
@@ -325,9 +346,9 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   // lead to be calling it twice, and calling 'did' below once.
   notifier_->NewTabWillLoadUrl(params.web_params.url, params.user_initiated);
 
-  web::WebState* adjacent_web_state = nil;
+  web::WebState* parent_web_state = nullptr;
   if (params.append_to == kCurrentTab)
-    adjacent_web_state = browser_->GetWebStateList()->GetActiveWebState();
+    parent_web_state = browser_->GetWebStateList()->GetActiveWebState();
 
   int insertion_index = TabInsertion::kPositionAutomatically;
   if (params.append_to == kSpecifiedIndex)
@@ -337,9 +358,18 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   auto openTab = ^{
     TabInsertionBrowserAgent* insertionAgent =
         TabInsertionBrowserAgent::FromBrowser(browser_);
-    insertionAgent->InsertWebState(saved_params.web_params, adjacent_web_state,
-                                   false, insertion_index,
-                                   saved_params.in_background());
+
+    web::WebState* adjacent_web_state = parent_web_state;
+    if (adjacent_web_state &&
+        adjacent_web_state !=
+            browser_->GetWebStateList()->GetActiveWebState()) {
+      // The active tab could have changed or be destroyed.
+      adjacent_web_state = nullptr;
+    }
+
+    insertionAgent->InsertWebState(
+        saved_params.web_params, adjacent_web_state, false, insertion_index,
+        saved_params.in_background(), saved_params.inherit_opener);
     notifier_->NewTabDidLoadUrl(saved_params.web_params.url,
                                 saved_params.user_initiated);
   };

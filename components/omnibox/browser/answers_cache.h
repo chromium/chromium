@@ -8,13 +8,13 @@
 #include <stddef.h>
 
 #include <list>
+#include <string>
 
-#include "base/strings/string16.h"
 
 struct AnswersQueryData {
   AnswersQueryData();
-  AnswersQueryData(const base::string16& full_query_text, int query_type);
-  base::string16 full_query_text;
+  AnswersQueryData(const std::u16string& full_query_text, int query_type);
+  std::u16string full_query_text;
   int query_type;
 };
 
@@ -28,10 +28,10 @@ class AnswersCache {
 
   // Gets the top answer query completion for the query term. The query data
   // will contain empty query text and type if no matching data was found.
-  AnswersQueryData GetTopAnswerEntry(const base::string16& query);
+  AnswersQueryData GetTopAnswerEntry(const std::u16string& query);
 
   // Registers a query that received an answer suggestion.
-  void UpdateRecentAnswers(const base::string16& full_query_text,
+  void UpdateRecentAnswers(const std::u16string& full_query_text,
                            int query_type);
 
   // Signals if cache is empty.

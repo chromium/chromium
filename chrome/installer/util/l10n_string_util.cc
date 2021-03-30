@@ -11,15 +11,16 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/atl.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "chrome/install_static/install_details.h"
@@ -38,8 +39,8 @@ constexpr base::win::i18n::LanguageSelector::LangToOffset
 
 // Returns the language under which Chrome was downloaded, or an empty string if
 // no such language is specified.
-base::string16 GetPreferredLanguageFromGoogleUpdate() {
-  base::string16 language;
+std::wstring GetPreferredLanguageFromGoogleUpdate() {
+  std::wstring language;
   GoogleUpdateSettings::GetLanguage(&language);
   return language;
 }
@@ -83,10 +84,9 @@ std::wstring GetLocalizedString(int base_message_id) {
   return localized_string;
 }
 
-base::string16 GetLocalizedStringF(int base_message_id,
-                                   const base::string16& a) {
+std::wstring GetLocalizedStringF(int base_message_id, const std::wstring& a) {
   return base::ReplaceStringPlaceholders(GetLocalizedString(base_message_id),
-                                         std::vector<base::string16>(1, a),
+                                         std::vector<std::wstring>(1, a),
                                          nullptr);
 }
 
@@ -99,7 +99,7 @@ std::wstring GetLocalizedEulaResource() {
     return L"";
 
   // The resource names are more or less the upcased language names.
-  base::string16 language(GetLanguageSelector().selected_translation());
+  std::wstring language(GetLanguageSelector().selected_translation());
   std::replace(language.begin(), language.end(), L'-', L'_');
   language = base::ToUpperASCII(language);
 

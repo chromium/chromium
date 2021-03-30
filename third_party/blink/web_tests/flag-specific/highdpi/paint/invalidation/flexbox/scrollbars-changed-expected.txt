@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "bounds": [300, 150]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [278, 0],
+      "bounds": [22, 150]
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [278, 315],
+      "backgroundColor": "#80808080",
+      "invalidations": [
+        [0, 7, 23, 23]
+      ]
+    }
+  ]
+}
+

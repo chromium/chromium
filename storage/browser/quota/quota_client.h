@@ -12,76 +12,35 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 namespace storage {
 
-// Interface between each storage API and the quota manager.
+// Interface between the legacy quota clients and the QuotaManager.
 //
-// Each storage API must register an implementation of this interface with
-// the quota manager, by calling QuotaManager::RegisterClient().
+// Implementations of this class will be transitioned to inherit from
+// storage::mojom::QuotaClient and talk to the QuotaManager via mojo.
 //
-// All the methods will be called on the IO thread in the browser.
+// This inherits from storage::mojom::QuotaClient so that MockQuotaClient
+// instances can be passed to QuotaManger::RegisterLegacyClient(),
+// as well as used via mojo with QuotaManager::RegisterClient().
 //
-// When AppCache is deleted, this can become a std::unique_ptr instead
-// of refcounted, and owned by the QuotaManager.
+// TODO(crbug.com/1163009): Remove this class after all QuotaClients have
+//                          been mojofied.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaClient
-    : public base::RefCountedThreadSafe<QuotaClient> {
+    : public base::RefCountedThreadSafe<QuotaClient>,
+      public storage::mojom::QuotaClient {
  public:
-  // The callback aliases precisely follow mojo conventions, because this
-  // abstract class will become a mojo interface soon. See crbug.com/1016065.
-  using GetOriginUsageCallback = base::OnceCallback<void(int64_t usage)>;
-  using GetOriginsForTypeCallback =
-      base::OnceCallback<void(const std::vector<url::Origin>& origins)>;
-  using GetOriginsForHostCallback =
-      base::OnceCallback<void(const std::vector<url::Origin>& origins)>;
-  using DeleteOriginDataCallback =
-      base::OnceCallback<void(blink::mojom::QuotaStatusCode status)>;
-  using PerformStorageCleanupCallback = base::OnceClosure;
-
   // Called when the QuotaManager is destroyed.
   virtual void OnQuotaManagerDestroyed() = 0;
-
-  // Called by the QuotaManager.
-  // Gets the amount of data stored in the storage specified by
-  // |origin| and |type|.
-  // Note it is safe to fire the callback after the QuotaClient is destructed.
-  virtual void GetOriginUsage(const url::Origin& origin,
-                              blink::mojom::StorageType type,
-                              GetOriginUsageCallback callback) = 0;
-
-  // Called by the QuotaManager.
-  // Returns a list of origins that has data in the |type| storage.
-  // Note it is safe to fire the callback after the QuotaClient is destructed.
-  virtual void GetOriginsForType(blink::mojom::StorageType type,
-                                 GetOriginsForTypeCallback callback) = 0;
-
-  // Called by the QuotaManager.
-  // Returns a list of origins that match the |host|.
-  // Note it is safe to fire the callback after the QuotaClient is destructed.
-  virtual void GetOriginsForHost(blink::mojom::StorageType type,
-                                 const std::string& host,
-                                 GetOriginsForHostCallback callback) = 0;
-
-  // Called by the QuotaManager.
-  // Note it is safe to fire the callback after the QuotaClient is destructed.
-  virtual void DeleteOriginData(const url::Origin& origin,
-                                blink::mojom::StorageType type,
-                                DeleteOriginDataCallback callback) = 0;
-
-  // Called by the QuotaManager.
-  // Gives the QuotaClient an opportunity to perform a cleanup step after major
-  // deletions.
-  virtual void PerformStorageCleanup(
-      blink::mojom::StorageType type,
-      PerformStorageCleanupCallback callback) = 0;
 
  protected:
   friend class RefCountedThreadSafe<QuotaClient>;
 
-  virtual ~QuotaClient() = default;
+  ~QuotaClient() override = default;
 };
 
 }  // namespace storage

@@ -95,7 +95,7 @@ Polymer({
     },
 
     /**
-     * True if lottie animation should be used instead of animated PNGs.
+     * True if lottie animation file should be used instead of an illustration.
      * @type {boolean}
      * @private
      */
@@ -162,11 +162,19 @@ Polymer({
   },
 
   /**
-   * This is 'on-tap' event handler for 'Skip' button.
+   * This is 'on-tap' event handler for 'Skip' button for 'START' step.
    * @private
    */
-  onSkip_(e) {
-    this.userActed('setup-skipped');
+  onSkipOnStart_(e) {
+    this.userActed('setup-skipped-on-start');
+  },
+
+  /**
+   * This is 'on-tap' event handler for 'Skip' button for 'PROGRESS' step.
+   * @private
+   */
+  onSkipInProgress_(e) {
+    this.userActed('setup-skipped-in-flow');
   },
 
   /**

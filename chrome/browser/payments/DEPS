@@ -1,5 +1,7 @@
 include_rules = [
  "+third_party/libaddressinput",
+ "+content/public/android/java/src/org/chromium/content_public/browser",
+ "+chrome/android/java/src/org/chromium/chrome/browser/payments",
 ]
 
 specific_include_rules = {

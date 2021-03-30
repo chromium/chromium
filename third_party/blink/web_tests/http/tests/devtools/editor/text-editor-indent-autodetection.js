@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test checks text editor indent autodetection functionality\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
 <div>--------------TEST 1--------------</div>

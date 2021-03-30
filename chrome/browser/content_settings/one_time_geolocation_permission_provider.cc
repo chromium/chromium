@@ -45,15 +45,15 @@ class OneTimeRuleIterator : public content_settings::RuleIterator {
 }  // namespace
 
 OneTimeGeolocationPermissionProvider::OneTimeGeolocationPermissionProvider(
-    content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {
-  LastTabStandingTrackerFactory::GetForBrowserContext(browser_context)
-      ->AddObserver(this);
+    content::BrowserContext* browser_context) {
+  last_tab_standing_tracker_ =
+      LastTabStandingTrackerFactory::GetForBrowserContext(browser_context);
+  last_tab_standing_tracker_->AddObserver(this);
 }
 
 OneTimeGeolocationPermissionProvider::~OneTimeGeolocationPermissionProvider() {
-  LastTabStandingTrackerFactory::GetForBrowserContext(browser_context_)
-      ->RemoveObserver(this);
+  if (last_tab_standing_tracker_)
+    last_tab_standing_tracker_->RemoveObserver(this);
 }
 
 std::unique_ptr<content_settings::RuleIterator>
@@ -135,4 +135,8 @@ void OneTimeGeolocationPermissionProvider::OnLastPageFromOriginClosed(
       break;
     }
   }
+}
+
+void OneTimeGeolocationPermissionProvider::OnShutdown() {
+  last_tab_standing_tracker_ = nullptr;
 }

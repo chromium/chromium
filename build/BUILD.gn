@@ -40,9 +40,6 @@ buildflag_header("chromeos_buildflags") {
   flags = [
     "IS_CHROMEOS_DEVICE=$is_chromeos_device",
 
-    # TODO(crbug.com/1052397): Remove IS_LACROS|ASH once all of them are replaced by IS_CHROMEOS_*.
-    "IS_LACROS=$is_chromeos_lacros",
-    "IS_ASH=$is_chromeos_ash",
     "IS_CHROMEOS_LACROS=$is_chromeos_lacros",
     "IS_CHROMEOS_ASH=$is_chromeos_ash",
   ]

@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -29,6 +31,7 @@
 #import "ios/net/cookies/system_cookie_util.h"
 #include "ios/net/ios_net_buildflags.h"
 #import "net/base/mac/url_conversions.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/log/net_log.h"
@@ -285,7 +288,7 @@ void CookieStoreIOS::GetCookieListWithOptionsAsync(
   system_store_->GetCookiesForURLAsync(
       url,
       base::BindOnce(&CookieStoreIOS::RunGetCookieListCallbackOnSystemCookies,
-                     weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CookieStoreIOS::GetAllCookiesAsync(GetAllCookiesCallback callback) {
@@ -299,7 +302,7 @@ void CookieStoreIOS::GetAllCookiesAsync(GetAllCookiesCallback callback) {
   // to pass options in here as well.
   system_store_->GetAllCookiesAsync(
       base::BindOnce(&CookieStoreIOS::RunGetAllCookiesCallbackOnSystemCookies,
-                     weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CookieStoreIOS::DeleteCanonicalCookieAsync(const CanonicalCookie& cookie,
@@ -474,7 +477,8 @@ void CookieStoreIOS::DeleteCookiesMatchingInfoAsync(
             bool delegate_treats_url_as_trustworthy = false;
             net::CookieAccessParams params = {
                 net::CookieAccessSemantics::UNKNOWN,
-                delegate_treats_url_as_trustworthy};
+                delegate_treats_url_as_trustworthy,
+                net::CookieSamePartyStatus::kNoSamePartyEnforcement};
             return delete_info.Matches(cc, params);
           },
           std::move(delete_info)),

@@ -23,10 +23,13 @@ class DataPipeDrainerTest : public testing::Test,
                             public DataPipeDrainer::Client {
  protected:
   DataPipeDrainerTest() {
-    DataPipe pipe;
-    drainer_ = std::make_unique<DataPipeDrainer>(
-        this, std::move(pipe.consumer_handle));
-    producer_handle_ = std::move(pipe.producer_handle);
+    ScopedDataPipeProducerHandle producer_handle;
+    ScopedDataPipeConsumerHandle consumer_handle;
+    EXPECT_EQ(CreateDataPipe(nullptr, producer_handle, consumer_handle),
+              MOJO_RESULT_OK);
+    drainer_ =
+        std::make_unique<DataPipeDrainer>(this, std::move(consumer_handle));
+    producer_handle_ = std::move(producer_handle);
   }
 
   ScopedDataPipeProducerHandle producer_handle_;

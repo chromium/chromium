@@ -12,8 +12,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import presubmit_util
 
 def main(argv):
-  presubmit_util.DoPresubmitMain(argv, 'structured.xml', 'structured.old.xml',
-                                 model.PrettifyXML)
+  dirname = os.path.dirname(os.path.realpath(__file__))
+  xml = dirname + '/structured.xml'
+  old_xml = dirname + '/structured.old.xml'
+  presubmit_util.DoPresubmitMain(argv, xml,
+                                 old_xml, lambda x: repr(model.Model(x)))
 
 
 if '__main__' == __name__:

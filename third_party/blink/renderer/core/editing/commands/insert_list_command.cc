@@ -178,7 +178,7 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
 
   const HTMLQualifiedName& list_tag =
       (type_ == kOrderedList) ? html_names::kOlTag : html_names::kUlTag;
-  if (EndingSelection().IsRange()) {
+  if (EndingVisibleSelection().IsRange()) {
     bool force_list_creation = false;
     VisibleSelection selection =
         SelectionForParagraphIteration(EndingVisibleSelection());
@@ -470,32 +470,33 @@ void InsertListCommand::UnlistifyParagraph(
   DCHECK(HasEditableStyle(*list_element->parentNode()));
   Node* next_list_child;
   Node* previous_list_child;
-  VisiblePosition start;
-  VisiblePosition end;
+  Position start;
+  Position end;
   DCHECK(list_child_node);
   if (IsA<HTMLLIElement>(*list_child_node)) {
-    start = VisiblePosition::FirstPositionInNode(*list_child_node);
-    end = VisiblePosition::LastPositionInNode(*list_child_node);
+    start = Position::FirstPositionInNode(*list_child_node);
+    end = Position::LastPositionInNode(*list_child_node);
     next_list_child = list_child_node->nextSibling();
     previous_list_child = list_child_node->previousSibling();
   } else {
     // A paragraph is visually a list item minus a list marker.  The paragraph
     // will be moved.
-    start = StartOfParagraph(original_start, kCanSkipOverEditingBoundary);
-    end = EndOfParagraph(start, kCanSkipOverEditingBoundary);
+    const VisiblePosition& visible_start =
+        StartOfParagraph(original_start, kCanSkipOverEditingBoundary);
+    const VisiblePosition& visible_end =
+        EndOfParagraph(visible_start, kCanSkipOverEditingBoundary);
+    start = visible_start.DeepEquivalent();
+    end = visible_end.DeepEquivalent();
     // InsertListCommandTest.UnlistifyParagraphCrashOnRemoveStyle reaches here.
-    ABORT_EDITING_COMMAND_IF(start.DeepEquivalent() == end.DeepEquivalent());
-    Node* next = NextPositionOf(end).DeepEquivalent().AnchorNode();
-    DCHECK_NE(next, end.DeepEquivalent().AnchorNode());
+    ABORT_EDITING_COMMAND_IF(start == end);
+    Node* next = NextPositionOf(visible_end).DeepEquivalent().AnchorNode();
+    DCHECK_NE(next, end.AnchorNode());
     next_list_child = EnclosingListChild(next, list_element);
-    Node* previous = PreviousPositionOf(start).DeepEquivalent().AnchorNode();
-    DCHECK_NE(previous, start.DeepEquivalent().AnchorNode());
+    Node* previous =
+        PreviousPositionOf(visible_start).DeepEquivalent().AnchorNode();
+    DCHECK_NE(previous, start.AnchorNode());
     previous_list_child = EnclosingListChild(previous, list_element);
   }
-
-  // Helpers for making |start| and |end| valid again after DOM changes.
-  PositionWithAffinity start_position = start.ToPositionWithAffinity();
-  PositionWithAffinity end_position = end.ToPositionWithAffinity();
 
   // When removing a list, we must always create a placeholder to act as a point
   // of insertion for the list content being removed.
@@ -540,12 +541,9 @@ void InsertListCommand::UnlistifyParagraph(
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  // Make |start| and |end| valid again.
-  start = CreateVisiblePosition(start_position);
-  end = CreateVisiblePosition(end_position);
-
   VisiblePosition insertion_point = VisiblePosition::BeforeNode(*placeholder);
-  MoveParagraphs(start, end, insertion_point, editing_state, kPreserveSelection,
+  MoveParagraphs(CreateVisiblePosition(start), CreateVisiblePosition(end),
+                 insertion_point, editing_state, kPreserveSelection,
                  kPreserveStyle, list_child_node);
 }
 

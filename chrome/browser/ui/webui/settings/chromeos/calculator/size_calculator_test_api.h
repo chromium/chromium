@@ -141,7 +141,8 @@ class OtherUsersSizeTestAPI {
         user_manager::UserList(user_count);
   }
 
-  void SimulateOnGetOtherUserSize(base::Optional<cryptohome::BaseReply> reply) {
+  void SimulateOnGetOtherUserSize(
+      base::Optional<user_data_auth::GetAccountDiskUsageReply> reply) {
     other_users_size_calculator_->OnGetOtherUserSize(reply);
   }
 

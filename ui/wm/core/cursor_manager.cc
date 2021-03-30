@@ -25,8 +25,7 @@ namespace internal {
 class CursorState {
  public:
   CursorState()
-      : cursor_(ui::mojom::CursorType::kNone),
-        visible_(true),
+      : visible_(true),
         cursor_size_(ui::CursorSize::kNormal),
         mouse_events_enabled_(true),
         visible_on_mouse_events_enabled_(true) {}

@@ -39,6 +39,7 @@ struct DataForRecursion {
   int scroll_tree_parent;
   int closest_ancestor_with_cached_render_surface;
   int closest_ancestor_with_copy_request;
+  int closest_ancestor_being_captured;
   SkColor safe_opaque_background_color;
   bool animation_axis_aligned_since_render_target;
   bool not_axis_aligned_since_last_clip;
@@ -137,13 +138,9 @@ bool HasPotentiallyRunningTransformAnimation(const MutatorHost& host,
       layer->element_id(), layer->GetElementTypeForAnimation());
 }
 
-void GetAnimationScales(const MutatorHost& host,
-                        Layer* layer,
-                        float* maximum_scale,
-                        float* starting_scale) {
-  return host.GetAnimationScales(layer->element_id(),
-                                 layer->GetElementTypeForAnimation(),
-                                 maximum_scale, starting_scale);
+float MaximumAnimationScale(const MutatorHost& host, Layer* layer) {
+  return host.MaximumScale(layer->element_id(),
+                           layer->GetElementTypeForAnimation());
 }
 
 bool AnimationsPreserveAxisAlignment(const MutatorHost& host, Layer* layer) {
@@ -287,8 +284,7 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
 
   node->has_potential_animation = has_potentially_animated_transform;
   node->is_currently_animating = TransformIsAnimating(mutator_host_, layer);
-  GetAnimationScales(mutator_host_, layer, &node->maximum_animation_scale,
-                     &node->starting_animation_scale);
+  node->maximum_animation_scale = MaximumAnimationScale(mutator_host_, layer);
 
   node->scroll_offset = layer->scroll_offset();
 
@@ -389,6 +385,9 @@ RenderSurfaceReason ComputeRenderSurfaceReason(const MutatorHost& mutator_host,
   if (layer->mirror_count())
     return RenderSurfaceReason::kMirrored;
 
+  if (layer->subtree_capture_id().is_valid())
+    return RenderSurfaceReason::kSubtreeIsBeingCaptured;
+
   return RenderSurfaceReason::kNone;
 }
 
@@ -455,6 +454,7 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   node->stable_id = layer->id();
   node->opacity = layer->opacity();
   node->blend_mode = layer->blend_mode();
+  node->subtree_capture_id = layer->subtree_capture_id();
   node->cache_render_surface = layer->cache_render_surface();
   node->has_copy_request = layer->HasCopyRequest();
   node->filters = layer->filters();
@@ -484,6 +484,10 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
       layer->HasCopyRequest()
           ? node_id
           : data_from_ancestor.closest_ancestor_with_copy_request;
+  node->closest_ancestor_being_captured_id =
+      layer->subtree_capture_id().is_valid()
+          ? node_id
+          : data_from_ancestor.closest_ancestor_being_captured;
 
   if (layer->HasRoundedCorner()) {
     // This is currently in the local space of the layer and hence in an invalid
@@ -518,6 +522,8 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
       node->closest_ancestor_with_cached_render_surface_id;
   data_for_children->closest_ancestor_with_copy_request =
       node->closest_ancestor_with_copy_request_id;
+  data_for_children->closest_ancestor_being_captured =
+      node->closest_ancestor_being_captured_id;
   data_for_children->effect_tree_parent = node_id;
   layer->SetEffectTreeIndex(node_id);
 
@@ -716,6 +722,8 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   data_for_recursion.closest_ancestor_with_cached_render_surface =
       EffectTree::kInvalidNodeId;
   data_for_recursion.closest_ancestor_with_copy_request =
+      EffectTree::kInvalidNodeId;
+  data_for_recursion.closest_ancestor_being_captured =
       EffectTree::kInvalidNodeId;
   data_for_recursion.compound_transform_since_render_target = gfx::Transform();
   data_for_recursion.animation_axis_aligned_since_render_target = true;

@@ -18,27 +18,27 @@ const char kViewTypeUserDataKey[] = "ViewTypeUserData";
 
 class ViewTypeUserData : public base::SupportsUserData::Data {
  public:
-  explicit ViewTypeUserData(ViewType type) : type_(type) {}
+  explicit ViewTypeUserData(mojom::ViewType type) : type_(type) {}
   ~ViewTypeUserData() override {}
-  ViewType type() { return type_; }
+  mojom::ViewType type() { return type_; }
 
  private:
-  ViewType type_;
+  mojom::ViewType type_;
 };
 
 }  // namespace
 
-ViewType GetViewType(WebContents* tab) {
+mojom::ViewType GetViewType(WebContents* tab) {
   if (!tab)
-    return VIEW_TYPE_INVALID;
+    return mojom::ViewType::kInvalid;
 
   ViewTypeUserData* user_data = static_cast<ViewTypeUserData*>(
       tab->GetUserData(&kViewTypeUserDataKey));
 
-  return user_data ? user_data->type() : VIEW_TYPE_INVALID;
+  return user_data ? user_data->type() : mojom::ViewType::kInvalid;
 }
 
-void SetViewType(WebContents* tab, ViewType type) {
+void SetViewType(WebContents* tab, mojom::ViewType type) {
   tab->SetUserData(&kViewTypeUserDataKey,
                    std::make_unique<ViewTypeUserData>(type));
 

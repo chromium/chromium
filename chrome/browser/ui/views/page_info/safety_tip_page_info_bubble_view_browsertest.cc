@@ -13,8 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/reputation/reputation_service.h"
@@ -25,6 +23,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -39,6 +38,8 @@
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"
+#include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -46,6 +47,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -232,6 +234,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest
       public testing::WithParamInterface<UIStatus> {
  protected:
   UIStatus ui_status() const { return GetParam(); }
+  virtual bool digital_asset_links_enabled() const { return false; }
 
   bool IsSuspiciousSiteWarningEnabled() const {
     return ui_status() == UIStatus::kEnabledWithDefaultFeatures ||
@@ -246,37 +249,51 @@ class SafetyTipPageInfoBubbleViewBrowserTest
   }
 
   void SetUp() override {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
+    std::vector<base::Feature> disabled_features;
+
     switch (ui_status()) {
       case UIStatus::kDisabled:
-        feature_list_.InitAndDisableFeature(
-            security_state::features::kSafetyTipUI);
+        disabled_features.push_back(security_state::features::kSafetyTipUI);
         break;
       case UIStatus::kEnabledWithDefaultFeatures:
-        feature_list_.InitAndEnableFeature(
-            security_state::features::kSafetyTipUI);
+        enabled_features.emplace_back(security_state::features::kSafetyTipUI,
+                                      base::FieldTrialParams());
         break;
       case UIStatus::kEnabledWithSuspiciousSites:
-        feature_list_.InitWithFeaturesAndParameters(
-            {{security_state::features::kSafetyTipUI,
-              {{"suspicioussites", "true"},
-               {"topsites", "false"},
-               {"editdistance", "false"},
-               {"editdistance_siteengagement", "false"},
-               {"targetembedding", "false"}}}},
-            {});
+        enabled_features.emplace_back(
+            security_state::features::kSafetyTipUI,
+            base::FieldTrialParams({{"suspicioussites", "true"},
+                                    {"topsites", "false"},
+                                    {"editdistance", "false"},
+                                    {"editdistance_siteengagement", "false"},
+                                    {"targetembedding", "false"}}));
         break;
       case UIStatus::kEnabledWithAllFeatures:
-        feature_list_.InitWithFeaturesAndParameters(
-            {{security_state::features::kSafetyTipUI,
-              {{"suspicioussites", "true"},
-               {"topsites", "true"},
-               {"editdistance", "true"},
-               {"editdistance_siteengagement", "true"},
-               {"targetembedding", "true"}}},
-             {lookalikes::features::kDetectTargetEmbeddingLookalikes, {}}},
-            {});
+        enabled_features.emplace_back(
+            security_state::features::kSafetyTipUI,
+            base::FieldTrialParams({{"suspicioussites", "true"},
+                                    {"topsites", "true"},
+                                    {"editdistance", "true"},
+                                    {"editdistance_siteengagement", "true"},
+                                    {"targetembedding", "true"}}));
+        enabled_features.emplace_back(
+            lookalikes::features::kDetectTargetEmbeddingLookalikes,
+            base::FieldTrialParams());
         break;
     }
+
+    if (digital_asset_links_enabled()) {
+      enabled_features.emplace_back(
+          lookalikes::features::kLookalikeDigitalAssetLinks,
+          base::FieldTrialParams());
+    } else {
+      disabled_features.push_back(
+          lookalikes::features::kLookalikeDigitalAssetLinks);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
 
     reputation::InitializeSafetyTipConfig();
     InProcessBrowserTest::SetUp();
@@ -350,7 +367,9 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     }
 
     OpenPageInfoBubble(browser);
-    auto* page_info = static_cast<PageInfoBubbleViewBase*>(
+    ASSERT_EQ(PageInfoBubbleViewBase::GetShownBubbleType(),
+              PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO);
+    auto* page_info = static_cast<PageInfoBubbleView*>(
         PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
     ASSERT_TRUE(page_info);
 
@@ -371,6 +390,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest
                           GetFormattedHostName(expected_safe_url)));
         break;
 
+      case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
       case security_state::SafetyTipStatus::kBadKeyword:
       case security_state::SafetyTipStatus::kUnknown:
       case security_state::SafetyTipStatus::kNone:
@@ -391,8 +411,12 @@ class SafetyTipPageInfoBubbleViewBrowserTest
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_NOT_SECURE_SUMMARY) ||
         page_info->GetWindowTitle() ==
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_INTERNAL_PAGE));
-    EXPECT_NE(page_info->GetSecurityDescriptionType(),
-              PageInfoUI::SecurityDescriptionType::SAFETY_TIP);
+    if (PageInfoBubbleViewBase::GetShownBubbleType() ==
+        PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO) {
+      EXPECT_NE(static_cast<PageInfoBubbleView*>(page_info)
+                    ->GetSecurityDescriptionType(),
+                PageInfoUI::SecurityDescriptionType::SAFETY_TIP);
+    }
   }
 
   // Checks that a certain amount of safety tip heuristics UKM events have been
@@ -515,6 +539,7 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest, ShowOnBlock) {
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest, NoShowOnError) {
   auto kNavigatedUrl =
       embedded_test_server()->GetURL("site1.com", "/close-socket");
+
   reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
 
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
@@ -1380,4 +1405,155 @@ IN_PROC_BROWSER_TEST_F(SafetyTipSimplifiedDomainPageInfoBubbleViewBrowserTest,
   SetEngagementScore(browser(), url, kLowEngagement);
   NavigateToURL(browser(), url, WindowOpenDisposition::CURRENT_TAB);
   EXPECT_FALSE(IsUIShowing());
+}
+
+// Tests for Digital Asset Links for lookalike checks.
+// TODO(meacer): Refactor the DAL code in LookalikeNavigationThrottle tests and
+// reuse here.
+class SafetyTipPageInfoBubbleViewDigitalAssetLinksBrowserTest
+    : public SafetyTipPageInfoBubbleViewBrowserTest {
+ protected:
+  struct TestSite {
+    std::string hostname;
+    std::string manifest;
+  };
+
+  bool digital_asset_links_enabled() const override { return true; }
+
+  void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
+
+  void SetUpManifests(const std::vector<TestSite>& sites) {
+    url_loader_interceptor_ = std::make_unique<
+        content::URLLoaderInterceptor>(base::BindRepeating(
+        &SafetyTipPageInfoBubbleViewDigitalAssetLinksBrowserTest::OnIntercept,
+        base::Unretained(this), sites));
+  }
+
+  static std::string MakeManifestWithTarget(const char* target_domain,
+                                            bool invalid = false) {
+    const char* const format = R"([{
+        "relation": ["%s"],
+        "target": {
+          "namespace": "web",
+          "site": "https://%s"
+        }
+      }])";
+    // Go through MakeURL to convert target_domain to punycode.
+    return base::StringPrintf(format,
+                              (invalid ? "junkvalue" : "lookalikes/allowlist"),
+                              MakeURL(target_domain).host().c_str());
+  }
+
+ private:
+  bool OnIntercept(const std::vector<TestSite>& sites,
+                   content::URLLoaderInterceptor::RequestParams* params) {
+    for (const TestSite& site : sites) {
+      if (params->url_request.url == MakeManifestURL(site.hostname)) {
+        DCHECK(!site.manifest.empty());
+        // Serve manifest contents:
+        std::string headers =
+            "HTTP/1.1 200 OK\nContent-Type: application/json; "
+            "charset=utf-8\n";
+        content::URLLoaderInterceptor::WriteResponse(headers, site.manifest,
+                                                     params->client.get());
+        return true;
+      }
+      // Serve site's contents:
+      if (params->url_request.url == MakeURL(site.hostname)) {
+        content::URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n",
+            "<html>Test page</html>", params->client.get());
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static GURL MakeManifestURL(const std::string& hostname) {
+    return GURL("https://" + hostname + "/.well-known/assetlinks.json");
+  }
+
+  static GURL MakeURL(const std::string& hostname) {
+    return GURL("https://" + hostname);
+  }
+
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafetyTipPageInfoBubbleViewDigitalAssetLinksBrowserTest,
+    ::testing::Values(UIStatus::kEnabledWithAllFeatures));
+
+// Lookalike and target sites' manifests don't match each other. Show the UI.
+// TODO(crbug.com/1191216): Check if there is already an existing manifest
+// validation happening and ignore new validation requests.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewDigitalAssetLinksBrowserTest,
+                       ShowOnDigitalAssetLinkMismatch) {
+  if (!AreLookalikeWarningsEnabled()) {
+    return;
+  }
+
+  const GURL kNavigatedUrl("https://gooogle.com");
+  const GURL kTargetUrl("https://google.com");
+  const std::vector<TestSite> sites{
+      {kNavigatedUrl.host().c_str(), MakeManifestWithTarget("invalid.host")},
+      {kTargetUrl.host().c_str(), MakeManifestWithTarget("invalid.host")},
+  };
+  SetUpManifests(sites);
+
+  base::HistogramTester histograms;
+
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(IsUIShowing());
+
+  histograms.ExpectTotalCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kStarted, 1);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kLookalikeManifestFailed, 1);
+}
+
+// Same as ShowOnDigitalAssetLinkMismatch but with valid manifests.
+// An edit distance match would normally display a Safety Tip, but the lookalike
+// site properly allowlisted the target site so the Safety Tip is suppressed.
+// TODO(crbug.com/1191216): Check if there is already an existing manifest
+// validation happening and ignore new validation requests.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewDigitalAssetLinksBrowserTest,
+                       NoShowOnDigitalAssetLinkMatch) {
+  if (!AreLookalikeWarningsEnabled()) {
+    return;
+  }
+
+  const GURL kNavigatedUrl("https://gooogle.com");
+  const GURL kTargetUrl("https://google.com");
+  const std::vector<TestSite> sites{
+      {kNavigatedUrl.host().c_str(),
+       MakeManifestWithTarget(kTargetUrl.host().c_str())},
+      {kTargetUrl.host().c_str(),
+       MakeManifestWithTarget(kNavigatedUrl.host().c_str())},
+  };
+  SetUpManifests(sites);
+
+  base::HistogramTester histograms;
+
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  SetEngagementScore(browser(), kTargetUrl, kHighEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+
+  ASSERT_FALSE(IsUIShowing());
+
+  histograms.ExpectTotalCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kStarted, 1);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kValidationSucceeded, 1);
 }

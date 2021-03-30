@@ -10,8 +10,8 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -73,6 +73,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Serializes from `HoldingSpaceItem` to `base::DictionaryValue`.
   base::DictionaryValue Serialize() const;
 
+  // Adds `callback` to be notified when `this` gets deleted.
+  base::CallbackListSubscription AddDeletionCallback(
+      base::RepeatingClosureList::CallbackType callback) const;
+
   // Indicates whether the item has been finalized. This will be false for items
   // created using `Deserialize()` for which `Finalize()` has not yet been
   // called.
@@ -90,11 +94,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // are loaded when the image is next needed.
   void InvalidateImage();
 
+  // Returns true if this item is a screen capture.
+  bool IsScreenCapture() const;
+
   const std::string& id() const { return id_; }
 
   Type type() const { return type_; }
 
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
 
   const HoldingSpaceImage& image() const { return *image_; }
 
@@ -110,7 +117,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
                    const std::string& id,
                    const base::FilePath& file_path,
                    const GURL& file_system_url,
-                   const base::string16& text,
+                   const std::u16string& text,
                    std::unique_ptr<HoldingSpaceImage> image);
 
   const Type type_;
@@ -125,10 +132,13 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   GURL file_system_url_;
 
   // If set, the text that should be shown for the item.
-  base::string16 text_;
+  std::u16string text_;
 
   // The image representation of the item.
   std::unique_ptr<HoldingSpaceImage> image_;
+
+  // Mutable to allow const access from `AddDeletionCallback()`.
+  mutable base::RepeatingClosureList deletion_callback_list_;
 };
 
 }  // namespace ash

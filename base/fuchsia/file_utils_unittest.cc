@@ -41,12 +41,4 @@ TEST_F(OpenDirectoryTest, OpenFile) {
   ASSERT_FALSE(dir);
 }
 
-// TODO(crbug.com/1073821): Remove this test.
-// Tests the deprecated ::base::fuchsia::OpenDirectory() function works until
-// all callers have been removed.
-TEST_F(OpenDirectoryTest, OpenTransitional) {
-  auto dir = ::base::fuchsia::OpenDirectory(temp_dir.GetPath());
-  ASSERT_TRUE(dir);
-}
-
 }  // namespace base

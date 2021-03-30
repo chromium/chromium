@@ -210,11 +210,6 @@ MULTIPROCESS_TEST_MAIN(EchoPUP_ExtraData) {
   pup.expanded_scheduled_tasks.push_back(L"Scheduled task 2");
   pup.expanded_scheduled_tasks.push_back(L"Scheduled task 3");
 
-  pup.matched_extensions.push_back(ForceInstalledExtension(
-      *ExtensionID::Create(base::WideToUTF8(kTestExtensionId1)),
-      POLICY_EXTENSION_FORCELIST, "https://test.com",
-      "all_your_permission_are_belong_to_us"));
-
   const PUPData::PUP echoed = child_process->EchoPUP(pup);
 
   // Not using operator== because error messages only show the sequences of
@@ -225,7 +220,6 @@ MULTIPROCESS_TEST_MAIN(EchoPUP_ExtraData) {
       UnorderedElementsAreArray(pup.expanded_disk_footprints.file_paths()));
   EXPECT_TRUE(echoed.expanded_registry_footprints.empty());
   EXPECT_TRUE(echoed.expanded_scheduled_tasks.empty());
-  EXPECT_TRUE(echoed.matched_extensions.empty());
 
   return ::testing::Test::HasNonfatalFailure();
 }

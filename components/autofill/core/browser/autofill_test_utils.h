@@ -56,6 +56,44 @@ inline bool operator!=(const FormDataPredictions& a,
 // Common utilities shared amongst Autofill tests.
 namespace test {
 
+// A compound data type that contains the type, the value and the verification
+// status for a form group entry (an AutofillProfile).
+struct FormGroupValue {
+  ServerFieldType type;
+  std::string value;
+  structured_address::VerificationStatus verification_status =
+      structured_address::VerificationStatus::kNoStatus;
+};
+
+// Convenience declaration for multiple FormGroup values.
+using FormGroupValues = std::vector<FormGroupValue>;
+
+// Creates a non-empty LocalFrameToken (no variation among different calls).
+LocalFrameToken GetLocalFrameToken();
+
+// Creates new, pairwise distinct FormRendererIds.
+FormRendererId MakeFormRendererId();
+
+// Creates new, pairwise distinct FieldRendererIds.
+FieldRendererId MakeFieldRendererId();
+
+// Creates new, pairwise distinct FormGlobalIds.
+FormGlobalId MakeFormGlobalId();
+
+// Creates new, pairwise distinct FieldGlobalIds.
+FieldGlobalId MakeFieldGlobalId();
+
+// Helper function to set values and verification statuses to a form group.
+void SetFormGroupValues(FormGroup& form_group,
+                        const std::vector<FormGroupValue>& values);
+
+// Helper function to verify the expectation of values and verification
+// statuses in a form group. If |ignore_status| is set, status checking is
+// omitted.
+void VerifyFormGroupValues(const FormGroup& form_group,
+                           const std::vector<FormGroupValue>& values,
+                           bool ignore_status = false);
+
 const char kEmptyOrigin[] = "";
 
 // The following methods return a PrefService that can be used for
@@ -207,7 +245,9 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* zipcode,
                     const char* country,
                     const char* phone,
-                    bool finalize = true);
+                    bool finalize = true,
+                    structured_address::VerificationStatus =
+                        structured_address::VerificationStatus::kObserved);
 
 // This one doesn't require the |dependent_locality|.
 void SetProfileInfo(AutofillProfile* profile,
@@ -223,23 +263,28 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* zipcode,
                     const char* country,
                     const char* phone,
-                    bool finalize = true);
+                    bool finalize = true,
+                    structured_address::VerificationStatus =
+                        structured_address::VerificationStatus::kObserved);
 
-void SetProfileInfoWithGuid(AutofillProfile* profile,
-                            const char* guid,
-                            const char* first_name,
-                            const char* middle_name,
-                            const char* last_name,
-                            const char* email,
-                            const char* company,
-                            const char* address1,
-                            const char* address2,
-                            const char* city,
-                            const char* state,
-                            const char* zipcode,
-                            const char* country,
-                            const char* phone,
-                            bool finalize = true);
+void SetProfileInfoWithGuid(
+    AutofillProfile* profile,
+    const char* guid,
+    const char* first_name,
+    const char* middle_name,
+    const char* last_name,
+    const char* email,
+    const char* company,
+    const char* address1,
+    const char* address2,
+    const char* city,
+    const char* state,
+    const char* zipcode,
+    const char* country,
+    const char* phone,
+    bool finalize = true,
+    structured_address::VerificationStatus =
+        structured_address::VerificationStatus::kObserved);
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetCreditCardInfo| provides a quick way to populate a credit card
@@ -302,18 +347,6 @@ void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned autofill_type,
                      const std::vector<unsigned>& validity_states);
 
-// Fills the query form |field| with the information passed by parameter. If the
-// value of a const char* parameter is NULL, the corresponding attribute won't
-// be set at all, as opposed to being set to empty string.
-void FillQueryField(AutofillQueryContents::Form::Field* field,
-                    unsigned signature,
-                    const char* name,
-                    const char* control_type);
-void FillQueryField(AutofillPageQueryRequest_Form_Field* field,
-                    unsigned signature,
-                    const char* name,
-                    const char* control_type);
-
 // Creates the structure of signatures that would be encoded by
 // FormStructure::EncodeUploadRequest() and FormStructure::EncodeQueryRequest()
 // and consumed by FormStructure::ParseQueryResponse() and
@@ -338,8 +371,20 @@ std::string NextYear();
 std::string TenYearsFromNow();
 
 void AddFieldSuggestionToForm(
-    autofill::FormFieldData field_data,
+    const autofill::FormFieldData& field_data,
     ServerFieldType field_type,
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
+
+// Adds |field_types| predictions of |field_data| to |form_suggestion| query
+// response. Assumes int type can be cast to ServerFieldType.
+void AddFieldPredictionsToForm(
+    const autofill::FormFieldData& field_data,
+    const std::vector<int>& field_types,
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
+
+void AddFieldPredictionsToForm(
+    const autofill::FormFieldData& field_data,
+    const std::vector<ServerFieldType>& field_types,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
 
 }  // namespace test

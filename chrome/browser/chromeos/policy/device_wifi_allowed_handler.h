@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 
 namespace policy {
 
@@ -18,13 +18,13 @@ namespace policy {
 // setting.
 class DeviceWiFiAllowedHandler {
  public:
-  explicit DeviceWiFiAllowedHandler(chromeos::CrosSettings* cros_settings);
+  explicit DeviceWiFiAllowedHandler(ash::CrosSettings* cros_settings);
   ~DeviceWiFiAllowedHandler();
 
  private:
   void OnWiFiPolicyChanged();
 
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
   base::CallbackListSubscription wifi_policy_subscription_;
   base::WeakPtrFactory<DeviceWiFiAllowedHandler> weak_factory_{this};
 

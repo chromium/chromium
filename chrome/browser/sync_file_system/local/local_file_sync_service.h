@@ -95,13 +95,13 @@ class LocalFileSyncService
   // Calling this method again while this already has another URL waiting
   // for sync will overwrite the previously registered URL.
   void RegisterURLForWaitingSync(const storage::FileSystemURL& url,
-                                 const base::Closure& on_syncable_callback);
+                                 base::OnceClosure on_syncable_callback);
 
   // Synchronize one (or a set of) local change(s) to the remote server
   // using local_change_processor given by SetLocalChangeProcessor().
   // |processor| must have same or longer lifetime than this service.
   // It is invalid to call this method before calling SetLocalChangeProcessor().
-  void ProcessLocalChange(const SyncFileCallback& callback);
+  void ProcessLocalChange(SyncFileCallback callback);
 
   // Sets a local change processor. The value is ignored if
   // SetLocalChangeProcessorCallback() is called separately.
@@ -125,23 +125,22 @@ class LocalFileSyncService
   void HasPendingLocalChanges(const storage::FileSystemURL& url,
                               HasPendingLocalChangeCallback callback);
 
-  void PromoteDemotedChanges(const base::Closure& callback);
+  void PromoteDemotedChanges(base::RepeatingClosure callback);
 
   // Returns the metadata of a remote file pointed by |url|.
   virtual void GetLocalFileMetadata(const storage::FileSystemURL& url,
-                                    const SyncFileMetadataCallback& callback);
+                                    SyncFileMetadataCallback callback);
 
   // RemoteChangeProcessor overrides.
-  void PrepareForProcessRemoteChange(
-      const storage::FileSystemURL& url,
-      const PrepareChangeCallback& callback) override;
+  void PrepareForProcessRemoteChange(const storage::FileSystemURL& url,
+                                     PrepareChangeCallback callback) override;
   void ApplyRemoteChange(const FileChange& change,
                          const base::FilePath& local_path,
                          const storage::FileSystemURL& url,
                          SyncStatusCallback callback) override;
   void FinalizeRemoteSync(const storage::FileSystemURL& url,
                           bool clear_local_changes,
-                          const base::Closure& completion_callback) override;
+                          base::OnceClosure completion_callback) override;
   void RecordFakeLocalChange(const storage::FileSystemURL& url,
                              const FileChange& change,
                              SyncStatusCallback callback) override;
@@ -196,18 +195,18 @@ class LocalFileSyncService
   void DidInitializeForRemoteSync(
       const storage::FileSystemURL& url,
       storage::FileSystemContext* file_system_context,
-      const PrepareChangeCallback& callback,
+      PrepareChangeCallback callback,
       SyncStatusCode status);
 
   // Callback for ApplyRemoteChange.
   void DidApplyRemoteChange(SyncStatusCallback callback, SyncStatusCode status);
 
   // Callbacks for ProcessLocalChange.
-  void DidGetFileForLocalSync(const SyncFileCallback& callback,
+  void DidGetFileForLocalSync(SyncFileCallback callback,
                               SyncStatusCode status,
                               const LocalFileSyncInfo& sync_file_info,
                               storage::ScopedFile snapshot);
-  void ProcessNextChangeForURL(const SyncFileCallback& callback,
+  void ProcessNextChangeForURL(SyncFileCallback callback,
                                storage::ScopedFile snapshot,
                                const LocalFileSyncInfo& sync_file_info,
                                const FileChange& last_change,

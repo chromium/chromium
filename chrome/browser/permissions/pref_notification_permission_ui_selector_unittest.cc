@@ -11,6 +11,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -19,6 +20,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using testing::DoAll;
 
 using QuietUiReason = PrefNotificationPermissionUiSelector::QuietUiReason;
 using WarningReason = PrefNotificationPermissionUiSelector::WarningReason;
@@ -92,8 +95,7 @@ TEST_F(PrefNotificationPermissionUiSelectorTest, FeatureAndPrefCombinations) {
                               QuitMessageLoop(&callback_loop)));
 
     permissions::MockPermissionRequest mock_request(
-        std::string(),
-        permissions::PermissionRequestType::PERMISSION_NOTIFICATIONS,
+        std::string(), permissions::RequestType::kNotifications,
         GURL("http://example.com"));
     pref_selector()->SelectUiToUse(&mock_request, mock_callback.Get());
     callback_loop.Run();

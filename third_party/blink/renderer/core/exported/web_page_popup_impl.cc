@@ -34,6 +34,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/ukm_manager.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
 #include "third_party/blink/public/web/web_view_client.h"
@@ -73,6 +74,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -173,9 +175,12 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     // do not wish to actually do anything.
     if (popup_->closing_)
       return;
-    if (WebTestSupport::IsRunningWebTest()) {
+
+    // When the renderer has a compositor thread we need to follow the
+    // normal code path.
+    if (WebTestSupport::IsRunningWebTest() && !Thread::CompositorThread()) {
       // In single-threaded web tests, the owner frame tree runs the composite
-      // step for the popup. Popup widgets don't runany composite step on their
+      // step for the popup. Popup widgets don't run any composite step on their
       // own. And we don't run popup tests with a compositor thread, so no need
       // to check for that.
       Document& opener_document =
@@ -199,9 +204,14 @@ class PagePopupChromeClient final : public EmptyChromeClient {
         timeline->GetAnimationTimeline());
   }
 
-  ScreenInfo GetScreenInfo(LocalFrame&) const override {
+  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     // LocalFrame is ignored since there is only 1 frame in a popup.
     return popup_->GetScreenInfo();
+  }
+
+  const ScreenInfos& GetScreenInfos(LocalFrame&) const override {
+    // LocalFrame is ignored since there is only 1 frame in a popup.
+    return popup_->GetScreenInfos();
   }
 
   IntSize MinimumWindowSize() const override { return IntSize(0, 0); }
@@ -324,7 +334,9 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
   page_clients.chrome_client = chrome_client_.Get();
 
   Settings& main_settings = opener_web_view_->GetPage()->GetSettings();
-  page_ = Page::CreateNonOrdinary(page_clients);
+  page_ = Page::CreateNonOrdinary(page_clients, opener_web_view_->GetPage()
+                                                    ->GetPageScheduler()
+                                                    ->GetAgentGroupScheduler());
   page_->GetSettings().SetAcceleratedCompositingEnabled(true);
   page_->GetSettings().SetScriptEnabled(true);
   page_->GetSettings().SetAllowScriptsToCloseWindows(true);
@@ -349,8 +361,15 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
   // an UpdateStyleAndLayoutTree() before opening the popup in the various
   // default event handlers.
   if (const auto* style = popup_client_->OwnerElement().GetComputedStyle()) {
+    // Avoid using dark color scheme stylesheet for popups when forced colors
+    // mode is active.
+    // TODO(iopopesc): move this to popup CSS when the FocedColors feature is
+    // enabled by default.
+    bool in_forced_colors_mode =
+        popup_client_->OwnerElement().GetDocument().InForcedColorsMode();
     page_->GetSettings().SetPreferredColorScheme(
-        style->UsedColorScheme() == mojom::blink::ColorScheme::kDark
+        style->UsedColorScheme() == mojom::blink::ColorScheme::kDark &&
+                !in_forced_colors_mode
             ? mojom::blink::PreferredColorScheme::kDark
             : mojom::blink::PreferredColorScheme::kLight);
   }
@@ -374,10 +393,9 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
       empty_local_frame_client, *page_,
       /* FrameOwner* */ nullptr, /* Frame* parent */ nullptr,
       /* Frame* previous_sibling */ nullptr,
-      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
+      FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       window_agent_factory,
-      /* InterfaceRegistry* */ nullptr,
-      /* policy_container */ nullptr);
+      /* InterfaceRegistry* */ nullptr);
   frame->SetPagePopupOwner(popup_client_->OwnerElement());
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
 
@@ -393,7 +411,7 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
         owner_settings->GetAllowUniversalAccessFromFileURLs());
   }
 
-  frame->Init(nullptr);
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
   frame->View()->SetParentVisible(true);
   frame->View()->SetSelfVisible(true);
 
@@ -432,18 +450,25 @@ void WebPagePopupImpl::DidSetBounds() {
 }
 
 void WebPagePopupImpl::InitializeCompositing(
-    scheduler::WebThreadScheduler* main_thread_scheduler,
+    scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
-    const ScreenInfo& screen_info,
+    const ScreenInfos& screen_infos,
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
-    const cc::LayerTreeSettings* settings) {
+    const cc::LayerTreeSettings* settings,
+    gfx::RenderingPipeline* main_thread_pipeline,
+    gfx::RenderingPipeline* compositor_thread_pipeline) {
   // Careful Initialize() is called after InitializeCompositing, so don't do
   // much work here.
-  widget_base_->InitializeCompositing(main_thread_scheduler, task_graph_runner,
-                                      /*for_child_local_root_frame=*/false,
-                                      screen_info,
-                                      std::move(ukm_recorder_factory), settings,
-                                      /*frame_widget_input_handler=*/nullptr);
+  widget_base_->InitializeCompositing(
+      agent_group_scheduler, task_graph_runner,
+      /*for_child_local_root_frame=*/false, screen_infos,
+      std::move(ukm_recorder_factory), settings,
+      /*frame_widget_input_handler=*/nullptr, main_thread_pipeline,
+      compositor_thread_pipeline);
+  cc::LayerTreeDebugState debug_state =
+      widget_base_->LayerTreeHost()->GetDebugState();
+  debug_state.TurnOffHudInfoDisplay();
+  widget_base_->LayerTreeHost()->SetDebugState(debug_state);
 }
 
 scheduler::WebRenderWidgetSchedulingState*
@@ -505,6 +530,18 @@ void WebPagePopupImpl::ApplyVisualProperties(
 
 const ScreenInfo& WebPagePopupImpl::GetScreenInfo() {
   return widget_base_->GetScreenInfo();
+}
+
+const ScreenInfos& WebPagePopupImpl::GetScreenInfos() {
+  return widget_base_->screen_infos();
+}
+
+const ScreenInfo& WebPagePopupImpl::GetOriginalScreenInfo() {
+  return widget_base_->GetScreenInfo();
+}
+
+const ScreenInfos& WebPagePopupImpl::GetOriginalScreenInfos() {
+  return widget_base_->screen_infos();
 }
 
 gfx::Rect WebPagePopupImpl::WindowRect() {
@@ -647,8 +684,8 @@ void WebPagePopupImpl::Resize(const gfx::Size& new_size_in_viewport) {
   SetWindowRect(IntRect(window_rect_in_dips));
 
   if (page_) {
-    MainFrame().View()->Resize(WebSize(new_size_in_viewport));
-    page_->GetVisualViewport().SetSize(WebSize(new_size_in_viewport));
+    MainFrame().View()->Resize(IntSize(new_size_in_viewport));
+    page_->GetVisualViewport().SetSize(IntSize(new_size_in_viewport));
   }
 }
 
@@ -867,7 +904,7 @@ void WebPagePopupImpl::UpdateVisualProperties(
   widget_base_->UpdateSurfaceAndScreenInfo(
       visual_properties.local_surface_id.value_or(viz::LocalSurfaceId()),
       visual_properties.compositor_viewport_pixel_rect,
-      visual_properties.screen_info);
+      visual_properties.screen_infos);
   widget_base_->SetVisibleViewportSizeInDIPs(
       visual_properties.visible_viewport_size);
 
@@ -880,10 +917,6 @@ void WebPagePopupImpl::UpdateVisualProperties(
       combined_scale_factor, visual_properties.is_pinch_gesture_active);
 
   Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));
-}
-
-const ScreenInfo& WebPagePopupImpl::GetOriginalScreenInfo() {
-  return widget_base_->GetScreenInfo();
 }
 
 gfx::Rect WebPagePopupImpl::ViewportVisibleRect() {

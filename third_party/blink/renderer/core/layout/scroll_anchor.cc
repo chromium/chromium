@@ -673,6 +673,15 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
 }
 
 const SerializedAnchor ScrollAnchor::GetSerializedAnchor() {
+  if (auto* scroller_box = ScrollerLayoutBox(scroller_)) {
+    // This method may be called to find a serialized anchor on a document which
+    // needs a lifecycle update. Computing offsets below may currently compute
+    // style for ::first-line. If that is done with dirty active stylesheets, we
+    // may have null pointer crash as style computation assumes active sheets
+    // are up to date. Update active style if necessary here.
+    scroller_box->GetDocument().GetStyleEngine().UpdateActiveStyle();
+  }
+
   // It's safe to return saved_selector_ before checking anchor_object_, since
   // clearing anchor_object_ also clears saved_selector_.
   if (!saved_selector_.IsEmpty()) {

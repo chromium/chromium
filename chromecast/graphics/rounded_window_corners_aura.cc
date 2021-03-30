@@ -12,6 +12,8 @@
 #include "ui/aura/window.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -24,6 +26,7 @@ const int kCornerRadius = 10;
 // of the main view.
 class BlackCornerView : public views::View {
  public:
+  METADATA_HEADER(BlackCornerView);
   BlackCornerView(int radius, bool on_right, bool on_top)
       : radius_(radius), on_right_(on_right), on_top_(on_top) {}
 
@@ -32,8 +35,9 @@ class BlackCornerView : public views::View {
   void SetColorInversion(bool enable) {
     // In order to show as black we need to paint white when inversion is on.
     color_ = enable ? SK_ColorWHITE : SK_ColorBLACK;
-    SchedulePaint();
+    OnPropertyChanged(&color_, views::kPropertyEffectsPaint);
   }
+  bool GetColorInversion() const { return color_ == SK_ColorWHITE; }
 
  private:
   void OnPaint(gfx::Canvas* canvas) override {
@@ -61,6 +65,10 @@ class BlackCornerView : public views::View {
   bool on_right_;
   bool on_top_;
 };
+
+BEGIN_METADATA(BlackCornerView, views::View)
+ADD_PROPERTY_METADATA(bool, ColorInversion)
+END_METADATA
 
 // Aura based implementation of RoundedWindowCorners.
 class RoundedWindowCornersAura : public RoundedWindowCorners {

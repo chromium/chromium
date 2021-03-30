@@ -115,7 +115,7 @@ void CardUnmaskPromptViewAndroid::DisableAndWaitForVerification() {
 }
 
 void CardUnmaskPromptViewAndroid::GotVerificationResult(
-    const base::string16& error_message,
+    const std::u16string& error_message,
     bool allow_retry) {
   auto java_object = GetOrCreateJavaObject();
   if (!java_object)

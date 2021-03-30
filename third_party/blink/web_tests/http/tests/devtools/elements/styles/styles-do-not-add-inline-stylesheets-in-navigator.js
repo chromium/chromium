@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Verify that inline stylesheets do not appear in navigator.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

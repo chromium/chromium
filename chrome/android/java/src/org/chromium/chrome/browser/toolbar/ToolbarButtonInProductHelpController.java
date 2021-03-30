@@ -14,7 +14,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.datareduction.DataReductionSavingsMilestonePromo;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotMonitor;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -93,8 +91,7 @@ public class ToolbarButtonInProductHelpController
         mMenuButtonAnchorView = menuButtonAnchorView;
         mSecurityIconAnchorView = securityIconAnchorView;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
-        mUserEducationHelper =
-                new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile);
+        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
         mScreenshotMonitor = new ScreenshotMonitor(this);
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -132,14 +129,10 @@ public class ToolbarButtonInProductHelpController
                 Tracker tracker = TrackerFactory.getTrackerForProfile(
                         Profile.fromWebContents(tab.getWebContents()));
                 if (dataSaved > 0L) tracker.notifyEvent(EventConstants.DATA_SAVED_ON_PAGE_LOAD);
-                if (Previews.isPreview(tab)) {
-                    tracker.notifyEvent(EventConstants.PREVIEWS_PAGE_LOADED);
-                }
 
                 if (tab.isUserInteractable()) {
                     showDataSaverDetail();
                     if (dataSaved > 0L) showDataSaverMilestonePromo();
-                    if (Previews.isPreview(tab)) showPreviewVerboseStatus();
                 }
 
                 showDownloadPageTextBubble(tab, FeatureConstants.DOWNLOAD_PAGE_FEATURE);
@@ -162,7 +155,7 @@ public class ToolbarButtonInProductHelpController
                         Profile.fromWebContents(tab.getWebContents()));
                 tracker.notifyEvent(EventConstants.USER_HAS_SEEN_DINO);
             }
-        });
+        }, /*swapCallback=*/null);
     }
 
     public void destroy() {
@@ -270,16 +263,6 @@ public class ToolbarButtonInProductHelpController
                         .build());
     }
 
-    // Attempts to show an IPH text bubble for page in preview mode.
-    private void showPreviewVerboseStatus() {
-        mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(mActivity.getResources(),
-                FeatureConstants.PREVIEWS_OMNIBOX_UI_FEATURE, R.string.iph_previews_omnibox_ui_text,
-                R.string.iph_previews_omnibox_ui_accessibility_text)
-                                                    .setAnchorView(mSecurityIconAnchorView)
-                                                    .setShouldHighlight(false)
-                                                    .build());
-    }
-
     private void showDownloadHomeIPH() {
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mActivity.getResources(),
@@ -307,10 +290,7 @@ public class ToolbarButtonInProductHelpController
                 new IPHCommandBuilder(mActivity.getResources(), featureName,
                         R.string.iph_download_page_for_offline_usage_text,
                         R.string.iph_download_page_for_offline_usage_accessibility_text)
-                        .setOnShowCallback(
-                                ()
-                                        -> turnOnHighlightForMenuItem(
-                                                AppMenuPropertiesDelegateImpl.getOfflinePageId()))
+                        .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.offline_page_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mMenuButtonAnchorView)
                         .build());
@@ -352,7 +332,7 @@ public class ToolbarButtonInProductHelpController
         }
 
         Integer menuItemId = DownloadUtils.isAllowedToDownloadPage(mCurrentTabSupplier.get())
-                ? AppMenuPropertiesDelegateImpl.getOfflinePageId()
+                ? R.id.offline_page_id
                 : R.id.downloads_menu_id;
 
         mUserEducationHelper.requestShowIPH(

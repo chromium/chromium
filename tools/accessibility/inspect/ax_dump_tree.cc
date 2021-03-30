@@ -68,7 +68,6 @@ void PrintHelp() {
   printf(
       "  --filters\tfile containing property filters used to filter out\n"
       "  \t\taccessible tree, see example-tree-filters.txt as an example\n");
-  printf("  --json\toutputs tree in JSON format\n");
 }
 
 int main(int argc, char** argv) {

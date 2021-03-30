@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS COEP:require-corp embeds same-origin COEP:none
+PASS COEP:require-corp embeds cross-origin COEP:none
+FAIL COEP:require-corp embeds same-origin COEP:credentialless assert_equals: expected "block" but got "load"
+PASS COEP:require-corp embeds cross-origin COEP:credentialless
+PASS COEP:require-corp embeds same-origin COEP:require-corp
+PASS COEP:require-corp embeds cross-origin COEP:require-corp
+PASS COEP:require-corp embeds same-origin COEP:none, CORP:cross-origin
+PASS COEP:require-corp embeds cross-origin COEP:none, CORP:cross-origin
+FAIL COEP:require-corp embeds same-origin COEP:credentialless, CORP:cross-origin assert_equals: expected "block" but got "load"
+FAIL COEP:require-corp embeds cross-origin COEP:credentialless, CORP:cross-origin assert_equals: expected "block" but got "load"
+PASS COEP:require-corp embeds same-origin COEP:require-corp, CORP:cross-origin
+PASS COEP:require-corp embeds cross-origin COEP:require-corp, CORP:cross-origin
+Harness: the test ran to completion.
+

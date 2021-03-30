@@ -91,10 +91,11 @@ bool RebootShlib::RebootNow(RebootSource reboot_source) {
       reason = StateControlRebootReason::USER_REQUEST;
       break;
     case RebootSource::OTA:
-      // We are only expecting OTAs initiated by the platform via the
-      // fuchsia.hardware.power.statecontrol/Admin FIDL service.
-      NOTREACHED();
-      return false;
+      // We expect OTAs to be initiated by the platform via the
+      // fuchsia.hardware.power.statecontrol/Admin FIDL service. In case
+      // non-platform code wants to initiate OTAs too, we also support it here.
+      reason = StateControlRebootReason::SYSTEM_UPDATE;
+      break;
     case RebootSource::OVERHEAT:
       reason = StateControlRebootReason::HIGH_TEMPERATURE;
       break;

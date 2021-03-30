@@ -8,42 +8,13 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-// An identifier for a piece of content served by Now or delivered to the Now
-// client(s).
-// See [INTERNAL LINK] for the design of this feature.
-// ContentId comprises a unique key for all content. The client will never have
-// more than one piece of content with the same ContentID.
 message ContentId {
-  optional string content_domain = 1;
-
-  // The type of content this represents. Generally, this is somewhat redundant,
-  // as this ContentId proto will be embedded within a particular parent proto
-  // that implies its type. It is repeated here for the purpose of making
-  // ContentId fully self-contained, able to completely specify a piece of
-  // content's ID without additional context.
-  // Since Type is one of the components of content's uniqueness, it is safe
-  // and reasonable for two related pieces of content with different types
-  // (e.g. a card and its attached notification) to share the same id and
-  // content_domain, and to differ only in their type.  However, Type is **not**
-  // included when determing if two ContentIds are equivalent.
   enum Type {
-    // Undefined type - DO NOT USE
     TYPE_UNDEFINED = 0;
-    CARD = 1;
     CLUSTER = 3;
-    // A feature, which is the indivisible unit of Feed content.
     FEATURE = 4;
-    // A ContentId used only for identifying nodes in a tree structure.
-    TREE_STRUCTURE = 7;
-    // A ContentId for a collection.
-    COLLECTION = 8;
-    // A ContentId for a token, e.g. a NextPage token.
-    TOKEN = 9;
-
-    reserved 2;
   }
-  // The type of content this represents
-  optional Type type = 2;
-
+  optional string content_domain = 1;
+  optional int32 type = 2;
   optional fixed64 id = 3;
 }

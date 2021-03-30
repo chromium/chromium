@@ -359,7 +359,7 @@ public class BottomSheetObserverTest {
         assertEquals(BottomSheetController.SheetState.FULL, mBottomSheetController.getSheetState());
 
         // Check the offset.
-        assertEquals(wrappedContentHeight + mTestSupport.getToolbarShadowHeight(),
-                mBottomSheetController.getCurrentOffset(), MathUtils.EPSILON);
+        assertEquals(
+                wrappedContentHeight, mBottomSheetController.getCurrentOffset(), MathUtils.EPSILON);
     }
 }

@@ -194,8 +194,8 @@ void ServiceProcessControl::Launch(base::OnceClosure success_task,
       CreateServiceProcessCommandLine());
   // And then start the process asynchronously.
   launcher_ = new Launcher(std::move(cmd_line));
-  launcher_->Run(base::Bind(&ServiceProcessControl::OnProcessLaunched,
-                            base::Unretained(this)));
+  launcher_->Run(base::BindOnce(&ServiceProcessControl::OnProcessLaunched,
+                                base::Unretained(this)));
 }
 
 void ServiceProcessControl::Disconnect() {
@@ -273,15 +273,13 @@ void ServiceProcessControl::OnHistograms(
 void ServiceProcessControl::RunHistogramsCallback() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!histograms_callback_.is_null()) {
-    histograms_callback_.Run();
-    histograms_callback_.Reset();
+    std::move(histograms_callback_).Run();
   }
   histograms_timeout_callback_.Cancel();
 }
 
-bool ServiceProcessControl::GetHistograms(
-    const base::Closure& histograms_callback,
-    const base::TimeDelta& timeout) {
+bool ServiceProcessControl::GetHistograms(base::OnceClosure histograms_callback,
+                                          const base::TimeDelta& timeout) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!histograms_callback.is_null());
   histograms_callback_.Reset();
@@ -302,12 +300,12 @@ bool ServiceProcessControl::GetHistograms(
       &ServiceProcessControl::OnHistograms, base::Unretained(this)));
 
   // Run timeout task to make sure |histograms_callback| is called.
-  histograms_timeout_callback_.Reset(base::Bind(
+  histograms_timeout_callback_.Reset(base::BindOnce(
       &ServiceProcessControl::RunHistogramsCallback, base::Unretained(this)));
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, histograms_timeout_callback_.callback(), timeout);
 
-  histograms_callback_ = histograms_callback;
+  histograms_callback_ = std::move(histograms_callback);
   return true;
 }
 
@@ -332,9 +330,9 @@ ServiceProcessControl::Launcher::Launcher(
 // Execute the command line to start the process asynchronously.
 // After the command is executed, |task| is called with the process handle on
 // the UI thread.
-void ServiceProcessControl::Launcher::Run(const base::Closure& task) {
+void ServiceProcessControl::Launcher::Run(base::OnceClosure task) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  notify_task_ = task;
+  notify_task_ = std::move(task);
   content::GetProcessLauncherTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&Launcher::DoRun, this));
 }
@@ -345,8 +343,7 @@ ServiceProcessControl::Launcher::~Launcher() {
 
 void ServiceProcessControl::Launcher::Notify() {
   DCHECK(!notify_task_.is_null());
-  notify_task_.Run();
-  notify_task_.Reset();
+  std::move(notify_task_).Run();
 }
 
 #if !defined(OS_MAC)

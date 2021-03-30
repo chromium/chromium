@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Menambahkan www. dan .com ke masukan Anda dalam kolom URL, lalu membuka halaman</translation>
+<translation id="1768987374400973299">Mengambil screenshot/rekaman</translation>
 <translation id="1872219238824176091">Menghapus desktop saat ini</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, lalu <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> atau <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Membuka tab berikutnya</translation>
 <translation id="2010818616644390445">Membuka tab terakhir di jendela</translation>
 <translation id="2040706009561734834">Membuka/menutup peluncur</translation>
+<translation id="2086334242442703436">Buka Alat Pilih Emoji</translation>
 <translation id="2088054208777350526">Telusuri pintasan keyboard</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> atau <ph name="F" /></translation>
 <translation id="2145908266289632567">Pengeditan Teks</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Buka Asisten Google</translation>
 <translation id="2488661730534396940">Mengaktifkan desktop di sisi kiri</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Buka Aplikasi Diagnostik</translation>
 <translation id="2530339807289914946">Men-scroll halaman ke bawah</translation>
 <translation id="2530896289327917474">Mengaktifkan atau menonaktifkan penjelajahan dengan keyboard</translation>
 <translation id="2574014812750545982">Mereset tingkat perbesaran/perkecilan di halaman</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Berpindah ke akhir kata berikutnya</translation>
 <translation id="4866066940972151697">Mengaktifkan desktop di sisi kanan</translation>
 <translation id="4916163929714267752">Membuka link di jendela baru</translation>
+<translation id="492453977506755176">Tombol mode tangkapan layar</translation>
 <translation id="5030659775136592441">Menampilkan pengelola bookmark</translation>
 <translation id="5034421018520995080">Membuka bagian atas halaman</translation>
 <translation id="5042305953558921026">Tombol mode ringkasan</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Menampilkan atau menyembunyikan konsol Developer Tools</translation>
 <translation id="5919628958418675842">Aktifkan atau nonaktifkan layar privasi</translation>
 <translation id="5921745308587794300">Putar jendela</translation>
+<translation id="5926306472221400972">Mengambil screenshot dalam layar penuh</translation>
 <translation id="6022924867608035986">Hapus teks dari kotak penelusuran</translation>
 <translation id="6045998054441862242">Mengaktifkan mode kontras tinggi</translation>
 <translation id="6052614013050385269">Mengklik kanan link</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Mengembalikan tab ke posisi semula</translation>
 <translation id="6474744297082284761">Perkecil (saat dipasang ke dok ATAU kaca pembesar layar penuh diaktifkan)</translation>
 <translation id="649811797655257835">Pilih file, lalu tekan <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Mengambil screenshot/rekaman sebagian</translation>
 <translation id="6556040137485212400">Membuka jendela yang paling lama tidak digunakan</translation>
 <translation id="666343722268997814">Membuka menu klik kanan untuk item yang ditandai</translation>
 <translation id="6671538777808758331">Membuka hasil berikutnya yang cocok untuk penelusuran</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Pindahkan fokus ke pop-up dan dialog</translation>
 <translation id="7635348532214572995">Memindahkan ikon aplikasi di seluruh petak aplikasi</translation>
 <translation id="766326951329901120">Menempelkan konten dari papan klip dalam bentuk teks biasa</translation>
+<translation id="7673453620027697230">Mengambil screenshot/rekaman jendela</translation>
 <translation id="7703010453515335249">tanda kurung siku buka</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, lalu <ph name="SPACE" /> atau <ph name="ENTER" /></translation>

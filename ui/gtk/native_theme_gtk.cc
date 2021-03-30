@@ -9,9 +9,20 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skbitmap_operations.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gtk/gtk_util.h"
+#include "ui/native_theme/common_theme.h"
+#include "ui/native_theme/native_theme_aura.h"
+
+#if BUILDFLAG(GTK_VERSION) >= 4
+#define CSS_MENU "#popover.background.menu #contents"
+#define CSS_MENUITEM "#modelbutton.flat"
+#define CSS_SCROLLBAR "#scrollbar #range"
+#else
+#define CSS_MENU "GtkMenu#menu"
+#define CSS_MENUITEM "GtkMenuItem#menuitem"
+#define CSS_SCROLLBAR "GtkScrollbar#scrollbar #trough"
+#endif
 
 namespace gtk {
 
@@ -23,14 +34,14 @@ enum BackgroundRenderMode {
   BG_RENDER_RECURSIVE,
 };
 
-ScopedStyleContext GetTooltipContext() {
+GtkCssContext GetTooltipContext() {
   return AppendCssNodeToStyleContext(
-      nullptr, GtkCheckVersion(3, 20) ? "#tooltip.background"
-                                      : "GtkWindow#window.background.tooltip");
+      {}, GtkCheckVersion(3, 20) ? "#tooltip.background"
+                                 : "GtkWindow#window.background.tooltip");
 }
 
 SkBitmap GetWidgetBitmap(const gfx::Size& size,
-                         GtkStyleContext* context,
+                         GtkCssContext context,
                          BackgroundRenderMode bg_mode,
                          bool render_frame) {
   DCHECK(bg_mode != BG_RENDER_NONE || render_frame);
@@ -59,7 +70,7 @@ SkBitmap GetWidgetBitmap(const gfx::Size& size,
 
 void PaintWidget(cc::PaintCanvas* canvas,
                  const gfx::Rect& rect,
-                 GtkStyleContext* context,
+                 GtkCssContext context,
                  BackgroundRenderMode bg_mode,
                  bool render_frame) {
   canvas->drawImage(cc::PaintImage::CreateFromBitmap(GetWidgetBitmap(
@@ -67,22 +78,16 @@ void PaintWidget(cc::PaintCanvas* canvas,
                     rect.x(), rect.y());
 }
 
-base::Optional<SkColor> SkColorFromColorId(
-    ui::NativeTheme::ColorId color_id,
-    const ui::NativeTheme* base_theme,
-    ui::NativeTheme::ColorScheme color_scheme) {
+base::Optional<SkColor> SkColorFromColorId(ui::NativeTheme::ColorId color_id) {
   switch (color_id) {
-    // Windows
     case ui::NativeTheme::kColorId_WindowBackground:
-    // Dialogs
     case ui::NativeTheme::kColorId_DialogBackground:
     case ui::NativeTheme::kColorId_BubbleBackground:
-    // Notifications
-    case ui::NativeTheme::kColorId_NotificationDefaultBackground:
+    case ui::NativeTheme::kColorId_NotificationBackground:
       return GetBgColor("");
     case ui::NativeTheme::kColorId_DialogForeground:
     case ui::NativeTheme::kColorId_AvatarIconIncognito:
-      return GetFgColor("GtkLabel");
+      return GetFgColor("GtkLabel#label");
     case ui::NativeTheme::kColorId_BubbleFooterBackground:
       return GetBgColor("#statusbar");
 
@@ -106,84 +111,85 @@ base::Optional<SkColor> SkColorFromColorId(
     case ui::NativeTheme::kColorId_HighlightedMenuItemBackgroundColor:
     case ui::NativeTheme::kColorId_MenuItemInitialAlertBackgroundColor:
     case ui::NativeTheme::kColorId_MenuItemTargetAlertBackgroundColor:
-      return GetBgColor("GtkMenu#menu");
+      return GetBgColor(CSS_MENU);
     case ui::NativeTheme::kColorId_MenuBorderColor:
-      return GetBorderColor("GtkMenu#menu");
+      return GetBorderColor(CSS_MENU);
     case ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor:
-      return GetBgColor("GtkMenu#menu GtkMenuItem#menuitem:hover");
+      return GetBgColor(CSS_MENU " " CSS_MENUITEM ":hover");
     case ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor:
     case ui::NativeTheme::kColorId_MenuDropIndicator:
     case ui::NativeTheme::kColorId_HighlightedMenuItemForegroundColor:
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem GtkLabel");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM " GtkLabel#label");
     case ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor:
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem:hover GtkLabel");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM ":hover GtkLabel#label");
     case ui::NativeTheme::kColorId_DisabledMenuItemForegroundColor:
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem:disabled GtkLabel");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM ":disabled GtkLabel#label");
     case ui::NativeTheme::kColorId_AvatarIconGuest:
     case ui::NativeTheme::kColorId_MenuItemMinorTextColor:
       if (GtkCheckVersion(3, 20)) {
-        return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem #accelerator");
+        return GetFgColor(CSS_MENU " " CSS_MENUITEM " #accelerator");
       }
-      return GetFgColor(
-          "GtkMenu#menu GtkMenuItem#menuitem GtkLabel.accelerator");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM
+                                 " GtkLabel#label.accelerator");
     case ui::NativeTheme::kColorId_MenuSeparatorColor:
     case ui::NativeTheme::kColorId_AvatarHeaderArt:
       if (GtkCheckVersion(3, 20)) {
-        return GetSeparatorColor(
-            "GtkMenu#menu GtkSeparator#separator.horizontal");
+        return GetSeparatorColor(CSS_MENU " GtkSeparator#separator.horizontal");
       }
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem.separator");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM ".separator");
 
     // Dropdown
     case ui::NativeTheme::kColorId_DropdownBackgroundColor:
       return GetBgColor(
           "GtkComboBoxText#combobox GtkWindow#window.background.popup "
-          "GtkTreeMenu#menu(gtk-combobox-popup-menu) GtkMenuItem#menuitem "
+          "GtkTreeMenu#menu(gtk-combobox-popup-menu) " CSS_MENUITEM
+          " "
           "GtkCellView#cellview");
     case ui::NativeTheme::kColorId_DropdownForegroundColor:
       return GetFgColor(
           "GtkComboBoxText#combobox GtkWindow#window.background.popup "
-          "GtkTreeMenu#menu(gtk-combobox-popup-menu) GtkMenuItem#menuitem "
+          "GtkTreeMenu#menu(gtk-combobox-popup-menu) " CSS_MENUITEM
+          " "
           "GtkCellView#cellview");
     case ui::NativeTheme::kColorId_DropdownSelectedBackgroundColor:
       return GetBgColor(
           "GtkComboBoxText#combobox GtkWindow#window.background.popup "
-          "GtkTreeMenu#menu(gtk-combobox-popup-menu) "
-          "GtkMenuItem#menuitem:hover GtkCellView#cellview");
+          "GtkTreeMenu#menu(gtk-combobox-popup-menu) " CSS_MENUITEM
+          ":hover GtkCellView#cellview");
     case ui::NativeTheme::kColorId_DropdownSelectedForegroundColor:
       return GetFgColor(
           "GtkComboBoxText#combobox GtkWindow#window.background.popup "
-          "GtkTreeMenu#menu(gtk-combobox-popup-menu) "
-          "GtkMenuItem#menuitem:hover GtkCellView#cellview");
+          "GtkTreeMenu#menu(gtk-combobox-popup-menu) " CSS_MENUITEM
+          ":hover GtkCellView#cellview");
 
     // Label
     case ui::NativeTheme::kColorId_LabelEnabledColor:
-      return GetFgColor("GtkLabel");
+      return GetFgColor("GtkLabel#label");
     case ui::NativeTheme::kColorId_LabelDisabledColor:
     case ui::NativeTheme::kColorId_LabelSecondaryColor:
-      return GetFgColor("GtkLabel:disabled");
+      return GetFgColor("GtkLabel#label:disabled");
     case ui::NativeTheme::kColorId_LabelTextSelectionColor:
-      return GetFgColor(GtkCheckVersion(3, 20) ? "GtkLabel #selection"
-                                               : "GtkLabel:selected");
+      return GetFgColor(GtkCheckVersion(3, 20) ? "GtkLabel#label #selection"
+                                               : "GtkLabel#label:selected");
     case ui::NativeTheme::kColorId_LabelTextSelectionBackgroundFocused:
-      return GetSelectionBgColor(GtkCheckVersion(3, 20) ? "GtkLabel #selection"
-                                                        : "GtkLabel:selected");
+      return GetSelectionBgColor(GtkCheckVersion(3, 20)
+                                     ? "GtkLabel#label #selection"
+                                     : "GtkLabel#label:selected");
 
     // Link
     case ui::NativeTheme::kColorId_LinkDisabled:
-      return SkColorSetA(
-          base_theme->GetSystemColor(ui::NativeTheme::kColorId_LinkEnabled,
-                                     color_scheme),
-          0xBB);
+      if (GtkCheckVersion(3, 12))
+        return GetFgColor("GtkLabel#label.link:link:disabled");
+      FALLTHROUGH;
     case ui::NativeTheme::kColorId_LinkPressed:
       if (GtkCheckVersion(3, 12))
-        return GetFgColor("GtkLabel.link:link:hover:active");
+        return GetFgColor("GtkLabel#label.link:link:hover:active");
       FALLTHROUGH;
     case ui::NativeTheme::kColorId_LinkEnabled: {
       if (GtkCheckVersion(3, 12))
-        return GetFgColor("GtkLabel.link:link");
-#if !GTK_CHECK_VERSION(3, 90, 0)
-      auto link_context = GetStyleContextFromCss("GtkLabel.view");
+        return GetFgColor("GtkLabel#label.link:link");
+#if BUILDFLAG(GTK_VERSION) < 4
+      auto link_context = GetStyleContextFromCss("GtkLabel#label.view");
       GdkColor* color;
       gtk_style_context_get_style(link_context, "link-color", &color, nullptr);
       if (color) {
@@ -203,10 +209,14 @@ base::Optional<SkColor> SkColorFromColorId(
     }
 
     // Scrollbar
-    case ui::NativeTheme::kColorId_OverlayScrollbarThumbBackground:
+    case ui::NativeTheme::kColorId_OverlayScrollbarThumbStroke:
       return GetBgColor("#GtkScrollbar#scrollbar #trough");
-    case ui::NativeTheme::kColorId_OverlayScrollbarThumbForeground:
+    case ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke:
+      return GetBgColor("#GtkScrollbar#scrollbar #trough:hover");
+    case ui::NativeTheme::kColorId_OverlayScrollbarThumbFill:
       return GetBgColor("#GtkScrollbar#scrollbar #slider");
+    case ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill:
+      return GetBgColor("#GtkScrollbar#scrollbar #slider:hover");
 
     // Slider
     case ui::NativeTheme::kColorId_SliderThumbDefault:
@@ -227,9 +237,9 @@ base::Optional<SkColor> SkColorFromColorId(
       return GetBgColor("GtkButton#button");
     case ui::NativeTheme::kColorId_ButtonEnabledColor:
     case ui::NativeTheme::kColorId_ButtonUncheckedColor:
-      return GetFgColor("GtkButton#button.text-button GtkLabel");
+      return GetFgColor("GtkButton#button.text-button GtkLabel#label");
     case ui::NativeTheme::kColorId_ButtonDisabledColor:
-      return GetFgColor("GtkButton#button.text-button:disabled GtkLabel");
+      return GetFgColor("GtkButton#button.text-button:disabled GtkLabel#label");
     // TODO(thomasanderson): Add this once this CL lands:
     // https://chromium-review.googlesource.com/c/chromium/src/+/2053144
     // case ui::NativeTheme::kColorId_ButtonHoverColor:
@@ -245,7 +255,7 @@ base::Optional<SkColor> SkColorFromColorId(
     case ui::NativeTheme::kColorId_TextOnProminentButtonColor:
       return GetFgColor(
           "GtkTreeView#treeview.view "
-          "GtkTreeView#treeview.view.cell:selected:focus GtkLabel");
+          "GtkTreeView#treeview.view.cell:selected:focus GtkLabel#label");
     case ui::NativeTheme::kColorId_ProminentButtonDisabledColor:
       return GetBgColor("GtkButton#button.text-button:disabled");
     case ui::NativeTheme::kColorId_ButtonBorderColor:
@@ -265,9 +275,9 @@ base::Optional<SkColor> SkColorFromColorId(
 
     // TabbedPane
     case ui::NativeTheme::kColorId_TabTitleColorActive:
-      return GetFgColor("GtkLabel");
+      return GetFgColor("GtkLabel#label");
     case ui::NativeTheme::kColorId_TabTitleColorInactive:
-      return GetFgColor("GtkLabel:disabled");
+      return GetFgColor("GtkLabel#label:disabled");
     case ui::NativeTheme::kColorId_TabBottomBorder:
       return GetBorderColor(GtkCheckVersion(3, 20) ? "GtkFrame#frame #border"
                                                    : "GtkFrame#frame");
@@ -319,7 +329,7 @@ base::Optional<SkColor> SkColorFromColorId(
       return GetFgColor("GtkButton#button.image-button:hover");
     case ui::NativeTheme::kColorId_TooltipText: {
       auto context = GetTooltipContext();
-      context = AppendCssNodeToStyleContext(context, "GtkLabel");
+      context = AppendCssNodeToStyleContext(context, "GtkLabel#label");
       return GetFgColorFromStyleContext(context);
     }
 
@@ -333,14 +343,15 @@ base::Optional<SkColor> SkColorFromColorId(
     case ui::NativeTheme::kColorId_TreeText:
     case ui::NativeTheme::kColorId_TableGroupingIndicatorColor:
       return GetFgColor(
-          "GtkTreeView#treeview.view GtkTreeView#treeview.view.cell GtkLabel");
+          "GtkTreeView#treeview.view GtkTreeView#treeview.view.cell "
+          "GtkLabel#label");
     case ui::NativeTheme::kColorId_TableSelectedText:
     case ui::NativeTheme::kColorId_TableSelectedTextUnfocused:
     case ui::NativeTheme::kColorId_TreeSelectedText:
     case ui::NativeTheme::kColorId_TreeSelectedTextUnfocused:
       return GetFgColor(
           "GtkTreeView#treeview.view "
-          "GtkTreeView#treeview.view.cell:selected:focus GtkLabel");
+          "GtkTreeView#treeview.view.cell:selected:focus GtkLabel#label");
     case ui::NativeTheme::kColorId_TableSelectionBackgroundFocused:
     case ui::NativeTheme::kColorId_TableSelectionBackgroundUnfocused:
     case ui::NativeTheme::kColorId_TreeSelectionBackgroundFocused:
@@ -351,7 +362,8 @@ base::Optional<SkColor> SkColorFromColorId(
 
     // Table Header
     case ui::NativeTheme::kColorId_TableHeaderText:
-      return GetFgColor("GtkTreeView#treeview.view GtkButton#button GtkLabel");
+      return GetFgColor(
+          "GtkTreeView#treeview.view GtkButton#button GtkLabel#label");
     case ui::NativeTheme::kColorId_TableHeaderBackground:
       return GetBgColor("GtkTreeView#treeview.view GtkButton#button");
     case ui::NativeTheme::kColorId_TableHeaderSeparator:
@@ -362,7 +374,6 @@ base::Optional<SkColor> SkColorFromColorId(
     case ui::NativeTheme::kColorId_ThrobberSpinningColor:
       return GetFgColor("GtkSpinner#spinner");
     case ui::NativeTheme::kColorId_ThrobberWaitingColor:
-    case ui::NativeTheme::kColorId_ThrobberLightColor:
       return GetFgColor("GtkSpinner#spinner:disabled");
 
     // Alert icons
@@ -373,17 +384,14 @@ base::Optional<SkColor> SkColorFromColorId(
       // Alert icons appear on the toolbar, so use the toolbar BG
       // color (the GTK window bg color) to determine if the dark
       // or light native theme should be used for the icons.
-      ui::NativeTheme* fallback_theme =
-          color_utils::IsDark(GetBgColor(""))
-              ? ui::NativeTheme::GetInstanceForDarkUI()
-              : ui::NativeTheme::GetInstanceForNativeUi();
-      return fallback_theme->GetSystemColor(color_id);
+      return ui::GetAlertSeverityColor(color_id,
+                                       color_utils::IsDark(GetBgColor("")));
     }
 
     case ui::NativeTheme::kColorId_MenuIconColor:
       if (GtkCheckVersion(3, 20))
-        return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem #radio");
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem.radio");
+        return GetFgColor(CSS_MENU " " CSS_MENUITEM " #radio");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM ".radio");
 
     case ui::NativeTheme::kColorId_DefaultIconColor:
       return GetFgColor("GtkButton#button.flat.scale GtkImage#image");
@@ -407,6 +415,8 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 }
 
 NativeThemeGtk::NativeThemeGtk() {
+  // g_type_from_name() is only used in GTK3.
+#if BUILDFLAG(GTK_VERSION) < 4
   // These types are needed by g_type_from_name(), but may not be registered at
   // this point.  We need the g_type_class magic to make sure the compiler
   // doesn't optimize away this code.
@@ -431,12 +441,14 @@ NativeThemeGtk::NativeThemeGtk() {
   g_type_class_unref(g_type_class_ref(gtk_window_get_type()));
   g_type_class_unref(g_type_class_ref(gtk_combo_box_text_get_type()));
   g_type_class_unref(g_type_class_ref(gtk_cell_view_get_type()));
+  g_type_class_unref(g_type_class_ref(gtk_scale_get_type()));
 
   // Initialize the GtkTreeMenu type.  _gtk_tree_menu_get_type() is private, so
   // we need to initialize it indirectly.
-  ScopedGObject<GtkTreeModel> model{
-      GTK_TREE_MODEL(gtk_tree_store_new(1, G_TYPE_STRING))};
-  ScopedGObject<GtkWidget> combo{gtk_combo_box_new_with_model(model)};
+  auto model =
+      TakeGObject(GTK_TREE_MODEL(gtk_tree_store_new(1, G_TYPE_STRING)));
+  auto combo = TakeGObject(gtk_combo_box_new_with_model(model));
+#endif
 
   OnThemeChanged(gtk_settings_get_default(), nullptr);
 }
@@ -447,16 +459,42 @@ NativeThemeGtk::~NativeThemeGtk() {
 
 void NativeThemeGtk::SetThemeCssOverride(ScopedCssProvider provider) {
   if (theme_css_override_) {
+#if BUILDFLAG(GTK_VERSION) >= 4
+    gtk_style_context_remove_provider_for_display(
+        gdk_display_get_default(),
+        GTK_STYLE_PROVIDER(theme_css_override_.get()));
+#else
     gtk_style_context_remove_provider_for_screen(
         gdk_screen_get_default(),
         GTK_STYLE_PROVIDER(theme_css_override_.get()));
+#endif
   }
   theme_css_override_ = std::move(provider);
   if (theme_css_override_) {
+#if BUILDFLAG(GTK_VERSION) >= 4
+    gtk_style_context_add_provider_for_display(
+        gdk_display_get_default(),
+        GTK_STYLE_PROVIDER(theme_css_override_.get()),
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#else
     gtk_style_context_add_provider_for_screen(
         gdk_screen_get_default(), GTK_STYLE_PROVIDER(theme_css_override_.get()),
         GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#endif
   }
+}
+
+void NativeThemeGtk::NotifyObservers() {
+  NativeTheme::NotifyObservers();
+
+  // Update the preferred contrast settings for the NativeThemeAura instance and
+  // notify its observers about the change.
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_preferred_contrast(
+      UserHasContrastPreference()
+          ? ui::NativeThemeBase::PreferredContrast::kMore
+          : ui::NativeThemeBase::PreferredContrast::kNoPreference);
+  native_theme->NotifyObservers();
 }
 
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
@@ -496,19 +534,31 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
   // case-insensitive.
   std::transform(theme_name.begin(), theme_name.end(), theme_name.begin(),
                  ::tolower);
-  set_high_contrast(theme_name.find("high") != std::string::npos &&
-                    theme_name.find("contrast") != std::string::npos);
+  bool high_contrast = theme_name.find("high") != std::string::npos &&
+                       theme_name.find("contrast") != std::string::npos;
+  set_preferred_contrast(
+      high_contrast ? ui::NativeThemeBase::PreferredContrast::kMore
+                    : ui::NativeThemeBase::PreferredContrast::kNoPreference);
 
   NotifyObservers();
 }
 
-SkColor NativeThemeGtk::GetSystemColor(ColorId color_id,
-                                       ColorScheme color_scheme) const {
+bool NativeThemeGtk::AllowColorPipelineRedirection(
+    ColorScheme color_scheme) const {
+  // TODO(crbug.com/1186781): Remove this override.
+  return false;
+}
+
+SkColor NativeThemeGtk::GetSystemColorDeprecated(ColorId color_id,
+                                                 ColorScheme color_scheme,
+                                                 bool apply_processing) const {
   base::Optional<SkColor> color = color_cache_[color_id];
   if (!color) {
-    color = SkColorFromColorId(color_id, this, color_scheme);
-    if (!color)
-      color = ui::NativeThemeBase::GetSystemColor(color_id, color_scheme);
+    color = SkColorFromColorId(color_id);
+    if (!color) {
+      color = ui::NativeThemeBase::GetSystemColorDeprecated(
+          color_id, color_scheme, apply_processing);
+    }
     color_cache_[color_id] = color;
   }
   DCHECK(color);
@@ -522,31 +572,33 @@ void NativeThemeGtk::PaintArrowButton(
     State state,
     ColorScheme color_scheme,
     const ScrollbarArrowExtraParams& arrow) const {
+  // Add the "flat" styleclass to avoid drawing a border.
   auto context = GetStyleContextFromCss(
-      GtkCheckVersion(3, 20)
-          ? "GtkScrollbar#scrollbar #contents GtkButton#button"
-          : "GtkRange.scrollbar.button");
+      GtkCheckVersion(3, 20) ? CSS_SCROLLBAR " #range GtkButton#button.flat"
+                             : "GtkRange.scrollbar.button.flat");
+  // Remove any rounded corners since arrow scrollbar buttons are tiny.
+  ApplyCssToContext(context, "* { border-radius: 0px; }");
   GtkStateFlags state_flags = StateToStateFlags(state);
   gtk_style_context_set_state(context, state_flags);
 
   switch (direction) {
     case kScrollbarUpArrow:
-      gtk_style_context_add_class(context, GTK_STYLE_CLASS_TOP);
+      gtk_style_context_add_class(context, "top");
       break;
     case kScrollbarRightArrow:
-      gtk_style_context_add_class(context, GTK_STYLE_CLASS_RIGHT);
+      gtk_style_context_add_class(context, "right");
       break;
     case kScrollbarDownArrow:
-      gtk_style_context_add_class(context, GTK_STYLE_CLASS_BOTTOM);
+      gtk_style_context_add_class(context, "bottom");
       break;
     case kScrollbarLeftArrow:
-      gtk_style_context_add_class(context, GTK_STYLE_CLASS_LEFT);
+      gtk_style_context_add_class(context, "left");
       break;
     default:
       NOTREACHED();
   }
 
-  PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
+  PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, false);
   PaintArrow(canvas, rect, direction, GetFgColorFromStyleContext(context));
 }
 
@@ -557,12 +609,11 @@ void NativeThemeGtk::PaintScrollbarTrack(
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
     ColorScheme color_scheme) const {
-  PaintWidget(
-      canvas, rect,
-      GetStyleContextFromCss(GtkCheckVersion(3, 20)
-                                 ? "GtkScrollbar#scrollbar #contents #trough"
-                                 : "GtkScrollbar.scrollbar.trough"),
-      BG_RENDER_NORMAL, true);
+  PaintWidget(canvas, rect,
+              GetStyleContextFromCss(GtkCheckVersion(3, 20)
+                                         ? CSS_SCROLLBAR " #trough"
+                                         : "GtkScrollbar.scrollbar.trough"),
+              BG_RENDER_NORMAL, true);
 }
 
 void NativeThemeGtk::PaintScrollbarThumb(
@@ -572,10 +623,9 @@ void NativeThemeGtk::PaintScrollbarThumb(
     const gfx::Rect& rect,
     NativeTheme::ScrollbarOverlayColorTheme theme,
     ColorScheme color_scheme) const {
-  auto context = GetStyleContextFromCss(
-      GtkCheckVersion(3, 20)
-          ? "GtkScrollbar#scrollbar #contents #trough #slider"
-          : "GtkScrollbar.scrollbar.slider");
+  auto context = GetStyleContextFromCss(GtkCheckVersion(3, 20)
+                                            ? CSS_SCROLLBAR " #trough #slider"
+                                            : "GtkScrollbar.scrollbar.slider");
   gtk_style_context_set_state(context, StateToStateFlags(state));
   PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
 }
@@ -596,8 +646,10 @@ void NativeThemeGtk::PaintMenuPopupBackground(
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
-  PaintWidget(canvas, gfx::Rect(size), GetStyleContextFromCss("GtkMenu#menu"),
-              BG_RENDER_RECURSIVE, false);
+  auto context = GetStyleContextFromCss(CSS_MENU);
+  // Chrome menus aren't rendered with transparency, so avoid rounded corners.
+  ApplyCssToContext(context, "* { border-radius: 0px; }");
+  PaintWidget(canvas, gfx::Rect(size), context, BG_RENDER_RECURSIVE, false);
 }
 
 void NativeThemeGtk::PaintMenuItemBackground(
@@ -606,7 +658,7 @@ void NativeThemeGtk::PaintMenuItemBackground(
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item,
     ColorScheme color_scheme) const {
-  auto context = GetStyleContextFromCss("GtkMenu#menu GtkMenuItem#menuitem");
+  auto context = GetStyleContextFromCss(CSS_MENU " " CSS_MENUITEM);
   gtk_style_context_set_state(context, StateToStateFlags(state));
   PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
 }
@@ -639,15 +691,15 @@ void NativeThemeGtk::PaintMenuSeparator(
     }
   };
   if (GtkCheckVersion(3, 20)) {
-    auto context = GetStyleContextFromCss(
-        "GtkMenu#menu GtkSeparator#separator.horizontal");
+    auto context =
+        GetStyleContextFromCss(CSS_MENU " GtkSeparator#separator.horizontal");
     GtkBorder margin, border, padding;
     int min_height = 1;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
     gtk_style_context_get_margin(context, &margin);
     gtk_style_context_get_border(context, &border);
     gtk_style_context_get_padding(context, &padding);
-    gtk_style_context_get(context, "min-height", &min_height, nullptr);
+    min_height = GetSeparatorSize(true).height();
 #else
     GtkStateFlags state = gtk_style_context_get_state(context);
     gtk_style_context_get_margin(context, state, &margin);
@@ -663,9 +715,9 @@ void NativeThemeGtk::PaintMenuSeparator(
     int y = separator_offset(h);
     PaintWidget(canvas, gfx::Rect(x, y, w, h), context, BG_RENDER_NORMAL, true);
   } else {
-#if !GTK_CHECK_VERSION(3, 90, 0)
-    auto context = GetStyleContextFromCss(
-        "GtkMenu#menu GtkMenuItem#menuitem.separator.horizontal");
+#if BUILDFLAG(GTK_VERSION) < 4
+    auto context = GetStyleContextFromCss(CSS_MENU " " CSS_MENUITEM
+                                                   ".separator.horizontal");
     gboolean wide_separators = false;
     gint separator_height = 0;
     gtk_style_context_get_style(context, "wide-separators", &wide_separators,
@@ -708,13 +760,7 @@ void NativeThemeGtk::PaintFrameTopArea(
 
   SkBitmap bitmap =
       GetWidgetBitmap(rect.size(), context, BG_RENDER_RECURSIVE, false);
-
-  if (frame_top_area.incognito) {
-    bitmap = SkBitmapOperations::CreateHSLShiftedBitmap(
-        bitmap, kDefaultTintFrameIncognito);
-    bitmap.setImmutable();
-  }
-
+  bitmap.setImmutable();
   canvas->drawImage(cc::PaintImage::CreateFromBitmap(std::move(bitmap)),
                     rect.x(), rect.y());
 }

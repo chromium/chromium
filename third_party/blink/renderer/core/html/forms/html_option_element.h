@@ -26,6 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_OPTION_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
@@ -54,6 +55,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
                                                    ExceptionState&);
 
   explicit HTMLOptionElement(Document&);
+  ~HTMLOptionElement() override;
   void Trace(Visitor* visitor) const override;
 
   // A text to be shown to users.  The difference from |label()| is |label()|
@@ -112,13 +114,11 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void DidChangeTextContent();
 
  private:
-  ~HTMLOptionElement() override;
-
   bool SupportsFocus() const override;
   bool MatchesDefaultPseudoClass() const override;
   bool MatchesEnabledPseudoClass() const override;
   void ParseAttribute(const AttributeModificationParams&) override;
-  void AccessKeyAction(bool) override;
+  void AccessKeyAction(SimulatedClickCreationScope) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;

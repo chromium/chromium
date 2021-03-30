@@ -26,7 +26,7 @@ scoped_refptr<FontFallbackList> FontFallbackMap::Get(
     return iter->value;
   }
   auto add_result = fallback_list_for_description_.insert(
-      font_description, FontFallbackList::Create(font_selector_));
+      font_description, FontFallbackList::Create(*this));
   return add_result.stored_value->value;
 }
 

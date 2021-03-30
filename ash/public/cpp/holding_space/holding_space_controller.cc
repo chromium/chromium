@@ -83,8 +83,10 @@ void HoldingSpaceController::SetClient(HoldingSpaceClient* client) {
 
 void HoldingSpaceController::SetModel(HoldingSpaceModel* model) {
   if (model_) {
+    HoldingSpaceModel* const old_model = model_;
+    model_ = nullptr;
     for (auto& observer : observers_)
-      observer.OnHoldingSpaceModelDetached(model_);
+      observer.OnHoldingSpaceModelDetached(old_model);
   }
 
   model_ = model;

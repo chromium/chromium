@@ -10,28 +10,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 interface GuestView {
-  // Tells the browser to create a mime handler guest view for a plugin.
-  // This method is only called when the network service is enabled, and only
-  // for plugins added using the embedded/object tag.
-  CreateEmbeddedMimeHandlerViewGuest(
-      int32 render_frame_id,
-      int32 tab_id,
-      url.mojom.Url original_url,
-      int32 element_instance_id,
-      gfx.mojom.Size element_size,
-      blink.mojom.TransferrableURLLoader transferrable_url_loader);
-
-  // Tells the browser to create a mime handler guest view for a plugin.
-  // This method is called for full-frame plugins or for all plugins when the
-  // network service is disabled.
-  CreateMimeHandlerViewGuest(
-      int32 render_frame_id,
-      string view_id,
-      int32 element_instance_id,
-      gfx.mojom.Size element_size,
-      pending_remote<extensions.mime_handler.BeforeUnloadControl>?
-          before_unload_control);
-
   // Notifies the browser whether or not now is a good time to start loading the
   // MimeHandlerView. |routing_id| identifies the embedder frame. If |success|
   // is false, then MimeHandlerViewEmbedder should destroy itself. When

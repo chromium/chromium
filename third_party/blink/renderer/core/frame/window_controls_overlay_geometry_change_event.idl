@@ -1,0 +1,15 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/window-controls-overlay/blob/master/explainer.md
+
+[
+    Exposed=Window,
+    RuntimeEnabled=WebAppWindowControlsOverlay
+] interface WindowControlsOverlayGeometryChangeEvent : Event {
+    constructor(DOMString type, WindowControlsOverlayGeometryChangeEventInit eventInitDict);
+    [SameObject] readonly attribute DOMRect boundingRect;
+    readonly attribute boolean visible;
+};
+

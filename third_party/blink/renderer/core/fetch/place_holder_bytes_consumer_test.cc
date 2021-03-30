@@ -70,7 +70,7 @@ TEST_F(PlaceHolderBytesConsumerTest, Update) {
 TEST_F(PlaceHolderBytesConsumerTest, DrainAsDataPipe) {
   mojo::ScopedDataPipeConsumerHandle consumer_end;
   mojo::ScopedDataPipeProducerHandle producer_end;
-  auto result = mojo::CreateDataPipe(nullptr, &producer_end, &consumer_end);
+  auto result = mojo::CreateDataPipe(nullptr, producer_end, consumer_end);
 
   ASSERT_EQ(result, MOJO_RESULT_OK);
 

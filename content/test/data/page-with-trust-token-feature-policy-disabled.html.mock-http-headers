@@ -1,2 +1,0 @@
-HTTP/1.0 200 OK
-Feature-Policy: trust-token-redemption 'none'

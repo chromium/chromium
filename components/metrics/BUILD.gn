@@ -92,6 +92,8 @@ static_library("metrics") {
     "persistent_system_profile.h",
     "reporting_service.cc",
     "reporting_service.h",
+    "sampling_metrics_provider.cc",
+    "sampling_metrics_provider.h",
     "stability_metrics_helper.cc",
     "stability_metrics_helper.h",
     "stability_metrics_provider.cc",
@@ -213,6 +215,9 @@ static_library("component_metrics") {
 if (!is_ios) {
   static_library("content") {
     sources = [
+      # ChromeOS accessibility metrics provider is in chromeos_metrics_provider.
+      "content/accessibility_metrics_provider.cc",
+      "content/accessibility_metrics_provider.h",
       "content/content_stability_metrics_provider.cc",
       "content/content_stability_metrics_provider.h",
       "content/extensions_helper.h",

@@ -47,7 +47,7 @@ HTMLFormControlElement::HTMLFormControlElement(const QualifiedName& tag_name,
       autofill_state_(WebAutofillState::kNotFilled),
       blocks_form_submission_(false) {
   SetHasCustomStyleCallbacks();
-  static unsigned next_free_unique_id = 0;
+  static unsigned next_free_unique_id = 1;
   unique_renderer_form_control_id_ = next_free_unique_id++;
 }
 

@@ -13,6 +13,12 @@ namespace switches {
 
 AX_BASE_EXPORT extern const char kEnableExperimentalAccessibilityAutoclick[];
 AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilityDictationExtension[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilityDictationOffline[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilityDictationListening[];
+AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLabelsDebugging[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLanguageDetection[];
@@ -20,9 +26,19 @@ AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLanguageDetectionDynamic[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilitySwitchAccessText[];
-AX_BASE_EXPORT extern const char
-    kEnableExperimentalAccessibilityChromeVoxAnnotations[];
 AX_BASE_EXPORT extern const char kEnableSwitchAccessPointScanning[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilitySwitchAccessSetupGuide[];
+
+// Returns true if experimental accessibility dictation extension is enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationExtensionEnabled();
+
+// Returns true if experimental accessibility offline dictation is enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationOfflineEnabled();
+
+// Returns true if experimental accessibility dictation listening features are
+// enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationListeningEnabled();
 
 // Returns true if experimental accessibility language detection is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityLanguageDetectionEnabled();

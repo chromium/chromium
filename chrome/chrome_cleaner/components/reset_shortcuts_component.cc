@@ -59,7 +59,22 @@ std::vector<base::FilePath> GetPathsToExplore() {
 
 void ResetShortcuts(std::vector<ShortcutInformation> shortcuts,
                     const FilePathSet& chrome_exe_paths) {
-  LOG(ERROR) << "Number of shortcuts to reset: " << shortcuts.size();
+  LOG(INFO) << "Number of shortcuts to reset: " << shortcuts.size();
+  if (chrome_exe_paths.empty()) {
+    LOG(ERROR)
+        << "No known paths to Chrome installations. Cannot reset shortcuts.";
+    return;
+  }
+  const base::FilePath& target_chrome_exe =
+      *chrome_exe_paths.file_paths().begin();
+  if (chrome_exe_paths.size() > 1) {
+    LOG(WARNING) << "More than one chrome.exe candidate for target_path. Path "
+                    "to be used: "
+                 << SanitizePath(target_chrome_exe);
+  }
+
+  const base::FilePath& chrome_exe_working_dir = target_chrome_exe.DirName();
+
   for (const ShortcutInformation& shortcut : shortcuts) {
     base::FilePath shortcut_path(shortcut.lnk_path);
     base::ScopedBlockingCall scoped_blocking_call(
@@ -68,7 +83,8 @@ void ResetShortcuts(std::vector<ShortcutInformation> shortcuts,
     // Clear arguments that are custom-made.
     base::win::ShortcutProperties updated_properties;
     // Use the first chrome.exe path in the set.
-    updated_properties.set_target(chrome_exe_paths.ToVector()[0]);
+    updated_properties.set_target(target_chrome_exe);
+    updated_properties.set_working_dir(chrome_exe_working_dir);
     // Additional Chrome profiles may have custom icons so the icon location
     // should be preserved.
     base::FilePath icon_location(shortcut.icon_location);
@@ -99,15 +115,10 @@ ResetShortcutsComponent::ResetShortcutsComponent(
     : shortcut_parser_(shortcut_parser) {
   shortcut_paths_to_explore_ = GetPathsToExplore();
 
-  std::set<base::FilePath> chrome_exe_paths;
-  ListChromeExePaths(&chrome_exe_paths);
-  for (const auto& path : chrome_exe_paths) {
-    chrome_exe_file_path_set_.Insert(path);
-  }
-  if (chrome_exe_paths.size() > 1) {
-    LOG(WARNING) << "More than one chrome.exe candidate for target_path. Path "
-                    "to be used: "
-                 << SanitizePath(chrome_exe_file_path_set_.ToVector()[0]);
+  std::set<base::FilePath> chrome_exe_directories;
+  ListChromeExeDirectories(&chrome_exe_directories);
+  for (const auto& path : chrome_exe_directories) {
+    chrome_exe_file_path_set_.Insert(path.Append(L"chrome.exe"));
   }
 }
 

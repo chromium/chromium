@@ -100,8 +100,6 @@ bool BaseBlockingPage::IsMainPageLoadBlocked(
          unsafe_resources[0].IsMainPageLoadBlocked();
 }
 
-void BaseBlockingPage::HandleSubresourcesAfterProceed() {}
-
 void BaseBlockingPage::SetThreatDetailsProceedDelayForTesting(int64_t delay) {
   threat_details_proceed_delay_ms_ = delay;
 }
@@ -160,18 +158,7 @@ std::string BaseBlockingPage::GetMetricPrefix(
     case BaseSafeBrowsingErrorUI::SB_REASON_BILLING:
       return primary_subresource ? "billing_subresource" : "billing";
     case BaseSafeBrowsingErrorUI::SB_REASON_PHISHING:
-      ThreatPatternType threat_pattern_type =
-          unsafe_resources[0].threat_metadata.threat_pattern_type;
-      if (threat_pattern_type == ThreatPatternType::PHISHING ||
-          threat_pattern_type == ThreatPatternType::NONE)
-        return primary_subresource ? "phishing_subresource" : "phishing";
-      else if (threat_pattern_type == ThreatPatternType::SOCIAL_ENGINEERING_ADS)
-        return primary_subresource ? "social_engineering_ads_subresource"
-                                   : "social_engineering_ads";
-      else if (threat_pattern_type ==
-               ThreatPatternType::SOCIAL_ENGINEERING_LANDING)
-        return primary_subresource ? "social_engineering_landing_subresource"
-                                   : "social_engineering_landing";
+      return primary_subresource ? "phishing_subresource" : "phishing";
   }
   NOTREACHED();
   return "unkown_metric_prefix";
@@ -182,19 +169,12 @@ std::string BaseBlockingPage::GetMetricPrefix(
 std::string BaseBlockingPage::GetExtraMetricsSuffix(
     const UnsafeResourceList& unsafe_resources) {
   switch (unsafe_resources[0].threat_source) {
-    case safe_browsing::ThreatSource::DATA_SAVER:
-      return "from_data_saver";
     case safe_browsing::ThreatSource::REMOTE:
-    case safe_browsing::ThreatSource::LOCAL_PVER3:
-      // REMOTE and LOCAL_PVER3 can be distinguished in the logs
-      // by platform type: Remote is mobile, local_pver3 is desktop.
       return "from_device";
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       return "from_device_v4";
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
       return "from_client_side_detection";
-    case safe_browsing::ThreatSource::PASSWORD_PROTECTION_SERVICE:
-      return "from_password_protection_service";
     case safe_browsing::ThreatSource::REAL_TIME_CHECK:
       return "from_real_time_check";
     case safe_browsing::ThreatSource::UNKNOWN:

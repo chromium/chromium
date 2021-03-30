@@ -85,10 +85,16 @@ class SocketDataPumpTest : public testing::Test,
   void Init(net::StaticSocketDataProvider* data_provider) {
     mock_client_socket_factory_.AddSocketDataProvider(data_provider);
     mock_client_socket_factory_.set_enable_read_if_ready(true);
-    mojo::DataPipe send_pipe;
-    mojo::DataPipe receive_pipe;
-    receive_handle_ = std::move(receive_pipe.consumer_handle);
-    send_handle_ = std::move(send_pipe.producer_handle);
+
+    mojo::ScopedDataPipeConsumerHandle send_consumer_handle;
+    ASSERT_EQ(mojo::CreateDataPipe(nullptr, send_handle_, send_consumer_handle),
+              MOJO_RESULT_OK);
+
+    mojo::ScopedDataPipeProducerHandle receive_producer_handle;
+    ASSERT_EQ(
+        mojo::CreateDataPipe(nullptr, receive_producer_handle, receive_handle_),
+        MOJO_RESULT_OK);
+
     socket_ = mock_client_socket_factory_.CreateTransportClientSocket(
         net::AddressList(), nullptr /*socket_performance_watcher*/,
         nullptr /*network_quality_estimator*/, nullptr /*netlog*/,
@@ -99,8 +105,8 @@ class SocketDataPumpTest : public testing::Test,
       result = callback.WaitForResult();
     EXPECT_EQ(net::OK, result);
     data_pump_ = std::make_unique<SocketDataPump>(
-        socket_.get(), delegate(), std::move(receive_pipe.producer_handle),
-        std::move(send_pipe.consumer_handle), TRAFFIC_ANNOTATION_FOR_TESTS);
+        socket_.get(), delegate(), std::move(receive_producer_handle),
+        std::move(send_consumer_handle), TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
   // Reads |num_bytes| from |handle| or reads until an error occurs. Returns the

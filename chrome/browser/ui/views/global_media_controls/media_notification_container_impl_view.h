@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
+#include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/browser/ui/views/global_media_controls/overlay_media_notification_view.h"
 #include "components/media_message_center/media_notification_container.h"
@@ -18,6 +19,7 @@
 #include "media/base/media_switches.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace media_message_center {
@@ -30,6 +32,7 @@ class ImageButton;
 class SlideOutController;
 }  // namespace views
 
+class CastMediaNotificationItem;
 class MediaNotificationDeviceSelectorView;
 class MediaNotificationContainerObserver;
 class MediaNotificationService;
@@ -45,12 +48,19 @@ class MediaNotificationContainerImplView
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
  public:
+  METADATA_HEADER(MediaNotificationContainerImplView);
+
   MediaNotificationContainerImplView(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       MediaNotificationService* service,
+      GlobalMediaControlsEntryPoint entry_point,
       base::Optional<media_message_center::NotificationTheme> theme =
           base::nullopt);
+  MediaNotificationContainerImplView(
+      const MediaNotificationContainerImplView&) = delete;
+  MediaNotificationContainerImplView& operator=(
+      const MediaNotificationContainerImplView&) = delete;
   ~MediaNotificationContainerImplView() override;
 
   // views::Button:
@@ -109,7 +119,7 @@ class MediaNotificationContainerImplView
   // Called when overlay notification is shown and setup |overlay_|.
   void OnOverlayNotificationShown(OverlayMediaNotificationView* overlay);
 
-  const base::string16& GetTitle();
+  const std::u16string& GetTitle() const;
 
   views::ImageButton* GetDismissButtonForTesting();
   views::Button* GetStopCastingButtonForTesting();
@@ -129,31 +139,26 @@ class MediaNotificationContainerImplView
  private:
   class DismissButton;
 
+  void AddStopCastButton(CastMediaNotificationItem* item);
+  void AddDeviceSelectorView(bool is_local_media_session);
+  void StopCasting(CastMediaNotificationItem* item);
   void UpdateDismissButtonIcon();
-
   void UpdateDismissButtonBackground();
-
   void UpdateDismissButtonVisibility();
-
   void DismissNotification();
-
   void CreateDragImageWidget();
-
   // Updates the forced expanded state of |view_|.
   void ForceExpandedState();
-
   // Notify observers that we've been clicked.
   void ContainerClicked();
-
   // True if we should handle the given mouse event for dragging purposes.
   bool ShouldHandleMouseEvent(const ui::MouseEvent& event, bool is_press);
-
   void OnSizeChanged();
 
   const std::string id_;
   views::View* swipeable_container_ = nullptr;
 
-  base::string16 title_;
+  std::u16string title_;
 
   // Always "visible" so that it reserves space in the header so that the
   // dismiss button can appear without forcing things to shift.
@@ -166,7 +171,7 @@ class MediaNotificationContainerImplView
 
   DismissButton* dismiss_button_ = nullptr;
   media_message_center::MediaNotificationView* view_ = nullptr;
-  MediaNotificationDeviceSelectorView* audio_device_selector_view_ = nullptr;
+  MediaNotificationDeviceSelectorView* device_selector_view_ = nullptr;
 
   // Only shows up for cast notifications.
   views::View* stop_button_strip_ = nullptr;
@@ -213,8 +218,7 @@ class MediaNotificationContainerImplView
   MediaNotificationService* const service_;
 
   const bool is_cros_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationContainerImplView);
+  const GlobalMediaControlsEntryPoint entry_point_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_CONTAINER_IMPL_VIEW_H_

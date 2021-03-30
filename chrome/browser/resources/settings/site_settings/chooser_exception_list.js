@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import './chooser_exception_list_entry.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -197,7 +197,7 @@ Polymer({
 
     if (!this.updateList(
             'chooserExceptions', x => x.displayName, exceptions,
-            true /* uidBasedUpdate */)) {
+            true /* identityBasedUpdate= */)) {
       // The chooser objects have not been changed, so check if their site
       // permissions have changed. The |exceptions| and |this.chooserExceptions|
       // arrays should be the same length.

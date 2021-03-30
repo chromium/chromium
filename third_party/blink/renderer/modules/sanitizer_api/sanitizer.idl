@@ -11,7 +11,7 @@ typedef (DOMString or TrustedHTML or DocumentFragment or Document) SanitizerInpu
   Exposed=Window,
   RuntimeEnabled=SanitizerAPI
 ] interface Sanitizer {
-  [RaisesException] constructor(optional SanitizerConfig config = {});
-  [CallWith=ScriptState, RaisesException] DOMString sanitizeToString(SanitizerInput input);
-  [CallWith=ScriptState, RaisesException] DocumentFragment sanitize(SanitizerInputWithTrustedHTML input);
+  [MeasureAs=SanitizerAPICreated, CallWith=ExecutionContext, RaisesException] constructor(optional SanitizerConfig config = {});
+  [MeasureAs=SanitizerAPIToString, CallWith=ScriptState, RaisesException] DOMString sanitizeToString(SanitizerInput input);
+  [MeasureAs=SanitizerAPIToFragment, CallWith=ScriptState, RaisesException] DocumentFragment sanitize(SanitizerInputWithTrustedHTML input);
 };

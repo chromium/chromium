@@ -20,6 +20,9 @@ class EligibleHostDevicesProviderImpl
     : public EligibleHostDevicesProvider,
       public device_sync::DeviceSyncClient::Observer {
  public:
+  static constexpr base::TimeDelta kInactiveDeviceThresholdInDays =
+      base::TimeDelta::FromDays(30);
+
   class Factory {
    public:
     static std::unique_ptr<EligibleHostDevicesProvider> Create(

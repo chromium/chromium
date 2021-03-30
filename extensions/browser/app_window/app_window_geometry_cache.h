@@ -14,7 +14,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -147,8 +147,8 @@ class AppWindowGeometryCache : public KeyedService,
   base::TimeDelta sync_delay_;
 
   // Listen to extension load, unloaded notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::ObserverList<Observer>::Unchecked observers_;
 };

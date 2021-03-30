@@ -56,13 +56,12 @@
 #endif
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_window.h"
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #endif
 
 namespace {
@@ -76,6 +75,9 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     // Allowed, because only used on Android and the primary account must be
     // cleared when the account is removed from device
     signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE,
+    // Allowed to force finish the account id migration.
+    signin_metrics::ACCOUNT_ID_MIGRATION,
+    // Allowed, for tests.
     signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST};
 
 SigninClient::SignoutDecision IsSignoutAllowed(
@@ -107,7 +109,6 @@ ChromeSigninClient::~ChromeSigninClient() {
 }
 
 void ChromeSigninClient::DoFinalInit() {
-  MaybeFetchSigninTokenHandle();
   VerifySyncToken();
 }
 
@@ -185,10 +186,10 @@ void ChromeSigninClient::PreSignOut(
     } else {
       BrowserList::CloseAllBrowsersWithProfile(
           profile_,
-          base::Bind(&ChromeSigninClient::OnCloseBrowsersSuccess,
-                     base::Unretained(this), signout_source_metric),
-          base::Bind(&ChromeSigninClient::OnCloseBrowsersAborted,
-                     base::Unretained(this)),
+          base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersSuccess,
+                              base::Unretained(this), signout_source_metric),
+          base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersAborted,
+                              base::Unretained(this)),
           signout_source_metric == signin_metrics::ABORT_SIGNIN ||
               signout_source_metric ==
                   signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN ||
@@ -201,46 +202,6 @@ void ChromeSigninClient::PreSignOut(
     std::move(on_signout_decision_reached_)
         .Run(IsSignoutAllowed(profile_, signout_source_metric));
   }
-}
-
-void ChromeSigninClient::OnGetTokenInfoResponse(
-    std::unique_ptr<base::DictionaryValue> token_info) {
-  if (!token_info->HasKey("error")) {
-    std::string handle;
-    if (token_info->GetString("token_handle", &handle)) {
-      ProfileAttributesEntry* entry = nullptr;
-      bool has_entry = g_browser_process->profile_manager()->
-          GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile_->GetPath(), &entry);
-      DCHECK(has_entry);
-      entry->SetPasswordChangeDetectionToken(handle);
-    }
-  }
-  access_token_fetcher_.reset();
-}
-
-void ChromeSigninClient::OnOAuthError() {
-  // Ignore the failure.  It's not essential and we'll try again next time.
-  access_token_fetcher_.reset();
-}
-
-void ChromeSigninClient::OnNetworkError(int response_code) {
-  // Ignore the failure.  It's not essential and we'll try again next time.
-  access_token_fetcher_.reset();
-}
-
-void ChromeSigninClient::OnAccessTokenAvailable(
-    GoogleServiceAuthError error,
-    signin::AccessTokenInfo access_token_info) {
-  access_token_fetcher_.reset();
-
-  // Exchange the access token for a handle that can be used for later
-  // verification that the token is still valid (i.e. the password has not
-  // been changed).
-  if (!oauth_client_) {
-    oauth_client_.reset(new gaia::GaiaOAuthClient(GetURLLoaderFactory()));
-  }
-  oauth_client_->GetTokenInfo(access_token_info.token, 3 /* retries */, this);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -290,36 +251,6 @@ void ChromeSigninClient::VerifySyncToken() {
   if (signin_util::IsForceSigninEnabled() && !force_signin_verifier_)
     force_signin_verifier_ = std::make_unique<ForceSigninVerifier>(
         IdentityManagerFactory::GetForProfile(profile_));
-#endif
-}
-
-void ChromeSigninClient::MaybeFetchSigninTokenHandle() {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // We get a "handle" that can be used to reference the signin token on the
-  // server.  We fetch this if we don't have one so that later we can check
-  // it to know if the signin token to which it is attached has been revoked
-  // and thus distinguish between a password mismatch due to the password
-  // being changed and the user simply mis-typing it.
-  if (profiles::IsLockAvailable(profile_)) {
-    ProfileAttributesStorage& storage =
-        g_browser_process->profile_manager()->GetProfileAttributesStorage();
-    ProfileAttributesEntry* entry;
-    // If we don't have a token for detecting a password change, create one.
-    if (storage.GetProfileAttributesWithPath(profile_->GetPath(), &entry) &&
-        entry->GetPasswordChangeDetectionToken().empty() &&
-        !access_token_fetcher_) {
-      auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-      if (identity_manager->HasPrimaryAccount()) {
-        const signin::ScopeSet scopes{GaiaConstants::kGoogleUserInfoEmail};
-        access_token_fetcher_ =
-            std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-                "chrome_signin_client", identity_manager, scopes,
-                base::BindOnce(&ChromeSigninClient::OnAccessTokenAvailable,
-                               base::Unretained(this)),
-                signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
-      }
-    }
-  }
 #endif
 }
 
@@ -373,19 +304,17 @@ void ChromeSigninClient::OnCloseBrowsersAborted(
 
 void ChromeSigninClient::LockForceSigninProfile(
     const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry;
-  bool has_entry =
+  ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath(), &entry);
-  if (!has_entry)
+          .GetProfileAttributesWithPath(profile_->GetPath());
+  if (!entry)
     return;
   entry->LockForceSigninProfile(true);
 }
 
 void ChromeSigninClient::ShowUserManager(const base::FilePath& profile_path) {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  UserManager::Show(profile_path,
-                    profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
 #endif
 }

@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/signin/oauth2_login_manager.h"
+#include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #endif
 
 class Profile;
@@ -61,8 +61,8 @@ class RendererUpdater : public KeyedService,
 #endif
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
-  void OnPrimaryAccountCleared(const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   // Update all renderers due to a configuration change.
   void UpdateAllRenderers();

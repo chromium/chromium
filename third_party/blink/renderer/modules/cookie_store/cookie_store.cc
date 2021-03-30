@@ -130,6 +130,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   //
   // The Cookie Store API can only set secure cookies, so it is unusable on
   // insecure origins.
+  // TODO(crbug.com/1153336) Use network::IsUrlPotentiallyTrustworthy().
   if (!SecurityOrigin::IsSecure(cookie_url)) {
     exception_state.ThrowTypeError(
         "Cannot modify a secure cookie on insecure origin");

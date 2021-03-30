@@ -55,8 +55,8 @@ class SystemMediaControlsNotifierTest : public testing::Test {
   void SimulateStopped() { notifier_->MediaSessionInfoChanged(nullptr); }
 
   void SimulateMetadataChanged(bool empty,
-                               base::string16 title,
-                               base::string16 artist) {
+                               std::u16string title,
+                               std::u16string artist) {
     if (!empty) {
       media_session::MediaMetadata metadata;
       metadata.title = title;
@@ -118,8 +118,8 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesPlaybackState) {
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesMetadata) {
-  base::string16 title = base::ASCIIToUTF16("title");
-  base::string16 artist = base::ASCIIToUTF16("artist");
+  std::u16string title = u"title";
+  std::u16string artist = u"artist";
 
   EXPECT_CALL(mock_system_media_controls(), SetTitle(title));
   EXPECT_CALL(mock_system_media_controls(), SetArtist(artist));
@@ -134,7 +134,7 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesNullMetadata) {
   EXPECT_CALL(mock_system_media_controls(), SetArtist(_)).Times(0);
   EXPECT_CALL(mock_system_media_controls(), ClearMetadata());
 
-  SimulateMetadataChanged(true, base::string16(), base::string16());
+  SimulateMetadataChanged(true, std::u16string(), std::u16string());
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesImage) {

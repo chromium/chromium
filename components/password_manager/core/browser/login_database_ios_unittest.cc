@@ -84,17 +84,18 @@ size_t LoginDatabaseIOSTest::GetKeychainSize() {
 }
 
 TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
-  base::string16 test_passwords[] = {
-      base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar"),
-      base::WideToUTF16(L"\u043F\u0430\u0440\u043E\u043B\u044C"),
-      base::string16(),
+  std::u16string test_passwords[] = {
+      u"foo",
+      u"bar",
+      u"\u043F\u0430\u0440\u043E\u043B\u044C",
+      std::u16string(),
   };
 
   for (unsigned int i = 0; i < base::size(test_passwords); i++) {
     std::string encrypted;
     EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
               login_db_->EncryptedString(test_passwords[i], &encrypted));
-    base::string16 decrypted;
+    std::u16string decrypted;
     EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
               login_db_->DecryptedString(encrypted, &decrypted));
     EXPECT_STREQ(UTF16ToUTF8(test_passwords[i]).c_str(),
@@ -109,8 +110,8 @@ TEST_F(LoginDatabaseIOSTest, AddLogin) {
   form.url = GURL("http://0.com");
   form.signon_realm = "http://www.example.com/";
   form.action = GURL("http://www.example.com/action");
-  form.password_element = base::ASCIIToUTF16("pwd");
-  form.password_value = base::ASCIIToUTF16("example");
+  form.password_element = u"pwd";
+  form.password_value = u"example";
 
   password_manager::PasswordStoreChangeList changes = login_db_->AddLogin(form);
   std::string encrypted_password = changes[0].form().encrypted_password;
@@ -138,12 +139,12 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   form.url = GURL("http://0.com");
   form.signon_realm = "http://www.example.com";
   form.action = GURL("http://www.example.com/action");
-  form.password_element = base::ASCIIToUTF16("pwd");
-  form.password_value = base::ASCIIToUTF16("example");
+  form.password_element = u"pwd";
+  form.password_value = u"example";
 
   ignore_result(login_db_->AddLogin(form));
 
-  form.password_value = base::ASCIIToUTF16("secret");
+  form.password_value = u"secret";
 
   password_manager::PasswordStoreChangeList changes =
       login_db_->UpdateLogin(form);
@@ -161,8 +162,8 @@ TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
   PasswordForm form;
   form.signon_realm = "www.example.com";
   form.action = GURL("www.example.com/action");
-  form.password_element = base::ASCIIToUTF16("pwd");
-  form.password_value = base::ASCIIToUTF16("example");
+  form.password_element = u"pwd";
+  form.password_value = u"example";
 
   ignore_result(login_db_->AddLogin(form));
 
@@ -179,21 +180,21 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   PasswordForm forms[3];
   forms[0].url = GURL("http://0.com");
   forms[0].signon_realm = "http://www.example.com";
-  forms[0].username_element = base::ASCIIToUTF16("login0");
+  forms[0].username_element = u"login0";
   forms[0].date_created = base::Time::FromDoubleT(100);
-  forms[0].password_value = base::ASCIIToUTF16("pass0");
+  forms[0].password_value = u"pass0";
 
   forms[1].url = GURL("http://1.com");
   forms[1].signon_realm = "http://www.example.com";
-  forms[1].username_element = base::ASCIIToUTF16("login1");
+  forms[1].username_element = u"login1";
   forms[1].date_created = base::Time::FromDoubleT(200);
-  forms[1].password_value = base::ASCIIToUTF16("pass1");
+  forms[1].password_value = u"pass1";
 
   forms[2].url = GURL("http://2.com");
   forms[2].signon_realm = "http://www.example.com";
-  forms[2].username_element = base::ASCIIToUTF16("login2");
+  forms[2].username_element = u"login2";
   forms[2].date_created = base::Time::FromDoubleT(300);
-  forms[2].password_value = base::ASCIIToUTF16("pass2");
+  forms[2].password_value = u"pass2";
 
   for (size_t i = 0; i < base::size(forms); i++) {
     ignore_result(login_db_->AddLogin(forms[i]));

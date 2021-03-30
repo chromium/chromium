@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/threading/thread_restrictions.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/worker_resource_timing_notifier_impl.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/workers/cross_thread_global_scope_creation_params_copier.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
@@ -188,10 +190,10 @@ void WorkerThread::Start(
 
   PostCrossThreadTask(
       *GetWorkerBackingThread().BackingThread().GetTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(
-          &WorkerThread::InitializeOnWorkerThread, CrossThreadUnretained(this),
-          WTF::Passed(std::move(global_scope_creation_params)),
-          thread_startup_data, WTF::Passed(std::move(devtools_params))));
+      CrossThreadBindOnce(&WorkerThread::InitializeOnWorkerThread,
+                          CrossThreadUnretained(this),
+                          std::move(global_scope_creation_params),
+                          thread_startup_data, std::move(devtools_params)));
 }
 
 void WorkerThread::EvaluateClassicScript(
@@ -204,7 +206,7 @@ void WorkerThread::EvaluateClassicScript(
       *GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
       CrossThreadBindOnce(&WorkerThread::EvaluateClassicScriptOnWorkerThread,
                           CrossThreadUnretained(this), script_url, source_code,
-                          WTF::Passed(std::move(cached_meta_data)), stack_id));
+                          std::move(cached_meta_data), stack_id));
 }
 
 void WorkerThread::FetchAndRunClassicScript(
@@ -221,8 +223,8 @@ void WorkerThread::FetchAndRunClassicScript(
       CrossThreadBindOnce(
           &WorkerThread::FetchAndRunClassicScriptOnWorkerThread,
           CrossThreadUnretained(this), script_url,
-          WTF::Passed(std::move(worker_main_script_load_params)),
-          WTF::Passed(std::move(outside_settings_object_data)),
+          std::move(worker_main_script_load_params),
+          std::move(outside_settings_object_data),
           WrapCrossThreadPersistent(outside_resource_timing_notifier),
           stack_id));
 }
@@ -242,8 +244,8 @@ void WorkerThread::FetchAndRunModuleScript(
       CrossThreadBindOnce(
           &WorkerThread::FetchAndRunModuleScriptOnWorkerThread,
           CrossThreadUnretained(this), script_url,
-          WTF::Passed(std::move(worker_main_script_load_params)),
-          WTF::Passed(std::move(outside_settings_object_data)),
+          std::move(worker_main_script_load_params),
+          std::move(outside_settings_object_data),
           WrapCrossThreadPersistent(outside_resource_timing_notifier),
           credentials_mode, reject_coep_unsafe_none.value()));
 }
@@ -398,10 +400,6 @@ HashSet<WorkerThread*>& WorkerThread::InitializingWorkerThreads() {
 HashSet<WorkerThread*>& WorkerThread::WorkerThreads() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<WorkerThread*>, threads, ());
   return threads;
-}
-
-PlatformThreadId WorkerThread::GetPlatformThreadId() {
-  return GetWorkerBackingThread().BackingThread().ThreadId();
 }
 
 bool WorkerThread::IsForciblyTerminated() {
@@ -580,6 +578,7 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
       TaskType::kPostedMessage,
       TaskType::kRemoteEvent,
       TaskType::kUserInteraction,
+      TaskType::kWakeLock,
       TaskType::kWebGL,
       TaskType::kWebLocks,
       TaskType::kWebSocket,

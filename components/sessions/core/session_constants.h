@@ -16,13 +16,23 @@ extern const base::FilePath::StringPieceType SESSIONS_EXPORT kSessionsDirectory;
 
 // File name prefix for a type of TAB.
 // Added in Chrome 85.
-extern const base::FilePath::StringPieceType SESSIONS_EXPORT
-    kTabSessionFileNamePrefix;
+extern const base::FilePath::CharType SESSIONS_EXPORT
+    kTabSessionFileNamePrefix[];
 
 // File name prefix for a type of SESSION.
 // Added in Chrome 85.
-extern const base::FilePath::StringPieceType SESSIONS_EXPORT
-    kSessionFileNamePrefix;
+extern const base::FilePath::CharType SESSIONS_EXPORT kSessionFileNamePrefix[];
+
+// File name prefix for a type of APP.
+// Added in Chrome 91.
+extern const base::FilePath::CharType SESSIONS_EXPORT
+    kAppSessionFileNamePrefix[];
+
+// Separator between the file name (such as `kSessionFileNamePrefix`) and the
+// timestamp.
+extern const base::FilePath::CharType SESSIONS_EXPORT kTimestampSeparator[];
+
+// TODO(sky): remove the legacy files around ~1/2022.
 
 // Legacy file names (current and previous) for a type of TAB.
 // Used before Chrome 85.

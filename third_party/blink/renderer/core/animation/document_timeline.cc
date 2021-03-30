@@ -44,10 +44,11 @@ namespace {
 
 // Returns the current animation time for a given |document|. This is
 // the animation clock time capped to be at least this document's
-// ZeroTime() such that the animation time is never negative when converted.
+// CalculateZeroTime() such that the animation time is never negative when
+// converted.
 base::TimeTicks CurrentAnimationTime(Document* document) {
   base::TimeTicks animation_time = document->GetAnimationClock().CurrentTime();
-  base::TimeTicks document_zero_time = document->Timeline().ZeroTime();
+  base::TimeTicks document_zero_time = document->Timeline().CalculateZeroTime();
 
   // The AnimationClock time may be null or less than the local document's
   // zero time if we have not generated any frames for this document yet. If
@@ -142,10 +143,11 @@ void DocumentTimeline::DocumentTimelineTiming::WakeAfter(
 
 void DocumentTimeline::DocumentTimelineTiming::Trace(Visitor* visitor) const {
   visitor->Trace(timeline_);
+  visitor->Trace(timer_);
   DocumentTimeline::PlatformTiming::Trace(visitor);
 }
 
-base::TimeTicks DocumentTimeline::ZeroTime() {
+base::TimeTicks DocumentTimeline::CalculateZeroTime() {
   if (!zero_time_initialized_ && document_->Loader()) {
     zero_time_ = document_->Loader()->GetTiming().ReferenceMonotonicTime() +
                  origin_time_;
@@ -172,12 +174,14 @@ AnimationTimeline::PhaseAndTime DocumentTimeline::CurrentPhaseAndTime() {
 
   base::Optional<base::TimeDelta> result =
       playback_rate_ == 0
-          ? ZeroTime().since_origin()
-          : (CurrentAnimationTime(GetDocument()) - ZeroTime()) * playback_rate_;
+          ? CalculateZeroTime().since_origin()
+          : (CurrentAnimationTime(GetDocument()) - CalculateZeroTime()) *
+                playback_rate_;
   return {TimelinePhase::kActive, result};
 }
 
-void DocumentTimeline::PauseAnimationsForTesting(double pause_time) {
+void DocumentTimeline::PauseAnimationsForTesting(
+    AnimationTimeDelta pause_time) {
   for (const auto& animation : animations_needing_update_)
     animation->PauseForTesting(pause_time);
   ServiceAnimations(kTimingUpdateOnDemand);

@@ -16,7 +16,10 @@ namespace base {
 class TimeTicks;
 }  // namespace base
 
+namespace breadcrumbs {
 class BreadcrumbManager;
+}  // namespace breadcrumbs
+
 class BreadcrumbPersistentStorageManager;
 
 // Name of event logged when device orientation is changed.
@@ -26,7 +29,8 @@ extern const char kBreadcrumbOrientation[];
 // BreadcrumbManager passed in the constructor.
 class ApplicationBreadcrumbsLogger {
  public:
-  explicit ApplicationBreadcrumbsLogger(BreadcrumbManager* breadcrumb_manager);
+  explicit ApplicationBreadcrumbsLogger(
+      breadcrumbs::BreadcrumbManager* breadcrumb_manager);
   ~ApplicationBreadcrumbsLogger();
 
   // Sets a BreadcrumbPersistentStorageManager to persist application breadcrumb
@@ -55,7 +59,7 @@ class ApplicationBreadcrumbsLogger {
   static bool IsUserTriggeredAction(const std::string& action);
 
   // The BreadcrumbManager to log events.
-  BreadcrumbManager* breadcrumb_manager_;
+  breadcrumbs::BreadcrumbManager* breadcrumb_manager_;
   // The callback invoked whenever a user action is registered.
   base::ActionCallback user_action_callback_;
   // A memory pressure listener which observes memory pressure events.

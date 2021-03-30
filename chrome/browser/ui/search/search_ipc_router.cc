@@ -86,6 +86,7 @@ void EmbeddedSearchClientFactoryImpl::Connect(
   if (!IsInInstantProcess(frame) || !is_main_frame) {
     return;
   }
+  client_receiver_->reset();
   client_receiver_->Bind(std::move(receiver));
   embedded_search_client_.reset();
   embedded_search_client_.Bind(std::move(client));
@@ -374,7 +375,7 @@ void SearchIPCRouter::LogMostVisitedNavigation(
 }
 
 void SearchIPCRouter::PasteAndOpenDropdown(int page_seq_no,
-                                           const base::string16& text) {
+                                           const std::u16string& text) {
   if (page_seq_no != commit_counter_)
     return;
 
@@ -475,7 +476,7 @@ void SearchIPCRouter::ConfirmThemeChanges() {
   delegate_->OnConfirmThemeChanges();
 }
 
-void SearchIPCRouter::QueryAutocomplete(const base::string16& input,
+void SearchIPCRouter::QueryAutocomplete(const std::u16string& input,
                                         bool prevent_inline_autocomplete) {
   if (!policy_->ShouldProcessQueryAutocomplete(is_active_tab_)) {
     return;

@@ -9,13 +9,13 @@
 #include <stdint.h>
 
 #if defined(OS_WIN)
+#include <string>
 #include <vector>
 #endif
 
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -36,6 +36,8 @@ class KeyEvent;
 enum class TextEditCommand;
 
 // An interface implemented by a View that needs text input support.
+// All strings related to IME operations should be UTF-16 encoded and all
+// indices/ranges relative to those strings should be UTF-16 code units.
 class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
  public:
   // The reason the control was focused, used by the virtual keyboard to detect
@@ -95,7 +97,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // Inserts a given text at the insertion point. Current composition text or
   // selection will be removed. This method should never be called when the
   // current text input type is TEXT_INPUT_TYPE_NONE.
-  virtual void InsertText(const base::string16& text,
+  virtual void InsertText(const std::u16string& text,
                           InsertTextCursorBehavior cursor_behavior) = 0;
 
   // Inserts a single char at the insertion point. Unlike above InsertText()
@@ -185,7 +187,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // Returns false if the operation is not supported or the specified range
   // is out of the text range returned by GetTextRange().
   virtual bool GetTextFromRange(const gfx::Range& range,
-                                base::string16* text) const = 0;
+                                std::u16string* text) const = 0;
 
   // Miscellaneous ------------------------------------------------------------
 
@@ -277,7 +279,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // composition has been committed or not.
   virtual void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
-      const base::string16& active_composition_text,
+      const std::u16string& active_composition_text,
       bool is_composition_committed) = 0;
 #endif
 

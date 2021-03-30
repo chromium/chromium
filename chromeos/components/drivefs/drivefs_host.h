@@ -49,6 +49,9 @@ class DriveFsHostObserver;
 class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
  public:
   using MountObserver = DriveFsSession::MountObserver;
+  using DialogHandler = base::RepeatingCallback<void(
+      const mojom::DialogReason&,
+      base::OnceCallback<void(mojom::DialogResult)>)>;
 
   class Delegate : public DriveFsAuth::Delegate {
    public:
@@ -105,6 +108,10 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
       mojom::QueryParametersPtr query,
       mojom::SearchQuery::GetNextPageCallback callback);
 
+  void set_dialog_handler(DialogHandler dialog_handler) {
+    dialog_handler_ = dialog_handler;
+  }
+
  private:
   class AccountTokenDelegate;
   class MountState;
@@ -129,6 +136,7 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
   std::unique_ptr<MountState> mount_state_;
 
   base::ObserverList<DriveFsHostObserver>::Unchecked observers_;
+  DialogHandler dialog_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(DriveFsHost);
 };

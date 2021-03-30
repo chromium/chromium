@@ -23,6 +23,7 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    DeviceInfoUtil::GetPulseInterval(),
                    /*send_tab_to_self_receiving_enabled=*/false,
                    /*sharing_info=*/base::nullopt,
+                   /*paask_info=*/base::nullopt,
                    /*fcm_registration_token=*/std::string(),
                    /*interested_data_types=*/ModelTypeSet()) {}
 
@@ -40,14 +41,14 @@ const DeviceInfo* FakeLocalDeviceInfoProvider::GetLocalDeviceInfo() const {
 base::CallbackListSubscription
 FakeLocalDeviceInfoProvider::RegisterOnInitializedCallback(
     const base::RepeatingClosure& callback) {
-  return callback_list_.Add(callback);
+  return closure_list_.Add(callback);
 }
 
 void FakeLocalDeviceInfoProvider::SetReady(bool ready) {
   bool got_ready = !ready_ && ready;
   ready_ = ready;
   if (got_ready)
-    callback_list_.Notify();
+    closure_list_.Notify();
 }
 
 DeviceInfo* FakeLocalDeviceInfoProvider::GetMutableDeviceInfo() {

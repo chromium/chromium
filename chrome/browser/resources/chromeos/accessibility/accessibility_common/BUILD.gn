@@ -27,6 +27,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "accessibility_common_loader.js",
     "autoclick/autoclick.js",
     "background.html",
+    "dictation/dictation.js",
     "magnifier/magnifier.js",
   ]
   rewrite_rules = [
@@ -62,6 +63,7 @@ js2gtest("accessibility_common_extjs_tests") {
   sources = [
     "accessibility_common_test.js",
     "autoclick/autoclick_test.js",
+    "dictation/dictation_test.js",
     "magnifier/magnifier_test.js",
   ]
   gen_include_files = [
@@ -90,12 +92,14 @@ js_library("accessibility_common") {
   sources = [ "accessibility_common_loader.js" ]
   deps = [
     ":autoclick",
+    ":dictation",
     ":magnifier",
     "../common:event_handler",
     "../common:instance_checker",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
+    "$externs_path/accessibility_features.js",
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",
   ]
@@ -113,4 +117,8 @@ js_library("autoclick") {
 js_library("magnifier") {
   sources = [ "magnifier/magnifier.js" ]
   externs_list = [ "$externs_path/settings_private.js" ]
+}
+
+js_library("dictation") {
+  sources = [ "dictation/dictation.js" ]
 }

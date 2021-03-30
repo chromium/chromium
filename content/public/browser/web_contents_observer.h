@@ -25,7 +25,6 @@
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -51,7 +50,6 @@ class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHost;
 class WebContents;
-class WebContentsImpl;
 struct AXEventNotificationDetails;
 struct AXLocationChangeNotificationDetails;
 struct EntryChangedDetails;
@@ -62,7 +60,10 @@ struct PrunedDetails;
 struct Referrer;
 
 // An observer API implemented by classes which are interested in various page
-// load events from WebContents.  They also get a chance to filter IPC messages.
+// events from WebContents.  They also get a chance to filter IPC messages.
+// The difference between WebContentsDelegate (WCD) and WebContentsObserver
+// (WCO) is that there is one WCD per WebContents and many WCOs. Methods which
+// have a return value, e.g. are expected to change state, should be on WCD.
 //
 // Since a WebContents can be a delegate to almost arbitrarily many
 // RenderViewHosts, it is important to check in those WebContentsObserver
@@ -106,10 +107,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Use |RenderFrameHostChanged| to listen for when a RenderFrameHost object is
   // made the current host for a frame.
   virtual void FrameDeleted(RenderFrameHost* render_frame_host) {}
-
-  // This is called when a RVH is created for a WebContents, but not if it's an
-  // interstitial.
-  virtual void RenderViewCreated(RenderViewHost* render_view_host) {}
 
   // This method is invoked when the RenderView of the current RenderViewHost
   // is ready, e.g. because we recreated it after a crash.
@@ -238,14 +235,19 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void LoadProgressChanged(double progress) {}
 
   // This method is invoked once the window.document object of the main frame
-  // was created.
-  virtual void DocumentAvailableInMainFrame() {}
+  // was created. Since the WebContents could be hosting more than one main
+  // frame (e.g. prerendered page), the |render_frame_host| represents the frame
+  // where the event happened.
+  virtual void DocumentAvailableInMainFrame(
+      RenderFrameHost* render_frame_host) {}
 
   // This method is invoked once the onload handler of the main frame has
-  // completed.
+  // completed. Since the WebContents could be hosting more than one main frame,
+  // the |render_frame_host| represents the frame where the event happened.
   // Prefer using WebContents::IsDocumentOnLoadCompletedInMainFrame instead
   // of saving this state in your component.
-  virtual void DocumentOnLoadCompletedInMainFrame() {}
+  virtual void DocumentOnLoadCompletedInMainFrame(
+      RenderFrameHost* render_frame_host) {}
 
   // This method is invoked when the document in the given frame finished
   // loading. At this point, scripts marked as defer were executed, and
@@ -388,6 +390,13 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Invoked when a frame changes size.
   virtual void FrameSizeChanged(RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) {}
+
+  // Invoked when the state of `RenderFrameHost::IsInBackForwardCache()`
+  // changes.
+  // TODO(crbug.com/1113357): replace this with
+  // RenderFrameHostStateChanged when it's available.
+  virtual void FrameBackForwardCacheStateChanged(
+      RenderFrameHost* render_frame_host) {}
 
   // This method is invoked when the title of the WebContents is set. Note that
   // |entry| may be null if the web page whose title changed has not yet had a
@@ -538,10 +547,10 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void OnDidAddMessageToConsole(
       RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::string16& source_id,
-      const base::Optional<base::string16>& untrusted_stack_trace) {}
+      const std::u16string& source_id,
+      const base::Optional<std::u16string>& untrusted_stack_trace) {}
 
   // Invoked when media is playing or paused.  |id| is unique per player and per
   // RenderFrameHost.  There may be multiple players within a RenderFrameHost
@@ -646,17 +655,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void OnServiceWorkerAccessed(NavigationHandle* navigation_handle,
                                        const GURL& scope,
                                        AllowServiceWorkerResult allowed) {}
-  virtual bool ShowPopupMenu(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-      const gfx::Rect& bounds,
-      int32_t item_height,
-      double font_size,
-      int32_t selected_item,
-      std::vector<blink::mojom::MenuItemPtr>* menu_items,
-      bool right_aligned,
-      bool allow_multiple_selection);
-
   // IPC::Listener implementation.
   // DEPRECATED: Use (i.e. override) the other overload instead:
   //     virtual bool OnMessageReceived(const IPC::Message& message,
@@ -686,7 +684,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
 
   void ResetWebContents();
 
-  WebContentsImpl* web_contents_;
+  WebContents* web_contents_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
 };

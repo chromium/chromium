@@ -12,3 +12,9 @@ include_rules = [
   "+ui/views",
   "+ui/webui",
 ]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+content/public/test",
+  ],
+}

@@ -53,8 +53,9 @@ id<ApplicationCommands, BrowserCommands> HandlerForActiveBrowser();
 // Removes all presented infobars.
 void RemoveAllInfoBars();
 
-// Dismisses all presented views and modal dialogs.
-void ClearPresentedState();
+// Dismisses all presented views and modal dialogs. |completion| is invoked when
+// all the views are dismissed.
+void ClearPresentedState(ProceduralBlock completion);
 
 // Sets the value of a boolean local state pref.
 // TODO(crbug.com/647022): Clean up other tests that use this helper function.

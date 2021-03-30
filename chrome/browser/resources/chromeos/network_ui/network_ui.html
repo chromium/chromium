@@ -1,135 +1,114 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style>
+  .button-group > cr-button {
+    margin-inline-start: 10px;
+  }
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_select.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network_health/network_diagnostics.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network_health/network_health_summary.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_tabs/cr_tabs.html">
-<link rel="import" href="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.html">
-<link rel="import" href="chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
-<link rel="import" href="network_ui_browser_proxy.html">
-<link rel="import" href="network_state_ui.html">
-<link rel="import" href="network_logs_ui.html">
+  .tabpanel > div {
+    margin-bottom: 10px;
+  }
 
-<dom-module id="network-ui">
-  <template>
-    <style>
-      .button-group > cr-button {
-        margin-inline-start: 10px;
-      }
+  #global-policy {
+    white-space: pre-wrap;
+  }
 
-      .tabpanel > div {
-        margin-bottom: 10px;
-      }
+  #select-div {
+    display: flex;
+    height: 400px;
+    width: 500px;
+  }
 
-      #global-policy {
-        white-space: pre-wrap;
-      }
+  #onc-import-result {
+    margin: 10px 0
+  }
 
-      #select-div {
-        display: flex;
-        height: 400px;
-        width: 500px;
-      }
+  iron-pages {
+    flex: 1;
+    position: relative;
+  }
 
-      #onc-import-result {
-        margin: 10px 0
-      }
+  network-select {
+    flex: 1;
+  }
 
-      iron-pages {
-        flex: 1;
-        position: relative;
-      }
+  .error {
+    color: red;
+  }
+</style>
 
-      network-select {
-        flex: 1;
-      }
+<cr-tabs selected="{{selectedTab_}}" tab-names="[[tabNames_]]">
+</cr-tabs>
+<iron-pages selected="[[selectedTab_]]">
+  <div class="tabpanel" id="general">
+    <h2>$i18n{titleText}</h2>
+    <div>
+      <h2>$i18n{globalPolicyLabel}</h2>
+      <div id="global-policy"></div>
+    </div>
 
-      .error {
-        color: red;
-      }
-    </style>
+    <div>
+      <h2>$i18n{dhcpHostnameLabel}</h2>
+      <cr-input id="hostnameInput" value="{{hostname_}}"
+          on-change="onHostnameChanged_">
+      </cr-input>
+    </div>
 
-    <cr-tabs selected="{{selectedTab_}}" tab-names="[[tabNames_]]">
-    </cr-tabs>
-    <iron-pages selected="[[selectedTab_]]">
-      <div class="tabpanel" id="general">
-        <h2>$i18n{titleText}</h2>
-        <div>
-          <h2>$i18n{globalPolicyLabel}</h2>
-          <div id="global-policy"></div>
-        </div>
-
-        <div>
-          <h2>$i18n{dhcpHostnameLabel}</h2>
-          <cr-input id="hostnameInput" value="{{hostname_}}"
-              on-change="onHostnameChanged_">
-          </cr-input>
-        </div>
-
-        <div>
-          <h2>$i18n{cellularActivationLabel}</h2>
-          <cr-button class="action-button" id="cellular-activation-button"
-              on-click="openCellularActivationUi_">
-            $i18n{cellularActivationButtonText}
-          </cr-button>
-          <div id="cellular-error-text" class="error" hidden>
-            $i18n{noCellularErrorText}
-          </div>
-        </div>
-
-        <div>
-          <h2>$i18n{addNewWifiLabel}</h2>
-          <cr-button class="action-button" id="add-new-wifi-button"
-              on-click="showAddNewWifi_">
-            $i18n{addNewWifiButtonText}
-          </cr-button>
-        </div>
-
-        <div>
-          <h2>$i18n{importOncButtonText}</h2>
-          <input type="file" id="import-onc" on-change="onImportOncChange_">
-          <div id="onc-import-result"></div>
-        </div>
+    <div>
+      <h2>$i18n{cellularActivationLabel}</h2>
+      <cr-button class="action-button" id="cellular-activation-button"
+          on-click="openCellularActivationUi_">
+        $i18n{cellularActivationButtonText}
+      </cr-button>
+      <div id="cellular-error-text" class="error" hidden>
+        $i18n{noCellularErrorText}
       </div>
+    </div>
 
-      <div class="tabpanel" id="health">
-        <h2>$i18n{networkHealthLabel}</h2>
-        <network-health-summary></network-health-summary>
-        <h2>$i18n{networkDiagnosticsLabel}</h2>
-        <div class="button-group">
-          <cr-button on-click="onRunAllRoutinesClick_">
-            [[i18n('NetworkDiagnosticsRunAll')]]
-          </cr-button>
-          <cr-button on-click="onSendFeedbackReportClick_">
-            [[i18n('NetworkDiagnosticsSendFeedback')]]
-          </cr-button>
-        </div>
-        <network-diagnostics id="network-diagnostics"
-            on-open-feedback-dialog="onOpenFeedbackDialog_">
-        </network-diagnostics>
-      </div>
+    <div>
+      <h2>$i18n{addNewWifiLabel}</h2>
+      <cr-button class="action-button" id="add-new-wifi-button"
+          on-click="showAddNewWifi_">
+        $i18n{addNewWifiButtonText}
+      </cr-button>
+    </div>
 
-      <div class="tabpanel" id="logs">
-        <network-logs-ui></network-logs-ui>
-      </div>
+    <div>
+      <h2>$i18n{importOncButtonText}</h2>
+      <input type="file" id="import-onc" on-change="onImportOncChange_">
+      <div id="onc-import-result"></div>
+    </div>
+  </div>
 
-      <div class="tabpanel" id="state">
-        <network-state-ui></network-state-ui>
-      </div>
+  <div class="tabpanel" id="health">
+    <h2>$i18n{networkHealthLabel}</h2>
+    <network-health-summary></network-health-summary>
+    <h2>$i18n{networkDiagnosticsLabel}</h2>
+    <div class="button-group">
+      <cr-button on-click="onRunAllRoutinesClick_">
+        [[i18n('NetworkDiagnosticsRunAll')]]
+      </cr-button>
+      <cr-button on-click="onSendFeedbackReportClick_">
+        [[i18n('NetworkDiagnosticsSendFeedback')]]
+      </cr-button>
+    </div>
+    <network-diagnostics id="network-diagnostics"
+        on-open-feedback-dialog="onOpenFeedbackDialog_">
+    </network-diagnostics>
+  </div>
 
-      <div class="tabpanel" id="select">
-        <div id="select-div">
-          <network-select
-              on-network-item-selected="onNetworkItemSelected_"
-              on-custom-item-selected="onCustomItemSelected_">
-          </network-select>
-        </div>
-      </div>
-    </iron-pages>
-  </template>
-  <script src="network_ui.js"></script>
-</dom-module>
+  <div class="tabpanel" id="logs">
+    <network-logs-ui></network-logs-ui>
+  </div>
+
+  <div class="tabpanel" id="state">
+    <network-state-ui></network-state-ui>
+  </div>
+
+  <div class="tabpanel" id="select">
+    <div id="select-div">
+      <network-select
+          on-network-item-selected="onNetworkItemSelected_"
+          on-custom-item-selected="onCustomItemSelected_">
+      </network-select>
+    </div>
+  </div>
+</iron-pages>

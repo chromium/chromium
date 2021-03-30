@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 
-#include "chrome/browser/chromeos/login/screens/offline_login_screen.h"
+#include "chrome/browser/ash/login/screens/offline_login_screen.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "components/user_manager/known_user.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace chromeos {
 
@@ -28,6 +30,8 @@ void OfflineLoginScreenHandler::RegisterMessages() {
   BaseScreenHandler::RegisterMessages();
   AddCallback("completeOfflineAuthentication",
               &OfflineLoginScreenHandler::HandleCompleteAuth);
+  AddCallback("OfflineLogin.onEmailSubmitted",
+              &OfflineLoginScreenHandler::HandleEmailSubmitted);
 }
 
 void OfflineLoginScreenHandler::DeclareLocalizedValues(
@@ -43,6 +47,9 @@ void OfflineLoginScreenHandler::DeclareLocalizedValues(
   builder->Add("offlineLoginForgotPasswordDlg",
                IDS_OFFLINE_LOGIN_FORGOT_PASSWORD_DIALOG_TEXT);
   builder->Add("offlineLoginCloseBtn", IDS_OFFLINE_LOGIN_CLOSE_BUTTON_TEXT);
+  builder->Add("offlineLoginWarningTitle", IDS_OFFLINE_LOGIN_WARNING_TITLE);
+  builder->Add("offlineLoginWarning", IDS_OFFLINE_LOGIN_WARNING_TEXT);
+  builder->Add("offlineLoginOkBtn", IDS_OFFLINE_LOGIN_OK_BUTTON_TEXT);
 }
 
 void OfflineLoginScreenHandler::Initialize() {
@@ -84,8 +91,21 @@ void OfflineLoginScreenHandler::HandleCompleteAuth(
   screen_->HandleCompleteAuth(username, password);
 }
 
+void OfflineLoginScreenHandler::HandleEmailSubmitted(
+    const std::string& username) {
+  screen_->HandleEmailSubmitted(username);
+}
+
 void OfflineLoginScreenHandler::LoadParams(base::DictionaryValue& params) {
   CallJS("login.OfflineLoginScreen.loadParams", params);
+}
+
+void OfflineLoginScreenHandler::ShowPasswordPage() {
+  CallJS("login.OfflineLoginScreen.proceedToPasswordPage");
+}
+
+void OfflineLoginScreenHandler::ShowOnlineRequiredDialog() {
+  CallJS("login.OfflineLoginScreen.showOnlineRequiredDialog");
 }
 
 }  // namespace chromeos

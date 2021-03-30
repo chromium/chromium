@@ -125,6 +125,13 @@ CompositorFrameBuilder& CompositorFrameBuilder::SetSendFrameTokenToEmbedder(
   return *this;
 }
 
+CompositorFrameBuilder& CompositorFrameBuilder::AddDelegatedInkMetadata(
+    const gfx::DelegatedInkMetadata& metadata) {
+  frame_->metadata.delegated_ink_metadata =
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
+  return *this;
+}
+
 CompositorFrame CompositorFrameBuilder::MakeInitCompositorFrame() const {
   static FrameTokenGenerator next_token;
   CompositorFrame frame;

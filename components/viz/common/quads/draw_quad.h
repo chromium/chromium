@@ -76,9 +76,13 @@ class VIZ_COMMON_EXPORT DrawQuad {
 
   bool IsDebugQuad() const { return material == Material::kDebugBorder; }
 
-  bool ShouldDrawWithBlending() const {
+  bool ShouldDrawWithBlendingForReasonOtherThanMaskFilter() const {
     return needs_blending || shared_quad_state->opacity < 1.0f ||
-           shared_quad_state->blend_mode != SkBlendMode::kSrcOver ||
+           shared_quad_state->blend_mode != SkBlendMode::kSrcOver;
+  }
+
+  bool ShouldDrawWithBlending() const {
+    return ShouldDrawWithBlendingForReasonOtherThanMaskFilter() ||
            !shared_quad_state->mask_filter_info.IsEmpty();
   }
 

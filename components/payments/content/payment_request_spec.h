@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/payments/content/initialization_task.h"
@@ -81,7 +80,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   void Retry(mojom::PaymentValidationErrorsPtr validation_errors);
 
   // Gets the display string for the general retry error message.
-  const base::string16& retry_error_message() const {
+  const std::u16string& retry_error_message() const {
     return retry_error_message_;
   }
 
@@ -93,10 +92,10 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   // Gets the display string for the shipping address error for the given
   // |type|.
-  base::string16 GetShippingAddressError(autofill::ServerFieldType type);
+  std::u16string GetShippingAddressError(autofill::ServerFieldType type);
 
   // Gets the display string for the payer error for the given |type|.
-  base::string16 GetPayerError(autofill::ServerFieldType type);
+  std::u16string GetPayerError(autofill::ServerFieldType type);
 
   // Returns whether there is a shipping address error message set by merchant.
   bool has_shipping_address_error() const;
@@ -160,7 +159,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
 
   // Uses CurrencyFormatter to format the value of |currency_amount| with the
   // currency symbol for its currency.
-  base::string16 GetFormattedCurrencyAmount(
+  std::u16string GetFormattedCurrencyAmount(
       const mojom::PaymentCurrencyAmountPtr& currency_amount);
 
   // Uses CurrencyFormatter to get the formatted currency code for
@@ -174,7 +173,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   // This may contain a non-empty error returned by the merchant. In this case
   // PaymentRequestState::selected_shipping_option_error_profile() will contain
   // the profile related to the error.
-  const base::string16& selected_shipping_option_error() const {
+  const std::u16string& selected_shipping_option_error() const {
     return selected_shipping_option_error_;
   }
 
@@ -245,7 +244,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   const std::string app_locale_;
   // The currently shipping option as specified by the merchant.
   mojom::PaymentShippingOption* selected_shipping_option_;
-  base::string16 selected_shipping_option_error_;
+  std::u16string selected_shipping_option_error_;
 
   // One currency formatter is instantiated and cached per currency code.
   std::map<std::string, CurrencyFormatter> currency_formatters_;
@@ -290,7 +289,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   // notified.
   base::ObserverList<Observer> observers_;
 
-  base::string16 retry_error_message_;
+  std::u16string retry_error_message_;
   mojom::PayerErrorsPtr payer_errors_;
 
   std::set<std::string> app_store_billing_methods_;

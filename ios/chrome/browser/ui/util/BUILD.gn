@@ -5,17 +5,6 @@
 import("//build/buildflag_header.gni")
 import("//ios/build/chrome_build.gni")
 
-source_set("multiwindow_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  sources = [
-    "multi_window_support.h",
-    "multi_window_support.mm",
-  ]
-
-  deps = [ "//base" ]
-}
-
 source_set("util") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -88,6 +77,7 @@ source_set("util") {
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
     "//ios/web:threads",
+    "//ios/web/common:uikit",
     "//ios/web/public/thread:thread",
     "//ios/web/thread",
     "//net",

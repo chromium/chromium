@@ -1,14 +1,3 @@
-diff --git a/components-chromium/font-roboto/roboto.html b/components-chromium/font-roboto/roboto.html
-index 7a24999..4eefcba 100644
---- a/components-chromium/font-roboto/roboto.html
-+++ b/components-chromium/font-roboto/roboto.html
-@@ -7,5 +7,4 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
- Code distributed by Google as part of the polymer project is also
- subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
- -->
--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic">
--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700">
-+<link rel="stylesheet" href="chrome://resources/css/roboto.css">
 diff --git a/components-chromium/html-imports/html-imports.min.js b/components-chromium/html-imports/html-imports.min.js
 index 3365917e8b99..8750aefdefb1 100644
 --- a/components-chromium/html-imports/html-imports.min.js

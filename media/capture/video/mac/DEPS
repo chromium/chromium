@@ -2,3 +2,9 @@ include_rules = [
   "+third_party/decklink",
   "+services/video_capture/public/uma",
 ]
+
+specific_include_rules = {
+"video_capture_metrics_mac_unittest.mm": [
+  "+third_party/ocmock"
+]
+}

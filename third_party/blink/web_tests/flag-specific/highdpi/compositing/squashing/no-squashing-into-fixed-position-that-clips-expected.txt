@@ -1,0 +1,35 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#ADD8E6"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='compositedlayer'",
+      "bounds": [36, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='notsquashedelement'",
+      "bounds": [1200, 90],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [600, 60, 0, 1]
+      ]
+    }
+  ]
+}
+

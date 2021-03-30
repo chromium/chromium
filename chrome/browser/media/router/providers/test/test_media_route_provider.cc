@@ -37,7 +37,7 @@ void Wait(base::TimeDelta timeout) {
 }  // namespace
 
 const MediaRouteProviderId TestMediaRouteProvider::kProviderId =
-    MediaRouteProviderId::CAST;
+    MediaRouteProviderId::TEST;
 
 TestMediaRouteProvider::TestMediaRouteProvider(
     mojo::PendingReceiver<mojom::MediaRouteProvider> receiver,
@@ -49,11 +49,17 @@ TestMediaRouteProvider::TestMediaRouteProvider(
       kProviderId, mojom::MediaRouter::SinkAvailability::PER_SOURCE);
 }
 
+TestMediaRouteProvider::~TestMediaRouteProvider() = default;
+
 void TestMediaRouteProvider::SetSinks() {
   MediaSinkInternal sink_internal_1;
   MediaSinkInternal sink_internal_2;
-  sink_internal_1.set_sink(MediaSink("id1", "test-sink-1", SinkIconType::CAST));
-  sink_internal_2.set_sink(MediaSink("id2", "test-sink-2", SinkIconType::CAST));
+  MediaSink sink1("id1", "test-sink-1", SinkIconType::CAST);
+  MediaSink sink2("id2", "test-sink-2", SinkIconType::CAST);
+  sink1.set_provider_id(kProviderId);
+  sink2.set_provider_id(kProviderId);
+  sink_internal_1.set_sink(sink1);
+  sink_internal_2.set_sink(sink2);
   sinks_ = {sink_internal_1, sink_internal_2};
 }
 
@@ -207,29 +213,19 @@ void TestMediaRouteProvider::StartObservingMediaSinks(
 }
 
 void TestMediaRouteProvider::StopObservingMediaSinks(
-    const std::string& media_source) {
-  NOTIMPLEMENTED();
-}
+    const std::string& media_source) {}
 
 void TestMediaRouteProvider::StartObservingMediaRoutes(
-    const std::string& media_source) {
-  NOTIMPLEMENTED();
-}
+    const std::string& media_source) {}
 
 void TestMediaRouteProvider::StopObservingMediaRoutes(
-    const std::string& media_source) {
-  NOTIMPLEMENTED();
-}
+    const std::string& media_source) {}
 
 void TestMediaRouteProvider::StartListeningForRouteMessages(
-    const std::string& route_id) {
-  NOTIMPLEMENTED();
-}
+    const std::string& route_id) {}
 
 void TestMediaRouteProvider::StopListeningForRouteMessages(
-    const std::string& route_id) {
-  NOTIMPLEMENTED();
-}
+    const std::string& route_id) {}
 
 void TestMediaRouteProvider::DetachRoute(const std::string& route_id) {
   media_router_->OnPresentationConnectionClosed(
@@ -237,12 +233,9 @@ void TestMediaRouteProvider::DetachRoute(const std::string& route_id) {
       "Close route");
 }
 
-void TestMediaRouteProvider::EnableMdnsDiscovery() {
-  NOTIMPLEMENTED();
-}
+void TestMediaRouteProvider::EnableMdnsDiscovery() {}
 
 void TestMediaRouteProvider::UpdateMediaSinks(const std::string& media_source) {
-  NOTIMPLEMENTED();
 }
 
 void TestMediaRouteProvider::CreateMediaRouteController(
@@ -250,13 +243,11 @@ void TestMediaRouteProvider::CreateMediaRouteController(
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer,
     CreateMediaRouteControllerCallback callback) {
-  NOTIMPLEMENTED();
+  std::move(callback).Run(false);
 }
 
-void TestMediaRouteProvider::ProvideSinks(
-    const std::string& provider_name,
-    const std::vector<media_router::MediaSinkInternal>& sinks) {
-  NOTIMPLEMENTED();
+void TestMediaRouteProvider::GetState(GetStateCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
 std::vector<MediaRoute> TestMediaRouteProvider::GetMediaRoutes() {

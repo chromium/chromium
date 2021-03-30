@@ -20,6 +20,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
+#include "extensions/browser/state_store.h"
 
 namespace chromeos {
 namespace platform_keys {

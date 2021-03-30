@@ -40,6 +40,8 @@ class RTCStatsAllowlist {
     allowlisted_stats_types_.insert(webrtc::RTCOutboundRTPStreamStats::kType);
     allowlisted_stats_types_.insert(
         webrtc::RTCRemoteInboundRtpStreamStats::kType);
+    allowlisted_stats_types_.insert(
+        webrtc::RTCRemoteOutboundRtpStreamStats::kType);
     allowlisted_stats_types_.insert(webrtc::RTCMediaSourceStats::kType);
     allowlisted_stats_types_.insert(webrtc::RTCAudioSourceStats::kType);
     allowlisted_stats_types_.insert(webrtc::RTCVideoSourceStats::kType);

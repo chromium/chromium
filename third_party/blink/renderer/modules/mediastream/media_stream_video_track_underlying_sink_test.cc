@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/modules/mediastream/frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
@@ -72,8 +73,10 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
   PushableMediaStreamVideoSource* pushable_video_source_;
 };
 
+// TODO(1153092): Test flakes, likely due to completing before background
+// thread has had chance to call OnVideoFrame().
 TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,
-       WriteToStreamForwardsToMediaStreamSink) {
+       DISABLED_WriteToStreamForwardsToMediaStreamSink) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* underlying_sink = CreateUnderlyingSink(script_state);
@@ -124,7 +127,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteInvalidDataFails) {
   sink->write(script_state, v8_integer, nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
 
-  // Writing something that is not a VideoFrame to the sink should fail.
+  // Writing a null value to the sink should fail.
   dummy_exception_state.ClearException();
   EXPECT_FALSE(dummy_exception_state.HadException());
   sink->write(script_state, ScriptValue::CreateNull(v8_scope.GetIsolate()),
@@ -135,10 +138,9 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteInvalidDataFails) {
   dummy_exception_state.ClearException();
   VideoFrame* video_frame = nullptr;
   auto chunk = CreateVideoFrameChunk(script_state, &video_frame);
-  video_frame->destroy();
+  video_frame->close();
   EXPECT_FALSE(dummy_exception_state.HadException());
-  sink->write(script_state, ScriptValue::CreateNull(v8_scope.GetIsolate()),
-              nullptr, dummy_exception_state);
+  sink->write(script_state, chunk, nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
 }
 

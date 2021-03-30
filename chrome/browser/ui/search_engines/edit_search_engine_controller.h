@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
@@ -22,8 +21,8 @@ class EditSearchEngineControllerDelegate {
   // value indicates a new TemplateURL should be created rather than modifying
   // an existing TemplateURL.
   virtual void OnEditedKeyword(TemplateURL* template_url,
-                               const base::string16& title,
-                               const base::string16& keyword,
+                               const std::u16string& title,
+                               const std::u16string& keyword,
                                const std::string& url) = 0;
 
  protected:
@@ -42,7 +41,7 @@ class EditSearchEngineController {
   ~EditSearchEngineController() {}
 
   // Returns true if the value of |title_input| is a valid search engine name.
-  bool IsTitleValid(const base::string16& title_input) const;
+  bool IsTitleValid(const std::u16string& title_input) const;
 
   // Returns true if the value of |url_input| represents a valid search engine
   // URL. The URL is valid if it contains no search terms and is a valid
@@ -53,11 +52,11 @@ class EditSearchEngineController {
   // Returns true if the value of |keyword_input| represents a valid keyword.
   // The keyword is valid if it is non-empty and does not conflict with an
   // existing entry. NOTE: this is just the keyword, not the title and url.
-  bool IsKeywordValid(const base::string16& keyword_input) const;
+  bool IsKeywordValid(const std::u16string& keyword_input) const;
 
   // Completes the add or edit of a search engine.
-  void AcceptAddOrEdit(const base::string16& title_input,
-                       const base::string16& keyword_input,
+  void AcceptAddOrEdit(const std::u16string& title_input,
+                       const std::u16string& keyword_input,
                        const std::string& url_input);
 
   // Deletes an unused TemplateURL, if its add was cancelled and it's not

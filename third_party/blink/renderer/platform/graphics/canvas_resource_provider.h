@@ -112,6 +112,13 @@ class PLATFORM_EXPORT CanvasResourceProvider
       bool is_origin_top_left,
       uint32_t shared_image_usage_flags);
 
+  static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
+      const IntSize& size,
+      SkFilterQuality filter_quality,
+      const CanvasResourceParams& params,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
+
   static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
       const IntSize& size,
       SkFilterQuality filter_quality,
@@ -142,6 +149,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void OnContextDestroyed() override;
 
   cc::PaintCanvas* Canvas();
+  void ReleaseLockedImages();
   sk_sp<cc::PaintRecord> FlushCanvas();
   const CanvasResourceParams& ColorParams() const { return params_; }
   void SetFilterQuality(SkFilterQuality quality) { filter_quality_ = quality; }
@@ -265,6 +273,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void RasterRecord(sk_sp<cc::PaintRecord>);
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   void TearDownSkSurface();
+
+  // Will only notify a will draw if its needed. This is initially done for the
+  // CanvasResourceProviderSharedImage use case.
+  virtual void WillDrawIfNeeded() {}
 
   ResourceProviderType type_;
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init

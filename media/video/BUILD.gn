@@ -18,6 +18,7 @@ source_set("video") {
   sources = [
     "gpu_memory_buffer_video_frame_pool.cc",
     "gpu_memory_buffer_video_frame_pool.h",
+    "gpu_video_accelerator_factories.cc",
     "gpu_video_accelerator_factories.h",
     "h264_bit_reader.cc",
     "h264_bit_reader.h",
@@ -31,8 +32,6 @@ source_set("video") {
     "half_float_maker.h",
     "picture.cc",
     "picture.h",
-    "supported_video_decoder_config.cc",
-    "supported_video_decoder_config.h",
     "trace_util.cc",
     "trace_util.h",
     "video_decode_accelerator.cc",
@@ -55,6 +54,7 @@ source_set("video") {
   public_deps = [ "//gpu/command_buffer/client:gles2_interface" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//media/base",
@@ -125,7 +125,7 @@ source_set("unit_tests") {
     "h264_parser_unittest.cc",
     "h264_poc_unittest.cc",
     "half_float_maker_unittest.cc",
-    "supported_video_decoder_config_unittest.cc",
+    "software_video_encoder_test.cc",
     "video_encode_accelerator_adapter_test.cc",
   ]
   if (enable_platform_hevc) {

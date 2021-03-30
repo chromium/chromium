@@ -5,19 +5,22 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_PRIVATE_NETWORK_SETTINGS_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_PRIVATE_NETWORK_SETTINGS_H_
 
-class GURL;
 class HostContentSettingsMap;
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content_settings {
 
-// Returns whether |url| should be allowed to make insecure private network
+// Returns whether |origin| should be allowed to make insecure private network
 // requests, given the settings contained in |map|.
 //
 // |map| must not be nullptr. Caller retains ownership.
-// |url| should identify the frame initiating a request.
+// |origin| should identify the frame initiating a request.
 bool ShouldAllowInsecurePrivateNetworkRequests(
     const HostContentSettingsMap* map,
-    const GURL& url);
+    const url::Origin& origin);
 
 }  // namespace content_settings
 

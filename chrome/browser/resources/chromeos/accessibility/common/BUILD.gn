@@ -18,7 +18,10 @@ accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
 
 group("build") {
-  deps = [ ":accessibility_common_copied_files" ]
+  deps = [
+    ":accessibility_common_copied_files",
+    "tutorial:build",
+  ]
 }
 
 run_jsbundler("accessibility_common_copied_files") {
@@ -30,6 +33,9 @@ run_jsbundler("accessibility_common_copied_files") {
     "automation_util.js",
     "closure_shim.js",
     "constants.js",
+    "cursors/cursor.js",
+    "cursors/range.js",
+    "cursors/recovery_strategy.js",
     "event_generator.js",
     "event_handler.js",
     "gdocs_script.js",
@@ -38,6 +44,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "rect_util.js",
     "repeated_event_handler.js",
     "repeated_tree_change_handler.js",
+    "string_util.js",
     "tree_walker.js",
   ]
   rewrite_rules = [ rebase_path(".", root_build_dir) + ":" ]
@@ -145,6 +152,8 @@ js2gtest("accessibility_tests") {
   sources = [
     "array_util_test.js",
     "automation_util_test.js",
+    "cursors/cursors_test.js",
+    "cursors/recovery_strategy_test.js",
     "event_generator_test.js",
     "repeated_event_handler_test.js",
     "repeated_tree_change_handler_test.js",

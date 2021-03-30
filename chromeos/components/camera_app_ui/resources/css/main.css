@@ -24,6 +24,9 @@
   --exit-easing: cubic-bezier(0.4, 0, 1, 1);
 
   /* App specific settings */
+  --default-font-family: 'Google Sans', sans-serif;
+  --fixed-width-font-family: 'Cousine', monospace;
+
   --focus-color: rgba(var(--blue-600-dark-rgb), 0.7);
 }
 
@@ -36,8 +39,6 @@ audio {
 }
 
 body {
-  --default-font-family: 'Google Sans', sans-serif;
-
   background: black;
   bottom: 0;
   font-family: var(--default-font-family);
@@ -52,7 +53,13 @@ body {
 }
 
 button,
-input,
+input {
+  --focus-ring-size: 3px;
+}
+
+button,
+input[type=radio],
+input[type=checkbox],
 label {
   background-color: transparent;
   border-radius: 4px;
@@ -64,14 +71,17 @@ label {
   position: relative;
 }
 
-input {
+input[type=radio],
+input[type=checkbox] {
   -webkit-appearance: none;
+}
+
+[tabindex] {
+  user-select: none;
 }
 
 body.tab-navigation button:focus::after,
 body.tab-navigation input:focus::after {
-  --focus-ring-size: 3px;
-
   border: 2px solid var(--focus-color);
   border-radius: 4px;
   bottom: calc(-1 * var(--focus-ring-size));
@@ -152,7 +162,8 @@ body.tab-navigation .circle input:focus::after {
   visibility: visible;
 }
 
-body.taking.video .left-stripe {
+body.taking.video .left-stripe:not(#options-group),
+body.taking.video #options-group :not(#open-ptz-panel) {
   opacity: 0;
   transition: visibility 0ms 225ms, opacity 225ms var(--standard-easing);
   visibility: hidden;
@@ -380,14 +391,12 @@ body.tab-navigation .mode-item>input:focus + span::after {
 }
 
 button.shutter {
+  --focus-ring-size: 9px;
+
   display: none;
   height: 60px;
   width: 60px;
   z-index: 1;  /* On top of transforming switch-mode buttons. */
-}
-
-body.tab-navigation button.shutter:focus::after {
-  --focus-ring-size: 9px;
 }
 
 body.video #recordvideo,
@@ -593,6 +602,8 @@ body.mode-switching:not(.streaming) #camera-mode {
 }
 
 #switch-device {
+  --focus-ring-size: 8px;
+
   background-image: url(/images/camera_button_switch_device.svg);
   height: var(--big-icon);
   width: var(--big-icon);
@@ -609,10 +620,6 @@ body.mode-switching:not(.streaming) #camera-mode {
   100% {
     transform: rotate(-180deg);
   }
-}
-
-body.tab-navigation #switch-device:focus::after {
-  --focus-ring-size: 8px;
 }
 
 #gallery-enter {
@@ -638,9 +645,11 @@ body.should-handle-intent-result #gallery-enter {
   --switch-device-gap: 32px;
   bottom: calc(var(--bottom-line) + (var(--big-icon) / 2) + var(--switch-device-gap) - var(--option-item-vpadding));
   flex-direction: column-reverse;
+  transition: bottom var(--fast1-duration);
 }
 
-body:not(.multi-camera) #options-group {
+body:not(.multi-camera) #options-group,
+body.taking.video #options-group {
   bottom: calc(var(--bottom-line) - var(--option-item-vpadding) - (var(--small-icon) / 2));
 }
 
@@ -649,15 +658,24 @@ body.max-wnd #options-group {
   --switch-device-gap: 48px;
 }
 
-#options-group input {
+#options-group input,
+#options-group button {
   margin: var(--option-item-vpadding) 0;
 }
 
-body._3sec #toggle-timer:checked {
+body:not(.has-ptz-support) #open-ptz-panel {
+  display: none;
+}
+
+#open-ptz-panel {
+  background-image: url(/images/camera_button_ptz_panel.svg);
+}
+
+body.timer-3s #toggle-timer:checked {
   background-image: url(/images/camera_button_timer_on_3s.svg);
 }
 
-body._10sec #toggle-timer:checked {
+body.timer-10s #toggle-timer:checked {
   background-image: url(/images/camera_button_timer_on_10s.svg);
 }
 
@@ -704,11 +722,11 @@ body:not(.video) #toggle-fps {
   display: none;
 }
 
-body._30fps #toggle-fps {
+body.fps-30 #toggle-fps {
   background-image: url(/images/camera_button_fps_30.svg);
 }
 
-body._60fps #toggle-fps {
+body.fps-60 #toggle-fps {
   background-image: url(/images/camera_button_fps_60.svg);
 }
 
@@ -721,6 +739,7 @@ body.should-handle-intent-result #open-settings {
 }
 
 #view-camera,
+#view-ptz-panel,
 #view-settings,
 #view-grid-settings,
 #view-timer-settings,
@@ -742,6 +761,7 @@ body.should-handle-intent-result #open-settings {
 }
 
 body.view-camera #view-camera,
+body.view-ptz-panel #view-ptz-panel,
 body.view-settings #view-settings,
 body.view-grid-settings #view-grid-settings,
 body.view-timer-settings #view-timer-settings,
@@ -839,7 +859,8 @@ body.streaming .preview-content {
 }
 
 body.mirror .preview-content ,
-body.mirror #preview-focus {
+body.mirror #preview-focus,
+body.mirror #preview-face-overlay {
   transform: scaleX(-1);
 }
 
@@ -854,6 +875,11 @@ body.mirror #preview-focus {
 #preview-focus-aim {
   position: absolute;
   transform: translate(-50%, -50%);
+}
+
+#preview-face-overlay {
+  pointer-events: none;
+  position: absolute;
 }
 
 #preview-video {
@@ -874,7 +900,7 @@ body.mirror:not(.streaming) #preview-video {
   transform: scale(-1.03, 1.03);
 }
 
-#preview-metadata {
+#expert-controls {
   font-size: 14px;
   left: 60px;
   position: absolute;
@@ -882,25 +908,34 @@ body.mirror:not(.streaming) #preview-video {
   top: 10px;
 }
 
-.metadata-row {
+#expert-controls input[type=range] {
+  vertical-align: middle;
+}
+
+.expert-control-row {
   margin-top: 5px;
 }
 
-.metadata-category {
-  background-color: rgba(255, 255, 255, 0.7);
+#expert-controls .title {
+  background-color: rgb(0, 128, 0);
   border-radius: 3px;
-  color: grey;
+  color: white;
   display: inline;
   font-weight: bold;
   padding: 1px 3px 1px 3px;
 }
 
-.mode-on .metadata-category {
-  background-color: rgb(0, 128, 0);
-  color: white;
+#expert-controls input,
+#expert-controls select {
+  pointer-events: auto;
 }
 
-.metadata-value {
+#expert-controls .metadata-row:not(.mode-on) .title {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: grey;
+}
+
+#expert-controls .value {
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 3px;
   display: inline;
@@ -924,7 +959,7 @@ body.mirror:not(.streaming) #preview-video {
   top: 0;
 }
 
-body:not(.streaming) #preview-metadata,
+body:not(.streaming) #expert-controls,
 body:not(.streaming) #preview-grid,
 body:not(.streaming) #preview-focus,
 body:not(.streaming) #open-settings,
@@ -933,14 +968,11 @@ body:not(.streaming) #options-group {
   visibility: hidden;
 }
 
-body:not(.expert) #preview-metadata,
-body:not(.expert) #preview-metadata::before,
-body:not(.show-metadata) #preview-metadata,
-body:not(.show-metadata) #preview-metadata::before {
-  visibility: hidden;
-}
-
-body:not(.expert) #settings-expert {
+body:not(.expert) #settings-expert,
+body:not(.expert) #expert-controls,
+body:not(.show-metadata) #expert-controls>.metadata-row,
+body:not(.video) #expert-controls>.video-option-row,
+body:not(.custom-video-parameters) #expert-controls>.video-option-row {
   display: none;
 }
 
@@ -955,7 +987,7 @@ body:not(.expert) #settings-expert {
   transform: translateY(-50%);
 }
 
-body._4x4 #preview-grid-horizontal::before {
+body.grid.grid-4x4 #preview-grid-horizontal::before {
   border-bottom: 1px solid white;
   content: '';
   height: 0;
@@ -965,20 +997,20 @@ body._4x4 #preview-grid-horizontal::before {
   top: 0;
 }
 
-body.grid._3x3 #preview-grid-horizontal,
-body.view-grid-settings._3x3 #preview-grid-horizontal {
+body.grid.grid-3x3 #preview-grid-horizontal,
+body.view-grid-settings.grid-3x3 #preview-grid-horizontal {
   height: 33.333%;
 }
 
-body.grid.golden #preview-grid-horizontal,
-body.view-grid-settings.golden #preview-grid-horizontal {
+body.grid.grid-golden #preview-grid-horizontal,
+body.view-grid-settings.grid-golden #preview-grid-horizontal {
   height: 23.607%;
 }
 
-body.grid._4x4 #preview-grid-horizontal,
-body.grid._4x4 #preview-grid-horizontal::before,
-body.view-grid-settings._4x4 #preview-grid-horizontal,
-body.view-grid-settings._4x4 #preview-grid-horizontal::before {
+body.grid.grid-4x4 #preview-grid-horizontal,
+body.grid.grid-4x4 #preview-grid-horizontal::before,
+body.view-grid-settings.grid-4x4 #preview-grid-horizontal,
+body.view-grid-settings.grid-4x4 #preview-grid-horizontal::before {
   height: 50%;
 }
 
@@ -993,7 +1025,7 @@ body.view-grid-settings._4x4 #preview-grid-horizontal::before {
   width: 100%;
 }
 
-body._4x4 #preview-grid-vertical::before {
+body.grid-4x4 #preview-grid-vertical::before {
   border-right: 1px solid white;  /* csschecker-disable-line left-right */
   bottom: 0;
   content: '';
@@ -1003,30 +1035,30 @@ body._4x4 #preview-grid-vertical::before {
   width: 0;
 }
 
-body.grid._3x3 #preview-grid-vertical,
-body.view-grid-settings._3x3 #preview-grid-vertical {
+body.grid.grid-3x3 #preview-grid-vertical,
+body.view-grid-settings.grid-3x3 #preview-grid-vertical {
   width: 33.333%;
 }
 
-body.grid.golden #preview-grid-vertical,
-body.view-grid-settings.golden #preview-grid-vertical {
+body.grid.grid-golden #preview-grid-vertical,
+body.view-grid-settings.grid-golden #preview-grid-vertical {
   width: 23.607%;
 }
 
-body.grid._4x4 #preview-grid-vertical,
-body.grid._4x4 #preview-grid-vertical::before,
-body.view-grid-settings._4x4 #preview-grid-vertical,
-body.view-grid-settings._4x4 #preview-grid-vertical::before {
+body.grid.grid-4x4 #preview-grid-vertical,
+body.grid.grid-4x4 #preview-grid-vertical::before,
+body.view-grid-settings.grid-4x4 #preview-grid-vertical,
+body.view-grid-settings.grid-4x4 #preview-grid-vertical::before {
   width: 50%;
 }
 
-#preview-grid-horizontal.animate,
-#preview-grid-horizontal.animate::before {
+#preview-grid-horizontal,
+#preview-grid-horizontal::before {
   transition: height 500ms, visibility 500ms;
 }
 
-#preview-grid-vertical.animate,
-#preview-grid-vertical.animate::before {
+#preview-grid-vertical,
+#preview-grid-vertical::before {
   transition: width 500ms, visibility 500ms;
 }
 
@@ -1066,14 +1098,15 @@ body.recording-ui-paused #record-time {
 }
 
 body.recording-ui-paused #record-time .icon,
-body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_msg] {
+body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] {
   display: none;
 }
 
 #record-time #record-time-msg,
-#record-time [i18n-content=record_video_paused_msg] {
+#record-time [i18n-text=record_video_paused_msg] {
   color: white;
   flex-shrink: 0;
+  font-family: var(--fixed-width-font-family);
   font-size: 13px;
 }
 
@@ -1166,28 +1199,40 @@ body:not(.recording-ui-paused) #record-time [i18n-content=record_video_paused_ms
 }
 
 #banner {
+  --bottom-down: -130px;
+  --bottom-up: 31px;
   background: white;
   border-radius: 8px;
-  bottom: -130px;
+  bottom: var(--bottom-up);
   display: none;
   padding: 26px 29px;
   width: 460px;
 }
 
 #banner.animate {
-  animation: emerge 6000ms var(--enter-easing);
+  --present-duration: 5000ms;
+  --hide-delay: calc(var(--moderate2-duration) + var(--present-duration));
+  animation:
+    show-banner var(--moderate2-duration) var(--enter-easing),
+    hide-banner var(--moderate2-duration) var(--hide-delay) var(--exit-easing);
   display: block;
 }
 
-@keyframes emerge {
-  0%,
-  100% {
-    bottom: -130;
+@keyframes show-banner {
+  0% {
+    bottom: var(--bottom-down);
   }
-  8%,
-  92% {
-    animation-timing-function: var(--exit-easing);
-    bottom: 31px;
+  100% {
+    bottom: var(--bottom-up);
+  }
+}
+
+@keyframes hide-banner {
+  0% {
+    bottom: var(--bottom-up);
+  }
+  100% {
+    bottom: var(--bottom-down);
   }
 }
 
@@ -1230,7 +1275,256 @@ html[dir=rtl] #banner-close {
   right: auto;
 }
 
+#panel-container {
+  background: rgba(32, 33, 36, 30%);
+  border-radius: 4px;
+  bottom: 106px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+  left: 68px;
+  position: absolute;
+}
+
+body.taking.video #panel-container {
+  bottom: 24px;
+  transition: bottom var(--fast1-duration);
+}
+
+#panel-container button {
+  height: 48px;
+  position: absolute;
+  width: 48px;
+}
+
+.body:not(.HAS_PAN_SUPPORT) :is(#pan-left, #pan-right),
+.body:not(.HAS_TILT_SUPPORT) :is(#tilt-up, #tilt-down),
+.body:not(.HAS_ZOOM_SUPPORT) :is(#zoom-in, #zoom-out) {
+  display: none;
+}
+
+#pan-left {
+  background: url(/images/ptz_pan_left.svg) center no-repeat;
+}
+
+#pan-right {
+  background: url(/images/ptz_pan_right.svg) center no-repeat;
+}
+
+#tilt-up {
+  background: url(/images/ptz_tilt_up.svg) center no-repeat;
+}
+
+#tilt-down {
+  background: url(/images/ptz_tilt_down.svg) center no-repeat;
+}
+
+#zoom-in {
+  background: url(/images/ptz_zoom_in.svg) center no-repeat;
+}
+
+#zoom-out {
+  background: url(/images/ptz_zoom_out.svg) center no-repeat;
+}
+
+/* Only P, Only Z */
+
+body.has-pan-support:not(.has-tilt-support):not(.has-zoom-support) #panel-container,
+body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #panel-container {
+  height: 48px;
+  width: 96px;
+}
+
+body.has-pan-support:not(.has-tilt-support):not(.has-zoom-support) #pan-left,
+body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #zoom-in {
+  left: 0;
+}
+
+body.has-pan-support:not(.has-tilt-support):not(.has-zoom-support) #pan-right,
+body.has-zoom-support:not(.has-pan-support):not(.has-tilt-support) #zoom-out {
+  right: 0;
+}
+
+/* Only T */
+
+body:not(.has-pan-support).has-tilt-support:not(.has-zoom-support) #panel-container {
+  height: 96px;
+  width: 48px;
+}
+
+body:not(.has-pan-support).has-tilt-support:not(.has-zoom-support) #tilt-up {
+  top: 0;
+}
+
+body:not(.has-pan-support).has-tilt-support:not(.has-zoom-support) #tilt-down {
+  bottom: 0;
+}
+
+/* P, T */
+
+body.has-pan-support.has-tilt-support:not(.has-zoom-support) #panel-container {
+  height: 144px;
+  width: 144px;
+}
+
+body.has-pan-support.has-tilt-support:not(.has-zoom-support) #pan-left {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+body.has-pan-support.has-tilt-support:not(.has-zoom-support) #pan-right {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+body.has-pan-support.has-tilt-support:not(.has-zoom-support) #tilt-up {
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+body.has-pan-support.has-tilt-support:not(.has-zoom-support) #tilt-down {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* P, Z */
+
+body.has-pan-support:not(.has-tilt-support).has-zoom-support #panel-container {
+  height: 48px;
+  width: 192px;
+}
+
+body.has-pan-support:not(.has-tilt-support).has-zoom-support #pan-left {
+  left: 0;
+}
+
+body.has-pan-support:not(.has-tilt-support).has-zoom-support #pan-right {
+  left: 75%;
+}
+
+body.has-pan-support:not(.has-tilt-support).has-zoom-support #zoom-in {
+  left: 50%;
+}
+
+body.has-pan-support:not(.has-tilt-support).has-zoom-support #zoom-out {
+  left: 25%;
+}
+
+/* T, Z */
+
+body:not(.has-pan-support).has-tilt-support.has-zoom-support #panel-container {
+  height: 144px;
+  width: 96px;
+}
+
+body:not(.has-pan-support).has-tilt-support.has-zoom-support #tilt-up {
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+body:not(.has-pan-support).has-tilt-support.has-zoom-support #tilt-down {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+body:not(.has-pan-support).has-tilt-support.has-zoom-support #zoom-out {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+body:not(.has-pan-support).has-tilt-support.has-zoom-support #zoom-in {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* P, T, Z */
+
+body.has-pan-support.has-tilt-support.has-zoom-support #panel-container {
+  border-radius: 20px;
+  height: 192px;
+  width: 192px;
+}
+
+/* TODO(b/172881094): Polish focusd, active, disabled visual look of clipped
+ button. */
+
+body.has-pan-support.has-tilt-support.has-zoom-support #panel-container button {
+  height: 100%;
+  width: 100%;
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support #tilt-down {
+  --svg-width: 12px;
+  --svg-height: 8px;
+  --x: calc(calc(192px - var(--svg-width)) / 2);
+  --y: calc(48px * 3 + calc(48px - var(--svg-height)) / 2);
+
+  background-position: var(--x) var(--y);
+  clip-path: path('M 96 96 L 0 192 L 192 192 L 96 96 Z');
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support #tilt-up {
+  --svg-width: 12px;
+  --svg-height: 8px;
+  --x: calc(calc(192px - var(--svg-width)) / 2);
+  --y: calc(calc(48px - var(--svg-height)) / 2);
+
+  background-position: var(--x) var(--y);
+  clip-path: path('M 96 96 L 0 0 L 192 0 L 96 96 Z');
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support #pan-left {
+  --svg-width: 8px;
+  --svg-height: 10px;
+  --x: calc(calc(48px - var(--svg-width)) / 2);
+  --y: calc(calc(192px - var(--svg-height)) / 2);
+
+  background-position: var(--x) var(--y);
+  clip-path: path('M 96 96 L 0 0 L 0 192 L 96 96 Z');
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support #pan-right {
+  --svg-width: 8px;
+  --svg-height: 10px;
+  --x: calc(48px * 3 + calc(48px - var(--svg-width)) / 2);
+  --y: calc(calc(192px - var(--svg-height)) / 2);
+
+  background-position: var(--x) var(--y);
+  clip-path: path('M 96 96 L 192 0 L 192 192 L 96 96 Z');
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support :is(#zoom-in, #zoom-out) {
+  z-index: 1;
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support #zoom-in {
+  --svg-width: 16px;
+  --svg-height: 16px;
+  --x: calc(48px * 2 + 16px);
+  --y: calc(calc(192px - var(--svg-height)) / 2);
+
+  background-position: var(--x) var(--y);
+  clip-path: path('M 96 134 L 96 58 A 38 38 0 0 1 96 134 Z');
+}
+
+body.has-pan-support.has-tilt-support.has-zoom-support #zoom-out {
+  --svg-width: 16px;
+  --svg-height: 16px;
+  --x: calc(48px * 2 - 16px - var(--svg-width));
+  --y: calc(calc(192px - var(--svg-height)) / 2);
+
+  background-position: var(--x) var(--y);
+  clip-path: path('M 96 134 L 96 58 A 38 38 0 0 0 96 134 Z');
+}
+
 .menu {
+  backdrop-filter: blur(10px);
   background: rgba(0, 0, 0, 0.75);
   display: flex;
   flex-direction: column;
@@ -1343,11 +1637,11 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
   display: none;
 }
 
-body._3x3 .description span[i18n-content=label_grid_3x3],
-body._4x4 .description span[i18n-content=label_grid_4x4],
-body.golden .description span[i18n-content=label_grid_golden],
-body._3sec .description span[i18n-content=label_timer_3s],
-body._10sec .description span[i18n-content=label_timer_10s],
+body.grid-3x3 .description span[i18n-text=label_grid_3x3],
+body.grid-4x4 .description span[i18n-text=label_grid_4x4],
+body.grid-golden .description span[i18n-text=label_grid_golden],
+body.timer-3s .description span[i18n-text=label_timer_3s],
+body.timer-10s .description span[i18n-text=label_timer_10s],
 .menu-item.resol-item .description span {
   display: inline;
 }
@@ -1383,7 +1677,10 @@ body.tab-navigation button.menu-item:focus::after {
   right: 2px;
 }
 
-.menu-header .icon {
+.menu-header button.icon {
+  /* Icon image is small enough and won't be covered by -1px */
+  --focus-ring-size: -1px;
+
   background-image: url(/images/settings_button_back.svg);
 }
 
@@ -1549,16 +1846,22 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   --border-distance: 8px;
   --border-width: 4px;
   --inner-border-radius: 16px;
+  opacity: 0;
   /* Use padding-top instead of height to make a responsive square, since the
    * percentage in padding-top is relative to the width of the containing
    * block. */
-  padding-top: calc(100% / 3);
+  padding-top: calc(100% / 2);
+  transition: all var(--exit-easing) var(--moderate1-duration);
   visibility: hidden;
-  width: calc(100% / 3);
+  width: calc(100% / 2);
 }
 
 body.photo.scan-barcode .barcode-scan-box {
+  opacity: 1;
+  padding-top: calc(100% / 3);
+  transition: all var(--enter-easing) var(--moderate1-duration);
   visibility: visible;
+  width: calc(100% / 3);
 }
 
 /* The inner scan box with a translucent overlay. */
@@ -1598,24 +1901,29 @@ body.photo.scan-barcode .barcode-scan-box {
   --text-expand-button-height: 40px;
   --text-line-height: 24px;
   --text-padding-vertical: 8px;
+  /* Avoid collision with scan-box and preview-box */
+  --top: max(8px, min(10%, 33.33% - var(--text-line-height) -
+      var(--text-expand-button-height) - 2 * var(--text-padding-vertical) -
+      var(--min-scanbox-distance)));
 
   left: 50%;
   max-width: min(80%, var(--chip-max-width));
   opacity: 1;
+  pointer-events: auto;
   position: absolute;
-  /* Avoid collision with scan-box and preview-box */
-  top: max(8px, min(10%, 33.33% - var(--text-line-height) -
-      var(--text-expand-button-height) - 2 * var(--text-padding-vertical) -
-      var(--min-scanbox-distance)));
+  top: var(--top);
   transform: translateX(-50%);
-  transition: opacity var(--moderate1-duration) var(--standard-easing);
+  transition: opacity var(--fast2-duration) linear,
+              top var(--fast2-duration) var(--standard-easing);
   z-index: 50;
 }
 
 .barcode-chip-container.invisible {
   opacity: 0;
-  transition: opacity var(--moderate1-duration) var(--standard-easing),
-              visibility 0s var(--moderate1-duration);
+  top: calc(var(--top) + 2px);
+  transition: opacity var(--fast2-duration) linear,
+              top var(--fast2-duration) var(--standard-easing),
+              visibility 0s var(--fast2-duration);
 }
 
 .barcode-chip-url {

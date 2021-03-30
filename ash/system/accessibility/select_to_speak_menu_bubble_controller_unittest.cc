@@ -174,6 +174,17 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceKeyPressed) {
             SelectToSpeakPanelAction::kPreviousSentence);
 }
 
+TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceKeyPressedRtl) {
+  base::i18n::SetICUDefaultLocale("he");
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
+
+  GetEventGenerator()->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kPreviousSentence);
+}
+
 TEST_F(SelectToSpeakMenuBubbleControllerTest, NextParagraphButtonPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
@@ -211,6 +222,17 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceKeyPressed) {
   ShowSelectToSpeakPanel(/*is_paused=*/false);
 
   GetEventGenerator()->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kNextSentence);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceKeyPressedRtl) {
+  base::i18n::SetICUDefaultLocale("he");
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
+
+  GetEventGenerator()->PressKey(ui::VKEY_LEFT, ui::EF_NONE);
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kNextSentence);

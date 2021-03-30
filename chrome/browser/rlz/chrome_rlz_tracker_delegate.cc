@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -41,8 +42,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "chromeos/constants/chromeos_switches.h"
 #endif
 
 ChromeRLZTrackerDelegate::ChromeRLZTrackerDelegate() {}
@@ -141,9 +142,12 @@ bool ChromeRLZTrackerDelegate::ShouldEnableZeroDelayForTesting() {
       ::switches::kTestType);
 }
 
-bool ChromeRLZTrackerDelegate::GetLanguage(base::string16* language) {
+bool ChromeRLZTrackerDelegate::GetLanguage(std::u16string* language) {
 #if defined(OS_WIN)
-  return GoogleUpdateSettings::GetLanguage(language);
+  std::wstring wide_language;
+  bool result = GoogleUpdateSettings::GetLanguage(&wide_language);
+  *language = base::AsString16(wide_language);
+  return result;
 #else
   // On other systems, we don't know the install language of promotions. That's
   // OK, for now all promotions on non-Windows systems will be reported as "en".
@@ -153,9 +157,12 @@ bool ChromeRLZTrackerDelegate::GetLanguage(base::string16* language) {
 #endif
 }
 
-bool ChromeRLZTrackerDelegate::GetReferral(base::string16* referral) {
+bool ChromeRLZTrackerDelegate::GetReferral(std::u16string* referral) {
 #if defined(OS_WIN)
-  return GoogleUpdateSettings::GetReferral(referral);
+  std::wstring wide_referral;
+  bool result = GoogleUpdateSettings::GetReferral(&wide_referral);
+  *referral = base::AsString16(wide_referral);
+  return result;
 #else
   // The referral program is defunct and not used. No need to implement this
   // function on non-Win platforms.
@@ -178,8 +185,8 @@ void ChromeRLZTrackerDelegate::SetOmniboxSearchCallback(
   DCHECK(!callback.is_null());
   omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-          base::Bind(&ChromeRLZTrackerDelegate::OnURLOpenedFromOmnibox,
-                     base::Unretained(this)));
+          base::BindRepeating(&ChromeRLZTrackerDelegate::OnURLOpenedFromOmnibox,
+                              base::Unretained(this)));
   on_omnibox_search_callback_ = std::move(callback);
 }
 

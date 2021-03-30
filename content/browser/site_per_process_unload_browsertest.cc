@@ -11,13 +11,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -288,9 +289,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 // Verify that when the last active frame in a process is going away as part of
-// OnUnload, the FrameHostMsg_Unload_ACK is received prior to the process
-// starting to shut down, ensuring that any related unload work also happens
-// before shutdown. See https://crbug.com/867274 and https://crbug.com/794625.
+// OnUnload, the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is
+// received prior to the process starting to shut down, ensuring that any
+// related unload work also happens before shutdown. See
+// https://crbug.com/867274 and https://crbug.com/794625.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        UnloadACKArrivesPriorToProcessShutdownRequest) {
   GURL start_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -300,15 +302,19 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Navigate cross-site.  Since the current frame is the last active frame in
   // the current process, the process will eventually shut down.  Once the
-  // process goes away, ensure that the FrameHostMsg_Unload_ACK was received
-  // (i.e., that we didn't just simulate OnUnloaded() due to the process
-  // erroneously going away before the FrameHostMsg_Unload_ACK was received, as
-  // in https://crbug.com/867274).
+  // process goes away, ensure that the
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame was received (i.e.,
+  // that we didn't just simulate OnUnloaded() due to the process erroneously
+  // going away before the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame
+  // was received, as in https://crbug.com/867274).
   RenderProcessHostWatcher watcher(
       rfh->GetProcess(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  auto unload_ack_filter = base::MakeRefCounted<ObserveMessageFilter>(
-      FrameMsgStart, FrameHostMsg_Unload_ACK::ID);
-  rfh->GetProcess()->AddFilter(unload_ack_filter.get());
+  bool received_unload = false;
+  auto unload_ack_filter = base::BindLambdaForTesting([&]() {
+    received_unload = true;
+    return false;
+  });
+  rfh->SetUnloadACKCallbackForTesting(unload_ack_filter);
 
   // Disable the BackForwardCache to ensure the old process is going to be
   // released.
@@ -318,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL cross_site_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), cross_site_url));
   watcher.Wait();
-  EXPECT_TRUE(unload_ack_filter->has_received_message());
+  EXPECT_TRUE(received_unload);
   EXPECT_TRUE(watcher.did_exit_normally());
 }
 
@@ -351,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // the page a gesture to allow dialogs.
   web_contents->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
   web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::string16());
+      std::u16string());
 
   // Hang the first contents in a beforeunload dialog.
   BeforeUnloadBlockingDelegate test_delegate(web_contents);
@@ -573,21 +579,19 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
   RenderFrameHostImpl* rfh_a = web_contents()->GetMainFrame();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_b->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_c->lifecycle_state());
 
   // Act as if there was a slow unload handler on rfh_b and rfh_c.
-  // The navigating frames are waiting for FrameHostMsg_Unload_ACK.
-  auto unload_ack_filter_b = base::MakeRefCounted<DropMessageFilter>(
-      FrameMsgStart, FrameHostMsg_Unload_ACK::ID);
-  auto unload_ack_filter_c = base::MakeRefCounted<DropMessageFilter>(
-      FrameMsgStart, FrameHostMsg_Unload_ACK::ID);
-  rfh_b->GetProcess()->AddFilter(unload_ack_filter_b.get());
-  rfh_c->GetProcess()->AddFilter(unload_ack_filter_c.get());
+  // The navigating frames are waiting for
+  // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.
+  auto unload_ack_filter = base::BindRepeating([] { return true; });
+  rfh_b->SetUnloadACKCallbackForTesting(unload_ack_filter);
+  rfh_c->SetUnloadACKCallbackForTesting(unload_ack_filter);
   EXPECT_TRUE(ExecuteScript(rfh_b->frame_tree_node(), onunload_script));
   EXPECT_TRUE(ExecuteScript(rfh_c->frame_tree_node(), onunload_script));
   rfh_b->DisableUnloadTimerForTesting();
@@ -597,11 +601,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
 
   // 2) Navigate rfh_c to D.
   EXPECT_TRUE(NavigateToURLFromRenderer(rfh_c->frame_tree_node(), url_d));
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_b->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             rfh_c->lifecycle_state());
   RenderFrameHostImpl* rfh_d = rfh_b->child_at(0)->current_frame_host();
   // Set an arbitrarily long timeout to ensure the subframe unload timer doesn't
@@ -617,13 +621,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
 
   // 3) Navigate rfh_b to E.
   EXPECT_TRUE(NavigateToURLFromRenderer(rfh_b->frame_tree_node(), url_e));
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             rfh_b->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             rfh_c->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             rfh_d->lifecycle_state());
 
   // rfh_d completes its unload event. It deletes the frame, including rfh_c.
@@ -635,6 +639,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
 
   // rfh_b completes its unload event.
   EXPECT_FALSE(delete_b.deleted());
+  rfh_b->SetUnloadACKCallbackForTesting(base::NullCallback());
   rfh_b->OnUnloadACK();
   EXPECT_TRUE(delete_b.deleted());
 }
@@ -662,10 +667,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
   RenderFrameDeletedObserver delete_a2(a2);
   RenderFrameDeletedObserver delete_b1(b1);
 
-  // Disable Detach and FrameHostMsg_Unload_ACK. They will be called manually.
-  auto unload_ack_filter = base::MakeRefCounted<DropMessageFilter>(
-      FrameMsgStart, FrameHostMsg_Unload_ACK::ID);
-  a1->GetProcess()->AddFilter(unload_ack_filter.get());
+  // Disable Detach and mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.
+  // They will be called manually.
+  auto unload_ack_filter = base::BindRepeating([] { return true; });
+  a1->SetUnloadACKCallbackForTesting(unload_ack_filter);
   a1->DoNotDeleteForTesting();
   a2->DoNotDeleteForTesting();
 
@@ -693,11 +698,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
   EXPECT_FALSE(delete_a1.deleted());
   EXPECT_FALSE(delete_b1.deleted());
   EXPECT_FALSE(delete_a2.deleted());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             a1->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kReadyToBeDeleted,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted,
             b1->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             a2->lifecycle_state());
 
   // 3) B1 receives confirmation it has been deleted. This has no effect,
@@ -706,11 +711,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
   EXPECT_FALSE(delete_a1.deleted());
   EXPECT_FALSE(delete_b1.deleted());
   EXPECT_FALSE(delete_a2.deleted());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             a1->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kReadyToBeDeleted,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted,
             b1->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             a2->lifecycle_state());
 
   // 4) A2 received confirmation that it has been deleted and destroy B1 and A2.
@@ -718,11 +723,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
   EXPECT_FALSE(delete_a1.deleted());
   EXPECT_TRUE(delete_b1.deleted());
   EXPECT_TRUE(delete_a2.deleted());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             a1->lifecycle_state());
 
-  // 5) A1 receives FrameHostMsg_Unload_ACK and deletes itself.
+  // 5) A1 receives mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame and
+  // deletes itself.
   a1->ResumeDeletionForTesting();
+  a1->SetUnloadACKCallbackForTesting(base::NullCallback());
   a1->OnUnloadACK();
   EXPECT_TRUE(delete_a1.deleted());
 }
@@ -791,10 +798,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   UnloadPrint(rfh_6->frame_tree_node(), "");
   UnloadPrint(rfh_14->frame_tree_node(), "");
 
-  // Disable Detach and FrameHostMsg_Unload_ACK.
-  auto unload_ack_filter = base::MakeRefCounted<DropMessageFilter>(
-      FrameMsgStart, FrameHostMsg_Unload_ACK::ID);
-  rfh_0->GetProcess()->AddFilter(unload_ack_filter.get());
+  // Disable Detach and mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.
+  auto unload_ack_filter = base::BindRepeating([] { return true; });
+  rfh_0->SetUnloadACKCallbackForTesting(unload_ack_filter);
   rfh_0->DoNotDeleteForTesting();
   rfh_1->DoNotDeleteForTesting();
   rfh_3->DoNotDeleteForTesting();
@@ -987,7 +993,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // This performs window.open() and waits for the title of the original
   // document to change to signal that the unload handler has been registered.
   {
-    base::string16 title_when_loaded = base::UTF8ToUTF16("loaded");
+    std::u16string title_when_loaded = u"loaded";
     TitleWatcher title_watcher(shell()->web_contents(), title_when_loaded);
     EXPECT_TRUE(
         ExecuteScript(root, JsReplace("var w = window.open($1)", open_url)));
@@ -997,7 +1003,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // The closes the window and waits for the title of the original document to
   // change again to signal that the unload handler has run.
   {
-    base::string16 title_when_done = base::UTF8ToUTF16("unloaded");
+    std::u16string title_when_done = u"unloaded";
     TitleWatcher title_watcher(shell()->web_contents(), title_when_done);
     EXPECT_TRUE(ExecuteScript(root, "w.close()"));
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), title_when_done);
@@ -1030,11 +1036,14 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ExecJs(node3, "window.name = 'node3'"));
   ASSERT_TRUE(ExecJs(node4, "window.name = 'node4'"));
 
+  ASSERT_TRUE(ExecJs(node1, "window.node2 = window[0]"));
+  ASSERT_TRUE(ExecJs(node1, "window.node3 = window[0][0]"));
+  ASSERT_TRUE(ExecJs(node1, "window.node4 = window[1]"));
+
   // Test sanity check.
-  EXPECT_EQ(true, EvalJs(node1, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node2, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node3, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node4, "!!top.node2.node3"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node2"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node3"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node4"));
 
   // Simulate a long-running unload handler in |node3|.
   node3->DoNotDeleteForTesting();
@@ -1051,7 +1060,7 @@ IN_PROC_BROWSER_TEST_P(
 
           var can_node3_be_found = false;
           try {
-            can_node3_be_found = !!top.node2.node3;
+            can_node3_be_found = !!top[0][0];  // top.node2.node3
           } catch(e) {
             can_node3_be_found = false;
           }
@@ -1072,7 +1081,7 @@ IN_PROC_BROWSER_TEST_P(
       var node2_frame = document.getElementsByTagName('iframe')[0];
       node2_frame.onload = function() {
           console.log('node2_frame.onload ...');
-          node4.postMessage('try to find node3', '*');
+          window.node4.postMessage('try to find node3', '*');
       };
       node2_frame.src = $1;
   )";
@@ -1121,11 +1130,14 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ExecJs(node3, "window.name = 'node3'"));
   ASSERT_TRUE(ExecJs(node4, "window.name = 'node4'"));
 
+  ASSERT_TRUE(ExecJs(node1, "window.node2 = window[0]"));
+  ASSERT_TRUE(ExecJs(node1, "window.node3 = window[0][0]"));
+  ASSERT_TRUE(ExecJs(node1, "window.node4 = window[1]"));
+
   // Test sanity check.
-  EXPECT_EQ(true, EvalJs(node1, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node2, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node3, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node4, "!!top.node2.node3"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node2"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node3"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node4"));
 
   // Add a long-running unload handler to |node3|.
   node3->DoNotDeleteForTesting();
@@ -1142,7 +1154,7 @@ IN_PROC_BROWSER_TEST_P(
 
           var can_node3_be_found = false;
           try {
-            can_node3_be_found = !!top.node2.node3;
+            can_node3_be_found = !!top[0][0];  // top.node2.node3
           } catch(e) {
             can_node3_be_found = false;
           }
@@ -1163,7 +1175,7 @@ IN_PROC_BROWSER_TEST_P(
       var node2_frame = document.getElementsByTagName('iframe')[0];
       node2_frame.onload = function() {
           console.log('node2_frame.onload ...');
-          node4.postMessage('try to find node3', '*');
+          window.node4.postMessage('try to find node3', '*');
       };
       node2_frame.src = $1;
   )";

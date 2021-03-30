@@ -8,19 +8,70 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "components/feed/core/proto/v2/wire/request.pb.h"
+#include "components/feed/core/proto/v2/wire/response.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/types.h"
 
 namespace feedwire {
-class UploadActionsResponse;
-class UploadActionsRequest;
 class Request;
 class Response;
 }  // namespace feedwire
 
 namespace feed {
 
+// DiscoverApi types. Defines information about each discover API. For use with
+// `FeedNetwork::SendApiRequest()`.
+
+struct UploadActionsDiscoverApi {
+  using Request = feedwire::UploadActionsRequest;
+  using Response = feedwire::UploadActionsResponse;
+  static const NetworkRequestType kRequestType =
+      NetworkRequestType::kUploadActions;
+  static base::StringPiece Method() { return "POST"; }
+  static base::StringPiece RequestPath() { return "v1/actions:upload"; }
+};
+
+struct ListFollowedWebFeedDiscoverApi {
+  using Request = feedwire::webfeed::ListWebFeedsRequest;
+  using Response = feedwire::webfeed::ListWebFeedsResponse;
+  static const NetworkRequestType kRequestType =
+      NetworkRequestType::kListWebFeeds;
+  static base::StringPiece Method() { return "GET"; }
+  // TODO(harringtond): Path TDB.
+  static base::StringPiece RequestPath() { return "v1/webFeeds"; }
+};
+
+struct FollowWebFeedDiscoverApi {
+  using Request = feedwire::webfeed::FollowWebFeedRequest;
+  using Response = feedwire::webfeed::FollowWebFeedResponse;
+  static const NetworkRequestType kRequestType =
+      NetworkRequestType::kFollowWebFeed;
+  static base::StringPiece Method() { return "POST"; }
+  // TODO(harringtond): Path TDB.
+  static base::StringPiece RequestPath() { return "v1:followWebFeed"; }
+};
+
+struct UnfollowWebFeedDiscoverApi {
+  using Request = feedwire::webfeed::UnfollowWebFeedRequest;
+  using Response = feedwire::webfeed::UnfollowWebFeedResponse;
+  static const NetworkRequestType kRequestType =
+      NetworkRequestType::kUnfollowWebFeed;
+  static base::StringPiece Method() { return "POST"; }
+  // TODO(harringtond): Path TDB.
+  static base::StringPiece RequestPath() { return "v1:unfollowWebFeed"; }
+};
+
 class FeedNetwork {
  public:
+  struct RawResponse {
+    // HTTP response body.
+    std::string response_bytes;
+    NetworkResponseInfo response_info;
+  };
   // Result of SendQueryRequest.
   struct QueryRequestResult {
     QueryRequestResult();
@@ -34,37 +85,72 @@ class FeedNetwork {
     bool was_signed_in;
   };
 
-  // Result of SendActionRequest.
-  struct ActionRequestResult {
-    ActionRequestResult();
-    ~ActionRequestResult();
-    ActionRequestResult(ActionRequestResult&&);
-    ActionRequestResult& operator=(ActionRequestResult&&);
+  template <typename RESPONSE_MESSAGE>
+  struct ApiResult {
+    ApiResult() = default;
+    ~ApiResult() = default;
+    ApiResult(ApiResult&&) = default;
+    ApiResult& operator=(ApiResult&&) = default;
+
     NetworkResponseInfo response_info;
     // Response body if one was received.
-    std::unique_ptr<feedwire::UploadActionsResponse> response_body;
+    std::unique_ptr<RESPONSE_MESSAGE> response_body;
   };
 
   virtual ~FeedNetwork();
 
+  // Send functions. These send a request and call the callback with the result.
+  // If |CancelRequests()| is called, the result callback may never be called.
+
   // Send a feedwire::Request, and receive the response in |callback|.
-  // |callback| will be called unless the request is canceled with
-  // |CancelRequests()|.
   virtual void SendQueryRequest(
+      NetworkRequestType request_type,
       const feedwire::Request& request,
       bool force_signed_out_request,
       base::OnceCallback<void(QueryRequestResult)> callback) = 0;
 
-  // Send a feedwire::UploadActionsRequest, and receive the response in
-  // |callback|. |callback| will be called unless the request is canceled with
-  // |CancelRequests()|.
-  virtual void SendActionRequest(
-      const feedwire::UploadActionsRequest& request,
-      base::OnceCallback<void(ActionRequestResult)> callback) = 0;
+  // Send a Discover API request. Usage:
+  // SendApiRequest<UploadActionsDiscoverApi>(request_message, callback).
+  template <typename API>
+  void SendApiRequest(
+      const typename API::Request& request,
+      base::OnceCallback<void(ApiResult<typename API::Response>)> callback) {
+    std::string binary_proto;
+    request.SerializeToString(&binary_proto);
+    SendDiscoverApiRequest(
+        API::RequestPath(), API::Method(), std::move(binary_proto),
+        base::BindOnce(&ParseAndForwardApiResponse<API>, std::move(callback)));
+  }
 
   // Cancels all pending requests immediately. This could be used, for example,
   // if there are pending requests for a user who just signed out.
   virtual void CancelRequests() = 0;
+
+ protected:
+  static void ParseAndForwardApiResponseBegin(NetworkRequestType request_type,
+                                              const RawResponse& raw_response);
+  virtual void SendDiscoverApiRequest(
+      base::StringPiece api_path,
+      base::StringPiece method,
+      std::string request_bytes,
+      base::OnceCallback<void(RawResponse)> callback) = 0;
+
+  template <typename API>
+  static void ParseAndForwardApiResponse(
+      base::OnceCallback<void(FeedNetwork::ApiResult<typename API::Response>)>
+          result_callback,
+      RawResponse raw_response) {
+    ParseAndForwardApiResponseBegin(API::kRequestType, raw_response);
+    FeedNetwork::ApiResult<typename API::Response> result;
+    result.response_info = raw_response.response_info;
+    if (result.response_info.status_code == 200) {
+      auto response_message = std::make_unique<typename API::Response>();
+      if (response_message->ParseFromString(raw_response.response_bytes)) {
+        result.response_body = std::move(response_message);
+      }
+    }
+    std::move(result_callback).Run(std::move(result));
+  }
 };
 
 }  // namespace feed

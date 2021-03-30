@@ -7,17 +7,17 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/system_token_cert_db_initializer.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -46,14 +46,14 @@ void DidGetCertDbOnIoThread(
 void GetCertDatabaseOnIoThread(
     const scoped_refptr<base::SingleThreadTaskRunner>& origin_task_runner,
     PlatformKeysServiceImplDelegate::OnGotNSSCertDatabase callback,
-    content::ResourceContext* context) {
+    NssCertDatabaseGetter database_getter) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   base::RepeatingCallback<void(net::NSSCertDatabase*)> on_got_on_io_thread =
       base::BindRepeating(&DidGetCertDbOnIoThread, origin_task_runner,
-                          base::AdaptCallbackForRepeating(std::move(callback)));
+                          base::Passed(&callback));
   net::NSSCertDatabase* cert_db =
-      GetNSSCertDatabaseForResourceContext(context, on_got_on_io_thread);
+      std::move(database_getter).Run(on_got_on_io_thread);
 
   if (cert_db)
     on_got_on_io_thread.Run(cert_db);
@@ -72,7 +72,7 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
         FROM_HERE,
         base::BindOnce(&GetCertDatabaseOnIoThread,
                        base::ThreadTaskRunnerHandle::Get(), std::move(callback),
-                       browser_context_->GetResourceContext()));
+                       CreateNSSCertDatabaseGetter(browser_context_)));
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
@@ -94,17 +94,16 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
 };
 
 class DelegateForDevice : public PlatformKeysServiceImplDelegate,
-                          public SystemTokenCertDBObserver {
+                          public SystemTokenCertDbStorage::Observer {
  public:
   DelegateForDevice() {
-    scoped_observer_.Add(SystemTokenCertDBInitializer::Get());
+    scoped_observeration_.Observe(SystemTokenCertDbStorage::Get());
   }
 
   ~DelegateForDevice() override = default;
 
   void GetNSSCertDatabase(OnGotNSSCertDatabase callback) override {
-    SystemTokenCertDBInitializer::Get()->GetSystemTokenCertDb(
-        std::move(callback));
+    SystemTokenCertDbStorage::Get()->GetDatabase(std::move(callback));
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
@@ -115,12 +114,13 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
   }
 
  private:
-  ScopedObserver<SystemTokenCertDBInitializer, SystemTokenCertDBObserver>
-      scoped_observer_{this};
+  base::ScopedObservation<SystemTokenCertDbStorage,
+                          SystemTokenCertDbStorage::Observer>
+      scoped_observeration_{this};
 
-  // SystemTokenCertDBObserver:
-  void OnSystemTokenCertDBDestroyed() override {
-    scoped_observer_.RemoveAll();
+  // SystemTokenCertDbStorage::Observer
+  void OnSystemTokenCertDbDestroyed() override {
+    scoped_observeration_.Reset();
     ShutDown();
   }
 };

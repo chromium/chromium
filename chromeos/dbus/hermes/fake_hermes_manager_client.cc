@@ -35,13 +35,15 @@ FakeHermesManagerClient::~FakeHermesManagerClient() = default;
 
 void FakeHermesManagerClient::AddEuicc(const dbus::ObjectPath& path,
                                        const std::string& eid,
-                                       bool is_active) {
+                                       bool is_active,
+                                       uint32_t physical_slot) {
   DVLOG(1) << "Adding new euicc path=" << path.value() << ", eid=" << eid
            << ", active=" << is_active;
   HermesEuiccClient::Properties* properties =
       HermesEuiccClient::Get()->GetProperties(path);
   properties->eid().ReplaceValue(eid);
   properties->is_active().ReplaceValue(is_active);
+  properties->physical_slot().ReplaceValue(physical_slot);
   available_euiccs_.push_back(path);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -82,12 +84,13 @@ void FakeHermesManagerClient::ParseCommandLineSwitch() {
 
   // Add a default Euicc and an installed fake carrier profile
   // as initial environment.
-  AddEuicc(dbus::ObjectPath(kDefaultEuiccPath), kDefaultEid, true);
+  AddEuicc(dbus::ObjectPath(kDefaultEuiccPath), kDefaultEid, /*is_active=*/true,
+           /*physical_slot=*/0);
   HermesEuiccClient::TestInterface* euicc_client_test =
       HermesEuiccClient::Get()->GetTestInterface();
   euicc_client_test->AddFakeCarrierProfile(dbus::ObjectPath(kDefaultEuiccPath),
                                            hermes::profile::State::kInactive,
-                                           "");
+                                           "", /*service_only=*/true);
 }
 
 void FakeHermesManagerClient::NotifyAvailableEuiccListChanged() {

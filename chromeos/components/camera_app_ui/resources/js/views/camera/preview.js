@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import * as barcodeChip from '../../barcode_chip.js';
+import {assert, assertInstanceof} from '../../chrome_util.js';
 import * as dom from '../../dom.js';
+import {FaceOverlay} from '../../face.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
@@ -16,11 +18,12 @@ import * as util from '../../util.js';
  */
 export class Preview {
   /**
-   * @param {function()} onNewStreamNeeded Callback to request new stream.
+   * @param {function(): !Promise} onNewStreamNeeded Callback to request new
+   *     stream.
    */
   constructor(onNewStreamNeeded) {
     /**
-     * @type {function()}
+     * @type {function(): !Promise}
      * @private
      */
     this.onNewStreamNeeded_ = onNewStreamNeeded;
@@ -33,18 +36,18 @@ export class Preview {
     this.video_ = dom.get('#preview-video', HTMLVideoElement);
 
     /**
-     * Element that shows the preview metadata.
-     * @type {!HTMLElement}
-     * @private
-     */
-    this.metadata_ = dom.get('#preview-metadata', HTMLElement);
-
-    /**
      * The observer id for preview metadata.
      * @type {?number}
      * @private
      */
     this.metadataObserverId_ = null;
+
+    /**
+     * The face overlay for showing faces over preview.
+     * @type {?FaceOverlay}
+     * @private
+     */
+    this.faceOverlay_ = null;
 
     /**
      * Current active stream.
@@ -72,7 +75,6 @@ export class Preview {
      * @private
      */
     this.scanner_ = null;
-
 
     window.addEventListener('resize', () => this.onWindowResize_());
 
@@ -129,7 +131,9 @@ export class Preview {
     this.video_.load();
     this.video_ = video;
     video.addEventListener('resize', () => this.onIntrinsicSizeChanged_());
-    video.addEventListener('click', (event) => this.onFocusClicked_(event));
+    video.addEventListener(
+        'click',
+        (event) => this.onFocusClicked_(assertInstanceof(event, MouseEvent)));
     return this.onIntrinsicSizeChanged_();
   }
 
@@ -160,6 +164,31 @@ export class Preview {
       this.updateScanBarcode_();
       this.updateShowMetadata_();
 
+      const deviceOperator = await DeviceOperator.getInstance();
+      if (deviceOperator !== null) {
+        const deviceId =
+            this.stream_.getVideoTracks()[0].getSettings().deviceId;
+        const isSuccess =
+            await deviceOperator.setCameraFrameRotationEnabledAtSource(
+                deviceId, false);
+        if (!isSuccess) {
+          console.warn(
+              'Cannot disable camera frame rotation. ' +
+              'The camera is probably being used by another app.');
+        }
+      }
+
+      const track = this.stream.getVideoTracks()[0];
+      const settings = track.getSettings();
+      const {pan, tilt, zoom} = track.getCapabilities();
+      // PTZ function is excluded from builtin camera until we set up its AVL
+      // calibration standard.
+      const isBuiltinCamera = settings.facingMode !== undefined;
+      state.set(
+          state.State.HAS_PTZ_SUPPORT,
+          !isBuiltinCamera &&
+              (pan !== undefined || tilt !== undefined || zoom !== undefined));
+
       state.set(state.State.STREAMING, true);
     } catch (e) {
       await this.close();
@@ -179,13 +208,14 @@ export class Preview {
     }
     // Pause video element to avoid black frames during transition.
     this.video_.pause();
+    this.disableShowMetadata_();
     if (this.stream_ !== null) {
       const track = this.stream_.getVideoTracks()[0];
       const {deviceId} = track.getSettings();
       track.stop();
       const deviceOperator = await DeviceOperator.getInstance();
       if (deviceOperator !== null) {
-        await deviceOperator.waitForDeviceClose(deviceId);
+        deviceOperator.dropConnection(deviceId);
       }
       this.stream_ = null;
     }
@@ -253,16 +283,16 @@ export class Preview {
       return;
     }
 
-    document.querySelectorAll('.metadata-value').forEach((element) => {
+    dom.getAll('.metadata.value', HTMLElement).forEach((element) => {
       element.style.display = 'none';
     });
 
     const displayCategory = (selector, enabled) => {
-      document.querySelector(selector).classList.toggle('mode-on', enabled);
+      dom.get(selector, HTMLElement).classList.toggle('mode-on', enabled);
     };
 
     const showValue = (selector, val) => {
-      const element = document.querySelector(selector);
+      const element = dom.get(selector, HTMLElement);
       element.style.display = '';
       element.textContent = val;
     };
@@ -383,6 +413,31 @@ export class Preview {
       };
     })();
 
+    const deviceOperator = await DeviceOperator.getInstance();
+    if (!deviceOperator) {
+      return;
+    }
+
+    const deviceId = videoTrack.getSettings().deviceId;
+    const activeArraySize = await deviceOperator.getActiveArraySize(deviceId);
+    const sensorOrientation =
+        await deviceOperator.getSensorOrientation(deviceId);
+    this.faceOverlay_ = new FaceOverlay(activeArraySize, sensorOrientation);
+
+    const updateFace = (mode, rects) => {
+      if (mode ===
+          cros.mojom.AndroidStatisticsFaceDetectMode
+              .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
+        dom.get('#preview-num-faces', HTMLDivElement).style.display = 'none';
+        return;
+      }
+      assert(rects.length % 4 === 0);
+      const numFaces = rects.length / 4;
+      const label = numFaces >= 2 ? 'Faces' : 'Face';
+      showValue('#preview-num-faces', `${numFaces} ${label}`);
+      this.faceOverlay_.show(rects);
+    };
+
     const callback = (metadata) => {
       showValue('#preview-resolution', resolution);
       showValue('#preview-device-name', deviceName);
@@ -390,8 +445,32 @@ export class Preview {
       if (fps !== null) {
         showValue('#preview-fps', `${fps.toFixed(0)} FPS`);
       }
+
+      let faceMode = cros.mojom.AndroidStatisticsFaceDetectMode
+                         .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF;
+      let faceRects = [];
+
+      const tryParseFaceEntry = (entry) => {
+        switch (entry.tag) {
+          case tag.ANDROID_STATISTICS_FACE_DETECT_MODE: {
+            const data = parseMetadata(entry);
+            assert(data.length === 1);
+            faceMode = data;
+            return true;
+          }
+          case tag.ANDROID_STATISTICS_FACE_RECTANGLES: {
+            faceRects = parseMetadata(entry);
+            return true;
+          }
+        }
+        return false;
+      };
+
       for (const entry of metadata.entries) {
         if (entry.count === 0) {
+          continue;
+        }
+        if (tryParseFaceEntry(entry)) {
           continue;
         }
         const handler = metadataEntryHandlers[entry.tag];
@@ -400,14 +479,12 @@ export class Preview {
         }
         handler(parseMetadata(entry));
       }
+
+      // We always need to run updateFace() even if face rectangles are obsent
+      // in the metadata, which may happen if there is no face detected.
+      updateFace(faceMode, faceRects);
     };
 
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (!deviceOperator) {
-      return;
-    }
-
-    const deviceId = videoTrack.getSettings().deviceId;
     this.metadataObserverId_ = await deviceOperator.addMetadataObserver(
         deviceId, callback, cros.mojom.StreamType.PREVIEW_OUTPUT);
   }
@@ -435,6 +512,11 @@ export class Preview {
           this.metadataObserverId_}`);
     }
     this.metadataObserverId_ = null;
+
+    if (this.faceOverlay_ !== null) {
+      this.faceOverlay_.clear();
+      this.faceOverlay_ = null;
+    }
   }
 
   /**
@@ -459,7 +541,7 @@ export class Preview {
 
   /**
    * Handles clicking for focus.
-   * @param {!Event} event Click event.
+   * @param {!MouseEvent} event Click event.
    * @private
    */
   onFocusClicked_(event) {
@@ -469,21 +551,25 @@ export class Preview {
     const x = event.offsetX / this.video_.offsetWidth;
     const y = event.offsetY / this.video_.offsetHeight;
     const constraints = {advanced: [{pointsOfInterest: [{x, y}]}]};
-    const track = this.video_.srcObject.getVideoTracks()[0];
-    const focus =
-        track.applyConstraints(constraints)
-            .then(() => {
-              if (focus !== this.focus_) {
-                return;  // Focus was cancelled.
-              }
-              const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
-              const clone = aim.cloneNode(true);
-              clone.style.left = `${event.offsetX + this.video_.offsetLeft}px`;
-              clone.style.top = `${event.offsetY + this.video_.offsetTop}px`;
-              clone.hidden = false;
-              aim.parentElement.replaceChild(clone, aim);
-            })
-            .catch(console.error);
+    const track = this.stream.getVideoTracks()[0];
+    const focus = (async () => {
+      try {
+        await track.applyConstraints(constraints);
+      } catch {
+        // The device might not support setting pointsOfInterest. Ignore the
+        // error and return.
+        return;
+      }
+      if (focus !== this.focus_) {
+        return;  // Focus was cancelled.
+      }
+      const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
+      const clone = aim.cloneNode(true);
+      clone.style.left = `${event.offsetX + this.video_.offsetLeft}px`;
+      clone.style.top = `${event.offsetY + this.video_.offsetTop}px`;
+      clone.hidden = false;
+      aim.parentElement.replaceChild(clone, aim);
+    })();
     this.focus_ = focus;
   }
 

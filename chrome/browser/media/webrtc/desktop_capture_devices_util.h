@@ -25,7 +25,7 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     bool capture_audio,
     bool disable_local_echo,
     bool display_notification,
-    const base::string16& application_title,
-    const base::string16& registered_extension_name);
+    const std::u16string& application_title,
+    const std::u16string& registered_extension_name);
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_CAPTURE_DEVICES_UTIL_H_

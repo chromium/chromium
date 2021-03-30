@@ -126,11 +126,10 @@ bool AddSupervisionDialog::OnDialogCloseRequested() {
   return !showing_confirm_dialog;
 }
 
-bool AddSupervisionDialog::DeprecatedOnDialogCloseRequested() {
+void AddSupervisionDialog::OnDialogWillClose() {
   // Record UMA metric that user has closed the Add Supervision dialog.
   AddSupervisionMetricsRecorder::GetInstance()->RecordAddSupervisionEnrollment(
       AddSupervisionMetricsRecorder::EnrollmentState::kClosed);
-  return true;
 }
 
 bool AddSupervisionDialog::ShouldCloseDialogOnEscape() const {
@@ -139,7 +138,7 @@ bool AddSupervisionDialog::ShouldCloseDialogOnEscape() const {
 
 AddSupervisionDialog::AddSupervisionDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIAddSupervisionURL),
-                              base::string16()) {}
+                              std::u16string()) {}
 
 AddSupervisionDialog::~AddSupervisionDialog() = default;
 
@@ -202,13 +201,14 @@ void AddSupervisionUI::SetUpResources() {
   }
 
   source->DisableTrustedTypesCSP();
+  source->EnableReplaceI18nInJS();
 
   // Forward data to the WebUI.
   source->AddResourcePath("post_message_api.js",
                           IDR_ADD_SUPERVISION_POST_MESSAGE_API_JS);
   source->AddResourcePath("add_supervision_api_server.js",
                           IDR_ADD_SUPERVISION_API_SERVER_JS);
-  source->AddResourcePath("add_supervision.js", IDR_ADD_SUPERVISION_JS);
+  source->AddResourcePath("add_supervision_ui.js", IDR_ADD_SUPERVISION_UI_JS);
   source->AddResourcePath("images/network_unavailable.svg",
                           IDR_ADD_SUPERVISION_NETWORK_UNAVAILABLE_SVG);
 

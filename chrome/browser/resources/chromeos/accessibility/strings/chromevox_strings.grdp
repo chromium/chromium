@@ -1213,6 +1213,24 @@
   <message desc="Describes an element where the checked state is mixed or indeterminate." name="IDS_CHROMEVOX_CHECKED_MIXED">
     Partially checked
   </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=true." name="IDS_CHROMEVOX_ARIA_CURRENT_TRUE">
+    Current
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=page." name="IDS_CHROMEVOX_ARIA_CURRENT_PAGE">
+    Current page
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=step." name="IDS_CHROMEVOX_ARIA_CURRENT_STEP">
+    Current step
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=location." name="IDS_CHROMEVOX_ARIA_CURRENT_LOCATION">
+    Current location
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=date." name="IDS_CHROMEVOX_ARIA_CURRENT_DATE">
+    Current date
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=time." name="IDS_CHROMEVOX_ARIA_CURRENT_TIME">
+    Current time
+  </message>
   <message desc="Describes an element with the ARIA attribute aria-disabled=true." name="IDS_CHROMEVOX_ARIA_DISABLED_TRUE">
     Disabled
   </message>
@@ -2171,14 +2189,20 @@
   <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_WRAP_EARCON_DESCRIPTION">
     Wrap from beginning to end or end to beginning inside of a page, dialog, or other container
   </message>
-  <message desc="Describes a command to turn off the visual display for accessibility without impacting usage of the machine." name="IDS_CHROMEVOX_DARKEN_SCREEN">
-    Darken screen
+  <message desc="Describes a command to turn off the visual display for accessibility without impacting usage of the machine." name="IDS_CHROMEVOX_TOGGLE_SCREEN_OFF">
+    Screen off
   </message>
-  <message desc="Describes a command to turn the visual display on for accessibility undoing any previous request to turn off the visual display." name="IDS_CHROMEVOX_UNDARKEN_SCREEN">
-    Undarken screen
+  <message desc="Describes a command to turn the visual display on for accessibility undoing any previous request to turn off the visual display." name="IDS_CHROMEVOX_TOGGLE_SCREEN_ON">
+    Screen on
   </message>
-  <message desc="Describes a command to toggle on/off the visual display for accessibility." name="IDS_CHROMEVOX_TOGGLE_DARK_SCREEN">
-    Toggle dark screen
+  <message desc="Describes a command to toggle on/off the visual display for accessibility." name="IDS_CHROMEVOX_TOGGLE_SCREEN">
+    Toggle screen on or off
+  </message>
+  <message desc="The title of a dialog shown the first time the user requests to turn off the visual display." name="IDS_CHROMEVOX_TOGGLE_SCREEN_TITLE">
+    Turn off screen?
+  </message>
+  <message desc="The message of a dialog Shown the first time a user requests to turn off the visual display, describes what the screen off command does and how to turn the screen on again with Search + Brightness Up buttons." name="IDS_CHROMEVOX_TOGGLE_SCREEN_DESCRIPTION">
+    This turns off the screen. You can always turn the screen back on by pressing Search + Brightness up.
   </message>
   <message desc="Describes a command that turns text to speech feedback off." name="IDS_CHROMEVOX_SPEECH_OFF">
     Speech off
@@ -2279,6 +2303,9 @@
   <message desc="A hint to the user that there are details associated with this element." name="IDS_CHROMEVOX_HINT_DETAILS">
     Press Search+A, J to jump to details
   </message>
+  <message desc="A hint to the user that action is available on this node" name="IDS_CHROMEVOX_HINT_ACTION">
+    Actions available. Press Search+Period to view
+  </message>
   <message desc="The display name of the command that will jump to more details about an item." name="IDS_CHROMEVOX_JUMP_TO_DETAILS">
     Jump to Details
   </message>
@@ -2325,7 +2352,7 @@
     Double tap to start editing
   </message>
   <message desc="Describes Learn Mode when the mode is initially entered with text-to-speech." name="IDS_CHROMEVOX_LEARN_MODE_INTRO" is_accessibility_with_no_ui="true">
-    Press a qwerty key, refreshable braille key, or touch gesture to learn its function. Press control with w or escape to exit.
+    Press a qwerty key, refreshable braille key, or touch gesture to learn its function. Press control with w, space with Z, swipe left with two fingers, or escape to exit.
   </message>
   <message desc="Output when leaving Learn Mode." name="IDS_CHROMEVOX_LEARN_MODE_OUTTRO">
     Stopping Learn Mode
@@ -3209,5 +3236,77 @@
   </message>
   <message desc="A spoken announcement given in the tutorial if the user becomes inactive." name="IDS_CHROMEVOX_TUTORIAL_HINT_EXIT" is_accessibility_with_no_ui="true">
     Hint: Press Escape if you would like to exit this tutorial.
+  </message>
+  <message desc="Title for the intro lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_INTRO_TITLE">
+    ChromeVox touch tutorial
+  </message>
+  <message desc="Text content for the intro lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_INTRO_TEXT">
+    Welcome to the ChromeVox tutorial. To exit this tutorial at any time, swipe from right to left with two fingers. To turn ChromeVox on or off at any time, press and hold both Volume buttons for five seconds. When you’re ready, double-tap the screen with one finger to move to the next lesson.
+  </message>
+  <message desc="Title for the activate item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_ACTIVATE_TITLE">
+    Activate an item
+  </message>
+  <message desc="Text content for the activate item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_ACTIVATE_TEXT">
+    Let's start with a few gestures you'll use regularly. If you reach an item you want to activate, double-tap the screen with one finger. To continue, double-tap now.
+  </message>
+  <message desc="Title for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_PREVIOUS_ITEM_TITLE">
+    Move to the next or previous item
+  </message>
+  <message desc="Text content for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_ITEM_TEXT">
+    Next, you’ll learn how to move around the screen. You can swipe one finger from left to right to move to the next item. Try it now to move to the next step.
+  </message>
+  <message desc="Text content for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_PREVIOUS_ITEM_TEXT">
+    You can also swipe one finger from right to left to move to the previous item. Try it now.
+  </message>
+  <message desc="Text content for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_PREVIOUS_CONTINUE_TEXT">
+    Once you’ve had some practice, find the Next lesson button. Then double-tap to continue. 
+  </message>
+  <message desc="Title for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_TITLE">
+    Explore by touch
+  </message>
+  <message desc="Text content for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_TEXT">
+    You can also move around by dragging one finger around the screen. This is called exploring by touch. Try dragging your finger around to read the rest of this lesson.
+  </message>
+  <message desc="Text content for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_MORE_TEXT">
+    Exploring by touch can help you quickly get a sense of what's on the screen.
+  </message>
+  <message desc="Text content for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_EFFICIENCY_TEXT">
+    It can also be more efficient than swiping left and right with one finger.
+  </message>
+  <message desc="Text content for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_CONTINUE_TEXT">
+    To continue, explore by touch to find the Next lesson button. Then double-tap to continue.
+  </message>
+  <message desc="Title for the stop speech lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_STOP_SPEECH_TITLE">
+    Stop speech
+  </message>
+  <message desc="Text content for the stop speech lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_STOP_SPECH_TEXT">
+    Tapping the screen with two fingers can be used to stop any current speech. This is useful if you don’t want ChromeVox to read something. To continue, tap the screen with two fingers.
+  </message>
+  <message desc="Title for the menus lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_MENUS_TITLE">
+    Access menus
+  </message>
+  <message desc="Text content for the menus lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_MENUS_TEXT">
+    Tapping the screen with four fingers will open and close the ChromeVox menus. These menus contain helpful information about commands and shortcuts. Once the menus are open, you can swipe with one finger to navigate through items, and double-tap to activate items. To continue, tap the screen with four fingers.
+  </message>
+  <message desc="Title for the next/previous section lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_PREVIOUS_SECTION_TITLE">
+    Move to the next or previous section
+  </message>
+  <message desc="Text content for the next/previous section lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_SECTION_TEXT">
+    You can also move between sections of the screen. For example, you can move between the launcher, the shelf, and your Chrome tabs. To move to the next section, swipe from left to right with four fingers. Try it now to continue.
+  </message>
+  <message desc="Text content for the next/previous section lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_PREVIOUS_SECTION_TEXT">
+    Similarly, swiping with four fingers from right to left can be used to move to the previous major element. Try it now!
+  </message>
+  <message desc="Title for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_TITLE">
+    Touch tutorial complete
+  </message>
+  <message desc="Text content for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_TEXT">
+    Well done! You’ve learned the basics of ChromeVox touch. You can go through the tutorial again or exit this tutorial using the buttons below.
+  </message>
+  <message desc="Text content for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_HELP_CENTER_TEXT">
+    For a full list of gestures, visit the help center.
+  </message>
+  <message desc="Text content for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_MORE_TUTORIALS_TEXT">
+    You can always view tutorials by opening the menus with a four-finger tap. Then activate the tutorial under the “ChromeVox” section.
   </message>
 </grit-part>

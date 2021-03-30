@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_VIEW_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class Browser;
 
@@ -16,6 +18,11 @@ namespace media_router {
 // Cast feature.
 class CloudServicesDialogView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(CloudServicesDialogView);
+
+  CloudServicesDialogView(const CloudServicesDialogView&) = delete;
+  CloudServicesDialogView& operator=(const CloudServicesDialogView&) = delete;
+
   // Instantiates and shows the singleton dialog.
   static void ShowDialog(views::View* anchor_view, Browser* browser);
 
@@ -43,8 +50,6 @@ class CloudServicesDialogView : public views::BubbleDialogDelegateView {
 
   // Browser window that this dialog is attached to.
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudServicesDialogView);
 };
 
 }  // namespace media_router

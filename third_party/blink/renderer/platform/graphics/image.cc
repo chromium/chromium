@@ -145,13 +145,13 @@ PaintImage Image::ResizeAndOrientImage(
   DCHECK_GE(opacity, 0);
   DCHECK_LE(opacity, 1);
   paint.setAlpha(opacity * 255);
-  paint.setFilterQuality(interpolation_quality == kInterpolationNone
-                             ? kNone_SkFilterQuality
-                             : kHigh_SkFilterQuality);
+  SkSamplingOptions sampling;
+  if (interpolation_quality != kInterpolationNone)
+    sampling = SkSamplingOptions(SkCubicResampler::CatmullRom());
 
   SkCanvas* canvas = surface->getCanvas();
   canvas->concat(AffineTransformToSkMatrix(transform));
-  canvas->drawImage(image.GetSwSkImage(), 0, 0, &paint);
+  canvas->drawImage(image.GetSwSkImage(), 0, 0, sampling, &paint);
 
   return PaintImageBuilder::WithProperties(std::move(image))
       .set_image(surface->makeImageSnapshot(), PaintImage::GetNextContentId())
@@ -179,7 +179,7 @@ namespace {
 
 sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
                                        const SkMatrix& shader_matrix,
-                                       SkFilterQuality quality_to_use,
+                                       const SkSamplingOptions& sampling,
                                        bool should_antialias,
                                        const FloatSize& spacing,
                                        SkTileMode tmx,
@@ -200,13 +200,12 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
   cc::PaintCanvas* canvas = recorder.beginRecording(tile_rect);
   PaintFlags flags;
   flags.setAntiAlias(should_antialias);
-  flags.setFilterQuality(quality_to_use);
   canvas->drawImageRect(
       image,
       SkRect::MakeXYWH(subset_rect.X(), subset_rect.Y(), subset_rect.Width(),
                        subset_rect.Height()),
-      SkRect::MakeWH(subset_rect.Width(), subset_rect.Height()), &flags,
-      SkCanvas::kStrict_SrcRectConstraint);
+      SkRect::MakeWH(subset_rect.Width(), subset_rect.Height()), sampling,
+      &flags, SkCanvas::kStrict_SrcRectConstraint);
 
   return PaintShader::MakePaintRecord(recorder.finishRecordingAsPicture(),
                                       tile_rect, tmx, tmy, &shader_matrix);
@@ -279,10 +278,10 @@ void Image::DrawPattern(GraphicsContext& context,
   const auto tmy = ComputeTileMode(dest_rect.Y(), dest_rect.MaxY(), adjusted_y,
                                    adjusted_y + tile_size.Height());
 
-  SkFilterQuality quality_to_use =
-      context.ComputeFilterQuality(this, dest_rect, FloatRect(subset_rect));
+  SkSamplingOptions sampling_to_use =
+      context.ComputeSamplingOptions(this, dest_rect, FloatRect(subset_rect));
   sk_sp<PaintShader> tile_shader = CreatePatternShader(
-      image, local_matrix, quality_to_use, context.ShouldAntialias(),
+      image, local_matrix, sampling_to_use, context.ShouldAntialias(),
       FloatSize(repeat_spacing.Width() / oriented_scale.Width(),
                 repeat_spacing.Height() / oriented_scale.Height()),
       tmx, tmy, subset_rect);
@@ -293,7 +292,6 @@ void Image::DrawPattern(GraphicsContext& context,
   // Note: we can't simply bail, because of arbitrary blend mode.
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setBlendMode(composite_op);
-  flags.setFilterQuality(quality_to_use);
   flags.setShader(std::move(tile_shader));
 
   context.DrawRect(dest_rect, flags);

@@ -11,6 +11,8 @@ import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Interface providing the access to C++ ScreenOrientationProvider.
+ * TODO(boliu): This interface working with WindowAndroid does not support the use case
+ * when an Activity (and WindowAndroid) is recreated on rotation.
  */
 public interface ScreenOrientationProvider {
     static ScreenOrientationProvider getInstance() {

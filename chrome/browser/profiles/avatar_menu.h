@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/buildflags.h"
@@ -58,11 +57,11 @@ class AvatarMenu :
     bool active;
 
     // The name of this profile.
-    base::string16 name;
+    std::u16string name;
 
     // A string representing the username of the profile, if signed in.  Empty
     // when not signed in.
-    base::string16 username;
+    std::u16string username;
 
     // Whether or not the current profile is signed in. If true, |sync_state| is
     // expected to be the email of the signed in user.
@@ -70,10 +69,6 @@ class AvatarMenu :
 
     // Whether or not the current profile requires sign-in before use.
     bool signin_required;
-
-    // Whether or not the current profile is a legacy supervised user profile
-    // (see SupervisedUserService).
-    bool legacy_supervised;
 
     // Whether or not the profile is associated with a child account
     // (see SupervisedUserService).
@@ -149,7 +144,7 @@ class AvatarMenu :
   // Returns information about a supervised user which will be displayed in the
   // avatar menu. If the profile does not belong to a supervised user, an empty
   // string will be returned.
-  base::string16 GetSupervisedUserInformation() const;
+  std::u16string GetSupervisedUserInformation() const;
 
   // This menu is also used for the always-present Mac and Linux system menubar.
   // If the last active browser changes, the menu will need to reference that
@@ -166,9 +161,9 @@ class AvatarMenu :
   // ProfileAttributesStorage::Observer:
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnProfileWasRemoved(const base::FilePath& profile_path,
-      const base::string16& profile_name) override;
+                           const std::u16string& profile_name) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
-      const base::string16& old_profile_name) override;
+                            const std::u16string& old_profile_name) override;
   void OnProfileAuthInfoChanged(const base::FilePath& profile_path) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
   void OnProfileHighResAvatarLoaded(

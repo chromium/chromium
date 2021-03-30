@@ -4,13 +4,13 @@
 
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -21,7 +21,7 @@
 
 namespace {
 
-constexpr char kHistogramName[] = "ChromeOS.FamilyUser.LogSegment";
+constexpr char kHistogramName[] = "ChromeOS.FamilyUser.LogSegment2";
 
 // Returns user's segment for metrics logging.
 enterprise_management::PolicyData::MetricsLogSegment GetMetricsLogSegment(
@@ -41,6 +41,18 @@ bool IsEnterpriseManaged() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   return connector->IsEnterpriseManaged();
+}
+
+Profile* GetPrimaryUserProfile() {
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  DCHECK(primary_user);
+  DCHECK(primary_user->is_profile_created());
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  DCHECK(profile);
+  DCHECK(chromeos::ProfileHelper::IsRegularProfile(profile));
+  return profile;
 }
 
 }  // namespace
@@ -74,14 +86,7 @@ void FamilyUserMetricsProvider::ProvideCurrentSessionData(
 void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
   if (!is_primary_user)
     return;
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
-  DCHECK(primary_user->is_profile_created());
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  DCHECK(profile);
-  DCHECK(chromeos::ProfileHelper::IsRegularProfile(profile));
+  Profile* profile = GetPrimaryUserProfile();
 
   // Check for incognito profiles.
   if (!profile->IsRegularProfile()) {
@@ -108,6 +113,10 @@ void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
     DCHECK(profile->GetProfilePolicyConnector()->IsManaged());
     // This is a K-12 EDU user on an unmanaged ChromeOS device.
     log_segment_ = LogSegment::kStudentAtHome;
+  } else if (!profile->GetProfilePolicyConnector()->IsManaged()) {
+    DCHECK(!profile->IsChild());
+    // This is a regular unmanaged user on any device.
+    log_segment_ = LogSegment::kRegularUser;
   } else {
     log_segment_ = LogSegment::kOther;
   }
@@ -117,10 +126,7 @@ void FamilyUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
 // detecting when a supervised user adds an EDU secondary account.
 void FamilyUserMetricsProvider::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  Profile* profile = GetPrimaryUserProfile();
   // Check for incognito profiles.
   if (!profile->IsRegularProfile())
     return;
@@ -133,6 +139,23 @@ void FamilyUserMetricsProvider::OnRefreshTokenUpdatedForAccount(
   // must be EDU.
   if (profile->IsChild() && accounts_size > 1)
     log_segment_ = LogSegment::kSupervisedStudent;
+}
+
+// Called when the user removes a secondary account. We're interested in
+// detecting when a supervised user removes an EDU secondary account.
+void FamilyUserMetricsProvider::OnRefreshTokenRemovedForAccount(
+    const CoreAccountId& account_id) {
+  Profile* profile = GetPrimaryUserProfile();
+  // Check for incognito profiles.
+  if (!profile->IsRegularProfile())
+    return;
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  auto accounts_size = identity_manager->GetAccountsWithRefreshTokens().size();
+
+  if (profile->IsChild() && accounts_size == 1)
+    log_segment_ = LogSegment::kSupervisedUser;
 }
 
 // static

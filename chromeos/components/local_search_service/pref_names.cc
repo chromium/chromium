@@ -22,6 +22,8 @@ const char kLocalSearchServiceMetricsCrosSettingsCount[] =
     "local_search_service.metrics.cros_settings_count";
 const char kLocalSearchServiceMetricsHelpAppCount[] =
     "local_search_service.metrics.help_app_count";
+const char kLocalSearchServiceMetricsHelpAppLauncherCount[] =
+    "local_search_service.metrics.help_app_launcher_count";
 
 }  // namespace prefs
 }  // namespace local_search_service

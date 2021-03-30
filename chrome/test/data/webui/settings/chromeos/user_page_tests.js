@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {FakeUsersPrivate} from './fake_users_private.m.js';
+// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';

@@ -90,6 +90,7 @@ cast_source_set("base") {
   deps = [
     "//base",
     "//chromecast:chromecast_buildflags",
+    "//third_party/widevine/cdm:buildflags",
   ]
 
   if (chromecast_branding == "public") {
@@ -163,7 +164,6 @@ cast_source_set("test_support") {
 test("cast_base_unittests") {
   sources = [
     "alarm_manager_unittest.cc",
-    "bind_to_task_runner_unittest.cc",
     "cast_features_unittest.cc",
     "device_capabilities_impl_unittest.cc",
     "error_codes_unittest.cc",
@@ -354,8 +354,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
@@ -384,6 +383,7 @@ if (is_android) {
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndThenTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableFilterTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/ObservableFlatMapTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableMapTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableMiscellaneousTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableNotTest.java",

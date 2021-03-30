@@ -1,7 +1,7 @@
 Name: LevelDB: A Fast Persistent Key-Value Store
 Short Name: leveldb
 URL: https://github.com/google/leveldb.git
-Version: 1.22.git.4bd052d7e8b0469b2b87664388e2a99cb212ecdb
+Version: 1.23
 License: New BSD
 License File: src/LICENSE
 Security Critical: yes

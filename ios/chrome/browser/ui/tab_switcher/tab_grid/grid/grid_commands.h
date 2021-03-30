@@ -17,6 +17,9 @@
 // Tells the receiver to select the item with identifier |itemID|. If there is
 // no item with that identifier, no change in selection should be made.
 - (void)selectItemWithID:(NSString*)itemID;
+// Asks the receiver whether the item with identifier |itemID| is already
+// selected.
+- (BOOL)isItemWithIDSelected:(NSString*)itemID;
 // Tells the receiver to move the item with identifier |itemID| to |index|. If
 // there is no item with that identifier, no move should be made. It is an error
 // to pass a value for |index| outside of the bounds of the items array.

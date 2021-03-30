@@ -17,7 +17,6 @@ Event.Latency.EndToEnd.TouchpadPinch\n"];
       [label="\
 Event.Latency.<scroll_name>.TimeToScrollUpdateSwapBegin2\n\
 Event.Latency.<scroll_name>.<input_modality>.TimeToScrollUpdateSwapBegin4\n\
-Event.Latency.Scroll.Wheel.TimeToScrollUpdateSwapBegin2\n\
 UKM: Event.<scroll_name>.<input_modality>.TimeToScrollUpdateSwapBegin\n"]
     scroll_to_schedule_metrics
       [label="\

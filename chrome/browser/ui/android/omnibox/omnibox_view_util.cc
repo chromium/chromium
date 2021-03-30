@@ -15,7 +15,7 @@ using base::android::ScopedJavaLocalRef;
 ScopedJavaLocalRef<jstring> JNI_OmniboxViewUtil_SanitizeTextForPaste(
     JNIEnv* env,
     const JavaParamRef<jstring>& jtext) {
-  base::string16 pasted_text(
+  std::u16string pasted_text(
       base::android::ConvertJavaStringToUTF16(env, jtext));
   pasted_text = OmniboxView::SanitizeTextForPaste(pasted_text);
   return base::android::ConvertUTF16ToJavaString(env, pasted_text);

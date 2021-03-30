@@ -6,6 +6,7 @@
 <link rel="import" href="../../../cr_elements/shared_style_css.html">
 <link rel="import" href="../../../cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout.html">
 
 <dom-module id="button-bar">
@@ -37,33 +38,12 @@
         hidden$="[[isButtonHidden_(Button.CANCEL, buttonState.*)]]">
       [[i18n('cancel')]]
     </cr-button>
-    <cr-button id="tryAgain"
+    <cr-button id="forward"
         class="action-button"
-        on-click="onTryAgainButtonClicked_"
-        disabled="[[isButtonDisabled_(Button.TRY_AGAIN, buttonState.*)]]"
-        hidden$="[[isButtonHidden_(Button.TRY_AGAIN, buttonState.*)]]">
-      [[i18n('tryAgain')]]
-    </cr-button>
-    <cr-button id="done"
-        class="action-button"
-        on-click="onDoneButtonClicked_"
-        disabled="[[isButtonDisabled_(Button.DONE, buttonState.*)]]"
-        hidden$="[[isButtonHidden_(Button.DONE, buttonState.*)]]">
-      [[i18n('done')]]
-    </cr-button>
-    <cr-button id="skipDiscovery"
-        class="action-button"
-        on-click="onNextButtonClicked_"
-        disabled="[[isButtonDisabled_(Button.SKIP_DISCOVERY, buttonState.*)]]"
-        hidden$="[[isButtonHidden_(Button.SKIP_DISCOVERY, buttonState.*)]]">
-      [[i18n('skipDiscovery')]]
-    </cr-button>
-    <cr-button id="next"
-        class="action-button"
-        on-click="onNextButtonClicked_"
-        disabled="[[isButtonDisabled_(Button.NEXT, buttonState.*)]]"
-        hidden$="[[isButtonHidden_(Button.NEXT, buttonState.*)]]">
-      [[i18n('next')]]
+        on-click="onForwardButtonClicked_"
+        disabled="[[isButtonDisabled_(Button.FORWARD, buttonState.*)]]"
+        hidden$="[[isButtonHidden_(Button.FORWARD, buttonState.*)]]">
+      [[forwardButtonLabel]]
     </cr-button>
   </template>
   <script src="button_bar.js"></script>

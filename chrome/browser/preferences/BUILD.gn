@@ -10,15 +10,14 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeyChecker.java",
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/DeprecatedChromePreferenceKeys.java",
-    "android/java/src/org/chromium/chrome/browser/preferences/GrandfatheredChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/KeyPrefix.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/LegacyChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java",
     "android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManager.java",
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_pref_names_srcjar" ]
@@ -33,6 +32,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/embedder_support/pref_names.cc",
     "//components/feed/core/common/pref_names.cc",
     "//components/feed/core/shared_prefs/pref_names.cc",
+    "//components/language/core/browser/pref_names.cc",
     "//components/offline_pages/core/prefetch/prefetch_prefs.cc",
     "//components/password_manager/core/common/password_manager_pref_names.cc",
     "//components/payments/core/payment_prefs.cc",
@@ -64,7 +64,7 @@ java_library("preferences_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
   ]

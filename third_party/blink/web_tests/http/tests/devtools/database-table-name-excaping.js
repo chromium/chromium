@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests how table names are escaped in database table view.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
 
   var tableName = 'table-name-with-dashes-and-"quotes"';
   var escapedTableName = Resources.DatabaseTableView.prototype._escapeTableName(tableName, '', true);

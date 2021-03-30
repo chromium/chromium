@@ -10,6 +10,7 @@
 #include <windows.h>   // NOLINT
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -20,7 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
 #include "base/scoped_native_library.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task_runner.h"
 #include "base/threading/thread.h"
@@ -64,7 +64,7 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
  private:
   void ShowDialogOnPrivateThread(HWND parent, const std::string& failed_url) {
     NDFHANDLE incident_handle;
-    base::string16 failed_url_wide = base::UTF8ToUTF16(failed_url);
+    std::wstring failed_url_wide = base::UTF8ToWide(failed_url);
     if (!SUCCEEDED(NdfCreateWebIncident(failed_url_wide.c_str(),
                                         &incident_handle))) {
       return;

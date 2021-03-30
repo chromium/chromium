@@ -91,9 +91,9 @@ const MinidumpUTF8String* MinidumpUTF8StringAtRVA(
   return TMinidumpStringAtRVA<MinidumpUTF8String>(file_contents, rva);
 }
 
-base::string16 MinidumpStringAtRVAAsString(const std::string& file_contents,
+std::u16string MinidumpStringAtRVAAsString(const std::string& file_contents,
                                            RVA rva) {
-  return TMinidumpStringAtRVAAsString<base::string16, MINIDUMP_STRING>(
+  return TMinidumpStringAtRVAAsString<std::u16string, MINIDUMP_STRING>(
       file_contents, rva);
 }
 

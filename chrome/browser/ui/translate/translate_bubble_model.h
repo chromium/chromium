@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
+#include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/translate/core/common/translate_errors.h"
 
 // The model for the Translate bubble UX. This manages the user's manipulation
@@ -51,17 +51,26 @@ class TranslateBubbleModel {
   // Goes back from the 'Advanced' view state.
   virtual void GoBackFromAdvanced() = 0;
 
-  // Returns the number of languages supported.
-  virtual int GetNumberOfLanguages() const = 0;
+  // Returns the number of source languages supported.
+  virtual int GetNumberOfSourceLanguages() const = 0;
 
-  // Returns the displayable name for the language at |index|.
-  virtual base::string16 GetLanguageNameAt(int index) const = 0;
+  // Returns the number of target languages supported.
+  virtual int GetNumberOfTargetLanguages() const = 0;
 
-  // Returns the original language index.
-  virtual int GetOriginalLanguageIndex() const = 0;
+  // Returns the displayable name for the source language at |index|.
+  virtual std::u16string GetSourceLanguageNameAt(int index) const = 0;
 
-  // Updates the original language index.
-  virtual void UpdateOriginalLanguageIndex(int index) = 0;
+  // Returns the displayable name for the target language at |index|.
+  virtual std::u16string GetTargetLanguageNameAt(int index) const = 0;
+
+  // Returns the source language code.
+  virtual std::string GetSourceLanguageCode() const = 0;
+
+  // Returns the source language index.
+  virtual int GetSourceLanguageIndex() const = 0;
+
+  // Updates the source language index.
+  virtual void UpdateSourceLanguageIndex(int index) = 0;
 
   // Returns the target language index.
   virtual int GetTargetLanguageIndex() const = 0;
@@ -91,7 +100,7 @@ class TranslateBubbleModel {
   // current page's domain.
   virtual void SetNeverTranslateSite(bool value) = 0;
 
-  // Returns true if the webpage in the current original language should be
+  // Returns true if the webpage in the current source language should be
   // translated into the current target language automatically.
   virtual bool ShouldAlwaysTranslate() const = 0;
 
@@ -103,7 +112,7 @@ class TranslateBubbleModel {
   // functionality.
   virtual bool ShouldShowAlwaysTranslateShortcut() const = 0;
 
-  // Sets the value if the webpage in the current original language should be
+  // Sets the value if the webpage in the current source language should be
   // translated into the current target language automatically.
   virtual void SetAlwaysTranslate(bool value) = 0;
 
@@ -123,6 +132,10 @@ class TranslateBubbleModel {
 
   // True if the site of the current page can be blocklisted.
   virtual bool CanBlocklistSite() = 0;
+
+  // Reports a high level UI interaction to the centralzied
+  // TranslateMetricsLogger.
+  virtual void ReportUIInteraction(translate::UIInteraction ui_interaction) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_MODEL_H_

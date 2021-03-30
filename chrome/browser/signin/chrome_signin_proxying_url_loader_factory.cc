@@ -22,6 +22,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace signin {
@@ -84,7 +85,6 @@ class ProxyingURLLoaderFactory::InProgressRequest
   InProgressRequest(
       ProxyingURLLoaderFactory* factory,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -117,6 +117,9 @@ class ProxyingURLLoaderFactory::InProgressRequest
   }
 
   // network::mojom::URLLoaderClient:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    target_client_->OnReceiveEarlyHints(std::move(early_hints));
+  }
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
@@ -164,8 +167,9 @@ class ProxyingURLLoaderFactory::InProgressRequest
   net::HttpRequestHeaders headers_;
   net::HttpRequestHeaders cors_exempt_headers_;
   net::RedirectInfo redirect_info_;
-  const blink::mojom::ResourceType resource_type_;
+  const network::mojom::RequestDestination request_destination_;
   const bool is_main_frame_;
+  const bool is_fetch_like_api_;
 
   base::OnceClosure destruction_callback_;
 
@@ -203,8 +207,12 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
     return in_progress_request_->factory_->web_contents_getter_;
   }
 
-  blink::mojom::ResourceType GetResourceType() const override {
-    return in_progress_request_->resource_type_;
+  network::mojom::RequestDestination GetRequestDestination() const override {
+    return in_progress_request_->request_destination_;
+  }
+
+  bool IsFetchLikeAPI() const override {
+    return in_progress_request_->is_fetch_like_api_;
   }
 
   GURL GetReferrerOrigin() const override {
@@ -275,7 +283,6 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
 ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     ProxyingURLLoaderFactory* factory,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -285,9 +292,9 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       request_url_(request.url),
       response_url_(request.url),
       referrer_origin_(request.referrer.GetOrigin()),
-      resource_type_(
-          static_cast<blink::mojom::ResourceType>(request.resource_type)),
+      request_destination_(request.destination),
       is_main_frame_(request.is_main_frame),
+      is_fetch_like_api_(request.is_fetch_like_api),
       target_client_(std::move(client)),
       loader_receiver_(this, std::move(loader_receiver)) {
   mojo::PendingRemote<network::mojom::URLLoaderClient> proxy_client =
@@ -301,8 +308,8 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
 
   if (modified_headers.IsEmpty() && removed_headers.empty()) {
     factory_->target_factory_->CreateLoaderAndStart(
-        target_loader_.BindNewPipeAndPassReceiver(), routing_id, request_id,
-        options, request, std::move(proxy_client), traffic_annotation);
+        target_loader_.BindNewPipeAndPassReceiver(), request_id, options,
+        request, std::move(proxy_client), traffic_annotation);
 
     // We need to keep a full copy of the request headers in case there is a
     // redirect and the request headers need to be modified again.
@@ -317,8 +324,8 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     }
 
     factory_->target_factory_->CreateLoaderAndStart(
-        target_loader_.BindNewPipeAndPassReceiver(), routing_id, request_id,
-        options, request_copy, std::move(proxy_client), traffic_annotation);
+        target_loader_.BindNewPipeAndPassReceiver(), request_id, options,
+        request_copy, std::move(proxy_client), traffic_annotation);
 
     headers_.Swap(&request_copy.headers);
     cors_exempt_headers_.Swap(&request_copy.cors_exempt_headers);
@@ -461,15 +468,14 @@ bool ProxyingURLLoaderFactory::MaybeProxyRequest(
 
 void ProxyingURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   requests_.insert(std::make_unique<InProgressRequest>(
-      this, std::move(loader_receiver), routing_id, request_id, options,
-      request, std::move(client), traffic_annotation));
+      this, std::move(loader_receiver), request_id, options, request,
+      std::move(client), traffic_annotation));
 }
 
 void ProxyingURLLoaderFactory::Clone(

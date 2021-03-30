@@ -102,6 +102,8 @@ static unsigned MakePresentationAttributeCacheKey(
   // attribute.
   if (IsA<HTMLInputElement>(element))
     return 0;
+  if (element.HasExtraStyleForPresentationAttribute())
+    return 0;
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const Attribute& attr : attributes) {
     if (!element.IsPresentationAttribute(attr.GetName()))

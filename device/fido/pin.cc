@@ -61,7 +61,7 @@ PINEntryError ValidatePIN(const std::string& pin,
   return PINEntryError::kNoError;
 }
 
-PINEntryError ValidatePIN(const base::string16& pin16,
+PINEntryError ValidatePIN(const std::u16string& pin16,
                           uint32_t min_pin_length,
                           base::Optional<std::string> current_pin) {
   std::string pin;

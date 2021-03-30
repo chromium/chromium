@@ -139,10 +139,8 @@ class DiscardableImageGenerator {
             op_rect, ctm, image_op->flags.getFilterQuality());
       } else if (op_type == PaintOpType::DrawImageRect) {
         auto* image_rect_op = static_cast<DrawImageRectOp*>(op);
-        SkMatrix matrix = ctm;
-        matrix.postConcat(SkMatrix::MakeRectToRect(image_rect_op->src,
-                                                   image_rect_op->dst,
-                                                   SkMatrix::kFill_ScaleToFit));
+        SkMatrix matrix =
+            SkMatrix::RectToRect(image_rect_op->src, image_rect_op->dst) * ctm;
         AddImage(image_rect_op->image,
                  image_rect_op->flags.useDarkModeForImage(), image_rect_op->src,
                  op_rect, matrix, image_rect_op->flags.getFilterQuality());
@@ -196,8 +194,7 @@ class DiscardableImageGenerator {
 
       SkNoDrawCanvas canvas(scaled_tile_rect.width(),
                             scaled_tile_rect.height());
-      canvas.setMatrix(SkMatrix::MakeRectToRect(
-          shader->tile(), scaled_tile_rect, SkMatrix::kFill_ScaleToFit));
+      canvas.setMatrix(SkMatrix::RectToRect(shader->tile(), scaled_tile_rect));
       base::AutoReset<bool> auto_reset(&only_gather_animated_images_, true);
       size_t prev_image_set_size = image_set_.size();
       GatherDiscardableImages(shader->paint_record().get(), &op_rect, &canvas);

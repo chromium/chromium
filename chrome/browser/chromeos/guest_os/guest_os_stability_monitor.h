@@ -7,16 +7,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
-#include "chrome/browser/chromeos/vm_shutdown_observer.h"
 #include "chromeos/dbus/chunneld_client.h"
 #include "chromeos/dbus/cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/seneschal_client.h"
 
 namespace guest_os {
-
-extern const char kCrostiniStabilityHistogram[];
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
@@ -43,17 +39,32 @@ enum class FailureClasses {
   kMaxValue = CrosNotificationdStopped,
 };
 
+// Logs host-side VM service failures, and unexpected VM shutdowns.
+//
+// Each implementing VM type (Crostini, Borealis, etc.) should create its own
+// instance of this class, and keep it alive for as long as any VMs of that
+// type are running. During the instance's lifetime, it will log any failures
+// of concierge, cicerone, seneschal, or chunneld and log them under the
+// provided histogram with a value from |FailureClasses|.
+//
+// Effectively, if any host service fails, *all* currently running VMs are
+// blamed. Note this overattributes blame, so analyze results accordingly.
+//
+// Implementers should also listen for VmStopped events from concierge, and
+// call |LogUnexpectedVmShutdown| if any are considered unexpected.
+// Take care to ignore VMs owned by other implementers.
 class GuestOsStabilityMonitor : chromeos::ConciergeClient::Observer,
                                 chromeos::CiceroneClient::Observer,
                                 chromeos::SeneschalClient::Observer,
-                                chromeos::ChunneldClient::Observer,
-                                chromeos::VmShutdownObserver {
+                                chromeos::ChunneldClient::Observer {
  public:
-  explicit GuestOsStabilityMonitor(crostini::CrostiniManager* crostini_manager);
+  explicit GuestOsStabilityMonitor(const std::string& histogram);
   ~GuestOsStabilityMonitor() override;
 
   GuestOsStabilityMonitor(const GuestOsStabilityMonitor&) = delete;
   GuestOsStabilityMonitor& operator=(const GuestOsStabilityMonitor&) = delete;
+
+  void LogUnexpectedVmShutdown();
 
   void ConciergeStarted(bool is_available);
   void CiceroneStarted(bool is_available);
@@ -76,10 +87,8 @@ class GuestOsStabilityMonitor : chromeos::ConciergeClient::Observer,
   void ChunneldServiceStopped() override;
   void ChunneldServiceStarted() override;
 
-  //  chromeos::VmShutdownObserver::
-  void OnVmShutdown(const std::string& vm_name) override;
-
  private:
+  std::string histogram_;
   base::ScopedObservation<chromeos::ConciergeClient,
                           chromeos::ConciergeClient::Observer>
       concierge_observer_;
@@ -92,13 +101,6 @@ class GuestOsStabilityMonitor : chromeos::ConciergeClient::Observer,
   base::ScopedObservation<chromeos::ChunneldClient,
                           chromeos::ChunneldClient::Observer>
       chunneld_observer_;
-  base::ScopedObservation<crostini::CrostiniManager,
-                          chromeos::VmShutdownObserver,
-                          &crostini::CrostiniManager::AddVmShutdownObserver,
-                          &crostini::CrostiniManager::RemoveVmShutdownObserver>
-      vm_stopped_observer_;
-
-  base::WeakPtr<crostini::CrostiniManager> crostini_manager_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

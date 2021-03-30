@@ -25,14 +25,15 @@ public class BookmarkPage extends BasicNativePage {
      * Create a new instance of the bookmarks page.
      * @param componentName The current activity component, used to open bookmarks.
      * @param snackbarManager Allows control over the app snackbar.
-     * @param activity The activity to get context and manage fragments.
+     * @param isIncognito Whether the bookmark UI is loaded in incognito mode.
      * @param host A NativePageHost to load urls.
      */
-    public BookmarkPage(
-            ComponentName componentName, SnackbarManager snackbarManager, NativePageHost host) {
+    public BookmarkPage(ComponentName componentName, SnackbarManager snackbarManager,
+            boolean isIncognito, NativePageHost host) {
         super(host);
 
-        mManager = new BookmarkManager(host.getContext(), componentName, false, snackbarManager);
+        mManager = new BookmarkManager(
+                host.getContext(), componentName, false, isIncognito, snackbarManager);
         mManager.setBasicNativePage(this);
         mTitle = host.getContext().getResources().getString(R.string.bookmarks);
 

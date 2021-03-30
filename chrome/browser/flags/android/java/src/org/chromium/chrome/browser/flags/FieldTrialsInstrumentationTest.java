@@ -19,6 +19,9 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.FieldTrials;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Tests for {@link FieldTrials}.
  */
@@ -145,5 +148,25 @@ public final class FieldTrialsInstrumentationTest {
         // Make sure ensureCommandLineIsUpToDate() doesn't erase the value.
         Features.ensureCommandLineIsUpToDate();
         Assert.assertEquals("b1", parameter.getValue());
+    }
+
+    @Test
+    @SmallTest
+    // clang-format off
+    @CommandLineFlags.Add({"enable-features=" + sFeature2 + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:101/x/y/99"})
+    public void testAllCachedFieldTrialParameters() {
+        AllCachedFieldTrialParameters parameters = new AllCachedFieldTrialParameters(sFeature2);
+        Map<String, String> expectedFeatures = new HashMap<>();
+        expectedFeatures.put("101", "x");
+        expectedFeatures.put("y", "99");
+        Assert.assertEquals(expectedFeatures, parameters.getParams());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetLastUpdateFromNativeTimeMillis() {
+        Assert.assertNotEquals(0, CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis());
     }
 }

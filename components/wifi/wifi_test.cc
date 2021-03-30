@@ -124,7 +124,7 @@ bool WiFiTest::ParseCommandLine(int argc, const char* argv[]) {
 
   if (parsed_command_line.GetArgs().size() == 1) {
 #if defined(OS_WIN)
-    network_guid = base::UTF16ToASCII(parsed_command_line.GetArgs()[0]);
+    network_guid = base::WideToASCII(parsed_command_line.GetArgs()[0]);
 #else
     network_guid = parsed_command_line.GetArgs()[0];
 #endif

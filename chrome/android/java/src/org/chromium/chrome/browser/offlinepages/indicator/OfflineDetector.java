@@ -27,7 +27,7 @@ import org.chromium.components.variations.VariationsAssociatedData;
  */
 class OfflineDetector
         implements ConnectivityDetector.Observer, ApplicationStatus.ApplicationStateListener {
-    // If the connection is online, then we report that immediately via |mCallback|.
+    // If the connection is online, then we report that immediately via |mIsOfflineCallback|.
     // |STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS| and
     // |mStatusIndicatorWaitOnSwitchOnlineToOfflineDurationMs| control the duration before
     // we report the device as offline. It's important to wait a bit before reporting connection as
@@ -39,17 +39,17 @@ class OfflineDetector
     // |STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS| is the duration before we wait before
     // reporting the connection type as offline if the app has never been on an online connection.
     // In this case, we need to wait a shorter time before
-    // invoking |mCallback| since the actual connection change to offline happened  much earlier
-    // than when the app received the notification. Any delays in app receiving the notification of
-    // connection change are only due to device's CPU constraints.
+    // invoking |mIsOfflineCallback| since the actual connection change to offline happened  much
+    // earlier than when the app received the notification. Any delays in app receiving the
+    // notification of connection change are only due to device's CPU constraints.
     static final long STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS = 2000;
 
     // |mStatusIndicatorWaitOnSwitchOnlineToOfflineDurationMs| is the duration before we wait before
     // reporting the connection type as offline if the app has been on an online connection before.
-    // In this case, we need to wait a longer time before invoking |mCallback| since the connection
-    // change is ongoing. Any delays in app receiving the notification of connection change are due
-    // to time taken by device in reestablishing the connection as well as device CPU constraints.
-    // Value of |mStatusIndicatorWaitOnSwitchOnlineToOfflineDurationMs| is set to
+    // In this case, we need to wait a longer time before invoking |mIsOfflineCallback| since the
+    // connection change is ongoing. Any delays in app receiving the notification of connection
+    // change are due to time taken by device in reestablishing the connection as well as device CPU
+    // constraints. Value of |mStatusIndicatorWaitOnSwitchOnlineToOfflineDurationMs| is set to
     // |STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS| by default, but can
     // be overridden using finch.
     static final long STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS = 10000;
@@ -62,15 +62,24 @@ class OfflineDetector
 
     // Maintains if the connection is effectively offline.
     // Effectively offline means that all checks have been passed and the
-    // |mCallback| has been invoked to notify the observers.
+    // |mIsOfflineCallback| has been invoked to notify the observers.
     private boolean mIsEffectivelyOffline;
+    private boolean mIsEffectivelyOfflineInitialized;
 
     // True if the network is offline as detected by the connectivity detector.
     private boolean mIsOfflineLastReportedByConnectivityDetector;
 
     private Handler mHandler;
     private Runnable mUpdateOfflineStatusIndicatorDelayedRunnable;
-    private final Callback<Boolean> mCallback;
+
+    // Used to inform the client when the system changes between online and offline. A value of true
+    // is given when the system is offline, and a value of false is given when the system is online.
+    private final Callback<Boolean> mIsOfflineCallback;
+
+    // Used to inform the client when the application changes between foreground and background. A
+    // value of true is given when the application is foregrounded, and a value of false is given
+    // when the application is backgrounded.
+    private final Callback<Boolean> mIsForegroundCallback;
 
     // Current state of the application.
     private int mApplicationState = ApplicationStatus.getStateForApplication();
@@ -101,8 +110,9 @@ class OfflineDetector
      * @param callback The {@link callback} is invoked when the connectivity status is stable and
      *         has changed.
      */
-    OfflineDetector(Callback<Boolean> callback) {
-        mCallback = callback;
+    OfflineDetector(Callback<Boolean> isOfflineCallback, Callback<Boolean> isForegroundCallback) {
+        mIsOfflineCallback = isOfflineCallback;
+        mIsForegroundCallback = isForegroundCallback;
         mHandler = new Handler();
         mStatusIndicatorWaitOnSwitchOnlineToOfflineDurationMs = getIntParamValueOrDefault(
                 "STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS",
@@ -122,11 +132,13 @@ class OfflineDetector
 
             // Connection state has not changed since |mUpdateOfflineStatusIndicatorDelayedRunnable|
             // was posted.
-            if (mIsOfflineLastReportedByConnectivityDetector == mIsEffectivelyOffline) {
+            if (mIsEffectivelyOfflineInitialized
+                    && mIsOfflineLastReportedByConnectivityDetector == mIsEffectivelyOffline) {
                 return;
             }
             mIsEffectivelyOffline = mIsOfflineLastReportedByConnectivityDetector;
-            mCallback.onResult(mIsEffectivelyOffline);
+            mIsEffectivelyOfflineInitialized = true;
+            mIsOfflineCallback.onResult(mIsEffectivelyOffline);
             if (sLoggingEnabled) {
                 logToAdbConsoleNow("Running mUpdateOfflineStatusIndicatorDelayedRunnable end.");
             }
@@ -151,9 +163,9 @@ class OfflineDetector
                 mIsOfflineLastReportedByConnectivityDetector;
         mIsOfflineLastReportedByConnectivityDetector =
                 (connectionState != ConnectionState.VALIDATED);
-        if (previousLastReportedStateByOfflineDetector
-                == mIsOfflineLastReportedByConnectivityDetector) {
-            mConnectivityDetectorInitialized = true;
+        if (mConnectivityDetectorInitialized
+                && previousLastReportedStateByOfflineDetector
+                        == mIsOfflineLastReportedByConnectivityDetector) {
             return;
         }
 
@@ -204,6 +216,10 @@ class OfflineDetector
         return mIsEffectivelyOffline;
     }
 
+    boolean isApplicationForeground() {
+        return mApplicationState == ApplicationState.HAS_RUNNING_ACTIVITIES;
+    }
+
     void destroy() {
         ApplicationStatus.unregisterApplicationStateListener(this);
         if (mConnectivityDetector != null) {
@@ -218,6 +234,8 @@ class OfflineDetector
         if (mApplicationState == newState) return;
 
         mApplicationState = newState;
+
+        mIsForegroundCallback.onResult(isApplicationForeground());
 
         if (mApplicationState == ApplicationState.HAS_RUNNING_ACTIVITIES) {
             mTimeWhenLastForegrounded = getElapsedTime();

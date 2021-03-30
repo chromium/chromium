@@ -51,7 +51,8 @@ static features::MBIMode GetMBIMode() {
 // AgentSchedulingGroup:
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
-    mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap)
+    mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap,
+    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
     : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
               ->CreateAgentGroupScheduler()),
@@ -60,6 +61,8 @@ AgentSchedulingGroup::AgentSchedulingGroup(
       receiver_(this) {
   DCHECK(agent_group_scheduler_);
   DCHECK_NE(GetMBIMode(), features::MBIMode::kLegacy);
+
+  agent_group_scheduler_->BindInterfaceBroker(std::move(broker_remote));
 
   channel_ = SyncChannel::Create(
       /*listener=*/this, /*ipc_task_runner=*/render_thread_.GetIOTaskRunner(),
@@ -82,7 +85,8 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
-    PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver)
+    PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
+    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
     : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
               ->CreateAgentGroupScheduler()),
@@ -92,6 +96,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
                 agent_group_scheduler_->DefaultTaskRunner()) {
   DCHECK(agent_group_scheduler_);
   DCHECK_EQ(GetMBIMode(), features::MBIMode::kLegacy);
+  agent_group_scheduler_->BindInterfaceBroker(std::move(broker_remote));
 }
 
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
@@ -149,10 +154,23 @@ void AgentSchedulingGroup::AddRoute(int32_t routing_id, Listener* listener) {
   render_thread_.AddRoute(routing_id, listener);
 }
 
+void AgentSchedulingGroup::AddFrameRoute(
+    int32_t routing_id,
+    IPC::Listener* listener,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  AddRoute(routing_id, listener);
+  render_thread_.AttachTaskRunnerToRoute(routing_id, std::move(task_runner));
+}
+
 void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
   DCHECK(listener_map_.Lookup(routing_id));
   listener_map_.Remove(routing_id);
   render_thread_.RemoveRoute(routing_id);
+}
+
+void AgentSchedulingGroup::DidUnloadRenderFrame(
+    const blink::LocalFrameToken& frame_token) {
+  host_remote_->DidUnloadRenderFrame(frame_token);
 }
 
 mojom::RouteProvider* AgentSchedulingGroup::GetRemoteRouteProvider() {
@@ -188,27 +206,27 @@ void AgentSchedulingGroup::DestroyView(int32_t view_id,
 
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
   RenderFrameImpl::CreateFrame(
-      *this, params->routing_id, std::move(params->interface_broker),
-      params->previous_routing_id, params->opener_frame_token,
-      params->parent_routing_id, params->previous_sibling_routing_id,
-      params->frame_token, params->devtools_frame_token,
-      params->replication_state, &ToImpl(render_thread_),
+      *this, params->token, params->routing_id, std::move(params->frame),
+      std::move(params->interface_broker), params->previous_routing_id,
+      params->opener_frame_token, params->parent_routing_id,
+      params->previous_sibling_routing_id, params->devtools_frame_token,
+      std::move(params->replication_state), &ToImpl(render_thread_),
       std::move(params->widget_params),
       std::move(params->frame_owner_properties),
       params->has_committed_real_load, std::move(params->policy_container));
 }
 
 void AgentSchedulingGroup::CreateFrameProxy(
+    const blink::RemoteFrameToken& token,
     int32_t routing_id,
-    int32_t render_view_routing_id,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    const base::Optional<blink::FrameToken>& opener_frame_token,
+    int32_t view_routing_id,
     int32_t parent_routing_id,
-    const FrameReplicationState& replicated_state,
-    const base::UnguessableToken& frame_token,
+    blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token) {
   RenderFrameProxy::CreateFrameProxy(
-      *this, routing_id, render_view_routing_id, opener_frame_token,
-      parent_routing_id, replicated_state, frame_token, devtools_frame_token);
+      *this, token, routing_id, opener_frame_token, view_routing_id,
+      parent_routing_id, std::move(replicated_state), devtools_frame_token);
 }
 
 void AgentSchedulingGroup::BindAssociatedInterfaces(

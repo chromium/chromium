@@ -36,17 +36,24 @@
       #exceptionHeader {
         padding: 0 var(--cr-section-padding);
       }
+
+      #toastText {
+        align-items: center;
+        display: flex;
+        max-width: 300px;
+        min-height: var(--settings-row-two-line-min-height);
+      }
     </style>
     <picture>
       <source
           srcset="chrome://settings/images/cookies_banner_dark.svg"
-          media="(prefers-color-scheme: dark">
+          media="(prefers-color-scheme: dark)">
       <img id="banner" alt=""
           src="chrome://settings/images/cookies_banner.svg">
     </picture>
     <div id="generalControls">
       <h2>$i18n{cookiePageGeneralControls}</h2>
-      <settings-radio-group id="primarySettingGroup"
+      <settings-radio-group id="primarySettingGroup" no-set-pref
           pref="{{prefs.generated.cookie_primary_setting}}"
           selectable-elements="cr-radio-button, settings-collapse-radio-button"
           on-change="onCookiePrimarySettingChanged_">
@@ -165,3 +172,13 @@
         read-only-list="[[exceptionListsReadOnly_]]"
         search-filter="[[searchTerm]]">
     </site-list>
+    <cr-toast id="toast">
+      <div id="toastText">$i18n{privacySandboxCookiesDialog}</div>
+      <cr-button on-click="onPrivacySandboxClick_">
+        $i18n{privacySandboxCookiesDialogMore}
+      </cr-button>
+      <a id="privacySandboxLink" href="privacySandbox"
+          target="_blank" tabindex="-1" aria-disabled="true"
+          role="none"></a>
+    </cr-toast>
+

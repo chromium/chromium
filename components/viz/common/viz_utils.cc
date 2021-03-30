@@ -4,12 +4,14 @@
 
 #include "components/viz/common/viz_utils.h"
 
+#include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/rrect_f.h"
 
 #if defined(OS_ANDROID)
 #include <array>
+#include <string>
 
 #include "base/android/build_info.h"
 #include "base/no_destructor.h"
@@ -26,6 +28,15 @@ bool PreferRGB565ResourcesForDisplay() {
 
 #if defined(OS_ANDROID)
 bool AlwaysUseWideColorGamut() {
+  // Full stack integration tests draw in sRGB and expect to read back in sRGB.
+  // WideColorGamut causes pixels to be drawn in P3, but read back doesn't tell
+  // us the color space. So disable WCG for tests.
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  static const char kDisableWCGForTest[] = "disable-wcg-for-test";
+  if (command_line.HasSwitch(kDisableWCGForTest))
+    return false;
+
   auto compute_always_use_wide_color_gamut = []() {
     const char* current_model =
         base::android::BuildInfo::GetInstance()->model();

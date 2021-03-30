@@ -242,9 +242,9 @@ void BrowserThemePackTest::BuildFromUnpackedExtension(
       base::DictionaryValue::From(deserializer.Deserialize(NULL, &error));
   EXPECT_EQ("", error);
   ASSERT_TRUE(valid_value.get());
-  scoped_refptr<Extension> extension(
-      Extension::Create(extension_path, extensions::Manifest::INVALID_LOCATION,
-                        *valid_value, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension(Extension::Create(
+      extension_path, extensions::mojom::ManifestLocation::kInvalidLocation,
+      *valid_value, Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get());
   ASSERT_EQ("", error);
   BrowserThemePack::BuildFromExtension(extension.get(), pack);

@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/file_manager/mount_test_util.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 
 namespace file_manager {
 namespace test_util {

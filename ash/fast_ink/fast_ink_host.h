@@ -82,7 +82,7 @@ class FastInkHost {
   bool auto_refresh_ = false;
   bool pending_compositor_frame_ = false;
   bool pending_compositor_frame_ack_ = false;
-  int next_resource_id_ = 1;
+  viz::ResourceIdGenerator id_generator_;
   // Cached resources that can be reused.
   std::vector<std::unique_ptr<Resource>> returned_resources_;
   std::unique_ptr<LayerTreeFrameSinkHolder> frame_sink_holder_;

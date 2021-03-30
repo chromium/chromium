@@ -35,38 +35,6 @@ namespace task_manager {
 
 class SharedSampler;
 
-// Identifies the initiator of a network request, by a (child_id,
-// route_id) tuple.
-// BytesTransferredKey supports hashing and may be used as an unordered_map key.
-struct BytesTransferredKey {
-  // The unique ID of the host of the child process requester.
-  int child_id;
-
-  // The ID of the IPC route for the URLRequest (this identifies the
-  // RenderView or like-thing in the renderer that the request gets routed
-  // to).
-  int route_id;
-
-  struct Hasher {
-    size_t operator()(const BytesTransferredKey& key) const;
-  };
-
-  bool operator==(const BytesTransferredKey& other) const;
-};
-
-// This is the entry of the unordered map that tracks bytes transfered by task.
-struct BytesTransferredParam {
-  // The number of bytes read.
-  int64_t byte_read_count = 0;
-
-  // The number of bytes sent.
-  int64_t byte_sent_count = 0;
-};
-
-using BytesTransferredMap = std::unordered_map<BytesTransferredKey,
-                                               BytesTransferredParam,
-                                               BytesTransferredKey::Hasher>;
-
 // Defines a concrete implementation of the TaskManagerInterface.
 class TaskManagerImpl : public TaskManagerInterface,
                         public TaskProviderObserver {
@@ -74,6 +42,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   ~TaskManagerImpl() override;
 
   static TaskManagerImpl* GetInstance();
+  static bool IsCreated();
 
   // task_manager::TaskManagerInterface:
   void ActivateTask(TaskId task_id) override;
@@ -97,8 +66,8 @@ class TaskManagerImpl : public TaskManagerInterface,
                       int64_t* peak) const override;
   int GetOpenFdCount(TaskId task_id) const override;
   bool IsTaskOnBackgroundedProcess(TaskId task_id) const override;
-  const base::string16& GetTitle(TaskId task_id) const override;
-  base::string16 GetProfileName(TaskId task_id) const override;
+  const std::u16string& GetTitle(TaskId task_id) const override;
+  std::u16string GetProfileName(TaskId task_id) const override;
   const gfx::ImageSkia& GetIcon(TaskId task_id) const override;
   const base::ProcessHandle& GetProcessHandle(TaskId task_id) const override;
   const base::ProcessId& GetProcessId(TaskId task_id) const override;
@@ -131,10 +100,10 @@ class TaskManagerImpl : public TaskManagerInterface,
   void TaskRemoved(Task* task) override;
   void TaskUnresponsive(Task* task) override;
 
-  // Used when Network Service is enabled.
-  // Receives total network usages from |NetworkService|.
-  void OnTotalNetworkUsages(
-      std::vector<network::mojom::NetworkUsagePtr> total_network_usages);
+  void UpdateAccumulatedStatsNetworkForRoute(int process_id,
+                                             int route_id,
+                                             int64_t recv_bytes,
+                                             int64_t sent_bytes);
 
  private:
   using PidToTaskGroupMap =
@@ -158,13 +127,6 @@ class TaskManagerImpl : public TaskManagerInterface,
   // Lookup a task by child_id and possibly route_id.
   Task* GetTaskByRoute(int child_id, int route_id) const;
 
-  // Based on |param| the appropriate task will be updated by its network usage.
-  // Returns true if it was able to match |param| to an existing task, returns
-  // false otherwise, at which point the caller must explicitly match these
-  // bytes to the browser process by calling this method again with
-  // |param.origin_pid = 0| and |param.child_id = param.route_id = -1|.
-  bool UpdateTasksWithBytesTransferred(const BytesTransferredKey& key,
-                                       const BytesTransferredParam& param);
 
   PidToTaskGroupMap* GetVmPidToTaskGroupMap(Task::Type type);
   TaskGroup* GetTaskGroupByTaskId(TaskId task_id) const;
@@ -191,11 +153,6 @@ class TaskManagerImpl : public TaskManagerInterface,
 
   // A cached sorted list of the task IDs.
   mutable std::vector<TaskId> sorted_task_ids_;
-
-  // Used when Network Service is enabled.
-  // Stores the total network usages per |process_id, routing_id| from last
-  // refresh.
-  BytesTransferredMap last_refresh_total_network_usages_map_;
 
   // The list of the task providers that are owned and observed by this task
   // manager implementation.

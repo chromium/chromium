@@ -8,6 +8,7 @@ import './text_badge.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
@@ -33,6 +34,9 @@ export function getRoutineType(routineType) {
       return loadTimeData.getString('cpuFloatingPointAccuracyRoutineText');
     case chromeos.diagnostics.mojom.RoutineType.kCpuPrime:
       return loadTimeData.getString('cpuPrimeSearchRoutineText');
+    case chromeos.diagnostics.mojom.RoutineType.kLanConnectivity:
+      // TODO(michaelcheco): Replace with localized string.
+      return 'Lan Connectivity';
     case chromeos.diagnostics.mojom.RoutineType.kMemory:
       return loadTimeData.getString('memoryRoutineText');
     default:
@@ -40,6 +44,30 @@ export function getRoutineType(routineType) {
       assert(false);
       return '';
   }
+}
+
+/**
+ * @param {!RoutineResult} result
+ * @return {?StandardRoutineResult}
+ */
+export function getSimpleResult(result) {
+  if (!result) {
+    return null;
+  }
+
+  if (result.hasOwnProperty('simpleResult')) {
+    // Ideally we would just return assert(result.simpleResult) but enum
+    // value 0 fails assert.
+    return /** @type {!StandardRoutineResult} */ (result.simpleResult);
+  }
+
+  if (result.hasOwnProperty('powerResult')) {
+    return /** @type {!StandardRoutineResult} */ (
+        result.powerResult.simpleResult);
+  }
+
+  assertNotReached();
+  return null;
 }
 
 /**
@@ -62,6 +90,25 @@ Polymer({
       type: String,
       computed: 'getRunningRoutineString_(item.routine)',
     },
+
+    /** @private {!BadgeType} */
+    badgeType_: {
+      type: String,
+      value: BadgeType.QUEUED,
+    },
+
+    /** @private {string} */
+    badgeText_: {
+      type: String,
+      value: '',
+    },
+  },
+
+  observers: ['entryStatusChanged_(item.progress, item.result)'],
+
+  /** @override */
+  attached() {
+    IronA11yAnnouncer.requestAvailability();
   },
 
   /**
@@ -74,67 +121,54 @@ Polymer({
   },
 
   /**
-   * @param {!RoutineResult} result
-   * @return {!StandardRoutineResult}
+   * @private
    */
-  getSimpleResult_(result) {
-    assert(result);
-
-    if (result.hasOwnProperty('simpleResult')) {
-      // Ideally we would just return assert(result.simpleResult) but enum
-      // value 0 fails assert.
-      return /** @type {!StandardRoutineResult} */ (result.simpleResult);
+  entryStatusChanged_() {
+    switch (this.item.progress) {
+      case ExecutionProgress.kNotStarted:
+        this.setBadgeTypeAndText_(
+            BadgeType.QUEUED, loadTimeData.getString('testQueuedBadgeText'));
+        break;
+      case ExecutionProgress.kRunning:
+        this.setBadgeTypeAndText_(
+            BadgeType.RUNNING, loadTimeData.getString('testRunningBadgeText'));
+        this.announceRoutineStatus_();
+        break;
+      case ExecutionProgress.kCancelled:
+        this.setBadgeTypeAndText_(
+            BadgeType.STOPPED, loadTimeData.getString('testStoppedBadgeText'));
+        this.announceRoutineStatus_();
+        break;
+      case ExecutionProgress.kCompleted:
+        const testPassed = this.item.result &&
+            getSimpleResult(this.item.result) ===
+                chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed;
+        const badgeType = testPassed ? BadgeType.SUCCESS : BadgeType.ERROR;
+        const badgeText = loadTimeData.getString(
+            testPassed ? 'testSucceededBadgeText' : 'testFailedBadgeText');
+        this.setBadgeTypeAndText_(badgeType, badgeText);
+        this.announceRoutineStatus_();
+        break;
+      default:
+        assertNotReached();
     }
-
-    if (result.hasOwnProperty('powerResult')) {
-      return /** @type {!StandardRoutineResult} */ (
-          result.powerResult.simpleResult);
-    }
-
-    assertNotReached();
   },
 
   /**
-   * @protected
+   * @param {!BadgeType} badgeType
+   * @param {string} badgeText
+   * @private
    */
-  getBadgeText_() {
-    if (this.item.progress === ExecutionProgress.kRunning) {
-      return loadTimeData.getString('testRunningBadgeText');
-    }
-
-    if (this.item.result &&
-        this.getSimpleResult_(this.item.result) ===
-            chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed) {
-      return loadTimeData.getString('testSucceededBadgeText');
-    }
-
-    return loadTimeData.getString('testFailedBadgeText');
-  },
-
-  /**
-   * @protected
-   */
-  getBadgeType_() {
-    if (this.item.progress === ExecutionProgress.kRunning) {
-      return BadgeType.DEFAULT;
-    }
-
-    if (this.item.result &&
-        this.getSimpleResult_(this.item.result) ===
-            chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed) {
-      return BadgeType.SUCCESS;
-    }
-    return BadgeType.ERROR;
-  },
-
-  /**
-   * @protected
-   * @return {boolean}
-   */
-  isTestStarted_() {
-    return this.item.progress !== ExecutionProgress.kNotStarted;
+  setBadgeTypeAndText_(badgeType, badgeText) {
+    this.setProperties({badgeType_: badgeType, badgeText_: badgeText});
   },
 
   /** @override */
   created() {},
+
+  /** @private */
+  announceRoutineStatus_() {
+    this.fire(
+        'iron-announce', {text: this.routineType_ + ' - ' + this.badgeText_});
+  },
 });

@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
@@ -52,7 +51,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void OnUpgradeRecommended() override;
 
   // Returns the browser version as a string.
-  static base::string16 BuildBrowserVersionString();
+  static std::u16string BuildBrowserVersionString();
 
  protected:
   // Used to test the EOL string displayed in the About details page.
@@ -146,7 +145,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
                        bool powerwash,
                        const std::string& version,
                        int64_t size,
-                       const base::string16& fail_message);
+                       const std::u16string& fail_message);
 
 #if defined(OS_MAC)
   // Callback method which forwards promotion state to the page.
@@ -154,6 +153,8 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  void HandleOpenDiagnostics(const base::ListValue* args);
+
   void HandleGetRegulatoryInfo(const base::ListValue* args);
 
   // Callback for when the directory with the regulatory label image and alt

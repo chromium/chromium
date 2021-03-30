@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "device_command_screenshot_job\.cc": [
-    "+ash/shell.h",
-  ],
-}

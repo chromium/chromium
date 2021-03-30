@@ -213,6 +213,7 @@ fuchsia::ui::gfx::mat4 ConvertTransform(gfx::Transform* transform) {
 
 fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
     const ui::AXNodeData& node,
+    const ui::AXNodeData& container_node,
     const ui::AXTreeID& tree_id,
     bool is_root,
     NodeIDMapper* id_mapper) {
@@ -226,9 +227,19 @@ fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
   fuchsia_node.set_child_ids(
       ConvertChildIds(node.child_ids, tree_id, id_mapper));
   fuchsia_node.set_location(ConvertBoundingBox(node.relative_bounds.bounds));
+  fuchsia_node.set_container_id(
+      id_mapper->ToFuchsiaNodeID(tree_id, container_node.id, false));
+
+  // The transform field must be handled carefully to account for
+  // the offsetting implied by the offset container's relative bounds.
+  gfx::Transform transform;
   if (node.relative_bounds.transform) {
-    fuchsia_node.set_transform(
-        ConvertTransform(node.relative_bounds.transform.get()));
+    transform = *node.relative_bounds.transform;
+  }
+  transform.PostTranslate(container_node.relative_bounds.bounds.x(),
+                          container_node.relative_bounds.bounds.y());
+  if (!transform.IsIdentity()) {
+    fuchsia_node.set_transform(ConvertTransform(&transform));
   }
 
   return fuchsia_node;

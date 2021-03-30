@@ -8,11 +8,13 @@
 #include <drm_mode.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <limits>
 #include <map>
 #include <memory>
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -122,6 +124,9 @@ class MockDrmDevice : public DrmDevice {
 
   void SetPropertyBlob(ScopedDrmPropertyBlobPtr blob);
 
+  void SetModifiersOverhead(base::flat_map<uint64_t, int> modifiers_overhead);
+  void SetSystemLimitOfModifiers(uint64_t limit);
+
   // DrmDevice:
   ScopedDrmResourcesPtr GetResources() override;
   ScopedDrmPlaneResPtr GetPlaneResources() override;
@@ -177,10 +182,6 @@ class MockDrmDevice : public DrmDevice {
   bool MapDumbBuffer(uint32_t handle, size_t size, void** pixels) override;
   bool UnmapDumbBuffer(void* pixels, size_t size) override;
   bool CloseBufferHandle(uint32_t handle) override;
-  bool CommitProperties(drmModeAtomicReq* request,
-                        uint32_t flags,
-                        uint32_t crtc_count,
-                        scoped_refptr<PageFlipRequest> callback) override;
   bool SetGammaRamp(
       uint32_t crtc_id,
       const std::vector<display::GammaRampRGBEntry>& lut) override;
@@ -188,7 +189,20 @@ class MockDrmDevice : public DrmDevice {
   uint32_t GetFramebufferForCrtc(uint32_t crtc_id) const;
 
  private:
+  // Properties of the plane associated with a fb.
+  struct FramebufferProps {
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint64_t modifier = 0;
+  };
+
   ~MockDrmDevice() override;
+
+  bool CommitPropertiesInternal(
+      drmModeAtomicReq* request,
+      uint32_t flags,
+      uint32_t crtc_count,
+      scoped_refptr<PageFlipRequest> callback) override;
 
   bool UpdateProperty(uint32_t id,
                       uint64_t value,
@@ -237,11 +251,13 @@ class MockDrmDevice : public DrmDevice {
 
   std::map<uint32_t, std::string> property_names_;
 
-  // TODO(dnicoara): Generate all IDs internal to MockDrmDevice.
-  // For now generate something with a high enough ID to be unique in tests.
-  uint32_t property_id_generator_ = 0xff000000;
-
   std::set<uint32_t> allocated_property_blobs_;
+
+  // Props of the plane associated with the generated fb_id.
+  base::flat_map<uint32_t /*fb_id*/, FramebufferProps> fb_props_;
+
+  uint64_t system_watermark_limitations_ = std::numeric_limits<uint64_t>::max();
+  base::flat_map<uint64_t /*modifier*/, int /*overhead*/> modifiers_overhead_;
 
   DISALLOW_COPY_AND_ASSIGN(MockDrmDevice);
 };

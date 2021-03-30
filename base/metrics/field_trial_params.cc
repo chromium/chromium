@@ -86,8 +86,9 @@ bool AssociateFieldTrialParamsFromString(
 
 bool GetFieldTrialParams(const std::string& trial_name,
                          FieldTrialParams* params) {
-  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(
-      trial_name, params);
+  FieldTrial* trial = FieldTrialList::Find(trial_name);
+  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
+                                                                       params);
 }
 
 bool GetFieldTrialParamsByFeature(const Feature& feature,
@@ -96,10 +97,8 @@ bool GetFieldTrialParamsByFeature(const Feature& feature,
     return false;
 
   FieldTrial* trial = FeatureList::GetFieldTrial(feature);
-  if (!trial)
-    return false;
-
-  return GetFieldTrialParams(trial->trial_name(), params);
+  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
+                                                                       params);
 }
 
 std::string GetFieldTrialParamValue(const std::string& trial_name,
@@ -115,14 +114,13 @@ std::string GetFieldTrialParamValue(const std::string& trial_name,
 
 std::string GetFieldTrialParamValueByFeature(const Feature& feature,
                                              const std::string& param_name) {
-  if (!FeatureList::IsEnabled(feature))
-    return std::string();
-
-  FieldTrial* trial = FeatureList::GetFieldTrial(feature);
-  if (!trial)
-    return std::string();
-
-  return GetFieldTrialParamValue(trial->trial_name(), param_name);
+  FieldTrialParams params;
+  if (GetFieldTrialParamsByFeature(feature, &params)) {
+    auto it = params.find(param_name);
+    if (it != params.end())
+      return it->second;
+  }
+  return std::string();
 }
 
 int GetFieldTrialParamByFeatureAsInt(const Feature& feature,

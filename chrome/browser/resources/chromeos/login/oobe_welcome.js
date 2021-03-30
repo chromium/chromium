@@ -38,7 +38,6 @@ Polymer({
 
   behaviors: [
     OobeI18nBehavior,
-    OobeDialogHostBehavior,
     LoginScreenBehavior,
     MultiStepBehavior,
   ],
@@ -129,7 +128,13 @@ Polymer({
      * @private {number}
      * @const
      */
-    DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_: {type: Number, value: 40 * 1000}
+    DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_: {type: Number, value: 40 * 1000},
+
+    /**
+     * Tracks if we've given the ChromeVox hint yet.
+     * @private
+     */
+    chromeVoxHintGiven_: {type: Boolean, value: false}
   },
 
   /** Overridden from LoginScreenBehavior. */
@@ -449,43 +454,36 @@ Polymer({
    * Shows the device requisition prompt.
    */
   showEditRequisitionDialog(requisition) {
-    if (!this.deviceRequisitionDialog_) {
-      this.deviceRequisitionDialog_ =
-          new cr.ui.dialogs.PromptDialog(document.body);
-      this.deviceRequisitionDialog_.setOkLabel(
-          loadTimeData.getString('deviceRequisitionPromptOk'));
-      this.deviceRequisitionDialog_.setCancelLabel(
-          loadTimeData.getString('deviceRequisitionPromptCancel'));
-    }
-    this.deviceRequisitionDialog_.show(
-        loadTimeData.getString('deviceRequisitionPromptText'), requisition,
-        function(value) {
-          chrome.send(
-              'WelcomeScreen.setDeviceRequisition',
-              [value == '' ? 'none' : value]);
-        });
+    this.$.editRequisitionDialog.showDialog();
+    this.$.editRequisitionInput.focus();
+  },
+
+  onEditRequisitionCancel_() {
+    chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
+    this.$.editRequisitionDialog.hideDialog();
+  },
+
+  onEditRequisitionConfirm_() {
+    const requisition = this.$.editRequisitionInput.value;
+    chrome.send('WelcomeScreen.setDeviceRequisition', [requisition]);
+    this.$.editRequisitionDialog.hideDialog();
   },
 
   /**
    * Shows the special remora/shark device requisition prompt.
    */
   showRemoraRequisitionDialog() {
-    if (!this.deviceRequisitionRemoraDialog_) {
-      this.deviceRequisitionRemoraDialog_ =
-          new cr.ui.dialogs.ConfirmDialog(document.body);
-      this.deviceRequisitionRemoraDialog_.setOkLabel(
-          loadTimeData.getString('deviceRequisitionRemoraPromptOk'));
-      this.deviceRequisitionRemoraDialog_.setCancelLabel(
-          loadTimeData.getString('deviceRequisitionRemoraPromptCancel'));
-    }
-    this.deviceRequisitionRemoraDialog_.show(
-        loadTimeData.getString('deviceRequisitionRemoraPromptText'),
-        function() {  // onShow
-          chrome.send('WelcomeScreen.setDeviceRequisition', ['remora']);
-        },
-        function() {  // onCancel
-          chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
-        });
+    this.$.remoraRequisitionDialog.showDialog();
+  },
+
+  onRemoraCancel_() {
+    chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
+    this.$.remoraRequisitionDialog.hideDialog();
+  },
+
+  onRemoraConfirm_() {
+    chrome.send('WelcomeScreen.setDeviceRequisition', ['remora']);
+    this.$.remoraRequisitionDialog.hideDialog();
   },
 
   onKeyboardsChanged_() {
@@ -572,7 +570,7 @@ Polymer({
    * @private
    */
   onCFMBootstrappingClicked_() {
-    cr.ui.Oobe.handleAccelerator(ACCELERATOR_DEVICE_REQUISITION_REMORA);
+    this.userActed('activateRemoraRequisition');
   },
 
   /**
@@ -581,7 +579,7 @@ Polymer({
    * @private
    */
   onDeviceRequisitionClicked_() {
-    cr.ui.Oobe.handleAccelerator(ACCELERATOR_DEVICE_REQUISITION);
+    this.userActed('editDeviceRequisition');
   },
 
   /** ******************** ChromeVox hint section ******************* */
@@ -668,7 +666,7 @@ Polymer({
    * @private
    */
   onVoiceNotLoaded_() {
-    if (!this.voicesChangedListenerMaybeGiveChromeVoxHint_) {
+    if (this.voicesChangedListenerMaybeGiveChromeVoxHint_ === undefined) {
       // Add voiceschanged listener that tries to give the hint when new voices
       // are loaded.
       this.voicesChangedListenerMaybeGiveChromeVoxHint_ =
@@ -700,6 +698,14 @@ Polymer({
    * @private
    */
   giveChromeVoxHint_(locale, options, isDefaultHint) {
+    if (this.chromeVoxHintGiven_) {
+      // Only give the hint once.
+      // Due to event listeners/timeouts, there is the chance that this gets
+      // called multiple times.
+      return;
+    }
+
+    this.chromeVoxHintGiven_ = true;
     if (isDefaultHint) {
       console.warn(
           'No voice available for ' + loadTimeData.getString('language') +

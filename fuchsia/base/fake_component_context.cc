@@ -4,8 +4,6 @@
 
 #include "fuchsia/base/fake_component_context.h"
 
-#include <fuchsia/base/agent_impl.h>
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,6 +11,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "fuchsia/base/agent_impl.h"
 
 namespace cr_fuchsia {
 
@@ -20,7 +19,7 @@ FakeComponentContext::FakeComponentContext(
     sys::OutgoingDirectory* outgoing_directory,
     base::StringPiece component_url)
     : binding_(outgoing_directory, this),
-      component_url_(component_url.as_string()),
+      component_url_(component_url),
       outgoing_directory_(outgoing_directory) {}
 
 void FakeComponentContext::RegisterCreateComponentStateCallback(

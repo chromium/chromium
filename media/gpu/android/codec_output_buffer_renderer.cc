@@ -109,9 +109,19 @@ bool CodecOutputBufferRenderer::RenderToTextureOwnerFrontBuffer(
   if (phase_ == Phase::kInvalidated)
     return false;
 
-  std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current =
-      MakeCurrentIfNeeded(
-          codec_buffer_wait_coordinator_->texture_owner().get());
+  std::unique_ptr<ui::ScopedMakeCurrent> scoped_make_current;
+
+  // If the texture_owner() binds the texture while doing the texture update
+  // (UpdateTexImage), like in SurfaceTexture case, then only make the context
+  // current. For AImageReader, since we only acquire the latest image from it
+  // during the texture update process, there is no need to make it's context
+  // current.
+  if (codec_buffer_wait_coordinator_->texture_owner()
+          ->binds_texture_on_update()) {
+    scoped_make_current = MakeCurrentIfNeeded(
+        codec_buffer_wait_coordinator_->texture_owner().get());
+  }
+
   // If updating the image will implicitly update the texture bindings then
   // restore if requested or the update needed a context switch.
   base::Optional<ScopedRestoreTextureBinding> scoped_restore_texture;

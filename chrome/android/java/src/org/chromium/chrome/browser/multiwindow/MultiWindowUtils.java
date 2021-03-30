@@ -17,6 +17,7 @@ import android.provider.Browser;
 import android.text.TextUtils;
 import android.view.Display;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -25,13 +26,17 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.display.DisplayAndroidManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -52,6 +57,22 @@ public class MultiWindowUtils implements ActivityStateListener {
     private Boolean mTabbedActivity2TaskRunning;
     private WeakReference<ChromeTabbedActivity> mLastResumedTabbedActivity;
     private boolean mIsInMultiWindowModeForTesting;
+
+    // Note: these values must match the AndroidMultiWindowActivityType enum in enums.xml.
+    @IntDef({MultiWindowActivityType.ENTER, MultiWindowActivityType.EXIT})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface MultiWindowActivityType {
+        int ENTER = 0;
+        int EXIT = 1;
+    }
+
+    // Note: these values must match the AndroidMultiWindowState enum in enums.xml.
+    @IntDef({MultiWindowState.SINGLE_WINDOW, MultiWindowState.MULTI_WINDOW})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface MultiWindowState {
+        int SINGLE_WINDOW = 0;
+        int MULTI_WINDOW = 1;
+    }
 
     private MultiWindowUtils() {}
 
@@ -78,7 +99,6 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return Whether the system currently supports multiple displays, requiring Android Q+.
      */
     public boolean isInMultiDisplayMode(Activity activity) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_MULTIPLE_DISPLAY)) return false;
         // TODO(crbug.com/824954): Consider supporting more displays.
         return ApiCompatibilityUtils.getTargetableDisplayIds(activity).size() == 2;
     }
@@ -175,9 +195,6 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return The targetable secondary display. {@code Display.INVALID_DISPLAY} if not found.
      */
     public static int getDisplayIdForTargetableSecondaryDisplay(Activity activity) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_MULTIPLE_DISPLAY)) {
-            return Display.INVALID_DISPLAY;
-        }
         List<Integer> displays = ApiCompatibilityUtils.getTargetableDisplayIds(activity);
         Display defaultDisplay = DisplayAndroidManager.getDefaultDisplayForContext(activity);
         if (displays.size() != 0) {
@@ -449,5 +466,55 @@ public class MultiWindowUtils implements ActivityStateListener {
             intent.setFlags(intent.getFlags()
                     & ~(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT));
         }
+    }
+
+    /**
+     * Records user actions and ukms associated with entering and exiting Android N multi-window
+     * mode.
+     * For second activity, records separate user actions for entering/exiting multi-window mode to
+     * avoid recording the same action twice when two instances are running, but still records same
+     * UKM since two instances have two different tabs.
+     * @param isInMultiWindowMode True if the activity is in multi-window mode.
+     * @param isDeferredStartup True if the activity is deferred startup.
+     * @param isFirstActivity True if the activity is the first activity in multi-window mode.
+     * @param tab The current activity {@link Tab}.
+     */
+    public void recordMultiWindowModeChanged(boolean isInMultiWindowMode, boolean isDeferredStartup,
+            boolean isFirstActivity, @Nullable Tab tab) {
+        if (isFirstActivity) {
+            if (isInMultiWindowMode) {
+                RecordUserAction.record("Android.MultiWindowMode.Enter");
+            } else {
+                RecordUserAction.record("Android.MultiWindowMode.Exit");
+            }
+        } else {
+            if (isDeferredStartup) {
+                RecordUserAction.record("Android.MultiWindowMode.MultiInstance.Enter");
+            } else if (isInMultiWindowMode) {
+                RecordUserAction.record("Android.MultiWindowMode.Enter-SecondInstance");
+            } else {
+                RecordUserAction.record("Android.MultiWindowMode.Exit-SecondInstance");
+            }
+        }
+
+        if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
+
+        new UkmRecorder.Bridge().recordEventWithIntegerMetric(tab.getWebContents(),
+                "Android.MultiWindowChangeActivity", "ActivityType",
+                isInMultiWindowMode ? MultiWindowActivityType.ENTER : MultiWindowActivityType.EXIT);
+    }
+
+    /**
+     * Records the ukms about if the activity is in multi-window mode when the activity is shown.
+     * @param activity The current Context, used to retrieve the ActivityManager system service.
+     * @param tab The current activity {@link Tab}.
+     */
+    public void recordMultiWindowStateUkm(Activity activity, Tab tab) {
+        if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
+
+        new UkmRecorder.Bridge().recordEventWithIntegerMetric(tab.getWebContents(),
+                "Android.MultiWindowState", "WindowState",
+                isInMultiWindowMode(activity) ? MultiWindowState.MULTI_WINDOW
+                                              : MultiWindowState.SINGLE_WINDOW);
     }
 }

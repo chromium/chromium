@@ -59,8 +59,7 @@ void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
 
   rtc::CopyOnWriteBuffer buffer;
   buffer.SetSize(message->ByteSize());
-  message->SerializeWithCachedSizesToArray(
-      reinterpret_cast<uint8_t*>(buffer.data()));
+  message->SerializeWithCachedSizesToArray(buffer.MutableData());
   pending_messages_.emplace(
       webrtc::DataBuffer(std::move(buffer), true /* binary */),
       std::move(done));

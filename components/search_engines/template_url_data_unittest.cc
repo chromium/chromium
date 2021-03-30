@@ -11,19 +11,18 @@
 
 TEST(TemplateURLDataTest, Trim) {
   TemplateURLData data(
-      base::ASCIIToUTF16(" shortname "), base::ASCIIToUTF16(" keyword "),
-      "https://cs.chromium.org", base::StringPiece(), base::StringPiece(),
+      u" shortname ", u" keyword ", "https://cs.chromium.org",
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
       base::StringPiece(), base::StringPiece(), base::StringPiece(),
-      base::ListValue(), 0);
+      base::StringPiece(), base::StringPiece(), base::ListValue(), 0);
 
-  EXPECT_EQ(base::ASCIIToUTF16("shortname"), data.short_name());
-  EXPECT_EQ(base::ASCIIToUTF16("keyword"), data.keyword());
+  EXPECT_EQ(u"shortname", data.short_name());
+  EXPECT_EQ(u"keyword", data.keyword());
 
-  data.SetShortName(base::ASCIIToUTF16(" othershortname "));
-  data.SetKeyword(base::ASCIIToUTF16(" otherkeyword "));
+  data.SetShortName(u" othershortname ");
+  data.SetKeyword(u" otherkeyword ");
 
-  EXPECT_EQ(base::ASCIIToUTF16("othershortname"), data.short_name());
-  EXPECT_EQ(base::ASCIIToUTF16("otherkeyword"), data.keyword());
+  EXPECT_EQ(u"othershortname", data.short_name());
+  EXPECT_EQ(u"otherkeyword", data.keyword());
 }

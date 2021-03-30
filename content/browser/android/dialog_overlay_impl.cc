@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "media/mojo/mojom/android_overlay.mojom.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 
@@ -81,6 +82,9 @@ DialogOverlayImpl::DialogOverlayImpl(const JavaParamRef<jobject>& obj,
   JNIEnv* env = AttachCurrentThread();
   obj_ = JavaObjectWeakGlobalRef(env, obj);
 
+  // Make sure RenderFrameDeleted will be called on RFH and thus we will clean
+  // up.
+  DCHECK(rfhi_->IsRenderFrameCreated());
   web_contents->GetNativeView()->AddObserver(this);
 
   // Note that we're not allowed to call back into |obj| before it calls
@@ -185,12 +189,6 @@ void DialogOverlayImpl::RenderFrameHostChanged(RenderFrameHost* old_host,
     Stop();
 }
 
-void DialogOverlayImpl::FrameDeleted(RenderFrameHost* render_frame_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (render_frame_host == rfhi_)
-    Stop();
-}
-
 void DialogOverlayImpl::OnVisibilityChanged(content::Visibility visibility) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (visibility == content::Visibility::HIDDEN)
@@ -253,6 +251,17 @@ void DialogOverlayImpl::RegisterWindowObserverIfNeeded(
   }
 }
 
+// Helper class that has permission to talk to SyncCallRestrictions.  Rather
+// than friend the function directly, which has an odd signature, friend a class
+// that knows how to do the work.
+class AndroidOverlaySyncHelper {
+ public:
+  static void MakeSyncCall(media::mojom::AndroidOverlayClient* remote) {
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
+    remote->OnSynchronouslyDestroyed();
+  }
+};
+
 static void JNI_DialogOverlayImpl_NotifyDestroyedSynchronously(
     JNIEnv* env,
     int message_pipe_handle) {
@@ -262,9 +271,11 @@ static void JNI_DialogOverlayImpl_NotifyDestroyedSynchronously(
       mojo::PendingRemote<media::mojom::AndroidOverlayClient>(
           std::move(scoped_handle),
           media::mojom::AndroidOverlayClient::Version_));
+  // This prevents crashes, though it's unclear how we'd have a null remote.
+  // https://crbug.com/1155313 .
   if (!remote.is_bound())
     return;
-  remote->OnSynchronouslyDestroyed();
+  AndroidOverlaySyncHelper::MakeSyncCall(remote.get());
   // Note that we don't take back the mojo message pipe.  We let it close when
   // `remote` goes out of scope.
 }

@@ -7,7 +7,7 @@
 
 namespace offline_pages {
 
-base::string16 ExtractRelevantHostFromOfflinePageItemList(
+std::u16string ExtractRelevantHostFromOfflinePageItemList(
     const base::Time& pages_created_after,
     const MultipleOfflinePageItemResult page_list) {
   const OfflinePageItem* newest_page = nullptr;
@@ -23,7 +23,7 @@ base::string16 ExtractRelevantHostFromOfflinePageItemList(
   }
 
   if (newest_page == nullptr)
-    return base::string16();
+    return std::u16string();
 
   return url_formatter::FormatUrlForSecurityDisplay(
       newest_page->url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);

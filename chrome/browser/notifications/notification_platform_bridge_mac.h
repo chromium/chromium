@@ -47,10 +47,10 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override;
   void DisplayServiceShutDown(Profile* profile) override;
 
-  // Returns if alerts are supported on this machine.
-  static bool SupportsAlerts();
-
  private:
+  // Closes all notifications for the given |profile|.
+  void CloseAllNotificationsForProfile(Profile* profile);
+
   // Cocoa class that receives callbacks from the NSUserNotificationCenter.
   base::scoped_nsobject<NotificationCenterDelegate> delegate_;
 

@@ -23,33 +23,24 @@ const DawnProcTable& WebGPUInterfaceStub::GetProcs() const {
   return null_procs_;
 }
 void WebGPUInterfaceStub::FlushCommands() {}
-void WebGPUInterfaceStub::FlushCommands(DawnDeviceClientID device_client_id) {}
-void WebGPUInterfaceStub::EnsureAwaitingFlush(
-    DawnDeviceClientID device_client_id,
-    bool* needs_flush) {}
-void WebGPUInterfaceStub::FlushAwaitingCommands(
-    DawnDeviceClientID device_client_id) {}
-WGPUDevice WebGPUInterfaceStub::GetDevice(DawnDeviceClientID device_client_id) {
-  return nullptr;
+void WebGPUInterfaceStub::EnsureAwaitingFlush(bool* needs_flush) {}
+void WebGPUInterfaceStub::FlushAwaitingCommands() {}
+void WebGPUInterfaceStub::DisconnectContextAndDestroyServer() {}
+ReservedTexture WebGPUInterfaceStub::ReserveTexture(WGPUDevice) {
+  return {nullptr, 0, 0, 0, 0};
 }
-ReservedTexture WebGPUInterfaceStub::ReserveTexture(
-    DawnDeviceClientID device_client_id) {
-  return {nullptr, 0, 0};
-}
-bool WebGPUInterfaceStub::RequestAdapterAsync(
+void WebGPUInterfaceStub::RequestAdapterAsync(
     PowerPreference power_preference,
     base::OnceCallback<void(int32_t, const WGPUDeviceProperties&, const char*)>
-        request_adapter_callback) {
-  return false;
-}
-bool WebGPUInterfaceStub::RequestDeviceAsync(
+        request_adapter_callback) {}
+void WebGPUInterfaceStub::RequestDeviceAsync(
     uint32_t adapter_service_id,
     const WGPUDeviceProperties& requested_device_properties,
-    base::OnceCallback<void(bool, DawnDeviceClientID)>
-        request_device_callback) {
-  return false;
+    base::OnceCallback<void(WGPUDevice)> request_device_callback) {}
+
+WGPUDevice WebGPUInterfaceStub::DeprecatedEnsureDefaultDeviceSync() {
+  return nullptr;
 }
-void WebGPUInterfaceStub::RemoveDevice(DawnDeviceClientID device_client_id) {}
 
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in

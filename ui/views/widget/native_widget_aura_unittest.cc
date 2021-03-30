@@ -419,7 +419,7 @@ TEST_F(NativeWidgetAuraTest, DontCaptureOnGesture) {
   ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(41, 51),
                        ui::EventTimeForNow(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 1));
-  ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&press);
+  ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&press);
   ASSERT_FALSE(details.dispatcher_destroyed);
   // Both views should get the press.
   EXPECT_TRUE(view->got_gesture_event());
@@ -434,7 +434,7 @@ TEST_F(NativeWidgetAuraTest, DontCaptureOnGesture) {
   ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(250, 251),
                          ui::EventTimeForNow(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, 1));
-  details = event_sink()->OnEventFromSource(&release);
+  details = GetEventSink()->OnEventFromSource(&release);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_TRUE(view->got_gesture_event());
   EXPECT_FALSE(child->got_gesture_event());

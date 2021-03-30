@@ -37,6 +37,8 @@ class NetworkHealthService {
       mojo::PendingReceiver<
           network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver);
 
+  void AddObserver(mojo::PendingRemote<mojom::NetworkEventsObserver> observer);
+
  private:
   std::unique_ptr<NetworkHealth> network_health_;
   std::unique_ptr<network_diagnostics::NetworkDiagnostics> network_diagnostics_;

@@ -60,6 +60,8 @@ class ExternalService : public external_mojo::mojom::ExternalService {
     bundle_.RemoveInterface<Interface>();
   }
 
+  InterfaceBundle* bundle() { return &bundle_; }
+
  private:
   // external_mojo::mojom::ExternalService implementation:
   void OnBindInterface(const std::string& interface_name,

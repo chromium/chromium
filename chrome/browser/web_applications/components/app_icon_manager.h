@@ -17,21 +17,6 @@
 
 namespace web_app {
 
-// Icon bitmaps for each IconPurpose.
-struct IconBitmaps {
-  IconBitmaps();
-  ~IconBitmaps();
-  IconBitmaps(const IconBitmaps&);
-  IconBitmaps(IconBitmaps&&) noexcept;
-  void SetBitmapsForPurpose(IconPurpose purpose,
-                            std::map<SquareSizePx, SkBitmap> bitmaps);
-  bool empty();
-
-  std::map<SquareSizePx, SkBitmap> any;
-  std::map<SquareSizePx, SkBitmap> maskable;
-  // TODO (crbug.com/1114638): Monochrome support.
-};
-
 // Exclusively used from the UI thread.
 class AppIconManager {
  public:
@@ -74,7 +59,7 @@ class AppIconManager {
                          ReadIconsCallback callback) const = 0;
 
   using ReadShortcutsMenuIconsCallback = base::OnceCallback<void(
-      ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps)>;
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps)>;
 
   // Reads bitmaps for all shortcuts menu icons for an app. Returns a vector of
   // map<SquareSizePx, SkBitmap>. The index of a map in the vector is the same

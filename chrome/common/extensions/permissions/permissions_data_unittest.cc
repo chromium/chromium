@@ -4,12 +4,12 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,8 +38,10 @@
 using base::UTF16ToUTF8;
 using content::SocketPermissionRequest;
 using extension_test_util::LoadManifest;
-using extension_test_util::LoadManifestUnchecked;
 using extension_test_util::LoadManifestStrict;
+using extension_test_util::LoadManifestUnchecked;
+using extensions::mojom::APIPermissionID;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -61,7 +63,7 @@ bool CheckSocketPermission(scoped_refptr<Extension> extension,
                            uint16_t port) {
   SocketPermission::CheckParam param(type, host, port);
   return extension->permissions_data()->CheckAPIPermissionWithParam(
-      APIPermission::kSocket, &param);
+      APIPermissionID::kSocket, &param);
 }
 
 // Creates and returns an extension with the given |id|, |host_permissions|, and
@@ -69,7 +71,7 @@ bool CheckSocketPermission(scoped_refptr<Extension> extension,
 scoped_refptr<const Extension> GetExtensionWithHostPermission(
     const std::string& id,
     const std::string& host_permissions,
-    Manifest::Location location) {
+    ManifestLocation location) {
   ListBuilder permissions;
   if (!host_permissions.empty())
     permissions.Append(host_permissions);
@@ -165,48 +167,41 @@ TEST(PermissionsDataTest, EffectiveHostPermissions) {
 
   extension = LoadManifest("effective_host_permissions", "empty.json");
   EXPECT_EQ(0u, extension->permissions_data()
-                    ->GetEffectiveHostPermissions(
-                        PermissionsData::EffectiveHostPermissionsMode::
-                            kIncludeTabSpecific)
+                    ->GetEffectiveHostPermissions()
                     .patterns()
                     .size());
   EXPECT_FALSE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "one_host.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_FALSE(hosts.MatchesURL(GURL("https://www.google.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions",
                            "one_host_wildcard.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://google.com")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://foo.google.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "two_hosts.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.reddit.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions",
                            "https_not_considered.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://google.com")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("https://google.com")));
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions",
                            "two_content_scripts.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://google.com")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.reddit.com")));
   EXPECT_TRUE(extension->permissions_data()
@@ -220,30 +215,26 @@ TEST(PermissionsDataTest, EffectiveHostPermissions) {
   EXPECT_FALSE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "all_hosts.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://test/")));
   EXPECT_FALSE(hosts.MatchesURL(GURL("https://test/")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_TRUE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "all_hosts2.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://test/")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_TRUE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
   extension = LoadManifest("effective_host_permissions", "all_hosts3.json");
-  hosts = extension->permissions_data()->GetEffectiveHostPermissions(
-      PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
+  hosts = extension->permissions_data()->GetEffectiveHostPermissions();
   EXPECT_FALSE(hosts.MatchesURL(GURL("http://test/")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("https://test/")));
   EXPECT_TRUE(hosts.MatchesURL(GURL("http://www.google.com")));
   EXPECT_TRUE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
 
-  // Tab-specific permissions should be included in the effective hosts if and
-  // only if kIncludeTabSpecific is specified.
+  // Tab-specific permissions should always be included.
   GURL tab_url("http://www.example.com/");
   {
     URLPatternSet new_hosts;
@@ -252,29 +243,18 @@ TEST(PermissionsDataTest, EffectiveHostPermissions) {
         1, PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
                          std::move(new_hosts), URLPatternSet()));
   }
-  EXPECT_TRUE(extension->permissions_data()
-                  ->GetEffectiveHostPermissions(
-                      PermissionsData::EffectiveHostPermissionsMode::
-                          kIncludeTabSpecific)
-                  .MatchesURL(tab_url));
+  EXPECT_TRUE(
+      extension->permissions_data()->GetEffectiveHostPermissions().MatchesURL(
+          tab_url));
   extension->permissions_data()->ClearTabSpecificPermissions(1);
   EXPECT_FALSE(
-      extension->permissions_data()
-          ->GetEffectiveHostPermissions(
-              PermissionsData::EffectiveHostPermissionsMode::kOmitTabSpecific)
-          .MatchesURL(tab_url));
+      extension->permissions_data()->GetEffectiveHostPermissions().MatchesURL(
+          tab_url));
 
   extension->permissions_data()->ClearTabSpecificPermissions(1);
-  EXPECT_FALSE(extension->permissions_data()
-                   ->GetEffectiveHostPermissions(
-                       PermissionsData::EffectiveHostPermissionsMode::
-                           kIncludeTabSpecific)
-                   .MatchesURL(tab_url));
-  EXPECT_EQ(
-      extension->permissions_data()->GetEffectiveHostPermissions(
-          PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific),
-      extension->permissions_data()->GetEffectiveHostPermissions(
-          PermissionsData::EffectiveHostPermissionsMode::kOmitTabSpecific));
+  EXPECT_FALSE(
+      extension->permissions_data()->GetEffectiveHostPermissions().MatchesURL(
+          tab_url));
 }
 
 TEST(PermissionsDataTest, SocketPermissions) {
@@ -285,10 +265,9 @@ TEST(PermissionsDataTest, SocketPermissions) {
   EXPECT_FALSE(CheckSocketPermission(
       extension, SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80));
 
-  extension = LoadManifestUnchecked("socket_permissions",
-                                    "socket1.json",
-                                    Manifest::INTERNAL, Extension::NO_FLAGS,
-                                    &error);
+  extension = LoadManifestUnchecked("socket_permissions", "socket1.json",
+                                    mojom::ManifestLocation::kInternal,
+                                    Extension::NO_FLAGS, &error);
   EXPECT_TRUE(extension.get() == NULL);
   std::string expected_error_msg_header = ErrorUtils::FormatErrorMessage(
       manifest_errors::kInvalidPermissionWithDetail,
@@ -312,19 +291,15 @@ TEST(PermissionsDataTest, SocketPermissions) {
 }
 
 TEST(PermissionsDataTest, IsRestrictedUrl) {
-  scoped_refptr<const Extension> extension =
-      GetExtensionWithHostPermission("normal_extension",
-                                     kAllHostsPermission,
-                                     Manifest::INTERNAL);
+  scoped_refptr<const Extension> extension = GetExtensionWithHostPermission(
+      "normal_extension", kAllHostsPermission, ManifestLocation::kInternal);
   // Chrome and chrome-untrusted:// urls should be blocked for normal
   // extensions.
   CheckRestrictedUrls(extension.get(), /*block_chrome_urls=*/true,
                       /*block_chrome_untrusted_urls=*/true);
 
-  scoped_refptr<const Extension> component =
-      GetExtensionWithHostPermission("component",
-                                     kAllHostsPermission,
-                                     Manifest::COMPONENT);
+  scoped_refptr<const Extension> component = GetExtensionWithHostPermission(
+      "component", kAllHostsPermission, ManifestLocation::kComponent);
   // Chrome and chrome-untrusted:// urls should be accessible by component
   // extensions.
   CheckRestrictedUrls(component.get(), /*block_chrome_urls=*/false,
@@ -382,13 +357,13 @@ TEST(PermissionsDataTest, ExtensionScheme) {
   // A regular extension shouldn't get access to chrome-extension: scheme URLs
   // even with <all_urls> specified.
   extension = GetExtensionWithHostPermission("regular_extension", "<all_urls>",
-                                             Manifest::UNPACKED);
+                                             ManifestLocation::kUnpacked);
   ASSERT_FALSE(extension->permissions_data()->HasHostPermission(external_file));
 
   // Component extensions should get access to chrome-extension: scheme URLs
   // when <all_urls> is specified.
-  extension = GetExtensionWithHostPermission("component_extension",
-                                             "<all_urls>", Manifest::COMPONENT);
+  extension = GetExtensionWithHostPermission(
+      "component_extension", "<all_urls>", ManifestLocation::kComponent);
   ASSERT_TRUE(extension->permissions_data()->HasHostPermission(external_file));
 }
 
@@ -566,10 +541,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
   // Having chrome://*/ should not work for regular extensions. Note that
   // for favicon access, we require the explicit pattern chrome://favicon/*.
   std::string error;
-  extension = LoadManifestUnchecked("script_and_capture",
-                                    "extension_wildcard_chrome.json",
-                                    Manifest::INTERNAL, Extension::NO_FLAGS,
-                                    &error);
+  extension = LoadManifestUnchecked(
+      "script_and_capture", "extension_wildcard_chrome.json",
+      mojom::ManifestLocation::kInternal, Extension::NO_FLAGS, &error);
   const std::vector<InstallWarning>& warnings = extension->install_warnings();
   EXPECT_FALSE(warnings.empty());
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(
@@ -601,8 +575,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
 
   // Component extensions with <all_urls> should get everything except for
   // "chrome" scheme URLs.
-  extension = LoadManifest("script_and_capture", "extension_component_all.json",
-      Manifest::COMPONENT, Extension::NO_FLAGS);
+  extension =
+      LoadManifest("script_and_capture", "extension_component_all.json",
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   EXPECT_EQ(ALLOWED_SCRIPT_AND_CAPTURE,
             GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(ALLOWED_SCRIPT_AND_CAPTURE,
@@ -615,9 +590,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
             GetExtensionAccess(extension.get(), chrome_untrusted_url));
 
   // Component extensions should only get access to what they ask for.
-  extension = LoadManifest("script_and_capture",
-      "extension_component_google.json", Manifest::COMPONENT,
-      Extension::NO_FLAGS);
+  extension =
+      LoadManifest("script_and_capture", "extension_component_google.json",
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   EXPECT_EQ(ALLOWED_SCRIPT_ONLY, GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), https_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), file_url));
@@ -687,10 +662,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
   // Having chrome://*/ should work for regular extensions with the flag
   // enabled.
   std::string error;
-  extension = LoadManifestUnchecked("script_and_capture",
-                                    "extension_wildcard_chrome.json",
-                                    Manifest::INTERNAL, Extension::NO_FLAGS,
-                                    &error);
+  extension = LoadManifestUnchecked(
+      "script_and_capture", "extension_wildcard_chrome.json",
+      mojom::ManifestLocation::kInternal, Extension::NO_FLAGS, &error);
   EXPECT_FALSE(extension.get() == NULL);
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), https_url));
@@ -724,8 +698,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
 
   // Component extensions with <all_urls> should get everything except for
   // "chrome" scheme URLs.
-  extension = LoadManifest("script_and_capture", "extension_component_all.json",
-                           Manifest::COMPONENT, Extension::NO_FLAGS);
+  extension =
+      LoadManifest("script_and_capture", "extension_component_all.json",
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   EXPECT_EQ(ALLOWED_SCRIPT_AND_CAPTURE,
             GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(ALLOWED_SCRIPT_AND_CAPTURE,
@@ -740,7 +715,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
   // Component extensions should only get access to what they ask for.
   extension =
       LoadManifest("script_and_capture", "extension_component_google.json",
-                   Manifest::COMPONENT, Extension::NO_FLAGS);
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   EXPECT_EQ(ALLOWED_SCRIPT_ONLY, GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), https_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), file_url));
@@ -859,7 +834,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeURLs) {
             GetExtensionAccess(active_tab.get(), settings_url, kTabId));
   {
     APIPermissionSet tab_api_permissions;
-    tab_api_permissions.insert(APIPermission::kTab);
+    tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
                         settings_url.GetOrigin());
@@ -888,7 +863,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeUntrustedURLs) {
 
   {
     APIPermissionSet tab_api_permissions;
-    tab_api_permissions.insert(APIPermission::kTab);
+    tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     // Even extensions that can execute scripts everywhere, e.g. component
     // extensions, are not able to capture chrome-untrusted://.
@@ -918,7 +893,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureFileURLs) {
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(active_tab.get(), file_url, kTabId));
   {
     APIPermissionSet tab_api_permissions;
-    tab_api_permissions.insert(APIPermission::kTab);
+    tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
                         file_url.GetOrigin());
@@ -936,14 +911,16 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureFileURLs) {
 TEST(PermissionsDataTest, ChromeWebstoreUrl) {
   scoped_refptr<const Extension> normal_extension =
       GetExtensionWithHostPermission("all_hosts_normal_extension",
-                                     kAllHostsPermission, Manifest::INTERNAL);
+                                     kAllHostsPermission,
+                                     ManifestLocation::kInternal);
   scoped_refptr<const Extension> policy_extension =
       GetExtensionWithHostPermission("all_hosts_policy_extension",
                                      kAllHostsPermission,
-                                     Manifest::EXTERNAL_POLICY);
+                                     ManifestLocation::kExternalPolicy);
   scoped_refptr<const Extension> unpacked_extension =
       GetExtensionWithHostPermission("all_hosts_unpacked_extension",
-                                     kAllHostsPermission, Manifest::UNPACKED);
+                                     kAllHostsPermission,
+                                     ManifestLocation::kUnpacked);
   const Extension* extensions[] = {
       normal_extension.get(), policy_extension.get(), unpacked_extension.get(),
   };
@@ -1164,8 +1141,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PolicyHostRestrictions) {
 
   // Component extensions with <all_urls> should get everything regardless of
   // policy, except for chrome scheme URLs.
-  extension = LoadManifest("script_and_capture", "extension_component_all.json",
-                           Manifest::COMPONENT, Extension::NO_FLAGS);
+  extension =
+      LoadManifest("script_and_capture", "extension_component_all.json",
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   extension->permissions_data()->SetUsesDefaultHostRestrictions(context_id);
   PermissionsData::SetDefaultPolicyHostRestrictions(0, default_blocked,
                                                     default_allowed);
@@ -1199,7 +1177,7 @@ class CaptureVisiblePageTest : public testing::Test {
 
   void GrantActiveTab(const Extension& extension, const GURL& url) {
     APIPermissionSet tab_api_permissions;
-    tab_api_permissions.insert(APIPermission::kTab);
+    tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
                         url::Origin::Create(url).GetURL());

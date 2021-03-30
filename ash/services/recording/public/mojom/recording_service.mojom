@@ -4,11 +4,13 @@
 
 module recording.mojom;
 
+import "media/mojo/mojom/audio_stream_factory.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
-import "services/audio/public/mojom/stream_factory.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 
 // Defines the interface for the recording service client (e.g. ash), which
 // lives in a remote process other than that of the recording service itself.
@@ -24,13 +26,14 @@ interface RecordingServiceClient {
   // Called by the service to inform the client that an in-progress video
   // recording ended, and no further frames will be provided. If |success| is
   // false, then recording is being terminated by the service itself due to an
-  // internal failure.
-  OnRecordingEnded(bool success);
+  // internal failure. The service can provide an RGB image |thumbnail|
+  // representing the recorded video. It can be empty in case of a failure.
+  OnRecordingEnded(bool success, gfx.mojom.ImageSkia? thumbnail);
 };
 
 // Defines the interface of the recording service which is implemented by
 // |recording::RecordingService| and runs in its own utility process. It is
-// launched by the process on which the |RecordingServiceClient| resides, and is
+// launched by the Ash on which the |RecordingServiceClient| resides, and is
 // used to perform audio/video recording of the whole screen, a partial region
 // of it, or an individual window. The service captures, encodes, and muxes the
 // audio and video frames, and sends the WebM muxed video chunks to the client.
@@ -44,47 +47,102 @@ interface RecordingService {
 
   // Starts a fullscreen recording of a root window which has the given
   // |frame_sink_id|. The resulting video will have a resolution equal to the
-  // given |video_size| in DIPs. Note that if the aspect ratio of |video_size|
-  // is different than that of the captured source, the content will letterbox
-  // or pillarbox as needed.
+  // given |frame_sink_size| in DIPs. Note that calling OnFrameSinkSizeChanged()
+  // will do nothing in this recording mode, and the output video will maintain
+  // the same size as the given |frame_sink_size|. The content of the video will
+  // letterbox within that size as needed. This is desired in Fullscreen
+  // recording, as it makes it clear when the recorded display changes rotation,
+  // resolution, or device scale factor.
   // |frame_sink_id| must be valid.
   RecordFullscreen(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
-      gfx.mojom.Size video_size);
+      gfx.mojom.Size frame_sink_size);
 
-  // Starts a recording of a window which has the given |frame_sink_id|.
-  // |initial_video_size| and |max_video_size| specify a range of acceptable
-  // capture resolutions in DIPs. The resolution of the output will adapt
-  // dynamically as the window being recorded gets resized by the end user (e.g.
-  // resized, maximized, fullscreened, ... etc.).
-  // Note that if the aspect ratio of |max_video_size| is different than that of
-  // the captured source, the content will letterbox  or pillarbox as needed.
-  // |frame_sink_id| must be valid.
+  // Starts a recording of a window. If this window has a valid |frame_sink_id|,
+  // and submits its own compositor frames independently, then
+  // |subtree_capture_id| can be default-constructed and won't be used.
+  // Otherwise, for windows that don't submit compositor frames (e.g. non-root
+  // windows), the given |frame_sink_id| must be of the root window they're
+  // descendant from, and they must be made capturable by tagging the them with
+  // a valid |subtree_capture_id| before calling this (see
+  // aura::Window::MakeWindowCapturable()).
+  // |window_size| is the initial size of the recorded window, and can be
+  // updated by calling OnRecordedWindowSizeChanged() when the window gets
+  // resized by the user (e.g. resized, maximized, fullscreened, ... etc.).
+  // Unlike fullscreen recording, updating the window size will update the
+  // output video size, since it is desired for the video dimensions to always
+  // match the those of the window without letterboxing.
+  // |frame_sink_size| is the current size of the frame sink whose
+  // |frame_sink_id| was given. This can be updated by calling
+  // OnFrameSinkSizeChanged() which will update the resolution constraints on
+  // the capturer to avoid letterboxing, so the resulting video frames are sharp
+  // and crisp, and their size match that of the window.
   RecordWindow(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
-      gfx.mojom.Size initial_video_size,
-      gfx.mojom.Size max_video_size);
+      gfx.mojom.Size frame_sink_size,
+      viz.mojom.SubtreeCaptureId subtree_capture_id,
+      gfx.mojom.Size window_size);
 
   // Starts a recording of a partial region of a root window which has the given
   // |frame_sink_id|. The video will be captured at a resolution equal to the
-  // given |full_capture_size| in DIPs, but the resulting video frames will be
+  // given |frame_sink_size| in DIPs, but the resulting video frames will be
   // cropped to the given |crop_region| in DIPs.
+  // If the root window gets resized (due to e.g. rotation, device scale factor
+  // change ... etc.) OnFrameSinkSizeChanged() must be called to update the
+  // resolution constraints on the capturer in order to avoid letterboxing.
+  // Letterboxing breaks the relation between |crop_region| and generated video
+  // frame sizes, which results in the wrong region being shown in the video.
   // |frame_sink_id| must be valid.
   RecordRegion(
       pending_remote<RecordingServiceClient> client,
       pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
-      pending_remote<audio.mojom.StreamFactory>? audio_stream_factory,
+      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
       viz.mojom.FrameSinkId frame_sink_id,
-      gfx.mojom.Size full_capture_size,
+      gfx.mojom.Size frame_sink_size,
       gfx.mojom.Rect crop_region);
 
   // Stops an on-going video recording. The remaining frames will continue being
   // provided to the client until OnRecordingEnded() is called.
   StopRecording();
+
+  // Called by the client to let the service know that a window being recorded
+  // is about to move to a different display (i.e a different root window),
+  // giving it the |new_frame_sink_id| of that new root window. It also provides
+  // the |new_frame_sink_size| in DIPs (since the new display may have different
+  // bounds).
+  // Note that changing the window's root doesn't affect the window's
+  // SubtreeCaptureId, and therefore it doesn't need to be reprovided.
+  // This can *only* be called when the service is already recording a window
+  // (i.e. RecordWindow() has already been called to start the recording of a
+  // window).
+  OnRecordedWindowChangingRoot(
+      viz.mojom.FrameSinkId new_frame_sink_id,
+      gfx.mojom.Size new_frame_sink_size);
+
+  // Called by the client to let the service know that a window being recorded
+  // has been resized (e.g. due to snapping, maximizing, user resizing, ...
+  // etc.). |new_window_size| is the new size in DIPs which will be used to
+  // change the dimensions of the output video to match the new size. Therefore,
+  // it's better to throttle such changes to avoid having to change the size of
+  // the video repeatedly.
+  // This can *only* be called when the service is already recording a window
+  // (i.e. RecordWindow() has already been called to start the recording of a
+  // window).
+  OnRecordedWindowSizeChanged(gfx.mojom.Size new_window_size);
+
+  // Called by the client to let the service know that the frame sink being
+  // recorded (whose |frame_sink_id| was provided to the above functions) has
+  // changed its size to |new_frame_sink_size| in DIPs.
+  // The service will update the capturer resolution constraints and the output
+  // video size if needed.
+  // This does nothing when recording a fullscreen display, as the capturer
+  // already takes care of centering and letter-boxing the video content within
+  // the initial requested video resolution.
+  OnFrameSinkSizeChanged(gfx.mojom.Size new_frame_sink_size);
 };

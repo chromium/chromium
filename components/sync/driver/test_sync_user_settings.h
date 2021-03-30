@@ -24,9 +24,6 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsSyncRequested() const override;
   void SetSyncRequested(bool requested) override;
 
-  bool IsSyncAllowedByPlatform() const override;
-  void SetSyncAllowedByPlatform(bool allowed) override;
-
   bool IsFirstSetupComplete() const override;
   void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
 
@@ -53,6 +50,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   syncer::ModelTypeSet GetEncryptedDataTypes() const override;
   bool IsPassphraseRequired() const override;
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
+  bool IsPassphrasePromptMutedForCurrentProductVersion() const override;
+  void MarkPassphrasePromptMutedForCurrentProductVersion() override;
   bool IsTrustedVaultKeyRequired() const override;
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const override;
   bool IsTrustedVaultRecoverabilityDegraded() const override;

@@ -10,14 +10,18 @@ rootWebArea
 ++++++textField description='Title3' inputType='text' name='LabelledBy3' descriptionFrom=title
 ++++++++genericContainer
 ++++++textField inputType='text' name='Placeholder4'
+++++++++genericContainer ignored
 ++++++++genericContainer
 ++++++textField inputType='text' name='ARIA Placeholder4a'
 ++++++++genericContainer
 ++++++textField inputType='text' name='Placeholder4b'
+++++++++genericContainer ignored
 ++++++++genericContainer
 ++++++textField description='Title5' inputType='text' name='Placeholder5' descriptionFrom=title
+++++++++genericContainer ignored
 ++++++++genericContainer
 ++++++textField description='DescribedBy6' inputType='text' name='LabelledBy6' descriptionFrom=relatedElement
 ++++++++genericContainer
-++++++textField description='DescribedBy7' inputType='text' name='AriaLabel7' descriptionFrom=relatedElement
+++++++textField description='DescribedBy7' inputType='text' name='AriaLabel7' placeholder='Placeholder7' descriptionFrom=relatedElement
+++++++++genericContainer ignored
 ++++++++genericContainer

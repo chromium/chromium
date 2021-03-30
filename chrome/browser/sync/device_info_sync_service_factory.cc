@@ -32,6 +32,10 @@
 #include "components/sync_device_info/device_info_sync_service_impl.h"
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
+#if defined(OS_ANDROID)
+#include "chrome/browser/webauthn/android/cable_module_android.h"
+#endif
+
 namespace {
 
 class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
@@ -97,6 +101,15 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     return syncer::ModelTypeSet();
   }
 
+  base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+  GetPhoneAsASecurityKeyInfo() const override {
+#if defined(OS_ANDROID)
+    return webauthn::authenticator::GetSyncDataIfRegistered();
+#else
+    return base::nullopt;
+#endif
+  }
+
  private:
   Profile* const profile_;
 };
@@ -154,7 +167,8 @@ KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       std::make_unique<DeviceInfoSyncClient>(profile);
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
-          chrome::GetChannel(), chrome::GetVersionString(),
+          chrome::GetChannel(),
+          chrome::GetVersionString(chrome::WithExtendedStable(false)),
           device_info_sync_client.get());
 
   auto device_prefs = std::make_unique<syncer::DeviceInfoPrefs>(

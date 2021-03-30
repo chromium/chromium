@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -12,11 +11,11 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.AssistantOnboardingResult;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,22 +26,13 @@ import java.util.Map;
  * A handler that provides Autofill Assistant actions for a specific activity.
  */
 class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandler {
-    private final Context mContext;
-    private final BottomSheetController mBottomSheetController;
-    private final BrowserControlsStateProvider mBrowserControls;
-    private final CompositorViewHolder mCompositorViewHolder;
     private final ActivityTabProvider mActivityTabProvider;
-    private final ScrimCoordinator mScrim;
+    private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
 
-    AutofillAssistantActionHandlerImpl(Context context, BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
-            ActivityTabProvider activityTabProvider, ScrimCoordinator scrim) {
-        mContext = context;
-        mBottomSheetController = bottomSheetController;
-        mBrowserControls = browserControls;
-        mCompositorViewHolder = compositorViewHolder;
+    AutofillAssistantActionHandlerImpl(OnboardingCoordinatorFactory onboardingCoordinatorFactory,
+            ActivityTabProvider activityTabProvider) {
         mActivityTabProvider = activityTabProvider;
-        mScrim = scrim;
+        mOnboardingCoordinatorFactory = onboardingCoordinatorFactory;
     }
 
     @Override
@@ -82,12 +72,12 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
     public void performOnboarding(
             String experimentIds, Bundle arguments, Callback<Boolean> callback) {
         Map<String, String> parameters = toArgumentMap(arguments);
-        BottomSheetOnboardingCoordinator coordinator =
-                new BottomSheetOnboardingCoordinator(experimentIds, parameters, mContext,
-                        mBottomSheetController, mBrowserControls, mCompositorViewHolder, mScrim);
-        coordinator.show(accepted -> {
+        BaseOnboardingCoordinator coordinator =
+                mOnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(
+                        experimentIds, parameters);
+        coordinator.show(result -> {
             coordinator.hide();
-            callback.onResult(accepted);
+            callback.onResult(result == AssistantOnboardingResult.ACCEPTED);
         });
     }
 
@@ -101,17 +91,17 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         }
 
         Map<String, String> argumentMap = toArgumentMap(arguments);
-        Callback<BottomSheetOnboardingCoordinator> afterOnboarding = (onboardingCoordinator) -> {
+        Callback<BaseOnboardingCoordinator> afterOnboarding = (onboardingCoordinator) -> {
             callback.onResult(client.performDirectAction(
                     name, experimentIds, argumentMap, onboardingCoordinator));
         };
 
         if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {
-            BottomSheetOnboardingCoordinator coordinator = new BottomSheetOnboardingCoordinator(
-                    experimentIds, argumentMap, mContext, mBottomSheetController, mBrowserControls,
-                    mCompositorViewHolder, mScrim);
-            coordinator.show(accepted -> {
-                if (!accepted) {
+            BaseOnboardingCoordinator coordinator =
+                    mOnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(
+                            experimentIds, argumentMap);
+            coordinator.show(result -> {
+                if (result != AssistantOnboardingResult.ACCEPTED) {
                     coordinator.hide();
                     callback.onResult(false);
                     return;
@@ -123,6 +113,14 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         afterOnboarding.onResult(null);
     }
 
+    private WebContents getWebContents() {
+        Tab tab = mActivityTabProvider.get();
+        if (tab == null) {
+            return null;
+        }
+        return tab.getWebContents();
+    }
+
     /**
      * Returns a client for the current tab or {@code null} if there's no current tab or the current
      * tab doesn't have an associated browser content.
@@ -130,11 +128,11 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
     @Nullable
     private AutofillAssistantClient getOrCreateClient() {
         ThreadUtils.assertOnUiThread();
-        Tab tab = mActivityTabProvider.get();
-
-        if (tab == null || tab.getWebContents() == null) return null;
-
-        return AutofillAssistantClient.fromWebContents(tab.getWebContents());
+        WebContents webContents = getWebContents();
+        if (webContents == null) {
+            return null;
+        }
+        return AutofillAssistantClient.fromWebContents(webContents);
     }
 
     /** Extracts string arguments from a bundle. */

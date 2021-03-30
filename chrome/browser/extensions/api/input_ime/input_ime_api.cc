@@ -22,19 +22,21 @@ namespace KeyEventHandled = extensions::api::input_ime::KeyEventHandled;
 namespace SetComposition = extensions::api::input_ime::SetComposition;
 namespace CommitText = extensions::api::input_ime::CommitText;
 namespace SendKeyEvents = extensions::api::input_ime::SendKeyEvents;
-using chromeos::InputMethodEngineBase;
 
 namespace {
 const char kErrorRouterNotAvailable[] = "The router is not available.";
 const char kErrorSetKeyEventsFail[] = "Could not send key events.";
 
-InputMethodEngineBase* GetEngineIfActive(Profile* profile,
-                                         const std::string& extension_id,
-                                         std::string* error) {
+using chromeos::InputMethodEngine;
+using chromeos::InputMethodEngineBase;
+
+InputMethodEngine* GetEngineIfActive(Profile* profile,
+                                     const std::string& extension_id,
+                                     std::string* error) {
   extensions::InputImeEventRouter* event_router =
       extensions::GetInputImeEventRouter(profile);
   DCHECK(event_router) << kErrorRouterNotAvailable;
-  InputMethodEngineBase* engine =
+  InputMethodEngine* engine =
       event_router->GetEngineIfActive(extension_id, error);
   return engine;
 }
@@ -98,7 +100,7 @@ std::string GetKeyFromEvent(const ui::KeyEvent& event) {
   } else {
     ch = event.GetCharacter();
   }
-  return base::UTF16ToUTF8(base::string16(1, ch));
+  return base::UTF16ToUTF8(std::u16string(1, ch));
 }
 
 ui::KeyEvent ConvertKeyboardEventToUIKeyEvent(
@@ -152,12 +154,13 @@ void ImeObserver::OnActivate(const std::string& component_id) {
 }
 
 void ImeObserver::OnFocus(
+    int context_id,
     const IMEEngineHandlerInterface::InputContext& context) {
   if (extension_id_.empty() || !HasListener(input_ime::OnFocus::kEventName))
     return;
 
   input_ime::InputContext context_value;
-  context_value.context_id = context.id;
+  context_value.context_id = context_id;
   context_value.type =
       input_ime::ParseInputContextType(ConvertInputContextType(context));
   context_value.auto_correct = ConvertInputContextAutoCorrect(context);
@@ -200,7 +203,7 @@ void ImeObserver::OnKeyEvent(
   }
 
   std::string error;
-  InputMethodEngineBase* engine =
+  InputMethodEngine* engine =
       GetEngineIfActive(profile_, extension_id_, &error);
   if (!engine)
     return;
@@ -269,7 +272,7 @@ void ImeObserver::OnCompositionBoundsChanged(
     const std::vector<gfx::Rect>& bounds) {}
 
 void ImeObserver::OnSurroundingTextChanged(const std::string& component_id,
-                                           const base::string16& text,
+                                           const std::u16string& text,
                                            int cursor_pos,
                                            int anchor_pos,
                                            int offset_pos) {
@@ -364,8 +367,15 @@ bool ImeObserver::ConvertInputContextAutoComplete(
 
 input_ime::AutoCapitalizeType ImeObserver::ConvertInputContextAutoCapitalize(
     ui::IMEEngineHandlerInterface::InputContext input_context) {
+  // NOTE: ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE corresponds to Blink's "none"
+  // that's a synonym for "off", while input_ime::AUTO_CAPITALIZE_TYPE_NONE
+  // auto-generated via API specs means "unspecified" and translates to empty
+  // string. The latter should not be emitted as the API specifies a non-falsy
+  // enum. So technically there's a bug here; either this impl or the API needs
+  // fixing. However, as a public API, the behaviour is left intact for now.
   if (input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE)
     return input_ime::AUTO_CAPITALIZE_TYPE_NONE;
+
   if (input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
     return input_ime::AUTO_CAPITALIZE_TYPE_CHARACTERS;
   if (input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
@@ -428,7 +438,7 @@ ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
   std::unique_ptr<KeyEventHandled::Params> params(
       KeyEventHandled::Params::Create(*args_));
   std::string error;
-  InputMethodEngineBase* engine = GetEngineIfActive(
+  InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -439,7 +449,7 @@ ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
 
 ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   std::string error;
-  InputMethodEngineBase* engine = GetEngineIfActive(
+  InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -485,7 +495,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
 
 ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   std::string error;
-  InputMethodEngineBase* engine = GetEngineIfActive(
+  InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -493,7 +503,8 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   std::unique_ptr<CommitText::Params> parent_params(
       CommitText::Params::Create(*args_));
   const CommitText::Params::Parameters& params = parent_params->parameters;
-  if (!engine->CommitText(params.context_id, params.text.c_str(), &error)) {
+  if (!engine->CommitText(params.context_id, base::UTF8ToUTF16(params.text),
+                          &error)) {
     std::unique_ptr<base::ListValue> results =
         std::make_unique<base::ListValue>();
     results->Append(std::make_unique<base::Value>(false));
@@ -505,7 +516,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
 
 ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
   std::string error;
-  InputMethodEngineBase* engine = GetEngineIfActive(
+  InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -530,7 +541,8 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
 
 InputImeAPI::InputImeAPI(content::BrowserContext* context)
     : browser_context_(context) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 
   EventRouter* event_router = EventRouter::Get(browser_context_);
   event_router->RegisterObserver(this, input_ime::OnFocus::kEventName);
@@ -539,7 +551,7 @@ InputImeAPI::InputImeAPI(content::BrowserContext* context)
 InputImeAPI::~InputImeAPI() = default;
 
 void InputImeAPI::Shutdown() {
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
   InputImeEventRouterFactory::GetInstance()->RemoveProfile(
       Profile::FromBrowserContext(browser_context_));
   EventRouter::Get(browser_context_)->UnregisterObserver(this);

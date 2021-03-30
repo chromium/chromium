@@ -559,7 +559,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
       options.capacity_num_bytes = 0;
 
       MojoResult rv =
-          mojo::CreateDataPipe(&options, &out_data_pipe_, &pipe_consumer);
+          mojo::CreateDataPipe(&options, out_data_pipe_, pipe_consumer);
       if (rv != MOJO_RESULT_OK) {
         StopInternal();
         client_->DidFetchDataLoadFailed();

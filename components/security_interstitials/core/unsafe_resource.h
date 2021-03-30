@@ -12,6 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/db/hit_report.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -48,6 +49,11 @@ struct UnsafeResource {
   // committed.
   bool IsMainPageLoadBlocked() const;
 
+  // Checks if |callback| is not null and posts it to |callback_thread|.
+  void DispatchCallback(const base::Location& from_here,
+                        bool proceed,
+                        bool showed_interstitial) const;
+
   GURL url;
   GURL original_url;
   GURL navigation_url;
@@ -57,7 +63,7 @@ struct UnsafeResource {
   bool is_subframe;
   safe_browsing::SBThreatType threat_type;
   safe_browsing::ThreatMetadata threat_metadata;
-  safe_browsing::ResourceType resource_type;
+  network::mojom::RequestDestination request_destination;
   UrlCheckCallback callback;  // This is called back on |callback_thread|.
   scoped_refptr<base::SingleThreadTaskRunner> callback_thread;
   // TODO(crbug.com/1073315): |web_state_getter| is only used on iOS, and

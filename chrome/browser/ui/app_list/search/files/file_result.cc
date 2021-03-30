@@ -14,17 +14,23 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
+#include "base/logging.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/string_matching/tokenized_string_match.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 
 namespace {
+
+using chromeos::string_matching::TokenizedString;
+using chromeos::string_matching::TokenizedStringMatch;
 
 std::string StripHostedFileExtensions(const std::string& filename) {
   static const base::NoDestructor<std::vector<std::string>> hosted_extensions(
@@ -42,6 +48,26 @@ std::string StripHostedFileExtensions(const std::string& filename) {
 
 }  // namespace
 
+double CalculateFilenameRelevance(const base::Optional<TokenizedString>& query,
+                                  const base::FilePath& path) {
+  const TokenizedString title(
+      base::UTF8ToUTF16(StripHostedFileExtensions(path.BaseName().value())),
+      TokenizedString::Mode::kWords);
+
+  const bool use_default_relevance =
+      !query || query.value().text().empty() || title.text().empty();
+  UMA_HISTOGRAM_BOOLEAN("Apps.AppList.FileResult.DefaultRelevanceUsed",
+                        use_default_relevance);
+  if (use_default_relevance) {
+    static constexpr double kDefaultRelevance = 0.5;
+    return kDefaultRelevance;
+  }
+
+  TokenizedStringMatch match;
+  match.Calculate(query.value(), title);
+  return match.relevance();
+}
+
 FileResult::FileResult(const std::string& schema,
                        const base::FilePath& filepath,
                        ResultType result_type,
@@ -53,18 +79,21 @@ FileResult::FileResult(const std::string& schema,
   set_id(schema + filepath.value());
   set_relevance(relevance);
 
-  // TODO(crbug.com/1034842): Rename or replace the DriveQuickAccess and
-  // ZeroStateFile enum values.
-
   SetResultType(result_type);
   switch (result_type) {
-    case ResultType::kDriveQuickAccess:
-    case ResultType::kDriveQuickAccessChip:
-      SetMetricsType(ash::DRIVE_QUICK_ACCESS);
+    case ResultType::kDriveChip:
+    case ResultType::kZeroStateDrive:
+      SetMetricsType(ash::ZERO_STATE_DRIVE);
       break;
     case ResultType::kFileChip:
     case ResultType::kZeroStateFile:
       SetMetricsType(ash::ZERO_STATE_FILE);
+      break;
+    case ResultType::kFileSearch:
+      SetMetricsType(ash::FILE_SEARCH);
+      break;
+    case ResultType::kDriveSearch:
+      SetMetricsType(ash::DRIVE_SEARCH);
       break;
     default:
       NOTREACHED();
@@ -87,7 +116,7 @@ FileResult::FileResult(const std::string& schema,
   }
 
   // Set the details to the display name of the Files app.
-  base::string16 sanitized_name = base::CollapseWhitespace(
+  std::u16string sanitized_name = base::CollapseWhitespace(
       l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   SetDetails(sanitized_name);

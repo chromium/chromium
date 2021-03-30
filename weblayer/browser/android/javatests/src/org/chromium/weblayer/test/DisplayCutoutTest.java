@@ -39,7 +39,6 @@ public class DisplayCutoutTest {
         Assert.assertNotNull(mActivity);
     }
 
-    @MinWebLayerVersion(86)
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.P)
@@ -62,7 +61,6 @@ public class DisplayCutoutTest {
         });
     }
 
-    @MinWebLayerVersion(86)
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.P)

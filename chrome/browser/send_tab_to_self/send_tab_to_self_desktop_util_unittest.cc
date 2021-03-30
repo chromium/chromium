@@ -76,7 +76,7 @@ class SendTabToSelfDesktopUtilTest : public BrowserWithTestWindowTest {
 
  protected:
   GURL url_;
-  base::string16 title_;
+  std::u16string title_;
 };
 
 TEST_F(SendTabToSelfDesktopUtilTest, CreateNewEntry) {

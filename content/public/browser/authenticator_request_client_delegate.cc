@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -62,9 +63,6 @@ bool AuthenticatorRequestClientDelegate::SupportsResidentKeys() {
   return false;
 }
 
-void AuthenticatorRequestClientDelegate::SetMightCreateResidentCredential(
-    bool v) {}
-
 void AuthenticatorRequestClientDelegate::ConfigureCable(
     const url::Origin& origin,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
@@ -91,8 +89,7 @@ AuthenticatorRequestClientDelegate::GetTouchIdAuthenticatorConfig() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 AuthenticatorRequestClientDelegate::ChromeOSGenerateRequestIdCallback
-AuthenticatorRequestClientDelegate::GetGenerateRequestIdCallback(
-    RenderFrameHost* render_frame_host) {
+AuthenticatorRequestClientDelegate::GetGenerateRequestIdCallback() {
   return base::NullCallback();
 }
 #endif
@@ -110,6 +107,9 @@ void AuthenticatorRequestClientDelegate::DisableUI() {}
 bool AuthenticatorRequestClientDelegate::IsWebAuthnUIEnabled() {
   return false;
 }
+
+void AuthenticatorRequestClientDelegate::SetConditionalRequest(
+    bool is_conditional) {}
 
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}
@@ -134,7 +134,7 @@ bool AuthenticatorRequestClientDelegate::SupportsPIN() const {
 
 void AuthenticatorRequestClientDelegate::CollectPIN(
     CollectPINOptions options,
-    base::OnceCallback<void(base::string16)> provide_pin_cb) {
+    base::OnceCallback<void(std::u16string)> provide_pin_cb) {
   NOTREACHED();
 }
 

@@ -98,7 +98,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
  protected:
   // LocationBarBubbleDelegateView overrides:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void CloseBubble() override;
 
  private:
@@ -116,6 +116,8 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, WebContentsTiedToBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, WindowTitle);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, ButtonLabels);
+  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTest,
+                           DoubleClickOpensApp);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
                            BubblePopOut);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,

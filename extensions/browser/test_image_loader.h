@@ -33,9 +33,9 @@ class TestImageLoader {
                             int size);
 
   gfx::Image image_;
-  base::Closure loader_message_loop_quit_;
-  bool waiting_;
-  bool image_loaded_;
+  base::OnceClosure loader_message_loop_quit_;
+  bool waiting_ = false;
+  bool image_loaded_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestImageLoader);
 };

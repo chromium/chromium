@@ -15,7 +15,6 @@
 
 #include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -69,13 +68,13 @@ class NotificationPlatformBridgeWinTest : public testing::Test {
 
     GURL origin(kOrigin);
     auto notification = std::make_unique<message_center::Notification>(
-        message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, L"title",
-        L"message", gfx::Image(), L"display_source", origin,
+        message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, u"title",
+        u"message", gfx::Image(), u"display_source", origin,
         message_center::NotifierId(origin),
         message_center::RichNotificationData(), nullptr /* delegate */);
     notification->set_renotify(renotify);
     FakeNotificationImageRetainer image_retainer;
-    base::string16 xml_template =
+    std::wstring xml_template =
         BuildNotificationTemplate(&image_retainer, launch_id, *notification);
 
     mswr::ComPtr<winui::Notifications::IToastNotification> toast =
@@ -130,6 +129,9 @@ TEST_F(NotificationPlatformBridgeWinTest, GroupAndTag) {
   base::win::ScopedHString tag(hstring_tag);
   std::string tag_data = std::string(kNotificationId) + "|" + kProfileId + "|0";
   ASSERT_EQ(base::NumberToWString(base::Hash(tag_data)), tag.Get());
+
+  // Let tasks on |notification_task_runner_| of |bridge| run before its dtor.
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(NotificationPlatformBridgeWinTest, GroupAndTagUniqueness) {
@@ -206,6 +208,9 @@ TEST_F(NotificationPlatformBridgeWinTest, GroupAndTagUniqueness) {
 
     ASSERT_EQ(tagA.Get(), tagB.Get());
   }
+
+  // Let tasks on |notification_task_runner_| of |bridge| run before its dtor.
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(NotificationPlatformBridgeWinTest, Suppress) {
@@ -239,7 +244,7 @@ TEST_F(NotificationPlatformBridgeWinTest, Suppress) {
 
   // Register a single notification with a specific tag.
   std::string tag_data = std::string(kNotificationId) + "|" + kProfileId + "|0";
-  base::string16 tag = base::NumberToString16(base::Hash(tag_data));
+  std::wstring tag = base::NumberToWString(base::Hash(tag_data));
   // Microsoft::WRL::Make() requires FakeIToastNotification to derive from
   // RuntimeClass.
   notifications.push_back(Microsoft::WRL::Make<FakeIToastNotification>(
@@ -262,4 +267,7 @@ TEST_F(NotificationPlatformBridgeWinTest, Suppress) {
   toast2.Reset();
 
   bridge.SetDisplayedNotificationsForTesting(nullptr);
+
+  // Let tasks on |notification_task_runner_| of |bridge| run before its dtor.
+  task_environment_.RunUntilIdle();
 }

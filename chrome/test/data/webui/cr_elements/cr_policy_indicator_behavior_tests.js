@@ -5,11 +5,13 @@
 /** @fileoverview Suite of tests for CrPolicyIndicatorBehavior. */
 
 // clang-format off
-// #import {CrPolicyIndicatorBehavior, CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
-// #import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-// #import './cr_policy_strings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import './cr_policy_strings.js';
+
+import {CrPolicyIndicatorBehavior, CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 suite('CrPolicyIndicatorBehavior', function() {
@@ -108,7 +110,7 @@ suite('CrPolicyIndicatorBehavior', function() {
             indicator.indicatorType, indicator.indicatorSourceName));
   });
 
-  if (cr.isChromeOS) {
+  if (isChromeOS) {
     test('primary-user controlled indicator', function() {
       indicator.indicatorType = CrPolicyIndicatorType.PRIMARY_USER;
       indicator.indicatorSourceName = 'user@example.com';

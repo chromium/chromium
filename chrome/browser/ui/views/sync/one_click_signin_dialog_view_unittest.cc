@@ -42,13 +42,13 @@ class OneClickSigninDialogViewTest : public ChromeViewsTestBase,
  protected:
   OneClickSigninDialogView* ShowOneClickSigninDialog() {
     OneClickSigninDialogView::ShowDialog(
-        base::string16(), nullptr, anchor_widget_->GetNativeWindow(),
+        std::u16string(), nullptr, anchor_widget_->GetNativeWindow(),
         base::BindOnce(&OneClickSigninDialogViewTest::ConfirmedCallback,
                        base::Unretained(this)));
 
     OneClickSigninDialogView* view =
         OneClickSigninDialogView::view_for_testing();
-    EXPECT_TRUE(view != NULL);
+    EXPECT_NE(nullptr, view);
     return view;
   }
 

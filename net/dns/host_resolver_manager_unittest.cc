@@ -42,6 +42,7 @@
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -222,10 +223,7 @@ class MockHostResolverProc : public HostResolverProc {
       DCHECK_EQ(OK, rv);
       return OK;
     }
-    // Ignore HOST_RESOLVER_SYSTEM_ONLY, since it should have no impact on
-    // whether a rule matches. It should only affect cache lookups.
-    ResolveKey key(hostname, address_family,
-                   host_resolver_flags & ~HOST_RESOLVER_SYSTEM_ONLY);
+    ResolveKey key(hostname, address_family, host_resolver_flags);
     if (rules_.count(key) == 0)
       return ERR_NAME_NOT_RESOLVED;
     *addrlist = rules_[key];
@@ -2224,8 +2222,8 @@ TEST_F(HostResolverManagerTest, MultipleAttempts) {
   // Override the current thread task runner, so we can simulate the passage of
   // time and avoid any actual sleeps.
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::ScopedClosureRunner task_runner_override_scoped_cleanup =
-      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+  base::ThreadTaskRunnerHandleOverrideForTesting task_runner_handle_override(
+      test_task_runner);
 
   // Resolve "host1".
   ResolveHostResponseHelper response(resolver_->CreateRequest(
@@ -2265,8 +2263,8 @@ TEST_F(HostResolverManagerTest, MultipleAttempts) {
 // number of retries used is 4 rather than something higher.
 TEST_F(HostResolverManagerTest, DefaultMaxRetryAttempts) {
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::ScopedClosureRunner task_runner_override_scoped_cleanup =
-      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+  base::ThreadTaskRunnerHandleOverrideForTesting task_runner_handle_override(
+      test_task_runner);
 
   // Instantiate a ResolverProc that will block all incoming requests.
   auto resolver_proc = base::MakeRefCounted<LookupAttemptHostResolverProc>(
@@ -2494,6 +2492,29 @@ TEST_F(HostResolverManagerTest, IsSpeculative) {
 
   EXPECT_EQ("just.testing", proc_->GetCaptureList()[0].hostname);
   EXPECT_EQ(1u, proc_->GetCaptureList().size());  // No increase.
+}
+
+TEST_F(HostResolverManagerTest, AvoidMulticastResolutionParameter) {
+  proc_->AddRuleForAllFamilies("avoid.multicast.test", "123.123.123.123",
+                               HOST_RESOLVER_AVOID_MULTICAST);
+  proc_->SignalMultiple(2u);
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.avoid_multicast_resolution = true;
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("avoid.multicast.test", 80), NetworkIsolationKey(),
+      NetLogWithSource(), parameters, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  ResolveHostResponseHelper response_no_flag(resolver_->CreateRequest(
+      HostPortPair("avoid.multicast.test", 80), NetworkIsolationKey(),
+      NetLogWithSource(), base::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults().value().endpoints(),
+              testing::ElementsAre(CreateExpected("123.123.123.123", 80)));
+
+  EXPECT_THAT(response_no_flag.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
 }
 
 #if BUILDFLAG(ENABLE_MDNS)
@@ -2982,8 +3003,8 @@ TEST_F(HostResolverManagerTest, Mdns_NoResponse) {
   // Override the current thread task runner, so we can simulate the passage of
   // time to trigger the timeout.
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::ScopedClosureRunner task_runner_override_scoped_cleanup =
-      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+  base::ThreadTaskRunnerHandleOverrideForTesting task_runner_handle_override(
+      test_task_runner);
 
   HostResolver::ResolveHostParameters parameters;
   parameters.source = HostResolverSource::MULTICAST_DNS;
@@ -3021,8 +3042,8 @@ TEST_F(HostResolverManagerTest, Mdns_WrongType) {
   // Override the current thread task runner, so we can simulate the passage of
   // time to trigger the timeout.
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::ScopedClosureRunner task_runner_override_scoped_cleanup =
-      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+  base::ThreadTaskRunnerHandleOverrideForTesting task_runner_handle_override(
+      test_task_runner);
 
   HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = DnsQueryType::A;
@@ -3067,8 +3088,8 @@ TEST_F(HostResolverManagerTest, Mdns_PartialResults) {
   // Override the current thread task runner, so we can simulate the passage of
   // time to trigger the timeout.
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::ScopedClosureRunner task_runner_override_scoped_cleanup =
-      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+  base::ThreadTaskRunnerHandleOverrideForTesting task_runner_handle_override(
+      test_task_runner);
 
   HostResolver::ResolveHostParameters parameters;
   parameters.source = HostResolverSource::MULTICAST_DNS;
@@ -10771,6 +10792,21 @@ TEST_F(HostResolverManagerDnsTest,
   EXPECT_THAT(response.result_error(), IsOk());
 
   resolver_->DeregisterResolveContext(&context);
+}
+
+// `HostResolver::ResolveHostParameters::avoid_multicast_resolution` not
+// currently supported to do anything except with the system resolver. So with
+// DnsTask, expect it to be ignored.
+TEST_F(HostResolverManagerDnsTest, AvoidMulticastIgnoredWithDnsTask) {
+  ChangeDnsConfig(CreateValidDnsConfig());
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.avoid_multicast_resolution = true;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("ok", 80), NetworkIsolationKey(), NetLogWithSource(),
+      parameters, resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsOk());
 }
 
 }  // namespace net

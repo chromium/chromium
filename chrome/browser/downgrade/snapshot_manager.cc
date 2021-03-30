@@ -119,26 +119,14 @@ std::vector<base::FilePath> GetUserProfileDirectories(
 // Moves the |source| directory to |target| to be deleted later. If the move
 // initially fails, move the contents of the directory.
 void MoveFolderForLaterDeletion(const base::FilePath& source,
-                                const base::FilePath& target,
-                                const char* move_result_histogram,
-                                const char* failure_count_histogram) {
-  const bool move_result = MoveWithoutFallback(source, target);
-  if (move_result_histogram)
-    base::UmaHistogramBoolean(move_result_histogram, move_result);
-  if (move_result)
+                                const base::FilePath& target) {
+  if (MoveWithoutFallback(source, target))
     return;
   auto failure_count =
       MoveContents(source, base::GetUniquePath(target), ExclusionPredicate());
-  if (failure_count_histogram && failure_count.has_value() &&
-      !base::DeleteFile(source)) {
-    failure_count = failure_count.value() + 1;
-    // Report precise values rather than an exponentially bucketed
-    // histogram. Bucket 0 means that the target directory could not be
-    // created. All other buckets are a count of files/directories left
-    // behind.
-    base::UmaHistogramExactLinear(failure_count_histogram,
-                                  failure_count.value_or(0), 50);
-  }
+  // If some files failed to be moved, try and delete them immediately.
+  if (failure_count.has_value())
+    base::DeletePathRecursively(source);
 }
 
 }  // namespace
@@ -161,9 +149,8 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
                                .AddExtension(kDowngradeDeleteSuffix);
     base::CreateDirectory(move_target_dir);
     // This succeeds more than 80% of the time.
-    MoveFolderForLaterDeletion(snapshot_dir,
-                               move_target_dir.AppendASCII(version.GetString()),
-                               nullptr, nullptr);
+    MoveFolderForLaterDeletion(
+        snapshot_dir, move_target_dir.AppendASCII(version.GetString()));
   }
 
   size_t success_count = 0;
@@ -303,7 +290,7 @@ void SnapshotManager::RestoreSnapshot(const base::Version& version) {
     // Version file is deleted, this snapshot will now be considered invalid,
     // and will be deleted, otherwise it will be overwritten at the next
     // upgrade.
-    MoveFolderForLaterDeletion(snapshot_dir, move_target, nullptr, nullptr);
+    MoveFolderForLaterDeletion(snapshot_dir, move_target);
 
     auto last_version_file_path =
         snapshot_dir.Append(kDowngradeLastVersionFile);
@@ -324,9 +311,10 @@ void SnapshotManager::PurgeInvalidAndOldSnapshots(
   // Moves all the invalid snapshots for later deletion.
   auto invalid_snapshots = GetInvalidSnapshots(snapshot_dir);
   for (const auto& path : invalid_snapshots) {
-    MoveFolderForLaterDeletion(path, target.Append(path.BaseName()),
-                               "Downgrade.InvalidSnapshotMove.Result",
-                               "Downgrade.InvalidSnapshotMove.FailureCount");
+    // This succeeds 97% of the time according to
+    // Downgrade.InvalidSnapshotMove.Result, with most of the failures having
+    // under 4 files failing to be copied.
+    MoveFolderForLaterDeletion(path, target.Append(path.BaseName()));
   }
 
   base::flat_set<base::Version> available_snapshots =
@@ -352,10 +340,11 @@ void SnapshotManager::PurgeInvalidAndOldSnapshots(
   // Moves all the older snapshots for later deletion.
   for (const auto& snapshot : available_snapshots) {
     auto snapshot_path = snapshot_dir.AppendASCII(snapshot.GetString());
+    // This succeeds 97% of the time according to
+    // Downgrade.InvalidSnapshotMove.Result, with most of the failures having
+    // under 4 files failing to be copied.
     MoveFolderForLaterDeletion(snapshot_path,
-                               target.Append(snapshot_path.BaseName()),
-                               "Downgrade.InvalidSnapshotMove.Result",
-                               "Downgrade.InvalidSnapshotMove.FailureCount");
+                               target.Append(snapshot_path.BaseName()));
     if (--number_of_snapshots_to_delete == 0)
       break;
   }

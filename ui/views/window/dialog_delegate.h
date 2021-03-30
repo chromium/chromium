@@ -6,11 +6,11 @@
 #define UI_VIEWS_WINDOW_DIALOG_DELEGATE_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
@@ -61,7 +61,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
     // here will get the default text for its type from GetDialogButtonLabel.
     // Prefer to use this field (via SetButtonLabel) rather than override
     // GetDialogButtonLabel - see https://crbug.com/1011446
-    base::string16 button_labels[ui::DIALOG_BUTTON_LAST + 1];
+    std::u16string button_labels[ui::DIALOG_BUTTON_LAST + 1];
 
     // A bitmask of buttons (from ui::DialogButton) that are enabled in this
     // dialog. It's legal for a button to be marked enabled that isn't present
@@ -127,7 +127,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   int GetDefaultDialogButton() const;
 
   // Returns the label of the specified dialog button.
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const;
+  std::u16string GetDialogButtonLabel(ui::DialogButton button) const;
 
   // Returns whether the specified dialog button is enabled.
   virtual bool IsDialogButtonEnabled(ui::DialogButton button) const;
@@ -212,7 +212,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // necessary to call DialogModelChanged() yourself after calling them.
   void SetDefaultButton(int button);
   void SetButtons(int buttons);
-  void SetButtonLabel(ui::DialogButton button, base::string16 label);
+  void SetButtonLabel(ui::DialogButton button, std::u16string label);
   void SetButtonEnabled(ui::DialogButton button, bool enabled);
 
   // Called when the user presses the dialog's "OK" button or presses the dialog

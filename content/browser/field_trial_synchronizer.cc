@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/variations/variations_client.h"
@@ -122,8 +121,8 @@ void FieldTrialSynchronizer::UpdateRendererVariationsHeader(
 
 void FieldTrialSynchronizer::VariationIdsHeaderUpdated() {
   // PostTask to avoid recursive lock.
-  base::PostTask(
-      FROM_HERE, BrowserThread::UI,
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &FieldTrialSynchronizer::NotifyAllRenderersOfVariationsHeader));
 }

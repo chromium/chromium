@@ -4,216 +4,361 @@
 
 #include "chrome/browser/chromeos/child_accounts/family_user_device_metrics.h"
 
+#include <memory>
 #include <tuple>
-#include <vector>
 
+#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/metrics/user_action_tester.h"
-#include "base/values.h"
-#include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
-#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
-#include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/ui/browser.h"
-#include "chromeos/login/auth/user_context.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
-#include "net/dns/mock_host_resolver.h"
 
 namespace chromeos {
 
 namespace {
-
-const LoginManagerMixin::TestUserInfo kChild{
-    AccountId::FromUserEmailGaiaId("child@gmail.com", "123456780"),
-    user_manager::USER_TYPE_CHILD};
-
-const LoginManagerMixin::TestUserInfo kRegular{
-    AccountId::FromUserEmailGaiaId("regular@gmail.com", "123456789"),
-    user_manager::USER_TYPE_REGULAR};
-
 const AccountId kDefaultOwnerAccountId =
-    AccountId::FromUserEmailGaiaId("owner@gmail.com", "123456781");
-
-std::vector<LoginManagerMixin::TestUserInfo> GetInitialUsers(bool with_child) {
-  if (with_child)
-    return {kChild};
-  return {kRegular};
-}
-
+    AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId);
+const AccountId kManagedUserAccountId =
+    AccountId::FromUserEmail("example@example.com");
+const AccountId kActiveDirectoryUserAccountId =
+    AccountId::AdFromUserEmailObjGuid("active@gmail.com", "obj-guid");
 }  // namespace
 
 // Test params:
-//  - is_initial_user_child: whether the user presented in the initial user list
-//  is child.
-//  - is_initial_user_device_owner: whether the user presented in the initial
-//  user list is device owner.
+//  - LogInType: regular or child.
+//  - IsUserExisting: if false, no existing users on the login screen.
 class FamilyUserDeviceMetricsTest
     : public MixinBasedInProcessBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
+      public testing::WithParamInterface<
+          std::tuple<LoggedInUserMixin::LogInType, /*IsUserExisting=*/bool>> {
+ protected:
+  bool IsUserChild() const {
+    return GetLogInType() == LoggedInUserMixin::LogInType::kChild;
+  }
+  bool IsUserExisting() const { return std::get<1>(GetParam()); }
+
+  FakeChromeUserManager* user_manager_ = nullptr;
+
+  LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_,
+      GetLogInType(),
+      embedded_test_server(),
+      this,
+      /*should_launch_browser=*/false,
+      /*account_id=*/base::nullopt,
+      /*include_initial_user=*/IsUserExisting()};
+
+  // MixinBasedInProcessBrowserTest:
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-    fake_gaia_.SetupFakeGaiaForChildUser(
-        kChild.account_id.GetUserEmail(), kChild.account_id.GetGaiaId(),
-        FakeGaiaMixin::kFakeRefreshToken, false /*issue_any_scope_token*/);
-
-    // Child users require a user policy, set up an empty one so the user can
-    // get through login.
-    ASSERT_TRUE(user_policy_mixin_.RequestPolicyUpdate());
-
-    WizardController::SkipPostLoginScreensForTesting();
-
-    AccountId owner_account = EmptyAccountId();
-    if (!IsInitialUserDeviceOwner()) {
-      owner_account = kDefaultOwnerAccountId;
-    } else if (IsInitialUserChild()) {
-      owner_account = kChild.account_id;
-    } else {
-      owner_account = kRegular.account_id;
-    }
-
-    FakeChromeUserManager* user_manager =
+    // Child users require user policy. Set up an empty one so the user can get
+    // through login.
+    user_policy_mixin_.RequestPolicyUpdate();
+    user_manager_ =
         static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-    user_manager->SetOwnerId(owner_account);
-    scoped_testing_cros_settings_.device_settings()->Set(
-        kDeviceOwner, base::Value(owner_account.GetUserEmail()));
   }
-
- protected:
-  void LoginUser(const LoginManagerMixin::TestUserInfo& user_info) {
-    UserContext user_context =
-        LoginManagerMixin::CreateDefaultUserContext(user_info);
-    user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
-    login_manager_mixin_.LoginAndWaitForActiveSession(user_context);
-  }
-
-  bool IsLoggedInUserNew(bool is_logged_in_user_child) const {
-    // The user list always have 1 initial user, either child user or regular
-    // user. If the |is_logged_in_user_child| is different from
-    // IsInitialUserChild(), it indicates that the user type of the initial
-    // user is different from current logged in user, so the current logged in
-    // user is new.
-    return is_logged_in_user_child != IsInitialUserChild();
-  }
-
-  bool IsLoggedInUserDeviceOwner(bool is_logged_in_user_child) const {
-    // If IsInitialUserDeviceOwner() is false, no device owner is set at
-    // the beginning, otherwise the initial user is the device owner.
-    if (!IsInitialUserDeviceOwner())
-      return false;
-
-    // Check whether the current logged in user is the initial user.
-    return !IsLoggedInUserNew(is_logged_in_user_child);
-  }
-
-  int GetUserCountOnDevice(bool is_logged_in_user_child) const {
-    // The user list always have 1 initial user, either child user or regular
-    // user. If the current logged in user is new, it has 2 users on the device,
-    // otherwise 1.
-    return IsLoggedInUserNew(is_logged_in_user_child) ? 2 : 1;
-  }
-
-  bool IsInitialUserChild() const { return std::get<0>(GetParam()); }
-  bool IsInitialUserDeviceOwner() const { return std::get<1>(GetParam()); }
 
  private:
-  EmbeddedTestServerSetupMixin embedded_test_server_setup_{
-      &mixin_host_, embedded_test_server()};
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
-  LocalPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
-  UserPolicyMixin user_policy_mixin_{&mixin_host_, kChild.account_id,
-                                     &policy_server_mixin_};
+  LoggedInUserMixin::LogInType GetLogInType() const {
+    return std::get<0>(GetParam());
+  }
 
-  LoginManagerMixin login_manager_mixin_{&mixin_host_,
-                                         GetInitialUsers(IsInitialUserChild())};
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  UserPolicyMixin user_policy_mixin_{&mixin_host_, kDefaultOwnerAccountId};
 };
 
-IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsChildUser) {
-  base::UserActionTester user_action_tester;
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, IsDeviceOwner) {
   base::HistogramTester histogram_tester;
 
-  LoginUser(kChild);
-
-  // FamilyUserDeviceMetrics::OnNewDay() is triggered in the
-  // FamilyUserMetricsService constructor, so that metrics
-  // which are reported would have records.
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserDeviceMetrics::GetFamilyLinkUsersCountHistogramNameForTest(),
-      /*sample=*/1,
-      /*expected_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      FamilyUserDeviceMetrics::GetTotalUsersCountHistogramNameForTest(),
-      /*sample=*/GetUserCountOnDevice(/*is_logged_in_user_child=*/true),
-      /*expected_count=*/1);
-
-  if (IsLoggedInUserNew(/*is_logged_in_user_child=*/true)) {
-    histogram_tester.ExpectUniqueSample(
-        FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(),
-        /*sample=*/FamilyUserDeviceMetrics::NewUserAdded::kFamilyLinkUserAdded,
-        /*expected_count=*/1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(), 0);
-  }
+  // Set the device owner to the logged in user.
+  user_manager_->SetOwnerId(logged_in_user_mixin_.GetAccountId());
+  logged_in_user_mixin_.LogInUser();
 
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetDeviceOwnerHistogramNameForTest(),
-      /*sample=*/
-      IsLoggedInUserDeviceOwner(/*is_logged_in_user_child=*/true) ? 1 : 0,
+      /*sample=*/true, /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, IsNotDeviceOwner) {
+  base::HistogramTester histogram_tester;
+
+  // Set the device owner to an arbitrary account that's not logged in.
+  user_manager_->SetOwnerId(kDefaultOwnerAccountId);
+  logged_in_user_mixin_.LogInUser();
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetDeviceOwnerHistogramNameForTest(),
+      /*sample=*/false, /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, SingleUserAdded) {
+  base::HistogramTester histogram_tester;
+
+  logged_in_user_mixin_.LogInUser();
+
+  if (IsUserExisting()) {
+    // This user has signed into this device before, so they are not new.
+    histogram_tester.ExpectTotalCount(
+        FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(), 0);
+  } else {
+    // This is the first time this user is signing into this device.
+    FamilyUserDeviceMetrics::NewUserAdded sample =
+        IsUserChild()
+            ? FamilyUserDeviceMetrics::NewUserAdded::kFamilyLinkUserAdded
+            : FamilyUserDeviceMetrics::NewUserAdded::kRegularUserAdded;
+    histogram_tester.ExpectUniqueSample(
+        FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(), sample,
+        /*expected_count=*/1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, SingleUserCount) {
+  base::HistogramTester histogram_tester;
+
+  logged_in_user_mixin_.LogInUser();
+
+  const int family_link_users_count = IsUserChild() ? 1 : 0;
+  const int gaia_users_count = 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetFamilyLinkUsersCountHistogramNameForTest(),
+      /*sample=*/family_link_users_count,
+      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
       /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsRegularUser) {
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewChildUser) {
   base::HistogramTester histogram_tester;
 
-  LoginUser(kRegular);
+  logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewChildUser();
+  logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
 
-  // FamilyUserDeviceMetrics::OnNewDay() is triggered in the
-  // FamilyUserMetricsService constructor, so that metrics
-  // which are reported would have records.
+  // If existing Family Link user on login screen, then two Family Link users.
+  const int family_link_users_count = IsUserExisting() && IsUserChild() ? 2 : 1;
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(),
+      FamilyUserDeviceMetrics::NewUserAdded::kFamilyLinkUserAdded,
+      /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
       FamilyUserDeviceMetrics::GetFamilyLinkUsersCountHistogramNameForTest(),
-      /*sample=*/IsInitialUserChild() ? 1 : 0,
+      /*sample=*/family_link_users_count,
       /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics ::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, LoginAsNewRegularUser) {
+  base::HistogramTester histogram_tester;
+
+  logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
+  logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
+
+  // If existing Family Link user on login screen, then one Family Link user.
+  const int family_link_users_count = IsUserExisting() && IsUserChild() ? 1 : 0;
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
 
   histogram_tester.ExpectUniqueSample(
-      FamilyUserDeviceMetrics::GetTotalUsersCountHistogramNameForTest(),
-      /*sample=*/GetUserCountOnDevice(/*is_logged_in_user_child=*/false),
+      FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(),
+      FamilyUserDeviceMetrics::NewUserAdded::kRegularUserAdded,
       /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetFamilyLinkUsersCountHistogramNameForTest(),
+      /*sample=*/family_link_users_count,
+      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
 
-  if (IsLoggedInUserNew(/*is_logged_in_user_child=*/false)) {
-    histogram_tester.ExpectUniqueSample(
-        FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(),
-        /*sample=*/FamilyUserDeviceMetrics::NewUserAdded::kRegularUserAdded,
-        /*expected_count=*/1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        FamilyUserDeviceMetrics::GetNewUserAddedHistogramNameForTest(), 0);
-  }
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, GuestUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddGuestUser();
+
+  logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
+  logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
+
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
 
   histogram_tester.ExpectUniqueSample(
-      FamilyUserDeviceMetrics::GetDeviceOwnerHistogramNameForTest(),
-      /*sample=*/
-      IsLoggedInUserDeviceOwner(/*is_logged_in_user_child=*/false) ? 1 : 0,
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, ActiveDirectoryUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddActiveDirectoryUser(kActiveDirectoryUserAccountId);
+  logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
+  logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
+
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
       /*expected_count=*/1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyUserDeviceMetricsTest,
-    testing::Combine(/*is_initial_user_child=*/testing::Bool(),
-                     /*is_initial_user_device_owner=*/testing::Bool()));
+    testing::Combine(testing::Values(LoggedInUserMixin::LogInType::kChild,
+                                     LoggedInUserMixin::LogInType::kRegular),
+                     /*IsUserExisting=*/testing::Bool()));
+
+class FamilyUserDeviceMetricsManagedDeviceTest
+    : public FamilyUserDeviceMetricsTest {
+ protected:
+  void LoginAsNewRegularUser() {
+    logged_in_user_mixin_.GetLoginManagerMixin()->LoginAsNewRegularUser();
+    logged_in_user_mixin_.GetLoginManagerMixin()->WaitForActiveSession();
+  }
+
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest, KioskAppUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddKioskAppUser(kManagedUserAccountId);
+  LoginAsNewRegularUser();
+
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
+                       ArcKioskAppUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddArcKioskAppUser(kManagedUserAccountId);
+  LoginAsNewRegularUser();
+
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
+                       WebKioskAppUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddWebKioskAppUser(kManagedUserAccountId);
+  LoginAsNewRegularUser();
+
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsManagedDeviceTest,
+                       PublicAccountUser) {
+  base::HistogramTester histogram_tester;
+
+  user_manager_->AddPublicAccountUser(kManagedUserAccountId);
+  LoginAsNewRegularUser();
+
+  size_t total_user_count = IsUserExisting() ? 3 : 2;
+  EXPECT_EQ(total_user_count, user_manager_->GetUsers().size());
+
+  // If no existing users on login screen, then this user is the first and only.
+  const int gaia_users_count = IsUserExisting() ? 2 : 1;
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/gaia_users_count,
+      /*expected_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FamilyUserDeviceMetricsManagedDeviceTest,
+    testing::Combine(testing::Values(LoggedInUserMixin::LogInType::kChild,
+                                     LoggedInUserMixin::LogInType::kRegular),
+                     /*IsUserExisting=*/testing::Bool()));
+
+class FamilyUserDeviceMetricsEphemeralUserTest
+    : public FamilyUserDeviceMetricsManagedDeviceTest {
+ protected:
+  // MixinBaseInProcessBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_ephemeral_users_enabled()
+        ->set_ephemeral_users_enabled(true);
+
+    device_policy_update.reset();
+  }
+};
+
+// Tests that regular ephemeral users report 0 for FamilyUser.GaiaUsersCount.
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsEphemeralUserTest,
+                       EphemeralUser) {
+  base::HistogramTester histogram_tester;
+  LoginAsNewRegularUser();
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest(),
+      /*sample=*/0,
+      /*expected_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FamilyUserDeviceMetricsEphemeralUserTest,
+    testing::Combine(testing::Values(LoggedInUserMixin::LogInType::kChild,
+                                     LoggedInUserMixin::LogInType::kRegular),
+                     /*IsUserExisting=*/testing::Values(false)));
 
 }  // namespace chromeos

@@ -31,6 +31,10 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 
+namespace content {
+class NavigationHandle;
+}  // namespace content
+
 namespace chromecast {
 
 namespace shell {
@@ -69,13 +73,12 @@ class CastWebContentsImpl : public CastWebContents,
   void EnableBackgroundVideoPlayback(bool enabled) override;
   on_load_script_injector::OnLoadScriptInjectorHost<std::string>*
   script_injector() override;
-  void InjectScriptsIntoMainFrame() override;
   void PostMessageToMainFrame(
       const std::string& target_origin,
       const std::string& data,
       std::vector<blink::WebMessagePort> ports) override;
   void ExecuteJavaScript(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       base::OnceCallback<void(base::Value)> callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -93,13 +96,10 @@ class CastWebContentsImpl : public CastWebContents,
 
   // content::WebContentsObserver implementation:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
-                              content::RenderFrameHost* new_host) override;
   void OnInterfaceRequestFromFrame(
       content::RenderFrameHost* /* render_frame_host */,
       const std::string& interface_name,
       mojo::ScopedMessagePipeHandle* interface_pipe) override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
   void RenderProcessGone(base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -167,7 +167,12 @@ class CastWebContentsImpl : public CastWebContents,
   bool is_websql_enabled_;
   bool is_mixer_audio_enabled_;
   base::TimeTicks start_loading_ticks_;
+
+  // True once the main frame finishes loading and there are no outstanding
+  // navigations.
   bool main_frame_loaded_;
+  content::NavigationHandle* active_navigation_ = nullptr;
+
   bool closing_;
   bool stopped_;
   bool stop_notified_;

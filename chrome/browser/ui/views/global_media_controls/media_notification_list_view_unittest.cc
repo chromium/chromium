@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
+#include "chrome/browser/ui/views/global_media_controls/test_helper.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 
 namespace {
@@ -33,6 +34,7 @@ class MediaNotificationListViewTest : public ChromeViewsTestBase {
     list_view_ =
         widget_->SetContentsView(std::make_unique<MediaNotificationListView>());
 
+    item_ = std::make_unique<MockMediaNotificationItem>();
     widget_->Show();
   }
 
@@ -43,8 +45,9 @@ class MediaNotificationListViewTest : public ChromeViewsTestBase {
 
   void ShowNotification(const std::string& id) {
     list_view_->ShowNotification(
-        id, std::make_unique<MediaNotificationContainerImplView>(id, nullptr,
-                                                                 nullptr));
+        id, std::make_unique<MediaNotificationContainerImplView>(
+                id, item_->GetWeakPtr(), nullptr,
+                GlobalMediaControlsEntryPoint::kToolbarIcon));
   }
 
   void HideNotification(const std::string& id) {
@@ -56,6 +59,7 @@ class MediaNotificationListViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   MediaNotificationListView* list_view_ = nullptr;
+  std::unique_ptr<MockMediaNotificationItem> item_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaNotificationListViewTest);
 };

@@ -43,12 +43,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocket
   using ReceiveErrorCompletionCallback =
       base::OnceCallback<void(ErrorReason, const std::string& error_message)>;
 
-  // Destroys resources associated with the socket. After calling this method,
-  // it is illegal to call any method on this socket instance (except for the
-  // destructor via Release).
-  virtual void Close() = 0;
-
   // Gracefully disconnects the socket and calls |callback| upon completion.
+  // After calling this method, it is illegal to call any method on this socket
+  // instance (except for the destructor via Release).
   // There is no failure case, as this is a best effort operation.
   virtual void Disconnect(base::OnceClosure success_callback) = 0;
 

@@ -8,7 +8,7 @@
     `Tests that evaluating 'console.log()' in the console will have access to its outer scope variables. Bug 60547.\n`
   );
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

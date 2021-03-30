@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacTest,
   EXPECT_EQ(find_request_id + 2, helper->current_find_request_id());
   EXPECT_EQ(-1, helper->find_result().number_of_matches());
   EXPECT_EQ(-1, helper->find_result().active_match_ordinal());
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             find_bar->GetFindBarTesting()->GetMatchCountText());
   EXPECT_EQ(base::SysNSStringToUTF16(empty_string), find_bar->GetFindText());
 }

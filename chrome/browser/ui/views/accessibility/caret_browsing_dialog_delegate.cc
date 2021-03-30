@@ -19,6 +19,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 // static
@@ -43,7 +44,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::CONTROL));
 
-  base::string16 message_text =
+  std::u16string message_text =
       l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_INFO);
 
   auto* message_label = AddChildView(std::make_unique<views::Label>(
@@ -88,3 +89,6 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
 }
 
 CaretBrowsingDialogDelegate::~CaretBrowsingDialogDelegate() = default;
+
+BEGIN_METADATA(CaretBrowsingDialogDelegate, views::DialogDelegateView)
+END_METADATA

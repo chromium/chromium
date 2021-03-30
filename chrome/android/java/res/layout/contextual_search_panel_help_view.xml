@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contextual_search_panel_help"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:visibility="invisible"
+    android:background="@drawable/contextual_search_panel_help_background">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        app:srcCompat="@drawable/ic_touch_app_blue"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/contextual_search_help_header_view"
+            android:text="@string/contextual_search_help_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            style="@style/TextAppearance.TextLarge.Primary"
+            app:leading="@dimen/headline_size_leading" />
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/contextual_search_help_body_view"
+            android:text="@string/contextual_search_help_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="12dp"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            app:leading="@dimen/text_size_small_leading" />
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/contextual_search_ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="12dp"
+            android:text="@string/ok"
+            style="@style/FilledButton.Flat" />
+    </LinearLayout>
+</LinearLayout>

@@ -3,44 +3,47 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/libassistant/platform_api.h"
+
 #include "base/check.h"
+#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/libassistant/audio/audio_output_provider_impl.h"
+#include "chromeos/services/libassistant/fake_auth_provider.h"
+#include "chromeos/services/libassistant/file_provider_impl.h"
+#include "chromeos/services/libassistant/power_manager_provider_impl.h"
+#include "chromeos/services/libassistant/system_provider_impl.h"
+#include "media/audio/audio_device_description.h"
 
 namespace chromeos {
 namespace libassistant {
 
+PlatformApi::PlatformApi()
+    : audio_output_provider_(std::make_unique<AudioOutputProviderImpl>(
+          media::AudioDeviceDescription::kDefaultDeviceId)),
+      fake_auth_provider_(std::make_unique<FakeAuthProvider>()),
+      file_provider_(std::make_unique<FileProviderImpl>()),
+      network_provider_(std::make_unique<NetworkProviderImpl>()) {
+  // Only enable native power features if they are supported by the UI.
+  std::unique_ptr<PowerManagerProviderImpl> provider;
+  if (assistant::features::IsPowerManagerEnabled()) {
+    provider = std::make_unique<PowerManagerProviderImpl>();
+  }
+  system_provider_ = std::make_unique<SystemProviderImpl>(std::move(provider));
+}
+
+PlatformApi::~PlatformApi() = default;
+
+void PlatformApi::Bind(
+    mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+    mojom::PlatformDelegate* platform_delegate) {
+  audio_output_provider_->Bind(std::move(audio_output_delegate),
+                               platform_delegate);
+  network_provider_->Initialize(platform_delegate);
+  system_provider_->Initialize(platform_delegate);
+}
+
 PlatformApi& PlatformApi::SetAudioInputProvider(
     assistant_client::AudioInputProvider* provider) {
   audio_input_provider_ = provider;
-  return *this;
-}
-
-PlatformApi& PlatformApi::SetAudioOutputProvider(
-    assistant_client::AudioOutputProvider* provider) {
-  audio_output_provider_ = provider;
-  return *this;
-}
-
-PlatformApi& PlatformApi::SetAuthProvider(
-    assistant_client::AuthProvider* provider) {
-  auth_provider_ = provider;
-  return *this;
-}
-
-PlatformApi& PlatformApi::SetFileProvider(
-    assistant_client::FileProvider* provider) {
-  file_provider_ = provider;
-  return *this;
-}
-
-PlatformApi& PlatformApi::SetNetworkProvider(
-    assistant_client::NetworkProvider* provider) {
-  network_provider_ = provider;
-  return *this;
-}
-
-PlatformApi& PlatformApi::SetSystemProvider(
-    assistant_client::SystemProvider* provider) {
-  system_provider_ = provider;
   return *this;
 }
 
@@ -55,8 +58,8 @@ assistant_client::AudioOutputProvider& PlatformApi::GetAudioOutputProvider() {
 }
 
 assistant_client::AuthProvider& PlatformApi::GetAuthProvider() {
-  DCHECK(auth_provider_);
-  return *auth_provider_;
+  DCHECK(fake_auth_provider_);
+  return *fake_auth_provider_;
 }
 
 assistant_client::FileProvider& PlatformApi::GetFileProvider() {

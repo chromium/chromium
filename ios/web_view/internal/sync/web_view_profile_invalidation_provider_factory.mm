@@ -61,7 +61,7 @@ WebViewProfileInvalidationProviderFactory::
 }
 
 WebViewProfileInvalidationProviderFactory::
-    ~WebViewProfileInvalidationProviderFactory() {}
+    ~WebViewProfileInvalidationProviderFactory() = default;
 
 std::unique_ptr<KeyedService>
 WebViewProfileInvalidationProviderFactory::BuildServiceInstanceFor(
@@ -76,15 +76,16 @@ WebViewProfileInvalidationProviderFactory::BuildServiceInstanceFor(
   auto service = std::make_unique<invalidation::FCMInvalidationService>(
       identity_provider.get(),
       base::BindRepeating(
-          &syncer::FCMNetworkHandler::Create,
+          &invalidation::FCMNetworkHandler::Create,
           WebViewGCMProfileServiceFactory::GetForBrowserState(browser_state)
               ->driver(),
           WebViewInstanceIDProfileServiceFactory::GetForBrowserState(
               browser_state)
               ->driver()),
-      base::BindRepeating(&syncer::PerUserTopicSubscriptionManager::Create,
-                          identity_provider.get(), browser_state->GetPrefs(),
-                          browser_state->GetURLLoaderFactory()),
+      base::BindRepeating(
+          &invalidation::PerUserTopicSubscriptionManager::Create,
+          identity_provider.get(), browser_state->GetPrefs(),
+          browser_state->GetURLLoaderFactory()),
       WebViewInstanceIDProfileServiceFactory::GetForBrowserState(browser_state)
           ->driver(),
       browser_state->GetPrefs());
@@ -97,8 +98,8 @@ WebViewProfileInvalidationProviderFactory::BuildServiceInstanceFor(
 void WebViewProfileInvalidationProviderFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   ProfileInvalidationProvider::RegisterProfilePrefs(registry);
-  syncer::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
-  syncer::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
+  invalidation::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
+  invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
 }
 
 }  // namespace ios_web_view

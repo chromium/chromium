@@ -29,7 +29,7 @@ class BluetoothScanningPromptDesktop : public content::BluetoothScanningPrompt {
   // content::BluetoothScanningPrompt:
   void AddOrUpdateDevice(const std::string& device_id,
                          bool should_update_name,
-                         const base::string16& device_name) override;
+                         const std::u16string& device_name) override;
 
  private:
   // DeviceChooserContentView owns the controller.

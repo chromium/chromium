@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -128,6 +129,10 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
                        num_received_frames_);
   ++num_received_frames_;
 
+  uint64_t frame_id = base::trace_event::GetNextGlobalTraceId();
+  TRACE_EVENT_WITH_FLOW0("ui", "Tab.Preview.ProcessVideoCaptureFrame", frame_id,
+                         TRACE_EVENT_FLAG_FLOW_OUT);
+
   // The SkBitmap's pixels will be marked as immutable, but the installPixels()
   // API requires a non-const pointer. So, cast away the const.
   void* const pixels = const_cast<void*>(mapping.memory());
@@ -172,15 +177,18 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
   frame.setImmutable();
 
   SkBitmap cropped_frame;
-  if (frame.extractSubset(&cropped_frame,
-                          gfx::RectToSkIRect(effective_content_rect))) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Tab.Preview.TimeToStoreAfterFrameReceived",
-        base::TimeTicks::Now() - time_of_call,
-        base::TimeDelta::FromMicroseconds(10),
-        base::TimeDelta::FromMilliseconds(10), 50);
-    got_frame_callback_.Run(cropped_frame);
+  if (!frame.extractSubset(&cropped_frame,
+                           gfx::RectToSkIRect(effective_content_rect))) {
+    return;
   }
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Tab.Preview.TimeToStoreAfterFrameReceived",
+      base::TimeTicks::Now() - time_of_call,
+      base::TimeDelta::FromMicroseconds(10),
+      base::TimeDelta::FromMilliseconds(10), 50);
+
+  got_frame_callback_.Run(cropped_frame, frame_id);
 }
 
 void BackgroundThumbnailVideoCapturer::OnStopped() {}

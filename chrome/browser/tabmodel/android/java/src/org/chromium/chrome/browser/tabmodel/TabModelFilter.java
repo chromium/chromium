@@ -218,6 +218,13 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
+    public void didCloseTab(Tab tab) {
+        for (TabModelObserver observer : mFilteredObservers) {
+            observer.didCloseTab(tab);
+        }
+    }
+
+    @Override
     public void didCloseTab(int tabId, boolean incognito) {
         for (TabModelObserver observer : mFilteredObservers) {
             observer.didCloseTab(tabId, incognito);

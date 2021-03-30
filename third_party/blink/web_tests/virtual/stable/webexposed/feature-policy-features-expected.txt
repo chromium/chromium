@@ -27,6 +27,7 @@ encrypted-media
 fullscreen
 geolocation
 gyroscope
+hid
 magnetometer
 microphone
 midi
@@ -34,6 +35,7 @@ payment
 picture-in-picture
 publickey-credentials-get
 screen-wake-lock
+serial
 sync-xhr
 usb
 xr-spatial-tracking

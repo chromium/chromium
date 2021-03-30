@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/webapk/webapk_icon_hasher.h"
 
+#include <limits>
 #include <set>
 
 #include "base/macros.h"
@@ -31,10 +32,8 @@ class WebApkIconHasherBrowserTest : public PlatformBrowserTest {
  public:
   WebApkIconHasherBrowserTest()
       : http_server_(net::EmbeddedTestServer::TYPE_HTTP) {
-    scoped_feature_list_.InitWithFeatures(
-        {net::features::kSplitCacheByNetworkIsolationKey,
-         net::features::kAppendFrameOriginToNetworkIsolationKey},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
   }
   ~WebApkIconHasherBrowserTest() override = default;
 
@@ -98,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(WebApkIconHasherBrowserTest,
   {
     base::RunLoop run_loop;
     content::ManifestIconDownloader::Download(
-        web_contents, kIconUrl, 0, 0,
+        web_contents, kIconUrl, 0, 0, std::numeric_limits<int>::max(),
         base::BindOnce(&OnDownloadedManifestIcon, run_loop.QuitClosure()),
         false /* square_only */);
     run_loop.Run();

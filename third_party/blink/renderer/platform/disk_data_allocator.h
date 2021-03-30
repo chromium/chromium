@@ -28,8 +28,7 @@ class DiskDataMetadata;
 // available.
 //
 // Threading:
-// - Reads must be done from the main thread
-// - Writes can be done from any thread.
+// - Reads and writes can be done from any thread.
 // - public methods are thread-safe, and unless otherwise noted, can be called
 //   from any thread.
 class PLATFORM_EXPORT DiskDataAllocator : public mojom::blink::DiskAllocator {
@@ -47,14 +46,16 @@ class PLATFORM_EXPORT DiskDataAllocator : public mojom::blink::DiskAllocator {
   std::unique_ptr<DiskDataMetadata> Write(const void* data, size_t size);
 
   // Reads data. A read failure is fatal.
-  // Must be called from the main thread.
+  // Caller must make sure that this is not called at the same time as
+  // |Discard()|.
   // Can be called at any time before |Discard()| destroys |metadata|.
   //
   // |data| must point to an area large enough to fit a |metadata.size|-ed
   // array. Note that this performs a blocking disk read.
   void Read(const DiskDataMetadata& metadata, void* data);
 
-  // Discards existing data pointed at by |metadata|.
+  // Discards existing data pointed at by |metadata|. Caller must make sure this
+  // is not called while the same file is being read.
   void Discard(std::unique_ptr<DiskDataMetadata> metadata);
 
   ~DiskDataAllocator() override;

@@ -25,6 +25,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
 
+namespace gles2_conform_support {
 // Thread local key for ThreadState instance. Accessed when holding g_egl_lock
 // only, since the initialization can not be Guaranteed otherwise.  Not in
 // anonymous namespace due to Mac OS X 10.6 linker. See gles2_lib.cc.
@@ -64,10 +65,10 @@ egl::ThreadState* ThreadState::Get() {
       std::string env_string;
       env->GetVar("CHROME_COMMAND_BUFFER_GLES2_ARGS", &env_string);
 #if defined(OS_WIN)
-      argv = base::SplitString(base::UTF8ToUTF16(env_string),
-                               base::kWhitespaceUTF16, base::TRIM_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
-      argv.insert(argv.begin(), base::UTF8ToUTF16("dummy"));
+      argv =
+          base::SplitString(base::UTF8ToWide(env_string), base::kWhitespaceWide,
+                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      argv.insert(argv.begin(), base::UTF8ToWide("dummy"));
 #else
       argv =
           base::SplitString(env_string, base::kWhitespaceASCII,
@@ -204,3 +205,4 @@ void ThreadState::AutoCurrentContextRestore::SetCurrent(Surface* surface,
 }
 
 }  // namespace egl
+}  // namespace gles2_conform_support

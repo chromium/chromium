@@ -71,8 +71,9 @@ void SetJsonDevicePolicy(
                 POLICY_SOURCE_CLOUD, std::move(value_to_set),
                 std::move(external_data_fetcher));
   if (!error.empty())
-    policies->AddError(policy_name, IDS_POLICY_PROTO_PARSING_ERROR,
-                       {base::UTF8ToUTF16(error)});
+    policies->AddMessage(policy_name, PolicyMap::MessageType::kError,
+                         IDS_POLICY_PROTO_PARSING_ERROR,
+                         {base::UTF8ToUTF16(error)});
 }
 
 // Returns true and sets |level| to a PolicyLevel if the policy has been set
@@ -113,7 +114,8 @@ void SetPolicyWithValidatingRegex(const std::string& policy_name,
   policies->Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                 POLICY_SOURCE_CLOUD, base::Value(policy_value), nullptr);
   if (!RE2::FullMatch(policy_value, pattern))
-    policies->AddError(policy_name, IDS_POLICY_INVALID_VALUE);
+    policies->AddMessage(policy_name, PolicyMap::MessageType::kError,
+                         IDS_POLICY_INVALID_VALUE);
 }
 
 void SetExternalDataDevicePolicy(
@@ -157,8 +159,9 @@ std::unique_ptr<base::Value> DecodeConnectionType(int value) {
 void AddDeprecationWarning(const std::string& old_name,
                            const std::string& new_name,
                            PolicyMap* policies) {
-  policies->AddError(old_name, IDS_POLICY_MIGRATED_OLD_POLICY,
-                     {base::UTF8ToUTF16(new_name)});
+  policies->AddMessage(old_name, PolicyMap::MessageType::kError,
+                       IDS_POLICY_MIGRATED_OLD_POLICY,
+                       {base::UTF8ToUTF16(new_name)});
 }
 
 void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
@@ -795,6 +798,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       policies->Set(key::kReportDeviceSystemInfo, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.report_system_info()), nullptr);
+    }
+    if (container.has_report_print_jobs()) {
+      policies->Set(key::kReportDevicePrintJobs, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.report_print_jobs()), nullptr);
     }
   }
 
@@ -1880,6 +1888,49 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       SetJsonDevicePolicy(key::kDeviceArcDataSnapshotHours,
                           container.arc_data_snapshot_hours(), policies);
     }
+  }
+
+  if (policy.has_device_allow_mgs_to_store_display_properties()) {
+    const em::BooleanPolicyProto& container(
+        policy.device_allow_mgs_to_store_display_properties());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceAllowMGSToStoreDisplayProperties,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
+
+  if (policy.has_device_system_wide_tracing_enabled() &&
+      policy.device_system_wide_tracing_enabled().has_enabled()) {
+    bool enabled = policy.device_system_wide_tracing_enabled().enabled();
+    policies->Set(key::kDeviceSystemWideTracingEnabled, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                  base::Value(enabled), nullptr);
+  } else {
+    // Set policy default to false if the policy is unset.
+    policies->Set(key::kDeviceSystemWideTracingEnabled, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                  base::Value(false), nullptr);
+  }
+
+  if (policy.has_device_pci_peripheral_data_access_enabled()) {
+    const em::DevicePciPeripheralDataAccessEnabledProto& container(
+        policy.device_pci_peripheral_data_access_enabled());
+    if (container.has_enabled()) {
+      policies->Set(key::kDevicePciPeripheralDataAccessEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
+
+  if (policy.has_device_borealis_allowed() &&
+      policy.device_borealis_allowed().has_allowed()) {
+    policies->Set(key::kDeviceBorealisAllowed, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                  base::Value(policy.device_borealis_allowed().allowed()),
+                  nullptr);
   }
 }
 

@@ -8,6 +8,7 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/egl_util.h"
+#include "ui/gl/gl_bindings.h"
 
 using ui::GetLastEGLErrorString;
 
@@ -19,7 +20,7 @@ NativeViewGLSurfaceEGLX11GLES2::NativeViewGLSurfaceEGLX11GLES2(
 
 bool NativeViewGLSurfaceEGLX11GLES2::InitializeNativeWindow() {
   auto* connection = GetXNativeConnection();
-  auto geometry = connection->GetGeometry({parent_window_}).Sync();
+  auto geometry = connection->GetGeometry(parent_window_).Sync();
   if (!geometry) {
     LOG(ERROR) << "GetGeometry failed for window "
                << static_cast<uint32_t>(parent_window_) << ".";
@@ -65,7 +66,7 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
     // Get a config compatible with the window
     DCHECK(window_);
     auto* connection = GetXNativeConnection();
-    auto geometry = connection->GetGeometry({window()}).Sync();
+    auto geometry = connection->GetGeometry(window()).Sync();
     if (!geometry)
       return nullptr;
 

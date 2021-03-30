@@ -52,7 +52,9 @@ function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
     pathFromUrl = source.slice(urlPrefix.length);
   } else if (source.startsWith(schemeRelativeUrl)) {
     pathFromUrl = source.slice(schemeRelativeUrl.length);
-  } else if (!!origin && origin.startsWith(urlSrcPath)) {
+  } else if (
+      !source.includes('://') && !!origin && origin.startsWith(urlSrcPath)) {
+    // Relative import from a file that lives in urlSrcPath.
     pathFromUrl = combinePaths(relativePath(urlSrcPath, origin), source);
   }
   if (!pathFromUrl) {

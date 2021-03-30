@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "cc/animation/keyframed_animation_curve.h"
+#include "cc/animation/filter_animation_curve.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/picture_layer.h"
@@ -17,6 +17,7 @@
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/transform.h"
@@ -552,8 +553,9 @@ TEST_F(PropertyTreeBuilderTest, DelayedFilterAnimationCreatesRenderSurface) {
       FilterKeyframe::Create(base::TimeDelta(), start_filters, nullptr));
   curve->AddKeyframe(FilterKeyframe::Create(
       base::TimeDelta::FromMilliseconds(100), end_filters, nullptr));
-  std::unique_ptr<KeyframeModel> keyframe_model =
-      KeyframeModel::Create(std::move(curve), 0, 1, TargetProperty::FILTER);
+  std::unique_ptr<KeyframeModel> keyframe_model = KeyframeModel::Create(
+      std::move(curve), 0, 1,
+      KeyframeModel::TargetPropertyId(TargetProperty::FILTER));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
   keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
 

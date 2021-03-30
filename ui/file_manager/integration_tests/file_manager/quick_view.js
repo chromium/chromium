@@ -209,6 +209,31 @@
   }
 
   /**
+   * Mount and select USB.
+   *
+   * @param {string} appId Files app windowId.
+   */
+  async function mountAndSelectUsb(appId) {
+    const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
+
+    // Mount a USB volume.
+    await sendTestMessage({name: 'mountFakeUsb'});
+
+    // Wait for the USB volume to mount.
+    await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
+
+    // Click to open the USB volume.
+    chrome.test.assertTrue(
+        !!await remoteCall.callRemoteTestUtil(
+            'fakeMouseClick', appId, [USB_VOLUME_QUERY]),
+        'fakeMouseClick failed');
+
+    // Check: the USB files should appear in the file list.
+    const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
+    await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+  }
+
+  /**
    * Assuming that Quick View is currently open per openQuickView above, closes
    * the Quick View dialog.
    *
@@ -426,29 +451,12 @@
    * Tests opening Quick View on a USB file.
    */
   testcase.openQuickViewUsb = async () => {
-    const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
-
     // Open Files app on Downloads containing ENTRIES.photos.
     const appId =
         await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
-    // Mount a USB volume.
-    await sendTestMessage({name: 'mountFakeUsb'});
-
-    // Wait for the USB volume to mount.
-    await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-    // Click to open the USB volume.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil(
-            'fakeMouseClick', appId, [USB_VOLUME_QUERY]),
-        'fakeMouseClick failed');
-
-    // Check: the USB files should appear in the file list.
-    const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
-    await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
-
     // Open a USB file in Quick View.
+    await mountAndSelectUsb(appId);
     await openQuickView(appId, ENTRIES.hello.nameText);
   };
 
@@ -630,7 +638,7 @@
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
       // Check: the content of text file should be shown.
-      if (!text || !text[0].includes('I like chocolate and chips.')) {
+      if (!text || !text[0] || !text[0].includes('chocolate and chips')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -766,7 +774,7 @@
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
       // Check: the content of ENTRIES.utf8Text should be shown.
-      if (!text || !text[0].includes('їсти मुझे |∊☀✌✂♁ 🙂\n')) {
+      if (!text || !text[0] || !text[0].includes('їсти मुझे |∊☀✌✂♁ 🙂\n')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -860,6 +868,63 @@
 
     // Open the file in Quick View.
     await openQuickView(appId, ENTRIES.tallPdf.nameText);
+
+    // Wait for the Quick View <webview> to load and display its content.
+    function checkWebViewPdfLoaded(elements) {
+      let haveElements = Array.isArray(elements) && elements.length === 1;
+      if (haveElements) {
+        haveElements = elements[0].styles.display.includes('block');
+      }
+      if (!haveElements || !elements[0].attributes.src) {
+        return pending(caller, 'Waiting for <webview> to load.');
+      }
+      return;
+    }
+    await repeatUntil(async () => {
+      return checkWebViewPdfLoaded(await remoteCall.callRemoteTestUtil(
+          'deepQueryAllElements', appId, [webView, ['display']]));
+    });
+
+    // Get the <webview> embed type attribute.
+    function checkPdfEmbedType(type) {
+      const haveElements = Array.isArray(type) && type.length === 1;
+      if (!haveElements || !type[0].toString().includes('pdf')) {
+        return pending(caller, 'Waiting for plugin <embed> type.');
+      }
+      return type[0];
+    }
+    const type = await repeatUntil(async () => {
+      const getType = 'window.document.querySelector("embed").type';
+      return checkPdfEmbedType(await remoteCall.callRemoteTestUtil(
+          'deepExecuteScriptInWebView', appId, [webView, getType]));
+    });
+
+    // Check: the <webview> embed type should be PDF mime type.
+    chrome.test.assertEq('application/pdf', type);
+
+    // Check: the correct mimeType should be displayed.
+    const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
+    chrome.test.assertEq('application/pdf', mimeType);
+  };
+
+  /**
+   * Tests opening Quick View on a PDF document that opens a popup JS dialog.
+   */
+  testcase.openQuickViewPdfPopup = async () => {
+    const caller = getCaller();
+
+    /**
+     * The PDF <webview> resides in the #quick-view shadow DOM, as a child of
+     * the #dialog element.
+     */
+    const webView = ['#quick-view', '#dialog[open] webview.content'];
+
+    // Open Files app on Downloads containing ENTRIES.popupPdf.
+    const appId = await setupAndWaitUntilReady(
+        RootPath.DOWNLOADS, [ENTRIES.popupPdf], []);
+
+    // Open the file in Quick View.
+    await openQuickView(appId, ENTRIES.popupPdf.nameText);
 
     // Wait for the Quick View <webview> to load and display its content.
     function checkWebViewPdfLoaded(elements) {
@@ -1791,7 +1856,7 @@
       const getTextContent = 'window.document.body.textContent';
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
-      if (!text || !text[0].includes('This is a sample file')) {
+      if (!text || !text[0] || !text[0].includes('This is a sample file')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -1806,7 +1871,7 @@
       const getTextContent = 'window.document.body.textContent';
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
-      if (!text || !text[0].includes('42 tall text')) {
+      if (!text || !text[0] || !text[0].includes('42 tall text')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -1858,7 +1923,7 @@
       const getTextContent = 'window.document.body.textContent';
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
-      if (!text || !text[0].includes('This is a sample file')) {
+      if (!text || !text[0] || !text[0].includes('This is a sample file')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -1873,7 +1938,7 @@
       const getTextContent = 'window.document.body.textContent';
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
-      if (!text || !text[0].includes('42 tall text')) {
+      if (!text || !text[0] || !text[0].includes('42 tall text')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -2272,7 +2337,7 @@
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
       // Check: the content of ENTRIES.hello should be shown.
-      if (!text || !text[0].includes('This is a sample file')) {
+      if (!text || !text[0] || !text[0].includes('This is a sample file')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -2288,7 +2353,7 @@
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
       // Check: the content of ENTRIES.tallText should be shown.
-      if (!text || !text[0].includes('42 tall text')) {
+      if (!text || !text[0] || !text[0].includes('42 tall text')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -2362,7 +2427,7 @@
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
       // Check: the content of ENTRIES.hello should be shown.
-      if (!text || !text[0].includes('This is a sample file')) {
+      if (!text || !text[0] || !text[0].includes('This is a sample file')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -2378,7 +2443,7 @@
       const text = await remoteCall.callRemoteTestUtil(
           'deepExecuteScriptInWebView', appId, [webView, getTextContent]);
       // Check: the content of ENTRIES.tallText should be shown.
-      if (!text || !text[0].includes('42 tall text')) {
+      if (!text || !text[0] || !text[0].includes('42 tall text')) {
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
@@ -2713,9 +2778,11 @@
   testcase.openQuickViewTabIndexDeleteDialog = async () => {
     // Open Files app.
     const appId =
-        await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+        await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
-    // Open the file in Quick View.
+    // Open a USB file in Quick View. USB delete never uses trash and always
+    // shows the delete dialog.
+    await mountAndSelectUsb(appId);
     await openQuickView(appId, ENTRIES.hello.nameText);
 
     // Open the Quick View delete confirm dialog.
@@ -2726,13 +2793,13 @@
 
     // Check: the Quick View delete confirm dialog should open.
     await remoteCall.waitForElement(
-        appId,  // The cr dialog is a child of the Quick View shadow DOM.
-        ['#quick-view', '.cr-dialog-container.shown .cr-dialog-ok:focus']);
+        appId,  // The <cr-dialog> is a child of the Quick View shadow DOM.
+        ['#quick-view', '.cr-dialog-container.shown .cr-dialog-cancel:focus']);
 
     // Prepare a list of tab-index focus queries.
     const tabQueries = [
-      {'query': ['#quick-view', '.cr-dialog-cancel:not([hidden])']},
       {'query': ['#quick-view', '.cr-dialog-ok:not([hidden])']},
+      {'query': ['#quick-view', '.cr-dialog-cancel:not([hidden])']},
     ];
 
     for (const query of tabQueries) {
@@ -2756,22 +2823,32 @@
    * that Quick View closes when there are no more items to view.
    */
   testcase.openQuickViewAndDeleteSingleSelection = async () => {
-    // Open Files app.
+    // Open Files app on Downloads containing ENTRIES.hello.
     const appId =
-        await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+        await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
     // Open the file in Quick View.
     await openQuickView(appId, ENTRIES.hello.nameText);
 
-    // Open the Quick View delete confirm dialog.
+    // Press delete key.
     const deleteKey = ['#quick-view', 'Delete', false, false, false];
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
-    // Click the delete confirm dialog OK button.
-    const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-    await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      // Check: the delete confirm dialog should focus the 'Cancel' button.
+      let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
+      defaultDialogButton =
+          await remoteCall.waitForElement(appId, defaultDialogButton);
+      chrome.test.assertEq('Cancel', defaultDialogButton.text);
+
+      // Click the delete confirm dialog 'Delete' button.
+      let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+      deleteDialogButton =
+          await remoteCall.waitAndClickElement(appId, deleteDialogButton);
+      chrome.test.assertEq('Delete', deleteDialogButton.text);
+    }
 
     // Check: |hello.txt| should have been deleted.
     await remoteCall.waitForElementLost(
@@ -2788,9 +2865,9 @@
    * deletion.
    */
   testcase.openQuickViewAndDeleteCheckSelection = async () => {
-    // Open Files app.
-    const appId =
-        await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_LOCAL_ENTRY_SET);
+    // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
+    const appId = await setupAndWaitUntilReady(
+        RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
     const caller = getCaller();
 
@@ -2812,15 +2889,25 @@
     chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
         'fakeKeyDown', appId, quickViewArrowUp));
 
-    // Open the Quick View delete confirm dialog.
+    // Press delete key.
     const deleteKey = ['#quick-view', 'Delete', false, false, false];
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
-    // Click the delete confirm dialog OK button.
-    const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-    await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      // Check: the delete confirm dialog should focus the 'Cancel' button.
+      let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
+      defaultDialogButton =
+          await remoteCall.waitForElement(appId, defaultDialogButton);
+      chrome.test.assertEq('Cancel', defaultDialogButton.text);
+
+      // Click the delete confirm dialog 'Delete' button.
+      let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+      deleteDialogButton =
+          await remoteCall.waitAndClickElement(appId, deleteDialogButton);
+      chrome.test.assertEq('Delete', deleteDialogButton.text);
+    }
 
     // Check: |hello.txt| should have been deleted.
     await remoteCall.waitForElementLost(
@@ -2916,6 +3003,12 @@
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
+    // Click the delete confirm dialog OK button.
+    const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    }
+
     // Check: |Beautiful Song.ogg| should have been deleted.
     await remoteCall.waitForElementLost(
         appId, '#file-list [file-name="Beautiful Song.ogg"]');
@@ -2948,6 +3041,11 @@
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
+    // Click the delete confirm dialog OK button.
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    }
+
     // Check: |My Desktop Background.png| should have been deleted.
     await remoteCall.waitForElementLost(
         appId, '#file-list [file-name="My Desktop Background.png"]');
@@ -2971,6 +3069,12 @@
     const quickViewDeleteButton =
         ['#quick-view', '#delete-button:not([hidden])'];
     await remoteCall.waitAndClickElement(appId, quickViewDeleteButton);
+
+    // Click the delete confirm dialog OK button.
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+      await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    }
 
     // Check: |hello.txt| should have been deleted.
     await remoteCall.waitForElementLost(
@@ -2998,6 +3102,9 @@
       ['Linux files', '--', 'Folder'],
       ['Trash', '--', 'Folder'],
     ];
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      expectedRows.pop();
+    }
     await remoteCall.waitForFiles(
         appId, expectedRows, {ignoreLastModifiedTime: true});
 

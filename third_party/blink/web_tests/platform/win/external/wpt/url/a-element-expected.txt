@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 576 tests; 343 PASS, 233 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 588 tests; 345 PASS, 243 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -586,5 +586,17 @@ PASS Parsing: <#link> against <https://example.org/##link>
 PASS Parsing: <non-special:cannot-be-a-base-url-\0~> against <about:blank>
 PASS Parsing: <https://www.example.com/path{path.html?query'=query#fragment<fragment> against <about:blank>
 PASS Parsing: <https://user:pass[@foo/bar> against <http://example.org>
+FAIL Parsing: <foo:// !"$%&'()*+,-.;<=>@[\]^_`{|}~@host/> against <about:blank> assert_equals: href expected "foo://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo:// !\"$%&'()*+,-.;<=>@[\\]^_`{|}~@host/"
+FAIL Parsing: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:blank> assert_equals: href expected "wss://%20!%22$%&'()*+,-.%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/" but got "wss://%20!%22$%&%27()*+,-.%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/"
+FAIL Parsing: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> against <about:blank> assert_equals: href expected "foo://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5C%5D%5E_%60%7B%7C%7D~@host/" but got "foo://joe: !\"$%&'()*+,-.:;<=>@[\\]^_`{|}~@host/"
+FAIL Parsing: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> against <about:blank> assert_equals: href expected "wss://joe:%20!%22$%&'()*+,-.%3A%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/" but got "wss://joe:%20!%22$%&%27()*+,-.%3A%3B%3C%3D%3E%40%5B%5D%5E_%60%7B%7C%7D~@host/"
+FAIL Parsing: <foo://!"$%&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: host expected "!\"$%&'()*+,-.;=_`{}~" but got ""
+FAIL Parsing: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: href expected "wss://!\"$&'()*+,-.;=_`{}~/" but got "wss://%21%22%24%26%27%28%29%2A+%2C-.%3B%3D_%60%7B%7D%7E/"
+FAIL Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank> assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\]^_%60%7B|%7D~" but got "foo://host/ !\"$%&'()*+,-./:;<=>@[\\]^_`{|}~"
+FAIL Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank> assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
+FAIL Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank> assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\]^_`{|}~" but got "foo://host/dir/? !\"$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+PASS Parsing: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+FAIL Parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank> assert_equals: href expected "foo://host/dir/#%20!%22#$%&'()*+,-./:;%3C=%3E?@[\\]^_%60{|}~" but got "foo://host/dir/# !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+PASS Parsing: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
 Harness: the test ran to completion.
 

@@ -7,8 +7,6 @@ import("//build/config/python.gni")
 
 python_library("stack_py") {
   pydeps_file = "stack.pydeps"
-  data = [
-    "stack",
-    "//third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer",
-  ]
+  data = [ "stack" ]
+  data_deps = [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]
 }

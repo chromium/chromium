@@ -20,6 +20,15 @@ TEST(ServerUrlFetcherTest, GetDefaultServerUrl) {
               Eq(GURL("https://automate-pa.googleapis.com")));
 }
 
+TEST(ServerUrlFetcherTest, IsProdEndpoint) {
+  ServerUrlFetcher points_to_prod = {
+      GURL("https://automate-pa.googleapis.com")};
+  EXPECT_TRUE(points_to_prod.IsProdEndpoint());
+
+  ServerUrlFetcher points_to_test = {GURL("https://example.com")};
+  EXPECT_FALSE(points_to_test.IsProdEndpoint());
+}
+
 TEST(ServerUrlFetcherTest, GetDefaultServerUrlCommandLineOverride) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kAutofillAssistantUrl, "https://www.example.com");

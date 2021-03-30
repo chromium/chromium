@@ -75,7 +75,7 @@ bool RelaunchRecommendedBubbleView::Accept() {
   return false;
 }
 
-base::string16 RelaunchRecommendedBubbleView::GetWindowTitle() const {
+std::u16string RelaunchRecommendedBubbleView::GetWindowTitle() const {
   return relaunch_recommended_timer_.GetWindowTitle();
 }
 

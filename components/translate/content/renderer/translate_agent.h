@@ -11,7 +11,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -40,7 +39,7 @@ class TranslateAgent : public content::RenderFrameObserver,
   ~TranslateAgent() override;
 
   // Informs us that the page's text has been extracted.
-  void PageCaptured(const base::string16& contents);
+  void PageCaptured(const std::u16string& contents);
 
   // Lets the translation system know that we are preparing to navigate to
   // the specified URL. If there is anything that can or should be done before
@@ -154,12 +153,16 @@ class TranslateAgent : public content::RenderFrameObserver,
   // if the page is being closed.
   blink::WebLocalFrame* GetMainFrame();
 
+  // Called by the translate host when a new language detection model file
+  // has been loaded and is available.
+  void UpdateLanguageDetectionModel(base::File model_file);
+
   // The states associated with the current translation.
   TranslateFrameCallback translate_callback_pending_;
   std::string source_lang_;
   std::string target_lang_;
 
-  // Time when a page langauge is determined. This is used to know a duration
+  // Time when a page language is determined. This is used to know a duration
   // time from showing infobar to requesting translation.
   base::TimeTicks language_determined_time_;
 
@@ -183,6 +186,9 @@ class TranslateAgent : public content::RenderFrameObserver,
 
   // Method factory used to make calls to TranslatePageImpl.
   base::WeakPtrFactory<TranslateAgent> weak_method_factory_{this};
+
+  // Weak pointer factory used to provide references to the translate host.
+  base::WeakPtrFactory<TranslateAgent> weak_pointer_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TranslateAgent);
 };

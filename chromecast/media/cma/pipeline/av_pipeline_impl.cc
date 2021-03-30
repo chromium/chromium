@@ -318,7 +318,7 @@ void AvPipelineImpl::OnPushBufferComplete(BufferStatus status) {
 
 void AvPipelineImpl::OnEndOfStream() {
   if (!client_.eos_cb.is_null())
-    std::move(client_.eos_cb).Run();
+    client_.eos_cb.Run();
 }
 
 void AvPipelineImpl::OnDecoderError() {

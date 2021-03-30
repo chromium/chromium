@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <message name="IDS_SODA_LANGUAGE_DISPLAY_NAME_ENGLISH" desc="The display name of the SODA English language component.">
+    English
+  </message>
+  <message name="IDS_SODA_LANGUAGE_DISPLAY_NAME_FRENCH" desc="The display name of the SODA French language component.">
+    French
+  </message>
+  <message name="IDS_SODA_LANGUAGE_DISPLAY_NAME_GERMAN" desc="The display name of the SODA German language component.">
+    German
+  </message>
+  <message name="IDS_SODA_LANGUAGE_DISPLAY_NAME_ITALIAN" desc="The display name of the SODA Italian language component.">
+    Italian
+  </message>
+  <message name="IDS_SODA_LANGUAGE_DISPLAY_NAME_JAPANESE" desc="The display name of the SODA Japanese language component.">
+    Japanese
+  </message>
+  <message name="IDS_SODA_LANGUAGE_DISPLAY_NAME_SPANISH" desc="The display name of the SODA Spanish language component.">
+    Spanish
+  </message>
+</grit-part>

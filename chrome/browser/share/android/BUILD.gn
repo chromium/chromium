@@ -13,6 +13,7 @@ android_resources("java_resources") {
     "java/res/drawable/generic_favicon.xml",
     "java/res/drawable/generic_file.xml",
     "java/res/drawable/link.xml",
+    "java/res/drawable/link_off.xml",
     "java/res/drawable/preview_icon_border_background.xml",
     "java/res/drawable/qrcode_background.xml",
     "java/res/drawable/save_icon.xml",
@@ -34,9 +35,9 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
-    "java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextMetricsBridge.java",
-    "java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsTabService.java",
-    "java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsTabServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
+    "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
+    "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
     "java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
     "java/src/org/chromium/chrome/browser/share/screenshot/EditorScreenshotTask.java",
     "java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",

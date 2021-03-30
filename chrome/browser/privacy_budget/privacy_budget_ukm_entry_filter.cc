@@ -24,7 +24,7 @@ PrivacyBudgetUkmEntryFilter::PrivacyBudgetUkmEntryFilter(
 
 bool PrivacyBudgetUkmEntryFilter::FilterEntry(
     ukm::mojom::UkmEntry* entry,
-    base::flat_set<uint64_t>* removed_metric_hashes) const {
+    base::flat_set<uint64_t>* removed_metric_hashes) {
   // We don't yet deal with any event other than Identifiability. All other
   // types of events pass through.
   if (entry->event_hash != ukm::builders::Identifiability::kEntryNameHash)
@@ -78,7 +78,7 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
   return !entry->metrics.empty();
 }
 
-void PrivacyBudgetUkmEntryFilter::OnStoreRecordingsInReport() const {
-  identifiability_study_state_->ResetRecordedSurfaces();
+void PrivacyBudgetUkmEntryFilter::OnStoreRecordingsInReport() {
+  identifiability_study_state_->ResetPerReportState();
   metadata_reported_ = false;
 }

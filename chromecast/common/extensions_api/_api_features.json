@@ -44,7 +44,7 @@
       "channel": "stable",
       "contexts": ["blessed_extension"],
       "extension_types": ["platform_app"],
-      "whitelist": [
+      "allowlist": [
         "A948368FC53BE437A55FEB414106E207925482F5"  // File manager
       ]
     }

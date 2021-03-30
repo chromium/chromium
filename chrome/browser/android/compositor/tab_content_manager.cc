@@ -43,6 +43,8 @@ using base::android::JavaRef;
 
 namespace {
 
+const double kDefaultThumbnailAspectRatio = 0.85;
+
 using TabReadbackCallback = base::OnceCallback<void(float, const SkBitmap&)>;
 
 }  // namespace
@@ -72,7 +74,7 @@ class TabContentManager::TabReadbackRequest {
     if (crop_to_match_aspect_ratio) {
       double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
           chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
-          1.0);
+          kDefaultThumbnailAspectRatio);
       aspect_ratio = ThumbnailCache::clampAspectRatio(aspect_ratio, 0.5, 2.0);
       int height = std::min(view_size_in_pixels.height(),
                             (int)(view_size_in_pixels.width() / aspect_ratio));
@@ -130,7 +132,8 @@ TabContentManager::TabContentManager(JNIEnv* env,
                                      jboolean save_jpeg_thumbnails)
     : weak_java_tab_content_manager_(env, obj) {
   double jpeg_aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
-      chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio", 1.0);
+      chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
+      kDefaultThumbnailAspectRatio);
   thumbnail_cache_ = std::make_unique<ThumbnailCache>(
       static_cast<size_t>(default_cache_size),
       static_cast<size_t>(approximation_cache_size),
@@ -386,20 +389,26 @@ void TabContentManager::SendThumbnailToJava(
     const SkBitmap& bitmap) {
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!bitmap.isNull() && result) {
-    // In portrait mode, we want to show thumbnails in squares.
-    // Therefore, the thumbnail saved in portrait mode needs to be cropped to
-    // a square, or it would be vertically center-aligned, and the top would
-    // be hidden.
-    // It's fine to horizontally center-align thumbnail saved in landscape
-    // mode.
+    // We want to show thumbnails in a specific aspect ratio. Therefore, the
+    // thumbnail saved needs to be cropped to the target aspect ratio, otherwise
+    // it would be vertically center-aligned and the top would be hidden in
+    // portrait mode, or it would be shown in the wrong aspect ratio in
+    // landscape mode.
     int scale = need_downsampling ? 2 : 1;
     double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
-        chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio", 1.0);
+        chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
+        kDefaultThumbnailAspectRatio);
     aspect_ratio = ThumbnailCache::clampAspectRatio(aspect_ratio, 0.5, 2.0);
-    SkIRect dest_subset = {
-        0, 0, bitmap.width() / scale,
-        std::min(bitmap.height() / scale,
-                 (int)(bitmap.width() / aspect_ratio / scale))};
+
+    int width = std::min(bitmap.width() / scale,
+                         (int)(bitmap.height() * aspect_ratio / scale));
+    int height = std::min(bitmap.height() / scale,
+                          (int)(bitmap.width() / aspect_ratio / scale));
+    // When cropping the thumbnails, we want to keep the top center portion.
+    int begin_x = (bitmap.width() / scale - width) / 2;
+    int end_x = begin_x + width;
+    SkIRect dest_subset = {begin_x, 0, end_x, height};
+
     j_bitmap = gfx::ConvertToJavaBitmap(skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_BETTER, bitmap.width() / scale,
         bitmap.height() / scale, dest_subset));

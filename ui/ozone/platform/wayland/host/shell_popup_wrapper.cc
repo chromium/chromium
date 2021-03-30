@@ -6,6 +6,10 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 
 namespace ui {
 
@@ -77,6 +81,121 @@ gfx::Rect GetAnchorRect(MenuType menu_type,
   }
 
   return anchor_rect;
+}
+
+WlAnchor GetAnchor(MenuType menu_type, const gfx::Rect& bounds) {
+  WlAnchor anchor = WlAnchor::None;
+  switch (menu_type) {
+    case MenuType::TYPE_RIGHT_CLICK:
+      anchor = WlAnchor::TopLeft;
+      break;
+    case MenuType::TYPE_3DOT_PARENT_MENU:
+      anchor = WlAnchor::BottomRight;
+      break;
+    case MenuType::TYPE_3DOT_CHILD_MENU:
+      // Chromium may want to manually position a child menu on the left side of
+      // its parent menu. Thus, react accordingly. Positive x means the child is
+      // located on the right side of the parent and negative - on the left
+      // side.
+      if (bounds.x() >= 0)
+        anchor = WlAnchor::TopRight;
+      else
+        anchor = WlAnchor::TopLeft;
+      break;
+    case MenuType::TYPE_UNKNOWN:
+      NOTREACHED() << "Unsupported menu type";
+      break;
+  }
+
+  return anchor;
+}
+
+WlGravity GetGravity(MenuType menu_type, const gfx::Rect& bounds) {
+  WlGravity gravity = WlGravity::None;
+  switch (menu_type) {
+    case MenuType::TYPE_RIGHT_CLICK:
+      gravity = WlGravity::BottomRight;
+      break;
+    case MenuType::TYPE_3DOT_PARENT_MENU:
+      gravity = WlGravity::BottomRight;
+      break;
+    case MenuType::TYPE_3DOT_CHILD_MENU:
+      // Chromium may want to manually position a child menu on the left side of
+      // its parent menu. Thus, react accordingly. Positive x means the child is
+      // located on the right side of the parent and negative - on the left
+      // side.
+      if (bounds.x() >= 0)
+        gravity = WlGravity::BottomRight;
+      else
+        gravity = WlGravity::BottomLeft;
+      break;
+    case MenuType::TYPE_UNKNOWN:
+      NOTREACHED() << "Unsupported menu type";
+      break;
+  }
+
+  return gravity;
+}
+
+WlConstraintAdjustment GetConstraintAdjustment(MenuType menu_type) {
+  WlConstraintAdjustment constraint = WlConstraintAdjustment::None;
+
+  switch (menu_type) {
+    case MenuType::TYPE_RIGHT_CLICK:
+      constraint =
+          WlConstraintAdjustment::SlideX | WlConstraintAdjustment::SlideY |
+          WlConstraintAdjustment::FlipY | WlConstraintAdjustment::ResizeY;
+      break;
+    case MenuType::TYPE_3DOT_PARENT_MENU:
+      constraint = WlConstraintAdjustment::SlideX |
+                   WlConstraintAdjustment::FlipY |
+                   WlConstraintAdjustment::ResizeY;
+      break;
+    case MenuType::TYPE_3DOT_CHILD_MENU:
+      constraint = WlConstraintAdjustment::SlideY |
+                   WlConstraintAdjustment::FlipX |
+                   WlConstraintAdjustment::ResizeY;
+      break;
+    case MenuType::TYPE_UNKNOWN:
+      NOTREACHED() << "Unsupported menu type";
+      break;
+  }
+
+  return constraint;
+}
+
+MenuType ShellPopupWrapper::GetMenuTypeForPositioner(
+    WaylandConnection* connection,
+    WaylandWindow* parent_window) const {
+  bool is_right_click_menu =
+      connection->event_source()->last_pointer_button_pressed() &
+      EF_RIGHT_MOUSE_BUTTON;
+
+  // Different types of menu require different anchors, constraint adjustments,
+  // gravity and etc.
+  if (is_right_click_menu)
+    return MenuType::TYPE_RIGHT_CLICK;
+  else if (!wl::IsMenuType(parent_window->type()))
+    return MenuType::TYPE_3DOT_PARENT_MENU;
+  else
+    return MenuType::TYPE_3DOT_CHILD_MENU;
+}
+
+bool ShellPopupWrapper::CanGrabPopup(WaylandConnection* connection) const {
+  // When drag process starts, as described the protocol -
+  // https://goo.gl/1Mskq3, the client must have an active implicit grab. If
+  // we try to create a popup and grab it, it will be immediately dismissed.
+  // Thus, do not take explicit grab during drag process.
+  if (connection->IsDragInProgress() || !connection->seat())
+    return false;
+
+  // According to the definition of the xdg protocol, the grab request must be
+  // used in response to some sort of user action like a button press, key
+  // press, or touch down event.
+  EventType last_event_type = connection->event_serial().event_type;
+  return last_event_type == ET_TOUCH_PRESSED ||
+         last_event_type == ET_KEY_PRESSED ||
+         last_event_type == ET_MOUSE_PRESSED;
 }
 
 }  // namespace ui

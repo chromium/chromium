@@ -8,10 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
-#include "chromeos/components/scanning/scanning_paths_provider.h"
+#include "chromeos/components/scanning/scanning_app_delegate.h"
+#include "chromeos/components/scanning/scanning_metrics_handler.h"
 #include "chromeos/components/scanning/url_constants.h"
 #include "chromeos/grit/chromeos_scanning_app_resources.h"
 #include "chromeos/grit/chromeos_scanning_app_resources_map.h"
@@ -28,26 +31,20 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chromeos/components/scanning/resources/";
-
 // TODO(jschettler): Replace with webui::SetUpWebUIDataSource() once it no
 // longer requires a dependency on //chrome/browser.
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
-                          base::span<const GritResourceMap> resources,
-                          const std::string& generated_path,
+                          base::span<const webui::ResourcePath> resources,
                           int default_resource) {
   for (const auto& resource : resources) {
-    std::string path = resource.name;
-    if (path.rfind(generated_path, 0) == 0)
-      path = path.substr(generated_path.size());
-
-    source->AddResourcePath(path, resource.value);
+    source->AddResourcePath(resource.path, resource.id);
   }
 
   source->SetDefaultResource(default_resource);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("test_loader_util.js",
+                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 }
 
 void AddScanningAppStrings(content::WebUIDataSource* html_source) {
@@ -62,6 +59,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"colorOptionText", IDS_SCANNING_APP_COLOR_OPTION_TEXT},
       {"defaultSourceOptionText", IDS_SCANNING_APP_DEFAULT_SOURCE_OPTION_TEXT},
       {"doneButtonText", IDS_SCANNING_APP_DONE_BUTTON_TEXT},
+      {"editButtonLabel", IDS_SCANNING_APP_EDIT_BUTTON_LABEL},
       {"fileNotFoundToastText", IDS_SCANNING_APP_FILE_NOT_FOUND_TOAST_TEXT},
       {"fileTypeDropdownLabel", IDS_SCANNING_APP_FILE_TYPE_DROPDOWN_LABEL},
       {"fitToScanAreaOptionText",
@@ -70,12 +68,12 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"getHelpLinkText", IDS_SCANNING_APP_GET_HELP_LINK_TEXT},
       {"grayscaleOptionText", IDS_SCANNING_APP_GRAYSCALE_OPTION_TEXT},
       {"jpgOptionText", IDS_SCANNING_APP_JPG_OPTION_TEXT},
+      {"learnMoreButtonLabel", IDS_SCANNING_APP_LEARN_MORE_BUTTON_LABEL},
       {"letterOptionText", IDS_SCANNING_APP_LETTER_OPTION_TEXT},
       {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},
       {"myFilesSelectOption", IDS_SCANNING_APP_MY_FILES_SELECT_OPTION},
-      {"noScannersHelpLinkLabel", IDS_SCANNING_APP_NO_SCANNERS_HELP_LINK_LABEL},
-      {"noScannersHelpText", IDS_SCANNING_APP_NO_SCANNERS_HELP_TEXT},
       {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT},
+      {"noScannersSubtext", IDS_SCANNING_APP_NO_SCANNERS_SUBTEXT},
       {"okButtonLabel", IDS_SCANNING_APP_OK_BUTTON_LABEL},
       {"oneSidedDocFeederOptionText",
        IDS_SCANNING_APP_ONE_SIDED_DOC_FEEDER_OPTION_TEXT},
@@ -84,6 +82,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"pageSizeDropdownLabel", IDS_SCANNING_APP_PAGE_SIZE_DROPDOWN_LABEL},
       {"resolutionDropdownLabel", IDS_SCANNING_APP_RESOLUTION_DROPDOWN_LABEL},
       {"resolutionOptionText", IDS_SCANNING_APP_RESOLUTION_OPTION_TEXT},
+      {"retryButtonLabel", IDS_SCANNING_APP_RETRY_BUTTON_LABEL},
       {"scanButtonText", IDS_SCANNING_APP_SCAN_BUTTON_TEXT},
       {"scanCanceledToastText", IDS_SCANNING_APP_SCAN_CANCELED_TOAST_TEXT},
       {"scanFailedDialogBodyText",
@@ -94,16 +93,15 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"scanPreviewProgressText", IDS_SCANNING_APP_SCAN_PREVIEW_PROGRESS_TEXT},
       {"scanToDropdownLabel", IDS_SCANNING_APP_SCAN_TO_DROPDOWN_LABEL},
       {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL},
+      {"scannersLoadingText", IDS_SCANNING_APP_SCANNERS_LOADING_TEXT},
+      {"scanningImagesAriaLabel", IDS_SCANNING_APP_SCANNING_IMAGES_ARIA_LABEL},
       {"selectFolderOption", IDS_SCANNING_APP_SELECT_FOLDER_OPTION},
-      {"showFileLocationLabel", IDS_SCANNING_APP_SHOW_FILE_LOCATION_LABEL},
       {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL},
       {"startScanFailedToast", IDS_SCANNING_APP_START_SCAN_FAILED_TOAST},
       {"twoSidedDocFeederOptionText",
        IDS_SCANNING_APP_TWO_SIDED_DOC_FEEDER_OPTION_TEXT}};
 
-  for (const auto& str : kLocalizedStrings)
-    html_source->AddLocalizedString(str.name, str.id);
-
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();
 }
 
@@ -116,14 +114,18 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
     handler->AddStringToPluralMap(str.name, str.id);
 }
 
+void AddFeatureFlags(content::WebUIDataSource* html_source) {
+  html_source->AddBoolean(
+      "scanAppMediaLinkEnabled",
+      base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink));
+}
+
 }  // namespace
 
 ScanningUI::ScanningUI(
     content::WebUI* web_ui,
     BindScanServiceCallback callback,
-    const ScanningHandler::SelectFilePolicyCreator& select_file_policy_creator,
-    std::unique_ptr<ScanningPathsProvider> scanning_paths_provider,
-    const ScanningHandler::OpenFilesAppFunction& open_files_app_fn)
+    std::unique_ptr<ScanningAppDelegate> scanning_app_delegate)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
       bind_pending_receiver_callback_(std::move(callback)) {
   auto html_source = base::WrapUnique(
@@ -135,7 +137,7 @@ ScanningUI::ScanningUI(
 
   const auto resources = base::make_span(kChromeosScanningAppResources,
                                          kChromeosScanningAppResourcesSize);
-  SetUpWebUIDataSource(html_source.get(), resources, kGeneratedPath,
+  SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_SCANNING_APP_INDEX_HTML);
 
   html_source->AddResourcePath("scanning.mojom-lite.js",
@@ -143,14 +145,16 @@ ScanningUI::ScanningUI(
   html_source->AddResourcePath("file_path.mojom-lite.js",
                                IDR_SCANNING_APP_FILE_PATH_MOJO_LITE_JS);
 
+  AddFeatureFlags(html_source.get());
+
   AddScanningAppStrings(html_source.get());
 
-  auto handler = std::make_unique<ScanningHandler>(
-      select_file_policy_creator, std::move(scanning_paths_provider),
-      open_files_app_fn);
+  auto handler =
+      std::make_unique<ScanningHandler>(std::move(scanning_app_delegate));
   AddScanningAppPluralStrings(handler.get());
 
   web_ui->AddMessageHandler(std::move(handler));
+  web_ui->AddMessageHandler(std::make_unique<ScanningMetricsHandler>());
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 }

@@ -125,10 +125,10 @@ template("js_test_gen_html") {
     type_check_deps += [ ":$type_check_target_name" ]
     js_type_check(type_check_target_name) {
       if (defined(invoker.js_module) && invoker.js_module) {
-        uses_js_modules = true
-      }
-      if (defined(invoker.is_polymer3) && invoker.is_polymer3) {
+      } else if (defined(invoker.is_polymer3) && invoker.is_polymer3) {
         is_polymer3 = true
+      } else {
+        uses_legacy_modules = true
       }
       testonly = true
       forward_variables_from(invoker, [ "closure_flags" ])

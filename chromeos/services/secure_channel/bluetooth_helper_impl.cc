@@ -4,13 +4,13 @@
 
 #include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/beacon_seed.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/secure_channel/background_eid_generator.h"
 #include "chromeos/services/secure_channel/ble_advertisement_generator.h"
 #include "chromeos/services/secure_channel/ble_constants.h"
@@ -138,6 +138,40 @@ std::string BluetoothHelperImpl::GetBluetoothPublicAddress(
   if (device)
     return device->bluetooth_public_address();
   return std::string();
+}
+
+std::string BluetoothHelperImpl::ExpectedServiceDataToString(
+    const DeviceIdPairSet& device_id_pair_set) {
+  std::stringstream ss;
+
+  for (const DeviceIdPair& pair : device_id_pair_set) {
+    ss << "{Device ID: "
+       << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
+              pair.remote_device_id())
+       << " - ";
+
+    base::Optional<multidevice::RemoteDeviceRef> device =
+        remote_device_cache_->GetRemoteDevice(
+            base::nullopt /* instance_id */,
+            pair.remote_device_id() /* legacy_device_id */);
+
+    if (!device) {
+      ss << "<missing metadata>},";
+      continue;
+    }
+
+    std::vector<DataWithTimestamp> data_for_device =
+        background_eid_generator_->GenerateNearestEids(
+            multidevice::ToCryptAuthSeedList(device->beacon_seeds()));
+    if (data_for_device.empty()) {
+      ss << "[]},";
+      continue;
+    }
+
+    ss << DataWithTimestamp::ToDebugString(data_for_device) << "},";
+  }
+
+  return ss.str();
 }
 
 base::Optional<BluetoothHelper::DeviceWithBackgroundBool>

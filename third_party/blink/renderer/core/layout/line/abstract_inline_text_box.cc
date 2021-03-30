@@ -112,10 +112,8 @@ LegacyAbstractInlineTextBox::~LegacyAbstractInlineTextBox() {
 
 void AbstractInlineTextBox::Detach() {
   DCHECK(GetLineLayoutItem());
-  if (Node* node = GetNode()) {
-    if (AXObjectCache* cache = node->GetDocument().ExistingAXObjectCache())
-      cache->Remove(this);
-  }
+  if (AXObjectCache* cache = ExistingAXObjectCache())
+    cache->Remove(this);
 
   line_layout_item_ = LineLayoutText(nullptr);
 }
@@ -225,6 +223,18 @@ Node* AbstractInlineTextBox::GetNode() const {
   if (!GetLineLayoutItem())
     return nullptr;
   return GetLineLayoutItem().GetNode();
+}
+
+LayoutObject* AbstractInlineTextBox::GetLayoutObject() const {
+  if (!GetLineLayoutItem())
+    return nullptr;
+  return GetLineLayoutItem().GetLayoutObject();
+}
+
+AXObjectCache* AbstractInlineTextBox::ExistingAXObjectCache() const {
+  if (LayoutObject* layout_object = GetLayoutObject())
+    return layout_object->GetDocument().ExistingAXObjectCache();
+  return nullptr;
 }
 
 void LegacyAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {

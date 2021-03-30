@@ -21,7 +21,6 @@
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -36,8 +35,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
@@ -105,12 +104,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // the browser wishes the object to be destroyed.
   void Destroy();
 
-  // Used by web_test_support to hook into the creation of RenderViewImpls.
-  static void InstallCreateHook(RenderViewImpl* (*create_render_view_impl)(
-      AgentSchedulingGroup&,
-      CompositorDependencies*,
-      const mojom::CreateViewParams&));
-
   // Returns the RenderViewImpl for the given routing ID.
   static RenderViewImpl* FromRoutingID(int routing_id);
 
@@ -144,11 +137,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // be coalesced into one update.
   void StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame);
 
-  // Returns the length of the session history of this RenderView. Note that
-  // this only coincides with the actual length of the session history if this
-  // RenderView is the currently active RenderView of a WebContents.
-  unsigned GetLocalSessionHistoryLengthForTesting() const;
-
   // Registers a watcher to observe changes in the
   // blink::RendererPreferences.
   void RegisterRendererPreferenceWatcher(
@@ -170,24 +158,15 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       blink::WebNavigationPolicy policy,
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::SessionStorageNamespaceId& session_storage_namespace_id,
-      bool& consumed_user_gesture) override;
+      bool& consumed_user_gesture,
+      const base::Optional<blink::WebImpression>& impression) override;
   blink::WebPagePopup* CreatePopup(blink::WebLocalFrame* creator) override;
-  base::StringPiece GetSessionStorageNamespaceId() override;
   void PrintPage(blink::WebLocalFrame* frame) override;
   bool AcceptsLoadDrops() override;
   bool CanUpdateLayout() override;
-  void DidUpdateMainFrameLayout() override;
-  blink::WebString AcceptLanguages() override;
-  int HistoryBackListCount() override;
-  int HistoryForwardListCount() override;
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;
   void OnPageFrozenChanged(bool frozen) override;
   void DidUpdateRendererPreferences() override;
-  void ZoomLevelChanged() override;
-  void DidCommitCompositorFrameForLocalMainFrame(
-      base::TimeTicks commit_start_time) override;
-  void OnSetHistoryOffsetAndLength(int history_offset,
-                                   int history_length) override;
 
   // RenderView implementation -------------------------------------------------
 
@@ -219,8 +198,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // utility functions needed in both classes, while we move frame specific
   // code away from this class.
   friend class RenderFrameImpl;
-
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, SetHistoryLengthAndOffset);
 
   // Initialize() is separated out from the constructor because it is possible
   // to accidentally call virtual functions. All RenderViewImpl creation is
@@ -295,18 +272,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // messages to send when the next |nav_state_sync_timer_| fires.
   std::set<int> frames_with_pending_state_;
 
-  // History list --------------------------------------------------------------
-
-  // The offset of the current item in the history list.
-  int history_list_offset_ = -1;
-
-  // The RenderView's current impression of the history length.  This includes
-  // any items that have committed in this process, but because of cross-process
-  // navigations, the history may have some entries that were committed in other
-  // processes.  We won't know about them until the next navigation in this
-  // process.
-  int history_list_length_ = 0;
-
   // View ----------------------------------------------------------------------
 
   // This class owns this member, and is responsible for calling
@@ -328,11 +293,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 #endif
 
   // Misc ----------------------------------------------------------------------
-
-  // The SessionStorage namespace that we're assigned to has an ID, and that ID
-  // is passed to us upon creation.  WebKit asks for this ID upon first use and
-  // uses it whenever asking the browser process to allocate new storage areas.
-  blink::SessionStorageNamespaceId session_storage_namespace_id_;
 
   // All the registered observers.  We expect this list to be small, so vector
   // is fine.

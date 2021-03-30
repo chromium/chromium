@@ -9,13 +9,13 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "cc/animation/keyframe_model.h"
-#include "cc/animation/keyframed_animation_curve.h"
 #include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/databinding/binding.h"
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 namespace vr {
 
@@ -253,15 +253,15 @@ TEST(UiElement, AnimateSize) {
   scene.RunFirstFrameForTest();
   auto rect = std::make_unique<UiElement>();
   rect->SetSize(10, 100);
-  rect->AddKeyframeModel(CreateBoundsAnimation(1, 1, gfx::SizeF(10, 100),
-                                               gfx::SizeF(20, 200),
-                                               MicrosecondsToDelta(10000)));
+  rect->AddKeyframeModel(gfx::CreateSizeAnimation(
+      rect.get(), 1, BOUNDS, gfx::SizeF(10, 100), gfx::SizeF(20, 200),
+      gfx::MicrosecondsToDelta(10000)));
   UiElement* rect_ptr = rect.get();
   scene.AddUiElement(kRoot, std::move(rect));
-  base::TimeTicks start_time = MicrosecondsToTicks(1);
+  base::TimeTicks start_time = gfx::MicrosecondsToTicks(1);
   EXPECT_TRUE(scene.OnBeginFrame(start_time, kStartHeadPose));
   EXPECT_FLOAT_SIZE_EQ(gfx::SizeF(10, 100), rect_ptr->size());
-  EXPECT_TRUE(scene.OnBeginFrame(start_time + MicrosecondsToDelta(10000),
+  EXPECT_TRUE(scene.OnBeginFrame(start_time + gfx::MicrosecondsToDelta(10000),
                                  kStartHeadPose));
   EXPECT_FLOAT_SIZE_EQ(gfx::SizeF(20, 200), rect_ptr->size());
 }
@@ -273,20 +273,21 @@ TEST(UiElement, AnimationAffectsInheritableTransform) {
   UiElement* rect_ptr = rect.get();
   scene.AddUiElement(kRoot, std::move(rect));
 
-  cc::TransformOperations from_operations;
+  gfx::TransformOperations from_operations;
   from_operations.AppendTranslate(10, 100, 1000);
-  cc::TransformOperations to_operations;
+  gfx::TransformOperations to_operations;
   to_operations.AppendTranslate(20, 200, 2000);
-  rect_ptr->AddKeyframeModel(CreateTransformAnimation(
-      2, 2, from_operations, to_operations, MicrosecondsToDelta(10000)));
+  rect_ptr->AddKeyframeModel(gfx::CreateTransformAnimation(
+      rect_ptr, 2, TRANSFORM, from_operations, to_operations,
+      gfx::MicrosecondsToDelta(10000)));
 
-  base::TimeTicks start_time = MicrosecondsToTicks(1);
+  base::TimeTicks start_time = gfx::MicrosecondsToTicks(1);
   EXPECT_TRUE(scene.OnBeginFrame(start_time, kStartHeadPose));
   gfx::Point3F p;
   rect_ptr->LocalTransform().TransformPoint(&p);
   EXPECT_VECTOR3DF_EQ(gfx::Vector3dF(10, 100, 1000), p);
   p = gfx::Point3F();
-  EXPECT_TRUE(scene.OnBeginFrame(start_time + MicrosecondsToDelta(10000),
+  EXPECT_TRUE(scene.OnBeginFrame(start_time + gfx::MicrosecondsToDelta(10000),
                                  kStartHeadPose));
   rect_ptr->LocalTransform().TransformPoint(&p);
   EXPECT_VECTOR3DF_EQ(gfx::Vector3dF(20, 200, 2000), p);
@@ -464,11 +465,11 @@ TEST(UiElement, CoordinatedVisibilityTransitions) {
   parent->AddChild(std::move(child));
   scene.AddUiElement(kRoot, std::move(parent));
 
-  scene.OnBeginFrame(MsToTicks(0), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
 
   value = true;
 
-  scene.OnBeginFrame(MsToTicks(16), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(16), kStartHeadPose);
 
   // We should have started animating both, and they should both be at opacity
   // zero given that this is the first frame. This does not guarantee that
@@ -479,7 +480,7 @@ TEST(UiElement, CoordinatedVisibilityTransitions) {
   EXPECT_TRUE(child_ptr->IsAnimatingProperty(OPACITY));
   EXPECT_EQ(child_ptr->opacity(), parent_ptr->opacity());
 
-  scene.OnBeginFrame(MsToTicks(32), kStartHeadPose);
+  scene.OnBeginFrame(gfx::MsToTicks(32), kStartHeadPose);
   EXPECT_EQ(child_ptr->opacity(), parent_ptr->opacity());
   EXPECT_LT(0.0f, child_ptr->opacity());
 }

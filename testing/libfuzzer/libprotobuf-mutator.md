@@ -28,10 +28,10 @@ for how to do this.
 must write code that converts data from a protobuf-based format that represents
 the grammar to a format the target accepts. url_parse_proto_fuzzer is a working
 example of this and is commented extensively. Readers may wish to consult its
-code, which is located in `testing/libfuzzer/fuzzers/url_parse_proto_fuzzer.cc`,
-and `testing/libfuzzer/fuzzers/url.proto`. Its build configuration can be found
-in `testing/libfuzzer/fuzzers/BUILD.gn`. We also provide a walkthrough on how to
-do this in the section after the next.
+code, which is located in `testing/libfuzzer/fuzzers/url_parse_proto_fuzzer.cc`
+and `testing/libfuzzer/proto/url.proto`. Its build configuration can be found
+in `testing/libfuzzer/fuzzers/BUILD.gn` and `testing/libfuzzer/proto/BUILD.gn`.
+We also provide a walkthrough on how to do this in the section after the next.
 * Fuzzing targets that accept more than one argument (such as data and flags).
 In this case, you can define each argument as its own field in your protobuf
 definition.
@@ -135,7 +135,7 @@ message MyProtoFormat {
 }
 ```
 
-See `testing/libfuzzer/fuzzers/url.proto` for an example of this in practice.
+See `testing/libfuzzer/proto/url.proto` for an example of this in practice.
 That example has extensive comments on URL syntax and how that influenced
 the definition of the Url message.
 
@@ -163,7 +163,7 @@ DEFINE_PROTO_FUZZER(const my_fuzzer::MyFormat& my_proto_format) {
     // if it doesn't accept protobufs.
     std::string native_input = convert_to_native_input(my_proto_format);
 
-    // You should provide a way to easily retreive the native input for
+    // You should provide a way to easily retrieve the native input for
     // a given protobuf input. This is useful for debugging and for seeing
     // the inputs that cause targeted_function to crash (which is the reason we
     // are here!). Note how this is done before targeted_function is called
@@ -178,20 +178,21 @@ DEFINE_PROTO_FUZZER(const my_fuzzer::MyFormat& my_proto_format) {
 
 This is very similar to the same step in writing a standard libFuzzer fuzzer.
 The only real differences are accepting protobufs rather than raw data and
-converting them to the desired format. Conversion code can't really be explored
-in this guide since it is format-specific. However, a good example of conversion
-code (and a fuzz target) can be found in
-`testing/libfuzzer/fuzzers/url_parse_proto_fuzzer.cc`. That example thoroughly
-documents how it converts the Url protobuf message into a real URL string.
-A good convention is printing the native input when the `LPM_DUMP_NATIVE_INPUT`
-env variable is set. This will make it easy to retreive the actual input that
-causes the code to crash instead of the protobuf version of it (eg you can get
-the URL string that causes an input to crash rather than a protobuf). Since it
-is only a convention it is strongly recommended even though it isn't necessary.
-You don't need to do this if the native input of targeted_function is protobufs.
-Beware that printing a newline can make the output invalid for some formats. In
-this case you should use `fflush(0)` since otherwise the program may crash
-before native_input is actually printed.
+converting them to the desired format. Conversion code can't really be
+explored in this guide since it is format-specific. However, a good example
+of conversion code (and a fuzz target) can be found in
+`testing/libfuzzer/fuzzers/url_parse_proto_fuzzer.cc`. That example
+thoroughly documents how it converts the Url protobuf message into a real URL
+string. A good convention is printing the native input when the
+`LPM_DUMP_NATIVE_INPUT` env variable is set. This will make it easy to
+retrieve the actual input that causes the code to crash instead of the
+protobuf version of it (e.g. you can get the URL string that causes an input
+to crash rather than a protobuf). Since it is only a convention it is
+strongly recommended even though it isn't necessary. You don't need to do
+this if the native input of targeted_function is protobufs. Beware that
+printing a newline can make the output invalid for some formats. In this case
+you should use `fflush(0)` since otherwise the program may crash before
+native_input is actually printed.
 
 
 ### Define the GN Target

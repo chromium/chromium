@@ -44,7 +44,7 @@ InstanceRegistry::~InstanceRegistry() {
   for (auto& obs : observers_) {
     obs.OnInstanceRegistryWillBeDestroyed(this);
   }
-  DCHECK(!observers_.might_have_observers());
+  DCHECK(observers_.empty());
 }
 
 void InstanceRegistry::AddObserver(Observer* observer) {

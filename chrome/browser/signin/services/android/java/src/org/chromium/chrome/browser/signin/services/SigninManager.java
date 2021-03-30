@@ -10,7 +10,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -80,17 +79,6 @@ public interface SigninManager {
          * Called after the data is wiped.
          */
         void signOutComplete();
-    }
-
-    /**
-     * Logs the access point when the user see the view of choosing account to sign in. Sign-in
-     * completion histogram is recorded by {@link #signinAndEnableSync}.
-     *
-     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
-     */
-    static void logSigninStartAccessPoint(@SigninAccessPoint int accessPoint) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SigninStartedAccessPoint", accessPoint, SigninAccessPoint.MAX);
     }
 
     /**
@@ -244,13 +232,6 @@ public interface SigninManager {
      * Returns the management domain if the signed in account is managed, otherwise returns null.
      */
     String getManagementDomain();
-
-    /**
-     * Reloads accounts from system within IdentityManager.
-     * TODO(crbug.com/1152460): Move the caller of this method to SigninManager and remove this
-     * method.
-     */
-    void reloadAllAccountsFromSystem();
 
     /**
      * Verifies if the account is managed. Callback may be called either

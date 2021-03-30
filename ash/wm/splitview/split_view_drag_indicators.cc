@@ -144,7 +144,7 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
                     kSplitviewLabelHorizontalInsetDp)));
 
     label_ = label_parent_->AddChildView(std::make_unique<views::Label>(
-        base::string16(), views::style::CONTEXT_LABEL));
+        std::u16string(), views::style::CONTEXT_LABEL));
     label_->SetEnabledColor(DeprecatedGetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary,
         kSplitviewLabelEnabledColor));
@@ -155,7 +155,7 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
 
   ~RotatedImageLabelView() override = default;
 
-  void SetLabelText(const base::string16& text) { label_->SetText(text); }
+  void SetLabelText(const std::u16string& text) { label_->SetText(text); }
 
   // Called when the view's bounds are altered. Rotates the view by |angle|
   // degrees.

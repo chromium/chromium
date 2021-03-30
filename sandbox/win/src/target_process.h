@@ -24,7 +24,7 @@ namespace sandbox {
 
 class SharedMemIPCServer;
 class Sid;
-class ThreadProvider;
+class ThreadPool;
 class StartupInformationHelper;
 
 // TargetProcess models a target instance (child process). Objects of this
@@ -35,7 +35,7 @@ class TargetProcess {
   TargetProcess(base::win::ScopedHandle initial_token,
                 base::win::ScopedHandle lockdown_token,
                 HANDLE job,
-                ThreadProvider* thread_pool,
+                ThreadPool* thread_pool,
                 const std::vector<Sid>& impersonation_capabilities);
   ~TargetProcess();
 
@@ -104,7 +104,7 @@ class TargetProcess {
   // Reference to the IPC subsystem.
   std::unique_ptr<SharedMemIPCServer> ipc_server_;
   // Provides the threads used by the IPC. This class does not own this pointer.
-  ThreadProvider* thread_pool_;
+  ThreadPool* thread_pool_;
   // Base address of the main executable
   void* base_address_;
   // Full name of the target executable.

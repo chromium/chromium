@@ -37,14 +37,10 @@ class MockVideoFrameReceiver : public VideoFrameReceiver {
   }
 
   void OnFrameReadyInBuffer(
-      int32_t buffer_id,
-      int frame_feedback_id,
-      std::unique_ptr<
-          VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-          buffer_read_permission,
-      media::mojom::VideoFrameInfoPtr frame_info) override {
-    MockOnFrameReadyInBuffer(buffer_id, &buffer_read_permission,
-                             frame_info->coded_size);
+      ReadyFrameInBuffer frame,
+      std::vector<ReadyFrameInBuffer> scaled_frames) override {
+    MockOnFrameReadyInBuffer(frame.buffer_id, &frame.buffer_read_permission,
+                             frame.frame_info->coded_size);
   }
 };
 

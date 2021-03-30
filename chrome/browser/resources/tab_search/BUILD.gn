@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/optimize_webui.gni")
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
@@ -21,7 +21,7 @@ if (optimize_webui) {
   build_manifest = "build_manifest.json"
 
   optimize_webui("build") {
-    host = "tab-search"
+    host = "tab-search.top-chrome"
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     js_out_files = [ "tab_search.rollup.js" ]
     js_module_in_files = [ "tab_search.js" ]
@@ -81,10 +81,12 @@ preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
+    "bimap.js",
     "fuzzy_search.js",
     "tab_data.js",
     "tab_search.js",
     "tab_search_api_proxy.js",
+    "title_item.js",
   ]
 }
 
@@ -116,7 +118,7 @@ preprocess_if_expr("preprocess_mojo") {
   in_files = [ "tab_search.mojom-webui.js" ]
 }
 
-grit("tab_search_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.
@@ -144,6 +146,7 @@ js_type_check("closure_compile") {
       ]
   deps = [
     ":app",
+    ":bimap",
     ":fuzzy_search",
     ":infinite_list",
     ":tab_data",
@@ -151,6 +154,7 @@ js_type_check("closure_compile") {
     ":tab_search_api_proxy",
     ":tab_search_item",
     ":tab_search_search_field",
+    ":title_item",
   ]
 }
 
@@ -162,6 +166,7 @@ js_library("app") {
     ":tab_search_api_proxy",
     ":tab_search_item",
     ":tab_search_search_field",
+    ":title_item",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
@@ -169,6 +174,10 @@ js_library("app") {
     "//ui/webui/resources/js:util.m",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("bimap") {
+  deps = []
 }
 
 js_library("fuzzy_search") {
@@ -180,6 +189,7 @@ js_library("fuzzy_search") {
 
 js_library("infinite_list") {
   deps = [
+    ":bimap",
     "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -214,8 +224,12 @@ js_library("tab_search_item") {
 js_library("tab_search_search_field") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field_behavior.m",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field_behavior",
   ]
+}
+
+js_library("title_item") {
+  deps = []
 }
 
 html_to_js("web_components") {

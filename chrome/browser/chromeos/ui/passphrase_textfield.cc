@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace chromeos {
 
@@ -20,6 +21,10 @@ void PassphraseTextfield::SetShowFake(bool show_fake) {
     SetFakePassphrase();
   else
     ClearFakePassphrase();
+}
+
+bool PassphraseTextfield::GetShowFake() const {
+  return show_fake_;
 }
 
 void PassphraseTextfield::OnFocus() {
@@ -40,16 +45,24 @@ std::string PassphraseTextfield::GetPassphrase() {
   return changed_ ? base::UTF16ToUTF8(GetText()) : std::string();
 }
 
+bool PassphraseTextfield::GetChanged() const {
+  return changed_;
+}
+
 void PassphraseTextfield::SetFakePassphrase() {
-  static base::NoDestructor<base::string16> fake_passphrase(
-      base::ASCIIToUTF16("********"));
+  static base::NoDestructor<std::u16string> fake_passphrase(u"********");
   SetText(*fake_passphrase);
   changed_ = false;
 }
 
 void PassphraseTextfield::ClearFakePassphrase() {
-  SetText(base::string16());
+  SetText(std::u16string());
   changed_ = true;
 }
+
+BEGIN_METADATA(PassphraseTextfield, views::Textfield)
+ADD_PROPERTY_METADATA(bool, ShowFake)
+ADD_READONLY_PROPERTY_METADATA(bool, Changed)
+END_METADATA
 
 }  // namespace chromeos

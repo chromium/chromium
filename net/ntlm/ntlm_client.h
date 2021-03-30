@@ -21,7 +21,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/ntlm/ntlm_constants.h"
@@ -87,9 +86,9 @@ class NET_EXPORT_PRIVATE NtlmClient {
   //
   // [1] - https://technet.microsoft.com/en-us/library/jj852267(v=ws.11).aspx
   std::vector<uint8_t> GenerateAuthenticateMessage(
-      const base::string16& domain,
-      const base::string16& username,
-      const base::string16& password,
+      const std::u16string& domain,
+      const std::u16string& username,
+      const std::u16string& password,
       const std::string& hostname,
       const std::string& channel_bindings,
       const std::string& spn,
@@ -101,9 +100,9 @@ class NET_EXPORT_PRIVATE NtlmClient {
   // |spn|, or |client_time|. See |GenerateAuthenticateMessage| for more
   // details.
   std::vector<uint8_t> GenerateAuthenticateMessageV1(
-      const base::string16& domain,
-      const base::string16& username,
-      const base::string16& password,
+      const std::u16string& domain,
+      const std::u16string& username,
+      const std::u16string& password,
       const std::string& hostname,
       base::span<const uint8_t, 8> client_challenge,
       base::span<const uint8_t> server_challenge_message) const {
@@ -120,14 +119,14 @@ class NET_EXPORT_PRIVATE NtlmClient {
   // negotiated.
   size_t CalculateAuthenticateMessageLength(
       bool is_unicode,
-      const base::string16& domain,
-      const base::string16& username,
+      const std::u16string& domain,
+      const std::u16string& username,
       const std::string& hostname,
       size_t updated_target_info_len) const;
 
-  void CalculatePayloadLayout(bool is_unicode,
-                              const base::string16& domain,
-                              const base::string16& username,
+  bool CalculatePayloadLayout(bool is_unicode,
+                              const std::u16string& domain,
+                              const std::u16string& username,
                               const std::string& hostname,
                               size_t updated_target_info_len,
                               SecurityBuffer* lm_info,

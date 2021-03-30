@@ -5,6 +5,8 @@
 #include "gpu/command_buffer/service/scheduler.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -13,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -34,10 +37,12 @@ uint64_t GetTaskFlowId(uint32_t sequence_id, uint32_t order_num) {
 
 Scheduler::Task::Task(SequenceId sequence_id,
                       base::OnceClosure closure,
-                      std::vector<SyncToken> sync_token_fences)
+                      std::vector<SyncToken> sync_token_fences,
+                      ReportingCallback report_callback)
     : sequence_id(sequence_id),
       closure(std::move(closure)),
-      sync_token_fences(std::move(sync_token_fences)) {}
+      sync_token_fences(std::move(sync_token_fences)),
+      report_callback(std::move(report_callback)) {}
 Scheduler::Task::Task(Task&& other) = default;
 Scheduler::Task::~Task() = default;
 Scheduler::Task& Scheduler::Task::operator=(Task&& other) = default;
@@ -57,10 +62,18 @@ Scheduler::SchedulingState::AsValue() const {
   return std::move(state);
 }
 
-Scheduler::Sequence::Task::Task(base::OnceClosure closure, uint32_t order_num)
-    : closure(std::move(closure)), order_num(order_num) {}
+Scheduler::Sequence::Task::Task(base::OnceClosure closure,
+                                uint32_t order_num,
+                                ReportingCallback report_callback)
+    : closure(std::move(closure)),
+      order_num(order_num),
+      report_callback(std::move(report_callback)) {}
+
 Scheduler::Sequence::Task::Task(Task&& other) = default;
-Scheduler::Sequence::Task::~Task() = default;
+Scheduler::Sequence::Task::~Task() {
+  DCHECK(report_callback.is_null());
+}
+
 Scheduler::Sequence::Task& Scheduler::Sequence::Task::operator=(Task&& other) =
     default;
 
@@ -172,17 +185,33 @@ void Scheduler::Sequence::UpdateRunningPriority() {
 void Scheduler::Sequence::ContinueTask(base::OnceClosure closure) {
   DCHECK_EQ(running_state_, RUNNING);
   uint32_t order_num = order_data_->current_order_num();
-  tasks_.push_front({std::move(closure), order_num});
+
+  tasks_.push_front({std::move(closure), order_num, ReportingCallback()});
   order_data_->PauseProcessingOrderNumber(order_num);
 }
 
-uint32_t Scheduler::Sequence::ScheduleTask(base::OnceClosure closure) {
+uint32_t Scheduler::Sequence::ScheduleTask(base::OnceClosure closure,
+                                           ReportingCallback report_callback) {
   uint32_t order_num = order_data_->GenerateUnprocessedOrderNumber();
   TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "Scheduler::ScheduleTask",
                          GetTaskFlowId(sequence_id_.value(), order_num),
                          TRACE_EVENT_FLAG_FLOW_OUT);
-  tasks_.push_back({std::move(closure), order_num});
+  tasks_.push_back({std::move(closure), order_num, std::move(report_callback)});
   return order_num;
+}
+
+base::TimeDelta Scheduler::Sequence::FrontTaskWaitingDependencyDelta() {
+  DCHECK(!tasks_.empty());
+  if (tasks_.front().first_dependency_added.is_null()) {
+    // didn't wait for dependencies.
+    return base::TimeDelta();
+  }
+  return tasks_.front().running_ready - tasks_.front().first_dependency_added;
+}
+
+base::TimeDelta Scheduler::Sequence::FrontTaskSchedulingDelay() {
+  DCHECK(!tasks_.empty());
+  return base::TimeTicks::Now() - tasks_.front().running_ready;
 }
 
 uint32_t Scheduler::Sequence::BeginTask(base::OnceClosure* closure) {
@@ -194,6 +223,9 @@ uint32_t Scheduler::Sequence::BeginTask(base::OnceClosure* closure) {
 
   *closure = std::move(tasks_.front().closure);
   uint32_t order_num = tasks_.front().order_num;
+  if (!tasks_.front().report_callback.is_null()) {
+    std::move(tasks_.front().report_callback).Run(tasks_.front().running_ready);
+  }
   tasks_.pop_front();
 
   return order_num;
@@ -202,6 +234,14 @@ uint32_t Scheduler::Sequence::BeginTask(base::OnceClosure* closure) {
 void Scheduler::Sequence::FinishTask() {
   DCHECK_EQ(running_state_, RUNNING);
   running_state_ = IDLE;
+}
+
+void Scheduler::Sequence::SetLastTaskFirstDependencyTimeIfNeeded() {
+  DCHECK(!tasks_.empty());
+  if (tasks_.back().first_dependency_added.is_null()) {
+    // Fence are always added for the last task (which should always exists).
+    tasks_.back().first_dependency_added = base::TimeTicks::Now();
+  }
 }
 
 void Scheduler::Sequence::AddWaitFence(const SyncToken& sync_token,
@@ -232,6 +272,17 @@ void Scheduler::Sequence::RemoveWaitFence(const SyncToken& sync_token,
   if (it != wait_fences_.end()) {
     SchedulingPriority wait_priority = it->second;
     wait_fences_.erase(it);
+
+    for (auto& task : tasks_) {
+      if (order_num == task.order_num) {
+        // The fence applies to this task, bump the readiness timestamp
+        task.running_ready = base::TimeTicks::Now();
+        break;
+      } else if (order_num < task.order_num) {
+        // Updated all task related to this fence.
+        break;
+      }
+    }
 
     Sequence* release_sequence = scheduler_->GetSequence(release_sequence_id);
     if (release_sequence)
@@ -413,7 +464,8 @@ void Scheduler::ScheduleTaskHelper(Task task) {
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
 
-  uint32_t order_num = sequence->ScheduleTask(std::move(task.closure));
+  uint32_t order_num = sequence->ScheduleTask(std::move(task.closure),
+                                              std::move(task.report_callback));
 
   for (const SyncToken& sync_token : task.sync_token_fences) {
     SequenceId release_sequence_id =
@@ -424,6 +476,7 @@ void Scheduler::ScheduleTaskHelper(Task task) {
                            sync_token, order_num, release_sequence_id,
                            sequence_id))) {
       sequence->AddWaitFence(sync_token, order_num, release_sequence_id);
+      sequence->SetLastTaskFirstDependencyTimeIfNeeded();
     }
   }
 
@@ -495,6 +548,7 @@ void Scheduler::TryScheduleSequence(Sequence* sequence) {
     if (!running_) {
       TRACE_EVENT_ASYNC_BEGIN0("gpu", "Scheduler::Running", this);
       running_ = true;
+      run_next_task_scheduled_ = base::TimeTicks::Now();
       task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&Scheduler::RunNextTask, weak_ptr_));
     }
@@ -525,6 +579,11 @@ void Scheduler::RebuildSchedulingQueue() {
 void Scheduler::RunNextTask() {
   DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock auto_lock(lock_);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "GPU.Scheduler.ThreadSuspendedTime",
+      base::TimeTicks::Now() - run_next_task_scheduled_,
+      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
+      100);
 
   RebuildSchedulingQueue();
 
@@ -543,6 +602,18 @@ void Scheduler::RunNextTask() {
 
   Sequence* sequence = GetSequence(state.sequence_id);
   DCHECK(sequence);
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "GPU.Scheduler.TaskDependencyTime",
+      sequence->FrontTaskWaitingDependencyDelta(),
+      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
+      100);
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "GPU.Scheduler.TaskSchedulingDelayTime",
+      sequence->FrontTaskSchedulingDelay(),
+      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
+      100);
 
   base::OnceClosure closure;
   uint32_t order_num = sequence->BeginTask(&closure);
@@ -598,6 +669,7 @@ void Scheduler::RunNextTask() {
       base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
       100);
 
+  run_next_task_scheduled_ = base::TimeTicks::Now();
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&Scheduler::RunNextTask, weak_ptr_));
 }

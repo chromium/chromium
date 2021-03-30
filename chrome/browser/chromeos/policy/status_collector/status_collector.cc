@@ -5,9 +5,9 @@
 #include "chrome/browser/chromeos/policy/status_collector/status_collector.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/policy/status_collector/activity_storage.h"
 #include "chrome/browser/chromeos/policy/status_collector/app_info_generator.h"
@@ -28,7 +28,7 @@ namespace ent_mgmt = ::enterprise_management;
 // session has been removed from policy since the session started, in which
 // case we won't report its status).
 std::unique_ptr<DeviceLocalAccount> GetCurrentKioskDeviceLocalAccount(
-    chromeos::CrosSettings* settings) {
+    ash::CrosSettings* settings) {
   if (!user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
     return nullptr;
   }
@@ -102,7 +102,7 @@ base::Optional<std::string> StatusCollector::GetBootMode(
 }
 
 StatusCollector::StatusCollector(chromeos::system::StatisticsProvider* provider,
-                                 chromeos::CrosSettings* cros_settings,
+                                 ash::CrosSettings* cros_settings,
                                  base::Clock* clock)
     : statistics_provider_(provider),
       cros_settings_(cros_settings),
@@ -113,23 +113,23 @@ StatusCollector::~StatusCollector() = default;
 std::unique_ptr<DeviceLocalAccount>
 StatusCollector::GetAutoLaunchedKioskSessionInfo() {
   std::unique_ptr<DeviceLocalAccount> account =
-      GetCurrentKioskDeviceLocalAccount(chromeos::CrosSettings::Get());
+      GetCurrentKioskDeviceLocalAccount(ash::CrosSettings::Get());
   if (!account) {
     // No auto-launched kiosk session active.
     return nullptr;
   }
 
-  chromeos::KioskAppManager::App current_app;
+  ash::KioskAppManager::App current_app;
   bool regular_app_auto_launched_with_zero_delay =
-      chromeos::KioskAppManager::Get()->GetApp(account->kiosk_app_id,
-                                               &current_app) &&
+      ash::KioskAppManager::Get()->GetApp(account->kiosk_app_id,
+                                          &current_app) &&
       current_app.was_auto_launched_with_zero_delay;
   bool arc_app_auto_launched_with_zero_delay =
       chromeos::ArcKioskAppManager::Get()
           ->current_app_was_auto_launched_with_zero_delay();
 
   bool web_app_auto_launched_with_zero_delay =
-      chromeos::WebKioskAppManager::Get()
+      ash::WebKioskAppManager::Get()
           ->current_app_was_auto_launched_with_zero_delay();
 
   return regular_app_auto_launched_with_zero_delay ||

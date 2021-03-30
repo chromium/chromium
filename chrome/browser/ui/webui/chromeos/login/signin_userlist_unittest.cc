@@ -8,11 +8,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/chromeos/login/screens/user_selection_screen.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/login/users/multi_profile_user_controller.h"
-#include "chrome/browser/chromeos/login/users/multi_profile_user_controller_delegate.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/screens/user_selection_screen.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
+#include "chrome/browser/ash/login/users/multi_profile_user_controller_delegate.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
@@ -22,7 +22,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace chromeos {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove once this file is migrated.
+using ::ash::MultiProfileUserController;
+using ::ash::MultiProfileUserControllerDelegate;
 
 const size_t kMaxUsers = 50;  // same as in user_selection_screen.cc
 const char* kOwner = "owner@gmail.com";
@@ -33,8 +38,6 @@ std::string GenerateUserEmail(int number) {
 }
 
 }  // namespace
-
-namespace chromeos {
 
 class SigninPrepareUserListTest : public testing::Test,
                                   public MultiProfileUserControllerDelegate {

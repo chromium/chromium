@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/sensor/absolute_orientation_sensor.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 
 using device::mojom::blink::SensorType;
 
@@ -30,13 +30,14 @@ AbsoluteOrientationSensor::AbsoluteOrientationSensor(
     ExecutionContext* execution_context,
     const SpatialSensorOptions* options,
     ExceptionState& exception_state)
-    : OrientationSensor(execution_context,
-                        options,
-                        exception_state,
-                        SensorType::ABSOLUTE_ORIENTATION_QUATERNION,
-                        {mojom::blink::FeaturePolicyFeature::kAccelerometer,
-                         mojom::blink::FeaturePolicyFeature::kGyroscope,
-                         mojom::blink::FeaturePolicyFeature::kMagnetometer}) {}
+    : OrientationSensor(
+          execution_context,
+          options,
+          exception_state,
+          SensorType::ABSOLUTE_ORIENTATION_QUATERNION,
+          {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
+           mojom::blink::PermissionsPolicyFeature::kGyroscope,
+           mojom::blink::PermissionsPolicyFeature::kMagnetometer}) {}
 
 void AbsoluteOrientationSensor::Trace(Visitor* visitor) const {
   OrientationSensor::Trace(visitor);

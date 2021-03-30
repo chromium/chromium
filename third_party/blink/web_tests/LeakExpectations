@@ -48,8 +48,6 @@ crbug.com/667560 [ Linux ] http/tests/devtools/console/console-search.js [ Failu
 crbug.com/835943 [ Linux ] http/tests/appcache/non-html.xhtml [ Failure Pass ]
 
 crbug.com/860117 [ Linux ] editing/pasteboard/drag-drop-iframe-refresh-crash.html [ Pass Failure ]
-crbug.com/976438 [ Linux ] external/wpt/css/selectors/focus-visible-007.html [ Pass Failure ]
-
 
 crbug.com/809609 [ Linux ] editing/pasteboard/drop-file-svg.html [ Pass Failure ]
 crbug.com/809609 [ Linux ] editing/inserting/insert_div_with_style.html [ Pass Failure ]
@@ -84,17 +82,7 @@ crbug.com/934144 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-fl
 # Sheriff 2019-08-21
 crbug.com/996235 [ Linux ] media/controls/doubletap-to-jump-backwards-at-start.html [ Pass Failure ]
 
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/application-panel/app-manifest-view-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/audits-start-view-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/basic-a11y-test.js [ Failure Pass ]
 crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/elements/event-listeners-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/memory/heap-profiler-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/network/network-condition-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/security/security-origin-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/sources/source-navigator-filesystem-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/sources/source-navigator-network-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/sources/sources-editor-pane-a11y-test.js [ Failure Pass ]
 
 # Only times out on the leak bots.
 crbug.com/998399 [ Linux ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass Timeout ]
@@ -177,6 +165,36 @@ crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.
 
 # Sheriff 2020-10-08
 crbug.com/1136690 [ Linux ] http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Pass Timeout ]
+
+# Sheriff 20201-02-16
+crbug.com/1178723 [ Linux ] http/tests/devtools/network/ping-response.js [ Pass Failure ]
+crbug.com/1178725 [ Linux ] http/tests/devtools/sources/snippet-overrides.js [ Pass Failure ]
+
+# Sheriff 2021-02-18
+crbug.com/1179722 [ Linux ] http/tests/devtools/console/console-string-format.js [ Pass Failure ]
+crbug.com/1179784 [ Linux ] http/tests/devtools/indexeddb/database-data.js [ Pass Failure ]
+crbug.com/1179784 [ Linux ] http/tests/devtools/indexeddb/transaction-promise-console.js [ Pass Failure ]
+
+# Sheriff 2021-02-18
+crbug.com/1180251 [ Linux ] virtual/wheel-event-regions/fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Pass Failure ]
+crbug.com/1180251 [ Linux ] http/tests/devtools/sources/debugger-pause/debugger-pause-on-promise-rejection.js [ Pass Failure ]
+crbug.com/1180251 [ Linux ] http/tests/devtools/sources/debugger-async/async-await/async-pause-on-exception.js [ Pass Failure ]
+
+# Sheriff 2021-03-02
+crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]
+crbug.com/1183788 [ Linux ] external/wpt/webrtc/protocol/handover.html [ Pass Failure ]
+crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Pass Failure ]
+crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-onnegotiationneeded.html [ Pass Failure ]
+crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Pass Failure ]
+
+# Sheriff 2021-03-18
+crbug.com/1177856 [ Linux ] http/tests/devtools/elements/shadow/inspect-slot-not-in-shadow-tree.js [ Pass Failure ]
+
+# These tests are flaky on the Leak bots but seem reliable elsewhere
+crbug.com/1164553 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-error-a11y-test.js [ Pass Failure ]
+crbug.com/1164553 [ Linux ] http/tests/devtools/console/console-external-array.js [ Pass Failure ]
+crbug.com/1164553 [ Linux ] http/tests/devtools/profiler/heap-snapshot-summary-search-by-id.js [ Pass Failure ]
+crbug.com/1164553 [ Linux ] http/tests/devtools/runtime/runtime-es6-setSymbolPropertyValue.js [ Pass Failure ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #

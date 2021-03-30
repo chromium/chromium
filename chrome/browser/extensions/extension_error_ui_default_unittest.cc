@@ -50,19 +50,18 @@ TEST(ExtensionErrorUIDefaultTest, BubbleTitleAndMessageMentionsExtension) {
   extensions::ExtensionErrorUIDefault ui(&delegate);
   GlobalErrorWithStandardBubble* bubble = ui.GetErrorForTesting();
 
-  base::string16 title = bubble->GetBubbleViewTitle();
+  std::u16string title = bubble->GetBubbleViewTitle();
   EXPECT_THAT(title,
               l10n_util::GetPluralStringFUTF16(IDS_EXTENSION_ALERT_TITLE, 2));
 
-  std::vector<base::string16> messages = bubble->GetBubbleViewMessages();
+  std::vector<std::u16string> messages = bubble->GetBubbleViewMessages();
 
-  EXPECT_THAT(
-      messages,
-      testing::ElementsAre(
-          l10n_util::GetStringFUTF16(IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_OTHER,
-                                     base::UTF8ToUTF16("Bar")),
-          l10n_util::GetStringFUTF16(IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_OTHER,
-                                     base::UTF8ToUTF16("Baz"))));
+  EXPECT_THAT(messages,
+              testing::ElementsAre(
+                  l10n_util::GetStringFUTF16(
+                      IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_OTHER, u"Bar"),
+                  l10n_util::GetStringFUTF16(
+                      IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_OTHER, u"Baz")));
 }
 
 TEST(ExtensionErrorUIDefaultTest, BubbleTitleAndMessageMentionsApp) {
@@ -76,14 +75,13 @@ TEST(ExtensionErrorUIDefaultTest, BubbleTitleAndMessageMentionsApp) {
   extensions::ExtensionErrorUIDefault ui(&delegate);
   GlobalErrorWithStandardBubble* bubble = ui.GetErrorForTesting();
 
-  base::string16 title = bubble->GetBubbleViewTitle();
+  std::u16string title = bubble->GetBubbleViewTitle();
   EXPECT_THAT(title, l10n_util::GetPluralStringFUTF16(IDS_APP_ALERT_TITLE, 1));
 
-  std::vector<base::string16> messages = bubble->GetBubbleViewMessages();
+  std::vector<std::u16string> messages = bubble->GetBubbleViewMessages();
 
   EXPECT_THAT(messages, testing::ElementsAre(l10n_util::GetStringFUTF16(
-                            IDS_APP_ALERT_ITEM_BLOCKLISTED_OTHER,
-                            base::UTF8ToUTF16("Bar"))));
+                            IDS_APP_ALERT_ITEM_BLOCKLISTED_OTHER, u"Bar")));
 }
 
 TEST(ExtensionErrorUIDefaultTest, BubbleMessageMentionsMalware) {
@@ -101,10 +99,10 @@ TEST(ExtensionErrorUIDefaultTest, BubbleMessageMentionsMalware) {
   extensions::ExtensionErrorUIDefault ui(&delegate);
   GlobalErrorWithStandardBubble* bubble = ui.GetErrorForTesting();
 
-  base::string16 title = bubble->GetBubbleViewTitle();
+  std::u16string title = bubble->GetBubbleViewTitle();
   EXPECT_THAT(title, l10n_util::GetPluralStringFUTF16(IDS_APP_ALERT_TITLE, 1));
 
-  std::vector<base::string16> messages = bubble->GetBubbleViewMessages();
+  std::vector<std::u16string> messages = bubble->GetBubbleViewMessages();
 
   EXPECT_THAT(messages, testing::ElementsAre(l10n_util::GetStringFUTF16(
                             IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_MALWARE,

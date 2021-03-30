@@ -23,7 +23,7 @@ class AXPlatformNodeMac : public AXPlatformNodeBase {
   // AXPlatformNode.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
-  void AnnounceText(const base::string16& text) override;
+  void AnnounceText(const std::u16string& text) override;
 
   // AXPlatformNodeBase.
   void Destroy() override;

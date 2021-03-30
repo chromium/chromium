@@ -20,6 +20,9 @@ enum PageAccessibilityConfiguration {
   PageInaccessible,
   PageRead,
   PageReadWrite,
+  // This flag is mapped to PageReadWrite on systems that
+  // don't support MTE.
+  PageReadWriteTagged,
   PageReadExecute,
   // This flag is deprecated and will go away soon.
   // TODO(bbudge) Remove this as soon as V8 doesn't need RWX pages.
@@ -113,11 +116,11 @@ BASE_EXPORT void SetSystemPagesAccess(
 // http://crbug.com/766882.
 //
 // Decommitted means that physical resources (RAM or swap) backing the allocated
-// virtual address range are released back to the system, but the address space
-// is still allocated to the process (possibly using up page table entries or
-// other accounting resources). Unless PageKeepPermissionsIfPossible disposition
-// is used, any access to a decommitted region of memory is an error and will
-// generate a fault.
+// virtual address range may be released back to the system, but the address
+// space is still allocated to the process (possibly using up page table entries
+// or other accounting resources). There is no guarantee that the pages are
+// zeroed. Unless PageKeepPermissionsIfPossible disposition is used, any access
+// to a decommitted region of memory is an error and will generate a fault.
 //
 // This operation is not atomic on all platforms.
 //
@@ -157,6 +160,13 @@ BASE_EXPORT void RecommitSystemPages(
     size_t length,
     PageAccessibilityConfiguration page_accessibility,
     PageAccessibilityDisposition accessibility_disposition);
+
+// Like RecommitSystemPages(), but returns false instead of crashing.
+BASE_EXPORT bool TryRecommitSystemPages(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration page_accessibility,
+    PageAccessibilityDisposition accessibility_disposition) WARN_UNUSED_RESULT;
 
 // Discard one or more system pages starting at |address| and continuing for
 // |length| bytes. |length| must be a multiple of |SystemPageSize()|.

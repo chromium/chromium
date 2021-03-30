@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 #endif

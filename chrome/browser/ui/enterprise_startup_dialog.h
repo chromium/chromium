@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_ENTERPRISE_STARTUP_DIALOG_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace policy {
 
@@ -39,13 +39,13 @@ class EnterpriseStartupDialog {
   // Display |information| with a throbber. Changes the content of dialog
   // without re-opening it.
   virtual void DisplayLaunchingInformationWithThrobber(
-      const base::string16& information) = 0;
+      const std::u16string& information) = 0;
   // Display |error_message| with an error icon. Show confirm button with
   // value |accept_button| if provided. Changes the content of dialog without
   // re-opening it.
   virtual void DisplayErrorMessage(
-      const base::string16& error_message,
-      const base::Optional<base::string16>& accept_button) = 0;
+      const std::u16string& error_message,
+      const base::Optional<std::u16string>& accept_button) = 0;
   // Return true if dialog is being displayed.
   virtual bool IsShowing() = 0;
 

@@ -14,6 +14,53 @@
 
 namespace media {
 
+// List of known AudioDecoder implementations; recorded to UKM, always add new
+// values to the end and do not reorder or delete values from this list.
+enum class AudioDecoderType : int {
+  kUnknown = 0,     // Decoder name string is not recognized or n/a.
+  kFFmpeg = 1,      // FFmpegAudioDecoder
+  kMojo = 2,        // MojoAudioDecoder
+  kDecrypting = 3,  // DecryptingAudioDecoder
+  kMediaCodec = 4,  // MediaCodecAudioDecoder (Android)
+  kBroker = 5,      // AudioDecoderBroker
+  kTesting = 6,     // Never send this to UKM, for tests only.
+
+  // Keep this at the end and equal to the last entry.
+  kMaxValue = kTesting,
+};
+
+// List of known VideoDecoder implementations; recorded to UKM, always add new
+// values to the end and do not reorder or delete values from this list.
+enum class VideoDecoderType : int {
+  kUnknown = 0,  // Decoder name string is not recognized or n/a.
+  // kGpu = 1,      // GpuVideoDecoder (DEPRECATED)
+  kFFmpeg = 2,      // FFmpegVideoDecoder
+  kVpx = 3,         // VpxVideoDecoder
+  kAom = 4,         // AomVideoDecoder
+  kMojo = 5,        // MojoVideoDecoder
+  kDecrypting = 6,  // DecryptingVideoDecoder
+  kDav1d = 7,       // Dav1dVideoDecoder
+  kFuchsia = 8,     // FuchsiaVideoDecoder
+  kMediaCodec = 9,  // MediaCodecVideoDecoder (Android)
+  kGav1 = 10,       // Gav1VideoDecoder
+  kD3D11 = 11,      // D3D11VideoDecoder
+  kVaapi = 12,      // VaapiVideoDecoder
+  kBroker = 13,     // VideoDecoderBroker (Webcodecs)
+  kVda = 14,        // VDAVideoDecoder
+  // kChromeOs = 15,  // DEPRECATED, should be kVaapi or kV4L2 instead.
+  kV4L2 = 16,       // V4L2VideoDecoder
+
+  kTesting = 17,  // Never send this to UKM, for tests only.
+
+  // Keep this at the end and equal to the last entry.
+  kMaxValue = kTesting
+};
+
+MEDIA_EXPORT std::string GetDecoderName(AudioDecoderType type);
+MEDIA_EXPORT std::string GetDecoderName(VideoDecoderType type);
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, AudioDecoderType type);
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, VideoDecoderType type);
+
 class MEDIA_EXPORT Decoder {
  public:
   virtual ~Decoder();
@@ -30,12 +77,6 @@ class MEDIA_EXPORT Decoder {
   // problems, it does allow incompatible decoders to pass the filtering step in
   // |DecoderSelector| potentially slowing down the selection process.
   virtual bool SupportsDecryption() const;
-
-  // Returns the name of the decoder for logging and decoder selection purposes.
-  // This name should be available immediately after construction, and should
-  // also be stable in the sense that the name does not change across multiple
-  // constructions.
-  virtual std::string GetDisplayName() const = 0;
 
  protected:
   Decoder();

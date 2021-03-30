@@ -6,6 +6,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -15,13 +17,28 @@
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
+constexpr char kTestProfileName[] = "test@test.com";
+
 std::unique_ptr<KeyedService> BuildTestSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
+}
+
+std::unique_ptr<TestingProfile> BuildTestProfile(
+    network::TestURLLoaderFactory& url_loader_factory) {
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetProfileName(kTestProfileName);
+  profile_builder.AddTestingFactory(
+      ChromeSigninClientFactory::GetInstance(),
+      base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                          &url_loader_factory));
+  return IdentityTestEnvironmentProfileAdaptor::
+      CreateProfileForIdentityTestEnvironment(profile_builder);
 }
 
 }  // namespace
@@ -31,8 +48,12 @@ namespace settings_private = extensions::settings_private;
 
 class GeneratedPasswordLeakDetectionPrefTest : public testing::Test {
  public:
+  GeneratedPasswordLeakDetectionPrefTest() {
+    identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
+  }
+
   signin::IdentityTestEnvironment* identity_test_env() {
-    return identity_test_env_adaptor_->identity_test_env();
+    return identity_test_env_adaptor_.identity_test_env();
   }
 
   sync_preferences::TestingPrefServiceSyncable* prefs() {
@@ -46,18 +67,16 @@ class GeneratedPasswordLeakDetectionPrefTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_ =
-      IdentityTestEnvironmentProfileAdaptor::
-          CreateProfileForIdentityTestEnvironment({});
+      BuildTestProfile(test_url_loader_factory_);
   syncer::TestSyncService* sync_service_ =
       static_cast<syncer::TestSyncService*>(
           ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
               profile(),
               base::BindRepeating(&BuildTestSyncService)));
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_ =
-          std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-              profile_.get());
+  IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor_{
+      profile_.get()};
 };
 
 TEST_F(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
@@ -68,7 +87,10 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
 
   // Check that the observer fires for identity updates.
   identity_test_env()->EnableRemovalOfExtendedAccountInfo();
-  identity_test_env()->MakePrimaryAccountAvailable("test@test.com");
+
+  // Create a sync consented account so revoking the refresh token also triggers
+  // the preference updated observer.
+  identity_test_env()->MakePrimaryAccountAvailable(kTestProfileName);
   EXPECT_EQ(test_observer.GetUpdatedPrefName(),
             kGeneratedPasswordLeakDetectionPref);
 
@@ -120,7 +142,7 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, UpdatePreference) {
   prefs()->SetDefaultPrefValue(
       password_manager::prefs::kPasswordLeakDetectionEnabled,
       base::Value(false));
-  identity_test_env()->MakePrimaryAccountAvailable("test@test.com");
+  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(kTestProfileName);
 
   // Check setting the generated pref updates the underlying preference.
   EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(true).get()),
@@ -161,7 +183,7 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, ProfileState) {
 
   // Check when signed in and Safe Browsing set to standard, both user control
   // and the pref are enabled.
-  identity_test_env()->MakePrimaryAccountAvailable("test@test.com");
+  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(kTestProfileName);
   prefs()->SetUserPref(prefs::kSafeBrowsingEnabled,
                        std::make_unique<base::Value>(true));
   prefs()->SetUserPref(prefs::kSafeBrowsingEnhanced,
@@ -215,7 +237,7 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, ManagementState) {
 
   // Check that the preference cannot be changed when the backing preference is
   // managed, but the preference could otherwise be changed.
-  identity_test_env()->MakePrimaryAccountAvailable("test@test.com");
+  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(kTestProfileName);
   prefs()->SetUserPref(prefs::kSafeBrowsingEnabled,
                        std::make_unique<base::Value>(true));
   prefs()->SetUserPref(prefs::kSafeBrowsingEnhanced,

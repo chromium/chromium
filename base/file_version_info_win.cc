@@ -96,48 +96,48 @@ FileVersionInfoWin::CreateFileVersionInfoWin(const base::FilePath& file_path) {
       std::move(data), translate->language, translate->code_page));
 }
 
-base::string16 FileVersionInfoWin::company_name() {
-  return GetStringValue(STRING16_LITERAL("CompanyName"));
+std::u16string FileVersionInfoWin::company_name() {
+  return GetStringValue(u"CompanyName");
 }
 
-base::string16 FileVersionInfoWin::company_short_name() {
-  return GetStringValue(STRING16_LITERAL("CompanyShortName"));
+std::u16string FileVersionInfoWin::company_short_name() {
+  return GetStringValue(u"CompanyShortName");
 }
 
-base::string16 FileVersionInfoWin::internal_name() {
-  return GetStringValue(STRING16_LITERAL("InternalName"));
+std::u16string FileVersionInfoWin::internal_name() {
+  return GetStringValue(u"InternalName");
 }
 
-base::string16 FileVersionInfoWin::product_name() {
-  return GetStringValue(STRING16_LITERAL("ProductName"));
+std::u16string FileVersionInfoWin::product_name() {
+  return GetStringValue(u"ProductName");
 }
 
-base::string16 FileVersionInfoWin::product_short_name() {
-  return GetStringValue(STRING16_LITERAL("ProductShortName"));
+std::u16string FileVersionInfoWin::product_short_name() {
+  return GetStringValue(u"ProductShortName");
 }
 
-base::string16 FileVersionInfoWin::product_version() {
-  return GetStringValue(STRING16_LITERAL("ProductVersion"));
+std::u16string FileVersionInfoWin::product_version() {
+  return GetStringValue(u"ProductVersion");
 }
 
-base::string16 FileVersionInfoWin::file_description() {
-  return GetStringValue(STRING16_LITERAL("FileDescription"));
+std::u16string FileVersionInfoWin::file_description() {
+  return GetStringValue(u"FileDescription");
 }
 
-base::string16 FileVersionInfoWin::file_version() {
-  return GetStringValue(STRING16_LITERAL("FileVersion"));
+std::u16string FileVersionInfoWin::file_version() {
+  return GetStringValue(u"FileVersion");
 }
 
-base::string16 FileVersionInfoWin::original_filename() {
-  return GetStringValue(STRING16_LITERAL("OriginalFilename"));
+std::u16string FileVersionInfoWin::original_filename() {
+  return GetStringValue(u"OriginalFilename");
 }
 
-base::string16 FileVersionInfoWin::special_build() {
-  return GetStringValue(STRING16_LITERAL("SpecialBuild"));
+std::u16string FileVersionInfoWin::special_build() {
+  return GetStringValue(u"SpecialBuild");
 }
 
-bool FileVersionInfoWin::GetValue(const base::char16* name,
-                                  base::string16* value) const {
+bool FileVersionInfoWin::GetValue(const char16_t* name,
+                                  std::u16string* value) const {
   const struct LanguageAndCodePage lang_codepages[] = {
       // Use the language and codepage from the DLL.
       {language_, code_page_},
@@ -158,16 +158,15 @@ bool FileVersionInfoWin::GetValue(const base::char16* name,
     uint32_t size;
     BOOL r = ::VerQueryValue(data_, sub_block, &value_ptr, &size);
     if (r && value_ptr && size) {
-      value->assign(static_cast<base::char16*>(value_ptr), size - 1);
+      value->assign(static_cast<char16_t*>(value_ptr), size - 1);
       return true;
     }
   }
   return false;
 }
 
-base::string16 FileVersionInfoWin::GetStringValue(
-    const base::char16* name) const {
-  base::string16 str;
+std::u16string FileVersionInfoWin::GetStringValue(const char16_t* name) const {
+  std::u16string str;
   GetValue(name, &str);
   return str;
 }

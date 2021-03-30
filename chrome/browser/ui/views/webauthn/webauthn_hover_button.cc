@@ -10,6 +10,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 
 namespace {
@@ -20,6 +22,7 @@ namespace {
 // by that class is incompatible with the WebAuthn UI spec.
 class IconWrapper : public views::View {
  public:
+  METADATA_HEADER(IconWrapper);
   explicit IconWrapper(std::unique_ptr<views::View> icon)
       : icon_(AddChildView(std::move(icon))) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -35,16 +38,19 @@ class IconWrapper : public views::View {
   views::View* icon_;
 };
 
+BEGIN_METADATA(IconWrapper, views::View)
+END_METADATA
+
 }  // namespace
 
 WebAuthnHoverButton::WebAuthnHoverButton(
     PressedCallback callback,
     std::unique_ptr<views::ImageView> icon,
-    const base::string16& title_text,
-    const base::string16& subtitle_text,
+    const std::u16string& title_text,
+    const std::u16string& subtitle_text,
     std::unique_ptr<views::View> secondary_icon,
     bool force_two_line)
-    : HoverButton(std::move(callback), base::string16()) {
+    : HoverButton(std::move(callback), std::u16string()) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   views::GridLayout* grid_layout =
@@ -121,8 +127,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
 
   SetAccessibleName(subtitle_text.empty()
                         ? title_text
-                        : base::JoinString({title_text, subtitle_text},
-                                           base::ASCIIToUTF16("\n")));
+                        : base::JoinString({title_text, subtitle_text}, u"\n"));
 
   // Per WebAuthn UI specs, the top/bottom insets of hover buttons are 12dp for
   // a one-line button, and 8dp for a two-line button. Left/right insets are
@@ -136,3 +141,6 @@ WebAuthnHoverButton::WebAuthnHoverButton(
 
   Layout();
 }
+
+BEGIN_METADATA(WebAuthnHoverButton, HoverButton)
+END_METADATA

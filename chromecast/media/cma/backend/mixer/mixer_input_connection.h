@@ -22,6 +22,7 @@
 #include "chromecast/media/audio/audio_provider.h"
 #include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/playback_rate_shifter.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/volume_control.h"
@@ -33,9 +34,7 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace media {
-class AudioBufferMemoryPool;
 class AudioBus;
-class AudioRendererAlgorithm;
 }  // namespace media
 
 namespace net {
@@ -124,8 +123,6 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
                  float* const* channels)
       EXCLUSIVE_LOCKS_REQUIRED(lock_) override;
 
-  bool PrepareDataForFill(int num_frames) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  bool FillRateShifted(int needed_frames) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   int FillAudio(int num_frames, float* const* channels)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -186,11 +183,11 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   RenderingDelay mixer_rendering_delay_ GUARDED_BY(lock_);
   int64_t next_playback_timestamp_ GUARDED_BY(lock_) = INT64_MIN;
   int mixer_read_size_ GUARDED_BY(lock_) = 0;
-  int extra_delay_frames_ GUARDED_BY(lock_) = 0;
   int current_buffer_offset_ GUARDED_BY(lock_) = 0;
+  PlaybackRateShifter rate_shifter_ GUARDED_BY(lock_);
   AudioFader fader_ GUARDED_BY(lock_);
   AudioClockSimulator audio_clock_simulator_ GUARDED_BY(lock_);
-  bool zero_fader_frames_ GUARDED_BY(lock_) = false;
+  bool in_underrun_ GUARDED_BY(lock_) = false;
   bool started_ GUARDED_BY(lock_) = false;
   double playback_rate_ GUARDED_BY(lock_) = 1.0;
   bool use_start_timestamp_ GUARDED_BY(lock_) = false;
@@ -206,16 +203,6 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   int64_t playback_start_pts_ GUARDED_BY(lock_) = INT64_MIN;
   int remaining_silence_frames_ GUARDED_BY(lock_) = 0;
   bool fed_one_silence_buffer_after_removal_ GUARDED_BY(lock_) = false;
-  ::media::NullMediaLog media_log_;
-  std::unique_ptr<::media::AudioRendererAlgorithm> rate_shifter_
-      GUARDED_BY(lock_);
-  std::unique_ptr<::media::AudioBus> rate_shifter_output_ GUARDED_BY(lock_);
-  int rate_shifted_offset_ GUARDED_BY(lock_) = 0;
-  bool waiting_for_rate_shifter_fill_ GUARDED_BY(lock_) = false;
-  int64_t rate_shifter_input_frames_ GUARDED_BY(lock_) = 0;
-  int64_t rate_shifter_output_frames_ GUARDED_BY(lock_) = 0;
-  bool skip_next_fill_for_rate_change_ GUARDED_BY(lock_) = false;
-  scoped_refptr<::media::AudioBufferMemoryPool> audio_buffer_pool_;
 
   base::RepeatingClosure pcm_completion_task_;
   base::RepeatingClosure eos_task_;

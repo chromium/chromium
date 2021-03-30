@@ -7,11 +7,11 @@
 namespace apps {
 
 IntentPickerAppInfo::IntentPickerAppInfo(PickerEntryType type,
-                                         const gfx::Image& icon,
+                                         const ui::ImageModel& icon_model,
                                          const std::string& launch_name,
                                          const std::string& display_name)
     : type(type),
-      icon(icon),
+      icon_model(icon_model),
       launch_name(launch_name),
       display_name(display_name) {}
 

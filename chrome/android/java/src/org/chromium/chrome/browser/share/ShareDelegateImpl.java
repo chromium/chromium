@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -17,6 +18,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotTabObserver;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -35,14 +37,15 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.ui_metrics.CanonicalURLResult;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.net.GURLUtils;
 import org.chromium.printing.PrintManagerDelegateImpl;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +60,7 @@ public class ShareDelegateImpl implements ShareDelegate {
     // should never be reused.
     @IntDef({ShareOrigin.OVERFLOW_MENU, ShareOrigin.TOP_TOOLBAR, ShareOrigin.CONTEXT_MENU,
             ShareOrigin.WEBSHARE_API, ShareOrigin.MOBILE_ACTION_MODE, ShareOrigin.EDIT_URL,
-            ShareOrigin.TAB_GROUP, ShareOrigin.WEBAPP_NOTIFICATION})
+            ShareOrigin.TAB_GROUP, ShareOrigin.WEBAPP_NOTIFICATION, ShareOrigin.FEED})
     public @interface ShareOrigin {
         int OVERFLOW_MENU = 0;
         int TOP_TOOLBAR = 1;
@@ -67,9 +70,10 @@ public class ShareDelegateImpl implements ShareDelegate {
         int EDIT_URL = 5;
         int TAB_GROUP = 6;
         int WEBAPP_NOTIFICATION = 7;
+        int FEED = 8;
 
         // Must be the last one.
-        int COUNT = 8;
+        int COUNT = 9;
     }
 
     private final BottomSheetController mBottomSheetController;
@@ -175,10 +179,10 @@ public class ShareDelegateImpl implements ShareDelegate {
                 if (shouldFetchCanonicalUrl(currentTab)) {
                     WebContents webContents = currentTab.getWebContents();
                     String title = currentTab.getTitle();
-                    String visibleUrl = currentTab.getUrlString();
-                    webContents.getMainFrame().getCanonicalUrlForSharing(new Callback<String>() {
+                    GURL visibleUrl = currentTab.getUrl();
+                    webContents.getMainFrame().getCanonicalUrlForSharing(new Callback<GURL>() {
                         @Override
-                        public void onResult(String result) {
+                        public void onResult(GURL result) {
                             logCanonicalUrlResult(visibleUrl, result);
 
                             triggerShareWithCanonicalUrlResolved(window, webContents, title,
@@ -187,16 +191,16 @@ public class ShareDelegateImpl implements ShareDelegate {
                     });
                 } else {
                     triggerShareWithCanonicalUrlResolved(window, currentTab.getWebContents(),
-                            currentTab.getTitle(), currentTab.getUrlString(), null, shareOrigin,
-                            shareDirectly, isIncognito);
+                            currentTab.getTitle(), currentTab.getUrl(), GURL.emptyGURL(),
+                            shareOrigin, shareDirectly, isIncognito);
                 }
             }
         });
     }
 
     private void triggerShareWithCanonicalUrlResolved(final WindowAndroid window,
-            final WebContents webContents, final String title, final String visibleUrl,
-            final String canonicalUrl, @ShareOrigin final int shareOrigin,
+            final WebContents webContents, final String title, final @NonNull GURL visibleUrl,
+            final GURL canonicalUrl, @ShareOrigin final int shareOrigin,
             final boolean shareDirectly, boolean isIncognito) {
         // Share an empty blockingUri in place of screenshot file. The file ready notification is
         // sent by onScreenshotReady call below when the file is written.
@@ -241,7 +245,7 @@ public class ShareDelegateImpl implements ShareDelegate {
         return true;
     }
 
-    private static void logCanonicalUrlResult(String visibleUrl, String canonicalUrl) {
+    private static void logCanonicalUrlResult(GURL visibleUrl, GURL canonicalUrl) {
         @CanonicalURLResult
         int result = getCanonicalUrlResult(visibleUrl, canonicalUrl);
         RecordHistogram.recordEnumeratedHistogram(CANONICAL_URL_RESULT_HISTOGRAM, result,
@@ -254,30 +258,28 @@ public class ShareDelegateImpl implements ShareDelegate {
     }
 
     @VisibleForTesting
-    static String getUrlToShare(String visibleUrl, String canonicalUrl) {
-        if (TextUtils.isEmpty(canonicalUrl)) return visibleUrl;
-        // TODO(tedchoc): Can we replace GURLUtils.getScheme with Uri.parse(...).getScheme()
-        //                https://crbug.com/783819
-        if (!UrlConstants.HTTPS_SCHEME.equals(GURLUtils.getScheme(visibleUrl))) {
-            return visibleUrl;
+    static String getUrlToShare(@NonNull GURL visibleUrl, GURL canonicalUrl) {
+        if (canonicalUrl == null || canonicalUrl.isEmpty()) {
+            return visibleUrl.getSpec();
         }
-        String canonicalScheme = GURLUtils.getScheme(canonicalUrl);
-        if (!UrlConstants.HTTP_SCHEME.equals(canonicalScheme)
-                && !UrlConstants.HTTPS_SCHEME.equals(canonicalScheme)) {
-            return visibleUrl;
+        if (!UrlConstants.HTTPS_SCHEME.equals(visibleUrl.getScheme())) {
+            return visibleUrl.getSpec();
         }
-        return canonicalUrl;
+        if (!UrlUtilities.isHttpOrHttps(canonicalUrl)) {
+            return visibleUrl.getSpec();
+        }
+        return canonicalUrl.getSpec();
     }
 
     @CanonicalURLResult
-    private static int getCanonicalUrlResult(String visibleUrl, String canonicalUrl) {
-        if (!UrlConstants.HTTPS_SCHEME.equals(GURLUtils.getScheme(visibleUrl))) {
+    private static int getCanonicalUrlResult(GURL visibleUrl, GURL canonicalUrl) {
+        if (!UrlConstants.HTTPS_SCHEME.equals(visibleUrl.getScheme())) {
             return CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS;
         }
-        if (TextUtils.isEmpty(canonicalUrl)) {
+        if (canonicalUrl == null || canonicalUrl.isEmpty()) {
             return CanonicalURLResult.FAILED_NO_CANONICAL_URL_DEFINED;
         }
-        String canonicalScheme = GURLUtils.getScheme(canonicalUrl);
+        String canonicalScheme = canonicalUrl.getScheme();
         if (!UrlConstants.HTTPS_SCHEME.equals(canonicalScheme)) {
             if (!UrlConstants.HTTP_SCHEME.equals(canonicalScheme)) {
                 return CanonicalURLResult.FAILED_CANONICAL_URL_INVALID;
@@ -285,7 +287,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                 return CanonicalURLResult.SUCCESS_CANONICAL_URL_NOT_HTTPS;
             }
         }
-        if (TextUtils.equals(visibleUrl, canonicalUrl)) {
+        if (visibleUrl.equals(canonicalUrl)) {
             return CanonicalURLResult.SUCCESS_CANONICAL_URL_SAME_AS_VISIBLE;
         } else {
             return CanonicalURLResult.SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE;
@@ -338,9 +340,10 @@ public class ShareDelegateImpl implements ShareDelegate {
                                 ContextUtils.getApplicationContext().getPackageManager()),
                         printCallback, new LargeIconBridge(Profile.getLastUsedRegularProfile()),
                         new SettingsLauncherImpl(), isSyncEnabled,
-                        AppHooks.get().getImageEditorModuleProvider());
+                        AppHooks.get().getImageEditorModuleProvider(),
+                        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile()));
                 // TODO(crbug/1009124): open custom share sheet.
-                coordinator.showShareSheet(params, chromeShareExtras, shareStartTime);
+                coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);
             } else {
                 RecordHistogram.recordEnumeratedHistogram(
                         "Sharing.DefaultSharesheetAndroid.Opened", shareOrigin, ShareOrigin.COUNT);

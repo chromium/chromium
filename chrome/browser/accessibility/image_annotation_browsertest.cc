@@ -262,7 +262,7 @@ class ImageAnnotationBrowserTest : public InProcessBrowserTest {
     PrefService* prefs = user_prefs::UserPrefs::Get(context);
     DCHECK(prefs);
 
-    prefs->Set(language::prefs::kAcceptLanguages,
+    prefs->Set(language::prefs::kSelectedLanguages,
                base::Value(accept_languages));
   }
 

@@ -97,8 +97,9 @@ TEST_F(ContentScriptsManifestTest, FailLoadingNonUTF8Scripts) {
                     .AppendASCII("bad_encoding");
 
   std::string error;
-  scoped_refptr<Extension> extension(file_util::LoadExtension(
-      install_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension(
+      file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
+                               Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get() == NULL);
   ASSERT_STREQ(
       "Could not load file 'bad_encoding.js' for content script. "

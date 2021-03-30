@@ -51,25 +51,21 @@ class FormatResourceMapUnittest(unittest.TestCase):
        </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include <stddef.h>
-#ifndef GRIT_RESOURCE_MAP_STRUCT_
-#define GRIT_RESOURCE_MAP_STRUCT_
-struct GritResourceMap {
-  const char* const name;
-  int value;
-};
-#endif // GRIT_RESOURCE_MAP_STRUCT_
-extern const GritResourceMap kTheRcHeader[];
+#include "ui/base/webui/resource_path.h"
+extern const webui::ResourcePath kTheRcHeader[];
 extern const size_t kTheRcHeaderSize;''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
 #include "base/stl_util.h"
 #include "the_rc_header.h"
-const GritResourceMap kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[] = {
   {"IDC_KLONKMENU", IDC_KLONKMENU},
   {"IDS_FIRSTPRESENT", IDS_FIRSTPRESENT},
   {"IDS_WITHRESOURCEPATH", IDS_WITHRESOURCEPATH},
@@ -79,12 +75,13 @@ const GritResourceMap kTheRcHeader[] = {
 const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
 #include "base/stl_util.h"
 #include "the_rc_header.h"
-const GritResourceMap kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[] = {
   {"grit/testdata/klonk.rc", IDC_KLONKMENU},
   {"abc", IDS_FIRSTPRESENT},
   {"new_path/rst_resource", IDS_WITHRESOURCEPATH},
@@ -112,18 +109,11 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
          </includes>
         </release>''', run_gatherers=True)
 
-    formatter = resource_map.GetFormatter('resource_file_map_source')
-    output = util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', '.')))
-    expected = '''\
-#include "resource_map_header.h"
-#include <stddef.h>
-#include "base/stl_util.h"
-#include "the_rc_header.h"
-const GritResourceMap kTheRcHeader[] = {
-  {"@out_folder@/gen/foo/bar/baz.js", IDR_FOO_BAR_BAZ_JS},
-};
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);'''
-    self.assertEqual(expected, output)
+    with self.assertRaises(AssertionError) as assertion_error:
+      formatter = resource_map.GetFormatter('resource_file_map_source')
+      util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', '.')))
+    self.assertTrue(str(assertion_error.exception). \
+        startswith('resource_path attribute missing for IDR_FOO_BAR_BAZ_JS'))
 
   def testFormatResourceMapWithOutputAllEqualsFalseForStructures(self):
     grd = util.ParseGrdForUnittest('''
@@ -168,25 +158,21 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);'''
         </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include <stddef.h>
-#ifndef GRIT_RESOURCE_MAP_STRUCT_
-#define GRIT_RESOURCE_MAP_STRUCT_
-struct GritResourceMap {
-  const char* const name;
-  int value;
-};
-#endif // GRIT_RESOURCE_MAP_STRUCT_
-extern const GritResourceMap kTheRcHeader[];
+#include "ui/base/webui/resource_path.h"
+extern const webui::ResourcePath kTheRcHeader[];
 extern const size_t kTheRcHeaderSize;''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
 #include "base/stl_util.h"
 #include "the_rc_header.h"
-const GritResourceMap kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[] = {
   {"IDR_KLONKMENU", IDR_KLONKMENU},
   {"IDR_BLOB", IDR_BLOB},
   {"IDR_METEOR", IDR_METEOR},
@@ -195,12 +181,13 @@ const GritResourceMap kTheRcHeader[] = {
 const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
 #include "base/stl_util.h"
 #include "the_rc_header.h"
-const GritResourceMap kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[] = {
   {"IDR_KLONKMENU", IDR_KLONKMENU},
   {"IDR_BLOB", IDR_BLOB},
   {"IDR_METEOR", IDR_METEOR},
@@ -247,25 +234,21 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
         </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include <stddef.h>
-#ifndef GRIT_RESOURCE_MAP_STRUCT_
-#define GRIT_RESOURCE_MAP_STRUCT_
-struct GritResourceMap {
-  const char* const name;
-  int value;
-};
-#endif // GRIT_RESOURCE_MAP_STRUCT_
-extern const GritResourceMap kTheRcHeader[];
+#include "ui/base/webui/resource_path.h"
+extern const webui::ResourcePath kTheRcHeader[];
 extern const size_t kTheRcHeaderSize;''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
 #include "base/stl_util.h"
 #include "the_rc_header.h"
-const GritResourceMap kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[] = {
   {"IDC_KLONKMENU", IDC_KLONKMENU},
   {"IDS_FIRSTPRESENT", IDS_FIRSTPRESENT},
   {"IDS_THIRDPRESENT", IDS_THIRDPRESENT},
@@ -276,12 +259,13 @@ const GritResourceMap kTheRcHeader[] = {
 const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
 #include "base/stl_util.h"
 #include "the_rc_header.h"
-const GritResourceMap kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[] = {
   {"grit/testdata/klonk.rc", IDC_KLONKMENU},
   {"abc", IDS_FIRSTPRESENT},
   {"mno", IDS_THIRDPRESENT},
@@ -320,25 +304,21 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
     grd.InitializeIds()
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include <stddef.h>
-#ifndef GRIT_RESOURCE_MAP_STRUCT_
-#define GRIT_RESOURCE_MAP_STRUCT_
-struct GritResourceMap {
-  const char* const name;
-  int value;
-};
-#endif // GRIT_RESOURCE_MAP_STRUCT_
-extern const GritResourceMap kTheRcHeader[];
+#include "ui/base/webui/resource_path.h"
+extern const webui::ResourcePath kTheRcHeader[];
 extern const size_t kTheRcHeaderSize;''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include "the_rc_map_header.h"
 #include <stddef.h>
 #include "base/stl_util.h"
 #include "the_rc_header.h"
-const GritResourceMap kTheRcHeader[] = {
+const webui::ResourcePath kTheRcHeader[] = {
   {"IDS_PRODUCT_NAME", IDS_PRODUCT_NAME},
   {"IDS_DEFAULT_TAB_TITLE_TITLE_CASE", IDS_DEFAULT_TAB_TITLE_TITLE_CASE},
 };

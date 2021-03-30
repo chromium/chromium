@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 // MTPDeviceObjectEntry contains the media transfer protocol device object
@@ -17,18 +17,18 @@
 // IPortableDeviceProperties::GetValues().
 struct MTPDeviceObjectEntry {
   MTPDeviceObjectEntry();  // Necessary for STL.
-  MTPDeviceObjectEntry(const base::string16& object_id,
-                       const base::string16& object_name,
+  MTPDeviceObjectEntry(const std::wstring& object_id,
+                       const std::u16string& object_name,
                        bool is_directory,
                        int64_t size,
                        const base::Time& last_modified_time);
 
   // The object identifier obtained using IEnumPortableDeviceObjectIDs::Next(),
   // e.g. "o299".
-  base::string16 object_id;
+  std::wstring object_id;
 
   // Friendly name of the object, e.g. "IMG_9911.jpeg".
-  base::string16 name;
+  std::u16string name;
 
   // True if the current object is a directory/folder/album content type.
   bool is_directory;

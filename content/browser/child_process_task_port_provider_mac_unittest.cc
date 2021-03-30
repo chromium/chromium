@@ -49,6 +49,8 @@ class MockChildProcess : public mojom::ChildProcess {
   MOCK_METHOD1(BindServiceInterface,
                void(mojo::GenericPendingReceiver receiver));
   MOCK_METHOD1(BindReceiver, void(mojo::GenericPendingReceiver receiver));
+  MOCK_METHOD1(EnableSystemTracingService,
+               void(mojo::PendingRemote<tracing::mojom::SystemTracingService>));
 };
 
 class ChildProcessTaskPortProviderTest : public testing::Test,

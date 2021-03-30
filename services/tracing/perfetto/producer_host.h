@@ -18,9 +18,13 @@
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/tracing_service.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/forward_decls.h"
 
+namespace base {
 namespace tracing {
-
 class PerfettoTaskRunner;
+}  // namespace tracing
+}  // namespace base
+
+namespace tracing {
 
 // This class is the service-side part of the Perfetto Producer pair
 // and is responsible for registering any available DataSources
@@ -34,7 +38,7 @@ class PerfettoTaskRunner;
 class ProducerHost : public tracing::mojom::ProducerHost,
                      public perfetto::Producer {
  public:
-  explicit ProducerHost(PerfettoTaskRunner*);
+  explicit ProducerHost(base::tracing::PerfettoTaskRunner*);
   ~ProducerHost() override;
 
   // Keep in sync with tools/metrics/histograms/enums.xml. These values are
@@ -103,7 +107,7 @@ class ProducerHost : public tracing::mojom::ProducerHost,
 
  private:
   mojo::Remote<mojom::ProducerClient> producer_client_;
-  PerfettoTaskRunner* task_runner_;
+  base::tracing::PerfettoTaskRunner* task_runner_;
 
  protected:
   // Perfetto guarantees that no OnXX callbacks are invoked on |this|

@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/partition_alloc_support.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
@@ -27,6 +28,7 @@
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
+#include "printing/sandbox/print_backend_sandbox_hook_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "services/audio/audio_sandbox_hook_linux.h"
 #include "services/network/network_sandbox_hook_linux.h"
@@ -58,16 +60,20 @@ int UtilityMain(const MainFunctionParams& parameters) {
           : base::MessagePumpType::DEFAULT;
 
 #if defined(OS_MAC)
-  // On Mac, the TYPE_UI pump for the main thread is an NSApplication loop. In
-  // a sandboxed utility process, NSApp attempts to acquire more Mach resources
-  // than a restrictive sandbox policy should allow. Services that require a
-  // TYPE_UI pump generally just need a NS/CFRunLoop to pump system work
-  // sources, so choose that pump type instead. A NSRunLoop MessagePump is used
-  // for TYPE_UI MessageLoops on non-main threads.
-  base::MessagePump::OverrideMessagePumpForUIFactory(
-      []() -> std::unique_ptr<base::MessagePump> {
-        return std::make_unique<base::MessagePumpNSRunLoop>();
-      });
+  auto sandbox_type =
+      sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
+  if (sandbox_type != sandbox::policy::SandboxType::kNoSandbox) {
+    // On Mac, the TYPE_UI pump for the main thread is an NSApplication loop.
+    // In a sandboxed utility process, NSApp attempts to acquire more Mach
+    // resources than a restrictive sandbox policy should allow. Services that
+    // require a TYPE_UI pump generally just need a NS/CFRunLoop to pump system
+    // work sources, so choose that pump type instead. A NSRunLoop MessagePump
+    // is used for TYPE_UI MessageLoops on non-main threads.
+    base::MessagePump::OverrideMessagePumpForUIFactory(
+        []() -> std::unique_ptr<base::MessagePump> {
+          return std::make_unique<base::MessagePumpNSRunLoop>();
+        });
+  }
 #endif
 
 #if defined(OS_FUCHSIA)
@@ -95,11 +101,14 @@ int UtilityMain(const MainFunctionParams& parameters) {
       sandbox_type == sandbox::policy::SandboxType::kIme ||
       sandbox_type == sandbox::policy::SandboxType::kTts ||
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      sandbox_type == sandbox::policy::SandboxType::kPrintBackend ||
       sandbox_type == sandbox::policy::SandboxType::kAudio ||
       sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition) {
     sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
     if (sandbox_type == sandbox::policy::SandboxType::kNetwork)
       pre_sandbox_hook = base::BindOnce(&network::NetworkPreSandboxHook);
+    else if (sandbox_type == sandbox::policy::SandboxType::kPrintBackend)
+      pre_sandbox_hook = base::BindOnce(&printing::PrintBackendPreSandboxHook);
     else if (sandbox_type == sandbox::policy::SandboxType::kAudio)
       pre_sandbox_hook = base::BindOnce(&audio::AudioPreSandboxHook);
     else if (sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition)
@@ -170,9 +179,23 @@ int UtilityMain(const MainFunctionParams& parameters) {
     // Ensure RtlGenRandom is warm before the token is lowered; otherwise,
     // base::RandBytes() will CHECK fail when v8 is initialized.
     base::RandBytes(&buffer, sizeof(buffer));
+
+    if (sandbox_type == sandbox::policy::SandboxType::kNetwork) {
+      // Network service process needs FWPUCLNT.DLL to be loaded before sandbox
+      // lockdown otherwise getaddrinfo fails.
+      HMODULE fwpuclnt_pin = ::LoadLibrary(L"FWPUCLNT.DLL");
+      UNREFERENCED_PARAMETER(fwpuclnt_pin);
+      // Network service process needs urlmon.dll to be loaded before sandbox
+      // lockdown otherwise CoInternetCreateSecurityManager fails.
+      HMODULE urlmon_pin = ::LoadLibrary(L"urlmon.dll");
+      UNREFERENCED_PARAMETER(urlmon_pin);
+    }
     g_utility_target_services->LowerToken();
   }
 #endif
+
+  internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+      switches::kUtilityProcess);
 
   run_loop.Run();
 

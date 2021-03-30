@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/browsing_data/site_data_size_collector.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "components/arc/mojom/storage_manager.mojom.h"
 #include "components/arc/session/connection_observer.h"
@@ -277,7 +278,8 @@ class OtherUsersSizeCalculator : public SizeCalculator {
   void PerformCalculation() override;
 
   // Callback to update the sizes of the other users.
-  void OnGetOtherUserSize(base::Optional<cryptohome::BaseReply> reply);
+  void OnGetOtherUserSize(
+      base::Optional<::user_data_auth::GetAccountDiskUsageReply> reply);
 
   // The list of other users whose directory sizes will be accumulated as the
   // size of "Other users".

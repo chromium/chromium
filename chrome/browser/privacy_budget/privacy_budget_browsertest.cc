@@ -2,23 +2,55 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+#include <iosfwd>
+#include <map>
+#include <memory>
+#include <utility>
+
 #include "base/feature_list.h"
-#include "base/threading/thread.h"
-#include "build/build_config.h"
+#include "base/run_loop.h"
+#include "build/buildflag.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
+#include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/test/fake_server/fake_server.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/ukm/ukm_test_helper.h"
+#include "components/unified_consent/unified_consent_service.h"
 #include "components/variations/service/buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "services/metrics/public/mojom/ukm_interface.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "url/gurl.h"
+
+class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
+namespace ukm {
+class UkmService;
+}  // namespace ukm
 
 #if defined(OS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -38,20 +70,39 @@ uint64_t HashFeature(const blink::mojom::WebFeature& feature) {
 }
 
 // This test runs on Android as well as desktop platforms.
-class PrivacyBudgetBrowserTest : public PlatformBrowserTest {
+class PrivacyBudgetBrowserTest : public SyncTest {
  public:
-  PrivacyBudgetBrowserTest() {
+  PrivacyBudgetBrowserTest() : SyncTest(SINGLE_CLIENT) {
     privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
   }
 
   void SetUpOnMainThread() override {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    SyncTest::SetUpOnMainThread();
   }
 
   ukm::TestUkmRecorder& recorder() { return *ukm_recorder_; }
 
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  ukm::UkmService* ukm_service() const {
+    return g_browser_process->GetMetricsServicesManager()->GetUkmService();
+  }
+
+  PrefService* local_state() const { return g_browser_process->local_state(); }
+
+  void EnableSyncForProfile(Profile* profile) {
+    std::unique_ptr<ProfileSyncServiceHarness> harness =
+        metrics::test::InitializeProfileForSync(profile,
+                                                GetFakeServer()->AsWeakPtr());
+    EXPECT_TRUE(harness->SetupSync());
+
+    unified_consent::UnifiedConsentService* consent_service =
+        UnifiedConsentServiceFactory::GetForProfile(profile);
+    if (consent_service)
+      consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
   }
 
  private:
@@ -65,6 +116,49 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, BrowserSideSettingsIsActive) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
   auto* settings = blink::IdentifiabilityStudySettings::Get();
   EXPECT_TRUE(settings->IsActive());
+}
+
+// When UKM resets the Client ID for some reason the study should reset its
+// local state as well.
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
+                       UkmClientIdChangesResetStudyState) {
+  EXPECT_TRUE(blink::IdentifiabilityStudySettings::Get()->IsActive());
+
+  // Sync needs to be enabled for reporting to be enabled.
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  EnableSyncForProfile(profile);
+
+  bool reporting_allowed = true;
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+      &reporting_allowed);
+
+  // UpdateUploadPermissions causes the MetricsServicesManager to look at the
+  // consent signals and re-evaluate whether reporting should be enabled.
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+
+  ASSERT_TRUE(ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled())
+      << "UKM recording not enabled";
+
+  local_state()->SetString(prefs::kPrivacyBudgetActiveSurfaces, "1,2,3");
+  const auto first_prng_seed =
+      local_state()->GetUint64(prefs::kPrivacyBudgetSeed);
+
+  // Disallowing reporting is equivalent to revoking consent.
+  reporting_allowed = false;
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+  ASSERT_FALSE(ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled())
+      << "UKM recording not disabled";
+
+  const auto second_prng_seed =
+      local_state()->GetUint64(prefs::kPrivacyBudgetSeed);
+
+  EXPECT_NE(first_prng_seed, second_prng_seed)
+      << "PRNG seeds from before and after resetting UKM Client ID are still "
+         "the same";
+  EXPECT_TRUE(
+      local_state()->GetString(prefs::kPrivacyBudgetActiveSurfaces).empty())
+      << "Active surface list still exists after resetting client ID";
+  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, SamplingScreenAPIs) {
@@ -204,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
   // If the value of the relevant merged entry changes, input_digest needs to
   // change. The new input_digest can be calculated by:
   // new_input_digest = new_ukm_entry >> kTypeBits
-  constexpr uint64_t input_digest = UINT64_C(9877979512039296);
+  constexpr uint64_t input_digest = UINT64_C(61919955620835840);
   EXPECT_THAT(merged_entries.begin()->second->metrics,
               IsSupersetOf({
                   Key(blink::IdentifiableSurface::FromTypeAndToken(

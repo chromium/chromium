@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/fileapi/external_file_resolver.h"
 
+#include <utility>
 #include "base/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
@@ -60,7 +61,7 @@ class URLHelper {
     }
     Profile* const profile = reinterpret_cast<Profile*>(profile_id);
     content::StoragePartition* const storage =
-        content::BrowserContext::GetStoragePartitionForSite(profile, url);
+        content::BrowserContext::GetStoragePartitionForUrl(profile, url);
     DCHECK(storage);
 
     scoped_refptr<storage::FileSystemContext> context =
@@ -90,7 +91,7 @@ class URLHelper {
     extensions::app_file_handler_util::GetMimeTypeForLocalPath(
         profile, isolated_file_system_.url.path(),
         base::BindOnce(&URLHelper::OnGotMimeTypeOnUIThread,
-                       base::Unretained(this), base::Passed(&lifetime)));
+                       base::Unretained(this), std::move(lifetime)));
   }
 
   void OnGotMimeTypeOnUIThread(Lifetime lifetime,

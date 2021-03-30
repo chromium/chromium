@@ -20,6 +20,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -68,7 +69,7 @@ CrostiniUpdateComponentView::CrostiniUpdateComponentView() {
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  const base::string16 message =
+  const std::u16string message =
       l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINA_UPDATE_OFFLINE);
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
@@ -81,3 +82,6 @@ CrostiniUpdateComponentView::CrostiniUpdateComponentView() {
 CrostiniUpdateComponentView::~CrostiniUpdateComponentView() {
   g_crostini_upgrade_view = nullptr;
 }
+
+BEGIN_METADATA(CrostiniUpdateComponentView, views::BubbleDialogDelegateView)
+END_METADATA

@@ -34,7 +34,7 @@ MediaGalleryPrefInfo MakePrefInfo(MediaGalleryPrefId id) {
   gallery.device_id = storage_monitor::StorageInfo::MakeDeviceId(
       storage_monitor::StorageInfo::FIXED_MASS_STORAGE,
       base::NumberToString(id));
-  gallery.display_name = base::ASCIIToUTF16("Display Name");
+  gallery.display_name = u"Display Name";
   return gallery;
 }
 
@@ -58,8 +58,7 @@ class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    std::vector<base::string16> headers = {base::string16(),
-                                           base::ASCIIToUTF16("header2")};
+    std::vector<std::u16string> headers = {std::u16string(), u"header2"};
     MediaGalleriesDialogController::Entries attached_permissions = {
         MediaGalleriesDialogController::Entry(MakePrefInfo(1), true),
         MediaGalleriesDialogController::Entry(MakePrefInfo(2), false)};

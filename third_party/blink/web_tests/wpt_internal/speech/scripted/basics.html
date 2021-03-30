@@ -1,0 +1,49 @@
+<!doctype html>
+<title>Tests the basics of the Speech JavaScript API</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+test(() => {
+  assert_true("webkitSpeechRecognition" in self);
+  assert_not_equals(webkitSpeechRecognition, null);
+}, "Check availability of constructors");
+
+test(() => {
+  var speechReco = new webkitSpeechRecognition();
+  assert_not_equals(speechReco, null);
+  assert_true("grammars" in speechReco);
+  assert_not_equals(speechReco.grammars, null);
+  assert_equals(speechReco.grammars.length, 0);
+  assert_true("lang" in speechReco);
+  assert_true("continuous" in speechReco);
+  assert_true("interimResults" in speechReco);
+  assert_true("maxAlternatives" in speechReco);
+  assert_true("start" in speechReco);
+  assert_true("stop" in speechReco);
+  assert_true("abort" in speechReco);
+  assert_true("onaudiostart" in speechReco);
+  assert_true("onsoundstart" in speechReco);
+  assert_true("onspeechstart" in speechReco);
+  assert_true("onspeechend" in speechReco);
+  assert_true("onsoundend" in speechReco);
+  assert_true("onaudioend" in speechReco);
+  assert_true("onresult" in speechReco);
+  assert_true("onnomatch" in speechReco);
+  assert_true("onerror" in speechReco);
+  assert_true("onstart" in speechReco);
+  assert_true("onend" in speechReco);
+
+  assert_true("addEventListener" in speechReco);
+  assert_true("removeEventListener" in speechReco);
+  assert_true("dispatchEvent" in speechReco);
+}, "Check members of SpeechRecognition");
+
+test(() => {
+  var speechReco = new webkitSpeechRecognition();
+  assert_equals(speechReco.lang, "");
+  assert_equals(speechReco.continuous, false);
+  assert_equals(speechReco.maxAlternatives, 1);
+}, "Check default values of SpeechRecognition");
+
+</script>

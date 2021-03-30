@@ -29,19 +29,20 @@ AddressContactFormLabelFormatter::~AddressContactFormLabelFormatter() {}
 // Note that the order in which parts of the label are added--name, street
 // address, phone, and email--ensures that the label is formatted correctly for
 // |focused_group|, |focused_field_type_|, and this kind of formatter.
-base::string16 AddressContactFormLabelFormatter::GetLabelForProfile(
+std::u16string AddressContactFormLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
-  std::vector<base::string16> label_parts;
+  std::vector<std::u16string> label_parts;
 
-  bool street_address_is_focused = focused_group == ADDRESS_HOME &&
-                                   IsStreetAddressPart(focused_field_type());
+  bool street_address_is_focused =
+      focused_group == FieldTypeGroup::kAddressHome &&
+      IsStreetAddressPart(focused_field_type());
   bool non_street_address_is_focused =
-      focused_group == ADDRESS_HOME &&
+      focused_group == FieldTypeGroup::kAddressHome &&
       !IsStreetAddressPart(focused_field_type());
 
-  if (focused_group != NAME && !non_street_address_is_focused &&
-      data_util::ContainsName(groups())) {
+  if (focused_group != FieldTypeGroup::kName &&
+      !non_street_address_is_focused && data_util::ContainsName(groups())) {
     AddLabelPartIfNotEmpty(
         GetLabelName(field_types_for_labels(), profile, app_locale()),
         &label_parts);
@@ -54,11 +55,11 @@ base::string16 AddressContactFormLabelFormatter::GetLabelForProfile(
         &label_parts);
   }
 
-  if (focused_group != PHONE_HOME && phone_disambiguates_) {
+  if (focused_group != FieldTypeGroup::kPhoneHome && phone_disambiguates_) {
     AddLabelPartIfNotEmpty(GetLabelPhone(profile, app_locale()), &label_parts);
   }
 
-  if (focused_group != EMAIL && email_disambiguates_) {
+  if (focused_group != FieldTypeGroup::kEmail && email_disambiguates_) {
     AddLabelPartIfNotEmpty(GetLabelEmail(profile, app_locale()), &label_parts);
   }
 

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<style>
+
+span {
+  display: inline-block;
+  border: solid;
+  width: 60px;
+  height: 30px;
+  box-sizing: border-box;
+  contain: size layout;
+  line-height: 1;
+}
+
+span:nth-child(2n) {
+  text-align: center;
+}
+
+span:nth-child(3n) {
+  text-align: end;
+}
+</style>
+<script src="../resources/runner.js"></script>
+<script>
+  let textNodes = [];
+
+  function populateData() {
+    for (let i = 0; i < 100*100; i++) {
+      let span = document.createElement('span');
+      span.classList.add('cell');
+      let textNode = document.createTextNode('' + (100 * Math.random()).toFixed(2));
+      span.appendChild(textNode);
+      document.body.appendChild(span);
+      textNodes.push(textNode);
+    }
+  }
+
+  function startTest() {
+    populateData();
+
+    PerfTestRunner.forceLayout();
+
+    PerfTestRunner.measureTime({
+      description: "Measures performance of changing text nodes content.",
+      run: function() {
+        for (let i = 0; i < textNodes.length; i++) {
+          textNodes[i].data = '' + (100 * Math.random()).toFixed(2);
+        }
+
+        PerfTestRunner.forceLayout();
+      },
+    });
+  }
+</script>
+<body onload="startTest();">
+</body>

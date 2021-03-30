@@ -251,4 +251,37 @@ TEST(CookieInclusionStatusTest, ShouldRecordDowngradeMetrics) {
                    .ShouldRecordDowngradeMetrics());
 }
 
+TEST(CookieInclusionStatusTest, RemoveExclusionReasons) {
+  CookieInclusionStatus status =
+      CookieInclusionStatus::MakeFromReasonsForTesting({
+          CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR,
+          CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT,
+          CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+      });
+  EXPECT_TRUE(status.IsValid());
+  ASSERT_TRUE(status.HasExactlyExclusionReasonsForTesting({
+      CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR,
+      CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT,
+      CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+  }));
+
+  status.RemoveExclusionReasons(
+      {CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR,
+       CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR,
+       CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT});
+  EXPECT_TRUE(status.IsValid());
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({
+      CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+  }));
+
+  // Removing a nonexistent exclusion reason doesn't do anything.
+  ASSERT_FALSE(
+      status.HasExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS));
+  status.RemoveExclusionReasons({CookieInclusionStatus::NUM_EXCLUSION_REASONS});
+  EXPECT_TRUE(status.IsValid());
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({
+      CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+  }));
+}
+
 }  // namespace net

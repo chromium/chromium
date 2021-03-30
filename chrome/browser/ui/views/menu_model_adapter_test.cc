@@ -35,7 +35,7 @@ const int kSubMenuBaseId = 200;
 //  virtual int GetItemCount() const = 0;
 //  virtual ItemType GetTypeAt(int index) const = 0;
 //  virtual int GetCommandIdAt(int index) const = 0;
-//  virtual base::string16 GetLabelAt(int index) const = 0;
+//  virtual std::u16string GetLabelAt(int index) const = 0;
 class CommonMenuModel : public ui::MenuModel {
  public:
   CommonMenuModel() {
@@ -102,9 +102,7 @@ class SubMenuModel : public CommonMenuModel {
     return index + kSubMenuBaseId;
   }
 
-  base::string16 GetLabelAt(int index) const override {
-    return base::ASCIIToUTF16("Item");
-  }
+  std::u16string GetLabelAt(int index) const override { return u"Item"; }
 
   void MenuWillShow() override { showing_ = true; }
 
@@ -137,9 +135,7 @@ class TopMenuModel : public CommonMenuModel {
     return index + kTopMenuBaseId;
   }
 
-  base::string16 GetLabelAt(int index) const override {
-    return base::ASCIIToUTF16("submenu");
-  }
+  std::u16string GetLabelAt(int index) const override { return u"submenu"; }
 
   MenuModel* GetSubmenuModelAt(int index) const override {
     return &sub_menu_model_;
@@ -177,7 +173,7 @@ class MenuModelAdapterTest : public ViewEventTestBase {
     auto button = std::make_unique<views::MenuButton>(
         base::BindRepeating(&MenuModelAdapterTest::ButtonPressed,
                             base::Unretained(this)),
-        base::ASCIIToUTF16("Menu Adapter Test"));
+        u"Menu Adapter Test");
     button_ = button.get();
     return button;
   }

@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "content/public/browser/service_process_host.h"
@@ -21,6 +22,10 @@ namespace {
 constexpr base::TimeDelta kResetOnIdleTimeout =
     base::TimeDelta::FromSeconds(20);
 
+// `PrintBackendService` override for testing.
+mojo::Remote<printing::mojom::PrintBackendService>*
+    g_print_backend_service_for_test = nullptr;
+
 }  // namespace
 
 const mojo::Remote<printing::mojom::PrintBackendService>&
@@ -29,6 +34,10 @@ GetPrintBackendService(const std::string& locale,
   static base::NoDestructor<base::flat_map<
       std::string, mojo::Remote<printing::mojom::PrintBackendService>>>
       remotes;
+
+  if (g_print_backend_service_for_test)
+    return *g_print_backend_service_for_test;
+
   std::string remote_id;
 #if defined(OS_WIN)
   // Windows drivers are not thread safe.  Use a process per driver to prevent
@@ -73,4 +82,9 @@ GetPrintBackendService(const std::string& locale,
   }
 
   return service;
+}
+
+void SetPrintBackendServiceForTesting(
+    mojo::Remote<printing::mojom::PrintBackendService>* remote) {
+  g_print_backend_service_for_test = remote;
 }

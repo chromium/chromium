@@ -21,14 +21,20 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     }
 
     @Override
+    public void onPageLoadStarted(Tab tab, GURL url) {
+        SearchResultUserData searchResultUserData = SearchResultUserData.getOrCreateForTab(tab);
+        searchResultUserData.updateCurrentUrl(url);
+    }
+
+    @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
-        SearchResultUserData searchResultUserData = SearchResultUserData.getForTab(tab);
+        SearchResultUserData searchResultUserData = SearchResultUserData.getOrCreateForTab(tab);
         searchResultUserData.updateCurrentUrl(url);
 
         // Cancel any existing requests.
         resetProducer();
 
-        String query = SearchUrlHelper.getQueryIfSrpUrl(url);
+        String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
         if (query == null) return;
 
         mProducer = SearchResultProducerFactory.create(tab, this);
@@ -42,7 +48,7 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     @Override
     public void onCloseContents(Tab tab) {
         resetProducer();
-        SearchResultUserData.getForTab(tab).invalidateData();
+        SearchResultUserData.getOrCreateForTab(tab).invalidateData();
     }
 
     @Override
@@ -57,7 +63,7 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         assert metadata != null;
         mProducer = null;
 
-        SearchResultUserData.getForTab(mTab).updateData(metadata, mTab.getUrl());
+        SearchResultUserData.getOrCreateForTab(mTab).updateData(metadata, mTab.getUrl());
     }
 
     @Override

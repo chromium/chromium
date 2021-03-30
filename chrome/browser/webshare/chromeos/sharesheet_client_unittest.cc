@@ -17,8 +17,8 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
-#include "chrome/browser/webshare/chromeos/prepare_directory_task.h"
-#include "chrome/browser/webshare/chromeos/store_file_task.h"
+#include "chrome/browser/webshare/prepare_directory_task.h"
+#include "chrome/browser/webshare/store_file_task.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/web_contents_tester.h"
@@ -35,13 +35,26 @@ class SharesheetClientUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    StoreFileTask::SkipCopyingForTesting();
     SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindRepeating(&SharesheetClientUnitTest::AcceptShareRequest));
   }
 
-  void SetIncognito() {
+  void SetGuest() {
     Profile* const otr_profile = profile()->GetOffTheRecordProfile(
         Profile::OTRProfileID("Test::SharesheetClient"));
+    EXPECT_TRUE(otr_profile->IsOffTheRecord());
+    EXPECT_FALSE(otr_profile->IsIncognitoProfile());
+    scoped_refptr<content::SiteInstance> instance =
+        content::SiteInstance::Create(otr_profile);
+    SetContents(content::WebContentsTester::CreateTestWebContents(
+        otr_profile, std::move(instance)));
+  }
+
+  void SetIncognito() {
+    Profile* const otr_profile = profile()->GetPrimaryOTRProfile();
+    EXPECT_TRUE(otr_profile->IsOffTheRecord());
+    EXPECT_TRUE(otr_profile->IsIncognitoProfile());
     scoped_refptr<content::SiteInstance> instance =
         content::SiteInstance::Create(otr_profile);
     SetContents(content::WebContentsTester::CreateTestWebContents(
@@ -108,6 +121,7 @@ TEST_F(SharesheetClientUnitTest, TestWithoutFilesInIncognito) {
 }
 
 TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
+  SetGuest();
   SharesheetClient sharesheet_client(web_contents());
   const base::FilePath my_files =
       file_manager::util::GetMyFilesFolderForProfile(profile());
@@ -127,7 +141,6 @@ TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
 
   base::RunLoop run_loop;
   blink::mojom::ShareError error = blink::mojom::ShareError::INTERNAL_ERROR;
-  StoreFileTask::SkipCopyingForTesting();
   sharesheet_client.Share(
       title, text, share_url, std::move(files),
       base::BindLambdaForTesting(

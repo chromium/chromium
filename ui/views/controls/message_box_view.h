@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/view.h"
@@ -40,7 +40,7 @@ class VIEWS_EXPORT MessageBoxView : public View {
   // http://dev.w3.org/html5/spec/Overview.html#text-rendered-in-native-user-interfaces:
   // The spec does not say anything about alignment. And we choose to
   // align all paragraphs according to the direction of the first paragraph.
-  explicit MessageBoxView(const base::string16& message = base::string16(),
+  explicit MessageBoxView(const std::u16string& message = std::u16string(),
                           bool detect_directionality = false);
 
   ~MessageBoxView() override;
@@ -50,7 +50,7 @@ class VIEWS_EXPORT MessageBoxView : public View {
 
   // Returns user entered data in the prompt field, returns an empty string if
   // no visible prompt field.
-  base::string16 GetInputText();
+  std::u16string GetInputText();
 
   // Returns true if this message box has a visible checkbox, false otherwise.
   bool HasVisibleCheckBox() const;
@@ -63,22 +63,19 @@ class VIEWS_EXPORT MessageBoxView : public View {
   // first call. Otherwise, it changes the label of the current checkbox. To
   // start, the message box has no visible checkbox until this function is
   // called.
-  void SetCheckBoxLabel(const base::string16& label);
+  void SetCheckBoxLabel(const std::u16string& label);
 
   // Sets the state of the check-box if it is visible.
   void SetCheckBoxSelected(bool selected);
 
   // Sets the text and the callback of the link. |text| must be non-empty.
-  void SetLink(const base::string16& text, Link::ClickedCallback callback);
-
-  // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void SetLink(const std::u16string& text, Link::ClickedCallback callback);
 
   void SetInterRowVerticalSpacing(int spacing);
   void SetMessageWidth(int width);
 
   // Adds a prompt field with |default_prompt| as the displayed text.
-  void SetPromptField(const base::string16& default_prompt);
+  void SetPromptField(const std::u16string& default_prompt);
 
  protected:
   // View:

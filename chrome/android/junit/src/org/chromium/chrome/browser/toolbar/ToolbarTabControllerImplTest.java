@@ -27,10 +27,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.test.util.browser.Features;
@@ -56,7 +58,8 @@ public class ToolbarTabControllerImplTest {
                     && argument.getTransitionType() == mLoadUrlParams.getTransitionType();
         }
     }
-
+    @Rule
+    public JniMocker mocker = new JniMocker();
     @Mock
     private Supplier<Tab> mTabSupplier;
     @Mock
@@ -64,17 +67,19 @@ public class ToolbarTabControllerImplTest {
     @Mock
     private Supplier<Boolean> mOverrideHomePageSupplier;
     @Mock
-    private Supplier<Profile> mProfileSupplier;
-    @Mock
-    private Profile mProfile;
-    @Mock
     private Supplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
     @Mock
     private BottomControlsCoordinator mBottomControlsCoordinator;
     @Mock
     private Tracker mTracker;
     @Mock
+    private Supplier<Tracker> mTrackerSupplier;
+    @Mock
     private Runnable mRunnable;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    public Profile.Natives mMockProfileNatives;
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -86,9 +91,11 @@ public class ToolbarTabControllerImplTest {
         MockitoAnnotations.initMocks(this);
         doReturn(mTab).when(mTabSupplier).get();
         doReturn(false).when(mOverrideHomePageSupplier).get();
+        mocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
+        doReturn(mProfile).when(mMockProfileNatives).fromWebContents(any());
         TrackerFactory.setTrackerForTests(mTracker);
         mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
-                mOverrideHomePageSupplier, mProfileSupplier, mBottomControlsCoordinatorSupplier,
+                mOverrideHomePageSupplier, mTrackerSupplier, mBottomControlsCoordinatorSupplier,
                 ToolbarManager::homepageUrl, mRunnable);
     }
 
@@ -154,7 +161,7 @@ public class ToolbarTabControllerImplTest {
     @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
     public void openHomepage_handledByStartSurfaceWithProfile() {
         doReturn(true).when(mOverrideHomePageSupplier).get();
-        doReturn(mProfile).when(mProfileSupplier).get();
+        doReturn(mTracker).when(mTrackerSupplier).get();
 
         mToolbarTabController.openHomepage();
 
@@ -166,7 +173,7 @@ public class ToolbarTabControllerImplTest {
     @Features.DisableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
     public void openHomepage_handledByStartSurface_disabledNtpButtonFeature() {
         doReturn(true).when(mOverrideHomePageSupplier).get();
-        doReturn(mProfile).when(mProfileSupplier).get();
+        doReturn(mTracker).when(mTrackerSupplier).get();
 
         mToolbarTabController.openHomepage();
 

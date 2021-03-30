@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/form_parsing/email_field.h"
+#include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
 #include "components/autofill/core/browser/form_parsing/name_field.h"
 #include "components/autofill/core/browser/form_parsing/phone_field.h"
 #include "components/autofill/core/browser/form_parsing/price_field.h"
@@ -40,7 +41,7 @@ namespace autofill {
 
 // There's an implicit precedence determined by the values assigned here. Email
 // is currently the most important followed by Phone, Travel, Address,
-// Credit Card, Name, and Search.
+// Credit Card, Price, Name, Merchant promo code, and Search.
 const float FormField::kBaseEmailParserScore = 1.4f;
 const float FormField::kBasePhoneParserScore = 1.3f;
 const float FormField::kBaseTravelParserScore = 1.2f;
@@ -48,6 +49,7 @@ const float FormField::kBaseAddressParserScore = 1.1f;
 const float FormField::kBaseCreditCardParserScore = 1.0f;
 const float FormField::kBasePriceParserScore = 0.95f;
 const float FormField::kBaseNameParserScore = 0.9f;
+const float FormField::kBaseMerchantPromoCodeParserScore = 0.85f;
 const float FormField::kBaseSearchParserScore = 0.8f;
 
 // static
@@ -103,6 +105,10 @@ FieldCandidatesMap FormField::ParseFormFields(
   ParseFormFieldsPass(NameField::Parse, processed_fields, &field_candidates,
                       page_language, log_manager);
 
+  // Merchant promo code pass.
+  ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
+                      &field_candidates, page_language, log_manager);
+
   // Search pass.
   ParseFormFieldsPass(SearchField::Parse, processed_fields, &field_candidates,
                       page_language, log_manager);
@@ -133,7 +139,7 @@ FieldCandidatesMap FormField::ParseFormFields(
       }
       for (const auto& candidate : field_candidates) {
         LogBuffer name;
-        name << "Type candidate for renderer ID: " << candidate.first.value();
+        name << "Type candidate for frame and renderer ID: " << candidate.first;
         LogBuffer description;
         ServerFieldType field_type = candidate.second.BestHeuristicType();
         description << "BestHeuristicType: "
@@ -155,7 +161,7 @@ FieldCandidatesMap FormField::ParseFormFields(
 
 // static
 bool FormField::ParseField(AutofillScanner* scanner,
-                           const base::string16& pattern,
+                           const std::u16string& pattern,
                            AutofillField** match,
                            const RegExLogging& logging) {
   return ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT, match, logging);
@@ -169,7 +175,7 @@ bool FormField::ParseField(AutofillScanner* scanner,
 }
 
 bool FormField::ParseField(AutofillScanner* scanner,
-                           const base::string16& pattern,
+                           const std::u16string& pattern,
                            const std::vector<MatchingPattern>& patterns,
                            AutofillField** match,
                            const RegExLogging& logging) {
@@ -184,7 +190,7 @@ bool FormField::ParseField(AutofillScanner* scanner,
 }
 
 bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
-                                    const base::string16& pattern,
+                                    const std::u16string& pattern,
                                     int match_field_attributes,
                                     int match_field_input_types,
                                     AutofillField** match,
@@ -241,7 +247,7 @@ bool FormField::ParseFieldSpecifics(
 
 // static
 bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
-                                    const base::string16& pattern,
+                                    const std::u16string& pattern,
                                     int match_type,
                                     AutofillField** match,
                                     const RegExLogging& logging) {
@@ -254,7 +260,7 @@ bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
 
 bool FormField::ParseFieldSpecifics(
     AutofillScanner* scanner,
-    const base::string16& pattern,
+    const std::u16string& pattern,
     int match_type,
     const std::vector<MatchingPattern>& patterns,
     AutofillField** match,
@@ -284,8 +290,8 @@ bool FormField::ParseFieldSpecifics(
 // static
 bool FormField::ParseEmptyLabel(AutofillScanner* scanner,
                                 AutofillField** match) {
-  return ParseFieldSpecifics(scanner, base::ASCIIToUTF16("^$"),
-                             MATCH_LABEL | MATCH_ALL_INPUTS, match);
+  return ParseFieldSpecifics(scanner, u"^$", MATCH_LABEL | MATCH_ALL_INPUTS,
+                             match);
 }
 
 // static
@@ -297,12 +303,12 @@ void FormField::AddClassification(const AutofillField* field,
   if (field == nullptr)
     return;
 
-  FieldCandidates& candidates = (*field_candidates)[field->unique_renderer_id];
+  FieldCandidates& candidates = (*field_candidates)[field->global_id()];
   candidates.AddFieldCandidate(type, score);
 }
 
 bool FormField::MatchAndAdvance(AutofillScanner* scanner,
-                                const base::string16& pattern,
+                                const std::u16string& pattern,
                                 int match_field_attributes,
                                 int match_field_input_types,
                                 AutofillField** match,
@@ -321,7 +327,7 @@ bool FormField::MatchAndAdvance(AutofillScanner* scanner,
 
 // static
 bool FormField::MatchAndAdvance(AutofillScanner* scanner,
-                                const base::string16& pattern,
+                                const std::u16string& pattern,
                                 int match_type,
                                 AutofillField** match,
                                 const RegExLogging& logging) {
@@ -333,25 +339,34 @@ bool FormField::MatchAndAdvance(AutofillScanner* scanner,
 }
 
 bool FormField::Match(const AutofillField* field,
-                      const base::string16& pattern,
+                      const std::u16string& pattern,
                       int match_field_attributes,
                       int match_field_input_types,
                       const RegExLogging& logging) {
   bool found_match = false;
   base::StringPiece match_type_string;
   base::StringPiece16 value;
-  base::string16 match;
+  std::u16string match;
+
+  // TODO(crbug/1165780): Remove once shared labels are launched.
+  const std::u16string& label =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForParsingWithSharedLabels)
+          ? field->parseable_label()
+          : field->label;
+
+  const std::u16string& name = field->parseable_name();
 
   if ((match_field_attributes & MATCH_LABEL) &&
-      MatchesPattern(field->label, pattern, &match)) {
+      MatchesPattern(label, pattern, &match)) {
     found_match = true;
     match_type_string = "Match in label";
-    value = field->label;
+    value = label;
   } else if ((match_field_attributes & MATCH_NAME) &&
-             MatchesPattern(field->parseable_name(), pattern, &match)) {
+             MatchesPattern(name, pattern, &match)) {
     found_match = true;
     match_type_string = "Match in name";
-    value = field->parseable_name();
+    value = name;
   }
 
   if (found_match && logging.log_manager) {
@@ -372,7 +387,7 @@ bool FormField::Match(const AutofillField* field,
 
 // static
 bool FormField::Match(const AutofillField* field,
-                      const base::string16& pattern,
+                      const std::u16string& pattern,
                       int match_type,
                       const RegExLogging& logging) {
   int match_field_attributes = match_type & 0b11;

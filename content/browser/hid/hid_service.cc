@@ -17,7 +17,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace content {
 
@@ -70,9 +70,7 @@ void RemoveProtectedReports(device::mojom::HidDeviceInfo& device) {
 HidService::HidService(RenderFrameHost* render_frame_host,
                        mojo::PendingReceiver<blink::mojom::HidService> receiver)
     : FrameServiceBase(render_frame_host, std::move(receiver)),
-      requesting_origin_(render_frame_host->GetLastCommittedOrigin()),
-      embedding_origin_(
-          render_frame_host->GetMainFrame()->GetLastCommittedOrigin()) {
+      origin_(render_frame_host->GetMainFrame()->GetLastCommittedOrigin()) {
   watchers_.set_disconnect_handler(
       base::BindRepeating(&HidService::OnWatcherRemoved, base::Unretained(this),
                           true /* cleanup_watcher_ids */));
@@ -99,8 +97,8 @@ void HidService::Create(
   DCHECK(render_frame_host);
 
   if (!render_frame_host->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kHid)) {
-    mojo::ReportBadMessage("Feature policy blocks access to HID.");
+          blink::mojom::PermissionsPolicyFeature::kHid)) {
+    mojo::ReportBadMessage("Permissions policy blocks access to HID.");
     return;
   }
 
@@ -135,7 +133,7 @@ void HidService::RequestDevice(
     RequestDeviceCallback callback) {
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
   if (!delegate->CanRequestDevicePermission(
-          WebContents::FromRenderFrameHost(render_frame_host()), origin())) {
+          WebContents::FromRenderFrameHost(render_frame_host()))) {
     std::move(callback).Run(std::vector<device::mojom::HidDeviceInfoPtr>());
     return;
   }
@@ -193,8 +191,7 @@ void HidService::DecrementActiveFrameCount() {
 void HidService::OnDeviceAdded(
     const device::mojom::HidDeviceInfo& device_info) {
   if (!GetContentClient()->browser()->GetHidDelegate()->HasDevicePermission(
-          WebContents::FromRenderFrameHost(render_frame_host()), origin(),
-          device_info)) {
+          WebContents::FromRenderFrameHost(render_frame_host()), device_info)) {
     return;
   }
 
@@ -210,8 +207,7 @@ void HidService::OnDeviceAdded(
 void HidService::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device_info) {
   if (!GetContentClient()->browser()->GetHidDelegate()->HasDevicePermission(
-          WebContents::FromRenderFrameHost(render_frame_host()), origin(),
-          device_info)) {
+          WebContents::FromRenderFrameHost(render_frame_host()), device_info)) {
     return;
   }
 
@@ -229,10 +225,8 @@ void HidService::OnHidManagerConnectionError() {
   clients_.Clear();
 }
 
-void HidService::OnPermissionRevoked(const url::Origin& requesting_origin,
-                                     const url::Origin& embedding_origin) {
-  if (requesting_origin_ != requesting_origin ||
-      embedding_origin_ != embedding_origin) {
+void HidService::OnPermissionRevoked(const url::Origin& origin) {
+  if (origin_ != origin) {
     return;
   }
 
@@ -247,8 +241,7 @@ void HidService::OnPermissionRevoked(const url::Origin& requesting_origin,
         if (!device_info)
           return true;
 
-        if (delegate->HasDevicePermission(web_contents, origin(),
-                                          *device_info)) {
+        if (delegate->HasDevicePermission(web_contents, *device_info)) {
           return false;
         }
 
@@ -272,8 +265,7 @@ void HidService::FinishGetDevices(
       continue;
 
     if (delegate->HasDevicePermission(
-            WebContents::FromRenderFrameHost(render_frame_host()), origin(),
-            *device))
+            WebContents::FromRenderFrameHost(render_frame_host()), *device))
       result.push_back(std::move(device));
   }
 

@@ -13,6 +13,8 @@ source_set("color_headers") {
     "color_id_macros.inc",
     "color_mixer.h",
     "color_provider.h",
+    "color_provider_manager.h",
+    "color_provider_utils.h",
     "color_set.h",
   ]
 
@@ -26,8 +28,8 @@ component("color") {
   sources = [
     "color_mixer.cc",
     "color_provider.cc",
-    "color_provider_manager.cc",
-    "color_provider_manager.h",
+    "color_provider_utils.cc",
+    "color_provider_utils.h",
     "color_recipe.cc",
     "color_recipe.h",
     "color_set.cc",
@@ -43,6 +45,15 @@ component("color") {
     "//skia:skia",
     "//ui/gfx:color_utils",
   ]
+
+  if (is_mac) {
+    frameworks = [ "AppKit.framework" ]
+    sources += [
+      "mac/native_color_transform.mm",
+      "mac/system_color_utils.h",
+      "mac/system_color_utils.mm",
+    ]
+  }
 }
 
 test("color_unittests") {
@@ -60,6 +71,7 @@ test("color_unittests") {
 
   deps = [
     ":color",
+    ":mixers",
     "//base/test:test_support",
     "//testing/gtest",
   ]
@@ -68,6 +80,8 @@ test("color_unittests") {
 component("mixers") {
   sources = [
     "color_mixers.h",
+    "color_provider_manager.cc",
+    "color_provider_manager.h",
     "core_default_color_mixer.cc",
     "ui_color_mixer.cc",
   ]
@@ -96,6 +110,8 @@ component("mixers") {
       "mac/scoped_current_nsappearance.h",
       "mac/scoped_current_nsappearance.mm",
     ]
+  } else if (is_ios) {
+    sources += [ "ios/native_color_mixers.mm" ]
   } else if (is_win) {
     sources += [ "win/native_color_mixers.cc" ]
   }

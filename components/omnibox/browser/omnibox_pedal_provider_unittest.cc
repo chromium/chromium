@@ -6,7 +6,6 @@
 
 #include "base/environment.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -18,18 +17,15 @@ class OmniboxPedalProviderTest : public testing::Test {
 
 TEST_F(OmniboxPedalProviderTest, QueriesTriggerPedals) {
   MockAutocompleteProviderClient client;
-  AutocompleteInput input;
-  OmniboxPedalProvider provider(client);
-  EXPECT_EQ(provider.FindPedalMatch(input, base::ASCIIToUTF16("")), nullptr);
-  EXPECT_EQ(provider.FindPedalMatch(input, base::ASCIIToUTF16("clear histor")),
-            nullptr);
-  EXPECT_NE(provider.FindPedalMatch(input, base::ASCIIToUTF16("clear history")),
-            nullptr);
+  OmniboxPedalProvider provider(client, true);
+  EXPECT_EQ(provider.FindPedalMatch(u""), nullptr);
+  EXPECT_EQ(provider.FindPedalMatch(u"clear histor"), nullptr);
+  EXPECT_NE(provider.FindPedalMatch(u"clear history"), nullptr);
 }
 
 TEST_F(OmniboxPedalProviderTest, MemoryUsageIsModerate) {
   MockAutocompleteProviderClient client;
-  OmniboxPedalProvider provider(client);
+  OmniboxPedalProvider provider(client, true);
   // Note: This allowance is a soft limit that may be tweaked depending on
   // how usefulness is weighed against memory cost. The goal of the test is
   // just to prove a reasonable bound.

@@ -5,8 +5,9 @@
 #ifndef ASH_LOGIN_UI_ACCESS_CODE_INPUT_H_
 #define ASH_LOGIN_UI_ACCESS_CODE_INPUT_H_
 
+#include <string>
+
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -70,7 +71,7 @@ class FlexCodeInput : public AccessCodeInput {
   FlexCodeInput& operator=(const FlexCodeInput&) = delete;
   ~FlexCodeInput() override;
 
-  void SetAccessibleName(const base::string16& name);
+  void SetAccessibleName(const std::u16string& name);
 
   // Appends |value| to the code
   void InsertDigit(int value) override;
@@ -95,7 +96,7 @@ class FlexCodeInput : public AccessCodeInput {
 
   // views::TextfieldController
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
   // views::TextfieldController
   bool HandleKeyEvent(views::Textfield* sender,
@@ -251,7 +252,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   AccessibleInputField* ActiveField() const;
 
   // Returns text in the active input field.
-  const base::string16& ActiveInput() const;
+  const std::u16string& ActiveInput() const;
 
   // To be called when access input code changes (digit is inserted, deleted or
   // updated). Passes true when code is complete (all digits have input value)
@@ -272,7 +273,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   // Value of current input, associate with AX event. The value will be the
   // concat string of input fields. i.e. [1][2][3][|][][], text_value_for_a11y_
   // = "123   ".
-  base::string16 text_value_for_a11y_;
+  std::u16string text_value_for_a11y_;
 
   // Whether the user can navigate the input fields with the arrow keys.
   bool arrow_navigation_allowed_ = true;

@@ -54,7 +54,7 @@ void TextInputTestLocalFrame::GetStringForRange(
             // Updates the string from the range and calls |callback|.
             frame->SetStringFromRange(
                 base::UTF16ToUTF8(attributed_string ? attributed_string->string
-                                                    : base::string16()));
+                                                    : std::u16string()));
             std::move(callback).Run(std::move(attributed_string), gfx::Point());
 
             // Calls |quit_closure_|.

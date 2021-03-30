@@ -9,7 +9,7 @@
         <!-- Text colors -->
         <item name="android:textColorLink">@color/default_text_color_link</item>
         <item name="android:textColorHighlight">@color/text_highlight_color</item>
-        <item name="android:textColorHint">@color/default_text_color_secondary</item>
+        <item name="android:textColorHint">@color/default_text_color_hint_list</item>
 
         <!-- Color of checkboxes, switches, buttons, etc. -->
         <item name="colorAccent">@color/default_control_color_active</item>
@@ -42,6 +42,9 @@
             @style/TextAppearance.TextLarge.Primary
         </item>
         <item name="android:contextPopupMenuStyle" tools:targetApi="24">@style/PopupMenuStyle</item>
+
+        <!-- Shape -->
+        <item name="menuCornerSize">@dimen/popup_bg_corner_radius</item>
     </style>
 
     <!-- Popup and long-press context popup menu style -->
@@ -152,4 +155,9 @@
         <item name="colorAccent">@color/default_control_color_active</item>
     </style>
     <style name="Theme.Chromium.Fullscreen" parent="Base.Theme.Chromium.Fullscreen" />
+
+    <!-- Refactored styles -->
+    <style name="ThemeRefactorAppThemeOverlay">
+        <item name="menuCornerSize">@dimen/refactor_menu_rounded_corner_radius</item>
+    </style>
 </resources>

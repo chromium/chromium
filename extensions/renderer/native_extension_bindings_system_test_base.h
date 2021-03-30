@@ -14,15 +14,15 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/frame.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/message_target.h"
 #include "extensions/renderer/string_source_map.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-struct ExtensionHostMsg_Request_Params;
 
 namespace base {
 class DictionaryValue;
@@ -48,12 +48,11 @@ class TestIPCMessageSender : public IPCMessageSender {
   ~TestIPCMessageSender() override;
 
   // IPCMessageSender:
-  void SendRequestIPC(
-      ScriptContext* context,
-      std::unique_ptr<ExtensionHostMsg_Request_Params> params) override;
+  void SendRequestIPC(ScriptContext* context,
+                      mojom::RequestParamsPtr params) override;
   void SendOnRequestResponseReceivedIPC(int request_id) override {}
   // The event listener methods are less of a pain to mock (since they don't
-  // have complex parameters like ExtensionHostMsg_Request_Params).
+  // have complex parameters like mojom::RequestParams).
   MOCK_METHOD2(SendAddUnfilteredEventListenerIPC,
                void(ScriptContext* context, const std::string& event_name));
   MOCK_METHOD2(SendRemoveUnfilteredEventListenerIPC,
@@ -89,12 +88,10 @@ class TestIPCMessageSender : public IPCMessageSender {
   MOCK_METHOD2(SendPostMessageToPort,
                void(const PortId& port_id, const Message& message));
 
-  const ExtensionHostMsg_Request_Params* last_params() const {
-    return last_params_.get();
-  }
+  const mojom::RequestParams* last_params() const { return last_params_.get(); }
 
  private:
-  std::unique_ptr<ExtensionHostMsg_Request_Params> last_params_;
+  mojom::RequestParamsPtr last_params_;
 
   DISALLOW_COPY_AND_ASSIGN(TestIPCMessageSender);
 };
@@ -129,7 +126,7 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
     return bindings_system_.get();
   }
   bool has_last_params() const { return !!ipc_message_sender_->last_params(); }
-  const ExtensionHostMsg_Request_Params& last_params() {
+  const mojom::RequestParams& last_params() {
     return *ipc_message_sender_->last_params();
   }
   StringSourceMap* source_map() { return &source_map_; }
@@ -147,8 +144,6 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
   // The TestIPCMessageSender; owned by the bindings system.
   TestIPCMessageSender* ipc_message_sender_ = nullptr;
-
-  std::unique_ptr<ExtensionHostMsg_Request_Params> last_params_;
 
   StringSourceMap source_map_;
   TestExtensionsRendererClient renderer_client_;

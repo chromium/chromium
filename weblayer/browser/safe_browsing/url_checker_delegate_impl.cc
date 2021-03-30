@@ -5,12 +5,12 @@
 #include "weblayer/browser/safe_browsing/url_checker_delegate_impl.h"
 
 #include "base/bind.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_ui_manager.h"
 
@@ -18,14 +18,16 @@ namespace weblayer {
 
 namespace {
 
-// Destroys the prerender contents associated with the web_contents, if any.
-void DestroyPrerenderContents(
+// Destroys the NoStatePrefetch contents associated with the web_contents, if
+// any.
+void DestroyNoStatePrefetchContents(
     content::WebContents::OnceGetter web_contents_getter) {
   content::WebContents* web_contents = std::move(web_contents_getter).Run();
 
-  auto* prerender_contents = PrerenderContentsFromWebContents(web_contents);
-  if (prerender_contents)
-    prerender_contents->Destroy(prerender::FINAL_STATUS_SAFE_BROWSING);
+  auto* no_state_prefetch_contents =
+      NoStatePrefetchContentsFromWebContents(web_contents);
+  if (no_state_prefetch_contents)
+    no_state_prefetch_contents->Destroy(prerender::FINAL_STATUS_SAFE_BROWSING);
 }
 
 }  // namespace
@@ -43,11 +45,11 @@ UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
 
 UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
 
-void UrlCheckerDelegateImpl::MaybeDestroyPrerenderContents(
+void UrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
     content::WebContents::OnceGetter web_contents_getter) {
   // Destroy the prefetch with FINAL_STATUS_SAFE_BROWSING.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DestroyPrerenderContents,
+      FROM_HERE, base::BindOnce(&DestroyNoStatePrefetchContents,
                                 std::move(web_contents_getter)));
 }
 
@@ -88,6 +90,12 @@ void UrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
 bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   // TODO(timvolodine): false for now, we may want allowlisting support later.
   return false;
+}
+
+void UrlCheckerDelegateImpl::SetPolicyAllowlistDomains(
+    const std::vector<std::string>& allowlist_domains) {
+  // The SafeBrowsingAllowlistDomains policy is not supported on WebLayer.
+  return;
 }
 
 bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(

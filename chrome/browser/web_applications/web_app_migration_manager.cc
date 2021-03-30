@@ -159,9 +159,9 @@ void WebAppMigrationManager::OnWebAppIconsWritten(const AppId& app_id,
 
 void WebAppMigrationManager::OnBookmarkAppShortcutsMenuIconsRead(
     const AppId& app_id,
-    ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps) {
+    ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
   web_app_icon_manager_->WriteShortcutsMenuIconsData(
-      app_id, std::move(shortcuts_menu_icons_bitmaps),
+      app_id, std::move(shortcuts_menu_icon_bitmaps),
       base::BindOnce(&WebAppMigrationManager::OnWebAppShortcutsMenuIconsWritten,
                      weak_ptr_factory_.GetWeakPtr()));
 }

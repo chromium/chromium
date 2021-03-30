@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,7 +26,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
@@ -37,6 +36,8 @@
 #include "components/safety_check/test_update_check_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
@@ -161,12 +162,22 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   }
 
   void InvokeOnCompromisedCredentialsChanged() {
+    // Compromised credentials can be added only after password form to which
+    // they corresponds exists.
+    password_manager::PasswordForm form;
+    form.signon_realm = std::string("test.com");
+    form.url = GURL("test.com");
     // Credentials have to be unique, so the callback is always invoked.
-    store_->AddCompromisedCredentials(password_manager::CompromisedCredentials(
-        "test.com",
-        base::ASCIIToUTF16("test" +
-                           base::NumberToString(test_credential_counter_++)),
-        base::Time(), password_manager::CompromiseType::kLeaked,
+    form.username_value = base::ASCIIToUTF16(
+        "test" + base::NumberToString(test_credential_counter_++));
+    form.password_value = u"password";
+    form.username_element = u"username_element";
+    store_->AddLogin(form);
+    base::RunLoop().RunUntilIdle();
+
+    store_->AddInsecureCredential(password_manager::InsecureCredential(
+        form.signon_realm, form.username_value, base::Time(),
+        password_manager::InsecureType::kLeaked,
         password_manager::IsMuted(false)));
     base::RunLoop().RunUntilIdle();
   }
@@ -268,7 +279,7 @@ class TestChromeCleanerControllerDelegate
 
 }  // namespace
 
-class SafetyCheckHandlerTest : public ChromeRenderViewHostTestHarness {
+class SafetyCheckHandlerTest : public testing::Test {
  public:
   void SetUp() override;
   void TearDown() override;
@@ -283,16 +294,19 @@ class SafetyCheckHandlerTest : public ChromeRenderViewHostTestHarness {
   std::string GenerateExtensionId(char char_to_repeat);
 
   void VerifyDisplayString(const base::DictionaryValue* event,
-                           const base::string16& expected);
+                           const std::u16string& expected);
   void VerifyDisplayString(const base::DictionaryValue* event,
                            const std::string& expected);
 
   // Replaces any instances of browser name (e.g. Google Chrome, Chromium,
   // etc) with "browser" to make sure tests work both on Chromium and
   // Google Chrome.
-  void ReplaceBrowserName(base::string16* s);
+  void ReplaceBrowserName(std::u16string* s);
 
  protected:
+  content::BrowserTaskEnvironment browser_task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   safety_check::TestUpdateCheckHelper* update_helper_ = nullptr;
   TestVersionUpdater* version_updater_ = nullptr;
   std::unique_ptr<password_manager::BulkLeakCheckService> test_leak_service_;
@@ -309,9 +323,13 @@ class SafetyCheckHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 void SafetyCheckHandlerTest::SetUp() {
-  ChromeRenderViewHostTestHarness::SetUp();
-
   feature_list_.InitWithFeatures({features::kSafetyCheckWeakPasswords}, {});
+
+  TestingProfile::Builder builder;
+  profile_ = builder.Build();
+
+  web_contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(profile_.get()));
 
   // The unique pointer to a TestVersionUpdater gets moved to
   // SafetyCheckHandler, but a raw pointer is retained here to change its
@@ -323,8 +341,8 @@ void SafetyCheckHandlerTest::SetUp() {
   test_leak_service_ = std::make_unique<password_manager::BulkLeakCheckService>(
       nullptr, nullptr);
   test_passwords_delegate_.SetBulkLeakCheckService(test_leak_service_.get());
-  test_web_ui_.set_web_contents(web_contents());
-  test_extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
+  test_web_ui_.set_web_contents(web_contents_.get());
+  test_extension_prefs_ = extensions::ExtensionPrefs::Get(profile_.get());
   auto timestamp_delegate = std::make_unique<TestTimestampDelegate>();
   safety_check_ = std::make_unique<TestingSafetyCheckHandler>(
       std::move(update_helper), std::move(version_updater),
@@ -334,11 +352,12 @@ void SafetyCheckHandlerTest::SetUp() {
   test_web_ui_.ClearTrackedCalls();
   safety_check_->set_web_ui(&test_web_ui_);
   safety_check_->AllowJavascript();
+
+  browser_task_environment_.RunUntilIdle();
 }
 
 void SafetyCheckHandlerTest::TearDown() {
   test_passwords_delegate_.TearDown();
-  ChromeRenderViewHostTestHarness::TearDown();
 }
 
 const base::DictionaryValue*
@@ -377,14 +396,14 @@ std::string SafetyCheckHandlerTest::GenerateExtensionId(char char_to_repeat) {
 
 void SafetyCheckHandlerTest::VerifyDisplayString(
     const base::DictionaryValue* event,
-    const base::string16& expected) {
-  base::string16 display;
+    const std::u16string& expected) {
+  std::u16string display;
   ASSERT_TRUE(event->GetString("displayString", &display));
   ReplaceBrowserName(&display);
   // Need to also replace any instances of Chrome and Chromium in the
   // expected string due to an edge case on ChromeOS, where a device name
   // is "Chrome", which gets replaced in the display string.
-  base::string16 expected_replaced = expected;
+  std::u16string expected_replaced = expected;
   ReplaceBrowserName(&expected_replaced);
   EXPECT_EQ(expected_replaced, display);
 }
@@ -395,13 +414,10 @@ void SafetyCheckHandlerTest::VerifyDisplayString(
   VerifyDisplayString(event, base::ASCIIToUTF16(expected));
 }
 
-void SafetyCheckHandlerTest::ReplaceBrowserName(base::string16* s) {
-  base::ReplaceSubstringsAfterOffset(s, 0, base::ASCIIToUTF16("Google Chrome"),
-                                     base::ASCIIToUTF16("Browser"));
-  base::ReplaceSubstringsAfterOffset(s, 0, base::ASCIIToUTF16("Chrome"),
-                                     base::ASCIIToUTF16("Browser"));
-  base::ReplaceSubstringsAfterOffset(s, 0, base::ASCIIToUTF16("Chromium"),
-                                     base::ASCIIToUTF16("Browser"));
+void SafetyCheckHandlerTest::ReplaceBrowserName(std::u16string* s) {
+  base::ReplaceSubstringsAfterOffset(s, 0, u"Google Chrome", u"Browser");
+  base::ReplaceSubstringsAfterOffset(s, 0, u"Chrome", u"Browser");
+  base::ReplaceSubstringsAfterOffset(s, 0, u"Chromium", u"Browser");
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckUpdates_Checking) {
@@ -412,7 +428,7 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Checking) {
           kUpdates,
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kChecking));
   ASSERT_TRUE(event);
-  VerifyDisplayString(event, base::UTF8ToUTF16(""));
+  VerifyDisplayString(event, u"");
   // Checking state should not get recorded.
   histogram_tester_.ExpectTotalCount("Settings.SafetyCheck.UpdatesResult", 0);
 }
@@ -426,9 +442,8 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Updated) {
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kUpdated));
   ASSERT_TRUE(event);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::string16 expected = base::ASCIIToUTF16("Your ") +
-                            ui::GetChromeOSDeviceName() +
-                            base::ASCIIToUTF16(" is up to date");
+  std::u16string expected =
+      u"Your " + ui::GetChromeOSDeviceName() + u" is up to date";
   VerifyDisplayString(event, expected);
 #else
   VerifyDisplayString(event, "Browser is up to date");
@@ -512,7 +527,9 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Disabled) {
       event, "Version " + version_info::GetVersionNumber() + " (" +
                  (version_info::IsOfficialBuild() ? "Official Build"
                                                   : "Developer Build") +
-                 ") " + chrome::GetChannelName() + processor_variation);
+                 ") " +
+                 chrome::GetChannelName(chrome::WithExtendedStable(true)) +
+                 processor_variation);
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.UpdatesResult",
       SafetyCheckHandler::UpdateStatus::kUnknown, 1);
@@ -752,7 +769,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_ObserverRemovedAfterError) {
           kPasswords,
           static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   ASSERT_TRUE(event);
-  VerifyDisplayString(event, base::UTF8ToUTF16(""));
+  VerifyDisplayString(event, u"");
   histogram_tester_.ExpectTotalCount("Settings.SafetyCheck.PasswordsResult", 0);
   // Second, an "offline" state.
   test_leak_service_->set_state_and_notify(
@@ -792,7 +809,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_InterruptedAndRefreshed) {
           kPasswords,
           static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   ASSERT_TRUE(event);
-  VerifyDisplayString(event, base::UTF8ToUTF16(""));
+  VerifyDisplayString(event, u"");
   // The check gets interrupted and the page is refreshed.
   safety_check_->DisallowJavascript();
   safety_check_->AllowJavascript();
@@ -906,9 +923,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StaleSafeThenCompromised) {
   // Not a "safe" state, so send an |OnCredentialDone| with is_leaked=true.
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
-      ->OnCredentialDone(
-          {base::ASCIIToUTF16("login"), base::ASCIIToUTF16("password")},
-          password_manager::IsLeaked(true));
+      ->OnCredentialDone({u"login", u"password"},
+                         password_manager::IsLeaked(true));
   // The service goes idle, but the disk still has a stale "safe" state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
@@ -1175,8 +1191,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_NoPasswords) {
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
-  auto credential = password_manager::LeakCheckCredential(
-      base::UTF8ToUTF16("test"), base::UTF8ToUTF16("test"));
+  auto credential = password_manager::LeakCheckCredential(u"test", u"test");
   auto is_leaked = password_manager::IsLeaked(false);
   safety_check_->PerformSafetyCheck();
   test_passwords_delegate_.SetPasswordCheckState(
@@ -1190,7 +1205,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
           kPasswords,
           static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   EXPECT_TRUE(event);
-  VerifyDisplayString(event, base::UTF8ToUTF16("Checking passwords (1 of 3)…"));
+  VerifyDisplayString(event, u"Checking passwords (1 of 3)…");
 
   test_passwords_delegate_.SetProgress(2, 3);
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
@@ -1201,8 +1216,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
           kPasswords,
           static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   EXPECT_TRUE(event2);
-  VerifyDisplayString(event2,
-                      base::UTF8ToUTF16("Checking passwords (2 of 3)…"));
+  VerifyDisplayString(event2, u"Checking passwords (2 of 3)…");
 
   // Final update comes after status change, so no new progress message should
   // be present.
@@ -1218,8 +1232,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
           static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   EXPECT_TRUE(event3);
   // Still 2/3 event.
-  VerifyDisplayString(event3,
-                      base::UTF8ToUTF16("Checking passwords (2 of 3)…"));
+  VerifyDisplayString(event3, u"Checking passwords (2 of 3)…");
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckExtensions_NoExtensions) {
@@ -1411,7 +1424,7 @@ class SafetyCheckHandlerChromeCleanerIdleTest
       public testing::WithParamInterface<
           std::tuple<safe_browsing::ChromeCleanerController::IdleReason,
                      SafetyCheckHandler::ChromeCleanerStatus,
-                     base::string16>> {
+                     std::u16string>> {
  protected:
   void SetUp() override {
     SafetyCheckHandlerTest::SetUp();
@@ -1422,7 +1435,7 @@ class SafetyCheckHandlerChromeCleanerIdleTest
 
   safe_browsing::ChromeCleanerController::IdleReason idle_reason_;
   SafetyCheckHandler::ChromeCleanerStatus expected_cct_status_;
-  base::string16 expected_display_string_;
+  std::u16string expected_display_string_;
 };
 
 TEST_P(SafetyCheckHandlerChromeCleanerIdleTest, CheckChromeCleanerIdleStates) {
@@ -1475,7 +1488,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::IdleReason::kReporterFailed,
         SafetyCheckHandler::ChromeCleanerStatus::kError,
-        base::UTF8ToUTF16("Something went wrong. Click for more details."))));
+        u"Something went wrong. Click for more details.")));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_ScanningFoundNothing,
@@ -1493,7 +1506,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::IdleReason::kScanningFailed,
         SafetyCheckHandler::ChromeCleanerStatus::kError,
-        base::UTF8ToUTF16("Something went wrong. Click for more details."))));
+        u"Something went wrong. Click for more details.")));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_ConnectionLost,
@@ -1501,16 +1514,16 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::IdleReason::kConnectionLost,
         SafetyCheckHandler::ChromeCleanerStatus::kInfected,
-        base::UTF8ToUTF16("Browser found harmful software on your computer"))));
+        u"Browser found harmful software on your computer")));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_UserDeclinedCleanup,
     SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::
-            kUserDeclinedCleanup,
-        SafetyCheckHandler::ChromeCleanerStatus::kInfected,
-        base::UTF8ToUTF16("Browser found harmful software on your computer"))));
+    ::testing::Values(
+        std::make_tuple(safe_browsing::ChromeCleanerController::IdleReason::
+                            kUserDeclinedCleanup,
+                        SafetyCheckHandler::ChromeCleanerStatus::kInfected,
+                        u"Browser found harmful software on your computer")));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_CleaningFailed,
@@ -1518,7 +1531,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::IdleReason::kCleaningFailed,
         SafetyCheckHandler::ChromeCleanerStatus::kError,
-        base::UTF8ToUTF16("Something went wrong. Click for more details."))));
+        u"Something went wrong. Click for more details.")));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_CleaningSucceed,
@@ -1532,18 +1545,18 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_CleanerDownloadFailed,
     SafetyCheckHandlerChromeCleanerIdleTest,
-    ::testing::Values(std::make_tuple(
-        safe_browsing::ChromeCleanerController::IdleReason::
-            kCleanerDownloadFailed,
-        SafetyCheckHandler::ChromeCleanerStatus::kError,
-        base::UTF8ToUTF16("Something went wrong. Click for more details."))));
+    ::testing::Values(
+        std::make_tuple(safe_browsing::ChromeCleanerController::IdleReason::
+                            kCleanerDownloadFailed,
+                        SafetyCheckHandler::ChromeCleanerStatus::kError,
+                        u"Something went wrong. Click for more details.")));
 
 class SafetyCheckHandlerChromeCleanerNonIdleTest
     : public SafetyCheckHandlerTest,
       public testing::WithParamInterface<
           std::tuple<safe_browsing::ChromeCleanerController::State,
                      SafetyCheckHandler::ChromeCleanerStatus,
-                     base::string16>> {
+                     std::u16string>> {
  protected:
   void SetUp() override {
     SafetyCheckHandlerTest::SetUp();
@@ -1554,7 +1567,7 @@ class SafetyCheckHandlerChromeCleanerNonIdleTest
 
   safe_browsing::ChromeCleanerController::State state_;
   SafetyCheckHandler::ChromeCleanerStatus expected_cct_status_;
-  base::string16 expected_display_string_;
+  std::u16string expected_display_string_;
 };
 
 TEST_P(SafetyCheckHandlerChromeCleanerNonIdleTest,
@@ -1615,7 +1628,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(std::make_tuple(
         safe_browsing::ChromeCleanerController::State::kInfected,
         SafetyCheckHandler::ChromeCleanerStatus::kInfected,
-        base::UTF8ToUTF16("Browser found harmful software on your computer"))));
+        u"Browser found harmful software on your computer")));
 
 INSTANTIATE_TEST_SUITE_P(
     CheckChromeCleaner_RebootRequired,
@@ -1703,7 +1716,7 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
   for (auto tuple : tuples) {
     const base::Time time =
         system_time - base::TimeDelta::FromSeconds(std::get<1>(tuple));
-    const base::string16 display_string =
+    const std::u16string display_string =
         safety_check_->GetStringForParentRan(time, system_time);
     EXPECT_EQ(base::UTF8ToUTF16(
                   base::StrCat({"Safety check ran ", std::get<0>(tuple)})),
@@ -1715,7 +1728,7 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
 TEST_F(SafetyCheckHandlerTest, CheckChromeCleanerRanDisplayString) {
   // Test string without timestamp.
   base::Time null_time;
-  base::string16 display_string =
+  std::u16string display_string =
       safety_check_->GetStringForChromeCleanerRan(null_time, null_time);
   ReplaceBrowserName(&display_string);
   EXPECT_EQ(display_string,
@@ -1769,31 +1782,31 @@ TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckStartedWebUiEvents) {
           kParent,
           static_cast<int>(SafetyCheckHandler::ParentStatus::kChecking));
   ASSERT_TRUE(event_parent);
-  VerifyDisplayString(event_parent, base::UTF8ToUTF16("Running…"));
+  VerifyDisplayString(event_parent, u"Running…");
   const base::DictionaryValue* event_updates =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kUpdates,
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kChecking));
   ASSERT_TRUE(event_updates);
-  VerifyDisplayString(event_updates, base::UTF8ToUTF16(""));
+  VerifyDisplayString(event_updates, u"");
   const base::DictionaryValue* event_pws =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kPasswords,
           static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   ASSERT_TRUE(event_pws);
-  VerifyDisplayString(event_pws, base::UTF8ToUTF16(""));
+  VerifyDisplayString(event_pws, u"");
   const base::DictionaryValue* event_sb =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kSafeBrowsing,
           static_cast<int>(SafetyCheckHandler::SafeBrowsingStatus::kChecking));
   ASSERT_TRUE(event_sb);
-  VerifyDisplayString(event_sb, base::UTF8ToUTF16(""));
+  VerifyDisplayString(event_sb, u"");
   const base::DictionaryValue* event_extensions =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kExtensions,
           static_cast<int>(SafetyCheckHandler::ExtensionsStatus::kChecking));
   ASSERT_TRUE(event_extensions);
-  VerifyDisplayString(event_extensions, base::UTF8ToUTF16(""));
+  VerifyDisplayString(event_extensions, u"");
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckCompletedWebUiEvents) {
@@ -1816,8 +1829,7 @@ TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckCompletedWebUiEvents) {
       GetSafetyCheckStatusChangedWithDataIfExists(
           kParent, static_cast<int>(SafetyCheckHandler::ParentStatus::kAfter));
   ASSERT_TRUE(event_parent);
-  VerifyDisplayString(event_parent,
-                      base::UTF8ToUTF16("Safety check ran a moment ago"));
+  VerifyDisplayString(event_parent, u"Safety check ran a moment ago");
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Subsequent Chrome cleaner status updates without the user running safety

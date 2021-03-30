@@ -8,6 +8,7 @@
 # and to load balance. Only use OWNERS in this file for these subdirectories
 # when doing refactorings and general cleanups.
 
+set noparent
 chcunningham@chromium.org
 dalecurtis@chromium.org
 jrummell@chromium.org

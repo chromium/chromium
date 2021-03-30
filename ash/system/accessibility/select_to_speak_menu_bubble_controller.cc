@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/floating_menu_utils.h"
+#include "ash/system/accessibility/select_to_speak_constants.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
@@ -53,7 +54,6 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::TOP_LEFT);
     bubble_view_->SetCanActivate(true);
-    bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
 
     menu_view_ = new SelectToSpeakMenuView(this);
     menu_view_->SetBorder(
@@ -92,7 +92,7 @@ void SelectToSpeakMenuBubbleController::Hide() {
   }
 }
 
-base::string16 SelectToSpeakMenuBubbleController::GetAccessibleNameForBubble() {
+std::u16string SelectToSpeakMenuBubbleController::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_MENU);
 }
 
@@ -111,7 +111,11 @@ void SelectToSpeakMenuBubbleController::OnWindowActivated(
 
   views::Widget* gained_widget =
       views::Widget::GetWidgetForNativeView(gained_active);
-  if (gained_widget == bubble_widget_ && menu_view_) {
+  if (gained_widget == bubble_widget_ && menu_view_ &&
+      (!lost_active ||
+       lost_active->GetName() != kSelectToSpeakSpeedBubbleWindowName)) {
+    // Reset initial focus of the menu view, unless we're coming from the
+    // reading speed selector.
     menu_view_->SetInitialFocus();
   }
 }
@@ -141,9 +145,10 @@ void SelectToSpeakMenuBubbleController::OnActionSelected(
 void SelectToSpeakMenuBubbleController::OnSpeechRateSelected(
     double speech_rate) {
   if (speed_bubble_controller_) {
+    menu_view_->SetSpeedButtonToggled(false);
+    menu_view_->SetSpeedButtonFocused();
     speed_bubble_controller_->Hide();
     speed_bubble_controller_.reset();
-    menu_view_->SetSpeedButtonToggled(false);
   }
   Shell::Get()->accessibility_controller()->OnSelectToSpeakPanelAction(
       SelectToSpeakPanelAction::kChangeSpeed, /*value=*/speech_rate);

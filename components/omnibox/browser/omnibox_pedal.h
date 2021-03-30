@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_H_
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_H_
 
+#include <string>
 #include <unordered_set>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_pedal_concepts.h"
@@ -40,17 +41,16 @@ class OmniboxPedal {
 
   struct LabelStrings {
     LabelStrings(int id_hint,
-                 int id_hint_short,
                  int id_suggestion_contents,
                  int id_accessibility_suffix,
                  int id_accessibility_hint);
+    LabelStrings();
     LabelStrings(const LabelStrings&);
     ~LabelStrings();
-    const base::string16 hint;
-    const base::string16 hint_short;
-    const base::string16 suggestion_contents;
-    const int id_accessibility_suffix;
-    const base::string16 accessibility_hint;
+    std::u16string hint;
+    std::u16string suggestion_contents;
+    std::u16string accessibility_suffix;
+    std::u16string accessibility_hint;
   };
 
   class SynonymGroup {
@@ -130,11 +130,18 @@ class OmniboxPedal {
   // Provides read access to labels associated with this Pedal.
   const LabelStrings& GetLabelStrings() const;
 
+  // Writes labels associated with this Pedal by taking named
+  //  values from provided dictionary value |ui_strings|.
+  void SetLabelStrings(const base::Value& ui_strings);
+
   // Returns true if this is purely a navigation Pedal with URL.
   bool IsNavigation() const;
 
   // For navigation Pedals, returns the destination URL.
   const GURL& GetNavigationUrl() const;
+
+  // Sets the destination URL for the Pedal.
+  void SetNavigationUrl(const GURL& url);
 
   // Takes the action associated with this Pedal.  Non-navigation
   // Pedals must override the default, but Navigation Pedals don't need to.

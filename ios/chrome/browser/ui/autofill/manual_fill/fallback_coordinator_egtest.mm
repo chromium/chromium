@@ -31,7 +31,7 @@ using chrome_test_util::ManualFallbackProfileTableViewWindowMatcher;
 
 namespace {
 
-// Using |isKeyboadDocked| requires to inject a UITextField in the window and
+// Using |isKeyboardDocked| requires to inject a UITextField in the window and
 // wait for it to be shown. For performance reasons, only try to dock the
 // keyboard in |tearDown| if it was undocked during the test.
 bool gKeyboardUndockAttempted = false;
@@ -48,21 +48,6 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
   return grey_buttonTitle(@"Underworld");
 }
 
-// Polls the JavaScript query |java_script_condition| until the returned
-// |boolValue| is YES with a kWaitForActionTimeout timeout.
-BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
-  auto verify_block = ^BOOL {
-    id boolValue = [ChromeEarlGrey executeJavaScript:java_script_condition];
-    return [boolValue isEqual:@YES];
-  };
-  //  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout;
-  NSString* condition_name = [NSString
-      stringWithFormat:@"Wait for JS condition: %@", java_script_condition];
-  GREYCondition* condition = [GREYCondition conditionWithName:condition_name
-                                                        block:verify_block];
-  return [condition waitWithTimeout:kWaitForActionTimeout];
-}
-
 // Undocks and split the keyboard by swiping it up. Does nothing if already
 // undocked. Some devices, like iPhone or iPad Pro, do not allow undocking or
 // splitting, this returns NO if it is the case.
@@ -73,7 +58,7 @@ BOOL UndockAndSplitKeyboard() {
   UITextField* textField = [KeyboardAppInterface showKeyboard];
 
   // Return if already undocked.
-  if (![KeyboardAppInterface isKeyboadDocked]) {
+  if (![KeyboardAppInterface isKeyboardDocked]) {
     // If a dummy textfield was created for this, remove it.
     [textField removeFromSuperview];
     return YES;
@@ -86,7 +71,7 @@ BOOL UndockAndSplitKeyboard() {
 
   // If a dummy textfield was created for this, remove it.
   [textField removeFromSuperview];
-  return ![KeyboardAppInterface isKeyboadDocked];
+  return ![KeyboardAppInterface isKeyboardDocked];
 }
 
 // Docks the keyboard by swiping it down. Does nothing if already docked.
@@ -98,7 +83,7 @@ void DockKeyboard() {
   UITextField* textField = [KeyboardAppInterface showKeyboard];
 
   // Return if already docked.
-  if ([KeyboardAppInterface isKeyboadDocked]) {
+  if ([KeyboardAppInterface isKeyboardDocked]) {
     // If we created a dummy textfield for this, remove it.
     [textField removeFromSuperview];
     return;
@@ -114,7 +99,7 @@ void DockKeyboard() {
   GREYCondition* waitForDockedKeyboard = [GREYCondition
       conditionWithName:@"Wait For Docked Keyboard Animations"
                   block:^BOOL {
-                    return [KeyboardAppInterface isKeyboadDocked];
+                    return [KeyboardAppInterface isKeyboardDocked];
                   }];
 
   GREYAssertTrue([waitForDockedKeyboard waitWithTimeout:kWaitForActionTimeout],
@@ -220,7 +205,7 @@ BOOL WaitForKeyboardToAppear() {
   NSString* javaScriptCondition = [NSString
       stringWithFormat:@"document.getElementById('%s').value === '%@'",
                        kFormElementName, name];
-  XCTAssertTrue(WaitForJavaScriptCondition(javaScriptCondition));
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
 // Tests that the manual fallback view concedes preference to the system picker

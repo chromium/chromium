@@ -144,7 +144,7 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   base::flat_map<ResourceId, ImportedResource> imported_resources_;
   // The ResourceIds in ClientResourceProvider start from 1 to avoid
   // conflicts with id from DisplayResourceProvider.
-  ResourceId next_id_ = 1;
+  ResourceIdGenerator id_generator_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientResourceProvider);
 };

@@ -4,11 +4,12 @@
 
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/quic/platform/impl/quic_flags_impl.h"
@@ -46,10 +47,10 @@ class QuicCommandLineFlagTest : public QuicTest {
   }
 
   // Overload for platforms where base::CommandLine::StringType ==
-  // base::string16.
+  // std::u16string.
   static void FillCommandLineArgs(int argc,
                                   const char* const* argv,
-                                  std::vector<base::string16>* v) {
+                                  std::vector<std::u16string>* v) {
     for (int i = 0; i < argc; ++i) {
       v->push_back(base::UTF8ToUTF16(argv[i]));
     }

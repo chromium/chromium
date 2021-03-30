@@ -1,0 +1,95 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.build;
+
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+
+#if defined(USE_FINAL)
+#define MAYBE_FINAL final
+#define MAYBE_ZERO = 0
+#define MAYBE_FALSE = false
+#else
+#define MAYBE_FINAL
+#define MAYBE_ZERO
+#define MAYBE_FALSE
+#endif
+
+/**
+ *  Build configuration. Generated on a per-target basis.
+ */
+public class BuildConfig {
+
+#if defined(ENABLE_MULTIDEX)
+    public static MAYBE_FINAL boolean IS_MULTIDEX_ENABLED = true;
+#else
+    public static MAYBE_FINAL boolean IS_MULTIDEX_ENABLED MAYBE_FALSE;
+#endif
+
+#if defined(_ENABLE_ASSERTS)
+    public static MAYBE_FINAL boolean ENABLE_ASSERTS = true;
+#else
+    public static MAYBE_FINAL boolean ENABLE_ASSERTS MAYBE_FALSE;
+#endif
+
+#if defined(_IS_UBSAN)
+    public static MAYBE_FINAL boolean IS_UBSAN = true;
+#else
+    public static MAYBE_FINAL boolean IS_UBSAN MAYBE_FALSE;
+#endif
+
+#if defined(_IS_CHROME_BRANDED)
+    public static MAYBE_FINAL boolean IS_CHROME_BRANDED = true;
+#else
+    public static MAYBE_FINAL boolean IS_CHROME_BRANDED MAYBE_FALSE;
+#endif
+
+    // The ID of the android string resource that stores the product version.
+    // This layer of indirection is necessary to make the resource dependency
+    // optional for android_apk targets/base_java (ex. for cronet).
+#if defined(_RESOURCES_VERSION_VARIABLE)
+    public static MAYBE_FINAL int R_STRING_PRODUCT_VERSION = _RESOURCES_VERSION_VARIABLE;
+#else
+    // Default value, do not use.
+    public static MAYBE_FINAL int R_STRING_PRODUCT_VERSION MAYBE_ZERO;
+#endif
+
+    // Minimum SDK Version supported by this apk.
+    // Be cautious when using this value, as it can happen that older apks get
+    // installed on newer Android version (e.g. when a device goes through a
+    // system upgrade). It is also convenient for developing to have all
+    // features available through a single APK.
+    // However, it's pretty safe to assument that a feature specific to KitKat
+    // will never be needed in an APK with MIN_SDK_VERSION = Oreo.
+#if defined(_MIN_SDK_VERSION)
+    public static MAYBE_FINAL int MIN_SDK_VERSION = _MIN_SDK_VERSION;
+#else
+    public static MAYBE_FINAL int MIN_SDK_VERSION = 1;
+#endif
+
+#if defined(_BUNDLES_SUPPORTED)
+    public static MAYBE_FINAL boolean BUNDLES_SUPPORTED = true;
+#else
+    public static MAYBE_FINAL boolean BUNDLES_SUPPORTED MAYBE_FALSE;
+#endif
+
+#if defined(_IS_INCREMENTAL_INSTALL)
+    public static MAYBE_FINAL boolean IS_INCREMENTAL_INSTALL = true;
+#else
+    public static MAYBE_FINAL boolean IS_INCREMENTAL_INSTALL MAYBE_FALSE;
+#endif
+
+#if defined(_IS_CHROMECAST_BRANDING_INTERNAL)
+    public static MAYBE_FINAL boolean IS_CHROMECAST_BRANDING_INTERNAL = true;
+#else
+    public static MAYBE_FINAL boolean IS_CHROMECAST_BRANDING_INTERNAL MAYBE_FALSE;
+#endif
+
+#if defined(_ISOLATED_SPLITS_ENABLED)
+    public static MAYBE_FINAL boolean ISOLATED_SPLITS_ENABLED = true;
+#else
+    public static MAYBE_FINAL boolean ISOLATED_SPLITS_ENABLED MAYBE_FALSE;
+#endif
+}

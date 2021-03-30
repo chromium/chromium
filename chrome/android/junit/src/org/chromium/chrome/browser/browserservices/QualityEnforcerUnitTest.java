@@ -252,7 +252,7 @@ public class QualityEnforcerUnitTest {
     }
 
     private void navigateToUrl(GURL url, int httpStatusCode, @NetError int errorCode) {
-        when(mTab.getOriginalUrl()).thenReturn(url.getSpec());
+        when(mTab.getOriginalUrl()).thenReturn(url);
 
         NavigationHandle navigation =
                 new NavigationHandle(0 /* navigationHandleProxy */, url, true /* isMainFrame */,

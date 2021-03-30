@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safety_check/safety_check.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
@@ -466,8 +467,12 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     case PasswordItemType:
       return [self passwordCheckErrorInfo];
     case SafeBrowsingItemType: {
-      NSString* message = l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_INFO);
+      NSString* message =
+          signin::IsMobileIdentityConsistencyEnabled()
+              ? l10n_util::GetNSString(
+                    IDS_IOS_SETTINGS_SAFETY_CHECK_OPEN_SAFE_BROWSING_INFO)
+              : l10n_util::GetNSString(
+                    IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_INFO);
       GURL safeBrowsingURL(
           base::SysNSStringToUTF8(kSafeBrowsingSafetyCheckStringURL));
       return [self attributedStringWithText:message link:safeBrowsingURL];
@@ -548,7 +553,6 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 // Computes the appropriate error info to be displayed in the updates popover.
 - (NSAttributedString*)updateCheckErrorInfoString {
   NSString* message;
-  GURL linkURL;
 
   switch (self.updateCheckRowState) {
     case UpdateCheckRowStateDefault:
@@ -568,7 +572,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     case UpdateCheckRowStateChannel:
       break;
   }
-  return [self attributedStringWithText:message link:linkURL];
+  return [self attributedStringWithText:message link:GURL()];
 }
 
 // Computes the appropriate error info to be displayed in the passwords popover.
@@ -622,30 +626,21 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 // Configures check error info with a link for popovers.
 - (NSAttributedString*)attributedStringWithText:(NSString*)text
                                            link:(GURL)link {
-  NSRange range;
+  NSDictionary* textAttributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+  };
 
-  NSString* strippedText = ParseStringWithLink(text, &range);
-
-  NSRange fullRange = NSMakeRange(0, strippedText.length);
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:strippedText];
-  [attributedText addAttribute:NSForegroundColorAttributeName
-                         value:[UIColor colorNamed:kTextSecondaryColor]
-                         range:fullRange];
-
-  [attributedText
-      addAttribute:NSFontAttributeName
-             value:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
-             range:fullRange];
-
-  if (range.location != NSNotFound && range.length != 0) {
-    NSURL* URL = net::NSURLWithGURL(link);
-    id linkValue = URL ? URL : @"";
-    [attributedText addAttribute:NSLinkAttributeName
-                           value:linkValue
-                           range:range];
+  if (link.is_empty()) {
+    return [[NSMutableAttributedString alloc] initWithString:text
+                                                  attributes:textAttributes];
   }
-  return attributedText;
+  NSDictionary* linkAttributes =
+      @{NSLinkAttributeName : net::NSURLWithGURL(link)};
+
+  return AttributedStringFromStringWithLink(text, textAttributes,
+                                            linkAttributes);
 }
 
 // Upon a tap of checkStartItem either starts or cancels a safety check.
@@ -1212,7 +1207,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
   base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;
 
-  base::string16 timestamp;
+  std::u16string timestamp;
   // If check found issues less than 1 minuete ago.
   if (elapsedTime < base::TimeDelta::FromMinutes(1)) {
     timestamp = l10n_util::GetStringUTF16(IDS_IOS_CHECK_FINISHED_JUST_NOW);

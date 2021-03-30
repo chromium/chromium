@@ -198,10 +198,8 @@ void MediaRouterAndroid::UnregisterMediaSinksObserver(
 
   // If we are removing the final observer for the source, then stop
   // observing sinks for it.
-  // might_have_observers() is reliable here on the assumption that this call
-  // is not inside the ObserverList iteration.
   it->second->RemoveObserver(observer);
-  if (!it->second->might_have_observers()) {
+  if (it->second->empty()) {
     sinks_observers_.erase(source_id);
     bridge_->StopObservingMediaSinks(source_id);
   }

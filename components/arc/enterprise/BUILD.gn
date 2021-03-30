@@ -11,18 +11,23 @@ static_library("enterprise") {
     "arc_data_snapshotd_bridge.h",
     "arc_data_snapshotd_manager.cc",
     "arc_data_snapshotd_manager.h",
+    "arc_snapshot_reboot_notification.h",
     "snapshot_hours_policy_service.cc",
     "snapshot_hours_policy_service.h",
+    "snapshot_reboot_controller.cc",
+    "snapshot_reboot_controller.h",
     "snapshot_session_controller.cc",
     "snapshot_session_controller.h",
   ]
 
   deps = [
+    "//ash/constants",
     "//base/util/timer",
     "//chromeos",
     "//chromeos/cryptohome",
     "//chromeos/dbus:dbus",
     "//chromeos/dbus/arc:arc",
+    "//chromeos/dbus/power",
     "//chromeos/dbus/upstart:upstart",
     "//components/arc:prefs",
     "//components/prefs",

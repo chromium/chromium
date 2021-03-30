@@ -16,7 +16,7 @@ const char kPrivacyBudgetGeneration[] = "privacy_budget.generation";
 void RegisterPrivacyBudgetPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kPrivacyBudgetActiveSurfaces, std::string());
   registry->RegisterStringPref(kPrivacyBudgetRetiredSurfaces, std::string());
-  registry->RegisterInt64Pref(kPrivacyBudgetSeed, 0);
+  registry->RegisterUint64Pref(kPrivacyBudgetSeed, 0u);
   registry->RegisterIntegerPref(kPrivacyBudgetGeneration, 0);
 }
 

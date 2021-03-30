@@ -5,7 +5,11 @@
 import("//build/config/android/rules.gni")
 
 source_set("android") {
-  sources = [ "photo_picker_sandbox_bridge.cc" ]
+  sources = [
+    "features.cc",
+    "features.h",
+    "photo_picker_sandbox_bridge.cc",
+  ]
   deps = [
     ":photo_picker_jni_headers",
     "//base",
@@ -36,17 +40,16 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//net/android:net_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
-    "//third_party/android_deps:androidx_core_core_java",
-    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
-    "//third_party/android_deps:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_java",
   ]
   srcjar_deps = [ ":photo_picker_aidl" ]
@@ -76,6 +79,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_play_circle_filled_white_24dp.xml",
     "java/res/drawable/ic_volume_off_white_24dp.xml",
     "java/res/drawable/ic_volume_on_white_24dp.xml",
+    "java/res/drawable/photo_picker_large_button_shadow.xml",
     "java/res/drawable/photo_picker_seekbar_thumb.xml",
     "java/res/drawable/photo_picker_seekbar_track.xml",
     "java/res/drawable/video_player_gradient.xml",
@@ -113,9 +117,9 @@ java_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//net/android:net_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
@@ -140,14 +144,14 @@ android_library("javatests") {
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
-    "//third_party/android_deps:androidx_core_core_java",
-    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

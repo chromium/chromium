@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -27,8 +28,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
 class Profile;
@@ -151,6 +152,13 @@ class ExtensionServiceTestBase : public testing::Test {
     return &policy_provider_;
   }
 
+  // If a test uses a feature list, it should be destroyed after
+  // |task_environment_|, to avoid tsan data races between the ScopedFeatureList
+  // destructor, and any tasks running on different threads that check if a
+  // feature is enabled. ~BrowserTaskEnvironment will make sure those tasks
+  // finish before |feature_list_| is destroyed.
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   // Must be declared before anything that may make use of the
   // directory so as to ensure files are closed before cleanup.
@@ -169,7 +177,7 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // Provides policies for the PolicyService below, so this must be created
   // before it.
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   // PolicyService for the testing profile, so unit tests can use custom
   // policies.
@@ -203,8 +211,8 @@ class ExtensionServiceTestBase : public testing::Test {
   extensions::ExtensionRegistry* registry_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
 
   // An override that ignores CRX3 publisher signatures.

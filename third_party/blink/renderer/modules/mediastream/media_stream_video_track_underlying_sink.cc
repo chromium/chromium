@@ -12,7 +12,7 @@ namespace blink {
 
 MediaStreamVideoTrackUnderlyingSink::MediaStreamVideoTrackUnderlyingSink(
     PushableMediaStreamVideoSource* source)
-    : source_(source) {}
+    : source_(source->GetWeakPtr()) {}
 
 ScriptPromise MediaStreamVideoTrackUnderlyingSink::start(
     ScriptState* script_state,
@@ -34,23 +34,24 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::write(
   }
 
   if (!video_frame->frame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Empty video frame.");
+    exception_state.ThrowTypeError("Empty video frame.");
     return ScriptPromise();
   }
 
-  if (!source_->running()) {
+  PushableMediaStreamVideoSource* pushable_source =
+      static_cast<PushableMediaStreamVideoSource*>(source_.get());
+  if (!pushable_source || !pushable_source->running()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
     return ScriptPromise();
   }
 
   base::TimeTicks estimated_capture_time = base::TimeTicks::Now();
-  source_->PushFrame(video_frame->frame(), estimated_capture_time);
+  pushable_source->PushFrame(video_frame->frame(), estimated_capture_time);
   // Invalidate the JS |video_frame|. Otherwise, the media frames might not be
   // released, which would leak resources and also cause some MediaStream
   // sources such as cameras to drop frames.
-  video_frame->destroy();
+  video_frame->close();
 
   return ScriptPromise::CastUndefined(script_state);
 }
@@ -59,14 +60,16 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
-  source_->StopSource();
+  if (source_)
+    source_->StopSource();
   return ScriptPromise::CastUndefined(script_state);
 }
 
 ScriptPromise MediaStreamVideoTrackUnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  source_->StopSource();
+  if (source_)
+    source_->StopSource();
   return ScriptPromise::CastUndefined(script_state);
 }
 

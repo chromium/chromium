@@ -16,6 +16,8 @@ namespace page_info {
 #if defined(OS_ANDROID)
 // Enables the discoverability ui animations for Page Info.
 extern const base::Feature kPageInfoDiscoverability;
+// Enables the history sub page for Page Info.
+extern const base::Feature kPageInfoHistory;
 // Enables the second version of the Page Info View.
 extern const base::Feature kPageInfoV2;
 #endif

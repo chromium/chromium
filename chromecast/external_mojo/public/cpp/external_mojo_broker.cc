@@ -22,6 +22,7 @@
 #include "base/task/current_thread.h"
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
+#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/external_mojo/public/cpp/common.h"
 #include "chromecast/external_mojo/public/mojom/connector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -409,6 +410,10 @@ class ExternalMojoBroker::ReadWatcher
 ExternalMojoBroker::ExternalMojoBroker(const std::string& broker_path) {
   connector_ = std::make_unique<ConnectorImpl>();
 
+  // For external service support, we expose a channel endpoint on the
+  // |broker_path|. Otherwise, only services in the same process network can
+  // make use of the broker.
+#if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
   LOG(INFO) << "Initializing external mojo broker at: " << broker_path;
 
   mojo::NamedPlatformChannel::Options channel_options;
@@ -425,6 +430,7 @@ ExternalMojoBroker::ExternalMojoBroker(const std::string& broker_path) {
 
   read_watcher_ = std::make_unique<ReadWatcher>(
       connector_.get(), server_endpoint.TakePlatformHandle());
+#endif  // BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
 }
 
 void ExternalMojoBroker::InitializeChromium(
@@ -439,6 +445,11 @@ ExternalMojoBroker::CreateConnector() {
   mojo::PendingRemote<mojom::ExternalConnector> remote;
   connector_->AddReceiver(remote.InitWithNewPipeAndPassReceiver());
   return remote;
+}
+
+void ExternalMojoBroker::BindConnector(
+    mojo::PendingReceiver<mojom::ExternalConnector> receiver) {
+  connector_->AddReceiver(std::move(receiver));
 }
 
 ExternalMojoBroker::~ExternalMojoBroker() = default;

@@ -210,7 +210,7 @@ public class OfflinePageNotificationBridge {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) {
             intializeOfflineItemsCollection();
             DownloadManagerService.getDownloadManagerService()
-                    .getInfoBarController(false)
+                    .getInfoBarController(/*otrProfileID=*/null)
                     .onDownloadStarted();
         } else {
             Toast.makeText(ContextUtils.getApplicationContext(), R.string.download_started,

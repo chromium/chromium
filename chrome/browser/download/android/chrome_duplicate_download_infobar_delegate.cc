@@ -72,9 +72,6 @@ ChromeDuplicateDownloadInfoBarDelegate::ChromeDuplicateDownloadInfoBarDelegate(
         file_selected_callback)
     : download_item_(download_item),
       file_path_(file_path),
-      is_off_the_record_(
-          content::DownloadItemUtils::GetBrowserContext(download_item)
-              ->IsOffTheRecord()),
       file_selected_callback_(std::move(file_selected_callback)) {
   download_item_->AddObserver(this);
 }
@@ -120,8 +117,17 @@ void ChromeDuplicateDownloadInfoBarDelegate::InfoBarDismissed() {
   Cancel();
 }
 
-bool ChromeDuplicateDownloadInfoBarDelegate::IsOffTheRecord() const {
-  return is_off_the_record_;
+base::Optional<Profile::OTRProfileID>
+ChromeDuplicateDownloadInfoBarDelegate::GetOTRProfileID() const {
+  content::BrowserContext* browser_context =
+      content::DownloadItemUtils::GetBrowserContext(download_item_);
+  // If belongs to an off-the-record profile, then the OTRProfileID should be
+  // taken from the browser context to support multiple off-the-record profiles.
+  if (browser_context && browser_context->IsOffTheRecord()) {
+    return Profile::FromBrowserContext(browser_context)->GetOTRProfileID();
+  }
+  // If belongs to the regular profile, then OTRProfileID should be null.
+  return base::nullopt;
 }
 
 }  // namespace android

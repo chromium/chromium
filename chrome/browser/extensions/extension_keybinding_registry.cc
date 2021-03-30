@@ -41,8 +41,9 @@ ExtensionKeybindingRegistry::ExtensionKeybindingRegistry(
       extension_filter_(extension_filter),
       delegate_(delegate),
       shortcut_handling_suspended_(false) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
-  command_service_observer_.Add(CommandService::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
+  command_service_observation_.Observe(CommandService::Get(browser_context_));
   media_keys_listener_ = ui::MediaKeysListener::Create(
       this, ui::MediaKeysListener::Scope::kFocused);
 }
@@ -275,7 +276,7 @@ void ExtensionKeybindingRegistry::OnExtensionCommandAdded(
   // Component extensions trigger OnExtensionLoaded() for extension
   // installs as well as loads. This can cause adding of multiple key
   // targets.
-  if (extension->location() == Manifest::COMPONENT)
+  if (extension->location() == mojom::ManifestLocation::kComponent)
     return;
 
   AddExtensionKeybindings(extension, command.command_name());
@@ -297,7 +298,7 @@ void ExtensionKeybindingRegistry::OnExtensionCommandRemoved(
 }
 
 void ExtensionKeybindingRegistry::OnCommandServiceDestroying() {
-  command_service_observer_.RemoveAll();
+  command_service_observation_.Reset();
 }
 
 void ExtensionKeybindingRegistry::OnMediaKeysAccelerator(

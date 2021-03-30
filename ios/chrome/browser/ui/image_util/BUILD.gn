@@ -31,5 +31,6 @@ source_set("web") {
     "//ios/web",
     "//ui/base",
   ]
+  frameworks = [ "Photos.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

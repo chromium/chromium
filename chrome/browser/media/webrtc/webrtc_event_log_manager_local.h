@@ -26,8 +26,8 @@ class WebRtcLocalEventLogManager final {
   explicit WebRtcLocalEventLogManager(WebRtcLocalEventLogsObserver* observer);
   ~WebRtcLocalEventLogManager();
 
-  bool PeerConnectionAdded(const PeerConnectionKey& key);
-  bool PeerConnectionRemoved(const PeerConnectionKey& key);
+  bool OnPeerConnectionAdded(const PeerConnectionKey& key);
+  bool OnPeerConnectionRemoved(const PeerConnectionKey& key);
 
   bool EnableLogging(const base::FilePath& base_path,
                      size_t max_file_size_bytes);

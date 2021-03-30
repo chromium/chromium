@@ -48,10 +48,10 @@ class StatusIconWin : public StatusIcon {
 
   // Overridden from StatusIcon:
   void SetImage(const gfx::ImageSkia& image) override;
-  void SetToolTip(const base::string16& tool_tip) override;
+  void SetToolTip(const std::u16string& tool_tip) override;
   void DisplayBalloon(const gfx::ImageSkia& icon,
-                      const base::string16& title,
-                      const base::string16& contents,
+                      const std::u16string& title,
+                      const std::u16string& contents,
                       const message_center::NotifierId& notifier_id) override;
   void ForceVisible() override;
 

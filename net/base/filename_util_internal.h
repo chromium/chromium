@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 class GURL;
 
@@ -28,13 +27,13 @@ void EnsureSafeExtension(const std::string& mime_type,
                          bool ignore_extension,
                          base::FilePath* file_name);
 
-bool FilePathToString16(const base::FilePath& path, base::string16* converted);
+bool FilePathToString16(const base::FilePath& path, std::u16string* converted);
 
 // Similar to GetSuggestedFilename(), but takes a function to replace illegal
 // characters. If |should_replace_extension| is true, the file extension
 // extracted from a URL will always be considered unreliable and the file
 // extension will be determined by |mime_type|.
-base::string16 GetSuggestedFilenameImpl(
+std::u16string GetSuggestedFilenameImpl(
     const GURL& url,
     const std::string& content_disposition,
     const std::string& referrer_charset,

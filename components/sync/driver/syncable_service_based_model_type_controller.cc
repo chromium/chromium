@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
-#include "components/sync/model_impl/forwarding_model_type_controller_delegate.h"
-#include "components/sync/model_impl/syncable_service_based_bridge.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/forwarding_model_type_controller_delegate.h"
+#include "components/sync/model/syncable_service_based_bridge.h"
 
 namespace syncer {
 

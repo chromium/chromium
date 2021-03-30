@@ -42,27 +42,33 @@ rm -rf $src
 rm -rf $tgt
 rm -rf chromedriver_linux64
 rm -rf chromedriver_mac64
+rm -rf chromedriver_mac64_m1
 rm -rf chromedriver_win32
 
 mkdir $src
 mkdir $tgt
+mkdir chromedriver_mac64_m1
 
 gsutil cp gs://chrome-unsigned/desktop-5c0tCh/$version/linux64/chromedriver_linux64.zip $src
 gsutil cp gs://chrome-unsigned/desktop-5c0tCh/$version/mac64/chromedriver_mac64.zip $src
+gsutil cp gs://chrome-unsigned/desktop-5c0tCh/$version/mac-arm64/chromedriver_mac64.zip $src/chromedriver_mac64_m1.zip
 gsutil cp gs://chrome-unsigned/desktop-5c0tCh/$version/win-clang/chromedriver_win32.zip $src
 
 unzip $src/chromedriver_linux64.zip
 unzip $src/chromedriver_mac64.zip
+unzip $src/chromedriver_mac64_m1.zip -d chromedriver_mac64_m1/
 unzip $src/chromedriver_win32.zip
 
-strip chromedriver_linux64/chromedriver
+strip -p chromedriver_linux64/chromedriver
 
 zip -j $tgt/chromedriver_linux64.zip chromedriver_linux64/chromedriver
 zip -j $tgt/chromedriver_mac64.zip chromedriver_mac64/chromedriver
+zip -j $tgt/chromedriver_mac64_m1.zip chromedriver_mac64_m1/chromedriver_mac64/chromedriver
 zip -j $tgt/chromedriver_win32.zip chromedriver_win32/chromedriver.exe
 
 gsutil cp $tgt/chromedriver_linux64.zip gs://chromedriver/$version/chromedriver_linux64.zip
 gsutil cp $tgt/chromedriver_mac64.zip gs://chromedriver/$version/chromedriver_mac64.zip
+gsutil cp $tgt/chromedriver_mac64_m1.zip gs://chromedriver/$version/chromedriver_mac64_m1.zip
 gsutil cp $tgt/chromedriver_win32.zip gs://chromedriver/$version/chromedriver_win32.zip
 
 echo -n $version > latest

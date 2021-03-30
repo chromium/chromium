@@ -71,7 +71,7 @@ bool IsInternalApp(const std::string& app_id);
 // |test_delegate| is used to mock OpenTabsUIDelegate in test.
 bool HasRecommendableForeignTab(
     Profile* profile,
-    base::string16* title,
+    std::u16string* title,
     GURL* url,
     sync_sessions::OpenTabsUIDelegate* test_delegate);
 

@@ -10,12 +10,12 @@
     <style>
       #device-name {
         -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
         color: rgba(0, 0, 0, 0.87);
         display: -webkit-box;
         letter-spacing: 0.25px;
         line-height: 154%;
         overflow: hidden;
+        overflow-wrap: break-word;
         text-align: center;
         width: 116px;
       }
@@ -51,8 +51,9 @@
         transition: stroke-dashoffset 400ms ease;
       }
 
-      .unknown-progress #wheel {
-        animation: 1.4s ease-in-out infinite both unknown-progress-animation;
+      .indeterminate-progress #wheel {
+        animation: 1.4s ease-in-out infinite both
+            indeterminate-progress-animation;
         stroke-dasharray: 116;
       }
 
@@ -68,7 +69,7 @@
         top: 0;
       }
 
-      .unknown-progress #svg {
+      .indeterminate-progress #svg {
         animation: 2s linear infinite svg-animation;
       }
 
@@ -76,7 +77,11 @@
         animation: none;
       }
 
-      @keyframes unknown-progress-animation {
+      .hidden #svg {
+        display: none;
+      }
+
+      @keyframes indeterminate-progress-animation {
         0%,
         25% {
           stroke-dashoffset: 115;

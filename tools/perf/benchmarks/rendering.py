@@ -1,6 +1,7 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import logging
 import sys
 from core import perf_benchmark
 from core import platforms as core_platforms
@@ -16,36 +17,16 @@ from telemetry.web_perf import timeline_based_measurement
 RENDERING_BENCHMARK_UMA = [
     'Compositing.Display.DrawToSwapUs',
     'CompositorLatency.TotalLatency',
+    'CompositorLatency.Type',
     'Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4',
     'Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4',
     'Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4',
     'Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4',
-    'Graphics.Smoothness.Checkerboarding.CompositorAnimation',
-    'Graphics.Smoothness.Checkerboarding.MainThreadAnimation',
-    'Graphics.Smoothness.Checkerboarding.PinchZoom',
-    'Graphics.Smoothness.Checkerboarding.RAF',
     'Graphics.Smoothness.Checkerboarding.TouchScroll',
-    'Graphics.Smoothness.Checkerboarding.Video',
     'Graphics.Smoothness.Checkerboarding.WheelScroll',
     'Graphics.Smoothness.PercentDroppedFrames.AllAnimations',
     'Graphics.Smoothness.PercentDroppedFrames.AllInteractions',
     'Graphics.Smoothness.PercentDroppedFrames.AllSequences',
-    'Graphics.Smoothness.PercentDroppedFrames.MainThread.MainThreadAnimation',
-    'Graphics.Smoothness.PercentDroppedFrames.MainThread.RAF',
-    'Graphics.Smoothness.PercentDroppedFrames.MainThread.TouchScroll',
-    'Graphics.Smoothness.PercentDroppedFrames.MainThread.WheelScroll',
-    ('Graphics.Smoothness.PercentDroppedFrames'
-     '.CompositorThread.CompositorAnimation'),
-    'Graphics.Smoothness.PercentDroppedFrames.CompositorThread.PinchZoom',
-    'Graphics.Smoothness.PercentDroppedFrames.CompositorThread.TouchScroll',
-    'Graphics.Smoothness.PercentDroppedFrames.CompositorThread.WheelScroll',
-    'Graphics.Smoothness.PercentDroppedFrames.MainThread.Universal',
-    'Graphics.Smoothness.PercentDroppedFrames.CompositorThread.Universal',
-    'Graphics.Smoothness.PercentDroppedFrames.SlowerThread.Universal',
-    'Graphics.Smoothness.PercentDroppedFrames.ScrollingThread.TouchScroll',
-    'Graphics.Smoothness.PercentDroppedFrames.ScrollingThread.WheelScroll',
-    'Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow',
-    'Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow',
     'Memory.GPU.PeakMemoryUsage.Scroll',
     'Memory.GPU.PeakMemoryUsage.PageLoad',
 ]
@@ -58,6 +39,13 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
                       help='If set, continuously scroll up and down forever. '
                            'This is useful for analysing scrolling behaviour '
                            'with tools such as perf.')
+    parser.add_option('--allow-software-compositing', action='store_true',
+                      help='If set, allows the benchmark to run with software '
+                           'compositing.')
+
+  @classmethod
+  def ProcessCommandLineArgs(cls, parser, args):
+    cls.allow_software_compositing = args.allow_software_compositing
 
   def CreateStorySet(self, options):
     return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME)
@@ -65,13 +53,14 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--enable-gpu-benchmarking')
     options.AppendExtraBrowserArgs('--touch-events=enabled')
-    options.AppendExtraBrowserArgs('--disable-software-compositing-fallback')
+    if self.allow_software_compositing:
+      logging.warning('Allowing software compositing. Some of the reported '
+                      'metrics will have unreliable values.')
+    else:
+      options.AppendExtraBrowserArgs('--disable-software-compositing-fallback')
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     category_filter = chrome_trace_category_filter.CreateLowOverheadFilter()
-    # Supplement the base trace categories with "gpu.memory" which records
-    # timings associated with memory ablation experiments.
-    category_filter.AddFilterString('gpu.memory')
     category_filter.AddDisabledByDefault(
         'disabled-by-default-histogram_samples')
     options = timeline_based_measurement.Options(category_filter)
@@ -80,7 +69,6 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     options.SetTimelineBasedMetrics([
         'renderingMetric',
         'umaMetric',
-        'memoryAblationMetric',
         # Unless --experimentatil-tbmv3-metric flag is used, the following tbmv3
         # metrics do nothing.
         'tbmv3:uma_metrics'

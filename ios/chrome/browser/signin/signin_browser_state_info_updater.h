@@ -36,10 +36,8 @@ class SigninBrowserStateInfoUpdater : public KeyedService,
   void OnErrorChanged() override;
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   signin::IdentityManager* identity_manager_ = nullptr;
   SigninErrorController* signin_error_controller_ = nullptr;

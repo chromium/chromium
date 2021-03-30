@@ -12,15 +12,14 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
-#include "third_party/blink/public/mojom/frame/navigation_initiator.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
@@ -57,7 +56,6 @@ namespace blink {
 
 class KURL;
 class WebDocumentLoader;
-class WebLocalFrame;
 
 // This structure holds all information collected by Blink when
 // navigation is being initiated.
@@ -81,6 +79,8 @@ struct BLINK_EXPORT WebNavigationInfo {
 
   // Whether the frame had a transient user activation
   // at the time this request was issued.
+  // TODO(mustaq): Combine this with had_transient_user_activation, or make it
+  // less confusing which of the two we should use in various scenarios.
   bool has_transient_user_activation = false;
 
   // The load type. See WebFrameLoadType.
@@ -92,12 +92,6 @@ struct BLINK_EXPORT WebNavigationInfo {
 
   // Whether the navigation is a result of client redirect.
   bool is_client_redirect = false;
-
-  // WebLocalFrame that initiated this navigation request. May be null for
-  // navigations that are not associated with a frame. Storing this pointer is
-  // dangerous, it should be verified by comparing against a set of known active
-  // frames before direct use.
-  WebLocalFrame* initiator_frame;
 
   // Whether the navigation initiator frame has the
   // |network::mojom::blink::WebSandboxFlags::kDownloads| bit set in its sandbox
@@ -140,14 +134,6 @@ struct BLINK_EXPORT WebNavigationInfo {
   // the input start time.
   base::TimeTicks input_start;
 
-  // This is the navigation relevant CSP to be used during request and response
-  // checks.
-  WebVector<WebContentSecurityPolicy> initiator_csp;
-
-  // The navigation initiator, if any.
-  CrossVariantMojoRemote<mojom::NavigationInitiatorInterfaceBase>
-      navigation_initiator_remote;
-
   // Specifies whether or not a MHTML Archive can be used to load a subframe
   // resource instead of doing a network request.
   enum class ArchiveStatus { Absent, Present };
@@ -172,10 +158,17 @@ struct BLINK_EXPORT WebNavigationInfo {
 
   // The frame policy specified by the frame owner element.
   // For top-level window with no opener, this is the default lax FramePolicy.
+  // This attribute is used for the synchronous re-navigation to about:blank
+  // only.
   FramePolicy frame_policy;
 
   // The frame token of the initiator Frame.
-  base::Optional<base::UnguessableToken> initiator_frame_token;
+  base::Optional<LocalFrameToken> initiator_frame_token;
+
+  // A handle for keeping the initiator RenderFrameHost's PolicyContainerHost
+  // alive until we create the NavigationRequest.
+  CrossVariantMojoRemote<mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
+      initiator_policy_container_keep_alive_handle;
 };
 
 // This structure holds all information provided by the embedder that is
@@ -191,17 +184,22 @@ struct BLINK_EXPORT WebNavigationParams {
   explicit WebNavigationParams(const base::UnguessableToken&);
 
   // Shortcut for navigating based on WebNavigationInfo parameters.
+  //
+  // This is used only for navigations not driven by the browser process:
+  // - the re-navigation to about:blank when creating a new subframe or window
+  //   with initial location == about:blank (see https://crbug.com/778318)
+  // - unit tests.
   static std::unique_ptr<WebNavigationParams> CreateFromInfo(
       const WebNavigationInfo&);
 
   // Shortcut for loading html with "text/html" mime type and "UTF8" encoding.
-  static std::unique_ptr<WebNavigationParams> CreateWithHTMLString(
+  static std::unique_ptr<WebNavigationParams> CreateWithHTMLStringForTesting(
       base::span<const char> html,
       const WebURL& base_url);
 
 #if INSIDE_BLINK
   // Shortcut for loading html with "text/html" mime type and "UTF8" encoding.
-  static std::unique_ptr<WebNavigationParams> CreateWithHTMLBuffer(
+  static std::unique_ptr<WebNavigationParams> CreateWithHTMLBufferForTesting(
       scoped_refptr<SharedBuffer> buffer,
       const KURL& base_url);
 #endif
@@ -247,11 +245,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // If non-null, this gives the pre-redirect URL in case that we're committing
   // a failed navigation.
   WebURL pre_redirect_url_for_failed_navigations;
-
-  // The IP address space from which this document was loaded.
-  // https://wicg.github.io/cors-rfc1918/#address-space
-  network::mojom::IPAddressSpace ip_address_space =
-      network::mojom::IPAddressSpace::kUnknown;
 
   // The net error code for failed navigation. Must be non-zero when
   // |unreachable_url| is non-null.
@@ -315,7 +308,18 @@ struct BLINK_EXPORT WebNavigationParams {
   // The origin in which a navigation should commit. When provided, Blink
   // should use this origin directly and not compute locally the new document
   // origin.
+  // TODO(arthursonzogni): Always provide origin_to_commit.
   WebSecurityOrigin origin_to_commit;
+
+  // The sandbox flags to apply to the new document. This is the union of:
+  // - the frame's current sandbox attribute, taken when the navigation started.
+  // - the navigation response's CSP sandbox flags.
+  // - the result of CSP embedded enforcement required CSP sandbox flags.
+  // - Various edge cases: MHTML document, error pages, ...
+  // See content/browser/renderer_host/sandbox_flags.md
+  network::mojom::WebSandboxFlags sandbox_flags =
+      network::mojom::WebSandboxFlags::kAll;
+
   // The devtools token for this navigation. See DocumentLoader
   // for details.
   base::UnguessableToken devtools_navigation_token;
@@ -328,7 +332,7 @@ struct BLINK_EXPORT WebNavigationParams {
   bool was_discarded = false;
   // Whether this navigation had a transient user activation
   // when inititated.
-  bool had_transient_activation = false;
+  bool had_transient_user_activation = false;
   // Whether this navigation has a sticky user activation flag.
   bool is_user_activated = false;
   // Whether the navigation should be allowed to invoke a text fragment anchor.
@@ -337,6 +341,8 @@ struct BLINK_EXPORT WebNavigationParams {
   bool has_text_fragment_token = false;
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
+  // Whether this navigation was for prerendering.
+  bool is_prerendering = false;
   // Whether the document should be able to access local file:// resources.
   bool grant_load_local_resources = false;
   // The previews state which should be used for this navigation.
@@ -399,19 +405,16 @@ struct BLINK_EXPORT WebNavigationParams {
   // A list of origin trial names to enable for the document being loaded.
   WebVector<WebString> force_enabled_origin_trials;
 
-  // Whether the page is origin isolated.
-  // https://github.com/WICG/origin-isolation
-  bool origin_isolated = false;
+  // Whether the page is in an origin-keyed agent cluster.
+  // https://html.spec.whatwg.org/C/#is-origin-keyed
+  bool origin_agent_cluster = false;
 
   // List of client hints enabled for top-level frame. These still need to be
-  // checked against feature policy before use.
+  // checked against permissions policy before use.
   WebVector<network::mojom::WebClientHintsType> enabled_client_hints;
 
   // Whether the navigation is cross browsing context group (browsing instance).
   bool is_cross_browsing_context_group_navigation = false;
-
-  // A list of additional content security policies to be enforced by blink.
-  WebVector<WebString> forced_content_security_policies;
 
   // Blink's copy of the policy container containing security policies to be
   // enforced on the document created by this navigation.

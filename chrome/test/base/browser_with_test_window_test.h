@@ -24,8 +24,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #else
 #include "ui/views/test/scoped_views_test_helper.h"
@@ -33,6 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "chromeos/ui/base/tablet_state.h"
 #endif
 
@@ -165,7 +166,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   // Set the |title| of the current tab.
   void NavigateAndCommitActiveTabWithTitle(Browser* browser,
                                            const GURL& url,
-                                           const base::string16& title);
+                                           const std::u16string& title);
 
   // Creates the profile used by this test. The caller doesn't own the return
   // value.
@@ -198,7 +199,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
+  ash::ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
   chromeos::StubInstallAttributes* GetInstallAttributes();
 #endif
 
@@ -213,9 +214,13 @@ class BrowserWithTestWindowTest : public testing::Test {
   // We need to create a MessageLoop, otherwise a bunch of things fails.
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<chromeos::LacrosChromeServiceImpl> lacros_chrome_service_;
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
 
   TestingProfile* profile_;

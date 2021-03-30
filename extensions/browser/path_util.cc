@@ -49,10 +49,10 @@ const base::FilePath::CharType kHomeShortcut[] = FILE_PATH_LITERAL("~");
 
 void OnDirectorySizeCalculated(
     int message_id,
-    base::OnceCallback<void(const base::string16&)> callback,
+    base::OnceCallback<void(const std::u16string&)> callback,
     int64_t size_in_bytes) {
   const int one_mebibyte_in_bytes = 1024 * 1024;
-  base::string16 response =
+  std::u16string response =
       size_in_bytes < one_mebibyte_in_bytes
           ? l10n_util::GetStringUTF16(message_id)
           : ui::FormatBytesWithUnits(size_in_bytes, ui::DATA_UNITS_MEBIBYTE,
@@ -109,7 +109,7 @@ base::FilePath PrettifyPath(const base::FilePath& source_path) {
 void CalculateAndFormatExtensionDirectorySize(
     const base::FilePath& extension_path,
     int message_id,
-    base::OnceCallback<void(const base::string16&)> callback) {
+    base::OnceCallback<void(const std::u16string&)> callback) {
   base::PostTaskAndReplyWithResult(
       GetExtensionFileTaskRunner().get(), FROM_HERE,
       base::BindOnce(&base::ComputeDirectorySize, extension_path),

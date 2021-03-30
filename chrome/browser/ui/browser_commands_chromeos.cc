@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "ui/views/widget/widget.h"
 
 using base::UserMetricsAction;
 
@@ -23,4 +24,11 @@ void TakeScreenshot() {
   ChromeScreenshotGrabber* grabber = ChromeScreenshotGrabber::Get();
   if (grabber->CanTakeScreenshot())
     grabber->HandleTakeScreenshotForAllRootWindows();
+}
+
+void ToggleAssignedToAllDesks(Browser* browser) {
+  auto* widget = views::Widget::GetWidgetForNativeWindow(
+      browser->window()->GetNativeWindow());
+  DCHECK(widget);
+  widget->SetVisibleOnAllWorkspaces(!widget->IsVisibleOnAllWorkspaces());
 }

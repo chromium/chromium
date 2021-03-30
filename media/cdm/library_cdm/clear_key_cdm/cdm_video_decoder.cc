@@ -27,7 +27,6 @@
 #include "media/cdm/cdm_type_conversion.h"
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
 #include "media/media_buildflags.h"
-#include "third_party/libaom/libaom_buildflags.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
 #if BUILDFLAG(ENABLE_LIBVPX)
@@ -257,7 +256,7 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
 
   void OnVideoFrameReady(scoped_refptr<VideoFrame> video_frame) {
     // Do not queue EOS frames, which is not needed.
-    if (video_frame->metadata()->end_of_stream)
+    if (video_frame->metadata().end_of_stream)
       return;
 
     decoded_video_frames_.push(std::move(video_frame));

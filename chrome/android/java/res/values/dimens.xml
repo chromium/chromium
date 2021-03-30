@@ -12,41 +12,19 @@
 
     <!-- TabSwitcher - The minimum distance from the edge to commit a side swap. -->
     <dimen name="swipe_commit_distance">120dp</dimen>
-    <!-- TabSwitcher - Size of the shift applied to tabs when stacked. -->
-    <dimen name="stacked_tab_visible_size">4dp</dimen>
-    <!-- TabSwitcher - Buffer space above the stack. -->
-    <dimen name="stack_buffer_height">5dp</dimen>
-    <!-- TabSwitcher - Buffer space on the side of the stack. -->
-    <dimen name="stack_buffer_width">5dp</dimen>
-    <!-- TabSwitcher - Minimum spacing between tabs. -->
-    <dimen name="min_spacing">120dp</dimen>
-    <!-- TabSwitcher - Maximum over scroll. -->
-    <dimen name="over_scroll">75dp</dimen>
-    <!-- TabSwitcher - Minimum scrolling distance to even out all the tabs. -->
-    <dimen name="even_out_scrolling">400dp</dimen>
     <!-- TabSwitcher - The space between tabs in the toolbar swiping transition. -->
     <dimen name="toolbar_swipe_space_between_tabs">30dp</dimen>
     <!-- TabSwitcher - The minimum distance from the edge to commit a toolbar side swap. -->
     <dimen name="toolbar_swipe_commit_distance">90dp</dimen>
-    <!-- TabSwitcher - Maximum amount to slide the tabs down or right in over scroll. -->
-    <dimen name="over_scroll_slide">10dp</dimen>
      <!-- TabSwitcher - The size of the close button on each tab. -->
     <dimen name="tab_switcher_close_button_size">20dp</dimen>
 
-    <!-- TabSwitcher -->
-    <dimen name="tabswitcher_border_frame_padding_left">6dp</dimen>
-    <dimen name="tabswitcher_border_frame_padding_top">50dp</dimen>
-    <dimen name="tabswitcher_border_frame_transparent_top">3dp</dimen>
-    <dimen name="tabswitcher_border_frame_transparent_side">2dp</dimen>
-
+    <!-- Toolbar Phone - padding of the optional button when menu button is present -->
+    <dimen name="toolbar_phone_optional_button_padding">12dp</dimen>
     <!-- Tab title -->
     <dimen name="border_texture_title_fade">24dp</dimen>                    <!-- 40px hdpi -->
     <dimen name="tab_title_favicon_start_padding">10dp</dimen>
     <dimen name="tab_title_favicon_end_padding">7dp</dimen>
-
-    <!-- Custom Menu dimensions -->
-    <dimen name="tab_switcher_menu_width">222dp</dimen>
-    <dimen name="tab_switcher_menu_vertical_padding">8dp</dimen>
 
     <dimen name="menu_badge_translation_y">6dp</dimen>
 
@@ -165,19 +143,12 @@
     <dimen name="signin_chooser_padding">16dp</dimen>
     <dimen name="signin_screen_top_padding">50dp</dimen>
 
-    <!-- Signin promo dimensions -->
-    <dimen name="signin_promo_account_image_size">48dp</dimen>
-    <dimen name="signin_promo_cold_state_image_size">24dp</dimen>
-
     <!-- Autofill tooltip dimensions -->
     <dimen name="autofill_tooltip_horizontal_padding">16dp</dimen>
     <dimen name="autofill_tooltip_vertical_padding">16dp</dimen>
 
     <!-- ModalDialogView dimensions -->
     <dimen name="tab_modal_scrim_vertical_margin">16dp</dimen>
-
-    <!-- Tab Strip Dimensions -->
-    <dimen name="tab_strip_height">0dp</dimen>
 
     <!-- Full Screen Dimensions -->
     <!-- Should match toolbar_height_no_shadow -->
@@ -192,11 +163,7 @@
     <dimen name="find_in_page_popup_height">60dp</dimen>
     <dimen name="find_in_page_popup_margin_end">62dp</dimen>
 
-    <dimen name="webapk_screenshot_margin">20dp</dimen>
-
     <!-- Toolbar dimensions -->
-    <dimen name="toolbar_tab_count_text_size_1_digit">12dp</dimen>
-    <dimen name="toolbar_tab_count_text_size_2_digit">10dp</dimen>
     <dimen name="toolbar_height_no_shadow">56dp</dimen>
     <dimen name="toolbar_progress_bar_height">2dp</dimen>
     <dimen name="toolbar_button_width">48dp</dimen>
@@ -245,9 +212,6 @@
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
     <dimen name="toolbar_optional_button_animation_translation">10dp</dimen>
 
-    <!-- Bottom controls dimensions -->
-    <dimen name="bottom_controls_height">@dimen/min_touch_target_size</dimen>
-
     <!-- Start surface toolbar dimensions -->
     <dimen name="start_surface_toolbar_button_padding_to_button">8dp</dimen>
     <dimen name="start_surface_toolbar_button_padding_to_edge">16dp</dimen>
@@ -265,6 +229,7 @@
     <dimen name="omnibox_suggestion_compact_padding">6dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_bottom">8dp</dimen>
     <dimen name="omnibox_suggestion_start_offset_without_icon">18dp</dimen>
+    <dimen name="omnibox_carousel_suggestion_padding">12dp</dimen>
 
     <dimen name="omnibox_suggestion_36dp_icon_size">36dp</dimen>
     <dimen name="omnibox_suggestion_24dp_icon_size">24dp</dimen>
@@ -292,27 +257,6 @@
     <dimen name="tile_grid_layout_bleed">8dp</dimen>
     <dimen name="tile_grid_layout_vertical_spacing">6dp</dimen>
     <dimen name="tile_grid_layout_min_horizontal_spacing">4dp</dimen>
-    <dimen name="tile_view_bg_corner_radius">2dp</dimen>
-    <dimen name="tile_view_width">80dp</dimen>
-    <dimen name="tile_view_width_condensed">64dp</dimen>
-    <dimen name="tile_view_min_height">86dp</dimen>
-    <dimen name="tile_view_icon_size">48dp</dimen>
-    <dimen name="tile_view_icon_size_modern">24dp</dimen>
-    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
-    <dimen tools:ignore="PxUsage" name="tile_view_icon_min_size">24px</dimen>
-    <dimen name="tile_view_icon_corner_radius">4dp</dimen>
-    <dimen name="tile_view_icon_text_size">20dp</dimen>
-    <dimen name="tile_view_monogram_size_modern">26dp</dimen>
-    <dimen name="tile_view_icon_margin_top_modern">19dp</dimen>
-    <dimen name="tile_view_monogram_margin_top_modern">18dp</dimen>
-    <dimen name="tile_view_icon_background_margin_top_modern">7dp</dimen>
-    <dimen name="tile_view_offline_badge_size_modern">16dp</dimen>
-    <dimen name="tile_view_offline_badge_margin_top_modern">7dp</dimen>
-    <dimen name="tile_view_offline_badge_margin_end_modern">9dp</dimen>
-    <dimen name="tile_view_offline_badge_margin_top_modern_condensed">6dp</dimen>
-    <dimen name="tile_view_offline_badge_margin_end_modern_condensed">7dp</dimen>
-    <dimen name="tile_view_padding">4dp</dimen>
-    <dimen name="tile_view_title_margin_top_modern">61dp</dimen>
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="duet_ntp_logo_top_margin">-16dp</dimen>
@@ -322,7 +266,7 @@
     <!-- The ntp_voice_search_button_width is 48dp and its icon is 24dp. Setting
          8dp start padding will result in 8dp padding between the icon and the
          end of the fakebox ((48 - 24 - 8) / 2). -->
-    <dimen name="sei_ntp_voice_button_start_padding">8dp</dimen>
+    <dimen name="sei_ntp_fakebox_button_start_padding">8dp</dimen>
     <dimen name="experimental_explore_sites_radius">8dp</dimen>
     <dimen name="experimental_explore_sites_padding">8dp</dimen>
     <dimen name="experimental_explore_sites_margin">16dp</dimen>
@@ -331,19 +275,18 @@
          to both the top and bottom bounds to bring the 48dp modern_toolbar_background_size to 56dp
          (matches toolbar_height_no_shadow). -->
     <dimen name="ntp_search_box_bounds_vertical_inset_modern">-4dp</dimen>
-    <dimen name="ntp_wide_card_lateral_margins">48dp</dimen>
-    <dimen name="ntp_wide_card_lateral_margins_v2">36dp</dimen>
+    <dimen name="ntp_wide_card_lateral_margins">36dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="snippets_article_header_menu_size">48dp</dimen>
-    <dimen name="feed_v2_header_menu_width">33dp</dimen>
+    <dimen name="feed_v2_header_menu_width">18dp</dimen>
     <dimen name="feed_v2_header_menu_touch_padding">4dp</dimen>
     <dimen name="feed_v2_header_menu_disabled_padding">11dp</dimen>
     <!-- This should match |ntp_header_lateral_margins_v2|. -->
     <dimen name="ntp_header_lateral_margins_v2">16dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
-    <dimen name="content_suggestions_card_modern_margin">12dp</dimen>
-    <dimen name="content_suggestions_card_modern_margin_v2">0dp</dimen>
-    <dimen name="content_suggestions_card_modern_padding_v2">16dp</dimen>
+    <dimen name="content_suggestions_card_modern_margin">0dp</dimen>
+    <dimen name="content_suggestions_card_modern_padding">16dp</dimen>
+    <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
     <dimen name="md_incognito_ntp_padding_left">16dp</dimen>
     <dimen name="cryptid_height_in_logo_wrapper">60dp</dimen>
@@ -397,6 +340,7 @@
     <dimen name="bookmark_minimum_dialog_size_tablet">500dp</dimen>
     <dimen name="bookmark_list_view_padding_top">64dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
+    <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
 
     <!-- Bookmark widget dimensions -->
     <dimen name="bookmark_widget_min_width">64dp</dimen>
@@ -406,9 +350,7 @@
     <dimen name="custom_tabs_toolbar_maxWidth">60dp</dimen>
     <dimen name="custom_tabs_toolbar_vertical_padding">16dp</dimen>
     <dimen name="custom_tabs_toolbar_horizontal_margin_no_close">8dp</dimen>
-    <dimen name="toolbar_icon_height">24dp</dimen>
     <dimen name="min_toolbar_icon_side_padding">6dp</dimen>
-    <dimen name="custom_tabs_url_lite_separator_margin">4dp</dimen>
     <dimen name="custom_tabs_url_text_size">12sp</dimen>
     <dimen name="custom_tabs_title_text_size">16sp</dimen>
     <dimen name="custom_tabs_bottom_bar_max_height">120dp</dimen>
@@ -442,7 +384,6 @@
     <!--  Used as a margin to force the shadow view to overlap other views. -->
     <dimen name="action_bar_shadow_margin_negative">-10dp</dimen>
     <dimen name="sync_promo_view_padding">16dp</dimen>
-    <dimen name="open_new_tab_animation_y_translation">-20dp</dimen>
     <dimen name="sync_passphrase_type_instructions_padding">25dp</dimen>
     <!-- 18dp padding is added to each side of the remove button to limit the image width to 20dp (56dp - 2 * 18dp). -->
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>
@@ -497,7 +438,6 @@
     <dimen name="navigation_bubble_text_end_padding">8dp</dimen>
     <dimen name="navigation_sheet_content_top_padding">18dp</dimen>
     <dimen name="navigation_sheet_content_bottom_padding">4dp</dimen>
-    <dimen name="navigation_sheet_content_wrap_padding">12dp</dimen>
     <dimen name="navigation_sheet_peek_height">120dp</dimen>
 
     <!-- RadioButtonWithDescriptionLayout dimensions -->
@@ -533,4 +473,9 @@
     <dimen name="sharing_hub_preview_inner_icon_size">24dp</dimen>
     <dimen name="sharing_hub_3p_icon_size">36dp</dimen>
     <dimen name="sharing_hub_3p_icon_padding_top">20dp</dimen>
+
+    <!-- Long Screenshots dimensions -->
+    <dimen name="long_screenshots_button_size">24dp</dimen>
+    <dimen name="long_screenshots_button_padding">17dp</dimen>
+
 </resources>

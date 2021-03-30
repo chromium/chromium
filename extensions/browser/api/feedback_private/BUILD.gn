@@ -21,10 +21,13 @@ source_set("feedback_private") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/feedback",
+    "//components/feedback/content",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api",
     "//extensions/common",
     "//extensions/common/api",
+    "//google_apis",
     "//net",
   ]
 
@@ -40,6 +43,7 @@ source_set("feedback_private") {
 
     deps += [
       "//ash/public/cpp",
+      "//chromeos/services/assistant/public/cpp",
       "//chromeos/services/assistant/public/mojom",
     ]
   }

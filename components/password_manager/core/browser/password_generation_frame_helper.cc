@@ -111,7 +111,7 @@ bool PasswordGenerationFrameHelper::IsGenerationEnabled(
   return false;
 }
 
-base::string16 PasswordGenerationFrameHelper::GeneratePassword(
+std::u16string PasswordGenerationFrameHelper::GeneratePassword(
     const GURL& last_committed_url,
     autofill::FormSignature form_signature,
     autofill::FieldSignature field_signature,

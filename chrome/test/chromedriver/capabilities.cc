@@ -81,10 +81,9 @@ Status ParseTimeDelta(base::TimeDelta* to_set,
 Status ParseFilePath(base::FilePath* to_set,
                      const base::Value& option,
                      Capabilities* capabilities) {
-  base::FilePath::StringType str;
-  if (!option.GetAsString(&str))
+  if (!option.is_string())
     return Status(kInvalidArgument, "must be a string");
-  *to_set = base::FilePath(str);
+  *to_set = base::FilePath::FromUTF8Unsafe(option.GetString());
   return Status(kOk);
 }
 
@@ -304,7 +303,7 @@ Status ParseProxy(bool w3c_compliant,
   } else if (proxy_type == "system") {
     // Chrome default.
   } else if (proxy_type == "pac") {
-    base::CommandLine::StringType proxy_pac_url;
+    std::string proxy_pac_url;
     if (!proxy_dict->GetString("proxyAutoconfigUrl", &proxy_pac_url))
       return Status(kInvalidArgument, "'proxyAutoconfigUrl' must be a string");
     capabilities->switches.SetSwitch("proxy-pac-url", proxy_pac_url);
@@ -676,27 +675,19 @@ Switches::Switches(const Switches& other) = default;
 Switches::~Switches() {}
 
 void Switches::SetSwitch(const std::string& name) {
-  SetSwitch(name, NativeString());
+  SetSwitch(name, std::string());
 }
 
 void Switches::SetSwitch(const std::string& name, const std::string& value) {
 #if defined(OS_WIN)
-  SetSwitch(name, base::UTF8ToUTF16(value));
+  switch_map_[name] = base::UTF8ToWide(value);
 #else
   switch_map_[name] = value;
-#endif
-}
-
-void Switches::SetSwitch(const std::string& name, const base::string16& value) {
-#if defined(OS_WIN)
-  switch_map_[name] = value;
-#else
-  SetSwitch(name, base::UTF16ToUTF8(value));
 #endif
 }
 
 void Switches::SetSwitch(const std::string& name, const base::FilePath& value) {
-  SetSwitch(name, value.value());
+  switch_map_[name] = value.value();
 }
 
 void Switches::SetFromSwitches(const Switches& switches) {
@@ -732,7 +723,7 @@ bool Switches::HasSwitch(const std::string& name) const {
 std::string Switches::GetSwitchValue(const std::string& name) const {
   NativeString value = GetSwitchValueNative(name);
 #if defined(OS_WIN)
-  return base::UTF16ToUTF8(value);
+  return base::WideToUTF8(value);
 #else
   return value;
 #endif

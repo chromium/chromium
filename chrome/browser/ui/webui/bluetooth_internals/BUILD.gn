@@ -18,6 +18,7 @@ source_set("bluetooth_internals") {
   deps = [
     ":mojo_bindings",
     "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/bluetooth_internals:resources",
     "//chrome/common",
     "//content/public/browser",

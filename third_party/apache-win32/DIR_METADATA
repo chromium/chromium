@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Blink>Infra"
+monorail: {
+  component: "Blink>Infra"
 }
-team_email:  "blink-infra@chromium.org"
+team_email: "blink-infra@chromium.org"

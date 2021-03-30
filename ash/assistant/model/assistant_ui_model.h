@@ -17,7 +17,6 @@ class AssistantUiModelObserver;
 
 // Enumeration of Assistant UI modes.
 enum class AssistantUiMode {
-  kAmbientUi,
   kLauncherEmbeddedUi,
 };
 

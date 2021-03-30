@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
@@ -81,7 +82,7 @@ void SVGResources::UpdateClipPathFilterMask(SVGElement& element,
     layout_object->SetNeedsPaintPropertyUpdate();
     client.MarkFilterDataDirty();
   }
-  if (StyleSVGResource* masker_resource = style.SvgStyle().MaskerResource())
+  if (StyleSVGResource* masker_resource = style.MaskerResource())
     masker_resource->AddClient(element.EnsureSVGResourceClient());
   if (had_client)
     ClearClipPathFilterMask(element, old_style);
@@ -101,7 +102,7 @@ void SVGResources::ClearClipPathFilterMask(SVGElement& element,
     style->Filter().RemoveClient(*client);
     client->InvalidateFilterData();
   }
-  if (StyleSVGResource* masker_resource = style->SvgStyle().MaskerResource())
+  if (StyleSVGResource* masker_resource = style->MaskerResource())
     masker_resource->RemoveClient(*client);
 }
 
@@ -109,10 +110,9 @@ void SVGResources::UpdatePaints(SVGElement& element,
                                 const ComputedStyle* old_style,
                                 const ComputedStyle& style) {
   const bool had_client = element.GetSVGResourceClient();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-  if (StyleSVGResource* paint_resource = svg_style.FillPaint().Resource())
+  if (StyleSVGResource* paint_resource = style.FillPaint().Resource())
     paint_resource->AddClient(element.EnsureSVGResourceClient());
-  if (StyleSVGResource* paint_resource = svg_style.StrokePaint().Resource())
+  if (StyleSVGResource* paint_resource = style.StrokePaint().Resource())
     paint_resource->AddClient(element.EnsureSVGResourceClient());
   if (had_client)
     ClearPaints(element, old_style);
@@ -125,10 +125,9 @@ void SVGResources::ClearPaints(SVGElement& element,
   SVGResourceClient* client = element.GetSVGResourceClient();
   if (!client)
     return;
-  const SVGComputedStyle& old_svg_style = style->SvgStyle();
-  if (StyleSVGResource* paint_resource = old_svg_style.FillPaint().Resource())
+  if (StyleSVGResource* paint_resource = style->FillPaint().Resource())
     paint_resource->RemoveClient(*client);
-  if (StyleSVGResource* paint_resource = old_svg_style.StrokePaint().Resource())
+  if (StyleSVGResource* paint_resource = style->StrokePaint().Resource())
     paint_resource->RemoveClient(*client);
 }
 
@@ -136,12 +135,11 @@ void SVGResources::UpdateMarkers(SVGElement& element,
                                  const ComputedStyle* old_style,
                                  const ComputedStyle& style) {
   const bool had_client = element.GetSVGResourceClient();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-  if (StyleSVGResource* marker_resource = svg_style.MarkerStartResource())
+  if (StyleSVGResource* marker_resource = style.MarkerStartResource())
     marker_resource->AddClient(element.EnsureSVGResourceClient());
-  if (StyleSVGResource* marker_resource = svg_style.MarkerMidResource())
+  if (StyleSVGResource* marker_resource = style.MarkerMidResource())
     marker_resource->AddClient(element.EnsureSVGResourceClient());
-  if (StyleSVGResource* marker_resource = svg_style.MarkerEndResource())
+  if (StyleSVGResource* marker_resource = style.MarkerEndResource())
     marker_resource->AddClient(element.EnsureSVGResourceClient());
   if (had_client)
     ClearMarkers(element, old_style);
@@ -154,12 +152,11 @@ void SVGResources::ClearMarkers(SVGElement& element,
   SVGResourceClient* client = element.GetSVGResourceClient();
   if (!client)
     return;
-  const SVGComputedStyle& old_svg_style = style->SvgStyle();
-  if (StyleSVGResource* marker_resource = old_svg_style.MarkerStartResource())
+  if (StyleSVGResource* marker_resource = style->MarkerStartResource())
     marker_resource->RemoveClient(*client);
-  if (StyleSVGResource* marker_resource = old_svg_style.MarkerMidResource())
+  if (StyleSVGResource* marker_resource = style->MarkerMidResource())
     marker_resource->RemoveClient(*client);
-  if (StyleSVGResource* marker_resource = old_svg_style.MarkerEndResource())
+  if (StyleSVGResource* marker_resource = style->MarkerEndResource())
     marker_resource->RemoveClient(*client);
 }
 
@@ -206,21 +203,42 @@ class SVGElementResourceClient::FilterData final
 SVGElementResourceClient::SVGElementResourceClient(SVGElement* element)
     : element_(element), filter_data_dirty_(false) {}
 
-void SVGElementResourceClient::ResourceContentChanged(
-    InvalidationModeMask invalidation_mask) {
+namespace {
+
+template <typename ContainerType>
+bool ContainsResource(const ContainerType* container, SVGResource* resource) {
+  return container && container->Resource() == resource;
+}
+
+bool ContainsResource(const FilterOperations& operations,
+                      SVGResource* resource) {
+  return base::ranges::any_of(
+      operations.Operations(), [resource](const FilterOperation* operation) {
+        return ContainsResource(DynamicTo<ReferenceFilterOperation>(operation),
+                                resource);
+      });
+}
+
+}  // namespace
+
+void SVGElementResourceClient::ResourceContentChanged(SVGResource* resource) {
   LayoutObject* layout_object = element_->GetLayoutObject();
   if (!layout_object)
     return;
 
-  if (invalidation_mask & SVGResourceClient::kFilterCacheInvalidation)
+  const ComputedStyle& style = layout_object->StyleRef();
+  if (style.HasFilter() && ContainsResource(style.Filter(), resource)) {
     InvalidateFilterData();
+    layout_object->SetShouldDoFullPaintInvalidation();
+  }
 
-  if (layout_object->IsSVGResourceContainer()) {
-    To<LayoutSVGResourceContainer>(layout_object)->RemoveAllClientsFromCache();
+  if (auto* container = DynamicTo<LayoutSVGResourceContainer>(layout_object)) {
+    container->RemoveAllClientsFromCache();
     return;
   }
 
-  if (invalidation_mask & SVGResourceClient::kPaintInvalidation) {
+  if (ContainsResource(style.FillPaint().Resource(), resource) ||
+      ContainsResource(style.StrokePaint().Resource(), resource)) {
     // Since LayoutSVGInlineTexts don't have SVGResources (they use their
     // parent's), they will not be notified of changes to paint servers. So
     // if the client is one that could have a LayoutSVGInlineText use a
@@ -230,36 +248,34 @@ void SVGElementResourceClient::ResourceContentChanged(
         PaintInvalidationReason::kSVGResource);
   }
 
-  if (invalidation_mask & SVGResourceClient::kClipCacheInvalidation)
-    layout_object->InvalidateClipPathCache();
-
-  // Invalidate paint properties to update effects if any.
-  if (invalidation_mask & SVGResourceClient::kPaintPropertiesInvalidation)
-    layout_object->SetNeedsPaintPropertyUpdate();
-
-  if (invalidation_mask & SVGResourceClient::kBoundariesInvalidation)
+  bool needs_layout = false;
+  if (ContainsResource(style.MarkerStartResource(), resource) ||
+      ContainsResource(style.MarkerMidResource(), resource) ||
+      ContainsResource(style.MarkerEndResource(), resource)) {
+    needs_layout = true;
     layout_object->SetNeedsBoundariesUpdate();
+  }
 
-  bool needs_layout =
-      invalidation_mask & SVGResourceClient::kLayoutInvalidation;
+  const auto* clip_reference =
+      DynamicTo<ReferenceClipPathOperation>(style.ClipPath());
+  if (ContainsResource(clip_reference, resource)) {
+    // TODO(fs): "Downgrade" to non-subtree?
+    layout_object->SetSubtreeShouldDoFullPaintInvalidation();
+    layout_object->InvalidateClipPathCache();
+  }
+
+  if (ContainsResource(style.MaskerResource(), resource)) {
+    // TODO(fs): "Downgrade" to non-subtree?
+    layout_object->SetSubtreeShouldDoFullPaintInvalidation();
+    layout_object->SetNeedsPaintPropertyUpdate();
+  }
+
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
       *layout_object, needs_layout);
 }
 
-void SVGElementResourceClient::ResourceElementChanged() {
-  LayoutObject* layout_object = element_->GetLayoutObject();
-  if (!layout_object)
-    return;
-  // TODO(fs): If the resource element (for a filter) doesn't actually change
-  // we don't need to perform the associated invalidations.
-  InvalidateFilterData();
-  if (layout_object->Parent()) {
-    LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
-        *layout_object, true);
-  }
-}
-
 void SVGElementResourceClient::FilterPrimitiveChanged(
+    SVGResource* resource,
     SVGFilterPrimitiveStandardAttributes& primitive,
     const QualifiedName& attribute) {
   if (filter_data_ && !filter_data_->Invalidate(primitive, attribute))
@@ -334,9 +350,10 @@ void SVGElementResourceClient::InvalidateFilterData() {
     return;
   if (FilterData* filter_data = filter_data_.Release())
     filter_data->Dispose();
-  LayoutObject* layout_object = element_->GetLayoutObject();
-  layout_object->SetNeedsPaintPropertyUpdate();
-  MarkFilterDataDirty();
+  if (LayoutObject* layout_object = element_->GetLayoutObject()) {
+    layout_object->SetNeedsPaintPropertyUpdate();
+    MarkFilterDataDirty();
+  }
 }
 
 void SVGElementResourceClient::MarkFilterDataDirty() {
@@ -360,11 +377,11 @@ void SVGResourceInvalidator::InvalidateEffects() {
     if (SVGElementResourceClient* client = SVGResources::GetClient(object_))
       client->InvalidateFilterData();
   }
-  if (style.ClipPath()) {
+  if (style.HasClipPath()) {
     object_.SetShouldDoFullPaintInvalidation();
     object_.InvalidateClipPathCache();
   }
-  if (style.SvgStyle().HasMasker()) {
+  if (style.MaskerResource()) {
     object_.SetShouldDoFullPaintInvalidation();
     object_.SetNeedsPaintPropertyUpdate();
   }
@@ -375,14 +392,14 @@ void SVGResourceInvalidator::InvalidatePaints() {
   if (!client)
     return;
   bool needs_invalidation = false;
-  const SVGComputedStyle& svg_style = object_.StyleRef().SvgStyle();
+  const ComputedStyle& style = object_.StyleRef();
   if (auto* fill = GetSVGResourceAsType<LayoutSVGResourcePaintServer>(
-          *client, svg_style.FillPaint().Resource())) {
+          *client, style.FillPaint().Resource())) {
     fill->RemoveClientFromCache(*client);
     needs_invalidation = true;
   }
   if (auto* stroke = GetSVGResourceAsType<LayoutSVGResourcePaintServer>(
-          *client, svg_style.StrokePaint().Resource())) {
+          *client, style.StrokePaint().Resource())) {
     stroke->RemoveClientFromCache(*client);
     needs_invalidation = true;
   }

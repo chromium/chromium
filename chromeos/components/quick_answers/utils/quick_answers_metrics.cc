@@ -26,6 +26,7 @@ const char kDurationSuffix[] = ".Duration";
 const char kQuickAnswersNotice[] = "QuickAnswers.Consent";
 const char kQuickAnswersNoticeDuration[] = "QuickAnswers.Consent.Duration";
 const char kQuickAnswersNoticeImpression[] = "QuickAnswers.Consent.Impression";
+const char kQuickAnswersNetworkError[] = "QuickAnswers.NetworkError.IntentType";
 
 std::string ResultTypeToString(ResultType result_type) {
   switch (result_type) {
@@ -127,5 +128,10 @@ void RecordNoticeImpression(int nth_impression) {
 void RecordIntentType(IntentType intent_type) {
   base::UmaHistogramEnumeration(kQuickAnswerIntent, intent_type);
 }
+
+void RecordNetworkError(IntentType intent_type) {
+  base::UmaHistogramEnumeration(kQuickAnswersNetworkError, intent_type);
+}
+
 }  // namespace quick_answers
 }  // namespace chromeos

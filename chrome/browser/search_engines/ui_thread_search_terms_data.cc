@@ -48,11 +48,11 @@ std::string UIThreadSearchTermsData::GetApplicationLocale() const {
 
 // Android implementations are in ui_thread_search_terms_data_android.cc.
 #if !defined(OS_ANDROID)
-base::string16 UIThreadSearchTermsData::GetRlzParameterValue(
+std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
-  base::string16 rlz_string;
+  std::u16string rlz_string;
 #if BUILDFLAG(ENABLE_RLZ)
   // For organic brandcodes do not use rlz at all. Empty brandcode usually
   // means a chromium install. This is ok.
@@ -112,7 +112,9 @@ std::string UIThreadSearchTermsData::GoogleImageSearchSource() const {
   if (version_info::IsOfficialBuild())
     version += " (Official)";
   version += " " + version_info::GetOSType();
-  std::string modifier(chrome::GetChannelName());
+  // Do not distinguish extended from regular stable in image search queries.
+  std::string modifier(
+      chrome::GetChannelName(chrome::WithExtendedStable(false)));
   if (!modifier.empty())
     version += " " + modifier;
   return version;

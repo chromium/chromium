@@ -16,10 +16,10 @@
 #include "media/audio/audio_input_ipc.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace audio {
 
@@ -29,7 +29,7 @@ namespace audio {
 class InputIPC : public media::AudioInputIPC,
                  public media::mojom::AudioInputStreamClient {
  public:
-  InputIPC(mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
+  InputIPC(mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
            const std::string& device_id,
            mojo::PendingRemote<media::mojom::AudioLog> log);
   ~InputIPC() override;
@@ -66,8 +66,8 @@ class InputIPC : public media::AudioInputIPC,
   // bound to |stream_factory_|. This is done because the constructor may be
   // called from a different sequence than the other functions and
   // |stream_factory_| must be bound on the sequence which uses it.
-  mojo::Remote<audio::mojom::StreamFactory> stream_factory_;
-  mojo::PendingRemote<audio::mojom::StreamFactory> pending_stream_factory_;
+  mojo::Remote<media::mojom::AudioStreamFactory> stream_factory_;
+  mojo::PendingRemote<media::mojom::AudioStreamFactory> pending_stream_factory_;
 
   mojo::Remote<media::mojom::AudioLog> log_;
 

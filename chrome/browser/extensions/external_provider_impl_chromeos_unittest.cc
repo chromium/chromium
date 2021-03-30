@@ -6,15 +6,17 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -25,8 +27,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/sync/base/pref_names.h"
@@ -53,7 +53,7 @@ const char kTestUserAccount[] = "user@test";
 class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
  public:
   ExternalProviderImplChromeOSTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager()),
+      : fake_user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
 
   ~ExternalProviderImplChromeOSTest() override {}
@@ -83,8 +83,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
 
     ProviderCollection providers;
     extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), service_->pending_extension_manager(),
-        &providers);
+        service_, profile_.get(), &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers)
       service_->AddProviderForTesting(std::move(provider));
@@ -102,7 +101,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     // finish cleanly).
     // So ensure we let pending extension installations finish.
     WaitForPendingStandaloneExtensionsInstalled();
-    chromeos::KioskAppManager::Shutdown();
+    ash::KioskAppManager::Shutdown();
     ExtensionServiceTestBase::TearDown();
   }
 
@@ -127,20 +126,19 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
 
     ProviderCollection providers;
     extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), service_->pending_extension_manager(),
-        &providers);
+        service_, profile_.get(), &providers);
 
     EXPECT_EQ(providers.size(), expected_count);
   }
 
-  chromeos::FakeChromeUserManager* fake_user_manager() const {
+  ash::FakeChromeUserManager* fake_user_manager() const {
     return fake_user_manager_;
   }
 
  private:
   std::unique_ptr<base::ScopedPathOverride> external_externsions_overrides_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalProviderImplChromeOSTest);
@@ -201,7 +199,8 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_StandaloneChild) {
 }
 
 // Normal mode, standalone app should be installed, because sync is disabled.
-TEST_F(ExternalProviderImplChromeOSTest, SyncDisabled) {
+// TODO(crbug.com/1181737): Flaky test
+TEST_F(ExternalProviderImplChromeOSTest, DISABLED_SyncDisabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableSync);
 
   InitServiceWithExternalProviders(true);
@@ -246,7 +245,8 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
 
 // User signed in, sync service started, install app when priority sync is
 // completed.
-TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
+// TODO(crbug.com/1177118) Re-enable test
+TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
   InitServiceWithExternalProviders(true);
 
   // User is logged in.

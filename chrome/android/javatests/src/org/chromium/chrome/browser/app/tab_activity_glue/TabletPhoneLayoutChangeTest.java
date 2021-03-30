@@ -59,7 +59,7 @@ public class TabletPhoneLayoutChangeTest {
                     (RecreateObserver) helper::notifyCalled);
             Assert.assertTrue(
                     "Activity should be ready for tablet mode change.", cta.didChangeTabletMode());
-            cta.performOnConfigurationChanged(cta.getResources().getConfiguration());
+            cta.getDisplayAndroidObserverForTesting().onCurrentModeChanged(null);
         });
 
         helper.waitForFirst("Activity should be restart");

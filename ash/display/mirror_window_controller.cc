@@ -15,11 +15,11 @@
 #include "ash/host/root_window_transformer.h"
 #include "ash/root_window_settings.h"
 #include "ash/shell.h"
-#include "ash/window_factory.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "ui/aura/client/capture_client.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
@@ -225,7 +225,7 @@ void MirrorWindowController::UpdateWindow(
       host->Show();
 
       aura::Window* mirror_window = host_info->mirror_window =
-          window_factory::NewWindow().release();
+          new aura::Window(nullptr);
       mirror_window->Init(ui::LAYER_SOLID_COLOR);
       host->window()->AddChild(mirror_window);
       host_info->ash_host->SetRootWindowTransformer(std::move(transformer));

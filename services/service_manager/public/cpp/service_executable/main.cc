@@ -47,8 +47,8 @@ void WaitForDebuggerIfNecessary() {
     }
     if (apps_to_debug.empty() || base::Contains(apps_to_debug, app)) {
 #if defined(OS_WIN)
-      base::string16 appw = base::UTF8ToUTF16(app);
-      base::string16 message = base::UTF8ToUTF16(
+      std::wstring appw = base::UTF8ToWide(app);
+      std::wstring message = base::UTF8ToWide(
           base::StringPrintf("%s - %ld", app.c_str(), GetCurrentProcessId()));
       MessageBox(NULL, message.c_str(), appw.c_str(), MB_OK | MB_SETFOREGROUND);
 #else

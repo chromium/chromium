@@ -8,6 +8,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_representation_d3d.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
 #include "ui/gl/trace_util.h"
@@ -80,6 +81,10 @@ SharedImageBackingD3D::~SharedImageBackingD3D() {
   keyed_mutex_acquire_key_ = 0;
   keyed_mutex_acquired_ = false;
   shared_handle_.Close();
+
+#if BUILDFLAG(USE_DAWN)
+  external_image_ = nullptr;
+#endif  // BUILDFLAG(USE_DAWN)
 }
 
 void SharedImageBackingD3D::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
@@ -93,13 +98,57 @@ bool SharedImageBackingD3D::ProduceLegacyMailbox(
   return true;
 }
 
+uint32_t SharedImageBackingD3D::GetAllowedDawnUsages() const {
+  // TODO(crbug.com/2709243): Figure out other SI flags, if any.
+  DCHECK(usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU);
+  return static_cast<uint32_t>(
+      WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
+      WGPUTextureUsage_Sampled | WGPUTextureUsage_OutputAttachment);
+}
+
 std::unique_ptr<SharedImageRepresentationDawn>
 SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
                                    MemoryTypeTracker* tracker,
                                    WGPUDevice device) {
 #if BUILDFLAG(USE_DAWN)
-  return std::make_unique<SharedImageRepresentationDawnD3D>(manager, this,
-                                                            tracker, device);
+
+  // Persistently open the shared handle by caching it on this backing.
+  if (!external_image_) {
+    DCHECK(shared_handle_.IsValid());
+
+    const viz::ResourceFormat viz_resource_format = format();
+    const WGPUTextureFormat wgpu_format =
+        viz::ToWGPUFormat(viz_resource_format);
+    if (wgpu_format == WGPUTextureFormat_Undefined) {
+      DLOG(ERROR) << "Unsupported viz format found: " << viz_resource_format;
+      return nullptr;
+    }
+
+    WGPUTextureDescriptor texture_descriptor = {};
+    texture_descriptor.nextInChain = nullptr;
+    texture_descriptor.format = wgpu_format;
+    texture_descriptor.usage = GetAllowedDawnUsages();
+    texture_descriptor.dimension = WGPUTextureDimension_2D;
+    texture_descriptor.size = {size().width(), size().height(), 1};
+    texture_descriptor.mipLevelCount = 1;
+    texture_descriptor.sampleCount = 1;
+
+    dawn_native::d3d12::ExternalImageDescriptorDXGISharedHandle
+        externalImageDesc;
+    externalImageDesc.cTextureDescriptor = &texture_descriptor;
+    externalImageDesc.sharedHandle = shared_handle_.Get();
+
+    external_image_ = dawn_native::d3d12::ExternalImageDXGI::Create(
+        device, &externalImageDesc);
+
+    if (!external_image_) {
+      DLOG(ERROR) << "Failed to create external image";
+      return nullptr;
+    }
+  }
+
+  return std::make_unique<SharedImageRepresentationDawnD3D>(
+      manager, this, tracker, device, external_image_.get());
 #else
   return nullptr;
 #endif  // BUILDFLAG(USE_DAWN)

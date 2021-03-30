@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  setBluetoothManualChooser(true);
+
+  // Open the chooser, looking for a Heart Rate device.
+  let requestDevicePromise =
+      setBluetoothFakeAdapter('SecondDiscoveryFindsHeartRateAdapter')
+          .then(
+              () => requestDeviceWithTrustedClick(
+                  {filters: [{services: ['heart_rate']}]}));
+
+  // The adapter finds nothing, so we just see discovery start and stop.
+  return getBluetoothManualChooserEvents(3)
+      .then(events => {
+        assert_array_equals(events, [
+          'chooser-opened(https://web-platform.test:8444)',
+          'discovering',
+          'discovery-idle',
+        ]);
+
+        // On the second discovery, the adapter finds the Heart Rate device.
+        sendBluetoothManualChooserEvent('rescan', '');
+        return getBluetoothManualChooserEvents(3);
+      })
+      .then(events => {
+        assert_equals(events.length, 3, events);
+        assert_equals(events[0], 'discovering', 'events[0]');
+        let idsByName = new AddDeviceEventSet();
+        idsByName.assert_add_device_event(events[1]);
+        assert_true(idsByName.has('Heart Rate Device'));
+        assert_equals(events[2], 'discovery-idle');
+
+        // Select it and let the test complete.
+        sendBluetoothManualChooserEvent(
+            'selected', idsByName.get('Heart Rate Device'));
+        return requestDevicePromise;
+      })
+      .then(device => assert_equals(device.name, 'Heart Rate Device'));
+}, 'The chooser can restart the BT scan.');
+</script>

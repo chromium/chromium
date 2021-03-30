@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/supports_user_data.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -39,6 +40,10 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+#if defined(OS_LINUX)
+#include "ui/ozone/public/ozone_switches.h"
+#endif
 
 namespace {
 const char kPopupFirstDocumentEngagement[] =
@@ -197,7 +202,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 
 // OpenURLFromTab goes through a different code path than traditional popups
 // that use window.open(). Make sure the tracker is created in those cases.
-IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, ControlClick_HasTracker) {
+// Disabled due to flakiness. See crbug.com/1186441.
+IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ControlClick_HasTracker) {
   base::HistogramTester tester;
   const GURL url = embedded_test_server()->GetURL(
       "/popup_blocker/popup-simulated-click-on-anchor.html");
@@ -242,7 +248,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, ControlClick_HasTracker) {
       entry, kUkmNumGestureScrollBeginInteractions, 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, ShiftClick_HasTracker) {
+// Disabled due to flakiness. See crbug.com/1186441.
+IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ShiftClick_HasTracker) {
   base::HistogramTester tester;
   const GURL url = embedded_test_server()->GetURL(
       "/popup_blocker/popup-simulated-click-on-anchor.html");
@@ -540,7 +547,14 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
       static_cast<int>(WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
-IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInWindow_IsWindowTrue) {
+// TODO(crbug.com/1178846): Test is flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PopupInWindow_IsWindowTrue DISABLED_PopupInWindow_IsWindowTrue
+#else
+#define MAYBE_PopupInWindow_IsWindowTrue PopupInWindow_IsWindowTrue
+#endif
+IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
+                       MAYBE_PopupInWindow_IsWindowTrue) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
   ui_test_utils::NavigateToURL(browser(), first_url);
 
@@ -573,8 +587,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInWindow_IsWindowTrue) {
       static_cast<int>(WindowOpenDisposition::NEW_POPUP));
 }
 
-// TODO(crbug.com/1146598): Test is flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1146598): Test is flaky on Lacros, Linux Ozone Wayland.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
 #define MAYBE_PopupNoRedirect_RedirectCountZero DISABLED_PopupNoRedirect_RedirectCountZero
 #else
 #define MAYBE_PopupNoRedirect_RedirectCountZero PopupNoRedirect_RedirectCountZero
@@ -611,8 +625,28 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmRedirectCount, 0);
 }
 
+// TODO(crbug.com/1179235): Test is flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PopupRedirectsTwice_RedirectCountTwo \
+  DISABLED_PopupRedirectsTwice_RedirectCountTwo
+#else
+#define MAYBE_PopupRedirectsTwice_RedirectCountTwo \
+  PopupRedirectsTwice_RedirectCountTwo
+#endif
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
-                       PopupRedirectsTwice_RedirectCountTwo) {
+                       MAYBE_PopupRedirectsTwice_RedirectCountTwo) {
+#if defined(OS_LINUX)
+  {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kOzonePlatform) &&
+        command_line->GetSwitchValueASCII(switches::kOzonePlatform) ==
+            "wayland") {
+      // TODO(crbug.com/1179235): Test is flaky on Linux Wayland configuration.
+      GTEST_SKIP() << "Flaky on Linux Wayland";
+    }
+  }
+#endif
+
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
   ui_test_utils::NavigateToURL(browser(), first_url);
 
@@ -646,8 +680,16 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmRedirectCount, 2);
 }
 
+// TODO(crbug.com/1179859): Test is flaky on Windows, Linux and Lacros.
+#if defined(OS_LINUX) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PopupJavascriptRenavigation_RedirectCountZero \
+  DISABLED_PopupJavascriptRenavigation_RedirectCountZero
+#else
+#define MAYBE_PopupJavascriptRenavigation_RedirectCountZero \
+  PopupJavascriptRenavigation_RedirectCountZero
+#endif
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
-                       PopupJavascriptRenavigation_RedirectCountZero) {
+                       MAYBE_PopupJavascriptRenavigation_RedirectCountZero) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
   ui_test_utils::NavigateToURL(browser(), first_url);
 

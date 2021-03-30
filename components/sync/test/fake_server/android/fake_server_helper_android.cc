@@ -26,6 +26,7 @@
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -216,7 +217,7 @@ void FakeServerHelperAndroid::InjectBookmarkEntity(
     const JavaParamRef<jobject>& obj,
     jlong fake_server,
     const JavaParamRef<jstring>& title,
-    const JavaParamRef<jstring>& url,
+    const JavaParamRef<jobject>& url,
     const JavaParamRef<jstring>& parent_id) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
@@ -249,7 +250,7 @@ void FakeServerHelperAndroid::ModifyBookmarkEntity(
     jlong fake_server,
     const JavaParamRef<jstring>& entity_id,
     const JavaParamRef<jstring>& title,
-    const JavaParamRef<jstring>& url,
+    const JavaParamRef<jobject>& url,
     const JavaParamRef<jstring>& parent_id) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
@@ -297,14 +298,14 @@ void FakeServerHelperAndroid::ModifyBookmarkFolderEntity(
 }
 
 std::unique_ptr<syncer::LoopbackServerEntity>
-FakeServerHelperAndroid::CreateBookmarkEntity(JNIEnv* env,
-                                              jstring title,
-                                              jstring url,
-                                              jstring parent_id) {
-  std::string url_as_string = base::android::ConvertJavaStringToUTF8(env, url);
-  GURL gurl = GURL(url_as_string);
+FakeServerHelperAndroid::CreateBookmarkEntity(
+    JNIEnv* env,
+    jstring title,
+    const base::android::JavaRef<jobject>& url,
+    jstring parent_id) {
+  auto gurl = *url::GURLAndroid::ToNativeGURL(env, url);
   if (!gurl.is_valid()) {
-    NOTREACHED() << "The given string (" << url_as_string
+    NOTREACHED() << "The given string (" << gurl.possibly_invalid_spec()
                  << ") is not a valid URL.";
   }
 

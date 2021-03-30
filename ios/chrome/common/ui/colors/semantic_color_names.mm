@@ -13,14 +13,20 @@ NSString* const kBackgroundColor = @"background_color";
 NSString* const kCloseButtonColor = @"close_button_color";
 NSString* const kDisabledTintColor = @"disabled_tint_color";
 NSString* const kFaviconBackgroundColor = @"favicon_background_color";
+NSString* const kGroupedPrimaryBackgroundColor =
+    @"grouped_primary_background_color";
+NSString* const kGroupedSecondaryBackgroundColor =
+    @"grouped_secondary_background_color";
 NSString* const kMDCInkColor = @"mdc_ink_color";
 NSString* const kMDCSecondaryInkColor = @"mdc_secondary_ink_color";
 NSString* const kPlaceholderImageTintColor = @"placeholder_image_tint_color";
+NSString* const kPrimaryBackgroundColor = @"primary_background_color";
 NSString* const kScrimBackgroundColor = @"scrim_background_color";
 NSString* const kSecondaryBackgroundColor = @"secondary_background_color";
 NSString* const kSeparatorColor = @"separator_color";
 NSString* const kSolidButtonTextColor = @"solid_button_text_color";
 NSString* const kTableViewRowHighlightColor = @"table_view_row_highlight_color";
+NSString* const kTertiaryBackgroundColor = @"tertiary_background_color";
 NSString* const kTextPrimaryColor = @"text_primary_color";
 NSString* const kTextSecondaryColor = @"text_secondary_color";
 NSString* const kTextfieldBackgroundColor = @"textfield_background_color";
@@ -49,6 +55,10 @@ NSString* const kGrey900Color = @"grey_900_color";
 // Temporary for iOS 12
 
 NSString* const kBackgroundDarkColor = @"background_dark_color";
+NSString* const kSecondaryBackgroundDarkColor =
+    @"secondary_background_dark_color";
+NSString* const kTertiaryBackgroundDarkColor =
+    @"tertiary_background_dark_color";
 NSString* const kCloseButtonDarkColor = @"close_button_dark_color";
 NSString* const kTableViewRowHighlightDarkColor =
     @"table_view_row_highlight_dark_color";

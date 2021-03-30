@@ -2,39 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":os_settings_menu" ]
+js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
+  is_polymer3 = true
+  deps = [ ":os_settings_menu.m" ]
 }
-
-js_library("os_settings_menu") {
-  deps = [
-    "..:os_route",
-    "../..:router",
-    "//third_party/polymer/v1_0/components-chromium/iron-collapse:iron-collapse-extracted",
-    "//third_party/polymer/v1_0/components-chromium/paper-ripple:paper-ripple-extracted",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-# TODO: Uncomment as the Polymer3 migration makes progress.
-#js_type_check("closure_compile_module") {
-#  is_polymer3 = true
-#  deps = [
-#    ":os_settings_menu.m"
-#  ]
-#}
 
 js_library("os_settings_menu.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_menu/os_settings_menu.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    "..:os_route.m",
+    "../..:router",
+    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":os_settings_menu_module" ]
 }
-
-import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [ ":os_settings_menu_module" ]
@@ -44,4 +32,7 @@ polymer_modulizer("os_settings_menu") {
   js_file = "os_settings_menu.js"
   html_file = "os_settings_menu.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }

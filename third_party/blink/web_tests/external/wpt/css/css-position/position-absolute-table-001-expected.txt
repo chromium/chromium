@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS table size is interpreted as border-box width by default
-PASS table size is interpreted as minimum width
-PASS table size border-box
-PASS table size border-box interpreted as minimum width
-FAIL table size content-box assert_equals: expected 100 but got 60
-PASS table size content-box interpreted as minimum width
-Harness: the test ran to completion.
-

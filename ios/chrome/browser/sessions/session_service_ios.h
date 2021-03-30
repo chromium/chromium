@@ -8,17 +8,14 @@
 #import <Foundation/Foundation.h>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/sequenced_task_runner.h"
 
 @class SessionIOS;
 @class SessionIOSFactory;
 
-namespace session_constants {
-NSString* const kSessionsDirectory = @"Sessions";
-}
-
-// A singleton service for saving the current session. Can either save on a
-// delay or immediately. Saving is always performed on a separate thread.
+// A singleton service for saving the sessions (list of tabs). Can either save
+// on a delay or immediately. Saving is always performed on a separate thread.
 @interface SessionServiceIOS : NSObject
 
 // Lazily creates a singleton instance with a default task runner.
@@ -30,40 +27,40 @@ NSString* const kSessionsDirectory = @"Sessions";
     (const scoped_refptr<base::SequencedTaskRunner>&)taskRunner
     NS_DESIGNATED_INITIALIZER;
 
-// Saves the session returned by |factory| to |directory|. If |immediately|
-// is NO, the save is done after a delay. If another call is pending, this one
-// is ignored. If YES, the save is done now, cancelling any pending calls.
-// Either way, the save is done on a separate thread to avoid blocking the UI
-// thread.
+// Saves the session (list of tabs) returned by |factory|. The save location
+// is derived from the scene identifier |sessionID| and the ChromeBrowserState
+// |directory|. If |immediately| is NO, the save is done after a fixed delay,
+// or ignored if another delayed save for the same location is still pending.
+// If |immediately| is YES, then the save is done immediately and any pending
+// save is cancelled. Either way, the save is done on a separate thread to
+// avoid blocking the UI thread.
 - (void)saveSession:(__weak SessionIOSFactory*)factory
-          directory:(NSString*)directory
+          sessionID:(NSString*)sessionID
+          directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately;
 
-// Loads the session from default session file in |directory| on the main
-// thread. Returns nil in case of errors.
-- (SessionIOS*)loadSessionFromDirectory:(NSString*)directory;
+// Loads a session (list of tabs) from the save location derived from the scene
+// identifier |sessionID| and the ChromeBrowserState |directory|.
+- (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
+                              directory:(const base::FilePath&)directory;
 
 // Loads the session from |sessionPath| on the main thread. Returns nil in case
 // of errors.
 - (SessionIOS*)loadSessionFromPath:(NSString*)sessionPath;
 
-// Schedules deletion of the all session files from a specific browser state
-// |directory|.
-- (void)deleteAllSessionFilesInBrowserStateDirectory:(NSString*)directory
-                                          completion:
-                                              (base::OnceClosure)callback;
+// Schedules deletion of the all session files from a specific |directory|.
+- (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
+                              completion:(base::OnceClosure)callback;
 
 // Schedule deletion of session directories with |sessionIDs| which resides in
 // a specific browser state |directory|.
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs
-    fromBrowserStateDirectory:(NSString*)directory;
+             directory:(const base::FilePath&)directory
+            completion:(base::OnceClosure)callback;
 
 // Returns the path of the session with |sessionID| within a |directory|.
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
-                           directory:(NSString*)directory;
-
-// Returns the path of the session file for |directory|.
-+ (NSString*)sessionPathForDirectory:(NSString*)directory;
+                           directory:(const base::FilePath&)directory;
 
 @end
 

@@ -29,7 +29,7 @@ class DummyTextInputClient : public TextInputClient {
   void SetCompositionText(const CompositionText& composition) override;
   uint32_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
-  void InsertText(const base::string16& text,
+  void InsertText(const std::u16string& text,
                   InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const KeyEvent& event) override;
   TextInputType GetTextInputType() const override;
@@ -48,7 +48,7 @@ class DummyTextInputClient : public TextInputClient {
   bool SetEditableSelectionRange(const gfx::Range& range) override;
   bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
-                        base::string16* text) const override;
+                        std::u16string* text) const override;
   void OnInputMethodChanged() override;
   bool ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection direction) override;
@@ -77,13 +77,13 @@ class DummyTextInputClient : public TextInputClient {
       base::Optional<gfx::Rect>* selection_bounds) override;
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
-      const base::string16& active_composition_text,
+      const std::u16string& active_composition_text,
       bool is_composition_committed) override;
 #endif
 
   int insert_char_count() const { return insert_char_count_; }
-  base::char16 last_insert_char() const { return last_insert_char_; }
-  const std::vector<base::string16>& insert_text_history() const {
+  char16_t last_insert_char() const { return last_insert_char_; }
+  const std::vector<std::u16string>& insert_text_history() const {
     return insert_text_history_;
   }
   const std::vector<CompositionText>& composition_history() const {
@@ -100,8 +100,8 @@ class DummyTextInputClient : public TextInputClient {
 
  private:
   int insert_char_count_;
-  base::char16 last_insert_char_;
-  std::vector<base::string16> insert_text_history_;
+  char16_t last_insert_char_;
+  std::vector<std::u16string> insert_text_history_;
   std::vector<CompositionText> composition_history_;
   std::vector<gfx::Range> selection_history_;
   gfx::Range autocorrect_range_;

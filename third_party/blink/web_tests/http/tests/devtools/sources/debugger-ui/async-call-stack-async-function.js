@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that call stack sidebar contains correct labels for async await functions.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       async function foo()
@@ -39,7 +39,7 @@
       .then(() => SourcesTestRunner.completeDebuggerTest());
 
   function dumpCallStackSidebarPane() {
-    var pane = self.runtime.sharedInstance(Sources.CallStackSidebarPane);
+    var pane = Sources.CallStackSidebarPane.instance();
     for (var element of pane.contentElement.querySelectorAll('.call-frame-item'))
       TestRunner.addResult(element.deepTextContent().replace(/VM\d+/g, 'VM'));
   }

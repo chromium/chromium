@@ -500,6 +500,7 @@ VaapiJpegEncodeAccelerator::Initialize(
   client_ = client;
   scoped_refptr<VaapiWrapper> vaapi_wrapper = VaapiWrapper::Create(
       VaapiWrapper::kEncode, VAProfileJPEGBaseline,
+      EncryptionScheme::kUnencrypted,
       base::BindRepeating(&ReportVaapiErrorToUMA,
                           "Media.VaapiJpegEncodeAccelerator.VAAPIError"));
 
@@ -510,6 +511,7 @@ VaapiJpegEncodeAccelerator::Initialize(
 
   scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper = VaapiWrapper::Create(
       VaapiWrapper::kVideoProcess, VAProfileNone,
+      EncryptionScheme::kUnencrypted,
       base::BindRepeating(&ReportVaapiErrorToUMA,
                           "Media.VaapiJpegEncodeAccelerator.Vpp.VAAPIError"));
   if (!vpp_vaapi_wrapper) {

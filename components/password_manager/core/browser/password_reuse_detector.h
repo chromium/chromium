@@ -14,7 +14,6 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_change.h"
@@ -26,14 +25,14 @@ class PasswordReuseDetectorConsumer;
 
 // Comparator that compares reversed strings.
 struct ReverseStringLess {
-  bool operator()(const base::string16& lhs, const base::string16& rhs) const;
+  bool operator()(const std::u16string& lhs, const std::u16string& rhs) const;
 };
 
 // Container for the signon_realm and username that a compromised saved password
 // is saved on/with.
 struct MatchingReusedCredential {
   std::string signon_realm;
-  base::string16 username;
+  std::u16string username;
   // The store in which those credentials are stored.
   PasswordForm::Store in_store = PasswordForm::Store::kNotSet;
 
@@ -63,7 +62,7 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
   // If such suffix is found, |consumer|->OnReuseFound() is called on the same
   // thread on which this method is called.
   // |consumer| should not be null.
-  void CheckReuse(const base::string16& input,
+  void CheckReuse(const std::u16string& input,
                   const std::string& domain,
                   PasswordReuseDetectorConsumer* consumer);
 
@@ -91,7 +90,7 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
 
  private:
   using PasswordsReusedCredentialsMap =
-      std::map<base::string16,
+      std::map<std::u16string,
                std::set<MatchingReusedCredential>,
                ReverseStringLess>;
 
@@ -104,20 +103,20 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
   // If Gaia password reuse is found, return the PasswordHashData of the reused
   // password. If no reuse is found, return |base::nullopt|.
   base::Optional<PasswordHashData> CheckGaiaPasswordReuse(
-      const base::string16& input,
+      const std::u16string& input,
       const std::string& domain);
 
   // If Non-Gaia enterprise password reuse is found, return the PasswordHashData
   // of the the reused password. If no reuse is found, return |base::nullopt|.
   base::Optional<PasswordHashData> CheckNonGaiaEnterprisePasswordReuse(
-      const base::string16& input,
+      const std::u16string& input,
       const std::string& domain);
 
   // If saved-password reuse is found, fill in the MatchingReusedCredentials
   // that match any reused password, and return the length of the
   // longest password matched.  If no reuse is found, return 0.
   size_t CheckSavedPasswordReuse(
-      const base::string16& input,
+      const std::u16string& input,
       const std::string& domain,
       std::vector<MatchingReusedCredential>* matching_reused_credentials_out);
 
@@ -127,14 +126,14 @@ class PasswordReuseDetector : public PasswordStoreConsumer {
   // Returns passwords_with_matching_reused_credentials_.end() in case when no
   // key in |passwords_with_matching_reused_credentials_| is a prefix of
   // |input|.
-  passwords_iterator FindFirstSavedPassword(const base::string16& input);
+  passwords_iterator FindFirstSavedPassword(const std::u16string& input);
 
   // Call this repeatedly with iterator from |FindFirstSavedPassword| to
   // find other matching passwords. This returns the iterator to
   // |passwords_with_matching_reused_credentials_| that is the next previous
   // matching entry that's a suffix of |input|, or
   // passwords_with_matching_reused_credentials_.end() if there are no more.
-  passwords_iterator FindNextSavedPassword(const base::string16& input,
+  passwords_iterator FindNextSavedPassword(const std::u16string& input,
                                            passwords_iterator it);
 
   // Contains all passwords.

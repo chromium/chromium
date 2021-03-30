@@ -4,7 +4,6 @@
 
 #include "services/network/origin_policy/origin_policy_parser.h"
 #include "base/strings/stringprintf.h"
-#include "services/network/public/cpp/isolation_opt_in_hints.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -18,8 +17,7 @@ namespace {
 
 void AssertEmptyPolicy(
     const network::OriginPolicyContentsPtr& policy_contents) {
-  ASSERT_FALSE(policy_contents->feature_policy.has_value());
-  ASSERT_FALSE(policy_contents->isolation_optin_hints.has_value());
+  ASSERT_FALSE(policy_contents->permissions_policy.has_value());
   ASSERT_EQ(0u, policy_contents->ids.size());
   ASSERT_EQ(0u, policy_contents->content_security_policies.size());
   ASSERT_EQ(0u, policy_contents->content_security_policies_report_only.size());
@@ -454,7 +452,7 @@ TEST(OriginPolicyParser, FeatureOne) {
       } )");
 
   ASSERT_EQ("geolocation 'self' http://maps.google.com",
-            policy_contents->feature_policy);
+            policy_contents->permissions_policy);
 }
 
 TEST(OriginPolicyParser, FeatureTwo) {
@@ -468,7 +466,7 @@ TEST(OriginPolicyParser, FeatureTwo) {
 
   ASSERT_EQ(
       "geolocation 'self' http://maps.google.com; camera https://example.com",
-      policy_contents->feature_policy);
+      policy_contents->permissions_policy);
 }
 
 TEST(OriginPolicyParser, FeatureTwoFeatures) {
@@ -479,7 +477,7 @@ TEST(OriginPolicyParser, FeatureTwoFeatures) {
         "features": { "policy": "camera https://example.com" }
       } )");
 
-  ASSERT_EQ("camera https://example.com", policy_contents->feature_policy);
+  ASSERT_EQ("camera https://example.com", policy_contents->permissions_policy);
 }
 
 TEST(OriginPolicyParser, FeatureTwoPolicy) {
@@ -492,7 +490,7 @@ TEST(OriginPolicyParser, FeatureTwoPolicy) {
         }
       } )");
 
-  ASSERT_EQ("camera https://example.com", policy_contents->feature_policy);
+  ASSERT_EQ("camera https://example.com", policy_contents->permissions_policy);
 }
 
 // At this level we don't validate the syntax, so commas get passed through.
@@ -509,7 +507,7 @@ TEST(OriginPolicyParser, FeatureComma) {
 
   ASSERT_EQ(
       "geolocation 'self' http://maps.google.com, camera https://example.com",
-      policy_contents->feature_policy);
+      policy_contents->permissions_policy);
 }
 
 // Similarly, complete garbage will be passed through; this is expected.
@@ -522,7 +520,7 @@ TEST(OriginPolicyParser, FeatureGarbage) {
         }
       } )");
 
-  ASSERT_EQ("Lorem ipsum! dolor sit amet", policy_contents->feature_policy);
+  ASSERT_EQ("Lorem ipsum! dolor sit amet", policy_contents->permissions_policy);
 }
 
 TEST(OriginPolicyParser, FeatureNonDict) {
@@ -532,7 +530,7 @@ TEST(OriginPolicyParser, FeatureNonDict) {
         "features": "geolocation 'self' http://maps.google.com"
       } )");
 
-  ASSERT_FALSE(policy_contents->feature_policy.has_value());
+  ASSERT_FALSE(policy_contents->permissions_policy.has_value());
 }
 
 TEST(OriginPolicyParser, FeatureNonString) {
@@ -544,111 +542,7 @@ TEST(OriginPolicyParser, FeatureNonString) {
         }
       } )");
 
-  ASSERT_FALSE(policy_contents->feature_policy.has_value());
-}
-
-namespace {
-
-void TestHintsHelper(const std::vector<std::string>& target_hints) {
-  std::string hints_substr;
-  for (auto hint_str : target_hints) {
-    hints_substr += base::StringPrintf("%s\"%s\": true",
-                                       (!hints_substr.empty() ? ", " : ""),
-                                       hint_str.c_str());
-  }
-  std::string manifest_string =
-      base::StringPrintf("{ \"ids\": [\"my-policy\"], \"isolation\": { %s }}",
-                         hints_substr.c_str());
-  auto policy_contents = OriginPolicyParser::Parse(manifest_string);
-
-  ASSERT_TRUE(policy_contents->isolation_optin_hints.has_value());
-  for (auto target_hint_str : target_hints) {
-    IsolationOptInHints target_hint =
-        GetIsolationOptInHintFromString(target_hint_str);
-    EXPECT_EQ(target_hint,
-              target_hint & policy_contents->isolation_optin_hints.value());
-  }
-}
-
-}  // namespace
-
-TEST(OriginPolicyParser, IsolationOptInNoIsolationKey) {
-  auto policy_contents =
-      OriginPolicyParser::Parse(R"({ "ids": ["my-policy"] })");
-  ASSERT_FALSE(policy_contents->isolation_optin_hints.has_value());
-}
-
-TEST(OriginPolicyParser, IsolationOptInNoDictTrue) {
-  auto policy_contents = OriginPolicyParser::Parse(R"({
-    "ids": ["my-policy"],
-    "isolation": true
-  })");
-  ASSERT_TRUE(policy_contents->isolation_optin_hints.has_value());
-  EXPECT_EQ(IsolationOptInHints::NO_HINTS,
-            policy_contents->isolation_optin_hints.value());
-}
-
-TEST(OriginPolicyParser, IsolationOptInNoDictFalse) {
-  auto policy_contents = OriginPolicyParser::Parse(R"({
-    "ids": ["my-policy"],
-    "isolation": false
-  })");
-
-  ASSERT_FALSE(OriginPolicyParser::Parse(R"({ "isolation": false })")
-                   ->isolation_optin_hints.has_value());
-}
-
-TEST(OriginPolicyParser, IsolationOptInEmptyDict) {
-  TestHintsHelper({});
-}
-
-TEST(OriginPolicyParser, IsolationOptInTestOneHint) {
-  TestHintsHelper({"prefer_isolated_event_loop"});
-  TestHintsHelper({"prefer_isolated_memory"});
-  TestHintsHelper({"for_side_channel_protection"});
-  TestHintsHelper({"for_memory_measurement"});
-}
-
-TEST(OriginPolicyParser, IsolationOptInTestTwoHints) {
-  TestHintsHelper({"prefer_isolated_event_loop", "prefer_isolated_memory"});
-  TestHintsHelper(
-      {"prefer_isolated_event_loop", "for_side_channel_protection"});
-  TestHintsHelper({"prefer_isolated_event_loop", "for_memory_measurement"});
-  TestHintsHelper({"prefer_isolated_memory", "for_side_channel_protection"});
-  TestHintsHelper({"prefer_isolated_memory", "for_memory_measurement"});
-  TestHintsHelper({"for_side_channel_protection", "for_memory_measurement"});
-}
-
-TEST(OriginPolicyParser, IsolationOptInTestThreeHints) {
-  TestHintsHelper({"prefer_isolated_event_loop", "prefer_isolated_memory",
-                   "for_side_channel_protection"});
-}
-
-TEST(OriginPolicyParser, IsolationOptInIgnoreUnrecognisedKeys) {
-  std::string manifest_string = R"( {
-    "ids": ["my-policy"],
-    "isolation": {
-      "prefer_isolated_event_loop": true,
-      "foo": true
-    }
-  } )";
-  auto policy_contents = OriginPolicyParser::Parse(manifest_string);
-  ASSERT_TRUE(policy_contents->isolation_optin_hints.has_value());
-  EXPECT_EQ(IsolationOptInHints::PREFER_ISOLATED_EVENT_LOOP,
-            policy_contents->isolation_optin_hints.value());
-}
-
-TEST(OriginPolicyParser, IsolationOptInIgnoreFalseValues) {
-  std::string manifest_string = R"( {
-    "ids": ["my-policy"],
-    "isolation": {
-      "prefer_isolated_event_loop": false
-    }
-  } )";
-  auto policy_contents = OriginPolicyParser::Parse(manifest_string);
-  ASSERT_TRUE(policy_contents->isolation_optin_hints.has_value());
-  EXPECT_EQ(IsolationOptInHints::NO_HINTS,
-            policy_contents->isolation_optin_hints.value());
+  ASSERT_FALSE(policy_contents->permissions_policy.has_value());
 }
 
 }  // namespace network

@@ -30,6 +30,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   class DispatchedFocusMessage;
   class DispatchedIMEMessage;
   class DispatchedRequestCompositionUpdatesMessage;
+  class DispatchedFinishComposingMessage;
 
   // Abstract storage of a received call on the MockWidgetInputHandler
   // interface.
@@ -56,6 +57,10 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
     virtual DispatchedRequestCompositionUpdatesMessage*
     ToRequestCompositionUpdates();
 
+    // Cast this to a DispatchedFinishComposingMessage if it is one,
+    // null otherwise.
+    virtual DispatchedFinishComposingMessage* ToFinishComposing();
+
     // Return the name associated with this message. It will either match
     // the message call name (eg. MouseCaptureLost) or the name of an
     // input event (eg. GestureScrollBegin).
@@ -72,7 +77,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   class DispatchedIMEMessage : public DispatchedMessage {
    public:
     DispatchedIMEMessage(const std::string& name,
-                         const base::string16& text,
+                         const std::u16string& text,
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& range,
                          int32_t start,
@@ -83,14 +88,14 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
     DispatchedIMEMessage* ToIME() override;
 
     // Returns if this message matches the parameters passed in.
-    bool Matches(const base::string16& text,
+    bool Matches(const std::u16string& text,
                  const std::vector<ui::ImeTextSpan>& ime_text_spans,
                  const gfx::Range& range,
                  int32_t start,
                  int32_t end) const;
 
    private:
-    base::string16 text_;
+    std::u16string text_;
     std::vector<ui::ImeTextSpan> text_spans_;
     gfx::Range range_;
     int32_t start_;
@@ -193,18 +198,38 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
     DISALLOW_COPY_AND_ASSIGN(DispatchedRequestCompositionUpdatesMessage);
   };
 
+  // A DispatchedMessage that stores the FinishComposingText parameters
+  // that were invoked with.
+  class DispatchedFinishComposingMessage : public DispatchedMessage {
+   public:
+    explicit DispatchedFinishComposingMessage(bool keep_selection);
+    DispatchedFinishComposingMessage(const DispatchedFinishComposingMessage&) =
+        delete;
+    DispatchedFinishComposingMessage& operator=(
+        const DispatchedFinishComposingMessage&) = delete;
+    ~DispatchedFinishComposingMessage() override;
+
+    // Override and return |this|.
+    DispatchedFinishComposingMessage* ToFinishComposing() override;
+
+    bool keep_selection() const { return keep_selection_; }
+
+   private:
+    const bool keep_selection_;
+  };
+
   // blink::mojom::WidgetInputHandler override.
   void SetFocus(bool focused) override;
   void MouseCaptureLost() override;
   void SetEditCommandsForNextKeyEvent(
       std::vector<blink::mojom::EditCommandPtr> commands) override;
   void CursorVisibilityChanged(bool visible) override;
-  void ImeSetComposition(const base::string16& text,
+  void ImeSetComposition(const std::u16string& text,
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& range,
                          int32_t start,
                          int32_t end) override;
-  void ImeCommitText(const base::string16& text,
+  void ImeCommitText(const std::u16string& text,
                      const std::vector<ui::ImeTextSpan>& ime_text_spans,
                      const gfx::Range& range,
                      int32_t relative_cursor_position,
@@ -219,6 +244,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   void DispatchNonBlockingEvent(
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override;
+#if defined(OS_ANDROID)
   void AttachSynchronousCompositor(
       mojo::PendingRemote<blink::mojom::SynchronousCompositorControlHost>
           control_host,
@@ -226,6 +252,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
           host,
       mojo::PendingAssociatedReceiver<blink::mojom::SynchronousCompositor>
           compositor_request) override;
+#endif
   void GetFrameWidgetInputHandler(
       mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetInputHandler>
           interface_request) override;

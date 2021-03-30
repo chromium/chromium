@@ -20,7 +20,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
  * methods provided in methodList should be implemented as methods
  * of the subclass.
  */
-/* #export */ class PostMessageAPIServer {
+export class PostMessageAPIServer {
   constructor(clientElement, methodList, targetURL, messageOriginURLFilter) {
     /**
      * The Window type element to which this server will listen for messages,
@@ -172,19 +172,24 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
       return;
     }
 
-    if (this.initialization_timeout_id_) {
-      // Cancel the current init timeout, and signal to the initialization
-      // polling process that we have received an init message from the guest
-      // content, so it doesn't reschedule the timer.
-      clearTimeout(this.initialization_timeout_id_);
-      this.initialization_timeout_id_ = 0;
-    }
-
     if (event.data === 'init') {
+      if (this.initialization_timeout_id_) {
+        // Cancel the current init timeout, and signal to the initialization
+        // polling process that we have received an init message from the guest
+        // content, so it doesn't reschedule the timer.
+        clearTimeout(this.initialization_timeout_id_);
+        this.initialization_timeout_id_ = 0;
+      }
+
       this.isInitialized_ = true;
       return;
     }
-
+    // If we have gotten this far, we have received a message from a trusted
+    // origin, and we should try to process it.  We can't gate this on whether
+    // the channel is initialized, because we can receive events out of order,
+    // and method calls can be received before the init event. Essentially, we
+    // should treat the channel as being potentially as soon as we send 'init'
+    // to the guest content.
     const methodId = event.data.methodId;
     const fn = event.data.fn;
     const args = event.data.args || [];
@@ -220,7 +225,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
  * over the postMessage API.  This should be subclassed and the methods in the
  * server that the client needs to access should be provided in methodList.
  */
-/* #export */ class PostMessageAPIClient {
+export class PostMessageAPIClient {
   /**
    * @param {!Array<string>} methodList The list of methods accessible via the
    *     client.

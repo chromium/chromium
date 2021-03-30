@@ -5,8 +5,11 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_action.h"
 #include "ash/metrics/user_metrics_recorder.h"
+#include "ash/projector/projector_controller_impl.h"
+#include "ash/projector/projector_feature_pod_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
@@ -61,6 +64,7 @@
 #include "base/numerics/ranges.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/widget/widget.h"
@@ -128,8 +132,8 @@ UnifiedSystemTrayView* UnifiedSystemTrayController::CreateView() {
         media_controls_controller_->CreateView());
   }
 
-  volume_slider_controller_ =
-      std::make_unique<UnifiedVolumeSliderController>(this);
+  volume_slider_controller_ = std::make_unique<UnifiedVolumeSliderController>(
+      this, false /* in_bubble */);
   unified_view_->AddSliderView(volume_slider_controller_->CreateView());
 
   brightness_slider_controller_ =
@@ -153,7 +157,10 @@ void UnifiedSystemTrayController::HandleLockAction() {
 
 void UnifiedSystemTrayController::HandleSettingsAction() {
   Shell::Get()->metrics()->RecordUserMetricsAction(UMA_TRAY_SETTINGS);
-  Shell::Get()->system_tray_model()->client()->ShowSettings();
+  Shell::Get()->system_tray_model()->client()->ShowSettings(
+      display::Screen::GetScreen()
+          ->GetDisplayNearestView(unified_view_->GetWidget()->GetNativeView())
+          .id());
 }
 
 void UnifiedSystemTrayController::HandlePowerAction() {
@@ -438,17 +445,20 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<AccessibilityFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<QuietModeFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<RotationLockFeaturePodController>());
-  AddFeaturePodItem(std::make_unique<PrivacyScreenFeaturePodController>());
+  if (features::IsCaptureModeEnabled())
+    AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>(this));
+  if (chromeos::features::IsProjectorFeaturePodEnabled() &&
+      Shell::Get()->projector_controller()->IsEligible()) {
+    AddFeaturePodItem(std::make_unique<ProjectorFeaturePodController>(this));
+  }
+  AddFeaturePodItem(std::make_unique<NearbyShareFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<NightLightFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<CastFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<VPNFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<IMEFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<LocaleFeaturePodController>(this));
-  if (features::IsCaptureModeEnabled())
-    AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>(this));
   if (features::IsDarkLightModeEnabled())
     AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
-  AddFeaturePodItem(std::make_unique<NearbyShareFeaturePodController>(this));
 
   // If you want to add a new feature pod item, add here.
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -79,7 +81,7 @@ class TestNavigationThrottle : public NavigationThrottle {
         did_call_will_redirect_(std::move(did_call_will_redirect)),
         did_call_will_fail_(std::move(did_call_will_fail)),
         did_call_will_process_(std::move(did_call_will_process)) {}
-  ~TestNavigationThrottle() override {}
+  ~TestNavigationThrottle() override = default;
 
   const char* GetNameForLogging() override { return "TestNavigationThrottle"; }
 
@@ -176,7 +178,7 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
         will_fail_result_(will_fail_result),
         will_process_result_(will_process_result),
         expected_start_url_(expected_start_url) {}
-  ~TestNavigationThrottleInstaller() override {}
+  ~TestNavigationThrottleInstaller() override = default;
 
   // Installs a TestNavigationThrottle whose |method| method will return
   // |result|. All other methods will return NavigationThrottle::PROCEED.
@@ -393,7 +395,7 @@ class TestDeferringNavigationThrottleInstaller
 // Records all navigation start URLs from the WebContents.
 class NavigationStartUrlRecorder : public WebContentsObserver {
  public:
-  NavigationStartUrlRecorder(WebContents* web_contents)
+  explicit NavigationStartUrlRecorder(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
@@ -545,7 +547,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyPageTransition) {
 
 // Ensure that the following methods on NavigationHandle behave correctly:
 // * IsInMainFrame
-// * IsParentMainFrame
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyFrameTree) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
@@ -576,7 +577,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyFrameTree) {
   EXPECT_FALSE(b_observer.is_error());
   EXPECT_EQ(b_url, b_observer.last_committed_url());
   EXPECT_FALSE(b_observer.is_main_frame());
-  EXPECT_TRUE(b_observer.is_parent_main_frame());
   EXPECT_EQ(root->child_at(0)->frame_tree_node_id(),
             b_observer.frame_tree_node_id());
 
@@ -585,7 +585,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyFrameTree) {
   EXPECT_FALSE(c_observer.is_error());
   EXPECT_EQ(c_url, c_observer.last_committed_url());
   EXPECT_FALSE(c_observer.is_main_frame());
-  EXPECT_FALSE(c_observer.is_parent_main_frame());
   EXPECT_EQ(root->child_at(0)->child_at(0)->frame_tree_node_id(),
             c_observer.frame_tree_node_id());
 }
@@ -1072,16 +1071,17 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleBlockAndCollapse) {
     std::unique_ptr<TestNavigationThrottleInstaller>
         subframe_throttle_installer;
     if (test_case.deferred_block) {
-      subframe_throttle_installer.reset(
-          new TestDeferringNavigationThrottleInstaller(
+      subframe_throttle_installer =
+          std::make_unique<TestDeferringNavigationThrottleInstaller>(
               shell()->web_contents(), test_case.will_start_result,
               test_case.will_redirect_result, NavigationThrottle::PROCEED,
-              NavigationThrottle::PROCEED, blocked_subframe_url));
+              NavigationThrottle::PROCEED, blocked_subframe_url);
     } else {
-      subframe_throttle_installer.reset(new TestNavigationThrottleInstaller(
-          shell()->web_contents(), test_case.will_start_result,
-          test_case.will_redirect_result, NavigationThrottle::PROCEED,
-          NavigationThrottle::PROCEED, blocked_subframe_url));
+      subframe_throttle_installer =
+          std::make_unique<TestNavigationThrottleInstaller>(
+              shell()->web_contents(), test_case.will_start_result,
+              test_case.will_redirect_result, NavigationThrottle::PROCEED,
+              NavigationThrottle::PROCEED, blocked_subframe_url);
     }
 
     {
@@ -1712,7 +1712,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestHostResolutionFailureTest,
 // Record and list the navigations that are started and finished.
 class NavigationLogger : public WebContentsObserver {
  public:
-  NavigationLogger(WebContents* web_contents)
+  explicit NavigationLogger(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
@@ -1930,8 +1930,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   installer.reset();
 
   {
-    // A blocked subframe navigation should commit an error page in the same
-    // process.
+    // A blocked subframe navigation should commit an error page in the error
+    // page process or stay in the same process, based on the isolation policy.
     EXPECT_TRUE(NavigateToURL(shell(), start_url));
     const std::string javascript =
         "var i = document.createElement('iframe');"
@@ -1946,6 +1946,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
         NavigationThrottle::PROCEED);
 
     content::RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+    scoped_refptr<SiteInstance> initial_site_instance = rfh->GetSiteInstance();
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     ASSERT_TRUE(content::ExecuteScript(rfh, javascript));
     navigation_observer.Wait();
@@ -1956,10 +1957,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     ASSERT_EQ(1u, root->child_count());
     FrameTreeNode* child = root->child_at(0u);
 
-    EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-              child->current_frame_host()->GetSiteInstance());
-    EXPECT_NE(kUnreachableWebDataURL,
-              child->current_frame_host()->GetSiteInstance()->GetSiteURL());
+    EXPECT_TRUE(IsExpectedSubframeErrorTransition(
+        initial_site_instance.get(),
+        child->current_frame_host()->GetSiteInstance()));
   }
 }
 
@@ -2692,7 +2692,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest, Disallowed) {
                             ->frame_tree_node();
   EXPECT_TRUE(
       root->navigation_request()->common_params().download_policy.IsType(
-          NavigationDownloadType::kViewSource));
+          blink::NavigationDownloadType::kViewSource));
   EXPECT_FALSE(root->navigation_request()
                    ->common_params()
                    .download_policy.IsDownloadAllowed());
@@ -2913,7 +2913,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, AuthChallengeInfo) {
 
 class TestMixedContentWebContentsDelegate : public WebContentsDelegate {
  public:
-  TestMixedContentWebContentsDelegate() {}
+  TestMixedContentWebContentsDelegate() = default;
   TestMixedContentWebContentsDelegate(
       const TestMixedContentWebContentsDelegate&) = delete;
   TestMixedContentWebContentsDelegate& operator=(
@@ -2960,6 +2960,120 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                              non_webby_url)));
   observer.Wait();
   EXPECT_FALSE(test_delegate.passive_insecure_content_found());
+}
+
+using CSPEmbeddedEnforcementBrowserTest = NavigationRequestBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(CSPEmbeddedEnforcementBrowserTest,
+                       CheckCSPEmbeddedEnforcement) {
+  // We need one initial navigation to set up everything.
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "www.example.org", "/empty.html")));
+
+  struct TestCase {
+    const char* name;
+    const char* required_csp;
+    const char* frame_url;
+    const char* allow_csp_from;
+    const char* returned_csp;
+    bool expect_allow;
+  } cases[] = {
+      {
+          "No required csp",
+          "",
+          "www.not-example.org",
+          nullptr,
+          nullptr,
+          true,
+      },
+      {
+          "Required csp - Same origin",
+          "script-src 'none'",
+          "www.example.org",
+          nullptr,
+          nullptr,
+          true,
+      },
+      {
+          "Required csp - Cross origin",
+          "script-src 'none'",
+          "www.not-example.org",
+          nullptr,
+          nullptr,
+          false,
+      },
+      {
+          "Required csp - Cross origin with Allow-CSP-From",
+          "script-src 'none'",
+          "www.not-example.org",
+          "*",
+          nullptr,
+          true,
+      },
+      {
+          "Required csp - Cross origin with wrong Allow-CSP-From",
+          "script-src 'none'",
+          "www.not-example.org",
+          "www.another-example.org",
+          nullptr,
+          false,
+      },
+      {
+          "Required csp - Cross origin with non-subsuming CSPs",
+          "script-src 'none'",
+          "www.not-example.org",
+          nullptr,
+          "style-src 'none'",
+          false,
+      },
+      {
+          "Required csp - Cross origin with subsuming CSPs",
+          "script-src 'none'",
+          "www.not-example.org",
+          nullptr,
+          "script-src 'none'",
+          true,
+      },
+      {
+          "Required csp - Cross origin with wrong Allow-CSP-From but subsuming "
+          "CSPs",
+          "script-src 'none'",
+          "www.not-example.org",
+          "www.another-example.org",
+          "script-src 'none'",
+          true,
+      },
+  };
+
+  for (auto test : cases) {
+    SCOPED_TRACE(test.name);
+
+    std::string headers;
+    if (test.returned_csp) {
+      headers +=
+          base::StringPrintf("Content-Security-Policy: %s&", test.returned_csp);
+    }
+    if (test.allow_csp_from) {
+      headers += base::StringPrintf("Allow-CSP-From: %s&", test.allow_csp_from);
+    }
+
+    GURL frame_url = embedded_test_server()->GetURL(test.frame_url,
+                                                    "/set-header?" + headers);
+    content::TestNavigationManager observer(shell()->web_contents(), frame_url);
+
+    EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                       JsReplace(R"(
+      const iframe = document.createElement("iframe");
+      iframe.src = $2;
+      if ($1)
+        iframe.csp = $1;
+      document.body.appendChild(iframe);
+    )",
+                                 test.required_csp, frame_url)));
+
+    observer.WaitForNavigationFinished();
+    EXPECT_EQ(test.expect_allow, observer.was_successful());
+  }
 }
 
 }  // namespace content

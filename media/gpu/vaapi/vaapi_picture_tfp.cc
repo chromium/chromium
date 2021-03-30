@@ -91,7 +91,7 @@ Status VaapiTFPPicture::Allocate(gfx::BufferFormat format) {
   auto root = connection_->default_root();
 
   uint8_t depth = 0;
-  if (auto reply = connection_->GetGeometry({root}).Sync())
+  if (auto reply = connection_->GetGeometry(root).Sync())
     depth = reply->depth;
   else
     return StatusCode::kVaapiNoPixmap;

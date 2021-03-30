@@ -63,12 +63,12 @@ bool g_cloud_policies_enabled = false;
 
 // Creates the URL used to fetch the policies from the backend based on the
 // credential present (OAuth vs DM token) for authentication.
-GURL GetFetchUserPoliciesUrl(const base::string16& sid,
+GURL GetFetchUserPoliciesUrl(const std::wstring& sid,
                              bool has_access_token,
-                             const base::string16& device_resource_id,
-                             const base::string16& dm_token) {
+                             const std::wstring& device_resource_id,
+                             const std::wstring& dm_token) {
   GURL gcpw_service_url = GetGcpwServiceUrl();
-  base::string16 user_id;
+  std::wstring user_id;
 
   HRESULT status = GetIdFromSid(sid.c_str(), &user_id);
   if (FAILED(status)) {
@@ -79,7 +79,7 @@ GURL GetFetchUserPoliciesUrl(const base::string16& sid,
   std::string user_policies_path(kGcpwServiceFetchUserPoliciesPath);
   std::string placeholder(kUserIdUrlPlaceholder);
   user_policies_path.replace(user_policies_path.find(placeholder),
-                             placeholder.size(), base::UTF16ToUTF8(user_id));
+                             placeholder.size(), base::WideToUTF8(user_id));
 
   if (!has_access_token) {
     if (device_resource_id.empty() || dm_token.empty()) {
@@ -89,9 +89,8 @@ GURL GetFetchUserPoliciesUrl(const base::string16& sid,
       return GURL();
     }
 
-    std::string device_resource_id_value =
-        base::UTF16ToUTF8(device_resource_id);
-    std::string dm_token_value = base::UTF16ToUTF8(dm_token);
+    std::string device_resource_id_value = base::WideToUTF8(device_resource_id);
+    std::string dm_token_value = base::WideToUTF8(dm_token);
     std::string query_suffix = base::StringPrintf(
         kGcpwServiceFetchUserPoliciesQueryTemplate,
         device_resource_id_value.c_str(), dm_token_value.c_str());
@@ -164,10 +163,8 @@ extension::TaskCreator UserPoliciesManager::GetFetchPoliciesTaskCreator() {
 }
 
 UserPoliciesManager::UserPoliciesManager() : fetch_status_(S_OK) {
-  std::string dm_token;
-  bool has_dm_token = SUCCEEDED(GetDmToken(&dm_token)) && !dm_token.empty();
-  g_cloud_policies_enabled = GetGlobalFlagOrDefault(kCloudPoliciesEnabledRegKey,
-                                                    has_dm_token ? 1 : 0) == 1;
+  g_cloud_policies_enabled =
+      GetGlobalFlagOrDefault(kCloudPoliciesEnabledRegKey, 1) == 1;
 }
 
 UserPoliciesManager::~UserPoliciesManager() = default;
@@ -177,14 +174,14 @@ bool UserPoliciesManager::CloudPoliciesEnabled() const {
 }
 
 GURL UserPoliciesManager::GetGcpwServiceUserPoliciesUrl(
-    const base::string16& sid) {
+    const std::wstring& sid) {
   return GetFetchUserPoliciesUrl(sid, true, L"", L"");
 }
 
 GURL UserPoliciesManager::GetGcpwServiceUserPoliciesUrl(
-    const base::string16& sid,
-    const base::string16& device_resource_id,
-    const base::string16& dm_token) {
+    const std::wstring& sid,
+    const std::wstring& device_resource_id,
+    const std::wstring& dm_token) {
   return GetFetchUserPoliciesUrl(sid, false, device_resource_id, dm_token);
 }
 
@@ -198,7 +195,7 @@ HRESULT UserPoliciesManager::FetchAndStoreCloudUserPolicies(
 }
 
 HRESULT UserPoliciesManager::FetchAndStoreCloudUserPolicies(
-    const base::string16& sid,
+    const std::wstring& sid,
     const std::string& access_token) {
   if (access_token.empty()) {
     LOGFN(ERROR) << "Access token not specified";
@@ -210,7 +207,7 @@ HRESULT UserPoliciesManager::FetchAndStoreCloudUserPolicies(
 }
 
 HRESULT UserPoliciesManager::FetchAndStorePolicies(
-    const base::string16& sid,
+    const std::wstring& sid,
     GURL user_policies_url,
     const std::string& access_token) {
   fetch_status_ = E_FAIL;
@@ -265,7 +262,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   }
 
   base::Time fetch_time = base::Time::Now();
-  base::string16 fetch_time_millis = base::NumberToString16(
+  std::wstring fetch_time_millis = base::NumberToWString(
       fetch_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
 
   // Store the fetch time so we know whether a refresh is needed.
@@ -274,8 +271,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   return (fetch_status_ = S_OK);
 }
 
-
-bool UserPoliciesManager::GetUserPolicies(const base::string16& sid,
+bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
                                           UserPolicies* user_policies) const {
   DCHECK(user_policies);
 
@@ -312,7 +308,7 @@ bool UserPoliciesManager::GetUserPolicies(const base::string16& sid,
 }
 
 bool UserPoliciesManager::IsUserPolicyStaleOrMissing(
-    const base::string16& sid) const {
+    const std::wstring& sid) const {
   UserPolicies user_policies;
   if (!GetUserPolicies(sid, &user_policies)) {
     return true;

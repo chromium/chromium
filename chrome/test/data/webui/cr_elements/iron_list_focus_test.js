@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-// #import {assertEquals, assertTrue, assertNotEquals} from '../chai_assert.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 // test-iron-focusable is a native custom element in order to maintain
@@ -66,28 +68,28 @@ suite('iron-list-focus-test', function() {
     assertTrue(!!testIronList);
 
     testIronList.items = Array(15).fill('item').map((v, i) => `${v}${i}`);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('test focus is NOT preserved', function() {
     const initialFocus = testIronList.querySelector('[tabindex="0"]');
     initialFocus.focus();
-    Polymer.dom.flush();
+    flush();
     assertEquals('item0', initialFocus.text);
     assertEquals(initialFocus, document.activeElement);
 
     testIronList.splice('items', 0, 1);  // Remove the item from the list.
-    Polymer.dom.flush();
+    flush();
 
     const newFocus = testIronList.querySelector('[tabindex="0"]');
     assertEquals('item1', newFocus.text);
     assertNotEquals(newFocus, document.activeElement);
 
     newFocus.focus();
-    Polymer.dom.flush();
+    flush();
 
     testIronList.splice('items', 5, 1);  // Remove a different item.
-    Polymer.dom.flush();
+    flush();
 
     const sameFocus = testIronList.querySelector('[tabindex="0"]');
     assertEquals('item1', sameFocus.text);
@@ -99,19 +101,19 @@ suite('iron-list-focus-test', function() {
 
     const initialFocus = testIronList.querySelector('[tabindex="0"]');
     initialFocus.focus();
-    Polymer.dom.flush();
+    flush();
     assertEquals('item0', initialFocus.text);
     assertEquals(initialFocus, document.activeElement);
 
     testIronList.splice('items', 0, 1);  // Remove the item from the list.
-    Polymer.dom.flush();
+    flush();
 
     const newFocus = testIronList.querySelector('[tabindex="0"]');
     assertEquals('item1', newFocus.text);
     assertEquals(newFocus, document.activeElement);
 
     testIronList.splice('items', 5, 1);  // Remove a different item.
-    Polymer.dom.flush();
+    flush();
 
     const sameFocus = testIronList.querySelector('[tabindex="0"]');
     assertEquals('item1', sameFocus.text);

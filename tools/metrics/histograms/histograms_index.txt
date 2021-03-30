@@ -30,7 +30,6 @@ tools/metrics/histograms/histograms_xml/dev/histograms.xml
 tools/metrics/histograms/histograms_xml/diagnostics/histograms.xml
 tools/metrics/histograms/histograms_xml/direct/histograms.xml
 tools/metrics/histograms/histograms_xml/disk/histograms.xml
-tools/metrics/histograms/histograms_xml/dom/histograms.xml
 tools/metrics/histograms/histograms_xml/download/histograms.xml
 tools/metrics/histograms/histograms_xml/enterprise/histograms.xml
 tools/metrics/histograms/histograms_xml/event/histograms.xml
@@ -43,6 +42,7 @@ tools/metrics/histograms/histograms_xml/geolocation/histograms.xml
 tools/metrics/histograms/histograms_xml/google/histograms.xml
 tools/metrics/histograms/histograms_xml/gpu/histograms.xml
 tools/metrics/histograms/histograms_xml/hang_watcher/histograms.xml
+tools/metrics/histograms/histograms_xml/help_app/histograms.xml
 tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml
 tools/metrics/histograms/histograms_xml/history/histograms.xml
 tools/metrics/histograms/histograms_xml/holding_space/histograms.xml
@@ -61,6 +61,7 @@ tools/metrics/histograms/histograms_xml/mobile/histograms.xml
 tools/metrics/histograms/histograms_xml/multi_device/histograms.xml
 tools/metrics/histograms/histograms_xml/na_cl/histograms.xml
 tools/metrics/histograms/histograms_xml/navigation/histograms.xml
+tools/metrics/histograms/histograms_xml/nearby/histograms.xml
 tools/metrics/histograms/histograms_xml/net/histograms.xml
 tools/metrics/histograms/histograms_xml/network/histograms.xml
 tools/metrics/histograms/histograms_xml/new_tab_page/histograms.xml
@@ -73,11 +74,13 @@ tools/metrics/histograms/histograms_xml/others/histograms.xml
 tools/metrics/histograms/histograms_xml/page/histograms.xml
 tools/metrics/histograms/histograms_xml/password/histograms.xml
 tools/metrics/histograms/histograms_xml/payment/histograms.xml
+tools/metrics/histograms/histograms_xml/pcscan/histograms.xml
 tools/metrics/histograms/histograms_xml/permissions/histograms.xml
 tools/metrics/histograms/histograms_xml/phonehub/histograms.xml
 tools/metrics/histograms/histograms_xml/platform/histograms.xml
 tools/metrics/histograms/histograms_xml/plugin/histograms.xml
 tools/metrics/histograms/histograms_xml/power/histograms.xml
+tools/metrics/histograms/histograms_xml/prefetch/histograms.xml
 tools/metrics/histograms/histograms_xml/print/histograms.xml
 tools/metrics/histograms/histograms_xml/printing/histograms.xml
 tools/metrics/histograms/histograms_xml/profile/histograms.xml
@@ -116,5 +119,6 @@ tools/metrics/histograms/histograms_xml/web_apk/histograms.xml
 tools/metrics/histograms/histograms_xml/web_audio/histograms.xml
 tools/metrics/histograms/histograms_xml/web_core/histograms.xml
 tools/metrics/histograms/histograms_xml/web_rtc/histograms.xml
+tools/metrics/histograms/histograms_xml/webauthn/histograms.xml
 tools/metrics/histograms/histograms_xml/weblayer/histograms.xml
 tools/metrics/histograms/histograms_xml/windows/histograms.xml

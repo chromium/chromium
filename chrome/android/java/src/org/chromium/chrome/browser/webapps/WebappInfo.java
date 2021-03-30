@@ -11,8 +11,14 @@ import androidx.annotation.Nullable;
 import androidx.browser.trusted.sharing.ShareData;
 
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.webapps.WebApkExtras.ShortcutItem;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
+import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
+import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.components.webapps.ShortcutSource;
 
 import java.util.List;

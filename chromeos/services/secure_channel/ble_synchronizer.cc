@@ -131,8 +131,11 @@ void BleSynchronizer::ProcessQueue() {
         break;
       }
 
-      stop_discovery_args->discovery_session->Stop();
-      OnDiscoverySessionStopped();
+      stop_discovery_args->discovery_session->Stop(
+          base::BindOnce(&BleSynchronizer::OnDiscoverySessionStopped,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&BleSynchronizer::OnDiscoverySessionStoppedError,
+                         weak_ptr_factory_.GetWeakPtr()));
       break;
     }
     default:
@@ -224,6 +227,15 @@ void BleSynchronizer::OnDiscoverySessionStopped() {
       current_command_->stop_discovery_args.get();
   DCHECK(stop_discovery_args);
   std::move(stop_discovery_args->callback).Run();
+}
+
+void BleSynchronizer::OnDiscoverySessionStoppedError() {
+  RecordDiscoverySessionStopped(false /* success */);
+  ScheduleCommandCompletion();
+  StopDiscoveryArgs* stop_discovery_args =
+      current_command_->stop_discovery_args.get();
+  DCHECK(stop_discovery_args);
+  std::move(stop_discovery_args->error_callback).Run();
 }
 
 void BleSynchronizer::ScheduleCommandCompletion() {

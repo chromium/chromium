@@ -6,11 +6,11 @@
 #define SERVICES_DEVICE_GEOLOCATION_POSITION_CACHE_IMPL_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/network_change_notifier.h"
@@ -56,7 +56,7 @@ class PositionCacheImpl
  private:
   // In order to avoid O(N) comparisons while searching for the right WifiData,
   // we hash the contents of those objects and use the hashes as cache keys.
-  using Hash = base::string16;
+  using Hash = std::u16string;
 
   class CacheEntry {
    public:

@@ -45,6 +45,7 @@ class Element;
 class HTMLMapElement;
 class HitTestResult;
 class IdTargetObserverRegistry;
+class Node;
 class SVGTreeScopeResources;
 class ScopedStyleResolver;
 
@@ -150,7 +151,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
  protected:
   TreeScope(ContainerNode&, Document&);
-  TreeScope(Document&);
+  explicit TreeScope(Document&);
   virtual ~TreeScope();
 
   void ResetTreeScope();

@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">સૂચિ આઇટમ</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">બે આંગળી જમણી બાજુ સ્વાઇપ કરો</translation>
-<translation id="1016393160682012902">કોઈ qwerty કી, રિફ્રેશ કરી શકાય એવી બ્રેઇલ કી અથવા ટચ સંકેતના કાર્ય જાણવા માટે તેને દબાવો. 'w' વડે 'control' કી દબાવો અથવા બહાર નીકળવા માટે 'escape' કી દબાવો.</translation>
 <translation id="1022586497894531524">શું તમે ChromeVoxના બોલાયેલ પ્રતિસાદનો પહેલી વાર ઉપયોગ કરી રહ્યા છો? આ ઝડપી ટ્યૂટૉરિઅલ ChromeVox શરૂ કરવા માટેની જરૂરી બાબતો સમજાવે છે.</translation>
 <translation id="1025074108959230262">સ્ટીકી મોડ અક્ષમ કર્યો</translation>
 <translation id="1031961866430398710">પછી</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">કોઈ પાછલું નિયંત્રણ નથી</translation>
 <translation id="2045606329038304310">ફોર્મ ફીલ્ડનું નિયંત્રણ</translation>
 <translation id="2063539687800151747">શિલાલેખ</translation>
+<translation id="2074531330963286860">ઉપલબ્ધ ક્રિયાઓ. જોવા માટે શોધ+પૂર્ણવિરામ દબાવો</translation>
 <translation id="2086961585857038472">આગલો શબ્દ</translation>
 <translation id="2087981446621639008">વર્ણનની સૂચિની વિગત</translation>
 <translation id="2089387485033699258">gu</translation>
@@ -807,7 +807,7 @@
 <translation id="7039555289296502784">રાખોડી ઓલિવ</translation>
 <translation id="7041173719775863268">પસંદગી સમાપ્ત કરો</translation>
 <translation id="7043850226734279132">ઘેરો ખાખી</translation>
-<translation id="7051308646573997571">પરવાળું</translation>
+<translation id="7051308646573997571">Coral</translation>
 <translation id="7062635574500127092">મોરપીંછ</translation>
 <translation id="7086377898680121060">તેજસ્વીતા વધારો</translation>
 <translation id="7088743565397416204">જે ફોકસ કરેલું હોય તેને સક્રિય કરવા માટે બે વાર ટૅપ કરો</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">પસંદગી શરૂ અથવા સમાપ્ત કરો</translation>
 <translation id="827422111966801947">ઘેરો ભૂરો</translation>
 <translation id="8276439074553447000">પાછલી ફોકસ કરવા યોગ્ય આઇટમ પર જમ્પ કરો</translation>
+<translation id="8279039817939141096">કોઈ qwerty કી, રિફ્રેશ કરી શકાય એવી બ્રેઇલ કી અથવા ટચ સંકેતના કાર્ય જાણવા માટે તેને દબાવો. બહાર નીકળવા માટે 'w' સાથે 'control' કી, 'Z' સાથે સ્પેસ કી દબાવો, તમે બે આંગળી વડે ડાબી બાજુએ સ્વાઇપ કરી શકો છો અથવા 'escape' કી દબાવી શકો છો.</translation>
 <translation id="8283603667300770666">આગલું ફોર્મ ફીલ્ડ</translation>
 <translation id="8310185481635255431">કોઈ આગલી લિંક નથી</translation>
 <translation id="831207808878314375">વ્યાખ્યા</translation>
@@ -988,7 +989,7 @@
 <translation id="8378855320830505539">પ્રદેશ</translation>
 <translation id="8382679411218029383">સ્વતઃપૂર્ણ ઇનલાઇન અને સૂચિ</translation>
 <translation id="8394908167088220973">મીડિયા ચલાવો/થોભાવો</translation>
-<translation id="8428213095426709021">સેટિંગ્સ</translation>
+<translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428603554127842284">સ્તર <ph name="DEPTH" /></translation>
 <translation id="8430049249787218991">mnubr</translation>
 <translation id="8446884382197647889">વધુ જાણો</translation>

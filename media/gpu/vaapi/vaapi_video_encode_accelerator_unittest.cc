@@ -123,9 +123,6 @@ class MockAcceleratedVideoEncoder : public AcceleratedVideoEncoder {
   bool UpdateRates(const VideoBitrateAllocation&, uint32_t) override {
     return false;
   }
-  ScalingSettings GetScalingSettings() const override {
-    return ScalingSettings();
-  }
 };
 }  // namespace
 

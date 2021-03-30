@@ -45,6 +45,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/federated_learning/features/features.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/fcm_invalidation_service.h"
@@ -65,7 +66,7 @@
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/sync_engine_switches.h"
-#include "components/sync/engine_impl/sync_scheduler_impl.h"
+#include "components/sync/engine/sync_scheduler_impl.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -83,14 +84,14 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
 #include "chrome/browser/sync/test/integration/sync_arc_package_helper.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
-#include "chromeos/components/account_manager/account_manager.h"
-#include "chromeos/components/account_manager/account_manager_factory.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -108,13 +109,8 @@
 
 using syncer::ProfileSyncService;
 
-namespace switches {
-const char kPasswordFileForTest[] = "password-file-for-test";
-const char kSyncUserForTest[] = "sync-user-for-test";
-const char kSyncPasswordForTest[] = "sync-password-for-test";
-}  // namespace switches
-
 namespace {
+
 // Sender ID coming from the Firebase console.
 const char kInvalidationGCMSenderId[] = "8181035976";
 
@@ -126,19 +122,19 @@ void SetURLLoaderFactoryForTest(
   signin_client->SetURLLoaderFactoryForTest(url_loader_factory);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerFactory* factory =
+  auto* factory =
       g_browser_process->platform_part()->GetAccountManagerFactory();
-  chromeos::AccountManager* account_manager =
+  auto* account_manager =
       factory->GetAccountManager(profile->GetPath().value());
   account_manager->SetUrlLoaderFactoryForTests(url_loader_factory);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 class FakePerUserTopicSubscriptionManager
-    : public syncer::PerUserTopicSubscriptionManager {
+    : public invalidation::PerUserTopicSubscriptionManager {
  public:
   explicit FakePerUserTopicSubscriptionManager(PrefService* local_state)
-      : syncer::PerUserTopicSubscriptionManager(
+      : invalidation::PerUserTopicSubscriptionManager(
             /*identity_provider=*/nullptr,
             /*pref_service=*/local_state,
             /*url_loader_factory=*/nullptr,
@@ -146,28 +142,28 @@ class FakePerUserTopicSubscriptionManager
             /*migrate_prefs=*/false) {}
   ~FakePerUserTopicSubscriptionManager() override = default;
 
-  void UpdateSubscribedTopics(const syncer::Topics& topics,
+  void UpdateSubscribedTopics(const invalidation::Topics& topics,
                               const std::string& instance_id_token) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FakePerUserTopicSubscriptionManager);
 };
 
-std::unique_ptr<syncer::FCMNetworkHandler> CreateFCMNetworkHandler(
+std::unique_ptr<invalidation::FCMNetworkHandler> CreateFCMNetworkHandler(
     Profile* profile,
-    std::map<const Profile*, syncer::FCMNetworkHandler*>*
+    std::map<const Profile*, invalidation::FCMNetworkHandler*>*
         profile_to_fcm_network_handler_map,
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
     const std::string& sender_id,
     const std::string& app_id) {
-  auto handler = std::make_unique<syncer::FCMNetworkHandler>(
+  auto handler = std::make_unique<invalidation::FCMNetworkHandler>(
       gcm_driver, instance_id_driver, sender_id, app_id);
   (*profile_to_fcm_network_handler_map)[profile] = handler.get();
   return handler;
 }
 
-std::unique_ptr<syncer::PerUserTopicSubscriptionManager>
+std::unique_ptr<invalidation::PerUserTopicSubscriptionManager>
 CreatePerUserTopicSubscriptionManager(
     invalidation::IdentityProvider* identity_provider,
     PrefService* local_state,
@@ -177,15 +173,15 @@ CreatePerUserTopicSubscriptionManager(
   return std::make_unique<FakePerUserTopicSubscriptionManager>(local_state);
 }
 
-syncer::FCMNetworkHandler* GetFCMNetworkHandler(
+invalidation::FCMNetworkHandler* GetFCMNetworkHandler(
     Profile* profile,
-    std::map<const Profile*, syncer::FCMNetworkHandler*>*
+    std::map<const Profile*, invalidation::FCMNetworkHandler*>*
         profile_to_fcm_network_handler_map) {
   // Delivering FCM notifications does not work if explicitly signed-out.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired))
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin))
     return nullptr;
 
   auto it = profile_to_fcm_network_handler_map->find(profile);
@@ -235,6 +231,10 @@ instance_id::InstanceIDDriver* GetOrCreateInstanceIDDriver(
 }
 
 }  // namespace
+
+const char switches::kPasswordFileForTest[] = "password-file-for-test";
+const char switches::kSyncUserForTest[] = "sync-user-for-test";
+const char switches::kSyncPasswordForTest[] = "sync-password-for-test";
 
 SyncTest::FakeInstanceID::FakeInstanceID(const std::string& app_id,
                                          gcm::GCMDriver* gcm_driver)
@@ -309,6 +309,11 @@ SyncTest::SyncTest(TestType test_type)
       server_type_(SERVER_TYPE_UNDECIDED),
       previous_profile_(nullptr),
       num_clients_(-1) {
+  // TODO(crbug.com/1153297): This is a workaround to mitigate flakiness. Remove
+  // once the issue is resolved.
+  feature_list_.InitAndDisableFeature(
+      federated_learning::kFlocIdComputedEventLogging);
+
   sync_datatype_helper::AssociateWithTest(this);
   switch (test_type_) {
     case SINGLE_CLIENT: {
@@ -509,7 +514,7 @@ Profile* SyncTest::MakeProfileForUISignin(base::FilePath profile_path) {
   ProfileManager::CreateCallback create_callback =
       base::BindRepeating(&CreateProfileCallback, run_loop.QuitClosure());
   profile_manager->CreateProfileAsync(profile_path, create_callback,
-                                      base::string16(), std::string());
+                                      std::u16string(), std::string());
   run_loop.Run();
   return profile_manager->GetProfileByPath(profile_path);
 }
@@ -1064,7 +1069,7 @@ void SyncTest::OnWillCreateBrowserContextServices(
 
 // static
 std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
-    std::map<const Profile*, syncer::FCMNetworkHandler*>*
+    std::map<const Profile*, invalidation::FCMNetworkHandler*>*
         profile_to_fcm_network_handler_map,
     std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
         profile_to_instance_id_driver_map,

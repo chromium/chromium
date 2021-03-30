@@ -22,17 +22,17 @@ void AgentManager::ConnectToAgentServiceUnsafe(base::StringPiece agent,
                                                zx::channel request) {
   auto it = agents_.find(agent);
   if (it == agents_.end()) {
-    it = agents_.emplace(agent.as_string(), AgentConnection()).first;
+    it = agents_.emplace(agent, AgentConnection()).first;
     component_context_->DeprecatedConnectToAgent(
-        agent.as_string(), it->second.services.NewRequest(),
+        std::string(agent), it->second.services.NewRequest(),
         it->second.controller.NewRequest());
     it->second.services.set_error_handler(
-        [this, agent = agent.as_string()](zx_status_t status) {
+        [this, agent = std::string(agent)](zx_status_t status) {
           ZX_LOG(WARNING, status) << "Agent disconnected: " << agent;
           agents_.erase(agent);
         });
   }
-  it->second.services->ConnectToService(interface.as_string(),
+  it->second.services->ConnectToService(std::string(interface),
                                         std::move(request));
 }
 

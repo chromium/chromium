@@ -10,12 +10,11 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/js/action_link.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import '../site_favicon.js';
 import './passwords_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -59,7 +58,19 @@ Polymer({
     clickedChangePassword: {
       type: Boolean,
       value: false,
-    }
+    },
+
+    /** @private */
+    buttonClass_: {
+      type: String,
+      computed: 'computeButtonClass_(item.compromisedInfo)',
+    },
+
+    /** @private */
+    iconClass_: {
+      type: String,
+      computed: 'computeIconClass_(item.compromisedInfo)',
+    },
   },
 
   /**
@@ -136,6 +147,32 @@ Polymer({
    */
   computePasswordVisibility_() {
     return !!this.item.password;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeButtonClass_() {
+    if (this.item.compromisedInfo) {
+      // Strong CTA.
+      return 'action-button';
+    }
+    // Weak CTA.
+    return '';
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeIconClass_() {
+    if (this.item.compromisedInfo) {
+      // Strong CTA, white icon.
+      return '';
+    }
+    // Weak CTA, non-white-icon.
+    return 'icon-weak-cta';
   },
 
   /**

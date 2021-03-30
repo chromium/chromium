@@ -121,7 +121,6 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromProto_Valid) {
 TEST_P(SingleWeeklyTimeTest, ExtractFromValue_UnspecifiedDay) {
   int milliseconds = minutes() * kMinute.InMilliseconds();
   base::DictionaryValue value;
-  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[0]));
   EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, milliseconds));
   auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
   ASSERT_FALSE(result);
@@ -130,20 +129,21 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromValue_UnspecifiedDay) {
 TEST_P(SingleWeeklyTimeTest, ExtractFromValue_InvalidDay) {
   int milliseconds = minutes() * kMinute.InMilliseconds();
   base::DictionaryValue value;
-  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kDayOfWeek, -1));
+  EXPECT_TRUE(
+      value.SetStringKey(WeeklyTime::kDayOfWeek, WeeklyTime::kWeekDays[0]));
   EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, milliseconds));
   auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
   ASSERT_FALSE(result);
 
-  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kDayOfWeek, 8));
+  EXPECT_TRUE(value.SetStringKey(WeeklyTime::kDayOfWeek, ""));
   result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
   ASSERT_FALSE(result);
 }
 
 TEST_P(SingleWeeklyTimeTest, ExtractFromValue_InvalidTime) {
   base::DictionaryValue value;
-  EXPECT_TRUE(
-      value.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[day_of_week()]));
+  EXPECT_TRUE(value.SetStringKey(WeeklyTime::kDayOfWeek,
+                                 WeeklyTime::kWeekDays[day_of_week()]));
   EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, -1));
   auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
   ASSERT_FALSE(result);
@@ -152,8 +152,8 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromValue_InvalidTime) {
 TEST_P(SingleWeeklyTimeTest, ExtractFromValue_Valid) {
   int milliseconds = minutes() * kMinute.InMilliseconds();
   base::DictionaryValue value;
-  EXPECT_TRUE(
-      value.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[day_of_week()]));
+  EXPECT_TRUE(value.SetStringKey(WeeklyTime::kDayOfWeek,
+                                 WeeklyTime::kWeekDays[day_of_week()]));
   EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, milliseconds));
   auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
   ASSERT_TRUE(result);

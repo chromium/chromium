@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_BROWSER_SYNC_ACTIVE_DEVICES_PROVIDER_IMPL_H_
 #define COMPONENTS_BROWSER_SYNC_ACTIVE_DEVICES_PROVIDER_IMPL_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/sequence_checker.h"
 #include "base/time/default_clock.h"
 #include "components/sync/driver/active_devices_provider.h"
@@ -26,6 +30,9 @@ class ActiveDevicesProviderImpl : public syncer::ActiveDevicesProvider,
   // syncer::ActiveDevicesProvider implementation.
   size_t CountActiveDevicesIfAvailable() override;
 
+  std::vector<std::string> CollectFCMRegistrationTokensForInvalidations(
+      const std::string& local_cache_guid) override;
+
   void SetActiveDevicesChangedCallback(
       ActiveDevicesChangedCallback callback) override;
 
@@ -33,6 +40,8 @@ class ActiveDevicesProviderImpl : public syncer::ActiveDevicesProvider,
   void OnDeviceInfoChange() override;
 
  private:
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> GetActiveDevices() const;
+
   syncer::DeviceInfoTracker* const device_info_tracker_;
   const base::Clock* const clock_;
   ActiveDevicesChangedCallback callback_;

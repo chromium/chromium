@@ -78,7 +78,7 @@ class SearchTest : public BrowserWithTestWindowTest {
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(profile());
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16("foo.com"));
+    data.SetShortName(u"foo.com");
     data.SetURL("http://foo.com/url?bar={searchTerms}");
     if (set_ntp_url) {
       data.new_tab_url = (insecure_ntp_url ? "http" : "https") +
@@ -106,10 +106,11 @@ struct SearchTestCase {
 };
 
 TEST_F(SearchTest, ShouldAssignURLToInstantRenderer) {
-  // Only NTPs (both local and remote) should be assigned to Instant renderers.
+  // Only remote NTPs and most-visited tiles embedded in remote NTPs should be
+  // assigned to Instant renderers.
   const SearchTestCase kTestCases[] = {
-      {chrome::kChromeSearchLocalNtpUrl, true, "Local NTP"},
-      {"chrome-search://local-ntp/local-ntp.html?bar=abc", true, "Local NTP"},
+      {"chrome-search://most-visited/title.html?bar=abc", true,
+       "Most-visited tile"},
       {"https://foo.com/newtab", true, "Remote NTP"},
       {"https://foo.com/instant", false, "Instant support was removed"},
       {"https://foo.com/url", false, "Instant support was removed"},
@@ -129,9 +130,7 @@ TEST_F(SearchTest, ShouldAssignURLToInstantRenderer) {
 
 TEST_F(SearchTest, ShouldUseProcessPerSiteForInstantSiteURL) {
   const SearchTestCase kTestCases[] = {
-      {"chrome-search://local-ntp", true, "Local NTP"},
       {"chrome-search://remote-ntp", true, "Remote NTP"},
-      {"invalid-scheme://local-ntp", false, "Invalid Local NTP URL"},
       {"invalid-scheme://online-ntp", false, "Invalid Online NTP URL"},
       {"chrome-search://foo.com", false, "Search result page"},
       {"https://foo.com/instant", false, ""},
@@ -165,10 +164,6 @@ const struct ProcessIsolationTestCase {
   bool same_site_instance;
   bool same_process;
 } kProcessIsolationTestCases[] = {
-    {"Local NTP -> SRP", "chrome-search://local-ntp", true,
-     "https://foo.com/url", false, false, false},
-    {"Local NTP -> Regular", "chrome-search://local-ntp", true,
-     "https://foo.com/other", false, false, false},
     {"Remote NTP -> SRP", "https://foo.com/newtab", true, "https://foo.com/url",
      false, false, false},
     {"Remote NTP -> Regular", "https://foo.com/newtab", true,
@@ -273,9 +268,6 @@ const SearchTestCase kInstantNTPTestCases[] = {
     {"chrome://blank/", false, "Chrome scheme"},
     {"chrome-search://foo", false, "Chrome-search scheme"},
     {"https://bar.com/instant", false, "Random non-search page"},
-    {chrome::kChromeSearchLocalNtpUrl, true, "Local new tab page"},
-    {"chrome-search://local-ntp/local-ntp.html?bar=abc", true,
-     "Local new tab page"},
     {"https://foo.com/newtab", true, "New tab URL"},
     {"http://foo.com/newtab", false, "Insecure New tab URL"},
 };
@@ -297,9 +289,9 @@ TEST_F(SearchTest, InstantCacheableNTPNavigationEntry) {
         browser()->tab_strip_model()->GetWebContentsAt(0);
   content::NavigationController& controller = contents->GetController();
   // Local NTP.
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
-  EXPECT_TRUE(NavEntryIsInstantNTP(contents,
-                                   controller.GetLastCommittedEntry()));
+  NavigateAndCommitActiveTab(GURL(chrome::kChromeUINewTabPageURL));
+  EXPECT_FALSE(
+      NavEntryIsInstantNTP(contents, controller.GetLastCommittedEntry()));
   // Remote NTP.
   NavigateAndCommitActiveTab(GetNewTabPageURL(profile()));
   EXPECT_TRUE(NavEntryIsInstantNTP(contents,
@@ -312,13 +304,15 @@ TEST_F(SearchTest, InstantCacheableNTPNavigationEntryNewProfile) {
   content::WebContents* contents =
         browser()->tab_strip_model()->GetWebContentsAt(0);
   content::NavigationController& controller = contents->GetController();
-  // Test virtual url chrome://newtab  for first NTP of a new profile
-  EXPECT_TRUE(NavEntryIsInstantNTP(contents,
-                                   controller.GetLastCommittedEntry()));
+  // Test virtual url chrome://newtab for first NTP of a new profile
+  EXPECT_TRUE(
+      MatchesOriginAndPath(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+                           controller.GetLastCommittedEntry()->GetURL()));
   // The new_tab_url gets set after the first NTP is visible.
   SetSearchProvider(true, false);
-  EXPECT_TRUE(NavEntryIsInstantNTP(contents,
-                                   controller.GetLastCommittedEntry()));
+  EXPECT_TRUE(
+      MatchesOriginAndPath(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+                           controller.GetLastCommittedEntry()->GetURL()));
 }
 
 TEST_F(SearchTest, NoRewriteInIncognito) {
@@ -333,21 +327,21 @@ TEST_F(SearchTest, NoRewriteInIncognito) {
 TEST_F(SearchTest, UseLocalNTPIfNTPURLIsInsecure) {
   // Set an insecure new tab page URL and verify that it's ignored.
   SetSearchProvider(true, true);
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl),
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
             GetNewTabPageURL(profile()));
   GURL new_tab_url(chrome::kChromeUINewTabURL);
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl), new_tab_url);
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
 
 TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
   // Set an insecure new tab page URL and verify that it's ignored.
   SetSearchProvider(false, true);
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl),
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
             GetNewTabPageURL(profile()));
   GURL new_tab_url(chrome::kChromeUINewTabURL);
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl), new_tab_url);
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -362,20 +356,17 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   hosts["foo.com"] = false;
   url_filter->SetManualHosts(std::move(hosts));
 
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl),
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
             GetNewTabPageURL(profile()));
   GURL new_tab_url(chrome::kChromeUINewTabURL);
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
-  EXPECT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl), new_tab_url);
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
 #endif
 
 TEST_F(SearchTest, IsNTPOrRelatedURL) {
   GURL invalid_url;
   GURL ntp_url(chrome::kChromeUINewTabURL);
-  GURL local_ntp_url(chrome::kChromeSearchLocalNtpUrl);
-  GURL local_ntp_url_with_param(
-      "chrome-search://local-ntp/local-ntp.html?bar=abc");
 
   EXPECT_FALSE(IsNTPOrRelatedURL(invalid_url, profile()));
 
@@ -385,15 +376,12 @@ TEST_F(SearchTest, IsNTPOrRelatedURL) {
   GURL search_url_without_search_terms("https://foo.com/url?bar");
 
   EXPECT_FALSE(IsNTPOrRelatedURL(ntp_url, profile()));
-  EXPECT_TRUE(IsNTPOrRelatedURL(local_ntp_url, profile()));
-  EXPECT_TRUE(IsNTPOrRelatedURL(local_ntp_url_with_param, profile()));
   EXPECT_TRUE(IsNTPOrRelatedURL(remote_ntp_url, profile()));
   EXPECT_TRUE(IsNTPOrRelatedURL(remote_ntp_service_worker_url, profile()));
   EXPECT_FALSE(IsNTPOrRelatedURL(search_url_with_search_terms, profile()));
   EXPECT_FALSE(IsNTPOrRelatedURL(search_url_without_search_terms, profile()));
 
   EXPECT_FALSE(IsNTPOrRelatedURL(ntp_url, NULL));
-  EXPECT_FALSE(IsNTPOrRelatedURL(local_ntp_url, NULL));
   EXPECT_FALSE(IsNTPOrRelatedURL(remote_ntp_url, NULL));
   EXPECT_FALSE(IsNTPOrRelatedURL(remote_ntp_service_worker_url, NULL));
   EXPECT_FALSE(IsNTPOrRelatedURL(search_url_with_search_terms, NULL));
@@ -404,14 +392,10 @@ TEST_F(SearchTest, IsNTPOrRelatedURL) {
 // See search::IsNTPURL(const GURL& url);
 TEST_F(SearchTest, IsNTPURL) {
   const SearchTestCase kTestCases[] = {
-      {"chrome-search://local-ntp", true, "Local NTP URL"},
-      {"chrome-search://local-ntp/local-ntp.html?bar=abc", true,
-       "Local NTP URL with params"},
       {"chrome-search://remote-ntp", true, "Remote NTP URL"},
       {"chrome://new-tab-page", true, "WebUI NTP"},
       {"chrome://new-tab-page/path?params", true,
        "WebUI NTP with path and params"},
-      {"invalid-scheme://local-ntp", false, "Invalid Local NTP URL"},
       {"invalid-scheme://remote-ntp", false, "Invalid Remote NTP URL"},
       {"chrome-search://most-visited/", false, "Most visited URL"},
       {"", false, "Invalid URL"},
@@ -431,7 +415,7 @@ TEST_F(SearchTest, SearchProviderWithPort) {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16("localhost"));
+  data.SetShortName(u"localhost");
   data.SetURL("https://[::1]:1993/url?bar={searchTerms}");
   data.new_tab_url = "https://[::1]:1993/newtab";
   data.alternate_urls.push_back("https://[::1]:1993/alt#quux={searchTerms}");

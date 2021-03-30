@@ -141,11 +141,14 @@ bool WaylandWindowDragController::Drag(WaylandToplevelWindow* window,
   RunLoop();
   SetDraggedWindow(nullptr, {});
 
-  DCHECK(state_ == State::kAttached || state_ == State::kDropped);
-  bool dropped = state_ == State::kDropped;
-  if (dropped)
-    HandleDropAndResetState();
-  return dropped;
+  DCHECK(state_ == State::kAttaching || state_ == State::kDropped);
+  if (state_ == State::kAttaching) {
+    state_ = State::kAttached;
+    return false;
+  }
+
+  HandleDropAndResetState();
+  return true;
 }
 
 void WaylandWindowDragController::StopDragging() {
@@ -157,7 +160,7 @@ void WaylandWindowDragController::StopDragging() {
   // This function is supposed to be called to indicate that the window was just
   // snapped into a tab strip. So switch to |kAttached| state, store the focused
   // window as the pointer grabber and ask to quit the nested loop.
-  state_ = State::kAttached;
+  state_ = State::kAttaching;
   pointer_grab_owner_ = window_manager_->GetCurrentFocusedWindow();
   DCHECK(pointer_grab_owner_);
   QuitLoop();
@@ -216,6 +219,11 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
   DCHECK_GE(state_, State::kAttached);
   VLOG(2) << "OnMotion. location=" << location.ToString();
 
+  // Motion events are not expected to be dispatched while waiting for the drag
+  // loop to exit, ie: kAttaching transitional state. See crbug.com/1169446.
+  if (state_ == State::kAttaching)
+    return;
+
   // Forward cursor location update info to the input handling delegate.
   should_process_drag_event_ = true;
   pointer_location_ = location;
@@ -224,7 +232,6 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
 
 void WaylandWindowDragController::OnDragLeave() {
   DCHECK_GE(state_, State::kAttached);
-  DCHECK_LE(state_, State::kDetached);
 
   // In order to guarantee ET_MOUSE_RELEASED event is delivered once the DND
   // session finishes, the focused window is not reset here. This is similar to
@@ -323,8 +330,6 @@ uint32_t WaylandWindowDragController::DispatchEvent(
   DCHECK_EQ(state_, State::kDetached);
   DCHECK(base::CurrentUIThread::IsSet());
 
-  VLOG(2) << "Dispatch. event=" << event->GetName();
-
   if (event->type() == ET_MOUSE_MOVED || event->type() == ET_MOUSE_DRAGGED) {
     HandleMotionEvent(event->AsMouseEvent());
     return POST_DISPATCH_STOP_PROPAGATION;
@@ -347,7 +352,6 @@ void WaylandWindowDragController::OnToplevelWindowCreated(
           << " calculated_offset=" << offset.ToString();
 
   SetDraggedWindow(window, offset);
-  state_ = State::kDetached;
 }
 
 void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {

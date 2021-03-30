@@ -213,7 +213,8 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
       base::BindOnce(std::move(callback), this, can_make_payment_result_));
 }
 
-void ServiceWorkerPaymentApp::InvokePaymentApp(Delegate* delegate) {
+void ServiceWorkerPaymentApp::InvokePaymentApp(
+    base::WeakPtr<Delegate> delegate) {
   delegate_ = delegate;
   auto* payment_app_provider = GetPaymentAppProvider();
   if (!payment_app_provider)
@@ -390,9 +391,9 @@ bool ServiceWorkerPaymentApp::CanPreselect() const {
   return !GetLabel().empty() && icon_bitmap() && !icon_bitmap()->drawsNothing();
 }
 
-base::string16 ServiceWorkerPaymentApp::GetMissingInfoLabel() const {
+std::u16string ServiceWorkerPaymentApp::GetMissingInfoLabel() const {
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool ServiceWorkerPaymentApp::HasEnrolledInstrument() const {
@@ -415,13 +416,13 @@ std::string ServiceWorkerPaymentApp::GetId() const {
                              : stored_payment_app_info_->scope.spec();
 }
 
-base::string16 ServiceWorkerPaymentApp::GetLabel() const {
+std::u16string ServiceWorkerPaymentApp::GetLabel() const {
   return base::UTF8ToUTF16(needs_installation_
                                ? installable_web_app_info_->name
                                : stored_payment_app_info_->name);
 }
 
-base::string16 ServiceWorkerPaymentApp::GetSublabel() const {
+std::u16string ServiceWorkerPaymentApp::GetSublabel() const {
   if (needs_installation_) {
     DCHECK(GURL(installable_web_app_info_->sw_scope).is_valid());
     return base::UTF8ToUTF16(

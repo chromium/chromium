@@ -42,6 +42,13 @@ class MenuScrollViewContainer : public View {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
+  friend class MenuScrollView;
+
+  void DidScrollToTop();
+  void DidScrollToBottom();
+  void DidScrollAwayFromTop();
+  void DidScrollAwayFromBottom();
+
   // Create a default border or bubble border, as appropriate.
   void CreateBorder();
 

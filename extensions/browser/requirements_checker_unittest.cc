@@ -5,10 +5,10 @@
 #include "extensions/browser/requirements_checker.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -60,8 +60,8 @@ class RequirementsCheckerTest : public ExtensionsTest {
 
     std::string error;
     extension_ =
-        Extension::Create(base::FilePath(), Manifest::UNPACKED, *manifest_dict_,
-                          Extension::NO_FLAGS, &error);
+        Extension::Create(base::FilePath(), mojom::ManifestLocation::kUnpacked,
+                          *manifest_dict_, Extension::NO_FLAGS, &error);
     ASSERT_TRUE(extension_.get()) << error;
   }
 

@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "absl/base/config.h"
+#include "absl/base/internal/endian.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -73,7 +74,7 @@ class ExplicitSeedSeq {
   template <typename OutIterator>
   void generate(OutIterator begin, OutIterator end) {
     for (size_t index = 0; begin != end; begin++) {
-      *begin = state_.empty() ? 0 : state_[index++];
+      *begin = state_.empty() ? 0 : little_endian::FromHost32(state_[index++]);
       if (index >= state_.size()) {
         index = 0;
       }

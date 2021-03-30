@@ -272,7 +272,6 @@ AutocompleteController::AutocompleteController(
       stop_timer_duration_(OmniboxFieldTrial::StopTimerFieldTrialDuration()),
       done_(true),
       in_start_(false),
-      first_query_(true),
       search_service_worker_signal_sent_(false),
       template_url_service_(provider_client_->GetTemplateURLService()) {
   provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
@@ -411,7 +410,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
       obs.OnStart(this, input);
   }
 
-  const base::string16 old_input_text(input_.text());
+  const std::u16string old_input_text(input_.text());
   const bool old_allow_exact_keyword_match = input_.allow_exact_keyword_match();
   const bool old_want_asynchronous_matches = input_.want_asynchronous_matches();
   const OmniboxFocusType old_focus_type = input_.focus_type();
@@ -481,17 +480,6 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   UpdateResult(false, true);
 
   in_start_ = false;
-
-  // Omnibox has dependencies that may be lazily initialized. This metric will
-  // help tracking regression on the first use.
-  if (first_query_) {
-    base::TimeTicks end_time = base::TimeTicks::Now();
-    base::HistogramBase* counter =
-        base::Histogram::FactoryGet("Omnibox.WarmupTime", 1, 1000, 50,
-                                    base::Histogram::kUmaTargetedHistogramFlag);
-    counter->Add(static_cast<int>((end_time - start_time).InMilliseconds()));
-    first_query_ = false;
-  }
 
   // If the input looks like a query, send a signal predicting that the user is
   // going to issue a search (either to the default search engine or to a
@@ -596,10 +584,8 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
   }
 
   // Add any features that have been triggered.
-  // |GetOmniboxTriggeredFeatureService()| can be null in tests.
-  if (provider_client_->GetOmniboxTriggeredFeatureService())
-    provider_client_->GetOmniboxTriggeredFeatureService()->RecordToLogs(
-        &logs->feature_triggered_in_session);
+  provider_client_->GetOmniboxTriggeredFeatureService()->RecordToLogs(
+      &logs->feature_triggered_in_session);
 }
 
 void AutocompleteController::ResetSession() {
@@ -615,9 +601,7 @@ void AutocompleteController::ResetSession() {
     provider_client_->GetPedalProvider()->ResetSession();
   }
 
-  // |GetOmniboxTriggeredFeatureService()| can be null in tests.
-  if (provider_client_->GetOmniboxTriggeredFeatureService())
-    provider_client_->GetOmniboxTriggeredFeatureService()->ResetSession();
+  provider_client_->GetOmniboxTriggeredFeatureService()->ResetSession();
 }
 
 void AutocompleteController::UpdateMatchDestinationURLWithQueryFormulationTime(
@@ -699,7 +683,7 @@ void AutocompleteController::UpdateResult(
   TRACE_EVENT0("omnibox", "AutocompleteController::UpdateResult");
 
   base::Optional<AutocompleteMatch> last_default_match;
-  base::string16 last_default_associated_keyword;
+  std::u16string last_default_associated_keyword;
   if (result_.default_match()) {
     last_default_match = *result_.default_match();
     if (last_default_match->associated_keyword) {
@@ -762,7 +746,7 @@ void AutocompleteController::UpdateResult(
     search_provider_->RegisterDisplayedAnswers(result_);
 
   const bool default_is_valid = result_.default_match();
-  base::string16 default_associated_keyword;
+  std::u16string default_associated_keyword;
   if (default_is_valid &&
       result_.default_match()->associated_keyword) {
     default_associated_keyword =
@@ -801,12 +785,12 @@ void AutocompleteController::UpdateAssociatedKeywords(
     return;
 
   // Determine if the user's input is an exact keyword match.
-  base::string16 exact_keyword =
+  std::u16string exact_keyword =
       keyword_provider_->GetKeywordForText(input_.text());
 
-  std::set<base::string16> keywords;
+  std::set<std::u16string> keywords;
   for (auto match(result->begin()); match != result->end(); ++match) {
-    base::string16 keyword(
+    std::u16string keyword(
         match->GetSubstitutingExplicitlyInvokedKeyword(template_url_service_));
     if (!keyword.empty()) {
       keywords.insert(keyword);
@@ -868,7 +852,7 @@ void AutocompleteController::UpdateHeaderInfoFromZeroSuggestProvider(
 
 void AutocompleteController::UpdateKeywordDescriptions(
     AutocompleteResult* result) {
-  base::string16 last_keyword;
+  std::u16string last_keyword;
   for (auto i(result->begin()); i != result->end(); ++i) {
     if (AutocompleteMatch::IsSearchType(i->type)) {
       if (AutocompleteMatchHasCustomDescription(*i))
@@ -909,11 +893,11 @@ void AutocompleteController::UpdateAssistedQueryStats(
   std::string autocompletions;
   int count = 0;
   int num_zero_prefix_shown = 0;
-  size_t last_type = base::string16::npos;
+  size_t last_type = std::u16string::npos;
   base::flat_set<int> last_subtypes = {};
   for (const auto& match : *result) {
     auto subtypes = match.subtypes;
-    size_t type = base::string16::npos;
+    size_t type = std::u16string::npos;
     GetMatchTypeAndExtendSubtypes(match, &type, &subtypes);
 
     // Count any suggestions that constitute zero-prefix suggestions.
@@ -924,7 +908,7 @@ void AutocompleteController::UpdateAssistedQueryStats(
       ++num_zero_prefix_shown;
     }
 
-    if (last_type != base::string16::npos &&
+    if (last_type != std::u16string::npos &&
         (type != last_type || subtypes != last_subtypes)) {
       AppendAvailableAutocompletion(last_type, last_subtypes, count,
                                     &autocompletions);
@@ -1021,7 +1005,7 @@ void AutocompleteController::StopHelper(bool clear_result,
 }
 
 bool AutocompleteController::ShouldCurbKeywordDescriptions(
-    const base::string16& keyword) {
+    const std::u16string& keyword) {
   return AutocompleteProvider::InExplicitExperimentalKeywordMode(input_,
                                                                  keyword);
 }

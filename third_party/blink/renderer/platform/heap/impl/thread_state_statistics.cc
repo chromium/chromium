@@ -29,4 +29,11 @@ ThreadState::Statistics ThreadState::StatisticsCollector::CollectStatistics(
   return stats;
 }
 
+void ThreadState::StatisticsCollector::Verify() const {
+#if BUILDFLAG(BLINK_HEAP_VERIFICATION) && DCHECK_IS_ON()
+  // CollectStatistics checks counter consistency with DCHECKs.
+  CollectStatistics(Statistics::kDetailed);
+#endif  // BUILDFLAG(BLINK_HEAP_VERIFICATION) && DCHECK_IS_ON()
+}
+
 }  // namespace blink

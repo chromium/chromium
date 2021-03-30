@@ -65,9 +65,8 @@ bool RunResponseForwardToCallback::Accept(Message* message) {
           interface_control::internal::RunResponseMessageParams_Data*>(
           message->mutable_payload());
   interface_control::RunResponseMessageParamsPtr params_ptr;
-  SerializationContext context;
   Deserialize<interface_control::RunResponseMessageParamsDataView>(
-      params, &params_ptr, &context);
+      params, &params_ptr, message);
 
   std::move(callback_).Run(std::move(params_ptr));
   return true;
@@ -81,10 +80,9 @@ void SendRunMessage(InterfaceEndpointClient* endpoint,
   Message message(interface_control::kRunMessageId,
                   Message::kFlagExpectsResponse, 0, 0, nullptr);
   message.set_heap_profiler_tag(kMessageTag);
-  SerializationContext context;
-  interface_control::internal::RunMessageParams_Data::BufferWriter writer;
-  Serialize<interface_control::RunMessageParamsDataView>(
-      params_ptr, message.payload_buffer(), &writer, &context);
+  MessageFragment<interface_control::internal::RunMessageParams_Data> fragment(
+      message);
+  Serialize<interface_control::RunMessageParamsDataView>(params_ptr, fragment);
   std::unique_ptr<MessageReceiver> responder =
       std::make_unique<RunResponseForwardToCallback>(std::move(callback));
   endpoint->SendControlMessageWithResponder(&message, std::move(responder));
@@ -97,11 +95,11 @@ Message ConstructRunOrClosePipeMessage(
   Message message(interface_control::kRunOrClosePipeMessageId, 0, 0, 0,
                   nullptr);
   message.set_heap_profiler_tag(kMessageTag);
-  SerializationContext context;
-  interface_control::internal::RunOrClosePipeMessageParams_Data::BufferWriter
-      writer;
-  Serialize<interface_control::RunOrClosePipeMessageParamsDataView>(
-      params_ptr, message.payload_buffer(), &writer, &context);
+
+  MessageFragment<interface_control::internal::RunOrClosePipeMessageParams_Data>
+      fragment(message);
+  Serialize<interface_control::RunOrClosePipeMessageParamsDataView>(params_ptr,
+                                                                    fragment);
   return message;
 }
 

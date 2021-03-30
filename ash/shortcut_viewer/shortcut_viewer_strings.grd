@@ -21,7 +21,6 @@
     <output filename="shortcut_viewer_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="shortcut_viewer_strings_et.pak" type="data_package" lang="et" />
     <output filename="shortcut_viewer_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="shortcut_viewer_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="shortcut_viewer_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="shortcut_viewer_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="shortcut_viewer_strings_fr.pak" type="data_package" lang="fr" />
@@ -31,6 +30,7 @@
     <output filename="shortcut_viewer_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="shortcut_viewer_strings_hu.pak" type="data_package" lang="hu" />
     <output filename="shortcut_viewer_strings_id.pak" type="data_package" lang="id" />
+    <output filename="shortcut_viewer_strings_is.pak" type="data_package" lang="is" />
     <output filename="shortcut_viewer_strings_it.pak" type="data_package" lang="it" />
     <output filename="shortcut_viewer_strings_ja.pak" type="data_package" lang="ja" />
     <output filename="shortcut_viewer_strings_kn.pak" type="data_package" lang="kn" />
@@ -62,6 +62,10 @@
     <output filename="shortcut_viewer_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="shortcut_viewer_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="shortcut_viewer_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="shortcut_viewer_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="shortcut_viewer_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/shortcut_viewer_strings_af.xtb" lang="af" />
@@ -146,7 +150,7 @@
     <file path="strings/shortcut_viewer_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/shortcut_viewer_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
   <!-- Title -->
   <message name="IDS_KSV_TITLE" desc="The tooltip text of the keyboard shortcut viewer shelf icon.">
@@ -240,6 +244,9 @@
   <message name="IDS_KSV_KEY_FULLSCREEN" desc="Name of the key on a Chromebook keyboard that triggers the fullscreen.">
     Fullscreen key
   </message>
+  <message name="IDS_KSV_KEY_SNAPSHOT" desc="Name of the key on a Chromebook keyboard that triggers the capture mode.">
+    Capture mode key
+  </message>
   <message name="IDS_KSV_KEY_NO_MAPPING" desc="Alternative string to display if no meaning found for the key.">
     Not supported with current keyboard layout
   </message>
@@ -311,9 +318,18 @@
     Make keyboard brighter (for backlit keyboards only)
   </message>
   <message name="IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
+    Take screenshot/recording
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT_OLD" desc="Description of the command in keyboard shortcut viewer when capture mode is disabled.">
     Take screenshot
   </message>
+  <message name="IDS_KSV_DESCRIPTION_TAKE_FULLSCREEN_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
+    Take fullscreen screenshot
+  </message>
   <message name="IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
+    Take partial screenshot/recording
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT_OLD" desc="Description of the command in keyboard shortcut viewer if the capture mode is disabled.">
     Take partial screenshot
   </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_FILE_MANAGER" desc="Description of the command in keyboard shortcut viewer.">
@@ -722,6 +738,9 @@
     Open/close the fullscreen launcher
   </message>
   <message name="IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
+    Take window screenshot/recording
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT_OLD" desc="Description of the command in keyboard shortcut viewer when capture mode is disabled.">
     Take window screenshot
   </message>
   <message name="IDS_KSV_DESCRIPTION_SUSPEND" desc="Description of the command in keyboard shortcut viewer.">
@@ -729,6 +748,9 @@
   </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_GET_HELP" desc="Description of the command in keyboard shortcut viewer.">
     Open Help Center
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_OPEN_DIAGNOSTICS" desc="Description of the command in keyboard shortcut viewer.">
+    Open Diagnostics App
   </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_FEEDBACK_PAGE" desc="Description of the command in keyboard shortcut viewer.">
     Submit feedback
@@ -816,6 +838,9 @@
   </message>
   <message name="IDS_KSV_DESCRIPTION_CARET_BROWSING_TOGGLE" desc="Description of the command in keyboard shortcut viewer.">
     Turn caret browsing on or off
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_SHOW_EMOJI_PICKER" desc="Description of the command in keyboard shortcut viewer.">
+    Open Emoji Picker
   </message>
     </messages>
   </release>

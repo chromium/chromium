@@ -31,7 +31,6 @@ std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
 
 std::unique_ptr<infobars::InfoBar> CreateHighPriorityConfirmInfoBar(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
-  DCHECK(IsInfobarUIRebootEnabled());
   // TODO(crbug.com/927064): Coordinators shouldn't be created at this level,
   // we should probably send only the delegate and have the presenting
   // Coordinator create the right Coordinator using that delegate.

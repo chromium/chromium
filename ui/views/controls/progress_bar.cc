@@ -31,13 +31,20 @@ namespace {
 // In DP, the amount to round the corners of the progress bar (both bg and
 // fg, aka slice).
 constexpr int kCornerRadius = 3;
+constexpr int kSmallCornerRadius = 1;
 
-// Adds a rectangle to the path. The corners will be rounded if there is room.
+// Adds a rectangle to the path. The corners will be rounded with regular corner
+// radius if the progress bar height is larger than the regular corner radius.
+// Otherwise the corners will be rounded with the small corner radius if there
+// is room for it.
 void AddPossiblyRoundRectToPath(const gfx::Rect& rectangle,
                                 bool allow_round_corner,
                                 SkPath* path) {
-  if (!allow_round_corner || rectangle.height() < kCornerRadius) {
+  if (!allow_round_corner || rectangle.height() < kSmallCornerRadius) {
     path->addRect(gfx::RectToSkRect(rectangle));
+  } else if (rectangle.height() < kCornerRadius) {
+    path->addRoundRect(gfx::RectToSkRect(rectangle), kSmallCornerRadius,
+                       kSmallCornerRadius);
   } else {
     path->addRoundRect(gfx::RectToSkRect(rectangle), kCornerRadius,
                        kCornerRadius);
@@ -257,8 +264,8 @@ void ProgressBar::MaybeNotifyAccessibilityValueChanged() {
 }
 
 BEGIN_METADATA(ProgressBar, View)
-ADD_PROPERTY_METADATA(SkColor, ForegroundColor)
-ADD_PROPERTY_METADATA(SkColor, BackgroundColor)
+ADD_PROPERTY_METADATA(SkColor, ForegroundColor, metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, BackgroundColor, metadata::SkColorConverter)
 END_METADATA
 
 }  // namespace views

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -23,9 +24,15 @@ using protocol::Cast::Sink;
 
 namespace {
 
+constexpr char kMediaRouterErrorMessage[] =
+    "You must enable the Media Router feature in order to use Cast.";
+
 media_router::MediaRouter* GetMediaRouter(content::WebContents* web_contents) {
-  return media_router::MediaRouterFactory::GetApiForBrowserContext(
-      web_contents->GetBrowserContext());
+  if (media_router::MediaRouterEnabled(web_contents->GetBrowserContext())) {
+    return media_router::MediaRouterFactory::GetApiForBrowserContext(
+        web_contents->GetBrowserContext());
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -83,7 +90,9 @@ CastHandler::CastHandler(content::WebContents* web_contents,
 CastHandler::~CastHandler() = default;
 
 Response CastHandler::SetSinkToUse(const std::string& in_sink_name) {
-  EnsureInitialized();
+  Response init_response = EnsureInitialized();
+  if (!init_response.IsSuccess())
+    return init_response;
   media_router::PresentationServiceDelegateImpl::GetOrCreateForWebContents(
       web_contents_)
       ->set_start_presentation_cb(
@@ -95,7 +104,9 @@ Response CastHandler::SetSinkToUse(const std::string& in_sink_name) {
 void CastHandler::StartTabMirroring(
     const std::string& in_sink_name,
     std::unique_ptr<StartTabMirroringCallback> callback) {
-  EnsureInitialized();
+  Response init_response = EnsureInitialized();
+  if (!init_response.IsSuccess())
+    callback->sendFailure(init_response);
   const media_router::MediaSink::Id& sink_id = GetSinkIdByName(in_sink_name);
   if (sink_id.empty()) {
     callback->sendFailure(Response::ServerError("Sink not found"));
@@ -116,7 +127,9 @@ void CastHandler::StartTabMirroring(
 }
 
 Response CastHandler::StopCasting(const std::string& in_sink_name) {
-  EnsureInitialized();
+  Response init_response = EnsureInitialized();
+  if (!init_response.IsSuccess())
+    return init_response;
   const media_router::MediaSink::Id& sink_id = GetSinkIdByName(in_sink_name);
   if (sink_id.empty())
     return Response::ServerError("Sink not found");
@@ -129,7 +142,9 @@ Response CastHandler::StopCasting(const std::string& in_sink_name) {
 }
 
 Response CastHandler::Enable(protocol::Maybe<std::string> in_presentation_url) {
-  EnsureInitialized();
+  Response init_response = EnsureInitialized();
+  if (!init_response.IsSuccess())
+    return init_response;
   StartObservingForSinks(std::move(in_presentation_url));
   return Response::Success();
 }
@@ -152,9 +167,11 @@ void CastHandler::OnResultsUpdated(
 CastHandler::CastHandler(content::WebContents* web_contents)
     : web_contents_(web_contents), router_(GetMediaRouter(web_contents)) {}
 
-void CastHandler::EnsureInitialized() {
+Response CastHandler::EnsureInitialized() {
+  if (!router_)
+    return Response::ServerError(kMediaRouterErrorMessage);
   if (query_result_manager_)
-    return;
+    return Response::Success();
 
   query_result_manager_ =
       std::make_unique<media_router::QueryResultManager>(router_);
@@ -165,6 +182,7 @@ void CastHandler::EnsureInitialized() {
   issues_observer_ = std::make_unique<IssuesObserver>(
       router_,
       base::BindRepeating(&CastHandler::OnIssue, base::Unretained(this)));
+  return Response::Success();
 }
 
 void CastHandler::StartPresentation(

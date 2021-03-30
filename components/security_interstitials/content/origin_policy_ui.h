@@ -6,11 +6,11 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_ORIGIN_POLICY_UI_H_
 
 #include <memory>
+#include <string>
 
 #include <string>
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 class GURL;
 

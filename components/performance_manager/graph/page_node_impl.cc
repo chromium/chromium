@@ -29,6 +29,8 @@ PageNodeImpl::PageNodeImpl(const WebContentsProxy& contents_proxy,
       browser_context_id_(browser_context_id),
       is_visible_(is_visible),
       is_audible_(is_audible) {
+  weak_this_ = weak_factory_.GetWeakPtr();
+
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -69,10 +71,12 @@ void PageNodeImpl::RemoveFrame(base::PassKey<FrameNodeImpl>,
 }
 
 void PageNodeImpl::SetLoadingState(LoadingState loading_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   loading_state_.SetAndMaybeNotify(this, loading_state);
 }
 
 void PageNodeImpl::SetIsVisible(bool is_visible) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_visible_.SetAndMaybeNotify(this, is_visible)) {
     // The change time needs to be updated after observers are notified, as they
     // use this to determine time passed since the *previous* visibility state
@@ -83,10 +87,12 @@ void PageNodeImpl::SetIsVisible(bool is_visible) {
 }
 
 void PageNodeImpl::SetIsAudible(bool is_audible) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_audible_.SetAndMaybeNotify(this, is_audible);
 }
 
 void PageNodeImpl::SetUkmSourceId(ukm::SourceId ukm_source_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ukm_source_id_.SetAndMaybeNotify(this, ukm_source_id);
 }
 

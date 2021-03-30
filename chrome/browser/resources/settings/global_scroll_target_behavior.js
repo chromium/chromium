@@ -14,14 +14,13 @@
  * |setGlobalScrollTarget| should only be called once.
  */
 
-// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-// #import {Route, Router, RouteObserverBehavior} from './router.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {Route, Router, RouteObserverBehavior} from './router.js';
 
-cr.define('settings', function() {
   let scrollTargetResolver = new PromiseResolver();
 
   /** @polymerBehavior */
-  /* #export */ const GlobalScrollTargetBehaviorImpl = {
+  export const GlobalScrollTargetBehaviorImpl = {
     properties: {
       /**
        * Read only property for the scroll target.
@@ -44,7 +43,7 @@ cr.define('settings', function() {
 
       /**
        * The |subpageScrollTarget| should only be set for this route.
-       * @type {settings.Route}
+       * @type {Route}
        * @private
        */
       subpageRoute: Object,
@@ -56,11 +55,11 @@ cr.define('settings', function() {
     /** @override */
     attached() {
       this.active_ =
-          settings.Router.getInstance().getCurrentRoute() === this.subpageRoute;
+          Router.getInstance().getCurrentRoute() === this.subpageRoute;
       scrollTargetResolver.promise.then(this._setScrollTarget.bind(this));
     },
 
-    /** @param {!settings.Route} route */
+    /** @param {!Route} route */
     currentRouteChanged(route) {
       // Immediately set the scroll target to active when this page is
       // activated, but wait a task to remove the scroll target when the page is
@@ -98,26 +97,17 @@ cr.define('settings', function() {
    * This should only be called once.
    * @param {HTMLElement} scrollTarget
    */
-  /* #export */ function setGlobalScrollTarget(scrollTarget) {
+  export function setGlobalScrollTarget(scrollTarget) {
     scrollTargetResolver.resolve(scrollTarget);
   }
 
-  /* #export */ function resetGlobalScrollTargetForTesting() {
+  export function resetGlobalScrollTargetForTesting() {
     scrollTargetResolver = new PromiseResolver();
   }
 
   // This is done to make the closure compiler happy: it needs fully qualified
   // names when specifying an array of behaviors.
   /** @polymerBehavior */
-  /* #export */ const GlobalScrollTargetBehavior =
-      [settings.RouteObserverBehavior, GlobalScrollTargetBehaviorImpl];
+  export const GlobalScrollTargetBehavior =
+      [RouteObserverBehavior, GlobalScrollTargetBehaviorImpl];
 
-  // #cr_define_end
-  return {
-    GlobalScrollTargetBehaviorImpl: GlobalScrollTargetBehaviorImpl,
-    GlobalScrollTargetBehavior: GlobalScrollTargetBehavior,
-    setGlobalScrollTarget: setGlobalScrollTarget,
-    resetGlobalScrollTargetForTesting: resetGlobalScrollTargetForTesting,
-    scrollTargetResolver: scrollTargetResolver,
-  };
-});

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that Comparison view of heap snapshots will contain added nodes even if their ids are less than the maximumm JS object id in the base snapshot.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   function createHeapSnapshotA() {

@@ -81,7 +81,7 @@ void DictionaryValueUpdate::SetString(base::StringPiece path,
 }
 
 void DictionaryValueUpdate::SetString(base::StringPiece path,
-                                      const base::string16& in_value) {
+                                      const std::u16string& in_value) {
   Set(path, std::make_unique<base::Value>(in_value));
 }
 
@@ -152,7 +152,7 @@ bool DictionaryValueUpdate::GetString(base::StringPiece path,
 }
 
 bool DictionaryValueUpdate::GetString(base::StringPiece path,
-                                      base::string16* out_value) const {
+                                      std::u16string* out_value) const {
   return value_->GetString(path, out_value);
 }
 
@@ -211,7 +211,7 @@ bool DictionaryValueUpdate::GetStringWithoutPathExpansion(
 
 bool DictionaryValueUpdate::GetStringWithoutPathExpansion(
     base::StringPiece key,
-    base::string16* out_value) const {
+    std::u16string* out_value) const {
   return value_->GetStringWithoutPathExpansion(key, out_value);
 }
 

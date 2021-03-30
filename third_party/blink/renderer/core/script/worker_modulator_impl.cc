@@ -36,20 +36,16 @@ ModuleScriptFetcher* WorkerModulatorImpl::CreateModuleScriptFetcher(
 }
 
 bool WorkerModulatorImpl::IsDynamicImportForbidden(String* reason) {
-  if (GetExecutionContext()->IsDedicatedWorkerGlobalScope())
-    return false;
-
-  // TODO(https://crbug.com/824646): Remove this flag check once module loading
-  // for SharedWorker is enabled by default.
-  if (GetExecutionContext()->IsSharedWorkerGlobalScope() &&
-      RuntimeEnabledFeatures::ModuleSharedWorkerEnabled()) {
+  if (GetExecutionContext()->IsDedicatedWorkerGlobalScope() ||
+      GetExecutionContext()->IsSharedWorkerGlobalScope()) {
     return false;
   }
 
-  // TODO(https://crbug.com/824647): Support module loading for Service Worker.
+  // https://html.spec.whatwg.org/C/#hostimportmoduledynamically(referencingscriptormodule,-specifier,-promisecapability)
+  DCHECK(GetExecutionContext()->IsServiceWorkerGlobalScope());
   *reason =
-      "Module scripts are not supported on ServiceWorkerGlobalScope yet (see "
-      "https://crbug.com/824647).";
+      "import() is disallowed on ServiceWorkerGlobalScope by the HTML "
+      "specification. See https://github.com/w3c/ServiceWorker/issues/1356.";
   return true;
 }
 

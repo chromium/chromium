@@ -9,7 +9,7 @@ import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {TestPrivacyPageBrowserProxy} from 'chrome://test/settings/test_privacy_page_browser_proxy.js';
-import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.m.js';
+import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://test/test_util.m.js';
 
 // clang-format on
@@ -27,14 +27,11 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       driveSuggestAvailable: true,
+      signinAvailable: true,
     });
   });
 
-  setup(function() {
-    testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
-    syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+  function buildTestElement() {
     PolymerTest.clearBody();
     testElement = document.createElement('settings-personalization-options');
     testElement.prefs = {
@@ -48,6 +45,14 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
     };
     document.body.appendChild(testElement);
     flush();
+  }
+
+  setup(function() {
+    testBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    buildTestElement();
   });
 
   teardown(function() {
@@ -162,6 +167,14 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
             assertFalse(testElement.prefs.signin.allowed_on_next_startup.value);
             assertTrue(testElement.$.toast.open);
           });
+    });
+
+    // Tests that the "Allow sign-in" toggle is hidden when signin is not
+    // available.
+    test('signinUnavailable', function() {
+      loadTimeData.overrideValues({'signinAvailable': false});
+      buildTestElement();  // Rebuild the element after modifying loadTimeData.
+      assertFalse(isVisible(testElement.$.signinAllowedToggle));
     });
   }
 });

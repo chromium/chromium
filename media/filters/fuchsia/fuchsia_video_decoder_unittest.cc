@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/process/process_handle.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -24,6 +25,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
@@ -40,6 +42,8 @@ class TestBufferCollection {
       ZX_LOG(FATAL, status)
           << "The fuchsia.sysmem.Allocator channel was terminated.";
     });
+    sysmem_allocator_->SetDebugClientInfo("CrTestBufferCollection",
+                                          base::GetCurrentProcId());
 
     sysmem_allocator_->BindSharedCollection(
         fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>(

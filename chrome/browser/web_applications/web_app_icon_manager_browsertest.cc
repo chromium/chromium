@@ -22,7 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -74,14 +74,14 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
         std::make_unique<WebApplicationInfo>();
     web_application_info->start_url = start_url;
     web_application_info->scope = start_url.GetWithoutFilename();
-    web_application_info->title = base::ASCIIToUTF16("App Name");
+    web_application_info->title = u"App Name";
     web_application_info->open_as_window = true;
 
     {
       SkBitmap bitmap;
       bitmap.allocN32Pixels(icon_size::k32, icon_size::k32, true);
       bitmap.eraseColor(SK_ColorBLUE);
-      web_application_info->icon_bitmaps_any[icon_size::k32] =
+      web_application_info->icon_bitmaps.any[icon_size::k32] =
           std::move(bitmap);
     }
 
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     app_service_test().FlushMojoCalls();
     image_skia = app_service_test().LoadAppIconBlocking(
-        apps::mojom::AppType::kWeb, app_id, web_app::kWebAppIconSmall);
+        apps::mojom::AppType::kWeb, app_id, kWebAppIconSmall);
   }
 #endif
 

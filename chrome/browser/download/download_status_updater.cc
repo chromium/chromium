@@ -12,6 +12,9 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 
 namespace {
 
@@ -127,6 +130,50 @@ void DownloadStatusUpdater::OnDownloadUpdated(content::DownloadManager* manager,
     WasInProgressData::Clear(item);
   }
   UpdateAppIconDownloadProgress(item);
+  UpdateProfileKeepAlive(manager);
+}
+
+void DownloadStatusUpdater::OnManagerGoingDown(
+    content::DownloadManager* manager) {
+  Profile* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
+  profile_keep_alives_.erase(profile);
+}
+
+void DownloadStatusUpdater::UpdateProfileKeepAlive(
+    content::DownloadManager* manager) {
+  if (!manager) {
+    // Can be null in tests.
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
+  DCHECK(profile);
+  if (profile->IsOffTheRecord())
+    return;
+
+  // Are we already holding a keepalive?
+  bool already_has_keep_alive =
+      (profile_keep_alives_.find(profile) != profile_keep_alives_.end());
+
+  // Do we still need to hold a keepalive?
+  content::DownloadManager::DownloadVector items;
+  manager->GetAllDownloads(&items);
+  auto items_it = base::ranges::find(items, download::DownloadItem::IN_PROGRESS,
+                                     &download::DownloadItem::GetState);
+  bool should_keep_alive = (items_it != items.end());
+
+  if (should_keep_alive == already_has_keep_alive) {
+    // The current state is already correct for this Profile. No changes needed.
+    return;
+  }
+
+  // The current state is incorrect. Acquire/release a keepalive.
+  if (should_keep_alive) {
+    profile_keep_alives_[profile] = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kDownloadInProgress);
+  } else {
+    profile_keep_alives_.erase(profile);
+  }
 }
 
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)

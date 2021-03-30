@@ -68,7 +68,7 @@ mojom::PaymentAddressPtr GetPaymentAddressFromAutofillProfile(
 
 std::unique_ptr<BasicCardResponse> GetBasicCardResponseFromAutofillCreditCard(
     const autofill::CreditCard& card,
-    const base::string16& cvc,
+    const std::u16string& cvc,
     const autofill::AutofillProfile& billing_profile,
     const std::string& app_locale) {
   std::unique_ptr<BasicCardResponse> response =
@@ -146,8 +146,8 @@ void ParseSupportedMethods(
   }
 }
 
-base::string16 FormatCardNumberForDisplay(const base::string16& card_number) {
-  base::string16 number = autofill::CreditCard::StripSeparators(card_number);
+std::u16string FormatCardNumberForDisplay(const std::u16string& card_number) {
+  std::u16string number = autofill::CreditCard::StripSeparators(card_number);
   if (number.empty() || !base::IsAsciiDigit(number[0]))
     return card_number;
 
@@ -157,7 +157,7 @@ base::string16 FormatCardNumberForDisplay(const base::string16& card_number) {
     positions = {4U, 11U};
   }
 
-  static const base::char16 kSeparator = base::ASCIIToUTF16(" ")[0];
+  static constexpr char16_t kSeparator = u' ';
   for (size_t i : positions) {
     if (number.size() > i)
       number.insert(i, 1U, kSeparator);

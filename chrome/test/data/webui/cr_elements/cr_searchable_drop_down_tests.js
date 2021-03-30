@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.js';
-// #import {Polymer, html, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.js';
+
+import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 suite('cr-searchable-drop-down', function() {
@@ -25,7 +27,7 @@ suite('cr-searchable-drop-down', function() {
    */
   function setItems(items) {
     dropDown.items = items;
-    Polymer.dom.flush();
+    flush();
   }
 
   /** @return {!NodeList} */
@@ -42,30 +44,30 @@ suite('cr-searchable-drop-down', function() {
         dropDown.shadowRoot.querySelector('cr-input'));
     input.value = searchTerm;
     input.fire('input');
-    Polymer.dom.flush();
+    flush();
   }
 
   function blur() {
     const input = /** @type {!CrInputElement} */ (
         dropDown.shadowRoot.querySelector('cr-input'));
     input.fire('blur');
-    Polymer.dom.flush();
+    flush();
   }
 
   function down() {
-    MockInteractions.keyDownOn(searchInput, 0, [], 'ArrowDown');
+    keyDownOn(searchInput, 0, [], 'ArrowDown');
   }
 
   function up() {
-    MockInteractions.keyDownOn(searchInput, 0, [], 'ArrowUp');
+    keyDownOn(searchInput, 0, [], 'ArrowUp');
   }
 
   function enter() {
-    MockInteractions.keyDownOn(searchInput, 0, [], 'Enter');
+    keyDownOn(searchInput, 0, [], 'Enter');
   }
 
   function tab() {
-    MockInteractions.keyDownOn(searchInput, 0, [], 'Tab');
+    keyDownOn(searchInput, 0, [], 'Tab');
   }
 
   function pointerDown(element) {
@@ -92,7 +94,7 @@ suite('cr-searchable-drop-down', function() {
     outsideElement =
         /** @type {!HTMLElement} */ (document.querySelector('#outside'));
     searchInput = dropDown.$.search;
-    Polymer.dom.flush();
+    flush();
   });
 
   test('correct list items', function() {
@@ -270,9 +272,9 @@ suite('cr-searchable-drop-down', function() {
 
     assertEquals(null, getSelectedElement());
 
-    MockInteractions.move(getList()[1], {x: 0, y: 0}, {x: 0, y: 0}, 1);
+    move(getList()[1], {x: 0, y: 0}, {x: 0, y: 0}, 1);
     assertEquals('cat', getSelectedElement().textContent.trim());
-    MockInteractions.move(getList()[2], {x: 0, y: 0}, {x: 0, y: 0}, 1);
+    move(getList()[2], {x: 0, y: 0}, {x: 0, y: 0}, 1);
     assertEquals('mouse', getSelectedElement().textContent.trim());
 
     // Interacting with the keyboard should update the selected element.
@@ -280,7 +282,7 @@ suite('cr-searchable-drop-down', function() {
     assertEquals('cat', getSelectedElement().textContent.trim());
 
     // When the user moves the mouse again, the selected element should change.
-    MockInteractions.move(getList()[0], {x: 0, y: 0}, {x: 0, y: 0}, 1);
+    move(getList()[0], {x: 0, y: 0}, {x: 0, y: 0}, 1);
     assertEquals('dog', getSelectedElement().textContent.trim());
   });
 

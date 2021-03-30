@@ -338,8 +338,6 @@ suite('CupsAddPrinterDialogTests', function() {
       printerAddress: '192.168.1.13',
       printerDescription: '',
       printerId: '',
-      printerManufacturer: '',
-      printerModel: '',
       printerMakeAndModel: '',
       printerName: 'Test Printer',
       printerPPDPath: '',

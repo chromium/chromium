@@ -24,7 +24,8 @@ public class HistoryActivity extends SnackbarActivity {
 
         boolean isIncognito = IntentUtils.safeGetBooleanExtra(
                 getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
-        mHistoryManager = new HistoryManager(this, true, getSnackbarManager(), isIncognito);
+        mHistoryManager = new HistoryManager(this, true, getSnackbarManager(), isIncognito,
+                /* TabCreatorManager */ null, /* Supplier<Tab>= */ null);
         setContentView(mHistoryManager.getView());
     }
 

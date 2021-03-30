@@ -15,8 +15,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/cbor/reader.h"
+#include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_util.h"
+#include "url/url_constants.h"
 
 namespace web_package {
 
@@ -278,10 +280,10 @@ GURL ParseExchangeURL(base::StringPiece str) {
   if (url.has_ref() || url.has_username() || url.has_password())
     return GURL();
 
-  // For now, we allow only http:, https: and urn: schemes in Web Bundle URLs.
+  // For now, we allow only http:, https: and urn:uuid URLs in Web Bundles.
   // TODO(crbug.com/966753): Revisit this once
   // https://github.com/WICG/webpackage/issues/468 is resolved.
-  if (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIs("urn"))
+  if (!url.SchemeIsHTTPOrHTTPS() && !IsValidUrnUuidURL(url))
     return GURL();
 
   return url;

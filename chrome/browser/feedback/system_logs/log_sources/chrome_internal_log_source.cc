@@ -42,14 +42,13 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/ash_interfaces.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
-#include "chrome/browser/chromeos/crosapi/browser_manager.h"
-#include "chrome/browser/chromeos/crosapi/browser_util.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/login_pref_names.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/dbus/util/version_loader.h"
@@ -79,7 +78,7 @@ constexpr char kPowerApiListKey[] = "chrome.power extensions";
 constexpr char kDataReductionProxyKey[] = "data_reduction_proxy";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
 #endif
 
@@ -137,7 +136,7 @@ std::string GetPrimaryAccountTypeString() {
       return "guest";
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return "public_account";
-    case user_manager::USER_TYPE_SUPERVISED:
+    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
       return "supervised";
     case user_manager::USER_TYPE_KIOSK_APP:
       return "kiosk_app";
@@ -235,32 +234,26 @@ void PopulateEntriesAsync(SystemLogsResponse* response) {
 
 std::string GetChromeVersionString() {
   // Version of the current running browser.
-  std::string browser_version = chrome::GetVersionString();
-
-// This is used by simple lacros feedback for backward compatibility.
-// TODO(http://crbug.com/1132106): Remove after M87 beta when Feedback
-// crosapi is available in all ash versions.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  browser_version = kLacrosChromeVersionPrefix + browser_version;
-#endif
+  std::string browser_version =
+      chrome::GetVersionString(chrome::WithExtendedStable(true));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If the device is receiving LTS updates, add a prefix to the version string.
   // The value of the policy is ignored here.
   std::string value;
-  const bool is_lts = chromeos::CrosSettings::Get()->GetString(
-      chromeos::kReleaseLtsTag, &value);
+  const bool is_lts =
+      ash::CrosSettings::Get()->GetString(chromeos::kReleaseLtsTag, &value);
   if (is_lts)
     browser_version = kLTSChromeVersionPrefix + browser_version;
 
   // If lacros-chrome is allowed & supported, and launched before, which
-  // is indicated by |lacros_version| in BrowserManager being set to non-empty
+  // is indicated by |browser_version| in BrowserManager being set to non-empty
   // string during lacros startup, attach its version in the chrome
   // version string.
   if (crosapi::browser_util::IsLacrosEnabled() &&
-      !crosapi::BrowserManager::Get()->lacros_version().empty()) {
+      !crosapi::BrowserManager::Get()->browser_version().empty()) {
     std::string lacros_version =
-        crosapi::BrowserManager::Get()->lacros_version();
+        crosapi::BrowserManager::Get()->browser_version();
     return kLacrosChromeVersionPrefix + lacros_version + ", " +
            kAshChromeVersionPrefix + browser_version;
   }
@@ -405,7 +398,7 @@ void ChromeInternalLogSource::PopulateSyncLogs(SystemLogsResponse* response) {
       syncer::sync_ui_util::ConstructAboutInformation(
           syncer::sync_ui_util::IncludeSensitiveData(false),
           ProfileSyncServiceFactory::GetForProfile(profile),
-          chrome::GetChannel());
+          chrome::GetChannelName(chrome::WithExtendedStable(true)));
   std::string serialized_sync_logs;
   JSONStringValueSerializer(&serialized_sync_logs).Serialize(*sync_logs);
   response->emplace(kSyncDataKey, serialized_sync_logs);

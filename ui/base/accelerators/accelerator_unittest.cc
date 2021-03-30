@@ -4,7 +4,8 @@
 
 #include "ui/base/accelerators/accelerator.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +59,7 @@ TEST(AcceleratorTest, MAYBE_GetShortcutText) {
   };
 
   for (const auto& key : keys) {
-    base::string16 text =
+    std::u16string text =
         Accelerator(key.code, key.modifiers).GetShortcutText();
 #if defined(OS_APPLE)
     EXPECT_EQ(text, base::UTF8ToUTF16(key.expected_short));
@@ -70,7 +71,7 @@ TEST(AcceleratorTest, MAYBE_GetShortcutText) {
 
 TEST(AcceleratorTest, ShortcutTextForUnknownKey) {
   const Accelerator accelerator(VKEY_UNKNOWN, EF_NONE);
-  EXPECT_EQ(base::string16(), accelerator.GetShortcutText());
+  EXPECT_EQ(std::u16string(), accelerator.GetShortcutText());
 }
 
 }  // namespace ui

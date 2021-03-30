@@ -136,7 +136,7 @@ export class BasicNode extends SAChildNode {
           if (this.isValidAndVisible()) {
             FocusRingManager.setFocusedNode(this);
           } else {
-            Navigator.instance.moveToValidNode();
+            Navigator.byItem.moveToValidNode();
           }
         }, {exactMatch: true, allAncestors: true});
   }
@@ -155,7 +155,7 @@ export class BasicNode extends SAChildNode {
     switch (action) {
       case SwitchAccessMenuAction.SELECT:
         if (this.isGroup()) {
-          Navigator.instance.enterGroup();
+          Navigator.byItem.enterGroup();
         } else {
           this.baseNode_.doDefault();
         }
@@ -335,7 +335,7 @@ export class BasicRootNode extends SARootNode {
     this.refreshChildren();
     if (this.invalidated_) {
       this.onUnfocus();
-      Navigator.instance.moveToValidNode();
+      Navigator.byItem.moveToValidNode();
       return;
     }
 
@@ -343,14 +343,14 @@ export class BasicRootNode extends SARootNode {
     if (focusedChild) {
       for (const child of this.children) {
         if (child.isEquivalentTo(focusedChild)) {
-          Navigator.instance.forceFocusedNode(child);
+          Navigator.byItem.forceFocusedNode(child);
           return;
         }
       }
     }
 
     // If we didn't find a match, fall back and reset.
-    Navigator.instance.moveToValidNode();
+    Navigator.byItem.moveToValidNode();
   }
 
   // ================= Static methods =================

@@ -132,7 +132,7 @@ cr.define('test_util', function() {
     // Promises have microtask timing, so we use setTimeout to explicitly force
     // a new task.
     return new Promise(function(resolve, reject) {
-      window.setTimeout(resolve, 1);
+      window.setTimeout(resolve, 0);
     });
   }
 

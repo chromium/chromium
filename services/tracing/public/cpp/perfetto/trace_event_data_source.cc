@@ -34,6 +34,7 @@
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
+#include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -61,7 +62,9 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.pbzero.h"
 
 #if defined(OS_ANDROID)
+#include "base/android/application_status_listener.h"
 #include "base/android/build_info.h"
+#include "base/trace_event/application_state_proto_android.h"
 #endif
 
 using TraceLog = base::trace_event::TraceLog;
@@ -98,19 +101,13 @@ ChromeProcessDescriptor::ProcessType GetProcessType(const std::string& name) {
   return ChromeProcessDescriptor::PROCESS_UNSPECIFIED;
 }
 
-void WriteMetadataProto(ChromeMetadataPacket* metadata_proto,
-                        bool privacy_filtering_enabled) {
-#if defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
-  // Version code is only set for official builds on Android.
-  const char* version_code_str =
-      base::android::BuildInfo::GetInstance()->package_version_code();
-  if (version_code_str) {
-    int version_code = 0;
-    bool res = base::StringToInt(version_code_str, &version_code);
-    DCHECK(res);
-    metadata_proto->set_chrome_version_code(version_code);
+void EmitRecurringUpdates(ChromeProcessDescriptor::ProcessType process_type) {
+#if defined(OS_ANDROID)
+  if (process_type == ChromeProcessDescriptor::PROCESS_BROWSER) {
+    auto state = base::android::ApplicationStatusListener::GetState();
+    TRACE_APPLICATION_STATE(state);
   }
-#endif  // defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
+#endif
 }
 
 static_assert(
@@ -151,7 +148,8 @@ TraceEventMetadataSource::TraceEventMetadataSource()
       origin_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   g_trace_event_metadata_source_for_testing = this;
   PerfettoTracedProcess::Get()->AddDataSource(this);
-  AddGeneratorFunction(base::BindRepeating(&WriteMetadataProto));
+  AddGeneratorFunction(base::BindRepeating(
+      &TraceEventMetadataSource::WriteMetadataPacket, base::Unretained(this)));
   AddGeneratorFunction(base::BindRepeating(
       &TraceEventMetadataSource::GenerateTraceConfigMetadataDict,
       base::Unretained(this)));
@@ -188,6 +186,29 @@ void TraceEventMetadataSource::AddGeneratorFunction(
     packet_generator_functions_.push_back(generator);
   }
   GenerateMetadataPacket(generator);
+}
+
+void TraceEventMetadataSource::WriteMetadataPacket(
+    perfetto::protos::pbzero::ChromeMetadataPacket* metadata_proto,
+    bool privacy_filtering_enabled) {
+#if defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
+  // Version code is only set for official builds on Android.
+  const char* version_code_str =
+      base::android::BuildInfo::GetInstance()->package_version_code();
+  if (version_code_str) {
+    int version_code = 0;
+    bool res = base::StringToInt(version_code_str, &version_code);
+    DCHECK(res);
+    metadata_proto->set_chrome_version_code(version_code);
+  }
+#endif  // defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
+
+  AutoLockWithDeferredTaskPosting lock(lock_);
+
+  if (parsed_chrome_config_) {
+    metadata_proto->set_enabled_categories(
+        parsed_chrome_config_->ToCategoryFilterString());
+  }
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -478,8 +499,8 @@ namespace {
 base::ThreadLocalStorage::Slot* ThreadLocalEventSinkSlot() {
   static base::NoDestructor<base::ThreadLocalStorage::Slot>
       thread_local_event_sink_tls([](void* event_sink) {
-        AutoThreadLocalBoolean thread_is_in_trace_event(
-            TraceEventDataSource::GetThreadIsInTraceEventTLS());
+        base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
+            base::tracing::GetThreadIsInTraceEventTLS());
         delete static_cast<TrackEventThreadLocalEventSink*>(event_sink);
       });
 
@@ -497,12 +518,6 @@ TraceEventDataSource* TraceEventDataSource::GetInstance() {
 }
 
 // static
-base::ThreadLocalBoolean* TraceEventDataSource::GetThreadIsInTraceEventTLS() {
-  static base::NoDestructor<base::ThreadLocalBoolean> thread_is_in_trace_event;
-  return thread_is_in_trace_event.get();
-}
-
-// static
 void TraceEventDataSource::ResetForTesting() {
   if (!g_trace_event_data_source_for_testing)
     return;
@@ -514,6 +529,10 @@ TraceEventDataSource::TraceEventDataSource()
     : DataSourceBase(mojom::kTraceEventDataSourceName),
       disable_interning_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kPerfettoDisableInterning)) {
+  // Use an approximate creation time as this is not available as TimeTicks in
+  // all platforms.
+  process_creation_time_ticks_ = TRACE_TIME_TICKS_NOW();
+
   DCHECK(session_flags_.is_lock_free())
       << "SessionFlags are not atomic! We rely on efficient lock-free look-up "
          "of the session flags when emitting a trace event.";
@@ -599,11 +618,12 @@ TrackEventThreadLocalEventSink* TraceEventDataSource::GetOrPrepareEventSink() {
   // to deal with these events later would break the event ordering that the
   // JSON traces rely on to merge 'A'/'B' events, as well as having to deal with
   // updating duration of 'X' events which haven't been added yet.
-  if (GetThreadIsInTraceEventTLS()->Get()) {
+  if (base::tracing::GetThreadIsInTraceEventTLS()->Get()) {
     return nullptr;
   }
 
-  AutoThreadLocalBoolean thread_is_in_trace_event(GetThreadIsInTraceEventTLS());
+  base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
+      base::tracing::GetThreadIsInTraceEventTLS());
 
   auto* thread_local_event_sink = static_cast<TrackEventThreadLocalEventSink*>(
       ThreadLocalEventSinkSlot()->Get());
@@ -844,8 +864,8 @@ void TraceEventDataSource::StartTracingInternal(
   if (startup_tracing_active) {
     // Binding startup buffers may cause tasks to be posted. Disable trace
     // events to avoid deadlocks due to reentrancy into tracing code.
-    AutoThreadLocalBoolean thread_is_in_trace_event(
-        GetThreadIsInTraceEventTLS());
+    base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
+        base::tracing::GetThreadIsInTraceEventTLS());
     producer->BindStartupTargetBuffer(session_id,
                                       data_source_config.target_buffer());
   } else {
@@ -1070,8 +1090,8 @@ void TraceEventDataSource::OnAddLegacyTraceEvent(
     base::trace_event::TraceEventHandle* handle) {
   auto* thread_local_event_sink = GetOrPrepareEventSink();
   if (thread_local_event_sink) {
-    AutoThreadLocalBoolean thread_is_in_trace_event(
-        GetThreadIsInTraceEventTLS());
+    base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
+        base::tracing::GetThreadIsInTraceEventTLS());
     thread_local_event_sink->AddLegacyTraceEvent(trace_event, handle);
   }
 }
@@ -1097,11 +1117,12 @@ void TraceEventDataSource::OnUpdateDuration(
     const base::TimeTicks& now,
     const base::ThreadTicks& thread_now,
     base::trace_event::ThreadInstructionCount thread_instruction_now) {
-  if (GetThreadIsInTraceEventTLS()->Get()) {
+  if (base::tracing::GetThreadIsInTraceEventTLS()->Get()) {
     return;
   }
 
-  AutoThreadLocalBoolean thread_is_in_trace_event(GetThreadIsInTraceEventTLS());
+  base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
+      base::tracing::GetThreadIsInTraceEventTLS());
 
   auto* thread_local_event_sink = static_cast<TrackEventThreadLocalEventSink*>(
       ThreadLocalEventSinkSlot()->Get());
@@ -1129,8 +1150,8 @@ void TraceEventDataSource::FlushCurrentThread() {
   if (thread_local_event_sink) {
     // Prevent any events from being emitted while we're deleting
     // the sink (like from the TraceWriter being PostTask'ed for deletion).
-    AutoThreadLocalBoolean thread_is_in_trace_event(
-        GetThreadIsInTraceEventTLS());
+    base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
+        base::tracing::GetThreadIsInTraceEventTLS());
     thread_local_event_sink->Flush();
     // TODO(oysteine): To support flushing while still recording, this needs to
     // be changed to not destruct the TLS object as that will emit any
@@ -1165,7 +1186,7 @@ void TraceEventDataSource::OnMetricsSampleCallback(
     base::HistogramBase::Sample sample) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("histogram_samples"), "HistogramSample",
-      TRACE_EVENT_SCOPE_THREAD, [&](perfetto::EventContext ctx) {
+      [&](perfetto::EventContext ctx) {
         bool privacy_filtering_enabled =
             TraceEventDataSource::GetInstance()->IsPrivacyFilteringEnabled();
         perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
@@ -1182,9 +1203,11 @@ void TraceEventDataSource::OnMetricsSampleCallback(
 void TraceEventDataSource::OnUserActionSampleCallback(
     const std::string& action,
     base::TimeTicks action_time) {
+  constexpr uint64_t kGlobalInstantTrackId = 0;
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("user_action_samples"), "UserAction",
-      TRACE_EVENT_SCOPE_GLOBAL, [&](perfetto::EventContext ctx) {
+      perfetto::Track::Global(kGlobalInstantTrackId),
+      [&](perfetto::EventContext ctx) {
         bool privacy_filtering_enabled =
             TraceEventDataSource::GetInstance()->IsPrivacyFilteringEnabled();
         perfetto::protos::pbzero::ChromeUserEvent* new_sample =
@@ -1233,7 +1256,8 @@ void TraceEventDataSource::ReturnTraceWriter(
 void TraceEventDataSource::EmitTrackDescriptor() {
   // Prevent reentrancy into tracing code (flushing the trace writer sends a
   // mojo message which can result in additional trace events).
-  AutoThreadLocalBoolean thread_is_in_trace_event(GetThreadIsInTraceEventTLS());
+  base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
+      base::tracing::GetThreadIsInTraceEventTLS());
 
   // It's safe to use this writer outside the lock because EmitTrackDescriptor()
   // is either called (a) when startup tracing is set up (from the main thread)
@@ -1286,6 +1310,8 @@ void TraceEventDataSource::EmitTrackDescriptor() {
 
   ProcessDescriptor* process = track_descriptor->set_process();
   process->set_pid(process_id);
+  process->set_start_timestamp_ns(
+      process_creation_time_ticks_.since_origin().InNanoseconds());
   if (!privacy_filtering_enabled && !process_name.empty()) {
     process->set_process_name(process_name);
   }
@@ -1316,6 +1342,9 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // TODO(eseckler): Set other fields on |chrome_process|.
 
   trace_packet = TracePacketHandle();
+
+  EmitRecurringUpdates(process_type);
+
   writer->Flush();
 }
 

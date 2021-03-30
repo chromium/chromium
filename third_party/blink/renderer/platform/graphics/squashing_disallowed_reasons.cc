@@ -37,6 +37,10 @@ constexpr SquashingDisallowedReasonStringMap
          "squashingTransformAncestorMismatch",
          "Cannot be squashed because this layer has a different transform "
          "ancestor than the squashing layer"},
+        {SquashingDisallowedReason::kPreserve3DSortingContextMismatch,
+         "squashingPreserve3DSortingContextMismatch",
+         "Cannot be squashed because this layer is part of a different 3-D"
+         "Rendering Context than the squashing layer"},
         {SquashingDisallowedReason::kFilterMismatch,
          "squashingFilterAncestorMismatch",
          "Cannot be squashed because this layer has a different filter "

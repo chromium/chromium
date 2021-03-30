@@ -8,8 +8,19 @@
  * linear UI range to a range of real values.  When |value| does not map exactly
  * to a tick mark, it interpolates to the nearest tick.
  */
+import '../settings_vars_css.js';
+
+import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.m.js';
+import {CrPolicyPrefBehavior} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
+import {assert} from '//resources/js/assert.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+
 Polymer({
   is: 'settings-slider',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [CrPolicyPrefBehavior],
 
@@ -19,7 +30,7 @@ Polymer({
 
     /**
      * Values corresponding to each tick.
-     * @type {!Array<cr_slider.SliderTick>|!Array<number>}
+     * @type {!Array<SliderTick>|!Array<number>}
      */
     ticks: {
       type: Array,
@@ -79,7 +90,7 @@ Polymer({
   },
 
   /**
-   * @param {number|cr_slider.SliderTick} tick
+   * @param {number|SliderTick} tick
    * @return {number|undefined}
    */
   getTickValue_(tick) {

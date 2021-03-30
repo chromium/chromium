@@ -100,7 +100,8 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
       bool request_audio) {
     FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
         {false /* expect_screens */, false /* expect_windows*/,
-         true /* expect_tabs */, request_audio /* expect_audio */,
+         true /* expect_tabs */, false /* expect_current_tab */,
+         request_audio /* expect_audio */,
          fake_desktop_media_id_response /* selected_source */}};
     picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
     blink::mojom::MediaStreamType audio_type =
@@ -136,10 +137,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void NotifyWebContentsDestroyed() {
-    access_handler_->Observe(
-        content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-        content::Source<content::WebContents>(web_contents()),
-        content::NotificationDetails());
+    access_handler_->WebContentsDestroyed(web_contents());
   }
 
   const DesktopCaptureAccessHandler::RequestsQueues& GetRequestQueues() {
@@ -207,8 +205,9 @@ TEST_F(DesktopCaptureAccessHandlerTest,
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
       {false /* expect_screens */, false /* expect_windows*/,
-       true /* expect_tabs */, false /* expect_audio */,
-       content::DesktopMediaID(), true /* cancelled */}};
+       true /* expect_tabs */, false /* expect_current_tab */,
+       false /* expect_audio */, content::DesktopMediaID(),
+       true /* cancelled */}};
   picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
   content::MediaStreamRequest request(
       render_process_id, render_frame_id, page_request_id,
@@ -238,8 +237,9 @@ TEST_F(DesktopCaptureAccessHandlerTest,
 TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceWebContentsDestroyed) {
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
       {false /* expect_screens */, false /* expect_windows*/,
-       true /* expect_tabs */, false /* expect_audio */,
-       content::DesktopMediaID(), true /* cancelled */}};
+       true /* expect_tabs */, false /* expect_current_tab */,
+       false /* expect_audio */, content::DesktopMediaID(),
+       true /* cancelled */}};
   picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
   content::MediaStreamRequest request(
       0, 0, 0, GURL("http://origin/"), false, blink::MEDIA_DEVICE_UPDATE,
@@ -263,12 +263,14 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceWebContentsDestroyed) {
 TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceMultipleRequests) {
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
       {false /* expect_screens */, false /* expect_windows*/,
-       true /* expect_tabs */, false /* expect_audio */,
+       true /* expect_tabs */, false /* expect_current_tab */,
+       false /* expect_audio */,
        content::DesktopMediaID(
            content::DesktopMediaID::TYPE_SCREEN,
            content::DesktopMediaID::kFakeId) /* selected_source */},
       {false /* expect_screens */, false /* expect_windows*/,
-       true /* expect_tabs */, false /* expect_audio */,
+       true /* expect_tabs */, false /* expect_current_tab */,
+       false /* expect_audio */,
        content::DesktopMediaID(
            content::DesktopMediaID::TYPE_WINDOW,
            content::DesktopMediaID::kNullId) /* selected_source */}};
@@ -350,7 +352,7 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessSuccess) {
       switches::kAllowHttpScreenCapture);
 
   extensions::ExtensionBuilder extensionBuilder("Component Extension");
-  extensionBuilder.SetLocation(extensions::Manifest::COMPONENT);
+  extensionBuilder.SetLocation(extensions::mojom::ManifestLocation::kComponent);
   auto extension = extensionBuilder.Build();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -375,7 +377,7 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessSuccess) {
 TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
   // Setup Data Leak Prevention restriction.
   policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::DlpContentManager::SetDlpContentManagerForTesting(
+  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager_(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(testing::_))
       .Times(1)
@@ -387,7 +389,7 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
       switches::kAllowHttpScreenCapture);
 
   extensions::ExtensionBuilder extensionBuilder("Component Extension");
-  extensionBuilder.SetLocation(extensions::Manifest::COMPONENT);
+  extensionBuilder.SetLocation(extensions::mojom::ManifestLocation::kComponent);
   auto extension = extensionBuilder.Build();
 
   std::unique_ptr<aura::Window> primary_root_window =
@@ -404,13 +406,12 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
 
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
   EXPECT_EQ(0u, devices.size());
-  policy::DlpContentManager::ResetDlpContentManagerForTesting();
 }
 
 TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
   // Setup Data Leak Prevention restriction.
   policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::DlpContentManager::SetDlpContentManagerForTesting(
+  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager_(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(testing::_))
       .Times(1)
@@ -434,6 +435,5 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
 
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
   EXPECT_EQ(0u, devices.size());
-  policy::DlpContentManager::ResetDlpContentManagerForTesting();
 }
 #endif

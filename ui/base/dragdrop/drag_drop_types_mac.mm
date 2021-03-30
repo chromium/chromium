@@ -4,7 +4,7 @@
 
 #include "ui/base/dragdrop/drag_drop_types.h"
 
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 
 namespace ui {
 

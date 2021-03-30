@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/input_method/input_method_configuration.h"
@@ -92,6 +93,7 @@ class TestObserver : public InputMethodEngineBase::Observer {
     engine_id_ = engine_id;
   }
   void OnFocus(
+      int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {
     calls_bitmap_ |= ONFOCUS;
   }
@@ -109,7 +111,7 @@ class TestObserver : public InputMethodEngineBase::Observer {
   void OnMenuItemActivated(const std::string& engine_id,
                            const std::string& menu_id) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
-                                const base::string16& text,
+                                const std::u16string& text,
                                 int cursor_pos,
                                 int anchor_pos,
                                 int offset) override {}
@@ -315,15 +317,15 @@ TEST_F(InputMethodEngineTest, TestHistograms) {
   std::string error;
   base::HistogramTester histograms;
   engine_->SetComposition(context, "test", 0, 0, 0, segments, nullptr);
-  engine_->CommitText(context, "input", &error);
+  engine_->CommitText(context, u"input", &error);
   engine_->SetComposition(context, "test", 0, 0, 0, segments, nullptr);
   engine_->CommitText(context,
-                      "\xE5\x85\xA5\xE5\x8A\x9B",  // 2 UTF-8 characters
+                      u"你好",  // 2 UTF-16 code units
                       &error);
   engine_->SetComposition(context, "test", 0, 0, 0, segments, nullptr);
-  engine_->CommitText(context, "input\xE5\x85\xA5\xE5\x8A\x9B", &error);
+  engine_->CommitText(context, u"input你好", &error);
   // This one shouldn't be counted because there was no composition.
-  engine_->CommitText(context, "abc", &error);
+  engine_->CommitText(context, u"abc", &error);
   histograms.ExpectTotalCount("InputMethod.CommitLength", 4);
   histograms.ExpectBucketCount("InputMethod.CommitLength", 5, 1);
   histograms.ExpectBucketCount("InputMethod.CommitLength", 2, 1);
@@ -380,10 +382,10 @@ TEST_F(InputMethodEngineTest, TestDisableAfterSetCompositionRange) {
   const int context = engine_->GetContextIdForTesting();
 
   std::string error;
-  engine_->CommitText(context, "text", &error);
+  engine_->CommitText(context, u"text", &error);
   EXPECT_EQ("", error);
   EXPECT_EQ(1, mock_ime_input_context_handler_->commit_text_call_count());
-  EXPECT_EQ("text", mock_ime_input_context_handler_->last_commit_text());
+  EXPECT_EQ(u"text", mock_ime_input_context_handler_->last_commit_text());
 
   // Change composition range to include "text".
   engine_->chromeos::InputMethodEngineBase::SetCompositionRange(context, 0, 4,
@@ -395,7 +397,7 @@ TEST_F(InputMethodEngineTest, TestDisableAfterSetCompositionRange) {
 
   EXPECT_EQ("", error);
   EXPECT_EQ(2, mock_ime_input_context_handler_->commit_text_call_count());
-  EXPECT_EQ("text", mock_ime_input_context_handler_->last_commit_text());
+  EXPECT_EQ(u"text", mock_ime_input_context_handler_->last_commit_text());
 }
 
 TEST_F(InputMethodEngineTest, KeyEventHandledRecordsLatencyHistogram) {

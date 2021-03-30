@@ -98,38 +98,6 @@ class PostTaskTestWithExecutor : public ::testing::Test {
   test::TaskEnvironment task_environment_;
 };
 
-TEST_F(PostTaskTestWithExecutor, PostTaskToThreadPool) {
-  EXPECT_TRUE(PostTask(FROM_HERE, {ThreadPool(), MayBlock()}, DoNothing()));
-  EXPECT_FALSE(executor_.runner()->HasPendingTask());
-
-  EXPECT_TRUE(PostTask(FROM_HERE, {ThreadPool()}, DoNothing()));
-  EXPECT_FALSE(executor_.runner()->HasPendingTask());
-
-  // Task runners without extension should not be the executor's.
-  auto task_runner = CreateTaskRunner({ThreadPool()});
-  EXPECT_NE(executor_.runner(), task_runner);
-  auto sequenced_task_runner = CreateSequencedTaskRunner({ThreadPool()});
-  EXPECT_NE(executor_.runner(), sequenced_task_runner);
-  auto single_thread_task_runner = CreateSingleThreadTaskRunner({ThreadPool()});
-  EXPECT_NE(executor_.runner(), single_thread_task_runner);
-#if defined(OS_WIN)
-  auto comsta_task_runner = CreateCOMSTATaskRunner({ThreadPool()});
-  EXPECT_NE(executor_.runner(), comsta_task_runner);
-#endif  // defined(OS_WIN)
-
-  // Thread pool task runners should not be the executor's.
-  task_runner = CreateTaskRunner({ThreadPool()});
-  EXPECT_NE(executor_.runner(), task_runner);
-  sequenced_task_runner = CreateSequencedTaskRunner({ThreadPool()});
-  EXPECT_NE(executor_.runner(), sequenced_task_runner);
-  single_thread_task_runner = CreateSingleThreadTaskRunner({ThreadPool()});
-  EXPECT_NE(executor_.runner(), single_thread_task_runner);
-#if defined(OS_WIN)
-  comsta_task_runner = CreateCOMSTATaskRunner({ThreadPool()});
-  EXPECT_NE(executor_.runner(), comsta_task_runner);
-#endif  // defined(OS_WIN)
-}
-
 TEST_F(PostTaskTestWithExecutor, PostTaskToTaskExecutor) {
   // Tasks with extension should go to the executor.
   {
@@ -174,56 +142,6 @@ TEST_F(PostTaskTestWithExecutor, PostTaskToTaskExecutor) {
     EXPECT_EQ(executor_.runner(), comsta_task_runner);
 #endif  // defined(OS_WIN)
   }
-}
-
-TEST_F(PostTaskTestWithExecutor,
-       ThreadPoolTaskRunnerGetTaskExecutorForCurrentThread) {
-  auto task_runner = CreateTaskRunner({ThreadPool()});
-  RunLoop run_loop;
-
-  EXPECT_TRUE(task_runner->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
-        // We don't have an executor for a ThreadPool task runner becuse they
-        // are for one shot tasks.
-        EXPECT_THAT(GetTaskExecutorForCurrentThread(), IsNull());
-        run_loop.Quit();
-      })));
-
-  run_loop.Run();
-}
-
-TEST_F(PostTaskTestWithExecutor,
-       ThreadPoolSequencedTaskRunnerGetTaskExecutorForCurrentThread) {
-  auto sequenced_task_runner = CreateSequencedTaskRunner({ThreadPool()});
-  RunLoop run_loop;
-
-  EXPECT_TRUE(sequenced_task_runner->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
-        EXPECT_THAT(GetTaskExecutorForCurrentThread(), NotNull());
-        run_loop.Quit();
-      })));
-
-  run_loop.Run();
-}
-
-TEST_F(PostTaskTestWithExecutor,
-       ThreadPoolSingleThreadTaskRunnerGetTaskExecutorForCurrentThread) {
-  auto single_thread_task_runner = CreateSingleThreadTaskRunner({ThreadPool()});
-  RunLoop run_loop;
-
-  EXPECT_TRUE(single_thread_task_runner->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
-        EXPECT_THAT(GetTaskExecutorForCurrentThread(), NotNull());
-        run_loop.Quit();
-      })));
-
-  run_loop.Run();
-}
-
-TEST_F(PostTaskTestWithExecutor, RegisterExecutorTwice) {
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
-  EXPECT_DCHECK_DEATH(
-      RegisterTaskExecutor(TestTaskTraitsExtension::kExtensionId, &executor_));
 }
 
 namespace {

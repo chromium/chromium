@@ -27,17 +27,23 @@ group("resources") {
     ":grey_700_color",
     ":grey_800_color",
     ":grey_900_color",
+    ":grouped_primary_background_color",
+    ":grouped_secondary_background_color",
     ":mdc_ink_color",
     ":mdc_secondary_ink_color",
     ":placeholder_image_tint_color",
+    ":primary_background_color",
     ":red_color",
     ":red_dark_color",
     ":scrim_background_color",
     ":secondary_background_color",
+    ":secondary_background_dark_color",
     ":separator_color",
     ":solid_button_text_color",
     ":table_view_row_highlight_color",
     ":table_view_row_highlight_dark_color",
+    ":tertiary_background_color",
+    ":tertiary_background_dark_color",
     ":text_primary_color",
     ":text_primary_dark_color",
     ":text_secondary_color",
@@ -176,6 +182,14 @@ colorset("table_view_row_highlight_dark_color") {
   sources = [ "table_view_row_highlight_dark_color.colorset/Contents.json" ]
 }
 
+colorset("tertiary_background_color") {
+  sources = [ "tertiary_background_color.colorset/Contents.json" ]
+}
+
+colorset("tertiary_background_dark_color") {
+  sources = [ "tertiary_background_dark_color.colorset/Contents.json" ]
+}
+
 colorset("text_primary_color") {
   sources = [ "text_primary_color.colorset/Contents.json" ]
 }
@@ -222,4 +236,20 @@ colorset("toolbar_shadow_color") {
 
 colorset("secondary_background_color") {
   sources = [ "secondary_background_color.colorset/Contents.json" ]
+}
+
+colorset("secondary_background_dark_color") {
+  sources = [ "secondary_background_dark_color.colorset/Contents.json" ]
+}
+
+colorset("primary_background_color") {
+  sources = [ "primary_background_color.colorset/Contents.json" ]
+}
+
+colorset("grouped_secondary_background_color") {
+  sources = [ "grouped_secondary_background_color.colorset/Contents.json" ]
+}
+
+colorset("grouped_primary_background_color") {
+  sources = [ "grouped_primary_background_color.colorset/Contents.json" ]
 }

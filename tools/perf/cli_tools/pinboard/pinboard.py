@@ -40,6 +40,7 @@ MEASUREMENTS = set([
     'Optimize-Background:duration',
     'Optimize:duration',
     'RunsPerMinute',
+    'Score',
     'Total-Main-Thread:duration',
     'Total:duration',
     'V8-Only-Main-Thread:duration',
@@ -86,7 +87,7 @@ ACTIVE_STORIES = set([
 
     # v8.browsing_desktop.
     'browse:news:nytimes:2020',
-    'browse:news:flipboard:2018',
+    'browse:news:flipboard:2020',
     'browse:social:facebook_infinite_scroll:2018',
     'browse:tools:sheets:2019',
     'browse:media:tumblr:2018',
@@ -95,15 +96,18 @@ ACTIVE_STORIES = set([
     'browse:tech:discourse_infinite_scroll:2018',
     'browse:social:twitter:2018',
     'browse:social:tumblr_infinite_scroll:2018',
-    'browse:media:googleplaystore:2018',
+    'browse:media:googleplaystore:2021',
     'browse:search:google:2020',
     'browse:news:cnn:2018',
     'browse:news:reddit:2020',
-    'browse:search:google_india:2018',
+    'browse:search:google_india:2021',
     'browse:media:youtubetv:2019',
 
     # Speedometer2.
     'Speedometer2',
+
+    # JetStream2.
+    'JetStream2',
 ])
 
 
@@ -129,10 +133,12 @@ def StartPinpointJobs(state, date):
     logging.info(output)
     assert 'https://pinpoint' in output
     bot = config['configuration']
+    patch = config['patch']
     item['jobs'].append({
         'id': output.split('/')[-1],
         'status': 'queued',
-        'bot': bot
+        'bot': bot,
+        'patch': patch,
     })
   state.append(item)
   state.sort(key=lambda p: p['timestamp'])  # Keep items sorted by date.
@@ -324,13 +330,16 @@ def GetRevisionResults(item):
       df['timestamp'] - pd.DateOffset(years=1))
 
   df['bot'] = 'unknown'
+  df['patch'] = 'unknown'
   for j in item['jobs']:
     bot = j.get('bot', 'unknown')
+    patch = j.get('patch', 'unknown')
     df.loc[df['job_id'].str.contains(str(j['id'])), 'bot'] = bot
+    df.loc[df['job_id'].str.contains(str(j['id'])), 'patch'] = patch
 
   return df[[
-      'revision', 'timestamp', 'bot', 'label', 'benchmark', 'name', 'mean',
-      'count'
+      'revision', 'timestamp', 'bot', 'patch', 'label', 'benchmark', 'name',
+      'mean', 'count'
   ]]
 
 

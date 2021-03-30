@@ -43,6 +43,7 @@
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -124,7 +125,7 @@ TestingPlatformSupport::GetBrowserInterfaceBroker() {
 }
 
 void TestingPlatformSupport::RunUntilIdle() {
-  ThreadState::HeapPointersOnStackScope scan_stack(ThreadState::Current());
+  HeapPointersOnStackScope scan_stack(ThreadState::Current());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -176,7 +177,7 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
 
   ProcessHeap::Init();
   ThreadState::AttachMainThread();
-  blink::ThreadState::Current()->DetachFromIsolate();
+  blink::ThreadState::Current()->EnableDetachedGarbageCollectionsForTesting();
   http_names::Init();
   fetch_initiator_type_names::Init();
 

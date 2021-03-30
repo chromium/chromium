@@ -11,13 +11,12 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
-#include "base/observer_list_threadsafe.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chromeos/components/sensors/sensor_hal_dispatcher.h"
+#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 
 namespace ash {
 
@@ -27,96 +26,30 @@ namespace {
 constexpr base::TimeDelta kDelayReconnect =
     base::TimeDelta::FromMilliseconds(1000);
 
+// Timeout for the late-present devices: 10 seconds.
+constexpr base::TimeDelta kNewDevicesTimeout =
+    base::TimeDelta::FromMilliseconds(10000);
+
 }  // namespace
 
-AccelerometerProviderMojo::AccelerometerProviderMojo()
-    : update_(new AccelerometerUpdate()) {}
+AccelerometerProviderMojo::AccelerometerProviderMojo() = default;
 
 void AccelerometerProviderMojo::PrepareAndInitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This function should only be called once.
-  DCHECK(!task_runner_);
 
-  task_runner_ = base::SequencedTaskRunnerHandle::Get();
-
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AccelerometerProviderMojo::RegisterSensorClient,
-                     base::Unretained(this)));
+  RegisterSensorClient();
 }
 
-void AccelerometerProviderMojo::AddObserver(
-    AccelerometerReader::Observer* observer) {
+void AccelerometerProviderMojo::TriggerRead() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(task_runner_);
-
-  observers_.AddObserver(observer);
-
-  one_time_read_ = true;
-
-  if (accelerometer_read_on_)
-    return;
-
-  for (auto& accelerometer : accelerometers_) {
-    if (!accelerometer.second.samples_observer.get())
-      continue;
-
-    accelerometer.second.samples_observer->SetEnabled(true);
-  }
+  if (GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::SUPPORTED)
+    EnableAccelerometerReading();
 }
 
-void AccelerometerProviderMojo::RemoveObserver(
-    AccelerometerReader::Observer* observer) {
+void AccelerometerProviderMojo::CancelRead() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(task_runner_);
-
-  observers_.RemoveObserver(observer);
-}
-
-void AccelerometerProviderMojo::StartListenToTabletModeController() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
-}
-
-void AccelerometerProviderMojo::StopListenToTabletModeController() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-}
-
-void AccelerometerProviderMojo::SetEmitEvents(bool emit_events) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  emit_events_ = emit_events;
-}
-
-void AccelerometerProviderMojo::OnTabletPhysicalStateChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Wait until the existence of the driver is determined.
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::UNKNOWN) {
-    pending_on_tablet_physical_state_changed_ = true;
-    return;
-  }
-
-  // When CrOS EC lid angle driver is not present, accelerometer read is always
-  // ON and can't be tuned. Thus AccelerometerProviderMojo no longer listens
-  // to tablet mode event.
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::NOT_SUPPORTED) {
-    tablet_mode_controller->RemoveObserver(this);
-    return;
-  }
-
-  // Auto rotation is turned on when the device is physically used as a tablet
-  // (i.e. flipped or detached), regardless of the UI state (i.e. whether tablet
-  // mode is turned on or off).
-  const bool is_auto_rotation_on =
-      tablet_mode_controller->is_in_tablet_physical_state();
-
-  task_runner_->PostNonNestableTask(
-      FROM_HERE,
-      is_auto_rotation_on
-          ? base::BindOnce(&AccelerometerProviderMojo::TriggerRead, this)
-          : base::BindOnce(&AccelerometerProviderMojo::CancelRead, this));
+  if (GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::SUPPORTED)
+    DisableAccelerometerReading();
 }
 
 void AccelerometerProviderMojo::SetUpChannel(
@@ -128,37 +61,58 @@ void AccelerometerProviderMojo::SetUpChannel(
     return;
   }
 
-  sensor_service_remote_.Bind(std::move(pending_remote), task_runner_);
-  sensor_service_remote_.set_disconnect_handler(
-      base::BindOnce(&AccelerometerProviderMojo::OnSensorServiceDisconnect,
-                     base::Unretained(this)));
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::UNKNOWN) {
+  sensor_service_remote_.Bind(std::move(pending_remote));
+  sensor_service_remote_.set_disconnect_handler(base::BindOnce(
+      &AccelerometerProviderMojo::OnSensorServiceDisconnect, this));
+  SetNewDevicesObserver();
+
+  if (GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::UNKNOWN) {
     sensor_service_remote_->GetDeviceIds(
         chromeos::sensors::mojom::DeviceType::ANGL,
         base::BindOnce(&AccelerometerProviderMojo::GetLidAngleIdsCallback,
-                       base::Unretained(this)));
+                       this));
   }
 
   sensor_service_remote_->GetDeviceIds(
       chromeos::sensors::mojom::DeviceType::ACCEL,
       base::BindOnce(&AccelerometerProviderMojo::GetAccelerometerIdsCallback,
-                     base::Unretained(this)));
+                     this));
 }
 
-void AccelerometerProviderMojo::TriggerRead() {
+void AccelerometerProviderMojo::OnNewDeviceAdded(
+    int32_t iio_device_id,
+    const std::vector<chromeos::sensors::mojom::DeviceType>& types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED)
-    EnableAccelerometerReading();
+  DCHECK_NE(initialization_state_, MojoState::ANGL_LID);
+
+  for (const auto& type : types) {
+    if (type == chromeos::sensors::mojom::DeviceType::ACCEL) {
+      if (initialization_state_ == MojoState::LID_BASE) {
+        // Don't need a new accelerometer.
+        continue;
+      }
+
+      if (accelerometers_.find(iio_device_id) != accelerometers_.end())
+        continue;
+
+      RegisterAccelerometerWithId(iio_device_id);
+    } else if (type == chromeos::sensors::mojom::DeviceType::ANGL) {
+      SetECLidAngleDriverSupported();
+    }
+  }
 }
 
-void AccelerometerProviderMojo::CancelRead() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED)
-    DisableAccelerometerReading();
-}
-
-State AccelerometerProviderMojo::GetInitializationStateForTesting() const {
+MojoState AccelerometerProviderMojo::GetInitializationStateForTesting() const {
   return initialization_state_;
+}
+
+bool AccelerometerProviderMojo::ShouldDelayOnTabletPhysicalStateChanged() {
+  if (GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::UNKNOWN) {
+    pending_on_tablet_physical_state_changed_ = true;
+    return true;
+  }
+
+  return false;
 }
 
 AccelerometerProviderMojo::AccelerometerData::AccelerometerData() = default;
@@ -169,12 +123,16 @@ AccelerometerProviderMojo::~AccelerometerProviderMojo() = default;
 void AccelerometerProviderMojo::RegisterSensorClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
-      sensor_hal_client_.BindNewPipeAndPassRemote());
+  auto* dispatcher = chromeos::sensors::SensorHalDispatcher::GetInstance();
+  if (!dispatcher) {
+    // In unit tests, SensorHalDispatcher is not initialized.
+    return;
+  }
 
-  sensor_hal_client_.set_disconnect_handler(
-      base::BindOnce(&AccelerometerProviderMojo::OnSensorHalClientFailure,
-                     base::Unretained(this)));
+  dispatcher->RegisterClient(sensor_hal_client_.BindNewPipeAndPassRemote());
+
+  sensor_hal_client_.set_disconnect_handler(base::BindOnce(
+      &AccelerometerProviderMojo::OnSensorHalClientFailure, this));
 }
 
 void AccelerometerProviderMojo::OnSensorHalClientFailure() {
@@ -185,10 +143,9 @@ void AccelerometerProviderMojo::OnSensorHalClientFailure() {
   ResetSensorService();
   sensor_hal_client_.reset();
 
-  task_runner_->PostDelayedTask(
+  ui_task_runner_->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&AccelerometerProviderMojo::RegisterSensorClient,
-                     base::Unretained(this)),
+      base::BindOnce(&AccelerometerProviderMojo::RegisterSensorClient, this),
       kDelayReconnect);
 }
 
@@ -207,33 +164,221 @@ void AccelerometerProviderMojo::ResetSensorService() {
     accelerometer.second.remote.reset();
     accelerometer.second.samples_observer.reset();
   }
+
+  new_devices_observer_.reset();
   sensor_service_remote_.reset();
 }
 
-void AccelerometerProviderMojo::GetLidAngleIdsCallback(
-    const std::vector<int32_t>& lid_angle_ids) {
+void AccelerometerProviderMojo::SetECLidAngleDriverSupported() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(ec_lid_angle_driver_status_, ECLidAngleDriverStatus::UNKNOWN);
 
-  if (!lid_angle_ids.empty()) {
-    ec_lid_angle_driver_status_ = ECLidAngleDriverStatus::SUPPORTED;
-  } else {
-    ec_lid_angle_driver_status_ = ECLidAngleDriverStatus::NOT_SUPPORTED;
-    EnableAccelerometerReading();
+  if (GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::SUPPORTED)
+    return;
+
+  DCHECK_NE(initialization_state_, MojoState::ANGL);
+  DCHECK_NE(initialization_state_, MojoState::ANGL_LID);
+
+  if (GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::NOT_SUPPORTED) {
+    // |GetECLidAngleDriverStatus()| will be set to NOT_SUPPORTED when waiting
+    // for new devices is timed out. However, this function may still be called
+    // after the timeout and when that happens, we'll need to overwrite the
+    // status and revert some changes.
+    LOG(WARNING) << "Overwriting ECLidAngleDriverStatus from NOT_SUPPORTED "
+                    "to SUPPORTED";
+
+    // Restarts to listen to TabletPhysicalStateChanged from
+    // TabletModeController. Allows the enabled samples when setting
+    // ECLidAngleDriverStatus to SUPPORTED.
+    StartListenToTabletModeController();
   }
+
+  SetECLidAngleDriverStatus(ECLidAngleDriverStatus::SUPPORTED);
+
+  if (pending_on_tablet_physical_state_changed_)
+    OnTabletPhysicalStateChanged();
+
+  UpdateStateWithECLidAngleDriverSupported();
+}
+
+void AccelerometerProviderMojo::UpdateStateWithECLidAngleDriverSupported() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (initialization_state_) {
+    case MojoState::INITIALIZING:
+      initialization_state_ = MojoState::ANGL;
+      break;
+
+    case MojoState::BASE: {
+      initialization_state_ = MojoState::ANGL;
+
+      // Ignores the base-accelerometer as it's no longer needed for the only
+      // use case: calculating the angle between the lid and the base, which is
+      // substituted by the driver.
+      auto it = location_to_accelerometer_id_.find(
+          ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+      DCHECK(it != location_to_accelerometer_id_.end());
+      IgnoreAccelerometer(it->second);
+      break;
+    }
+
+    case MojoState::LID:
+      initialization_state_ = MojoState::ANGL_LID;
+      break;
+
+    case MojoState::LID_BASE: {
+      initialization_state_ = MojoState::ANGL_LID;
+
+      // Ignores the base-accelerometer as it's no longer needed for the only
+      // use case: calculating the angle between the lid and the base, which is
+      // substituted by the driver.
+      auto it = location_to_accelerometer_id_.find(
+          ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+      DCHECK(it != location_to_accelerometer_id_.end());
+      IgnoreAccelerometer(it->second);
+      break;
+    }
+
+    default:
+      LOG(FATAL) << "Unexpected state: "
+                 << static_cast<int32_t>(initialization_state_);
+      break;
+  }
+
+  if (initialization_state_ == MojoState::ANGL_LID)
+    new_devices_observer_.reset();
+}
+
+void AccelerometerProviderMojo::UpdateStateWithLidAccelerometer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (initialization_state_) {
+    case MojoState::INITIALIZING:
+      initialization_state_ = MojoState::LID;
+      break;
+
+    case MojoState::BASE: {
+      initialization_state_ = MojoState::LID_BASE;
+
+      auto it = location_to_accelerometer_id_.find(
+          ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+      DCHECK(it != location_to_accelerometer_id_.end());
+      if (accelerometers_[it->second].samples_observer.get())
+        accelerometers_[it->second].samples_observer->SetEnabled(true);
+
+      break;
+    }
+
+    case MojoState::ANGL:
+      initialization_state_ = MojoState::ANGL_LID;
+      new_devices_observer_.reset();
+      break;
+
+    default:
+      LOG(FATAL) << "Unexpected state: "
+                 << static_cast<int32_t>(initialization_state_);
+      break;
+  }
+}
+
+void AccelerometerProviderMojo::UpdateStateWithBaseAccelerometer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (initialization_state_) {
+    case MojoState::INITIALIZING:
+      initialization_state_ = MojoState::BASE;
+      break;
+
+    case MojoState::LID:
+      initialization_state_ = MojoState::LID_BASE;
+      break;
+
+    case MojoState::ANGL:
+    case MojoState::ANGL_LID: {
+      // Ignores the base-accelerometer as it's no longer needed for the only
+      // use case: calculating the angle between the lid and the base, which is
+      // substituted by the driver.
+      auto it = location_to_accelerometer_id_.find(
+          ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+      DCHECK(it != location_to_accelerometer_id_.end());
+      IgnoreAccelerometer(it->second);
+      break;
+    }
+
+    default:
+      LOG(FATAL) << "Unexpected state: "
+                 << static_cast<int32_t>(initialization_state_);
+      break;
+  }
+}
+
+void AccelerometerProviderMojo::SetNewDevicesObserver() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(sensor_service_remote_.is_bound());
+  DCHECK(!new_devices_observer_.is_bound());
+
+  if (initialization_state_ == MojoState::ANGL_LID) {
+    // Don't need any further devices.
+    return;
+  }
+
+  sensor_service_remote_->RegisterNewDevicesObserver(
+      new_devices_observer_.BindNewPipeAndPassRemote());
+  new_devices_observer_.set_disconnect_handler(base::BindOnce(
+      &AccelerometerProviderMojo::OnNewDevicesObserverDisconnect, this));
+
+  ui_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AccelerometerProviderMojo::OnNewDevicesTimeout, this),
+      kNewDevicesTimeout);
+}
+
+void AccelerometerProviderMojo::AccelerometerProviderMojo::
+    OnNewDevicesObserverDisconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  LOG(ERROR)
+      << "OnNewDevicesObserverDisconnect, resetting SensorService as IIO "
+         "Service should be destructed and waiting for the relaunch of it.";
+  ResetSensorService();
+}
+
+void AccelerometerProviderMojo::OnNewDevicesTimeout() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!sensor_service_remote_.is_bound()) {
+    // Skips and waits for the next timeout for the case that IIO Service
+    // disconnects after the first connection.
+    return;
+  }
+
+  if (GetECLidAngleDriverStatus() != ECLidAngleDriverStatus::UNKNOWN)
+    return;
+
+  if (initialization_state_ == MojoState::INITIALIZING ||
+      initialization_state_ == MojoState::BASE ||
+      initialization_state_ == MojoState::ANGL) {
+    LOG(ERROR) << "Unfinished initialization after timeout: "
+               << static_cast<int32_t>(initialization_state_);
+  }
+
+  SetECLidAngleDriverStatus(ECLidAngleDriverStatus::NOT_SUPPORTED);
+  EnableAccelerometerReading();
 
   if (pending_on_tablet_physical_state_changed_)
     OnTabletPhysicalStateChanged();
 }
 
+void AccelerometerProviderMojo::GetLidAngleIdsCallback(
+    const std::vector<int32_t>& lid_angle_ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!lid_angle_ids.empty())
+    SetECLidAngleDriverSupported();
+}
+
 void AccelerometerProviderMojo::GetAccelerometerIdsCallback(
     const std::vector<int32_t>& accelerometer_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (accelerometer_ids.empty()) {
-    FailedToInitialize();
-    return;
-  }
 
   for (int32_t id : accelerometer_ids)
     RegisterAccelerometerWithId(id);
@@ -262,8 +407,7 @@ void AccelerometerProviderMojo::RegisterAccelerometerWithId(int32_t id) {
   sensor_service_remote_->GetDevice(
       id, accelerometer.remote.BindNewPipeAndPassReceiver());
   accelerometer.remote.set_disconnect_handler(base::BindOnce(
-      &AccelerometerProviderMojo::OnAccelerometerRemoteDisconnect,
-      base::Unretained(this), id));
+      &AccelerometerProviderMojo::OnAccelerometerRemoteDisconnect, this, id));
 
   std::vector<std::string> attr_names;
   if (!accelerometer.location.has_value())
@@ -271,16 +415,24 @@ void AccelerometerProviderMojo::RegisterAccelerometerWithId(int32_t id) {
   if (!accelerometer.scale.has_value())
     attr_names.push_back(chromeos::sensors::mojom::kScale);
 
-  if (!attr_names.empty()) {
-    accelerometer.remote->GetAttributes(
-        attr_names,
-        base::BindOnce(&AccelerometerProviderMojo::GetAttributesCallback,
-                       base::Unretained(this), id));
-  } else {
+  if (attr_names.empty()) {
     // Create the observer directly if the attributes have already been
     // retrieved.
     CreateAccelerometerSamplesObserver(id);
+
+    return;
   }
+
+  if (initialization_state_ == MojoState::ANGL_LID ||
+      initialization_state_ == MojoState::LID_BASE) {
+    // No need of new accelerometers.
+    return;
+  }
+
+  accelerometer.remote->GetAttributes(
+      attr_names,
+      base::BindOnce(&AccelerometerProviderMojo::GetAttributesCallback, this,
+                     id));
 }
 
 void AccelerometerProviderMojo::OnAccelerometerRemoteDisconnect(int32_t id) {
@@ -329,10 +481,10 @@ void AccelerometerProviderMojo::GetAttributesCallback(
 
     if (location_to_accelerometer_id_.find(source) !=
         location_to_accelerometer_id_.end()) {
-      LOG(ERROR) << "Duplicated location source " << source
-                 << " of accel id: " << id
-                 << ", and accel id: " << location_to_accelerometer_id_[source];
-      FailedToInitialize();
+      LOG(WARNING) << "Duplicated location source " << source
+                   << " of accel id: " << id << ", and accel id: "
+                   << location_to_accelerometer_id_[source];
+      IgnoreAccelerometer(id);
       return;
     }
 
@@ -360,7 +512,18 @@ void AccelerometerProviderMojo::GetAttributesCallback(
     ++index;
   }
 
-  CheckInitialization();
+  if (accelerometer.location == ACCELEROMETER_SOURCE_SCREEN) {
+    UpdateStateWithLidAccelerometer();
+  } else {
+    DCHECK_EQ(accelerometer.location.value(),
+              ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+    UpdateStateWithBaseAccelerometer();
+  }
+
+  if (accelerometer.ignored) {
+    // base-accelerometer is not needed if EC Lid Angle Driver is supported.
+    return;
+  }
 
   CreateAccelerometerSamplesObserver(id);
 }
@@ -373,54 +536,7 @@ void AccelerometerProviderMojo::IgnoreAccelerometer(int32_t id) {
   LOG(WARNING) << "Ignoring accel with id: " << id;
   accelerometer.ignored = true;
   accelerometer.remote.reset();
-
-  CheckInitialization();
-}
-
-void AccelerometerProviderMojo::CheckInitialization() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(ec_lid_angle_driver_status_, ECLidAngleDriverStatus::UNKNOWN);
-
-  if (initialization_state_ != State::INITIALIZING)
-    return;
-
-  bool has_accelerometer_lid = false;
-  for (const auto& accelerometer : accelerometers_) {
-    if (accelerometer.second.ignored) {
-      if (!accelerometer.second.location.has_value())
-        continue;
-
-      if (accelerometer.second.location == ACCELEROMETER_SOURCE_SCREEN ||
-          ec_lid_angle_driver_status_ ==
-              ECLidAngleDriverStatus::NOT_SUPPORTED) {
-        // This ignored accelerometer is essential.
-        FailedToInitialize();
-        return;
-      }
-
-      continue;
-    }
-
-    if (!accelerometer.second.scale.has_value() ||
-        !accelerometer.second.location.has_value())
-      return;
-
-    if (accelerometer.second.location == ACCELEROMETER_SOURCE_SCREEN)
-      has_accelerometer_lid = true;
-    else
-      has_accelerometer_base_ = true;
-  }
-
-  if (has_accelerometer_lid) {
-    if (!has_accelerometer_base_) {
-      LOG(WARNING)
-          << "Initialization succeeded without an accelerometer on the base";
-    }
-
-    initialization_state_ = State::SUCCESS;
-  } else {
-    FailedToInitialize();
-  }
+  accelerometer.samples_observer.reset();
 }
 
 void AccelerometerProviderMojo::CreateAccelerometerSamplesObserver(int32_t id) {
@@ -432,7 +548,7 @@ void AccelerometerProviderMojo::CreateAccelerometerSamplesObserver(int32_t id) {
   DCHECK(accelerometer.scale.has_value() && accelerometer.location.has_value());
 
   if (accelerometer.location == ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD &&
-      ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED) {
+      GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::SUPPORTED) {
     // Skipping as it's only needed if lid-angle is not supported.
     // |GetLidAngleIdsCallback| will call this function with this |id| again if
     // it's found not supported.
@@ -443,20 +559,32 @@ void AccelerometerProviderMojo::CreateAccelerometerSamplesObserver(int32_t id) {
       std::make_unique<AccelerometerSamplesObserver>(
           id, std::move(accelerometer.remote), accelerometer.scale.value(),
           base::BindRepeating(
-              &AccelerometerProviderMojo::OnSampleUpdatedCallback,
-              base::Unretained(this)));
+              &AccelerometerProviderMojo::OnSampleUpdatedCallback, this));
 
-  if (accelerometer_read_on_ || one_time_read_)
+  if (initialization_state_ == MojoState::BASE) {
+    DCHECK_EQ(accelerometer.location.value(),
+              ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+    // Don't need base-accelerometer's samples without lid-accelerometer.
+    return;
+  }
+
+  if (accelerometer_read_on_)
     accelerometer.samples_observer->SetEnabled(true);
 }
 
 void AccelerometerProviderMojo::EnableAccelerometerReading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(ec_lid_angle_driver_status_, ECLidAngleDriverStatus::UNKNOWN);
+  DCHECK_NE(GetECLidAngleDriverStatus(), ECLidAngleDriverStatus::UNKNOWN);
   if (accelerometer_read_on_)
     return;
 
   accelerometer_read_on_ = true;
+
+  if (initialization_state_ == MojoState::BASE) {
+    // Don't need base-accelerometer's samples without lid-accelerometer.
+    return;
+  }
+
   for (auto& accelerometer : accelerometers_) {
     if (!accelerometer.second.samples_observer.get())
       continue;
@@ -467,16 +595,11 @@ void AccelerometerProviderMojo::EnableAccelerometerReading() {
 
 void AccelerometerProviderMojo::DisableAccelerometerReading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(ec_lid_angle_driver_status_, ECLidAngleDriverStatus::SUPPORTED);
+  DCHECK_EQ(GetECLidAngleDriverStatus(), ECLidAngleDriverStatus::SUPPORTED);
   if (!accelerometer_read_on_)
     return;
 
   accelerometer_read_on_ = false;
-
-  // Allow one more read and let |OnSampleUpdatedCallback| disable the
-  // observers.
-  if (one_time_read_)
-    return;
 
   for (auto& accelerometer : accelerometers_) {
     if (!accelerometer.second.samples_observer.get())
@@ -494,57 +617,26 @@ void AccelerometerProviderMojo::OnSampleUpdatedCallback(
 
   auto& accelerometer = accelerometers_[iio_device_id];
   DCHECK(accelerometer.location.has_value());
+  DCHECK(accelerometer.location == ACCELEROMETER_SOURCE_SCREEN ||
+         initialization_state_ == MojoState::LID_BASE);
 
-  bool need_two_accelerometers =
-      (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::NOT_SUPPORTED &&
-       has_accelerometer_base_);
-
-  if (!one_time_read_ && !accelerometer_read_on_) {
+  if (!accelerometer_read_on_) {
     // This sample is not needed.
     return;
   }
 
-  if (!emit_events_)
-    return;
+  update_.Set(accelerometers_[iio_device_id].location.value(), sample[0],
+              sample[1], sample[2]);
 
-  update_->Set(accelerometers_[iio_device_id].location.value(), sample[0],
-               sample[1], sample[2]);
-
-  if (need_two_accelerometers &&
-      (!update_->has(ACCELEROMETER_SOURCE_SCREEN) ||
-       !update_->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD))) {
-    // Wait for the other accel to be updated.
+  if (initialization_state_ == MojoState::LID_BASE &&
+      (!update_.has(ACCELEROMETER_SOURCE_SCREEN) ||
+       !update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD))) {
+    // Wait for the other accelerometer to be updated.
     return;
   }
 
-  for (auto& observer : observers_)
-    observer.OnAccelerometerUpdated(update_);
-
-  update_ = new AccelerometerUpdate();
-
-  one_time_read_ = false;
-  if (accelerometer_read_on_)
-    return;
-
-  // This was a one time read. Disable observers.
-  for (auto& accelerometer : accelerometers_) {
-    if (!accelerometer.second.samples_observer.get())
-      continue;
-
-    accelerometer.second.samples_observer->SetEnabled(false);
-  }
-}
-
-void AccelerometerProviderMojo::FailedToInitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(initialization_state_, State::SUCCESS);
-
-  LOG(ERROR) << "Failed to initialize for accelerometer read.";
-  initialization_state_ = State::FAILED;
-
-  accelerometers_.clear();
-  ResetSensorService();
-  sensor_hal_client_.reset();
+  NotifyAccelerometerUpdated(update_);
+  update_.Reset();
 }
 
 }  // namespace ash

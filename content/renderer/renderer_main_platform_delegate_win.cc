@@ -7,14 +7,13 @@
 #include <dwrite.h>
 
 #include <memory>
+#include <string>
 
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h"
 #include "content/child/font_warmup_win.h"
-#include "content/public/common/injection_test_win.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/render_thread_impl.h"
 #include "sandbox/policy/switches.h"

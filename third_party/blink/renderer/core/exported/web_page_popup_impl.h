@@ -54,6 +54,7 @@ class Layer;
 
 namespace blink {
 class Element;
+class Node;
 class Page;
 class PagePopupChromeClient;
 class PagePopupClient;
@@ -133,7 +134,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void ScheduleAnimation() override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;
-  const ScreenInfo& GetOriginalScreenInfo() override;
   gfx::Rect ViewportVisibleRect() override;
   void ScreenRectToEmulated(gfx::Rect& screen_rect) override;
   void EmulatedToScreenRect(gfx::Rect& screen_rect) override;
@@ -157,11 +157,13 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   bool HasFocus() override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override { return {}; }
   void InitializeCompositing(
-      scheduler::WebThreadScheduler* main_thread_scheduler,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
-      const ScreenInfo& screen_info,
+      const ScreenInfos& screen_infos,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
-      const cc::LayerTreeSettings* settings) override;
+      const cc::LayerTreeSettings* settings,
+      gfx::RenderingPipeline* main_thread_pipeline,
+      gfx::RenderingPipeline* compositor_thread_pipeline) override;
   scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
       override;
   void SetCursor(const ui::Cursor& cursor) override;
@@ -174,6 +176,18 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void ShowVirtualKeyboard() override;
   void FlushInputProcessedCallback() override;
   void CancelCompositionForPepper() override;
+  void ApplyVisualProperties(
+      const VisualProperties& visual_properties) override;
+  const ScreenInfo& GetScreenInfo() override;
+  const ScreenInfos& GetScreenInfos() override;
+  const ScreenInfo& GetOriginalScreenInfo() override;
+  const ScreenInfos& GetOriginalScreenInfos() override;
+  gfx::Rect WindowRect() override;
+  gfx::Rect ViewRect() override;
+  void SetScreenRects(const gfx::Rect& widget_screen_rect,
+                      const gfx::Rect& window_screen_rect) override;
+  gfx::Size VisibleViewportSizeInDIPs() override;
+  bool IsHidden() const override;
 
   // PageWidgetEventHandler functions
   WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;
@@ -181,15 +195,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void HandleMouseDown(LocalFrame& main_frame, const WebMouseEvent&) override;
   WebInputEventResult HandleMouseWheel(LocalFrame& main_frame,
                                        const WebMouseWheelEvent&) override;
-  void ApplyVisualProperties(
-      const VisualProperties& visual_properties) override;
-  const ScreenInfo& GetScreenInfo() override;
-  gfx::Rect WindowRect() override;
-  gfx::Rect ViewRect() override;
-  void SetScreenRects(const gfx::Rect& widget_screen_rect,
-                      const gfx::Rect& window_screen_rect) override;
-  gfx::Size VisibleViewportSizeInDIPs() override;
-  bool IsHidden() const override;
 
   // This may only be called if page_ is non-null.
   LocalFrame& MainFrame() const;

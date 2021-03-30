@@ -12,10 +12,10 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/accessibility/magnification_manager.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -45,9 +45,10 @@
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
-#include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_helper_bridge.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
@@ -55,9 +56,13 @@
 #include "ui/display/screen.h"
 #endif
 
-namespace accessibility_private = extensions::api::accessibility_private;
-
 namespace {
+
+namespace accessibility_private = ::extensions::api::accessibility_private;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using ::ash::AccessibilityManager;
+#endif
 
 const char kErrorNotSupported[] = "This API is not supported on this platform.";
 
@@ -86,7 +91,7 @@ AccessibilityPrivateOpenSettingsSubpageFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(chrome-a11y-core): we can't open a settings page when you're on the
   // signin profile, but maybe we should notify the user and explain why?
-  Profile* profile = chromeos::AccessibilityManager::Get()->profile();
+  Profile* profile = AccessibilityManager::Get()->profile();
   if (!chromeos::ProfileHelper::IsSigninProfile(profile) &&
       chromeos::settings::IsOSSettingsSubPage(params->subpage)) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
@@ -106,7 +111,7 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
       accessibility_private::SetFocusRings::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  auto* accessibility_manager = chromeos::AccessibilityManager::Get();
+  auto* accessibility_manager = AccessibilityManager::Get();
 
   for (const accessibility_private::FocusRingInfo& focus_ring_info :
        params->focus_rings) {
@@ -209,7 +214,7 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
     return RespondNow(Error("Could not parse hex color"));
 
   // Set the highlights to cover all of these rects.
-  chromeos::AccessibilityManager::Get()->SetHighlights(rects, color);
+  AccessibilityManager::Get()->SetHighlights(rects, color);
 
   return RespondNow(NoArguments());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -228,8 +233,7 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
   EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(1, &capture));
 
-  chromeos::AccessibilityManager* manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* manager = AccessibilityManager::Get();
 
   const std::string current_id = manager->keyboard_listener_extension_id();
   if (!current_id.empty() && extension()->id() != current_id)
@@ -251,7 +255,7 @@ AccessibilityPrivateDarkenScreenFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool darken = false;
   EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &darken));
-  chromeos::AccessibilityManager::Get()->SetDarkenScreen(darken);
+  AccessibilityManager::Get()->SetDarkenScreen(darken);
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error(kErrorNotSupported));
@@ -428,7 +432,7 @@ AccessibilityPrivateSetSelectToSpeakStateFunction::Run() {
       state = ash::SelectToSpeakState::kSelectToSpeakStateInactive;
   }
 
-  auto* accessibility_manager = chromeos::AccessibilityManager::Get();
+  auto* accessibility_manager = AccessibilityManager::Get();
   accessibility_manager->SetSelectToSpeakState(state);
 
   return RespondNow(NoArguments());
@@ -459,8 +463,7 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
   gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
                    params->rect.height);
 
-  chromeos::MagnificationManager* magnification_manager =
-      chromeos::MagnificationManager::Get();
+  auto* magnification_manager = ash::MagnificationManager::Get();
   if (magnification_manager)
     magnification_manager->HandleMoveMagnifierToRectIfEnabled(bounds);
 
@@ -655,4 +658,33 @@ AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-#endif  // defined (OS_CHROMEOS)
+ExtensionFunction::ResponseAction
+AccessibilityPrivateShowConfirmationDialogFunction::Run() {
+  std::unique_ptr<accessibility_private::ShowConfirmationDialog::Params>
+      params =
+          accessibility_private::ShowConfirmationDialog::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::u16string title = base::UTF8ToUTF16(params->title);
+  std::u16string description = base::UTF8ToUTF16(params->description);
+  ash::AccessibilityController::Get()->ShowConfirmationDialog(
+      title, description,
+      base::BindOnce(
+          &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
+          base::RetainedRef(this), /* confirmed */ true),
+      base::BindOnce(
+          &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
+          base::RetainedRef(this), /* not confirmed */ false),
+      base::BindOnce(
+          &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
+          base::RetainedRef(this), /* not confirmed */ false));
+
+  return RespondLater();
+}
+
+void AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult(
+    bool confirmed) {
+  Respond(OneArgument(base::Value(confirmed)));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

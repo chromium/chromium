@@ -130,7 +130,7 @@ void CleanUpInfoBar(content::WebContents* web_contents) {
       details.previous_main_frame_url =
           controller.GetLastCommittedEntry()->GetURL();
     }
-    details.type = content::NAVIGATION_TYPE_NEW_PAGE;
+    details.type = content::NAVIGATION_TYPE_NEW_ENTRY;
     for (int i = service->infobar_count() - 1; i >= 0; --i) {
       infobars::InfoBar* infobar = service->infobar_at(i);
       if (infobar->delegate()->ShouldExpire(
@@ -251,7 +251,7 @@ void SupervisedUserInterstitial::ShowFeedback() {
   std::string second_custodian =
       supervised_user_service->GetSecondCustodianName();
 
-  base::string16 reason =
+  std::u16string reason =
       l10n_util::GetStringUTF16(supervised_user_error_page::GetBlockMessageID(
           reason_, is_child_account, second_custodian.empty()));
   std::string message = l10n_util::GetStringFUTF8(

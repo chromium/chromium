@@ -21,7 +21,7 @@
 namespace tab_util {
 
 NSString* GetTabTitle(web::WebState* web_state) {
-  base::string16 title;
+  std::u16string title;
   web::NavigationManager* navigationManager = web_state->GetNavigationManager();
   DownloadManagerTabHelper* downloadTabHelper =
       DownloadManagerTabHelper::FromWebState(web_state);

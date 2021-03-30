@@ -69,7 +69,7 @@ class PlatformStateStoreWinTest : public ::testing::Test {
     ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER, kStoreKeyName_,
                                         KEY_SET_VALUE | KEY_WOW64_32KEY));
     ASSERT_EQ(ERROR_SUCCESS,
-              key.WriteValue(base::UTF8ToUTF16(kProfileName_).c_str(),
+              key.WriteValue(base::UTF8ToWide(kProfileName_).c_str(),
                              &kTestData_[0], kTestDataSize_, REG_BINARY));
   }
 
@@ -77,7 +77,7 @@ class PlatformStateStoreWinTest : public ::testing::Test {
     base::win::RegKey key;
     ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, kStoreKeyName_,
                                       KEY_QUERY_VALUE | KEY_WOW64_32KEY));
-    ASSERT_FALSE(key.HasValue(base::UTF8ToUTF16(kProfileName_).c_str()));
+    ASSERT_FALSE(key.HasValue(base::UTF8ToWide(kProfileName_).c_str()));
   }
 
   void AssertTestDataIsPresent() {
@@ -88,8 +88,8 @@ class PlatformStateStoreWinTest : public ::testing::Test {
     DWORD data_size = kTestDataSize_;
     DWORD data_type = REG_NONE;
     ASSERT_EQ(ERROR_SUCCESS,
-              key.ReadValue(base::UTF8ToUTF16(kProfileName_).c_str(),
-                            &buffer[0], &data_size, &data_type));
+              key.ReadValue(base::UTF8ToWide(kProfileName_).c_str(), &buffer[0],
+                            &data_size, &data_type));
     EXPECT_EQ(static_cast<DWORD>(REG_BINARY), data_type);
     ASSERT_EQ(kTestDataSize_, data_size);
     EXPECT_EQ(std::string(&buffer[0], data_size),
@@ -97,7 +97,7 @@ class PlatformStateStoreWinTest : public ::testing::Test {
   }
 
   static const char kProfileName_[];
-  static const base::char16 kStoreKeyName_[];
+  static const wchar_t kStoreKeyName_[];
   TestingProfile* profile_;
 
  private:
@@ -111,10 +111,10 @@ class PlatformStateStoreWinTest : public ::testing::Test {
 // static
 const char PlatformStateStoreWinTest::kProfileName_[] = "test_profile";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const base::char16 PlatformStateStoreWinTest::kStoreKeyName_[] =
+const wchar_t PlatformStateStoreWinTest::kStoreKeyName_[] =
     L"Software\\Google\\Chrome\\IncidentsSent";
 #else
-const base::char16 PlatformStateStoreWinTest::kStoreKeyName_[] =
+const wchar_t PlatformStateStoreWinTest::kStoreKeyName_[] =
     L"Software\\Chromium\\IncidentsSent";
 #endif
 
@@ -124,7 +124,7 @@ TEST_F(PlatformStateStoreWinTest, WriteStoreData) {
 
   ASSERT_FALSE(base::win::RegKey(HKEY_CURRENT_USER, kStoreKeyName_,
                                  KEY_QUERY_VALUE | KEY_WOW64_32KEY)
-                   .HasValue(base::UTF8ToUTF16(kProfileName_).c_str()));
+                   .HasValue(base::UTF8ToWide(kProfileName_).c_str()));
   WriteStoreData(profile_, kTestData_);
   AssertTestDataIsPresent();
 }

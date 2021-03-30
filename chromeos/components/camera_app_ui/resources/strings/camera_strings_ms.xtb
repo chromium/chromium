@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Tempoh pemasa</translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktif</translation>
+<translation id="2144806332417375165">Sesuaikan parameter video</translation>
 <translation id="229579744168541441">Eksport ke cakera</translation>
 <translation id="2501278716633472235">Kembali</translation>
 <translation id="2501853267655415902">Rakaman dihentikan</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Peleraian kamera</translation>
 <translation id="3517926952904427380">Tidak dapat mengambil foto potret</translation>
 <translation id="3569311554794739032">Adakah anda benar-benar mahu mengalih keluar <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Kamera anda sedang digunakan oleh apl lain</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Imbas kod bar</translation>
 <translation id="3892148308691398805">Salin teks</translation>
@@ -76,10 +76,12 @@ Jika maklum balas anda adalah tentang kualiti imej atau video, sila lampirkan sa
 <translation id="7337660886763914220">Ralat sistem fail.</translation>
 <translation id="7450541714075000668">Teks disalin</translation>
 <translation id="7557677699350329807">Beralih kepada kamera seterusnya</translation>
+<translation id="7607002721634913082">Dijeda</translation>
 <translation id="7608223098072244877">4 kali 4</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Tunjukkan pilihan sorot/condong/zum</translation>
 <translation id="7983668134180549431">Teks dikesan.</translation>
 <translation id="8067883171444229417">Mainkan video</translation>
 <translation id="8131740175452115882">Sahkan</translation>

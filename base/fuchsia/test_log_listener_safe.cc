@@ -6,6 +6,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -74,7 +75,7 @@ SimpleTestLogListener::RunUntilMessageReceived(
         quit_loop.Run();
       });
   on_log_message_ = base::BindLambdaForTesting(
-      [&logged_message, expected_string = expected_string.as_string(),
+      [&logged_message, expected_string = std::string(expected_string),
        quit_loop =
            loop.QuitClosure()](const fuchsia::logger::LogMessage& message) {
         if (message.msg.find(expected_string) == std::string::npos)

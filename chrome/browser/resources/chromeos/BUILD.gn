@@ -8,21 +8,10 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Only Chrome OS resources in //c/b/resources//chromeos.")
 
-grit("cellular_setup_resources") {
-  source = "cellular_setup/cellular_setup_resources.grd"
-
-  defines = chrome_grit_defines
-  outputs = [
-    "grit/cellular_setup_resources.h",
-    "grit/cellular_setup_resources_map.cc",
-    "grit/cellular_setup_resources_map.h",
-    "cellular_setup_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
 grit("multidevice_setup_resources") {
-  source = "multidevice_setup/multidevice_setup_resources.grd"
+  multidevice_setup_gen_dir =
+      "$root_gen_dir/chrome/browser/resources/chromeos/multidevice_setup"
+  source = "$multidevice_setup_gen_dir/multidevice_setup_resources.grd"
 
   defines = chrome_grit_defines
   outputs = [
@@ -31,6 +20,8 @@ grit("multidevice_setup_resources") {
     "grit/multidevice_setup_resources_map.h",
     "multidevice_setup_resources.pak",
   ]
+  deps = [ "//chrome/browser/resources/chromeos/multidevice_setup:build_grd" ]
+  enable_input_discovery_for_gn_analyze = false
   output_dir = "$root_gen_dir/chrome"
 }
 
@@ -38,6 +29,7 @@ group("closure_compile") {
   deps = [
     "accessibility/accessibility_common:closure_compile",
     "accessibility/braille_ime:closure_compile",
+    "accessibility/chromevox:closure_compile",
     "accessibility/select_to_speak:closure_compile",
     "accessibility/switch_access:closure_compile",
     "account_manager:closure_compile",

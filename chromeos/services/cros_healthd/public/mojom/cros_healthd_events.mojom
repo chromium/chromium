@@ -5,10 +5,12 @@
 // Definitions for the event API exposed by the cros_healthd daemon. This API is
 // normally consumed by the browser.
 
-// NOTE: This mojom should be kept in sync with the copy in Chromium's repo in
-// src/platform2/diagnostics/mojo/cros_healthd_events.mojom.
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/platform2/diagnostics/mojo/cros_healthd_events.mojom.
 
 module chromeos.cros_healthd.mojom;
+
+import "chromeos/services/network_health/public/mojom/network_health.mojom";
 
 // Implemented by clients who desire Bluetooth notifications.
 interface CrosHealthdBluetoothObserver {
@@ -45,3 +47,4 @@ interface CrosHealthdPowerObserver {
   // Fired when the system completes a suspend request.
   OnOsResume();
 };
+

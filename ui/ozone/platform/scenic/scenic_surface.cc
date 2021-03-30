@@ -8,6 +8,7 @@
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 #include <lib/zx/eventpair.h>
 
+#include "base/numerics/math_constants.h"
 #include "ui/ozone/platform/scenic/scenic_gpu_host.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
 
@@ -19,6 +20,27 @@ namespace {
 // to elevate content. ViewProperties set by ScenicWindow sets z-plane to
 // [-0.5f, 0.5f] range, so 0.01f is small enough to make a difference.
 constexpr float kElevationStep = 0.01f;
+
+// Converts OverlayTransform enum to angle in radians.
+float OverlayTransformToRadians(gfx::OverlayTransform plane_transform) {
+  switch (plane_transform) {
+    case gfx::OVERLAY_TRANSFORM_NONE:
+    case gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
+      return 0;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
+      return base::kPiFloat * .5f;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+      return base::kPiFloat;
+    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+      return base::kPiFloat * 1.5f;
+    case gfx::OVERLAY_TRANSFORM_INVALID:
+      NOTREACHED();
+      return 0;
+  }
+  NOTREACHED();
+  return 0;
+}
 
 }  // namespace
 
@@ -47,6 +69,10 @@ ScenicSurface::~ScenicSurface() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   scenic_surface_factory_->RemoveSurface(window_);
 }
+
+ScenicSurface::OverlayViewInfo::OverlayViewInfo(scenic::ViewHolder holder,
+                                                scenic::EntityNode node)
+    : view_holder(std::move(holder)), entity_node(std::move(node)) {}
 
 void ScenicSurface::OnScenicEvents(
     std::vector<fuchsia::ui::scenic::Event> events) {
@@ -124,6 +150,7 @@ bool ScenicSurface::UpdateOverlayViewPosition(
     int plane_z_order,
     const gfx::Rect& display_bounds,
     const gfx::RectF& crop_rect,
+    gfx::OverlayTransform plane_transform,
     std::vector<zx::event> acquire_fences) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(overlays_.count(id));
@@ -131,13 +158,15 @@ bool ScenicSurface::UpdateOverlayViewPosition(
 
   if (overlay_view_info.plane_z_order == plane_z_order &&
       overlay_view_info.display_bounds == display_bounds &&
-      overlay_view_info.crop_rect == crop_rect) {
+      overlay_view_info.crop_rect == crop_rect &&
+      overlay_view_info.plane_transform == plane_transform) {
     return false;
   }
 
   overlay_view_info.plane_z_order = plane_z_order;
   overlay_view_info.display_bounds = display_bounds;
   overlay_view_info.crop_rect = crop_rect;
+  overlay_view_info.plane_transform = plane_transform;
 
   for (auto& fence : acquire_fences)
     scenic_session_.EnqueueAcquireFence(std::move(fence));
@@ -205,22 +234,41 @@ void ScenicSurface::UpdateViewHolderScene() {
     view_properties.focus_change = false;
     info.view_holder.SetViewProperties(std::move(view_properties));
 
-    // Scale ImagePipe based on the display bounds and clip rect given.
-    const float scaled_width =
-        info.display_bounds.width() /
-        (info.crop_rect.width() * main_shape_size_.width());
-    const float scaled_height =
-        info.display_bounds.height() /
-        (info.crop_rect.height() * main_shape_size_.height());
-    info.entity_node.SetScale(scaled_width, scaled_height, 1.f);
-
-    // Position ImagePipe based on the display bounds given.
+    // We receive |display_bounds| in screen coordinates. Convert them to fit
+    // 1x1 View, which is later scaled up by the browser process.
+    float scaled_width = info.display_bounds.width() /
+                         (info.crop_rect.width() * main_shape_size_.width());
+    float scaled_height = info.display_bounds.height() /
+                          (info.crop_rect.height() * main_shape_size_.height());
     const float scaled_x = info.display_bounds.x() / main_shape_size_.width();
     const float scaled_y = info.display_bounds.y() / main_shape_size_.height();
+
+    // Position ImagePipe based on the display bounds given.
     info.entity_node.SetTranslation(
-        scaled_x - (0.5f - scaled_width / 2),
-        scaled_y - (0.5f - scaled_height / 2),
+        -0.5f + scaled_x + scaled_width / 2,
+        -0.5f + scaled_y + scaled_height / 2,
         (min_z_order - info.plane_z_order) * kElevationStep);
+
+    // Apply rotation if given. Scenic expects rotation passed as Quaternion.
+    const float angle = OverlayTransformToRadians(info.plane_transform);
+    info.entity_node.SetRotation(
+        {0.f, 0.f, sinf(angle * .5f), cosf(angle * .5f)});
+
+    // Scenic applies scaling before rotation.
+    if (info.plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
+        info.plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) {
+      std::swap(scaled_width, scaled_height);
+    }
+
+    // Scenic expects flip as negative scaling.
+    if (info.plane_transform == gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL) {
+      scaled_width = -scaled_width;
+    } else if (info.plane_transform == gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL) {
+      scaled_height = -scaled_height;
+    }
+
+    // Scale ImagePipe based on the display bounds and clip rect given.
+    info.entity_node.SetScale(scaled_width, scaled_height, 1.f);
   }
 
   main_material_.SetColor(255, 255, 255, 0 > min_z_order ? 254 : 255);

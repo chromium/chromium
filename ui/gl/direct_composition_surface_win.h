@@ -19,6 +19,10 @@
 #include "ui/gl/gpu_switching_observer.h"
 #include "ui/gl/vsync_observer.h"
 
+namespace gfx {
+class DelegatedInkMetadata;
+}  // namespace gfx
+
 namespace gl {
 class DCLayerTree;
 class DirectCompositionChildSurfaceWin;
@@ -54,6 +58,10 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   // --disable-direct-composition-video-overlays. This function is thread safe.
   static bool AreOverlaysSupported();
 
+  // Returns if the GPU supports hardware overlays. This function is thread
+  // safe.
+  static bool AreHardwareOverlaysSupported();
+
   // Returns true if zero copy decode swap chain is supported.
   static bool IsDecodeSwapChainSupported();
   static void DisableDecodeSwapChain();
@@ -61,6 +69,9 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   // After this is called, overlay support is disabled during the
   // current GPU process' lifetime.
   static void DisableOverlays();
+
+  // Similar to the above but disables software overlay support.
+  static void DisableSoftwareOverlays();
 
   // Indicate the overlay caps are invalid.
   static void InvalidateOverlayCaps();
@@ -107,6 +118,14 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   // IDXGIOutput3::CheckOverlaySupport().
   static void ForceNV12OverlaySupport();
 
+  // Forces to enable RGBA101010A2 overlay support regardless of the query
+  // results from IDXGIOutput3::CheckOverlaySupport().
+  static void ForceRgb10a2OverlaySupport();
+
+  // Enable NV12 overlay support only when
+  // DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709 is supported.
+  static void SetCheckYCbCrStudioG22LeftP709ForNv12Support();
+
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
   void Destroy() override;
@@ -148,6 +167,10 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   void OnDisplayAdded() override;
   void OnDisplayRemoved() override;
   void OnDisplayMetricsChanged() override;
+
+  bool SupportsDelegatedInk() override;
+  void SetDelegatedInkTrailStartPoint(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
 
   HWND window() const { return window_; }
 

@@ -121,7 +121,7 @@ AppListAssistantMainStage::AppListAssistantMainStage(
   SetID(AssistantViewID::kMainStage);
   InitLayout();
 
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
   AssistantInteractionController::Get()->GetModel()->AddObserver(this);
   AssistantUiController::Get()->GetModel()->AddObserver(this);
 }
@@ -314,7 +314,9 @@ void AppListAssistantMainStage::AnimateInFooter() {
 void AppListAssistantMainStage::OnAssistantControllerDestroying() {
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
   AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-  assistant_controller_observer_.Remove(AssistantController::Get());
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void AppListAssistantMainStage::OnCommittedQueryChanged(

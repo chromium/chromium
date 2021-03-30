@@ -7,25 +7,17 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "build/build_config.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 class PrefService;
-
-namespace syncer {
-class SyncService;
-}
-
-namespace signin {
-class IdentityManager;
-}
 
 namespace variations {
 class VariationsService;
 }
 
 namespace safe_browsing {
-
-enum class ResourceType;
 
 // This class implements the logic to decide whether the real time lookup
 // feature is enabled for a given user/profile.
@@ -37,11 +29,17 @@ class RealTimePolicyEngine {
   RealTimePolicyEngine() = delete;
   ~RealTimePolicyEngine() = delete;
 
-  // Return true if full URL lookups are enabled for |resource_type|. If
+  // A callback via which the client of this class indicates whether they
+  // are configured to support token fetches. Used as part of
+  // CanPerformFullURLLookupWithToken().
+  using ClientConfiguredForTokenFetchesCallback =
+      base::OnceCallback<bool(bool user_has_enabled_enhanced_protection)>;
+
+  // Return true if full URL lookups are enabled for |request_destination|. If
   // |can_rt_check_subresource_url| is set to false, return true only if
-  // |resource_type| is |kMainFrame|.
-  static bool CanPerformFullURLLookupForResourceType(
-      ResourceType resource_type,
+  // |request_destination| is |kDocument|.
+  static bool CanPerformFullURLLookupForRequestDestination(
+      network::mojom::RequestDestination request_destination,
       bool can_rt_check_subresource_url);
 
   // Return true if the feature to enable full URL lookups is enabled and the
@@ -57,8 +55,7 @@ class RealTimePolicyEngine {
   static bool CanPerformFullURLLookupWithToken(
       PrefService* pref_service,
       bool is_off_the_record,
-      syncer::SyncService* sync_service,
-      signin::IdentityManager* identity_manager,
+      ClientConfiguredForTokenFetchesCallback client_callback,
       variations::VariationsService* variations_service);
 
   static bool CanPerformEnterpriseFullURLLookup(const PrefService* pref_service,
@@ -78,10 +75,6 @@ class RealTimePolicyEngine {
 
   // Whether the user has opted-in to Enhanced Protection.
   static bool IsUserEpOptedIn(PrefService* pref_service);
-
-  // Whether the primary account is signed in. Sync is not required.
-  static bool IsPrimaryAccountSignedIn(
-      signin::IdentityManager* identity_manager);
 
   friend class RealTimePolicyEngineTest;
 };  // class RealTimePolicyEngine

@@ -20,22 +20,44 @@ namespace full_restore {
 // app launch information.
 struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
   AppLaunchInfo(const std::string& app_id,
-                int32_t session_id,
+                int32_t window_id,
                 apps::mojom::LaunchContainer container,
                 WindowOpenDisposition disposition,
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,
                 apps::mojom::IntentPtr intent);
-  ~AppLaunchInfo();
+
+  AppLaunchInfo(const std::string& app_id, int32_t window_id);
+
+  AppLaunchInfo(const std::string& app_id,
+                apps::mojom::LaunchContainer container,
+                WindowOpenDisposition disposition,
+                int64_t display_id,
+                std::vector<base::FilePath> launch_files,
+                apps::mojom::IntentPtr intent);
+
+  AppLaunchInfo(const std::string& app_id,
+                int32_t event_flags,
+                int32_t arc_session_id,
+                int64_t display_id);
+
+  AppLaunchInfo(const std::string& app_id,
+                int32_t event_flags,
+                apps::mojom::IntentPtr intent,
+                int32_t arc_session_id,
+                int64_t display_id);
 
   AppLaunchInfo(const AppLaunchInfo&) = delete;
   AppLaunchInfo& operator=(const AppLaunchInfo&) = delete;
 
+  ~AppLaunchInfo();
+
   std::string app_id;
-  base::Optional<int32_t> id;
+  base::Optional<int32_t> window_id;
   base::Optional<int32_t> event_flag;
   base::Optional<int32_t> container;
   base::Optional<int32_t> disposition;
+  base::Optional<int32_t> arc_session_id;
   base::Optional<int64_t> display_id;
   base::Optional<GURL> url;
   base::Optional<std::vector<base::FilePath>> file_paths;

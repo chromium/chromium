@@ -14,7 +14,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_request_id.h"
@@ -25,11 +24,12 @@
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/was_activated_option.mojom.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -136,7 +136,7 @@ class NavigationController {
     // was not associated with a frame, or if the initiating frame did not exist
     // by the time navigation started. This parameter is defined if and only if
     // |initiator_process_id| below is.
-    base::Optional<base::UnguessableToken> initiator_frame_token;
+    base::Optional<blink::LocalFrameToken> initiator_frame_token;
 
     // ID of the renderer process of the frame host that initiated the
     // navigation. This is defined if and only if |initiator_frame_token| above
@@ -183,9 +183,10 @@ class NavigationController {
     // important for tracking whether to display pending URLs.
     bool is_renderer_initiated;
 
-    // Prerender2:
-    // True for prerendering navigations.
-    bool is_prerendering = false;
+    // Whether a navigation in a new window has the opener suppressed. False if
+    // the navigation is not in a new window. Can only be true when
+    // |is_renderer_initiated| is true.
+    bool was_opener_suppressed = false;
 
     // User agent override for this load. See comments in
     // UserAgentOverrideOption definition.
@@ -269,7 +270,7 @@ class NavigationController {
 
     // Impression info associated with this navigation. Should only be populated
     // for navigations originating from a link click.
-    base::Optional<Impression> impression;
+    base::Optional<blink::Impression> impression;
 
     DISALLOW_COPY_AND_ASSIGN(LoadURLParams);
   };

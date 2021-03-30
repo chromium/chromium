@@ -126,7 +126,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   bool ShouldHideTooltip(const gfx::Point& cursor_location) const override;
   const std::vector<aura::Window*> GetOpenWindowsForView(
       views::View* view) override;
-  base::string16 GetTitleForView(const views::View* view) const override;
+  std::u16string GetTitleForView(const views::View* view) const override;
   views::View* GetViewForEvent(const ui::Event& event) override;
 
   // Returns rectangle bounding all visible launcher items. Used screen
@@ -140,6 +140,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -493,6 +494,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // The |click_point| is only used for |context_menu|'s.
   void ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
                 views::View* source,
+                const ShelfID& shelf_id,
                 const gfx::Point& click_point,
                 bool context_menu,
                 ui::MenuSourceType source_type);
@@ -529,7 +531,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void DestroyScopedDisplay();
 
   // Different from GetTitleForView, |view| here must be a child view.
-  base::string16 GetTitleForChildView(const views::View* view) const;
+  std::u16string GetTitleForChildView(const views::View* view) const;
 
   int CalculateAppIconsLayoutOffset() const;
 

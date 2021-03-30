@@ -149,7 +149,7 @@ cr.define('settings', function() {
      * ES5 strict mode.
      */
     ready() {
-      CrPolicyStrings = {
+      window.CrPolicyStrings = {
         controlledSettingExtension:
             loadTimeData.getString('controlledSettingExtension'),
         controlledSettingExtensionWithoutName:
@@ -203,7 +203,7 @@ cr.define('settings', function() {
       this.async(() => {
         // Lazy-create the drawer the first time it is opened or swiped into
         // view.
-        const drawer = this.$$('#drawer');
+        const drawer = /** @type {!CrDrawerElement} */ (this.$$('#drawer'));
         assert(drawer);
         listenOnce(drawer, 'cr-drawer-opening', () => {
           this.$$('#drawerTemplate').if = true;
@@ -339,7 +339,8 @@ cr.define('settings', function() {
       }
 
       settings.recordSearch();
-      this.$.main.searchContents(urlSearchQuery);
+      /** @type {!OsSettingsMainElement} */ (
+          this.$.main.searchContents(urlSearchQuery));
     },
 
     // Override FindShortcutBehavior methods.

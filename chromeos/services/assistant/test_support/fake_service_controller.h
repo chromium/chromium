@@ -8,27 +8,33 @@
 #include <mutex>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
-}  // namespace assistant_client
 
 namespace chromeos {
 namespace assistant {
 
-// Fake implementation of the Mojom |ServiceController|.
-// This implementation will inform the registered |StateObserver| instances of
-// any state change, just like the real implementation.
-class FakeServiceController : public libassistant::mojom::ServiceController {
+// Fake implementation of the Mojom |ServiceController| and
+// |SettingsController|. This implementation will inform the registered
+// |StateObserver| instances of any state change, just like the real
+// implementation.
+class FakeServiceController
+    : public chromeos::libassistant::mojom::ServiceController,
+      public chromeos::libassistant::mojom::SettingsController {
  public:
-  using State = libassistant::mojom::ServiceState;
-  using InitializeCallback =
-      base::OnceCallback<void(assistant_client::AssistantManager*,
-                              assistant_client::AssistantManagerInternal*)>;
+  // Value returned when optional fields |access_token| or |user_id| are
+  // missing. Note we use this instead of a |base::Optional| because this
+  // results in a much nicer error message if the test fails. (otherwise you get
+  // a message like this:
+  //     Expected equality of these values:
+  //           "<new-user-id-wrong>"
+  //     with 32-byte object <01-00 snip 00-00>
+  static constexpr const char* kNoValue = "<no-value>";
+
+  using State = chromeos::libassistant::mojom::ServiceState;
 
   FakeServiceController();
   FakeServiceController(FakeServiceController&) = delete;
@@ -40,14 +46,18 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   void SetState(State new_state);
   State state() const { return state_; }
 
-  // Returns the Libassistant config that was passed to the last Start() call.
-  std::string libassistant_config() { return libassistant_config_; }
+  // Returns the Libassistant config that was passed to Initialize().
+  const chromeos::libassistant::mojom::BootupConfig& libassistant_config() {
+    DCHECK(libassistant_config_);
+    return *libassistant_config_;
+  }
 
-  void Bind(mojo::PendingReceiver<libassistant::mojom::ServiceController>
-                pending_receiver);
+  void Bind(
+      mojo::PendingReceiver<chromeos::libassistant::mojom::ServiceController>
+          service_receiver,
+      mojo::PendingReceiver<chromeos::libassistant::mojom::SettingsController>
+          settings_receiver);
   void Unbind();
-
-  void SetInitializeCallback(InitializeCallback callback);
 
   // Call this to block any call to |Start|. The observers will not be invoked
   // as long as the start call is blocked. Unblock these calls using
@@ -56,26 +66,65 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   void BlockStartCalls();
   void UnblockStartCalls();
 
-  // mojom::ServiceController implementation:
-  void Start(const std::string& libassistant_config) override;
-  void Stop() override;
-  void AddAndFireStateObserver(
-      mojo::PendingRemote<libassistant::mojom::StateObserver> pending_observer)
-      override;
+  // Return the access-token that was passed to |SetAuthenticationTokens|, or
+  // |kNoValue| if an empty vector was passed in.
+  std::string access_token();
+  // Return the user-id that was passed to |SetAuthenticationTokens|, or
+  // |kNoValue| if an empty vector was passed in.
+  std::string gaia_id();
+
+  // True if ResetAllDataAndStop() was called.
+  bool has_data_been_reset() const { return has_data_been_reset_; }
 
  private:
+  // mojom::ServiceController implementation:
+  void Initialize(chromeos::libassistant::mojom::BootupConfigPtr config,
+                  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+                      url_loader_factory) override;
+  void Start() override;
+  void Stop() override;
+  void ResetAllDataAndStop() override;
+  void AddAndFireStateObserver(
+      mojo::PendingRemote<chromeos::libassistant::mojom::StateObserver>
+          pending_observer) override;
+
+  // mojom::SettingsController implementation:
+  void SetAuthenticationTokens(
+      std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr> tokens)
+      override;
+  void SetListeningEnabled(bool value) override {}
+  void SetLocale(const std::string& value) override {}
+  void SetSpokenFeedbackEnabled(bool value) override {}
+  void UpdateSettings(const std::string& settings,
+                      UpdateSettingsCallback callback) override;
+  void GetSettings(const std::string& selector,
+                   GetSettingsCallback callback) override;
+  void SetHotwordEnabled(bool value) override {}
+
   // Mutex taken in |Start| to allow the calls to block if |BlockStartCalls| was
   // called.
   std::mutex start_mutex_;
 
   // Config passed to LibAssistant when it was started.
-  std::string libassistant_config_;
+  chromeos::libassistant::mojom::BootupConfigPtr libassistant_config_;
 
-  InitializeCallback initialize_callback_;
+  // True if ResetAllDataAndStop() was called.
+  bool has_data_been_reset_ = false;
+
+  // Authentication tokens passed to SetAuthenticationTokens().
+  std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr>
+      authentication_tokens_;
 
   State state_ = State::kStopped;
-  mojo::Receiver<libassistant::mojom::ServiceController> receiver_;
-  mojo::RemoteSet<libassistant::mojom::StateObserver> state_observers_;
+  mojo::Receiver<chromeos::libassistant::mojom::ServiceController>
+      service_receiver_{this};
+  mojo::Receiver<chromeos::libassistant::mojom::SettingsController>
+      settings_receiver_{this};
+  mojo::RemoteSet<chromeos::libassistant::mojom::StateObserver>
+      state_observers_;
+  scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
+
+  base::WeakPtrFactory<FakeServiceController> weak_factory_{this};
 };
 }  // namespace assistant
 }  // namespace chromeos

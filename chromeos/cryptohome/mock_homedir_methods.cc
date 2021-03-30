@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/mock_async_method_caller.h"
 
 using ::testing::Invoke;
 using ::testing::WithArgs;

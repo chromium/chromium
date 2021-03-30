@@ -39,7 +39,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // |text|. |button_context| is a value from views::style::TextContext and
   // determines the appearance of |text|.
   explicit LabelButton(PressedCallback callback = PressedCallback(),
-                       const base::string16& text = base::string16(),
+                       const std::u16string& text = std::u16string(),
                        int button_context = style::CONTEXT_BUTTON);
   LabelButton(const LabelButton&) = delete;
   LabelButton& operator=(const LabelButton&) = delete;
@@ -53,8 +53,8 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   void SetImageModel(ButtonState for_state, const ui::ImageModel& image_model);
 
   // Gets or sets the text shown on the button.
-  const base::string16& GetText() const;
-  virtual void SetText(const base::string16& text);
+  const std::u16string& GetText() const;
+  virtual void SetText(const std::u16string& text);
 
   // Makes the button report its preferred size without the label. This lets
   // AnimatingLayoutManager gradually shrink the button until the text is
@@ -179,7 +179,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   void StateChanged(ButtonState old_state) override;
 
  private:
-  void SetTextInternal(const base::string16& text);
+  void SetTextInternal(const std::u16string& text);
 
   void ClearTextIfShrunkDown();
 
@@ -272,7 +272,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, LabelButton, Button)
-VIEW_BUILDER_PROPERTY(base::string16, Text)
+VIEW_BUILDER_PROPERTY(std::u16string, Text)
 VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
 VIEW_BUILDER_PROPERTY(gfx::Size, MinSize)
 VIEW_BUILDER_PROPERTY(gfx::Size, MaxSize)

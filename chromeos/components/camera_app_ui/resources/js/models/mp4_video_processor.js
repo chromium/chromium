@@ -245,9 +245,9 @@ class OutputDevice {
 class Mp4VideoProcessor {
   /**
    * @param {!AsyncWriter} output The output writer of mp4.
-   * @param {{seekable: boolean}} opts
+   * @param {{seekable: boolean, rotate: number}} opts
    */
-  constructor(output, {seekable}) {
+  constructor(output, {seekable, rotate}) {
     this.output_ = output;
     this.inputDevice_ = new InputDevice();
     this.outputDevice_ = new OutputDevice(output);
@@ -260,6 +260,8 @@ class Mp4VideoProcessor {
       '-analyzeduration', '1M',
       // mkv input from stdin
       '-f', 'matroska', '-i', 'pipe:0',
+      // rotate the video by metadata
+      '-metadata:s:v', `rotate=${rotate}`,
       // transcode audio to aac and copy the video
       '-c:a', 'aac', '-c:v', 'copy',
       // show error log only

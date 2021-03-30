@@ -53,7 +53,7 @@ AppIconColorHandler::AppIconColorHandler() {
 AppIconColorHandler::~AppIconColorHandler() {
 }
 
-bool AppIconColorHandler::Parse(Extension* extension, base::string16* error) {
+bool AppIconColorHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<AppIconColorInfo> app_icon_color_info(new AppIconColorInfo);
 
   const base::Value* temp = NULL;

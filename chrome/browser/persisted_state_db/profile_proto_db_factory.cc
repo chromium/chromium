@@ -14,3 +14,44 @@ GetPersistedStateProfileProtoDBFactory() {
       instance;
   return instance.get();
 }
+
+template <>
+ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
+ProfileProtoDBFactory<
+    persisted_state_db::PersistedStateContentProto>::GetInstance() {
+  return GetPersistedStateProfileProtoDBFactory();
+}
+
+#if !defined(OS_ANDROID)
+ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
+GetChromeCartProfileProtoDBFactory() {
+  static base::NoDestructor<
+      ProfileProtoDBFactory<cart_db::ChromeCartContentProto>>
+      instance;
+  return instance.get();
+}
+
+template <>
+ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
+ProfileProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance() {
+  return GetChromeCartProfileProtoDBFactory();
+}
+
+#else
+ProfileProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>*
+GetCommerceSubscriptionProfileProtoDBFactory() {
+  static base::NoDestructor<ProfileProtoDBFactory<
+      commerce_subscription_db::CommerceSubscriptionContentProto>>
+      instance;
+  return instance.get();
+}
+
+template <>
+ProfileProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>*
+ProfileProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>::GetInstance() {
+  return GetCommerceSubscriptionProfileProtoDBFactory();
+}
+#endif

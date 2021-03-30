@@ -56,6 +56,7 @@ class Element;
 class ExceptionState;
 class ExecutionContext;
 class GCObservation;
+class HTMLCanvasElement;
 class HTMLIFrameElement;
 class HTMLInputElement;
 class HTMLMediaElement;
@@ -80,6 +81,7 @@ class ScrollState;
 class SequenceTest;
 class ShadowRoot;
 class StaticSelection;
+class Text;
 class TypeConversions;
 class UnionTypesTest;
 
@@ -178,21 +180,21 @@ class Internals final : public ScriptWrappable {
   DOMRectReadOnly* boundingBox(Element*);
 
   void setMarker(Document*, const Range*, const String&, ExceptionState&);
-  unsigned markerCountForNode(Node*, const String&, ExceptionState&);
-  unsigned activeMarkerCountForNode(Node*);
-  Range* markerRangeForNode(Node*,
+  unsigned markerCountForNode(Text*, const String&, ExceptionState&);
+  unsigned activeMarkerCountForNode(Text*);
+  Range* markerRangeForNode(Text*,
                             const String& marker_type,
                             unsigned index,
                             ExceptionState&);
-  String markerDescriptionForNode(Node*,
+  String markerDescriptionForNode(Text*,
                                   const String& marker_type,
                                   unsigned index,
                                   ExceptionState&);
-  unsigned markerBackgroundColorForNode(Node*,
+  unsigned markerBackgroundColorForNode(Text*,
                                         const String& marker_type,
                                         unsigned index,
                                         ExceptionState&);
-  unsigned markerUnderlineColorForNode(Node*,
+  unsigned markerUnderlineColorForNode(Text*,
                                        const String& marker_type,
                                        unsigned index,
                                        ExceptionState&);
@@ -466,8 +468,6 @@ class Internals final : public ScriptWrappable {
   DOMRect* selectionBounds(ExceptionState&);
   String textAffinity();
 
-  bool loseSharedGraphicsContext3D();
-
   void forceCompositingUpdate(Document*, ExceptionState&);
 
   void setForcedColorsAndDarkPreferredColorScheme(Document* document);
@@ -508,6 +508,8 @@ class Internals final : public ScriptWrappable {
 
   bool isInCanvasFontCache(Document*, const String&);
   unsigned canvasFontCacheMaxFonts();
+  void forceLoseCanvasContext(HTMLCanvasElement* canvas,
+                              const String& context_type);
 
   void setScrollChain(ScrollState*,
                       const HeapVector<Member<Element>>& elements,
@@ -617,6 +619,11 @@ class Internals final : public ScriptWrappable {
                                        const String& optimizer,
                                        ExceptionState&);
 
+  ScriptValue createWritableStreamAndSink(ScriptState* script_state,
+                                          int32_t queueSize,
+                                          const String& optimizer,
+                                          ExceptionState&);
+
  private:
   Document* ContextDocument() const;
   Vector<String> IconURLs(Document*, int icon_types_mask) const;
@@ -629,7 +636,7 @@ class Internals final : public ScriptWrappable {
                    int height,
                    Document*);
 
-  DocumentMarker* MarkerAt(Node*,
+  DocumentMarker* MarkerAt(Text*,
                            const String& marker_type,
                            unsigned index,
                            ExceptionState&);

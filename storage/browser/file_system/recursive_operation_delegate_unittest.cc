@@ -148,11 +148,10 @@ class RecursiveOperationDelegateTest : public testing::Test {
   void TearDown() override { sandbox_file_system_.TearDown(); }
 
   std::unique_ptr<FileSystemOperationContext> NewContext() {
-    FileSystemOperationContext* context =
-        sandbox_file_system_.NewOperationContext();
+    auto context = sandbox_file_system_.NewOperationContext();
     // Grant enough quota for all test cases.
     context->set_allowed_bytes_growth(1000000);
-    return base::WrapUnique(context);
+    return context;
   }
 
   FileSystemFileUtil* file_util() { return sandbox_file_system_.file_util(); }

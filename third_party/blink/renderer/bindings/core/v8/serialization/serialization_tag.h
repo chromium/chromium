@@ -43,16 +43,15 @@ enum SerializationTag {
                           // transferred MojoHandle.
   kBlobTag = 'b',  // uuid:WebCoreString, type:WebCoreString, size:uint64_t ->
                    // Blob (ref)
-  kBlobIndexTag = 'i',      // index:int32_t -> Blob (ref)
-  kFileTag = 'f',           // file:RawFile -> File (ref)
-  kFileIndexTag = 'e',      // index:int32_t -> File (ref)
-  kDOMFileSystemTag = 'd',  // type:int32_t, name:WebCoreString,
-                            // uuid:WebCoreString -> FileSystem (ref)
-  kNativeFileSystemFileHandleTag = 'n',  // name:WebCoreString, index:uint32_t
-                                         // -> NativeFileSystemFileHandle (ref)
-  kNativeFileSystemDirectoryHandleTag =
-      'N',  // name:WebCoreString, index:uint32_t ->
-            // NativeFileSystemDirectoryHandle (ref)
+  kBlobIndexTag = 'i',             // index:int32_t -> Blob (ref)
+  kFileTag = 'f',                  // file:RawFile -> File (ref)
+  kFileIndexTag = 'e',             // index:int32_t -> File (ref)
+  kDOMFileSystemTag = 'd',         // type:int32_t, name:WebCoreString,
+                                   // uuid:WebCoreString -> FileSystem (ref)
+  kFileSystemFileHandleTag = 'n',  // name:WebCoreString, index:uint32_t
+                                   // -> FileSystemFileHandle (ref)
+  kFileSystemDirectoryHandleTag = 'N',  // name:WebCoreString, index:uint32_t ->
+                                        // FileSystemDirectoryHandle (ref)
   kFileListTag =
       'l',  // length:uint32_t, files:RawFile[length] -> FileList (ref)
   kFileListIndexTag =
@@ -105,6 +104,7 @@ enum SerializationTag {
   kRTCEncodedAudioFrameTag = 'A',  // uint32_t -> transferred audio frame ID
   kRTCEncodedVideoFrameTag = 'V',  // uint32_t -> transferred video frame ID
 
+  kAudioFrameTag = 'a',  // uint32_t -> transferred audio frame data
   kVideoFrameTag = 'v',  // uint32_t -> transferred video frame ID
 
   // The following tags were used by the Shape Detection API implementation

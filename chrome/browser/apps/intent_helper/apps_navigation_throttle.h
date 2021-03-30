@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/gurl.h"
 
@@ -36,6 +35,8 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
       content::NavigationHandle* handle);
 
   explicit AppsNavigationThrottle(content::NavigationHandle* navigation_handle);
+  AppsNavigationThrottle(const AppsNavigationThrottle&) = delete;
+  AppsNavigationThrottle& operator=(const AppsNavigationThrottle&) = delete;
   ~AppsNavigationThrottle() override;
 
   // content::NavigationHandle overrides
@@ -53,6 +54,10 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
 
   virtual bool ShouldCancelNavigation(content::NavigationHandle* handle);
 
+  virtual bool ShouldShowDisablePage(content::NavigationHandle* handle);
+
+  virtual ThrottleCheckResult MaybeShowCustomResult();
+
   bool navigate_from_link() const;
 
   // Keeps track of whether we already shown the UI or preferred app. Since
@@ -62,15 +67,21 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
   // trigger the UI twice for the same throttle.
   // TODO(crbug.com/824598): This is no longer needed after removing
   // ChromeOsAppsNavigationThrottle.
-  bool ui_displayed_;
+  bool ui_displayed_ = false;
 
   GURL starting_url_;
 
  private:
   // Returns whether navigation to |url| was captured by a web app and what to
   // do next if so.
-  base::Optional<ThrottleCheckResult>
-  CaptureExperimentalTabStripWebAppScopeNavigations(
+  // Note that this implementation is only for:
+  //  - |kDesktopPWAsTabStripLinkCapturing|
+  //  - |kWebAppEnableLinkCapturing| when |kIntentPickerPWAPersistence| is
+  //    disabled.
+  // When |kIntentPickerPWAPersistence| is enabled |kWebAppEnableLinkCapturing|
+  // is handled by WebAppsBase::LaunchAppWithIntentImpl() instead and integrates
+  // properly with App Service's intent handling system.
+  base::Optional<ThrottleCheckResult> CaptureWebAppScopeNavigations(
       content::WebContents* web_contents,
       content::NavigationHandle* handle) const;
 
@@ -79,9 +90,7 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
   // Keeps track of whether the navigation is coming from a link or not. If the
   // navigation is not from a link, we will not show the pop up for the intent
   // picker bubble.
-  bool navigate_from_link_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppsNavigationThrottle);
+  bool navigate_from_link_ = false;
 };
 
 }  // namespace apps

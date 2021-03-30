@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_METRICS_CLEAN_EXIT_BEACON_H_
 #define COMPONENTS_METRICS_CLEAN_EXIT_BEACON_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 class PrefRegistrySimple;
@@ -22,9 +23,8 @@ class CleanExitBeacon {
   // |local_state| must be fully initialized.
   // On Windows, |backup_registry_key| is used to store a backup of the beacon.
   // It is ignored on other platforms.
-  CleanExitBeacon(
-      const base::string16& backup_registry_key,
-      PrefService* local_state);
+  CleanExitBeacon(const std::wstring& backup_registry_key,
+                  PrefService* local_state);
 
   ~CleanExitBeacon();
 
@@ -53,7 +53,7 @@ class CleanExitBeacon {
   // time of construction. It notes a timestamp from the previous browser
   // session when the browser was known to be alive.
   const base::Time initial_browser_last_live_timestamp_;
-  const base::string16 backup_registry_key_;
+  const std::wstring backup_registry_key_;
 
   DISALLOW_COPY_AND_ASSIGN(CleanExitBeacon);
 };

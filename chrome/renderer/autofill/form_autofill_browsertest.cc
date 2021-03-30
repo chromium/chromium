@@ -4,12 +4,12 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
 #include "base/format_macros.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -21,7 +21,7 @@
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -277,10 +277,7 @@ bool ClickElement(const WebDocument& document,
 
 class FormAutofillTest : public ChromeRenderViewTest {
  public:
-  FormAutofillTest() : ChromeRenderViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-  }
+  FormAutofillTest() : ChromeRenderViewTest() {}
   ~FormAutofillTest() override {}
 
 #if defined(OS_WIN)
@@ -290,16 +287,16 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Autofill uses the system font to render suggestion previews. On Windows
     // an extra step is required to ensure that the system font is configured.
     blink::WebFontRendering::SetMenuFontMetrics(
-        base::ASCIIToUTF16("Arial").c_str(), 12);
+        blink::WebString::FromASCII("Arial"), 12);
   }
 #endif
 
   void ExpectLabels(const char* html,
-                    const std::vector<base::string16>& id_attributes,
-                    const std::vector<base::string16>& name_attributes,
-                    const std::vector<base::string16>& labels,
-                    const std::vector<base::string16>& names,
-                    const std::vector<base::string16>& values) {
+                    const std::vector<std::u16string>& id_attributes,
+                    const std::vector<std::u16string>& name_attributes,
+                    const std::vector<std::u16string>& labels,
+                    const std::vector<std::u16string>& names,
+                    const std::vector<std::u16string>& values) {
     ASSERT_EQ(labels.size(), id_attributes.size());
     ASSERT_EQ(labels.size(), name_attributes.size());
     ASSERT_EQ(labels.size(), names.size());
@@ -348,23 +345,23 @@ class FormAutofillTest : public ChromeRenderViewTest {
   // the name attribute to identify the input fields. Otherwise, this is the
   // same text structure as ExpectJohnSmithLabelsAndNameAttributes().
   void ExpectJohnSmithLabelsAndIdAttributes(const char* html) {
-    std::vector<base::string16> id_attributes, name_attributes, labels, names,
+    std::vector<std::u16string> id_attributes, name_attributes, labels, names,
         values;
 
     id_attributes.push_back(ASCIIToUTF16("firstname"));
-    name_attributes.push_back(base::string16());
+    name_attributes.push_back(std::u16string());
     labels.push_back(ASCIIToUTF16("First name:"));
     names.push_back(id_attributes.back());
     values.push_back(ASCIIToUTF16("John"));
 
     id_attributes.push_back(ASCIIToUTF16("lastname"));
-    name_attributes.push_back(base::string16());
+    name_attributes.push_back(std::u16string());
     labels.push_back(ASCIIToUTF16("Last name:"));
     names.push_back(id_attributes.back());
     values.push_back(ASCIIToUTF16("Smith"));
 
     id_attributes.push_back(ASCIIToUTF16("email"));
-    name_attributes.push_back(base::string16());
+    name_attributes.push_back(std::u16string());
     labels.push_back(ASCIIToUTF16("Email:"));
     names.push_back(id_attributes.back());
     values.push_back(ASCIIToUTF16("john@example.com"));
@@ -376,21 +373,21 @@ class FormAutofillTest : public ChromeRenderViewTest {
   // the id attribute to identify the input fields. Otherwise, this is the same
   // text structure as ExpectJohnSmithLabelsAndIdAttributes().
   void ExpectJohnSmithLabelsAndNameAttributes(const char* html) {
-    std::vector<base::string16> id_attributes, name_attributes, labels, names,
+    std::vector<std::u16string> id_attributes, name_attributes, labels, names,
         values;
-    id_attributes.push_back(base::string16());
+    id_attributes.push_back(std::u16string());
     name_attributes.push_back(ASCIIToUTF16("firstname"));
     labels.push_back(ASCIIToUTF16("First name:"));
     names.push_back(name_attributes.back());
     values.push_back(ASCIIToUTF16("John"));
 
-    id_attributes.push_back(base::string16());
+    id_attributes.push_back(std::u16string());
     name_attributes.push_back(ASCIIToUTF16("lastname"));
     labels.push_back(ASCIIToUTF16("Last name:"));
     names.push_back(name_attributes.back());
     values.push_back(ASCIIToUTF16("Smith"));
 
-    id_attributes.push_back(base::string16());
+    id_attributes.push_back(std::u16string());
     name_attributes.push_back(ASCIIToUTF16("email"));
     labels.push_back(ASCIIToUTF16("Email:"));
     names.push_back(name_attributes.back());
@@ -398,8 +395,9 @@ class FormAutofillTest : public ChromeRenderViewTest {
     ExpectLabels(html, id_attributes, name_attributes, labels, names, values);
   }
 
-  typedef void (*FillFormFunction)(const FormData& form,
-                                   const WebFormControlElement& element);
+  typedef std::vector<WebFormControlElement> (*FillFormFunction)(
+      const FormData& form,
+      const WebFormControlElement& element);
 
   typedef WebString (*GetValueFunction)(WebFormControlElement element);
 
@@ -663,20 +661,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // selected text.
     EXPECT_EQ(0, firstname.SelectionStart());
     EXPECT_EQ(0, firstname.SelectionEnd());
-  }
-
-  void TestUnmatchedUnownedForm(const char* html, const char* url_override) {
-    if (url_override)
-      LoadHTMLWithUrlOverride(html, url_override);
-    else
-      LoadHTML(html);
-
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
-
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
-    ASSERT_EQ(0U, forms.size());
   }
 
   void TestFindFormForInputElement(const char* html, bool unowned) {
@@ -1337,7 +1321,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // We now modify the values.
     // This will be ignored, the string will be sanitized into an empty string.
     control_elements[0].SetValue(WebString::FromUTF16(
-        base::char16(base::i18n::kLeftToRightMark) + ASCIIToUTF16("     ")));
+        char16_t{base::i18n::kLeftToRightMark} + ASCIIToUTF16("     ")));
 
     // This will be considered as a value entered by the user.
     control_elements[1].SetValue(WebString::FromUTF16(ASCIIToUTF16("Earp")));
@@ -1519,9 +1503,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // We now modify the values.
     // These will be ignored, because it's (case insensitively) equal to the
     // placeholder.
-    control_elements[0].SetValue(
-        WebString::FromUTF16(base::char16(base::i18n::kLeftToRightMark) +
-                             ASCIIToUTF16("first name")));
+    control_elements[0].SetValue(WebString::FromUTF16(
+        char16_t{base::i18n::kLeftToRightMark} + ASCIIToUTF16("first name")));
     control_elements[1].SetValue(
         WebString::FromUTF16(ASCIIToUTF16("LAST NAME")));
     // This will be considered.
@@ -2152,7 +2135,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_EQ(0, firstname.SelectionEnd());
   }
 
-  void TestClearPreviewedFormWithElement(const char* html) {
+  void TestClearPreviewedElements(const char* html) {
     LoadHTML(html);
     WebLocalFrame* web_frame = GetMainFrame();
     ASSERT_NE(nullptr, web_frame);
@@ -2161,27 +2144,28 @@ class FormAutofillTest : public ChromeRenderViewTest {
     std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
     ASSERT_EQ(1U, forms.size());
 
+    std::vector<WebFormControlElement> elements;
+    elements.push_back(GetInputElementById("firstname"));
+    elements.push_back(GetInputElementById("lastname"));
+    elements.push_back(GetInputElementById("email"));
+    elements.push_back(GetInputElementById("email2"));
+    elements.push_back(GetInputElementById("phone"));
+    WebInputElement& firstname = *blink::ToWebInputElement(&elements[0]);
+    WebInputElement& lastname = *blink::ToWebInputElement(&elements[1]);
+
     // Set the auto-filled attribute.
-    WebInputElement firstname = GetInputElementById("firstname");
-    firstname.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement lastname = GetInputElementById("lastname");
-    lastname.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement email = GetInputElementById("email");
-    email.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement email2 = GetInputElementById("email2");
-    email2.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement phone = GetInputElementById("phone");
-    phone.SetAutofillState(WebAutofillState::kPreviewed);
+    for (WebFormControlElement& e : elements) {
+      e.SetAutofillState(WebAutofillState::kPreviewed);
+    }
 
     // Set the suggested values on two of the elements.
     lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
-    email.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    email2.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    phone.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
+    elements[2].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[3].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[4].SetSuggestedValue(WebString::FromASCII("650-777-9999"));
 
     // Clear the previewed fields.
-    EXPECT_TRUE(
-        ClearPreviewedFormWithElement(lastname, WebAutofillState::kNotFilled));
+    ClearPreviewedElements(elements, lastname, WebAutofillState::kNotFilled);
 
     // Fields with empty suggestions suggestions are not modified.
     EXPECT_EQ(ASCIIToUTF16("Wyatt"), firstname.Value().Utf16());
@@ -2189,18 +2173,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_TRUE(firstname.IsAutofilled());
 
     // Verify the previewed fields are cleared.
-    EXPECT_TRUE(lastname.Value().IsEmpty());
-    EXPECT_TRUE(lastname.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(lastname.IsAutofilled());
-    EXPECT_TRUE(email.Value().IsEmpty());
-    EXPECT_TRUE(email.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(email.IsAutofilled());
-    EXPECT_TRUE(email2.Value().IsEmpty());
-    EXPECT_TRUE(email2.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(email2.IsAutofilled());
-    EXPECT_TRUE(phone.Value().IsEmpty());
-    EXPECT_TRUE(phone.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(phone.IsAutofilled());
+    for (size_t i = 1; i < elements.size(); ++i) {
+      SCOPED_TRACE(testing::Message() << "Element " << i);
+      EXPECT_TRUE(elements[i].Value().IsEmpty());
+      EXPECT_TRUE(elements[i].SuggestedValue().IsEmpty());
+      EXPECT_FALSE(elements[i].IsAutofilled());
+    }
 
     // Verify that the cursor position has been updated.
     EXPECT_EQ(0, lastname.SelectionStart());
@@ -2216,28 +2194,29 @@ class FormAutofillTest : public ChromeRenderViewTest {
     std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
     ASSERT_EQ(1U, forms.size());
 
+    std::vector<WebFormControlElement> elements;
+    elements.push_back(GetInputElementById("firstname"));
+    elements.push_back(GetInputElementById("lastname"));
+    elements.push_back(GetInputElementById("email"));
+    elements.push_back(GetInputElementById("email2"));
+    elements.push_back(GetInputElementById("phone"));
+    WebInputElement& firstname = *blink::ToWebInputElement(&elements[0]);
+    WebInputElement& lastname = *blink::ToWebInputElement(&elements[1]);
+
     // Set the auto-filled attribute.
-    WebInputElement firstname = GetInputElementById("firstname");
-    firstname.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement lastname = GetInputElementById("lastname");
-    lastname.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement email = GetInputElementById("email");
-    email.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement email2 = GetInputElementById("email2");
-    email2.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement phone = GetInputElementById("phone");
-    phone.SetAutofillState(WebAutofillState::kPreviewed);
+    for (WebFormControlElement& e : elements) {
+      e.SetAutofillState(WebAutofillState::kPreviewed);
+    }
 
     // Set the suggested values on all of the elements.
     firstname.SetSuggestedValue(WebString::FromASCII("Wyatt"));
     lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
-    email.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    email2.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    phone.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
+    elements[2].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[3].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[4].SetSuggestedValue(WebString::FromASCII("650-777-9999"));
 
     // Clear the previewed fields.
-    EXPECT_TRUE(
-        ClearPreviewedFormWithElement(firstname, WebAutofillState::kNotFilled));
+    ClearPreviewedElements(elements, firstname, WebAutofillState::kNotFilled);
 
     // Fields with non-empty values are restored.
     EXPECT_EQ(ASCIIToUTF16("W"), firstname.Value().Utf16());
@@ -2247,18 +2226,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_EQ(1, firstname.SelectionEnd());
 
     // Verify the previewed fields are cleared.
-    EXPECT_TRUE(lastname.Value().IsEmpty());
-    EXPECT_TRUE(lastname.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(lastname.IsAutofilled());
-    EXPECT_TRUE(email.Value().IsEmpty());
-    EXPECT_TRUE(email.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(email.IsAutofilled());
-    EXPECT_TRUE(email2.Value().IsEmpty());
-    EXPECT_TRUE(email2.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(email2.IsAutofilled());
-    EXPECT_TRUE(phone.Value().IsEmpty());
-    EXPECT_TRUE(phone.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(phone.IsAutofilled());
+    for (size_t i = 1; i < elements.size(); ++i) {
+      SCOPED_TRACE(testing::Message() << "Element " << i);
+      EXPECT_TRUE(elements[i].Value().IsEmpty());
+      EXPECT_TRUE(elements[i].SuggestedValue().IsEmpty());
+      EXPECT_FALSE(elements[i].IsAutofilled());
+    }
   }
 
   void TestClearPreviewedFormWithAutofilledInitiatingNode(const char* html) {
@@ -2270,28 +2243,29 @@ class FormAutofillTest : public ChromeRenderViewTest {
     std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
     ASSERT_EQ(1U, forms.size());
 
+    std::vector<WebFormControlElement> elements;
+    elements.push_back(GetInputElementById("firstname"));
+    elements.push_back(GetInputElementById("lastname"));
+    elements.push_back(GetInputElementById("email"));
+    elements.push_back(GetInputElementById("email2"));
+    elements.push_back(GetInputElementById("phone"));
+    WebInputElement& firstname = *blink::ToWebInputElement(&elements[0]);
+    WebInputElement& lastname = *blink::ToWebInputElement(&elements[1]);
+
     // Set the auto-filled attribute.
-    WebInputElement firstname = GetInputElementById("firstname");
-    firstname.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement lastname = GetInputElementById("lastname");
-    lastname.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement email = GetInputElementById("email");
-    email.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement email2 = GetInputElementById("email2");
-    email2.SetAutofillState(WebAutofillState::kPreviewed);
-    WebInputElement phone = GetInputElementById("phone");
-    phone.SetAutofillState(WebAutofillState::kPreviewed);
+    for (WebFormControlElement& e : elements) {
+      e.SetAutofillState(WebAutofillState::kPreviewed);
+    }
 
     // Set the suggested values on all of the elements.
     firstname.SetSuggestedValue(WebString::FromASCII("Wyatt"));
     lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
-    email.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    email2.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    phone.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
+    elements[2].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[3].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[4].SetSuggestedValue(WebString::FromASCII("650-777-9999"));
 
     // Clear the previewed fields.
-    EXPECT_TRUE(ClearPreviewedFormWithElement(firstname,
-                                              WebAutofillState::kAutofilled));
+    ClearPreviewedElements(elements, firstname, WebAutofillState::kAutofilled);
 
     // Fields with non-empty values are restored.
     EXPECT_EQ(ASCIIToUTF16("W"), firstname.Value().Utf16());
@@ -2301,18 +2275,12 @@ class FormAutofillTest : public ChromeRenderViewTest {
     EXPECT_EQ(1, firstname.SelectionEnd());
 
     // Verify the previewed fields are cleared.
-    EXPECT_TRUE(lastname.Value().IsEmpty());
-    EXPECT_TRUE(lastname.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(lastname.IsAutofilled());
-    EXPECT_TRUE(email.Value().IsEmpty());
-    EXPECT_TRUE(email.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(email.IsAutofilled());
-    EXPECT_TRUE(email2.Value().IsEmpty());
-    EXPECT_TRUE(email2.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(email2.IsAutofilled());
-    EXPECT_TRUE(phone.Value().IsEmpty());
-    EXPECT_TRUE(phone.SuggestedValue().IsEmpty());
-    EXPECT_FALSE(phone.IsAutofilled());
+    for (size_t i = 1; i < elements.size(); ++i) {
+      SCOPED_TRACE(testing::Message() << "Element " << i);
+      EXPECT_TRUE(elements[i].Value().IsEmpty());
+      EXPECT_TRUE(elements[i].SuggestedValue().IsEmpty());
+      EXPECT_FALSE(elements[i].IsAutofilled());
+    }
   }
 
   void TestClearOnlyAutofilledFields(const char* html) {
@@ -3186,7 +3154,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_CssClasses) {
   EXPECT_EQ(3U, form.fields.size());
   EXPECT_EQ(ASCIIToUTF16("firstname_field"), form.fields[0].css_classes);
   EXPECT_EQ(ASCIIToUTF16("lastname_field"), form.fields[1].css_classes);
-  EXPECT_EQ(base::string16(), form.fields[2].css_classes);
+  EXPECT_EQ(std::u16string(), form.fields[2].css_classes);
 }
 
 // Tests id attributes are set.
@@ -3579,40 +3547,6 @@ TEST_F(FormAutofillTest, PreviewFormForUnownedNonEnglishForm) {
   TestPreviewForm(kUnownedNonEnglishFormHtml, true, nullptr);
 }
 
-// Data that looks like an unowned form should NOT be matched unless an
-// additional indicator is present, such as title tag or url, to prevent false
-// positives. The fields that have an autocomplete attribute should match since
-// there is no chance of making a prediction error.
-
-TEST_F(FormAutofillTest, UnmatchedFormNoURL) {
-  TestUnmatchedUnownedForm(kUnownedUntitledFormHtml, nullptr);
-}
-
-TEST_F(FormAutofillTest, UnmatchedFormPathWithoutKeywords) {
-  TestUnmatchedUnownedForm(kUnownedUntitledFormHtml,
-                           "http://example.test/path_without_keywords");
-}
-
-TEST_F(FormAutofillTest, UnmatchedFormKeywordInQueryOnly) {
-  TestUnmatchedUnownedForm(kUnownedUntitledFormHtml,
-                           "http://example.test/search?q=checkout+in+query");
-}
-
-TEST_F(FormAutofillTest, UnmatchedFormTitleWithoutKeywords) {
-  std::string wrong_title_html(
-      "<TITLE>This title has nothing to do with autofill</TITLE>");
-  wrong_title_html += kUnownedUntitledFormHtml;
-  TestUnmatchedUnownedForm(wrong_title_html.c_str(), nullptr);
-}
-
-TEST_F(FormAutofillTest, UnmatchedFormNonASCII) {
-  std::string html("<HEAD><TITLE>Non-ASCII soft hyphen in the middle of "
-                   "keyword prevents a match here: check\xC2\xADout"
-                   "</TITLE></HEAD>");
-  html.append(kUnownedUntitledFormHtml);
-  TestUnmatchedUnownedForm(html.c_str(), nullptr);
-}
-
 
 TEST_F(FormAutofillTest, Labels) {
   ExpectJohnSmithLabelsAndIdAttributes(
@@ -3647,7 +3581,7 @@ TEST_F(FormAutofillTest, LabelsWithSpans) {
 // however, current label parsing code will extract the text from the previous
 // label element and apply it to the following input field.
 TEST_F(FormAutofillTest, InvalidLabels) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16(""));
@@ -3803,7 +3737,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableCellTH) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromTableCellNested) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -3878,7 +3812,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableCellNested) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromTableEmptyTDs) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -3944,7 +3878,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableEmptyTDs) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromPreviousTD) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -4180,7 +4114,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableTDInterveningElements) {
 // Verify that we correctly infer labels when the label text spans multiple
 // adjacent HTML elements, not separated by whitespace.
 TEST_F(FormAutofillTest, LabelsInferredFromTableAdjacentElements) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -4241,7 +4175,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableAdjacentElements) {
 // Verify that we correctly infer labels when the label text resides in the
 // previous row.
 TEST_F(FormAutofillTest, LabelsInferredFromTableRow) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -4365,7 +4299,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableRow) {
 
 // Verify that we correctly infer labels when enclosed within a list item.
 TEST_F(FormAutofillTest, LabelsInferredFromListItem) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("areacode"));
@@ -4407,7 +4341,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromListItem) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromDefinitionList) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -4477,26 +4411,26 @@ TEST_F(FormAutofillTest, LabelsInferredFromDefinitionList) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredWithSameName) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("Address"));
   labels.push_back(ASCIIToUTF16("Address Line 1:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("Address"));
   labels.push_back(ASCIIToUTF16("Address Line 2:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("Address"));
   labels.push_back(ASCIIToUTF16("Address Line 3:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   ExpectLabels(
       "<FORM name='TestForm' action='http://cnn.com' method='post'>"
@@ -4512,38 +4446,38 @@ TEST_F(FormAutofillTest, LabelsInferredWithSameName) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredWithImageTags) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dayphone1"));
   labels.push_back(ASCIIToUTF16("Phone:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dayphone2"));
   labels.push_back(ASCIIToUTF16(""));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dayphone3"));
   labels.push_back(ASCIIToUTF16(""));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dayphone4"));
   labels.push_back(ASCIIToUTF16("ext.:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dummy"));
-  labels.push_back(base::string16());
+  labels.push_back(std::u16string());
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   ExpectLabels(
       "<FORM name='TestForm' action='http://cnn.com' method='post'>"
@@ -5101,8 +5035,8 @@ TEST_F(FormAutofillTest,
       true);
 }
 
-TEST_F(FormAutofillTest, ClearPreviewedFormWithElement) {
-  TestClearPreviewedFormWithElement(
+TEST_F(FormAutofillTest, ClearPreviewedElements) {
+  TestClearPreviewedElements(
       "<FORM name='TestForm' action='http://abc.com' method='post'>"
       "  <INPUT type='text' id='firstname' value='Wyatt'/>"
       "  <INPUT type='text' id='lastname'/>"
@@ -5114,7 +5048,7 @@ TEST_F(FormAutofillTest, ClearPreviewedFormWithElement) {
 }
 
 TEST_F(FormAutofillTest, ClearPreviewedFormWithElementForUnownedForm) {
-  TestClearPreviewedFormWithElement(
+  TestClearPreviewedElements(
       "<HEAD><TITLE>store checkout</TITLE></HEAD>"
       "<INPUT type='text' id='firstname' value='Wyatt'/>"
       "<INPUT type='text' id='lastname'/>"
@@ -5196,23 +5130,23 @@ TEST_F(FormAutofillTest, ClearOnlyAutofilledFieldsForUnownedForm) {
 
 // If we have multiple labels per id, the labels concatenated into label string.
 TEST_F(FormAutofillTest, MultipleLabelsPerElement) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
-  name_attributes.push_back(base::string16());
+  name_attributes.push_back(std::u16string());
   labels.push_back(ASCIIToUTF16("First Name:"));
   names.push_back(id_attributes.back());
   values.push_back(ASCIIToUTF16("John"));
 
   id_attributes.push_back(ASCIIToUTF16("lastname"));
-  name_attributes.push_back(base::string16());
+  name_attributes.push_back(std::u16string());
   labels.push_back(ASCIIToUTF16("Last Name:"));
   names.push_back(id_attributes.back());
   values.push_back(ASCIIToUTF16("Smith"));
 
   id_attributes.push_back(ASCIIToUTF16("email"));
-  name_attributes.push_back(base::string16());
+  name_attributes.push_back(std::u16string());
   labels.push_back(ASCIIToUTF16("Email: xxx@yyy.com"));
   names.push_back(id_attributes.back());
   values.push_back(ASCIIToUTF16("john@example.com"));
@@ -5388,7 +5322,7 @@ TEST_F(FormAutofillTest,
   ASSERT_EQ(2U, fieldsets.size());
 
   FormData form;
-  EXPECT_TRUE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
       extract_mask, &form, nullptr));
 
@@ -5451,7 +5385,7 @@ TEST_F(FormAutofillTest,
   ASSERT_EQ(1U, fieldsets.size());
 
   FormData form;
-  EXPECT_TRUE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
       extract_mask, &form, nullptr));
 
@@ -5503,7 +5437,7 @@ TEST_F(FormAutofillTest, UnownedFormElementsAndFieldSetsToFormDataWithForm) {
   ASSERT_TRUE(fieldsets.empty());
 
   FormData form;
-  EXPECT_FALSE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
+  EXPECT_FALSE(UnownedFormElementsAndFieldSetsToFormData(
       fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
       extract_mask, &form, nullptr));
 }
@@ -5526,21 +5460,8 @@ TEST_F(FormAutofillTest, FormlessForms) {
   ASSERT_TRUE(fieldsets.empty());
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
     FormData form;
-    EXPECT_FALSE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
-        fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
-        extract_mask, &form, nullptr));
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-    FormData form;
-    EXPECT_TRUE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
+    EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
         fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
         extract_mask, &form, nullptr));
   }
@@ -5550,29 +5471,28 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
   struct {
     const char* description;
     const char* html;
-    const bool has_extracted_form;
+    const size_t number_of_extracted_forms;
     const bool is_form_tag;
-    const bool is_formless_checkout;
   } test_cases[] = {
       // An empty form should not be extracted
       {"Empty Form",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "</FORM>",
-       false, true, false},
+       0u, true},
       // A form with less than three fields with no autocomplete type(s) should
       // be extracted because no minimum is being enforced for upload.
       {"Small Form no autocomplete",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "  <INPUT type='text' id='firstname'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
       // A form with less than three fields with at least one autocomplete type
       // should be extracted.
       {"Small Form w/ autocomplete",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "  <INPUT type='text' id='firstname' autocomplete='given-name'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
       // A form with three or more fields should be extracted.
       {"3 Field Form",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
@@ -5581,33 +5501,32 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
        "  <INPUT type='text' id='email'/>"
        "  <INPUT type='submit' value='Send'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
       // An input field with an autocomplete attribute outside of a form should
-      // be extracted. The is_formless_checkout attribute should
-      // then be true.
+      // be extracted.
       {"Small, formless, with autocomplete",
        "<INPUT type='text' id='firstname' autocomplete='given-name'/>"
        "<INPUT type='submit' value='Send'/>",
-       true, false, false},
+       1u, false},
       // An input field without an autocomplete attribute outside of a form,
       // with no checkout hints, should not be extracted.
       {"Small, formless, no autocomplete",
        "<INPUT type='text' id='firstname'/>"
        "<INPUT type='submit' value='Send'/>",
-       false, false, false},
+       1u, false},
       // A form with one field which is password gets extracted.
       {"Password-Only",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "  <INPUT type='password' id='pw'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
       // A form with two fields which are passwords should be extracted.
       {"two passwords",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "  <INPUT type='password' id='pw'/>"
        "  <INPUT type='password' id='new_pw'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
   };
 
   for (auto test_case : test_cases) {
@@ -5619,12 +5538,9 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
 
     FormCache form_cache(web_frame);
     std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
-    EXPECT_EQ(test_case.has_extracted_form, forms.size() == 1);
-
-    if (test_case.has_extracted_form) {
-      EXPECT_EQ(test_case.is_form_tag, forms[0].is_form_tag);
-      EXPECT_EQ(test_case.is_formless_checkout, forms[0].is_formless_checkout);
-    }
+    EXPECT_EQ(test_case.number_of_extracted_forms, forms.size());
+    if (!forms.empty())
+      EXPECT_EQ(test_case.is_form_tag, forms.back().is_form_tag);
   }
 }
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -16,6 +15,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 class OmniboxView;
@@ -37,6 +37,8 @@ class BubbleDialogDelegate;
 // shows a bubble when clicked.
 class PageActionIconView : public IconLabelBubbleView {
  public:
+  METADATA_HEADER(PageActionIconView);
+
   class Delegate {
    public:
     // Gets the opacity to use for the ink highlight.
@@ -56,15 +58,18 @@ class PageActionIconView : public IconLabelBubbleView {
     virtual const OmniboxView* GetOmniboxView() const;
   };
 
+  PageActionIconView(const PageActionIconView&) = delete;
+  PageActionIconView& operator=(const PageActionIconView&) = delete;
   ~PageActionIconView() override;
 
   // Updates the color of the icon, this must be set before the icon is drawn.
   void SetIconColor(SkColor icon_color);
+  SkColor GetIconColor() const;
 
   // Sets the active state of the icon. An active icon will be displayed in a
   // "call to action" color.
   void SetActive(bool active);
-  bool active() const { return active_; }
+  bool GetActive() const;
 
   // Hide the icon on user input in progress and invokes UpdateImpl().
   void Update();
@@ -73,7 +78,7 @@ class PageActionIconView : public IconLabelBubbleView {
   virtual views::BubbleDialogDelegate* GetBubble() const = 0;
 
   // Retrieve the text to be used for a tooltip or accessible name.
-  virtual base::string16 GetTextForTooltipAndAccessibleName() const = 0;
+  virtual std::u16string GetTextForTooltipAndAccessibleName() const = 0;
 
   SkColor GetLabelColorForTesting() const;
 
@@ -104,7 +109,7 @@ class PageActionIconView : public IconLabelBubbleView {
   bool SetCommandEnabled(bool enabled) const;
 
   // Sets the tooltip text.
-  void SetTooltipText(const base::string16& tooltip);
+  void SetTooltipText(const std::u16string& tooltip);
 
   // Invoked prior to executing the command.
   virtual void OnExecuting(ExecuteSource execute_source) = 0;
@@ -114,7 +119,7 @@ class PageActionIconView : public IconLabelBubbleView {
 
   // views::IconLabelBubbleView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
@@ -135,7 +140,6 @@ class PageActionIconView : public IconLabelBubbleView {
 
   // IconLabelBubbleView:
   void OnTouchUiChanged() override;
-  const char* GetClassName() const override;
 
   // Updates the icon image after some state has changed.
   virtual void UpdateIconImage();
@@ -181,8 +185,6 @@ class PageActionIconView : public IconLabelBubbleView {
 
   // The loading indicator, showing a throbber animation on top of the icon.
   PageActionIconLoadingIndicatorView* loading_indicator_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PageActionIconView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_VIEW_H_

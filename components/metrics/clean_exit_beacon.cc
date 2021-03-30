@@ -13,13 +13,14 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #endif
 
 namespace metrics {
 
-CleanExitBeacon::CleanExitBeacon(const base::string16& backup_registry_key,
+CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
                                  PrefService* local_state)
     : local_state_(local_state),
       initial_value_(local_state->GetBoolean(prefs::kStabilityExitedCleanly)),
@@ -44,11 +45,10 @@ CleanExitBeacon::CleanExitBeacon(const base::string16& backup_registry_key,
 
   base::win::RegKey regkey;
   DWORD value = 0u;
-  if (regkey.Open(HKEY_CURRENT_USER,
-                  backup_registry_key_.c_str(),
+  if (regkey.Open(HKEY_CURRENT_USER, backup_registry_key_.c_str(),
                   KEY_ALL_ACCESS) == ERROR_SUCCESS &&
       regkey.ReadValueDW(
-          base::ASCIIToUTF16(prefs::kStabilityExitedCleanly).c_str(), &value) ==
+          base::ASCIIToWide(prefs::kStabilityExitedCleanly).c_str(), &value) ==
           ERROR_SUCCESS) {
     if (value)
       consistency = initial_value_ ? CLEAN_CLEAN : CLEAN_DIRTY;
@@ -80,12 +80,10 @@ void CleanExitBeacon::WriteBeaconValue(bool value) {
 
 #if defined(OS_WIN)
   base::win::RegKey regkey;
-  if (regkey.Create(HKEY_CURRENT_USER,
-                    backup_registry_key_.c_str(),
+  if (regkey.Create(HKEY_CURRENT_USER, backup_registry_key_.c_str(),
                     KEY_ALL_ACCESS) == ERROR_SUCCESS) {
-    regkey.WriteValue(
-        base::ASCIIToUTF16(prefs::kStabilityExitedCleanly).c_str(),
-        value ? 1u : 0u);
+    regkey.WriteValue(base::ASCIIToWide(prefs::kStabilityExitedCleanly).c_str(),
+                      value ? 1u : 0u);
   }
 #endif
 }

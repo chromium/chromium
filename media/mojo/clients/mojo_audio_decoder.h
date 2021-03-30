@@ -36,7 +36,7 @@ class MojoAudioDecoder final : public AudioDecoder,
   // Decoder implementation
   bool IsPlatformDecoder() const final;
   bool SupportsDecryption() const final;
-  std::string GetDisplayName() const final;
+  AudioDecoderType GetDecoderType() const override;
 
   // AudioDecoder implementation.
   void Initialize(const AudioDecoderConfig& config,
@@ -66,7 +66,9 @@ class MojoAudioDecoder final : public AudioDecoder,
   void FailInit(InitCB init_cb, Status err);
 
   // Called when |remote_decoder_| finished initialization.
-  void OnInitialized(const Status& status, bool needs_bitstream_conversion);
+  void OnInitialized(const Status& status,
+                     bool needs_bitstream_conversion,
+                     AudioDecoderType decoder_type);
 
   // Called when |remote_decoder_| accepted or rejected DecoderBuffer.
   void OnDecodeStatus(const Status& decode_status);
@@ -103,6 +105,7 @@ class MojoAudioDecoder final : public AudioDecoder,
   // Flag telling whether this decoder requires bitstream conversion.
   // Passed from |remote_decoder_| as a result of its initialization.
   bool needs_bitstream_conversion_ = false;
+  AudioDecoderType decoder_type_ = AudioDecoderType::kUnknown;
 
   DISALLOW_COPY_AND_ASSIGN(MojoAudioDecoder);
 };

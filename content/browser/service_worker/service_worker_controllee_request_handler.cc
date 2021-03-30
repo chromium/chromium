@@ -18,7 +18,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
-#include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/allow_service_worker_result.h"
@@ -117,22 +116,24 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
 void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,
     BrowserContext* browser_context,
-    ServiceWorkerLoaderCallback callback,
+    NavigationLoaderInterceptor::LoaderCallback loader_callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
-  // InitializeContainerHost() will update the host. This is important to do
-  // before falling back to network below, so service worker APIs still work
-  // even if the service worker is bypassed for request interception.
-  if (!InitializeContainerHost(tentative_resource_request)) {
+  if (!container_host_) {
     // We can't do anything other than to fall back to network.
-    std::move(callback).Run({});
+    std::move(loader_callback).Run({});
     return;
   }
+
+  // Update the host. This is important to do before falling back to network
+  // below, so service worker APIs still work even if the service worker is
+  // bypassed for request interception.
+  InitializeContainerHost(tentative_resource_request);
 
   // Fall back to network if we were instructed to bypass the service worker for
   // request interception, or if the context is gone so we have to bypass
   // anyway.
   if (skip_service_worker_ || !context_) {
-    std::move(callback).Run({});
+    std::move(loader_callback).Run({});
     return;
   }
 
@@ -146,7 +147,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // headers between now and when the request handler passed to
   // |loader_callback_| is invoked.
   if (ShouldFallbackToLoadOfflinePage(tentative_resource_request.headers)) {
-    std::move(callback).Run({});
+    std::move(loader_callback).Run({});
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -161,7 +162,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "URL",
       tentative_resource_request.url.spec());
 
-  loader_callback_ = std::move(callback);
+  loader_callback_ = std::move(loader_callback);
   fallback_callback_ = std::move(fallback_callback);
   registration_lookup_start_time_ = base::TimeTicks::Now();
   browser_context_ = browser_context;
@@ -174,57 +175,8 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
           weak_factory_.GetWeakPtr()));
 }
 
-base::Optional<SubresourceLoaderParams>
-ServiceWorkerControlleeRequestHandler::MaybeCreateSubresourceLoaderParams() {
-  // ContinueWithRegistration() for the request didn't find a matching service
-  // worker for this request, and
-  // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
-  if (!container_host_ || !container_host_->controller())
-    return base::nullopt;
-
-  // Otherwise let's send the controller service worker information along
-  // with the navigation commit.
-  SubresourceLoaderParams params;
-  auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
-  controller_info->mode = container_host_->GetControllerMode();
-  // Note that |controller_info->remote_controller| is null if the controller
-  // has no fetch event handler. In that case the renderer frame won't get the
-  // controller pointer upon the navigation commit, and subresource loading will
-  // not be intercepted. (It might get intercepted later if the controller
-  // changes due to skipWaiting() so SetController is sent.)
-  mojo::Remote<blink::mojom::ControllerServiceWorker> remote =
-      container_host_->GetRemoteControllerServiceWorker();
-  if (remote.is_bound()) {
-    controller_info->remote_controller = remote.Unbind();
-  }
-
-  controller_info->client_id = container_host_->client_uuid();
-  if (container_host_->fetch_request_window_id()) {
-    controller_info->fetch_request_window_id =
-        base::make_optional(container_host_->fetch_request_window_id());
-  }
-  base::WeakPtr<ServiceWorkerObjectHost> object_host =
-      container_host_->GetOrCreateServiceWorkerObjectHost(
-          container_host_->controller());
-  if (object_host) {
-    params.controller_service_worker_object_host = object_host;
-    controller_info->object_info = object_host->CreateIncompleteObjectInfo();
-  }
-  for (const auto feature : container_host_->controller()->used_features()) {
-    controller_info->used_features.push_back(feature);
-  }
-  params.controller_service_worker_info = std::move(controller_info);
-  return base::Optional<SubresourceLoaderParams>(std::move(params));
-}
-
-bool ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
+void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
     const network::ResourceRequest& tentative_resource_request) {
-  ClearJob();
-
-  if (!container_host_) {
-    return false;
-  }
-
   // Update the container host with this request, clearing old controller state
   // if this is a redirect.
   container_host_->SetControllerRegistration(nullptr,
@@ -236,7 +188,6 @@ bool ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
                                   ? tentative_resource_request.trusted_params
                                         ->isolation_info.top_frame_origin()
                                   : base::nullopt);
-  return true;
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
@@ -470,8 +421,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "Info",
       "Forwarded to the ServiceWorker");
   std::move(loader_callback_)
-      .Run(base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
-                          loader_wrapper_->get()->AsWeakPtr()));
+      .Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
+          base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
+                         loader_wrapper_->get()->AsWeakPtr())));
 }
 
 void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
@@ -561,16 +513,6 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
   version->RegisterStatusChangeCallback(base::BindOnce(
       &ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged,
       weak_factory_.GetWeakPtr(), std::move(registration), version));
-}
-
-void ServiceWorkerControlleeRequestHandler::ClearJob() {
-  // Invalidate weak pointers to cancel RegisterStatusChangeCallback().
-  // Otherwise we may end up calling ForwardToServiceWorer()
-  // or FallbackToNetwork() twice on the same |loader()|.
-  // TODO(bashi): Consider not to reuse this handler when restarting the
-  // request after S13nServiceWorker is shipped.
-  weak_factory_.InvalidateWeakPtrs();
-  loader_wrapper_.reset();
 }
 
 void ServiceWorkerControlleeRequestHandler::CompleteWithoutLoader() {

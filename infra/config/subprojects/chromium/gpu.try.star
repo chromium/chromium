@@ -119,6 +119,11 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
+    name = "gpu-fyi-try-android-r-pixel-4-32",
+    pool = "luci.chromium.gpu.android.pixel4.try",
+)
+
+gpu_android_builder(
     name = "gpu-try-android-m-nexus-5x-64",
     pool = "luci.chromium.gpu.android.nexus5x.try",
 )
@@ -152,6 +157,16 @@ def gpu_linux_builder(*, name, **kwargs):
         ssd = None,
         **kwargs
     )
+
+gpu_linux_builder(
+    name = "gpu-fyi-try-lacros-amd-rel",
+    pool = "luci.chromium.gpu.linux.amd.try",
+)
+
+gpu_linux_builder(
+    name = "gpu-fyi-try-lacros-intel-rel",
+    pool = "luci.chromium.gpu.linux.intel.try",
+)
 
 gpu_linux_builder(
     name = "gpu-fyi-try-linux-amd-rel",
@@ -236,11 +251,6 @@ def gpu_mac_builder(*, name, **kwargs):
     )
 
 gpu_mac_builder(
-    name = "gpu-fyi-try-mac-amd-dqp",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
-)
-
-gpu_mac_builder(
     name = "gpu-fyi-try-mac-amd-pro-rel",
     pool = "luci.chromium.gpu.mac.pro.amd.try",
 )
@@ -274,11 +284,6 @@ gpu_mac_builder(
 
 gpu_mac_builder(
     name = "gpu-fyi-try-mac-intel-dbg",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
-)
-
-gpu_mac_builder(
-    name = "gpu-fyi-try-mac-intel-dqp",
     pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
@@ -343,11 +348,6 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
-    name = "gpu-fyi-try-win10-intel-dqp-64",
-    pool = "luci.chromium.gpu.win10.intel.try",
-)
-
-gpu_win_builder(
     name = "gpu-fyi-try-win10-intel-exp-64",
     pool = "luci.chromium.gpu.win10.intel.try",
 )
@@ -359,11 +359,6 @@ gpu_win_builder(
 
 gpu_win_builder(
     name = "gpu-fyi-try-win10-nvidia-dbg-64",
-    pool = "luci.chromium.gpu.win10.nvidia.try",
-)
-
-gpu_win_builder(
-    name = "gpu-fyi-try-win10-nvidia-dqp-64",
     pool = "luci.chromium.gpu.win10.nvidia.try",
 )
 
@@ -410,11 +405,6 @@ gpu_win_builder(
 gpu_win_builder(
     name = "gpu-fyi-try-win7-amd-rel-32",
     pool = "luci.chromium.gpu.win7.amd.try",
-)
-
-gpu_win_builder(
-    name = "gpu-fyi-try-win7-nvidia-dqp-64",
-    pool = "luci.chromium.gpu.win7.nvidia.try",
 )
 
 gpu_win_builder(

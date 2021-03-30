@@ -159,6 +159,15 @@ TEST_F(OAuth2AccessTokenFetcherImplTest, Success) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(OAuth2AccessTokenFetcherImplTest, CancelOngoingRequest) {
+  SetupGetAccessToken(net::OK, net::HTTP_OK, kValidTokenResponse);
+  // `OnGetTokenSuccess()` should not be called.
+  EXPECT_CALL(consumer_, OnGetTokenSuccess(_)).Times(0);
+  fetcher_->Start("client_id", "client_secret", ScopeList());
+  fetcher_->CancelRequest();
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(OAuth2AccessTokenFetcherImplTest, MakeGetAccessTokenBodyNoScope) {
   std::string body =
       "client_id=cid1&"

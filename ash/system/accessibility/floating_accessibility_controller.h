@@ -54,7 +54,7 @@ class ASH_EXPORT FloatingAccessibilityController
   views::Widget* GetBubbleWidget() override;
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
-  base::string16 GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForBubble() override;
   // LocaleChangeObserver:
   void OnLocaleChanged() override;
 

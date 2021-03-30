@@ -89,6 +89,11 @@ MojoResult MojoWatcher::Watch(mojo::Handle handle,
   if (result != MOJO_RESULT_OK)
     return result;
 
+  // If MojoAddTrigger succeeded above, we need this object to stay alive at
+  // least until OnHandleReady is invoked with MOJO_RESULT_CANCELLED, which
+  // signals the final invocation by the trap.
+  keep_alive_ = this;
+
   handle_ = handle;
 
   MojoResult ready_result;
@@ -137,10 +142,9 @@ MojoResult MojoWatcher::Arm(MojoResult* ready_result) {
 
 // static
 void MojoWatcher::OnHandleReady(const MojoTrapEvent* event) {
-  // It is safe to assume the MojoWathcer still exists. It stays alive at least
-  // as long as |handle_| is valid, and |handle_| is only reset after we
-  // dispatch a |MOJO_RESULT_CANCELLED| notification. That is always the last
-  // notification received by this callback.
+  // It is safe to assume the MojoWathcer still exists, because we keep it alive
+  // until we've dispatched MOJO_RESULT_CANCELLED from here to RunReadyCallback,
+  // and that is always the last notification we'll dispatch.
   MojoWatcher* watcher = reinterpret_cast<MojoWatcher*>(event->trigger_context);
   PostCrossThreadTask(
       *watcher->task_runner_, FROM_HERE,
@@ -152,6 +156,7 @@ void MojoWatcher::OnHandleReady(const MojoTrapEvent* event) {
 void MojoWatcher::RunReadyCallback(MojoResult result) {
   if (result == MOJO_RESULT_CANCELLED) {
     // Last notification.
+    keep_alive_.Clear();
     handle_ = mojo::Handle();
 
     // Only dispatch to the callback if this cancellation was implicit due to

@@ -11,7 +11,6 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/policy/core/common/policy_map.h"
@@ -27,7 +26,6 @@
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -132,7 +130,6 @@ ProfileSyncServiceFactory::ProfileSyncServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordStoreFactory::GetInstance());
-  DependsOn(IOSChromeProfileInvalidationProviderFactory::GetInstance());
   DependsOn(IOSUserEventServiceFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
@@ -173,14 +170,6 @@ ProfileSyncServiceFactory::BuildServiceInstanceFor(
   auto* policy_connector = browser_state->GetPolicyConnector();
   init_params.policy_service =
       policy_connector ? policy_connector->GetPolicyService() : nullptr;
-
-  auto* fcm_invalidation_provider =
-      IOSChromeProfileInvalidationProviderFactory::GetForBrowserState(
-          browser_state);
-  if (fcm_invalidation_provider) {
-    init_params.invalidations_identity_provider =
-        fcm_invalidation_provider->GetIdentityProvider();
-  }
 
   auto pss =
       std::make_unique<syncer::ProfileSyncService>(std::move(init_params));

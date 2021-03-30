@@ -6,10 +6,12 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/flags/AllCachedFieldTrialParameters.java",
     "android/java/src/org/chromium/chrome/browser/flags/BooleanCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
     "android/java/src/org/chromium/chrome/browser/flags/DoubleCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtils.java",
     "android/java/src/org/chromium/chrome/browser/flags/IntCachedFieldTrialParameter.java",
@@ -17,12 +19,14 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build:chromeos_buildflags",
     "//chrome/browser/preferences:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  srcjar_deps = [ ":chrome_android_java_switches_srcjar" ]
+  srcjar_deps = [
+    ":chrome_android_java_switches_srcjar",
+    ":chrome_browser_flags_enums_srcjar",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
@@ -30,6 +34,7 @@ generate_jni("jni_headers") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
   ]
 }
 
@@ -37,6 +42,8 @@ static_library("flags_android") {
   sources = [
     "android/cached_feature_flags.cc",
     "android/cached_feature_flags.h",
+    "android/chrome_session_state.cc",
+    "android/chrome_session_state.h",
   ]
   deps = [
     ":jni_headers",
@@ -48,6 +55,10 @@ static_library("flags_android") {
 java_cpp_strings("chrome_android_java_switches_srcjar") {
   sources = [ "//chrome/common/chrome_switches.cc" ]
   template = "android/java_templates/ChromeSwitches.java.tmpl"
+}
+
+java_cpp_enum("chrome_browser_flags_enums_srcjar") {
+  sources = [ "android/chrome_session_state.h" ]
 }
 
 java_library("flags_junit_tests") {
@@ -86,9 +97,9 @@ android_library("javatests") {
     "//base/test:test_support_java",
     "//chrome/android:chrome_java",
     "//chrome/test/android:chrome_java_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_sdk:android_test_mock_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

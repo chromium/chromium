@@ -326,7 +326,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       // If FRAME_DURATION metadata was provided in the source VideoFrame,
       // compute the utilization metrics.
       base::TimeDelta frame_duration =
-          request.video_frame->metadata()->frame_duration.value_or(
+          request.video_frame->metadata().frame_duration.value_or(
               base::TimeDelta());
       if (frame_duration > base::TimeDelta()) {
         // Compute encoder utilization in terms of the number of frames in

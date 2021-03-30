@@ -22,6 +22,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.signin.services.AccountInfoService;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
@@ -33,6 +34,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninReason;
 import org.chromium.components.signin.metrics.SignoutDelete;
@@ -52,8 +54,7 @@ import java.util.List;
  * <p/>
  * See chrome/browser/android/signin/signin_manager_android.h for more details.
  */
-class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededListener,
-                                   IdentityManager.Observer, SigninManager {
+class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private static final String TAG = "SigninManager";
 
     /**
@@ -125,11 +126,15 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
         mSigninAllowedByPolicy =
                 SigninManagerImplJni.get().isSigninAllowedByPolicy(mNativeSigninManagerAndroid);
-
-        mAccountTrackerService.addSystemAccountsSeededListener(this);
         mIdentityManager.addObserver(this);
 
-        reloadAllAccountsFromSystem();
+        AccountInfoService.init(mIdentityManager);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)) {
+            mAccountTrackerService.setOnAccountSeededListener(
+                    mIdentityManager::forceRefreshOfExtendedAccountInfo);
+        }
+        mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
 
         maybeRollbackMobileIdentityConsistency();
     }
@@ -141,8 +146,8 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
     @VisibleForTesting
     @CalledByNative
     void destroy() {
+        AccountInfoService.get().destroy();
         mIdentityManager.removeObserver(this);
-        mAccountTrackerService.removeSystemAccountsSeededListener(this);
         mNativeSigninManagerAndroid = 0;
     }
 
@@ -153,7 +158,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
     private void maybeRollbackMobileIdentityConsistency() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) return;
         // Nothing to do if there's no primary account.
-        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) == null) return;
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) return;
         // Nothing to do if sync is on - this state existed before MobileIdentityConsistency.
         if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) return;
 
@@ -265,17 +270,6 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
     }
 
     /**
-     * Continue pending sign in after system accounts have been seeded into AccountTrackerService.
-     */
-    @Override
-    public void onSystemAccountsSeedingComplete() {
-        if (mSignInState != null && mSignInState.mBlockedOnAccountSeeding) {
-            mSignInState.mBlockedOnAccountSeeding = false;
-            progressSignInFlowCheckPolicy();
-        }
-    }
-
-    /**
      * Starts the sign-in flow, and executes the callback when finished.
      *
      * The sign-in flow goes through the following steps:
@@ -366,12 +360,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
         mSignInState = signinState;
         notifySignInAllowedChanged();
-
-        if (mAccountTrackerService.checkAndSeedSystemAccounts()) {
-            progressSignInFlowCheckPolicy();
-        } else {
-            mSignInState.mBlockedOnAccountSeeding = true;
-        }
+        mAccountTrackerService.seedAccountsIfNeeded(this::progressSignInFlowCheckPolicy);
     }
 
     /**
@@ -420,7 +409,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
         @ConsentLevel
         int consentLevel =
-                mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.NOT_REQUIRED;
+                mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.SIGNIN;
         if (!mIdentityMutator.setPrimaryAccount(
                     mSignInState.mCoreAccountInfo.getId(), consentLevel)) {
             Log.w(TAG, "Failed to set the PrimaryAccount in IdentityManager, aborting signin");
@@ -452,8 +441,8 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
             RecordUserAction.record("Signin_Signin_Succeed");
             RecordHistogram.recordEnumeratedHistogram("Signin.SigninCompletedAccessPoint",
                     mSignInState.getAccessPoint(), SigninAccessPoint.MAX);
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Signin.SigninReason", SigninReason.SIGNIN_PRIMARY_ACCOUNT, SigninReason.MAX);
+            RecordHistogram.recordEnumeratedHistogram("Signin.SigninReason",
+                    SigninReason.REASON_SIGNIN_PRIMARY_ACCOUNT, SigninReason.MAX_VALUE + 1);
         }
 
         if (mSignInState.mCallback != null) {
@@ -471,14 +460,49 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
     }
 
     /**
-     * Implements {@link IdentityManager.Observer}: take action when primary account is set.
-     * Simply verify that the request is ongoing (mSignInState != null), as only SigninManager
-     * should update IdentityManager. This is triggered by the call to
-     * IdentityMutator.setPrimaryAccount
+     * Implements {@link IdentityManager.Observer}
      */
     @Override
-    public void onPrimaryAccountSet(CoreAccountInfo account) {
-        assert mSignInState != null;
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        switch (eventDetails.getEventTypeFor(ConsentLevel.SYNC)) {
+            case PrimaryAccountChangeEvent.Type.SET:
+                // Simply verify that the request is ongoing (mSignInState != null), as only
+                // SigninManager should update IdentityManager. This is triggered by the call to
+                // IdentityMutator.setPrimaryAccount
+                assert mSignInState != null;
+                break;
+            case PrimaryAccountChangeEvent.Type.CLEARED:
+                // This event can occur in two cases:
+                // - Syncing account is signed out. User may choose to delete data from UI prompt
+                //   if account is not managed. In this case mSigninOutState is set.
+                // - RevokeSyncConsent() is called in native code. In this case the user may still
+                //   be signed in with Consentlevel::SIGNIN and just lose sync privileges.
+                //   If the account is managed then the data should be wiped.
+                //
+                //   TODO(https://crbug.com/1173016): It might be too late to get management status
+                //       here. ProfileSyncService should call RevokeSyncConsent/ClearPrimaryAccount
+                //       in SigninManager instead.
+                if (mSignOutState == null) {
+                    mSignOutState = new SignOutState(null, getManagementDomain() != null);
+                }
+
+                // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
+                //                                  uses the sync account before the native is
+                //                                  loaded.
+                SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(null);
+                disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
+                break;
+            case PrimaryAccountChangeEvent.Type.NONE:
+                if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
+                        == PrimaryAccountChangeEvent.Type.CLEARED) {
+                    if (mSignOutState == null) {
+                        // Don't wipe data as the user is not syncing.
+                        mSignOutState = new SignOutState(null, false);
+                    }
+                    disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
+                }
+                break;
+        }
     }
 
     /**
@@ -530,6 +554,8 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
             boolean forceWipeUserData) {
         // Only one signOut at a time!
         assert mSignOutState == null;
+        // User data should not be wiped if the user is not syncing.
+        assert mIdentityManager.hasPrimaryAccount() || !forceWipeUserData;
 
         // Grab the management domain before nativeSignOut() potentially clears it.
         String managementDomain = getManagementDomain();
@@ -538,7 +564,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
         Log.d(TAG, "Signing out, management domain: " + managementDomain);
 
         // User data will be wiped in disableSyncAndWipeData(), called from
-        // onPrimaryAccountcleared().
+        // onPrimaryAccountChanged().
         mIdentityMutator.clearPrimaryAccount(signoutSource,
                 // Always use IGNORE_METRIC for the profile deletion argument. Chrome
                 // Android has just a single-profile which is never deleted upon
@@ -552,15 +578,6 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
     @Override
     public String getManagementDomain() {
         return SigninManagerImplJni.get().getManagementDomain(mNativeSigninManagerAndroid);
-    }
-
-    /**
-     * Reloads accounts from system within IdentityManager.
-     */
-    @Override
-    public void reloadAllAccountsFromSystem() {
-        mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)));
     }
 
     /**
@@ -583,27 +600,6 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
         Log.d(TAG, "Signin flow aborted.");
         notifySignInAllowedChanged();
-    }
-
-    @Override
-    public void onPrimaryAccountCleared(CoreAccountInfo account) {
-        if (mSignOutState == null) {
-            // mSignOutState can only be null when the sign out is triggered by
-            // native (since otherwise SigninManager.signOut would have created
-            // it). As sign out from native can only happen from policy code,
-            // the account is managed and the user data must be wiped.
-            mSignOutState = new SignOutState(null, true);
-        }
-
-        Log.d(TAG, "On native signout, wipe user data: " + mSignOutState.mShouldWipeUserData);
-
-        // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that uses
-        //                                  the sync account before the native is loaded.
-        SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(null);
-
-        if (mSignOutState.mSignOutCallback != null) mSignOutState.mSignOutCallback.preWipeData();
-        disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
-        mAccountTrackerService.invalidateAccountSeedStatus(true);
     }
 
     @VisibleForTesting
@@ -630,15 +626,14 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
     @Override
     public void onAccountsCookieDeletedByUserAction() {
-        // No need to sign out if the user is already signed out.
-        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) == null) return;
-
-        // If the user consented for sync, then the user should not be signed out.
-        // Account cookies will be rebuilt by the account reconcilor.
-        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) return;
-
-        // Clearing account cookies should also sign the user out if the user was not syncing.
-        signOut(SignoutReason.USER_DELETED_ACCOUNT_COOKIES);
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
+                && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null) {
+            // Clearing account cookies should trigger sign-out only when user is signed in
+            // without sync.
+            // If the user consented for sync, then the user should not be signed out,
+            // since account cookies will be rebuilt by the account reconcilor.
+            signOut(SignoutReason.USER_DELETED_ACCOUNT_COOKIES);
+        }
     }
 
     /**
@@ -676,6 +671,11 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
     private void disableSyncAndWipeData(
             boolean shouldWipeUserData, final Runnable wipeDataCallback) {
+        Log.d(TAG, "On native signout, wipe user data: " + mSignOutState.mShouldWipeUserData);
+
+        if (mSignOutState.mSignOutCallback != null) {
+            mSignOutState.mSignOutCallback.preWipeData();
+        }
         mAndroidSyncSettings.updateAccount(null);
         if (shouldWipeUserData) {
             SigninManagerImplJni.get().wipeProfileData(
@@ -684,6 +684,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
             SigninManagerImplJni.get().wipeGoogleServiceWorkerCaches(
                     mNativeSigninManagerAndroid, wipeDataCallback);
         }
+        mAccountTrackerService.invalidateAccountSeedStatus(true);
     }
 
     @VisibleForTesting
@@ -699,14 +700,6 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
         private final @SigninAccessPoint Integer mAccessPoint;
         final Account mAccount;
         final SignInCallback mCallback;
-
-        /**
-         * If the system accounts need to be seeded, the sign in flow will block for that to occur.
-         * This boolean should be set to true during that time and then reset back to false
-         * afterwards. This allows the manager to know if it should progress the flow when the
-         * account tracker broadcasts updates.
-         */
-        boolean mBlockedOnAccountSeeding;
 
         /**
          * Contains the full Core account info, which can be retrieved only once account seeding is

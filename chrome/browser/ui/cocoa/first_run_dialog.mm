@@ -38,7 +38,7 @@ class FirstRunShowBridge : public base::RefCounted<FirstRunShowBridge> {
  public:
   FirstRunShowBridge(FirstRunDialogController* controller);
 
-  void ShowDialog(const base::Closure& quit_closure);
+  void ShowDialog(base::OnceClosure quit_closure);
 
  private:
   friend class base::RefCounted<FirstRunShowBridge>;
@@ -52,12 +52,12 @@ FirstRunShowBridge::FirstRunShowBridge(
     FirstRunDialogController* controller) : controller_(controller) {
 }
 
-void FirstRunShowBridge::ShowDialog(const base::Closure& quit_closure) {
+void FirstRunShowBridge::ShowDialog(base::OnceClosure quit_closure) {
   // Proceeding past the modal dialog requires user interaction. Allow nested
   // tasks to run so that signal handlers operate correctly.
   base::CurrentThread::ScopedNestableTaskAllower allow_nested;
   [controller_ show];
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 FirstRunShowBridge::~FirstRunShowBridge() {}

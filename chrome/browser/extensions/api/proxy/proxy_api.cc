@@ -58,11 +58,10 @@ void ProxyEventRouter::OnProxyError(
   }
 }
 
-void ProxyEventRouter::OnPACScriptError(
-    EventRouterForwarder* event_router,
-    void* profile,
-    int line_number,
-    const base::string16& error) {
+void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
+                                        void* profile,
+                                        int line_number,
+                                        const std::u16string& error) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetBoolean(proxy_api_constants::kProxyEventFatal, false);

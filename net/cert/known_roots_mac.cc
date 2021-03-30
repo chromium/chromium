@@ -38,6 +38,15 @@ class OSXKnownRootHelper {
     return IsSHA256HashInSortedArray(hash, known_roots_);
   }
 
+  bool IsKnownRoot(const HashValue& cert_sha256) {
+    // If there are no known roots, then an API failure occurred. For safety,
+    // assume that all certificates are issued by known roots.
+    if (known_roots_.empty())
+      return true;
+
+    return IsSHA256HashInSortedArray(cert_sha256, known_roots_);
+  }
+
  private:
   friend struct base::LazyInstanceTraitsBase<OSXKnownRootHelper>;
 
@@ -75,6 +84,10 @@ base::LazyInstance<OSXKnownRootHelper>::Leaky g_known_roots =
 
 bool IsKnownRoot(SecCertificateRef cert) {
   return g_known_roots.Get().IsKnownRoot(cert);
+}
+
+bool IsKnownRoot(const HashValue& cert_sha256) {
+  return g_known_roots.Get().IsKnownRoot(cert_sha256);
 }
 
 void InitializeKnownRoots() {

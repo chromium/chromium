@@ -84,6 +84,7 @@ class CORE_EXPORT InspectorPageAgent final
     kWebSocketResource,
     kManifestResource,
     kSignedExchangeResource,
+    kPingResource,
     kOtherResource
   };
 
@@ -141,6 +142,12 @@ class CORE_EXPORT InspectorPageAgent final
                                         const String& html) override;
   protocol::Response setBypassCSP(bool enabled) override;
 
+  protocol::Response getPermissionsPolicyState(
+      const String& frame_id,
+      std::unique_ptr<
+          protocol::Array<protocol::Page::PermissionsPolicyFeatureState>>*)
+      override;
+
   protocol::Response startScreencast(Maybe<String> format,
                                      Maybe<int> quality,
                                      Maybe<int> max_width,
@@ -148,9 +155,12 @@ class CORE_EXPORT InspectorPageAgent final
                                      Maybe<int> every_nth_frame) override;
   protocol::Response stopScreencast() override;
   protocol::Response getLayoutMetrics(
-      std::unique_ptr<protocol::Page::LayoutViewport>*,
-      std::unique_ptr<protocol::Page::VisualViewport>*,
-      std::unique_ptr<protocol::DOM::Rect>*) override;
+      std::unique_ptr<protocol::Page::LayoutViewport>* out_layout_viewport,
+      std::unique_ptr<protocol::Page::VisualViewport>* out_visual_viewport,
+      std::unique_ptr<protocol::DOM::Rect>* out_content_size,
+      std::unique_ptr<protocol::Page::LayoutViewport>* out_css_layout_viewport,
+      std::unique_ptr<protocol::Page::VisualViewport>* out_css_visual_viewport,
+      std::unique_ptr<protocol::DOM::Rect>* out_css_content_size) override;
   protocol::Response createIsolatedWorld(const String& frame_id,
                                          Maybe<String> world_name,
                                          Maybe<bool> grant_universal_access,
@@ -163,6 +173,9 @@ class CORE_EXPORT InspectorPageAgent final
                                         Maybe<String> group) override;
 
   protocol::Response setProduceCompilationCache(bool enabled) override;
+  protocol::Response produceCompilationCache(
+      std::unique_ptr<protocol::Array<protocol::Page::CompilationCacheParams>>
+          scripts) override;
   protocol::Response addCompilationCache(const String& url,
                                          const protocol::Binary& data) override;
   protocol::Response clearCompilationCache() override;
@@ -175,6 +188,7 @@ class CORE_EXPORT InspectorPageAgent final
   void DomContentLoadedEventFired(LocalFrame*);
   void LoadEventFired(LocalFrame*);
   void WillCommitLoad(LocalFrame*, DocumentLoader*);
+  void DidRestoreFromBackForwardCache(LocalFrame*);
   void DidOpenDocument(LocalFrame*, DocumentLoader*);
   void FrameAttachedToParent(LocalFrame*);
   void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
@@ -206,10 +220,11 @@ class CORE_EXPORT InspectorPageAgent final
                   const AtomicString&,
                   const WebWindowFeatures&,
                   bool);
-  void ConsumeCompilationCache(const ScriptSourceCode& source,
-                               v8::ScriptCompiler::CachedData**);
-  void ProduceCompilationCache(const ScriptSourceCode& source,
-                               v8::Local<v8::Script> script);
+  void ApplyCompilationModeOverride(const ScriptSourceCode& source,
+                                    v8::ScriptCompiler::CachedData**,
+                                    v8::ScriptCompiler::CompileOptions*);
+  void DidProduceCompilationCache(const ScriptSourceCode& source,
+                                  v8::Local<v8::Script> script);
   void FileChooserOpened(LocalFrame* frame,
                          HTMLInputElement* element,
                          bool* intercepted);
@@ -248,6 +263,10 @@ class CORE_EXPORT InspectorPageAgent final
       LocalFrame*);
   Member<InspectedFrames> inspected_frames_;
   HashMap<String, protocol::Binary> compilation_cache_;
+  // TODO(caseq): should this be stored as InspectorAgentState::StringMap
+  // instead? Current use cases do not require this, but we might eventually
+  // reconsider. Value is true iff eager compilation requested.
+  HashMap<String, bool> requested_compilation_cache_;
   using FrameIsolatedWorlds = HashMap<String, scoped_refptr<DOMWrapperWorld>>;
   HeapHashMap<WeakMember<LocalFrame>, FrameIsolatedWorlds> isolated_worlds_;
   v8_inspector::V8InspectorSession* v8_session_;

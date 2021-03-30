@@ -9,6 +9,7 @@
 
 @protocol ReadingListListItem;
 @protocol ReadingListListItemAccessibilityDelegate;
+@protocol ReadingListListItemFactoryDelegate;
 
 // Factory object that creates arrays of custom accessibility actions for
 // ListItems used by the reading list.
@@ -17,6 +18,10 @@
 // Delegate for the accessibility actions.
 @property(nonatomic, weak) id<ReadingListListItemAccessibilityDelegate>
     accessibilityDelegate;
+
+// Delegate for the incognito avaibility.
+@property(nonatomic, weak) id<ReadingListListItemFactoryDelegate>
+    incognitoDelegate;
 
 // Creates an array of custom a11y actions for a reading list cell configured
 // for |item| with |status|.

@@ -28,15 +28,21 @@ class BaseProtoStyleGenerator(BaseGenerator):
 
     def _CreateFieldList(self):
         field_value_map = dict()
+        field_id_map = dict()
         field_list = []
         for ctx in self.in_file_to_context.values():
-            field = {
-                'name': ctx['field_name'],
-                'id': ctx['field_id'],
-                'values': []
-            }
-            field_list.append(field)
-            field_value_map[field['name']] = field['values']
+            field_name = ctx['field_name']
+            field_id = ctx['field_id']
+            if field_name in field_id_map and field_id_map.get(
+                    field_name) != field_id:
+                raise Exception(
+                    'Proto field "%s" declared > 1 times with differing ids' %
+                    field_name)
+            field_id_map[field_name] = field_id
+            field = {'name': field_name, 'id': field_id, 'values': []}
+            if field_name not in field_value_map:
+                field_list.append(field)
+                field_value_map[field_name] = field['values']
 
         # Order fields by key
         field_list.sort(key=lambda x: x['id'])
@@ -63,7 +69,7 @@ class BaseProtoStyleGenerator(BaseGenerator):
         def AlphaToInt(alpha):
             return int(alpha * 255)
 
-        return '0x%X%02X%02X%02X' % (AlphaToInt(c.a), c.r, c.g, c.b)
+        return '0x%X%02X%02X%02X' % (AlphaToInt(c.opacity.a), c.r, c.g, c.b)
 
 
 class ProtoStyleGenerator(BaseProtoStyleGenerator):

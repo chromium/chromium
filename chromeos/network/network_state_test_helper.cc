@@ -7,8 +7,10 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/device_state.h"
+#include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/onc/onc_utils.h"
@@ -35,11 +37,21 @@ NetworkStateTestHelper::NetworkStateTestHelper(
     shill_clients::InitializeFakes();
     shill_clients_initialized_ = true;
   }
+
+  if (!HermesManagerClient::Get()) {
+    hermes_clients::InitializeFakes();
+    hermes_clients_initialized_ = true;
+  }
+
   manager_test_ = ShillManagerClient::Get()->GetTestInterface();
   profile_test_ = ShillProfileClient::Get()->GetTestInterface();
   device_test_ = ShillDeviceClient::Get()->GetTestInterface();
   service_test_ = ShillServiceClient::Get()->GetTestInterface();
   ip_config_test_ = ShillIPConfigClient::Get()->GetTestInterface();
+
+  hermes_euicc_test_ = HermesEuiccClient::Get()->GetTestInterface();
+  hermes_manager_test_ = HermesManagerClient::Get()->GetTestInterface();
+  hermes_profile_test_ = HermesProfileClient::Get()->GetTestInterface();
 
   profile_test_->AddProfile(NetworkProfileHandler::GetSharedProfilePath(),
                             std::string() /* shared profile */);
@@ -47,15 +59,20 @@ NetworkStateTestHelper::NetworkStateTestHelper(
   base::RunLoop().RunUntilIdle();
 
   network_state_handler_ = NetworkStateHandler::InitializeForTest();
+  network_device_handler_ =
+      NetworkDeviceHandler::InitializeForTesting(network_state_handler_.get());
 
   if (!use_default_devices_and_services)
     ResetDevicesAndServices();
 }
 
 NetworkStateTestHelper::~NetworkStateTestHelper() {
+  network_device_handler_.reset();
   ShutdownNetworkState();
   if (shill_clients_initialized_)
     shill_clients::Shutdown();
+  if (hermes_clients_initialized_)
+    hermes_clients::Shutdown();
 }
 
 void NetworkStateTestHelper::ShutdownNetworkState() {
@@ -95,6 +112,11 @@ void NetworkStateTestHelper::ClearDevices() {
 void NetworkStateTestHelper::ClearServices() {
   service_test_->ClearServices();
   base::RunLoop().RunUntilIdle();
+}
+
+void NetworkStateTestHelper::ClearProfiles() {
+  profile_test_->ClearProfiles();
+  manager_test_->ClearProfiles();
 }
 
 void NetworkStateTestHelper::AddDevice(const std::string& device_path,

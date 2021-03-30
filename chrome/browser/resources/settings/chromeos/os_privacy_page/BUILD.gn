@@ -3,35 +3,27 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":os_privacy_page" ]
-}
-
-js_library("os_privacy_page") {
-  deps = [
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../os_people_page:lock_screen",
-    "../os_people_page:lock_state_behavior",
-    "//chrome/browser/resources/settings/controls:settings_toggle_button",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
-  deps = [ ":os_privacy_page.m" ]
+  deps = [
+    ":os_privacy_page.m",
+    ":peripheral_data_access_protection_dialog.m",
+  ]
 }
 
 js_library("os_privacy_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_privacy_page/os_privacy_page.m.js" ]
   deps = [
+    ":peripheral_data_access_browser_proxy.m",
+    ":peripheral_data_access_protection_dialog.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "../os_people_page:lock_screen.m",
     "../os_people_page:lock_state_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -40,10 +32,31 @@ js_library("os_privacy_page.m") {
   extra_deps = [ ":os_privacy_page_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
+js_library("peripheral_data_access_browser_proxy.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_privacy_page/peripheral_data_access_browser_proxy.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("peripheral_data_access_protection_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_privacy_page/peripheral_data_access_protection_dialog.m.js" ]
+  deps = [
+    "../../prefs:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":peripheral_data_access_protection_dialog_module" ]
+}
 
 group("polymer3_elements") {
-  public_deps = [ ":os_privacy_page_module" ]
+  public_deps = [
+    ":modulize",
+    ":os_privacy_page_module",
+    ":peripheral_data_access_protection_dialog_module",
+  ]
 }
 
 polymer_modulizer("os_privacy_page") {
@@ -51,5 +64,20 @@ polymer_modulizer("os_privacy_page") {
   html_file = "os_privacy_page.html"
   html_type = "dom-module"
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("peripheral_data_access_protection_dialog") {
+  js_file = "peripheral_data_access_protection_dialog.js"
+  html_file = "peripheral_data_access_protection_dialog.html"
+  html_type = "dom-module"
+  namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
+  auto_imports = os_settings_auto_imports
+}
+
+js_modulizer("modulize") {
+  input_files = [ "peripheral_data_access_browser_proxy.js" ]
+  namespace_rewrites = os_settings_namespace_rewrites
 }

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/controls/button/button.h"
@@ -28,8 +28,8 @@ class AppListView;
 class ContentsView;
 
 // A tile item for the expand arrow on the start page.
-class APP_LIST_EXPORT ExpandArrowView : public views::Button,
-                                        public views::ViewTargeterDelegate {
+class ASH_EXPORT ExpandArrowView : public views::Button,
+                                   public views::ViewTargeterDelegate {
  public:
   ExpandArrowView(ContentsView* contents_view, AppListView* app_list_view);
   ~ExpandArrowView() override;

@@ -32,12 +32,14 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/window_properties.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -153,8 +155,12 @@ gfx::Size TaskManagerView::CalculatePreferredSize() const {
 }
 
 bool TaskManagerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  const bool is_valid_modifier =
+      accelerator.modifiers() == ui::EF_CONTROL_DOWN ||
+      accelerator.modifiers() == (ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  DCHECK(is_valid_modifier);
   DCHECK_EQ(ui::VKEY_W, accelerator.key_code());
-  DCHECK_EQ(ui::EF_CONTROL_DOWN, accelerator.modifiers());
+
   GetWidget()->Close();
   return true;
 }
@@ -171,8 +177,11 @@ bool TaskManagerView::ExecuteWindowsCommand(int command_id) {
 
 gfx::ImageSkia TaskManagerView::GetWindowIcon() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_ASH_SHELF_ICON_TASK_MANAGER);
+  // TODO(crbug.com/1162514): Move apps::CreateStandardIconImage to some
+  // where lower in the stack.
+  return apps::CreateStandardIconImage(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_ASH_SHELF_ICON_TASK_MANAGER));
 #else
   return views::DialogDelegateView::GetWindowIcon();
 #endif
@@ -341,6 +350,8 @@ void TaskManagerView::Init() {
   table_model_->RetrieveSavedColumnsSettingsAndUpdateTable();
 
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
+  AddAccelerator(
+      ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
 }
 
 void TaskManagerView::InitAlwaysOnTopState() {
@@ -374,6 +385,9 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   if (dictionary)
     dictionary->GetBoolean("always_on_top", &is_always_on_top_);
 }
+
+BEGIN_METADATA(TaskManagerView, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace task_manager
 

@@ -18,9 +18,9 @@
 using testing::Mock;
 using testing::Return;
 
-void TestingCallback(bool* out, base::Closure closure, bool in) {
+void TestingCallback(bool* out, base::OnceClosure closure, bool in) {
   *out = in;
-  closure.Run();
+  std::move(closure).Run();
 }
 
 namespace crostini {

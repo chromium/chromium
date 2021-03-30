@@ -27,8 +27,6 @@ class JavaService : public Service {
       const base::android::JavaParamRef<jobject>& java_service);
   ~JavaService() override;
 
-  bool IsLiteService() const override;
-
   // Get scripts for a given |url|, which should be a valid URL.
   void GetScriptsForUrl(const GURL& url,
                         const TriggerContext& trigger_context,

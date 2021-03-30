@@ -87,7 +87,7 @@ class PLATFORM_EXPORT BufferingBytesConsumer final
   void BufferData();
 
   const Member<BytesConsumer> bytes_consumer_;
-  TaskRunnerTimer<BufferingBytesConsumer> timer_;
+  HeapTaskRunnerTimer<BufferingBytesConsumer> timer_;
   Deque<Vector<char>> buffer_;
   size_t offset_for_first_chunk_ = 0;
 

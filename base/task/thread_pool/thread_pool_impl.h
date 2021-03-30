@@ -167,7 +167,7 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   AtomicFlag all_tasks_user_blocking_;
 
   std::unique_ptr<ThreadGroup> foreground_thread_group_;
-  std::unique_ptr<ThreadGroupImpl> background_thread_group_;
+  std::unique_ptr<ThreadGroup> background_thread_group_;
 
   bool disable_job_yield_ = false;
   bool disable_fair_scheduling_ = false;

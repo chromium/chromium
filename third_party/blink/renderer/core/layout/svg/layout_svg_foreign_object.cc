@@ -106,11 +106,10 @@ void LayoutSVGForeignObject::UpdateLayout() {
   // zoom.
   SVGLengthContext length_context(foreign);
   const ComputedStyle& style = StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-  viewport_ = FloatRect(
-      length_context.ResolveLengthPair(svg_style.X(), svg_style.Y(), style),
-      ToFloatSize(length_context.ResolveLengthPair(style.Width(),
-                                                   style.Height(), style)));
+  viewport_ =
+      FloatRect(length_context.ResolveLengthPair(style.X(), style.Y(), style),
+                ToFloatSize(length_context.ResolveLengthPair(
+                    style.Width(), style.Height(), style)));
 
   // Use the zoomed version of the viewport as the location, because we will
   // interpose a transform that "unzooms" the effective zoom to let the children

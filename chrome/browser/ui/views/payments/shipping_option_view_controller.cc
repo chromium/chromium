@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/payments/shipping_option_view_controller.h"
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -42,12 +42,12 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
  private:
   // payments::PaymentRequestItemList::Item:
   std::unique_ptr<views::View> CreateContentView(
-      base::string16* accessible_content) override {
+      std::u16string* accessible_content) override {
     return CreateShippingOptionLabel(
         shipping_option_,
         /*formatted_amount=*/
         spec() ? spec()->GetFormattedCurrencyAmount(shipping_option_->amount)
-               : base::string16(),
+               : std::u16string(),
         /*emphasize_label=*/true, accessible_content);
   }
 
@@ -57,7 +57,7 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
     }
   }
 
-  base::string16 GetNameForDataType() override {
+  std::u16string GetNameForDataType() override {
     return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_OPTION_LABEL);
   }
 
@@ -114,9 +114,9 @@ void ShippingOptionViewController::OnSpecUpdated() {
   }
 }
 
-base::string16 ShippingOptionViewController::GetSheetTitle() {
+std::u16string ShippingOptionViewController::GetSheetTitle() {
   return spec() ? GetShippingOptionSectionString(spec()->shipping_type())
-                : base::string16();
+                : std::u16string();
 }
 
 void ShippingOptionViewController::FillContentView(views::View* content_view) {

@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/cursors/webcursor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -13,6 +14,8 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+
+#include "ui/base/cursor/win/win_cursor.h"
 #endif
 
 namespace content {
@@ -62,14 +65,14 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
 #if defined(USE_OZONE)
   // Test if the rotating custom cursor works correctly.
   display::Display display;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   display.set_panel_rotation(display::Display::ROTATE_90);
 #endif
   webcursor.SetDisplayInfo(display);
   EXPECT_FALSE(webcursor.has_custom_cursor_for_test());
   native_cursor = webcursor.GetNativeCursor();
   EXPECT_TRUE(webcursor.has_custom_cursor_for_test());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Hotspot should be scaled & rotated.  We're using the icon created for 2.0,
   // on the display with dsf=1.0, so the host spot should be
   // ((32 - 20) / 2, 10 / 2) = (6, 5).
@@ -207,7 +210,9 @@ void ScaleCursor(float scale, int hotspot_x, int hotspot_y) {
   display.set_device_scale_factor(scale);
   webcursor.SetDisplayInfo(display);
 
-  HCURSOR windows_cursor_handle = webcursor.GetNativeCursor().platform();
+  HCURSOR windows_cursor_handle =
+      static_cast<ui::WinCursor*>(webcursor.GetNativeCursor().platform())
+          ->hcursor();
   EXPECT_NE(nullptr, windows_cursor_handle);
   ICONINFO windows_icon_info;
   EXPECT_TRUE(GetIconInfo(windows_cursor_handle, &windows_icon_info));

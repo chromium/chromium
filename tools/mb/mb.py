@@ -93,17 +93,18 @@ class MetaBuildWrapper(object):
     self.args = argparse.Namespace()
     self.configs = {}
     self.public_artifact_builders = None
-    self.masters = {}
+    self.builder_groups = {}
     self.mixins = {}
     self.isolate_exe = 'isolate.exe' if self.platform.startswith(
         'win') else 'isolate'
     self.use_luci_auth = False
+    self.rts_out_dir = self.PathJoin('gen', 'rts')
 
   def Main(self, args):
     self.ParseArgs(args)
     try:
       ret = self.args.func()
-      if ret:
+      if ret != 0:
         self.DumpInputFiles()
       return ret
     except KeyboardInterrupt:
@@ -120,7 +121,8 @@ class MetaBuildWrapper(object):
     def AddCommonOptions(subp):
       group = subp.add_mutually_exclusive_group()
       group.add_argument(
-          '-m', '--master', help='master name to look up config from')
+          '-m',  '--builder-group',
+          help='builder group name to look up config from')
       subp.add_argument('-b', '--builder',
                         help='builder name to look up config from')
       subp.add_argument('-c', '--config',
@@ -257,6 +259,16 @@ class MetaBuildWrapper(object):
                            'newline.')
     subp.add_argument('--json-output',
                       help='Write errors to json.output')
+    # For more info about RTS, please see
+    # //docs/testing/regression-test-selection.md
+    subp.add_argument('--use-rts',
+                      action='store_true',
+                      default=False,
+                      help='whether or not to use regression test selection')
+    subp.add_argument('--rts-target-change-recall',
+                      type=float,
+                      help='how much safety is needed when selecting tests. '
+                      '0.0 is the lowest and 1.0 is the highest')
     subp.add_argument('path',
                       help='path to generate build into')
     subp.set_defaults(func=self.CmdGen)
@@ -269,6 +281,10 @@ class MetaBuildWrapper(object):
     subp.set_defaults(func=self.CmdIsolateEverything)
     subp.add_argument('path',
                       help='path build was generated into')
+    subp.add_argument('--use-rts',
+                      action='store_true',
+                      default=False,
+                      help='whether or not to use regression test selection')
 
     subp = subps.add_parser('isolate',
                             description='Generate the .isolate files for a '
@@ -435,8 +451,8 @@ class MetaBuildWrapper(object):
     for f in self.ListDir(expectations_dir):
       self.RemoveFile(os.path.join(expectations_dir, f))
     obj = self._ToJsonish()
-    for master, builder in sorted(obj.items()):
-      expectation_file = os.path.join(expectations_dir, master + '.json')
+    for builder_group, builder in sorted(obj.items()):
+      expectation_file = os.path.join(expectations_dir, builder_group + '.json')
       json_s = json.dumps(builder,
                           indent=2,
                           sort_keys=True,
@@ -444,7 +460,34 @@ class MetaBuildWrapper(object):
       self.WriteFile(expectation_file, json_s)
     return 0
 
+  def RtsSelect(self):
+    model_dir = self.PathJoin(
+        self.chromium_src_dir, 'testing', 'rts', self._CipdPlatform())
+
+    exe = self.PathJoin(model_dir, 'rts-chromium')
+    if self.platform == 'win32':
+      exe += '.exe'
+
+    args = [
+       exe, 'select',
+      '-model-dir', model_dir, \
+      '-out', self.PathJoin(self.ToAbsPath(self.args.path), self.rts_out_dir),
+      '-checkout', self.chromium_src_dir,
+    ]
+    if self.args.rts_target_change_recall:
+      if (self.args.rts_target_change_recall < 0
+          or self.args.rts_target_change_recall > 1):
+        self.WriteFailureAndRaise(
+            'rts-target-change-recall must be between (0 and 1]', None)
+      args += ['-target-change-recall', str(self.args.rts_target_change_recall)]
+
+    ret, _, _ = self.Run(args, force_verbose=True)
+    if ret != 0:
+      self.WriteFailureAndRaise(err, None)
+
   def CmdGen(self):
+    if self.args.use_rts:
+      self.RtsSelect()
     vals = self.Lookup()
     return self.RunGNGen(vals)
 
@@ -473,7 +516,7 @@ class MetaBuildWrapper(object):
       return 1
     if self.args.build:
       ret = self.Build(self.args.target)
-      if ret:
+      if ret != 0:
         return ret
     return self.RunGNIsolate(vals)
 
@@ -485,9 +528,7 @@ class MetaBuildWrapper(object):
     else:
       cmd = self.GNCmd('gen', '_path_')
       self.Print('\nWriting """\\\n%s""" to _path_/args.gn.\n' % gn_args)
-      env = None
-
-      self.PrintCmd(cmd, env)
+      self.PrintCmd(cmd)
     return 0
 
   def CmdTry(self):
@@ -607,8 +648,7 @@ class MetaBuildWrapper(object):
         self.RemoveDirectory(zip_dir)
 
   def _RunUnderSwarming(self, build_dir, target, isolate_cmd):
-    isolate_server = 'isolateserver.appspot.com'
-    namespace = 'default-gzip'
+    cas_instance = 'chromium-swarm'
     swarming_server = 'chromium-swarm.appspot.com'
     # TODO(dpranke): Look up the information for the target in
     # the //testing/buildbot.json file, if possible, so that we
@@ -628,12 +668,8 @@ class MetaBuildWrapper(object):
         'archive',
         '-i',
         self.ToSrcRelPath('%s/%s.isolate' % (build_dir, target)),
-        '-s',
-        self.ToSrcRelPath('%s/%s.isolated' % (build_dir, target)),
-        '-I',
-        isolate_server,
-        '-namespace',
-        namespace,
+        '-cas-instance',
+        cas_instance,
         '-dump-json',
         archive_json_path,
     ]
@@ -641,7 +677,7 @@ class MetaBuildWrapper(object):
     # Talking to the isolateserver may fail because we're not logged in.
     # We trap the command explicitly and rewrite the error output so that
     # the error message is actually correct for a Chromium check out.
-    self.PrintCmd(cmd, env=None)
+    self.PrintCmd(cmd)
     ret, out, err = self.Run(cmd, force_verbose=False)
     if ret:
       self.Print('  -> returned %d' % ret)
@@ -664,7 +700,7 @@ class MetaBuildWrapper(object):
           'Failed to read JSON file "%s"' % archive_json_path, file=sys.stderr)
       return 1
     try:
-      isolated_hash = archive_hashes[target]
+      cas_digest = archive_hashes[target]
     except Exception:
       self.Print(
           'Cannot find hash for "%s" in "%s", file content: %s' %
@@ -680,12 +716,8 @@ class MetaBuildWrapper(object):
       cmd = [
           self.PathJoin('tools', 'luci-go', 'swarming'),
           'trigger',
-          '-isolated',
-          isolated_hash,
-          '-I',
-          'https://' + isolate_server,
-          '-namespace',
-          namespace,
+          '-digest',
+          cas_digest,
           '-server',
           swarming_server,
           '-tag=purpose:user-debug-mb',
@@ -702,18 +734,26 @@ class MetaBuildWrapper(object):
         return ret
       task_json = self.ReadFile(json_file)
       task_id = json.loads(task_json)["tasks"][0]['task_id']
+      collect_output = self.PathJoin(json_dir, 'collect_output.json')
+      cmd = [
+          self.PathJoin('tools', 'luci-go', 'swarming'),
+          'collect',
+          '-server',
+          swarming_server,
+          '-task-output-stdout=console',
+          '-task-summary-json',
+          collect_output,
+          task_id,
+      ]
+      ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
+      if ret != 0:
+        return ret
+      collect_json = json.loads(self.ReadFile(collect_output))
+      # The exit_code field is not included if the task was successful.
+      ret = collect_json.get(task_id, {}).get('results', {}).get('exit_code', 0)
     finally:
       if json_dir:
         self.RemoveDirectory(json_dir)
-    cmd = [
-        self.PathJoin('tools', 'luci-go', 'swarming'),
-        'collect',
-        '-server',
-        swarming_server,
-        '-task-output-stdout=console',
-        task_id,
-    ]
-    ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
     return ret
 
   def _RunLocallyIsolated(self, build_dir, target):
@@ -751,14 +791,14 @@ class MetaBuildWrapper(object):
     """Dumps the config file into a json-friendly expanded dict.
 
     Returns:
-      A dict with master -> builder -> all GN args mapping.
+      A dict with builder group -> builder -> all GN args mapping.
     """
     self.ReadConfigFile(self.args.config_file)
     obj = {}
-    for master, builders in self.masters.items():
-      obj[master] = {}
+    for builder_group, builders in self.builder_groups.items():
+      obj[builder_group] = {}
       for builder in builders:
-        config = self.masters[master][builder]
+        config = self.builder_groups[builder_group][builder]
         if not config:
           continue
         if isinstance(config, dict):
@@ -777,7 +817,7 @@ class MetaBuildWrapper(object):
           args = {'gn_args': gn_helpers.FromGNArgs(flattened_config['gn_args'])}
           if flattened_config.get('args_file'):
             args['args_file'] = flattened_config['args_file']
-        obj[master][builder] = args
+        obj[builder_group][builder] = args
 
     return obj
 
@@ -787,7 +827,7 @@ class MetaBuildWrapper(object):
     self.ReadConfigFile(self.args.config_file)
 
     # Build a list of all of the configs referenced by builders.
-    all_configs = validation.GetAllConfigs(self.masters)
+    all_configs = validation.GetAllConfigs(self.builder_groups)
 
     # Check that every referenced args file or config actually exists.
     for config, loc in all_configs.items():
@@ -804,11 +844,11 @@ class MetaBuildWrapper(object):
                                                   self.configs, self.mixins)
 
     if self.args.config_file == self.default_config:
-      validation.EnsureNoProprietaryMixins(errs, self.masters, self.configs,
-                                           self.mixins)
+      validation.EnsureNoProprietaryMixins(errs, self.builder_groups,
+                                           self.configs, self.mixins)
 
     validation.CheckDuplicateConfigs(errs, self.configs, self.mixins,
-                                     self.masters, FlattenConfig)
+                                     self.builder_groups, FlattenConfig)
 
     if errs:
       raise MBErr(('mb config file %s has problems:\n  ' %
@@ -830,7 +870,7 @@ class MetaBuildWrapper(object):
     build_dir = self.args.path
 
     vals = DefaultVals()
-    if self.args.builder or self.args.master or self.args.config:
+    if self.args.builder or self.args.builder_group or self.args.config:
       vals = self.Lookup()
       # Re-run gn gen in order to ensure the config is consistent with the
       # build dir.
@@ -922,10 +962,10 @@ class MetaBuildWrapper(object):
     return vals
 
   def ReadIOSBotConfig(self):
-    if not self.args.master or not self.args.builder:
+    if not self.args.builder_group or not self.args.builder:
       return {}
     path = self.PathJoin(self.chromium_src_dir, 'ios', 'build', 'bots',
-                         self.args.master, self.args.builder + '.json')
+                         self.args.builder_group, self.args.builder + '.json')
     if not self.Exists(path):
       return {}
 
@@ -947,7 +987,7 @@ class MetaBuildWrapper(object):
 
     self.configs = contents['configs']
     self.mixins = contents['mixins']
-    self.masters = contents.get('masters')
+    self.builder_groups = contents.get('builder_groups')
     self.public_artifact_builders = contents.get('public_artifact_builders')
 
   def ReadIsolateMap(self):
@@ -974,38 +1014,39 @@ class MetaBuildWrapper(object):
 
   def ConfigFromArgs(self):
     if self.args.config:
-      if self.args.master or self.args.builder:
-        raise MBErr('Can not specific both -c/--config and -m/--master or '
-                    '-b/--builder')
+      if self.args.builder_group or self.args.builder:
+        raise MBErr('Can not specific both -c/--config and --group '
+                    'or -b/--builder')
 
       return self.args.config
 
-    if not self.args.master or not self.args.builder:
+    if not self.args.builder_group or not self.args.builder:
       raise MBErr('Must specify either -c/--config or '
-                  '(-m/--master and -b/--builder)')
+                  '(--group and -b/--builder)')
 
-    if not self.args.master in self.masters:
-      raise MBErr('Master name "%s" not found in "%s"' %
-                  (self.args.master, self.args.config_file))
+    if not self.args.builder_group in self.builder_groups:
+      raise MBErr('Builder group name "%s" not found in "%s"' %
+                  (self.args.builder_group, self.args.config_file))
 
-    if not self.args.builder in self.masters[self.args.master]:
-      raise MBErr('Builder name "%s"  not found under masters[%s] in "%s"' %
-                  (self.args.builder, self.args.master, self.args.config_file))
+    if not self.args.builder in self.builder_groups[self.args.builder_group]:
+      raise MBErr('Builder name "%s"  not found under groups[%s] in "%s"' %
+                  (self.args.builder, self.args.builder_group,
+                   self.args.config_file))
 
-    config = self.masters[self.args.master][self.args.builder]
+    config = self.builder_groups[self.args.builder_group][self.args.builder]
     if isinstance(config, dict):
       if self.args.phase is None:
         raise MBErr('Must specify a build --phase for %s on %s' %
-                    (self.args.builder, self.args.master))
+                    (self.args.builder, self.args.builder_group))
       phase = str(self.args.phase)
       if phase not in config:
         raise MBErr('Phase %s doesn\'t exist for %s on %s' %
-                    (phase, self.args.builder, self.args.master))
+                    (phase, self.args.builder, self.args.builder_group))
       return config[phase]
 
     if self.args.phase is not None:
       raise MBErr('Must not specify a build --phase for %s on %s' %
-                  (self.args.builder, self.args.master))
+                  (self.args.builder, self.args.builder_group))
     return config
 
   def RunGNGen(self, vals, compute_inputs_for_analyze=False, check=True):
@@ -1077,7 +1118,7 @@ class MetaBuildWrapper(object):
       self.Print('python interpreter not under %s' % prefix)
 
     ret, output, _ = self.Run(cmd)
-    if ret:
+    if ret != 0:
       if self.args.json_output:
         # write errors to json.output
         self.WriteJSON({'output': output}, self.args.json_output)
@@ -1103,7 +1144,7 @@ class MetaBuildWrapper(object):
     build_dir = self.args.path
     ret, output, _ = self.Run(self.GNCmd('ls', build_dir),
                               force_verbose=False)
-    if ret:
+    if ret != 0:
       # If `gn ls` failed, we should exit early rather than trying to
       # generate isolates.
       self.Print('GN ls failed: %d' % ret)
@@ -1204,10 +1245,20 @@ class MetaBuildWrapper(object):
       command, extra_files = self.GetSwarmingCommand(target, vals)
       runtime_deps = self.ReadFile(path_to_use).splitlines()
 
+      # For more info about RTS, please see
+      # //docs/testing/regression-test-selection.md
+      if self.args.use_rts:
+        filter_file = target + '.filter'
+        filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
+        if self.Exists(self.ToAbsPath(build_dir, filter_file_path)):
+          runtime_deps.append(filter_file_path)
+          command.append('--test-launcher-filter-file=%s' % filter_file_path)
+          self.Print('added rts filter file to isolate: %s' % filter_file)
+
       canonical_target = target.replace(':','_').replace('/','_')
       ret = self.WriteIsolateFiles(build_dir, command, canonical_target,
                                    runtime_deps, vals, extra_files)
-      if ret:
+      if ret != 0:
         return ret
     return 0
 
@@ -1294,7 +1345,7 @@ class MetaBuildWrapper(object):
     cmd = self.GNCmd('desc', build_dir, label, 'runtime_deps',
                      '--fail-on-unused-args')
     ret, out, _ = self.Call(cmd)
-    if ret:
+    if ret != 0:
       if out:
         self.Print(out)
       return ret
@@ -1303,7 +1354,7 @@ class MetaBuildWrapper(object):
 
     ret = self.WriteIsolateFiles(build_dir, command, target, runtime_deps, vals,
                                  extra_files)
-    if ret:
+    if ret != 0:
       return ret
 
     ret, _, _ = self.Run([
@@ -1375,6 +1426,7 @@ class MetaBuildWrapper(object):
               'ChromiumUpdater.app/',
               'Content Shell.app/',
               'Google Chrome Framework.framework/',
+              'Google Chrome Helper (Alerts).app/',
               'Google Chrome Helper (GPU).app/',
               'Google Chrome Helper (Plugin).app/',
               'Google Chrome Helper (Renderer).app/',
@@ -1427,6 +1479,8 @@ class MetaBuildWrapper(object):
       isolate_path + 'd.gen.json',
     )
 
+    return 0
+
   def MapTargetsToLabels(self, isolate_map, targets):
     labels = []
     err = ''
@@ -1465,7 +1519,6 @@ class MetaBuildWrapper(object):
     if self.args.dotfile:
       cmd += ['--dotfile=' + self.args.dotfile]
     return cmd + [path] + list(args)
-
 
   def GNArgs(self, vals, expand_imports=False):
     gn_args = vals['gn_args']
@@ -1556,6 +1609,7 @@ class MetaBuildWrapper(object):
     cfi_diag = 'use_cfi_diag=true' in vals['gn_args']
     clang_coverage = 'use_clang_coverage=true' in vals['gn_args']
     java_coverage = 'use_jacoco_coverage=true' in vals['gn_args']
+    javascript_coverage = 'use_javascript_coverage=true' in vals['gn_args']
 
     executable = isolate_map[target].get('executable', target)
     executable_suffix = isolate_map[target].get(
@@ -1603,6 +1657,9 @@ class MetaBuildWrapper(object):
           '--tsan=%d' % tsan,
           '--cfi-diag=%d' % cfi_diag,
       ]
+
+      if javascript_coverage:
+        cmdline += ['--devtools-code-coverage=${ISOLATED_OUTDIR}']
     elif test_type in ('windowed_test_launcher', 'console_test_launcher'):
       cmdline += [
           '../../testing/test_env.py',
@@ -1627,10 +1684,21 @@ class MetaBuildWrapper(object):
             '--logs-dir=${ISOLATED_OUTDIR}',
             '--',
         ]
-      cmdline += [
-          '../../testing/test_env.py',
-          '../../' + self.ToSrcRelPath(isolate_map[target]['script'])
-      ]
+      if is_android:
+        extra_files.append('../../build/android/test_wrapper/logdog_wrapper.py')
+        cmdline += [
+            '../../testing/test_env.py',
+            '../../build/android/test_wrapper/logdog_wrapper.py',
+            '--script',
+            '../../' + self.ToSrcRelPath(isolate_map[target]['script']),
+            '--logdog-bin-cmd',
+            '../../.task_template_packages/logdog_butler',
+        ]
+      else:
+        cmdline += [
+            '../../testing/test_env.py',
+            '../../' + self.ToSrcRelPath(isolate_map[target]['script'])
+        ]
     elif test_type == 'additional_compile_target':
       cmdline = [
           './' + str(target) + executable_suffix,
@@ -1658,7 +1726,7 @@ class MetaBuildWrapper(object):
     # Analyze runs before 'gn gen' now, so we need to run gn gen
     # in order to ensure that we have a build directory.
     ret = self.RunGNGen(vals, compute_inputs_for_analyze=True, check=False)
-    if ret:
+    if ret != 0:
       return ret
 
     build_path = self.args.path
@@ -1709,7 +1777,7 @@ class MetaBuildWrapper(object):
       self.WriteJSON(gn_inp, gn_input_path)
       cmd = self.GNCmd('analyze', build_path, gn_input_path, gn_output_path)
       ret, output, _ = self.Run(cmd, force_verbose=True)
-      if ret:
+      if ret != 0:
         if self.args.json_output:
           # write errors to json.output
           self.WriteJSON({'output': output}, self.args.json_output)
@@ -1827,22 +1895,11 @@ class MetaBuildWrapper(object):
       raise MBErr('Error %s writing to the output path "%s"' %
                  (e, path))
 
-
-  def PrintCmd(self, cmd, env):
+  def PrintCmd(self, cmd):
     if self.platform == 'win32':
-      env_prefix = 'set '
-      env_quoter = QuoteForSet
       shell_quoter = QuoteForCmd
     else:
-      env_prefix = ''
-      env_quoter = pipes.quote
       shell_quoter = pipes.quote
-
-    def print_env(var):
-      if env and var in env:
-        self.Print('%s%s=%s' % (env_prefix, var, env_quoter(env[var])))
-
-    print_env('LLVM_FORCE_HEAD_REVISION')
 
     if cmd[0] == self.executable:
       cmd = ['python'] + cmd[1:]
@@ -1867,13 +1924,13 @@ class MetaBuildWrapper(object):
   def Run(self, cmd, env=None, force_verbose=True, buffer_output=True):
     # This function largely exists so it can be overridden for testing.
     if self.args.dryrun or self.args.verbose or force_verbose:
-      self.PrintCmd(cmd, env)
+      self.PrintCmd(cmd)
     if self.args.dryrun:
       return 0, '', ''
 
     ret, out, err = self.Call(cmd, env=env, buffer_output=buffer_output)
     if self.args.verbose or force_verbose:
-      if ret:
+      if ret != 0:
         self.Print('  -> returned %d' % ret)
       if out:
         # This is the error seen on the logs
@@ -1894,6 +1951,17 @@ class MetaBuildWrapper(object):
       p.wait()
       out = err = ''
     return p.returncode, out, err
+
+  def _CipdPlatform(self):
+    """Returns current CIPD platform, e.g. linux-amd64.
+
+    Assumes AMD64.
+    """
+    if self.platform == 'win32':
+      return 'windows-amd64'
+    if self.platform == 'darwin':
+      return 'mac-amd64'
+    return 'linux-amd64'
 
   def ExpandUser(self, path):
     # This function largely exists so it can be overridden for testing.

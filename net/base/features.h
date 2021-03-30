@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/net_buildflags.h"
 
@@ -177,6 +178,13 @@ NET_EXPORT extern const base::Feature kTLS13KeyUpdate;
 // Enables CECPQ2, a post-quantum key-agreement, in TLS 1.3 connections.
 NET_EXPORT extern const base::Feature kPostQuantumCECPQ2;
 
+// Enables CECPQ2, a post-quantum key-agreement, in TLS 1.3 connections for a
+// subset of domains. (This is intended as Finch kill-switch. For testing
+// compatibility with large ClientHello messages, use |kPostQuantumCECPQ2|.)
+NET_EXPORT extern const base::Feature kPostQuantumCECPQ2SomeDomains;
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kPostQuantumCECPQ2Prefix;
+
 // Changes the timeout after which unused sockets idle sockets are cleaned up.
 NET_EXPORT extern const base::Feature kNetUnusedIdleSocketTimeout;
 
@@ -215,9 +223,20 @@ NET_EXPORT extern const base::Feature kSameSiteDefaultChecksMethodRigorously;
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 // When enabled, use the builtin cert verifier instead of the platform verifier.
 NET_EXPORT extern const base::Feature kCertVerifierBuiltinFeature;
-#endif
+#if defined(OS_MAC)
+NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinImpl;
+NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinCacheSize;
+#endif /* defined(OS_MAC) */
+#endif /* BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) */
 
-NET_EXPORT extern const base::Feature kAppendFrameOriginToNetworkIsolationKey;
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+NET_EXPORT extern const base::Feature kCertDualVerificationTrialFeature;
+#if defined(OS_MAC)
+NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
+NET_EXPORT extern const base::FeatureParam<int>
+    kCertDualVerificationTrialCacheSize;
+#endif /* defined(OS_MAC) */
+#endif /* BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) */
 
 // Turns off streaming media caching to disk when on battery power.
 NET_EXPORT extern const base::Feature kTurnOffStreamingMediaCachingOnBattery;
@@ -289,6 +308,31 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 
 // Enables usage of First Party Sets to determine cookie availability.
 NET_EXPORT extern const base::Feature kFirstPartySets;
+
+// Controls whether the client is considered a dogfooder for the FirstPartySets
+// feature.
+NET_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
+
+// Controls whether the fix for crbug.com/1166211 is enabled. When this is
+// enabled, SameSite=Lax cookies may only be accessed for cross-site requests if
+// they are top-level navigations. When it is disabled, the (incorrect) previous
+// behavior that allows SameSite=Lax cookies on cross-site, non-top-level
+// requests if all frame ancestors are same-site with the request URL is used
+// instead. This fix is implemented behind a flag (kill switch) due to potential
+// compatibility risk.
+NET_EXPORT extern const base::Feature kSameSiteCookiesBugfix1166211;
+
+// When this feature is enabled, no CookieChangeDispatcher notifications will be
+// sent when loading cookies from the persistent store. All other change
+// notifications are still dispatched as usual.
+NET_EXPORT extern const base::Feature kNoCookieChangeNotificationOnLoad;
+
+#if BUILDFLAG(ENABLE_REPORTING)
+// When enabled this feature will allow a new Reporting-Endpoints header to
+// configure reporting endpoints for report delivery. This is used to support
+// the new Document Reporting spec.
+NET_EXPORT extern const base::Feature kDocumentReporting;
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 }  // namespace features
 }  // namespace net

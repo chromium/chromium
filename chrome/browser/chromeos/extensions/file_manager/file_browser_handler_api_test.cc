@@ -182,8 +182,7 @@ class FileBrowserHandlerExtensionTest : public extensions::ExtensionApiTest {
   // Creates new, test mount point.
   void AddTmpMountPoint(const std::string& extension_id) {
     BrowserContext::GetMountPoints(browser()->profile())
-        ->RegisterFileSystem("tmp",
-                             storage::kFileSystemTypeNativeLocal,
+        ->RegisterFileSystem("tmp", storage::kFileSystemTypeLocal,
                              storage::FileSystemMountOption(),
                              tmp_mount_point_);
   }

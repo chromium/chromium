@@ -13,8 +13,6 @@
 #include "base/observer_list.h"
 #include "components/download/public/background_service/download_params.h"
 
-class Profile;
-
 namespace download {
 class DownloadService;
 }  // namespace download
@@ -32,7 +30,8 @@ class PredictionModel;
 class PredictionModelDownloadManager {
  public:
   PredictionModelDownloadManager(
-      Profile* profile,
+      download::DownloadService* download_service,
+      const base::FilePath& models_dir,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   virtual ~PredictionModelDownloadManager();
   PredictionModelDownloadManager(const PredictionModelDownloadManager&) =
@@ -124,6 +123,9 @@ class PredictionModelDownloadManager {
   // Guaranteed to outlive |this|.
   download::DownloadService* download_service_;
 
+  // The directory to store verified models in.
+  base::FilePath models_dir_;
+
   // Whether the download service is available.
   bool is_available_for_downloads_;
 
@@ -138,6 +140,10 @@ class PredictionModelDownloadManager {
 
   // Background thread where download file processing should be performed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  // Sequence checker used to verify all public API methods are called on the
+  // UI thread.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to get weak ptr to self on the UI thread.
   base::WeakPtrFactory<PredictionModelDownloadManager> ui_weak_ptr_factory_{

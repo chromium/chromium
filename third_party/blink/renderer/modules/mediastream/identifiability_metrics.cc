@@ -24,6 +24,12 @@ namespace blink {
 
 namespace {
 
+using ConstrainLong = LongOrConstrainLongRange;
+using ConstrainDouble = DoubleOrConstrainDoubleRange;
+using ConstrainBoolean = BooleanOrConstrainBooleanParameters;
+using ConstrainDOMString = StringOrStringSequenceOrConstrainDOMStringParameters;
+using ConstrainPoint2D = Point2DSequenceOrConstrainPoint2DParameters;
+
 template <typename T>
 void Visit(IdentifiableTokenBuilder& builder, const T* range) {
   if (!range)
@@ -34,8 +40,7 @@ void Visit(IdentifiableTokenBuilder& builder, const T* range) {
   builder.AddToken(range->hasMin() ? range->min() : IdentifiableToken());
 }
 
-void Visit(IdentifiableTokenBuilder& builder,
-           const DoubleOrConstrainDoubleRange& d) {
+void Visit(IdentifiableTokenBuilder& builder, const ConstrainDouble& d) {
   if (d.IsDouble()) {
     builder.AddToken(d.GetAsDouble());
     return;
@@ -48,8 +53,7 @@ void Visit(IdentifiableTokenBuilder& builder,
   builder.AddToken(IdentifiableToken());
 }
 
-void Visit(IdentifiableTokenBuilder& builder,
-           const LongOrConstrainLongRange& l) {
+void Visit(IdentifiableTokenBuilder& builder, const ConstrainLong& l) {
   if (l.IsLong()) {
     builder.AddToken(l.GetAsLong());
     return;
@@ -77,8 +81,7 @@ void Visit(IdentifiableTokenBuilder& builder, const StringOrStringSequence& s) {
   builder.AddToken(IdentifiableToken());
 }
 
-void Visit(IdentifiableTokenBuilder& builder,
-           const StringOrStringSequenceOrConstrainDOMStringParameters& s) {
+void Visit(IdentifiableTokenBuilder& builder, const ConstrainDOMString& s) {
   if (s.IsString()) {
     builder.AddToken(IdentifiabilityBenignStringToken(s.GetAsString()));
     return;
@@ -108,8 +111,7 @@ void Visit(IdentifiableTokenBuilder& builder,
   builder.AddToken(IdentifiableToken());
 }
 
-void Visit(IdentifiableTokenBuilder& builder,
-           const BooleanOrConstrainBooleanParameters& b) {
+void Visit(IdentifiableTokenBuilder& builder, const ConstrainBoolean& b) {
   if (b.IsBoolean()) {
     builder.AddToken(b.GetAsBoolean());
     return;
@@ -153,8 +155,7 @@ void Visit(IdentifiableTokenBuilder& builder,
   }
 }
 
-void Visit(IdentifiableTokenBuilder& builder,
-           const Point2DSequenceOrConstrainPoint2DParameters& x) {
+void Visit(IdentifiableTokenBuilder& builder, const ConstrainPoint2D& x) {
   if (x.IsPoint2DSequence()) {
     Visit(builder, x.GetAsPoint2DSequence());
     return;
@@ -180,35 +181,49 @@ void Visit(IdentifiableTokenBuilder& builder,
 
 void Visit(IdentifiableTokenBuilder& builder,
            const MediaTrackConstraintSet& set) {
-  Visit(builder, set.width());
-  Visit(builder, set.height());
-  Visit(builder, set.aspectRatio());
-  Visit(builder, set.frameRate());
-  Visit(builder, set.facingMode());
-  Visit(builder, set.sampleRate());
-  Visit(builder, set.sampleSize());
-  Visit(builder, set.echoCancellation());
-  Visit(builder, set.autoGainControl());
-  Visit(builder, set.latency());
-  Visit(builder, set.channelCount());
-  Visit(builder, set.videoKind());
-  Visit(builder, set.whiteBalanceMode());
-  Visit(builder, set.exposureMode());
-  Visit(builder, set.focusMode());
-  Visit(builder, set.pointsOfInterest());
-  Visit(builder, set.exposureCompensation());
-  Visit(builder, set.exposureTime());
-  Visit(builder, set.colorTemperature());
-  Visit(builder, set.iso());
-  Visit(builder, set.brightness());
-  Visit(builder, set.contrast());
-  Visit(builder, set.saturation());
-  Visit(builder, set.sharpness());
-  Visit(builder, set.focusDistance());
-  Visit(builder, set.pan());
-  Visit(builder, set.tilt());
-  Visit(builder, set.zoom());
-  Visit(builder, set.torch());
+  // TODO(crbug.com/1070871): As a workaround for code simplicity, we use a
+  // default value of a union type if each member is not provided in input.
+  Visit(builder, set.hasWidth() ? set.width() : ConstrainLong());
+  Visit(builder, set.hasHeight() ? set.height() : ConstrainLong());
+  Visit(builder, set.hasAspectRatio() ? set.aspectRatio() : ConstrainDouble());
+  Visit(builder, set.hasFrameRate() ? set.frameRate() : ConstrainDouble());
+  Visit(builder, set.hasFacingMode() ? set.facingMode() : ConstrainDOMString());
+  Visit(builder, set.hasSampleRate() ? set.sampleRate() : ConstrainLong());
+  Visit(builder, set.hasSampleSize() ? set.sampleSize() : ConstrainLong());
+  Visit(builder, set.hasEchoCancellation() ? set.echoCancellation()
+                                           : ConstrainBoolean());
+  Visit(builder,
+        set.hasAutoGainControl() ? set.autoGainControl() : ConstrainBoolean());
+  Visit(builder, set.hasLatency() ? set.latency() : ConstrainDouble());
+  Visit(builder, set.hasChannelCount() ? set.channelCount() : ConstrainLong());
+  Visit(builder, set.hasVideoKind() ? set.videoKind() : ConstrainDOMString());
+  Visit(builder, set.hasWhiteBalanceMode() ? set.whiteBalanceMode()
+                                           : ConstrainDOMString());
+  Visit(builder,
+        set.hasExposureMode() ? set.exposureMode() : ConstrainDOMString());
+  Visit(builder, set.hasFocusMode() ? set.focusMode() : ConstrainDOMString());
+  Visit(builder, set.hasPointsOfInterest() ? set.pointsOfInterest()
+                                           : ConstrainPoint2D());
+  Visit(builder, set.hasExposureCompensation() ? set.exposureCompensation()
+                                               : ConstrainDouble());
+  Visit(builder,
+        set.hasExposureTime() ? set.exposureTime() : ConstrainDouble());
+  Visit(builder,
+        set.hasColorTemperature() ? set.colorTemperature() : ConstrainDouble());
+  Visit(builder, set.hasIso() ? set.iso() : ConstrainDouble());
+  Visit(builder, set.hasBrightness() ? set.brightness() : ConstrainDouble());
+  Visit(builder, set.hasContrast() ? set.contrast() : ConstrainDouble());
+  Visit(builder, set.hasSaturation() ? set.saturation() : ConstrainDouble());
+  Visit(builder, set.hasSharpness() ? set.sharpness() : ConstrainDouble());
+  Visit(builder,
+        set.hasFocusDistance() ? set.focusDistance() : ConstrainDouble());
+  Visit(builder,
+        set.hasPan() ? set.pan() : BooleanOrDoubleOrConstrainDoubleRange());
+  Visit(builder,
+        set.hasTilt() ? set.tilt() : BooleanOrDoubleOrConstrainDoubleRange());
+  Visit(builder,
+        set.hasZoom() ? set.zoom() : BooleanOrDoubleOrConstrainDoubleRange());
+  Visit(builder, set.hasTorch() ? set.torch() : ConstrainBoolean());
 }
 
 void Visit(IdentifiableTokenBuilder& builder,

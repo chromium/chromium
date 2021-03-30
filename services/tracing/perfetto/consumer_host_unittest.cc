@@ -19,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/trace_event/trace_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -356,7 +357,7 @@ class TracingConsumerTest : public testing::Test,
                                          MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 0};
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    MojoResult rv = mojo::CreateDataPipe(&options, &producer, &consumer);
+    MojoResult rv = mojo::CreateDataPipe(&options, producer, consumer);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
     threaded_service_->ReadBuffers(std::move(producer), base::OnceClosure());
     drainer_.reset(new mojo::DataPipeDrainer(this, std::move(consumer)));
@@ -369,7 +370,7 @@ class TracingConsumerTest : public testing::Test,
                                          MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 0};
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    MojoResult rv = mojo::CreateDataPipe(&options, &producer, &consumer);
+    MojoResult rv = mojo::CreateDataPipe(&options, producer, consumer);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
     threaded_service_->DisableTracingAndEmitJson(std::move(producer),
                                                  std::move(write_callback),

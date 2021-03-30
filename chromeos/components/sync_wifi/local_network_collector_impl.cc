@@ -4,6 +4,7 @@
 
 #include "chromeos/components/sync_wifi/local_network_collector_impl.h"
 
+#include "base/barrier_closure.h"
 #include "base/guid.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
@@ -37,11 +38,21 @@ dbus::ObjectPath GetServicePathForGuid(const std::string& guid) {
   return dbus::ObjectPath(state->path());
 }
 
+bool IsAutoconnectUnspecified(
+    const sync_pb::WifiConfigurationSpecifics& proto) {
+  return !proto.has_automatically_connect() ||
+         proto.automatically_connect() ==
+             sync_pb::
+                 WifiConfigurationSpecifics_AutomaticallyConnectOption_AUTOMATICALLY_CONNECT_UNSPECIFIED;
+}
+
 }  // namespace
 
 LocalNetworkCollectorImpl::LocalNetworkCollectorImpl(
-    network_config::mojom::CrosNetworkConfig* cros_network_config)
-    : cros_network_config_(cros_network_config) {
+    network_config::mojom::CrosNetworkConfig* cros_network_config,
+    SyncedNetworkMetricsLogger* metrics_recorder)
+    : cros_network_config_(cros_network_config),
+      metrics_recorder_(metrics_recorder) {
   cros_network_config_->AddObserver(
       cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
 
@@ -53,6 +64,13 @@ LocalNetworkCollectorImpl::~LocalNetworkCollectorImpl() = default;
 
 void LocalNetworkCollectorImpl::GetAllSyncableNetworks(
     ProtoListCallback callback) {
+  if (!is_mojo_networks_loaded_) {
+    after_networks_are_loaded_callback_queue_.push(
+        base::BindOnce(&LocalNetworkCollectorImpl::GetAllSyncableNetworks,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
   std::string request_guid = InitializeRequest();
   request_guid_to_list_callback_[request_guid] = std::move(callback);
 
@@ -72,6 +90,40 @@ void LocalNetworkCollectorImpl::GetAllSyncableNetworks(
   if (!count) {
     OnRequestFinished(request_guid);
   }
+}
+
+void LocalNetworkCollectorImpl::RecordZeroNetworksEligibleForSync() {
+  if (has_logged_zero_eligible_networks_metric_) {
+    return;
+  }
+
+  if (!is_mojo_networks_loaded_) {
+    after_networks_are_loaded_callback_queue_.push(base::BindOnce(
+        &LocalNetworkCollectorImpl::RecordZeroNetworksEligibleForSync,
+        weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  base::flat_set<NetworkEligibilityStatus>
+      network_eligible_for_sync_status_codes;
+  NetworkEligibilityStatus network_eligible_for_sync_status;
+  for (const network_config::mojom::NetworkStatePropertiesPtr& network :
+       mojo_networks_) {
+    if (!network ||
+        network->type != network_config::mojom::NetworkType::kWiFi) {
+      continue;
+    }
+    network_eligible_for_sync_status = GetNetworkEligibilityStatus(
+        network->guid, network->connectable,
+        network->type_state->get_wifi()->hidden_ssid,
+        network->type_state->get_wifi()->security, network->source,
+        /*log_result=*/false);
+    network_eligible_for_sync_status_codes.insert(
+        network_eligible_for_sync_status);
+  }
+  metrics_recorder_->RecordZeroNetworksEligibleForSync(
+      network_eligible_for_sync_status_codes);
+  has_logged_zero_eligible_networks_metric_ = true;
 }
 
 void LocalNetworkCollectorImpl::GetSyncableNetwork(const std::string& guid,
@@ -134,6 +186,7 @@ bool LocalNetworkCollectorImpl::IsEligible(
   const network_config::mojom::WiFiStatePropertiesPtr& wifi_properties =
       network->type_state->get_wifi();
   return IsEligibleForSync(network->guid, network->connectable,
+                           wifi_properties->hidden_ssid,
                            wifi_properties->security, network->source,
                            /*log_result=*/true);
 }
@@ -167,14 +220,8 @@ void LocalNetworkCollectorImpl::OnGetManagedPropertiesResult(
       properties->type_properties->get_wifi()->auto_connect));
   proto.set_is_preferred(IsPreferredProtoFromMojo(properties->priority));
 
-  if (properties->metered) {
-    proto.set_metered(
-        properties->metered->active_value
-            ? sync_pb::
-                  WifiConfigurationSpecifics_MeteredOption_METERED_OPTION_YES
-            : sync_pb::
-                  WifiConfigurationSpecifics_MeteredOption_METERED_OPTION_NO);
-  }
+  // TODO(crbug/1128692): Restore support for the metered property when mojo
+  // networks track the "Automatic" state.
 
   bool is_proxy_modified =
       network_metadata_store_->GetIsFieldExternallyModified(
@@ -273,6 +320,13 @@ void LocalNetworkCollectorImpl::OnRequestFinished(
 }
 
 void LocalNetworkCollectorImpl::OnNetworkStateListChanged() {
+  if (!NetworkHandler::Get()
+           ->network_state_handler()
+           ->IsProfileNetworksLoaded()) {
+    is_mojo_networks_loaded_ = false;
+    return;
+  }
+
   cros_network_config_->GetNetworkStateList(
       network_config::mojom::NetworkFilter::New(
           network_config::mojom::FilterType::kConfigured,
@@ -285,6 +339,108 @@ void LocalNetworkCollectorImpl::OnNetworkStateListChanged() {
 void LocalNetworkCollectorImpl::OnGetNetworkList(
     std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
   mojo_networks_ = std::move(networks);
+  is_mojo_networks_loaded_ = true;
+  while (!after_networks_are_loaded_callback_queue_.empty()) {
+    std::move(after_networks_are_loaded_callback_queue_.front()).Run();
+    after_networks_are_loaded_callback_queue_.pop();
+  }
+}
+
+void LocalNetworkCollectorImpl::ExecuteAfterNetworksLoaded(
+    base::OnceClosure callback) {
+  if (is_mojo_networks_loaded_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  after_networks_are_loaded_callback_queue_.push(std::move(callback));
+}
+
+void LocalNetworkCollectorImpl::FixAutoconnect(
+    std::vector<sync_pb::WifiConfigurationSpecifics> protos,
+    base::OnceClosure callback) {
+  std::vector<std::string> guids_to_fix;
+  for (const sync_pb::WifiConfigurationSpecifics& proto : protos) {
+    // b/180854680 only affected networks with autoconnect unset/unspecified.
+    if (!IsAutoconnectUnspecified(proto)) {
+      continue;
+    }
+
+    network_config::mojom::NetworkStatePropertiesPtr network =
+        GetNetworkFromProto(proto);
+    if (!network) {
+      // A synced network that is shared could have been removed by another user
+      continue;
+    }
+
+    guids_to_fix.push_back(network->guid);
+  }
+
+  if (guids_to_fix.empty()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  fix_autoconnect_callback_ =
+      base::BarrierClosure(guids_to_fix.size(), std::move(callback));
+  for (const std::string& guid : guids_to_fix) {
+    cros_network_config_->GetManagedProperties(
+        guid,
+        base::BindOnce(&LocalNetworkCollectorImpl::EnableAutoconnectIfDisabled,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void LocalNetworkCollectorImpl::OnFixAutoconnectComplete(
+    bool success,
+    const std::string& error) {
+  if (!fix_autoconnect_callback_.is_null()) {
+    fix_autoconnect_callback_.Run();
+    return;
+  }
+
+  NOTREACHED();
+}
+
+network_config::mojom::NetworkStatePropertiesPtr
+LocalNetworkCollectorImpl::GetNetworkFromProto(
+    const sync_pb::WifiConfigurationSpecifics& proto) {
+  auto id = NetworkIdentifier::FromProto(proto);
+  network_config::mojom::NetworkStatePropertiesPtr network;
+  for (const network_config::mojom::NetworkStatePropertiesPtr& n :
+       mojo_networks_) {
+    if (id == NetworkIdentifier::FromMojoNetwork(n)) {
+      return n->Clone();
+    }
+  }
+  return nullptr;
+}
+
+void LocalNetworkCollectorImpl::EnableAutoconnectIfDisabled(
+    network_config::mojom::ManagedPropertiesPtr properties) {
+  if (!properties ||
+      properties->type != network_config::mojom::NetworkType::kWiFi) {
+    OnFixAutoconnectComplete(/*success=*/true, /*error=*/std::string());
+    return;
+  }
+  if (properties->type_properties->get_wifi()->auto_connect &&
+      properties->type_properties->get_wifi()->auto_connect->active_value) {
+    OnFixAutoconnectComplete(/*success=*/true, /*error=*/std::string());
+    return;
+  }
+
+  NET_LOG(EVENT) << "Fixing autoconnect for "
+                 << NetworkGuidId(properties->guid);
+  auto config = network_config::mojom::ConfigProperties::New();
+  config->type_config =
+      network_config::mojom::NetworkTypeConfigProperties::NewWifi(
+          network_config::mojom::WiFiConfigProperties::New());
+
+  config->auto_connect = network_config::mojom::AutoConnectConfig::New(true);
+  cros_network_config_->SetProperties(
+      properties->guid, std::move(config),
+      base::BindOnce(&LocalNetworkCollectorImpl::OnFixAutoconnectComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace sync_wifi

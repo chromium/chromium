@@ -43,7 +43,7 @@ void IPCDataSource::Read(int64_t position,
   utility_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&IPCDataSource::ReadMediaData, base::Unretained(this),
-                     destination, base::Passed(std::move(callback)), size));
+                     destination, std::move(callback), size));
 }
 
 bool IPCDataSource::GetSize(int64_t* size_out) {
@@ -68,9 +68,8 @@ void IPCDataSource::ReadMediaData(uint8_t* destination,
   CHECK_GE(size, 0);
 
   media_data_source_->Read(
-      size,
-      base::BindOnce(&IPCDataSource::ReadDone, base::Unretained(this),
-                     destination, base::Passed(std::move(callback)), size));
+      size, base::BindOnce(&IPCDataSource::ReadDone, base::Unretained(this),
+                           destination, std::move(callback), size));
 }
 
 void IPCDataSource::ReadDone(uint8_t* destination,

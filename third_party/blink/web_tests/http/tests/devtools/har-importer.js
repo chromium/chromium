@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       'Verifies that imported HAR files create matching NetworkRequests');
-  await TestRunner.loadModule('application_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   const harRoot = new HARImporter.HARRoot(harJson);
   const requests = HARImporter.Importer.requestsFromHARLog(harRoot.log);
   const formattedRequests = await Promise.all(requests.map(async request => {

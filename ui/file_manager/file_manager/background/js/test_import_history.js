@@ -10,7 +10,7 @@
 // clang-format off
 // #import {assertTrue} from 'chrome://test/chai_assert.js';
 // #import {importer} from '../../common/js/importer_common.m.js';
-// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+// #import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
 // clang-format on
 
 // Namespace

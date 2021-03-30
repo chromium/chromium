@@ -17,32 +17,33 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/undo/bookmark_undo_service.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
-
-using bookmarks::BookmarkModel;
-using bookmarks::BookmarkNode;
-using bookmarks::BookmarkNodeData;
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 
 namespace chrome {
+
+using ::bookmarks::BookmarkModel;
+using ::bookmarks::BookmarkNode;
+using ::bookmarks::BookmarkNodeData;
+using ::ui::mojom::DragOperation;
 
 BookmarkDragParams::BookmarkDragParams(
     std::vector<const bookmarks::BookmarkNode*> nodes,
     int drag_node_index,
-    gfx::NativeView view,
+    content::WebContents* web_contents,
     ui::mojom::DragEventSource source,
     gfx::Point start_point)
     : nodes(std::move(nodes)),
       drag_node_index(drag_node_index),
-      view(view),
+      web_contents(web_contents),
       source(source),
       start_point(start_point) {}
 BookmarkDragParams::~BookmarkDragParams() = default;
 
-int DropBookmarks(Profile* profile,
-                  const BookmarkNodeData& data,
-                  const BookmarkNode* parent_node,
-                  size_t index,
-                  bool copy) {
+DragOperation DropBookmarks(Profile* profile,
+                            const BookmarkNodeData& data,
+                            const BookmarkNode* parent_node,
+                            size_t index,
+                            bool copy) {
   DCHECK(profile);
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
 #if !defined(OS_ANDROID)
@@ -64,14 +65,14 @@ int DropBookmarks(Profile* profile,
         }
         index = size_t{parent_node->GetIndexOf(dragged_nodes[i]) + 1};
       }
-      return copy ? ui::DragDropTypes::DRAG_COPY : ui::DragDropTypes::DRAG_MOVE;
+      return copy ? DragOperation::kCopy : DragOperation::kMove;
     }
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
   }
   RecordBookmarksAdded(profile);
   // Dropping a folder from different profile. Always accept.
   bookmarks::CloneBookmarkNode(model, data.elements, parent_node, index, true);
-  return ui::DragDropTypes::DRAG_COPY;
+  return DragOperation::kCopy;
 }
 
 }  // namespace chrome

@@ -69,9 +69,9 @@ class FrameSettingImageProvider : public cc::ImageProvider {
     DCHECK(!draw_image.paint_image().IsPaintWorklet());
     auto sk_image =
         draw_image.paint_image().GetSkImageForFrame(frame_index_, client_id_);
-    return ScopedResult(
-        cc::DecodedDrawImage(sk_image, nullptr, SkSize::MakeEmpty(),
-                             SkSize::Make(1, 1), draw_image.filter_quality()));
+    return ScopedResult(cc::DecodedDrawImage(
+        sk_image, nullptr, SkSize::MakeEmpty(), SkSize::Make(1, 1),
+        draw_image.filter_quality(), true));
   }
 
  private:
@@ -92,7 +92,7 @@ void GenerateBitmapForPaintImage(cc::PaintImage paint_image,
   bitmap->eraseColor(SK_AlphaTRANSPARENT);
   FrameSettingImageProvider image_provider(frame_index, client_id);
   cc::SkiaPaintCanvas canvas(*bitmap, &image_provider);
-  canvas.drawImage(paint_image, 0u, 0u, nullptr);
+  canvas.drawImage(paint_image, 0u, 0u);
 }
 
 }  // namespace
@@ -187,7 +187,7 @@ class BitmapImageTest : public testing::Test {
     bitmap.allocPixels(info, image->Size().Width() * 4);
     bitmap.eraseColor(SK_AlphaTRANSPARENT);
     cc::SkiaPaintCanvas canvas(bitmap);
-    canvas.drawImage(paint_image, 0u, 0u, nullptr);
+    canvas.drawImage(paint_image, 0u, 0u);
     return bitmap;
   }
 

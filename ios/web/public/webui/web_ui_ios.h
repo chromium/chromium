@@ -6,10 +6,10 @@
 #define IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 
 class GURL;
 
@@ -30,7 +30,7 @@ class WebUIIOS {
  public:
   // Returns JavaScript code that, when executed, calls the function specified
   // by |function_name| with the arguments specified in |arg_list|.
-  static base::string16 GetJavascriptCall(
+  static std::u16string GetJavascriptCall(
       const std::string& function_name,
       const std::vector<const base::Value*>& arg_list);
 

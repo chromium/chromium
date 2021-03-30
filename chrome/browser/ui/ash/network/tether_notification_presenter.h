@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/notification_presenter.h"
 #include "chromeos/network/network_state.h"
@@ -92,8 +91,8 @@ class TetherNotificationPresenter : public NotificationPresenter {
 
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id,
-      const base::string16& title,
-      const base::string16& message,
+      const std::u16string& title,
+      const std::u16string& message,
       const gfx::ImageSkia& small_image,
       const message_center::RichNotificationData& rich_notification_data);
 

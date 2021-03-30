@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chromeos/components/local_search_service/index.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 
@@ -51,14 +50,14 @@ class LinearMapSearch : public Index {
               DeleteCallback callback) override;
   void UpdateDocuments(const std::vector<Data>& data,
                        UpdateDocumentsCallback callback) override;
-  void Find(const base::string16& query,
+  void Find(const std::u16string& query,
             uint32_t max_results,
             FindCallback callback) override;
   void ClearIndex(ClearIndexCallback callback) override;
 
  private:
   // Returns all search results for a given query.
-  std::vector<Result> GetSearchResults(const base::string16& query,
+  std::vector<Result> GetSearchResults(const std::u16string& query,
                                        uint32_t max_results) const;
 
   KeyToTagVector data_;

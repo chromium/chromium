@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -115,14 +114,14 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
     // worker died. When this is called, status is STOPPED.
     virtual void OnDetached(EmbeddedWorkerStatus old_status) {}
 
-    virtual void OnReportException(const base::string16& error_message,
+    virtual void OnReportException(const std::u16string& error_message,
                                    int line_number,
                                    int column_number,
                                    const GURL& source_url) {}
     virtual void OnReportConsoleMessage(
         blink::mojom::ConsoleMessageSource source,
         blink::mojom::ConsoleMessageLevel message_level,
-        const base::string16& message,
+        const std::u16string& message,
         int line_number,
         const GURL& source_url) {}
   };
@@ -168,6 +167,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   int process_id() const;
   int thread_id() const { return thread_id_; }
   int worker_devtools_agent_route_id() const;
+  base::UnguessableToken WorkerDevtoolsId() const;
 
   // DEPRECATED, only for use by ServiceWorkerVersion.
   // TODO(crbug.com/855852): Remove the Listener interface.
@@ -232,7 +232,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // The below can only be called on the UI thread. The returned factory may be
   // later supplied to UpdateLoaderFactories().
   static std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-  CreateFactoryBundleOnUI(
+  CreateFactoryBundle(
       RenderProcessHost* rph,
       int routing_id,
       const url::Origin& origin,
@@ -240,7 +240,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
           cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      ContentBrowserClient::URLLoaderFactoryType factory_type);
+      ContentBrowserClient::URLLoaderFactoryType factory_type,
+      const std::string& devtools_worker_token);
 
   // Creates a set of factory bundles for scripts and subresources. This must be
   // called after the COEP value for the worker script is known.
@@ -298,13 +299,13 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // Resets the embedded worker instance to the initial state. Changes
   // the internal status from STARTING or RUNNING to STOPPED.
   void OnStopped() override;
-  void OnReportException(const base::string16& error_message,
+  void OnReportException(const std::u16string& error_message,
                          int line_number,
                          int column_number,
                          const GURL& source_url) override;
   void OnReportConsoleMessage(blink::mojom::ConsoleMessageSource source,
                               blink::mojom::ConsoleMessageLevel message_level,
-                              const base::string16& message,
+                              const std::u16string& message,
                               int line_number,
                               const GURL& source_url) override;
 

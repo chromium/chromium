@@ -102,9 +102,25 @@ TEST_F(CompositingReasonFinderTest, OnlyAnchoredStickyPositionPromoted) {
 
 TEST_F(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
   SetBodyInnerHTML(R"HTML(
-    <style>.scroller {width: 400px; height: 400px; overflow: auto;
-    will-change: transform;}
-    .sticky { position: sticky; top: 0; width: 10px; height: 10px;}
+    <style>
+      .scroller {
+        width: 400px;
+        height: 400px;
+        overflow: auto;
+        will-change: transform;
+      }
+      .sticky {
+        position: sticky;
+        top: 0;
+        width: 10px;
+        height: 10px;
+      }
+      .overflow-hidden {
+        width: 400px;
+        height: 400px;
+        overflow: hidden;
+        will-change: transform;
+      }
     </style>
     <div class='scroller'>
       <div id='sticky-scrolling' class='sticky'></div>
@@ -113,20 +129,56 @@ TEST_F(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
     <div class='scroller'>
       <div id='sticky-no-scrolling' class='sticky'></div>
     </div>
+    <div class='overflow-hidden'>
+      <div id='overflow-hidden-scrolling' class='sticky'></div>
+      <div style='height: 2000px;'></div>
+    </div>
+    <div class='overflow-hidden'>
+      <div id='overflow-hidden-no-scrolling' class='sticky'></div>
+    </div>
   )HTML");
 
-  EXPECT_EQ(
-      kPaintsIntoOwnBacking,
-      GetPaintLayerByElementId("sticky-scrolling")->GetCompositingState());
-  EXPECT_EQ(
-      kNotComposited,
-      GetPaintLayerByElementId("sticky-no-scrolling")->GetCompositingState());
+  auto& sticky_scrolling =
+      *To<LayoutBoxModelObject>(GetLayoutObjectByElementId("sticky-scrolling"));
+  EXPECT_TRUE(
+      CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
+          *sticky_scrolling.Layer()));
+
+  auto& sticky_no_scrolling = *To<LayoutBoxModelObject>(
+      GetLayoutObjectByElementId("sticky-no-scrolling"));
+  EXPECT_FALSE(
+      CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
+          *sticky_no_scrolling.Layer()));
+
+  auto& overflow_hidden_scrolling = *To<LayoutBoxModelObject>(
+      GetLayoutObjectByElementId("overflow-hidden-scrolling"));
+  EXPECT_TRUE(
+      CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
+          *overflow_hidden_scrolling.Layer()));
+
+  auto& overflow_hidden_no_scrolling = *To<LayoutBoxModelObject>(
+      GetLayoutObjectByElementId("overflow-hidden-no-scrolling"));
+  EXPECT_FALSE(
+      CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
+          *overflow_hidden_no_scrolling.Layer()));
+
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_EQ(kPaintsIntoOwnBacking,
+              sticky_scrolling.Layer()->GetCompositingState());
+    EXPECT_EQ(kNotComposited,
+              sticky_no_scrolling.Layer()->GetCompositingState());
+    EXPECT_EQ(kPaintsIntoOwnBacking,
+              overflow_hidden_scrolling.Layer()->GetCompositingState());
+    EXPECT_EQ(kNotComposited,
+              overflow_hidden_no_scrolling.Layer()->GetCompositingState());
+  }
 }
 
 void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
     bool supports_transform_animation) {
   auto* object = GetLayoutObjectByElementId("target");
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
 
   style->SetSubtreeWillChangeContents(false);
   style->SetHasCurrentTransformAnimation(false);
@@ -196,9 +248,6 @@ TEST_F(CompositingReasonFinderTest, DontPromoteEmptyIframe) {
 }
 
 TEST_F(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      blink::features::kCompositeCrossOriginIframes, true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <iframe id=iframe></iframe>
@@ -363,6 +412,48 @@ TEST_F(CompositingReasonFinderTest, CompositedSVGText) {
   ASSERT_TRUE(text->IsText());
   EXPECT_EQ(CompositingReason::kNone,
             CompositingReasonFinder::DirectReasonsForPaintProperties(*text));
+}
+
+TEST_F(CompositingReasonFinderTest, NotSupportedTransformAnimationsOnSVG) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      * { animation: transformKeyframes 1s infinite; }
+      @keyframes transformKeyframes {
+        0% { transform: rotate(-5deg); }
+        100% { transform: rotate(5deg); }
+      }
+    </style>
+    <svg>
+      <defs id="defs" />
+      <text id="text">text content
+        <tspan id="tspan">tspan content</tspan>
+      </text>
+    </svg>
+  )HTML");
+
+  auto* defs = GetLayoutObjectByElementId("defs");
+  EXPECT_EQ(CompositingReason::kNone,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*defs));
+
+  auto* text = GetLayoutObjectByElementId("text");
+  EXPECT_EQ(CompositingReason::kActiveTransformAnimation,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*text));
+
+  auto* text_content = text->SlowFirstChild();
+  ASSERT_TRUE(text_content->IsText());
+  EXPECT_EQ(
+      CompositingReason::kNone,
+      CompositingReasonFinder::DirectReasonsForPaintProperties(*text_content));
+
+  auto* tspan = GetLayoutObjectByElementId("tspan");
+  EXPECT_EQ(CompositingReason::kNone,
+            CompositingReasonFinder::DirectReasonsForPaintProperties(*tspan));
+
+  auto* tspan_content = tspan->SlowFirstChild();
+  ASSERT_TRUE(tspan_content->IsText());
+  EXPECT_EQ(
+      CompositingReason::kNone,
+      CompositingReasonFinder::DirectReasonsForPaintProperties(*tspan_content));
 }
 
 }  // namespace blink

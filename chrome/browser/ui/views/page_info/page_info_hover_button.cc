@@ -22,11 +22,11 @@ PageInfoHoverButton::PageInfoHoverButton(
     views::Button::PressedCallback callback,
     const gfx::ImageSkia& image_icon,
     int title_resource_id,
-    const base::string16& secondary_text,
+    const std::u16string& secondary_text,
     int click_target_id,
-    const base::string16& tooltip_text,
-    const base::string16& subtitle_text)
-    : HoverButton(std::move(callback), base::string16()) {
+    const std::u16string& tooltip_text,
+    const std::u16string& subtitle_text)
+    : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(image_icon);
@@ -106,7 +106,7 @@ PageInfoHoverButton::PageInfoHoverButton(
 }
 
 void PageInfoHoverButton::SetTitleText(int title_resource_id,
-                                       const base::string16& secondary_text) {
+                                       const std::u16string& secondary_text) {
   DCHECK(title_);
   if (secondary_text.empty()) {
     title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
@@ -125,11 +125,11 @@ void PageInfoHoverButton::SetTitleText(int title_resource_id,
 }
 
 void PageInfoHoverButton::UpdateAccessibleName() {
-  const base::string16 accessible_name =
+  const std::u16string accessible_name =
       subtitle() == nullptr
           ? title()->GetText()
           : base::JoinString({title()->GetText(), subtitle()->GetText()},
-                             base::ASCIIToUTF16("\n"));
+                             u"\n");
   HoverButton::SetAccessibleName(accessible_name);
 }
 

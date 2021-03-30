@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller.h"
 
 namespace autofill {
@@ -22,31 +21,31 @@ class CardNameFixFlowControllerImpl : public CardNameFixFlowController {
   ~CardNameFixFlowControllerImpl() override;
 
   void Show(CardNameFixFlowView* card_name_fix_flow_view,
-            const base::string16& inferred_cardholder_name,
-            base::OnceCallback<void(const base::string16&)> name_callback);
+            const std::u16string& inferred_cardholder_name,
+            base::OnceCallback<void(const std::u16string&)> name_callback);
 
   // CardNameFixFlowController implementation.
   void OnConfirmNameDialogClosed() override;
-  void OnNameAccepted(const base::string16& name) override;
+  void OnNameAccepted(const std::u16string& name) override;
   void OnDismissed() override;
   int GetIconId() const override;
-  base::string16 GetCancelButtonLabel() const override;
-  base::string16 GetInferredCardholderName() const override;
-  base::string16 GetInferredNameTooltipText() const override;
-  base::string16 GetInputLabel() const override;
-  base::string16 GetInputPlaceholderText() const override;
-  base::string16 GetSaveButtonLabel() const override;
-  base::string16 GetTitleText() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetInferredCardholderName() const override;
+  std::u16string GetInferredNameTooltipText() const override;
+  std::u16string GetInputLabel() const override;
+  std::u16string GetInputPlaceholderText() const override;
+  std::u16string GetSaveButtonLabel() const override;
+  std::u16string GetTitleText() const override;
 
  private:
   // Inferred cardholder name from Gaia account.
-  base::string16 inferred_cardholder_name_;
+  std::u16string inferred_cardholder_name_;
 
   // View that displays the fix flow prompt.
   CardNameFixFlowView* card_name_fix_flow_view_ = nullptr;
 
   // The callback to call once user confirms their name through the fix flow.
-  base::OnceCallback<void(const base::string16&)> name_accepted_callback_;
+  base::OnceCallback<void(const std::u16string&)> name_accepted_callback_;
 
   // Whether the prompt was shown to the user.
   bool shown_ = false;

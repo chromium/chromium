@@ -41,8 +41,8 @@ class GraphPageViewBase : public views::View {
                    float top,
                    float right,
                    float bottom,
-                   const base::string16& x_unit,
-                   const base::string16& y_unit,
+                   const std::u16string& x_unit,
+                   const std::u16string& y_unit,
                    int horizontal_points_number,
                    int horizontal_ticks_interval,
                    float vertical_ticks_interval);

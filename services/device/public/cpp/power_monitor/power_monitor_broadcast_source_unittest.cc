@@ -45,7 +45,8 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
 
 TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   base::PowerMonitorTestObserver observer;
-  base::PowerMonitor::AddObserver(&observer);
+  base::PowerMonitor::AddPowerSuspendObserver(&observer);
+  base::PowerMonitor::AddPowerStateObserver(&observer);
 
   // Sending resume when not suspended should have no effect.
   client()->Resume();
@@ -93,7 +94,9 @@ TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
   client()->PowerStateChange(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer.power_state_changes(), 2);
-  base::PowerMonitor::RemoveObserver(&observer);
+
+  base::PowerMonitor::RemovePowerSuspendObserver(&observer);
+  base::PowerMonitor::RemovePowerStateObserver(&observer);
 }
 
 }  // namespace device

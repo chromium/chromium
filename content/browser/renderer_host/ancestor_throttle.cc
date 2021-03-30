@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -23,10 +24,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
 namespace content {
 
@@ -93,42 +96,6 @@ bool HeadersContainFrameAncestorsCSP(
       });
 }
 
-class FrameAncestorCSPContext : public network::CSPContext {
- public:
-  FrameAncestorCSPContext(
-      RenderFrameHostImpl* navigated_frame,
-      const std::vector<network::mojom::ContentSecurityPolicyPtr>& policies)
-      : navigated_frame_(navigated_frame) {
-    // TODO(arthursonzogni): Refactor CSPContext to its original state, it
-    // shouldn't own any ContentSecurityPolicies on its own. This should be
-    // defined by the implementation instead. Copies could be avoided here.
-    for (auto& policy : policies)
-      AddContentSecurityPolicy(mojo::Clone(policy));
-  }
-
- private:
-  void ReportContentSecurityPolicyViolation(
-      network::mojom::CSPViolationPtr violation_params) override {
-    return navigated_frame_->ReportContentSecurityPolicyViolation(
-        std::move(violation_params));
-  }
-
-  bool SchemeShouldBypassCSP(const base::StringPiece& scheme) override {
-    return navigated_frame_->SchemeShouldBypassCSP(scheme);
-  }
-
-  void SanitizeDataForUseInCspViolation(
-      bool is_redirect,
-      network::mojom::CSPDirectiveName directive,
-      GURL* blocked_url,
-      network::mojom::SourceLocation* source_location) const override {
-    return navigated_frame_->SanitizeDataForUseInCspViolation(
-        is_redirect, directive, blocked_url, source_location);
-  }
-
-  RenderFrameHostImpl* navigated_frame_;
-};
-
 // Returns the parent, including outer delegates in the case of portals.
 RenderFrameHostImpl* ParentOrOuterDelegate(RenderFrameHostImpl* frame) {
   return frame->InsidePortal() ? frame->ParentOrOuterDelegateFrame()
@@ -146,56 +113,6 @@ std::unique_ptr<NavigationThrottle> AncestorThrottle::MaybeCreateThrottleFor(
 }
 
 AncestorThrottle::~AncestorThrottle() {}
-
-NavigationThrottle::ThrottleCheckResult AncestorThrottle::WillStartRequest() {
-  NavigationRequest* request = NavigationRequest::From(navigation_handle());
-  if (request->IsInMainFrame())
-    return NavigationThrottle::PROCEED;
-
-  // TODO(antoniosartori): Probably we should have taken a snapshot of the 'csp'
-  // attribute at the beginning of the navigation and not now, since the
-  // beforeunload handlers might have modified it in the meantime.
-  std::vector<network::mojom::ContentSecurityPolicyPtr> frame_csp;
-  network::mojom::ContentSecurityPolicyPtr frame_csp_attribute =
-      request->frame_tree_node()->csp_attribute()
-          ? request->frame_tree_node()->csp_attribute()->Clone()
-          : nullptr;
-  if (frame_csp_attribute) {
-    const GURL& url = navigation_handle()->GetURL();
-
-    // TODO(antoniosartori): Maybe we should revisit what 'self' means in the
-    // 'csp' attribute.
-    frame_csp_attribute->self_origin = network::mojom::CSPSource::New(
-        url.scheme(), url.host(), url.EffectiveIntPort(), "", false, false);
-  }
-  frame_csp.emplace_back(std::move(frame_csp_attribute));
-
-  const network::mojom::ContentSecurityPolicy* parent_required_csp =
-      request->frame_tree_node()->parent()->required_csp();
-
-  std::string error_message;
-  if (!network::IsValidRequiredCSPAttr(frame_csp, parent_required_csp,
-                                       error_message)) {
-    if (frame_csp[0]) {
-      navigation_handle()->GetParentFrame()->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          base::StringPrintf("The frame 'csp' attribute ('%s') is invalid and "
-                             "will be discarded: %s",
-                             frame_csp[0]->header->header_value.c_str(),
-                             error_message.c_str()));
-    }
-    if (parent_required_csp)
-      request->SetRequiredCSP(parent_required_csp->Clone());
-    // TODO(antoniosartori): Consider instead blocking the navigation here,
-    // since this seems to be insecure
-    // (cf. https://github.com/w3c/webappsec-cspee/pull/11).
-  } else {
-    // If |frame_csp| is valid then it is not null.
-    request->SetRequiredCSP(std::move(frame_csp[0]));
-  }
-
-  return NavigationThrottle::PROCEED;
-}
 
 NavigationThrottle::ThrottleCheckResult
 AncestorThrottle::WillRedirectRequest() {
@@ -255,12 +172,6 @@ NavigationThrottle::ThrottleCheckResult AncestorThrottle::ProcessResponseImpl(
 
   if (EvaluateEmbeddingOptIn(logging) == CheckResult::BLOCK)
     return NavigationThrottle::BLOCK_RESPONSE;
-
-  // CSPEE is checked only for the final response.
-  if (is_response_check &&
-      EvaluateCSPEmbeddedEnforcement() == CheckResult::BLOCK) {
-    return NavigationThrottle::BLOCK_RESPONSE;
-  }
 
   return NavigationThrottle::PROCEED;
 }
@@ -453,15 +364,11 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
 
 AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
     LoggingDisposition logging) {
-  if (!base::FeatureList::IsEnabled(features::kEmbeddingRequiresOptIn))
-    return CheckResult::PROCEED;
-
+  // If the proposal in https://github.com/mikewest/embedding-requires-opt-in is
+  // enabled, a response will be blocked unless it's explicitly opted-into
+  // being embeddable via 'X-Frame-Options'/'frame-ancestors', or is same-origin
+  // with its ancestors.
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
-
-  // If embedding requires opt-in, then we check whether the response opted-into
-  // embedding via either an 'X-Frame-Options' header or a 'frame-ancestors'
-  // directive. If neither is present, the response will be blocked unless it is
-  // same-origin with its ancestor chain.
   if (request->response()->parsed_headers->xfo ==
           network::mojom::XFrameOptionsValue::kNone &&
       !HeadersContainFrameAncestorsCSP(request->response()->parsed_headers)) {
@@ -471,8 +378,16 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
         url::Origin::Create(navigation_handle()->GetURL());
     while (parent) {
       if (!parent->GetLastCommittedOrigin().IsSameOriginWith(current_origin)) {
+        GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+            parent, blink::mojom::WebFeature::
+                        kEmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO);
+
+        if (!base::FeatureList::IsEnabled(features::kEmbeddingRequiresOptIn))
+          return CheckResult::PROCEED;
+
         if (logging == LoggingDisposition::LOG_TO_CONSOLE)
           ConsoleErrorEmbeddingRequiresOptIn();
+
         return CheckResult::BLOCK;
       }
       parent = ParentOrOuterDelegate(parent);
@@ -489,12 +404,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
   // navigation_request().common_params().source_location here instead.
   auto empty_source_location = network::mojom::SourceLocation::New();
 
-  // CSP frame-ancestors are checked against the URL of every parent and are
-  // reported to the navigating frame.
-  FrameAncestorCSPContext csp_context(
-      NavigationRequest::From(navigation_handle())->GetRenderFrameHost(),
-      content_security_policy);
-
   // Check CSP frame-ancestors against every parent.
   // We enforce frame-ancestors in the outer delegate for portals, but not
   // for other uses of inner/outer WebContents (GuestViews).
@@ -502,7 +411,13 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
       ParentOrOuterDelegate(static_cast<RenderFrameHostImpl*>(
           navigation_handle()->GetRenderFrameHost()));
   while (parent) {
-    if (!csp_context.IsAllowedByCsp(
+    // CSP violations (if any) are reported via the disallowed ancestor of the
+    // navigated frame (because while the throttle runs the navigation hasn't
+    // committed yet and the target frame might not yet have a URLLoaderFactory
+    // that could be used to report the violation).
+    // See also https://crbug.com/1111049.
+    if (!RenderFrameHostCSPContext(parent).IsAllowedByCsp(
+            content_security_policy,
             network::mojom::CSPDirectiveName::FrameAncestors,
             parent->GetLastCommittedOrigin().GetURL(),
             navigation_handle()->WasServerRedirect(),
@@ -515,98 +430,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
   }
 
   return CheckResult::PROCEED;
-}
-
-// When the embedder requires the use of Content Security Policy via Embedded
-// Enforcement, framed documents must either
-// 1) Use the 'allow-csp-from' header to opt-into enforcement.
-// 2) Enforce its own CSP that subsumes the required CSP.
-// Framed documents that fail to do either of these will be blocked.
-//
-// See:
-// - https://w3c.github.io/webappsec-cspee/#required-csp-header
-// - https://w3c.github.io/webappsec-cspee/#allow-csp-from-header
-AncestorThrottle::CheckResult
-AncestorThrottle::EvaluateCSPEmbeddedEnforcement() {
-  NavigationRequest* request = NavigationRequest::From(navigation_handle());
-  if (request->IsInMainFrame()) {
-    // We enforce CSPEE only for frames, not for portals.
-    return CheckResult::PROCEED;
-  }
-
-  RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
-      navigation_handle()->GetRenderFrameHost());
-
-  if (!request->required_csp())
-    return CheckResult::PROCEED;
-
-  const network::mojom::AllowCSPFromHeaderValuePtr& allow_csp_from =
-      request->response()->parsed_headers->allow_csp_from;
-  if (AllowsBlanketEnforcementOfRequiredCSP(
-          frame->GetParent()->GetLastCommittedOrigin(),
-          navigation_handle()->GetURL(), allow_csp_from)) {
-    // Enforce the required csps on the frame by passing them down to blink
-    request->ForceCSPForResponse(request->required_csp()->header->header_value);
-    return CheckResult::PROCEED;
-  }
-
-  std::string sanitized_blocked_url =
-      navigation_handle()->GetRedirectChain().front().GetOrigin().spec();
-  if (allow_csp_from && allow_csp_from->is_error_message()) {
-    frame->GetParent()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        base::StringPrintf("The value of the 'Allow-CSP-From' response header "
-                           "returned by %s is invalid: %s",
-                           sanitized_blocked_url.c_str(),
-                           allow_csp_from->get_error_message().c_str()));
-  }
-  if (network::Subsumes(
-          *request->required_csp(),
-          request->response()->parsed_headers->content_security_policy)) {
-    return CheckResult::PROCEED;
-  }
-
-  frame->GetParent()->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError,
-      base::StringPrintf(
-          "Refused to display '%s' in a frame. The embedder requires it to "
-          "enforce the following Content Security Policy: '%s'. However, the "
-          "frame neither accepts that policy using the Allow-CSP-From header "
-          "nor delivers a Content Security Policy which is at least as strong "
-          "as that one.",
-          sanitized_blocked_url.c_str(),
-          request->required_csp()->header->header_value.c_str()));
-
-  return CheckResult::BLOCK;
-}
-
-// static
-bool AncestorThrottle::AllowsBlanketEnforcementOfRequiredCSP(
-    const url::Origin& request_origin,
-    const GURL& response_url,
-    const network::mojom::AllowCSPFromHeaderValuePtr& allow_csp_from) {
-  if (response_url.SchemeIs(url::kAboutScheme) ||
-      response_url.SchemeIs(url::kDataScheme) || response_url.SchemeIsFile() ||
-      response_url.SchemeIsFileSystem() || response_url.SchemeIsBlob()) {
-    return true;
-  }
-
-  if (request_origin.IsSameOriginWith(url::Origin::Create(response_url))) {
-    return true;
-  }
-
-  if (!allow_csp_from)
-    return false;
-
-  if (allow_csp_from->is_allow_star()) {
-    return true;
-  }
-  if (allow_csp_from->is_origin() &&
-      request_origin.IsSameOriginWith(allow_csp_from->get_origin())) {
-    return true;
-  }
-
-  return false;
 }
 
 }  // namespace content

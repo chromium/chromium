@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 #include "components/sync/driver/sync_user_settings.h"
 
@@ -75,14 +80,18 @@ ProfileCustomizationBubbleSyncController::
     : sync_service_(sync_service),
       theme_service_(theme_service),
       show_bubble_callback_(std::move(show_bubble_callback)),
-      suggested_profile_color_(suggested_profile_color) {
+      suggested_profile_color_(suggested_profile_color),
+      observation_start_time_(base::TimeTicks::Now()) {
   DCHECK(sync_service_);
   DCHECK(theme_service_);
   DCHECK(show_bubble_callback_);
 }
 
 ProfileCustomizationBubbleSyncController::
-    ~ProfileCustomizationBubbleSyncController() = default;
+    ~ProfileCustomizationBubbleSyncController() {
+  base::UmaHistogramTimes("Profile.SyncCustomizationBubbleDelay",
+                          base::TimeTicks::Now() - observation_start_time_);
+}
 
 void ProfileCustomizationBubbleSyncController::Init() {
   if (!CanSyncStart(sync_service_)) {
@@ -115,11 +124,17 @@ void ProfileCustomizationBubbleSyncController::OnStateChanged(
   }
 }
 
-void ProfileCustomizationBubbleSyncController::OnThemeSyncStarted() {
-  // Skip the bubble (and not use the default color) if the user got a
-  // non-default value from sync.
-  if (!theme_service_->UsingDefaultTheme() &&
-      !theme_service_->UsingSystemTheme()) {
+void ProfileCustomizationBubbleSyncController::OnThemeSyncStarted(
+    ThemeSyncableService::ThemeSyncState state) {
+  // Skip the bubble (and not use the default color) if the user got a custom
+  // value from sync (that is either already applied as a custom theme or
+  // triggered a custom theme installation).
+  const bool using_custom_theme = !theme_service_->UsingDefaultTheme() &&
+                                  !theme_service_->UsingSystemTheme();
+  const bool installing_custom_theme =
+      state ==
+      ThemeSyncableService::ThemeSyncState::kWaitingForExtensionInstallation;
+  if (using_custom_theme || installing_custom_theme) {
     SkipBubble();
     return;
   }
@@ -136,4 +151,18 @@ void ProfileCustomizationBubbleSyncController::
 void ProfileCustomizationBubbleSyncController::SkipBubble() {
   std::move(show_bubble_callback_).Run(false);
   delete this;
+}
+
+// Defined in
+// chrome/browser/ui/signin/profile_customization_bubble_sync_controller.h
+void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
+    Browser* browser,
+    SkColor suggested_profile_color) {
+  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
+                                 ->toolbar_button_provider()
+                                 ->GetAvatarToolbarButton();
+  DCHECK(anchor_view);
+  ProfileCustomizationBubbleSyncController::
+      ApplyColorAndShowBubbleWhenNoValueSynced(browser->profile(), anchor_view,
+                                               suggested_profile_color);
 }

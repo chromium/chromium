@@ -20,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -88,6 +87,7 @@ class NaClDomHandler : public WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
  private:
   // Callback for the "requestNaClInfo" message.
@@ -136,7 +136,6 @@ class NaClDomHandler : public WebUIMessageHandler {
   bool pnacl_path_exists_;
   std::string pnacl_version_string_;
 
-  // Factory for the creating refs in callbacks.
   base::WeakPtrFactory<NaClDomHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NaClDomHandler);
@@ -146,12 +145,9 @@ NaClDomHandler::NaClDomHandler()
     : has_plugin_info_(false),
       pnacl_path_validated_(false),
       pnacl_path_exists_(false) {
-  PluginService::GetInstance()->GetPlugins(base::BindOnce(
-      &NaClDomHandler::OnGotPlugins, weak_ptr_factory_.GetWeakPtr()));
 }
 
-NaClDomHandler::~NaClDomHandler() {
-}
+NaClDomHandler::~NaClDomHandler() = default;
 
 void NaClDomHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -160,9 +156,13 @@ void NaClDomHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
+void NaClDomHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void AddPair(base::ListValue* list,
-             const base::string16& key,
-             const base::string16& value) {
+             const std::u16string& key,
+             const std::u16string& value) {
   std::unique_ptr<base::DictionaryValue> results(new base::DictionaryValue());
   results->SetString("key", key);
   results->SetString("value", value);
@@ -171,7 +171,7 @@ void AddPair(base::ListValue* list,
 
 // Generate an empty data-pair which acts as a line break.
 void AddLineBreak(base::ListValue* list) {
-  AddPair(list, ASCIIToUTF16(""), ASCIIToUTF16(""));
+  AddPair(list, u"", u"");
 }
 
 bool NaClDomHandler::isPluginEnabled(size_t plugin_index) {
@@ -187,8 +187,9 @@ bool NaClDomHandler::isPluginEnabled(size_t plugin_index) {
 void NaClDomHandler::AddOperatingSystemInfo(base::ListValue* list) {
   // Obtain the Chrome version info.
   AddPair(list, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
-          ASCIIToUTF16(version_info::GetVersionNumber() + " (" +
-                       chrome::GetChannelName() + ")"));
+          ASCIIToUTF16(
+              version_info::GetVersionNumber() + " (" +
+              chrome::GetChannelName(chrome::WithExtendedStable(true)) + ")"));
 
   // OS version information.
   // TODO(jvoung): refactor this to share the extra windows labeling
@@ -230,27 +231,27 @@ void NaClDomHandler::AddPluginList(base::ListValue* list) {
   std::vector<content::WebPluginInfo> info_array;
   PluginService::GetInstance()->GetPluginInfoArray(
       GURL(), "application/x-nacl", false, &info_array, NULL);
-  base::string16 nacl_version;
-  base::string16 nacl_key = ASCIIToUTF16("NaCl plugin");
+  std::u16string nacl_version;
+  std::u16string nacl_key = u"NaCl plugin";
   if (info_array.empty()) {
-    AddPair(list, nacl_key, ASCIIToUTF16("Disabled"));
+    AddPair(list, nacl_key, u"Disabled");
   } else {
     // Only the 0th plugin is used.
-    nacl_version = info_array[0].version + ASCIIToUTF16(" ") +
-        info_array[0].path.LossyDisplayName();
+    nacl_version =
+        info_array[0].version + u" " + info_array[0].path.LossyDisplayName();
     if (!isPluginEnabled(0)) {
-      nacl_version += ASCIIToUTF16(" (Disabled in profile prefs)");
+      nacl_version += u" (Disabled in profile prefs)";
     }
 
     AddPair(list, nacl_key, nacl_version);
 
     // Mark the rest as not used.
     for (size_t i = 1; i < info_array.size(); ++i) {
-      nacl_version = info_array[i].version + ASCIIToUTF16(" ") +
-          info_array[i].path.LossyDisplayName();
-      nacl_version += ASCIIToUTF16(" (not used)");
+      nacl_version =
+          info_array[i].version + u" " + info_array[i].path.LossyDisplayName();
+      nacl_version += u" (not used)";
       if (!isPluginEnabled(i)) {
-        nacl_version += ASCIIToUTF16(" (Disabled in profile prefs)");
+        nacl_version += u" (Disabled in profile prefs)";
       }
       AddPair(list, nacl_key, nacl_version);
     }
@@ -260,42 +261,34 @@ void NaClDomHandler::AddPluginList(base::ListValue* list) {
 
 void NaClDomHandler::AddPnaclInfo(base::ListValue* list) {
   // Display whether PNaCl is enabled.
-  base::string16 pnacl_enabled_string = ASCIIToUTF16("Enabled");
+  std::u16string pnacl_enabled_string = u"Enabled";
   if (!isPluginEnabled(0)) {
-    pnacl_enabled_string = ASCIIToUTF16("Disabled in profile prefs");
+    pnacl_enabled_string = u"Disabled in profile prefs";
   }
-  AddPair(list,
-          ASCIIToUTF16("Portable Native Client (PNaCl)"),
-          pnacl_enabled_string);
+  AddPair(list, u"Portable Native Client (PNaCl)", pnacl_enabled_string);
 
   // Obtain the version of the PNaCl translator.
   base::FilePath pnacl_path;
   bool got_path =
       base::PathService::Get(chrome::DIR_PNACL_COMPONENT, &pnacl_path);
   if (!got_path || pnacl_path.empty() || !pnacl_path_exists_) {
-    AddPair(list,
-            ASCIIToUTF16("PNaCl translator"),
-            ASCIIToUTF16("Not installed"));
+    AddPair(list, u"PNaCl translator", u"Not installed");
   } else {
-    AddPair(list,
-            ASCIIToUTF16("PNaCl translator path"),
-            pnacl_path.LossyDisplayName());
-    AddPair(list,
-            ASCIIToUTF16("PNaCl translator version"),
+    AddPair(list, u"PNaCl translator path", pnacl_path.LossyDisplayName());
+    AddPair(list, u"PNaCl translator version",
             ASCIIToUTF16(pnacl_version_string_));
   }
   AddLineBreak(list);
 }
 
 void NaClDomHandler::AddNaClInfo(base::ListValue* list) {
-  base::string16 nacl_enabled_string = ASCIIToUTF16("Disabled");
+  std::u16string nacl_enabled_string = u"Disabled";
   if (isPluginEnabled(0) &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableNaCl)) {
-    nacl_enabled_string = ASCIIToUTF16("Enabled by flag '--enable-nacl'");
+    nacl_enabled_string = u"Enabled by flag '--enable-nacl'";
   }
-  AddPair(list,
-          ASCIIToUTF16("Native Client (non-portable, outside web store)"),
+  AddPair(list, u"Native Client (non-portable, outside web store)",
           nacl_enabled_string);
   AddLineBreak(list);
 }
@@ -304,6 +297,11 @@ void NaClDomHandler::HandleRequestNaClInfo(const base::ListValue* args) {
   CHECK(callback_id_.empty());
   CHECK_EQ(1U, args->GetSize());
   callback_id_ = args->GetList()[0].GetString();
+
+  if (!has_plugin_info_) {
+    PluginService::GetInstance()->GetPlugins(base::BindOnce(
+        &NaClDomHandler::OnGotPlugins, weak_ptr_factory_.GetWeakPtr()));
+  }
 
   // Force re-validation of PNaCl's path in the next call to
   // MaybeRespondToPage(), in case PNaCl went from not-installed

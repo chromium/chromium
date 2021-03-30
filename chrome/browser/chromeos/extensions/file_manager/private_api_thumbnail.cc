@@ -9,9 +9,10 @@
 #include "base/files/file_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -206,7 +207,7 @@ FileManagerPrivateInternalGetPdfThumbnailFunction::Run() {
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURL(url);
 
-  if (file_system_url.type() != storage::kFileSystemTypeNativeLocal) {
+  if (file_system_url.type() != storage::kFileSystemTypeLocal) {
     return RespondNow(Error("Expected a native local URL"));
   }
 
@@ -297,6 +298,9 @@ FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::Run() {
 
   auto* root_map = arc::ArcDocumentsProviderRootMap::GetForBrowserContext(
       chrome_details_.GetProfile());
+  if (!root_map) {
+    return RespondNow(Error("File not found"));
+  }
   base::FilePath path;
   auto* root = root_map->ParseAndLookup(file_system_url, &path);
   if (!root) {
@@ -339,9 +343,17 @@ void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
 }
 
 void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
-    GotContentUrls(const gfx::Size& size_hint, const std::vector<GURL>& urls) {
+    GotContentUrls(const gfx::Size& size_hint,
+                   const std::vector<GURL>& urls,
+                   const std::vector<base::FilePath>& paths_to_share) {
   if (urls.size() != 1 || urls[0] == GURL()) {
     Respond(Error("Failed to resolve to countent URL"));
+    return;
+  }
+  if (!paths_to_share.empty()) {
+    Respond(
+        Error("paths_to_share should be empty when getting "
+              "ArcDocumentsProviderThumbnail URL"));
     return;
   }
 

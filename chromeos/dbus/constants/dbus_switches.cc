@@ -11,6 +11,10 @@ namespace switches {
 // attestation.
 const char kAttestationServer[] = "attestation-server";
 
+// Enables cros disks fake behavior. If the switch is set, fake cros disk D-Bus
+// client is initialized and USB events are not reaching chrome.
+const char kCrosDisksFake[] = "cros-disks-fake";
+
 // Forces the stub implementation of D-Bus clients.
 const char kDbusStub[] = "dbus-stub";
 

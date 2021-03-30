@@ -49,7 +49,7 @@ class SchedulingAffectingFeaturesTest : public SimTest {
   }
 };
 
-TEST_F(SchedulingAffectingFeaturesTest, WebSocketStopsThrottling) {
+TEST_F(SchedulingAffectingFeaturesTest, WebSocketIsTracked) {
   SimRequest main_resource("https://example.com/", "text/html");
 
   LoadURL("https://example.com/");
@@ -63,7 +63,7 @@ TEST_F(SchedulingAffectingFeaturesTest, WebSocketStopsThrottling) {
       "  var socket = new WebSocket(\"ws://www.example.com/websocket\");"
       "</script>");
 
-  EXPECT_TRUE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
   EXPECT_THAT(
       GetNonTrivialMainFrameFeatures(),
       testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebSocket));

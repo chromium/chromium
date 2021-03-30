@@ -24,14 +24,14 @@ HttpNetworkLayer::HttpNetworkLayer(HttpNetworkSession* session)
       suspended_(false) {
   DCHECK(session_);
 #if defined(OS_WIN)
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
 #endif
 }
 
 HttpNetworkLayer::~HttpNetworkLayer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 #if defined(OS_WIN)
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 #endif
 }
 

@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "base/metrics/histogram_macros.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/client/aura_constants.h"
@@ -223,6 +225,11 @@ void MultiProfileSupport::OnWindowOwnerEntryChanged(aura::Window* window,
 }
 
 void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
+  if (ash::features::IsFullRestoreEnabled()) {
+    full_restore::SetActiveProfilePath(
+        ProfileManager::GetActiveUserProfile()->GetPath());
+  }
+
   ChromeLauncherController* chrome_launcher_controller =
       ChromeLauncherController::instance();
   // Some unit tests have no ChromeLauncherController.

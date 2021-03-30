@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/browser_navigator_browsertest.h"
-#include "content/public/test/browser_test.h"
 
 #include <memory>
 
@@ -26,7 +25,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -39,16 +38,17 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request_body.h"
 
@@ -107,7 +107,7 @@ bool BrowserNavigatorTest::OpenPOSTURLInNewForegroundTabAndGetTitle(
     const GURL& url,
     const std::string& post_data,
     bool is_browser_initiated,
-    base::string16* title) {
+    std::u16string* title) {
   NavigateParams param(MakeNavigateParams());
   param.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   param.url = url;
@@ -222,14 +222,6 @@ void BrowserNavigatorTest::RunDoNothingIfIncognitoIsForcedTest(
             browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-void BrowserNavigatorTest::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED, type);
-  ++created_tab_contents_count_;
-}
-
 // Subclass of TestNavigationObserver that saves ChromeNavigationUIData.
 class TestNavigationUIDataObserver : public content::TestNavigationObserver {
  public:
@@ -296,16 +288,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_CurrentTab) {
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_SingletonTabExisting) {
   const GURL singleton_url1("http://maps.google.com/");
 
-  // Register for a notification if an additional WebContents was instantiated.
-  // Opening a Singleton tab that is already opened should not be opening a new
-  // tab nor be creating a new WebContents object.
-  content::NotificationRegistrar registrar;
-
-  // As the registrar object goes out of scope, this will get unregistered
-  registrar.Add(this,
-                content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED,
-                content::NotificationService::AllSources());
-
   chrome::AddSelectedTabWithURL(browser(), singleton_url1,
                                 ui::PAGE_TRANSITION_LINK);
   chrome::AddSelectedTabWithURL(browser(), GetGoogleURL(),
@@ -313,9 +295,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_SingletonTabExisting) {
 
   // We should have one browser with 3 tabs, the 3rd selected.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
   EXPECT_EQ(2, browser()->tab_strip_model()->active_index());
-
-  unsigned int previous_tab_contents_count = created_tab_contents_count_ = 0;
 
   // Navigate to singleton_url1.
   NavigateParams params(MakeNavigateParams());
@@ -328,7 +309,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_SingletonTabExisting) {
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
   // No tab contents should have been created
-  EXPECT_EQ(previous_tab_contents_count, created_tab_contents_count_);
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
@@ -1368,9 +1350,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 // This test makes sure a crashed singleton tab reloads from a new navigation.
-// TODO(https://crbug.com/396371): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       DISABLED_NavigateToCrashedSingletonTab) {
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateToCrashedSingletonTab) {
   const GURL singleton_url(GetContentSettingsURL());
   WebContents* web_contents = chrome::AddSelectedTabWithURL(
       browser(), singleton_url, ui::PAGE_TRANSITION_LINK);
@@ -1381,7 +1361,14 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
   // Kill the singleton tab.
-  web_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+    content::RenderFrameDeletedObserver crash_observer(
+        web_contents->GetMainFrame());
+    web_contents->GetMainFrame()->GetProcess()->Shutdown(1);
+    crash_observer.WaitUntilDeleted();
+  }
   EXPECT_TRUE(web_contents->IsCrashed());
 
   NavigateParams params(MakeNavigateParams());
@@ -1449,7 +1436,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   params.url = GURL(chrome::kChromeUINewTabURL);
   ui_test_utils::NavigateToURL(&params);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(local_ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
+  EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
             browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()
@@ -1514,8 +1501,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
+// TODO(crbug.com/1171245): This is disabled for Mac OS due to flakiness.
 // TODO(1024166): Timing out on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 #define MAYBE_NavigateFromNTPToOptionsPageInSameTab \
   DISABLED_NavigateFromNTPToOptionsPageInSameTab
 #else
@@ -1727,9 +1715,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open a browser initiated POST request in new foreground tab.
-  base::string16 expected_title(base::ASCIIToUTF16(kExpectedTitle));
+  std::u16string expected_title(base::ASCIIToUTF16(kExpectedTitle));
   std::string post_data = kExpectedTitle;
-  base::string16 title;
+  std::u16string title;
   ASSERT_TRUE(OpenPOSTURLInNewForegroundTabAndGetTitle(
       embedded_test_server()->GetURL(kEchoTitleCommand), post_data, true,
       &title));
@@ -1744,9 +1732,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open a renderer initiated POST request in new foreground tab.
-  base::string16 expected_title(base::ASCIIToUTF16(kExpectedTitle));
+  std::u16string expected_title(base::ASCIIToUTF16(kExpectedTitle));
   std::string post_data = kExpectedTitle;
-  base::string16 title;
+  std::u16string title;
   ASSERT_TRUE(OpenPOSTURLInNewForegroundTabAndGetTitle(
       embedded_test_server()->GetURL(kEchoTitleCommand), post_data, false,
       &title));
@@ -1777,7 +1765,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   params.window_action = NavigateParams::SHOW_WINDOW;
   ui_test_utils::NavigateToURL(&params);
 
-  base::string16 expected_title(base::UTF8ToUTF16(unescaped_title));
+  std::u16string expected_title(base::UTF8ToUTF16(unescaped_title));
   EXPECT_TRUE(params.navigated_or_inserted_contents);
   EXPECT_EQ(expected_title, params.navigated_or_inserted_contents->GetTitle());
   // GURL always keeps non-ASCII characters escaped, but check them anyways.

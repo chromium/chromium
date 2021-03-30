@@ -5,10 +5,10 @@
 #ifndef UI_BASE_MODELS_TREE_MODEL_H_
 #define UI_BASE_MODELS_TREE_MODEL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 namespace gfx {
 class ImageSkia;
@@ -27,7 +27,7 @@ class TreeModel;
 class TreeModelNode {
  public:
   // Returns the title for the node.
-  virtual const base::string16& GetTitle() const = 0;
+  virtual const std::u16string& GetTitle() const = 0;
 
  protected:
   virtual ~TreeModelNode() {}
@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
 
   // Sets the title of |node|.
   // This is only invoked if the node is editable and the user edits a node.
-  virtual void SetTitle(TreeModelNode* node, const base::string16& title);
+  virtual void SetTitle(TreeModelNode* node, const std::u16string& title);
 
   // Returns the set of icons for the nodes in the tree. You only need override
   // this if you don't want to use the default folder icons.

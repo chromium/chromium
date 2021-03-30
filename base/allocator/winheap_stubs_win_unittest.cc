@@ -15,7 +15,7 @@ namespace {
 bool IsPtrAligned(void* ptr, size_t alignment) {
   CHECK(base::bits::IsPowerOfTwo(alignment));
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-  return base::bits::Align(address, alignment) == address;
+  return base::bits::AlignUp(address, alignment) == address;
 }
 
 }  // namespace

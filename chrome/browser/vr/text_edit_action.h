@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_VR_TEXT_EDIT_ACTION_H_
 #define CHROME_BROWSER_VR_TEXT_EDIT_ACTION_H_
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace vr {
@@ -24,11 +24,11 @@ class VR_BASE_EXPORT TextEditAction {
  public:
   explicit TextEditAction(TextEditActionType type);
   TextEditAction(TextEditActionType type,
-                 base::string16 text,
+                 std::u16string text,
                  int new_cursor_position);
 
   TextEditActionType type() const { return type_; }
-  base::string16 text() const { return text_; }
+  std::u16string text() const { return text_; }
   int cursor_position() const { return new_cursor_position_; }
 
   bool operator==(const TextEditAction& other) const;
@@ -38,7 +38,7 @@ class VR_BASE_EXPORT TextEditAction {
 
  private:
   TextEditActionType type_;
-  base::string16 text_;
+  std::u16string text_;
   int new_cursor_position_;
 };
 

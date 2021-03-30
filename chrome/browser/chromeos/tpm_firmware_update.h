@@ -66,4 +66,12 @@ void UpdateAvailable(base::OnceCallback<void(bool)> completion,
 }  // namespace tpm_firmware_update
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace ash {
+namespace tpm_firmware_update {
+using ::chromeos::tpm_firmware_update::DecodeSettingsProto;
+}  // namespace tpm_firmware_update
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_TPM_FIRMWARE_UPDATE_H_

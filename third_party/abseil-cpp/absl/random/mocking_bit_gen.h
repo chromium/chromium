@@ -104,10 +104,7 @@ class BitGenRef;
 class MockingBitGen {
  public:
   MockingBitGen() = default;
-
-  ~MockingBitGen() {
-    for (const auto& del : deleters_) del();
-  }
+  ~MockingBitGen() = default;
 
   // URBG interface
   using result_type = absl::BitGen::result_type;
@@ -117,14 +114,6 @@ class MockingBitGen {
   result_type operator()() { return gen_(); }
 
  private:
-  using match_impl_fn = void (*)(void* mock_fn, void* t_erased_arg_tuple,
-                                 void* t_erased_result);
-
-  struct MockData {
-    void* mock_fn = nullptr;
-    match_impl_fn match_impl = nullptr;
-  };
-
   // GetMockFnType returns the testing::MockFunction for a result and tuple.
   // This method only exists for type deduction and is otherwise unimplemented.
   template <typename ResultT, typename... Args>
@@ -136,15 +125,44 @@ class MockingBitGen {
   // NOTE: MockFnCaller is essentially equivalent to the lambda:
   // [fn](auto... args) { return fn->Call(std::move(args)...)}
   // however that fails to build on some supported platforms.
-  template <typename ResultT, typename MockFnType, typename Tuple>
+  template <typename MockFnType, typename ResultT, typename Tuple>
   struct MockFnCaller;
+
   // specialization for std::tuple.
-  template <typename ResultT, typename MockFnType, typename... Args>
-  struct MockFnCaller<ResultT, MockFnType, std::tuple<Args...>> {
+  template <typename MockFnType, typename ResultT, typename... Args>
+  struct MockFnCaller<MockFnType, ResultT, std::tuple<Args...>> {
     MockFnType* fn;
     inline ResultT operator()(Args... args) {
       return fn->Call(std::move(args)...);
     }
+  };
+
+  // FunctionHolder owns a particular ::testing::MockFunction associated with
+  // a mocked type signature, and implement the type-erased Apply call, which
+  // applies type-erased arguments to the mock.
+  class FunctionHolder {
+   public:
+    virtual ~FunctionHolder() = default;
+
+    // Call is a dispatch function which converts the
+    // generic type-erased parameters into a specific mock invocation call.
+    virtual void Apply(/*ArgTupleT*/ void* args_tuple,
+                       /*ResultT*/ void* result) = 0;
+  };
+
+  template <typename MockFnType, typename ResultT, typename ArgTupleT>
+  class FunctionHolderImpl final : public FunctionHolder {
+   public:
+    void Apply(void* args_tuple, void* result) override {
+      // Requires tuple_args to point to a ArgTupleT, which is a
+      // std::tuple<Args...> used to invoke the mock function. Requires result
+      // to point to a ResultT, which is the result of the call.
+      *static_cast<ResultT*>(result) =
+          absl::apply(MockFnCaller<MockFnType, ResultT, ArgTupleT>{&mock_fn_},
+                      *static_cast<ArgTupleT*>(args_tuple));
+    }
+
+    MockFnType mock_fn_;
   };
 
   // MockingBitGen::RegisterMock
@@ -157,37 +175,31 @@ class MockingBitGen {
   //
   // The returned MockFunction<...> type can be used to setup additional
   // distribution parameters of the expectation.
-  template <typename ResultT, typename ArgTupleT>
-  auto RegisterMock(base_internal::FastTypeIdType type)
+  template <typename ResultT, typename ArgTupleT, typename SelfT>
+  auto RegisterMock(SelfT&, base_internal::FastTypeIdType type)
       -> decltype(GetMockFnType(std::declval<ResultT>(),
                                 std::declval<ArgTupleT>()))& {
-    using MockFnType = decltype(
-        GetMockFnType(std::declval<ResultT>(), std::declval<ArgTupleT>()));
-    auto& mock = mocks_[type];
-    if (!mock.mock_fn) {
-      auto* mock_fn = new MockFnType;
-      mock.mock_fn = mock_fn;
-      mock.match_impl = &MatchImpl<ResultT, ArgTupleT>;
-      deleters_.emplace_back([mock_fn] { delete mock_fn; });
-    }
-    return *static_cast<MockFnType*>(mock.mock_fn);
-  }
+    using MockFnType = decltype(GetMockFnType(std::declval<ResultT>(),
+                                              std::declval<ArgTupleT>()));
 
-  // MockingBitGen::MatchImpl<> is a dispatch function which converts the
-  // generic type-erased parameters into a specific mock invocation call.
-  // Requires tuple_args to point to a ArgTupleT, which is a std::tuple<Args...>
-  // used to invoke the mock function.
-  // Requires result to point to a ResultT, which is the result of the call.
-  template <typename ResultT, typename ArgTupleT>
-  static void MatchImpl(/*MockFnType<ResultT, Args...>*/ void* mock_fn,
-                        /*ArgTupleT*/ void* args_tuple,
-                        /*ResultT*/ void* result) {
-    using MockFnType = decltype(
-        GetMockFnType(std::declval<ResultT>(), std::declval<ArgTupleT>()));
-    *static_cast<ResultT*>(result) = absl::apply(
-        MockFnCaller<ResultT, MockFnType, ArgTupleT>{
-            static_cast<MockFnType*>(mock_fn)},
-        *static_cast<ArgTupleT*>(args_tuple));
+    using WrappedFnType = absl::conditional_t<
+        std::is_same<SelfT, ::testing::NiceMock<absl::MockingBitGen>>::value,
+        ::testing::NiceMock<MockFnType>,
+        absl::conditional_t<
+            std::is_same<SelfT,
+                         ::testing::NaggyMock<absl::MockingBitGen>>::value,
+            ::testing::NaggyMock<MockFnType>,
+            absl::conditional_t<
+                std::is_same<SelfT,
+                             ::testing::StrictMock<absl::MockingBitGen>>::value,
+                ::testing::StrictMock<MockFnType>, MockFnType>>>;
+
+    using ImplT = FunctionHolderImpl<WrappedFnType, ResultT, ArgTupleT>;
+    auto& mock = mocks_[type];
+    if (!mock) {
+      mock = absl::make_unique<ImplT>();
+    }
+    return static_cast<ImplT*>(mock.get())->mock_fn_;
   }
 
   // MockingBitGen::InvokeMock
@@ -206,13 +218,13 @@ class MockingBitGen {
     // Trigger a mock, if there exists one that matches `param`.
     auto it = mocks_.find(type);
     if (it == mocks_.end()) return false;
-    auto* mock_data = static_cast<MockData*>(&it->second);
-    mock_data->match_impl(mock_data->mock_fn, args_tuple, result);
+    it->second->Apply(args_tuple, result);
     return true;
   }
 
-  absl::flat_hash_map<base_internal::FastTypeIdType, MockData> mocks_;
-  std::vector<std::function<void()>> deleters_;
+  absl::flat_hash_map<base_internal::FastTypeIdType,
+                      std::unique_ptr<FunctionHolder>>
+      mocks_;
   absl::BitGen gen_;
 
   template <typename>

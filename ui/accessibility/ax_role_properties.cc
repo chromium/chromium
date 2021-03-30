@@ -20,6 +20,16 @@ constexpr bool kExposeLayoutTableAsDataTable = false;
 
 }  // namespace
 
+bool CanHaveInlineTextBoxChildren(ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kLineBreak:
+    case ax::mojom::Role::kStaticText:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool HasPresentationalChildren(const ax::mojom::Role role) {
   // See http://www.w3.org/TR/core-aam-1.1/#exclude_elements2.
   if (IsImage(role))
@@ -182,23 +192,23 @@ bool IsControlOnAndroid(const ax::mojom::Role role, bool isFocusable) {
   switch (role) {
     case ax::mojom::Role::kSplitter:
       return isFocusable;
-    case ax::mojom::Role::kTreeItem:
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
-    case ax::mojom::Role::kInputTime:
     case ax::mojom::Role::kDocBackLink:
     case ax::mojom::Role::kDocBiblioRef:
     case ax::mojom::Role::kDocGlossRef:
     case ax::mojom::Role::kDocNoteRef:
+    case ax::mojom::Role::kInputTime:
     case ax::mojom::Role::kLink:
+    case ax::mojom::Role::kTreeItem:
       return true;
+    case ax::mojom::Role::kAlert:
+    case ax::mojom::Role::kDialog:
     case ax::mojom::Role::kMenu:
     case ax::mojom::Role::kMenuBar:
     case ax::mojom::Role::kNone:
-    case ax::mojom::Role::kUnknown:
     case ax::mojom::Role::kTree:
-    case ax::mojom::Role::kDialog:
-    case ax::mojom::Role::kAlert:
+    case ax::mojom::Role::kUnknown:
       return false;
     default:
       return IsControl(role);
@@ -270,7 +280,6 @@ bool IsImage(const ax::mojom::Role role) {
     case ax::mojom::Role::kDocCover:
     case ax::mojom::Role::kGraphicsSymbol:
     case ax::mojom::Role::kImage:
-    case ax::mojom::Role::kImageMap:
     case ax::mojom::Role::kSvgRoot:
       return true;
     default:
@@ -723,6 +732,17 @@ bool IsText(ax::mojom::Role role) {
   }
 }
 
+bool IsComboBox(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kComboBoxGrouping:
+    case ax::mojom::Role::kTextFieldWithComboBox:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kArticle:
@@ -733,7 +753,6 @@ bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
     case ax::mojom::Role::kDocument:
     case ax::mojom::Role::kGraphicsDocument:
     case ax::mojom::Role::kImage:
-    case ax::mojom::Role::kImageMap:
     case ax::mojom::Role::kList:
     case ax::mojom::Role::kListItem:
     case ax::mojom::Role::kPdfRoot:

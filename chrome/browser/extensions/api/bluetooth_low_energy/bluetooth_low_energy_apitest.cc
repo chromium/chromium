@@ -25,29 +25,30 @@
 #include "extensions/test/result_catcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using device::BluetoothUUID;
 using device::BluetoothAdapter;
 using device::BluetoothDevice;
-using device::BluetoothRemoteGattCharacteristic;
 using device::BluetoothGattConnection;
+using device::BluetoothGattNotifySession;
+using device::BluetoothRemoteGattCharacteristic;
 using device::BluetoothRemoteGattDescriptor;
 using device::BluetoothRemoteGattService;
-using device::BluetoothGattNotifySession;
+using device::BluetoothUUID;
 using device::MockBluetoothAdapter;
 using device::MockBluetoothDevice;
 using device::MockBluetoothGattCharacteristic;
 using device::MockBluetoothGattConnection;
 using device::MockBluetoothGattDescriptor;
-using device::MockBluetoothGattService;
 using device::MockBluetoothGattNotifySession;
+using device::MockBluetoothGattService;
 using extensions::BluetoothLowEnergyEventRouter;
 using extensions::ResultCatcher;
+using testing::_;
+using testing::DoAll;
 using testing::Invoke;
 using testing::Return;
 using testing::ReturnRef;
 using testing::ReturnRefOfCopy;
 using testing::SaveArg;
-using testing::_;
 
 namespace {
 

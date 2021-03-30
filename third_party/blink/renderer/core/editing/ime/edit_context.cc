@@ -380,10 +380,10 @@ String EditContext::enterKeyHint() const {
   }
 }
 
-void EditContext::GetLayoutBounds(WebRect* web_control_bounds,
-                                  WebRect* web_selection_bounds) {
-  *web_control_bounds = control_bounds_;
-  *web_selection_bounds = selection_bounds_;
+void EditContext::GetLayoutBounds(gfx::Rect* control_bounds,
+                                  gfx::Rect* selection_bounds) {
+  *control_bounds = control_bounds_;
+  *selection_bounds = selection_bounds_;
 }
 
 bool EditContext::SetComposition(
@@ -417,7 +417,7 @@ bool EditContext::SetComposition(
   selection_end_ = composition_range_start_ + selection_end;
   DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
                           selection_start_, selection_end_);
-  composition_range_end_ = composition_range_start_ + selection_end;
+  composition_range_end_ = composition_range_start_ + text.length();
   DispatchTextFormatEvent(ime_text_spans);
   return true;
 }
@@ -454,6 +454,20 @@ bool EditContext::SetCompositionFromExistingText(
   // Update the selection range.
   selection_start_ = composition_start;
   selection_end_ = composition_start;
+  return true;
+}
+
+bool EditContext::InsertText(const WebString& text) {
+  String update_text(text);
+  text_ = text_.Substring(0, selection_start_) + update_text +
+          text_.Substring(selection_end_);
+  uint32_t update_range_start = selection_start_;
+  uint32_t update_range_end = selection_end_;
+  selection_start_ = selection_start_ + text.length();
+  selection_end_ = selection_start_;
+
+  DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
+                          selection_start_, selection_end_);
   return true;
 }
 
@@ -596,16 +610,17 @@ int EditContext::TextInputFlags() const {
 }
 
 WebRange EditContext::CompositionRange() {
-  return WebRange(composition_range_start_, composition_range_end_);
+  return WebRange(composition_range_start_,
+                  composition_range_end_ - composition_range_start_);
 }
 
-bool EditContext::GetCompositionCharacterBounds(WebVector<WebRect>& bounds) {
+bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
   bounds[0] = selection_bounds_;
   return true;
 }
 
 WebRange EditContext::GetSelectionOffsets() const {
-  return WebRange(selection_start_, selection_end_);
+  return WebRange(selection_start_, selection_end_ - selection_start_);
 }
 
 void EditContext::Trace(Visitor* visitor) const {

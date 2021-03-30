@@ -3,12 +3,13 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   deps = [
-    ":add_supervision",
     ":add_supervision_api_server",
+    ":add_supervision_ui",
     ":post_message_api",
   ]
 }
@@ -20,10 +21,11 @@ js_library("add_supervision_api_server") {
   ]
 }
 
-js_library("add_supervision") {
+js_library("add_supervision_ui") {
   deps = [
     ":add_supervision_api_server",
-    "//ui/webui/resources/js:load_time_data",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
@@ -31,19 +33,9 @@ js_library("add_supervision") {
   ]
 }
 
-# Old style non-modularized js_libraries, needed so that gaia_auth_host JS library
-# can be used in older non-modularized JS code that can't be quickly ported
-# (i.e. OOBE, Gellerization/Add-Supervision).
-
 js_library("post_message_api") {
 }
 
-# New ES6 JS module style post_message_api library.
-js_library("post_message_api.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/add_supervision/post_message_api.m.js" ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_modulizer("modulize") {
-  input_files = [ "post_message_api.js" ]
+html_to_js("web_components") {
+  js_files = [ "add_supervision_ui.js" ]
 }

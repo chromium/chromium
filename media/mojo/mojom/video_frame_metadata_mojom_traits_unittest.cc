@@ -21,7 +21,7 @@ namespace {
 
 class VideoFrameMetadataStructTraitsTest
     : public testing::Test,
-      public media::mojom::VideoFrameMetadataTraitsTestService {
+      public mojom::VideoFrameMetadataTraitsTestService {
  public:
   VideoFrameMetadataStructTraitsTest() = default;
 
@@ -62,7 +62,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
 
   EXPECT_FALSE(metadata_out.capture_counter.has_value());
   EXPECT_FALSE(metadata_out.capture_update_rect.has_value());
-  EXPECT_FALSE(metadata_out.rotation.has_value());
+  EXPECT_FALSE(metadata_out.transformation.has_value());
   EXPECT_FALSE(metadata_out.allow_overlay);
   EXPECT_FALSE(metadata_out.copy_mode.has_value());
   EXPECT_FALSE(metadata_out.end_of_stream);
@@ -70,6 +70,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.wants_promotion_hint);
   EXPECT_FALSE(metadata_out.protected_video);
   EXPECT_FALSE(metadata_out.hw_protected);
+  EXPECT_FALSE(metadata_out.hw_protected_validation_id);
   EXPECT_FALSE(metadata_out.power_efficient);
   EXPECT_FALSE(metadata_out.read_lock_fences_enabled);
   EXPECT_FALSE(metadata_out.interactive_content);
@@ -99,16 +100,16 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   // ints
   metadata_in.capture_counter = 123;
+  metadata_in.hw_protected_validation_id = 456;
 
   // gfx::Rects
   metadata_in.capture_update_rect = gfx::Rect(12, 34, 360, 480);
 
-  // media::VideoRotations
-  metadata_in.rotation = media::VideoRotation::VIDEO_ROTATION_90;
+  // VideoTransformation
+  metadata_in.transformation = VideoTransformation(VIDEO_ROTATION_90, true);
 
-  // media::VideoFrameMetadata::CopyMode
-  metadata_in.copy_mode =
-      media::VideoFrameMetadata::CopyMode::kCopyToNewTexture;
+  // VideoFrameMetadata::CopyMode
+  metadata_in.copy_mode = VideoFrameMetadata::CopyMode::kCopyToNewTexture;
 
   // bools
   metadata_in.allow_overlay = true;
@@ -153,7 +154,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   EXPECT_EQ(metadata_in.capture_counter, metadata_out.capture_counter);
   EXPECT_EQ(metadata_in.capture_update_rect, metadata_out.capture_update_rect);
-  EXPECT_EQ(metadata_in.rotation, metadata_out.rotation);
+  EXPECT_EQ(metadata_in.transformation, metadata_out.transformation);
   EXPECT_EQ(metadata_in.allow_overlay, metadata_out.allow_overlay);
   EXPECT_EQ(metadata_in.copy_mode, metadata_out.copy_mode);
   EXPECT_EQ(metadata_in.end_of_stream, metadata_out.end_of_stream);
@@ -162,6 +163,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
             metadata_out.wants_promotion_hint);
   EXPECT_EQ(metadata_in.protected_video, metadata_out.protected_video);
   EXPECT_EQ(metadata_in.hw_protected, metadata_out.hw_protected);
+  EXPECT_EQ(metadata_in.hw_protected_validation_id,
+            metadata_out.hw_protected_validation_id);
   EXPECT_EQ(metadata_in.power_efficient, metadata_out.power_efficient);
   EXPECT_EQ(metadata_in.read_lock_fences_enabled,
             metadata_out.read_lock_fences_enabled);

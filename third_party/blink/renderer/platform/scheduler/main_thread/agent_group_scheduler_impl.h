@@ -6,6 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_AGENT_GROUP_SCHEDULER_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequence_manager/task_queue.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
@@ -17,6 +20,7 @@ namespace blink {
 namespace scheduler {
 class MainThreadSchedulerImpl;
 class MainThreadTaskQueue;
+class WebThreadScheduler;
 
 // AgentGroupScheduler implementation which schedules per-AgentSchedulingGroup
 // tasks.
@@ -30,18 +34,25 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override;
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    return default_task_runner_;
-  }
-  MainThreadSchedulerImpl& GetMainThreadScheduler() {
-    return main_thread_scheduler_;
-  }
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
+  scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();
+  WebThreadScheduler& GetMainThreadScheduler() override;
   AgentGroupScheduler& AsAgentGroupScheduler() override;
+
+  void BindInterfaceBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote_broker)
+      override;
+  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
 
  private:
   scoped_refptr<MainThreadTaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
+  scoped_refptr<MainThreadTaskQueue> compositor_task_queue_;
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
   MainThreadSchedulerImpl& main_thread_scheduler_;  // Not owned.
+
+  BrowserInterfaceBrokerProxy broker_;
 };
 
 }  // namespace scheduler

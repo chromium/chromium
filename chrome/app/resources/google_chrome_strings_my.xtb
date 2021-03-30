@@ -13,22 +13,21 @@
 <translation id="1125124144982679672">Chrome ကို မည်သူသုံးနေသလဲ။</translation>
 <translation id="1142745911746664600">Chrome ကို အပ်ဒိတ်လုပ်၍ မရခြင်း</translation>
 <translation id="1154147086299354128">&amp;Chrome တွင် ဖွင့်ရန်</translation>
-<translation id="123620459398936149">Chrome OS သင်၏ဒေတာကို စင့်ခ်လုပ်၍ မရပါ။ သင့်စင့်ခ်လျှို့ဝှက်စကားစုကို ကျေးဇူးပြု၍ အဆင့်မြှင့်ပါ။</translation>
 <translation id="1293325835983155583">ဤစက်ကိုမသုံးမီ အောက်ပါ 'ဝန်ဆောင်မှု စည်းမျဉ်းများ' ကို ဖတ်ရှုပြီး လက်ခံရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ ဤစည်းမျဉ်းများက 'Google Chrome OS စည်းမျဉ်းများ' ကို ထပ်ထည့်ခြင်း၊ မွမ်းမံခြင်း သို့မဟုတ် ကန့်သတ်ခြင်း မရှိပါ။</translation>
 <translation id="1302523850133262269">​​ကျေးဇူးပြုပြီး Chrome က စနစ်၏ နောက်ဆုံး မွမ်းမံမှုများကို တပ်ဆင်ပေးနေတာကို စောင့်ပါ။</translation>
-<translation id="1355000804395496115">အလုပ်နှင့် ကိုယ်ရေးကိုယ်တာဖွင့်ကြည့်မှုကို ခွဲခြားရန် သို့မဟုတ် ဤစက်ကို အသုံးပြုသူ အမျိုးမျိုးအတွက် Chrome တွင် မတူညီသောပရိုဖိုင်များ အသုံးပြုပါ</translation>
 <translation id="137466361146087520">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲ</translation>
 <translation id="1399397803214730675">ဒီကွန်ပျူတာ ထဲမှာ ပိုပြီး နောက်ကျသော Google Chrome  ဗားရှင်း ရှိနေပါပြီ။ ဆော့ဝဲ အလုပ်မလုပ်လျှင်၊ ကျေးဇူးပြုပြီး Google Chrome ကို ဖြုတ်လိုက်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1434626383986940139">Chrome ၏ Canary စမ်းသပ်အက်ပ်များ</translation>
-<translation id="1513277449617685876">ကိုယ်ရေးကိုယ်တာနှင့် <ph name="NEW_USER" /> ဖွင့်ကြည့်မှုကို ခွဲခြားရန်အတွက် Chrome တွင် ပရိုဖိုင်သစ်တစ်ခုပြုလုပ်ပါ</translation>
+<translation id="147727933880789532">'အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု' စံနှုန်းများနှင့် လောလောဆယ်မကိုက်ညီသဖြင့် ဤနောက်ဆက်တွဲကို ပိတ်ထားရန် Chrome က အကြံပြုပါသည်။</translation>
+<translation id="1516530951338665275">Google Chrome သည် ဆက်လက်တွဲချိတ်ရန် ဘလူးတုသ်သုံးခွင့် 
+ လိုပါသည်။ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Update Chrome</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ကို ဤ Chrome ပရိုဖိုင်တွင် လက်မှတ်ထိုးဝင်ထားပြီး ဖြစ်သည်။ ၎င်းသည် <ph name="USER_EMAIL_ADDRESS" /> အတွက် Chrome ပရိုဖိုင်အသစ် ပြုလုပ်ပါမည်</translation>
 <translation id="1587223624401073077">Google Chrome iသည် သင်၏ ကင်မရာကို သုံးနေ</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> သည် အန္တရာယ်ရှိသောကြောင့် Chrome က ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
 <translation id="1597911401261118146">သင်၏စကားဝှက်များတွင် ဒေတာပေါက်ကြားမှုနှင့် အခြားသော လုံခြုံရေးပြဿနာများ ရှိ၊ မရှိ စစ်ဆေးရန် <ph name="BEGIN_LINK" />Chrome သို့ လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" />။</translation>
 <translation id="1619887657840448962">Chrome ပိုမိုလုံခြုံမှုရှိစေရန်၊ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> တွင် စာရင်းဝင်ထားခြင်း မရှိသည့်အပြင် သင့်အား အသိမပေးဘဲ ထည့်ထားပုံရသည့် အောက်ပါ တိုးချဲ့လိုင်းအား ပိတ်ထားခဲ့၏။</translation>
-<translation id="162629503687514352">Chrome OS က သင့်စကားဝှက်များကို စင့်ခ်လုပ်၍မရပါ။</translation>
 <translation id="1628000112320670027">Chrome အကူအညီရယူရန်</translation>
-<translation id="1662639173275167396">Chrome OS ကို နောက်ထပ် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" />၊ ရှိရင်းစွဲ <ph name="BEGIN_LINK_LINUX_OSS" />Linux (စမ်းသပ်ဆော့ဖ်ဝဲ)<ph name="END_LINK_LINUX_OSS" /> တို့က ပံ့ပိုးထားခြင်းဖြစ်သည်။</translation>
 <translation id="1666409074978194368">အပ်ဒိတ်လုပ်ပြီးပါတော့မည်။ အပ်ဒိတ်လုပ်ခြင်း အပြီးသတ်ရန် Google Chrome ကို ပြန်ဖွင့်ပါ။ ရုပ်ဖျက် ဝင်ဒိုးများကို ပြန်ဖွင့်မည် မဟုတ်ပါ။</translation>
 <translation id="1674870198290878346">Chrome ရုပ်ဖျက်ဝင်းဒိုးတွင် လင့်ခ်ကို ဖွင့်ခြင်း</translation>
 <translation id="1682634494516646069">Google Chrome သည် ၎င်း၏ဒေတာဒါရိုက်ထရီသို့ မဖတ်နိုင် မရေးနိုင်ပါ:
@@ -40,12 +39,14 @@
 <translation id="174539241580958092">Google Chrome သည် ဝင်ရောက်မှု ပြဿနာကြောင့် သင့်ဒေတာကို စင့်ခ်မလုပ်နိုင်ပါ။</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">သင်၏ <ph name="TARGET_DEVICE_NAME" /> တွင် Chrome သို့ လက်မှတ်ထိုးဝင်ထားကြောင်း သေချာစေပြီး ထပ်ပို့ကြည့်ပါ။</translation>
+<translation id="1807517590912578995">Chrome ပရိုဖိုင်ကို သီးခြားခွဲမလား။</translation>
 <translation id="1812689907177901597">၎င်းကိုပိတ်ခြင်းဖြင့် Chrome တွင် လက်မှတ်ထိုးမဝင်ဘဲ Gmail ကဲ့သို့ Google ဝဘ်ဆိုက်များသို့ လက်မှတ်ထိုးဝင်နိုင်ပါသည်</translation>
 <translation id="1860536484129686729">ဤဝဘ်ဆိုက်အတွက် Chrome သည် သင်၏ကင်မရာကို အသုံးပြုခွင့်ရရန် လိုအပ်ပါသည်</translation>
 <translation id="1873233029667955273">Google Chrome သည် သင်၏ မူရင်းဘရောင်ဇာ မဟုတ်ပါ</translation>
 <translation id="1874309113135274312">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲ (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome မှာ ဟောင်းသွားပြီ</translation>
 <translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>
+<translation id="2018528049276128029">ပရိုဖိုင်တစ်ခုစီတွင် လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များ စသည်တို့ကဲ့သို့ ၎င်း၏သီးခြား Chrome အချက်အလက်များ ပါဝင်သည်</translation>
 <translation id="2063848847527508675">မွမ်းမံသည့်အဆင့်ပြီးဆုံးရန်အတွက် Chrome အိုအက်စ် (OS) ကို အသစ်ပြန်စရန် လိုပါမည်။</translation>
 <translation id="2094919256425865063">Chrome ကို မည်သို့ပင်ဖြစ်စေ ပိတ်လိုပါသလား။</translation>
 <translation id="2120620239521071941">၎င်းသည် ဤစက်ပစ္စည်းမှ အကြောင်းအရာ <ph name="ITEMS_COUNT" /> ခုကို ဖျက်လိုက်ပါမည်။ သင့်ဒေတာကို နောက်မှ ပြန်ယူရန် Chrome သို့ <ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။</translation>
@@ -59,11 +60,14 @@
 <translation id="234869673307233423">Chrome က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="235650106824528204">ဤပရိုဖိုင်အသုံးပြုစဉ်အတွင်း ရရှိလာသော Chrome ဒေတာမှန်သမျှ (လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်နှင့် အခြားဆက်တင်များပြုလုပ်ခြင်း ကဲ့သို့) ကို အလုပ်ပရိုဖိုင် စီမံခန့်ခွဲသူက ဖယ်ရှားနိုင်သည်။ <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">သင်၏ ဒိုမိန်းအတွက် စင့်က် လုပ်မရနိုင်သောကြောင့် Google Chrome က သင်၏ ဒေတာကို စင့်က် မလုပ်နိုင်ခဲ့ပါ။</translation>
+<translation id="245659736593643560"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင် (စမ်းသပ်ဆော့ဖ်ဝဲ)<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် Chrome OS ကို ရေးဆွဲထားသည်။</translation>
 <translation id="2467438592969358367">Google Chrome သည် သင်၏ စကားဝှက်များကို တင်ပို့လိုသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ထည့်ပါ။</translation>
 <translation id="2485422356828889247">ဖြုတ်ရန်</translation>
 <translation id="2534507159460261402">Google Pay (Chrome သို့ မိတ္တူကူးထားသည်)</translation>
+<translation id="2574930892358684005"><ph name="EXISTING_USER" /> ကို ဤ Chrome ပရိုဖိုင်တွင် လက်မှတ်ထိုးဝင်ထားပြီး ဖြစ်သည်။ သင်၏ကြည့်ရှုမှုကို သီးခြားခွဲထားရန် Chrome က သင့်အတွက် သီးခြားပရိုဖိုင် ပြုလုပ်နိုင်သည်။</translation>
 <translation id="2580411288591421699">လက်ရှိ အချိန်မှာ ဖွင့်သုံးထားသည့် Google Chrome ဗားရှင်းကိုပဲ တပ်ဆင်၍ မရနိုင်ပါ။ ကျေးဇူးပြုပြီး Google Chrome ကို ပိတ်လိုက်ကာ ထပ်စမ်းပါ။</translation>
 <translation id="2586406160782125153">၎င်းသည် ဤစက်ပစ္စည်းထဲရှိ အင်တာနက်အသုံးပြုမှု အချက်အလက်များကို ဖျက်လိုက်ပါမည်။ သင့်ဒေတာကို နောက်မှ ပြန်ယူရန် Chrome သို့ <ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။</translation>
+<translation id="2588634262982826227">ပြန်လည်စတင်ပြီးနောက်တွင် အချိန်တိုင်း ပြန်မေးစရာမလိုဘဲ သင်၏အက်ပ်နှင့် စာမျက်နှာများကို Chrome OS က အချိန်မရွေးပြန်ပြောင်းနိုင်သည်။</translation>
 <translation id="2622559029861875898">Chrome က အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ။ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="2644798301485385923">Chrome OS စနစ်</translation>
 <translation id="2652691236519827073">Chrome တဘ်အသစ်တွင် လင့်ခ်ကို ဖွင့်ခြင်း</translation>
@@ -75,26 +79,26 @@
 <translation id="2799223571221894425">ပြန်လည်ဖွင့်တင်ရန်</translation>
 <translation id="2847461019998147611">Google Chrome ကို ဤဘာသာစကားဖြင့် ပြသပါ</translation>
 <translation id="2857540653560290388">Chrome ကို ဖွင့်နေသည်...</translation>
+<translation id="2857972467023607093">ဤအကောင့်သုံးထားသော Chrome ပရိုဖိုင် ရှိနှင့်ပြီးဖြစ်သည်</translation>
 <translation id="2871893339301912279">Chrome သို့သင် ဝင်ရောက်ပြီးဖြစ်သည်။</translation>
 <translation id="2885378588091291677">အလုပ် မန်နေဂျာ</translation>
 <translation id="2888126860611144412">Chrome အကြောင်း</translation>
 <translation id="2926676257163822632">လုံခြုံမှုလျော့နည်းသည့် စကားဝှက်များကို အလွယ်တကူ ခန့်မှန်းနိုင်သည်။ <ph name="BEGIN_LINK" />သင့်အတွက် လုံခြုံမှုမြင့်သည့်စကားဝှက်များ ပြုလုပ်ပြီး မှတ်ထားရန်<ph name="END_LINK" /> Chrome ကို ခွင့်ပြုပါ။</translation>
 <translation id="2929907241665500097">Chrome အပ်ဒိတ်လုပ်၍ မရပါ၊ တစ်ခုခု မှားသွားသည်။ <ph name="BEGIN_LINK" />Chrome အပ်ဒိတ်ပြဿနာများနှင့် လုပ်၍မရသော အပ်ဒိတ်များကို ပြင်ဆင်ပါ။<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ကွန်ရက် လက်မှတ်ထိုးဝင်ခြင်း - Chrome</translation>
-<translation id="298099161970687941">Chrome ပွင့်သောအခါ ခွင့်တောင်းရန်</translation>
 <translation id="3037838751736561277">Google Chrome သည် နောက်ခံ မုဒ်ထဲမျာ ရှိနေသည်။</translation>
 <translation id="3059710691562604940">'လုံခြုံစွာ ကြည့်ရှုခြင်း' ပိတ်ထားသည်။ ၎င်းကိုဖွင့်ရန် Chrome က အကြံပြုပါသည်။</translation>
 <translation id="3065168410429928842">Chrome တဘ်</translation>
 <translation id="3080151273017101988">Google Chrome ကို ပိတ်လိုက်ချိန်မှာ နောက်ခံအက်ပ်များကို ဆက်ဖွင့် ထားရန်</translation>
 <translation id="3089968997497233615">ပိုသစ်သော၊ ပိုလုံခြုံသော Google Chrome ရနိုင်ပါသည်။</translation>
+<translation id="3100998948628680988">သင်၏ Chrome ပရိုဖိုင်ကို အမည်ပေးပါ</translation>
 <translation id="3114643501466072395">သင်၏အခြားစကားဝှက်များတွင် ဒေတာပေါက်ကြားမှုနှင့် အခြားသော လုံခြုံရေးပြဿနာများ ရှိ၊ မရှိ စစ်ဆေးရန် <ph name="BEGIN_LINK" />Chrome သို့ လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" />။</translation>
-<translation id="3127818369811890733">Chrome OS က သင့်ဒေတာများကို စင့်ခ်လုပ်၍မရပါ။</translation>
+<translation id="3140883423282498090">သင် ပြောင်းလဲခဲ့သည်များမျာ သင်က Google Chrome ကို နောက်တစ်ကြိမ် ပြန်ဖွင့်စဉ် အကျိုးသက်ရောက် လာကြပါမည်။</translation>
 <translation id="3149510190863420837">Chrome အက်ပ်များ</translation>
 <translation id="3360895254066713204">Chrome ကူညီပေးသူ</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ကို ယခု ပြန်လည်စတင်ပါမည်}=1{Chrome ကို ၁ စက္ကန့်အကြာတွင် ပြန်လည်စတင်ပါမည်}other{Chrome ကို # စက္ကန့်အကြာတွင် ပြန်လည်စတင်ပါမည်}}</translation>
 <translation id="3395323229510056640">Chrome OS အကူအညီရယူရန်</translation>
 <translation id="3396977131400919238">ထည့်သွင်းစဉ်တွင် လည်ပတ်မှုစနစ် မှားယွင်းမှု ဖြစ်ပေါ်ခဲ့သည်။ Google Chrome ကို ကျေးဇူးပြု၍ ထပ်မံ ဒေါင်းလုဒ် ပြုလုပ်ပါ။</translation>
-<translation id="3398288718845740432">Chrome မီနူးတွင် သိမ်းထားရန်</translation>
 <translation id="3434246496373299699">သင်၏ Google Account နှင့် လက်မှတ်ထိုးဝင်သည့်အခါ Chrome က သင့်စကားဝှက်များကို စစ်ဆေးနိုင်သည်</translation>
 <translation id="3451115285585441894">Chrome သို့ ထည့်ပေးနေ...</translation>
 <translation id="345171907106878721">ကိုယ့်ဘာသာကိုယ် Chrome သို့ ထည့်ပေးရန်</translation>
@@ -110,6 +114,7 @@
 <translation id="3735758079232443276">သင် Chrome အား စသုံးသောအခါ စာမျက်နှာမှ ပြသသည်ကို ဤတိုးချဲလိုင်း "<ph name="EXTENSION_NAME" />" မှ ပြောင်းလဲခဲ့၏။</translation>
 <translation id="3779473566290487688">Google Chrome အနာဂတ်အပ်ဒိတ်များ ရယူရန် OS X 10.11 နှင့်အထက် လိုအပ်ပါမည်။ ဤကွန်ပျူတာက OS X 10.10 အသုံးပြုနေသည်။</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">၎င်းသည် <ph name="USER_EMAIL_ADDRESS" /> အတွက် Chrome ပရိုဖိုင်အသစ် ပြုလုပ်ပါမည်</translation>
 <translation id="386202838227397562">ကျေးဇူးပြုပြီး Google Chrome ဝင်ဒိုးများကို ပိတ်ပြီ ထပ်စမ်းပါ။</translation>
 <translation id="3865754807470779944">Chrome ဗားရှင်း <ph name="PRODUCT_VERSION" /> ကို ထည့်သွင်းလိုက်သည်</translation>
 <translation id="3873044882194371212">Chrome ရုပ်ဖျက်ဝင်းဒိုးတွင် လင့်ခ်ကို ဖွင့်ရန်</translation>
@@ -117,7 +122,6 @@
 <translation id="4050175100176540509">အရေးကြီးလုံခြုံရေးဆိုင်ရာဖွံ့ဖြိုးတိုးတက်မှုများနှင့် အင်္ဂါရပ် အသစ်များအား နောက်ဆုံးပေါ် ဗားရှင်းဖြင့် ရရှိနိုင်ပါသည်။</translation>
 <translation id="4053720452172726777">Google Chrome ကို စိတ်ကြိုက် ပြုပြင်ရန် နှင့် ထိန်းချုပ်ရန်</translation>
 <translation id="4110895483821904099">သင်၏ Chrome ပရိုဖိုင်အသစ်ကို စနစ်ထည့်သွင်းပါ</translation>
-<translation id="4143243756087420366">Chrome အမည်နှင့် ဓာတ်ပုံ</translation>
 <translation id="4147555960264124640">သင်သည် စီမံခြင်းအကောင့်ဖြင့် ဝင်ရောက်နေခြင်း ဖြစ်ပြီး ၎င်း၏ကြီးကြပ်သူကို Google Chrome ပရိုဖိုင်အား ထိန်းချုပ်ခွင့်ပေးသည်။ အက်ပ်များ၊ စာညှပ်များ၊ မှတ်တမ်း၊ လျှို့ဝှက်စကားလုံးများ၊ နှင့် အခြား ကြိုတင်ချိန်ညှိချက်များကဲ့သို့ Chrome ဒေတာများသည် <ph name="USER_NAME" /> သို့အမြဲတမ်း ချည်နှောင်ထားပါသည်။ ဤဒေတာများကို သင် Google အကောင့်များ ဒိုင်ခွက်မှ တစ်ဆင့် ဖျက်နိုင်သည်၊ သို့သော် ဤဒေတာများကို အခြားအကောင့်ဖြင့် ချိတ်ဆက်၍ရမည် မဟုတ်ပါ။ <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">ထည့်သွင်းရန်လုပ်ဆောင်ရာတွင် ချုံ့ထားသောဖိုင်မှတ်တမ်းကို ပြန်ဖွင့်မပေးနိုင်ခဲ့ပါ။ ကျေးဇူးပြု၍ Google Chrome ကို ထပ်ပြီး ဒေါင်းလုဒ် လုပ်ယူပါ။</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome ကို တစ်ရက်အတွင်း ပြန်လည်စတင်ပါ}other{Chrome ကို # ရက်အတွင်း ပြန်လည်စတင်ပါ}}</translation>
@@ -142,10 +146,9 @@
 <translation id="4571503333518166079">Chrome အကြောင်းကြားချက် ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="459622048091363950">Chrome အသုံးပြုခွင့်ရှိသည်နှင့် ဝဘ်ဆိုက်များသည် သင့်ထံခွင့်ပြုချက်တောင်းပါမည်။</translation>
 <translation id="4600710005438004015">Chrome ကို နောက်ဆုံးဗားရှင်းသို့ အပ်ဒိတ်လုပ်၍မရသောကြောင့် ဝန်ဆောင်မှုအသစ်များနှင့် လုံခြုံရေး ပြင်ဆင်မွမ်းမံချက်များကို သင်ရရှိမည် မဟုတ်ပါ။</translation>
-<translation id="4631713731678262610">Chrome မီနူးတွင် သိမ်းထားရန်</translation>
 <translation id="4633000520311261472">Chrome ပိုပြီး လုံခြုံစေရန် အတွက်၊ ကျွန်ုပ်တို့သည် <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />ထဲမှာ ဖေါ်ပြမထားသည့်၊ သင် မသိဘဲနှင့် ထည့်ပေးထားတာ ဖြစ်နိုင်သည့်၊ တိုးချဲ့မှု အချို့ကို ပိတ်ထားပါသည်။</translation>
+<translation id="4666328473657283332">သင့်စက်အားလုံးတွင် သင်၏ Chrome နှင့် သက်ဆိုင်သည့်အရာများကို ဝင်သုံးရန် လက်မှတ်ထိုးဝင်ပါ၊ ထို့နောက် စင့်ခ်လုပ်ခြင်းကို ဖွင့်နိုင်ပါပြီ။</translation>
 <translation id="4728575227883772061">မသိရသည့် အမှားတစ်ခုကြောင့် တပ်ဆင်မှု မအေင်မြင်ခဲ့ပါ။ Google Chrome သည် လောလောဆယ်မှာ အလုပ်လုပ်နေလျှင်၊ ကျေးဇူးပြုပြီး ၎င်းကို ပိတ်လိုက်ကာ ထပ်စမ်းကြည့်ပါ။</translation>
-<translation id="4750550185319565338"><ph name="PLUGIN_NAME" /> ကို ဖွင့်ရန် Chrome ကို ပြန်လည်စတင်ပါ</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">ဤဖိုင်သည် အန္တရာယ်ရှိနိုင်ပါသည်။ ထို့ကြောင့် Chrome သည် ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
 <translation id="479167709087336770">၎င်းက Google ရှာဖွေမှုတွင် အသုံးပြုထားသော စာလုံးပေါင်း စစ်စနစ် တစ်ခုတည်းကို အသုံးပြုသည်။ ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ပို့ပါသည်။ ဤလုပ်ဆောင်ပုံကို ဆက်တင်များတွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
@@ -153,13 +156,17 @@
 <translation id="4895437082222824641">Chrome တဘ်အသစ်တွင် လင့်ခ်ကို ဖွင့်ရန်</translation>
 <translation id="4953650215774548573">Google Chrome ကို သင်၏ ပုံသေ ဘရောင်ဇာ အဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="495931528404527476">Chrome ထဲမှာ</translation>
+<translation id="4970761609246024540">Chrome ပရိုဖိုင်များမှ ကြိုဆိုပါသည်</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Chrome OS ကို ပြန်လည်စတင်ပါ</translation>
 <translation id="5132929315877954718">Google Chrome အတွက် ဧရာမ အက်ပ်များ၊ ဂိမ်းများ၊ တိုးချဲ့မှုများ နှင့် အပြင်အဆင်များကို ရှာကြည့်ပါ</translation>
+<translation id="5139423532931106058">သင့် Chrome ပရိုဖိုင်ကို စိတ်ကြိုက်လုပ်ရန်</translation>
+<translation id="5163087008893166964">Chrome မှ ကြိုဆိုပါသည်၊ ဘရောင်ဇာဝင်းဒိုးအသစ် ဖွင့်လိုက်ပါပြီ</translation>
 <translation id="5170938038195470297">သင်၏ ပရိုဖိုင်မှာ ပိုသစ်သော Google Chrome ဗားရှင်း ထဲမှ ဖြစ်နေ၍ ၎င်းကို သုံးမရနိုင်ပါ။
 
 အချို့သော အင်္ဂါရပ်များကို ရချင်မှ ရပါမည်။ ကျေးဇူးပြုပြီး အခြား ပရိုဖိုင် ဒါရိုက်ထရီ တစ်ခုကို ဖေါ်ပြပေးပါ သို့မဟုတ် Chrome ၏ ပိုသစ်သော ဗားရှင်းကို အသုံးပြုပါ။</translation>
 <translation id="5193136243808726294">Google Chrome OS သည် ဤစာမျက်နှာကို ဖွင့်၍မရပါ။</translation>
+<translation id="521447420733633466">စက်ကိုမျှဝေအသုံးပြုပါက မိတ်ဆွေများနှင့် မိသားစုသည် သီးခြားစီဝင်ကြည့်နိုင်ပြီး သူတို့စိတ်ကြိုက်ပုံစံဖြင့် Chrome ကို စနစ်ထည့်သွင်းနိုင်သည်</translation>
 <translation id="5251420635869119124">ဧည့်သည်များသည် နောက်မှာ မကျန်ရစ်စေခဲ့ဘဲ Chrome ကို သုံးနိုင်ကြသည်။</translation>
 <translation id="532046782124376502">သတိပေးချက်− Chrome သည် သင်၏အသုံးပြုမှုမှတ်တမ်းကို နောက်ဆက်တွဲများက မှတ်သားခြင်းမရှိစေနိုင်ရန် တားမြစ်၍မရပါ။ ရုပ်ဖျက်မုဒ်တွင် ဤနောက်ဆက်တွဲကို ပိတ်ရန်အတွက် ဤအရာကို ရွေးချယ်ထားခြင်းမှ ဖြုတ်လိုက်ပါ။</translation>
 <translation id="5386244825306882791">၎င်းသည် သင်က Chrome ကို စတင်စဉ် သို့မဟုတ် Omnibox ထဲမှ ရှာဖွေစဉ် ပြပေးသည့် စာမျက်နှာကိုပါ ထိန်းချုပ်ပါသည်။</translation>
@@ -167,10 +174,9 @@
 <translation id="5430073640787465221">သင်၏ ဦးစားပေးမှု ဖိုင်မှာ ပျက်စီး သို့မဟုတ် မမှန်ကန်ပါ။
 
 Google Chrome သည် သင်၏ ဆက်တင်များကို ပြန်ပြီး မဖေါ်ထုတ်နိုင်ပါ။</translation>
+<translation id="5434383153637353914">သင်လက်မှတ်ထိုးဝင်ထားသော Google အကောင့်များကို စီမံခန့်ခွဲရန် ဤစာမျက်နှာက ခွင့်ပြုသည်။ ဤအကောင့်များကို Chrome ဘရောင်ဇာနှင့် Play Store အက်ပ်များအပြင် Gmail၊ Drive နှင့် YouTube ကဲ့သို့ ဝန်ဆောင်မှုများတွင် အသုံးပြုနိုင်သည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="556024056938947818">Google Chrome က စကားဝှက်များကို ပြပေးရန် ကြိုးစားနေသည်။</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5655746611259367388">သင်သည် ၎င်းနှင့် <ph name="USER_NAME" /> အတွက် တစ်နေရာတည်းမှ ထည့်ထားသော အခြား Google Account များကို <ph name="LINK_BEGIN" />ဆက်တင်များ<ph name="LINK_END" /> တွင် စီမံနိုင်သည်။
-          Chrome ဘရောင်ဇာရှိ ဝဘ်ဆိုက်များနှင့် Google Play မှ အက်ပ်များကို ပေးထားသော ခွင့်ပြုချက်များက အကောင့်အားလုံးတွင် အကျုံးဝင်နိုင်သည်။</translation>
 <translation id="5657226924540934362">ဤစာမျက်နှာပေါ်တွင် ဆက်တင်ကို မပြလျှင် သင်၏ <ph name="LINK_BEGIN" />
       Chrome OS ဆက်တင်များ<ph name="LINK_END" /> တွင် ကြည့်ပါ</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> သည် အန္တရာယ်ရှိနိုင်သောကြောင့် Chrome က ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
@@ -179,6 +185,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome သည် ၁ စက္ကန့်အတွင်း ပြန်လည်စတင်ပါမည်}other{Google Chrome သည် # စက္ကန့်အတွင်း ပြန်လည်စတင်ပါမည်}}</translation>
 <translation id="573759479754913123">Chrome OS အကြောင်း</translation>
+<translation id="5756509061973259733">ယခုစက်တွင် ဤအကောင့်သုံးထားသော Chrome ပရိုဖိုင် ရှိနှင့်ပြီးဖြစ်သည်</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ကို ဖွင့်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5867197326698922595">Google Chrome က စကားဝှက်များ တည်းဖြတ်ရန် ကြိုးပမ်းနေသည်။</translation>
@@ -197,12 +204,14 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6291549208091401781">သင့်ကွန်ပျူတာပေါ်ရှိ အသုံးပြုသူများအတွက် Google Chrome ကို ထည့်သွင်းထားပြီးဖြစ်ပါသည်။</translation>
 <translation id="6338556085225130112">Google Chrome ကို အပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="6368958679917195344">Chrome OS ကို ထပ်ဖြည့်ပေးခဲ့သည့် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ ရင်းမြစ် ဆော့ဝဲ<ph name="END_LINK_CROS_OSS" />များဖြင့် အားဖြည့်ပေးထားသည်။</translation>
+<translation id="6418662306461808273">လက်ရှိ Chrome ပရိုဖိုင်သို့ ပြောင်းမလား။</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome ကို အပ်ဒိတ်လုပ်နေသည် (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS စနစ်</translation>
 <translation id="6650333065969705433">ကာကွယ်ထားသောမီဒီယာ ဖွင့်ရန်အတွက် Rosetta အသုံးပြုရန် Chrome ကို ပြန်စရမည်။</translation>
 <translation id="6676384891291319759">အင်တာနက် ရယူရန်</translation>
 <translation id="6679975945624592337">Google Chrome ကို နောက်ခံတွင် ဖွင့်ခွင့်ပေးပါ</translation>
+<translation id="6739177684496155661">Chrome ပရိုဖိုင်အသစ်တွင် ဆက်လုပ်မလား။</translation>
 <translation id="6750954913813541382">စာလုံးပေါင်း အမှားများ ပြင်ရန် Chrome က ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ ပို့ပါသည်</translation>
 <translation id="6755885556185485672">Chrome OS ကို မှန်ကန်စွာ ပိတ်မထားပါ။</translation>
 <translation id="677276454032249905">မည်သို့ပင်ဖြစ်စေ Chrome မှ ထွက်လိုပါသလား။</translation>
@@ -211,7 +220,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6943584222992551122">ဤပုဂ္ဂိုလ်၏ ကြည့်ရှုမှုဒေတာများကို ဤကိရိယာမှနေ၍ ဖျက်လိုက်ပါမည်။ ဒေတာကို ပြန်လည်ရယူရန် <ph name="USER_EMAIL" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="6967962315388095737">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲက mDNS အသွားအလာကို ခွင့်ပြုပေးနိုင်ရန်အတွက် ချမှတ်ထားသော အတွင်းစည်းမျဉ်း။</translation>
 <translation id="6989339256997917931">Google Chrome ကို မွမ်းမံပြီးသွားပြီ၊ သို့သော် သင်သည် ၎င်းကို အနည်းဆုံးအားဖြင့် ရက် ၃၀ အတွင်းမှာ မသုံးခဲ့ပါ။</translation>
-<translation id="7054640471403081847">ဤကွန်ပျူတာသည် မကြာခင်တွင် Google Chrome မှအဆင့်မြှင့်မှုများကို လက်ခံရရှိခြင်းမှ ရပ်စဲတော့မည်ဖြစ်သည် အကြောင်းမှာ ၎င်း၏ စက်ပစ္စည်းသည် မထောက်ပံ့တော့သောကြောင့် ဖြစ်သည်။</translation>
 <translation id="7062128746136194023">Chrome အတွက် "ဝဘ်ဆိုက်၊ အက်ပ်နှင့် နောက်ဆက်တွဲ ခွင့်ပြုချက်များ" ကို သင့်မိဘက ပိတ်လိုက်သည်။ ဤ <ph name="EXTENSION_TYPE_PARAMETER" /> ထည့်ခြင်းကို ခွင့်မပြုပါ။</translation>
 <translation id="7098166902387133879">Google Chrome သည် သင်၏ မိုက်ခရိုဖုန်းကို သုံးနေ</translation>
 <translation id="7106741999175697885">တာဝန် မန်နေဂျာ - Google Chrome</translation>
@@ -220,12 +228,12 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7242029209006116544">သင်သည် စီမံခြင်းအကောင့်ဖြင့် ဝင်ရောက်နေခြင်း ဖြစ်ပြီး ၎င်း၏ကြီးကြပ်သူကို Google Chrome ပရိုဖိုင်အား ထိန်းချုပ်ခွင့်ပေးသည်။ အက်ပ်များ၊ စာညှပ်များ၊ မှတ်တမ်း၊ လျှို့ဝှက်စကားလုံးများ၊ နှင့် အခြား ကြိုတင်ချိန်ညှိချက်များကဲ့သို့ Chrome ဒေတာများသည် <ph name="USER_NAME" /> သို့အမြဲတမ်း ချည်နှောင်ထားပါသည်။ ဤဒေတာများကို သင် Google အကောင့်များ ဒိုင်ခွက်မှ တစ်ဆင့် ဖျက်နိုင်သည်၊ သို့သော် ဤဒေတာများကို အခြားအကောင့်ဖြင့် ချိတ်ဆက်၍ရမည် မဟုတ်ပါ။ <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Google Chrome UI ပြသရန် ဤဘာသာစကားကို အသုံးပြုထားသည်</translation>
 <translation id="7296210096911315575">အရေးကြီး အသုံးပြုခြင်းနှင့် အန္တရာယ်ကင်း အချက်အလက်များ</translation>
+<translation id="7303916856901595720">Chrome ပရိုဖိုင်အသစ်သို့ အကောင့်ကို ရွှေ့မလား။</translation>
 <translation id="7308322188646931570">ဖိုင်များကို ဒေါင်းလုဒ်လုပ်ရန်အတွက် Chrome သည် သိုလှောင်ခန်းကို သုံးခွင့်ရရန် လိုအပ်သည်</translation>
 <translation id="7339898014177206373">ဝင်ဒိုး အသစ်</translation>
 <translation id="7398801000654795464">Chrome သို့ <ph name="USER_EMAIL_ADDRESS" /> အဖြစ်သင် ဝင်ရောက်ခဲ့သည်။ ကျေးဇူးပြု၍ တူညီသည့်အကောင့်ကို အသုံးပြုကာ ထပ်မံဝင်ရောက်ပါ။</translation>
 <translation id="7408085963519505752">Chrome OS စည်းကမ်းချက်များ</translation>
 <translation id="7419046106786626209">သင်၏ ဒိုမိန်းအတွက် စင့်က် လုပ်မရနိုင်သောကြောင့် Chrome OS က သင်၏ ဒေတာကို စင့်က် မလုပ်နိုင်ခဲ့ပါ။</translation>
-<translation id="7423733001651488593">၎င်းသည် သင်၏ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ဤစက်ထဲမှ ထာဝရ ဖျက်ပစ်ပါမည်။ ဒေတာကို ပြန်လည်ရယူရန် အောက်ပါဖြင့် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7486227612705979895">လိပ်စာဘားတွင် အကြံပြုချက်များ ပေးနိုင်ရန် Chrome သည် သင်၏ Drive ကို အသုံးပြုသွားပါမည်။</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">သင်၏စက် အပ်ဒိတ်ဖြစ်မဖြစ် ကြည့်ရန် <ph name="LINK_BEGIN" />Chrome OS ဆက်တင်များ<ph name="LINK_END" /> သို့သွားပါ</translation>
@@ -271,9 +279,9 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8641606876632989680">ကျိုးပေါက်ထားသည့် စကားဝှက်ဖြင့် လက်မှတ်ထိုးဝင်သည့်အခါ Chrome က သင့်ကို အကြောင်းကြားပါမည်</translation>
 <translation id="8669527147644353129">Google Chrome ကူညီပေးသူ</translation>
 <translation id="8679801911857917785">သင်က Chrome ကို စတင်စဉ် ဘယ်စာမျက်နှာ ပြကြောင်းကိုပါ ၎င်းက ထိန်းချုပ်ပါသည်။</translation>
+<translation id="8686817260976772516">သင်၏ Chrome လုပ်ဆောင်ချက်အားလုံးကို Chrome ပရိုဖိုင်များဖြင့် သီးသန့်ခွဲခြားနိုင်သည်။ မိတ်ဆွေများနှင့် မိသားစုတို့အတွက် ပရိုဖိုင်များပြုလုပ်ပါ (သို့) အလုပ်နှင့် ပျော်စရာအကြား ခွဲခြားအသုံးပြုပါ။</translation>
 <translation id="870251953148363156">&amp;Google Chrome ကို အဆင့်မြှင့်ရန်</translation>
 <translation id="873133009373065397">Google Chrome သည် မူရင်းဘရောင်ဇာကို ဆုံးဖြတ်ပေးခြင်းသော်လည်းကောင်း သတ်မှတ်ခြင်းသော်လည်းကောင်း လုပ်၍မရပါ</translation>
-<translation id="8748242232968346981">Chrome တွင် သင့်ကိုယ်ပိုင်ပရိုဖိုင် ပြုလုပ်မလား။</translation>
 <translation id="8823341990149967727">Chrome မှာ ဟောင်းသွားပြီ</translation>
 <translation id="8834965163890861871">Google Chrome သည် စကားဝှက်များ တည်းဖြတ်ရန် ကြိုးပမ်းနေသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ထည့်ပါ။</translation>
 <translation id="884296878221830158">သင် Chrome ကိုအစပြုချိန် သို့မဟုတ် ပင်မခလုတ် နှိပ်လိုက်လျှင် မည်သည့် စာမျက်နှာပြမည်ကိုပါ ထိန်းချုပ်ပါသည်။</translation>
@@ -288,5 +296,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="911206726377975832">သင့်အသုံးပြုမှု ဒေတာအားလဲ ဖျက်မည်လား?</translation>
 <translation id="9138603949443464873">သင့်အပြောင်းအလဲများ ထည့်သွင်းရန် Chrome ကို ပြန်စတင်ပါ</translation>
 <translation id="919706545465235479">စင့်ခ်လုပ်ခြင်းစတင်ရန် Chrome ကို အပ်ဒိတ်လုပ်ပါ</translation>
+<translation id="940313311831216333">သင့်စက်အားလုံးတွင် သင်၏ Chrome နှင့်သက်ဆိုင်သည့်အရာများကို သုံးရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ။</translation>
 <translation id="989369509083708165">Google Chrome သည် သင်၏ မူရင်းဘရောင်ဇာဖြစ်သည်</translation>
 </translationbundle>

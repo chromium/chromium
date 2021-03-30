@@ -6,6 +6,9 @@
 
 #include "ui/gl/dc_layer_tree.h"
 
+#include <utility>
+
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
@@ -17,6 +20,7 @@ namespace {
 bool SizeContains(const gfx::Size& a, const gfx::Size& b) {
   return gfx::Rect(a).Contains(gfx::Rect(b));
 }
+
 }  // namespace
 
 VideoProcessorWrapper::VideoProcessorWrapper() = default;
@@ -29,7 +33,12 @@ VideoProcessorWrapper& VideoProcessorWrapper::operator=(
 DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
                          bool disable_vp_scaling)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
-      disable_vp_scaling_(disable_vp_scaling) {}
+      disable_vp_scaling_(disable_vp_scaling),
+      ink_renderer_(
+          std::make_unique<
+              DelegatedInkPointRendererGpu<IDCompositionInkTrailDevice,
+                                           IDCompositionDelegatedInkTrail>>()) {
+}
 
 DCLayerTree::~DCLayerTree() = default;
 
@@ -179,7 +188,7 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     DirectCompositionChildSurfaceWin* root_surface) {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
                "num_pending_overlays", pending_overlays_.size());
-  DCHECK(!needs_rebuild_visual_tree_);
+  DCHECK(!needs_rebuild_visual_tree_ || ink_renderer_->HasBeenInitialized());
   bool needs_commit = false;
   // Check if root surface visual needs a commit first.
   if (!root_surface_visual_) {
@@ -245,7 +254,9 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
 
   // Rebuild visual tree and commit if any visual changed.
   // Note: needs_rebuild_visual_tree_ might be set in this function and in
-  // SetNeedsRebuildVisualTree() during video_swap_chain->PresentToSwapChain()
+  // SetNeedsRebuildVisualTree() during video_swap_chain->PresentToSwapChain().
+  // Can also be set in DCLayerTree::SetDelegatedInkTrailStartPoint to add a
+  // delegated ink visual into the tree.
   if (needs_rebuild_visual_tree_) {
     TRACE_EVENT0(
         "gpu", "DCLayerTree::CommitAndClearPendingOverlays::ReBuildVisualTree");
@@ -273,6 +284,19 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
       IDCompositionVisual2* visual = video_swap_chains_[i]->visual().Get();
       dcomp_root_visual_->AddVisual(visual, FALSE, nullptr);
     }
+
+    // Only add the ink visual to the tree if it has already been initialized.
+    // It will only have been initialized if delegated ink has been used, so
+    // this ensures the visual is only added when it is needed. The ink renderer
+    // must be updated so that if the root swap chain or dcomp device have
+    // changed the ink visual and delegated ink object can be updated
+    // accordingly.
+    if (ink_renderer_->HasBeenInitialized()) {
+      // Reinitialize the ink renderer in case the root swap chain or dcomp
+      // device changed since initialization.
+      if (InitializeInkRenderer())
+        AddDelegatedInkVisualToTree();
+    }
     needs_commit = true;
   }
 
@@ -298,6 +322,38 @@ void DCLayerTree::SetFrameRate(float frame_rate) {
   frame_rate_ = frame_rate;
   for (size_t ii = 0; ii < video_swap_chains_.size(); ++ii)
     video_swap_chains_[ii]->SetFrameRate(frame_rate);
+}
+
+bool DCLayerTree::SupportsDelegatedInk() {
+  return ink_renderer_->DelegatedInkIsSupported(dcomp_device_);
+}
+
+bool DCLayerTree::InitializeInkRenderer() {
+  return ink_renderer_->Initialize(dcomp_device_, root_swap_chain_);
+}
+
+void DCLayerTree::AddDelegatedInkVisualToTree() {
+  DCHECK(SupportsDelegatedInk());
+  DCHECK(ink_renderer_->HasBeenInitialized());
+
+  root_surface_visual_->AddVisual(ink_renderer_->GetInkVisual(), FALSE,
+                                  nullptr);
+}
+
+void DCLayerTree::SetDelegatedInkTrailStartPoint(
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+  DCHECK(SupportsDelegatedInk());
+
+  if (!ink_renderer_->HasBeenInitialized()) {
+    if (!InitializeInkRenderer())
+      return;
+    // This ensures that the delegated ink visual is added to the tree after
+    // the root visual is created, during
+    // DCLayerTree::CommitAndClearPendingOverlays
+    needs_rebuild_visual_tree_ = true;
+  }
+
+  ink_renderer_->SetDelegatedInkTrailStartPoint(std::move(metadata));
 }
 
 }  // namespace gl

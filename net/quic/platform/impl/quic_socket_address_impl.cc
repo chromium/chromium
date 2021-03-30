@@ -75,7 +75,7 @@ int QuicSocketAddressImpl::FromSocket(int fd) {
 }
 
 QuicSocketAddressImpl QuicSocketAddressImpl::Normalized() const {
-  QUIC_BUG << "QuicSocketAddressImpl::Normalized() is not implemented.";
+  LOG(DFATAL) << "QuicSocketAddressImpl::Normalized() is not implemented.";
   return QuicSocketAddressImpl();
 }
 

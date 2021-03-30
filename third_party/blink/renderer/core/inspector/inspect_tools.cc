@@ -45,12 +45,14 @@ InspectorHighlightContrastInfo FetchContrast(Node* node) {
   Vector<Color> bgcolors;
   String font_size;
   String font_weight;
+  float text_opacity = 1.0f;
   InspectorCSSAgent::GetBackgroundColors(element, &bgcolors, &font_size,
-                                         &font_weight);
+                                         &font_weight, &text_opacity);
   if (bgcolors.size() == 1) {
     result.font_size = font_size;
     result.font_weight = font_weight;
     result.background_color = bgcolors[0];
+    result.text_opacity = text_opacity;
   }
   return result;
 }
@@ -236,6 +238,7 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
   }
 
   // Store values for the highlight.
+  bool hovered_node_changed = node != hovered_node_;
   hovered_node_ = node;
   event_target_node_ = (event.GetModifiers() & WebInputEvent::kShiftKey)
                            ? HoveredNodeForEvent(frame, event, false)
@@ -246,7 +249,8 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
                   (WebInputEvent::kControlKey | WebInputEvent::kMetaKey);
 
   contrast_info_ = FetchContrast(node);
-  NodeHighlightRequested(node);
+  if (hovered_node_changed)
+    NodeHighlightRequested(node);
   return true;
 }
 

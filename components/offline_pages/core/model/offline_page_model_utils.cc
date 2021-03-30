@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -63,7 +62,7 @@ std::string AddHistogramSuffix(const std::string& name_space,
 }
 
 base::FilePath GenerateUniqueFilenameForOfflinePage(
-    const base::string16& title,
+    const std::u16string& title,
     const GURL& url,
     const base::FilePath& target_dir) {
   std::string kMHTMLMimeType = "multipart/related";

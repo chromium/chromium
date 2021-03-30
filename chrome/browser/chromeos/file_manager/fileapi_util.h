@@ -18,6 +18,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 class Profile;
 
@@ -117,20 +118,20 @@ bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
     base::FilePath* relative_path);
 
 // Converts a file definition to a entry definition and returns the result
-// via a callback. |profile| cannot be null. Must be called on UI thread.
+// via a callback. Must be called on UI thread.
 void ConvertFileDefinitionToEntryDefinition(
-    Profile* profile,
-    const std::string& extension_id,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const url::Origin& origin,
     const FileDefinition& file_definition,
     EntryDefinitionCallback callback);
 
 // Converts a list of file definitions into a list of entry definitions and
 // returns it via |callback|. The method is safe, |file_definition_list| is
 // copied internally. The output list has the same order of items and size as
-// the input vector. |profile| cannot be null. Must be called on UI thread.
+// the input vector. Must be called on UI thread.
 void ConvertFileDefinitionListToEntryDefinitionList(
-    Profile* profile,
-    const std::string& extension_id,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const url::Origin& origin,
     const FileDefinitionList& file_definition_list,
     EntryDefinitionListCallback callback);
 

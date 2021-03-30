@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_UI_KIOSK_EXTERNAL_UPDATE_NOTIFICATION_H_
 #define CHROME_BROWSER_CHROMEOS_UI_KIOSK_EXTERNAL_UPDATE_NOTIFICATION_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace chromeos {
 
@@ -15,15 +16,15 @@ class KioskExternalUpdateNotificationView;
 // Provides the UI showing kiosk external update status to admin.
 class KioskExternalUpdateNotification {
  public:
-  explicit KioskExternalUpdateNotification(const base::string16& message);
+  explicit KioskExternalUpdateNotification(const std::u16string& message);
   virtual ~KioskExternalUpdateNotification();
 
-  void ShowMessage(const base::string16& message);
+  void ShowMessage(const std::u16string& message);
 
  private:
   friend class KioskExternalUpdateNotificationView;
   void Dismiss();
-  void CreateAndShowNotificationView(const base::string16& message);
+  void CreateAndShowNotificationView(const std::u16string& message);
 
   KioskExternalUpdateNotificationView* view_;  // Owned by views hierarchy.
 
@@ -31,5 +32,11 @@ class KioskExternalUpdateNotification {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when migrated to
+// chrome/browser/ash/.
+namespace ash {
+using ::chromeos::KioskExternalUpdateNotification;
+}
 
 #endif  // CHROME_BROWSER_CHROMEOS_UI_KIOSK_EXTERNAL_UPDATE_NOTIFICATION_H_

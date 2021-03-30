@@ -31,7 +31,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadLazyImageFirstKFullyLoad(&out->lazy_image_first_k_fully_load) ||
       !data.ReadDefaultEncoding(&out->default_encoding) ||
       !data.ReadTextTrackBackgroundColor(&out->text_track_background_color) ||
-      !data.ReadDefaultEncoding(&out->text_track_text_color) ||
+      !data.ReadTextTrackTextColor(&out->text_track_text_color) ||
       !data.ReadTextTrackTextSize(&out->text_track_text_size) ||
       !data.ReadTextTrackTextShadow(&out->text_track_text_shadow) ||
       !data.ReadTextTrackFontFamily(&out->text_track_font_family) ||
@@ -131,6 +131,10 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.dont_send_key_events_to_javascript();
   out->barrel_button_for_drag_enabled = data.barrel_button_for_drag_enabled();
   out->sync_xhr_in_documents_enabled = data.sync_xhr_in_documents_enabled();
+  out->target_blank_implies_no_opener_enabled_will_be_removed =
+      data.target_blank_implies_no_opener_enabled_will_be_removed();
+  out->allow_non_empty_navigator_plugins =
+      data.allow_non_empty_navigator_plugins();
   out->number_of_cpu_cores = data.number_of_cpu_cores();
   out->editing_behavior = data.editing_behavior();
   out->supports_multiple_windows = data.supports_multiple_windows();
@@ -216,6 +220,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->allow_mixed_content_upgrades = data.allow_mixed_content_upgrades();
   out->always_show_focus = data.always_show_focus();
   out->touch_drag_drop_enabled = data.touch_drag_drop_enabled();
+  out->webxr_immersive_ar_allowed = data.webxr_immersive_ar_allowed();
   return true;
 }
 

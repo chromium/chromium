@@ -477,6 +477,7 @@ def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
           '#include <string>\n'
           '\n'
           '#include "base/values.h"\n'
+          '#include "build/chromeos_buildflags.h"\n'
           '#include "components/policy/core/common/policy_details.h"\n'
           '#include "components/policy/core/common/policy_map.h"\n'
           '#include "components/policy/proto/cloud_policy.pb.h"\n'
@@ -492,7 +493,7 @@ def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
             'configuration resides.\n'
             'extern const wchar_t kRegistryChromePolicyKey[];\n')
 
-  f.write('#if defined (OS_CHROMEOS)\n'
+  f.write('#if BUILDFLAG(IS_CHROMEOS_ASH)\n'
           '// Sets default values for enterprise users.\n'
           'void SetEnterpriseUsersDefaults(PolicyMap* policy_map);\n'
           '#endif\n'
@@ -914,19 +915,22 @@ class SchemaNodesGenerator:
         f.write('  %s,\n' % self.GetString(possible_values))
       f.write('};\n\n')
 
-    f.write('const internal::SchemaData kChromeSchemaData = {\n'
-            '  kSchemas,\n')
-    f.write('  kPropertyNodes,\n' if self.property_nodes else '  nullptr,\n')
-    f.write('  kProperties,\n' if self.properties_nodes else '  nullptr,\n')
-    f.write(
-        '  kRestrictionNodes,\n' if self.restriction_nodes else '  nullptr,\n')
-    f.write('  kRequiredProperties,\n' if self.
+    f.write('const internal::SchemaData* GetChromeSchemaData() {\n')
+    f.write('  static const internal::SchemaData kChromeSchemaData = {\n'
+            '    kSchemas,\n')
+    f.write('    kPropertyNodes,\n' if self.property_nodes else '  nullptr,\n')
+    f.write('    kProperties,\n' if self.properties_nodes else '  nullptr,\n')
+    f.write('    kRestrictionNodes,\n' if self.
+            restriction_nodes else '  nullptr,\n')
+    f.write('    kRequiredProperties,\n' if self.
             required_properties else '  nullptr,\n')
-    f.write('  kIntegerEnumerations,\n' if self.int_enums else '  nullptr,\n')
-    f.write('  kStringEnumerations,\n' if self.string_enums else '  nullptr,\n')
-    f.write('  %d,  // validation_schema root index\n' %
+    f.write('    kIntegerEnumerations,\n' if self.int_enums else '  nullptr,\n')
+    f.write(
+        '    kStringEnumerations,\n' if self.string_enums else '  nullptr,\n')
+    f.write('    %d,  // validation_schema root index\n' %
             self.validation_schema_root_index)
-    f.write('};\n\n')
+    f.write('  };\n\n')
+    f.write('  return &kChromeSchemaData;\n' '}\n\n')
 
   def GetByID(self, id_str):
     if not isinstance(id_str, string_type):
@@ -1123,11 +1127,7 @@ namespace policy {
             'L"' + CHROMIUM_POLICY_KEY + '";\n'
             '#endif\n\n')
 
-  f.write('const internal::SchemaData* GetChromeSchemaData() {\n'
-          '  return &kChromeSchemaData;\n'
-          '}\n\n')
-
-  f.write('#if defined (OS_CHROMEOS)\n'
+  f.write('#if BUILDFLAG(IS_CHROMEOS_ASH)\n'
           'void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {\n')
 
   for policy in policies:

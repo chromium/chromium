@@ -25,6 +25,8 @@ class UkmRecorder;
 
 namespace blink {
 
+enum class DocumentUpdateReason;
+
 // This class aggregaties and records time based UKM and UMA metrics
 // for LocalFrameView. The simplest way to use it is via the
 // SCOPED_UMA_AND_UKM_TIMER macro combined with
@@ -129,8 +131,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kPrePaint,
     kStyle,
     kLayout,
-    kForcedStyleAndLayout,
-    kHitTestDocumentUpdate,
     kHandleInputEvents,
     kAnimate,
     kUpdateLayers,
@@ -139,6 +139,14 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kJavascriptIntersectionObserver,
     kLazyLoadIntersectionObserver,
     kMediaIntersectionObserver,
+    kUpdateViewportIntersection,
+    kForcedStyleAndLayout,
+    kContentDocumentUpdate,
+    kHitTestDocumentUpdate,
+    kJavascriptDocumentUpdate,
+    kScrollDocumentUpdate,
+    kServiceDocumentUpdate,
+    kUserDrivenDocumentUpdate,
     kCount,
     kMainFrame
   };
@@ -166,8 +174,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"PrePaint", true},
         {"Style", true},
         {"Layout", true},
-        {"ForcedStyleAndLayout", true},
-        {"HitTestDocumentUpdate", true},
         {"HandleInputEvents", true},
         {"Animate", true},
         {"UpdateLayers", false},
@@ -175,7 +181,15 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"DisplayLockIntersectionObserver", true},
         {"JavascriptIntersectionObserver", true},
         {"LazyLoadIntersectionObserver", true},
-        {"MediaIntersectionObserver", true}};
+        {"MediaIntersectionObserver", true},
+        {"UpdateViewportIntersection", true},
+        {"ForcedStyleAndLayout", true},
+        {"ContentDocumentUpdate", true},
+        {"HitTestDocumentUpdate", true},
+        {"JavascriptDocumentUpdate", true},
+        {"ScrollDocumentUpdate", true},
+        {"ServiceDocumentUpdate", true},
+        {"UserDrivenDocumentUpdate", true}};
     static_assert(base::size(data) == kCount, "Metrics data mismatch");
     return data;
   }
@@ -230,6 +244,13 @@ class CORE_EXPORT LocalFrameUkmAggregator
                     base::TimeTicks start,
                     base::TimeTicks end);
 
+  // Record a ForcedLayout sample. The reason will determine which, if any,
+  // additional metrics are reported in order to diagnose the cause of
+  // ForcedLayout regressions.
+  void RecordForcedLayoutSample(DocumentUpdateReason reason,
+                                base::TimeTicks start,
+                                base::TimeTicks end);
+
   // Record a sample for the impl-side compositor processing.
   // - requested is the time the renderer proxy requests a commit
   // - started is the time the impl thread begins processing the request
@@ -278,8 +299,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
   struct SampleToRecord {
     base::TimeDelta primary_metric_duration;
-    Vector<base::TimeDelta> sub_metrics_durations;
-    Vector<base::TimeDelta> sub_main_frame_durations;
+    std::array<base::TimeDelta, kCount> sub_metrics_durations;
+    std::array<base::TimeDelta, kCount> sub_main_frame_durations;
     cc::ActiveFrameSequenceTrackers trackers;
   };
 
@@ -296,9 +317,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Reports the Blink.PageLoad to the UKM system. Called on the first main
   // frame after First Contentful Paint.
   void ReportPreFCPEvent();
-
-  // Implements throttling of the ForcedStyleAndLayoutUMA metric.
-  void RecordForcedStyleLayoutUMA(base::TimeDelta& duration);
 
   // To test event sampling. Controls whether we update the current sample
   // on the next frame, or do not. Values persist until explicitly changed.
@@ -320,7 +338,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Event and metric data
   const char* const event_name_;
   AbsoluteMetricRecord primary_metric_;
-  Vector<AbsoluteMetricRecord> absolute_metric_records_;
+  std::array<AbsoluteMetricRecord, kCount> absolute_metric_records_;
 
   // The current sample to report. When RecordEvent() is called we
   // check for uniform_random[0,1) < 1 / n where n is the number of frames
@@ -334,7 +352,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   unsigned frames_since_last_report_ = 0;
 
   // Control for the ForcedStyleAndUpdate UMA metric sampling
-  unsigned mean_calls_between_forced_style_layout_uma_ = 100;
+  unsigned mean_calls_between_forced_style_layout_uma_ = 500;
   unsigned calls_to_next_forced_style_layout_uma_ = 0;
 
   // Set by BeginMainFrame() and cleared in RecordMEndOfFrameMetrics.

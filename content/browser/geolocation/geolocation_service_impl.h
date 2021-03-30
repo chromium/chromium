@@ -28,18 +28,18 @@ class GeolocationServiceImplContext {
   explicit GeolocationServiceImplContext(
       PermissionControllerImpl* permission_controller);
   ~GeolocationServiceImplContext();
-  void RequestPermission(
-      RenderFrameHost* render_frame_host,
-      bool user_gesture,
-      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback);
+  using PermissionCallback =
+      base::OnceCallback<void(blink::mojom::PermissionStatus)>;
+  void RequestPermission(RenderFrameHost* render_frame_host,
+                         bool user_gesture,
+                         PermissionCallback callback);
 
  private:
   PermissionControllerImpl* permission_controller_;
   int request_id_;
 
-  void HandlePermissionStatus(
-      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
-      blink::mojom::PermissionStatus permission_status);
+  void HandlePermissionStatus(PermissionCallback callback,
+                              blink::mojom::PermissionStatus permission_status);
 
   base::WeakPtrFactory<GeolocationServiceImplContext> weak_factory_{this};
 

@@ -12,7 +12,7 @@
     
                 Defs and Blocks
              &mdash;
-    Mako 1.0.14 Documentation
+    Mako 1.1.4 Documentation
 
         </title>
 
@@ -32,7 +32,7 @@
 
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+    <link rel="top" title="Mako 1.1.4 Documentation" href="index.html" />
         <link rel="next" title="The Mako Runtime Environment" href="runtime.html" />
         <link rel="prev" title="Syntax" href="syntax.html" />
     <!-- end layout.mako headers -->
@@ -56,7 +56,7 @@
 
 
 <div id="docs-header">
-    <h1>Mako 1.0.14 Documentation</h1>
+    <h1>Mako 1.1.4 Documentation</h1>
 
     <div id="docs-search">
     Search:
@@ -68,7 +68,7 @@
     </div>
 
     <div id="docs-version-header">
-        Release: <span class="version-num">1.0.14</span>
+        Release: <span class="version-num">1.1.4</span>
 
     </div>
 
@@ -92,7 +92,7 @@
     </div>
 
     <div id="docs-navigation-banner">
-        <a href="index.html">Mako 1.0.14 Documentation</a>
+        <a href="index.html">Mako 1.1.4 Documentation</a>
         » 
                 Defs and Blocks
             
@@ -244,23 +244,23 @@ these docs. For more detail and examples, see
 <div class="section" id="calling-defs-programmatically">
 <h3>Calling Defs Programmatically<a class="headerlink" href="#calling-defs-programmatically" title="Permalink to this headline">¶</a></h3>
 <p>You can call defs programmatically from any <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object
-using the <a class="reference internal" href="usage.html#mako.template.Template.get_def" title="mako.template.Template.get_def"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_def()</span></code></a> method, which returns a <a class="reference internal" href="usage.html#mako.template.DefTemplate" title="mako.template.DefTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefTemplate</span></code></a>
+using the <a class="reference internal" href="usage.html#mako.template.Template.get_def" title="mako.template.Template.get_def"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.get_def()</span></code></a> method, which returns a <a class="reference internal" href="usage.html#mako.template.DefTemplate" title="mako.template.DefTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefTemplate</span></code></a>
 object. This is a <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> subclass which the parent
 <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> creates, and is usable like any other template:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
 
 <span class="n">template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    &lt;</span><span class="si">%d</span><span class="s2">ef name=&quot;hi(name)&quot;&gt;</span>
-<span class="s2">        hi ${name}!</span>
+<span class="s2">        hi $</span><span class="si">{name}</span><span class="s2">!</span>
 <span class="s2">    &lt;/</span><span class="si">%d</span><span class="s2">ef&gt;</span>
 
 <span class="s2">    &lt;</span><span class="si">%d</span><span class="s2">ef name=&quot;bye(name)&quot;&gt;</span>
-<span class="s2">        bye ${name}!</span>
+<span class="s2">        bye $</span><span class="si">{name}</span><span class="s2">!</span>
 <span class="s2">    &lt;/</span><span class="si">%d</span><span class="s2">ef&gt;</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
-<span class="k">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">get_def</span><span class="p">(</span><span class="s2">&quot;hi&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ed&quot;</span><span class="p">))</span>
-<span class="k">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">get_def</span><span class="p">(</span><span class="s2">&quot;bye&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ed&quot;</span><span class="p">))</span></pre></div>
+<span class="nb">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">get_def</span><span class="p">(</span><span class="s2">&quot;hi&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ed&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">get_def</span><span class="p">(</span><span class="s2">&quot;bye&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ed&quot;</span><span class="p">))</span></pre></div>
 </div>
 </div>
 <div class="section" id="defs-within-defs">
@@ -672,7 +672,7 @@ anonymous block is available inside as well.</p>
 
     <div id="docs-copyright">
         &copy; Copyright the Mako authors and contributors.
-        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3
         with Mako templates.
     </div>
 </div>
@@ -687,7 +687,7 @@ anonymous block is available inside as well.</p>
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    './',
-          VERSION:     '1.0.14',
+          VERSION:     '1.1.4',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -699,7 +699,6 @@ anonymous block is available inside as well.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
     <!-- end iterate through sphinx environment script_files -->
 
     <script type="text/javascript" src="_static/detectmobile.js"></script>

@@ -8,11 +8,11 @@
 #include <msctf.h>
 #include <wrl/client.h>
 #include <deque>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/events/event_utils.h"
@@ -276,7 +276,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
 
   // Start new composition with new text.
   void StartCompositionOnNewText(size_t start_offset,
-                                 const base::string16& composition_string);
+                                 const std::u16string& composition_string);
 
   // Commit and insert text into TextInputClient. End any ongoing composition.
   void CommitTextAndEndCompositionIfAny(size_t old_size, size_t new_size) const;
@@ -335,8 +335,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   //    |has_composition_range_| = true;
   //    |composition_range_start_| = 3;
   //    |composition_range_end_| = 6;
-  base::string16 string_buffer_document_;
-  base::string16 string_pending_insertion_;
+  std::u16string string_buffer_document_;
+  std::u16string string_pending_insertion_;
   size_t composition_start_ = 0;
   bool has_composition_range_ = false;
   gfx::Range composition_range_;
@@ -354,7 +354,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // change to blink if IME only change the selection range but not the
   // composition text. |previous_text_spans_| saves the IME spans in previous
   // edit session during same composition.
-  base::string16 previous_composition_string_;
+  std::u16string previous_composition_string_;
   size_t previous_composition_start_ = 0;
   gfx::Range previous_composition_selection_range_ = gfx::Range::InvalidRange();
   ImeTextSpans previous_text_spans_;
@@ -376,7 +376,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
 
   // |buffer_from_client_| contains all string returned from
   // TextInputClient::GetTextFromRange();
-  base::string16 buffer_from_client_;
+  std::u16string buffer_from_client_;
 
   // |selection_from_client_| indicates the selection range returned from
   // TextInputClient::GetEditableSelectionRange();

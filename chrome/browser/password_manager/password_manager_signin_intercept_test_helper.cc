@@ -69,7 +69,7 @@ void PasswordManagerSigninInterceptTestHelper::StoreGaiaCredentials(
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = GaiaUrls::GetInstance()->gaia_url().spec();
   signin_form.username_value = base::ASCIIToUTF16(kGaiaUsername);
-  signin_form.password_value = base::ASCIIToUTF16("pw");
+  signin_form.password_value = u"pw";
   password_store->AddLogin(signin_form);
 }
 
@@ -97,8 +97,7 @@ void PasswordManagerSigninInterceptTestHelper::SetupProfilesForInterception(
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
   profile_storage->AddProfile(
-      profile_path, base::UTF8ToUTF16("TestProfileName"), kGaiaId,
-      base::UTF8ToUTF16(kGaiaEmail),
+      profile_path, u"TestProfileName", kGaiaId, base::UTF8ToUTF16(kGaiaEmail),
       /*is_consented_primary_account=*/false, /*icon_index=*/0,
       /*supervised_user_id=*/std::string(), EmptyAccountId());
 

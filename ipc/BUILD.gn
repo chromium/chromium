@@ -68,6 +68,8 @@ component("ipc") {
       "message_filter_router.h",
       "message_router.cc",
       "message_router.h",
+      "trace_ipc_message.cc",
+      "trace_ipc_message.h",
     ]
   }
 
@@ -92,6 +94,7 @@ component("ipc") {
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
+    "//services/tracing/public/cpp",
   ]
 
   if (!is_nacl_nonsfi) {
@@ -104,14 +107,6 @@ component("ipc") {
 
   if (enable_ipc_fuzzer) {
     public_configs = [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
-  }
-
-  if (!is_nacl && !is_ios) {
-    sources += [
-      "trace_ipc_message.cc",
-      "trace_ipc_message.h",
-    ]
-    public_deps += [ "//services/tracing/public/cpp" ]
   }
 }
 
@@ -197,10 +192,7 @@ mojom_component("mojom") {
   output_prefix = "ipc_mojom"
   macro_prefix = "IPC_MOJOM"
   sources = [ "ipc.mojom" ]
-  public_deps = [
-    "//mojo/public/interfaces/bindings",
-    "//mojo/public/mojom/base",
-  ]
+  public_deps = [ "//mojo/public/interfaces/bindings" ]
 
   cpp_typemaps = [
     {
@@ -217,10 +209,7 @@ mojom_component("mojom") {
         "//ipc/message_view.cc",
         "//ipc/message_view.h",
       ]
-      traits_public_deps = [
-        "//ipc:message_support",
-        "//mojo/public/cpp/base:shared_typemap_traits",
-      ]
+      traits_public_deps = [ "//ipc:message_support" ]
     },
   ]
 

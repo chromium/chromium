@@ -11,18 +11,19 @@
 namespace web_share_target {
 
 std::string convertDataElementToString(const network::DataElement& element) {
-  if (element.type() == network::mojom::DataElementType::kBytes) {
-    return std::string(element.bytes(), element.length());
+  if (element.type() == network::DataElement::Tag::kBytes) {
+    return std::string(element.As<network::DataElementBytes>().AsStringPiece());
   }
-  if (element.type() == network::mojom::DataElementType::kFile) {
-    return std::string(element.path().AsUTF8Unsafe());
+  if (element.type() == network::DataElement::Tag::kFile) {
+    return std::string(
+        element.As<network::DataElementFile>().path().AsUTF8Unsafe());
   }
   return "";
 }
 
 void CheckDataElements(
     const scoped_refptr<network::ResourceRequestBody>& body,
-    const std::vector<network::mojom::DataElementType>& expected_element_types,
+    const std::vector<network::DataElement::Tag>& expected_element_types,
     const std::vector<std::string>& expected_element_values) {
   EXPECT_NE(nullptr, body->elements());
   const std::vector<network::DataElement>& data_elements = *body->elements();
@@ -67,12 +68,10 @@ TEST(TargetUtilTest, ValidMultipartBodyForFile) {
       ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
                            boundary);
 
-  std::vector<network::mojom::DataElementType> expected_types = {
-      network::mojom::DataElementType::kBytes,
-      network::mojom::DataElementType::kFile,
-      network::mojom::DataElementType::kBytes,
-      network::mojom::DataElementType::kBytes,
-      network::mojom::DataElementType::kBytes};
+  std::vector<network::DataElement::Tag> expected_types = {
+      network::DataElement::Tag::kBytes, network::DataElement::Tag::kFile,
+      network::DataElement::Tag::kBytes, network::DataElement::Tag::kBytes,
+      network::DataElement::Tag::kBytes};
   std::vector<std::string> expected = {
       "--boundary\r\nContent-Disposition: form-data; name=\"share-file%22\"; "
       "filename=\"filename%0D%0A\"\r\nContent-Type: type\r\n\r\n",
@@ -97,9 +96,8 @@ TEST(TargetUtilTest, ValidMultipartBodyForText) {
       ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
                            boundary);
 
-  std::vector<network::mojom::DataElementType> expected_types = {
-      network::mojom::DataElementType::kBytes,
-      network::mojom::DataElementType::kBytes};
+  std::vector<network::DataElement::Tag> expected_types = {
+      network::DataElement::Tag::kBytes, network::DataElement::Tag::kBytes};
   std::vector<std::string> expected = {
       "--boundary\r\nContent-Disposition: form-data; "
       "name=\"name%22\"\r\nContent-Type: type\r\n\r\nvalue\r\n",
@@ -126,27 +124,24 @@ TEST(TargetUtilTest, ValidMultipartBodyForTextAndFile) {
   scoped_refptr<network::ResourceRequestBody> body = ComputeMultipartBody(
       names, values, is_value_file_uris, filenames, types, boundary);
 
-  std::vector<network::mojom::DataElementType> expected_types = {
+  std::vector<network::DataElement::Tag> expected_types = {
       // item 1
-      network::mojom::DataElementType::kBytes,
+      network::DataElement::Tag::kBytes,
       // item 2
-      network::mojom::DataElementType::kBytes,
-      network::mojom::DataElementType::kFile,
-      network::mojom::DataElementType::kBytes,
+      network::DataElement::Tag::kBytes, network::DataElement::Tag::kFile,
+      network::DataElement::Tag::kBytes,
       // item 3
-      network::mojom::DataElementType::kBytes,
-      network::mojom::DataElementType::kFile,
-      network::mojom::DataElementType::kBytes,
+      network::DataElement::Tag::kBytes, network::DataElement::Tag::kFile,
+      network::DataElement::Tag::kBytes,
       // item 4
-      network::mojom::DataElementType::kBytes,
+      network::DataElement::Tag::kBytes,
       // item 5
-      network::mojom::DataElementType::kBytes,
-      network::mojom::DataElementType::kFile,
-      network::mojom::DataElementType::kBytes,
+      network::DataElement::Tag::kBytes, network::DataElement::Tag::kFile,
+      network::DataElement::Tag::kBytes,
       // item 6
-      network::mojom::DataElementType::kBytes,
+      network::DataElement::Tag::kBytes,
       // ending
-      network::mojom::DataElementType::kBytes};
+      network::DataElement::Tag::kBytes};
   std::vector<std::string> expected = {
       // item 1
       "--boundary\r\nContent-Disposition: form-data; "
@@ -185,9 +180,8 @@ TEST(TargetUtilTest, MultipartBodyWithPercentEncoding) {
       names, values, is_value_file_uris, filenames, types, boundary);
   EXPECT_NE(nullptr, body->elements());
 
-  std::vector<network::mojom::DataElementType> expected_types = {
-      network::mojom::DataElementType::kBytes,
-      network::mojom::DataElementType::kBytes};
+  std::vector<network::DataElement::Tag> expected_types = {
+      network::DataElement::Tag::kBytes, network::DataElement::Tag::kBytes};
   std::vector<std::string> expected = {
       "--boundary\r\nContent-Disposition: form-data;"
       " name=\"name\"; filename=\"filename\"\r\nContent-Type: type"

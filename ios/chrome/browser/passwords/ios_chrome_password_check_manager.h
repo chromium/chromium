@@ -107,7 +107,7 @@ class IOSChromePasswordCheckManager
       override;
 
   // password_manager::InsecureCredentialsManager::Observer:
-  void OnCompromisedCredentialsChanged(
+  void OnInsecureCredentialsChanged(
       password_manager::InsecureCredentialsManager::CredentialsView credentials)
       override;
 

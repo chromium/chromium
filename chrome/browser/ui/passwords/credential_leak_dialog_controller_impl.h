@@ -31,10 +31,10 @@ class CredentialLeakDialogControllerImpl
   void OnCancelDialog() override;
   void OnAcceptDialog() override;
   void OnCloseDialog() override;
-  base::string16 GetAcceptButtonLabel() const override;
-  base::string16 GetCancelButtonLabel() const override;
-  base::string16 GetDescription() const override;
-  base::string16 GetTitle() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetDescription() const override;
+  std::u16string GetTitle() const override;
   bool ShouldCheckPasswords() const override;
   bool ShouldShowCancelButton() const override;
 

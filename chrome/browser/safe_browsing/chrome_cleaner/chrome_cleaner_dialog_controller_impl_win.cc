@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_navigation_util_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "components/component_updater/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "extensions/browser/extension_system.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace safe_browsing {
@@ -87,11 +85,8 @@ void ChromeCleanerDialogControllerImpl::Accept(bool logs_enabled) {
 
   Profile* profile = browser_->profile();
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-
   cleaner_controller_->ReplyWithUserResponse(
-      profile, extension_service,
+      profile,
       logs_enabled
           ? ChromeCleanerController::UserResponse::kAcceptedWithLogs
           : ChromeCleanerController::UserResponse::kAcceptedWithoutLogs);
@@ -109,12 +104,8 @@ void ChromeCleanerDialogControllerImpl::Cancel() {
 
   Profile* profile = browser_->profile();
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-
   cleaner_controller_->ReplyWithUserResponse(
-      profile, extension_service,
-      ChromeCleanerController::UserResponse::kDenied);
+      profile, ChromeCleanerController::UserResponse::kDenied);
   OnInteractionDone();
 }
 
@@ -127,12 +118,8 @@ void ChromeCleanerDialogControllerImpl::Close() {
 
   Profile* profile = browser_->profile();
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-
   cleaner_controller_->ReplyWithUserResponse(
-      profile, extension_service,
-      ChromeCleanerController::UserResponse::kDismissed);
+      profile, ChromeCleanerController::UserResponse::kDismissed);
   OnInteractionDone();
 }
 

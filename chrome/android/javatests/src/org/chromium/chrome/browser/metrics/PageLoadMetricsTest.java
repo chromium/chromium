@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -36,20 +35,23 @@ public class PageLoadMetricsTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private static final int PAGE_LOAD_METRICS_TIMEOUT_MS = 3000;
-    private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
-    private static final String TEST_PAGE_2 = "/chrome/test/data/android/test.html";
+    private static final int PAGE_LOAD_METRICS_TIMEOUT_MS = 6000;
+    private static final String PAGE_PREFIX = "/chrome/test/data/android/google.html";
 
-    private String mTestPage;
-    private String mTestPage2;
     private EmbeddedTestServer mTestServer;
+    private int mLoadCount;
+
+    // Provide the next URL to test with. To eliminate a potential source of flakiness each observed
+    // URL is unique.
+    private String getNextLoadUrl() {
+        int i = mLoadCount++;
+        return mTestServer.getURL(PAGE_PREFIX + "?q=" + i);
+    }
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-        mTestPage = mTestServer.getURL(TEST_PAGE);
-        mTestPage2 = mTestServer.getURL(TEST_PAGE_2);
     }
 
     @After
@@ -76,13 +78,11 @@ public class PageLoadMetricsTest {
         private final CountDownLatch mFirstContentfulPaintLatch = new CountDownLatch(1);
         private final CountDownLatch mLoadEventStartLatch = new CountDownLatch(1);
         private long mNavigationId = NO_NAVIGATION_ID;
-        private Boolean mIsFirstNavigationInWebContents;
 
         @Override
         public void onNewNavigation(WebContents webContents, long navigationId,
                 boolean isFirstNavigationInWebContents) {
             if (mNavigationId == NO_NAVIGATION_ID) mNavigationId = navigationId;
-            mIsFirstNavigationInWebContents = isFirstNavigationInWebContents;
         }
 
         @Override
@@ -123,15 +123,10 @@ public class PageLoadMetricsTest {
         public long getNavigationId() {
             return mNavigationId;
         }
-
-        public Boolean getIsFirstNavigationInWebContents() {
-            return mIsFirstNavigationInWebContents;
-        }
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "crbug.com/983804")
     public void testPageLoadMetricEmitted() throws InterruptedException {
         Assert.assertFalse("Tab shouldn't be loading anything before we add observer",
                 mActivityTestRule.getActivity().getActivityTab().isLoading());
@@ -139,33 +134,27 @@ public class PageLoadMetricsTest {
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.addObserver(metricsObserver));
 
-        Assert.assertNull(metricsObserver.getIsFirstNavigationInWebContents());
-
-        mActivityTestRule.loadUrl(mTestPage);
-        Assert.assertTrue(metricsObserver.getIsFirstNavigationInWebContents().booleanValue());
+        mActivityTestRule.loadUrl(getNextLoadUrl());
         assertMetricsEmitted(metricsObserver);
 
-        mActivityTestRule.loadUrl(mTestPage);
-        Assert.assertFalse(metricsObserver.getIsFirstNavigationInWebContents().booleanValue());
-
+        mActivityTestRule.loadUrl(getNextLoadUrl());
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.removeObserver(metricsObserver));
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "crbug.com/986025")
     public void testPageLoadMetricNavigationIdSetCorrectly() throws InterruptedException {
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.addObserver(metricsObserver));
-        mActivityTestRule.loadUrl(mTestPage);
+        mActivityTestRule.loadUrl(getNextLoadUrl());
         assertMetricsEmitted(metricsObserver);
 
         PageLoadMetricsTestObserver metricsObserver2 = new PageLoadMetricsTestObserver();
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.addObserver(metricsObserver2));
-        mActivityTestRule.loadUrl(mTestPage2);
+        mActivityTestRule.loadUrl(getNextLoadUrl());
         assertMetricsEmitted(metricsObserver2);
 
         Assert.assertNotEquals("Subsequent navigations should have different navigation ids",

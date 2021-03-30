@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "extensions/common/constants.h"
 
 namespace chromeos {
@@ -62,6 +62,7 @@ const char* const kDefaultAppOrder[] = {
     web_app::kGoogleDriveAppId,
 
     extension_misc::kGoogleKeepAppId,
+    web_app::kGoogleKeepAppId,
 
     arc::kGoogleCalendarAppId,
     extension_misc::kCalendarAppId,
@@ -73,6 +74,7 @@ const char* const kDefaultAppOrder[] = {
 
     arc::kYoutubeMusicAppId,
     web_app::kYoutubeMusicAppId,
+    arc::kYoutubeMusicWebApkAppId,
 
     arc::kPlayMoviesAppId,
     extension_misc::kGooglePlayMoviesAppId,

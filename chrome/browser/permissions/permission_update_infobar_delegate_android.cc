@@ -160,7 +160,7 @@ int PermissionUpdateInfoBarDelegate::GetIconId() const {
   return IDR_ANDROID_INFOBAR_WARNING;
 }
 
-base::string16 PermissionUpdateInfoBarDelegate::GetMessageText() const {
+std::u16string PermissionUpdateInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(permission_msg_id_);
 }
 
@@ -168,7 +168,7 @@ int PermissionUpdateInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 PermissionUpdateInfoBarDelegate::GetButtonLabel(
+std::u16string PermissionUpdateInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(button, BUTTON_OK);
   return l10n_util::GetStringUTF16(IDS_INFOBAR_UPDATE_PERMISSIONS_BUTTON_TEXT);

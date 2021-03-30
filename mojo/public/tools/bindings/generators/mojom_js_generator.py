@@ -813,6 +813,11 @@ class Generator(generator.Generator):
       if mojom.IsStructKind(field.kind):
         assert field.default == "default"
         return "null"
+      if ((field.kind == mojom.INT64 or field.kind == mojom.UINT64)
+          and not isinstance(
+              field.default,
+              (mojom.EnumValue, mojom.NamedValue, mojom.BuiltinValue))):
+        return "BigInt('{}')".format(int(field.default, 0))
       return self._ExpressionToTextLite(field.default, for_module=for_module)
     if field.kind == mojom.INT64 or field.kind == mojom.UINT64:
       return "BigInt(0)"
@@ -893,7 +898,7 @@ class Generator(generator.Generator):
     if mojom.IsUnionKind(kind):
       return "decodeUnion(%s)" % self._CodecType(kind)
     if mojom.IsEnumKind(kind):
-      return self._JavaScriptDecodeSnippet(mojom.INT32)
+      return "decodeStruct(%s)" % self._CodecType(kind)
     raise Exception("No decode snippet for %s" % kind)
 
   def _JavaScriptEncodeSnippet(self, kind):
@@ -997,12 +1002,15 @@ class Generator(generator.Generator):
       #  - Enums: NamespaceUid.Enum.CONSTANT_NAME
       #  - Struct: NamespaceUid.Struct_CONSTANT_NAME
 
-      name_prefix = []
+      namespace_components = []
       qualified = (not for_module) or (token.module is not self.module)
       if token.module and qualified:
-        name_prefix.append(token.module.namespace)
+        namespace_components.append(token.module.namespace)
       if token.parent_kind:
-        name_prefix.append(token.parent_kind.name)
+        namespace_components.append(token.parent_kind.name)
+      name_prefix = '.'.join(namespace_components)
+      if for_module:
+        name_prefix = name_prefix.replace('.', '_')
 
       name = []
       if isinstance(token, mojom.EnumValue):
@@ -1013,7 +1021,10 @@ class Generator(generator.Generator):
       if mojom.IsStructKind(token.parent_kind) or for_module:
         separator = "_"
 
-      return ".".join(name_prefix) + separator + ".".join(name)
+      if len(name_prefix) > 0:
+        return name_prefix + separator + ".".join(name)
+
+      return ".".join(name)
 
     return self._ExpressionToText(token)
 
@@ -1021,7 +1032,7 @@ class Generator(generator.Generator):
     assert isinstance(constant, mojom.Constant)
     text = self._ExpressionToTextLite(constant.value, for_module=for_module)
     if constant.kind == mojom.INT64 or constant.kind == mojom.UINT64:
-      return "BigInt('{}')".format(text)
+      return "BigInt('{}')".format(int(text, 0))
     return text
 
   def _GetConstantValueInJsModule(self, constant):

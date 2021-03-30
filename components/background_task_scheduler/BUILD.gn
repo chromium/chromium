@@ -60,7 +60,7 @@ if (is_android) {
   # between WebView and Chrome.
   android_library("background_task_scheduler_task_ids_java") {
     srcjar_deps = [ ":jni_enums" ]
-    deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 
   java_cpp_enum("jni_enums") {
@@ -84,8 +84,8 @@ if (is_android) {
     deps = [
       ":background_task_scheduler_task_ids_java",
       "//base:base_java",
-      "//content/public/android:content_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//content/public/android:content_main_dex_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
@@ -95,7 +95,7 @@ if (is_android) {
     deps = [
       ":public_java",
       "internal:internal_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -53,6 +54,13 @@ public class TestBottomSheetContent implements BottomSheetContent {
 
     /** Whether this content intercepts back button presses. */
     private boolean mHandleBackPress;
+
+    /** Set to true to ask for an offset controller. */
+    private boolean mContentControlsOffset;
+
+    /** Current offset controller. */
+    @Nullable
+    private Callback<Integer> mOffsetController;
 
     /**
      * @param context A context to inflate views with.
@@ -201,5 +209,23 @@ public class TestBottomSheetContent implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return android.R.string.copy;
+    }
+
+    @Override
+    public boolean contentControlsOffset() {
+        return mContentControlsOffset;
+    }
+
+    @Override
+    public void setOffsetController(Callback<Integer> offsetController) {
+        mOffsetController = offsetController;
+    }
+
+    public Callback<Integer> getOffsetController() {
+        return mOffsetController;
+    }
+
+    public void setContentControlsOffset(boolean value) {
+        mContentControlsOffset = value;
     }
 }

@@ -6,7 +6,7 @@
 // #import '../constants/routes.mojom-lite.js';
 
 // #import {OsSettingsRoutes} from './os_settings_routes.m.js';
-// #import {Route, Router} from '../router.m.js';
+// #import {Route, Router} from '../router.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 cr.define('settings', function() {
@@ -81,7 +81,7 @@ cr.define('settings', function() {
       r.SMART_LOCK = createSubpage(
           r.MULTIDEVICE_FEATURES, mojom.SMART_LOCK_SUBPAGE_PATH,
           Subpage.kSmartLock);
-      if (loadTimeData.getBoolean('nearbySharingFeatureFlag')) {
+      if (loadTimeData.getBoolean('isNearbyShareSupported')) {
         r.NEARBY_SHARE = createSubpage(
             r.MULTIDEVICE, mojom.NEARBY_SHARE_SUBPAGE_PATH,
             Subpage.kNearbyShare);
@@ -207,7 +207,7 @@ cr.define('settings', function() {
     if (loadTimeData.valueExists('showCrostini') &&
         loadTimeData.getBoolean('showCrostini')) {
       r.CROSTINI = createSection(
-          r.BASIC, mojom.CROSTINI_SECTION_PATH, Section.kCrostini);
+          r.ADVANCED, mojom.CROSTINI_SECTION_PATH, Section.kCrostini);
       r.CROSTINI_DETAILS = createSubpage(
           r.CROSTINI, mojom.CROSTINI_DETAILS_SUBPAGE_PATH,
           Subpage.kCrostiniDetails);

@@ -13,7 +13,10 @@
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/chromeos/remote_apps/remote_apps_manager.h"
+#include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
@@ -33,6 +36,15 @@ AppServiceAppItem::AppServiceAppItem(
   OnAppUpdate(app_update, true);
   if (sync_item && sync_item->item_ordinal.IsValid()) {
     UpdateFromSync(sync_item);
+  } else if (app_type_ == apps::mojom::AppType::kRemote) {
+    chromeos::RemoteAppsManager* remote_apps_manager =
+        chromeos::RemoteAppsManagerFactory::GetForProfile(profile);
+
+    if (remote_apps_manager->ShouldAddToFront(app_update.AppId())) {
+      SetPosition(model_updater->GetPositionBeforeFirstItem());
+    } else {
+      SetDefaultPositionIfApplicable(model_updater);
+    }
   } else {
     SetDefaultPositionIfApplicable(model_updater);
 
@@ -144,7 +156,7 @@ void AppServiceAppItem::Launch(int event_flags,
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->Launch(id(), event_flags, launch_source,
-                GetController()->GetAppListDisplayId());
+                apps::MakeWindowInfo(GetController()->GetAppListDisplayId()));
 }
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
@@ -155,11 +167,12 @@ void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
       (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
           ? apps::mojom::IconType::kStandard
           : apps::mojom::IconType::kUncompressed;
-  proxy->LoadIcon(app_type_, id(), icon_type,
-                  ash::AppListConfig::instance().grid_icon_dimension(),
-                  allow_placeholder_icon,
-                  base::BindOnce(&AppServiceAppItem::OnLoadIcon,
-                                 weak_ptr_factory_.GetWeakPtr()));
+  proxy->LoadIcon(
+      app_type_, id(), icon_type,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      allow_placeholder_icon,
+      base::BindOnce(&AppServiceAppItem::OnLoadIcon,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AppServiceAppItem::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {

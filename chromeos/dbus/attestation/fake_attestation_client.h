@@ -136,6 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
       bool include_spkac) const override;
   void set_sign_enterprise_challenge_delay(
       const base::TimeDelta& delay) override;
+  void set_aca_type_for_legacy_flow(::attestation::ACAType aca_type) override;
   void set_enroll_request_status(
       ::attestation::AttestationStatus status) override;
   std::string GetFakePcaEnrollRequest() const override;
@@ -239,6 +240,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
       allowlisted_sign_enterprise_challenge_keys_;
   // The delay the reply of `SignEnterpriseChallenge()` is posted with.
   base::TimeDelta sign_enterprise_challenge_delay_;
+
+  // The allowed ACA type for legacy attestation flow.
+  ::attestation::ACAType aca_type_for_legacy_mode_ = ::attestation::DEFAULT_ACA;
 
   // The status returned by `CreateEnrollRequest()`.
   ::attestation::AttestationStatus enroll_request_status_ =

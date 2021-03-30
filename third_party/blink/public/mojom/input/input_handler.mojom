@@ -13,7 +13,6 @@ import "third_party/blink/public/mojom/input/input_event.mojom";
 import "third_party/blink/public/mojom/input/input_event_result.mojom";
 import "third_party/blink/public/mojom/input/pointer_lock_context.mojom";
 import "third_party/blink/public/mojom/input/pointer_lock_result.mojom";
-import "third_party/blink/public/mojom/input/synchronous_compositor.mojom";
 import "third_party/blink/public/mojom/input/touch_event.mojom";
 import "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom";
 import "ui/base/ime/mojom/ime_types.mojom";
@@ -23,6 +22,9 @@ import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 import "ui/latency/mojom/latency_info.mojom";
+
+[EnableIf=is_android]
+import "third_party/blink/public/mojom/input/synchronous_compositor.mojom";
 
 // These structs are purposely duplicated from ui/events/mojom/event.mojom.
 // They map WebInputEvent <-> WebInputEvent across mojo.
@@ -410,6 +412,7 @@ interface WidgetInputHandler {
 
   // Attach the synchronous compositor interface. This method only
   // should be called for Android WebView.
+  [EnableIf=is_android]
   AttachSynchronousCompositor(
       pending_remote<SynchronousCompositorControlHost> control_host,
       pending_associated_remote<SynchronousCompositorHost> host,

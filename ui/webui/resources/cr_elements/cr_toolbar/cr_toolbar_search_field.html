@@ -1,15 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="../cr_icon_button/cr_icon_button.html">
-<link rel="import" href="../cr_icons_css.html">
-<link rel="import" href="../cr_search_field/cr_search_field_behavior.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../shared_style_css.html">
-<link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-
-<dom-module id="cr-toolbar-search-field">
-  <template>
     <style include="cr-shared-style cr-icons">
       :host {
         align-items: center;
@@ -31,6 +19,9 @@
 
       @media (prefers-color-scheme: light) {
         cr-icon-button {
+          --cr-icon-button-focus-outline-color: var(
+              --cr-toolbar-icon-button-focus-outline-color,
+              white);
           --cr-icon-button-fill-color: var(
               --cr-toolbar-search-field-input-icon-color,
               white);
@@ -198,6 +189,3 @@
       <cr-icon-button id="clearSearch" iron-icon="cr:cancel"
           title="[[clearLabel]]" on-click="clearSearch_"></cr-icon-button>
     </template>
-  </template>
-  <script src="cr_toolbar_search_field.js"></script>
-</dom-module>

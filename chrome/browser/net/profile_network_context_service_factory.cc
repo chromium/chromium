@@ -11,7 +11,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #endif
 
 ProfileNetworkContextService*

@@ -49,25 +49,20 @@ template("cr_fuchsia_package") {
 
   # Process the CMX fragment in |manifest| to get a full manifest.
   action(_component_cmx_target) {
-    forward_variables_from(invoker, [ "testonly" ])
-
-    if (!defined(invoker.manifest)) {
-      assert(testonly == true)
-
-      # TODO(1019938): switch the default to tests.cmx which doesn't request
-      # the deprecated-ambient-replace-as-executable feature.
-      _manifest_fragment = "//build/config/fuchsia/tests-with-exec.cmx"
-    } else {
-      _manifest_fragment = invoker.manifest
-    }
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "testonly",
+                           ])
 
     script = "//build/config/fuchsia/build_cmx_from_fragment.py"
-    inputs = [ _manifest_fragment ]
+
+    inputs = [ invoker.manifest ]
     outputs = [ _component_manifest ]
 
     args = [
       "--cmx-fragment",
-      rebase_path(_manifest_fragment),
+      rebase_path(invoker.manifest),
       "--cmx",
       rebase_path(_component_manifest),
       "--program",

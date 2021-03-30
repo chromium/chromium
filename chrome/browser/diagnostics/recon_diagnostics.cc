@@ -294,7 +294,8 @@ class VersionTest : public DiagnosticsTest {
       RecordFailure(DIAG_RECON_EMPTY_VERSION, "Empty Version");
       return true;
     }
-    std::string version_modifier = chrome::GetChannelName();
+    std::string version_modifier =
+        chrome::GetChannelName(chrome::WithExtendedStable(true));
     if (!version_modifier.empty())
       current_version += " " + version_modifier;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

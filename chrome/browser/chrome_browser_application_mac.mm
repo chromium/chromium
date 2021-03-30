@@ -4,8 +4,6 @@
 
 #import "chrome/browser/chrome_browser_application_mac.h"
 
-#include <dispatch/dispatch.h>
-
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/mac/call_with_eh_frame.h"
@@ -60,14 +58,24 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     case NSEventTypeKeyDown:
     case NSEventTypeKeyUp: {
       // Some NSEvents return a string with NUL in event.characters, see
-      // <https://crbug.com/826908>.
-      std::string characters = base::SysNSStringToUTF8([event.characters
-          stringByReplacingOccurrencesOfString:@"\0"
-                                    withString:@"\\x00"]);
-      std::string unmodified_characters =
-          base::SysNSStringToUTF8([event.charactersIgnoringModifiers
-              stringByReplacingOccurrencesOfString:@"\0"
-                                        withString:@"\\x00"]);
+      // <https://crbug.com/826908>. To make matters worse, in rare cases,
+      // NSEvent.characters or NSEvent.charactersIgnoringModifiers can throw an
+      // NSException complaining that "TSMProcessRawKeyCode failed". Since we're
+      // trying to gather a crash key here, if that exception happens, just
+      // remark that it happened and continue rather than crashing the browser.
+      std::string characters, unmodified_characters;
+      @try {
+        characters = base::SysNSStringToUTF8([event.characters
+            stringByReplacingOccurrencesOfString:@"\0"
+                                      withString:@"\\x00"]);
+        unmodified_characters =
+            base::SysNSStringToUTF8([event.charactersIgnoringModifiers
+                stringByReplacingOccurrencesOfString:@"\0"
+                                          withString:@"\\x00"]);
+      } @catch (id exception) {
+        characters = "(exception)";
+        unmodified_characters = "(exception)";
+      }
       desc += base::StringPrintf(
           " keyCode=0x%d ARepeat=%d characters='%s' unmodifiedCharacters='%s'",
           event.keyCode, event.ARepeat, characters.c_str(),
@@ -335,6 +343,8 @@ std::string DescriptionForNSEvent(NSEvent* event) {
         content::BrowserAccessibilityState::GetInstance();
     if ([value intValue] == 1)
       accessibility_state->OnScreenReaderDetected();
+    else
+      accessibility_state->DisableAccessibility();
   }
   return [super accessibilitySetValue:value forAttribute:attribute];
 }
@@ -345,6 +355,20 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   return [super accessibilityFocusedUIElement];
 }
 
+- (NSAccessibilityRole)accessibilityRole {
+  // For non-VoiceOver AT, such as Voice Control, Apple recommends turning on
+  // a11y when an AT accesses the 'accessibilityRole' property. This function
+  // is accessed frequently so we only change the accessibility state when
+  // accessibility is disabled.
+  content::BrowserAccessibilityState* accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+  if (!accessibility_state->GetAccessibilityMode().has_mode(
+          ui::kAXModeBasic.mode())) {
+    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeBasic);
+  }
+  return [super accessibilityRole];
+}
+
 - (void)addNativeEventProcessorObserver:
     (content::NativeEventProcessorObserver*)observer {
   _observers.AddObserver(observer);
@@ -353,21 +377,6 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 - (void)removeNativeEventProcessorObserver:
     (content::NativeEventProcessorObserver*)observer {
   _observers.RemoveObserver(observer);
-}
-
-- (NSAccessibilityRole)accessibilityRole {
-  // Our previous method of enabling a11y when the 'AXEnhancedUserInterface'
-  // attribute was set didn't work for the new VoiceControl system.  After
-  // discussions with Apple, they recommended that we turn on a11y when an AT
-  // accesses the 'accessibilityRole' property.  This works with VoiceControl,
-  // and should work with any other new ATs in the future.
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    content::BrowserAccessibilityState* accessibility_state =
-        content::BrowserAccessibilityState::GetInstance();
-    accessibility_state->OnScreenReaderDetected();
-  });
-  return [super accessibilityRole];
 }
 
 @end

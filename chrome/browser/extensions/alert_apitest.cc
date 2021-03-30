@@ -79,8 +79,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, AlertBasic) {
                             ->GetBackgroundHostForExtension(extension->id());
   ASSERT_TRUE(host);
   host->host_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("alert('This should not crash.');"),
-      base::NullCallback());
+      u"alert('This should not crash.');", base::NullCallback());
 
   ASSERT_NO_FATAL_FAILURE(CloseDialog());
 }

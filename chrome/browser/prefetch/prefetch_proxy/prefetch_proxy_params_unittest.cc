@@ -68,3 +68,25 @@ TEST(PrefetchProxyParamsTest, PrefetchPosition_Messy) {
     EXPECT_FALSE(PrefetchProxyShouldPrefetchPosition(not_want_position));
   }
 }
+
+TEST(PrefetchProxyParamsTest, DecoyProbabilityClampedZero) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders,
+      {{"ineligible_decoy_request_probability", "-1"}});
+
+  for (size_t i = 0; i < 100; i++) {
+    EXPECT_FALSE(PrefetchProxySendDecoyRequestForIneligiblePrefetch());
+  }
+}
+
+TEST(PrefetchProxyParamsTest, DecoyProbabilityClampedOne) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders,
+      {{"ineligible_decoy_request_probability", "2"}});
+
+  for (size_t i = 0; i < 100; i++) {
+    EXPECT_TRUE(PrefetchProxySendDecoyRequestForIneligiblePrefetch());
+  }
+}

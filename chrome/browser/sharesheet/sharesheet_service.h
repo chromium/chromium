@@ -6,15 +6,17 @@
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/sharesheet/sharesheet_action_cache.h"
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
@@ -56,18 +58,28 @@ class SharesheetService : public KeyedService {
   // Drive hosted document, only drive share action will be shown.
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
-                  sharesheet::CloseCallback close_callback);
+                  SharesheetMetrics::LaunchSource source,
+                  CloseCallback close_callback);
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
                   bool contains_hosted_document,
-                  sharesheet::CloseCallback close_callback);
+                  SharesheetMetrics::LaunchSource source,
+                  CloseCallback close_callback);
+  // Skips the generic Sharesheet bubble and directly displays the
+  // NearbyShare bubble dialog.
+  void ShowNearbyShareBubble(content::WebContents* web_contents,
+                             apps::mojom::IntentPtr intent,
+                             SharesheetMetrics::LaunchSource source,
+                             sharesheet::CloseCallback close_callback);
   void OnBubbleClosed(gfx::NativeWindow native_window,
-                      const base::string16& active_action);
+                      const std::u16string& active_action);
   void OnTargetSelected(gfx::NativeWindow native_window,
-                        const base::string16& target_name,
+                        const std::u16string& target_name,
                         const TargetType type,
                         apps::mojom::IntentPtr intent,
                         views::View* share_action_view);
+  bool OnAcceleratorPressed(const ui::Accelerator& accelerator,
+                            const std::u16string& active_action);
   SharesheetServiceDelegate* GetOrCreateDelegate(
       gfx::NativeWindow native_window);
   SharesheetServiceDelegate* GetDelegate(gfx::NativeWindow native_window);
@@ -77,7 +89,9 @@ class SharesheetService : public KeyedService {
   bool HasShareTargets(const apps::mojom::IntentPtr& intent,
                        bool contains_hosted_document);
   Profile* GetProfile();
-  const gfx::VectorIcon* GetVectorIcon(const base::string16& display_name);
+  const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
+
+  static void SetSelectedAppForTesting(const std::u16string& target_name);
 
  private:
   using SharesheetServiceIconLoaderCallback =
@@ -88,6 +102,9 @@ class SharesheetService : public KeyedService {
                     size_t index,
                     SharesheetServiceIconLoaderCallback callback);
 
+  void LaunchApp(const std::u16string& target_name,
+                 apps::mojom::IntentPtr intent);
+
   void OnIconLoaded(std::vector<apps::IntentLaunchInfo> intent_launch_info,
                     std::vector<TargetInfo> targets,
                     size_t index,
@@ -96,15 +113,17 @@ class SharesheetService : public KeyedService {
 
   void OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                         apps::mojom::IntentPtr intent,
-                        sharesheet::CloseCallback close_callback,
+                        CloseCallback close_callback,
                         std::vector<TargetInfo> targets);
 
   void ShowBubbleWithDelegate(SharesheetServiceDelegate* delegate,
                               apps::mojom::IntentPtr intent,
                               bool contains_hosted_document,
-                              sharesheet::CloseCallback close_callback);
+                              CloseCallback close_callback);
 
-  void RecordActionMetrics(const base::string16& target_name);
+  void RecordUserActionMetrics(const std::u16string& target_name);
+  void RecordTargetCountMetrics(const std::vector<TargetInfo>& targets);
+  void RecordShareActionMetrics(const std::u16string& target_name);
 
   Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;

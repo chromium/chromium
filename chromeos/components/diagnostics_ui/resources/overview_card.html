@@ -1,26 +1,26 @@
 <style include="diagnostics-shared diagnostics-fonts">
   #marketingName {
-    font-weight: var(--diagnostics-overview-font-weight);
-    margin-right: 5px;
+    font-weight: 500;
+    margin-right: 4px;
   }
 
   #overviewCardContainer {
     display: flex;
+    height: 48px;
     justify-content: center;
   }
 
-  .overview-chip {
-    @apply --diagnostics-overview-font;
-    background-color: var(--google-grey-100);
-    border-radius: 16px;
-    color: var(--diagnostics-overview-text-color);
-    margin-right: 15px;
-    padding: 10px;
+  #overviewChip {
+    margin-top: 14px;
   }
+
 </style>
 <div id="overviewCardContainer">
-  <div class="overview-chip">
-    <span id="marketingName">[[systemInfo_.marketingName]]</span>
-    <span id="deviceInfo">[[deviceInfo_]]</span>
+  <div class="diagnostics-chip" id="overviewChip">
+    <span id="marketingName" aria-describedby="deviceInfo"
+        hidden="[[shouldHideMarketingName_(systemInfo_.marketingName)]]">
+      [[systemInfo_.marketingName]]
+    </span>
+    <span id="deviceInfo" aria-hidden="true">[[deviceInfo_]]</span>
   </div>
 </div>

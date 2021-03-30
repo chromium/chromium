@@ -11,7 +11,9 @@ Polymer({
   is: 'cellular-networks-list',
 
   behaviors: [
+    ESimManagerListenerBehavior,
     I18nBehavior,
+    WebUIListenerBehavior,
   ],
 
   properties: {
@@ -33,10 +35,22 @@ Polymer({
     showTechnologyBadge: Boolean,
 
     /**
-     * Device state for the network type.
+     * Device state for the cellular network type.
+     * TODO(cvandermerwe): Rename to cellularDeviceState.
      * @type {!OncMojo.DeviceStateProperties|undefined}
      */
     deviceState: Object,
+
+    isConnectedToNonCellularNetwork: {
+      type: Boolean,
+    },
+
+    /**
+     * Device state for the tether network type. This device state should be
+     * used for instant tether networks.
+     * @type {!OncMojo.DeviceStateProperties|undefined}
+     */
+    tetherDeviceState: Object,
 
     /**
      * The list of eSIM network state properties for display.
@@ -51,11 +65,24 @@ Polymer({
     },
 
     /**
+     * Dictionary mapping pending eSIM profile iccids to pending eSIM profiles.
+     * @type {!Map<string, chromeos.cellularSetup.mojom.ESimProfileRemote>}
+     * @private
+     */
+    profilesMap_: {
+      type: Object,
+      value() {
+        return new Map();
+      },
+    },
+
+    /**
      * The list of pending eSIM profiles to display after the list of eSIM
      * networks.
      * @type {!Array<NetworkList.CustomItemState>}
+     * @private
      */
-    eSimPendingProfiles_: {
+    eSimPendingProfileItems_: {
       type: Array,
       value() {
         return [];
@@ -90,11 +117,58 @@ Polymer({
     shouldShowEidPopup_: {
       type: Boolean,
       value: false,
-    }
+    },
+
+    /** @private {boolean} */
+    shouldShowInstallErrorDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Euicc object representing the active euicc_ module on the device
+     * @private {?chromeos.cellularSetup.mojom.EuiccRemote}
+     */
+    euicc_: {
+      type: Object,
+      value: null,
+    },
+
+    /**
+     * The current eSIM profile being installed.
+     * @type {?chromeos.cellularSetup.mojom.ESimProfileRemote}
+     * @private
+     */
+    installingESimProfile_: {
+      type: Object,
+      value: null,
+    },
+
+    /**
+     * The error code returned when eSIM profile install attempt was made.
+     * @type {?chromeos.cellularSetup.mojom.ProfileInstallResult}
+     * @private
+     */
+    eSimProfileInstallError_: {
+      type: Object,
+      value: null,
+    },
+
+    /**
+     * Multi-device page data used to determine if the tether section should be
+     * shown or not.
+     * @type {?settings.MultiDevicePageContentData}
+     * @private
+     */
+    multiDevicePageContentData_: {
+      type: Object,
+      value: null,
+    },
   },
 
   listeners: {
     'close-eid-popup': 'toggleEidPopup_',
+    'install-profile': 'installProfile_',
   },
 
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
@@ -107,46 +181,115 @@ Polymer({
     this.fetchESimPendingProfileList_();
   },
 
+  /** @override */
+  ready() {
+    this.addWebUIListener(
+        'settings.updateMultidevicePageContentData',
+        this.onMultiDevicePageContentDataChanged_.bind(this));
+
+    const browserProxy = settings.MultiDeviceBrowserProxyImpl.getInstance();
+    browserProxy.getPageContentData().then(
+        this.onMultiDevicePageContentDataChanged_.bind(this));
+  },
+
+  /**
+   * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
+   * ESimManagerListenerBehavior override
+   */
+  onProfileListChanged(euicc) {
+    this.fetchESimPendingProfileListForEuicc_(euicc);
+  },
+
+  /**
+   * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   * ESimManagerListenerBehavior override
+   */
+  onProfileChanged(profile) {
+    profile.getProperties().then(response => {
+      const eSimPendingProfileItem =
+          this.eSimPendingProfileItems_.find(item => {
+            return item.customData.iccid === response.properties.iccid;
+          });
+      if (!eSimPendingProfileItem) {
+        return;
+      }
+      eSimPendingProfileItem.customItemType = response.properties.state ===
+              chromeos.cellularSetup.mojom.ProfileState.kInstalling ?
+          NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
+          NetworkList.CustomItemType.ESIM_PENDING_PROFILE;
+    });
+  },
+
   /** @private */
   fetchESimPendingProfileList_() {
-    cellular_setup.getESimManagerRemote()
-        .getAvailableEuiccs()
-        .then(response => {
-          if (response.euiccs.length > 0) {
-            return cellular_setup.getPendingESimProfiles(response.euiccs[0]);
-          }
-          throw new Error('No EUICCs available.');
-        })
-        .then(profiles => {
-          const pendingProfilePromises = profiles.map(profile => {
-            return profile.getProperties().then(response => {
-              return {
-                customItemType: NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
-                customItemName:
-                    String.fromCharCode(...response.properties.name.data),
-                customItemSubtitle: String.fromCharCode(
-                    ...response.properties.serviceProvider.data),
-                polymerIcon: 'network:cellular-0',
-                showBeforeNetworksList: false,
-                customData: {
-                  iccid: response.properties.iccid,
-                },
-              };
-            });
-          });
-          Promise.all(pendingProfilePromises).then(profiles => {
-            this.eSimPendingProfiles_ = profiles;
-          });
-        })
-        .catch(error => {
-          console.error(error);
-        });
+    cellular_setup.getEuicc().then(euicc => {
+      if (!euicc) {
+        return;
+      }
+      this.euicc_ = euicc;
+      this.fetchESimPendingProfileListForEuicc_(euicc);
+    });
+  },
+
+  /**
+   * @param {!chromeos.cellularSetup.mojom.EuiccRemote} euicc
+   * @private
+   */
+  fetchESimPendingProfileListForEuicc_(euicc) {
+    cellular_setup.getPendingESimProfiles(euicc).then(
+        this.processESimPendingProfiles_.bind(this));
+  },
+
+  /**
+   * @param {Array<!chromeos.cellularSetup.mojom.ESimProfileRemote>} profiles
+   * @private
+   */
+  processESimPendingProfiles_(profiles) {
+    this.profilesMap_ = new Map();
+    const eSimPendingProfilePromises =
+        profiles.map(this.createESimPendingProfilePromise_.bind(this));
+    Promise.all(eSimPendingProfilePromises).then(eSimPendingProfileItems => {
+      this.eSimPendingProfileItems_ = eSimPendingProfileItems;
+    });
+  },
+
+  /**
+   * @param {!chromeos.cellularSetup.mojom.ESimProfileRemote} profile
+   * @return {!Promise<NetworkList.CustomItemState>}
+   * @private
+   */
+  createESimPendingProfilePromise_(profile) {
+    return profile.getProperties().then(response => {
+      this.profilesMap_.set(response.properties.iccid, profile);
+      return this.createESimPendingProfileItem_(response.properties);
+    });
+  },
+
+  /**
+   * @param {!chromeos.cellularSetup.mojom.ESimProfileProperties} properties
+   * @return {NetworkList.CustomItemState}
+   */
+  createESimPendingProfileItem_(properties) {
+    return {
+      customItemType: properties.state ===
+              chromeos.cellularSetup.mojom.ProfileState.kInstalling ?
+          NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
+          NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
+      customItemName: String.fromCharCode(...properties.name.data),
+      customItemSubtitle:
+          String.fromCharCode(...properties.serviceProvider.data),
+      polymerIcon: 'network:cellular-0',
+      showBeforeNetworksList: false,
+      customData: {
+        iccid: properties.iccid,
+      },
+    };
   },
 
   /**
    * @private
    */
-  async onNetworksListChanged_() {
+  onNetworksListChanged_() {
     const mojom = chromeos.networkConfig.mojom;
 
     const pSimNetworks = [];
@@ -159,16 +302,7 @@ Polymer({
         continue;
       }
 
-      const managedPropertiesResponse =
-          await this.networkConfig_.getManagedProperties(network.guid);
-      if (!managedPropertiesResponse || !managedPropertiesResponse.result) {
-        console.error(
-            'Unable to get managed properties for network. guid=',
-            network.guid);
-        continue;
-      }
-
-      if (managedPropertiesResponse.result.typeProperties.cellular.eid) {
+      if (network.typeState.cellular && network.typeState.cellular.eid) {
         eSimNetworks.push(network);
       } else {
         pSimNetworks.push(network);
@@ -189,6 +323,27 @@ Polymer({
       return accumulator + currentList.length;
     }, 0);
     return totalListLength > 0;
+  },
+
+  /**
+   * @param {!settings.MultiDevicePageContentData} newData
+   * @private
+   */
+  onMultiDevicePageContentDataChanged_(newData) {
+    this.multiDevicePageContentData_ = newData;
+  },
+
+  /**
+   * @param {?settings.MultiDevicePageContentData} pageContentData
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowTetherSection_(pageContentData) {
+    if (!pageContentData) {
+      return false;
+    }
+    return pageContentData.instantTetheringState ===
+        settings.MultiDeviceFeatureState.ENABLED_BY_USER;
   },
 
   /**
@@ -227,5 +382,37 @@ Polymer({
         this.$$('.eid-popup').focus();
       });
     }
-  }
+  },
+
+  /**
+   * @param {Event} event
+   * @private
+   */
+  installProfile_(event) {
+    if (!this.isConnectedToNonCellularNetwork) {
+      this.fire('show-error-toast', this.i18n('eSimNoConnectionErrorToast'));
+      return;
+    }
+    this.installingESimProfile_ = this.profilesMap_.get(event.detail.iccid);
+    this.installingESimProfile_.installProfile('').then((response) => {
+      if (response.result ===
+          chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess) {
+        this.eSimProfileInstallError_ = null;
+        this.installingESimProfile_ = null;
+      } else {
+        this.eSimProfileInstallError_ = response.result;
+        this.showInstallErrorDialog_();
+      }
+    });
+  },
+
+  /** @private */
+  showInstallErrorDialog_() {
+    this.shouldShowInstallErrorDialog_ = true;
+  },
+
+  /** @private */
+  onCloseInstallErrorDialog_() {
+    this.shouldShowInstallErrorDialog_ = false;
+  },
 });

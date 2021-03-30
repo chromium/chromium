@@ -7,6 +7,11 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/tracing_buildflags.h"
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "base/trace_event/memory_pressure_level_proto.h"  // no-presubmit-check
+#endif
 
 namespace base {
 
@@ -89,9 +94,18 @@ MemoryPressureListener::~MemoryPressureListener() {
 }
 
 void MemoryPressureListener::Notify(MemoryPressureLevel memory_pressure_level) {
-  TRACE_EVENT2("base", "MemoryPressureListener::Notify",
-               "listener_creation_info", creation_location_.ToString(), "level",
-               memory_pressure_level);
+  TRACE_EVENT(
+      "base", "MemoryPressureListener::Notify",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(
+            trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
+        data->set_creation_location_iid(
+            base::trace_event::InternedSourceLocation::Get(
+                &ctx,
+                base::trace_event::TraceSourceLocation(creation_location_)));
+      });
   callback_.Run(memory_pressure_level);
 }
 
@@ -106,10 +120,15 @@ void MemoryPressureListener::SyncNotify(
 void MemoryPressureListener::NotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_NE(memory_pressure_level, MEMORY_PRESSURE_LEVEL_NONE);
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("memory-infra"),
-                       "MemoryPressureListener::NotifyMemoryPressure",
-                       TRACE_EVENT_SCOPE_THREAD, "level",
-                       memory_pressure_level);
+  TRACE_EVENT_INSTANT(
+      trace_event::MemoryDumpManager::kTraceCategory,
+      "MemoryPressureListener::NotifyMemoryPressure",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(
+            trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
+      });
   if (AreNotificationsSuppressed())
     return;
   DoNotifyMemoryPressure(memory_pressure_level);

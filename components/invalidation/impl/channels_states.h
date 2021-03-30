@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_CHANNELS_STATES_H_
 #define COMPONENTS_INVALIDATION_IMPL_CHANNELS_STATES_H_
 
-namespace syncer {
+namespace invalidation {
 
 enum class FcmChannelState {
   NOT_STARTED,
@@ -30,6 +30,6 @@ const char* FcmChannelStateToString(FcmChannelState state);
 
 const char* SubscriptionChannelStateToString(SubscriptionChannelState state);
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_CHANNELS_STATES_H_

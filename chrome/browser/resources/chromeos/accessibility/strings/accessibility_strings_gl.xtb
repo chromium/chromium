@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Elemento da lista</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Pasa dous dedos cara á dereita</translation>
-<translation id="1016393160682012902">Fai un xesto táctil ou ben preme unha tecla dunha liña de braille ou dun teclado qwerty para obter información sobre esta función. Preme Control+W ou Esc para saír.</translation>
 <translation id="1022586497894531524">Estás utilizando os comentarios de voz de ChromeVox por primeira vez? Este rápido titorial explica os conceptos básicos para empezar con ChromeVox.</translation>
 <translation id="1025074108959230262">Modo de teclas presas desactivado</translation>
 <translation id="1031961866430398710">e, a continuación,</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Non hai ningún control anterior</translation>
 <translation id="2045606329038304310">Control de campo de formulario</translation>
 <translation id="2063539687800151747">Epígrafe</translation>
+<translation id="2074531330963286860">Hai accións dispoñibles. Para velas, preme Buscar + Punto</translation>
 <translation id="2086961585857038472">Seguinte palabra</translation>
 <translation id="2087981446621639008">dtl lstdscr</translation>
 <translation id="2089387485033699258">gl</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Inicia ou finaliza a selección</translation>
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8276439074553447000">Salta ao elemento enfocable anterior</translation>
+<translation id="8279039817939141096">Fai un xesto táctil ou ben preme unha tecla dunha liña de braille ou dun teclado QWERTY se queres descubrir para que serve. Para saír, preme Escape, Control+W ou Espazo+Z, ou ben pasa dous dedos cara á esquerda.</translation>
 <translation id="8283603667300770666">Seguinte campo do formulario</translation>
 <translation id="8310185481635255431">Non hai ningunha ligazón posterior</translation>
 <translation id="831207808878314375">Definición</translation>

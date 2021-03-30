@@ -1,39 +1,25 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <script src="../../resources/js-test.js"></script>
-</head>
-<body>
-    <script>
-        if (window.testRunner) {
-            testRunner.dumpAsText();
-            testRunner.waitUntilDone();
-        }
+<title>':visited' never applies for a link in an SVG image</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  async_test(t => {
+    let image = new Image();
+    image.src = "resources/link.svg";
+    image.onload = t.step_func_done(() => {
+      let ctx = document.createElement("canvas").getContext("2d");
 
-        var svg = new Image();
-        svg.src = "resources/link.svg";
+      let colorChannels = ctx.getImageData(0, 0, 1, 1).data;
+      assert_equals(colorChannels[0], 0, 'r before');
+      assert_equals(colorChannels[1], 0, 'g before');
+      assert_equals(colorChannels[2], 0, 'b before');
 
-        svg.onload = function() {
-            var canvas = document.createElement("canvas");
-            var ctx = canvas.getContext("2d");
+      ctx.drawImage(image, 0, 0);
 
-            window.colorChannels = ctx.getImageData(0, 0, 1, 1).data;
-
-            shouldBe("window.colorChannels[0]", "0");
-            shouldBe("window.colorChannels[1]", "0");
-            shouldBe("window.colorChannels[2]", "0");
-
-            ctx.drawImage(svg, 0, 0);
-
-            window.colorChannels = ctx.getImageData(0, 0, 1, 1).data;
-
-            shouldBe("window.colorChannels[0]", "0");
-            shouldBe("window.colorChannels[1]", "128");
-            shouldBe("window.colorChannels[2]", "0");
-
-            if (window.testRunner)
-                testRunner.notifyDone();
-        };
-    </script>
-</body>
-</html>
+      colorChannels = ctx.getImageData(0, 0, 1, 1).data;
+      assert_equals(colorChannels[0], 0, 'r after');
+      assert_equals(colorChannels[1], 128, 'g after');
+      assert_equals(colorChannels[2], 0, 'b after');
+    });
+  });
+</script>

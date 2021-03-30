@@ -20,6 +20,8 @@
 #include "chromeos/network/certificate_helper.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
+#include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/cert_database.h"
@@ -30,6 +32,9 @@
 namespace chromeos {
 
 namespace {
+
+bool g_force_available_for_network_auth_for_test = false;
+NetworkCertLoader* g_cert_loader = nullptr;
 
 enum class NetworkCertType {
   kAuthorityCertificate,
@@ -45,6 +50,12 @@ NetworkCertType GetNetworkCertType(CERTCertificate* cert) {
     return NetworkCertType::kAuthorityCertificate;
   VLOG(2) << "Ignoring cert type: " << type;
   return NetworkCertType::kOther;
+}
+
+bool IsAvailableForNetworkAuth(CERTCertificate* cert) {
+  if (g_force_available_for_network_auth_for_test)
+    return true;
+  return crypto::IsSlotProvidedByChaps(cert->slot);
 }
 
 // Returns all authority certificates with default (not restricted) scope
@@ -65,8 +76,9 @@ NetworkCertLoader::NetworkCertList GetPolicyProvidedAuthorities(
       LOG(ERROR) << "Unable to create CERTCertificate";
       continue;
     }
-    result.push_back(
-        NetworkCertLoader::NetworkCert(std::move(x509_cert), device_wide));
+    result.push_back(NetworkCertLoader::NetworkCert(
+        std::move(x509_cert), /*available_for_network_auth=*/false,
+        device_wide));
   }
   return result;
 }
@@ -110,11 +122,32 @@ NetworkCertLoader::NetworkCertList CombineNetworkCertLists(
 // certificates from multiple sources.
 class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
  public:
+  enum class State {
+    // The CertCache is not initialized and not expected to be initialized soon.
+    kNotInitialized,
+    // The CertCache is expected to be initialized soon.
+    kMarkedWillBeInitialized,
+    // The CertCache initialization has started, the initial load of
+    // certificates is in progress.
+    kInitialLoadInProgress,
+    // The CertCache is initialized and currently not re-loading certificates.
+    kInitializedAndIdle,
+    // The CertCache is initialized and currently re-loading certificates.
+    kInitializedAndReloading
+  };
+
   explicit CertCache(base::RepeatingClosure certificates_updated_callback)
       : certificates_updated_callback_(certificates_updated_callback) {}
 
   ~CertCache() override {
     net::CertDatabase::GetInstance()->RemoveObserver(this);
+  }
+
+  void MarkWillBeInitialized(bool will_be_initialized) {
+    DCHECK(state_ == State::kNotInitialized ||
+           state_ == State::kMarkedWillBeInitialized);
+    state_ = will_be_initialized ? State::kMarkedWillBeInitialized
+                                 : State::kNotInitialized;
   }
 
   void SetNSSDBAndSlot(net::NSSCertDatabase* nss_database,
@@ -135,7 +168,7 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
     // NSSCertDatabase to send notification on all relevant changes.
     net::CertDatabase::GetInstance()->AddObserver(this);
 
-    LoadCertificates();
+    LoadCertificates(/*initial_load=*/true);
   }
 
   net::NSSCertDatabase* nss_database() { return nss_database_; }
@@ -143,41 +176,50 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   // net::CertDatabase::Observer
   void OnCertDBChanged() override {
     VLOG(1) << "OnCertDBChanged";
-    LoadCertificates();
+    LoadCertificates(/*initial_load=*/false);
   }
 
   const NetworkCertList& authority_certs() const { return authority_certs_; }
 
   const NetworkCertList& client_certs() const { return client_certs_; }
 
+  bool is_or_will_be_initialized() const {
+    return state_ != State::kNotInitialized;
+  }
+
   bool is_initialized() const { return nss_database_; }
 
   bool initial_load_running() const {
-    return nss_database_ && !initial_load_finished_;
+    return state_ == State::kInitialLoadInProgress;
   }
 
   bool certificates_update_running() const {
-    return certificates_update_running_;
+    return state_ == State::kInitialLoadInProgress ||
+           state_ == State::kInitializedAndReloading;
   }
 
-  bool initial_load_finished() const { return initial_load_finished_; }
+  bool initial_load_finished() const {
+    return state_ == State::kInitializedAndIdle ||
+           state_ == State::kInitializedAndReloading;
+  }
 
  private:
   // Trigger a certificate load. If a certificate loading task is already in
   // progress, will start a reload once the current task is finished.
-  void LoadCertificates() {
+  void LoadCertificates(bool initial_load) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    VLOG(1) << "LoadCertificates: " << certificates_update_running_;
+    VLOG(1) << "LoadCertificates: " << certificates_update_running();
 
     if (!nss_database_)
       return;
 
-    if (certificates_update_running_) {
+    if (certificates_update_running()) {
       certificates_update_required_ = true;
       return;
     }
 
-    certificates_update_running_ = true;
+    state_ = initial_load ? State::kInitialLoadInProgress
+                          : State::kInitializedAndReloading;
     certificates_update_required_ = false;
 
     nss_database_->ListCertsInSlot(
@@ -189,7 +231,7 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   // Called if a certificate load task is finished.
   void UpdateCertificates(net::ScopedCERTCertificateList cert_list) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    DCHECK(certificates_update_running_);
+    DCHECK(certificates_update_running());
     VLOG(1) << "UpdateCertificates: " << cert_list.size();
 
     authority_certs_.clear();
@@ -198,32 +240,32 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
       NetworkCertType type = GetNetworkCertType(cert.get());
       if (type == NetworkCertType::kAuthorityCertificate) {
         authority_certs_.push_back(
-            NetworkCert(std::move(cert), is_slot_device_wide_));
+            NetworkCert(std::move(cert), /*available_for_network_auth=*/false,
+                        is_slot_device_wide_));
       } else if (type == NetworkCertType::kClientCertificate) {
-        client_certs_.push_back(
-            NetworkCert(std::move(cert), is_slot_device_wide_));
+        bool available_for_network_auth = IsAvailableForNetworkAuth(cert.get());
+        client_certs_.push_back(NetworkCert(
+            std::move(cert), available_for_network_auth, is_slot_device_wide_));
       }
     }
 
-    initial_load_finished_ = true;
-    certificates_update_running_ = false;
+    state_ = State::kInitializedAndIdle;
     certificates_updated_callback_.Run();
 
     if (certificates_update_required_)
-      LoadCertificates();
+      LoadCertificates(/*initial_load=*/false);
   }
 
   // To be called when certificates have been updated.
   base::RepeatingClosure certificates_updated_callback_;
 
-  // This is true after certificates have been loaded initially.
-  bool initial_load_finished_ = false;
+  // The state of this CertCache.
+  State state_ = State::kNotInitialized;
+
   // This is true if a notification about certificate DB changes arrived while
   // loading certificates and means that we will have to trigger another
   // certificates load after that.
   bool certificates_update_required_ = false;
-  // This is true while certificates are being loaded.
-  bool certificates_update_running_ = false;
 
   // The NSS certificate database from which the certificates should be loaded.
   net::NSSCertDatabase* nss_database_ = nullptr;
@@ -249,23 +291,27 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
 };
 
 NetworkCertLoader::NetworkCert::NetworkCert(net::ScopedCERTCertificate cert,
+                                            bool available_for_network_auth,
                                             bool device_wide)
-    : cert_(std::move(cert)), device_wide_(device_wide) {}
-
-NetworkCertLoader::NetworkCert::NetworkCert(NetworkCert&& other) = default;
+    : cert_(std::move(cert)),
+      available_for_network_auth_(available_for_network_auth),
+      device_wide_(device_wide) {}
 
 NetworkCertLoader::NetworkCert::~NetworkCert() = default;
+
+NetworkCertLoader::NetworkCert::NetworkCert(NetworkCert&& other) = default;
 
 NetworkCertLoader::NetworkCert& NetworkCertLoader::NetworkCert::operator=(
     NetworkCert&& other) = default;
 
-NetworkCertLoader::NetworkCert NetworkCertLoader::NetworkCert::Clone() const {
-  return NetworkCert(net::x509_util::DupCERTCertificate(cert_.get()),
-                     device_wide_);
+bool NetworkCertLoader::NetworkCert::IsHardwareBacked() const {
+  return net::NSSCertDatabase::IsHardwareBacked(cert_.get());
 }
 
-static NetworkCertLoader* g_cert_loader = nullptr;
-static bool g_force_hardware_backed_for_test = false;
+NetworkCertLoader::NetworkCert NetworkCertLoader::NetworkCert::Clone() const {
+  return NetworkCert(net::x509_util::DupCERTCertificate(cert_.get()),
+                     available_for_network_auth_, device_wide_);
+}
 
 // static
 void NetworkCertLoader::Initialize() {
@@ -300,6 +346,12 @@ NetworkCertLoader::NetworkCertLoader() {
   user_public_slot_cert_cache_ =
       std::make_unique<CertCache>(base::BindRepeating(
           &NetworkCertLoader::OnCertCacheUpdated, base::Unretained(this)));
+
+  auto* system_token_cert_db_storage = SystemTokenCertDbStorage::Get();
+  DCHECK(system_token_cert_db_storage);
+
+  system_token_cert_db_storage->GetDatabase(base::BindOnce(
+      &NetworkCertLoader::OnSystemNssDbReady, weak_factory_.GetWeakPtr()));
 }
 
 NetworkCertLoader::~NetworkCertLoader() {
@@ -307,11 +359,20 @@ NetworkCertLoader::~NetworkCertLoader() {
   DCHECK(!user_policy_certificate_provider_);
 }
 
-void NetworkCertLoader::SetSystemNSSDB(
+void NetworkCertLoader::MarkSystemNSSDBWillBeInitialized() {
+  system_slot_cert_cache_->MarkWillBeInitialized(true);
+}
+
+void NetworkCertLoader::SetSystemNssDbForTesting(
     net::NSSCertDatabase* system_slot_database) {
   system_slot_cert_cache_->SetNSSDBAndSlot(
       system_slot_database, system_slot_database->GetSystemSlot(),
       true /* is_slot_device_wide */);
+}
+
+void NetworkCertLoader::MarkUserNSSDBWillBeInitialized() {
+  user_private_slot_cert_cache_->MarkWillBeInitialized(true);
+  user_public_slot_cert_cache_->MarkWillBeInitialized(true);
 }
 
 void NetworkCertLoader::SetUserNSSDB(net::NSSCertDatabase* user_database) {
@@ -321,6 +382,8 @@ void NetworkCertLoader::SetUserNSSDB(net::NSSCertDatabase* user_database) {
     user_private_slot_cert_cache_->SetNSSDBAndSlot(
         user_database, std::move(private_slot),
         false /* is_slot_device_wide */);
+  } else {
+    user_private_slot_cert_cache_->MarkWillBeInitialized(false);
   }
   user_public_slot_cert_cache_->SetNSSDBAndSlot(
       user_database, user_database->GetPublicSlot(),
@@ -357,14 +420,6 @@ void NetworkCertLoader::RemoveObserver(NetworkCertLoader::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-// static
-bool NetworkCertLoader::IsCertificateHardwareBacked(CERTCertificate* cert) {
-  if (g_force_hardware_backed_for_test)
-    return true;
-  PK11SlotInfo* slot = cert->slot;
-  return slot && PK11_IsHW(slot);
-}
-
 bool NetworkCertLoader::initial_load_of_any_database_running() const {
   return system_slot_cert_cache_->initial_load_running() ||
          user_private_slot_cert_cache_->initial_load_running() ||
@@ -388,6 +443,11 @@ bool NetworkCertLoader::user_cert_database_load_finished() const {
 
   return user_private_slot_cert_cache_->initial_load_finished() &&
          user_public_slot_cert_cache_->initial_load_finished();
+}
+
+bool NetworkCertLoader::can_have_client_certificates() const {
+  return system_slot_cert_cache_->is_or_will_be_initialized() ||
+         user_private_slot_cert_cache_->is_or_will_be_initialized();
 }
 
 // static
@@ -414,8 +474,8 @@ NetworkCertLoader::NetworkCertList NetworkCertLoader::CloneNetworkCertList(
 }
 
 // static
-void NetworkCertLoader::ForceHardwareBackedForTesting() {
-  g_force_hardware_backed_for_test = true;
+void NetworkCertLoader::ForceAvailableForNetworkAuthForTesting() {
+  g_force_available_for_network_auth_for_test = true;
 }
 
 // static
@@ -447,6 +507,20 @@ std::string NetworkCertLoader::GetPkcs11IdAndSlotForCert(CERTCertificate* cert,
   SECKEY_DestroyPrivateKey(priv_key);
 
   return pkcs11_id;
+}
+
+void NetworkCertLoader::OnSystemNssDbReady(
+    net::NSSCertDatabase* system_slot_database) {
+  // SystemTokenCertDbStorage informs callers that the system token certificate
+  // database initialization failed by returning nullptr.
+  if (!system_slot_database) {
+    LOG(ERROR) << "Failed to retrieve system token certificate database";
+    return;
+  }
+
+  system_slot_cert_cache_->SetNSSDBAndSlot(
+      system_slot_database, system_slot_database->GetSystemSlot(),
+      true /* is_slot_device_wide */);
 }
 
 void NetworkCertLoader::OnCertCacheUpdated() {

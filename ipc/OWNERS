@@ -1,3 +1,4 @@
+set noparent
 jam@chromium.org
 rockot@google.com
 tsepez@chromium.org
@@ -21,4 +22,5 @@ per-file *.typemap=file://ipc/SECURITY_OWNERS
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
 
+per-file SECURITY_OWNERS=set noparent
 per-file SECURITY_OWNERS=file://ipc/SECURITY_OWNERS

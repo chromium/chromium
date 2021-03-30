@@ -32,8 +32,11 @@ class WebMessageReplyProxyImpl : public WebMessageHost {
   void PostMessage(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& message_contents);
+  bool IsActive(JNIEnv* env);
+
   // WebMessageHost:
   void OnPostMessage(std::unique_ptr<WebMessage> message) override;
+  void OnBackForwardCacheStateChanged() override;
 
  private:
   WebMessageReplyProxy* reply_proxy_;

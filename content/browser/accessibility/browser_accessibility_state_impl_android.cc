@@ -15,18 +15,29 @@ using base::android::AttachCurrentThread;
 
 namespace content {
 
-void BrowserAccessibilityStateImpl::PlatformInitialize() {
+class BrowserAccessibilityStateImplAndroid
+    : public BrowserAccessibilityStateImpl {
+ public:
+  BrowserAccessibilityStateImplAndroid();
+  ~BrowserAccessibilityStateImplAndroid() override {}
+
+ protected:
+  void UpdateHistogramsOnOtherThread() override;
+  void UpdateUniqueUserHistograms() override;
+  void SetImageLabelsModeForProfile(bool enabled,
+                                    BrowserContext* profile) override;
+};
+
+BrowserAccessibilityStateImplAndroid::BrowserAccessibilityStateImplAndroid() {
   // Setup the listener for the prefers reduced motion setting changing, so we
   // can inform the renderer about changes.
   JNIEnv* env = AttachCurrentThread();
   Java_BrowserAccessibilityState_registerAnimatorDurationScaleObserver(env);
 }
 
-void BrowserAccessibilityStateImpl::
-    UpdatePlatformSpecificHistogramsOnUIThread() {}
+void BrowserAccessibilityStateImplAndroid::UpdateHistogramsOnOtherThread() {
+  BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
 
-void BrowserAccessibilityStateImpl::
-    UpdatePlatformSpecificHistogramsOnOtherThread() {
   // NOTE: this method is run from another thread to reduce jank, since
   // there's no guarantee these system calls will return quickly. Be careful
   // not to add any code that isn't safe to run from a non-main thread!
@@ -39,13 +50,15 @@ void BrowserAccessibilityStateImpl::
                         mode.has_mode(ui::AXMode::kScreenReader));
 }
 
-void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {
+void BrowserAccessibilityStateImplAndroid::UpdateUniqueUserHistograms() {
+  BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
+
   ui::AXMode mode = GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.ScreenReader.EveryReport",
                         mode.has_mode(ui::AXMode::kScreenReader));
 }
 
-void BrowserAccessibilityStateImpl::SetImageLabelsModeForProfile(
+void BrowserAccessibilityStateImplAndroid::SetImageLabelsModeForProfile(
     bool enabled,
     BrowserContext* profile) {
   std::vector<WebContentsImpl*> web_contents_vector =
@@ -70,6 +83,17 @@ void JNI_BrowserAccessibilityState_OnAnimatorDurationScaleChanged(JNIEnv* env) {
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
     wc->OnWebPreferencesChanged();
   }
+}
+
+//
+// BrowserAccessibilityStateImpl::GetInstance implementation that constructs
+// this class instead of the base class.
+//
+
+// static
+BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
+  static base::NoDestructor<BrowserAccessibilityStateImplAndroid> instance;
+  return &*instance;
 }
 
 }  // namespace content

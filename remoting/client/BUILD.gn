@@ -31,8 +31,6 @@ static_library("client") {
     "host_experiment_sender.h",
     "in_memory_log_handler.cc",
     "in_memory_log_handler.h",
-    "queued_task_poster.cc",
-    "queued_task_poster.h",
     "software_video_renderer.cc",
     "software_video_renderer.h",
   ]
@@ -68,7 +66,7 @@ static_library("client") {
 
   libs = []
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos_ash && !is_chromeos_lacros) {
     # GestureInterpreter depends on //remoting/client/display, which currently
     # doesn't build on CrOS. crbug.com/869578
     sources += [
@@ -92,7 +90,6 @@ source_set("unit_tests") {
     "client_telemetry_logger_unittest.cc",
     "dual_buffer_frame_consumer_unittest.cc",
     "empty_cursor_filter_unittest.cc",
-    "queued_task_poster_unittest.cc",
     "software_video_renderer_unittest.cc",
   ]
 

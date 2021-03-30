@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
 import "url/mojom/url.mojom";
 
 // Interface for getting the cause of page loads to blink. This service lives
@@ -17,5 +17,5 @@ import "url/mojom/url.mojom";
 interface WebLaunchService {
   // Used to notify a frame that it was opened with |files|. This
   // method is fire-and-forget.
-  SetLaunchFiles(array<NativeFileSystemEntry> files);
+  SetLaunchFiles(array<FileSystemAccessEntry> files);
 };

@@ -17,7 +17,10 @@ generate_jni("jni_headers") {
 }
 
 source_set("native") {
-  deps = [ ":jni_headers" ]
+  deps = [
+    ":jni_headers",
+    "//base",
+  ]
   sources = [
     "module_provider.cc",
     "module_provider.h",

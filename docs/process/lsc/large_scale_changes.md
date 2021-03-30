@@ -1,11 +1,5 @@
 # Chrome Large Scale Changes
 
-*** note
-Status: _**DRAFT**_
-
-Editors: [jclinton@google.com](mailto:jclinton@google.com)
-***
-
 [TOC]
 
 *** promo

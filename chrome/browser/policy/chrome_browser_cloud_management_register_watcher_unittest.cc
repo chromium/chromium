@@ -4,11 +4,11 @@
 
 #include "chrome/browser/policy/chrome_browser_cloud_management_register_watcher.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
@@ -64,10 +64,10 @@ class MockEnterpriseStartupDialog : public EnterpriseStartupDialog {
   }
 
   MOCK_METHOD1(DisplayLaunchingInformationWithThrobber,
-               void(const base::string16&));
+               void(const std::u16string&));
   MOCK_METHOD2(DisplayErrorMessage,
-               void(const base::string16&,
-                    const base::Optional<base::string16>&));
+               void(const std::u16string&,
+                    const base::Optional<std::u16string>&));
   MOCK_METHOD0(IsShowing, bool());
 
   void SetCallback(EnterpriseStartupDialog::DialogResultCallback callback) {

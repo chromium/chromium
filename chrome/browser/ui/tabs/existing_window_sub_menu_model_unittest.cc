@@ -23,7 +23,7 @@ class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
   std::unique_ptr<Browser> CreateTestBrowser(bool incognito, bool popup);
   void AddTabWithTitle(Browser* browser, std::string title);
 
-  static void CheckBrowserTitle(const base::string16& title,
+  static void CheckBrowserTitle(const std::u16string& title,
                                 const std::string& expected_title,
                                 const int expected_num_tabs);
 };
@@ -52,17 +52,17 @@ void ExistingWindowSubMenuModelTest::AddTabWithTitle(Browser* browser,
 
 // static
 void ExistingWindowSubMenuModelTest::CheckBrowserTitle(
-    const base::string16& title,
+    const std::u16string& title,
     const std::string& expected_title,
     const int expected_num_tabs) {
-  const base::string16 expected_title16 = base::ASCIIToUTF16(expected_title);
+  const std::u16string expected_title16 = base::ASCIIToUTF16(expected_title);
 
   // Check the suffix, which should always show if there are multiple tabs.
   if (expected_num_tabs > 1) {
     std::ostringstream oss;
     oss << " and " << expected_num_tabs - 1;
     oss << ((expected_num_tabs == 2) ? " other tab" : " other tabs");
-    const base::string16 expected_suffix16 = base::ASCIIToUTF16(oss.str());
+    const std::u16string expected_suffix16 = base::ASCIIToUTF16(oss.str());
 
     // Not case sensitive, since MacOS uses title case.
     EXPECT_TRUE(base::EndsWith(title, expected_suffix16,
@@ -73,7 +73,7 @@ void ExistingWindowSubMenuModelTest::CheckBrowserTitle(
   if (!base::StartsWith(title, expected_title16,
                         base::CompareCase::SENSITIVE)) {
     // Check that the title before being elided matches the tab title.
-    std::vector<base::string16> tokens =
+    std::vector<std::u16string> tokens =
         SplitString(title, gfx::kEllipsisUTF16, base::KEEP_WHITESPACE,
                     base::SPLIT_WANT_NONEMPTY);
     EXPECT_TRUE(base::StartsWith(expected_title16, tokens[0],
@@ -202,10 +202,9 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
   AddTabWithTitle(incognito_browser_1.get(), "Incognito Browser 1");
   AddTabWithTitle(incognito_browser_2.get(), "Incognito Browser 2");
 
-  const base::string16 kBrowser2ExpectedTitle = base::WideToUTF16(L"Browser 2");
-  const base::string16 kBrowser3ExpectedTitle = base::WideToUTF16(L"Browser 3");
-  const base::string16 kIncognitoBrowser2ExpectedTitle =
-      base::WideToUTF16(L"Incognito Browser 2");
+  const std::u16string kBrowser2ExpectedTitle = u"Browser 2";
+  const std::u16string kBrowser3ExpectedTitle = u"Browser 3";
+  const std::u16string kIncognitoBrowser2ExpectedTitle = u"Incognito Browser 2";
 
   // Test that a non-incognito browser only shows non-incognito windows.
   ExistingWindowSubMenuModel menu(nullptr, browser()->tab_strip_model(), 0);
@@ -239,8 +238,8 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   AddTabWithTitle(browser_2.get(), "Browser 2");
   AddTabWithTitle(browser_3.get(), "Browser 3");
 
-  const base::string16 kBrowser2ExpectedTitle = base::WideToUTF16(L"Browser 2");
-  const base::string16 kBrowser3ExpectedTitle = base::WideToUTF16(L"Browser 3");
+  const std::u16string kBrowser2ExpectedTitle = u"Browser 2";
+  const std::u16string kBrowser3ExpectedTitle = u"Browser 3";
 
   // Test that popups do not show.
   ExistingWindowSubMenuModel menu(nullptr, browser()->tab_strip_model(), 0);

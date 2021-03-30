@@ -1,8 +1,12 @@
 include_rules = [
+  "+components/signin/public/identity_manager/account_info.h",
   "+components/sync/base",
-  "+components/sync/engine_impl",
-  "+components/sync/model",
-  "+components/sync/nigori",
   "+components/sync/protocol",
   "+components/sync/test",
+  "+components/sync/js",
+  "+net/base/net_errors.h",
+  "+net/http/http_status_code.h",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/protobuf",
 ]

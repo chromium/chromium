@@ -82,16 +82,16 @@ void SearchResultBaseView::OnResultDestroying() {
   SetResult(nullptr);
 }
 
-base::string16 SearchResultBaseView::ComputeAccessibleName() const {
+std::u16string SearchResultBaseView::ComputeAccessibleName() const {
   if (!result())
-    return base::string16();
+    return std::u16string();
 
   if (!result()->accessible_name().empty())
     return result()->accessible_name();
 
-  base::string16 accessible_name = result()->title();
+  std::u16string accessible_name = result()->title();
   if (!result()->title().empty() && !result()->details().empty())
-    accessible_name += base::ASCIIToUTF16(", ");
+    accessible_name += u", ";
   accessible_name += result()->details();
 
   return accessible_name;

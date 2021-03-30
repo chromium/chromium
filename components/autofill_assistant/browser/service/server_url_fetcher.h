@@ -18,12 +18,15 @@ class ServerUrlFetcher {
   // if applicable, the one provided via command-line argument.
   static GURL GetDefaultServerUrl();
 
+  // Returns whether this instance points to the prod endpoint or not.
+  virtual bool IsProdEndpoint() const;
+
   // Returns the endpoint to send the SupportsScript RPC to.
-  virtual GURL GetSupportsScriptEndpoint();
+  virtual GURL GetSupportsScriptEndpoint() const;
   // Returns the endpoint to send the GetNextActions RPC to.
-  virtual GURL GetNextActionsEndpoint();
+  virtual GURL GetNextActionsEndpoint() const;
   // Returns the endpoint to send the GetTriggerScripts RPC to.
-  virtual GURL GetTriggerScriptsEndpoint();
+  virtual GURL GetTriggerScriptsEndpoint() const;
 
  private:
   GURL server_url_;

@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,7 +20,10 @@
 #include "url/origin.h"
 
 SavePasswordMessageDelegate::SavePasswordMessageDelegate() = default;
-SavePasswordMessageDelegate::~SavePasswordMessageDelegate() = default;
+
+SavePasswordMessageDelegate::~SavePasswordMessageDelegate() {
+  DismissSavePasswordPrompt();
+}
 
 void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
     content::WebContents* web_contents,
@@ -27,39 +31,41 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
   DCHECK_NE(nullptr, web_contents);
   DCHECK(form_to_save);
 
-  // Dismiss previous message if it is displayed.
-  DismissSavePasswordPrompt();
-  DCHECK(message_ == nullptr);
-
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // is_saving_google_account indicates whether the user is syncing
   // passwords to their Google Account.
   const bool is_saving_google_account =
       password_bubble_experiment::IsSmartLockUser(
-          ProfileSyncServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext())));
+          ProfileSyncServiceFactory::GetForProfile(profile));
 
-  // All the DisplaySavePasswordPrompt parameters are passed to CreateMessage to
-  // avoid a call to MessageDispatcherBridge::EnqueueMessage from test while
-  // still providing decent test coverage.
-  CreateMessage(web_contents, std::move(form_to_save),
-                is_saving_google_account);
-
-  messages::MessageDispatcherBridge::EnqueueMessage(message_.get(),
-                                                    web_contents_);
+  base::Optional<AccountInfo> account_info =
+      password_manager::GetAccountInfoForPasswordMessages(
+          profile, is_saving_google_account);
+  DisplaySavePasswordPromptInternal(web_contents, std::move(form_to_save),
+                                    account_info);
 }
 
 void SavePasswordMessageDelegate::DismissSavePasswordPrompt() {
+  DismissSavePasswordPromptInternal(messages::DismissReason::UNKNOWN);
+}
+
+void SavePasswordMessageDelegate::DismissSavePasswordPromptInternal(
+    messages::DismissReason dismiss_reason) {
   if (message_ != nullptr) {
-    messages::MessageDispatcherBridge::DismissMessage(message_.get(),
-                                                      web_contents_);
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), web_contents_, dismiss_reason);
   }
 }
 
-void SavePasswordMessageDelegate::CreateMessage(
+void SavePasswordMessageDelegate::DisplaySavePasswordPromptInternal(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-    bool is_saving_google_account) {
-  ui_dismissal_reason_ = password_manager::metrics_util::NO_DIRECT_INTERACTION;
+    base::Optional<AccountInfo> account_info) {
+  // Dismiss previous message if it is displayed.
+  DismissSavePasswordPrompt();
+  DCHECK(message_ == nullptr);
+
   web_contents_ = web_contents;
   form_to_save_ = std::move(form_to_save);
 
@@ -75,20 +81,26 @@ void SavePasswordMessageDelegate::CreateMessage(
   const password_manager::PasswordForm& pending_credentials =
       form_to_save_->GetPendingCredentials();
 
-  int title_message_id = 0;
-  if (!pending_credentials.federation_origin.opaque()) {
-    title_message_id = is_saving_google_account ? IDS_SAVE_ACCOUNT_TO_GOOGLE
-                                                : IDS_SAVE_ACCOUNT;
-  } else {
-    title_message_id = is_saving_google_account ? IDS_SAVE_PASSWORD_TO_GOOGLE
-                                                : IDS_SAVE_PASSWORD;
-  }
+  int title_message_id = pending_credentials.federation_origin.opaque()
+                             ? IDS_SAVE_PASSWORD
+                             : IDS_SAVE_ACCOUNT;
 
   message_->SetTitle(l10n_util::GetStringUTF16(title_message_id));
 
-  base::string16 description = pending_credentials.username_value;
-  description.append(base::ASCIIToUTF16(" "))
-      .append(pending_credentials.password_value.size(), L'•');
+  const std::u16string masked_password =
+      std::u16string(pending_credentials.password_value.size(), L'•');
+  std::u16string description;
+  if (account_info.has_value()) {
+    description = l10n_util::GetStringFUTF16(
+        IDS_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT,
+        pending_credentials.username_value, masked_password,
+        base::UTF8ToUTF16(account_info.value().email));
+  } else {
+    description.append(pending_credentials.username_value)
+        .append(u" ")
+        .append(masked_password);
+  }
+
   message_->SetDescription(description);
 
   message_->SetPrimaryButtonText(
@@ -103,31 +115,30 @@ void SavePasswordMessageDelegate::CreateMessage(
   message_->SetSecondaryActionCallback(base::BindOnce(
       &SavePasswordMessageDelegate::HandleNeverClick, base::Unretained(this)));
 
-  // Recording metrics is not a part of message creation. It is included here to
-  // ensure metrics recording test coverage.
   RecordMessageShownMetrics();
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION);
 }
 
 void SavePasswordMessageDelegate::HandleSaveClick() {
   form_to_save_->Save();
-  ui_dismissal_reason_ = password_manager::metrics_util::CLICKED_ACCEPT;
 }
 
 void SavePasswordMessageDelegate::HandleNeverClick() {
   form_to_save_->Blocklist();
-  ui_dismissal_reason_ = password_manager::metrics_util::CLICKED_NEVER;
-  DismissSavePasswordPrompt();
+  DismissSavePasswordPromptInternal(messages::DismissReason::SECONDARY_ACTION);
 }
 
-void SavePasswordMessageDelegate::HandleDismissCallback() {
+void SavePasswordMessageDelegate::HandleDismissCallback(
+    messages::DismissReason dismiss_reason) {
   // The message is dismissed. Record metrics and cleanup state.
-  RecordDismissalReasonMetrics();
+  RecordDismissalReasonMetrics(
+      MessageDismissReasonToPasswordManagerUIDismissalReason(dismiss_reason));
   message_.reset();
   form_to_save_.reset();
-  // Following fields are also set in CreateMessage(). Resetting them here to
-  // keep the state clean when no message is enqueued.
+  // web_contents_ is set in DisplaySavePasswordPromptInternal(). Resetting it
+  // here to keep the state clean when no message is enqueued.
   web_contents_ = nullptr;
-  ui_dismissal_reason_ = password_manager::metrics_util::NO_DIRECT_INTERACTION;
 }
 
 void SavePasswordMessageDelegate::RecordMessageShownMetrics() {
@@ -138,14 +149,38 @@ void SavePasswordMessageDelegate::RecordMessageShownMetrics() {
   }
 }
 
-void SavePasswordMessageDelegate::RecordDismissalReasonMetrics() {
+void SavePasswordMessageDelegate::RecordDismissalReasonMetrics(
+    password_manager::metrics_util::UIDismissalReason ui_dismissal_reason) {
   password_manager::metrics_util::LogSaveUIDismissalReason(
-      ui_dismissal_reason_, /*user_state=*/base::nullopt);
+      ui_dismissal_reason, /*user_state=*/base::nullopt);
   if (form_to_save_->WasUnblocklisted()) {
     password_manager::metrics_util::LogSaveUIDismissalReasonAfterUnblocklisting(
-        ui_dismissal_reason_);
+        ui_dismissal_reason);
   }
   if (auto* recorder = form_to_save_->GetMetricsRecorder()) {
-    recorder->RecordUIDismissalReason(ui_dismissal_reason_);
+    recorder->RecordUIDismissalReason(ui_dismissal_reason);
   }
+}
+
+// static
+password_manager::metrics_util::UIDismissalReason SavePasswordMessageDelegate::
+    MessageDismissReasonToPasswordManagerUIDismissalReason(
+        messages::DismissReason dismiss_reason) {
+  password_manager::metrics_util::UIDismissalReason ui_dismissal_reason;
+  switch (dismiss_reason) {
+    case messages::DismissReason::PRIMARY_ACTION:
+      ui_dismissal_reason = password_manager::metrics_util::CLICKED_ACCEPT;
+      break;
+    case messages::DismissReason::SECONDARY_ACTION:
+      ui_dismissal_reason = password_manager::metrics_util::CLICKED_NEVER;
+      break;
+    case messages::DismissReason::GESTURE:
+      ui_dismissal_reason = password_manager::metrics_util::CLICKED_CANCEL;
+      break;
+    default:
+      ui_dismissal_reason =
+          password_manager::metrics_util::NO_DIRECT_INTERACTION;
+      break;
+  }
+  return ui_dismissal_reason;
 }

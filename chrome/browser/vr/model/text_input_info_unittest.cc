@@ -31,13 +31,13 @@ class TextInputInfoTest : public testing::Test {
 
 TEST(TextInputInfo, Clamping) {
   // Out of bounds indices.
-  auto info = TextInputInfo(base::UTF8ToUTF16("hi"), 4, 4, 4, 4);
-  auto info_expected = TextInputInfo(base::UTF8ToUTF16("hi"), 2, 2, -1, -1);
+  auto info = TextInputInfo(u"hi", 4, 4, 4, 4);
+  auto info_expected = TextInputInfo(u"hi", 2, 2, -1, -1);
   EXPECT_EQ(info, info_expected);
 
   // Invalid indices.
-  info = TextInputInfo(base::UTF8ToUTF16("hi"), 4, 2, 2, 1);
-  info_expected = TextInputInfo(base::UTF8ToUTF16("hi"), 2, 2, -1, -1);
+  info = TextInputInfo(u"hi", 4, 2, 2, 1);
+  info_expected = TextInputInfo(u"hi", 2, 2, -1, -1);
   EXPECT_EQ(info, info_expected);
 }
 
@@ -47,26 +47,24 @@ TEST_F(TextInputInfoTest, CommitDiff) {
   // Add a character.
   auto edits = EditedText(Text("a", 1, 1), Text("", 0, 0)).GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("a"), 1));
+  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT, u"a", 1));
 
   // Add more characters.
   edits = EditedText(Text("asdf", 4, 4), Text("a", 1, 1)).GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("sdf"), 3));
+  EXPECT_EQ(edits[0],
+            TextEditAction(TextEditActionType::COMMIT_TEXT, u"sdf", 3));
 
   // Delete a character.
   edits = EditedText(Text("asd", 3, 3), Text("asdf", 4, 4)).GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::DELETE_TEXT,
-                                     base::UTF8ToUTF16(""), -1));
+  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::DELETE_TEXT, u"", -1));
 
   // Add characters while the cursor is not at the end.
   edits = EditedText(Text("asqwed", 5, 5), Text("asd", 2, 2)).GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("qwe"), 3));
+  EXPECT_EQ(edits[0],
+            TextEditAction(TextEditActionType::COMMIT_TEXT, u"qwe", 3));
 }
 
 TEST_F(TextInputInfoTest, CommitDiffWithSelection) {
@@ -74,8 +72,7 @@ TEST_F(TextInputInfoTest, CommitDiffWithSelection) {
   auto edits = EditedText(Text("This a text", 6, 6), Text("This is text", 5, 7))
                    .GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("a"), 1));
+  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT, u"a", 1));
 
   // There was a selection and the new text is longer than the selection text.
   // This could happen when the user clicks on a keyboard suggestion.
@@ -83,50 +80,49 @@ TEST_F(TextInputInfoTest, CommitDiffWithSelection) {
       EditedText(Text("This was the text", 12, 12), Text("This is text", 5, 7))
           .GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("was the"), 7));
+  EXPECT_EQ(edits[0],
+            TextEditAction(TextEditActionType::COMMIT_TEXT, u"was the", 7));
   // There was a selection and the new text is of the same length as the
   // selection.
   edits = EditedText(Text("This ha text", 7, 7), Text("This is text", 5, 7))
               .GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("ha"), 2));
+  EXPECT_EQ(edits[0],
+            TextEditAction(TextEditActionType::COMMIT_TEXT, u"ha", 2));
 
   // There was a selection and backspace was pressed.
   edits = EditedText(Text(" text", 0, 0), Text("short text", 0, 5)).GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16(""), 0));
+  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT, u"", 0));
 }
 
 TEST_F(TextInputInfoTest, CompositionDiff) {
   // Start composition
   auto edits = EditedText(Text("a", 1, 1, 0, 1), Text("", 0, 0)).GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::SET_COMPOSING_TEXT,
-                                     base::UTF8ToUTF16("a"), 1));
+  EXPECT_EQ(edits[0],
+            TextEditAction(TextEditActionType::SET_COMPOSING_TEXT, u"a", 1));
 
   // Add more characters.
   edits = EditedText(Text("asdf", 4, 4, 0, 4), Text("a", 1, 1, 0, 1)).GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::SET_COMPOSING_TEXT,
-                                     base::UTF8ToUTF16("asdf"), 3));
+  EXPECT_EQ(edits[0],
+            TextEditAction(TextEditActionType::SET_COMPOSING_TEXT, u"asdf", 3));
 
   // Delete a few characters.
   edits =
       EditedText(Text("as", 2, 2, 0, 2), Text("asdf", 4, 4, 0, 4)).GetDiff();
   EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::SET_COMPOSING_TEXT,
-                                     base::UTF8ToUTF16("as"), -2));
+  EXPECT_EQ(edits[0],
+            TextEditAction(TextEditActionType::SET_COMPOSING_TEXT, u"as", -2));
 
   // Finish composition.
   edits =
       EditedText(Text("as ", 3, 3, -1, -1), Text("as", 2, 2, 0, 2)).GetDiff();
   EXPECT_EQ(edits.size(), 2u);
   EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::CLEAR_COMPOSING_TEXT));
-  EXPECT_EQ(edits[1], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("as "), 3));
+  EXPECT_EQ(edits[1],
+            TextEditAction(TextEditActionType::COMMIT_TEXT, u"as ", 3));
 
   // Finish composition, but the text is different. This could happen when the
   // user hits a suggestion that's different from the current composition, but
@@ -135,8 +131,8 @@ TEST_F(TextInputInfoTest, CompositionDiff) {
       EditedText(Text("lk", 2, 2, -1, -1), Text("as", 2, 2, 0, 2)).GetDiff();
   EXPECT_EQ(edits.size(), 2u);
   EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::CLEAR_COMPOSING_TEXT));
-  EXPECT_EQ(edits[1], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("lk"), 2));
+  EXPECT_EQ(edits[1],
+            TextEditAction(TextEditActionType::COMMIT_TEXT, u"lk", 2));
 
   // Finish composition, but the new text is shorter than the previous
   // composition. This could happen when the user hits a suggestion that's
@@ -146,8 +142,8 @@ TEST_F(TextInputInfoTest, CompositionDiff) {
           .GetDiff();
   EXPECT_EQ(edits.size(), 2u);
   EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::CLEAR_COMPOSING_TEXT));
-  EXPECT_EQ(edits[1], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("hi"), 2));
+  EXPECT_EQ(edits[1],
+            TextEditAction(TextEditActionType::COMMIT_TEXT, u"hi", 2));
 
   // A new composition without finishing the previous composition. This could
   // happen when we get coalesced events from the keyboard. For example, when
@@ -159,10 +155,10 @@ TEST_F(TextInputInfoTest, CompositionDiff) {
           .GetDiff();
   EXPECT_EQ(edits.size(), 3u);
   EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::CLEAR_COMPOSING_TEXT));
-  EXPECT_EQ(edits[1], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("hi"), 2));
-  EXPECT_EQ(edits[2], TextEditAction(TextEditActionType::SET_COMPOSING_TEXT,
-                                     base::UTF8ToUTF16("i"), 1));
+  EXPECT_EQ(edits[1],
+            TextEditAction(TextEditActionType::COMMIT_TEXT, u"hi", 2));
+  EXPECT_EQ(edits[2],
+            TextEditAction(TextEditActionType::SET_COMPOSING_TEXT, u"i", 1));
   // Same as above, but the new composition happens by deleting the current
   // composition.
   edits =
@@ -170,10 +166,9 @@ TEST_F(TextInputInfoTest, CompositionDiff) {
           .GetDiff();
   EXPECT_EQ(edits.size(), 3u);
   EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::CLEAR_COMPOSING_TEXT));
-  EXPECT_EQ(edits[1], TextEditAction(TextEditActionType::DELETE_TEXT,
-                                     base::UTF8ToUTF16(""), -2));
-  EXPECT_EQ(edits[2], TextEditAction(TextEditActionType::SET_COMPOSING_TEXT,
-                                     base::UTF8ToUTF16("hi"), 2));
+  EXPECT_EQ(edits[1], TextEditAction(TextEditActionType::DELETE_TEXT, u"", -2));
+  EXPECT_EQ(edits[2],
+            TextEditAction(TextEditActionType::SET_COMPOSING_TEXT, u"hi", 2));
 }
 
 }  // namespace vr

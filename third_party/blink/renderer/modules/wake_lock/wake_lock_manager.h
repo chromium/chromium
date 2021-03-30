@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 
 namespace blink {
 
@@ -44,18 +43,11 @@ class MODULES_EXPORT WakeLockManager final
 
   // An actual platform WakeLock. If bound, it means there is an active wake
   // lock for a given type.
-  HeapMojoRemote<device::mojom::blink::WakeLock,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      wake_lock_;
+  HeapMojoRemote<device::mojom::blink::WakeLock> wake_lock_;
   WakeLockType wake_lock_type_;
 
   // ExecutionContext from which we will connect to |wake_lock_service_|.
   Member<ExecutionContext> execution_context_;
-
-  // Do not put a page into BackForwardCache if a page has acquired WakeLock.
-  // The page becomes cache-able when all locks are released.
-  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
-      feature_handle_for_scheduler_;
 
   FRIEND_TEST_ALL_PREFIXES(WakeLockManagerTest, AcquireWakeLock);
   FRIEND_TEST_ALL_PREFIXES(WakeLockManagerTest, ReleaseAllWakeLocks);

@@ -64,7 +64,7 @@ void ChromeNativeAppWindowViewsWin::InitializeDefaultWindow(
 
   std::string app_name =
       web_app::GenerateApplicationNameFromAppId(extension->id());
-  base::string16 app_name_wide = base::UTF8ToWide(app_name);
+  std::wstring app_name_wide = base::UTF8ToWide(app_name);
   HWND hwnd = GetNativeAppWindowHWND();
   Profile* profile =
       Profile::FromBrowserContext(app_window()->browser_context());

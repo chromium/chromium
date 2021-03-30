@@ -21,7 +21,7 @@ import java.util.Arrays;
 /**
  * A fake server which supplies Feedv2 content.
  */
-class TestFeedServer implements WebServer.RequestHandler {
+public class TestFeedServer implements WebServer.RequestHandler {
     private static final String TAG = "TestFeedServer";
     private WebServer mServer;
     private boolean mReceivedQueryRequest;

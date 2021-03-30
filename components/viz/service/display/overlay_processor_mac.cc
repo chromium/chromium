@@ -35,6 +35,14 @@ bool OverlayProcessorMac::IsOverlaySupported() const {
   return true;
 }
 
+gfx::Rect OverlayProcessorMac::GetPreviousFrameOverlaysBoundingRect() const {
+  // This function's return value is used to determine the range of quads
+  // produced by surface aggregation. We use the quads to generate our CALayer
+  // tree every frame, and we use the quads that didn't change. For that
+  // reason, always return the full frame.
+  return previous_frame_full_bounding_rect_;
+}
+
 gfx::Rect OverlayProcessorMac::GetAndResetOverlayDamage() {
   gfx::Rect result = ca_overlay_damage_rect_;
   ca_overlay_damage_rect_ = gfx::Rect();
@@ -58,6 +66,7 @@ void OverlayProcessorMac::ProcessForOverlays(
 
   // Clear to get ready to handle output surface as overlay.
   output_surface_already_handled_ = false;
+  previous_frame_full_bounding_rect_ = render_pass->output_rect;
 
   // Skip overlay processing if we have copy request.
   if (!render_pass->copy_requests.empty())
@@ -81,6 +90,7 @@ void OverlayProcessorMac::ProcessForOverlays(
     // Set |last_overlay_damage_| to be everything, so that the next
     // frame that we draw to the output surface will do a full re-draw.
     ca_overlay_damage_rect_ = render_pass->output_rect;
+    previous_frame_full_bounding_rect_ = ca_overlay_damage_rect_;
 
     // Everything in |render_pass->quad_list| has been moved over to
     // |candidates|. Ideally we would clear |render_pass->quad_list|, but some
@@ -89,9 +99,10 @@ void OverlayProcessorMac::ProcessForOverlays(
     *damage_rect = gfx::Rect();
   }
 
-  // TODO(https://crbug.com/1152849): If there is any HDR or protected content,
-  // use an underlay strategy to move those to |candidates| and replace them
-  // with transparent quads in |render_pass->quad_list|.
+  ca_layer_overlay_processor_->PutHDRContentInSeparateOverlay(
+      resource_provider, render_pass.get(),
+      gfx::RectF(render_pass->output_rect), &render_pass->quad_list,
+      render_pass_filters, render_pass_backdrop_filters, candidates);
 }
 
 void OverlayProcessorMac::AdjustOutputSurfaceOverlay(

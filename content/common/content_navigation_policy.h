@@ -82,6 +82,12 @@ CONTENT_EXPORT std::string GetRenderDocumentLevelName(
     RenderDocumentLevel level);
 CONTENT_EXPORT extern const char kRenderDocumentLevelParameterName[];
 
+// If this is false we continue the old behaviour of doing an early call to
+// RenderFrameHostManager::CommitPending when we are replacing a crashed
+// frame.
+// TODO(https://crbug.com/1072817): Stop allowing this.
+CONTENT_EXPORT bool ShouldSkipEarlyCommitPendingForCrashedFrame();
+
 }  // namespace content
 
 #endif  // CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_

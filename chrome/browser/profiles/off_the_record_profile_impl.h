@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_io_data_handle.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/domain_reliability/clear_mode.h"
 #include "content/public/browser/content_browser_client.h"
@@ -47,7 +46,8 @@ class OffTheRecordProfileImpl : public Profile {
 
   // Profile implementation.
   std::string GetProfileUserName() const override;
-  Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id) override;
+  Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
+                                  bool create_if_needed) override;
   std::vector<Profile*> GetAllOffTheRecordProfiles() override;
   void DestroyOffTheRecordProfile(Profile* otr_profile) override;
   bool HasOffTheRecordProfile(const OTRProfileID& otr_profile_id) override;
@@ -56,7 +56,6 @@ class OffTheRecordProfileImpl : public Profile {
   const Profile* GetOriginalProfile() const override;
   bool IsSupervised() const override;
   bool IsChild() const override;
-  bool IsLegacySupervised() const override;
   bool AllowsBrowserWindows() const override;
   ExtensionSpecialStoragePolicy* GetExtensionSpecialStoragePolicy() override;
   PrefService* GetPrefs() override;
@@ -90,6 +89,9 @@ class OffTheRecordProfileImpl : public Profile {
   void InitChromeOSPreferences() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Returns whether the wrapped underlying profile is new.
+  bool IsNewProfile() const override;
+
   GURL GetHomePage() override;
   void SetCreationTimeForTesting(base::Time creation_time) override;
 
@@ -109,7 +111,6 @@ class OffTheRecordProfileImpl : public Profile {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
-  content::ResourceContext* GetResourceContext() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   content::PushMessagingService* GetPushMessagingService() override;
@@ -124,14 +125,8 @@ class OffTheRecordProfileImpl : public Profile {
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
   media::VideoDecodePerfHistory* GetVideoDecodePerfHistory() override;
-  void SetCorsOriginAccessListForOrigin(
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure) override;
-  content::SharedCorsOriginAccessList* GetSharedCorsOriginAccessList() override;
-  content::NativeFileSystemPermissionContext*
-  GetNativeFileSystemPermissionContext() override;
+  content::FileSystemAccessPermissionContext*
+  GetFileSystemAccessPermissionContext() override;
   void RecordMainFrameNavigation() override;
 
  protected:
@@ -164,7 +159,6 @@ class OffTheRecordProfileImpl : public Profile {
   base::CallbackListSubscription track_zoom_subscription_;
   base::CallbackListSubscription parent_default_zoom_level_subscription_;
 #endif  // !defined(OS_ANDROID)
-  ProfileIODataHandle io_data_;
 
   // Time we were started.
   base::Time start_time_;

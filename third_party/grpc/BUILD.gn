@@ -30,11 +30,13 @@ config("grpc_config") {
     "HAVE_CONFIG_H",
     "PB_FIELD_16BIT",
     "GRPC_NO_XDS",
+
+    # This is defaulted to true in google3. See:
+    # go/grpc-callback-codelab#advanced-topics
+    "GRPC_CALLBACK_API_NONEXPERIMENTAL",
   ]
 
-  cflags = [
-    "-Wno-implicit-fallthrough",
-  ]
+  cflags = [ "-Wno-implicit-fallthrough" ]
 
   if (is_android) {
     libs = [ "log" ]  # For __android_log_write
@@ -87,7 +89,8 @@ template("grpc_so") {
     shared_library(target_name) {
       forward_variables_from(invoker, "*")
       inputs = [ "./grpc_shared_lib.map" ]
-      ldflags = [ "-Wl,--version-script=" + rebase_path("./grpc_shared_lib.map", root_build_dir) ]
+      ldflags = [ "-Wl,--version-script=" +
+                  rebase_path("./grpc_shared_lib.map", root_build_dir) ]
     }
   }
 }
@@ -97,10 +100,9 @@ grpc_so("grpc++") {
     ":grpc++_cc",
     ":grpc++_repeated",
   ]
-  public_deps = [
-    ":grpc++_h",
-  ]
+  public_deps = [ ":grpc++_h" ]
 }
+
 # There are some .cc files that are in multiple places. GN doesn't like
 # that. Moving them to another target.
 source_set("grpc++_h") {
@@ -343,6 +345,7 @@ source_set("grpc++_h") {
     "src/include/grpcpp/support/sync_stream.h",
     "src/include/grpcpp/support/time.h",
     "src/include/grpcpp/support/validate_service_config.h",
+    "src/include/grpcpp/xds_server_builder.h",
     "src/src/core/ext/filters/client_channel/backend_metric.h",
     "src/src/core/ext/filters/client_channel/backup_poller.h",
     "src/src/core/ext/filters/client_channel/client_channel.h",
@@ -350,6 +353,7 @@ source_set("grpc++_h") {
     "src/src/core/ext/filters/client_channel/client_channel_factory.h",
     "src/src/core/ext/filters/client_channel/config_selector.h",
     "src/src/core/ext/filters/client_channel/connector.h",
+    "src/src/core/ext/filters/client_channel/dynamic_filters.h",
     "src/src/core/ext/filters/client_channel/global_subchannel_pool.h",
     "src/src/core/ext/filters/client_channel/health/health_check_client.h",
     "src/src/core/ext/filters/client_channel/http_connect_handshaker.h",
@@ -372,7 +376,6 @@ source_set("grpc++_h") {
     "src/src/core/ext/filters/client_channel/resolver_factory.h",
     "src/src/core/ext/filters/client_channel/resolver_registry.h",
     "src/src/core/ext/filters/client_channel/resolver_result_parsing.h",
-    "src/src/core/ext/filters/client_channel/resolving_lb_policy.h",
     "src/src/core/ext/filters/client_channel/retry_throttle.h",
     "src/src/core/ext/filters/client_channel/server_address.h",
     "src/src/core/ext/filters/client_channel/service_config.h",
@@ -449,6 +452,7 @@ source_set("grpc++_h") {
     "src/src/core/ext/upb-generated/envoy/config/route/v3/route_components.upb.h",
     "src/src/core/ext/upb-generated/envoy/config/route/v3/scoped_route.upb.h",
     "src/src/core/ext/upb-generated/envoy/config/trace/v3/http_tracer.upb.h",
+    "src/src/core/ext/upb-generated/envoy/extensions/clusters/aggregate/v3/cluster.upb.h",
     "src/src/core/ext/upb-generated/envoy/extensions/filters/network/http_connection_manager/v3/http_connection_manager.upb.h",
     "src/src/core/ext/upb-generated/envoy/extensions/transport_sockets/tls/v3/cert.upb.h",
     "src/src/core/ext/upb-generated/envoy/extensions/transport_sockets/tls/v3/common.upb.h",
@@ -478,6 +482,12 @@ source_set("grpc++_h") {
     "src/src/core/ext/upb-generated/google/api/expr/v1alpha1/checked.upb.h",
     "src/src/core/ext/upb-generated/google/api/expr/v1alpha1/syntax.upb.h",
     "src/src/core/ext/upb-generated/google/api/http.upb.h",
+    "src/src/core/ext/upb-generated/google/protobuf/any.upb.h",
+    "src/src/core/ext/upb-generated/google/protobuf/duration.upb.h",
+    "src/src/core/ext/upb-generated/google/protobuf/empty.upb.h",
+    "src/src/core/ext/upb-generated/google/protobuf/struct.upb.h",
+    "src/src/core/ext/upb-generated/google/protobuf/timestamp.upb.h",
+    "src/src/core/ext/upb-generated/google/protobuf/wrappers.upb.h",
     "src/src/core/ext/upb-generated/google/rpc/status.upb.h",
     "src/src/core/ext/upb-generated/src/proto/grpc/gcp/altscontext.upb.h",
     "src/src/core/ext/upb-generated/src/proto/grpc/gcp/handshaker.upb.h",
@@ -489,14 +499,14 @@ source_set("grpc++_h") {
     "src/src/core/ext/upb-generated/udpa/annotations/sensitive.upb.h",
     "src/src/core/ext/upb-generated/udpa/annotations/status.upb.h",
     "src/src/core/ext/upb-generated/udpa/annotations/versioning.upb.h",
-    "src/src/core/ext/upb-generated/udpa/core/v1/authority.upb.h",
-    "src/src/core/ext/upb-generated/udpa/core/v1/collection_entry.upb.h",
-    "src/src/core/ext/upb-generated/udpa/core/v1/context_params.upb.h",
-    "src/src/core/ext/upb-generated/udpa/core/v1/resource.upb.h",
-    "src/src/core/ext/upb-generated/udpa/core/v1/resource_locator.upb.h",
-    "src/src/core/ext/upb-generated/udpa/core/v1/resource_name.upb.h",
     "src/src/core/ext/upb-generated/udpa/data/orca/v1/orca_load_report.upb.h",
     "src/src/core/ext/upb-generated/validate/validate.upb.h",
+    "src/src/core/ext/upb-generated/xds/core/v3/authority.upb.h",
+    "src/src/core/ext/upb-generated/xds/core/v3/collection_entry.upb.h",
+    "src/src/core/ext/upb-generated/xds/core/v3/context_params.upb.h",
+    "src/src/core/ext/upb-generated/xds/core/v3/resource.upb.h",
+    "src/src/core/ext/upb-generated/xds/core/v3/resource_locator.upb.h",
+    "src/src/core/ext/upb-generated/xds/core/v3/resource_name.upb.h",
     "src/src/core/ext/upbdefs-generated/envoy/annotations/deprecation.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/envoy/annotations/resource.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/envoy/config/accesslog/v3/accesslog.upbdefs.h",
@@ -528,6 +538,7 @@ source_set("grpc++_h") {
     "src/src/core/ext/upbdefs-generated/envoy/config/route/v3/route_components.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/envoy/config/route/v3/scoped_route.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/envoy/config/trace/v3/http_tracer.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/envoy/extensions/clusters/aggregate/v3/cluster.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/envoy/extensions/filters/network/http_connection_manager/v3/http_connection_manager.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/envoy/extensions/transport_sockets/tls/v3/cert.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/envoy/extensions/transport_sockets/tls/v3/common.upbdefs.h",
@@ -555,19 +566,25 @@ source_set("grpc++_h") {
     "src/src/core/ext/upbdefs-generated/envoy/type/v3/semantic_version.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/google/api/annotations.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/google/api/http.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/any.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/duration.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/empty.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/struct.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/timestamp.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/wrappers.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/google/rpc/status.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/migrate.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/security.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/sensitive.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/status.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/versioning.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/authority.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/collection_entry.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/context_params.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/resource.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/resource_locator.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/resource_name.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/validate/validate.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/authority.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/collection_entry.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/context_params.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/resource.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/resource_locator.upbdefs.h",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/resource_name.upbdefs.h",
     "src/src/core/lib/avl/avl.h",
     "src/src/core/lib/backoff/backoff.h",
     "src/src/core/lib/channel/channel_args.h",
@@ -619,7 +636,6 @@ source_set("grpc++_h") {
     "src/src/core/lib/gprpp/global_config_generic.h",
     "src/src/core/lib/gprpp/host_port.h",
     "src/src/core/lib/gprpp/manual_constructor.h",
-    "src/src/core/lib/gprpp/map.h",
     "src/src/core/lib/gprpp/memory.h",
     "src/src/core/lib/gprpp/mpscq.h",
     "src/src/core/lib/gprpp/orphanable.h",
@@ -628,6 +644,7 @@ source_set("grpc++_h") {
     "src/src/core/lib/gprpp/stat.h",
     "src/src/core/lib/gprpp/sync.h",
     "src/src/core/lib/gprpp/thd.h",
+    "src/src/core/lib/gprpp/time_util.h",
     "src/src/core/lib/http/format_request.h",
     "src/src/core/lib/http/httpcli.h",
     "src/src/core/lib/http/parser.h",
@@ -660,7 +677,6 @@ source_set("grpc++_h") {
     "src/src/core/lib/iomgr/iomgr.h",
     "src/src/core/lib/iomgr/iomgr_custom.h",
     "src/src/core/lib/iomgr/iomgr_internal.h",
-    "src/src/core/lib/iomgr/iomgr_posix.h",
     "src/src/core/lib/iomgr/is_epollexclusive_available.h",
     "src/src/core/lib/iomgr/load_file.h",
     "src/src/core/lib/iomgr/lockfree_event.h",
@@ -714,6 +730,8 @@ source_set("grpc++_h") {
     "src/src/core/lib/profiling/timers.h",
     "src/src/core/lib/security/authorization/authorization_engine.h",
     "src/src/core/lib/security/authorization/evaluate_args.h",
+
+    # "src/src/core/lib/security/authorization/matchers.h",
     "src/src/core/lib/security/authorization/mock_cel/activation.h",
     "src/src/core/lib/security/authorization/mock_cel/cel_expr_builder_factory.h",
     "src/src/core/lib/security/authorization/mock_cel/cel_expression.h",
@@ -726,6 +744,8 @@ source_set("grpc++_h") {
     "src/src/core/lib/security/credentials/alts/grpc_alts_credentials_options.h",
     "src/src/core/lib/security/credentials/composite/composite_credentials.h",
     "src/src/core/lib/security/credentials/credentials.h",
+    "src/src/core/lib/security/credentials/external/aws_external_account_credentials.h",
+    "src/src/core/lib/security/credentials/external/aws_request_signer.h",
     "src/src/core/lib/security/credentials/external/external_account_credentials.h",
     "src/src/core/lib/security/credentials/external/file_external_account_credentials.h",
     "src/src/core/lib/security/credentials/external/url_external_account_credentials.h",
@@ -743,7 +763,9 @@ source_set("grpc++_h") {
     "src/src/core/lib/security/credentials/tls/grpc_tls_certificate_provider.h",
     "src/src/core/lib/security/credentials/tls/grpc_tls_credentials_options.h",
     "src/src/core/lib/security/credentials/tls/tls_credentials.h",
-    "src/src/core/lib/security/credentials/xds/xds_credentials.h",
+    "src/src/core/lib/security/credentials/tls/tls_utils.h",
+
+    # "src/src/core/lib/security/credentials/xds/xds_credentials.h",
     "src/src/core/lib/security/security_connector/alts/alts_security_connector.h",
     "src/src/core/lib/security/security_connector/fake/fake_security_connector.h",
     "src/src/core/lib/security/security_connector/insecure/insecure_security_connector.h",
@@ -843,12 +865,8 @@ source_set("grpc++_h") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib",
   ]
-  public_configs = [
-    ":grpc_config",
-  ]
-  configs += [
-    ":grpc_config_private",
-  ]
+  public_configs = [ ":grpc_config" ]
+  configs += [ ":grpc_config_private" ]
   include_dirs = [
     ":cares",
     "src/third_party/address_sorting/include",
@@ -862,6 +880,9 @@ source_set("grpc++_h") {
 
 source_set("grpc++_cc") {
   sources = [
+    # Disabling some default plugins.
+    # "src/src/core/plugin_registry/grpc_plugin_registry.cc",
+    "plugin_registry/grpc_plugin_registry.cc",
     "src/src/core/ext/filters/census/grpc_context.cc",
     "src/src/core/ext/filters/client_channel/backend_metric.cc",
     "src/src/core/ext/filters/client_channel/backup_poller.cc",
@@ -871,6 +892,7 @@ source_set("grpc++_cc") {
     "src/src/core/ext/filters/client_channel/client_channel_factory.cc",
     "src/src/core/ext/filters/client_channel/client_channel_plugin.cc",
     "src/src/core/ext/filters/client_channel/config_selector.cc",
+    "src/src/core/ext/filters/client_channel/dynamic_filters.cc",
     "src/src/core/ext/filters/client_channel/global_subchannel_pool.cc",
     "src/src/core/ext/filters/client_channel/health/health_check_client.cc",
     "src/src/core/ext/filters/client_channel/http_connect_handshaker.cc",
@@ -885,22 +907,21 @@ source_set("grpc++_cc") {
     "src/src/core/ext/filters/client_channel/proxy_mapper_registry.cc",
     "src/src/core/ext/filters/client_channel/resolver.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/dns_resolver_ares.cc",
-    "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/grpc_ares_ev_driver.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/grpc_ares_ev_driver_libuv.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/grpc_ares_ev_driver_posix.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/grpc_ares_ev_driver_windows.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/grpc_ares_wrapper.cc",
-    "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/grpc_ares_wrapper_fallback.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/grpc_ares_wrapper_libuv.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/grpc_ares_wrapper_posix.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/c_ares/grpc_ares_wrapper_windows.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/dns_resolver_selection.cc",
     "src/src/core/ext/filters/client_channel/resolver/dns/native/dns_resolver.cc",
     "src/src/core/ext/filters/client_channel/resolver/fake/fake_resolver.cc",
+
+    # "src/src/core/ext/filters/client_channel/resolver/google_c2p/google_c2p_resolver.cc",
     "src/src/core/ext/filters/client_channel/resolver/sockaddr/sockaddr_resolver.cc",
     "src/src/core/ext/filters/client_channel/resolver_registry.cc",
     "src/src/core/ext/filters/client_channel/resolver_result_parsing.cc",
-    "src/src/core/ext/filters/client_channel/resolving_lb_policy.cc",
     "src/src/core/ext/filters/client_channel/retry_throttle.cc",
     "src/src/core/ext/filters/client_channel/server_address.cc",
     "src/src/core/ext/filters/client_channel/service_config.cc",
@@ -1014,6 +1035,12 @@ source_set("grpc++_cc") {
     "src/src/core/ext/upb-generated/google/api/annotations.upb.c",
     "src/src/core/ext/upb-generated/google/api/expr/v1alpha1/checked.upb.c",
     "src/src/core/ext/upb-generated/google/api/expr/v1alpha1/syntax.upb.c",
+    "src/src/core/ext/upb-generated/google/protobuf/any.upb.c",
+    "src/src/core/ext/upb-generated/google/protobuf/duration.upb.c",
+    "src/src/core/ext/upb-generated/google/protobuf/empty.upb.c",
+    "src/src/core/ext/upb-generated/google/protobuf/struct.upb.c",
+    "src/src/core/ext/upb-generated/google/protobuf/timestamp.upb.c",
+    "src/src/core/ext/upb-generated/google/protobuf/wrappers.upb.c",
     "src/src/core/ext/upb-generated/google/rpc/status.upb.c",
     "src/src/core/ext/upb-generated/src/proto/grpc/gcp/altscontext.upb.c",
     "src/src/core/ext/upb-generated/src/proto/grpc/gcp/handshaker.upb.c",
@@ -1024,13 +1051,13 @@ source_set("grpc++_cc") {
     "src/src/core/ext/upb-generated/udpa/annotations/security.upb.c",
     "src/src/core/ext/upb-generated/udpa/annotations/sensitive.upb.c",
     "src/src/core/ext/upb-generated/udpa/annotations/versioning.upb.c",
-    "src/src/core/ext/upb-generated/udpa/core/v1/authority.upb.c",
-    "src/src/core/ext/upb-generated/udpa/core/v1/collection_entry.upb.c",
-    "src/src/core/ext/upb-generated/udpa/core/v1/context_params.upb.c",
-    "src/src/core/ext/upb-generated/udpa/core/v1/resource_locator.upb.c",
-    "src/src/core/ext/upb-generated/udpa/core/v1/resource_name.upb.c",
     "src/src/core/ext/upb-generated/udpa/data/orca/v1/orca_load_report.upb.c",
     "src/src/core/ext/upb-generated/validate/validate.upb.c",
+    "src/src/core/ext/upb-generated/xds/core/v3/authority.upb.c",
+    "src/src/core/ext/upb-generated/xds/core/v3/collection_entry.upb.c",
+    "src/src/core/ext/upb-generated/xds/core/v3/context_params.upb.c",
+    "src/src/core/ext/upb-generated/xds/core/v3/resource_locator.upb.c",
+    "src/src/core/ext/upb-generated/xds/core/v3/resource_name.upb.c",
     "src/src/core/ext/upbdefs-generated/envoy/annotations/deprecation.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/envoy/annotations/resource.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/envoy/config/accesslog/v3/accesslog.upbdefs.c",
@@ -1087,17 +1114,23 @@ source_set("grpc++_cc") {
     "src/src/core/ext/upbdefs-generated/envoy/type/v3/range.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/envoy/type/v3/semantic_version.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/google/api/annotations.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/any.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/duration.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/empty.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/struct.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/timestamp.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/google/protobuf/wrappers.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/google/rpc/status.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/migrate.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/security.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/sensitive.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/versioning.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/authority.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/collection_entry.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/context_params.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/resource_locator.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/resource_name.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/validate/validate.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/authority.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/collection_entry.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/context_params.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/resource_locator.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/resource_name.upbdefs.c",
     "src/src/core/lib/avl/avl.cc",
     "src/src/core/lib/backoff/backoff.cc",
     "src/src/core/lib/channel/channel_args.cc",
@@ -1151,6 +1184,7 @@ source_set("grpc++_cc") {
     "src/src/core/lib/gpr/tmpfile_msys.cc",
     "src/src/core/lib/gpr/tmpfile_posix.cc",
     "src/src/core/lib/gpr/tmpfile_windows.cc",
+
     # gRPC memcpy wrapping logic isn't useful here.
     # See https://crbug.com/661171
     # "src/src/core/lib/gpr/wrap_memcpy.cc",
@@ -1164,6 +1198,7 @@ source_set("grpc++_cc") {
     "src/src/core/lib/gprpp/stat_windows.cc",
     "src/src/core/lib/gprpp/thd_posix.cc",
     "src/src/core/lib/gprpp/thd_windows.cc",
+    "src/src/core/lib/gprpp/time_util.cc",
     "src/src/core/lib/http/format_request.cc",
     "src/src/core/lib/http/httpcli.cc",
     "src/src/core/lib/http/httpcli_security_connector.cc",
@@ -1271,6 +1306,8 @@ source_set("grpc++_cc") {
     "src/src/core/lib/profiling/stap_timers.cc",
     "src/src/core/lib/security/authorization/authorization_engine.cc",
     "src/src/core/lib/security/authorization/evaluate_args.cc",
+
+    # "src/src/core/lib/security/authorization/matchers.cc",
     "src/src/core/lib/security/context/security_context.cc",
     "src/src/core/lib/security/credentials/alts/alts_credentials.cc",
     "src/src/core/lib/security/credentials/alts/check_gcp_environment.cc",
@@ -1283,6 +1320,8 @@ source_set("grpc++_cc") {
     "src/src/core/lib/security/credentials/composite/composite_credentials.cc",
     "src/src/core/lib/security/credentials/credentials.cc",
     "src/src/core/lib/security/credentials/credentials_metadata.cc",
+    "src/src/core/lib/security/credentials/external/aws_external_account_credentials.cc",
+    "src/src/core/lib/security/credentials/external/aws_request_signer.cc",
     "src/src/core/lib/security/credentials/external/external_account_credentials.cc",
     "src/src/core/lib/security/credentials/external/file_external_account_credentials.cc",
     "src/src/core/lib/security/credentials/external/url_external_account_credentials.cc",
@@ -1302,7 +1341,9 @@ source_set("grpc++_cc") {
     "src/src/core/lib/security/credentials/tls/grpc_tls_certificate_provider.cc",
     "src/src/core/lib/security/credentials/tls/grpc_tls_credentials_options.cc",
     "src/src/core/lib/security/credentials/tls/tls_credentials.cc",
-    "src/src/core/lib/security/credentials/xds/xds_credentials.cc",
+    "src/src/core/lib/security/credentials/tls/tls_utils.cc",
+
+    # "src/src/core/lib/security/credentials/xds/xds_credentials.cc",
     "src/src/core/lib/security/security_connector/alts/alts_security_connector.cc",
     "src/src/core/lib/security/security_connector/fake/fake_security_connector.cc",
     "src/src/core/lib/security/security_connector/insecure/insecure_security_connector.cc",
@@ -1360,9 +1401,6 @@ source_set("grpc++_cc") {
     "src/src/core/lib/transport/transport.cc",
     "src/src/core/lib/transport/transport_op_string.cc",
     "src/src/core/lib/uri/uri_parser.cc",
-    # Disabling some default plugins.
-    # "src/src/core/plugin_registry/grpc_plugin_registry.cc",
-    "plugin_registry/grpc_plugin_registry.cc",
     "src/src/core/tsi/alts/crypt/aes_gcm.cc",
     "src/src/core/tsi/alts/crypt/gsec.cc",
     "src/src/core/tsi/alts/frame_protector/alts_counter.cc",
@@ -1432,6 +1470,8 @@ source_set("grpc++_cc") {
     "src/src/cpp/server/server_context.cc",
     "src/src/cpp/server/server_credentials.cc",
     "src/src/cpp/server/server_posix.cc",
+
+    # "src/src/cpp/server/xds_server_credentials.cc",
     "src/src/cpp/thread_manager/thread_manager.cc",
     "src/src/cpp/util/byte_buffer_cc.cc",
     "src/src/cpp/util/status.cc",
@@ -1449,12 +1489,8 @@ source_set("grpc++_cc") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib",
   ]
-  public_configs = [
-    ":grpc_config",
-  ]
-  configs += [
-    ":grpc_config_private",
-  ]
+  public_configs = [ ":grpc_config" ]
+  configs += [ ":grpc_config_private" ]
   include_dirs = [
     ":cares",
     "src/third_party/address_sorting/include",
@@ -1468,17 +1504,20 @@ source_set("grpc++_cc") {
 
 source_set("grpc++_repeated") {
   sources = [
+    "src/src/core/ext/upb-generated/envoy/extensions/clusters/aggregate/v3/cluster.upb.c",
     "src/src/core/ext/upb-generated/envoy/type/metadata/v3/metadata.upb.c",
     "src/src/core/ext/upb-generated/google/api/http.upb.c",
     "src/src/core/ext/upb-generated/udpa/annotations/status.upb.c",
-    "src/src/core/ext/upb-generated/udpa/core/v1/resource.upb.c",
+    "src/src/core/ext/upb-generated/xds/core/v3/resource.upb.c",
+    "src/src/core/ext/upbdefs-generated/envoy/extensions/clusters/aggregate/v3/cluster.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/envoy/type/metadata/v3/metadata.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/google/api/http.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/udpa/annotations/status.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/udpa/core/v1/resource.upbdefs.c",
+    "src/src/core/ext/upbdefs-generated/xds/core/v3/resource.upbdefs.c",
     "src/src/core/lib/security/util/json_util.cc",
     "src/src/cpp/client/insecure_credentials.cc",
-    "src/src/cpp/client/xds_credentials.cc",
+
+    # "src/src/cpp/client/xds_credentials.cc",
   ]
 
   deps = [
@@ -1491,12 +1530,8 @@ source_set("grpc++_repeated") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib",
   ]
-  public_configs = [
-    ":grpc_config",
-  ]
-  configs += [
-    ":grpc_config_private",
-  ]
+  public_configs = [ ":grpc_config" ]
+  configs += [ ":grpc_config_private" ]
   visibility = [ "./*" ]
   if (!is_win) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
@@ -1512,15 +1547,9 @@ source_set("address_sorting") {
     "src/third_party/address_sorting/address_sorting_windows.c",
     "src/third_party/address_sorting/include/address_sorting/address_sorting.h",
   ]
-  public_configs = [
-    ":grpc_config",
-  ]
-  configs += [
-    ":grpc_config_private",
-  ]
-  include_dirs = [
-    "src/third_party/address_sorting/include",
-  ]
+  public_configs = [ ":grpc_config" ]
+  configs += [ ":grpc_config_private" ]
+  include_dirs = [ "src/third_party/address_sorting/include" ]
   visibility = [ "./*" ]
   if (!is_win) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
@@ -1530,7 +1559,7 @@ source_set("address_sorting") {
 
 # Only compile the plugin for the host architecture.
 if (current_toolchain == host_toolchain) {
-    source_set("grpc_plugin_support") {
+  source_set("grpc_plugin_support") {
     sources = [
       "src/include/grpc++/impl/codegen/config_protobuf.h",
       "src/include/grpcpp/impl/codegen/config_protobuf.h",
@@ -1561,58 +1590,34 @@ if (current_toolchain == host_toolchain) {
       "src/src/compiler/schema_interface.h",
     ]
 
-    deps = [
-      "//third_party/protobuf:protoc_lib",
-    ]
-    public_configs = [
-      ":grpc_config",
-    ]
-    configs += [
-      ":grpc_config_private",
-    ]
+    deps = [ "//third_party/protobuf:protoc_lib" ]
+    public_configs = [ ":grpc_config" ]
+    configs += [ ":grpc_config_private" ]
   }
-
 }
 source_set("upb") {
   sources = [
-    "src/src/core/ext/upb-generated/google/protobuf/any.upb.c",
-    "src/src/core/ext/upb-generated/google/protobuf/any.upb.h",
     "src/src/core/ext/upb-generated/google/protobuf/descriptor.upb.c",
     "src/src/core/ext/upb-generated/google/protobuf/descriptor.upb.h",
-    "src/src/core/ext/upb-generated/google/protobuf/duration.upb.c",
-    "src/src/core/ext/upb-generated/google/protobuf/duration.upb.h",
-    "src/src/core/ext/upb-generated/google/protobuf/empty.upb.c",
-    "src/src/core/ext/upb-generated/google/protobuf/empty.upb.h",
-    "src/src/core/ext/upb-generated/google/protobuf/struct.upb.c",
-    "src/src/core/ext/upb-generated/google/protobuf/struct.upb.h",
-    "src/src/core/ext/upb-generated/google/protobuf/timestamp.upb.c",
-    "src/src/core/ext/upb-generated/google/protobuf/timestamp.upb.h",
-    "src/src/core/ext/upb-generated/google/protobuf/wrappers.upb.c",
-    "src/src/core/ext/upb-generated/google/protobuf/wrappers.upb.h",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/any.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/any.upbdefs.h",
     "src/src/core/ext/upbdefs-generated/google/protobuf/descriptor.upbdefs.c",
     "src/src/core/ext/upbdefs-generated/google/protobuf/descriptor.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/duration.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/duration.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/empty.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/empty.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/struct.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/struct.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/timestamp.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/timestamp.upbdefs.h",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/wrappers.upbdefs.c",
-    "src/src/core/ext/upbdefs-generated/google/protobuf/wrappers.upbdefs.h",
+    "src/third_party/upb/third_party/wyhash/wyhash.h",
     "src/third_party/upb/upb/decode.c",
     "src/third_party/upb/upb/decode.h",
+    "src/third_party/upb/upb/decode.int.h",
+    "src/third_party/upb/upb/decode_fast.c",
+    "src/third_party/upb/upb/decode_fast.h",
     "src/third_party/upb/upb/def.c",
     "src/third_party/upb/upb/def.h",
     "src/third_party/upb/upb/def.hpp",
     "src/third_party/upb/upb/encode.c",
     "src/third_party/upb/upb/encode.h",
+    "src/third_party/upb/upb/json_decode.c",
+    "src/third_party/upb/upb/json_decode.h",
+    "src/third_party/upb/upb/json_encode.c",
+    "src/third_party/upb/upb/json_encode.h",
     "src/third_party/upb/upb/msg.c",
     "src/third_party/upb/upb/msg.h",
-    "src/third_party/upb/upb/port.c",
     "src/third_party/upb/upb/port_def.inc",
     "src/third_party/upb/upb/port_undef.inc",
     "src/third_party/upb/upb/reflection.c",
@@ -1624,13 +1629,10 @@ source_set("upb") {
     "src/third_party/upb/upb/upb.c",
     "src/third_party/upb/upb/upb.h",
     "src/third_party/upb/upb/upb.hpp",
+    "src/third_party/upb/upb/upb.int.h",
   ]
-  public_configs = [
-    ":grpc_config",
-  ]
-  configs += [
-    ":grpc_config_private",
-  ]
+  public_configs = [ ":grpc_config" ]
+  configs += [ ":grpc_config_private" ]
   visibility = [ "./*" ]
   if (!is_win) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
@@ -1641,16 +1643,12 @@ source_set("upb") {
 # Only compile the plugin for the host architecture.
 if (current_toolchain == host_toolchain) {
   executable("grpc_cpp_plugin") {
-    sources = [
-      "src/src/compiler/cpp_plugin.cc",
-    ]
+    sources = [ "src/src/compiler/cpp_plugin.cc" ]
     deps = [
       ":grpc_plugin_support",
       "//third_party/protobuf:protoc_lib",
     ]
-    configs += [
-      "//third_party/protobuf:protobuf_config",
-    ]
+    configs += [ "//third_party/protobuf:protobuf_config" ]
     public_configs = [ ":grpc_config" ]
   }
 }
@@ -1663,9 +1661,7 @@ config("cares_config") {
 }
 
 source_set("cares") {
-  sources = [
-    "src/third_party/cares/ares_build.h",
-  ]
+  sources = [ "src/third_party/cares/ares_build.h" ]
 
   if (enable_grpc_ares) {
     sources += [
@@ -1757,11 +1753,10 @@ source_set("cares") {
   } else {
     sources += [ "src/third_party/cares/config_linux/ares_config.h" ]
   }
-  deps = [
-    "//third_party/boringssl",
-  ]
+  deps = [ "//third_party/boringssl" ]
 
   public_configs = [ ":grpc_config" ]
 }
 
-group("fuzzers") {}
+group("fuzzers") {
+}

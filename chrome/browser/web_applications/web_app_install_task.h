@@ -19,7 +19,7 @@
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class GURL;
@@ -142,6 +142,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       content::WebContents* web_contents,
       const AppId& app_id,
       std::unique_ptr<WebApplicationInfo> web_application_info,
+      bool redownload_app_icons,
       InstallManager::OnceInstallCallback callback);
 
   // Obtains WebApplicationInfo about web app located at |start_url|, fallbacks
@@ -183,6 +184,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       WebAppUrlLoader::Result result);
   void OnWebAppInstallabilityChecked(
       base::Optional<blink::Manifest> opt_manifest,
+      const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
 
@@ -200,6 +202,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       std::unique_ptr<WebApplicationInfo> web_app_info,
       bool force_shortcut_app,
       base::Optional<blink::Manifest> opt_manifest,
+      const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
 
@@ -233,6 +236,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       IconsMap icons_map);
   void OnIconsRetrievedFinalizeUpdate(
       std::unique_ptr<WebApplicationInfo> web_app_info,
+      bool redownload_app_icons,
       IconsMap icons_map);
   void OnDialogCompleted(ForInstallableSite for_installable_site,
                          bool user_accepted,

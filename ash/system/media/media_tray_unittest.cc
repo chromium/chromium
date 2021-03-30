@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/media_notification_provider.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
@@ -71,9 +72,7 @@ class MockTrayBackgroundView : public ash::TrayBackgroundView {
   ~MockTrayBackgroundView() override = default;
 
   // TrayBackgroundview implementations
-  base::string16 GetAccessibleNameForTray() override {
-    return base::ASCIIToUTF16("");
-  }
+  std::u16string GetAccessibleNameForTray() override { return u""; }
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
   void ClickedOutsideBubble() override {}
@@ -290,7 +289,12 @@ TEST_F(MediaTrayTest, PinToShelfDefaultBehavior) {
 }
 
 TEST_F(MediaTrayTest, BubbleGetsFocusWhenOpenWithKeyboard) {
-  media_tray()->ShowBubble(false /* show_by_click */);
+  media_tray()->ShowBubble();
+
+  // Generate a tab key press.
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
+
   EXPECT_TRUE(GetBubbleWrapper()->GetBubbleWidget()->IsActive());
 }
 

@@ -45,7 +45,7 @@ public class TabStateExtractorTest {
     @Mock
     private WebContentsStateBridge.Natives mWebContentsBridgeJni;
     @Mock
-    private TabImpl mTabMock;
+    private Tab mTabMock;
     @Mock
     private WebContents mWebContentsMock;
     @Mock

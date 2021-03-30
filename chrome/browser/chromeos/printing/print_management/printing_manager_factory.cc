@@ -4,16 +4,16 @@
 
 #include "chrome/browser/chromeos/printing/print_management/printing_manager_factory.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/chromeos/printing/print_management/printing_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/prefs/pref_registry_simple.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 
 namespace chromeos {
 namespace printing {
@@ -29,12 +29,6 @@ PrintingManager* PrintingManagerFactory::GetForProfile(Profile* profile) {
 // static
 PrintingManagerFactory* PrintingManagerFactory::GetInstance() {
   return base::Singleton<PrintingManagerFactory>::get();
-}
-
-// static
-void PrintingManagerFactory::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kDeletePrintJobHistoryAllowed, true);
 }
 
 PrintingManagerFactory::PrintingManagerFactory()
@@ -75,6 +69,11 @@ KeyedService* PrintingManagerFactory::BuildServiceInstanceFor(
 content::BrowserContext* PrintingManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextRedirectedInIncognito(context);
+}
+
+void PrintingManagerFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* user_prefs) {
+  user_prefs->RegisterBooleanPref(prefs::kDeletePrintJobHistoryAllowed, true);
 }
 
 bool PrintingManagerFactory::ServiceIsCreatedWithBrowserContext() const {

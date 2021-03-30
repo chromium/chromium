@@ -10,13 +10,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/scoped_nss_types.h"
@@ -157,7 +157,7 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12WrongPassword) {
 
   EXPECT_EQ(
       ERR_PKCS12_IMPORT_BAD_PASSWORD,
-      cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, base::string16(),
+      cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, std::u16string(),
                                  true,  // is_extractable
                                  nullptr));
 
@@ -168,10 +168,10 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12WrongPassword) {
 TEST_F(CertDatabaseNSSTest, ImportFromPKCS12AsExtractableAndExportAgain) {
   std::string pkcs12_data = ReadTestFile("client.p12");
 
-  EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           ASCIIToUTF16("12345"),
-                                           true,  // is_extractable
-                                           nullptr));
+  EXPECT_EQ(OK,
+            cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, u"12345",
+                                       true,  // is_extractable
+                                       nullptr));
 
   ScopedCERTCertificateList cert_list = ListCerts();
   ASSERT_EQ(1U, cert_list.size());
@@ -179,8 +179,8 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12AsExtractableAndExportAgain) {
 
   // TODO(mattm): move export test to separate test case?
   std::string exported_data;
-  EXPECT_EQ(1, cert_db_->ExportToPKCS12(cert_list, ASCIIToUTF16("exportpw"),
-                                        &exported_data));
+  EXPECT_EQ(1,
+            cert_db_->ExportToPKCS12(cert_list, u"exportpw", &exported_data));
   ASSERT_LT(0U, exported_data.size());
   // TODO(mattm): further verification of exported data?
 }
@@ -188,64 +188,64 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12AsExtractableAndExportAgain) {
 TEST_F(CertDatabaseNSSTest, ImportFromPKCS12Twice) {
   std::string pkcs12_data = ReadTestFile("client.p12");
 
-  EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           ASCIIToUTF16("12345"),
-                                           true,  // is_extractable
-                                           nullptr));
+  EXPECT_EQ(OK,
+            cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, u"12345",
+                                       true,  // is_extractable
+                                       nullptr));
   EXPECT_EQ(1U, ListCerts().size());
 
   // NSS has a SEC_ERROR_PKCS12_DUPLICATE_DATA error, but it doesn't look like
   // it's ever used.  This test verifies that.
-  EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           ASCIIToUTF16("12345"),
-                                           true,  // is_extractable
-                                           nullptr));
+  EXPECT_EQ(OK,
+            cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, u"12345",
+                                       true,  // is_extractable
+                                       nullptr));
   EXPECT_EQ(1U, ListCerts().size());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportFromPKCS12AsUnextractableAndExportAgain) {
   std::string pkcs12_data = ReadTestFile("client.p12");
 
-  EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           ASCIIToUTF16("12345"),
-                                           false,  // is_extractable
-                                           nullptr));
+  EXPECT_EQ(OK,
+            cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, u"12345",
+                                       false,  // is_extractable
+                                       nullptr));
 
   ScopedCERTCertificateList cert_list = ListCerts();
   ASSERT_EQ(1U, cert_list.size());
   EXPECT_EQ("testusercert", GetSubjectCN(cert_list[0].get()));
 
   std::string exported_data;
-  EXPECT_EQ(0, cert_db_->ExportToPKCS12(cert_list, ASCIIToUTF16("exportpw"),
-                                        &exported_data));
+  EXPECT_EQ(0,
+            cert_db_->ExportToPKCS12(cert_list, u"exportpw", &exported_data));
 }
 
 // Importing a PKCS#12 file with a certificate but no corresponding
 // private key should not mark an existing private key as unextractable.
 TEST_F(CertDatabaseNSSTest, ImportFromPKCS12OnlyMarkIncludedKey) {
   std::string pkcs12_data = ReadTestFile("client.p12");
-  EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           ASCIIToUTF16("12345"),
-                                           true,  // is_extractable
-                                           nullptr));
+  EXPECT_EQ(OK,
+            cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, u"12345",
+                                       true,  // is_extractable
+                                       nullptr));
 
   ScopedCERTCertificateList cert_list = ListCerts();
   ASSERT_EQ(1U, cert_list.size());
 
   // Now import a PKCS#12 file with just a certificate but no private key.
   pkcs12_data = ReadTestFile("client-nokey.p12");
-  EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           ASCIIToUTF16("12345"),
-                                           false,  // is_extractable
-                                           nullptr));
+  EXPECT_EQ(OK,
+            cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, u"12345",
+                                       false,  // is_extractable
+                                       nullptr));
 
   cert_list = ListCerts();
   ASSERT_EQ(1U, cert_list.size());
 
   // Make sure the imported private key is still extractable.
   std::string exported_data;
-  EXPECT_EQ(1, cert_db_->ExportToPKCS12(cert_list, ASCIIToUTF16("exportpw"),
-                                        &exported_data));
+  EXPECT_EQ(1,
+            cert_db_->ExportToPKCS12(cert_list, u"exportpw", &exported_data));
   ASSERT_LT(0U, exported_data.size());
 }
 
@@ -254,7 +254,7 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12InvalidFile) {
 
   EXPECT_EQ(
       ERR_PKCS12_IMPORT_INVALID_FILE,
-      cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, base::string16(),
+      cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, std::u16string(),
                                  true,  // is_extractable
                                  nullptr));
 
@@ -266,7 +266,7 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12EmptyPassword) {
   std::string pkcs12_data = ReadTestFile("client-empty-password.p12");
 
   EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           base::string16(),
+                                           std::u16string(),
                                            true,  // is_extractable
                                            nullptr));
   EXPECT_EQ(1U, ListCerts().size());
@@ -276,7 +276,7 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12NullPassword) {
   std::string pkcs12_data = ReadTestFile("client-null-password.p12");
 
   EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           base::string16(),
+                                           std::u16string(),
                                            true,  // is_extractable
                                            nullptr));
   EXPECT_EQ(1U, ListCerts().size());

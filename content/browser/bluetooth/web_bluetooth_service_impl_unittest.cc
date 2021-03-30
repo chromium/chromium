@@ -151,6 +151,10 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     prompt_->RunPromptEventCallback(event);
   }
 
+  void AddFramePermissionObserver(FramePermissionObserver* observer) override {}
+  void RemoveFramePermissionObserver(
+      FramePermissionObserver* observer) override {}
+
  private:
   FakeBluetoothScanningPrompt* prompt_ = nullptr;
 };

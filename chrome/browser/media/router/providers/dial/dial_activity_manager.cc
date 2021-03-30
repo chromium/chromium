@@ -272,8 +272,8 @@ void DialActivityManager::OnLaunchSuccess(const MediaRoute::Id& route_id,
 }
 
 void DialActivityManager::OnLaunchError(const MediaRoute::Id& route_id,
-                                        int response_code,
-                                        const std::string& message) {
+                                        const std::string& message,
+                                        base::Optional<int> response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto record_it = records_.find(route_id);
   if (record_it == records_.end())
@@ -300,8 +300,8 @@ void DialActivityManager::OnStopSuccess(const MediaRoute::Id& route_id,
 }
 
 void DialActivityManager::OnStopError(const MediaRoute::Id& route_id,
-                                      int response_code,
-                                      const std::string& message) {
+                                      const std::string& message,
+                                      base::Optional<int> response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto record_it = records_.find(route_id);
   if (record_it == records_.end())

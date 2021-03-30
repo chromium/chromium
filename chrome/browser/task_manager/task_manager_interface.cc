@@ -40,6 +40,19 @@ TaskManagerInterface* TaskManagerInterface::GetTaskManager() {
   return TaskManagerImpl::GetInstance();
 }
 
+// static
+void TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
+    int process_id,
+    int route_id,
+    int64_t recv_bytes,
+    int64_t sent_bytes) {
+  // Don't create a task manager if it hasn't already been created.
+  if (TaskManagerImpl::IsCreated()) {
+    TaskManagerImpl::GetInstance()->UpdateAccumulatedStatsNetworkForRoute(
+        process_id, route_id, recv_bytes, sent_bytes);
+  }
+}
+
 void TaskManagerInterface::AddObserver(TaskManagerObserver* observer) {
   observers_.AddObserver(observer);
   observer->observed_task_manager_ = this;

@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_RANGE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/range_boundary_point.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -48,7 +49,7 @@ class Node;
 class NodeWithIndex;
 class Text;
 
-class CORE_EXPORT Range final : public ScriptWrappable {
+class CORE_EXPORT Range final : public AbstractRange {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -68,12 +69,12 @@ class CORE_EXPORT Range final : public ScriptWrappable {
     DCHECK(owner_document_);
     return *owner_document_.Get();
   }
-  Node* startContainer() const { return &start_.Container(); }
-  unsigned startOffset() const { return start_.Offset(); }
-  Node* endContainer() const { return &end_.Container(); }
-  unsigned endOffset() const { return end_.Offset(); }
+  Node* startContainer() const override { return &start_.Container(); }
+  unsigned startOffset() const override { return start_.Offset(); }
+  Node* endContainer() const override { return &end_.Container(); }
+  unsigned endOffset() const override { return end_.Offset(); }
 
-  bool collapsed() const { return start_ == end_; }
+  bool collapsed() const override { return start_ == end_; }
   bool IsConnected() const;
 
   Node* commonAncestorContainer() const;

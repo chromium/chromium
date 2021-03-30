@@ -1,0 +1,86 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module memories.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/token.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "url/mojom/url.mojom";
+
+// Represents a search query related to a Memory.
+struct SearchQuery {
+  // Text of the search query.
+  mojo_base.mojom.String16 query;
+  // URL of the search query page.
+  url.mojom.Url url;
+};
+
+// Represents a webpage a visit was made to.
+struct WebPage {
+  // URL of the webpage; Identifies the webpage.
+  url.mojom.Url url;
+  // Title of the webpage.
+  mojo_base.mojom.String16 title;
+  // Optional externally hosted thumbnail representing the webpage.
+  url.mojom.Url? thumbnail_url;
+};
+
+// Represents a tab group related to a Memory.
+struct TabGroup {
+  // Tab group identifier. See //components/tab_groups/tab_group_id.h
+  mojo_base.mojom.Token id;
+  // Title of the tab group.
+  mojo_base.mojom.String16 title;
+  // Pages in this tab group.
+  array<WebPage> pages;
+};
+
+// Represents a visit to a webpage.
+struct Visit {
+  // Visit identifier. See //components/history/core/browser/history_types.h
+  int64 id;
+  // Visited URL.
+  url.mojom.Url url;
+  // Title of the visited webpage.
+  mojo_base.mojom.String16 page_title;
+  // Optional externally hosted thumbnail representing the visited webpage.
+  url.mojom.Url? thumbnail_url;
+  // Time of the visit.
+  mojo_base.mojom.Time time;
+  // Localized string of approximate time of visit, e.g., "2 days ago".
+  mojo_base.mojom.String16 relative_date;
+  // Time of day of visit, e.g., "3:07 PM".
+  mojo_base.mojom.String16 time_of_day;
+  // Number of duplicate visits (i.e., visits to the same URL) in the Memory.
+  int32 num_duplicate_visits;
+  // Related visits (e.g., visits to the same domain name) in the Memory;
+  // starting with the most recent, if applicable.
+  array<Visit> related_visits;
+  // A calculated engagement score (i.e., calculated based on how long the tab
+  // was in foreground etc).
+  double engagement_score;
+};
+
+// Represents a cluster of visits generated from device history by the browser
+// and displayed in the chrome://memories WebUI. Contains cluster-level metadata
+// derived from the metadata of constituent visits.
+struct Memory {
+  // Memory identifier.
+  mojo_base.mojom.UnguessableToken id;
+  // Search queries related to the constituent visits.
+  array<SearchQuery> related_searches;
+  // Tab groups containing one or more of the visited URLs in the Memory.
+  array<TabGroup> related_tab_groups;
+  // Bookmarked visited pages in the Memory.
+  array<WebPage> bookmarks;
+  // Top constituent visits; starting with the most recent.
+  array<Visit> top_visits;
+  // Time of the most recent visit in the Memory. Used for extracting Memories.
+  mojo_base.mojom.Time last_visit_time;
+  // A calculated engagement score based on engagement scores of constituent
+  // visits. Used to rank Memories.
+  double engagement_score;
+};

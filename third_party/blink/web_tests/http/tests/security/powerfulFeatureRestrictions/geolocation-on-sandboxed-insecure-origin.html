@@ -26,7 +26,7 @@
         }));
 
         var iframe = document.createElement("iframe");
-        iframe.sandbox = "allow-scripts";
+        iframe.sandbox = "allow-scripts allow-same-origin";
         iframe.src = get_host_info().UNAUTHENTICATED_ORIGIN +
                      "/security/powerfulFeatureRestrictions/resources/" +
                      "geolocation-in-iframe.html";

@@ -25,10 +25,12 @@
 - (void)setPreviousSessionEvents:(const std::vector<std::string>&)events;
 
 // Starts collecting breadcrumb events logged to |breadcrumbManager|.
-- (void)observeBreadcrumbManager:(BreadcrumbManager*)breadcrumbManager;
+- (void)observeBreadcrumbManager:
+    (breadcrumbs::BreadcrumbManager*)breadcrumbManager;
 
 // Stops collecting breadcrumb events logged to |breadcrumbManager|.
-- (void)stopObservingBreadcrumbManager:(BreadcrumbManager*)breadcrumbManager;
+- (void)stopObservingBreadcrumbManager:
+    (breadcrumbs::BreadcrumbManager*)breadcrumbManager;
 
 // Starts collecting breadcrumb events logged to |breadcrumbManagerService|.
 - (void)observeBreadcrumbManagerService:

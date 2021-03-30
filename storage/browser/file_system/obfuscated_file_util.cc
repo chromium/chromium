@@ -21,8 +21,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -819,7 +817,7 @@ ObfuscatedFileUtil::CreateFileEnumerator(FileSystemOperationContext* context,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SandboxDirectoryDatabase* db = GetDirectoryDatabase(root_url, false);
   if (!db) {
-    return base::WrapUnique(new EmptyFileEnumerator);
+    return std::make_unique<EmptyFileEnumerator>();
   }
   return std::make_unique<ObfuscatedFileEnumerator>(
       db, context, this, root_url, recursive);
@@ -1348,18 +1346,19 @@ bool ObfuscatedFileUtil::InitOriginDatabase(const url::Origin& origin_hint,
     }
   }
 
-  SandboxPrioritizedOriginDatabase* prioritized_origin_database =
-      new SandboxPrioritizedOriginDatabase(file_system_directory_,
-                                           env_override_);
-  origin_database_.reset(prioritized_origin_database);
+  std::unique_ptr<SandboxPrioritizedOriginDatabase>
+      prioritized_origin_database =
+          std::make_unique<SandboxPrioritizedOriginDatabase>(
+              file_system_directory_, env_override_);
 
-  if (!origin_hint.opaque() || !HasIsolatedStorage(origin_hint))
-    return true;
+  if (origin_hint.opaque() && HasIsolatedStorage(origin_hint)) {
+    const std::string isolated_origin_string =
+        GetIdentifierFromOrigin(origin_hint);
+    prioritized_origin_database->InitializePrimaryOrigin(
+        isolated_origin_string);
+  }
 
-  const std::string isolated_origin_string =
-      GetIdentifierFromOrigin(origin_hint);
-
-  prioritized_origin_database->InitializePrimaryOrigin(isolated_origin_string);
+  origin_database_ = std::move(prioritized_origin_database);
 
   return true;
 }

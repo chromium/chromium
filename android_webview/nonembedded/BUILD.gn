@@ -7,16 +7,23 @@ import("//android_webview/variables.gni")
 import("//build/config/android/rules.gni")
 
 generate_jni("nonembedded_jni_headers") {
-  sources = [ "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java" ]
+  sources = [
+    "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
+    "java/src/org/chromium/android_webview/nonembedded/NetworkFetcherTask.java",
+    "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
+    "java/src/org/chromium/android_webview/services/ComponentsProviderPathUtil.java",
+  ]
 }
 
 # Contains classes needed by the webview apk, but not used when loading the apk
 # as a library.
 android_library("nonembedded_java") {
   sources = [
+    "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
     "java/src/org/chromium/android_webview/nonembedded/AwNonembeddedUmaRecorder.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseActivity.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseContentProvider.java",
+    "java/src/org/chromium/android_webview/nonembedded/NetworkFetcherTask.java",
     "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
   ]
   deps = [
@@ -25,15 +32,16 @@ android_library("nonembedded_java") {
     "//android_webview:android_webview_product_config_java",
     "//android_webview:common_aidl_java",
     "//android_webview:common_java",
+    "//android_webview/glue:glue_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/about_ui/android:aboutui_java",
     "//components/embedder_support/android:application_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
@@ -65,13 +73,13 @@ android_library("devui_java") {
     "//base:base_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/version_info/android:version_constants_java",
-    "//third_party/android_deps:androidx_activity_activity_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_core_core_java",
-    "//third_party/android_deps:androidx_fragment_fragment_java",
-    "//third_party/android_deps:androidx_lifecycle_lifecycle_common_java",
-    "//third_party/android_deps:androidx_lifecycle_lifecycle_viewmodel_java",
-    "//third_party/android_deps:androidx_savedstate_savedstate_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
+    "//third_party/androidx:androidx_savedstate_savedstate_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.android_webview.devui"
@@ -82,6 +90,8 @@ android_library("services_java") {
     "java/src/org/chromium/android_webview/services/AwMinidumpUploadJobService.java",
     "java/src/org/chromium/android_webview/services/AwMinidumpUploaderDelegate.java",
     "java/src/org/chromium/android_webview/services/AwVariationsSeedFetcher.java",
+    "java/src/org/chromium/android_webview/services/ComponentsProviderPathUtil.java",
+    "java/src/org/chromium/android_webview/services/ComponentsProviderService.java",
     "java/src/org/chromium/android_webview/services/CrashReceiverService.java",
     "java/src/org/chromium/android_webview/services/DeveloperModeContentProvider.java",
     "java/src/org/chromium/android_webview/services/DeveloperUiService.java",
@@ -99,21 +109,52 @@ android_library("services_java") {
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/component_updater/android:component_provider_service_aidl_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/variations/android:variations_java",
     "//components/version_info/android:version_constants_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 
 source_set("nonembedded") {
-  sources = [ "webview_apk_application.cc" ]
+  sources = [
+    "component_updater/aw_component_installer_policy_delegate.cc",
+    "component_updater/aw_component_installer_policy_delegate.h",
+    "component_updater/aw_component_update_service.cc",
+    "component_updater/aw_component_update_service.h",
+    "component_updater/aw_component_updater_configurator.cc",
+    "component_updater/aw_component_updater_configurator.h",
+    "component_updater/installer_policies/aw_origin_trials_component_installer.cc",
+    "component_updater/installer_policies/aw_origin_trials_component_installer.h",
+    "component_updater/installer_policies/aw_trust_token_key_commitments_component_installer_policy.cc",
+    "component_updater/installer_policies/aw_trust_token_key_commitments_component_installer_policy.h",
+    "component_updater/registration.cc",
+    "component_updater/registration.h",
+    "net/network_fetcher_task.cc",
+    "net/network_fetcher_task.h",
+    "net/network_impl.cc",
+    "net/network_impl.h",
+    "webview_apk_application.cc",
+    "webview_apk_process.cc",
+    "webview_apk_process.h",
+  ]
   deps = [
     ":nonembedded_jni_headers",
     "//android_webview/common",
     "//base",
+    "//components/component_updater",
+    "//components/component_updater/installer_policies",
+    "//components/prefs",
+    "//components/update_client",
+    "//components/update_client:in_process_patcher",
+    "//components/update_client:in_process_unzipper",
+    "//components/version_info",
+    "//components/version_info/android:channel_getter",
+    "//url",
+    "//url:gurl_android",
 
     # Called via JNI by LicenseContentProvider in :nonembedded_java.
     "//components/about_ui:about_ui_android",

@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
@@ -33,6 +33,7 @@ class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
+class TabUrlProvider;
 class TopHostProvider;
 }  // namespace optimization_guide
 
@@ -67,6 +68,7 @@ class OptimizationGuideKeyedService
       override;
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
+      const base::Optional<optimization_guide::proto::Any>& model_metadata,
       optimization_guide::OptimizationTargetModelObserver* observer) override;
   void RemoveObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
@@ -103,6 +105,7 @@ class OptimizationGuideKeyedService
   // testing purposes only.
   void OverrideTargetModelFileForTesting(
       optimization_guide::proto::OptimizationTarget optimization_target,
+      const base::Optional<optimization_guide::proto::Any>& model_metadata,
       const base::FilePath& file_path);
 
  private:
@@ -166,6 +169,10 @@ class OptimizationGuideKeyedService
   // hosts. Will be null if the user has not consented to this type of browser
   // behavior.
   std::unique_ptr<optimization_guide::TopHostProvider> top_host_provider_;
+
+  // The tab URL provider to use for fetching information for the user's active
+  // tabs. Will be null if the user is off the record.
+  std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(OptimizationGuideKeyedService);
 };

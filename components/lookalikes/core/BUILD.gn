@@ -18,6 +18,7 @@ static_library("core") {
     "//components/security_state/core:features",
     "//components/strings",
     "//components/url_formatter",
+    "//components/url_formatter/spoof_checks/common_words:common",
     "//components/url_formatter/spoof_checks/top_domains:common",
     "//components/url_formatter/spoof_checks/top_domains:top500_domains",
     "//components/url_formatter/spoof_checks/top_domains:top500_domains_header",

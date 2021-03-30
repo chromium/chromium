@@ -4,8 +4,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import distutils.spawn
-import functools
 import logging
 import multiprocessing
 import optparse
@@ -19,6 +17,7 @@ import zipfile
 from util import build_utils
 from util import md5_check
 from util import jar_info_utils
+from util import server_utils
 
 sys.path.insert(
     0,
@@ -28,6 +27,10 @@ import colorama
 _JAVAC_EXTRACTOR = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party',
                                 'android_prebuilts', 'build_tools', 'common',
                                 'framework', 'javac_extractor.jar')
+
+# Add a check here to cause the suggested fix to be applied while compiling.
+# Use this when trying to enable more checks.
+ERRORPRONE_CHECKS_TO_APPLY = []
 
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
@@ -43,7 +46,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'MutablePublicArray',
     'UnescapedEntity',
     'NonCanonicalType',
-    'ProtectedMembersInFinalClass',
     'AlmostJavadoc',
     # TODO(crbug.com/834807): Follow steps in bug
     'DoubleBraceInitialization',
@@ -57,8 +59,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'CatchFail',
     # TODO(crbug.com/803485): Follow steps in bug.
     'JUnitAmbiguousTestClass',
-    # TODO(crbug.com/1027683): Follow steps in bug.
-    'UnnecessaryParentheses',
     # Android platform default is always UTF-8.
     # https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
     'DefaultCharset',
@@ -165,6 +165,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # We already have presubmit checks for this. Not necessary to warn on
     # every build.
     'RemoveUnusedImports',
+    # We do not care about unnecessary parenthesis enough to check for them.
+    'UnnecessaryParentheses',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -356,7 +358,7 @@ class _InfoFileContext(object):
     entries = self._Collect()
 
     logging.info('Writing info file: %s', output_path)
-    with build_utils.AtomicOutput(output_path) as f:
+    with build_utils.AtomicOutput(output_path, mode='wb') as f:
       jar_info_utils.WriteJarInfoFile(f, entries, self._srcjar_files)
     logging.info('Completed info file: %s', output_path)
 
@@ -406,8 +408,11 @@ def _OnStaleMd5(options, javac_cmd, javac_args, java_files):
 
   # Compiles with Error Prone take twice as long to run as pure javac. Thus GN
   # rules run both in parallel, with Error Prone only used for checks.
-  _RunCompiler(options, javac_cmd + javac_args, java_files,
-               options.classpath, options.jar_path,
+  _RunCompiler(options,
+               javac_cmd + javac_args,
+               java_files,
+               options.classpath,
+               options.jar_path,
                save_outputs=not options.enable_errorprone)
   logging.info('Completed all steps in _OnStaleMd5')
 
@@ -522,6 +527,10 @@ def _ParseOptions(argv):
   parser = optparse.OptionParser()
   build_utils.AddDepfileOption(parser)
 
+  parser.add_option('--target-name', help='Fully qualified GN target name.')
+  parser.add_option('--skip-build-server',
+                    action='store_true',
+                    help='Avoid using the build server.')
   parser.add_option(
       '--java-srcjars',
       action='append',
@@ -628,11 +637,17 @@ def _ParseOptions(argv):
 
 def main(argv):
   build_utils.InitLogging('JAVAC_DEBUG')
-  colorama.init()
-
   argv = build_utils.ExpandFileArgs(argv)
   options, java_files = _ParseOptions(argv)
 
+  # Only use the build server for errorprone runs.
+  if (options.enable_errorprone and not options.skip_build_server
+      and server_utils.MaybeRunCommand(name=options.target_name,
+                                       argv=sys.argv,
+                                       stamp_file=options.jar_path)):
+    return
+
+  colorama.init()
   javac_cmd = []
   if options.gomacc_path:
     javac_cmd.append(options.gomacc_path)
@@ -656,15 +671,26 @@ def main(argv):
     # Make everything a warning so that when treat_warnings_as_errors is false,
     # they do not fail the build.
     errorprone_flags += ['-XepAllErrorsAsWarnings']
-    for warning in ERRORPRONE_WARNINGS_TO_DISABLE:
-      errorprone_flags.append('-Xep:{}:OFF'.format(warning))
-    for warning in ERRORPRONE_WARNINGS_TO_ENABLE:
-      errorprone_flags.append('-Xep:{}:WARN'.format(warning))
+    # Don't check generated files.
+    errorprone_flags += ['-XepDisableWarningsInGeneratedCode']
+    errorprone_flags.extend('-Xep:{}:OFF'.format(x)
+                            for x in ERRORPRONE_WARNINGS_TO_DISABLE)
+    errorprone_flags.extend('-Xep:{}:WARN'.format(x)
+                            for x in ERRORPRONE_WARNINGS_TO_ENABLE)
+
+    if ERRORPRONE_CHECKS_TO_APPLY:
+      errorprone_flags += [
+          '-XepPatchLocation:IN_PLACE',
+          '-XepPatchChecks:,' + ','.join(ERRORPRONE_CHECKS_TO_APPLY)
+      ]
+
     javac_args += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
+
     # This flag quits errorprone after checks and before code generation, since
     # we do not need errorprone outputs, this speeds up errorprone by 4 seconds
     # for chrome_java.
-    javac_args += ['-XDshould-stop.ifNoError=FLOW']
+    if not ERRORPRONE_CHECKS_TO_APPLY:
+      javac_args += ['-XDshould-stop.ifNoError=FLOW']
 
   if options.java_version:
     javac_args.extend([
@@ -707,15 +733,16 @@ def main(argv):
     input_paths.append(options.header_jar)
   input_paths += [x[0] for x in options.additional_jar_files]
 
-  output_paths = [
-      options.jar_path,
-      options.jar_path + '.info',
-  ]
+  output_paths = [options.jar_path]
+  if not options.enable_errorprone:
+    output_paths += [options.jar_path + '.info']
 
   input_strings = javac_cmd + javac_args + options.classpath + java_files + [
       options.warnings_as_errors, options.jar_info_exclude_globs
   ]
 
+  # Keep md5_check since we plan to use its changes feature to implement a build
+  # speed improvement for non-signature compiles: https://crbug.com/1170778
   md5_check.CallAndWriteDepfileIfStale(
       lambda: _OnStaleMd5(options, javac_cmd, javac_args, java_files),
       options,

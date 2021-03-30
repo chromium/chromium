@@ -30,6 +30,7 @@ DEVICE_BASE_EXPORT extern const base::Feature kWebXrOrientationSensorDevice;
 namespace features {
 #if BUILDFLAG(ENABLE_OPENXR)
 DEVICE_BASE_EXPORT extern const base::Feature kOpenXR;
+DEVICE_BASE_EXPORT extern const base::Feature kOpenXRSharedImages;
 #endif  // ENABLE_OPENXR
 }  // namespace features
 }  // namespace device

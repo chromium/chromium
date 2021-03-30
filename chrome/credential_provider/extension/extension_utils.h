@@ -33,7 +33,7 @@ bool IsGCPWExtensionEnabled();
 
 // Returns the registry name from the provided |task_name| which is provided
 // when registering the task with GCPW extension.
-base::string16 GetLastSyncRegNameForTask(const base::string16& task_name);
+std::wstring GetLastSyncRegNameForTask(const std::wstring& task_name);
 
 }  // namespace extension
 }  // namespace credential_provider

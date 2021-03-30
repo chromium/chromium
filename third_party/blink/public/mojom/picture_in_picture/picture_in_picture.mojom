@@ -59,7 +59,7 @@ interface PictureInPictureService {
   // get migrated to not requiring a MediaPlayerId for identification purposes.
   StartSession(
       uint32 player_id,
-      pending_remote<media.mojom.MediaPlayer> player_remote,
+      pending_associated_remote<media.mojom.MediaPlayer> player_remote,
       viz.mojom.SurfaceId? surface_id,
       gfx.mojom.Size natural_size,
       bool show_play_pause_button,

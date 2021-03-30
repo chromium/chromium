@@ -21,6 +21,7 @@
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -115,12 +116,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_switches.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/dbus/dbus_helper.h"
 #include "chrome/browser/chromeos/startup_settings_cache.h"
-#include "chromeos/constants/chromeos_paths.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/hugepage_text/hugepage_text.h"
 #include "chromeos/memory/kstaled.h"
@@ -135,7 +136,7 @@
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_descriptors.h"
-#include "content/public/common/cpu_affinity.h"
+#include "components/power_scheduler/power_scheduler.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #else  // defined(OS_ANDROID)
 // Diagnostics is only available on non-android platforms.
@@ -207,11 +208,11 @@ namespace {
 // Early versions of Chrome incorrectly registered a chromehtml: URL handler,
 // which gives us nothing but trouble. Avoid launching chrome this way since
 // some apps fail to properly escape arguments.
-bool HasDeprecatedArguments(const base::string16& command_line) {
+bool HasDeprecatedArguments(const std::wstring& command_line) {
   const wchar_t kChromeHtml[] = L"chromehtml:";
-  base::string16 command_line_lower = base::ToLowerASCII(command_line);
+  std::wstring command_line_lower = base::ToLowerASCII(command_line);
   // We are only searching for ASCII characters so this is OK.
-  return (command_line_lower.find(kChromeHtml) != base::string16::npos);
+  return (command_line_lower.find(kChromeHtml) != std::wstring::npos);
 }
 
 // If we try to access a path that is not currently available, we want the call
@@ -247,15 +248,13 @@ void SetUpExtendedCrashReporting(bool is_browser_process) {
   wchar_t exe_file[MAX_PATH] = {};
   CHECK(::GetModuleFileName(nullptr, exe_file, base::size(exe_file)));
 
-  base::string16 product_name;
-  base::string16 version_number;
-  base::string16 channel_name;
-  base::string16 special_build;
+  std::wstring product_name, version_number, channel_name, special_build;
   install_static::GetExecutableVersionDetails(
       exe_file, &product_name, &version_number, &special_build, &channel_name);
 
-  extended_crash_reporting->SetProductStrings(product_name, version_number,
-                                              channel_name, special_build);
+  extended_crash_reporting->SetProductStrings(
+      base::WideToUTF16(product_name), base::WideToUTF16(version_number),
+      base::WideToUTF16(channel_name), base::WideToUTF16(special_build));
 }
 
 #endif  // defined(OS_WIN)
@@ -311,9 +310,9 @@ bool SubprocessNeedsResourceBundle(const std::string& process_type) {
 #if BUILDFLAG(ENABLE_NACL)
       process_type == switches::kNaClLoaderProcess ||
 #endif
-      process_type == switches::kPpapiPluginProcess ||
       process_type == switches::kGpuProcess ||
 #endif
+      process_type == switches::kPpapiPluginProcess ||
       process_type == switches::kRendererProcess ||
       process_type == switches::kUtilityProcess;
 }
@@ -332,7 +331,7 @@ bool HandleVersionSwitches(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kVersion)) {
     printf("%s %s %s\n", version_info::GetProductName().c_str(),
            version_info::GetVersionNumber().c_str(),
-           chrome::GetChannelName().c_str());
+           chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str());
     return true;
   }
 
@@ -527,11 +526,24 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // a ChromeNetworkDelegate attached that selectively allows cookies again.
   net::URLRequest::SetDefaultCookiePolicyToBlock();
 
+  // On Chrome OS, IPC (D-Bus, Crosapi) is required to create the FeatureList,
+  // which depends on policy from an OS service. So, initialize it at this
+  // timing.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The feature list depends on BrowserPolicyConnectorChromeOS which depends
   // on DBus, so initialize it here. Some D-Bus clients may depend on feature
   // list, so initialize them separately later at the end of this function.
   chromeos::InitializeDBus();
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // LacrosChromeServiceImpl instance needs the sequence of the main thread,
+  // and needs to be created earlier than incoming Mojo invitation handling.
+  // This also needs ThreadPool sequences to post some tasks internally.
+  // However, the tasks can be suspended until actual start of the ThreadPool
+  // sequences later.
+  lacros_chrome_service_ = std::make_unique<chromeos::LacrosChromeServiceImpl>(
+      std::make_unique<LacrosChromeServiceDelegateImpl>());
 #endif
 
   ChromeFeatureListCreator* chrome_feature_list_creator =
@@ -549,13 +561,6 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initialize D-Bus clients that depend on feature list.
   chromeos::InitializeFeatureListDependentDBus();
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LacrosChromeServiceImpl instance is needs the sequence of the main thread,
-  // and needs to be created earlier than incoming Mojo invitation handling.
-  lacros_chrome_service_ = std::make_unique<chromeos::LacrosChromeServiceImpl>(
-      std::make_unique<LacrosChromeServiceDelegateImpl>());
 #endif
 
 #if defined(OS_ANDROID)
@@ -577,6 +582,10 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 
 #if defined(OS_ANDROID)
   UmaSessionStats::OnStartup();
+#endif
+
+#if defined(OS_MAC)
+  chrome::CacheChannelInfo();
 #endif
 }
 
@@ -602,7 +611,12 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   // removed, the sandbox allowlist should be updated too.
   if (base::FeatureList::IsEnabled(
           features::kCpuAffinityRestrictToLittleCores)) {
-    content::EnforceProcessCpuAffinity(base::CpuAffinityMode::kLittleCoresOnly);
+    power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
+        power_scheduler::SchedulingPolicy::kLittleCoresOnly);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kPowerSchedulerThrottleIdle)) {
+    power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
+        power_scheduler::SchedulingPolicy::kThrottleIdle);
   }
 #endif
 
@@ -655,6 +669,14 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
 
   base::HangWatcher::InitializeOnMainThread();
 }
+
+#if defined(OS_WIN)
+bool ChromeMainDelegate::ShouldHandleConsoleControlEvents() {
+  // Handle console control events so that orderly shutdown can be performed by
+  // ChromeContentBrowserClient's override of SessionEnding.
+  return true;
+}
+#endif
 
 bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -977,9 +999,10 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #endif
 
 #if defined(OS_WIN)
-  // TODO(zturner): Throbber icons are still stored in chrome.dll, this can be
-  // killed once those are merged into resources.pak.  See
-  // GlassBrowserFrameView::InitThrobberIcons() and http://crbug.com/368327.
+  // TODO(zturner): Throbber icons and cursors are still stored in chrome.dll,
+  // this can be killed once those are merged into resources.pak. See
+  // GlassBrowserFrameView::InitThrobberIcons(), https://crbug.com/368327 and
+  // https://crbug.com/1178117.
   ui::SetResourcesDataDLL(_AtlBaseModule.GetResourceInstance());
 #endif
 

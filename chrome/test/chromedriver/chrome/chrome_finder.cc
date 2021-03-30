@@ -138,11 +138,9 @@ bool FindChrome(base::FilePath* browser_exe) {
   base::FilePath browser_exes_array[] = {
 #if defined(OS_WIN) || defined(OS_MAC)
     base::FilePath(chrome::kBrowserProcessExecutablePath),
-    base::FilePath(chrome::kBrowserProcessExecutablePathChromium)
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
     base::FilePath("google-chrome"),
     base::FilePath(chrome::kBrowserProcessExecutablePath),
-    base::FilePath(chrome::kBrowserProcessExecutablePathChromium),
     base::FilePath("chromium"),
     base::FilePath("chromium-browser")
 #else

@@ -66,9 +66,18 @@ class NET_EXPORT ReportingService {
 
   // Processes a Report-To header. |url| is the URL that originated the header;
   // |header_value| is the normalized value of the Report-To header.
-  virtual void ProcessHeader(const GURL& url,
-                             const NetworkIsolationKey& network_isolation_key,
-                             const std::string& header_value) = 0;
+  virtual void ProcessReportToHeader(
+      const GURL& url,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& header_value) = 0;
+
+  // Processes a Reporting-Endpoints header. |url| is the URL that originated
+  // the header; |header_value| is the normalized value of the
+  // Reporting-Endpoints header.
+  virtual void ProcessReportingEndpointsHeader(
+      const url::Origin& origin,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& header_value) = 0;
 
   // Removes browsing data from the Reporting system. See
   // ReportingBrowsingDataRemover for more details.

@@ -83,7 +83,7 @@ void UnmuteIfMutedByExtension(content::WebContents* contents,
 
 ExtensionBrowserWindowHelper::ExtensionBrowserWindowHelper(Browser* browser)
     : browser_(browser) {
-  registry_observer_.Add(ExtensionRegistry::Get(browser_->profile()));
+  registry_observation_.Observe(ExtensionRegistry::Get(browser_->profile()));
 }
 
 ExtensionBrowserWindowHelper::~ExtensionBrowserWindowHelper() = default;

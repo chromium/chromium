@@ -135,6 +135,7 @@ def _GetAllCfiRows(symbol_file):
   cfi_data = {}
   current_func = []
   for line in symbol_file:
+    line = line.decode('utf8')
     if 'STACK CFI' not in line:
       continue
 
@@ -197,7 +198,7 @@ def _WriteCfiData(cfi_data, out_file):
   # Store mapping between the functions to the index.
   func_addr_to_index = {}
   previous_func_end = 0
-  for addr, function in sorted(cfi_data.iteritems()):
+  for addr, function in sorted(cfi_data.items()):
     # Add an empty function entry when functions CFIs are missing between 2
     # functions.
     if previous_func_end != 0 and addr - previous_func_end  > 4:
@@ -211,7 +212,7 @@ def _WriteCfiData(cfi_data, out_file):
     # rows have CFI data. Create function data array as given in the format.
     for row in function[1:]:
       addr_offset = row[_ADDR_ENTRY] - addr
-      cfa_offset = (row[_CFA_REG]) | (row[_RA_REG] / 4)
+      cfa_offset = (row[_CFA_REG]) | (row[_RA_REG] // 4)
 
       func_data_arr.append(addr_offset)
       func_data_arr.append(cfa_offset)
@@ -221,7 +222,7 @@ def _WriteCfiData(cfi_data, out_file):
     for data in func_data_arr:
       func_data = (func_data << 16) | data
 
-    row_count = len(func_data_arr) / 2
+    row_count = len(func_data_arr) // 2
     if func_data not in data_to_index:
       # When data is not found, create a new index = len(unw_data), and write
       # the data to |unw_data|.
@@ -243,7 +244,7 @@ def _WriteCfiData(cfi_data, out_file):
   _Write4Bytes(out_file, len(func_addr_to_index))
 
   # Write the UNW_INDEX table. First list of addresses and then indices.
-  sorted_unw_index = sorted(func_addr_to_index.iteritems())
+  sorted_unw_index = sorted(func_addr_to_index.items())
   for addr, index in sorted_unw_index:
     _Write4Bytes(out_file, addr)
   for addr, index in sorted_unw_index:

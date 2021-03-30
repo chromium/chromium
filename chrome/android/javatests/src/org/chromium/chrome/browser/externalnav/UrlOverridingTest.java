@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Build;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -36,16 +35,15 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -56,7 +54,6 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -187,7 +184,7 @@ public class UrlOverridingTest {
         tab.addObserver(new TestTabObserver(finishCallback, failCallback, destroyedCallback));
         if (createsNewTab) {
             mActivityTestRule.getActivity().getTabModelSelector().addObserver(
-                    new EmptyTabModelSelectorObserver() {
+                    new TabModelSelectorObserver() {
                         @Override
                         public void onNewTabCreated(
                                 Tab newTab, @TabCreationState int creationState) {
@@ -433,7 +430,7 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    public void testRedirectionFromIntentCold() throws Exception {
+    public void testRedirectionFromIntentColdNoTask() throws Exception {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(mTestServer.getURL(NAVIGATION_FROM_JAVA_REDIRECTION_PAGE)));
@@ -446,29 +443,56 @@ public class UrlOverridingTest {
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
-        }, ScalableTimeout.scaleTimeout(10000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        ApplicationTestUtils.waitForActivityState(activity, Stage.STOPPED);
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
     }
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1159767")
-    public void testRedirectionFromIntentWarm() throws Exception {
+    public void testRedirectionFromIntentColdWithTask() throws Exception {
+        // Set up task with finished ChromeActivity.
         Context context = ContextUtils.getApplicationContext();
-        // TODO(crbug.com/1153686): This test times out on M tablets.
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return;
-        }
         mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.getActivity().finish();
+        ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.DESTROYED);
+
+        // Fire intent into existing task.
         Intent intent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(mTestServer.getURL(NAVIGATION_FROM_JAVA_REDIRECTION_PAGE)));
         intent.setClassName(context, ChromeLauncherActivity.class.getName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
+        ChromeTabbedActivity activity = ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class, Stage.CREATED, () -> context.startActivity(intent));
+        mActivityTestRule.setActivity(activity);
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testRedirectionFromIntentWarm() throws Exception {
+        Context context = ContextUtils.getApplicationContext();
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(mTestServer.getURL(NAVIGATION_FROM_JAVA_REDIRECTION_PAGE)));
+        intent.setClassName(context, ChromeLauncherActivity.class.getName());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
         context.startActivity(intent);
 
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1)));
+                () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
     }
 
     @Test

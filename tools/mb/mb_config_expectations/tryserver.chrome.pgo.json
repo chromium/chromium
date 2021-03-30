@@ -1,5 +1,5 @@
 {
-  "linux-pgo-trunk": {
+  "linux-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
       "is_chrome_branded": true,
@@ -10,7 +10,7 @@
       "use_goma": true
     }
   },
-  "mac-pgo-trunk": {
+  "mac-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
       "enable_keystone_registration_framework": false,
@@ -24,7 +24,7 @@
       "use_goma": true
     }
   },
-  "win32-pgo-trunk": {
+  "win32-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
       "enable_resource_allowlist_generation": false,
@@ -37,7 +37,7 @@
       "use_goma": true
     }
   },
-  "win64-pgo-trunk": {
+  "win64-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
       "enable_resource_allowlist_generation": false,

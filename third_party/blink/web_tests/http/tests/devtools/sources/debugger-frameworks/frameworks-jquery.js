@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests framework blackboxing feature on jQuery.\n`);
 
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.loadHTML(`

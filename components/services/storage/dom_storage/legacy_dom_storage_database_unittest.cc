@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "sql/statement.h"
@@ -54,23 +55,18 @@ void CheckValuesMatch(LegacyDomStorageDatabase* db,
 
   LegacyDomStorageValuesMap::const_iterator it = values_read.begin();
   for (; it != values_read.end(); ++it) {
-    base::string16 key = it->first;
-    base::NullableString16 value = it->second;
-    base::NullableString16 expected_value = expected.find(key)->second;
-    EXPECT_EQ(expected_value.string(), value.string());
-    EXPECT_EQ(expected_value.is_null(), value.is_null());
+    const std::u16string& key = it->first;
+    const base::Optional<std::u16string>& value = it->second;
+    const base::Optional<std::u16string>& expected_value =
+        expected.find(key)->second;
+    EXPECT_EQ(expected_value, value);
   }
 }
 
 void CreateMapWithValues(LegacyDomStorageValuesMap* values) {
-  base::string16 kCannedKeys[] = {ASCIIToUTF16("test"), ASCIIToUTF16("company"),
-                                  ASCIIToUTF16("date"), ASCIIToUTF16("empty")};
-  base::NullableString16 kCannedValues[] = {
-      base::NullableString16(ASCIIToUTF16("123"), false),
-      base::NullableString16(ASCIIToUTF16("Google"), false),
-      base::NullableString16(ASCIIToUTF16("18-01-2012"), false),
-      base::NullableString16(base::string16(), false)};
-  for (unsigned i = 0; i < sizeof(kCannedKeys) / sizeof(kCannedKeys[0]); i++)
+  std::u16string kCannedKeys[] = {u"test", u"company", u"date", u"empty"};
+  std::u16string kCannedValues[] = {u"123", u"Google", u"18-01-2012", u""};
+  for (unsigned i = 0; i < base::size(kCannedKeys); i++)
     (*values)[kCannedKeys[i]] = kCannedValues[i];
 }
 
@@ -139,7 +135,7 @@ TEST(LegacyDomStorageDatabaseTest, CloseEmptyDatabaseDeletesFile) {
     ASSERT_TRUE(db.CommitChanges(false, storage));
     auto it = storage.begin();
     for (; it != storage.end(); ++it)
-      it->second = base::NullableString16();
+      it->second = base::nullopt;
     ASSERT_TRUE(db.CommitChanges(false, storage));
   }
   EXPECT_FALSE(base::PathExists(file_name));
@@ -161,8 +157,7 @@ TEST(LegacyDomStorageDatabaseTest, TestLazyOpenIsLazy) {
   // Reading an empty db should not open the database.
   EXPECT_FALSE(db.IsOpen());
 
-  values[ASCIIToUTF16("key")] =
-      base::NullableString16(ASCIIToUTF16("value"), false);
+  values[u"key"] = u"value";
   db.CommitChanges(false, values);
   // Writing content should open the database.
   EXPECT_TRUE(db.IsOpen());
@@ -208,8 +203,7 @@ TEST(LegacyDomStorageDatabaseTest, WriteWithClear) {
 
   // Insert some values, clearing the database first.
   storage.clear();
-  storage[ASCIIToUTF16("another_key")] =
-      base::NullableString16(ASCIIToUTF16("test"), false);
+  storage[u"another_key"] = u"test";
   ASSERT_TRUE(db.CommitChanges(true, storage));
   CheckValuesMatch(&db, storage);
 
@@ -223,8 +217,8 @@ TEST(LegacyDomStorageDatabaseTest, TestSimpleRemoveOneValue) {
   LegacyDomStorageDatabase db(MakeFilesystemProxy());
 
   ASSERT_TRUE(db.LazyOpen(true));
-  const base::string16 kCannedKey = ASCIIToUTF16("test");
-  const base::NullableString16 kCannedValue(ASCIIToUTF16("data"), false);
+  const std::u16string kCannedKey = u"test";
+  const std::u16string kCannedValue = u"data";
   LegacyDomStorageValuesMap expected;
   expected[kCannedKey] = kCannedValue;
 
@@ -235,7 +229,7 @@ TEST(LegacyDomStorageDatabaseTest, TestSimpleRemoveOneValue) {
   LegacyDomStorageValuesMap values;
   // A null string in the map should mean that that key gets
   // removed.
-  values[kCannedKey] = base::NullableString16();
+  values[kCannedKey] = base::nullopt;
   EXPECT_TRUE(db.CommitChanges(false, values));
 
   expected.clear();
@@ -267,16 +261,15 @@ TEST(LegacyDomStorageDatabaseTest, TestCanOpenAndReadWebCoreDatabase) {
   EXPECT_TRUE(db.IsOpen());
   EXPECT_EQ(2u, values.size());
 
-  LegacyDomStorageValuesMap::const_iterator it =
-      values.find(ASCIIToUTF16("value"));
+  LegacyDomStorageValuesMap::const_iterator it = values.find(u"value");
   EXPECT_TRUE(it != values.end());
-  EXPECT_EQ(ASCIIToUTF16("I am in local storage!"), it->second.string());
+  EXPECT_EQ(u"I am in local storage!", it->second.value());
 
-  it = values.find(ASCIIToUTF16("timestamp"));
+  it = values.find(u"timestamp");
   EXPECT_TRUE(it != values.end());
-  EXPECT_EQ(ASCIIToUTF16("1326738338841"), it->second.string());
+  EXPECT_EQ(u"1326738338841", it->second.value());
 
-  it = values.find(ASCIIToUTF16("not_there"));
+  it = values.find(u"not_there");
   EXPECT_TRUE(it == values.end());
 }
 

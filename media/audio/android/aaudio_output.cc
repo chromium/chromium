@@ -5,6 +5,7 @@
 #include "media/audio/android/aaudio_output.h"
 
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "media/audio/android/aaudio_stubs.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/audio_bus.h"
@@ -42,11 +43,25 @@ AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
   DCHECK(params.IsValid());
 
   if (AudioManagerAndroid::SupportsPerformanceModeForOutput()) {
-    if (params.latency_tag() == AudioLatency::LATENCY_PLAYBACK)
-      performance_mode_ = AAUDIO_PERFORMANCE_MODE_POWER_SAVING;
-    else if (params.latency_tag() == AudioLatency::LATENCY_RTC)
-      performance_mode_ = AAUDIO_PERFORMANCE_MODE_LOW_LATENCY;
+    switch (params.latency_tag()) {
+      case AudioLatency::LATENCY_EXACT_MS:
+      case AudioLatency::LATENCY_INTERACTIVE:
+      case AudioLatency::LATENCY_RTC:
+        performance_mode_ = AAUDIO_PERFORMANCE_MODE_LOW_LATENCY;
+        break;
+      case AudioLatency::LATENCY_PLAYBACK:
+        performance_mode_ = AAUDIO_PERFORMANCE_MODE_POWER_SAVING;
+        break;
+      default:
+        performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
+    }
   }
+
+  TRACE_EVENT2("audio", "AAudioOutputStream::AAudioOutputStream",
+               "AAUDIO_PERFORMANCE_MODE_LOW_LATENCY",
+               performance_mode_ == AAUDIO_PERFORMANCE_MODE_LOW_LATENCY
+                   ? "true" : "false",
+               "frames_per_buffer", params.frames_per_buffer());
 }
 
 AAudioOutputStream::~AAudioOutputStream() {
@@ -70,8 +85,6 @@ bool AAudioOutputStream::Open() {
   AAudioStreamBuilder_setFormat(builder, AAUDIO_FORMAT_PCM_FLOAT);
   AAudioStreamBuilder_setUsage(builder, usage_);
   AAudioStreamBuilder_setPerformanceMode(builder, performance_mode_);
-  AAudioStreamBuilder_setBufferCapacityInFrames(builder,
-                                                params_.frames_per_buffer());
   AAudioStreamBuilder_setFramesPerDataCallback(builder,
                                                params_.frames_per_buffer());
 
@@ -87,7 +100,18 @@ bool AAudioOutputStream::Open() {
   if (AAUDIO_OK != result)
     return false;
 
+  // After opening the stream, sets the effective buffer size to 3X the burst
+  // size to prevent glitching if the burst is small (e.g. < 128). On some
+  // devices you can get by with 1X or 2X, but 3X is safer.
+  int32_t framesPerBurst = AAudioStream_getFramesPerBurst(aaudio_stream_);
+  int32_t sizeRequested = framesPerBurst * (framesPerBurst < 128 ? 3 : 2);
+  AAudioStream_setBufferSizeInFrames(aaudio_stream_, sizeRequested);
+
   audio_bus_ = AudioBus::Create(params_);
+
+  TRACE_EVENT2("audio", "AAudioOutputStream::Open",
+               "params_", params_.AsHumanReadableString(),
+               "requested BufferSizeInFrames", sizeRequested);
 
   return true;
 }

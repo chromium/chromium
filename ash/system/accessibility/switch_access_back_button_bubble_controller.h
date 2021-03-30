@@ -15,6 +15,10 @@ class SwitchAccessBackButtonView;
 class ASH_EXPORT SwitchAccessBackButtonBubbleController
     : public TrayBubbleView::Delegate {
  public:
+  // The additional amount of space taken up by the focus rings around the
+  // specified rect.
+  static constexpr int kFocusRingPaddingDp = 10;
+
   SwitchAccessBackButtonBubbleController();
   ~SwitchAccessBackButtonBubbleController() override;
 
@@ -38,6 +42,8 @@ class ASH_EXPORT SwitchAccessBackButtonBubbleController
   friend class SwitchAccessMenuBubbleControllerTest;
 
   gfx::Rect AdjustAnchorRect(const gfx::Rect& anchor);
+
+  bool for_menu_ = false;
 
   // Owned by views hierarchy.
   SwitchAccessBackButtonView* back_button_view_ = nullptr;

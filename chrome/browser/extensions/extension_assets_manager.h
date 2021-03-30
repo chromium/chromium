@@ -32,11 +32,13 @@ class ExtensionAssetsManager {
 
   // Copy extension assets to final location. This location could be under
   // |local_install_dir| or some common location shared for multiple users.
-  virtual void InstallExtension(const Extension* extension,
-                                const base::FilePath& unpacked_extension_root,
-                                const base::FilePath& local_install_dir,
-                                Profile* profile,
-                                InstallExtensionCallback callback) = 0;
+  virtual void InstallExtension(
+      const Extension* extension,
+      const base::FilePath& unpacked_extension_root,
+      const base::FilePath& local_install_dir,
+      Profile* profile,
+      InstallExtensionCallback callback,
+      bool updates_from_webstore_or_empty_update_url) = 0;
 
   // Remove extension assets if it is not used by anyone else.
   virtual void UninstallExtension(const std::string& id,

@@ -12,7 +12,15 @@ extern const char kUrlKey[];
 extern const char kDefaultLaunchContainerKey[];
 extern const char kDefaultLaunchContainerWindowValue[];
 extern const char kDefaultLaunchContainerTabValue[];
-extern const char kCreateDesktopShorcutKey[];
+extern const char kCreateDesktopShortcutKey[];
+extern const char kFallbackAppNameKey[];
+
+extern const char kWildcard[];
+
+extern const char kRunOnOsLogin[];
+extern const char kAllowed[];
+extern const char kBlocked[];
+extern const char kRunWindowed[];
 
 }  // namespace web_app
 

@@ -22,7 +22,7 @@ class LatencyTracker {
   // performing relevant UMA latency reporting.
   // Called when GPU buffers swap completes.
   void OnGpuSwapBuffersCompleted(
-      const std::vector<LatencyInfo>& latency_info,
+      std::vector<LatencyInfo> latency_info,
       bool top_controls_visible_height_changed = false);
 
  private:
@@ -34,9 +34,6 @@ class LatencyTracker {
 
     INPUT_METRIC_EVENT_MAX = SCROLL_UPDATE_WHEEL
   };
-
-  void OnGpuSwapBuffersCompleted(const LatencyInfo& latency,
-                                 bool top_controls_visible_height_changed);
 
   void ReportUkmScrollLatency(
       const InputMetricEvent& metric_event,

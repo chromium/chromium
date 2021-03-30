@@ -36,8 +36,7 @@
       </div>
       <div id="dialog-body" slot="body" scrollable>
         <iron-list class="ripple-padding" scroll-target="[[$$('[slot=body]')]]"
-            items="[[getLanguages_(
-                languages.supported, languages.enabled.*, filterValue_)]]">
+            items="[[getLanguages_(filterValue_)]]">
           <template>
             <cr-checkbox class="list-item no-outline"
                 checked="[[willAdd_(item.code)]]" tab-index="[[tabIndex]]"

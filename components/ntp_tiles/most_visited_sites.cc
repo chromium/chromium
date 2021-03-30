@@ -87,19 +87,18 @@ bool ShouldShowPopularSites() {
 
 // Generate a short title for Most Visited items before they're converted to
 // custom links.
-base::string16 GenerateShortTitle(const base::string16& title) {
+std::u16string GenerateShortTitle(const std::u16string& title) {
   // Empty title only happened in the unittests.
   if (title.empty())
-    return base::string16();
-  std::vector<base::string16> short_title_list =
-      SplitString(title, base::UTF8ToUTF16("-:|;"), base::TRIM_WHITESPACE,
-                  base::SPLIT_WANT_NONEMPTY);
+    return std::u16string();
+  std::vector<std::u16string> short_title_list = SplitString(
+      title, u"-:|;", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   // Make sure it doesn't crash when the title only contains spaces.
   if (short_title_list.empty())
-    return base::string16();
-  base::string16 short_title_front = short_title_list.front();
-  base::string16 short_title_back = short_title_list.back();
-  base::string16 short_title = short_title_front;
+    return std::u16string();
+  std::u16string short_title_front = short_title_list.front();
+  std::u16string short_title_back = short_title_list.back();
+  std::u16string short_title = short_title_front;
   if (short_title_front != short_title_back) {
     int words_in_front =
         SplitString(short_title_front, base::kWhitespaceASCIIAs16,
@@ -294,7 +293,7 @@ void MostVisitedSites::EnableCustomLinks(bool enable) {
 }
 
 bool MostVisitedSites::AddCustomLink(const GURL& url,
-                                     const base::string16& title) {
+                                     const std::u16string& title) {
   if (!custom_links_ || !custom_links_enabled_)
     return false;
 
@@ -317,7 +316,7 @@ bool MostVisitedSites::AddCustomLink(const GURL& url,
 
 bool MostVisitedSites::UpdateCustomLink(const GURL& url,
                                         const GURL& new_url,
-                                        const base::string16& new_title) {
+                                        const std::u16string& new_title) {
   if (!custom_links_ || !custom_links_enabled_)
     return false;
 
@@ -390,6 +389,10 @@ void MostVisitedSites::UndoCustomLinkAction() {
     UninitializeCustomLinks();
   else if (custom_links_->UndoAction())
     BuildCurrentTiles();
+}
+
+size_t MostVisitedSites::GetCustomLinkNum() {
+  return custom_links_->GetLinks().size();
 }
 
 void MostVisitedSites::AddOrRemoveBlockedUrl(const GURL& url, bool add_url) {
@@ -715,7 +718,7 @@ NTPTilesVector MostVisitedSites::CreatePopularSitesTiles(
 
 void MostVisitedSites::OnHomepageTitleDetermined(
     NTPTilesVector tiles,
-    const base::Optional<base::string16>& title) {
+    const base::Optional<std::u16string>& title) {
   if (!title.has_value())
     return;  // If there is no title, the most recent tile was already sent out.
 
@@ -724,7 +727,7 @@ void MostVisitedSites::OnHomepageTitleDetermined(
 
 NTPTilesVector MostVisitedSites::InsertHomeTile(
     NTPTilesVector tiles,
-    const base::string16& title) const {
+    const std::u16string& title) const {
   DCHECK(homepage_client_);
   DCHECK_GT(GetMaxNumSites(), 0u);
 
@@ -832,7 +835,7 @@ void MostVisitedSites::InitiateNotificationForNewTiles(
 
     // Don't wait for the homepage title from history but immediately serve a
     // copy of new tiles.
-    new_tiles = InsertHomeTile(std::move(new_tiles), base::string16());
+    new_tiles = InsertHomeTile(std::move(new_tiles), std::u16string());
   }
   MergeMostVisitedTiles(std::move(new_tiles));
 }

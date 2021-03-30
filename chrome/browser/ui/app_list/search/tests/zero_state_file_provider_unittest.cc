@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/zero_state_file_provider.h"
+#include "chrome/browser/ui/app_list/search/files/zero_state_file_provider.h"
+
+#include <string>
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/zero_state_file_result.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -74,7 +74,7 @@ class ZeroStateFileProviderTest : public testing::Test {
 };
 
 TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {
-  provider_->Start(base::UTF8ToUTF16("query"));
+  provider_->Start(u"query");
   Wait();
   EXPECT_TRUE(provider_->results().empty());
 }
@@ -92,7 +92,7 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
       {OpenEvent("exists_1.txt"), OpenEvent("exists_2.png")});
   provider_->OnFilesOpened({OpenEvent("nonexistant.txt")});
 
-  provider_->Start(base::string16());
+  provider_->Start(std::u16string());
   Wait();
 
   EXPECT_THAT(
@@ -114,7 +114,7 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvidedWithChips) {
       {OpenEvent("exists_1.txt"), OpenEvent("exists_2.png")});
   provider_->OnFilesOpened({OpenEvent("nonexistant.txt")});
 
-  provider_->Start(base::string16());
+  provider_->Start(std::u16string());
   Wait();
 
   EXPECT_THAT(

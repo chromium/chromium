@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -16,6 +15,10 @@ class AudioFocusWebContentsObserverBrowserTest
     : public extensions::PlatformAppBrowserTest {
  public:
   AudioFocusWebContentsObserverBrowserTest() = default;
+  AudioFocusWebContentsObserverBrowserTest(
+      const AudioFocusWebContentsObserverBrowserTest&) = delete;
+  AudioFocusWebContentsObserverBrowserTest& operator=(
+      const AudioFocusWebContentsObserverBrowserTest&) = delete;
   ~AudioFocusWebContentsObserverBrowserTest() override = default;
 
   const base::UnguessableToken& GetAudioFocusGroupId(
@@ -24,9 +27,6 @@ class AudioFocusWebContentsObserverBrowserTest
         AudioFocusWebContentsObserver::FromWebContents(web_contents);
     return wco->audio_focus_group_id_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusWebContentsObserverBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AudioFocusWebContentsObserverBrowserTest,

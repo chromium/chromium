@@ -32,6 +32,7 @@ class HIDDetectionView {
   virtual void Unbind() = 0;
   virtual void SetKeyboardState(const std::string& value) = 0;
   virtual void SetMouseState(const std::string& value) = 0;
+  virtual void SetTouchscreenDetectedState(bool value) = 0;
   virtual void SetKeyboardPinCode(const std::string& value) = 0;
   virtual void SetPinDialogVisible(bool value) = 0;
   virtual void SetNumKeysEnteredPinCode(int value) = 0;
@@ -57,6 +58,7 @@ class HIDDetectionScreenHandler
   void Unbind() override;
   void SetKeyboardState(const std::string& value) override;
   void SetMouseState(const std::string& value) override;
+  void SetTouchscreenDetectedState(bool value) override;
   void SetKeyboardPinCode(const std::string& value) override;
   void SetPinDialogVisible(bool value) override;
   void SetNumKeysEnteredPinCode(int value) override;
@@ -67,10 +69,14 @@ class HIDDetectionScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+  void DeclareJSCallbacks() override;
   void Initialize() override;
 
   // Registers the preference for derelict state.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  // Emulate that a USB Mouse and a USB Keyboard are connected for testing.
+  void HandleEmulateDevicesConnectedForTesting();
 
   // State that has been exported to JS. Used by tests.
   std::string keyboard_state_for_test() const { return keyboard_state_; }
@@ -116,4 +122,3 @@ class HIDDetectionScreenHandler
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_HID_DETECTION_SCREEN_HANDLER_H_
-

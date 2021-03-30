@@ -42,7 +42,6 @@ class LocalDOMWindow;
 class KURL;
 class ExceptionState;
 class HistoryItem;
-class SecurityOrigin;
 class ScriptState;
 
 // This class corresponds to the History interface.
@@ -80,14 +79,6 @@ class CORE_EXPORT History final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(HistoryTest, CanChangeToURL);
-  FRIEND_TEST_ALL_PREFIXES(HistoryTest, CanChangeToURLInFileOrigin);
-  FRIEND_TEST_ALL_PREFIXES(HistoryTest, CanChangeToURLInUniqueOrigin);
-
-  static bool CanChangeToUrl(const KURL&,
-                             const SecurityOrigin*,
-                             const KURL& document_url);
-
   KURL UrlForState(const String& url);
 
   void StateObjectAdded(scoped_refptr<SerializedScriptValue>,

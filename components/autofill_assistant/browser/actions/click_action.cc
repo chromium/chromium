@@ -40,7 +40,7 @@ void ClickAction::InternalProcessAction(ProcessActionCallback callback) {
     return;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector, base::BindOnce(&ClickAction::OnWaitForElementTimed,
                                weak_ptr_factory_.GetWeakPtr(),
                                base::BindOnce(&ClickAction::OnWaitForElement,
@@ -52,7 +52,7 @@ void ClickAction::OnWaitForElement(ProcessActionCallback callback,
                                    const Selector& selector,
                                    const ClientStatus& element_status) {
   if (!element_status.ok()) {
-    UpdateProcessedAction(element_status.proto_status());
+    UpdateProcessedAction(element_status);
     std::move(callback).Run(std::move(processed_action_proto_));
     return;
   }

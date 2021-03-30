@@ -6,9 +6,6 @@
 
 #include "base/trace_event/trace_event.h"
 
-using base::TimeDelta;
-using base::TimeTicks;
-
 namespace content {
 
 OneShotTimeoutMonitor::OneShotTimeoutMonitor(TimeoutHandler timeout_handler,

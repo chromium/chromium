@@ -8,12 +8,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
@@ -37,7 +37,7 @@ class Extension;
 class DevicePermissionsPrompt {
  public:
   using UsbDevicesCallback =
-      base::Callback<void(std::vector<device::mojom::UsbDeviceInfoPtr>)>;
+      base::OnceCallback<void(std::vector<device::mojom::UsbDeviceInfoPtr>)>;
   using HidDevicesCallback =
       base::OnceCallback<void(std::vector<device::mojom::HidDeviceInfoPtr>)>;
 
@@ -51,14 +51,14 @@ class DevicePermissionsPrompt {
       DeviceInfo();
       virtual ~DeviceInfo();
 
-      const base::string16& name() const { return name_; }
-      const base::string16& serial_number() const { return serial_number_; }
+      const std::u16string& name() const { return name_; }
+      const std::u16string& serial_number() const { return serial_number_; }
       bool granted() const { return granted_; }
       void set_granted() { granted_ = true; }
 
      protected:
-      base::string16 name_;
-      base::string16 serial_number_;
+      std::u16string name_;
+      std::u16string serial_number_;
 
      private:
       bool granted_ = false;
@@ -68,10 +68,13 @@ class DevicePermissionsPrompt {
     // implementation should register an observer.
     class Observer {
      public:
+      // Must be called after OnDeviceAdded() has been called for the final time
+      // to create the initial set of options.
+      virtual void OnDevicesInitialized() = 0;
       virtual void OnDeviceAdded(size_t index,
-                                 const base::string16& device_name) = 0;
+                                 const std::u16string& device_name) = 0;
       virtual void OnDeviceRemoved(size_t index,
-                                   const base::string16& device_name) = 0;
+                                   const std::u16string& device_name) = 0;
 
      protected:
       virtual ~Observer();
@@ -85,8 +88,8 @@ class DevicePermissionsPrompt {
     virtual void SetObserver(Observer* observer);
 
     size_t GetDeviceCount() const { return devices_.size(); }
-    base::string16 GetDeviceName(size_t index) const;
-    base::string16 GetDeviceSerialNumber(size_t index) const;
+    std::u16string GetDeviceName(size_t index) const;
+    std::u16string GetDeviceSerialNumber(size_t index) const;
 
     // Notifies the DevicePermissionsManager for the current extension that
     // access to the device at the given index is now granted.
@@ -100,7 +103,7 @@ class DevicePermissionsPrompt {
    protected:
     virtual ~Prompt();
 
-    void AddCheckedDevice(std::unique_ptr<DeviceInfo> device, bool allowed);
+    void AddDevice(std::unique_ptr<DeviceInfo> device);
 
     const Extension* extension() const { return extension_; }
     Observer* observer() const { return observer_; }
@@ -130,7 +133,7 @@ class DevicePermissionsPrompt {
                         content::BrowserContext* context,
                         bool multiple,
                         std::vector<device::mojom::UsbDeviceFilterPtr> filters,
-                        const UsbDevicesCallback& callback);
+                        UsbDevicesCallback callback);
 
   void AskForHidDevices(const Extension* extension,
                         content::BrowserContext* context,

@@ -105,7 +105,8 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
     // underlying HTTP/2 connection has been established but before the stream
     // has been opened.  This cannot be called more than once.
     virtual std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
-        base::WeakPtr<SpdySession> session) = 0;
+        base::WeakPtr<SpdySession> session,
+        std::vector<std::string> dns_aliases) = 0;
   };
 
   // After the handshake has completed, this method creates a WebSocketStream

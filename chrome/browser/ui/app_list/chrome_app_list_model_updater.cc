@@ -90,15 +90,21 @@ void ChromeAppListModelUpdater::AddItemToFolder(
 }
 
 void ChromeAppListModelUpdater::RemoveItem(const std::string& id) {
+  // Copy the ID to the stack since it may to be destroyed in
+  // RemoveChromeItem(). See crbug.com/1190347.
+  std::string id_copy = id;
+  RemoveChromeItem(id_copy);
   if (app_list_controller_)
-    app_list_controller_->RemoveItem(id);
-  RemoveChromeItem(id);
+    app_list_controller_->RemoveItem(id_copy);
 }
 
 void ChromeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
+  // Copy the ID to the stack since it may to be destroyed in
+  // RemoveChromeItem(). See crbug.com/1190347.
+  std::string id_copy = id;
+  RemoveChromeItem(id_copy);
   if (app_list_controller_)
-    app_list_controller_->RemoveUninstalledItem(id);
-  RemoveChromeItem(id);
+    app_list_controller_->RemoveUninstalledItem(id_copy);
 }
 
 void ChromeAppListModelUpdater::MoveItemToFolder(const std::string& id,
@@ -121,7 +127,7 @@ void ChromeAppListModelUpdater::SetSearchEngineIsGoogle(bool is_google) {
     app_list_controller_->SetSearchEngineIsGoogle(is_google);
 }
 
-void ChromeAppListModelUpdater::UpdateSearchBox(const base::string16& text,
+void ChromeAppListModelUpdater::UpdateSearchBox(const std::u16string& text,
                                                 bool initiated_by_user) {
   if (!app_list_controller_)
     return;
@@ -264,6 +270,13 @@ void ChromeAppListModelUpdater::SetItemFolderId(const std::string& id,
   app_list_controller_->SetItemMetadata(id, std::move(data));
 }
 
+void ChromeAppListModelUpdater::SetNotificationBadgeColor(const std::string& id,
+                                                          const SkColor color) {
+  if (!app_list_controller_)
+    return;
+  app_list_controller_->SetItemNotificationBadgeColor(id, color);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Methods only used by ChromeSearchResult that talk to ash directly.
 
@@ -352,17 +365,12 @@ void ChromeAppListModelUpdater::GetContextMenuModel(
 
 syncer::StringOrdinal ChromeAppListModelUpdater::GetFirstAvailablePosition()
     const {
-  std::vector<ChromeAppListItem*> top_level_items;
-  for (auto& entry : items_) {
-    ChromeAppListItem* item = entry.second.get();
-    DCHECK(item->position().IsValid())
-        << "Item with invalid position: id=" << item->id()
-        << ", name=" << item->name() << ", is_folder=" << item->is_folder()
-        << ", is_page_break=" << item->is_page_break();
-    if (item->folder_id().empty() && item->position().IsValid())
-      top_level_items.emplace_back(item);
-  }
-  return GetFirstAvailablePositionInternal(top_level_items);
+  return GetFirstAvailablePositionInternal(GetTopLevelItems());
+}
+
+syncer::StringOrdinal ChromeAppListModelUpdater::GetPositionBeforeFirstItem()
+    const {
+  return GetPositionBeforeFirstItemInternal(GetTopLevelItems());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -546,4 +554,19 @@ void ChromeAppListModelUpdater::OnPageBreakItemDeleted(const std::string& id) {
   for (AppListModelUpdaterObserver& observer : observers_)
     observer.OnAppListItemWillBeDeleted(chrome_item);
   items_.erase(id);
+}
+
+std::vector<ChromeAppListItem*> ChromeAppListModelUpdater::GetTopLevelItems()
+    const {
+  std::vector<ChromeAppListItem*> top_level_items;
+  for (auto& entry : items_) {
+    ChromeAppListItem* item = entry.second.get();
+    DCHECK(item->position().IsValid())
+        << "Item with invalid position: id=" << item->id()
+        << ", name=" << item->name() << ", is_folder=" << item->is_folder()
+        << ", is_page_break=" << item->is_page_break();
+    if (item->folder_id().empty() && item->position().IsValid())
+      top_level_items.emplace_back(item);
+  }
+  return top_level_items;
 }

@@ -9,7 +9,7 @@
 #include "ash/style/scoped_light_mode_as_default.h"
 
 namespace ash {
-ClipboardHistoryLabel::ClipboardHistoryLabel(const base::string16& text)
+ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text)
     : views::Label(text) {
   SetPreferredSize(
       gfx::Size(INT_MAX, ClipboardHistoryViews::kLabelPreferredHeight));

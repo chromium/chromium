@@ -1,0 +1,114 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "bounds": [300, 300],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 278],
+      "bounds": [278, 22],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [278, 0],
+      "bounds": [22, 278],
+      "transform": 1
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [278, 278],
+      "bounds": [22, 22],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='child first'",
+      "bounds": [90, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='child second'",
+      "bounds": [90, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 6
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 12, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, -0.00666666666666667],
+        [0, 0, 0, 1]
+      ],
+      "origin": [150, 150]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 98, 0, 1]
+      ],
+      "flattenInheritedTransform": false
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 15, 1]
+      ],
+      "flattenInheritedTransform": false
+    },
+    {
+      "id": 5,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [98, 98, 0, 1]
+      ],
+      "flattenInheritedTransform": false
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 30, 1]
+      ],
+      "flattenInheritedTransform": false
+    }
+  ]
+}
+

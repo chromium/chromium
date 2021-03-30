@@ -71,7 +71,7 @@ class AX_BASE_EXPORT AXMode {
   constexpr AXMode() : flags_(0) {}
   constexpr AXMode(uint32_t flags) : flags_(flags) {}
 
-  bool has_mode(uint32_t flag) const { return (flags_ & flag) > 0; }
+  bool has_mode(uint32_t flag) const { return (flags_ & flag) == flag; }
 
   void set_mode(uint32_t flag, bool value) {
     flags_ = value ? (flags_ | flag) : (flags_ & ~flag);
@@ -96,11 +96,20 @@ class AX_BASE_EXPORT AXMode {
   uint32_t flags_;
 };
 
+// Used when an AT that only require basic accessibility information, such as
+// a dictation tool, is present.
+static constexpr AXMode kAXModeBasic(AXMode::kNativeAPIs |
+                                     AXMode::kWebContents);
+
+// Used when complete accessibility access is desired but a third-party AT is
+// not present.
 static constexpr AXMode kAXModeWebContentsOnly(AXMode::kWebContents |
                                                AXMode::kInlineTextBoxes |
                                                AXMode::kScreenReader |
                                                AXMode::kHTML);
 
+// Used when an AT that requires full accessibility access, such as a screen
+// reader, is present.
 static constexpr AXMode kAXModeComplete(AXMode::kNativeAPIs |
                                         AXMode::kWebContents |
                                         AXMode::kInlineTextBoxes |

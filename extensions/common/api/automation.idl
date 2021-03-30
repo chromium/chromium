@@ -244,7 +244,6 @@
     iframePresentational,
     ignored,
     image,
-    imageMap,
     imeCandidate,
     inlineTextBox,
     inputTime,
@@ -461,14 +460,26 @@
     readOnly
   };
 
-  // Indicates the availability and type of interactive popup element
+  // Availability and types for an interactive popup element.
   enum HasPopup {
+    false,
     true,
     menu,
     listbox,
     tree,
     grid,
     dialog
+  };
+
+  // Indicates the ARIA-current state.
+  enum AriaCurrentState {
+    false,
+    true,
+    page,
+    step,
+    location,
+    date,
+    time
   };
 
   // Describes possible actions when performing a do default action.
@@ -1222,14 +1233,8 @@ enum SortDirectionType {
     // The detected language code for this subtree.
     DOMString? detectedLanguage;
 
-    // Indicates the availability and type of interactive popup element
-    // true - the popup is a menu
-    // menu - the popup is a menu
-    // listbox - the popup is a listbox
-    // tree - the popup is a tree
-    // grid - the popup is a grid
-    // dialog - the popup is a dialog
-    DOMString? hasPopup;
+    // Indicates the availability and type of an interactive popup element.
+    HasPopup? hasPopup;
 
     // Input restriction, if any, such as readonly or disabled:
     // undefined - enabled control or other object that is not disabled
@@ -1282,6 +1287,9 @@ enum SortDirectionType {
 
     // Indicates whether this is a root of an editable subtree.
     boolean editableRoot;
+
+    // Indicates aria-current state.
+    AriaCurrentState? ariaCurrentState;
 
     //
     // Walking the tree.

@@ -4,8 +4,10 @@
 
 #include "components/query_tiles/internal/tile_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/query_tiles/internal/tile_config.h"
 #include "components/query_tiles/internal/tile_group.h"
+#include "components/query_tiles/switches.h"
 #include "components/query_tiles/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +40,7 @@ TEST(TileUtilsTest, Sort) {
   EXPECT_EQ(group.tiles[1]->sub_tiles[1]->sub_tiles[0]->id, "guid-3-1");
 }
 
-TEST(TileUtilsTest, SortWithEmptytile_stats) {
+TEST(TileUtilsTest, SortWithEmptyTileStats) {
   TileGroup group;
   test::ResetTestGroup(&group);
 
@@ -48,6 +50,28 @@ TEST(TileUtilsTest, SortWithEmptytile_stats) {
   EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-2");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
+  EXPECT_EQ(group.tiles[0]->sub_tiles[0]->id, "guid-2-1");
+  EXPECT_EQ(group.tiles[0]->sub_tiles[1]->id, "guid-2-2");
+}
+
+TEST(TileUtilsTest, SortWithEmptyTileStatsAndShuffle) {
+  base::test::ScopedFeatureList feature_list;
+  // Shuffle the 2nd and 3rd tile.
+  std::map<std::string, std::string> params = {{kTileShufflePositionKey, "1"}};
+  feature_list.InitAndEnableFeatureWithParameters(features::kQueryTiles,
+                                                  params);
+  TileGroup group;
+  test::ResetTestGroup(&group);
+
+  std::map<std::string, TileStats> tile_stats;
+
+  // First tile should be in place.
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
+  EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
+
+  EXPECT_TRUE(
+      (group.tiles[1]->id == "guid-1-2" && group.tiles[2]->id == "guid-1-3") ||
+      (group.tiles[1]->id == "guid-1-3" && group.tiles[2]->id == "guid-1-2"));
   EXPECT_EQ(group.tiles[0]->sub_tiles[0]->id, "guid-2-1");
   EXPECT_EQ(group.tiles[0]->sub_tiles[1]->id, "guid-2-2");
 }

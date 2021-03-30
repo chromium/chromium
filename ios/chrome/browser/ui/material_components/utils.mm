@@ -15,6 +15,7 @@
 
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,7 +45,7 @@ void ConfigureAppBarViewControllerWithCardStyle(
   viewController.headerView.shiftBehavior =
       MDCFlexibleHeaderShiftBehaviorDisabled;
   viewController.headerView.backgroundColor =
-      UIColor.cr_secondarySystemBackgroundColor;
+      [UIColor colorNamed:kSecondaryBackgroundColor];
   viewController.navigationBar.tintColor = UIColor.cr_labelColor;
   viewController.navigationBar.titleAlignment =
       MDCNavigationBarTitleAlignmentLeading;

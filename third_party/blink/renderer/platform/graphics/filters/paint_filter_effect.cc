@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkPaintImageFilter.h"
 
 namespace blink {
 

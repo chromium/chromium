@@ -50,10 +50,10 @@ constexpr int kExpectedSourceBufferSize = kRequestedBufferSize;
 // output end of its FIFO.
 constexpr int kExpectedOutputBufferSize = kSampleRate / 100;
 
-class MockMediaStreamAudioSink : public WebMediaStreamAudioSink {
+class FormatCheckingMockAudioSink : public WebMediaStreamAudioSink {
  public:
-  MockMediaStreamAudioSink() {}
-  ~MockMediaStreamAudioSink() override {}
+  FormatCheckingMockAudioSink() = default;
+  ~FormatCheckingMockAudioSink() override = default;
 
   void OnData(const media::AudioBus& audio_bus,
               base::TimeTicks estimated_capture_time) override {
@@ -173,8 +173,7 @@ TEST_F(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   CheckOutputFormatMatches(audio_source()->GetAudioParameters());
 
   // Connect a sink to the track.
-  std::unique_ptr<MockMediaStreamAudioSink> sink(
-      new MockMediaStreamAudioSink());
+  auto sink = std::make_unique<FormatCheckingMockAudioSink>();
   EXPECT_CALL(*sink, FormatIsSet(_))
       .WillOnce(Invoke(this, &ThisTest::CheckOutputFormatMatches));
   MediaStreamAudioTrack::From(audio_track())->AddSink(sink.get());

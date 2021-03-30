@@ -41,7 +41,7 @@ class LocaleItem : public ActionableView {
 
   LocaleItem(tray::LocaleDetailedView* locale_detailed_view,
              const std::string& iso_code,
-             const base::string16& display_name,
+             const std::u16string& display_name,
              bool checked)
       : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
         locale_detailed_view_(locale_detailed_view),

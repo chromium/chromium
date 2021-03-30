@@ -15,12 +15,9 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/prefs/testing_pref_service.h"
 
-namespace syncer {
-class Invalidation;
-}
-
 namespace invalidation {
 
+class Invalidation;
 class InvalidationLogger;
 
 // An InvalidationService that emits invalidations only when
@@ -33,39 +30,36 @@ class FakeInvalidationService : public InvalidationService {
       delete;
   ~FakeInvalidationService() override;
 
-  void RegisterInvalidationHandler(
-      syncer::InvalidationHandler* handler) override;
-  bool UpdateInterestedTopics(syncer::InvalidationHandler* handler,
-                              const syncer::TopicSet& topics) override;
-  void UnregisterInvalidationHandler(
-      syncer::InvalidationHandler* handler) override;
+  void RegisterInvalidationHandler(InvalidationHandler* handler) override;
+  bool UpdateInterestedTopics(InvalidationHandler* handler,
+                              const TopicSet& topics) override;
+  void UnregisterInvalidationHandler(InvalidationHandler* handler) override;
 
-  syncer::InvalidatorState GetInvalidatorState() const override;
+  InvalidatorState GetInvalidatorState() const override;
   std::string GetInvalidatorClientId() const override;
   InvalidationLogger* GetInvalidationLogger() override;
   void RequestDetailedStatus(
       base::RepeatingCallback<void(const base::DictionaryValue&)> caller)
       const override;
 
-  void SetInvalidatorState(syncer::InvalidatorState state);
+  void SetInvalidatorState(InvalidatorState state);
 
-  const syncer::InvalidatorRegistrarWithMemory& invalidator_registrar() const {
+  const InvalidatorRegistrarWithMemory& invalidator_registrar() const {
     return *invalidator_registrar_;
   }
 
-  void EmitInvalidationForTest(const syncer::Invalidation& invalidation);
+  void EmitInvalidationForTest(const Invalidation& invalidation);
 
   // Emitted invalidations will be hooked up to this AckHandler.  Clients can
   // query it to assert the invalidaitons are being acked properly.
-  syncer::MockAckHandler* GetMockAckHandler();
+  MockAckHandler* GetMockAckHandler();
 
  private:
   std::string client_id_;
   // |pref_service_| must outlive |invalidator_registrar_|.
   TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<syncer::InvalidatorRegistrarWithMemory>
-      invalidator_registrar_;
-  syncer::MockAckHandler mock_ack_handler_;
+  std::unique_ptr<InvalidatorRegistrarWithMemory> invalidator_registrar_;
+  MockAckHandler mock_ack_handler_;
 };
 
 }  // namespace invalidation

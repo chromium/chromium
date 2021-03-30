@@ -6,15 +6,15 @@
 # toolchain() rules themselves.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromecast_build.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
-  # If this is set to true, or if LLVM_FORCE_HEAD_REVISION is set to 1
-  # in the environment, we use the revision in the llvm repo to determine
+  # If this is set to true, we use the revision in the llvm repo to determine
   # the CLANG_REVISION to use, instead of the version hard-coded into
   # //tools/clang/scripts/update.py. This should only be used in
-  # conjunction with setting LLVM_FORCE_HEAD_REVISION in the
-  # environment when `gclient runhooks` is run as well.
+  # conjunction with setting the llvm_force_head_revision DEPS variable when
+  # `gclient runhooks` is run as well.
   llvm_force_head_revision = false
 
   # Compile with Xcode version of clang instead of hermetic version shipped
@@ -27,9 +27,9 @@ declare_args() {
 }
 
 if (generate_linker_map) {
-  assert(
-      is_official_build,
-      "Linker map files should only be generated when is_official_build = true")
+  assert(is_official_build || is_chromecast,
+         "Linker map files should only be generated when is_official_build = " +
+             "true or is_chromecast = true")
   assert(current_os == "android" || current_os == "linux" ||
              target_os == "android" || target_os == "linux" ||
              target_os == "chromeos",
@@ -38,8 +38,7 @@ if (generate_linker_map) {
 }
 
 declare_args() {
-  # Clang compiler version. Clang files are placed at version-dependent paths.
-  clang_version = "12.0.0"
+  clang_version = "13.0.0"
 }
 
 # Check target_os here instead of is_ios as this file is loaded for secondary

@@ -26,7 +26,7 @@ MinimumChromeVersionChecker::~MinimumChromeVersionChecker() {
 }
 
 bool MinimumChromeVersionChecker::Parse(Extension* extension,
-                                        base::string16* error) {
+                                        std::u16string* error) {
   std::string minimum_version_string;
   if (!extension->manifest()->GetString(keys::kMinimumChromeVersion,
                                         &minimum_version_string)) {

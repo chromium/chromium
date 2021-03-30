@@ -263,6 +263,34 @@ function testNewWindowAttachAfterOpenerDestroyed() {
   embedder.setUpNewWindowRequest_(webview, 'guest.html', '', testName);
 }
 
+// Test that an embedder can attach a new window to a <webview> in a different
+// frame.
+async function testNewWindowAttachInSubFrame() {
+  let testName = 'testNewWindowAttachInSubFrame';
+  let webview = embedder.setUpGuest_('foobar');
+
+  let subframe = document.createElement('iframe');
+  subframe.src = '/subframe_with_webview.html';
+  await new Promise((resolve) => {
+    subframe.onload = resolve;
+    document.body.appendChild(subframe);
+  });
+
+  webview.addEventListener('newwindow', (e) => {
+    embedder.assertCorrectEvent_(e, '');
+
+    let newwebview = subframe.contentDocument.querySelector('webview');
+    newwebview.addEventListener('loadstop', embedder.test.succeed);
+    try {
+      e.window.attach(newwebview);
+    } catch (e) {
+      embedder.test.fail();
+    }
+  });
+
+  embedder.setUpNewWindowRequest_(webview, 'guest.html', '', testName);
+}
+
 function testNewWindowClose() {
   var testName = 'testNewWindowClose';
   var webview = embedder.setUpGuest_('foobar');
@@ -600,6 +628,7 @@ function testNewWindowAndUpdateOpener() {
 embedder.test.testList = {
   'testNewWindowAttachAfterOpenerDestroyed':
       testNewWindowAttachAfterOpenerDestroyed,
+  'testNewWindowAttachInSubFrame': testNewWindowAttachInSubFrame,
   'testNewWindowClose': testNewWindowClose,
   'testNewWindowDeclarativeWebRequest': testNewWindowDeclarativeWebRequest,
   'testNewWindowDeferredAttachment': testNewWindowDeferredAttachment,

@@ -31,10 +31,11 @@ namespace device {
 class XRDeviceAbstraction {
  public:
   virtual mojom::XRFrameDataPtr GetNextFrameData();
-  virtual bool StartRuntime() = 0;
+
+  using StartRuntimeCallback = base::OnceCallback<void(bool success)>;
+  virtual void StartRuntime(StartRuntimeCallback start_runtime_callback) = 0;
   virtual void StopRuntime() = 0;
   virtual void OnSessionStart();
-  virtual bool PreComposite();
   virtual bool HasSessionEnded();
   virtual bool SubmitCompositedFrame() = 0;
   virtual void HandleDeviceLost();
@@ -106,6 +107,13 @@ class XRCompositorCommon : public base::Thread,
 
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
 
+  // Override the default of false if you wish to use shared buffers across
+  // processes
+  virtual bool IsUsingSharedImages() const;
+
+  void SubmitFrameWithTextureHandle(int16_t frame_index,
+                                    mojo::PlatformHandle texture_handle) final;
+
  private:
   // base::Thread overrides:
   void Init() final;
@@ -113,6 +121,14 @@ class XRCompositorCommon : public base::Thread,
 
   void ClearPendingFrame();
   void StartPendingFrame();
+
+  void StartRuntimeFinish(
+      base::OnceCallback<void()> on_presentation_ended,
+      base::RepeatingCallback<void(mojom::XRVisibilityState)>
+          on_visibility_state_changed,
+      mojom::XRRuntimeSessionOptionsPtr options,
+      RequestSessionCallback callback,
+      bool success);
 
   // Will Submit if we have textures submitted from the Overlay (if it is
   // visible), and WebXR (if it is visible).  We decide what to wait for during
@@ -130,9 +146,7 @@ class XRCompositorCommon : public base::Thread,
                    base::TimeDelta time_waited) final;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,
                                    const gpu::SyncToken&,
-                                   base::TimeDelta time_waited) final;
-  void SubmitFrameWithTextureHandle(int16_t frame_index,
-                                    mojo::PlatformHandle texture_handle) final;
+                                   base::TimeDelta time_waited) override;
   void UpdateLayerBounds(int16_t frame_id,
                          const gfx::RectF& left_bounds,
                          const gfx::RectF& right_bounds,

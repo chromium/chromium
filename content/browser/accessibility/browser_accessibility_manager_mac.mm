@@ -54,10 +54,6 @@ BrowserAccessibilityManagerMac::BrowserAccessibilityManagerMac(
     BrowserAccessibilityDelegate* delegate)
     : BrowserAccessibilityManager(delegate) {
   Initialize(initial_tree);
-  // Temporary fix. Disable extra mac nodes, which only affects column
-  // navigation but fixes a number of crash bugs seen only with VoiceOver.
-  // This does not affect verbalization of columns headers in cell navigation.
-  ax_tree()->SetEnableExtraMacNodes(GetExtraMacNodesAllowed());
 }
 
 BrowserAccessibilityManagerMac::~BrowserAccessibilityManagerMac() {}
@@ -131,8 +127,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
   auto native_node = ToBrowserAccessibilityCocoa(node);
   DCHECK(native_node);
 
-  bool focus_changed = GetFocus() != GetLastFocusedNode();
-
   // Refer to |AXObjectCache::postPlatformNotification| in WebKit source code.
   NSString* mac_notification = nullptr;
   switch (event_type) {
@@ -183,8 +177,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       if (!focus)
         break;  // Just fire a notification on the root.
 
-      NSDictionary* user_info =
-          GetUserInfoForSelectedTextChangedNotification(focus_changed);
+      NSDictionary* user_info = GetUserInfoForSelectedTextChangedNotification();
 
       BrowserAccessibilityManager* root_manager = GetRootManager();
       if (!root_manager)
@@ -276,7 +269,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       mac_notification = ui::NSAccessibilityMenuItemSelectedNotification;
       break;
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
-      DCHECK(node->GetData().IsRangeValueSupported());
+      DCHECK(node->GetData().IsRangeValueSupported())
+          << "Range value changed but range values are not supported: " << node;
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
     case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
@@ -321,8 +315,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       DCHECK(node->IsTextField());
       mac_notification = NSAccessibilityValueChangedNotification;
       if (!text_edits_.empty()) {
-        base::string16 deleted_text;
-        base::string16 inserted_text;
+        std::u16string deleted_text;
+        std::u16string inserted_text;
         int32_t node_id = node->GetId();
         const auto iterator = text_edits_.find(node_id);
         id edit_text_marker = nil;
@@ -452,9 +446,8 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
   }
 }
 
-NSDictionary*
-BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
-    bool focus_changed) {
+NSDictionary* BrowserAccessibilityManagerMac::
+    GetUserInfoForSelectedTextChangedNotification() {
   NSMutableDictionary* user_info =
       [[[NSMutableDictionary alloc] init] autorelease];
   [user_info setObject:@YES forKey:ui::NSAccessibilityTextStateSyncKey];
@@ -471,7 +464,10 @@ BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
   // TODO(mrobinson): Determine definitively what the type of this text
   // selection change is. This requires passing this information here from
   // blink.
-  if (focus_changed) {
+  BrowserAccessibility* focus_object = GetFocus();
+  DCHECK(focus_object);
+
+  if (focus_object != GetLastFocusedNode()) {
     [user_info setObject:@(ui::AXTextStateChangeTypeSelectionMove)
                   forKey:ui::NSAccessibilityTextStateChangeTypeKey];
   } else {
@@ -479,22 +475,18 @@ BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
                   forKey:ui::NSAccessibilityTextStateChangeTypeKey];
   }
 
-  int32_t focus_id = ax_tree()->GetUnignoredSelection().focus_object_id;
-  BrowserAccessibility* focus_object = GetFromID(focus_id);
-  if (focus_object) {
-    focus_object = focus_object->PlatformGetClosestPlatformObject();
-    auto native_focus_object = ToBrowserAccessibilityCocoa(focus_object);
-    if (native_focus_object && [native_focus_object instanceActive]) {
-      [user_info setObject:native_focus_object
-                    forKey:ui::NSAccessibilityTextChangeElement];
+  focus_object = focus_object->PlatformGetLowestPlatformAncestor();
+  auto native_focus_object = ToBrowserAccessibilityCocoa(focus_object);
+  if (native_focus_object && [native_focus_object instanceActive]) {
+    [user_info setObject:native_focus_object
+                  forKey:ui::NSAccessibilityTextChangeElement];
 
-      id selected_text = [native_focus_object selectedTextMarkerRange];
-      if (selected_text) {
-        NSString* const NSAccessibilitySelectedTextMarkerRangeAttribute =
-            @"AXSelectedTextMarkerRange";
-        [user_info setObject:selected_text
-                      forKey:NSAccessibilitySelectedTextMarkerRangeAttribute];
-      }
+    id selected_text = [native_focus_object selectedTextMarkerRange];
+    if (selected_text) {
+      NSString* const NSAccessibilitySelectedTextMarkerRangeAttribute =
+          @"AXSelectedTextMarkerRange";
+      [user_info setObject:selected_text
+                    forKey:NSAccessibilitySelectedTextMarkerRangeAttribute];
     }
   }
 
@@ -504,8 +496,8 @@ BrowserAccessibilityManagerMac::GetUserInfoForSelectedTextChangedNotification(
 NSDictionary*
 BrowserAccessibilityManagerMac::GetUserInfoForValueChangedNotification(
     const BrowserAccessibilityCocoa* native_node,
-    const base::string16& deleted_text,
-    const base::string16& inserted_text,
+    const std::u16string& deleted_text,
+    const std::u16string& inserted_text,
     id edit_text_marker) const {
   DCHECK(native_node);
   if (deleted_text.empty() && inserted_text.empty())

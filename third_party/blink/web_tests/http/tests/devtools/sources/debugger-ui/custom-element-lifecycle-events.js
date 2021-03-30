@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(`Tests that custom element lifecycle events fire while debugger is paused.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.evaluateInPagePromise(`

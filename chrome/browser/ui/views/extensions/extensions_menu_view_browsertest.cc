@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -39,7 +40,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
@@ -296,6 +296,10 @@ class ExtensionsMenuViewBrowserTest : public ExtensionsToolbarBrowserTest {
 
     // Removing the last extension. All actions now have the same state.
     RemoveExtension(method, extensions()[1]->id());
+
+    // Container should remain visible during the removal animation.
+    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
+    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
     EXPECT_EQ(expected_visibility, GetExtensionsToolbarContainer()->IsDrawn());
   }
 
@@ -552,8 +556,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   DismissUi();
 }
 
+// Failing on Mac. https://crbug.com/1176703
+#if defined(OS_MAC)
+#define MAYBE_PinningDisabledInIncognito DISABLED_PinningDisabledInIncognito
+#else
+#define MAYBE_PinningDisabledInIncognito PinningDisabledInIncognito
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
-                       PinningDisabledInIncognito) {
+                       MAYBE_PinningDisabledInIncognito) {
   LoadTestExtension("extensions/uitest/window_open", true);
   SetUpIncognitoBrowser();
 
@@ -634,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
-  base::string16 visibility_label = context_menu->GetLabelAt(visibility_index);
+  std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
   EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Unpin");
 }
 
@@ -664,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
-  base::string16 visibility_label = context_menu->GetLabelAt(visibility_index);
+  std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
   EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Pin");
 }
 
@@ -702,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   ExtensionsMenuItemView* item_view = menu_items[0];
   EXPECT_FALSE(item_view->IsContextMenuRunning());
 
-  views::ImageButton* context_menu_button =
+  HoverButton* context_menu_button =
       menu_items[0]->context_menu_button_for_testing();
   ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
@@ -745,136 +755,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, InvocationSourceMetrics) {
 
   // TODO(devlin): Add a test for command invocation once
   // https://crbug.com/1070305 is fixed.
-}
-
-namespace {
-constexpr char kExtensionAId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
-constexpr char kExtensionBId[] = "mockepjebcnmhmhcahfddgfcdgkdifnc";
-constexpr char kExtensionCId[] = "dpfmafkdlbmopmcepgpjkpldjbghdibm";
-
-bool TestShouldEnableToolbarMenuExperiment() {
-  std::string test_name =
-      testing::UnitTest::GetInstance()->current_test_info()->name();
-  // This PRE_PRE_ step sets up pre-migration extension prefs. The experiment
-  // triggers migration so it needs to be off during pre-condition setup.
-  return test_name.find(
-             "PRE_PRE_PostExtensionMigrationChangesPersistAfterRestart") ==
-         std::string::npos;
-}
-
-}  // namespace
-
-class ExtensionsToolbarMigrationBrowserTest
-    : public ExtensionsToolbarBrowserTest {
- protected:
-  ExtensionsToolbarMigrationBrowserTest()
-      : ExtensionsToolbarBrowserTest(TestShouldEnableToolbarMenuExperiment()) {}
-
-  void ShowUi(const std::string& name) override {
-    // Intentionally empty, this tests UI in the toolbar.
-  }
-
- private:
-  extensions::ScopedInstallVerifierBypassForTest ignore_install_verification_;
-};
-
-// Add and verify extensions with extensions toolbar menu feature turned off.
-// TODO(corising): Remove this series of tests and the |enable_flag| parameter
-// from initialization of ExtensionsToolbarBrowserTest once the extensions
-// toolbar menu experiment has been launched for a couple milestones.
-IN_PROC_BROWSER_TEST_F(
-    ExtensionsToolbarMigrationBrowserTest,
-    PRE_PRE_PostExtensionMigrationChangesPersistAfterRestart) {
-  // Add three extensions.
-  LoadTestExtension("extensions/good.crx");
-  LoadTestExtension("extensions/trivial_extension/extension.crx");
-  LoadTestExtension("extensions/page_action.crx");
-
-  // Verify all extensions have been added.
-  EXPECT_EQ(3u, extensions().size());
-  EXPECT_EQ(extensions()[0]->id(), kExtensionAId);
-  EXPECT_EQ(extensions()[1]->id(), kExtensionBId);
-  EXPECT_EQ(extensions()[2]->id(), kExtensionCId);
-
-  BrowserActionsContainer* browser_actions =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
-          ->browser_actions();
-
-  // Hide the last extension and verify that only the first two of the three are
-  // visible.
-  ToolbarActionsModel::Get(profile())->SetActionVisibility(kExtensionCId,
-                                                           false);
-  EXPECT_TRUE(browser_actions->GetViewForId(kExtensionAId)->GetVisible());
-  EXPECT_TRUE(browser_actions->GetViewForId(kExtensionBId)->GetVisible());
-  EXPECT_FALSE(browser_actions->GetViewForId(kExtensionCId)->GetVisible());
-}
-
-// Test visible extensions migrate to pinned extensions after Chrome restart and
-// that any further changes are reflected in the extension prefs.
-IN_PROC_BROWSER_TEST_F(ExtensionsToolbarMigrationBrowserTest,
-                       PRE_PostExtensionMigrationChangesPersistAfterRestart) {
-  // Wait for any animations to finish.
-  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
-
-  auto* toolbar_model = ToolbarActionsModel::Get(profile());
-
-  // Verify that the extensions that were visible are now the pinned extensions
-  // in the extension prefs.
-  extensions::ExtensionPrefs* const extension_prefs =
-      extensions::ExtensionPrefs::Get(profile());
-  EXPECT_THAT(extension_prefs->GetPinnedExtensions(),
-              testing::ElementsAre(kExtensionAId, kExtensionBId));
-  // Verify that the extensions that were visible are now the pinned extensions
-  // in the toolbar model.
-  EXPECT_TRUE(toolbar_model->IsActionPinned(kExtensionAId));
-  EXPECT_TRUE(toolbar_model->IsActionPinned(kExtensionBId));
-  EXPECT_FALSE(toolbar_model->IsActionPinned(kExtensionCId));
-  // Verify that the extensions that were visible are now visible in the toolbar
-  // container.
-  ExtensionsToolbarContainer* extensions_container =
-      GetExtensionsToolbarContainer();
-  EXPECT_TRUE(extensions_container->GetViewForId(kExtensionAId)->GetVisible());
-  EXPECT_TRUE(extensions_container->GetViewForId(kExtensionBId)->GetVisible());
-  EXPECT_FALSE(extensions_container->GetViewForId(kExtensionCId)->GetVisible());
-
-  // Verify that pinning/unpinning action is reflected in preferences.
-  toolbar_model->SetActionVisibility(kExtensionAId, false);
-  EXPECT_THAT(extension_prefs->GetPinnedExtensions(),
-              testing::ElementsAre(kExtensionBId));
-  toolbar_model->SetActionVisibility(kExtensionCId, true);
-  EXPECT_THAT(extension_prefs->GetPinnedExtensions(),
-              testing::ElementsAre(kExtensionBId, kExtensionCId));
-
-  // Verify that moving an action is reflected in preferences.
-  toolbar_model->MovePinnedAction(kExtensionCId, 0);
-  EXPECT_THAT(extension_prefs->GetPinnedExtensions(),
-              testing::ElementsAre(kExtensionCId, kExtensionBId));
-}
-
-// Test that any post-migration extension changes are persisent after Chrome
-// restarts.
-IN_PROC_BROWSER_TEST_F(ExtensionsToolbarMigrationBrowserTest,
-                       PostExtensionMigrationChangesPersistAfterRestart) {
-  // Wait for any animations to finish.
-  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
-
-  extensions::ExtensionPrefs* const extension_prefs =
-      extensions::ExtensionPrefs::Get(profile());
-  EXPECT_THAT(extension_prefs->GetPinnedExtensions(),
-              testing::ElementsAre(kExtensionCId, kExtensionBId));
-  // Verify that these extensions are also pinned extensions in the toolbar
-  // model.
-  auto* toolbar_model = ToolbarActionsModel::Get(profile());
-  EXPECT_FALSE(toolbar_model->IsActionPinned(kExtensionAId));
-  EXPECT_TRUE(toolbar_model->IsActionPinned(kExtensionBId));
-  EXPECT_TRUE(toolbar_model->IsActionPinned(kExtensionCId));
-  // Verify that these extensions are visible in the toolbar container.
-  ExtensionsToolbarContainer* extensions_container =
-      GetExtensionsToolbarContainer();
-  EXPECT_FALSE(extensions_container->GetViewForId(kExtensionAId)->GetVisible());
-  EXPECT_TRUE(extensions_container->GetViewForId(kExtensionBId)->GetVisible());
-  EXPECT_TRUE(extensions_container->GetViewForId(kExtensionCId)->GetVisible());
 }
 
 class ActivateWithReloadExtensionsMenuBrowserTest

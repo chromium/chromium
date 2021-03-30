@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -42,6 +43,9 @@ class ASH_EXPORT AutotestDesksApi {
   // true otherwise.
   bool ActivateAdjacentDesksToTargetIndex(int index,
                                           base::OnceClosure on_complete);
+
+  // Check whether a window belongs to a desk at |desk_index| or not.
+  bool IsWindowInDesk(aura::Window* window, int desk_index);
 };
 
 }  // namespace ash

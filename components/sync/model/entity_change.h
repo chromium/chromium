@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/sync/model/entity_data.h"
+#include "components/sync/engine/entity_data.h"
 
 namespace syncer {
 

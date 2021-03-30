@@ -62,7 +62,8 @@ StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
   standard_params.is_signin_allowed =
       ProfileSyncServiceFactory::IsSyncAllowed(profile);
   if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile)) {
-    standard_params.is_signed_in = identity_manager->HasPrimaryAccount();
+    standard_params.is_signed_in =
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
   standard_params.is_supervised_user = profile->IsSupervised();
   standard_params.is_force_signin_enabled = signin_util::IsForceSigninEnabled();

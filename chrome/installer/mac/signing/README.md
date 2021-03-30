@@ -68,8 +68,17 @@ tied to the official Google signing identity.
 In addition, the Chromium [code sign
 config](https://cs.chromium.org/chromium/src/chrome/installer/mac/signing/chromium_config.py)
 only produces one Distribution to sign just the .app. An
-`is_chrome_build=true` build produces several Distributions for the official
+`is_chrome_branded=true` build produces several Distributions for the official
 release system.
+
+## Google Chrome
+
+If you attempt to sign an `is_chrome_branded=true` build locally, the app will
+fail to launch because certain entitlements are tied to the official Google code
+signing identity/certificate. To test an `is_chrome_branded=true` build locally,
+replace the contents of
+[`app-entitlements-chrome.plist`](../../../app/app-entitlements-chrome.plist) with
+an empty plist.
 
 ### System Detached Signatures
 

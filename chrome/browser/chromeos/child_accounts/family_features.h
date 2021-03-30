@@ -17,6 +17,11 @@ extern const base::Feature kFamilyUserMetricsProvider;
 // Filters family link user metrics into one of three types.
 extern const base::Feature kFamilyLinkUserMetricsProvider;
 
+// Enables showing handoff screen to Family Link user during OOBE.
+extern const base::Feature kFamilyLinkOobeHandoff;
+
+bool IsFamilyLinkOobeHandoffEnabled();
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_FAMILY_FEATURES_H_

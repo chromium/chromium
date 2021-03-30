@@ -359,7 +359,7 @@ SyncStatusCode LocalFileChangeTracker::CollectLastDirtyChanges(
       file_system_context->sandbox_delegate()->sync_file_util();
   DCHECK(file_util);
   std::unique_ptr<FileSystemOperationContext> context(
-      new FileSystemOperationContext(file_system_context));
+      std::make_unique<FileSystemOperationContext>(file_system_context));
 
   base::File::Info file_info;
   base::FilePath platform_path;

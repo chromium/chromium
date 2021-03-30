@@ -9,6 +9,14 @@
 
 @class UIView;
 
+// Observer to listen for when the doodle is shown and hidden.
+@protocol DoodleObserver <NSObject>
+
+// Notifies observer that the display state of the doodle has changed.
+- (void)doodleDisplayStateChanged:(BOOL)showingDoodle;
+
+@end
+
 // Defines a controller whose view contains a doodle or search engine logo.
 @protocol LogoVendor<LogoAnimationControllerOwnerOwner, NSObject>
 
@@ -17,6 +25,12 @@
 
 // Whether or not the logo should be shown.  Defaults to YES.
 @property(nonatomic, assign, getter=isShowingLogo) BOOL showingLogo;
+
+// Whether or not the doodle is being shown. Defaults to NO.
+- (BOOL)isShowingDoodle;
+
+// Listening to DoodleObserver.
+@property(nonatomic, weak) id<DoodleObserver> doodleObserver;
 
 // Checks for a new doodle.  Calling this method frequently will result in a
 // query being issued at most once per hour.

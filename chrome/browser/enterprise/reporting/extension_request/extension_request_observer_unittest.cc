@@ -142,7 +142,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
         close_run_loop.QuitClosure());
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification_id,
-        base::Optional<int>(), base::Optional<base::string16>());
+        base::Optional<int>(), base::Optional<std::u16string>());
     close_run_loop.Run();
 
     // Verify that only |expected_removed_requests| are removed from the pref.

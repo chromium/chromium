@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/views/policy/enterprise_startup_dialog_view.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
@@ -30,6 +30,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(OS_MAC)
 #include "base/task/current_thread.h"
@@ -54,7 +55,7 @@ gfx::Insets GetDialogInsets() {
       views::CONTROL, views::TEXT);
 }
 
-std::unique_ptr<views::Label> CreateText(const base::string16& message) {
+std::unique_ptr<views::Label> CreateText(const std::u16string& message) {
   auto text = std::make_unique<views::Label>(message);
   text->SetFontList(gfx::FontList().Derive(kFontSizeDelta, gfx::Font::NORMAL,
                                            gfx::Font::Weight::MEDIUM));
@@ -95,6 +96,7 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
   set_draggable(true);
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetExtraView(CreateLogoView());
+  SetModalType(ui::MODAL_TYPE_NONE);
   SetAcceptCallback(
       base::BindOnce(&EnterpriseStartupDialogView::RunDialogCallback,
                      base::Unretained(this), true));
@@ -116,7 +118,7 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
 EnterpriseStartupDialogView::~EnterpriseStartupDialogView() {}
 
 void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
-    const base::string16& information) {
+    const std::u16string& information) {
   ResetDialog(false);
 
   std::unique_ptr<views::Label> text = CreateText(information);
@@ -129,8 +131,8 @@ void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
 }
 
 void EnterpriseStartupDialogView::DisplayErrorMessage(
-    const base::string16& error_message,
-    const base::Optional<base::string16>& accept_button) {
+    const std::u16string& error_message,
+    const base::Optional<std::u16string>& accept_button) {
   ResetDialog(accept_button.has_value());
   std::unique_ptr<views::Label> text = CreateText(error_message);
   auto error_icon = std::make_unique<views::ImageView>();
@@ -190,10 +192,6 @@ bool EnterpriseStartupDialogView::ShouldShowWindowTitle() const {
   return false;
 }
 
-ui::ModalType EnterpriseStartupDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_NONE;
-}
-
 gfx::Size EnterpriseStartupDialogView::CalculatePreferredSize() const {
   return gfx::Size(kDialogContentWidth, kDialogContentHeight);
 }
@@ -237,6 +235,9 @@ void EnterpriseStartupDialogView::SetupLayout(
   GetWidget()->GetRootView()->SchedulePaint();
 }
 
+BEGIN_METADATA(EnterpriseStartupDialogView, views::DialogDelegateView)
+END_METADATA
+
 /*
  * EnterpriseStartupDialogImpl
  */
@@ -256,14 +257,14 @@ EnterpriseStartupDialogImpl::~EnterpriseStartupDialogImpl() {
 }
 
 void EnterpriseStartupDialogImpl::DisplayLaunchingInformationWithThrobber(
-    const base::string16& information) {
+    const std::u16string& information) {
   if (dialog_view_)
     dialog_view_->DisplayLaunchingInformationWithThrobber(information);
 }
 
 void EnterpriseStartupDialogImpl::DisplayErrorMessage(
-    const base::string16& error_message,
-    const base::Optional<base::string16>& accept_button) {
+    const std::u16string& error_message,
+    const base::Optional<std::u16string>& accept_button) {
   if (dialog_view_)
     dialog_view_->DisplayErrorMessage(error_message, accept_button);
 }

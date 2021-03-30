@@ -5,33 +5,31 @@
 #ifndef UI_GTK_X_GTK_EVENT_LOOP_X11_H_
 #define UI_GTK_X_GTK_EVENT_LOOP_X11_H_
 
-#include "base/macros.h"
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
+
 #include "ui/base/glib/glib_integers.h"
-
-using GdkEvent = union _GdkEvent;
-using GdkEventKey = struct _GdkEventKey;
-
-namespace base {
-template <typename Type>
-struct DefaultSingletonTraits;
-}
+#include "ui/base/glib/glib_signal.h"
+#include "ui/gtk/gtk_buildflags.h"
 
 namespace ui {
 
 class GtkEventLoopX11 {
  public:
-  static GtkEventLoopX11* EnsureInstance();
-
- private:
-  friend struct base::DefaultSingletonTraits<GtkEventLoopX11>;
-
-  GtkEventLoopX11();
-  GtkEventLoopX11(const GtkEventLoopX11&) = delete;
-  GtkEventLoopX11& operator=(const GtkEventLoopX11&) = delete;
+  explicit GtkEventLoopX11(GtkWidget* widget);
   ~GtkEventLoopX11();
 
+  GtkEventLoopX11(const GtkEventLoopX11&) = delete;
+  GtkEventLoopX11& operator=(const GtkEventLoopX11&) = delete;
+
+ private:
+#if BUILDFLAG(GTK_VERSION) >= 4
+  CHROMEG_CALLBACK_0(GtkEventLoopX11, gboolean, OnEvent, GdkEvent*);
+  GdkSurface* surface_ = nullptr;
+  gulong signal_id_ = 0;
+#else
   static void DispatchGdkEvent(GdkEvent* gdk_event, gpointer);
-  static void ProcessGdkEventKey(const GdkEventKey& gdk_event_key);
+#endif
 };
 
 }  // namespace ui

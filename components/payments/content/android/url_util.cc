@@ -6,6 +6,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/payments/content/android/jni_headers/UrlUtil_jni.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -14,17 +15,17 @@ namespace android {
 // static
 jboolean JNI_UrlUtil_IsOriginAllowedToUseWebPaymentApis(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jurl) {
-  return UrlUtil::IsOriginAllowedToUseWebPaymentApis(
-      GURL(base::android::ConvertJavaStringToUTF8(env, jurl)));
+    const base::android::JavaParamRef<jobject>& j_url) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return UrlUtil::IsOriginAllowedToUseWebPaymentApis(*url);
 }
 
 // static
 jboolean JNI_UrlUtil_IsLocalDevelopmentUrl(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jurl) {
-  return UrlUtil::IsLocalDevelopmentUrl(
-      GURL(base::android::ConvertJavaStringToUTF8(env, jurl)));
+    const base::android::JavaParamRef<jobject>& j_url) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return UrlUtil::IsLocalDevelopmentUrl(*url);
 }
 
 }  // namespace android

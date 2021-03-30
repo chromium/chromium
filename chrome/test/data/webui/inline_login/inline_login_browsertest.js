@@ -10,9 +10,10 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#if defined(OS_CHROMEOS)');
-GEN('#include "chromeos/constants/chromeos_features.h"');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#endif');
 
 // eslint-disable-next-line no-var
@@ -49,7 +50,7 @@ TEST_F('InlineLoginBrowserTest', 'BackButton', function() {
   this.runMochaTest(inline_login_test.TestNames.BackButton);
 });
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 // eslint-disable-next-line no-var
 var InlineLoginBrowserTestWithAccountManagementFlowsV2Enabled =
     class extends InlineLoginBrowserTest {
@@ -100,6 +101,10 @@ var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
     return inline_login_welcome_page_test.suiteName;
   }
 };
+
+TEST_F('InlineLoginWelcomePageBrowserTest', 'Reauthentication', function() {
+  this.runMochaTest(inline_login_welcome_page_test.TestNames.Reauthentication);
+});
 
 TEST_F('InlineLoginWelcomePageBrowserTest', 'OkButton', function() {
   this.runMochaTest(inline_login_welcome_page_test.TestNames.OkButton);

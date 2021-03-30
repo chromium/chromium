@@ -101,11 +101,12 @@ _BLACK_LIST_TEST_MODULES = {
 # The list of benchmark names to be excluded from our smoke tests.
 _BLACK_LIST_TEST_NAMES = [
     'memory.long_running_idle_gmail_background_tbmv2',
-    'tab_search', # crbug.com/1159462
+    'desktop_ui',  # crbug.com/1159462
     'tab_switching.typical_25',
     'UNSCHEDULED_oortonline_tbmv2',
     'webrtc',  # crbug.com/932036
-    'v8.runtime_stats.top_25'  # Fails in Windows, crbug.com/1043048
+    'v8.runtime_stats.top_25',  # Fails in Windows, crbug.com/1043048
+    'wasmpspdfkit',  # Fails in Chrome OS, crbug.com/1191938
 ]
 
 

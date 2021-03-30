@@ -30,6 +30,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -100,18 +102,18 @@ class IdleAppNameNotificationDelegateView
     : public views::WidgetDelegateView,
       public ui::ImplicitAnimationObserver {
  public:
+  METADATA_HEADER(IdleAppNameNotificationDelegateView);
   // An idle message which will get shown from the caller and hides itself after
   // a time, calling |owner->CloseMessage| to inform the owner that it got
   // destroyed. The |app_name| is a string which gets used as message and
   // |error| is true if something is not correct.
   // |message_visibility_time_in_ms| ms's after creation the message will start
   // to remove itself from the screen.
-  IdleAppNameNotificationDelegateView(IdleAppNameNotificationView *owner,
-                                      const base::string16& app_name,
+  IdleAppNameNotificationDelegateView(IdleAppNameNotificationView* owner,
+                                      const std::u16string& app_name,
                                       bool error,
                                       int message_visibility_time_in_ms)
-      : owner_(owner),
-        widget_closed_(false) {
+      : owner_(owner), widget_closed_(false) {
     ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
     // Add the application name label to the message.
     AddLabel(app_name, rb->GetFontList(ui::ResourceBundle::BoldFont),
@@ -127,6 +129,11 @@ class IdleAppNameNotificationDelegateView
         this,
         &IdleAppNameNotificationDelegateView::RemoveMessage);
   }
+
+  IdleAppNameNotificationDelegateView(
+      const IdleAppNameNotificationDelegateView&) = delete;
+  IdleAppNameNotificationDelegateView& operator=(
+      const IdleAppNameNotificationDelegateView&) = delete;
 
   ~IdleAppNameNotificationDelegateView() override {
     // The widget is already closing, but the other cleanup items need to be
@@ -182,7 +189,7 @@ class IdleAppNameNotificationDelegateView
 
  private:
   // Adds the label to the view, using |text| with a |font| and a |text_color|.
-  void AddLabel(const base::string16& text,
+  void AddLabel(const std::u16string& text,
                 const gfx::FontList& font,
                 SkColor text_color) {
     views::Label* label = new views::Label;
@@ -202,12 +209,10 @@ class IdleAppNameNotificationDelegateView
   IdleAppNameNotificationView* owner_;
 
   // The spoken text.
-  base::string16 spoken_text_;
+  std::u16string spoken_text_;
 
   // True if the widget got already closed.
   bool widget_closed_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleAppNameNotificationDelegateView);
 };
 
 IdleAppNameNotificationView::IdleAppNameNotificationView(
@@ -234,7 +239,7 @@ bool IdleAppNameNotificationView::IsVisible() {
   return view_ != NULL;
 }
 
-base::string16 IdleAppNameNotificationView::GetShownTextForTest() {
+std::u16string IdleAppNameNotificationView::GetShownTextForTest() {
   ui::AXNodeData node_data;
   DCHECK(view_);
   view_->GetAccessibleNodeData(&node_data);
@@ -247,7 +252,7 @@ void IdleAppNameNotificationView::ShowMessage(
     const extensions::Extension* extension) {
   DCHECK(!view_);
 
-  base::string16 app_name;
+  std::u16string app_name;
   bool error = false;
   if (extension &&
       !base::ContainsOnlyChars(extension->name(), base::kWhitespaceASCII)) {
@@ -265,5 +270,8 @@ void IdleAppNameNotificationView::ShowMessage(
       message_visibility_time_in_ms + animation_time_ms);
   CreateAndShowWidget(view_, animation_time_ms);
 }
+
+BEGIN_METADATA(IdleAppNameNotificationDelegateView, views::WidgetDelegateView)
+END_METADATA
 
 }  // namespace chromeos

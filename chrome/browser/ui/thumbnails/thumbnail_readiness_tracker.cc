@@ -63,7 +63,8 @@ void ThumbnailReadinessTracker::DidFinishNavigation(
   UpdateReadiness(Readiness::kReadyForInitialCapture);
 }
 
-void ThumbnailReadinessTracker::DocumentOnLoadCompletedInMainFrame() {
+void ThumbnailReadinessTracker::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   UpdateReadiness(Readiness::kReadyForFinalCapture);
 }
 

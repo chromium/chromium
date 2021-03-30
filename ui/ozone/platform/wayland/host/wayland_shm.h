@@ -24,6 +24,8 @@ class WaylandShm {
   WaylandShm(wl_shm* shm, WaylandConnection* connection);
   ~WaylandShm();
 
+  wl_shm* get() const { return shm_.get(); }
+
   // Creates a wl_buffer based on shared memory handle for the specified
   // |widget|.
   wl::Object<struct wl_buffer> CreateBuffer(base::ScopedFD fd,

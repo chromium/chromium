@@ -18,10 +18,43 @@ bool OpacityFilterCanvas::onFilter(SkPaint& paint) const {
   if (opacity_ < 1.f)
     paint.setAlphaf(paint.getAlphaf() * opacity_);
 
-  if (disable_image_filtering_)
-    paint.setFilterQuality(kNone_SkFilterQuality);
-
   return true;
+}
+
+void OpacityFilterCanvas::onDrawImage2(const SkImage* image,
+                                       SkScalar dx,
+                                       SkScalar dy,
+                                       const SkSamplingOptions& sampling,
+                                       const SkPaint* paint) {
+  this->INHERITED::onDrawImage2(
+      image, dx, dy, disable_image_filtering_ ? SkSamplingOptions() : sampling,
+      paint);
+}
+
+void OpacityFilterCanvas::onDrawImageRect2(const SkImage* image,
+                                           const SkRect& src,
+                                           const SkRect& dst,
+                                           const SkSamplingOptions& sampling,
+                                           const SkPaint* paint,
+                                           SrcRectConstraint constraint) {
+  this->INHERITED::onDrawImageRect2(
+      image, src, dst,
+      disable_image_filtering_ ? SkSamplingOptions() : sampling, paint,
+      constraint);
+}
+
+void OpacityFilterCanvas::onDrawEdgeAAImageSet2(
+    const ImageSetEntry imageSet[],
+    int count,
+    const SkPoint dstClips[],
+    const SkMatrix preViewMatrices[],
+    const SkSamplingOptions& sampling,
+    const SkPaint* paint,
+    SrcRectConstraint constraint) {
+  this->INHERITED::onDrawEdgeAAImageSet2(
+      imageSet, count, dstClips, preViewMatrices,
+      disable_image_filtering_ ? SkSamplingOptions() : sampling, paint,
+      constraint);
 }
 
 void OpacityFilterCanvas::onDrawPicture(const SkPicture* picture,

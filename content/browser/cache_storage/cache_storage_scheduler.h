@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -19,6 +20,8 @@
 namespace content {
 
 class CacheStorageOperation;
+
+CONTENT_EXPORT extern const base::Feature kCacheStorageParallelOps;
 
 // TODO(jkarlin): Support operation identification so that ops can be checked in
 // DCHECKs.

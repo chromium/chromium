@@ -8,9 +8,9 @@
 
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/ui/webui_login_view.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/webui_login_view.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -44,7 +44,7 @@ bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
   if (security_origin.spec() == chrome::kChromeUIOobeURL)
     return true;
 
-  const chromeos::CrosSettings* const settings = chromeos::CrosSettings::Get();
+  const ash::CrosSettings* const settings = ash::CrosSettings::Get();
   if (!settings)
     return false;
 

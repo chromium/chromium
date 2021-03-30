@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/common/buildflags.h"
@@ -114,14 +113,14 @@ class ExtensionInstallPrompt {
     PromptType type() const { return type_; }
 
     // Getters for UI element labels.
-    base::string16 GetDialogTitle() const;
+    std::u16string GetDialogTitle() const;
     int GetDialogButtons() const;
     // Returns the empty string when there should be no "accept" button.
-    base::string16 GetAcceptButtonLabel() const;
-    base::string16 GetAbortButtonLabel() const;
-    base::string16 GetPermissionsHeading() const;
-    base::string16 GetRetainedFilesHeading() const;
-    base::string16 GetRetainedDevicesHeading() const;
+    std::u16string GetAcceptButtonLabel() const;
+    std::u16string GetAbortButtonLabel() const;
+    std::u16string GetPermissionsHeading() const;
+    std::u16string GetRetainedFilesHeading() const;
+    std::u16string GetRetainedDevicesHeading() const;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     void set_requires_parent_permission(bool requires_parent_permission) {
@@ -145,15 +144,15 @@ class ExtensionInstallPrompt {
     // that they append to the star display area.
     typedef void(*StarAppender)(const gfx::ImageSkia*, void*);
     void AppendRatingStars(StarAppender appender, void* data) const;
-    base::string16 GetRatingCount() const;
-    base::string16 GetUserCount() const;
+    std::u16string GetRatingCount() const;
+    std::u16string GetUserCount() const;
     size_t GetPermissionCount() const;
-    base::string16 GetPermission(size_t index) const;
-    base::string16 GetPermissionsDetails(size_t index) const;
+    std::u16string GetPermission(size_t index) const;
+    std::u16string GetPermissionsDetails(size_t index) const;
     size_t GetRetainedFileCount() const;
-    base::string16 GetRetainedFile(size_t index) const;
+    std::u16string GetRetainedFile(size_t index) const;
     size_t GetRetainedDeviceCount() const;
-    base::string16 GetRetainedDeviceMessageString(size_t index) const;
+    std::u16string GetRetainedDeviceMessageString(size_t index) const;
 
     const extensions::Extension* extension() const { return extension_; }
     void set_extension(const extensions::Extension* extension) {
@@ -165,7 +164,7 @@ class ExtensionInstallPrompt {
       retained_files_ = retained_files;
     }
     void set_retained_device_messages(
-        const std::vector<base::string16>& retained_device_messages) {
+        const std::vector<std::u16string>& retained_device_messages) {
       retained_device_messages_ = retained_device_messages;
     }
 
@@ -237,7 +236,7 @@ class ExtensionInstallPrompt {
     bool has_webstore_data_;
 
     std::vector<base::FilePath> retained_files_;
-    std::vector<base::string16> retained_device_messages_;
+    std::vector<std::u16string> retained_device_messages_;
 
     base::ObserverList<Observer> observers_;
 

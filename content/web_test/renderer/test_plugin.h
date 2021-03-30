@@ -76,10 +76,10 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
   bool CanProcessDrag() const override;
   bool SupportsKeyboardFocus() const override;
   void UpdateAllLifecyclePhases(blink::DocumentUpdateReason) override {}
-  void Paint(cc::PaintCanvas* canvas, const blink::WebRect& rect) override {}
-  void UpdateGeometry(const blink::WebRect& window_rect,
-                      const blink::WebRect& clip_rect,
-                      const blink::WebRect& unobscured_rect,
+  void Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) override {}
+  void UpdateGeometry(const gfx::Rect& window_rect,
+                      const gfx::Rect& clip_rect,
+                      const gfx::Rect& unobscured_rect,
                       bool is_visible) override;
   void UpdateFocus(bool focus, blink::mojom::FocusType focus_type) override {}
   void UpdateVisibility(bool visibility) override {}
@@ -171,7 +171,7 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
   blink::WebPluginContainer* container_;
   blink::WebLocalFrame* web_local_frame_;
 
-  blink::WebRect rect_;
+  gfx::Rect rect_;
   scoped_refptr<ContextProviderRef> context_provider_;
   gpu::gles2::GLES2Interface* gl_;
   gpu::Mailbox mailbox_;

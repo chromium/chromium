@@ -18,7 +18,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -104,8 +104,8 @@ class ASH_EXPORT AssistantScreenContextControllerImpl
 
   AssistantScreenContextModel model_;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 
   base::WeakPtrFactory<AssistantScreenContextControllerImpl> weak_factory_{
       this};

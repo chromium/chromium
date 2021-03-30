@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
@@ -69,7 +69,7 @@ public class CurrentPageVerifier implements NativeInitObserver {
                     || navigation.isSameDocument()) {
                 return;
             }
-            verify(navigation.getUrlString());
+            verify(navigation.getUrl().getSpec());
         }
 
         @Override

@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/run_loop.h"

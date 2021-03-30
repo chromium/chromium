@@ -24,7 +24,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/svg/svg_external_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
@@ -34,6 +33,7 @@
 namespace blink {
 
 class SVGAnimatedLength;
+class SVGResourceDocumentContent;
 
 class SVGUseElement final : public SVGGraphicsElement,
                             public SVGURIReference,
@@ -109,7 +109,7 @@ class SVGUseElement final : public SVGGraphicsElement,
   String DebugName() const override;
   void UpdateTargetReference();
 
-  Member<SVGExternalDocumentCache::Entry> cache_entry_;
+  Member<SVGResourceDocumentContent> document_content_;
 
   Member<SVGAnimatedLength> x_;
   Member<SVGAnimatedLength> y_;

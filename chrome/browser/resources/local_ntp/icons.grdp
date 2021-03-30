@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <include name="IDR_LOCAL_NTP_ICONS_BOOKMARK"
-           file="resources/local_ntp/icons/bookmark.svg" type="BINDATA" />
    <include name="IDR_LOCAL_NTP_ICONS_CALCULATOR"
            file="resources/local_ntp/icons/calculator.svg" type="BINDATA" />
    <include name="IDR_LOCAL_NTP_ICONS_CLOCK"

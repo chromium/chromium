@@ -39,7 +39,7 @@ class StatusIconMenuModelTest : public testing::Test,
 };
 
 TEST_F(StatusIconMenuModelTest, ToggleBooleanProperties) {
-  menu_model()->AddItem(0, ASCIIToUTF16("foo"));
+  menu_model()->AddItem(0, u"foo");
 
   menu_model()->SetCommandIdChecked(0, true);
   EXPECT_TRUE(menu_model()->IsCommandIdChecked(0));
@@ -61,8 +61,8 @@ TEST_F(StatusIconMenuModelTest, ToggleBooleanProperties) {
 }
 
 TEST_F(StatusIconMenuModelTest, SetProperties) {
-  menu_model()->AddItem(0, ASCIIToUTF16("foo1"));
-  menu_model()->AddItem(1, ASCIIToUTF16("foo2"));
+  menu_model()->AddItem(0, u"foo1");
+  menu_model()->AddItem(1, u"foo2");
 
   ui::Accelerator test_accel(ui::VKEY_A, ui::EF_NONE);
   gfx::Image test_image1 = gfx::test::CreateImage(16, 16);
@@ -80,11 +80,11 @@ TEST_F(StatusIconMenuModelTest, SetProperties) {
 
   // Try setting label and changing it. Also ensure that menu item is marked
   // dynamic since the label has changed.
-  menu_model()->ChangeLabelForCommandId(0, ASCIIToUTF16("label1"));
+  menu_model()->ChangeLabelForCommandId(0, u"label1");
   EXPECT_TRUE(menu_model()->IsItemForCommandIdDynamic(0));
-  EXPECT_EQ(ASCIIToUTF16("label1"), menu_model()->GetLabelForCommandId(0));
-  menu_model()->ChangeLabelForCommandId(0, ASCIIToUTF16("label2"));
-  EXPECT_EQ(ASCIIToUTF16("label2"), menu_model()->GetLabelForCommandId(0));
+  EXPECT_EQ(u"label1", menu_model()->GetLabelForCommandId(0));
+  menu_model()->ChangeLabelForCommandId(0, u"label2");
+  EXPECT_EQ(u"label2", menu_model()->GetLabelForCommandId(0));
 
   // Try setting icon image and changing it.
   menu_model()->ChangeIconForCommandId(1, test_image1);
@@ -95,7 +95,7 @@ TEST_F(StatusIconMenuModelTest, SetProperties) {
 
   // Ensure changes to one menu item does not affect the other menu item.
   EXPECT_FALSE(menu_model()->GetAcceleratorForCommandId(1, &accel_arg));
-  EXPECT_EQ(base::string16(), menu_model()->GetLabelForCommandId(1));
+  EXPECT_EQ(std::u16string(), menu_model()->GetLabelForCommandId(1));
   EXPECT_TRUE(menu_model()->GetIconForCommandId(0).IsEmpty());
 
   // Menu state should have changed 6 times in this test.

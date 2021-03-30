@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -89,10 +89,14 @@ void ErrorScreenHandler::SetUIState(NetworkError::UIState ui_state) {
   CallJS("login.ErrorMessageScreen.setUIState", static_cast<int>(ui_state));
 }
 
-void ErrorScreenHandler::RegisterMessages() {
-  AddCallback("hideCaptivePortal",
-              &ErrorScreenHandler::HandleHideCaptivePortal);
-  BaseScreenHandler::RegisterMessages();
+// TODO (crbug.com/1168114): We need to handle that fully in C++ once
+// all error screen logic is migrated to Screen object.
+void ErrorScreenHandler::OnCancelButtonClicked() {
+  CallJS("cr.ui.Oobe.showUserPods");
+}
+
+void ErrorScreenHandler::OnReloadGaiaClicked() {
+  CallJS("login.GaiaSigninScreen.doReload");
 }
 
 void ErrorScreenHandler::DeclareLocalizedValues(
@@ -147,11 +151,6 @@ void ErrorScreenHandler::Initialize() {
     Show();
     show_on_init_ = false;
   }
-}
-
-void ErrorScreenHandler::HandleHideCaptivePortal() {
-  if (screen_)
-    screen_->HideCaptivePortal();
 }
 
 }  // namespace chromeos

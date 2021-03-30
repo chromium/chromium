@@ -16,9 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/help_app_launcher.h"
-#include "chrome/browser/chromeos/login/oobe_configuration.h"
-#include "chrome/browser/chromeos/login/version_info_updater.h"
+#include "chrome/browser/ash/login/help_app_launcher.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
+#include "chrome/browser/ash/login/version_info_updater.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -55,8 +55,6 @@ class CoreOobeView {
                                const std::string& help_link_text,
                                HelpAppLauncher::HelpTopic help_topic_id) = 0;
   virtual void ResetSignInUI(bool force_online) = 0;
-  virtual void ClearUserPodPassword() = 0;
-  virtual void RefocusCurrentPod() = 0;
   virtual void ClearErrors() = 0;
   virtual void ReloadContent(const base::DictionaryValue& dictionary) = 0;
   virtual void ReloadEulaContent(const base::DictionaryValue& dictionary) = 0;
@@ -130,8 +128,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
                        const std::string& help_link_text,
                        HelpAppLauncher::HelpTopic help_topic_id) override;
   void ResetSignInUI(bool force_online) override;
-  void ClearUserPodPassword() override;
-  void RefocusCurrentPod() override;
   void ClearErrors() override;
   void ReloadContent(const base::DictionaryValue& dictionary) override;
   void ReloadEulaContent(const base::DictionaryValue& dictionary) override;

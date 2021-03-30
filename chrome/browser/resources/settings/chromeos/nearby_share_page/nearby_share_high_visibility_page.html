@@ -34,7 +34,7 @@
       }
 
       #helpText {
-        margin: auto;
+        margin: auto 0;
       }
 
       #infoIcon {
@@ -77,7 +77,8 @@
     </style>
     <nearby-page-template title="$i18n{nearbyShareFeatureName}"
         sub-title="[[getSubTitle_(deviceName, remainingTimeInSeconds_)]]"
-        sub-title-aria-hidden
+        a11y-announced-sub-title="[[getA11yAnnouncedSubTitle_(deviceName,
+                                  remainingTimeInSeconds_)]]"
         cancel-button-label="$i18n{cancel}"
         close-only="[[getErrorTitle_(errorState_)]]">
       <div id="content" slot="content">
@@ -93,8 +94,6 @@
                   link-url="$i18n{nearbyShareLearnMoreLink}">
               </settings-localized-link>
             </div>
-            <!-- Announcer has to be inside modal dialog to work -->
-            <iron-a11y-announcer></iron-a11y-announcer>
           </template>
           <template is="dom-if" if="[[getErrorTitle_(errorState_)]]">
             <iron-icon id="infoIcon" icon="nearby20:info"

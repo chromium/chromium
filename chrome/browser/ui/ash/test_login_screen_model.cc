@@ -36,7 +36,7 @@ void TestLoginScreenModel::ShowEasyUnlockIcon(
 void TestLoginScreenModel::SetChallengeResponseAuthEnabledForUser(
     const AccountId& user,
     bool enabled) {}
-void TestLoginScreenModel::UpdateWarningMessage(const base::string16& message) {
+void TestLoginScreenModel::UpdateWarningMessage(const std::u16string& message) {
 }
 void TestLoginScreenModel::SetSystemInfo(
     bool show,

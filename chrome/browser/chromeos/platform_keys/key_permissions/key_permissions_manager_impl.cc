@@ -16,6 +16,7 @@
 #include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions.pb.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -236,7 +236,14 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     OnKeyPermissionsUpdated(Status permissions_update_status) {
-  if (permissions_update_status != Status::kSuccess) {
+  if (permissions_update_status == Status::kErrorKeyNotFound) {
+    // Some public keys are not removed from chaps although their corresponding
+    // private keys are removed. We continue the migration process if we
+    // received kKeyNotFound as a workaround until the keys-clean-up problem is
+    // solved (crbug.com/1096051).
+    LOG(WARNING) << "Corresponding private key not found. Continuing the "
+                    "migration process...";
+  } else if (permissions_update_status != Status::kSuccess) {
     LOG(ERROR) << "Couldn't update permissions for a key: "
                << StatusToString(permissions_update_status);
     std::move(callback_).Run(permissions_update_status);
@@ -388,6 +395,12 @@ void KeyPermissionsManagerImpl::IsKeyAllowedForUsage(
         base::BindOnce(&KeyPermissionsManagerImpl::IsKeyAllowedForUsage,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        usage, std::move(public_key_spki_der)));
+    return;
+  }
+
+  // All system token keys are allowed for corporate usage by default.
+  if (usage == KeyUsage::kCorporate && token_id_ == TokenId::kSystem) {
+    std::move(callback).Run(/*allowed=*/true, Status::kSuccess);
     return;
   }
 

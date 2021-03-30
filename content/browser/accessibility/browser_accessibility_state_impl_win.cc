@@ -18,6 +18,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/animation/animation.h"
+#include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace content {
 
@@ -41,7 +42,7 @@ class WindowsAccessibilityEnabler
     // enable basic web accessibility support. (Full screen reader support is
     // detected later when specific more advanced APIs are accessed.)
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+        ui::kAXModeBasic);
   }
 
   void OnScreenReaderHoneyPotQueried() override {
@@ -53,7 +54,7 @@ class WindowsAccessibilityEnabler
     screen_reader_honeypot_queried_ = true;
     if (acc_name_called_) {
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+          ui::kAXModeBasic);
     }
   }
 
@@ -64,7 +65,7 @@ class WindowsAccessibilityEnabler
     acc_name_called_ = true;
     if (screen_reader_honeypot_queried_) {
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+          ui::kAXModeBasic);
     }
   }
 
@@ -92,7 +93,20 @@ void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 
 }  // namespace
 
-void BrowserAccessibilityStateImpl::PlatformInitialize() {
+class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
+ public:
+  BrowserAccessibilityStateImplWin();
+  ~BrowserAccessibilityStateImplWin() override {}
+
+ protected:
+  void UpdateHistogramsOnOtherThread() override;
+  void UpdateUniqueUserHistograms() override;
+
+ private:
+  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+};
+
+BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
   ui::GetWinAccessibilityAPIUsageObserverList().AddObserver(
       new WindowsAccessibilityEnabler());
 
@@ -100,15 +114,13 @@ void BrowserAccessibilityStateImpl::PlatformInitialize() {
       new gfx::SingletonHwndObserver(base::BindRepeating(&OnWndProc)));
 }
 
-void BrowserAccessibilityStateImpl::
-    UpdatePlatformSpecificHistogramsOnUIThread() {}
+void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
+  BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
 
-void BrowserAccessibilityStateImpl::
-    UpdatePlatformSpecificHistogramsOnOtherThread() {
   // NOTE: this method is run from another thread to reduce jank, since
   // there's no guarantee these system calls will return quickly. Code that
   // needs to run in the UI thread can be run in
-  // UpdatePlatformSpecificHistogramsOnUIThread instead.
+  // UpdateHistogramsOnUIThread instead.
 
   AUDIODESCRIPTION audio_description = {0};
   audio_description.cbSize = sizeof(AUDIODESCRIPTION);
@@ -162,7 +174,7 @@ void BrowserAccessibilityStateImpl::
   for (size_t i = 0; i < module_count; i++) {
     TCHAR filename[MAX_PATH];
     GetModuleFileName(modules[i], filename, base::size(filename));
-    base::string16 module_name(base::FilePath(filename).BaseName().value());
+    std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
     if (base::LowerCaseEqualsASCII(module_name, "fsdomsrv.dll"))
       g_jaws = true;
     if (base::LowerCaseEqualsASCII(module_name, "vbufbackend_gecko_ia2.dll") ||
@@ -184,7 +196,9 @@ void BrowserAccessibilityStateImpl::
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText", g_zoomtext);
 }
 
-void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {
+void BrowserAccessibilityStateImplWin::UpdateUniqueUserHistograms() {
+  BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
+
   ui::AXMode mode = GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinScreenReader2.EveryReport",
                         mode.has_mode(ui::AXMode::kScreenReader));
@@ -192,6 +206,17 @@ void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA.EveryReport", g_nvda);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova.EveryReport", g_supernova);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText.EveryReport", g_zoomtext);
+}
+
+//
+// BrowserAccessibilityStateImpl::GetInstance implementation that constructs
+// this class instead of the base class.
+//
+
+// static
+BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
+  static base::NoDestructor<BrowserAccessibilityStateImplWin> instance;
+  return &*instance;
 }
 
 }  // namespace content

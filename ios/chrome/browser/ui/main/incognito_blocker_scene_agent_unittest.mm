@@ -27,6 +27,10 @@ class IncognitoBlockerSceneAgentTest : public PlatformTest {
     agent_.sceneState = scene_state_;
   }
 
+  ~IncognitoBlockerSceneAgentTest() override {
+    scene_state_.incognitoContentVisible = NO;
+  }
+
  protected:
   // The scene state that the agent works with.
   SceneState* scene_state_;
@@ -55,7 +59,7 @@ TEST_F(IncognitoBlockerSceneAgentTest, ShowIncognitoBlocker) {
   scene_state_.incognitoContentVisible = YES;
   EXPECT_EQ(window.subviews.count, 0u);
 
-  // Upon background, the blocker should be added.
+  // Upon background with incognito content, the blocker should be added.
   scene_state_.activationLevel = SceneActivationLevelBackground;
   EXPECT_EQ(window.subviews.count, 1u);
 
@@ -67,6 +71,15 @@ TEST_F(IncognitoBlockerSceneAgentTest, ShowIncognitoBlocker) {
   scene_state_.incognitoContentVisible = NO;
   scene_state_.activationLevel = SceneActivationLevelBackground;
   EXPECT_EQ(window.subviews.count, 0u);
+
+  // Prepare to go to background with the QR scanner visible.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  scene_state_.QRScannerVisible = YES;
+  EXPECT_EQ(window.subviews.count, 0u);
+
+  // Upon background with the QR scanner visible, the blocker should be added.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  EXPECT_EQ(window.subviews.count, 1u);
 
   [applicationWindowMock stopMocking];
 }

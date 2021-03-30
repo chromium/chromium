@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"
@@ -39,17 +38,15 @@ namespace net {
 namespace internal {
 
 // Converts a UTF-16 domain name to ASCII, possibly using punycode.
-// Returns true if the conversion succeeds and output is not empty. In case of
-// failure, |domain| might become dirty.
-bool NET_EXPORT_PRIVATE ParseDomainASCII(base::WStringPiece widestr,
-                                         std::string* domain);
+// Returns empty string on failure.
+std::string NET_EXPORT_PRIVATE ParseDomainASCII(base::WStringPiece widestr);
 
 // Parses |value| as search list (comma-delimited list of domain names) from
-// a registry key and stores it in |out|. Returns true on success. Empty
+// a registry key and stores it in |out|. Returns empty vector on failure. Empty
 // entries (e.g., "chromium.org,,org") terminate the list. Non-ascii hostnames
 // are converted to punycode.
-bool NET_EXPORT_PRIVATE ParseSearchList(const std::wstring& value,
-                                        std::vector<std::string>* out);
+std::vector<std::string> NET_EXPORT_PRIVATE
+ParseSearchList(base::WStringPiece value);
 
 // All relevant settings read from registry and IP Helper. This isolates our
 // logic from system calls and is exposed for unit tests. Keep it an aggregate
@@ -75,6 +72,9 @@ struct NET_EXPORT_PRIVATE DnsSystemSettings {
 
   DnsSystemSettings();
   ~DnsSystemSettings();
+
+  DnsSystemSettings(DnsSystemSettings&&);
+  DnsSystemSettings& operator=(DnsSystemSettings&&);
 
   // Filled in by GetAdapterAddresses. Note that the alternative
   // GetNetworkParams does not include IPv6 addresses.
@@ -114,27 +114,10 @@ struct NET_EXPORT_PRIVATE DnsSystemSettings {
   bool have_proxy = false;
 };
 
-enum ConfigParseWinResult {
-  CONFIG_PARSE_WIN_OK = 0,
-  CONFIG_PARSE_WIN_READ_IPHELPER,
-  CONFIG_PARSE_WIN_READ_POLICY_SEARCHLIST,
-  CONFIG_PARSE_WIN_READ_TCPIP_SEARCHLIST,
-  CONFIG_PARSE_WIN_READ_DOMAIN,
-  CONFIG_PARSE_WIN_READ_POLICY_DEVOLUTION,
-  CONFIG_PARSE_WIN_READ_DNSCACHE_DEVOLUTION,
-  CONFIG_PARSE_WIN_READ_TCPIP_DEVOLUTION,
-  CONFIG_PARSE_WIN_READ_APPEND_MULTILABEL,
-  CONFIG_PARSE_WIN_READ_PRIMARY_SUFFIX,
-  CONFIG_PARSE_WIN_BAD_ADDRESS,
-  CONFIG_PARSE_WIN_NO_NAMESERVERS,
-  CONFIG_PARSE_WIN_UNHANDLED_OPTIONS,
-  CONFIG_PARSE_WIN_MAX  // Bounding values for enumeration.
-};
-
-// Fills in |dns_config| from |settings|. Exposed for tests.
-ConfigParseWinResult NET_EXPORT_PRIVATE ConvertSettingsToDnsConfig(
-    const DnsSystemSettings& settings,
-    DnsConfig* dns_config);
+// Fills in |dns_config| from |settings|. Exposed for tests. Returns nullopt if
+// a valid config could not be determined.
+base::Optional<DnsConfig> NET_EXPORT_PRIVATE
+ConvertSettingsToDnsConfig(const DnsSystemSettings& settings);
 
 // Service for reading and watching Windows system DNS settings. This object is
 // not thread-safe and methods may perform blocking I/O so methods must be
@@ -153,11 +136,9 @@ class NET_EXPORT_PRIVATE DnsConfigServiceWin : public DnsConfigService {
   class HostsReader;
 
   // DnsConfigService:
-  void ReadNow() override;
+  void ReadConfigNow() override;
+  void ReadHostsNow() override;
   bool StartWatching() override;
-
-  void OnConfigChanged(bool succeeded);
-  void OnHostsChanged(bool succeeded);
 
   std::unique_ptr<Watcher> watcher_;
   scoped_refptr<ConfigReader> config_reader_;

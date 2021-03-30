@@ -12,8 +12,8 @@
 #include "base/memory/ptr_util.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
+#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
-#include "extensions/common/api/declarative_net_request/utils.h"
 
 namespace extensions {
 namespace declarative_net_request {
@@ -73,6 +73,10 @@ size_t RulesetMatcher::GetRegexRulesCount() const {
   return regex_matcher_.GetRulesCount();
 }
 
+RulesCountPair RulesetMatcher::GetRulesCountPair() const {
+  return RulesCountPair(GetRulesCount(), GetRegexRulesCount());
+}
+
 void RulesetMatcher::OnRenderFrameCreated(content::RenderFrameHost* host) {
   url_pattern_index_matcher_.OnRenderFrameCreated(host);
   regex_matcher_.OnRenderFrameCreated(host);
@@ -83,9 +87,10 @@ void RulesetMatcher::OnRenderFrameDeleted(content::RenderFrameHost* host) {
   regex_matcher_.OnRenderFrameDeleted(host);
 }
 
-void RulesetMatcher::OnDidFinishNavigation(content::RenderFrameHost* host) {
-  url_pattern_index_matcher_.OnDidFinishNavigation(host);
-  regex_matcher_.OnDidFinishNavigation(host);
+void RulesetMatcher::OnDidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  url_pattern_index_matcher_.OnDidFinishNavigation(navigation_handle);
+  regex_matcher_.OnDidFinishNavigation(navigation_handle);
 }
 
 base::Optional<RequestAction>

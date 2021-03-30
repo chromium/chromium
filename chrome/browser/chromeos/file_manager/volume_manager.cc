@@ -25,26 +25,25 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_media_view_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
+#include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/file_manager/snapshot_manager.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_factory.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_observer.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/prefs/pref_service.h"
@@ -82,10 +81,9 @@ bool RegisterDownloadsMountPoint(Profile* profile, const base::FilePath& path) {
   // In some tests we want to override existing Downloads mount point, so we
   // first revoke the existing mount point (if any).
   mount_points->RevokeFileSystem(mount_point_name);
-  return mount_points->RegisterFileSystem(mount_point_name,
-                                          storage::kFileSystemTypeNativeLocal,
-                                          storage::FileSystemMountOption(),
-                                          path);
+  return mount_points->RegisterFileSystem(
+      mount_point_name, storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(), path);
 }
 
 // Registers a mount point for Android files to ExternalMountPoints.
@@ -94,7 +92,7 @@ bool RegisterAndroidFilesMountPoint() {
       storage::ExternalMountPoints::GetSystemInstance();
   return mount_points->RegisterFileSystem(
       file_manager::util::GetAndroidFilesMountPointName(),
-      storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+      storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       base::FilePath(util::kAndroidFilesPath));
 }
 
@@ -697,7 +695,7 @@ bool VolumeManager::RegisterAndroidFilesDirectoryForTesting(
   bool result =
       storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
           file_manager::util::GetAndroidFilesMountPointName(),
-          storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+          storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
           path);
   DCHECK(result);
   DoMountEvent(chromeos::MOUNT_ERROR_NONE, Volume::CreateForAndroidFiles(path));
@@ -753,7 +751,7 @@ bool VolumeManager::RegisterCrostiniDirectoryForTesting(
   bool success =
       storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
           file_manager::util::GetCrostiniMountPointName(profile_),
-          storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+          storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
           path);
   DoMountEvent(
       success ? chromeos::MOUNT_ERROR_NONE : chromeos::MOUNT_ERROR_INVALID_PATH,

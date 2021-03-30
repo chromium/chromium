@@ -1,0 +1,37 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (current_toolchain == default_toolchain) {
+  import("//build/toolchain/toolchain.gni")
+
+  # A toolchain that will capture compiler and linker arguments to a file.
+  toolchain("flagcapture") {
+    tool("cxx") {
+      cxx = rebase_path("argcapture.py", root_build_dir)
+      command = "$cxx {{output}} {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}"
+      outputs = [ "{{root_out_dir}}/{{label_name}}.txt" ]
+    }
+    tool("solink") {
+      solink = rebase_path("argcapture.py", root_build_dir)
+      command = "$solink {{output}} {{ldflags}}"
+      outputs = [ "{{root_out_dir}}/{{label_name}}.txt" ]
+    }
+    tool("alink") {
+      command = "this-should-never-run"
+      outputs = [ "this-will-never-exist" ]
+    }
+    tool("stamp") {
+      command = stamp_command
+      description = stamp_description
+    }
+  }
+} else if (current_toolchain == "//build/android/native_flags:flagcapture") {
+  # This will record flags from all default configs of the default toolchain.
+  source_set("default_ccflags") {
+    sources = [ "empty.cc" ]
+  }
+  shared_library("default_ldflags") {
+    no_default_deps = true
+  }
+}

@@ -17,4 +17,9 @@ bool operator==(const google::protobuf::MessageLite& proto_a,
   return serialized_proto_a == serialized_proto_b;
 }
 
+bool operator==(const autofill_assistant::ScriptParameterProto& proto,
+                const std::pair<std::string, std::string>& pair) {
+  return proto.name() == pair.first && proto.value() == pair.second;
+}
+
 }  // namespace autofill_assistant

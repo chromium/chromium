@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "base/strings/string16.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -49,7 +48,7 @@ class WilcoDtcSupportdNotificationDelegate
       const WilcoDtcSupportdNotificationDelegate& other) = delete;
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     if (button_index && *button_index == 0) {
       auto help_app(
           base::MakeRefCounted<HelpAppLauncher>(nullptr /* parent_window */));
@@ -179,7 +178,7 @@ void WilcoDtcSupportdNotificationController::DisplayNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
           l10n_util::GetStringUTF16(title_id),
           l10n_util::GetStringUTF16(message_id),
-          base::string16() /* display_source */, GURL() /* origin_url */,
+          std::u16string() /* display_source */, GURL() /* origin_url */,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotifierWilco),
           rich_data,

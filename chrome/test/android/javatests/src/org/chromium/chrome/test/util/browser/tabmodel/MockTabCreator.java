@@ -52,7 +52,8 @@ public class MockTabCreator extends TabCreator {
     }
 
     @Override
-    public Tab createFrozenTab(TabState state, byte[] criticalPersistedTabData, int id, int index) {
+    public Tab createFrozenTab(TabState state, byte[] criticalPersistedTabData, int id,
+            boolean isIncognito, int index) {
         Tab tab = new MockTab(id, state.isIncognito(), TabLaunchType.FROM_RESTORE);
         TabTestUtils.restoreFieldsFromState(tab, state);
         mSelector.getModel(mIsIncognito)

@@ -50,7 +50,8 @@ class ExtensionsMetricsProvider : public metrics::MetricsProvider {
   static metrics::ExtensionInstallProto ConstructInstallProtoForTesting(
       const extensions::Extension& extension,
       extensions::ExtensionPrefs* prefs,
-      base::Time last_sample_time);
+      base::Time last_sample_time,
+      Profile* profile);
   static std::vector<metrics::ExtensionInstallProto>
   GetInstallsForProfileForTesting(Profile* profile,
                                   base::Time last_sample_time);

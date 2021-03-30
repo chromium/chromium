@@ -6,9 +6,9 @@
 
 #include <string>
 
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/enable_debugging_screen.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -68,8 +68,6 @@ void EnableDebuggingScreenHandler::DeclareLocalizedValues(
                IDS_ENABLE_DEBUGGING_LEARN_MORE);
   builder->Add("enableDebuggingSetupMessage",
                IDS_ENABLE_DEBUGGING_SETUP_MESSAGE);
-  builder->Add("enableDebuggingWaitMessage",
-               IDS_ENABLE_DEBUGGING_WAIT_MESSAGE);
   builder->AddF("enableDebuggingWarningTitle",
                 IDS_ENABLE_DEBUGGING_SCREEN_WARNING_MSG,
                 IDS_SHORT_PRODUCT_NAME);

@@ -18,7 +18,10 @@ interface RemoteApps {
   // Output parameters:
   // - |folder_id|: the ID of the newly added folder.
   // - |error|: A string describing the error if any.
-  AddFolder(string name) => (string? folder_id, string? error);
+  // - |add_to_front|: true if the folder should be added to the front of the
+  //                   app list.
+  AddFolder(string name,
+            bool add_to_front) => (string? folder_id, string? error);
 
   // Adds a Remote Apps app to the launcher.
   //
@@ -27,12 +30,16 @@ interface RemoteApps {
   // - |folder_id|: the ID of the parent folder. An empty string indicates the
   //                app has no parent folder.
   // - |icon_url|: a URL pointing to an image which represents the app's icon.
+  // - |add_to_front|: true if the app should be added to the front of the app
+  //                   list. Has no effect if the app has a parent folder.
   //
   // Output parameters:
   // - |app_id|: the ID of the newly added app.
   // - |error|: A string describing the error if any.
-  AddApp(string name, string folder_id, url.mojom.Url icon_url) =>
-      (string? app_id, string? error);
+  AddApp(string name,
+         string folder_id,
+         url.mojom.Url icon_url,
+         bool add_to_front) => (string? app_id, string? error);
 };
 
 // Factory for creating an instance of RemoteApps.

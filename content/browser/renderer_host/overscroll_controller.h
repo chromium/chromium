@@ -65,7 +65,7 @@ class CONTENT_EXPORT OverscrollController {
 
   OverscrollMode overscroll_mode() const { return overscroll_mode_; }
 
-  void set_delegate(OverscrollControllerDelegate* delegate) {
+  void set_delegate(base::WeakPtr<OverscrollControllerDelegate> delegate) {
     delegate_ = delegate;
   }
 
@@ -159,7 +159,7 @@ class CONTENT_EXPORT OverscrollController {
 
   // The delegate that receives the overscroll updates. The delegate is not
   // owned by this controller.
-  OverscrollControllerDelegate* delegate_ = nullptr;
+  base::WeakPtr<OverscrollControllerDelegate> delegate_;
 
   // A inertial scroll (fling) event may complete an overscroll gesture and
   // navigate to a new page or cancel the overscroll animation. In both cases

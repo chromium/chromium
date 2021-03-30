@@ -92,7 +92,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
    * @param {boolean} expanded
    */
   function clickRoutineGroup() {
-    const container = routineGroup.$$('.group-container');
+    const container = routineGroup.$$('network-health-container');
     assertTrue(!!container);
     container.click();
     Polymer.dom.flush();

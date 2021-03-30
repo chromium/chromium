@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -107,7 +108,7 @@ void LocalFileStreamReader::DidVerifyForOpen(
     return;
   }
 
-  stream_impl_.reset(new net::FileStream(task_runner_));
+  stream_impl_ = std::make_unique<net::FileStream>(task_runner_);
   callback_ = std::move(callback);
   const int result = stream_impl_->Open(
       file_path_, kOpenFlagsForRead,

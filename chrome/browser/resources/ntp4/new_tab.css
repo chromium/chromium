@@ -24,36 +24,6 @@ body {
   display: none !important;
 }
 
-.close-button {
-  background: no-repeat;
-  background-color: transparent;
-  /* TODO(estade): this should animate between states. */
-  background-image: -webkit-image-set(
-      url(../../../../ui/resources/default_100_percent/close_2.png) 1x,
-      url(../../../../ui/resources/default_200_percent/close_2.png) 2x);
-  border: 0;
-  cursor: default;
-  display: inline-block;
-  height: 16px;
-  padding: 0;
-  width: 16px;
-}
-
-.close-button:hover,
-.close-button:focus {
-  background-image: -webkit-image-set(
-      url(../../../../ui/resources/default_100_percent/close_2_hover.png) 1x,
-      url(../../../../ui/resources/default_200_percent/close_2_hover.png) 2x);
-}
-
-.close-button:active {
-  background-image: -webkit-image-set(
-      url(../../../../ui/resources/default_100_percent/close_2_pressed.png)
-          1x,
-      url(../../../../ui/resources/default_200_percent/close_2_pressed.png)
-          2x);
-}
-
 [is='action-link'] {
   margin-inline-start: 0.5em;
 }

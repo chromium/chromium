@@ -98,7 +98,7 @@ DataUseMeasurement::~DataUseMeasurement() {
     app_listener_.reset();
 #endif
   network_connection_tracker_->RemoveNetworkConnectionObserver(this);
-  DCHECK(!services_data_use_observer_list_.might_have_observers());
+  DCHECK(services_data_use_observer_list_.empty());
 }
 
 void DataUseMeasurement::RecordDownstreamUserTrafficSizeMetric(

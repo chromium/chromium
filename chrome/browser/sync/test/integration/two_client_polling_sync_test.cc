@@ -116,19 +116,20 @@ IN_PROC_BROWSER_TEST_F(TwoClientPollingSyncTest, DISABLED_ShouldPollOnStartup) {
   // start-up) and verify it receives the latest changes and the poll cycle
   // updated the last-poll-time.
   // All data is already there, so we can get it in the first poll.
-  SyncPrefs remote_prefs(GetProfile(1)->GetPrefs());
+  syncer::SyncTransportDataPrefs remote_transport_data_prefs(
+      GetProfile(1)->GetPrefs());
   // Note: SyncSchedulerImpl delays a poll on startup by up to 1% of the poll
   // interval. 1% of 4 hours (the default poll interval) is still a while, so
   // set a shorter poll interval here.
   base::TimeDelta poll_interval = base::TimeDelta::FromMinutes(2);
-  remote_prefs.SetPollInterval(poll_interval);
+  remote_transport_data_prefs.SetPollInterval(poll_interval);
   base::Time remote_start = base::Time::Now();
   base::Time new_last_poll_time =
       remote_start - poll_interval - base::TimeDelta::FromMilliseconds(100);
-  remote_prefs.SetLastPollTime(new_last_poll_time);
+  remote_transport_data_prefs.SetLastPollTime(new_last_poll_time);
   ASSERT_TRUE(GetClient(1)->StartSyncService()) << "SetupSync() failed.";
   GetClient(0)->AwaitMutualSyncCycleCompletion(GetClient(1));
-  EXPECT_THAT(remote_prefs.GetLastPollTime(), Gt(remote_start));
+  EXPECT_THAT(remote_transport_data_prefs.GetLastPollTime(), Gt(remote_start));
 }
 
 }  // namespace

@@ -35,7 +35,7 @@ class InvalidationService;
 namespace policy {
 
 // Listens for and provides policy invalidations.
-class CloudPolicyInvalidator : public syncer::InvalidationHandler,
+class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
                                public CloudPolicyCore::Observer,
                                public CloudPolicyStore::Observer {
  public:
@@ -116,12 +116,12 @@ class CloudPolicyInvalidator : public syncer::InvalidationHandler,
     return invalidation_service_;
   }
 
-  // syncer::InvalidationHandler:
-  void OnInvalidatorStateChange(syncer::InvalidatorState state) override;
+  // invalidation::InvalidationHandler:
+  void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
   void OnIncomingInvalidation(
-      const syncer::TopicInvalidationMap& invalidation_map) override;
+      const invalidation::TopicInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
-  bool IsPublicTopic(const syncer::Topic& topic) const override;
+  bool IsPublicTopic(const invalidation::Topic& topic) const override;
 
   // CloudPolicyCore::Observer:
   void OnCoreConnected(CloudPolicyCore* core) override;
@@ -134,7 +134,7 @@ class CloudPolicyInvalidator : public syncer::InvalidationHandler,
 
  private:
   // Handle an invalidation to the policy.
-  void HandleInvalidation(const syncer::Invalidation& invalidation);
+  void HandleInvalidation(const invalidation::Invalidation& invalidation);
 
   // Update topic subscription with the invalidation service based on the
   // given policy data.
@@ -142,7 +142,7 @@ class CloudPolicyInvalidator : public syncer::InvalidationHandler,
 
   // Registers this handler with |invalidation_service_| if needed and
   // subscribes to the given |topic| with the invalidation service.
-  void Register(const syncer::Topic& topic);
+  void Register(const invalidation::Topic& topic);
 
   // Unregisters this handler and unsubscribes from the current topic with
   // the invalidation service.
@@ -216,7 +216,7 @@ class CloudPolicyInvalidator : public syncer::InvalidationHandler,
   bool is_registered_;
 
   // The topic representing the policy in the invalidation service.
-  syncer::Topic topic_;
+  invalidation::Topic topic_;
 
   // Whether the policy is current invalid. This is set to true when an
   // invalidation is received and reset when the policy fetched due to the
@@ -237,7 +237,7 @@ class CloudPolicyInvalidator : public syncer::InvalidationHandler,
   int64_t highest_handled_invalidation_version_;
 
   // The most up to date invalidation.
-  std::unique_ptr<syncer::Invalidation> invalidation_;
+  std::unique_ptr<invalidation::Invalidation> invalidation_;
 
   // The maximum random delay, in ms, between receiving an invalidation and
   // fetching the new policy.

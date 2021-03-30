@@ -5,15 +5,15 @@
 #ifndef ASH_SYSTEM_AUDIO_MIC_GAIN_SLIDER_VIEW_H_
 #define ASH_SYSTEM_AUDIO_MIC_GAIN_SLIDER_VIEW_H_
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/system/unified/unified_slider_view.h"
-#include "chromeos/audio/cras_audio_handler.h"
 
 namespace ash {
 
 class MicGainSliderController;
 
 class MicGainSliderView : public UnifiedSliderView,
-                          public chromeos::CrasAudioHandler::AudioObserver {
+                          public CrasAudioHandler::AudioObserver {
  public:
   MicGainSliderView(MicGainSliderController* controller,
                     uint64_t device_id,

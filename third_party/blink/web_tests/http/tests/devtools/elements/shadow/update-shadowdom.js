@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test confirms that updating the shadow dom is reflected to the Inspector.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>

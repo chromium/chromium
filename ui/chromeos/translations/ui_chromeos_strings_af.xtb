@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Die lêer of gids is nie bruikbaar nie.</translation>
 <translation id="1363028406613469049">Snit</translation>
 <translation id="1378727793141957596">Welkom by Google Drive!</translation>
+<translation id="1379911846207762492">Jy kan lêers vanlyn beskikbaar stel vir toegang wanneer jy nie 'n internetverbinding het nie.</translation>
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1395262318152388157">Soekglyer</translation>
 <translation id="1404323374378969387">Noors</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Alle lêers</translation>
 <translation id="1810764548349082891">Geen voorskou beskikbaar nie</translation>
 <translation id="1812302367230252929">Amhaarse transliterasie</translation>
+<translation id="1813278315230285598">Dienste</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Wees versigtig:<ph name="END_BOLD" /> Hierdie lêers is tydelik en kan outomaties uitgevee word om skyfspasie beskikbaar te maak. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pikkewyn</translation>
 <translation id="183183971458492120">Laai tans inligting …</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Hierdie vouer word met Linux gedeel</translation>
 <translation id="1864756863218646478">Die lêer kon nie gevind word nie.</translation>
 <translation id="1920670151694390848">Malabaarse transliterasie</translation>
+<translation id="1920798810075583923">Waatlemoen</translation>
 <translation id="1924372192547904021">Het <ph name="DRIVE_NAME" /> geformateer</translation>
 <translation id="1931134289871235022">Slowaaks</translation>
 <translation id="1933345018156373194">Kon nie skuif nie; 'n onverwagse fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fins</translation>
 <translation id="1942765061641586207">Prentresolusie</translation>
-<translation id="1943097386230153518">Installeer nuwe diens</translation>
 <translation id="1972984168337863910">Vou lêersterugvoerpanele uit</translation>
+<translation id="1984456723671657197">Hierdie lêertipe word nie gesteun nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="1995337122023280937">Gaan na lêerligging toe</translation>
 <translation id="2001796770603320721">Bestuur in Drive</translation>
 <translation id="2009067268969781306">Alle data wat op 'n skyf geberg is, sal uitgevee word wanneer dit geformateer word. Hierdie handeling kan nie ontdoen word nie.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Platespeler</translation>
 <translation id="2291538123825441971">Maak tans <ph name="NUMBER_OF_FILES" /> lêers oop.</translation>
 <translation id="2303301624314357662">Maak tans lêer <ph name="FILE_NAME" /> oop.</translation>
+<translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> is uitgegooi.</translation>
 <translation id="2325650632570794183">Hierdie lêertipe word nie gesteun nie. Besoek asseblief die Chrome Webwinkel om 'n program te vind wat hierdie tipe lêer kan oopmaak.</translation>
 <translation id="2326539130272988168">Bulgaars</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">VSA internasionaal</translation>
 <translation id="2562685439590298522">Dokumente</translation>
 <translation id="2563185590376525700">Padda</translation>
-<translation id="2572501073504669105">Jy kan lêers vanlyn beskikbaar stel vir toegang wanneer jy nie 'n internetverbinding het nie.</translation>
 <translation id="2578394532502990878">Tamil-foneties</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">Frans (Kanada)</translation>
 <translation id="3003633581067744647">Skakel oor na kleinkiekie-aansig</translation>
 <translation id="3007214526293698309">Stel verhouding reg</translation>
+<translation id="3029114385395636667">Aktiveer Google Vanlyn Dokumente om Dokumente, Blaaie en Skyfies vanlyn beskikbaar te maak.</translation>
 <translation id="303198083543495566">Geografie</translation>
 <translation id="3047197340186497470">Chinees-Dayi</translation>
 <translation id="3057861065630527966">Rugsteun jou foto's en video's</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Jaar opgeneem</translation>
 <translation id="3353984535370177728">Kies 'n vouer om op te laai</translation>
 <translation id="3356580349448036450">Voltooi</translation>
+<translation id="3358452157379365236">Kitaar</translation>
 <translation id="3382143449143186018">Nepalees met InScript-sleutelbord</translation>
 <translation id="3408236822532681288">Duits (Duitsland) met Neo 2-sleutelbord</translation>
 <translation id="3414856743105198592">Die formatering van verwyderbare media gaan alle data uitvee. Wil jy voortgaan?</translation>
 <translation id="3437801641691368414">Tyd geskep</translation>
+<translation id="343907260260897561">Kitskamera</translation>
 <translation id="3455931012307786678">Esties</translation>
 <translation id="3466147780910026086">Skandeer tans jou mediatoestel …</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> foto's is gerugsteun na <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google-sigblad</translation>
+<translation id="3479552764303398839">Nie nou nie</translation>
 <translation id="3486821258960016770">Mongools</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> foute.</translation>
 <translation id="3522708245912499433">Portugees</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Om lêers met <ph name="APP_NAME" /> oop te maak, moet jy hulle eers na die Windows-lêersvouer toe kopieer.</translation>
 <translation id="3556731189587832921">Engels (VSA) met internasionale rekenaarsleutelbord</translation>
 <translation id="357479282490346887">Litaus</translation>
+<translation id="3592251141500063301">Kon nie <ph name="FILE_NAME" /> vanlyn beskikbaar maak nie</translation>
 <translation id="3603385196401704894">Kanadese Frans</translation>
 <translation id="3606220979431771195">Turkse F</translation>
 <translation id="3616113530831147358">Oudio</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Eenhoring</translation>
 <translation id="4158739975813877944">Maak speellys oop</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> is geskuif.</translation>
+<translation id="4186579485882418952">Aktiveer vanlyn</translation>
 <translation id="4193154014135846272">Google-dokument</translation>
 <translation id="4197674956721858839">Kompakteer-keuse</translation>
 <translation id="4202378258276439759">Spaans (Latyns-Amerika)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Algemene inligting</translation>
 <translation id="432252891123397018">Roemeens met standaardsleutelbord</translation>
 <translation id="4325128273762811722">Sloweens</translation>
+<translation id="4326142238881453352">Plantkundige</translation>
 <translation id="4326192123064055915">Koffie</translation>
 <translation id="4336032328163998280">Kopieerhandeling het misluk. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Sorani-Koerdies met sleutelbord wat op Arabies gegrond is</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">Tamil met Typewriter-sleutelbord</translation>
 <translation id="4711094779914110278">Turks</translation>
 <translation id="4712283082407695269">Maak tans "<ph name="PATH" />" oop</translation>
-<translation id="4713544552769165154">Hierdie lêer is ontwerp vir 'n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel, wat Chrome OS gebruik nie. Deursoek die <ph name="BEGIN_LINK" />Chrome-webwinkel<ph name="END_LINK" /> vir 'n gepaste plaasvervangerprogram.<ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto's is gerugsteun</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Jammer, hierdie video word nie deur jou uitsaaitoestel gesteun nie.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Deel, skep en werk saam met ander<ph name="MARKUP_8" />
     aan lêers op een plek.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Het lêers van Google Drive herwin</translation>
+<translation id="5288441970121584418">Burger</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5318819489018851358">Deel met Linux</translation>
 <translation id="5323213332664049067">Latyns-Amerikaans</translation>
@@ -460,8 +470,6 @@
 <translation id="5833610766403489739">Die lêer het weggedwaal. Gaan asseblief jou aflaailigging na en probeer weer.</translation>
 <translation id="5838451609423551646">Het alle inskrywings uit keuse verwyder.</translation>
 <translation id="5838825566232597749">Internasionale VSA-Workman</translation>
-<translation id="5850516540536751549">Hierdie tipe lêer word nie gesteun nie. Besoek asseblief die <ph name="BEGIN_LINK" />Chrome Webwinkel<ph name="END_LINK" /> om 'n soortgelyke program te vind wat hierdie tipe lêer kan oopmaak.
-    <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Hier is niks om te sien nie …</translation>
 <translation id="5911887972742538906">Kon nie jou Linux-program installeer nie.</translation>
 <translation id="5912396950572065471">Formaat</translation>
@@ -499,10 +507,12 @@
 <translation id="6248400709929739064">Aktiveer onderskrifte</translation>
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6287852322318138013">Kies 'n program om hierdie lêer oop te maak</translation>
+<translation id="6321303798550928047">Waai</translation>
 <translation id="6339145975392024142">VSA-internasionaal (PC)</translation>
 <translation id="6346310558342052870">Toegang is beperk</translation>
 <translation id="6356685157277930264">Lêersterugvoervenster</translation>
 <translation id="6358884629796491903">Draak</translation>
+<translation id="6367976544441405720">Afleweringvoertuig</translation>
 <translation id="637062427944097960">Hierdie lêer het op 'n ander werkskerm oopgemaak. Beweeg na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om dit te bekyk.</translation>
 <translation id="6394388407447716302">Leesalleen</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
@@ -526,6 +536,7 @@
 <translation id="6650726141019353908">Pienk skoenlapper</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6673674183150363784">Frans (Frankryk) met Bépo-sleutelbord</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6751256176799620176">1 vouer is gekies</translation>
 <translation id="6790428901817661496">Speel</translation>
@@ -559,6 +570,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bulgaars</translation>
 <translation id="6973630695168034713">Vouers</translation>
+<translation id="6976795442547527108">Leeu</translation>
 <translation id="6978611942794658017">Hierdie lêer is ontwerp vir 'n rekenaar met Windows-sagteware. Dit is nie versoenbaar met jou toestel wat Chrome-bedryfstelsel laat loop nie. Deursoek asseblief die Chrome-webwinkel vir 'n geskikte plaasvervangerprogram.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sweeds</translation>
@@ -605,6 +617,7 @@
 <translation id="7532029025027028521">Persiese transliterasie</translation>
 <translation id="7544830582642184299">Gee Linux-programme toegang tot lêers in jou Google Drive. Veranderinge sal met jou ander toestelle gesinkroniseer word.</translation>
 <translation id="7544853251252956727">Skommel</translation>
+<translation id="7547009467130558110">Tekkie</translation>
 <translation id="7547780573915868306">Litaus</translation>
 <translation id="7547811415869834682">Nederlands</translation>
 <translation id="7551643184018910560">Speld aan rak vas</translation>
@@ -619,6 +632,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% voltooi.</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7654209398114106148">Skuif tans <ph name="NUMBER_OF_ITEMS" /> items …</translation>
+<translation id="7655441028674523381">Gaan maklik na Google Foto's</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Alle data wat op 'n skyf geberg is, sal uitgevee word wanneer dit geformateer word en alle bestaande verdelings sal verwyder word, insluitend die verdelings wat nie sigbaar is nie. Hierdie handeling kan nie ontdoen word nie.</translation>
@@ -650,7 +664,6 @@
 <translation id="7839804798877833423">Dit sal ongeveer <ph name="FILE_SIZE" /> mobiele data gebruik om hierdie lêers te gaan haal.</translation>
 <translation id="7846076177841592234">Kanselleer keuse</translation>
 <translation id="7853966320808728790">Franse BÉPO</translation>
-<translation id="7864662577698025113">Voeg nuwe diens by</translation>
 <translation id="7868774406711971383">Pools</translation>
 <translation id="7873831373602885875">Kan nie in <ph name="FOLDER_NAME" /> stoor nie. Alle wysigings sal in <ph name="DOWNLOADS_FOLDER" /> in die Aflaaie-vouer gestoor word.</translation>
 <translation id="7874321682039004450">Filippyns</translation>
@@ -665,13 +678,13 @@
 <translation id="7972920761225148017">Frans (Switserland)</translation>
 <translation id="7980421588063892270">Engels (VSA) met Colemak-sleutelbord</translation>
 <translation id="7982283708762922719">Hoogte</translation>
+<translation id="79907182588096956">Hierdie lêer is ontwerp vir 'n rekenaar met Windows-sagteware. Dit is nie versoenbaar met jou toestel wat Chrome OS gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
 <translation id="8028993641010258682">Grootte</translation>
 <translation id="803771048473350947">Lêer</translation>
 <translation id="8038111231936746805">(verstek)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-oudio</translation>
 <translation id="8045462269890919536">Roemeens</translation>
-<translation id="8052887694493382350">Hierdie lêer is ontwerp vir 'n rekenaar wat Windows-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome OS gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Alle wysigings sal in <ph name="DOWNLOADS_FOLDER" /> gestoor word.</translation>
 <translation id="8079530767338315840">Herhaal</translation>
 <translation id="8106045200081704138">Met my gedeel</translation>
@@ -711,6 +724,7 @@
 <translation id="8466234950814670489">Teerargief</translation>
 <translation id="8475647382427415476">Google Drive kon <ph name="FILENAME" /> nie nou onmiddellik sinkroniseer nie. Google Drive sal later weer probeer.</translation>
 <translation id="8477649328507734757">Spin</translation>
+<translation id="8484284835977497781">Kies uit jou onlangse foto's.</translation>
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
 <translation id="8521441079177373948">VK</translation>
 <translation id="8525306231823319788">Volskerm</translation>
@@ -743,8 +757,10 @@
 <translation id="8860454412039442620">Excel-sigblad</translation>
 <translation id="8866284467018526531">Arabiese transliterasie</translation>
 <translation id="8900820606136623064">Hongaars</translation>
+<translation id="8903931173357132290">Gegradueerde</translation>
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8965697826696209160">Daar is nie genoeg spasie nie.</translation>
+<translation id="8970501467542182729">Hierdie lêer is ontwerp vir 'n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome OS gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>
 <translation id="8997962250644902079">Chinees- (tradisioneel) Pinjin</translation>
 <translation id="9017798300203431059">Russiese fonetiek</translation>
 <translation id="9034924485347205037">Linux-lêers</translation>

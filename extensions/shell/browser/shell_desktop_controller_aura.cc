@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -64,15 +63,15 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
   // wm::NativeCursorManager overrides.
   void SetDisplay(const display::Display& display,
                   wm::NativeCursorManagerDelegate* delegate) override {
-    if (cursor_loader_->SetDisplayData(display.panel_rotation(),
-                                       display.device_scale_factor()))
+    if (cursor_loader_.SetDisplayData(display.panel_rotation(),
+                                      display.device_scale_factor()))
       SetCursor(delegate->GetCursor(), delegate);
   }
 
   void SetCursor(gfx::NativeCursor cursor,
                  wm::NativeCursorManagerDelegate* delegate) override {
-    cursor_loader_->SetPlatformCursor(&cursor);
-    cursor.set_image_scale_factor(cursor_loader_->scale());
+    cursor_loader_.SetPlatformCursor(&cursor);
+    cursor.set_image_scale_factor(cursor_loader_.scale());
     delegate->CommitCursor(cursor);
 
     if (delegate->IsCursorVisible())
@@ -87,14 +86,14 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
       SetCursor(delegate->GetCursor(), delegate);
     } else {
       gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
-      cursor_loader_->SetPlatformCursor(&invisible_cursor);
+      cursor_loader_.SetPlatformCursor(&invisible_cursor);
       SetCursorOnAllRootWindows(invisible_cursor);
     }
   }
 
   void SetCursorSize(ui::CursorSize cursor_size,
                      wm::NativeCursorManagerDelegate* delegate) override {
-    cursor_loader_->set_size(cursor_size);
+    cursor_loader_.SetSize(cursor_size);
     delegate->CommitCursorSize(cursor_size);
     if (delegate->IsCursorVisible())
       SetCursor(delegate->GetCursor(), delegate);
@@ -116,8 +115,7 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
 
   ShellDesktopControllerAura* desktop_controller_;  // Not owned.
 
-  std::unique_ptr<ui::CursorLoader> cursor_loader_ =
-      ui::CursorLoader::Create(/*use_platform_cursors=*/false);
+  ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 
   DISALLOW_COPY_AND_ASSIGN(ShellNativeCursorManager);
 };
@@ -163,14 +161,16 @@ ShellDesktopControllerAura::~ShellDesktopControllerAura() {
   extensions::AppWindowClient::Set(NULL);
 }
 
-void ShellDesktopControllerAura::Run() {
+void ShellDesktopControllerAura::PreMainMessageLoopRun() {
   KeepAliveRegistry::GetInstance()->AddObserver(this);
+}
 
-  base::RunLoop run_loop;
-  run_loop_ = &run_loop;
-  run_loop.Run();
-  run_loop_ = nullptr;
+void ShellDesktopControllerAura::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  quit_when_idle_closure_ = run_loop->QuitWhenIdleClosure();
+}
 
+void ShellDesktopControllerAura::PostMainMessageLoopRun() {
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(true);
   KeepAliveRegistry::GetInstance()->RemoveObserver(this);
 }
@@ -400,9 +400,9 @@ void ShellDesktopControllerAura::TearDownRootWindowController(
 void ShellDesktopControllerAura::MaybeQuit() {
   // Quit if there are no app windows open and no keep-alives waiting for apps
   // to relaunch.  |run_loop_| may be null in tests.
-  if (run_loop_ && root_window_controllers_.empty() &&
+  if (quit_when_idle_closure_ && root_window_controllers_.empty() &&
       !KeepAliveRegistry::GetInstance()->IsKeepingAlive()) {
-    run_loop_->QuitWhenIdle();
+    std::move(quit_when_idle_closure_).Run();
   }
 }
 

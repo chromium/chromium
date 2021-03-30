@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Check that RuntimeCallStats are present in profile.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <div id="foo">

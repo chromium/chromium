@@ -7,13 +7,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#import "ios/chrome/browser/crash_report/breakpad_helper.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_constants.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,7 +77,7 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
 
   void TearDown() override {
     [[mock_breakpad_controller_ stub] stop];
-    breakpad_helper::SetEnabled(false);
+    crash_helper::SetEnabled(false);
     PlatformTest::TearDown();
   }
 
@@ -95,7 +95,7 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
 // reports.
 TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
+  crash_helper::SetEnabled(true);
 
   BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
@@ -119,7 +119,8 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
   }];
   [[mock_breakpad_controller_ expect]
       addUploadParameter:breadcrumbs_param_vaidation_block
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
 
   breadcrumb_service->AddEvent(std::string("Breadcrumb Event"));
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
@@ -128,7 +129,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
 // Tests that breadcrumbs string is cut when it exceeds the max allowed length.
 TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
+  crash_helper::SetEnabled(true);
 
   BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
@@ -140,19 +141,20 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
 
   // Build a sample breadcrumbs string greater than the maximum allowed size.
   NSMutableString* breadcrumbs = [[NSMutableString alloc] init];
-  while (breadcrumbs.length < kMaxBreadcrumbsDataLength) {
+  while (breadcrumbs.length < breadcrumbs::kMaxDataLength) {
     [breadcrumbs appendString:@"12:01 Fake Breadcrumb Event/n"];
   }
   [breadcrumbs appendString:@"12:01 Fake Breadcrumb Event/n"];
-  ASSERT_GT([breadcrumbs length], kMaxBreadcrumbsDataLength);
+  ASSERT_GT([breadcrumbs length], breadcrumbs::kMaxDataLength);
 
   id validation_block = [OCMArg checkWithBlock:^(id value) {
-    EXPECT_EQ(kMaxBreadcrumbsDataLength, [value length]);
+    EXPECT_EQ(breadcrumbs::kMaxDataLength, [value length]);
     return YES;
   }];
   [[mock_breakpad_controller_ expect]
       addUploadParameter:validation_block
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
   breadcrumb_service->AddEvent(base::SysNSStringToUTF8(breadcrumbs));
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 }
@@ -163,7 +165,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
 TEST_F(CrashReporterBreadcrumbObserverTest,
        MultipleBrowserStatesAttachedToCrashReport) {
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
+  crash_helper::SetEnabled(true);
 
   const std::string event = std::string("Breadcrumb Event");
   NSString* event_nsstring = base::SysUTF8ToNSString(event);
@@ -179,7 +181,8 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
                              1, event_nsstring)
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
   breadcrumb_service->AddEvent(event);
 
   ChromeBrowserState* otr_browser_state =
@@ -193,7 +196,8 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
                              2, event_nsstring)
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
   otr_breadcrumb_service->AddEvent(event);
 
   TestChromeBrowserState::Builder test_cbs_builder;
@@ -208,7 +212,8 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
                              3, event_nsstring)
-                  forKey:crash_keys::kBreadcrumbsProductDataKey];
+                  forKey:base::SysUTF8ToNSString(
+                             crash_keys::kBreadcrumbsProductDataKey)];
   breadcrumb_service_2->AddEvent(event);
 
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);

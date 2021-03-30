@@ -23,6 +23,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
+#include "components/performance_manager/public/graph/node_state.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/registered_objects.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -154,6 +155,9 @@ class GraphImpl : public Graph {
  protected:
   friend class NodeBase;
 
+  // Used to implement `NodeBase::GetNodeState()` and `Node::GetNodeState()`.
+  NodeState GetNodeState(const NodeBase* node) const;
+
   // Provides access to per-node-class typed observers. Exposed to nodes via
   // TypedNodeBase.
   template <typename Observer>
@@ -176,8 +180,9 @@ class GraphImpl : public Graph {
   using ProcessByPidMap = std::map<base::ProcessId, ProcessNodeImpl*>;
   using FrameById = std::map<ProcessAndFrameId, FrameNodeImpl*>;
 
-  void OnNodeAdded(NodeBase* node);
-  void OnBeforeNodeRemoved(NodeBase* node);
+  void DispatchNodeAddedNotifications(NodeBase* node);
+  void DispatchNodeRemovedNotifications(NodeBase* node);
+  void RemoveNodeAttachedData(NodeBase* node);
 
   // Returns a new serialization ID.
   friend class NodeBase;
@@ -253,6 +258,14 @@ class GraphImpl : public Graph {
   // The most recently assigned serialization ID.
   int64_t current_node_serialization_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
       0u;
+
+  // The identity of the node currently being added to or removed from the
+  // graph, if any. This is used to prevent re-entrant notifications.
+  const NodeBase* node_in_transition_ = nullptr;
+
+  // The state of the node being added or removed. Any node in the graph not
+  // explicitly in transition is automatically in the kActiveInGraph state.
+  NodeState node_in_transition_state_ = NodeState::kNotInGraph;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

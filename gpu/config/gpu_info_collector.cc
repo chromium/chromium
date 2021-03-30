@@ -200,8 +200,11 @@ bool CollectGraphicsDeviceInfoFromCommandLine(
   }
 
   bool info_updated = gpu.vendor_id || gpu.device_id ||
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+                      gpu.revision ||
+#endif
 #if defined(OS_WIN)
-                      gpu.sub_sys_id || gpu.revision ||
+                      gpu.sub_sys_id ||
 #endif
                       !gpu.driver_version.empty();
 
@@ -231,10 +234,16 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     return true;
   }
 
+  gl::GLImplementationParts implementation =
+      gl::GetNamedGLImplementation(use_gl, use_angle);
+
+  bool useSoftwareGLForTests =
+      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
   base::StringPiece software_gl_impl_name =
-      gl::GetGLImplementationName(gl::GetSoftwareGLImplementation());
-  if (use_gl == software_gl_impl_name ||
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests)) {
+      gl::GetGLImplementationGLName(gl::GetLegacySoftwareGLImplementation());
+  if ((implementation == gl::GetLegacySoftwareGLImplementation()) ||
+      (useSoftwareGLForTests && (gl::GetLegacySoftwareGLImplementation() ==
+                                 gl::GetSoftwareGLForTestsImplementation()))) {
     // If using the software GL implementation, use fake vendor and
     // device ids to make sure it never gets blocklisted. It allows us
     // to proceed with loading the blocklist which may have non-device
@@ -249,8 +258,10 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     gpu_info->gpu.driver_vendor = software_gl_impl_name.as_string();
 
     return true;
-  } else if (use_gl == gl::kGLImplementationANGLEName &&
-             use_angle == gl::kANGLEImplementationSwiftShaderName) {
+  } else if ((implementation == gl::GetSoftwareGLImplementation()) ||
+             (useSoftwareGLForTests &&
+              (gl::GetSoftwareGLImplementation() ==
+               gl::GetSoftwareGLForTestsImplementation()))) {
     // Similarly to the above, use fake vendor and device ids
     // to make sure they never gets blocklisted for SwANGLE as well.
     gpu_info->gpu.vendor_id = 0xffff;
@@ -445,6 +456,9 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
 
   gpu_info->gpu.vendor_id = active->vendorId;
   gpu_info->gpu.device_id = active->deviceId;
+#if defined(OS_CHROMEOS)
+  gpu_info->gpu.revision = active->revisionId;
+#endif
   gpu_info->gpu.driver_vendor = std::move(active->driverVendor);
   gpu_info->gpu.driver_version = std::move(active->driverVersion);
   gpu_info->gpu.active = true;
@@ -457,6 +471,9 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
     GPUInfo::GPUDevice device;
     device.vendor_id = system_info->gpus[i].vendorId;
     device.device_id = system_info->gpus[i].deviceId;
+#if defined(OS_CHROMEOS)
+    device.revision = system_info->gpus[i].revisionId;
+#endif
     device.driver_vendor = std::move(system_info->gpus[i].driverVendor);
     device.driver_version = std::move(system_info->gpus[i].driverVersion);
 

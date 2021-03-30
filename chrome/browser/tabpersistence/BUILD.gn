@@ -8,7 +8,7 @@ android_library("java") {
   sources = [ "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateDirectory.java" ]
   deps = [
     "//base:base_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
 }

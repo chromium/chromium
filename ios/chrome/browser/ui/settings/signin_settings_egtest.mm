@@ -40,7 +40,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 - (void)testSignInPromoWithNoAccountsOnDeviceUsingPrimaryButton {
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
 
   // Cancel the sign-in operation.
@@ -48,7 +48,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
                                           kSkipSigninAccessibilityIdentifier)]
       performAction:grey_tap()];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 }
 
 // Tests signing in, using the primary button with one account on the device.
@@ -58,7 +58,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
 
@@ -76,7 +76,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
   [ChromeEarlGreyUI tapSettingsMenuButton:SecondarySignInButton()];
   [SigninEarlGreyUI selectIdentityWithEmail:fakeIdentity.userEmail];
   [SigninEarlGreyUI tapSigninConfirmationDialog];
@@ -96,7 +96,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
   [ChromeEarlGreyUI openSettingsMenu];
   // Check the sign-in promo view is visible.
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
   // Check the sign-in promo will not be shown anymore.
   int newDisplayedCount =
       [SigninSettingsAppInterface settingsSigninPromoDisplayedCount];
@@ -119,7 +119,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
   [ChromeEarlGreyUI openSettingsMenu];
   // Check the sign-in promo view is visible.
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
   // Tap on dismiss button.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(

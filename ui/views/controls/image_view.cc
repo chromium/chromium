@@ -94,7 +94,7 @@ ImageView::Alignment ImageView::GetVerticalAlignment() const {
   return vertical_alignment_;
 }
 
-void ImageView::SetAccessibleName(const base::string16& accessible_name) {
+void ImageView::SetAccessibleName(const std::u16string& accessible_name) {
   if (accessible_name_ == accessible_name)
     return;
 
@@ -103,15 +103,15 @@ void ImageView::SetAccessibleName(const base::string16& accessible_name) {
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
-const base::string16& ImageView::GetAccessibleName() const {
+const std::u16string& ImageView::GetAccessibleName() const {
   return accessible_name_.empty() ? tooltip_text_ : accessible_name_;
 }
 
-void ImageView::SetTooltipText(const base::string16& tooltip) {
+void ImageView::SetTooltipText(const std::u16string& tooltip) {
   tooltip_text_ = tooltip;
 }
 
-const base::string16& ImageView::GetTooltipText() const {
+const std::u16string& ImageView::GetTooltipText() const {
   return tooltip_text_;
 }
 
@@ -178,7 +178,7 @@ void ImageView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void ImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  const base::string16& name = GetAccessibleName();
+  const std::u16string& name = GetAccessibleName();
   if (name.empty()) {
     node_data->role = ax::mojom::Role::kIgnored;
     return;
@@ -188,7 +188,7 @@ void ImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(name);
 }
 
-base::string16 ImageView::GetTooltipText(const gfx::Point& p) const {
+std::u16string ImageView::GetTooltipText(const gfx::Point& p) const {
   return tooltip_text_;
 }
 
@@ -270,17 +270,16 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
   return scaled_image_;
 }
 
-DEFINE_ENUM_CONVERTERS(
-    ImageView::Alignment,
-    {ImageView::Alignment::kLeading, base::ASCIIToUTF16("kLeading")},
-    {ImageView::Alignment::kCenter, base::ASCIIToUTF16("kCenter")},
-    {ImageView::Alignment::kTrailing, base::ASCIIToUTF16("kTrailing")})
+DEFINE_ENUM_CONVERTERS(ImageView::Alignment,
+                       {ImageView::Alignment::kLeading, u"kLeading"},
+                       {ImageView::Alignment::kCenter, u"kCenter"},
+                       {ImageView::Alignment::kTrailing, u"kTrailing"})
 
 BEGIN_METADATA(ImageView, View)
 ADD_PROPERTY_METADATA(Alignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(Alignment, VerticalAlignment)
-ADD_PROPERTY_METADATA(base::string16, AccessibleName)
-ADD_PROPERTY_METADATA(base::string16, TooltipText)
+ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
+ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 END_METADATA
 
 }  // namespace views

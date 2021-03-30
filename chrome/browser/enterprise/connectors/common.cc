@@ -15,11 +15,22 @@ AnalysisSettings& AnalysisSettings::operator=(AnalysisSettings&&) = default;
 AnalysisSettings::~AnalysisSettings() = default;
 
 ReportingSettings::ReportingSettings() = default;
-ReportingSettings::ReportingSettings(GURL url, const std::string& dm_token)
-    : reporting_url(url), dm_token(dm_token) {}
+ReportingSettings::ReportingSettings(GURL url,
+                                     const std::string& dm_token,
+                                     bool per_profile)
+    : reporting_url(url), dm_token(dm_token), per_profile(per_profile) {}
 ReportingSettings::ReportingSettings(ReportingSettings&&) = default;
 ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;
 ReportingSettings::~ReportingSettings() = default;
+
+FileSystemSettings::FileSystemSettings() = default;
+FileSystemSettings::FileSystemSettings(const FileSystemSettings&) = default;
+FileSystemSettings::FileSystemSettings(FileSystemSettings&&) = default;
+FileSystemSettings& FileSystemSettings::operator=(const FileSystemSettings&) =
+    default;
+FileSystemSettings& FileSystemSettings::operator=(FileSystemSettings&&) =
+    default;
+FileSystemSettings::~FileSystemSettings() = default;
 
 const char* ConnectorPref(AnalysisConnector connector) {
   switch (connector) {
@@ -39,6 +50,13 @@ const char* ConnectorPref(ReportingConnector connector) {
   switch (connector) {
     case ReportingConnector::SECURITY_EVENT:
       return kOnSecurityEventPref;
+  }
+}
+
+const char* ConnectorPref(FileSystemConnector connector) {
+  switch (connector) {
+    case FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD:
+      return kSendDownloadToCloudPref;
   }
 }
 

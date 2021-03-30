@@ -109,7 +109,7 @@ TYPED_TEST(ObserverListPerfTest, NotifyPerformance) {
 
     EXPECT_EQ(observer_count * weighted_laps,
               g_observer_list_perf_test_counter);
-    EXPECT_TRUE(observer_count == 0 || list.might_have_observers());
+    EXPECT_TRUE(observer_count == 0 || !list.empty());
 
     std::string story_name =
         base::StringPrintf("%s_%d", Pick<TypeParam>::GetName(), observer_count);

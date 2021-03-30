@@ -62,8 +62,6 @@ public class VariationsSeedServer extends Service {
         // reported a second time.
         metrics.clearJobInterval();
         metrics.clearJobQueueTime();
-        metrics.clearSeedFetchResult();
-        metrics.clearSeedFetchTime();
         if (!metrics.writeMetricsToVariationsSharedPreferences(context)) {
             Log.e(TAG, "Failed to write variations SharedPreferences to disk");
         }

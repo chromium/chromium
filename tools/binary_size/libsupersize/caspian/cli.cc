@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Command-line interface for checking the integrity of .size files.
-// Usage: cli (path to .size file)
 
 #include <stdlib.h>
 
@@ -76,8 +75,9 @@ void PrintUsageAndExit() {
   std::cerr << "Must have exactly one of:" << std::endl;
   std::cerr << "  validate, diff" << std::endl;
   std::cerr << "Usage:" << std::endl;
-  std::cerr << "  cli validate <size file>" << std::endl;
-  std::cerr << "  cli diff <before_file> <after_file>" << std::endl;
+  std::cerr << "  caspian_cli validate <.size file>" << std::endl;
+  std::cerr << "  caspian_cli validatediff <.sizediff file>" << std::endl;
+  std::cerr << "  caspian_cli diff <before_file> <after_file>" << std::endl;
   exit(1);
 }
 

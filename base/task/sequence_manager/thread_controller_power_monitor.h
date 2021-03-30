@@ -14,7 +14,7 @@ namespace internal {
 // A helper class that keeps track of the power state and handles power
 // notifications. The class register itself to the PowerMonitor and receives
 // notifications on the bound thread (see BindToCurrentThread(...)).
-class BASE_EXPORT ThreadControllerPowerMonitor : public PowerObserver {
+class BASE_EXPORT ThreadControllerPowerMonitor : public PowerSuspendObserver {
  public:
   ThreadControllerPowerMonitor();
   ~ThreadControllerPowerMonitor() override;
@@ -37,7 +37,7 @@ class BASE_EXPORT ThreadControllerPowerMonitor : public PowerObserver {
   static void OverrideUsePowerMonitorForTesting(bool use_power_monitor);
   static void ResetForTesting();
 
-  // base::PowerObserver:
+  // base::PowerSuspendObserver:
   void OnSuspend() override;
   void OnResume() override;
 

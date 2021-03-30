@@ -4,12 +4,12 @@
 
 #include "chrome/browser/extensions/api/file_system/request_file_system_notification.h"
 
+#include <string>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
@@ -94,10 +94,10 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
   message_center::RichNotificationData data;
 
   // TODO(mtomasz): Share this code with RequestFileSystemDialogView.
-  const base::string16 display_name =
+  const std::u16string display_name =
       base::UTF8ToUTF16(!volume->volume_label().empty() ? volume->volume_label()
                                                         : volume->volume_id());
-  const base::string16 message = l10n_util::GetStringFUTF16(
+  const std::u16string message = l10n_util::GetStringFUTF16(
       writable
           ? IDS_FILE_SYSTEM_REQUEST_FILE_SYSTEM_NOTIFICATION_WRITABLE_MESSAGE
           : IDS_FILE_SYSTEM_REQUEST_FILE_SYSTEM_NOTIFICATION_MESSAGE,
@@ -107,7 +107,7 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       base::UTF8ToUTF16(extension.name()), message,
       gfx::Image(),      // Updated asynchronously later.
-      base::string16(),  // display_source
+      std::u16string(),  // display_source
       GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  notification_id),

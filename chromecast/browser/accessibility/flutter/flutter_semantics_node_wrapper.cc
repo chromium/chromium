@@ -10,7 +10,7 @@
 #include "chromecast/browser/cast_web_contents.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 
 using gallium::castos::ActionProperties;
 using gallium::castos::BooleanProperties;
@@ -19,7 +19,7 @@ namespace chromecast {
 namespace accessibility {
 
 FlutterSemanticsNodeWrapper::FlutterSemanticsNodeWrapper(
-    AXTreeSourceFlutter* tree_source,
+    ui::AXTreeSource<FlutterSemanticsNode*>* tree_source,
     const SemanticsNode* node)
     : tree_source_(tree_source), node_ptr_(node) {
   DCHECK(tree_source_);
@@ -73,6 +73,11 @@ bool FlutterSemanticsNodeWrapper::HasScopesRoute() const {
 bool FlutterSemanticsNodeWrapper::HasNamesRoute() const {
   const BooleanProperties& boolean_properties = node_ptr_->boolean_properties();
   return boolean_properties.names_route();
+}
+
+bool FlutterSemanticsNodeWrapper::IsKeyboardNode() const {
+  const BooleanProperties& boolean_properties = node_ptr_->boolean_properties();
+  return boolean_properties.is_lift_to_type();
 }
 
 bool FlutterSemanticsNodeWrapper::CanBeAccessibilityFocused() const {
@@ -171,7 +176,9 @@ void FlutterSemanticsNodeWrapper::PopulateAXRole(
     return;
   }
 
-  if (node_ptr_->scroll_children() > 0) {
+  std::vector<FlutterSemanticsNodeWrapper*> actionable_children;
+  GetActionableChildren(&actionable_children);
+  if (node_ptr_->scroll_children() > 0 && actionable_children.size() > 0) {
     out_data->role = ax::mojom::Role::kList;
     return;
   }
@@ -279,12 +286,10 @@ void FlutterSemanticsNodeWrapper::PopulateAXState(
                                   : ax::mojom::CheckedState::kFalse);
   }
 
-  // Put this back after b/148875421 is resolved. Flutter is sending
-  // many elements with a disabled flag which causes the reader to
-  // speak 'Disabled' even though it is not.
-  // if (!boolean_properties.is_enabled()) {
-  // out_data->SetRestriction(ax::mojom::Restriction::kDisabled);
-  //}
+  if (boolean_properties.has_enabled_state() &&
+      !boolean_properties.is_enabled()) {
+    out_data->SetRestriction(ax::mojom::Restriction::kDisabled);
+  }
 }
 
 void FlutterSemanticsNodeWrapper::Serialize(ui::AXNodeData* out_data) const {
@@ -332,8 +337,7 @@ void FlutterSemanticsNodeWrapper::Serialize(ui::AXNodeData* out_data) const {
     // get bounds relative to 0,0 anyway since we are full screen.  This may
     // change if flutter is ever not full screen in which case we will have
     // to pass in the bounds of whatever container it resides in.
-    const gfx::Rect& local_bounds =
-        tree_source_->GetBounds(tree_source_->GetFromId(GetId()));
+    const gfx::Rect& local_bounds = GetRelativeBounds();
     out_data->relative_bounds.bounds.SetRect(local_bounds.x(), local_bounds.y(),
                                              local_bounds.width(),
                                              local_bounds.height());
@@ -414,16 +418,14 @@ void FlutterSemanticsNodeWrapper::Serialize(ui::AXNodeData* out_data) const {
       for (CastWebContents* contents : all_contents) {
         if (contents->id() == web_contents_id) {
           content::WebContents* web_contents = contents->web_contents();
-          out_data->AddStringAttribute(
-              ax::mojom::StringAttribute::kChildTreeId,
-              web_contents->GetMainFrame()->GetAXTreeID().ToString());
+          out_data->AddChildTreeId(web_contents->GetMainFrame()->GetAXTreeID());
           break;
         }
       }
     } else {
       // Use the value as a tree id.
-      out_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                   ax_tree_id);
+      ui::AXTreeID child_ax_tree_id = ui::AXTreeID::FromString(ax_tree_id);
+      out_data->AddChildTreeId(child_ax_tree_id);
     }
   }
 
@@ -591,6 +593,27 @@ bool FlutterSemanticsNodeWrapper::HasValue() const {
 
 std::string FlutterSemanticsNodeWrapper::GetValue() const {
   return node_ptr_->value();
+}
+
+const gfx::Rect FlutterSemanticsNodeWrapper::GetRelativeBounds() const {
+  FlutterSemanticsNode* root_node = tree_source_->GetRoot();
+  DCHECK(root_node);
+
+  gfx::Rect node_bounds = GetBounds();
+
+  // TODO(rmrossi): If embedded flutter is ever not full screen, we will have
+  // to pass in the embedded object tag's screen coordinates to this function
+  // and set the offset of the root node here separately from other nodes.
+  // The bounds of the root node are supposed to be relative to its container
+  // but since we are full screen, we leave them alone.  See
+  // ax_tree_source_arc.cc for an example.
+  if (GetId() != root_node->GetId()) {
+    // Bounds of non-root node is relative to its tree's root.
+    gfx::Rect root_bounds = root_node->GetBounds();
+    node_bounds.Offset(-1 * root_bounds.x(), -1 * root_bounds.y());
+  }
+
+  return node_bounds;
 }
 
 }  // namespace accessibility

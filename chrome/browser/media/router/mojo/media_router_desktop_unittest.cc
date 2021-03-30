@@ -64,11 +64,13 @@ class MediaRouterDesktopTest : public MediaRouterMojoTest {
  protected:
   std::unique_ptr<MediaRouterMojoImpl> CreateMediaRouter() override {
     std::unique_ptr<MockCastMediaSinkService> cast_media_sink_service;
-    // We disable the DIAL MRP because initializing the DIAL MRP requires
-    // initialization of objects it depends on, which is outside the scope of
-    // this unit test. DIAL MRP initialization is covered by Media Router
-    // browser tests.
-    feature_list_.InitAndDisableFeature(kDialMediaRouteProvider);
+    // We disable the DIAL and Cast MRPs because initializing the MRPs requires
+    // initialization of objects they depend on, which is outside the scope of
+    // this unit test. MRP initialization is covered by Media Router browser
+    // tests.
+    feature_list_.InitWithFeatures(
+        {}, /* disabled_features */ {kDialMediaRouteProvider,
+                                     kCastMediaRouteProvider});
     cast_media_sink_service = std::make_unique<MockCastMediaSinkService>();
     cast_media_sink_service_ = cast_media_sink_service.get();
     media_sink_service_ =
@@ -144,39 +146,6 @@ TEST_F(MediaRouterDesktopTest, SyncStateToMediaRouteProvider) {
   messages_observer = std::make_unique<NullMessageObserver>(router(), kRouteId);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClearExpectations(&mock_extension_provider_));
-}
-
-TEST_F(MediaRouterDesktopTest, ProvideSinks) {
-  std::vector<MediaSinkInternal> sinks;
-  MediaSink sink("sinkId", "sinkName", SinkIconType::CAST,
-                 MediaRouteProviderId::EXTENSION);
-  CastSinkExtraData extra_data;
-  net::IPAddress ip_address;
-  EXPECT_TRUE(ip_address.AssignFromIPLiteral("192.168.1.3"));
-  extra_data.ip_endpoint = net::IPEndPoint(ip_address, 0);
-  extra_data.capabilities = 2;
-  extra_data.cast_channel_id = 3;
-  MediaSinkInternal expected_sink(sink, extra_data);
-  sinks.push_back(expected_sink);
-  const std::string kCastProviderName = "cast";
-
-  // |router()| is already registered with |media_sink_service_| during
-  // |SetUp()|.
-  EXPECT_CALL(mock_extension_provider_, ProvideSinks(kCastProviderName, sinks));
-  media_sink_service()->OnSinksDiscovered(kCastProviderName, sinks);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_CALL(mock_extension_provider_, ProvideSinks(kCastProviderName, sinks));
-  static_cast<MediaRouterDesktop*>(router())->ProvideSinksToExtension();
-  base::RunLoop().RunUntilIdle();
-
-  const std::string kDialProviderName = "dial";
-  EXPECT_CALL(mock_extension_provider_, ProvideSinks(kCastProviderName, sinks));
-  EXPECT_CALL(mock_extension_provider_, ProvideSinks(kDialProviderName, sinks))
-      .Times(0);
-  media_sink_service()->OnSinksDiscovered(kDialProviderName, sinks);
-  static_cast<MediaRouterDesktop*>(router())->ProvideSinksToExtension();
-  base::RunLoop().RunUntilIdle();
 }
 
 // Tests that auto-join and Cast SDK join requests are routed to the extension

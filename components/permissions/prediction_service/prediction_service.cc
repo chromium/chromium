@@ -29,6 +29,10 @@ namespace {
 
 constexpr base::TimeDelta kURLLookupTimeout = base::TimeDelta::FromSeconds(2);
 
+constexpr float kRoundToMultiplesOf = 0.1f;
+
+constexpr int kCountBuckets[] = {20, 15, 12, 10, 9, 8, 7, 6, 5, 4};
+
 permissions::ClientFeatures_Gesture ConvertToProtoGesture(
     const permissions::PermissionRequestGestureType type) {
   switch (type) {
@@ -37,40 +41,44 @@ permissions::ClientFeatures_Gesture ConvertToProtoGesture(
     case permissions::PermissionRequestGestureType::NO_GESTURE:
       return permissions::ClientFeatures_Gesture_NO_GESTURE;
     case permissions::PermissionRequestGestureType::UNKNOWN:
-      return permissions::ClientFeatures_Gesture_UNKNOWN_GESTURE;
+      return permissions::ClientFeatures_Gesture_GESTURE_UNSPECIFIED;
     case permissions::PermissionRequestGestureType::NUM:
       break;
   }
 
   NOTREACHED();
-  return permissions::ClientFeatures_Gesture_UNKNOWN_GESTURE;
+  return permissions::ClientFeatures_Gesture_GESTURE_UNSPECIFIED;
 }
 
-inline float GetRatioRoundedToTwoDecimals(int numerator, int denominator) {
+inline float GetRoundedRatio(int numerator, int denominator) {
   if (denominator == 0)
     return 0;
-  return roundf(100.f * numerator / denominator) / 100.f;
+  return roundf(numerator / kRoundToMultiplesOf / denominator) *
+         kRoundToMultiplesOf;
 }
 
 void FillInStatsFeatures(
     const permissions::PredictionRequestFeatures::ActionCounts& counts,
     permissions::StatsFeatures* features) {
-  int total_counts =
-      counts.denies + counts.dismissals + counts.grants + counts.ignores;
+  int total_counts = counts.total();
 
   // Round to only 2 decimal places to help prevent fingerprinting.
-  features->set_avg_deny_rate(
-      GetRatioRoundedToTwoDecimals(counts.denies, total_counts));
+  features->set_avg_deny_rate(GetRoundedRatio(counts.denies, total_counts));
   features->set_avg_dismiss_rate(
-      GetRatioRoundedToTwoDecimals(counts.dismissals, total_counts));
-  features->set_avg_grant_rate(
-      GetRatioRoundedToTwoDecimals(counts.grants, total_counts));
-  features->set_avg_ignore_rate(
-      GetRatioRoundedToTwoDecimals(counts.ignores, total_counts));
+      GetRoundedRatio(counts.dismissals, total_counts));
+  features->set_avg_grant_rate(GetRoundedRatio(counts.grants, total_counts));
+  features->set_avg_ignore_rate(GetRoundedRatio(counts.ignores, total_counts));
 
-  // Prevent hyperspecific large counts from becoming usable to fingerprint
-  // users that see an unexpectedly large prompt count.
-  features->set_prompts_count(std::min(total_counts, 100));
+  // Put the total prompts count into the appropriate bucket to prevent
+  // fingerprinting. Since the buckets are in descending order, the correct
+  // bucket is the first one that is smaller or equal to the prompt count.
+  features->set_prompts_count(0);
+  for (const auto& bucket : kCountBuckets) {
+    if (total_counts >= bucket) {
+      features->set_prompts_count(bucket);
+      break;
+    }
+  }
 }
 
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
@@ -106,6 +114,10 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
     })");
 }
 
+bool ShouldUseJson() {
+  return permissions::feature_params::kPermissionPredictionServiceUseJson.Get();
+}
+
 }  // namespace
 
 namespace permissions {
@@ -121,7 +133,12 @@ void PredictionService::StartLookup(const PredictionRequestFeatures& entity,
   auto request = GetResourceRequest();
   auto proto_request = GetPredictionRequestProto(entity);
   std::string request_data;
-  proto_request->SerializeToString(&request_data);
+  if (ShouldUseJson()) {
+    request_data =
+        GeneratePredictionsRequestMessageToJson(*proto_request.get());
+  } else {
+    proto_request->SerializeToString(&request_data);
+  }
 
   SendRequestInternal(std::move(request), request_data, entity,
                       std::move(response_callback));
@@ -175,10 +192,10 @@ PredictionService::GetResourceRequest() {
   return request;
 }
 
-std::unique_ptr<GetSuggestionsRequest>
+std::unique_ptr<GeneratePredictionsRequest>
 PredictionService::GetPredictionRequestProto(
     const PredictionRequestFeatures& entity) {
-  auto proto_request = std::make_unique<GetSuggestionsRequest>();
+  auto proto_request = std::make_unique<GeneratePredictionsRequest>();
 
   ClientFeatures* client_features = proto_request->mutable_client_features();
   client_features->set_platform(GetCurrentPlatformProto());
@@ -192,7 +209,7 @@ PredictionService::GetPredictionRequestProto(
                       permission_features->mutable_permission_stats());
 
   switch (entity.type) {
-    case PermissionRequestType::PERMISSION_NOTIFICATIONS:
+    case RequestType::kNotifications:
       permission_features->mutable_notification_permission()
           ->Clear();
       break;
@@ -211,7 +228,9 @@ void PredictionService::SendRequestInternal(
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        GetTrafficAnnotationTag());
-  owned_loader->AttachStringForUpload(request_data, "application/x-protobuf");
+  owned_loader->AttachStringForUpload(
+      request_data,
+      ShouldUseJson() ? "application/json" : "application/x-protobuf");
 
   owned_loader->SetTimeoutDuration(kURLLookupTimeout);
   owned_loader->DownloadToString(
@@ -249,7 +268,7 @@ void PredictionService::OnURLLoaderComplete(
   NOTREACHED() << "Unexpected loader callback.";
 }
 
-std::unique_ptr<GetSuggestionsResponse>
+std::unique_ptr<GeneratePredictionsResponse>
 PredictionService::CreatePredictionsResponse(network::SimpleURLLoader* loader,
                                              const std::string* response_body) {
   if (!response_body || loader->NetError() != net::OK ||
@@ -257,13 +276,19 @@ PredictionService::CreatePredictionsResponse(network::SimpleURLLoader* loader,
     return nullptr;
   }
 
-  auto predictions_response = std::make_unique<GetSuggestionsResponse>();
-
-  if (predictions_response->ParseFromString(*response_body)) {
-    return predictions_response;
+  std::string mime_type;
+  if (loader->ResponseInfo()->headers->GetMimeType(&mime_type) &&
+      mime_type == "application/json") {
+    return GeneratePredictionsResponseJsonToMessage(*response_body);
   }
 
-  return nullptr;
+  std::unique_ptr<GeneratePredictionsResponse> predictions_response;
+  predictions_response = std::make_unique<GeneratePredictionsResponse>();
+  if (!predictions_response->ParseFromString(*response_body)) {
+    return nullptr;
+  }
+
+  return predictions_response;
 }
 
 }  // namespace permissions

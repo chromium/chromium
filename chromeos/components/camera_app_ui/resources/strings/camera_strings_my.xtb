@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">တိုင်မာကြာချိန်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ကို ရွေးထားသည်</translation>
+<translation id="2144806332417375165">စိတ်ကြိုက် ဗီဒီယို သတ်မှတ်ချက်များ</translation>
 <translation id="229579744168541441">ဒစ်ခ်သို့ ထုတ်ယူရန်</translation>
 <translation id="2501278716633472235">နောက်သို့ ပြန်ရန်</translation>
 <translation id="2501853267655415902">ရိုက်ကူးခြင်း ရပ်သွားပါပြီ</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">ကင်မရာ ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="3517926952904427380">ထောင်လိုက်ဓာတ်ပုံ ရိုက်၍မရပါ</translation>
 <translation id="3569311554794739032">"<ph name="FILE" />" ကို သင် တကယ် ဖယ်ရှားလိုသလား။</translation>
-<translation id="3750315947605636967">သင်၏ကင်မရာကို အက်ပ်နောက်တစ်ခုက အသုံးပြုနေသည်</translation>
 <translation id="3810838688059735925">ဗီဒီယို</translation>
 <translation id="3838931309141338733">ဘားကုဒ်ကို စကင်ဖတ်ရန်</translation>
 <translation id="3892148308691398805">စာသား မိတ္တူကူးရန်</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">ဖိုင်စနစ် အမှားများ။</translation>
 <translation id="7450541714075000668">စာသားကူးယူပြီးပါပြီ</translation>
 <translation id="7557677699350329807">ကင်မရာနောက်တစ်ခုသို့ ပြောင်းရန်</translation>
+<translation id="7607002721634913082">ဆိုင်းငံ့ထား</translation>
 <translation id="7608223098072244877">အလျား ၄၊​ အနံ ၄</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">ရွှေ့ကြည့်ရန်/စောင်းကြည့်ရန်/ဇူးမ်ဆွဲရန်အတွက် ရွေးစရာများ ပြရန်</translation>
 <translation id="7983668134180549431">စာသား တွေ့ရှိသည်။</translation>
 <translation id="8067883171444229417">ဗီဒီယို ဖွင့်ရန်</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>

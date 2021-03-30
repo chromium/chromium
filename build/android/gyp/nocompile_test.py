@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import subprocess
+import re
 import sys
 from util import build_utils
 
@@ -85,7 +86,7 @@ def _find_lines_after_prefix(text, prefix, num_lines):
   lines = text.split('\n')
   for i, line in enumerate(lines):
     if line.startswith(prefix):
-      return '\n'.join(lines[i:i + num_lines])
+      return lines[i:i + num_lines]
   return None
 
 
@@ -128,18 +129,25 @@ def main():
   for config in test_configs:
     # Strip leading '//'
     gn_path = config['target'][2:]
-    expectation = config['expect']
+    expect_regex = config['expect_regex']
     ninja_args = [_NINJA_PATH, '-C', options.out_dir, gn_path]
 
     # Purpose of quotes at beginning of message is to make it clear that
     # "Compile successful." is not a compiler log message.
     test_output = _run_command_get_output(ninja_args, '""\nCompile successful.')
 
-    failure_message = _find_lines_after_prefix(test_output, 'FAILED:', 5)
-    if not failure_message or expectation not in failure_message:
-      error_message = '//{} failed.\nExpected compile output:\n'\
+    failure_message_lines = _find_lines_after_prefix(test_output, 'FAILED:', 5)
+
+    found_expect_regex = False
+    if failure_message_lines:
+      for line in failure_message_lines:
+        if re.search(expect_regex, line):
+          found_expect_regex = True
+          break
+    if not found_expect_regex:
+      error_message = '//{} failed.\nExpected compile output pattern:\n'\
           '{}\nActual compile output:\n{}'.format(
-              gn_path, expectation, test_output)
+              gn_path, expect_regex, test_output)
       error_messages.append(error_message)
 
   if error_messages:

@@ -19,11 +19,11 @@
     {
       "id": 3,
       "description": "GL driver is software rendered. GPU acceleration is disabled",
-      "cr_bugs": [59302, 315217],
+      "cr_bugs": [59302, 315217, 1155974],
       "os": {
         "type": "linux"
       },
-      "gl_renderer": "(?i).*software.*",
+      "gl_renderer": "(?i).*(software|llvmpipe|softpipe).*",
       "features": [
         "all"
       ]
@@ -331,7 +331,7 @@
     },
     {
       "id": 50,
-      "description": "Disable VMware software renderer on older Mesa",
+      "description": "Disable VMware virtualized renderer on older Mesa",
       "cr_bugs": [145531, 332596, 571899, 629434],
       "os": {
         "type": "linux"
@@ -1536,6 +1536,22 @@
       ],
       "features": [
         "all"
+      ]
+    },
+    {
+      "id": 167,
+      "description": "8.17.10.* AMD drivers trigger hands in video stack",
+      "cr_bugs": [1160623],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "driver_version": {
+        "op": "=",
+        "value": "8.17.10"
+      },
+      "features": [
+        "accelerated_video_decode"
       ]
     }
   ]

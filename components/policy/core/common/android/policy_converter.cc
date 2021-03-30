@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/android/policy_converter.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/json/json_reader.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/policy/android/jni_headers/PolicyConverter_jni.h"

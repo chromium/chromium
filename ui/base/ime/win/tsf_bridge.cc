@@ -233,6 +233,13 @@ void TSFBridgeImpl::OnTextInputTypeChanged(const TextInputClient* client) {
     return;
   }
 
+  // Since we reuse TSF document for same text input type, there is a case where
+  // focus is switched between two text fields with same input type. We should
+  // prepare the TSF document for reuse by clearing focus first.
+  if (input_type_ != TEXT_INPUT_TYPE_NONE &&
+      input_type_ == client_->GetTextInputType()) {
+    thread_manager_->SetFocus(nullptr);
+  }
   input_type_ = client_->GetTextInputType();
   TSFDocument* document = GetAssociatedDocument();
   if (!document)

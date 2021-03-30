@@ -5,11 +5,11 @@
 (async function() {
   TestRunner.addResult(
       `Tests that application cache model keeps track of manifest urls and statuses correctly after UPDATEREADY event and swapCache() call.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('resources');
 
   var frameId1;

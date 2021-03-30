@@ -7,7 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -38,8 +38,9 @@ void BackgroundPageWatcher::WaitForClose() {
 void BackgroundPageWatcher::WaitForOpenState(bool wait_for_open) {
   if (IsBackgroundPageOpen() == wait_for_open)
     return;
-  ScopedObserver<ProcessManager, ProcessManagerObserver> observer(this);
-  observer.Add(process_manager_);
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver> observer(
+      this);
+  observer.Observe(process_manager_);
   bool* flag = wait_for_open ? &is_waiting_for_open_ : &is_waiting_for_close_;
   base::AutoReset<bool> set_flag(flag, true);
   base::RunLoop run_loop;

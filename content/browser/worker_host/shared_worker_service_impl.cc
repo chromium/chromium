@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
@@ -195,13 +196,12 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   auto partition_domain = site_instance->GetPartitionDomain(storage_partition_);
   SharedWorkerInstance instance(
       info->url, info->options->type, info->options->credentials,
-      info->options->name, constructor_origin, info->content_security_policy,
-      info->content_security_policy_type, info->creation_address_space,
+      info->options->name, constructor_origin, info->creation_address_space,
       creation_context_type);
-  host = CreateWorker(*render_frame_host, instance,
-                      std::move(info->outside_fetch_client_settings_object),
-                      partition_domain, message_port,
-                      std::move(blob_url_loader_factory));
+  host = CreateWorker(
+      *render_frame_host, instance, std::move(info->content_security_policies),
+      std::move(info->outside_fetch_client_settings_object), partition_domain,
+      message_port, std::move(blob_url_loader_factory));
   if (!host) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
@@ -271,6 +271,8 @@ void SharedWorkerServiceImpl::NotifyClientRemoved(
 SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     RenderFrameHostImpl& creator,
     const SharedWorkerInstance& instance,
+    std::vector<network::mojom::ContentSecurityPolicyPtr>
+        content_security_policies,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     const std::string& storage_domain,
@@ -301,7 +303,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     } else {
       site_instance = SiteInstanceImpl::CreateForUrlInfo(
           partition->browser_context(),
-          UrlInfo(instance.url(), /*origin_requests_isolation=*/false),
+          UrlInfo(instance.url(), UrlInfo::OriginIsolationRequest::kNone),
           CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     }
   }
@@ -321,7 +323,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // creating a new host and therefore new SharedWorker thread.
   auto insertion_result =
       worker_hosts_.insert(std::make_unique<SharedWorkerHost>(
-          this, instance, std::move(site_instance)));
+          this, instance, std::move(site_instance),
+          std::move(content_security_policies)));
   DCHECK(insertion_result.second);
   SharedWorkerHost* host = insertion_result.first->get();
 

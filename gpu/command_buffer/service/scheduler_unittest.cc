@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,6 +67,28 @@ TEST_F(SchedulerTest, ScheduledTasksRunInOrder) {
 
   task_runner()->RunPendingTasks();
   EXPECT_TRUE(ran2);
+}
+
+TEST_F(SchedulerTest, ScheduledTasksRunAfterReporting) {
+  SequenceId sequence_id =
+      scheduler()->CreateSequence(SchedulingPriority::kNormal);
+
+  bool ran = false;
+  bool reported = false;
+  scheduler()->ScheduleTask(
+      Scheduler::Task(sequence_id, GetClosure([&] {
+                        EXPECT_TRUE(reported);
+                        ran = true;
+                      }),
+                      std::vector<SyncToken>(),
+                      base::Bind(
+                          [&](bool& ran, bool& reported, base::TimeTicks t) {
+                            EXPECT_FALSE(ran);
+                            reported = true;
+                          },
+                          std::ref(ran), std::ref(reported))));
+  task_runner()->RunPendingTasks();
+  EXPECT_TRUE(ran);
 }
 
 TEST_F(SchedulerTest, ContinuedTasksRunFirst) {

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 (async function() {
-  await TestRunner.loadModule('axe_core_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadTestModule('axe_core_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await UI.viewManager.showView('sources.scopeChain');
 
@@ -24,7 +24,7 @@
   await SourcesTestRunner.waitUntilPausedPromise();
 
   await TestRunner.addSnifferPromise(Sources.ScopeChainSidebarPane.prototype, '_sidebarPaneUpdatedForTest');
-  const scopePane = self.runtime.sharedInstance(Sources.ScopeChainSidebarPane);
+  const scopePane = Sources.ScopeChainSidebarPane.instance();
   await TestRunner.addSnifferPromise(ObjectUI.ObjectPropertyTreeElement, 'populateWithProperties');
   TestRunner.addResult(`Scope pane content: ${scopePane.contentElement.deepTextContent()}`);
   TestRunner.addResult(`Running the axe-core linter on the scope pane.`);

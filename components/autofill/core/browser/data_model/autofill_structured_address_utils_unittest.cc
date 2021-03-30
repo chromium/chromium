@@ -217,37 +217,40 @@ TEST(AutofillStructuredAddressUtils, CaptureTypeWithPattern) {
             CaptureTypeWithPattern(NAME_FULL, "abs\\w", {.separator = "_"}));
 }
 
+TEST(AutofillStructuredAddressUtils, NoCaptureTypeWithPattern) {
+  EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)?",
+            NoCapturePattern("abs\\w", {.quantifier = MATCH_OPTIONAL}));
+  EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)", NoCapturePattern("abs\\w"));
+  EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)??",
+            NoCapturePattern("abs\\w", {.quantifier = MATCH_LAZY_OPTIONAL}));
+  EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)", NoCapturePattern("abs\\w"));
+  EXPECT_EQ("(?i:abs\\w(?:_)+)",
+            NoCapturePattern("abs\\w", {.separator = "_"}));
+}
+
 TEST(AutofillStructuredAddressUtils, TokenizeValue) {
   std::vector<AddressToken> expected_tokens = {
-      {base::ASCIIToUTF16("AnD"), base::ASCIIToUTF16("and"), 1},
-      {base::ASCIIToUTF16("anotherOne"), base::ASCIIToUTF16("anotherone"), 2},
-      {base::ASCIIToUTF16("valUe"), base::ASCIIToUTF16("value"), 0}};
+      {u"AnD", u"and", 1},
+      {u"anotherOne", u"anotherone", 2},
+      {u"valUe", u"value", 0}};
 
-  EXPECT_EQ(TokenizeValue(base::ASCIIToUTF16("  valUe AnD    anotherOne")),
-            expected_tokens);
+  EXPECT_EQ(TokenizeValue(u"  valUe AnD    anotherOne"), expected_tokens);
 
   std::vector<AddressToken> expected_cjk_tokens = {
-      {base::UTF8ToUTF16("영"), base::UTF8ToUTF16("영"), 1},
-      {base::UTF8ToUTF16("이"), base::UTF8ToUTF16("이"), 0},
-      {base::UTF8ToUTF16("호"), base::UTF8ToUTF16("호"), 2}};
+      {u"영", u"영", 1}, {u"이", u"이", 0}, {u"호", u"호", 2}};
 
-  EXPECT_EQ(TokenizeValue(base::UTF8ToUTF16("이영 호")), expected_cjk_tokens);
-  EXPECT_EQ(TokenizeValue(base::UTF8ToUTF16("이・영호")), expected_cjk_tokens);
-  EXPECT_EQ(TokenizeValue(base::UTF8ToUTF16("이영 호")), expected_cjk_tokens);
+  EXPECT_EQ(TokenizeValue(u"이영 호"), expected_cjk_tokens);
+  EXPECT_EQ(TokenizeValue(u"이・영호"), expected_cjk_tokens);
+  EXPECT_EQ(TokenizeValue(u"이영 호"), expected_cjk_tokens);
 }
 
 TEST(AutofillStructuredAddressUtils, NormalizeValue) {
-  EXPECT_EQ(NormalizeValue(base::UTF8ToUTF16(" MÜLLeR   Örber")),
-            base::UTF8ToUTF16("muller orber"));
+  EXPECT_EQ(NormalizeValue(u" MÜLLeR   Örber"), u"muller orber");
 }
 
 TEST(AutofillStructuredAddressUtils, TestGetRewriter) {
-  EXPECT_EQ(RewriterCache::Rewrite(base::UTF8ToUTF16("us"),
-                                   base::UTF8ToUTF16("unit #3")),
-            base::UTF8ToUTF16("unit 3"));
-  EXPECT_EQ(RewriterCache::Rewrite(base::UTF8ToUTF16("us"),
-                                   base::UTF8ToUTF16("california")),
-            base::UTF8ToUTF16("ca"));
+  EXPECT_EQ(RewriterCache::Rewrite(u"us", u"unit #3"), u"unit 3");
+  EXPECT_EQ(RewriterCache::Rewrite(u"us", u"california"), u"ca");
 }
 
 }  // namespace structured_address

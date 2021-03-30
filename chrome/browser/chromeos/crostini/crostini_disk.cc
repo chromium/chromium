@@ -95,8 +95,10 @@ void OnAmountOfFreeDiskSpace(OnceDiskInfoCallback callback,
   } else {
     VLOG(1) << "Starting vm " << vm_name;
     auto container_id = ContainerId(vm_name, kCrostiniDefaultContainerName);
-    CrostiniManager::GetForProfile(profile)->EnsureVmRunning(
-        std::move(container_id),
+    CrostiniManager::RestartOptions options;
+    options.start_vm_only = true;
+    CrostiniManager::GetForProfile(profile)->RestartCrostiniWithOptions(
+        std::move(container_id), std::move(options),
         base::BindOnce(&OnCrostiniSufficientlyRunning, std::move(callback),
                        profile, std::move(vm_name), free_space));
   }
@@ -266,8 +268,10 @@ void ResizeCrostiniDisk(Profile* profile,
                         uint64_t size_bytes,
                         base::OnceCallback<void(bool)> callback) {
   ContainerId container_id(vm_name, kCrostiniDefaultContainerName);
-  CrostiniManager::GetForProfile(profile)->EnsureVmRunning(
-      std::move(container_id),
+  CrostiniManager::RestartOptions options;
+  options.start_vm_only = true;
+  CrostiniManager::GetForProfile(profile)->RestartCrostiniWithOptions(
+      std::move(container_id), std::move(options),
       base::BindOnce(&OnVMRunning, std::move(callback), profile,
                      std::move(vm_name), size_bytes));
 }

@@ -69,8 +69,8 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
       GetBubbleFrameView()->SetTitleView(std::move(title_view_));
   }
 
-  base::string16 GetWindowTitle() const override {
-    return base::ASCIIToUTF16("TITLE TITLE TITLE");
+  std::u16string GetWindowTitle() const override {
+    return u"TITLE TITLE TITLE";
   }
 
   bool ShouldShowWindowTitle() const override {
@@ -505,7 +505,7 @@ TEST_F(BubbleDialogDelegateViewTest, StyledLabelTitle) {
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   StyledLabel* title_view =
       bubble_delegate->set_title_view(std::make_unique<StyledLabel>());
-  title_view->SetText(base::ASCIIToUTF16("123"));
+  title_view->SetText(u"123");
 
   Widget* bubble_widget =
       BubbleDialogDelegateView::CreateBubble(bubble_delegate);
@@ -513,7 +513,7 @@ TEST_F(BubbleDialogDelegateViewTest, StyledLabelTitle) {
 
   const gfx::Size size_before_new_title =
       bubble_widget->GetWindowBoundsInScreen().size();
-  title_view->SetText(base::ASCIIToUTF16("12"));
+  title_view->SetText(u"12");
   bubble_delegate->SizeToContents();
 
   // A shorter title should change nothing, since both will be within the
@@ -537,7 +537,7 @@ TEST_F(BubbleDialogDelegateViewTest, AttachedWidgetShowsInkDropWhenVisible) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget();
   LabelButton* button =
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
-          Button::PressedCallback(), base::string16()));
+          Button::PressedCallback(), std::u16string()));
   TestInkDrop* ink_drop = new TestInkDrop();
   test::InkDropHostViewTestApi(button).SetInkDrop(base::WrapUnique(ink_drop));
   TestBubbleDialogDelegateView* bubble_delegate =
@@ -566,7 +566,7 @@ TEST_F(BubbleDialogDelegateViewTest, VisibleWidgetShowsInkDropOnAttaching) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget();
   LabelButton* button =
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
-          Button::PressedCallback(), base::string16()));
+          Button::PressedCallback(), std::u16string()));
   TestInkDrop* ink_drop = new TestInkDrop();
   test::InkDropHostViewTestApi(button).SetInkDrop(base::WrapUnique(ink_drop));
   TestBubbleDialogDelegateView* bubble_delegate =

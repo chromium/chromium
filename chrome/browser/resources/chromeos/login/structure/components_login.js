@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="../gaia_password_changed.js">
-// <include src="../oobe_supervision_transition.js">
-// <include src="../active_directory_password_change.js">
-// <include src="../encryption_migration.js">
-// <include src="../update_required_card.js">
-// <include src="../oobe_terms_of_service.js">
-// <include src="../offline_login.js">
+// <include src="../screens/login/gaia_password_changed.js">
+// <include src="../screens/login/supervision_transition.js">
+// <include src="../screens/login/active_directory_password_change.js">
+// <include src="../screens/login/encryption_migration.js">
+// <include src="../screens/login/update_required_card.js">
+// <include src="../screens/login/public_session_terms_of_service.js">
+// <include src="../screens/login/offline_login.js">

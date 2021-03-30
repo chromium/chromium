@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/ranges.h"
 #include "base/synchronization/lock.h"
+#include "build/chromeos_buildflags.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vp8_picture.h"
@@ -350,7 +351,12 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
 }
 
 bool IsValidVABufferType(VABufferType type) {
-  return type < VABufferTypeMax || type == VAEncryptionParameterBufferType ||
+  return type < VABufferTypeMax ||
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+         // TODO(jkardatzke): Remove this once we update to libva 2.0.10 in
+         // ChromeOS.
+         type == VAEncryptionParameterBufferType ||
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
          type == VACencStatusParameterBufferType;
 }
 

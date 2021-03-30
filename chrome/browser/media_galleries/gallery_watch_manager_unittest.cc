@@ -31,8 +31,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
 namespace component_updater {
@@ -59,7 +59,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   GalleryWatchManagerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        test_user_manager_(std::make_unique<chromeos::ScopedTestUserManager>()),
+        test_user_manager_(std::make_unique<ash::ScopedTestUserManager>()),
 #endif
         profile_(new TestingProfile()),
         gallery_prefs_(nullptr),
@@ -200,8 +200,8 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   EnsureMediaDirectoriesExists mock_gallery_locations_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
 #endif
 
   storage_monitor::TestStorageMonitor* monitor_;
@@ -239,7 +239,13 @@ TEST_F(GalleryWatchManagerTest, MAYBE_Basic) {
   loop.Run();
 }
 
-TEST_F(GalleryWatchManagerTest, AddAndRemoveTwoWatches) {
+// TODO(crbug.com/1183482): Flaky on mac.
+#if defined(OS_MAC)
+#define MAYBE_AddAndRemoveTwoWatches DISABLED_AddAndRemoveTwoWatches
+#else
+#define MAYBE_AddAndRemoveTwoWatches AddAndRemoveTwoWatches
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_AddAndRemoveTwoWatches) {
   if (!GalleryWatchesSupported())
     return;
 
@@ -284,7 +290,13 @@ TEST_F(GalleryWatchManagerTest, AddAndRemoveTwoWatches) {
   EXPECT_TRUE(manager()->GetWatchSet(profile(), extension()->id()).empty());
 }
 
-TEST_F(GalleryWatchManagerTest, RemoveAllWatches) {
+// TODO(crbug.com/1182867): Flaky on mac.
+#if defined(OS_MAC)
+#define MAYBE_RemoveAllWatches DISABLED_RemoveAllWatches
+#else
+#define MAYBE_RemoveAllWatches RemoveAllWatches
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_RemoveAllWatches) {
   if (!GalleryWatchesSupported())
     return;
 
@@ -312,7 +324,13 @@ TEST_F(GalleryWatchManagerTest, RemoveAllWatches) {
   EXPECT_TRUE(manager()->GetWatchSet(profile(), extension()->id()).empty());
 }
 
-TEST_F(GalleryWatchManagerTest, DropWatchOnGalleryRemoved) {
+// Fails on Mac: crbug.com/1183212
+#if defined(OS_MAC)
+#define MAYBE_DropWatchOnGalleryRemoved DISABLED_DropWatchOnGalleryRemoved
+#else
+#define MAYBE_DropWatchOnGalleryRemoved DropWatchOnGalleryRemoved
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_DropWatchOnGalleryRemoved) {
   if (!GalleryWatchesSupported())
     return;
 
@@ -342,7 +360,13 @@ TEST_F(GalleryWatchManagerTest, DropWatchOnGalleryPermissionRevoked) {
   success_loop.Run();
 }
 
-TEST_F(GalleryWatchManagerTest, DropWatchOnStorageRemoved) {
+// TODO(crbug.com/1183212): flaky on mac.
+#if defined(OS_MAC)
+#define MAYBE_DropWatchOnStorageRemoved DISABLED_DropWatchOnStorageRemoved
+#else
+#define MAYBE_DropWatchOnStorageRemoved DropWatchOnStorageRemoved
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_DropWatchOnStorageRemoved) {
   if (!GalleryWatchesSupported())
     return;
 
@@ -364,7 +388,12 @@ TEST_F(GalleryWatchManagerTest, DropWatchOnStorageRemoved) {
   success_loop.Run();
 }
 
-TEST_F(GalleryWatchManagerTest, TestWatchOperation) {
+#if defined(OS_CHROMEOS)
+#define MAYBE_TestWatchOperation DISABLED_TestWatchOperation
+#else
+#define MAYBE_TestWatchOperation TestWatchOperation
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_TestWatchOperation) {
   if (!GalleryWatchesSupported())
     return;
 

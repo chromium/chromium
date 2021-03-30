@@ -18,8 +18,8 @@
 
 namespace {
 
-const base::string16 kSharedTabName = base::UTF8ToUTF16("example.com");
-const base::string16 kAppName = base::UTF8ToUTF16("sharing.com");
+const std::u16string kSharedTabName = u"example.com";
+const std::u16string kAppName = u"sharing.com";
 
 class MockTabSharingUIViews : public TabSharingUI {
  public:
@@ -40,8 +40,8 @@ class TabSharingInfoBarDelegateTest : public BrowserWithTestWindowTest {
  public:
   TabSharingInfoBarDelegateTest() {}
 
-  infobars::InfoBar* CreateInfobar(base::string16 shared_tab_name,
-                                   base::string16 app_name,
+  infobars::InfoBar* CreateInfobar(std::u16string shared_tab_name,
+                                   std::u16string app_name,
                                    bool shared_tab,
                                    bool can_share,
                                    int tab_index = 0) {
@@ -52,8 +52,8 @@ class TabSharingInfoBarDelegateTest : public BrowserWithTestWindowTest {
         tab_sharing_mock_ui());
   }
 
-  ConfirmInfoBarDelegate* CreateDelegate(base::string16 shared_tab_name,
-                                         base::string16 app_name,
+  ConfirmInfoBarDelegate* CreateDelegate(std::u16string shared_tab_name,
+                                         std::u16string app_name,
                                          bool shared_tab,
                                          bool can_share,
                                          int tab_index = 0) {
@@ -91,7 +91,7 @@ TEST_F(TabSharingInfoBarDelegateTest, StopSharingOnAccept) {
 TEST_F(TabSharingInfoBarDelegateTest, InfobarOnSharedTab) {
   AddTab(browser(), GURL("about:blank"));
   ConfirmInfoBarDelegate* delegate =
-      CreateDelegate(base::string16(), kAppName, true, true);
+      CreateDelegate(std::u16string(), kAppName, true, true);
   EXPECT_STREQ(delegate->GetVectorIcon().name,
                vector_icons::kScreenShareIcon.name);
   EXPECT_EQ(delegate->GetMessageText(),
@@ -130,7 +130,7 @@ TEST_F(TabSharingInfoBarDelegateTest, InfobarWhenSharingNotAllowed) {
   // Create infobar for shared tab.
   AddTab(browser(), GURL("about:blank"));
   ConfirmInfoBarDelegate* delegate_shared_tab = CreateDelegate(
-      base::string16(), kAppName, true, false /* can_share */, 0);
+      std::u16string(), kAppName, true, false /* can_share */, 0);
   EXPECT_EQ(delegate_shared_tab->GetButtons(),
             ConfirmInfoBarDelegate::BUTTON_OK);
 

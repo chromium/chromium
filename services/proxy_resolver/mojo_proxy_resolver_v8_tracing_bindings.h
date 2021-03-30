@@ -41,12 +41,12 @@ class MojoProxyResolverV8TracingBindings
   }
 
   // ProxyResolverV8Tracing::Bindings overrides.
-  void Alert(const base::string16& message) override {
+  void Alert(const std::u16string& message) override {
     DCHECK(thread_checker_.CalledOnValidThread());
     client_->Alert(base::UTF16ToUTF8(message));
   }
 
-  void OnError(int line_number, const base::string16& message) override {
+  void OnError(int line_number, const std::u16string& message) override {
     DCHECK(thread_checker_.CalledOnValidThread());
     client_->OnError(line_number, base::UTF16ToUTF8(message));
   }

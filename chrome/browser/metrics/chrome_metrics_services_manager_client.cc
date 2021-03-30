@@ -28,7 +28,6 @@
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/rappor/rappor_service_impl.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
@@ -52,7 +51,7 @@
 #endif  // OS_WIN
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics {
@@ -63,12 +62,6 @@ namespace internal {
 // consent is given, then there will be no recording or reporting.
 const base::Feature kMetricsReportingFeature{"MetricsReporting",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
-// A feature controlling whether all clients in the OutOfReportingSample group
-// should discard their uploads, regardless of which user consent flow they
-// went through. When disabled, only opt-out users will discard uploads.
-const base::Feature kMetricsDownsampleConsistentlyFeature{
-    "MetricsDownsampleConsistently", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace internal
 }  // namespace metrics
@@ -98,44 +91,30 @@ void AppendSamplingTrialGroup(const std::string& group_name,
   trial->AppendGroup(group_name, rate);
 }
 
-// Unless the DownsampleConsistently feature is enabled, only clients that were
-// given an opt-out metrics-reporting consent flow are eligible for sampling.
-bool IsClientEligibleForSampling(PrefService* local_state) {
-  return base::FeatureList::IsEnabled(
-             metrics::internal::kMetricsDownsampleConsistentlyFeature) ||
-         metrics::GetMetricsReportingDefaultState(local_state) ==
-             metrics::EnableMetricsDefault::OPT_OUT;
-}
-
 // Implementation of IsClientInSample() that takes a PrefService param.
 bool IsClientInSampleImpl(PrefService* local_state) {
   // Test the MetricsReporting feature for all users to ensure that the trial
   // is reported.
-  bool is_in_sample_group =
-      base::FeatureList::IsEnabled(metrics::internal::kMetricsReportingFeature);
-  // Until the DownsampleConsistently feature is rolled out, only some clients
-  // are eligible for downsampling. Clients that aren't eligible should always
-  // send reports when they have opted to do so, but should still report their
-  // group assignment to the trial controlling downsampling.
-  return is_in_sample_group || !IsClientEligibleForSampling(local_state);
+  return base::FeatureList::IsEnabled(
+      metrics::internal::kMetricsReportingFeature);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Callback to update the metrics reporting state when the Chrome OS metrics
 // reporting setting changes.
 void OnCrosMetricsReportingSettingChange() {
-  bool enable_metrics = chromeos::StatsReportingController::Get()->IsEnabled();
+  bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
   ChangeMetricsReportingState(enable_metrics);
 }
 #endif
 
 // Returns the name of a key under HKEY_CURRENT_USER that can be used to store
 // backups of metrics data. Unused except on Windows.
-base::string16 GetRegistryBackupKey() {
+std::wstring GetRegistryBackupKey() {
 #if defined(OS_WIN)
   return install_static::GetRegistryPath().append(L"\\StabilityMetrics");
 #else
-  return base::string16();
+  return std::wstring();
 #endif
 }
 
@@ -226,11 +205,6 @@ bool ChromeMetricsServicesManagerClient::IsClientInSample() {
 
 // static
 bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
-  // The population that is NOT eligible for sampling in considered "in sample",
-  // but does not have a defined sample rate.
-  if (!IsClientEligibleForSampling(g_browser_process->local_state()))
-    return false;
-
   std::string rate_str = variations::GetVariationParamValueByFeature(
       metrics::internal::kMetricsReportingFeature, kRateParamName);
   if (rate_str.empty())
@@ -245,7 +219,7 @@ bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
   reporting_setting_subscription_ =
-      chromeos::StatsReportingController::Get()->AddObserver(
+      ash::StatsReportingController::Get()->AddObserver(
           base::BindRepeating(&OnCrosMetricsReportingSettingChange));
   // Invoke the callback once initially to set the metrics reporting state.
   OnCrosMetricsReportingSettingChange();
@@ -255,13 +229,6 @@ void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
 const metrics::EnabledStateProvider&
 ChromeMetricsServicesManagerClient::GetEnabledStateProviderForTesting() {
   return *enabled_state_provider_;
-}
-
-std::unique_ptr<rappor::RapporServiceImpl>
-ChromeMetricsServicesManagerClient::CreateRapporServiceImpl() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return std::make_unique<rappor::RapporServiceImpl>(
-      local_state_, base::BindRepeating(&chrome::IsOffTheRecordSessionActive));
 }
 
 std::unique_ptr<variations::VariationsService>
@@ -315,9 +282,8 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
   // work correctly.
   // TODO(crbug/741888): Check if TabModelList's version can be updated safely.
   // TODO(crbug/1023759): This function should return true for Incognito CCTs.
-  for (TabModelList::const_iterator i = TabModelList::begin();
-       i != TabModelList::end(); i++) {
-    if ((*i)->IsOffTheRecord())
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->IsOffTheRecord())
       return true;
   }
 

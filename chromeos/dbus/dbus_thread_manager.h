@@ -205,4 +205,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after moved to ash.
+namespace ash {
+using ::chromeos::DBusThreadManager;
+}
+
 #endif  // CHROMEOS_DBUS_DBUS_THREAD_MANAGER_H_

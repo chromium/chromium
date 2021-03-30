@@ -33,8 +33,29 @@ class BarcodeWorker {
       return null;
     }
 
-    // TODO(b/172879638): Handle multiple barcodes.
-    return codes[0].rawValue;
+    const cx = bitmap.width / 2;
+    const cy = bitmap.height / 2;
+    /**
+     * @param {!DetectedBarcode} code
+     * @return {number}
+     */
+    const distanceToCenter = (code) => {
+      const {left, right, top, bottom} = code.boundingBox;
+      const x = (left + right) / 2;
+      const y = (top + bottom) / 2;
+      return Math.hypot(x - cx, y - cy);
+    };
+
+    let bestCode = codes[0];
+    let minDistance = distanceToCenter(codes[0]);
+    for (let i = 1; i < codes.length; i++) {
+      const distance = distanceToCenter(codes[i]);
+      if (distance < minDistance) {
+        bestCode = codes[i];
+        minDistance = distance;
+      }
+    }
+    return bestCode.rawValue;
   }
 }
 

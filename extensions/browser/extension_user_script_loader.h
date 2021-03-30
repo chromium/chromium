@@ -6,11 +6,13 @@
 #define EXTENSIONS_BROWSER_EXTENSION_USER_SCRIPT_LOADER_H_
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_l10n_util.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -29,16 +31,16 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
     std::string default_locale;
     extension_l10n_util::GzippedMessagesPermission gzip_permission;
   };
-  using HostsInfo = std::map<HostID, PathAndLocaleInfo>;
+  using HostsInfo = std::map<mojom::HostID, PathAndLocaleInfo>;
 
   // The listen_for_extension_system_loaded is only set true when initializing
-  // the Extension System, e.g, when constructs SharedUserScriptManager in
+  // the Extension System, e.g, when constructs UserScriptManager in
   // ExtensionSystemImpl.
   ExtensionUserScriptLoader(content::BrowserContext* browser_context,
-                            const HostID& host_id,
+                            const ExtensionId& extension_id,
                             bool listen_for_extension_system_loaded);
   ExtensionUserScriptLoader(content::BrowserContext* browser_context,
-                            const HostID& host_id,
+                            const ExtensionId& extension_id,
                             bool listen_for_extension_system_loaded,
                             scoped_refptr<ContentVerifier> content_verifier);
   ~ExtensionUserScriptLoader() override;
@@ -52,13 +54,13 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
  private:
   // UserScriptLoader:
   void LoadScripts(std::unique_ptr<UserScriptList> user_scripts,
-                   const std::set<HostID>& changed_hosts,
+                   const std::set<mojom::HostID>& changed_hosts,
                    const std::set<std::string>& added_script_ids,
                    LoadScriptsCallback callback) override;
 
   // Updates |hosts_info_| to contain info for each element of
   //  |changed_hosts_|.
-  void UpdateHostsInfo(const std::set<HostID>& changed_hosts);
+  void UpdateHostsInfo(const std::set<mojom::HostID>& changed_hosts);
 
   // ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -75,8 +77,8 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
   // Manages content verification of the loaded user scripts.
   scoped_refptr<ContentVerifier> content_verifier_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::WeakPtrFactory<ExtensionUserScriptLoader> weak_factory_{this};
 

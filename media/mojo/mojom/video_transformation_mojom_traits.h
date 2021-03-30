@@ -7,7 +7,7 @@
 
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/video_transformation.h"
-#include "media/mojo/mojom/media_types.mojom.h"
+#include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/mojo/mojom/media_types_enum_mojom_traits.h"
 
 namespace mojo {

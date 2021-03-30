@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -39,7 +38,7 @@ class ExtensionInstalledBubbleModel {
   bool show_key_binding() const { return show_key_binding_; }
   bool show_sign_in_promo() const { return show_sign_in_promo_; }
 
-  base::string16 GetHowToUseText() const;
+  std::u16string GetHowToUseText() const;
 
   gfx::ImageSkia MakeIconOfSize(const gfx::Size& size) const;
 
@@ -63,7 +62,7 @@ class ExtensionInstalledBubbleModel {
   // Whether to show a signin promo in the install bubble.
   bool show_sign_in_promo_ = false;
 
-  base::string16 how_to_use_text_;
+  std::u16string how_to_use_text_;
 
   const SkBitmap icon_;
 

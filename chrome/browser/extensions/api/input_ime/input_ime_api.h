@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -49,7 +49,8 @@ class ImeObserver : public InputMethodEngineBase::Observer {
 
   // InputMethodEngineBase::Observer overrides.
   void OnActivate(const std::string& component_id) override;
-  void OnFocus(const IMEEngineHandlerInterface::InputContext& context) override;
+  void OnFocus(int context_id,
+               const IMEEngineHandlerInterface::InputContext& context) override;
   void OnBlur(int context_id) override;
   void OnKeyEvent(
       const std::string& component_id,
@@ -60,7 +61,7 @@ class ImeObserver : public InputMethodEngineBase::Observer {
   void OnCompositionBoundsChanged(
       const std::vector<gfx::Rect>& bounds) override;
   void OnSurroundingTextChanged(const std::string& component_id,
-                                const base::string16& text,
+                                const std::u16string& text,
                                 int cursor_pos,
                                 int anchor_pos,
                                 int offset_pos) override;
@@ -211,8 +212,8 @@ class InputImeAPI : public BrowserContextKeyedAPI,
   content::BrowserContext* const browser_context_;
 
   // Listen to extension load, unloaded notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   std::unique_ptr<ui::IMEBridgeObserver> observer_;
 };

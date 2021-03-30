@@ -19,6 +19,25 @@ Sync
 Sync
 Periodic Sync
 Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 ============================
 The second Serviceworker is installed.
 ==== ServiceWorkersView ====
@@ -44,6 +63,25 @@ Sync
 Sync
 Periodic Sync
 Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 ============================
 The first ServiceWorker worker became redundant and stopped.
 ==== ServiceWorkersView ====
@@ -64,5 +102,24 @@ Sync
 Sync
 Periodic Sync
 Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 ============================
 

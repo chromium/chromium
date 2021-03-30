@@ -20,6 +20,9 @@ namespace signin {
 
 namespace {
 
+constexpr char kOAuthConsumerName[] =
+    "ProfileOAuth2TokenServiceDelegateChromeOS";
+
 // Values used from |MutableProfileOAuth2TokenServiceDelegate|.
 const net::BackoffEntry::Policy kBackoffPolicy = {
     0 /* int num_errors_to_ignore */,
@@ -68,11 +71,13 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
     ProfileOAuth2TokenServiceDelegateChromeOS(
         AccountTrackerService* account_tracker_service,
         network::NetworkConnectionTracker* network_connection_tracker,
-        chromeos::AccountManager* account_manager,
+        ash::AccountManager* account_manager,
+        account_manager::AccountManagerFacade* account_manager_facade,
         bool is_regular_profile)
     : account_tracker_service_(account_tracker_service),
       network_connection_tracker_(network_connection_tracker),
       account_manager_(account_manager),
+      account_manager_facade_(account_manager_facade),
       backoff_entry_(&kBackoffPolicy),
       backoff_error_(GoogleServiceAuthError::NONE),
       is_regular_profile_(is_regular_profile),
@@ -118,11 +123,13 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
         consumer, backoff_error_);
   }
 
-  return account_manager_->CreateAccessTokenFetcher(
+  // TODO(https://crbug.com/1192668): use the consumer name that was passed to
+  // `IdentityManager::CreateAccessTokenFetcher`.
+  return account_manager_facade_->CreateAccessTokenFetcher(
       account_manager::AccountKey{
           account_tracker_service_->GetAccountInfo(account_id).gaia,
           account_manager::AccountType::kGaia} /* account_key */,
-      consumer);
+      kOAuthConsumerName, consumer);
 }
 
 // Note: This method should use the same logic for filtering accounts as

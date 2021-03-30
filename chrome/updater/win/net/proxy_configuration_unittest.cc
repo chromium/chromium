@@ -22,7 +22,7 @@ TEST(ProxyConfiguration, AutoProxy) {
   EXPECT_EQ(proxy_configuration->access_type(),
             WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY);
   base::Optional<ScopedWinHttpProxyInfo> winhttp_proxy_info =
-      proxy_configuration->GetProxyForUrl(nullptr, GURL(L"http://example.com"));
+      proxy_configuration->GetProxyForUrl(nullptr, GURL("http://example.com"));
   EXPECT_FALSE(winhttp_proxy_info.has_value());
 }
 
@@ -39,7 +39,7 @@ TEST(ProxyConfiguration, WPADProxyGetProxyForUrl) {
   EXPECT_EQ(proxy_configuration->access_type(),
             WINHTTP_ACCESS_TYPE_DEFAULT_PROXY);
   base::Optional<ScopedWinHttpProxyInfo> winhttp_proxy_info =
-      proxy_configuration->GetProxyForUrl(nullptr, GURL(L"http://example.com"));
+      proxy_configuration->GetProxyForUrl(nullptr, GURL("http://example.com"));
   EXPECT_FALSE(winhttp_proxy_info.has_value());
 }
 

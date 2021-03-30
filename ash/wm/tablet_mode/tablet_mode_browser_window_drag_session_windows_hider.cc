@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "ash/home_screen/home_screen_controller.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -55,7 +55,7 @@ TabletModeBrowserWindowDragSessionWindowsHider::
   }
 
   // Hide the home launcher if it's enabled during dragging.
-  Shell::Get()->home_screen_controller()->OnWindowDragStarted();
+  Shell::Get()->app_list_controller()->OnWindowDragStarted();
 
   // Blurs the wallpaper background.
   RootWindowController::ForWindow(root_window_)
@@ -81,7 +81,7 @@ TabletModeBrowserWindowDragSessionWindowsHider::
   DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
 
   // May reshow the home launcher after dragging.
-  Shell::Get()->home_screen_controller()->OnWindowDragEnded(
+  Shell::Get()->app_list_controller()->OnWindowDragEnded(
       /*animate=*/false);
 
   // Clears the background wallpaper blur.

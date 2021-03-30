@@ -588,7 +588,12 @@ void PresentationServiceDelegateImpl::ListenForConnectionStateChange(
                                                      render_frame_id);
   const auto it = presentation_frames_.find(render_frame_host_id);
   if (it != presentation_frames_.end())
-    it->second->ListenForConnectionStateChange(connection, state_changed_cb);
+    it->second->ListenForConnectionStateChange(
+        connection,
+        base::BindRepeating(
+            &PresentationServiceDelegateImpl::OnConnectionStateChanged,
+            weak_factory_.GetWeakPtr(), render_frame_host_id, connection,
+            state_changed_cb));
 }
 
 void PresentationServiceDelegateImpl::AddObserver(
@@ -636,6 +641,16 @@ void PresentationServiceDelegateImpl::OnPresentationResponse(
   } else {
     DCHECK(!connection);
   }
+}
+std::vector<MediaRoute> PresentationServiceDelegateImpl::GetMediaRoutes() {
+  std::vector<MediaRoute> routes;
+  for (const auto& presentation_frame : presentation_frames_) {
+    for (const auto& route :
+         presentation_frame.second->presentation_id_to_route()) {
+      routes.push_back(route.second);
+    }
+  }
+  return routes;
 }
 
 base::WeakPtr<WebContentsPresentationManager>
@@ -726,15 +741,22 @@ void PresentationServiceDelegateImpl::NotifyDefaultPresentationChanged(
 }
 
 void PresentationServiceDelegateImpl::NotifyMediaRoutesChanged() {
-  std::vector<MediaRoute> routes;
-  for (const auto& presentation_frame : presentation_frames_) {
-    for (const auto& route :
-         presentation_frame.second->presentation_id_to_route()) {
-      routes.push_back(route.second);
-    }
-  }
+  auto routes = GetMediaRoutes();
   for (auto& presentation_observer : presentation_observers_)
     presentation_observer.OnMediaRoutesChanged(routes);
+}
+
+void PresentationServiceDelegateImpl::OnConnectionStateChanged(
+    const content::GlobalFrameRoutingId& render_frame_host_id,
+    const PresentationInfo& connection,
+    const content::PresentationConnectionStateChangedCallback& state_changed_cb,
+    const content::PresentationConnectionStateChangeInfo& info) {
+  if (info.state == blink::mojom::PresentationConnectionState::CLOSED ||
+      info.state == blink::mojom::PresentationConnectionState::TERMINATED) {
+    RemovePresentation(render_frame_host_id, connection.id);
+  }
+
+  state_changed_cb.Run(info);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PresentationServiceDelegateImpl)

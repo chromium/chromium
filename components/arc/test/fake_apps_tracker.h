@@ -20,20 +20,19 @@ class FakeAppsTracker : public ArcAppsTracker {
   ~FakeAppsTracker() override;
 
   // ArcAppsTracker overrides:
-  void StartTracking(
-      base::RepeatingCallback<void(int)> update_callback) override;
-  void StopTracking() override;
+  void StartTracking(base::RepeatingCallback<void(int)> update_callback,
+                     base::OnceClosure finish_callback) override;
 
   base::RepeatingCallback<void(int)>& update_callback() {
     return update_callback_;
   }
+  base::OnceClosure finish_callback() { return std::move(finish_callback_); }
   int start_tracking_num() const { return start_tracking_num_; }
-  int stop_tracking_num() const { return stop_tracking_num_; }
 
  private:
   int start_tracking_num_ = 0;
-  int stop_tracking_num_ = 0;
   base::RepeatingCallback<void(int)> update_callback_;
+  base::OnceClosure finish_callback_;
 };
 
 }  // namespace data_snapshotd

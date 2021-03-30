@@ -38,7 +38,7 @@ Opening with new browsing context
     targetId : <string>
     title : 
     type : page
-    url : 
+    url : http://127.0.0.1:8000/inspector-protocol/resources/resources/test-page.html
 }
 PASS: Correct openerFrameId
 PASS: Correct openerId

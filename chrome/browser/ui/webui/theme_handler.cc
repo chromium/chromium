@@ -8,20 +8,22 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/theme_resources.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ThemeHandler
 
 ThemeHandler::ThemeHandler() = default;
-ThemeHandler::~ThemeHandler() = default;
+
+ThemeHandler::~ThemeHandler() {
+  ThemeServiceFactory::GetForProfile(GetProfile())->RemoveObserver(this);
+}
 
 void ThemeHandler::RegisterMessages() {
   // These are not actual message registrations, but can't be done in the
@@ -36,27 +38,34 @@ void ThemeHandler::RegisterMessages() {
 
 void ThemeHandler::OnJavascriptAllowed() {
   // Listen for theme installation.
-  registrar_.Add(this, chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                 content::Source<ThemeService>(
-                     ThemeServiceFactory::GetForProfile(GetProfile())));
+  ThemeServiceFactory::GetForProfile(GetProfile())->AddObserver(this);
+
   // Or native theme change.
-  theme_observer_.Add(ui::NativeTheme::GetInstanceForNativeUi());
+  if (web_ui()) {
+    theme_observation_.Observe(
+        webui::GetNativeTheme(web_ui()->GetWebContents()));
+  }
 }
 
 void ThemeHandler::OnJavascriptDisallowed() {
-  registrar_.RemoveAll();
-  theme_observer_.RemoveAll();
+  ThemeServiceFactory::GetForProfile(GetProfile())->RemoveObserver(this);
+  theme_observation_.Reset();
 }
 
-void ThemeHandler::Observe(int type,
-                           const content::NotificationSource& source,
-                           const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_BROWSER_THEME_CHANGED, type);
+void ThemeHandler::OnThemeChanged() {
   SendThemeChanged();
 }
 
 void ThemeHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  DCHECK_EQ(observed_theme, ui::NativeTheme::GetInstanceForNativeUi());
+  // There are two types of theme update. a) The observed theme change. e.g.
+  // switch between light/dark mode. b) A different theme is enabled. e.g.
+  // switch between GTK and classic theme on Linux. Reset observer in case b).
+  ui::NativeTheme* current_theme =
+      webui::GetNativeTheme(web_ui()->GetWebContents());
+  if (observed_theme != current_theme) {
+    theme_observation_.Reset();
+    theme_observation_.Observe(current_theme);
+  }
   SendThemeChanged();
 }
 

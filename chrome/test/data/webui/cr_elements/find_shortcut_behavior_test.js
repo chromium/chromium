@@ -3,22 +3,19 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {eventToPromise} from 'chrome://test/test_util.m.js';
-// #import {FindShortcutBehavior, FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_behavior.m.js';
-// #import {isMac} from 'chrome://resources/js/cr.m.js';
-// #import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+
+import {FindShortcutBehavior, FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('find-shortcut', () => {
   /** @override */
-  /* #ignore */ suiteSetup(
-      /* #ignore */ () => PolymerTest.importHtml(
-          /* #ignore */ 'chrome://resources/cr_elements/cr_dialog/' +
-          /* #ignore */ 'cr_dialog.html'));
 
   /**
    * @type {PromiseResolver<!{modalContextOpen: boolean, self: HTMLElement}>}
@@ -27,10 +24,9 @@ suite('find-shortcut', () => {
   /** @type {boolean} */
   let resolved;
 
-  const pressCtrlF = () => MockInteractions.pressAndReleaseKeyOn(
-      window, 70, cr.isMac ? 'meta' : 'ctrl', 'f');
-  const pressSlash = () =>
-      MockInteractions.pressAndReleaseKeyOn(window, 191, '', '/');
+  const pressCtrlF = () =>
+      pressAndReleaseKeyOn(window, 70, isMac ? 'meta' : 'ctrl', 'f');
+  const pressSlash = () => pressAndReleaseKeyOn(window, 191, '', '/');
 
   /**
    * Checks that the handleFindShortcut method is being called for the
@@ -58,7 +54,7 @@ suite('find-shortcut', () => {
    * @return {!Promise}
    */
   const listenOnceAndCheckDefaultPrevented = async defaultPrevented => {
-    const e = await test_util.eventToPromise('keydown', window);
+    const e = await eventToPromise('keydown', window);
     assertEquals(e.defaultPrevented, defaultPrevented);
   };
 
@@ -142,7 +138,7 @@ suite('find-shortcut', () => {
     const dialog = document.body.querySelector('cr-dialog');
     dialog.showModal();
     assertTrue(dialog.open);
-    const whenCloseFired = test_util.eventToPromise('close', dialog);
+    const whenCloseFired = eventToPromise('close', dialog);
     dialog.close();
     await whenCloseFired;
     await check(testElement);
@@ -197,7 +193,7 @@ suite('find-shortcut', () => {
     const bubbledUp = listenOnceAndCheckDefaultPrevented(false);
     document.body.innerHTML = `<find-shortcut-element></find-shortcut-element>`;
     const testElement = document.body.querySelector('find-shortcut-element');
-    MockInteractions.pressAndReleaseKeyOn(window, 70, ['meta', 'ctrl'], 'f');
+    pressAndReleaseKeyOn(window, 70, ['meta', 'ctrl'], 'f');
     await bubbledUp;
   });
 
@@ -211,8 +207,7 @@ suite('find-shortcut', () => {
 
   test('shortcut with no listeners bubbles up', async () => {
     const bubbledUp = listenOnceAndCheckDefaultPrevented(false);
-    MockInteractions.pressAndReleaseKeyOn(
-        window, 70, cr.isMac ? 'meta' : 'ctrl', 'f');
+    pressAndReleaseKeyOn(window, 70, isMac ? 'meta' : 'ctrl', 'f');
     await bubbledUp;
   });
 

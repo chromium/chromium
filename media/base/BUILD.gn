@@ -22,6 +22,11 @@ source_set("base") {
   visibility = media_subcomponent_deps
   visibility += [ "//media" ]
 
+  if (!enable_library_cdms) {
+    # cdm_type_conversion is not part of media_subcomponent_deps.
+    visibility += [ "//media/cdm:cdm_type_conversion" ]
+  }
+
   # TODO(dalecurtis): Replace this with empty targets on non-mac so
   # we can just include //media/base/mac in media_subcomponent_deps.
   if (is_apple) {
@@ -156,8 +161,6 @@ source_set("base") {
     "encryption_scheme.h",
     "fake_audio_worker.cc",
     "fake_audio_worker.h",
-    "fallback_video_decoder.cc",
-    "fallback_video_decoder.h",
     "feedback_signal_accumulator.h",
     "flinging_controller.h",
     "format_utils.cc",
@@ -230,6 +233,8 @@ source_set("base") {
     "multi_channel_resampler.h",
     "null_video_sink.cc",
     "null_video_sink.h",
+    "offloading_audio_encoder.cc",
+    "offloading_audio_encoder.h",
     "offloading_video_encoder.cc",
     "offloading_video_encoder.h",
     "output_device_info.cc",
@@ -285,6 +290,9 @@ source_set("base") {
     "subsample_entry.h",
     "supported_types.cc",
     "supported_types.h",
+    "supported_types.h",
+    "supported_video_decoder_config.cc",
+    "supported_video_decoder_config.h",
     "text_cue.cc",
     "text_cue.h",
     "text_ranges.cc",
@@ -319,8 +327,6 @@ source_set("base") {
     "video_encoder.h",
     "video_frame.cc",
     "video_frame.h",
-    "video_frame_feedback.cc",
-    "video_frame_feedback.h",
     "video_frame_layout.cc",
     "video_frame_layout.h",
     "video_frame_metadata.cc",
@@ -333,8 +339,6 @@ source_set("base") {
     "video_thumbnail_decoder.h",
     "video_transformation.cc",
     "video_transformation.h",
-    "video_types.cc",
-    "video_types.h",
     "video_util.cc",
     "video_util.h",
     "wait_and_replace_sync_token_client.cc",
@@ -361,8 +365,10 @@ source_set("base") {
     "//build:chromeos_buildflags",
     "//components/system_media_controls/linux/buildflags",
     "//gpu/command_buffer/client:interface_base",
+    "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common:common",
+    "//skia",
     "//third_party/libyuv",
     "//third_party/widevine/cdm:headers",
     "//ui/display:display",
@@ -480,6 +486,7 @@ static_library("test_support") {
     "//media/base/android:test_support",
     "//media/filters:test_support",
     "//media/formats:test_support",
+    "//media/renderers:test_support",
     "//media/video:test_support",
   ]
   testonly = true
@@ -553,7 +560,6 @@ source_set("unit_tests") {
     "audio_sample_types_unittest.cc",
     "audio_shifter_unittest.cc",
     "audio_timestamp_helper_unittest.cc",
-    "bind_to_current_loop_unittest.cc",
     "bit_reader_unittest.cc",
     "callback_holder_unittest.cc",
     "callback_registry_unittest.cc",
@@ -567,7 +573,6 @@ source_set("unit_tests") {
     "djb2_unittest.cc",
     "fake_audio_worker_unittest.cc",
     "fake_demuxer_stream_unittest.cc",
-    "fallback_video_decoder_unittest.cc",
     "feedback_signal_accumulator_unittest.cc",
     "frame_rate_estimator_unittest.cc",
     "key_systems_unittest.cc",
@@ -578,6 +583,7 @@ source_set("unit_tests") {
     "moving_average_unittest.cc",
     "multi_channel_resampler_unittest.cc",
     "null_video_sink_unittest.cc",
+    "offloading_audio_encoder_unittest.cc",
     "offloading_video_encoder_unittest.cc",
     "pipeline_impl_unittest.cc",
     "ranges_unittest.cc",
@@ -591,6 +597,7 @@ source_set("unit_tests") {
     "stream_parser_unittest.cc",
     "subsample_entry_unittest.cc",
     "supported_types_unittest.cc",
+    "supported_video_decoder_config_unittest.cc",
     "text_ranges_unittest.cc",
     "text_renderer_unittest.cc",
     "time_delta_interpolator_unittest.cc",
@@ -634,7 +641,10 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [ "win/dxgi_device_scope_handle_unittest.cc" ]
-    deps += [ "//media/base/win:media_foundation_util" ]
+    deps += [
+      "//media/base/win:media_foundation_util",
+      "//ui/events:test_support",
+    ]
     libs = [
       "d3d11.lib",
       "mfplat.lib",

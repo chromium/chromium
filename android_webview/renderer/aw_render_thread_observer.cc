@@ -4,7 +4,7 @@
 
 #include "android_webview/renderer/aw_render_thread_observer.h"
 
-#include "content/public/common/cpu_affinity.h"
+#include "components/power_scheduler/power_scheduler.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
@@ -46,7 +46,8 @@ void AwRenderThreadObserver::SetJsOnlineProperty(bool network_up) {
 }
 
 void AwRenderThreadObserver::SetCpuAffinityToLittleCores() {
-  content::EnforceProcessCpuAffinity(base::CpuAffinityMode::kLittleCoresOnly);
+  power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
+      power_scheduler::SchedulingPolicy::kLittleCoresOnly);
 }
 
 }  // namespace android_webview

@@ -17,7 +17,7 @@ class SearchResult;
 class SuggestedContentInfoView;
 
 // A container view for privacy info.
-class APP_LIST_EXPORT PrivacyContainerView : public SearchResultContainerView {
+class ASH_EXPORT PrivacyContainerView : public SearchResultContainerView {
  public:
   explicit PrivacyContainerView(AppListViewDelegate* view_delegate);
   ~PrivacyContainerView() override;

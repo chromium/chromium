@@ -95,13 +95,33 @@ using IDLLongLongEnforceRange =
 using IDLUnsignedLongLongEnforceRange =
     IDLIntegerTypeBase<uint64_t, bindings::IDLIntegerConvMode::kEnforceRange>;
 
+// Floating point number types
+
+namespace bindings {
+
+enum class IDLFloatingPointNumberConvMode {
+  kDefault,
+  kUnrestricted,
+};
+
+}  // namespace bindings
+
+template <typename T,
+          bindings::IDLFloatingPointNumberConvMode mode =
+              bindings::IDLFloatingPointNumberConvMode::kDefault>
+struct IDLFloatingPointNumberTypeBase final : public IDLBaseHelper<T> {};
+
 // float
-struct IDLFloat final : public IDLBaseHelper<float> {};
-struct IDLUnrestrictedFloat final : public IDLBaseHelper<float> {};
+using IDLFloat = IDLFloatingPointNumberTypeBase<float>;
+using IDLUnrestrictedFloat = IDLFloatingPointNumberTypeBase<
+    float,
+    bindings::IDLFloatingPointNumberConvMode::kUnrestricted>;
 
 // double
-struct IDLDouble final : public IDLBaseHelper<double> {};
-struct IDLUnrestrictedDouble final : public IDLBaseHelper<double> {};
+using IDLDouble = IDLFloatingPointNumberTypeBase<double>;
+using IDLUnrestrictedDouble = IDLFloatingPointNumberTypeBase<
+    double,
+    bindings::IDLFloatingPointNumberConvMode::kUnrestricted>;
 
 // Strings
 // The "Base" classes are always templatized and require users to specify how JS
@@ -179,29 +199,32 @@ enum class IDLStringConvMode {
 
 }  // namespace bindings
 
+// Base class for IDL string types (except for enumeration types)
+struct IDLStringTypeBase : public IDLBaseHelper<String> {};
+
 // ByteString
 template <bindings::IDLStringConvMode mode>
-struct IDLByteStringBaseV2 final : public IDLBaseHelper<String> {};
+struct IDLByteStringBaseV2 final : public IDLStringTypeBase {};
 using IDLByteStringV2 =
     IDLByteStringBaseV2<bindings::IDLStringConvMode::kDefault>;
 
 // DOMString
 template <bindings::IDLStringConvMode mode>
-struct IDLStringBaseV2 final : public IDLBaseHelper<String> {};
+struct IDLStringBaseV2 final : public IDLStringTypeBase {};
 using IDLStringV2 = IDLStringBaseV2<bindings::IDLStringConvMode::kDefault>;
 using IDLStringTreatNullAsEmptyStringV2 =
     IDLStringBaseV2<bindings::IDLStringConvMode::kTreatNullAsEmptyString>;
 
 // USVString
 template <bindings::IDLStringConvMode mode>
-struct IDLUSVStringBaseV2 final : public IDLBaseHelper<String> {};
+struct IDLUSVStringBaseV2 final : public IDLStringTypeBase {};
 using IDLUSVStringV2 =
     IDLUSVStringBaseV2<bindings::IDLStringConvMode::kDefault>;
 
 // [StringContext=TrustedHTML] DOMString
 template <bindings::IDLStringConvMode mode>
 struct IDLStringStringContextTrustedHTMLBaseV2 final
-    : public IDLBaseHelper<String> {};
+    : public IDLStringTypeBase {};
 using IDLStringStringContextTrustedHTMLV2 =
     IDLStringStringContextTrustedHTMLBaseV2<
         bindings::IDLStringConvMode::kDefault>;
@@ -212,7 +235,7 @@ using IDLStringStringContextTrustedHTMLTreatNullAsEmptyStringV2 =
 // [StringContext=TrustedScript] DOMString
 template <bindings::IDLStringConvMode mode>
 struct IDLStringStringContextTrustedScriptBaseV2 final
-    : public IDLBaseHelper<String> {};
+    : public IDLStringTypeBase {};
 using IDLStringStringContextTrustedScriptV2 =
     IDLStringStringContextTrustedScriptBaseV2<
         bindings::IDLStringConvMode::kDefault>;
@@ -223,7 +246,7 @@ using IDLStringStringContextTrustedScriptTreatNullAsEmptyStringV2 =
 // [StringContext=TrustedScriptURL] USVString
 template <bindings::IDLStringConvMode mode>
 struct IDLUSVStringStringContextTrustedScriptURLBaseV2 final
-    : public IDLBaseHelper<String> {};
+    : public IDLStringTypeBase {};
 using IDLUSVStringStringContextTrustedScriptURLV2 =
     IDLUSVStringStringContextTrustedScriptURLBaseV2<
         bindings::IDLStringConvMode::kDefault>;
@@ -243,7 +266,10 @@ struct IDLSequence final : public IDLBase {
 
 // Frozen array types
 template <typename T>
-using IDLArray = IDLSequence<T>;
+struct IDLArray final : public IDLBase {
+  using ImplType =
+      VectorOf<std::remove_pointer_t<typename NativeValueTraits<T>::ImplType>>;
+};
 
 // Record types
 template <typename Key, typename Value>

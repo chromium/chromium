@@ -6,7 +6,7 @@ import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.m.j
 import {MockFileSystem} from './mock_entry.m.js';
 import * as wrappedUtil from './util.m.js';
 const {util} = wrappedUtil;
-import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js';
+import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js';
 const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://test/chai_assert.js';
@@ -316,4 +316,31 @@ export function testBytesToStringWithAddedPrecision() {
   assertEquals(util.bytesToString(2 * PB + 647 * TB, 2), '2.632 PB');
   assertEquals(util.bytesToString(2 * PB + 647 * TB, 3), '2.632 PB');
   assertEquals(util.bytesToString(200 * PB + 647 * TB, 1), '200.63 PB');
+}
+
+/**
+ * Tests the util.getFileErrorString helper for undefined, null, or empty
+ * string error name input, which should output an i18n FILE_ERROR_GENERIC
+ * error name.
+ *
+ * Also tests pre-defined error names ('NotFoundError' and 'PathExistsError'
+ * here), which should output their associated i18n error names.
+ */
+export function testGetFileErrorString() {
+  let i18nErrorName;
+
+  i18nErrorName = util.getFileErrorString(undefined);
+  assertEquals(i18nErrorName, 'FILE_ERROR_GENERIC');
+
+  i18nErrorName = util.getFileErrorString(null);
+  assertEquals(i18nErrorName, 'FILE_ERROR_GENERIC');
+
+  i18nErrorName = util.getFileErrorString('');
+  assertEquals(i18nErrorName, 'FILE_ERROR_GENERIC');
+
+  i18nErrorName = util.getFileErrorString('NotFoundError');
+  assertEquals(i18nErrorName, 'FILE_ERROR_NOT_FOUND');
+
+  i18nErrorName = util.getFileErrorString('PathExistsError');
+  assertEquals(i18nErrorName, 'FILE_ERROR_PATH_EXISTS');
 }

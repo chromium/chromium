@@ -24,13 +24,14 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -83,15 +84,17 @@ void ManageProfileHandler::RegisterMessages() {
       "removeProfileShortcut",
       base::BindRepeating(&ManageProfileHandler::HandleRemoveProfileShortcut,
                           base::Unretained(this)));
+  content::URLDataSource::Add(profile_,
+                              std::make_unique<ThemeSource>(profile_));
 }
 
 void ManageProfileHandler::OnJavascriptAllowed() {
-  observer_.Add(
+  observation_.Observe(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
 }
 
 void ManageProfileHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void ManageProfileHandler::OnProfileHighResAvatarLoaded(
@@ -131,11 +134,12 @@ void ManageProfileHandler::HandleGetAvailableIcons(
 }
 
 std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
-  ProfileAttributesEntry* entry = nullptr;
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_->GetPath());
   // TODO(msalama): Convert to a DCHECK.
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(profile_->GetPath(), &entry)) {
+  if (!entry) {
     LOG(ERROR) << "No profile attributes entry found for profile with path: "
                << profile_->GetPath();
     return std::make_unique<base::ListValue>();
@@ -150,13 +154,11 @@ std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
       profiles::GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
 
   if (entry->GetSigninState() == SigninState::kNotSignedIn) {
-    if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-      ProfileThemeColors colors = entry->GetProfileThemeColors();
-      auto generic_avatar_info = profiles::GetDefaultProfileAvatarIconAndLabel(
-          colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
-          selected_avatar_idx == profiles::GetPlaceholderAvatarIndex());
-      avatars->Insert(0, std::move(generic_avatar_info));
-    }
+    ProfileThemeColors colors = entry->GetProfileThemeColors();
+    auto generic_avatar_info = profiles::GetDefaultProfileAvatarIconAndLabel(
+        colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
+        selected_avatar_idx == profiles::GetPlaceholderAvatarIndex());
+    avatars->Insert(0, std::move(generic_avatar_info));
     return avatars;
   }
 
@@ -221,10 +223,7 @@ void ManageProfileHandler::HandleSetProfileName(const base::ListValue* args) {
   CHECK(args);
   CHECK_EQ(1u, args->GetSize());
 
-  if (profile_->IsLegacySupervised())
-    return;
-
-  base::string16 new_profile_name;
+  std::u16string new_profile_name;
   CHECK(args->GetString(0, &new_profile_name));
 
   base::TrimWhitespace(new_profile_name, base::TRIM_ALL, &new_profile_name);

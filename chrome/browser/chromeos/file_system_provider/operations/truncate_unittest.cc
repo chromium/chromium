@@ -63,8 +63,8 @@ TEST_F(FileSystemProviderOperationsTruncateTest, Execute) {
                     kTruncateLength,
                     base::BindOnce(&util::LogStatusCallback, &callback_log));
   truncate.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(truncate.Execute(kRequestId));
 
@@ -95,8 +95,8 @@ TEST_F(FileSystemProviderOperationsTruncateTest, Execute_NoListener) {
                     kTruncateLength,
                     base::BindOnce(&util::LogStatusCallback, &callback_log));
   truncate.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(truncate.Execute(kRequestId));
 }
@@ -114,8 +114,8 @@ TEST_F(FileSystemProviderOperationsTruncateTest, Execute_ReadOnly) {
                     kTruncateLength,
                     base::BindOnce(&util::LogStatusCallback, &callback_log));
   truncate.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(truncate.Execute(kRequestId));
 }
@@ -128,8 +128,8 @@ TEST_F(FileSystemProviderOperationsTruncateTest, OnSuccess) {
                     kTruncateLength,
                     base::BindOnce(&util::LogStatusCallback, &callback_log));
   truncate.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(truncate.Execute(kRequestId));
 
@@ -148,8 +148,8 @@ TEST_F(FileSystemProviderOperationsTruncateTest, OnError) {
                     kTruncateLength,
                     base::BindOnce(&util::LogStatusCallback, &callback_log));
   truncate.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(truncate.Execute(kRequestId));
 

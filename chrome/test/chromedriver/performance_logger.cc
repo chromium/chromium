@@ -19,6 +19,8 @@
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/log.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/chrome/web_view.h"
+#include "chrome/test/chromedriver/chrome/web_view_impl.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "chrome/test/chromedriver/session.h"
 
@@ -72,16 +74,19 @@ PerformanceLogger::PerformanceLogger(Log* log, const Session* session)
     : log_(log),
       session_(session),
       browser_client_(nullptr),
-      trace_buffering_(false) {}
+      trace_buffering_(false),
+      enable_service_worker_(false) {}
 
 PerformanceLogger::PerformanceLogger(Log* log,
                                      const Session* session,
-                                     const PerfLoggingPrefs& prefs)
+                                     const PerfLoggingPrefs& prefs,
+                                     bool enable_service_worker)
     : log_(log),
       session_(session),
       prefs_(prefs),
       browser_client_(nullptr),
-      trace_buffering_(false) {}
+      trace_buffering_(false),
+      enable_service_worker_(enable_service_worker) {}
 
 bool PerformanceLogger::subscribes_to_browser() {
   return true;
@@ -101,6 +106,34 @@ Status PerformanceLogger::OnEvent(
     DevToolsClient* client,
     const std::string& method,
     const base::DictionaryValue& params) {
+  if (method == "Target.attachedToTarget") {
+    std::string type, target_id, session_id;
+    if (!params.GetString("targetInfo.type", &type))
+      return Status(kUnknownError,
+                    "missing target type in Target.attachedToTarget event");
+    if (enable_service_worker_ && type == "service_worker") {
+      std::string target_id;
+      if (!params.GetString("targetInfo.targetId", &target_id))
+        return Status(kUnknownError,
+                      "missing target ID in Target.attachedToTarget event");
+
+      std::list<std::string> webview_ids;
+      Status status = session_->chrome->GetWebViewIds(&webview_ids,
+                                                      session_->w3c_compliant);
+
+      if (status.IsError())
+        return status;
+
+      WebView* webview = nullptr;
+      status = session_->chrome->GetWebViewById(target_id, &webview);
+      if (status.IsError())
+        return status;
+
+      status = webview->ConnectIfNecessary();
+      if (status.IsError())
+        return status;
+    }
+  }
   if (IsBrowserwideClient(client)) {
     return HandleTraceEvents(client, method, params);
   } else {
@@ -145,10 +178,13 @@ void PerformanceLogger::AddLogEntry(
 
 Status PerformanceLogger::EnableInspectorDomains(DevToolsClient* client) {
   std::vector<std::string> enable_commands;
-  if (IsEnabled(prefs_.network))
+  if (IsEnabled(prefs_.network)) {
     enable_commands.push_back("Network.enable");
-  if (IsEnabled(prefs_.page))
+  }
+  if (IsEnabled(prefs_.page) && (client->GetOwner() == nullptr ||
+                                 !client->GetOwner()->IsServiceWorker())) {
     enable_commands.push_back("Page.enable");
+  }
   for (const auto& enable_command : enable_commands) {
     base::DictionaryValue params;  // All the enable commands have empty params.
     Status status = client->SendCommand(enable_command, params);

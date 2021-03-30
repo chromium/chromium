@@ -176,13 +176,13 @@ GURL TestPageURL() {
 
   // Sign-in promo should be visible with no accounts on the device.
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign-in promo should be visible with an account on the device.
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
                            closeButton:NO];
   [self closeRecentTabs];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
@@ -200,7 +200,7 @@ GURL TestPageURL() {
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
 
   // Tap on "Other Devices", to hide the sign-in promo.
@@ -226,7 +226,7 @@ GURL TestPageURL() {
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
                            closeButton:NO];
   [self closeRecentTabs];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
@@ -290,7 +290,7 @@ GURL TestPageURL() {
   }
 }
 
-// Tests that the Cold Mode Signin promo is visible in the Other Devices section
+// Tests that the Signin promo is visible in the Other Devices section
 // (and with illustrated-empty-states enabled, there is the illustrated cell)
 - (void)testOtherDevicesDefaultEmptyState {
   OpenRecentTabsPanel();
@@ -314,7 +314,7 @@ GURL TestPageURL() {
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
 }
 
@@ -368,21 +368,9 @@ GURL TestPageURL() {
   [self loadTestURL];
   OpenRecentTabsPanel();
 
-  [ChromeEarlGrey waitForForegroundWindowCount:1];
-
   [self longPressTestURLTab];
 
-  // Select "Open in New Window" and confirm that new tab is opened with
-  // selected URL in the new window.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::OpenLinkInNewWindowButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
-
-  // Validate that one window has the URL loaded.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          TestPageURL().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:"hello"];
 
   // Validate that Recent tabs was not closed in the original window. The
   // Accessibility Element matcher is added as there are other (non-accessible)
@@ -391,9 +379,6 @@ GURL TestPageURL() {
       selectElementWithMatcher:grey_allOf(RecentTabsTable(),
                                           grey_accessibilityElement(), nil)]
       assertWithMatcher:grey_notNil()];
-
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
 }
 
 // Tests the Share action on a recent tab's context menu.

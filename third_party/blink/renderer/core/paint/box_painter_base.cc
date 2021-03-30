@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 
 #include "base/optional.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -58,6 +59,24 @@ void BoxPainterBase::PaintFillLayers(const PaintInfo& paint_info,
   if (should_draw_background_in_separate_buffer)
     context.EndLayer();
 }
+
+namespace {
+
+void ApplySpreadToShadowShape(FloatRoundedRect& shadow_shape, float spread) {
+  if (spread == 0)
+    return;
+
+  if (spread >= 0)
+    shadow_shape.ExpandRadii(spread);
+  else
+    shadow_shape.ShrinkRadii(-spread);
+
+  if (!shadow_shape.IsRenderable())
+    shadow_shape.AdjustRadii();
+  shadow_shape.ConstrainRadii();
+}
+
+}  // namespace
 
 void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
                                           const PhysicalRect& paint_rect,
@@ -136,22 +155,18 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
       }
     }
 
-    // Draw only the shadow.
-    context.SetShadow(shadow_offset, shadow_blur, shadow_color,
-                      DrawLooperBuilder::kShadowRespectsTransforms,
-                      DrawLooperBuilder::kShadowIgnoresAlpha, kDrawShadowOnly);
+    // Draw only the shadow. If the color of the shadow is transparent we will
+    // set an empty draw looper.
+    DrawLooperBuilder draw_looper_builder;
+    draw_looper_builder.AddShadow(shadow_offset, shadow_blur, shadow_color,
+                                  DrawLooperBuilder::kShadowRespectsTransforms,
+                                  DrawLooperBuilder::kShadowIgnoresAlpha);
+    context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
 
     if (has_border_radius) {
       FloatRoundedRect rounded_fill_rect = border;
       rounded_fill_rect.Inflate(shadow_spread);
-
-      if (shadow_spread >= 0)
-        rounded_fill_rect.ExpandRadii(shadow_spread);
-      else
-        rounded_fill_rect.ShrinkRadii(-shadow_spread);
-      if (!rounded_fill_rect.IsRenderable())
-        rounded_fill_rect.AdjustRadii();
-      rounded_fill_rect.ConstrainRadii();
+      ApplySpreadToShadowShape(rounded_fill_rect, shadow_spread);
       context.FillRoundedRect(rounded_fill_rect, Color::kBlack);
     } else {
       context.FillRect(fill_rect, Color::kBlack);
@@ -182,42 +197,92 @@ void BoxPainterBase::PaintInsetBoxShadowWithInnerRect(
   PaintInsetBoxShadow(info, bounds, style);
 }
 
+namespace {
+
+inline FloatRect AreaCastingShadowInHole(const FloatRect& hole_rect,
+                                         const ShadowData& shadow) {
+  FloatRect bounds(hole_rect);
+  bounds.Inflate(shadow.Blur());
+
+  if (shadow.Spread() < 0)
+    bounds.Inflate(-shadow.Spread());
+
+  FloatRect offset_bounds = bounds;
+  offset_bounds.MoveBy(-shadow.Location());
+  return UnionRect(bounds, offset_bounds);
+}
+
+void AdjustInnerRectForSideClipping(FloatRect& inner_rect,
+                                    const ShadowData& shadow,
+                                    PhysicalBoxSides sides_to_include) {
+  if (!sides_to_include.left) {
+    float extend_by = std::max(shadow.X(), 0.0f) + shadow.Blur();
+    inner_rect.Move(-extend_by, 0);
+    inner_rect.SetWidth(inner_rect.Width() + extend_by);
+  }
+  if (!sides_to_include.top) {
+    float extend_by = std::max(shadow.Y(), 0.0f) + shadow.Blur();
+    inner_rect.Move(0, -extend_by);
+    inner_rect.SetHeight(inner_rect.Height() + extend_by);
+  }
+  if (!sides_to_include.right) {
+    float shrink_by = std::min(shadow.X(), 0.0f) - shadow.Blur();
+    inner_rect.SetWidth(inner_rect.Width() - shrink_by);
+  }
+  if (!sides_to_include.bottom) {
+    float shrink_by = std::min(shadow.Y(), 0.0f) - shadow.Blur();
+    inner_rect.SetHeight(inner_rect.Height() - shrink_by);
+  }
+}
+
+}  // namespace
+
 void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
                                          const FloatRoundedRect& bounds,
                                          const ComputedStyle& style,
                                          PhysicalBoxSides sides_to_include) {
   GraphicsContext& context = info.context;
-  GraphicsContextStateSaver state_saver(context, false);
 
   const ShadowList* shadow_list = style.BoxShadow();
   for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
     const ShadowData& shadow = shadow_list->Shadows()[i];
     if (shadow.Style() != ShadowStyle::kInset)
       continue;
-
-    FloatSize shadow_offset(shadow.X(), shadow.Y());
-    float shadow_blur = shadow.Blur();
-    float shadow_spread = shadow.Spread();
-
-    if (shadow_offset.IsZero() && !shadow_blur && !shadow_spread)
+    if (!shadow.X() && !shadow.Y() && !shadow.Blur() && !shadow.Spread())
       continue;
 
     const Color& shadow_color = shadow.GetColor().Resolve(
         style.VisitedDependentColor(GetCSSPropertyColor()),
         style.UsedColorScheme());
 
-    // The inset shadow case.
-    GraphicsContext::Edges clipped_edges = GraphicsContext::kNoEdge;
-    if (!sides_to_include.top)
-      clipped_edges |= GraphicsContext::kTopEdge;
-    if (!sides_to_include.right)
-      clipped_edges |= GraphicsContext::kRightEdge;
-    if (!sides_to_include.bottom)
-      clipped_edges |= GraphicsContext::kBottomEdge;
-    if (!sides_to_include.left)
-      clipped_edges |= GraphicsContext::kLeftEdge;
-    context.DrawInnerShadow(bounds, shadow_color, shadow_offset, shadow_blur,
-                            shadow_spread, clipped_edges);
+    FloatRect inner_rect(bounds.Rect());
+    inner_rect.Inflate(-shadow.Spread());
+    if (inner_rect.IsEmpty()) {
+      context.FillRoundedRect(bounds, shadow_color);
+      continue;
+    }
+    AdjustInnerRectForSideClipping(inner_rect, shadow, sides_to_include);
+
+    FloatRoundedRect inner_rounded_rect(inner_rect, bounds.GetRadii());
+    GraphicsContextStateSaver state_saver(context);
+    if (bounds.IsRounded()) {
+      context.ClipRoundedRect(bounds);
+      ApplySpreadToShadowShape(inner_rounded_rect, -shadow.Spread());
+    } else {
+      context.Clip(bounds.Rect());
+    }
+
+    DrawLooperBuilder draw_looper_builder;
+    draw_looper_builder.AddShadow(ToFloatSize(shadow.Location()), shadow.Blur(),
+                                  shadow_color,
+                                  DrawLooperBuilder::kShadowRespectsTransforms,
+                                  DrawLooperBuilder::kShadowIgnoresAlpha);
+    context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
+
+    Color fill_color(shadow_color.Red(), shadow_color.Green(),
+                     shadow_color.Blue());
+    FloatRect outer_rect = AreaCastingShadowInHole(bounds.Rect(), shadow);
+    context.FillRectWithRoundedHole(outer_rect, inner_rounded_rect, fill_color);
   }
 }
 
@@ -317,13 +382,17 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   is_printing = doc.Printing();
 
   should_paint_image = image && image->CanRender();
-  should_paint_color =
-      is_bottom_layer && color.Alpha() &&
-      (!should_paint_image || !layer.ImageOccludesNextLayers(doc, style));
-  should_paint_color_with_paint_worklet_image =
-      should_paint_color &&
+  bool composite_bgcolor_animation =
       RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       style.HasCurrentBackgroundColorAnimation();
+  // When background color animation is running on the compositor thread, we
+  // need to trigger repaint even if the background is transparent to collect
+  // artifacts in order to run the animation on the compositor.
+  should_paint_color =
+      is_bottom_layer && (color.Alpha() || composite_bgcolor_animation) &&
+      (!should_paint_image || !layer.ImageOccludesNextLayers(doc, style));
+  should_paint_color_with_paint_worklet_image =
+      should_paint_color && composite_bgcolor_animation;
 }
 
 namespace {
@@ -491,20 +560,59 @@ void DrawTiledBackground(GraphicsContext& context,
                          respect_orientation);
 }
 
+// Returning false meaning that we cannot paint background color with
+// BackgroundColorPaintWorklet.
+bool GetBGColorPaintWorkletParams(const BoxPainterBase::FillLayerInfo& info,
+                                  const Document* document,
+                                  Node* node,
+                                  Vector<Color>* animated_colors,
+                                  Vector<double>* offsets,
+                                  base::Optional<double>* progress) {
+  if (!info.should_paint_color_with_paint_worklet_image)
+    return false;
+  BackgroundColorPaintImageGenerator* generator =
+      document->GetFrame()->GetBackgroundColorPaintImageGenerator();
+  return generator->GetBGColorPaintWorkletParams(node, animated_colors, offsets,
+                                                 progress);
+}
+
 void FillRectWithPaintWorklet(const Document* document,
                               const BoxPainterBase::FillLayerInfo& info,
                               Node* node,
                               const FloatRoundedRect& dest_rect,
-                              GraphicsContext& context) {
-  FloatRect src_rect = dest_rect.Rect();
+                              GraphicsContext& context,
+                              const Vector<Color>& animated_colors,
+                              const Vector<double>& offsets,
+                              const base::Optional<double>& progress) {
+  FloatRect src_rect(FloatPoint(), dest_rect.Rect().Size());
   BackgroundColorPaintImageGenerator* generator =
       document->GetFrame()->GetBackgroundColorPaintImageGenerator();
-  scoped_refptr<Image> paint_worklet_image =
-      generator->Paint(src_rect.Size(), node);
+  scoped_refptr<Image> paint_worklet_image = generator->Paint(
+      src_rect.Size(), node, animated_colors, offsets, progress);
   context.DrawImageRRect(
       paint_worklet_image.get(), Image::kSyncDecode, dest_rect, src_rect,
       node && node->ComputedStyleRef().HasFilterInducingProperty(),
       SkBlendMode::kSrcOver, info.respect_image_orientation);
+}
+
+// Returns true if we can paint the background color with paint worklet.
+bool PaintBGColorWithPaintWorklet(const Document* document,
+                                  const BoxPainterBase::FillLayerInfo& info,
+                                  Node* node,
+                                  const FloatRoundedRect& dest_rect,
+                                  GraphicsContext& context) {
+  // TODO(xidachen): Consider merge this into GetBGColorPaintWorkletParams, so
+  // that function doesn't need to return these parameters.
+  Vector<Color> animated_colors;
+  Vector<double> offsets;
+  base::Optional<double> progress;
+  if (GetBGColorPaintWorkletParams(info, document, node, &animated_colors,
+                                   &offsets, &progress)) {
+    FillRectWithPaintWorklet(document, info, node, dest_rect, context,
+                             animated_colors, offsets, progress);
+    return true;
+  }
+  return false;
 }
 
 inline bool PaintFastBottomLayer(const Document* document,
@@ -594,9 +702,10 @@ inline bool PaintFastBottomLayer(const Document* document,
 
   // Paint the color if needed.
   if (info.should_paint_color) {
-    if (info.should_paint_color_with_paint_worklet_image) {
-      FillRectWithPaintWorklet(document, info, node, color_border, context);
-    } else {
+    // Try to paint the background with a paint worklet first in case it will be
+    // animated. Otherwise, paint it directly into the context.
+    if (!PaintBGColorWithPaintWorklet(document, info, node, color_border,
+                                      context)) {
       context.FillRoundedRect(color_border, info.color);
     }
   }
@@ -643,11 +752,10 @@ inline bool PaintFastBottomLayer(const Document* document,
         image->CorrectSrcRectForImageOrientation(intrinsic_tile_size, src_rect);
   }
 
-  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
-               "data",
-               inspector_paint_image_event::Data(
-                   node, *info.image, FloatRect(image->Rect()),
-                   FloatRect(image_border.Rect())));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
+      inspector_paint_image_event::Data, node, *info.image,
+      FloatRect(image->Rect()), FloatRect(image_border.Rect()));
 
   // Since there is no way for the developer to specify decode behavior, use
   // kSync by default.
@@ -772,10 +880,10 @@ void PaintFillLayerBackground(const Document* document,
   // painting area.
   if (info.is_bottom_layer && info.color.Alpha() && info.should_paint_color) {
     IntRect background_rect(PixelSnappedIntRect(scrolled_paint_rect));
-    if (info.should_paint_color_with_paint_worklet_image) {
-      FillRectWithPaintWorklet(document, info, node,
-                               FloatRoundedRect(background_rect), context);
-    } else {
+    // Try to paint the background with a paint worklet first in case it will be
+    // animated. Otherwise, paint it directly into the context.
+    if (!PaintBGColorWithPaintWorklet(
+            document, info, node, FloatRoundedRect(background_rect), context)) {
       context.FillRect(background_rect, info.color);
     }
   }
@@ -785,11 +893,10 @@ void PaintFillLayerBackground(const Document* document,
   // resource locator is given such as "//:0", so still check for image.
   if (info.should_paint_image && !geometry.SnappedDestRect().IsEmpty() &&
       !geometry.TileSize().IsEmpty() && image) {
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
-                 "data",
-                 inspector_paint_image_event::Data(
-                     node, *info.image, FloatRect(image->Rect()),
-                     FloatRect(scrolled_paint_rect)));
+    DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
+        inspector_paint_image_event::Data, node, *info.image,
+        FloatRect(image->Rect()), FloatRect(scrolled_paint_rect));
     DrawTiledBackground(
         context, image, FloatSize(geometry.UnsnappedDestRect().size),
         FloatRect(geometry.SnappedDestRect()), geometry.Phase(),

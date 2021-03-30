@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.contextmenu;
 import android.net.Uri;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.content_public.browser.WebContents;
 
@@ -18,24 +20,24 @@ public class LensChipDelegate implements ChipDelegate {
     private LensQueryParams mLensQueryParams;
     private LensController mLensController;
     private ContextMenuNativeDelegate mNativeDelegate;
-    private Runnable mOnChipClickedCallback;
-    private Runnable mOnChipShownCallback;
+    private Callback<Integer> mOnChipClickedCallback;
+    private Callback<Integer> mOnChipShownCallback;
 
     public LensChipDelegate(String pageUrl, String titleOrAltText, String srcUrl, String pageTitle,
             boolean isIncognito, WebContents webContents, ContextMenuNativeDelegate nativeDelegate,
-            Runnable onChipClickedCallback, Runnable onChipShownCallback) {
-        mLensController = LensController.getInstance();
+            Callback<Integer> onChipClickedCallback, Callback<Integer> onChipShownCallback) {
+        mLensController = AppHooks.get().getLensController();
         if (!mLensController.isQueryEnabled()) {
             return;
         }
-        mLensQueryParams = (new LensQueryParams.Builder())
-                                   .withPageUrl(pageUrl)
-                                   .withImageTitleOrAltText(titleOrAltText)
-                                   .withSrcUrl(srcUrl)
-                                   .withPageTitle(pageTitle)
-                                   .withIsIncognito(isIncognito)
-                                   .withWebContents(webContents)
-                                   .build();
+        mLensQueryParams =
+                new LensQueryParams.Builder(LensEntryPoint.CONTEXT_MENU_CHIP, isIncognito)
+                        .withPageUrl(pageUrl)
+                        .withImageTitleOrAltText(titleOrAltText)
+                        .withSrcUrl(srcUrl)
+                        .withPageTitle(pageTitle)
+                        .withWebContents(webContents)
+                        .build();
         mNativeDelegate = nativeDelegate;
         mOnChipClickedCallback = onChipClickedCallback;
         mOnChipShownCallback = onChipShownCallback;
@@ -59,10 +61,10 @@ public class LensChipDelegate implements ChipDelegate {
                         // The onClickCallback defined in LensController.
                         originalOnClickCallback.run();
                         // The onClickCallback defined when initialize the LensChipDelegate.
-                        mOnChipClickedCallback.run();
+                        mOnChipClickedCallback.bind(chipParams.chipType).run();
                     };
                     chipParams.onClickCallback = mergedOnClickCallback;
-                    chipParams.onShowCallback = mOnChipShownCallback;
+                    chipParams.onShowCallback = mOnChipShownCallback.bind(chipParams.chipType);
                 }
                 chipParamsCallback.onResult(chipParams);
             });

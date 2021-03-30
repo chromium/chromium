@@ -15,7 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
+#include "ui/base/clipboard/file_info.h"
 
 class GURL;
 
@@ -41,11 +41,15 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardUtil {
   // Only returns true if url->is_valid() is true.
   static bool GetUrl(IDataObject* data_object,
                      GURL* url,
-                     base::string16* title,
+                     std::u16string* title,
                      bool convert_filenames);
   // Only returns true if |*filenames| is not empty.
   static bool GetFilenames(IDataObject* data_object,
                            std::vector<std::wstring>* filenames);
+
+  // Creates a new STGMEDIUM object to hold files.
+  static STGMEDIUM CreateStorageForFileNames(
+      const std::vector<FileInfo>& filenames);
 
   // Fills a vector of display names of "virtual files" in the data store, but
   // does not actually retrieve the file contents. Display names are assured to
@@ -73,9 +77,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardUtil {
           callback);
 
   static bool GetPlainText(IDataObject* data_object,
-                           base::string16* plain_text);
+                           std::u16string* plain_text);
   static bool GetHtml(IDataObject* data_object,
-                      base::string16* text_html,
+                      std::u16string* text_html,
                       std::string* base_url);
   static bool GetFileContents(IDataObject* data_object,
                               std::wstring* filename,
@@ -86,7 +90,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardUtil {
   // strings from web content.
   static bool GetWebCustomData(
       IDataObject* data_object,
-      std::unordered_map<base::string16, base::string16>* custom_data);
+      std::unordered_map<std::u16string, std::u16string>* custom_data);
 
   // Helper method for converting between MS CF_HTML format and plain
   // text/html.

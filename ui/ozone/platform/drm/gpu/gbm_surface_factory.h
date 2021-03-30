@@ -35,10 +35,11 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
 
   // SurfaceFactoryOzone:
   std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
-  GLOzone* GetGLOzone(gl::GLImplementation implementation) override;
+  GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
+      bool use_swiftshader,
       bool allow_protected_memory,
       bool enforce_protected_memory) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapForVulkan(

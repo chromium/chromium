@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
+#include "chrome/browser/ash/login/users/affiliation.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/authpolicy/authpolicy_helper.h"
-#include "chrome/browser/chromeos/login/users/affiliation.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
@@ -333,11 +333,11 @@ void UserActiveDirectoryPolicyManager::OnPublishPolicy() {
     return;
 
   // Update user affiliation IDs.
-  chromeos::AffiliationIDSet set_of_user_affiliation_ids(
+  ash::AffiliationIDSet set_of_user_affiliation_ids(
       policy_data->user_affiliation_ids().begin(),
       policy_data->user_affiliation_ids().end());
 
-  chromeos::ChromeUserManager::Get()->SetUserAffiliation(
+  ash::ChromeUserManager::Get()->SetUserAffiliation(
       account_id_, set_of_user_affiliation_ids);
 }
 

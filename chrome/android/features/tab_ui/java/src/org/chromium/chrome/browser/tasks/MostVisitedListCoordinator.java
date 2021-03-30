@@ -8,6 +8,7 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
+import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
@@ -26,11 +28,17 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.suggestions.tile.TileRenderer;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Coordinator for displaying a list of {@link SuggestionsTileView} in a {@link ViewGroup}.
@@ -38,6 +46,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * TODO(mattsimmons): Move logic and view manipulation into the mediator/viewbinder. (and add tests)
  */
 class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSetupDelegate {
+    private static final String TAG = "TopSites";
     private static final int TITLE_LINES = 1;
 
     // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
@@ -48,6 +57,8 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     private final Supplier<Tab> mParentTabSupplier;
     private TileGroup mTileGroup;
     private TileRenderer mRenderer;
+    private SuggestionsUiDelegate mSuggestionsUiDelegate;
+    private boolean mInitializationComplete;
 
     public MostVisitedListCoordinator(ChromeActivity activity, ViewGroup parent,
             PropertyModel propertyModel, Supplier<Tab> parentTabSupplier) {
@@ -59,31 +70,62 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     }
 
     public void initialize() {
-        if (mRenderer != null) return;
-        assert mTileGroup == null;
+        mRenderer =
+                new TileRenderer(mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, null);
 
-        // This function is never called in incognito mode.
+        // If it's a cold start and Instant Start is turned on, we render MV tiles placeholder here
+        // pre-native.
+        if (!mInitializationComplete && StartSurfaceConfiguration.isStartSurfaceEnabled()
+                && TabUiFeatureUtilities.supportInstantStart(
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity))) {
+            try {
+                List<Tile> tiles =
+                        MostVisitedSitesMetadataUtils.restoreFileToSuggestionListsOnUiThread();
+                if (tiles != null) {
+                    mRenderer.renderTileSection(tiles, mParent, this);
+                }
+            } catch (IOException e) {
+                Log.i(TAG, "No cached MV tiles file.");
+            }
+        }
+    }
+
+    public void initWithNative() {
         Profile profile = Profile.getLastUsedRegularProfile();
-
-        ImageFetcher imageFetcher = new ImageFetcher(profile);
         SnackbarManager snackbarManager = mActivity.getSnackbarManager();
-
-        mRenderer = new TileRenderer(
-                mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, imageFetcher);
+        if (!mInitializationComplete) {
+            ImageFetcher imageFetcher = new ImageFetcher(profile);
+            mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(profile, snackbarManager);
+            if (mRenderer == null) {
+                // This function is never called in incognito mode.
+                mRenderer = new TileRenderer(
+                        mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, imageFetcher);
+            } else {
+                mRenderer.setImageFetcher(imageFetcher);
+            }
+        }
 
         OfflinePageBridge offlinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
-
         TileGroupDelegateImpl tileGroupDelegate =
                 new TileGroupDelegateImpl(mActivity, profile, null, snackbarManager);
-        SuggestionsUiDelegate suggestionsUiDelegate =
-                new MostVisitedSuggestionsUiDelegate(profile, snackbarManager);
-        mTileGroup = new TileGroup(
-                mRenderer, suggestionsUiDelegate, null, tileGroupDelegate, this, offlinePageBridge);
+        mTileGroup = new TileGroup(mRenderer, mSuggestionsUiDelegate, null, tileGroupDelegate, this,
+                offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
+        mInitializationComplete = true;
     }
 
     private void updateTileIcon(Tile tile) {
+        SuggestionsTileView tileView = findTileView(tile);
+        if (tileView != null) tileView.renderIcon(tile);
+    }
+
+    private void updateOfflineBadge(Tile tile) {
+        SuggestionsTileView tileView = findTileView(tile);
+        if (tileView != null) tileView.renderOfflineBadge(tile);
+    }
+
+    private SuggestionsTileView findTileView(Tile tile) {
         for (int i = 0; i < mParent.getChildCount(); i++) {
             View tileView = mParent.getChildAt(i);
 
@@ -91,10 +133,11 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
             SuggestionsTileView suggestionsTileView = (SuggestionsTileView) tileView;
 
-            if (!suggestionsTileView.getUrl().equals(tile.getUrl())) continue;
-
-            ((SuggestionsTileView) mParent.getChildAt(i)).renderIcon(tile);
+            if (tile.getUrl().equals(suggestionsTileView.getUrl())) {
+                return (SuggestionsTileView) tileView;
+            }
         }
+        return null;
     }
 
     /** TileGroup.Observer implementation. */
@@ -104,16 +147,23 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
         mRenderer.renderTileSection(
                 mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED), mParent, this);
+
+        MostVisitedSitesMetadataUtils.getInstance().saveSuggestionListsToFile(
+                mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED));
     }
 
     @Override
     public void onTileCountChanged() {}
 
     @Override
-    public void onTileIconChanged(Tile tile) {}
+    public void onTileIconChanged(Tile tile) {
+        updateTileIcon(tile);
+    }
 
     @Override
-    public void onTileOfflineBadgeVisibilityChanged(Tile tile) {}
+    public void onTileOfflineBadgeVisibilityChanged(Tile tile) {
+        updateOfflineBadge(tile);
+    }
 
     /** TileSetupDelegate implementation. */
     @Override
@@ -155,9 +205,8 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
         @Override
         public void onClick(View v) {
-            ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(
-                    mTile.getUrl().getSpec(), PageTransition.AUTO_BOOKMARK, null /*incognito*/,
-                    mParentTabSupplier.get());
+            ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(mTile.getUrl().getSpec(),
+                    PageTransition.AUTO_BOOKMARK, null /*incognito*/, mParentTabSupplier.get());
             SuggestionsMetrics.recordTileTapped();
         }
 

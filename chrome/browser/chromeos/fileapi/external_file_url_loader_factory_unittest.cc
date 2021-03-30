@@ -9,12 +9,11 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/chromeos/file_system_provider/service.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/url_constants.h"
@@ -55,7 +54,7 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     Profile* const profile =
         profile_manager_->CreateTestingProfile("test-user");
-    user_manager_ = std::make_unique<chromeos::FakeChromeUserManager>();
+    user_manager_ = std::make_unique<FakeChromeUserManager>();
     user_manager_->AddUser(
         AccountId::FromUserEmailGaiaId(profile->GetProfileUserName(), "12345"));
     render_process_host_ =
@@ -97,9 +96,9 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
       const network::ResourceRequest& resource_request) {
     mojo::PendingRemote<network::mojom::URLLoader> loader;
     url_loader_factory_->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, network::mojom::kURLLoadOptionNone,
-        resource_request, client->CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        network::mojom::kURLLoadOptionNone, resource_request,
+        client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
     return loader;
   }
@@ -110,7 +109,7 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<chromeos::FakeChromeUserManager> user_manager_;
+  std::unique_ptr<FakeChromeUserManager> user_manager_;
   // Used to register the profile with the ChildProcessSecurityPolicyImpl.
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
 };

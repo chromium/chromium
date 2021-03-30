@@ -83,7 +83,7 @@ void DeletePlatformShortcutsAndPostCallback(
 void DeleteMultiProfileShortcutsForAppAndPostCallback(
     const std::string& app_id,
     CreateShortcutsCallback callback) {
-  web_app::internals::DeleteMultiProfileShortcutsForApp(app_id);
+  internals::DeleteMultiProfileShortcutsForApp(app_id);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
@@ -95,12 +95,6 @@ ShortcutInfo::ShortcutInfo() = default;
 ShortcutInfo::~ShortcutInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
-
-ShortcutLocations::ShortcutLocations()
-    : on_desktop(false),
-      applications_menu_location(APP_MENU_LOCATION_NONE),
-      in_quick_launch_bar(false),
-      in_startup(false) {}
 
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info) {
   // TODO(loyso): Remove this empty()/non-empty difference.
@@ -126,8 +120,8 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
   std::string scheme_port(scheme + "_" + port);
 
 #if defined(OS_WIN)
-  base::FilePath::StringType host_path(base::UTF8ToUTF16(host));
-  base::FilePath::StringType scheme_port_path(base::UTF8ToUTF16(scheme_port));
+  base::FilePath::StringType host_path(base::UTF8ToWide(host));
+  base::FilePath::StringType scheme_port_path(base::UTF8ToWide(scheme_port));
 #elif defined(OS_POSIX)
   base::FilePath::StringType host_path(host);
   base::FilePath::StringType scheme_port_path(scheme_port);

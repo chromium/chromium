@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/tether/tether_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
@@ -19,8 +19,6 @@
 #include "chromeos/components/tether/tether_component.h"
 #include "chromeos/components/tether/tether_component_impl.h"
 #include "chromeos/components/tether/tether_host_fetcher_impl.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_type_pattern.h"
@@ -460,10 +458,10 @@ void TetherService::GetBluetoothAdapter() {
   // constructed yet. Post the GetAdapter call to avoid this.
   auto* factory = device::BluetoothAdapterFactory::Get();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&device::BluetoothAdapterFactory::GetAdapter,
-                                base::Unretained(factory),
-                                base::BindRepeating(
-                                    &TetherService::OnBluetoothAdapterFetched,
+      FROM_HERE,
+      base::BindOnce(&device::BluetoothAdapterFactory::GetAdapter,
+                     base::Unretained(factory),
+                     base::BindOnce(&TetherService::OnBluetoothAdapterFetched,
                                     weak_ptr_factory_.GetWeakPtr())));
 }
 

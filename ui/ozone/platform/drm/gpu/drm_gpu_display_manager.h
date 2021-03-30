@@ -52,7 +52,7 @@ class DrmGpuDisplayManager {
   bool TakeDisplayControl();
   void RelinquishDisplayControl();
 
-  base::flat_map<int64_t, bool> ConfigureDisplays(
+  bool ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests);
   bool GetHDCPState(int64_t display_id,
                     display::HDCPState* state,

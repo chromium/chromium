@@ -19,14 +19,14 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
-#include "components/sync/model/entity_data.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/model_type_store_test_util.h"
-#include "components/sync/test/test_matchers.h"
+#include "components/sync/test/model/test_matchers.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
@@ -336,12 +336,21 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   ~TestLocalDeviceInfoProvider() override = default;
 
   // MutableLocalDeviceInfoProvider implementation.
-  void Initialize(const std::string& cache_guid,
-                  const std::string& session_name,
-                  const std::string& manufacturer_name,
-                  const std::string& model_name,
-                  const std::string& last_fcm_registration_token,
-                  const ModelTypeSet& last_interested_data_types) override {
+  void Initialize(
+      const std::string& cache_guid,
+      const std::string& session_name,
+      const std::string& manufacturer_name,
+      const std::string& model_name,
+      std::unique_ptr<DeviceInfo> device_info_restored_from_store) override {
+    std::string last_fcm_registration_token;
+    ModelTypeSet last_interested_data_types;
+    if (device_info_restored_from_store) {
+      last_fcm_registration_token =
+          device_info_restored_from_store->fcm_registration_token();
+      last_interested_data_types =
+          device_info_restored_from_store->interested_data_types();
+    }
+
     std::set<sync_pb::SharingSpecificFields::EnabledFeatures>
         sharing_enabled_features{SharingEnabledFeaturesForSuffix(kLocalSuffix)};
     local_device_info_ = std::make_unique<DeviceInfo>(
@@ -359,7 +368,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
              SharingSenderIdP256dhForSuffix(kLocalSuffix),
              SharingSenderIdAuthSecretForSuffix(kLocalSuffix)},
             sharing_enabled_features),
-        last_fcm_registration_token, last_interested_data_types);
+        /*paask_info=*/base::nullopt, last_fcm_registration_token,
+        last_interested_data_types);
   }
 
   void Clear() override { local_device_info_.reset(); }
@@ -1480,6 +1490,29 @@ TEST_F(DeviceInfoSyncBridgeTest,
       bridge()->IsRecentLocalCacheGuid(CacheGuidForSuffix(kLocalSuffix)));
   EXPECT_THAT(bridge()->GetLocalDeviceInfoProvider()->GetLocalDeviceInfo(),
               IsNull());
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, ShouldInvokeCallbackOnReadAllMetadata) {
+  const DeviceInfoSpecifics specifics = CreateLocalDeviceSpecifics();
+  const ModelTypeState model_type_state = StateWithEncryption("ekn");
+  WriteToStoreWithMetadata({specifics}, model_type_state);
+
+  InitializeBridge();
+  // Wait until the metadata is loaded.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*processor(), IsTrackingMetadata).WillOnce(Return(true));
+  EXPECT_CALL(*processor(), ModelReadyToSync)
+      .WillOnce([&run_loop](std::unique_ptr<MetadataBatch> batch) {
+        run_loop.Quit();
+      });
+  run_loop.Run();
+
+  // Check that the bridge won't call SendLocalData() during initial merge.
+  EXPECT_CALL(*processor(), Put).Times(0);
+
+  // Check that the bridge has notified observers even if the local data hasn't
+  // been changed.
+  EXPECT_EQ(1, change_count());
 }
 
 }  // namespace

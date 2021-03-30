@@ -47,6 +47,7 @@
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/views/controls/menu/menu_pre_target_handler.h"
 #endif
@@ -689,7 +690,7 @@ class MenuControllerTest : public ViewsTestBase,
 
   void MenuHostOnDragComplete(MenuHost* host) { host->OnDragComplete(); }
 
-  void SelectByChar(base::char16 character) {
+  void SelectByChar(char16_t character) {
     menu_controller_->SelectByChar(character);
   }
 
@@ -767,12 +768,11 @@ class MenuControllerTest : public ViewsTestBase,
   // `single_child` is true, the hosting menu item has only one child button.
   MenuItemView* AddButtonMenuItems(bool single_child) {
     menu_item()->SetBounds(0, 0, 200, 300);
-    MenuItemView* item_view =
-        menu_item()->AppendMenuItem(5, base::ASCIIToUTF16("Five"));
+    MenuItemView* item_view = menu_item()->AppendMenuItem(5, u"Five");
     const size_t children_count = single_child ? 1 : 3;
     for (size_t i = 0; i < children_count; ++i) {
-      LabelButton* button = new LabelButton(Button::PressedCallback(),
-                                            base::ASCIIToUTF16("Label"));
+      LabelButton* button =
+          new LabelButton(Button::PressedCallback(), u"Label");
       // This is an in-menu button. Hence it must be always focusable.
       button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
       item_view->AddChildView(button);
@@ -834,10 +834,10 @@ class MenuControllerTest : public ViewsTestBase,
   void SetupMenuItem() {
     menu_delegate_ = std::make_unique<TestMenuDelegate>();
     menu_item_ = std::make_unique<TestMenuItemViewShown>(menu_delegate_.get());
-    menu_item_->AppendMenuItem(1, base::ASCIIToUTF16("One"));
-    menu_item_->AppendMenuItem(2, base::ASCIIToUTF16("Two"));
-    menu_item_->AppendMenuItem(3, base::ASCIIToUTF16("Three"));
-    menu_item_->AppendMenuItem(4, base::ASCIIToUTF16("Four"));
+    menu_item_->AppendMenuItem(1, u"One");
+    menu_item_->AppendMenuItem(2, u"Two");
+    menu_item_->AppendMenuItem(3, u"Three");
+    menu_item_->AppendMenuItem(4, u"Four");
   }
 
   void SetupMenuController() {
@@ -1055,6 +1055,70 @@ TEST_F(MenuControllerTest, VerifyMenuBubblePositionAfterSizeChanges) {
     EXPECT_LE(options.anchor_bounds.y() - border_and_shadow_insets.top() +
                   updated_size.height(),
               monitor_bounds.bottom());
+
+    options.menu_position = MenuItemView::MenuPosition::kAboveBounds;
+    CalculateBubbleMenuBounds(options);
+    EXPECT_EQ(MenuItemView::MenuPosition::kAboveBounds,
+              menu_item()->ActualMenuPosition());
+  }
+}
+
+// Verifies that the context menu bubble position, MenuPosition::kBubbleBelow,
+// does not shift as items are removed. The menu position will shift it items
+// are added and the menu no longer fits in its previous position.
+TEST_F(MenuControllerTest, VerifyMenuBubbleBelowPositionAfterSizeChanges) {
+  constexpr gfx::Rect kMonitorBounds(0, 0, 500, 500);
+  constexpr gfx::Size kMenuSize(100, 200);
+  const gfx::Insets border_and_shadow_insets =
+      BubbleBorder::GetBorderAndShadowInsets(
+          MenuConfig::instance().touchable_menu_shadow_elevation);
+
+  // Calculate the suitable anchor point to ensure that if the menu shows below
+  // the anchor point, the bottom of the menu should be one pixel off the
+  // bottom of the display. It means that there is insufficient space for the
+  // menu below the anchor.
+  const gfx::Point anchor_point(kMonitorBounds.width() / 2,
+                                kMonitorBounds.bottom() + 1 -
+                                    kMenuSize.height() +
+                                    border_and_shadow_insets.top());
+
+  MenuBoundsOptions options;
+  options.menu_anchor = MenuAnchorPosition::kBubbleBelow;
+  options.monitor_bounds = kMonitorBounds;
+  options.anchor_bounds = gfx::Rect(anchor_point, gfx::Size());
+
+  // Case 1: There is insufficient space for the menu below `anchor_point` and
+  // there is no cached menu position. The menu should show above the anchor.
+  {
+    options.menu_size = kMenuSize;
+    ASSERT_GT(options.anchor_bounds.y() - border_and_shadow_insets.top() +
+                  kMenuSize.height(),
+              kMonitorBounds.bottom());
+    CalculateBubbleMenuBounds(options);
+    EXPECT_EQ(MenuItemView::MenuPosition::kAboveBounds,
+              menu_item()->ActualMenuPosition());
+  }
+
+  // Case 2: There is insufficient space for the menu below `anchor_point`. The
+  // cached position is below the anchor. The menu should show above the anchor
+  // point.
+  {
+    options.menu_position = MenuItemView::MenuPosition::kBelowBounds;
+    CalculateBubbleMenuBounds(options);
+    EXPECT_EQ(MenuItemView::MenuPosition::kAboveBounds,
+              menu_item()->ActualMenuPosition());
+  }
+
+  // Case 3: There is enough space for the menu below `anchor_point`. The cached
+  // menu position is above the anchor. The menu should show above the anchor.
+  {
+    // Shrink the menu size. Verify that there is enough space below the anchor
+    // point now.
+    constexpr gfx::Size kUpdatedSize(kMenuSize.width(), kMenuSize.height() / 2);
+    options.menu_size = kUpdatedSize;
+    EXPECT_LE(options.anchor_bounds.y() - border_and_shadow_insets.top() +
+                  kUpdatedSize.height(),
+              kMonitorBounds.bottom());
 
     options.menu_position = MenuItemView::MenuPosition::kAboveBounds;
     CalculateBubbleMenuBounds(options);
@@ -2098,9 +2162,9 @@ TEST_P(MenuControllerTest, TestMenuFitsOnSmallScreen) {
 TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
   menu_controller()->set_use_touchable_layout(true);
   MenuItemView* sub_item = menu_item()->GetSubmenu()->GetMenuItemAt(0);
-  sub_item->AppendMenuItem(11, base::ASCIIToUTF16("Subitem.One"));
+  sub_item->AppendMenuItem(11, u"Subitem.One");
 
-  const int menu_width = MenuConfig::instance().touchable_menu_width;
+  const int menu_width = MenuConfig::instance().touchable_menu_min_width;
   const gfx::Size parent_size(menu_width, menu_width);
   const gfx::Size parent_size_wide(menu_width * 2, menu_width);
 
@@ -2185,9 +2249,8 @@ TEST_F(MenuControllerTest, MouseAtMenuItemOnShow) {
   // the menu is shown.
   std::unique_ptr<TestMenuItemViewNotShown> menu_item(
       new TestMenuItemViewNotShown(menu_delegate()));
-  MenuItemView* first_item =
-      menu_item->AppendMenuItem(1, base::ASCIIToUTF16("One"));
-  menu_item->AppendMenuItem(2, base::ASCIIToUTF16("Two"));
+  MenuItemView* first_item = menu_item->AppendMenuItem(1, u"One");
+  menu_item->AppendMenuItem(2, u"Two");
   menu_item->SetController(menu_controller());
 
   // Move the mouse to where the first menu item will be shown,

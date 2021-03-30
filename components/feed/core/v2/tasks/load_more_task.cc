@@ -10,32 +10,44 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/time/time.h"
+#include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
+#include "components/feed/core/v2/wire_response_translator.h"
 
 namespace feed {
 
-LoadMoreTask::LoadMoreTask(FeedStream* stream,
+LoadMoreTask::Result::~Result() = default;
+LoadMoreTask::Result::Result() = default;
+LoadMoreTask::Result::Result(Result&&) = default;
+LoadMoreTask::Result& LoadMoreTask::Result::operator=(Result&&) = default;
+
+LoadMoreTask::LoadMoreTask(const StreamType& stream_type,
+                           FeedStream* stream,
                            base::OnceCallback<void(Result)> done_callback)
-    : stream_(stream), done_callback_(std::move(done_callback)) {}
+    : stream_type_(stream_type),
+      stream_(stream),
+      done_callback_(std::move(done_callback)) {}
 
 LoadMoreTask::~LoadMoreTask() = default;
 
 void LoadMoreTask::Run() {
   // Check prerequisites.
-  StreamModel* model = stream_->GetModel();
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  StreamModel* model = stream_->GetModel(stream_type_);
   if (!model)
     return Done(LoadStreamStatus::kLoadMoreModelIsNotLoaded);
 
   LoadStreamStatus final_status =
-      stream_->ShouldMakeFeedQueryRequest(/*is_load_more=*/true);
+      stream_->ShouldMakeFeedQueryRequest(stream_type_, /*is_load_more=*/true);
   if (final_status != LoadStreamStatus::kNoStatus)
     return Done(final_status);
 
@@ -46,7 +58,8 @@ void LoadMoreTask::Run() {
 }
 
 void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
-  StreamModel* model = stream_->GetModel();
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  StreamModel* model = stream_->GetModel(stream_type_);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
   // Determine whether the load more request should be forced signed-out
@@ -64,18 +77,20 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   bool force_signed_out_request = !model->signed_in();
   // Send network request.
   fetch_start_time_ = base::TimeTicks::Now();
+  // TODO(crbug/1152592): Send a different network request type for WebFeeds.
   stream_->GetNetwork()->SendQueryRequest(
+      NetworkRequestType::kNextPage,
       CreateFeedQueryLoadMoreRequest(
-          stream_->GetRequestMetadata(/*is_for_next_page=*/true),
-          stream_->GetMetadata()->GetConsistencyToken(),
-          stream_->GetModel()->GetNextPageToken()),
+          stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/true),
+          stream_->GetMetadata().consistency_token(),
+          stream_->GetModel(stream_type_)->GetNextPageToken()),
       force_signed_out_request,
       base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
 }
 
 void LoadMoreTask::QueryRequestComplete(
     FeedNetwork::QueryRequestResult result) {
-  StreamModel* model = stream_->GetModel();
+  StreamModel* model = stream_->GetModel(stream_type_);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
   if (!result.response_body)
@@ -90,24 +105,28 @@ void LoadMoreTask::QueryRequestComplete(
   if (!translated_response.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);
 
-  loaded_new_content_from_network_ =
+  result_.loaded_new_content_from_network =
       !translated_response.model_update_request->stream_structures.empty();
 
-  stream_->GetMetadata()->MaybeUpdateSessionId(translated_response.session_id);
+  base::Optional<feedstore::Metadata> updated_metadata =
+      feedstore::MaybeUpdateSessionId(stream_->GetMetadata(),
+                                      translated_response.session_id);
+  if (updated_metadata) {
+    stream_->SetMetadata(std::move(*updated_metadata));
+  }
 
-  model->Update(std::move(translated_response.model_update_request));
+  result_.model_update_request =
+      std::move(translated_response.model_update_request);
 
-  if (translated_response.request_schedule)
-    stream_->SetRequestSchedule(*translated_response.request_schedule);
+  result_.request_schedule = std::move(translated_response.request_schedule);
 
   Done(LoadStreamStatus::kLoadedFromNetwork);
 }
 
 void LoadMoreTask::Done(LoadStreamStatus status) {
-  Result result;
-  result.final_status = status;
-  result.loaded_new_content_from_network = loaded_new_content_from_network_;
-  std::move(done_callback_).Run(result);
+  result_.stream_type = stream_type_;
+  result_.final_status = status;
+  std::move(done_callback_).Run(std::move(result_));
   TaskComplete();
 }
 

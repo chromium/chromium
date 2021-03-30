@@ -48,8 +48,7 @@ base::Value WorkerNodeImplDescriber::DescribeWorkerNodeData(
   ret.SetKey("url", base::Value(impl->url().spec()));
   ret.SetKey("worker_type",
              base::Value(WorkerTypeToString(impl->worker_type())));
-  ret.SetKey("priority",
-             PriorityAndReasonToValue(impl->priority_and_reason_.value()));
+  ret.SetKey("priority", PriorityAndReasonToValue(impl->priority_and_reason()));
 
   return ret;
 }

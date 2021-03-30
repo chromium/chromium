@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -57,7 +56,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
     virtual void OnFullCardRequestSucceeded(
         const payments::FullCardRequest& full_card_request,
         const CreditCard& card,
-        const base::string16& cvc) = 0;
+        const std::u16string& cvc) = 0;
     virtual void OnFullCardRequestFailed(FailureType failure_type) = 0;
   };
 

@@ -33,7 +33,7 @@ HidDeviceInfo::HidDeviceInfo(HidPlatformDeviceId platform_device_id,
                              const std::string& product_name,
                              const std::string& serial_number,
                              mojom::HidBusType bus_type,
-                             const std::vector<uint8_t> report_descriptor,
+                             base::span<const uint8_t> report_descriptor,
                              std::string device_node) {
   std::vector<mojom::HidCollectionInfoPtr> collections;
   bool has_report_id;
@@ -66,7 +66,8 @@ HidDeviceInfo::HidDeviceInfo(HidPlatformDeviceId platform_device_id,
 
   device_ = mojom::HidDeviceInfo::New(
       base::GenerateGUID(), physical_device_id, vendor_id, product_id,
-      product_name, serial_number, bus_type, report_descriptor,
+      product_name, serial_number, bus_type,
+      std::vector<uint8_t>(report_descriptor.begin(), report_descriptor.end()),
       std::move(collections), has_report_id, max_input_report_size,
       max_output_report_size, max_feature_report_size, device_node,
       protected_input_report_ids, protected_output_report_ids,

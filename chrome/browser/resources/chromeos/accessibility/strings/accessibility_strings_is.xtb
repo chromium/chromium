@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Listaatriði</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Strjúktu tveimur fingrum til hægri</translation>
-<translation id="1016393160682012902">Ýttu á qwerty-lykil, blindraleturslykil sem hægt er að endurnýja eða snertibendingu til að fræðast um virknina. Ýttu á Control og w eða Esc til að loka.</translation>
 <translation id="1022586497894531524">Ertu að nota raddsvörun ChromeVox í fyrsta skipti? Þessi stutta kynning útskýrir það helsta sem þarf til að hefjast handa með ChromeVox.</translation>
 <translation id="1025074108959230262">Lyklafesting óvirk</translation>
 <translation id="1031961866430398710">og svo</translation>
@@ -150,6 +149,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2045055672832940894">Engin fyrri stýring</translation>
 <translation id="2045606329038304310">Reitastýring eyðublaðs</translation>
 <translation id="2063539687800151747">Upphafstilvitnun</translation>
+<translation id="2074531330963286860">Aðgerðir í boði. Ýttu á leitarlykilinn+punkt til að skoða</translation>
 <translation id="2086961585857038472">Næsta orð</translation>
 <translation id="2087981446621639008">uppl á lýslista</translation>
 <translation id="2089387485033699258">is</translation>
@@ -976,6 +976,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="827266600368092403">Hefja eða ljúka vali</translation>
 <translation id="827422111966801947">Dimmfjólublár</translation>
 <translation id="8276439074553447000">Fara í fyrra atriði sem hægt er að setja fókus á</translation>
+<translation id="8279039817939141096">Ýttu á qwerty-lykil, blindraleturslykil sem hægt er að endurnýja eða snertibendingu til að fræðast um virknina. Ýttu á Control og w, bilslá og Z, strjúktu til vinstri með tveimur fingrum eða ýttu á Esc til að loka.</translation>
 <translation id="8283603667300770666">Næsti reitur eyðublaðs</translation>
 <translation id="8310185481635255431">Enginn næsti tengill</translation>
 <translation id="831207808878314375">Skilgreining</translation>

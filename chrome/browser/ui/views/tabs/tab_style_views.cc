@@ -9,6 +9,7 @@
 
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "cc/paint/paint_record.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -608,15 +609,6 @@ float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
   // animation. Only hide the separator if it's in the first slot, or in
   // certain cases if the tab has a visible background (see below).
 
-  // Do not show the separator if it is to the right of a group header.
-  // Otherwise, show the separator since the following group header takes up a
-  // slot.
-  if (adjacent_to_header) {
-    if (leading)
-      return 0.0f;
-    return GetHoverInterpolatedSeparatorOpacity(for_layout, nullptr);
-  }
-
   // If the tab has a visible background even when not selected or active, there
   // are additional cases where the separators can be hidden.
   if (tab_->controller()->HasVisibleBackgroundTabShapes()) {
@@ -627,6 +619,13 @@ float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
     // an end slot, then the tab was probably next to a selected dragging tab
     // (see the condition below).
     if (!adjacent_tab)
+      return 0.0f;
+
+    // With visible tab background shapes, a tab next to a group header doesn't
+    // need the additional contrast of a separator, because it's the tab
+    // background on top of the tab strip background directly, same as if the
+    // tab were in an end slot.
+    if (adjacent_to_header)
       return 0.0f;
 
     // If the adjacent tab is selected, any separator on the current tab will be
@@ -642,6 +641,15 @@ float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
     // GetBoundsInterpolatedSeparatorOpacity(), but not just for the end slots.
     if (adjacent_tab->IsSelected())
       return 0.0f;
+  }
+
+  // Do not show the separator if it is to the right of a group header.
+  // Otherwise, show the separator since the following group header takes up a
+  // slot.
+  if (adjacent_to_header) {
+    if (leading)
+      return 0.0f;
+    return GetHoverInterpolatedSeparatorOpacity(for_layout, nullptr);
   }
 
   // If the tab does not have a visible background and is in the first slot,
@@ -945,6 +953,37 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
 
 }  // namespace
 
+// static
+std::u16string views::metadata::TypeConverter<TabStyle::TabColors>::ToString(
+    views::metadata::ArgType<TabStyle::TabColors> source_value) {
+  return base::ASCIIToUTF16(base::StringPrintf(
+      "{%s,%s}",
+      color_utils::SkColorToRgbaString(source_value.foreground_color).c_str(),
+      color_utils::SkColorToRgbaString(source_value.background_color).c_str()));
+}
+
+// static
+base::Optional<TabStyle::TabColors> views::metadata::TypeConverter<
+    TabStyle::TabColors>::FromString(const std::u16string& source_value) {
+  std::u16string trimmed_string;
+  base::TrimString(source_value, u"{ }", &trimmed_string);
+  std::u16string::const_iterator color_pos = trimmed_string.cbegin();
+  const auto foreground_color = SkColorConverter::GetNextColor(
+      color_pos, trimmed_string.cend(), color_pos);
+  const auto background_color =
+      SkColorConverter::GetNextColor(color_pos, trimmed_string.cend());
+  return (foreground_color && background_color)
+             ? base::make_optional<TabStyle::TabColors>(
+                   foreground_color.value(), background_color.value())
+             : base::nullopt;
+}
+
+// static
+views::metadata::ValidStrings
+views::metadata::TypeConverter<TabStyle::TabColors>::GetValidStrings() {
+  return ValidStrings();
+}
+
 // TabStyle --------------------------------------------------------------------
 
 TabStyleViews::~TabStyleViews() = default;
@@ -956,19 +995,35 @@ std::unique_ptr<TabStyleViews> TabStyleViews::CreateForTab(Tab* tab) {
 
 // static
 int TabStyleViews::GetMinimumActiveWidth() {
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip))
-    return 72;
-  return TabCloseButton::GetGlyphSize() + GetContentsHorizontalInsetSize() * 2;
+  int min_active_width =
+      TabCloseButton::GetGlyphSize() + GetContentsHorizontalInsetSize() * 2;
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    return std::max(
+        min_active_width,
+        base::GetFieldTrialParamByFeatureAsInt(
+            features::kScrollableTabStrip,
+            features::kMinimumTabWidthFeatureParameterName, min_active_width));
+  }
+  return min_active_width;
 }
 
 // static
 int TabStyleViews::GetMinimumInactiveWidth() {
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip))
-    return 72;
   // Allow tabs to shrink until they appear to be 16 DIP wide excluding
   // outer corners.
   constexpr int kInteriorWidth = 16;
   // The overlap contains the trailing separator that is part of the interior
   // width; avoid double-counting it.
-  return kInteriorWidth - GetSeparatorSize().width() + GetTabOverlap();
+  int min_inactive_width =
+      kInteriorWidth - GetSeparatorSize().width() + GetTabOverlap();
+
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    return std::max(min_inactive_width,
+                    base::GetFieldTrialParamByFeatureAsInt(
+                        features::kScrollableTabStrip,
+                        features::kMinimumTabWidthFeatureParameterName,
+                        min_inactive_width));
+  }
+
+  return min_inactive_width;
 }

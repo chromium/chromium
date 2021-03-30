@@ -22,6 +22,7 @@
 
 class Browser;
 class DiceSignedInProfileCreator;
+class SigninUIError;
 
 namespace signin {
 class IdentityManager;
@@ -39,6 +40,8 @@ class DiceTurnSyncOnHelper
       public policy::PolicyService::ProviderUpdateObserver {
  public:
   // Behavior when the signin is aborted (by an error or cancelled by the user).
+  // The mode has no effect on the sync-is-disabled flow where cancelling always
+  // implies removing the account.
   enum class SigninAbortedMode {
     // The token is revoked and the account is signed out of the web.
     REMOVE_ACCOUNT,
@@ -66,10 +69,7 @@ class DiceTurnSyncOnHelper
     virtual ~Delegate() {}
 
     // Shows a login error to the user.
-    // TODO(crbug.com/1133189): Replace `error_message` with an enum as
-    // different types of UI are shown for different actions.
-    virtual void ShowLoginError(const std::string& email,
-                                const std::string& error_message) = 0;
+    virtual void ShowLoginError(const SigninUIError& error) = 0;
 
     // Shows a confirmation dialog when the user was previously signed in with a
     // different account in the same profile. |callback| must be called.
@@ -80,21 +80,34 @@ class DiceTurnSyncOnHelper
 
     // Shows a confirmation dialog when the user is signing in a managed
     // account. |callback| must be called.
+    // NOTE: When this is called, any subsequent call to
+    // ShowSync(Disabled)Confirmation will have is_managed_account set to true.
+    // The other implication is only partially true: for a managed account,
+    // ShowEnterpriseAccountConfirmation() must be called before calling
+    // ShowSyncConfirmation() but it does not have to be called before calling
+    // ShowSyncDisabledConfirmation(). Namely, Chrome can have clarity about
+    // sync being disabled even before fetching enterprise policies (e.g. sync
+    // engine gets a 'disabled-by-enterprise' error from the server).
     virtual void ShowEnterpriseAccountConfirmation(
         const std::string& email,
         SigninChoiceCallback callback) = 0;
 
     // Shows a sync confirmation screen offering to open the Sync settings.
     // |callback| must be called.
+    // NOTE: The account is managed iff ShowEnterpriseAccountConfirmation() has
+    // been called before.
     virtual void ShowSyncConfirmation(
         base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
             callback) = 0;
 
-    // Shows a confirmation screen offering to stay signed-in or to signout.
-    // |callback| must be called.
+    // Shows a screen informing that sync is disabled for the user.
+    // |is_managed_account| is true if the account (where sync is being set up)
+    // is managed (which may influence the UI or strings). |callback| must be
+    // called.
     // TODO(crbug.com/1126913): Use a new enum for this callback with only
     // values that make sense here (stay signed-in / signout).
     virtual void ShowSyncDisabledConfirmation(
+        bool is_managed_account,
         base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
             callback) = 0;
 
@@ -104,20 +117,20 @@ class DiceTurnSyncOnHelper
     // Informs the delegate that the flow is switching to a new profile.
     virtual void SwitchToProfile(Profile* new_profile) = 0;
 
-   protected:
-    // Shows the login error with `error_message` and `email` for `browser`.
+    // Shows the `error` for `browser`.
     // This helper is static because in some cases it needs to be called
     // after this object gets destroyed.
-    static void ShowLoginErrorForBrowser(const std::string& email,
-                                         const std::string& error_message,
+    static void ShowLoginErrorForBrowser(const SigninUIError& error,
                                          Browser* browser);
 
     // Shows the enterprise account confirmation dialog with `email` for
-    // `browser` and returns the result via `callback`. This helper is static
+    // `browser` and returns the result via `callback`. The variant of the
+    // dialog is based on `prompt_for_new_profile`. This helper is static
     // because in some cases it needs to be called after this object gets
     // destroyed.
     static void ShowEnterpriseAccountConfirmationForBrowser(
         const std::string& email,
+        bool prompt_for_new_profile,
         DiceTurnSyncOnHelper::SigninChoiceCallback callback,
         Browser* browser);
   };

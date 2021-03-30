@@ -661,3 +661,22 @@ async function isSinglePartitionFormat(appId) {
   const flag = dialog.attributes['single-partition-format'] || '';
   return !!flag;
 }
+
+/**
+ * Waits until the MediaApp/Backlight shows up.
+ */
+async function waitForMediaApp() {
+  // The MediaApp window should open for the image.
+  const caller = getCaller();
+  const mediaAppAppId = 'jhdjimmaggjajfjphpljagpgkidjilnj';
+  await repeatUntil(async () => {
+    const result = await sendTestMessage({
+      name: 'hasSwaStarted',
+      swaAppId: mediaAppAppId,
+    });
+
+    if (result !== 'true') {
+      return pending(caller, 'Waiting for MediaApp to open');
+    }
+  });
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test the File System Access API during prerendering</title>
+</head>
+<body>
+<script>
+
+const eventsSeen = [];
+
+let resolveFunc;
+let rejectFunc;
+
+document.addEventListener('prerenderingchange', () => {
+  eventsSeen.push(
+      `prerenderingchange (prerendering: ${document.prerendering})`);
+});
+
+const result = new Promise((resolve, reject) => {
+  resolveFunc = resolve;
+  rejectFunc = reject;
+});
+
+async function accessOriginPrivateFileSystem() {
+  try {
+    // The page should initially be in the prerendering state.
+    eventsSeen.push(
+        `accessOriginPrivateFileSystem (prerendering: ${document.prerendering})`);
+
+    const directoryHandle = await navigator.storage.getDirectory();
+
+    // `navigator.storage.getDirectory()` is expected to be deferred until the prerendered
+    // page is activated. So `document.prerendering` should be false here.
+    eventsSeen.push(
+        `getDirectory (prerendering: ${document.prerendering})`);
+
+    resolveFunc(true);
+  } catch (err) {
+    rejectFunc(err);
+  }
+}
+
+function runLoop() {
+  return new Promise(resolve => {
+    setTimeout(resolve, 0);
+  });
+}
+
+</script>
+</body>
+</html>

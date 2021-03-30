@@ -6,7 +6,6 @@
 
 #include "base/mac/foundation_util.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
 
@@ -23,10 +22,7 @@ TEST_F(FormInputAccessoryViewHandlerTest, FormInputAccessoryViewHandler) {
       [[FormInputAccessoryViewHandler alloc] init];
   ASSERT_TRUE(accessory_view_delegate);
   [accessory_view_delegate closeKeyboardWithoutButtonPress];
-  CRWJSInjectionReceiver* injection_receiver =
-      web_state()->GetJSInjectionReceiver();
   accessory_view_delegate.JSSuggestionManager =
-      base::mac::ObjCCastStrict<JsSuggestionManager>(
-          [injection_receiver instanceOfClass:[JsSuggestionManager class]]);
+      autofill::JsSuggestionManager::GetOrCreateForWebState(web_state());
   [accessory_view_delegate closeKeyboardWithoutButtonPress];
 }

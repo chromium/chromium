@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,7 +108,7 @@ class AnimationEventLogger : public AnimatingLayoutManager::Observer {
   ~AnimationEventLogger() override = default;
 
   explicit AnimationEventLogger(AnimatingLayoutManager* layout) {
-    scoped_observer_.Add(layout);
+    scoped_observation_.Observe(layout);
   }
 
   void OnLayoutIsAnimatingChanged(AnimatingLayoutManager* source,
@@ -120,7 +120,8 @@ class AnimationEventLogger : public AnimatingLayoutManager::Observer {
 
  private:
   std::vector<bool> events_;
-  ScopedObserver<AnimatingLayoutManager, Observer> scoped_observer_{this};
+  base::ScopedObservation<AnimatingLayoutManager, Observer> scoped_observation_{
+      this};
 };
 
 }  // anonymous namespace
@@ -2879,7 +2880,7 @@ class AnimationWatcher : public AnimatingLayoutManager::Observer {
  public:
   explicit AnimationWatcher(AnimatingLayoutManager* layout_manager)
       : layout_manager_(layout_manager) {
-    observer_.Add(layout_manager);
+    observation_.Observe(layout_manager);
   }
 
   void OnLayoutIsAnimatingChanged(AnimatingLayoutManager*,
@@ -2901,8 +2902,9 @@ class AnimationWatcher : public AnimatingLayoutManager::Observer {
 
  private:
   AnimatingLayoutManager* const layout_manager_;
-  ScopedObserver<AnimatingLayoutManager, AnimatingLayoutManager::Observer>
-      observer_{this};
+  base::ScopedObservation<AnimatingLayoutManager,
+                          AnimatingLayoutManager::Observer>
+      observation_{this};
   std::unique_ptr<base::RunLoop> run_loop_;
   bool waiting_ = false;
 };

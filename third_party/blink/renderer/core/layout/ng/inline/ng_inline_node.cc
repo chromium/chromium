@@ -243,7 +243,7 @@ class ReusingTextShaper final {
                                      unsigned end_offset) {
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
-    const Font& font = start_item.Style()->GetFont();
+    const Font& font = start_item.FontWithSVGScaling();
     if (data_.segments) {
       return data_.segments->ShapeText(&shaper_, &font, direction, start_offset,
                                        end_offset,
@@ -416,10 +416,22 @@ inline bool ShouldBreakShapingAfterBox(const NGInlineItem& item,
 }
 
 inline bool NeedsShaping(const NGInlineItem& item) {
-  return item.Type() == NGInlineItem::kText && !item.TextShapeResult() &&
-         // Text item with length==0 exists to maintain LayoutObject states such
-         // as ClearNeedsLayout, but not needed to shape.
-         item.Length();
+  if (item.Type() != NGInlineItem::kText)
+    return false;
+  // Text item with length==0 exists to maintain LayoutObject states such as
+  // ClearNeedsLayout, but not needed to shape.
+  if (!item.Length())
+    return false;
+  const ShapeResult* shape_result = item.TextShapeResult();
+  if (!shape_result)
+    return true;
+  // |StartOffset| is usually safe-to-break, but it is not when we shape across
+  // elements and split the |ShapeResult|. Such |ShapeResult| is not safe to
+  // reuse.
+  DCHECK_EQ(item.StartOffset(), shape_result->StartIndex());
+  if (!shape_result->IsStartSafeToBreak())
+    return true;
+  return false;
 }
 
 // Determine if reshape is needed for ::first-line style.
@@ -864,7 +876,8 @@ const NGInlineNodeData& NGInlineNode::EnsureData() const {
 }
 
 const NGOffsetMapping* NGInlineNode::ComputeOffsetMappingIfNeeded() const {
-  DCHECK(!GetLayoutBlockFlow()->GetDocument().NeedsLayoutTreeUpdate());
+  DCHECK(!GetLayoutBlockFlow()->GetDocument().NeedsLayoutTreeUpdate() ||
+         GetLayoutBlockFlow()->IsLayoutNGObjectForCanvasFormattedText());
 
   NGInlineNodeData* data = MutableData();
   if (!data->offset_mapping) {
@@ -879,7 +892,8 @@ const NGOffsetMapping* NGInlineNode::ComputeOffsetMappingIfNeeded() const {
 void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
                                         NGInlineNodeData* data) {
   DCHECK(!data->offset_mapping);
-  DCHECK(!layout_block_flow->GetDocument().NeedsLayoutTreeUpdate());
+  DCHECK(!layout_block_flow->GetDocument().NeedsLayoutTreeUpdate() ||
+         layout_block_flow->IsLayoutNGObjectForCanvasFormattedText());
 
   // TODO(xiaochengh): ComputeOffsetMappingIfNeeded() discards the
   // NGInlineItems and text content built by |builder|, because they are
@@ -900,7 +914,6 @@ void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
     data->text_content = builder.ToString();
   } else {
     DCHECK(layout_block_flow->IsLayoutNGMixin());
-    DCHECK_EQ(data->text_content, builder.ToString());
   }
 
   // TODO(xiaochengh): This doesn't compute offset mapping correctly when
@@ -1160,7 +1173,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     }
 
     const ComputedStyle& start_style = *start_item.Style();
-    const Font& font = start_style.GetFont();
+    const Font& font = start_item.FontWithSVGScaling();
     TextDirection direction = start_item.Direction();
     unsigned end_index = index + 1;
     unsigned end_offset = start_item.EndOffset();
@@ -1457,23 +1470,15 @@ String NGInlineNode::TextContentForStickyImagesQuirk(
 static LayoutUnit ComputeContentSize(
     NGInlineNode node,
     WritingMode container_writing_mode,
-    const MinMaxSizesInput& input,
+    const NGConstraintSpace& space,
+    const MinMaxSizesFloatInput& float_input,
     NGLineBreakerMode mode,
     NGLineBreaker::MaxSizeCache* max_size_cache,
     base::Optional<LayoutUnit>* max_size_out,
-    bool* depends_on_percentage_block_size_out) {
+    bool* depends_on_block_constraints_out) {
   const ComputedStyle& style = node.Style();
   LayoutUnit available_inline_size =
       mode == NGLineBreakerMode::kMaxContent ? LayoutUnit::Max() : LayoutUnit();
-
-  NGConstraintSpaceBuilder builder(
-      /* parent_writing_mode */ style.GetWritingMode(),
-      style.GetWritingDirection(),
-      /* is_new_fc */ false);
-  builder.SetAvailableSize({available_inline_size, kIndefiniteSize});
-  builder.SetPercentageResolutionSize({LayoutUnit(), LayoutUnit()});
-  builder.SetReplacedPercentageResolutionSize({LayoutUnit(), LayoutUnit()});
-  NGConstraintSpace space = builder.ToConstraintSpace();
 
   NGExclusionSpace empty_exclusion_space;
   NGPositionedFloatVector empty_leading_floats;
@@ -1484,7 +1489,7 @@ static LayoutUnit ComputeContentSize(
                              /* handled_leading_floats_index */ 0u,
                              /* break_token */ nullptr, &empty_exclusion_space);
   line_breaker.SetIntrinsicSizeOutputs(max_size_cache,
-                                       depends_on_percentage_block_size_out);
+                                       depends_on_block_constraints_out);
   const NGInlineItemsData& items_data = line_breaker.ItemsData();
 
   // Computes max-size for floats in inline formatting context.
@@ -1492,9 +1497,9 @@ static LayoutUnit ComputeContentSize(
     STACK_ALLOCATED();
 
    public:
-    explicit FloatsMaxSize(const MinMaxSizesInput& input)
-        : floats_inline_size_(input.float_left_inline_size +
-                              input.float_right_inline_size) {
+    explicit FloatsMaxSize(const MinMaxSizesFloatInput& float_input)
+        : floats_inline_size_(float_input.float_left_inline_size +
+                              float_input.float_right_inline_size) {
       DCHECK_GE(floats_inline_size_, 0);
     }
 
@@ -1660,14 +1665,14 @@ static LayoutUnit ComputeContentSize(
         ForceLineBreak(line_info);
     }
   };
-  FloatsMaxSize floats_max_size(input);
+  FloatsMaxSize floats_max_size(float_input);
   bool can_compute_max_size_from_min_size = true;
   MaxSizeFromMinSize max_size_from_min_size(items_data, *max_size_cache,
                                             &floats_max_size);
 
   do {
     NGLineInfo line_info;
-    line_breaker.NextLine(input.percentage_resolution_block_size, &line_info);
+    line_breaker.NextLine(&line_info);
     if (line_info.Results().IsEmpty())
       break;
 
@@ -1681,19 +1686,24 @@ static LayoutUnit ComputeContentSize(
       DCHECK(floating_object && floating_object->IsFloating());
 
       NGBlockNode float_node(To<LayoutBox>(floating_object));
-      const ComputedStyle& float_style = float_node.Style();
 
-      // Floats don't intrude into floats.
-      MinMaxSizesInput float_input(input.percentage_resolution_block_size,
-                                   MinMaxSizesType::kContent);
-      MinMaxSizesResult child_result =
-          ComputeMinAndMaxContentContribution(style, float_node, float_input);
+      NGMinMaxConstraintSpaceBuilder builder(space, style, float_node,
+                                             /* is_new_fc */ true);
+      builder.SetAvailableBlockSize(space.AvailableSize().block_size);
+      builder.SetPercentageResolutionBlockSize(
+          space.PercentageResolutionBlockSize());
+      builder.SetReplacedPercentageResolutionBlockSize(
+          space.ReplacedPercentageResolutionBlockSize());
+      const auto float_space = builder.ToConstraintSpace();
+
+      const MinMaxSizesResult child_result =
+          ComputeMinAndMaxContentContribution(style, float_node, float_space);
       LayoutUnit child_inline_margins =
           ComputeMinMaxMargins(style, float_node).InlineSum();
 
-      if (depends_on_percentage_block_size_out) {
-        *depends_on_percentage_block_size_out |=
-            child_result.depends_on_percentage_block_size;
+      if (depends_on_block_constraints_out) {
+        *depends_on_block_constraints_out |=
+            child_result.depends_on_block_constraints;
       }
 
       if (mode == NGLineBreakerMode::kMinContent) {
@@ -1701,7 +1711,7 @@ static LayoutUnit ComputeContentSize(
                           child_result.sizes.min_size + child_inline_margins);
       }
       floats_max_size.AddFloat(
-          float_style, style,
+          float_node.Style(), style,
           child_result.sizes.max_size + child_inline_margins);
     }
 
@@ -1726,8 +1736,8 @@ static LayoutUnit ComputeContentSize(
     // Check the max size matches to the value computed from 2 pass.
 #if DCHECK_IS_ON()
     LayoutUnit content_size = ComputeContentSize(
-        node, container_writing_mode, input, NGLineBreakerMode::kMaxContent,
-        max_size_cache, nullptr, nullptr);
+        node, container_writing_mode, space, float_input,
+        NGLineBreakerMode::kMaxContent, max_size_cache, nullptr, nullptr);
     bool values_might_be_saturated =
         (*max_size_out)->MightBeSaturated() || content_size.MightBeSaturated();
     if (!values_might_be_saturated) {
@@ -1742,8 +1752,8 @@ static LayoutUnit ComputeContentSize(
 
 MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
-    const MinMaxSizesInput& input,
-    const NGConstraintSpace* constraint_space) const {
+    const NGConstraintSpace& space,
+    const MinMaxSizesFloatInput& float_input) const {
   PrepareLayoutIfNeeded();
 
   // Compute the max of inline sizes of all line boxes with 0 available inline
@@ -1752,22 +1762,23 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
   NGLineBreaker::MaxSizeCache max_size_cache;
   MinMaxSizes sizes;
   base::Optional<LayoutUnit> max_size;
-  bool depends_on_percentage_block_size = false;
-  sizes.min_size = ComputeContentSize(
-      *this, container_writing_mode, input, NGLineBreakerMode::kMinContent,
-      &max_size_cache, &max_size, &depends_on_percentage_block_size);
+  bool depends_on_block_constraints = false;
+  sizes.min_size =
+      ComputeContentSize(*this, container_writing_mode, space, float_input,
+                         NGLineBreakerMode::kMinContent, &max_size_cache,
+                         &max_size, &depends_on_block_constraints);
   if (max_size) {
     sizes.max_size = *max_size;
   } else {
-    sizes.max_size = ComputeContentSize(*this, container_writing_mode, input,
-                                        NGLineBreakerMode::kMaxContent,
-                                        &max_size_cache, nullptr, nullptr);
+    sizes.max_size = ComputeContentSize(
+        *this, container_writing_mode, space, float_input,
+        NGLineBreakerMode::kMaxContent, &max_size_cache, nullptr, nullptr);
   }
 
   // Negative text-indent can make min > max. Ensure min is the minimum size.
   sizes.min_size = std::min(sizes.min_size, sizes.max_size);
 
-  return {sizes, depends_on_percentage_block_size};
+  return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
 bool NGInlineNode::UseFirstLineStyle() const {
@@ -1791,6 +1802,10 @@ bool NGInlineNode::ShouldReportLetterSpacingUseCounterForTesting(
     const LayoutBlockFlow* block_flow) {
   return ShouldReportLetterSpacingUseCounter(layout_object, first_line,
                                              block_flow);
+}
+
+bool NGInlineNode::NeedsShapingForTesting(const NGInlineItem& item) {
+  return NeedsShaping(item);
 }
 
 String NGInlineNode::ToString() const {

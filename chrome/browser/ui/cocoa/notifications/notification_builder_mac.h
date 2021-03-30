@@ -7,13 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/scoped_nsobject.h"
 #import "chrome/browser/ui/cocoa/notifications/notification_builder_base.h"
 
 @class NSUserNotification;
 
 // Provides a marshallable way for storing the information required to construct
-// a NSUSerNotification that is to be displayed on the system.
+// a NSUserNotification that is to be displayed on the system.
 //
 // A quick example:
 //     base::scoped_nsobject<NotificationBuilder> builder(
@@ -33,9 +32,6 @@
 //     base::scoped_nsobject<NotificationBuilder> finalBuilder(
 //         [[NotificationBuilder alloc] initWithData:notificationData]);
 @interface NotificationBuilder : NotificationBuilderBase
-
-// Sets the icon that is displayed in the notification if present
-- (void)setIcon:(NSImage*)icon;
 
 // Returns a notification ready to be displayed out of the provided
 // |notificationData|.

@@ -27,14 +27,14 @@ ScopedActiveInstall::~ScopedActiveInstall() {
 }
 
 void ScopedActiveInstall::CancelDeregister() {
-  tracker_observer_.RemoveAll();
+  tracker_observation_.Reset();
   tracker_ = nullptr;
 }
 
 void ScopedActiveInstall::Init() {
   DCHECK(!extension_id_.empty());
   DCHECK(tracker_);
-  tracker_observer_.Add(tracker_);
+  tracker_observation_.Observe(tracker_);
 }
 
 void ScopedActiveInstall::OnShutdown() {

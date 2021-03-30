@@ -16,7 +16,7 @@
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/login/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/chromeos/policy/server_backed_device_state.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
@@ -47,9 +47,8 @@ namespace {
 using EnrollmentCheckType =
     em::DeviceAutoEnrollmentRequest::EnrollmentCheckType;
 
-// Timeout for running private set membership protocol.
-constexpr base::TimeDelta kPrivateSetMembershipTimeout =
-    base::TimeDelta::FromSeconds(15);
+// Timeout for running PSM protocol.
+constexpr base::TimeDelta kPsmTimeout = base::TimeDelta::FromSeconds(15);
 
 // Returns the power of the next power-of-2 starting at |value|.
 int NextPowerOf2(int64_t value) {
@@ -177,22 +176,20 @@ class AutoEnrollmentClientImpl::StateDownloadMessageProcessor {
       const enterprise_management::DeviceManagementResponse& response) = 0;
 };
 
-class PrivateSetMembershipHelper {
+class PsmHelper {
  public:
   // Callback will be triggered after completing the protocol, in case of a
   // successful determination or stopping due to an error. Also, the bool result
   // is ignored.
   using CompletionCallback = base::OnceCallback<bool()>;
 
-  // The PrivateSetMembershipHelper doesn't take ownership of
-  // |device_management_service| and |local_state|. Also, both must not be
-  // nullptr. The |device_management_service| and |local_state| must outlive
-  // PrivateSetMembershipHelper.
-  PrivateSetMembershipHelper(
-      DeviceManagementService* device_management_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* local_state,
-      psm_rlwe::RlwePlaintextId psm_rlwe_id)
+  // The PsmHelper doesn't take ownership of |device_management_service| and
+  // |local_state|. Also, both must not be nullptr. The
+  // |device_management_service| and |local_state| must outlive PsmHelper.
+  PsmHelper(DeviceManagementService* device_management_service,
+            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+            PrefService* local_state,
+            psm_rlwe::RlwePlaintextId psm_rlwe_id)
       : random_device_id_(base::GenerateGUID()),
         url_loader_factory_(url_loader_factory),
         device_management_service_(device_management_service),
@@ -206,77 +203,69 @@ class PrivateSetMembershipHelper {
     auto status_or_client = psm_rlwe::PrivateMembershipRlweClient::Create(
         psm_rlwe::RlweUseCase::CROS_DEVICE_STATE, psm_ids);
     if (!status_or_client.ok()) {
-      // If the private set membership RLWE client hasn't been created
-      // successfully, then report the error and don't run the protocol.
+      // If the PSM RLWE client hasn't been created successfully, then report
+      // the error and don't run the protocol.
       LOG(ERROR)
           << "PSM error: unexpected internal logic error during creating "
              "PSM RLWE client";
-      has_private_set_membership_error_ = true;
+      has_psm_error_ = true;
       return;
     }
 
-    private_set_membership_rlwe_client_ = std::move(status_or_client).value();
+    psm_rlwe_client_ = std::move(status_or_client).value();
   }
 
   // Disallow copy constructor and assignment operator.
-  PrivateSetMembershipHelper(const PrivateSetMembershipHelper&) = delete;
-  PrivateSetMembershipHelper& operator=(const PrivateSetMembershipHelper&) =
-      delete;
+  PsmHelper(const PsmHelper&) = delete;
+  PsmHelper& operator=(const PsmHelper&) = delete;
 
-  // Cancels the ongoing private set membership operation, if any (without
-  // calling the operation's callbacks).
-  ~PrivateSetMembershipHelper() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
+  // Cancels the ongoing PSM operation, if any (without calling the operation's
+  // callbacks).
+  ~PsmHelper() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
-  // Determines the private set membership for the |psm_rlwe_id_|. Then, will
-  // call |callback| upon completing the protocol, whether it finished with a
-  // successful determination or stopped in case of errors. Also, the |callback|
-  // has to be non-null. In case a request is already in progress, the callback
-  // is called immediately.
+  // Determines the PSM for the |psm_rlwe_id_|. Then, will call |callback| upon
+  // completing the protocol, whether it finished with a successful
+  // determination or stopped in case of errors. Also, the |callback| has to be
+  // non-null. In case a request is already in progress, the callback is called
+  // immediately.
   void CheckMembership(CompletionCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(callback);
 
     // Ignore new calls and execute their completion |callback|, if any error
-    // occurred while running private set membership previously, or in case the
+    // occurred while running PSM previously, or in case the
     // requests from previous call didn't finish yet.
-    if (has_private_set_membership_error_ || psm_request_job_) {
+    if (has_psm_error_ || psm_request_job_) {
       std::move(callback).Run();
       return;
     }
 
     // Report the psm attempt and start the timer to measure successful private
     // set membership requests.
-    base::UmaHistogramEnumeration(kUMAPrivateSetMembershipRequestStatus,
-                                  PrivateSetMembershipStatus::kAttempt);
+    base::UmaHistogramEnumeration(kUMAPsmRequestStatus, PsmStatus::kAttempt);
     time_start_ = base::TimeTicks::Now();
 
     on_completion_callback_ = std::move(callback);
 
     // Start the protocol and its timeout timer.
-    private_set_membership_timeout_.Start(
-        FROM_HERE, kPrivateSetMembershipTimeout,
-        base::BindOnce(&PrivateSetMembershipHelper::OnTimeout,
-                       base::Unretained(this)));
-    SendPrivateSetMembershipRlweOprfRequest();
+    psm_timeout_.Start(
+        FROM_HERE, kPsmTimeout,
+        base::BindOnce(&PsmHelper::OnTimeout, base::Unretained(this)));
+    SendPsmRlweOprfRequest();
   }
 
-  // Sets the |private_set_membership_rlwe_client_| and |psm_rlwe_id_| for
-  // testing.
+  // Sets the |psm_rlwe_client_| and |psm_rlwe_id_| for testing.
   void SetRlweClientAndIdForTesting(
-      std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>
-          private_set_membership_rlwe_client,
+      std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client,
       psm_rlwe::RlwePlaintextId psm_rlwe_id) {
-    private_set_membership_rlwe_client_ =
-        std::move(private_set_membership_rlwe_client);
+    psm_rlwe_client_ = std::move(psm_rlwe_client);
     psm_rlwe_id_ = std::move(psm_rlwe_id);
   }
 
-  // Tries to load the result of a previous execution of the private set
-  // memberhsip protocol from local state. Returns decision value if it has been
-  // made and is valid, otherwise nullopt.
-  base::Optional<bool> GetPrivateSetMembershipCachedDecision() const {
+  // Tries to load the result of a previous execution of the PSM protocol from
+  // local state. Returns decision value if it has been made and is valid,
+  // otherwise nullopt.
+  base::Optional<bool> GetPsmCachedDecision() const {
     const PrefService::Preference* has_psm_server_state_pref =
         local_state_->FindPreference(prefs::kShouldRetrieveDeviceState);
 
@@ -289,14 +278,13 @@ class PrivateSetMembershipHelper {
     return has_psm_server_state_pref->GetValue()->GetBool();
   }
 
-  // Indicate whether an error occurred while executing the private set
-  // membership protocol.
-  bool HasPrivateSetMembershipError() const {
+  // Indicate whether an error occurred while executing the PSM protocol.
+  bool HasPsmError() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return has_private_set_membership_error_;
+    return has_psm_error_;
   }
 
-  // Returns true if the private set membership protocol is still running,
+  // Returns true if the PSM protocol is still running,
   // otherwise false.
   bool IsCheckMembershipInProgress() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -305,33 +293,30 @@ class PrivateSetMembershipHelper {
 
  private:
   void OnTimeout() {
-    base::UmaHistogramEnumeration(kUMAPrivateSetMembershipRequestStatus,
-                                  PrivateSetMembershipStatus::kTimeout);
+    base::UmaHistogramEnumeration(kUMAPsmRequestStatus, PsmStatus::kTimeout);
     StoreErrorAndStop();
   }
 
   void StoreErrorAndStop() {
     // Record the error. Note that a timeout is also recorded as error.
-    base::UmaHistogramEnumeration(kUMAPrivateSetMembershipRequestStatus,
-                                  PrivateSetMembershipStatus::kError);
+    base::UmaHistogramEnumeration(kUMAPsmRequestStatus, PsmStatus::kError);
 
-    // Stop the private set membership timer.
-    private_set_membership_timeout_.Stop();
+    // Stop the PSM timer.
+    psm_timeout_.Stop();
 
     // Stop the current |psm_request_job_|.
     psm_request_job_.reset();
 
-    has_private_set_membership_error_ = true;
+    has_psm_error_ = true;
     std::move(on_completion_callback_).Run();
   }
 
-  // Constructs and sends the private set membership RLWE OPRF request.
-  void SendPrivateSetMembershipRlweOprfRequest() {
+  // Constructs and sends the PSM RLWE OPRF request.
+  void SendPsmRlweOprfRequest() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // Create RLWE OPRF request.
-    const auto status_or_oprf_request =
-        private_set_membership_rlwe_client_->CreateOprfRequest();
+    const auto status_or_oprf_request = psm_rlwe_client_->CreateOprfRequest();
     if (!status_or_oprf_request.ok()) {
       // If the RLWE OPRF request hasn't been created successfully, then report
       // the error and stop the protocol.
@@ -349,8 +334,7 @@ class PrivateSetMembershipHelper {
     // destroyed, so it's safe to use base::Unretained.
     std::unique_ptr<DMServerJobConfiguration> config =
         CreatePsmRequestJobConfiguration(base::BindOnce(
-            &PrivateSetMembershipHelper::OnRlweOprfRequestCompletion,
-            base::Unretained(this)));
+            &PsmHelper::OnRlweOprfRequestCompletion, base::Unretained(this)));
 
     em::DeviceManagementRequest* request = config->request();
     em::PrivateSetMembershipRlweRequest* psm_rlwe_request =
@@ -383,8 +367,7 @@ class PrivateSetMembershipHelper {
         }
 
         LOG(WARNING) << "PSM RLWE OPRF request completed successfully";
-        SendPrivateSetMembershipRlweQueryRequest(
-            response.private_set_membership_response());
+        SendPsmRlweQueryRequest(response.private_set_membership_response());
         return;
       }
       case DM_STATUS_REQUEST_FAILED: {
@@ -401,15 +384,15 @@ class PrivateSetMembershipHelper {
     }
   }
 
-  // Constructs and sends the private set membership RLWE Query request.
-  void SendPrivateSetMembershipRlweQueryRequest(
-      const em::PrivateSetMembershipResponse& private_set_membership_response) {
-    // Extract the oprf_response from |private_set_membership_response|.
+  // Constructs and sends the PSM RLWE Query request.
+  void SendPsmRlweQueryRequest(
+      const em::PrivateSetMembershipResponse& psm_response) {
+    // Extract the oprf_response from |psm_response|.
     const psm_rlwe::PrivateMembershipRlweOprfResponse oprf_response =
-        private_set_membership_response.rlwe_response().oprf_response();
+        psm_response.rlwe_response().oprf_response();
 
     const auto status_or_query_request =
-        private_set_membership_rlwe_client_->CreateQueryRequest(oprf_response);
+        psm_rlwe_client_->CreateQueryRequest(oprf_response);
 
     // Create RLWE query request.
     if (!status_or_query_request.ok()) {
@@ -426,9 +409,9 @@ class PrivateSetMembershipHelper {
 
     // Prepare the RLWE query request job.
     std::unique_ptr<DMServerJobConfiguration> config =
-        CreatePsmRequestJobConfiguration(base::BindOnce(
-            &PrivateSetMembershipHelper::OnRlweQueryRequestCompletion,
-            base::Unretained(this), oprf_response));
+        CreatePsmRequestJobConfiguration(
+            base::BindOnce(&PsmHelper::OnRlweQueryRequestCompletion,
+                           base::Unretained(this), oprf_response));
 
     em::DeviceManagementRequest* request = config->request();
     em::PrivateSetMembershipRlweRequest* psm_rlwe_request =
@@ -468,8 +451,7 @@ class PrivateSetMembershipHelper {
                 .query_response();
 
         auto status_or_responses =
-            private_set_membership_rlwe_client_->ProcessResponse(
-                query_response);
+            psm_rlwe_client_->ProcessResponse(query_response);
 
         if (!status_or_responses.ok()) {
           // If the RLWE query response hasn't processed successfully, then
@@ -483,10 +465,9 @@ class PrivateSetMembershipHelper {
 
         LOG(WARNING) << "PSM query request completed successfully";
 
-        base::UmaHistogramEnumeration(
-            kUMAPrivateSetMembershipRequestStatus,
-            PrivateSetMembershipStatus::kSuccessfulDetermination);
-        RecordPrivateSetMembershipSuccessTimeHistogram();
+        base::UmaHistogramEnumeration(kUMAPsmRequestStatus,
+                                      PsmStatus::kSuccessfulDetermination);
+        RecordPsmSuccessTimeHistogram();
 
         // The RLWE query response has been processed successfully. Extract
         // the membership response, and report the result.
@@ -503,8 +484,8 @@ class PrivateSetMembershipHelper {
         // CheckMembership.
         psm_request_job_.reset();
 
-        // Stop the private set membership timer.
-        private_set_membership_timeout_.Stop();
+        // Stop the PSM timer.
+        psm_timeout_.Stop();
 
         // Cache the decision in local_state, so that it is reused in case
         // the device reboots before completing OOBE.
@@ -544,9 +525,8 @@ class PrivateSetMembershipHelper {
         std::move(callback));
   }
 
-  // Record UMA histogram for timing of successful private set membership
-  // request.
-  void RecordPrivateSetMembershipSuccessTimeHistogram() {
+  // Record UMA histogram for timing of successful PSM request.
+  void RecordPsmSuccessTimeHistogram() {
     // These values determine bucketing of the histogram, they should not be
     // changed.
     static const base::TimeDelta kMin = base::TimeDelta::FromMilliseconds(1);
@@ -556,49 +536,46 @@ class PrivateSetMembershipHelper {
     base::TimeTicks now = base::TimeTicks::Now();
     if (!time_start_.is_null()) {
       base::TimeDelta delta = now - time_start_;
-      base::UmaHistogramCustomTimes(kUMAPrivateSetMembershipSuccessTime, delta,
-                                    kMin, kMax, kBuckets);
+      base::UmaHistogramCustomTimes(kUMAPsmSuccessTime, delta, kMin, kMax,
+                                    kBuckets);
     }
   }
 
-  // Private Set Membership RLWE client, used for preparing PSM requests and
-  // parsing PSM responses.
-  std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>
-      private_set_membership_rlwe_client_;
+  // PSM RLWE client, used for preparing PSM requests and parsing PSM responses.
+  std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client_;
 
-  // Randomly generated device id for the private set membership requests.
+  // Randomly generated device id for the PSM requests.
   std::string random_device_id_;
 
-  // The loader factory to use to perform private set membership requests.
+  // The loader factory to use to perform PSM requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Unowned by PrivateSetMembershipHelper. Its used to communicate with the
-  // device management service.
+  // Unowned by PsmHelper. Its used to communicate with the device management
+  // service.
   DeviceManagementService* device_management_service_;
 
-  // Its being used for both private set membership requests e.g. RLWE OPRF
-  // request and RLWE query request.
+  // Its being used for both PSM requests e.g. RLWE OPRF request and RLWE query
+  // request.
   std::unique_ptr<DeviceManagementService::Job> psm_request_job_;
 
   // Callback will be triggered upon completing of the protocol.
   CompletionCallback on_completion_callback_;
 
-  // PrefService where the private set membership protocol result is cached.
+  // PrefService where the PSM protocol result is cached.
   PrefService* const local_state_;
 
-  // Private Set Membership identifier, which is going to be used while
-  // preparing the private set membership requests.
+  // PSM identifier, which is going to be used while preparing the PSM requests.
   psm_rlwe::RlwePlaintextId psm_rlwe_id_;
 
   // Indicates whether there was previously any error occurred while running
-  // private set membership protocol.
-  bool has_private_set_membership_error_ = false;
+  // PSM protocol.
+  bool has_psm_error_ = false;
 
-  // A timer that puts a hard limit on the maximum time to wait for private set
-  // membership protocol.
-  base::OneShotTimer private_set_membership_timeout_;
+  // A timer that puts a hard limit on the maximum time to wait for PSM
+  // protocol.
+  base::OneShotTimer psm_timeout_;
 
-  // The time when the private set membership request started.
+  // The time when the PSM request started.
   base::TimeTicks time_start_;
 
   // A sequence checker to prevent the race condition of having the possibility
@@ -857,8 +834,8 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
       power_initial, power_limit,
       base::make_optional(power_outdated_server_detect),
       kUMAHashDanceSuffixInitialEnrollment,
-      chromeos::AutoEnrollmentController::IsPrivateSetMembershipEnabled()
-          ? std::make_unique<PrivateSetMembershipHelper>(
+      chromeos::AutoEnrollmentController::IsPsmEnabled()
+          ? std::make_unique<PsmHelper>(
                 device_management_service, url_loader_factory, local_state,
                 ConstructDeviceRlweId(device_serial_number, device_brand_code))
           : nullptr));
@@ -938,7 +915,7 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
     int power_limit,
     base::Optional<int> power_outdated_server_detect,
     std::string uma_suffix,
-    std::unique_ptr<PrivateSetMembershipHelper> private_set_membership_helper)
+    std::unique_ptr<PsmHelper> private_set_membership_helper)
     : progress_callback_(callback),
       state_(AUTO_ENROLLMENT_STATE_IDLE),
       has_server_state_(false),
@@ -954,7 +931,7 @@ AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
       device_identifier_provider_(std::move(device_identifier_provider)),
       state_download_message_processor_(
           std::move(state_download_message_processor)),
-      private_set_membership_helper_(std::move(private_set_membership_helper)),
+      psm_helper_(std::move(private_set_membership_helper)),
       uma_suffix_(uma_suffix),
       recorded_psm_hash_dance_comparison_(false) {
   DCHECK_LE(current_power_, power_limit_);
@@ -982,7 +959,7 @@ bool AutoEnrollmentClientImpl::GetCachedDecision() {
 }
 
 bool AutoEnrollmentClientImpl::RetryStep() {
-  if (PrivateSetMembershipRetryStep())
+  if (PsmRetryStep())
     return true;
 
   // If there is a pending request job, let it finish.
@@ -1008,58 +985,54 @@ bool AutoEnrollmentClientImpl::RetryStep() {
   return false;
 }
 
-bool AutoEnrollmentClientImpl::PrivateSetMembershipRetryStep() {
+bool AutoEnrollmentClientImpl::PsmRetryStep() {
   // Don't retry if the protocol is disabled, or an error occurred while
   // executing the protocol.
-  if (!private_set_membership_helper_ ||
-      private_set_membership_helper_->HasPrivateSetMembershipError()) {
+  if (!psm_helper_ || psm_helper_->HasPsmError()) {
     return false;
   }
 
-  // If the private set membership protocol is in progress, signal to the caller
+  // If the PSM protocol is in progress, signal to the caller
   // that nothing else needs to be done.
-  if (private_set_membership_helper_->IsCheckMembershipInProgress())
+  if (psm_helper_->IsCheckMembershipInProgress())
     return true;
 
   const base::Optional<bool> private_set_membership_server_state =
-      private_set_membership_helper_->GetPrivateSetMembershipCachedDecision();
+      psm_helper_->GetPsmCachedDecision();
 
   if (private_set_membership_server_state.has_value()) {
     LOG(WARNING) << "PSM Cached: psm_server_state="
                  << private_set_membership_server_state.value();
     return false;
   } else {
-    private_set_membership_helper_->CheckMembership(base::BindOnce(
+    psm_helper_->CheckMembership(base::BindOnce(
         &AutoEnrollmentClientImpl::RetryStep, base::Unretained(this)));
     return true;
   }
 }
 
-void AutoEnrollmentClientImpl::SetPrivateSetMembershipRlweClientForTesting(
-    std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>
-        private_set_membership_rlwe_client,
+void AutoEnrollmentClientImpl::SetPsmRlweClientForTesting(
+    std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient> psm_rlwe_client,
     const psm_rlwe::RlwePlaintextId& psm_rlwe_id) {
-  if (!private_set_membership_helper_)
+  if (!psm_helper_)
     return;
 
-  DCHECK(private_set_membership_rlwe_client);
-  private_set_membership_helper_->SetRlweClientAndIdForTesting(
-      std::move(private_set_membership_rlwe_client), std::move(psm_rlwe_id));
+  DCHECK(psm_rlwe_client);
+  psm_helper_->SetRlweClientAndIdForTesting(std::move(psm_rlwe_client),
+                                            std::move(psm_rlwe_id));
 }
 
 void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) {
   state_ = state;
-  // If hash dance finished with an error or result, record comparison with
-  // private set membership. Note that hash dance might be retried but for
-  // recording we only care about the first attempt.
-  // If |private_set_membership_helper_| is non-null, a private set membership
-  // request has been made at this point because it is executed before hash
-  // dance.
+  // If hash dance finished with an error or result, record comparison with PSM.
+  // Note that hash dance might be retried but for recording we only care about
+  // the first attempt. If |psm_helper_| is non-null, a PSM request has been
+  // made at this point because it is executed before hash dance.
   const bool has_hash_dance_result = (state != AUTO_ENROLLMENT_STATE_IDLE &&
                                       state != AUTO_ENROLLMENT_STATE_PENDING);
-  if (private_set_membership_helper_ && !recorded_psm_hash_dance_comparison_ &&
+  if (psm_helper_ && !recorded_psm_hash_dance_comparison_ &&
       has_hash_dance_result) {
-    RecordPrivateSetMembershipHashDanceComparison();
+    RecordPsmHashDanceComparison();
   }
   if (progress_callback_.is_null()) {
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
@@ -1369,18 +1342,16 @@ void AutoEnrollmentClientImpl::RecordHashDanceSuccessTimeHistogram() {
   }
 }
 
-void AutoEnrollmentClientImpl::RecordPrivateSetMembershipHashDanceComparison() {
-  // Private set membership timeout is enforced in the helper class. This method
-  // should only be called after private set membership request finished or ran
-  // into timeout.
-  DCHECK(private_set_membership_helper_);
-  DCHECK(!private_set_membership_helper_->IsCheckMembershipInProgress());
+void AutoEnrollmentClientImpl::RecordPsmHashDanceComparison() {
+  // PSM timeout is enforced in the helper class. This method should only be
+  // called after PSM request finished or ran into timeout.
+  DCHECK(psm_helper_);
+  DCHECK(!psm_helper_->IsCheckMembershipInProgress());
 
   // Make sure to only record once per instance.
   recorded_psm_hash_dance_comparison_ = true;
 
-  bool private_set_membership_error =
-      private_set_membership_helper_->HasPrivateSetMembershipError();
+  bool psm_error = psm_helper_->HasPsmError();
 
   bool hash_dance_decision = has_server_state_;
   bool hash_dance_error = false;
@@ -1402,31 +1373,38 @@ void AutoEnrollmentClientImpl::RecordPrivateSetMembershipHashDanceComparison() {
       NOTREACHED();
   }
 
-  auto comparison = PrivateSetMembershipHashDanceComparison::kEqualResults;
-  if (!hash_dance_error && !private_set_membership_error) {
-    base::Optional<bool> private_set_membership_decision =
-        private_set_membership_helper_->GetPrivateSetMembershipCachedDecision();
+  auto comparison = PsmHashDanceComparison::kEqualResults;
+  if (!hash_dance_error && !psm_error) {
+    base::Optional<bool> psm_decision = psm_helper_->GetPsmCachedDecision();
 
     // There was no error and this function is only invoked after PSM has been
     // performed, so there must be a decision.
-    DCHECK(private_set_membership_decision.has_value());
+    DCHECK(psm_decision.has_value());
 
-    comparison =
-        (hash_dance_decision == private_set_membership_decision.value())
-            ? PrivateSetMembershipHashDanceComparison::kEqualResults
-            : PrivateSetMembershipHashDanceComparison::kDifferentResults;
-  } else if (hash_dance_error && !private_set_membership_error) {
-    comparison =
-        PrivateSetMembershipHashDanceComparison::kPSMSuccessHashDanceError;
-  } else if (!hash_dance_error && private_set_membership_error) {
-    comparison =
-        PrivateSetMembershipHashDanceComparison::kPSMErrorHashDanceSuccess;
+    comparison = (hash_dance_decision == psm_decision.value())
+                     ? PsmHashDanceComparison::kEqualResults
+                     : PsmHashDanceComparison::kDifferentResults;
+
+    if (hash_dance_decision != psm_decision.value()) {
+      // Reports the different values of the protocols, after both have finished
+      // executing successfully.
+      auto different_protocols_results_comparison =
+          (psm_decision.value()
+               ? PsmHashDanceDifferentResultsComparison::kPsmTrueHashDanceFalse
+               : PsmHashDanceDifferentResultsComparison::
+                     kHashDanceTruePsmFalse);
+      base::UmaHistogramEnumeration(kUMAPsmHashDanceDifferentResultsComparison,
+                                    different_protocols_results_comparison);
+    }
+  } else if (hash_dance_error && !psm_error) {
+    comparison = PsmHashDanceComparison::kPSMSuccessHashDanceError;
+  } else if (!hash_dance_error && psm_error) {
+    comparison = PsmHashDanceComparison::kPSMErrorHashDanceSuccess;
   } else {
-    comparison = PrivateSetMembershipHashDanceComparison::kBothError;
+    comparison = PsmHashDanceComparison::kBothError;
   }
 
-  base::UmaHistogramEnumeration(kUMAPrivateSetMembershipHashDanceComparison,
-                                comparison);
+  base::UmaHistogramEnumeration(kUMAPsmHashDanceComparison, comparison);
 }
 
 }  // namespace policy

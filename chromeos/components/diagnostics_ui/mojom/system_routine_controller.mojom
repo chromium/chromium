@@ -12,6 +12,7 @@ enum RoutineType {
   kCpuFloatingPoint,
   kCpuPrime,
   kMemory,
+  kLanConnectivity,
 };
 
 enum StandardRoutineResult {

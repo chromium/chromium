@@ -7,6 +7,7 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/liburlpattern/parse.h"
 
 namespace liburlpattern {
 struct Options;
@@ -39,11 +40,25 @@ class URLPattern : public ScriptWrappable {
              base::PassKey<URLPattern> key);
 
   bool test(const USVStringOrURLPatternInit& input,
+            const String& base_url,
             ExceptionState& exception_state) const;
+  bool test(const USVStringOrURLPatternInit& input,
+            ExceptionState& exception_state) const;
+
+  URLPatternResult* exec(const USVStringOrURLPatternInit& input,
+                         const String& base_url,
+                         ExceptionState& exception_state) const;
   URLPatternResult* exec(const USVStringOrURLPatternInit& input,
                          ExceptionState& exception_state) const;
 
-  // TODO: define a stringifier
+  String protocol() const;
+  String username() const;
+  String password() const;
+  String hostname() const;
+  String port() const;
+  String pathname() const;
+  String search() const;
+  String hash() const;
 
   void Trace(Visitor* visitor) const override;
 
@@ -53,17 +68,21 @@ class URLPattern : public ScriptWrappable {
   // then nullptr may be returned without throwing an exception.  In this case
   // the Component is not constructed and the nullptr value should be treated as
   // matching any input value for the component.  The |component| string is used
-  // for exception messages.  The |options| control how the pattern is compiled.
-  static Component* CompilePattern(const String& pattern,
-                                   StringView component,
-                                   const liburlpattern::Options& options,
-                                   ExceptionState& exception_state);
+  // for exception messages.  The |encode_callback| will be used to validate and
+  // encode plain text within the pattern during compilation.  |options| control
+  // how the pattern is compiled.
+  static Component* CompilePattern(
+      const String& pattern,
+      StringView component,
+      liburlpattern::EncodeCallback encode_callback,
+      const liburlpattern::Options& options,
+      ExceptionState& exception_state);
 
   // A utility function to determine if a given |input| matches the pattern
   // or not.  Returns |true| if there is a match and |false| otherwise.  If
-  // |result| is not nullptr then the URLPatternResult contents will be filled
-  // in as expected by the exec() method.
+  // |result| is not nullptr then the URLPatternResult contents will be filled.
   bool Match(const USVStringOrURLPatternInit& input,
+             const String& base_url,
              URLPatternResult* result,
              ExceptionState& exception_state) const;
 
@@ -74,6 +93,8 @@ class URLPattern : public ScriptWrappable {
       Component* component,
       const String& input,
       const Vector<String>& group_list);
+
+  static bool ShouldTreatAsStandardURL(Component* protocol);
 
   // The compiled patterns for each URL component.  If a Component member is
   // nullptr then it should be treated as a wildcard matching any input.

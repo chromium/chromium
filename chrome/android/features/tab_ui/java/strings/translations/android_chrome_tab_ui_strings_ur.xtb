@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="125153950246128346">دوسرا ٹیب دیکھنے کیلئے تھپتھپائیں</translation>
+<translation id="1302104331113804646">قیمت کی ٹریکنگ کی ترتیبات</translation>
+<translation id="1378979118429748177">قیمتوں میں کمی ہونے پر اطلاع حاصل کریں</translation>
 <translation id="1657719826150349398">ٹیب کو نیچے منتقل کریں</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="2277224997687551299">گروپ کے نام میں ترمیم کریں</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{گروپ سے <ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو ہٹائیں۔}other{گروپ سے <ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو ہٹائیں۔}}</translation>
+<translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
 <translation id="2569352796411618312">تجویز: آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="257674075312929031">گروپ</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">گروپ کا اشتراک کریں</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ پھیلائیں۔</translation>
 <translation id="2977480621796371840">گروپ سے ہٹائیں</translation>
+<translation id="3291470810748040983">کھلے ہوئے ٹیب میں قیمت کم ہونے پر آپ کو الرٹ کیا جائے گا</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{<ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
+<translation id="3882834874697329510">کھلے ہوئے ٹیب میں کم قیمت ہونے پر الرٹ حاصل کرنے کے لئے، ترتیبات میں موجود اطلاعات آن کریں۔</translation>
+<translation id="3940195383040445971">ٹیبز پر قیمتیں ٹریک کریں</translation>
+<translation id="3996880007329611795">اطلاع حاصل کریں</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="4212246570487010370">براؤز کرنا جاری رکھیں</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
 <translation id="4648718555153979859">آپ کے ٹیبز کو ایک ساتھ یہاں گروپ بند کیا گیا ہے</translation>
-<translation id="4922064041913095674">دیکھیں کہ آپ کے کھلے ٹیبز میں کون سے آئٹم کی قیمت بہتر ہے</translation>
 <translation id="492284538114688557">قیمت میں کمی ہوئی</translation>
 <translation id="5007392906805964215">جائزہ لیں</translation>
 <translation id="5073204694187207510">پوری اسکرین گرڈ کو چھپائیں</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">بعد میں دکھائیں</translation>
 <translation id="5558362125926932819">ٹیب گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ بند کریں</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ٹیبز کا گروپ بن گیا</translation>
+<translation id="575494663145460764">قیمتوں میں کمی کے لیے الرٹس حاصل کریں؟</translation>
 <translation id="58326064309361797">ان کی گروپ بندی کرنے کے لیے ٹیبز کو گھسیٹیں</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ بند کریں</translation>
 <translation id="6040143037577758943">بند کریں</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">متعدد انتخاب کی وضع کو چھپائیں</translation>
 <translation id="7151209024774799310">ٹیبز کو گروپ سے ہٹائیں</translation>
 <translation id="7204204600596740190">متعدد انتخاب کی وضع</translation>
+<translation id="7352298686197644113">دیکھیں کہ آپ کے کھلے ٹیبز میں کون سے آئٹم کی قیمت کم ہے</translation>
 <translation id="753732157349120914">ٹیب سوئچر</translation>
 <translation id="7559245342362162951">پوری اسکرین گرڈ میں گروپ کے ٹیبز دکھائیں</translation>
 <translation id="7792771145871471484">تجاویز کا جائزہ لیں۔</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">ٹیب اسٹرپ کو دوبارہ نہ دکھائیں؟</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب بند کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز بند کریں}}</translation>
 <translation id="8557923272772633250">ٹیب گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ پھیلائیں۔</translation>
+<translation id="860282621117673749">قیمت میں کمی کے الرٹس</translation>
+<translation id="8714939927607906138">کم قیمت</translation>
 <translation id="8749939518995770034">بند ٹیب اسٹرپ</translation>
+<translation id="8820741577754260431">اپنے ٹیبز پر قیمتوں میں کمی دیکھیں</translation>
 <translation id="9150694013019234766">اسکرین کے نچلے حصے کے قریب ٹیبز کے اپنے گروپ میں ٹیبز کے درمیان سوئچ کریں</translation>
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>
 <translation id="959682366969460160">منظم رہیں</translation>

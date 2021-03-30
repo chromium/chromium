@@ -6,24 +6,24 @@
 
 #include <utility>
 
-#include "chrome/browser/chromeos/login/users/avatar/user_image_manager.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {
 
 namespace {
 
-chromeos::UserImageManager* GetUserImageManager(const std::string& user_id) {
-  return chromeos::ChromeUserManager::Get()->GetUserImageManager(
+ash::UserImageManager* GetUserImageManager(const std::string& user_id) {
+  return ash::ChromeUserManager::Get()->GetUserImageManager(
       CloudExternalDataPolicyHandler::GetAccountId(user_id));
 }
 
 }  // namespace
 
 UserAvatarImageExternalDataHandler::UserAvatarImageExternalDataHandler(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     DeviceLocalAccountPolicyService* policy_service)
     : user_avatar_image_observer_(cros_settings,
                                   policy_service,
@@ -57,7 +57,7 @@ void UserAvatarImageExternalDataHandler::OnExternalDataFetched(
 
 void UserAvatarImageExternalDataHandler::RemoveForAccountId(
     const AccountId& account_id) {
-  chromeos::ChromeUserManager::Get()
+  ash::ChromeUserManager::Get()
       ->GetUserImageManager(account_id)
       ->DeleteUserImage();
 }

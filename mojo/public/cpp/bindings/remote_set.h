@@ -93,6 +93,7 @@ class RemoteSetImpl {
   // Adds a new remote to this set and returns a unique ID that can be used to
   // identify the remote later.
   RemoteSetElementId Add(RemoteType<Interface> remote) {
+    DCHECK(remote.is_bound());
     auto id = GenerateNextElementId();
     remote.set_disconnect_handler(base::BindOnce(&RemoteSetImpl::OnDisconnect,
                                                  base::Unretained(this), id));
@@ -107,6 +108,7 @@ class RemoteSetImpl {
   RemoteSetElementId Add(
       PendingRemoteType<Interface> remote,
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+    DCHECK(remote.is_valid());
     return Add(
         RemoteType<Interface>(std::move(remote), std::move(task_runner)));
   }
@@ -116,6 +118,15 @@ class RemoteSetImpl {
 
   // Indicates whether a remote with the given ID is present in the set.
   bool Contains(RemoteSetElementId id) { return base::Contains(storage_, id); }
+
+  // Returns an `Interface*` for the given ID, that can be used to issue
+  // interface calls.
+  Interface* Get(RemoteSetElementId id) {
+    auto* it = storage_.find(id);
+    if (it == storage_.end())
+      return nullptr;
+    return it->second.get();
+  }
 
   // Sets a callback to invoke any time a remote in the set is disconnected.
   // Note that the remote in question is already removed from the set by the

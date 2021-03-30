@@ -114,7 +114,7 @@ def main(args):
         repr(args.default_modules),
     }
     script.write(SCRIPT_TEMPLATE.substitute(script_dict))
-  os.chmod(args.script_output_path, 0750)
+  os.chmod(args.script_output_path, 0o750)
   return 0
 
 

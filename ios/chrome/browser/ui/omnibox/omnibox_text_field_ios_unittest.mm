@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_legacy.h"
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/chrome_paths.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -30,7 +31,7 @@ class OmniboxTextFieldTest : public PlatformTest {
     // This rect is fairly arbitrary. The text field just needs a non-zero width
     // so that the pre-edit label's text alignment can be tested.
     CGRect rect = CGRectMake(0, 0, 100, 20);
-    textfield_ = [[OmniboxTextFieldIOS alloc] initWithFrame:rect];
+    textfield_ = [[OmniboxTextFieldLegacy alloc] initWithFrame:rect];
     [[[UIApplication sharedApplication] keyWindow] addSubview:textfield_];
   }
 

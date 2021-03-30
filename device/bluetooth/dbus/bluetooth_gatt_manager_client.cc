@@ -7,7 +7,9 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
@@ -18,6 +20,14 @@ namespace bluez {
 
 const char BluetoothGattManagerClient::kNoResponseError[] =
     "org.chromium.Error.NoResponse";
+const char BluetoothGattManagerClient::kUnknownGattManager[] =
+    "org.chromium.Error.UnknownGattManager";
+
+namespace {
+
+const char kNoGattManagerMessage[] = "No GATT Manager found: ";
+
+}  // namespace
 
 // The BluetoothGattManagerClient implementation used in production.
 class BluetoothGattManagerClientImpl : public BluetoothGattManagerClient {
@@ -49,7 +59,12 @@ class BluetoothGattManagerClientImpl : public BluetoothGattManagerClient {
     DCHECK(object_manager_);
     dbus::ObjectProxy* object_proxy =
         object_manager_->GetObjectProxy(adapter_object_path);
-    DCHECK(object_proxy);
+    if (!object_proxy) {
+      RespondWhenNoProxyAvailable(adapter_object_path,
+                                  std::move(error_callback));
+      return;
+    }
+
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothGattManagerClientImpl::OnSuccess,
@@ -74,7 +89,12 @@ class BluetoothGattManagerClientImpl : public BluetoothGattManagerClient {
     DCHECK(object_manager_);
     dbus::ObjectProxy* object_proxy =
         object_manager_->GetObjectProxy(adapter_object_path);
-    DCHECK(object_proxy);
+    if (!object_proxy) {
+      RespondWhenNoProxyAvailable(adapter_object_path,
+                                  std::move(error_callback));
+      return;
+    }
+
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothGattManagerClientImpl::OnSuccess,
@@ -116,6 +136,14 @@ class BluetoothGattManagerClientImpl : public BluetoothGattManagerClient {
       error_name = kNoResponseError;
     }
     std::move(error_callback).Run(error_name, error_message);
+  }
+
+  void RespondWhenNoProxyAvailable(const dbus::ObjectPath& application_path,
+                                   ErrorCallback error_callback) {
+    LOG(WARNING) << "No ObjectProxy found for " << application_path.value();
+    std::move(error_callback)
+        .Run(kUnknownGattManager,
+             base::StrCat({kNoGattManagerMessage, application_path.value()}));
   }
 
   // The proxy to the bluez object manager.

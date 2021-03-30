@@ -472,7 +472,7 @@ class _Generator(object):
       'const base::DictionaryValue& root_dict',
       'base::StringPiece key',
       '%(classname)s* out',
-      'base::string16* error',
+      'std::u16string* error',
       'std::vector<base::StringPiece>* error_path_reversed'
     ]
 
@@ -1003,7 +1003,7 @@ class _Generator(object):
       else:
         args = ['*list', '&%(dst_var)s']
         if self._generate_error_messages:
-          c.Append('base::string16 array_parse_error;')
+          c.Append('std::u16string array_parse_error;')
           args.append('&array_parse_error')
 
         c.Append('if (!%s(%s)) {' % (
@@ -1294,7 +1294,7 @@ class _Generator(object):
     if generate_error_messages is None:
       generate_error_messages = self._generate_error_messages
     if generate_error_messages:
-      params = list(params) + ['base::string16* error']
+      params = list(params) + ['std::u16string* error']
     return ', '.join(str(p) for p in params)
 
   def _GenerateArgs(self, args, generate_error_messages=None):

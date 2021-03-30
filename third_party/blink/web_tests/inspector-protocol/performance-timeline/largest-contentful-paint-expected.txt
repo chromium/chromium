@@ -1,0 +1,31 @@
+Basic test for LargestContentfulPaint support in PerformanceTimeline
+[
+    [0] : {
+        frameId : <string>
+        lcpDetails : {
+            elementId : text
+            loadTime : 0
+            nodeId : <div#text>
+            renderTime : <number>
+            size : 48000
+        }
+        name : 
+        time : <number>
+        type : largest-contentful-paint
+    }
+    [1] : {
+        frameId : <string>
+        lcpDetails : {
+            elementId : image
+            loadTime : <number>
+            nodeId : <img#image>
+            renderTime : 0
+            size : 65536
+            url : .../images/resources/green-256x256.jpg
+        }
+        name : 
+        time : <number>
+        type : largest-contentful-paint
+    }
+]
+

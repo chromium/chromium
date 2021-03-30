@@ -35,6 +35,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
@@ -46,18 +48,15 @@
 #include "chrome/browser/chromeos/policy/status_uploader.h"
 #include "chrome/browser/chromeos/policy/system_log_uploader.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/proxy/proxy_config_handler.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
@@ -96,14 +95,14 @@ using testing::Return;
 using testing::ReturnRef;
 
 struct ContextualManagementSourceUpdate {
-  base::string16 extension_reporting_title;
-  base::string16 subtitle;
+  std::u16string extension_reporting_title;
+  std::u16string subtitle;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::string16 management_overview;
-  base::string16 update_required_eol;
+  std::u16string management_overview;
+  std::u16string update_required_eol;
   bool show_proxy_server_privacy_disclosure;
 #else
-  base::string16 browser_management_notice;
+  std::u16string browser_management_notice;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   bool managed;
 };
@@ -154,8 +153,7 @@ class TestDeviceStatusCollector : public policy::DeviceStatusCollector {
 
   // empty methods that need to be implemented but are of no use for this
   // case.
-  void GetStatusAsync(
-      const policy::StatusCollectorCallback& callback) override {}
+  void GetStatusAsync(policy::StatusCollectorCallback callback) override {}
   void OnSubmittedSuccessfully() override {}
 
  private:
@@ -190,10 +188,6 @@ class TestManagementUIHandler : public ManagementUIHandler {
       : policy_service_(policy_service) {}
   ~TestManagementUIHandler() override = default;
 
-  void EnableCloudReportingExtension(bool enable) {
-    cloud_reporting_extension_exists_ = enable;
-  }
-
   void EnableUpdateRequiredEolInfo(bool enable) {
     update_required_eol_ = enable;
   }
@@ -214,13 +208,6 @@ class TestManagementUIHandler : public ManagementUIHandler {
 
   policy::PolicyService* GetPolicyService() const override {
     return policy_service_;
-  }
-
-  const extensions::Extension* GetEnabledExtension(
-      const std::string& extensionId) const override {
-    if (cloud_reporting_extension_exists_)
-      return extensions::ExtensionBuilder("dummy").SetID("id").Build().get();
-    return nullptr;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -245,7 +232,6 @@ class TestManagementUIHandler : public ManagementUIHandler {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
-  bool cloud_reporting_extension_exists_ = false;
   policy::PolicyService* policy_service_ = nullptr;
   bool update_required_eol_ = false;
   std::string device_domain = "devicedomain.com";
@@ -265,7 +251,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   ManagementUIHandlerTests()
       : TestingBaseClass(),
         handler_(&policy_service_),
-        device_domain_(base::UTF8ToUTF16("devicedomain.com")),
+        device_domain_(u"devicedomain.com"),
         task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
         state_keys_broker_(&session_manager_client_) {
     ON_CALL(policy_service_, GetPolicies(_))
@@ -280,7 +266,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 
   ~ManagementUIHandlerTests() override = default;
 
-  base::string16 device_domain() { return device_domain_; }
+  std::u16string device_domain() { return device_domain_; }
   void EnablePolicy(const char* policy_key, policy::PolicyMap& policies) {
     policies.Set(policy_key, policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
@@ -310,11 +296,11 @@ class ManagementUIHandlerTests : public TestingBaseClass {
                  std::move(policy_value.value()), nullptr);
   }
 
-  base::string16 ExtractPathFromDict(const base::Value& data,
+  std::u16string ExtractPathFromDict(const base::Value& data,
                                      const std::string path) {
     const std::string* buf = data.FindStringPath(path);
     if (!buf)
-      return base::string16();
+      return std::u16string();
     return base::UTF8ToUTF16(*buf);
   }
 
@@ -389,6 +375,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     crostini_features_ = std::make_unique<crostini::FakeCrostiniFeatures>();
     SetUpConnectManager();
     chromeos::NetworkHandler::Initialize();
+    chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
     // The |DeviceSettingsTestBase| setup above instantiates
     // |FakeShillManagerClient| with a default environment which will post
     // tasks on the current thread to setup a initial network configuration with
@@ -475,7 +462,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   bool GetManaged() const { return extracted_.managed; }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::string16 GetManagementOverview() const {
+  std::u16string GetManagementOverview() const {
     return extracted_.management_overview;
   }
   base::test::ScopedFeatureList* scoped_feature_list() {
@@ -486,7 +473,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     return crostini_features_.get();
   }
 
-  base::string16 GetUpdateRequiredEolMessage() const {
+  std::u16string GetUpdateRequiredEolMessage() const {
     return extracted_.update_required_eol;
   }
 
@@ -495,17 +482,17 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   }
 #else
 
-  base::string16 GetBrowserManagementNotice() const {
+  std::u16string GetBrowserManagementNotice() const {
     return extracted_.browser_management_notice;
   }
 
 #endif
 
-  base::string16 GetExtensionReportingTitle() const {
+  std::u16string GetExtensionReportingTitle() const {
     return extracted_.extension_reporting_title;
   }
 
-  base::string16 GetPageSubtitle() const { return extracted_.subtitle; }
+  std::u16string GetPageSubtitle() const { return extracted_.subtitle; }
 
   TestingProfile* GetProfile() const { return profile_.get(); }
 
@@ -558,7 +545,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   TestManagementUIHandler handler_;
   policy::MockPolicyService policy_service_;
   policy::PolicyMap empty_policy_map_;
-  base::string16 device_domain_;
+  std::u16string device_domain_;
   ContextualManagementSourceUpdate extracted_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::ScopedStubInstallAttributes> install_attributes_;
@@ -569,7 +556,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   std::unique_ptr<TestDeviceCloudPolicyManagerChromeOS> manager_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   policy::ServerBackedStateKeysBroker state_keys_broker_;
-  chromeos::ScopedTestingCrosSettings settings_;
+  ash::ScopedTestingCrosSettings settings_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #else
   content::BrowserTaskEnvironment task_environment_;
@@ -789,7 +776,7 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetManagementOverview(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_ACCOUNT_MANAGED_BY,
                                        base::UTF8ToUTF16(domain)));
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -805,8 +792,8 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetPageSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
                                        l10n_util::GetStringUTF16(device_type)));
-  EXPECT_EQ(GetManagementOverview(), base::string16());
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetManagementOverview(), std::u16string());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -825,8 +812,8 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        device_domain()));
-  EXPECT_EQ(GetManagementOverview(), base::string16());
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetManagementOverview(), std::u16string());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -848,7 +835,7 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetManagementOverview(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY, device_domain()));
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -873,7 +860,7 @@ TEST_F(ManagementUIHandlerTests,
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY,
                 device_domain(), base::UTF8ToUTF16(domain)));
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -892,7 +879,7 @@ TEST_F(ManagementUIHandlerTests, ManagementContextualSourceUpdateUnmanaged) {
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(GetManagementOverview(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_DEVICE_NOT_MANAGED));
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_FALSE(GetManaged());
 }
 
@@ -1067,28 +1054,11 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
 #endif
 
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoNoPolicySetNoMessage) {
-  handler_.EnableCloudReportingExtension(false);
   auto reporting_info = handler_.GetExtensionReportingInfo();
   EXPECT_EQ(reporting_info.GetList().size(), 0u);
 }
 
-TEST_F(ManagementUIHandlerTests,
-       ExtensionReportingInfoCloudExtensionAddsDefaultPolicies) {
-  handler_.EnableCloudReportingExtension(true);
-
-  const std::set<std::string> expected_messages = {
-      kManagementExtensionReportMachineName, kManagementExtensionReportUsername,
-      kManagementExtensionReportVersion,
-      kManagementExtensionReportExtensionsPlugin,
-      kManagementExtensionReportSafeBrowsingWarnings};
-
-  ASSERT_PRED_FORMAT2(MessagesToBeEQ,
-                      handler_.GetExtensionReportingInfo().GetList(),
-                      expected_messages);
-}
-
 TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
-  handler_.EnableCloudReportingExtension(false);
 
   policy::PolicyMap chrome_policies;
   const policy::PolicyNamespace chrome_policies_namespace =
@@ -1106,7 +1076,6 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
                       handler_.GetExtensionReportingInfo().GetList(),
                       expected_messages);
 }
-
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
   policy::PolicyMap on_prem_reporting_extension_beta_policies;
   policy::PolicyMap on_prem_reporting_extension_stable_policies;
@@ -1121,8 +1090,6 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
                on_prem_reporting_extension_stable_policies);
 
   EnablePolicy(kPolicyKeyReportMachineIdData,
-               on_prem_reporting_extension_stable_policies);
-  EnablePolicy(kPolicyKeyReportSafeBrowsingData,
                on_prem_reporting_extension_stable_policies);
   EnablePolicy(kPolicyKeyReportSystemTelemetryData,
                on_prem_reporting_extension_stable_policies);
@@ -1145,20 +1112,18 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
   EXPECT_CALL(policy_service_,
               GetPolicies(on_prem_reporting_extension_beta_policy_namespace))
       .WillOnce(ReturnRef(on_prem_reporting_extension_beta_policies));
-  policy::PolicyMap empty_policy_map;
+  policy::PolicyMap chrome_policies;
   EXPECT_CALL(policy_service_,
               GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                                   std::string())))
-      .WillOnce(ReturnRef(empty_policy_map));
-
-  handler_.EnableCloudReportingExtension(true);
+      .WillOnce(ReturnRef(chrome_policies));
+  SetPolicyValue(policy::key::kCloudReportingEnabled, true, chrome_policies);
 
   std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineNameAddress,
       kManagementExtensionReportUsername,
       kManagementExtensionReportVersion,
       kManagementExtensionReportExtensionsPlugin,
-      kManagementExtensionReportSafeBrowsingWarnings,
       kManagementExtensionReportUserBrowsingData,
       kManagementExtensionReportPerfCrash};
 

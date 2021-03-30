@@ -84,6 +84,14 @@ export const SAConstants = {
   MenuType: {MAIN_MENU: 0, TEXT_NAVIGATION: 1, POINT_SCAN_MENU: 2},
 
   /**
+   * The modes of interaction the user can select for how to interact with the
+   * device.
+   * @enum {number}
+   * @const
+   */
+  Mode: {ITEM_SCAN: 0, POINT_SCAN: 1},
+
+  /**
    * Preferences that are configurable in Switch Access.
    * @enum {string}
    */
@@ -92,9 +100,11 @@ export const SAConstants = {
     AUTO_SCAN_TIME: 'settings.a11y.switch_access.auto_scan.speed_ms',
     AUTO_SCAN_KEYBOARD_TIME:
         'settings.a11y.switch_access.auto_scan.keyboard.speed_ms',
-    NEXT_SETTING: 'settings.a11y.switch_access.next.setting',
-    PREVIOUS_SETTING: 'settings.a11y.switch_access.previous.setting',
-    SELECT_SETTING: 'settings.a11y.switch_access.select.setting',
+    NEXT_DEVICE_KEY_CODES: 'settings.a11y.switch_access.next.device_key_codes',
+    PREVIOUS_DEVICE_KEY_CODES:
+        'settings.a11y.switch_access.previous.device_key_codes',
+    SELECT_DEVICE_KEY_CODES:
+        'settings.a11y.switch_access.select.device_key_codes',
   },
 
   // =========================== Sub-objects ===========================
@@ -132,23 +142,28 @@ export const SAConstants = {
       PRIMARY: 'primary',
       // The ID for the ring showing a preview of the next focus, if the user
       // selects the current element.
-      PREVIEW: 'preview',
-      // The ID for the area where text is being input.
-      TEXT: 'text'
+      PREVIEW: 'preview'
     },
 
     /**
-     * The inner color of the focus rings.
+     * The inner color of the primary focus ring.
      * @type {string}
      * @const
      */
-    PRIMARY_COLOR: '#8AB4F8',
+    PRIMARY_COLOR: '#8AB4F8',  // Google Blue 300
+
+    /**
+     * The inner color of the preview focus ring
+     * @type {string}
+     * @const
+     */
+    PREVIEW_COLOR: '#8AB4F880',  // Google Blue 300, 50% opacity
 
     /**
      * The outer color of the focus rings.
      * @type {string}
      * @const
      */
-    SECONDARY_COLOR: '#000',
+    OUTER_COLOR: '#174EA6',  // Google Blue 900
   },
 };

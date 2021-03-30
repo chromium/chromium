@@ -59,7 +59,7 @@ class LayerTreeHostFiltersPixelTest
     };
 
     FilterOperations filters;
-    SkImageFilter::CropRect cropRect(
+    PaintFilter::CropRect cropRect(
         SkRect::MakeXYWH(-40000, -40000, 80000, 80000));
     filters.Append(FilterOperation::CreateReferenceFilter(
         sk_make_sp<ColorFilterPaintFilter>(SkColorFilters::Matrix(matrix),
@@ -77,12 +77,18 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
+// viz::GetRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(LayerTreeHostFiltersPixelTest);
+
 using LayerTreeHostFiltersPixelTestGPU = LayerTreeHostFiltersPixelTest;
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersPixelTestGPU,
                          ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
+
+// viz::GetGpuRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(LayerTreeHostFiltersPixelTestGPU);
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
   scoped_refptr<SolidColorLayer> background = CreateSolidColorLayer(
@@ -98,8 +104,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
   background->AddChild(blur);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      2.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
@@ -164,8 +169,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRadius) {
   background->AddChild(blur);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      30.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(30.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
@@ -206,8 +210,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRounded) {
   background->AddChild(blur);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      2.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 14,
                                      16, 18, 20, 22, 30, 40, 50);
@@ -254,8 +257,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurOutsets) {
   background->AddChild(blur);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      5.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(5.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
@@ -339,8 +341,7 @@ class LayerTreeHostBlurFiltersPixelTestGPULayerList
     EffectNode& blur_effect_node = CreateEffectNode(blur_layers[0].get());
 
     FilterOperations filters;
-    filters.Append(FilterOperation::CreateBlurFilter(
-        2.f, SkBlurImageFilter::kClamp_TileMode));
+    filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
     blur_effect_node.backdrop_filters = filters;
     blur_effect_node.render_surface_reason =
         RenderSurfaceReason::kBackdropFilter;
@@ -364,6 +365,10 @@ INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostBlurFiltersPixelTestGPULayerList,
                          ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
+
+// viz::GetGpuRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostBlurFiltersPixelTestGPULayerList);
 
 // TODO(michaelludwig): Re-enable after Skia roll and update expected images.
 // See skbug.com/9545
@@ -471,6 +476,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
+// viz::GetRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    LayerTreeHostFiltersScaledPixelTest);
+
 TEST_P(LayerTreeHostFiltersScaledPixelTest, StandardDpi) {
   RunPixelTestType(100, 1.f);
 }
@@ -497,7 +506,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, CroppedFilter) {
   // Check that a filter with a zero-height crop rect crops out its
   // result completely.
   FilterOperations filters;
-  SkImageFilter::CropRect cropRect(SkRect::MakeXYWH(0, 0, 100, 0));
+  PaintFilter::CropRect cropRect(SkRect::MakeXYWH(0, 0, 100, 0));
   sk_sp<PaintFilter> offset(
       sk_make_sp<OffsetPaintFilter>(0, 0, nullptr, &cropRect));
   filters.Append(FilterOperation::CreateReferenceFilter(offset));
@@ -518,7 +527,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterClipped) {
   // This filter does a red-blue swap, so the foreground becomes blue.
   matrix[2] = matrix[6] = matrix[10] = matrix[18] = 1.0f;
   // We filter only the bottom 200x100 pixels of the foreground.
-  SkImageFilter::CropRect crop_rect(SkRect::MakeXYWH(0, 100, 200, 100));
+  PaintFilter::CropRect crop_rect(SkRect::MakeXYWH(0, 100, 200, 100));
   FilterOperations filters;
   filters.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<ColorFilterPaintFilter>(
@@ -580,7 +589,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
   filter->SetBackdropFilters(filters);
   filter->ClearBackdropFilterBounds();
 
-#if defined(OS_WIN) || defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(_MIPS_ARCH_LOONGSON) || \
+    defined(ARCH_CPU_ARM64)
 #if defined(OS_WIN)
   // Windows has 153 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_large_error = 0.3825f;  // 153px / (200*200)
@@ -590,6 +600,10 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
     percentage_pixels_large_error = 0.415f;  // 166px / (200*200)
     large_error_allowed = 1;
   }
+#elif defined(OS_MAC)
+  // There's a 1 pixel error on MacOS
+  float percentage_pixels_large_error = 0.0025f;  // 1px / (200*200)
+  int large_error_allowed = 1;
 #elif defined(_MIPS_ARCH_LOONGSON)
   // Loongson has 2 pixels off by at most 2: crbug.com/819075
   float percentage_pixels_large_error = 0.005f;  // 2px / (200*200)
@@ -610,7 +624,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
 
   RunPixelTest(
       background,
-      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_on_scaled_layer_.png"))
+      base::FilePath(
+          (use_swangle() || use_skia_vulkan())
+              ? FILE_PATH_LITERAL("backdrop_filter_on_scaled_layer_.png")
+              : FILE_PATH_LITERAL(
+                    "backdrop_filter_on_scaled_layer_legacy_swiftshader_.png"))
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
@@ -644,8 +662,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterRotated) {
 
   // Add a blur filter to the blue layer.
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      5.0f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(5.0f, SkTileMode::kClamp));
   filter_layer->SetBackdropFilters(filters);
   gfx::RRectF backdrop_filter_bounds(
       gfx::RectF(gfx::SizeF(filter_layer->bounds())), 0);
@@ -724,7 +741,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageRenderSurfaceScaled) {
 
   RunPixelTest(
       background,
-      base::FilePath(FILE_PATH_LITERAL("scaled_render_surface_layer_.png"))
+      base::FilePath(
+          (use_swangle() || use_skia_vulkan())
+              ? FILE_PATH_LITERAL("scaled_render_surface_layer_.png")
+              : FILE_PATH_LITERAL(
+                    "scaled_render_surface_layer_legacy_swiftshader_.png"))
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
@@ -880,7 +901,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
 
   background->AddChild(child);
 
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS) || \
+    defined(ARCH_CPU_ARM64) || defined(USE_OZONE)
 #if defined(ARCH_CPU_ARM64) && \
     (defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC))
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
@@ -888,6 +910,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
   float percentage_pixels_large_error = 0.89f;
   float average_error_allowed_in_bad_pixels = 5.f;
   int large_error_allowed = 17;
+#elif defined(OS_MAC) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+  // There's a 1 pixel error on MacOS and ChromeOS
+  float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
+  float average_error_allowed_in_bad_pixels = 1.f;
+  int large_error_allowed = 1;
 #else
   // Windows and all other ARM64 have 3 pixels off by 1: crbug.com/259915
   float percentage_pixels_large_error = 0.00333334f;  // 3px / (300*300)
@@ -1019,7 +1046,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, EnlargedTextureWithCropOffsetFilter) {
   filter_layer->AddChild(child2);
 
   FilterOperations filters;
-  SkImageFilter::CropRect cropRect(SkRect::MakeXYWH(10, 10, 80, 80));
+  PaintFilter::CropRect cropRect(SkRect::MakeXYWH(10, 10, 80, 80));
   filters.Append(FilterOperation::CreateReferenceFilter(
       sk_make_sp<OffsetPaintFilter>(0, 0, nullptr, &cropRect)));
   filter_layer->SetFilters(filters);
@@ -1052,8 +1079,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BlurFilterWithClip) {
   filter_layer->AddChild(child4);
 
   FilterOperations filters;
-  filters.Append(FilterOperation::CreateBlurFilter(
-      2.f, SkBlurImageFilter::kClamp_TileMode));
+  filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
   filter_layer->SetFilters(filters);
 
   // Force the allocation a larger textures.
@@ -1157,6 +1183,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
+// viz::GetRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(BackdropFilterOffsetTest);
+
 TEST_P(BackdropFilterOffsetTest, StandardDpi) {
   RunPixelTestType(1.f);
 }
@@ -1216,6 +1245,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          BackdropFilterInvertTest,
                          ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
+
+// viz::GetRendererTypes() can return an empty list on some platforms.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(BackdropFilterInvertTest);
 
 TEST_P(BackdropFilterInvertTest, StandardDpi) {
   RunPixelTestType(1.f);

@@ -101,24 +101,29 @@ void RoundOrientationEulerReading(SensorReadingXYZ* reading) {
 void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type) {
   switch (sensor_type) {
     case mojom::SensorType::ACCELEROMETER:
-      FALLTHROUGH;
+    case mojom::SensorType::GRAVITY:
     case mojom::SensorType::LINEAR_ACCELERATION:
       RoundAccelerometerReading(&reading->accel);
       break;
+
     case mojom::SensorType::GYROSCOPE:
       RoundGyroscopeReading(&reading->gyro);
       break;
+
     case mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
-      FALLTHROUGH;
     case mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
       RoundOrientationEulerReading(&reading->orientation_euler);
       break;
+
     case mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
-      FALLTHROUGH;
     case mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION:
       RoundOrientationQuaternionReading(&reading->orientation_quat);
       break;
-    default:
+
+    case mojom::SensorType::AMBIENT_LIGHT:
+    case mojom::SensorType::MAGNETOMETER:
+    case mojom::SensorType::PRESSURE:
+    case mojom::SensorType::PROXIMITY:
       break;
   }
 }

@@ -31,8 +31,7 @@ class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
   // BrowserAccessibility methods.
   void OnDataChanged() override;
   ui::AXPlatformNode* GetAXPlatformNode() const override;
-  base::string16 GetText() const override;
-  base::string16 GetHypertext() const override;
+  std::u16string GetHypertext() const override;
 
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
 

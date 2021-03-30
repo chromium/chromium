@@ -63,13 +63,8 @@ class TestCascadeResolver {
   bool DetectCycle(const CSSProperty& property) {
     return resolver_.DetectCycle(property);
   }
-  wtf_size_t CycleDepth() const { return resolver_.cycle_depth_; }
-  void MarkApplied(CascadePriority* priority) {
-    resolver_.MarkApplied(priority);
-  }
-  void MarkUnapplied(CascadePriority* priority) {
-    resolver_.MarkUnapplied(priority);
-  }
+  wtf_size_t CycleStart() const { return resolver_.cycle_start_; }
+  wtf_size_t CycleEnd() const { return resolver_.cycle_end_; }
   uint8_t GetGeneration() { return resolver_.generation_; }
   CascadeResolver& InnerResolver() { return resolver_; }
   const CSSProperty* CurrentProperty() const {
@@ -220,7 +215,7 @@ class TestCascade {
   }
 
   static scoped_refptr<ComputedStyle> InitialStyle(Document& document) {
-    return StyleResolver::InitialStyleForElement(document);
+    return document.GetStyleResolver().InitialStyleForElement();
   }
 
   void FinishOrigin() {
@@ -292,13 +287,8 @@ class TestCascadeAutoLock {
   CascadeResolver::AutoLock lock_;
 };
 
-class StyleCascadeTest
-    : public PageTestBase,
-      private ScopedCSSMatchedPropertiesCacheDependenciesForTest {
+class StyleCascadeTest : public PageTestBase {
  public:
-  StyleCascadeTest()
-      : ScopedCSSMatchedPropertiesCacheDependenciesForTest(true) {}
-
   CSSStyleSheet* CreateSheet(const String& css_text) {
     auto* init = MakeGarbageCollected<CSSStyleSheetInit>();
     DummyExceptionStateForTesting exception_state;
@@ -777,12 +767,12 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycle) {
           // Cycle 1 (big cycle):
           EXPECT_TRUE(resolver.DetectCycle(b));
           EXPECT_TRUE(resolver.InCycle());
-          EXPECT_EQ(1u, resolver.CycleDepth());
+          EXPECT_EQ(1u, resolver.CycleStart());
 
           // Cycle 2 (small cycle):
           EXPECT_TRUE(resolver.DetectCycle(c));
           EXPECT_TRUE(resolver.InCycle());
-          EXPECT_EQ(1u, resolver.CycleDepth());
+          EXPECT_EQ(1u, resolver.CycleStart());
         }
       }
       EXPECT_TRUE(resolver.InCycle());
@@ -819,12 +809,12 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycleReverse) {
           // Cycle 1 (small cycle):
           EXPECT_TRUE(resolver.DetectCycle(c));
           EXPECT_TRUE(resolver.InCycle());
-          EXPECT_EQ(2u, resolver.CycleDepth());
+          EXPECT_EQ(2u, resolver.CycleStart());
 
           // Cycle 2 (big cycle):
           EXPECT_TRUE(resolver.DetectCycle(b));
           EXPECT_TRUE(resolver.InCycle());
-          EXPECT_EQ(1u, resolver.CycleDepth());
+          EXPECT_EQ(1u, resolver.CycleStart());
         }
       }
       EXPECT_TRUE(resolver.InCycle());
@@ -832,20 +822,6 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycleReverse) {
     EXPECT_FALSE(resolver.InCycle());
   }
   EXPECT_FALSE(resolver.InCycle());
-}
-
-TEST_F(StyleCascadeTest, ResolverMarkApplied) {
-  TestCascadeResolver resolver(2);
-
-  CascadePriority priority(CascadeOrigin::kAuthor);
-  EXPECT_EQ(0, priority.GetGeneration());
-
-  resolver.MarkApplied(&priority);
-  EXPECT_EQ(2, priority.GetGeneration());
-
-  // Mark a second time to verify observation of the same generation.
-  resolver.MarkApplied(&priority);
-  EXPECT_EQ(2, priority.GetGeneration());
 }
 
 TEST_F(StyleCascadeTest, CurrentProperty) {
@@ -876,21 +852,62 @@ TEST_F(StyleCascadeTest, CurrentProperty) {
   EXPECT_FALSE(resolver.CurrentProperty());
 }
 
-TEST_F(StyleCascadeTest, ResolverMarkUnapplied) {
-  TestCascadeResolver resolver(7);
+TEST_F(StyleCascadeTest, CycleWithExtraEdge) {
+  using AutoLock = TestCascadeAutoLock;
 
-  CascadePriority priority(CascadeOrigin::kAuthor);
-  EXPECT_EQ(0, priority.GetGeneration());
+  TestCascade cascade(GetDocument());
+  TestCascadeResolver resolver;
 
-  resolver.MarkApplied(&priority);
-  EXPECT_EQ(7, priority.GetGeneration());
+  CustomProperty a("--a", GetDocument());
+  CustomProperty b("--b", GetDocument());
+  CustomProperty c("--c", GetDocument());
+  CustomProperty d("--d", GetDocument());
 
-  resolver.MarkUnapplied(&priority);
-  EXPECT_EQ(0, priority.GetGeneration());
+  {
+    AutoLock lock(a, resolver);
+    EXPECT_FALSE(resolver.InCycle());
+    {
+      AutoLock lock(b, resolver);
+      EXPECT_FALSE(resolver.InCycle());
 
-  // Mark a second time to verify observation of the same generation.
-  resolver.MarkUnapplied(&priority);
-  EXPECT_EQ(0, priority.GetGeneration());
+      {
+        AutoLock lock(c, resolver);
+        EXPECT_FALSE(resolver.InCycle());
+
+        // Cycle:
+        EXPECT_TRUE(resolver.DetectCycle(b));
+        EXPECT_TRUE(resolver.InCycle());
+        EXPECT_EQ(1u, resolver.CycleStart());
+        EXPECT_EQ(3u, resolver.CycleEnd());
+      }
+
+      // ~AutoLock must shrink the in-cycle range:
+      EXPECT_EQ(1u, resolver.CycleStart());
+      EXPECT_EQ(2u, resolver.CycleEnd());
+
+      {
+        // We should not be in a cycle when locking a new property ...
+        AutoLock lock(d, resolver);
+        EXPECT_FALSE(resolver.InCycle());
+        // AutoLock ctor does not affect in-cycle range:
+        EXPECT_EQ(1u, resolver.CycleStart());
+        EXPECT_EQ(2u, resolver.CycleEnd());
+      }
+
+      EXPECT_EQ(1u, resolver.CycleStart());
+      EXPECT_EQ(2u, resolver.CycleEnd());
+
+      // ... however we should be back InCycle when that AutoLock is destroyed.
+      EXPECT_TRUE(resolver.InCycle());
+    }
+
+    // ~AutoLock should reduce cycle-end to equal cycle-start, hence we
+    // are no longer in a cycle.
+    EXPECT_EQ(kNotFound, resolver.CycleStart());
+    EXPECT_EQ(kNotFound, resolver.CycleEnd());
+    EXPECT_FALSE(resolver.InCycle());
+  }
+  EXPECT_FALSE(resolver.InCycle());
 }
 
 TEST_F(StyleCascadeTest, BasicCycle) {
@@ -1006,6 +1023,19 @@ TEST_F(StyleCascadeTest, RegisteredCycle) {
   cascade.Add("--b", "var(--a)");
   cascade.Apply();
 
+  EXPECT_EQ("0px", cascade.ComputedValue("--a"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--b"));
+}
+
+TEST_F(StyleCascadeTest, UniversalSyntaxCycle) {
+  RegisterProperty(GetDocument(), "--a", "*", "foo", false);
+  RegisterProperty(GetDocument(), "--b", "*", "bar", false);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("--a", "var(--b)");
+  cascade.Add("--b", "var(--a)");
+  cascade.Apply();
+
   EXPECT_FALSE(cascade.ComputedValue("--a"));
   EXPECT_FALSE(cascade.ComputedValue("--b"));
 }
@@ -1018,11 +1048,11 @@ TEST_F(StyleCascadeTest, PartiallyRegisteredCycle) {
   cascade.Add("--b", "var(--a)");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--a"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--a"));
   EXPECT_FALSE(cascade.ComputedValue("--b"));
 }
 
-TEST_F(StyleCascadeTest, FallbackTriggeredByRegisteredCycle) {
+TEST_F(StyleCascadeTest, ReferencedRegisteredCycle) {
   RegisterProperty(GetDocument(), "--a", "<length>", "0px", false);
   RegisterProperty(GetDocument(), "--b", "<length>", "0px", false);
 
@@ -1035,10 +1065,10 @@ TEST_F(StyleCascadeTest, FallbackTriggeredByRegisteredCycle) {
   cascade.Add("--d", "var(--b,2px)");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--a"));
-  EXPECT_FALSE(cascade.ComputedValue("--b"));
-  EXPECT_EQ("1px", cascade.ComputedValue("--c"));
-  EXPECT_EQ("2px", cascade.ComputedValue("--d"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--a"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--b"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--c"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--d"));
 }
 
 TEST_F(StyleCascadeTest, CycleStillInvalidWithFallback) {
@@ -1201,7 +1231,7 @@ TEST_F(StyleCascadeTest, EmUnitCycle) {
   cascade.Add("--x", "10em");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--x"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
 }
 
 TEST_F(StyleCascadeTest, SubstitutingEmCycles) {
@@ -1214,8 +1244,8 @@ TEST_F(StyleCascadeTest, SubstitutingEmCycles) {
   cascade.Add("--z", "var(--x,1px)");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--y"));
-  EXPECT_EQ("1px", cascade.ComputedValue("--z"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--y"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--z"));
 }
 
 TEST_F(StyleCascadeTest, RemUnit) {
@@ -1264,7 +1294,7 @@ TEST_F(StyleCascadeTest, RemUnitInRootFontSizeCycle) {
   cascade.Add("--x", "1rem");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--x"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
 }
 
 TEST_F(StyleCascadeTest, RemUnitInRootFontSizeNonCycle) {
@@ -3238,77 +3268,6 @@ TEST_F(StyleCascadeTest, GetImportantSetMany) {
   EXPECT_EQ(CSSBitset({CSSPropertyID::kWidth, CSSPropertyID::kHeight,
                        CSSPropertyID::kTop}),
             *cascade.GetImportantSet());
-}
-
-TEST_F(StyleCascadeTest, NoDependenciesPresent) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("left:2px");
-  cascade.Add("top:initial");
-  cascade.Add("border:1px solid black");
-  cascade.Add("--x:bar");
-  cascade.Add("direction:rtl");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_TRUE(state.Dependencies().IsEmpty());
-  EXPECT_FALSE(state.HasIncomparableDependency());
-}
-
-TEST_F(StyleCascadeTest, ExplicitInheritanceDependencyIsDetected) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("left:inherit");
-  cascade.Add("right:inherit");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(2u, state.Dependencies().size());
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("left")));
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("right")));
-  EXPECT_FALSE(state.HasIncomparableDependency());
-}
-
-TEST_F(StyleCascadeTest, IncomparableDependencyDetected) {
-  ASSERT_FALSE(
-      GetCSSPropertyInternalEmptyLineHeight().IsComputedValueComparable());
-
-  TestCascade cascade(GetDocument());
-  cascade.Add("-internal-empty-line-height:inherit", CascadeOrigin::kUserAgent);
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(1u, state.Dependencies().size());
-  EXPECT_TRUE(state.Dependencies().Contains(
-      CSSPropertyName(CSSPropertyID::kInternalEmptyLineHeight)));
-  EXPECT_TRUE(state.HasIncomparableDependency());
-}
-
-TEST_F(StyleCascadeTest, CustomPropertyDependencyIsDetected) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("left:var(--x,1px)");
-  cascade.Add("right:var(--x,2px)");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(1u, state.Dependencies().size());
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("--x")));
-  EXPECT_FALSE(state.HasIncomparableDependency());
-}
-
-TEST_F(StyleCascadeTest, NonInheritedCustomPropertyIsNoDependency) {
-  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
-  TestCascade cascade(GetDocument());
-  cascade.Add("left:var(--x,1px)");
-  cascade.Add("right:var(--x,2px)");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(0u, state.Dependencies().size());
-}
-
-TEST_F(StyleCascadeTest, DirectionAndWritingModeDependenciesAreDetected) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("margin-inline-start: 2px");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(2u, state.Dependencies().size());
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("direction")));
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("writing-mode")));
-  EXPECT_FALSE(state.HasIncomparableDependency());
 }
 
 TEST_F(StyleCascadeTest, RootColorNotModifiedByEmptyCascade) {

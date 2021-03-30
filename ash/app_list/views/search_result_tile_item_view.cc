@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
@@ -25,10 +26,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -42,7 +46,7 @@ namespace ash {
 namespace {
 
 // The width of the focus ring.
-constexpr int kFocusRingWidth = 2;
+constexpr int kSelectionRingWidth = 2;
 
 constexpr int kSearchTileWidth = 80;
 constexpr int kSearchTileTopPadding = 4;
@@ -71,12 +75,10 @@ constexpr int kSearchRatingCenteringOffset =
 }  // namespace
 
 SearchResultTileItemView::SearchResultTileItemView(
-    AppListViewDelegate* view_delegate,
-    bool show_in_apps_page)
+    AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate),
       is_app_reinstall_recommendation_enabled_(
-          app_list_features::IsAppReinstallZeroStateEnabled()),
-      show_in_apps_page_(show_in_apps_page) {
+          app_list_features::IsAppReinstallZeroStateEnabled()) {
   SetCallback(base::BindRepeating(&SearchResultTileItemView::OnButtonPressed,
                                   base::Unretained(this)));
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -150,48 +152,43 @@ void SearchResultTileItemView::OnResultChanged() {
   SetRating(result()->rating());
   SetPrice(result()->formatted_price());
 
-  const gfx::FontList& font = AppListConfig::instance().app_title_font();
-  if (IsSuggestedAppTileShownInAppPage()) {
-    title_->SetFontList(font);
-    title_->SetEnabledColor(AppListConfig::instance().grid_title_color());
-  } else {
-    if (rating_) {
-      if (!IsSuggestedAppTile()) {
-        // App search results use different fonts than AppList apps.
-        rating_->SetFontList(
-            ui::ResourceBundle::GetSharedInstance().GetFontList(
-                AppListConfig::instance().search_result_title_font_style()));
-      } else {
-        rating_->SetFontList(font);
-      }
-    }
-    if (price_) {
-      if (!IsSuggestedAppTile()) {
-        // App search results use different fonts than AppList apps.
-        price_->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
-            AppListConfig::instance().search_result_title_font_style()));
-      } else {
-        price_->SetFontList(font);
-      }
-    }
+  const gfx::FontList& font =
+      SharedAppListConfig::instance().search_result_recommendation_title_font();
+  if (rating_) {
     if (!IsSuggestedAppTile()) {
       // App search results use different fonts than AppList apps.
-      title_->SetFontList(
-          ui::ResourceBundle::GetSharedInstance()
-              .GetFontList(
-                  AppListConfig::instance().search_result_title_font_style())
-              .DeriveWithSizeDelta(kSearchResultTileTitleTextSizeDelta));
+      rating_->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
+          SharedAppListConfig::instance().search_result_title_font_style()));
     } else {
-      title_->SetFontList(font);
+      rating_->SetFontList(font);
     }
-    title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
-        /*default_color*/ gfx::kGoogleGrey900));
   }
+  if (price_) {
+    if (!IsSuggestedAppTile()) {
+      // App search results use different fonts than AppList apps.
+      price_->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
+          SharedAppListConfig::instance().search_result_title_font_style()));
+    } else {
+      price_->SetFontList(font);
+    }
+  }
+  if (!IsSuggestedAppTile()) {
+    // App search results use different fonts than AppList apps.
+    title_->SetFontList(
+        ui::ResourceBundle::GetSharedInstance()
+            .GetFontList(SharedAppListConfig::instance()
+                             .search_result_title_font_style())
+            .DeriveWithSizeDelta(kSearchResultTileTitleTextSizeDelta));
+  } else {
+    title_->SetFontList(font);
+  }
+  title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
+      /*default_color*/ gfx::kGoogleGrey900));
 
   title_->SetMaxLines(2);
   title_->SetMultiLine(
       (result()->display_type() == SearchResultDisplayType::kTile ||
-       (IsSuggestedAppTile() && !show_in_apps_page_)) &&
+       IsSuggestedAppTile()) &&
       (result()->result_type() == AppListSearchResultType::kInstalledApp ||
        result()->result_type() == AppListSearchResultType::kArcAppShortcut));
 
@@ -203,8 +200,8 @@ void SearchResultTileItemView::OnResultChanged() {
   UpdateAccessibleName();
 }
 
-base::string16 SearchResultTileItemView::ComputeAccessibleName() const {
-  base::string16 accessible_name;
+std::u16string SearchResultTileItemView::ComputeAccessibleName() const {
+  std::u16string accessible_name;
   if (!result()->accessible_name().empty())
     return result()->accessible_name();
 
@@ -291,30 +288,29 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
   if (!result() || !selected())
     return;
 
-  gfx::Rect rect(GetContentsBounds());
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(kFocusRingWidth);
+  flags.setStrokeWidth(kSelectionRingWidth);
   flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
 
-  if (IsSuggestedAppTileShownInAppPage()) {
-    rect.ClampToCenteredSize(AppListConfig::instance().grid_focus_size());
-    canvas->DrawRoundRect(gfx::RectF(rect),
-                          AppListConfig::instance().grid_focus_corner_radius(),
-                          flags);
-  } else {
-    const int kLeftRightPadding = (rect.width() - kIconSelectedSize) / 2;
-    rect.Inset(kLeftRightPadding, kFocusRingWidth);
-    rect.set_height(kIconSelectedSize - 2 * kFocusRingWidth);
-    canvas->DrawRoundRect(gfx::RectF(rect), kIconSelectedCornerRadius, flags);
-  }
+  gfx::RectF selection_ring = GetSelectionRingBounds();
+  selection_ring.Inset(0, kSelectionRingWidth);
+  canvas->DrawRoundRect(selection_ring, kIconSelectedCornerRadius, flags);
+}
+
+gfx::RectF SearchResultTileItemView::GetSelectionRingBounds() const {
+  gfx::RectF bounds(GetContentsBounds());
+  const float horizontal_padding = (bounds.width() - kIconSelectedSize) / 2.0;
+  bounds.Inset(horizontal_padding, 0);
+  bounds.set_height(kIconSelectedSize);
+  return bounds;
 }
 
 void SearchResultTileItemView::OnMetadataChanged() {
   SetIcon(result()->icon());
   SetTitle(result()->title());
-  SetBadgeIcon(result()->badge_icon());
+  SetBadgeIcon(result()->badge_icon(), result()->use_badge_icon_background());
   SetRating(result()->rating());
   SetPrice(result()->formatted_price());
   Layout();
@@ -343,9 +339,9 @@ void SearchResultTileItemView::OnGetContextMenuModel(
   if (!menu_model || (context_menu_ && context_menu_->IsShowingMenu()))
     return;
 
-  gfx::Rect anchor_rect = source->GetBoundsInScreen();
-  // Anchor the menu to the same rect that is used for selection highlight.
-  anchor_rect.ClampToCenteredSize(AppListConfig::instance().grid_focus_size());
+  // Anchor the menu to the same rect that is used for selection ring.
+  gfx::Rect anchor_rect = gfx::ToEnclosingRect(GetSelectionRingBounds());
+  views::View::ConvertRectToScreen(this, &anchor_rect);
 
   AppLaunchedMetricParams metric_params = {
       AppListLaunchedFrom::kLaunchedFromSearchBox,
@@ -394,7 +390,7 @@ void SearchResultTileItemView::ActivateResult(int event_flags,
     UMA_HISTOGRAM_EXACT_LINEAR(
         "Apps.AppListPlayStoreAppLaunchedIndex",
         group_index_in_container_view(),
-        AppListConfig::instance().max_search_result_tiles());
+        SharedAppListConfig::instance().max_search_result_tiles());
     if (launch_as_default) {
       UMA_HISTOGRAM_MEDIUM_TIMES(
           "Arc.PlayStoreSearch.DefaultResultClickLatency", activation_delay);
@@ -412,23 +408,36 @@ void SearchResultTileItemView::ActivateResult(int event_flags,
 }
 
 void SearchResultTileItemView::SetIcon(const gfx::ImageSkia& icon) {
-  const int icon_size = AppListConfig::instance().search_tile_icon_dimension();
+  const int icon_size =
+      SharedAppListConfig::instance().search_tile_icon_dimension();
   gfx::ImageSkia resized(gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST,
       gfx::Size(icon_size, icon_size)));
   icon_->SetImage(resized);
 }
 
-void SearchResultTileItemView::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
-  if (badge_icon.isNull()) {
+void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
+                                            bool use_badge_icon_background) {
+  if (badge_icon.IsEmpty()) {
     badge_->SetVisible(false);
     return;
   }
 
+  gfx::ImageSkia badge_icon_skia =
+      badge_icon.IsVectorIcon()
+          ? ui::ThemedVectorIcon(badge_icon.GetVectorIcon())
+                .GetImageSkia(GetNativeTheme())
+          : badge_icon.GetImage().AsImageSkia();
+
+  if (use_badge_icon_background) {
+    badge_icon_skia =
+        CreateIconWithCircleBackground(badge_icon_skia, SK_ColorWHITE);
+  }
+
   gfx::ImageSkia resized_badge_icon(
       gfx::ImageSkiaOperations::CreateResizedImage(
-          badge_icon, skia::ImageOperations::RESIZE_BEST,
-          AppListConfig::instance().search_tile_badge_icon_size()));
+          badge_icon_skia, skia::ImageOperations::RESIZE_BEST,
+          SharedAppListConfig::instance().search_tile_badge_icon_size()));
 
   gfx::ShadowValues shadow_values;
   shadow_values.push_back(
@@ -440,7 +449,7 @@ void SearchResultTileItemView::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
   badge_->SetVisible(true);
 }
 
-void SearchResultTileItemView::SetTitle(const base::string16& title) {
+void SearchResultTileItemView::SetTitle(const std::u16string& title) {
   title_->SetText(title);
 }
 
@@ -459,7 +468,7 @@ void SearchResultTileItemView::SetRating(float rating) {
   rating_star_->SetVisible(true);
 }
 
-void SearchResultTileItemView::SetPrice(const base::string16& price) {
+void SearchResultTileItemView::SetPrice(const std::u16string& price) {
   if (!price_)
     return;
 
@@ -498,10 +507,6 @@ bool SearchResultTileItemView::IsSuggestedAppTile() const {
   return result() && result()->is_recommendation();
 }
 
-bool SearchResultTileItemView::IsSuggestedAppTileShownInAppPage() const {
-  return IsSuggestedAppTile() && show_in_apps_page_;
-}
-
 void SearchResultTileItemView::LogAppLaunchForSuggestedApp() const {
   // Only log the app launch if the class is being used as a suggested app.
   if (!IsSuggestedAppTile())
@@ -530,66 +535,57 @@ void SearchResultTileItemView::Layout() {
   if (rect.IsEmpty() || !result())
     return;
 
-  if (IsSuggestedAppTileShownInAppPage()) {
-    icon_->SetBoundsRect(AppListItemView::GetIconBoundsForTargetViewBounds(
-        AppListConfig::instance(), rect, icon_->GetImage().size(),
-        /*icon_scale=*/1.0f));
-    title_->SetBoundsRect(AppListItemView::GetTitleBoundsForTargetViewBounds(
-        AppListConfig::instance(), rect, title_->GetPreferredSize(),
-        /*icon_scale=*/1.0f));
-  } else {
-    gfx::Rect icon_rect(rect);
-    icon_rect.ClampToCenteredSize(icon_->GetImage().size());
-    icon_rect.set_y(kSearchTileTopPadding);
-    icon_->SetBoundsRect(icon_rect);
+  gfx::Rect icon_rect(rect);
+  icon_rect.ClampToCenteredSize(icon_->GetImage().size());
+  icon_rect.set_y(kSearchTileTopPadding);
+  icon_->SetBoundsRect(icon_rect);
 
-    const int badge_icon_dimension =
-        AppListConfig::instance().search_tile_badge_icon_dimension();
-    const int badge_icon_offset =
-        AppListConfig::instance().search_tile_badge_icon_offset();
-    const gfx::Rect badge_rect(
-        icon_rect.right() - badge_icon_dimension + badge_icon_offset,
-        icon_rect.bottom() - badge_icon_dimension + badge_icon_offset,
-        badge_icon_dimension, badge_icon_dimension);
-    badge_->SetBoundsRect(badge_rect);
+  const int badge_icon_dimension =
+      SharedAppListConfig::instance().search_tile_badge_icon_dimension();
+  const int badge_icon_offset =
+      SharedAppListConfig::instance().search_tile_badge_icon_offset();
+  const gfx::Rect badge_rect(
+      icon_rect.right() - badge_icon_dimension + badge_icon_offset,
+      icon_rect.bottom() - badge_icon_dimension + badge_icon_offset,
+      badge_icon_dimension, badge_icon_dimension);
+  badge_->SetBoundsRect(badge_rect);
 
-    rect.set_y(icon_rect.bottom() + kSearchTitleSpacing);
-    rect.set_height(title_->GetPreferredSize().height());
-    title_->SetBoundsRect(rect);
+  rect.set_y(icon_rect.bottom() + kSearchTitleSpacing);
+  rect.set_height(title_->GetPreferredSize().height());
+  title_->SetBoundsRect(rect);
 
-    // If there is no price set, we center the rating.
-    const bool center_rating =
-        rating_ && rating_star_ && price_ && price_->GetText().empty();
-    const int rating_horizontal_offset =
-        center_rating ? kSearchRatingCenteringOffset : 0;
+  // If there is no price set, we center the rating.
+  const bool center_rating =
+      rating_ && rating_star_ && price_ && price_->GetText().empty();
+  const int rating_horizontal_offset =
+      center_rating ? kSearchRatingCenteringOffset : 0;
 
-    if (rating_) {
-      gfx::Rect rating_rect(rect);
-      rating_rect.Inset(rating_horizontal_offset,
-                        title_->GetPreferredSize().height(), 0, 0);
-      rating_rect.set_size(rating_->GetPreferredSize());
-      rating_rect.set_width(kSearchRatingSize);
-      rating_->SetBoundsRect(rating_rect);
-    }
+  if (rating_) {
+    gfx::Rect rating_rect(rect);
+    rating_rect.Inset(rating_horizontal_offset,
+                      title_->GetPreferredSize().height(), 0, 0);
+    rating_rect.set_size(rating_->GetPreferredSize());
+    rating_rect.set_width(kSearchRatingSize);
+    rating_->SetBoundsRect(rating_rect);
+  }
 
-    if (rating_star_) {
-      gfx::Rect rating_star_rect(rect);
-      rating_star_rect.Inset(rating_horizontal_offset + kSearchRatingSize +
-                                 kSearchRatingStarHorizontalSpacing,
-                             title_->GetPreferredSize().height() +
-                                 kSearchRatingStarVerticalSpacing,
-                             0, 0);
-      rating_star_rect.set_size(rating_star_->GetPreferredSize());
-      rating_star_->SetBoundsRect(rating_star_rect);
-    }
+  if (rating_star_) {
+    gfx::Rect rating_star_rect(rect);
+    rating_star_rect.Inset(
+        rating_horizontal_offset + kSearchRatingSize +
+            kSearchRatingStarHorizontalSpacing,
+        title_->GetPreferredSize().height() + kSearchRatingStarVerticalSpacing,
+        0, 0);
+    rating_star_rect.set_size(rating_star_->GetPreferredSize());
+    rating_star_->SetBoundsRect(rating_star_rect);
+  }
 
-    if (price_) {
-      gfx::Rect price_rect(rect);
-      price_rect.Inset(rect.width() - kSearchPriceSize,
-                       title_->GetPreferredSize().height(), 0, 0);
-      price_rect.set_size(price_->GetPreferredSize());
-      price_->SetBoundsRect(price_rect);
-    }
+  if (price_) {
+    gfx::Rect price_rect(rect);
+    price_rect.Inset(rect.width() - kSearchPriceSize,
+                     title_->GetPreferredSize().height(), 0, 0);
+    price_rect.set_size(price_->GetPreferredSize());
+    price_->SetBoundsRect(price_rect);
   }
 }
 
@@ -601,23 +597,18 @@ gfx::Size SearchResultTileItemView::CalculatePreferredSize() const {
   if (!result())
     return gfx::Size();
 
-  if (IsSuggestedAppTileShownInAppPage()) {
-    return gfx::Size(AppListConfig::instance().grid_tile_width(),
-                     AppListConfig::instance().grid_tile_height());
-  }
-
   return gfx::Size(kSearchTileWidth,
-                   AppListConfig::instance().search_tile_height());
+                   SharedAppListConfig::instance().search_tile_height());
 }
 
-base::string16 SearchResultTileItemView::GetTooltipText(
+std::u16string SearchResultTileItemView::GetTooltipText(
     const gfx::Point& p) const {
   // Use the label to generate a tooltip, so that it will consider its text
   // truncation in making the tooltip. We do not want the label itself to have a
   // tooltip, so we only temporarily enable it to get the tooltip text from the
   // label, then disable it again.
   title_->SetHandlesTooltips(true);
-  base::string16 tooltip = title_->GetTooltipText(p);
+  std::u16string tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
   return tooltip;
 }

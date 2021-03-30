@@ -1,0 +1,147 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+js_library("file_browser_background_full") {
+  sources = []
+
+  externs_list = [
+    "background_base.js",
+    "crostini.js",
+    "../drive_dialog_controller.js",
+    "drive_sync_handler.js",
+    "duplicate_finder.js",
+    "file_browser_background_full.js",
+    "file_operation_manager.js",
+    "import_history.js",
+    "media_import_handler.js",
+    "media_scanner.js",
+    "progress_center.js",
+    "../progress_center_panel.js",
+    "task_queue.js",
+  ]
+}
+
+js_library("file_browser_background_full.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/file_browser_background_full.m.js" ]
+  deps = [
+    ":background_base.m",
+    ":crostini.m",
+    ":drive_sync_handler.m",
+    ":file_operation_manager.m",
+    ":import_history.m",
+    ":media_import_handler.m",
+    ":media_scanner.m",
+    ":progress_center.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("background_base.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/background_base.m.js" ]
+
+  deps = [ "..:volume_manager.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("drive_sync_handler.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/drive_sync_handler.m.js" ]
+
+  deps = [ "..:drive_dialog_controller.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("duplicate_finder.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/duplicate_finder.m.js" ]
+  deps = [
+    ":import_history.m",
+    "//ui/file_manager/file_manager/common/js:importer_common.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("crostini.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/crostini.m.js" ]
+  deps = [ "..:volume_manager.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("file_operation_manager.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/file_operation_manager.m.js" ]
+  deps = [
+    "..:files_app_entry_interfaces.m",
+    "..:volume_manager.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("import_history.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/import_history.m.js" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:importer_common.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("media_import_handler.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/media_import_handler.m.js" ]
+  deps = [
+    ":drive_sync_handler.m",
+    ":duplicate_finder.m",
+    ":import_history.m",
+    ":media_scanner.m",
+    ":progress_center.m",
+    ":task_queue.m",
+    "//ui/file_manager/file_manager/common/js:importer_common.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("media_scanner.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/media_scanner.m.js" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:importer_common.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("progress_center.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/progress_center.m.js" ]
+  deps = [
+    "..:progress_center_panel.m",
+    "//ui/file_manager/file_manager/common/js:progress_center_common.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("task_queue.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/background/task_queue.m.js" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:importer_common.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "file_browser_background_full.js",
+    "background_base.js",
+    "crostini.js",
+    "drive_sync_handler.js",
+    "duplicate_finder.js",
+    "file_operation_manager.js",
+    "import_history.js",
+    "media_import_handler.js",
+    "media_scanner.js",
+    "progress_center.js",
+    "task_queue.js",
+  ]
+}

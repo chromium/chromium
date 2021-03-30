@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that HTML editor hides only when focusing another element\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div>

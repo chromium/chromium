@@ -6,9 +6,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/ScreenOrientationProviderImpl_jni.h"
-#include "ui/android/window_android.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace content {
 
@@ -31,10 +30,9 @@ void ScreenOrientationDelegateAndroid::Lock(
   base::android::ScopedJavaLocalRef<jobject> java_instance =
       Java_ScreenOrientationProviderImpl_getInstance(
           base::android::AttachCurrentThread());
-  gfx::NativeWindow window = web_contents->GetTopLevelNativeWindow();
-  Java_ScreenOrientationProviderImpl_lockOrientation(
+  Java_ScreenOrientationProviderImpl_lockOrientationForWebContents(
       base::android::AttachCurrentThread(), java_instance,
-      window ? window->GetJavaObject() : nullptr,
+      static_cast<WebContentsImpl*>(web_contents)->GetJavaWebContents(),
       static_cast<jbyte>(lock_orientation));
 }
 
@@ -53,10 +51,9 @@ void ScreenOrientationDelegateAndroid::Unlock(WebContents* web_contents) {
   base::android::ScopedJavaLocalRef<jobject> java_instance =
       Java_ScreenOrientationProviderImpl_getInstance(
           base::android::AttachCurrentThread());
-  gfx::NativeWindow window = web_contents->GetTopLevelNativeWindow();
-  Java_ScreenOrientationProviderImpl_unlockOrientation(
+  Java_ScreenOrientationProviderImpl_unlockOrientationForWebContents(
       base::android::AttachCurrentThread(), java_instance,
-      window ? window->GetJavaObject() : nullptr);
+      static_cast<WebContentsImpl*>(web_contents)->GetJavaWebContents());
 }
 
 } // namespace content

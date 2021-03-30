@@ -10,11 +10,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/driver/fake_sync_api_component_factory.h"
 #include "components/sync/driver/profile_sync_service.h"
-#include "components/sync/driver/sync_api_component_factory_mock.h"
 #include "components/sync/driver/sync_client_mock.h"
 #include "components/sync/invalidations/mock_sync_invalidations_service.h"
 #include "components/sync/invalidations/switches.h"
@@ -53,12 +52,8 @@ class ProfileSyncServiceBundle {
     return identity_test_env_.identity_manager();
   }
 
-  SyncApiComponentFactoryMock* component_factory() {
+  FakeSyncApiComponentFactory* component_factory() {
     return &component_factory_;
-  }
-
-  invalidation::ProfileIdentityProvider* identity_provider() {
-    return identity_provider_.get();
   }
 
   MockSyncInvalidationsService* sync_invalidations_service() {
@@ -73,8 +68,7 @@ class ProfileSyncServiceBundle {
   TestingPrefServiceSimple pref_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
-  testing::NiceMock<SyncApiComponentFactoryMock> component_factory_;
-  std::unique_ptr<invalidation::ProfileIdentityProvider> identity_provider_;
+  FakeSyncApiComponentFactory component_factory_;
   testing::NiceMock<MockSyncInvalidationsService> sync_invalidations_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileSyncServiceBundle);

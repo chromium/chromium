@@ -11,7 +11,7 @@ bool IsControlChar(const ui::KeyEvent* event) {
   // considered as a control character. See:
   // https://en.wikipedia.org/wiki/Unicode_control_characters They are control
   // characters and not treated as a text insertion.
-  const base::char16 ch = event->GetCharacter();
+  const char16_t ch = event->GetCharacter();
   const bool is_control_char =
       (0x00 <= ch && ch <= 0x1f) || (0x7f <= ch && ch <= 0x9f);
   return is_control_char;

@@ -120,20 +120,8 @@ bool ScriptPrecondition::MatchPath(const GURL& url) const {
 
 bool ScriptPrecondition::MatchParameters(const TriggerContext& context) const {
   for (const auto& match : parameter_match_) {
-    auto opt_value = context.GetParameter(match.name());
-    if (match.exists()) {
-      // parameter must exist and optionally have a specific value
-      if (!opt_value)
-        return false;
-
-      if (!match.value_equals().empty() &&
-          opt_value.value() != match.value_equals())
-        return false;
-
-    } else {
-      // parameter must not exist
-      if (opt_value)
-        return false;
+    if (!context.GetScriptParameters().Matches(match)) {
+      return false;
     }
   }
   return true;

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chromeos/components/sync_wifi/local_network_collector.h"
+#include "chromeos/components/sync_wifi/synced_network_metrics_logger.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -39,11 +40,15 @@ class LocalNetworkCollectorImpl
 
   // |cros_network_config| and |network_metadata_store| must outlive this class.
   explicit LocalNetworkCollectorImpl(
-      network_config::mojom::CrosNetworkConfig* cros_network_config);
+      network_config::mojom::CrosNetworkConfig* cros_network_config,
+      SyncedNetworkMetricsLogger* metrics_recorder);
   ~LocalNetworkCollectorImpl() override;
 
   // Can only execute one request at a time.
   void GetAllSyncableNetworks(ProtoListCallback callback) override;
+
+  // Executes at most once per instance of LocalNetworkCollectorImpl.
+  void RecordZeroNetworksEligibleForSync() override;
 
   // Can be called on multiple networks simultaneously.
   void GetSyncableNetwork(const std::string& guid,
@@ -54,6 +59,11 @@ class LocalNetworkCollectorImpl
 
   void SetNetworkMetadataStore(
       base::WeakPtr<NetworkMetadataStore> network_metadata_store) override;
+
+  void FixAutoconnect(std::vector<sync_pb::WifiConfigurationSpecifics> protos,
+                      base::OnceClosure callback) override;
+
+  void ExecuteAfterNetworksLoaded(base::OnceClosure callback) override;
 
   // CrosNetworkConfigObserver:
   void OnNetworkStateListChanged() override;
@@ -79,6 +89,8 @@ class LocalNetworkCollectorImpl
       sync_pb::WifiConfigurationSpecifics proto,
       const std::string& request_guid,
       network_config::mojom::ManagedPropertiesPtr properties);
+  void EnableAutoconnectIfDisabled(
+      network_config::mojom::ManagedPropertiesPtr managed_properties);
 
   // Callback for shill's GetWiFiPassphrase method.  |proto| should contain the
   // partially filled in proto representation of the network, |is_one_off|
@@ -100,8 +112,12 @@ class LocalNetworkCollectorImpl
   void OnRequestFinished(const std::string& request_guid);
   void OnGetNetworkList(
       std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks);
+  network_config::mojom::NetworkStatePropertiesPtr GetNetworkFromProto(
+      const sync_pb::WifiConfigurationSpecifics& proto);
+  void OnFixAutoconnectComplete(bool success, const std::string& error);
 
   network_config::mojom::CrosNetworkConfig* cros_network_config_;
+  SyncedNetworkMetricsLogger* metrics_recorder_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
   std::vector<network_config::mojom::NetworkStatePropertiesPtr> mojo_networks_;
@@ -113,6 +129,12 @@ class LocalNetworkCollectorImpl
       request_guid_to_in_flight_networks_;
   base::flat_map<std::string, ProtoCallback> request_guid_to_single_callback_;
   base::flat_map<std::string, ProtoListCallback> request_guid_to_list_callback_;
+  base::queue<base::OnceClosure> after_networks_are_loaded_callback_queue_;
+  bool is_mojo_networks_loaded_ = false;
+  bool has_logged_zero_eligible_networks_metric_ = false;
+
+  // This will be null unless there is FixAutoconnect operation in progress.
+  base::RepeatingClosure fix_autoconnect_callback_;
 
   base::WeakPtrFactory<LocalNetworkCollectorImpl> weak_ptr_factory_{this};
 };

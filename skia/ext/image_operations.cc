@@ -375,8 +375,7 @@ SkBitmap ImageOperations::Resize(const SkPixmap& source,
   SkBitmap result;
   result.setInfo(
       source.info().makeWH(dest_subset.width(), dest_subset.height()));
-  result.allocPixels(allocator);
-  if (!result.readyToDraw())
+  if (!result.tryAllocPixels(allocator) || !result.readyToDraw())
     return SkBitmap();
 
   BGRAConvolve2D(source_subset, static_cast<int>(source.rowBytes()),

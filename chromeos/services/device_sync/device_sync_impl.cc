@@ -4,6 +4,7 @@
 
 #include "chromeos/services/device_sync/device_sync_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -16,7 +17,6 @@
 #include "base/unguessable_token.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/cryptauth_client_impl.h"
 #include "chromeos/services/device_sync/cryptauth_device_activity_getter_impl.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager_impl.h"
@@ -783,14 +783,20 @@ void DeviceSyncImpl::Shutdown() {
   clock_ = nullptr;
 }
 
-void DeviceSyncImpl::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& primary_account_info) {
-  PA_LOG(VERBOSE) << "DeviceSyncImpl: OnUnconsentedPrimaryAccountChanged";
-  // We're only interested when the account is set.
-  if (primary_account_info.account_id.empty())
-    return;
-  identity_manager_->RemoveObserver(this);
-  ProcessPrimaryAccountInfo(primary_account_info);
+void DeviceSyncImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  PA_LOG(VERBOSE) << "DeviceSyncImpl: OnPrimaryAccountChanged";
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      identity_manager_->RemoveObserver(this);
+      ProcessPrimaryAccountInfo(event.GetCurrentState().primary_account);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      FALLTHROUGH;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      // Ignored
+      break;
+  }
 }
 
 void DeviceSyncImpl::RunNextInitializationStep() {
@@ -825,8 +831,8 @@ void DeviceSyncImpl::FetchAccountInfo() {
   status_ = InitializationStatus::kFetchingAccountInfo;
 
   // "Unconsented" because this feature is not tied to browser sync consent.
-  CoreAccountInfo primary_account = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo primary_account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_account.account_id.empty()) {
     // Primary profile not loaded yet. This happens when adding a new account.
     PA_LOG(VERBOSE) << "DeviceSyncImpl: Waiting for primary account info";

@@ -22,8 +22,7 @@ void TokenFetcher::GetAccessToken(
   // users.
 
   token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
-      identity_manager_->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired),
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       kOAuthConsumerName, {GaiaConstants::kTachyonOAuthScope},
       base::BindOnce(&TokenFetcher::OnOAuthTokenFetched,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -34,7 +33,10 @@ void TokenFetcher::OnOAuthTokenFetched(
     base::OnceCallback<void(const std::string& token)> callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
+  // It is safe to reset the token fetcher now.
+  token_fetcher_.reset();
   // Note: We do not do anything special for empty tokens.
   std::move(callback).Run(access_token_info.token);
-  token_fetcher_.reset();
+  // TODO(crbug/1180403): This refactor will make the comment below unnecessary.
+  // |this| may be be deleted at this point.
 }

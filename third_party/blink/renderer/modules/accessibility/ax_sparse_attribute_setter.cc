@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -49,6 +50,8 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
     return;
 
   AXObject* ax_target = object->AXObjectCache().GetOrCreate(target);
+  if (!ax_target)
+    return;
   if (attribute == ax::mojom::blink::IntAttribute::kActivedescendantId &&
       !ax_target->IsVisible()) {
     return;
@@ -76,8 +79,6 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
         object->AXObjectCache().GetOrCreate(associated_element);
     if (!ax_element)
       continue;
-    if (AXObject* parent = ax_element->ParentObject())
-      parent->UpdateChildrenIfNecessary();
     if (!ax_element->AccessibilityIsIgnored())
       ax_ids.push_back(ax_element->AXObjectID());
   }
@@ -148,6 +149,17 @@ AXSparseAttributeSetterMap& GetAXSparseAttributeSetterMap() {
             &SetStringAttribute,
             ax::mojom::blink::StringAttribute::kRoleDescription));
     ax_sparse_setter_map.Set(
+        html_names::kAriaTouchpassthroughAttr,
+        WTF::BindRepeating(&SetBoolAttribute,
+                           ax::mojom::blink::BoolAttribute::kTouchPassthrough));
+    if (RuntimeEnabledFeatures::AccessibilityAriaVirtualContentEnabled()) {
+      ax_sparse_setter_map.Set(
+          html_names::kAriaVirtualcontentAttr,
+          WTF::BindRepeating(
+              &SetStringAttribute,
+              ax::mojom::blink::StringAttribute::kVirtualContent));
+    }
+    ax_sparse_setter_map.Set(
         html_names::kAriaKeyshortcutsAttr,
         WTF::BindRepeating(&SetStringAttribute,
                            ax::mojom::blink::StringAttribute::kKeyShortcuts));
@@ -165,6 +177,11 @@ void AXNodeDataAOMPropertyClient::AddStringProperty(AOMStringProperty property,
       break;
     case AOMStringProperty::kRoleDescription:
       attribute = ax::mojom::blink::StringAttribute::kRoleDescription;
+      break;
+    case AOMStringProperty::kVirtualContent:
+      if (!RuntimeEnabledFeatures::AccessibilityAriaVirtualContentEnabled())
+        return;
+      attribute = ax::mojom::blink::StringAttribute::kVirtualContent;
       break;
     default:
       return;
@@ -206,7 +223,7 @@ void AXNodeDataAOMPropertyClient::AddRelationProperty(
 
   Element* target = value.element();
   AXObject* ax_target = ax_object_cache_->GetOrCreate(target);
-  if (!target)
+  if (!ax_target)
     return;
 
   node_data_.AddIntAttribute(attribute, ax_target->AXObjectID());

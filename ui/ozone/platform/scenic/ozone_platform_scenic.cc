@@ -131,7 +131,8 @@ class OzonePlatformScenic : public OzonePlatform,
   std::unique_ptr<InputMethod> CreateInputMethod(
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget widget) override {
-    return std::make_unique<InputMethodFuchsia>(delegate, widget);
+    return std::make_unique<InputMethodFuchsia>(
+        delegate, window_manager_->GetWindow(widget)->CloneViewRef());
   }
 
   void InitializeUI(const InitParams& params) override {

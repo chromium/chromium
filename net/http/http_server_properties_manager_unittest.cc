@@ -44,14 +44,12 @@ using ::testing::StrictMock;
 
 enum class NetworkIsolationKeyMode {
   kDisabled,
-  kTopFrameOriginOnly,
-  kTopFrameOriginAndFrameOrigin,
+  kEnabled,
 };
 
 const NetworkIsolationKeyMode kNetworkIsolationKeyModes[] = {
     NetworkIsolationKeyMode::kDisabled,
-    NetworkIsolationKeyMode::kTopFrameOriginOnly,
-    NetworkIsolationKeyMode::kTopFrameOriginAndFrameOrigin,
+    NetworkIsolationKeyMode::kEnabled,
 };
 
 std::unique_ptr<base::test::ScopedFeatureList> SetNetworkIsolationKeyMode(
@@ -62,20 +60,9 @@ std::unique_ptr<base::test::ScopedFeatureList> SetNetworkIsolationKeyMode(
       feature_list->InitAndDisableFeature(
           features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
       break;
-    case NetworkIsolationKeyMode::kTopFrameOriginOnly:
-      feature_list->InitWithFeatures(
-          // enabled_features
-          {features::kPartitionHttpServerPropertiesByNetworkIsolationKey},
-          // disabled_features
-          {features::kAppendFrameOriginToNetworkIsolationKey});
-      break;
-    case NetworkIsolationKeyMode::kTopFrameOriginAndFrameOrigin:
-      feature_list->InitWithFeatures(
-          // enabled_features
-          {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-           features::kAppendFrameOriginToNetworkIsolationKey},
-          // disabled_features
-          {});
+    case NetworkIsolationKeyMode::kEnabled:
+      feature_list->InitAndEnableFeature(
+          features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
       break;
   }
   return feature_list;
@@ -1216,14 +1203,14 @@ TEST_F(HttpServerPropertiesManagerTest, UpdatePrefsWithCache) {
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
-      "{\"alternative_service\":[{\"advertised_versions\":[],"
+      "{\"alternative_service\":[{\"advertised_alpns\":[],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"h2\"},"
-      "{\"advertised_versions\":[],\"expiration\":\"13758804000000000\","
+      "{\"advertised_alpns\":[],\"expiration\":\"13758804000000000\","
       "\"host\":\"www.google.com\",\"port\":1234,\"protocol_str\":\"h2\"}],"
       "\"isolation\":[],"
       "\"server\":\"https://www.google.com:80\"},"
-      "{\"alternative_service\":[{\"advertised_versions\":[],"
+      "{\"alternative_service\":[{\"advertised_alpns\":[],"
       "\"expiration\":\"9223372036854775807\",\"host\":\"foo.google.com\","
       "\"port\":444,\"protocol_str\":\"h2\"}],"
       "\"isolation\":[],"
@@ -1520,14 +1507,16 @@ TEST_F(HttpServerPropertiesManagerTest, PersistAdvertisedVersionsToPref) {
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
       "{\"alternative_service\":[{"
-      "\"advertised_versions\":[46,43],\"expiration\":\"13756212000000000\","
-      "\"port\":443,\"protocol_str\":\"quic\"},{\"advertised_versions\":[],"
+      "\"advertised_alpns\":[\"h3-Q046\",\"h3-Q043\"],\"expiration\":"
+      "\"13756212000000000\","
+      "\"port\":443,\"protocol_str\":\"quic\"},{\"advertised_alpns\":[],"
       "\"expiration\":\"13758804000000000\",\"host\":\"www.google.com\","
       "\"port\":1234,\"protocol_str\":\"h2\"}],"
       "\"isolation\":[],"
       "\"server\":\"https://www.google.com:80\"},"
       "{\"alternative_service\":[{"
-      "\"advertised_versions\":[50],\"expiration\":\"9223372036854775807\","
+      "\"advertised_alpns\":[\"h3-Q050\",\"h3-29\"],\"expiration\":"
+      "\"9223372036854775807\","
       "\"host\":\"foo.google.com\",\"port\":444,\"protocol_str\":\"quic\"}],"
       "\"isolation\":[],"
       "\"network_stats\":{\"srtt\":42},"
@@ -1553,7 +1542,7 @@ TEST_F(HttpServerPropertiesManagerTest, ReadAdvertisedVersionsFromPref) {
       "\"expiration\":\"9223372036854775807\","
       // Add 33 which we know is not supported, as regression test for
       // https://crbug.com/1061509
-      "\"advertised_versions\":[33,46,43]}]}");
+      "\"advertised_alpns\":[\"h3-Q033\",\"h3-Q046\",\"h3-Q043\"]}]}");
   ASSERT_TRUE(server_dict);
   ASSERT_TRUE(server_dict->is_dict());
 
@@ -1588,7 +1577,7 @@ TEST_F(HttpServerPropertiesManagerTest, ReadAdvertisedVersionsFromPref) {
   // Verify advertised versions.
   const quic::ParsedQuicVersionVector loaded_advertised_versions =
       alternative_service_info_vector[1].advertised_versions();
-  EXPECT_EQ(2u, loaded_advertised_versions.size());
+  ASSERT_EQ(2u, loaded_advertised_versions.size());
   EXPECT_EQ(quic::ParsedQuicVersion::Q043(), loaded_advertised_versions[0]);
   EXPECT_EQ(quic::ParsedQuicVersion::Q046(), loaded_advertised_versions[1]);
 
@@ -1638,7 +1627,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
-      "{\"alternative_service\":[{\"advertised_versions\":[50],"
+      "{\"alternative_service\":[{\"advertised_alpns\":[\"h3-Q050\",\"h3-29\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
       "\"isolation\":[],"
@@ -1678,7 +1667,8 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
-      "{\"alternative_service\":[{\"advertised_versions\":[46,43],"
+      "{\"alternative_service\":"
+      "[{\"advertised_alpns\":[\"h3-Q046\",\"h3-Q043\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
       "\"isolation\":[],"
@@ -1713,7 +1703,8 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
-      "{\"alternative_service\":[{\"advertised_versions\":[43,46],"
+      "{\"alternative_service\":"
+      "[{\"advertised_alpns\":[\"h3-Q043\",\"h3-Q046\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
       "\"isolation\":[],"
@@ -2996,6 +2987,64 @@ TEST_F(HttpServerPropertiesManagerTest,
                           &preferences_json);
   EXPECT_EQ("{\"quic_servers\":[],\"servers\":[],\"version\":5}",
             preferences_json);
+}
+
+TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
+  for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
+    // Reset test infrastructure.
+    TearDown();
+    SetUp();
+    InitializePrefs();
+    // Create alternate version information.
+    const url::SchemeHostPort server("https", "quic.example.org", 443);
+    AlternativeServiceInfoVector alternative_service_info_vector_in;
+    AlternativeService quic_alternative_service(kProtoQUIC, "", 443);
+    base::Time expiration;
+    ASSERT_TRUE(base::Time::FromUTCString("2036-12-01 10:00:00", &expiration));
+    quic::ParsedQuicVersionVector advertised_versions = {version};
+    alternative_service_info_vector_in.push_back(
+        AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+            quic_alternative_service, expiration, advertised_versions));
+    http_server_props_->SetAlternativeServices(
+        server, NetworkIsolationKey(), alternative_service_info_vector_in);
+    // Save to JSON.
+    EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
+    EXPECT_NE(0u, GetPendingMainThreadTaskCount());
+    FastForwardUntilNoTasksRemain();
+    EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
+    const base::Value* http_server_properties =
+        pref_delegate_->GetServerProperties();
+    std::string preferences_json;
+    EXPECT_TRUE(
+        base::JSONWriter::Write(*http_server_properties, &preferences_json));
+    // Reset test infrastructure.
+    TearDown();
+    SetUp();
+    InitializePrefs();
+    // Read from JSON.
+    std::unique_ptr<base::Value> preferences_dict =
+        base::JSONReader::ReadDeprecated(preferences_json);
+    ASSERT_TRUE(preferences_dict);
+    ASSERT_TRUE(preferences_dict->is_dict());
+    const base::Value* servers_list = preferences_dict->FindListKey("servers");
+    ASSERT_TRUE(servers_list);
+    ASSERT_TRUE(servers_list->is_list());
+    ASSERT_EQ(servers_list->GetList().size(), 1u);
+    const base::Value& server_dict = servers_list->GetList()[0];
+    HttpServerProperties::ServerInfo server_info;
+    EXPECT_TRUE(HttpServerPropertiesManager::ParseAlternativeServiceInfo(
+        server, server_dict, &server_info));
+    ASSERT_TRUE(server_info.alternative_services.has_value());
+    AlternativeServiceInfoVector alternative_service_info_vector_out =
+        server_info.alternative_services.value();
+    ASSERT_EQ(1u, alternative_service_info_vector_out.size());
+    EXPECT_EQ(
+        kProtoQUIC,
+        alternative_service_info_vector_out[0].alternative_service().protocol);
+    // Ensure we correctly parsed the version.
+    EXPECT_EQ(advertised_versions,
+              alternative_service_info_vector_out[0].advertised_versions());
+  }
 }
 
 }  // namespace net

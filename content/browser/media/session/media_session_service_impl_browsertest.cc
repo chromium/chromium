@@ -5,6 +5,7 @@
 #include "content/browser/media/session/media_session_service_impl.h"
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/media_session_player_observer.h"
@@ -16,6 +17,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "media/base/media_content_type.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,6 +52,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnResume(int player_id) override {}
   void OnSeekForward(int player_id, base::TimeDelta seek_time) override {}
   void OnSeekBackward(int player_id, base::TimeDelta seek_time) override {}
+  void OnSeekTo(int player_id, base::TimeDelta seek_time) override {}
   void OnSetVolumeMultiplier(int player_id, double volume_multiplier) override {
   }
   void OnEnterPictureInPicture(int player_id) override {}
@@ -97,6 +100,15 @@ char kSetUpMediaSessionScript[] =
     "navigator.mediaSession.metadata = new MediaMetadata({ title: \"foo\" });\n"
     "navigator.mediaSession.setActionHandler(\"seekforward\", _ => {});";
 
+char kSetUpWebRTCMediaSessionScript[] =
+    "navigator.mediaSession.playbackState = \"playing\";\n"
+    "navigator.mediaSession.metadata = new MediaMetadata({ title: \"foo\" });\n"
+    "navigator.mediaSession.setMicrophoneActive(true);\n"
+    "navigator.mediaSession.setCameraActive(true);\n"
+    "navigator.mediaSession.setActionHandler(\"togglemicrophone\", _ => {});\n"
+    "navigator.mediaSession.setActionHandler(\"togglecamera\", _ => {});\n"
+    "navigator.mediaSession.setActionHandler(\"hangup\", _ => {});";
+
 const int kPlayerId = 0;
 
 }  // anonymous namespace
@@ -127,8 +139,9 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
 
   MediaSessionServiceImpl* GetService() {
     RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
-    if (GetSession()->services_.count(main_frame))
-      return GetSession()->services_[main_frame];
+    const auto main_frame_id = main_frame->GetGlobalFrameRoutingId();
+    if (GetSession()->services_.count(main_frame_id))
+      return GetSession()->services_[main_frame_id];
 
     return nullptr;
   }
@@ -141,6 +154,8 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     expected_actions.insert(media_session::mojom::MediaSessionAction::kPlay);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kPause);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kStop);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
     expected_actions.insert(
         media_session::mojom::MediaSessionAction::kSeekForward);
 
@@ -234,6 +249,66 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
             GetService()->playback_state());
   EXPECT_TRUE(GetService()->metadata());
   EXPECT_EQ(1u, GetService()->actions().size());
+}
+
+// Browser tests with the MediaSessionWebRTC feature enabled.
+// TODO(steimel): Merge with above tests when the feature is enabled by default.
+class MediaSessionServiceImplWebRTCBrowserTest
+    : public MediaSessionServiceImplBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MediaSessionServiceImplBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitAndEnableFeature(media::kMediaSessionWebRTC);
+  }
+
+  bool ExecuteScriptToSetUpWebRTCMediaSessionSync() {
+    bool result = ExecuteScript(shell(), kSetUpWebRTCMediaSessionScript);
+    media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
+
+    std::set<media_session::mojom::MediaSessionAction> expected_actions;
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kPlay);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kPause);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kStop);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kToggleMicrophone);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kToggleCamera);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kHangUp);
+
+    observer.WaitForExpectedActions(expected_actions);
+    return result;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplWebRTCBrowserTest,
+                       MicrophoneAndCameraStatesInitiallyUnknown) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
+  EnsurePlayer();
+
+  EXPECT_TRUE(ExecuteScriptToSetUpMediaSessionSync());
+
+  media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
+  observer.WaitForMicrophoneState(
+      media_session::mojom::MicrophoneState::kUnknown);
+  observer.WaitForCameraState(media_session::mojom::CameraState::kUnknown);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplWebRTCBrowserTest,
+                       MicrophoneAndCameraStatesCanBeSet) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
+  EnsurePlayer();
+
+  EXPECT_TRUE(ExecuteScriptToSetUpWebRTCMediaSessionSync());
+
+  media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
+  observer.WaitForMicrophoneState(
+      media_session::mojom::MicrophoneState::kUnmuted);
+  observer.WaitForCameraState(media_session::mojom::CameraState::kTurnedOn);
 }
 
 }  // namespace content

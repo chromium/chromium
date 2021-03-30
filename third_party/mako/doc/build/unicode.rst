@@ -4,6 +4,9 @@
 The Unicode Chapter
 ===================
 
+.. note:: this chapter was written many years ago and is very Python-2
+   centric. As of Mako 1.1.3, the default template encoding is ``utf-8``.
+
 The Python language supports two ways of representing what we
 know as "strings", i.e. series of characters. In Python 2, the
 two types are ``string`` and ``unicode``, and in Python 3 they are
@@ -89,34 +92,22 @@ encoding <defining_output_encoding>` (still required in Python 3).
 Specifying the Encoding of a Template File
 ==========================================
 
-This is the most basic encoding-related setting, and it is
-equivalent to Python's "magic encoding comment", as described in
-`pep-0263 <http://www.python.org/dev/peps/pep-0263/>`_. Any
-template that contains non-ASCII characters requires that this
-comment be present so that Mako can decode to unicode (and also
-make usage of Python's AST parsing services). Mako's lexer will
-use this encoding in order to convert the template source into a
-``unicode`` object before continuing its parsing:
+.. versionchanged:: 1.1.3
+
+    As of Mako 1.1.3, the default template encoding is "utf-8".  Previously, a
+    Python "magic encoding comment" was required for templates that were not
+    using ASCII.
+
+Mako templates support Python's "magic encoding comment" syntax
+described in  `pep-0263 <http://www.python.org/dev/peps/pep-0263/>`_:
 
 .. sourcecode:: mako
 
     ## -*- coding: utf-8 -*-
 
-    Alors vous imaginez ma surprise, au lever du jour, quand 
+    Alors vous imaginez ma surprise, au lever du jour, quand
     une drôle de petite voix m’a réveillé. Elle disait:
      « S’il vous plaît… dessine-moi un mouton! »
-
-For the picky, the regular expression used is derived from that
-of the above mentioned pep:
-
-.. sourcecode:: python
-
-    #.*coding[:=]\s*([-\w.]+).*\n
-
-The lexer will convert to unicode in all cases, so that if any
-characters exist in the template that are outside of the
-specified encoding (or the default of ``ascii``), the error will
-be immediate.
 
 As an alternative, the template encoding can be specified
 programmatically to either :class:`.Template` or :class:`.TemplateLookup` via

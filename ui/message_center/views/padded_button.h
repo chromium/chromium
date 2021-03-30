@@ -5,12 +5,10 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_PADDED_BUTTON_H_
 #define UI_MESSAGE_CENTER_VIEWS_PADDED_BUTTON_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace message_center {
 
@@ -23,15 +21,16 @@ namespace message_center {
 // area (<http://crbug.com/168856>).
 class MESSAGE_CENTER_EXPORT PaddedButton : public views::ImageButton {
  public:
+  METADATA_HEADER(PaddedButton);
+
   explicit PaddedButton(PressedCallback callback);
+  PaddedButton(const PaddedButton&) = delete;
+  PaddedButton& operator=(const PaddedButton&) = delete;
   ~PaddedButton() override = default;
 
   // views::ImageButton:
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   void OnThemeChanged() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaddedButton);
 };
 
 }  // namespace message_center

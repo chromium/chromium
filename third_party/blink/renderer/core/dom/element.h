@@ -35,10 +35,12 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/element_data.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
+#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -59,6 +61,7 @@ class DOMStringMap;
 class DOMTokenList;
 class DisplayLockContext;
 class Document;
+class EditContext;
 class ElementAnimations;
 class ElementInternals;
 class ElementIntersectionObserverData;
@@ -76,7 +79,7 @@ class MutableCSSPropertyValueSet;
 class NamedNodeMap;
 class PointerLockOptions;
 class PseudoElement;
-class PseudoElementStyleRequest;
+class StyleRequest;
 class ResizeObservation;
 class ResizeObserver;
 class ScrollIntoViewOptions;
@@ -88,6 +91,7 @@ class SpaceSplitString;
 class StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL;
 class StylePropertyMap;
 class StylePropertyMapReadOnly;
+class StyleRecalcContext;
 
 enum class CSSPropertyID;
 enum class CSSValueID;
@@ -335,6 +339,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       DocumentUpdateReason reason = DocumentUpdateReason::kUnknown) const;
 
   DOMRectList* getClientRects();
+  FloatRect GetBoundingClientRectNoLifecycleUpdate() const;
   DOMRect* getBoundingClientRect();
 
   const AtomicString& computedRole();
@@ -443,6 +448,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) {}
+  // Subclasses can override these functions if there is extra style that needs
+  // to be mapped like attributes.
+  virtual bool HasExtraStyleForPresentationAttribute() const { return false; }
+  virtual void CollectExtraStyleForPresentationAttribute(
+      MutableCSSPropertyValueSet*) {}
 
   // For exposing to DOM only.
   NamedNodeMap* attributesForBindings() const;
@@ -511,7 +521,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout);
   virtual bool LayoutObjectIsNeeded(const ComputedStyle&) const;
-  void RecalcStyle(const StyleRecalcChange);
+  void RecalcStyle(const StyleRecalcChange, const StyleRecalcContext&);
   void RecalcStyleForTraversalRootAncestor();
   void RebuildLayoutTreeForTraversalRootAncestor() {
     RebuildFirstLetterLayoutTree();
@@ -589,16 +599,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
            GetCustomElementState() == CustomElementState::kCustom;
   }
 
-  bool ComputeInheritedDirPseudoClass(TextDirection direction) const;
-  virtual bool MatchesDirPseudoClassForDirAutoAttribute(
-      TextDirection direction) const {
-    return false;
-  }
-
   AtomicString ComputeInheritedLanguage() const;
   Locale& GetLocale() const;
 
-  virtual void AccessKeyAction(bool /*sendToAnyEvent*/) {}
+  virtual void AccessKeyAction(SimulatedClickCreationScope) {}
 
   virtual bool IsURLAttribute(const Attribute&) const { return false; }
   virtual bool IsHTMLContentAttribute(const Attribute&) const { return false; }
@@ -666,7 +670,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       Element* new_focused_element,
       InputDeviceCapabilities* source_capabilities = nullptr);
 
-  // The implementation of |innerText()| is found in "element_inner_text.cc".
+  // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
+  // found in "element_inner_text.cc".
+  String GetInnerTextWithoutUpdate();  // Avoids layout update.
   String innerText();
   String outerText();
 
@@ -715,17 +721,34 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // parsing a special case in this respect should be avoided if possible.
   virtual void FinishParsingChildren();
 
-  void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
+  virtual void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
 
   PseudoElement* GetPseudoElement(PseudoId) const;
   LayoutObject* PseudoElementLayoutObject(PseudoId) const;
 
   bool PseudoElementStylesDependOnFontMetrics() const;
-  const ComputedStyle* CachedStyleForPseudoElement(
-      const PseudoElementStyleRequest&);
-  scoped_refptr<ComputedStyle> StyleForPseudoElement(
-      const PseudoElementStyleRequest&,
-      const ComputedStyle* parent_style = nullptr);
+
+  // Retrieve the ComputedStyle (if any) corresponding to the provided
+  // PseudoId from cache, calculating the ComputedStyle on-demand if it's
+  // missing from the cache.
+  const ComputedStyle* CachedStyleForPseudoElement(PseudoId);
+
+  // Calculate the ComputedStyle corresponding to the provided StyleRequest,
+  // bypassing the pseudo style cache.
+  //
+  // This is appropriate to use if the cached version is invalid in a given
+  // situation.
+  scoped_refptr<ComputedStyle> UncachedStyleForPseudoElement(
+      const StyleRequest&);
+
+  // This is the same as UncachedStyleForPseudoElement, except that the caller
+  // must provide an appropriate StyleRecalcContext such that e.g. @container
+  // queries are evaluated correctly.
+  //
+  // See StyleRecalcContext for more information.
+  scoped_refptr<ComputedStyle> StyleForPseudoElement(const StyleRecalcContext&,
+                                                     const StyleRequest&);
+
   virtual bool CanGeneratePseudoElement(PseudoId) const;
 
   virtual bool MatchesDefaultPseudoClass() const { return false; }
@@ -830,7 +853,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsSpellCheckingEnabled() const;
 
   // FIXME: public for LayoutTreeBuilder, we shouldn't expose this though.
-  scoped_refptr<ComputedStyle> StyleForLayoutObject();
+  scoped_refptr<ComputedStyle> StyleForLayoutObject(const StyleRecalcContext&);
 
   bool HasID() const;
   bool HasClass() const;
@@ -868,6 +891,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void setTabIndex(int);
   int tabIndex() const;
 
+  void setEditContext(EditContext* editContext);
+  EditContext* editContext() const;
+
   // Helpers for V8DOMActivityLogger::logEvent.  They call logEvent only if
   // the element is isConnected() and the context is an isolated world.
   void LogAddElementIfIsolatedWorldAndInDocument(const char element[],
@@ -902,6 +928,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
   DisplayLockContext& EnsureDisplayLockContext();
 
+  ContainerQueryEvaluator* GetContainerQueryEvaluator() const;
+  void SetContainerQueryEvaluator(ContainerQueryEvaluator*);
+
   bool ChildStyleRecalcBlockedByDisplayLock() const;
 
   // Activates all activatable (for a given reason) locked ancestors for this
@@ -917,6 +946,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual bool IsAdRelated() const { return false; }
 
   void NotifyInlineStyleMutation();
+
+  // Returns true if this element should composite due to a document transition.
+  // See third_party/blink/renderer/core/document_transition/README.md for more
+  // information.
+  bool ShouldCompositeForDocumentTransition() const;
 
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
@@ -947,7 +981,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   virtual void WillRecalcStyle(const StyleRecalcChange);
   virtual void DidRecalcStyle(const StyleRecalcChange);
-  virtual scoped_refptr<ComputedStyle> CustomStyleForLayoutObject();
+  virtual scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&);
 
   virtual NamedItemType GetNamedItemType() const {
     return NamedItemType::kNone;
@@ -978,7 +1013,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   static bool AttributeValueIsJavaScriptURL(const Attribute&);
 
-  scoped_refptr<ComputedStyle> OriginalStyleForLayoutObject();
+  scoped_refptr<ComputedStyle> OriginalStyleForLayoutObject(
+      const StyleRecalcContext&);
 
   // Step 4 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   Node* InsertAdjacent(const String& where, Node* new_child, ExceptionState&);
@@ -1041,9 +1077,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // and returns the new style. Otherwise, returns null.
   scoped_refptr<ComputedStyle> PropagateInheritedProperties();
 
+  const ComputedStyle* EnsureOwnComputedStyle(const StyleRecalcContext&,
+                                              PseudoId);
+
   // Recalculate the ComputedStyle for this element and return a
   // StyleRecalcChange for propagation/traversal into child nodes.
-  StyleRecalcChange RecalcOwnStyle(const StyleRecalcChange);
+  StyleRecalcChange RecalcOwnStyle(const StyleRecalcChange,
+                                   const StyleRecalcContext&);
 
   void RebuildPseudoElementLayoutTree(PseudoId, WhitespaceAttacher&);
   void RebuildFirstLetterLayoutTree();
@@ -1052,7 +1092,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   inline void CheckForEmptyStyleChange(const Node* node_before_change,
                                        const Node* node_after_change);
 
-  void UpdatePseudoElement(PseudoId, const StyleRecalcChange);
+  void UpdatePseudoElement(PseudoId,
+                           const StyleRecalcChange,
+                           const StyleRecalcContext&);
 
   enum class StyleUpdatePhase {
     kRecalc,
@@ -1062,7 +1104,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void UpdateFirstLetterPseudoElement(StyleUpdatePhase);
 
-  inline PseudoElement* CreatePseudoElementIfNeeded(PseudoId);
+  inline PseudoElement* CreatePseudoElementIfNeeded(PseudoId,
+                                                    const StyleRecalcContext&);
   void AttachPseudoElement(PseudoId, AttachContext&);
   void DetachPseudoElement(PseudoId, bool performing_reattach);
 
@@ -1096,7 +1139,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                 const AtomicString& new_id);
   void UpdateName(const AtomicString& old_name, const AtomicString& new_name);
 
-  void ClientQuads(Vector<FloatQuad>& quads);
+  void ClientQuads(Vector<FloatQuad>& quads) const;
 
   NodeType getNodeType() const final;
   bool ChildTypeAllowed(NodeType) const final;

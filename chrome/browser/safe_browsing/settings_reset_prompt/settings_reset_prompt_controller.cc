@@ -34,7 +34,7 @@ namespace safe_browsing {
 
 namespace {
 
-base::string16 FormatUrlForDisplay(const GURL& url) {
+std::u16string FormatUrlForDisplay(const GURL& url) {
   return url_formatter::FormatUrlForSecurityDisplay(
       url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 }
@@ -76,7 +76,7 @@ SettingsResetPromptController::SettingsResetPromptController(
 
 SettingsResetPromptController::~SettingsResetPromptController() {}
 
-base::string16 SettingsResetPromptController::GetWindowTitle() const {
+std::u16string SettingsResetPromptController::GetWindowTitle() const {
   if (ResetSearchEnabled(*model_)) {
     return l10n_util::GetStringUTF16(
         IDS_SETTINGS_RESET_PROMPT_TITLE_SEARCH_ENGINE);
@@ -89,10 +89,10 @@ base::string16 SettingsResetPromptController::GetWindowTitle() const {
     return l10n_util::GetStringUTF16(IDS_SETTINGS_RESET_PROMPT_TITLE_HOMEPAGE);
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 SettingsResetPromptController::GetMainText() const {
+std::u16string SettingsResetPromptController::GetMainText() const {
   DCHECK(!main_text_.empty());
   return main_text_;
 }
@@ -144,7 +144,7 @@ void SettingsResetPromptController::InitMainText() {
   DCHECK(main_text_.empty());
 
   // Get the URL string to be displayed in the dialog message.
-  base::string16 url_string;
+  std::u16string url_string;
   if (ResetSearchEnabled(*model_)) {
     url_string = FormatUrlForDisplay(model_->default_search());
   } else if (ResetStartupUrlsEnabled(*model_)) {

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker_registry.h"
@@ -67,15 +68,17 @@ mojom::blink::V8CacheOptions ModulatorImplBase::GetV8CacheOptions() const {
 // href="https://html.spec.whatwg.org/C/#fetch-a-module-worker-script-tree">
 void ModulatorImplBase::FetchTree(
     const KURL& url,
+    ModuleType module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
     const ScriptFetchOptions& options,
     ModuleScriptCustomFetchType custom_fetch_type,
     ModuleTreeClient* client) {
-  ModuleTreeLinker::Fetch(url, fetch_client_settings_object_fetcher,
-                          context_type, destination, options, this,
-                          custom_fetch_type, tree_linker_registry_, client);
+  ModuleTreeLinker::Fetch(url, module_type,
+                          fetch_client_settings_object_fetcher, context_type,
+                          destination, options, this, custom_fetch_type,
+                          tree_linker_registry_, client);
 }
 
 void ModulatorImplBase::FetchDescendantsForInlineScript(
@@ -100,8 +103,10 @@ void ModulatorImplBase::FetchSingle(
                                 level, custom_fetch_type, client);
 }
 
-ModuleScript* ModulatorImplBase::GetFetchedModuleScript(const KURL& url) {
-  return map_->GetFetchedModuleScript(url);
+ModuleScript* ModulatorImplBase::GetFetchedModuleScript(
+    const KURL& url,
+    ModuleType module_type) {
+  return map_->GetFetchedModuleScript(url, module_type);
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#resolve-a-module-specifier">
@@ -210,13 +215,10 @@ void ModulatorImplBase::RegisterImportMap(const ImportMap* import_map,
   //
   // TODO(crbug.com/927119): Implement merging. Currently only one import map is
   // allowed.
-  if (import_map_) {
-    GetExecutionContext()->AddConsoleMessage(
-        mojom::ConsoleMessageSource::kOther, mojom::ConsoleMessageLevel::kError,
-        "Multiple import maps are not yet supported. https://crbug.com/927119");
-    return;
-  }
 
+  // Because the second and subsequent import maps are already rejected in
+  // ScriptLoader::PrepareScript(), this is called only once.
+  DCHECK(!import_map_);
   import_map_ = import_map;
 }
 
@@ -225,7 +227,7 @@ bool ModulatorImplBase::HasValidContext() {
 }
 
 void ModulatorImplBase::ResolveDynamically(
-    const String& specifier,
+    const ModuleRequest& module_request,
     const KURL& referrer_url,
     const ReferrerScriptInfo& referrer_info,
     ScriptPromiseResolver* resolver) {
@@ -237,7 +239,7 @@ void ModulatorImplBase::ResolveDynamically(
   }
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kDynamicImportModuleScript);
-  dynamic_module_resolver_->ResolveDynamically(specifier, referrer_url,
+  dynamic_module_resolver_->ResolveDynamically(module_request, referrer_url,
                                                referrer_info, resolver);
 }
 
@@ -274,6 +276,31 @@ Vector<ModuleRequest> ModulatorImplBase::ModuleRequestsFromModuleRecord(
   return ModuleRecord::ModuleRequests(script_state_, module_record);
 }
 
+ModuleType ModulatorImplBase::ModuleTypeFromRequest(
+    const ModuleRequest& module_request) const {
+  String module_type_string = module_request.GetModuleTypeString();
+  if (module_type_string.IsNull()) {
+    // Per https://github.com/whatwg/html/pull/5883, if no type assertion is
+    // provided then the import should be treated as a JavaScript module.
+    return ModuleType::kJavaScript;
+  } else if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
+             module_type_string == "json") {
+    // Per https://github.com/whatwg/html/pull/5658, a "json" type assertion
+    // indicates that the import should be treated as a JSON module script.
+    return ModuleType::kJSON;
+  } else if (RuntimeEnabledFeatures::CSSModulesEnabled() &&
+             module_type_string == "css") {
+    // Per https://github.com/whatwg/html/pull/4898, a "css" type assertion
+    // indicates that the import should be treated as a CSS module script.
+    return ModuleType::kCSS;
+  } else {
+    // Per https://github.com/whatwg/html/pull/5883, if an unsupported type
+    // assertion is provided then the import should be treated as an error
+    // similar to an invalid module specifier.
+    return ModuleType::kInvalid;
+  }
+}
+
 void ModulatorImplBase::ProduceCacheModuleTreeTopLevel(
     ModuleScript* module_script) {
   DCHECK(module_script);
@@ -307,11 +334,15 @@ void ModulatorImplBase::ProduceCacheModuleTree(
     KURL child_url =
         module_script->ResolveModuleSpecifier(module_request.specifier);
 
+    ModuleType child_module_type = this->ModuleTypeFromRequest(module_request);
+    CHECK_NE(child_module_type, ModuleType::kInvalid);
+
     CHECK(child_url.IsValid())
         << "ModuleScript::ResolveModuleSpecifier() impl must "
            "return a valid url.";
 
-    ModuleScript* child_module = GetFetchedModuleScript(child_url);
+    ModuleScript* child_module =
+        GetFetchedModuleScript(child_url, child_module_type);
     CHECK(child_module);
 
     if (discovered_set->Contains(child_module))

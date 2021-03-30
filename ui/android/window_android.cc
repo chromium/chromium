@@ -147,9 +147,6 @@ std::vector<float> WindowAndroid::GetSupportedRefreshRates() {
 }
 
 void WindowAndroid::SetPreferredRefreshRate(float refresh_rate) {
-  if (force_60hz_refresh_rate_)
-    return;
-
   if (test_hooks_) {
     test_hooks_->SetPreferredRate(refresh_rate);
     return;
@@ -204,7 +201,6 @@ void WindowAndroid::OnUpdateRefreshRate(
     float refresh_rate) {
   if (compositor_)
     compositor_->OnUpdateRefreshRate(refresh_rate);
-  Force60HzRefreshRateIfNeeded();
 }
 
 void WindowAndroid::OnSupportedRefreshRatesUpdated(
@@ -218,29 +214,11 @@ void WindowAndroid::OnSupportedRefreshRatesUpdated(
   }
   if (compositor_)
     compositor_->OnUpdateSupportedRefreshRates(supported_refresh_rates);
-
-  Force60HzRefreshRateIfNeeded();
 }
 
 void WindowAndroid::SetWideColorEnabled(bool enabled) {
   JNIEnv* env = AttachCurrentThread();
   Java_WindowAndroid_setWideColorEnabled(env, GetJavaObject(), enabled);
-}
-
-void WindowAndroid::SetForce60HzRefreshRate() {
-  if (force_60hz_refresh_rate_)
-    return;
-
-  force_60hz_refresh_rate_ = true;
-  Force60HzRefreshRateIfNeeded();
-}
-
-void WindowAndroid::Force60HzRefreshRateIfNeeded() {
-  if (!force_60hz_refresh_rate_)
-    return;
-
-  JNIEnv* env = AttachCurrentThread();
-  Java_WindowAndroid_setPreferredRefreshRate(env, GetJavaObject(), 60.f);
 }
 
 bool WindowAndroid::HasPermission(const std::string& permission) {

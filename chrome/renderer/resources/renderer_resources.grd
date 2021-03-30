@@ -15,6 +15,8 @@
       <include name="IDR_PDF_PLUGIN_HTML" file="plugins/pdf_plugin.html" flattenhtml="true" type="BINDATA" />
       <include name="IDR_PREFER_HTML_PLUGIN_HTML" file="plugins/prefer_html_plugin.html" flattenhtml="true" type="BINDATA" />
       <include name="IDR_PLUGIN_POSTER_HTML" file="plugins/plugin_poster.html" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_CART_PRODUCT_EXTRACTION_JS" file="cart/cart-product-extraction.js" type="BINDATA"/>
+      <include name="IDR_CART_DOMAIN_CART_URL_REGEX_JSON" file="cart/cart_domain_cart_url_regex.json" type="BINDATA"/>
 
       <!-- Extension libraries. -->
       <if expr="enable_extensions">
@@ -43,22 +45,24 @@
         <include name="IDR_TTS_ENGINE_CUSTOM_BINDINGS_JS" file="extensions\tts_engine_custom_bindings.js" type="BINDATA" />
         <include name="IDR_WEBRTC_DESKTOP_CAPTURE_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\webrtc_desktop_capture_private_custom_bindings.js" type="BINDATA" />
         <include name="IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\webrtc_logging_private_custom_bindings.js" type="BINDATA" />
-        <if expr="chromeos">
-          <include name="IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\certificate_provider_custom_bindings.js" type="BINDATA" />
+        <if expr="chromeos or lacros">
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS" file="extensions\enterprise_platform_keys_custom_bindings.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_INTERNAL_API_JS" file="extensions\enterprise_platform_keys\internal_api.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_KEY_PAIR_JS" file="extensions\enterprise_platform_keys\key_pair.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_SUBTLE_CRYPTO_JS" file="extensions\enterprise_platform_keys\subtle_crypto.js" type="BINDATA" />
           <include name="IDR_ENTERPRISE_PLATFORM_KEYS_TOKEN_JS" file="extensions\enterprise_platform_keys\token.js" type="BINDATA" />
-          <include name="IDR_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_JS" file="extensions\file_browser_handler_custom_bindings.js" type="BINDATA" />
-          <include name="IDR_FILE_MANAGER_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\file_manager_private_custom_bindings.js" type="BINDATA" />
-          <include name="IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\file_system_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_CUSTOM_BINDINGS_JS" file="extensions\platform_keys_custom_bindings.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_GET_PUBLIC_KEY_JS" file="extensions\platform_keys\get_public_key.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_INTERNAL_API_JS" file="extensions\platform_keys\internal_api.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_KEY_JS" file="extensions\platform_keys\key.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_SUBTLE_CRYPTO_JS" file="extensions\platform_keys\subtle_crypto.js" type="BINDATA" />
           <include name="IDR_PLATFORM_KEYS_UTILS_JS" file="extensions\platform_keys\utils.js" type="BINDATA" />
+        </if>
+        <if expr="chromeos">
+          <include name="IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\certificate_provider_custom_bindings.js" type="BINDATA" />
+          <include name="IDR_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_JS" file="extensions\file_browser_handler_custom_bindings.js" type="BINDATA" />
+          <include name="IDR_FILE_MANAGER_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\file_manager_private_custom_bindings.js" type="BINDATA" />
+          <include name="IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS" file="extensions\file_system_provider_custom_bindings.js" type="BINDATA" />
           <include name="IDR_TERMINAL_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\terminal_private_custom_bindings.js" type="BINDATA" />
 
           <!-- ChromeOS IME Mojo service and bindings. -->

@@ -19,20 +19,18 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "extensions/browser/activity.h"
 #include "extensions/browser/event_page_tracker.h"
+#include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/browser/service_worker/worker_id_set.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/view_type.h"
 
 class GURL;
 
@@ -55,11 +53,11 @@ class ProcessManagerObserver;
 // of this class per Profile. OTR Profiles have a separate instance that keeps
 // track of split-mode extensions only.
 class ProcessManager : public KeyedService,
-                       public content::NotificationObserver,
                        public ExtensionRegistryObserver,
                        public EventPageTracker,
                        public content::DevToolsAgentHostObserver,
-                       public content::RenderProcessHostObserver {
+                       public content::RenderProcessHostObserver,
+                       public ExtensionHostObserver {
  public:
   using ExtensionHostSet = std::set<extensions::ExtensionHost*>;
 
@@ -149,6 +147,9 @@ class ProcessManager : public KeyedService,
                                    Activity::Type activity_type,
                                    const std::string& extra_data);
 
+  // Sends out notification to observers when the extension process is gone.
+  void NotifyExtensionProcessTerminated(const Extension* extension);
+
   // Methods to increment or decrement the ref-count of a specified service
   // worker with id |worker_id|.
   // The increment method returns the guid that needs to be passed to the
@@ -175,15 +176,12 @@ class ProcessManager : public KeyedService,
   void OnShouldSuspendAck(const std::string& extension_id,
                           uint64_t sequence_id);
 
-  // Same as above, for the Suspend message.
-  void OnSuspendAck(const std::string& extension_id);
-
   // Tracks network requests for a given RenderFrameHost, used to know
   // when network activity is idle for lazy background pages.
-  void OnNetworkRequestStarted(content::RenderFrameHost* render_frame_host,
-                               uint64_t request_id);
-  void OnNetworkRequestDone(content::RenderFrameHost* render_frame_host,
-                            uint64_t request_id);
+  void NetworkRequestStarted(content::RenderFrameHost* render_frame_host,
+                             uint64_t request_id);
+  void NetworkRequestDone(content::RenderFrameHost* render_frame_host,
+                          uint64_t request_id);
 
   // Prevents |extension|'s background page from being closed and sends the
   // onSuspendCanceled() event to it.
@@ -262,11 +260,6 @@ class ProcessManager : public KeyedService,
   friend class ProcessManagerFactory;
   friend class ProcessManagerTest;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
@@ -278,6 +271,10 @@ class ProcessManager : public KeyedService,
   void RenderProcessExited(
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
+
+  // ExtensionHostObserver:
+  void OnExtensionHostDestroyed(ExtensionHost* host) override;
+  void OnExtensionHostShouldClose(ExtensionHost* host) override;
 
   // Extra information we keep for each extension's background page.
   struct BackgroundPageData;
@@ -337,7 +334,9 @@ class ProcessManager : public KeyedService,
   // Clears background page data for this extension.
   void ClearBackgroundPageData(const std::string& extension_id);
 
-  content::NotificationRegistrar registrar_;
+  // Handles a response to the SuspendExtension Mojo method, used for lazy
+  // background pages.
+  void OnSuspendAck(const std::string& extension_id);
 
   // The set of ExtensionHosts running viewless background extensions.
   ExtensionHostSet background_hosts_;
@@ -393,8 +392,9 @@ class ProcessManager : public KeyedService,
   std::map<int, ExtensionHost*> pending_network_requests_;
 
   // Observers of Service Worker RPH this ProcessManager manages.
-  ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
-      process_observer_{this};
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      process_observations_{this};
   // Maps render render_process_id -> extension_id for all Service Workers this
   // ProcessManager manages.
   std::map<int, std::set<ExtensionId>> worker_process_to_extension_ids_;

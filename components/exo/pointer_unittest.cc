@@ -43,7 +43,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif
 
 namespace exo {
@@ -547,9 +547,9 @@ TEST_F(PointerTest, OnPointerMotion) {
                         gfx::Vector2d(1, 1));
 
   std::unique_ptr<Surface> child_surface(new Surface);
-  std::unique_ptr<ShellSurface> child_shell_surface(
-      new ShellSurface(child_surface.get(), gfx::Point(9, 9), true, false,
-                       ash::desks_util::GetActiveDeskContainerId()));
+  std::unique_ptr<ShellSurface> child_shell_surface(new ShellSurface(
+      child_surface.get(), gfx::Point(9, 9), /*can_minimize=*/false,
+      ash::desks_util::GetActiveDeskContainerId()));
   child_shell_surface->DisableMovement();
   child_shell_surface->SetParent(shell_surface.get());
   gfx::Size child_buffer_size(15, 15);
@@ -709,7 +709,7 @@ TEST_F(PointerTest, RegisterPointerEventsOnModal) {
   // Create modal surface.
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(
-      new ShellSurface(surface.get(), gfx::Point(), true, false,
+      new ShellSurface(surface.get(), gfx::Point(), /*can_minimize=*/false,
                        ash::kShellWindowId_SystemModalContainer));
   shell_surface->DisableMovement();
   std::unique_ptr<Buffer> buffer(
@@ -768,7 +768,7 @@ TEST_F(PointerTest, IgnorePointerEventsOnNonModalWhenModalIsOpen) {
   // Create surface for modal window.
   std::unique_ptr<Surface> surface2(new Surface);
   std::unique_ptr<ShellSurface> shell_surface2(
-      new ShellSurface(surface2.get(), gfx::Point(), true, false,
+      new ShellSurface(surface2.get(), gfx::Point(), /*can_minimize=*/false,
                        ash::kShellWindowId_SystemModalContainer));
   shell_surface2->DisableMovement();
   std::unique_ptr<Buffer> buffer2(
@@ -830,7 +830,7 @@ TEST_F(PointerTest, IgnorePointerLeaveOnModal) {
   // Create modal surface.
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(
-      new ShellSurface(surface.get(), gfx::Point(), true, false,
+      new ShellSurface(surface.get(), gfx::Point(), /*can_minimize=*/false,
                        ash::kShellWindowId_SystemModalContainer));
   shell_surface->DisableMovement();
   std::unique_ptr<Buffer> buffer(
@@ -881,7 +881,7 @@ TEST_F(PointerTest, RegisterPointerEventsOnNonModal) {
   // Create another surface for a non-modal window.
   std::unique_ptr<Surface> surface2(new Surface);
   std::unique_ptr<ShellSurface> shell_surface2(
-      new ShellSurface(surface2.get(), gfx::Point(), true, false,
+      new ShellSurface(surface2.get(), gfx::Point(), /*can_minimize=*/false,
                        ash::kShellWindowId_SystemModalContainer));
   shell_surface2->DisableMovement();
   std::unique_ptr<Buffer> buffer2(
@@ -1043,7 +1043,7 @@ TEST_F(PointerTest, OnPointerRelativeMotion) {
       gfx::Vector2d(10, 10);
   auto child_surface = std::make_unique<Surface>();
   auto child_shell_surface = std::make_unique<ShellSurface>(
-      child_surface.get(), child_surface_origin, true, false,
+      child_surface.get(), child_surface_origin, /*can_minimize=*/false,
       ash::desks_util::GetActiveDeskContainerId());
   child_shell_surface->DisableMovement();
   child_shell_surface->SetParent(shell_surface.get());
@@ -1171,7 +1171,7 @@ TEST_F(PointerTest, ConstrainPointer) {
 
   auto child_surface = std::make_unique<Surface>();
   auto child_shell_surface = std::make_unique<ShellSurface>(
-      child_surface.get(), gfx::Point(), true, false,
+      child_surface.get(), gfx::Point(), /*can_minimize=*/false,
       ash::desks_util::GetActiveDeskContainerId());
   child_shell_surface->DisableMovement();
   child_shell_surface->SetParent(shell_surface.get());
@@ -1200,7 +1200,7 @@ TEST_F(PointerTest, ConstrainPointer) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotFocused) {
+TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotActive) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       chromeos::features::kExoPointerLock);
@@ -1219,7 +1219,6 @@ TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotFocused) {
   auto pointer = std::make_unique<Pointer>(&delegate, &seat);
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
-  focus_client->FocusWindow(nullptr);
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
   EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(surface.get()))
@@ -1227,24 +1226,20 @@ TEST_F(PointerTest, ConstrainPointerFailsWhenSurfaceIsNotFocused) {
 
   EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
       .WillRepeatedly(testing::Return(surface.get()));
-  EXPECT_FALSE(pointer->ConstrainPointer(&constraint_delegate));
 
-  auto child_surface = std::make_unique<Surface>();
-  auto child_shell_surface = std::make_unique<ShellSurface>(
-      child_surface.get(), gfx::Point(), true, false,
-      ash::desks_util::GetActiveDeskContainerId());
-  child_shell_surface->DisableMovement();
-  child_shell_surface->SetParent(shell_surface.get());
-  gfx::Size child_buffer_size(15, 15);
-  auto child_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(child_buffer_size));
-  child_surface->Attach(child_buffer.get());
-  child_surface->Commit();
+  auto second_surface = std::make_unique<Surface>();
+  auto second_shell_surface =
+      std::make_unique<ShellSurface>(second_surface.get());
+  auto second_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  second_surface->Attach(second_buffer.get());
+  second_surface->Commit();
 
-  EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(child_surface.get()))
+  EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(second_surface.get()))
       .WillRepeatedly(testing::Return(true));
 
-  focus_client->FocusWindow(child_surface->window());
+  // Setting the focused window also makes it activated.
+  focus_client->FocusWindow(second_surface->window());
   EXPECT_FALSE(pointer->ConstrainPointer(&constraint_delegate));
 
   focus_client->FocusWindow(surface->window());

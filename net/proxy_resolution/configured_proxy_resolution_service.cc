@@ -1185,8 +1185,9 @@ void ConfiguredProxyResolutionService::ReportSuccess(const ProxyInfo& result) {
         const ProxyRetryInfo& proxy_retry_info = iter.second;
         proxy_delegate_->OnFallback(bad_proxy, proxy_retry_info.net_error);
       }
-    } else if (existing->second.bad_until < iter.second.bad_until)
+    } else if (existing->second.bad_until < iter.second.bad_until) {
       existing->second.bad_until = iter.second.bad_until;
+    }
   }
   if (net_log_) {
     net_log_->AddGlobalEntry(NetLogEventType::BAD_PROXY_LIST_REPORTED, [&] {
@@ -1562,13 +1563,27 @@ void ConfiguredProxyResolutionService::OnIPAddressChanged() {
   stall_proxy_autoconfig_until_ =
       TimeTicks::Now() + stall_proxy_auto_config_delay_;
 
+  // With a new network connection, using the proper proxy configuration for the
+  // new connection may be essential for URL requests to work properly. Reset
+  // the config to ensure new URL requests are blocked until the potential new
+  // proxy configuration is loaded.
   State previous_state = ResetProxyConfig(false);
   if (previous_state != STATE_NONE)
     ApplyProxyConfigIfAvailable();
 }
 
 void ConfiguredProxyResolutionService::OnDNSChanged() {
-  OnIPAddressChanged();
+  // Do not fully reset proxy config on DNS change notifications. Instead,
+  // inform the poller that it would be a good time to check for changes.
+  //
+  // While a change to DNS servers in use could lead to different WPAD results,
+  // and thus a different proxy configuration, it is extremely unlikely to ever
+  // be essential for that changed proxy configuration to be picked up
+  // immediately. Either URL requests on the connection are generally working
+  // fine without the proxy, or requests are already broken, leaving little harm
+  // in letting a couple more requests fail until Chrome picks up the new proxy.
+  if (script_poller_.get())
+    script_poller_->OnLazyPoll();
 }
 
 }  // namespace net

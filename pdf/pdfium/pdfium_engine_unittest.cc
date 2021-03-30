@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
@@ -21,7 +22,7 @@
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
-#include "pdf/thumbnail.h"
+#include "pdf/ui/thumbnail.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
@@ -311,7 +312,28 @@ TEST_F(PDFiumEngineTest, GetDocumentAttachments) {
   }
 }
 
-TEST_F(PDFiumEngineTest, DocumentWithInvalidAttachment) {
+TEST_F(PDFiumEngineTest, GetInvalidDocumentAttachment) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("invalid_attachment.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Test on a document with one invalid attachment, which can make
+  // FPDFDoc_GetAttachment() fail. This particular attachment is invalid due
+  // to its key value violating the `Limits` entry.
+  const std::vector<DocumentAttachmentInfo>& attachments =
+      engine->GetDocumentAttachmentInfoList();
+  ASSERT_EQ(1u, attachments.size());
+
+  const DocumentAttachmentInfo& attachment = attachments[0];
+  EXPECT_THAT(attachment.name, IsEmpty());
+  EXPECT_FALSE(attachment.is_readable);
+  EXPECT_EQ(0u, attachment.size_bytes);
+  EXPECT_THAT(attachment.creation_date, IsEmpty());
+  EXPECT_THAT(attachment.modified_date, IsEmpty());
+}
+
+TEST_F(PDFiumEngineTest, GetDocumentAttachmentWithInvalidData) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("embedded_attachments_invalid_data.pdf"));
@@ -349,11 +371,24 @@ TEST_F(PDFiumEngineTest, GetDocumentMetadata) {
   const DocumentMetadata& doc_metadata = engine->GetDocumentMetadata();
 
   EXPECT_EQ(PdfVersion::k1_7, doc_metadata.version);
+  EXPECT_EQ(714u, doc_metadata.size_bytes);
+  EXPECT_FALSE(doc_metadata.linearized);
   EXPECT_EQ("Sample PDF Document Info", doc_metadata.title);
   EXPECT_EQ("Chromium Authors", doc_metadata.author);
   EXPECT_EQ("Testing", doc_metadata.subject);
+  EXPECT_EQ("testing,chromium,pdfium,document,info", doc_metadata.keywords);
   EXPECT_EQ("Your Preferred Text Editor", doc_metadata.creator);
   EXPECT_EQ("fixup_pdf_template.py", doc_metadata.producer);
+
+  base::Time expected_creation_date;
+  ASSERT_TRUE(base::Time::FromUTCString("2020-02-05 15:39:12",
+                                        &expected_creation_date));
+  EXPECT_EQ(expected_creation_date, doc_metadata.creation_date);
+
+  base::Time expected_mod_date;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2020-02-06 09:42:34", &expected_mod_date));
+  EXPECT_EQ(expected_mod_date, doc_metadata.mod_date);
 }
 
 TEST_F(PDFiumEngineTest, GetEmptyDocumentMetadata) {
@@ -365,11 +400,24 @@ TEST_F(PDFiumEngineTest, GetEmptyDocumentMetadata) {
   const DocumentMetadata& doc_metadata = engine->GetDocumentMetadata();
 
   EXPECT_EQ(PdfVersion::k1_7, doc_metadata.version);
+  EXPECT_EQ(786u, doc_metadata.size_bytes);
+  EXPECT_FALSE(doc_metadata.linearized);
   EXPECT_THAT(doc_metadata.title, IsEmpty());
   EXPECT_THAT(doc_metadata.author, IsEmpty());
   EXPECT_THAT(doc_metadata.subject, IsEmpty());
+  EXPECT_THAT(doc_metadata.keywords, IsEmpty());
   EXPECT_THAT(doc_metadata.creator, IsEmpty());
   EXPECT_THAT(doc_metadata.producer, IsEmpty());
+  EXPECT_TRUE(doc_metadata.creation_date.is_null());
+  EXPECT_TRUE(doc_metadata.mod_date.is_null());
+}
+
+TEST_F(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("linearized.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_TRUE(engine->GetDocumentMetadata().linearized);
 }
 
 TEST_F(PDFiumEngineTest, GetBadPdfVersion) {
@@ -1023,7 +1071,7 @@ class ScrollingTestClient : public TestClient {
 
   // Mock PDFEngine::Client methods.
   MOCK_METHOD(void, ScrollToX, (int), (override));
-  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int), (override));
 };
 
 TEST_F(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
@@ -1037,7 +1085,7 @@ TEST_F(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
   {
     InSequence sequence;
     static constexpr gfx::Point kScrollValue = {510, 478};
-    EXPECT_CALL(client, ScrollToY(kScrollValue.y(), false))
+    EXPECT_CALL(client, ScrollToY(kScrollValue.y()))
         .WillOnce(Invoke(
             [&engine]() { engine->ScrolledToYPosition(kScrollValue.y()); }));
     EXPECT_CALL(client, ScrollToX(kScrollValue.x()))
@@ -1092,7 +1140,7 @@ TEST_F(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
     static constexpr gfx::Point kScrollValues[] = {{510, 478}, {510, 478}};
 
     for (const auto& scroll_value : kScrollValues) {
-      EXPECT_CALL(client, ScrollToY(scroll_value.y(), false))
+      EXPECT_CALL(client, ScrollToY(scroll_value.y()))
           .WillOnce(Invoke([&engine, &scroll_value]() {
             engine->ScrolledToYPosition(scroll_value.y());
           }));

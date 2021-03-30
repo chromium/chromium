@@ -4,7 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Tests that a line-level CPU profile is shown in the text editor.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule("perf_ui");
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('timeline');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../resources/empty.js');
@@ -48,7 +50,7 @@
     const url = frame.uiSourceCode().url();
     TestRunner.addResult(TestRunner.formatters.formatAsURL(url));
     cpuProfile.nodes.forEach(n => n.callFrame.url = url);
-    const lineProfile = self.runtime.sharedInstance(PerfUI.LineLevelProfile.Performance);
+    const lineProfile = PerfUI.LineLevelProfile.Performance.instance();
     lineProfile.appendCPUProfile(new SDK.CPUProfileDataModel(cpuProfile));
     setTimeout(() => TestRunner.completeTest(), 0);
   }

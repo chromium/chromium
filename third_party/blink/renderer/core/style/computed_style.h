@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/cursor_list.h"
 #include "third_party/blink/renderer/core/style/data_ref.h"
-#include "third_party/blink/renderer/core/style/svg_computed_style.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -88,7 +87,6 @@ class StyleDifference;
 class StyleImage;
 class StyleInheritedVariables;
 class StyleInitialData;
-class StylePath;
 class StyleResolver;
 class StyleSelfAlignmentData;
 class TransformationMatrix;
@@ -97,6 +95,7 @@ typedef Vector<scoped_refptr<const ComputedStyle>, 4> PseudoElementStyleCache;
 
 namespace css_longhand {
 
+class AccentColor;
 class Appearance;
 class BackgroundColor;
 class BorderBottomColor;
@@ -132,6 +131,7 @@ class InternalVisitedTextFillColor;
 class InternalVisitedTextStrokeColor;
 class LightingColor;
 class OutlineColor;
+class Position;
 class Resize;
 class StopColor;
 class Stroke;
@@ -148,7 +148,7 @@ class WebkitTextStrokeColor;
 // Blink. It acts as a container where the computed value of every CSS property
 // can be stored and retrieved:
 //
-//   auto style = ComputedStyle::Create();
+//   auto style = ComputedStyle::CreateInitialStyleSingleton();
 //   style->SetDisplay(EDisplay::kNone); //'display' keyword property
 //   style->Display();
 //
@@ -243,6 +243,7 @@ class ComputedStyle : public ComputedStyleBase,
   friend class css_longhand::InternalVisitedTextStrokeColor;
   friend class css_longhand::LightingColor;
   friend class css_longhand::OutlineColor;
+  friend class css_longhand::Position;
   friend class css_longhand::Resize;
   friend class css_longhand::StopColor;
   friend class css_longhand::Stroke;
@@ -294,16 +295,10 @@ class ComputedStyle : public ComputedStyleBase,
   mutable std::unique_ptr<PseudoElementStyleCache>
       cached_pseudo_element_styles_;
 
-  DataRef<SVGComputedStyle> svg_style_;
-
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
   ALWAYS_INLINE ComputedStyle();
   ALWAYS_INLINE ComputedStyle(const ComputedStyle&);
-
-  static scoped_refptr<ComputedStyle> CreateInitialStyle();
-  // TODO(crbug.com/794841): Remove this. Initial style should not be mutable.
-  CORE_EXPORT static ComputedStyle& MutableInitialStyle();
 
  public:
   using PassKey = base::PassKey<ComputedStyle>;
@@ -311,17 +306,12 @@ class ComputedStyle : public ComputedStyleBase,
   ALWAYS_INLINE ComputedStyle(PassKey, const ComputedStyle&);
   ALWAYS_INLINE explicit ComputedStyle(PassKey);
 
-  CORE_EXPORT static scoped_refptr<ComputedStyle> Create();
-  static scoped_refptr<ComputedStyle> CreateAnonymousStyleWithDisplay(
-      const ComputedStyle& parent_style,
-      EDisplay);
-  static scoped_refptr<ComputedStyle>
-  CreateInheritedDisplayContentsStyleIfNeeded(
-      const ComputedStyle& parent_style,
-      const ComputedStyle& layout_parent_style);
+  // Create the per-document/context singleton that is used for shallow-copying
+  // into new instances.
+  CORE_EXPORT static scoped_refptr<ComputedStyle> CreateInitialStyleSingleton();
+
+  // Shallow copy into a new instance sharing DataPtrs.
   CORE_EXPORT static scoped_refptr<ComputedStyle> Clone(const ComputedStyle&);
-  static const ComputedStyle& InitialStyle() { return MutableInitialStyle(); }
-  static void InvalidateInitialStyle();
 
   // Find out how two ComputedStyles differ. Used for figuring out if style
   // recalc needs to propagate style changes down the tree. The constants are
@@ -528,11 +518,11 @@ class ComputedStyle : public ComputedStyleBase,
   void SetBorderImageOutset(const BorderImageLengthBox&);
 
   // Border width properties.
-  float BorderTopWidth() const {
+  LayoutUnit BorderTopWidth() const {
     if (BorderTopStyle() == EBorderStyle::kNone ||
         BorderTopStyle() == EBorderStyle::kHidden)
-      return 0;
-    return BorderTopWidthInternal().ToFloat();
+      return LayoutUnit(0);
+    return BorderTopWidthInternal();
   }
   void SetBorderTopWidth(float v) { SetBorderTopWidthInternal(LayoutUnit(v)); }
   bool BorderTopNonZero() const {
@@ -540,11 +530,11 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // border-bottom-width
-  float BorderBottomWidth() const {
+  LayoutUnit BorderBottomWidth() const {
     if (BorderBottomStyle() == EBorderStyle::kNone ||
         BorderBottomStyle() == EBorderStyle::kHidden)
-      return 0;
-    return BorderBottomWidthInternal().ToFloat();
+      return LayoutUnit(0);
+    return BorderBottomWidthInternal();
   }
   void SetBorderBottomWidth(float v) {
     SetBorderBottomWidthInternal(LayoutUnit(v));
@@ -554,11 +544,11 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // border-left-width
-  float BorderLeftWidth() const {
+  LayoutUnit BorderLeftWidth() const {
     if (BorderLeftStyle() == EBorderStyle::kNone ||
         BorderLeftStyle() == EBorderStyle::kHidden)
-      return 0;
-    return BorderLeftWidthInternal().ToFloat();
+      return LayoutUnit(0);
+    return BorderLeftWidthInternal();
   }
   void SetBorderLeftWidth(float v) {
     SetBorderLeftWidthInternal(LayoutUnit(v));
@@ -568,11 +558,11 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // border-right-width
-  float BorderRightWidth() const {
+  LayoutUnit BorderRightWidth() const {
     if (BorderRightStyle() == EBorderStyle::kNone ||
         BorderRightStyle() == EBorderStyle::kHidden)
-      return 0;
-    return BorderRightWidthInternal().ToFloat();
+      return LayoutUnit(0);
+    return BorderRightWidthInternal();
   }
   void SetBorderRightWidth(float v) {
     SetBorderRightWidthInternal(LayoutUnit(v));
@@ -584,6 +574,20 @@ class ComputedStyle : public ComputedStyleBase,
   // box-shadow (aka -webkit-box-shadow)
   bool BoxShadowDataEquivalent(const ComputedStyle& other) const {
     return DataEquivalent(BoxShadow(), other.BoxShadow());
+  }
+
+  // clip-path
+  ClipPathOperation* ClipPath() const {
+    // This method is accessed frequently during SVG Hit Testing, but the
+    // cumulative cost of calling |ClipPathInternal| can be fairly high due to
+    // multiple rare data pointer indirections. |HasClipPath| was added as a way
+    // to reduce the cost of these expensive indirections by placing a bit
+    // in more easily accessible memory.
+    return HasClipPath() ? ClipPathInternal().get() : nullptr;
+  }
+  void SetClipPath(scoped_refptr<ClipPathOperation> clip_path) {
+    SetHasClipPath(clip_path.get());
+    SetClipPathInternal(std::move(clip_path));
   }
 
   // clip
@@ -964,10 +968,10 @@ class ComputedStyle : public ComputedStyleBase,
   // TODO(crbug.com/687225): These functions are deprecated. Callers should be
   // migrated to GetListStyleType().
   CORE_EXPORT EListStyleType ListStyleType() const;
-  AtomicString ListStyleStringValue() const;
+  const AtomicString& ListStyleStringValue() const;
   // TODO(crbug.com/687225): Get rid of the deprecated functions above so that
   // the getter can also be auto-generated.
-  ListStyleTypeData* GetListStyleType() const;
+  CORE_EXPORT ListStyleTypeData* GetListStyleType() const;
   bool ListStyleTypeDataEquivalent(const ComputedStyle& other) const {
     return DataEquivalent(ListStyleTypeInternal(),
                           other.ListStyleTypeInternal());
@@ -1001,7 +1005,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   // If true, the ComputedStyle must be recalculated when fonts are updated.
   bool DependsOnFontMetrics() const {
-    return HasGlyphRelativeUnits() || HasFontSizeAdjust();
+    return HasGlyphRelativeUnits() || HasFontSizeAdjust() ||
+           CustomStyleCallbackDependsOnFont();
   }
   bool CachedPseudoElementStylesDependOnFontMetrics() const;
 
@@ -1083,95 +1088,37 @@ class ComputedStyle : public ComputedStyleBase,
   // widows
   void SetWidows(int16_t w) { SetWidowsInternal(clampTo<int16_t>(w, 1)); }
 
-  // SVG properties.
-  const SVGComputedStyle& SvgStyle() const { return *svg_style_.Get(); }
-  SVGComputedStyle& AccessSVGStyle() { return *svg_style_.Access(); }
-
-  // baseline-shift
-  EBaselineShift BaselineShift() const { return SvgStyle().BaselineShift(); }
-  const Length& BaselineShiftValue() const {
-    return SvgStyle().BaselineShiftValue();
-  }
-  void SetBaselineShiftValue(const Length& value) {
-    SVGComputedStyle& svg_style = AccessSVGStyle();
-    svg_style.SetBaselineShift(BS_LENGTH);
-    svg_style.SetBaselineShiftValue(value);
+  // fill helpers
+  bool HasFill() const { return !FillPaint().IsNone(); }
+  bool IsFillColorCurrentColor() const {
+    return FillPaint().HasCurrentColor() ||
+           InternalVisitedFillPaint().HasCurrentColor();
   }
 
-  // cx
-  void SetCx(const Length& cx) { AccessSVGStyle().SetCx(cx); }
-
-  // cy
-  void SetCy(const Length& cy) { AccessSVGStyle().SetCy(cy); }
-
-  // d
-  void SetD(scoped_refptr<StylePath> d) { AccessSVGStyle().SetD(std::move(d)); }
-
-  // x
-  void SetX(const Length& x) { AccessSVGStyle().SetX(x); }
-
-  // y
-  void SetY(const Length& y) { AccessSVGStyle().SetY(y); }
-
-  // r
-  void SetR(const Length& r) { AccessSVGStyle().SetR(r); }
-
-  // rx
-  void SetRx(const Length& rx) { AccessSVGStyle().SetRx(rx); }
-
-  // ry
-  void SetRy(const Length& ry) { AccessSVGStyle().SetRy(ry); }
-
-  // fill-opacity
-  float FillOpacity() const { return SvgStyle().FillOpacity(); }
-  void SetFillOpacity(float f) { AccessSVGStyle().SetFillOpacity(f); }
-
-  // stop-color
-  void SetStopColor(const StyleColor& c) { AccessSVGStyle().SetStopColor(c); }
-
-  // flood-color
-  void SetFloodColor(const StyleColor& c) { AccessSVGStyle().SetFloodColor(c); }
-
-  // lighting-color
-  void SetLightingColor(const StyleColor& c) {
-    AccessSVGStyle().SetLightingColor(c);
+  // marker-* helpers
+  bool HasMarkers() const {
+    return MarkerStartResource() || MarkerMidResource() || MarkerEndResource();
   }
 
-  // flood-opacity
-  float FloodOpacity() const { return SvgStyle().FloodOpacity(); }
-  void SetFloodOpacity(float f) { AccessSVGStyle().SetFloodOpacity(f); }
+  // paint-order helper
+  EPaintOrderType PaintOrderType(unsigned index) const;
 
-  // stop-opacity
-  float StopOpacity() const { return SvgStyle().StopOpacity(); }
-  void SetStopOpacity(float f) { AccessSVGStyle().SetStopOpacity(f); }
-
-  // stroke-dasharray
-  SVGDashArray* StrokeDashArray() const { return SvgStyle().StrokeDashArray(); }
-  void SetStrokeDashArray(scoped_refptr<SVGDashArray> array) {
-    AccessSVGStyle().SetStrokeDashArray(std::move(array));
+  // stroke helpers
+  bool HasStroke() const { return !StrokePaint().IsNone(); }
+  bool HasVisibleStroke() const {
+    return HasStroke() && !StrokeWidth().IsZero();
   }
-
-  // stroke-dashoffset
-  const Length& StrokeDashOffset() const {
-    return SvgStyle().StrokeDashOffset();
+  bool IsStrokeColorCurrentColor() const {
+    return StrokePaint().HasCurrentColor() ||
+           InternalVisitedStrokePaint().HasCurrentColor();
   }
-  void SetStrokeDashOffset(const Length& d) {
-    AccessSVGStyle().SetStrokeDashOffset(d);
-  }
+  bool HasDashArray() const { return !StrokeDashArray()->data.IsEmpty(); }
+  bool StrokeDashArrayDataEquivalent(const ComputedStyle&) const;
 
-  // stroke-miterlimit
-  float StrokeMiterLimit() const { return SvgStyle().StrokeMiterLimit(); }
-  void SetStrokeMiterLimit(float f) { AccessSVGStyle().SetStrokeMiterLimit(f); }
-
-  // stroke-opacity
-  float StrokeOpacity() const { return SvgStyle().StrokeOpacity(); }
-  void SetStrokeOpacity(float f) { AccessSVGStyle().SetStrokeOpacity(f); }
-
-  // stroke-width
-  const UnzoomedLength& StrokeWidth() const { return SvgStyle().StrokeWidth(); }
-  void SetStrokeWidth(const UnzoomedLength& w) {
-    AccessSVGStyle().SetStrokeWidth(w);
-  }
+  // accent-color
+  const StyleAutoColor& AccentColor() const { return AccentColorInternal(); }
+  // An empty optional means the accent-color is 'auto'
+  base::Optional<Color> AccentColorResolved() const;
 
   // Comparison operators
   // FIXME: Replace callers of operator== wth a named method instead, e.g.
@@ -1688,19 +1635,19 @@ class ComputedStyle : public ComputedStyleBase,
   void SetBorderImageSlicesFill(bool);
   const BorderValue BorderLeft() const {
     return BorderValue(BorderLeftStyle(), BorderLeftColor(),
-                       BorderLeftWidthInternal().ToFloat());
+                       BorderLeftWidthInternal());
   }
   const BorderValue BorderRight() const {
     return BorderValue(BorderRightStyle(), BorderRightColor(),
-                       BorderRightWidthInternal().ToFloat());
+                       BorderRightWidthInternal());
   }
   const BorderValue BorderTop() const {
     return BorderValue(BorderTopStyle(), BorderTopColor(),
-                       BorderTopWidthInternal().ToFloat());
+                       BorderTopWidthInternal());
   }
   const BorderValue BorderBottom() const {
     return BorderValue(BorderBottomStyle(), BorderBottomColor(),
-                       BorderBottomWidthInternal().ToFloat());
+                       BorderBottomWidthInternal());
   }
 
   bool BorderSizeEquals(const ComputedStyle& o) const {
@@ -1728,20 +1675,22 @@ class ComputedStyle : public ComputedStyleBase,
   BorderValue BorderStart() const { return BorderStartUsing(*this); }
   BorderValue BorderEnd() const { return BorderEndUsing(*this); }
 
-  float BorderAfterWidth() const {
+  LayoutUnit BorderAfterWidth() const {
     return PhysicalBorderWidthToLogical().After();
   }
-  float BorderBeforeWidth() const {
+  LayoutUnit BorderBeforeWidth() const {
     return PhysicalBorderWidthToLogical().Before();
   }
-  float BorderEndWidth() const { return PhysicalBorderWidthToLogical().End(); }
-  float BorderStartWidth() const {
+  LayoutUnit BorderEndWidth() const {
+    return PhysicalBorderWidthToLogical().End();
+  }
+  LayoutUnit BorderStartWidth() const {
     return PhysicalBorderWidthToLogical().Start();
   }
-  float BorderOverWidth() const {
+  LayoutUnit BorderOverWidth() const {
     return PhysicalBorderWidthToLogical().Over();
   }
-  float BorderUnderWidth() const {
+  LayoutUnit BorderUnderWidth() const {
     return PhysicalBorderWidthToLogical().Under();
   }
 
@@ -1797,7 +1746,7 @@ class ComputedStyle : public ComputedStyleBase,
            BorderLeftColor() == o.BorderLeftColor();
   }
   bool BorderLeftEquals(const BorderValue& o) const {
-    return BorderLeftWidthInternal().ToFloat() == o.Width() &&
+    return BorderLeftWidthInternal() == o.Width() &&
            BorderLeftStyle() == o.Style() && BorderLeftColor() == o.GetColor();
   }
 
@@ -1817,7 +1766,7 @@ class ComputedStyle : public ComputedStyleBase,
            BorderRightColor() == o.BorderRightColor();
   }
   bool BorderRightEquals(const BorderValue& o) const {
-    return BorderRightWidthInternal().ToFloat() == o.Width() &&
+    return BorderRightWidthInternal() == o.Width() &&
            BorderRightStyle() == o.Style() &&
            BorderRightColor() == o.GetColor();
   }
@@ -1848,7 +1797,7 @@ class ComputedStyle : public ComputedStyleBase,
            BorderTopColor() == o.BorderTopColor();
   }
   bool BorderTopEquals(const BorderValue& o) const {
-    return BorderTopWidthInternal().ToFloat() == o.Width() &&
+    return BorderTopWidthInternal() == o.Width() &&
            BorderTopStyle() == o.Style() && BorderTopColor() == o.GetColor();
   }
 
@@ -1868,7 +1817,7 @@ class ComputedStyle : public ComputedStyleBase,
            BorderBottomColor() == o.BorderBottomColor();
   }
   bool BorderBottomEquals(const BorderValue& o) const {
-    return BorderBottomWidthInternal().ToFloat() == o.Width() &&
+    return BorderBottomWidthInternal() == o.Width() &&
            BorderBottomStyle() == o.Style() &&
            BorderBottomColor() == o.GetColor();
   }
@@ -2005,6 +1954,15 @@ class ComputedStyle : public ComputedStyleBase,
            (!Top().IsAuto() || !Left().IsAuto() || !Right().IsAuto() ||
             !Bottom().IsAuto());
   }
+  EPosition GetPosition() const {
+    // Applied sticky position is static for table columns and column groups.
+    if (PositionInternal() == EPosition::kSticky &&
+        (Display() == EDisplay::kTableColumnGroup ||
+         Display() == EDisplay::kTableColumn)) {
+      return EPosition::kStatic;
+    }
+    return PositionInternal();
+  }
 
   // Clear utility functions.
   bool HasClear() const { return ClearInternal() != EClear::kNone; }
@@ -2083,7 +2041,11 @@ class ComputedStyle : public ComputedStyleBase,
   bool ContainsPaint() const { return Contain() & kContainsPaint; }
   bool ContainsStyle() const { return Contain() & kContainsStyle; }
   bool ContainsLayout() const { return Contain() & kContainsLayout; }
-  bool ContainsSize() const { return Contain() & kContainsSize; }
+  bool ContainsSize() const {
+    return (Contain() & kContainsSize) == kContainsSize;
+  }
+  bool ContainsInlineSize() const { return Contain() & kContainsInlineSize; }
+  bool ContainsBlockSize() const { return Contain() & kContainsBlockSize; }
 
   // Display utility functions.
   bool IsDisplayReplacedType() const {
@@ -2264,8 +2226,10 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Table layout utility functions.
   bool IsFixedTableLayout() const {
+    // https://www.w3.org/TR/css-tables-3/#table-layout-property
     return TableLayout() == ETableLayout::kFixed &&
-           !LogicalWidth().IsAutoOrContentOrIntrinsic();
+           (LogicalWidth().IsSpecified() || LogicalWidth().IsMinContent() ||
+            LogicalWidth().IsFitContent());
   }
 
   LogicalSize TableBorderSpacing() const {
@@ -2392,7 +2356,7 @@ class ComputedStyle : public ComputedStyleBase,
       return true;
     if (has_box_reflection)
       return true;
-    if (ClipPath())
+    if (HasClipPath())
       return true;
     if (HasIsolation())
       return true;
@@ -2427,7 +2391,7 @@ class ComputedStyle : public ComputedStyleBase,
   // Return true if this style has properties ('filter', 'clip-path' and 'mask')
   // that applies an effect to SVG elements.
   bool HasSVGEffect() const {
-    return HasFilter() || ClipPath() || SvgStyle().HasMasker();
+    return HasFilter() || HasClipPath() || MaskerResource();
   }
 
   // Paint utility functions.
@@ -2527,6 +2491,10 @@ class ComputedStyle : public ComputedStyleBase,
            GetLineBreak() == LineBreak::kAfterWhiteSpace;
   }
 
+  bool NeedsTrailingSpace() const {
+    return BreakOnlyAfterWhiteSpace() && AutoWrap();
+  }
+
   bool BreakWords() const {
     return (WordBreak() == EWordBreak::kBreakWord ||
             OverflowWrap() != EOverflowWrap::kNormal) &&
@@ -2582,6 +2550,12 @@ class ComputedStyle : public ComputedStyleBase,
   bool HasBackground() const {
     Color color = VisitedDependentColor(GetCSSPropertyBackgroundColor());
     if (color.Alpha())
+      return true;
+    // When background color animation is running on the compositor thread, we
+    // need to trigger repaint even if the background is transparent to collect
+    // artifacts in order to run the animation on the compositor.
+    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+        HasCurrentBackgroundColorAnimation())
       return true;
     return HasBackgroundImage();
   }
@@ -2662,7 +2636,11 @@ class ComputedStyle : public ComputedStyleBase,
     return LogicalSize(LayoutUnit(ratio.Width()), LayoutUnit(ratio.Height()));
   }
 
-  bool IsContainerForContainerQueries() const { return ContainsLayout(); }
+  EBoxSizing BoxSizingForAspectRatio() const {
+    if (AspectRatio().GetType() == EAspectRatioType::kAutoAndRatio)
+      return EBoxSizing::kContentBox;
+    return BoxSizing();
+  }
 
  private:
   EClear Clear() const { return ClearInternal(); }
@@ -2785,6 +2763,7 @@ class ComputedStyle : public ComputedStyleBase,
     return ColumnRuleColorInternal();
   }
   const StyleColor& OutlineColor() const { return OutlineColorInternal(); }
+  const StyleColor& StopColor() const { return StopColorInternal(); }
   const StyleColor& TextDecorationColor() const {
     return TextDecorationColorInternal();
   }
@@ -2883,10 +2862,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   StyleColor DecorationColorIncludingFallback(bool visited_link) const;
 
-  const StyleColor& StopColor() const { return SvgStyle().StopColor(); }
-  const StyleColor& FloodColor() const { return SvgStyle().FloodColor(); }
-  const StyleColor& LightingColor() const { return SvgStyle().LightingColor(); }
-
   // Appearance accessors are private to make sure callers use
   // EffectiveAppearance in almost all cases.
   ControlPart Appearance() const { return AppearanceInternal(); }
@@ -2918,6 +2893,8 @@ class ComputedStyle : public ComputedStyleBase,
   bool DiffNeedsVisualRectUpdate(const ComputedStyle& other) const;
   CORE_EXPORT void UpdatePropertySpecificDifferences(const ComputedStyle& other,
                                                      StyleDifference&) const;
+  bool PotentialCompositingReasonsFor3DTransformChanged(
+      const ComputedStyle& other) const;
 
   bool PropertiesEqual(const Vector<CSSPropertyID>& properties,
                        const ComputedStyle& other) const;
@@ -2963,10 +2940,10 @@ class ComputedStyle : public ComputedStyleBase,
                                           BorderBottom(), BorderLeft());
   }
 
-  PhysicalToLogical<float> PhysicalBorderWidthToLogical() const {
-    return PhysicalToLogical<float>(GetWritingDirection(), BorderTopWidth(),
-                                    BorderRightWidth(), BorderBottomWidth(),
-                                    BorderLeftWidth());
+  PhysicalToLogical<LayoutUnit> PhysicalBorderWidthToLogical() const {
+    return PhysicalToLogical<LayoutUnit>(
+        GetWritingDirection(), BorderTopWidth(), BorderRightWidth(),
+        BorderBottomWidth(), BorderLeftWidth());
   }
 
   PhysicalToLogical<EBorderStyle> PhysicalBorderStyleToLogical() const {

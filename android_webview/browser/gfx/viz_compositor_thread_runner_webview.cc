@@ -6,12 +6,13 @@
 
 #include <utility>
 
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 
@@ -96,6 +97,11 @@ void VizCompositorThreadRunnerWebView::PostTaskAndBlock(
 
 VizCompositorThreadRunnerWebView::~VizCompositorThreadRunnerWebView() = default;
 
+base::PlatformThreadId VizCompositorThreadRunnerWebView::thread_id() {
+  DCHECK(viz_thread_.IsRunning());
+  return viz_thread_.GetThreadId();
+}
+
 base::SingleThreadTaskRunner* VizCompositorThreadRunnerWebView::task_runner() {
   return viz_task_runner_.get();
 }
@@ -109,7 +115,8 @@ void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
 void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
     viz::mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
-    viz::GpuServiceImpl* gpu_service) {
+    viz::GpuServiceImpl* gpu_service,
+    gfx::RenderingPipeline* gpu_pipeline) {
   viz_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

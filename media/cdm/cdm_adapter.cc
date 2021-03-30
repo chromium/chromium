@@ -19,7 +19,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "components/crash/core/common/crash_key.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_initialized_promise.h"
@@ -213,6 +212,7 @@ CdmAdapter::CdmAdapter(
       session_keys_change_cb_(session_keys_change_cb),
       session_expiration_update_cb_(session_expiration_update_cb),
       cdm_origin_(helper_->GetCdmOrigin().Serialize()),
+      scoped_crash_key_(&g_origin_crash_key, cdm_origin_),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
       pool_(new AudioBufferMemoryPool()) {
   DVLOG(1) << __func__;
@@ -226,14 +226,14 @@ CdmAdapter::CdmAdapter(
   DCHECK(session_expiration_update_cb_);
 
   helper_->SetFileReadCB(
-      base::Bind(&CdmAdapter::OnFileRead, weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&CdmAdapter::OnFileRead, weak_factory_.GetWeakPtr()));
 }
 
 CdmAdapter::~CdmAdapter() {
   DVLOG(1) << __func__;
 
   // Reject any outstanding promises and close all the existing sessions.
-  cdm_promise_adapter_.Clear();
+  cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kDestruction);
 
   if (audio_init_cb_)
     std::move(audio_init_cb_).Run(false);
@@ -425,8 +425,6 @@ void CdmAdapter::Decrypt(StreamType stream_type,
            << encrypted->AsHumanReadableString(/*verbose=*/true);
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  ScopedCrashKeyString scoped_crash_key(&g_origin_crash_key, cdm_origin_);
-
   cdm::InputBuffer_2 input_buffer = {};
   std::vector<cdm::SubsampleEntry> subsamples;
   std::unique_ptr<DecryptedBlockImpl> decrypted_block(new DecryptedBlockImpl());
@@ -540,12 +538,10 @@ void CdmAdapter::InitializeVideoDecoder(const VideoDecoderConfig& config,
 }
 
 void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
-                                       const AudioDecodeCB& audio_decode_cb) {
+                                       AudioDecodeCB audio_decode_cb) {
   DVLOG(3) << __func__ << ": "
            << encrypted->AsHumanReadableString(/*verbose=*/true);
   DCHECK(task_runner_->BelongsToCurrentThread());
-
-  ScopedCrashKeyString scoped_crash_key(&g_origin_crash_key, cdm_origin_);
 
   cdm::InputBuffer_2 input_buffer = {};
   std::vector<cdm::SubsampleEntry> subsamples;
@@ -562,7 +558,8 @@ void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
   const Decryptor::AudioFrames empty_frames;
   if (status != cdm::kSuccess) {
     DVLOG(1) << __func__ << ": status = " << status;
-    audio_decode_cb.Run(ToMediaDecryptorStatus(status), empty_frames);
+    std::move(audio_decode_cb)
+        .Run(ToMediaDecryptorStatus(status), empty_frames);
     return;
   }
 
@@ -571,20 +568,18 @@ void CdmAdapter::DecryptAndDecodeAudio(scoped_refptr<DecoderBuffer> encrypted,
   if (!AudioFramesDataToAudioFrames(std::move(audio_frames),
                                     &audio_frame_list)) {
     DVLOG(1) << __func__ << " unable to convert Audio Frames";
-    audio_decode_cb.Run(Decryptor::kError, empty_frames);
+    std::move(audio_decode_cb).Run(Decryptor::kError, empty_frames);
     return;
   }
 
-  audio_decode_cb.Run(Decryptor::kSuccess, audio_frame_list);
+  std::move(audio_decode_cb).Run(Decryptor::kSuccess, audio_frame_list);
 }
 
 void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
-                                       const VideoDecodeCB& video_decode_cb) {
+                                       VideoDecodeCB video_decode_cb) {
   DVLOG(3) << __func__ << ": "
            << encrypted->AsHumanReadableString(/*verbose=*/true);
   DCHECK(task_runner_->BelongsToCurrentThread());
-
-  ScopedCrashKeyString scoped_crash_key(&g_origin_crash_key, cdm_origin_);
 
   cdm::InputBuffer_2 input_buffer = {};
   std::vector<cdm::SubsampleEntry> subsamples;
@@ -604,7 +599,7 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
 
   if (status != cdm::kSuccess) {
     DVLOG(1) << __func__ << ": status = " << status;
-    video_decode_cb.Run(ToMediaDecryptorStatus(status), nullptr);
+    std::move(video_decode_cb).Run(ToMediaDecryptorStatus(status), nullptr);
     return;
   }
 
@@ -613,13 +608,13 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
       GetNaturalSize(visible_rect, pixel_aspect_ratio_));
   if (!decoded_frame) {
     DLOG(ERROR) << __func__ << ": TransformToVideoFrame failed.";
-    video_decode_cb.Run(Decryptor::kError, nullptr);
+    std::move(video_decode_cb).Run(Decryptor::kError, nullptr);
     return;
   }
 
-  decoded_frame->metadata()->protected_video = is_video_encrypted_;
+  decoded_frame->metadata().protected_video = is_video_encrypted_;
 
-  video_decode_cb.Run(Decryptor::kSuccess, decoded_frame);
+  std::move(video_decode_cb).Run(Decryptor::kSuccess, decoded_frame);
 }
 
 void CdmAdapter::ResetDecoder(StreamType stream_type) {

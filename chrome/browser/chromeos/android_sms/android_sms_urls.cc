@@ -6,10 +6,10 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_switches.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "url/gurl.h"
 
 namespace chromeos {

@@ -36,26 +36,16 @@
       return removeBundle(useExternalSdes(sdp));
     });
     createConnections({
-      'mandatory': {'RtpDataChannels': true, 'DtlsSrtpKeyAgreement': false}
+      'mandatory': {'DtlsSrtpKeyAgreement': false}
     });
-    var hasExchanged = promiseDataChannelExchange({reliable: false});
     navigator.mediaDevices.getUserMedia({audio: true, video: true})
         .then(addStreamToBothConnectionsAndNegotiate)
         .catch(failTest);
 
     Promise.all([
-      hasExchanged,
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-2')
     ]).then(reportTestSuccess);
-  }
-
-  // Test only a data channel.
-  function callWithDataOnly() {
-    createConnections({optional:[{RtpDataChannels: true}]});
-    promiseDataChannelExchange({reliable: false})
-        .then(reportTestSuccess);
-    negotiate();
   }
 
   function callWithSctpDataOnly() {
@@ -63,21 +53,6 @@
     promiseSctpDataChannelExchange({reliable: true})
         .then(reportTestSuccess);
     negotiate();
-  }
-
-  // Test call with audio, video and a data channel.
-  function callWithDataAndMedia() {
-    createConnections({optional:[{RtpDataChannels: true}]});
-    var hasExchanged = promiseDataChannelExchange({reliable: false});
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
-        .then(addStreamToBothConnectionsAndNegotiate)
-        .catch(failTest);
-
-    Promise.all([
-      hasExchanged,
-      detectVideoPlaying('remote-view-1'),
-      detectVideoPlaying('remote-view-2')
-    ]).then(reportTestSuccess);
   }
 
   function callWithSctpDataAndMedia() {
@@ -92,27 +67,6 @@
       detectVideoPlaying('remote-view-1'),
       detectVideoPlaying('remote-view-2')
     ]).then(reportTestSuccess);
-  }
-
-  // Test call with a data channel and later add audio and video.
-  function callWithDataAndLaterAddMedia() {
-    createConnections({optional:[{RtpDataChannels: true}]});
-    var hasExchanged = promiseDataChannelExchange({reliable: false});
-    negotiate();
-
-    // Set an event handler for when the data channel has been closed.
-    hasExchanged.then(() => {
-      // When the video is flowing the test is done.
-      return navigator.mediaDevices.getUserMedia({audio: true, video: true})
-          .then(addStreamToBothConnectionsAndNegotiate);
-    }).then(() => {
-      return Promise.all([
-        detectVideoPlaying('remote-view-1'),
-        detectVideoPlaying('remote-view-2')
-      ]);
-    })
-    .then(reportTestSuccess)
-    .catch(failTest);
   }
 
   // This function is used for setting up a test that:

@@ -12,10 +12,10 @@
 
 namespace elevation_service {
 
-HRESULT Elevator::RunRecoveryCRXElevated(const base::char16* crx_path,
-                                         const base::char16* browser_appid,
-                                         const base::char16* browser_version,
-                                         const base::char16* session_id,
+HRESULT Elevator::RunRecoveryCRXElevated(const wchar_t* crx_path,
+                                         const wchar_t* browser_appid,
+                                         const wchar_t* browser_version,
+                                         const wchar_t* session_id,
                                          DWORD caller_proc_id,
                                          ULONG_PTR* proc_handle) {
   base::win::ScopedHandle scoped_proc_handle;

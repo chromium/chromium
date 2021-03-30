@@ -166,9 +166,8 @@ void DrmGpuDisplayManager::RelinquishDisplayControl() {
     drm->DropMaster();
 }
 
-base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
+bool DrmGpuDisplayManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests) {
-  base::flat_map<int64_t, bool> statuses;
   ScreenManager::ControllerConfigsList controllers_to_configure;
 
   for (const auto& config : config_requests) {
@@ -176,8 +175,7 @@ base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
     DrmDisplay* display = FindDisplay(display_id);
     if (!display) {
       LOG(ERROR) << "There is no display with ID " << display_id;
-      statuses.insert(std::make_pair(display_id, false));
-      continue;
+      return false;
     }
 
     std::unique_ptr<drmModeModeInfo> mode_ptr =
@@ -185,8 +183,7 @@ base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
     if (config.mode) {
       if (!FindModeForDisplay(mode_ptr.get(), *config.mode.value(),
                               display->modes(), displays_)) {
-        statuses.insert(std::make_pair(display_id, false));
-        continue;
+        return false;
       }
     }
 
@@ -205,41 +202,30 @@ base::flat_map<int64_t, bool> DrmGpuDisplayManager::ConfigureDisplays(
     controllers_to_configure.push_back(std::move(params));
   }
 
-  if (controllers_to_configure.empty())
-    return statuses;
-
   if (clear_overlay_cache_callback_)
     clear_overlay_cache_callback_.Run();
 
-  auto config_statuses =
+  bool config_success =
       screen_manager_->ConfigureDisplayControllers(controllers_to_configure);
-  for (const auto& status : config_statuses) {
-    int64_t display_id = status.first;
-    bool success = status.second;
-    DrmDisplay* display = FindDisplay(display_id);
-    auto config = std::find_if(
-        config_requests.begin(), config_requests.end(),
-        [display_id](const auto& request) { return request.id == display_id; });
 
-    if (success) {
-      display->SetOrigin(config->origin);
+  for (const auto& controller : controllers_to_configure) {
+    if (config_success) {
+      FindDisplay(controller.display_id)->SetOrigin(controller.origin);
     } else {
-      if (config->mode) {
+      if (controller.mode) {
         VLOG(1) << "Failed to enable device="
-                << display->drm()->device_path().value()
-                << " crtc=" << display->crtc()
-                << " connector=" << display->connector();
+                << controller.drm->device_path().value()
+                << " crtc=" << controller.crtc
+                << " connector=" << controller.connector;
       } else {
         VLOG(1) << "Failed to disable device="
-                << display->drm()->device_path().value()
-                << " crtc=" << display->crtc();
+                << controller.drm->device_path().value()
+                << " crtc=" << controller.crtc;
       }
     }
-
-    statuses.insert(std::make_pair(display_id, success));
   }
 
-  return statuses;
+  return config_success;
 }
 
 bool DrmGpuDisplayManager::GetHDCPState(

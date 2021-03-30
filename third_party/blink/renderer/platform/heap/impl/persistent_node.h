@@ -341,7 +341,7 @@ void PersistentNodePtr<affinity, weakness_configuration>::Uninitialize() {
       weakness_configuration == kWeakPersistentConfiguration
           ? state->GetWeakPersistentRegion()
           : state->GetPersistentRegion();
-  state->FreePersistentNode(region, ptr_);
+  region->FreeNode(ptr_);
   ptr_ = nullptr;
 }
 

@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <ostream>
 #include <sstream>
+#include <string>
 
 #include "base/json/json_writer.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -84,14 +84,13 @@ std::string ToString(const T& obj) {
   return ostream.str();
 }
 
-base::string16 ValueElementVectorToString(
+std::u16string ValueElementVectorToString(
     const ValueElementVector& value_element_pairs) {
-  std::vector<base::string16> pairs(value_element_pairs.size());
-  std::transform(value_element_pairs.begin(), value_element_pairs.end(),
-                 pairs.begin(), [](const ValueElementPair& p) {
-                   return p.first + base::ASCIIToUTF16("+") + p.second;
-                 });
-  return base::JoinString(pairs, base::ASCIIToUTF16(", "));
+  std::vector<std::u16string> pairs(value_element_pairs.size());
+  std::transform(
+      value_element_pairs.begin(), value_element_pairs.end(), pairs.begin(),
+      [](const ValueElementPair& p) { return p.first + u"+" + p.second; });
+  return base::JoinString(pairs, u", ");
 }
 
 // Serializes a PasswordForm to a JSON object. Used only for logging in tests.
@@ -173,11 +172,12 @@ PasswordForm& PasswordForm::operator=(const PasswordForm& form) = default;
 PasswordForm& PasswordForm::operator=(PasswordForm&& form) = default;
 
 bool PasswordForm::IsPossibleChangePasswordForm() const {
-  return !new_password_element.empty();
+  return !new_password_element_renderer_id.is_null();
 }
 
 bool PasswordForm::IsPossibleChangePasswordFormWithoutUsername() const {
-  return IsPossibleChangePasswordForm() && username_element.empty();
+  return IsPossibleChangePasswordForm() &&
+         username_element_renderer_id.is_null();
 }
 
 bool PasswordForm::HasUsernameElement() const {

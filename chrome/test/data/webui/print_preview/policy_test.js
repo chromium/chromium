@@ -48,8 +48,8 @@ suite(policy_tests.suiteName, function() {
     document.body.innerHTML = '';
     const nativeLayer = new NativeLayerStub();
     nativeLayer.setInitialSettings(initialSettings);
-    nativeLayer.setLocalDestinationCapabilities(
-        getCddTemplate(initialSettings.printerName));
+    nativeLayer.setLocalDestinations(
+        [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     nativeLayer.setPageCount(3);
     NativeLayerImpl.instance_ = nativeLayer;
     // <if expr="chromeos">

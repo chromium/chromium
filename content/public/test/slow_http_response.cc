@@ -7,66 +7,43 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
+#include "base/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace content {
 
-namespace {
-
-static bool g_should_finish_response = false;
-
-void SendResponseBodyDone(const net::test_server::SendBytesCallback& send,
-                          net::test_server::SendCompleteCallback done);
-
-// The response body is sent in two parts, of size |kFirstResponsePartSize| and
-// |kSecondResponsePartSize| respectively.
-void SendResponseBody(const net::test_server::SendBytesCallback& send,
-                      net::test_server::SendCompleteCallback done,
-                      bool finish_response) {
-  int data_size = finish_response ? SlowHttpResponse::kSecondResponsePartSize
-                                  : SlowHttpResponse::kFirstResponsePartSize;
-  std::string response(data_size, '*');
-
-  if (finish_response) {
-    send.Run(response, std::move(done));
-  } else {
-    send.Run(response,
-             base::BindOnce(&SendResponseBodyDone, send, std::move(done)));
-  }
-}
-
-// Called when the response body was successfully sent.
-void SendResponseBodyDone(const net::test_server::SendBytesCallback& send,
-                          net::test_server::SendCompleteCallback done) {
-  if (g_should_finish_response) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SendResponseBody, send, std::move(done), true),
-        base::TimeDelta::FromMilliseconds(100));
-  } else {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&SendResponseBodyDone, send, std::move(done)),
-        base::TimeDelta::FromMilliseconds(100));
-  }
-}
-
-}  // namespace
-
-// static
-const char SlowHttpResponse::kSlowResponseHostName[] =
-    "url.handled.by.slow.response";
 const char SlowHttpResponse::kSlowResponseUrl[] = "/slow-response";
 const char SlowHttpResponse::kFinishSlowResponseUrl[] = "/slow-response-finish";
 
 const int SlowHttpResponse::kFirstResponsePartSize = 1024 * 35;
 const int SlowHttpResponse::kSecondResponsePartSize = 1024 * 10;
 
-SlowHttpResponse::SlowHttpResponse(const std::string& url) : url_(url) {}
+// static
+SlowHttpResponse::GotRequestCallback
+SlowHttpResponse::FinishResponseImmediately() {
+  return base::BindOnce(
+      [](base::OnceClosure start_response, base::OnceClosure finish_response) {
+        std::move(start_response).Run();
+        std::move(finish_response).Run();
+      });
+}
+
+// static
+SlowHttpResponse::GotRequestCallback SlowHttpResponse::NoResponse() {
+  return base::DoNothing();
+}
+
+SlowHttpResponse::SlowHttpResponse(GotRequestCallback got_request)
+    : main_thread_(base::ThreadTaskRunnerHandle::Get()),
+      got_request_(std::move(got_request)) {}
 
 SlowHttpResponse::~SlowHttpResponse() = default;
 
 bool SlowHttpResponse::IsHandledUrl() {
-  return url_ == kSlowResponseUrl || url_ == kFinishSlowResponseUrl;
+  //  return url_ == kSlowResponseUrl || url_ == kFinishSlowResponseUrl;
+  return false;
 }
 
 void SlowHttpResponse::AddResponseHeaders(std::string* response) {
@@ -80,21 +57,52 @@ void SlowHttpResponse::SetStatusLine(std::string* response) {
 void SlowHttpResponse::SendResponse(
     const net::test_server::SendBytesCallback& send,
     net::test_server::SendCompleteCallback done) {
-  std::string response;
-  SetStatusLine(&response);
-  if (base::LowerCaseEqualsASCII(kFinishSlowResponseUrl, url_)) {
-    response.append("Content-type: text/plain\r\n");
-    response.append("\r\n");
+  // Construct the headers here so subclasses can override them. Then we will
+  // bind them into the async task which sends them in the response.
+  std::string header_response;
+  SetStatusLine(&header_response);
+  AddResponseHeaders(&header_response);
+  header_response.append("Cache-Control: no-store\r\n");
+  header_response.append("\r\n");
 
-    g_should_finish_response = true;
-    send.Run(response, std::move(done));
-  } else {
-    AddResponseHeaders(&response);
-    response.append("Cache-Control: max-age=0\r\n");
-    response.append("\r\n");
-    send.Run(response,
-             base::BindOnce(&SendResponseBody, send, std::move(done), false));
-  }
+  // SendResponse() runs off the test's main thread so we must have these tasks
+  // post back from the test's main thread to this thread.
+  auto send_headers = base::BindPostTask(
+      base::ThreadTaskRunnerHandle::Get(),
+      base::BindOnce(
+          [](const std::string& header_response,
+             const net::test_server::SendBytesCallback& send) {
+            send.Run(header_response, base::DoNothing());
+          },
+          header_response, send));
+  auto send_first_part = base::BindPostTask(
+      base::ThreadTaskRunnerHandle::Get(),
+      base::BindOnce(
+          [](const net::test_server::SendBytesCallback& send) {
+            std::string response(kFirstResponsePartSize, '*');
+            send.Run(response, base::DoNothing());
+          },
+          send));
+  auto send_second_part = base::BindPostTask(
+      base::ThreadTaskRunnerHandle::Get(),
+      base::BindOnce(
+          [](const net::test_server::SendBytesCallback& send,
+             net::test_server::SendCompleteCallback done) {
+            std::string response(kSecondResponsePartSize, '*');
+            send.Run(response, std::move(done));
+          },
+          send, std::move(done)));
+
+  // We run both `send_headers` and `send_first_part` when the test asks
+  // us to start the response, but as separate tasks.
+  base::OnceClosure start_response =
+      std::move(send_headers).Then(std::move(send_first_part));
+  base::OnceClosure finish_response = std::move(send_second_part);
+  // SendResponse() runs off the test's main thread so we must post task the
+  // test's `got_request_` callback to the main thread.
+  main_thread_->PostTask(FROM_HERE, base::BindOnce(std::move(got_request_),
+                                                   std::move(start_response),
+                                                   std::move(finish_response)));
 }
 
 }  // namespace content

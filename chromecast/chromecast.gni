@@ -30,11 +30,6 @@ declare_args() {
   # Set true to enable assistant features.
   enable_assistant = false
 
-  # Set to true on devices that support multizone. Only indicates that the
-  # device supports multizone. The command line flag --enable-multizone must
-  # still be used to enable multizone.
-  supports_multizone = is_cast_audio_only && !is_cast_desktop_build
-
   # Set to true if there is a full mixer implementation; if not, we create a
   # shim mixer service receiver that pushes audio to the CMA backend.
   have_full_mixer = is_cast_audio_only
@@ -60,17 +55,10 @@ declare_args() {
   # volume streams to a single one.
   is_single_volume = false
 
-  # Set to true to keep Android activities alive when they are moved to the
-  # background.
-  enable_background_activities = false
-
   # Set to true to use CastWebContentsFragment instead of CastWebContentsActivity
   # to run cast receiver app.
   # TODO(thoren) merge this flag with display_web_contents_in_service
   enable_cast_fragment = false
-
-  # Set the number of lines for LogcatExtractor to send.
-  logcat_extractor_size = 512
 
   if (is_android) {
     # Set to true to get logcat from a remote service
@@ -147,8 +135,6 @@ declare_args() {
 }
 
 declare_args() {
-  enable_volume_tables_access =
-      is_android_things && chromecast_branding != "public"
   is_android_things_non_public =
       is_android_things && chromecast_branding != "public"
 }
@@ -169,9 +155,11 @@ if (chromecast_branding == "public") {
 }
 
 # All locales supported by Cast builds. This provides a single point of
-# reference for all GN files referencing a locales list. |locales| is declared
-# in //build/config/locales.gni.
-cast_locales = locales
+# reference for all GN files referencing a locales list.
+# |locales_without_pseudolocales| is declared in //build/config/locales.gni.
+# See https://chromium-review.googlesource.com/488166/ for why we can't use
+# pseudolocales in chromecast.
+cast_locales = locales_without_pseudolocales
 
 # Android currently supports more locales than Desktop and ChromeOS.
 # If Cast will also the android files update this and the Cast grd files.

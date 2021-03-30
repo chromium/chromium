@@ -70,6 +70,7 @@ source_set("signin") {
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/reading_list:reading_list_remover",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
@@ -105,6 +106,7 @@ source_set("test_support") {
     "//ios/chrome/browser/sync",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:constants",
     "//ios/public/provider/chrome/browser/signin:test_support",
   ]
 }

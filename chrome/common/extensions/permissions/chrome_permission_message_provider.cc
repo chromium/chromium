@@ -19,6 +19,8 @@
 #include "extensions/common/url_pattern_set.h"
 #include "url/gurl.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace {
@@ -141,7 +143,7 @@ void ChromePermissionMessageProvider::AddHostPermissions(
     return;
 
   if (permissions.ShouldWarnAllHosts()) {
-    permission_ids->insert(APIPermission::kHostsAll);
+    permission_ids->insert(APIPermissionID::kHostsAll);
   } else {
     URLPatternSet regular_hosts;
     ExtensionsClient::Get()->FilterHostPermissions(
@@ -150,7 +152,7 @@ void ChromePermissionMessageProvider::AddHostPermissions(
     std::set<std::string> hosts =
         permission_message_util::GetDistinctHosts(regular_hosts, true, true);
     for (const auto& host : hosts) {
-      permission_ids->insert(APIPermission::kHostReadWrite,
+      permission_ids->insert(APIPermissionID::kHostReadWrite,
                              base::UTF8ToUTF16(host));
     }
   }
@@ -163,10 +165,10 @@ bool ChromePermissionMessageProvider::IsAPIOrManifestPrivilegeIncrease(
   AddAPIPermissions(granted_permissions, &granted_ids);
   AddManifestPermissions(granted_permissions, &granted_ids);
 
-  // <all_urls> is processed as APIPermission::kHostsAll and should be included
-  // when checking permission messages.
+  // <all_urls> is processed as mojom::APIPermissionID::kHostsAll and should be
+  // included when checking permission messages.
   if (granted_permissions.ShouldWarnAllHosts())
-    granted_ids.insert(APIPermission::kHostsAll);
+    granted_ids.insert(APIPermissionID::kHostsAll);
 
   // We compare |granted_ids| against the set of permissions that would be
   // granted if the requested permissions are allowed.
@@ -175,14 +177,14 @@ bool ChromePermissionMessageProvider::IsAPIOrManifestPrivilegeIncrease(
   AddManifestPermissions(requested_permissions, &potential_total_ids);
 
   if (requested_permissions.ShouldWarnAllHosts())
-    potential_total_ids.insert(APIPermission::kHostsAll);
+    potential_total_ids.insert(APIPermissionID::kHostsAll);
 
   // For M62, we added a new permission ID for new tab page overrides. Consider
   // the addition of this permission to not result in a privilege increase for
   // the time being.
   // TODO(robertshield): Remove this once most of the population is on M62+
-  granted_ids.erase(APIPermission::kNewTabPageOverride);
-  potential_total_ids.erase(APIPermission::kNewTabPageOverride);
+  granted_ids.erase(APIPermissionID::kNewTabPageOverride);
+  potential_total_ids.erase(APIPermissionID::kNewTabPageOverride);
 
   // If all the IDs were already there, it's not a privilege increase.
   if (granted_ids.Includes(potential_total_ids))

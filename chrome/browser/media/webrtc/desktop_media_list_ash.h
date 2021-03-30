@@ -24,7 +24,7 @@ class Image;
 // native windows.
 class DesktopMediaListAsh : public DesktopMediaListBase {
  public:
-  explicit DesktopMediaListAsh(content::DesktopMediaID::Type type);
+  explicit DesktopMediaListAsh(DesktopMediaList::Type type);
   ~DesktopMediaListAsh() override;
 
  private:

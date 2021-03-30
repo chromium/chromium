@@ -20,6 +20,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   static ChromeCaptureModeDelegate* Get();
 
+  bool is_session_active() const { return is_session_active_; }
+
   // Sets |is_screen_capture_locked_| to the given |locked|, and interrupts any
   // on going video capture.
   void SetIsScreenCaptureLocked(bool locked);
@@ -29,24 +31,26 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void InterruptVideoRecordingIfAny();
 
   // ash::CaptureModeDelegate:
-  base::FilePath GetActiveUserDownloadsDir() const override;
+  base::FilePath GetScreenCaptureDir() const override;
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
-  bool IsCaptureModeInitRestricted() const override;
-  bool IsCaptureAllowed(const aura::Window* window,
-                        const gfx::Rect& bounds,
-                        bool for_video) const override;
+  bool IsCaptureModeInitRestrictedByDlp() const override;
+  bool IsCaptureAllowedByDlp(const aura::Window* window,
+                             const gfx::Rect& bounds,
+                             bool for_video) const override;
+  bool IsCaptureAllowedByPolicy() const override;
   void StartObservingRestrictedContent(
       const aura::Window* window,
       const gfx::Rect& bounds,
       base::OnceClosure stop_callback) override;
   void StopObservingRestrictedContent() override;
-  void OpenFeedbackDialog() override;
   mojo::Remote<recording::mojom::RecordingService> LaunchRecordingService()
       override;
   void BindAudioStreamFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
+      override;
+  void OnSessionStateChanged(bool started) override;
 
  private:
   // Used to temporarily disable capture mode in certain cases for which neither
@@ -60,6 +64,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // locked.
   // This is only non-null during recording.
   base::OnceClosure interrupt_video_recording_callback_;
+
+  // True when a capture mode session is currently active.
+  bool is_session_active_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_CAPTURE_MODE_DELEGATE_H_

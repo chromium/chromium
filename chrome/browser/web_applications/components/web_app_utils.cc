@@ -8,9 +8,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -36,8 +37,7 @@ bool AreWebAppsEnabled(const Profile* profile) {
   }
   // Disable Web Apps if running any kiosk app.
   auto* user_manager = user_manager::UserManager::Get();
-  if (user_manager && (user_manager->IsLoggedInAsKioskApp() ||
-                       user_manager->IsLoggedInAsArcKioskApp())) {
+  if (user_manager && user_manager->IsLoggedInAsAnyKioskApp()) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -64,6 +64,7 @@ content::BrowserContext* GetBrowserContextForWebAppMetrics(
   Profile* original_profile =
       Profile::FromBrowserContext(context)->GetOriginalProfile();
   const bool is_web_app_metrics_enabled =
+      site_engagement::SiteEngagementService::IsEnabled() &&
       AreWebAppsEnabled(original_profile) &&
       !original_profile->IsGuestSession() &&
       !original_profile->IsEphemeralGuestProfile();

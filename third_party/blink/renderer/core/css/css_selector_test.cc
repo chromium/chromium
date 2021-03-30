@@ -127,6 +127,18 @@ TEST(CSSSelector, Specificity_Slotted) {
   EXPECT_EQ(Specificity("::slotted(*)"), Specificity("::first-line"));
 }
 
+TEST(CSSSelector, Specificity_Host) {
+  EXPECT_EQ(Specificity(":host"), Specificity(".host"));
+  EXPECT_EQ(Specificity(":host(.a)"), Specificity(".host .a"));
+  EXPECT_EQ(Specificity(":host(div#a.b)"), Specificity(".host div#a.b"));
+}
+
+TEST(CSSSelector, Specificity_HostContext) {
+  EXPECT_EQ(Specificity(":host-context(.a)"), Specificity(".host-context .a"));
+  EXPECT_EQ(Specificity(":host-context(div#a.b)"),
+            Specificity(".host-context div#a.b"));
+}
+
 TEST(CSSSelector, Specificity_Not) {
   EXPECT_EQ(Specificity(":not(div)"), Specificity(":is(div)"));
   EXPECT_EQ(Specificity(":not(.a)"), Specificity(":is(.a)"));
@@ -163,6 +175,27 @@ TEST(CSSSelector, HasLinkOrVisited) {
   EXPECT_TRUE(HasLinkOrVisited("::cue(:link)"));
   EXPECT_TRUE(HasLinkOrVisited(":host(:link)"));
   EXPECT_TRUE(HasLinkOrVisited(":host-context(:link)"));
+}
+
+TEST(CSSSelector, CueDefaultNamespace) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(R"HTML(
+    @namespace "http://www.w3.org/1999/xhtml";
+    video::cue(b) {}
+  )HTML");
+
+  const CSSSelector& cue_selector =
+      (*sheet.GetRuleSet().CuePseudoRules())[0]->Selector();
+  EXPECT_EQ(cue_selector.GetPseudoType(), CSSSelector::kPseudoCue);
+
+  const CSSSelectorList* cue_arguments = cue_selector.SelectorList();
+  ASSERT_TRUE(cue_arguments);
+  const CSSSelector* vtt_type_selector = cue_arguments->First();
+  ASSERT_TRUE(vtt_type_selector);
+  EXPECT_EQ(vtt_type_selector->TagQName().LocalName(), "b");
+  // Default namespace should not affect VTT node type selector.
+  EXPECT_EQ(vtt_type_selector->TagQName().NamespaceURI(), g_star_atom);
 }
 
 }  // namespace blink

@@ -31,19 +31,11 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
-class IDBObservation;
-
 class WebIDBDatabaseCallbacks {
  public:
-  using ObservationIndexMap = HashMap<int32_t, Vector<int32_t>>;
-
-  // Maps observer to transaction, which needs an id and a scope.
-  using TransactionMap = HashMap<int32_t, std::pair<int64_t, Vector<int64_t>>>;
-
   virtual ~WebIDBDatabaseCallbacks() = default;
 
   virtual void OnForcedClose() = 0;
@@ -51,9 +43,6 @@ class WebIDBDatabaseCallbacks {
 
   virtual void OnAbort(int64_t transaction_id, const IDBDatabaseError&) = 0;
   virtual void OnComplete(int64_t transaction_id) = 0;
-  virtual void OnChanges(const ObservationIndexMap&,
-                         Vector<Persistent<IDBObservation>> observations,
-                         const TransactionMap& transactions) = 0;
   virtual void Detach() = 0;
 };
 

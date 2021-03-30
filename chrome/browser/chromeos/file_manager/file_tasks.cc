@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -23,8 +24,8 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/chromeos/file_manager/arc_file_tasks.h"
@@ -47,8 +48,6 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/drive/drive_api_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -171,20 +170,6 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
   tasks->swap(filtered);
 }
 
-// Returns whether |path| is a RAW image file according to its extension. Note
-// that since none of the extensions of interest are "known" mime types (per
-// net/mime_util.cc), it's enough to simply check the extension rather than
-// using MimeTypeCollector. TODO(crbug/1030935): Remove this.
-bool IsRawImage(const base::FilePath& path) {
-  constexpr const char* kRawExtensions[] = {".arw", ".cr2", ".dng", ".nef",
-                                            ".nrw", ".orf", ".raf", ".rw2"};
-  for (const char* extension : kRawExtensions) {
-    if (path.MatchesExtension(extension))
-      return true;
-  }
-  return false;
-}
-
 // Adjusts |tasks| to reflect the product decision that chrome://media-app
 // should behave more like a user-installed app than a fallback handler.
 // Specifically, only apps set as the default in user prefs should be preferred
@@ -206,43 +191,27 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
   if (media_app_task == tasks->end())
     return;
 
-  // TODO(crbug/1030935): Delete the IsRawImage function and early exit when
-  // kMediaAppHandlesRaw is removed. The any_non_image check can be removed once
-  // video player functionality of the Media App is fully polished
-  // (b/171154148).
-  bool any_non_image = false;
-  for (const auto& entry : entries) {
-    if (!base::FeatureList::IsEnabled(
-            chromeos::features::kMediaAppHandlesRaw) &&
-        IsRawImage(entry.path)) {
-      tasks->erase(media_app_task);
-      return;  // Let Gallery handle it.
-    }
-
-    any_non_image =
-        any_non_image || !net::MatchesMimeType("image/*", entry.mime_type);
-  }
-
   const auto gallery_task = task_for_app(kGalleryAppId);
-  if (any_non_image) {
-    // Remove the gallery app (if it was found), but don't re-order prefs.
-    // Picking it would launch Media App due to executeTask interception, but we
-    // should still prefer the Video Player app over Media App.
+
+  // If the video player is still available, check if it was offered and early
+  // exit. Unfortunately because obscure videos must be handled with extension
+  // matches, both the MediaApp and Video have equal priority for those. That
+  // causes them to be ordered by extension ID. Video is "jhd.." and Media is
+  // "jcg..". So to ensure the Video app takes precedence, we pretend the media
+  // app is actually a wildcard match. Note the video player will only be
+  // offered if _all_ the files in the selection are videos, and it is not
+  // already hidden by flags.
+  if (task_for_app(kVideoPlayerAppId) != tasks->end()) {
+    media_app_task->set_is_generic_file_handler(true);
     if (gallery_task != tasks->end())
-      tasks->erase(gallery_task);  // Note: invalidates iterators.
+      tasks->erase(gallery_task);
     return;
   }
 
-  // Due to https://crbug.com/1071289, configuring extension matches in SWA
-  // manifests has no effect on is_file_extension_match(), which means a non-
-  // "fallback" web app (i.e. a built-in app) can never be an automatic default.
-  // Fallback handlers are never preferred over extension-matched handlers, so
-  // we must instead pretend that the media app has an extension match.
-  // Note this must be done after the any_non_image check to ensure the video
-  // player app gets preference as "default".
-
-  // First DCHECK to see if the hack can be removed.
-  DCHECK(!media_app_task->is_file_extension_match());
+  // TOOD(crbug/1071289): For a while is_file_extension_match() would always be
+  // false for System Web App manifests, even when specifying extension matches.
+  // So this line can be removed once the media app manifest is updated with a
+  // full complement of image file extensions.
   media_app_task->set_is_file_extension_match(true);
 
   // The logic in ChooseAndSetDefaultTask() also requires the following to hold.
@@ -710,6 +679,17 @@ void FindFileHandlerTasks(Profile* profile,
     if (profile->IsOffTheRecord() &&
         !extensions::util::IsIncognitoEnabled(extension->id(), profile))
       continue;
+
+    if (base::FeatureList::IsEnabled(ash::features::kVideoPlayerAppHidden) &&
+        extension->id() == kVideoPlayerAppId) {
+      // "Hide" the video player component extension (i.e. skip the rest of this
+      // loop which would add it as a handler). Note this is not achieved by
+      // preventing the extension install in component_loader.cc. The component
+      // extension must first be properly "uninstalled" in a milestone after all
+      // entrypoints are removed.
+      // TODO(crbug/1158531): Remove this when the video player is uninstalled.
+      continue;
+    }
 
     typedef std::vector<extensions::FileHandlerMatch> FileHandlerMatchList;
     FileHandlerMatchList file_handlers =

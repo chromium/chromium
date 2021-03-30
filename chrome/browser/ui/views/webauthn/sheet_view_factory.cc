@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_bio_enrollment_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
@@ -31,9 +32,9 @@ class PlaceholderSheetModel : public AuthenticatorSheetModelBase {
       ImageColorScheme color_scheme) const override {
     return gfx::kNoneIcon;
   }
-  base::string16 GetStepTitle() const override { return base::string16(); }
-  base::string16 GetStepDescription() const override {
-    return base::string16();
+  std::u16string GetStepTitle() const override { return std::u16string(); }
+  std::u16string GetStepDescription() const override {
+    return std::u16string();
   }
 };
 
@@ -97,14 +98,19 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorBlePowerOnManualSheetModel>(
               dialog_model));
       break;
-    case Step::kTouchIdIncognitoSpeedBump:
+    case Step::kPlatformAuthenticatorOffTheRecordInterstitial:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
-          std::make_unique<AuthenticatorTouchIdIncognitoBumpSheetModel>(
+          std::make_unique<AuthenticatorOffTheRecordInterstitialSheetModel>(
               dialog_model));
       break;
     case Step::kCableActivate:
-      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+      sheet_view = std::make_unique<AuthenticatorPaaskSheetView>(
           std::make_unique<AuthenticatorPaaskSheetModel>(dialog_model));
+      break;
+    case Step::kAndroidAccessory:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorAndroidAccessorySheetModel>(
+              dialog_model));
       break;
     case Step::kCableV2Activate:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
@@ -178,7 +184,13 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AttestationPermissionRequestSheetModel>(
               dialog_model));
       break;
+    case Step::kEnterpriseAttestationPermissionRequest:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<EnterpriseAttestationPermissionRequestSheetModel>(
+              dialog_model));
+      break;
     case Step::kNotStarted:
+    case Step::kLocationBarBubble:
     case Step::kClosed:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<PlaceholderSheetModel>(dialog_model));

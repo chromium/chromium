@@ -211,7 +211,7 @@ function controlElementInputListener_(evt) {
  * @param {string} forceFillFieldStringID Identified field will always be
  *     filled even if non-empty. May be null.
  * @param {number} forceFillFieldNumericID Identified field will always be
- *     filled even if non-empty. May be kNotSetRendererId.
+ *     filled even if non-empty. May be __gCrWeb.fill.RENDERER_ID_NOT_SET.
  * @param {bool} useRendererIDs Whether the logic should use numeric renderer
  *     IDs for form filling.
  * @return {string} JSON encoded list of renderer IDs of filled elements.
@@ -268,7 +268,7 @@ __gCrWeb.autofill['fillForm'] = function(
     // c) The "value" or "placeholder" attributes match the value, if any; or
     // d) The value has not been set by the user.
     const shouldBeForceFilled = useRendererIDs ?
-        fieldRendererID === forceFillFieldNumericID :
+        fieldRendererID === forceFillFieldNumericID.toString() :
         fieldIdentifier === forceFillFieldStringID;
     if (element.value && __gCrWeb.form.fieldWasEditedByUser(element) &&
         !__gCrWeb.autofill.sanitizedFieldIsEmpty(element.value) &&
@@ -606,7 +606,7 @@ __gCrWeb.autofill['fillPredictionData'] = function(data) {
  * Returns whether |value| contains only formating characters.
  *
  * It is based on the logic in
- *     void SanitizedFieldIsEmpty(const base::string16& value);
+ *     void SanitizedFieldIsEmpty(const std::u16string& value);
  * in chromium/src/components/autofill/common/autofill_util.h.
  *
  * @param {HTMLFormElement} formElement A form element to be processed.

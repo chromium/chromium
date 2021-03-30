@@ -29,6 +29,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -101,7 +102,8 @@ const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                                spdy::SpdyStreamId pushed_stream_id,
-                               NetLogSource source_dependency)
+                               NetLogSource source_dependency,
+                               std::vector<std::string> dns_aliases)
     : MultiplexedHttpStream(
           std::make_unique<MultiplexedSessionHandle>(spdy_session)),
       spdy_session_(spdy_session),
@@ -122,7 +124,8 @@ SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
       request_body_buf_size_(0),
       buffered_read_callback_pending_(false),
       more_read_data_pending_(false),
-      was_alpn_negotiated_(false) {
+      was_alpn_negotiated_(false),
+      dns_aliases_(std::move(dns_aliases)) {
   DCHECK(spdy_session_.get());
 }
 
@@ -386,6 +389,20 @@ void SpdyHttpStream::OnHeadersSent() {
     SendEmptyBody();
   } else {
     MaybePostRequestCallback(OK);
+  }
+}
+
+void SpdyHttpStream::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {
+  DCHECK(!response_headers_complete_);
+  DCHECK(response_info_);
+  DCHECK_EQ(stream_->type(), SPDY_REQUEST_RESPONSE_STREAM);
+
+  const bool headers_valid = SpdyHeadersToHttpResponse(headers, response_info_);
+  CHECK(headers_valid);
+
+  if (!response_callback_.is_null()) {
+    DoResponseCallback(OK);
   }
 }
 
@@ -713,8 +730,16 @@ void SpdyHttpStream::SetPriority(RequestPriority priority) {
 }
 
 const std::vector<std::string>& SpdyHttpStream::GetDnsAliases() const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
-  return *emptyvector_result;
+  return dns_aliases_;
+}
+
+base::StringPiece SpdyHttpStream::GetAcceptChViaAlps() const {
+  if (!request_info_) {
+    return {};
+  }
+
+  const url::Origin origin = url::Origin::Create(request_info_->url);
+  return session()->GetAcceptChViaAlpsForOrigin(origin);
 }
 
 }  // namespace net

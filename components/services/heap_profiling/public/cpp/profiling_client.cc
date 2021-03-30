@@ -154,8 +154,6 @@ mojom::AllocatorType ConvertType(
       return mojom::AllocatorType::kMalloc;
     case base::PoissonAllocationSampler::AllocatorType::kPartitionAlloc:
       return mojom::AllocatorType::kPartitionAlloc;
-    case base::PoissonAllocationSampler::AllocatorType::kBlinkGC:
-      return mojom::AllocatorType::kOilpan;
   }
 }
 

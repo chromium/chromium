@@ -41,7 +41,7 @@ CSSPathValue* CreatePathValue() {
 
 }  // namespace
 
-CSSPathValue& CSSPathValue::EmptyPathValue() {
+const CSSPathValue& CSSPathValue::EmptyPathValue() {
   DEFINE_STATIC_LOCAL(Persistent<CSSPathValue>, empty, (CreatePathValue()));
   return *empty;
 }

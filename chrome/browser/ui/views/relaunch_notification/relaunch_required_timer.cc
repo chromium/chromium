@@ -44,7 +44,7 @@ void RelaunchRequiredTimer::SetDeadline(base::Time deadline) {
   }
 }
 
-base::string16 RelaunchRequiredTimer::GetWindowTitle() const {
+std::u16string RelaunchRequiredTimer::GetWindowTitle() const {
   // Round the time-to-relaunch to the nearest "boundary", which may be a day,
   // hour, minute, or second. For example, two days and eighteen hours will be
   // rounded up to three days, while two days and one hour will be rounded down

@@ -131,7 +131,7 @@ void SearchSuggestService::Shutdown() {
   }
 
   signin_observer_.reset();
-  DCHECK(!observers_.might_have_observers());
+  DCHECK(observers_.empty());
 }
 
 const base::Optional<SearchSuggestData>&

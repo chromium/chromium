@@ -12,15 +12,14 @@
 #include "base/path_service.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/api/file_system/consent_provider.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -124,9 +123,9 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
 
     ASSERT_TRUE(test_cache_root_.CreateUniqueTempDir());
 
-    create_drive_integration_service_ =
-        base::Bind(&FileSystemApiTestForDrive::CreateDriveIntegrationService,
-                   base::Unretained(this));
+    create_drive_integration_service_ = base::BindRepeating(
+        &FileSystemApiTestForDrive::CreateDriveIntegrationService,
+        base::Unretained(this));
     service_factory_for_test_.reset(
         new drive::DriveIntegrationServiceFactory::ScopedFactoryForTest(
             &create_drive_integration_service_));
@@ -261,7 +260,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   // Creates a testing file system in a testing directory.
@@ -275,7 +274,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
         base::CreateDirectory(mount_point_path.Append(kChildDirectory)));
     ASSERT_TRUE(content::BrowserContext::GetMountPoints(browser()->profile())
                     ->RegisterFileSystem(
-                        mount_point_name, storage::kFileSystemTypeNativeLocal,
+                        mount_point_name, storage::kFileSystemTypeLocal,
                         storage::FileSystemMountOption(), mount_point_path));
     VolumeManager* const volume_manager =
         VolumeManager::Get(browser()->profile());
@@ -287,7 +286,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
 
   // Simulates entering the kiosk session.
   void EnterKioskSession() {
-    fake_user_manager_ = new chromeos::FakeChromeUserManager();
+    fake_user_manager_ = new ash::FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
 
@@ -496,18 +495,21 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem, NotKioskSession) {
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
                        AllowlistedComponent) {
   ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_CANCEL);
-  ASSERT_TRUE(RunPlatformAppTestWithFlags(
-      "api_test/file_system/request_file_system_whitelisted_component",
-      kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "api_test/file_system/request_file_system_whitelisted_component",
+       .load_as_component = true,
+       .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
                        NotAllowlistedComponent) {
   ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_OK);
-  ASSERT_TRUE(RunPlatformAppTestWithFlags(
-      "api_test/file_system/request_file_system_not_whitelisted_component",
-      kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name =
+           "api_test/file_system/request_file_system_not_whitelisted_component",
+       .load_as_component = true,
+       .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -541,9 +543,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
                        AllowlistedExtensionForDownloads) {
   ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_CANCEL);
-  ASSERT_TRUE(RunPlatformAppTestWithFlags(
-      "api_test/file_system/request_downloads_whitelisted_extension", kFlagNone,
-      kFlagLaunchPlatformApp))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "api_test/file_system/request_downloads_whitelisted_extension",
+       .launch_as_platform_app = true}))
       << message_;
 }
 

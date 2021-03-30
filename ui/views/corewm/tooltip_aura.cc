@@ -26,6 +26,8 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -35,10 +37,6 @@ namespace {
 // Max visual tooltip width. If a tooltip is greater than this width, it will
 // be wrapped.
 constexpr int kTooltipMaxWidthPixels = 800;
-
-// FIXME: get cursor offset from actual cursor size.
-constexpr int kCursorOffsetX = 10;
-constexpr int kCursorOffsetY = 15;
 
 // Paddings
 constexpr int kHorizontalPadding = 8;
@@ -59,6 +57,7 @@ bool CanUseTranslucentTooltipWidget() {
 // TODO(oshima): Consider to use views::Label.
 class TooltipView : public views::View {
  public:
+  METADATA_HEADER(TooltipView);
   TooltipView() : render_text_(gfx::RenderText::CreateRenderText()) {
     SetBorder(views::CreateEmptyBorder(kVerticalPaddingTop, kHorizontalPadding,
                                        kVerticalPaddingBottom,
@@ -70,6 +69,8 @@ class TooltipView : public views::View {
     ResetDisplayRect();
   }
 
+  TooltipView(const TooltipView&) = delete;
+  TooltipView& operator=(const TooltipView&) = delete;
   ~TooltipView() override = default;
 
   // views:View:
@@ -93,16 +94,13 @@ class TooltipView : public views::View {
     return view_size;
   }
 
-  const char* GetClassName() const override { return "TooltipView"; }
-
-  void SetText(const base::string16& text) {
+  void SetText(const std::u16string& text) {
     render_text_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
 
     // Replace tabs with whitespace to avoid placeholder character rendering
     // where previously it did not. crbug.com/993100
-    base::string16 newText(text);
-    base::ReplaceChars(newText, base::ASCIIToUTF16("\t"),
-                       base::ASCIIToUTF16("        "), &newText);
+    std::u16string newText(text);
+    base::ReplaceChars(newText, u"\t", u"        ", &newText);
     render_text_->SetText(newText);
     SchedulePaint();
   }
@@ -150,9 +148,10 @@ class TooltipView : public views::View {
 
   std::unique_ptr<gfx::RenderText> render_text_;
   int max_width_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipView);
 };
+
+BEGIN_METADATA(TooltipView, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -189,24 +188,40 @@ void TooltipAura::GetAccessibleNodeDataForTest(ui::AXNodeData* node_data) {
   widget_->GetTooltipView()->GetAccessibleNodeData(node_data);
 }
 
-gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Point& mouse_pos,
-                                        const gfx::Size& tooltip_size) {
-  gfx::Rect tooltip_rect(mouse_pos, tooltip_size);
-  tooltip_rect.Offset(kCursorOffsetX, kCursorOffsetY);
+gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
+                                        const TooltipPosition& position) {
+  gfx::Rect tooltip_rect(position.anchor_point, tooltip_size);
+  // When the tooltip is showing up as a result of a cursor event, the tooltip
+  // needs to show up at the bottom-right corner of the cursor. When it's not,
+  // it has to be centered with the anchor point with pass it.
+  switch (position.behavior) {
+    case TooltipPositionBehavior::kCentered:
+      tooltip_rect.Offset(-tooltip_size.width() / 2, 0);
+      break;
+    case TooltipPositionBehavior::kRelativeToCursor:
+      tooltip_rect.Offset(kCursorOffsetX, kCursorOffsetY);
+      break;
+  }
+
   display::Screen* screen = display::Screen::GetScreen();
-  gfx::Rect display_bounds(screen->GetDisplayNearestPoint(mouse_pos).bounds());
+  gfx::Rect display_bounds(
+      screen->GetDisplayNearestPoint(position.anchor_point).bounds());
 
   // If tooltip is out of bounds on the x axis, we simply shift it
-  // horizontally by the offset.
+  // horizontally by the offset variation.
+  if (tooltip_rect.x() < display_bounds.x()) {
+    int delta = tooltip_rect.x() - display_bounds.x();
+    tooltip_rect.Offset(delta, 0);
+  }
   if (tooltip_rect.right() > display_bounds.right()) {
-    int h_offset = tooltip_rect.right() - display_bounds.right();
-    tooltip_rect.Offset(-h_offset, 0);
+    int delta = tooltip_rect.right() - display_bounds.right();
+    tooltip_rect.Offset(-delta, 0);
   }
 
   // If tooltip is out of bounds on the y axis, we flip it to appear above the
   // mouse cursor instead of below.
   if (tooltip_rect.bottom() > display_bounds.bottom())
-    tooltip_rect.set_y(mouse_pos.y() - tooltip_size.height());
+    tooltip_rect.set_y(position.anchor_point.y() - tooltip_size.height());
 
   tooltip_rect.AdjustToFit(display_bounds);
   return tooltip_rect;
@@ -248,26 +263,22 @@ int TooltipAura::GetMaxWidth(const gfx::Point& location) const {
   return std::min(kTooltipMaxWidthPixels, (display_bounds.width() + 1) / 2);
 }
 
-void TooltipAura::SetText(aura::Window* window,
-                          const base::string16& tooltip_text,
-                          const gfx::Point& location) {
+void TooltipAura::Update(aura::Window* window,
+                         const std::u16string& tooltip_text,
+                         const TooltipPosition& position) {
+  // Hide() must be called before showing the next tooltip.  See also the
+  // comment in Hide().
+  DCHECK(!widget_);
+
   tooltip_window_ = window;
 
-  if (!widget_) {
-    auto new_tooltip_view = std::make_unique<TooltipView>();
-    new_tooltip_view->SetMaxWidth(GetMaxWidth(location));
-    new_tooltip_view->SetText(tooltip_text);
-    CreateTooltipWidget(
-        GetTooltipBounds(location, new_tooltip_view->GetPreferredSize()));
-    widget_->SetTooltipView(std::move(new_tooltip_view));
-    widget_->AddObserver(this);
-  } else {
-    TooltipView* old_tooltip_view = widget_->GetTooltipView();
-    old_tooltip_view->SetMaxWidth(GetMaxWidth(location));
-    old_tooltip_view->SetText(tooltip_text);
-    widget_->SetBounds(
-        GetTooltipBounds(location, old_tooltip_view->GetPreferredSize()));
-  }
+  auto new_tooltip_view = std::make_unique<TooltipView>();
+  new_tooltip_view->SetMaxWidth(GetMaxWidth(position.anchor_point));
+  new_tooltip_view->SetText(tooltip_text);
+  CreateTooltipWidget(
+      GetTooltipBounds(new_tooltip_view->GetPreferredSize(), position));
+  widget_->SetTooltipView(std::move(new_tooltip_view));
+  widget_->AddObserver(this);
 
   ui::NativeTheme* native_theme = widget_->GetNativeTheme();
   auto background_color =

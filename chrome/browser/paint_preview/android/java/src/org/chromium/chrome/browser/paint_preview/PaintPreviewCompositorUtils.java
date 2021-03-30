@@ -15,7 +15,7 @@ public class PaintPreviewCompositorUtils {
     /**
      * Warms up the compositor process.
      */
-    static void warmupCompositor() {
+    public static void warmupCompositor() {
         PaintPreviewCompositorUtilsJni.get().warmupCompositor();
     }
 

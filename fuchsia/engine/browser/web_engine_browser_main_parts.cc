@@ -11,12 +11,16 @@
 #include "base/command_line.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/intl_profile_watcher.h"
+#include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/histogram_fetcher.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
 #include "fuchsia/base/legacymetrics_client.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/media_resource_provider_service.h"
@@ -24,7 +28,9 @@
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 #include "fuchsia/engine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/aura/screen_ozone.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -65,8 +71,13 @@ void WebEngineBrowserMainParts::PostEarlyInitialization() {
   base::ImportantFileWriterCleaner::GetInstance().Initialize();
 }
 
-void WebEngineBrowserMainParts::PreMainMessageLoopRun() {
+int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   DCHECK(!screen_);
+
+  // Watch for changes to the user's locale setting.
+  intl_profile_watcher_ = std::make_unique<base::FuchsiaIntlProfileWatcher>(
+      base::BindRepeating(&WebEngineBrowserMainParts::OnIntlProfileChanged,
+                          base::Unretained(this)));
 
   screen_ = std::make_unique<aura::ScreenOzone>();
   display::Screen::SetScreenInstance(screen_.get());
@@ -137,15 +148,16 @@ void WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
   // Make sure temporary files associated with this process are cleaned up.
   base::ImportantFileWriterCleaner::GetInstance().Start();
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void WebEngineBrowserMainParts::PreDefaultMainMessageLoopRun(
-    base::OnceClosure quit_closure) {
-  quit_closure_ = std::move(quit_closure);
-}
-
-bool WebEngineBrowserMainParts::MainMessageLoopRun(int* result_code) {
-  return !run_message_loop_;
+void WebEngineBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  if (run_message_loop_)
+    quit_closure_ = run_loop->QuitClosure();
+  else
+    run_loop.reset();
 }
 
 void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
@@ -161,6 +173,27 @@ void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
   context_binding_.reset();
   browser_context_.reset();
   screen_.reset();
+  intl_profile_watcher_.reset();
 
   base::ImportantFileWriterCleaner::GetInstance().Stop();
+}
+
+void WebEngineBrowserMainParts::OnIntlProfileChanged(
+    const fuchsia::intl::Profile& profile) {
+  // Configure the ICU library in this process with the new primary locale.
+  std::string primary_locale =
+      base::FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(profile);
+  base::i18n::SetICUDefaultLocale(primary_locale);
+
+  // Reload locale-specific resources.
+  std::string loaded_locale =
+      ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
+          base::i18n::GetConfiguredLocale());
+  VLOG(1) << "Reloaded locale resources: " << loaded_locale;
+
+  // Reconfigure the network process.
+  content::BrowserContext::GetDefaultStoragePartition(browser_context_.get())
+      ->GetNetworkContext()
+      ->SetAcceptLanguage(net::HttpUtil::GenerateAcceptLanguageHeader(
+          browser_context_->GetPreferredLanguages()));
 }

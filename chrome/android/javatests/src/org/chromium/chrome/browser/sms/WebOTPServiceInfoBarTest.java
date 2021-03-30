@@ -20,6 +20,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -123,6 +124,7 @@ public class WebOTPServiceInfoBarTest {
                 WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED, dismissed_count + 0);
     }
 
+    @DisabledTest(message = "https://crbug.com/1169221")
     @Test
     @MediumTest
     @Feature({"InfoBars", "UiCatalogue"})

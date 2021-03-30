@@ -128,23 +128,4 @@ TEST_F(ImeUtilChromeosTest, MoveUpThenRestore) {
   EXPECT_EQ(original_bounds, window->GetBoundsInScreen());
 }
 
-// Tests that setting/clearing kEmbeddedWindowEnsureNotInRect window property
-// triggers the relevant top level to be moved/restored.
-TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRectHelper) {
-  const gfx::Rect original_bounds(10, 10, 100, 100);
-  aura::Window* top_level = aura::test::CreateTestWindow(
-      SK_ColorWHITE, 1, original_bounds, root_window());
-  aura::Window* embedding_root = aura::test::CreateTestWindowWithBounds(
-      gfx::Rect(original_bounds.size()), top_level);
-  EnsureWindowNotInRectHelper helper(embedding_root);
-
-  gfx::Rect occluded_rect(50, 50, 200, 200);
-  embedding_root->SetProperty(aura::client::kEmbeddedWindowEnsureNotInRect,
-                              new gfx::Rect(occluded_rect));
-  EXPECT_EQ(gfx::Rect(10, 0, 100, 100), top_level->bounds());
-
-  embedding_root->ClearProperty(aura::client::kEmbeddedWindowEnsureNotInRect);
-  EXPECT_EQ(original_bounds, top_level->bounds());
-}
-
 }  // namespace wm

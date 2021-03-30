@@ -31,9 +31,9 @@
  * @private
  */
 /* #export */ const actionToPref = {
-  select: 'settings.a11y.switch_access.select.key_codes',
-  next: 'settings.a11y.switch_access.next.key_codes',
-  previous: 'settings.a11y.switch_access.previous.key_codes'
+  select: 'settings.a11y.switch_access.select.device_key_codes',
+  next: 'settings.a11y.switch_access.next.device_key_codes',
+  previous: 'settings.a11y.switch_access.previous.device_key_codes'
 };
 
 /**
@@ -45,6 +45,46 @@
   ADD_ASSIGNMENT: 'add-assignment',
   REMOVE_ASSIGNMENT: 'remove-assignment',
 };
+
+/**
+ * Mapping of a stringified key code to a list of Switch Access device types
+ * for that key code.
+ * @typedef {!Object<string, !Array<!SwitchAccessDeviceType>>}
+ */
+let SwitchAccessKeyAssignmentInfoMapping;
+
+/**
+ * @param {!SwitchAccessDeviceType} deviceType
+ * @return {string}
+ */
+/* #export */ function getLabelForDeviceType(deviceType) {
+  switch (deviceType) {
+    case SwitchAccessDeviceType.INTERNAL:
+      return I18nBehavior.i18nAdvanced(
+          'switchAccessInternalDeviceTypeLabel', {});
+    case SwitchAccessDeviceType.USB:
+      return I18nBehavior.i18nAdvanced('switchAccessUsbDeviceTypeLabel', {});
+    case SwitchAccessDeviceType.BLUETOOTH:
+      return I18nBehavior.i18nAdvanced(
+          'switchAccessBluetoothDeviceTypeLabel', {});
+    case SwitchAccessDeviceType.UNKNOWN:
+      return I18nBehavior.i18nAdvanced(
+          'switchAccessUnknownDeviceTypeLabel', {});
+  }
+  throw new Error('Invalid device type.');
+}
+
+/**
+ * Converts assignment object to pretty-formatted label.
+ * E.g. {key: 'Escape', device: 'usb'} -> 'Escape (USB)'
+ * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
+ * @return {string}
+ */
+/* #export */ function getLabelForAssignment(assignment) {
+  return I18nBehavior.i18nAdvanced('switchAndDeviceType', {
+    substitutions: [assignment.key, getLabelForDeviceType(assignment.device)]
+  });
+}
 
 Polymer({
   is: 'settings-switch-access-action-assignment-dialog',
@@ -76,7 +116,7 @@ Polymer({
 
     /**
      * Assignments for the current action.
-     * @private {Array<string>}
+     * @private {!Array<{key: string, device: !SwitchAccessDeviceType}>}
      */
     assignments_: {
       type: Array,
@@ -95,12 +135,19 @@ Polymer({
     /**
      * A dictionary containing all Switch Access key codes (mapped from
      * actions).
-     * @private {{select: !Array<string>, next: !Array<string>, previous:
-     *     !Array<string>}}
+     * TODO: Consider changing from list of devices to a set/map of devices,
+     * to guarantee uniqueness and better represent the underlying state (a
+     * device either is or isn't associated with a given key code, and order of
+     * devices doesn't matter)
+     * @private {{
+     *         select: SwitchAccessKeyAssignmentInfoMapping,
+     *         next: SwitchAccessKeyAssignmentInfoMapping,
+     *         previous: SwitchAccessKeyAssignmentInfoMapping
+     * }}
      */
     keyCodes_: {
       type: Object,
-      value: {select: [], next: [], previous: []},
+      value: {select: {}, next: {}, previous: {}},
     },
 
     /**
@@ -127,14 +174,14 @@ Polymer({
     /** @private {!string} */
     currentKey_: String,
 
-    /** @private {!string} */
-    unexpectedKey_: String,
-
     /** @private {?number} */
     currentKeyCode_: {
       type: Number,
       value: null,
     },
+
+    /** @private {!SwitchAccessDeviceType} */
+    currentDeviceType_: String,
   },
 
   /** @private {?SwitchAccessSubpageBrowserProxy} */
@@ -211,6 +258,7 @@ Polymer({
   handleKeyEventInWaitForKey_(event) {
     this.currentKeyCode_ = event.keyCode;
     this.currentKey_ = event.key;
+    this.currentDeviceType_ = event.device;
 
     if (!this.currentKey_) {
       this.assignmentState_ = AssignmentState.WARN_UNRECOGNIZED_KEY;
@@ -219,7 +267,9 @@ Polymer({
 
     // Check for pre-existing assignments in actions other than the current one.
     for (const action of Object.values(SwitchAccessCommand)) {
-      if (!this.keyCodes_[action].includes(event.keyCode)) {
+      if (!this.keyCodes_[action][event.keyCode] ||
+          !this.keyCodes_[action][event.keyCode].includes(
+              this.currentDeviceType_)) {
         continue;
       }
 
@@ -238,7 +288,9 @@ Polymer({
       return;
     }
     this.assignmentState_ = AssignmentState.WAIT_FOR_CONFIRMATION;
-    this.push('assignments_', this.currentKey_);
+    this.push(
+        'assignments_',
+        {key: this.currentKey_, device: this.currentDeviceType_});
   },
 
   /**
@@ -249,16 +301,30 @@ Polymer({
    * @private
    */
   handleKeyEventInWaitForConfirmation_(event) {
-    if (this.currentKeyCode_ === event.keyCode) {
-      // Confirmed.
-      this.keyCodes_[this.action].push(this.currentKeyCode_);
-      this.$.switchAccessActionAssignmentDialog.close();
+    if (this.currentKeyCode_ !== event.keyCode ||
+        this.currentDeviceType_ !== event.device) {
+      this.assignmentState_ = AssignmentState.WARN_NOT_CONFIRMED;
       return;
     }
 
-    // Not confirmed.
-    this.unexpectedKey_ = event.key;
-    this.assignmentState_ = AssignmentState.WARN_NOT_CONFIRMED;
+    // Save the key to |this.keyCodes_| for inclusion into prefs later.
+    const keyAssignmentInfoMapping = this.keyCodes_[this.action];
+    if (!keyAssignmentInfoMapping) {
+      throw new Error('Expected valid pref for action: ' + this.action);
+    }
+    let devices = keyAssignmentInfoMapping[this.currentKeyCode_];
+    if (!devices) {
+      // |this.currentKeyCode_| was not set as a switch key for |this.action|
+      // before.
+      devices = [];
+      keyAssignmentInfoMapping[this.currentKeyCode_] = devices;
+    }
+    if (!devices.includes(event.device)) {
+      // A new device for the current key code has been added.
+      devices.push(event.device);
+    }
+
+    this.$.switchAccessActionAssignmentDialog.close();
   },
 
   /**
@@ -269,17 +335,19 @@ Polymer({
    * @private
    */
   handleKeyEventInWaitForConfirmationRemoval_(event) {
-    if (this.currentKeyCode_ !== event.keyCode) {
-      this.unexpectedKey_ = event.key;
+    if (this.currentKeyCode_ !== event.keyCode ||
+        this.currentDeviceType_ !== event.device) {
       this.assignmentState_ = AssignmentState.WARN_NOT_CONFIRMED_REMOVAL;
       return;
     }
 
-    // Remove this key code.
-    const index = this.keyCodes_[this.action].indexOf(this.currentKeyCode_);
-    if (index !== -1) {
-      this.keyCodes_[this.action].splice(index, 1);
+    // Remove this device type for this key code.
+    const devices = this.keyCodes_[this.action][this.currentKeyCode_];
+    devices.splice(devices.indexOf(event.device), 1);
+    if (!devices.length) {
+      delete this.keyCodes_[this.action][this.currentKeyCode_];
     }
+
     this.$.switchAccessActionAssignmentDialog.close();
   },
 
@@ -289,21 +357,12 @@ Polymer({
   },
 
   /**
-   * @param {!Object<SwitchAccessCommand, !Array<string>>} value
+   * @param {!Object<SwitchAccessCommand, !Array<{key: string, device:
+   *     !SwitchAccessDeviceType}>>} value
    * @private
    */
   onAssignmentsChanged_(value) {
-    switch (this.action) {
-      case SwitchAccessCommand.SELECT:
-        this.assignments_ = value.select;
-        break;
-      case SwitchAccessCommand.NEXT:
-        this.assignments_ = value.next;
-        break;
-      case SwitchAccessCommand.PREVIOUS:
-        this.assignments_ = value.previous;
-        break;
-    }
+    this.assignments_ = value[this.action];
   },
 
   /**
@@ -325,6 +384,15 @@ Polymer({
   },
 
   /**
+   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
+   * @return {string}
+   * @private
+   */
+  getLabelForAssignment_(assignment) {
+    return getLabelForAssignment(assignment);
+  },
+
+  /**
    * @param {SwitchAccessCommand} action
    * @return {string}
    * @private
@@ -338,12 +406,13 @@ Polymer({
   /**
    * Returns the image to use for the assignment's icon. The value must match
    * one of iron-icon's os-settings:(*) icon names.
-   * @param {string} assignment
+   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
    * @return {AssignmentIcon}
    * @private
    */
   computeIcon_(assignment) {
-    if (assignment !== this.currentKey_) {
+    if (assignment.key !== this.currentKey_ ||
+        assignment.device !== this.currentDeviceType_) {
       return AssignmentIcon.ASSIGNED;
     }
 
@@ -365,7 +434,7 @@ Polymer({
 
   /**
    * Returns the icon label describing the icon for the specified assignment.
-   * @param {string} assignment
+   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
    * @return {string}
    * @private
    */
@@ -386,7 +455,7 @@ Polymer({
 
   /**
    * @param {!AssignmentState} assignmentState
-   * @param {!Array<string>} assignments
+   * @param {!Array<{key: string, device: !SwitchAccessDeviceType}>} assignments
    * @return {string}
    * @private
    */

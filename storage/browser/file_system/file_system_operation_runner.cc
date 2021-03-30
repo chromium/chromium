@@ -267,8 +267,8 @@ OperationID FileSystemOperationRunner::Write(
     return id;
   }
 
-  std::unique_ptr<FileWriterDelegate> writer_delegate(new FileWriterDelegate(
-      std::move(writer), url.mount_option().flush_policy()));
+  auto writer_delegate = std::make_unique<FileWriterDelegate>(
+      std::move(writer), url.mount_option().flush_policy());
 
   std::unique_ptr<BlobReader> blob_reader;
   if (blob)
@@ -306,8 +306,8 @@ OperationID FileSystemOperationRunner::WriteStream(
     return id;
   }
 
-  std::unique_ptr<FileWriterDelegate> writer_delegate(new FileWriterDelegate(
-      std::move(writer), url.mount_option().flush_policy()));
+  auto writer_delegate = std::make_unique<FileWriterDelegate>(
+      std::move(writer), url.mount_option().flush_policy());
 
   PrepareForWrite(id, url);
   operation_raw->Write(url, std::move(writer_delegate), std::move(data_pipe),

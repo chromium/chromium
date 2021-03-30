@@ -43,7 +43,7 @@ void CurrentLocaleView::OnLocaleListSet() {
   const std::vector<LocaleInfo>& locales = locale_model->locale_list();
   for (auto& entry : locales) {
     if (entry.iso_code == locale_model->current_locale_iso_code()) {
-      const base::string16 description = l10n_util::GetStringFUTF16(
+      const std::u16string description = l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_INDICATOR_LOCALE_TOOLTIP, entry.display_name);
       label()->SetTooltipText(description);
       label()->SetCustomAccessibleName(description);

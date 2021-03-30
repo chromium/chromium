@@ -4,12 +4,9 @@
 
 package org.chromium.components.metrics;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-
 import org.chromium.base.Consumer;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 
 /**
  * Passes UMA logs from native to a java uploader.
@@ -29,19 +26,9 @@ public class AndroidMetricsLogUploader {
     }
 
     @CalledByNative
-    public static void uploadLog(byte[] data) throws InvalidProtocolBufferException {
+    public static void uploadLog(byte[] data) {
         final Consumer<byte[]> uploader = sUploader;
         if (uploader != null) {
-            // Speculative validity checks to see why WebView UMA (and probably other embedders of
-            // this component) are missing system_profiles for a small fraction of records.
-            // TODO(https://crbug.com/1081925): remove entirely when we figure out the issue.
-            if (data.length == 0) {
-                throw new RuntimeException("UMA log is completely empty");
-            }
-            ChromeUserMetricsExtension log = ChromeUserMetricsExtension.parseFrom(data);
-            if (!log.hasSystemProfile()) {
-                throw new RuntimeException("UMA log is missing a system_profile");
-            }
             uploader.accept(data);
         }
     }

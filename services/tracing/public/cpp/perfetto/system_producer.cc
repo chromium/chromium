@@ -6,7 +6,7 @@
 
 namespace tracing {
 
-SystemProducer::SystemProducer(PerfettoTaskRunner* task_runner)
+SystemProducer::SystemProducer(base::tracing::PerfettoTaskRunner* task_runner)
     : PerfettoProducer(task_runner) {}
 
 SystemProducer::~SystemProducer() = default;

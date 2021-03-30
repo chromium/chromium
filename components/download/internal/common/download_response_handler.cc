@@ -88,6 +88,9 @@ DownloadResponseHandler::DownloadResponseHandler(
 
 DownloadResponseHandler::~DownloadResponseHandler() = default;
 
+void DownloadResponseHandler::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void DownloadResponseHandler::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
   create_info_ = CreateDownloadCreateInfo(*head);

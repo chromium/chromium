@@ -102,12 +102,8 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   void OnNotificationServiceConnectionError();
   void OnPermissionServiceConnectionError();
 
-  HeapMojoRemote<mojom::blink::NotificationService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      notification_service_;
-  HeapMojoRemote<mojom::blink::PermissionService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      permission_service_;
+  HeapMojoRemote<mojom::blink::NotificationService> notification_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
   DISALLOW_COPY_AND_ASSIGN(NotificationManager);
 };

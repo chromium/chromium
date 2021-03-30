@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
@@ -135,16 +136,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void UnregisterFrameSinkHierarchy(const FrameSinkId& parent_frame_sink_id,
                                     const FrameSinkId& child_frame_sink_id);
 
-  // Returns true if RegisterFrameSinkHierarchy() was called with the supplied
-  // arguments.
-  bool IsFrameSinkHierarchyRegistered(
-      const FrameSinkId& parent_frame_sink_id,
-      const FrameSinkId& child_frame_sink_id) const;
-
-  // Returns the first ancestor of |start| (including |start|) that is a root.
-  base::Optional<FrameSinkId> FindRootFrameSinkId(
-      const FrameSinkId& start) const;
-
   // Asks viz to send updates regarding video activity to |observer|.
   void AddVideoDetectorObserver(
       mojo::PendingRemote<mojom::VideoDetectorObserver> observer);
@@ -171,16 +162,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request);
 
-  // Starts throttling the frame sinks specified by |frame_sink_ids| and all
-  // their descendant sinks to send BeginFrames at an interval of |interval|.
-  // |interval| should be greater than zero. Previous throttling operation
-  // on any frame sinks must be ended by EndThrottling() before applying the
-  // current throttling operation.
-  void StartThrottling(const std::vector<FrameSinkId>& frame_sink_ids,
-                       base::TimeDelta interval);
-
-  // Ends throttling of all previously throttled frame sinks.
-  void EndThrottling();
+  void Throttle(const std::vector<FrameSinkId>& ids, base::TimeDelta interval);
 
   // Add/Remove an observer to receive notifications of when the host receives
   // new hit test data.
@@ -218,7 +200,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     // Returns true if there is nothing in FrameSinkData and it can be deleted.
     bool IsEmpty() const {
       return !IsFrameSinkRegistered() && !has_created_compositor_frame_sink &&
-             parents.empty() && children.empty();
+             children.empty();
     }
 
     // The client to be notified of changes to this FrameSink.
@@ -235,12 +217,14 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     // If the frame sink is a root that corresponds to a Display.
     bool is_root = false;
 
+    // If we should wait on synchronous destruction.
+    bool wait_on_destruction = false;
+
     // If a mojom::CompositorFrameSink was created for this FrameSinkId. This
     // will always be false if not using Mojo.
     bool has_created_compositor_frame_sink = false;
 
-    // Track frame sink hierarchy in both directions.
-    std::vector<FrameSinkId> parents;
+    // Track frame sink hierarchy.
     std::vector<FrameSinkId> children;
 
    private:
@@ -256,11 +240,14 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   // mojom::FrameSinkManagerClient:
   void OnFrameTokenChanged(const FrameSinkId& frame_sink_id,
-                           uint32_t frame_token) override;
+                           uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;
   void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override;
+
+  const bool enable_sync_window_destruction_;
 
   // This will point to |frame_sink_manager_remote_| if using mojo or it may
   // point directly at FrameSinkManagerImpl in tests. Use this to make function

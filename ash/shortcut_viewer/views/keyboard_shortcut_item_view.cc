@@ -42,7 +42,7 @@ std::unique_ptr<views::View> CreateSeparatorView() {
 }
 
 // Creates the bubble view for modifiers and key.
-std::unique_ptr<views::View> CreateBubbleView(const base::string16& bubble_text,
+std::unique_ptr<views::View> CreateBubbleView(const std::u16string& bubble_text,
                                               ui::KeyboardCode key_code) {
   auto bubble_view = std::make_unique<BubbleView>();
   const gfx::VectorIcon* vector_icon = GetVectorIconForKeyboardCode(key_code);
@@ -70,8 +70,8 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
       base::i18n::IsRTL() ? gfx::ALIGN_RIGHT : gfx::ALIGN_LEFT);
 
   std::vector<size_t> offsets;
-  std::vector<base::string16> replacement_strings;
-  std::vector<base::string16> accessible_names;
+  std::vector<std::u16string> replacement_strings;
+  std::vector<std::u16string> accessible_names;
   const size_t shortcut_key_codes_size = item.shortcut_key_codes.size();
   offsets.reserve(shortcut_key_codes_size);
   replacement_strings.reserve(shortcut_key_codes_size);
@@ -84,7 +84,7 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
                  ->emplace(key_code, GetStringForKeyboardCode(key_code))
                  .first;
     }
-    const base::string16& dom_key_string = iter->second;
+    const std::u16string& dom_key_string = iter->second;
     // If the |key_code| has no mapped |dom_key_string|, we use alternative
     // string to indicate that the shortcut is not supported by current keyboard
     // layout.
@@ -96,7 +96,7 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
     }
     replacement_strings.push_back(dom_key_string);
 
-    base::string16 accessible_name = GetAccessibleNameForKeyboardCode(key_code);
+    std::u16string accessible_name = GetAccessibleNameForKeyboardCode(key_code);
     accessible_names.push_back(accessible_name.empty() ? dom_key_string
                                                        : accessible_name);
   }
@@ -132,8 +132,8 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
     }
   }
 
-  base::string16 shortcut_string;
-  base::string16 accessible_string;
+  std::u16string shortcut_string;
+  std::u16string accessible_string;
   if (replacement_strings.empty()) {
     shortcut_string = l10n_util::GetStringUTF16(
         has_invalid_dom_key ? IDS_KSV_KEY_NO_MAPPING : shortcut_message_id);
@@ -154,11 +154,11 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
   DCHECK_EQ(replacement_strings.size(), offsets.size());
   // TODO(wutao): make this reliable.
   // If the replacement string is "+ ", it indicates to insert a seperator view.
-  const base::string16 separator_string = base::ASCIIToUTF16("+ ");
+  const std::u16string separator_string = u"+ ";
   for (size_t i = 0; i < offsets.size(); ++i) {
     views::StyledLabel::RangeStyleInfo style_info;
     style_info.disable_line_wrapping = true;
-    const base::string16& replacement_string = replacement_strings[i];
+    const std::u16string& replacement_string = replacement_strings[i];
     std::unique_ptr<views::View> custom_view =
         replacement_string == separator_string
             ? CreateSeparatorView()
@@ -178,8 +178,8 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
   // redundant child label text is not also spoken.
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
   GetViewAccessibility().OverrideIsLeaf(true);
-  accessible_name_ = description_label_view_->GetText() +
-                     base::ASCIIToUTF16(", ") + accessible_string;
+  accessible_name_ =
+      description_label_view_->GetText() + u", " + accessible_string;
 }
 
 void KeyboardShortcutItemView::GetAccessibleNodeData(
@@ -204,9 +204,9 @@ void KeyboardShortcutItemView::ClearKeycodeToString16Cache() {
 }
 
 // static
-std::map<ui::KeyboardCode, base::string16>*
+std::map<ui::KeyboardCode, std::u16string>*
 KeyboardShortcutItemView::GetKeycodeToString16Cache() {
-  static base::NoDestructor<std::map<ui::KeyboardCode, base::string16>>
+  static base::NoDestructor<std::map<ui::KeyboardCode, std::u16string>>
       key_code_to_string16_cache;
   return key_code_to_string16_cache.get();
 }

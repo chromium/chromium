@@ -70,14 +70,12 @@ void AddURLPatternSetToList(
 }  // namespace
 
 std::vector<network::mojom::CorsOriginPatternPtr>
-CreateCorsOriginAccessAllowList(
-    const Extension& extension,
-    PermissionsData::EffectiveHostPermissionsMode mode) {
+CreateCorsOriginAccessAllowList(const Extension& extension) {
   std::vector<network::mojom::CorsOriginPatternPtr> allow_list;
 
   // Permissions declared by the extension.
   URLPatternSet origin_permissions =
-      extension.permissions_data()->GetEffectiveHostPermissions(mode);
+      extension.permissions_data()->GetEffectiveHostPermissions();
   AddURLPatternSetToList(
       origin_permissions, &allow_list,
       network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority);

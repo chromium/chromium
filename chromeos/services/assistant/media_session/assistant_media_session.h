@@ -10,21 +10,16 @@
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "libassistant/shared/public/media_manager.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "chromeos/services/libassistant/public/mojom/media_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
-namespace assistant_client {
-struct MediaStatus;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace assistant {
 
-class AssistantManagerService;
+class MediaHost;
 
 // MediaSession manages the media session and audio focus for Assistant.
 // MediaSession allows clients to observe its changes via MediaSessionObserver,
@@ -32,8 +27,7 @@ class AssistantManagerService;
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
     : public media_session::mojom::MediaSession {
  public:
-  explicit AssistantMediaSession(
-      AssistantManagerService* assistant_manager_service);
+  explicit AssistantMediaSession(MediaHost* host);
   ~AssistantMediaSession() override;
 
   // media_session.mojom.MediaSession overrides:
@@ -60,13 +54,16 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   void EnterPictureInPicture() override {}
   void ExitPictureInPicture() override {}
   void SetAudioSinkId(const base::Optional<std::string>& sink_id) override {}
+  void ToggleMicrophone() override {}
+  void ToggleCamera() override {}
+  void HangUp() override {}
 
   // Requests/abandons audio focus to the AudioFocusManager.
   void RequestAudioFocus(media_session::mojom::AudioFocusType audio_focus_type);
   void AbandonAudioFocusIfNeeded();
 
   void NotifyMediaSessionMetadataChanged(
-      const assistant_client::MediaStatus& status);
+      const chromeos::libassistant::mojom::MediaState& status);
 
   base::WeakPtr<AssistantMediaSession> GetWeakPtr();
 
@@ -83,6 +80,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   base::UnguessableToken internal_audio_focus_id() {
     return internal_audio_focus_id_;
   }
+
+  void SetInternalAudioFocusIdForTesting(const base::UnguessableToken& token);
 
  private:
   // Ensures that |audio_focus_ptr_| is connected.
@@ -105,13 +104,11 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   // The current metadata associated with the current media session.
   media_session::MediaMetadata metadata_;
 
-  AssistantManagerService* const assistant_manager_service_;
+  MediaHost* const host_;
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   // Binding for Mojo pointer to |this| held by AudioFocusManager.
   mojo::Receiver<media_session::mojom::MediaSession> receiver_{this};
-
-  assistant_client::TrackType current_track_;
 
   mojo::RemoteSet<media_session::mojom::MediaSessionObserver> observers_;
 

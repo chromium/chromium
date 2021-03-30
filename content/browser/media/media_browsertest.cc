@@ -54,6 +54,10 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     // failures. http://crbug.com/986021
     features::kAudioServiceOutOfProcess,
 #endif
+
+#if defined(OS_CHROMEOS)
+    media::kDeprecateLowUsageCodecs,
+#endif
   };
 
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -86,7 +90,7 @@ std::string MediaBrowserTest::RunTest(const GURL& gurl,
                              base::ASCIIToUTF16(expected_title));
   AddTitlesToAwait(&title_watcher);
   EXPECT_TRUE(NavigateToURL(shell(), gurl));
-  base::string16 result = title_watcher.WaitAndGetTitle();
+  std::u16string result = title_watcher.WaitAndGetTitle();
 
   CleanupTest();
   return base::UTF16ToASCII(result);
@@ -96,12 +100,12 @@ void MediaBrowserTest::CleanupTest() {
 #if defined(OS_ANDROID)
   // We only do this cleanup on Android, as a workaround for a test-only OOM
   // bug. See http://crbug.com/727542
-  const base::string16 cleaner_title = base::ASCIIToUTF16(kClean);
+  const std::u16string cleaner_title = base::ASCIIToUTF16(kClean);
   TitleWatcher clean_title_watcher(shell()->web_contents(), cleaner_title);
   GURL cleaner_url = content::GetFileUrlWithQuery(
       media::GetTestDataFilePath("cleaner.html"), "");
   EXPECT_TRUE(NavigateToURL(shell(), cleaner_url));
-  base::string16 cleaner_result = clean_title_watcher.WaitAndGetTitle();
+  std::u16string cleaner_result = clean_title_watcher.WaitAndGetTitle();
   EXPECT_EQ(cleaner_result, cleaner_title);
 #endif
 }

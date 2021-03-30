@@ -25,15 +25,16 @@ VideoCaptureJpegDecoderImpl::VideoCaptureJpegDecoderImpl(
       decode_done_cb_(std::move(decode_done_cb)),
       send_log_message_cb_(std::move(send_log_message_cb)),
       has_received_decoded_frame_(false),
+      decoder_status_(INIT_PENDING),
       next_task_id_(0),
-      task_id_(chromeos_camera::MjpegDecodeAccelerator::kInvalidTaskId),
-      decoder_status_(INIT_PENDING) {}
+      task_id_(chromeos_camera::MjpegDecodeAccelerator::kInvalidTaskId) {}
 
 VideoCaptureJpegDecoderImpl::~VideoCaptureJpegDecoderImpl() {
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
 }
 
 void VideoCaptureJpegDecoderImpl::Initialize() {
+  base::AutoLock lock(lock_);
   if (!IsVideoCaptureAcceleratedJpegDecodingEnabled()) {
     decoder_status_ = FAILED;
     RecordInitDecodeUMA_Locked();
@@ -130,8 +131,8 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
   out_frame->BackWithOwnedSharedMemory(std::move(out_region),
                                        std::move(out_mapping));
 
-  out_frame->metadata()->frame_rate = frame_format.frame_rate;
-  out_frame->metadata()->reference_time = reference_time;
+  out_frame->metadata().frame_rate = frame_format.frame_rate;
+  out_frame->metadata().reference_time = reference_time;
 
   media::mojom::VideoFrameInfoPtr out_frame_info =
       media::mojom::VideoFrameInfo::New();
@@ -139,14 +140,17 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
   out_frame_info->pixel_format = media::PIXEL_FORMAT_I420;
   out_frame_info->coded_size = dimensions;
   out_frame_info->visible_rect = gfx::Rect(dimensions);
-  out_frame_info->metadata = *(out_frame->metadata());
+  out_frame_info->metadata = out_frame->metadata();
   out_frame_info->color_space = out_frame->ColorSpace();
 
   {
     base::AutoLock lock(lock_);
     decode_done_closure_ = base::BindOnce(
-        decode_done_cb_, out_buffer.id, out_buffer.frame_feedback_id,
-        std::move(out_buffer.access_permission), std::move(out_frame_info));
+        decode_done_cb_,
+        ReadyFrameInBuffer(out_buffer.id, out_buffer.frame_feedback_id,
+                           std::move(out_buffer.access_permission),
+                           std::move(out_frame_info)),
+        std::vector<ReadyFrameInBuffer>());
   }
 
   // base::Unretained is safe because |decoder_| is deleted on
@@ -236,6 +240,7 @@ bool VideoCaptureJpegDecoderImpl::IsDecoding_Locked() const {
 }
 
 void VideoCaptureJpegDecoderImpl::RecordInitDecodeUMA_Locked() {
+  lock_.AssertAcquired();
   UMA_HISTOGRAM_BOOLEAN("Media.VideoCaptureGpuJpegDecoder.InitDecodeSuccess",
                         decoder_status_ == INIT_PASSED);
 }

@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/favicon_status.h"
@@ -36,7 +35,9 @@
 
 namespace content {
 
+class FrameTreeNode;
 class WebBundleNavigationInfo;
+class SubresourceWebBundleNavigationInfo;
 
 class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
  public:
@@ -89,7 +90,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       const GURL& url,
       const Referrer& referrer,
       const base::Optional<url::Origin>& initiator_origin,
-      const base::string16& title,
+      const std::u16string& title,
       ui::PageTransition transition_type,
       bool is_renderer_initiated,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory);
@@ -112,11 +113,11 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   const Referrer& GetReferrer() override;
   void SetVirtualURL(const GURL& url) override;
   const GURL& GetVirtualURL() override;
-  void SetTitle(const base::string16& title) override;
-  const base::string16& GetTitle() override;
+  void SetTitle(const std::u16string& title) override;
+  const std::u16string& GetTitle() override;
   void SetPageState(const blink::PageState& state) override;
   blink::PageState GetPageState() override;
-  const base::string16& GetTitleForDisplay() override;
+  const std::u16string& GetTitleForDisplay() override;
   bool IsViewSourceMode() override;
   void SetTransitionType(ui::PageTransition transition_type) override;
   ui::PageTransition GetTransitionType() override;
@@ -234,7 +235,9 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       int64_t post_id,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
-      std::unique_ptr<PolicyContainerHost::DocumentPolicies> document_policies);
+      std::unique_ptr<SubresourceWebBundleNavigationInfo>
+          subresource_web_bundle_navigation_info,
+      std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
 
   // Returns the FrameNavigationEntry corresponding to |frame_tree_node|, if
   // there is one in this NavigationEntry.
@@ -428,7 +431,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   PageType page_type_;
   GURL virtual_url_;
   bool update_virtual_url_with_url_;
-  base::string16 title_;
+  std::u16string title_;
   FaviconStatus favicon_;
   SSLStatus ssl_;
   ui::PageTransition transition_type_;
@@ -467,7 +470,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // us from having to do URL formatting on the URL every time the title is
   // displayed. When the URL, virtual URL, or title is set, this should be
   // cleared to force a refresh.
-  mutable base::string16 cached_display_title_;
+  mutable std::u16string cached_display_title_;
 
   // This is set to true when this entry is being reloaded and due to changes in
   // the state of the URL, it has to be reloaded in a different site instance.

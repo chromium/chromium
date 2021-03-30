@@ -6,6 +6,7 @@
 #define WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "weblayer/browser/browser_context_impl.h"
 
 namespace weblayer {
 
@@ -21,8 +22,7 @@ class ClientSideDetectionServiceDelegate
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetSafeBrowsingURLLoaderFactory() override;
-  safe_browsing::ChromeUserPopulation::ProfileManagementStatus
-  GetManagementStatus() override;
+  safe_browsing::ChromeUserPopulation GetUserPopulation() override;
 
  private:
   BrowserContextImpl* browser_context_;

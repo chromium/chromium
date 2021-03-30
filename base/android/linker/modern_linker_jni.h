@@ -26,6 +26,8 @@ enum class RelroSharingStatus {
   COUNT = 3,
 };
 
+struct SharedMemoryFunctions;
+
 // Holds address ranges of the loaded native library, its RELRO region, along
 // with the RELRO FD identifying the shared memory region. Carries the same
 // members as the Java-side LibInfo, allowing to internally import/export the
@@ -45,6 +47,12 @@ class NativeLibInfo {
   // Constructs and imports fields from the Java LibInfo. As above, the |env|
   // and |java_object| are used for exporting.
   NativeLibInfo(JNIEnv* env, jobject java_object);
+
+  // Whether to use memfd_create(2) when creating shared memory regions.
+  void set_use_memfd(bool use_memfd) {
+    use_memfd_initialized_ = true;
+    use_memfd_ = use_memfd;
+  }
 
   size_t load_address() const { return load_address_; }
 
@@ -84,7 +92,10 @@ class NativeLibInfo {
     relro_size_ = size;
   }
 
-  bool CreateSharedRelroFdForTesting() { return CreateSharedRelroFd(); }
+  // Creates a shared RELRO region as it normally would during LoadLibrary()
+  // with |spawn_relro_region=true|. Exposed here because it is difficult to
+  // unittest LoadLibrary() directly.
+  bool CreateSharedRelroFdForTesting();
 
   int get_relro_fd_for_testing() { return relro_fd_; }
 
@@ -123,15 +134,16 @@ class NativeLibInfo {
 
   // Initializes |relro_fd_| with a newly created read-only shared memory region
   // sized as the library's RELRO and with identical data.
-  bool CreateSharedRelroFd();
+  bool CreateSharedRelroFd(const SharedMemoryFunctions& functions);
 
   // Assuming that RELRO-related information is populated, memory-maps the RELRO
   // FD on top of the library's RELRO.
-  bool ReplaceRelroWithSharedOne() const;
+  bool ReplaceRelroWithSharedOne(const SharedMemoryFunctions& functions) const;
 
   // Returns true iff the RELRO address and size, along with the contents are
   // equal among the two.
-  bool RelroIsIdentical(const NativeLibInfo& external_lib_info) const;
+  bool RelroIsIdentical(const NativeLibInfo& external_lib_info,
+                        const SharedMemoryFunctions& functions) const;
 
   static constexpr int kInvalidFd = -1;
   size_t load_address_ = 0;
@@ -141,6 +153,8 @@ class NativeLibInfo {
   int relro_fd_ = kInvalidFd;
   JNIEnv* env_;
   jobject java_object_;
+  bool use_memfd_initialized_ = false;
+  bool use_memfd_;
 };
 
 // JNI_OnLoad() initialization hook for the modern linker.

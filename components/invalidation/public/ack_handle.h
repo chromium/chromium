@@ -15,7 +15,7 @@ namespace base {
 class DictionaryValue;
 }
 
-namespace syncer {
+namespace invalidation {
 
 // Opaque class that represents a local ack handle. We don't reuse the
 // invalidation ack handles to avoid unnecessary dependencies.
@@ -43,6 +43,6 @@ class INVALIDATION_EXPORT AckHandle {
   base::Time timestamp_;
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_ACK_HANDLE_H_

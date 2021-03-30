@@ -25,7 +25,6 @@ constexpr int kMarginDip = 16;
 constexpr int kSpacingDip = 8;
 
 // Typography
-constexpr SkColor kTextColor = SK_ColorWHITE;
 constexpr int kDefaultFontSizeDip = 64;
 constexpr int kDetailsFontSizeDip = 13;
 
@@ -40,7 +39,7 @@ AmbientInfoView::AmbientInfoView(AmbientViewDelegate* delegate)
 
 AmbientInfoView::~AmbientInfoView() = default;
 
-void AmbientInfoView::UpdateImageDetails(const base::string16& details) {
+void AmbientInfoView::UpdateImageDetails(const std::u16string& details) {
   details_label_->SetText(details);
 }
 
@@ -74,7 +73,8 @@ void AmbientInfoView::InitLayout() {
 
   details_label_ = AddChildView(std::make_unique<views::Label>());
   details_label_->SetAutoColorReadabilityEnabled(false);
-  details_label_->SetEnabledColor(kTextColor);
+  details_label_->SetEnabledColor(ambient::util::GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
   details_label_->SetFontList(
       ambient::util::GetDefaultFontlist().DeriveWithSizeDelta(
           kDetailsFontSizeDip - kDefaultFontSizeDip));

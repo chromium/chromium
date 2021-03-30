@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 

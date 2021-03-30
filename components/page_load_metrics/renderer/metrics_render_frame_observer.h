@@ -17,7 +17,6 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 
 class GURL;
@@ -52,6 +51,8 @@ class MetricsRenderFrameObserver
   void DidObserveNewCssPropertyUsage(blink::mojom::CSSSampleId css_property,
                                      bool is_animated) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
+  void DidObserveInputForLayoutShiftTracking(
+      base::TimeTicks timestamp) override;
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,
@@ -99,7 +100,7 @@ class MetricsRenderFrameObserver
   void OnAdResourceObserved(int request_id) override;
 
   void OnMainFrameIntersectionChanged(
-      const blink::WebRect& main_frame_intersection) override;
+      const gfx::Rect& main_frame_intersection) override;
   void OnMobileFriendlinessChanged(const blink::MobileFriendliness&) override;
 
   bool SetUpSmoothnessReporting(
@@ -137,10 +138,6 @@ class MetricsRenderFrameObserver
   virtual std::unique_ptr<PageTimingSender> CreatePageTimingSender(
       bool limited_sending_mode);
   virtual bool HasNoRenderFrame() const;
-
-  // Whether the initial about:blank document loaded into every frame was
-  // observed.
-  bool first_document_observed_ = false;
 
   // Collects the data use of the frame request for a provisional load until the
   // load is committed. We want to collect data use for completed navigations in

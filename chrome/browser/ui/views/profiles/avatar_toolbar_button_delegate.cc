@@ -21,7 +21,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif
 
 namespace {
@@ -37,12 +37,8 @@ ProfileAttributesStorage& GetProfileAttributesStorage() {
 }
 
 ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
-  ProfileAttributesEntry* entry;
-  if (!GetProfileAttributesStorage().GetProfileAttributesWithPath(
-          profile->GetPath(), &entry)) {
-    return nullptr;
-  }
-  return entry;
+  return GetProfileAttributesStorage().GetProfileAttributesWithPath(
+      profile->GetPath());
 }
 
 bool IsGenericProfile(const ProfileAttributesEntry& entry) {
@@ -83,7 +79,8 @@ gfx::Image GetAvatarImage(Profile* profile,
       IdentityManagerFactory::GetForProfile(profile);
   if (!user_identity_image.IsEmpty() &&
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) &&
-      !identity_manager->HasPrimaryAccount() && entry->IsUsingDefaultAvatar()) {
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+      entry->IsUsingDefaultAvatar()) {
     return user_identity_image;
   }
 
@@ -135,12 +132,12 @@ void AvatarToolbarButtonDelegate::Init(AvatarToolbarButton* button,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-base::string16 AvatarToolbarButtonDelegate::GetProfileName() const {
+std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
   DCHECK_NE(GetState(), AvatarToolbarButton::State::kIncognitoProfile);
   return profiles::GetAvatarNameForProfile(profile_->GetPath());
 }
 
-base::string16 AvatarToolbarButtonDelegate::GetShortProfileName() const {
+std::u16string AvatarToolbarButtonDelegate::GetShortProfileName() const {
   return signin_ui_util::GetShortProfileIdentityToDisplay(
       *GetProfileAttributesEntry(profile_), profile_);
 }
@@ -149,12 +146,12 @@ gfx::Image AvatarToolbarButtonDelegate::GetGaiaAccountImage() const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired)) {
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     base::Optional<AccountInfo> account_info =
         identity_manager
             ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
                 identity_manager->GetPrimaryAccountId(
-                    signin::ConsentLevel::kNotRequired));
+                    signin::ConsentLevel::kSignin));
     if (account_info.has_value())
       return account_info->account_image;
   }
@@ -187,8 +184,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
       IdentityManagerFactory::GetForProfile(profile_);
   ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
   if (!entry ||  // This can happen if the user deletes the current profile.
-      (!identity_manager->HasPrimaryAccount(
-           signin::ConsentLevel::kNotRequired) &&
+      (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
        IsGenericProfile(*entry))) {
     return AvatarToolbarButton::State::kGenericProfile;
   }
@@ -200,7 +196,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
   }
 
-  if (identity_manager->HasPrimaryAccount() &&
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
       ProfileSyncServiceFactory::IsSyncAllowed(profile_) &&
       error_controller_->HasAvatarError()) {
     const sync_ui_util::AvatarSyncErrorType error =
@@ -253,7 +249,7 @@ void AvatarToolbarButtonDelegate::ShowIdentityAnimation(
   // Check that the user is still signed in. See https://crbug.com/1025674
   CoreAccountInfo user_identity =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
   if (user_identity.IsEmpty()) {
     identity_animation_state_ = IdentityAnimationState::kNotShowing;
     return;
@@ -305,7 +301,7 @@ void AvatarToolbarButtonDelegate::OnProfileAdded(
 
 void AvatarToolbarButtonDelegate::OnProfileWasRemoved(
     const base::FilePath& profile_path,
-    const base::string16& profile_name) {
+    const std::u16string& profile_name) {
   // Removing a profile changes the profile count, we might go from showing
   // per-profile icons back to a generic avatar icon. Update icon accordingly.
   avatar_toolbar_button_->UpdateIcon();
@@ -323,14 +319,16 @@ void AvatarToolbarButtonDelegate::OnProfileHighResAvatarLoaded(
 
 void AvatarToolbarButtonDelegate::OnProfileNameChanged(
     const base::FilePath& profile_path,
-    const base::string16& old_profile_name) {
+    const std::u16string& old_profile_name) {
   avatar_toolbar_button_->UpdateText();
 }
 
-void AvatarToolbarButtonDelegate::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
-  if (unconsented_primary_account_info.IsEmpty())
+void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
     return;
+  }
   OnUserIdentityChanged();
 }
 
@@ -352,7 +350,7 @@ void AvatarToolbarButtonDelegate::OnRefreshTokensLoaded() {
   }
   CoreAccountInfo account =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
   if (account.IsEmpty())
     return;
   OnUserIdentityChanged();
@@ -391,7 +389,7 @@ void AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout(
     CoreAccountId account_id) {
   CoreAccountInfo user_identity =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
   // If another account is signed-in then the one that initiated this animation,
   // don't hide it. There's one more pending OnIdentityAnimationTimeout() that
   // will properly hide it after the proper delay.

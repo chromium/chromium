@@ -63,7 +63,10 @@ absl_source_set("pool_urbg") {
 absl_source_set("explicit_seed_seq") {
   testonly = true
   public = [ "explicit_seed_seq.h" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:endian",
+  ]
 }
 
 absl_source_set("sequence_urbg") {
@@ -146,6 +149,7 @@ absl_source_set("randen_engine") {
   deps = [
     ":iostream_state_saver",
     ":randen",
+    "//third_party/abseil-cpp/absl/base:endian",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
 }

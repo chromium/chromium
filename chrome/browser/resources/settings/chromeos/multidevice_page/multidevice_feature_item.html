@@ -38,6 +38,11 @@
       cr-policy-indicator {
         padding: 0 var(--cr-controlled-by-spacing);
       }
+
+      #help-icon:active {
+        /* Still reveal tooltip on click. */
+        pointer-events: none;
+      }
     </style>
     <div id="card" class="settings-box two-line no-padding">
       <div id="linkWrapper" class="link-wrapper"
@@ -45,10 +50,11 @@
                feature, pageContentData, subpageRoute)]]"
            on-click="handleItemClick_">
         <slot name="icon">
-          <iron-icon id="feature-icon" icon="[[getIconName(feature)]]">
+          <iron-icon id="feature-icon" icon="[[getIconName(feature)]]"
+              aria-hidden="true">
           </iron-icon>
         </slot>
-        <div id="item-text-container" class="middle">
+        <div id="item-text-container" class="middle" aria-hidden="true">
           <div id="featureName">[[getFeatureName(feature)]]</div>
           <slot name="feature-summary">
             <settings-localized-link
@@ -68,8 +74,11 @@
           </cr-icon-button>
         </template>
         <template is="dom-if" if="[[infoTooltip]]" restamp>
-          <iron-icon id="help-icon" icon="cr:help-outline"></iron-icon>
-          <paper-tooltip for="help-icon" position="top" fit-to-visible-bounds>
+          <iron-icon id="help-icon" tabindex="0" icon="cr:info-outline"
+              aria-labelledby="tooltip">
+          </iron-icon>
+          <paper-tooltip id="tooltip" for="help-icon" position="top"
+              aria-hidden="true" fit-to-visible-bounds>
             [[infoTooltip]]
           </paper-tooltip>
         </template>
@@ -86,12 +95,19 @@
           restamp>
         <cr-policy-indicator indicator-type="userPolicy"></cr-policy-indicator>
       </template>
-      <div class="margin-matches-padding">
+      <div class="margin-matches-padding" aria-labelledby="featureName"
+          aria-describedby="featureSecondary">
+        <!-- The aria-labelledby and aria-describedby are used by custom slotted
+        content, without which ChromeVox will not announce the #featureName
+        or #featureSummary. Note that the default slotted content still needs
+        their own aria-labelledby and aria-describedby attributes. -->
         <slot name="feature-controller">
           <!-- This settings-multidevice-feature-toggle is the default
           controller. If an element with slot="feature-controller" is attached,
           it will replace this one. -->
           <settings-multidevice-feature-toggle
+              aria-labelledby="featureName"
+              aria-describedby="featureSecondary"
               feature="[[feature]]"
               page-content-data="[[pageContentData]]">
           </settings-multidevice-feature-toggle>

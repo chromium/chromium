@@ -16,6 +16,9 @@ class EnterpriseConnectorsPolicyHandler
  public:
   EnterpriseConnectorsPolicyHandler(const char* policy_name,
                                     const char* pref_path,
+                                    policy::Schema schema);
+  EnterpriseConnectorsPolicyHandler(const char* policy_name,
+                                    const char* pref_path,
                                     const char* pref_scope_path,
                                     policy::Schema schema);
   EnterpriseConnectorsPolicyHandler(EnterpriseConnectorsPolicyHandler&) =
@@ -34,7 +37,7 @@ class EnterpriseConnectorsPolicyHandler
   const char* pref_path_;
 
   // Key used to store the policy::PolicyScope of the policy. This is looked up
-  // later so the Connector can adjust its behaviour.
+  // later so the Connector can adjust its behaviour.  May be null.
   const char* pref_scope_path_;
 };
 

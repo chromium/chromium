@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #import "ios/web/public/web_client.h"
 #include "net/base/mime_util.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_generated_resources_map.h"
@@ -31,13 +32,13 @@ const char kWebUIResourcesHost[] = "resources";
 
 // Maps a path name (i.e. "/js/path.js") to a resource map entry. Returns
 // nullptr if not found.
-const GritResourceMap* PathToResource(const std::string& path) {
+const webui::ResourcePath* PathToResource(const std::string& path) {
   for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
-    if (path == kWebuiResources[i].name)
+    if (path == kWebuiResources[i].path)
       return &kWebuiResources[i];
   }
   for (size_t i = 0; i < kWebuiGeneratedResourcesSize; ++i) {
-    if (path == kWebuiGeneratedResources[i].name)
+    if (path == kWebuiGeneratedResources[i].path)
       return &kWebuiGeneratedResources[i];
   }
   return nullptr;
@@ -56,13 +57,13 @@ std::string SharedResourcesDataSourceIOS::GetSource() const {
 void SharedResourcesDataSourceIOS::StartDataRequest(
     const std::string& path,
     URLDataSourceIOS::GotDataCallback callback) {
-  const GritResourceMap* resource = PathToResource(path);
+  const webui::ResourcePath* resource = PathToResource(path);
   DCHECK(resource) << " path: " << path;
   scoped_refptr<base::RefCountedMemory> bytes;
 
   WebClient* web_client = GetWebClient();
 
-  int idr = resource ? resource->value : -1;
+  int idr = resource ? resource->id : -1;
   if (idr == IDR_WEBUI_CSS_TEXT_DEFAULTS_CSS) {
     std::string css = webui::GetWebUiCssTextDefaults();
     bytes = base::RefCountedString::TakeString(&css);

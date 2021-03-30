@@ -6,10 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("device_feature_list_java") {
   sources = [ "src/org/chromium/device/DeviceFeatureList.java" ]
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-  ]
+  deps = [ "//base:base_java" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 

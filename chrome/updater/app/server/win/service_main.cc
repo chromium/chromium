@@ -201,7 +201,7 @@ void ServiceMain::ServiceControlHandler(DWORD control) {
 }
 
 // static
-void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, base::char16* argv[]) {
+void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
   ServiceMain::GetInstance()->ServiceMainImpl();
 }
 

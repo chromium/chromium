@@ -80,7 +80,8 @@ class ContentFaviconDriver
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
   bool document_on_load_completed_;
   GURL bypass_cache_page_url_;

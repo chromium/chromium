@@ -23,7 +23,12 @@ struct CookieAccessDetails {
   url.mojom.Url url;
 
   SiteForCookies site_for_cookies;
-  array<CookieWithAccessResult> cookie_list;
+  // Each element of the `cookie_list` array includes a CookieInclusionStatus
+  // and a CanonicalCookie if one was successfully constructed; if we were
+  // unable to create the CanonicalCookie, then we use the cookie string
+  // instead. Note that this means we always get a CanonicalCookie for reads,
+  // but may get a cookie string on writes.
+  array<CookieOrLineWithAccessResult> cookie_list;
 
   // |devtools_request_id| contains the DevTools request id of the request
   // that triggered the cookie change, if the read was triggered by a request.

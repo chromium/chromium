@@ -97,6 +97,8 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/datagram_client_socket.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon_ip.h"
 
 #if BUILDFLAG(ENABLE_MDNS)
 #include "net/dns/mdns_client_impl.h"
@@ -351,12 +353,13 @@ base::Value NetLogIPv6AvailableParams(bool ipv6_available, bool cached) {
 
 //-----------------------------------------------------------------------------
 
-// Maximum of 6 concurrent resolver threads (excluding retries).
-// Some routers (or resolvers) appear to start to provide host-not-found if
-// too many simultaneous resolutions are pending.  This number needs to be
-// further optimized, but 8 is what FF currently does. We found some routers
-// that limit this to 6, so we're temporarily holding it at that level.
-const size_t kDefaultMaxProcTasks = 6u;
+// Maximum of 64 concurrent resolver threads (excluding retries).
+// Between 2010 and 2020, the limit was set to 6 because of a report of a broken
+// home router that would fail in the presence of more simultaneous queries.
+// In 2020, we conducted an experiment to see if this kind of router was still
+// present on the Internet, and found no evidence of any remaining issues, so
+// we increased the limit to 64 at that time.
+const size_t kDefaultMaxProcTasks = 64u;
 
 PrioritizedDispatcher::Limits GetDispatcherLimits(
     const HostResolver::ManagerOptions& options) {
@@ -728,6 +731,17 @@ class HostResolverManager::RequestImpl
   void LogFinishRequest(int net_error, bool async_completion) {
     source_net_log_.EndEventWithNetErrorCode(
         NetLogEventType::HOST_RESOLVER_IMPL_REQUEST, net_error);
+
+    url::HostSafetyStatus host_safety_status = url::CheckHostnameSafety(
+        request_host_.host().c_str(),
+        url::Component(0, request_host_.host().size()));
+    if (net_error == net::OK) {
+      UMA_HISTOGRAM_ENUMERATION("Net.DNS.Request.Success.HostSafetyStatus",
+                                host_safety_status);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("Net.DNS.Request.Failure.HostSafetyStatus",
+                                host_safety_status);
+    }
 
     if (!parameters_.is_speculative) {
       DCHECK(!request_time_.is_null());
@@ -1190,12 +1204,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   }
 
  private:
-  static const HostCache::Entry& GetMalformedResponseResult() {
-    static const base::NoDestructor<HostCache::Entry> kMalformedResponseResult(
-        ERR_DNS_MALFORMED_RESPONSE, HostCache::Entry::SOURCE_DNS);
-    return *kMalformedResponseResult;
-  }
-
   std::unique_ptr<DnsTransaction> CreateTransaction(
       DnsQueryType dns_query_type) {
     DCHECK_NE(DnsQueryType::UNSPECIFIED, dns_query_type);
@@ -1618,7 +1626,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         num_occupied_job_slots_(0),
         dispatcher_(nullptr),
         dns_task_error_(OK),
-        is_secure_dns_task_error_(false),
         tick_clock_(tick_clock),
         start_time_(base::TimeTicks()),
         net_log_(
@@ -1773,7 +1780,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       if (has_proc_fallback) {
         KillDnsTask();
         dns_task_error_ = OK;
-        is_secure_dns_task_error_ = false;
         RunNextTask();
       } else if (!fallback_only) {
         CompleteRequestsWithError(error);
@@ -2005,21 +2011,10 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
                           const AddressList& addr_list) {
     DCHECK(proc_task_);
 
-    if (dns_task_error_ != OK) {
-      // If a secure DNS task previously failed and fell back to a ProcTask
-      // without issuing an insecure DNS task in between, record what happened
-      // to the fallback ProcTask.
-      if (is_secure_dns_task_error_) {
-        base::UmaHistogramSparse(
-            "Net.DNS.SecureDnsTaskFailure.FallbackProcTask.Error",
-            std::abs(net_error));
-      }
-
+    if (dns_task_error_ != OK && net_error == OK) {
       // This ProcTask was a fallback resolution after a failed insecure
       // DnsTask.
-      if (net_error == OK) {
-        resolver_->OnFallbackResolve(dns_task_error_);
-      }
+      resolver_->OnFallbackResolve(dns_task_error_);
     }
 
     if (ContainsIcannNameCollisionIp(addr_list))
@@ -2116,18 +2111,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.JobQueueTime.Failure",
                                  total_transaction_time_queued_);
 
-    if (duration < base::TimeDelta::FromMilliseconds(10)) {
-      base::UmaHistogramSparse(
-          secure ? "Net.DNS.SecureDnsTask.ErrorBeforeFallback.Fast"
-                 : "Net.DNS.DnsTask.ErrorBeforeFallback.Fast",
-          std::abs(failure_results.error()));
-    } else {
-      base::UmaHistogramSparse(
-          secure ? "Net.DNS.SecureDnsTask.ErrorBeforeFallback.Slow"
-                 : "Net.DNS.DnsTask.ErrorBeforeFallback.Slow",
-          std::abs(failure_results.error()));
-    }
-
     // If one of the fallback tasks doesn't complete the request, store a result
     // to use during request completion.
     base::TimeDelta ttl = failure_results.has_ttl()
@@ -2136,7 +2119,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     completion_results_.push_back({failure_results, ttl, secure});
 
     dns_task_error_ = failure_results.error();
-    is_secure_dns_task_error_ = secure;
     KillDnsTask();
     RunNextTask();
   }
@@ -2147,14 +2129,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
                          const HostCache::Entry& results,
                          bool secure) override {
     DCHECK(dns_task_);
-
-    // If a secure DNS task previously failed, record what happened to the
-    // fallback insecure DNS task.
-    if (dns_task_error_ != OK && is_secure_dns_task_error_) {
-      base::UmaHistogramSparse(
-          "Net.DNS.SecureDnsTaskFailure.FallbackDnsTask.Error",
-          std::abs(results.error()));
-    }
 
     base::TimeDelta duration = tick_clock_->NowTicks() - start_time;
     if (results.error() != OK) {
@@ -2492,10 +2466,6 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   // Result of DnsTask.
   int dns_task_error_;
-
-  // Whether the error in |dns_task_error_| corresponds to an insecure or
-  // secure DnsTask.
-  bool is_secure_dns_task_error_;
 
   const base::TickClock* tick_clock_;
   base::TimeTicks start_time_;

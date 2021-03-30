@@ -1,0 +1,32 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>$i18n{sysinfoPageTitle}</title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="chrome://resources/css/spinner.css">
+    <link rel="stylesheet" href="../../about_sys/about_sys.css">
+    <link rel="stylesheet" href="../css/sys_info.css">
+
+    <script type="module" src="../js/sys_info.js"></script>
+  </head>
+  <body>
+    <div id="header">
+      <h1 id="title">$i18n{sysinfoPageTitle}</h1>
+      <p id="description">$i18n{sysinfoPageDescription}</p>
+    </div>
+    <div id="content">
+      <h2 id="tableTitle">$i18n{sysinfoPageTableTitle}</h2>
+      <div id="anchor"></div>
+      <button id="expandAllBtn"
+              class="global-button">$i18n{sysinfoPageExpandAllBtn}</button>
+      <button id="collapseAllBtn"
+              class="global-button">$i18n{sysinfoPageCollapseAllBtn}</button>
+      <div id="spinner-container">
+        <div class="inline-spinner"></div>
+        <p id="status">$i18n{sysinfoPageStatusLoading}</p>
+      </div>
+      <table class="list" id="detailsTable"></table>
+    </div>
+  </body>
+</html>

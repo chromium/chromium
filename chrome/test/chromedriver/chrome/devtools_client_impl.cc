@@ -194,7 +194,8 @@ Status DevToolsClientImpl::SetUpDevTools() {
   unnotified_event_listeners_.clear();
   response_info_map_.clear();
 
-  if (id_ != kBrowserwideDevToolsClientId) {
+  if (id_ != kBrowserwideDevToolsClientId &&
+      (GetOwner() == nullptr || !GetOwner()->IsServiceWorker())) {
     base::DictionaryValue params;
     std::string script =
         "(function () {"
@@ -332,6 +333,10 @@ void DevToolsClientImpl::SetDetached() {
 
 void DevToolsClientImpl::SetOwner(WebViewImpl* owner) {
   owner_ = owner;
+}
+
+WebViewImpl* DevToolsClientImpl::GetOwner() const {
+  return owner_;
 }
 
 DevToolsClientImpl::ResponseInfo::ResponseInfo(const std::string& method)

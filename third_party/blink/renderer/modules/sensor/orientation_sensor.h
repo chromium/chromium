@@ -24,11 +24,12 @@ class OrientationSensor : public Sensor {
   void Trace(Visitor*) const override;
 
  protected:
-  OrientationSensor(ExecutionContext*,
-                    const SpatialSensorOptions*,
-                    ExceptionState&,
-                    device::mojom::blink::SensorType,
-                    const Vector<mojom::blink::FeaturePolicyFeature>& features);
+  OrientationSensor(
+      ExecutionContext*,
+      const SpatialSensorOptions*,
+      ExceptionState&,
+      device::mojom::blink::SensorType,
+      const Vector<mojom::blink::PermissionsPolicyFeature>& features);
 
  private:
   // SensorProxy override.

@@ -140,11 +140,6 @@ HyphenationComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> HyphenationComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return {};
-}
-
 // static
 void HyphenationComponentInstallerPolicy::GetHyphenationDictionary(
     base::OnceCallback<void(const base::FilePath&)> callback) {

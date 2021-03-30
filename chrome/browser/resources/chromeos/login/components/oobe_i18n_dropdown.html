@@ -1,0 +1,21 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
+
+<dom-module id="oobe-i18n-dropdown">
+  <template>
+    <style include="md-select">
+      :host {
+        font-size: var(--oobe-select-font-size);
+        line-height: var(--oobe-select-line-height);
+        --md-select-width: 240px;
+      }
+
+      select {
+        height: var(--oobe-select-height);
+      }
+    </style>
+    <select id="select" aria-label$="[[labelForAria]]" class="md-select" >
+    </select>
+  </template>
+</dom-module>

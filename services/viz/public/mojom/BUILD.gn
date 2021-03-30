@@ -14,12 +14,12 @@ mojom("mojom") {
     "compositing/compositor_frame.mojom",
     "compositing/compositor_frame_metadata.mojom",
     "compositing/compositor_frame_sink.mojom",
+    "compositing/compositor_frame_transition_directive.mojom",
     "compositing/compositor_render_pass.mojom",
     "compositing/compositor_render_pass_id.mojom",
     "compositing/copy_output_request.mojom",
     "compositing/copy_output_result.mojom",
-    "compositing/delegated_ink_metadata.mojom",
-    "compositing/delegated_ink_point.mojom",
+    "compositing/delegated_ink_point_renderer.mojom",
     "compositing/filter_operation.mojom",
     "compositing/filter_operations.mojom",
     "compositing/frame_deadline.mojom",
@@ -28,10 +28,12 @@ mojom("mojom") {
     "compositing/local_surface_id.mojom",
     "compositing/paint_filter.mojom",
     "compositing/quads.mojom",
+    "compositing/resource_id.mojom",
     "compositing/resource_settings.mojom",
     "compositing/returned_resource.mojom",
     "compositing/selection.mojom",
     "compositing/shared_quad_state.mojom",
+    "compositing/subtree_capture_id.mojom",
     "compositing/surface_id.mojom",
     "compositing/surface_info.mojom",
     "compositing/surface_range.mojom",
@@ -105,6 +107,16 @@ mojom("mojom") {
         "//components/viz/common",
         "//gpu/command_buffer/common",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.SubtreeCaptureId"
+          cpp = "::viz::SubtreeCaptureId"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/subtree_capture_id_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [
@@ -210,6 +222,18 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "viz.mojom.CompositorFrameTransitionDirective"
+          cpp = "::viz::CompositorFrameTransitionDirective"
+          move_only = true
+        },
+      ]
+      traits_sources = [ "//services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.cc" ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
           mojom = "viz.mojom.CompositorFrameMetadata"
           cpp = "::viz::CompositorFrameMetadata"
           move_only = true
@@ -245,30 +269,6 @@ mojom("mojom") {
         "//services/viz/public/cpp/compositing/copy_output_result_mojom_traits.cc",
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/copy_output_result_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.DelegatedInkMetadata"
-          cpp = "::std::unique_ptr<::viz::DelegatedInkMetadata>"
-          move_only = true
-          nullable_is_same_type = true
-        },
-      ]
-      traits_sources = [ "//services/viz/public/cpp/compositing/delegated_ink_metadata_mojom_traits.cc" ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/delegated_ink_metadata_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.DelegatedInkPoint"
-          cpp = "::viz::DelegatedInkPoint"
-        },
-      ]
-      traits_sources = [ "//services/viz/public/cpp/compositing/delegated_ink_point_mojom_traits.cc" ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/delegated_ink_point_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {
@@ -388,6 +388,20 @@ mojom("mojom") {
         "//services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h",
       ]
       traits_public_deps = [ "//ui/gl" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.ResourceId"
+          cpp = "::viz::ResourceId"
+        },
+      ]
+      traits_sources = [
+        "//services/viz/public/cpp/compositing/resource_id_mojom_traits.cc",
+      ]
+      traits_headers =
+          [ "//services/viz/public/cpp/compositing/resource_id_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [

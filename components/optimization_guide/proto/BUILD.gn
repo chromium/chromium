@@ -18,6 +18,7 @@ proto_library("optimization_guide_proto") {
     "lite_video_metadata.proto",
     "loading_predictor_metadata.proto",
     "models.proto",
+    "page_topics_model_metadata.proto",
     "performance_hints_metadata.proto",
     "public_image_metadata.proto",
   ]

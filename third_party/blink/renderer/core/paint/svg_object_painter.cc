@@ -33,8 +33,7 @@ void CopyStateFromGraphicsContext(GraphicsContext& context, PaintFlags& flags) {
 void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context) {
   DCHECK(!layout_object_.NeedsLayout());
 
-  PaintInfo info(context, LayoutRect::InfiniteIntRect(),
-                 PaintPhase::kForeground,
+  PaintInfo info(context, CullRect::Infinite(), PaintPhase::kForeground,
                  kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers,
                  kPaintLayerPaintingRenderingResourceSubtree,
                  &layout_object_.PaintingLayer()->GetLayoutObject());
@@ -72,11 +71,10 @@ bool SVGObjectPainter::PreparePaint(
   }
 
   const bool apply_to_fill = resource_mode == kApplyToFillMode;
-  const SVGComputedStyle& svg_style = style.SvgStyle();
   const SVGPaint& paint =
-      apply_to_fill ? svg_style.FillPaint() : svg_style.StrokePaint();
+      apply_to_fill ? style.FillPaint() : style.StrokePaint();
   const float alpha =
-      apply_to_fill ? svg_style.FillOpacity() : svg_style.StrokeOpacity();
+      apply_to_fill ? style.FillOpacity() : style.StrokeOpacity();
   if (paint.HasUrl()) {
     if (ApplyPaintResource(paint, additional_paint_server_transform, flags)) {
       flags.setColor(ScaleAlpha(SK_ColorBLACK, alpha));

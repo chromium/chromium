@@ -58,7 +58,7 @@ class MockSuggestionHandler : public SuggestionHandlerInterface {
   MOCK_METHOD(bool,
               AcceptSuggestionCandidate,
               (int context_id,
-               const base::string16& candidate,
+               const std::u16string& candidate,
                std::string* error),
               (override));
   MOCK_METHOD(bool,
@@ -76,7 +76,7 @@ TEST(AutocorrectManagerTest, HandleAutocorrectSetsAutocorrectRange) {
   MockSuggestionHandler mock_suggestion_handler;
   AutocorrectManager manager(&mock_suggestion_handler);
 
-  manager.HandleAutocorrect(gfx::Range(0, 3), "teh");
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh");
 
   EXPECT_EQ(mock_ime_input_context_handler.GetAutocorrectRange(),
             gfx::Range(0, 3));
@@ -88,7 +88,7 @@ TEST(AutocorrectManagerTest, OnKeyEventHidesUnderlineAfterEnoughKeyPresses) {
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   MockSuggestionHandler mock_suggestion_handler;
   AutocorrectManager manager(&mock_suggestion_handler);
-  manager.HandleAutocorrect(gfx::Range(0, 3), "teh");
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh");
 
   const auto key_event =
       CreateKeyEvent(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A);
@@ -107,20 +107,19 @@ TEST(AutocorrectManagerTest, MovingCursorInsideRangeShowsAssistiveWindow) {
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
   AutocorrectManager manager(&mock_suggestion_handler);
-  manager.OnSurroundingTextChanged(base::ASCIIToUTF16("the "), /*cursor_pos=*/4,
+  manager.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
                                    /*anchor_pos=*/4);
-  manager.HandleAutocorrect(gfx::Range(0, 3), "teh");
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh");
 
   AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = true;
   properties.announce_string = l10n_util::GetStringFUTF8(
-      IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, base::ASCIIToUTF16("teh"),
-      base::ASCIIToUTF16("the"));
+      IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, u"teh", u"the");
   EXPECT_CALL(mock_suggestion_handler,
               SetAssistiveWindowProperties(_, properties, _));
 
-  manager.OnSurroundingTextChanged(base::ASCIIToUTF16("the "), /*cursor_pos=*/1,
+  manager.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
                                    /*anchor_pos=*/1);
 }
 
@@ -130,9 +129,9 @@ TEST(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
   AutocorrectManager manager(&mock_suggestion_handler);
-  manager.OnSurroundingTextChanged(base::ASCIIToUTF16("the "), /*cursor_pos=*/4,
+  manager.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
                                    /*anchor_pos=*/4);
-  manager.HandleAutocorrect(gfx::Range(0, 3), "teh");
+  manager.HandleAutocorrect(gfx::Range(0, 3), u"teh");
 
   {
     ::testing::InSequence seq;
@@ -141,8 +140,7 @@ TEST(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
     shown_properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
     shown_properties.visible = true;
     shown_properties.announce_string = l10n_util::GetStringFUTF8(
-        IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, base::ASCIIToUTF16("teh"),
-        base::ASCIIToUTF16("the"));
+        IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, u"teh", u"the");
     EXPECT_CALL(mock_suggestion_handler,
                 SetAssistiveWindowProperties(_, shown_properties, _));
 
@@ -153,9 +151,9 @@ TEST(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
                 SetAssistiveWindowProperties(_, hidden_properties, _));
   }
 
-  manager.OnSurroundingTextChanged(base::ASCIIToUTF16("the "), /*cursor_pos=*/1,
+  manager.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
                                    /*anchor_pos=*/1);
-  manager.OnSurroundingTextChanged(base::ASCIIToUTF16("the "), /*cursor_pos=*/4,
+  manager.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
                                    /*anchor_pos=*/4);
 }
 

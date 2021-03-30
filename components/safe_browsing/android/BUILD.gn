@@ -8,8 +8,7 @@ import("//build/config/android/rules.gni")
 android_library("safe_browsing_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
@@ -48,6 +47,7 @@ static_library("remote_database_manager") {
     "//components/variations",
     "//content/public/browser",
     "//net",
+    "//services/network/public/mojom",
     "//url",
   ]
 }
@@ -104,6 +104,7 @@ source_set("unit_tests_mobile") {
     "//components/safe_browsing/core/db:v4_test_util",
     "//components/variations",
     "//content/test:test_support",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//url",
   ]

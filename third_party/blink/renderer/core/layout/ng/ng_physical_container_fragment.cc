@@ -223,7 +223,6 @@ void NGPhysicalContainerFragment::AddScrollableOverflowForInlineChild(
     const NGInlineCursor& cursor,
     TextHeightType height_type,
     PhysicalRect* overflow) const {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DCHECK(IsLineBox() || IsInlineBox());
   DCHECK(cursor.Current().Item() &&
          (cursor.Current().Item()->BoxFragment() == this ||

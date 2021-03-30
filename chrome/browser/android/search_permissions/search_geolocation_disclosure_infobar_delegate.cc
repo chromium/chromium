@@ -41,7 +41,7 @@ SearchGeolocationDisclosureInfoBarDelegate::
 void SearchGeolocationDisclosureInfoBarDelegate::Create(
     content::WebContents* web_contents,
     const GURL& search_url,
-    const base::string16& search_engine_name) {
+    const std::u16string& search_engine_name) {
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(web_contents);
   // Add the new delegate.
@@ -78,14 +78,14 @@ SearchGeolocationDisclosureInfoBarDelegate::
     SearchGeolocationDisclosureInfoBarDelegate(
         content::WebContents* web_contents,
         const GURL& search_url,
-        const base::string16& search_engine_name)
+        const std::u16string& search_engine_name)
     : infobars::InfoBarDelegate(),
       search_url_(search_url),
       result_(DisclosureResult::IGNORED),
       creation_time_(base::Time::Now()) {
   pref_service_ = Profile::FromBrowserContext(web_contents->GetBrowserContext())
                       ->GetPrefs();
-  base::string16 link = l10n_util::GetStringUTF16(
+  std::u16string link = l10n_util::GetStringUTF16(
       IDS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_SETTINGS_LINK_TEXT);
   std::vector<size_t> offsets;
   message_text_ =

@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/platform/heap/impl/heap_page.h"
 #include "third_party/blink/renderer/platform/heap/impl/marking_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace WTF {
@@ -483,56 +485,16 @@ struct TraceTrait<Member<T>> : public MemberTraceTraits<Member<T>> {};
 template <typename T>
 struct TraceTrait<WeakMember<T>> : public MemberTraceTraits<WeakMember<T>> {};
 
+template <typename T>
+inline bool IsHashTableDeletedValue(const Member<T>& m) {
+  return m.IsHashTableDeletedValue();
+}
+
+constexpr auto kMemberDeletedValue = WTF::kHashTableDeletedValue;
+
 }  // namespace blink
 
 namespace WTF {
-
-// PtrHash is the default hash for hash tables with Member<>-derived elements.
-template <typename T>
-struct MemberHash : PtrHash<T> {
-  STATIC_ONLY(MemberHash);
-  template <typename U>
-  static unsigned GetHash(const U& key) {
-    return PtrHash<T>::GetHash(key);
-  }
-  template <typename U, typename V>
-  static bool Equal(const U& a, const V& b) {
-    return a == b;
-  }
-};
-
-template <typename T>
-struct DefaultHash<blink::Member<T>> {
-  STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
-};
-
-template <typename T>
-struct DefaultHash<blink::WeakMember<T>> {
-  STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
-};
-
-template <typename T>
-struct DefaultHash<blink::UntracedMember<T>> {
-  STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
-};
-
-template <typename T>
-struct IsTraceable<blink::Member<T>> {
-  STATIC_ONLY(IsTraceable);
-  static const bool value = true;
-};
-
-template <typename T>
-struct IsWeak<blink::WeakMember<T>> : std::true_type {};
-
-template <typename T>
-struct IsTraceable<blink::WeakMember<T>> {
-  STATIC_ONLY(IsTraceable);
-  static const bool value = true;
-};
 
 template <typename T, typename Traits, typename Allocator>
 class MemberConstructTraits {

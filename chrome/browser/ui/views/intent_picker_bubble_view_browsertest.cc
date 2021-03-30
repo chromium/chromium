@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -16,9 +17,11 @@
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
@@ -61,15 +64,6 @@ class IntentPickerBubbleViewBrowserTest
     return IntentPickerBubbleView::intent_picker_bubble();
   }
 
-  void ClickIconToShowBubble() {
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "IntentPickerBubbleView");
-    GetIntentPickerIcon()->ExecuteForTesting();
-    waiter.WaitIfNeededAndGet();
-    ASSERT_TRUE(intent_picker_bubble());
-    EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  }
-
   void VerifyBubbleWithTestWebApp() {
     EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
     auto& app_info = intent_picker_bubble()->app_info_for_testing();
@@ -94,6 +88,9 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   NavigateToLaunchingPage(browser());
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "IntentPickerBubbleView");
   TestTabActionDoesNotOpenAppWindow(
       in_scope_url, base::BindOnce(&ClickLinkAndWait, web_contents,
                                    in_scope_url, LinkTarget::SELF, GetParam()));
@@ -101,9 +98,15 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
   EXPECT_TRUE(intent_picker_view->GetVisible());
 
-  EXPECT_FALSE(intent_picker_bubble());
+  if (!base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence)) {
+    EXPECT_FALSE(intent_picker_bubble());
+    GetIntentPickerIcon()->ExecuteForTesting();
+  }
 
-  ClickIconToShowBubble();
+  waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(intent_picker_bubble());
+  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+
   VerifyBubbleWithTestWebApp();
 
   intent_picker_bubble()->AcceptDialog();
@@ -134,9 +137,17 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
 // Tests that clicking a link from an app browser to either within or outside
 // the scope of an installed app does not show the intent picker, even when an
 // outside of scope link is opened within the context of the PWA.
+// Flaky on Linux: https://crbug.com/1186613
+#if defined(OS_LINUX)
+#define MAYBE_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker \
+  DISABLED_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker
+#else
+#define MAYBE_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker \
+  NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker
+#endif
 IN_PROC_BROWSER_TEST_P(
     IntentPickerBubbleViewBrowserTest,
-    NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker) {
+    MAYBE_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker) {
   InstallTestWebApp();
 
   // No intent picker should be seen when first opening the web app.
@@ -246,6 +257,33 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
                          redirect_url, out_of_scope_url, LinkTarget::SELF,
                          GetParam());
   EXPECT_FALSE(intent_picker_view->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTest, DoubleClickOpensApp) {
+  auto app_id = InstallTestWebApp(GetAppUrlHost(), GetAppScopePath());
+
+  const GURL in_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  ui_test_utils::NavigateToURL(browser(), in_scope_url);
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "IntentPickerBubbleView");
+  GetIntentPickerIcon()->ExecuteForTesting();
+  waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(intent_picker_bubble());
+  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+
+  intent_picker_bubble()->PressButtonForTesting(
+      /* index= */ 0,
+      ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), 0, 0));
+  intent_picker_bubble()->PressButtonForTesting(
+      /* index= */ 0,
+      ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_IS_DOUBLE_CLICK, 0));
+
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(

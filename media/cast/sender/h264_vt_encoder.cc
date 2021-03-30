@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/big_endian.h"
@@ -181,7 +182,7 @@ H264VideoToolboxEncoder::H264VideoToolboxEncoder(
             weak_factory_.GetWeakPtr(), cast_environment_));
 
     // Register for power state changes.
-    base::PowerMonitor::AddObserver(this);
+    base::PowerMonitor::AddPowerSuspendObserver(this);
     VLOG(1) << "Registered for power state changes.";
   }
 }
@@ -191,7 +192,7 @@ H264VideoToolboxEncoder::~H264VideoToolboxEncoder() {
 
   // Unregister the power observer. It is valid to remove an observer that was
   // not added.
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
 void H264VideoToolboxEncoder::ResetCompressionSession() {
@@ -556,7 +557,7 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
   encoder->cast_environment_->GetTaskRunner(CastEnvironment::MAIN)
       ->PostTask(FROM_HERE,
                  base::BindOnce(std::move(request->frame_encoded_callback),
-                                base::Passed(&encoded_frame)));
+                                std::move(encoded_frame)));
 }
 
 }  // namespace cast

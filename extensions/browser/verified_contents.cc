@@ -98,16 +98,25 @@ VerifiedContents::~VerifiedContents() {
 //   ]
 // }
 // static.
-std::unique_ptr<VerifiedContents> VerifiedContents::Create(
+std::unique_ptr<VerifiedContents> VerifiedContents::CreateFromFile(
     base::span<const uint8_t> public_key,
     const base::FilePath& path) {
+  std::string contents;
+  if (!base::ReadFileToString(path, &contents))
+    return nullptr;
+  return Create(public_key, contents);
+}
+
+std::unique_ptr<VerifiedContents> VerifiedContents::Create(
+    base::span<const uint8_t> public_key,
+    base::StringPiece contents) {
   ScopedUMARecorder<kUMAVerifiedContentsInitTime,
                     kUMAVerifiedContentsInitResult>
       uma_recorder;
   // Note: VerifiedContents constructor is private.
   auto verified_contents = base::WrapUnique(new VerifiedContents(public_key));
   std::string payload;
-  if (!verified_contents->GetPayload(path, &payload))
+  if (!verified_contents->GetPayload(contents, &payload))
     return nullptr;
 
   base::Optional<base::Value> dictionary = base::JSONReader::Read(payload);
@@ -241,11 +250,8 @@ bool VerifiedContents::TreeHashRootEquals(const base::FilePath& relative_path,
 // that it is for a given extension), but in the future we may validate using
 // the extension's key too (eg for non-webstore hosted extensions such as
 // enterprise installs).
-bool VerifiedContents::GetPayload(const base::FilePath& path,
+bool VerifiedContents::GetPayload(base::StringPiece contents,
                                   std::string* payload) {
-  std::string contents;
-  if (!base::ReadFileToString(path, &contents))
-    return false;
   base::Optional<base::Value> top_list = base::JSONReader::Read(contents);
   if (!top_list || !top_list->is_list())
     return false;

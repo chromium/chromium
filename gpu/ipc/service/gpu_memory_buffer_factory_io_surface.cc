@@ -78,6 +78,12 @@ void GpuMemoryBufferFactoryIOSurface::DestroyGpuMemoryBuffer(
   }
 }
 
+bool GpuMemoryBufferFactoryIOSurface::FillSharedMemoryRegionWithBufferContents(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory) {
+  return false;
+}
+
 ImageFactory* GpuMemoryBufferFactoryIOSurface::AsImageFactory() {
   return this;
 }

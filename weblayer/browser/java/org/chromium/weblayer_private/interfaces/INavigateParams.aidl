@@ -15,4 +15,7 @@ interface INavigateParams {
   void disableNetworkErrorAutoReload() = 2;
   void enableAutoPlay() = 3;
   void setResponse(in IObjectWrapper response) = 4;
+
+  // @since 89
+  void allowIntentLaunchesInBackground() = 5;
 }

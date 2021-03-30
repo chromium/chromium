@@ -114,7 +114,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
               location::nearby::connections::mojom::WebRtcDependencies::New(
                   webrtc_dependencies_->socket_manager_
                       .BindNewPipeAndPassRemote(),
-                  webrtc_dependencies_->mdns_responder_
+                  webrtc_dependencies_->mdns_responder_factory_
                       .BindNewPipeAndPassRemote(),
                   webrtc_dependencies_->ice_config_fetcher_
                       .BindNewPipeAndPassRemote(),
@@ -180,7 +180,9 @@ class NearbyProcessManagerImplTest : public testing::Test {
         nearby_process_manager_.get());
   }
 
-  void OnProcessStopped() { ++num_process_stopped_calls_; }
+  void OnProcessStopped(NearbyProcessManager::NearbyProcessShutdownReason) {
+    ++num_process_stopped_calls_;
+  }
 
   const base::test::TaskEnvironment task_environment_;
   size_t num_process_stopped_calls_ = 0u;

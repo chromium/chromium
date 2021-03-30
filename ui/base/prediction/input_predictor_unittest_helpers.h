@@ -21,9 +21,9 @@ class InputPredictorTest : public testing::Test {
   InputPredictorTest();
   ~InputPredictorTest() override;
 
-  static base::TimeTicks FromMilliseconds(int64_t ms) {
+  static base::TimeTicks FromMilliseconds(double ms) {
     return test::PredictionUnittestHelpers::GetStaticTimeStampForTests() +
-           base::TimeDelta::FromMilliseconds(ms);
+           base::TimeDelta::FromMillisecondsD(ms);
   }
 
   void ValidatePredictor(const std::vector<double>& x,

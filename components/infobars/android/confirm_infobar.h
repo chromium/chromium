@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_INFOBARS_ANDROID_CONFIRM_INFOBAR_H_
 #define COMPONENTS_INFOBARS_ANDROID_CONFIRM_INFOBAR_H_
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -20,7 +21,7 @@ class ConfirmInfoBar : public InfoBarAndroid {
 
  protected:
   ConfirmInfoBarDelegate* GetDelegate();
-  base::string16 GetTextFor(ConfirmInfoBarDelegate::InfoBarButton button);
+  std::u16string GetTextFor(ConfirmInfoBarDelegate::InfoBarButton button);
 
   // InfoBarAndroid overrides.
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(

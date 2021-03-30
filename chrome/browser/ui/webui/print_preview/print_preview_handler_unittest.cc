@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -204,7 +204,7 @@ class TestPrinterHandler : public PrinterHandler {
   void StartGrantPrinterAccess(const std::string& printer_id,
                                GetPrinterInfoCallback callback) override {}
 
-  void StartPrint(const base::string16& job_title,
+  void StartPrint(const std::u16string& job_title,
                   base::Value settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override {

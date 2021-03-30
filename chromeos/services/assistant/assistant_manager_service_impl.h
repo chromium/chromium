@@ -11,61 +11,51 @@
 #include <vector>
 
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
-#include "chromeos/assistant/internal/action/cros_action_module.h"
-#include "chromeos/assistant/internal/cros_display_connection.h"
-#include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
-#include "chromeos/services/assistant/chromium_api_delegate.h"
 #include "chromeos/services/assistant/proxy/assistant_proxy.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
-#include "libassistant/shared/internal_api/assistant_manager_delegate.h"
-#include "libassistant/shared/public/conversation_state_listener.h"
-#include "libassistant/shared/public/device_state_listener.h"
-#include "libassistant/shared/public/media_manager.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/service_controller.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
-#include "services/media_session/public/mojom/media_controller.mojom.h"
-#include "services/media_session/public/mojom/media_session.mojom.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 namespace ash {
-class AssistantAlarmTimerController;
 class AssistantNotificationController;
 class AssistantStateBase;
 }  // namespace ash
-
-namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
-}  // namespace assistant_client
-
-namespace network {
-class PendingSharedURLLoaderFactory;
-}  // namespace network
 
 namespace chromeos {
 namespace assistant {
 
 class AssistantMediaSession;
-class AssistantDeviceSettingsDelegate;
-class AssistantManagerServiceDelegate;
 class AssistantProxy;
-class CrosPlatformApi;
+class AudioInputHost;
+class AudioOutputDelegateImpl;
+class DeviceSettingsHost;
+class MediaHost;
+class PlatformDelegateImpl;
 class ServiceContext;
-class ServiceControllerProxy;
+class SpeechRecognitionObserverWrapper;
+class TimerHost;
 
 // Enumeration of Assistant query response type, also recorded in histograms.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -100,19 +90,15 @@ enum class AssistantQueryResponseType {
 // enabled/disabled in settings or switches to a non-primary profile.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
     : public AssistantManagerService,
-      public ::chromeos::assistant::action::AssistantActionObserver,
-      public AssistantEventObserver,
-      public assistant_client::ConversationStateListener,
-      public assistant_client::AssistantManagerDelegate,
-      public assistant_client::DeviceStateListener,
-      public assistant_client::MediaManager::Listener,
-      public media_session::mojom::MediaControllerObserver,
-      public AppListEventSubscriber {
+      public AppListEventSubscriber,
+      private chromeos::libassistant::mojom::StateObserver,
+      public ConversationObserver {
  public:
+  static void ResetIsFirstInitFlagForTesting();
+
   // |service| owns this class and must outlive this class.
   AssistantManagerServiceImpl(
       ServiceContext* context,
-      std::unique_ptr<AssistantManagerServiceDelegate> delegate,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
       base::Optional<std::string> s3_server_uri_override,
@@ -129,18 +115,17 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void Stop() override;
   State GetState() const override;
   void SetUser(const base::Optional<UserInfo>& user) override;
-  void EnableAmbientMode(bool enabled) override;
   void EnableListening(bool enable) override;
   void EnableHotword(bool enable) override;
   void SetArcPlayStoreEnabled(bool enable) override;
   void SetAssistantContextEnabled(bool enable) override;
   AssistantSettings* GetAssistantSettings() override;
-  void AddCommunicationErrorObserver(
-      CommunicationErrorObserver* observer) override;
-  void RemoveCommunicationErrorObserver(
-      const CommunicationErrorObserver* observer) override;
-  void AddAndFireStateObserver(StateObserver* observer) override;
-  void RemoveStateObserver(const StateObserver* observer) override;
+  void AddAuthenticationStateObserver(
+      AuthenticationStateObserver* observer) override;
+  void AddAndFireStateObserver(
+      AssistantManagerService::StateObserver* observer) override;
+  void RemoveStateObserver(
+      const AssistantManagerService::StateObserver* observer) override;
   void SyncDeviceAppsStatus() override;
   void UpdateInternalMediaPlayerStatus(
       media_session::mojom::MediaSessionAction action) override;
@@ -164,108 +149,48 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void DismissNotification(const AssistantNotification& notification) override;
   void OnAccessibilityStatusChanged(bool spoken_feedback_enabled) override;
   void SendAssistantFeedback(const AssistantFeedback& feedback) override;
-  void NotifyEntryIntoAssistantUi(AssistantEntryPoint entry_point) override;
   void AddTimeToTimer(const std::string& id, base::TimeDelta duration) override;
   void PauseTimer(const std::string& id) override;
   void RemoveAlarmOrTimer(const std::string& id) override;
   void ResumeTimer(const std::string& id) override;
+  void AddRemoteConversationObserver(ConversationObserver* observer) override;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+  GetPendingNotificationDelegate() override;
 
-  // AssistantActionObserver overrides:
-  void OnScheduleWait(int id, int time_ms) override;
-  void OnShowContextualQueryFallback() override;
-  void OnShowHtml(const std::string& html,
-                  const std::string& fallback) override;
-  void OnShowSuggestions(
-      const std::vector<action::Suggestion>& suggestions) override;
-  void OnShowText(const std::string& text) override;
-  void OnOpenUrl(const std::string& url, bool in_background) override;
-  void OnShowNotification(const action::Notification& notification) override;
-  void OnOpenAndroidApp(const AndroidAppInfo& app_info,
-                        const InteractionInfo& interaction) override;
-  void OnVerifyAndroidApp(const std::vector<AndroidAppInfo>& apps_info,
-                          const InteractionInfo& interaction) override;
-  void OnModifyDeviceSetting(
-      const ::assistant::api::client_op::ModifySettingArgs& args) override;
-  void OnGetDeviceSettings(
-      int interaction_id,
-      const ::assistant::api::client_op::GetDeviceSettingsArgs& args) override;
-
-  // AssistantEventObserver overrides:
-  void OnSpeechLevelUpdated(float speech_level) override;
-
-  // assistant_client::ConversationStateListener overrides:
-  void OnConversationTurnFinished(
-      assistant_client::ConversationStateListener::Resolution resolution)
-      override;
-  void OnRecognitionStateChanged(
-      assistant_client::ConversationStateListener::RecognitionState state,
-      const assistant_client::ConversationStateListener::RecognitionResult&
-          recognition_result) override;
-  void OnRespondingStarted(bool is_error_response) override;
-
-  // AssistantManagerDelegate overrides:
-  void OnConversationTurnStartedInternal(
-      const assistant_client::ConversationTurnMetadata& metadata) override;
-  void OnNotificationRemoved(const std::string& grouping_key) override;
-  void OnCommunicationError(int error_code) override;
-  // Last search source will be cleared after it is retrieved.
-  std::string GetLastSearchSource() override;
-
-  // assistant_client::DeviceStateListener overrides:
-  void OnStartFinished() override;
+  // chromeos::assistant::ConversationObserver overrides:
+  void OnInteractionStarted(
+      const AssistantInteractionMetadata& metadata) override;
+  void OnInteractionFinished(
+      AssistantInteractionResolution resolution) override;
+  void OnHtmlResponse(const std::string& response,
+                      const std::string& fallback) override;
+  void OnTextResponse(const std::string& reponse) override;
+  void OnOpenUrlResponse(const GURL& url, bool in_background) override;
 
   // AppListEventSubscriber overrides:
   void OnAndroidAppListRefreshed(
       const std::vector<AndroidAppInfo>& apps_info) override;
 
-  assistant_client::AssistantManager* assistant_manager();
-  assistant_client::AssistantManagerInternal* assistant_manager_internal();
-  CrosPlatformApi* platform_api() { return platform_api_.get(); }
+  void SetMicState(bool mic_open);
 
-  // assistant_client::MediaManager::Listener overrides:
-  void OnPlaybackStateChange(
-      const assistant_client::MediaStatus& status) override;
-
-  // media_session::mojom::MediaControllerObserver overrides:
-  void MediaSessionInfoChanged(
-      media_session::mojom::MediaSessionInfoPtr info) override;
-  void MediaSessionMetadataChanged(
-      const base::Optional<media_session::MediaMetadata>& metadata) override;
-  void MediaSessionActionsChanged(
-      const std::vector<media_session::mojom::MediaSessionAction>& action)
-      override {}
-  void MediaSessionChanged(
-      const base::Optional<base::UnguessableToken>& request_id) override;
-  void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override {}
-
-  // Get the action module for testing.
-  action::CrosActionModule* action_module_for_testing() {
-    return action_module_.get();
-  }
+  base::Thread& GetBackgroundThreadForTesting();
 
  private:
-  void InitAssistant(const base::Optional<UserInfo>& user,
-                     const std::string& locale);
-  void PostInitAssistant();
+  // chromeos::libassistant::mojom::StateObserver implementation:
+  void OnStateChanged(
+      chromeos::libassistant::mojom::ServiceState new_state) override;
+
+  void InitAssistant(const base::Optional<UserInfo>& user);
+  void OnServiceStarted();
+  void OnServiceRunning();
+  void OnServiceStopped();
   bool IsServiceStarted() const;
 
-  void HandleLaunchMediaIntentResponse(bool app_opened);
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory();
 
-  void OnAlarmTimerStateChanged();
   void OnModifySettingsAction(const std::string& modify_setting_args_proto);
-  void OnOpenMediaAndroidIntent(const std::string& play_media_args_proto,
-                                AndroidAppInfo* app_info);
-  void OnPlayMedia(const std::string& play_media_args_proto);
-  void OnMediaControlAction(const std::string& action_name,
-                            const std::string& media_action_args_proto);
 
   void OnDeviceAppsEnabled(bool enabled);
-
-  void RegisterFallbackMediaHandler();
-  void AddMediaControllerObserver();
-  void RemoveMediaControllerObserver();
-  void RegisterAlarmsTimersListener();
 
   void FillServerExperimentIds(std::vector<std::string>* server_experiment_ids);
 
@@ -277,89 +202,71 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // and settings modification proto along with any text/voice responses would
   // be sent back in the second round (recorded as kDeviceAction).
   void RecordQueryResponseTypeUMA();
-
-  void UpdateMediaState();
-  void ResetMediaState();
+  bool HasReceivedQueryResponse() const;
+  AssistantQueryResponseType GetQueryResponseType() const;
 
   std::string NewPendingInteraction(AssistantInteractionType interaction_type,
                                     AssistantQuerySource source,
                                     const std::string& query);
 
-  std::string ConsumeLastTriggerSource();
-
   void SendVoicelessInteraction(const std::string& interaction,
                                 const std::string& description,
                                 bool is_user_initiated);
 
-  ash::AssistantAlarmTimerController* assistant_alarm_timer_controller();
   ash::AssistantNotificationController* assistant_notification_controller();
   ash::AssistantScreenContextController* assistant_screen_context_controller();
   ash::AssistantStateBase* assistant_state();
   DeviceActions* device_actions();
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
-  CrosDisplayConnection* display_connection();
-  ServiceControllerProxy& service_controller();
-  const ServiceControllerProxy& service_controller() const;
+  chromeos::libassistant::mojom::ConversationController&
+  conversation_controller();
+  chromeos::libassistant::mojom::DisplayController& display_controller();
+  chromeos::libassistant::mojom::ServiceController& service_controller();
+  chromeos::libassistant::mojom::SettingsController& settings_controller();
   base::Thread& background_thread();
 
   void SetStateAndInformObservers(State new_state);
 
-  State state_ = State::STOPPED;
-  std::unique_ptr<AssistantMediaSession> media_session_;
-  std::unique_ptr<CrosPlatformApi> platform_api_;
-  std::unique_ptr<action::CrosActionModule> action_module_;
-  ChromiumApiDelegate chromium_api_delegate_;
+  State state_ = State::kStopped;
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 
   std::unique_ptr<AssistantProxy> assistant_proxy_;
+  std::unique_ptr<PlatformDelegateImpl> platform_delegate_;
+  std::unique_ptr<AudioInputHost> audio_input_host_;
 
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;
-  mojo::Remote<media_session::mojom::MediaController> media_controller_;
 
   // Owned by the parent |Service| which will destroy |this| before |context_|.
   ServiceContext* const context_;
 
-  std::unique_ptr<AssistantManagerServiceDelegate> delegate_;
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
-  std::unique_ptr<AssistantDeviceSettingsDelegate> settings_delegate_;
+  std::unique_ptr<DeviceSettingsHost> device_settings_host_;
+  std::unique_ptr<MediaHost> media_host_;
+  std::unique_ptr<TimerHost> timer_host_;
+  std::unique_ptr<AudioOutputDelegateImpl> audio_output_delegate_;
+  std::unique_ptr<SpeechRecognitionObserverWrapper>
+      speech_recognition_observer_;
+  mojo::Receiver<chromeos::libassistant::mojom::StateObserver>
+      state_observer_receiver_{this};
 
   bool spoken_feedback_enabled_ = false;
 
-  std::string last_trigger_source_;
-  base::Lock last_trigger_source_lock_;
   base::TimeTicks started_time_;
 
-  int next_interaction_id_ = 1;
-  std::map<std::string, std::unique_ptr<AssistantInteractionMetadata>>
-      pending_interactions_;
-
-  bool receive_modify_settings_proto_response_ = false;
   bool receive_inline_response_ = false;
   std::string receive_url_response_;
 
-  mojo::Receiver<media_session::mojom::MediaControllerObserver>
-      media_controller_observer_receiver_{this};
-
-  // Info associated to the active media session.
-  media_session::mojom::MediaSessionInfoPtr media_session_info_ptr_;
-  // The metadata for the active media session. It can be null to be reset, e.g.
-  // the media that was being played has been stopped.
-  base::Optional<media_session::MediaMetadata> media_metadata_ = base::nullopt;
-
-  base::UnguessableToken media_session_audio_focus_id_ =
-      base::UnguessableToken::Null();
-
   // Configuration passed to libassistant.
-  std::string libassistant_config_;
+  chromeos::libassistant::mojom::BootupConfigPtr bootup_config_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::ScopedObservation<DeviceActions,
                           AppListEventSubscriber,
                           &DeviceActions::AddAndFireAppListEventSubscriber,
                           &DeviceActions::RemoveAppListEventSubscriber>
       scoped_app_list_event_subscriber_{this};
-  base::ObserverList<CommunicationErrorObserver> error_observers_;
-  base::ObserverList<StateObserver> state_observers_;
+  base::ObserverList<AssistantManagerService::StateObserver> state_observers_;
 
   base::WeakPtrFactory<AssistantManagerServiceImpl> weak_factory_;
 

@@ -37,6 +37,14 @@ _JAVA_SRC_DIR = os.path.join('java', 'src', 'org', 'chromium', 'example',
 _REBASELINE_ENV = 'REBASELINE'
 
 
+def _RemoveHashedNames(natives):
+  ret = []
+  for n in natives:
+    ret.append(jni_generator.NativeMethod(**n.__dict__))
+    ret[-1].hashed_proxy_name = None
+  return ret
+
+
 class TestOptions(object):
   """The mock options object which is passed to the jni_generator.py script."""
 
@@ -1350,7 +1358,7 @@ class ProxyTestGenerator(BaseTest):
             proxy_name='org_chromium_example_SampleProxyJni_foo_1_1bar'),
     ]
 
-    self.AssertListEquals(natives, golden_natives)
+    self.AssertListEquals(_RemoveHashedNames(natives), golden_natives)
 
   def testProxyNativesMainDex(self):
     test_data = """
@@ -1392,7 +1400,7 @@ class ProxyTestGenerator(BaseTest):
             proxy_name='test_foo_Foo_thisismaindex'),
     ]
 
-    self.AssertListEquals(natives, golden_natives)
+    self.AssertListEquals(_RemoveHashedNames(natives), golden_natives)
 
     jni_params = jni_generator.JniParams(qualified_clazz)
     main_dex_header = jni_registration_generator.HeaderGenerator(
@@ -1502,8 +1510,9 @@ class ProxyTestGenerator(BaseTest):
             is_proxy=True,
             proxy_name='org_chromium_example_SampleProxyJni_foobar'),
     ]
-    self.AssertListEquals(golden_natives, natives)
-    self.AssertListEquals(golden_natives, bad_spacing_natives)
+    self.AssertListEquals(golden_natives, _RemoveHashedNames(natives))
+    self.AssertListEquals(golden_natives,
+                          _RemoveHashedNames(bad_spacing_natives))
 
     jni_params = jni_generator.JniParams(qualified_clazz)
     h1 = jni_generator.InlHeaderFileGenerator('', qualified_clazz, natives, [],
@@ -1635,7 +1644,7 @@ class ProxyTestGenerator(BaseTest):
             proxy_name='org_chromium_foo_FooJni_bazProxy',
             ptr_type='long')
     ]
-    self.AssertListEquals(golden_natives, natives)
+    self.AssertListEquals(golden_natives, _RemoveHashedNames(natives))
 
 
 def TouchStamp(stamp_path):

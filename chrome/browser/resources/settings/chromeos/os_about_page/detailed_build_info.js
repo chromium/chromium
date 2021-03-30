@@ -56,10 +56,29 @@ Polymer({
     },
 
     /** @private */
+    shouldHideEolInfo_: {
+      type: Boolean,
+      computed: 'computeShouldHideEolInfo_(eolMessageWithMonthAndYear)',
+    },
+
+    /** @private */
     isHostnameSettingEnabled_: {
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('isHostnameSettingEnabled');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * Whether the browser/ChromeOS is managed by their organization
+     * through enterprise policies.
+     * @private
+     */
+    isManaged_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isManaged');
       },
       readOnly: true,
     },
@@ -92,6 +111,14 @@ Polymer({
     }
 
     this.attemptDeepLink();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShouldHideEolInfo_() {
+    return this.isManaged_ || !this.eolMessageWithMonthAndYear;
   },
 
   /** @private */

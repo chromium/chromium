@@ -4,16 +4,14 @@
 
 #include "chrome/browser/metrics/perf/metric_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -51,30 +49,6 @@ void RedactCommMd5Prefixes(PerfDataProto* proto) {
       event.mutable_comm_event()->set_comm_md5_prefix(kRedactedCommMd5Prefix);
     }
   }
-}
-
-// Check if App Sync is enabled for a given user profile.
-bool IsAppSyncEnabledForUserProfile(Profile* profile) {
-  syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
-  if (!sync_service)
-    return false;
-  syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
-
-  // Chrome versions >= M78 have a feature that splits the sync settings between
-  // Chrome and ChromeOS. The App Sync toggle is moved under the ChromeOS
-  // settings. If the split sync setting is enabled, we will directly read from
-  // the OS settings. Otherwise, we read from Chrome settings. We then check if
-  // the sync feature is enabled and the App Sync toggle is on.
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    return sync_settings->IsOsSyncFeatureEnabled() &&
-           sync_settings->GetSelectedOsTypes().Has(
-               syncer::UserSelectableOsType::kOsApps);
-  }
-  // Read chrome settings if split sync is disabled.
-  return sync_service->IsSyncFeatureEnabled() &&
-         sync_settings->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kApps);
 }
 
 }  // namespace
@@ -185,8 +159,8 @@ void MetricProvider::OnSessionRestoreDone(int num_tabs_restored) {
 void MetricProvider::OnProfileDone(
     base::WeakPtr<MetricProvider> provider,
     std::unique_ptr<SampledProfile> sampled_profile) {
-  base::PostTask(FROM_HERE, base::TaskTraits(content::BrowserThread::UI),
-                 base::BindOnce(&MetricProvider::AddProfileToCache, provider,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&MetricProvider::AddProfileToCache, provider,
                                 std::move(sampled_profile)));
 }
 
@@ -212,6 +186,35 @@ void MetricProvider::DisableRecording() {
   recording_enabled_ = false;
 }
 
+MetricProvider::RecordAttemptStatus MetricProvider::AppSyncStateForUserProfile(
+    Profile* profile) {
+  syncer::SyncService* sync_service =
+      ProfileSyncServiceFactory::GetForProfile(profile);
+  if (!sync_service)
+    return RecordAttemptStatus::kSyncServiceUnavailable;
+  syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+
+  // Chrome versions >= M78 have a feature that splits the sync settings between
+  // Chrome and ChromeOS. The App Sync toggle is moved under the ChromeOS
+  // settings. If the split sync setting is enabled, we will directly read from
+  // the OS settings. Otherwise, we read from Chrome settings. We then check if
+  // the sync feature is enabled and the App Sync toggle is on.
+  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+    if (!sync_settings->IsOsSyncFeatureEnabled())
+      return RecordAttemptStatus::kOSSyncFeatureDisabled;
+    if (!sync_settings->GetSelectedOsTypes().Has(
+            syncer::UserSelectableOsType::kOsApps))
+      return RecordAttemptStatus::kOSAppSyncDisabled;
+    return RecordAttemptStatus::kAppSyncEnabled;
+  }
+  // Read chrome settings if split sync is disabled.
+  if (!sync_service->IsSyncFeatureEnabled())
+    return RecordAttemptStatus::kChromeSyncFeatureDisabled;
+  if (!sync_settings->GetSelectedTypes().Has(syncer::UserSelectableType::kApps))
+    return RecordAttemptStatus::kChromeAppSyncDisabled;
+  return RecordAttemptStatus::kAppSyncEnabled;
+}
+
 // Check the current state of App Sync in the settings. This is done by getting
 // all currently fully initialized profiles and reading the sync settings from
 // them.
@@ -225,13 +228,14 @@ MetricProvider::RecordAttemptStatus MetricProvider::GetAppSyncState() {
   int user_profile_count = 0;
 
   for (Profile* profile : profiles) {
-    // The Default profile on Chrome OS is used when the user has not logged in
-    // and this profile always disables sync. We skip this profile and look at
-    // sync settings of user profiles.
-    if (chromeos::ProfileHelper::IsSigninProfile(profile))
+    // The Default profile, lock screen app profile and lock screen profile are
+    // all not regular user profiles on Chrome OS. They always disable sync and
+    // we would skip them.
+    if (!chromeos::ProfileHelper::IsRegularProfile(profile))
       continue;
-    if (!IsAppSyncEnabledForUserProfile(profile))
-      return RecordAttemptStatus::kAppSyncDisabled;
+    auto app_sync_state = AppSyncStateForUserProfile(profile);
+    if (app_sync_state != RecordAttemptStatus::kAppSyncEnabled)
+      return app_sync_state;
     user_profile_count++;
   }
 

@@ -26,6 +26,7 @@
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -324,7 +325,7 @@ class TlsProberWithRealNetworkContextTest : public ::testing::Test {
     service_->Bind(network_service_.BindNewPipeAndPassReceiver());
     auto context_params = network::mojom::NetworkContextParams::New();
     context_params->cert_verifier_params = content::GetCertVerifierParams(
-        network::mojom::CertVerifierCreationParams::New());
+        cert_verifier::mojom::CertVerifierCreationParams::New());
     network_service_->CreateNetworkContext(
         network_context_.BindNewPipeAndPassReceiver(),
         std::move(context_params));

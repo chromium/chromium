@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "components/download/public/common/quarantine_connection.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -27,8 +28,8 @@ namespace content {
 class BrowserContext;
 class BrowserURLHandler;
 class RenderProcessHost;
-class RenderViewHost;
 class SiteInstance;
+class WebContents;
 }
 
 namespace storage {
@@ -47,7 +48,7 @@ class ChromeContentBrowserClientParts {
   virtual void RenderProcessWillLaunch(content::RenderProcessHost* host) {}
   virtual void SiteInstanceGotProcess(content::SiteInstance* site_instance) {}
   virtual void SiteInstanceDeleting(content::SiteInstance* site_instance) {}
-  virtual void OverrideWebkitPrefs(content::RenderViewHost* rvh,
+  virtual void OverrideWebkitPrefs(content::WebContents* web_contents,
                                    blink::web_pref::WebPreferences* web_prefs) {
   }
   virtual void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) {}
@@ -58,6 +59,7 @@ class ChromeContentBrowserClientParts {
   virtual void GetAdditionalFileSystemBackends(
       content::BrowserContext* browser_context,
       const base::FilePath& storage_partition_path,
+      download::QuarantineConnectionCallback quarantine_connection_callback,
       std::vector<std::unique_ptr<storage::FileSystemBackend>>*
           additional_backends) {}
 

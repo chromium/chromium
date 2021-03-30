@@ -47,7 +47,7 @@ class SelectFileDialogImpl : public SelectFileDialog {
   // params is expected to be a vector<string16> with accept_types first and
   // the capture value as the last element of the vector.
   void SelectFileImpl(SelectFileDialog::Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const SelectFileDialog::FileTypeInfo* file_types,
                       int file_type_index,

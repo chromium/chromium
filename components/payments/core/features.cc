@@ -5,6 +5,7 @@
 #include "components/payments/core/features.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace payments {
 namespace features {
@@ -44,11 +45,11 @@ const base::Feature kWebPaymentsRedactShippingAddress{
 
 const base::Feature kAppStoreBilling {
   "AppStoreBilling",
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // OS_ANDROID || OS_CHROMEOS
+#endif  // OS_ANDROID || BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 const base::Feature kAppStoreBillingDebug{"AppStoreBillingDebug",
@@ -79,14 +80,8 @@ const base::Feature kPaymentHandlerSecurityIcon{
 const base::Feature kEnforceFullDelegation{"EnforceFullDelegation",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSecurePaymentConfirmation {
-  "SecurePaymentConfirmation",
-#if defined(OS_MAC)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // OS_MAC
-};
+const base::Feature kGPayAppDynamicUpdate{"GPayAppDynamicUpdate",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace payments

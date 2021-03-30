@@ -4,6 +4,7 @@
 
 #include "components/blocked_content/android/popup_blocked_infobar_delegate.h"
 
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,6 +42,11 @@ class TestInfoBarManager : public infobars::ContentInfoBarManager {
 class PopupBlockedInfoBarDelegateTest
     : public content::RenderViewHostTestHarness {
  public:
+  PopupBlockedInfoBarDelegateTest() : content::RenderViewHostTestHarness() {
+    // Make sure the SafeBrowsingTriggeredPopupBlocker is not created.
+    feature_list_.InitAndDisableFeature(kAbusiveExperienceEnforce);
+  }
+
   ~PopupBlockedInfoBarDelegateTest() override {
     settings_map_->ShutdownOnUIThread();
   }
@@ -48,8 +54,6 @@ class PopupBlockedInfoBarDelegateTest
   // content::RenderViewHostTestHarness:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    // Make sure the SafeBrowsingTriggeredPopupBlocker is not created.
-    feature_list_.InitAndDisableFeature(kAbusiveExperienceEnforce);
 
     HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
     settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
@@ -92,7 +96,7 @@ TEST_F(PopupBlockedInfoBarDelegateTest, ReplacesInfobarOnSecondPopup) {
                                   ->delegate()
                                   ->AsConfirmInfoBarDelegate()
                                   ->GetMessageText(),
-                              base::ASCIIToUTF16("2")));
+                              u"2"));
 
   EXPECT_FALSE(PopupBlockedInfoBarDelegate::Create(
       infobar_manager(), 2, settings_map(), base::NullCallback()));
@@ -103,7 +107,7 @@ TEST_F(PopupBlockedInfoBarDelegateTest, ReplacesInfobarOnSecondPopup) {
                                  ->delegate()
                                  ->AsConfirmInfoBarDelegate()
                                  ->GetMessageText(),
-                             base::ASCIIToUTF16("2")));
+                             u"2"));
 }
 
 TEST_F(PopupBlockedInfoBarDelegateTest, ShowsBlockedPopups) {

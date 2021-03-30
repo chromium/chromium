@@ -14,33 +14,6 @@ component("proto") {
   public_deps = [ ":proto_internal" ]
 }
 
-# Record constants for use with the reporting messaging library.
-proto_library("policy_record_constants") {
-  visibility = [
-    ":reporting_record_proto",
-    ":reporting_record_proto_gen",
-    "//chrome/browser:browser",
-    "//components/policy/*",
-  ]
-  sources = [ "record_constants.proto" ]
-
-  proto_out_dir = "components/policy/proto"
-}
-
-# Record definitions for reporting.
-proto_library("reporting_record_proto") {
-  visibility = [
-    "//chrome/browser:browser",
-    "//chrome/browser:test_support",
-    "//components/policy/*",
-  ]
-  sources = [ "record.proto" ]
-
-  deps = [ ":policy_record_constants" ]
-
-  proto_out_dir = "components/policy/proto"
-}
-
 proto_library("policy_common_definitions_compile_proto") {
   visibility = [
     ":proto_internal",

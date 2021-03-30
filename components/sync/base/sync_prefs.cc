@@ -26,98 +26,25 @@ namespace syncer {
 
 namespace {
 
-// Obsolete prefs related to the removed ClearServerData flow.
-const char kSyncPassphraseEncryptionTransitionInProgress[] =
-    "sync.passphrase_encryption_transition_in_progress";
-const char kSyncNigoriStateForPassphraseTransition[] =
-    "sync.nigori_state_for_passphrase_transition";
+// Obsolete pref that used to store whether a platform specific passphrase error
+// prompt has been shown to the user (e.g. an Android system notification).
+const char kObsoleteSyncPassphrasePrompted[] = "sync.passphrase_prompted";
 
-// Obsolete pref that used to store a bool on whether Sync has an auth error.
-const char kSyncHasAuthError[] = "sync.has_auth_error";
-
-// Obsolete pref that used to store the timestamp of first sync.
-const char kSyncFirstSyncTime[] = "sync.first_sync_time";
-
-// Obsolete pref that used to store long poll intervals received by the server.
-const char kSyncLongPollIntervalSeconds[] = "sync.long_poll_interval";
+// Obsolete pref that used to store the product version from the last restart of
+// Chrome.
+const char kObsoleteSyncLastRunVersion[] = "sync.last_run_version";
 
 // Obsolete pref that used to store if sync should be prevented from
 // automatically starting up. This is now replaced by its inverse
 // kSyncRequested.
 const char kSyncSuppressStart[] = "sync.suppress_start";
 
-// Obsolete prefs for data types. Can be deleted after 2020-01-30.
-const char kSyncAppList[] = "sync.app_list";
-const char kSyncAppNotifications[] = "sync.app_notifications";
-const char kSyncAppSettings[] = "sync.app_settings";
-const char kSyncArcPackage[] = "sync.arc_package";
-const char kSyncArticles[] = "sync.articles";
-const char kSyncAutofillProfile[] = "sync.autofill_profile";
-const char kSyncAutofillWallet[] = "sync.autofill_wallet";
-const char kSyncAutofillWalletMetadata[] = "sync.autofill_wallet_metadata";
-const char kSyncDeviceInfo[] = "sync.device_info";
-const char kSyncDictionary[] = "sync.dictionary";
-const char kSyncExtensionSettings[] = "sync.extension_settings";
-const char kSyncFaviconImages[] = "sync.favicon_images";
-const char kSyncFaviconTracking[] = "sync.favicon_tracking";
-const char kSyncHistoryDeleteDirectives[] = "sync.history_delete_directives";
-const char kSyncMountainShares[] = "sync.mountain_shares";
-const char kSyncPriorityPreferences[] = "sync.priority_preferences";
-const char kSyncSearchEngines[] = "sync.search_engines";
-const char kSyncSessions[] = "sync.sessions";
-const char kSyncSupervisedUsers[] = "sync.managed_users";
-const char kSyncSupervisedUserSettings[] = "sync.managed_user_settings";
-const char kSyncSupervisedUserSharedSettings[] =
-    "sync.managed_user_shared_settings";
-const char kSyncSupervisedUserWhitelists[] = "sync.managed_user_whitelists";
-const char kSyncSyncedNotificationAppInfo[] =
-    "sync.synced_notification_app_info";
-const char kSyncSyncedNotifications[] = "sync.synced_notifications";
-const char kSyncUserEvents[] = "sync.user_events";
-const char kSyncWifiCredentials[] = "sync.wifi_credentials";
-
-// Obsolete pref. Can be deleted after 2020-09-09.
-const char kSyncUserConsents[] = "sync.user_consents";
-
-std::vector<std::string> GetObsoleteUserTypePrefs() {
-  return {kSyncAutofillProfile,
-          kSyncAutofillWallet,
-          kSyncAutofillWalletMetadata,
-          kSyncSearchEngines,
-          kSyncSessions,
-          kSyncAppSettings,
-          kSyncExtensionSettings,
-          kSyncAppNotifications,
-          kSyncHistoryDeleteDirectives,
-          kSyncSyncedNotifications,
-          kSyncSyncedNotificationAppInfo,
-          kSyncDictionary,
-          kSyncFaviconImages,
-          kSyncFaviconTracking,
-          kSyncDeviceInfo,
-          kSyncPriorityPreferences,
-          kSyncSupervisedUserSettings,
-          kSyncSupervisedUsers,
-          kSyncSupervisedUserSharedSettings,
-          kSyncArticles,
-          kSyncAppList,
-          kSyncWifiCredentials,
-          kSyncSupervisedUserWhitelists,
-          kSyncArcPackage,
-          kSyncUserEvents,
-          kSyncMountainShares,
-          kSyncUserConsents};
-}
-
-void RegisterObsoleteUserTypePrefs(PrefRegistrySimple* registry) {
-  for (const std::string& obsolete_pref : GetObsoleteUserTypePrefs()) {
-    registry->RegisterBooleanPref(obsolete_pref, false);
-  }
-}
-
 }  // namespace
 
-CryptoSyncPrefs::~CryptoSyncPrefs() {}
+SyncTransportDataPrefs::SyncTransportDataPrefs(PrefService* pref_service)
+    : pref_service_(pref_service) {}
+
+SyncTransportDataPrefs::~SyncTransportDataPrefs() = default;
 
 SyncPrefObserver::~SyncPrefObserver() {}
 
@@ -181,9 +108,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kSyncManaged, false);
   registry->RegisterStringPref(prefs::kSyncKeystoreEncryptionBootstrapToken,
                                std::string());
-  registry->RegisterBooleanPref(prefs::kSyncPassphrasePrompted, false);
+  registry->RegisterIntegerPref(prefs::kSyncPassphrasePromptMutedProductVersion,
+                                0);
   registry->RegisterDictionaryPref(prefs::kSyncInvalidationVersions);
-  registry->RegisterStringPref(prefs::kSyncLastRunVersion, std::string());
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
 #if defined(OS_ANDROID)
@@ -191,16 +118,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
 #endif  // defined(OS_ANDROID)
 
-  // Obsolete prefs that will be removed after a grace period.
-  RegisterObsoleteUserTypePrefs(registry);
-  registry->RegisterBooleanPref(kSyncPassphraseEncryptionTransitionInProgress,
-                                false);
-  registry->RegisterStringPref(kSyncNigoriStateForPassphraseTransition,
-                               std::string());
-  registry->RegisterBooleanPref(kSyncHasAuthError, false);
-  registry->RegisterInt64Pref(kSyncFirstSyncTime, 0);
-  registry->RegisterInt64Pref(kSyncLongPollIntervalSeconds, 0);
+  // Obsolete prefs.
   registry->RegisterBooleanPref(kSyncSuppressStart, false);
+  registry->RegisterBooleanPref(kObsoleteSyncPassphrasePrompted, false);
+  registry->RegisterStringPref(kObsoleteSyncLastRunVersion, std::string());
 }
 
 void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
@@ -213,23 +134,18 @@ void SyncPrefs::RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
   sync_pref_observers_.RemoveObserver(sync_pref_observer);
 }
 
-void SyncPrefs::ClearLocalSyncTransportData() {
+void SyncTransportDataPrefs::ClearAllExceptEncryptionBootstrapToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   pref_service_->ClearPref(prefs::kSyncLastSyncedTime);
   pref_service_->ClearPref(prefs::kSyncLastPollTime);
   pref_service_->ClearPref(prefs::kSyncPollIntervalSeconds);
   pref_service_->ClearPref(prefs::kSyncKeystoreEncryptionBootstrapToken);
-  pref_service_->ClearPref(prefs::kSyncPassphrasePrompted);
   pref_service_->ClearPref(prefs::kSyncInvalidationVersions);
-  pref_service_->ClearPref(prefs::kSyncLastRunVersion);
   pref_service_->ClearPref(prefs::kSyncGaiaId);
   pref_service_->ClearPref(prefs::kSyncCacheGuid);
   pref_service_->ClearPref(prefs::kSyncBirthday);
   pref_service_->ClearPref(prefs::kSyncBagOfChips);
-
-  // No need to clear kManaged, kEnableLocalSyncBackend or kLocalSyncBackendDir,
-  // since they're never actually set as user preferences.
 }
 
 bool SyncPrefs::IsFirstSetupComplete() const {
@@ -267,35 +183,35 @@ void SyncPrefs::SetSyncRequestedIfNotSetExplicitly() {
   }
 }
 
-base::Time SyncPrefs::GetLastSyncedTime() const {
+base::Time SyncTransportDataPrefs::GetLastSyncedTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Time::FromInternalValue(
       pref_service_->GetInt64(prefs::kSyncLastSyncedTime));
 }
 
-void SyncPrefs::SetLastSyncedTime(base::Time time) {
+void SyncTransportDataPrefs::SetLastSyncedTime(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetInt64(prefs::kSyncLastSyncedTime, time.ToInternalValue());
 }
 
-base::Time SyncPrefs::GetLastPollTime() const {
+base::Time SyncTransportDataPrefs::GetLastPollTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Time::FromInternalValue(
       pref_service_->GetInt64(prefs::kSyncLastPollTime));
 }
 
-void SyncPrefs::SetLastPollTime(base::Time time) {
+void SyncTransportDataPrefs::SetLastPollTime(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetInt64(prefs::kSyncLastPollTime, time.ToInternalValue());
 }
 
-base::TimeDelta SyncPrefs::GetPollInterval() const {
+base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::TimeDelta::FromSeconds(
       pref_service_->GetInt64(prefs::kSyncPollIntervalSeconds));
 }
 
-void SyncPrefs::SetPollInterval(base::TimeDelta interval) {
+void SyncTransportDataPrefs::SetPollInterval(base::TimeDelta interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetInt64(prefs::kSyncPollIntervalSeconds,
                           interval.InSeconds());
@@ -413,27 +329,30 @@ bool SyncPrefs::IsManaged() const {
   return pref_service_->GetBoolean(prefs::kSyncManaged);
 }
 
-std::string SyncPrefs::GetEncryptionBootstrapToken() const {
+std::string SyncTransportDataPrefs::GetEncryptionBootstrapToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetString(prefs::kSyncEncryptionBootstrapToken);
 }
 
-void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
+void SyncTransportDataPrefs::SetEncryptionBootstrapToken(
+    const std::string& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetString(prefs::kSyncEncryptionBootstrapToken, token);
 }
 
-void SyncPrefs::ClearEncryptionBootstrapToken() {
+void SyncTransportDataPrefs::ClearEncryptionBootstrapToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::kSyncEncryptionBootstrapToken);
 }
 
-std::string SyncPrefs::GetKeystoreEncryptionBootstrapToken() const {
+std::string SyncTransportDataPrefs::GetKeystoreEncryptionBootstrapToken()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetString(prefs::kSyncKeystoreEncryptionBootstrapToken);
 }
 
-void SyncPrefs::SetKeystoreEncryptionBootstrapToken(const std::string& token) {
+void SyncTransportDataPrefs::SetKeystoreEncryptionBootstrapToken(
+    const std::string& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetString(prefs::kSyncKeystoreEncryptionBootstrapToken, token);
 }
@@ -501,32 +420,32 @@ void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,
   registry->RegisterBooleanPref(pref_name, false);
 }
 
-void SyncPrefs::SetGaiaId(const std::string& gaia_id) {
+void SyncTransportDataPrefs::SetGaiaId(const std::string& gaia_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetString(prefs::kSyncGaiaId, gaia_id);
 }
 
-std::string SyncPrefs::GetGaiaId() const {
+std::string SyncTransportDataPrefs::GetGaiaId() const {
   return pref_service_->GetString(prefs::kSyncGaiaId);
 }
 
-void SyncPrefs::SetCacheGuid(const std::string& cache_guid) {
+void SyncTransportDataPrefs::SetCacheGuid(const std::string& cache_guid) {
   pref_service_->SetString(prefs::kSyncCacheGuid, cache_guid);
 }
 
-std::string SyncPrefs::GetCacheGuid() const {
+std::string SyncTransportDataPrefs::GetCacheGuid() const {
   return pref_service_->GetString(prefs::kSyncCacheGuid);
 }
 
-void SyncPrefs::SetBirthday(const std::string& birthday) {
+void SyncTransportDataPrefs::SetBirthday(const std::string& birthday) {
   pref_service_->SetString(prefs::kSyncBirthday, birthday);
 }
 
-std::string SyncPrefs::GetBirthday() const {
+std::string SyncTransportDataPrefs::GetBirthday() const {
   return pref_service_->GetString(prefs::kSyncBirthday);
 }
 
-void SyncPrefs::SetBagOfChips(const std::string& bag_of_chips) {
+void SyncTransportDataPrefs::SetBagOfChips(const std::string& bag_of_chips) {
   // |bag_of_chips| contains a serialized proto which is not utf-8, hence we use
   // base64 encoding in prefs.
   std::string encoded;
@@ -534,21 +453,13 @@ void SyncPrefs::SetBagOfChips(const std::string& bag_of_chips) {
   pref_service_->SetString(prefs::kSyncBagOfChips, encoded);
 }
 
-std::string SyncPrefs::GetBagOfChips() const {
+std::string SyncTransportDataPrefs::GetBagOfChips() const {
   // |kSyncBagOfChips| gets stored in base64 because it represents a serialized
   // proto which is not utf-8 encoding.
   const std::string encoded = pref_service_->GetString(prefs::kSyncBagOfChips);
   std::string decoded;
   base::Base64Decode(encoded, &decoded);
   return decoded;
-}
-
-bool SyncPrefs::IsPassphrasePrompted() const {
-  return pref_service_->GetBoolean(prefs::kSyncPassphrasePrompted);
-}
-
-void SyncPrefs::SetPassphrasePrompted(bool value) {
-  pref_service_->SetBoolean(prefs::kSyncPassphrasePrompted, value);
 }
 
 #if defined(OS_ANDROID)
@@ -563,7 +474,8 @@ bool SyncPrefs::GetDecoupledFromAndroidMasterSync() {
 }
 #endif  // defined(OS_ANDROID)
 
-std::map<ModelType, int64_t> SyncPrefs::GetInvalidationVersions() const {
+std::map<ModelType, int64_t> SyncTransportDataPrefs::GetInvalidationVersions()
+    const {
   std::map<ModelType, int64_t> invalidation_versions;
   const base::DictionaryValue* invalidation_dictionary =
       pref_service_->GetDictionary(prefs::kSyncInvalidationVersions);
@@ -580,7 +492,7 @@ std::map<ModelType, int64_t> SyncPrefs::GetInvalidationVersions() const {
   return invalidation_versions;
 }
 
-void SyncPrefs::UpdateInvalidationVersions(
+void SyncTransportDataPrefs::UpdateInvalidationVersions(
     const std::map<ModelType, int64_t>& invalidation_versions) {
   std::unique_ptr<base::DictionaryValue> invalidation_dictionary(
       new base::DictionaryValue());
@@ -593,52 +505,28 @@ void SyncPrefs::UpdateInvalidationVersions(
                      *invalidation_dictionary);
 }
 
-std::string SyncPrefs::GetLastRunVersion() const {
-  return pref_service_->GetString(prefs::kSyncLastRunVersion);
-}
-
-void SyncPrefs::SetLastRunVersion(const std::string& current_version) {
-  pref_service_->SetString(prefs::kSyncLastRunVersion, current_version);
-}
-
 bool SyncPrefs::IsLocalSyncEnabled() const {
   return local_sync_enabled_;
 }
 
-void MigrateSessionsToProxyTabsPrefs(PrefService* pref_service) {
-  if (pref_service->GetUserPrefValue(prefs::kSyncTabs) == nullptr &&
-      pref_service->GetUserPrefValue(kSyncSessions) != nullptr &&
-      pref_service->IsUserModifiablePreference(prefs::kSyncTabs)) {
-    // If there is no tab sync preference yet (i.e. newly enabled type),
-    // default to the session sync preference value.
-    bool sessions_pref_value = pref_service->GetBoolean(kSyncSessions);
-    pref_service->SetBoolean(prefs::kSyncTabs, sessions_pref_value);
-  }
+int SyncPrefs::GetPassphrasePromptMutedProductVersion() const {
+  return pref_service_->GetInteger(
+      prefs::kSyncPassphrasePromptMutedProductVersion);
 }
 
-void ClearObsoleteUserTypePrefs(PrefService* pref_service) {
-  for (const std::string& obsolete_pref : GetObsoleteUserTypePrefs()) {
-    pref_service->ClearPref(obsolete_pref);
-  }
+void SyncPrefs::SetPassphrasePromptMutedProductVersion(int major_version) {
+  pref_service_->SetInteger(prefs::kSyncPassphrasePromptMutedProductVersion,
+                            major_version);
 }
 
-void ClearObsoleteClearServerDataPrefs(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncPassphraseEncryptionTransitionInProgress);
-  pref_service->ClearPref(kSyncNigoriStateForPassphraseTransition);
+void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
+  pref_service_->ClearPref(prefs::kSyncPassphrasePromptMutedProductVersion);
 }
 
-void ClearObsoleteAuthErrorPrefs(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncHasAuthError);
+void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service) {
+  pref_service->ClearPref(kObsoleteSyncLastRunVersion);
+  pref_service->ClearPref(kObsoleteSyncPassphrasePrompted);
 }
-
-void ClearObsoleteFirstSyncTime(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncFirstSyncTime);
-}
-
-void ClearObsoleteSyncLongPollIntervalSeconds(PrefService* pref_service) {
-  pref_service->ClearPref(kSyncLongPollIntervalSeconds);
-}
-
 
 void MigrateSyncSuppressedPref(PrefService* pref_service) {
   // If the new kSyncRequested already has a value, there's nothing to be

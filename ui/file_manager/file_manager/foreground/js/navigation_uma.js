@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// clang-format on
+
 /**
  * UMA exporter for navigation in the Files app.
  *
  */
-class NavigationUma {
+/* #export */ class NavigationUma {
   /**
    * @param {!VolumeManager} volumeManager
    *

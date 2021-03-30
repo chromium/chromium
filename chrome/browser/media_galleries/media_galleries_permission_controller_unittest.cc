@@ -4,12 +4,13 @@
 
 #include "chrome/browser/media_galleries/media_galleries_permission_controller.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -26,8 +27,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
 using storage_monitor::StorageInfo;
@@ -36,7 +37,7 @@ using storage_monitor::TestStorageMonitor;
 namespace {
 
 std::string GalleryName(const MediaGalleryPrefInfo& gallery) {
-  base::string16 name = gallery.GetGalleryDisplayName();
+  std::u16string name = gallery.GetGalleryDisplayName();
   return base::UTF16ToASCII(name);
 }
 
@@ -151,8 +152,8 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
   scoped_refptr<extensions::Extension> extension_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
 
   TestStorageMonitor monitor_;
@@ -259,11 +260,11 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
 #endif
   EXPECT_EQ(galleryName, GalleryName(gallery));
 
-  gallery.display_name = base::ASCIIToUTF16("override");
+  gallery.display_name = u"override";
   EXPECT_EQ("override", GalleryName(gallery));
 
-  gallery.display_name = base::string16();
-  gallery.volume_label = base::ASCIIToUTF16("label");
+  gallery.display_name = std::u16string();
+  gallery.volume_label = u"label";
   EXPECT_EQ(galleryName, GalleryName(gallery));
 
   gallery.path = base::FilePath(FILE_PATH_LITERAL("sub/gallery2"));
@@ -281,18 +282,18 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
   gallery.device_id = StorageInfo::MakeDeviceId(
       StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM,
       "/path/to/dcim");
-  gallery.display_name = base::ASCIIToUTF16("override");
+  gallery.display_name = u"override";
   EXPECT_EQ("override", GalleryName(gallery));
 
-  gallery.volume_label = base::ASCIIToUTF16("volume");
-  gallery.vendor_name = base::ASCIIToUTF16("vendor");
-  gallery.model_name = base::ASCIIToUTF16("model");
+  gallery.volume_label = u"volume";
+  gallery.vendor_name = u"vendor";
+  gallery.model_name = u"model";
   EXPECT_EQ("override", GalleryName(gallery));
 
-  gallery.display_name = base::string16();
+  gallery.display_name = std::u16string();
   EXPECT_EQ("volume", GalleryName(gallery));
 
-  gallery.volume_label = base::string16();
+  gallery.volume_label = std::u16string();
   EXPECT_EQ("vendor, model", GalleryName(gallery));
 
   gallery.total_size_in_bytes = 1000000;

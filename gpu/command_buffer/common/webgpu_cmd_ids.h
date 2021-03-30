@@ -17,7 +17,7 @@ namespace webgpu {
 const char* GetCommandName(CommandId command_id);
 
 using DawnRequestAdapterSerial = uint64_t;
-using DawnDeviceClientID = uint64_t;
+using DawnRequestDeviceSerial = uint64_t;
 
 }  // namespace webgpu
 }  // namespace gpu

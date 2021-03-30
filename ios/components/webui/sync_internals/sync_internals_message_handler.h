@@ -67,7 +67,7 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
                      const syncer::JsEventDetails& details) override;
 
   // Callback used in GetAllNodes.
-  void OnReceivedAllNodes(int request_id,
+  void OnReceivedAllNodes(const std::string& callback_id,
                           std::unique_ptr<base::ListValue> nodes);
 
   // syncer::SyncServiceObserver implementation.

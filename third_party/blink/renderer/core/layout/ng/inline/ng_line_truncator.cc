@@ -17,13 +17,13 @@ namespace blink {
 namespace {
 
 bool IsLeftMostOffset(const ShapeResult& shape_result, unsigned offset) {
-  if (shape_result.Rtl())
+  if (shape_result.IsRtl())
     return offset == shape_result.NumCharacters();
   return offset == 0;
 }
 
 bool IsRightMostOffset(const ShapeResult& shape_result, unsigned offset) {
-  if (shape_result.Rtl())
+  if (shape_result.IsRtl())
     return offset == 0;
   return offset == shape_result.NumCharacters();
 }
@@ -112,7 +112,7 @@ wtf_size_t NGLineTruncator::AddTruncatedChild(
       return kDidNotAddChild;
     text_offset =
         shape_result->OffsetToFit(shape_result->PositionForOffset(
-                                      IsRtl(edge) == shape_result->Rtl()
+                                      IsRtl(edge) == shape_result->IsRtl()
                                           ? 1
                                           : shape_result->NumCharacters() - 1),
                                   edge);
@@ -243,6 +243,10 @@ LayoutUnit NGLineTruncator::TruncateLineInTheMiddle(
     const NGLogicalLineItem& item = line[initial_index_right + 1];
     // |line_width| and/or InlineOffset() might be saturated.
     if (line_width <= item.InlineOffset())
+      return line_width;
+    // We can do nothing if the right-side static item sticks out to the both
+    // sides.
+    if (item.InlineOffset() < 0)
       return line_width;
     static_width_right =
         line_width - item.InlineOffset() + item.margin_line_left;

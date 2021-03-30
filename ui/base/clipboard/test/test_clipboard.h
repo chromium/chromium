@@ -36,6 +36,7 @@ class TestClipboard : public Clipboard {
 
   // Clipboard overrides.
   void OnPreShutdown() override;
+  DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
   uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
@@ -43,25 +44,25 @@ class TestClipboard : public Clipboard {
   void Clear(ClipboardBuffer buffer) override;
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
-                          std::vector<base::string16>* types) const override;
-  std::vector<base::string16> ReadAvailablePlatformSpecificFormatNames(
+                          std::vector<std::u16string>* types) const override;
+  std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
       ClipboardBuffer buffer,
       const DataTransferEndpoint* data_dst) const override;
   void ReadText(ClipboardBuffer buffer,
                 const DataTransferEndpoint* data_dst,
-                base::string16* result) const override;
+                std::u16string* result) const override;
   void ReadAsciiText(ClipboardBuffer buffer,
                      const DataTransferEndpoint* data_dst,
                      std::string* result) const override;
   void ReadHTML(ClipboardBuffer buffer,
                 const DataTransferEndpoint* data_dst,
-                base::string16* markup,
+                std::u16string* markup,
                 std::string* src_url,
                 uint32_t* fragment_start,
                 uint32_t* fragment_end) const override;
   void ReadSvg(ClipboardBuffer buffer,
                const DataTransferEndpoint* data_dst,
-               base::string16* result) const override;
+               std::u16string* result) const override;
   void ReadRTF(ClipboardBuffer buffer,
                const DataTransferEndpoint* data_dst,
                std::string* result) const override;
@@ -69,11 +70,14 @@ class TestClipboard : public Clipboard {
                  const DataTransferEndpoint* data_dst,
                  ReadImageCallback callback) const override;
   void ReadCustomData(ClipboardBuffer buffer,
-                      const base::string16& type,
+                      const std::u16string& type,
                       const DataTransferEndpoint* data_dst,
-                      base::string16* result) const override;
+                      std::u16string* result) const override;
+  void ReadFilenames(ClipboardBuffer buffer,
+                     const DataTransferEndpoint* data_dst,
+                     std::vector<ui::FileInfo>* result) const override;
   void ReadBookmark(const DataTransferEndpoint* data_dst,
-                    base::string16* title,
+                    std::u16string* title,
                     std::string* url) const override;
   void ReadData(const ClipboardFormatType& format,
                 const DataTransferEndpoint* data_dst,
@@ -98,6 +102,7 @@ class TestClipboard : public Clipboard {
                  size_t url_len) override;
   void WriteSvg(const char* markup_data, size_t markup_len) override;
   void WriteRTF(const char* rtf_data, size_t data_len) override;
+  void WriteFilenames(std::vector<ui::FileInfo> filenames) override;
   void WriteBookmark(const char* title_data,
                      size_t title_len,
                      const char* url_data,
@@ -116,11 +121,13 @@ class TestClipboard : public Clipboard {
     ~DataStore();
     void Clear();
     void SetDataSource(std::unique_ptr<DataTransferEndpoint> data_src);
+    DataTransferEndpoint* GetDataSource() const;
     uint64_t sequence_number = 0;
     base::flat_map<ClipboardFormatType, std::string> data;
     std::string url_title;
     std::string html_src_url;
     SkBitmap image;
+    std::vector<ui::FileInfo> filenames;
     std::unique_ptr<DataTransferEndpoint> data_src = nullptr;
   };
 

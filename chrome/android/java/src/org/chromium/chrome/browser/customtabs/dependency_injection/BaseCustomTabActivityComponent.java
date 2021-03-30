@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabContro
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
-import org.chromium.chrome.browser.customtabs.content.ProfileProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -60,7 +59,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     CustomTabStatusBarColorProvider resolveCustomTabStatusBarColorProvider();
     CustomTabTaskDescriptionHelper resolveTaskDescriptionHelper();
     CustomTabToolbarCoordinator resolveToolbarCoordinator();
-    ProfileProvider resolveProfileProvider();
     TabObserverRegistrar resolveTabObserverRegistrar();
     TwaFinishHandler resolveTwaFinishHandler();
     Verifier resolveVerifier();

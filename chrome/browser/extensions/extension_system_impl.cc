@@ -31,7 +31,6 @@
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/navigation_observer.h"
 #include "chrome/browser/extensions/shared_module_service.h"
-#include "chrome/browser/extensions/state_store_notification_observer.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/update_install_gate.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
@@ -55,9 +54,9 @@
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_manager.h"
-#include "extensions/browser/shared_user_script_manager.h"
 #include "extensions/browser/state_store.h"
-#include "extensions/browser/uninstall_ping_sender.h"
+#include "extensions/browser/updater/uninstall_ping_sender.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/browser/value_store/value_store_factory_impl.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature_channel.h"
@@ -65,14 +64,14 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_update_install_gate.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_update_install_gate.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_management_policy_provider.h"
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_policy_provider.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -83,10 +82,13 @@ namespace {
 
 // Helper to serve as an UninstallPingSender::Filter callback.
 UninstallPingSender::FilterResult ShouldSendUninstallPing(
+    Profile* profile,
     const Extension* extension,
     UninstallReason reason) {
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile);
   if (extension && (extension->from_webstore() ||
-                    ManifestURL::UpdatesFromGallery(extension))) {
+                    extension_management->UpdatesFromWebstore(*extension))) {
     return UninstallPingSender::SEND_PING;
   }
   return UninstallPingSender::DO_NOT_SEND_PING;
@@ -112,8 +114,6 @@ void ExtensionSystemImpl::Shared::InitPrefs() {
   // requests.
   state_store_.reset(new StateStore(
       profile_, store_factory_, ValueStoreFrontend::BackendType::STATE, true));
-  state_store_notification_observer_.reset(
-      new StateStoreNotificationObserver(state_store_.get()));
 
   rules_store_.reset(new StateStore(
       profile_, store_factory_, ValueStoreFrontend::BackendType::RULES, false));
@@ -173,8 +173,8 @@ void ExtensionSystemImpl::Shared::InitInstallGates() {
       extension_service_->shared_module_service());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chrome::IsRunningInForcedAppMode()) {
-    kiosk_app_update_install_gate_.reset(
-        new chromeos::KioskAppUpdateInstallGate(profile_));
+    kiosk_app_update_install_gate_ =
+        std::make_unique<ash::KioskAppUpdateInstallGate>(profile_);
     extension_service_->RegisterInstallGate(
         ExtensionPrefs::DELAY_REASON_WAIT_FOR_OS_UPDATE,
         kiosk_app_update_install_gate_.get());
@@ -198,8 +198,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
 
   service_worker_manager_.reset(new ServiceWorkerManager(profile_));
 
-  shared_user_script_manager_ =
-      std::make_unique<SharedUserScriptManager>(profile_);
+  user_script_manager_ = std::make_unique<UserScriptManager>(profile_);
 
   // ExtensionService depends on RuntimeData.
   runtime_data_.reset(new RuntimeData(ExtensionRegistry::Get(profile_)));
@@ -220,7 +219,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
 
   uninstall_ping_sender_ = std::make_unique<UninstallPingSender>(
       ExtensionRegistry::Get(profile_),
-      base::BindRepeating(&ShouldSendUninstallPing));
+      base::BindRepeating(&ShouldSendUninstallPing, profile_));
 
   // These services must be registered before the ExtensionService tries to
   // load any extensions.
@@ -331,9 +330,8 @@ ManagementPolicy* ExtensionSystemImpl::Shared::management_policy() {
   return management_policy_.get();
 }
 
-SharedUserScriptManager*
-ExtensionSystemImpl::Shared::shared_user_script_manager() {
-  return shared_user_script_manager_.get();
+UserScriptManager* ExtensionSystemImpl::Shared::user_script_manager() {
+  return user_script_manager_.get();
 }
 
 InfoMap* ExtensionSystemImpl::Shared::info_map() {
@@ -376,7 +374,7 @@ void ExtensionSystemImpl::Shutdown() {
 void ExtensionSystemImpl::InitForRegularProfile(bool extensions_enabled) {
   TRACE_EVENT0("browser,startup", "ExtensionSystemImpl::InitForRegularProfile");
 
-  if (shared_user_script_manager() || extension_service())
+  if (user_script_manager() || extension_service())
     return;  // Already initialized.
 
   // The InfoMap needs to be created before the ProcessManager.
@@ -400,8 +398,8 @@ ServiceWorkerManager* ExtensionSystemImpl::service_worker_manager() {
   return shared_->service_worker_manager();
 }
 
-SharedUserScriptManager* ExtensionSystemImpl::shared_user_script_manager() {
-  return shared_->shared_user_script_manager();
+UserScriptManager* ExtensionSystemImpl::user_script_manager() {
+  return shared_->user_script_manager();
 }
 
 StateStore* ExtensionSystemImpl::state_store() {
@@ -484,7 +482,7 @@ void ExtensionSystemImpl::RegisterExtensionWithRequestContexts(
     const Extension* extension,
     base::OnceClosure callback) {
   base::Time install_time;
-  if (extension->location() != Manifest::COMPONENT) {
+  if (extension->location() != mojom::ManifestLocation::kComponent) {
     install_time = ExtensionPrefs::Get(profile_)->
         GetInstallTime(extension->id());
   }

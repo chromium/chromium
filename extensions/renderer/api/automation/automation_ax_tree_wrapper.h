@@ -74,8 +74,8 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
 
   // AXTreeManager overrides.
   ui::AXNode* GetNodeFromTree(const ui::AXTreeID tree_id,
-                              const ui::AXNode::AXID node_id) const override;
-  ui::AXNode* GetNodeFromTree(const ui::AXNode::AXID node_id) const override;
+                              const ui::AXNodeID node_id) const override;
+  ui::AXNode* GetNodeFromTree(const ui::AXNodeID node_id) const override;
   ui::AXTreeID GetTreeID() const override;
   ui::AXTreeID GetParentTreeID() const override;
   ui::AXNode* GetRootAsAXNode() const override;
@@ -98,7 +98,7 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
   std::vector<int> text_changed_node_ids_;
   ui::AXEventGenerator event_generator_;
 
-  int32_t accessibility_focused_id_ = ui::AXNode::kInvalidAXID;
+  int32_t accessibility_focused_id_ = ui::kInvalidAXNodeID;
 
   // Tracks whether a tree change event was sent during unserialization. Tree
   // changes outside of unserialization do not get reflected here. The value is

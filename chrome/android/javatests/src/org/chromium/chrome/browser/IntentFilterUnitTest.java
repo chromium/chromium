@@ -27,6 +27,8 @@ import org.chromium.base.test.util.Batch;
 @Batch(Batch.UNIT_TESTS)
 public class IntentFilterUnitTest {
     private static final Uri HTTPS_URI = Uri.parse("https://www.example.com/index.html");
+    private static final Uri ABOUT_URI = Uri.parse("about:blank");
+    private static final Uri JAVASCRIPT_URI = Uri.parse("javascript:WhyDoWeEvenSupportThis");
     private static final Uri CONTENT_URI = Uri.parse("content://package/path/id");
     private static final Uri HTML_URI = Uri.parse("file:///path/filename.html");
     private static final Uri MHTML_URI = Uri.parse("file:///path/to/.file/site.mhtml");
@@ -75,10 +77,69 @@ public class IntentFilterUnitTest {
 
     @Test
     @SmallTest
+    public void testHttpsUriWithMime() {
+        mIntent.setDataAndType(HTTPS_URI, "text/html");
+        verifyIntent(true);
+        mIntent.setDataAndType(HTTPS_URI, "text/plain");
+        verifyIntent(true);
+        mIntent.setDataAndType(HTTPS_URI, "application/xhtml+xml");
+        verifyIntent(true);
+        mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+        verifyIntent(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testAboutUri() {
+        mIntent.setData(ABOUT_URI);
+        verifyIntent(true);
+        mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+        verifyIntent(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testAboutUriWithMime() {
+        mIntent.setDataAndType(ABOUT_URI, "text/html");
+        verifyIntent(true);
+        mIntent.setDataAndType(ABOUT_URI, "text/plain");
+        verifyIntent(true);
+        mIntent.setDataAndType(ABOUT_URI, "application/xhtml+xml");
+        verifyIntent(true);
+        mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+        verifyIntent(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testJavascriptUri() {
+        mIntent.setData(JAVASCRIPT_URI);
+        verifyIntent(true);
+        mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+        verifyIntent(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testJavascriptUriWithMime() {
+        mIntent.setDataAndType(JAVASCRIPT_URI, "text/javascript");
+        verifyIntent(false); // Should we support this?
+        mIntent.setDataAndType(JAVASCRIPT_URI, "text/html");
+        verifyIntent(true);
+        mIntent.setDataAndType(JAVASCRIPT_URI, "text/plain");
+        verifyIntent(true);
+        mIntent.setDataAndType(JAVASCRIPT_URI, "application/xhtml+xml");
+        verifyIntent(true);
+        mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
+        verifyIntent(true);
+    }
+
+    @Test
+    @SmallTest
     public void testHtmlFileUri() {
         mIntent.setData(HTML_URI);
         verifyIntent(false);
-        mIntent.setType("text/html");
+        mIntent.setDataAndType(HTML_URI, "text/html");
         verifyIntent(false);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
         verifyIntent(false);

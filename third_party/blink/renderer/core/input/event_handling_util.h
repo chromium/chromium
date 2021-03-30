@@ -41,8 +41,8 @@ bool IsInDocument(EventTarget*);
 ContainerNode* ParentForClickEvent(const Node&);
 ContainerNode* ParentForClickEventInteractiveElementSensitive(const Node&);
 
-PhysicalOffset ContentPointFromRootFrame(LocalFrame*,
-                                         const FloatPoint& point_in_root_frame);
+CORE_EXPORT PhysicalOffset
+ContentPointFromRootFrame(LocalFrame*, const FloatPoint& point_in_root_frame);
 
 MouseEventWithHitTestResults PerformMouseEventHitTest(LocalFrame*,
                                                       const HitTestRequest&,

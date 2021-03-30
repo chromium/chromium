@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
@@ -23,7 +22,7 @@ namespace autofill {
 struct AutofillMetadata;
 
 // A midline horizontal ellipsis (U+22EF).
-extern const base::char16 kMidlineEllipsis[];
+extern const char16_t kMidlineEllipsis[];
 
 namespace internal {
 
@@ -32,7 +31,7 @@ namespace internal {
 // digits, even for RTL languages, inserts a Left-To-Right Embedding mark at the
 // beginning and a Pop Directional Formatting mark at the end.
 // Exposed for testing.
-base::string16 GetObfuscatedStringForCardDigits(const base::string16& digits);
+std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits);
 
 }  // namespace internal
 
@@ -78,10 +77,10 @@ class CreditCard : public AutofillDataModel {
   ~CreditCard() override;
 
   // Returns a version of |number| that has any separator characters removed.
-  static const base::string16 StripSeparators(const base::string16& number);
+  static const std::u16string StripSeparators(const std::u16string& number);
 
   // The user-visible issuer network of the card, e.g. 'Mastercard'.
-  static base::string16 NetworkForDisplay(const std::string& network);
+  static std::u16string NetworkForDisplay(const std::string& network);
 
   // The ResourceBundle ID for the appropriate card issuer network image.
   static int IconResourceId(const std::string& network);
@@ -94,11 +93,11 @@ class CreditCard : public AutofillDataModel {
   // Hence, the returned issuer network for both the valid card
   // "4111-1111-1111-1111" and the invalid card "4garbage" will be Visa, which
   // has an IIN of 4.
-  static const char* GetCardNetwork(const base::string16& number);
+  static const char* GetCardNetwork(const std::u16string& number);
 
   // Returns whether the nickname is valid. Note that empty nicknames are valid
   // because they are not required.
-  static bool IsNicknameValid(const base::string16& nickname);
+  static bool IsNicknameValid(const std::u16string& nickname);
 
   // Network issuer strings are defined at the bottom of this file, e.g.
   // kVisaCard.
@@ -116,17 +115,17 @@ class CreditCard : public AutofillDataModel {
   bool IsDeletable() const override;
 
   // FormGroup:
-  void GetMatchingTypes(const base::string16& text,
+  void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         ServerFieldTypeSet* matching_types) const override;
-  base::string16 GetRawInfo(ServerFieldType type) const override;
+  std::u16string GetRawInfo(ServerFieldType type) const override;
   void SetRawInfoWithVerificationStatus(
       ServerFieldType type,
-      const base::string16& value,
+      const std::u16string& value,
       structured_address::VerificationStatus status) override;
 
   // Special method to set value for HTML5 month input type.
-  void SetInfoForMonthInputType(const base::string16& value);
+  void SetInfoForMonthInputType(const std::u16string& value);
 
   const std::string& network() const { return network_; }
 
@@ -145,7 +144,7 @@ class CreditCard : public AutofillDataModel {
   const std::string& server_id() const { return server_id_; }
   void set_server_id(const std::string& server_id) { server_id_ = server_id; }
 
-  const base::string16& nickname() const { return nickname_; }
+  const std::u16string& nickname() const { return nickname_; }
 
   int64_t instrument_id() const { return instrument_id_; }
   void set_instrument_id(int64_t instrument_id) {
@@ -154,7 +153,7 @@ class CreditCard : public AutofillDataModel {
 
   // Set the nickname with the processed input (replace all tabs and newlines
   // with whitespaces, and trim leading/trailing whitespaces).
-  void SetNickname(const base::string16& nickname);
+  void SetNickname(const std::u16string& nickname);
 
   Issuer card_issuer() const { return card_issuer_; }
   void set_card_issuer(Issuer card_issuer) { card_issuer_ = card_issuer; }
@@ -215,10 +214,10 @@ class CreditCard : public AutofillDataModel {
   bool IsValid() const;
 
   // Returns the card number.
-  const base::string16& number() const { return number_; }
+  const std::u16string& number() const { return number_; }
   // Sets |number_| to |number| and computes the appropriate card issuer
   // |network_|.
-  void SetNumber(const base::string16& number);
+  void SetNumber(const std::u16string& number);
 
   // Logs the number of days since the card was last used and records its use.
   void RecordAndLogUse();
@@ -236,65 +235,65 @@ class CreditCard : public AutofillDataModel {
 
   // Sets |expiration_month_| to the integer conversion of |text| and returns
   // whether the operation was successful.
-  bool SetExpirationMonthFromString(const base::string16& text,
+  bool SetExpirationMonthFromString(const std::u16string& text,
                                     const std::string& app_locale);
 
   // Sets |expiration_year_| to the integer conversion of |text|. Will handle
   // 4-digit year or 2-digit year (eventually converted to 4-digit year).
   // Returns whether the operation was successful.
-  bool SetExpirationYearFromString(const base::string16& text);
+  bool SetExpirationYearFromString(const std::u16string& text);
 
   // Sets |expiration_year_| and |expiration_month_| to the integer conversion
   // of |text|. Will handle mmyy, mmyyyy, mm-yyyy and mm-yy as well as single
   // digit months, with various separators.
-  void SetExpirationDateFromString(const base::string16& text);
+  void SetExpirationDateFromString(const std::u16string& text);
 
   // Various display functions.
 
   // Card preview summary, for example: "Nickname/Network - ****1234",
   // ", 01/2020".
-  const std::pair<base::string16, base::string16> LabelPieces() const;
+  const std::pair<std::u16string, std::u16string> LabelPieces() const;
   // Like LabelPieces, but appends the two pieces together.
-  const base::string16 Label() const;
+  const std::u16string Label() const;
   // The last four digits of the card number (or possibly less if there aren't
   // enough characters).
-  base::string16 LastFourDigits() const;
+  std::u16string LastFourDigits() const;
   // The user-visible issuer network of the card, e.g. 'Mastercard'.
-  base::string16 NetworkForDisplay() const;
+  std::u16string NetworkForDisplay() const;
   // A label for this card formatted as '****2345'.
-  base::string16 ObfuscatedLastFourDigits() const;
+  std::u16string ObfuscatedLastFourDigits() const;
   // The string used to represent the icon to be used for the autofill
   // suggestion. For ex: visaCC, googleIssuedCC, americanExpressCC, etc.
   std::string CardIconStringForAutofillSuggestion() const;
   // A label for this card formatted as 'IssuerNetwork - ****2345'.
-  base::string16 NetworkAndLastFourDigits() const;
+  std::u16string NetworkAndLastFourDigits() const;
   // A label for this card formatted as 'Nickname - ****2345' if nickname is
   // available and valid;  otherwise, formatted as 'IssuerNetwork - ****2345'.
   // Google-issued cards have their own specific identifier, instead of
   // displaying the issuer network name.
-  base::string16 CardIdentifierStringForAutofillDisplay(
-      base::string16 customized_nickname = base::string16()) const;
+  std::u16string CardIdentifierStringForAutofillDisplay(
+      std::u16string customized_nickname = std::u16string()) const;
   // A label for this card formatted as 'Nickname - ****2345, expires on MM/YY'
   // if nickname experiment is turned on and nickname is available; otherwise,
   // formatted as 'IssuerNetwork - ****2345, expires on MM/YY'.
   // This label is used as a second line label when the cardholder
   // name/expiration date field is selected.
-  base::string16 CardIdentifierStringAndDescriptiveExpiration(
+  std::u16string CardIdentifierStringAndDescriptiveExpiration(
       const std::string& app_locale,
-      base::string16 customized_nickname = base::string16()) const;
+      std::u16string customized_nickname = std::u16string()) const;
   // A label for this card formatted as 'Expires on MM/YY'.
   // This label is used as a second line label when the autofill dropdown
   // uses a two line layout and the credit card number is selected.
-  base::string16 DescriptiveExpiration(const std::string& app_locale) const;
+  std::u16string DescriptiveExpiration(const std::string& app_locale) const;
 
   // Localized expiration for this card formatted as 'Exp: 06/17' if with_prefix
   // is true or as '06/17' otherwise.
-  base::string16 AbbreviatedExpirationDateForDisplay(bool with_prefix) const;
+  std::u16string AbbreviatedExpirationDateForDisplay(bool with_prefix) const;
   // Formatted expiration date (e.g., 05/2020).
-  base::string16 ExpirationDateForDisplay() const;
+  std::u16string ExpirationDateForDisplay() const;
   // Expiration functions.
-  base::string16 Expiration2DigitMonthAsString() const;
-  base::string16 Expiration4DigitYearAsString() const;
+  std::u16string Expiration2DigitMonthAsString() const;
+  std::u16string Expiration4DigitYearAsString() const;
 
   // Whether the cardholder name was created from separate first name and last
   // name fields.
@@ -308,31 +307,31 @@ class CreditCard : public AutofillDataModel {
   bool HasNonEmptyValidNickname() const;
 
   // Should be used ONLY by tests.
-  base::string16 NicknameAndLastFourDigitsForTesting() const;
+  std::u16string NicknameAndLastFourDigitsForTesting() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationDateFromString);
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationYearFromString);
 
-  base::string16 Expiration2DigitYearAsString() const;
+  std::u16string Expiration2DigitYearAsString() const;
 
   // FormGroup:
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
-  base::string16 GetInfoImpl(const AutofillType& type,
+  std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
   bool SetInfoWithVerificationStatusImpl(
       const AutofillType& type,
-      const base::string16& value,
+      const std::u16string& value,
       const std::string& app_locale,
       structured_address::VerificationStatus status) override;
 
   // The issuer network of the card to fill in to the page, e.g. 'Mastercard'.
-  base::string16 NetworkForFill() const;
+  std::u16string NetworkForFill() const;
 
   // A label for this card formatted as 'Nickname - ****2345'. Always call
   // HasNonEmptyValidNickname() before calling this.
-  base::string16 NicknameAndLastFourDigits(
-      base::string16 customized_nickname = base::string16()) const;
+  std::u16string NicknameAndLastFourDigits(
+      std::u16string customized_nickname = std::u16string()) const;
 
   // Sets the name_on_card_ value based on the saved name parts.
   void SetNameOnCardFromSeparateParts();
@@ -342,10 +341,10 @@ class CreditCard : public AutofillDataModel {
 
   // The card number. For MASKED_SERVER_CARDs, this number will just contain the
   // last four digits of the card number.
-  base::string16 number_;
+  std::u16string number_;
 
   // The cardholder's name. May be empty.
-  base::string16 name_on_card_;
+  std::u16string name_on_card_;
 
   // The network issuer of the card. This is one of the k...Card constants
   // below.
@@ -373,14 +372,14 @@ class CreditCard : public AutofillDataModel {
   // The credit card holder's name parts. Used when creating a new card to hold
   // on to the value until the credit card holder's other name part is set,
   // since we only store the full name.
-  base::string16 temp_card_first_name_;
-  base::string16 temp_card_last_name_;
+  std::u16string temp_card_first_name_;
+  std::u16string temp_card_last_name_;
 
   // Info of tokenizized credit card if available.
   sync_pb::CloudTokenData cloud_token_data_;
 
   // The nickname of the card. May be empty when nickname is not set.
-  base::string16 nickname_;
+  std::u16string nickname_;
 
   // The issuer for the card. This is populated from the sync response. It has a
   // default value of CreditCard::ISSUER_UNKNOWN.

@@ -141,7 +141,7 @@ bool BMPImageDecoder::GetFileType(const FastSharedBufferReader& fast_reader,
     return false;
   file_header = fast_reader.GetConsecutiveData(decoded_offset_,
                                                kSizeOfFileHeader, buffer);
-  file_type = (file_header[0] << 8) | static_cast<uint8_t>(file_header[1]);
+  file_type = (uint16_t{file_header[0]} << 8) | uint8_t{file_header[1]};
   return true;
 }
 

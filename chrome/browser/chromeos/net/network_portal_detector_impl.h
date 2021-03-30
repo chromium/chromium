@@ -185,8 +185,8 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   State state_ = STATE_IDLE;
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::CancelableClosure attempt_task_;
-  base::CancelableClosure attempt_timeout_;
+  base::CancelableOnceClosure attempt_task_;
+  base::CancelableOnceClosure attempt_timeout_;
 
   // Reference to a SharedURLLoaderFactory used to detect portals.
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;

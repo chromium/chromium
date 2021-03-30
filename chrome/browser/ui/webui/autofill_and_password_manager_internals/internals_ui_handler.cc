@@ -8,10 +8,10 @@
 
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/core/browser/logging/log_router.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/dev_ui_components_resources.h"
 #include "components/version_info/version_info.h"
 #include "components/version_ui/version_handler_helper.h"
@@ -39,9 +39,10 @@ content::WebUIDataSource* CreateInternalsHTMLSource(
   source->AddString(version_ui::kOfficial, version_info::IsOfficialBuild()
                                                ? "official"
                                                : "Developer build");
-  source->AddString(version_ui::kVersionModifier, chrome::GetChannelName());
+  source->AddString(version_ui::kVersionModifier,
+                    chrome::GetChannelName(chrome::WithExtendedStable(true)));
   source->AddString(version_ui::kCL, version_info::GetLastChange());
-  source->AddString(version_ui::kUserAgent, GetUserAgent());
+  source->AddString(version_ui::kUserAgent, embedder_support::GetUserAgent());
   source->AddString("app_locale", g_browser_process->GetApplicationLocale());
   return source;
 }

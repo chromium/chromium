@@ -147,7 +147,7 @@ void BrowserMainRunnerImpl::SynchronouslyFlushStartupTasks() {
 int BrowserMainRunnerImpl::Run() {
   DCHECK(initialization_started_);
   DCHECK(!is_shutdown_);
-  main_loop_->RunMainMessageLoopParts();
+  main_loop_->RunMainMessageLoop();
   return main_loop_->GetResultCode();
 }
 

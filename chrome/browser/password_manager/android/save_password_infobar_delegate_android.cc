@@ -98,7 +98,7 @@ void SavePasswordInfoBarDelegate::InfoBarDismissed() {
   infobar_response_ = password_manager::metrics_util::CLICKED_CANCEL;
 }
 
-base::string16 SavePasswordInfoBarDelegate::GetButtonLabel(
+std::u16string SavePasswordInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK)
                                        ? IDS_PASSWORD_MANAGER_SAVE_BUTTON

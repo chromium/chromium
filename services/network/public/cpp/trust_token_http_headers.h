@@ -40,7 +40,7 @@ constexpr char kTrustTokensRequestHeaderSecTime[] = "Sec-Time";
 // collection of headers; and, optionally, the request's body).
 constexpr char kTrustTokensRequestHeaderSecSignature[] = "Sec-Signature";
 
-// As a request header, provides aRedemption Record obtained from a prior
+// As a request header, provides a Redemption Record obtained from a prior
 // issuance-and-redemption flow.
 constexpr char kTrustTokensRequestHeaderSecRedemptionRecord[] =
     "Sec-Redemption-Record";

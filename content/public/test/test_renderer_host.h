@@ -110,7 +110,7 @@ class RenderFrameHostTester {
   // used as the container policy.
   virtual RenderFrameHost* AppendChildWithPolicy(
       const std::string& frame_name,
-      const blink::ParsedFeaturePolicy& allow) = 0;
+      const blink::ParsedPermissionsPolicy& allow) = 0;
 
   // Gives tests access to RenderFrameHostImpl::OnDetach. Destroys |this|.
   virtual void Detach() = 0;
@@ -119,8 +119,9 @@ class RenderFrameHostTester {
   // parameter.
   virtual void SimulateBeforeUnloadCompleted(bool proceed) = 0;
 
-  // Simulates the FrameHostMsg_Unload_ACK that fires if you commit a cross-site
-  // navigation without making any network requests.
+  // Simulates the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame that
+  // fires if you commit a cross-site navigation without making any network
+  // requests.
   virtual void SimulateUnloadACK() = 0;
 
   // Simulates the frame receiving a user activation.
@@ -155,10 +156,7 @@ class RenderViewHostTester {
   virtual ~RenderViewHostTester() {}
 
   // Gives tests access to RenderViewHostImpl::CreateRenderView.
-  virtual bool CreateTestRenderView(
-      const base::Optional<base::UnguessableToken>& opener_frame_route_id,
-      int proxy_routing_id,
-      bool created_with_opener) = 0;
+  virtual bool CreateTestRenderView() = 0;
 
   // Makes the WasHidden/WasShown calls to the RenderWidget that
   // tell it it has been hidden or restored from having been hidden.

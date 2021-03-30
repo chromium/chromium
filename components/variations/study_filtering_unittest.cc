@@ -88,9 +88,9 @@ TEST(VariationsStudyFilteringTest, CheckStudyChannel) {
 }
 
 TEST(VariationsStudyFilteringTest, CheckStudyFormFactor) {
-  const Study::FormFactor form_factors[] = {
-      Study::DESKTOP, Study::PHONE, Study::TABLET, Study::KIOSK,
-  };
+  const Study::FormFactor form_factors[] = {Study::DESKTOP, Study::PHONE,
+                                            Study::TABLET, Study::KIOSK,
+                                            Study::MEET_DEVICE};
 
   ASSERT_EQ(Study::FormFactor_ARRAYSIZE,
             static_cast<int>(base::size(form_factors)));
@@ -218,12 +218,14 @@ TEST(VariationsStudyFilteringTest, CheckStudyPlatform) {
                                        Study::PLATFORM_MAC,
                                        Study::PLATFORM_LINUX,
                                        Study::PLATFORM_CHROMEOS,
+                                       Study::PLATFORM_CHROMEOS_LACROS,
                                        Study::PLATFORM_ANDROID,
                                        Study::PLATFORM_IOS,
                                        Study::PLATFORM_ANDROID_WEBLAYER,
                                        Study::PLATFORM_FUCHSIA,
                                        Study::PLATFORM_ANDROID_WEBVIEW};
-  ASSERT_EQ(Study::Platform_ARRAYSIZE, static_cast<int>(base::size(platforms)));
+  static_assert(base::size(platforms) == Study::Platform_ARRAYSIZE,
+                "|platforms| must include all platforms.");
   bool platform_added[base::size(platforms)] = {false};
 
   Study::Filter filter;

@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -593,21 +592,6 @@ void HTMLMetaElement::ProcessContent() {
 
     GetExecutionContext()->ParseAndSetReferrerPolicy(content_value,
                                                      kPolicySourceMetaTag);
-    if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
-      LocalFrame* frame = GetDocument().GetFrame();
-      // If frame is null, this document is not attached to a frame, hence it
-      // has no PolicyContainer, so we ignore the next step. This function will
-      // run again anyway, should this document or this element be attached to a
-      // frame.
-      //
-      // SVG images (loaded via the img tag) create a fake LocalFrame which has
-      // no PolicyContainer. Ignore policy updates from meta tags inside SVG
-      // images.
-      if (frame && frame->GetPolicyContainer()) {
-        frame->GetPolicyContainer()->UpdateReferrerPolicy(
-            GetExecutionContext()->GetReferrerPolicy());
-      }
-    }
   } else if (EqualIgnoringASCIICase(name_value, "handheldfriendly") &&
              EqualIgnoringASCIICase(content_value, "true")) {
     ProcessViewportContentAttribute("width=device-width",

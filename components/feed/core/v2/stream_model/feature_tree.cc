@@ -121,8 +121,7 @@ void FeatureTree::ApplyStreamStructure(
       break;
     case feedstore::StreamStructure::UPDATE_OR_APPEND: {
       const ContentTag child_id = GetContentTag(structure.content_id());
-      const bool is_stream =
-          structure.type() == feedstore::StreamStructure::STREAM;
+      const bool is_root = structure.is_root();
       ContentTag parent_id;
       if (structure.has_parent_id()) {
         parent_id = GetContentTag(structure.parent_id());
@@ -133,7 +132,6 @@ void FeatureTree::ApplyStreamStructure(
 
       // If a node already has a parent, treat this as an update, not an append
       // operation.
-      child.is_stream = is_stream;
       child.tombstoned = false;
       if (root_tag_ == child_id) {
         computed_root_ = false;
@@ -146,8 +144,15 @@ void FeatureTree::ApplyStreamStructure(
         child.has_parent = true;
         child.previous_sibling = parent->last_child;
         parent->last_child = child_id;
-      } else if (!parent && is_stream) {
-        // The node meets the criteria for root.
+      } else if (is_root || ((!computed_root_ || root_tag_.is_null()) &&
+                             !parent && structure.parent_id().id() == 0 &&
+                             structure.parent_id().type() == 0)) {
+        // For recently produced stream data, there should be a node with
+        // 'is_root' set. However, for older cached stream data, we weren't
+        // storing this information. In that case, we fallback to pick the first
+        // node which doesn't have a parentID as root.
+        // TODO(crbug.com/1190364): simplify this once we can depend on
+        // receiving is_root.
         computed_root_ = true;
         root_tag_ = child_id;
       }
@@ -189,7 +194,6 @@ void FeatureTree::CopyAndAddContent(const feedstore::Content& content) {
 
 void FeatureTree::ResolveRoot() {
   if (computed_root_) {
-    DCHECK(!FindNode(root_tag_) || FindNode(root_tag_)->is_stream) << root_tag_;
     DCHECK(!FindNode(root_tag_) || !FindNode(root_tag_)->tombstoned);
     DCHECK(!FindNode(root_tag_) || !FindNode(root_tag_)->has_parent);
     return;
@@ -197,7 +201,7 @@ void FeatureTree::ResolveRoot() {
   root_tag_ = ContentTag();
   for (size_t i = 0; i < nodes_.size(); ++i) {
     const StreamNode& node = nodes_[i];
-    if (node.is_stream && !node.tombstoned && !node.has_parent) {
+    if (!node.tombstoned && !node.has_parent) {
       root_tag_ = ContentTag(i);
     }
   }
@@ -248,7 +252,7 @@ std::string FeatureTree::DumpStateForTesting() {
     if (!node || node->tombstoned)
       continue;
     ss << std::string(depth, ' ') << "|-";
-    ss << (node->is_stream ? "ROOT" : "node");
+    ss << (node->has_parent ? "ROOT" : "node");
     if (!node->last_child.is_null()) {
       for (ContentTag child_id = node->last_child; !child_id.is_null();
            child_id = nodes_[child_id.value()].previous_sibling) {

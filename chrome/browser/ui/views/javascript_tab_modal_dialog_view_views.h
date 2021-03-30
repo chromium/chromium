@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -23,19 +24,23 @@ class JavaScriptTabModalDialogViewViews
     : public javascript_dialogs::TabModalDialogView,
       public views::DialogDelegateView {
  public:
+  METADATA_HEADER(JavaScriptTabModalDialogViewViews);
+  JavaScriptTabModalDialogViewViews(const JavaScriptTabModalDialogViewViews&) =
+      delete;
+  JavaScriptTabModalDialogViewViews& operator=(
+      const JavaScriptTabModalDialogViewViews&) = delete;
   ~JavaScriptTabModalDialogViewViews() override;
 
   // JavaScriptDialog:
   void CloseDialogWithoutCallback() override;
-  base::string16 GetUserInput() override;
+  std::u16string GetUserInput() override;
 
   // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
   views::View* GetInitiallyFocusedView() override;
-  ui::ModalType GetModalType() const override;
 
   // views::View:
   void AddedToWidget() override;
@@ -47,16 +52,16 @@ class JavaScriptTabModalDialogViewViews
   JavaScriptTabModalDialogViewViews(
       content::WebContents* parent_web_contents,
       content::WebContents* alerting_web_contents,
-      const base::string16& title,
+      const std::u16string& title,
       content::JavaScriptDialogType dialog_type,
-      const base::string16& message_text,
-      const base::string16& default_prompt_text,
+      const std::u16string& message_text,
+      const std::u16string& default_prompt_text,
       content::JavaScriptDialogManager::DialogClosedCallback dialog_callback,
       base::OnceClosure dialog_force_closed_callback);
 
-  base::string16 title_;
-  base::string16 message_text_;
-  base::string16 default_prompt_text_;
+  std::u16string title_;
+  std::u16string message_text_;
+  std::u16string default_prompt_text_;
   content::JavaScriptDialogManager::DialogClosedCallback dialog_callback_;
   base::OnceClosure dialog_force_closed_callback_;
 
@@ -64,8 +69,6 @@ class JavaScriptTabModalDialogViewViews
   views::MessageBoxView* message_box_view_;
 
   base::WeakPtrFactory<JavaScriptTabModalDialogViewViews> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptTabModalDialogViewViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_JAVASCRIPT_TAB_MODAL_DIALOG_VIEW_VIEWS_H_

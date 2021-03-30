@@ -13,12 +13,11 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/gfx/geometry/point_f.h"
 
-namespace ipc_fuzzer {
-template <class T>
-struct FuzzTraits;
-}  // namespace ipc_fuzzer
-
 namespace content {
+
+namespace mojom {
+class SyntheticPointerActionParamsDataView;
+}  // namespace mojom
 
 // It contains all the parameters to create the synthetic events of touch,
 // mouse and pen inputs in SyntheticPointerAction::ForwardInputEvents function.
@@ -168,8 +167,9 @@ struct CONTENT_EXPORT SyntheticPointerActionParams {
       unsigned modifiers);
 
  private:
-  friend struct IPC::ParamTraits<content::SyntheticPointerActionParams>;
-  friend struct ipc_fuzzer::FuzzTraits<content::SyntheticPointerActionParams>;
+  friend struct mojo::StructTraits<
+      content::mojom::SyntheticPointerActionParamsDataView,
+      content::SyntheticPointerActionParams>;
 
   PointerActionType pointer_action_type_ = PointerActionType::NOT_INITIALIZED;
   // The position of the pointer, where it presses or moves to.

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       'Verifies that Network.*ExtraInfo events get assigned to the correct SDK.NetworkRequest instance in the case of cross origin redirects.');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
 
   await TestRunner.evaluateInPageAsync(`
 new Promise(resolve => {

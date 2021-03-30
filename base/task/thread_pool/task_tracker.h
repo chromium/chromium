@@ -147,6 +147,10 @@ class BASE_EXPORT TaskTracker {
                        TaskSource* task_source,
                        const TaskTraits& traits);
 
+  // Allow a subclass to wait more interactively for any running shutdown tasks
+  // before blocking the thread.
+  virtual void BeginCompleteShutdown(base::WaitableEvent& shutdown_event);
+
  private:
   friend class RegisteredTaskSource;
   class State;

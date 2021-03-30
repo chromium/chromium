@@ -8,17 +8,15 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/platform_util.h"
@@ -28,6 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -35,7 +34,6 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -80,6 +78,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -123,14 +123,17 @@ void AddColumnWithSideMargin(views::GridLayout* layout, int margin, int id) {
 // and the name of the site's identity.
 class BubbleHeaderView : public views::View {
  public:
+  METADATA_HEADER(BubbleHeaderView);
   BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin);
+  BubbleHeaderView(const BubbleHeaderView&) = delete;
+  BubbleHeaderView& operator=(const BubbleHeaderView&) = delete;
   ~BubbleHeaderView() override;
 
   // Sets the security summary for the current page.
-  void SetSummary(const base::string16& summary_text);
+  void SetSummary(const std::u16string& summary_text);
 
   // Sets the security details for the current page.
-  void SetDetails(const base::string16& details_text);
+  void SetDetails(const std::u16string& details_text);
 
   void AddEvCertificateDetailsLabel(
       const PageInfoBubbleView::IdentityInfo& identity_info);
@@ -141,7 +144,7 @@ class BubbleHeaderView : public views::View {
   // If |is_saved_password|, adds a check password button instead of
   // change password button.
   void AddPasswordReuseButtons(
-      bool is_saved_password,
+      PageInfo::SafeBrowsingStatus safe_browsing_status,
       views::Button::PressedCallback change_password_callback,
       views::Button::PressedCallback password_reuse_callback);
 
@@ -168,8 +171,6 @@ class BubbleHeaderView : public views::View {
   // A container for the label buttons used to change password or mark the site
   // as safe.
   views::View* password_reuse_button_container_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleHeaderView);
 };
 
 // The regular PageInfoBubbleView is not supported for internal Chrome pages and
@@ -177,6 +178,7 @@ class BubbleHeaderView : public views::View {
 // |InternalPageInfoBubbleView| is displayed.
 class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
  public:
+  METADATA_HEADER(InternalPageInfoBubbleView);
   // If |anchor_view| is nullptr, or has no Widget, |parent_window| may be
   // provided to ensure this bubble is closed when the parent closes.
   InternalPageInfoBubbleView(views::View* anchor_view,
@@ -184,9 +186,10 @@ class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
                              gfx::NativeView parent_window,
                              content::WebContents* web_contents,
                              const GURL& url);
+  InternalPageInfoBubbleView(const InternalPageInfoBubbleView&) = delete;
+  InternalPageInfoBubbleView& operator=(const InternalPageInfoBubbleView&) =
+      delete;
   ~InternalPageInfoBubbleView() override;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalPageInfoBubbleView);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -225,15 +228,15 @@ BubbleHeaderView::BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin)
 
 BubbleHeaderView::~BubbleHeaderView() = default;
 
-void BubbleHeaderView::SetDetails(const base::string16& details_text) {
-  std::vector<base::string16> subst;
+void BubbleHeaderView::SetDetails(const std::u16string& details_text) {
+  std::vector<std::u16string> subst;
   subst.push_back(details_text);
   subst.push_back(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 
   std::vector<size_t> offsets;
 
-  base::string16 text = base::ReplaceStringPlaceholders(
-      base::ASCIIToUTF16("$1 $2"), subst, &offsets);
+  std::u16string text =
+      base::ReplaceStringPlaceholders(u"$1 $2", subst, &offsets);
   security_details_label_->SetText(text);
   gfx::Range details_range(offsets[1], text.length());
 
@@ -251,7 +254,7 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
     reset_decisions_label_container_->RemoveAllChildViews(true);
   }
 
-  std::vector<base::string16> subst;
+  std::vector<std::u16string> subst;
   subst.push_back(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_INVALID_CERTIFICATE_DESCRIPTION));
   subst.push_back(l10n_util::GetStringUTF16(
@@ -259,8 +262,8 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
 
   std::vector<size_t> offsets;
 
-  base::string16 text = base::ReplaceStringPlaceholders(
-      base::ASCIIToUTF16("$1 $2"), subst, &offsets);
+  std::u16string text =
+      base::ReplaceStringPlaceholders(u"$1 $2", subst, &offsets);
   views::StyledLabel* reset_cert_decisions_label =
       reset_decisions_label_container_->AddChildView(
           std::make_unique<views::StyledLabel>());
@@ -285,7 +288,7 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
 }
 
 void BubbleHeaderView::AddPasswordReuseButtons(
-    bool is_saved_password,
+    PageInfo::SafeBrowsingStatus safe_browsing_status,
     views::Button::PressedCallback change_password_callback,
     views::Button::PressedCallback password_reuse_callback) {
   if (!password_reuse_button_container_->children().empty()) {
@@ -293,9 +296,26 @@ void BubbleHeaderView::AddPasswordReuseButtons(
     password_reuse_button_container_->RemoveAllChildViews(true /* delete */);
   }
 
-  int change_password_template = is_saved_password
-                                     ? IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON
-                                     : IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON;
+  int change_password_template = 0;
+  switch (safe_browsing_status) {
+    case PageInfo::SafeBrowsingStatus::
+        SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE:
+      change_password_template = IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON;
+      break;
+    case PageInfo::SafeBrowsingStatus::
+        SAFE_BROWSING_STATUS_ENTERPRISE_PASSWORD_REUSE:
+      change_password_template = IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON;
+      break;
+    case PageInfo::SafeBrowsingStatus::
+        SAFE_BROWSING_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case PageInfo::SafeBrowsingStatus::
+        SAFE_BROWSING_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE:
+      change_password_template = IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
 
   std::unique_ptr<views::MdTextButton> change_password_button;
   if (change_password_template) {
@@ -354,6 +374,9 @@ void BubbleHeaderView::AddPasswordReuseButtons(
 
   InvalidateLayout();
 }
+
+BEGIN_METADATA(BubbleHeaderView, views::View)
+END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // InternalPageInfoBubbleView
@@ -420,6 +443,9 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
 
 InternalPageInfoBubbleView::~InternalPageInfoBubbleView() {}
 
+BEGIN_METADATA(InternalPageInfoBubbleView, PageInfoBubbleViewBase)
+END_METADATA
+
 ////////////////////////////////////////////////////////////////////////////////
 // PageInfoBubbleView
 ////////////////////////////////////////////////////////////////////////////////
@@ -449,17 +475,10 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
 }
 
 void PageInfoBubbleView::SecurityDetailsClicked(const ui::Event& event) {
-  if (GetSecurityDescriptionType() == SecurityDescriptionType::SAFETY_TIP) {
-    OpenHelpCenterFromSafetyTip(web_contents());
-  } else {
-    web_contents()->OpenURL(content::OpenURLParams(
-        GURL(chrome::kPageInfoHelpCenterURL), content::Referrer(),
-        ui::DispositionFromEventFlags(
-            event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-        ui::PAGE_TRANSITION_LINK, false));
-    presenter_->RecordPageInfoAction(
-        PageInfo::PAGE_INFO_CONNECTION_HELP_OPENED);
-  }
+  if (GetSecurityDescriptionType() == SecurityDescriptionType::SAFETY_TIP)
+    presenter_->OpenSafetyTipHelpCenterPage();
+  else
+    presenter_->OpenConnectionHelpCenterPage(event);
 }
 
 void PageInfoBubbleView::ResetDecisionsClicked() {
@@ -526,7 +545,7 @@ PageInfoBubbleView::PageInfoBubbleView(
     layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
                                 views::GridLayout::kFixedSize, 0);
 
-    const base::string16& tooltip =
+    const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP);
     site_settings_link = layout->AddView(std::make_unique<PageInfoHoverButton>(
         base::BindRepeating(
@@ -535,9 +554,9 @@ PageInfoBubbleView::PageInfoBubbleView(
             },
             this),
         PageInfoUI::GetSiteSettingsIcon(GetRelatedTextColor()),
-        IDS_PAGE_INFO_SITE_SETTINGS_LINK, base::string16(),
+        IDS_PAGE_INFO_SITE_SETTINGS_LINK, std::u16string(),
         PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
-        tooltip, base::string16()));
+        tooltip, std::u16string()));
   }
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
@@ -551,6 +570,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   // before PageInfo updates trigger child layouts.
   SetSize(GetPreferredSize());
 
+  ui_delegate_ = std::make_unique<ChromePageInfoUiDelegate>(profile, url);
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents), web_contents,
       url);
@@ -614,7 +634,7 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
   }
 
   // Get the string to display the number of cookies.
-  const base::string16 num_cookies_text = l10n_util::GetPluralStringFUTF16(
+  const std::u16string num_cookies_text = l10n_util::GetPluralStringFUTF16(
       IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED, total_allowed);
 
   // Create the cookie button if it doesn't yet exist. This method gets called
@@ -625,13 +645,10 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
     PageInfo::PermissionInfo info;
     info.type = ContentSettingsType::COOKIES;
     info.setting = CONTENT_SETTING_ALLOW;
-    info.is_incognito =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-            ->IsOffTheRecord();
     const gfx::ImageSkia icon =
         PageInfoUI::GetPermissionIcon(info, GetRelatedTextColor());
 
-    const base::string16& tooltip =
+    const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
 
     cookie_button_ =
@@ -643,7 +660,7 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
                 this),
             icon, IDS_PAGE_INFO_COOKIES_BUTTON_TEXT, num_cookies_text,
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG, tooltip,
-            base::string16())
+            std::u16string())
             .release();
     site_settings_view_->AddChildView(cookie_button_);
   }
@@ -700,11 +717,8 @@ void PageInfoBubbleView::SetPermissionInfo(
   int min_height_for_permission_rows = 0;
   for (const auto& permission : permission_info_list) {
     std::unique_ptr<PermissionSelectorRow> selector =
-        std::make_unique<PermissionSelectorRow>(
-            profile_,
-            web_contents() ? web_contents()->GetVisibleURL()
-                           : GURL::EmptyGURL(),
-            permission, layout);
+        std::make_unique<PermissionSelectorRow>(ui_delegate_.get(), permission,
+                                                layout);
     selector->AddObserver(this);
     min_height_for_permission_rows = std::max(
         min_height_for_permission_rows, selector->MinHeightForPermissionRow());
@@ -753,7 +767,7 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
       GetSecurityDescription(identity_info);
 
   SetTitle(security_description->summary);
-  set_security_description_type(security_description->type);
+  SetSecurityDescriptionType(security_description->type);
   int text_style = views::style::STYLE_PRIMARY;
   switch (security_description->summary_style) {
     case SecuritySummaryColor::RED:
@@ -779,7 +793,7 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // validity of the Certificate.
     const bool valid_identity =
         (identity_info.identity_status != PageInfo::SITE_IDENTITY_STATUS_ERROR);
-    base::string16 tooltip;
+    std::u16string tooltip;
     if (valid_identity) {
       tooltip = l10n_util::GetStringFUTF16(
           IDS_PAGE_INFO_CERTIFICATE_VALID_LINK_TOOLTIP,
@@ -792,11 +806,11 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // Add the Certificate Section.
     const gfx::ImageSkia icon =
         PageInfoUI::GetCertificateIcon(GetRelatedTextColor());
-    const base::string16 secondary_text = l10n_util::GetStringUTF16(
+    const std::u16string secondary_text = l10n_util::GetStringUTF16(
         valid_identity ? IDS_PAGE_INFO_CERTIFICATE_VALID_PARENTHESIZED
                        : IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED);
 
-    base::string16 subtitle_text;
+    std::u16string subtitle_text;
     if (base::FeatureList::IsEnabled(features::kEvDetailsInPageInfo)) {
       // Only show the EV certificate details if there are no errors or mixed
       // content.
@@ -838,20 +852,16 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
 
   if (identity_info.show_change_password_buttons) {
     header_->AddPasswordReuseButtons(
-        identity_info.safe_browsing_status ==
-            PageInfo::SafeBrowsingStatus::
-                SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE,
+        identity_info.safe_browsing_status,
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
-              view->presenter_->OnChangePasswordButtonPressed(
-                  view->web_contents());
+              view->presenter_->OnChangePasswordButtonPressed();
             },
             this),
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
               view->GetWidget()->Close();
-              view->presenter_->OnWhitelistPasswordReuseButtonPressed(
-                  view->web_contents());
+              view->presenter_->OnWhitelistPasswordReuseButtonPressed();
             },
             this));
   }
@@ -892,7 +902,7 @@ void PageInfoBubbleView::SetPageFeatureInfo(const PageFeatureInfo& info) {
   auto button = std::make_unique<HoverButton>(
       views::Button::PressedCallback(), std::move(icon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_VR_PRESENTING_TEXT),
-      base::string16(), std::move(exit_button),
+      std::u16string(), std::move(exit_button),
       false,  // Try not to change the row height while adding secondary view
       true);  // Secondary view can handle events.
   button->SetID(VIEW_ID_PAGE_INFO_HOVER_BUTTON_VR_PRESENTATION);
@@ -902,6 +912,16 @@ void PageInfoBubbleView::SetPageFeatureInfo(const PageFeatureInfo& info) {
   Layout();
   SizeToContents();
 #endif
+}
+
+PageInfoUI::SecurityDescriptionType
+PageInfoBubbleView::GetSecurityDescriptionType() const {
+  return security_description_type_;
+}
+
+void PageInfoBubbleView::SetSecurityDescriptionType(
+    const PageInfoUI::SecurityDescriptionType& type) {
+  security_description_type_ = type;
 }
 
 void PageInfoBubbleView::LayoutPermissionsLikeUiRow(views::GridLayout* layout,
@@ -998,30 +1018,17 @@ void PageInfoBubbleView::HandleMoreInfoRequest(views::View* source) {
 }
 
 void PageInfoBubbleView::HandleMoreInfoRequestAsync(int view_id) {
-  // All switch cases require accessing web_contents(), so we check it here.
-  if (web_contents() == nullptr || web_contents()->IsBeingDestroyed()) {
-    return;
-  }
   switch (view_id) {
     case PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS:
       presenter_->OpenSiteSettingsView();
       break;
     case PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG:
-      // Count how often the Collected Cookies dialog is opened.
-      presenter_->RecordPageInfoAction(
-          PageInfo::PAGE_INFO_COOKIES_DIALOG_OPENED);
-      CollectedCookiesViews::CreateAndShowForWebContents(web_contents());
+      presenter_->OpenCookiesDialog();
       break;
     case PageInfoBubbleView::
-        VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER: {
-      gfx::NativeWindow top_window = web_contents()->GetTopLevelNativeWindow();
-      if (certificate_ && top_window) {
-        presenter_->RecordPageInfoAction(
-            PageInfo::PAGE_INFO_CERTIFICATE_DIALOG_OPENED);
-        ShowCertificateViewer(web_contents(), top_window, certificate_.get());
-      }
+        VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER:
+      presenter_->OpenCertificateDialog(certificate_.get());
       break;
-    }
     default:
       NOTREACHED();
   }
@@ -1046,3 +1053,15 @@ void ShowPageInfoDialogImpl(Browser* browser,
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();
 }
+
+DEFINE_ENUM_CONVERTERS(
+    PageInfoUI::SecurityDescriptionType,
+    {PageInfoUI::SecurityDescriptionType::CONNECTION, u"CONNECTION"},
+    {PageInfoUI::SecurityDescriptionType::INTERNAL, u"INTERNAL"},
+    {PageInfoUI::SecurityDescriptionType::SAFE_BROWSING, u"SAFE_BROWSING"},
+    {PageInfoUI::SecurityDescriptionType::SAFETY_TIP, u"SAFETY_TIP"})
+
+BEGIN_METADATA(PageInfoBubbleView, PageInfoBubbleViewBase)
+ADD_PROPERTY_METADATA(PageInfoUI::SecurityDescriptionType,
+                      SecurityDescriptionType)
+END_METADATA

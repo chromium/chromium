@@ -14,6 +14,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
@@ -79,11 +80,6 @@ public final class DownloadCallbackProxy {
 
     private void continueAllowDownload(String url, String requestMethod, String requestInitiator,
             long callbackId) throws RemoteException {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 81) {
-            DownloadCallbackProxyJni.get().allowDownload(callbackId, true);
-            return;
-        }
-
         if (mClient == null) {
             DownloadCallbackProxyJni.get().allowDownload(callbackId, true);
             return;
@@ -104,9 +100,10 @@ public final class DownloadCallbackProxy {
     }
 
     @CalledByNative
-    private DownloadImpl createDownload(long nativeDownloadImpl, int id) {
-        return new DownloadImpl(
-                mProfile.getName(), mProfile.isIncognito(), mClient, nativeDownloadImpl, id);
+    private DownloadImpl createDownload(
+            long nativeDownloadImpl, int id, boolean isTransient, GURL sourceUrl) {
+        return new DownloadImpl(mProfile.getName(), mProfile.isIncognito(), mClient,
+                nativeDownloadImpl, id, isTransient, sourceUrl);
     }
 
     @CalledByNative

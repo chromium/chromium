@@ -1,0 +1,69 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module continuous_search.mojom;
+
+import "url/mojom/url.mojom";
+
+// This module contains data structures and an interface to extract search
+// results from a Google Search Results Page.
+
+// A single result from the page.
+struct SearchResult {
+  // Link for the result.
+  url.mojom.Url link;
+
+  // Title of the result.
+  string title;
+};
+
+// A logically related group of search results with a label. E.g. ads, organic,
+// news, etc.
+struct ResultGroup {
+  // A label for the group of results.
+  string label;
+
+  // Whether the group is for ads.
+  bool is_ad_group;
+
+  // A list of results for this group.
+  array<SearchResult> results;
+};
+
+// The result category for the search page. E.g. results, news, images, etc.
+enum Category {
+  // Empty result.
+  kNone,
+
+  // Organic search results (regular "10 blue links").
+  kOrganic,
+};
+
+// All results from a particular category's page.
+struct CategoryResults {
+  // The URL of the document the data was extracted from.
+  url.mojom.Url document_url;
+
+  // The category the associated groups belong to.
+  Category category_type = kNone;
+
+  // Groups of results partitioned by a logical labels.
+  array<ResultGroup> groups;
+};
+
+// Used to extract search results for a Google search page.
+interface SearchResultExtractor {
+  // The outcome of the extraction attempt.
+  enum Status {
+    // Extraction was successful.
+    kSuccess,
+
+    // No results were generated from the extraction.
+    kNoResults,
+  };
+
+  // Performs a structured search of the DOM to extract results for the current
+  // search result page (with the currently selected category).
+  ExtractCurrentSearchResults() => (Status status, CategoryResults results);
+};

@@ -162,7 +162,7 @@ void PrintJobControllerImpl::StartPrinting(
 
   auto job = base::MakeRefCounted<printing::PrintJob>();
   // Save in separate variable because |query| is moved.
-  base::string16 title = query->settings().title();
+  std::u16string title = query->settings().title();
   job->Initialize(std::move(query), title, /*page_count=*/1);
   job->SetSource(printing::PrintJob::Source::EXTENSION, extension_id);
   printing::PrintedDocument* document = job->document();

@@ -54,7 +54,7 @@ _TESTER_NOOP_JOBS = [scheduler_pb.Job(
 ) for builder in _NON_BRANCHED_TESTERS]
 
 def _add_noop_jobs(ctx):
-    if settings.is_master:
+    if settings.is_main:
         return
     cfg = ctx.output["luci-scheduler.cfg"]
     for j in _TESTER_NOOP_JOBS:

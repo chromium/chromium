@@ -1,0 +1,26 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.eche_app.mojom;
+
+// Interface for sending signal messages from the SWA to the browser. The
+// signals are used to bootstrap a full WebRTC connection between a Nearby
+// endpoint and the SWA. Any further data exchange happens directly over the
+// WebRTC connection.
+interface SignalingMessageExchanger {
+  // Called when a new signaling message is ready for transmission. The
+  // `signal` is a serialized WebRtcSignal.
+  SendSignalingMessage(array<uint8> signal);
+  // Sets the listener for replies sent from the browser process to the SWA.
+  SetSignalingMessageObserver(
+      pending_remote<SignalingMessageObserver> observer);
+  // Called when we no longer need the signal channel.
+  TearDownSignaling();
+};
+
+// Interface for dispatching response signaling messages as they are received.
+interface SignalingMessageObserver {
+  // Dispatch message to recipient. The `signal` is a serialized WebRtcSignal.
+  OnReceivedSignalingMessage(array<uint8> signal);
+};

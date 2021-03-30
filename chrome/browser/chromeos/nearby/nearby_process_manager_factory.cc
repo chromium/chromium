@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider_factory.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_impl.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -17,7 +17,18 @@ namespace {
 
 bool g_bypass_primary_user_check_for_testing = false;
 
-bool IsLoggedInAsPrimaryUser(Profile* profile) {
+}  // namespace
+
+// static
+NearbyProcessManager* NearbyProcessManagerFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<NearbyProcessManager*>(
+      NearbyProcessManagerFactory::GetInstance()->GetServiceForBrowserContext(
+          profile, /*create=*/true));
+}
+
+// static
+bool NearbyProcessManagerFactory::CanBeLaunchedForProfile(Profile* profile) {
   // Guest/incognito profiles cannot use Phone Hub.
   if (profile->IsOffTheRecord())
     return false;
@@ -27,16 +38,6 @@ bool IsLoggedInAsPrimaryUser(Profile* profile) {
     return false;
 
   return ProfileHelper::IsPrimaryProfile(profile);
-}
-
-}  // namespace
-
-// static
-NearbyProcessManager* NearbyProcessManagerFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<NearbyProcessManager*>(
-      NearbyProcessManagerFactory::GetInstance()->GetServiceForBrowserContext(
-          profile, /*create=*/true));
 }
 
 // static
@@ -67,7 +68,7 @@ KeyedService* NearbyProcessManagerFactory::BuildServiceInstanceFor(
   // The service is meant to be a singleton, since multiple simultaneous process
   // managers could interfere with each other. Provide access only to the
   // primary user.
-  if (IsLoggedInAsPrimaryUser(profile) ||
+  if (CanBeLaunchedForProfile(profile) ||
       g_bypass_primary_user_check_for_testing) {
     return NearbyProcessManagerImpl::Factory::Create(
                NearbyConnectionsDependenciesProviderFactory::GetForProfile(

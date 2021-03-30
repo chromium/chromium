@@ -58,13 +58,13 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
     return icon_;
   }
 
-  base::string16 GetMessageText() const override {
+  std::u16string GetMessageText() const override {
     return l10n_util::GetStringFUTF16(
         IDS_IOS_POPUPS_BLOCKED_MOBILE,
         base::UTF8ToUTF16(base::StringPrintf("%" PRIuS, popups_.size())));
   }
 
-  base::string16 GetButtonLabel(InfoBarButton button) const override {
+  std::u16string GetButtonLabel(InfoBarButton button) const override {
     DCHECK(button == BUTTON_OK);
     return l10n_util::GetStringUTF16(IDS_IOS_POPUPS_ALWAYS_SHOW_MOBILE);
   }

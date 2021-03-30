@@ -6,6 +6,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -105,7 +106,7 @@ PartitionAllocMemoryReclaimer::~PartitionAllocMemoryReclaimer() = default;
 void PartitionAllocMemoryReclaimer::ReclaimAll() {
   constexpr int kFlags = PartitionPurgeDecommitEmptySlotSpans |
                          PartitionPurgeDiscardUnusedSystemPages |
-                         PartitionPurgeForceAllFreed;
+                         PartitionPurgeAggressiveReclaim;
   Reclaim(kFlags);
 }
 
@@ -118,6 +119,31 @@ void PartitionAllocMemoryReclaimer::ReclaimPeriodically() {
 void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
   AutoLock lock(lock_);  // Has to protect from concurrent (Un)Register calls.
   TRACE_EVENT0("base", "PartitionAllocMemoryReclaimer::Reclaim()");
+
+  // PCScan quarantines freed slots. Trigger the scan first to let it call
+  // FreeNoHooksImmediate on slots that pass the quarantine.
+  //
+  // In turn, FreeNoHooksImmediate may add slots to thread cache. Purge it next
+  // so that the slots are actually freed. (This is done synchronously only for
+  // the current thread.)
+  //
+  // Lastly decommit empty slot spans and lastly try to discard unused pages at
+  // the end of the remaining active slots.
+  {
+    using PCScan = internal::PCScan;
+    const auto invocation_mode = flags & PartitionPurgeAggressiveReclaim
+                                     ? PCScan::InvocationMode::kForcedBlocking
+                                     : PCScan::InvocationMode::kBlocking;
+    PCScan::Instance().PerformScanIfNeeded(invocation_mode);
+  }
+
+#if defined(PA_THREAD_CACHE_SUPPORTED)
+  // Don't completely empty the thread cache outside of low memory situations,
+  // as there is periodic purge which makes sure that it doesn't take too much
+  // space.
+  if (PartitionPurgeAggressiveReclaim)
+    internal::ThreadCacheRegistry::Instance().PurgeAll();
+#endif
 
   for (auto* partition : thread_safe_partitions_)
     partition->PurgeMemory(flags);

@@ -69,23 +69,29 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   void OnIconsDataWritten(
       CommitCallback commit_callback,
       std::unique_ptr<WebApp> web_app,
-      const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps,
+      const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
       bool success);
 
   void OnShortcutsMenuIconsDataWritten(CommitCallback commit_callback,
                                        std::unique_ptr<WebApp> web_app,
                                        bool success);
 
-  void OnIconsDataDeleted(const AppId& app_id,
-                          UninstallWebAppCallback callback,
-                          bool success);
+  void OnIconsDataDeletedAndWebAppUninstalled(const AppId& app_id,
+                                              UninstallWebAppCallback callback,
+                                              bool success);
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
                                            bool success);
+  void FinalizeUpdateWithShortcutInfo(
+      InstallFinalizedCallback callback,
+      const AppId app_id,
+      const WebApplicationInfo& web_app_info,
+      std::unique_ptr<ShortcutInfo> old_shortcut);
   void OnDatabaseCommitCompletedForUpdate(
       InstallFinalizedCallback callback,
       AppId app_id,
       std::string old_name,
+      std::unique_ptr<ShortcutInfo> old_shortcut,
       const WebApplicationInfo& web_app_info,
       bool success);
   void OnUninstallOsHooks(const AppId& app_id,
@@ -94,6 +100,7 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
 
   WebAppRegistrar& GetWebAppRegistrar() const;
 
+  // Used for legacy Bookmark Apps.
   std::unique_ptr<InstallFinalizer> legacy_finalizer_;
 
   Profile* const profile_;

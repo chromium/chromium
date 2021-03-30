@@ -16,8 +16,10 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.graphics.drawable.IconCompat;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 /**
@@ -27,6 +29,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     private static final String TAG = "NotifCompatBuilder";
     private final NotificationCompat.Builder mBuilder;
     private final NotificationMetadata mMetadata;
+    private final Context mContext;
 
     public NotificationWrapperCompatBuilder(Context context, String channelId,
             ChannelsInitializer channelsInitializer, NotificationMetadata metadata) {
@@ -35,6 +38,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
         }
         mBuilder = new NotificationCompat.Builder(context, channelId);
         mMetadata = metadata;
+        mContext = context;
     }
 
     @Override
@@ -75,7 +79,9 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
 
     @Override
     public NotificationWrapperBuilder setSmallIcon(Icon icon) {
-        assert false; // unused
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mBuilder.setSmallIcon(IconCompat.createFromIcon(mContext, icon));
+        }
         return this;
     }
 
@@ -136,7 +142,14 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     @Override
     public NotificationWrapperBuilder addAction(
             int icon, CharSequence title, PendingIntent intent) {
-        mBuilder.addAction(icon, title, intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && icon != 0) {
+            mBuilder.addAction(
+                    new NotificationCompat.Action
+                            .Builder(IconCompat.createWithResource(mContext, icon), title, intent)
+                            .build());
+        } else {
+            mBuilder.addAction(icon, title, intent);
+        }
         return this;
     }
 
@@ -149,12 +162,30 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
 
     @Override
     public NotificationWrapperBuilder addAction(Notification.Action action) {
+        Log.w(TAG, "Ignoring standard action in compat builder.");
         return this;
     }
 
     @Override
     public NotificationWrapperBuilder addAction(
             Notification.Action action, int flags, int actionType) {
+        Log.w(TAG, "Ignoring standard action in compat builder.");
+        return this;
+    }
+
+    @Override
+    public NotificationWrapperBuilder addAction(NotificationCompat.Action action) {
+        mBuilder.addAction(action);
+        return this;
+    }
+
+    @Override
+    public NotificationWrapperBuilder addAction(
+            NotificationCompat.Action action, int flags, int actionType) {
+        // TODO(xingliu): Plumb requestCode from action intent.
+        action.actionIntent =
+                new PendingIntentProvider(action.actionIntent, flags, 0).getPendingIntent();
+        addAction(action);
         return this;
     }
 
@@ -219,6 +250,12 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     }
 
     @Override
+    public NotificationWrapperBuilder setSilent(boolean silent) {
+        mBuilder.setSilent(silent);
+        return this;
+    }
+
+    @Override
     public NotificationWrapperBuilder setDefaults(int defaults) {
         mBuilder.setDefaults(defaults);
         return this;
@@ -243,14 +280,22 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     }
 
     @Override
-    public NotificationWrapperBuilder setStyle(Notification.BigPictureStyle style) {
-        assert false; // unused
+    public NotificationWrapperBuilder setBigPictureStyle(
+            Bitmap bigPicture, CharSequence summaryText) {
+        NotificationCompat.BigPictureStyle style =
+                new NotificationCompat.BigPictureStyle().bigPicture(bigPicture);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Android N doesn't show content text when expanded, so duplicate body text as a
+            // summary for the big picture.
+            style.setSummaryText(summaryText);
+        }
+        mBuilder.setStyle(style);
         return this;
     }
 
     @Override
-    public NotificationWrapperBuilder setStyle(Notification.BigTextStyle bigTextStyle) {
-        assert false; // unused
+    public NotificationWrapperBuilder setBigTextStyle(CharSequence bigText) {
+        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
         return this;
     }
 
@@ -288,12 +333,16 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
 
     @Override
     public Notification build() {
+        boolean success = false;
         Notification notification = null;
         try {
             notification = mBuilder.build();
+            success = true;
         } catch (NullPointerException e) {
             // Android M and L may throw exception, see https://crbug.com/949794.
             Log.e(TAG, "Failed to build notification.", e);
+        } finally {
+            RecordHistogram.recordBooleanHistogram("Notifications.Android.Build", success);
         }
         return notification;
     }

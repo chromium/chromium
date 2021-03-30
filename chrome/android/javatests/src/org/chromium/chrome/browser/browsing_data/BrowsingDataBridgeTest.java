@@ -18,15 +18,16 @@ import junit.framework.Assert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
@@ -37,7 +38,7 @@ import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -56,9 +57,15 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class BrowsingDataBridgeTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private CallbackHelper mCallbackHelper;
     private BrowsingDataBridge.OnClearBrowsingDataListener mListener;
@@ -68,14 +75,8 @@ public class BrowsingDataBridgeTest {
     @Before
     public void setUp() throws Exception {
         mCallbackHelper = new CallbackHelper();
-        mListener = new BrowsingDataBridge.OnClearBrowsingDataListener() {
-            @Override
-            public void onBrowsingDataCleared() {
-                mCallbackHelper.notifyCalled();
-            }
-        };
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mTestServer = mActivityTestRule.getTestServer();
+        mListener = mCallbackHelper::notifyCalled;
+        mTestServer = sActivityTestRule.getTestServer();
         mActionTester = new UserActionTester();
     }
 
@@ -114,6 +115,21 @@ public class BrowsingDataBridgeTest {
                 Matchers.containsInAnyOrder("ClearBrowsingData_LastHour",
                         "ClearBrowsingData_MaskContainsUnprotectedWeb", "ClearBrowsingData_Cookies",
                         "ClearBrowsingData_SiteUsageData", "ClearBrowsingData_ContentLicenses"));
+    }
+
+    /**
+     * Test deleting SameSite=None cookies.
+     */
+    @Test
+    @SmallTest
+    public void testSameSiteNoneCookiesDeleted() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearSameSiteNoneData(
+                    () -> { mCallbackHelper.notifyCalled(); });
+        });
+        mCallbackHelper.waitForCallback(0);
+        assertThat(mActionTester.toString(), getActions(),
+                Matchers.contains("ClearBrowsingData_SameSiteNoneData"));
     }
 
     /**
@@ -226,21 +242,20 @@ public class BrowsingDataBridgeTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.REMOVE_NAVIGATION_HISTORY)
     public void testFrozenNavigationDeletion() throws Exception {
         final String url1 = mTestServer.getURL("/chrome/test/data/browsing_data/a.html");
         final String url2 = mTestServer.getURL("/chrome/test/data/browsing_data/b.html");
 
         // Navigate to url1 and url2, close and recreate as frozen tab.
-        Tab tab = mActivityTestRule.loadUrlInNewTab(url1);
-        mActivityTestRule.loadUrl(url2);
+        Tab tab = sActivityTestRule.loadUrlInNewTab(url1);
+        sActivityTestRule.loadUrl(url2);
         Tab[] frozen = new Tab[1];
         WebContents[] restored = new WebContents[1];
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabState state = TabStateExtractor.from(tab);
-            mActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);
-            frozen[0] = mActivityTestRule.getActivity().getCurrentTabCreator().createFrozenTab(
-                    state, null, tab.getId(), 1);
+            sActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);
+            frozen[0] = sActivityTestRule.getActivity().getCurrentTabCreator().createFrozenTab(
+                    state, null, tab.getId(), tab.isIncognito(), 1);
             restored[0] = WebContentsStateBridge.restoreContentsFromByteBuffer(
                     TabStateExtractor.from(frozen[0]).contentsState, false);
         });
@@ -277,15 +292,14 @@ public class BrowsingDataBridgeTest {
      * Tests navigation entries are removed by history deletions.
      */
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.REMOVE_NAVIGATION_HISTORY)
     @MediumTest
     public void testNavigationDeletion() throws Exception {
         final String url1 = mTestServer.getURL("/chrome/test/data/browsing_data/a.html");
         final String url2 = mTestServer.getURL("/chrome/test/data/browsing_data/b.html");
 
         // Navigate to url1 and url2.
-        Tab tab = mActivityTestRule.loadUrlInNewTab(url1);
-        mActivityTestRule.loadUrl(url2);
+        Tab tab = sActivityTestRule.loadUrlInNewTab(url1);
+        sActivityTestRule.loadUrl(url2);
         NavigationController controller = tab.getWebContents().getNavigationController();
         assertTrue(tab.canGoBack());
         assertEquals(1, controller.getLastCommittedEntryIndex());

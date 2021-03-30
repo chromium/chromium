@@ -46,20 +46,6 @@ uintptr_t GetCurrentPC() {
 
 }  // namespace
 
-TEST_F(StackUnwinderTest, UnwindCurrentThread) {
-  const void* frames[kMaxStackFrames];
-  size_t result = unwinder()->TraceStack(frames, kMaxStackFrames);
-  EXPECT_GT(result, 0u);
-
-  // Since we are starting from chrome library function (this), all the unwind
-  // frames will be chrome frames.
-  for (size_t i = 0; i < result; ++i) {
-    EXPECT_TRUE(
-        base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()
-            ->is_chrome_address(reinterpret_cast<uintptr_t>(frames[i])));
-  }
-}
-
 TEST_F(StackUnwinderTest, UnwindOtherThread) {
   base::WaitableEvent unwind_finished_event;
   auto task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(

@@ -18,7 +18,6 @@ class GPUFence : public DawnObject<WGPUFence> {
 
  public:
   explicit GPUFence(GPUDevice* device, WGPUFence fence);
-  ~GPUFence() override;
 
   // gpu_fence.idl
   uint64_t getCompletedValue() const;

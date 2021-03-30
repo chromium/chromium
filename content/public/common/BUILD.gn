@@ -119,18 +119,12 @@ source_set("common_sources") {
     "content_switches.h",
     "drop_data.cc",
     "drop_data.h",
-    "impression.cc",
-    "impression.h",
     "input_event_ack_state.h",
     "isolated_world_ids.h",
     "javascript_dialog_type.h",
     "main_function_params.h",
-    "menu_item.cc",
-    "menu_item.h",
     "mhtml_generation_params.cc",
     "mhtml_generation_params.h",
-    "navigation_policy.cc",
-    "navigation_policy.h",
     "network_service_util.cc",
     "network_service_util.h",
     "origin_util.h",
@@ -147,7 +141,7 @@ source_set("common_sources") {
     "referrer.h",
     "referrer_type_converters.cc",
     "referrer_type_converters.h",
-    "resource_intercept_policy.h",
+    "resource_request_blocked_reason.h",
     "resource_usage_reporter_type_converters.cc",
     "resource_usage_reporter_type_converters.h",
     "result_codes.h",
@@ -158,8 +152,6 @@ source_set("common_sources") {
     "stop_find_action.h",
     "storage_quota_params.h",
     "three_d_api_types.h",
-    "untrustworthy_context_menu_params.cc",
-    "untrustworthy_context_menu_params.h",
     "url_constants.cc",
     "url_constants.h",
     "url_utils.cc",
@@ -174,10 +166,7 @@ source_set("common_sources") {
   ]
 
   if (is_win) {
-    sources += [
-      "font_cache_dispatcher_win.h",
-      "injection_test_win.h",
-    ]
+    sources += [ "font_cache_dispatcher_win.h" ]
   }
 
   if (is_android) {
@@ -253,7 +242,6 @@ source_set("common_sources") {
   }
 
   if (is_android) {
-    sources += [ "cpu_affinity.h" ]
     deps += [ "//content/public/android:jni" ]
   }
 

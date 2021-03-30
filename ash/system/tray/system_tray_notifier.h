@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -49,14 +48,14 @@ class ASH_EXPORT SystemTrayNotifier {
   void RemoveScreenCaptureObserver(ScreenCaptureObserver* observer);
   void NotifyScreenCaptureStart(base::RepeatingClosure stop_callback,
                                 base::RepeatingClosure source_callback,
-                                const base::string16& sharing_app_name);
+                                const std::u16string& sharing_app_name);
   void NotifyScreenCaptureStop();
 
   // Screen share.
   void AddScreenShareObserver(ScreenShareObserver* observer);
   void RemoveScreenShareObserver(ScreenShareObserver* observer);
   void NotifyScreenShareStart(base::RepeatingClosure stop_callback,
-                              const base::string16& helper_name);
+                              const std::u16string& helper_name);
   void NotifyScreenShareStop();
 
   // System tray focus.

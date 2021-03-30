@@ -6,6 +6,7 @@
 #define CHROMECAST_MEDIA_AUDIO_CAPTURE_SERVICE_CONSTANTS_H_
 
 #include <cstdint>
+#include <ostream>
 
 namespace chromecast {
 namespace media {
@@ -23,6 +24,24 @@ enum class SampleFormat : uint8_t {
   PLANAR_FLOAT = 5,
   LAST_FORMAT = PLANAR_FLOAT,
 };
+
+inline std::ostream& operator<<(std::ostream& os, SampleFormat sample_format) {
+  switch (sample_format) {
+    case SampleFormat::INTERLEAVED_INT16:
+      return os << "INTERLEAVED_INT16";
+    case SampleFormat::INTERLEAVED_INT32:
+      return os << "INTERLEAVED_INT32";
+    case SampleFormat::INTERLEAVED_FLOAT:
+      return os << "INTERLEAVED_FLOAT";
+    case SampleFormat::PLANAR_INT16:
+      return os << "PLANAR_INT16";
+    case SampleFormat::PLANAR_INT32:
+      return os << "PLANAR_INT32";
+    case SampleFormat::PLANAR_FLOAT:
+      return os << "PLANAR_FLOAT";
+    // Don't use default, so compiler can capture missed enums.
+  }
+}
 
 enum class StreamType : uint8_t {
   // Raw microphone capture from ALSA or other platform interface.

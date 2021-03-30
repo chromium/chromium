@@ -252,9 +252,9 @@ WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
   std::unique_ptr<Approval> result(new Approval());
   result->extension_id = extension_id;
   result->profile = profile;
-  result->manifest = std::unique_ptr<Manifest>(new Manifest(
-      Manifest::INVALID_LOCATION,
-      std::unique_ptr<base::DictionaryValue>(parsed_manifest->DeepCopy())));
+  result->manifest =
+      std::make_unique<Manifest>(mojom::ManifestLocation::kInvalidLocation,
+                                 std::move(parsed_manifest), extension_id);
   result->skip_install_dialog = true;
   result->manifest_check_level = strict_manifest_check ?
     MANIFEST_CHECK_LEVEL_STRICT : MANIFEST_CHECK_LEVEL_LOOSE;
@@ -285,7 +285,7 @@ WebstoreInstaller::WebstoreInstaller(Profile* profile,
 
   registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
                  content::Source<CrxInstaller>(nullptr));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
 
 void WebstoreInstaller::Start() {
@@ -322,7 +322,8 @@ void WebstoreInstaller::Start() {
   InstallVerifier::Get(profile_)->AddProvisional(ids);
 
   std::string name;
-  if (!approval_->manifest->value()->GetString(manifest_keys::kName, &name)) {
+  if (!approval_->manifest->available_values().GetString(manifest_keys::kName,
+                                                         &name)) {
     NOTREACHED();
   }
   extensions::InstallTracker* tracker =
@@ -353,7 +354,7 @@ void WebstoreInstaller::Observe(int type,
     return;
 
   // TODO(rdevlin.cronin): Continue removing std::string errors and
-  // replacing with base::string16. See crbug.com/71980.
+  // replacing with std::u16string. See crbug.com/71980.
   const extensions::CrxInstallError* error =
       content::Details<const extensions::CrxInstallError>(details).ptr();
   const std::string utf8_error = base::UTF16ToUTF8(error->message());

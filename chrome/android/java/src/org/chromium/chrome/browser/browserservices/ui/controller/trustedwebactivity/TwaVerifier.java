@@ -8,9 +8,11 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.Promise;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -54,7 +56,7 @@ public class TwaVerifier implements Verifier, Destroyable {
     @Inject
     public TwaVerifier(ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
-            OriginVerifier.Factory originVerifierFactory, CustomTabActivityTabProvider tabProvider,
+            OriginVerifierFactory originVerifierFactory, CustomTabActivityTabProvider tabProvider,
             ClientPackageNameProvider clientPackageNameProvider,
             ExternalAuthUtils externalAuthUtils) {
         mIntentDataProvider = intentDataProvider;
@@ -62,8 +64,9 @@ public class TwaVerifier implements Verifier, Destroyable {
         // TODO(peconn): See if we can get rid of the dependency on Web Contents.
         WebContents webContents =
                 tabProvider.getTab() != null ? tabProvider.getTab().getWebContents() : null;
-        mOriginVerifier = originVerifierFactory.create(
-                clientPackageNameProvider.get(), RELATIONSHIP, webContents, externalAuthUtils);
+        mOriginVerifier = originVerifierFactory.create(clientPackageNameProvider.get(),
+                RELATIONSHIP, webContents, externalAuthUtils,
+                new BrowserServicesMetrics.OriginVerifierMetricsListener());
 
         lifecycleDispatcher.register(this);
     }

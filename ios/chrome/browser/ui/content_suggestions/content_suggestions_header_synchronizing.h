@@ -15,9 +15,13 @@
 // ignored.
 @property(nonatomic, assign, getter=isShowing) BOOL showing;
 
-// Handles the scroll of the collection and unfocus the omnibox if needed.
-// Updates the fake omnibox to adapt to the current scrolling.
-- (void)updateFakeOmniboxOnCollectionScroll;
+// The added y-offset of the NTP collection view to make up for the header.
+// Without this, the offset is negative at the top of the NTP.
+@property(nonatomic, assign) CGFloat additionalOffset;
+
+// Handles the scroll position of the collection and unfocus the omnibox if
+// needed. Updates the fake omnibox to adapt to the current scrolling.
+- (void)updateFakeOmniboxForScrollPosition;
 
 // Updates the fake omnibox to adapt to the current orientation.
 - (void)updateFakeOmniboxOnNewWidth:(CGFloat)width;

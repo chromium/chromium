@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -22,7 +21,6 @@
 #include "ui/gfx/image/image_skia.h"
 #endif
 
-class GURL;
 class PageInfo;
 class PageInfoUiDelegate;
 
@@ -61,10 +59,10 @@ class PageInfoUI {
     // opinionated guide to the user on the overall security state of the site.
     SecuritySummaryColor summary_style;
     // A one-line summary of the security state.
-    base::string16 summary;
+    std::u16string summary;
     // A short paragraph with more details about the state, and how
     // the user should treat it.
-    base::string16 details;
+    std::u16string details;
     // The category of the security description, used to determine which help
     // center article to link to.
     SecurityDescriptionType type;
@@ -156,13 +154,13 @@ class PageInfoUI {
   virtual ~PageInfoUI();
 
   // Returns the UI string for the given permission |type|.
-  static base::string16 PermissionTypeToUIString(ContentSettingsType type);
+  static std::u16string PermissionTypeToUIString(ContentSettingsType type);
 
   // Returns the UI string describing the action taken for a permission,
   // including why that action was taken. E.g. "Allowed by you",
   // "Blocked by default". If |setting| is default, specify the actual default
   // setting using |default_setting|.
-  static base::string16 PermissionActionToUIString(
+  static std::u16string PermissionActionToUIString(
       PageInfoUiDelegate* delegate,
       ContentSettingsType type,
       ContentSetting setting,
@@ -172,10 +170,9 @@ class PageInfoUI {
 
   // Returns a string indicating whether the permission was blocked via an
   // extension, enterprise policy, or embargo.
-  static base::string16 PermissionDecisionReasonToUIString(
+  static std::u16string PermissionDecisionReasonToUIString(
       PageInfoUiDelegate* delegate,
-      const PageInfo::PermissionInfo& permission,
-      const GURL& url);
+      const PageInfo::PermissionInfo& permission);
 
   // Returns the color to use for the permission decision reason strings.
   static SkColor GetSecondaryTextColor();

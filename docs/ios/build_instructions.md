@@ -12,8 +12,8 @@ Are you a Google employee? See
 
 ## System requirements
 
-* A 64-bit Mac running 10.12.6 or later.
-* [Xcode](https://developer.apple.com/xcode) 12.0 or higher.
+* A 64-bit Mac running 10.15.4 or later.
+* [Xcode](https://developer.apple.com/xcode) 12.2 or higher.
 * The current version of the JDK (required for the Closure compiler).
 
 ## Install `depot_tools`
@@ -168,10 +168,13 @@ You then need to request provisioning profiles from Apple for your devices
 for the following bundle identifiers to build and run Chromium with these
 application extensions:
 
--   `${prefix}.chrome.ios.herebedragons`
--   `${prefix}.chrome.ios.herebedragons.ShareExtension`
--   `${prefix}.chrome.ios.herebedragons.TodayExtension`
--   `${prefix}.chrome.ios.herebedragons.SearchTodayExtension`
+-   `${prefix}.chrome.ios.dev`
+-   `${prefix}.chrome.ios.dev.ContentTodayExtension`
+-   `${prefix}.chrome.ios.dev.CredentialProviderExtension`
+-   `${prefix}.chrome.ios.dev.SearchTodayExtension`
+-   `${prefix}.chrome.ios.dev.ShareExtension`
+-   `${prefix}.chrome.ios.dev.TodayExtension`
+-   `${prefix}.chrome.ios.dev.WidgetKitExtension`
 
 All these certificates need to have the "App Groups"
 (`com.apple.security.application-groups`) capability enabled for
@@ -184,6 +187,11 @@ The `group.${prefix}.chrome` is only shared by Chromium and its extensions
 to share files and configurations while the `group.${prefix}.common` is shared
 with Chromium and other applications from the same organisation and can be used
 to send commands to Chromium.
+
+`${prefix}.chrome.ios.dev.CredentialProviderExtension` needs the AutoFill 
+Credential Provider Entitlement, which corresponds to the key 
+`com.apple.developer.authentication-services.autofill-credential-provider`
+Please refer to Apple's documentation on how to set this up.
 
 ### Mobile provisioning profiles for tests
 
@@ -342,8 +350,12 @@ script import lldbinit
 ```
 
 This will also allow you to see the content of some of Chromium types in the
-debugger like `base::string16`, ... If you want to use `lldb` directly, name
+debugger like `std::u16string`, ... If you want to use `lldb` directly, name
 the file `~/.lldbinit` instead of `~/.lldbinit-Xcode`.
+
+Note: if you are using `ios/build/tools/setup-gn.py` to generate the Xcode
+project, the script also generate an `.lldbinit` file next to the project and
+configure Xcode to use that file instead of the global one.
 
 ### Changing the version of Xcode
 

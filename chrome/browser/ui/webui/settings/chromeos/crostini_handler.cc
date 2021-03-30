@@ -20,8 +20,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_types.mojom.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
@@ -63,24 +61,6 @@ void CrostiniHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "requestRemoveCrostini",
       base::BindRepeating(&CrostiniHandler::HandleRequestRemoveCrostini,
-                          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "getCrostiniSharedPathsDisplayText",
-      base::BindRepeating(
-          &CrostiniHandler::HandleGetCrostiniSharedPathsDisplayText,
-          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "removeCrostiniSharedPath",
-      base::BindRepeating(&CrostiniHandler::HandleRemoveCrostiniSharedPath,
-                          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "notifyCrostiniSharedUsbDevicesPageReady",
-      base::BindRepeating(
-          &CrostiniHandler::HandleNotifyCrostiniSharedUsbDevicesPageReady,
-          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "setCrostiniUsbDeviceShared",
-      base::BindRepeating(&CrostiniHandler::HandleSetCrostiniUsbDeviceShared,
                           weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "exportCrostiniContainer",
@@ -192,9 +172,6 @@ void CrostiniHandler::OnJavascriptAllowed() {
   crostini_manager->AddContainerStartedObserver(this);
   crostini_manager->AddContainerShutdownObserver(this);
   crostini_manager->AddCrostiniMicSharingEnabledObserver(this);
-  if (chromeos::CrosUsbDetector::Get()) {
-    chromeos::CrosUsbDetector::Get()->AddUsbDeviceObserver(this);
-  }
   crostini::CrostiniExportImport::GetForProfile(profile_)->AddObserver(this);
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->AddObserver(this);
 
@@ -220,9 +197,6 @@ void CrostiniHandler::OnJavascriptDisallowed() {
   crostini_manager->RemoveContainerStartedObserver(this);
   crostini_manager->RemoveContainerShutdownObserver(this);
   crostini_manager->RemoveCrostiniMicSharingEnabledObserver(this);
-  if (chromeos::CrosUsbDetector::Get()) {
-    chromeos::CrosUsbDetector::Get()->RemoveUsbDeviceObserver(this);
-  }
   crostini::CrostiniExportImport::GetForProfile(profile_)->RemoveObserver(this);
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemoveObserver(
       this);
@@ -244,63 +218,7 @@ void CrostiniHandler::HandleRequestRemoveCrostini(const base::ListValue* args) {
                               crostini::CrostiniUISurface::kSettings);
 }
 
-void CrostiniHandler::HandleGetCrostiniSharedPathsDisplayText(
-    const base::ListValue* args) {
-  AllowJavascript();
-  CHECK_EQ(2U, args->GetList().size());
-  std::string callback_id = args->GetList()[0].GetString();
-  base::Value::ConstListView paths = args->GetList()[1].GetList();
-
-  base::ListValue texts;
-  for (size_t i = 0; i < paths.size(); ++i) {
-    texts.AppendString(file_manager::util::GetPathDisplayTextForSettings(
-        profile_, paths[i].GetString()));
-  }
-  ResolveJavascriptCallback(base::Value(callback_id), texts);
-}
-
-void CrostiniHandler::HandleRemoveCrostiniSharedPath(
-    const base::ListValue* args) {
-  AllowJavascript();
-  CHECK_EQ(3U, args->GetList().size());
-  std::string callback_id = args->GetList()[0].GetString();
-  std::string vm_name = args->GetList()[1].GetString();
-  std::string path = args->GetList()[2].GetString();
-
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->UnsharePath(
-      vm_name, base::FilePath(path),
-      /*unpersist=*/true,
-      base::BindOnce(&CrostiniHandler::OnCrostiniSharedPathRemoved,
-                     weak_ptr_factory_.GetWeakPtr(), callback_id, path));
-}
-
-void CrostiniHandler::OnCrostiniSharedPathRemoved(
-    const std::string& callback_id,
-    const std::string& path,
-    bool result,
-    const std::string& failure_reason) {
-  if (!result) {
-    LOG(ERROR) << "Error unsharing " << path << ": " << failure_reason;
-  }
-  ResolveJavascriptCallback(base::Value(callback_id), base::Value(result));
-}
-
 namespace {
-base::ListValue GetSharableUsbDevices(CrosUsbDetector* detector) {
-  base::ListValue usb_devices_list;
-  for (const auto& device : detector->GetDevicesSharableWithCrostini()) {
-    base::Value device_info(base::Value::Type::DICTIONARY);
-    device_info.SetStringKey("guid", device.guid);
-    device_info.SetStringKey("label", device.label);
-    bool shared = device.shared_vm_name == crostini::kCrostiniDefaultVmName;
-    device_info.SetBoolKey("shared", shared);
-    device_info.SetBoolKey(
-        "shareWillReassign",
-        !shared && detector->SharingRequiresReassignPrompt(device));
-    usb_devices_list.Append(std::move(device_info));
-  }
-  return usb_devices_list;
-}
 
 base::Value CrostiniDiskInfoToValue(
     std::unique_ptr<crostini::CrostiniDiskInfo> disk_info) {
@@ -327,39 +245,6 @@ base::Value CrostiniDiskInfoToValue(
   return disk_value;
 }
 }  // namespace
-
-void CrostiniHandler::HandleNotifyCrostiniSharedUsbDevicesPageReady(
-    const base::ListValue* args) {
-  AllowJavascript();
-  OnUsbDevicesChanged();
-}
-
-void CrostiniHandler::HandleSetCrostiniUsbDeviceShared(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
-  const auto& args_list = args->GetList();
-  std::string guid = args_list[0].GetString();
-  bool shared = args_list[1].GetBool();
-
-  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
-  if (!detector)
-    return;
-
-  if (shared) {
-    detector->AttachUsbDeviceToVm(crostini::kCrostiniDefaultVmName, guid,
-                                  base::DoNothing());
-    return;
-  }
-  detector->DetachUsbDeviceFromVm(crostini::kCrostiniDefaultVmName, guid,
-                                  base::DoNothing());
-}
-
-void CrostiniHandler::OnUsbDevicesChanged() {
-  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
-  DCHECK(detector);  // This callback is called by the detector.
-  FireWebUIListener("crostini-shared-usb-devices-changed",
-                    GetSharableUsbDevices(detector));
-}
 
 void CrostiniHandler::HandleExportCrostiniContainer(
     const base::ListValue* args) {

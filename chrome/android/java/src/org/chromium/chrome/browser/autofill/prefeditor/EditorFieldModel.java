@@ -62,7 +62,7 @@ public class EditorFieldModel {
     private static final int INPUT_TYPE_HINT_MIN_INCLUSIVE = 0;
 
     /** Text input with no special formatting rules, e.g., a city, a suburb, or a company name. */
-    private static final int INPUT_TYPE_HINT_NONE = 0;
+    public static final int INPUT_TYPE_HINT_NONE = 0;
 
     /** Indicates a phone field. */
     public static final int INPUT_TYPE_HINT_PHONE = 1;
@@ -113,6 +113,9 @@ public class EditorFieldModel {
 
     private static final int INPUT_TYPE_HINT_MAX_EXCLUSIVE = 13;
 
+    /* Indicates that the length counter is disabled. */
+    public static final int LENGTH_COUNTER_LIMIT_NONE = 0;
+
     private final int mInputTypeHint;
 
     @Nullable
@@ -162,6 +165,7 @@ public class EditorFieldModel {
     private int mActionIconDescriptionForAccessibility;
     private boolean mIsFullLine = true;
     private boolean mPlusIconIsDisplayed;
+    private int mLengthCounterLimit = LENGTH_COUNTER_LIMIT_NONE;
 
     /**
      * Constructs a label to show in the editor. This can be, for example, description of a server
@@ -286,7 +290,7 @@ public class EditorFieldModel {
     /**
      * Constructs a text input field model.
      *
-     * @param inputTypeHint        The type of input. For example, INPUT_TYPE_HINT_PHONE.
+     * @param inputTypeHint        The type of input. For example, {@link INPUT_TYPE_HINT_PHONE}.
      * @param label                The human-readable label for user to understand the type of data
      *                             that should be entered into this field.
      * @param suggestions          Optional set of values to suggest to the user.
@@ -297,6 +301,9 @@ public class EditorFieldModel {
      *                             cannot leave this field empty.
      * @param invalidErrorMessage  The optional error message that indicates to the user that the
      *                             value they have entered is not valid.
+     * @param lengthCounterLimit   The maximum number of characters to be allowed by the length
+     *                             counter ("cur/max") shown below the focused field. Use
+     *                             {@link LENGTH_COUNTER_LIMIT_NONE} to disable the counter.
      * @param value                Optional initial value of this field.
      */
     public static EditorFieldModel createTextInput(int inputTypeHint, CharSequence label,
@@ -304,7 +311,7 @@ public class EditorFieldModel {
             @Nullable EditorFieldValidator validator,
             @Nullable EditorValueIconGenerator valueIconGenerator,
             @Nullable CharSequence requiredErrorMessage, @Nullable CharSequence invalidErrorMessage,
-            @Nullable CharSequence value) {
+            int lengthCounterLimit, @Nullable CharSequence value) {
         assert label != null;
         EditorFieldModel result = new EditorFieldModel(inputTypeHint);
         assert result.isTextField();
@@ -316,6 +323,7 @@ public class EditorFieldModel {
         result.mRequiredErrorMessage = requiredErrorMessage;
         result.mLabel = label;
         result.mValue = value;
+        result.mLengthCounterLimit = Math.max(lengthCounterLimit, LENGTH_COUNTER_LIMIT_NONE);
         return result;
     }
 
@@ -664,5 +672,32 @@ public class EditorFieldModel {
      */
     public void setIsFullLine(boolean isFullLine) {
         mIsFullLine = isFullLine;
+    }
+
+    /**
+     * @return The maximum number of characters allowed by the length counter ("cur/max") shown
+     * below the focused field. If the value equals {@link LENGTH_COUNTER_LIMIT_NONE}, the counter
+     * is not shown, which is the default behavior.
+     */
+    public int getLengthCounterLimit() {
+        return mLengthCounterLimit;
+    }
+
+    /**
+     * Sets the maximum number of characters to be allowed by the length counter ("cur/max") shown
+     * below the focused field. If the value equals {@link LENGTH_COUNTER_LIMIT_NONE} or any
+     * nonpositive value, the counter won't be shown, which is the default behavior.
+     *
+     * @param lengthCounterLimit The maximum number of characters for the length counter.
+     */
+    public void setLengthCounterLimit(int lengthCounterLimit) {
+        mLengthCounterLimit = Math.max(lengthCounterLimit, LENGTH_COUNTER_LIMIT_NONE);
+    }
+
+    /**
+     * @return whether the length counter should be shown below the focused field.
+     */
+    public boolean hasLengthCounter() {
+        return mLengthCounterLimit != EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE;
     }
 }

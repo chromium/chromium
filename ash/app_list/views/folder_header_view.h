@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_item_observer.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -24,9 +24,9 @@ class FolderHeaderViewTest;
 }
 
 // FolderHeaderView contains an editable folder name field.
-class APP_LIST_EXPORT FolderHeaderView : public views::View,
-                                         public views::TextfieldController,
-                                         public AppListItemObserver {
+class ASH_EXPORT FolderHeaderView : public views::View,
+                                    public views::TextfieldController,
+                                    public AppListItemObserver {
  public:
   explicit FolderHeaderView(FolderHeaderViewDelegate* delegate);
   ~FolderHeaderView() override;
@@ -44,11 +44,12 @@ class APP_LIST_EXPORT FolderHeaderView : public views::View,
   const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
-  views::View* GetFolderNameViewForTest() const;
+  views::Textfield* GetFolderNameViewForTest() const;
 
  private:
   class FolderNameView;
   friend class test::FolderHeaderViewTest;
+  friend class PopulatedAppListTest;
 
   // Updates UI.
   void Update();
@@ -57,8 +58,8 @@ class APP_LIST_EXPORT FolderHeaderView : public views::View,
   void UpdateFolderNameAccessibleName();
 
   // Gets and sets the folder name for test.
-  const base::string16& GetFolderNameForTest();
-  void SetFolderNameForTest(const base::string16& name);
+  const std::u16string& GetFolderNameForTest();
+  void SetFolderNameForTest(const std::u16string& name);
 
   // Returns true if folder name is enabled, only for testing use.
   bool IsFolderNameEnabledForTest() const;
@@ -66,7 +67,7 @@ class APP_LIST_EXPORT FolderHeaderView : public views::View,
   int GetMaxFolderNameWidth() const;
 
   // Returns elided folder name from |folder_name|.
-  base::string16 GetElidedFolderName(const base::string16& folder_name) const;
+  std::u16string GetElidedFolderName(const std::u16string& folder_name) const;
 
   // Returns whether |folder_name_view_| should clear focus based on
   // |key_event_|.
@@ -77,7 +78,7 @@ class APP_LIST_EXPORT FolderHeaderView : public views::View,
 
   // views::TextfieldController overrides:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   void OnBeforeUserAction(views::Textfield* sender) override;
@@ -89,11 +90,11 @@ class APP_LIST_EXPORT FolderHeaderView : public views::View,
   void SetPreviousCursorPositionForTest(const size_t cursor_position);
 
   // Sets the |previous_folder_name_|, only for testing use
-  void SetPreviousFolderNameForTest(const base::string16& previous_name);
+  void SetPreviousFolderNameForTest(const std::u16string& previous_name);
 
   // Used to restore the folder name if the new folder name is longer than the
   // max chars folder length allowed
-  base::Optional<base::string16> previous_folder_name_;
+  base::Optional<std::u16string> previous_folder_name_;
 
   // Used to restore the cursor position to its last known location when
   // resetting the folder name in textfield
@@ -103,7 +104,7 @@ class APP_LIST_EXPORT FolderHeaderView : public views::View,
 
   FolderNameView* folder_name_view_;  // Owned by views hierarchy.
 
-  const base::string16 folder_name_placeholder_text_;
+  const std::u16string folder_name_placeholder_text_;
 
   FolderHeaderViewDelegate* delegate_;
 

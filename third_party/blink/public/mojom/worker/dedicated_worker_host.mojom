@@ -1,0 +1,12 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/frame/lifecycle.mojom";
+
+// Each dedicated worker has a corresponding host that is implemented in
+// the browser process.
+interface DedicatedWorkerHost {
+};

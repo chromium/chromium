@@ -6,15 +6,33 @@
  * @fileoverview 'settings-signout-dialog' is a dialog that allows the
  * user to turn off sync and sign out of Chromium.
  */
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import {ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
+import {SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
+import {loadTimeData} from '../i18n_setup.js';
+import '../settings_shared_css.js';
+
 Polymer({
   is: 'settings-signout-dialog',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [WebUIListenerBehavior],
 
   properties: {
     /**
      * The current sync status, supplied by the parent.
-     * @type {?settings.SyncStatus}
+     * @type {?SyncStatus}
      */
     syncStatus: {
       type: Object,
@@ -47,7 +65,7 @@ Polymer({
     this.addWebUIListener(
         'profile-stats-count-ready', this.handleProfileStatsCount_.bind(this));
     // <if expr="not chromeos">
-    settings.ProfileInfoBrowserProxyImpl.getInstance().getProfileStatsCount();
+    ProfileInfoBrowserProxyImpl.getInstance().getProfileStatsCount();
     // </if>
     this.async(() => {
       this.$.dialog.showModal();
@@ -119,11 +137,11 @@ Polymer({
     this.$.dialog.close();
     // <if expr="not chromeos">
     const deleteProfile = !!this.syncStatus.domain || this.deleteProfile_;
-    settings.SyncBrowserProxyImpl.getInstance().signOut(deleteProfile);
+    SyncBrowserProxyImpl.getInstance().signOut(deleteProfile);
     // </if>
     // <if expr="chromeos">
     // Chrome OS users are always signed-in, so just turn off sync.
-    settings.SyncBrowserProxyImpl.getInstance().turnOffSync();
+    SyncBrowserProxyImpl.getInstance().turnOffSync();
     // </if>
   },
 });

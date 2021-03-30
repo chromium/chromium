@@ -39,7 +39,7 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadSaveInfo {
 
   // If non-empty, contains an untrusted filename suggestion. This can't contain
   // a path (only a filename), and is only effective if |file_path| is empty.
-  base::string16 suggested_name;
+  std::u16string suggested_name;
 
   // If valid, contains the source data stream for the file contents.
   base::File file;

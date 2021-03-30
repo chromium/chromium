@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Stavka popisa</translation>
 <translation id="1013742170491673792">prtrž</translation>
 <translation id="1014370462248694370">Prelazak dvama prstima udesno</translation>
-<translation id="1016393160682012902">Pritisnite tipku qwerty tastuture, tipku s Braillevim pismom koju je moguće osvježiti ili uradite pokret dodira da saznate funkciju. Za zatvaranje pritisnite tipku Ctrl i "w" ili Esc.</translation>
 <translation id="1022586497894531524">Koristite li po prvi put ChromeVox izgovorene povratne informacije? Ovaj brzi vodič vam objašnjava osnove stvari da počnete koristiti ChromeVox.</translation>
 <translation id="1025074108959230262">Ljepljivi način rada je onemogućen</translation>
 <translation id="1031961866430398710">zatim</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Nema prethodne kontrole</translation>
 <translation id="2045606329038304310">Kontrola polja obrasca</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2074531330963286860">Radnje su dostupne. Pritisnite tipku za pretraživanje + tipku sa tačkom da pogledate</translation>
 <translation id="2086961585857038472">Sljedeća riječ</translation>
 <translation id="2087981446621639008">dtlj spskopsa</translation>
 <translation id="2089387485033699258">bs</translation>
@@ -286,7 +286,7 @@
 <translation id="307516670110542567">Brza orijentacija</translation>
 <translation id="3078345202707391975">Sljedeći naslov 2. nivoa</translation>
 <translation id="3078740164268491126">tabela</translation>
-<translation id="3082249673510793544">Pomicanje unazad</translation>
+<translation id="3082249673510793544">Pomjeranje unazad</translation>
 <translation id="3084806535845658316">nema odjeka tipkanja</translation>
 <translation id="3086746722712840547">bilješka</translation>
 <translation id="3090227230165225418">Objavi obavještenja o preuzimanju</translation>
@@ -336,7 +336,7 @@
 <translation id="3317212938060708859">Klizač</translation>
 <translation id="3321460131042519426">Omogući prilagođavanje riječi</translation>
 <translation id="3322936298410871309">Prethodni naslov 1. nivoa</translation>
-<translation id="3323447499041942178">Tekstualni okvir</translation>
+<translation id="3323447499041942178">Okvir za tekst</translation>
 <translation id="3324983252691184275">Grimizna</translation>
 <translation id="335581015389089642">Govor</translation>
 <translation id="3356951775008366684">Najava fonetskog izgovora za riječ</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Početak ili kraj odabira</translation>
 <translation id="827422111966801947">Indigo plava</translation>
 <translation id="8276439074553447000">Skok na prethodnu stavku koja se može fokusirati</translation>
+<translation id="8279039817939141096">Pritisnite tipku qwerty tastuture, tipku s Braillevim pismom koju je moguće osvježiti ili uradite pokret dodira da saznate funkciju. Da izađete, pritisnite tipku Ctrl i "w", tipku za razmak i "Z", prevucite ulijevo s dva prsta ili pritisnite tipku Esc.</translation>
 <translation id="8283603667300770666">Sljedeće polje obrasca</translation>
 <translation id="8310185481635255431">Nema sljedećeg linka</translation>
 <translation id="831207808878314375">Definicija</translation>

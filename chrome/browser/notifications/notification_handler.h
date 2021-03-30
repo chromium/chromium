@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 class GURL;
 class Profile;
@@ -62,7 +61,7 @@ class NotificationHandler {
                        const GURL& origin,
                        const std::string& notification_id,
                        const base::Optional<int>& action_index,
-                       const base::Optional<base::string16>& reply,
+                       const base::Optional<std::u16string>& reply,
                        base::OnceClosure completed_closure);
 
   // Called when notifications of the given origin have to be disabled.

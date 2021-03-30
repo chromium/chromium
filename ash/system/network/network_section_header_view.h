@@ -10,6 +10,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
@@ -101,6 +102,15 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView {
  private:
   // NetworkListView::NetworkSectionHeaderView:
   void OnToggleToggled(bool is_on) override;
+  void AddExtraButtons(bool enabled) override;
+
+  void PerformAddExtraButtons(bool enabled);
+  void OnCellularNetworksFetched(
+      bool enabled,
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks);
+
+  void AddCellularButtonPressed();
 
   // When Tether is disabled because Bluetooth is off, then enabling Bluetooth
   // will enable Tether. If enabling Bluetooth takes longer than some timeout

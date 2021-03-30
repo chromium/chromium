@@ -6,10 +6,10 @@
 #define UI_VIEWS_BUBBLE_INFO_BUBBLE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -22,7 +22,7 @@ class VIEWS_EXPORT InfoBubble : public BubbleDialogDelegateView {
  public:
   METADATA_HEADER(InfoBubble);
 
-  InfoBubble(View* anchor, const base::string16& message);
+  InfoBubble(View* anchor, const std::u16string& message);
   ~InfoBubble() override;
 
   // Shows the bubble. |widget_| will be NULL until this is called.

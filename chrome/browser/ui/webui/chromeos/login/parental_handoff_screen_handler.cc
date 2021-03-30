@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 
-#include "chrome/browser/chromeos/login/screens/parental_handoff_screen.h"
+#include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -15,8 +15,7 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kTitle[] = "title";
-constexpr char kSubTitle[] = "subtitle";
+constexpr char kUsername[] = "username";
 
 }  // namespace
 
@@ -38,15 +37,17 @@ void ParentalHandoffScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("parentalHandoffDialogNextButton",
                IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_NEXT_BUTTON);
+  builder->Add("parentalHandoffDialogTitle",
+               IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE);
+  builder->Add("parentalHandoffDialogSubtitle",
+               IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_SUBTITLE);
 }
 
 void ParentalHandoffScreenHandler::Initialize() {}
 
-void ParentalHandoffScreenHandler::Show(const base::string16& title,
-                                        const base::string16& subtitle) {
+void ParentalHandoffScreenHandler::Show(const std::u16string& username) {
   base::DictionaryValue data;
-  data.SetString(kTitle, title);
-  data.SetString(kSubTitle, subtitle);
+  data.SetString(kUsername, username);
 
   ShowScreenWithData(kScreenId, &data);
 }

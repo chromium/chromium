@@ -4,15 +4,15 @@
 
 #include "ui/ozone/platform/wayland/common/data_util.h"
 
+#include <string>
 #include <vector>
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/ozone/public/platform_clipboard.h"
@@ -101,7 +101,7 @@ void AddFiles(PlatformClipboard::Data data, OSExchangeData* os_exchange_data) {
     }
 
     std::string url_path = url.path();
-    url::RawCanonOutputT<base::char16> unescaped;
+    url::RawCanonOutputT<char16_t> unescaped;
     url::DecodeURLEscapeSequences(url_path.data(), url_path.size(),
                                   url::DecodeURLMode::kUTF8OrIsomorphic,
                                   &unescaped);
@@ -127,11 +127,11 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeData* os_exchange_data) {
   if (data->data().empty())
     return;
 
-  base::string16 data_as_string16 = BytesTo<base::string16>(data);
+  std::u16string data_as_string16 = BytesTo<std::u16string>(data);
 
   const auto lines =
-      base::SplitString(data_as_string16, base::ASCIIToUTF16("\r\n"),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      base::SplitString(data_as_string16, u"\r\n", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
   if (lines.size() != 2U) {
     LOG(WARNING) << "Invalid data passed as text/x-moz-url; it must contain "
                  << "exactly 2 lines but has " << lines.size() << " instead.";
@@ -191,20 +191,20 @@ bool ExtractOSExchangeData(const OSExchangeData& exchange_data,
   if (mime_type == ui::kMimeTypeMozillaURL &&
       exchange_data.HasURL(kFilenameToURLPolicy)) {
     GURL url;
-    base::string16 title;
+    std::u16string title;
     exchange_data.GetURLAndTitle(kFilenameToURLPolicy, &url, &title);
     out_content->append(url.spec());
     return true;
   }
   if (mime_type == ui::kMimeTypeHTML && exchange_data.HasHtml()) {
-    base::string16 data;
+    std::u16string data;
     GURL base_url;
     exchange_data.GetHtml(&data, &base_url);
     out_content->append(base::UTF16ToUTF8(data));
     return true;
   }
   if (exchange_data.HasString()) {
-    base::string16 data;
+    std::u16string data;
     exchange_data.GetString(&data);
     out_content->append(base::UTF16ToUTF8(data));
     return true;

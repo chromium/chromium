@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
@@ -474,7 +475,8 @@ void Shell::ToggleFullscreenModeForTab(WebContents* web_contents,
 #endif
   if (is_fullscreen_ != enter_fullscreen) {
     is_fullscreen_ = enter_fullscreen;
-    web_contents->GetRenderViewHost()
+    web_contents->GetMainFrame()
+        ->GetRenderViewHost()
         ->GetWidget()
         ->SynchronizeVisualProperties();
   }
@@ -557,9 +559,9 @@ bool Shell::HandleKeyboardEvent(WebContents* source,
 
 bool Shell::DidAddMessageToConsole(WebContents* source,
                                    blink::mojom::ConsoleMessageLevel log_level,
-                                   const base::string16& message,
+                                   const std::u16string& message,
                                    int32_t line_no,
-                                   const base::string16& source_id) {
+                                   const std::u16string& source_id) {
   return switches::IsRunWebTestsSwitchPresent();
 }
 

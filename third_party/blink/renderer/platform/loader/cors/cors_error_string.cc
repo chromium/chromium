@@ -111,7 +111,7 @@ String GetErrorString(const network::CorsErrorStatus& status,
       break;
     case CorsError::kInsecurePrivateNetwork:
       Append(builder, {"The request client is not a secure context and the "
-                       "resource is in more-private adress space `",
+                       "resource is in more-private address space `",
                        ShortAddressSpace(status.resource_address_space), "`."});
       break;
     case CorsError::kWildcardOriginNotAllowed:

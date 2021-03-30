@@ -1,0 +1,13 @@
+Name: firebase-encoders-json
+Short Name: firebase-encoders-json
+URL: https://firebase.google.com
+Version: 17.1.0
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+JSON encoders used in Firebase SDKs.
+
+Local Modifications:
+No modifications.

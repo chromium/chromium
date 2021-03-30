@@ -29,8 +29,6 @@ namespace content {
 //  fact a distinct object) When these selectors are called, the relevant
 // edit command is executed in WebCore.
 class CONTENT_EXPORT RenderWidgetHostViewMacEditCommandHelper {
-  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewMacEditCommandHelperTest,
-                           TestAddEditingSelectorsToClass);
   FRIEND_TEST_ALL_PREFIXES(
       RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
       TestEditingCommandDelivery);
@@ -38,14 +36,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMacEditCommandHelper {
  public:
   RenderWidgetHostViewMacEditCommandHelper();
   ~RenderWidgetHostViewMacEditCommandHelper();
-
-  // Adds editing selectors to the objc class using the objc runtime APIs.
-  // Each selector is connected to a single c method which forwards the message
-  // to WebCore's ExecuteEditCommand() function.
-  // This method is idempotent.
-  // The class passed in must conform to the RenderWidgetHostNSViewHostOwner
-  // protocol.
-  void AddEditingSelectorsToClass(Class klass);
 
   // Is a given menu item currently enabled?
   // SEL - the objc selector currently associated with an NSMenuItem.
@@ -58,12 +48,19 @@ class CONTENT_EXPORT RenderWidgetHostViewMacEditCommandHelper {
   // webkit.
   static NSString* CommandNameForSelector(SEL selector);
 
- protected:
+  // Adds editing selectors to the objc class using the objc runtime APIs.
+  // Each selector is connected to a single c method which forwards the message
+  // to WebCore's ExecuteEditCommand() function.
+  // This method is idempotent.
+  // The class passed in must conform to the RenderWidgetHostNSViewHostOwner
+  static void AddEditingSelectorsToClass(Class klass);
+
   // Gets a list of all the selectors that AddEditingSelectorsToClass adds to
   // the aforementioned class.
   // returns an array of NSStrings WITHOUT the trailing ':'s.
-  NSArray* GetEditSelectorNames();
+  static NSArray* GetEditSelectorNamesForTesting();
 
+ protected:
  private:
   std::unordered_set<std::string> edit_command_set_;
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewMacEditCommandHelper);

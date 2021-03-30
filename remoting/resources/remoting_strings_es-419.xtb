@@ -24,6 +24,7 @@ Para otorgarlo, haz clic en "<ph name="BUTTON_NAME" />" que se encuentra a conti
 Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala y vuelve a marcarla.</translation>
 <translation id="225614027745146050">Bienvenido</translation>
 <translation id="2320166752086256636">Ocultar el teclado</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Todos los derechos reservados.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">No se puede establecer la conexión con el host. Probablemente esto se deba a la configuración de la red que usas.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Última vez en línea <ph name="RELATIVE_TIMESTAMP" /></translation>
@@ -71,6 +72,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="4405930547258349619">Biblioteca principal</translation>
 <translation id="443560535555262820">Abrir las preferencias de Accesibilidad</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="4513946894732546136">Comentario</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
@@ -129,7 +131,6 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="7067321367069083429">La pantalla cuenta con función táctil</translation>
 <translation id="7116737094673640201">Bienvenido a Escritorio remoto de Chrome</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. Todos los derechos reservados.</translation>
 <translation id="7312846573060934304">El host no tiene conexión.</translation>
 <translation id="7319983568955948908">Dejar de compartir</translation>
 <translation id="7401733114166276557">Escritorio remoto de Chrome</translation>
@@ -155,7 +156,6 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="8073845705237259513">Para utilizar el escritorio remoto de Chrome, debes agregar una cuenta de Google en el dispositivo.</translation>
 <translation id="809687642899217504">Mis computadoras</translation>
 <translation id="8116630183974937060">Se produjo un error de red. Comprueba que el dispositivo esté conectado a Internet y vuelve a intentarlo.</translation>
-<translation id="8187079423890319756">Copyright 2013 Los autores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8295077433896346116">Para usar <ph name="PRODUCT_NAME" />, debes otorgar el permiso de "Accesibilidad", lo que te permitirá aplicar la entrada de la máquina remota en esta Mac.
 
 Para otorgarlo, haz clic en "<ph name="BUTTON_NAME" />" que aparece a continuación. En el panel de preferencias de "Accesibilidad" que se abre, marca la casilla junto a "<ph name="SERVICE_SCRIPT_NAME" />".
@@ -174,6 +174,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="8743328882720071828">¿Deseas permitir que <ph name="CLIENT_USERNAME" /> vea y controle tu computadora?</translation>
 <translation id="8747048596626351634">La sesión se bloqueó o no pudo iniciarse. Si la computadora remota cuenta con el script ~/.chrome-remote-desktop-session, asegúrate de que este inicia un proceso de ejecución prolongada en primer plano, como un entorno de escritorio o un administrador de ventanas.</translation>
 <translation id="8804164990146287819">Política de Privacidad</translation>
+<translation id="8906511416443321782">Debes permitir el acceso al micrófono para capturar audio y transmitirlo al cliente del Escritorio remoto de Chrome.</translation>
 <translation id="9111855907838866522">Te conectaste a tu dispositivo remoto. Para abrir el menú, presiona la pantalla con cuatro dedos.</translation>
 <translation id="9126115402994542723">No volver a pedir un PIN al conectarse a este host desde este dispositivo</translation>
 <translation id="916856682307586697">Iniciar la sesión predeterminada de Xsession</translation>

@@ -12,6 +12,8 @@
 
 namespace web_app {
 
+const char kRunOnOsLoginModeWindowed[] = "windowed";
+
 namespace {
 
 // Note: This can never return kBrowser. This is because the user has
@@ -39,6 +41,21 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
 }  // namespace
 
 static_assert(Source::kMinValue == 0, "Source enum should be zero based");
+
+std::ostream& operator<<(std::ostream& os, Source::Type type) {
+  switch (type) {
+    case Source::Type::kSystem:
+      return os << "System";
+    case Source::Type::kPolicy:
+      return os << "Policy";
+    case Source::Type::kWebAppStore:
+      return os << "WebAppStore";
+    case Source::Type::kSync:
+      return os << "Sync";
+    case Source::Type::kDefault:
+      return os << "Default";
+  }
+}
 
 static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");
@@ -161,8 +178,8 @@ std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode) {
       return "windowed";
     case RunOnOsLoginMode::kMinimized:
       return "minimized";
-    case RunOnOsLoginMode::kUndefined:
-      return "undefined";
+    case RunOnOsLoginMode::kNotRun:
+      return "not run";
   }
 }
 

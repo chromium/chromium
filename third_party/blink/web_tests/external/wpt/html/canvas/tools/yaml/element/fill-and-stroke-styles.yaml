@@ -108,6 +108,26 @@
   code: |
     @assert ctx.fillStyle === '#000000';
 
+- name: 2d.fillStyle.toStringFunctionCallback
+  desc: Passing a function in to ctx.fillStyle or ctx.strokeStyle with a toString callback works as specified
+  testing:
+    2d.colours.toStringFunctionCallback
+  code: |
+    ctx.fillStyle = { toString: function() { return "#008000"; } };
+    @assert ctx.fillStyle === "#008000";
+    ctx.fillStyle = {};
+    @assert ctx.fillStyle === "#008000";
+    ctx.fillStyle = 800000;
+    @assert ctx.fillStyle === "#008000";
+    @assert throws TypeError ctx.fillStyle = { toString: function() { throw new TypeError; } };
+    ctx.strokeStyle = { toString: function() { return "#008000"; } };
+    @assert ctx.strokeStyle === "#008000";
+    ctx.strokeStyle = {};
+    @assert ctx.strokeStyle === "#008000";
+    ctx.strokeStyle = 800000;
+    @assert ctx.strokeStyle === "#008000";
+    @assert throws TypeError ctx.strokeStyle = { toString: function() { throw new TypeError; } };
+
 - name: 2d.strokeStyle.default
   testing:
   - 2d.colours.default
@@ -2117,7 +2137,4 @@
         }), 250);
     }, 250);
   expected: green
-
-
-
 

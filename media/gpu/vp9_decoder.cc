@@ -120,6 +120,7 @@ bool VP9Decoder::Flush() {
 
 void VP9Decoder::Reset() {
   curr_frame_hdr_ = nullptr;
+  decrypt_config_.reset();
   pending_pic_.reset();
 
   ref_frames_.Clear();
@@ -146,12 +147,11 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
     }
 
     // Read a new frame header if one is not awaiting decoding already.
-    std::unique_ptr<DecryptConfig> decrypt_config;
     if (!curr_frame_hdr_) {
       gfx::Size allocate_size;
       std::unique_ptr<Vp9FrameHeader> hdr(new Vp9FrameHeader());
       Vp9Parser::Result res =
-          parser_.ParseNextFrame(hdr.get(), &allocate_size, &decrypt_config);
+          parser_.ParseNextFrame(hdr.get(), &allocate_size, &decrypt_config_);
       switch (res) {
         case Vp9Parser::kOk:
           curr_frame_hdr_ = std::move(hdr);
@@ -183,6 +183,7 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
         state_ = kDecoding;
       } else {
         curr_frame_hdr_.reset();
+        decrypt_config_.reset();
         continue;
       }
     }
@@ -215,6 +216,7 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       }
 
       curr_frame_hdr_.reset();
+      decrypt_config_.reset();
       continue;
     }
 
@@ -267,6 +269,7 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
         }
 
         curr_frame_hdr_.reset();
+        decrypt_config_.reset();
         return kRanOutOfStreamData;
       }
 
@@ -293,7 +296,7 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
     pic->set_visible_rect(new_render_rect);
     pic->set_bitstream_id(stream_id_);
 
-    pic->set_decrypt_config(std::move(decrypt_config));
+    pic->set_decrypt_config(std::move(decrypt_config_));
 
     // For VP9, container color spaces override video stream color spaces.
     if (container_color_space_.IsSpecified())

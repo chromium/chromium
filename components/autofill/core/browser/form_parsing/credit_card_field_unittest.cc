@@ -11,9 +11,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,59 +24,60 @@ using base::ASCIIToUTF16;
 
 namespace autofill {
 
-class CreditCardFieldTestBase {
+class CreditCardFieldTestBase : public FormFieldTestBase {
  public:
   CreditCardFieldTestBase() = default;
   CreditCardFieldTestBase(const CreditCardFieldTestBase&) = delete;
   CreditCardFieldTestBase& operator=(const CreditCardFieldTestBase&) = delete;
 
  protected:
-  // Parses the contents of |list_| as a form, and stores the result into
-  // |field_|.
-  void Parse() {
-    AutofillScanner scanner(list_);
-    // An empty page_language means the language is unknown and patterns of all
-    // languages are used.
-    std::unique_ptr<FormField> field =
-        CreditCardField::Parse(&scanner, LanguageCode(""), nullptr);
-    field_ = std::unique_ptr<CreditCardField>(
-        static_cast<CreditCardField*>(field.release()));
+  std::unique_ptr<FormField> Parse(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language = LanguageCode("us")) override {
+    return CreditCardField::Parse(scanner, page_language, nullptr);
   }
 
-  void MultipleParses() {
-    std::unique_ptr<FormField> field;
-
+  // Runs multiple parsing attempts until the end of the form is reached.
+  void ClassifyAndVerifyWithMultipleParses(
+      const LanguageCode& page_language = LanguageCode("")) {
     AutofillScanner scanner(list_);
     while (!scanner.IsEnd()) {
       // An empty page_language means the language is unknown and patterns of
       // all languages are used.
-      field = CreditCardField::Parse(&scanner, LanguageCode(""), nullptr);
-      field_ = std::unique_ptr<CreditCardField>(
-          static_cast<CreditCardField*>(field.release()));
+      field_ = Parse(&scanner, page_language);
       if (field_ == nullptr) {
         scanner.Advance();
       } else {
-        AddClassifications();
+        field_->AddClassificationsForTesting(&field_candidates_map_);
       }
     }
+    TestClassificationExpectations();
   }
 
-  // Associates fields with their corresponding types, based on the previous
-  // call to Parse().
-  void AddClassifications() {
-    return field_->AddClassifications(&field_candidates_map_);
+  // Returns a vector of numeric months with a leading 0 and an additional "MM"
+  // entry.
+  std::vector<std::string> GetMonths() {
+    return std::vector<std::string>{"MM", "01", "02", "03", "04", "05", "06",
+                                    "07", "08", "09", "10", "11", "12"};
   }
 
-  FieldRendererId MakeFieldRendererId() {
-    return FieldRendererId(++id_counter_);
+  // Returns a vector of 10 consecutive years starting today in 2 digit format
+  // and an additional "YY" entry.
+  std::vector<std::string> Get2DigitYears() {
+    std::vector<std::string> years = {"YY"};
+
+    const base::Time time_now = AutofillClock::Now();
+    base::Time::Exploded time_exploded;
+    time_now.UTCExplode(&time_exploded);
+    const int kYearsToAdd = 10;
+
+    for (auto year = time_exploded.year;
+         year < time_exploded.year + kYearsToAdd; year++) {
+      years.push_back(base::NumberToString(year).substr(2));
+    }
+
+    return years;
   }
-
-  std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<const CreditCardField> field_;
-  FieldCandidatesMap field_candidates_map_;
-
- private:
-  uint64_t id_counter_ = 0;
 };
 
 class CreditCardFieldTest : public CreditCardFieldTestBase,
@@ -85,354 +89,89 @@ class CreditCardFieldTest : public CreditCardFieldTestBase,
 };
 
 TEST_F(CreditCardFieldTest, Empty) {
-  Parse();
-  ASSERT_EQ(nullptr, field_.get());
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 TEST_F(CreditCardFieldTest, NonParse) {
-  list_.push_back(std::make_unique<AutofillField>());
-  Parse();
-  ASSERT_EQ(nullptr, field_.get());
+  AddTextFormFieldData("", "", UNKNOWN_TYPE);
+
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseCreditCardNoNumber) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("ccmonth", "Exp Month", UNKNOWN_TYPE);
+  AddTextFormFieldData("ccyear", "Exp Year", UNKNOWN_TYPE);
 
-  field.label = ASCIIToUTF16("Exp Month");
-  field.name = ASCIIToUTF16("ccmonth");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-
-  field.label = ASCIIToUTF16("Exp Year");
-  field.name = ASCIIToUTF16("ccyear");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-
-  Parse();
-  ASSERT_EQ(nullptr, field_.get());
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseCreditCardNoDate) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("card_number", "Card Number", UNKNOWN_TYPE);
 
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-
-  Parse();
-  ASSERT_EQ(nullptr, field_.get());
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseMiniumCreditCard) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number1 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Month");
-  field.name = ASCIIToUTF16("ccmonth");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month2 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Year");
-  field.name = ASCIIToUTF16("ccyear");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year3 = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(number1) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number1].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month2) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month2].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year3) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,
-            field_candidates_map_[year3].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseMinimumCreditCardWithExpiryDateOptions) {
-  FormFieldData cc_number_field;
-  FormFieldData month_field;
-  FormFieldData year_field;
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddSelectOneFormFieldData("Random Label", "Random Label", GetMonths(),
+                            GetMonths(), CREDIT_CARD_EXP_MONTH);
+  AddSelectOneFormFieldDataWithLength("Random Label", "Random Label", 2,
+                                      Get2DigitYears(), Get2DigitYears(),
+                                      CREDIT_CARD_EXP_2_DIGIT_YEAR);
 
-  cc_number_field.form_control_type = "text";
-  cc_number_field.label = ASCIIToUTF16("Card Number");
-  cc_number_field.name = ASCIIToUTF16("card_number");
-  cc_number_field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(cc_number_field));
-  FieldRendererId number = list_.back()->unique_renderer_id;
-
-  // For month field, set the label and name to something which won't match
-  // any regex, so we can test matching of the options themselves.
-  month_field.form_control_type = "select-one";
-  month_field.label = ASCIIToUTF16("Random label");
-  month_field.name = ASCIIToUTF16("Random name");
-  const std::vector<std::string> kMonths{"MM", "01", "02", "03", "04",
-                                         "05", "06", "07", "08", "09",
-                                         "10", "11", "12"};
-  for (auto month : kMonths) {
-    month_field.option_contents.push_back(base::UTF8ToUTF16(month));
-    month_field.option_values.push_back(base::UTF8ToUTF16(month));
-  }
-  month_field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(month_field));
-  FieldRendererId month = list_.back()->unique_renderer_id;
-
-  // For year, keep the label and name to something which doesn't match regex
-  // so we can test matching of the options themselves.
-  year_field.form_control_type = "select-one";
-  year_field.label = ASCIIToUTF16("Random label");
-  year_field.name = ASCIIToUTF16("Random name");
-  year_field.max_length = 2;
-  year_field.option_contents.push_back(base::ASCIIToUTF16("YY"));
-  year_field.option_values.push_back(base::ASCIIToUTF16("YY"));
-
-  const base::Time time_now = AutofillClock::Now();
-  base::Time::Exploded time_exploded;
-  time_now.UTCExplode(&time_exploded);
-  const int kYearsToAdd = 10;
-
-  for (auto year = time_exploded.year; year < time_exploded.year + kYearsToAdd;
-       year++) {
-    year_field.option_contents.push_back(
-        base::NumberToString16(year).substr(2));
-    year_field.option_values.push_back(base::NumberToString16(year).substr(2));
-  }
-  year_field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(year_field));
-  FieldRendererId year = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(number) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_2_DIGIT_YEAR,
-            field_candidates_map_[year].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseFullCreditCard) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
+  AddTextFormFieldData("verification", "Verification",
+                       CREDIT_CARD_VERIFICATION_CODE);
+  AddSelectOneFormFieldData("Card Type", "card_type", {"visa"}, {"visa"},
+                            CREDIT_CARD_TYPE);
 
-  field.label = ASCIIToUTF16("Name on Card");
-  field.name = ASCIIToUTF16("name_on_card");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Month");
-  field.name = ASCIIToUTF16("ccmonth");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Year");
-  field.name = ASCIIToUTF16("ccyear");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Verification");
-  field.name = ASCIIToUTF16("verification");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId cvc = list_.back()->unique_renderer_id;
-
-  field.form_control_type = "select-one";
-  field.label = ASCIIToUTF16("Card Type");
-  field.name = ASCIIToUTF16("card_type");
-  field.option_contents.push_back(ASCIIToUTF16("visa"));
-  field.option_values.push_back(ASCIIToUTF16("visa"));
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId type = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(type) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_TYPE, field_candidates_map_[type].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(name) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            field_candidates_map_[name].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(number) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,
-            field_candidates_map_[year].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(cvc) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_VERIFICATION_CODE,
-            field_candidates_map_[cvc].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseExpMonthYear) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ExpDate", "ExpDate Month / Year",
+                       CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ExpDate", "ExpDate Month / Year",
+                       CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  field.label = ASCIIToUTF16("Name on Card");
-  field.name = ASCIIToUTF16("name_on_card");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name1 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number2 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("ExpDate Month / Year");
-  field.name = ASCIIToUTF16("ExpDate");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month3 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("ExpDate Month / Year");
-  field.name = ASCIIToUTF16("ExpDate");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year4 = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            field_candidates_map_[name1].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(number2) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number2].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month3) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month3].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year4) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,
-            field_candidates_map_[year4].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseExpMonthYear2) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ExpDate", "Expiration date Month / Year",
+                       CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ExpDate", "Expiration date Month / Year",
+                       CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  field.label = ASCIIToUTF16("Name on Card");
-  field.name = ASCIIToUTF16("name_on_card");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name1 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number2 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Expiration date Month / Year");
-  field.name = ASCIIToUTF16("ExpDate");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month3 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Expiration date Month / Year");
-  field.name = ASCIIToUTF16("ExpDate");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year4 = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            field_candidates_map_[name1].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(number2) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number2].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month3) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month3].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year4) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,
-            field_candidates_map_[year4].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseGiftCard) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("gift.certificate", "Gift certificate", UNKNOWN_TYPE);
+  AddTextFormFieldData("gift-card", "Gift card", UNKNOWN_TYPE);
 
-  field.label = ASCIIToUTF16("Name on Card");
-  field.name = ASCIIToUTF16("name_on_card");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Gift certificate");
-  field.name = ASCIIToUTF16("gift.certificate");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId giftcert = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Gift card");
-  field.name = ASCIIToUTF16("gift-card");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId giftcard = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(name) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            field_candidates_map_[name].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(number) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(giftcert) ==
-              field_candidates_map_.end());
-  ASSERT_TRUE(field_candidates_map_.find(giftcard) ==
-              field_candidates_map_.end());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 typedef struct {
@@ -448,37 +187,13 @@ class ParseExpFieldTest : public CreditCardFieldTestBase,
 
 TEST_P(ParseExpFieldTest, ParseExpField) {
   auto test_case = GetParam();
-  // Clean up after previous test cases.
-  list_.clear();
-  field_.reset();
-  field_candidates_map_.clear();
 
-  FormFieldData field;
-  field.form_control_type = "text";
-
-  field.label = ASCIIToUTF16("Name on Card");
-  field.name = ASCIIToUTF16("name_on_card");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name1 = list_.back()->unique_renderer_id;
-
-  field.form_control_type = test_case.cc_fields_form_control_type;
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId num2 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16(test_case.label);
-  if (test_case.max_length != 0) {
-    field.max_length = test_case.max_length;
-  }
-  field.name = ASCIIToUTF16("cc_exp");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId exp3 = list_.back()->unique_renderer_id;
-
-  Parse();
+  AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
+  AddFormFieldData(test_case.cc_fields_form_control_type, "card_number",
+                   "Card Number", CREDIT_CARD_NUMBER);
+  AddFormFieldDataWithLength(test_case.cc_fields_form_control_type, "cc_exp",
+                             test_case.label, test_case.max_length,
+                             test_case.expected_prediction);
 
   // Assists in identifing which case has failed.
   SCOPED_TRACE(test_case.expected_prediction);
@@ -489,28 +204,15 @@ TEST_P(ParseExpFieldTest, ParseExpField) {
     // Expect failure and continue to next test case.
     // The expiry date is a required field for credit card forms, and thus the
     // parse sets |field_| to nullptr.
-    EXPECT_EQ(nullptr, field_.get());
+    ClassifyAndVerify(ParseResult::NOT_PARSED);
     return;
   }
 
-  // Ensure that the form was determined as valid.
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            field_candidates_map_[name1].BestHeuristicType());
-
-  ASSERT_TRUE(field_candidates_map_.find(num2) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[num2].BestHeuristicType());
-
-  ASSERT_TRUE(field_candidates_map_.find(exp3) != field_candidates_map_.end());
-  EXPECT_EQ(test_case.expected_prediction,
-            field_candidates_map_[exp3].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    CreditCardFieldTest,
+    ,
     ParseExpFieldTest,
     testing::Values(
         // CC fields input_type="text"
@@ -650,421 +352,155 @@ INSTANTIATE_TEST_SUITE_P(
                               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}));
 
 TEST_F(CreditCardFieldTest, ParseCreditCardHolderNameWithCCFullName) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("ccfullname", "Name", CREDIT_CARD_NAME_FULL);
 
-  field.label = ASCIIToUTF16("Name");
-  field.name = ASCIIToUTF16("ccfullname");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name1 = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            field_candidates_map_[name1].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 // Verifies that <input type="month"> controls are able to be parsed correctly.
 TEST_F(CreditCardFieldTest, ParseMonthControl) {
-  FormFieldData field;
+  AddTextFormFieldData("ccnumber", "Card number:", CREDIT_CARD_NUMBER);
+  AddFormFieldData("month", "ccexp",
+                   "Expiration date:", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
 
-  field.form_control_type = "text";
-  field.label = ASCIIToUTF16("Card number:");
-  field.name = ASCIIToUTF16("ccnumber");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number1 = list_.back()->unique_renderer_id;
-
-  field.form_control_type = "month";
-  field.label = ASCIIToUTF16("Expiration date:");
-  field.name = ASCIIToUTF16("ccexp");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId date2 = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(number1) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number1].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(date2) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-            field_candidates_map_[date2].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 // Verify that heuristics <input name="ccyear" maxlength="2"/> considers
 // *maxlength* attribute while parsing 2 Digit expiration year.
 TEST_F(CreditCardFieldTest, ParseCreditCardExpYear_2DigitMaxLength) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ccmonth", "Expiration Date", CREDIT_CARD_EXP_MONTH);
+  AddFormFieldDataWithLength("text", "ccyear", "Expiration Date", 2,
+                             CREDIT_CARD_EXP_2_DIGIT_YEAR);
 
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Expiration Date");
-  field.name = ASCIIToUTF16("ccmonth");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month = list_.back()->unique_renderer_id;
-
-  field.name = ASCIIToUTF16("ccyear");
-  field.max_length = 2;
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-  ASSERT_TRUE(field_candidates_map_.find(number) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_2_DIGIT_YEAR,
-            field_candidates_map_[year].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseCreditCardNumberWithSplit) {
   FormFieldData field;
   field.form_control_type = "text";
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number_q1");
-  field.max_length = 4;
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number1 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number_q2");
-  field.max_length = 4;
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number2 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number_q3");
-  field.max_length = 4;
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number3 = list_.back()->unique_renderer_id;
-
+  AddFormFieldDataWithLength("text", "card_number_q1", "Card Number", 4,
+                             CREDIT_CARD_NUMBER);
+  AddFormFieldDataWithLength("text", "card_number_q2", "Card Number", 4,
+                             CREDIT_CARD_NUMBER);
+  AddFormFieldDataWithLength("text", "card_number_q3", "Card Number", 4,
+                             CREDIT_CARD_NUMBER);
   // For last credit card number input field it simply ignores the |max_length|
   // attribute. So even having a very big number, does not conside it an invalid
   // split for autofilling.
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number_q4");
-  field.max_length = 20;
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number4 = list_.back()->unique_renderer_id;
+  AddFormFieldDataWithLength("text", "card_number_q4", "Card Number", 20,
+                             CREDIT_CARD_NUMBER);
 
-  field.label = ASCIIToUTF16("Exp Month");
-  field.name = ASCIIToUTF16("ccmonth");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month5 = list_.back()->unique_renderer_id;
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  field.label = ASCIIToUTF16("Exp Year");
-  field.name = ASCIIToUTF16("ccyear");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year6 = list_.back()->unique_renderer_id;
+  ClassifyAndVerify(ParseResult::PARSED);
 
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-
-  ASSERT_TRUE(field_candidates_map_.find(number1) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number1].BestHeuristicType());
-  EXPECT_EQ(0U, list_[0]->credit_card_number_offset());
-
-  ASSERT_TRUE(field_candidates_map_.find(number2) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number2].BestHeuristicType());
-  EXPECT_EQ(4U, list_[1]->credit_card_number_offset());
-
-  ASSERT_TRUE(field_candidates_map_.find(number3) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number3].BestHeuristicType());
-  EXPECT_EQ(8U, list_[2]->credit_card_number_offset());
-
-  ASSERT_TRUE(field_candidates_map_.find(number4) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number4].BestHeuristicType());
-  EXPECT_EQ(12U, list_[3]->credit_card_number_offset());
-
-  ASSERT_TRUE(field_candidates_map_.find(month5) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month5].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year6) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,
-            field_candidates_map_[year6].BestHeuristicType());
+  // Test the for the right credit card number offsets.
+  ASSERT_TRUE(list_.size() > 4);
+  EXPECT_EQ(list_[0]->credit_card_number_offset(), 0U);
+  EXPECT_EQ(list_[1]->credit_card_number_offset(), 4U);
+  EXPECT_EQ(list_[2]->credit_card_number_offset(), 8U);
+  EXPECT_EQ(list_[3]->credit_card_number_offset(), 12U);
 }
 
 TEST_F(CreditCardFieldTest, ParseMultipleCreditCardNumbers) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("confirm_card_number", "Confirm Card Number",
+                       CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  field.label = ASCIIToUTF16("Name on Card");
-  field.name = ASCIIToUTF16("name_on_card");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name1 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number2 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Confirm Card Number");
-  field.name = ASCIIToUTF16("confirm_card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number3 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Month");
-  field.name = ASCIIToUTF16("ccmonth");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month4 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Year");
-  field.name = ASCIIToUTF16("ccyear");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year5 = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-
-  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            field_candidates_map_[name1].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(number2) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number2].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(number3) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number3].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month4) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month4].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year5) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,
-            field_candidates_map_[year5].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseFirstAndLastNames) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("cc-fname", "First Name on Card",
+                       CREDIT_CARD_NAME_FIRST);
+  AddTextFormFieldData("cc-lname", "Last Name", CREDIT_CARD_NAME_LAST);
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  field.label = ASCIIToUTF16("First Name on Card");
-  field.name = ASCIIToUTF16("cc-fname");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name1 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Last Name");
-  field.name = ASCIIToUTF16("cc-lname");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name2 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number3 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Month");
-  field.name = ASCIIToUTF16("ccmonth");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month4 = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Year");
-  field.name = ASCIIToUTF16("ccyear");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year5 = list_.back()->unique_renderer_id;
-
-  Parse();
-  ASSERT_NE(nullptr, field_.get());
-  AddClassifications();
-
-  ASSERT_TRUE(field_candidates_map_.find(name1) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FIRST,
-            field_candidates_map_[name1].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(name2) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_LAST,
-            field_candidates_map_[name2].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(number3) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number3].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month4) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month4].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year5) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,
-            field_candidates_map_[year5].BestHeuristicType());
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(CreditCardFieldTest, ParseConsecutiveCvc) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
+  AddTextFormFieldData("verification", "Verification",
+                       CREDIT_CARD_VERIFICATION_CODE);
+  AddTextFormFieldData("verification", "Verification",
+                       CREDIT_CARD_VERIFICATION_CODE);
 
-  field.label = ASCIIToUTF16("Name on Card");
-  field.name = ASCIIToUTF16("name_on_card");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Month");
-  field.name = ASCIIToUTF16("ccmonth");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Exp Year");
-  field.name = ASCIIToUTF16("ccyear");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Verification");
-  field.name = ASCIIToUTF16("verification");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId cvc = list_.back()->unique_renderer_id;
-
-  field.label = ASCIIToUTF16("Verification");
-  field.name = ASCIIToUTF16("verification");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId cvc2 = list_.back()->unique_renderer_id;
-
-  MultipleParses();
-
-  ASSERT_TRUE(field_candidates_map_.find(name) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            field_candidates_map_[name].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(number) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,
-            field_candidates_map_[year].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(cvc) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_VERIFICATION_CODE,
-            field_candidates_map_[cvc].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(cvc2) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_VERIFICATION_CODE,
-            field_candidates_map_[cvc2].BestHeuristicType());
+  ClassifyAndVerifyWithMultipleParses();
 }
 
 TEST_F(CreditCardFieldTest, ParseNonConsecutiveCvc) {
-  FormFieldData field;
-  field.form_control_type = "text";
+  AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
+  AddTextFormFieldData("verification", "Verification",
+                       CREDIT_CARD_VERIFICATION_CODE);
+  AddTextFormFieldData("unknown", "Unknown", UNKNOWN_TYPE);
 
-  field.label = ASCIIToUTF16("Name on Card");
-  field.name = ASCIIToUTF16("name_on_card");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId name = list_.back()->unique_renderer_id;
+  ClassifyAndVerifyWithMultipleParses();
+}
 
-  field.label = ASCIIToUTF16("Card Number");
-  field.name = ASCIIToUTF16("card_number");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId number = list_.back()->unique_renderer_id;
+TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameNotCard) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures(
+      {features::kAutofillStrictContextualCardNameConditions}, {});
 
-  field.label = ASCIIToUTF16("Exp Month");
-  field.name = ASCIIToUTF16("ccmonth");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId month = list_.back()->unique_renderer_id;
+  AddTextFormFieldData("accNum", "Account ID", UNKNOWN_TYPE);
+  AddTextFormFieldData("name", "Account Name", UNKNOWN_TYPE);
+  AddTextFormFieldData("toAcctNum", "Move to Account ID", UNKNOWN_TYPE);
 
-  field.label = ASCIIToUTF16("Exp Year");
-  field.name = ASCIIToUTF16("ccyear");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId year = list_.back()->unique_renderer_id;
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
+}
 
-  field.label = ASCIIToUTF16("Verification");
-  field.name = ASCIIToUTF16("verification");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId cvc = list_.back()->unique_renderer_id;
+TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameNotCardAcctMatch) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures(
+      {features::kAutofillStrictContextualCardNameConditions}, {});
 
-  field.label = ASCIIToUTF16("Unknown");
-  field.name = ASCIIToUTF16("unknown");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId unknown = list_.back()->unique_renderer_id;
+  // TODO(crbug.com/1167977): This should be not parseable, but waiting before
+  // changing kNameOnCardRe to use word boundaries.
+  AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("acctName", "Account Name", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("toAcctNum", "Move to Account ID", CREDIT_CARD_NUMBER);
 
-  field.label = ASCIIToUTF16("Verification");
-  field.name = ASCIIToUTF16("verification");
-  field.unique_renderer_id = MakeFieldRendererId();
-  list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId cvc2 = list_.back()->unique_renderer_id;
+  ClassifyAndVerify(ParseResult::PARSED);
+}
 
-  MultipleParses();
+TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithExpiration) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures(
+      {features::kAutofillStrictContextualCardNameConditions}, {});
 
-  ASSERT_TRUE(field_candidates_map_.find(name) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NAME_FULL,
-            field_candidates_map_[name].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(number) !=
-              field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_NUMBER,
-            field_candidates_map_[number].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(month) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_MONTH,
-            field_candidates_map_[month].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(year) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,
-            field_candidates_map_[year].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(cvc) != field_candidates_map_.end());
-  EXPECT_EQ(CREDIT_CARD_VERIFICATION_CODE,
-            field_candidates_map_[cvc].BestHeuristicType());
-  ASSERT_TRUE(field_candidates_map_.find(unknown) ==
-              field_candidates_map_.end());
-  ASSERT_TRUE(field_candidates_map_.find(cvc2) == field_candidates_map_.end());
+  AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("name", "Account Name", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
+
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
+TEST_F(CreditCardFieldTest, ParseCreditCardContextualNameWithVerification) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures(
+      {features::kAutofillStrictContextualCardNameConditions}, {});
+
+  AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("name", "Account Name", CREDIT_CARD_NAME_FULL);
+  AddTextFormFieldData("cvv", "Verification", CREDIT_CARD_VERIFICATION_CODE);
+
+  ClassifyAndVerify(ParseResult::PARSED);
 }
 
 }  // namespace autofill

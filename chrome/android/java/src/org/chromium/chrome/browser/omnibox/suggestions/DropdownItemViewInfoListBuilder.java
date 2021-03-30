@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
@@ -44,8 +43,6 @@ import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /** Builds DropdownItemViewInfo list from AutocompleteResult for the Suggestions list. */
@@ -56,10 +53,10 @@ class DropdownItemViewInfoListBuilder {
     private static final int DEFAULT_SIZE_OF_VISIBLE_GROUP = 5;
 
     private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
+    private final @NonNull Supplier<Tab> mActivityTabSupplier;
     private @NonNull AutocompleteController mAutocompleteController;
 
     private @Nullable HeaderProcessor mHeaderProcessor;
-    private @Nullable ActivityTabProvider mActivityTabProvider;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable ImageFetcher mImageFetcher;
     private @Nullable LargeIconBridge mIconBridge;
@@ -67,12 +64,15 @@ class DropdownItemViewInfoListBuilder {
     @Px
     private int mDropdownHeight;
     private boolean mEnableAdaptiveSuggestionsCount;
+    private boolean mEnableNativeVoiceSuggestProvider;
     private boolean mBuiltListHasFullyConcealedElements;
 
-    DropdownItemViewInfoListBuilder(AutocompleteController controller) {
+    DropdownItemViewInfoListBuilder(
+            AutocompleteController controller, @NonNull Supplier<Tab> tabSupplier) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mAutocompleteController = controller;
+        mActivityTabSupplier = tabSupplier;
     }
 
     /**
@@ -91,15 +91,13 @@ class DropdownItemViewInfoListBuilder {
 
         final Supplier<ImageFetcher> imageFetcherSupplier = () -> mImageFetcher;
         final Supplier<LargeIconBridge> iconBridgeSupplier = () -> mIconBridge;
-        final Supplier<Tab> tabSupplier =
-                () -> mActivityTabProvider == null ? null : mActivityTabProvider.get();
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
         final Supplier<BookmarkBridge> bookmarkSupplier = () -> mBookmarkBridge;
 
         mHeaderProcessor = new HeaderProcessor(context, host, delegate);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
-                context, host, delegate, iconBridgeSupplier, tabSupplier, shareSupplier));
+                context, host, delegate, iconBridgeSupplier, mActivityTabSupplier, shareSupplier));
         registerSuggestionProcessor(
                 new AnswerSuggestionProcessor(context, host, textProvider, imageFetcherSupplier));
         registerSuggestionProcessor(
@@ -184,15 +182,6 @@ class DropdownItemViewInfoListBuilder {
     }
 
     /**
-     * Specify new Activity tab provider.
-     *
-     * @param provider Tab provider.
-     */
-    void setActivityTabProvider(ActivityTabProvider provider) {
-        mActivityTabProvider = provider;
-    }
-
-    /**
      * Specify dropdown list height in pixels.
      * The height is subsequentially used to determine number of visible suggestions and perform
      * partial suggestion ordering based on their visibility.
@@ -237,6 +226,8 @@ class DropdownItemViewInfoListBuilder {
     void onNativeInitialized() {
         mEnableAdaptiveSuggestionsCount =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
+        mEnableNativeVoiceSuggestProvider = ChromeFeatureList.isEnabled(
+                ChromeFeatureList.OMNIBOX_NATIVE_VOICE_SUGGEST_PROVIDER);
 
         mHeaderProcessor.onNativeInitialized();
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
@@ -258,6 +249,26 @@ class DropdownItemViewInfoListBuilder {
             mPriorityOrderedSuggestionProcessors.get(index).onSuggestionsReceived();
         }
 
+        final int suggestionsCount = autocompleteResult.getSuggestionsList().size();
+
+        // When Adaptive Suggestions are set, perform partial grouping by search vs url.
+        // Take action only if we have more suggestions to offer than just a default match and
+        // one suggestion (otherwise no need to perform grouping).
+        if (suggestionsCount > 2 && mEnableAdaptiveSuggestionsCount) {
+            final int numVisibleSuggestions = getVisibleSuggestionsCount(autocompleteResult);
+            // TODO(crbug.com/1073169): this should either infer the count from UI height or supply
+            // the default value if height is not known. For the time being we group the entire list
+            // to mimic the native behavior.
+            autocompleteResult.groupSuggestionsBySearchVsURL(1, numVisibleSuggestions);
+            if (numVisibleSuggestions < suggestionsCount) {
+                mBuiltListHasFullyConcealedElements = true;
+                autocompleteResult.groupSuggestionsBySearchVsURL(
+                        numVisibleSuggestions, suggestionsCount);
+            } else {
+                mBuiltListHasFullyConcealedElements = false;
+            }
+        }
+
         final List<AutocompleteMatch> newSuggestions = autocompleteResult.getSuggestionsList();
         final int newSuggestionsCount = newSuggestions.size();
         final List<DropdownItemViewInfo> viewInfoList = new ArrayList<>();
@@ -269,17 +280,6 @@ class DropdownItemViewInfoListBuilder {
             final AutocompleteMatch suggestion = newSuggestions.get(index);
             final SuggestionProcessor processor = getProcessorForSuggestion(suggestion, index);
             suggestionsPairedWithProcessors.add(new Pair<>(suggestion, processor));
-        }
-
-        // When Adaptive Suggestions are set, perform partial grouping by search vs url.
-        if (mEnableAdaptiveSuggestionsCount) {
-            int numVisibleSuggestions = getVisibleSuggestionsCount(suggestionsPairedWithProcessors);
-            mBuiltListHasFullyConcealedElements =
-                    (numVisibleSuggestions < suggestionsPairedWithProcessors.size());
-            // TODO(crbug.com/1073169): this should either infer the count from UI height or supply
-            // the default value if height is not known. For the time being we group the entire list
-            // to mimic the native behavior.
-            groupSuggestionsBySearchVsURL(suggestionsPairedWithProcessors, numVisibleSuggestions);
         }
 
         // Build ViewInfo structures.
@@ -314,38 +314,42 @@ class DropdownItemViewInfoListBuilder {
     }
 
     /**
-     * @param suggestionsPairedWithProcessors List of suggestions and their matching processors.
+     * @param autocompleteResult The AutocompleteResult to analyze.
      * @return Number of suggestions immediately visible to the user upon presenting the list.
+     *          Does not include the suggestions with headers, or VOICE_SUGGEST suggestions that
+     *          have been injected by Java provider.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    int getVisibleSuggestionsCount(
-            List<Pair<AutocompleteMatch, SuggestionProcessor>> suggestionsPairedWithProcessors) {
+    int getVisibleSuggestionsCount(AutocompleteResult autocompleteResult) {
         // For cases where we don't know how many suggestions can fit in the visile screen area,
         // make an assumption regarding the group size.
         if (mDropdownHeight == DROPDOWN_HEIGHT_UNKNOWN) {
-            return Math.min(suggestionsPairedWithProcessors.size(), DEFAULT_SIZE_OF_VISIBLE_GROUP);
+            return Math.min(
+                    autocompleteResult.getSuggestionsList().size(), DEFAULT_SIZE_OF_VISIBLE_GROUP);
         }
+
+        final List<AutocompleteMatch> suggestions = autocompleteResult.getSuggestionsList();
 
         @Px
         int calculatedSuggestionsHeight = 0;
-        int currentGroup = AutocompleteMatch.INVALID_GROUP;
         int lastVisibleIndex;
-        for (lastVisibleIndex = 0; lastVisibleIndex < suggestionsPairedWithProcessors.size();
-                lastVisibleIndex++) {
+        for (lastVisibleIndex = 0; lastVisibleIndex < suggestions.size(); lastVisibleIndex++) {
             if (calculatedSuggestionsHeight >= mDropdownHeight) break;
 
-            final Pair<AutocompleteMatch, SuggestionProcessor> pair =
-                    suggestionsPairedWithProcessors.get(lastVisibleIndex);
-            final AutocompleteMatch suggestion = pair.first;
-
-            // Include the height of the group header view.
-            if (currentGroup != suggestion.getGroupId()) {
-                currentGroup = suggestion.getGroupId();
-                calculatedSuggestionsHeight += mHeaderProcessor.getMinimumViewHeight();
+            final AutocompleteMatch suggestion = suggestions.get(lastVisibleIndex);
+            // We do not include suggestions with headers in partial grouping, so terminate early.
+            if (suggestion.getGroupId() != AutocompleteMatch.INVALID_GROUP) {
+                break;
+            }
+            // We do not include Java-sourced Voice suggestions in partial grouping. Terminate.
+            if (suggestion.getType() == OmniboxSuggestionType.VOICE_SUGGEST
+                    && !mEnableNativeVoiceSuggestProvider) {
+                break;
             }
 
-            // Include the height of the suggestion view.
-            final SuggestionProcessor processor = pair.second;
+            final SuggestionProcessor processor =
+                    getProcessorForSuggestion(suggestion, lastVisibleIndex);
+
             calculatedSuggestionsHeight += processor.getMinimumViewHeight();
         }
 
@@ -355,105 +359,6 @@ class DropdownItemViewInfoListBuilder {
     /** @return Whether built list contains fully concealed elements. */
     boolean hasFullyConcealedElements() {
         return mBuiltListHasFullyConcealedElements;
-    }
-
-    /**
-     * Group suggestions in-place by Search vs URL.
-     * Creates two subgroups:
-     * - Group 1 contains items visible, or partially visible to the user,
-     * - Group 2 contains items that are not visible at the time user interacts with the
-     * suggestions list.
-     *
-     * @param suggestionsPairedWithProcessors List of suggestions and their matching processors.
-     * @param numVisibleSuggestions Number of suggestions that are visible to the user.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void groupSuggestionsBySearchVsURL(
-            List<Pair<AutocompleteMatch, SuggestionProcessor>> suggestionsPairedWithProcessors,
-            int numVisibleSuggestions) {
-        final int firstIndexWithHeader = findFirstIndexWithHeader(suggestionsPairedWithProcessors);
-        final int firstIndexForGrouping =
-                findFirstIndexForGrouping(suggestionsPairedWithProcessors);
-
-        // Check if we have any suggestions we can group.
-        if (firstIndexWithHeader <= firstIndexForGrouping) return;
-
-        // Compute the index of first concealed element as a start of the second group.
-        // This addresses the situation, where all visible and some concealed suggestions are
-        // specialized (eg. visible default match, query tiles and concealed clipboard suggestion).
-        final int firstIndexInConcealedGroup = Math.max(
-                Math.min(numVisibleSuggestions, firstIndexWithHeader), firstIndexForGrouping);
-
-        // Comparator addressing the suggestion grouping.
-        final Comparator<Pair<AutocompleteMatch, SuggestionProcessor>> comparator =
-                (pair1, pair2) -> {
-            if (pair1.first.isSearchSuggestion() != pair2.first.isSearchSuggestion()) {
-                return pair1.first.isSearchSuggestion() ? -1 : 1;
-            }
-            return pair2.first.getRelevance() - pair1.first.getRelevance();
-        };
-
-        // Sort visible part of suggestions list.
-        if (firstIndexForGrouping < firstIndexInConcealedGroup) {
-            Collections.sort(suggestionsPairedWithProcessors.subList(
-                                     firstIndexForGrouping, firstIndexInConcealedGroup),
-                    comparator);
-            mAutocompleteController.groupSuggestionsBySearchVsURL(
-                    firstIndexForGrouping, firstIndexInConcealedGroup);
-        }
-
-        // Sort the concealed part of suggestions list.
-        if (firstIndexInConcealedGroup < firstIndexWithHeader) {
-            Collections.sort(suggestionsPairedWithProcessors.subList(
-                                     firstIndexInConcealedGroup, firstIndexWithHeader),
-                    comparator);
-            mAutocompleteController.groupSuggestionsBySearchVsURL(
-                    firstIndexInConcealedGroup, firstIndexWithHeader);
-        }
-    }
-
-    /** @return Index of the first suggestion decorated with a suggestion header. */
-    private int findFirstIndexWithHeader(
-            List<Pair<AutocompleteMatch, SuggestionProcessor>> suggestionsPairedWithProcessors) {
-        // Native counterpart ensures that suggestion with group headers always end up at the
-        // end of the list. This guarantees that these suggestions are both grouped at the end
-        // of the list and that there's nothing more we should do about them. See
-        // AutocompleteController::UpdateHeaders().
-        int firstIndexWithHeader;
-        for (firstIndexWithHeader = 0;
-                firstIndexWithHeader < suggestionsPairedWithProcessors.size();
-                firstIndexWithHeader++) {
-            if (suggestionsPairedWithProcessors.get(firstIndexWithHeader).first.getGroupId()
-                    != AutocompleteMatch.INVALID_GROUP) {
-                break;
-            }
-        }
-        return firstIndexWithHeader;
-    }
-
-    /**
-     * @return Index of the first element that should be used to group suggestions by
-     *         search vs URL.
-     */
-    private int findFirstIndexForGrouping(
-            List<Pair<AutocompleteMatch, SuggestionProcessor>> suggestionsPairedWithProcessors) {
-        int firstIndexForGrouping;
-        // Find the first suggestion that will be the subject for grouping by search vs url.
-        // Note that the first suggestion is the default match and we never change it.
-        for (firstIndexForGrouping = 1;
-                firstIndexForGrouping < suggestionsPairedWithProcessors.size();
-                firstIndexForGrouping++) {
-            final @OmniboxSuggestionType int type =
-                    suggestionsPairedWithProcessors.get(firstIndexForGrouping).first.getType();
-
-            if (type != OmniboxSuggestionType.TILE_SUGGESTION
-                    && type != OmniboxSuggestionType.CLIPBOARD_TEXT
-                    && type != OmniboxSuggestionType.CLIPBOARD_URL
-                    && type != OmniboxSuggestionType.CLIPBOARD_IMAGE) {
-                break;
-            }
-        }
-        return firstIndexForGrouping;
     }
 
     /**

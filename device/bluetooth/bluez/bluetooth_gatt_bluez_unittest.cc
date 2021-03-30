@@ -173,6 +173,7 @@ class BluetoothGattBlueZTest : public testing::Test {
         fake_bluetooth_device_client_->GetProperties(
             dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
     properties1->connected.ReplaceValue(true);
+    properties1->connected_le.ReplaceValue(true);
 
     return adapter_->GetDevice(
         bluez::FakeBluetoothDeviceClient::kLowEnergyAddress);
@@ -186,6 +187,7 @@ class BluetoothGattBlueZTest : public testing::Test {
         fake_bluetooth_device_client_->GetProperties(
             dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kDualPath));
     properties2->connected.ReplaceValue(true);
+    properties2->connected_le.ReplaceValue(true);
 
     return adapter_->GetDevice(bluez::FakeBluetoothDeviceClient::kDualAddress);
   }

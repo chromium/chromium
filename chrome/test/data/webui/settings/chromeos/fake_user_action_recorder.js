@@ -13,7 +13,7 @@ cr.define('settings', function() {
    *
    * @implements {chromeos.settings.mojom.UserActionRecorderInterface}
    */
-  class FakeUserActionRecorder {
+  /* #export */ class FakeUserActionRecorder {
     constructor() {
       this.pageFocusCount = 0;
       this.pageBlurCount = 0;

@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -37,7 +37,7 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 
 std::string GetNativeLibraryName(StringPiece name) {
   DCHECK(IsStringASCII(name));
-  return name.as_string();
+  return std::string(name);
 }
 
 std::string GetLoadableModuleName(StringPiece name) {

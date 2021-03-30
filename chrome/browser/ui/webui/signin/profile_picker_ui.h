@@ -13,6 +13,7 @@
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 
 class ProfileCreationCustomizeThemesHandler;
+class ProfilePickerHandler;
 
 // The WebUI controller for chrome://profile-picker/.
 class ProfilePickerUI
@@ -35,6 +36,9 @@ class ProfilePickerUI
                      customize_themes::mojom::CustomizeThemesHandlerFactory>
                          pending_receiver);
 
+  // Allows tests to trigger page events.
+  ProfilePickerHandler* GetProfilePickerHandlerForTesting();
+
  private:
   // customize_themes::mojom::CustomizeThemesHandlerFactory:
   void CreateCustomizeThemesHandler(
@@ -47,6 +51,9 @@ class ProfilePickerUI
       customize_themes_handler_;
   mojo::Receiver<customize_themes::mojom::CustomizeThemesHandlerFactory>
       customize_themes_factory_receiver_;
+
+  // Stored for tests.
+  ProfilePickerHandler* profile_picker_handler_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -10,6 +10,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/stl_util.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,22 +19,33 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_pedal.h"
+#include "components/omnibox/browser/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/omnibox_pedal_implementations.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/resources/grit/omnibox_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace {
-typedef base::StringTokenizerT<base::string16, base::string16::const_iterator>
+typedef base::StringTokenizerT<std::u16string, std::u16string::const_iterator>
     StringTokenizer16;
 
 }  // namespace
 
-OmniboxPedalProvider::OmniboxPedalProvider(AutocompleteProviderClient& client)
+OmniboxPedalProvider::OmniboxPedalProvider(AutocompleteProviderClient& client,
+                                           bool with_branding)
     : client_(client),
-      pedals_(GetPedalImplementations()),
+      pedals_(GetPedalImplementations(with_branding)),
       ignore_group_(false, false, 0) {
   LoadPedalConcepts();
+
+  // Cull Pedals with incomplete data; they won't trigger if not enabled,
+  // but there's no need to keep them in the collection (iterated frequently).
+  base::EraseIf(pedals_, [](const auto& it) {
+    const OmniboxPedal::LabelStrings& labels = it.second->GetLabelStrings();
+    return labels.hint.empty() || labels.suggestion_contents.empty() ||
+           labels.accessibility_hint.empty() ||
+           labels.accessibility_suffix.empty();
+  });
 }
 
 OmniboxPedalProvider::~OmniboxPedalProvider() {}
@@ -77,34 +89,44 @@ size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
 }
 
 OmniboxPedal* OmniboxPedalProvider::FindPedalMatch(
-    const AutocompleteInput& input,
-    const base::string16& match_text) {
+    const std::u16string& match_text) {
   OmniboxPedal::Tokens match_tokens = Tokenize(match_text);
   if (match_tokens.empty()) {
     return nullptr;
   }
-
-  // Some users may be in a counterfactual study arm in which the pedal button
-  // is not attached to the suggestion.
-  bool in_pedal_counterfactual_group = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kOmniboxPedalSuggestions, "PedalSuggestionsCounterfactualArm",
-      false);
-
   for (const auto& pedal : pedals_) {
-    if (pedal.second->IsTriggerMatch(match_tokens) &&
-        pedal.second->IsReadyToTrigger(input, client_)) {
-      field_trial_triggered_ = true;
-      field_trial_triggered_in_session_ = true;
-
-      return in_pedal_counterfactual_group ? nullptr : pedal.second.get();
+    if (pedal.second->IsTriggerMatch(match_tokens)) {
+      return pedal.second.get();
     }
   }
   return nullptr;
 }
 
+OmniboxPedal* OmniboxPedalProvider::FindReadyPedalMatch(
+    const AutocompleteInput& input,
+    const std::u16string& match_text) {
+  OmniboxPedal* const found = FindPedalMatch(match_text);
+  if (found == nullptr || !found->IsReadyToTrigger(input, client_)) {
+    return nullptr;
+  }
+
+  field_trial_triggered_ = true;
+  field_trial_triggered_in_session_ = true;
+
+  // Some users may be in a counterfactual study arm in which the pedal button
+  // is not attached to the suggestion, even though it triggered.
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          omnibox::kOmniboxPedalSuggestions,
+          "PedalSuggestionsCounterfactualArm", false)) {
+    return nullptr;
+  }
+
+  return found;
+}
+
 OmniboxPedal::Tokens OmniboxPedalProvider::Tokenize(
-    const base::string16& text) const {
-  base::string16 reduced_text = base::i18n::ToLower(text);
+    const std::u16string& text) const {
+  std::u16string reduced_text = base::i18n::ToLower(text);
   OmniboxPedal::Tokens match_tokens;
   match_tokens.reserve(max_tokens_);
   if (tokenize_characters_.empty()) {
@@ -167,14 +189,17 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   // to sanity check input since it is trusted and used for vector reserve.
   DCHECK_LT(max_tokens_, size_t{64});
 
-  concept_data->FindKey("tokenize_characters")
-      ->GetAsString(&tokenize_characters_);
+  if (concept_data->FindKey("tokenize_each_character")->GetBool()) {
+    tokenize_characters_ = u"";
+  } else {
+    tokenize_characters_ = u" -";
+  }
 
   const auto& dictionary = concept_data->FindKey("dictionary")->GetList();
   dictionary_.reserve(dictionary.size());
   int id = 0;
   for (const auto& token_value : dictionary) {
-    base::string16 token;
+    std::u16string token;
     token_value.GetAsString(&token);
     dictionary_.insert({token, id});
     ++id;
@@ -186,16 +211,29 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
 
   for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
     DCHECK(pedal_value.is_dict());
-    const OmniboxPedalId pedal_id =
-        static_cast<OmniboxPedalId>(pedal_value.FindKey("id")->GetInt());
-    const auto pedal = pedals_.find(pedal_id);
-    if (pedal == pedals_.end()) {
-      CHECK(false) << "OmniboxPedalId " << static_cast<int>(pedal_id)
-                   << " not found. Are all data-referenced implementations "
-                      "added to provider?";
+    const int id = pedal_value.FindIntKey("id").value();
+    // These IDs are the first and last for batch 2.
+    if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
+        id <= static_cast<int>(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) &&
+        !OmniboxFieldTrial::IsPedalsBatch2Enabled()) {
+      continue;
+    }
+    const auto pedal_iter = pedals_.find(static_cast<OmniboxPedalId>(id));
+    if (pedal_iter == pedals_.end()) {
+      // Data may exist for Pedals that are intentionally not registered; skip.
+      continue;
+    }
+    const base::Value* ui_strings =
+        pedal_value.FindDictKey("omnibox_ui_strings");
+    if (ui_strings) {
+      pedal_iter->second->SetLabelStrings(*ui_strings);
+    }
+    const std::string* url = pedal_value.FindStringKey("url");
+    if (!url->empty()) {
+      pedal_iter->second->SetNavigationUrl(GURL(*url));
     }
     for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
-      pedal->second->AddSynonymGroup(LoadSynonymGroup(group_value));
+      pedal_iter->second->AddSynonymGroup(LoadSynonymGroup(group_value));
     }
   }
 }

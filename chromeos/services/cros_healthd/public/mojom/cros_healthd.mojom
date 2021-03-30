@@ -37,6 +37,9 @@ interface CrosHealthdServiceFactory {
       pending_remote<
           chromeos.network_diagnostics.mojom.NetworkDiagnosticsRoutines>
               network_diagnostics_routines);
+  // TODO(http://b/181133872): Move this service out of this interface
+  // Returns a bound interface to the system service.
+  GetSystemService(CrosHealthdSystemService& service);
 };
 
 // Diagnostics interface exposed by the cros_healthd daemon. Consumed in Chrome
@@ -414,6 +417,25 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunHttpsLatencyRoutine() => (RunRoutineResponse response);
+
+  // Requests that the VideoConferencing routine is created and started on the
+  // platform. This routine checks the device's video conferencing capabalities
+  // by testing whether the device can:
+  // (1) Contact either a default or specified STUN server via UDP.
+  // (2) Contact either a default or specified STUN server via TCP.
+  // (3) Reach common media endpoints.
+  // This routine is only available if GetAvailableRoutines returned
+  // kVideoConferencing.
+  //
+  // The request:
+  // * |stun_server_hostname| - if specified, represents the custom STUN server
+  //                            hostname.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunVideoConferencingRoutine(string? stun_server_hostname)
+      => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
@@ -438,6 +460,15 @@ interface CrosHealthdEventService {
   // The request:
   // * |observer| - power observer to be added to cros_healthd.
   AddPowerObserver(CrosHealthdPowerObserver observer);
+
+  // Adds an observer to be notified on network events. The caller can remove
+  // the observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - network observer to be added to cros_healthd.
+  AddNetworkObserver(
+      pending_remote<
+          chromeos.network_health.mojom.NetworkEventsObserver> observer);
 };
 
 // Probe interface exposed by the cros_healthd daemon.
@@ -463,4 +494,20 @@ interface CrosHealthdProbeService {
   //                      will be non-null.
   ProbeTelemetryInfo(array<ProbeCategoryEnum> categories)
       => (TelemetryInfo telemetry_info);
+};
+
+// Contains data about the current service instance of cros_healthd.
+struct ServiceStatus {
+  // Boolean flag if the NetworkHealthService mojo remote has been sent from
+  // Chrome and bound in cros_healthd.
+  bool network_health_bound;
+  // Boolean flag if the NetworkDiagnosticsService mojo remote has been sent
+  // from Chrome and bound in cros_healthd.
+  bool network_diagnostics_bound;
+};
+
+// Interface to query the status of the cros_healthd service.
+interface CrosHealthdSystemService {
+  // Returns the status of the cros_healthd service and external mojo remotes.
+  GetServiceStatus() => (ServiceStatus response);
 };

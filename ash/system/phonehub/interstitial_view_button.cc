@@ -11,7 +11,7 @@
 namespace ash {
 
 InterstitialViewButton::InterstitialViewButton(Button::PressedCallback callback,
-                                               const base::string16& text,
+                                               const std::u16string& text,
                                                bool paint_background)
     : RoundedLabelButton(std::move(callback), text),
       paint_background_(paint_background) {}

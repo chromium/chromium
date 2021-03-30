@@ -48,7 +48,7 @@
   // received to conclude that no report has been generated. These timeouts must
   // not exceed the test timeouts set by vendors otherwise the test would fail.
   var timeout = document.querySelector("meta[name=timeout][content=long]") ? 20 : 3;
-  var reportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=retrieve_report&timeout=" + timeout + "&reportID=" + reportID;
+  var reportLocation = location.protocol + "//" + location.host + "/reporting/resources/report.py?op=retrieve_report&timeout=" + timeout + "&reportID=" + reportID;
 
   if (testName == "") testName = "Violation report status OK.";
   var reportTest = async_test(testName);
@@ -63,30 +63,36 @@
 
     var report = new XMLHttpRequest();
     report.onload = reportTest.step_func(function () {
+      var data = JSON.parse(report.responseText);
 
-        var data = JSON.parse(report.responseText);
+      if (data.error) {
+        assert_equals("false", reportExists, data.error);
+      } else {
+        // With the 'report-uri' directive, the report is contained in
+        // `data["csp-report"]`. With the 'report-to' directive, the report is
+        // contained in `data[0]["body"]`.
+        const reportBody = data[0] ? data[0]["body"] : data["csp-report"];
 
-        if (data.error) {
-          assert_equals("false", reportExists, data.error);
+        if (reportExists === "false") {
+          assert_equals(reportBody, undefined,
+                        "CSP report sent, but not expecting one.");
         } else {
-          if(reportExists != "" && reportExists == "false" && data["csp-report"]) {
-              assert_unreached("CSP report sent, but not expecting one: " + JSON.stringify(data["csp-report"]));
-          }
+          assert_true(reportBody !== undefined,
+                      "No CSP report sent, but expecting one.");
           // Firefox expands 'self' or origins in a policy to the actual origin value
           // so "www.example.com" becomes "http://www.example.com:80".
           // Accomodate this by just testing that the correct directive name
           // is reported, not the details...
 
-          if(data["csp-report"] != undefined && data["csp-report"][reportField] != undefined) {
-            assert_field_value(data["csp-report"][reportField], reportValue, reportField);
-          } else if (data[0] != undefined && data[0]["body"] != undefined && data[0]["body"][reportField] != undefined) {
-            assert_field_value(data[0]["body"][reportField], reportValue, reportField);
+          if (reportBody[reportField] !== undefined) {
+            assert_field_value(reportBody[reportField], reportValue, reportField);
           } else {
-            assert_equals("", reportField, "Expected report field could not be found in report");
+            assert_equals(reportField, "", "Expected report field could not be found in report.");
           }
         }
+      }
 
-        reportTest.done();
+      reportTest.done();
     });
 
     report.open("GET", reportLocation, true);
@@ -107,7 +113,7 @@
         }
         cookieTest.done();
       });
-      var cReportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=retrieve_cookies&timeout=" + timeout + "&reportID=" + reportID;
+      var cReportLocation = location.protocol + "//" + location.host + "/reporting/resources/report.py?op=retrieve_cookies&timeout=" + timeout + "&reportID=" + reportID;
       cookieReport.open("GET", cReportLocation, true);
       cookieReport.send();
   }
@@ -122,7 +128,7 @@
 
         reportCountTest.done();
       });
-      var cReportLocation = location.protocol + "//" + location.host + "/content-security-policy/support/report.py?op=retrieve_count&timeout=" + timeout + "&reportID=" + reportID;
+      var cReportLocation = location.protocol + "//" + location.host + "/reporting/resources/report.py?op=retrieve_count&timeout=" + timeout + "&reportID=" + reportID;
       reportCountReport.open("GET", cReportLocation, true);
       reportCountReport.send();
   }

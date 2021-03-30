@@ -11,6 +11,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
@@ -88,6 +89,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   int ReadIfReady(IOBuffer* buf,
                   int buf_len,
                   CompletionOnceCallback callback) override;
+  int CancelReadIfReady() override;
   int Write(IOBuffer* buf,
             int buf_len,
             CompletionOnceCallback callback,
@@ -106,6 +108,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   bool WasEverUsed() const override;
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
+  base::Optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetConnectionAttempts(ConnectionAttempts* out) const override;
   void ClearConnectionAttempts() override {}
@@ -347,6 +350,7 @@ void SSLServerContextImpl::SocketImpl::OnPrivateKeyComplete(
   DoHandshakeLoop(ERR_IO_PENDING);
 }
 
+// static
 int SSLServerContextImpl::SocketImpl::ALPNSelectCallback(SSL* ssl,
                                                          const uint8_t** out,
                                                          uint8_t* out_len,
@@ -375,6 +379,16 @@ int SSLServerContextImpl::SocketImpl::ALPNSelectCallback(SSL* ssl,
               CBS_len(&client_proto)) == server_proto_str) {
         *out = CBS_data(&client_proto);
         *out_len = CBS_len(&client_proto);
+
+        const auto& application_settings =
+            socket->context_->ssl_server_config_.application_settings;
+        auto it = application_settings.find(server_proto);
+        if (it != application_settings.end()) {
+          const std::vector<uint8_t>& data = it->second;
+          SSL_add_application_settings(ssl, CBS_data(&client_proto),
+                                       CBS_len(&client_proto), data.data(),
+                                       data.size());
+        }
         return SSL_TLSEXT_ERR_OK;
       }
     }
@@ -465,6 +479,22 @@ int SSLServerContextImpl::SocketImpl::ReadIfReady(
   return rv;
 }
 
+int SSLServerContextImpl::SocketImpl::CancelReadIfReady() {
+  DCHECK(user_read_callback_);
+  DCHECK(!user_read_buf_);
+
+  // Cancel |user_read_callback_|, because caller does not expect the callback
+  // to be invoked after they have canceled the ReadIfReady.
+  //
+  // We do not pass the signal on to |stream_socket_| or |transport_adapter_|.
+  // When it completes, it will signal OnReadReady(), which will notice there is
+  // no read operation to progress and skip it. Unlike with SSLClientSocket,
+  // SSL and transport reads are more aligned, but this avoids making
+  // assumptions or breaking the SocketBIOAdapter's state.
+  user_read_callback_.Reset();
+  return OK;
+}
+
 int SSLServerContextImpl::SocketImpl::Write(
     IOBuffer* buf,
     int buf_len,
@@ -543,6 +573,18 @@ bool SSLServerContextImpl::SocketImpl::WasAlpnNegotiated() const {
 
 NextProto SSLServerContextImpl::SocketImpl::GetNegotiatedProtocol() const {
   return negotiated_protocol_;
+}
+
+base::Optional<base::StringPiece>
+SSLServerContextImpl::SocketImpl::GetPeerApplicationSettings() const {
+  if (!SSL_has_application_settings(ssl_.get())) {
+    return base::nullopt;
+  }
+
+  const uint8_t* out_data;
+  size_t out_len;
+  SSL_get0_peer_application_settings(ssl_.get(), &out_data, &out_len);
+  return base::StringPiece{reinterpret_cast<const char*>(out_data), out_len};
 }
 
 bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
@@ -811,6 +853,12 @@ int SSLServerContextImpl::SocketImpl::Init() {
           .has_value()) {
     uint16_t id = *context_->ssl_server_config_.signature_algorithm_for_testing;
     CHECK(SSL_set_signing_algorithm_prefs(ssl_.get(), &id, 1));
+  }
+
+  const std::vector<int>& curves =
+      context_->ssl_server_config_.curves_for_testing;
+  if (!curves.empty()) {
+    CHECK(SSL_set1_curves(ssl_.get(), curves.data(), curves.size()));
   }
 
   transport_adapter_.reset(new SocketBIOAdapter(

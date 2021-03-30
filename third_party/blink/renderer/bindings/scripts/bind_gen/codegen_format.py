@@ -23,10 +23,11 @@ class _TemplateFormatter(string.Formatter):
         self._template_formatter_indexing_count_ = 0
 
     def get_value(self, key, args, kwargs):
-        if isinstance(key, (int, long)):
+        if isinstance(key, int):
             return args[key]
         assert isinstance(key, str)
         if not key:
+            # TODO(crbug.com/1174969):
             # Prior to Python 3.1, when a positional argument specifier is
             # omitted, |format_string="{}"| produces |key=""|.  Should be
             # removed once Python2 gets retired.

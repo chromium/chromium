@@ -33,7 +33,7 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore()
                             base::FilePath(),
                             std::unique_ptr<TransactionalLevelDBDatabase>(),
                             /*blob_storage_context=*/nullptr,
-                            /*native_file_system_context=*/nullptr,
+                            /*file_system_access_context=*/nullptr,
                             std::make_unique<storage::FilesystemProxy>(
                                 storage::FilesystemProxy::UNRESTRICTED,
                                 base::FilePath()),
@@ -50,7 +50,7 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
                             base::FilePath(),
                             std::unique_ptr<TransactionalLevelDBDatabase>(),
                             /*blob_storage_context=*/nullptr,
-                            /*native_file_system_context=*/nullptr,
+                            /*file_system_access_context=*/nullptr,
                             std::make_unique<storage::FilesystemProxy>(
                                 storage::FilesystemProxy::UNRESTRICTED,
                                 base::FilePath()),
@@ -60,7 +60,7 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
 IndexedDBFakeBackingStore::~IndexedDBFakeBackingStore() = default;
 
 leveldb::Status IndexedDBFakeBackingStore::DeleteDatabase(
-    const base::string16& name,
+    const std::u16string& name,
     TransactionalLevelDBTransaction* transaction) {
   return leveldb::Status::OK();
 }

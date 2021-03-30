@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/devicetype.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -17,18 +18,16 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/system/timezone_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/devicetype.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
@@ -401,7 +400,7 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
   }
 
   if (property_name == kPropertyTimezone) {
-    if (chromeos::system::PerUserTimezoneEnabled()) {
+    if (ash::system::PerUserTimezoneEnabled()) {
       const PrefService::Preference* timezone =
           Profile::FromBrowserContext(browser_context())
               ->GetPrefs()
@@ -410,13 +409,13 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
     }
     // TODO(crbug.com/697817): Convert CrosSettings::Get to take a unique_ptr.
     return base::WrapUnique<base::Value>(
-        chromeos::CrosSettings::Get()
+        ash::CrosSettings::Get()
             ->GetPref(chromeos::kSystemTimezone)
             ->DeepCopy());
   }
 
   if (property_name == kPropertySupportedTimezones) {
-    return chromeos::system::GetTimezoneList();
+    return ash::system::GetTimezoneList();
   }
 
   const char* pref_name = GetBoolPrefNameForApiProperty(property_name.c_str());
@@ -443,7 +442,7 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   if (param_name == kPropertyTimezone) {
     std::string param_value;
     EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &param_value));
-    if (chromeos::system::PerUserTimezoneEnabled()) {
+    if (ash::system::PerUserTimezoneEnabled()) {
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
           ->SetString(prefs::kUserTimezone, param_value);
@@ -452,7 +451,7 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
           chromeos::ProfileHelper::Get()->GetUserByProfile(
               Profile::FromBrowserContext(browser_context()));
       if (user)
-        chromeos::system::SetSystemTimezone(user, param_value);
+        ash::system::SetSystemTimezone(user, param_value);
     }
 
   } else {

@@ -160,8 +160,8 @@ void ServiceWorkerInstalledScriptReader::OnReadDataStarted(
     options.element_num_bytes = 1;
     options.capacity_num_bytes =
         blink::BlobUtils::GetDataPipeCapacity(metadata->size());
-    int rv = mojo::CreateDataPipe(&options, &meta_producer_handle,
-                                  &meta_data_consumer);
+    int rv = mojo::CreateDataPipe(&options, meta_producer_handle,
+                                  meta_data_consumer);
     if (rv != MOJO_RESULT_OK) {
       CompleteSendIfNeeded(FinishedReason::kCreateDataPipeError);
       return;

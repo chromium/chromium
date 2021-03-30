@@ -86,7 +86,6 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // SiteInstance) has been created.
   static void CreateFullPageMimeHandlerView(int32_t frame_tree_node_id,
                                             const GURL& resource_url,
-                                            const std::string& mime_type,
                                             const std::string& stream_id,
                                             const std::string& token);
 

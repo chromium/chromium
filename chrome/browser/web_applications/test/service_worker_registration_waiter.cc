@@ -15,8 +15,7 @@ ServiceWorkerRegistrationWaiter::ServiceWorkerRegistrationWaiter(
     const GURL& url)
     : url_(std::move(url)) {
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartitionForSite(browser_context,
-                                                          url_);
+      content::BrowserContext::GetStoragePartitionForUrl(browser_context, url_);
   DCHECK(storage_partition);
 
   service_worker_context_ = storage_partition->GetServiceWorkerContext();

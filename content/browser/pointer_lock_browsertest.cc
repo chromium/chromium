@@ -296,20 +296,27 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockEventRouting) {
 
   WaitForHitTestData(child->current_frame_host());
 
-  std::string set_mouse_move_event_listener =
-      R"code(mouseMoveExecuted = new Promise(function (resolve, reject){
-              mousemoveHandler = function(e){
-                x = e.x; y = e.y; mX = e.movementX; mY = e.movementY;
-                document.removeEventListener('mousemove', mousemoveHandler);
-                resolve();
-              };
-              document.addEventListener('mousemove', mousemoveHandler);
-             });)code";
-  std::string define_variables = R"code(var x; var y;
-       var mX; var mY;
-       var mouseMoveExecuted;
-       var mousemoveHandler;
-       )code";
+  std::string set_mouse_move_event_listener = R"(
+    mouseMoveExecuted = new Promise(function (resolve, reject) {
+      mousemoveHandler = function(e) {
+        x = e.x;
+        y = e.y;
+        mX = e.movementX;
+        mY = e.movementY;
+        resolve();
+      };
+      document.addEventListener('mousemove', mousemoveHandler, {once: true});
+    });
+    true; // A promise is defined above, but do not wait.
+  )";
+  std::string define_variables = R"(
+    var x;
+    var y;
+    var mX;
+    var mY;
+    var mouseMoveExecuted;
+    var mousemoveHandler;
+  )";
   // Add a mouse move event listener to the root frame.
   EXPECT_TRUE(ExecJs(root, define_variables));
   EXPECT_TRUE(ExecJs(root, set_mouse_move_event_listener));

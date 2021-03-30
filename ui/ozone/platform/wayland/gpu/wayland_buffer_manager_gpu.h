@@ -26,7 +26,6 @@
 
 namespace gfx {
 enum class SwapResult;
-class Rect;
 }  // namespace gfx
 
 namespace ui {
@@ -52,6 +51,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       const base::flat_map<::gfx::BufferFormat, std::vector<uint64_t>>&
           buffer_formats_with_modifiers,
       bool supports_dma_buf,
+      bool supports_viewporter,
       bool supports_acquire_fence) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
@@ -104,10 +104,13 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // logic as well. This call must not be done twice for the same |widget| until
   // the OnSubmission is called (which actually means the client can continue
   // sending buffer swap requests).
+  //
+  // CommitBuffer() calls CommitOverlays() to commit only a primary plane
+  // buffer.
   void CommitBuffer(gfx::AcceleratedWidget widget,
                     uint32_t buffer_id,
+                    const gfx::Rect& bounds_rect,
                     const gfx::Rect& damage_region);
-
   // Send overlay configurations for a frame to a WaylandWindow identified by
   // |widget|.
   void CommitOverlays(
@@ -126,6 +129,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 #endif
 
   bool supports_acquire_fence() const { return supports_acquire_fence_; }
+  bool supports_viewporter() const { return supports_viewporter_; }
 
   // Adds a WaylandBufferManagerGpu binding.
   void AddBindingWaylandBufferManagerGpu(
@@ -151,9 +155,6 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                     size_t length,
                                     gfx::Size size,
                                     uint32_t buffer_id);
-  void CommitBufferInternal(gfx::AcceleratedWidget widget,
-                            uint32_t buffer_id,
-                            const gfx::Rect& damage_region);
   void CommitOverlaysInternal(
       gfx::AcceleratedWidget widget,
       std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);
@@ -184,7 +185,11 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Whether Wayland server allows buffer submission with acquire fence.
   bool supports_acquire_fence_ = false;
 
-  mojo::Receiver<ozone::mojom::WaylandBufferManagerGpu> receiver_{this};
+  // Whether Wayland server implements wp_viewporter extension to support
+  // cropping and scaling buffers.
+  bool supports_viewporter_ = false;
+
+  mojo::ReceiverSet<ozone::mojom::WaylandBufferManagerGpu> receiver_set_;
 
   // A pointer to a WaylandBufferManagerHost object, which always lives on a
   // browser process side. It's used for a multi-process mode.

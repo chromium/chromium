@@ -65,7 +65,7 @@ class FileSystemDelegate {
   // for a given app.
   virtual void ConfirmSensitiveDirectoryAccess(
       bool has_write_permission,
-      const base::string16& app_name,
+      const std::u16string& app_name,
       content::WebContents* web_contents,
       base::OnceClosure on_accept,
       base::OnceClosure on_cancel) = 0;

@@ -7,6 +7,8 @@ import("//third_party/blink/renderer/core/core.gni")
 blink_core_sources_workers = [
   "abstract_worker.cc",
   "abstract_worker.h",
+  "cross_thread_global_scope_creation_params_copier.cc",
+  "cross_thread_global_scope_creation_params_copier.h",
   "dedicated_worker.cc",
   "dedicated_worker.h",
   "dedicated_worker_global_scope.cc",

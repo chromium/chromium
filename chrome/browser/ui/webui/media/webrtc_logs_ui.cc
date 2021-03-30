@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -27,6 +27,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/webrtc_logs_resources.h"
+#include "chrome/grit/webrtc_logs_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/upload_list/upload_list.h"
 #include "components/version_info/version_info.h"
@@ -37,10 +38,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/webui/web_ui_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#endif
 
 using content::WebContents;
 using content::WebUIMessageHandler;
@@ -75,11 +72,12 @@ content::WebUIDataSource* CreateWebRtcLogsUIHTMLSource() {
       {"noTextLogsMessage", IDS_WEBRTC_LOGS_NO_TEXT_LOGS_MESSAGE},
       {"noEventLogsMessage", IDS_WEBRTC_LOGS_NO_EVENT_LOGS_MESSAGE},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->UseStringsJs();
-  source->AddResourcePath("webrtc_logs.js", IDR_WEBRTC_LOGS_JS);
-  source->SetDefaultResource(IDR_WEBRTC_LOGS_HTML);
+  source->AddResourcePaths(
+      base::make_span(kWebrtcLogsResources, kWebrtcLogsResourcesSize));
+  source->SetDefaultResource(IDR_WEBRTC_LOGS_WEBRTC_LOGS_HTML);
   return source;
 }
 
@@ -261,16 +259,17 @@ void WebRtcLogsDOMHandler::UpdateUIWithTextLogs(
     std::unique_ptr<base::DictionaryValue> upload(new base::DictionaryValue());
     upload->SetString("id", i->upload_id);
 
-    base::string16 value_w;
+    std::u16string value_w;
     if (!i->upload_time.is_null())
       value_w = base::TimeFormatFriendlyDateAndTime(i->upload_time);
     upload->SetString("upload_time", value_w);
 
-    base::FilePath::StringType value;
-    if (!i->local_id.empty())
+    std::string value;
+    if (!i->local_id.empty()) {
       value = text_log_dir_.AppendASCII(i->local_id)
                   .AddExtension(FILE_PATH_LITERAL(".gz"))
-                  .value();
+                  .AsUTF8Unsafe();
+    }
     upload->SetString("local_file", value);
 
     // In october 2015, capture time was added to the log list, previously the
@@ -302,7 +301,7 @@ void WebRtcLogsDOMHandler::UpdateUIWithTextLogs(
     // was already in the variable. In case it's empty set the string to
     // inform that the time is unknown.
     if (value_w.empty())
-      value_w = base::string16(base::ASCIIToUTF16("(unknown time)"));
+      value_w = std::u16string(u"(unknown time)");
     upload->SetString("capture_time", value_w);
 
     upload_list->Append(std::move(upload));
@@ -353,7 +352,7 @@ std::unique_ptr<base::DictionaryValue> WebRtcLogsDOMHandler::FromPendingLog(
   log->SetString("capture_time",
                  base::TimeFormatFriendlyDateAndTime(info.capture_time));
   log->SetString("local_file",
-                 event_log_dir_.AppendASCII(info.local_id).value());
+                 event_log_dir_.AppendASCII(info.local_id).AsUTF8Unsafe());
   return log;
 }
 
@@ -372,7 +371,7 @@ WebRtcLogsDOMHandler::FromActivelyUploadedLog(
   log->SetString("capture_time",
                  base::TimeFormatFriendlyDateAndTime(info.capture_time));
   log->SetString("local_file",
-                 event_log_dir_.AppendASCII(info.local_id).value());
+                 event_log_dir_.AppendASCII(info.local_id).AsUTF8Unsafe());
   return log;
 }
 

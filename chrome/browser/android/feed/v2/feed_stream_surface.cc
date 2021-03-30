@@ -17,8 +17,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/variations/variations_ids_provider.h"
 
 using base::android::JavaParamRef;
@@ -28,6 +28,7 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
 
 namespace feed {
+namespace android {
 
 static jlong JNI_FeedStreamSurface_Init(JNIEnv* env,
                                         const JavaParamRef<jobject>& j_this) {
@@ -41,12 +42,11 @@ JNI_FeedStreamSurface_GetExperimentIds(JNIEnv* env) {
   DCHECK(variations_ids_provider != nullptr);
 
   return base::android::ToJavaIntArray(
-      env, variations_ids_provider
-               ->GetVariationsVectorForWebPropertiesKeys());
+      env, variations_ids_provider->GetVariationsVectorForWebPropertiesKeys());
 }
 
 FeedStreamSurface::FeedStreamSurface(const JavaRef<jobject>& j_this)
-    : feed_stream_api_(nullptr) {
+    : ::feed::FeedStreamSurface(kForYouStream), feed_stream_api_(nullptr) {
   java_ref_.Reset(j_this);
 
   FeedService* service = FeedServiceFactory::GetForBrowserContext(
@@ -95,9 +95,8 @@ void FeedStreamSurface::LoadMore(JNIEnv* env,
   if (!feed_stream_api_)
     return;
   feed_stream_api_->LoadMore(
-      GetSurfaceId(),
-      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
-                     ScopedJavaGlobalRef<jobject>(callback_obj)));
+      *this, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                            ScopedJavaGlobalRef<jobject>(callback_obj)));
 }
 
 void FeedStreamSurface::ProcessThereAndBackAgain(
@@ -130,7 +129,8 @@ int FeedStreamSurface::ExecuteEphemeralChange(
     return 0;
   std::string data_string;
   base::android::JavaByteArrayToString(env, data, &data_string);
-  return feed_stream_api_->CreateEphemeralChangeFromPackedData(data_string)
+  return feed_stream_api_
+      ->CreateEphemeralChangeFromPackedData(GetStreamType(), data_string)
       .GetUnsafeValue();
 }
 
@@ -139,7 +139,8 @@ void FeedStreamSurface::CommitEphemeralChange(JNIEnv* env,
                                               int change_id) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->CommitEphemeralChange(EphemeralChangeId(change_id));
+  feed_stream_api_->CommitEphemeralChange(GetStreamType(),
+                                          EphemeralChangeId(change_id));
 }
 
 void FeedStreamSurface::DiscardEphemeralChange(JNIEnv* env,
@@ -147,7 +148,8 @@ void FeedStreamSurface::DiscardEphemeralChange(JNIEnv* env,
                                                int change_id) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->RejectEphemeralChange(EphemeralChangeId(change_id));
+  feed_stream_api_->RejectEphemeralChange(GetStreamType(),
+                                          EphemeralChangeId(change_id));
 }
 
 void FeedStreamSurface::SurfaceOpened(JNIEnv* env,
@@ -169,7 +171,8 @@ void FeedStreamSurface::SurfaceClosed(JNIEnv* env,
 bool FeedStreamSurface::IsActivityLoggingEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return feed_stream_api_ && feed_stream_api_->IsActivityLoggingEnabled();
+  return feed_stream_api_ &&
+         feed_stream_api_->IsActivityLoggingEnabled(GetStreamType());
 }
 
 base::android::ScopedJavaLocalRef<jstring> FeedStreamSurface::GetSessionId(
@@ -186,7 +189,7 @@ void FeedStreamSurface::ReportOpenAction(
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportOpenAction(
-      base::android::ConvertJavaStringToUTF8(env, slice_id));
+      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
 void FeedStreamSurface::ReportOpenInNewTabAction(
@@ -196,15 +199,7 @@ void FeedStreamSurface::ReportOpenInNewTabAction(
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportOpenInNewTabAction(
-      base::android::ConvertJavaStringToUTF8(env, slice_id));
-}
-
-void FeedStreamSurface::ReportOpenInNewIncognitoTabAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportOpenInNewIncognitoTabAction();
+      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
 void FeedStreamSurface::ReportSliceViewed(
@@ -214,7 +209,8 @@ void FeedStreamSurface::ReportSliceViewed(
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportSliceViewed(
-      GetSurfaceId(), base::android::ConvertJavaStringToUTF8(env, slice_id));
+      GetSurfaceId(), GetStreamType(),
+      base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
 void FeedStreamSurface::ReportFeedViewed(
@@ -225,37 +221,6 @@ void FeedStreamSurface::ReportFeedViewed(
   feed_stream_api_->ReportFeedViewed(GetSurfaceId());
 }
 
-void FeedStreamSurface::ReportSendFeedbackAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportSendFeedbackAction();
-}
-
-void FeedStreamSurface::ReportLearnMoreAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportLearnMoreAction();
-}
-
-void FeedStreamSurface::ReportDownloadAction(JNIEnv* env,
-                                             const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportDownloadAction();
-}
-
-void FeedStreamSurface::ReportNavigationStarted(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportNavigationStarted();
-}
-
 void FeedStreamSurface::ReportPageLoaded(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj,
                                          jboolean in_new_tab) {
@@ -264,43 +229,12 @@ void FeedStreamSurface::ReportPageLoaded(JNIEnv* env,
   feed_stream_api_->ReportPageLoaded();
 }
 
-void FeedStreamSurface::ReportRemoveAction(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportRemoveAction();
-}
-
-void FeedStreamSurface::ReportNotInterestedInAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportNotInterestedInAction();
-}
-
-void FeedStreamSurface::ReportManageInterestsAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportManageInterestsAction();
-}
-
-void FeedStreamSurface::ReportContextMenuOpened(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportContextMenuOpened();
-}
-
 void FeedStreamSurface::ReportStreamScrolled(JNIEnv* env,
                                              const JavaParamRef<jobject>& obj,
                                              int distance_dp) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->ReportStreamScrolled(distance_dp);
+  feed_stream_api_->ReportStreamScrolled(GetStreamType(), distance_dp);
 }
 
 void FeedStreamSurface::ReportStreamScrollStart(
@@ -311,18 +245,12 @@ void FeedStreamSurface::ReportStreamScrollStart(
   feed_stream_api_->ReportStreamScrollStart();
 }
 
-void FeedStreamSurface::ReportTurnOnAction(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportTurnOnAction();
+void FeedStreamSurface::ReportOtherUserAction(JNIEnv* env,
+                                              const JavaParamRef<jobject>& obj,
+                                              int action_type) {
+  feed_stream_api_->ReportOtherUserAction(
+      GetStreamType(), static_cast<FeedUserActionType>(action_type));
 }
 
-void FeedStreamSurface::ReportTurnOffAction(JNIEnv* env,
-                                            const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportTurnOffAction();
-}
-
+}  // namespace android
 }  // namespace feed

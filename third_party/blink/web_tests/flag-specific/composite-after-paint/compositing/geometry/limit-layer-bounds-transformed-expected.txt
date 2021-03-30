@@ -10,6 +10,7 @@ Text here
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='compositing'",
       "bounds": [100, 100],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
@@ -17,6 +18,7 @@ Text here
       "name": "LayoutNGBlockFlow (positioned) DIV class='indicator'",
       "position": [0, 8],
       "bounds": [350, 142],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000"
     }
   ],

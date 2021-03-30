@@ -117,7 +117,7 @@ void UseCreditCardAction::FillFormWithData() {
     return;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector_,
       base::BindOnce(&UseCreditCardAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -141,7 +141,7 @@ void UseCreditCardAction::OnWaitForElement(const ClientStatus& element_status) {
 void UseCreditCardAction::OnGetFullCard(
     const ClientStatus& status,
     std::unique_ptr<autofill::CreditCard> card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
   action_stopwatch_.StartActiveTime();
   if (!status.ok()) {
     EndAction(status);

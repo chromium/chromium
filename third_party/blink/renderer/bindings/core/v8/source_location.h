@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace blink {
 
@@ -58,10 +59,18 @@ class CORE_EXPORT SourceLocation {
     return std::move(stack_trace_);
   }
 
+  bool HasStackTrace() const {
+    return stack_trace_ && !stack_trace_->isEmpty();
+  }
+
   // Safe to pass between threads, drops async chain in stack trace.
   std::unique_ptr<SourceLocation> Clone() const;
 
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+
   // No-op when stack trace is unknown.
+  // TODO(altimin): Replace all usages of `ToTracedValue` with
+  // `WriteIntoTracedValue` and remove this method.
   void ToTracedValue(TracedValue*, const char* name) const;
 
   // Could be null string when stack trace is unknown.
@@ -76,8 +85,7 @@ class CORE_EXPORT SourceLocation {
 
  private:
   static std::unique_ptr<SourceLocation> CreateFromNonEmptyV8StackTrace(
-      std::unique_ptr<v8_inspector::V8StackTrace>,
-      int script_id);
+      std::unique_ptr<v8_inspector::V8StackTrace>);
 
   String url_;
   unsigned line_number_;

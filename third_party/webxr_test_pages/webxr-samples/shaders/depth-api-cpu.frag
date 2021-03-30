@@ -1,8 +1,10 @@
 precision mediump float;
 
+uniform float uAlpha;
+
 varying float vDepthDistance;
 
-const highp float kMaxDepth = 8.0; // In meters.
+const highp float kMaxDepthInMeters = 8.0; // In meters.
 const float kInvalidDepthThreshold = 0.01;
 
 vec3 TurboColormap(in float x);
@@ -17,8 +19,8 @@ vec3 DepthGetColorVisualization(in float x) {
 }
 
 void main(void) {
-  highp float normalized_depth = clamp(vDepthDistance / 8.0, 0.0, 1.0);
-  gl_FragColor = vec4(DepthGetColorVisualization(normalized_depth), 0.75);
+  highp float normalized_depth = clamp(vDepthDistance / kMaxDepthInMeters, 0.0, 1.0);
+  gl_FragColor = vec4(DepthGetColorVisualization(normalized_depth), uAlpha);
 }
 
 // Insert turbo.glsl here.

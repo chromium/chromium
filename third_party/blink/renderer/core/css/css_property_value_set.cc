@@ -81,8 +81,14 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
     unsigned length)
     : CSSPropertyValueSet(kHTMLStandardMode) {
   property_vector_.ReserveInitialCapacity(length);
-  for (unsigned i = 0; i < length; ++i)
+  for (unsigned i = 0; i < length; ++i) {
     property_vector_.UncheckedAppend(properties[i]);
+    if (!may_have_logical_properties_) {
+      const CSSProperty& prop = CSSProperty::Get(properties[i].Id());
+      may_have_logical_properties_ =
+          prop.IsInLogicalPropertyGroup() && prop.IsSurrogate();
+    }
+  }
 }
 
 ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
@@ -180,12 +186,19 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
   if (auto* other_mutable_property_set =
           DynamicTo<MutableCSSPropertyValueSet>(other)) {
     property_vector_ = other_mutable_property_set->property_vector_;
+    may_have_logical_properties_ =
+        other_mutable_property_set->may_have_logical_properties_;
   } else {
     property_vector_.ReserveInitialCapacity(other.PropertyCount());
     for (unsigned i = 0; i < other.PropertyCount(); ++i) {
       PropertyReference property = other.PropertyAt(i);
       property_vector_.UncheckedAppend(
           CSSPropertyValue(property.PropertyMetadata(), property.Value()));
+      if (!may_have_logical_properties_) {
+        const CSSProperty& prop = CSSProperty::Get(property.Id());
+        may_have_logical_properties_ =
+            prop.IsInLogicalPropertyGroup() && prop.IsSurrogate();
+      }
     }
   }
 }
@@ -418,16 +431,18 @@ bool MutableCSSPropertyValueSet::SetProperty(const CSSPropertyValue& property,
   CSSPropertyValue* to_replace =
       slot ? slot : FindCSSPropertyWithName(property.Name());
   if (to_replace) {
-    const CSSProperty& prop = CSSProperty::Get(property.Id());
-    if (prop.IsInLogicalPropertyGroup()) {
-      DCHECK(property_vector_.Contains(*to_replace));
-      int to_replace_index = to_replace - property_vector_.begin();
-      for (int n = property_vector_.size() - 1; n > to_replace_index; --n) {
-        if (prop.IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
-                PropertyAt(n).Id())) {
-          RemovePropertyAtIndex(to_replace_index, nullptr);
-          to_replace = nullptr;
-          break;
+    if (may_have_logical_properties_) {
+      const CSSProperty& prop = CSSProperty::Get(property.Id());
+      if (prop.IsInLogicalPropertyGroup()) {
+        DCHECK(property_vector_.Contains(*to_replace));
+        int to_replace_index = to_replace - property_vector_.begin();
+        for (int n = property_vector_.size() - 1; n > to_replace_index; --n) {
+          if (prop.IsInSameLogicalPropertyGroupWithDifferentMappingLogic(
+                  PropertyAt(n).Id())) {
+            RemovePropertyAtIndex(to_replace_index, nullptr);
+            to_replace = nullptr;
+            break;
+          }
         }
       }
     }
@@ -437,6 +452,10 @@ bool MutableCSSPropertyValueSet::SetProperty(const CSSPropertyValue& property,
       *to_replace = property;
       return true;
     }
+  } else if (!may_have_logical_properties_) {
+    const CSSProperty& prop = CSSProperty::Get(property.Id());
+    may_have_logical_properties_ =
+        prop.IsInLogicalPropertyGroup() && prop.IsSurrogate();
   }
   property_vector_.push_back(property);
   return true;
@@ -518,6 +537,7 @@ bool CSSPropertyValueSet::HasFailedOrCanceledSubresources() const {
 
 void MutableCSSPropertyValueSet::Clear() {
   property_vector_.clear();
+  may_have_logical_properties_ = false;
 }
 
 inline bool ContainsId(const CSSProperty* const set[],

@@ -14,8 +14,8 @@ namespace policy {
 
 StatusCollectorState::StatusCollectorState(
     const scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const StatusCollectorCallback& response)
-    : task_runner_(task_runner), response_(response) {}
+    StatusCollectorCallback response)
+    : task_runner_(task_runner), response_(std::move(response)) {}
 
 StatusCollectorParams& StatusCollectorState::response_params() {
   return response_params_;
@@ -24,7 +24,8 @@ StatusCollectorParams& StatusCollectorState::response_params() {
 // Protected.
 StatusCollectorState::~StatusCollectorState() {
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(response_, std::move(response_params_)));
+      FROM_HERE,
+      base::BindOnce(std::move(response_), std::move(response_params_)));
 }
 
 }  // namespace policy

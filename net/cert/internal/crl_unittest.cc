@@ -4,6 +4,7 @@
 
 #include "net/cert/internal/crl.h"
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
@@ -18,7 +19,7 @@ namespace {
 constexpr base::TimeDelta kAgeOneWeek = base::TimeDelta::FromDays(7);
 
 std::string GetFilePath(base::StringPiece file_name) {
-  return std::string("net/data/crl_unittest/") + file_name.as_string();
+  return std::string("net/data/crl_unittest/") + std::string(file_name);
 }
 
 scoped_refptr<ParsedCertificate> ParseCertificate(base::StringPiece data) {
@@ -112,7 +113,7 @@ struct PrintTestName {
     base::StringPiece name(info.param);
     // Strip ".pem" from the end as GTest names cannot contain period.
     name.remove_suffix(4);
-    return name.as_string();
+    return std::string(name);
   }
 };
 

@@ -37,7 +37,7 @@ UsageTimeStateNotifier* UsageTimeStateNotifier::GetInstance() {
 void UsageTimeStateNotifier::AddObserver(
     UsageTimeStateNotifier::Observer* observer) {
   DCHECK(observer);
-  if (!observers_.might_have_observers()) {
+  if (observers_.empty()) {
     session_manager::SessionManager::Get()->AddObserver(this);
     PowerManagerClient::Get()->AddObserver(this);
     last_state_ = GetCurrentState();
@@ -49,7 +49,7 @@ void UsageTimeStateNotifier::RemoveObserver(
     UsageTimeStateNotifier::Observer* observer) {
   DCHECK(observer);
   observers_.RemoveObserver(observer);
-  if (!observers_.might_have_observers()) {
+  if (observers_.empty()) {
     session_manager::SessionManager::Get()->RemoveObserver(this);
     PowerManagerClient::Get()->RemoveObserver(this);
   }

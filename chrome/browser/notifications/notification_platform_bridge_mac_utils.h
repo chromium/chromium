@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/notifications/notification_common.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -16,10 +17,10 @@ class Notification;
 // This file is a combination of methods that are shared between the macOS
 // notification bridges.
 
-base::string16 CreateMacNotificationTitle(
+std::u16string CreateMacNotificationTitle(
     const message_center::Notification& notification);
 
-base::string16 CreateMacNotificationContext(
+std::u16string CreateMacNotificationContext(
     bool is_persistent,
     const message_center::Notification& notification,
     bool requires_attribution);
@@ -31,5 +32,11 @@ bool VerifyMacNotificationData(NSDictionary* response) WARN_UNUSED_RESULT;
 // Processes a notification response generated from a user action
 // (click close, etc.).
 void ProcessMacNotificationResponse(NSDictionary* response);
+
+// Returns if alerts via XPC are supported on this machine.
+bool MacOSSupportsXPCAlerts();
+
+// Returns if the given |notification| should be shown as an alert.
+bool IsAlertNotificationMac(const message_center::Notification& notification);
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_

@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_MODEL_H_
 #define COMPONENTS_PAYMENTS_CONTENT_SECURE_PAYMENT_CONFIRMATION_MODEL_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace payments {
@@ -25,30 +26,30 @@ class SecurePaymentConfirmationModel {
       const SecurePaymentConfirmationModel& other) = delete;
 
   // Title, e.g. "Use TouchID to verify and complete your purchase?"
-  const base::string16& title() const { return title_; }
-  void set_title(const base::string16& title) { title_ = title; }
+  const std::u16string& title() const { return title_; }
+  void set_title(const std::u16string& title) { title_ = title; }
 
   // Label for the merchant row, e.g. "Store".
-  const base::string16& merchant_label() const { return merchant_label_; }
-  void set_merchant_label(const base::string16& merchant_label) {
+  const std::u16string& merchant_label() const { return merchant_label_; }
+  void set_merchant_label(const std::u16string& merchant_label) {
     merchant_label_ = merchant_label;
   }
 
   // Label for the merchant row value, e.g. "merchant.com"
-  const base::string16& merchant_value() const { return merchant_value_; }
-  void set_merchant_value(const base::string16& merchant_value) {
+  const std::u16string& merchant_value() const { return merchant_value_; }
+  void set_merchant_value(const std::u16string& merchant_value) {
     merchant_value_ = merchant_value;
   }
 
   // Label for the instrument row, e.g. "Payment".
-  const base::string16& instrument_label() const { return instrument_label_; }
-  void set_instrument_label(const base::string16& instrument_label) {
+  const std::u16string& instrument_label() const { return instrument_label_; }
+  void set_instrument_label(const std::u16string& instrument_label) {
     instrument_label_ = instrument_label;
   }
 
   // Label for the instrument row value, e.g. "Mastercard ****4444"
-  const base::string16& instrument_value() const { return instrument_value_; }
-  void set_instrument_value(const base::string16& instrument_value) {
+  const std::u16string& instrument_value() const { return instrument_value_; }
+  void set_instrument_value(const std::u16string& instrument_value) {
     instrument_value_ = instrument_value;
   }
 
@@ -59,30 +60,30 @@ class SecurePaymentConfirmationModel {
   }
 
   // Label for the total row, e.g. "Total".
-  const base::string16& total_label() const { return total_label_; }
-  void set_total_label(const base::string16& total_label) {
+  const std::u16string& total_label() const { return total_label_; }
+  void set_total_label(const std::u16string& total_label) {
     total_label_ = total_label;
   }
 
   // Label for the total row value, e.g. "$20.00 USD"
-  const base::string16& total_value() const { return total_value_; }
-  void set_total_value(const base::string16& total_value) {
+  const std::u16string& total_value() const { return total_value_; }
+  void set_total_value(const std::u16string& total_value) {
     total_value_ = total_value;
   }
 
   // Label for the verify button, e.g. "Verify".
-  const base::string16& verify_button_label() const {
+  const std::u16string& verify_button_label() const {
     return verify_button_label_;
   }
-  void set_verify_button_label(const base::string16& verify_button_label) {
+  void set_verify_button_label(const std::u16string& verify_button_label) {
     verify_button_label_ = verify_button_label;
   }
 
   // Label for the cancel button, e.g. "Cancel".
-  const base::string16& cancel_button_label() const {
+  const std::u16string& cancel_button_label() const {
     return cancel_button_label_;
   }
-  void set_cancel_button_label(const base::string16& cancel_button_label) {
+  void set_cancel_button_label(const std::u16string& cancel_button_label) {
     cancel_button_label_ = cancel_button_label;
   }
 
@@ -119,20 +120,20 @@ class SecurePaymentConfirmationModel {
   base::WeakPtr<SecurePaymentConfirmationModel> GetWeakPtr();
 
  private:
-  base::string16 title_;
+  std::u16string title_;
 
-  base::string16 merchant_label_;
-  base::string16 merchant_value_;
+  std::u16string merchant_label_;
+  std::u16string merchant_value_;
 
-  base::string16 instrument_label_;
-  base::string16 instrument_value_;
+  std::u16string instrument_label_;
+  std::u16string instrument_value_;
   const SkBitmap* instrument_icon_ = nullptr;
 
-  base::string16 total_label_;
-  base::string16 total_value_;
+  std::u16string total_label_;
+  std::u16string total_value_;
 
-  base::string16 verify_button_label_;
-  base::string16 cancel_button_label_;
+  std::u16string verify_button_label_;
+  std::u16string cancel_button_label_;
 
   bool progress_bar_visible_ = false;
 

@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ParagraphUtils} from './paragraph_utils.js';
+
+const RoleType = chrome.automation.RoleType;
+
 /**
  * Utilities for processing sentences within strings and node groups.
  */
-class SentenceUtils {
+export class SentenceUtils {
   constructor() {}
 
   /**
@@ -80,7 +84,7 @@ class SentenceUtils {
       return null;
     }
     // Check if this nodeGroupItem has a non-empty static text node.
-    if (!nodeGroupItem.node.role === RoleType.STATIC_TEXT ||
+    if (nodeGroupItem.node.role !== RoleType.STATIC_TEXT ||
         nodeGroupItem.node.name.length === 0) {
       return null;
     }
@@ -157,7 +161,7 @@ class SentenceUtils {
     for (let i = 0; i < nodeGroup.nodes.length; i++) {
       const nodeGroupItem = nodeGroup.nodes[i];
       // Check if this nodeGroupItem has a non-empty static text node.
-      if (!nodeGroupItem.node.role === RoleType.STATIC_TEXT ||
+      if (nodeGroupItem.node.role !== RoleType.STATIC_TEXT ||
           nodeGroupItem.node.name.length === 0) {
         continue;
       }

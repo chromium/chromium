@@ -20,9 +20,8 @@ class ResourceFinishObserver;
 // API) and notifies the relevant document, so that it can manage the first
 // rendering timing to work with preloaded fonts.
 // Design doc: https://bit.ly/36E8UKB
-class CORE_EXPORT FontPreloadManager final {
-  DISALLOW_NEW();
-
+class CORE_EXPORT FontPreloadManager final
+    : public GarbageCollected<FontPreloadManager> {
  public:
   explicit FontPreloadManager(Document&);
   ~FontPreloadManager() = default;
@@ -76,7 +75,7 @@ class CORE_EXPORT FontPreloadManager final {
 
   unsigned imperative_font_loading_count_ = 0;
 
-  TaskRunnerTimer<FontPreloadManager> render_delay_timer_;
+  HeapTaskRunnerTimer<FontPreloadManager> render_delay_timer_;
   base::TimeDelta render_delay_timeout_;
 
   State state_ = State::kInitial;

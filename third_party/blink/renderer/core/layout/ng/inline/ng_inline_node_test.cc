@@ -80,16 +80,10 @@ class NGInlineNodeForTest : public NGInlineNode {
 
 class NGInlineNodeTest : public NGLayoutTest {
  protected:
-  void SetUp() override {
-    NGLayoutTest::SetUp();
-    style_ = ComputedStyle::Create();
-  }
-
   void SetupHtml(const char* id, String html) {
     SetBodyInnerHTML(html);
     layout_block_flow_ = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId(id));
     layout_object_ = layout_block_flow_->FirstChild();
-    style_ = layout_object_ ? layout_object_->Style() : nullptr;
   }
 
   void UseLayoutObjectAndAhem() {
@@ -108,12 +102,15 @@ class NGInlineNodeTest : public NGLayoutTest {
   }
 
   MinMaxSizes ComputeMinMaxSizes(NGInlineNode node) {
+    const auto space =
+        NGConstraintSpaceBuilder(node.Style().GetWritingMode(),
+                                 node.Style().GetWritingDirection(),
+                                 /* is_new_fc */ false)
+            .ToConstraintSpace();
+
     return node
-        .ComputeMinMaxSizes(
-            node.Style().GetWritingMode(),
-            MinMaxSizesInput(
-                /* percentage_resolution_block_size */ LayoutUnit(),
-                MinMaxSizesType::kContent))
+        .ComputeMinMaxSizes(node.Style().GetWritingMode(), space,
+                            MinMaxSizesFloatInput())
         .sizes;
   }
 
@@ -158,7 +155,6 @@ class NGInlineNodeTest : public NGLayoutTest {
     EXPECT_FALSE(expected);
   }
 
-  scoped_refptr<const ComputedStyle> style_;
   LayoutNGBlockFlow* layout_block_flow_ = nullptr;
   LayoutObject* layout_object_ = nullptr;
   FontCachePurgePreventer purge_preventer_;
@@ -1368,6 +1364,58 @@ TEST_F(NGInlineNodeTest, ReusingRTLAsLTR) {
   TEST_ITEM_OFFSET_DIR(Items()[0], 0u, 0u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(Items()[1], 0u, 10u, TextDirection::kLtr);
   TEST_ITEM_OFFSET_DIR(Items()[2], 10u, 10u, TextDirection::kLtr);
+}
+
+TEST_F(NGInlineNodeTest, ReuseFirstNonSafe) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    p {
+      font-size: 50px;
+    }
+    </style>
+    <p id="p">
+      <span>A</span>V
+    </p>
+  )HTML");
+  auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
+  const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
+  ASSERT_TRUE(data);
+  const Vector<NGInlineItem>& items = data->items;
+
+  // We shape "AV" together, which usually has kerning between "A" and "V", then
+  // split the |ShapeResult| to two |NGInlineItem|s. The |NGInlineItem| for "V"
+  // is not safe to reuse even if its style does not change.
+  const NGInlineItem& item_v = items[3];
+  EXPECT_EQ(item_v.Type(), NGInlineItem::kText);
+  EXPECT_EQ(
+      StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
+      "V");
+  EXPECT_TRUE(NGInlineNode::NeedsShapingForTesting(item_v));
+}
+
+TEST_F(NGInlineNodeTest, ReuseFirstNonSafeRtl) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    p {
+      font-size: 50px;
+      unicode-bidi: bidi-override;
+      direction: rtl;
+    }
+    </style>
+    <p id="p">
+      <span>A</span>V
+    </p>
+  )HTML");
+  auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
+  const NGInlineNodeData* data = block_flow->GetNGInlineNodeData();
+  ASSERT_TRUE(data);
+  const Vector<NGInlineItem>& items = data->items;
+  const NGInlineItem& item_v = items[4];
+  EXPECT_EQ(item_v.Type(), NGInlineItem::kText);
+  EXPECT_EQ(
+      StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
+      "V");
+  EXPECT_TRUE(NGInlineNode::NeedsShapingForTesting(item_v));
 }
 
 TEST_F(NGInlineNodeTest, LetterSpacingUseCounterFalse) {

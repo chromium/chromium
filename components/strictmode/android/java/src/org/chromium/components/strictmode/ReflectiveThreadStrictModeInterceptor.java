@@ -4,9 +4,14 @@
 
 package org.chromium.components.strictmode;
 
+import android.annotation.TargetApi;
 import android.app.ApplicationErrorReport;
+import android.os.Build;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
+import android.os.strictmode.DiskReadViolation;
+import android.os.strictmode.DiskWriteViolation;
+import android.os.strictmode.ResourceMismatchViolation;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,6 +63,10 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
 
     @Override
     public void install(ThreadPolicy detectors) {
+        // Use reflection on Android P despite the existence of
+        // StrictMode.OnThreadViolationListener because the listener receives a stack
+        // trace with stack frames prior to android.os.Handler calls stripped out.
+
         interceptWithReflection();
         StrictMode.setThreadPolicy(new ThreadPolicy.Builder(detectors).penaltyLog().build());
     }
@@ -98,14 +107,27 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
     }
 
     /** @param o {@code android.os.StrictMode.ViolationInfo} */
-    @SuppressWarnings({"unchecked", "PrivateApi"})
-    private static int getViolationType(Object o) {
+    @SuppressWarnings({"unchecked", "DiscouragedPrivateApi", "PrivateApi"})
+    private int getViolationType(Object violationInfo) {
         try {
-            Class<?> violationInfo = Class.forName("android.os.StrictMode$ViolationInfo");
-            Field crashInfoField = violationInfo.getDeclaredField("crashInfo");
+            Class<?> violationInfoClass = Class.forName("android.os.StrictMode$ViolationInfo");
+            if (Build.VERSION.SDK_INT == 28) {
+                Method getViolationBitMethod =
+                        violationInfoClass.getDeclaredMethod("getViolationBit");
+                getViolationBitMethod.setAccessible(true);
+                int violationType = (Integer) getViolationBitMethod.invoke(violationInfo);
+                return violationType & Violation.DETECT_ALL_KNOWN;
+            } else if (Build.VERSION.SDK_INT >= 29) {
+                Method getViolationClassMethod =
+                        violationInfoClass.getDeclaredMethod("getViolationClass");
+                getViolationClassMethod.setAccessible(true);
+                return computeViolationTypeAndroid10(
+                        (Class<?>) getViolationClassMethod.invoke(violationInfo));
+            }
+            Field crashInfoField = violationInfoClass.getDeclaredField("crashInfo");
             crashInfoField.setAccessible(true);
             ApplicationErrorReport.CrashInfo crashInfo =
-                    (ApplicationErrorReport.CrashInfo) crashInfoField.get(o);
+                    (ApplicationErrorReport.CrashInfo) crashInfoField.get(violationInfo);
             Method parseViolationFromMessage =
                     StrictMode.class.getDeclaredMethod("parseViolationFromMessage", String.class);
             parseViolationFromMessage.setAccessible(true);
@@ -116,5 +138,20 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
             Log.e(TAG, "Unable to get violation.", e);
             return Violation.DETECT_UNKNOWN;
         }
+    }
+
+    /**
+     * Computes the violation type based on the class of the passed-in violation.
+     */
+    @TargetApi(29)
+    private static int computeViolationTypeAndroid10(Class<?> violationClass) {
+        if (DiskReadViolation.class.isAssignableFrom(violationClass)) {
+            return Violation.DETECT_DISK_READ;
+        } else if (DiskWriteViolation.class.isAssignableFrom(violationClass)) {
+            return Violation.DETECT_DISK_WRITE;
+        } else if (ResourceMismatchViolation.class.isAssignableFrom(violationClass)) {
+            return Violation.DETECT_RESOURCE_MISMATCH;
+        }
+        return Violation.DETECT_UNKNOWN;
     }
 }

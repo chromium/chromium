@@ -22,6 +22,7 @@
 
 #include "base/pending_task.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
@@ -404,7 +405,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
     const char* log_tag_data = log_tag.data();
 
     fx_logger_config_t config = {
-        .min_severity = FX_LOG_INFO,
+        .min_severity = g_vlog_info ? FX_LOG_DEBUG : FX_LOG_INFO,
         .console_fd = -1,
         .tags = &log_tag_data,
         .num_tags = 1,
@@ -797,6 +798,11 @@ LogMessage::~LogMessage() {
         severity = FX_LOG_ERROR;
         break;
     }
+    // TODO(https://crbug.com/1188820): Integrate verbose levels with the switch
+    // statement.
+    if (severity_ <= LOGGING_VERBOSE) {
+      severity = FX_LOG_DEBUG;
+    }
 
     fx_logger_t* logger = fx_log_get_logger();
     if (logger) {
@@ -1158,5 +1164,17 @@ std::wstring GetLogFileFullPath() {
 }  // namespace logging
 
 std::ostream& std::operator<<(std::ostream& out, const wchar_t* wstr) {
-  return out << (wstr ? base::WideToUTF8(wstr) : std::string());
+  return out << (wstr ? base::WStringPiece(wstr) : base::WStringPiece());
+}
+
+std::ostream& std::operator<<(std::ostream& out, const std::wstring& wstr) {
+  return out << base::WStringPiece(wstr);
+}
+
+std::ostream& std::operator<<(std::ostream& out, const char16_t* str16) {
+  return out << (str16 ? base::StringPiece16(str16) : base::StringPiece16());
+}
+
+std::ostream& std::operator<<(std::ostream& out, const std::u16string& str16) {
+  return out << base::StringPiece16(str16);
 }

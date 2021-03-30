@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabViewProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.paintpreview.player.PlayerManager;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.TokenHolder;
 
 /**
@@ -75,8 +77,12 @@ public class TabbedPaintPreview implements UserData {
                 showToolbarPersistent();
                 setProgressPreventionNeeded(true);
             }
+
+            @Override
+            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+                // Intentionally do nothing to prevent automatic observer removal on detachment.
+            }
         };
-        mTab.addObserver(mTabObserver);
     }
 
     public void setBrowserVisibilityDelegate(
@@ -108,6 +114,7 @@ public class TabbedPaintPreview implements UserData {
         boolean hasCapture = getService().hasCaptureForTab(mTab.getId());
         if (!hasCapture) return false;
 
+        mTab.addObserver(mTabObserver);
         PaintPreviewCompositorUtils.warmupCompositor();
         mPlayerManager = new PlayerManager(mTab.getUrl(), mTab.getContext(), getService(),
                 String.valueOf(mTab.getId()), listener,
@@ -133,6 +140,7 @@ public class TabbedPaintPreview implements UserData {
 
         mFadingOut = true;
         mPlayerManager.setAcceptUserInput(false);
+        mTab.removeObserver(mTabObserver);
         Point scrollPosition = mPlayerManager.getScrollPosition();
         // Destroy early to free up resource, but don't null until faded out so view sticks around.
         mPlayerManager.destroy();
@@ -227,6 +235,11 @@ public class TabbedPaintPreview implements UserData {
     @VisibleForTesting
     View getViewForTesting() {
         return mTabbedPainPreviewViewProvider.getView();
+    }
+
+    @VisibleForTesting
+    PlayerManager getPlayerManagerForTesting() {
+        return mPlayerManager;
     }
 
     private class TabbedPaintPreviewViewProvider implements TabViewProvider {

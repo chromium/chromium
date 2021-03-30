@@ -33,6 +33,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -41,10 +42,6 @@ namespace {
 constexpr int kIconSizeForNonTouchUi = 22;
 
 }  // namespace
-
-// static
-const char AvatarToolbarButton::kAvatarToolbarButtonClassName[] =
-    "AvatarToolbarButton";
 
 AvatarToolbarButton::AvatarToolbarButton(Browser* browser)
     : AvatarToolbarButton(browser, nullptr) {}
@@ -125,7 +122,7 @@ void AvatarToolbarButton::Layout() {
 
 void AvatarToolbarButton::UpdateText() {
   base::Optional<SkColor> color;
-  base::string16 text;
+  std::u16string text;
 
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile: {
@@ -154,7 +151,15 @@ void AvatarToolbarButton::UpdateText() {
       text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
       break;
     case State::kGuestSession: {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // On ChromeOS all windows are either Guest or not Guest and the Guest
+      // avatar button is not actionable. Showing the number of open windows is
+      // not as helpful as on other desktop platforms. Please see
+      // crbug.com/1178520.
+      const int guest_window_count = 1;
+#else
       const int guest_window_count = delegate_->GetWindowCount();
+#endif
       SetAccessibleName(l10n_util::GetPluralStringFUTF16(
           IDS_GUEST_BUBBLE_ACCESSIBLE_TITLE, guest_window_count));
       text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST,
@@ -192,10 +197,6 @@ void AvatarToolbarButton::ShowAvatarHighlightAnimation() {
   delegate_->ShowHighlightAnimation();
 }
 
-bool AvatarToolbarButton::IsParentHighlighted() const {
-  return parent_ && parent_->IsHighlighted();
-}
-
 void AvatarToolbarButton::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -207,10 +208,6 @@ void AvatarToolbarButton::RemoveObserver(Observer* observer) {
 void AvatarToolbarButton::NotifyHighlightAnimationFinished() {
   for (AvatarToolbarButton::Observer& observer : observer_list_)
     observer.OnAvatarHighlightAnimationFinished();
-}
-
-const char* AvatarToolbarButton::GetClassName() const {
-  return kAvatarToolbarButtonClassName;
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
@@ -246,12 +243,12 @@ void AvatarToolbarButton::NotifyClick(const ui::Event& event) {
       event.IsKeyEvent());
 }
 
-base::string16 AvatarToolbarButton::GetAvatarTooltipText() const {
+std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP);
     case State::kGuestSession:
-      return l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_GUEST_TOOLTIP);
     case State::kGenericProfile:
       return l10n_util::GetStringUTF16(IDS_GENERIC_USER_AVATAR_LABEL);
     case State::kAnimatedUserIdentity:
@@ -270,7 +267,7 @@ base::string16 AvatarToolbarButton::GetAvatarTooltipText() const {
       return delegate_->GetProfileName();
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
@@ -288,11 +285,6 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
     case State::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);
     case State::kGenericProfile:
-      if (!base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-        return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
-                                              icon_color, icon_size);
-      }
-      FALLTHROUGH;
     case State::kAnimatedUserIdentity:
     case State::kPasswordsOnlySyncError:
     case State::kSyncError:
@@ -314,3 +306,6 @@ void AvatarToolbarButton::SetInsets() {
       touch_ui ? 0 : (kDefaultIconSize - kIconSizeForNonTouchUi) / 2);
   SetLayoutInsetDelta(layout_insets);
 }
+
+BEGIN_METADATA(AvatarToolbarButton, ToolbarButton)
+END_METADATA

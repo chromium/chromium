@@ -111,7 +111,7 @@ void ArcAppWindow::SetIcon(const gfx::ImageSkia& icon) {
   // Reset any pending request to set default app icon.
   apply_default_image_timer_.Stop();
 
-  if (!exo::GetShellMainSurface(GetNativeWindow())) {
+  if (!exo::GetShellRootSurface(GetNativeWindow())) {
     // Support unit tests where we don't have exo system initialized.
     views::NativeWidgetAura::AssignIconToAuraWindow(
         GetNativeWindow(), gfx::ImageSkia() /* window_icon */,

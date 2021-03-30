@@ -14,8 +14,7 @@ by a child template that "extends" this file.
     xmlns:tools="http://schemas.android.com/tools"
     package="{{ manifest_package }}"
     {% set definitions_in_split = definitions_in_split|default(0) == 'true' %}
-    {% set enable_isolated_splits = enable_isolated_splits|default(0) == 'true' %}
-    {% if enable_isolated_splits %}
+    {% if definitions_in_split %}
     android:isolatedSplits="true"
     {% endif %}
     tools:ignore="MissingVersion">
@@ -46,9 +45,7 @@ by a child template that "extends" this file.
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
-    {% if target_sdk_version|int > 27 or target_sdk_version == "Q" %}
-        <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    {% endif %}
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
@@ -103,8 +100,6 @@ by a child template that "extends" this file.
     <uses-permission android:name="{{ manifest_package }}.TOS_ACKED" />
 
     <uses-permission android:name="com.chrome.permission.DEVICE_EXTRAS" />
-    <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS"/>
-    <uses-permission android:name="com.android.browser.permission.WRITE_HISTORY_BOOKMARKS"/>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
 
@@ -154,13 +149,7 @@ by a child template that "extends" this file.
 
     <!-- Set android:largeHeap to "true" to allow more than the default
          Java heap limit (32Mb on Nexus S, 48Mb on Xoom). -->
-      <application android:name="{% block application_name %}
-          {%- if enable_isolated_splits -%}
-          org.chromium.chrome.browser.base.SplitChromeApplication
-          {%- else -%}
-          org.chromium.chrome.browser.ChromeApplication
-          {%- endif -%}
-          {% endblock %}"
+      <application android:name="{% block application_name %}org.chromium.chrome.browser.base.SplitChromeApplication{% endblock %}"
         android:icon="@drawable/ic_launcher"
         android:roundIcon="@drawable/ic_launcher_round"
         android:label="{% block application_label %}@string/app_name{% endblock %}"
@@ -178,9 +167,7 @@ by a child template that "extends" this file.
         {% endif %}
         android:networkSecurityConfig="@xml/network_security_config"
         android:allowAudioPlaybackCapture="false"
-        {% if enable_isolated_splits %}
         android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"
-        {% endif %}
         {% block extra_application_attributes %}{% endblock %}>
 
       {% macro application_definitions() %}
@@ -215,13 +202,21 @@ by a child template that "extends" this file.
                 <data android:scheme="https" />
                 <data android:scheme="about" />
                 <data android:scheme="javascript" />
-                {% endblock %}
                 <category android:name="android.intent.category.BROWSABLE" />
+                {% endblock %}
             </intent-filter>
             <!-- Same filter as above but with MIME types.  Intents that
                  do not specify a MIME type won't match. -->
-            <intent-filter tools:ignore="AppLinkUrlError">
+            <intent-filter>
                 {{ self.common_view_intent_shared_filter_body() }}
+                <data android:mimeType="text/html"/>
+                <data android:mimeType="text/plain"/>
+                <data android:mimeType="application/xhtml+xml"/>
+            </intent-filter>
+            <!-- content URI support. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="content" />
                 <data android:mimeType="text/html"/>
                 <data android:mimeType="text/plain"/>
@@ -626,6 +621,14 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
 
+        <!-- Activities for feed. -->
+        <activity android:name="org.chromium.chrome.browser.app.feedmanagement.FeedManagementActivity"
+            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
+        </activity>
+
         <!-- Activities for video tutorials. -->
         <activity android:name="org.chromium.chrome.browser.app.video_tutorials.VideoPlayerActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
@@ -851,7 +854,8 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:label="@string/cablev2_activity_title"
             android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <!-- This activity can be started by GMSCore, and is thus exported
             with a permission set, or can be started by the Android system in
             the case that a USB device is attached. -->
@@ -945,16 +949,6 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
             android:hardwareAccelerated="false" />
 
-        <!-- Receiver for GCM messages. -->
-        <receiver android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-               <category android:name="{{ manifest_package }}"/>
-            </intent-filter>
-        </receiver>
         <!-- GcmTaskService for registration for Invalidations. Not actually implemented anymore. -->
         <service android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
             android:exported="true"
@@ -967,7 +961,7 @@ by a child template that "extends" this file.
         <service android:name="org.chromium.chrome.browser.services.gcm.ChromeGcmListenerService"
             android:exported="false" >
             <intent-filter>
-              <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service android:name="org.chromium.chrome.browser.services.gcm.GCMBackgroundService"
@@ -1065,6 +1059,15 @@ by a child template that "extends" this file.
         <receiver android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$Receiver"
             android:exported="false"/>
 
+        <activity
+            android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$TrampolineActivity"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:exported="false"
+            android:autoRemoveFromRecents="true"
+            android:excludeFromRecents="true"
+            android:documentLaunchMode="always"
+            android:noHistory="true"/>
+
         <receiver android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
             android:exported="false"/>
 
@@ -1079,6 +1082,8 @@ by a child template that "extends" this file.
         <receiver android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardMessageHandler$TapReceiver"
             android:exported="false"/>
         <receiver android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardMessageHandler$TryAgainReceiver"
+            android:exported="false"/>
+        <receiver android:name="org.chromium.chrome.browser.sharing.sms_fetcher.SmsFetcherMessageHandler$NotificationReceiver"
             android:exported="false"/>
 
         <receiver android:name="org.chromium.chrome.browser.offlinepages.prefetch.PrefetchedPagesNotifier$ClickReceiver"
@@ -1177,10 +1182,6 @@ by a child template that "extends" this file.
           android:exported="false" />
 
       {% endfor %}
-
-      <!-- Downloads Google Sans from GMS Core -->
-      <meta-data android:name="preloaded_fonts"
-          android:resource="@array/chrome_preloaded_google_sans_fonts" />
 
       <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true" />
 

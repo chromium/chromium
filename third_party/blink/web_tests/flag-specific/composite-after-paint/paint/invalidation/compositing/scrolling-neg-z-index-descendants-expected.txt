@@ -17,11 +17,13 @@
       "name": "LayoutNGBlockFlow HTML",
       "position": [8, 8],
       "bounds": [784, 302],
+      "contentsOpaqueForText": true,
       "drawsContent": false
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
       "bounds": [102, 302],
+      "contentsOpaqueForText": true,
       "backfaceVisibility": "hidden",
       "transform": 1
     },

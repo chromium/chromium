@@ -5,14 +5,8 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_
 
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-
-namespace content {
-class NotificationSource;
-class NotificationDetails;
-}  // namespace content
 
 class Profile;
 class ProfileAttributesStorage;
@@ -24,7 +18,7 @@ class ThemeService;
 // These colors are used to display a list of profiles. They are cached to be
 // accessible without having to load the profiles from disk.
 class ProfileThemeUpdateService : public KeyedService,
-                                  public content::NotificationObserver {
+                                  public ThemeServiceObserver {
  public:
   ProfileThemeUpdateService(
       Profile* profile,
@@ -37,10 +31,8 @@ class ProfileThemeUpdateService : public KeyedService,
   ProfileThemeUpdateService& operator=(const ProfileThemeUpdateService&) =
       delete;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ThemeServiceObserver:
+  void OnThemeChanged() override;
 
  private:
   // Updates profile theme colors in |profile_attributes_storage_| for
@@ -50,8 +42,6 @@ class ProfileThemeUpdateService : public KeyedService,
   Profile* const profile_;
   ProfileAttributesStorage* const profile_attributes_storage_;
   ThemeService* const theme_service_;
-
-  content::NotificationRegistrar notification_registrar_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_

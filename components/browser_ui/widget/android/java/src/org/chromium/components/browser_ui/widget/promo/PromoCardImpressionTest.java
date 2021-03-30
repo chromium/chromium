@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -63,29 +64,30 @@ public class PromoCardImpressionTest {
 
     @Before
     public void setupTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { sContent.removeAllViews(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> sContent.removeAllViews());
     }
 
     @After
     public void tearDown() {
-        mCoordinator.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.destroy());
     }
 
     private void setUpPromoCard(boolean trackPrimary, boolean hidePromo) {
-        mModel = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS)
-                         .with(PromoCardProperties.IMPRESSION_SEEN_CALLBACK,
-                                 mPromoSeenCallback::notifyCalled)
-                         .with(PromoCardProperties.IS_IMPRESSION_ON_PRIMARY_BUTTON, trackPrimary)
-                         .with(PromoCardProperties.TITLE, "Title")
-                         .with(PromoCardProperties.DESCRIPTION, "Description")
-                         .with(PromoCardProperties.PRIMARY_BUTTON_TEXT, "Primary")
-                         .with(PromoCardProperties.HAS_SECONDARY_BUTTON, false)
-                         .build();
-
-        mCoordinator = new PromoCardCoordinator(sActivity, mModel, "impression-test");
-        View promoView = mCoordinator.getView();
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel =
+                    new PropertyModel.Builder(PromoCardProperties.ALL_KEYS)
+                            .with(PromoCardProperties.IMPRESSION_SEEN_CALLBACK,
+                                    mPromoSeenCallback::notifyCalled)
+                            .with(PromoCardProperties.IS_IMPRESSION_ON_PRIMARY_BUTTON, trackPrimary)
+                            .with(PromoCardProperties.TITLE, "Title")
+                            .with(PromoCardProperties.DESCRIPTION, "Description")
+                            .with(PromoCardProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                            .with(PromoCardProperties.HAS_SECONDARY_BUTTON, false)
+                            .build();
+
+            mCoordinator = new PromoCardCoordinator(sActivity, mModel, "impression-test");
+            View promoView = mCoordinator.getView();
+
             if (hidePromo) promoView.setVisibility(View.INVISIBLE);
             sContent.addView(promoView,
                     new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -110,6 +112,7 @@ public class PromoCardImpressionTest {
 
     @Test
     @SmallTest
+    @FlakyTest(message = "https://crbug.com/1181859")
     public void testImpression_Card_Hide() throws TimeoutException {
         int initCount = mPromoSeenCallback.getCallCount();
         setUpPromoCard(false, true);

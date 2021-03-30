@@ -56,7 +56,7 @@ void AccountStorageAuthHelper::TriggerOptInReauth(
     return;
   }
   CoreAccountId primary_account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (primary_account_id.empty()) {
     std::move(reauth_callback).Run(ReauthSucceeded(false));
     return;

@@ -9,12 +9,12 @@
  */
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-import '../controls/settings_toggle_button.m.js';
-import '../icons.m.js';
-import '../prefs/prefs.m.js';
-import '../settings_shared_css.m.js';
+import '../controls/settings_toggle_button.js';
+import '../icons.js';
+import '../prefs/prefs.js';
+import '../settings_shared_css.js';
 import '../site_settings/site_list.js';
 import './collapse_radio_button.js';
 import './do_not_track_toggle.js';
@@ -26,9 +26,9 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
 
 /**
@@ -61,7 +61,11 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [PrefsBehavior, WebUIListenerBehavior],
+  behaviors: [
+    PrefsBehavior,
+    RouteObserverBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /**
@@ -169,6 +173,17 @@ Polymer({
     });
   },
 
+  /**
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @protected
+   */
+  currentRouteChanged(route) {
+    if (route !== routes.COOKIES) {
+      this.$.toast.hide();
+    }
+  },
+
   /** @private */
   onSiteDataClick_() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
@@ -216,6 +231,29 @@ Polymer({
       this.metricsBrowserProxy_.recordSettingsPageHistogram(
           PrivacyElementInteractions.COOKIES_BLOCK);
     }
+
+    // If this change resulted in the user now blocking 3P cookies where they
+    // previously were not, and privacy sandbox APIs are enabled, the privacy
+    // sandbox toast should be shown.
+    const currentCookieSetting =
+        this.getPref('generated.cookie_primary_setting').value;
+    if (loadTimeData.getBoolean('privacySandboxSettingsEnabled') &&
+        this.getPref('privacy_sandbox.apis_enabled').value &&
+        (currentCookieSetting === CookiePrimarySetting.ALLOW_ALL ||
+         currentCookieSetting ===
+             CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO) &&
+        (selection === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
+         selection === CookiePrimarySetting.BLOCK_ALL)) {
+      this.$.toast.show();
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Block3PCookies');
+    } else if (
+        selection === CookiePrimarySetting.ALLOW_ALL ||
+        selection === CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO) {
+      this.$.toast.hide();
+    }
+
+    this.$.primarySettingGroup.sendPrefChange();
   },
 
   /** @private */
@@ -233,5 +271,14 @@ Polymer({
   onNetworkPredictionChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.NETWORK_PREDICTION);
+  },
+
+  /** @private */
+  onPrivacySandboxClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.OpenedFromCookiesPageToast');
+    this.$.toast.hide();
+    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
+    this.shadowRoot.getElementById('privacySandboxLink').click();
   },
 });

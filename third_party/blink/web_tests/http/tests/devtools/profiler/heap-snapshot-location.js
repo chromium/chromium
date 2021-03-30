@@ -24,7 +24,7 @@ async function assertLocation(section, select_row) {
 (async function() {
   TestRunner.addResult(`Test that objects have source links in heap snapshot view.\n`);
 
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
   await TestRunner.evaluateInPagePromise(`
       class MyTestClass {

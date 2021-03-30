@@ -9,6 +9,8 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix.h"
+#include "third_party/blink/renderer/modules/xr/xr_joint_pose.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -19,13 +21,15 @@ namespace blink {
 
 class ExceptionState;
 class XRAnchorSet;
-class XRDepthInformation;
+class XRCPUDepthInformation;
 class XRHitTestResult;
 class XRHitTestSource;
 class XRImageTrackingResult;
 class XRInputSource;
+class XRJointPose;
 class XRLightEstimate;
 class XRLightProbe;
+class XRJointSpace;
 class XRPlaneSet;
 class XRPose;
 class XRReferenceSpace;
@@ -41,6 +45,12 @@ class XRFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static constexpr char kInactiveFrame[] =
+      "XRFrame access outside the callback that produced it is invalid.";
+  static constexpr char kNonAnimationFrame[] =
+      "This method can only be called on XRFrame objects passed to "
+      "XRSession.requestAnimationFrame callbacks.";
+
   explicit XRFrame(XRSession* session, bool is_animation_frame = false);
 
   XRSession* session() const { return session_; }
@@ -49,7 +59,7 @@ class XRFrame final : public ScriptWrappable {
   XRPose* getPose(XRSpace*, XRSpace*, ExceptionState&);
   XRAnchorSet* trackedAnchors() const;
   XRLightEstimate* getLightEstimate(XRLightProbe*, ExceptionState&) const;
-  XRDepthInformation* getDepthInformation(
+  XRCPUDepthInformation* getDepthInformation(
       XRView* view,
       ExceptionState& exception_state) const;
   XRPlaneSet* detectedPlanes(ExceptionState& exception_state) const;
@@ -79,11 +89,21 @@ class XRFrame final : public ScriptWrappable {
   HeapVector<Member<XRImageTrackingResult>> getImageTrackingResults(
       ExceptionState&);
 
+  XRJointPose* getJointPose(XRJointSpace* joint,
+                            XRSpace* baseSpace,
+                            ExceptionState& exception_state);
+  bool fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
+                      NotShared<DOMFloat32Array> radii,
+                      ExceptionState& exception_state);
+  bool fillPoses(HeapVector<Member<XRSpace>>& spaces,
+                 XRSpace* baseSpace,
+                 NotShared<DOMFloat32Array> transforms,
+                 ExceptionState& exception_state);
+
  private:
   std::unique_ptr<TransformationMatrix> GetAdjustedPoseMatrix(XRSpace*) const;
   XRPose* GetTargetRayPose(XRInputSource*, XRSpace*) const;
   XRPose* GetGripPose(XRInputSource*, XRSpace*) const;
-
   // Helper that creates an anchor with the assumption that the conversion from
   // passed in space to a stationary space is required.
   // |native_origin_from_anchor| is a transform from |space|'s native origin to
@@ -93,6 +113,7 @@ class XRFrame final : public ScriptWrappable {
       ScriptState* script_state,
       const blink::TransformationMatrix& native_origin_from_anchor,
       XRSpace* space,
+      base::Optional<uint64_t> maybe_plane_id,
       ExceptionState& exception_state);
 
   const Member<XRSession> session_;

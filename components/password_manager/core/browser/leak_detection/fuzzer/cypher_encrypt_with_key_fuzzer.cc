@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 
+#include "base/optional.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 
@@ -32,7 +33,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   std::string payload(reinterpret_cast<const char*>(data), size);
-  std::string result = password_manager::CipherEncryptWithKey(payload, key);
+  base::Optional<std::string> result =
+      password_manager::CipherEncryptWithKey(payload, key);
   return 0;
 }
 

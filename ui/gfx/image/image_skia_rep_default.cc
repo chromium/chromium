@@ -84,7 +84,7 @@ sk_sp<cc::PaintRecord> ImageSkiaRep::GetPaintRecord() const {
       display_item_list.get(), SkRect::MakeIWH(pixel_width(), pixel_height()));
 
   display_item_list->StartPaint();
-  record_canvas.drawImage(paint_image(), 0, 0, nullptr);
+  record_canvas.drawImage(paint_image(), 0, 0);
   display_item_list->EndPaintOfPairedEnd();
   display_item_list->Finalize();
 

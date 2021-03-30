@@ -58,9 +58,8 @@ class SourceStreamToDataPipeTest
         sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
         GetParam().pipe_capacity};
     mojo::ScopedDataPipeProducerHandle producer_end;
-    CHECK_EQ(MOJO_RESULT_OK,
-             mojo::CreateDataPipe(&data_pipe_options, &producer_end,
-                                  &consumer_end_));
+    CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&data_pipe_options,
+                                                  producer_end, consumer_end_));
 
     adapter_ = std::make_unique<SourceStreamToDataPipe>(
         std::move(source), std::move(producer_end));

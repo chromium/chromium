@@ -38,20 +38,9 @@ const char kOriginInfoTable[] = "OriginInfoTable";
 const char kEvictionInfoTable[] = "EvictionInfoTable";
 const char kIsOriginTableBootstrapped[] = "IsOriginTableBootstrapped";
 
-bool VerifyValidQuotaConfig(const char* key) {
-  return (key != nullptr &&
-          (!strcmp(key, QuotaDatabase::kDesiredAvailableSpaceKey) ||
-           !strcmp(key, QuotaDatabase::kTemporaryQuotaOverrideKey)));
-}
-
 const int kCommitIntervalMs = 30000;
 
 }  // anonymous namespace
-
-// static
-const char QuotaDatabase::kDesiredAvailableSpaceKey[] = "DesiredAvailableSpace";
-const char QuotaDatabase::kTemporaryQuotaOverrideKey[] =
-    "TemporaryQuotaOverride";
 
 const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
     {kHostQuotaTable,
@@ -137,12 +126,6 @@ QuotaDatabase::~QuotaDatabase() {
   if (db_) {
     db_->CommitTransaction();
   }
-}
-
-void QuotaDatabase::CloseDatabase() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  meta_table_.reset();
-  db_.reset();
 }
 
 bool QuotaDatabase::GetHostQuota(const std::string& host,
@@ -415,22 +398,6 @@ bool QuotaDatabase::DeleteOriginInfo(const url::Origin& origin,
 
   ScheduleCommit();
   return true;
-}
-
-bool QuotaDatabase::GetQuotaConfigValue(const char* key, int64_t* value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyOpen(false))
-    return false;
-  DCHECK(VerifyValidQuotaConfig(key));
-  return meta_table_->GetValue(key, value);
-}
-
-bool QuotaDatabase::SetQuotaConfigValue(const char* key, int64_t value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyOpen(true))
-    return false;
-  DCHECK(VerifyValidQuotaConfig(key));
-  return meta_table_->SetValue(key, value);
 }
 
 bool QuotaDatabase::GetLRUOrigin(StorageType type,

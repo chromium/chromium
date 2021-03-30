@@ -64,10 +64,8 @@
   // https://crbug.com/846893.
 
   NSResponder* responder = [window firstResponder];
-  if ([responder conformsToProtocol:@protocol(CommandDispatcherTarget)]) {
-    NSObject<CommandDispatcherTarget>* target =
-        static_cast<NSObject<CommandDispatcherTarget>*>(responder);
-    if ([target isKeyLocked:event]) {
+  if ([responder respondsToSelector:@selector(isKeyLocked:)]) {
+    if ([(id)responder isKeyLocked:event]) {
       return ui::PerformKeyEquivalentResult::kUnhandled;
     }
   }

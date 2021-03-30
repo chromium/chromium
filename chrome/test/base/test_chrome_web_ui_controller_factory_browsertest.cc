@@ -59,6 +59,8 @@ class TestChromeWebUIControllerFactoryTest : public InProcessBrowserTest {
         GURL(kChromeTestChromeWebUIControllerFactory).host());
     content::WebUIControllerFactory::UnregisterFactoryForTesting(
         test_factory_.get());
+    content::WebUIControllerFactory::RegisterFactory(
+        ChromeWebUIControllerFactory::GetInstance());
 
     test_factory_.reset();
   }

@@ -96,6 +96,12 @@ void TouchExplorationManager::SetTouchAccessibilityAnchorPoint(
   }
 }
 
+void TouchExplorationManager::SetVirtualKeyboardBounds(const gfx::Rect& rect) {
+  if (touch_exploration_controller_) {
+    touch_exploration_controller_->SetLiftActivationBounds(rect);
+  }
+}
+
 void TouchExplorationManager::UpdateTouchExplorationState() {
   // See https://crbug.com/603745 for more details.
   aura::Window* active_window = activation_client_->GetActiveWindow();

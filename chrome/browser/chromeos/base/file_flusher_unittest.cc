@@ -58,7 +58,7 @@ class FileFlusherTest : public testing::Test {
   std::unique_ptr<FileFlusher> CreateFileFlusher() {
     std::unique_ptr<FileFlusher> flusher(new FileFlusher);
     flusher->set_on_flush_callback_for_test(
-        base::Bind(&FileFlusherTest::OnFlush, base::Unretained(this)));
+        base::BindRepeating(&FileFlusherTest::OnFlush, base::Unretained(this)));
     return flusher;
   }
 
@@ -90,7 +90,7 @@ TEST_F(FileFlusherTest, Flush) {
   std::unique_ptr<FileFlusher> flusher(CreateFileFlusher());
   base::RunLoop run_loop;
   flusher->RequestFlush(GetTestFilePath("dir1"), /*recursive=*/false,
-                        base::Closure());
+                        base::OnceClosure());
   flusher->RequestFlush(GetTestFilePath("dir2"), /*recursive=*/false,
                         run_loop.QuitClosure());
   run_loop.Run();
@@ -109,7 +109,7 @@ TEST_F(FileFlusherTest, DuplicateRequests) {
   base::RunLoop run_loop;
   flusher->PauseForTest();
   flusher->RequestFlush(GetTestFilePath("dir1"), /*recursive=*/false,
-                        base::Closure());
+                        base::OnceClosure());
   flusher->RequestFlush(GetTestFilePath("dir1"), /*recursive=*/false,
                         run_loop.QuitClosure());
   flusher->ResumeForTest();

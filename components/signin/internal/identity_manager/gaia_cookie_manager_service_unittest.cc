@@ -299,8 +299,8 @@ TEST_F(GaiaCookieManagerServiceTest, MergeSessionRetried) {
   MockObserver observer(&helper);
 
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::ScopedClosureRunner task_runner_ =
-      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+  base::ThreadTaskRunnerHandleOverrideForTesting ttrh_override(
+      test_task_runner);
 
   EXPECT_CALL(helper, StartFetchingUbertoken());
   EXPECT_CALL(helper, StartFetchingMergeSession());
@@ -323,8 +323,8 @@ TEST_F(GaiaCookieManagerServiceTest, MergeSessionRetriedTwice) {
   base::HistogramTester histograms;
 
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::ScopedClosureRunner task_runner_ =
-      base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+  base::ThreadTaskRunnerHandleOverrideForTesting ttrh_override(
+      test_task_runner);
 
   EXPECT_CALL(helper, StartFetchingUbertoken());
   EXPECT_CALL(helper, StartFetchingMergeSession()).Times(2);
@@ -917,8 +917,8 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
     MockObserver observer(&helper);
     auto test_task_runner =
         base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-    base::ScopedClosureRunner task_runner_ =
-        base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner);
+    base::ThreadTaskRunnerHandleOverrideForTesting ttrh_override(
+        test_task_runner);
 
     EXPECT_CALL(helper, StartFetchingListAccounts()).Times(3);
 

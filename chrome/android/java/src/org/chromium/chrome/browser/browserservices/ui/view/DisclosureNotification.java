@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQuali
 import static org.chromium.chrome.browser.notifications.NotificationConstants.NOTIFICATION_ID_TWA_DISCLOSURE_INITIAL;
 import static org.chromium.chrome.browser.notifications.NotificationConstants.NOTIFICATION_ID_TWA_DISCLOSURE_SUBSEQUENT;
 
-import android.app.Notification;
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -112,6 +111,7 @@ public class DisclosureNotification
         String text = mResources.getString(R.string.twa_running_in_chrome_v2, scopeForDisplay);
 
         // We're using setStyle, which can't be handled by compat mode.
+        // TODO(crbug.com/697104): setStyle is now supported, consider using compat mode.
         boolean preferCompat = false;
         // The notification is being displayed by Chrome, so we don't need to provide a
         // remoteAppPackageName.
@@ -134,7 +134,7 @@ public class DisclosureNotification
                 .setShowWhen(false)
                 .setAutoCancel(false)
                 .setSound(null)
-                .setStyle(new Notification.BigTextStyle().bigText(text))
+                .setBigTextStyle(text)
                 .setOngoing(!firstTime)
                 .setPriorityBeforeO(preOPriority)
                 .buildNotificationWrapper();

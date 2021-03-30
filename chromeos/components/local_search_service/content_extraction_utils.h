@@ -5,7 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_CONTENT_EXTRACTION_UTILS_H_
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_CONTENT_EXTRACTION_UTILS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chromeos/components/local_search_service/shared_structs.h"
 
 namespace chromeos {
@@ -20,7 +21,7 @@ std::vector<Token> ConsolidateToken(const std::vector<Token>& tokens);
 // base::i18n::GetConfiguredLocale(). The format of locale will be
 // language-country@variant. Country and variant are optional.
 std::vector<Token> ExtractContent(const std::string& content_id,
-                                  const base::string16& text,
+                                  const std::u16string& text,
                                   double weight,
                                   const std::string& locale);
 
@@ -33,11 +34,11 @@ bool IsNonLatinLocale(const std::string& locale);
 // Checks if a word is a stopword given a locale. Locale will be in the
 // following format: language-country@variant (country and variant are
 // optional).
-bool IsStopword(const base::string16& word, const std::string& locale);
+bool IsStopword(const std::u16string& word, const std::string& locale);
 
 // Returns a normalized version of a string16: removes diacritics, convert to
 // lower-case and possibly remove hyphen from the text (set to true by default).
-base::string16 Normalizer(const base::string16& word,
+std::u16string Normalizer(const std::u16string& word,
                           bool remove_hyphen = true);
 
 }  // namespace local_search_service

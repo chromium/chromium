@@ -205,7 +205,7 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
 
   // Verify the pref values in |dict| are equal to that in |compression_stats_|.
   void VerifyPrefs(base::DictionaryValue* dict) {
-    base::string16 dict_pref_string;
+    std::u16string dict_pref_string;
     int64_t dict_pref;
     int64_t service_pref;
 
@@ -1114,44 +1114,6 @@ TEST_F(DataReductionProxyCompressionStatsTest,
   VerifyDictionaryPref(
       prefs::kThisWeekUserTrafficContentTypeDownstreamKB,
       data_use_measurement::DataUseUserData::NON_MAIN_FRAME_HTML, 0);
-}
-
-TEST_F(DataReductionProxyCompressionStatsTest, ClearsObsoletePrefs) {
-  const std::vector<std::string> kObsoletePrefNames = {
-      prefs::kDailyHttpOriginalContentLengthApplication,
-      prefs::kDailyHttpOriginalContentLengthVideo,
-      prefs::kDailyHttpOriginalContentLengthUnknown,
-      prefs::kDailyHttpReceivedContentLengthApplication,
-      prefs::kDailyHttpReceivedContentLengthVideo,
-      prefs::kDailyHttpReceivedContentLengthUnknown,
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyApplication,
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyVideo,
-      prefs::kDailyOriginalContentLengthViaDataReductionProxyUnknown,
-      prefs::kDailyContentLengthViaDataReductionProxyApplication,
-      prefs::kDailyContentLengthViaDataReductionProxyVideo,
-      prefs::kDailyContentLengthViaDataReductionProxyUnknown,
-      prefs::
-          kDailyOriginalContentLengthWithDataReductionProxyEnabledApplication,
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabledVideo,
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabledUnknown,
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledApplication,
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledVideo,
-      prefs::kDailyContentLengthWithDataReductionProxyEnabledUnknown,
-      prefs::kDailyContentLengthHttpsWithDataReductionProxyEnabled,
-      prefs::kDailyContentLengthLongBypassWithDataReductionProxyEnabled,
-      prefs::kDailyContentLengthShortBypassWithDataReductionProxyEnabled,
-      prefs::kDailyContentLengthUnknownWithDataReductionProxyEnabled,
-      prefs::kDailyContentLengthViaDataReductionProxy,
-      prefs::kDailyContentLengthWithDataReductionProxyEnabled,
-      prefs::kDailyOriginalContentLengthViaDataReductionProxy,
-      prefs::kDailyOriginalContentLengthWithDataReductionProxyEnabled};
-
-  for (const std::string& pref_name : kObsoletePrefNames) {
-    const PrefService::Preference* pref =
-        pref_service()->FindPreference(pref_name);
-    ASSERT_TRUE(pref) << pref_name;
-    EXPECT_TRUE(pref->IsDefaultValue()) << pref_name;
-  }
 }
 
 }  // namespace data_reduction_proxy

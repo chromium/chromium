@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "extensions/browser/declarative_user_script_set.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
 
 namespace base {
@@ -25,6 +25,7 @@ class WebContents;
 namespace extensions {
 
 class Extension;
+class ExtensionUserScriptLoader;
 
 // Base class for all ContentActions of the Declarative Content API.
 //
@@ -74,9 +75,6 @@ class RequestContentScript : public ContentAction {
   RequestContentScript(content::BrowserContext* browser_context,
                        const Extension* extension,
                        const ScriptData& script_data);
-  RequestContentScript(DeclarativeUserScriptSet* script_set,
-                       const Extension* extension,
-                       const ScriptData& script_data);
 
   ~RequestContentScript() override;
 
@@ -84,12 +82,6 @@ class RequestContentScript : public ContentAction {
       content::BrowserContext* browser_context,
       const Extension* extension,
       const base::DictionaryValue* dict,
-      std::string* error);
-
-  static std::unique_ptr<ContentAction> CreateForTest(
-      DeclarativeUserScriptSet* master,
-      const Extension* extension,
-      const base::Value& json_action,
       std::string* error);
 
   static bool InitScriptData(const base::DictionaryValue* dict,
@@ -102,7 +94,7 @@ class RequestContentScript : public ContentAction {
   void Revert(const ApplyInfo& apply_info) const override;
 
  private:
-  void InitScript(const HostID& host_id,
+  void InitScript(const mojom::HostID& host_id,
                   const Extension* extension,
                   const ScriptData& script_data);
 
@@ -112,7 +104,7 @@ class RequestContentScript : public ContentAction {
                                      const Extension* extension) const;
 
   UserScript script_;
-  DeclarativeUserScriptSet* script_set_;
+  ExtensionUserScriptLoader* script_loader_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RequestContentScript);
 };

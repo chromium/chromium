@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "components/page_info/page_info_ui.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/buildflags.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -63,11 +65,6 @@ void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {
   g_page_info_bubble = nullptr;
 }
 
-PageInfoUI::SecurityDescriptionType
-PageInfoBubbleViewBase::GetSecurityDescriptionType() const {
-  return security_description_type_;
-}
-
 void PageInfoBubbleViewBase::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   if (render_frame_host == web_contents()->GetMainFrame()) {
@@ -91,3 +88,6 @@ void PageInfoBubbleViewBase::DidChangeVisibleSecurityState() {
   // Subclasses may update instead, but this the only safe general option.
   GetWidget()->Close();
 }
+
+BEGIN_METADATA(PageInfoBubbleViewBase, views::BubbleDialogDelegateView)
+END_METADATA

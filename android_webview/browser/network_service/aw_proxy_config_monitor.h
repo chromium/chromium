@@ -31,6 +31,7 @@ class AwProxyConfigMonitor : public net::ProxyConfigService::Observer {
       const std::vector<net::ProxyConfigServiceAndroid::ProxyOverrideRule>&
           proxy_rules,
       const std::vector<std::string>& bypass_rules,
+      const bool reverse_bypass,
       base::OnceClosure callback);
   void ClearProxyOverride(base::OnceClosure callback);
 

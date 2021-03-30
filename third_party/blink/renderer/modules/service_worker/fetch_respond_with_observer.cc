@@ -7,12 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -24,6 +22,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/service_worker/cross_origin_resource_policy_checker.h"
 #include "third_party/blink/renderer/modules/service_worker/fetch_event.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
@@ -294,28 +293,24 @@ void FetchRespondWithObserver::OnResponseFulfilled(
 
   // If Cross-Origin-Embedder-Policy is set to require-corp,
   // Cross-Origin-Resource-Policy verification should happen before passing the
-  // response to the client.
-  if (base::FeatureList::IsEnabled(
-          network::features::kCrossOriginEmbedderPolicy)) {
-    // The service worker script must be in the same origin with the requestor,
-    // which is a client of the service worker.
-    //
-    // Here is in the renderer and we don't have a "trustworthy" initiator.
-    // Hence we provide |initiator_origin| as |request_initiator_origin_lock|.
-    auto initiator_origin =
-        url::Origin::Create(GURL(service_worker_global_scope->Url()));
-    // |corp_checker_| could be nullptr when the request is for a main resource
-    // or the connection to the client which initiated the request is broken.
-    // CORP check isn't needed in both cases because a service worker should be
-    // in the same origin with the main resource, and the response to the broken
-    // connection won't reach to the client.
-    if (corp_checker_ &&
-        corp_checker_->IsBlocked(
-            url::Origin::Create(GURL(service_worker_global_scope->Url())),
-            request_mode_, request_destination_, *response)) {
-      OnResponseRejected(ServiceWorkerResponseError::kDisallowedByCorp);
-      return;
-    }
+  // response to the client. The service worker script must be in the same
+  // origin with the requestor, which is a client of the service worker.
+  //
+  // Here is in the renderer and we don't have a "trustworthy" initiator.
+  // Hence we provide |initiator_origin| as |request_initiator_origin_lock|.
+  auto initiator_origin =
+      url::Origin::Create(GURL(service_worker_global_scope->Url()));
+  // |corp_checker_| could be nullptr when the request is for a main resource
+  // or the connection to the client which initiated the request is broken.
+  // CORP check isn't needed in both cases because a service worker should be
+  // in the same origin with the main resource, and the response to the broken
+  // connection won't reach to the client.
+  if (corp_checker_ &&
+      corp_checker_->IsBlocked(
+          url::Origin::Create(GURL(service_worker_global_scope->Url())),
+          request_mode_, request_destination_, *response)) {
+    OnResponseRejected(ServiceWorkerResponseError::kDisallowedByCorp);
+    return;
   }
 
   BodyStreamBuffer* buffer = response->InternalBodyBuffer();
@@ -375,11 +370,35 @@ void FetchRespondWithObserver::OnResponseFulfilled(
 
 void FetchRespondWithObserver::OnNoResponse() {
   DCHECK(GetExecutionContext());
+  if (request_body_stream_ && (request_body_stream_->IsLocked() ||
+                               request_body_stream_->IsDisturbed())) {
+    GetExecutionContext()->CountUse(
+        WebFeature::kFetchRespondWithNoResponseWithUsedRequestBody);
+    if (!request_body_has_source_) {
+      OnResponseRejected(
+          mojom::blink::ServiceWorkerResponseError::kRequestBodyUnusable);
+      return;
+    }
+  }
+  if (request_body_stream_ && !request_body_has_source_) {
+    // TODO(crbug.com/1165690): Cancel `request_body_stream_`.
+  }
   ServiceWorkerGlobalScope* service_worker_global_scope =
       To<ServiceWorkerGlobalScope>(GetExecutionContext());
   service_worker_global_scope->RespondToFetchEventWithNoResponse(
       event_id_, request_url_, event_dispatch_time_, base::TimeTicks::Now());
   event_->ResolveHandledPromise();
+}
+
+void FetchRespondWithObserver::SetEvent(FetchEvent* event) {
+  DCHECK(!event_);
+  DCHECK(!request_body_stream_);
+  event_ = event;
+  // We don't use Body::body() in order to avoid accidental CountUse calls.
+  BodyStreamBuffer* body_buffer = event_->request()->BodyBuffer();
+  if (body_buffer) {
+    request_body_stream_ = body_buffer->Stream();
+  }
 }
 
 FetchRespondWithObserver::FetchRespondWithObserver(
@@ -394,11 +413,13 @@ FetchRespondWithObserver::FetchRespondWithObserver(
       redirect_mode_(request.redirect_mode),
       frame_type_(request.frame_type),
       request_destination_(request.destination),
+      request_body_has_source_(request.body.FormBody()),
       corp_checker_(std::move(corp_checker)),
       task_runner_(context->GetTaskRunner(TaskType::kNetworking)) {}
 
 void FetchRespondWithObserver::Trace(Visitor* visitor) const {
   visitor->Trace(event_);
+  visitor->Trace(request_body_stream_);
   RespondWithObserver::Trace(visitor);
 }
 

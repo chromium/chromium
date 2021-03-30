@@ -28,7 +28,7 @@ RecentFile MakeRecentFile(const std::string& name,
                           const base::Time& last_modified) {
   storage::FileSystemURL url = storage::FileSystemURL::CreateForTest(
       url::Origin(),  // origin
-      storage::kFileSystemTypeNativeLocal, base::FilePath(name));
+      storage::kFileSystemTypeLocal, base::FilePath(name));
   return RecentFile(url, last_modified);
 }
 

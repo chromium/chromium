@@ -94,8 +94,6 @@ std::unique_ptr<content::NavigationEntry> MakeNavigationEntryForTest() {
       ->set_parent_id(test_data::kParentTaskId);
   NavigationTaskId::Get(navigation_entry.get())
       ->set_root_id(test_data::kRootTaskId);
-  NavigationTaskId::Get(navigation_entry.get())
-      ->set_children_ids(test_data::kChildrenTaskIds);
   return navigation_entry;
 }
 
@@ -181,7 +179,6 @@ TEST_F(ContentSerializedNavigationBuilderTest, FromNavigationEntry) {
   EXPECT_EQ(test_data::kTaskId, navigation.task_id());
   EXPECT_EQ(test_data::kParentTaskId, navigation.parent_task_id());
   EXPECT_EQ(test_data::kRootTaskId, navigation.root_task_id());
-  EXPECT_EQ(test_data::kChildrenTaskIds, navigation.children_task_ids());
 }
 
 // Test effect of the navigation serialization options.

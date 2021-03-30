@@ -23,6 +23,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
@@ -96,15 +97,15 @@ CloudServicesDialogView::CloudServicesDialogView(views::View* anchor_view,
 CloudServicesDialogView::~CloudServicesDialogView() = default;
 
 void CloudServicesDialogView::Init() {
-  std::vector<base::string16> substrings;
+  std::vector<std::u16string> substrings;
   substrings.push_back(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_BODY));
   substrings.push_back(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 
   std::vector<size_t> offsets;
 
-  base::string16 text = base::ReplaceStringPlaceholders(
-      base::ASCIIToUTF16("$1 $2"), substrings, &offsets);
+  std::u16string text =
+      base::ReplaceStringPlaceholders(u"$1 $2", substrings, &offsets);
   gfx::Range learn_more_range(offsets[1], text.length());
 
   views::StyledLabel::RangeStyleInfo link_style =
@@ -131,5 +132,8 @@ void CloudServicesDialogView::WindowClosing() {
 
 // static
 CloudServicesDialogView* CloudServicesDialogView::instance_ = nullptr;
+
+BEGIN_METADATA(CloudServicesDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace media_router

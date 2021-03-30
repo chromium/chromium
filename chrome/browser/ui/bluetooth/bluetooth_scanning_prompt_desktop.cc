@@ -31,7 +31,7 @@ BluetoothScanningPromptDesktop::~BluetoothScanningPromptDesktop() {
 void BluetoothScanningPromptDesktop::AddOrUpdateDevice(
     const std::string& device_id,
     bool should_update_name,
-    const base::string16& device_name) {
+    const std::u16string& device_name) {
   if (bluetooth_scanning_prompt_controller_) {
     bluetooth_scanning_prompt_controller_->AddOrUpdateDevice(
         device_id, should_update_name, device_name);

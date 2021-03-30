@@ -39,6 +39,28 @@ TEST(GcpPasswordTest, GenerateRandomPassword) {
   }
 }
 
+TEST(GcpOsVersionTest, GetOsFromRegistries) {
+  registry_util::RegistryOverrideManager registry_override_;
+  InitializeRegistryOverrideForTesting(&registry_override_);
+  wchar_t kOsRegistryPath[] =
+      L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
+  wchar_t kOsMajorName[] = L"CurrentMajorVersionNumber";
+  wchar_t kOsMinorName[] = L"CurrentMinorVersionNumber";
+  wchar_t kOsBuildName[] = L"CurrentBuildNumber";
+  wchar_t kOsBuild[] = L"10819";
+  DWORD major = 15;
+  DWORD minor = 1;
+
+  SetMachineRegDWORD(kOsRegistryPath, kOsMajorName, major);
+  SetMachineRegDWORD(kOsRegistryPath, kOsMinorName, minor);
+  SetMachineRegString(kOsRegistryPath, kOsBuildName, kOsBuild);
+
+  std::string version;
+  GetOsVersion(&version);
+
+  ASSERT_EQ(version, "15.1.10819");
+}
+
 class GcpProcHelperTest : public ::testing::Test {
  protected:
   void CreateHandle(base::win::ScopedHandle* handle);
@@ -420,7 +442,7 @@ TEST_F(GcpProcHelperTest, GetCommandLineForEntrypoint) {
   ASSERT_LT(0u, GetModuleFileName(nullptr, path, base::size(path)));
   ASSERT_LT(0u, GetShortPathName(path, short_path, base::size(short_path)));
 
-  base::string16 expected_arg =
+  std::wstring expected_arg =
       base::StringPrintf(L"\"%ls\",%ls", short_path, L"entrypoint");
 
   ASSERT_EQ(1u, command_line.GetArgs().size());
@@ -478,11 +500,11 @@ TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
   const char* username = std::get<4>(GetParam());
   const char* domain = std::get<5>(GetParam());
   const char* serial_number = std::get<6>(GetParam());
-  base::string16 serial_number16 =
-      base::UTF8ToUTF16(base::StringPrintf("%s", serial_number));
+  std::wstring serial_number16 =
+      base::UTF8ToWide(base::StringPrintf("%s", serial_number));
   const char* machine_guid = std::get<7>(GetParam());
-  base::string16 machine_guid16 =
-      base::UTF8ToUTF16(base::StringPrintf("%s", machine_guid));
+  std::wstring machine_guid16 =
+      base::UTF8ToWide(base::StringPrintf("%s", machine_guid));
   const char* is_user_ad_joined = std::get<8>(GetParam());
   const char* device_resource_id = std::get<9>(GetParam());
   FakeOSUserManager fake_os_user_manager;
@@ -516,9 +538,9 @@ TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
   GoogleRegistrationDataForTesting g_registration_data(serial_number16);
 
   if (device_resource_id) {
-    base::string16 sid16 = base::UTF8ToUTF16(base::StringPrintf("%s", sid));
+    std::wstring sid16 = base::UTF8ToWide(base::StringPrintf("%s", sid));
     HRESULT hr = SetUserProperty(sid16, kRegUserDeviceResourceId,
-                                 base::UTF8ToUTF16(device_resource_id));
+                                 base::UTF8ToWide(device_resource_id));
     EXPECT_TRUE(SUCCEEDED(hr));
   }
 

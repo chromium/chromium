@@ -169,7 +169,7 @@ export class BackButtonNode extends SAChildNode {
     if (MenuManager.isMenuOpen()) {
       ActionManager.exitCurrentMenu();
     } else {
-      Navigator.instance.exitGroupUnconditionally();
+      Navigator.byItem.exitGroupUnconditionally();
     }
   }
 

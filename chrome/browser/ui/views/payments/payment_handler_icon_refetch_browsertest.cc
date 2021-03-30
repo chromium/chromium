@@ -58,17 +58,17 @@ class PaymentHandlerIconRefetchTest : public PaymentRequestBrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerIconRefetchTest, RefechMissingIcon) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerIconRefetchTest, RefetchMissingIcon) {
   // Navigate to a page with strict CSP so that Kylepay's icon fetch fails.
   NavigateTo("/csp_prevent_icon_download.html");
   SetDownloaderAndIgnorePortInOriginComparisonForTesting();
 
   // Create a payment request for Kylepay.
   ResetEventWaiterForDialogOpened();
-  EXPECT_TRUE(content::ExecJs(
+  content::ExecuteScriptAsync(
       GetActiveWebContents(),
       "testPaymentMethods([{supportedMethods: 'https://kylepay.com/webpay'}], "
-      "/* requestShippingContact= */ true);"));
+      "/* requestShippingContact= */ true);");
   WaitForObservedEvent();
 
   // App with missing icon is not preselectable.

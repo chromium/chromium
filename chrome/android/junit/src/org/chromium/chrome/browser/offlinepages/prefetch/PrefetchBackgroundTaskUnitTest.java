@@ -74,6 +74,11 @@ public class PrefetchBackgroundTaskUnitTest {
         }
 
         @Override
+        public boolean isScheduled(Context context, int taskId) {
+            return (mTaskInfos.get(taskId) != null);
+        }
+
+        @Override
         public void checkForOSUpgrade(Context context) {}
 
         @Override
@@ -112,7 +117,9 @@ public class PrefetchBackgroundTaskUnitTest {
         mPrefetchBackgroundTask.setDelegate(new ChromeNativeBackgroundTaskDelegate());
 
         mocker.mock(PrefetchBackgroundTaskJni.TEST_HOOKS, mPrefetchBackgroundTaskJniMock);
-        doNothing().when(mChromeBrowserInitializer).handlePreNativeStartup(any(BrowserParts.class));
+        doNothing()
+                .when(mChromeBrowserInitializer)
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {

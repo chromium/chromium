@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL Test computed AX rect for some common objects assert_approx_equals: input left expected 8 +/- 1 but got 12
+FAIL Test objects inside of absolute-positioned container assert_approx_equals: div2 left expected 415 +/- 1 but got 622.5
+FAIL Test objects inside of scrolled container assert_approx_equals: div3 left expected 8 +/- 1 but got 12
+FAIL Test objects inside of rotated container assert_approx_equals: div4 left expected 30.92536163330078 +/- 1 but got 46.38804626464844
+FAIL Test object inside of several nested containers with transforms and scrolling. assert_approx_equals: div5 left expected 28.20233726501465 +/- 1 but got 42.303497314453125
+PASS Container must be an ancestor in both the AX tree and layout tree.
+FAIL Test spans inside of absolute-positioned container assert_approx_equals: span7 left expected 615 +/- 1 but got 922.5
+FAIL Test node that's inline and relative-positioned assert_approx_equals: span8 child 0 left expected 55.333335876464844 +/- 1 but got 83
+Harness: the test ran to completion.
+

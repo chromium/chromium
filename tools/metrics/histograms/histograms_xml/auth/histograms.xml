@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="AuthPolicy.ErrorTypeOfAuthenticateUser"
-    enum="AuthPolicyErrorType" expires_after="2021-06-20">
+    enum="AuthPolicyErrorType" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -31,14 +31,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfAutoMachinePasswordChange"
-    enum="AuthPolicyErrorType" expires_after="M90">
+    enum="AuthPolicyErrorType" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>Result from automatic background machine password renewal.</summary>
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfAutoTgtRenewal"
-    enum="AuthPolicyErrorType" expires_after="M90">
+    enum="AuthPolicyErrorType" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -47,7 +47,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfGetUserKerberosFiles"
-    enum="AuthPolicyErrorType" expires_after="M90">
+    enum="AuthPolicyErrorType" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -57,7 +57,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfGetUserStatus"
-    enum="AuthPolicyErrorType" expires_after="M90">
+    enum="AuthPolicyErrorType" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -67,7 +67,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfJoinADDomain" enum="AuthPolicyErrorType"
-    expires_after="2021-06-27">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -76,7 +76,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfRefreshDevicePolicy"
-    enum="AuthPolicyErrorType" expires_after="M90">
+    enum="AuthPolicyErrorType" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -86,7 +86,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.ErrorTypeOfRefreshUserPolicy"
-    enum="AuthPolicyErrorType" expires_after="M90">
+    enum="AuthPolicyErrorType" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -96,7 +96,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.FailedTriesOfKinit" units="units"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -108,7 +108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.FailedTriesOfSmbClient" units="units"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.KerberosEncryptionTypes.AuthenticateUser"
-    enum="KerberosEncryptionTypes" expires_after="M90">
+    enum="KerberosEncryptionTypes" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -129,7 +129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.KerberosEncryptionTypes.JoinADDomain"
-    enum="KerberosEncryptionTypes" expires_after="M90">
+    enum="KerberosEncryptionTypes" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -140,7 +140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.NumGposToDownload" units="units"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -151,7 +151,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToAuthenticateUser" units="ms"
-    expires_after="2021-06-20">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -161,7 +161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToGetUserKerberosFiles" units="ms"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -171,7 +171,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToGetUserStatus" units="ms" expires_after="M90">
+<histogram name="AuthPolicy.TimeToGetUserStatus" units="ms" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -180,8 +180,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToJoinADDomain" units="ms"
-    expires_after="2021-06-27">
+<histogram name="AuthPolicy.TimeToJoinADDomain" units="ms" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -192,7 +191,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRefreshDevicePolicy" units="ms"
-    expires_after="2021-06-20">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -203,7 +202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRefreshUserPolicy" units="ms"
-    expires_after="2021-06-20">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -213,7 +212,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunKinit" units="ms" expires_after="M90">
+<histogram name="AuthPolicy.TimeToRunKinit" units="ms" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -224,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunKlist" units="ms" expires_after="M90">
+<histogram name="AuthPolicy.TimeToRunKlist" units="ms" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -235,7 +234,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunKpasswd" units="ms" expires_after="M90">
+<histogram name="AuthPolicy.TimeToRunKpasswd" units="ms" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -246,7 +245,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunNetAdsGpo" units="ms" expires_after="M90">
+<histogram name="AuthPolicy.TimeToRunNetAdsGpo" units="ms" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -256,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunNetAdsInfo" units="ms" expires_after="M90">
+<histogram name="AuthPolicy.TimeToRunNetAdsInfo" units="ms" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -266,7 +265,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunNetAdsJoin" units="ms" expires_after="M90">
+<histogram name="AuthPolicy.TimeToRunNetAdsJoin" units="ms" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -277,7 +276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRunNetAdsSearch" units="ms"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -288,7 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AuthPolicy.TimeToRunNetAdsWorkgroup" units="ms"
-    expires_after="M90">
+    expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>
@@ -298,7 +297,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="AuthPolicy.TimeToRunSmbclient" units="ms" expires_after="M90">
+<histogram name="AuthPolicy.TimeToRunSmbclient" units="ms" expires_after="M97">
   <owner>fsandrade@chromium.org</owner>
   <owner>tomdobro@chromium.org</owner>
   <summary>

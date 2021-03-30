@@ -24,7 +24,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   // content::ContentBrowserClient implementation:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       const content::MainFunctionParams&) override;
-  void OverrideWebkitPrefs(content::RenderViewHost* render_view_host,
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
@@ -65,11 +65,13 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       bool in_memory,
       const base::FilePath& relative_partition_path,
       ::network::mojom::NetworkContextParams* network_context_params,
-      ::network::mojom::CertVerifierCreationParams*
+      ::cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params) override;
 
   std::string GetProduct() override;
   std::string GetUserAgent() override;
+
+  bool CanAcceptUntrustedExchangesIfNeeded() override;
 
  private:
   class StubBadgeService;

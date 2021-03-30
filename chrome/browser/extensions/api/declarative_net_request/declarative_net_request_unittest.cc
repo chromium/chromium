@@ -35,6 +35,7 @@
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
+#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
@@ -188,9 +189,9 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     // Verify the error. Only verify if the |expected_error| is a substring of
     // the actual error, since some string may be prepended/appended while
     // creating the actual error.
-    const std::vector<base::string16>* errors = error_reporter()->GetErrors();
+    const std::vector<std::u16string>* errors = error_reporter()->GetErrors();
     ASSERT_EQ(1u, errors->size());
-    EXPECT_NE(base::string16::npos,
+    EXPECT_NE(std::u16string::npos,
               errors->at(0).find(base::UTF8ToUTF16(error_with_filename)))
         << "expected: " << error_with_filename << " actual: " << errors->at(0);
 
@@ -324,7 +325,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     ASSERT_TRUE(result->is_list());
     const base::ListValue& ids_value = base::Value::AsListValue(*result);
 
-    base::string16 error;
+    std::u16string error;
     std::vector<std::string> actual_ids;
     for (const auto& val : ids_value)
       actual_ids.push_back(val.GetString());
@@ -403,17 +404,15 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
   scoped_refptr<const Extension> extension_;
   const ExtensionPrefs* extension_prefs_ = nullptr;
 
-  // Override the API guaranteed minimum to prevent a timeout on loading the
-  // extension.
+  // Override the various API rule limits to prevent a timeout.
   base::AutoReset<int> guaranteed_minimum_override_ =
       CreateScopedStaticGuaranteedMinimumOverrideForTesting(100);
-
-  // Similarly, override the global limit to prevent a timeout.
   base::AutoReset<int> global_limit_override_ =
       CreateScopedGlobalStaticRuleLimitOverrideForTesting(200);
-
   base::AutoReset<int> regex_rule_limit_override_ =
       CreateScopedRegexRuleLimitOverrideForTesting(100);
+  base::AutoReset<int> dynamic_and_session_rule_limit_override_ =
+      CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(200);
 };
 
 // Fixture testing that declarative rules corresponding to the Declarative Net
@@ -819,8 +818,7 @@ TEST_P(SingleRulesetTest, WarningAndError) {
 // Ensure that we get an install warning on exceeding the regex rule count
 // limit.
 TEST_P(SingleRulesetTest, RegexRuleCountExceeded) {
-  TestRule regex_rule = CreateGenericRule();
-  regex_rule.condition->url_filter.reset();
+  TestRule regex_rule = CreateRegexRule();
   int rule_id = kMinValidID;
   for (int i = 1; i <= GetRegexRuleLimit() + 5; ++i, ++rule_id) {
     regex_rule.id = rule_id;
@@ -1158,6 +1156,134 @@ TEST_P(SingleRulesetTest, RuleCountLimitExceeded) {
   CheckExtensionAllocationInPrefs(extension()->id(), base::nullopt);
 }
 
+// Tests that the rule limit is correctly shared between dynamic and session
+// rulesets of an extension.
+TEST_P(SingleRulesetTest, SharedDynamicAndSessionRuleLimits) {
+  ASSERT_EQ(200, GetDynamicAndSessionRuleLimit());
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  // Add 100 dynamic rules, it should succeed.
+  std::vector<TestRule> dynamic_rules;
+  int rule_id = kMinValidID;
+  for (size_t i = 0; i < 100; ++i)
+    dynamic_rules.push_back(CreateGenericRule(rule_id++));
+
+  ASSERT_NO_FATAL_FAILURE(
+      RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
+                             dynamic_rules, RulesetScope::kDynamic));
+
+  // Add 101 more session rules, it should fail since the 200 rule limit is
+  // shared between dynamic and session-scoped rules.
+  std::vector<TestRule> session_rules = dynamic_rules;
+  session_rules.push_back(CreateGenericRule(rule_id++));
+  std::string expected_error = kSessionRuleCountExceeded;
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {} /* rule_ids_to_remove */, session_rules,
+      RulesetScope::kSession, &expected_error));
+
+  // Adding 100 session rules should succeed.
+  session_rules.pop_back();
+  ASSERT_NO_FATAL_FAILURE(
+      RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
+                             session_rules, RulesetScope::kSession));
+
+  const RulesMonitorService* service =
+      RulesMonitorService::Get(browser_context());
+  RulesCountPair expected_count(100 /* rule_count */, 0 /* regex_rule_count */);
+  EXPECT_EQ(expected_count,
+            service->GetRulesCountPair(extension()->id(), kDynamicRulesetID));
+  EXPECT_EQ(expected_count,
+            service->GetRulesCountPair(extension()->id(), kSessionRulesetID));
+
+  // Adding any more dynamic rules will fail.
+  expected_error = kDynamicRuleCountExceeded;
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {} /* rule_ids_to_remove */, {CreateGenericRule(rule_id++)},
+      RulesetScope::kDynamic, &expected_error));
+}
+
+// Tests that the regex rule limit is correctly shared between dynamic and
+// session rulesets of an extension.
+TEST_P(SingleRulesetTest, SharedDynamicAndSessionRegexRuleLimits) {
+  ASSERT_EQ(100, GetRegexRuleLimit());
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  // Add 50 session-scoped regex rules, along with 10 non-regex rules.
+  std::vector<TestRule> session_rules;
+  int rule_id = kMinValidID;
+  for (size_t i = 0; i < 50; ++i)
+    session_rules.push_back(CreateRegexRule(rule_id++));
+  for (size_t i = 0; i < 10; ++i)
+    session_rules.push_back(CreateGenericRule(rule_id++));
+
+  ASSERT_NO_FATAL_FAILURE(
+      RunUpdateRulesFunction(*extension(), {} /* rule_ids_to_remove */,
+                             session_rules, RulesetScope::kSession));
+
+  // Add the same number of dynamic rules, it should succeed as well.
+  std::vector<TestRule> dynamic_rules = session_rules;
+  ASSERT_NO_FATAL_FAILURE(
+      RunUpdateRulesFunction(*extension(), {} /*   rule_ids_to_remove */,
+                             dynamic_rules, RulesetScope::kDynamic));
+
+  const RulesMonitorService* service =
+      RulesMonitorService::Get(browser_context());
+  RulesCountPair expected_count(60 /* rule_count */, 50 /* regex_rule_count */);
+  EXPECT_EQ(expected_count,
+            service->GetRulesCountPair(extension()->id(), kDynamicRulesetID));
+  EXPECT_EQ(expected_count,
+            service->GetRulesCountPair(extension()->id(), kSessionRulesetID));
+
+  // Adding more regex based dynamic or session rules should fail.
+  std::string expected_error = kDynamicRegexRuleCountExceeded;
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {} /*   rule_ids_to_remove */, {CreateRegexRule(rule_id++)},
+      RulesetScope::kDynamic, &expected_error));
+  expected_error = kSessionRegexRuleCountExceeded;
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {} /*   rule_ids_to_remove */, {CreateRegexRule(rule_id++)},
+      RulesetScope::kSession, &expected_error));
+
+  // Adding non-regex dynamic or session rules should still succeed.
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {} /*   rule_ids_to_remove */,
+      {CreateGenericRule(rule_id++)}, RulesetScope::kDynamic));
+  ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
+      *extension(), {} /*   rule_ids_to_remove */,
+      {CreateGenericRule(rule_id++)}, RulesetScope::kSession));
+
+  expected_count.rule_count++;
+  EXPECT_EQ(expected_count,
+            service->GetRulesCountPair(extension()->id(), kDynamicRulesetID));
+  EXPECT_EQ(expected_count,
+            service->GetRulesCountPair(extension()->id(), kSessionRulesetID));
+}
+
+// Test that getMatchedRules will return an error if an invalid tab id is
+// specified.
+TEST_P(SingleRulesetTest, GetMatchedRulesInvalidTabID) {
+  LoadAndExpectSuccess();
+  const ExtensionId extension_id = extension()->id();
+
+  auto function =
+      base::MakeRefCounted<DeclarativeNetRequestGetMatchedRulesFunction>();
+  function->set_extension(extension());
+
+  std::string expected_error = ErrorUtils::FormatErrorMessage(
+      declarative_net_request::kTabNotFoundError, "-9001");
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), R"([{ "tabId": -9001 }])" /* args */, browser_context());
+
+  EXPECT_EQ(expected_error, error);
+}
+
 // Tests that multiple static rulesets are correctly indexed.
 class MultipleRulesetsTest : public DeclarativeNetRequestUnittest {
  public:
@@ -1185,13 +1311,8 @@ class MultipleRulesetsTest : public DeclarativeNetRequestUnittest {
       rules.push_back(rule);
     }
 
-    TestRule regex_rule = CreateGenericRule();
-    regex_rule.condition->url_filter.reset();
-    regex_rule.condition->regex_filter = "block";
-    for (size_t i = 0; i < num_regex_rules; ++i, ++id) {
-      regex_rule.id = id;
-      rules.push_back(regex_rule);
-    }
+    for (size_t i = 0; i < num_regex_rules; ++i, ++id)
+      rules.push_back(CreateRegexRule(id));
 
     return TestRulesetInfo(manifest_id_and_path, *ToListValue(rules), enabled);
   }

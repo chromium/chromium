@@ -18,7 +18,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
 #endif
 

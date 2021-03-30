@@ -38,7 +38,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
   const char* GetClassName() const override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // ShelfButtonDelegate:
   void OnShelfButtonAboutToRequestFocusFromTabTraversal(ShelfButton* button,
@@ -64,6 +64,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
  protected:
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
  private:
   // views::ViewTargeterDelegate:

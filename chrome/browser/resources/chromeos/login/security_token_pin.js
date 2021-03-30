@@ -9,12 +9,6 @@
 
 (function() {
 
-// Only inform the user about the number of attempts left if it's smaller or
-// equal to this constant. (This is a pure UX heuristic.)
-// Please keep this constant in sync with the one in
-// //chromeos/components/security_token_pin/error_generator.cc.
-const ATTEMPTS_LEFT_THRESHOLD = 3;
-
 Polymer({
   is: 'security-token-pin',
 
@@ -32,16 +26,6 @@ Polymer({
     parameters: {
       type: Object,
       observer: 'onParametersChanged_',
-    },
-
-    /**
-     * The i18n string ID containing the error label to be shown to the user.
-     * Is null when there's no error label.
-     * @private
-     */
-    errorLabelId_: {
-      type: String,
-      computed: 'computeErrorLabelId_(parameters)',
     },
 
     /**
@@ -80,7 +64,7 @@ Polymer({
     canEdit_: {
       type: Boolean,
       computed:
-          'computeCanEdit_(parameters.attemptsLeft, processingCompletion_)',
+          'computeCanEdit_(parameters.enableUserInput, processingCompletion_)',
     },
 
     /**
@@ -89,7 +73,7 @@ Polymer({
      */
     canSubmit_: {
       type: Boolean,
-      computed: 'computeCanSubmit_(parameters.attemptsLeft, ' +
+      computed: 'computeCanSubmit_(parameters.enableUserInput, ' +
           'hasValue_, processingCompletion_)',
     },
   },
@@ -102,51 +86,26 @@ Polymer({
   },
 
   /**
-   * Returns the i18n string ID for the current error label.
-   * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
-   * @return {string|null}
-   * @private
-   */
-  computeErrorLabelId_(parameters) {
-    if (!parameters)
-      return null;
-    switch (parameters.errorLabel) {
-      case OobeTypes.SecurityTokenPinDialogErrorType.NONE:
-        return null;
-      case OobeTypes.SecurityTokenPinDialogErrorType.UNKNOWN:
-        return 'securityTokenPinDialogUnknownError';
-      case OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PIN:
-        return 'securityTokenPinDialogUnknownInvalidPin';
-      case OobeTypes.SecurityTokenPinDialogErrorType.INVALID_PUK:
-        return 'securityTokenPinDialogUnknownInvalidPuk';
-      case OobeTypes.SecurityTokenPinDialogErrorType.MAX_ATTEMPTS_EXCEEDED:
-        return 'securityTokenPinDialogUnknownMaxAttemptsExceeded';
-      default:
-        assertNotReached(`Unexpected enum value: ${parameters.errorLabel}`);
-    }
-  },
-
-  /**
    * Computes the value of the canEdit_ property.
-   * @param {number} attemptsLeft
+   * @param {boolean} enableUserInput
    * @param {boolean} processingCompletion
    * @return {boolean}
    * @private
    */
-  computeCanEdit_(attemptsLeft, processingCompletion) {
-    return attemptsLeft != 0 && !processingCompletion;
+  computeCanEdit_(enableUserInput, processingCompletion) {
+    return enableUserInput && !processingCompletion;
   },
 
   /**
    * Computes the value of the canSubmit_ property.
-   * @param {number} attemptsLeft
+   * @param {boolean} enableUserInput
    * @param {boolean} hasValue
    * @param {boolean} processingCompletion
    * @return {boolean}
    * @private
    */
-  computeCanSubmit_(attemptsLeft, hasValue, processingCompletion) {
-    return attemptsLeft != 0 && hasValue && !processingCompletion;
+  computeCanSubmit_(enableUserInput, hasValue, processingCompletion) {
+    return enableUserInput && hasValue && !processingCompletion;
   },
 
   /**
@@ -203,10 +162,7 @@ Polymer({
    * @private
    */
   isErrorLabelVisible_(parameters, userEdited) {
-    return parameters &&
-        parameters.errorLabel !==
-        OobeTypes.SecurityTokenPinDialogErrorType.NONE &&
-        !userEdited;
+    return parameters && parameters.hasError && !userEdited;
   },
 
   /**
@@ -216,8 +172,7 @@ Polymer({
    * @private
    */
   isAttemptsLeftVisible_(parameters) {
-    return parameters && parameters.attemptsLeft >= 0 &&
-        parameters.attemptsLeft <= ATTEMPTS_LEFT_THRESHOLD;
+    return parameters && parameters.formattedAttemptsLeft !== '';
   },
 
   /**
@@ -234,14 +189,12 @@ Polymer({
 
   /**
    * Returns the label to be used for the PIN input field.
-   * @param {string} locale
    * @param {OobeTypes.SecurityTokenPinDialogParameters} parameters
-   * @param {string|null} errorLabelId
    * @param {boolean} userEdited
    * @return {string}
    * @private
    */
-  getLabel_(locale, parameters, errorLabelId, userEdited) {
+  getLabel_(parameters, userEdited) {
     if (!this.isLabelVisible_(parameters, userEdited)) {
       // Neither error nor the number of left attempts are to be displayed.
       return '';
@@ -249,20 +202,9 @@ Polymer({
     if (!this.isErrorLabelVisible_(parameters, userEdited) &&
         this.isAttemptsLeftVisible_(parameters)) {
       // There's no error, but the number of left attempts has to be displayed.
-      return this.i18n(
-          'securityTokenPinDialogAttemptsLeft', parameters.attemptsLeft);
+      return parameters.formattedAttemptsLeft;
     }
-    // If we get here, |parameters| must be defined, and |parameters.errorLabel|
-    // != NONE, so |errorLabelId| will be defined.
-    assert(errorLabelId);
-    // Format the error and, if present, the number of left attempts.
-    if ((parameters && !parameters.enableUserInput) ||
-        !this.isAttemptsLeftVisible_(parameters)) {
-      return this.i18n(errorLabelId);
-    }
-    return this.i18n(
-        'securityTokenPinDialogErrorAttempts', this.i18n(errorLabelId),
-        parameters.attemptsLeft);
+    return parameters.formattedError;
   },
 });
 })();

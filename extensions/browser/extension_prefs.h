@@ -19,6 +19,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/model/string_ordinal.h"
+#include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
@@ -29,6 +30,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/url_pattern_set.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
@@ -219,7 +221,7 @@ class ExtensionPrefs : public KeyedService {
 
   // Called when an extension is uninstalled, so that prefs get cleaned up.
   void OnExtensionUninstalled(const std::string& extension_id,
-                              const Manifest::Location& location,
+                              const mojom::ManifestLocation location,
                               bool external_uninstall);
 
   // Sets the extension's state to enabled and clears disable reasons.
@@ -372,7 +374,7 @@ class ExtensionPrefs : public KeyedService {
   // For updating the prefs when the install location is changed for the
   // extension.
   void SetInstallLocation(const std::string& extension_id,
-                          Manifest::Location location);
+                          mojom::ManifestLocation location);
 
   // Returns whether the extension with |id| has its blocklist bit set.
   //
@@ -381,6 +383,22 @@ class ExtensionPrefs : public KeyedService {
   // sources of blocklist information, such as safebrowsing. You probably want
   // to use Blocklist::GetBlocklistedIDs rather than this method.
   bool IsExtensionBlocklisted(const std::string& id) const;
+
+  // Gets the Safe Browsing allowlist state.
+  AllowlistState GetExtensionAllowlistState(
+      const std::string& extension_id) const;
+
+  // Sets the Safe Browsing allowlist state.
+  void SetExtensionAllowlistState(const std::string& extension_id,
+                                  AllowlistState state);
+
+  // Gets the Safe Browsing allowlist acknowledge state.
+  AllowlistAcknowledgeState GetExtensionAllowlistAcknowledgeState(
+      const std::string& extension_id) const;
+
+  // Sets the Safe Browsing allowlist acknowledge state.
+  void SetExtensionAllowlistAcknowledgeState(const std::string& extension_id,
+                                             AllowlistAcknowledgeState state);
 
   // Increment the count of how many times we prompted the user to acknowledge
   // the given extension, and return the new count.
@@ -407,12 +425,6 @@ class ExtensionPrefs : public KeyedService {
   // Subsequent calls return true. It's not possible through an API to ever
   // reset it. Don't call it unless you mean it!
   bool SetAlertSystemFirstRun();
-
-  // Whether extensions that were previously visible in the toolbar from
-  // |BrowserActionsContainer| have been migrated to pinned extensions in the
-  // |ExtensionsToolbarContainer|.
-  bool IsPinnedExtensionsMigrationComplete();
-  void MarkPinnedExtensionsMigrationComplete();
 
   // Returns the last value set via SetLastPingDay. If there isn't such a
   // pref, the returned Time will return true for is_null().
@@ -732,7 +744,7 @@ class ExtensionPrefs : public KeyedService {
   // loaded again after this.
   void MarkObsoleteComponentExtensionAsRemoved(
       const std::string& extension_id,
-      const Manifest::Location& location);
+      const mojom::ManifestLocation location);
 
   // When called before the ExtensionService is created, alerts that are
   // normally suppressed in first run will still trigger.

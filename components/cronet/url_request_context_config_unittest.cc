@@ -862,6 +862,8 @@ TEST(URLRequestContextConfigTest, SetQuicConnectionMigrationV2Options) {
             quic_params->max_migrations_to_non_default_network_on_write_error);
   EXPECT_EQ(
       4, quic_params->max_migrations_to_non_default_network_on_path_degrading);
+  EXPECT_EQ(quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q050()},
+            quic_params->supported_versions);
 }
 
 TEST(URLRequestContextConfigTest, SetQuicStaleDNSracing) {

@@ -13,8 +13,8 @@ FakeCrashRecoveryManager::FakeCrashRecoveryManager() = default;
 FakeCrashRecoveryManager::~FakeCrashRecoveryManager() = default;
 
 void FakeCrashRecoveryManager::RestorePreCrashStateIfNecessary(
-    const base::Closure& on_restoration_finished) {
-  on_restoration_finished_callback_ = on_restoration_finished;
+    base::OnceClosure on_restoration_finished) {
+  on_restoration_finished_callback_ = std::move(on_restoration_finished);
 }
 
 }  // namespace tether

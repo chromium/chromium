@@ -28,10 +28,10 @@ if (!('allowsEval' in document.securityPolicy)) {
 // <include src="../../file_manager/common/js/async_util.js">
 // <include src="../../file_manager/common/js/file_type.js">
 // <include src="../../file_manager/common/js/util.js">
-// <include src="../../base/js/mediasession_types.js">
-// <include src="../../base/js/app_util.js">
-// <include src="../../base/js/volume_manager_types.js">
-// <include src="../../base/js/filtered_volume_manager.js">
+// <include src="../../file_manager/common/js/mediasession_types.js">
+// <include src="../../file_manager/common/js/app_util.js">
+// <include src="../../file_manager/common/js/volume_manager_types.js">
+// <include src="../../file_manager/common/js/filtered_volume_manager.js">
 
 // <include src="../../file_manager/foreground/js/metadata/content_metadata_provider.js">
 // <include src="../../file_manager/foreground/js/metadata/external_metadata_provider.js">

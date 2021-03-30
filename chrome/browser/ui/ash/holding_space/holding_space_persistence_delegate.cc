@@ -7,11 +7,27 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash {
+
+namespace {
+
+// Returns whether the item should be ignored by the holding space model. This
+// returns true if the item is not supported in the current context, but may
+// be otherwise supported. For example, returns true for ARC file system
+// backed items in a secondary user profile.
+bool ShouldIgnoreItem(Profile* profile, const HoldingSpaceItem* item) {
+  return file_manager::util::GetAndroidFilesPath().IsParent(
+             item->file_path()) &&
+         !chromeos::ProfileHelper::IsPrimaryProfile(profile);
+}
+
+}  // namespace
 
 // static
 constexpr char HoldingSpacePersistenceDelegate::kPersistencePath[];
@@ -109,6 +125,8 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
             base::Value::AsDictionaryValue(persisted_holding_space_item),
             base::BindOnce(&holding_space_util::ResolveImage,
                            base::Unretained(thumbnail_loader_)));
+    if (ShouldIgnoreItem(profile(), holding_space_item.get()))
+      continue;
     item_restored_callback_.Run(std::move(holding_space_item));
   }
   // Notify completion of persistence restoration.

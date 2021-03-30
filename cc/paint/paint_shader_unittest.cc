@@ -48,7 +48,7 @@ class MockImageProvider : public ImageProvider {
     sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
     return ScopedResult(DecodedDrawImage(image, nullptr, SkSize::MakeEmpty(),
                                          SkSize::Make(1.0f, 1.0f),
-                                         draw_image.filter_quality()));
+                                         draw_image.filter_quality(), true));
   }
 
   const DrawImage& draw_image() const { return draw_image_; }
@@ -84,7 +84,7 @@ TEST(PaintShaderTest, DecodePaintRecord) {
                                .set_paint_image_generator(generator)
                                .TakePaintImage();
 
-  record->push<DrawImageOp>(paint_image, 0.f, 0.f, nullptr);
+  record->push<DrawImageOp>(paint_image, 0.f, 0.f);
   SkMatrix local_matrix = SkMatrix::Scale(0.5f, 0.5f);
   auto record_shader = PaintShader::MakePaintRecord(
       record, SkRect::MakeWH(100, 100), SkTileMode::kClamp, SkTileMode::kClamp,

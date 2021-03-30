@@ -37,7 +37,8 @@ struct OptionalStyleColor {
 
 class ColorPropertyFunctions {
  public:
-  static OptionalStyleColor GetInitialColor(const CSSProperty&);
+  static OptionalStyleColor GetInitialColor(const CSSProperty&,
+                                            const ComputedStyle& initial_style);
   static OptionalStyleColor GetUnvisitedColor(const CSSProperty&,
                                               const ComputedStyle&);
   static OptionalStyleColor GetVisitedColor(const CSSProperty&,

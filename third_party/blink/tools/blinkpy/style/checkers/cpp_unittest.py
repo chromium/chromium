@@ -2482,50 +2482,6 @@ class WebKitStyleTest(CppStyleTestBase):
             'If one part of an if-else statement uses curly braces, the other part must too.  [whitespace/braces] [4]'
         )
 
-    def test_null_false_zero(self):
-        # Tests for true/false and null/non-null should be done without
-        # equality comparisons.
-        self.assert_lint(
-            'if (string != NULL)',
-            'Tests for true/false and null/non-null should be done without equality comparisons.'
-            '  [readability/comparison_to_boolean] [5]')
-        self.assert_lint(
-            'if (p == nullptr)',
-            'Tests for true/false and null/non-null should be done without equality comparisons.'
-            '  [readability/comparison_to_boolean] [5]')
-        self.assert_lint(
-            'if (condition == true)',
-            'Tests for true/false and null/non-null should be done without equality comparisons.'
-            '  [readability/comparison_to_boolean] [5]')
-        self.assert_lint(
-            'if (myVariable != /* Why would anyone put a comment here? */ false)',
-            'Tests for true/false and null/non-null should be done without equality comparisons.'
-            '  [readability/comparison_to_boolean] [5]')
-
-        self.assert_lint(
-            'if (NULL == thisMayBeNull)',
-            'Tests for true/false and null/non-null should be done without equality comparisons.'
-            '  [readability/comparison_to_boolean] [5]')
-        self.assert_lint(
-            'if (nullptr /* funny place for a comment */ == p)',
-            'Tests for true/false and null/non-null should be done without equality comparisons.'
-            '  [readability/comparison_to_boolean] [5]')
-        self.assert_lint(
-            'if (true != anotherCondition)',
-            'Tests for true/false and null/non-null should be done without equality comparisons.'
-            '  [readability/comparison_to_boolean] [5]')
-        self.assert_lint(
-            'if (false == myBoolValue)',
-            'Tests for true/false and null/non-null should be done without equality comparisons.'
-            '  [readability/comparison_to_boolean] [5]')
-
-        self.assert_lint('if (fontType == trueType)', '')
-        self.assert_lint('if (othertrue == fontType)', '')
-        self.assert_lint('if (LIKELY(foo == 0))', '')
-        self.assert_lint('if (UNLIKELY(foo == 0))', '')
-        self.assert_lint('if ((a - b) == 0.5)', '')
-        self.assert_lint('if (0.5 == (a - b))', '')
-
     def test_using_std_swap_ignored(self):
         self.assert_lint('using std::swap;', '', 'foo.cpp')
 

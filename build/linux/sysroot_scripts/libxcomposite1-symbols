@@ -1,0 +1,15 @@
+libXcomposite.so.1 libxcomposite1 #MINVER#
+ XCompositeCreateRegionFromBorderClip@Base 1:0.4.4-1
+ XCompositeExtensionInfo@Base 1:0.4.4-1
+ XCompositeExtensionName@Base 1:0.4.4-1
+ XCompositeFindDisplay@Base 1:0.4.4-1
+ XCompositeGetOverlayWindow@Base 1:0.4.4-1
+ XCompositeNameWindowPixmap@Base 1:0.4.4-1
+ XCompositeQueryExtension@Base 1:0.4.4-1
+ XCompositeQueryVersion@Base 1:0.4.4-1
+ XCompositeRedirectSubwindows@Base 1:0.4.4-1
+ XCompositeRedirectWindow@Base 1:0.4.4-1
+ XCompositeReleaseOverlayWindow@Base 1:0.4.4-1
+ XCompositeUnredirectSubwindows@Base 1:0.4.4-1
+ XCompositeUnredirectWindow@Base 1:0.4.4-1
+ XCompositeVersion@Base 1:0.4.4-1

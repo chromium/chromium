@@ -10,9 +10,6 @@ modules_idl_files = [
   "idb_index.idl",
   "idb_key_range.idl",
   "idb_object_store.idl",
-  "idb_observation.idl",
-  "idb_observer.idl",
-  "idb_observer_changes.idl",
   "idb_open_db_request.idl",
   "idb_request.idl",
   "idb_transaction.idl",
@@ -23,7 +20,6 @@ modules_dictionary_idl_files = [
   "idb_database_info.idl",
   "idb_index_parameters.idl",
   "idb_object_store_parameters.idl",
-  "idb_observer_init.idl",
   "idb_transaction_options.idl",
   "idb_version_change_event_init.idl",
 ]

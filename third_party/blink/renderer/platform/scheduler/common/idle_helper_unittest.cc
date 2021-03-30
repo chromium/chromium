@@ -180,6 +180,7 @@ class BaseIdleHelperTest : public testing::Test {
         nullptr, test_task_runner_, test_task_runner_->GetMockTickClock());
     scheduler_helper_ = std::make_unique<NonMainThreadSchedulerHelper>(
         sequence_manager_.get(), nullptr, TaskType::kInternalTest);
+    scheduler_helper_->AttachToCurrentThread();
     idle_helper_ = std::make_unique<IdleHelperForTest>(
         scheduler_helper_.get(),
         required_quiescence_duration_before_long_idle_period,

@@ -21,6 +21,7 @@ enum MediaRouteProviderId {
   CAST,
   DIAL,
   ANDROID_CAF,
+  TEST,
   UNKNOWN  // New values must be added above this value.
 };
 

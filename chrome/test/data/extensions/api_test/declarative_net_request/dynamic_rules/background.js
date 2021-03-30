@@ -4,8 +4,6 @@
 
 var updateDynamicRules = chrome.declarativeNetRequest.updateDynamicRules;
 var getDynamicRules = chrome.declarativeNetRequest.getDynamicRules;
-var ruleLimit = chrome.declarativeNetRequest.MAX_NUMBER_OF_DYNAMIC_RULES;
-var regexRuleLimit = chrome.declarativeNetRequest.MAX_NUMBER_OF_REGEX_RULES;
 var nextId = 1;
 
 var createRuleWithID = function(id) {
@@ -95,45 +93,4 @@ chrome.test.runTests([
             'Rule with id 5 specified a more complex regex than allowed as ' +
             'part of the "regexFilter" key.'));
   },
-
-  // Ensure that an extension can add up to |regexRuleLimit| number of regex
-  // rules.
-  function regexRuleLimitReached() {
-    var numRulesToAdd = regexRuleLimit;
-    var newRules = [];
-    while (newRules.length < regexRuleLimit)
-      newRules.push(createRegexRuleWithID(nextId++));
-
-    currentRules = newRules.concat(currentRules);
-    chrome.test.assertEq(regexRuleLimit + 1, currentRules.length);
-    updateDynamicRules({addRules: newRules}, verifyCurrentRulesCallback);
-  },
-
-  // Ensure that adding more regex rules than |regexRuleLimit| causes an error.
-  function regexRuleLimitError() {
-    updateDynamicRules(
-        {addRules: [createRegexRuleWithID(nextId++)]},
-        chrome.test.callbackFail(
-            'Dynamic rule count for regex rules exceeded.'));
-  },
-
-  // Ensure we can add up to |ruleLimit| no. of rules.
-  function ruleLimitReached() {
-    var numRulesToAdd = ruleLimit - currentRules.length;
-    var newRules = [];
-    while (newRules.length < numRulesToAdd)
-      newRules.push(createRuleWithID(nextId++));
-
-    currentRules = newRules.concat(currentRules);
-    chrome.test.assertEq(ruleLimit, currentRules.length);
-    updateDynamicRules(
-        {addRules: newRules, removeRuleIds: []}, verifyCurrentRulesCallback);
-  },
-
-  // Ensure we can't add more than |ruleLimit| rules.
-  function ruleLimitError() {
-    updateDynamicRules(
-        {addRules: [createRuleWithID(nextId++)]},
-        chrome.test.callbackFail('Dynamic rule count exceeded.'));
-  }
 ]);

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests moust hover/select events handling in the Layers panel\n`);
-  await TestRunner.loadModule('layers_test_runner');
+  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadHTML(`
       <style>
       .layer {

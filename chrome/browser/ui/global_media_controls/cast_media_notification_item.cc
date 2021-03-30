@@ -125,7 +125,7 @@ media_session::mojom::MediaSessionInfo::SessionState ToSessionState(
   }
 }
 
-base::string16 GetSourceTitle(const media_router::MediaRoute& route) {
+std::u16string GetSourceTitle(const media_router::MediaRoute& route) {
   if (route.media_sink_name().empty())
     return base::UTF8ToUTF16(route.description());
 
@@ -148,14 +148,14 @@ CastMediaNotificationItem::CastMediaNotificationItem(
     std::unique_ptr<CastMediaSessionController> session_controller,
     Profile* profile)
     : notification_controller_(notification_controller),
+      profile_(profile),
       session_controller_(std::move(session_controller)),
       media_route_id_(route.media_route_id()),
       image_downloader_(
           profile,
           base::BindRepeating(&CastMediaNotificationItem::ImageChanged,
                               base::Unretained(this))),
-      session_info_(CreateSessionInfo()),
-      profile_(profile) {
+      session_info_(CreateSessionInfo()) {
   metadata_.source_title = GetSourceTitle(route);
   base::UmaHistogramEnumeration(
       kSourceHistogramName, route.is_local() ? Source::kLocalCastSession
@@ -198,6 +198,7 @@ void CastMediaNotificationItem::OnMediaSessionActionButtonPressed(
 
 void CastMediaNotificationItem::Dismiss() {
   notification_controller_->HideNotification(media_route_id_);
+  is_active_ = false;
 }
 
 media_message_center::SourceType CastMediaNotificationItem::SourceType() {
@@ -226,12 +227,12 @@ void CastMediaNotificationItem::OnRouteUpdated(
     const media_router::MediaRoute& route) {
   DCHECK_EQ(route.media_route_id(), media_route_id_);
   bool updated = false;
-  const base::string16 new_source_title = GetSourceTitle(route);
+  const std::u16string new_source_title = GetSourceTitle(route);
   if (metadata_.source_title != new_source_title) {
     metadata_.source_title = new_source_title;
     updated = true;
   }
-  const base::string16 new_artist = base::UTF8ToUTF16(route.description());
+  const std::u16string new_artist = base::UTF8ToUTF16(route.description());
   if (metadata_.artist != new_artist) {
     metadata_.artist = new_artist;
     updated = true;

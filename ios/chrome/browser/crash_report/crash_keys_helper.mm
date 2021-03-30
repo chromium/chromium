@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 
 #include "base/check.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/sys_string_conversions.h"
+#include "components/crash/core/common/crash_key.h"
 #import "components/previous_session_info/previous_session_info.h"
-#import "ios/chrome/browser/crash_report/breakpad_helper.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 
@@ -14,21 +16,20 @@
 #error "This file requires ARC support."
 #endif
 
-using breakpad_helper::AddReportParameter;
-using breakpad_helper::RemoveReportParameter;
-
 namespace crash_keys {
 
-NSString* const kBreadcrumbsProductDataKey = @"breadcrumbs";
+const char kBreadcrumbsProductDataKey[] = "breadcrumbs";
 
 namespace {
 
-NSString* const kCrashedInBackground = @"crashed_in_background";
-NSString* const kFreeDiskInKB = @"free_disk_in_kb";
-NSString* const kFreeMemoryInKB = @"free_memory_in_kb";
-NSString* const kMemoryWarningInProgress = @"memory_warning_in_progress";
-NSString* const kMemoryWarningCount = @"memory_warning_count";
-NSString* const kGridToVisibleTabAnimation = @"grid_to_visible_tab_animation";
+const char kCrashedInBackground[] = "crashed_in_background";
+const char kFreeDiskInKB[] = "free_disk_in_kb";
+const char kFreeMemoryInKB[] = "free_memory_in_kb";
+const char kMemoryWarningInProgress[] = "memory_warning_in_progress";
+const char kMemoryWarningCount[] = "memory_warning_count";
+const char kGridToVisibleTabAnimation[] = "grid_to_visible_tab_animation";
+static crash_reporter::CrashKeyString<1028> kRemoveGridToVisibleTabAnimationKey(
+    kGridToVisibleTabAnimation);
 
 // Multiple state information are combined into one CrashReportMultiParameter
 // to save limited and finite number of ReportParameters.
@@ -47,39 +48,41 @@ NSString* const kDestroyingAndRebuildingIncognitoBrowserState =
 }  // namespace
 
 void SetCurrentlyInBackground(bool background) {
+  static crash_reporter::CrashKeyString<4> key(kCrashedInBackground);
   if (background) {
-    AddReportParameter(kCrashedInBackground, @"yes", true);
+    key.Set("yes");
     [[MainThreadFreezeDetector sharedInstance] stop];
   } else {
-    RemoveReportParameter(kCrashedInBackground);
+    key.Clear();
     [[MainThreadFreezeDetector sharedInstance] start];
   }
 }
 
 void SetMemoryWarningCount(int count) {
+  static crash_reporter::CrashKeyString<16> key(kMemoryWarningCount);
   if (count) {
-    AddReportParameter(kMemoryWarningCount,
-                       [NSString stringWithFormat:@"%d", count], true);
+    key.Set(base::NumberToString(count));
   } else {
-    RemoveReportParameter(kMemoryWarningCount);
+    key.Clear();
   }
 }
 
 void SetMemoryWarningInProgress(bool value) {
+  static crash_reporter::CrashKeyString<4> key(kMemoryWarningInProgress);
   if (value)
-    AddReportParameter(kMemoryWarningInProgress, @"yes", true);
+    key.Set("yes");
   else
-    RemoveReportParameter(kMemoryWarningInProgress);
+    key.Clear();
 }
 
 void SetCurrentFreeMemoryInKB(int value) {
-  AddReportParameter(kFreeMemoryInKB, [NSString stringWithFormat:@"%d", value],
-                     true);
+  static crash_reporter::CrashKeyString<16> key(kFreeMemoryInKB);
+  key.Set(base::NumberToString(value));
 }
 
 void SetCurrentFreeDiskInKB(int value) {
-  AddReportParameter(kFreeDiskInKB, [NSString stringWithFormat:@"%d", value],
-                     true);
+  static crash_reporter::CrashKeyString<16> key(kFreeDiskInKB);
+  key.Set(base::NumberToString(value));
 }
 
 void SetCurrentTabIsPDF(bool value) {
@@ -154,15 +157,17 @@ void SetGridToVisibleTabAnimation(NSString* to_view_controller,
                     @"{toVC:%@, presentingVC:%@, presentedVC:%@, parentVC:%@}",
                     to_view_controller, presenting_view_controller,
                     presented_view_controller, parent_view_controller];
-  AddReportParameter(kGridToVisibleTabAnimation, formatted_value, true);
+  kRemoveGridToVisibleTabAnimationKey.Set(
+      base::SysNSStringToUTF8(formatted_value));
 }
 
 void RemoveGridToVisibleTabAnimation() {
-  RemoveReportParameter(kGridToVisibleTabAnimation);
+  kRemoveGridToVisibleTabAnimationKey.Clear();
 }
 
 void SetBreadcrumbEvents(NSString* breadcrumbs) {
-  AddReportParameter(kBreadcrumbsProductDataKey, breadcrumbs, /*async=*/true);
+  static crash_reporter::CrashKeyString<2550> key(kBreadcrumbsProductDataKey);
+  key.Set(base::SysNSStringToUTF8(breadcrumbs));
 }
 
 void MediaStreamPlaybackDidStart() {
@@ -175,4 +180,4 @@ void MediaStreamPlaybackDidStop() {
       decrementValue:kVideoPlaying];
 }
 
-}  // namespace breakpad_helper
+}  // namespace crash_keys

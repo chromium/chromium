@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/before_unload_event.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 

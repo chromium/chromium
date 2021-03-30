@@ -88,7 +88,7 @@ bool IOSSecurityInterstitialPage::ShouldDisplayURL() const {
   return true;
 }
 
-base::string16 IOSSecurityInterstitialPage::GetFormattedHostName() const {
+std::u16string IOSSecurityInterstitialPage::GetFormattedHostName() const {
   return security_interstitials::common_string_util::GetFormattedHostName(
       request_url_);
 }

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// clang-format on
+
 /** @implements {settings.CrostiniBrowserProxy} */
-class TestCrostiniBrowserProxy extends TestBrowserProxy {
+/* #export */ class TestCrostiniBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'requestCrostiniInstallerView',
       'requestRemoveCrostini',
-      'getCrostiniSharedPathsDisplayText',
-      'notifyCrostiniSharedUsbDevicesPageReady',
-      'setCrostiniUsbDeviceShared',
-      'removeCrostiniSharedPath',
       'exportCrostiniContainer',
       'importCrostiniContainer',
       'requestCrostiniContainerUpgradeView',
@@ -32,9 +32,9 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
       'setCrostiniMicSharingEnabled',
       'getCrostiniMicSharingEnabled',
       'requestCrostiniInstallerStatus',
+      'requestArcAdbSideloadStatus',
+      'getCanChangeArcAdbSideloading',
     ]);
-    this.sharedUsbDevices = [];
-    this.removeSharedPathResult = true;
     this.crostiniMicSharingEnabled = false;
     this.crostiniIsRunning = true;
     this.methodCalls_ = {};
@@ -77,28 +77,14 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
     this.methodCalled('requestRemoveCrostini');
   }
 
-  /** override */
-  getCrostiniSharedPathsDisplayText(paths) {
-    this.methodCalled('getCrostiniSharedPathsDisplayText');
-    return Promise.resolve(paths.map(path => path + '-displayText'));
-  }
-
-  /** @override */
-  notifyCrostiniSharedUsbDevicesPageReady() {
-    this.methodCalled('notifyCrostiniSharedUsbDevicesPageReady');
-    cr.webUIListenerCallback(
-        'crostini-shared-usb-devices-changed', this.sharedUsbDevices);
-  }
-
-  /** @override */
-  setCrostiniUsbDeviceShared(guid, shared) {
-    this.methodCalled('setCrostiniUsbDeviceShared', [guid, shared]);
+  /**override */
+  requestArcAdbSideloadStatus() {
+    this.methodCalled('requestArcAdbSideloadStatus');
   }
 
   /** override */
-  removeCrostiniSharedPath(vmName, path) {
-    this.methodCalled('removeCrostiniSharedPath', [vmName, path]);
-    return Promise.resolve(this.removeSharedPathResult);
+  getCanChangeArcAdbSideloading() {
+    this.methodCalled('getCanChangeArcAdbSideloading');
   }
 
   /** @override */

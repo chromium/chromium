@@ -49,7 +49,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="prefetch_proxy_probe"/>
       <traffic_annotation unique_id="enterprise_safe_browsing_realtime_url_lookup"/>
       <traffic_annotation unique_id="remote_copy_message_handler"/>
-      <traffic_annotation unique_id="chrome_HaTS_service"/>
       <traffic_annotation unique_id="port_forwarding_controller_socket"/>
       <traffic_annotation unique_id="media_feeds"/>
       <traffic_annotation unique_id="receive_messages_express"/>
@@ -74,6 +73,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="cast_socket"/>
       <traffic_annotation unique_id="dom_distiller"/>
       <traffic_annotation unique_id="download_manager_resume"/>
+      <traffic_annotation unique_id="file_system_connector_to_box"/>
       <traffic_annotation unique_id="parallel_download_job"/>
       <traffic_annotation unique_id="interest_feedv2_send"/>
       <traffic_annotation unique_id="mirroring_get_setup_info"/>
@@ -112,6 +112,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="pepper_udp_socket"/>
       <traffic_annotation unique_id="service_worker_navigation_preload"/>
       <traffic_annotation unique_id="service_worker_update_checker"/>
+      <traffic_annotation unique_id="service_worker_script_load"/>
       <traffic_annotation unique_id="download_web_contents_frame"/>
       <traffic_annotation unique_id="sigined_exchange_cert_fetcher"/>
       <traffic_annotation unique_id="sigined_exchange_validity_pinger"/>
@@ -153,13 +154,16 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="services_http_server_error_response"/>
       <traffic_annotation unique_id="webrtc_peer_connection"/>
       <traffic_annotation unique_id="direct_sockets"/>
-      <traffic_annotation unique_id="floc_id_provider_impl"/>
+      <traffic_annotation unique_id="floc_event_logger"/>
       <traffic_annotation unique_id="gstatic_change_password_override_urls"/>
       <traffic_annotation unique_id="interest_feedv2_image_send"/>
       <traffic_annotation unique_id="sanitized_image_source"/>
       <traffic_annotation unique_id="kaleidoscope_service"/>
       <traffic_annotation unique_id="webid"/>
       <traffic_annotation unique_id="managed_configuration_loader"/>
+      <traffic_annotation unique_id="box_access_token_fetcher"/>
+      <traffic_annotation unique_id="web_app_origin_association_download"/>
+      <traffic_annotation unique_id="digital_asset_links"/>
     </sender>
   </group>
   <group name="Admin Features">
@@ -350,7 +354,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="chrome_feedback_report_app"/>
       <traffic_annotation unique_id="metrics_report_ukm"/>
       <traffic_annotation unique_id="metrics_report_uma"/>
-      <traffic_annotation unique_id="rappor_report"/>
     </sender>
     <sender name="WebRTC">
       <traffic_annotation unique_id="webrtc_event_log_uploader"/>
@@ -391,6 +394,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="backdrop_collection_images_download"/>
       <traffic_annotation unique_id="backdrop_collection_names_download"/>
       <traffic_annotation unique_id="backdrop_next_image_download"/>
+      <traffic_annotation unique_id="drive_service"/>
       <traffic_annotation unique_id="ntp_snippets_fetch"/>
       <traffic_annotation unique_id="ntp_custom_background"/>
       <traffic_annotation unique_id="ntp_icon_source"/>
@@ -430,6 +434,9 @@ hidden="true" so that these annotations don't show up in the document.
     <sender name="Phone as a Security Key">
       <traffic_annotation unique_id="cablev2_websocket_from_client"/>
       <traffic_annotation unique_id="cablev2_websocket_from_authenticator"/>
+    </sender>
+    <sender name="Memories">
+      <traffic_annotation unique_id="memories_remote_model_request"/>
     </sender>
   </group>
 </groups>

@@ -350,91 +350,6 @@ GraphImpl* GraphImpl::FromGraph(const Graph* graph) {
   return reinterpret_cast<GraphImpl*>(const_cast<void*>(graph->GetImpl()));
 }
 
-void GraphImpl::OnNodeAdded(NodeBase* node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // This handles the strongly typed observer notifications.
-  switch (node->type()) {
-    case NodeTypeEnum::kFrame: {
-      auto* frame_node = FrameNodeImpl::FromNodeBase(node);
-      for (auto* observer : frame_node_observers_)
-        observer->OnFrameNodeAdded(frame_node);
-    } break;
-    case NodeTypeEnum::kPage: {
-      auto* page_node = PageNodeImpl::FromNodeBase(node);
-      for (auto* observer : page_node_observers_)
-        observer->OnPageNodeAdded(page_node);
-    } break;
-    case NodeTypeEnum::kProcess: {
-      auto* process_node = ProcessNodeImpl::FromNodeBase(node);
-      for (auto* observer : process_node_observers_)
-        observer->OnProcessNodeAdded(process_node);
-    } break;
-    case NodeTypeEnum::kSystem: {
-      auto* system_node = SystemNodeImpl::FromNodeBase(node);
-      for (auto* observer : system_node_observers_)
-        observer->OnSystemNodeAdded(system_node);
-    } break;
-    case NodeTypeEnum::kWorker: {
-      auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
-      for (auto* observer : worker_node_observers_)
-        observer->OnWorkerNodeAdded(worker_node);
-    } break;
-    case NodeTypeEnum::kInvalidType: {
-      NOTREACHED();
-    } break;
-  }
-}
-
-void GraphImpl::OnBeforeNodeRemoved(NodeBase* node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Clear any node-specific state and issue the relevant notifications before
-  // sending the last-gasp removal notification for this node.
-  node->OnBeforeLeavingGraph();
-
-  // This handles the strongly typed observer notifications.
-  switch (node->type()) {
-    case NodeTypeEnum::kFrame: {
-      auto* frame_node = FrameNodeImpl::FromNodeBase(node);
-      for (auto* observer : frame_node_observers_)
-        observer->OnBeforeFrameNodeRemoved(frame_node);
-    } break;
-    case NodeTypeEnum::kPage: {
-      auto* page_node = PageNodeImpl::FromNodeBase(node);
-      for (auto* observer : page_node_observers_)
-        observer->OnBeforePageNodeRemoved(page_node);
-    } break;
-    case NodeTypeEnum::kProcess: {
-      auto* process_node = ProcessNodeImpl::FromNodeBase(node);
-      for (auto* observer : process_node_observers_)
-        observer->OnBeforeProcessNodeRemoved(process_node);
-    } break;
-    case NodeTypeEnum::kSystem: {
-      auto* system_node = SystemNodeImpl::FromNodeBase(node);
-      for (auto* observer : system_node_observers_)
-        observer->OnBeforeSystemNodeRemoved(system_node);
-    } break;
-    case NodeTypeEnum::kWorker: {
-      auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
-      for (auto* observer : worker_node_observers_)
-        observer->OnBeforeWorkerNodeRemoved(worker_node);
-    } break;
-    case NodeTypeEnum::kInvalidType: {
-      NOTREACHED();
-    } break;
-  }
-
-  // Leave the graph only after the OnBeforeNodeRemoved notification so that the
-  // node still observes the graph invariant during that callback.
-  node->LeaveGraph();
-}
-
-int64_t GraphImpl::GetNextNodeSerializationId() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ++current_node_serialization_id_;
-}
-
 SystemNodeImpl* GraphImpl::FindOrCreateSystemNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!system_node_) {
@@ -508,43 +423,45 @@ size_t GraphImpl::GetNodeAttachedDataCountForTesting(const Node* node,
   return count;
 }
 
-GraphImpl::ProcessAndFrameId::ProcessAndFrameId(
-    RenderProcessHostId render_process_id,
-    int render_frame_id)
-    : render_process_id(render_process_id), render_frame_id(render_frame_id) {}
-
-bool GraphImpl::ProcessAndFrameId::operator<(
-    const ProcessAndFrameId& other) const {
-  return std::tie(render_process_id, render_frame_id) <
-         std::tie(other.render_process_id, other.render_frame_id);
-}
-
 void GraphImpl::AddNewNode(NodeBase* new_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!node_in_transition_);
+
+  // Add the node to the graph.
   auto it = nodes_.insert(new_node);
   DCHECK(it.second);  // Inserted successfully
 
-  // Add the node to the graph and allow it to initialize itself.
+  // Advance the node through its lifecycle until it is active in the graph. See
+  // NodeBase and NodeState for full details of the lifecycle.
+  node_in_transition_ = new_node;
+  node_in_transition_state_ = NodeState::kNotInGraph;
   new_node->JoinGraph(this);
+  node_in_transition_state_ = NodeState::kInitializing;
   new_node->OnJoiningGraph();
-
-  // Then notify observers.
-  OnNodeAdded(new_node);
+  node_in_transition_state_ = NodeState::kJoiningGraph;
+  DispatchNodeAddedNotifications(new_node);
+  node_in_transition_ = nullptr;
+  node_in_transition_state_ = NodeState::kNotInGraph;
 }
 
 void GraphImpl::RemoveNode(NodeBase* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnBeforeNodeRemoved(node);
+  DCHECK(NodeInGraph(node));
+  DCHECK_EQ(this, node->graph());
+  DCHECK(!node_in_transition_);
 
-  // Remove any node attached data affiliated with this node.
-  const Node* public_node = node->ToNode();
-  auto lower =
-      node_attached_data_map_.lower_bound(std::make_pair(public_node, nullptr));
-  auto upper = node_attached_data_map_.lower_bound(
-      std::make_pair(public_node + 1, nullptr));
-  node_attached_data_map_.erase(lower, upper);
+  // Walk the node through the latter half of its lifecycle. See NodeBase and
+  // NodeState for full details of the lifecycle.
+  node->OnBeforeLeavingGraph();
+  node_in_transition_ = node;
+  node_in_transition_state_ = NodeState::kLeavingGraph;
+  DispatchNodeRemovedNotifications(node);
+  node->LeaveGraph();
+  node_in_transition_ = nullptr;
+  node_in_transition_state_ = NodeState::kNotInGraph;
 
-  // Before removing the node itself.
+  // Clean-up related resources and remove the node itself.
+  RemoveNodeAttachedData(node);
   size_t erased = nodes_.erase(node);
   DCHECK_EQ(1u, erased);
 }
@@ -556,6 +473,146 @@ size_t GraphImpl::NodeDataDescriberCountForTesting() const {
   auto* registry = static_cast<const NodeDataDescriberRegistryImpl*>(
       describer_registry_.get());
   return registry->size();
+}
+
+NodeState GraphImpl::GetNodeState(const NodeBase* node) const {
+  DCHECK_EQ(this, node->graph());
+  // If this is a transitioning node (being added to or removed from the graph)
+  // then return the appropriate state.
+  if (node == node_in_transition_)
+    return node_in_transition_state_;
+  // Otherwise, this is a node at steady state.
+  return NodeState::kActiveInGraph;
+}
+
+template <>
+const std::vector<FrameNodeObserver*>& GraphImpl::GetObservers() const {
+  return frame_node_observers_;
+}
+
+template <>
+const std::vector<PageNodeObserver*>& GraphImpl::GetObservers() const {
+  return page_node_observers_;
+}
+
+template <>
+const std::vector<ProcessNodeObserver*>& GraphImpl::GetObservers() const {
+  return process_node_observers_;
+}
+
+template <>
+const std::vector<SystemNodeObserver*>& GraphImpl::GetObservers() const {
+  return system_node_observers_;
+}
+
+template <>
+const std::vector<WorkerNodeObserver*>& GraphImpl::GetObservers() const {
+  return worker_node_observers_;
+}
+
+GraphImpl::ProcessAndFrameId::ProcessAndFrameId(
+    RenderProcessHostId render_process_id,
+    int render_frame_id)
+    : render_process_id(render_process_id), render_frame_id(render_frame_id) {}
+
+bool GraphImpl::ProcessAndFrameId::operator<(
+    const ProcessAndFrameId& other) const {
+  return std::tie(render_process_id, render_frame_id) <
+         std::tie(other.render_process_id, other.render_frame_id);
+}
+
+GraphImpl::ProcessAndFrameId::~ProcessAndFrameId() = default;
+
+GraphImpl::ProcessAndFrameId::ProcessAndFrameId(
+    const GraphImpl::ProcessAndFrameId& other) = default;
+
+GraphImpl::ProcessAndFrameId& GraphImpl::ProcessAndFrameId::operator=(
+    const GraphImpl::ProcessAndFrameId& other) = default;
+
+void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // This handles the strongly typed observer notifications.
+  switch (node->type()) {
+    case NodeTypeEnum::kFrame: {
+      auto* frame_node = FrameNodeImpl::FromNodeBase(node);
+      for (auto* observer : frame_node_observers_)
+        observer->OnFrameNodeAdded(frame_node);
+    } break;
+    case NodeTypeEnum::kPage: {
+      auto* page_node = PageNodeImpl::FromNodeBase(node);
+      for (auto* observer : page_node_observers_)
+        observer->OnPageNodeAdded(page_node);
+    } break;
+    case NodeTypeEnum::kProcess: {
+      auto* process_node = ProcessNodeImpl::FromNodeBase(node);
+      for (auto* observer : process_node_observers_)
+        observer->OnProcessNodeAdded(process_node);
+    } break;
+    case NodeTypeEnum::kSystem: {
+      auto* system_node = SystemNodeImpl::FromNodeBase(node);
+      for (auto* observer : system_node_observers_)
+        observer->OnSystemNodeAdded(system_node);
+    } break;
+    case NodeTypeEnum::kWorker: {
+      auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
+      for (auto* observer : worker_node_observers_)
+        observer->OnWorkerNodeAdded(worker_node);
+    } break;
+    case NodeTypeEnum::kInvalidType: {
+      NOTREACHED();
+    } break;
+  }
+}
+
+void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (node->type()) {
+    case NodeTypeEnum::kFrame: {
+      auto* frame_node = FrameNodeImpl::FromNodeBase(node);
+      for (auto* observer : frame_node_observers_)
+        observer->OnBeforeFrameNodeRemoved(frame_node);
+    } break;
+    case NodeTypeEnum::kPage: {
+      auto* page_node = PageNodeImpl::FromNodeBase(node);
+      for (auto* observer : page_node_observers_)
+        observer->OnBeforePageNodeRemoved(page_node);
+    } break;
+    case NodeTypeEnum::kProcess: {
+      auto* process_node = ProcessNodeImpl::FromNodeBase(node);
+      for (auto* observer : process_node_observers_)
+        observer->OnBeforeProcessNodeRemoved(process_node);
+    } break;
+    case NodeTypeEnum::kSystem: {
+      auto* system_node = SystemNodeImpl::FromNodeBase(node);
+      for (auto* observer : system_node_observers_)
+        observer->OnBeforeSystemNodeRemoved(system_node);
+    } break;
+    case NodeTypeEnum::kWorker: {
+      auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
+      for (auto* observer : worker_node_observers_)
+        observer->OnBeforeWorkerNodeRemoved(worker_node);
+    } break;
+    case NodeTypeEnum::kInvalidType: {
+      NOTREACHED();
+    } break;
+  }
+}
+
+void GraphImpl::RemoveNodeAttachedData(NodeBase* node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const Node* public_node = node->ToNode();
+  auto lower =
+      node_attached_data_map_.lower_bound(std::make_pair(public_node, nullptr));
+  auto upper = node_attached_data_map_.lower_bound(
+      std::make_pair(public_node + 1, nullptr));
+  node_attached_data_map_.erase(lower, upper);
+}
+
+int64_t GraphImpl::GetNextNodeSerializationId() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return ++current_node_serialization_id_;
 }
 
 void GraphImpl::BeforeProcessPidChange(ProcessNodeImpl* process,
@@ -612,38 +669,5 @@ void GraphImpl::ReleaseSystemNode() {
   RemoveNode(system_node_.get());
   system_node_.reset();
 }
-
-template <>
-const std::vector<FrameNodeObserver*>& GraphImpl::GetObservers() const {
-  return frame_node_observers_;
-}
-
-template <>
-const std::vector<PageNodeObserver*>& GraphImpl::GetObservers() const {
-  return page_node_observers_;
-}
-
-template <>
-const std::vector<ProcessNodeObserver*>& GraphImpl::GetObservers() const {
-  return process_node_observers_;
-}
-
-template <>
-const std::vector<SystemNodeObserver*>& GraphImpl::GetObservers() const {
-  return system_node_observers_;
-}
-
-template <>
-const std::vector<WorkerNodeObserver*>& GraphImpl::GetObservers() const {
-  return worker_node_observers_;
-}
-
-GraphImpl::ProcessAndFrameId::~ProcessAndFrameId() = default;
-
-GraphImpl::ProcessAndFrameId::ProcessAndFrameId(
-    const GraphImpl::ProcessAndFrameId& other) = default;
-
-GraphImpl::ProcessAndFrameId& GraphImpl::ProcessAndFrameId::operator=(
-    const GraphImpl::ProcessAndFrameId& other) = default;
 
 }  // namespace performance_manager

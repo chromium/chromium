@@ -156,9 +156,9 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
     case kInPerformLayout:
       return next_state == kAfterPerformLayout;
     case kAfterPerformLayout:
-      // We can synchronously recompute layout in AfterPerformLayout.
-      // FIXME: Ideally, we would unnest this recursion into a loop.
       if (next_state == kInPreLayout)
+        return true;
+      if (next_state == kInPerformLayout)
         return true;
       if (next_state == kLayoutClean)
         return true;

@@ -10,14 +10,15 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/cache_storage_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
-using content::CacheStorageContext;
 using content::StorageUsageInfo;
 
 namespace browsing_data {
@@ -25,15 +26,16 @@ namespace {
 
 void GetAllOriginsInfoForCacheStorageCallback(
     CacheStorageHelper::FetchCallback callback,
-    const std::vector<StorageUsageInfo>& origins) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> usage_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
 
   std::list<content::StorageUsageInfo> result;
-  for (const StorageUsageInfo& origin : origins) {
-    if (!HasWebScheme(origin.origin.GetURL()))
+  for (const storage::mojom::StorageUsageInfoPtr& usage : usage_info) {
+    if (!HasWebScheme(usage->origin.GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
-    result.push_back(origin);
+    result.emplace_back(content::StorageUsageInfo(
+        usage->origin, usage->total_size_bytes, usage->last_modified));
   }
 
   std::move(callback).Run(result);
@@ -41,10 +43,9 @@ void GetAllOriginsInfoForCacheStorageCallback(
 
 }  // namespace
 
-CacheStorageHelper::CacheStorageHelper(
-    CacheStorageContext* cache_storage_context)
-    : cache_storage_context_(cache_storage_context) {
-  DCHECK(cache_storage_context_);
+CacheStorageHelper::CacheStorageHelper(content::StoragePartition* partition)
+    : partition_(partition) {
+  DCHECK(partition);
 }
 
 CacheStorageHelper::~CacheStorageHelper() {}
@@ -52,18 +53,18 @@ CacheStorageHelper::~CacheStorageHelper() {}
 void CacheStorageHelper::StartFetching(FetchCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
-  cache_storage_context_->GetAllOriginsInfo(base::BindOnce(
+  partition_->GetCacheStorageControl()->GetAllOriginsInfo(base::BindOnce(
       &GetAllOriginsInfoForCacheStorageCallback, std::move(callback)));
 }
 
 void CacheStorageHelper::DeleteCacheStorage(const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  cache_storage_context_->DeleteForOrigin(origin);
+  partition_->GetCacheStorageControl()->DeleteForOrigin(origin);
 }
 
 CannedCacheStorageHelper::CannedCacheStorageHelper(
-    content::CacheStorageContext* context)
-    : CacheStorageHelper(context) {}
+    content::StoragePartition* partition)
+    : CacheStorageHelper(partition) {}
 
 CannedCacheStorageHelper::~CannedCacheStorageHelper() {}
 

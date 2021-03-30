@@ -1,35 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head></head>
-<body></body>
+<head>
 <script>
+// Preserve the initial document.prerendering value.
+const initial_document_prerendering = document.prerendering;
 
-// Adds <link rel=prerender> for the URL.
-function add_prerender(url) {
-  const link = document.createElement('link');
-  link.rel = 'prerender';
-  link.href = url;
-  document.head.appendChild(link);
-}
-
-// Creates a new iframe with the URL.
-async function add_iframe(url) {
-  const frame = document.createElement('iframe');
-  frame.src = url;
-  document.body.appendChild(frame);
-  return await new Promise(resolve => {
-    frame.onload = e => resolve('LOADED');
-  });
-}
-
-// Opens a new pop-up window with the URL.
-async function open_window(url) {
-  const win = window.open(url, '_blank');
-  return await new Promise(resolve => {
-    win.onload = e => resolve('LOADED');
-  });
-}
-
+// Records if 'onprerenderingchange' event is triggered at least once.
+let onprerenderingchange_observed = false;
+document.addEventListener('prerenderingchange', e => {
+  onprerenderingchange_observed = true;
+});
 </script>
+</head>
+<body>
+<script src="test_utils.js"></script>
 </body>
 </html>

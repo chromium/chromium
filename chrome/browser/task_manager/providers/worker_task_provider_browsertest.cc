@@ -35,7 +35,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif
 
 namespace task_manager {
@@ -49,7 +49,7 @@ void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
     run_loop->Quit();
 }
 
-base::string16 ExpectedTaskTitle(const std::string& title) {
+std::u16string ExpectedTaskTitle(const std::string& title) {
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_SERVICE_WORKER_PREFIX,
                                     base::UTF8ToUTF16(title));
 }
@@ -96,7 +96,7 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
         new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop),
-        base::string16(), std::string());
+        std::u16string(), std::string());
     run_loop.Run();
 
     profiles::SwitchToProfile(new_path, /* always_create = */ false,
@@ -330,7 +330,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest, CreateExistingTasks) {
 // Tests that destroying a profile while updating will correctly remove the
 // existing tasks. An incognito browser is used because a regular profile is
 // never truly destroyed until browser shutdown (See https://crbug.com/88586).
-IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest, DestroyedProfile) {
+// TODO(crbug.com/1168407): Fix the flakiness and re-enable this.
+IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
+                       DISABLED_DestroyedProfile) {
   StartUpdating();
 
   EXPECT_TRUE(tasks().empty());

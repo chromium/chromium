@@ -67,7 +67,14 @@ class ProfileManager : public content::NotificationObserver,
   // GetLastUsedProfileAllowedByPolicy() instead.
   // Except in ChromeOS guest sessions, the returned profile is always a regular
   // profile (non-OffTheRecord).
+  // WARNING: if the profile does not exist, this function creates it
+  // synchronously, causing blocking file I/O. Use GetLastUsedProfileIfExists()
+  // to avoid creating the profile synchronously.
   static Profile* GetLastUsedProfile();
+
+  // Same as GetLastUsedProfile() but returns nullptr if the profile is not
+  // loaded. Does not block.
+  static Profile* GetLastUsedProfileIfLoaded();
 
   // Same as GetLastUsedProfile() but returns the incognito Profile if
   // incognito mode is forced. This should be used if the last used Profile
@@ -134,7 +141,7 @@ class ProfileManager : public content::NotificationObserver,
   // immediately. Should be called on the UI thread.
   void CreateProfileAsync(const base::FilePath& profile_path,
                           const CreateCallback& callback,
-                          const base::string16& name,
+                          const std::u16string& name,
                           const std::string& icon_url);
 
   // Returns true if the profile pointer is known to point to an existing
@@ -184,7 +191,7 @@ class ProfileManager : public content::NotificationObserver,
   // and CREATE_STATUS_CREATED) so binding parameters with bind::Passed() is
   // prohibited. Returns the file path to the profile that will be created
   // asynchronously.
-  static base::FilePath CreateMultiProfileAsync(const base::string16& name,
+  static base::FilePath CreateMultiProfileAsync(const std::u16string& name,
                                                 const std::string& icon_url,
                                                 const CreateCallback& callback);
 
@@ -265,6 +272,11 @@ class ProfileManager : public content::NotificationObserver,
                         bool success,
                         bool is_new_profile) override;
 
+  // Used for testing. Returns true if |profile| has at least one ref of type
+  // |origin|.
+  bool HasKeepAliveForTesting(const Profile* profile,
+                              ProfileKeepAliveOrigin origin);
+
  protected:
   // Creates a new profile by calling into the profile's profile creation
   // method. Virtual so that unittests can return a TestingProfile instead
@@ -303,6 +315,9 @@ class ProfileManager : public content::NotificationObserver,
     std::unique_ptr<Profile> profile;
     // Strong references to this Profile once it's been created (e.g. a Browser
     // object, a BackgroundModeManager, ...)
+    //
+    // Initially contains a kWaitingForFirstBrowserWindow entry, which gets
+    // removed when a kBrowserWindow keepalive is added.
     std::map<ProfileKeepAliveOrigin, int> keep_alives;
     // Whether profile has been fully loaded (created and initialized).
     bool created;
@@ -315,6 +330,14 @@ class ProfileManager : public content::NotificationObserver,
   // off-the-record profile)
   void AddKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
   void RemoveKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
+
+  // Removes the kWaitingForFirstBrowserWindow keepalive. This allows a Profile*
+  // to be deleted from now on, even if it never had a visible browser window.
+  void ClearFirstBrowserWindowKeepAlive(const Profile* profile);
+
+  // Helper for RemoveKeepAlive() and ClearFirstBrowserWindowFlag(). If the
+  // refcount to this Profile is zero, calls RemoveKeepAlive().
+  void DeleteProfileIfNoKeepAlive(const ProfileInfo* info);
 
   // Does final initial actions.
   void DoFinalInit(ProfileInfo* profile_info, bool go_off_the_record);

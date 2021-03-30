@@ -187,11 +187,6 @@ VrAssetsComponentInstallerPolicy::GetInstallerAttributes() const {
            std::to_string(vr::kTargetMajorVrAssetsComponentVersion)}};
 }
 
-std::vector<std::string> VrAssetsComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 bool ShouldRegisterVrAssetsComponentOnStartup() {
   return VrAssetsComponentInstallerPolicy::
       ShouldRegisterVrAssetsComponentOnStartup();

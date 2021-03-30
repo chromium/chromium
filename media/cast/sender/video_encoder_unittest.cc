@@ -40,8 +40,7 @@ class VideoEncoderTest
  protected:
   VideoEncoderTest()
       : task_runner_(new FakeSingleThreadTaskRunner(&testing_clock_)),
-        thread_task_runner_override_reverter_(
-            base::ThreadTaskRunnerHandle::OverrideForTesting(task_runner_)),
+        task_runner_handle_override_(task_runner_),
         cast_environment_(new CastEnvironment(&testing_clock_,
                                               task_runner_,
                                               task_runner_,
@@ -194,7 +193,7 @@ class VideoEncoderTest
 
   base::SimpleTestTickClock testing_clock_;
   const scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
-  base::ScopedClosureRunner thread_task_runner_override_reverter_;
+  base::ThreadTaskRunnerHandleOverrideForTesting task_runner_handle_override_;
   const scoped_refptr<CastEnvironment> cast_environment_;
   FrameSenderConfig video_config_;
   std::unique_ptr<FakeVideoEncodeAcceleratorFactory> vea_factory_;

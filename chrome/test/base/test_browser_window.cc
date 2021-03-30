@@ -56,6 +56,9 @@ LocationBarTesting*
   return NULL;
 }
 
+bool TestBrowserWindow::TestLocationBar::IsInputTypedUrlWithoutScheme() const {
+  return false;
+}
 
 // TestBrowserWindow ----------------------------------------------------------
 
@@ -91,6 +94,10 @@ void TestBrowserWindow::SetTopControlsShownRatio(
 bool TestBrowserWindow::DoBrowserControlsShrinkRendererSize(
     const content::WebContents* contents) const {
   return false;
+}
+
+ui::NativeTheme* TestBrowserWindow::GetNativeTheme() {
+  return nullptr;
 }
 
 int TestBrowserWindow::GetTopControlsHeight() const {
@@ -247,7 +254,7 @@ std::string TestBrowserWindow::GetWorkspace() const {
 }
 
 bool TestBrowserWindow::IsVisibleOnAllWorkspaces() const {
-  return false;
+  return visible_on_all_workspaces_;
 }
 
 std::unique_ptr<content::EyeDropper> TestBrowserWindow::OpenEyeDropper(

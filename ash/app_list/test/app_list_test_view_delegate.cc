@@ -153,8 +153,8 @@ void AppListTestViewDelegate::GetSearchResultContextMenuModel(
   auto menu = std::make_unique<ui::SimpleMenuModel>(this);
   // Change items if needed.
   int command_id = 0;
-  menu->AddItem(command_id++, base::ASCIIToUTF16("Item0"));
-  menu->AddItem(command_id++, base::ASCIIToUTF16("Item1"));
+  menu->AddItem(command_id++, u"Item0");
+  menu->AddItem(command_id++, u"Item1");
   std::move(callback).Run(std::move(menu));
 }
 
@@ -168,7 +168,7 @@ void AppListTestViewDelegate::OnSearchResultVisibilityChanged(
     bool visibility) {}
 
 void AppListTestViewDelegate::NotifySearchResultsForLogging(
-    const base::string16& raw_query,
+    const std::u16string& raw_query,
     const ash::SearchResultIdWithPositionIndices& results,
     int position_index) {}
 

@@ -32,15 +32,14 @@ namespace net {
 
 namespace {
 
-bool LooksLikePacScript(const base::string16& script) {
+bool LooksLikePacScript(const std::u16string& script) {
   // Note: this is only an approximation! It may not always work correctly,
   // however it is very likely that legitimate scripts have this exact string,
   // since they must minimally define a function of this name. Conversely, a
   // file not containing the string is not likely to be a PAC script.
   //
   // An exact test would have to load the script in a javascript evaluator.
-  return script.find(base::ASCIIToUTF16("FindProxyForURL")) !=
-         base::string16::npos;
+  return script.find(u"FindProxyForURL") != std::u16string::npos;
 }
 
 // This is the hard-coded location used by the DNS portion of web proxy
@@ -275,6 +274,15 @@ int PacFileDecider::DoQuickCheck() {
   // suffix search paths, because for security, we are relying on suffix search
   // paths rather than WPAD-standard DNS devolution.
   parameters.source = HostResolverSource::SYSTEM;
+
+  // For most users, the WPAD DNS query will have no results. Allowing the query
+  // to go out via LLMNR or mDNS (which usually have no quick negative response)
+  // would therefore typically result in waiting the full timeout before
+  // `quick_check_timer_` fires. Given that a lot of Chrome requests could be
+  // blocked on completing these checks, it is better to avoid multicast
+  // resolution for WPAD.
+  // See crbug.com/1176970.
+  parameters.avoid_multicast_resolution = true;
 
   HostResolver* host_resolver =
       pac_file_fetcher_->GetRequestContext()->host_resolver();

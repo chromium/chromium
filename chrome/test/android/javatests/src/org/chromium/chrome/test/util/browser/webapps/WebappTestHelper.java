@@ -7,7 +7,7 @@ package org.chromium.chrome.test.util.browser.webapps;
 import android.content.Intent;
 
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.webapps.WebappIntentDataProviderFactory;
 
 /** Helper class for webapp tests. */

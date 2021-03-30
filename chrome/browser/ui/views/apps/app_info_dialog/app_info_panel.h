@@ -39,7 +39,7 @@ class AppInfoPanel : public views::View {
   void OpenLink(const GURL& url);
 
   // Create a heading label with the given text.
-  std::unique_ptr<views::Label> CreateHeading(const base::string16& text) const;
+  std::unique_ptr<views::Label> CreateHeading(const std::u16string& text) const;
 
   // Create a view with a vertically-stacked box layout, which can have child
   // views appended to it. |child_spacing| defaults to

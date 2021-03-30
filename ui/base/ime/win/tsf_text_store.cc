@@ -286,7 +286,7 @@ HRESULT TSFTextStore::GetText(LONG acp_start,
   acp_end = std::min(acp_end, acp_start + static_cast<LONG>(text_buffer_size));
   *text_buffer_copied = acp_end - acp_start;
 
-  const base::string16& result =
+  const std::u16string& result =
       string_buffer_document_.substr(acp_start, *text_buffer_copied);
   for (size_t i = 0; i < result.size(); ++i) {
     text_buffer[i] = result[i];
@@ -495,7 +495,7 @@ HRESULT TSFTextStore::InsertTextAtSelection(DWORD flags,
   DCHECK_LE(start_pos, end_pos);
   string_buffer_document_ =
       string_buffer_document_.substr(0, start_pos) +
-      base::string16(text_buffer, text_buffer + text_buffer_size) +
+      std::u16string(text_buffer, text_buffer + text_buffer_size) +
       string_buffer_document_.substr(end_pos);
 
   // reconstruct string that needs to be inserted.
@@ -622,7 +622,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   if (!text_input_client_)
     return E_UNEXPECTED;
 
-  // If string_pending_insertion_ is empty, then there are three cases:
+  // If string_pending_insertion_ is empty, then there are four cases:
   // 1. there is no composition We only need to do comparison between our
   //    cache and latest textinputstate and send notifications accordingly.
   // 2. A new composition is about to start on existing text. We need to start
@@ -630,16 +630,20 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   // 3. There is composition. User cancels the composition by deleting all of
   //    the composing text, we need to reset the composition_start_ and call
   //    into blink to complete the existing composition(later in this method).
+  // 4. There is no composition. IME removes previous inserted text. We need to
+  //    ask tic to delete the text range.
   if (string_pending_insertion_.empty()) {
     if (!text_input_client_->HasCompositionText()) {
+      // Remove replacing text.
+      if (new_text_inserted_ && !replace_text_range_.is_empty() &&
+          !replace_text_size_) {
+        is_tic_write_in_progress_ = true;
+        text_input_client_->SetEditableSelectionRange(replace_text_range_);
+        text_input_client_->ExtendSelectionAndDelete(0, 0);
+        is_tic_write_in_progress_ = false;
+      }
       if (has_composition_range_ && on_start_composition_called_) {
         is_tic_write_in_progress_ = true;
-        // Remove replacing text first before starting composition.
-        if (new_text_inserted_ && !replace_text_range_.is_empty() &&
-            !replace_text_size_) {
-          text_input_client_->SetEditableSelectionRange(replace_text_range_);
-          text_input_client_->ExtendSelectionAndDelete(0, 0);
-        }
         string_pending_insertion_ = string_buffer_document_.substr(
             composition_range_.GetMin(), composition_range_.length());
         StartCompositionOnExistingText();
@@ -694,7 +698,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
     is_tic_write_in_progress_ = false;
   }
 
-  const base::string16& composition_string = string_buffer_document_.substr(
+  const std::u16string& composition_string = string_buffer_document_.substr(
       composition_range_.GetMin(), composition_range_.length());
 
   // Only need to set composition if the current composition string
@@ -972,8 +976,15 @@ HRESULT TSFTextStore::OnEndEdit(ITfContext* context,
   }
 
   composition_start_ = selection_.start();
-  if (has_composition_range_)
-    ResetCompositionState();
+  if (has_composition_range_) {
+    has_composition_range_ = false;
+    composition_range_.set_start(0);
+    composition_range_.set_end(0);
+    previous_composition_string_.clear();
+    previous_composition_start_ = 0;
+    previous_composition_selection_range_ = gfx::Range::InvalidRange();
+    previous_text_spans_.clear();
+  }
 
   return S_OK;
 }
@@ -1074,7 +1085,6 @@ bool TSFTextStore::GetCompositionStatus(
       ImeTextSpan span;
       span.start_offset = start_pos;
       span.end_offset = start_pos + length;
-      span.underline_color = SK_ColorBLACK;
       span.background_color = SK_ColorTRANSPARENT;
       if (selection_.EqualsIgnoringDirection(
               gfx::Range(span.start_offset, span.end_offset))) {
@@ -1131,7 +1141,7 @@ void TSFTextStore::CalculateTextandSelectionDiffAndNotifyIfNeeded() {
   TRACE_EVENT0("ime",
                "TSFTextStore::CalculateTextandSelectionDiffAndNotifyIfNeeded");
   gfx::Range latest_buffer_range_from_client;
-  base::string16 latest_buffer_from_client;
+  std::u16string latest_buffer_from_client;
   gfx::Range latest_selection_from_client;
 
   if (text_input_client_->GetTextRange(&latest_buffer_range_from_client) &&
@@ -1294,7 +1304,7 @@ bool TSFTextStore::CancelComposition() {
     return false;
 
   TRACE_EVENT0("ime", "TSFTextStore::CancelComposition");
-  
+
   ResetCompositionState();
 
   return TerminateComposition();
@@ -1411,7 +1421,7 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
   }
 
   // Construct string to be committed.
-  const base::string16& new_committed_string = string_buffer_document_.substr(
+  const std::u16string& new_committed_string = string_buffer_document_.substr(
       new_committed_string_offset, new_committed_string_size);
   // TODO(crbug.com/978678): Unify the behavior of
   //     |TextInputClient::InsertText(text)| for the empty text.
@@ -1446,7 +1456,7 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
 
 void TSFTextStore::StartCompositionOnNewText(
     size_t start_offset,
-    const base::string16& composition_string) {
+    const std::u16string& composition_string) {
   CompositionText composition_text;
   composition_text.text = composition_string;
   composition_text.ime_text_spans = text_spans_;
@@ -1478,7 +1488,7 @@ void TSFTextStore::StartCompositionOnNewText(
           /*is_composition_committed*/ false);
     } else {
       // User wants to commit the current composition
-      const base::string16& committed_string = string_buffer_document_.substr(
+      const std::u16string& committed_string = string_buffer_document_.substr(
           composition_range_.GetMin(), composition_range_.length());
       text_input_client_->SetActiveCompositionForAccessibility(
           composition_range_, committed_string,

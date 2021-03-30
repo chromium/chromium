@@ -107,8 +107,15 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   explicit XboxControllerMac(Delegate* delegate);
   ~XboxControllerMac() override;
 
+  // Open the Xbox controller represented by |service| and perform any necessary
+  // initialization. Returns OPEN_SUCCEEDED if the device was opened
+  // successfully or OPEN_FAILED on failure. Returns
+  // OPEN_FAILED_EXCLUSIVE_ACCESS if the device is already opened by another
+  // process.
   OpenDeviceResult OpenDevice(io_service_t service);
 
+  // Send a command to an Xbox 360 controller to set the player indicator LED
+  // |pattern|.
   void SetLEDPattern(LEDPattern pattern);
 
   // AbstractHapticGamepad implementation.
@@ -126,18 +133,52 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   bool SupportsVibration() const;
 
  private:
+  // Callback to be called when outgoing packets are sent to the device.
+  // |context| is a pointer to the XboxControllerMac and |result| is the error
+  // code for the write operation. |arg0| is unused.
   static void WriteComplete(void* context, IOReturn result, void* arg0);
+
+  // Callback to be called when incoming packets are received from the device.
+  // |context| is a pointer to the XboxControllerMac, |result| is the error
+  // code for the read operation, and |*arg0| contains the number of bytes
+  // received.
+  //
+  // GotData calls IOError if |result| indicates the current read operation
+  // failed, or if scheduling the next read operation fails.
   static void GotData(void* context, IOReturn result, void* arg0);
 
+  // Process the incoming packet in |read_buffer_| as an Xbox 360 packet.
+  // |length| is the size of the packet in bytes.
   void ProcessXbox360Packet(size_t length);
-  void ProcessXboxOnePacket(size_t length);
-  void QueueRead();
 
+  // Process the incoming packet in |read_buffer_| as an Xbox One packet.
+  // |length| is the size of the packet in bytes.
+  void ProcessXboxOnePacket(size_t length);
+
+  // Queue a read from the device. Returns true if the read was queued, or false
+  // on I/O error.
+  bool QueueRead();
+
+  // Notify the delegate that a fatal I/O error occurred.
   void IOError();
 
+  // Send an Xbox 360 rumble packet to the device, where |strong_magnitude| and
+  // |weak_magnitude| are values in the range [0,255] that represent the
+  // vibration intensity for the strong and weak rumble motors.
   void WriteXbox360Rumble(uint8_t strong_magnitude, uint8_t weak_magnitude);
-  void WriteXboxOneInit();
+
+  // Send an Xbox One S initialization packet to the device. Returns true if the
+  // packet was sent successfully, or false on I/O error.
+  bool WriteXboxOneInit();
+
+  // Send an Xbox One rumble packet to the device, where |strong_magnitude| and
+  // |weak_magnitude| are values in the range [0,255] that represent the
+  // vibration intensity for the strong and weak rumble motors.
   void WriteXboxOneRumble(uint8_t strong_magnitude, uint8_t weak_magnitude);
+
+  // Send an Xbox One packet to the device acknowledging that the Xbox button
+  // was pressed or released. |sequence_number| must match the value in the
+  // incoming report containing the new button state.
   void WriteXboxOneAckGuide(uint8_t sequence_number);
 
   // Handle for the USB device. IOUSBDeviceStruct320 is the latest version of

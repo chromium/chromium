@@ -724,14 +724,14 @@ TEST_F(PipelineImplTest, OnStatisticsUpdate) {
   StartPipelineAndExpect(PIPELINE_OK);
 
   PipelineStatistics stats;
-  stats.audio_decoder_info.decoder_name = "TestAudioDecoderName";
+  stats.audio_decoder_info.decoder_type = AudioDecoderType::kMojo;
   stats.audio_decoder_info.is_platform_decoder = false;
   EXPECT_CALL(callbacks_, OnAudioDecoderChange(_));
   renderer_client_->OnStatisticsUpdate(stats);
   base::RunLoop().RunUntilIdle();
 
   // VideoDecoderInfo changed and we expect OnVideoDecoderChange() to be called.
-  stats.video_decoder_info.decoder_name = "TestVideoDecoderName";
+  stats.video_decoder_info.decoder_type = VideoDecoderType::kMojo;
   stats.video_decoder_info.is_platform_decoder = true;
   EXPECT_CALL(callbacks_, OnVideoDecoderChange(_));
   renderer_client_->OnStatisticsUpdate(stats);
@@ -749,7 +749,7 @@ TEST_F(PipelineImplTest, OnStatisticsUpdate) {
   base::RunLoop().RunUntilIdle();
 
   // Both info changed.
-  stats.audio_decoder_info.decoder_name = "NewTestAudioDecoderName";
+  stats.audio_decoder_info.decoder_type = AudioDecoderType::kFFmpeg;
   stats.video_decoder_info.has_decrypting_demuxer_stream = true;
   EXPECT_CALL(callbacks_, OnAudioDecoderChange(_));
   EXPECT_CALL(callbacks_, OnVideoDecoderChange(_));

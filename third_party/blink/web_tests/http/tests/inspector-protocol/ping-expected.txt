@@ -1,0 +1,3 @@
+Tests that navigator.sendBeacon() is reported as type Ping.
+Ping
+

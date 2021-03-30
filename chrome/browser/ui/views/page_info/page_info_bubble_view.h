@@ -59,11 +59,15 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
                            public ChosenObjectViewObserver,
                            public PageInfoUI {
  public:
+  METADATA_HEADER(PageInfoBubbleView);
+
   // The width of the column size for permissions and chosen object icons.
   static constexpr int kIconColumnWidth = 16;
   // The column set id of the permissions table for |permissions_view_|.
   static constexpr int kPermissionColumnSetId = 0;
 
+  PageInfoBubbleView(const PageInfoBubbleView&) = delete;
+  PageInfoBubbleView& operator=(const PageInfoBubbleView&) = delete;
   ~PageInfoBubbleView() override;
 
   enum PageInfoBubbleViewID {
@@ -96,8 +100,12 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void SecurityDetailsClicked(const ui::Event& event);
   void ResetDecisionsClicked();
 
+  PageInfoUI::SecurityDescriptionType GetSecurityDescriptionType() const;
+  void SetSecurityDescriptionType(
+      const PageInfoUI::SecurityDescriptionType& type);
+
  protected:
-  const base::string16 details_text() const { return details_text_; }
+  const std::u16string details_text() const { return details_text_; }
 
  private:
   friend class PageInfoBubbleViewBrowserTest;
@@ -164,7 +172,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   BubbleHeaderView* header_ = nullptr;
 
   // The raw details of the status of the identity check for this site.
-  base::string16 details_text_ = base::string16();
+  std::u16string details_text_ = std::u16string();
 
   // The view that contains the certificate, cookie, and permissions sections.
   views::View* site_settings_view_ = nullptr;
@@ -195,9 +203,12 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
 
   PageInfoClosingCallback closing_callback_;
 
-  base::WeakPtrFactory<PageInfoBubbleView> weak_factory_{this};
+  PageInfoUI::SecurityDescriptionType security_description_type_ =
+      PageInfoUI::SecurityDescriptionType::CONNECTION;
 
-  DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleView);
+  std::unique_ptr<PageInfoUiDelegate> ui_delegate_;
+
+  base::WeakPtrFactory<PageInfoBubbleView> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_H_

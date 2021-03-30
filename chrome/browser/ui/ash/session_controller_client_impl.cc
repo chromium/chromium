@@ -15,13 +15,14 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
-#include "chrome/browser/chromeos/login/users/multi_profile_user_controller.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -157,9 +158,8 @@ SessionControllerClientImpl::SessionControllerClientImpl() {
       prefs::kSessionLengthLimit,
       base::BindRepeating(&SessionControllerClientImpl::SendSessionLengthLimit,
                           base::Unretained(this)));
-  chromeos::DeviceSettingsService::Get()
-      ->device_off_hours_controller()
-      ->AddObserver(this);
+  ash::DeviceSettingsService::Get()->device_off_hours_controller()->AddObserver(
+      this);
   DCHECK(!g_session_controller_client_instance);
   g_session_controller_client_instance = this;
 }
@@ -180,7 +180,7 @@ SessionControllerClientImpl::~SessionControllerClientImpl() {
   SessionManager::Get()->RemoveObserver(this);
   UserManager::Get()->RemoveObserver(this);
   UserManager::Get()->RemoveSessionStateObserver(this);
-  chromeos::DeviceSettingsService::Get()
+  ash::DeviceSettingsService::Get()
       ->device_off_hours_controller()
       ->RemoveObserver(this);
 }
@@ -255,32 +255,33 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
     return;
   }
 
-  if (UserManager::Get()->GetLoggedInUsers().size() >=
-      session_manager::kMaximumNumberOfUserSessions) {
-    return;
-  }
+  DCHECK(UserManager::Get()->GetLoggedInUsers().size() <
+         session_manager::kMaximumNumberOfUserSessions);
 
   // Launch sign in screen to add another user to current session.
-  if (!UserManager::Get()->GetUsersAllowedForMultiProfile().empty()) {
-    // Don't show the dialog if any logged-in user in the multi-profile session
-    // dismissed it.
-    bool show_intro = true;
-    const user_manager::UserList logged_in_users =
-        UserManager::Get()->GetLoggedInUsers();
-    for (User* user : logged_in_users) {
-      show_intro &=
-          !multi_user_util::GetProfileFromAccountId(user->GetAccountId())
-               ->GetPrefs()
-               ->GetBoolean(prefs::kMultiProfileNeverShowIntro);
-      if (!show_intro)
-        break;
-    }
-    if (show_intro) {
-      session_controller_->ShowMultiprofilesIntroDialog(
-          base::BindOnce(&OnAcceptMultiprofilesIntroDialog));
-    } else {
-      chromeos::UserAddingScreen::Get()->Start();
-    }
+  DCHECK(!UserManager::Get()->GetUsersAllowedForMultiProfile().empty());
+
+  // Lacros and multiprofile are mutually exclusive.
+  DCHECK(!crosapi::BrowserManager::Get()->IsRunningOrWillRun());
+
+  // Don't show the dialog if any logged-in user in the multi-profile session
+  // dismissed it.
+  bool show_intro = true;
+  const user_manager::UserList logged_in_users =
+      UserManager::Get()->GetLoggedInUsers();
+  for (User* user : logged_in_users) {
+    show_intro &=
+        !multi_user_util::GetProfileFromAccountId(user->GetAccountId())
+             ->GetPrefs()
+             ->GetBoolean(prefs::kMultiProfileNeverShowIntro);
+    if (!show_intro)
+      break;
+  }
+  if (show_intro) {
+    session_controller_->ShowMultiprofilesIntroDialog(
+        base::BindOnce(&OnAcceptMultiprofilesIntroDialog));
+  } else {
+    chromeos::UserAddingScreen::Get()->Start();
   }
 }
 
@@ -314,6 +315,11 @@ bool SessionControllerClientImpl::IsMultiProfileAvailable() {
     return false;
   if (chromeos::SessionTerminationManager::Get() &&
       chromeos::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
+    return false;
+  }
+  // Multiprofile mode is not allowed when Lacros is running.
+  if (crosapi::BrowserManager::Get() &&
+      crosapi::BrowserManager::Get()->IsRunningOrWillRun()) {
     return false;
   }
   size_t users_logged_in = UserManager::Get()->GetLoggedInUsers().size();
@@ -380,14 +386,24 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
   if (user_manager->GetUsersAllowedForMultiProfile().empty())
     return ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS;
 
-  if (chromeos::MultiProfileUserController::GetPrimaryUserPolicy() !=
-      chromeos::MultiProfileUserController::ALLOWED) {
+  if (ash::MultiProfileUserController::GetPrimaryUserPolicy() !=
+      ash::MultiProfileUserController::ALLOWED) {
     return ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER;
   }
 
-  if (UserManager::Get()->GetLoggedInUsers().size() >=
+  if (user_manager->GetLoggedInUsers().size() >=
       session_manager::kMaximumNumberOfUserSessions) {
     return ash::AddUserSessionPolicy::ERROR_MAXIMUM_USERS_REACHED;
+  }
+
+  // Multiprofile mode is not allowed when Lacros is running.
+  if (crosapi::BrowserManager::Get()) {
+    if (crosapi::BrowserManager::Get()->IsRunningOrWillRun())
+      return ash::AddUserSessionPolicy::ERROR_LACROS_RUNNING;
+  } else {
+    // If multiprofile is queried while browser manager is not set,
+    // we want to make sure that this is done before any user logs in.
+    DCHECK(user_manager->GetLoggedInUsers().empty());
   }
 
   return ash::AddUserSessionPolicy::ALLOWED;
@@ -605,7 +621,7 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
   }
 
   policy::off_hours::DeviceOffHoursController* off_hours_controller =
-      chromeos::DeviceSettingsService::Get()->device_off_hours_controller();
+      ash::DeviceSettingsService::Get()->device_off_hours_controller();
   base::Time off_hours_session_end_time;
   // Use "OffHours" end time only if the session will be actually terminated.
   if (off_hours_controller->IsCurrentSessionAllowedOnlyForOffHours())
@@ -636,4 +652,11 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
       off_hours_session_end_time - off_hours_session_start_time;
   session_controller_->SetSessionLengthLimit(off_hours_session_length_limit,
                                              off_hours_session_start_time);
+}
+
+void SessionControllerClientImpl::OnStateChanged() {
+  // Lacros is mutually exclusive with multi sign-in. If Lacros was running
+  // (or launching/terminating) and now is not (or vice-versa), we want to
+  // propagate this change to make multi sign-in unavailable or available.
+  SendSessionInfoIfChanged();
 }

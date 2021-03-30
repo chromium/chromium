@@ -173,7 +173,6 @@ void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
     command_buffer_helper_->SetError();
     return;
   }
-  mailbox_manager_->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 
@@ -228,7 +227,6 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
     command_buffer_helper_->SetError();
     return;
   }
-  mailbox_manager_->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 
@@ -301,7 +299,6 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
     command_buffer_helper_->SetError();
     return;
   }
-  mailbox_manager_->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 
@@ -343,7 +340,6 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithAHBOnGpuThread(
     command_buffer_helper_->SetError();
     return;
   }
-  mailbox_manager_->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 #endif
@@ -418,7 +414,6 @@ void SharedImageInterfaceInProcess::UpdateSharedImageOnGpuThread(
     command_buffer_helper_->SetError();
     return;
   }
-  mailbox_manager_->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 
@@ -453,7 +448,6 @@ void SharedImageInterfaceInProcess::WaitSyncTokenOnGpuThread(
   if (!MakeContextCurrent())
     return;
 
-  mailbox_manager_->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 

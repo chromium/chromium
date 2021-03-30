@@ -73,7 +73,7 @@ class QuirksBrowserTest : public InProcessBrowserTest {
     icc_path_ = path;
     file_existed_ = !downloaded;
     ASSERT_TRUE(!end_message_loop_.is_null());
-    end_message_loop_.Run();
+    std::move(end_message_loop_).Run();
   }
 
   void SetUpOnMainThread() override {
@@ -96,7 +96,7 @@ class QuirksBrowserTest : public InProcessBrowserTest {
             &test_url_loader_factory_));
   }
 
-  base::Closure end_message_loop_;  // Callback to terminate message loop.
+  base::OnceClosure end_message_loop_;  // Callback to terminate message loop.
   base::FilePath icc_path_;         // Path to icc file if found or downloaded.
   bool file_existed_ = false;       // File was previously downloaded.
   bool find_fake_file_ = false;     // Return success from Quirks server

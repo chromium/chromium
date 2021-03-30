@@ -5,6 +5,7 @@
 #include "chromeos/network/network_connect.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -63,6 +64,7 @@ class NetworkConnectImpl : public NetworkConnect {
   void SetTechnologyEnabled(const NetworkTypePattern& technology,
                             bool enabled_state) override;
   void ShowMobileSetup(const std::string& network_id) override;
+  void ShowCarrierAccountDetail(const std::string& network_id) override;
   void ConfigureNetworkIdAndConnect(
       const std::string& network_id,
       const base::DictionaryValue& shill_properties,
@@ -145,7 +147,7 @@ void NetworkConnectImpl::HandleUnconfiguredNetwork(
       return;
     }
     if (network->cellular_out_of_credits()) {
-      ShowMobileSetup(network_id);
+      ShowCarrierAccountDetail(network_id);
       return;
     }
     // No special configure or setup for |network|, show the settings UI.
@@ -192,7 +194,8 @@ void NetworkConnectImpl::OnConnectFailed(
       error_name == NetworkConnectionHandler::kErrorBadPassphrase ||
       error_name == NetworkConnectionHandler::kErrorPassphraseRequired ||
       error_name == NetworkConnectionHandler::kErrorConfigurationRequired ||
-      error_name == NetworkConnectionHandler::kErrorAuthenticationRequired) {
+      error_name == NetworkConnectionHandler::kErrorAuthenticationRequired ||
+      error_name == NetworkConnectionHandler::kErrorCellularOutOfCredits) {
     HandleUnconfiguredNetwork(network_id);
   } else if (error_name ==
              NetworkConnectionHandler::kErrorCertificateRequired) {
@@ -455,6 +458,17 @@ void NetworkConnectImpl::ShowMobileSetup(const std::string& network_id) {
   delegate_->ShowMobileSetupDialog(network_id);
 }
 
+void NetworkConnectImpl::ShowCarrierAccountDetail(
+    const std::string& network_id) {
+  const NetworkState* cellular = GetNetworkStateFromId(network_id);
+  if (!cellular || cellular->type() != shill::kTypeCellular) {
+    NET_LOG(ERROR) << "ShowCarrierAccountDetail without Cellular network: "
+                   << NetworkGuidId(network_id);
+    return;
+  }
+  delegate_->ShowCarrierAccountDetail(network_id);
+}
+
 void NetworkConnectImpl::ConfigureNetworkIdAndConnect(
     const std::string& network_id,
     const base::DictionaryValue& properties,
@@ -481,7 +495,7 @@ void NetworkConnectImpl::ConfigureNetworkIdAndConnect(
       network->path(), profile_path,
       base::BindOnce(&NetworkConnectImpl::ConfigureSetProfileSucceeded,
                      weak_factory_.GetWeakPtr(), network_id,
-                     base::Passed(&properties_to_set)),
+                     std::move(properties_to_set)),
       base::BindOnce(&NetworkConnectImpl::SetPropertiesFailed,
                      weak_factory_.GetWeakPtr(), "SetProfile: " + profile_path,
                      network_id));

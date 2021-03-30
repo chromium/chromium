@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -34,15 +35,6 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
-
-#if BUILDFLAG(SKIA_USE_DAWN)
-namespace {
-// TODO(senorblanco): This should be using RequestDeviceAsync(), but
-// those callbacks don't seem to work currently. Assume device 1
-// and use it in all the WebGPUInterface calls.  http://crbug.com/1078775
-constexpr uint64_t kWebGPUDeviceClientID = 1;
-}  // namespace
-#endif
 
 namespace blink {
 
@@ -134,8 +126,8 @@ bool CanvasResource::PrepareTransferableResource(
   DCHECK(IsValid());
 
   DCHECK(out_callback);
-  auto func = WTF::Bind(&ReleaseFrameResources, provider_,
-                        WTF::Passed(base::WrapRefCounted(this)));
+  auto func =
+      WTF::Bind(&ReleaseFrameResources, provider_, base::WrapRefCounted(this));
   *out_callback = viz::SingleReleaseCallback::Create(std::move(func));
 
   if (!out_resource)
@@ -342,8 +334,19 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       size_(size),
       is_origin_top_left_(is_origin_top_left),
       is_accelerated_(is_accelerated),
+#if defined(OS_MAC)
+      // On Mac, WebGPU usage is always backed by an IOSurface which should
+      // should also use the GL_TEXTURE_RECTANGLE target instead of
+      // GL_TEXTURE_2D. Setting |is_overlay_candidate_| both allows overlays,
+      // and causes |texture_target_| to take the value returned from
+      // gpu::GetBufferTextureTarget.
+      is_overlay_candidate_(
+          shared_image_usage_flags &
+          (gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_WEBGPU)),
+#else
       is_overlay_candidate_(shared_image_usage_flags &
                             gpu::SHARED_IMAGE_USAGE_SCANOUT),
+#endif
       texture_target_(
           is_overlay_candidate_
               ? gpu::GetBufferTextureTarget(
@@ -376,9 +379,14 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
 
   // The GLES2 flag is needed for rendering via GL using a GrContext.
   if (use_oop_rasterization_) {
+    // TODO(crbug.com/1050845): Ideally we'd like to get rid of the GLES2 usage
+    // flags. Adding them for now to isolate other errors/prepare for field
+    // trials.
     shared_image_usage_flags = shared_image_usage_flags |
                                gpu::SHARED_IMAGE_USAGE_RASTER |
-                               gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                               gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+                               gpu::SHARED_IMAGE_USAGE_GLES2 |
+                               gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   } else {
     shared_image_usage_flags = shared_image_usage_flags |
                                gpu::SHARED_IMAGE_USAGE_GLES2 |
@@ -828,8 +836,10 @@ void CanvasResourceSkiaDawnSharedImage::WillDraw() {
 
 void CanvasResourceSkiaDawnSharedImage::BeginAccess() {
   auto* webgpu = WebGPUInterface();
+  // TODO(senorblanco): create an actual passed-in Device, rather than this
+  // default hacky one.  http://crbug.com/1078775
   gpu::webgpu::ReservedTexture reservation =
-      webgpu->ReserveTexture(kWebGPUDeviceClientID);
+      webgpu->ReserveTexture(webgpu->DeprecatedEnsureDefaultDeviceSync());
   DCHECK(reservation.texture);
 
   owning_thread_data().texture = wgpu::Texture(reservation.texture);
@@ -837,8 +847,8 @@ void CanvasResourceSkiaDawnSharedImage::BeginAccess() {
   owning_thread_data().generation = reservation.generation;
   webgpu->FlushCommands();
   webgpu->AssociateMailbox(
-      kWebGPUDeviceClientID, 0, owning_thread_data().id,
-      owning_thread_data().generation,
+      reservation.deviceId, reservation.deviceGeneration,
+      owning_thread_data().id, owning_thread_data().generation,
       WGPUTextureUsage_Sampled | WGPUTextureUsage_OutputAttachment,
       reinterpret_cast<GLbyte*>(&owning_thread_data().shared_image_mailbox));
 }
@@ -846,7 +856,7 @@ void CanvasResourceSkiaDawnSharedImage::BeginAccess() {
 void CanvasResourceSkiaDawnSharedImage::EndAccess() {
   auto* webgpu = WebGPUInterface();
   webgpu->FlushCommands();
-  webgpu->DissociateMailbox(kWebGPUDeviceClientID, owning_thread_data().id,
+  webgpu->DissociateMailbox(owning_thread_data().id,
                             owning_thread_data().generation);
 
   owning_thread_data().texture = nullptr;

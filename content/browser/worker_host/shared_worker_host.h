@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -65,7 +64,9 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
  public:
   SharedWorkerHost(SharedWorkerServiceImpl* service,
                    const SharedWorkerInstance& instance,
-                   scoped_refptr<SiteInstanceImpl> site_instance);
+                   scoped_refptr<SiteInstanceImpl> site_instance,
+                   std::vector<network::mojom::ContentSecurityPolicyPtr>
+                       content_security_policies);
   ~SharedWorkerHost() override;
 
   // Returns the RenderProcessHost where this shared worker lives.
@@ -146,6 +147,11 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   const SharedWorkerInstance& instance() const { return instance_; }
 
+  const std::vector<network::mojom::ContentSecurityPolicyPtr>&
+  content_security_policies() const {
+    return content_security_policies_;
+  }
+
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
   const base::UnguessableToken& GetDevToolsToken() const;
@@ -223,6 +229,9 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   SharedWorkerInstance instance_;
   ClientList clients_;
 
+  std::vector<network::mojom::ContentSecurityPolicyPtr>
+      content_security_policies_;
+
   mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver_;
   mojo::Remote<blink::mojom::SharedWorker> worker_;
 
@@ -248,7 +257,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   mojo::Remote<blink::mojom::SharedWorkerFactory> factory_;
 
   BrowserInterfaceBrokerImpl<SharedWorkerHost, const url::Origin&> broker_{
-      this, /*policy_applier=*/nullptr};
+      this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 

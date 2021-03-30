@@ -14,9 +14,9 @@ namespace mojo {
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
                                         blink::VisualProperties> {
-  static const blink::ScreenInfo& screen_info(
+  static const blink::ScreenInfos& screen_infos(
       const blink::VisualProperties& r) {
-    return r.screen_info;
+    return r.screen_infos;
   }
 
   static bool auto_resize_enabled(const blink::VisualProperties& r) {

@@ -7,30 +7,43 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/fake_assistant_manager_service_impl.h"
+#include "chromeos/services/assistant/media_host.h"
+#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/assistant/test_support/libassistant_media_controller_mock.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace assistant {
 
+namespace {
+
 using media_session::mojom::MediaSession;
 using media_session::mojom::MediaSessionAction;
 using media_session::mojom::MediaSessionInfo;
 
+}  // namespace
+
 class AssistantMediaSessionTest : public testing::Test {
  public:
-  AssistantMediaSessionTest()
-      : assistant_media_session_(std::make_unique<AssistantMediaSession>(
-            &fake_assistant_manager_service_impl_)) {}
+  AssistantMediaSessionTest() = default;
   ~AssistantMediaSessionTest() override = default;
 
-  AssistantMediaSession* assistant_media_session() {
-    return assistant_media_session_.get();
+  void SetUp() override {
+    media_host().Initialize(
+        &libassistant_media_controller_,
+        libassistant_media_delegate_.BindNewPipeAndPassReceiver());
   }
 
-  FakeAssistantManagerServiceImpl* assistant_manager_service() {
-    return &fake_assistant_manager_service_impl_;
+  AssistantMediaSession* assistant_media_session() {
+    return &assistant_media_session_;
+  }
+
+  MediaHost& media_host() { return media_host_; }
+
+  LibassistantMediaControllerMock& libassistant_media_controller_mock() {
+    return libassistant_media_controller_;
   }
 
  private:
@@ -38,9 +51,14 @@ class AssistantMediaSessionTest : public testing::Test {
   // other class members.
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  std::unique_ptr<AssistantMediaSession> assistant_media_session_;
-  ScopedAssistantClient fake_client_;
-  FakeAssistantManagerServiceImpl fake_assistant_manager_service_impl_;
+  ScopedAssistantClient client;
+  testing::StrictMock<LibassistantMediaControllerMock>
+      libassistant_media_controller_;
+  mojo::Remote<chromeos::libassistant::mojom::MediaDelegate>
+      libassistant_media_delegate_;
+  MediaHost media_host_{AssistantClient::Get(),
+                        /*interaction_subscribers=*/nullptr};
+  AssistantMediaSession assistant_media_session_{&media_host_};
 };
 
 TEST_F(AssistantMediaSessionTest, ShouldUpdateSessionStateOnStartStopDucking) {
@@ -53,20 +71,20 @@ TEST_F(AssistantMediaSessionTest, ShouldUpdateSessionStateOnStartStopDucking) {
 
 TEST_F(AssistantMediaSessionTest,
        ShouldUpdateSessionStateAndSendActionOnSuspendResumePlaying) {
+  // Suspend.
+  EXPECT_CALL(libassistant_media_controller_mock(), PauseInternalMediaPlayer);
   assistant_media_session()->Suspend(MediaSession::SuspendType::kSystem);
   EXPECT_TRUE(assistant_media_session()->IsSessionStateSuspended());
-  EXPECT_EQ(assistant_manager_service()->media_session_action(),
-            MediaSessionAction::kPause);
 
+  // Then resume.
+  EXPECT_CALL(libassistant_media_controller_mock(), ResumeInternalMediaPlayer);
   assistant_media_session()->Resume(MediaSession::SuspendType::kSystem);
   EXPECT_TRUE(assistant_media_session()->IsSessionStateActive());
-  EXPECT_EQ(assistant_manager_service()->media_session_action(),
-            MediaSessionAction::kPlay);
 
+  // And pause again.
+  EXPECT_CALL(libassistant_media_controller_mock(), PauseInternalMediaPlayer);
   assistant_media_session()->Suspend(MediaSession::SuspendType::kSystem);
   EXPECT_TRUE(assistant_media_session()->IsSessionStateSuspended());
-  EXPECT_EQ(assistant_manager_service()->media_session_action(),
-            MediaSessionAction::kPause);
 }
 
 }  // namespace assistant

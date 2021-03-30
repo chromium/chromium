@@ -7,189 +7,8 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":multidevice_feature_behavior",
-    ":multidevice_feature_item",
-    ":multidevice_feature_toggle",
-    ":multidevice_notification_access_setup_dialog",
-    ":multidevice_page",
-    ":multidevice_smartlock_subpage",
-    ":multidevice_subpage",
-    ":multidevice_task_continuation_disabled_link",
-    ":multidevice_task_continuation_item",
-    ":multidevice_tether_item",
-    ":multidevice_wifi_sync_disabled_link",
-    ":multidevice_wifi_sync_item",
-  ]
-}
-
-js_library("multidevice_browser_proxy") {
-  deps = [
-    ":multidevice_constants",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("multidevice_constants") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("multidevice_feature_behavior") {
-  deps = [
-    ":multidevice_constants",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("multidevice_feature_item") {
-  deps = [
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-    "..:os_route",
-    "..:route_origin_behavior",
-    "../..:router",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("multidevice_feature_toggle") {
-  deps = [
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-  ]
-}
-
-js_library("multidevice_page") {
-  deps = [
-    ":multidevice_browser_proxy",
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-    ":multidevice_notification_access_setup_dialog",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../..:router",
-    "../../controls:password_prompt_dialog",
-    "../../prefs:prefs_behavior",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/pending_polymer.js" ]
-}
-
-js_library("multidevice_notification_access_setup_dialog") {
-  deps = [
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("multidevice_radio_button") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior-extracted",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button_behavior",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
-  ]
-}
-
-js_library("multidevice_smartlock_subpage") {
-  deps = [
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "..:os_settings_routes",
-    "../..:router",
-    "../../prefs:prefs_behavior",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("multidevice_subpage") {
-  deps = [
-    ":multidevice_browser_proxy",
-    ":multidevice_constants",
-    ":multidevice_feature_behavior",
-    ":multidevice_task_continuation_item",
-    ":multidevice_wifi_sync_item",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "..:os_settings_routes",
-    "../..:router",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/networking_private.js" ]
-  extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
-}
-
-js_library("multidevice_task_continuation_disabled_link") {
-  deps = [
-    "..:os_route",
-    "../..:router",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("multidevice_tether_item") {
-  deps = [
-    ":multidevice_feature_behavior",
-    "..:os_route",
-    "..:os_settings_routes",
-    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-  ]
-  externs_list = [ "$externs_path/networking_private.js" ]
-  extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
-}
-
-js_library("multidevice_task_continuation_item") {
-  deps = [
-    ":multidevice_feature_behavior",
-    ":multidevice_feature_item",
-    ":multidevice_task_continuation_disabled_link",
-    "../../people_page:sync_browser_proxy",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("multidevice_wifi_sync_item") {
-  deps = [
-    ":multidevice_feature_behavior",
-    ":multidevice_feature_item",
-    ":multidevice_wifi_sync_disabled_link",
-    "..:os_route",
-    "..:route_origin_behavior",
-    "../..:router",
-    "../../people_page:sync_browser_proxy",
-    "../os_people_page:os_sync_browser_proxy",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("multidevice_wifi_sync_disabled_link") {
-  deps = [
-    ":multidevice_feature_behavior",
-    "..:os_route",
-    "..:route_origin_behavior",
-    "../..:router",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":multidevice_browser_proxy.m",
@@ -242,7 +61,7 @@ js_library("multidevice_feature_item.m") {
     ":multidevice_feature_behavior.m",
     "..:os_route.m",
     "..:route_origin_behavior.m",
-    "../..:router.m",
+    "../..:router",
     "../localized_link:localized_link.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -270,9 +89,9 @@ js_library("multidevice_page.m") {
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
-    "../..:router.m",
-    "../../controls:password_prompt_dialog.m",
-    "../../prefs:prefs_behavior.m",
+    "../..:router",
+    "../../controls:password_prompt_dialog",
+    "../../prefs:prefs_behavior",
     "../localized_link:localized_link.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -284,6 +103,7 @@ js_library("multidevice_page.m") {
 js_library("multidevice_notification_access_setup_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_notification_access_setup_dialog.m.js" ]
   deps = [
+    ":multidevice_constants.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -309,8 +129,8 @@ js_library("multidevice_smartlock_subpage.m") {
     "..:metrics_recorder.m",
     "..:os_route.m",
     "..:os_settings_routes.m",
-    "../..:router.m",
-    "../../prefs:prefs_behavior.m",
+    "../..:router",
+    "../../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -329,7 +149,7 @@ js_library("multidevice_subpage.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "..:os_settings_routes.m",
-    "../..:router.m",
+    "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
   ]
@@ -357,7 +177,7 @@ js_library("multidevice_task_continuation_item.m") {
     ":multidevice_feature_behavior.m",
     ":multidevice_feature_item.m",
     ":multidevice_task_continuation_disabled_link.m",
-    "../../people_page:sync_browser_proxy.m",
+    "../../people_page:sync_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -372,8 +192,8 @@ js_library("multidevice_wifi_sync_item.m") {
     ":multidevice_wifi_sync_disabled_link.m",
     "..:os_route.m",
     "..:route_origin_behavior.m",
-    "../..:router.m",
-    "../../people_page:sync_browser_proxy.m",
+    "../..:router",
+    "../../people_page:sync_browser_proxy",
     "../os_people_page:os_sync_browser_proxy.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -387,7 +207,7 @@ js_library("multidevice_task_continuation_disabled_link.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_task_continuation_disabled_link.m.js" ]
   deps = [
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -401,7 +221,7 @@ js_library("multidevice_wifi_sync_disabled_link.m") {
     ":multidevice_feature_behavior.m",
     "..:os_route.m",
     "..:route_origin_behavior.m",
-    "../..:router.m",
+    "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",

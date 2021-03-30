@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/examples/examples_window.h"
 #include "ui/views/examples/examples_window_with_content.h"
 #include "ui/views_content_client/views_content_client.h"
 
@@ -64,6 +65,9 @@ int main(int argc, const char** argv) {
   base::CommandLine::Init(argc, argv);
   ui::ViewsContentClient views_content_client(argc, argv);
 #endif
+
+  if (views::examples::CheckCommandLineUsage())
+    return 0;
 
 #if defined(OS_APPLE)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

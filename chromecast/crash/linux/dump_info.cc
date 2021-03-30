@@ -25,6 +25,7 @@ const char kDumpTimeKey[] = "dump_time";
 const char kDumpKey[] = "dump";
 const char kUptimeKey[] = "uptime";
 const char kLogfileKey[] = "logfile";
+const char kAttachmentsKey[] = "attachments";
 const char kSuffixKey[] = "suffix";
 const char kPrevAppNameKey[] = "prev_app_name";
 const char kCurAppNameKey[] = "cur_app_name";
@@ -37,21 +38,24 @@ const char kExtraInfoKey[] = "extra_info";
 
 }  // namespace
 
-DumpInfo::DumpInfo(const base::Value* entry) : valid_(ParseEntry(entry)) {
-}
+DumpInfo::DumpInfo(const base::Value* entry) : valid_(ParseEntry(entry)) {}
 
 DumpInfo::DumpInfo(const std::string& crashed_process_dump,
-                   const std::string& logfile,
+                   const std::string& crashed_process_logfile,
                    const base::Time& dump_time,
-                   const MinidumpParams& params)
+                   const MinidumpParams& params,
+                   const std::vector<std::string>* attachments)
     : crashed_process_dump_(crashed_process_dump),
-      logfile_(logfile),
+      logfile_(crashed_process_logfile),
       dump_time_(dump_time),
       params_(params),
-      valid_(true) {}
-
-DumpInfo::~DumpInfo() {
+      valid_(true) {
+  if (attachments) {
+    attachments_ = *attachments;
+  }
 }
+
+DumpInfo::~DumpInfo() {}
 
 std::unique_ptr<base::Value> DumpInfo::GetAsValue() const {
   std::unique_ptr<base::Value> result =
@@ -70,6 +74,12 @@ std::unique_ptr<base::Value> DumpInfo::GetAsValue() const {
   std::string uptime = std::to_string(params_.process_uptime);
   entry->SetString(kUptimeKey, uptime);
   entry->SetString(kLogfileKey, logfile_);
+
+  std::unique_ptr<base::ListValue> attachments_list(new base::ListValue());
+  for (const auto& attachment : attachments_) {
+    attachments_list->AppendString(attachment);
+  }
+  entry->SetList(kAttachmentsKey, std::move(attachments_list));
   entry->SetString(kSuffixKey, params_.suffix);
   entry->SetString(kPrevAppNameKey, params_.previous_app_name);
   entry->SetString(kCurAppNameKey, params_.current_app_name);
@@ -116,6 +126,14 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
   size_t num_params = kNumRequiredParams;
 
   // Extract all other optional fields.
+  const base::ListValue* attachments_list;
+  if (dict->GetList(kAttachmentsKey, &attachments_list)) {
+    ++num_params;
+    for (const auto& attachment : *attachments_list) {
+      attachments_.push_back(attachment.GetString());
+    }
+  }
+
   std::string unused_process_name;
   if (dict->GetString(kNameKey, &unused_process_name))
     ++num_params;

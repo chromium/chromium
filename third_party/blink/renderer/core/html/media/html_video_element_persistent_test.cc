@@ -72,7 +72,7 @@ class HTMLVideoElementPersistentTest : public PageTestBase {
   }
 
   void SimulateBecamePersistentVideo(bool value) {
-    VideoElement()->OnBecamePersistentVideo(value);
+    VideoElement()->SetPersistentState(value);
   }
 
  private:

@@ -71,21 +71,23 @@ ABSL_NAMESPACE_END
 // By changing our extension points to be extern "C", we dodge this
 // check.
 extern "C" {
-void AbslInternalSpinLockWake(std::atomic<uint32_t> *w, bool all);
-void AbslInternalSpinLockDelay(
+void ABSL_INTERNAL_C_SYMBOL(AbslInternalSpinLockWake)(std::atomic<uint32_t> *w,
+                                                      bool all);
+void ABSL_INTERNAL_C_SYMBOL(AbslInternalSpinLockDelay)(
     std::atomic<uint32_t> *w, uint32_t value, int loop,
     absl::base_internal::SchedulingMode scheduling_mode);
 }
 
 inline void absl::base_internal::SpinLockWake(std::atomic<uint32_t> *w,
                                               bool all) {
-  AbslInternalSpinLockWake(w, all);
+  ABSL_INTERNAL_C_SYMBOL(AbslInternalSpinLockWake)(w, all);
 }
 
 inline void absl::base_internal::SpinLockDelay(
     std::atomic<uint32_t> *w, uint32_t value, int loop,
     absl::base_internal::SchedulingMode scheduling_mode) {
-  AbslInternalSpinLockDelay(w, value, loop, scheduling_mode);
+  ABSL_INTERNAL_C_SYMBOL(AbslInternalSpinLockDelay)
+  (w, value, loop, scheduling_mode);
 }
 
 #endif  // ABSL_BASE_INTERNAL_SPINLOCK_WAIT_H_

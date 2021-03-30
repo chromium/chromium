@@ -24,7 +24,6 @@ enum StackMode {
 enum AllocatorType {
   kMalloc,
   kPartitionAlloc,
-  kOilpan
 };
 
 // A wrapper for parameters that affect each client's implementation of

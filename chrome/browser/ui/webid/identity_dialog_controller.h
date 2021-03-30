@@ -10,7 +10,7 @@
 #include "content/public/browser/web_contents.h"
 
 class GURL;
-class WebIDSigninWindow;
+class WebIdDialog;
 
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using InitialApprovalCallback =
@@ -33,20 +33,25 @@ class IdentityDialogController
   ~IdentityDialogController() override;
 
   // content::IdentityRequestDelegate
-  void ShowInitialPermissionDialog(content::WebContents*,
+  void ShowInitialPermissionDialog(content::WebContents* rp_web_contents,
+                                   const GURL& idp_url,
                                    InitialApprovalCallback) override;
-  void ShowIdProviderWindow(content::WebContents* initiator_web_contents,
+
+  void ShowIdProviderWindow(content::WebContents* rp_web_contents,
                             content::WebContents* idp_web_contents,
                             const GURL& idp_signin_url,
                             IdProviderWindowClosedCallback) override;
+
   void CloseIdProviderWindow() override;
 
   void ShowTokenExchangePermissionDialog(
+      content::WebContents* rp_web_contents,
+      const GURL& idp_url,
       TokenExchangeApprovalCallback) override;
 
  private:
-  // This object manages its own lifetime
-  WebIDSigninWindow* signin_window_;
+  WebIdDialog& GetOrCreateView(content::WebContents* rp_web_contents);
+  WebIdDialog* view_{nullptr};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_

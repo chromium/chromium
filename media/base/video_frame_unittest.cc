@@ -59,8 +59,8 @@ media::VideoFrameMetadata GetFullVideoFrameMetadata() {
   // gfx::Rects
   metadata.capture_update_rect = gfx::Rect(12, 34, 360, 480);
 
-  // media::VideoRotations
-  metadata.rotation = media::VideoRotation::VIDEO_ROTATION_90;
+  // media::VideoTransformation
+  metadata.transformation = media::VIDEO_ROTATION_90;
 
   // media::VideoFrameMetadata::CopyMode
   metadata.copy_mode = media::VideoFrameMetadata::CopyMode::kCopyToNewTexture;
@@ -119,7 +119,7 @@ void VerifyVideoFrameMetadataEquality(const media::VideoFrameMetadata& a,
   EXPECT_EQ(a.interactive_content, b.interactive_content);
   EXPECT_EQ(a.reference_time, b.reference_time);
   EXPECT_EQ(a.read_lock_fences_enabled, b.read_lock_fences_enabled);
-  EXPECT_EQ(a.rotation, b.rotation);
+  EXPECT_EQ(a.transformation, b.transformation);
   EXPECT_EQ(a.texture_owner, b.texture_owner);
   EXPECT_EQ(a.wants_promotion_hint, b.wants_promotion_hint);
   EXPECT_EQ(a.protected_video, b.protected_video);
@@ -290,7 +290,7 @@ TEST(VideoFrame, CreateFrame) {
 
   // Test an empty frame.
   frame = VideoFrame::CreateEOSFrame();
-  EXPECT_TRUE(frame->metadata()->end_of_stream);
+  EXPECT_TRUE(frame->metadata().end_of_stream);
 }
 
 TEST(VideoFrame, CreateZeroInitializedFrame) {
@@ -326,7 +326,7 @@ TEST(VideoFrame, CreateBlackFrame) {
 
   // Test basic properties.
   EXPECT_EQ(0, frame->timestamp().InMicroseconds());
-  EXPECT_FALSE(frame->metadata()->end_of_stream);
+  EXPECT_FALSE(frame->metadata().end_of_stream);
 
   // Test |frame| properties.
   EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
@@ -368,7 +368,7 @@ TEST(VideoFrame, WrapVideoFrame) {
 
     gfx::Rect visible_rect(1, 1, 1, 1);
     gfx::Size natural_size = visible_rect.size();
-    wrapped_frame->metadata()->frame_duration = kFrameDuration;
+    wrapped_frame->metadata().frame_duration = kFrameDuration;
     frame = media::VideoFrame::WrapVideoFrame(
         wrapped_frame, wrapped_frame->format(), visible_rect, natural_size);
     wrapped_frame->AddDestructionObserver(
@@ -382,12 +382,12 @@ TEST(VideoFrame, WrapVideoFrame) {
     EXPECT_EQ(natural_size, frame->natural_size());
 
     // Verify metadata was copied to the wrapped frame.
-    EXPECT_EQ(*frame->metadata()->frame_duration, kFrameDuration);
+    EXPECT_EQ(*frame->metadata().frame_duration, kFrameDuration);
 
     // Verify the metadata copy was a deep copy.
     wrapped_frame->clear_metadata();
-    EXPECT_NE(wrapped_frame->metadata()->frame_duration.has_value(),
-              frame->metadata()->frame_duration.has_value());
+    EXPECT_NE(wrapped_frame->metadata().frame_duration.has_value(),
+              frame->metadata().frame_duration.has_value());
   }
 
   // Verify that |wrapped_frame| outlives |frame|.
@@ -725,6 +725,10 @@ TEST(VideoFrame, AllocationSize_OddSize) {
         EXPECT_EQ(30u, VideoFrame::AllocationSize(format, size))
             << VideoPixelFormatToString(format);
         break;
+      case PIXEL_FORMAT_RGBAF16:
+        EXPECT_EQ(120u, VideoFrame::AllocationSize(format, size))
+            << VideoPixelFormatToString(format);
+        break;
       case PIXEL_FORMAT_MJPEG:
       case PIXEL_FORMAT_UNKNOWN:
         continue;
@@ -738,11 +742,11 @@ TEST(VideoFrameMetadata, MergeMetadata) {
   VideoFrameMetadata empty_metadata;
 
   // Merging empty metadata into full metadata should be a no-op.
-  full_metadata.MergeMetadataFrom(&empty_metadata);
+  full_metadata.MergeMetadataFrom(empty_metadata);
   VerifyVideoFrameMetadataEquality(full_metadata, reference_metadata);
 
   // Merging full metadata into empty metadata should fill it up.
-  empty_metadata.MergeMetadataFrom(&full_metadata);
+  empty_metadata.MergeMetadataFrom(full_metadata);
   VerifyVideoFrameMetadataEquality(empty_metadata, reference_metadata);
 }
 
@@ -761,7 +765,7 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
   partial_metadata.allow_overlay = false;
 
   // Merging partial metadata into full metadata partially override it.
-  full_metadata.MergeMetadataFrom(&partial_metadata);
+  full_metadata.MergeMetadataFrom(partial_metadata);
 
   EXPECT_EQ(partial_metadata.capture_update_rect, kTempRect);
   EXPECT_EQ(partial_metadata.reference_time, kTempTicks);

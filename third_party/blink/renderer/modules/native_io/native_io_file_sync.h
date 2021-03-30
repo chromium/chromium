@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -28,7 +29,9 @@ class NativeIOFileSync final : public ScriptWrappable {
 
  public:
   NativeIOFileSync(base::File backing_file,
+                   int64_t backing_file_size,
                    HeapMojoRemote<mojom::blink::NativeIOFileHost> backend_file,
+                   NativeIOCapacityTracker* capacity_tracker,
                    ExecutionContext*);
 
   NativeIOFileSync(const NativeIOFileSync&) = delete;
@@ -58,8 +61,27 @@ class NativeIOFileSync final : public ScriptWrappable {
   // The file on disk backing this NativeIOFile.
   base::File backing_file_;
 
+  // The length of the file used in capacity accounting. This should equal the
+  // current file's length, unless that length cannot be reliably determined
+  // using base::GetLength(). In the latter case, the file will be force-closed
+  // to prevent further corruption.
+  //
+  // Operations that increase the file's length must first allocate capacity,
+  // update `file_length_` to reflect the increased length, and then perform the
+  // I/O. If the I/O fails, GetLength() must be used to obtain the actual file
+  // length. The result must first be compared against `file_length_` to account
+  // for the unused capacity, then used to update `file_length_`.
+  //
+  // Operations that decrease the file's length must first perform the I/O, and
+  // then update `file_length_` and return freed up capacity. I/O failures can
+  // be handled using the same logic as above.
+  int64_t file_length_ = 0;
+
   // Mojo pipe that holds the renderer's lock on the file.
   HeapMojoRemote<mojom::blink::NativeIOFileHost> backend_file_;
+
+  // Manages the capacity allocation for this file manager's execution context.
+  Member<NativeIOCapacityTracker> capacity_tracker_;
 };
 
 }  // namespace blink

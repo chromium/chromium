@@ -21,7 +21,6 @@ static_library("sample_system_web_app_ui") {
   ]
 
   deps = [
-    "//chromeos/constants",
     "//chromeos/resources:sample_system_web_app_resources",
     "//content/public/browser",
     "//ui/webui",
@@ -52,6 +51,10 @@ generate_grd("build_grd") {
     "sandbox.html",
     "untrusted.html",
     "untrusted.js",
+    "main.js",
+    "worker.js",
+    "timer.html",
+    "timer.js",
   ]
   manifest_files = []
   grd_prefix = "chromeos_sample_system_web_app"

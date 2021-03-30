@@ -1,0 +1,50 @@
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="chrome://oobe/custom_elements.html">
+
+<link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+
+<dom-module id="packaged-license-element">
+  <template>
+    <style include="oobe-dialog-host"></style>
+    <oobe-adaptive-dialog id="packagedLicenseDialog"
+        aria-label$="[[i18nDynamic(locale, 'oobePackagedLicenseTitle')]]"
+        role="dialog">
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oobePackagedLicenseTitle')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'oobePackagedLicenseSubtitleP1')]]
+      </p>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'oobePackagedLicenseSubtitleP2')]]
+      </p>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img src="../../images/enrollment_complete.svg"
+            class="oobe-illustration"
+            alt$="[[i18nDynamic(locale, 'oobePackagedLicenseTitle')]]">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="dont-enroll-button"
+            text-key="oobePackagedLicenseDontEnroll"
+            on-click="onDontEnrollButtonPressed_"></oobe-text-button>
+        <oobe-text-button id="enroll-button"
+            text-key="oobePackagedLicenseEnroll" class="focus-on-show"
+            inverse on-click="onEnrollButtonPressed_"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+</dom-module>

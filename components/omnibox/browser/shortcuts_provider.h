@@ -53,16 +53,16 @@ class ShortcutsProvider : public AutocompleteProvider,
       const ShortcutsDatabase::Shortcut& shortcut,
       int relevance,
       const AutocompleteInput& input,
-      const base::string16& fixed_up_input_text,
-      const base::string16 term_string);
+      const std::u16string& fixed_up_input_text,
+      const std::u16string term_string);
 
   // Returns iterator to first item in |shortcuts_map_| matching |keyword|.
   // Returns shortcuts_map_.end() if there are no matches.
   ShortcutsBackend::ShortcutMap::const_iterator FindFirstMatch(
-      const base::string16& keyword,
+      const std::u16string& keyword,
       ShortcutsBackend* backend);
 
-  int CalculateScore(const base::string16& terms,
+  int CalculateScore(const std::u16string& terms,
                      const ShortcutsDatabase::Shortcut& shortcut,
                      int max_relevance);
 

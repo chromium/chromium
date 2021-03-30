@@ -8,7 +8,6 @@ import mojom.generate.generator as generator
 import mojom.generate.module as mojom
 import mojom.generate.pack as pack
 from generators.cpp_util import IsNativeOnlyKind
-from generators.cpp_tracing_support import WriteInputParamForTracing
 from mojom.generate.template_expander import UseJinja, UseJinjaForImportedTemplate
 
 
@@ -367,7 +366,6 @@ class Generator(generator.Generator):
         self._GetUnionTraitGetterReturnType,
         "cpp_wrapper_call_type": self._GetCppWrapperCallType,
         "cpp_wrapper_param_type": self._GetCppWrapperParamType,
-        "write_input_param_for_tracing": self._WriteInputParamForTracing,
         "cpp_wrapper_param_type_new": self._GetCppWrapperParamTypeNew,
         "cpp_wrapper_type": self._GetCppWrapperType,
         "cpp_enum_without_namespace": GetEnumNameWithoutNamespace,
@@ -613,28 +611,6 @@ class Generator(generator.Generator):
     return "constexpr %s %s = %s" % (
         GetCppPodType(constant.kind), constant.name,
         self._ConstantValue(constant))
-
-  def _WriteInputParamForTracing(self, kind, parameter_name, cpp_parameter_name,
-                                 value):
-    """Generates lines of C++ to log parameter |parameter_name| into TracedValue
-    |value|.
-
-    Args:
-      kind: {Kind} The kind of the parameter (corresponds to its C++ type).
-      cpp_parameter_name: {string} The actual C++ variable name corresponding to
-        the mojom parameter |parameter_name|. Can be a valid C++ expression
-        (e.g., dereferenced variable |"(*var)"|).
-      value: {string} The C++ |TracedValue*| variable name to be logged into.
-
-    Yields:
-      {string} C++ lines of code that trace |parameter_name| into |value|.
-    """
-    for line in WriteInputParamForTracing(generator=self,
-                                          kind=kind,
-                                          parameter_name=parameter_name,
-                                          cpp_parameter_name=cpp_parameter_name,
-                                          value=value):
-      yield line
 
   def _GetCppWrapperType(self,
                          kind,

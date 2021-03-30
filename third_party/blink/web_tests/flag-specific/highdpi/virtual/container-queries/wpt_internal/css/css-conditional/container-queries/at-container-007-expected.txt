@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+FAIL getComputedStyle when element is display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle when parent is display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle when ancestor is display:none assert_equals: expected "30" but got ""
+PASS getComputedStyle when container is display:none
+FAIL getComputedStyle when element in nested container is display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle when inner container is display:none assert_equals: expected "50" but got ""
+FAIL getComputedStyle when intermediate ancestor is display:none assert_equals: expected "50" but got ""
+PASS getComputedStyle when outer container is display:none
+FAIL getComputedStyle when element becomes display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle when parent becomes display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle when ancestor becomes display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle when container becomes display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle when intermediate container becomes display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle when ::before is display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle when originating element is display:none assert_equals: expected "30" but got ""
+FAIL getComputedStyle on ::before when ancestor element is display:none assert_equals: expected "30" but got ""
+PASS getComputedStyle on ::before when container is display:none
+Harness: the test ran to completion.
+

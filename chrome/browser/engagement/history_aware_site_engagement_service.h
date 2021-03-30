@@ -8,9 +8,9 @@
 #include <set>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 
 namespace content {
 class BrowserContext;

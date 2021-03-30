@@ -39,9 +39,9 @@ void FuzzReportingHeaderParser(const std::string& data_json,
 
   // TODO: consider including proto definition for URL after moving that to
   // testing/libfuzzer/proto and creating a separate converter.
-  net::ReportingHeaderParser::ParseHeader(&context, net::NetworkIsolationKey(),
-                                          GURL("https://origin/path"),
-                                          std::move(data_value));
+  net::ReportingHeaderParser::ParseReportToHeader(
+      &context, net::NetworkIsolationKey(), GURL("https://origin/path"),
+      std::move(data_value));
   if (context.cache()->GetEndpointCount() == 0) {
     return;
   }

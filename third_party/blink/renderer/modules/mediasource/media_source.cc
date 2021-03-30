@@ -10,6 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
+#include "media/base/mime_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -133,7 +135,9 @@ MediaSource::MediaSource(ExecutionContext* context)
       active_source_buffers_(
           MakeGarbageCollected<SourceBufferList>(GetExecutionContext(),
                                                  async_event_queue_.Get())),
-      live_seekable_range_(MakeGarbageCollected<TimeRanges>()) {
+      has_live_seekable_range_(false),
+      live_seekable_range_start_(0.0),
+      live_seekable_range_end_(0.0) {
   DVLOG(1) << __func__ << " this=" << this;
 
   DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled() ||
@@ -190,8 +194,7 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
 
   // 2. If type contains a MIME type that is not supported ..., then throw a
   // NotSupportedError exception and abort these steps.
-  // TODO(crbug.com/535738): Increase relaxation of codec-specificity beyond
-  // initial special-casing.
+  // TODO(crbug.com/535738): Actually relax codec-specificity.
   if (!IsTypeSupportedInternal(
           GetExecutionContext(), type,
           false /* Allow underspecified codecs in |type| */)) {
@@ -525,11 +528,10 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
     return false;
   }
 
-  ContentType content_type(type);
-  String codecs = content_type.Parameter("codecs");
-
   // 2. If type does not contain a valid MIME type string, then return false.
-  if (content_type.GetType().IsEmpty()) {
+  ContentType content_type(type);
+  String mime_type = content_type.GetType();
+  if (mime_type.IsEmpty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
              << (enforce_codec_specificity ? "true" : "false")
              << ") -> false (invalid mime type)";
@@ -540,8 +542,58 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // HTMLMediaElement.canPlayType() will return "maybe" or "probably" since it
   // does not make sense for a MediaSource to support a type the
   // HTMLMediaElement knows it cannot play.
-  if (HTMLMediaElement::GetSupportsType(content_type) ==
-      MIMETypeRegistry::kIsNotSupported) {
+  String codecs = content_type.Parameter("codecs");
+  MIMETypeRegistry::SupportsType get_supports_type_result;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  // Here, we special-case for HEVC on ChromeOS, which is only supported if
+  // encrypted. isTypeSupported(fully qualified type with hevc codec) should say
+  // false on such platform (except if kEnableClearHevcForTesting cmdline switch
+  // is used, enabling GetSupportsType success), but addSourceBuffer(same) and
+  // changeType(same) shouldn't fail just due to having HEVC codec. We use
+  // |enforce_codec_specificity| to understand if we are servicing iTS (if true)
+  // versus aSB (if false). If servicing aSB or cT, we'll remove any detected
+  // hevc codec from the codecs we use in the GetSupportsType() query.
+  if (!enforce_codec_specificity) {
+    // Remove any detected HEVC codec from the query to GetSupportsType.
+    std::string filtered_codecs;
+    std::vector<std::string> parsed_codec_ids;
+    media::SplitCodecs(codecs.Ascii(), &parsed_codec_ids);
+    bool first = true;
+    for (const auto& codec_id : parsed_codec_ids) {
+      bool is_codec_ambiguous;
+      media::VideoCodec video_codec = media::kUnknownVideoCodec;
+      media::VideoCodecProfile profile;
+      uint8_t level = 0;
+      media::VideoColorSpace color_space;
+      if (media::ParseVideoCodecString(mime_type.Ascii(), codec_id,
+                                       &is_codec_ambiguous, &video_codec,
+                                       &profile, &level, &color_space) &&
+          !is_codec_ambiguous && video_codec == media::VideoCodec::kCodecHEVC) {
+        continue;
+      }
+      if (first)
+        first = false;
+      else
+        filtered_codecs += ",";
+      filtered_codecs += codec_id;
+    }
+
+    std::string filtered_type =
+        mime_type.Ascii() + "; codecs=\"" + filtered_codecs + "\"";
+    DVLOG(1) << __func__ << " filtered_type=" << filtered_type;
+    get_supports_type_result = HTMLMediaElement::GetSupportsType(
+        ContentType(String::FromUTF8(filtered_type.c_str())));
+  } else {
+    // Even on ChromeOS with HEVC support, don't filter out HEVC codec when
+    // servicing isTypeSupported().
+    get_supports_type_result = HTMLMediaElement::GetSupportsType(content_type);
+  }
+#else
+  get_supports_type_result = HTMLMediaElement::GetSupportsType(content_type);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
+        // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+
+  if (get_supports_type_result == MIMETypeRegistry::kIsNotSupported) {
     DVLOG(1) << __func__ << "(" << type << ", "
              << (enforce_codec_specificity ? "true" : "false")
              << ") -> false (not supported by HTMLMediaElement)";
@@ -563,28 +615,10 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // Relaxed codec specificity following similar non-normative guidance is
   // allowed for addSourceBuffer and changeType methods, but this strict codec
   // specificity is and will be retained for isTypeSupported.
+  // TODO(crbug.com/535738): Actually relax the codec-specifity for aSB() and
+  // cT() (which is when |enforce_codec_specificity| is false).
   MIMETypeRegistry::SupportsType supported =
-      MIMETypeRegistry::SupportsMediaSourceMIMEType(content_type.GetType(),
-                                                    codecs);
-
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if (supported == MIMETypeRegistry::kMayBeSupported &&
-      !enforce_codec_specificity && type == "video/mp4") {
-    // kMayBeSupported here indicates format is supported, but is lacking
-    // codec-specificity.
-
-    // TODO(crbug.com/535738): Increase actual relaxation of codec-specificity
-    // for addSourceBuffer and changeType usage beyond this initial
-    // special-casing for just HEVC-EME-CrOS. For now, precisely "video/mp4"
-    // with underspecified codecs string is assumed to be supported if the build
-    // supports EME+HEVC on ChromeOS. The underlying Chromium code will require
-    // precisely one track, encrypted HEVC, to exist when processing
-    // initialization segments on behalf of a SourceBuffer created with
-    // addSourceBuffer(|type|) (or currently resulting from changeType(|type|).
-    supported = MIMETypeRegistry::kIsSupported;
-  }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
-        // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+      MIMETypeRegistry::SupportsMediaSourceMIMEType(mime_type, codecs);
 
   bool result = supported == MIMETypeRegistry::kIsSupported;
 
@@ -667,11 +701,13 @@ void MediaSource::AssertAttachmentsMutexHeldIfCrossThreadForDebugging() const {
 
 void MediaSource::Trace(Visitor* visitor) const {
   visitor->Trace(async_event_queue_);
-  {
-    MutexLocker lock(attachment_link_lock_);
-    visitor->Trace(attachment_tracer_);
-    visitor->Trace(live_seekable_range_);
-  }
+
+  // |attachment_tracer_| is only set when this object is owned by the main
+  // thread and is possibly involved in a SameThreadMediaSourceAttachment.
+  // Therefore, it is thread-safe to access it here without taking the
+  // |attachment_link_lock_|.
+  visitor->Trace(TS_UNCHECKED_READ(attachment_tracer_));
+
   visitor->Trace(source_buffers_);
   visitor->Trace(active_source_buffers_);
   EventTargetWithInlineData::Trace(visitor);
@@ -800,29 +836,26 @@ WebTimeRanges MediaSource::SeekableInternal(
 
     {
       // If cross-thread, protect against concurrent usage of
-      // |live_seekable_range_|, since that member is updated without taking the
+      // |*live_seekable_range*|, since those are updated without taking the
       // attachment's internal |attachment_state_lock_|.
       MutexLocker lock(attachment_link_lock_);
 
       // 1. If live seekable range is not empty:
-      if (live_seekable_range_->length() != 0) {
+      if (has_live_seekable_range_) {
         // 1.1. Let union ranges be the union of live seekable range and the
         //      HTMLMediaElement.buffered attribute.
         // 1.2. Return a single range with a start time equal to the
         //      earliest start time in union ranges and an end time equal to
         //      the highest end time in union ranges and abort these steps.
         if (buffered.empty()) {
-          ranges.emplace_back(
-              live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
-              live_seekable_range_->end(0, ASSERT_NO_EXCEPTION));
+          ranges.emplace_back(live_seekable_range_start_,
+                              live_seekable_range_end_);
           return ranges;
         }
 
         ranges.emplace_back(
-            std::min(live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
-                     buffered.front().start),
-            std::max(live_seekable_range_->end(0, ASSERT_NO_EXCEPTION),
-                     buffered.back().end));
+            std::min(live_seekable_range_start_, buffered.front().start),
+            std::max(live_seekable_range_end_, buffered.back().end));
         return ranges;
       }
     }
@@ -1089,10 +1122,12 @@ void MediaSource::setLiveSeekableRange(double start,
     // SeekableInternal simultaneously, if attached fully. Here, for simplicity,
     // we don't need to take the full attachment exclusive
     // |attachment_state_lock_| so long as we
-    // fully protect access to |live_seekable_range_| read/write with
+    // fully protect access to |*live_seekable_range*| read/write with
     // |attachment_link_lock_|.
     MutexLocker lock(attachment_link_lock_);
-    live_seekable_range_ = MakeGarbageCollected<TimeRanges>(start, end);
+    has_live_seekable_range_ = true;
+    live_seekable_range_start_ = start;
+    live_seekable_range_end_ = end;
   }
 }
 
@@ -1116,12 +1151,15 @@ void MediaSource::clearLiveSeekableRange(ExceptionState& exception_state) {
     // If we are cross-thread, then main thread could be running
     // SeekableInternal simultaneously, if attached fully. Here, for simplicity,
     // we don't need to take the full attachment exclusive
-    // |attachment_state_lock_|so long as we
-    // fully protect access to |live_seekable_range_| read/write with
+    // |attachment_state_lock_| so long as we
+    // fully protect access to |*live_seekable_range*| read/write with
     // |attachment_link_lock_|.
     MutexLocker lock(attachment_link_lock_);
-    if (live_seekable_range_->length() != 0)
-      live_seekable_range_ = MakeGarbageCollected<TimeRanges>();
+    if (has_live_seekable_range_) {
+      has_live_seekable_range_ = false;
+      live_seekable_range_start_ = 0.0;
+      live_seekable_range_end_ = 0.0;
+    }
   }
 }
 

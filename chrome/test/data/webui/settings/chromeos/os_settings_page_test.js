@@ -1,153 +1,170 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Suite of tests for the OS Settings main page. */
+// clang-format off
+// #import 'chrome://os-settings/chromeos/lazy_load.js';
+// #import 'chrome://os-settings/chromeos/os_settings.js';
 
-suite('OSSettingsPage', function() {
-  let settingsMain = null;
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {flushTasks} from 'chrome://test/test_util.m.js';
+// clang-format on
+
+suite('OsSettingsPageTests', function() {
+  /** @type {?OsSettingsPageElement} */
   let settingsPage = null;
 
   suiteSetup(async function() {
-    await CrSettingsPrefs.initialized;
+    settings.Router.getInstance().navigateTo(settings.routes.BASIC);
+    PolymerTest.clearBody();
 
-    settingsMain =
-        document.querySelector('os-settings-ui').$$('os-settings-main');
-    assert(!!settingsMain);
+    const prefElement = document.createElement('settings-prefs');
+    document.body.appendChild(prefElement);
 
-    settingsPage = settingsMain.$$('os-settings-page');
-    assertTrue(!!settingsPage);
+    return CrSettingsPrefs.initialized.then(function() {
+      settingsPage = document.createElement('os-settings-page');
+      settingsPage.prefs = prefElement.prefs;
+      document.body.appendChild(settingsPage);
+      Polymer.dom.flush();
+    });
+  });
 
-    // Simulate Kerberos settings section enabled.
+  teardown(function() {
+    settingsPage.remove();
+    CrSettingsPrefs.resetForTesting();
+    settings.Router.getInstance().resetRouteForTesting();
+  });
+
+  test('Os Settings Page created', async () => {
+    assert(!!settingsPage);
+  });
+
+  test('Check settings-internet-page exists', async () => {
+    const settingsInternetPage = settingsPage.$$('settings-internet-page');
+    assert(!!settingsInternetPage);
+  });
+
+  test('Check os-settings-printing-page exists', async () => {
+    const idleRender = settingsPage.$$('settings-idle-load');
+    await idleRender.get();
+    Polymer.dom.flush();
+    const osSettingsPrintingPage = settingsPage.$$('os-settings-printing-page');
+    assert(!!osSettingsPrintingPage);
+  });
+
+  test('Check settings-bluetooth-page exists', async () => {
+    const settingsBluetoothPage = settingsPage.$$('settings-bluetooth-page');
+    assert(!!settingsBluetoothPage);
+  });
+
+  test('Check os-settings-privacy-page exists', async () => {
+    settingsPage.isAccountManagementFlowsV2Enabled_ = false;
+    const osSettingsPrivacyPage = settingsPage.$$('os-settings-privacy-page');
+    assert(!!osSettingsPrivacyPage);
+    Polymer.dom.flush();
+  });
+
+  test('Check settings-multidevice-page exists', async () => {
+    const settingsMultidevicePage =
+        settingsPage.$$('settings-multidevice-page');
+    assert(!!settingsMultidevicePage);
+  });
+
+  test('Check os-settings-people-page exists', async () => {
+    const settingsPeoplePage = settingsPage.$$('os-settings-people-page');
+    assert(!!settingsPeoplePage);
+  });
+
+  test('Check settings-date-time-page exists', async () => {
+    const idleRender = settingsPage.$$('settings-idle-load');
+    await idleRender.get();
+    Polymer.dom.flush();
+    const settingsDateTimePage = settingsPage.$$('settings-date-time-page');
+    assert(!!settingsDateTimePage);
+  });
+
+  test('Check os-settings-languages-section exists', async () => {
+    const osSettingsLangagesSection =
+        settingsPage.$$('os-settings-languages-section');
+    assert(!!osSettingsLangagesSection);
+  });
+
+  test('Check os-settings-a11y-page exists', async () => {
+    const osSettingsA11yPage = settingsPage.$$('os-settings-a11y-page');
+    assert(!!osSettingsA11yPage);
+  });
+
+  test('Check settings-kerberos-page exists', async () => {
     settingsPage.showKerberosSection = true;
-
-    const idleRender =
-        settingsMain.$$('os-settings-page').$$('settings-idle-load');
+    const idleRender = settingsPage.$$('settings-idle-load');
     assert(!!idleRender);
     await idleRender.get();
     Polymer.dom.flush();
+
+    const settingsKerberosPage = settingsPage.$$('settings-kerberos-page');
+    assert(!!settingsKerberosPage);
+    Polymer.dom.flush();
   });
 
-  /**
-   * Verifies the section has a visible #main element and that any possible
-   * sub-pages are hidden.
-   * @param {!Node} The DOM node for the section.
-   */
-  function verifySubpagesHidden(section) {
-    // Check if there are sub-pages to verify.
-    const pages = section.firstElementChild.shadowRoot.querySelector(
-        'settings-animated-pages');
-    if (!pages) {
-      return;
-    }
-
-    const children = pages.getContentChildren();
-    const stampedChildren = children.filter(function(element) {
-      return element.tagName !== 'TEMPLATE';
-    });
-
-    // The section's main child should be stamped and visible.
-    const main = stampedChildren.filter(function(element) {
-      return element.getAttribute('route-path') === 'default';
-    });
-    assertEquals(
-        main.length, 1,
-        'default card not found for section ' + section.section);
-    assertGT(main[0].offsetHeight, 0);
-
-    // Any other stamped subpages should not be visible.
-    const subpages = stampedChildren.filter(function(element) {
-      return element.getAttribute('route-path') !== 'default';
-    });
-    for (const subpage of subpages) {
-      assertEquals(
-          subpage.offsetHeight, 0,
-          'Expected subpage #' + subpage.id + ' in ' + section.section +
-              ' not to be visible.');
-    }
-  }
-
-  test('Basic sections', function() {
-    const sectionNames = [
-      'internet', 'bluetooth', 'multidevice', 'osPeople', 'kerberos', 'device',
-      'personalization', 'osSearch', 'apps'
-    ];
-
-    for (const name of sectionNames) {
-      const section = settingsPage.shadowRoot.querySelector(
-          `settings-section[section=${name}]`);
-      assertTrue(!!section, 'Did not find ' + name);
-      verifySubpagesHidden(section);
-    }
+  test('Check settings-device-page exists', async () => {
+    settingsPage.showCrostini = true;
+    settingsPage.allowCrostini_ = true;
+    const settingsDevicePage = settingsPage.$$('settings-device-page');
+    assert(!!settingsDevicePage);
+    Polymer.dom.flush();
   });
 
-  test('AdvancedSections', async function() {
-    // Open the Advanced section.
-    settingsMain.advancedToggleExpanded = true;
+  test('Check os-settings-files-page exists', async () => {
+    settingsPage.isGuestMode_ = false;
+    const idleRender = settingsPage.$$('settings-idle-load');
+    await idleRender.get();
     Polymer.dom.flush();
-    await test_util.flushTasks();
-
-    const sectionNames = [
-      'osPrivacy', 'osLanguages', 'files', 'osReset', 'dateTime',
-      'osAccessibility'
-    ];
-
-    for (const name of sectionNames) {
-      const section = settingsPage.shadowRoot.querySelector(
-          `settings-section[section=${name}]`);
-      assertTrue(!!section, 'Did not find ' + name);
-      verifySubpagesHidden(section);
-    }
+    const settingsFilesPage = settingsPage.$$('os-settings-files-page');
+    assert(!!settingsFilesPage);
   });
 
-  test('Guest mode', async function() {
-    // Simulate guest mode.
-    settingsPage.isGuestMode_ = true;
-
-    // Ensure Advanced is open.
-    settingsMain.advancedToggleExpanded = true;
-    Polymer.dom.flush();
-    await test_util.flushTasks();
-
-    const hiddenSections = ['multidevice', 'osPeople', 'personalization'];
-    for (const name of hiddenSections) {
-      const section = settingsPage.shadowRoot.querySelector(
-          `settings-section[section=${name}]`);
-      assertFalse(!!section, 'Found unexpected section ' + name);
-    }
-
-    const visibleSections = [
-      'internet', 'bluetooth', 'kerberos', 'device', 'osSearch', 'apps',
-      'osPrivacy', 'osLanguages', 'files', 'osReset', 'dateTime',
-      'osAccessibility'
-    ];
-    for (const name of visibleSections) {
-      const section = settingsPage.shadowRoot.querySelector(
-          `settings-section[section=${name}]`);
-      assertTrue(!!section, 'Expected section ' + name);
-    }
+  test('Check settings-personalization-page exists', async () => {
+    const settingsPersonalizationPage =
+        settingsPage.$$('settings-personalization-page');
+    assert(!!settingsPersonalizationPage);
   });
 
-  test('Update required end of life banner visibility', function() {
-    Polymer.dom.flush();
-    assertFalse(settingsPage.showUpdateRequiredEolBanner_);
-    assertFalse(!!settingsPage.$$('#updateRequiredEolBanner'));
-
-    settingsPage.showUpdateRequiredEolBanner_ = true;
-    Polymer.dom.flush();
-    assertTrue(!!settingsPage.$$('#updateRequiredEolBanner'));
+  test('Check os-settings-search-page exists', async () => {
+    const osSettingsSearchPage = settingsPage.$$('os-settings-search-page');
+    assert(!!osSettingsSearchPage);
   });
 
-  test('Update required end of life banner close button click', function() {
-    settingsPage.showUpdateRequiredEolBanner_ = true;
+  test('Check os-settings-apps-page exists', async () => {
+    settingsPage.showAndroidApps = true;
+    settingsPage.showPluginVm = true;
+    settingsPage.havePlayStoreApp = true;
     Polymer.dom.flush();
-    const banner = settingsPage.$$('#updateRequiredEolBanner');
-    assertTrue(!!banner);
+    const osSettingsAppsPage = settingsPage.$$('os-settings-apps-page');
+    assert(!!osSettingsAppsPage);
+  });
 
-    const closeButton = assert(settingsPage.$$('#closeUpdateRequiredEol'));
-    closeButton.click();
+  test('Check settings-on-startup-page exists', async () => {
+    settingsPage.showStartup = true;
     Polymer.dom.flush();
-    assertFalse(settingsPage.showUpdateRequiredEolBanner_);
-    assertEquals('none', banner.style.display);
+    const settingsOnStartupPage = settingsPage.$$('settings-on-startup-page');
+    assert(!!settingsOnStartupPage);
+  });
+
+  test('Check settings-crostini-page exists', async () => {
+    settingsPage.showCrostini = true;
+    const idleRender = settingsPage.$$('settings-idle-load');
+    await idleRender.get();
+    Polymer.dom.flush();
+    const osSettingsCrostiniPage = settingsPage.$$('settings-crostini-page');
+    assert(!!osSettingsCrostiniPage);
+  });
+
+  test('Check os-settings-reset-page exists', async () => {
+    settingsPage.showReset = true;
+    Polymer.dom.flush();
+    const osSettingsResetPage = settingsPage.$$('os-settings-reset-page');
+    assert(!!osSettingsResetPage);
   });
 });

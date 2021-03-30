@@ -18,20 +18,20 @@ HighlighterControllerTestApi::HighlighterControllerTestApi(
 }
 
 HighlighterControllerTestApi::~HighlighterControllerTestApi() {
-  if (scoped_observer_)
+  if (scoped_observation_)
     DetachClient();
-  if (instance_->enabled())
+  if (instance_->is_enabled())
     instance_->SetEnabled(false);
   instance_->DestroyPointerView();
 }
 
 void HighlighterControllerTestApi::AttachClient() {
-  scoped_observer_ = std::make_unique<ScopedObserver>(this);
-  scoped_observer_->Add(instance_);
+  scoped_observation_ = std::make_unique<ScopedObservation>(this);
+  scoped_observation_->Observe(instance_);
 }
 
 void HighlighterControllerTestApi::DetachClient() {
-  scoped_observer_.reset();
+  scoped_observation_.reset();
   instance_->CallExitCallback();
 }
 

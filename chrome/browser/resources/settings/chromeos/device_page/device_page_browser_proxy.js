@@ -2,7 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {WebUIListener, addWebUIListener, addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 cr.define('settings', function() {
+  /**
+   * Enumeration for device state about remaining space.
+   * These values must be kept in sync with
+   * StorageManagerHandler::StorageSpaceState in C++ code.
+   * @enum {number}
+   */
+  /* #export */ const StorageSpaceState = {
+    NORMAL: 0,
+    LOW: 1,
+    CRITICALLY_LOW: 2
+  };
+
+  let systemDisplayApi = null;
+
+  /* #export */ function setDisplayApiForTesting(testDisplayApi) {
+    systemDisplayApi = testDisplayApi;
+  }
+
+  /* #export */ function getDisplayApi() {
+    if (!systemDisplayApi) {
+      systemDisplayApi = chrome.system.display;
+    }
+    return systemDisplayApi;
+  }
+
   /**
    * @typedef {{
    *   id: string,
@@ -10,7 +39,7 @@ cr.define('settings', function() {
    *   description: string
    * }}
    */
-  let PowerSource;
+  /* #export */ let PowerSource;
 
   /**
    * @typedef {{
@@ -21,13 +50,13 @@ cr.define('settings', function() {
    *   statusText: string,
    * }}
    */
-  let BatteryStatus;
+  /* #export */ let BatteryStatus;
 
   /**
    * Mirrors chromeos::settings::PowerHandler::IdleBehavior.
    * @enum {number}
    */
-  const IdleBehavior = {
+  /* #export */ const IdleBehavior = {
     DISPLAY_OFF_SLEEP: 0,
     DISPLAY_OFF: 1,
     DISPLAY_ON: 2,
@@ -39,7 +68,7 @@ cr.define('settings', function() {
    * Mirrors chromeos::PowerPolicyController::Action.
    * @enum {number}
    */
-  const LidClosedBehavior = {
+  /* #export */ const LidClosedBehavior = {
     SUSPEND: 0,
     STOP_SESSION: 1,
     SHUT_DOWN: 2,
@@ -59,14 +88,14 @@ cr.define('settings', function() {
    *   hasLid: boolean,
    * }}
    */
-  let PowerManagementSettings;
+  /* #export */ let PowerManagementSettings;
 
   /**
    * A note app's availability for running as note handler app from lock screen.
    * Mirrors chromeos::NoteTakingLockScreenSupport.
    * @enum {number}
    */
-  const NoteAppLockScreenSupport =
+  /* #export */ const NoteAppLockScreenSupport =
       {NOT_SUPPORTED: 0, NOT_ALLOWED_BY_POLICY: 1, SUPPORTED: 2, ENABLED: 3};
 
   /**
@@ -77,7 +106,7 @@ cr.define('settings', function() {
    *   lockScreenSupport: settings.NoteAppLockScreenSupport,
    * }}
    */
-  let NoteAppInfo;
+  /* #export */ let NoteAppInfo;
 
   /**
    * @typedef {{
@@ -85,10 +114,10 @@ cr.define('settings', function() {
    *   uuid: string
    * }}
    */
-  let ExternalStorage;
+  /* #export */ let ExternalStorage;
 
   /** @interface */
-  class DevicePageBrowserProxy {
+  /* #export */ class DevicePageBrowserProxy {
     /** Initializes the mouse and touchpad handler. */
     initializePointers() {}
 
@@ -202,7 +231,7 @@ cr.define('settings', function() {
   /**
    * @implements {settings.DevicePageBrowserProxy}
    */
-  class DevicePageBrowserProxyImpl {
+  /* #export */ class DevicePageBrowserProxyImpl {
     /** @override */
     initializePointers() {
       chrome.send('initializePointerSettings');
@@ -328,5 +357,8 @@ cr.define('settings', function() {
     NoteAppLockScreenSupport,
     PowerManagementSettings,
     PowerSource,
+    setDisplayApiForTesting,
+    getDisplayApi,
+    StorageSpaceState,
   };
 });

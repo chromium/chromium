@@ -129,9 +129,15 @@ bool IsAngleBetweenAccelerometerReadingsStable(
          kNoisyMagnitudeDeviation;
 }
 
-// Returns the UiMode given by the force-table-mode command line.
+// Returns the UiMode given by the force-table-mode or
+// supports-clamshell-auto-rotation command line.
 TabletModeController::UiMode GetUiMode() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  // TODO(minch): Remove this once crbug.com/1189420 is fixed. Since Dooly will
+  // stay in clamshell without |touchview| USE flag.
+  if (command_line->HasSwitch(switches::kSupportsClamshellAutoRotation))
+    return TabletModeController::UiMode::kClamshell;
+
   if (command_line->HasSwitch(switches::kAshUiMode)) {
     std::string switch_value =
         command_line->GetSwitchValueASCII(switches::kAshUiMode);
@@ -259,17 +265,6 @@ constexpr TabletModeController::TabletModeBehavior kOnForDev{
     /*observe_pointer_device_events=*/true,
     /*block_internal_input_device=*/false,
     /*always_show_overview_button=*/true,
-    TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
-};
-
-// Defines the behavior that sticks to physical tablet state. Used to implement
-// the --force-in-tablet-physical-state switch.
-constexpr TabletModeController::TabletModeBehavior kForceOnBySwitch{
-    /*use_sensor=*/false,
-    /*observe_display_events=*/false,
-    /*observe_pointer_device_events=*/true,
-    /*block_internal_input_device=*/true,
-    /*always_show_overview_button=*/false,
     TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
 };
 
@@ -543,14 +538,14 @@ bool TabletModeController::InTabletMode() const {
   return tablet_state_.InTabletMode();
 }
 
-void TabletModeController::ForceUiTabletModeState(
+bool TabletModeController::ForceUiTabletModeState(
     base::Optional<bool> enabled) {
   if (!enabled.has_value()) {
     tablet_mode_behavior_ = kDefault;
     AccelerometerReader::GetInstance()->SetEnabled(true);
     if (!SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState()))
-      UpdateUiTabletState();
-    return;
+      return UpdateUiTabletState();
+    return true;
   }
   if (*enabled) {
     tablet_mode_behavior_ = kOnForAutotest;
@@ -562,7 +557,7 @@ void TabletModeController::ForceUiTabletModeState(
   // this should not block ScreenOrientationController as the screen may want
   // to be rotated for other factors.
   AccelerometerReader::GetInstance()->SetEnabled(false);
-  SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
+  return SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
 }
 
 void TabletModeController::SetEnabledForTest(bool enabled) {
@@ -586,12 +581,6 @@ void TabletModeController::OnShellInitialized() {
 
     case UiMode::kNone:
       break;
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceInTabletPhysicalState)) {
-    tablet_mode_behavior_ = kForceOnBySwitch;
-    SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
   }
 }
 
@@ -627,30 +616,30 @@ void TabletModeController::OnChromeTerminating() {
   }
 }
 
-void TabletModeController::OnAccelerometerUpdated(
-    scoped_refptr<const AccelerometerUpdate> update) {
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::UNKNOWN) {
-    ec_lid_angle_driver_status_ =
-        AccelerometerReader::GetInstance()->GetECLidAngleDriverStatus();
-  }
+void TabletModeController::OnECLidAngleDriverStatusChanged(bool is_supported) {
+  is_ec_lid_angle_driver_supported_ = is_supported;
 
-  // When ChromeOS EC lid angle driver is present, EC can handle lid angle
-  // calculation, thus Chrome side lid angle calculation is disabled. In this
-  // case, TabletModeController no longer listens to accelerometer events.
-  if (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED) {
-    // Reset lid angle that might be calculated before lid angle driver is
-    // read.
-    lid_angle_ = 0.f;
-    can_detect_lid_angle_ = false;
-    if (record_lid_angle_timer_.IsRunning())
-      record_lid_angle_timer_.Stop();
-    AccelerometerReader::GetInstance()->RemoveObserver(this);
+  if (!is_supported)
     return;
-  }
 
+  // When ChromeOS EC lid angle driver is supported, EC can handle lid angle
+  // calculation, thus Chrome side lid angle calculation is disabled. In this
+  // case, TabletModeController no longer listens to accelerometer samples.
+
+  // Reset lid angle that might be calculated before lid angle driver is
+  // read.
+  lid_angle_ = 0.f;
+  can_detect_lid_angle_ = false;
+  if (record_lid_angle_timer_.IsRunning())
+    record_lid_angle_timer_.Stop();
+  AccelerometerReader::GetInstance()->RemoveObserver(this);
+}
+
+void TabletModeController::OnAccelerometerUpdated(
+    const AccelerometerUpdate& update) {
   have_seen_accelerometer_data_ = true;
-  can_detect_lid_angle_ = update->has(ACCELEROMETER_SOURCE_SCREEN) &&
-                          update->has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+  can_detect_lid_angle_ = update.has(ACCELEROMETER_SOURCE_SCREEN) &&
+                          update.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
   if (!can_detect_lid_angle_) {
     if (record_lid_angle_timer_.IsRunning())
       record_lid_angle_timer_.Stop();
@@ -665,9 +654,9 @@ void TabletModeController::OnAccelerometerUpdated(
 
   // Whether or not we enter tablet mode affects whether we handle screen
   // rotation, so determine whether to enter tablet mode first.
-  if (update->IsReadingStable(ACCELEROMETER_SOURCE_SCREEN) &&
-      update->IsReadingStable(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD) &&
-      IsAngleBetweenAccelerometerReadingsStable(*update)) {
+  if (update.IsReadingStable(ACCELEROMETER_SOURCE_SCREEN) &&
+      update.IsReadingStable(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD) &&
+      IsAngleBetweenAccelerometerReadingsStable(update)) {
     // update.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD)
     // Ignore the reading if it appears unstable. The reading is considered
     // unstable if it deviates too much from gravity and/or the magnitude of the
@@ -862,7 +851,6 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
     // active before transition, do not take screenshot if overview is active
     // in this case.
     const bool overview_remain_active =
-        IsClamshellSplitViewModeEnabled() &&
         Shell::Get()->overview_controller()->InOverviewSession();
     if (use_screenshot_for_test && top_window_on_primary_display &&
         !top_window_animating && !overview_remain_active) {
@@ -900,11 +888,11 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
 }
 
 void TabletModeController::HandleHingeRotation(
-    scoped_refptr<const AccelerometerUpdate> update) {
+    const AccelerometerUpdate& update) {
   static const gfx::Vector3dF hinge_vector(1.0f, 0.0f, 0.0f);
   gfx::Vector3dF base_reading =
-      update->GetVector(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
-  gfx::Vector3dF lid_reading = update->GetVector(ACCELEROMETER_SOURCE_SCREEN);
+      update.GetVector(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD);
+  gfx::Vector3dF lid_reading = update.GetVector(ACCELEROMETER_SOURCE_SCREEN);
 
   // As the hinge approaches a vertical angle, the base and lid accelerometers
   // approach the same values making any angle calculations highly inaccurate.
@@ -1301,7 +1289,7 @@ bool TabletModeController::ShouldUiBeInTabletMode() const {
 
   const bool can_enter_tablet_mode =
       IsBoardTypeMarkedAsTabletCapable() && HasActiveInternalDisplay() &&
-      (ec_lid_angle_driver_status_ == ECLidAngleDriverStatus::SUPPORTED ||
+      (is_ec_lid_angle_driver_supported_.value_or(false) ||
        have_seen_accelerometer_data_);
 
   return !has_internal_pointing_device_ && can_enter_tablet_mode &&
@@ -1323,7 +1311,7 @@ bool TabletModeController::SetIsInTabletPhysicalState(bool new_state) {
     return true;
 
   UpdateInternalInputDevicesEventBlocker();
-  return true;
+  return false;
 }
 
 bool TabletModeController::UpdateUiTabletState() {

@@ -371,9 +371,8 @@ public class GamepadMappingsTest {
                     MotionEvent.AXIS_RX, MotionEvent.AXIS_RY, MotionEvent.AXIS_RZ,
                     MotionEvent.AXIS_HAT_X, MotionEvent.AXIS_HAT_Y};
         }
-        GamepadMappings mappings =
-                GamepadMappings.getMappings(GamepadMappings.PS_DUALSHOCK_4_PRODUCT_ID,
-                        GamepadMappings.PS_DUALSHOCK_4_VENDOR_ID, axes);
+        GamepadMappings mappings = GamepadMappings.getMappings(
+                GamepadMappings.SONY_VENDOR_ID, GamepadMappings.PS_DUALSHOCK_4_PRODUCT_ID, axes);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -435,9 +434,8 @@ public class GamepadMappingsTest {
         int[] axes = new int[] {MotionEvent.AXIS_X, MotionEvent.AXIS_Y, MotionEvent.AXIS_Z,
                 MotionEvent.AXIS_RZ, MotionEvent.AXIS_LTRIGGER, MotionEvent.AXIS_RTRIGGER,
                 MotionEvent.AXIS_HAT_X, MotionEvent.AXIS_HAT_Y};
-        GamepadMappings mappings =
-                GamepadMappings.getMappings(GamepadMappings.XBOX_ONE_S_2016_FIRMWARE_PRODUCT_ID,
-                        GamepadMappings.XBOX_ONE_S_2016_FIRMWARE_VENDOR_ID, axes);
+        GamepadMappings mappings = GamepadMappings.getMappings(GamepadMappings.MICROSOFT_VENDOR_ID,
+                GamepadMappings.XBOX_ONE_S_2016_FIRMWARE_PRODUCT_ID, axes);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
 
         Assert.assertEquals(mMappedButtons[CanonicalButtonIndex.PRIMARY],
@@ -489,7 +487,7 @@ public class GamepadMappingsTest {
                 MotionEvent.AXIS_RZ, MotionEvent.AXIS_LTRIGGER, MotionEvent.AXIS_RTRIGGER,
                 MotionEvent.AXIS_HAT_X, MotionEvent.AXIS_HAT_Y};
         GamepadMappings deviceIdMappings = GamepadMappings.getMappings(
-                XBOX_ONE_S_PRODUCT_ID, GamepadMappings.XBOX_ONE_S_2016_FIRMWARE_VENDOR_ID, axes);
+                GamepadMappings.MICROSOFT_VENDOR_ID, XBOX_ONE_S_PRODUCT_ID, axes);
         Assert.assertNull(deviceIdMappings);
 
         GamepadMappings deviceNameMappings = GamepadMappings.getMappings(XBOX_WIRELESS_DEVICE_NAME);
@@ -507,9 +505,8 @@ public class GamepadMappingsTest {
                 MotionEvent.AXIS_HAT_X,
                 MotionEvent.AXIS_HAT_Y,
         };
-        GamepadMappings mappings =
-                GamepadMappings.getMappings(GamepadMappings.SNAKEBYTE_IDROIDCON_PRODUCT_ID,
-                        GamepadMappings.BROADCOM_VENDOR_ID, axes);
+        GamepadMappings mappings = GamepadMappings.getMappings(GamepadMappings.BROADCOM_VENDOR_ID,
+                GamepadMappings.SNAKEBYTE_IDROIDCON_PRODUCT_ID, axes);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
 
         expectNoMetaButton(mappings);
@@ -540,9 +537,8 @@ public class GamepadMappingsTest {
                 MotionEvent.AXIS_HAT_X,
                 MotionEvent.AXIS_HAT_Y,
         };
-        GamepadMappings mappings =
-                GamepadMappings.getMappings(GamepadMappings.SNAKEBYTE_IDROIDCON_PRODUCT_ID,
-                        GamepadMappings.BROADCOM_VENDOR_ID, axes);
+        GamepadMappings mappings = GamepadMappings.getMappings(GamepadMappings.BROADCOM_VENDOR_ID,
+                GamepadMappings.SNAKEBYTE_IDROIDCON_PRODUCT_ID, axes);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
 
         expectNoMetaButton(mappings);

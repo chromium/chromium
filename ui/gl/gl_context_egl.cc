@@ -40,6 +40,13 @@
 #define EGL_DISPLAY_SEMAPHORE_SHARE_GROUP_ANGLE 0x348D
 #endif /* EGL_ANGLE_display_semaphore_share_group */
 
+#ifndef EGL_ANGLE_external_context_and_surface
+#define EGL_ANGLE_external_context_and_surface 1
+#define EGL_EXTERNAL_CONTEXT_ANGLE 0x348E
+#define EGL_EXTERNAL_SURFACE_ANGLE 0x348F
+#define EGL_EXTERNAL_CONTEXT_SAVE_STATE_ANGLE 0x3490
+#endif /* EGL_ANGLE_external_context_and_surface */
+
 #ifndef EGL_ANGLE_create_context_client_arrays
 #define EGL_ANGLE_create_context_client_arrays 1
 #define EGL_CONTEXT_CLIENT_ARRAYS_ENABLED_ANGLE 0x3452
@@ -247,6 +254,17 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
     }
   }
 
+  if (GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported()) {
+    if (attribs.angle_create_from_external_context) {
+      context_attributes.push_back(EGL_EXTERNAL_CONTEXT_ANGLE);
+      context_attributes.push_back(EGL_TRUE);
+    }
+    if (attribs.angle_restore_external_context_state) {
+      context_attributes.push_back(EGL_EXTERNAL_CONTEXT_SAVE_STATE_ANGLE);
+      context_attributes.push_back(EGL_TRUE);
+    }
+  }
+
   // Append final EGL_NONE to signal the context attributes are finished
   context_attributes.push_back(EGL_NONE);
   context_attributes.push_back(EGL_NONE);
@@ -365,9 +383,9 @@ bool GLContextEGL::MakeCurrentImpl(GLSurface* surface) {
     return true;
 
   ScopedReleaseCurrent release_current;
-  TRACE_EVENT2("gpu", "GLContextEGL::MakeCurrent",
-               "context", context_,
-               "surface", surface);
+  TRACE_EVENT2("gpu", "GLContextEGL::MakeCurrent", "context",
+               static_cast<void*>(context_), "surface",
+               static_cast<void*>(surface));
 
   if (unbind_fbo_on_makecurrent_ && GetCurrent()) {
     glBindFramebufferEXT(GL_FRAMEBUFFER, 0);

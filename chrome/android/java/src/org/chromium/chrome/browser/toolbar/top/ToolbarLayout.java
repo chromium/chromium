@@ -25,10 +25,12 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,7 +42,6 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.HomeButton;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -91,7 +92,6 @@ public abstract class ToolbarLayout
     public ToolbarLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mDefaultTint = ThemeUtils.getThemedToolbarIconTint(getContext(), false);
-        mProgressBar = createProgressBar();
 
         addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
@@ -112,13 +112,16 @@ public abstract class ToolbarLayout
      * @param toolbarDataProvider The provider for toolbar data.
      * @param tabController       The controller that handles interactions with the tab.
      * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
+     * @param isInVrSupplier A supplier of the state of VR mode.
      */
     @CallSuper
     protected void initialize(ToolbarDataProvider toolbarDataProvider,
-            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator) {
+            ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
+            BooleanSupplier isInVrSupplier) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
+        mProgressBar = createProgressBar(isInVrSupplier);
     }
 
     /** @param overlay The coordinator for the texture version of the top toolbar. */
@@ -212,8 +215,9 @@ public abstract class ToolbarLayout
     /**
      * @return A progress bar for Chrome to use.
      */
-    ToolbarProgressBar createProgressBar() {
-        return new ToolbarProgressBar(getContext(), getProgressBarHeight(), this, false);
+    private ToolbarProgressBar createProgressBar(BooleanSupplier isInVrSupplier) {
+        return new ToolbarProgressBar(
+                getContext(), getProgressBarHeight(), this, false, isInVrSupplier);
     }
 
     /**
@@ -600,6 +604,18 @@ public abstract class ToolbarLayout
     void onTabSwitcherTransitionFinished() {}
 
     /**
+     * Called when start surface state is changed.
+     * @param isShowingStartSurface Whether start surface homepage is showing.
+     */
+    void onStartSurfaceStateChanged(boolean isShowingStartSurface) {}
+
+    /**
+     * Force to hide toolbar shadow.
+     * @param forceHideShadow Whether toolbar shadow should be hidden.
+     */
+    void setForceHideShadow(boolean forceHideShadow) {}
+
+    /**
      * Gives inheriting classes the chance to observe tab count changes.
      * @param tabCountProvider The {@link TabCountProvider} subclasses can observe.
      */
@@ -774,8 +790,8 @@ public abstract class ToolbarLayout
     }
 
     private void maybeUnfocusUrlBar() {
-        if (getLocationBar() != null && getLocationBar().getFakeboxDelegate() != null) {
-            getLocationBar().getFakeboxDelegate().setUrlBarFocus(
+        if (getLocationBar() != null && getLocationBar().getOmniboxStub() != null) {
+            getLocationBar().getOmniboxStub().setUrlBarFocus(
                     false, null, OmniboxFocusReason.UNFOCUS);
         }
     }

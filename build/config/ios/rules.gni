@@ -2,12 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/apple_info_plist.gni")
+import("//build/config/apple/symbols.gni")
 import("//build/config/ios/ios_sdk.gni")
-import("//build/config/mac/base_rules.gni")
-import("//build/config/mac/symbols.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
+
+declare_args() {
+  # Set to true if an Xcode project is generated for this build. Set this to
+  # false if you do not plan to run `gn gen --ide=xcode` in this directory.
+  # This will speed up the generation at the cost of generating an invalid
+  # Xcode project if `gn gen --ide=xcode` is used. Defaults to true (favor
+  # correctness over speed).
+  ios_set_attributes_for_xcode_project_generation = true
+}
 
 # Constants corresponding to the bundle type identifiers use application,
 # application extension, XCTest and XCUITest targets respectively.
@@ -65,7 +74,7 @@ template("lipo_binary") {
                              "output_name",
                            ])
 
-    script = "//build/toolchain/mac/linker_driver.py"
+    script = "//build/toolchain/apple/linker_driver.py"
 
     # http://crbug.com/762840. Fix for bots running out of memory.
     pool = "//build/toolchain:link_pool($default_toolchain)"
@@ -291,19 +300,12 @@ template("create_signed_bundle") {
     _enable_code_signing = invoker.enable_code_signing
   }
 
-  _xcode_product_bundle_id = ""
-  if (defined(invoker.xcode_product_bundle_id)) {
-    _xcode_product_bundle_id = invoker.xcode_product_bundle_id
-  }
-
-  if (_xcode_product_bundle_id != "") {
-    _ios_provisioning_profile_info =
-        exec_script("//build/config/ios/codesign.py",
-                    [
-                      "find-provisioning-profile",
-                      "-b=" + _xcode_product_bundle_id,
-                    ],
-                    "json")
+  if (!ios_set_attributes_for_xcode_project_generation) {
+    not_needed(invoker,
+               [
+                 "xcode_product_bundle_id",
+                 "xcode_extra_attributes",
+               ])
   }
 
   create_bundle(_target_name) {
@@ -342,21 +344,35 @@ template("create_signed_bundle") {
       public_deps = []
     }
 
-    xcode_extra_attributes = {
-      IPHONEOS_DEPLOYMENT_TARGET = ios_deployment_target
-      if (_xcode_product_bundle_id != "") {
-        PRODUCT_BUNDLE_IDENTIFIER = _xcode_product_bundle_id
-
-        if (defined(_ios_provisioning_profile_info)) {
-          CODE_SIGN_IDENTITY = "iPhone Developer"
-          DEVELOPMENT_TEAM = _ios_provisioning_profile_info.team_identifier
-          PROVISIONING_PROFILE_SPECIFIER = _ios_provisioning_profile_info.name
-        }
+    if (ios_set_attributes_for_xcode_project_generation) {
+      _xcode_product_bundle_id = ""
+      if (defined(invoker.xcode_product_bundle_id)) {
+        _xcode_product_bundle_id = invoker.xcode_product_bundle_id
       }
 
-      # If invoker has defined extra attributes, they override the defaults.
-      if (defined(invoker.xcode_extra_attributes)) {
-        forward_variables_from(invoker.xcode_extra_attributes, "*")
+      if (_xcode_product_bundle_id != "") {
+        _ios_provisioning_profile_info =
+            exec_script("//build/config/ios/codesign.py",
+                        [
+                          "find-provisioning-profile",
+                          "-b=" + _xcode_product_bundle_id,
+                        ],
+                        "json")
+      }
+
+      xcode_extra_attributes = {
+        IPHONEOS_DEPLOYMENT_TARGET = ios_deployment_target
+        if (_xcode_product_bundle_id != "") {
+          CODE_SIGN_IDENTITY = "iPhone Developer"
+          DEVELOPMENT_TEAM = _ios_provisioning_profile_info.team_identifier
+          PRODUCT_BUNDLE_IDENTIFIER = _xcode_product_bundle_id
+          PROVISIONING_PROFILE_SPECIFIER = _ios_provisioning_profile_info.name
+        }
+
+        # If invoker has defined extra attributes, they override the defaults.
+        if (defined(invoker.xcode_extra_attributes)) {
+          forward_variables_from(invoker.xcode_extra_attributes, "*")
+        }
       }
     }
 
@@ -454,7 +470,7 @@ template("create_signed_bundle") {
         invoker.partial_info_plist,
       ]
 
-      _plist_compiler_path = "//build/config/mac/plist_util.py"
+      _plist_compiler_path = "//build/apple/plist_util.py"
 
       code_signing_sources += _partial_info_plists
       code_signing_sources += [ _plist_compiler_path ]
@@ -507,7 +523,7 @@ template("ios_info_plist") {
     _info_plist = _info_plist_target_output[0]
   }
 
-  info_plist(target_name) {
+  apple_info_plist(target_name) {
     format = "binary1"
     extra_substitutions = []
     if (defined(invoker.extra_substitutions)) {
@@ -521,6 +537,10 @@ template("ios_info_plist") {
       "IOS_SDK_BUILD=$ios_sdk_build",
       "IOS_SDK_NAME=$ios_sdk_name$ios_sdk_version",
       "IOS_SUPPORTED_PLATFORM=$ios_sdk_platform",
+      "BUILD_MACHINE_OS_BUILD=$machine_os_build",
+      "IOS_DEPLOYMENT_TARGET=$ios_deployment_target",
+      "XCODE_BUILD=$xcode_build",
+      "XCODE_VERSION=$xcode_version",
     ]
     plist_templates = [
       "//build/config/ios/BuildInfo.plist",
@@ -855,7 +875,8 @@ template("ios_app_bundle") {
       _create_pkg_info = target_name + "_pkg_info"
       action(_create_pkg_info) {
         forward_variables_from(invoker, [ "testonly" ])
-        script = "//build/config/mac/write_pkg_info.py"
+        script = "//build/apple/write_pkg_info.py"
+        inputs = [ "//build/apple/plist_util.py" ]
         sources = get_target_outputs(":$_generate_info_plist")
         outputs = [
           # Cannot name the output PkgInfo as the name will not be unique if
@@ -1792,32 +1813,50 @@ template("ios_xctest_bundle") {
       bundle_binary_target = ":$_lipo_loadable_module_target"
       bundle_binary_output = _output_name
 
-      # Test files need to be known to Xcode for proper indexing and discovery
-      # of tests function for XCTest, but the compilation is done via ninja and
-      # thus must prevent Xcode from linking object files via this hack.
-      xcode_extra_attributes = {
-        OTHER_LDFLAGS = "-help"
-        ONLY_ACTIVE_ARCH = "YES"
-        DEBUG_INFORMATION_FORMAT = "dwarf"
+      if (ios_set_attributes_for_xcode_project_generation) {
+        _xcode_product_bundle_id =
+            "$ios_app_bundle_id_prefix.gtest.$_output_name"
 
-        # For XCUITest, Xcode requires specifying the host application name via
-        # the TEST_TARGET_NAME attribute.
-        if (invoker.product_type == _ios_xcode_xcuitest_bundle_id) {
-          TEST_TARGET_NAME = invoker.xcode_test_application_name
-        }
+        _ios_provisioning_profile_info =
+            exec_script("//build/config/ios/codesign.py",
+                        [
+                          "find-provisioning-profile",
+                          "-b=" + _xcode_product_bundle_id,
+                        ],
+                        "json")
 
-        # For XCTest, Xcode requires specifying the host application path via
-        # both BUNDLE_LOADER and TEST_HOST attributes.
-        if (invoker.product_type == _ios_xcode_xctest_bundle_id) {
-          _xcode_app_name = invoker.xcode_test_application_name
-          if (defined(invoker.xcode_test_application_output_name)) {
-            _xcode_app_name = invoker.xcode_test_application_output_name
+        xcode_extra_attributes = {
+          IPHONEOS_DEPLOYMENT_TARGET = ios_deployment_target
+          CODE_SIGN_IDENTITY = "iPhone Developer"
+          DEVELOPMENT_TEAM = _ios_provisioning_profile_info.team_identifier
+          PRODUCT_BUNDLE_IDENTIFIER = _xcode_product_bundle_id
+          PROVISIONING_PROFILE_SPECIFIER = _ios_provisioning_profile_info.name
+
+          # For XCUITest, Xcode requires specifying the host application name
+          # via the TEST_TARGET_NAME attribute.
+          if (invoker.product_type == _ios_xcode_xcuitest_bundle_id) {
+            TEST_TARGET_NAME = invoker.xcode_test_application_name
           }
 
-          BUNDLE_LOADER = "\$(TEST_HOST)"
-          TEST_HOST =
-              "\$(BUILT_PRODUCTS_DIR)/${_xcode_app_name}.app/${_xcode_app_name}"
+          # For XCTest, Xcode requires specifying the host application path via
+          # both BUNDLE_LOADER and TEST_HOST attributes.
+          if (invoker.product_type == _ios_xcode_xctest_bundle_id) {
+            _xcode_app_name = invoker.xcode_test_application_name
+            if (defined(invoker.xcode_test_application_output_name)) {
+              _xcode_app_name = invoker.xcode_test_application_output_name
+            }
+
+            BUNDLE_LOADER = "\$(TEST_HOST)"
+            TEST_HOST = "\$(BUILT_PRODUCTS_DIR)/" +
+                        "${_xcode_app_name}.app/${_xcode_app_name}"
+          }
         }
+      } else {
+        not_needed(invoker,
+                   [
+                     "xcode_test_application_name",
+                     "xcode_test_application_output_name",
+                   ])
       }
 
       deps = [ ":$_info_plist_bundle" ]
@@ -1957,7 +1996,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
   action(_info_plist_merge_plist) {
     testonly = true
-    script = "//build/config/mac/plist_util.py"
+    script = "//build/apple/plist_util.py"
 
     sources = [
       "$_xctrunner_path/Info.plist",
@@ -1965,7 +2004,7 @@ template("ios_xcuitest_test_runner_bundle") {
       # NOTE: The XCTRunnerAddition+Info.plist must come after the Info.plist
       # because it overrides the values under "CFBundleIdentifier" and
       # "CFBundleName".
-      "//ios/chrome/app/resources/XCTRunnerAddition+Info.plist",
+      "//build/config/ios/resources/XCTRunnerAddition+Info.plist",
     ]
 
     _output_name = "$target_gen_dir/${_target_name}_merged.plist"

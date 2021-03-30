@@ -36,7 +36,7 @@ import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder.DelegatedNotificationSmallIconFallback;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
@@ -354,7 +354,7 @@ public class TrustedWebActivityClient {
             List<ResolveInfo> resolveInfosForUrl) {
         // This is ugly, but the call site for this is static and called by native.
         TrustedWebActivityClient client =
-                ChromeApplication.getComponent().resolveTrustedWebActivityClient();
+                ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
         return client.createLaunchIntentForTwaInternal(appContext, url, resolveInfosForUrl);
     }
 

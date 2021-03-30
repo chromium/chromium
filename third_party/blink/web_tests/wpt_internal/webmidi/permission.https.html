@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+promise_test(async _ => {
+  await setMidiPermission({sysex: true}, 'granted');
+
+  const access = await navigator.requestMIDIAccess({sysex: true});
+  assert_true(access.sysexEnabled);
+}, 'sysex permission grants are properly handled');
+
+promise_test(async t => {
+  await setMidiPermission({}, 'granted');
+  await setMidiPermission({sysex: true}, 'denied');
+
+  return promise_rejects_dom(t, 'SecurityError',
+      navigator.requestMIDIAccess({sysex: true}));
+}, 'sysex permission rejections are properly handled');
+
+</script>
+</body>
+</html>

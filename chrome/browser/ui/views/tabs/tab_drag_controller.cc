@@ -1397,6 +1397,10 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
 
   move_loop_widget_ = GetAttachedBrowserWidget();
   DCHECK(move_loop_widget_);
+
+  // RunMoveLoop can be called reentrantly from within another RunMoveLoop,
+  // in which case the observation is already established.
+  widget_observation_.Reset();
   widget_observation_.Observe(move_loop_widget_);
   current_state_ = DragState::kDraggingWindow;
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
@@ -1450,8 +1454,9 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
       return;
     tab_strip_to_attach_to_after_exit_ = nullptr;
   } else if (current_state_ == DragState::kWaitingToStop) {
-    EndDrag(result == views::Widget::MOVE_LOOP_CANCELED ? END_DRAG_CANCEL
-                                                        : END_DRAG_COMPLETE);
+    EndDrag(result == views::Widget::MoveLoopResult::kCanceled
+                ? END_DRAG_CANCEL
+                : END_DRAG_COMPLETE);
   }
 }
 
@@ -1613,6 +1618,16 @@ void TabDragController::RevertDrag() {
     }
   }
 
+  // If tabs were closed during this drag, the initial selection might include
+  // indices that are out of bounds for the tabstrip now. Reset the selection to
+  // include the stille-existing currently dragged WebContentses.
+  for (int selection : initial_selection_model_.selected_indices()) {
+    if (!source_context_->GetTabStripModel()->ContainsIndex(selection)) {
+      initial_selection_model_.Clear();
+      break;
+    }
+  }
+
   if (initial_selection_model_.empty())
     ResetSelection(source_context_->GetTabStripModel());
   else
@@ -1664,12 +1679,19 @@ void TabDragController::RestoreInitialSelection() {
   if (selection_model.empty())
     return;
 
+  // Tabs in |source_context_| may have closed since the drag began. In that
+  // case, |initial_selection_model_| may include indices that are no longer
+  // valid in |source_context_|. Abort restoring the selection if so.
+  if (!source_context_->GetTabStripModel()->ContainsIndex(
+          *(selection_model.selected_indices().rbegin())))
+    return;
+
   // The anchor/active may have been among the tabs that were dragged out. Force
   // the anchor/active to be valid.
   if (selection_model.anchor() == ui::ListSelectionModel::kUnselectedIndex)
-    selection_model.set_anchor(selection_model.selected_indices()[0]);
+    selection_model.set_anchor(*selection_model.selected_indices().begin());
   if (selection_model.active() == ui::ListSelectionModel::kUnselectedIndex)
-    selection_model.set_active(selection_model.selected_indices()[0]);
+    selection_model.set_active(*selection_model.selected_indices().begin());
   source_context_->GetTabStripModel()->SetSelectionFromModel(selection_model);
 }
 
@@ -1679,6 +1701,8 @@ void TabDragController::RevertDragAt(size_t drag_index) {
 
   base::AutoReset<bool> setter(&is_mutating_, true);
   TabDragData* data = &(drag_data_[drag_index]);
+  // The index we will try to insert the tab at. It may or may not end up at
+  // this index, if the source tabstrip has changed since the drag began.
   int target_index = data->source_model_index;
   if (attached_context_) {
     int index = attached_context_->GetTabStripModel()->GetIndexOfWebContents(
@@ -1718,8 +1742,9 @@ void TabDragController::RevertDragAt(size_t drag_index) {
         target_index, std::move(data->owned_contents),
         (data->pinned ? TabStripModel::ADD_PINNED : 0));
   }
-  source_context_->GetTabStripModel()->UpdateGroupForDragRevert(
-      target_index,
+  TabStripModel* source_model = source_context_->GetTabStripModel();
+  source_model->UpdateGroupForDragRevert(
+      source_model->GetIndexOfWebContents(data->contents),
       data->tab_group_data.has_value()
           ? base::Optional<tab_groups::TabGroupId>{data->tab_group_data.value()
                                                        .group_id}
@@ -1787,11 +1812,13 @@ void TabDragController::CompleteDrag() {
                                : source_context_->GetTabStripModel();
     ui::ListSelectionModel selection;
     int index = model->GetIndexOfWebContents(drag_data_[1].contents);
-    DCHECK_NE(-1, index);
-    selection.AddIndexToSelection(index);
-    selection.set_active(index);
-    selection.set_anchor(index);
-    model->SetSelectionFromModel(selection);
+    // The tabs in the group may have been closed during the drag.
+    if (index != TabStripModel::kNoTab) {
+      selection.AddIndexToSelection(index);
+      selection.set_active(index);
+      selection.set_anchor(index);
+      model->SetSelectionFromModel(selection);
+    }
   }
 }
 
@@ -2032,9 +2059,16 @@ Browser* TabDragController::CreateBrowserForDrag(
   // window is a maximized or fullscreen window since it will prevent window
   // moving/resizing on Chrome OS. See crbug.com/1023871 for details.
   create_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+
   // Don't copy the initial workspace since the *current* workspace might be
   // different and copying the workspace will move the tab to the initial one.
   create_params.initial_workspace = "";
+
+  // Don't copy the window name - the user's deliberately creating a new window,
+  // which should default to its own auto-generated name, not the same name as
+  // the previous window.
+  create_params.user_title = "";
+
   Browser* browser = Browser::Create(create_params);
   is_dragging_new_browser_ = true;
   // If the window is created maximized then the bounds we supplied are ignored.
@@ -2167,27 +2201,11 @@ void TabDragController::UpdateGroupForDraggedTabs() {
   const base::Optional<tab_groups::TabGroupId> updated_group =
       GetTabGroupForTargetIndex(selected_unpinned);
 
-  // Removing a tab from a group could change the index of the selected tabs.
-  // Store this to move the tab back to the proper position.
-  const int to_index = selected[0];
-
-  // All selected tabs should all be in the same group unless it is the initial
-  // move.
-  if (initial_move_) {
-    attached_model->RemoveFromGroup(selected_unpinned);
-    attached_model->MoveSelectedTabsTo(to_index);
-  }
-
   if (updated_group == attached_model->GetTabGroupForTab(selected_unpinned[0]))
     return;
 
-  if (updated_group.has_value()) {
-    attached_model->MoveTabsAndSetGroup(selected_unpinned, selected_unpinned[0],
-                                        updated_group.value());
-  } else {
-    attached_model->RemoveFromGroup(selected_unpinned);
-    attached_model->MoveSelectedTabsTo(to_index);
-  }
+  attached_model->MoveTabsAndSetGroup(selected_unpinned, selected_unpinned[0],
+                                      updated_group);
 }
 
 base::Optional<tab_groups::TabGroupId>

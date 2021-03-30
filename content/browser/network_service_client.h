@@ -16,6 +16,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/cert_database.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -30,7 +31,7 @@ namespace content {
 class WebRtcConnectionsObserver;
 
 class CONTENT_EXPORT NetworkServiceClient
-    : public network::mojom::NetworkServiceClient,
+    : public network::mojom::URLLoaderNetworkServiceObserver,
 #if defined(OS_ANDROID)
       public net::NetworkChangeNotifier::ConnectionTypeObserver,
       public net::NetworkChangeNotifier::MaxBandwidthObserver,
@@ -39,55 +40,11 @@ class CONTENT_EXPORT NetworkServiceClient
 #endif
       public net::CertDatabase::Observer {
  public:
-  explicit NetworkServiceClient(
-      mojo::PendingReceiver<network::mojom::NetworkServiceClient>
-          network_service_client_receiver);
+  NetworkServiceClient();
   ~NetworkServiceClient() override;
 
-  // network::mojom::NetworkServiceClient implementation:
-  void OnLoadingStateUpdate(std::vector<network::mojom::LoadInfoPtr> infos,
-                            OnLoadingStateUpdateCallback callback) override;
-  void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
-                       int64_t recv_bytes,
-                       int64_t sent_bytes) override;
-  void OnRawRequest(
-      int32_t process_id,
-      int32_t routing_id,
-      const std::string& devtools_request_id,
-      const net::CookieAccessResultList& cookies_with_access_result,
-      std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
-      network::mojom::ClientSecurityStatePtr client_security_state) override;
-  void OnRawResponse(
-      int32_t process_id,
-      int32_t routing_id,
-      const std::string& devtools_request_id,
-      const net::CookieAndLineAccessResultList& cookies_with_access_result,
-      std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
-      const base::Optional<std::string>& raw_response_headers) override;
-  void OnCorsPreflightRequest(
-      int32_t process_id,
-      int32_t render_frame_id,
-      const base::UnguessableToken& devtool_request_id,
-      const network::ResourceRequest& request,
-      const GURL& initiator_url,
-      const std::string& initiator_devtools_request_id) override;
-  void OnCorsPreflightResponse(
-      int32_t process_id,
-      int32_t render_frame_id,
-      const base::UnguessableToken& devtool_request_id,
-      const GURL& url,
-      network::mojom::URLResponseHeadPtr head) override;
-  void OnCorsPreflightRequestCompleted(
-      int32_t process_id,
-      int32_t render_frame_id,
-      const base::UnguessableToken& devtool_request_id,
-      const network::URLLoaderCompletionStatus& status) override;
-
-  void OnTrustTokenOperationDone(
-      int32_t process_id,
-      int32_t routing_id,
-      const std::string& devtool_request_id,
-      network::mojom::TrustTokenOperationResultPtr result) override;
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+  BindURLLoaderNetworkServiceObserver();
 
   // net::CertDatabase::Observer implementation:
   void OnCertDBChanged() override;
@@ -119,7 +76,38 @@ class CONTENT_EXPORT NetworkServiceClient
 #endif
 
  private:
-  mojo::Receiver<network::mojom::NetworkServiceClient> receiver_;
+  // network::mojom::URLLoaderNetworkServiceObserver overrides.
+  void OnSSLCertificateError(const GURL& url,
+                             int net_error,
+                             const net::SSLInfo& ssl_info,
+                             bool fatal,
+                             OnSSLCertificateErrorCallback response) override;
+  void OnCertificateRequested(
+      const base::Optional<base::UnguessableToken>& window_id,
+      const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
+      mojo::PendingRemote<network::mojom::ClientCertificateResponder>
+          cert_responder) override;
+  void OnAuthRequired(
+      const base::Optional<base::UnguessableToken>& window_id,
+      uint32_t request_id,
+      const GURL& url,
+      bool first_auth_attempt,
+      const net::AuthChallengeInfo& auth_info,
+      const scoped_refptr<net::HttpResponseHeaders>& head_headers,
+      mojo::PendingRemote<network::mojom::AuthChallengeResponder>
+          auth_challenge_responder) override;
+  void OnClearSiteData(const GURL& url,
+                       const std::string& header_value,
+                       int load_flags,
+                       OnClearSiteDataCallback callback) override;
+  void OnLoadingStateUpdate(network::mojom::LoadInfoPtr info,
+                            OnLoadingStateUpdateCallback callback) override;
+  void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
+                       int64_t recv_bytes,
+                       int64_t sent_bytes) override;
+  void Clone(
+      mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
+          listener) override;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
@@ -130,6 +118,9 @@ class CONTENT_EXPORT NetworkServiceClient
       app_status_listener_;
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
 #endif
+
+  mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_service_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkServiceClient);
 };

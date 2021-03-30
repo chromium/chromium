@@ -17,7 +17,6 @@
 #include "base/strings/string_piece.h"
 
 namespace base {
-namespace fuchsia {
 
 template <typename Interface>
 class BASE_EXPORT ScopedServicePublisher {
@@ -35,7 +34,7 @@ class BASE_EXPORT ScopedServicePublisher {
   ScopedServicePublisher(vfs::PseudoDir* pseudo_dir,
                          fidl::InterfaceRequestHandler<Interface> handler,
                          base::StringPiece name = Interface::Name_)
-      : pseudo_dir_(pseudo_dir), name_(name.as_string()) {
+      : pseudo_dir_(pseudo_dir), name_(name) {
     pseudo_dir_->AddEntry(name_,
                           std::make_unique<vfs::Service>(std::move(handler)));
   }
@@ -48,7 +47,6 @@ class BASE_EXPORT ScopedServicePublisher {
   DISALLOW_COPY_AND_ASSIGN(ScopedServicePublisher);
 };
 
-}  // namespace fuchsia
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_SCOPED_SERVICE_PUBLISHER_H_

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -39,7 +41,6 @@
 #if defined(OS_WIN)
 #include "base/base_paths_win.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/win/windows_version.h"
 #endif
 

@@ -47,32 +47,24 @@ chrome.test.runTests([
     viewer.viewport.setZoom(2);
     chrome.test.assertEq(2, cameras.length);
 
-    const updateEnabled =
-        document.documentElement.hasAttribute('pdf-viewer-update-enabled');
-    const scrollingContainer =
-        updateEnabled ? viewer.shadowRoot.querySelector('#scroller') : window;
+    const scrollingContainer = viewer.shadowRoot.querySelector('#scroller');
     scrollingContainer.scrollTo(100, 100);
     await animationFrame();
 
     chrome.test.assertEq(3, cameras.length);
 
     const expectations = [
-      {top: 44.25, left: -106.5, right: 718.5, bottom: -448.5},
-      {top: 23.25, left: -3.75, right: 408.75, bottom: -223.125},
-      {top: -14.25, left: 33.75, right: 446.25, bottom: -260.625},
+      {top: 2.25, left: -106.5, right: 718.5, bottom: -412.5},
+      {top: 2.25, left: -3.75, right: 408.75, bottom: -205.125},
+      {top: -35.25, left: 33.75, right: 446.25, bottom: -242.625},
     ];
 
     for (const expectation of expectations) {
       const actual = cameras.shift();
-      const expectationTop = updateEnabled ?
-          Math.min(2.25, expectation.top - 21) :
-          expectation.top;
-      const expectationBottom = updateEnabled ?
-          Math.max(-412.5, expectation.bottom + 18) :
-          expectation.bottom;
-      chrome.test.assertEq(expectationTop, actual.top);
+      const expectationBottom = Math.max(-412.5, expectation.bottom + 18);
+      chrome.test.assertEq(expectation.top, actual.top);
       chrome.test.assertEq(expectation.left, actual.left);
-      chrome.test.assertEq(expectationBottom, actual.bottom);
+      chrome.test.assertEq(expectation.bottom, actual.bottom);
       chrome.test.assertEq(expectation.right, actual.right);
     }
     chrome.test.succeed();
@@ -97,8 +89,8 @@ chrome.test.runTests([
     // Selected size and color.
     const penOptions = viewerAnnotationsBar.shadowRoot.querySelector(
         '#pen viewer-pen-options');
-    penOptions.$$('#sizes [value="1"]').click();
-    penOptions.$$('#colors [value="#00b0ff"]').click();
+    penOptions.shadowRoot.querySelector('#sizes [value="1"]').click();
+    penOptions.shadowRoot.querySelector('#colors [value="#00b0ff"]').click();
     await animationFrame();
     chrome.test.assertEq('pen', tool.tool);
     chrome.test.assertEq(1, tool.size);
@@ -129,13 +121,15 @@ chrome.test.runTests([
     // Need to expand to use this color.
     const highlighterOptions = viewerAnnotationsBar.shadowRoot.querySelector(
         '#highlighter viewer-pen-options');
-    highlighterOptions.$$('#colors [value="#d1c4e9"]').click();
+    highlighterOptions.shadowRoot.querySelector('#colors [value="#d1c4e9"]')
+        .click();
     chrome.test.assertEq('#ffbc00', tool.color);
 
     // Selected size and expanded color.
-    highlighterOptions.$$('#sizes [value="1"]').click();
-    highlighterOptions.$$('#colors #expand').click();
-    highlighterOptions.$$('#colors [value="#d1c4e9"]').click();
+    highlighterOptions.shadowRoot.querySelector('#sizes [value="1"]').click();
+    highlighterOptions.shadowRoot.querySelector('#colors #expand').click();
+    highlighterOptions.shadowRoot.querySelector('#colors [value="#d1c4e9"]')
+        .click();
     chrome.test.assertEq('highlighter', tool.tool);
     chrome.test.assertEq(1, tool.size);
     chrome.test.assertEq('#d1c4e9', tool.color);

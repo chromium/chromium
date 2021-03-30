@@ -32,12 +32,13 @@ void SetPriorityAndReason(
 
 }  // namespace
 
-RootVoteObserver::RootVoteObserver() : vote_consumer_default_impl_(this) {}
+RootVoteObserver::RootVoteObserver() = default;
+
 RootVoteObserver::~RootVoteObserver() = default;
 
 VotingChannel RootVoteObserver::GetVotingChannel() {
-  DCHECK_EQ(0u, vote_consumer_default_impl_.voting_channels_issued());
-  auto channel = vote_consumer_default_impl_.BuildVotingChannel();
+  DCHECK_EQ(0u, voting_channel_factory_.voting_channels_issued());
+  auto channel = voting_channel_factory_.BuildVotingChannel();
   voter_id_ = channel.voter_id();
   return channel;
 }

@@ -2,19 +2,19 @@
 ++[list]
 ++++[list item]
 ++++++[panel]
-++++++++[static] name='• '
+++++++++[static] name='%E2%80%A2 '
 ++++++[static] name='First item properly groups itself despite '
 ++++++[static] name='bolded'
 ++++++[static] name=' text.'
 ++++[list item]
 ++++++[panel]
-++++++++[static] name='• '
+++++++++[static] name='%E2%80%A2 '
 ++++++[static] name='This should also be '
 ++++++[static] name='seen'
 ++++++[static] name=' as a group.'
 ++++[list item]
 ++++++[panel]
-++++++++[static] name='• '
+++++++++[static] name='%E2%80%A2 '
 ++++++[static] name='Some '
 ++++++[static] name='more'
 ++++++[static] name=' text.'

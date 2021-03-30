@@ -26,37 +26,28 @@ struct AllowlistEntry {
 
 const char* const kScopedBlockingCallAllowedArgs[] = {
     "file_name", "function_name", "source_location", nullptr};
-const char* const kPeekMessageAllowedArgs[] = {"sent_messages_in_queue",
-                                               "chrome_message_pump", nullptr};
-const char* const kFallbackFontAllowedArgs[] = {"font_name",
-                                                "primary_font_name", nullptr};
-const char* const kGetFallbackFontsAllowedArgs[] = {"script", nullptr};
-const char* const kGPUAllowedArgs[] = {nullptr};
-const char* const kInputLatencyAllowedArgs[] = {"data", nullptr};
+const char* const kPeekMessageAllowedArgs[] = {"chrome_message_pump", nullptr};
 const char* const kMemoryDumpAllowedArgs[] = {
     "count", "dumps", "function", "top_queued_message_tag", nullptr};
 const char* const kRendererHostAllowedArgs[] = {
     "class",           "line", "should_background", "has_pending_views",
     "bytes_allocated", nullptr};
-const char* const kUIAllowedArgs[] = {
-    "dpi", "message_id", "chrome_window_handle_event_info", nullptr};
+const char* const kUIAllowedArgs[] = {"chrome_window_handle_event_info",
+                                      nullptr};
 const char* const kV8GCAllowedArgs[] = {"num_items", "num_tasks", nullptr};
-const char* const kTopLevelFlowAllowedArgs[] = {"task_queue_name", nullptr};
-const char* const kTopLevelIpcRunTaskAllowedArgs[] = {"ipc_hash", nullptr};
-const char* const kLifecyclesTaskPostedAllowedArgs[] = {
-    "task_queue_name", "time_since_disabled_ms", "ipc_hash", "location",
-    nullptr};
+const char* const kTopLevelIpcRunTaskAllowedArgs[] = {"chrome_task_annotator",
+                                                      nullptr};
+// TODO(ddrone): add args once creation_location_iid is parsed
 const char* const kMemoryPressureEventsAllowedArgs[] = {
-    "level", "listener_creation_info", nullptr};
+    "chrome_memory_pressure_notification", nullptr};
 
 const AllowlistEntry kEventArgsAllowlist[] = {
+    // Args recorded in perfetto protos and exported by trace processor JSON
+    // exporter:
+
     {"__metadata", "thread_name", nullptr},
     {"__metadata", "process_name", nullptr},
     {"__metadata", "process_uptime_seconds", nullptr},
-    {"__metadata", "chrome_library_address", nullptr},
-    {"__metadata", "chrome_library_module", nullptr},
-    {"__metadata", "stackFrames", nullptr},
-    {"__metadata", "typeNames", nullptr},
     {"base", "MemoryPressureListener::Notify",
      kMemoryPressureEventsAllowedArgs},
     {"base", "MessagePumpForUI::ProcessNextWindowsMessage PeekMessage",
@@ -70,42 +61,38 @@ const AllowlistEntry kEventArgsAllowlist[] = {
     {"base", "ScopedBlockingCall*", kScopedBlockingCallAllowedArgs},
     {"base", "ScopedMayLoadLibraryAtBackgroundPriority",
      kScopedBlockingCallAllowedArgs},
-    {"benchmark", "TestAllowlist*", nullptr},
-    {"blink", "MemoryPressureListenerRegistry::onMemoryPressure",
-     kMemoryPressureEventsAllowedArgs},
-    {"browser", "KeyedServiceFactory::GetServiceForContext", nullptr},
     {"browser", "TabLoader::OnMemoryPressure",
      kMemoryPressureEventsAllowedArgs},
-    {"fonts", "CachedFontLinkSettings::GetLinkedFonts", nullptr},
-    {"fonts", "QueryLinkedFontsFromRegistry", nullptr},
-    {"fonts", "RenderTextHarfBuzz::ItemizeTextToRuns::Runs", nullptr},
-    {"GPU", "*", kGPUAllowedArgs},
+    {"browser", "KeyedServiceFactory::GetServiceForContext", nullptr},
     {"ipc", "GpuChannelHost::Send", nullptr},
     {"ipc", "SyncChannel::Send", nullptr},
-    {"latencyInfo", "*", kInputLatencyAllowedArgs},
     {"memory", "RenderThreadImpl::OnMemoryPressure",
      kMemoryPressureEventsAllowedArgs},
-    {"renderer_host", "*", kRendererHostAllowedArgs},
     {"shutdown", "*", nullptr},
     {"startup", "PrefProvider::PrefProvider", nullptr},
-    {"task_scheduler", "*", nullptr},
+    {"startup", "TestAllowlist*", nullptr},
     {"toplevel", "*", nullptr},
-    {"toplevel.ipc", "TaskAnnotator::RunTask", kTopLevelIpcRunTaskAllowedArgs},
+    {"ui", "HWNDMessageHandler::OnWndProc", kUIAllowedArgs},
+    {"ui", "HWNDMessageHandler::OnDwmCompositionChanged", kUIAllowedArgs},
     {TRACE_DISABLED_BY_DEFAULT("cpu_profiler"), "*", nullptr},
+    {TRACE_DISABLED_BY_DEFAULT("lifecycles"), "task_posted_to_disabled_queue",
+     nullptr},
+    {TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"), "TaskAnnotator::RunTask",
+     kTopLevelIpcRunTaskAllowedArgs},
+    {TRACE_DISABLED_BY_DEFAULT("user_action_samples"), "UserAction", nullptr},
+
+    // Needs conversion to perfetto protos:
+
+    {"__metadata", "chrome_library_address", nullptr},
+    {"__metadata", "chrome_library_module", nullptr},
+    {"__metadata", "stackFrames", nullptr},
+    {"__metadata", "typeNames", nullptr},
+    {"renderer_host", "*", kRendererHostAllowedArgs},
     // Redefined the string since MemoryDumpManager::kTraceCategory causes
     // static initialization of this struct.
     {TRACE_DISABLED_BY_DEFAULT("memory-infra"), "*", kMemoryDumpAllowedArgs},
     {TRACE_DISABLED_BY_DEFAULT("system_stats"), "*", nullptr},
     {TRACE_DISABLED_BY_DEFAULT("v8.gc"), "*", kV8GCAllowedArgs},
-    {"ui", "HWNDMessageHandler::OnWndProc", kUIAllowedArgs},
-    {"ui", "HWNDMessageHandler::OnDwmCompositionChanged", kUIAllowedArgs},
-    {"ui", "RenderTextHarfBuzz::FallbackFont", kFallbackFontAllowedArgs},
-    {"ui", "RenderTextHarfBuzz::GetFallbackFonts",
-     kGetFallbackFontsAllowedArgs},
-    {TRACE_DISABLED_BY_DEFAULT("user_action_samples"), "UserAction", nullptr},
-    {"toplevel.flow", "SequenceManager::PostTask", kTopLevelFlowAllowedArgs},
-    {TRACE_DISABLED_BY_DEFAULT("lifecycles"), "task_posted_to_disabled_queue",
-     kLifecyclesTaskPostedAllowedArgs},
     {nullptr, nullptr, nullptr}};
 
 const char* kMetadataAllowlist[] = {"chrome-bitness",

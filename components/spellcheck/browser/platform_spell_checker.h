@@ -38,7 +38,7 @@ class PlatformSpellChecker {
 
   virtual void RequestTextCheck(
       int document_tag,
-      const base::string16& text,
+      const std::u16string& text,
       spellcheck_platform::TextCheckCompleteCallback callback) = 0;
 };
 

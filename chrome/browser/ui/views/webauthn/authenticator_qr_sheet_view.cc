@@ -7,19 +7,31 @@
 #include "base/base64url.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
-#include "chrome/common/qr_code_generator/dino_image.h"
-#include "chrome/common/qr_code_generator/qr_code_generator.h"
+#include "components/qr_code_generator/dino_image.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 using QRCode = QRCodeGenerator;
 
 namespace {
 
+// kMinimumQRVersion is the minimum QR version (i.e. size) that we support.
+// The amount of input already precludes smaller versions with the current
+// encoder but it's possible that a low-ECC configuration could be added that
+// would otherwise cause a smaller version to be used. This minimum ensures
+// that the UI sizing remains constant and that the dino image doesn't
+// obscure too much of the QR code
+constexpr int kMinimumQRVersion = 5;
+
 // QRView displays a QR code.
 class QRView : public views::View {
  public:
+  METADATA_HEADER(QRView);
+
   // kTilePixels is the height and width, in pixels, of a single tile from the
   // QR code.
   static constexpr int kTilePixels = 10;
@@ -39,8 +51,8 @@ class QRView : public views::View {
   explicit QRView(const std::string& qr_string) {
     CHECK_LE(qr_string.size(), QRCodeGenerator::V5::kInputBytes);
 
-    base::Optional<QRCode::GeneratedCode> code =
-        qr_.Generate(base::as_bytes(base::make_span(qr_string)));
+    base::Optional<QRCode::GeneratedCode> code = qr_.Generate(
+        base::as_bytes(base::make_span(qr_string)), kMinimumQRVersion);
     DCHECK(code);
     // The QR Encoder supports dynamic sizing but we expect our data to fit in
     // a version five code.
@@ -48,14 +60,17 @@ class QRView : public views::View {
     qr_tiles_ = code->data;
   }
 
+  QRView(const QRView&) = delete;
+  QRView& operator=(const QRView&) = delete;
   ~QRView() override = default;
 
   void RefreshQRCode(const std::string& qr_string) {
     CHECK_LE(qr_string.size(), QRCodeGenerator::V5::kInputBytes);
 
     state_ = (state_ + 1) % 6;
-    base::Optional<QRCode::GeneratedCode> code = qr_.Generate(
-        base::as_bytes(base::make_span(qr_string)), /*mask=*/state_);
+    base::Optional<QRCode::GeneratedCode> code =
+        qr_.Generate(base::as_bytes(base::make_span(qr_string)),
+                     kMinimumQRVersion, /*mask=*/state_);
     DCHECK(code);
     qr_tiles_ = code->data;
     SchedulePaint();
@@ -168,14 +183,16 @@ class QRView : public views::View {
   QRCode qr_;
   base::span<const uint8_t> qr_tiles_;
   int state_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(QRView);
 };
+
+BEGIN_METADATA(QRView, views::View)
+END_METADATA
 
 }  // anonymous namespace
 
 class AuthenticatorQRViewCentered : public views::View {
  public:
+  METADATA_HEADER(AuthenticatorQRViewCentered);
   explicit AuthenticatorQRViewCentered(const std::string& qr_data) {
     views::BoxLayout* layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -194,6 +211,9 @@ class AuthenticatorQRViewCentered : public views::View {
 
   QRView* qr_view_;
 };
+
+BEGIN_METADATA(AuthenticatorQRViewCentered, views::View)
+END_METADATA
 
 AuthenticatorQRSheetView::AuthenticatorQRSheetView(
     std::unique_ptr<AuthenticatorQRSheetModel> sheet_model)

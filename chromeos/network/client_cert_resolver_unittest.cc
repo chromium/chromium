@@ -31,6 +31,7 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/onc/onc_certificate_importer_impl.h"
 #include "chromeos/network/onc/onc_test_utils.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "components/onc/onc_constants.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -120,9 +121,10 @@ class ClientCertResolverTest : public testing::Test,
     service_test_->ClearServices();
     task_environment_.RunUntilIdle();
 
+    SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
     network_cert_loader_ = NetworkCertLoader::Get();
-    NetworkCertLoader::ForceHardwareBackedForTesting();
+    NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
   }
 
   void TearDown() override {
@@ -143,7 +145,8 @@ class ClientCertResolverTest : public testing::Test,
  protected:
   void StartNetworkCertLoader() {
     network_cert_loader_->SetUserNSSDB(test_nsscertdb_.get());
-    network_cert_loader_->SetSystemNSSDB(test_system_nsscertdb_.get());
+    network_cert_loader_->SetSystemNssDbForTesting(
+        test_system_nsscertdb_.get());
     if (test_client_cert_.get()) {
       int slot_id = 0;
       const std::string pkcs11_id =
@@ -245,11 +248,8 @@ class ClientCertResolverTest : public testing::Test,
   }
 
   void SetupWifi() {
-    service_test_->SetServiceProperties(kWifiStub,
-                                        kWifiStub,
-                                        kWifiSSID,
-                                        shill::kTypeWifi,
-                                        shill::kStateOnline,
+    service_test_->SetServiceProperties(kWifiStub, kWifiStub, kWifiSSID,
+                                        shill::kTypeWifi, shill::kStateOnline,
                                         true /* visible */);
     // Set an arbitrary cert id, so that we can check afterwards whether we
     // cleared the property or not.

@@ -99,11 +99,6 @@ inline void NoBarrier_Store(volatile Atomic32* ptr, Atomic32 value) {
   *ptr = value;
 }
 
-inline void Acquire_Store(volatile Atomic32* ptr, Atomic32 value) {
-  *ptr = value;
-  MemoryBarrier();
-}
-
 inline void Release_Store(volatile Atomic32* ptr, Atomic32 value) {
   MemoryBarrier();
   *ptr = value;
@@ -117,11 +112,6 @@ inline Atomic32 Acquire_Load(volatile const Atomic32* ptr) {
   Atomic32 value = *ptr;
   MemoryBarrier();
   return value;
-}
-
-inline Atomic32 Release_Load(volatile const Atomic32* ptr) {
-  MemoryBarrier();
-  return *ptr;
 }
 
 // 64-bit versions
@@ -172,11 +162,6 @@ inline void NoBarrier_Store(volatile Atomic64* ptr, Atomic64 value) {
   *ptr = value;
 }
 
-inline void Acquire_Store(volatile Atomic64* ptr, Atomic64 value) {
-  *ptr = value;
-  MemoryBarrier();
-}
-
 inline void Release_Store(volatile Atomic64* ptr, Atomic64 value) {
   MemoryBarrier();
   *ptr = value;
@@ -190,11 +175,6 @@ inline Atomic64 Acquire_Load(volatile const Atomic64* ptr) {
   Atomic64 value = *ptr;
   MemoryBarrier();
   return value;
-}
-
-inline Atomic64 Release_Load(volatile const Atomic64* ptr) {
-  MemoryBarrier();
-  return *ptr;
 }
 
 }  // namespace base::subtle

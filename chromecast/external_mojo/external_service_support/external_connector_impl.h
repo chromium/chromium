@@ -75,7 +75,7 @@ class ExternalConnectorImpl : public ExternalConnector {
   mojo::PendingRemote<external_mojo::mojom::ExternalConnector> pending_remote_;
   mojo::Remote<external_mojo::mojom::ExternalConnector> connector_;
 
-  base::CallbackList<void()> error_callbacks_;
+  base::RepeatingClosureList error_closures_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

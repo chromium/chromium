@@ -248,7 +248,7 @@ BluetoothLowEnergyEventRouter::BluetoothLowEnergyEventRouter(
 
   // Register for unload event so we clean up created services for apps that
   // get unloaded.
-  extension_registry_observer_.Add(ExtensionRegistry::Get(context));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
 }
 
 BluetoothLowEnergyEventRouter::~BluetoothLowEnergyEventRouter() {

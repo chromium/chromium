@@ -247,7 +247,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     if (!csp_for_world->AllowInline(
             ContentSecurityPolicy::InlineType::kNavigation,
             nullptr /* element */, script_source, String() /* nonce */,
-            opener_window.Url(), OrdinalNumber())) {
+            opener_window.Url(), OrdinalNumber::First())) {
       return nullptr;
     }
   }
@@ -314,9 +314,6 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   DCHECK(page->MainFrame());
   LocalFrame& frame = *To<LocalFrame>(page->MainFrame());
 
-  if (request.GetShouldSendReferrer() == kMaybeSendReferrer)
-    frame.DomWindow()->SetReferrerPolicy(opener_window.GetReferrerPolicy());
-
   page->SetWindowFeatures(features);
 
   frame.View()->SetCanHaveScrollbars(features.scrollbars_visible);
@@ -333,7 +330,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
 
   IntRect rect = page->GetChromeClient().CalculateWindowRectWithAdjustment(
       window_rect, frame, opener_frame);
-  page->GetChromeClient().Show(opener_frame.GetFrameToken(),
+  page->GetChromeClient().Show(opener_frame.GetLocalFrameToken(),
                                request.GetNavigationPolicy(), rect,
                                consumed_user_gesture);
   MaybeLogWindowOpen(opener_frame);

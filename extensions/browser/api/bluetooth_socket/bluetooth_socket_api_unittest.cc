@@ -52,7 +52,7 @@ TEST_F(BluetoothSocketApiUnittest, CreateThenClose) {
                                     .Build())
                            .Build())
                   .Build())
-          .SetLocation(Manifest::COMPONENT)
+          .SetLocation(mojom::ManifestLocation::kComponent)
           .Build();
 
   ASSERT_TRUE(extension_with_socket_permitted);

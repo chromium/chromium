@@ -30,7 +30,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame.h"
@@ -279,11 +279,11 @@ void SetElementReadOnly(WebInputElement& element, bool read_only) {
 
 bool FormHasFieldWithValue(const autofill::FormData& form,
                            const std::string& value) {
-  base::string16 value_16 = ASCIIToUTF16(value);
+  std::u16string value_16 = ASCIIToUTF16(value);
   for (const auto& field : form.fields) {
     if (field.value == value_16)
       return true;
-    if (field.typed_value == value_16)
+    if (field.user_input == value_16)
       return true;
   }
   return false;
@@ -323,7 +323,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     // Autofill uses the system font to render suggestion previews. On Windows
     // an extra step is required to ensure that the system font is configured.
     blink::WebFontRendering::SetMenuFontMetrics(
-        base::ASCIIToUTF16("Arial").c_str(), 12);
+        blink::WebString::FromASCII("Arial"), 12);
 #endif
 
     // TODO(crbug/862989): Remove workaround preventing non-test classes to bind
@@ -390,7 +390,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     LoadHTML(kFormHTML);
 
     // Necessary for SimulateElementClick() to work correctly.
-    GetWebFrameWidget()->Resize(blink::WebSize(500, 500));
+    GetWebFrameWidget()->Resize(gfx::Size(500, 500));
     GetWebFrameWidget()->SetFocus(true);
 
     // Now retrieve the input elements so the test can access them.
@@ -501,16 +501,16 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   }
 
   void SimulateSuggestionChoice(WebInputElement& username_input) {
-    base::string16 username(ASCIIToUTF16(kAliceUsername));
-    base::string16 password(ASCIIToUTF16(kAlicePassword));
+    std::u16string username(ASCIIToUTF16(kAliceUsername));
+    std::u16string password(ASCIIToUTF16(kAlicePassword));
     SimulateSuggestionChoiceOfUsernameAndPassword(username_input, username,
                                                   password);
   }
 
   void SimulateSuggestionChoiceOfUsernameAndPassword(
       WebInputElement& input,
-      const base::string16& username,
-      const base::string16& password) {
+      const std::u16string& username,
+      const std::u16string& password) {
     // This call is necessary to setup the autofill agent appropriate for the
     // user selection; simulates the menu actually popping up.
     SimulatePointClick(gfx::Point(1, 1));
@@ -533,7 +533,9 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     static_cast<content::RenderFrameObserver*>(autofill_agent_)
         ->FocusedElementChanged(username_element_);
     // Fill focused element (i.e. |username_element_|).
-    autofill_agent_->FillFieldWithValue(ASCIIToUTF16(text));
+    autofill_agent_->FillFieldWithValue(
+        FieldRendererId(username_element_.UniqueRendererFormControlId()),
+        ASCIIToUTF16(text));
   }
 
   void SimulateUsernameFieldChange(FieldChangeSource change_source) {
@@ -640,7 +642,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
   void ExpectFieldPropertiesMasks(
       PasswordFormSourceType expected_type,
-      const std::map<base::string16, FieldPropertiesMask>&
+      const std::map<std::u16string, FieldPropertiesMask>&
           expected_properties_masks,
       autofill::mojom::SubmissionIndicatorEvent expected_submission_event) {
     base::RunLoop().RunUntilIdle();
@@ -651,7 +653,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       form_data = *(fake_driver_.form_data_submitted());
     } else {
       ASSERT_EQ(PasswordFormSameDocumentNavigation, expected_type);
-      ASSERT_TRUE(fake_driver_.called_same_document_navigation());
+      ASSERT_TRUE(fake_driver_.called_dynamic_form_submission());
       ASSERT_TRUE(static_cast<bool>(fake_driver_.form_data_maybe_submitted()));
       form_data = *(fake_driver_.form_data_maybe_submitted());
       EXPECT_EQ(expected_submission_event, form_data.submission_event);
@@ -714,16 +716,16 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       const std::string& new_password_value,
       SubmissionIndicatorEvent event) {
     base::RunLoop().RunUntilIdle();
-    ASSERT_TRUE(fake_driver_.called_same_document_navigation());
+    ASSERT_TRUE(fake_driver_.called_dynamic_form_submission());
     ASSERT_TRUE(static_cast<bool>(fake_driver_.form_data_maybe_submitted()));
     ExpectFormDataWithUsernameAndPasswordsAndEvent(
         *(fake_driver_.form_data_maybe_submitted()), form_renderer_id,
         username_value, password_value, new_password_value, event);
   }
 
-  void CheckIfEventsAreCalled(const std::vector<base::string16>& checkers,
+  void CheckIfEventsAreCalled(const std::vector<std::u16string>& checkers,
                               bool expected) {
-    for (const base::string16& variable : checkers) {
+    for (const std::u16string& variable : checkers) {
       int value;
       EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(variable, &value))
           << variable;
@@ -783,15 +785,15 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   FakeMojoPasswordManagerDriver fake_driver_;
   testing::NiceMock<FakePasswordGenerationDriver> fake_pw_client_;
 
-  base::string16 username1_;
-  base::string16 username2_;
-  base::string16 username3_;
-  base::string16 username4_;
-  base::string16 password1_;
-  base::string16 password2_;
-  base::string16 password3_;
-  base::string16 alternate_username3_;
-  base::string16 password4_;
+  std::u16string username1_;
+  std::u16string username2_;
+  std::u16string username3_;
+  std::u16string username4_;
+  std::u16string password1_;
+  std::u16string password2_;
+  std::u16string password3_;
+  std::u16string alternate_username3_;
+  std::u16string password4_;
   PasswordFormFillData fill_data_;
 
   WebInputElement username_element_;
@@ -925,7 +927,7 @@ TEST_F(PasswordAutofillAgentTest, MetricsOnlyLoggedOnce) {
 // read-only field.
 TEST_F(PasswordAutofillAgentTest,
        AutocompletePasswordForReadonlyUsernamePrefixMatched) {
-  base::string16 username_at = username3_ + base::UTF8ToUTF16("@example.com");
+  std::u16string username_at = username3_ + base::UTF8ToUTF16("@example.com");
   username_element_.SetValue(WebString::FromUTF16(username_at));
   SetElementReadOnly(username_element_, true);
 
@@ -966,7 +968,7 @@ TEST_F(PasswordAutofillAgentTest, NoFillingOnSignupForm_NoMetrics) {
 // of username in read-only field.
 TEST_F(PasswordAutofillAgentTest,
        DontAutocompletePasswordForReadonlyUsernamePrefixMatched) {
-  base::string16 prefilled_username =
+  std::u16string prefilled_username =
       username3_ + base::UTF8ToUTF16("example.com");
   username_element_.SetValue(WebString::FromUTF16(prefilled_username));
   SetElementReadOnly(username_element_, true);
@@ -986,7 +988,7 @@ TEST_F(PasswordAutofillAgentTest,
 TEST_F(
     PasswordAutofillAgentTest,
     DontAutocompletePasswordForNotReadonlyUsernameFieldEvenWhenPrefixMatched) {
-  base::string16 prefilled_username =
+  std::u16string prefilled_username =
       username3_ + base::UTF8ToUTF16("@example.com");
   username_element_.SetValue(WebString::FromUTF16(prefilled_username));
 
@@ -1321,8 +1323,8 @@ TEST_F(PasswordAutofillAgentTest, NoDOMActivationTest) {
 // are filled on page load.
 TEST_F(PasswordAutofillAgentTest,
        PasswordAutofillTriggersOnChangeEventsOnLoad) {
-  std::vector<base::string16> username_event_checkers;
-  std::vector<base::string16> password_event_checkers;
+  std::vector<std::u16string> username_event_checkers;
+  std::vector<std::u16string> password_event_checkers;
   std::string events_registration_script =
       CreateScriptToRegisterListeners(kUsernameName, &username_event_checkers) +
       CreateScriptToRegisterListeners(kPasswordName, &password_event_checkers);
@@ -1359,7 +1361,7 @@ TEST_F(PasswordAutofillAgentTest,
 // are filled after page load.
 TEST_F(PasswordAutofillAgentTest,
        PasswordAutofillTriggersOnChangeEventsWaitForUsername) {
-  std::vector<base::string16> event_checkers;
+  std::vector<std::u16string> event_checkers;
   std::string events_registration_script =
       CreateScriptToRegisterListeners(kUsernameName, &event_checkers) +
       CreateScriptToRegisterListeners(kPasswordName, &event_checkers);
@@ -1384,7 +1386,7 @@ TEST_F(PasswordAutofillAgentTest,
   // the matching autofill from the dropdown.
   SimulateUsernameTyping("a");
   // Since the username element has focus, blur event will be not triggered.
-  base::Erase(event_checkers, ASCIIToUTF16("username_blur_event"));
+  base::Erase(event_checkers, u"username_blur_event");
   SimulateSuggestionChoice(username_element_);
 
   // The username and password should now have been autocompleted.
@@ -1897,7 +1899,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldForNonClickFocus) {
   // (see FillIntoFocusedFieldOnlyIntoPasswordFields).
 
   password_autofill_agent_->FillIntoFocusedField(
-      /*is_password=*/false, ASCIIToUTF16("TextToFill"));
+      /*is_password=*/false, u"TextToFill");
   CheckTextFieldsDOMState(std::string(), false, "TextToFill", true);
 }
 
@@ -2245,12 +2247,11 @@ TEST_F(PasswordAutofillAgentTest, RememberFieldPropertiesOnSubmit) {
 
   SaveAndSubmitForm();
 
-  std::map<base::string16, FieldPropertiesMask> expected_properties_masks;
-  expected_properties_masks[ASCIIToUTF16("random_field")] =
-      FieldPropertiesFlags::kHadFocus;
-  expected_properties_masks[ASCIIToUTF16("username")] =
+  std::map<std::u16string, FieldPropertiesMask> expected_properties_masks;
+  expected_properties_masks[u"random_field"] = FieldPropertiesFlags::kHadFocus;
+  expected_properties_masks[u"username"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
-  expected_properties_masks[ASCIIToUTF16("password")] =
+  expected_properties_masks[u"password"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
 
   ExpectFieldPropertiesMasks(PasswordFormSubmitted, expected_properties_masks,
@@ -2289,10 +2290,10 @@ TEST_F(PasswordAutofillAgentTest, FixEmptyFieldPropertiesOnSubmit) {
                           .To<WebFormElement>();
   SaveAndSubmitForm(form_element);
 
-  std::map<base::string16, FieldPropertiesMask> expected_properties_masks;
-  expected_properties_masks[ASCIIToUTF16("new_username")] =
+  std::map<std::u16string, FieldPropertiesMask> expected_properties_masks;
+  expected_properties_masks[u"new_username"] =
       FieldPropertiesFlags::kAutofilledOnPageLoad;
-  expected_properties_masks[ASCIIToUTF16("new_password")] =
+  expected_properties_masks[u"new_password"] =
       FieldPropertiesFlags::kAutofilledOnPageLoad;
 
   ExpectFieldPropertiesMasks(PasswordFormSubmitted, expected_properties_masks,
@@ -2316,10 +2317,10 @@ TEST_F(PasswordAutofillAgentTest,
 
   FireAjaxSucceeded();
 
-  std::map<base::string16, FieldPropertiesMask> expected_properties_masks;
-  expected_properties_masks[ASCIIToUTF16("username")] =
+  std::map<std::u16string, FieldPropertiesMask> expected_properties_masks;
+  expected_properties_masks[u"username"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
-  expected_properties_masks[ASCIIToUTF16("password")] =
+  expected_properties_masks[u"password"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
 
   ExpectFieldPropertiesMasks(PasswordFormSameDocumentNavigation,
@@ -2346,10 +2347,10 @@ TEST_F(PasswordAutofillAgentTest,
 
   base::RunLoop().RunUntilIdle();
 
-  std::map<base::string16, FieldPropertiesMask> expected_properties_masks;
-  expected_properties_masks[ASCIIToUTF16("username")] =
+  std::map<std::u16string, FieldPropertiesMask> expected_properties_masks;
+  expected_properties_masks[u"username"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
-  expected_properties_masks[ASCIIToUTF16("password")] =
+  expected_properties_masks[u"password"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
 
   ExpectFieldPropertiesMasks(PasswordFormSameDocumentNavigation,
@@ -2477,7 +2478,7 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {
   password_element_.SetAutofillState(WebAutofillState::kNotFilled);
 
   SimulateSuggestionChoiceOfUsernameAndPassword(
-      password_element_, base::string16(), ASCIIToUTF16(kAlicePassword));
+      password_element_, std::u16string(), ASCIIToUTF16(kAlicePassword));
   CheckSuggestions(std::string(), true);
   EXPECT_EQ(ASCIIToUTF16(kAlicePassword), password_element_.Value().Utf16());
   EXPECT_TRUE(password_element_.IsAutofilled());
@@ -2502,7 +2503,7 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnAutofilledPasswordField) {
   password_element_.SetAutofillState(WebAutofillState::kAutofilled);
 
   SimulateSuggestionChoiceOfUsernameAndPassword(
-      password_element_, base::string16(), ASCIIToUTF16(kAlicePassword));
+      password_element_, std::u16string(), ASCIIToUTF16(kAlicePassword));
   CheckSuggestions(std::string(), true);
   EXPECT_EQ(ASCIIToUTF16(kAlicePassword), password_element_.Value().Utf16());
   EXPECT_TRUE(password_element_.IsAutofilled());
@@ -2528,7 +2529,7 @@ TEST_F(PasswordAutofillAgentTest, NotShowPopupPasswordField) {
   password_element_.SetAutofillState(WebAutofillState::kNotFilled);
 
   SimulateSuggestionChoiceOfUsernameAndPassword(
-      password_element_, base::string16(), ASCIIToUTF16(kAlicePassword));
+      password_element_, std::u16string(), ASCIIToUTF16(kAlicePassword));
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
   base::RunLoop().RunUntilIdle();
 }
@@ -2601,7 +2602,7 @@ TEST_F(PasswordAutofillAgentTest,
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
   SimulateElementClick(kPasswordName);
 
-  base::string16 password = ASCIIToUTF16("NewPass22");
+  std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
 
@@ -2621,7 +2622,7 @@ TEST_F(PasswordAutofillAgentTest,
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
   SimulateElementClick(kPasswordName);
-  base::string16 password = ASCIIToUTF16("NewPass22");
+  std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
 
@@ -2677,7 +2678,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
   // show UI when the password field is focused.
   fill_data_.wait_for_username = true;
   fill_data_.username_field = FormFieldData();
-  fill_data_.password_field.name = ASCIIToUTF16("new_password");
+  fill_data_.password_field.name = u"new_password";
   UpdateUrlForHTML(kSignupFormHTML);
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -2918,7 +2919,7 @@ TEST_F(PasswordAutofillAgentTest,
   FireAjaxSucceeded();
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(fake_driver_.called_same_document_navigation());
+  EXPECT_FALSE(fake_driver_.called_dynamic_form_submission());
   EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
@@ -2947,7 +2948,7 @@ TEST_F(PasswordAutofillAgentTest,
   ExecuteJavaScriptForTests(show_captcha.c_str());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(fake_driver_.called_same_document_navigation());
+  EXPECT_FALSE(fake_driver_.called_dynamic_form_submission());
   EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
@@ -2980,7 +2981,7 @@ TEST_F(PasswordAutofillAgentTest,
   FireAjaxSucceeded();
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(fake_driver_.called_same_document_navigation());
+  EXPECT_FALSE(fake_driver_.called_dynamic_form_submission());
   EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
@@ -3011,7 +3012,7 @@ TEST_F(PasswordAutofillAgentTest,
   captcha_element.SetAttribute("style", "display:inline;");
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(fake_driver_.called_same_document_navigation());
+  EXPECT_FALSE(fake_driver_.called_dynamic_form_submission());
   EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
@@ -3431,8 +3432,8 @@ TEST_F(PasswordAutofillAgentTest, ShowAutofillSignaturesFlag) {
 TEST_F(PasswordAutofillAgentTest, SuggestWhenJavaScriptUpdatesFieldNames) {
   // Simulate that JavaScript updated field names.
   auto fill_data = fill_data_;
-  fill_data.username_field.name += ASCIIToUTF16("1");
-  fill_data.password_field.name += ASCIIToUTF16("1");
+  fill_data.username_field.name += u"1";
+  fill_data.password_field.name += u"1";
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data);
 
@@ -3654,7 +3655,7 @@ TEST_F(PasswordAutofillAgentTest,
   CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
 
   // Change fill data
-  fill_data_.password_field.value = ASCIIToUTF16("a-changed-password");
+  fill_data_.password_field.value = u"a-changed-password";
   // Supply changed fill data
   password_autofill_agent_->FillPasswordForm(fill_data_);
   CheckTextFieldsSuggestedState(kAliceUsername, true, "a-changed-password",
@@ -3668,7 +3669,7 @@ TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
   base::RunLoop().RunUntilIdle();
 
   // Change fill data
-  fill_data_.username_field.value = ASCIIToUTF16("a-changed-username");
+  fill_data_.username_field.value = u"a-changed-username";
 
   password_autofill_agent_->FillPasswordForm(fill_data_);
   SimulateElementClick(kPasswordName);
@@ -3694,10 +3695,10 @@ TEST_F(PasswordAutofillAgentTest, PSLMatchedPasswordIsNotAutofill) {
 
   // Add PSL matched credentials with username equal to prefilled one.
   PasswordAndMetadata psl_credentials;
-  psl_credentials.password = ASCIIToUTF16("pslpassword");
+  psl_credentials.password = u"pslpassword";
   // Non-empty realm means PSL matched credentials.
   psl_credentials.realm = "example.com";
-  psl_credentials.username = ASCIIToUTF16("prefilledusername");
+  psl_credentials.username = u"prefilledusername";
   fill_data_.additional_logins.push_back(std::move(psl_credentials));
 
   // Simulate the browser sending back the login info, it triggers the
@@ -3721,9 +3722,9 @@ TEST_F(PasswordAutofillAgentTest, FillOnLoadWith) {
 // attributes were changed between from load and filling.
 TEST_F(PasswordAutofillAgentTest, FillOnLoadFormChanged) {
   // Simulate JavaScript changed field names and form name.
-  fill_data_.name += ASCIIToUTF16("1");
-  fill_data_.username_field.name += ASCIIToUTF16("1");
-  fill_data_.password_field.name += ASCIIToUTF16("1");
+  fill_data_.name += u"1";
+  fill_data_.username_field.name += u"1";
+  fill_data_.password_field.name += u"1";
 
   SimulateOnFillPasswordForm(fill_data_);
   CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
@@ -3991,7 +3992,7 @@ TEST_F(PasswordAutofillAgentTest, NoXhrSubmissionAfterFillingOnPageload) {
   // that a submission was successful.
   ExecuteJavaScriptForTests(kJavaScriptRemoveForm);
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(fake_driver_.called_same_document_navigation());
+  ASSERT_FALSE(fake_driver_.called_dynamic_form_submission());
 }
 
 }  // namespace autofill

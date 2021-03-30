@@ -31,7 +31,7 @@ class SystemMediaControlsObserver;
 namespace internal {
 
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
-extern const char kMprisAPIServiceNamePrefix[];
+extern const char kMprisAPIServiceNameFormatString[];
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) extern const char kMprisAPIObjectPath[];
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
 extern const char kMprisAPIInterfaceName[];
@@ -43,10 +43,8 @@ extern const char kMprisAPIPlayerInterfaceName[];
 class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
     : public SystemMediaControls {
  public:
-  SystemMediaControlsLinux();
+  explicit SystemMediaControlsLinux(const std::string& product_name);
   ~SystemMediaControlsLinux() override;
-
-  static SystemMediaControlsLinux* GetInstance();
 
   // Starts the DBus service.
   void StartService();
@@ -60,9 +58,9 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void SetIsPlayPauseEnabled(bool value) override;
   void SetIsStopEnabled(bool value) override {}
   void SetPlaybackStatus(PlaybackStatus value) override;
-  void SetTitle(const base::string16& value) override;
-  void SetArtist(const base::string16& value) override;
-  void SetAlbum(const base::string16& value) override;
+  void SetTitle(const std::u16string& value) override;
+  void SetArtist(const std::u16string& value) override;
+  void SetAlbum(const std::u16string& value) override;
   void SetThumbnail(const SkBitmap& bitmap) override {}
   void ClearThumbnail() override {}
   void ClearMetadata() override;
@@ -105,6 +103,8 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   // signal if necessary.
   void SetMetadataPropertyInternal(const std::string& property_name,
                                    DbusVariant&& new_value);
+
+  const std::string product_name_;
 
   std::unique_ptr<DbusProperties> properties_;
 

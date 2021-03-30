@@ -104,6 +104,10 @@ bool WebViewPasswordManagerClient::PromptUserToChooseCredentials(
   return false;
 }
 
+bool WebViewPasswordManagerClient::RequiresReauthToFill() {
+  return true;
+}
+
 bool WebViewPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool update_password) {
@@ -141,6 +145,7 @@ void WebViewPasswordManagerClient::HideManualFallbackForSaving() {
 
 void WebViewPasswordManagerClient::FocusedInputChanged(
     password_manager::PasswordManagerDriver* driver,
+    autofill::FieldRendererId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
   NOTIMPLEMENTED();
 }
@@ -209,7 +214,7 @@ void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     password_manager::CompromisedSitesCount saved_sites,
     const GURL& origin,
-    const base::string16& username) {
+    const std::u16string& username) {
   [bridge_ showPasswordBreachForLeakType:leak_type URL:origin];
 }
 

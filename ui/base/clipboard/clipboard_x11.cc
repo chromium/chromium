@@ -12,6 +12,7 @@
 #include <set>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -27,6 +28,7 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/nine_image_painter_factory.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/x/selection_owner.h"
 #include "ui/base/x/selection_requestor.h"
 #include "ui/base/x/selection_utils.h"
@@ -482,6 +484,12 @@ void ClipboardX11::OnPreShutdown() {
   x11_details_->StoreCopyPasteDataAndWait();
 }
 
+DataTransferEndpoint* ClipboardX11::GetSource(ClipboardBuffer buffer) const {
+  DCHECK(CalledOnValidThread());
+  auto it = data_src_.find(buffer);
+  return it == data_src_.end() ? nullptr : it->second.get();
+}
+
 uint64_t ClipboardX11::GetSequenceNumber(ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   if (buffer == ClipboardBuffer::kCopyPaste)
@@ -511,6 +519,7 @@ void ClipboardX11::Clear(ClipboardBuffer buffer) {
   DCHECK(CalledOnValidThread());
   DCHECK(IsSupportedClipboardBuffer(buffer));
   x11_details_->Clear(buffer);
+  data_src_[buffer].reset();
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -518,7 +527,7 @@ void ClipboardX11::Clear(ClipboardBuffer buffer) {
 void ClipboardX11::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
-    std::vector<base::string16>* types) const {
+    std::vector<std::u16string>* types) const {
   DCHECK(CalledOnValidThread());
   DCHECK(types);
 
@@ -534,6 +543,10 @@ void ClipboardX11::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
   if (target_list.ContainsFormat(ClipboardFormatType::GetBitmapType()))
     types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
+  if (target_list.ContainsFormat(ClipboardFormatType::GetFilenamesType()) &&
+      base::FeatureList::IsEnabled(features::kClipboardFilenames))
+    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
 
   SelectionData data(x11_details_->RequestAndWaitForTypes(
       buffer, x11_details_->GetAtomsForFormat(
@@ -544,7 +557,7 @@ void ClipboardX11::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<base::string16>
+std::vector<std::u16string>
 ClipboardX11::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
@@ -559,7 +572,7 @@ ClipboardX11::ReadAvailablePlatformSpecificFormatNames(
   std::vector<x11::Future<x11::GetAtomNameReply>> futures;
   for (x11::Atom target : target_list)
     futures.push_back(x11::Connection::Get()->GetAtomName({target}));
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   types.reserve(target_list.size());
   for (auto& future : futures) {
     if (auto response = future.Sync())
@@ -575,7 +588,7 @@ ClipboardX11::ReadAvailablePlatformSpecificFormatNames(
 // platforms.
 void ClipboardX11::ReadText(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
-                            base::string16* result) const {
+                            std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kText);
 
@@ -607,7 +620,7 @@ void ClipboardX11::ReadAsciiText(ClipboardBuffer buffer,
 // platforms.
 void ClipboardX11::ReadHTML(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
-                            base::string16* markup,
+                            std::u16string* markup,
                             std::string* src_url,
                             uint32_t* fragment_start,
                             uint32_t* fragment_end) const {
@@ -635,7 +648,7 @@ void ClipboardX11::ReadHTML(ClipboardBuffer buffer,
 // platforms.
 void ClipboardX11::ReadSvg(ClipboardBuffer buffer,
                            const DataTransferEndpoint* data_dst,
-                           base::string16* result) const {
+                           std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kSvg);
 
@@ -677,9 +690,9 @@ void ClipboardX11::ReadImage(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardX11::ReadCustomData(ClipboardBuffer buffer,
-                                  const base::string16& type,
+                                  const std::u16string& type,
                                   const DataTransferEndpoint* data_dst,
-                                  base::string16* result) const {
+                                  std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kCustomData);
 
@@ -692,8 +705,25 @@ void ClipboardX11::ReadCustomData(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardX11::ReadFilenames(ClipboardBuffer buffer,
+                                 const DataTransferEndpoint* data_dst,
+                                 std::vector<ui::FileInfo>* result) const {
+  DCHECK(CalledOnValidThread());
+  RecordRead(ClipboardFormatMetric::kFilenames);
+
+  SelectionData data(x11_details_->RequestAndWaitForTypes(
+      buffer, x11_details_->GetAtomsForFormat(
+                  ClipboardFormatType::GetFilenamesType())));
+  std::string uri_list;
+  if (data.IsValid())
+    data.AssignTo(&uri_list);
+  *result = ui::URIListToFileInfos(uri_list);
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardX11::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                base::string16* title,
+                                std::u16string* title,
                                 std::string* url) const {
   DCHECK(CalledOnValidThread());
   // TODO(erg): This was left NOTIMPLEMENTED() in the gtk port too.
@@ -747,6 +777,8 @@ void ClipboardX11::WritePortableRepresentations(
       x11_details_->TakeOwnershipOfSelection(ClipboardBuffer::kSelection);
     }
   }
+
+  data_src_[buffer] = std::move(data_src);
 }
 
 // |data_src| is not used. It's only passed to be consistent with other
@@ -761,6 +793,7 @@ void ClipboardX11::WritePlatformRepresentations(
   x11_details_->CreateNewClipboardData();
   DispatchPlatformRepresentations(std::move(platform_representations));
   x11_details_->TakeOwnershipOfSelection(buffer);
+  data_src_[buffer] = std::move(data_src);
 }
 
 void ClipboardX11::WriteText(const char* text_data, size_t text_len) {
@@ -804,13 +837,21 @@ void ClipboardX11::WriteRTF(const char* rtf_data, size_t data_len) {
   WriteData(ClipboardFormatType::GetRtfType(), rtf_data, data_len);
 }
 
+void ClipboardX11::WriteFilenames(std::vector<ui::FileInfo> filenames) {
+  std::string uri_list = ui::FileInfosToURIList(filenames);
+  scoped_refptr<base::RefCountedMemory> mem(
+      base::RefCountedString::TakeString(&uri_list));
+  x11_details_->InsertMapping(ClipboardFormatType::GetFilenamesType().GetName(),
+                              mem);
+}
+
 void ClipboardX11::WriteBookmark(const char* title_data,
                                  size_t title_len,
                                  const char* url_data,
                                  size_t url_len) {
   // Write as a mozilla url (UTF16: URL, newline, title).
-  base::string16 url = base::UTF8ToUTF16(std::string(url_data, url_len) + "\n");
-  base::string16 title =
+  std::u16string url = base::UTF8ToUTF16(std::string(url_data, url_len) + "\n");
+  std::u16string title =
       base::UTF8ToUTF16(base::StringPiece(title_data, title_len));
 
   std::vector<unsigned char> data;

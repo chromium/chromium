@@ -7,17 +7,15 @@
 #include <algorithm>
 #include <cstdio>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_types.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
@@ -48,6 +46,10 @@ constexpr char kAlwaysStartWithNoPlayStore[] =
     "always-start-with-no-play-store";
 
 constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
+
+// ArcVmUreadaheadMode param value strings.
+constexpr char kGenerate[] = "generate";
+constexpr char kDisabled[] = "disabled";
 
 void SetArcCpuRestrictionCallback(
     login_manager::ContainerCpuRestrictionState state,
@@ -173,9 +175,41 @@ bool IsArcVmEnabled() {
       chromeos::switches::kEnableArcVm);
 }
 
+bool IsArcVmRtVcpuEnabled(uint32_t cpus) {
+  // TODO(kansho): remove switch after tast test use Finch instead.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kEnableArcVmRtVcpu)) {
+    return true;
+  }
+  if (cpus == 2 && base::FeatureList::IsEnabled(kRtVcpuDualCore))
+    return true;
+  if (cpus > 2 && base::FeatureList::IsEnabled(kRtVcpuQuadCore))
+    return true;
+  return false;
+}
+
 bool IsArcVmDevConfIgnored() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       chromeos::switches::kIgnoreArcVmDevConf);
+}
+
+ArcVmUreadaheadMode GetArcVmUreadaheadMode() {
+  ArcVmUreadaheadMode mode = ArcVmUreadaheadMode::READAHEAD;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kArcVmUreadaheadMode)) {
+    const std::string value =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            chromeos::switches::kArcVmUreadaheadMode);
+    if (value == kGenerate) {
+      mode = ArcVmUreadaheadMode::GENERATE;
+    } else if (value == kDisabled) {
+      mode = ArcVmUreadaheadMode::DISABLED;
+    } else {
+      LOG(ERROR) << "Invalid parameter " << value << " for "
+                 << chromeos::switches::kArcVmUreadaheadMode;
+    }
+  }
+  return mode;
 }
 
 bool ShouldArcAlwaysStart() {
@@ -266,13 +300,6 @@ bool IsArcOptInVerificationDisabled() {
       chromeos::switches::kDisableArcOptInVerification);
 }
 
-bool IsArcAppWindow(const aura::Window* window) {
-  if (!window)
-    return false;
-  return window->GetProperty(aura::client::kAppType) ==
-         static_cast<int>(ash::AppType::ARC_APP);
-}
-
 int GetWindowTaskId(const aura::Window* window) {
   if (!window)
     return kNoTaskId;
@@ -305,7 +332,7 @@ void SetArcCpuRestriction(CpuRestrictionState cpu_restriction_state) {
 
 bool IsArcForceCacheAppIcon() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kArcForceCacheAppIcons);
+      chromeos::switches::kArcGeneratePlayAutoInstall);
 }
 
 bool IsArcDataCleanupOnStartRequested() {
@@ -357,28 +384,6 @@ int32_t GetLcdDensityForDeviceScaleFactor(float device_scale_factor) {
   return static_cast<int32_t>(
       std::max(1.0f, device_scale_factor * kChromeScaleToAndroidScaleRatio) *
       kDefaultDensityDpi);
-}
-
-bool GenerateFirstStageFstab(const base::FilePath& combined_property_file_name,
-                             const base::FilePath& fstab_path) {
-  DCHECK(IsArcVmEnabled());
-  // The file is exposed to the guest by crosvm via /sys/firmware/devicetree,
-  // which in turn allows the guest's init process to mount /vendor very early,
-  // in its first stage (device) initialization step. crosvm also special-cases
-  // #dt-vendor line and expose |combined_property_file_name| via the device
-  // tree file system too. This also allow the init process to load the expanded
-  // properties very early even before all file systems are mounted.
-  //
-  // The device name for /vendor has to match what arc_vm_client_adapter.cc
-  // configures.
-  constexpr const char kFirstStageFstabTemplate[] =
-      "/dev/block/vdb /vendor squashfs ro,noatime,nosuid,nodev "
-      "wait,check,formattable,reservedsize=128M\n"
-      "#dt-vendor build.prop %s default default\n";
-  return base::WriteFile(
-      fstab_path,
-      base::StringPrintf(kFirstStageFstabTemplate,
-                         combined_property_file_name.value().c_str()));
 }
 
 int GetSystemPropertyInt(const std::string& property) {

@@ -28,8 +28,21 @@ BackgroundColorPaintImageGeneratorImpl::BackgroundColorPaintImageGeneratorImpl(
 
 scoped_refptr<Image> BackgroundColorPaintImageGeneratorImpl::Paint(
     const FloatSize& container_size,
-    const Node* node) {
-  return background_color_paint_worklet_->Paint(container_size, node);
+    const Node* node,
+    const Vector<Color>& animated_colors,
+    const Vector<double>& offsets,
+    const base::Optional<double>& progress) {
+  return background_color_paint_worklet_->Paint(
+      container_size, node, animated_colors, offsets, progress);
+}
+
+bool BackgroundColorPaintImageGeneratorImpl::GetBGColorPaintWorkletParams(
+    Node* node,
+    Vector<Color>* animated_colors,
+    Vector<double>* offsets,
+    base::Optional<double>* progress) {
+  return BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+      node, animated_colors, offsets, progress);
 }
 
 void BackgroundColorPaintImageGeneratorImpl::Shutdown() {

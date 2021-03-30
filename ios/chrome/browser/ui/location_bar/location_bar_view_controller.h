@@ -35,6 +35,9 @@
 // Request the scribble target to be focused.
 - (void)locationBarRequestScribbleTargetFocus;
 
+// Notifies the delegate about a tap on the share button to record metrics.
+- (void)recordShareButtonPressed;
+
 @end
 
 // The view controller displaying the location bar. Manages the two states of

@@ -7,30 +7,44 @@
 
 #include <iosfwd>
 
-#include "components/feed/core/common/enums.h"
-
 namespace feed {
 
+// One value for each network API method used by the feed.
 enum class NetworkRequestType : int {
   kFeedQuery = 0,
   kUploadActions = 1,
+  kNextPage = 2,
+  kListWebFeeds = 3,
+  kUnfollowWebFeed = 4,
+  kFollowWebFeed = 5,
 };
 
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
 enum class LoadStreamStatus {
   // Loading was not attempted.
   kNoStatus = 0,
+
+  // Final loading statuses where loading succeeds. :
   kLoadedFromStore = 1,
   kLoadedFromNetwork = 2,
+  kLoadedStaleDataFromStoreDueToNetworkFailure = 21,
+
+  // Statuses where data is loaded from the persistent store, but is stale.
+  kDataInStoreIsStale = 8,
+  // The timestamp for stored data is in the future, so we're treating stored
+  // data as it it is stale.
+  kDataInStoreIsStaleTimestampInFuture = 9,
+  kDataInStoreStaleMissedLastRefresh = 20,
+
+  // Failure statuses where content is not loaded.
   kFailedWithStoreError = 3,
   kNoStreamDataInStore = 4,
   kModelAlreadyLoaded = 5,
   kNoResponseBody = 6,
   kProtoTranslationFailed = 7,
-  kDataInStoreIsStale = 8,
-  // The timestamp for stored data is in the future, so we're treating stored
-  // data as it it is stale.
-  kDataInStoreIsStaleTimestampInFuture = 9,
   kCannotLoadFromNetworkSupressedForHistoryDelete_DEPRECATED = 10,
   kCannotLoadFromNetworkOffline = 11,
   kCannotLoadFromNetworkThrottled = 12,
@@ -41,12 +55,15 @@ enum class LoadStreamStatus {
   kLoadNotAllowedDisabledByEnterprisePolicy = 17,
   kNetworkFetchFailed = 18,
   kCannotLoadMoreNoNextPageToken = 19,
-  kMaxValue = kCannotLoadMoreNoNextPageToken,
+  kDataInStoreIsExpired = 22,
+
+  kMaxValue = kDataInStoreIsExpired,
 };
 
 std::ostream& operator<<(std::ostream& out, LoadStreamStatus value);
 
 // Keep this in sync with FeedUploadActionsStatus in enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
 enum class UploadActionsStatus {
   kNoStatus = 0,
   kNoPendingActions = 1,

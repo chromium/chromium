@@ -48,14 +48,15 @@ message Collection {
 }
 
 message GetCollectionsRequest {
-  // Deprecated or unused tag numbers
-  reserved 3;
-
   // The language that should be used for content. e.g. "en-US"
   optional string language = 1;
 
   // The approximate permanent location of the user. e.g. "us".
   optional string region = 2;
+
+  // Label (e.g. "chrome_desktop_ntp") used to return exclusive content or
+  // filter unwanted collections from the corpus.
+  repeated string filtering_label = 3;
 }
 
 message GetCollectionsResponse {

@@ -263,8 +263,8 @@ class UploadFlowTest : public UploadJobTestBase {
 
   // UploadJobTestBase:
   void SetUp() override {
-    test_server_.RegisterRequestHandler(
-        base::Bind(&UploadFlowTest::HandlePostRequest, base::Unretained(this)));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &UploadFlowTest::HandlePostRequest, base::Unretained(this)));
     UploadJobTestBase::SetUp();
     upload_attempt_count_ = 0;
   }
@@ -384,7 +384,7 @@ class UploadRequestTest : public UploadJobTestBase {
 
   // UploadJobTestBase:
   void SetUp() override {
-    test_server_.RegisterRequestHandler(base::Bind(
+    test_server_.RegisterRequestHandler(base::BindRepeating(
         &UploadRequestTest::HandlePostRequest, base::Unretained(this)));
     UploadJobTestBase::SetUp();
   }

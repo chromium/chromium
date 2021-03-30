@@ -85,6 +85,7 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
 
   // network::mojom::URLLoaderClient implementation (called from the source of
   // the response):
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(

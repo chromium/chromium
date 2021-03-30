@@ -1,0 +1,23 @@
+<!--
+@WAIT-FOR:Done
+-->
+<html>
+<body>
+  <div class="test-case" aria-hidden="false">
+    <button>expect invisible subtree</button>
+  </div>
+  <div class="test-case" aria-hidden="true">
+    <button>expect visible subtree</button>
+  </div>
+  <div role="group" id="test-status" aria-label="running"></div>
+  <script>
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.test-case[aria-hidden]').forEach((element) => {
+        let hidden = element.getAttribute('aria-hidden') == 'true';
+        element.setAttribute('aria-hidden', !hidden);
+      });
+      document.getElementById('test-status').setAttribute('aria-label', 'Done');
+    });
+  </script>
+</body>
+</html>

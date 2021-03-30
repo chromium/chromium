@@ -44,9 +44,9 @@ class AnimationWorkletProxyClientTest : public RenderingTest {
 
   void SetUp() override {
     RenderingTest::SetUp();
-    auto mutator =
-        std::make_unique<AnimationWorkletMutatorDispatcherImpl>(true);
     mutator_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(
+        mutator_task_runner_);
 
     proxy_client_ = MakeGarbageCollected<AnimationWorkletProxyClient>(
         1, nullptr, nullptr, mutator->GetWeakPtr(), mutator_task_runner_);
@@ -226,9 +226,10 @@ TEST_F(AnimationWorkletProxyClientTest,
                                                         nullptr, nullptr);
   EXPECT_TRUE(proxy_client->mutator_items_.IsEmpty());
 
-  auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(true);
   scoped_refptr<base::SingleThreadTaskRunner> mutator_task_runner =
-      mutator->GetTaskRunner();
+      base::ThreadTaskRunnerHandle::Get();
+  auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(
+      mutator_task_runner);
 
   proxy_client = MakeGarbageCollected<AnimationWorkletProxyClient>(
       1, nullptr, nullptr, mutator->GetWeakPtr(), mutator_task_runner);

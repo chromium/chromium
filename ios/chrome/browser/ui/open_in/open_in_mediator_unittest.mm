@@ -26,7 +26,9 @@ class OpenInMediatorTest : public PlatformTest {
   OpenInMediatorTest()
       : browser_state_(TestChromeBrowserState::Builder().Build()),
         browser_(std::make_unique<TestBrowser>(browser_state_.get())),
-        mediator_([[OpenInMediator alloc] initWithBrowser:browser_.get()]) {}
+        mediator_([[OpenInMediator alloc]
+            initWithBaseViewController:nil
+                               browser:browser_.get()]) {}
 
   std::unique_ptr<web::FakeWebState> CreateWebStateWithView() {
     auto web_state = std::make_unique<web::FakeWebState>();

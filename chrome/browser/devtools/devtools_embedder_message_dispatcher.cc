@@ -65,7 +65,7 @@ struct ParamTuple {
 
   template <typename H, typename... As>
   void Apply(const H& handler, As... args) {
-    handler.Run(args...);
+    handler.Run(std::forward<As>(args)...);
   }
 };
 
@@ -78,16 +78,16 @@ struct ParamTuple<T, Ts...> {
 
   template <typename H, typename... As>
   void Apply(const H& handler, As... args) {
-    tail.template Apply<H, As..., T>(handler, args..., head);
+    tail.template Apply<H, As..., T>(handler, std::forward<As>(args)..., head);
   }
 
   typename StorageTraits<T>::StorageType head;
   ParamTuple<Ts...> tail;
 };
 
-template<typename... As>
-bool ParseAndHandle(const base::Callback<void(As...)>& handler,
-                    const DispatchCallback& callback,
+template <typename... As>
+bool ParseAndHandle(const base::RepeatingCallback<void(As...)>& handler,
+                    DispatchCallback callback,
                     const base::ListValue& list) {
   ParamTuple<As...> tuple;
   if (!tuple.Parse(list, list.begin()))
@@ -96,15 +96,15 @@ bool ParseAndHandle(const base::Callback<void(As...)>& handler,
   return true;
 }
 
-template<typename... As>
+template <typename... As>
 bool ParseAndHandleWithCallback(
-    const base::Callback<void(const DispatchCallback&, As...)>& handler,
-    const DispatchCallback& callback,
+    const base::RepeatingCallback<void(DispatchCallback, As...)>& handler,
+    DispatchCallback callback,
     const base::ListValue& list) {
   ParamTuple<As...> tuple;
   if (!tuple.Parse(list, list.begin()))
     return false;
-  tuple.Apply(handler, callback);
+  tuple.Apply(handler, std::move(callback));
   return true;
 }
 
@@ -120,38 +120,38 @@ bool ParseAndHandleWithCallback(
  */
 class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
  public:
-  ~DispatcherImpl() override {}
+  ~DispatcherImpl() override = default;
 
-  bool Dispatch(const DispatchCallback& callback,
+  bool Dispatch(DispatchCallback callback,
                 const std::string& method,
                 const base::ListValue* params) override {
     auto it = handlers_.find(method);
-    return it != handlers_.end() && it->second.Run(callback, *params);
+    return it != handlers_.end() &&
+           it->second.Run(std::move(callback), *params);
   }
 
   template<typename... As>
   void RegisterHandler(const std::string& method,
                        void (Delegate::*handler)(As...),
                        Delegate* delegate) {
-    handlers_[method] = base::Bind(&ParseAndHandle<As...>,
-                                   base::Bind(handler,
-                                              base::Unretained(delegate)));
+    handlers_[method] = base::BindRepeating(
+        &ParseAndHandle<As...>,
+        base::BindRepeating(handler, base::Unretained(delegate)));
   }
 
-  template<typename... As>
-  void RegisterHandlerWithCallback(
-      const std::string& method,
-      void (Delegate::*handler)(const DispatchCallback&, As...),
-      Delegate* delegate) {
-    handlers_[method] = base::Bind(&ParseAndHandleWithCallback<As...>,
-                                   base::Bind(handler,
-                                              base::Unretained(delegate)));
+  template <typename... As>
+  void RegisterHandlerWithCallback(const std::string& method,
+                                   void (Delegate::*handler)(DispatchCallback,
+                                                             As...),
+                                   Delegate* delegate) {
+    handlers_[method] = base::BindRepeating(
+        &ParseAndHandleWithCallback<As...>,
+        base::BindRepeating(handler, base::Unretained(delegate)));
   }
-
 
  private:
-  using Handler = base::Callback<bool(const DispatchCallback&,
-                                      const base::ListValue&)>;
+  using Handler =
+      base::RepeatingCallback<bool(DispatchCallback, const base::ListValue&)>;
   using HandlerMap = std::map<std::string, Handler>;
   HandlerMap handlers_;
 };

@@ -98,13 +98,30 @@ Polymer({
     },
 
     /** @private */
+    isGuest_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isGuest');
+      },
+    },
+
+    /** @private */
     authenticationMethod_: {
       type: String,
       value() {
-        return loadTimeData.getBoolean('isActiveDirectoryUser') ||
-                loadTimeData.getBoolean('isKerberosEnabled') ?
-            SmbAuthMethod.KERBEROS :
-            SmbAuthMethod.CREDENTIALS;
+        // SSO not supported in guest mode. TODO(crbug/1186188): Enable SSO
+        // option for MGS on file share UI, after fixing authentication error.
+        if (loadTimeData.getBoolean('isGuest')) {
+          return SmbAuthMethod.CREDENTIALS;
+        }
+
+        // SSO only supported on ChromAD or Kerberos.
+        if (loadTimeData.getBoolean('isActiveDirectoryUser') ||
+            loadTimeData.getBoolean('isKerberosEnabled')) {
+          return SmbAuthMethod.KERBEROS;
+        }
+
+        return SmbAuthMethod.CREDENTIALS;
       },
       observer: 'onAuthenticationMethodChanged_',
     },
@@ -214,6 +231,13 @@ Polymer({
    * @private
    */
   shouldShowAuthenticationUI_() {
+    // SSO not supported in guest mode. TODO(crbug/1186188): Enable SSO option
+    // for MGS on file share UI, after fixing authentication error.
+    if (this.isGuest_) {
+      return false;
+    }
+
+    // SSO only supported on ChromAD or Kerberos.
     return this.isActiveDirectory_ || this.isKerberosEnabled_;
   },
 
@@ -240,6 +264,10 @@ Polymer({
           this.setCredentialError_(
               loadTimeData.getString('smbShareAddedAuthFailedMessage'));
         }
+        break;
+      case SmbMountResult.INVALID_USERNAME:
+        this.setCredentialError_(
+            loadTimeData.getString('smbShareAddedInvalidUsernameMessage'));
         break;
 
       // Path Errors

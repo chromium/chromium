@@ -40,8 +40,9 @@ RecoveryInstallGlobalError::RecoveryInstallGlobalError(Profile* profile)
   pref_registrar_.Init(pref);
   pref_registrar_.Add(
       prefs::kRecoveryComponentNeedsElevation,
-      base::Bind(&RecoveryInstallGlobalError::OnElevationRequirementChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &RecoveryInstallGlobalError::OnElevationRequirementChanged,
+          base::Unretained(this)));
 }
 
 RecoveryInstallGlobalError::~RecoveryInstallGlobalError() {}
@@ -63,7 +64,7 @@ int RecoveryInstallGlobalError::MenuItemCommandID() {
   return IDC_ELEVATED_RECOVERY_DIALOG;
 }
 
-base::string16 RecoveryInstallGlobalError::MenuItemLabel() {
+std::u16string RecoveryInstallGlobalError::MenuItemLabel() {
   return l10n_util::GetStringUTF16(IDS_UPDATE_NOW);
 }
 
@@ -93,17 +94,17 @@ bool RecoveryInstallGlobalError::ShouldCloseOnDeactivate() const {
   return false;
 }
 
-base::string16 RecoveryInstallGlobalError::GetBubbleViewTitle() {
+std::u16string RecoveryInstallGlobalError::GetBubbleViewTitle() {
   return l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TITLE);
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 RecoveryInstallGlobalError::GetBubbleViewMessages() {
-  return std::vector<base::string16>(1,
-      l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TEXT));
+  return std::vector<std::u16string>(
+      1, l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TEXT));
 }
 
-base::string16 RecoveryInstallGlobalError::GetBubbleViewAcceptButtonLabel() {
+std::u16string RecoveryInstallGlobalError::GetBubbleViewAcceptButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_RUN_RECOVERY);
 }
 
@@ -115,7 +116,7 @@ bool RecoveryInstallGlobalError::ShouldAddElevationIconToAcceptButton() {
   return true;
 }
 
-base::string16 RecoveryInstallGlobalError::GetBubbleViewCancelButtonLabel() {
+std::u16string RecoveryInstallGlobalError::GetBubbleViewCancelButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_DECLINE_RECOVERY);
 }
 

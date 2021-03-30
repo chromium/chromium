@@ -193,9 +193,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, PersistentIncognito) {
   PrefService* prefs = profile_->GetPrefs();
   SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
-  EXPECT_TRUE(
-      RunExtensionTestIncognito("preference/persistent_incognito")) <<
-      message_;
+  EXPECT_TRUE(RunExtensionTest({.name = "preference/persistent_incognito"},
+                               {.allow_in_incognito = true}))
+      << message_;
 
   // Setting an incognito preference should not create an incognito profile.
   EXPECT_FALSE(profile_->HasPrimaryOTRProfile());
@@ -221,9 +221,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SessionOnlyIncognito) {
   PrefService* prefs = profile_->GetPrefs();
   SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
-  EXPECT_TRUE(
-      RunExtensionTestIncognito("preference/session_only_incognito")) <<
-      message_;
+  EXPECT_TRUE(RunExtensionTest({.name = "preference/session_only_incognito"},
+                               {.allow_in_incognito = true}))
+      << message_;
 
   EXPECT_TRUE(profile_->HasPrimaryOTRProfile());
 
@@ -253,8 +253,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Clear) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChange) {
-  EXPECT_TRUE(RunExtensionTestIncognito("preference/onchange")) <<
-      message_;
+  EXPECT_TRUE(RunExtensionTest({.name = "preference/onchange"},
+                               {.allow_in_incognito = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {
@@ -319,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {
 
   base::FilePath extension_data_dir =
       test_data_dir_.AppendASCII("preference").AppendASCII("onchange_split");
-  ASSERT_TRUE(LoadExtensionIncognito(extension_data_dir));
+  ASSERT_TRUE(LoadExtension(extension_data_dir, {.allow_in_incognito = true}));
 
   // Test 1 - changeDefault
   EXPECT_TRUE(listener1.WaitUntilSatisfied()); // Regular ready
@@ -388,9 +389,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
 
   ExtensionTestMessageListener change_pref_listener("change pref value", false);
 
-  ASSERT_TRUE(
-      LoadExtensionIncognito(test_data_dir_.AppendASCII("preference")
-                                 .AppendASCII("onchange_split_regular_only")));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("preference")
+                                .AppendASCII("onchange_split_regular_only"),
+                            {.allow_in_incognito = true}));
 
   ASSERT_TRUE(change_pref_listener.WaitUntilSatisfied());
   SetCookieControlsMode(prefs, CookieControlsMode::kOff);
@@ -423,11 +424,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_FALSE(loaded_incognito_test_listener.was_satisfied());
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, DataReductionProxy) {
-  EXPECT_TRUE(RunExtensionTest("preference/data_reduction_proxy")) <<
-      message_;
 }
 
 // Tests the behavior of the Safe Browsing API as described in

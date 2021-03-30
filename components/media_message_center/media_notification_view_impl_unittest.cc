@@ -155,8 +155,8 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
 
     // Update the metadata.
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     item_->MediaSessionMetadataChanged(metadata);
 
     // Inject the test media controller into the item.
@@ -217,7 +217,7 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
     return GetHeaderRow(view());
   }
 
-  const base::string16& accessible_name() const {
+  const std::u16string& accessible_name() const {
     return view()->accessible_name_;
   }
 
@@ -262,7 +262,7 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
     return header_row()->expand_button()->GetVisible();
   }
 
-  bool IsActuallyExpanded() const { return view()->IsActuallyExpanded(); }
+  bool GetActuallyExpanded() const { return view()->GetActuallyExpanded(); }
 
   void SimulateButtonClick(MediaSessionAction action) {
     views::Button* button = GetButtonForAction(action);
@@ -428,7 +428,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, PlayPauseButtonTooltipCheck) {
   EXPECT_CALL(container(), OnMediaSessionInfoChanged(_));
 
   auto* button = GetButtonForAction(MediaSessionAction::kPlay);
-  base::string16 tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(tooltip.empty());
 
   media_session::mojom::MediaSessionInfoPtr session_info(
@@ -438,7 +438,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, PlayPauseButtonTooltipCheck) {
   session_info->is_controllable = true;
   GetItem()->MediaSessionInfoChanged(session_info.Clone());
 
-  base::string16 new_tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string new_tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(new_tooltip.empty());
   EXPECT_NE(tooltip, new_tooltip);
 }
@@ -603,8 +603,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, MetadataIsDisplayed) {
   EXPECT_TRUE(title_label()->GetVisible());
   EXPECT_TRUE(artist_label()->GetVisible());
 
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   EXPECT_EQ(kMediaTitleArtistRowExpectedHeight, title_artist_row()->height());
 }
@@ -624,9 +624,9 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_FromObserver) {
   EXPECT_FALSE(header_row()->summary_text_for_testing()->GetVisible());
 
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
-  metadata.album = base::ASCIIToUTF16("album");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
+  metadata.album = u"album";
 
   EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_));
   GetItem()->MediaSessionMetadataChanged(metadata);
@@ -644,7 +644,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_FromObserver) {
 
   EXPECT_EQ(kMediaTitleArtistRowExpectedHeight, title_artist_row()->height());
 
-  EXPECT_EQ(base::ASCIIToUTF16("title2 - artist2 - album"), accessible_name());
+  EXPECT_EQ(u"title2 - artist2 - album", accessible_name());
 
   ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kTitle,
                                   2);
@@ -662,8 +662,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_AppName) {
 
   {
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     metadata.source_title = base::ASCIIToUTF16(kTestAppName);
     GetItem()->MediaSessionMetadataChanged(metadata);
   }
@@ -673,8 +673,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_AppName) {
 
   {
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     GetItem()->MediaSessionMetadataChanged(metadata);
   }
 
@@ -694,7 +694,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, Buttons_WhenCollapsed) {
   view()->SetExpanded(false);
   testing::Mock::VerifyAndClearExpectations(&container());
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
 
   EXPECT_TRUE(IsActionButtonVisible(MediaSessionAction::kPlay));
   EXPECT_TRUE(IsActionButtonVisible(MediaSessionAction::kPreviousTrack));
@@ -766,7 +766,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, Buttons_WhenExpanded) {
   view()->SetExpanded(true);
   testing::Mock::VerifyAndClearExpectations(&container());
 
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
 
   EXPECT_TRUE(IsActionButtonVisible(MediaSessionAction::kPlay));
   EXPECT_TRUE(IsActionButtonVisible(MediaSessionAction::kPreviousTrack));
@@ -779,15 +779,15 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, ClickHeader_ToggleExpand) {
   view()->SetExpanded(true);
   EnableAllActions();
 
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
 
   SimulateHeaderClick();
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
 
   SimulateHeaderClick();
 
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, ActionButtonsHiddenByDefault) {
@@ -863,7 +863,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateArtworkFromItem) {
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, ExpandableDefaultState) {
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 }
 
@@ -871,7 +871,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
        ExpandablePlayPauseActionCountsOnce) {
   view()->SetExpanded(true);
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 
   EnableAction(MediaSessionAction::kPreviousTrack);
@@ -879,7 +879,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   EnableAction(MediaSessionAction::kPlay);
   EnableAction(MediaSessionAction::kPause);
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 
   media_session::mojom::MediaSessionInfoPtr session_info(
@@ -888,12 +888,12 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
       media_session::mojom::MediaPlaybackState::kPlaying;
   view()->UpdateWithMediaSessionInfo(session_info);
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 
   EnableAction(MediaSessionAction::kSeekForward);
 
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
   EXPECT_TRUE(expand_button_enabled());
 }
 
@@ -901,12 +901,12 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
        BecomeExpandableAndWasNotExpandable) {
   view()->SetExpanded(true);
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 
   EnableAllActions();
 
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
   EXPECT_TRUE(expand_button_enabled());
 }
 
@@ -914,17 +914,17 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
        BecomeExpandableButWasAlreadyExpandable) {
   view()->SetExpanded(true);
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 
   EnableAllActions();
 
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
   EXPECT_TRUE(expand_button_enabled());
 
   DisableAction(MediaSessionAction::kSeekForward);
 
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
   EXPECT_TRUE(expand_button_enabled());
 }
 
@@ -932,12 +932,12 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
        BecomeNotExpandableAndWasExpandable) {
   view()->SetExpanded(true);
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 
   EnableAllActions();
 
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
   EXPECT_TRUE(expand_button_enabled());
 
   DisableAction(MediaSessionAction::kPreviousTrack);
@@ -945,7 +945,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   DisableAction(MediaSessionAction::kSeekBackward);
   DisableAction(MediaSessionAction::kSeekForward);
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 }
 
@@ -953,12 +953,12 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
        BecomeNotExpandableButWasAlreadyNotExpandable) {
   view()->SetExpanded(true);
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 
   EnableAction(MediaSessionAction::kSeekForward);
 
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_FALSE(expand_button_enabled());
 }
 
@@ -969,7 +969,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, ActionButtonRowSizeAndAlignment) {
   int button_x = button->GetBoundsInScreen().x();
 
   // When collapsed the button row should be a fixed width.
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
   EXPECT_EQ(124, button_row()->width());
 
   EnableAllActions();
@@ -977,7 +977,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, ActionButtonRowSizeAndAlignment) {
 
   // When expanded the button row should be wider and the play button should
   // have shifted to the left.
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
   EXPECT_LT(124, button_row()->width());
   EXPECT_GT(button_x, button->GetBoundsInScreen().x());
 }
@@ -1015,21 +1015,21 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, AccessibleNodeData) {
 
   EXPECT_TRUE(
       data.HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription));
-  EXPECT_EQ(base::ASCIIToUTF16("title - artist"), accessible_name());
+  EXPECT_EQ(u"title - artist", accessible_name());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, Freezing_DoNotUpdateMetadata) {
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
-  metadata.album = base::ASCIIToUTF16("album");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
+  metadata.album = u"album";
 
   EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_)).Times(0);
   GetItem()->Freeze(base::DoNothing());
   GetItem()->MediaSessionMetadataChanged(metadata);
 
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, Freezing_DoNotUpdateImage) {
@@ -1106,8 +1106,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingDoesntMissUpdates) {
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Bind the item to a new controller that's playing instead of paused.
   auto new_media_controller = std::make_unique<TestMediaController>();
@@ -1127,14 +1127,14 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingDoesntMissUpdates) {
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Update the metadata.
   EXPECT_CALL(unfrozen_callback, Run);
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
   GetItem()->MediaSessionMetadataChanged(metadata);
 
   // The item should no longer be frozen, and we should see the updated data.
@@ -1142,8 +1142,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingDoesntMissUpdates) {
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title2"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist2"), artist_label()->GetText());
+  EXPECT_EQ(u"title2", title_label()->GetText());
+  EXPECT_EQ(u"artist2", artist_label()->GetText());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
@@ -1171,8 +1171,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Bind the item to a new controller that's playing instead of paused.
@@ -1192,14 +1192,14 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Update the metadata.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
   GetItem()->MediaSessionMetadataChanged(metadata);
 
   // The item should still be frozen, and waiting for a new image.
@@ -1207,8 +1207,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Once the freeze timer fires, the item should unfreeze even if there's no
@@ -1220,8 +1220,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title2"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist2"), artist_label()->GetText());
+  EXPECT_EQ(u"title2", title_label()->GetText());
+  EXPECT_EQ(u"artist2", artist_label()->GetText());
   EXPECT_TRUE(GetArtworkImage().isNull());
 }
 
@@ -1248,8 +1248,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForActions) {
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kNextTrack));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPreviousTrack));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Bind the item to a new controller that's playing instead of paused.
   auto new_media_controller = std::make_unique<TestMediaController>();
@@ -1270,13 +1270,13 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForActions) {
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kNextTrack));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPreviousTrack));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Update the metadata.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
   GetItem()->MediaSessionMetadataChanged(metadata);
 
   // The item should still be frozen, and waiting for new actions.
@@ -1286,8 +1286,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForActions) {
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kNextTrack));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPreviousTrack));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Once we receive actions, the item should unfreeze.
   EXPECT_CALL(unfrozen_callback, Run);
@@ -1302,8 +1302,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForActions) {
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kSeekForward));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kSeekBackward));
-  EXPECT_EQ(base::ASCIIToUTF16("title2"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist2"), artist_label()->GetText());
+  EXPECT_EQ(u"title2", title_label()->GetText());
+  EXPECT_EQ(u"artist2", artist_label()->GetText());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest,
@@ -1332,8 +1332,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Bind the item to a new controller that's playing instead of paused.
@@ -1353,14 +1353,14 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Update the metadata.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
   GetItem()->MediaSessionMetadataChanged(metadata);
 
   // The item should still be frozen, and waiting for a new image.
@@ -1368,8 +1368,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Once we receive artwork, the item should unfreeze.
@@ -1384,8 +1384,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title2"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist2"), artist_label()->GetText());
+  EXPECT_EQ(u"title2", title_label()->GetText());
+  EXPECT_EQ(u"artist2", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 }
 
@@ -1396,38 +1396,38 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, ForcedExpandedState) {
   // Force it to be expanded.
   bool expanded_state = true;
   view()->SetForcedExpandedState(&expanded_state);
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
 
   // Since it's forced, clicking on the header should not toggle the expanded
   // state.
   SimulateHeaderClick();
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
 
   // Force it to be not expanded.
   expanded_state = false;
   view()->SetForcedExpandedState(&expanded_state);
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
 
   // Since it's forced, clicking on the header should not toggle the expanded
   // state.
   SimulateHeaderClick();
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
 
   // Stop forcing expanded state.
   view()->SetForcedExpandedState(nullptr);
-  EXPECT_FALSE(IsActuallyExpanded());
+  EXPECT_FALSE(GetActuallyExpanded());
 
   // Clicking on the header should toggle the expanded state.
   SimulateHeaderClick();
-  EXPECT_TRUE(IsActuallyExpanded());
+  EXPECT_TRUE(GetActuallyExpanded());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, AllowsHidingOfAppIcon) {
   MediaNotificationViewImpl shows_icon(&container(), nullptr, nullptr,
-                                       base::string16(), kViewWidth,
+                                       std::u16string(), kViewWidth,
                                        /*should_show_icon=*/true);
   MediaNotificationViewImpl hides_icon(&container(), nullptr, nullptr,
-                                       base::string16(), kViewWidth,
+                                       std::u16string(), kViewWidth,
                                        /*should_show_icon=*/false);
 
   EXPECT_TRUE(

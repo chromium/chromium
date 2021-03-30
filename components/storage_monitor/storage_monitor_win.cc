@@ -11,6 +11,7 @@
 #include <stddef.h>
 
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/wrapped_window_proc.h"
 #include "components/storage_monitor/portable_device_watcher_win.h"
 #include "components/storage_monitor/removable_device_constants.h"
@@ -121,13 +122,14 @@ void StorageMonitorWin::EjectDevice(
 
 bool StorageMonitorWin::GetMTPStorageInfoFromDeviceId(
     const std::string& storage_device_id,
-    base::string16* device_location,
-    base::string16* storage_object_id) const {
+    std::wstring* device_location,
+    std::wstring* storage_object_id) const {
   StorageInfo::Type type;
   StorageInfo::CrackDeviceId(storage_device_id, &type, nullptr);
-  return ((type == StorageInfo::MTP_OR_PTP) &&
-      portable_device_watcher_->GetMTPStorageInfoFromDeviceId(
-          storage_device_id, device_location, storage_object_id));
+  if (type != StorageInfo::MTP_OR_PTP)
+    return false;
+  return portable_device_watcher_->GetMTPStorageInfoFromDeviceId(
+      storage_device_id, device_location, storage_object_id);
 }
 
 // static

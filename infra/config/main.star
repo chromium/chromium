@@ -10,15 +10,12 @@ load("//lib/branches.star", "branches")
 load("//project.star", "settings")
 
 lucicfg.check_version(
-    min = "1.21.0",
+    min = "1.22.1",
     message = "Update depot_tools",
 )
 
 # Enable LUCI Realms support.
 lucicfg.enable_experiment("crbug.com/1085650")
-
-# Enable tree closing.
-lucicfg.enable_experiment("crbug.com/1054172")
 
 # Tell lucicfg what files it is allowed to touch
 lucicfg.config(
@@ -27,7 +24,6 @@ lucicfg.config(
         "commit-queue.cfg",
         "cq-builders.md",
         "cr-buildbucket.cfg",
-        "goma-usage.pyl",
         "luci-logdog.cfg",
         "luci-milo.cfg",
         "luci-notify.cfg",
@@ -135,7 +131,7 @@ branches.exec("//subprojects/goma/subproject.star")
 branches.exec("//subprojects/webrtc/subproject.star")
 
 branches.exec("//generators/cq-builders-md.star")
-exec("//generators/goma-usage.star")
+
 exec("//generators/scheduler-noop-jobs.star")
 exec("//generators/sort-consoles.star")
 

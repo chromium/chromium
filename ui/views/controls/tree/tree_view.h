@@ -189,7 +189,7 @@ class VIEWS_EXPORT TreeView : public View,
 
   // TextfieldController overrides:
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 
@@ -201,7 +201,7 @@ class VIEWS_EXPORT TreeView : public View,
   int GetRowCount() override;
   int GetSelectedRow() override;
   void SetSelectedRow(int row) override;
-  base::string16 GetTextForRow(int row) override;
+  std::u16string GetTextForRow(int row) override;
 
  protected:
   // View overrides:

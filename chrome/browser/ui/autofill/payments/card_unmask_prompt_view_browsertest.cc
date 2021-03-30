@@ -75,9 +75,9 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
   // CardUnmaskPromptControllerImpl:.
   // When the confirm button is clicked.
-  void OnUnmaskPromptAccepted(const base::string16& cvc,
-                              const base::string16& exp_month,
-                              const base::string16& exp_year,
+  void OnUnmaskPromptAccepted(const std::u16string& cvc,
+                              const std::u16string& exp_month,
+                              const std::u16string& exp_year,
                               bool should_store_pan,
                               bool enable_fido_auth) override {
     // Call the original implementation.
@@ -86,12 +86,11 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
     // Wait some time and show verification result. An empty message means
     // success is shown.
-    base::string16 verification_message;
+    std::u16string verification_message;
     if (expected_failure_temporary_) {
-      verification_message = base::ASCIIToUTF16("Check your CVC and try again");
+      verification_message = u"Check your CVC and try again";
     } else if (expected_failure_permanent_) {
-      verification_message =
-          base::ASCIIToUTF16("This card can't be verified right now.");
+      verification_message = u"This card can't be verified right now.";
     }
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -127,7 +126,7 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   using CardUnmaskPromptControllerImpl::view;
 
  private:
-  void ShowVerificationResult(const base::string16 verification_message,
+  void ShowVerificationResult(const std::u16string verification_message,
                               bool allow_retry) {
     // It's possible the prompt has been closed.
     if (!view())
@@ -226,11 +225,11 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest, DisplayUI) {
 IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
                        EarlyCloseAfterSuccess) {
   ShowUi(kExpiryExpired);
-  controller()->OnUnmaskPromptAccepted(
-      base::ASCIIToUTF16("123"), base::ASCIIToUTF16("10"),
-      base::ASCIIToUTF16(test::NextYear()), /*should_store_locally=*/false,
-      /*enable_fido_auth=*/false);
-  EXPECT_EQ(base::ASCIIToUTF16("123"), delegate()->details().cvc);
+  controller()->OnUnmaskPromptAccepted(u"123", u"10",
+                                       base::ASCIIToUTF16(test::NextYear()),
+                                       /*should_store_locally=*/false,
+                                       /*enable_fido_auth=*/false);
+  EXPECT_EQ(u"123", delegate()->details().cvc);
   controller()->OnVerificationResult(AutofillClient::SUCCESS);
 
   // Simulate the user clicking [x] before the "Success!" message disappears.

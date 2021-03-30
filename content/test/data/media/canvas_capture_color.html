@@ -168,7 +168,7 @@ function testCanvas2DContextLoss(alphaContext) {
 
   doCanvasCaptureAndCheckRgba(contextType, RED, alphaContext)
       .then(function() {
-        window.internals.loseSharedGraphicsContext3D();
+        internals.forceLoseCanvasContext(canvas, "2d")
         // For the canvas to realize its Graphics context was lost we must try
         // to use the contents of the canvas.
         var imageData = canvas.getContext(contextType).getImageData(0, 0, 1, 1);

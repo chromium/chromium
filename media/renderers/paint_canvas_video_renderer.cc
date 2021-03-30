@@ -45,86 +45,27 @@
 #include "ui/gfx/skia_util.h"
 
 // Skia internal format depends on a platform. On Android it is ABGR, on others
-// it is ARGB. Commented out lines below don't exist in libyuv yet and are
-// shown here to indicate where ideal conversions are currently missing.
+// it's ARGB. YUV_MATRIX(), YUV_ORDER() conditionally remap YUV to YVU for ABGR.
 #if SK_B32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_R32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
-#define LIBYUV_I400_TO_ARGB libyuv::I400ToARGB
-#define LIBYUV_I420_TO_ARGB libyuv::I420ToARGB
-#define LIBYUV_I422_TO_ARGB libyuv::I422ToARGB
-#define LIBYUV_I444_TO_ARGB libyuv::I444ToARGB
-
-#define LIBYUV_I420ALPHA_TO_ARGB_MATRIX libyuv::I420AlphaToARGBMatrix
-
-#define LIBYUV_J400_TO_ARGB libyuv::J400ToARGB
-#define LIBYUV_J420_TO_ARGB libyuv::J420ToARGB
-#define LIBYUV_J422_TO_ARGB libyuv::J422ToARGB
-#define LIBYUV_J444_TO_ARGB libyuv::J444ToARGB
-
-#define LIBYUV_H420_TO_ARGB libyuv::H420ToARGB
-#define LIBYUV_H422_TO_ARGB libyuv::H422ToARGB
-#define LIBYUV_H444_TO_ARGB libyuv::H444ToARGB
-
-#define LIBYUV_U420_TO_ARGB libyuv::U420ToARGB
-#define LIBYUV_U422_TO_ARGB libyuv::U422ToARGB
-#define LIBYUV_U444_TO_ARGB libyuv::U444ToARGB
-
-#define LIBYUV_I010_TO_ARGB libyuv::I010ToARGB
-#define LIBYUV_I210_TO_ARGB libyuv::I210ToARGB
-// #define LIBYUV_I410_TO_ARGB libyuv::I410ToARGB
-
-// #define LIBYUV_J010_TO_ARGB libyuv::J010ToARGB
-// #define LIBYUV_J210_TO_ARGB libyuv::J210ToARGB
-// #define LIBYUV_J410_TO_ARGB libyuv::J410ToARGB
-
-#define LIBYUV_H010_TO_ARGB libyuv::H010ToARGB
-#define LIBYUV_H210_TO_ARGB libyuv::H210ToARGB
-// #define LIBYUV_H410_TO_ARGB libyuv::H410ToARGB
-
-#define LIBYUV_U010_TO_ARGB libyuv::U010ToARGB
-#define LIBYUV_U210_TO_ARGB libyuv::U210ToARGB
-// #define LIBYUV_U410_TO_ARGB libyuv::U410ToARGB
-
-#define LIBYUV_NV12_TO_ARGB libyuv::NV12ToARGB
+#define OUTPUT_ARGB 1
+#define LIBYUV_ABGR_TO_ARGB libyuv::ABGRToARGB
+#define YUV_MATRIX(matrix) matrix
+#define YUV_ORDER(y, y_stride, u, u_stride, v, v_stride) \
+  (y), (y_stride), (u), (u_stride), (v), (v_stride)
+#define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
+  (v), (v_stride), (y), (y_stride), (u), (u_stride)
+#define LIBYUV_NV12_TO_ARGB_MATRIX libyuv::NV12ToARGBMatrix
 #elif SK_R32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_B32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
-#define LIBYUV_I400_TO_ARGB libyuv::I400ToARGB
-#define LIBYUV_I420_TO_ARGB libyuv::I420ToABGR
-#define LIBYUV_I422_TO_ARGB libyuv::I422ToABGR
-#define LIBYUV_I444_TO_ARGB libyuv::I444ToABGR
-
-#define LIBYUV_I420ALPHA_TO_ARGB_MATRIX libyuv::I420AlphaToABGRMatrix
-
-#define LIBYUV_J400_TO_ARGB libyuv::J400ToARGB
-#define LIBYUV_J420_TO_ARGB libyuv::J420ToABGR
-#define LIBYUV_J422_TO_ARGB libyuv::J422ToABGR
-#define LIBYUV_J444_TO_ARGB libyuv::J444ToABGR
-
-#define LIBYUV_H420_TO_ARGB libyuv::H420ToABGR
-#define LIBYUV_H422_TO_ARGB libyuv::H422ToABGR
-#define LIBYUV_H444_TO_ARGB libyuv::H444ToABGR
-
-#define LIBYUV_U420_TO_ARGB libyuv::U420ToABGR
-#define LIBYUV_U422_TO_ARGB libyuv::U422ToABGR
-#define LIBYUV_U444_TO_ARGB libyuv::U444ToABGR
-
-#define LIBYUV_I010_TO_ARGB libyuv::I010ToABGR
-#define LIBYUV_I210_TO_ARGB libyuv::I210ToABGR
-// #define LIBYUV_I410_TO_ARGB libyuv::I410ToABGR
-
-// #define LIBYUV_J010_TO_ARGB libyuv::J010ToABGR
-// #define LIBYUV_J210_TO_ARGB libyuv::J210ToABGR
-// #define LIBYUV_J410_TO_ARGB libyuv::J410ToABGR
-
-#define LIBYUV_H010_TO_ARGB libyuv::H010ToABGR
-#define LIBYUV_H210_TO_ARGB libyuv::H210ToABGR
-// #define LIBYUV_H410_TO_ARGB libyuv::H410ToABGR
-
-#define LIBYUV_U010_TO_ARGB libyuv::H010ToABGR
-#define LIBYUV_U210_TO_ARGB libyuv::U210ToABGR
-// #define LIBYUV_U410_TO_ARGB libyuv::U410ToABGR
-
-#define LIBYUV_NV12_TO_ARGB libyuv::NV12ToABGR
+#define OUTPUT_ARGB 0
+#define LIBYUV_ABGR_TO_ARGB libyuv::ARGBToABGR
+#define YUV_MATRIX(matrix) matrix##VU
+#define YUV_ORDER(y, y_stride, u, u_stride, v, v_stride) \
+  (y), (y_stride), (v), (v_stride), (u), (u_stride)
+#define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
+  (u), (u_stride), (y), (y_stride), (v), (v_stride)
+#define LIBYUV_NV12_TO_ARGB_MATRIX libyuv::NV21ToARGBMatrix
 #else
 #error Unexpected Skia ARGB_8888 layout!
 #endif
@@ -243,7 +184,6 @@ sk_sp<SkImage> WrapGLTexture(
     GLenum target,
     GLuint texture_id,
     const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
     viz::RasterContextProvider* raster_context_provider) {
   GrGLTextureInfo texture_info;
   texture_info.fID = texture_id;
@@ -256,8 +196,7 @@ sk_sp<SkImage> WrapGLTexture(
                                    GrMipMapped::kNo, texture_info);
   return SkImage::MakeFromAdoptedTexture(
       raster_context_provider->GrContext(), backend_texture,
-      kTopLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType, kPremul_SkAlphaType,
-      color_space.ToSkColorSpace());
+      kTopLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
 }
 
 void VideoFrameCopyTextureOrSubTexture(gpu::gles2::GLES2Interface* gl,
@@ -314,7 +253,7 @@ void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
   WaitAndReplaceSyncTokenClient client(ri);
   video_frame->UpdateReleaseSyncToken(&client);
 
-  if (video_frame->metadata()->read_lock_fences_enabled) {
+  if (video_frame->metadata().read_lock_fences_enabled) {
     // |video_frame| must be kept alive during read operations.
     DCHECK(context_support);
     unsigned query_id = 0;
@@ -334,6 +273,30 @@ size_t GCD(size_t a, size_t b) {
 }
 size_t LCM(size_t a, size_t b) {
   return a / GCD(a, b) * b;
+}
+
+const libyuv::YuvConstants* GetYuvContantsForColorSpace(SkYUVColorSpace cs) {
+  switch (cs) {
+    case kJPEG_Full_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvJPEGConstants);
+    case kRec601_Limited_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvI601Constants);
+    case kRec709_Full_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvF709Constants);
+    case kRec709_Limited_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvH709Constants);
+    case kBT2020_8bit_Full_SkYUVColorSpace:
+    case kBT2020_10bit_Full_SkYUVColorSpace:
+    case kBT2020_12bit_Full_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvV2020Constants);
+    case kBT2020_8bit_Limited_SkYUVColorSpace:
+    case kBT2020_10bit_Limited_SkYUVColorSpace:
+    case kBT2020_12bit_Limited_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuv2020Constants);
+    case kIdentity_SkYUVColorSpace:
+      NOTREACHED();
+      return nullptr;
+  };
 }
 
 void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
@@ -380,214 +343,128 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
           .data = video_frame->visible_data(plane) +
                   video_frame->stride(plane) * (chunk_start * rows_per_chunk) /
                       VideoFrame::SampleSize(format, plane).height()};
+    } else {
+      plane_meta[plane] = {.stride = 0, .data = nullptr};
     }
   }
 
   uint8_t* pixels = static_cast<uint8_t*>(rgb_pixels) +
                     row_bytes * chunk_start * rows_per_chunk;
 
-  if (format == PIXEL_FORMAT_ARGB) {
+  if (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB ||
+      format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR) {
     DCHECK_LE(width, static_cast<int>(row_bytes));
     const uint8_t* data = plane_meta[VideoFrame::kARGBPlane].data;
-    for (size_t i = 0; i < rows; i++) {
-      memcpy(pixels, data, width * 4);
-      pixels += row_bytes;
-      data += plane_meta[VideoFrame::kARGBPlane].stride;
+
+    if ((OUTPUT_ARGB &&
+         (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB)) ||
+        (!OUTPUT_ARGB &&
+         (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR))) {
+      for (size_t i = 0; i < rows; i++) {
+        memcpy(pixels, data, width * 4);
+        pixels += row_bytes;
+        data += plane_meta[VideoFrame::kARGBPlane].stride;
+      }
+    } else {
+      LIBYUV_ABGR_TO_ARGB(plane_meta[VideoFrame::kARGBPlane].data,
+                          plane_meta[VideoFrame::kARGBPlane].stride, pixels,
+                          row_bytes, width, rows);
     }
     done->Run();
     return;
   }
 
   // TODO(crbug.com/828599): This should default to BT.709 color space.
-  SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;
-  video_frame->ColorSpace().ToSkYUVColorSpace(&color_space);
-
-  // Downgrade unsupported color spaces to supported ones. libyuv doesn't have
-  // support for these, so this is best effort.
-  if (color_space == kBT2020_8bit_Full_SkYUVColorSpace)
-    color_space = kBT2020_SkYUVColorSpace;
-  else if (color_space == kRec709_Full_SkYUVColorSpace)
-    color_space = kRec709_Limited_SkYUVColorSpace;
+  auto yuv_cs = kRec601_SkYUVColorSpace;
+  video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(), &yuv_cs);
+  const libyuv::YuvConstants* matrix = GetYuvContantsForColorSpace(yuv_cs);
 
   if (!video_frame->data(VideoFrame::kUPlane) &&
       !video_frame->data(VideoFrame::kVPlane)) {
     DCHECK_EQ(format, PIXEL_FORMAT_I420);
-    auto func = (color_space == kJPEG_SkYUVColorSpace) ? LIBYUV_J400_TO_ARGB
-                                                       : LIBYUV_I400_TO_ARGB;
-    func(plane_meta[VideoFrame::kYPlane].data,
-         plane_meta[VideoFrame::kYPlane].stride, pixels, row_bytes, width,
-         rows);
+    // For monochrome content ARGB and ABGR are interchangeable.
+    libyuv::I400ToARGBMatrix(plane_meta[VideoFrame::kYPlane].data,
+                             plane_meta[VideoFrame::kYPlane].stride, pixels,
+                             row_bytes, matrix, width, rows);
     done->Run();
     return;
   }
 
-  auto convert_yuv = [&](auto&& func) {
-    func(plane_meta[VideoFrame::kYPlane].data,
-         plane_meta[VideoFrame::kYPlane].stride,
-         plane_meta[VideoFrame::kUPlane].data,
-         plane_meta[VideoFrame::kUPlane].stride,
-         plane_meta[VideoFrame::kVPlane].data,
-         plane_meta[VideoFrame::kVPlane].stride, pixels, row_bytes, width,
-         rows);
+  auto convert_yuv = [&](const libyuv::YuvConstants* matrix, auto&& func) {
+    func(YUV_ORDER(plane_meta[VideoFrame::kYPlane].data,
+                   plane_meta[VideoFrame::kYPlane].stride,
+                   plane_meta[VideoFrame::kUPlane].data,
+                   plane_meta[VideoFrame::kUPlane].stride,
+                   plane_meta[VideoFrame::kVPlane].data,
+                   plane_meta[VideoFrame::kVPlane].stride),
+         pixels, row_bytes, matrix, width, rows);
   };
 
-  auto convert_yuv16 = [&](auto&& func) {
-    func(
-        reinterpret_cast<const uint16_t*>(plane_meta[VideoFrame::kYPlane].data),
-        plane_meta[VideoFrame::kYPlane].stride / 2,
-        reinterpret_cast<const uint16_t*>(plane_meta[VideoFrame::kUPlane].data),
-        plane_meta[VideoFrame::kUPlane].stride / 2,
-        reinterpret_cast<const uint16_t*>(plane_meta[VideoFrame::kVPlane].data),
-        plane_meta[VideoFrame::kVPlane].stride / 2, pixels, row_bytes, width,
-        rows);
+  auto convert_yuv16 = [&](const libyuv::YuvConstants* matrix, auto&& func) {
+    func(YUV_ORDER(reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::kYPlane].data),
+                   plane_meta[VideoFrame::kYPlane].stride / 2,
+                   reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::kUPlane].data),
+                   plane_meta[VideoFrame::kUPlane].stride / 2,
+                   reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::kVPlane].data),
+                   plane_meta[VideoFrame::kVPlane].stride / 2),
+         pixels, row_bytes, matrix, width, rows);
   };
 
   switch (format) {
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I420:
-      switch (color_space) {
-        case kJPEG_SkYUVColorSpace:
-          convert_yuv(LIBYUV_J420_TO_ARGB);
-          break;
-        case kRec709_SkYUVColorSpace:
-          convert_yuv(LIBYUV_H420_TO_ARGB);
-          break;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv(LIBYUV_I420_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv(LIBYUV_U420_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
-      }
+      convert_yuv(matrix, libyuv::I420ToARGBMatrix);
       break;
     case PIXEL_FORMAT_I422:
-      switch (color_space) {
-        case kJPEG_SkYUVColorSpace:
-          convert_yuv(LIBYUV_J422_TO_ARGB);
-          break;
-        case kRec709_SkYUVColorSpace:
-          convert_yuv(LIBYUV_H422_TO_ARGB);
-          break;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv(LIBYUV_I422_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv(LIBYUV_U422_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
+      convert_yuv(matrix, libyuv::I422ToARGBMatrix);
+      break;
+    case PIXEL_FORMAT_I444:
+      // Special case for 4:4:4 RGB encoded videos.
+      if (video_frame->ColorSpace().GetMatrixID() ==
+          gfx::ColorSpace::MatrixID::GBR) {
+        libyuv::MergeARGBPlane(
+            GBR_TO_RGB_ORDER(plane_meta[VideoFrame::kYPlane].data,
+                             plane_meta[VideoFrame::kYPlane].stride,
+                             plane_meta[VideoFrame::kUPlane].data,
+                             plane_meta[VideoFrame::kUPlane].stride,
+                             plane_meta[VideoFrame::kVPlane].data,
+                             plane_meta[VideoFrame::kVPlane].stride),
+            plane_meta[VideoFrame::kAPlane].data,
+            plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes, width,
+            rows);
+      } else {
+        convert_yuv(matrix, libyuv::I444ToARGBMatrix);
       }
+      break;
+    case PIXEL_FORMAT_YUV420P10:
+      convert_yuv16(matrix, libyuv::I010ToARGBMatrix);
+      break;
+    case PIXEL_FORMAT_YUV422P10:
+      convert_yuv16(matrix, libyuv::I210ToARGBMatrix);
       break;
 
     case PIXEL_FORMAT_I420A:
-      switch (color_space) {
-        case kJPEG_SkYUVColorSpace:
-          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
-              plane_meta[VideoFrame::kYPlane].data,
-              plane_meta[VideoFrame::kYPlane].stride,
-              plane_meta[VideoFrame::kUPlane].data,
-              plane_meta[VideoFrame::kUPlane].stride,
-              plane_meta[VideoFrame::kVPlane].data,
-              plane_meta[VideoFrame::kVPlane].stride,
-              plane_meta[VideoFrame::kAPlane].data,
-              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
-              &libyuv::kYuvJPEGConstants, width, rows, premultiply_alpha);
-          break;
-        case kRec709_SkYUVColorSpace:
-          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
-              plane_meta[VideoFrame::kYPlane].data,
-              plane_meta[VideoFrame::kYPlane].stride,
-              plane_meta[VideoFrame::kUPlane].data,
-              plane_meta[VideoFrame::kUPlane].stride,
-              plane_meta[VideoFrame::kVPlane].data,
-              plane_meta[VideoFrame::kVPlane].stride,
-              plane_meta[VideoFrame::kAPlane].data,
-              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
-              &libyuv::kYuvH709Constants, width, rows, premultiply_alpha);
-          break;
-        case kRec601_SkYUVColorSpace:
-          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
-              plane_meta[VideoFrame::kYPlane].data,
-              plane_meta[VideoFrame::kYPlane].stride,
-              plane_meta[VideoFrame::kUPlane].data,
-              plane_meta[VideoFrame::kUPlane].stride,
-              plane_meta[VideoFrame::kVPlane].data,
-              plane_meta[VideoFrame::kVPlane].stride,
-              plane_meta[VideoFrame::kAPlane].data,
-              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
-              &libyuv::kYuvI601Constants, width, rows, premultiply_alpha);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
-              plane_meta[VideoFrame::kYPlane].data,
-              plane_meta[VideoFrame::kYPlane].stride,
-              plane_meta[VideoFrame::kUPlane].data,
-              plane_meta[VideoFrame::kUPlane].stride,
-              plane_meta[VideoFrame::kVPlane].data,
-              plane_meta[VideoFrame::kVPlane].stride,
-              plane_meta[VideoFrame::kAPlane].data,
-              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
-              &libyuv::kYuv2020Constants, width, rows, premultiply_alpha);
-          break;
-        default:
-          NOTREACHED();
-      }
+      libyuv::I420AlphaToARGBMatrix(
+          YUV_ORDER(plane_meta[VideoFrame::kYPlane].data,
+                    plane_meta[VideoFrame::kYPlane].stride,
+                    plane_meta[VideoFrame::kUPlane].data,
+                    plane_meta[VideoFrame::kUPlane].stride,
+                    plane_meta[VideoFrame::kVPlane].data,
+                    plane_meta[VideoFrame::kVPlane].stride),
+          plane_meta[VideoFrame::kAPlane].data,
+          plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes, matrix,
+          width, rows, premultiply_alpha);
       break;
 
-    case PIXEL_FORMAT_I444:
-      switch (color_space) {
-        case kJPEG_SkYUVColorSpace:
-          convert_yuv(LIBYUV_J444_TO_ARGB);
-          break;
-        case kRec709_SkYUVColorSpace:
-          convert_yuv(LIBYUV_H444_TO_ARGB);
-          break;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv(LIBYUV_I444_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv(LIBYUV_U444_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
-      }
-      break;
-
-    case PIXEL_FORMAT_YUV420P10:
-      switch (color_space) {
-        case kRec709_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_H010_TO_ARGB);
-          break;
-        case kJPEG_SkYUVColorSpace:
-          FALLTHROUGH;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_I010_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_U010_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
-      }
-      break;
-    case PIXEL_FORMAT_YUV422P10:
-      switch (color_space) {
-        case kRec709_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_H210_TO_ARGB);
-          break;
-        case kJPEG_SkYUVColorSpace:
-          FALLTHROUGH;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_I210_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_U210_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
-      }
+    case PIXEL_FORMAT_NV12:
+      LIBYUV_NV12_TO_ARGB_MATRIX(plane_meta[VideoFrame::kYPlane].data,
+                                 plane_meta[VideoFrame::kYPlane].stride,
+                                 plane_meta[VideoFrame::kUVPlane].data,
+                                 plane_meta[VideoFrame::kUVPlane].stride,
+                                 pixels, row_bytes, matrix, width, rows);
       break;
 
     case PIXEL_FORMAT_YUV420P9:
@@ -600,14 +477,6 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_Y16:
       NOTREACHED()
           << "These cases should be handled in ConvertVideoFrameToRGBPixels";
-      break;
-
-    case PIXEL_FORMAT_NV12:
-      LIBYUV_NV12_TO_ARGB(plane_meta[VideoFrame::kYPlane].data,
-                          plane_meta[VideoFrame::kYPlane].stride,
-                          plane_meta[VideoFrame::kUPlane].data,
-                          plane_meta[VideoFrame::kUPlane].stride, pixels,
-                          row_bytes, width, rows);
       break;
 
     case PIXEL_FORMAT_UYVY:
@@ -623,6 +492,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_P016LE:
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
+    case PIXEL_FORMAT_RGBAF16:
     case PIXEL_FORMAT_UNKNOWN:
       NOTREACHED() << "Only YUV formats and Y16 are supported, got: "
                    << media::VideoPixelFormatToString(format);
@@ -631,7 +501,12 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
 }
 
 // Valid gl texture internal format that can try to use direct uploading path.
-bool ValidFormatForDirectUploading(GrGLenum format, unsigned int type) {
+bool ValidFormatForDirectUploading(
+    viz::RasterContextProvider* raster_context_provider,
+    GrGLenum format,
+    unsigned int type) {
+  const gpu::Capabilities& context_caps =
+      raster_context_provider->ContextCapabilities();
   switch (format) {
     case GL_RGBA:
       return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_4_4_4_4;
@@ -644,7 +519,7 @@ bool ValidFormatForDirectUploading(GrGLenum format, unsigned int type) {
     case GL_RGB8:
     case GL_RGB10_A2:
     case GL_RGBA4:
-      return true;
+      return context_caps.major_version >= 3;
     default:
       return false;
   }
@@ -703,40 +578,38 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
   bool QueryYUVA(const SkYUVAPixmapInfo::SupportedDataTypes&,
                  SkYUVAPixmapInfo* info) const override {
-    // Temporarily disabling this path to avoid creating YUV ImageData in
-    // GpuImageDecodeCache.
-    // TODO(crbug.com/921636): Restore the code below once YUV rendering support
-    // is added for VideoImageGenerator.
-    return false;
-#if 0
     SkYUVAInfo::PlaneConfig plane_config;
     SkYUVAInfo::Subsampling subsampling;
     std::tie(plane_config, subsampling) =
         VideoPixelFormatAsSkYUVAInfoValues(frame_->format());
-    if (plane_config == SkYUVAInfo::PlaneConfig::kUnknown) {
+    if (plane_config == SkYUVAInfo::PlaneConfig::kUnknown)
+      return false;
+
+    // Don't use the YUV conversion path for multi-plane RGB frames.
+    if (frame_->format() == PIXEL_FORMAT_I444 &&
+        frame_->ColorSpace().GetMatrixID() == gfx::ColorSpace::MatrixID::GBR) {
       return false;
     }
-    if (info) {
-      SkYUVColorSpace yuv_color_space;
-      if (!frame_->ColorSpace().ToSkYUVColorSpace(&yuv_color_space)) {
-        // TODO(hubbe): This really should default to rec709
-        // https://crbug.com/828599
-        yuv_color_space = kRec601_SkYUVColorSpace;
-      }
-      // We use the Y plane size because it may get rounded up to an even size.
-      // Our implementation of GetYUVAPlanes expects this.
-      gfx::Size y_size =
-          VideoFrame::PlaneSize(frame_->format(), VideoFrame::kYPlane,
-                                gfx::Size(frame_->visible_rect().width(),
-                                          frame_->visible_rect().height()));
-      SkYUVAInfo yuva_info =
-          SkYUVAInfo({y_size.width(), y_size.height()}, plane_config,
-                     subsampling, yuv_color_space);
-      *info = SkYUVAPixmapInfo(yuva_info, SkYUVAPixmapInfo::DataType::kUnorm8,
-                               /* row bytes */ nullptr);
+
+    if (!info)
+      return true;
+
+    SkYUVColorSpace yuv_color_space;
+    if (!frame_->ColorSpace().ToSkYUVColorSpace(frame_->BitDepth(),
+                                                &yuv_color_space)) {
+      // TODO(crbug.com/828599): This should default to BT.709 color space.
+      yuv_color_space = kRec601_SkYUVColorSpace;
     }
+
+    // We use the Y plane size because it may get rounded up to an even size.
+    // Our implementation of GetYUVAPlanes expects this.
+    auto y_size = VideoFrame::PlaneSizeInSamples(
+        frame_->format(), VideoFrame::kYPlane, frame_->visible_rect().size());
+    auto yuva_info = SkYUVAInfo({y_size.width(), y_size.height()}, plane_config,
+                                subsampling, yuv_color_space);
+    *info = SkYUVAPixmapInfo(yuva_info, SkYUVAPixmapInfo::DataType::kUnorm8,
+                             /*rowBytes=*/nullptr);
     return true;
-#endif
   }
 
   bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
@@ -745,50 +618,32 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     DCHECK_EQ(frame_index, 0u);
     DCHECK_EQ(pixmaps.numPlanes(), 3);
 
-    if (DCHECK_IS_ON()) {
-      SkYUVAInfo::PlaneConfig plane_config;
-      SkYUVAInfo::Subsampling subsampling;
-      std::tie(plane_config, subsampling) =
-          VideoPixelFormatAsSkYUVAInfoValues(frame_->format());
-      DCHECK_EQ(plane_config, pixmaps.yuvaInfo().planeConfig());
-      DCHECK_EQ(subsampling, pixmaps.yuvaInfo().subsampling());
-    }
+#if DCHECK_IS_ON()
+    SkYUVAInfo::PlaneConfig plane_config;
+    SkYUVAInfo::Subsampling subsampling;
+    std::tie(plane_config, subsampling) =
+        VideoPixelFormatAsSkYUVAInfoValues(frame_->format());
+    DCHECK_EQ(plane_config, pixmaps.yuvaInfo().planeConfig());
+    DCHECK_EQ(subsampling, pixmaps.yuvaInfo().subsampling());
+#endif
 
     for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane;
          ++plane) {
-      const gfx::Size size =
-          VideoFrame::PlaneSize(frame_->format(), plane,
-                                gfx::Size(frame_->visible_rect().width(),
-                                          frame_->visible_rect().height()));
-      if (size.width() != pixmaps.plane(plane).width() ||
-          size.height() != pixmaps.plane(plane).height()) {
+      const auto plane_size = VideoFrame::PlaneSizeInSamples(
+          frame_->format(), plane, frame_->visible_rect().size());
+      if (plane_size.width() != pixmaps.plane(plane).width() ||
+          plane_size.height() != pixmaps.plane(plane).height()) {
         return false;
       }
 
-      size_t offset;
-      const int y_shift =
-          (frame_->format() == media::PIXEL_FORMAT_I422) ? 0 : 1;
-      if (plane == VideoFrame::kYPlane) {
-        offset =
-            (frame_->stride(VideoFrame::kYPlane) * frame_->visible_rect().y()) +
-            frame_->visible_rect().x();
-      } else {
-        offset = (frame_->stride(VideoFrame::kUPlane) *
-                  (frame_->visible_rect().y() >> y_shift)) +
-                 (frame_->visible_rect().x() >> 1);
-      }
+      const auto& out_plane = pixmaps.plane(plane);
 
-      // Copy the frame to the supplied memory.
-      // TODO: Find a way (API change?) to avoid this copy.
-      uint8_t* out_line =
-          static_cast<uint8_t*>(pixmaps.plane(plane).writable_addr());
-      int out_line_stride = static_cast<int>(pixmaps.plane(plane).rowBytes());
-      uint8_t* in_line = frame_->data(plane) + offset;
-      int in_line_stride = frame_->stride(plane);
-      int plane_height = pixmaps.plane(plane).height();
-      int bytes_to_copy_per_line = std::min(out_line_stride, in_line_stride);
-      libyuv::CopyPlane(in_line, in_line_stride, out_line, out_line_stride,
-                        bytes_to_copy_per_line, plane_height);
+      // Copy the frame to the supplied memory. It'd be nice to avoid this copy,
+      // but the memory is externally owned so we can't w/o an API change.
+      libyuv::CopyPlane(frame_->visible_data(plane), frame_->stride(plane),
+                        reinterpret_cast<uint8_t*>(out_plane.writable_addr()),
+                        out_plane.rowBytes(), plane_size.width(),
+                        plane_size.height());
     }
     return true;
   }
@@ -928,8 +783,11 @@ void PaintCanvasVideoRenderer::Paint(
   // frame has an unexpected format.
   if (!video_frame.get() || video_frame->natural_size().IsEmpty() ||
       !(media::IsYuvPlanar(video_frame->format()) ||
-        video_frame->format() == media::PIXEL_FORMAT_Y16 ||
-        video_frame->format() == media::PIXEL_FORMAT_ARGB ||
+        video_frame->format() == PIXEL_FORMAT_Y16 ||
+        video_frame->format() == PIXEL_FORMAT_ARGB ||
+        video_frame->format() == PIXEL_FORMAT_XRGB ||
+        video_frame->format() == PIXEL_FORMAT_ABGR ||
+        video_frame->format() == PIXEL_FORMAT_XBGR ||
         video_frame->HasTextures())) {
     cc::PaintFlags black_with_alpha_flags;
     black_with_alpha_flags.setAlpha(flags.getAlpha());
@@ -958,14 +816,14 @@ void PaintCanvasVideoRenderer::Paint(
   cc::PaintFlags video_flags;
   video_flags.setAlpha(flags.getAlpha());
   video_flags.setBlendMode(flags.getBlendMode());
-  video_flags.setFilterQuality(flags.getFilterQuality());
 
   const bool need_rotation = video_transformation.rotation != VIDEO_ROTATION_0;
   const bool need_scaling =
       dest_rect.size() != gfx::SizeF(video_frame->visible_rect().size());
   const bool need_translation = !dest_rect.origin().IsOrigin();
-  // TODO(tmathmeyer): apply horizontal / vertical mirroring if needed.
-  bool need_transform = need_rotation || need_scaling || need_translation;
+  const bool needs_y_flip = video_transformation.mirrored;
+  bool need_transform =
+      need_rotation || need_scaling || need_translation || needs_y_flip;
   if (need_transform) {
     canvas->save();
     canvas->translate(
@@ -988,15 +846,25 @@ void PaintCanvasVideoRenderer::Paint(
     canvas->rotate(angle);
 
     gfx::SizeF rotated_dest_size = dest_rect.size();
-    if (video_transformation.rotation == VIDEO_ROTATION_90 ||
-        video_transformation.rotation == VIDEO_ROTATION_270) {
+
+    const bool has_flipped_size =
+        video_transformation.rotation == VIDEO_ROTATION_90 ||
+        video_transformation.rotation == VIDEO_ROTATION_270;
+    if (has_flipped_size) {
       rotated_dest_size =
           gfx::SizeF(rotated_dest_size.height(), rotated_dest_size.width());
     }
-    canvas->scale(SkFloatToScalar(rotated_dest_size.width() /
-                                  video_frame->visible_rect().width()),
-                  SkFloatToScalar(rotated_dest_size.height() /
-                                  video_frame->visible_rect().height()));
+    auto sx = SkFloatToScalar(rotated_dest_size.width() /
+                              video_frame->visible_rect().width());
+    auto sy = SkFloatToScalar(rotated_dest_size.height() /
+                              video_frame->visible_rect().height());
+    if (needs_y_flip) {
+      if (has_flipped_size)
+        sy *= -1;
+      else
+        sx *= -1;
+    }
+    canvas->scale(sx, sy);
     canvas->translate(
         -SkFloatToScalar(video_frame->visible_rect().width() * 0.5f),
         -SkFloatToScalar(video_frame->visible_rect().height() * 0.5f));
@@ -1021,13 +889,21 @@ void PaintCanvasVideoRenderer::Paint(
   } else if (video_frame->HasTextures()) {
     DCHECK_EQ(video_frame->coded_size(),
               gfx::Size(image.width(), image.height()));
-    canvas->drawImageRect(image, gfx::RectToSkRect(video_frame->visible_rect()),
-                          dest, &video_flags,
-                          SkCanvas::kStrict_SrcRectConstraint);
+    canvas->drawImageRect(
+        image, gfx::RectToSkRect(video_frame->visible_rect()),
+        SkRect::MakeWH(video_frame->visible_rect().width(),
+                       video_frame->visible_rect().height()),
+        SkSamplingOptions(flags.getFilterQuality(),
+                          SkSamplingOptions::kMedium_asMipmapLinear),
+        &video_flags, SkCanvas::kStrict_SrcRectConstraint);
   } else {
     DCHECK_EQ(video_frame->visible_rect().size(),
               gfx::Size(image.width(), image.height()));
-    canvas->drawImage(image, 0, 0, &video_flags);
+    canvas->drawImage(
+        image, 0, 0,
+        SkSamplingOptions(flags.getFilterQuality(),
+                          SkSamplingOptions::kMedium_asMipmapLinear),
+        &video_flags);
   }
 
   if (need_transform)
@@ -1100,7 +976,7 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
   ret->set_color_space(video_frame->ColorSpace());
   // Copy all metadata.
   // (May be enough to copy color space)
-  ret->metadata()->MergeMetadataFrom(video_frame->metadata());
+  ret->metadata().MergeMetadataFrom(video_frame->metadata());
 
   for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane; ++plane) {
     int width = ret->row_bytes(plane);
@@ -1372,30 +1248,26 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   DCHECK(video_frame);
   DCHECK(video_frame->HasTextures());
   if (video_frame->NumTextures() > 1 ||
-      video_frame->metadata()->read_lock_fences_enabled) {
+      video_frame->metadata().read_lock_fences_enabled) {
     if (!raster_context_provider)
       return false;
     GrDirectContext* gr_context = raster_context_provider->GrContext();
     if (!gr_context &&
         !raster_context_provider->ContextCapabilities().supports_oop_raster)
       return false;
-// TODO(crbug.com/1108154): Expand this uploading path to macOS, linux
-// chromeOS after collecting perf data and resolve failure cases.
-#if defined(OS_WIN)
     // Since skia always produces premultiply alpha outputs,
     // trying direct uploading path when video format is opaque or premultiply
     // alpha been requested. And dst texture mipLevel must be 0.
     // TODO(crbug.com/1155003): Figure out whether premultiply options here are
     // accurate.
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
-        level == 0) {
+        level == 0 && video_frame->NumTextures() > 1) {
       if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
-                                      video_frame, target, texture,
+                                      video_frame.get(), target, texture,
                                       internal_format, format, type, flip_y)) {
         return true;
       }
     }
-#endif  //  defined(OS_WIN)
 
     if (!UpdateLastImage(video_frame, raster_context_provider,
                          true /* allow_wrap_texture */)) {
@@ -1465,7 +1337,6 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     bool flip_y) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(video_frame);
-  DCHECK(video_frame->HasTextures());
   // Support uploading for NV12 and I420 video frame only.
   if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(*video_frame)) {
     return false;
@@ -1477,7 +1348,8 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     return false;
   }
 
-  if (!ValidFormatForDirectUploading(static_cast<GLenum>(internal_format),
+  if (!ValidFormatForDirectUploading(raster_context_provider,
+                                     static_cast<GLenum>(internal_format),
                                      type)) {
     return false;
   }
@@ -1516,8 +1388,10 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   destination_gl->WaitSyncTokenCHROMIUM(
       mailbox_holder.sync_token.GetConstData());
 
-  WaitAndReplaceSyncTokenClient client(source_ri);
-  video_frame->UpdateReleaseSyncToken(&client);
+  if (video_frame->HasTextures()) {
+    WaitAndReplaceSyncTokenClient client(source_ri);
+    video_frame->UpdateReleaseSyncToken(&client);
+  }
 
   return true;
 }
@@ -1587,7 +1461,7 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
-    const VideoFrame& video_frame,
+    scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
     unsigned int internal_format,
@@ -1597,14 +1471,38 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     bool premultiply_alpha,
     bool flip_y) {
   DCHECK(raster_context_provider);
-  if (!video_frame.IsMappable()) {
+#if defined(OS_ANDROID)
+  // TODO(crbug.com/1181993): These formats don't work with the passthrough
+  // command decoder on Android for some reason.
+  const auto format_enum = static_cast<GLenum>(internal_format);
+  if (format_enum == GL_RGB10_A2 || format_enum == GL_RGB565 ||
+      format_enum == GL_RGB5_A1 || format_enum == GL_RGBA4) {
+    return false;
+  }
+#endif
+
+  if (!video_frame->IsMappable()) {
     return false;
   }
 
-  if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(video_frame)) {
+  if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(*video_frame)) {
     return false;
   }
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
+
+  // Since skia always produces premultiply alpha outputs,
+  // trying direct uploading path when video format is opaque or premultiply
+  // alpha been requested. And dst texture mipLevel must be 0.
+  // TODO(crbug.com/1155003): Figure out whether premultiply options here are
+  // accurate.
+  if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
+      level == 0) {
+    if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
+                                    video_frame, target, texture,
+                                    internal_format, format, type, flip_y)) {
+      return true;
+    }
+  }
 
   auto* sii = raster_context_provider->SharedImageInterface();
   gpu::raster::RasterInterface* source_ri =
@@ -1614,13 +1512,13 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // one if compatible, otherwise create a new one.
   gpu::SyncToken token;
   if (!yuv_cache_.mailbox.IsZero() &&
-      yuv_cache_.size == video_frame.coded_size() &&
+      yuv_cache_.size == video_frame->coded_size() &&
       yuv_cache_.raster_context_provider == raster_context_provider) {
     token = yuv_cache_.sync_token;
   } else {
     yuv_cache_.Reset();
     yuv_cache_.raster_context_provider = raster_context_provider;
-    yuv_cache_.size = video_frame.coded_size();
+    yuv_cache_.size = video_frame->coded_size();
 
     uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2;
     if (raster_context_provider->ContextCapabilities().supports_oop_raster) {
@@ -1629,7 +1527,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     }
 
     yuv_cache_.mailbox = sii->CreateSharedImage(
-        viz::ResourceFormat::RGBA_8888, video_frame.coded_size(),
+        viz::ResourceFormat::RGBA_8888, video_frame->coded_size(),
         gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         gpu::kNullSurfaceHandle);
     token = sii->GenUnverifiedSyncToken();
@@ -1641,7 +1539,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   dest_holder.texture_target = GL_TEXTURE_2D;
   dest_holder.sync_token = token;
   yuv_cache_.yuv_converter.ConvertYUVVideoFrame(
-      &video_frame, raster_context_provider, dest_holder);
+      video_frame.get(), raster_context_provider, dest_holder);
 
   gpu::SyncToken post_conversion_sync_token;
   source_ri->GenUnverifiedSyncTokenCHROMIUM(
@@ -1655,7 +1553,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     ScopedSharedImageAccess access(destination_gl, intermediate_texture,
                                    yuv_cache_.mailbox);
     VideoFrameCopyTextureOrSubTexture(
-        destination_gl, video_frame.coded_size(), video_frame.visible_rect(),
+        destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         intermediate_texture, target, texture, internal_format, format, type,
         level, premultiply_alpha, flip_y);
   }
@@ -1850,9 +1748,9 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       cache_->visible_rect = video_frame->visible_rect();
       if (!cache_->texture_backing) {
         if (supports_oop_raster) {
-          SkImageInfo sk_image_info = SkImageInfo::Make(
-              gfx::SizeToSkISize(cache_->coded_size), kRGBA_8888_SkColorType,
-              kPremul_SkAlphaType, video_frame->ColorSpace().ToSkColorSpace());
+          SkImageInfo sk_image_info =
+              SkImageInfo::Make(gfx::SizeToSkISize(cache_->coded_size),
+                                kRGBA_8888_SkColorType, kPremul_SkAlphaType);
           cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
               mailbox, sk_image_info, wraps_video_frame_texture,
               raster_context_provider);
@@ -1868,7 +1766,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
                                 ? video_frame->mailbox_holder(0).texture_target
                                 : GL_TEXTURE_2D,
                             cache_->source_texture, video_frame->coded_size(),
-                            video_frame->ColorSpace(), raster_context_provider);
+                            raster_context_provider);
           if (!source_image) {
             // Couldn't create the SkImage.
             cache_.reset();
@@ -1921,7 +1819,9 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrame(
 }
 
 PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache() = default;
-PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() = default;
+PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() {
+  Reset();
+}
 
 void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
   if (mailbox.IsZero())

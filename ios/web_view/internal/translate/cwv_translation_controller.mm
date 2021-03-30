@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -295,9 +294,9 @@ CWVTranslationError CWVConvertTranslateError(
     std::string locale = translate::TranslateDownloadManager::GetInstance()
                              ->application_locale();
     for (const std::string& languageCode : languageCodes) {
-      base::string16 localizedName =
+      std::u16string localizedName =
           l10n_util::GetDisplayNameForLocale(languageCode, locale, true);
-      base::string16 nativeName =
+      std::u16string nativeName =
           l10n_util::GetDisplayNameForLocale(languageCode, languageCode, true);
       CWVTranslationLanguage* language =
           [[CWVTranslationLanguage alloc] initWithLanguageCode:languageCode

@@ -20,7 +20,11 @@ class AlsFileReader;
 class AlsReaderTest;
 class FakeLightProvider;
 class LightProviderInterface;
+class LightProviderMojo;
+class LightSamplesObserver;
 
+// If IIO Service is present, it uses LightProviderMojo as the implementation of
+// LightProviderInterface; otherwise, it uses AlsFileReader.
 class AlsReader {
  public:
   // Status of AlsReader initialization.
@@ -63,6 +67,8 @@ class AlsReader {
   friend AlsFileReader;
   friend AlsReaderTest;
   friend FakeLightProvider;
+  friend LightProviderMojo;
+  friend LightSamplesObserver;
 
   // Called when we've retrieved the number of ALS present.
   void OnNumAlsRetrieved(int num_als);

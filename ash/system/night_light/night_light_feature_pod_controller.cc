@@ -87,7 +87,7 @@ void NightLightFeaturePodController::UpdateButton() {
       is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE
                  : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE));
 
-  base::string16 tooltip_state = l10n_util::GetStringUTF16(
+  std::u16string tooltip_state = l10n_util::GetStringUTF16(
       is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ENABLED_STATE_TOOLTIP
                  : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP);
   button_->SetIconTooltip(l10n_util::GetStringFUTF16(

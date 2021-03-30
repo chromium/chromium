@@ -35,7 +35,6 @@
 #include <utility>
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_scoped_page_pauser.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -73,6 +72,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_performance_agent.h"
+#include "third_party/blink/renderer/core/inspector/inspector_performance_timeline_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
@@ -278,7 +278,8 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
 
   session->Append(MakeGarbageCollected<InspectorAuditsAgent>(
       network_agent,
-      &inspected_frames->Root()->GetPage()->GetInspectorIssueStorage()));
+      &inspected_frames->Root()->GetPage()->GetInspectorIssueStorage(),
+      inspected_frames));
 
   session->Append(MakeGarbageCollected<InspectorMediaAgent>(inspected_frames));
 
@@ -287,6 +288,9 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
   // we have to store the frame which will become the main frame later.
   session->Append(MakeGarbageCollected<InspectorEmulationAgent>(
       web_local_frame_impl_.Get()));
+
+  session->Append(MakeGarbageCollected<InspectorPerformanceTimelineAgent>(
+      inspected_frames));
 
   // Call session init callbacks registered from higher layers.
   CoreInitializer::GetInstance().InitInspectorAgentSession(
@@ -480,14 +484,9 @@ void WebDevToolsAgentImpl::DispatchBufferedTouchEvents() {
     it.value->DispatchBufferedTouchEvents();
 }
 
-void WebDevToolsAgentImpl::PageScrollStarted() {
+void WebDevToolsAgentImpl::SetPageIsScrolling(bool is_scrolling) {
   for (auto& it : overlay_agents_)
-    it.value->PageScrollStarted();
-}
-
-void WebDevToolsAgentImpl::PageScrollEnded() {
-  for (auto& it : overlay_agents_)
-    it.value->PageScrollEnded();
+    it.value->SetPageIsScrolling(is_scrolling);
 }
 
 WebInputEventResult WebDevToolsAgentImpl::HandleInputEvent(

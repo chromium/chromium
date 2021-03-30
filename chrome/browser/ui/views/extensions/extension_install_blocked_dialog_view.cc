@@ -33,13 +33,14 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chrome {
 
 void ShowExtensionInstallBlockedDialog(
     const std::string& extension_name,
-    const base::string16& custom_error_message,
+    const std::u16string& custom_error_message,
     const gfx::ImageSkia& icon,
     content::WebContents* web_contents,
     base::OnceClosure done_callback) {
@@ -54,7 +55,7 @@ void ShowExtensionInstallBlockedDialog(
 
 ExtensionInstallBlockedDialogView::ExtensionInstallBlockedDialogView(
     const std::string& extension_name,
-    const base::string16& custom_error_message,
+    const std::u16string& custom_error_message,
     const gfx::ImageSkia& icon,
     base::OnceClosure done_callback)
     : done_callback_(std::move(done_callback)) {
@@ -90,7 +91,7 @@ ExtensionInstallBlockedDialogView::~ExtensionInstallBlockedDialogView() {
 }
 
 void ExtensionInstallBlockedDialogView::AddCustomMessageContents(
-    const base::string16& custom_error_message) {
+    const std::u16string& custom_error_message) {
   DCHECK(!custom_error_message.empty());
 
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -122,3 +123,7 @@ void ExtensionInstallBlockedDialogView::AddCustomMessageContents(
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
 }
+
+BEGIN_METADATA(ExtensionInstallBlockedDialogView,
+               views::BubbleDialogDelegateView)
+END_METADATA

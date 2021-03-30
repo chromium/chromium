@@ -8,18 +8,19 @@
 #include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/transform.h"
-#include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_surface_egl.h"
 
 namespace android_webview {
 
 // This surface is used to represent the underlying surface provided by the App
 // inside a hardware draw. Note that offscreen contexts will not be using this
 // GLSurface.
-class AwGLSurface : public gl::GLSurface {
+class AwGLSurface : public gl::GLSurfaceEGL {
  public:
-  AwGLSurface();
+  explicit AwGLSurface(bool is_angle);
 
   // Implement GLSurface.
+  bool Initialize(gl::GLSurfaceFormat format) override;
   void Destroy() override;
   bool IsOffscreen() override;
   unsigned int GetBackingFramebufferObject() override;
@@ -32,9 +33,10 @@ class AwGLSurface : public gl::GLSurface {
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
+  EGLConfig GetConfig() override;
 
   void SetSize(const gfx::Size& size);
-  void MaybeDidPresent(gfx::PresentationFeedback feedback);
+  void MaybeDidPresent(const gfx::PresentationFeedback& feedback);
 
   virtual void RecalculateClipAndTransform(gfx::Size* viewport,
                                            gfx::Rect* clip_rect,
@@ -44,8 +46,10 @@ class AwGLSurface : public gl::GLSurface {
   ~AwGLSurface() override;
 
  private:
+  const bool is_angle_;
   PresentationCallback pending_presentation_callback_;
-  gfx::Size size_;
+  gfx::Size size_{1, 1};
+  EGLSurface surface_ = nullptr;
   DISALLOW_COPY_AND_ASSIGN(AwGLSurface);
 };
 

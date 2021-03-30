@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -27,7 +27,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   DiceWebSigninInterceptHandler(
       const DiceWebSigninInterceptor::Delegate::BubbleParameters&
           bubble_parameters,
-      base::OnceCallback<void(bool)> callback);
+      base::OnceCallback<void(SigninInterceptionUserChoice)> callback);
   ~DiceWebSigninInterceptHandler() override;
 
   DiceWebSigninInterceptHandler(const DiceWebSigninInterceptHandler&) = delete;
@@ -48,21 +48,27 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
 
   void HandleAccept(const base::ListValue* args);
   void HandleCancel(const base::ListValue* args);
+  void HandleGuest(const base::ListValue* args);
   void HandlePageLoaded(const base::ListValue* args);
 
   // Gets the values sent to javascript.
   base::Value GetAccountInfoValue(const AccountInfo& info);
   base::Value GetInterceptionParametersValue();
 
+  // The dialog string is different when the device is managed. This function
+  // returns whether the version for managed devices should be used.
+  bool ShouldShowManagedDeviceVersion() const;
+
   std::string GetHeaderText();
   std::string GetBodyTitle();
   std::string GetBodyText();
 
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_observer_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_observation_{this};
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
 
-  base::OnceCallback<void(bool)> callback_;
+  base::OnceCallback<void(SigninInterceptionUserChoice)> callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_HANDLER_H_

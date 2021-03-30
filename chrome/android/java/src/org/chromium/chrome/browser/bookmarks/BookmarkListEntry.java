@@ -8,10 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 
 import java.lang.annotation.Retention;
@@ -41,27 +38,33 @@ final class BookmarkListEntry {
         int SECTION_HEADER = 6;
     }
 
+    /**
+     * Contains data used by section header in bookmark UI.
+     */
+    static final class SectionHeaderData {
+        public final CharSequence headerTitle;
+        public final CharSequence headerDescription;
+        public final int topPadding;
+
+        SectionHeaderData(
+                @Nullable CharSequence title, @Nullable CharSequence description, int topPadding) {
+            headerTitle = title;
+            headerDescription = description;
+            this.topPadding = topPadding;
+        }
+    }
+
     private final @ViewType int mViewType;
     @Nullable
     private final BookmarkItem mBookmarkItem;
     @Nullable
-    private String mHeaderTitle;
-    @Nullable
-    private String mHeaderDescription;
+    private final SectionHeaderData mSectionHeaderData;
 
-    private BookmarkListEntry(int viewType, @Nullable BookmarkItem bookmarkItem) {
+    private BookmarkListEntry(int viewType, @Nullable BookmarkItem bookmarkItem,
+            @Nullable SectionHeaderData sectionHeaderData) {
         this.mViewType = viewType;
         this.mBookmarkItem = bookmarkItem;
-    }
-
-    /** Constructor for section headers. */
-    private BookmarkListEntry(
-            int viewType, String headerTitle, @Nullable String headerDescription) {
-        assert viewType == ViewType.SECTION_HEADER;
-        this.mViewType = viewType;
-        this.mBookmarkItem = null;
-        this.mHeaderTitle = headerTitle;
-        this.mHeaderDescription = headerDescription;
+        this.mSectionHeaderData = sectionHeaderData;
     }
 
     /**
@@ -69,8 +72,8 @@ final class BookmarkListEntry {
      * @param bookmarkItem The data object created from the bookmark backend.
      */
     static BookmarkListEntry createBookmarkEntry(@Nonnull BookmarkItem bookmarkItem) {
-        return new BookmarkListEntry(
-                bookmarkItem.isFolder() ? ViewType.FOLDER : ViewType.BOOKMARK, bookmarkItem);
+        return new BookmarkListEntry(bookmarkItem.isFolder() ? ViewType.FOLDER : ViewType.BOOKMARK,
+                bookmarkItem, /*sectionHeaderData=*/null);
     }
 
     /**
@@ -80,14 +83,15 @@ final class BookmarkListEntry {
     static BookmarkListEntry createSyncPromoHeader(@ViewType int viewType) {
         assert viewType == ViewType.PERSONALIZED_SIGNIN_PROMO
                 || viewType == ViewType.PERSONALIZED_SYNC_PROMO || viewType == ViewType.SYNC_PROMO;
-        return new BookmarkListEntry(viewType, /*bookmarkItem=*/null);
+        return new BookmarkListEntry(viewType, /*bookmarkItem=*/null, /*sectionHeaderData=*/null);
     }
 
     /**
      * Creates a divider to separate sections in the bookmark list.
      */
     static BookmarkListEntry createDivider() {
-        return new BookmarkListEntry(ViewType.DIVIDER, /*bookmarkItem=*/null);
+        return new BookmarkListEntry(
+                ViewType.DIVIDER, /*bookmarkItem=*/null, /*sectionHeaderData=*/null);
     }
 
     /**
@@ -101,27 +105,16 @@ final class BookmarkListEntry {
 
     /**
      * Create an entry representing the reading list read/unread section header.
-     * @param titleRes The string resource for title text.
-     * @param descriptionRes The string resource for description.
+     * @param title The title of the section header.
+     * @param description The description of the section header.
+     * @param topPadding The top padding of the section header. Only impacts the padding when
+     *         greater than 0.
      * @param context The context to use.
      */
-    static BookmarkListEntry createSectionHeader(@StringRes Integer titleRes,
-            @Nullable @StringRes Integer descriptionRes, Context context) {
-        return new BookmarkListEntry(ViewType.SECTION_HEADER, context.getString(titleRes),
-                descriptionRes == null ? null : context.getString(descriptionRes));
-    }
-
-    /**
-     * Create an entry representing the reading list read/unread section header.
-     * @param read True if it represents read section, false for unread section.
-     */
-    static BookmarkListEntry createReadingListSectionHeader(boolean read) {
-        Context context = ContextUtils.getApplicationContext();
-        return read ? new BookmarkListEntry(
-                       ViewType.SECTION_HEADER, context.getString(R.string.reading_list_read), null)
-                    : new BookmarkListEntry(ViewType.SECTION_HEADER,
-                            context.getString(R.string.reading_list_unread),
-                            context.getString(R.string.reading_list_ready_for_offline));
+    static BookmarkListEntry createSectionHeader(
+            CharSequence title, CharSequence description, int topPadding, Context context) {
+        SectionHeaderData sectionHeaderData = new SectionHeaderData(title, description, topPadding);
+        return new BookmarkListEntry(ViewType.SECTION_HEADER, null, sectionHeaderData);
     }
 
     /**
@@ -142,13 +135,21 @@ final class BookmarkListEntry {
 
     /** @return The title text to be shown if it is a section header. */
     @Nullable
-    String getHeaderTitle() {
-        return mHeaderTitle;
+    CharSequence getHeaderTitle() {
+        return mSectionHeaderData.headerTitle;
     }
 
     /** @return The description text to be shown if it is a section header. */
     @Nullable
-    String getHeaderDescription() {
-        return mHeaderDescription;
+    CharSequence getHeaderDescription() {
+        return mSectionHeaderData.headerDescription;
+    }
+
+    /**
+     * @return The {@link SectionHeaderData}. Could be null if this entry is not a section header.
+     */
+    @Nullable
+    SectionHeaderData getSectionHeaderData() {
+        return mSectionHeaderData;
     }
 }

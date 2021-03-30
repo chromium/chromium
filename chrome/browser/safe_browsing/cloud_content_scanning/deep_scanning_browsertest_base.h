@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_BROWSERTEST_BASE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_BROWSERTEST_BASE_H_
 
-#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -49,8 +49,10 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
 
   const std::vector<base::FilePath>& created_file_paths() const;
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   base::RepeatingClosure quit_closure_;
   enterprise_connectors::ContentAnalysisResponse
       connector_status_callback_response_;

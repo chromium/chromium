@@ -5,11 +5,13 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_PEER_CONNECTION_TRACKER_HOST_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_PEER_CONNECTION_TRACKER_HOST_H_
 
+#include <set>
 #include <string>
 
 #include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/process/process_handle.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,23 +23,27 @@ class Value;
 
 namespace content {
 
-class RenderProcessHost;
+class RenderFrameHost;
 
 // This class is the host for PeerConnectionTracker in the browser process
-// managed by RenderProcessHostImpl. It receives PeerConnection events from
+// managed by RenderFrameHostImpl. It receives PeerConnection events from
 // PeerConnectionTracker as IPC messages that it forwards to WebRTCInternals.
 // It also forwards browser process events to PeerConnectionTracker via IPC.
 class PeerConnectionTrackerHost
-    : public base::PowerObserver,
+    : public base::PowerSuspendObserver,
+      public base::PowerThermalObserver,
       public blink::mojom::PeerConnectionTrackerHost {
  public:
-  explicit PeerConnectionTrackerHost(RenderProcessHost* rph);
+  explicit PeerConnectionTrackerHost(RenderFrameHost* rfh);
   ~PeerConnectionTrackerHost() override;
 
-  // base::PowerObserver override.
+  static const std::set<PeerConnectionTrackerHost*>& GetAllHosts();
+
+  // base::PowerSuspendObserver override.
   void OnSuspend() override;
+  // base::PowerThermalObserver override.
   void OnThermalStateChange(
-      base::PowerObserver::DeviceThermalState new_state) override;
+      base::PowerThermalObserver::DeviceThermalState new_state) override;
 
   // These methods call out to blink::mojom::PeerConnectionManager on renderer
   // side.
@@ -69,7 +75,7 @@ class PeerConnectionTrackerHost
   void AddStandardStats(int lid, base::Value value) override;
   void AddLegacyStats(int lid, base::Value value) override;
 
-  int render_process_id_;
+  GlobalFrameRoutingId frame_id_;
   base::ProcessId peer_pid_;
   mojo::Receiver<blink::mojom::PeerConnectionTrackerHost> receiver_{this};
   mojo::Remote<blink::mojom::PeerConnectionManager> tracker_;

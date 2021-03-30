@@ -18,6 +18,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_position.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -135,21 +137,34 @@ Vector<ModuleRequest> ModuleRecord::ModuleRequests(
   int length = v8_module_requests->Length();
   Vector<ModuleRequest> requests;
   requests.ReserveInitialCapacity(length);
+  bool needs_text_position =
+      !WTF::IsMainThread() ||
+      probe::ToCoreProbeSink(ExecutionContext::From(script_state))
+          ->HasDevToolsSessions();
 
   for (int i = 0; i < length; ++i) {
     v8::Local<v8::ModuleRequest> v8_module_request =
         v8_module_requests->Get(script_state->GetContext(), i)
             .As<v8::ModuleRequest>();
     v8::Local<v8::String> v8_specifier = v8_module_request->GetSpecifier();
-    int source_offset = v8_module_request->GetSourceOffset();
-    v8::Location v8_loc = record->SourceOffsetToLocation(source_offset);
-    TextPosition position(
-        OrdinalNumber::FromZeroBasedInt(v8_loc.GetLineNumber()),
-        OrdinalNumber::FromZeroBasedInt(v8_loc.GetColumnNumber()));
+    TextPosition position = TextPosition::MinimumPosition();
+    if (needs_text_position) {
+      // The source position is only used by DevTools for module requests and
+      // only visible if devtools is open when the request is initiated.
+      // Calculating the source position is not free and V8 has to initialize
+      // the line end information for the complete module, thus we try to
+      // avoid this additional work here if DevTools is closed.
+      int source_offset = v8_module_request->GetSourceOffset();
+      v8::Location v8_loc = record->SourceOffsetToLocation(source_offset);
+      position = TextPosition(
+          OrdinalNumber::FromZeroBasedInt(v8_loc.GetLineNumber()),
+          OrdinalNumber::FromZeroBasedInt(v8_loc.GetColumnNumber()));
+    }
     Vector<ImportAssertion> import_assertions =
         ModuleRecord::ToBlinkImportAssertions(
             script_state->GetContext(), record,
-            v8_module_request->GetImportAssertions());
+            v8_module_request->GetImportAssertions(),
+            /*v8_import_assertions_has_positions=*/true);
 
     requests.emplace_back(ToCoreString(v8_specifier), position,
                           import_assertions);
@@ -172,10 +187,11 @@ v8::MaybeLocal<v8::Module> ModuleRecord::ResolveModuleCallback(
   Modulator* modulator = Modulator::From(ScriptState::From(context));
   DCHECK(modulator);
 
-  ModuleRequest module_request(ToCoreStringWithNullCheck(specifier),
-                               TextPosition(),
-                               ModuleRecord::ToBlinkImportAssertions(
-                                   context, referrer, import_assertions));
+  ModuleRequest module_request(
+      ToCoreStringWithNullCheck(specifier), TextPosition::MinimumPosition(),
+      ModuleRecord::ToBlinkImportAssertions(
+          context, referrer, import_assertions,
+          /*v8_import_assertions_has_positions=*/true));
 
   ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
                                  "ModuleRecord", "resolveModuleCallback");
@@ -191,11 +207,14 @@ v8::MaybeLocal<v8::Module> ModuleRecord::ResolveModuleCallback(
 Vector<ImportAssertion> ModuleRecord::ToBlinkImportAssertions(
     v8::Local<v8::Context> context,
     v8::Local<v8::Module> record,
-    v8::Local<v8::FixedArray> v8_import_assertions) {
-  // The list of import assertions obtained from V8 for a ModuleRequest is given
-  // in the form: [key1, value1, source_offset1, key2, value2, source_offset2,
-  // ...].
-  constexpr int kV8AssertionEntrySize = 3;
+    v8::Local<v8::FixedArray> v8_import_assertions,
+    bool v8_import_assertions_has_positions) {
+  // If v8_import_assertions_has_positions == true then v8_import_assertions has
+  // source position information and is given in the form [key1, value1,
+  // source_offset1, key2, value2, source_offset2, ...]. Otherwise if
+  // v8_import_assertions_has_positions == false, then v8_import_assertions is
+  // in the form [key1, value1, key2, value2, ...].
+  const int kV8AssertionEntrySize = v8_import_assertions_has_positions ? 3 : 2;
 
   Vector<ImportAssertion> import_assertions;
   int number_of_import_assertions =
@@ -208,15 +227,18 @@ Vector<ImportAssertion> ModuleRecord::ToBlinkImportAssertions(
     v8::Local<v8::String> v8_assertion_value =
         v8_import_assertions->Get(context, (i * kV8AssertionEntrySize) + 1)
             .As<v8::String>();
-    int32_t v8_assertion_source_offset =
-        v8_import_assertions->Get(context, (i * kV8AssertionEntrySize) + 2)
-            .As<v8::Int32>()
-            ->Value();
-    v8::Location v8_assertion_loc =
-        record->SourceOffsetToLocation(v8_assertion_source_offset);
-    TextPosition assertion_position(
-        OrdinalNumber::FromZeroBasedInt(v8_assertion_loc.GetLineNumber()),
-        OrdinalNumber::FromZeroBasedInt(v8_assertion_loc.GetColumnNumber()));
+    TextPosition assertion_position = TextPosition::MinimumPosition();
+    if (v8_import_assertions_has_positions) {
+      int32_t v8_assertion_source_offset =
+          v8_import_assertions->Get(context, (i * kV8AssertionEntrySize) + 2)
+              .As<v8::Int32>()
+              ->Value();
+      v8::Location v8_assertion_loc =
+          record->SourceOffsetToLocation(v8_assertion_source_offset);
+      assertion_position = TextPosition(
+          OrdinalNumber::FromZeroBasedInt(v8_assertion_loc.GetLineNumber()),
+          OrdinalNumber::FromZeroBasedInt(v8_assertion_loc.GetColumnNumber()));
+    }
 
     import_assertions.emplace_back(ToCoreString(v8_assertion_key),
                                    ToCoreString(v8_assertion_value),

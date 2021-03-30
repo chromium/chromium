@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
   // notification that they've run, and scripts that trigger a navigation may
   // not send that notification.
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.getElementById('reload-button').click();"),
+      u"document.getElementById('reload-button').click();",
       base::NullCallback());
   nav_observer.Wait();
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest,
   // Do a same-document navigation on the error page, which should not result
   // in a new navigation.
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.location='#';"), base::NullCallback());
+      u"document.location='#';", base::NullCallback());
   content::WaitForLoadStop(web_contents);
   // Page being displayed should not change.
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest,
   // notification that they've run, and scripts that trigger a navigation may
   // not send that notification.
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.getElementById('reload-button').click();"),
+      u"document.getElementById('reload-button').click();",
       base::NullCallback());
   nav_observer2.Wait();
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, ManualReloadNotSuppressed) {
     browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(web_contents, 1);
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.getElementById('reload-button').click();"),
+      u"document.getElementById('reload-button').click();",
       base::NullCallback());
   nav_observer.Wait();
   EXPECT_FALSE(IsDisplayingText(
@@ -798,13 +798,13 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const base::string16 kExpectedTitle = base::ASCIIToUTF16("Test One");
+  const std::u16string kExpectedTitle = u"Test One";
   content::TitleWatcher title_watcher(web_contents, kExpectedTitle);
 
   // Same-document navigation on an error page should not interrupt the
   // scheduled auto-reload which should still be pending on the WebContents.
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.location='#';"), base::NullCallback());
+      u"document.location='#';", base::NullCallback());
 
   // Wait for the second auto reload to happen. It will succeed and update the
   // WebContents' title.

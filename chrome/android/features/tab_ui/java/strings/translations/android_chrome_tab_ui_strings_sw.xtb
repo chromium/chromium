@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">Hujatumia vichupo vyako <ph name="NUMBER_OF_TABS" /> hivi karibuni. Je, tuvifunge?</translation>
 <translation id="1181037720776840403">Ondoa</translation>
 <translation id="125153950246128346">Gusa ili uone kichupo kingine</translation>
+<translation id="1302104331113804646">Mipangilio ya kufuatilia bei</translation>
+<translation id="1378979118429748177">Pata arifa bei zinapopunguzwa</translation>
 <translation id="1657719826150349398">Sogeza kichupo chini</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" />}other{Vichupo <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="2277224997687551299">Badilisha jina la kikundi</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Ondoa kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa kwenye kikundi.}other{Ondoa vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa kwenye kikundi.}}</translation>
+<translation id="2479148705183875116">Nenda kwenye Mipangilio</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Kunja kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2569352796411618312">Pendekezo: Hujatumia vichupo <ph name="NUMBER_OF_TABS" /> hivi majuzi. Ungependa tuvifunge?</translation>
 <translation id="257674075312929031">Kikundi</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Shiriki kikundi</translation>
 <translation id="2759453070259087442">Panua kikundi cha kichupo cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2977480621796371840">Ondoa kwenye kikundi</translation>
+<translation id="3291470810748040983">Utapata arifa wakati kuna bei nafuu zaidi katika kichupo ulichokifungua</translation>
 <translation id="3328308545011660196">Pendekezo: Vichupo <ph name="NUMBER_OF_TABS" /> vinaonekana kuwa vinahusiana. Ungependa kuvipanga pamoja?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Kunja kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
+<translation id="3882834874697329510">Washa arifa katika Mipangilio ili upate arifa wakati kuna bei nafuu zaidi katika kichupo ulichokifungua.</translation>
+<translation id="3940195383040445971">Fuatilia bei kwenye vichupo</translation>
+<translation id="3996880007329611795">Pata arifa</translation>
 <translation id="4133493477912226187">Vichupo <ph name="NUMBER_OF_TABS" /> vinaonekana kuwa vinahusiana. Ungependa kuvipanga pamoja?</translation>
 <translation id="4212246570487010370">Endelea kuvinjari</translation>
 <translation id="4450893287417543264">Usionyeshe tena</translation>
 <translation id="4648718555153979859">Vichupo vyako vimewekwa katika kikundi kimoja hapa</translation>
-<translation id="4922064041913095674">Angalia bidhaa iliyo na bei bora katika vichupo ulivyovifungua</translation>
 <translation id="492284538114688557">Punguo la bei limetambuliwa</translation>
 <translation id="5007392906805964215">Maoni</translation>
 <translation id="5073204694187207510">Ficha gridi ya skrini nzima</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Onyesha baadaye</translation>
 <translation id="5558362125926932819">Funga kikundi chenye vichupo <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Umeweka pamoja vichupo <ph name="TAB_COUNT" /></translation>
+<translation id="575494663145460764">Ungependa kupata arifa kuhusu punguzo la bei?</translation>
 <translation id="58326064309361797">Buruta vichupo ili uviweke katika kikundi</translation>
 <translation id="5846292395804797011">Funga kikundi cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="6040143037577758943">Funga</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Ficha hali ya kuchagua vingi</translation>
 <translation id="7151209024774799310">Ondoa vichupo kwenye kikundi</translation>
 <translation id="7204204600596740190">Hali ya kuchagua vingi</translation>
+<translation id="7352298686197644113">Angalia bidhaa iliyo na bei nafuu katika vichupo ulivyovifungua</translation>
 <translation id="753732157349120914">Kibadilishaji cha Vichupo</translation>
 <translation id="7559245342362162951">Onyesha vichupo vya kikundi katika gridi ya skrini nzima</translation>
 <translation id="7792771145871471484">Soma mapendekezo.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Hungependa kuonyeshwa ukanda wa vichupo tena?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Funga kichupo <ph name="TABS_COUNT_ONE" /> ulichochagua}other{Funga vichupo <ph name="TABS_COUNT_MANY" /> ulivyochagua}}</translation>
 <translation id="8557923272772633250">Panua kikundi chenye vichupo <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="860282621117673749">Arifa kuhusu punguzo la bei</translation>
+<translation id="8714939927607906138">Bei nafuu</translation>
 <translation id="8749939518995770034">Ukanda wa vichupo umefungwa</translation>
+<translation id="8820741577754260431">Angalia puzungo la bei kwenye vichupo vyako</translation>
 <translation id="9150694013019234766">Badili kati ya vichupo vilivyo katika kikundi chako cha vichupo karibu na sehemu ya chini ya skrini</translation>
 <translation id="9169594135889675189">Ongeza kichupo kipya kwenye kikundi</translation>
 <translation id="959682366969460160">Weka kwa utaratibu</translation>

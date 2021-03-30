@@ -21,6 +21,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/appcache/appcache.h"
 #include "content/browser/appcache/appcache_database.h"
 #include "content/browser/appcache/appcache_disk_cache_ops.h"
@@ -37,7 +38,6 @@
 #include "net/base/net_errors.h"
 #include "sql/database.h"
 #include "sql/transaction.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/features.h"
@@ -671,8 +671,8 @@ void AppCacheStorageImpl::StoreGroupAndCacheTask::GetQuotaThenSchedule() {
   // We have to ask the quota manager for the value.
   storage_->pending_quota_queries_.insert(this);
   storage_->service()->quota_manager_proxy()->GetUsageAndQuota(
-      base::ThreadTaskRunnerHandle::Get().get(), group_record_.origin,
-      blink::mojom::StorageType::kTemporary,
+      group_record_.origin, blink::mojom::StorageType::kTemporary,
+      base::ThreadTaskRunnerHandle::Get(),
       base::BindOnce(&StoreGroupAndCacheTask::OnQuotaCallback, this));
 }
 

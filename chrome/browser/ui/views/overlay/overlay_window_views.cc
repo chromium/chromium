@@ -224,7 +224,7 @@ std::unique_ptr<OverlayWindowViews> OverlayWindowViews::Create(
   overlay_window->OnRootViewReady();
 
 #if defined(OS_WIN)
-  base::string16 app_user_model_id;
+  std::wstring app_user_model_id;
   Browser* browser =
       chrome::FindBrowserWithWebContents(controller->GetWebContents());
   if (browser) {
@@ -349,6 +349,7 @@ void OverlayWindowViews::SetUpViews() {
   auto window_background_view = std::make_unique<views::View>();
   auto video_view = std::make_unique<views::View>();
   auto controls_scrim_view = std::make_unique<views::View>();
+  auto controls_container_view = std::make_unique<views::View>();
   auto close_controls_view =
       std::make_unique<views::CloseImageButton>(base::BindRepeating(
           [](OverlayWindowViews* overlay) {
@@ -418,6 +419,12 @@ void OverlayWindowViews::SetUpViews() {
   controls_scrim_view->layer()->SetColor(gfx::kGoogleGrey900);
   controls_scrim_view->layer()->SetOpacity(kControlsScrimOpacity);
 
+  // views::View that is a parent of all the controls. Makes hiding and showing
+  // all the controls at once easier.
+  controls_container_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  controls_container_view->layer()->SetFillsBoundsOpaquely(false);
+  controls_container_view->layer()->SetName("ControlsContainerView");
+
   // views::View that closes the window. --------------------------------------
   close_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   close_controls_view->layer()->SetFillsBoundsOpaquely(false);
@@ -463,23 +470,25 @@ void OverlayWindowViews::SetUpViews() {
       AddChildView(&view_holder_, std::move(window_background_view));
   video_view_ = AddChildView(&view_holder_, std::move(video_view));
   controls_scrim_view_ =
-      AddChildView(&view_holder_, std::move(controls_scrim_view));
+      controls_container_view->AddChildView(std::move(controls_scrim_view));
   close_controls_view_ =
-      AddChildView(&view_holder_, std::move(close_controls_view));
-  back_to_tab_controls_view_ =
-      AddChildView(&view_holder_, std::move(back_to_tab_controls_view));
-  previous_track_controls_view_ =
-      AddChildView(&view_holder_, std::move(previous_track_controls_view));
-  play_pause_controls_view_ =
-      AddChildView(&view_holder_, std::move(play_pause_controls_view));
-  next_track_controls_view_ =
-      AddChildView(&view_holder_, std::move(next_track_controls_view));
+      controls_container_view->AddChildView(std::move(close_controls_view));
+  back_to_tab_controls_view_ = controls_container_view->AddChildView(
+      std::move(back_to_tab_controls_view));
+  previous_track_controls_view_ = controls_container_view->AddChildView(
+      std::move(previous_track_controls_view));
+  play_pause_controls_view_ = controls_container_view->AddChildView(
+      std::move(play_pause_controls_view));
+  next_track_controls_view_ = controls_container_view->AddChildView(
+      std::move(next_track_controls_view));
   skip_ad_controls_view_ =
-      AddChildView(&view_holder_, std::move(skip_ad_controls_view));
+      controls_container_view->AddChildView(std::move(skip_ad_controls_view));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   resize_handle_view_ =
-      AddChildView(&view_holder_, std::move(resize_handle_view));
+      controls_container_view->AddChildView(std::move(resize_handle_view));
 #endif
+  controls_container_view_ =
+      AddChildView(&view_holder_, std::move(controls_container_view));
 }
 
 void OverlayWindowViews::OnRootViewReady() {
@@ -553,18 +562,8 @@ void OverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
 }
 
 void OverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
-  GetControlsScrimLayer()->SetVisible(is_visible);
-  GetCloseControlsLayer()->SetVisible(is_visible);
-  GetBackToTabControlsLayer()->SetVisible(is_visible);
-  previous_track_controls_view_->SetVisible(is_visible &&
-                                            show_previous_track_button_);
-  play_pause_controls_view_->SetVisible(is_visible && show_play_pause_button_);
-  next_track_controls_view_->SetVisible(is_visible && show_next_track_button_);
-  skip_ad_controls_view_->SetVisible(is_visible && show_skip_ad_button_);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  GetResizeHandleLayer()->SetVisible(is_visible);
-#endif
+  controls_container_view_->SetVisible(
+      force_controls_visible_.value_or(is_visible));
 }
 
 void OverlayWindowViews::UpdateControlsBounds() {
@@ -584,10 +583,11 @@ void OverlayWindowViews::UpdateControlsBounds() {
 }
 
 void OverlayWindowViews::OnUpdateControlsBounds() {
+  controls_container_view_->SetSize(GetBounds().size());
+
   // Adding an extra pixel to width/height makes sure the scrim covers the
   // entire window when the platform has fractional scaling applied.
-  gfx::Rect larger_window_bounds =
-      gfx::Rect(0, 0, GetBounds().width(), GetBounds().height());
+  gfx::Rect larger_window_bounds = gfx::Rect(GetBounds().size());
   larger_window_bounds.Inset(-1, -1);
   controls_scrim_view_->SetBoundsRect(larger_window_bounds);
 
@@ -702,7 +702,10 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
 
   // This will actually update the visibility of a control that was just added
   // or removed, see SetPlayPauseButtonVisibility(), etc.
-  UpdateControlsVisibility(AreControlsVisible());
+  previous_track_controls_view_->SetVisible(show_previous_track_button_);
+  play_pause_controls_view_->SetVisible(show_play_pause_button_);
+  next_track_controls_view_->SetVisible(show_next_track_button_);
+  skip_ad_controls_view_->SetVisible(show_skip_ad_button_);
 }
 
 gfx::Rect OverlayWindowViews::CalculateControlsBounds(int x,
@@ -1040,30 +1043,18 @@ int OverlayWindowViews::GetResizeHTComponent() const {
 #endif
 
 bool OverlayWindowViews::AreControlsVisible() const {
-  return controls_scrim_view_->layer()->visible();
+  return controls_container_view_->GetVisible();
+}
+
+void OverlayWindowViews::ForceControlsVisibleForTesting(bool visible) {
+  force_controls_visible_ = visible;
+  UpdateControlsVisibility(visible);
 }
 
 bool OverlayWindowViews::IsLayoutPendingForTesting() const {
   return update_controls_bounds_timer_ &&
          update_controls_bounds_timer_->IsRunning();
 }
-
-ui::Layer* OverlayWindowViews::GetControlsScrimLayer() {
-  return controls_scrim_view_->layer();
-}
-
-ui::Layer* OverlayWindowViews::GetBackToTabControlsLayer() {
-  return back_to_tab_controls_view_->layer();
-}
-
-ui::Layer* OverlayWindowViews::GetCloseControlsLayer() {
-  return close_controls_view_->layer();
-}
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-ui::Layer* OverlayWindowViews::GetResizeHandleLayer() {
-  return resize_handle_view_->layer();
-}
-#endif
 
 gfx::Rect OverlayWindowViews::GetWorkAreaForWindow() const {
   return display::Screen::GetScreen()

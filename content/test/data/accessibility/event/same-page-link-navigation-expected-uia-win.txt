@@ -1,0 +1,6 @@
+ActiveTextPositionChanged on role=link, name=Section 1 content
+Invoke_Invoked on role=link, name=Section 1
+ScrollVerticalScrollPercent changed on role=document
+=== Start Continuation ===
+ActiveTextPositionChanged on role=link, name=Section 3 content
+Invoke_Invoked on role=link, name=Section 3

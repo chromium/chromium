@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">ટાઇમર અવધિ</translation>
 <translation id="2050339315714019657">પોર્ટ્રેટ</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> સક્રિય</translation>
+<translation id="2144806332417375165">કસ્ટમ વીડિયો પેરામીટર</translation>
 <translation id="229579744168541441">ડિસ્કમાં નિકાસ કરો</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2501853267655415902">રેકોર્ડિંગ બંધ કર્યું</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">કૅમેરાનું રિઝોલ્યુશન</translation>
 <translation id="3517926952904427380">પોર્ટ્રેટ ફોટો લઈ શકાતો નથી</translation>
 <translation id="3569311554794739032">શું તમે ખરેખર <ph name="FILE" />ને કાઢી નાખવા માગો છો?</translation>
-<translation id="3750315947605636967">અન્ય ઍપ દ્વારા તમારા કૅમેરાનો ઉપયોગ કરવામાં આવી રહ્યો છે</translation>
 <translation id="3810838688059735925">વીડિયો</translation>
 <translation id="3838931309141338733">બારકોડ સ્કૅન કરો</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
@@ -76,17 +76,19 @@
 <translation id="7337660886763914220">ફાઇલ સિસ્ટમની ભૂલો.</translation>
 <translation id="7450541714075000668">ટેક્સ્ટ કૉપિ કરી</translation>
 <translation id="7557677699350329807">આગલા કૅમેરા પર સ્વિચ કરો</translation>
+<translation id="7607002721634913082">થોભાવેલું</translation>
 <translation id="7608223098072244877">4 બાય 4</translation>
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">પૅન, ટિલ્ટ કે નાનું-મોટું કરવાના વિકલ્પો બતાવો</translation>
 <translation id="7983668134180549431">ટેક્સ્ટની જાણકારી મળી.</translation>
 <translation id="8067883171444229417">વીડિયો ચલાવો</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8145038249676204903">ફોટો લેવા માટે સ્વિચ કરો</translation>
 <translation id="8239780215768881278">વીડિયો સ્નૅપશૉટ લો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
-<translation id="8428213095426709021">સેટિંગ્સ</translation>
+<translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">મેટાડેટાનું પ્રીવ્યૂ કરો</translation>
 <translation id="8815966864175525708">પોર્ટ્રેટ ફોટો લેવા માટે સ્વિચ કરો</translation>

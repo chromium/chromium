@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Файл або папка непрыдатныя да выкарыстання.</translation>
 <translation id="1363028406613469049">Трэк</translation>
 <translation id="1378727793141957596">Вітаем у Google Дыску!</translation>
+<translation id="1379911846207762492">Вы можаце зрабіць файлы даступнымі ў пазасеткавым рэжыме, каб мець магчымасць працаваць з імі, калі не будзе падключэння да інтэрнэту.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1395262318152388157">Паўзунок пераходу</translation>
 <translation id="1404323374378969387">Нарвежская</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Усе файлы</translation>
 <translation id="1810764548349082891">Перадпрагляд недаступны</translation>
 <translation id="1812302367230252929">Амхарская (транслітарацыя)</translation>
+<translation id="1813278315230285598">Сэрвісы</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Увага!<ph name="END_BOLD" />  Гэта часовыя файлы, яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="183183971458492120">Ідзе загрузка інфармацыі...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Гэта папка абагулена з Linux</translation>
 <translation id="1864756863218646478">Не ўдалося знайсці файл.</translation>
 <translation id="1920670151694390848">Малаялам (транслітарацыя)</translation>
+<translation id="1920798810075583923">Кавун</translation>
 <translation id="1924372192547904021">Дыск "<ph name="DRIVE_NAME" />" адфармаціраваны</translation>
 <translation id="1931134289871235022">Славацкая</translation>
 <translation id="1933345018156373194">Перамяшчэнне не ўдалося, нечаканая памылка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Фінская</translation>
 <translation id="1942765061641586207">Раздзяляльнасць відарыса</translation>
-<translation id="1943097386230153518">Усталяваць новае пашырэнне</translation>
 <translation id="1972984168337863910">Разгарнуць панэлі водгукаў для файлаў</translation>
+<translation id="1984456723671657197">Гэты тып файла не падтрымліваецца. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="1995337122023280937">Адкрыць месцазнаходжанне файла</translation>
 <translation id="2001796770603320721">Кіраваць на Дыску</translation>
 <translation id="2009067268969781306">Фармаціраванне дыска прывядзе да выдалення ўсіх захаваных на ім даных. Гэта дзеянне нельга адрабіць.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Патэфон</translation>
 <translation id="2291538123825441971">Адкрываюцца некалькі файлаў (<ph name="NUMBER_OF_FILES" />) .</translation>
 <translation id="2303301624314357662">Адкрываецца файл "<ph name="FILE_NAME" />".</translation>
+<translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Носьбіт <ph name="VOLUME_NAME" /> выняты.</translation>
 <translation id="2325650632570794183">Гэты тып файла не падтрымліваецца. Знайсці праграму для адкрыцця файлаў такога тыпу можна ў Вэб-краме Chrome.</translation>
 <translation id="2326539130272988168">Балгарская</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">ЗША, міжнародная</translation>
 <translation id="2562685439590298522">Дакументы</translation>
 <translation id="2563185590376525700">Жаба</translation>
-<translation id="2572501073504669105">Вы можаце зрабіць файлы даступнымі ў пазасеткавым рэжыме, каб мець магчымасць працаваць з імі, калі не будзе падключэння да інтэрнэту.</translation>
 <translation id="2578394532502990878">Тамільская (фанетычная раскладка)</translation>
 <translation id="2579959351793446050">Орыя</translation>
 <translation id="2614589611416690597">Відэа <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">Французская (Канада)</translation>
 <translation id="3003633581067744647">Пераключыцца на выгляд з мініяцюрамі</translation>
 <translation id="3007214526293698309">Выправіць суадносіны бакоў</translation>
+<translation id="3029114385395636667">Каб працаваць з файламі Дакументаў, Табліц і Прэзентацый без падключэння да інтэрнэту, уключыце пашырэнне "Дакументы Google у пазасеткавым рэжыме".</translation>
 <translation id="303198083543495566">Геаграфія</translation>
 <translation id="3047197340186497470">Кітайская (метад уводу Dayi)</translation>
 <translation id="3057861065630527966">Захаваць рэзервовыя копіі фота і відэа</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Год запісу</translation>
 <translation id="3353984535370177728">Выберыце папку для запампоўвання</translation>
 <translation id="3356580349448036450">Гатова</translation>
+<translation id="3358452157379365236">Гітара</translation>
 <translation id="3382143449143186018">Непальская (раскладка InScript)</translation>
 <translation id="3408236822532681288">Нямецкая (Германія) з раскладкай Neo 2</translation>
 <translation id="3414856743105198592">Фармаціраванне здымнага носьбіта мультымедыя прывядзе да страты ўсіх даных. Хочаце працягнуць?</translation>
 <translation id="3437801641691368414">Час стварэння</translation>
+<translation id="343907260260897561">Фотаапарат імгненнага друку</translation>
 <translation id="3455931012307786678">Эстонская</translation>
 <translation id="3466147780910026086">Праверка вашай мультымедыйнай прылады...</translation>
 <translation id="3468522857997926824">Фота (<ph name="FILE_COUNT" />) скапіраваны на <ph name="BEGIN_LINK" />Google Дыск<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Табліца Google</translation>
+<translation id="3479552764303398839">Не зараз</translation>
 <translation id="3486821258960016770">Мангольская</translation>
 <translation id="3495304270784461826">Памылак: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Партугальская</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Каб адкрываць файлы ў праграме "<ph name="APP_NAME" />", спачатку скапіруйце іх у папку файлаў Windows.</translation>
 <translation id="3556731189587832921">Англійская (ЗША) з міжнароднай клавіятурай для ПК</translation>
 <translation id="357479282490346887">Літоўская</translation>
+<translation id="3592251141500063301">Не ўдалося зрабіць файл <ph name="FILE_NAME" /> даступным па-за сеткай</translation>
 <translation id="3603385196401704894">Французская (канадская)</translation>
 <translation id="3606220979431771195">Турэцкая-F</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Аднарог</translation>
 <translation id="4158739975813877944">Адкрыць плэй-ліст</translation>
 <translation id="4159731583141908892">Элемент "<ph name="FILE_NAME" />" перамешчаны.</translation>
+<translation id="4186579485882418952">Уключыць пазасеткавы рэжым</translation>
 <translation id="4193154014135846272">Дакумент Google</translation>
 <translation id="4197674956721858839">Архіваваць выбранае ў файл ZIP</translation>
 <translation id="4202378258276439759">Іспанская (Лацінская Амерыка)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Агульныя звесткі</translation>
 <translation id="432252891123397018">Румынская (стандартная раскладка)</translation>
 <translation id="4325128273762811722">Славенская</translation>
+<translation id="4326142238881453352">Батанік</translation>
 <translation id="4326192123064055915">Кава</translation>
 <translation id="4336032328163998280">Збой аперацыі капіравання. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Курдская (сарані) (раскладка на аснове арабскай)</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">Тамільская (раскладка пішучай машынкі)</translation>
 <translation id="4711094779914110278">Турэцкая</translation>
 <translation id="4712283082407695269">Ідзе адкрыццё архіва "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай на Chrome OS. Пашукайце ў <ph name="BEGIN_LINK" />Вэб-краме Chrome<ph name="END_LINK" /> адпаведную праграму на замену. <ph name="BEGIN_LINK_HELP" />Даведацца больш<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Створана рэзервовая копія фота ў колькасці <ph name="FILE_COUNT" /></translation>
 <translation id="4725511304875193254">Коргі</translation>
 <translation id="4732760563705710320">Ваша прылада для трансляцыі не падтрымлівае гэта відэа.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Стварайце, абагульвайце файлы і працуйце<ph name="MARKUP_8" />
     над імі разам з іншымі – усё ў адным сэрвісе.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Адноўленыя файлы з Google Дыска</translation>
+<translation id="5288441970121584418">Бургер</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318819489018851358">Абагуліць з Linux</translation>
 <translation id="5323213332664049067">Лацінаамерыканская</translation>
@@ -460,8 +470,6 @@
 <translation id="5833610766403489739">Гэты файл некуды знік. Праверце налады размяшчэння спамповак і паўтарыце спробу.</translation>
 <translation id="5838451609423551646">Скасаваны выбар усіх элементаў</translation>
 <translation id="5838825566232597749">ЗША (Workman, міжнародная)</translation>
-<translation id="5850516540536751549">Гэты тып файла не падтрымліваецца. Знайсці праграму для адкрыцця файлаў такога тыпу можна, наведаўшы <ph name="BEGIN_LINK" />Вэб-краму Chrome<ph name="END_LINK" />.
-    <ph name="BEGIN_LINK_HELP" />Даведацца больш<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Тут нічога няма...</translation>
 <translation id="5911887972742538906">Узнікла памылка падчас усталявання Linux-праграмы.</translation>
 <translation id="5912396950572065471">Фармат</translation>
@@ -499,10 +507,12 @@
 <translation id="6248400709929739064">Уключыць субцітры</translation>
 <translation id="6269630227984243955">Малайская</translation>
 <translation id="6287852322318138013">Выберыце, у якой праграме адкрыць гэты файл</translation>
+<translation id="6321303798550928047">Маханне</translation>
 <translation id="6339145975392024142">ЗША, міжнародная (PC)</translation>
 <translation id="6346310558342052870">Доступ абмежаваны</translation>
 <translation id="6356685157277930264">Акно водгукаў на праграму "Файлы"</translation>
 <translation id="6358884629796491903">Дракон</translation>
+<translation id="6367976544441405720">Мікрааўтобус</translation>
 <translation id="637062427944097960">Гэты файл адкрыты на іншым працоўным стале. Каб праглядзець яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Толькі чытанне</translation>
 <translation id="6395575651121294044">Элементаў: <ph name="NUMBER_OF_FILES" /></translation>
@@ -526,6 +536,7 @@
 <translation id="6650726141019353908">Ружовы матылёк</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6673674183150363784">Французская (Францыя) з раскладкай Bépo</translation>
+<translation id="6710022688720561421">Робат</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6751256176799620176">Выбрана 1 папка</translation>
 <translation id="6790428901817661496">Прайграць</translation>
@@ -559,6 +570,7 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6970230597523682626">Балгарская</translation>
 <translation id="6973630695168034713">Папкі</translation>
+<translation id="6976795442547527108">Леў</translation>
 <translation id="6978611942794658017">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай на Chrome OS. Пашукайце ў Вэб-краме Chrome адпаведную праграму на замену.</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
 <translation id="6989942356279143254">Шведская</translation>
@@ -605,6 +617,7 @@
 <translation id="7532029025027028521">Персідская (транслітарацыя)</translation>
 <translation id="7544830582642184299">Даць праграмам Linux доступ да файлаў на Google Дыску. Змены будуць сінхранізавацца з іншымі прыладамі.</translation>
 <translation id="7544853251252956727">Перамяшаць</translation>
+<translation id="7547009467130558110">Красоўка</translation>
 <translation id="7547780573915868306">Літоўская</translation>
 <translation id="7547811415869834682">Галандская</translation>
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
@@ -619,6 +632,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% выканана.</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7654209398114106148">Ідзе перамяшчэнне элементаў (<ph name="NUMBER_OF_ITEMS" />)...</translation>
+<translation id="7655441028674523381">Лёгкі доступ да Google Фота</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7663224033570512922">Хіндзі</translation>
 <translation id="7693909743393669729">Фармаціраванне дыска прывядзе да сцірання ўсіх захаваных на ім даных і выдалення ўсіх наяўных раздзелаў, у тым ліку нябачных. Гэта дзеянне немагчыма адрабіць.</translation>
@@ -650,7 +664,6 @@
 <translation id="7839804798877833423">Каб атрымаць гэтыя файлы, будзе выкарыстана прыкладна <ph name="FILE_SIZE" /> мабільнага трафіка.</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
 <translation id="7853966320808728790">Французская раскладка клавіятуры BÉPO</translation>
-<translation id="7864662577698025113">Дадаць новы сэрвіс</translation>
 <translation id="7868774406711971383">Польская</translation>
 <translation id="7873831373602885875">Не ўдалося захаваць змены ў папку "<ph name="FOLDER_NAME" />". Яны будуць захаваны ў папцы "<ph name="DOWNLOADS_FOLDER" />", якая знаходзіцца ў папцы "Спампоўкі".</translation>
 <translation id="7874321682039004450">Філіпіна</translation>
@@ -665,13 +678,13 @@
 <translation id="7972920761225148017">Французская (Швейцарыя)</translation>
 <translation id="7980421588063892270">Англійская (ЗША) з раскладкай Colemak</translation>
 <translation id="7982283708762922719">Вышыня</translation>
+<translation id="79907182588096956">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай на Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="8008366997883261463">Сабака</translation>
 <translation id="8028993641010258682">Памер</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(стандартна)</translation>
 <translation id="8042602468072383151">Аўдыяфайл фармату <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Румынская</translation>
-<translation id="8052887694493382350">Гэты файл створаны для ПК з праграмным забеспячэннем Windows. Ён несумяшчальны з вашай прыладай на Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведацца больш<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Усе змены будуць захаваны ў папцы <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Паўтараць</translation>
 <translation id="8106045200081704138">Абагуленае са мной</translation>
@@ -711,6 +724,7 @@
 <translation id="8466234950814670489">Архіў .tar</translation>
 <translation id="8475647382427415476">Google Дыску зараз не ўдалося сінхранізаваць "<ph name="FILENAME" />". Спроба сінхранізацыі будзе паўторана пазней.</translation>
 <translation id="8477649328507734757">Кручэнне</translation>
+<translation id="8484284835977497781">Выбірайце са сваіх нядаўніх фота.</translation>
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
 <translation id="8521441079177373948">Вялікабрытанія</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
@@ -743,8 +757,10 @@
 <translation id="8860454412039442620">Электронная табліца Excel</translation>
 <translation id="8866284467018526531">Арабская (транслітарацыя)</translation>
 <translation id="8900820606136623064">Венгерская</translation>
+<translation id="8903931173357132290">Выпускнік</translation>
 <translation id="8919081441417203123">Дацкая</translation>
 <translation id="8965697826696209160">Недастаткова месца.</translation>
+<translation id="8970501467542182729">Гэты файл прызначаны для камп'ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай на Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="8997962250644902079">Кітайская (традыцыйная, піньінь)</translation>
 <translation id="9017798300203431059">Руская фанетычная</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>

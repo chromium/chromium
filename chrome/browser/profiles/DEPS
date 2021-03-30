@@ -1,21 +1,12 @@
+include_rules = [
+  "+ash/components/account_manager",
+]
+
 specific_include_rules = {
   "chrome_browser_main_extra_parts_profiles.cc": [
     # This is required to create the SiteDataCacheFacadeFactory when a profile
-    # is created.
+    # is created. This file isn't part of the PerformanceManager public API and
+    # its include should be explicitly allowed.
     "+chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
   ],
-  # TODO(crbug.com/1149277): Remove include rules for profile once it is in its
-  # own GN target. GN will prevent dependency cycles more reliably.
-  "profile\.(cc|h)": [
-    # Profile is a dependency for most of //chrome/browser for keyed services.
-    # It should not depend on anything in the //chrome/browser target.
-    "-chrome/browser",
-    "+chrome/browser/profiles/profile.h",
-    # Files without dependencies on //chrome/browser:
-    "+chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h",
-    "+chrome/browser/profiles/android/jni_headers",
-    "+chrome/browser/profiles/profile_observer.h",
-    # TODO(crbug.com/1149277): Remove this:
-    "+chrome/browser/first_run/first_run.h",
-  ]
 }

@@ -11,6 +11,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -46,7 +47,9 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
       const v8_inspector::V8StackTraceId&,
       const String& source_code,
       RejectCoepUnsafeNone reject_coep_unsafe_none,
-      const blink::DedicatedWorkerToken& token);
+      const blink::DedicatedWorkerToken& token,
+      mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+          dedicated_worker_host);
   void PostMessageToWorkerGlobalScope(BlinkTransferableMessage);
 
   bool HasPendingActivity() const;
@@ -98,6 +101,11 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
   // Tasks are queued here until worker scripts are evaluated on the worker
   // global scope.
   Vector<BlinkTransferableMessage> queued_early_tasks_;
+
+  // Passed to DedicatedWorkerThread on worker thread creation.
+  mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+      pending_dedicated_worker_host_;
+
   DISALLOW_COPY_AND_ASSIGN(DedicatedWorkerMessagingProxy);
 };
 

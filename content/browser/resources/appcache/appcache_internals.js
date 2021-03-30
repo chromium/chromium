@@ -2,25 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('appcache', function() {
-  'use strict';
+import 'chrome://resources/js/jstemplate_compiled.js';
 
-  const VIEW_DETAILS_TEXT = 'View Details';
-  const HIDE_DETAILS_TEXT = 'Hide Details';
-  const GET_ALL_APPCACHE = 'getAllAppCache';
-  const DELETE_APPCACHE = 'deleteAppCache';
-  const GET_APPCACHE_DETAILS = 'getAppCacheDetails';
-  const GET_FILE_DETAILS = 'getFileDetails';
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
-  const manifestsToView = [];
-  const manifestsToDelete = [];
-  const fileDetailsRequests = [];
+const VIEW_DETAILS_TEXT = 'View Details';
+const HIDE_DETAILS_TEXT = 'Hide Details';
+const GET_ALL_APPCACHE = 'getAllAppCache';
+const DELETE_APPCACHE = 'deleteAppCache';
+const GET_APPCACHE_DETAILS = 'getAppCacheDetails';
+const GET_FILE_DETAILS = 'getFileDetails';
 
-  function Manifest(url, path, link) {
-    this.url = url;
-    this.path = path;
-    this.link = link;
-  }
+const manifestsToView = [];
+const manifestsToDelete = [];
+const fileDetailsRequests = [];
+
+function Manifest(url, path, link) {
+  this.url = url;
+  this.path = path;
+  this.link = link;
+}
 
   function FileRequest(fileURL, manifestURL, path, groupId, responseId) {
     this.fileURL = fileURL;
@@ -64,9 +66,14 @@ cr.define('appcache', function() {
   }
 
   function initialize() {
+    addWebUIListener('all-appcache-info-ready', onAllAppCacheInfoReady);
+    // Note: The listeners below could be migrated to sendWithPromise, but would
+    // require some changes to the AppCache service/AppCacheResponseInfo.
+    addWebUIListener('appcache-details-ready', onAppCacheDetailsReady);
+    addWebUIListener('file-details-ready', onFileDetailsReady);
+    addWebUIListener('file-details-failed', onFileDetailsFailed);
     chrome.send(GET_ALL_APPCACHE);
   }
-
 
   function onAllAppCacheInfoReady(partition_path, display_name, data) {
     const template = jstGetTemplate('appcache-list-template');
@@ -179,7 +186,7 @@ cr.define('appcache', function() {
     return simpleVector;
   }
 
-  function deleteAppCacheInfoEventHandler(event) {
+  async function deleteAppCacheInfoEventHandler(event) {
     const link = event.target;
     const manifestURL = getFirstAncestor(link, function(node) {
                           return !!node.manifestURL;
@@ -189,7 +196,9 @@ cr.define('appcache', function() {
                           }).partitionPath;
     const manifest = new Manifest(manifestURL, partitionPath, link);
     manifestsToDelete.push(manifest);
-    chrome.send(DELETE_APPCACHE, [partitionPath, manifestURL]);
+    const deleted =
+        await sendWithPromise(DELETE_APPCACHE, partitionPath, manifestURL);
+    onAppCacheInfoDeleted(paritionPath, manifestURL, deleted);
   }
 
   function onAppCacheInfoDeleted(partitionPath, manifestURL, deleted) {
@@ -291,14 +300,4 @@ cr.define('appcache', function() {
     destStyle.innerHTML = tmp;
   }
 
-  return {
-    initialize: initialize,
-    onAllAppCacheInfoReady: onAllAppCacheInfoReady,
-    onAppCacheInfoDeleted: onAppCacheInfoDeleted,
-    onAppCacheDetailsReady: onAppCacheDetailsReady,
-    onFileDetailsReady: onFileDetailsReady,
-    onFileDetailsFailed: onFileDetailsFailed
-  };
-});
-
-document.addEventListener('DOMContentLoaded', appcache.initialize);
+  document.addEventListener('DOMContentLoaded', initialize);

@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ઍડ્રેસ બારમાંના તમારા ઇનપુટમાં www. અને .com ઉમેરો, પછી પેજ ખોલો</translation>
+<translation id="1768987374400973299">સ્ક્રીનશૉટ લો/રેકોર્ડિંગ કરો</translation>
 <translation id="1872219238824176091">વર્તમાન ડેસ્ક કાઢી નાખો</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, પછી <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> અથવા <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">આગળના ટૅબ પર જાઓ</translation>
 <translation id="2010818616644390445">વિંડોમાં છેલ્લા ટૅબ પર જાઓ</translation>
 <translation id="2040706009561734834">લૉન્ચર ખોલો/બંધ કરો</translation>
+<translation id="2086334242442703436">ઇમોજી પિકર ખોલો</translation>
 <translation id="2088054208777350526">કીબોર્ડ શૉર્ટકટ શોધો</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> અથવા <ph name="F" /></translation>
 <translation id="2145908266289632567">ટેક્સ્ટમાં ફેરફાર કરવો</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Google આસિસ્ટંટ ખોલો</translation>
 <translation id="2488661730534396940">ડાબી બાજુના ડેસ્કને સક્રિય કરો</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Diagnostics ઍપ ખોલો</translation>
 <translation id="2530339807289914946">વેબપેજમાં નીચે સ્ક્રોલ કરો</translation>
 <translation id="2530896289327917474">ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ અથવા બંધ કરો</translation>
 <translation id="2574014812750545982">પેજ પર ઝૂમ લેવલ રીસેટ કરો</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">આગલા શબ્દના અંતે જાઓ</translation>
 <translation id="4866066940972151697">જમણી બાજુના ડેસ્કને સક્રિય કરો</translation>
 <translation id="4916163929714267752">લિંકને નવી વિંડોમાં ખોલો</translation>
+<translation id="492453977506755176">કૅપ્ચર મોડવાળી કી</translation>
 <translation id="5030659775136592441">બુકમાર્ક મેનેજર બતાવો</translation>
 <translation id="5034421018520995080">પેજની ટોચે જાઓ</translation>
 <translation id="5042305953558921026">ઝલક મોડ કી</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">ડેવલપર સાધનો કન્સોલ બતાવો અથવા છુપાવો</translation>
 <translation id="5919628958418675842">પ્રાઇવસી સ્ક્રીન ચાલુ અથવા બંધ કરો</translation>
 <translation id="5921745308587794300">વિંડોને ફેરવો</translation>
+<translation id="5926306472221400972">પૂર્ણ સ્ક્રીનનો સ્ક્રીનશૉટ લો</translation>
 <translation id="6022924867608035986">શોધબૉક્સમાંથી બધી ટેક્સ્ટ સાફ કરો</translation>
 <translation id="6045998054441862242">ઉચ્ચ કૉન્ટ્રાસ્ટ મોડ ચાલુ કરો</translation>
 <translation id="6052614013050385269">લિંક પર રાઇટ-ક્લિક કરો</translation>
@@ -139,7 +144,7 @@
 <translation id="6143669479988153888">આ પેજ પર ઝૂમ વધારો</translation>
 <translation id="6185696379715117369">પૃષ્ઠ ઉપર</translation>
 <translation id="6228457605945141550">બ્રાઇટનેસ ઘટાડો</translation>
-<translation id="6276708887952587684">પેજનો સ્રોત જુઓ</translation>
+<translation id="6276708887952587684">પેજનો સૉર્સ જુઓ</translation>
 <translation id="6321940490215594447">ઇતિહાસનું પેજ ખોલો</translation>
 <translation id="6340769215862220182">ઝૂમ વધારવાનું બતાવો</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">ટૅબને તેની ઑરિજિનલ સ્થિતિમાં પાછી લાવો</translation>
 <translation id="6474744297082284761">ઝૂમ ઘટાડો (ડૉક કરેલ હોય અથવા પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર ચાલુ કરેલું હોય ત્યારે)</translation>
 <translation id="649811797655257835">ફાઇલ પસંદ કરો, પછી <ph name="SPACE" /> દબાવો</translation>
+<translation id="6551886416582667425">આંશિક સ્ક્રીનશૉટ લો/આંશિક રેકોર્ડિંગ કરો</translation>
 <translation id="6556040137485212400">સૌથી લાંબા સમયથી ઉપયોગમાં ન લેવાઈ હોય તે વિંડો ખોલો</translation>
 <translation id="666343722268997814">હાઇલાઇટ કરેલ આઇટમ માટે રાઇટ-ક્લિક મેનૂ ખોલો</translation>
 <translation id="6671538777808758331">તમારી શોધ માટેના આગલા મેળ પર જાઓ</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">પૉપઅપ અને સંવાદો પર ફોકસ લઈ જાઓ</translation>
 <translation id="7635348532214572995">ઍપ આઇકનને ગ્રિડની આસપાસ ખસેડો</translation>
 <translation id="766326951329901120">ક્લિપબોર્ડમાંના કન્ટેન્ટને સાદી ટેક્સ્ટ તરીકે પેસ્ટ કરો</translation>
+<translation id="7673453620027697230">વિન્ડો સ્ક્રીનશૉટ લો/વિન્ડો રેકોર્ડિંગ કરો</translation>
 <translation id="7703010453515335249">ડાબો કૌંસ</translation>
 <translation id="7724603315864178912">કાપો</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, પછી <ph name="SPACE" /> અથવા <ph name="ENTER" /></translation>

@@ -40,7 +40,11 @@ var JoinConfigType;
 Polymer({
   is: 'offline-ad-login-element',
 
-  behaviors: [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior
+  ],
 
   EXTERNAL_API: [
     'reset',
@@ -186,6 +190,18 @@ Polymer({
    */
   errorStateLocked_: false,
 
+  /**
+   * True when we skip unlock step and show back button option.
+   * @private {boolean}
+   */
+  backToUnlockButtonVisible_: false,
+
+  /**
+   * True when join configurations are visible.
+   * @private {boolean}
+   */
+  joinConfigVisible_: false,
+
   /** @override */
   ready() {
     if (this.isDomainJoin) {
@@ -286,9 +302,9 @@ Polymer({
    * @param {Array<JoinConfigType>} options
    */
   setJoinConfigurationOptions(options) {
-    this.$.backToUnlockButton.hidden = true;
+    this.backToUnlockButtonVisible_ = false;
     if (!options || options.length < 1) {
-      this.$.joinConfig.hidden = true;
+      this.joinConfigVisible_ = false;
       return;
     }
     this.joinConfigOptions_ = options;
@@ -300,7 +316,7 @@ Polymer({
         this.$.joinConfigSelect, selectList,
         this.onJoinConfigSelected_.bind(this));
     this.onJoinConfigSelected_(this.$.joinConfigSelect.value);
-    this.$.joinConfig.hidden = false;
+    this.joinConfigVisible_ = true;
   },
 
   /** @private */
@@ -379,7 +395,7 @@ Polymer({
     }
     this.fire('dialogHidden');
     this.disabled = false;
-    this.focus();
+    this.$.moreOptionsBtn.focus();
   },
 
   /** @private */
@@ -392,7 +408,7 @@ Polymer({
 
   /** @private */
   onSkipClicked_() {
-    this.$.backToUnlockButton.hidden = false;
+    this.backToUnlockButtonVisible_ = true;
     this.setUIStep(adLoginStep.CREDS);
     this.focus();
   },

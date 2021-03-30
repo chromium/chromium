@@ -82,22 +82,10 @@ class NetLogPlatformBrowserTestBase : public PlatformBrowserTest {
 };
 
 // This is an integration test to ensure that CertVerifyProc netlog events
-// continue to be logged once cert verification is moved out of the network
-// service process. (See crbug.com/1015134 and crbug.com/1040681.)
-class CertVerifyProcNetLogBrowserTest
-    : public NetLogPlatformBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+// continue to be logged even though cert verification is no longer performed in
+// the network process.
+class CertVerifyProcNetLogBrowserTest : public NetLogPlatformBrowserTestBase {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          network::features::kCertVerifierService);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          network::features::kCertVerifierService);
-    }
-  }
-
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();
 
@@ -142,11 +130,10 @@ class CertVerifyProcNetLogBrowserTest
   const std::string kTestHost = "netlog-example.a.test";
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_P(CertVerifyProcNetLogBrowserTest, Test) {
+IN_PROC_BROWSER_TEST_F(CertVerifyProcNetLogBrowserTest, Test) {
   ASSERT_TRUE(https_server_.Start());
 
   // Request using a unique host name to ensure that the cert verification wont
@@ -164,7 +151,3 @@ IN_PROC_BROWSER_TEST_P(CertVerifyProcNetLogBrowserTest, Test) {
   base::RunLoop().RunUntilIdle();
   content::FlushNetworkServiceInstanceForTesting();
 }
-
-INSTANTIATE_TEST_SUITE_P(CertVerifierService,
-                         CertVerifyProcNetLogBrowserTest,
-                         ::testing::Bool());

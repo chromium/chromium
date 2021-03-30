@@ -21,11 +21,21 @@ namespace extensions {
 // wait and not error out.
 TEST(MojoDataPumpTest, ReceiveStreamNotReady) {
   base::test::TaskEnvironment task_environment;
-  mojo::DataPipe receive_pipe;
-  mojo::DataPipe send_pipe;
-  auto pump =
-      std::make_unique<MojoDataPump>(std::move(receive_pipe.consumer_handle),
-                                     std::move(send_pipe.producer_handle));
+
+  mojo::ScopedDataPipeProducerHandle receive_producer_handle;
+  mojo::ScopedDataPipeConsumerHandle receive_consumer_handle;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, receive_producer_handle,
+                                 receive_consumer_handle),
+            MOJO_RESULT_OK);
+
+  mojo::ScopedDataPipeProducerHandle send_producer_handle;
+  mojo::ScopedDataPipeConsumerHandle send_consumer_handle;
+  ASSERT_EQ(
+      mojo::CreateDataPipe(nullptr, send_producer_handle, send_consumer_handle),
+      MOJO_RESULT_OK);
+
+  auto pump = std::make_unique<MojoDataPump>(std::move(receive_consumer_handle),
+                                             std::move(send_producer_handle));
   std::string data("dummy");
   base::RunLoop run_loop;
   bool callback_called = false;
@@ -44,14 +54,11 @@ TEST(MojoDataPumpTest, ReceiveStreamNotReady) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(callback_called);
 
-  mojo::ScopedDataPipeProducerHandle receive_pipe_producer =
-      std::move(receive_pipe.producer_handle);
-
   uint32_t num_bytes = data.size();
   // WriteData() completes synchronously because |data| is much smaller than
   // data pipe's internal buffer.
-  MojoResult r = receive_pipe_producer->WriteData(data.data(), &num_bytes,
-                                                  MOJO_WRITE_DATA_FLAG_NONE);
+  MojoResult r = receive_producer_handle->WriteData(data.data(), &num_bytes,
+                                                    MOJO_WRITE_DATA_FLAG_NONE);
   ASSERT_EQ(MOJO_RESULT_OK, r);
   ASSERT_EQ(data.size(), num_bytes);
 
@@ -64,11 +71,20 @@ TEST(MojoDataPumpTest, ReceiveStreamNotReady) {
 // propagated.
 TEST(MojoDataPumpTest, ReceiveStreamClosed) {
   base::test::TaskEnvironment task_environment;
-  mojo::DataPipe receive_pipe;
-  mojo::DataPipe send_pipe;
-  auto pump =
-      std::make_unique<MojoDataPump>(std::move(receive_pipe.consumer_handle),
-                                     std::move(send_pipe.producer_handle));
+  mojo::ScopedDataPipeProducerHandle receive_producer_handle;
+  mojo::ScopedDataPipeConsumerHandle receive_consumer_handle;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, receive_producer_handle,
+                                 receive_consumer_handle),
+            MOJO_RESULT_OK);
+
+  mojo::ScopedDataPipeProducerHandle send_producer_handle;
+  mojo::ScopedDataPipeConsumerHandle send_consumer_handle;
+  ASSERT_EQ(
+      mojo::CreateDataPipe(nullptr, send_producer_handle, send_consumer_handle),
+      MOJO_RESULT_OK);
+
+  auto pump = std::make_unique<MojoDataPump>(std::move(receive_consumer_handle),
+                                             std::move(send_producer_handle));
   base::RunLoop run_loop;
   pump->Read(10 /*count*/,
              base::BindLambdaForTesting(
@@ -78,9 +94,7 @@ TEST(MojoDataPumpTest, ReceiveStreamClosed) {
                    run_loop.Quit();
                  }));
 
-  mojo::ScopedDataPipeProducerHandle receive_pipe_producer =
-      std::move(receive_pipe.producer_handle);
-  receive_pipe_producer.reset();
+  receive_producer_handle.reset();
 
   // Now pump->Read() should complete.
   run_loop.Run();
@@ -89,17 +103,24 @@ TEST(MojoDataPumpTest, ReceiveStreamClosed) {
 // Tests that if |MojoDataPump::send_stream_| is closed, Write() will fail.
 TEST(MojoDataPumpTest, SendStreamClosed) {
   base::test::TaskEnvironment task_environment;
-  mojo::DataPipe receive_pipe;
-  mojo::DataPipe send_pipe;
-  auto pump =
-      std::make_unique<MojoDataPump>(std::move(receive_pipe.consumer_handle),
-                                     std::move(send_pipe.producer_handle));
+  mojo::ScopedDataPipeProducerHandle receive_producer_handle;
+  mojo::ScopedDataPipeConsumerHandle receive_consumer_handle;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, receive_producer_handle,
+                                 receive_consumer_handle),
+            MOJO_RESULT_OK);
+
+  mojo::ScopedDataPipeProducerHandle send_producer_handle;
+  mojo::ScopedDataPipeConsumerHandle send_consumer_handle;
+  ASSERT_EQ(
+      mojo::CreateDataPipe(nullptr, send_producer_handle, send_consumer_handle),
+      MOJO_RESULT_OK);
+
+  auto pump = std::make_unique<MojoDataPump>(std::move(receive_consumer_handle),
+                                             std::move(send_producer_handle));
   scoped_refptr<net::StringIOBuffer> write_buffer =
       base::MakeRefCounted<net::StringIOBuffer>("dummy");
   net::TestCompletionCallback callback;
-  mojo::ScopedDataPipeConsumerHandle send_pipe_consumer =
-      std::move(send_pipe.consumer_handle);
-  send_pipe_consumer.reset();
+  send_consumer_handle.reset();
   pump->Write(write_buffer.get(), write_buffer->size(), callback.callback());
   EXPECT_EQ(net::ERR_FAILED, callback.WaitForResult());
 }

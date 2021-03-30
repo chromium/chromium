@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #import "base/test/ios/wait_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -21,7 +20,6 @@
 #include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/web/public/deprecated/crw_test_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -44,7 +42,7 @@ class FakeResultDelegate
   void OnFullCardRequestSucceeded(
       const autofill::payments::FullCardRequest& /* full_card_request */,
       const autofill::CreditCard& card,
-      const base::string16& cvc) override {}
+      const std::u16string& cvc) override {}
 
   void OnFullCardRequestFailed(
       autofill::payments::FullCardRequest::FailureType /* failure_type */)
@@ -74,13 +72,8 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
 
     AddCreditCard(autofill::test::GetCreditCard());  // Visa.
 
-    // Set up what is needed to have an instance of autofill::AutofillManager.
-    CRWTestJSInjectionReceiver* injectionReceiver =
-        [[CRWTestJSInjectionReceiver alloc] init];
-    web_state()->SetJSInjectionReceiver(injectionReceiver);
-
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    auto main_frame = std::make_unique<web::FakeMainWebFrame>(
+    auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
         /*security_origin=*/GURL());
     frames_manager->AddWebFrame(std::move(main_frame));
     web_state()->SetWebFramesManager(std::move(frames_manager));

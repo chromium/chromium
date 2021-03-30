@@ -13,6 +13,7 @@
 #include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -26,6 +27,8 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
                                       public FullscreenObserver,
                                       public content::WebContentsObserver {
  public:
+  METADATA_HEADER(LocationBarBubbleDelegateView);
+
   enum DisplayReason {
     // The bubble appears as a direct result of a user action (clicking on the
     // location bar icon).
@@ -45,6 +48,9 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   LocationBarBubbleDelegateView(views::View* anchor_view,
                                 content::WebContents* web_contents);
 
+  LocationBarBubbleDelegateView(const LocationBarBubbleDelegateView&) = delete;
+  LocationBarBubbleDelegateView& operator=(
+      const LocationBarBubbleDelegateView&) = delete;
   ~LocationBarBubbleDelegateView() override;
 
   // Displays the bubble with appearance and behavior tailored for |reason|.
@@ -98,9 +104,8 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   // Closes the bubble.
   virtual void CloseBubble();
 
-  void set_close_on_main_frame_origin_navigation(bool close) {
-    close_on_main_frame_origin_navigation_ = close;
-  }
+  void SetCloseOnMainFrameOriginNavigation(bool close);
+  bool GetCloseOnMainFrameOriginNavigation() const;
 
  private:
   base::ScopedObservation<FullscreenController, FullscreenObserver>
@@ -111,8 +116,6 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   bool close_on_main_frame_origin_navigation_ = false;
 
   DisplayReason display_reason_ = AUTOMATIC;
-
-  DISALLOW_COPY_AND_ASSIGN(LocationBarBubbleDelegateView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_BUBBLE_DELEGATE_VIEW_H_

@@ -152,6 +152,7 @@ class WorkerThreadSchedulerTest : public testing::Test {
             task_environment_.GetMockTickClock(),
             &timeline_)) {
     scheduler_->Init();
+    scheduler_->AttachToCurrentThread();
     default_task_queue_ = scheduler_->CreateTaskQueue("test_tq");
     default_task_runner_ = default_task_queue_->CreateTaskRunner(0);
     idle_task_runner_ = scheduler_->IdleTaskRunner();
@@ -505,6 +506,7 @@ class WorkerThreadSchedulerWithProxyTest : public testing::Test {
     task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
 
     scheduler_->Init();
+    scheduler_->AttachToCurrentThread();
   }
 
   ~WorkerThreadSchedulerWithProxyTest() override = default;

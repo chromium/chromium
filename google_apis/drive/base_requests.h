@@ -57,12 +57,16 @@ typedef base::OnceCallback<void(DriveApiErrorCode error,
     FileResourceCallback;
 
 // Callback used for DownloadFileRequest and ResumeUploadRequestBase.
+// |first_chunk| indicates if |content| is from the very beginning of
+// the file being downloaded and helps consumers detect if download
+// was restarted, for example due to re-authentication.
 typedef base::RepeatingCallback<void(int64_t progress, int64_t total)>
     ProgressCallback;
 
 // Callback used to get the content from DownloadFileRequest.
 typedef base::RepeatingCallback<void(DriveApiErrorCode error,
-                                     std::unique_ptr<std::string> content)>
+                                     std::unique_ptr<std::string> content,
+                                     bool first_chunk)>
     GetContentCallback;
 
 // Parses JSON passed in |json|. Returns NULL on failure.

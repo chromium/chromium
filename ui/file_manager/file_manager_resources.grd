@@ -103,6 +103,7 @@
       <!-- Resources used for non-flattened HTML files. -->
       <include name="IDR_FILE_MANAGER_DRIVE_WELCOME_STYLE" file="file_manager/foreground/css/drive_welcome.css" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_HOLDING_SPACE_WELCOME_STYLE" file="file_manager/foreground/css/holding_space_welcome.css" type="BINDATA" />
+      <include name="IDR_FILE_MANAGER_PHOTOS_WELCOME_STYLE" file="file_manager/foreground/css/photos_welcome.css" type="BINDATA" />
 
       <!-- The VideoPlayer app pages and scripts. -->
       <include name="IDR_VIDEO_PLAYER_MANIFEST" file="video_player/manifest.json" type="BINDATA" />
@@ -171,7 +172,6 @@
       <!-- Image loader extension manifest and scripts. -->
       <if expr="chromeos">
         <include name="IDR_IMAGE_LOADER_MANIFEST" file="image_loader/manifest.json" type="BINDATA" />
-        <include name="IDR_IMAGE_LOADER_BACKGROUND_JS" file="image_loader/background_scripts.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_BACKGROUND_HTML" file="image_loader/background.html" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_CLIENT_JS" file="image_loader/image_loader_client.js" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_PIEX_WASM_JS" file="image_loader/piex/piex.js.wasm" type="BINDATA" />

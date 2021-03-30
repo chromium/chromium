@@ -14,44 +14,71 @@
 namespace language {
 namespace test {
 
-AcceptLanguagesTester::AcceptLanguagesTester(PrefService* user_prefs)
+LanguagePrefTester::LanguagePrefTester(PrefService* user_prefs)
     : prefs_(user_prefs) {}
 
-void AcceptLanguagesTester::ExpectLanguagePrefs(
+void LanguagePrefTester::ExpectPref(
+    const std::string& pref_name,
     const std::string& expected_prefs,
     const std::string& expected_prefs_chromeos) const {
   if (expected_prefs.empty()) {
-    EXPECT_TRUE(prefs_->GetString(language::prefs::kAcceptLanguages).empty());
+    EXPECT_TRUE(prefs_->GetString(pref_name).empty());
   } else {
-    EXPECT_EQ(expected_prefs,
-              prefs_->GetString(language::prefs::kAcceptLanguages));
+    EXPECT_EQ(expected_prefs, prefs_->GetString(pref_name));
   }
+}
+
+void LanguagePrefTester::ExpectAcceptLanguagePrefs(
+    const std::string& expected_prefs,
+    const std::string& expected_prefs_chromeos) const {
+  ExpectPref(language::prefs::kAcceptLanguages, expected_prefs,
+             expected_prefs_chromeos);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (expected_prefs_chromeos.empty()) {
-    EXPECT_TRUE(
-        prefs_->GetString(language::prefs::kPreferredLanguages).empty());
-  } else {
-    EXPECT_EQ(expected_prefs_chromeos,
-              prefs_->GetString(language::prefs::kPreferredLanguages));
-  }
+  ExpectPref(language::prefs::kPreferredLanguages, expected_prefs,
+             expected_prefs_chromeos);
 #endif
 }
 
 // Similar to function above: this one expects both ChromeOS and other
 // platforms to have the same value of language prefs.
-void AcceptLanguagesTester::ExpectLanguagePrefs(
+void LanguagePrefTester::ExpectAcceptLanguagePrefs(
     const std::string& expected_prefs) const {
-  ExpectLanguagePrefs(expected_prefs, expected_prefs);
+  ExpectAcceptLanguagePrefs(expected_prefs, expected_prefs);
 }
 
-void AcceptLanguagesTester::SetLanguagePrefs(
+void LanguagePrefTester::ExpectSelectedLanguagePrefs(
+    const std::string& expected_prefs,
+    const std::string& expected_prefs_chromeos) const {
+  ExpectPref(language::prefs::kSelectedLanguages, expected_prefs,
+             expected_prefs_chromeos);
+}
+
+// Similar to function above: this one expects both ChromeOS and other
+// platforms to have the same value of language prefs.
+void LanguagePrefTester::ExpectSelectedLanguagePrefs(
+    const std::string& expected_prefs) const {
+  ExpectSelectedLanguagePrefs(expected_prefs, expected_prefs);
+}
+
+void LanguagePrefTester::SetLanguagePrefs(
     const std::vector<std::string>& languages) {
   std::string languages_str = base::JoinString(languages, ",");
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   prefs_->SetString(language::prefs::kPreferredLanguages, languages_str);
 #endif
+  prefs_->SetString(language::prefs::kSelectedLanguages, languages_str);
+}
 
-  prefs_->SetString(language::prefs::kAcceptLanguages, languages_str);
+void LanguagePrefTester::SetForcedLanguagePrefs(
+    std::vector<std::string>&& languages) {
+  base::Value::ListStorage languages_list;
+
+  for (std::string language : languages) {
+    languages_list.push_back(base::Value(std::move(language)));
+  }
+
+  prefs_->Set(language::prefs::kForcedLanguages,
+              base::Value(std::move(languages_list)));
 }
 
 }  // namespace test

@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/css/css_custom_font_data.h"
@@ -468,51 +468,27 @@ void RemoteFontFaceSource::FontLoadHistograms::RecordLoadTimeHistogram(
   // bucket.
   if (font->ErrorOccurred()) {
     base::UmaHistogramTimes("WebFont.DownloadTime.LoadError", delta);
-    if (data_source_ == kFromNetwork) {
-      base::UmaHistogramTimes("WebFont.MissedCache.DownloadTime.LoadError",
-                              delta);
-    }
     return;
   }
 
   size_t size = font->EncodedSize();
   if (size < 10 * 1024) {
     base::UmaHistogramTimes("WebFont.DownloadTime.0.Under10KB", delta);
-    if (data_source_ == kFromNetwork) {
-      base::UmaHistogramTimes("WebFont.MissedCache.DownloadTime.0.Under10KB",
-                              delta);
-    }
     return;
   }
   if (size < 50 * 1024) {
     base::UmaHistogramTimes("WebFont.DownloadTime.1.10KBTo50KB", delta);
-    if (data_source_ == kFromNetwork) {
-      base::UmaHistogramTimes("WebFont.MissedCache.DownloadTime.1.10KBTo50KB",
-                              delta);
-    }
     return;
   }
   if (size < 100 * 1024) {
     base::UmaHistogramTimes("WebFont.DownloadTime.2.50KBTo100KB", delta);
-    if (data_source_ == kFromNetwork) {
-      base::UmaHistogramTimes("WebFont.MissedCache.DownloadTime.2.50KBTo100KB",
-                              delta);
-    }
     return;
   }
   if (size < 1024 * 1024) {
     base::UmaHistogramTimes("WebFont.DownloadTime.3.100KBTo1MB", delta);
-    if (data_source_ == kFromNetwork) {
-      base::UmaHistogramTimes("WebFont.MissedCache.DownloadTime.3.100KBTo1MB",
-                              delta);
-    }
     return;
   }
   base::UmaHistogramTimes("WebFont.DownloadTime.4.Over1MB", delta);
-  if (data_source_ == kFromNetwork) {
-    base::UmaHistogramTimes("WebFont.MissedCache.DownloadTime.4.Over1MB",
-                            delta);
-  }
 }
 
 RemoteFontFaceSource::FontLoadHistograms::CacheHitMetrics

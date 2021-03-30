@@ -12,6 +12,10 @@ StubWebView::StubWebView(const std::string& id) : id_(id) {}
 
 StubWebView::~StubWebView() {}
 
+bool StubWebView::IsServiceWorker() const {
+  return false;
+}
+
 std::string StubWebView::GetId() {
   return id_;
 }

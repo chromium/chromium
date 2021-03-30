@@ -1,0 +1,28 @@
+{% from 'templates/macros.tmpl' import license %}
+{{license()}}
+
+// To save memory, the bindings code-generator has a special optimization for
+// CSSStyleDeclaration property attributes. This optimization is accessed
+// via the extended attribute "CSSProperty", which causes read/writes to
+// such property attributes to be routed to CSSStyleDeclaration::
+// Get/SetPropertyAttribute, with the property name passed as a parameter.
+//
+// However, this optimization is not supported if "RuntimeEnabled" is used
+// at the same time. Hence, if "RuntimeEnabled" is present, we avoid
+// "CSSProperty", and instead bind to functions generated in
+// CSSStyleDeclarationAttributes.
+[
+    ImplementedAs=CSSStyleDeclarationAttributes
+] partial interface CSSStyleDeclaration {
+{% for attribute in attributes %}
+  {% set extended_attribs = [
+    'CEReactions',
+    'SetterCallWith=ExecutionContext',
+    'RaisesException=Setter',
+    (attribute.runtime_flag and 'RuntimeEnabled=' + attribute.runtime_flag or ''),
+    (not attribute.runtime_flag and 'CSSProperty' or ''),
+    ('ImplementedAs=' + attribute.implemented_as()|string or ''),
+  ] | reject('==', '') | join(',') %}
+  [{{extended_attribs}}] attribute [TreatNullAs=EmptyString] CSSOMString {{attribute}};
+{% endfor %}
+};

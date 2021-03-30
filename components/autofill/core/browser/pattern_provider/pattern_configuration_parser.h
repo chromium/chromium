@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/version.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"

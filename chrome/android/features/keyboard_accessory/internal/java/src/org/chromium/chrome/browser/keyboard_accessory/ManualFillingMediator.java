@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessor
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.TouchToFillSheetCoordinator;
+import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -92,6 +94,7 @@ class ManualFillingMediator extends EmptyTabObserver
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private DropdownPopupWindow mPopup;
     private BottomSheetController mBottomSheetController;
+    private ConfirmationDialogHelper mConfirmationHelper;
 
     private final TabObserver mTabObserver = new EmptyTabObserver() {
         @Override
@@ -129,13 +132,14 @@ class ManualFillingMediator extends EmptyTabObserver
 
     void initialize(KeyboardAccessoryCoordinator keyboardAccessory,
             AccessorySheetCoordinator accessorySheet, WindowAndroid windowAndroid,
-            BottomSheetController sheetController) {
+            BottomSheetController sheetController, ConfirmationDialogHelper confirmationHelper) {
         mActivity = (ChromeActivity) windowAndroid.getActivity().get();
         assert mActivity != null;
         mWindowAndroid = windowAndroid;
         mWindowAndroid.getApplicationBottomInsetProvider().addSupplier(mViewportInsetSupplier);
         mKeyboardAccessory = keyboardAccessory;
         mBottomSheetController = sheetController;
+        mConfirmationHelper = confirmationHelper;
         mModel.set(PORTRAIT_ORIENTATION, hasPortraitOrientation());
         mModel.addObserver(this::onPropertyChanged);
         mAccessorySheet = accessorySheet;
@@ -282,6 +286,7 @@ class ManualFillingMediator extends EmptyTabObserver
 
     void pause() {
         if (!isInitialized()) return;
+        mConfirmationHelper.dismiss();
         // When pause is called, the accessory needs to disappear fast since some UI forced it to
         // close (e.g. a scene changed or the screen was turned off).
         mKeyboardAccessory.skipClosingAnimationOnce();
@@ -325,6 +330,8 @@ class ManualFillingMediator extends EmptyTabObserver
             onOrientationChange();
             return;
         } else if (property == KEYBOARD_EXTENSION_STATE) {
+            TraceEvent.instant("ManualFillingMediator$KeyboardExtensionState",
+                    getNameForState(mModel.get(KEYBOARD_EXTENSION_STATE)));
             transitionIntoState(mModel.get(KEYBOARD_EXTENSION_STATE));
             return;
         } else if (property == SUPPRESSED_BY_BOTTOM_SHEET) {
@@ -342,9 +349,11 @@ class ManualFillingMediator extends EmptyTabObserver
      */
     private void transitionIntoState(@KeyboardExtensionState int extensionState) {
         if (!meetsStatePreconditions(extensionState)) return;
+        TraceEvent.begin("ManualFillingMediator#transitionIntoState");
         enforceStateProperties(extensionState);
         changeBottomControlSpaceForState(extensionState);
         updateKeyboard(extensionState);
+        TraceEvent.end("ManualFillingMediator#transitionIntoState");
     }
 
     /**
@@ -486,6 +495,10 @@ class ManualFillingMediator extends EmptyTabObserver
      */
     void swapSheetWithKeyboard() {
         if (isInitialized() && mAccessorySheet.isShown()) onCloseAccessorySheet();
+    }
+
+    void confirmOperation(String title, String message, Runnable confirmedCallback) {
+        mConfirmationHelper.showConfirmation(title, message, R.string.ok, confirmedCallback);
     }
 
     private void changeBottomControlSpaceForState(int extensionState) {
@@ -668,6 +681,24 @@ class ManualFillingMediator extends EmptyTabObserver
 
     private boolean is(@KeyboardExtensionState int state) {
         return mModel.get(KEYBOARD_EXTENSION_STATE) == state;
+    }
+
+    private static String getNameForState(@KeyboardExtensionState int state) {
+        switch (state) {
+            case HIDDEN:
+                return "HIDDEN";
+            case EXTENDING_KEYBOARD:
+                return "EXTENDING_KEYBOARD";
+            case REPLACING_KEYBOARD:
+                return "REPLACING_KEYBOARD";
+            case WAITING_TO_REPLACE:
+                return "WAITING_TO_REPLACE";
+            case FLOATING_BAR:
+                return "FLOATING_BAR";
+            case FLOATING_SHEET:
+                return "FLOATING_SHEET";
+        }
+        return null;
     }
 
     @VisibleForTesting

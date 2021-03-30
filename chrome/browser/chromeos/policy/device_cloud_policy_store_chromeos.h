@@ -11,8 +11,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_validator.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 namespace base {
@@ -34,10 +34,10 @@ namespace policy {
 // TODO(tnagel): Either drop "Cloud" from the name or refactor.
 class DeviceCloudPolicyStoreChromeOS
     : public CloudPolicyStore,
-      public chromeos::DeviceSettingsService::Observer {
+      public ash::DeviceSettingsService::Observer {
  public:
   DeviceCloudPolicyStoreChromeOS(
-      chromeos::DeviceSettingsService* device_settings_service,
+      ash::DeviceSettingsService* device_settings_service,
       chromeos::InstallAttributes* install_attributes,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~DeviceCloudPolicyStoreChromeOS() override;
@@ -56,7 +56,7 @@ class DeviceCloudPolicyStoreChromeOS
   void InstallInitialPolicy(
       const enterprise_management::PolicyFetchResponse& policy);
 
-  // chromeos::DeviceSettingsService::Observer:
+  // ash::DeviceSettingsService::Observer:
   void DeviceSettingsUpdated() override;
   void OnDeviceSettingsServiceShutdown() override;
 
@@ -68,9 +68,7 @@ class DeviceCloudPolicyStoreChromeOS
 
   // Called on completion on the policy validation prior to storing policy.
   // Starts the actual store operation.
-  // |is_initial| is whether the policy store is for the initial installation.
-  void OnPolicyToStoreValidated(bool is_initial,
-                                DeviceCloudPolicyValidator* validator);
+  void OnPolicyToStoreValidated(DeviceCloudPolicyValidator* validator);
 
   // Handles store completion operations updates status.
   void OnPolicyStored();
@@ -89,7 +87,7 @@ class DeviceCloudPolicyStoreChromeOS
   // Whether DM token check has yet been done.
   bool dm_token_checked_ = false;
 
-  chromeos::DeviceSettingsService* device_settings_service_;
+  ash::DeviceSettingsService* device_settings_service_;
   chromeos::InstallAttributes* install_attributes_;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

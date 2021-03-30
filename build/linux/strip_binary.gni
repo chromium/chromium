@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/toolchain/toolchain.gni")
+
+# Extracts symbols from a binary into a symbol file.
+#
+# Args:
+#   binary_input: Path to the binary containing symbols to extract, e.g.:
+#       "$root_out_dir/chrome"
+#   symbol_output: Desired output file for symbols, e.g.:
+#       "$root_out_dir/chrome.debug"
+#   stripped_binary_output: Desired output file for stripped file, e.g.:
+#       "$root_out_dir/chrome.stripped"
+template("strip_binary") {
+  forward_variables_from(invoker,
+                         [
+                           "deps",
+                           "testonly",
+                         ])
+  action("${target_name}") {
+    eu_strip_binary = "//buildtools/third_party/eu-strip/bin/eu-strip"
+    script = "//build/linux/strip_binary.py"
+    inputs = [
+      invoker.binary_input,
+      eu_strip_binary,
+    ]
+    outputs = [
+      invoker.symbol_output,
+      invoker.stripped_binary_output,
+    ]
+    args = [
+      "--eu-strip-binary-path",
+      rebase_path(eu_strip_binary, root_build_dir),
+      "--symbol-output",
+      rebase_path(invoker.symbol_output, root_build_dir),
+      "--stripped-binary-output",
+      rebase_path(invoker.stripped_binary_output, root_build_dir),
+      "--binary-input",
+      rebase_path(invoker.binary_input, root_build_dir),
+    ]
+  }
+}

@@ -48,15 +48,15 @@ class WebUIResourceBrowserTest : public InProcessBrowserTest {
   }
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelTest) {
   LoadTestUrl("js/cr/ui/array_data_model_test.html");
 }
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelModuleTest) {
   LoadTestUrl("?module=js/cr/ui/array_data_model_test.m.js");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
   LoadTestUrl("cr_test.html");
@@ -78,65 +78,17 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
   LoadTestUrl("i18n_process_css_test.html");
 }
 
-class WebUIResourceBrowserTestV0 : public InProcessBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    // Load resources that are only used by browser_tests.
-    base::FilePath pak_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
-    pak_path = pak_path.AppendASCII("browser_tests.pak");
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_path, ui::SCALE_FACTOR_NONE);
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(yoichio): This is temporary switch to support chrome internal
-    // components migration from the old web APIs.
-    // After completion of the migration, we should remove this.
-    // See crbug.com/911943 for detail.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "HTMLImports");
-  }
-
-  // Runs all test functions in |file|, waiting for them to complete.
-  void LoadFile(const std::string& file) {
-    GURL test_url =
-        embedded_test_server()->GetURL(std::string("/webui/") + file);
-    RunTest(test_url);
-  }
-
-  // Queues the library corresponding to |resource_id| for injection into the
-  // test. The code injection is performed post-load, so any common test
-  // initialization that depends on the library should be placed in a setUp
-  // function.
-  void AddLibrary(int resource_id) {
-    include_libraries_.push_back(resource_id);
-  }
-
- private:
-  void RunTest(const GURL& url) {
-    ui_test_utils::NavigateToURL(browser(), url);
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(web_contents);
-    EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents, include_libraries_));
-  }
-
-  // Resource IDs for internal javascript libraries to inject into the test.
-  std::vector<int> include_libraries_;
-};
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListTest) {
   LoadTestUrl("js/cr/ui/list_test.html");
 }
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListModuleTest) {
   LoadTestUrl("?module=js/cr/ui/list_test.m.js");
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridTest) {
   LoadTestUrl("js/cr/ui/grid_test.html");
 }
@@ -144,38 +96,34 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridTest) {
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridModuleTest) {
   LoadTestUrl("?module=js/cr/ui/grid_test.m.js");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModelTest) {
   LoadTestUrl("js/cr/ui/list_selection_model_test.html");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModeModulelTest) {
+// This test is Chrome OS only as the utils file it imports relies on
+// list_single_selection_model, which is only included on Chrome OS.
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModelModuleTest) {
   LoadTestUrl("?module=js/cr/ui/list_selection_model_test.m.js");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSingleSelectionModelTest) {
   LoadTestUrl("js/cr/ui/list_single_selection_model_test.html");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest,
                        ListSingleSelectionModelModuleTest) {
   LoadTestUrl("?module=js/cr/ui/list_single_selection_model_test.m.js");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuTest) {
   LoadTestUrl("js/cr/ui/menu_test.html");
 }
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuModuleTest) {
   LoadTestUrl("?module=js/cr/ui/menu_test.m.js");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
   LoadTestUrl("mock_timer_test.html");
@@ -185,55 +133,55 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ParseHtmlSubsetTest) {
   LoadTestUrl("parse_html_subset_test.html");
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilTest) {
   LoadTestUrl("js/cr/ui/position_util_test.html");
 }
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilModuleTest) {
   LoadTestUrl("?module=js/cr/ui/position_util_test.m.js");
 }
-#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandTest) {
   LoadTestUrl("js/cr/ui/command_test.html");
 }
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandModuleTest) {
   LoadTestUrl("?module=js/cr/ui/command_test.m.js");
 }
-#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerTest) {
   LoadTestUrl("js/cr/ui/context_menu_handler_test.html");
 }
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerModuleTest) {
   LoadTestUrl("?module=js/cr/ui/context_menu_handler_test.m.js");
 }
-#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonTest) {
   LoadTestUrl("js/cr/ui/menu_button_test.html");
 }
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonModuleTest) {
   LoadTestUrl("?module=js/cr/ui/menu_button_test.m.js");
 }
-#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterTest) {
   LoadTestUrl("js/cr/ui/splitter_test.html");
 }
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterModuleTest) {
   LoadTestUrl("?module=js/cr/ui/splitter_test.m.js");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, UtilTest) {
   LoadTestUrl("util_test.html");

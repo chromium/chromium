@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/cache_storage_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "extensions/buildflags/buildflags.h"
@@ -353,7 +352,7 @@ const CookieTreeNode* CookiesTreeModelUtil::GetTreeNodeFromPath(
 
 const CookieTreeNode* CookiesTreeModelUtil::GetTreeNodeFromTitle(
     const CookieTreeNode* root,
-    const base::string16& title) {
+    const std::u16string& title) {
   // TODO(dschuyler): This is an O(n) lookup for O(1) space, but it could be
   // improved to O(1) lookup if desired (by using O(n) space).
   const auto i = std::find_if(

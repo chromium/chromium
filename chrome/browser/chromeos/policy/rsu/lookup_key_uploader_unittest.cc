@@ -13,8 +13,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/attestation/mock_enrollment_certificate_uploader.h"
-#include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
+#include "chrome/browser/ash/attestation/mock_enrollment_certificate_uploader.h"
+#include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
@@ -24,7 +24,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::attestation::MockEnrollmentCertificateUploader;
+using CertificateStatus =
+    ash::attestation::EnrollmentCertificateUploader::Status;
+using ash::attestation::MockEnrollmentCertificateUploader;
 using testing::_;
 using testing::Invoke;
 
@@ -35,12 +37,12 @@ const char kValidRsuDeviceId[] = "123";
 const char kValidRsuDeviceIdEncoded[] =
     "MTIz";  // base::Base64Encode(kValidRsuDeviceId, kValidRsuDeviceencoded)
 }
-class LookupKeyUploaderTest : public chromeos::DeviceSettingsTestBase {
+class LookupKeyUploaderTest : public ash::DeviceSettingsTestBase {
  protected:
   LookupKeyUploaderTest() = default;
 
   void SetUp() override {
-    chromeos::DeviceSettingsTestBase::SetUp();
+    ash::DeviceSettingsTestBase::SetUp();
     pref_service_.registry()->RegisterStringPref(
         prefs::kLastRsuDeviceIdUploaded, std::string());
     lookup_key_uploader_ = std::make_unique<LookupKeyUploader>(
@@ -77,9 +79,10 @@ class LookupKeyUploaderTest : public chromeos::DeviceSettingsTestBase {
 
 TEST_F(LookupKeyUploaderTest, Uploads) {
   EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
-      .WillOnce(Invoke([](base::OnceCallback<void(bool status)> callback) {
-        std::move(callback).Run(true);
-      }));
+      .WillOnce(Invoke(
+          [](base::OnceCallback<void(CertificateStatus status)> callback) {
+            std::move(callback).Run(CertificateStatus::kSuccess);
+          }));
   SetCryptohomeReplyTo(kValidRsuDeviceId);
   Start();
   ExpectSavedIdToBe(kValidRsuDeviceIdEncoded);
@@ -116,9 +119,10 @@ TEST_F(LookupKeyUploaderTest, DoesNotUploadVeryFrequently) {
   AdvanceTime();
 
   EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
-      .WillOnce(Invoke([](base::OnceCallback<void(bool status)> callback) {
-        std::move(callback).Run(true);
-      }));
+      .WillOnce(Invoke(
+          [](base::OnceCallback<void(CertificateStatus status)> callback) {
+            std::move(callback).Run(CertificateStatus::kSuccess);
+          }));
   Start();
   ExpectSavedIdToBe(kValidRsuDeviceIdEncoded);
   EXPECT_FALSE(NeedsUpload());
@@ -127,9 +131,9 @@ TEST_F(LookupKeyUploaderTest, DoesNotUploadVeryFrequently) {
 TEST_F(LookupKeyUploaderTest, UploadsEvenWhenSubmittedBeforeIfForcedByPolicy) {
   EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
       .Times(2)
-      .WillRepeatedly(
-          Invoke([](base::OnceCallback<void(bool status)> callback) {
-            std::move(callback).Run(true);
+      .WillRepeatedly(Invoke(
+          [](base::OnceCallback<void(CertificateStatus status)> callback) {
+            std::move(callback).Run(CertificateStatus::kSuccess);
           }));
   SetCryptohomeReplyTo(kValidRsuDeviceId);
   Start();

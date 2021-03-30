@@ -42,8 +42,8 @@ class IOSChromeSavePasswordInfoBarDelegate
   bool ShouldExpire(const NavigationDetails& details) const override;
 
   // ConfirmInfoBarDelegate implementation.
-  base::string16 GetMessageText() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
   void InfoBarDismissed() override;

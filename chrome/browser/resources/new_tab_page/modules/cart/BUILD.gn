@@ -11,14 +11,14 @@ js_library("module") {
     "..:module_descriptor",
     "../..:img",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:i18n_behavior",
   ]
 }
 
 js_library("chrome_cart_proxy") {
-  deps = [
-    "//chrome/browser/cart:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr.m",
-  ]
+  deps = [ "//chrome/browser/cart:mojo_bindings_js_library_for_compile" ]
 }
 
 html_to_js("web_components") {

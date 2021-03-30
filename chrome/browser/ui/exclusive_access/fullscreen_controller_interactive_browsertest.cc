@@ -27,6 +27,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/display/screen_base.h"
 #include "ui/display/test/test_screen.h"
@@ -48,6 +49,12 @@ const base::FilePath::CharType* kSimpleFile = FILE_PATH_LITERAL("simple.html");
 
 class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExclusiveAccessTest::SetUpCommandLine(command_line);
+    // Slow bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
 
   // Tests that actually make the browser fullscreen have been flaky when
   // run sharded, and so are restricted here to interactive ui tests.
@@ -646,7 +653,9 @@ class ExperimentalFullscreenControllerInteractiveTest
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_FullscreenOnSecondDisplay DISABLED_FullscreenOnSecondDisplay
 #else
-#define MAYBE_FullscreenOnSecondDisplay FullscreenOnSecondDisplay
+// TODO(crbug.com/1183146): Disabled everywhere temporarily as a crash fix
+// while a better solution is investigated.
+#define MAYBE_FullscreenOnSecondDisplay DISABLED_FullscreenOnSecondDisplay
 #endif
 // An end-to-end test that mocks a dual-screen configuration and executes
 // javascript to request and exit fullscreen on the second display.
@@ -687,8 +696,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   FullscreenNotificationObserver enter_fullscreen_observer(browser());
   const std::string request_fullscreen_script = R"(
       (async () => {
-          const screens = await self.getScreens();
-          let options = { screen: screens[1] };
+          const screensInterface = await self.getScreens();
+          const options = { screen: screensInterface.screens[1] };
           await document.body.requestFullscreen(options);
           return !!document.fullscreenElement;
       })();
@@ -731,8 +740,10 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_FullscreenOnSecondDisplayMaximized \
   DISABLED_FullscreenOnSecondDisplayMaximized
 #else
+// TODO(crbug.com/1183146): Disabled everywhere temporarily as a crash fix
+// while a better solution is investigated.
 #define MAYBE_FullscreenOnSecondDisplayMaximized \
-  FullscreenOnSecondDisplayMaximized
+  DISABLED_FullscreenOnSecondDisplayMaximized
 #endif
 // An end-to-end test that mocks a dual-screen configuration and executes
 // javascript to request and exit fullscreen on the second display, while
@@ -776,8 +787,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   FullscreenNotificationObserver enter_fullscreen_observer(browser());
   const std::string request_fullscreen_script = R"(
       (async () => {
-          const screens = await self.getScreens();
-          let options = { screen: screens[1] };
+          const screensInterface = await self.getScreens();
+          const options = { screen: screensInterface.screens[1] };
           await document.body.requestFullscreen(options);
           return !!document.fullscreenElement;
       })();
@@ -813,7 +824,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 // Tests async fullscreen requests on screenschange event.
 // TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura
 // blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
-#if defined(OS_WIN)
+// TODO(crbug.com/1183791): Disabled on Mac due to flaky ObserverList crashes.
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_FullscreenOnScreensChange DISABLED_FullscreenOnScreensChange
 #else
 #define MAYBE_FullscreenOnScreensChange FullscreenOnScreensChange
@@ -844,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   // Add a screenschange handler to requestFullscreen after awaiting getScreens.
   const std::string request_fullscreen_script = R"(
       window.onscreenschange = async () => {
-        const screens = await self.getScreens();
+        const screens = await self.getScreensDeprecated();
         await document.body.requestFullscreen();
       };
   )";
@@ -864,6 +876,10 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 
   fullscreen_observer.Wait();
   EXPECT_TRUE(browser()->window()->IsFullscreen());
+
+  // Close all tabs to avoid assertions failing when their cached screen info
+  // differs from the restored original Screen instance.
+  browser()->tab_strip_model()->CloseAllTabs();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   display::Screen::SetScreenInstance(original_screen);

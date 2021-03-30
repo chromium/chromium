@@ -29,7 +29,7 @@ enum class PermissionStatusSource {
   // restricted, such as camera, microphone, etc.
   INSECURE_ORIGIN,
 
-  // The feature has been blocked in the requesting frame by feature policy.
+  // The feature has been blocked in the requesting frame by permissions policy.
   FEATURE_POLICY,
 
   // The virtual URL and the loaded URL are for different origins. The loaded

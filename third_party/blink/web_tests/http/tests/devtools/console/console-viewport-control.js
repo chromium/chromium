@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies viewport correctly shows and hides messages while logging and scrolling.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function addMessages(count)

@@ -36,13 +36,19 @@ class CastSessionIdMap {
   static CastSessionIdMap* GetInstance(
       base::SequencedTaskRunner* task_runner = nullptr);
   // Map a session id to a particular group id in the provided WebContents.
+  // Record whether the session is an audio only session.
   // Can be called on any thread.
-  static void SetSessionId(std::string session_id,
-                           content::WebContents* web_contents);
+  static void SetAppProperties(std::string session_id,
+                               bool is_audio_app,
+                               content::WebContents* web_contents);
   // Fetch the session id that is mapped to the provided group_id. Defaults to
   // empty string if the mapping is not found.
   // Must be called on the sequence for |task_runner_|.
   static std::string GetSessionId(const std::string& group_id);
+  // Fetch whether the session is an audio only session based on the provided
+  // session id. Defaults to false if the mapping is not found.
+  // Must be called on the sequence for |task_runner_|.
+  static bool IsAudioOnlySession(const std::string& session_id);
 
  private:
   class GroupObserver;
@@ -58,18 +64,27 @@ class CastSessionIdMap {
   // because it releases the GroupObserver who owns the destuctor callback.
   void RemoveGroupId(base::UnguessableToken group_id);
   // Maps the session id for the provided group id.
+  // Record whether the session is an audio only session.
   // This call be called on any thread.
-  void SetSessionIdInternal(std::string session_id,
-                            base::UnguessableToken group_id,
-                            std::unique_ptr<GroupObserver> group_observer);
+  void SetAppPropertiesInternal(std::string session_id,
+                                bool is_audio_app,
+                                base::UnguessableToken group_id,
+                                std::unique_ptr<GroupObserver> group_observer);
   // Retrieves the session id for the provided group id.
   // This must be called on the |task_runner_|.
   std::string GetSessionIdInternal(const std::string& group_id);
+  // Retrieves the session is an audio only session based on the provided
+  // session id.
+  // This must be called on the |task_runner_|.
+  bool IsAudioOnlySessionInternal(const std::string& session_id);
 
   base::flat_map<
       std::string,
       std::pair<std::string /* group_id */, std::unique_ptr<GroupObserver>>>
       mapping_;
+
+  base::flat_map<std::string /* session_id */, bool /* is_audio_app */>
+      application_capability_mapping_;
   base::SequencedTaskRunner* const task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
 

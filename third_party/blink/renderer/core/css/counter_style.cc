@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/layout/list_marker_text.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -25,59 +26,28 @@ namespace {
 // limit string length at 120.
 const wtf_size_t kCounterLengthLimit = 120;
 
-CounterStyleSystem ToCounterStyleSystemEnum(const CSSValue* value) {
-  if (!value)
-    return CounterStyleSystem::kSymbolic;
-
-  CSSValueID system_keyword;
-  if (const auto* id = DynamicTo<CSSIdentifierValue>(value)) {
-    system_keyword = id->GetValueID();
-  } else {
-    // Either fixed or extends.
-    DCHECK(value->IsValuePair());
-    const CSSValuePair* pair = To<CSSValuePair>(value);
-    DCHECK(pair->First().IsIdentifierValue());
-    system_keyword = To<CSSIdentifierValue>(pair->First()).GetValueID();
-  }
-
-  switch (system_keyword) {
-    case CSSValueID::kCyclic:
-      return CounterStyleSystem::kCyclic;
-    case CSSValueID::kFixed:
-      return CounterStyleSystem::kFixed;
-    case CSSValueID::kSymbolic:
-      return CounterStyleSystem::kSymbolic;
-    case CSSValueID::kAlphabetic:
-      return CounterStyleSystem::kAlphabetic;
-    case CSSValueID::kNumeric:
-      return CounterStyleSystem::kNumeric;
-    case CSSValueID::kAdditive:
-      return CounterStyleSystem::kAdditive;
-    case CSSValueID::kExtends:
-      return CounterStyleSystem::kUnresolvedExtends;
-    default:
-      NOTREACHED();
-      return CounterStyleSystem::kSymbolic;
-  }
-}
-
-bool SymbolsAreValid(const StyleRuleCounterStyle& rule,
-                     CounterStyleSystem system) {
-  const CSSValueList* symbols = To<CSSValueList>(rule.GetSymbols());
-  const CSSValueList* additive_symbols =
-      To<CSSValueList>(rule.GetAdditiveSymbols());
+bool HasSymbols(CounterStyleSystem system) {
   switch (system) {
     case CounterStyleSystem::kCyclic:
     case CounterStyleSystem::kFixed:
     case CounterStyleSystem::kSymbolic:
-      return symbols && symbols->length();
     case CounterStyleSystem::kAlphabetic:
     case CounterStyleSystem::kNumeric:
-      return symbols && symbols->length() > 1u;
     case CounterStyleSystem::kAdditive:
-      return additive_symbols && additive_symbols->length();
+      return true;
     case CounterStyleSystem::kUnresolvedExtends:
-      return !symbols && !additive_symbols;
+    case CounterStyleSystem::kHebrew:
+    case CounterStyleSystem::kSimpChineseInformal:
+    case CounterStyleSystem::kSimpChineseFormal:
+    case CounterStyleSystem::kTradChineseInformal:
+    case CounterStyleSystem::kTradChineseFormal:
+    case CounterStyleSystem::kKoreanHangulFormal:
+    case CounterStyleSystem::kKoreanHanjaInformal:
+    case CounterStyleSystem::kKoreanHanjaFormal:
+    case CounterStyleSystem::kLowerArmenian:
+    case CounterStyleSystem::kUpperArmenian:
+    case CounterStyleSystem::kEthiopicNumeric:
+      return false;
   }
 }
 
@@ -202,6 +172,116 @@ Vector<wtf_size_t> AdditiveAlgorithm(unsigned value,
   return result;
 }
 
+// TODO(crbug.com/687225): After @counter-style is shipped and the legacy
+// code paths are removed, remove everything else of list_marker_text and move
+// the implementation of the special algorithms here.
+
+String HebrewAlgorithm(unsigned value) {
+  if (value > 999999)
+    return String();
+  return list_marker_text::GetText(EListStyleType::kHebrew, value);
+}
+
+int AbsoluteValueForLegacyCJKAlgorithms(int value) {
+  // @counter-style algorithm works on absolute value, but the legacy
+  // implementation works on the original value (and handles negative sign on
+  // its own). Clamp to the signed int range before proceeding.
+  if (UNLIKELY(value == std::numeric_limits<int>::min()))
+    return std::numeric_limits<int>::max();
+  else
+    return std::abs(value);
+}
+
+String SimpChineseInformalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kSimpChineseInformal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+}
+
+String SimpChineseFormalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kSimpChineseFormal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+}
+
+String TradChineseInformalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kTradChineseInformal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+}
+
+String TradChineseFormalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kTradChineseFormal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+}
+
+String KoreanHangulFormalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kKoreanHangulFormal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+}
+
+String KoreanHanjaInformalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kKoreanHanjaInformal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+}
+
+String KoreanHanjaFormalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kKoreanHanjaFormal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+}
+
+String LowerArmenianAlgorithm(unsigned value) {
+  if (value > 99999999)
+    return String();
+  return list_marker_text::GetText(EListStyleType::kLowerArmenian, value);
+}
+
+String UpperArmenianAlgorithm(unsigned value) {
+  if (value > 99999999)
+    return String();
+  return list_marker_text::GetText(EListStyleType::kUpperArmenian, value);
+}
+
+// https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
+String EthiopicNumericAlgorithm(unsigned value) {
+  // Ethiopic characters for 1-9
+  static const UChar units[9] = {0x1369, 0x136A, 0x136B, 0x136C, 0x136D,
+                                 0x136E, 0x136F, 0x1370, 0x1371};
+  // Ethiopic characters for 10, 20, ..., 90
+  static const UChar tens[9] = {0x1372, 0x1373, 0x1374, 0x1375, 0x1376,
+                                0x1377, 0x1378, 0x1379, 0x137A};
+  if (!value)
+    return String();
+  if (value < 10u)
+    return String(&units[value - 1], 1);
+
+  // Generate characters in the reversed ordering
+  Vector<UChar> result;
+  for (bool odd_group = false; value; odd_group = !odd_group) {
+    unsigned group_value = value % 100;
+    value /= 100;
+    if (!odd_group) {
+      // This adds an extra character for group 0. We'll remove it in the end.
+      result.push_back(kEthiopicNumberTenThousandCharacter);
+    } else {
+      if (group_value)
+        result.push_back(kEthiopicNumberHundredCharacter);
+    }
+    bool most_significant_group = !value;
+    bool remove_digits = !group_value ||
+                         (group_value == 1 && most_significant_group) ||
+                         (group_value == 1 && odd_group);
+    if (!remove_digits) {
+      if (unsigned unit = group_value % 10)
+        result.push_back(units[unit - 1]);
+      if (unsigned ten = group_value / 10)
+        result.push_back(tens[ten - 1]);
+    }
+  }
+
+  std::reverse(result.begin(), result.end());
+  // Remove the extra character from group 0
+  result.pop_back();
+  return String(result.data(), result.size());
+}
+
 }  // namespace
 
 // static
@@ -214,6 +294,66 @@ CounterStyle& CounterStyle::GetDecimal() {
   return *decimal;
 }
 
+// static
+CounterStyleSystem CounterStyle::ToCounterStyleSystemEnum(
+    const CSSValue* value) {
+  if (!value)
+    return CounterStyleSystem::kSymbolic;
+
+  CSSValueID system_keyword;
+  if (const auto* id = DynamicTo<CSSIdentifierValue>(value)) {
+    system_keyword = id->GetValueID();
+  } else {
+    // Either fixed or extends.
+    DCHECK(value->IsValuePair());
+    const CSSValuePair* pair = To<CSSValuePair>(value);
+    DCHECK(pair->First().IsIdentifierValue());
+    system_keyword = To<CSSIdentifierValue>(pair->First()).GetValueID();
+  }
+
+  switch (system_keyword) {
+    case CSSValueID::kCyclic:
+      return CounterStyleSystem::kCyclic;
+    case CSSValueID::kFixed:
+      return CounterStyleSystem::kFixed;
+    case CSSValueID::kSymbolic:
+      return CounterStyleSystem::kSymbolic;
+    case CSSValueID::kAlphabetic:
+      return CounterStyleSystem::kAlphabetic;
+    case CSSValueID::kNumeric:
+      return CounterStyleSystem::kNumeric;
+    case CSSValueID::kAdditive:
+      return CounterStyleSystem::kAdditive;
+    case CSSValueID::kInternalHebrew:
+      return CounterStyleSystem::kHebrew;
+    case CSSValueID::kInternalSimpChineseInformal:
+      return CounterStyleSystem::kSimpChineseInformal;
+    case CSSValueID::kInternalSimpChineseFormal:
+      return CounterStyleSystem::kSimpChineseFormal;
+    case CSSValueID::kInternalTradChineseInformal:
+      return CounterStyleSystem::kTradChineseInformal;
+    case CSSValueID::kInternalTradChineseFormal:
+      return CounterStyleSystem::kTradChineseFormal;
+    case CSSValueID::kInternalKoreanHangulFormal:
+      return CounterStyleSystem::kKoreanHangulFormal;
+    case CSSValueID::kInternalKoreanHanjaInformal:
+      return CounterStyleSystem::kKoreanHanjaInformal;
+    case CSSValueID::kInternalKoreanHanjaFormal:
+      return CounterStyleSystem::kKoreanHanjaFormal;
+    case CSSValueID::kInternalLowerArmenian:
+      return CounterStyleSystem::kLowerArmenian;
+    case CSSValueID::kInternalUpperArmenian:
+      return CounterStyleSystem::kUpperArmenian;
+    case CSSValueID::kInternalEthiopicNumeric:
+      return CounterStyleSystem::kEthiopicNumeric;
+    case CSSValueID::kExtends:
+      return CounterStyleSystem::kUnresolvedExtends;
+    default:
+      NOTREACHED();
+      return CounterStyleSystem::kSymbolic;
+  }
+}
+
 CounterStyle::~CounterStyle() = default;
 
 AtomicString CounterStyle::GetName() const {
@@ -222,15 +362,14 @@ AtomicString CounterStyle::GetName() const {
 
 // static
 CounterStyle* CounterStyle::Create(const StyleRuleCounterStyle& rule) {
-  CounterStyleSystem system = ToCounterStyleSystemEnum(rule.GetSystem());
-  if (!SymbolsAreValid(rule, system))
+  if (!rule.HasValidSymbols())
     return nullptr;
 
   return MakeGarbageCollected<CounterStyle>(rule);
 }
 
 CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
-    : style_rule_(rule) {
+    : style_rule_(rule), style_rule_version_(rule.GetVersion()) {
   if (const CSSValue* system = rule.GetSystem()) {
     system_ = ToCounterStyleSystemEnum(system);
 
@@ -246,7 +385,7 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
   if (const CSSValue* fallback = rule.GetFallback())
     fallback_name_ = To<CSSCustomIdentValue>(fallback)->Value();
 
-  if (system_ != CounterStyleSystem::kUnresolvedExtends) {
+  if (HasSymbols(system_)) {
     if (system_ == CounterStyleSystem::kAdditive) {
       for (const CSSValue* symbol :
            To<CSSValueList>(*rule.GetAdditiveSymbols())) {
@@ -291,10 +430,10 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
   if (const CSSValue* suffix = rule.GetSuffix())
     suffix_ = SymbolToString(*suffix);
 
-  // TODO(crbug.com/687225): Implement 'speak-as'.
+  // TODO(crbug.com/1166766): Implement 'speak-as'.
 }
 
-void CounterStyle::ResolveExtends(const CounterStyle& extended) {
+void CounterStyle::ResolveExtends(CounterStyle& extended) {
   DCHECK_NE(extended.system_, CounterStyleSystem::kUnresolvedExtends);
   extended_style_ = extended;
 
@@ -328,23 +467,9 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
   if (!style_rule_->GetPrefix())
     prefix_ = extended.prefix_;
   if (!style_rule_->GetSuffix())
-    prefix_ = extended.suffix_;
+    suffix_ = extended.suffix_;
 
-  // TODO(crbug.com/687225): Implement 'speak-as'.
-}
-
-void CounterStyle::ResetExtends() {
-  if (extends_name_.IsNull() || extends_name_ == "decimal" ||
-      extends_name_ == "disc")
-    return;
-  system_ = CounterStyleSystem::kUnresolvedExtends;
-  extended_style_.Clear();
-}
-
-void CounterStyle::ResetFallback() {
-  if (fallback_name_ == "decimal" || fallback_name_ == "disc")
-    return;
-  fallback_style_.Clear();
+  // TODO(crbug.com/1166766): Implement 'speak-as'.
 }
 
 bool CounterStyle::RangeContains(int value) const {
@@ -361,12 +486,25 @@ bool CounterStyle::RangeContains(int value) const {
     case CounterStyleSystem::kCyclic:
     case CounterStyleSystem::kNumeric:
     case CounterStyleSystem::kFixed:
+    case CounterStyleSystem::kSimpChineseInformal:
+    case CounterStyleSystem::kSimpChineseFormal:
+    case CounterStyleSystem::kTradChineseInformal:
+    case CounterStyleSystem::kTradChineseFormal:
+    case CounterStyleSystem::kKoreanHangulFormal:
+    case CounterStyleSystem::kKoreanHanjaInformal:
+    case CounterStyleSystem::kKoreanHanjaFormal:
       return true;
     case CounterStyleSystem::kSymbolic:
     case CounterStyleSystem::kAlphabetic:
+    case CounterStyleSystem::kEthiopicNumeric:
       return value >= 1;
     case CounterStyleSystem::kAdditive:
       return value >= 0;
+    case CounterStyleSystem::kHebrew:
+      return value >= 0 && value <= 999999;
+    case CounterStyleSystem::kLowerArmenian:
+    case CounterStyleSystem::kUpperArmenian:
+      return value >= 0 && value <= 99999999;
     case CounterStyleSystem::kUnresolvedExtends:
       NOTREACHED();
       return false;
@@ -381,6 +519,17 @@ bool CounterStyle::NeedsNegativeSign(int value) const {
     case CounterStyleSystem::kAlphabetic:
     case CounterStyleSystem::kNumeric:
     case CounterStyleSystem::kAdditive:
+    case CounterStyleSystem::kHebrew:
+    case CounterStyleSystem::kSimpChineseInformal:
+    case CounterStyleSystem::kSimpChineseFormal:
+    case CounterStyleSystem::kTradChineseInformal:
+    case CounterStyleSystem::kTradChineseFormal:
+    case CounterStyleSystem::kKoreanHangulFormal:
+    case CounterStyleSystem::kKoreanHanjaInformal:
+    case CounterStyleSystem::kKoreanHanjaFormal:
+    case CounterStyleSystem::kLowerArmenian:
+    case CounterStyleSystem::kUpperArmenian:
+    case CounterStyleSystem::kEthiopicNumeric:
       return true;
     case CounterStyleSystem::kCyclic:
     case CounterStyleSystem::kFixed:
@@ -402,6 +551,8 @@ String CounterStyle::GenerateFallbackRepresentation(int value) const {
 }
 
 String CounterStyle::GenerateRepresentation(int value) const {
+  DCHECK(!IsDirty());
+
   if (pad_length_ > kCounterLengthLimit)
     return GenerateFallbackRepresentation(value);
 
@@ -410,10 +561,17 @@ String CounterStyle::GenerateRepresentation(int value) const {
     return GenerateFallbackRepresentation(value);
 
   wtf_size_t initial_length = NumGraphemeClusters(initial_representation);
-  if (NeedsNegativeSign(value)) {
-    initial_length += NumGraphemeClusters(negative_prefix_);
-    initial_length += NumGraphemeClusters(negative_suffix_);
-  }
+
+  // TODO(crbug.com/687225): Spec requires us to further increment
+  // |initial_length| by the length of the negative sign, but no current
+  // implementation is doing that. For backward compatibility, we don't do that
+  // for now. See https://github.com/w3c/csswg-drafts/issues/5906 for details.
+  //
+  // if (NeedsNegativeSign(value)) {
+  //  initial_length += NumGraphemeClusters(negative_prefix_);
+  //  initial_length += NumGraphemeClusters(negative_suffix_);
+  // }
+
   wtf_size_t pad_copies =
       pad_length_ > initial_length ? pad_length_ - initial_length : 0;
 
@@ -432,34 +590,55 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
   if (!RangeContains(value))
     return String();
 
-  unsigned abs_value = value < 0 ? -value : value;
+  unsigned abs_value =
+      value == std::numeric_limits<int>::min()
+          ? static_cast<unsigned>(std::numeric_limits<int>::max()) + 1u
+          : std::abs(value);
 
-  Vector<wtf_size_t> symbol_indexes;
   switch (system_) {
     case CounterStyleSystem::kCyclic:
-      symbol_indexes = CyclicAlgorithm(value, symbols_.size());
-      break;
+      return IndexesToString(CyclicAlgorithm(value, symbols_.size()));
     case CounterStyleSystem::kFixed:
-      symbol_indexes =
-          FixedAlgorithm(value, first_symbol_value_, symbols_.size());
-      break;
+      return IndexesToString(
+          FixedAlgorithm(value, first_symbol_value_, symbols_.size()));
     case CounterStyleSystem::kNumeric:
-      symbol_indexes = NumericAlgorithm(abs_value, symbols_.size());
-      break;
+      return IndexesToString(NumericAlgorithm(abs_value, symbols_.size()));
     case CounterStyleSystem::kSymbolic:
-      symbol_indexes = SymbolicAlgorithm(abs_value, symbols_.size());
-      break;
+      return IndexesToString(SymbolicAlgorithm(abs_value, symbols_.size()));
     case CounterStyleSystem::kAlphabetic:
-      symbol_indexes = AlphabeticAlgorithm(abs_value, symbols_.size());
-      break;
+      return IndexesToString(AlphabeticAlgorithm(abs_value, symbols_.size()));
     case CounterStyleSystem::kAdditive:
-      symbol_indexes = AdditiveAlgorithm(abs_value, additive_weights_);
-      break;
+      return IndexesToString(AdditiveAlgorithm(abs_value, additive_weights_));
+    case CounterStyleSystem::kHebrew:
+      return HebrewAlgorithm(abs_value);
+    case CounterStyleSystem::kSimpChineseInformal:
+      return SimpChineseInformalAlgorithm(value);
+    case CounterStyleSystem::kSimpChineseFormal:
+      return SimpChineseFormalAlgorithm(value);
+    case CounterStyleSystem::kTradChineseInformal:
+      return TradChineseInformalAlgorithm(value);
+    case CounterStyleSystem::kTradChineseFormal:
+      return TradChineseFormalAlgorithm(value);
+    case CounterStyleSystem::kKoreanHangulFormal:
+      return KoreanHangulFormalAlgorithm(value);
+    case CounterStyleSystem::kKoreanHanjaInformal:
+      return KoreanHanjaInformalAlgorithm(value);
+    case CounterStyleSystem::kKoreanHanjaFormal:
+      return KoreanHanjaFormalAlgorithm(value);
+    case CounterStyleSystem::kLowerArmenian:
+      return LowerArmenianAlgorithm(abs_value);
+    case CounterStyleSystem::kUpperArmenian:
+      return UpperArmenianAlgorithm(abs_value);
+    case CounterStyleSystem::kEthiopicNumeric:
+      return EthiopicNumericAlgorithm(abs_value);
     case CounterStyleSystem::kUnresolvedExtends:
       NOTREACHED();
-      break;
+      return String();
   }
+}
 
+String CounterStyle::IndexesToString(
+    const Vector<wtf_size_t>& symbol_indexes) const {
   if (symbol_indexes.IsEmpty())
     return String();
 
@@ -467,6 +646,35 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
   for (wtf_size_t index : symbol_indexes)
     result.Append(symbols_[index]);
   return result.ToString();
+}
+
+void CounterStyle::TraverseAndMarkDirtyIfNeeded(
+    HeapHashSet<Member<CounterStyle>>& visited_counter_styles) {
+  if (IsPredefined() || visited_counter_styles.Contains(this))
+    return;
+  visited_counter_styles.insert(this);
+
+  if (has_inexistent_references_ ||
+      style_rule_version_ != style_rule_->GetVersion()) {
+    SetIsDirty();
+    return;
+  }
+
+  if (extended_style_) {
+    extended_style_->TraverseAndMarkDirtyIfNeeded(visited_counter_styles);
+    if (extended_style_->IsDirty()) {
+      SetIsDirty();
+      return;
+    }
+  }
+
+  if (fallback_style_) {
+    fallback_style_->TraverseAndMarkDirtyIfNeeded(visited_counter_styles);
+    if (fallback_style_->IsDirty()) {
+      SetIsDirty();
+      return;
+    }
+  }
 }
 
 void CounterStyle::Trace(Visitor* visitor) const {

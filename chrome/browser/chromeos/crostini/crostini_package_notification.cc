@@ -47,7 +47,7 @@ CrostiniPackageNotification::CrostiniPackageNotification(
     NotificationType notification_type,
     PackageOperationStatus status,
     const ContainerId& container_id,
-    const base::string16& app_name,
+    const std::u16string& app_name,
     const std::string& notification_id,
     CrostiniPackageService* package_service)
     : notification_type_(notification_type),
@@ -71,7 +71,7 @@ CrostiniPackageNotification::CrostiniPackageNotification(
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id,
-      base::string16(), base::string16(),
+      std::u16string(), std::u16string(),
       gfx::Image(),  // icon
       notification_settings_.source,
       GURL(),  // origin_url
@@ -111,7 +111,7 @@ void CrostiniPackageNotification::OnRegistryUpdated(
 CrostiniPackageNotification::NotificationSettings
 CrostiniPackageNotification::GetNotificationSettingsForTypeAndAppName(
     NotificationType notification_type,
-    const base::string16& app_name) {
+    const std::u16string& app_name) {
   NotificationSettings result;
 
   switch (notification_type) {
@@ -176,8 +176,8 @@ void CrostiniPackageNotification::UpdateProgress(
   }
   current_status_ = status;
 
-  base::string16 title;
-  base::string16 body;
+  std::u16string title;
+  std::u16string body;
   std::vector<message_center::ButtonInfo> buttons;
   message_center::NotificationType notification_type =
       message_center::NOTIFICATION_TYPE_SIMPLE;
@@ -281,7 +281,7 @@ void CrostiniPackageNotification::Close(bool by_user) {
 
 void CrostiniPackageNotification::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   if (current_status_ == PackageOperationStatus::FAILED) {
     crostini::ShowCrostiniPackageInstallFailureView(error_message_);
   }

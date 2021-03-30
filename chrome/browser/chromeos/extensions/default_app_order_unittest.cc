@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/test/scoped_path_override.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

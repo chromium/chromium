@@ -7,6 +7,7 @@
 #include "chrome/browser/media_galleries/win/mtp_device_object_enumerator.h"
 
 #include "base/check.h"
+#include "base/strings/string_util.h"
 
 MTPDeviceObjectEnumerator::MTPDeviceObjectEnumerator(
     const MTPDeviceObjectEntries& entries)
@@ -25,7 +26,7 @@ base::FilePath MTPDeviceObjectEnumerator::Next() {
 
   if (!HasMoreEntries())
     return base::FilePath();
-  return base::FilePath(object_entries_[index_].name);
+  return base::FilePath(base::AsWString(object_entries_[index_].name));
 }
 
 int64_t MTPDeviceObjectEnumerator::Size() {
@@ -49,10 +50,10 @@ base::Time MTPDeviceObjectEnumerator::LastModifiedTime() {
   return object_entries_[index_].last_modified_time;
 }
 
-base::string16 MTPDeviceObjectEnumerator::GetObjectId() const {
+std::wstring MTPDeviceObjectEnumerator::GetObjectId() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!IsIndexReadyAndInRange())
-    return base::string16();
+    return std::wstring();
   return object_entries_[index_].object_id;
 }
 

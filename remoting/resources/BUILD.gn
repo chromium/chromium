@@ -61,7 +61,7 @@ grit("strings") {
   # The grd produces a *.pak file and a messages.json file (this one uses
   # underscores instead of hyphens) for each locale.
   outputs +=
-      process_file_template(remoting_locales,
+      process_file_template(remoting_locales_with_pseudolocales,
                             [ "remoting/resources/{{source_name_part}}.pak" ])
 
   outputs += remoting_resources_locale_files

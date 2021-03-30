@@ -53,4 +53,22 @@ TEST(AXPlatformUniqueIdTest, UnassignedIdsAreReused) {
   EXPECT_EQ(ids[kIdToReplace]->Get(), expected_id);
 }
 
+TEST(AXPlatformUniqueIdTest, DoesCreateCorrectId) {
+  int kLargerThanMaxId = kMaxId * 2;
+  std::unique_ptr<AXUniqueId> ids[kLargerThanMaxId];
+  // Creates and releases to fill up the internal static counter.
+  for (int i = 0; i < kLargerThanMaxId; i++) {
+    ids[i] = std::make_unique<AXUniqueId>();
+  }
+  for (int i = 0; i < kLargerThanMaxId; i++) {
+    ids[i].reset(nullptr);
+  }
+  // Creates an unique id whose max value is less than the internal
+  // static counter.
+  std::unique_ptr<AXTestSmallBankUniqueId> unique_id =
+      std::make_unique<AXTestSmallBankUniqueId>();
+
+  EXPECT_LE(unique_id->Get(), kMaxId);
+}
+
 }  // namespace ui

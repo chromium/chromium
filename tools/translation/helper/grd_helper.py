@@ -71,7 +71,7 @@ def GetGrdpMessagesFromString(grdp_string):
   replaced_string = grdp_string.replace(
       '<grit-part>',
       """<grit base_dir="." latest_public_release="1" current_release="1">
-            <release seq="1" allow_pseudo="false">
+            <release seq="1">
               <messages fallback_to_english="true">
         """)
   replaced_string = replaced_string.replace(

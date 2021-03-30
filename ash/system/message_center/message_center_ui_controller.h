@@ -5,11 +5,12 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UI_CONTROLLER_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UI_CONTROLLER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/system/message_center/message_center_ui_delegate.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -30,11 +31,10 @@ class ASH_EXPORT MessageCenterUiController
   explicit MessageCenterUiController(MessageCenterUiDelegate* delegate);
   ~MessageCenterUiController() override;
 
-  // Shows or updates the message center bubble and hides the popup bubble. Set
-  // |show_by_click| to true if bubble is shown by mouse or gesture click.
+  // Shows or updates the message center bubble and hides the popup bubble.
   // Returns whether the message center is visible after the call, whether or
   // not it was visible before.
-  bool ShowMessageCenterBubble(bool show_by_click);
+  bool ShowMessageCenterBubble();
 
   // Hides the message center if visible and returns whether the message center
   // was visible before.
@@ -69,7 +69,7 @@ class ASH_EXPORT MessageCenterUiController
   void OnNotificationClicked(
       const std::string& notification_id,
       const base::Optional<int>& button_index,
-      const base::Optional<base::string16>& reply) override;
+      const base::Optional<std::u16string>& reply) override;
   void OnNotificationDisplayed(
       const std::string& notification_id,
       const message_center::DisplaySource source) override;

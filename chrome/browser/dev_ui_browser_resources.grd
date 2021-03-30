@@ -29,15 +29,6 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_HTML" file="resources\domain_reliability_internals\domain_reliability_internals.html" type="BINDATA" />
       <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_CSS" file="resources\domain_reliability_internals\domain_reliability_internals.css" type="BINDATA" />
       <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_JS" file="resources\domain_reliability_internals\domain_reliability_internals.js" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_HTML" file="resources\download_internals\download_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_CSS" file="resources\download_internals\download_internals.css" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_JS" file="resources\download_internals\download_internals.js" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_BROWSER_PROXY_JS" file="resources\download_internals\download_internals_browser_proxy.js" type="BINDATA" />
-      <include name="IDR_DOWNLOAD_INTERNALS_VISUALS_JS" file="resources\download_internals\download_internals_visuals.js" type="BINDATA" />
-      <include name="IDR_INTERVENTIONS_INTERNALS_INDEX_HTML" file="resources\interventions_internals\index.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_INTERVENTIONS_INTERNALS_INDEX_JS" file="resources\interventions_internals\index.js" type="BINDATA" />
-      <include name="IDR_INTERVENTIONS_INTERNALS_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\interventions_internals\interventions_internals.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_INTERVENTIONS_INTERNALS_UNSUPPORTED_PAGE_HTML" file="resources\interventions_internals\unsupported_page.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_LOCAL_STATE_HTML" file="resources\local_state\local_state.html" type="BINDATA" />
       <include name="IDR_LOCAL_STATE_JS" file="resources\local_state\local_state.js" type="BINDATA" />
       <include name="IDR_MEDIA_DATA_TABLE_JS" file="resources\media\media_data_table.js" type="BINDATA" />
@@ -86,12 +77,13 @@ This file specifies browser resources for developer-facing chrome:// pages
       </if>
 
       <if expr="enable_supervised_users">
-        <include name="IDR_SUPERVISED_USER_INTERNALS_HTML" file="resources\supervised_user_internals\supervised_user_internals.html" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_SUPERVISED_USER_INTERNALS_CSS" file="resources\supervised_user_internals\supervised_user_internals.css" type="BINDATA" />
-        <include name="IDR_SUPERVISED_USER_INTERNALS_JS" file="resources\supervised_user_internals\supervised_user_internals.js" type="BINDATA" />
+        <include name="IDR_FAMILY_LINK_USER_INTERNALS_HTML" file="resources\family_link_user_internals\family_link_user_internals.html" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_FAMILY_LINK_USER_INTERNALS_CSS" file="resources\family_link_user_internals\family_link_user_internals.css" type="BINDATA" />
+        <include name="IDR_FAMILY_LINK_USER_INTERNALS_JS" file="resources\family_link_user_internals\family_link_user_internals.js" type="BINDATA" />
       </if>
-      <include name="IDR_TRANSLATE_INTERNALS_HTML" file="../../components/translate/translate_internals/translate_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_TRANSLATE_INTERNALS_JS" file="../../components/translate/translate_internals/translate_internals.js" type="BINDATA" />
+      <include name="IDR_TRANSLATE_INTERNALS_CSS" file="../../components/translate/translate_internals/translate_internals.css" type="BINDATA" />
+      <include name="IDR_TRANSLATE_INTERNALS_HTML" file="../../components/translate/translate_internals/translate_internals.html" type="BINDATA" />
+      <include name="IDR_TRANSLATE_INTERNALS_JS" file="../../components/translate/translate_internals/translate_internals.js" preprocess="true" type="BINDATA" />
       <include name="IDR_WEB_APP_INTERNALS_HTML" file="resources/web_app_internals/index.html" type="BINDATA" />
       <include name="IDR_WEB_APP_INTERNALS_JS" file="${root_gen_dir}/chrome/browser/resources/web_app_internals/web_app_internals.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_WEB_APP_INTERNALS_MOJOM_LITE_JS" file="${root_gen_dir}/chrome/browser/ui/webui/internals/web_app/web_app_internals.mojom-lite.js" use_base_dir="false" type="BINDATA" />

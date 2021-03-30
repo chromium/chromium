@@ -53,6 +53,7 @@
 #include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_config.h"
 #include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_util_win.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/ui/accessibility_util.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/uninstall_browser_prompt.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/last_browser_file_util.h"
@@ -97,7 +98,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
-#include "ui/base/cursor/cursor_loader_win.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/base/ui_base_switches.h"
@@ -147,7 +147,7 @@ int GetMinimumFontSize() {
 
 class TranslationDelegate : public installer::TranslationDelegate {
  public:
-  base::string16 GetLocalizedString(int installer_string_id) override;
+  std::wstring GetLocalizedString(int installer_string_id) override;
 };
 
 void DetectFaultTolerantHeap() {
@@ -187,7 +187,7 @@ void DetectFaultTolerantHeap() {
 
   base::win::RegKey FTH_HKLM_reg(HKEY_LOCAL_MACHINE, kRegPath, kRegFlags);
   FTHFlags detected = FTHFlags();
-  base::string16 chrome_app_compat;
+  std::wstring chrome_app_compat;
   if (FTH_HKLM_reg.ReadValue(module_path, &chrome_app_compat) == 0) {
     // This *usually* indicates that the fault tolerant heap is enabled.
     if (wcsicmp(chrome_app_compat.c_str(), kFTHData) == 0)
@@ -479,7 +479,7 @@ void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
         web_app::GetOsIntegrationResourcesDirectoryForApp(profile_dir, app_id,
                                                           GURL());
     web_app_path = web_app_path.Append(web_app::GetAppSpecificLauncherFilename(
-        base::UTF8ToUTF16(registrar.GetAppShortName(app_id))));
+        base::UTF8ToWide(registrar.GetAppShortName(app_id))));
     pwa_launcher_paths.push_back(std::move(web_app_path));
   }
 
@@ -581,7 +581,6 @@ void ChromeBrowserMainPartsWin::ToolkitInitialized() {
   ChromeBrowserMainParts::ToolkitInitialized();
   gfx::win::SetAdjustFontCallback(&AdjustUIFont);
   gfx::win::SetGetMinimumFontSizeCallback(&GetMinimumFontSize);
-  ui::CursorLoaderWin::SetCursorResourceModule(chrome::kBrowserResourcesDll);
 }
 
 void ChromeBrowserMainPartsWin::PreMainMessageLoopStart() {
@@ -615,10 +614,10 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
   const auto& details = install_static::InstallDetails::Get();
 
   static crash_reporter::CrashKeyString<50> ap_value("ap");
-  ap_value.Set(base::UTF16ToUTF8(details.update_ap()));
+  ap_value.Set(base::WideToUTF8(details.update_ap()));
 
   static crash_reporter::CrashKeyString<32> update_cohort_name("cohort-name");
-  update_cohort_name.Set(base::UTF16ToUTF8(details.update_cohort_name()));
+  update_cohort_name.Set(base::WideToUTF8(details.update_cohort_name()));
 
   if (chrome::GetChannel() == version_info::Channel::CANARY) {
     content::RenderProcessHost::SetHungRendererAnalysisFunction(
@@ -635,8 +634,8 @@ void ChromeBrowserMainPartsWin::PostMainMessageLoopRun() {
 }
 
 void ChromeBrowserMainPartsWin::ShowMissingLocaleMessageBox() {
-  ui::MessageBox(NULL, base::ASCIIToUTF16(kMissingLocaleDataMessage),
-                 base::ASCIIToUTF16(kMissingLocaleDataTitle),
+  ui::MessageBox(NULL, base::ASCIIToWide(kMissingLocaleDataMessage),
+                 base::ASCIIToWide(kMissingLocaleDataTitle),
                  MB_OK | MB_ICONERROR | MB_TOPMOST);
 }
 
@@ -739,6 +738,11 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
       ->PostTask(FROM_HERE,
                  base::BindOnce(&MigratePinnedTaskBarShortcutsIfNeeded));
 
+  // Send an accessibility announcement if this launch originated from the
+  // installer.
+  if (parsed_command_line().HasSwitch(switches::kFromInstaller))
+    AnnounceInActiveBrowser(l10n_util::GetStringUTF16(IDS_WELCOME_TO_CHROME));
+
   base::ImportantFileWriterCleaner::GetInstance().Start();
 }
 
@@ -762,10 +766,10 @@ void ChromeBrowserMainPartsWin::PrepareRestartOnCrashEnviroment(
   // The encoding we use for the info is "title|context|direction" where
   // direction is either env_vars::kRtlLocale or env_vars::kLtrLocale depending
   // on the current locale.
-  base::string16 dlg_strings(
+  std::u16string dlg_strings(
       l10n_util::GetStringUTF16(IDS_CRASH_RECOVERY_TITLE));
   dlg_strings.push_back('|');
-  base::string16 adjusted_string(
+  std::u16string adjusted_string(
       l10n_util::GetStringUTF16(IDS_CRASH_RECOVERY_CONTENT));
   base::i18n::AdjustStringForLocaleDirection(&adjusted_string);
   dlg_strings.append(adjusted_string);
@@ -812,13 +816,15 @@ int ChromeBrowserMainPartsWin::HandleIconsCommands(
   if (parsed_command_line.HasSwitch(switches::kHideIcons)) {
     // TODO(740976): This is not up-to-date and not localized. Figure out if
     // the --hide-icons and --show-icons switches are still used.
-    base::string16 cp_applet(L"Programs and Features");
-    const base::string16 msg =
+    std::u16string cp_applet = u"Programs and Features";
+    const std::u16string msg =
         l10n_util::GetStringFUTF16(IDS_HIDE_ICONS_NOT_SUPPORTED, cp_applet);
-    const base::string16 caption = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+    const std::u16string caption = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
     const UINT flags = MB_OKCANCEL | MB_ICONWARNING | MB_TOPMOST;
-    if (IDOK == ui::MessageBox(NULL, msg, caption, flags))
+    if (IDOK == ui::MessageBox(NULL, base::AsWString(msg),
+                               base::AsWString(caption), flags)) {
       ShellExecute(NULL, NULL, L"appwiz.cpl", NULL, NULL, SW_SHOWNORMAL);
+    }
 
     // Exit as we are not launching the browser.
     return content::RESULT_CODE_NORMAL_EXIT;
@@ -856,7 +862,7 @@ bool ChromeBrowserMainPartsWin::CheckMachineLevelInstall() {
           uninstall_cmd.AppendSwitch(installer::switches::kTriggerActiveSetup);
 
         const base::FilePath setup_exe(uninstall_cmd.GetProgram());
-        const base::string16 params(uninstall_cmd.GetArgumentsString());
+        const std::wstring params(uninstall_cmd.GetArgumentsString());
 
         SHELLEXECUTEINFO sei = { sizeof(sei) };
         sei.fMask = SEE_MASK_NOASYNC;
@@ -873,8 +879,7 @@ bool ChromeBrowserMainPartsWin::CheckMachineLevelInstall() {
   return false;
 }
 
-base::string16 TranslationDelegate::GetLocalizedString(
-    int installer_string_id) {
+std::wstring TranslationDelegate::GetLocalizedString(int installer_string_id) {
   int resource_id = 0;
   switch (installer_string_id) {
     // HANDLE_STRING is used by the DO_STRING_MAPPING macro which is in the
@@ -889,8 +894,8 @@ base::string16 TranslationDelegate::GetLocalizedString(
     NOTREACHED();
   }
   if (resource_id)
-    return l10n_util::GetStringUTF16(resource_id);
-  return base::string16();
+    return base::UTF16ToWide(l10n_util::GetStringUTF16(resource_id));
+  return std::wstring();
 }
 
 // static
@@ -907,6 +912,10 @@ base::CommandLine ChromeBrowserMainPartsWin::GetRestartCommandLine(
 
   // Remove flag switches added by about::flags.
   about_flags::RemoveFlagsSwitches(&switches);
+
+  // Remove switches that should never be conveyed to the restart.
+  switches.erase(switches::kFromInstaller);
+
   // Add remaining switches, but not non-switch arguments.
   for (const auto& it : switches)
     restart_command.AppendSwitchNative(it.first, it.second);

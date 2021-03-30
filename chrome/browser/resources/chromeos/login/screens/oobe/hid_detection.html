@@ -1,0 +1,200 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+
+<link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+
+<iron-iconset-svg name="oobe-hid-detection-20" size="20">
+  <svg>
+    <defs>
+      <g id="touchscreen" fill="none">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M4 6.288C4 8.343 5.22 10.125 7 11v1.071c-1.166-.379-2.162-.571-3-.571a1 1 0 00-.832.445l-1 1.5a1 1 0 00.08 1.213l3.5 4A1 1 0 006.5 19h7a1 1 0 00.894-.553l2.5-5A.999.999 0 0017 13c0-.734-.408-1.244-1.257-1.911a91.893 91.893 0 00-1.999-1.437A5.145 5.145 0 0015 6.288C15 3.368 12.538 1 9.5 1S4 3.368 4 6.288zm8 2.356V6.5a2.5 2.5 0 00-5 0V11 8.644a3.29 3.29 0 01-1-2.356C6 4.43 7.567 2.923 9.5 2.923S13 4.43 13 6.288a3.29 3.29 0 01-1 2.356zM9 13.5a1 1 0 01-1.371.928c-1.269-.507-2.312-.803-3.115-.896l-.257.386L6.954 17h5.928l2.006-4.012a4.803 4.803 0 00-.38-.327c-.285-.223-1.718-1.235-2.323-1.661H10V6.5a.5.5 0 00-1 0v7z" fill="#5F6368">
+        </path>
+      </g>
+      <g id="mouse" fill="none" fill-rule="evenodd">
+        <path d="M0 0h20v20H0"></path>
+        <path d="M10.833.892V7.5h5.834c0-3.4-2.546-6.2-5.834-6.608zM3.333 12.5c0 3.683 2.984 6.667 6.667 6.667s6.667-2.984 6.667-6.667V9.167H3.333V12.5zM9.167.892C5.88 1.3 3.333 4.1 3.333 7.5h5.834V.892z" fill="#5A5A5A">
+        </path>
+      </g>
+      <g id="keyboard" fill="none" fill-rule="evenodd">
+        <path d="M16.667 4.167H3.333c-.92 0-1.658.745-1.658 1.666l-.008 8.334c0 .92.746 1.666 1.666 1.666h13.334c.92 0 1.666-.745 1.666-1.666V5.833c0-.92-.745-1.666-1.666-1.666zm-7.5 2.5h1.666v1.666H9.167V6.667zm0 2.5h1.666v1.666H9.167V9.167zm-2.5-2.5h1.666v1.666H6.667V6.667zm0 2.5h1.666v1.666H6.667V9.167zm-.834 1.666H4.167V9.167h1.666v1.666zm0-2.5H4.167V6.667h1.666v1.666zm7.5 5.834H6.667V12.5h6.666v1.667zm0-3.334h-1.666V9.167h1.666v1.666zm0-2.5h-1.666V6.667h1.666v1.666zm2.5 2.5h-1.666V9.167h1.666v1.666zm0-2.5h-1.666V6.667h1.666v1.666z" fill="#5A5A5A">
+        </path>
+        <path d="M0 0h20v20H0V0zm0 0h20v20H0V0z" fill="#D8D8D8">
+        </path>
+      </g>
+    </defs>
+  </svg>
+</iron-iconset-svg>
+
+<iron-iconset-svg name="oobe-hid-detection-40" size="40">
+  <svg>
+    <defs>
+      <g id="touchscreen" fill="none">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M8 12.577c0 4.11 2.438 7.672 6 9.423v2.143C11.669 23.384 9.676 23 8 23a2 2 0 00-1.664.89l-2 3a2 2 0 00.159 2.427l7 8A2 2 0 0013 38h14a2 2 0 001.789-1.106l5-10A2 2 0 0034 26c0-1.468-.816-2.489-2.514-3.823-.524-.411-2.594-1.881-3.998-2.873C29.058 17.476 30 15.132 30 12.577 30 6.735 25.075 2 19 2S8 6.735 8 12.577zm16 4.71V13a5 5 0 00-10 0v9-4.713c-1.237-1.214-2-2.876-2-4.71 0-3.718 3.134-6.73 7-6.73 3.866-.001 7 3.012 7 6.73 0 1.834-.763 3.496-2 4.71zM18 27a2 2 0 01-2.743 1.857c-2.536-1.015-4.624-1.607-6.23-1.793l-.514.771L13.908 34h11.856l4.012-8.025a9.567 9.567 0 00-.762-.652c-.568-.447-3.435-2.472-4.645-3.323h-4.37L20 13a1 1 0 00-2 0v14z" fill="#5F6368">
+        </path>
+      </g>
+      <g id="mouse" fill="none" fill-rule="evenodd">
+        <path d="M0 0h40v40H0"></path>
+        <path d="M21 1.783V15h11.667c0-6.8-5.092-12.4-11.667-13.217zm-1 35.55c7.183 0 13-5.966 13-13.333v-7H7v7c0 7.367 5.818 13.333 13 13.333zM19 1.78C12.237 2.597 7 8.198 7 15h12V1.78z" fill="#5A5A5A">
+        </path>
+      </g>
+      <g id="keyboard" fill="none" fill-rule="evenodd">
+        <path d="M33.333 8.333H6.667c-1.842 0-3.317 1.492-3.317 3.334l-.017 16.666c0 1.842 1.492 3.334 3.334 3.334h26.666c1.842 0 3.334-1.492 3.334-3.334V11.667c0-1.842-1.492-3.334-3.334-3.334zm-15 5h3.334v3.334h-3.334v-3.334zm0 5h3.334v3.334h-3.334v-3.334zm-5-5h3.334v3.334h-3.334v-3.334zm0 5h3.334v3.334h-3.334v-3.334zm-1.666 3.334H8.333v-3.334h3.334v3.334zm0-5H8.333v-3.334h3.334v3.334zm15 11.666H13.333V25h13.334v3.333zm0-6.666h-3.334v-3.334h3.334v3.334zm0-5h-3.334v-3.334h3.334v3.334zm5 5h-3.334v-3.334h3.334v3.334zm0-5h-3.334v-3.334h3.334v3.334z" fill="#5A5A5A">
+        </path>
+        <path d="M0 0h40v40H0V0zm0 0h40v40H0V0z" fill="#D8D8D8">
+        </path>
+      </g>
+    </defs>
+  </svg>
+</iron-iconset-svg>
+
+<dom-module id="hid-detection-element">
+  <template>
+    <style include="oobe-dialog-host">
+      .hid-selection-entry {
+        border-bottom: 1px solid var(--google-grey-200);
+        color: var(--google-grey-900);
+      }
+
+      #touchscreen-icon,
+      #keyboard-icon,
+      #mouse-icon {
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+        padding-inline-end: 16px;
+      }
+
+      #hid-touchscreen-row,
+      #hid-mouse-row,
+      #hid-keyboard-row {
+        min-height: 48px;
+      }
+
+      #touchscreen-tick,
+      #keyboard-tick,
+      #mouse-tick {
+        margin-inline-start: -28px;
+        position: relative;
+        top: 4px;
+      }
+
+      #hid-keyboard-pincode {
+       padding: 30px 0 30px 0;
+      }
+
+      .key-next {
+        background: rgb(26, 115, 232); /*#1a73e8*/
+        border-radius: 5px;
+        color: #fff;
+      }
+
+      .pin-code-style {
+        color: rgb(26, 115, 232); /*#1a73e8*/
+        font-size: 48px;
+        line-height: 48px;
+      }
+
+      .content-padding {
+        padding-top: 12px;
+      }
+
+      .icon-active {
+        height: 24px;
+        width: 24px;
+      }
+    </style>
+    <oobe-adaptive-dialog>
+      <iron-icon slot="icon" icon="oobe-32:connect-devices">
+      </iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'hidDetectionInvitation')]]
+      </h1>
+      <div slot="subtitle">
+        [[getPrerequisitesText_(locale, touchscreenDetected_)]]
+      </div>
+      <div slot="content" class="landscape-header-aligned">
+        <div id="hid-touchscreen-entry"
+            class="layout vertical justified hid-selection-entry"
+            hidden="[[!touchscreenDetected_]]">
+          <div id="hid-touchscreen-row" class="flex layout horizontal center">
+            <iron-icon id="touchscreen-icon" alt=""
+                icon="oobe-hid-detection-20:touchscreen">
+            </iron-icon>
+            <img id="touchscreen-tick" alt=""
+                src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
+            <div id="touchscreen-label" aria-live="polite">
+                [[i18nDynamic(locale, 'hidDetectionTouchscreenDetected')]]
+            </div>
+          </div>
+        </div>
+        <div class="layout vertical hid-selection-entry">
+          <div id="hid-mouse-row" class="flex layout horizontal center">
+            <iron-icon id="mouse-icon" alt=""
+                icon="oobe-hid-detection-20:mouse">
+            </iron-icon>
+            <img id="mouse-tick" alt=""
+                hidden="[[!tickIsVisible_(mouseState_)]]"
+                src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
+            <div id="mouse-label" aria-live="polite" class="flex">
+              [[getMouseLabel_(locale, mouseState_, pointingDeviceName)]]
+            </div>
+            <paper-spinner-lite class="icon-active"
+                hidden="[[!spinnerIsVisible_(mouseState_)]]" active>
+            </paper-spinner-lite>
+          </div>
+        </div>
+        <div class="layout vertical hid-selection-entry">
+          <div id="hid-keyboard-row" class="flex layout horizontal center"
+              on-click="openPinDialog_">
+            <iron-icon id="keyboard-icon" alt=""
+                icon="oobe-hid-detection-20:keyboard">
+            </iron-icon>
+            <img id="keyboard-tick" alt=""
+                hidden="[[!tickIsVisible_(keyboardState_)]]"
+                src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
+            <div id="keyboard-label" aria-live="polite" class="flex">
+              [[getKeyboardLabel_(locale, keyboardState_, keyboardDeviceName)]]
+            </div>
+            <paper-spinner-lite class="icon-active"
+                hidden="[[!spinnerIsVisible_(keyboardState_)]]" active>
+            </paper-spinner-lite>
+          </div>
+        </div>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button inverse on-click="onHIDContinueTap_"
+            text-key="hidDetectionContinue"
+            id="hid-continue-button"
+            disabled="[[!continueButtonEnabled]]"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <!-- Popup that displays the PIN for pairing with a bluetooth keyboard. -->
+    <oobe-modal-dialog id="hid-pin-popup" on-close="onPinDialogClosed_">
+      <h1 slot="title">[[pinDialogTitle]]</h1>
+      <div slot="content" class="content-padding">
+        <div>
+          [[i18nDynamic(locale, 'hidDetectionBluetoothPairingCode')]]
+        </div>
+        <div id="hid-keyboard-pincode"
+            class="layout horizontal center-justified pin-code-style">
+          <div id="hid-pincode-sym-1"></div>
+          <div id="hid-pincode-sym-2"></div>
+          <div id="hid-pincode-sym-3"></div>
+          <div id="hid-pincode-sym-4"></div>
+          <div id="hid-pincode-sym-5"></div>
+          <div id="hid-pincode-sym-6"></div>
+        </div>
+        <div>
+          [[i18nDynamic(locale, 'hidDetectionBluetoothPairingCodeExplanation')]]
+        </div>
+      </div>
+    </oobe-modal-dialog>
+  </template>
+</dom-module>

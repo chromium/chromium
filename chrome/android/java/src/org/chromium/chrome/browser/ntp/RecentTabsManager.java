@@ -18,13 +18,13 @@ import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SigninPromoController;
-import org.chromium.chrome.browser.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.signin.ui.SigninPromoController;
+import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -109,7 +109,7 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
                 : new RecentlyClosedBridge(profile);
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
-        mProfileDataCache = ProfileDataCache.createProfileDataCache(context);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mSigninPromoController = new SigninPromoController(
                 SigninAccessPoint.RECENT_TABS, SigninActivityLauncherImpl.get());
         mProfileSyncService = ProfileSyncService.get();
@@ -376,7 +376,7 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
             }
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
                     && mSignInManager.getIdentityManager().getPrimaryAccountInfo(
-                               ConsentLevel.NOT_REQUIRED)
+                               ConsentLevel.SIGNIN)
                             != null) {
                 return PromoState.PROMO_SYNC_PERSONALIZED;
             }

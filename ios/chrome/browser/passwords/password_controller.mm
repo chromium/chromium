@@ -9,13 +9,13 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -26,8 +26,8 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
-#include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
+#import "ios/chrome/browser/ui/commands/password_protection_commands.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_password_coordinator.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
@@ -176,10 +177,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserverBridge.get());
-    if (passwordManagerClient)
+    if (passwordManagerClient) {
       _passwordManagerClient = std::move(passwordManagerClient);
-    else
+    } else {
       _passwordManagerClient.reset(new IOSChromePasswordManagerClient(self));
+    }
     _passwordManager.reset(new PasswordManager(_passwordManagerClient.get()));
 
     PasswordFormHelper* formHelper =
@@ -255,6 +257,12 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   return _sharedPasswordController;
 }
 
+#pragma mark - PasswordGenerationProvider
+
+- (id<PasswordGenerationProvider>)generationProvider {
+  return _sharedPasswordController;
+}
+
 #pragma mark - IOSChromePasswordManagerClientBridge
 
 - (WebState*)webState {
@@ -299,8 +307,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 // Shows auto sign-in notification and schedules hiding it after 3 seconds.
 // TODO(crbug.com/435048): Animate appearance.
 - (void)showAutosigninNotification:(std::unique_ptr<PasswordForm>)formSignedIn {
-  if (!_webState)
+  if (!_webState) {
     return;
+  }
 
   // If a notification is already being displayed, hides the old one, then shows
   // the new one.
@@ -341,6 +350,13 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
                                                            URL:URL];
 }
 
+- (void)showPasswordProtectionWarning:(NSString*)warningText
+                           completion:(void (^)(safe_browsing::WarningAction))
+                                          completion {
+  [self.passwordProtectionDispatcher showPasswordProtectionWarning:warningText
+                                                        completion:completion];
+}
+
 #pragma mark - Private methods
 
 // The dispatcher used for ApplicationCommands.
@@ -357,6 +373,14 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   DCHECK(self.browser->GetCommandDispatcher());
   return HandlerForProtocol(self.browser->GetCommandDispatcher(),
                             PasswordBreachCommands);
+}
+
+// The dispatcher used for PasswordProtectionCommands.
+- (id<PasswordProtectionCommands>)passwordProtectionDispatcher {
+  DCHECK(self.browser);
+  DCHECK(self.browser->GetCommandDispatcher());
+  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            PasswordProtectionCommands);
 }
 
 - (InfoBarIOS*)findInfobarOfType:(InfobarType)infobarType manual:(BOOL)manual {
@@ -399,14 +423,15 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (void)showInfoBarForForm:(std::unique_ptr<PasswordFormManagerForUI>)form
                infoBarType:(PasswordInfoBarType)type
                     manual:(BOOL)manual {
-  if (!_webState)
+  if (!_webState) {
     return;
+  }
 
   bool isSyncUser = false;
   if (self.browserState) {
-    syncer::SyncService* sync_service =
+    syncer::SyncService* syncService =
         ProfileSyncServiceFactory::GetForBrowserState(self.browserState);
-    isSyncUser = password_bubble_experiment::IsSmartLockUser(sync_service);
+    isSyncUser = password_bubble_experiment::IsSmartLockUser(syncService);
   }
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(_webState);
@@ -427,18 +452,18 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
         std::unique_ptr<InfoBarIOS> infobar;
 
         // If manual save, skip showing banner.
-        bool skip_banner = manual;
+        bool skipBanner = manual;
         if (IsInfobarOverlayUIEnabled()) {
           infobar = std::make_unique<InfoBarIOS>(
               InfobarType::kInfobarTypePasswordSave, std::move(delegate),
-              skip_banner);
+              skipBanner);
         } else {
           InfobarPasswordCoordinator* coordinator = [[InfobarPasswordCoordinator
               alloc]
               initWithInfoBarDelegate:delegate.get()
                                  type:InfobarType::kInfobarTypePasswordSave];
           infobar = std::make_unique<InfoBarIOS>(
-              coordinator, std::move(delegate), skip_banner);
+              coordinator, std::move(delegate), skipBanner);
         }
         infoBarManager->AddInfoBar(std::move(infobar),
                                    /*replace_existing=*/true);

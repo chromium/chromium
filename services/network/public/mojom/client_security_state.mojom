@@ -20,6 +20,10 @@ enum PrivateNetworkRequestPolicy {
   // Forbid requests to more-private address spaces than that of the initiator,
   // when the initiator is not in a secure context.
   kBlockFromInsecureToMorePrivate,
+
+  // Warn about requests to more-private address spaces than that of the
+  // initiator when the initiator is not in a secure context.
+  kWarnFromInsecureToMorePrivate,
 };
 
 struct ClientSecurityState {

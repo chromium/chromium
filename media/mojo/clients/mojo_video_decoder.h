@@ -60,7 +60,7 @@ class MojoVideoDecoder final : public VideoDecoder,
   // Decoder implementation
   bool IsPlatformDecoder() const final;
   bool SupportsDecryption() const final;
-  std::string GetDisplayName() const final;
+  VideoDecoderType GetDecoderType() const final;
 
   // VideoDecoder implementation.
   void Initialize(const VideoDecoderConfig& config,
@@ -74,6 +74,7 @@ class MojoVideoDecoder final : public VideoDecoder,
   bool NeedsBitstreamConversion() const final;
   bool CanReadWithoutStalling() const final;
   int GetMaxDecodeRequests() const final;
+  bool IsOptimizedForRTC() const final;
 
   // mojom::VideoDecoderClient implementation.
   void OnVideoFrameDecoded(
@@ -91,7 +92,8 @@ class MojoVideoDecoder final : public VideoDecoder,
   void FailInit(InitCB init_cb, Status err);
   void OnInitializeDone(const Status& status,
                         bool needs_bitstream_conversion,
-                        int32_t max_decode_requests);
+                        int32_t max_decode_requests,
+                        VideoDecoderType decoder_type);
   void OnDecodeDone(uint64_t decode_id, const Status& status);
   void OnResetDone();
 
@@ -146,6 +148,7 @@ class MojoVideoDecoder final : public VideoDecoder,
   bool initialized_ = false;
   bool needs_bitstream_conversion_ = false;
   bool can_read_without_stalling_ = true;
+  VideoDecoderType decoder_type_ = VideoDecoderType::kUnknown;
 
   // True if UMA metrics of success/failure after first few seconds of playback
   // have been already reported.

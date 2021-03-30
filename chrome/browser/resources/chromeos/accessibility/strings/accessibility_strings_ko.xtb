@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">목록 항목</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">손가락 두 개를 사용하여 오른쪽으로 스와이프</translation>
-<translation id="1016393160682012902">쿼티 키, 새로고침할 수 있는 점자 키 또는 터치 동작을 눌러 기능을 학습합니다. 종료하려면 ctrl과 w 또는 Esc를 함께 누릅니다.</translation>
 <translation id="1022586497894531524">ChromeVox 음성 피드백을 처음 사용하시나요? 이 빠른 가이드에서 ChromeVox를 시작하기 위한 기본사항을 알아볼 수 있습니다.</translation>
 <translation id="1025074108959230262">고정 모드 사용 중지됨</translation>
 <translation id="1031961866430398710">플러스</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">이전 컨트롤이 없습니다</translation>
 <translation id="2045606329038304310">양식 입력란 컨트롤</translation>
 <translation id="2063539687800151747">제명</translation>
+<translation id="2074531330963286860">작업을 사용할 수 있습니다. 보려면 검색+마침표를 누르세요.</translation>
 <translation id="2086961585857038472">다음 단어</translation>
 <translation id="2087981446621639008">설명목록 세부정보</translation>
 <translation id="2089387485033699258">ko</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">선택을 시작 또는 종료합니다.</translation>
 <translation id="827422111966801947">인디고</translation>
 <translation id="8276439074553447000">이전 초점 가능 항목으로 이동</translation>
+<translation id="8279039817939141096">QWERTY 키, 새로고침할 수 있는 점자 키를 누르거나 터치 동작으로 기능을 학습합니다. ctrl 키와 w, 스페이스바와 Z를 누르거나 두 손가락을 사용하여 왼쪽으로 스와이프합니다. 종료하려면 Esc 키를 누르세요.</translation>
 <translation id="8283603667300770666">다음 양식 입력란</translation>
 <translation id="8310185481635255431">다음 링크가 없습니다</translation>
 <translation id="831207808878314375">정의</translation>

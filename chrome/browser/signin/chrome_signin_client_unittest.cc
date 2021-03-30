@@ -146,10 +146,9 @@ class MockChromeSigninClient : public ChromeSigninClient {
 
 class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
  public:
+  ChromeSigninClientSignoutTest() : forced_signin_setter_(true) {}
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-
-    signin_util::SetForceSigninForTesting(true);
     CreateClient(browser()->profile());
   }
 
@@ -170,6 +169,7 @@ class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
                         source_metric);
   }
 
+  signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
   std::unique_ptr<MockChromeSigninClient> client_;
 };
 
@@ -193,7 +193,7 @@ TEST_F(ChromeSigninClientSignoutTest, SignOut) {
 }
 
 TEST_F(ChromeSigninClientSignoutTest, SignOutWithoutForceSignin) {
-  signin_util::SetForceSigninForTesting(false);
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(false);
   CreateClient(browser()->profile());
 
   signin_metrics::ProfileSignout source_metric =
@@ -244,6 +244,9 @@ bool IsSignoutDisallowedByPolicy(
       return false;
     case signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST:
       // Allow signout for tests that want to force it.
+      return false;
+    case signin_metrics::ProfileSignout::ACCOUNT_ID_MIGRATION:
+      // Allowed to force finish the account id migration.
       return false;
     case signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES:
     case signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK:
@@ -326,6 +329,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
     signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
     signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
+    signin_metrics::ProfileSignout::ACCOUNT_ID_MIGRATION,
 };
 static_assert(base::size(kSignoutSources) ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,

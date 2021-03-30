@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">リスト項目</translation>
 <translation id="1013742170491673792">検索用語を編集</translation>
 <translation id="1014370462248694370">2 本の指で右にスワイプします</translation>
-<translation id="1016393160682012902">QWERTY キーまたは点字キーを押すか、タップ操作を行って、機能を認識させてください。終了するには Ctrl+W キーまたは Esc キーを押します。</translation>
 <translation id="1022586497894531524">ChromeVox の音声フィードバックを初めてご利用になる場合は、このクイック チュートリアルで、ChromeVox の利用を開始するための基本事項をご確認ください。</translation>
 <translation id="1025074108959230262">スティッキー モードは無効</translation>
 <translation id="1031961866430398710">この場合</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">前のコントロールはありません</translation>
 <translation id="2045606329038304310">フォーム フィールドの制御</translation>
 <translation id="2063539687800151747">題辞</translation>
+<translation id="2074531330963286860">実行可能な操作があります。表示するには、検索+.（ピリオド）キーを押してください</translation>
 <translation id="2086961585857038472">次の単語</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ja</translation>
@@ -782,6 +782,7 @@
 <translation id="6837853484260746864">音声を選択:</translation>
 <translation id="6858047746862060282">プロローグ</translation>
 <translation id="6859876496651143278">1 本の指で左にスワイプします</translation>
+<translation id="6861391673272648730">画面がオフになります。検索+明るさを上げるキーを押すと、画面を再びオンにすることができます。画面をオフにしますか？</translation>
 <translation id="6865519907510167493">スペルミス</translation>
 <translation id="6873188295213080042">ヒント: 検索+矢印キーで移動できます。</translation>
 <translation id="6894148351896207544">現在の日付と時刻を音声で読み上げます</translation>
@@ -976,6 +977,7 @@
 <translation id="827266600368092403">選択を開始または終了します</translation>
 <translation id="827422111966801947">インディゴ</translation>
 <translation id="8276439074553447000">前のフォーカス可能項目にジャンプ</translation>
+<translation id="8279039817939141096">QWERTY キーまたは点字キーを押すか、タップ操作を行って、機能を認識させてください。終了するには、Ctrl+W キー、Space+Z キー、または Esc キーを押すか、2 本の指で左にスワイプします。</translation>
 <translation id="8283603667300770666">次のフォーム フィールド</translation>
 <translation id="8310185481635255431">次のリンクはありません</translation>
 <translation id="831207808878314375">定義</translation>

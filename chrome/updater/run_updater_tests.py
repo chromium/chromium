@@ -57,6 +57,20 @@ def main():
     logging.info('File not found: %s' % version_file_path)
     return -1
 
+  # copy dynamically generated updater branding_info.py from
+  # target gen directory to
+  # //chrome/updater/test/integration_tests/updater so that
+  # it can be imported as a module during test runs.
+  branding_file_path = os.path.join(target_gen_dir_abs_path, 'gen',
+                                   'chrome', 'updater', 'branding_info.py')
+  if os.path.exists(branding_file_path):
+    dest = os.path.join(path_finder.get_integration_tests_dir(),
+                        'updater', 'branding_info.py')
+    copy_file(branding_file_path, dest)
+  else:
+    logging.info('File not found: %s' % branding_file_path)
+    return -2
+
   runner.context = Context(runner.args.build_dir)
   return runner.run()[0]
 

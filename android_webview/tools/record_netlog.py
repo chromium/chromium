@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 #
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -14,6 +14,7 @@ from __future__ import print_function
 import argparse
 import logging
 import os
+import posixpath
 import re
 import sys
 import time
@@ -88,9 +89,17 @@ https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/net-d
   if len(devices) > 1:
     raise device_errors.MultipleDevicesError(devices)
 
+  if device.build_type == 'user':
+    device_setup_url = ('https://chromium.googlesource.com/chromium/src/+/HEAD/'
+                        'android_webview/docs/device-setup.md')
+    raise RuntimeError('It appears your device is a "user" build. We only '
+                       'support capturing netlog on userdebug/eng builds. See '
+                       '{} to configure a development device or set up an '
+                       'emulator.'.format(device_setup_url))
+
   package_name = args.package
   device_netlog_file_name = 'netlog.json'
-  device_netlog_path = os.path.join(
+  device_netlog_path = posixpath.join(
       device.GetApplicationDataDirectory(package_name), 'app_webview',
       device_netlog_file_name)
 
@@ -115,8 +124,13 @@ https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/net-d
   # The netlog file will be under the app's uid, which the default shell doesn't
   # have permission to read (but root does). Prefer this to EnableRoot(), which
   # restarts the adb daemon.
-  device.PullFile(device_netlog_path, host_netlog_path, as_root=True)
-  device.RemovePath(device_netlog_path, as_root=True)
+  if device.PathExists(device_netlog_path, as_root=True):
+    device.PullFile(device_netlog_path, host_netlog_path, as_root=True)
+    device.RemovePath(device_netlog_path, as_root=True)
+  else:
+    raise RuntimeError(
+        'Unable to find a netlog file in the "{}" app data directory. '
+        'Did you restart and run the app?'.format(package_name))
 
 
 if __name__ == '__main__':

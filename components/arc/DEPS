@@ -1,6 +1,7 @@
 include_rules = [
+  "+ash/constants",
   "+ash/public/cpp",
-  "+chromeos/constants",
+  "+chromeos/components/sensors",
   "+chromeos/cryptohome",
   "+chromeos/dbus",
   "+chromeos/memory",
@@ -43,6 +44,9 @@ specific_include_rules = {
   ],
   "arc_util_unittest.cc": [
     "+ui/aura",
+  ],
+  "arc_vm_client_adapter.cc": [
+    "+chromeos/components/sensors/buildflags.h",
   ],
   ".*_unittest.cc": [
     "+content/public/test/browser_task_environment.h"

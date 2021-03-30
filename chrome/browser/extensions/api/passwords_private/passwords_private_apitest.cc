@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <sstream>
+#include <string>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -16,7 +17,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -59,8 +59,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
 
  protected:
   bool RunPasswordsSubtest(const std::string& subtest) {
-    return RunExtensionSubtest("passwords_private", "main.html?" + subtest,
-                               kFlagNone, kFlagLoadAsComponent);
+    const std::string page_url = "main.html?" + subtest;
+    return RunExtensionTest({.name = "passwords_private",
+                             .page_url = page_url.c_str(),
+                             .load_as_component = true});
   }
 
   bool importPasswordsWasTriggered() {

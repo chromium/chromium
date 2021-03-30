@@ -8,12 +8,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
-class AssignToDesksMenuModel;
+class MoveToDesksMenuModel;
 
 // Menu model for the menu button in a web app browser window.
 class WebAppMenuModel : public AppMenuModel {
  public:
   static constexpr int kUninstallAppCommandId = 1;
+  static constexpr int kExtensionsMenuCommandId = 2;
 
   WebAppMenuModel(ui::AcceleratorProvider* provider, Browser* browser);
   WebAppMenuModel(const WebAppMenuModel&) = delete;
@@ -22,6 +23,7 @@ class WebAppMenuModel : public AppMenuModel {
 
   // AppMenuModel:
   bool IsCommandIdEnabled(int command_id) const override;
+  bool IsCommandIdVisible(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
 
  protected:
@@ -31,7 +33,7 @@ class WebAppMenuModel : public AppMenuModel {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<AssignToDesksMenuModel> assign_to_desks_submenu_;
+  std::unique_ptr<MoveToDesksMenuModel> move_to_desks_submenu_;
 #endif
 };
 

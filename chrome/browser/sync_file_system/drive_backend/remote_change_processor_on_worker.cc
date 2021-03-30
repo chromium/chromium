@@ -32,7 +32,7 @@ RemoteChangeProcessorOnWorker::~RemoteChangeProcessorOnWorker() {
 
 void RemoteChangeProcessorOnWorker::PrepareForProcessRemoteChange(
     const storage::FileSystemURL& url,
-    const PrepareChangeCallback& callback) {
+    PrepareChangeCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   ui_task_runner_->PostTask(
@@ -41,7 +41,7 @@ void RemoteChangeProcessorOnWorker::PrepareForProcessRemoteChange(
           &RemoteChangeProcessorWrapper::PrepareForProcessRemoteChange,
           wrapper_, url,
           RelayCallbackToTaskRunner(worker_task_runner_.get(), FROM_HERE,
-                                    callback)));
+                                    std::move(callback))));
 }
 
 void RemoteChangeProcessorOnWorker::ApplyRemoteChange(
@@ -63,7 +63,7 @@ void RemoteChangeProcessorOnWorker::ApplyRemoteChange(
 void RemoteChangeProcessorOnWorker::FinalizeRemoteSync(
     const storage::FileSystemURL& url,
     bool clear_local_changes,
-    const base::Closure& completion_callback) {
+    base::OnceClosure completion_callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   ui_task_runner_->PostTask(
@@ -72,7 +72,7 @@ void RemoteChangeProcessorOnWorker::FinalizeRemoteSync(
           &RemoteChangeProcessorWrapper::FinalizeRemoteSync, wrapper_, url,
           clear_local_changes,
           RelayCallbackToTaskRunner(worker_task_runner_.get(), FROM_HERE,
-                                    completion_callback)));
+                                    std::move(completion_callback))));
 }
 
 void RemoteChangeProcessorOnWorker::RecordFakeLocalChange(

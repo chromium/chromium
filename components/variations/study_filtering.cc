@@ -66,6 +66,25 @@ bool CheckStudyFormFactor(const Study::Filter& filter,
   return !base::Contains(filter.exclude_form_factor(), form_factor);
 }
 
+bool CheckStudyCpuArchitecture(const Study::Filter& filter,
+                               Study::CpuArchitecture cpu_architecture) {
+  // Empty allowlist and denylist signifies matching any CPU architecture.
+  if (filter.cpu_architecture_size() == 0 &&
+      filter.exclude_cpu_architecture_size() == 0) {
+    return true;
+  }
+
+  // Allow the cpu_architecture if it matches the allowlist.
+  // Note if both a allowlist and denylist are specified, the denylist is
+  // ignored. We do not expect both to be present for Chrome due to server-side
+  // checks.
+  if (filter.cpu_architecture_size() > 0)
+    return base::Contains(filter.cpu_architecture(), cpu_architecture);
+
+  // Omit if we match the denylist.
+  return !base::Contains(filter.exclude_cpu_architecture(), cpu_architecture);
+}
+
 bool CheckStudyHardwareClass(const Study::Filter& filter,
                              const std::string& hardware_class) {
   // Empty hardware_class and exclude_hardware_class matches all.
@@ -118,12 +137,6 @@ bool CheckStudyLowEndDevice(const Study::Filter& filter,
                             bool is_low_end_device) {
   return !filter.has_is_low_end_device() ||
          filter.is_low_end_device() == is_low_end_device;
-}
-
-bool CheckStudyEnterprise(const Study::Filter& filter,
-                          const ClientFilterableState& client_state) {
-  return !filter.has_is_enterprise() ||
-         filter.is_enterprise() == client_state.IsEnterprise();
 }
 
 bool CheckStudyPolicyRestriction(const Study::Filter& filter,
@@ -215,6 +228,12 @@ bool CheckStudyCountry(const Study::Filter& filter,
   return !base::Contains(filter.exclude_country(), country);
 }
 
+bool CheckStudyEnterprise(const Study::Filter& filter,
+                          const ClientFilterableState& client_state) {
+  return !filter.has_is_enterprise() ||
+         filter.is_enterprise() == client_state.IsEnterprise();
+}
+
 const std::string& GetClientCountryForStudy(
     const Study& study,
     const ClientFilterableState& client_state) {
@@ -278,6 +297,13 @@ bool ShouldAddStudy(const Study& study,
       return false;
     }
 
+    if (!CheckStudyCpuArchitecture(study.filter(),
+                                   client_state.cpu_architecture)) {
+      DVLOG(1) << "Filtered out study " << study.name()
+               << " due to cpu architecture.";
+      return false;
+    }
+
     if (!CheckStudyLocale(study.filter(), client_state.locale)) {
       DVLOG(1) << "Filtered out study " << study.name() << " due to locale.";
       return false;
@@ -317,12 +343,6 @@ bool ShouldAddStudy(const Study& study,
       return false;
     }
 
-    if (!CheckStudyEnterprise(study.filter(), client_state)) {
-      DVLOG(1) << "Filtered out study " << study.name()
-               << " due to enterprise state.";
-      return false;
-    }
-
     if (!CheckStudyPolicyRestriction(study.filter(),
                                      client_state.policy_restriction)) {
       DVLOG(1) << "Filtered out study " << study.name()
@@ -339,6 +359,14 @@ bool ShouldAddStudy(const Study& study,
     const std::string& country = GetClientCountryForStudy(study, client_state);
     if (!CheckStudyCountry(study.filter(), country)) {
       DVLOG(1) << "Filtered out study " << study.name() << " due to country.";
+      return false;
+    }
+
+    // Check for enterprise status last as checking whether the client is
+    // enterprise can be slow.
+    if (!CheckStudyEnterprise(study.filter(), client_state)) {
+      DVLOG(1) << "Filtered out study " << study.name()
+               << " due to enterprise state.";
       return false;
     }
   }

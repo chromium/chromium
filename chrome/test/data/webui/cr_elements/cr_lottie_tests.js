@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {LOTTIE_JS_URL} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {eventToPromise} from '../test_util.m.js';
-// #import {MockController, MockMethod} from '../mock_controller.m.js';
-// #import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {LOTTIE_JS_URL} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {MockController, MockMethod} from '../mock_controller.m.js';
+import {eventToPromise} from '../test_util.m.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-lottie. */
@@ -99,9 +100,8 @@ suite('cr_lottie_test', function() {
     crLottieElement.autoplay = true;
 
     waitForInitializeEvent =
-        test_util.eventToPromise('cr-lottie-initialized', crLottieElement);
-    waitForPlayingEvent =
-        test_util.eventToPromise('cr-lottie-playing', crLottieElement);
+        eventToPromise('cr-lottie-initialized', crLottieElement);
+    waitForPlayingEvent = eventToPromise('cr-lottie-playing', crLottieElement);
 
     container = /** @type {!HTMLDivElement} */ (document.createElement('div'));
     container.style.width = '300px';
@@ -111,7 +111,7 @@ suite('cr_lottie_test', function() {
 
     canvas = /** @type {!HTMLCanvasElement} */ (crLottieElement.$$('canvas'));
 
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -126,7 +126,7 @@ suite('cr_lottie_test', function() {
     // Instead, copy the rendered canvas into a new canvas and sample a pixel
     // from it.
     const img = document.createElement('img');
-    const waitForLoad = test_util.eventToPromise('load', img);
+    const waitForLoad = eventToPromise('load', img);
     const canvas = crLottieElement.$$('canvas');
     img.setAttribute('src', canvas.toDataURL());
     await waitForLoad;
@@ -151,7 +151,7 @@ suite('cr_lottie_test', function() {
     const newWidth = 400;
     const waitForResizeEvent =
         /** @type {!Promise<!CustomEvent<{width: number, height: number}>>} */ (
-            test_util.eventToPromise('cr-lottie-resized', crLottieElement));
+            eventToPromise('cr-lottie-resized', crLottieElement));
 
     // Update size of parent div container to see if the canvas is resized.
     container.style.width = newWidth + 'px';
@@ -168,12 +168,11 @@ suite('cr_lottie_test', function() {
     await waitForPlayingEvent;
 
     const waitForPauseEvent =
-        test_util.eventToPromise('cr-lottie-paused', crLottieElement);
+        eventToPromise('cr-lottie-paused', crLottieElement);
     crLottieElement.setPlay(false);
     await waitForPauseEvent;
 
-    waitForPlayingEvent =
-        test_util.eventToPromise('cr-lottie-playing', crLottieElement);
+    waitForPlayingEvent = eventToPromise('cr-lottie-playing', crLottieElement);
     crLottieElement.setPlay(true);
     await waitForPlayingEvent;
   });
@@ -224,11 +223,10 @@ suite('cr_lottie_test', function() {
     await waitForPlayingEvent;
 
     const waitForStoppedEvent =
-        test_util.eventToPromise('cr-lottie-stopped', crLottieElement);
+        eventToPromise('cr-lottie-stopped', crLottieElement);
     waitForInitializeEvent =
-        test_util.eventToPromise('cr-lottie-initialized', crLottieElement);
-    waitForPlayingEvent =
-        test_util.eventToPromise('cr-lottie-playing', crLottieElement);
+        eventToPromise('cr-lottie-initialized', crLottieElement);
+    waitForPlayingEvent = eventToPromise('cr-lottie-playing', crLottieElement);
 
     crLottieElement.animationUrl = SAMPLE_LOTTIE_BLUE;
 

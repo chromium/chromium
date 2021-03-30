@@ -29,7 +29,7 @@ namespace extensions {
 class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
  public:
   using NetworkMap =
-      std::map<base::string16, std::unique_ptr<base::DictionaryValue>>;
+      std::map<std::u16string, std::unique_ptr<base::DictionaryValue>>;
 
   typedef std::vector<std::string> GuidList;
 

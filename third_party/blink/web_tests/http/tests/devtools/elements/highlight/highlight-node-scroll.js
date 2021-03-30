@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test verifies the position and size of the highlight rectangles overlayed on an inspected div in the scrolled view.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

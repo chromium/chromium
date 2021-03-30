@@ -20,10 +20,18 @@
 // the app binary and can be called from either app or test code.
 @interface ChromeEarlGreyAppInterface : NSObject
 
+// YES if the current interface language uses RTL layout.
++ (BOOL)isRTL;
+
 // Clears browsing history and waits for history to finish clearing before
 // returning. Returns nil on success, or else an NSError indicating why the
 // operation failed.
 + (NSError*)clearBrowsingHistory;
+
+// Clears all web state browsing data and waits to finish clearing before
+// returning. Returns nil on success, otherwise an NSError indicating why
+// the operation failed.
++ (NSError*)clearAllWebStateBrowsingData;
 
 // Returns the number of entries in the history database. Returns -1 if there
 // was an error.
@@ -174,6 +182,9 @@
 
 #pragma mark - Window utilities (EG2)
 
+// Returns screen position of the given |windowNumber|
++ (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber;
+
 // Returns the number of windows, including background and disconnected or
 // archived windows.
 + (NSUInteger)windowCount WARN_UNUSED_RESULT;
@@ -183,6 +194,44 @@
 
 // Closes all but one window, including all non-foreground windows.
 + (void)closeAllExtraWindows;
+
+// Open a new window. Returns an error if multiwindow is not supported.
++ (NSError*)openNewWindow;
+
+// Opens a new tab in window with given number, and does not wait for animations
+// to complete.
++ (void)openNewTabInWindowWithNumber:(int)windowNumber;
+
+// Closes the window with given number.
++ (void)closeWindowWithNumber:(int)windowNumber;
+
+// Renumbers given window with current number to new number.
++ (void)changeWindowWithNumber:(int)windowNumber
+                   toNewNumber:(int)newWindowNumber;
+
+// Loads the URL |spec| in the current WebState in window with given number with
+// transition type ui::PAGE_TRANSITION_TYPED and returns without waiting for the
+// page to load.
++ (void)startLoadingURL:(NSString*)spec inWindowWithNumber:(int)windowNumber;
+
+// Returns YES if the current WebState in window with given number is loading.
++ (BOOL)isLoadingInWindowWithNumber:(int)windowNumber WARN_UNUSED_RESULT;
+
+// If the current WebState in window with given number is HTML content, will
+// wait until the window ID is injected. Returns YES if the injection is
+// successful or if the WebState is not HTML content.
++ (BOOL)waitForWindowIDInjectionIfNeededInWindowWithNumber:(int)windowNumber;
+
+// Returns YES if the current WebState in window with given number contains
+// |text|.
++ (BOOL)webStateContainsText:(NSString*)text
+          inWindowWithNumber:(int)windowNumber;
+
+// Returns the number of open non-incognito tabs, in window with given number.
++ (NSUInteger)mainTabCountInWindowWithNumber:(int)windowNumber;
+
+// Returns the number of open incognito tabs, in window with given number.
++ (NSUInteger)incognitoTabCountInWindowWithNumber:(int)windowNumber;
 
 #pragma mark - WebState Utilities (EG2)
 
@@ -266,6 +315,9 @@
 // Returns the size of the current WebState's web view.
 + (CGSize)webStateWebViewSize;
 
+// Stops any pending navigations in all WebStates which are loading.
++ (void)stopAllWebStatesLoading;
+
 #pragma mark - Bookmarks Utilities (EG2)
 
 // Waits for the bookmark internal state to be done loading.
@@ -303,6 +355,10 @@
 // Returns the current sync cache GUID. The sync server must be running when
 // calling this.
 + (NSString*)syncCacheGUID;
+
+// Waits for sync invalidation field presence in the DeviceInfo data type on the
+// server.
++ (NSError*)waitForSyncInvalidationFields;
 
 // Whether or not the fake sync server has been setup.
 + (BOOL)isFakeSyncServerSetUp;
@@ -518,6 +574,23 @@
 // Retrieves the currently stored URL on the pasteboard from the tested app's
 // perspective.
 + (NSString*)pasteboardURLSpec;
+
+#pragma mark - Watcher utilities
+
+// Starts monitoring for buttons (based on traits) with the given
+// (accessibility) |labels|. Monitoring will stop once all are found, or if
+// timeout expires. If a previous set is currently being watched for it gets
+// replaced with this set. Note that timeout is best effort and can be a bit
+// longer than specified. This method returns immediately.
++ (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
+                          timeout:(NSTimeInterval)timeout;
+
+// Returns YES is the button with given (accessibility) |label| was observed at
+// some point since |watchForButtonsWithLabels:timeout:| was called.
++ (BOOL)watcherDetectedButtonWithLabel:(NSString*)label;
+
+// Clear the watcher list, stopping monitoring.
++ (void)stopWatcher;
 
 @end
 

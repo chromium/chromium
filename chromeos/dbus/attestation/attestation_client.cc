@@ -55,7 +55,7 @@ bool ParseProto(dbus::Response* response,
   return true;
 }
 
-// "Real" implementation of AttestationClient taking to the Attestation daemon
+// "Real" implementation of AttestationClient talking to the Attestation daemon
 // on the Chrome OS side.
 class AttestationClientImpl : public AttestationClient {
  public:

@@ -29,6 +29,7 @@
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -68,6 +69,7 @@
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -116,23 +118,20 @@ RenderWidgetHostViewAura* ToRenderWidgetHostViewAura(
 
 // Listens to all mouse drag events during a drag and drop and sends them to
 // the renderer.
-class WebDragSourceAura : public NotificationObserver {
+class WebDragSourceAura : public content::WebContentsObserver {
  public:
   WebDragSourceAura(aura::Window* window, WebContentsImpl* contents)
-      : window_(window),
-        contents_(contents) {
-    registrar_.Add(this,
-                   NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-                   Source<WebContents>(contents));
+      : WebContentsObserver(contents), window_(window) {}
+
+  // content::WebContentsObserver
+  void RenderProcessGone(base::TerminationStatus status) override {
+    CancelDrag();
   }
 
-  ~WebDragSourceAura() override {}
+  void WebContentsDestroyed() override { CancelDrag(); }
 
-  // NotificationObserver:
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override {
-    if (type != NOTIFICATION_WEB_CONTENTS_DISCONNECTED)
+  void CancelDrag() {
+    if (!window_)
       return;
 
     // Cancel the drag if it is still in progress.
@@ -142,15 +141,12 @@ class WebDragSourceAura : public NotificationObserver {
       dnd_client->DragCancel();
 
     window_ = nullptr;
-    contents_ = nullptr;
   }
 
   aura::Window* window() const { return window_; }
 
  private:
   aura::Window* window_;
-  WebContentsImpl* contents_;
-  NotificationRegistrar registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(WebDragSourceAura);
 };
@@ -175,7 +171,7 @@ void PrepareDragForDownload(const DropData& drop_data,
   const std::string& page_encoding = web_contents->GetEncoding();
 
   // Parse the download metadata.
-  base::string16 mime_type;
+  std::u16string mime_type;
   base::FilePath file_name;
   GURL download_url;
   if (!ParseDownloadMetadata(drop_data.download_metadata,
@@ -188,12 +184,9 @@ void PrepareDragForDownload(const DropData& drop_data,
   std::string default_name =
       GetContentClient()->browser()->GetDefaultDownloadName();
   base::FilePath generated_download_file_name =
-      net::GenerateFileName(download_url,
-                            std::string(),
-                            std::string(),
-                            base::UTF16ToUTF8(file_name.value()),
-                            base::UTF16ToUTF8(mime_type),
-                            default_name);
+      net::GenerateFileName(download_url, std::string(), std::string(),
+                            base::WideToUTF8(file_name.value()),
+                            base::UTF16ToUTF8(mime_type), default_name);
 
   // http://crbug.com/332579
   base::ThreadRestrictions::ScopedAllowIO allow_file_operations;
@@ -310,13 +303,13 @@ bool ShouldIncludeVirtualFiles(const DropData& drop_data) {
 void PrepareDropData(DropData* drop_data, const ui::OSExchangeData& data) {
   drop_data->did_originate_from_renderer = data.DidOriginateFromRenderer();
 
-  base::string16 plain_text;
+  std::u16string plain_text;
   data.GetString(&plain_text);
   if (!plain_text.empty())
     drop_data->text = plain_text;
 
   GURL url;
-  base::string16 url_title;
+  std::u16string url_title;
   data.GetURLAndTitle(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url,
                       &url_title);
   if (url.is_valid()) {
@@ -324,7 +317,7 @@ void PrepareDropData(DropData* drop_data, const ui::OSExchangeData& data) {
     drop_data->url_title = url_title;
   }
 
-  base::string16 html;
+  std::u16string html;
   GURL html_base_url;
   data.GetHtml(&html, &html_base_url);
   if (!html.empty())
@@ -767,10 +760,15 @@ void WebContentsViewAura::EndDrag(
 
 void WebContentsViewAura::InstallOverscrollControllerDelegate(
     RenderWidgetHostViewAura* view) {
+  if (!base::FeatureList::IsEnabled(features::kOverscrollHistoryNavigation))
+    return;
+
   if (!gesture_nav_simple_)
     gesture_nav_simple_ = std::make_unique<GestureNavSimple>(web_contents_);
-  if (view)
-    view->overscroll_controller()->set_delegate(gesture_nav_simple_.get());
+  if (view) {
+    view->overscroll_controller()->set_delegate(
+        gesture_nav_simple_->GetWeakPtr());
+  }
 }
 
 ui::TouchSelectionController* WebContentsViewAura::GetSelectionController()
@@ -972,7 +970,7 @@ RenderWidgetHostViewBase* WebContentsViewAura::CreateViewForChildWidget(
   return new RenderWidgetHostViewAura(render_widget_host);
 }
 
-void WebContentsViewAura::SetPageTitle(const base::string16& title) {
+void WebContentsViewAura::SetPageTitle(const std::u16string& title) {
   window_->SetTitle(title);
   aura::Window* child_window = GetContentNativeView();
   if (child_window)
@@ -1353,9 +1351,17 @@ void WebContentsViewAura::DragUpdatedCallback(
     drag_dest_delegate_->OnDragOver();
 }
 
-int WebContentsViewAura::OnDragUpdated(const ui::DropTargetEvent& event) {
+aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
   if (web_contents_->ShouldIgnoreInputEvents())
-    return ui::DragDropTypes::DRAG_NONE;
+    return aura::client::DragUpdateInfo();
+
+  aura::client::DragUpdateInfo drag_info;
+  auto* focused_frame = web_contents_->GetFocusedFrame();
+  if (focused_frame) {
+    drag_info.data_endpoint = ui::DataTransferEndpoint(
+        web_contents_->GetFocusedFrame()->GetLastCommittedOrigin());
+  }
 
   std::unique_ptr<DropData> drop_data = std::make_unique<DropData>();
   // Calling this here as event.data might become invalid inside the callback.
@@ -1368,8 +1374,9 @@ int WebContentsViewAura::OnDragUpdated(const ui::DropTargetEvent& event) {
           base::BindOnce(&WebContentsViewAura::DragUpdatedCallback,
                          weak_ptr_factory_.GetWeakPtr(), event,
                          std::move(drop_data)));
-  return ConvertFromDragOperationsMask(
-      static_cast<blink::DragOperationsMask>(current_drag_op_));
+
+  drag_info.drag_operation = static_cast<int>(current_drag_op_);
+  return drag_info;
 }
 
 void WebContentsViewAura::OnDragExited() {
@@ -1504,11 +1511,11 @@ void WebContentsViewAura::FinishOnPerformDropCallback(
   current_drop_data_.reset();
 }
 
-int WebContentsViewAura::OnPerformDrop(
+ui::mojom::DragOperation WebContentsViewAura::OnPerformDrop(
     const ui::DropTargetEvent& event,
     std::unique_ptr<ui::OSExchangeData> data) {
   if (web_contents_->ShouldIgnoreInputEvents())
-    return ui::DragDropTypes::DRAG_NONE;
+    return ui::mojom::DragOperation::kNone;
 
   web_contents_->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(
@@ -1517,8 +1524,7 @@ int WebContentsViewAura::OnPerformDrop(
           base::BindOnce(&WebContentsViewAura::PerformDropCallback,
                          weak_ptr_factory_.GetWeakPtr(), event,
                          std::move(data)));
-  return ConvertFromDragOperationsMask(
-      static_cast<blink::DragOperationsMask>(current_drag_op_));
+  return current_drag_op_;
 }
 
 void WebContentsViewAura::CompleteDrop(RenderWidgetHostImpl* target_rwh,

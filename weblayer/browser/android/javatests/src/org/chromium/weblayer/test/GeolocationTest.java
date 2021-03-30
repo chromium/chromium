@@ -7,6 +7,7 @@ package org.chromium.weblayer.test;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Function;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -97,11 +99,9 @@ public final class GeolocationTest {
         Bundle extras = new Bundle();
         // We need to override the context with which to create WebLayer.
         extras.putBoolean(InstrumentationActivity.EXTRA_CREATE_WEBLAYER, false);
-        mActivity = mActivityTestRule.launchShell(extras);
-        Assert.assertNotNull(mActivity);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity.loadWebLayerSync(new InMemorySharedPreferencesContext(
-                    mActivity.getApplication()) {
+
+        Function<Context, Context> activityContextBuilder = (baseContext) -> {
+            return new InMemorySharedPreferencesContext(baseContext) {
                 @Override
                 public int checkPermission(String permission, int pid, int uid) {
                     if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -110,8 +110,14 @@ public final class GeolocationTest {
                     }
                     return getBaseContext().checkPermission(permission, pid, uid);
                 }
-            });
-        });
+            };
+        };
+        InstrumentationActivity.setActivityContextBuilder(activityContextBuilder);
+
+        mActivity = mActivityTestRule.launchShell(extras);
+        Assert.assertNotNull(mActivity);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivity.loadWebLayerSync(mActivity.getApplicationContext()); });
         mActivityTestRule.navigateAndWait("about:blank");
 
         mTestWebLayer = TestWebLayer.getTestWebLayer(mActivity.getApplicationContext());

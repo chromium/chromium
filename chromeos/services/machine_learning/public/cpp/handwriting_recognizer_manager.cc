@@ -29,17 +29,20 @@ void HandwritingRecognizerManager::AddReceiver(
 void HandwritingRecognizerManager::LoadHandwritingModel(
     mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
     LoadHandwritingModelCallback callback) {
-  ServiceConnection::GetInstance()->LoadHandwritingModelWithSpec(
-      mojom::HandwritingRecognizerSpec::New("en"), std::move(receiver),
-      std::move(callback));
+  ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .LoadHandwritingModelWithSpec(mojom::HandwritingRecognizerSpec::New("en"),
+                                    std::move(receiver), std::move(callback));
 }
 
 void HandwritingRecognizerManager::LoadGestureModel(
     mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
     LoadHandwritingModelCallback callback) {
-  ServiceConnection::GetInstance()->LoadHandwritingModelWithSpec(
-      mojom::HandwritingRecognizerSpec::New("gesture_in_context"),
-      std::move(receiver), std::move(callback));
+  ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .LoadHandwritingModelWithSpec(
+          mojom::HandwritingRecognizerSpec::New("gesture_in_context"),
+          std::move(receiver), std::move(callback));
 }
 
 }  // namespace machine_learning

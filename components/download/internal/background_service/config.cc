@@ -8,6 +8,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "components/download/public/background_service/features.h"
 
 namespace download {
@@ -59,8 +60,13 @@ const base::TimeDelta kDefaultWindowStartTime = base::TimeDelta::FromMinutes(5);
 const base::TimeDelta kDefaultWindowEndTime = base::TimeDelta::FromHours(8);
 
 // Default value for start up delay to wait for network stack ready.
+#if defined(OS_ANDROID)
 const base::TimeDelta kDefaultNetworkStartupDelay =
     base::TimeDelta::FromSeconds(25);
+#else
+const base::TimeDelta kDefaultNetworkStartupDelay =
+    base::TimeDelta::FromSeconds(2);
+#endif  // defined(OS_ANDROID)
 
 // Default value for start up delay to wait for network stack ready when
 // triggered from a background task.

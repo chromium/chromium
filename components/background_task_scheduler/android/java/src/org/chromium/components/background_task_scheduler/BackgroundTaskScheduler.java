@@ -38,6 +38,15 @@ public interface BackgroundTaskScheduler {
     void cancel(Context context, int taskId);
 
     /**
+     * Checks if a task specified by the task ID is currently scheduled.
+     *
+     * @param context the current context.
+     * @param taskId the ID of the task to check. See {@link TaskIds} for a list.
+     */
+    @MainThread
+    boolean isScheduled(Context context, int taskId);
+
+    /**
      * Checks whether OS was upgraded and triggers rescheduling if it is necessary.
      * Rescheduling is necessary if type of background task scheduler delegate is different for a
      * new version of the OS.

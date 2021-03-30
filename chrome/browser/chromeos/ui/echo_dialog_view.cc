@@ -18,6 +18,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -73,11 +74,10 @@ void EchoDialogView::Show(gfx::NativeWindow parent) {
   GetWidget()->Show();
 }
 
-void EchoDialogView::InitForEnabledEcho(const base::string16& service_name,
-                                        const base::string16& origin) {
-
+void EchoDialogView::InitForEnabledEcho(const std::u16string& service_name,
+                                        const std::u16string& origin) {
   size_t offset;
-  base::string16 text = l10n_util::GetStringFUTF16(IDS_ECHO_CONSENT_DIALOG_TEXT,
+  std::u16string text = l10n_util::GetStringFUTF16(IDS_ECHO_CONSENT_DIALOG_TEXT,
                                                    service_name, &offset);
 
   auto label = std::make_unique<views::StyledLabel>();
@@ -123,5 +123,8 @@ void EchoDialogView::SetBorderAndLabel(std::unique_ptr<views::View> label,
 
   AddChildView(std::move(label));
 }
+
+BEGIN_METADATA(EchoDialogView, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace chromeos

@@ -21,8 +21,8 @@ KeywordEditorController::KeywordEditorController(Profile* profile)
 KeywordEditorController::~KeywordEditorController() {
 }
 
-int KeywordEditorController::AddTemplateURL(const base::string16& title,
-                                            const base::string16& keyword,
+int KeywordEditorController::AddTemplateURL(const std::u16string& title,
+                                            const std::u16string& keyword,
                                             const std::string& url) {
   DCHECK(!url.empty());
 
@@ -35,8 +35,8 @@ int KeywordEditorController::AddTemplateURL(const base::string16& title,
 }
 
 void KeywordEditorController::ModifyTemplateURL(TemplateURL* template_url,
-                                                const base::string16& title,
-                                                const base::string16& keyword,
+                                                const std::u16string& title,
+                                                const std::u16string& keyword,
                                                 const std::string& url) {
   DCHECK(!url.empty());
   const int index = table_model_->IndexOfTemplateURL(template_url);

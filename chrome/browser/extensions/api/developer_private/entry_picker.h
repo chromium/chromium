@@ -30,7 +30,7 @@ class EntryPicker : public ui::SelectFileDialog::Listener {
               content::WebContents* web_contents,
               ui::SelectFileDialog::Type picker_type,
               const base::FilePath& last_directory,
-              const base::string16& select_title,
+              const std::u16string& select_title,
               const ui::SelectFileDialog::FileTypeInfo& info,
               int file_type_index);
 

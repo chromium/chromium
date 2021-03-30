@@ -513,7 +513,7 @@ TEST_P(ParameterizedVisibleUnitsWordTest, NextWordSkipSpacesBasic) {
             DoNextWordSkippingSpaces("<p> (|1) abc def</p>"));
   EXPECT_EQ("<p> (1) |abc def</p>",
             DoNextWordSkippingSpaces("<p> (1|) abc def</p>"));
-  EXPECT_EQ("<p> (1) abc |def</p>",
+  EXPECT_EQ("<p> (1) |abc def</p>",
             DoNextWordSkippingSpaces("<p> (1)| abc def</p>"));
   EXPECT_EQ("<p> (1) abc |def</p>",
             DoNextWordSkippingSpaces("<p> (1) |abc def</p>"));
@@ -521,7 +521,7 @@ TEST_P(ParameterizedVisibleUnitsWordTest, NextWordSkipSpacesBasic) {
             DoNextWordSkippingSpaces("<p> (1) a|bc def</p>"));
   EXPECT_EQ("<p> (1) abc |def</p>",
             DoNextWordSkippingSpaces("<p> (1) ab|c def</p>"));
-  EXPECT_EQ("<p> (1) abc def|</p>",
+  EXPECT_EQ("<p> (1) abc |def</p>",
             DoNextWordSkippingSpaces("<p> (1) abc| def</p>"));
   EXPECT_EQ("<p> (1) abc def|</p>",
             DoNextWordSkippingSpaces("<p> (1) abc |def</p>"));
@@ -627,6 +627,30 @@ TEST_P(ParameterizedVisibleUnitsWordTest, NextWordSkipTextControl) {
             DoNextWord("foo<input value=\"bla\">ba|r"));
   EXPECT_EQ("foo<input value=\"bla\">bar|",
             DoNextWord("foo<input value=\"bla\">bar|"));
+}
+
+TEST_P(ParameterizedVisibleUnitsWordTest, NextWordSkipSpacesEmoji) {
+  EXPECT_EQ("<p> abc |😂 def</p>",
+            DoNextWordSkippingSpaces("<p> |abc &#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂 |def</p>",
+            DoNextWordSkippingSpaces("<p> abc |&#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂 def|</p>",
+            DoNextWordSkippingSpaces("<p> abc &#x1F602; |def</p>"));
+}
+
+TEST_P(ParameterizedVisibleUnitsWordTest, NextWordEmoji) {
+  EXPECT_EQ("<p> abc| 😂 def</p>", DoNextWord("<p> |abc &#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂| def</p>", DoNextWord("<p> abc |&#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂 def|</p>", DoNextWord("<p> abc &#x1F602; |def</p>"));
+}
+
+TEST_P(ParameterizedVisibleUnitsWordTest, NextWordEmojiSequence) {
+  EXPECT_EQ("<p> abc| 😂😂 def</p>",
+            DoNextWord("<p> |abc &#x1F602;&#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂😂| def</p>",
+            DoNextWord("<p> abc |&#x1F602;&#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂😂 def|</p>",
+            DoNextWord("<p> abc &#x1F602;&#x1F602; |def</p>"));
 }
 
 //----

@@ -21,9 +21,9 @@
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_notifier_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -193,9 +193,6 @@ void SearchResultRanker::InitializeRankers(
             base::Unretained(this), default_config));
   }
 
-  search_ranking_event_logger_ =
-      std::make_unique<SearchRankingEventLogger>(profile_, search_controller);
-
   app_launch_event_logger_ = std::make_unique<app_list::AppLaunchEventLogger>();
 
   // Initialize on-device app ranking model.
@@ -212,7 +209,7 @@ void SearchResultRanker::InitializeRankers(
       chromeos::ProfileHelper::IsEphemeralUserProfile(profile_));
 }
 
-void SearchResultRanker::FetchRankings(const base::string16& query) {
+void SearchResultRanker::FetchRankings(const std::u16string& query) {
   last_query_ = query;
 
   // The search controller potentially calls SearchController::FetchResults
@@ -339,13 +336,6 @@ void SearchResultRanker::Train(const AppLaunchData& app_launch_data) {
   }
 
   LogChipUsageMetrics(app_launch_data);
-}
-
-void SearchResultRanker::LogSearchResults(
-    const base::string16& trimmed_query,
-    const ash::SearchResultIdWithPositionIndices& results,
-    int launched_index) {
-  search_ranking_event_logger_->Log(trimmed_query, results, launched_index);
 }
 
 void SearchResultRanker::ZeroStateResultsDisplayed(

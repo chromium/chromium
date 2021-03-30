@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class ActionsSubmenu {
+// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {util} from '../../../common/js/util.m.js';
+// #import {ActionsModel} from '../actions_model.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+/* #export */ class ActionsSubmenu {
   /** @param {!cr.ui.Menu} menu */
   constructor(menu) {
     /**

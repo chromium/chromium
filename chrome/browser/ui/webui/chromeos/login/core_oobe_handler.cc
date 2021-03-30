@@ -6,8 +6,8 @@
 
 #include <type_traits>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -17,18 +17,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/configuration_keys.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/screens/reset_screen.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/login/configuration_keys.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/chromeos/login/helper.h"
-#include "chrome/browser/chromeos/login/lock/screen_locker.h"
-#include "chrome/browser/chromeos/login/screens/reset_screen.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/ui/oobe_dialog_size_utils.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
-#include "chrome/browser/chromeos/system/input_device_settings.h"
+#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
@@ -41,9 +42,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_constants.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
@@ -93,22 +91,6 @@ void CoreOobeHandler::DeclareLocalizedValues(
   builder->Add("productName", IDS_SHORT_PRODUCT_NAME);
   builder->Add("learnMore", IDS_LEARN_MORE);
 
-  // Strings for the device requisition prompt.
-  builder->Add("deviceRequisitionPromptCancel",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_CANCEL);
-  builder->Add("deviceRequisitionPromptOk",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_OK);
-  builder->Add("deviceRequisitionPromptText",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_TEXT);
-  builder->Add("deviceRequisitionRemoraPromptCancel",
-               IDS_CONFIRM_MESSAGEBOX_NO_BUTTON_LABEL);
-  builder->Add("deviceRequisitionRemoraPromptOk",
-               IDS_CONFIRM_MESSAGEBOX_YES_BUTTON_LABEL);
-  builder->Add("deviceRequisitionRemoraPromptText",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_REMORA_PROMPT_TEXT);
-  builder->Add("deviceRequisitionSharkPromptText",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_SHARK_PROMPT_TEXT);
-
 
   // Strings for Asset Identifier shown in version string.
   builder->Add("assetIdLabel", IDS_OOBE_ASSET_ID_LABEL);
@@ -134,10 +116,11 @@ void CoreOobeHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
                base::Value(ash::TabletMode::Get()->InTabletMode()));
   dict->SetKey("isDemoModeEnabled",
                base::Value(DemoSetupController::IsDemoModeAllowed()));
-  dict->SetKey("showTechnologyBadge",
-               base::Value(!ash::features::IsSeparateNetworkIconsEnabled()));
   dict->SetKey("newLayoutEnabled",
                base::Value(features::IsNewOobeLayoutEnabled()));
+  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+    dict->SetKey("flowType", base::Value("meet"));
+  }
 }
 
 void CoreOobeHandler::RegisterMessages() {
@@ -184,14 +167,6 @@ void CoreOobeHandler::FocusReturned(bool reverse) {
 
 void CoreOobeHandler::ResetSignInUI(bool force_online) {
   CallJS("cr.ui.Oobe.resetSigninUI", force_online);
-}
-
-void CoreOobeHandler::ClearUserPodPassword() {
-  CallJS("cr.ui.Oobe.clearUserPodPassword");
-}
-
-void CoreOobeHandler::RefocusCurrentPod() {
-  CallJS("cr.ui.Oobe.refocusCurrentPod");
 }
 
 void CoreOobeHandler::ClearErrors() {
@@ -339,7 +314,7 @@ void CoreOobeHandler::OnDeviceInfoUpdated(const std::string& bluetooth_name) {
 }
 
 ui::EventSink* CoreOobeHandler::GetEventSink() {
-  return ash::Shell::GetPrimaryRootWindow()->GetHost()->event_sink();
+  return ash::Shell::GetPrimaryRootWindow()->GetHost()->GetEventSink();
 }
 
 void CoreOobeHandler::UpdateLabel(const std::string& id,

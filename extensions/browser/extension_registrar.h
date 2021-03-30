@@ -135,9 +135,9 @@ class ExtensionRegistrar {
   // is not loaded but isn't explicitly disabled in preferences.
   bool IsExtensionEnabled(const ExtensionId& extension_id) const;
 
-  // Called after the render view for the background page with the associated
-  // host is created.
-  void DidCreateRenderViewForBackgroundPage(ExtensionHost* host);
+  // Called after the renderer main frame for the background page with the
+  // associated host is created.
+  void DidCreateMainFrameForBackgroundPage(ExtensionHost* host);
 
   void OnUnpackedExtensionReloadFailed(const base::FilePath& path);
 

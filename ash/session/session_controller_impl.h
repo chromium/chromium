@@ -106,12 +106,10 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // Gets the primary user session.
   const UserSession* GetPrimaryUserSession() const;
 
-  // Returns true if the current user is supervised: has legacy supervised
-  // account or kid account.
-  bool IsUserSupervised() const;
-
-  // Returns true if the current user is legacy supervised.
-  bool IsUserLegacySupervised() const;
+  // Returns true if the current user is supervised: has deprecated legacy
+  // supervised account or kid account.
+  // TODO(crbug/1155729): Remove and replace all calls with IsUserChild().
+  bool IsUserChildOrDeprecatedSupervised() const;
 
   // Returns true if the current user is a child account.
   bool IsUserChild() const;

@@ -24,6 +24,7 @@ enum InstallerState {
 enum InstallerError {
   kNone,
   kErrorLoadingTermina,
+  kNeedUpdate,
   kErrorCreatingDiskImage,
   kErrorStartingTermina,
   kErrorStartingLxd,

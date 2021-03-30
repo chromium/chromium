@@ -94,7 +94,7 @@ theme changes, including when a `View` is first shown.
 ``` cpp
 class ThemeTrackingCheckbox : public views::Checkbox {
  public:
-  explicit ThemeTrackingCheckbox(const base::string16& label)
+  explicit ThemeTrackingCheckbox(const std::u16string& label)
       : Checkbox(label, this) {}
   ThemeTrackingCheckbox(const ThemeTrackingCheckbox&) = delete;
   ThemeTrackingCheckbox& operator=(const ThemeTrackingCheckbox&) = delete;
@@ -154,7 +154,7 @@ change.
 class TextVectorImageButton : public views::MdTextButton {
 public:
  TextVectorImageButton(PressedCallback callback,
-                       const base::string16& text,
+                       const std::u16string& text,
                        const gfx::VectorIcon& icon)
      : MdTextButton(std::move(callback), text), icon_(icon) {}
  TextVectorImageButton(const TextVectorImageButton&) = delete;

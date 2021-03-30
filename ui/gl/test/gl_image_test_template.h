@@ -62,7 +62,8 @@ class GLImageTestDelegateBase {
   virtual void DidSetUp() {}
   virtual void WillTearDown() {}
 
-  virtual base::Optional<GLImplementation> GetPreferedGLImplementation() const;
+  virtual base::Optional<GLImplementationParts> GetPreferedGLImplementation()
+      const;
   virtual bool SkipTest() const;
 };
 

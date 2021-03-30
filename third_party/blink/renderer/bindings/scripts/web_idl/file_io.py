@@ -25,7 +25,9 @@ def write_pickle_file_if_changed(filepath, obj):
 
     Returns True if the object is written to the file, and False if skipped.
     """
-    return write_to_file_if_changed(filepath, pickle.dumps(obj))
+    # TODO(crbug.com/1112471): Drop protocol=2 when we're no longer
+    # compiling anything using Python2.
+    return write_to_file_if_changed(filepath, pickle.dumps(obj, protocol=2))
 
 
 def write_to_file_if_changed(filepath, contents):

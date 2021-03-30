@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert, assertNotReached} from '../js/assert.m.js';
-// #import {isMac} from '../js/cr.m.js';
-// #import {isTextInputElement} from '../js/util.m.js';
-// #import {KeyboardShortcutList} from '../js/cr/ui/keyboard_shortcut_list.m.js';
+import {assert, assertNotReached} from '../js/assert.m.js';
+import {isMac} from '../js/cr.m.js';
+import {KeyboardShortcutList} from '../js/cr/ui/keyboard_shortcut_list.m.js';
+import {isTextInputElement} from '../js/util.m.js';
 
 /**
  * @fileoverview Listens for a find keyboard shortcut (i.e. Ctrl/Cmd+f or /)
@@ -13,7 +13,7 @@
  * top of the stack will be notified that a find shortcut has been invoked.
  */
 
-/* #export */ const FindShortcutManager = (() => {
+export const FindShortcutManager = (() => {
   /**
    * Stack of listeners. Only the top listener will handle the shortcut.
    * @type {!Array}
@@ -28,9 +28,8 @@
    */
   let modalContextOpen = false;
 
-  const shortcutCtrlF =
-      new cr.ui.KeyboardShortcutList(cr.isMac ? 'meta|f' : 'ctrl|f');
-  const shortcutSlash = new cr.ui.KeyboardShortcutList('/');
+  const shortcutCtrlF = new KeyboardShortcutList(isMac ? 'meta|f' : 'ctrl|f');
+  const shortcutSlash = new KeyboardShortcutList('/');
 
   window.addEventListener('keydown', e => {
     if (e.defaultPrevented || listeners.length === 0) {
@@ -76,7 +75,7 @@
  * Used to determine how to handle find shortcut invocations.
  * @polymerBehavior
  */
-/* #export */ const FindShortcutBehavior = {
+export const FindShortcutBehavior = {
   /**
    * @type {boolean}
    * @protected

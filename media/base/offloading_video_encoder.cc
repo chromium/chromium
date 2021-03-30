@@ -4,10 +4,11 @@
 
 #include "media/base/offloading_video_encoder.h"
 
+#include "base/bind_post_task.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "media/base/bind_to_current_loop.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "media/base/video_frame.h"
 
 namespace media {
@@ -83,7 +84,7 @@ OffloadingVideoEncoder::~OffloadingVideoEncoder() {
 template <class T>
 T OffloadingVideoEncoder::WrapCallback(T cb) {
   DCHECK(callback_runner_);
-  return media::BindToLoop(callback_runner_.get(), std::move(cb));
+  return base::BindPostTask(callback_runner_, std::move(cb));
 }
 
 }  // namespace media

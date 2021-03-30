@@ -50,7 +50,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   static std::unique_ptr<ThrottlingURLLoader> CreateLoaderAndStart(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       network::ResourceRequest* url_request,
@@ -114,7 +113,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   void Start(scoped_refptr<network::SharedURLLoaderFactory> factory,
-             int32_t routing_id,
              int32_t request_id,
              uint32_t options,
              network::ResourceRequest* url_request,
@@ -150,6 +148,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       const net::HttpRequestHeaders& modified_headers);
 
   // network::mojom::URLLoaderClient implementation:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
@@ -194,6 +193,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
     DEFERRED_RESPONSE,
     DEFERRED_COMPLETE
   };
+  const char* GetStageNameForHistogram(DeferredStage stage);
+
   DeferredStage deferred_stage_ = DEFERRED_NONE;
   bool loader_completed_ = false;
   bool did_receive_response_ = false;
@@ -214,7 +215,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   };
 
   std::vector<ThrottleEntry> throttles_;
-  std::set<URLLoaderThrottle*> deferring_throttles_;
+  std::map<URLLoaderThrottle*, /*start=*/base::Time> deferring_throttles_;
   // nullptr is used when this loader is directly requested to pause reading
   // body from net by calling PauseReadingBodyFromNet().
   std::set<URLLoaderThrottle*> pausing_reading_body_from_net_throttles_;
@@ -230,7 +231,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   struct StartInfo {
     StartInfo(
         scoped_refptr<network::SharedURLLoaderFactory> in_url_loader_factory,
-        int32_t in_routing_id,
         int32_t in_request_id,
         uint32_t in_options,
         network::ResourceRequest* in_url_request,
@@ -239,7 +239,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
     ~StartInfo();
 
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-    int32_t routing_id;
     int32_t request_id;
     uint32_t options;
 

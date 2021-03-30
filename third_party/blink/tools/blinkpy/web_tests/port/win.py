@@ -185,7 +185,7 @@ class WinPort(base.Port):
             try:
                 self._executive.run_command([python, '--version'])
                 return python
-            except WindowsError:
+            except:
                 pass
         raise WindowsError('Unable to find a valid python3 command name')
 

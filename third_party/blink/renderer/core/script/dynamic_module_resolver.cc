@@ -259,21 +259,13 @@ void DynamicModuleResolver::Trace(Visitor* visitor) const {
 // <specdef
 // href="https://html.spec.whatwg.org/C/#hostimportmoduledynamically(referencingscriptormodule,-specifier,-promisecapability)">
 void DynamicModuleResolver::ResolveDynamically(
-    const String& specifier,
+    const ModuleRequest& module_request,
     const KURL& referrer_resource_url,
     const ReferrerScriptInfo& referrer_info,
     ScriptPromiseResolver* promise_resolver) {
   DCHECK(modulator_->GetScriptState()->GetIsolate()->InContext())
       << "ResolveDynamically should be called from V8 callback, within a valid "
          "context.";
-
-  // https://github.com/WICG/import-maps/blob/master/spec.md#when-import-maps-can-be-encountered
-  // Strictly, the flag should be cleared at
-  // #internal-module-script-graph-fetching-procedure, i.e. in ModuleTreeLinker,
-  // but due to https://crbug.com/928435 https://crbug.com/928564 we also clears
-  // the flag here, as import maps can be accessed earlier than specced below
-  // (in ResolveModuleSpecifier()) and we need to clear the flag before that.
-  modulator_->ClearIsAcquiringImportMaps();
 
   // <spec step="4.1">Let referencing script be
   // referencingScriptOrModule.[[HostDefined]].</spec>
@@ -302,21 +294,37 @@ void DynamicModuleResolver::ResolveDynamically(
   // <specdef label="fetch-an-import()-module-script-graph"
   // href="https://html.spec.whatwg.org/C/#fetch-an-import()-module-script-graph">
 
+  // https://wicg.github.io/import-maps/#wait-for-import-maps
+  // 1.2. Set document’s acquiring import maps to false. [spec text]
+  modulator_->SetAcquiringImportMapsState(
+      Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad);
+
   // <spec label="fetch-an-import()-module-script-graph" step="1">Let url be the
   // result of resolving a module specifier given base URL and specifier.</spec>
-  KURL url = modulator_->ResolveModuleSpecifier(specifier, base_url);
+  KURL url =
+      modulator_->ResolveModuleSpecifier(module_request.specifier, base_url);
+
+  ModuleType module_type = modulator_->ModuleTypeFromRequest(module_request);
 
   // <spec label="fetch-an-import()-module-script-graph" step="2">If url is
   // failure, then asynchronously complete this algorithm with null, and abort
   // these steps.</spec>
-  if (!url.IsValid()) {
+  if (!url.IsValid() || module_type == ModuleType::kInvalid) {
     // <spec step="6">If result is null, then:</spec>
-    //
+    String error_message;
+    if (!url.IsValid()) {
+      error_message = "Failed to resolve module specifier '" +
+                      module_request.specifier + "'";
+    } else {
+      error_message = "\"" + module_request.GetModuleTypeString() +
+                      "\" is not a valid module type.";
+    }
+
     // <spec step="6.1">Let completion be Completion { [[Type]]: throw,
     // [[Value]]: a new TypeError, [[Target]]: empty }.</spec>
     v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
-    v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
-        isolate, "Failed to resolve module specifier '" + specifier + "'");
+    v8::Local<v8::Value> error =
+        V8ThrowException::CreateTypeError(isolate, error_message);
 
     // <spec step="6.2">Perform FinishDynamicImport(referencingScriptOrModule,
     // specifier, promiseCapability, completion).</spec>
@@ -334,7 +342,8 @@ void DynamicModuleResolver::ResolveDynamically(
 
   switch (referrer_info.GetBaseUrlSource()) {
     case ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSSameOrigin:
-      if (!modulator_->ResolveModuleSpecifier(specifier, BlankURL())
+      if (!modulator_
+               ->ResolveModuleSpecifier(module_request.specifier, BlankURL())
                .IsValid()) {
         UseCounter::Count(
             ExecutionContext::From(modulator_->GetScriptState()),
@@ -342,7 +351,8 @@ void DynamicModuleResolver::ResolveDynamically(
       }
       break;
     case ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin:
-      if (!modulator_->ResolveModuleSpecifier(specifier, BlankURL())
+      if (!modulator_
+               ->ResolveModuleSpecifier(module_request.specifier, BlankURL())
                .IsValid()) {
         UseCounter::Count(
             ExecutionContext::From(modulator_->GetScriptState()),
@@ -372,7 +382,8 @@ void DynamicModuleResolver::ResolveDynamically(
                              String(), referrer_info.ParserState(),
                              referrer_info.CredentialsMode(),
                              referrer_info.GetReferrerPolicy(),
-                             mojom::FetchImportanceMode::kImportanceAuto);
+                             mojom::blink::FetchImportanceMode::kImportanceAuto,
+                             RenderBlockingBehavior::kNonBlocking);
 
   // <spec label="fetch-an-import()-module-script-graph" step="3">Fetch a single
   // module script given url, settings object, "script", options, settings
@@ -388,7 +399,7 @@ void DynamicModuleResolver::ResolveDynamically(
       ExecutionContext::From(modulator_->GetScriptState());
   if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context))
     scope->EnsureFetcher();
-  modulator_->FetchTree(url, execution_context->Fetcher(),
+  modulator_->FetchTree(url, module_type, execution_context->Fetcher(),
                         mojom::blink::RequestContextType::SCRIPT,
                         network::mojom::RequestDestination::kScript, options,
                         ModuleScriptCustomFetchType::kNone, tree_client);

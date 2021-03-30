@@ -33,7 +33,7 @@ class ArcNotificationDelegate : public message_center::NotificationDelegate {
   // message_center::NotificationDelegate overrides:
   void Close(bool by_user) override;
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
   void SettingsClick() override;
 
  private:

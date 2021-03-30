@@ -161,6 +161,10 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
   // handle the request.
   virtual void WillStartRequest(network::ResourceRequest* request, bool* defer);
 
+  // If non-null is returned a histogram will be logged using this name when the
+  // throttle defers the navigation in WillStartRequest().
+  virtual const char* NameForLoggingWillStartRequest();
+
   // Called when the request was redirected.  |redirect_info| contains the
   // redirect responses's HTTP status code and some information about the new
   // request that will be sent if the redirect is followed, including the new
@@ -190,6 +194,10 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
       const GURL& response_url,
       network::mojom::URLResponseHead* response_head,
       bool* defer);
+
+  // If non-null is returned a histogram will be logged using this name when the
+  // throttle defers the navigation in WillProcessResponse().
+  virtual const char* NameForLoggingWillProcessResponse();
 
   // Called prior WillProcessResponse() to allow throttles to restart the URL
   // load by calling delegate_->RestartWithFlags().

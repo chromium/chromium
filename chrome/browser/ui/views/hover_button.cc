@@ -21,6 +21,8 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -41,6 +43,7 @@ std::unique_ptr<views::Border> CreateBorderWithVerticalSpacing(
 // badged part of the icon to extend into the padding.
 class IconWrapper : public views::View {
  public:
+  METADATA_HEADER(IconWrapper);
   explicit IconWrapper(std::unique_ptr<views::View> icon, int vertical_spacing)
       : icon_(AddChildView(std::move(icon))) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -69,9 +72,12 @@ class IconWrapper : public views::View {
   views::View* icon_;
 };
 
+BEGIN_METADATA(IconWrapper, views::View)
+END_METADATA
+
 }  // namespace
 
-HoverButton::HoverButton(PressedCallback callback, const base::string16& text)
+HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
     : views::LabelButton(callback, text, views::style::CONTEXT_BUTTON) {
   SetButtonController(std::make_unique<HoverButtonController>(
       this, std::move(callback),
@@ -97,19 +103,19 @@ HoverButton::HoverButton(PressedCallback callback, const base::string16& text)
 
 HoverButton::HoverButton(PressedCallback callback,
                          const gfx::ImageSkia& icon,
-                         const base::string16& text)
+                         const std::u16string& text)
     : HoverButton(std::move(callback), text) {
   SetImage(STATE_NORMAL, icon);
 }
 
 HoverButton::HoverButton(PressedCallback callback,
                          std::unique_ptr<views::View> icon_view,
-                         const base::string16& title,
-                         const base::string16& subtitle,
+                         const std::u16string& title,
+                         const std::u16string& subtitle,
                          std::unique_ptr<views::View> secondary_view,
                          bool resize_row_for_secondary_view,
                          bool secondary_view_can_process_events)
-    : HoverButton(std::move(callback), base::string16()) {
+    : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
   // Set the layout manager to ignore the ink_drop_container to ensure the ink
@@ -225,11 +231,10 @@ void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
 }
 
 void HoverButton::SetTooltipAndAccessibleName() {
-  const base::string16 accessible_name =
+  const std::u16string accessible_name =
       subtitle_ == nullptr
           ? title_->GetText()
-          : base::JoinString({title_->GetText(), subtitle_->GetText()},
-                             base::ASCIIToUTF16("\n"));
+          : base::JoinString({title_->GetText(), subtitle_->GetText()}, u"\n");
 
   // views::StyledLabels only add tooltips for any links they may have. However,
   // since HoverButton will never insert a link inside its child StyledLabel,
@@ -237,7 +242,7 @@ void HoverButton::SetTooltipAndAccessibleName() {
   // is smaller than its preferred size.
   const bool needs_tooltip =
       label_wrapper_->GetPreferredSize().width() > label_wrapper_->width();
-  SetTooltipText(needs_tooltip ? accessible_name : base::string16());
+  SetTooltipText(needs_tooltip ? accessible_name : std::u16string());
   SetAccessibleName(accessible_name);
 }
 
@@ -298,3 +303,6 @@ views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
 
   return this;
 }
+
+BEGIN_METADATA(HoverButton, views::LabelButton)
+END_METADATA

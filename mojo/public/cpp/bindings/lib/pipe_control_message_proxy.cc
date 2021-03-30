@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/interfaces/bindings/pipe_control_messages.mojom.h"
@@ -23,13 +24,14 @@ Message ConstructRunOrClosePipeMessage(
   params_ptr->input = std::move(input_ptr);
 
   Message message(pipe_control::kRunOrClosePipeMessageId, 0, 0, 0, nullptr);
-  internal::SerializationContext context;
-  pipe_control::internal::RunOrClosePipeMessageParams_Data::BufferWriter writer;
+  internal::MessageFragment<
+      pipe_control::internal::RunOrClosePipeMessageParams_Data>
+      fragment(message);
   internal::Serialize<pipe_control::RunOrClosePipeMessageParamsDataView>(
-      params_ptr, message.payload_buffer(), &writer, &context);
+      params_ptr, fragment);
   message.set_interface_id(kInvalidInterfaceId);
   message.set_heap_profiler_tag(kMessageTag);
-  message.AttachHandlesFromSerializationContext(&context);
+  message.SerializeHandles(/*group_controller=*/nullptr);
   return message;
 }
 
@@ -51,7 +53,6 @@ void PipeControlMessageProxy::PausePeerUntilFlushCompletes(PendingFlush flush) {
   input->set_pause_until_flush_completes(
       pipe_control::PauseUntilFlushCompletes::New(flush.PassPipe()));
   Message message(ConstructRunOrClosePipeMessage(std::move(input)));
-  message.set_heap_profiler_tag(kMessageTag);
   ignore_result(receiver_->Accept(&message));
 }
 
@@ -59,7 +60,6 @@ void PipeControlMessageProxy::FlushAsync(AsyncFlusher flusher) {
   auto input = pipe_control::RunOrClosePipeInput::New();
   input->set_flush_async(pipe_control::FlushAsync::New(flusher.PassPipe()));
   Message message(ConstructRunOrClosePipeMessage(std::move(input)));
-  message.set_heap_profiler_tag(kMessageTag);
   ignore_result(receiver_->Accept(&message));
 }
 

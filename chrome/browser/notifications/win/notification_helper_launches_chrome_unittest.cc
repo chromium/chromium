@@ -15,6 +15,7 @@
 // to make notification_helper_unittests.exe have data dependency on chrome.exe.
 
 #include <memory>
+#include <string>
 
 #include <NotificationActivationCallback.h>
 #include <wrl/client.h>
@@ -29,7 +30,6 @@
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
@@ -145,7 +145,7 @@ void KillProcessTree(base::Process process) {
 }
 
 // Returns the process with name |name| if it is found.
-base::Process FindProcess(const base::string16& name) {
+base::Process FindProcess(const std::wstring& name) {
   unsigned int pid;
   {
     base::NamedProcessIterator iter(name, nullptr);

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/offline_pages/core/request_header/offline_page_navigation_ui_data.h"
 #include "content/public/browser/navigation_ui_data.h"
@@ -31,9 +30,16 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   explicit ChromeNavigationUIData(content::NavigationHandle* navigation_handle);
   ~ChromeNavigationUIData() override;
 
+  // Creates an instance of ChromeNavigationUIData associated with the given
+  // |web_contents| with the given |disposition|.
+  // If |is_using_https_as_default_scheme|, this is a typed main frame
+  // navigation where the omnibox used HTTPS as the default URL scheme because
+  // the user didn't type a scheme (e.g. they entered "example.com" and we
+  // are navigating to https://example.com).
   static std::unique_ptr<ChromeNavigationUIData> CreateForMainFrameNavigation(
       content::WebContents* web_contents,
-      WindowOpenDisposition disposition);
+      WindowOpenDisposition disposition,
+      bool is_using_https_as_default_scheme);
 
   // Creates a new ChromeNavigationUIData that is a deep copy of the original.
   // Any changes to the original after the clone is created will not be
@@ -60,11 +66,12 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   }
 #endif
   WindowOpenDisposition window_open_disposition() const { return disposition_; }
-  prerender::mojom::PrerenderMode prerender_mode() const {
-    return prerender_mode_;
-  }
+  bool is_no_state_prefetching() const { return is_no_state_prefetching_; }
   const std::string& prerender_histogram_prefix() {
     return prerender_histogram_prefix_;
+  }
+  bool is_using_https_as_default_scheme() const {
+    return is_using_https_as_default_scheme_;
   }
 
  private:
@@ -80,9 +87,14 @@ class ChromeNavigationUIData : public content::NavigationUIData {
 #endif
 
   WindowOpenDisposition disposition_;
-  prerender::mojom::PrerenderMode prerender_mode_ =
-      prerender::mojom::PrerenderMode::kNoPrerender;
+  bool is_no_state_prefetching_ = false;
   std::string prerender_histogram_prefix_;
+  // True if the navigation was initiated by typing in the omnibox but the typed
+  // text didn't have a scheme such as http or https (e.g. google.com), and
+  // https was used as the default scheme for the navigation. This is used by
+  // TypedNavigationUpgradeThrottle to determine if the navigation should be
+  // observed and fall back to using http scheme if necessary.
+  bool is_using_https_as_default_scheme_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeNavigationUIData);
 };

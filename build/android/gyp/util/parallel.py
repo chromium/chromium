@@ -205,7 +205,7 @@ def BulkForkAndCall(func, arg_tuples, **kwargs):
   pool = _MakeProcessPool(arg_tuples, **kwargs)
   wrapped_func = _FuncWrapper(func)
   try:
-    for result in pool.imap(wrapped_func, xrange(len(arg_tuples))):
+    for result in pool.imap(wrapped_func, range(len(arg_tuples))):
       _CheckForException(result)
       yield result
   finally:

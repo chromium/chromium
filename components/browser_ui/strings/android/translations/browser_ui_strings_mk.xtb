@@ -13,15 +13,17 @@
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1289742167380433257">Google ги оптимизираше сликите на страницава за да ви заштеди интернет.</translation>
 <translation id="129382876167171263">Датотеките зачувани од веб-сајтовите се појавуваат тука</translation>
+<translation id="1317194122196776028">Заборави го сајтов</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">Локацијата <ph name="SITE_NAME" /> е додадена</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1384959399684842514">Преземањето е паузирано</translation>
 <translation id="1415402041810619267">URL-адресата е скратена</translation>
-<translation id="1431402976894535801">Не дозволувај сајтовите да знаат дали сум присутен</translation>
 <translation id="1446450296470737166">Дозволи контрола над MIDI-уреди</translation>
 <translation id="1509960214886564027">Функциите на многу сајтови може да не функционираат</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1644574205037202324">Историја</translation>
+<translation id="1647582022260550163">Дали сигурно сакате да ги ресетирате дозволите и да ги избришете колачињата и податоците од сајтот?</translation>
 <translation id="1660204651932907780">Дозволи сајтовите да пуштаат звук (се препорачува)</translation>
 <translation id="1677097821151855053">Колачињата и другите сајтови се користат за да ве запомнат, на пр., за најавување или за персонализирање реклами. За да управувате со колачињата за сите сајтови, погледнете ги <ph name="BEGIN_LINK" />Поставките<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Дали да се исчистат сите податоци?</translation>
@@ -39,7 +41,6 @@
 <translation id="1994173015038366702">URL на локацијата</translation>
 <translation id="2025115093177348061">Проширена реалност</translation>
 <translation id="2030769033451695672">Допрете за да се вратите на <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">Вашето присуство</translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2107397443965016585">Прашај пред да дозволиш сајтовите да пуштаат заштитени содржини (се препорачува)</translation>
@@ -82,7 +83,6 @@
 <translation id="3114012059975132928">Видеоплеер</translation>
 <translation id="3115898365077584848">Прикажи ги информациите</translation>
 <translation id="3123473560110926937">Блокирано на некои сајтови</translation>
-<translation id="3165371858310906303">Прашувај кога некој сајт сака да знае дали сум присутен</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> складирани податоци</translation>
 <translation id="321187648315454507">За да овозможите <ph name="APP_NAME" /> да ви испраќа известувања, вклучете ја дозволата за известувања и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -93,7 +93,6 @@
 <translation id="3386292677130313581">Прашај пред да дозволиш сајтовите да ја дознаат локацијата (се препорачува)</translation>
 <translation id="3538390592868664640">Не дозволувај им на сајтовите да создаваат 3D-карта на опкружувањето или да ја следат позицијата на камерата</translation>
 <translation id="3586500876634962664">Користење камера и микрофон</translation>
-<translation id="3587482841069643663">Сите</translation>
 <translation id="358794129225322306">Дозволете сајтот автоматски да презема повеќе датотеки.</translation>
 <translation id="3594780231884063836">Исклучете звук на видео</translation>
 <translation id="3596414637720633074">Блокирај колачиња од трети страни во „Инкогнито“</translation>
@@ -101,9 +100,11 @@
 <translation id="3744111561329211289">Синхронизација во заднина</translation>
 <translation id="3763247130972274048">Допрете двапати на видеото лево или десно за да прескокнете 10 секунди</translation>
 <translation id="381841723434055211">Телефонски броеви</translation>
+<translation id="3835233591525155343">Користење на уредот</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Барај понапред</translation>
 <translation id="3955193568934677022">Дозволете сајтовите да пуштаат заштитени содржини (се препорачува)</translation>
+<translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="3987993985790029246">Копирај линк</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">Наслов</translation>
@@ -117,6 +118,7 @@
 <translation id="429312253194641664">Сајтот репродуцира аудиовизуелни содржини</translation>
 <translation id="42981349822642051">Прошири</translation>
 <translation id="4336434711095810371">Избриши ги сите податоци</translation>
+<translation id="4402755511846832236">Не дозволувај сајтовите да знаат кога активно го користам уредов</translation>
 <translation id="4433925000917964731">Lite-страница овозможена од Google</translation>
 <translation id="4434045419905280838">Скокачки прозорци/пренасочувања</translation>
 <translation id="445467742685312942">Дозволи сајтовите да пуштаат заштитени содржини</translation>
@@ -129,6 +131,7 @@
 <translation id="4670064810192446073">Виртуелна реалност</translation>
 <translation id="4708011789095599544">Дали сте сигурни дека сакате да ги исчистите колачињата и другите податоците од сајтот за овој веб-сајт?</translation>
 <translation id="4751476147751820511">Сензори за движење или светлина</translation>
+<translation id="4836046166855586901">Прашувај кога некој сајт ќе сака да знае дали активно го користам уредов</translation>
 <translation id="4883854917563148705">Управуваните поставки не може да се ресетираат</translation>
 <translation id="4887024562049524730">Прашувај пред да им дозволиш на сајтовите да ги користат уредот и податоците за виртуелна реалност (препорачано)</translation>
 <translation id="4962975101802056554">Повлечи ги сите дозволи за уредот</translation>
@@ -140,6 +143,7 @@
 <translation id="5063480226653192405">Користење</translation>
 <translation id="5100237604440890931">Проширено - кликни да се прошири.</translation>
 <translation id="5123685120097942451">Картичка инкогнито</translation>
+<translation id="5186036860380548585">Опцијата е достапна речиси најгоре на екранот</translation>
 <translation id="5197729504361054390">Контактите што ќе ги изберете ќе се споделат со <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="528192093759286357">Повлечете од врвот и допрете го копчето Назад за да излезете од цел екран.</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -278,6 +282,7 @@
 <translation id="8447861592752582886">Отповикај ја дозволата за пристап до уредот</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Се користи 1 колаче}one{Се користи # колаче}other{Се користат # колачиња}}</translation>
 <translation id="8463851957836045671">Сајтот е брз</translation>
+<translation id="8487700953926739672">Достапно е исклучено од линија</translation>
 <translation id="851751545965956758">Блокирај ги сајтовите од поврзување со уреди</translation>
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="857943718398505171">Дозволено (препорачано)</translation>
@@ -300,10 +305,12 @@
 <translation id="894871326938397531">Да се напушти режимот „Инкогнито“?</translation>
 <translation id="8958424370300090006">Блокирајте колачиња за одреден сајт.</translation>
 <translation id="8959122750345127698">Навигацијата е недостапна: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Заборави</translation>
 <translation id="9019902583201351841">Управувано од вашите родители</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> друго}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> друго}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> други}}</translation>
 <translation id="913657688200966289">Вклучете ги дозволите за <ph name="APP_NAME" /> во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
+<translation id="930525582205581608">Да се заборави сајтов?</translation>
 <translation id="965817943346481315">Блокирај ако сајтот прикажува нападни или лажни реклами (препорачано)</translation>
 <translation id="967624055006145463">Складирани податоци</translation>
 </translationbundle>

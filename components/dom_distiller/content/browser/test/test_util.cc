@@ -86,8 +86,8 @@ void FakeDistilledPage::Load(EmbeddedTestServer* server,
 }
 
 std::string FakeDistilledPage::GetPageHtmlWithScripts() {
-  std::string html = GetArticleTemplateHtml(mojom::Theme::kLight,
-                                            mojom::FontFamily::kSansSerif);
+  std::string html = GetArticleTemplateHtml(
+      mojom::Theme::kLight, mojom::FontFamily::kSansSerif, std::string());
   for (const std::string& file : scripts_) {
     StrAppend(&html, {JsReplace("<script src=$1></script>", file)});
   }

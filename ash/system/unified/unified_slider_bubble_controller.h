@@ -6,12 +6,12 @@
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_BUBBLE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/timer/timer.h"
-#include "chromeos/audio/cras_audio_handler.h"
 
 namespace ash {
 
@@ -22,7 +22,7 @@ class UnifiedSliderListener;
 // brightness slider that can be triggered from hardware buttons.
 class ASH_EXPORT UnifiedSliderBubbleController
     : public TrayBubbleView::Delegate,
-      public chromeos::CrasAudioHandler::AudioObserver,
+      public CrasAudioHandler::AudioObserver,
       public UnifiedSystemTrayModel::Observer,
       public UnifiedVolumeSliderController::Delegate,
       public ShelfObserver {
@@ -50,7 +50,7 @@ class ASH_EXPORT UnifiedSliderBubbleController
   void OnMouseEnteredView() override;
   void OnMouseExitedView() override;
 
-  // chromeos::CrasAudioHandler::AudioObserver:
+  // CrasAudioHandler::AudioObserver:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
   void OnOutputMuteChanged(bool mute_on) override;
 

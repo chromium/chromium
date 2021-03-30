@@ -10,7 +10,10 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 js_library("module_descriptor") {
-  deps = [ "..:browser_proxy" ]
+  deps = [
+    "..:metrics_utils",
+    "..:window_proxy",
+  ]
 }
 
 js_library("modules") {
@@ -18,7 +21,6 @@ js_library("modules") {
     ":module_registry",
     "cart:module",
     "drive:module",
-    "kaleidoscope:module",
     "task_module:module",
   ]
   if (!is_official_build) {
@@ -29,8 +31,12 @@ js_library("modules") {
 js_library("module_wrapper") {
   deps = [
     ":module_descriptor",
+    "..:metrics_utils",
+    "..:window_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
+  externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
 }
 
 js_library("module_header") {
@@ -42,7 +48,7 @@ js_library("module_header") {
 js_library("module_registry") {
   deps = [
     ":module_descriptor",
-    "//ui/webui/resources/js:cr.m",
+    "..:new_tab_page_proxy",
   ]
 }
 
@@ -59,7 +65,6 @@ group("web_components") {
     "cart:web_components",
     "drive:web_components",
     "dummy:web_components",
-    "kaleidoscope:web_components",
     "task_module:web_components",
   ]
 }
@@ -96,6 +101,7 @@ preprocess_if_expr("preprocess") {
     "module_registry.js",
     "task_module/task_module_handler_proxy.js",
     "cart/chrome_cart_proxy.js",
+    "drive/drive_module_proxy.js",
   ]
   if (!is_official_build) {
     in_files += [ "dummy/foo_proxy.js" ]
@@ -109,7 +115,6 @@ preprocess_if_expr("preprocess_gen") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
-    "kaleidoscope/module.js",
     "module_header.js",
     "module_wrapper.js",
     "task_module/module.js",

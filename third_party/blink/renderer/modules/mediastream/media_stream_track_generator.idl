@@ -11,10 +11,12 @@
 interface MediaStreamTrackGenerator : MediaStreamTrack {
   [CallWith=ScriptState, RaisesException, MeasureAs=MediaStreamTrackGenerator]
   constructor(DOMString kind);
+  [CallWith=ScriptState, RaisesException, MeasureAs=MediaStreamTrackGenerator]
+  constructor(MediaStreamTrackGeneratorInit init);
 
-  // TODO(crbug.com/1142955): Add |readable| attribute giving control signals.
-
-  // This streams takes VideoFrame objects.
-  // TODO(crbug.com/1142955): Add support for audio.
+  // This streams takes VideoFrame or AudioFrame objects.
   [CallWith=ScriptState] readonly attribute WritableStream writable;
+
+  // This stream returns MediaStreamTrackSignal objects.
+  [CallWith=ScriptState] readonly attribute ReadableStream readableControl;
 };

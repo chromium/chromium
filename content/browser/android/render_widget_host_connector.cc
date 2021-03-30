@@ -92,7 +92,7 @@ void RenderWidgetHostConnector::Observer::DestroyEarly() {
 void RenderWidgetHostConnector::Observer::DoDestroy(
     WebContentsAndroid* web_contents_android) {
   web_contents_android->RemoveDestructionObserver(this);
-  DCHECK_EQ(active_rwhva_, GetRenderWidgetHostViewAndroid());
+  DCHECK(!active_rwhva_ || active_rwhva_ == GetRenderWidgetHostViewAndroid());
   UpdateRenderWidgetHostView(nullptr);
   delete connector_;
 }

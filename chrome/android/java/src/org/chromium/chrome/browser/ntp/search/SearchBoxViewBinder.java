@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,6 +26,10 @@ class SearchBoxViewBinder
     public final void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         ImageView voiceSearchButton =
                 view.findViewById(org.chromium.chrome.R.id.voice_search_button);
+        ImageView lensButton =
+                LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH.getValue()
+                ? view.findViewById(org.chromium.chrome.R.id.lens_camera_button_start)
+                : view.findViewById(org.chromium.chrome.R.id.lens_camera_button_end);
         View searchBoxContainer = view;
         final TextView searchBoxTextView = searchBoxContainer.findViewById(R.id.search_box_text);
         final ChipView chipView = searchBoxContainer.findViewById(R.id.query_tiles_chip);
@@ -49,6 +54,11 @@ class SearchBoxViewBinder
             voiceSearchButton.setVisibility(model.get(SearchBoxProperties.VOICE_SEARCH_VISIBILITY)
                             ? View.VISIBLE
                             : View.GONE);
+        } else if (SearchBoxProperties.LENS_VISIBILITY == propertyKey) {
+            lensButton.setVisibility(
+                    model.get(SearchBoxProperties.LENS_VISIBILITY) ? View.VISIBLE : View.GONE);
+        } else if (SearchBoxProperties.LENS_CLICK_CALLBACK == propertyKey) {
+            lensButton.setOnClickListener(model.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
         } else if (SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK == propertyKey) {
             searchBoxTextView.setOnClickListener(
                     model.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));

@@ -1,0 +1,6 @@
+Verifies that navigating from a OOPIF to in-process iframe sets the right sessionId.
+
+Loaded page-out with OOPIF, setting iframe src to in-process URL.
+Events received on iframe: [onRequestWillBeSent,onRequestWillBeSentExtraInfo,onResponseReceived,onResponseReceivedExtraInfo]
+Events received on main frame: []
+

@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/query_tiles/switches.h"
+#include "components/query_tiles/tile_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace query_tiles {
@@ -34,8 +35,10 @@ TEST(TileConfigTest, FinchConfigEnabled) {
       {kBackoffMaxDelayInMsKey, "567"}};
   feature_list.InitAndEnableFeatureWithParameters(features::kQueryTiles,
                                                   params);
-  EXPECT_EQ(TileConfig::GetQueryTilesServerUrl(),
-            "https://test.com/v1/querytiles");
+  EXPECT_EQ(TileConfig::GetQueryTilesServerUrl("", false),
+            GURL("https://test.com/v1/querytiles"));
+  EXPECT_EQ(TileConfig::GetQueryTilesServerUrl("https://xyz.com", false),
+            GURL("https://test.com/v1/querytiles"));
   EXPECT_TRUE(TileConfig::GetIsUnMeteredNetworkRequired());
   EXPECT_EQ(TileConfig::GetExperimentTag(), "1234");
   EXPECT_EQ(TileConfig::GetExpireDuration(), base::TimeDelta::FromSeconds(100));
@@ -50,8 +53,9 @@ TEST(TileConfigTest, FinchConfigEnabled) {
 TEST(TileConfigTest, FinchConfigDefaultParameter) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kQueryTiles);
-  EXPECT_EQ(TileConfig::GetQueryTilesServerUrl(),
-            "https://chromeupboarding-pa.googleapis.com/v1/querytiles");
+  EXPECT_EQ(TileConfig::GetQueryTilesServerUrl("", true), GURL());
+  EXPECT_EQ(TileConfig::GetQueryTilesServerUrl("https://xyz.com", true),
+            GURL("https://xyz.com/v1/querytiles"));
   EXPECT_FALSE(TileConfig::GetIsUnMeteredNetworkRequired());
   EXPECT_TRUE(TileConfig::GetExperimentTag().empty());
   EXPECT_EQ(TileConfig::GetExpireDuration(), base::TimeDelta::FromDays(2));

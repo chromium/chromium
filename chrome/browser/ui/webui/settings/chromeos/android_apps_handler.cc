@@ -6,9 +6,13 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"  // kSettingsAppId
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -17,10 +21,9 @@
 namespace chromeos {
 namespace settings {
 
-AndroidAppsHandler::AndroidAppsHandler(Profile* profile)
-    : arc_prefs_observer_(this),
-      arc_session_manager_observer_(this),
-      profile_(profile) {}
+AndroidAppsHandler::AndroidAppsHandler(Profile* profile,
+                                       apps::AppServiceProxy* app_service_proxy)
+    : profile_(profile), app_service_proxy_(app_service_proxy) {}
 
 AndroidAppsHandler::~AndroidAppsHandler() {}
 
@@ -34,24 +37,20 @@ void AndroidAppsHandler::RegisterMessages() {
       "showAndroidAppsSettings",
       base::BindRepeating(&AndroidAppsHandler::ShowAndroidAppsSettings,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "showAndroidManageAppLinks",
-      base::BindRepeating(&AndroidAppsHandler::ShowAndroidManageAppLinks,
-                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AndroidAppsHandler::OnJavascriptAllowed() {
   ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
   if (arc_prefs) {
-    arc_prefs_observer_.Add(arc_prefs);
+    arc_prefs_observation_.Observe(arc_prefs);
     // arc::ArcSessionManager is associated with primary profile.
-    arc_session_manager_observer_.Add(arc::ArcSessionManager::Get());
+    arc_session_manager_observation_.Observe(arc::ArcSessionManager::Get());
   }
 }
 
 void AndroidAppsHandler::OnJavascriptDisallowed() {
-  arc_prefs_observer_.RemoveAll();
-  arc_session_manager_observer_.RemoveAll();
+  arc_prefs_observation_.Reset();
+  arc_session_manager_observation_.Reset();
 }
 
 void AndroidAppsHandler::OnAppRegistered(
@@ -111,17 +110,10 @@ void AndroidAppsHandler::ShowAndroidAppsSettings(const base::ListValue* args) {
   args->GetBoolean(0, &activated_from_keyboard);
   int flags = activated_from_keyboard ? ui::EF_NONE : ui::EF_LEFT_MOUSE_BUTTON;
 
-  arc::LaunchAndroidSettingsApp(profile_, flags,
-                                GetDisplayIdForCurrentProfile());
-}
-
-void AndroidAppsHandler::ShowAndroidManageAppLinks(
-    const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
-
-  arc::LaunchSettingsAppActivity(profile_, arc::kSettingsAppDomainUrlActivity,
-                                 ui::EF_NONE /* flags */,
-                                 GetDisplayIdForCurrentProfile());
+  app_service_proxy_->Launch(
+      arc::kSettingsAppId, flags,
+      apps::mojom::LaunchSource::kFromParentalControls,
+      apps::MakeWindowInfo(GetDisplayIdForCurrentProfile()));
 }
 
 int64_t AndroidAppsHandler::GetDisplayIdForCurrentProfile() {

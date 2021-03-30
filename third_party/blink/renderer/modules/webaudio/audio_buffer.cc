@@ -244,10 +244,10 @@ void AudioBuffer::copyFromChannel(NotShared<DOMFloat32Array> destination,
 
   size_t count = data_length - buffer_offset;
 
-  count = std::min(destination.View()->length(), count);
+  count = std::min(destination->length(), count);
 
   const float* src = channel_data->Data();
-  float* dst = destination.View()->Data();
+  float* dst = destination->Data();
 
   DCHECK(src);
   DCHECK(dst);
@@ -288,14 +288,14 @@ void AudioBuffer::copyToChannel(NotShared<DOMFloat32Array> source,
 
   size_t count = channel_data->length() - buffer_offset;
 
-  count = std::min(source.View()->length(), count);
-  const float* src = source.View()->Data();
+  count = std::min(source->length(), count);
+  const float* src = source->Data();
   float* dst = channel_data->Data();
 
   DCHECK(src);
   DCHECK(dst);
   DCHECK_LE(buffer_offset + count, channel_data->length());
-  DCHECK_LE(count, source.View()->length());
+  DCHECK_LE(count, source->length());
 
   memmove(dst + buffer_offset, src, count * sizeof(*dst));
 }
@@ -303,7 +303,7 @@ void AudioBuffer::copyToChannel(NotShared<DOMFloat32Array> source,
 void AudioBuffer::Zero() {
   for (unsigned i = 0; i < channels_.size(); ++i) {
     if (NotShared<DOMFloat32Array> array = getChannelData(i)) {
-      float* data = array.View()->Data();
+      float* data = array->Data();
       memset(data, 0, length() * sizeof(*data));
     }
   }
@@ -317,7 +317,7 @@ SharedAudioBuffer::SharedAudioBuffer(AudioBuffer* buffer)
     : sample_rate_(buffer->sampleRate()), length_(buffer->length()) {
   channels_.resize(buffer->numberOfChannels());
   for (unsigned int i = 0; i < buffer->numberOfChannels(); ++i) {
-    buffer->getChannelData(i).View()->buffer()->ShareNonSharedForInternalUse(
+    buffer->getChannelData(i)->buffer()->ShareNonSharedForInternalUse(
         channels_[i]);
   }
 }

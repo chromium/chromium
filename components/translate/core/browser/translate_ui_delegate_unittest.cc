@@ -9,18 +9,21 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/infobars/core/infobar.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/language_experiments.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/translate/core/browser/mock_translate_client.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
 #include "components/translate/core/browser/mock_translate_ranker.h"
 #include "components/translate/core/browser/translate_client.h"
+#include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
@@ -86,6 +89,7 @@ class TranslateUIDelegateTest : public ::testing::Test {
   std::unique_ptr<MockLanguageModel> language_model_;
   std::unique_ptr<TranslateManager> manager_;
   std::unique_ptr<TranslateUIDelegate> delegate_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TranslateUIDelegateTest);
@@ -190,25 +194,25 @@ TEST_F(TranslateUIDelegateTest, ShouldShowNeverTranslateShortcut) {
 
 TEST_F(TranslateUIDelegateTest, LanguageCodes) {
   // Test language codes.
-  EXPECT_EQ("ar", delegate_->GetOriginalLanguageCode());
+  EXPECT_EQ("ar", delegate_->GetSourceLanguageCode());
   EXPECT_EQ("fr", delegate_->GetTargetLanguageCode());
 
-  // Test language indicies.
-  const size_t ar_index = delegate_->GetOriginalLanguageIndex();
+  // Test language indices.
+  const size_t ar_index = delegate_->GetSourceLanguageIndex();
   EXPECT_EQ("ar", delegate_->GetLanguageCodeAt(ar_index));
   const size_t fr_index = delegate_->GetTargetLanguageIndex();
   EXPECT_EQ("fr", delegate_->GetLanguageCodeAt(fr_index));
 
-  // Test updating original / target codes.
-  delegate_->UpdateOriginalLanguage("es");
-  EXPECT_EQ("es", delegate_->GetOriginalLanguageCode());
+  // Test updating source / target codes.
+  delegate_->UpdateSourceLanguage("es");
+  EXPECT_EQ("es", delegate_->GetSourceLanguageCode());
   delegate_->UpdateTargetLanguage("de");
   EXPECT_EQ("de", delegate_->GetTargetLanguageCode());
 
-  // Test updating original / target indicies. Note that this also returns
+  // Test updating source / target indices. Note that this also returns
   // the delegate to the starting state.
-  delegate_->UpdateOriginalLanguageIndex(ar_index);
-  EXPECT_EQ("ar", delegate_->GetOriginalLanguageCode());
+  delegate_->UpdateSourceLanguageIndex(ar_index);
+  EXPECT_EQ("ar", delegate_->GetSourceLanguageCode());
   delegate_->UpdateTargetLanguageIndex(fr_index);
   EXPECT_EQ("fr", delegate_->GetTargetLanguageCode());
 }
@@ -217,6 +221,50 @@ TEST_F(TranslateUIDelegateTest, GetPageHost) {
   const GURL url("https://www.example.com/hello/world?fg=1");
   driver_.SetLastCommittedURL(url);
   EXPECT_EQ("www.example.com", delegate_->GetPageHost());
+}
+
+TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(
+      language::kContentLanguagesInLanguagePicker);
+  TranslateDownloadManager::GetInstance()->set_application_locale("en");
+  std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
+  prefs->AddToLanguageList("de", /*force_blocked=*/false);
+  prefs->AddToLanguageList("pl", /*force_blocked=*/false);
+
+  std::unique_ptr<TranslateUIDelegate> delegate =
+      std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(), "en", "fr");
+  std::vector<std::string> expected_codes = {"de", "pl"};
+
+  std::vector<std::string> actual_codes;
+
+  delegate->GetContentLanguagesCodes(&actual_codes);
+
+  EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
+
+  // Mimic an update.
+  prefs->AddToLanguageList("it", /*force_blocked=*/false);
+  delegate->MaybeSetContentLanguages();
+  delegate->GetContentLanguagesCodes(&actual_codes);
+  expected_codes = {"de", "pl", "it"};
+  EXPECT_THAT(expected_codes, ::testing::ContainerEq(actual_codes));
+}
+
+TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      language::kContentLanguagesInLanguagePicker);
+
+  TranslateDownloadManager::GetInstance()->set_application_locale("en");
+  std::unique_ptr<TranslatePrefs> prefs(client_->GetTranslatePrefs());
+  prefs->AddToLanguageList("de", /*force_blocked=*/false);
+  prefs->AddToLanguageList("pl", /*force_blocked=*/false);
+
+  std::unique_ptr<TranslateUIDelegate> delegate =
+      std::make_unique<TranslateUIDelegate>(manager_->GetWeakPtr(), "en", "fr");
+
+  std::vector<std::string> actual_codes;
+
+  delegate->GetContentLanguagesCodes(&actual_codes);
+  EXPECT_TRUE(actual_codes.empty());
 }
 
 }  // namespace translate

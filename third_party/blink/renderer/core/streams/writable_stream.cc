@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
@@ -200,6 +201,16 @@ WritableStream* WritableStream::CreateWithCountQueueingStrategy(
     ScriptState* script_state,
     UnderlyingSinkBase* underlying_sink,
     size_t high_water_mark) {
+  return CreateWithCountQueueingStrategy(script_state, underlying_sink,
+                                         high_water_mark,
+                                         /*optimizer=*/nullptr);
+}
+
+WritableStream* WritableStream::CreateWithCountQueueingStrategy(
+    ScriptState* script_state,
+    UnderlyingSinkBase* underlying_sink,
+    size_t high_water_mark,
+    std::unique_ptr<WritableStreamTransferringOptimizer> optimizer) {
   // TODO(crbug.com/902633): This method of constructing a WritableStream
   // introduces unnecessary trips through V8. Implement algorithms based on an
   // UnderlyingSinkBase.
@@ -220,6 +231,8 @@ WritableStream* WritableStream::CreateWithCountQueueingStrategy(
                        exception_state);
   if (exception_state.HadException())
     return nullptr;
+
+  stream->transferring_optimizer_ = std::move(optimizer);
   return stream;
 }
 
@@ -261,9 +274,11 @@ void WritableStream::Serialize(ScriptState* script_state,
   //    port2 »).
 }
 
-WritableStream* WritableStream::Deserialize(ScriptState* script_state,
-                                            MessagePort* port,
-                                            ExceptionState& exception_state) {
+WritableStream* WritableStream::Deserialize(
+    ScriptState* script_state,
+    MessagePort* port,
+    std::unique_ptr<WritableStreamTransferringOptimizer> optimizer,
+    ExceptionState& exception_state) {
   // We need to execute JavaScript to call "Then" on v8::Promises. We will not
   // run author code.
   v8::Isolate::AllowJavascriptExecutionScope allow_js(
@@ -279,8 +294,8 @@ WritableStream* WritableStream::Deserialize(ScriptState* script_state,
   // 3. Perform ! SetUpCrossRealmTransformWritable(value, port).
   // In the standard |value| contains an unitialized WritableStream. In the
   // implementation, we create the stream here.
-  auto* writable =
-      CreateCrossRealmTransformWritable(script_state, port, exception_state);
+  auto* writable = CreateCrossRealmTransformWritable(
+      script_state, port, std::move(optimizer), exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -815,6 +830,11 @@ void WritableStream::SetController(
 
 void WritableStream::SetWriter(WritableStreamDefaultWriter* writer) {
   writer_ = writer;
+}
+
+std::unique_ptr<WritableStreamTransferringOptimizer>
+WritableStream::TakeTransferringOptimizer() {
+  return std::move(transferring_optimizer_);
 }
 
 // static

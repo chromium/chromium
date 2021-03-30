@@ -14,8 +14,8 @@ android_library("java") {
     "//base:base_java",
     "//components/browser_ui/notifications/android:java",
     "//components/url_formatter/android:url_formatter_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
   resources_package = "org.chromium.components.webrtc"
 }

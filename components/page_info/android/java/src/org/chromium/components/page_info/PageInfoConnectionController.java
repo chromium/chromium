@@ -102,4 +102,7 @@ public class PageInfoConnectionController
     public void dismiss(int actionOnContent) {
         mMainController.exitSubpage();
     }
+
+    @Override
+    public void clearData() {}
 }

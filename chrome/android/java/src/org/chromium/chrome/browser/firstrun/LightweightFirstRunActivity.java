@@ -22,13 +22,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
-import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.components.browser_ui.widget.LoadingView;
-import org.chromium.components.policy.PolicyService;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -44,9 +41,7 @@ public class LightweightFirstRunActivity
     // @Nullable from members below.
     private static boolean sSupportSkippingTos = true;
 
-    private @Nullable FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfo;
     private @Nullable SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
-    private @Nullable OneshotSupplierImpl<PolicyService> mPolicyServiceSupplier;
 
     private FirstRunFlowSequencer mFirstRunFlowSequencer;
     private TextView mTosAndPrivacyTextView;
@@ -68,16 +63,14 @@ public class LightweightFirstRunActivity
             "org.chromium.chrome.browser.firstrun.AssociatedAppName";
 
     public LightweightFirstRunActivity() {
-        if (sSupportSkippingTos) {
-            mFirstRunAppRestrictionInfo = FirstRunAppRestrictionInfo.takeMaybeInitialized();
-            mPolicyServiceSupplier = new OneshotSupplierImpl<>();
+        super();
 
-            mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
-                    mFirstRunAppRestrictionInfo, mPolicyServiceSupplier,
+        if (sSupportSkippingTos) {
+            mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(getPolicyLoadListener(),
                     EnterpriseInfo.getInstance(), new LightWeightTosDialogMetricsNameProvider());
             // We can ignore the result from #onAvailable here, as views are not created at this
             // point.
-            mSkipTosDialogPolicyListener.onAvailable((b) -> onPolicyLoadListenerAvailable());
+            mSkipTosDialogPolicyListener.onAvailable((ignored) -> onPolicyLoadListenerAvailable());
         }
     }
 
@@ -94,8 +87,9 @@ public class LightweightFirstRunActivity
                 }
 
                 @ChildAccountStatus.Status
-                int childAccountStatus = freProperties.getInt(
-                        SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+                int childAccountStatus =
+                        freProperties.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS,
+                                ChildAccountStatus.NOT_CHILD);
                 initializeViews(ChildAccountStatus.isChild(childAccountStatus));
             }
         };
@@ -211,13 +205,6 @@ public class LightweightFirstRunActivity
         assert !mNativeInitialized;
 
         mNativeInitialized = true;
-
-        boolean isPolicyServiceNeeded =
-                mSkipTosDialogPolicyListener != null && mSkipTosDialogPolicyListener.get() == null;
-
-        if (mPolicyServiceSupplier != null && isPolicyServiceNeeded) {
-            mPolicyServiceSupplier.set(PolicyServiceFactory.getGlobalPolicyService());
-        }
         if (mTriggerAcceptAfterNativeInit) acceptTermsOfService();
     }
 
@@ -232,8 +219,6 @@ public class LightweightFirstRunActivity
 
         mLoadingView.destroy();
 
-        // As first run is complete, we no longer need FirstRunAppRestrictionInfo.
-        if (mFirstRunAppRestrictionInfo != null) mFirstRunAppRestrictionInfo.destroy();
         if (mSkipTosDialogPolicyListener != null) mSkipTosDialogPolicyListener.destroy();
 
         if (mHandler != null && mExitFreRunnable != null) {

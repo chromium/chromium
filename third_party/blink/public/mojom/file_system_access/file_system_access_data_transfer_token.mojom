@@ -1,0 +1,25 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// This interface represents an opaque token that can be used to pass a dragged
+// and dropped or copied and pasted file or directory from the browser process
+// to the renderer process. A pending_remote<FileSystemAccessDataTransferToken>
+// passed from the browser to the renderer can be redeemed for a
+// FileSystemAccessEntry through
+// FileSystemAccessManager::GetEntryFromDataTransferToken.
+interface FileSystemAccessDataTransferToken {
+  // Used to retrieve the unique identifier associated with a token remote.
+  // This is used by the FileSystemAccessManager to associate a implementation
+  // with a Remote<FileSystemAccessDataTransferToken>.
+  GetInternalId() => (mojo_base.mojom.UnguessableToken id);
+
+  // Used by DataObjectItem to retain its copy of a
+  // FileSystemAccessDataTransferToken while passing a copy back to the browser
+  // process.
+  Clone(pending_receiver<FileSystemAccessDataTransferToken> token_clone);
+};

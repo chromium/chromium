@@ -2,6 +2,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
@@ -9,31 +11,111 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_loading_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/throbber_notice.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
 
 <link rel="stylesheet" href="chrome://resources/css/overlay.css">
 
 <dom-module id="arc-tos-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="arc_terms_of_service.css">
-    <!-- As this dialog have pre-loading logic that require access to elements,
-         dialog is marked as no-lazy. -->
-    <oobe-dialog id="arcTosDialog" has-buttons class="arc-tos-loading"
+    <style include="oobe-dialog-host">
+      #arcTosContainer p {
+        color: rgba(0, 0, 0, 0.54);
+        line-height: 16px;
+        margin: 0;
+        padding: 0;
+      }
+
+      cr-checkbox {
+        --cr-checkbox-label-padding-start: 16px;
+      }
+
+      .parameter-section {
+        margin: 0;
+        max-width: 590px;
+        padding: 0 20px 16px 20px;
+      }
+
+      #arcPolicyLink {
+        margin: 0;
+        padding: 16px 0 16px 20px;
+      }
+
+      #arcGoogleServiceConfirmation {
+        font-weight: 600;
+      }
+
+      #arcTosContainer::-webkit-scrollbar {
+        display: none;
+      }
+
+      #arcTosOverlayWebview {
+        border: 1px solid #d9d9d9;
+        display: flex;
+        height: 300px;
+        width: 100%;
+      }
+
+      #arcTosOverlayWebviewContainer {
+        box-sizing: border-box;
+        height: 332px;
+        margin: auto;
+        padding: 24px 8px 8px 8px;
+        width: 100%;
+      }
+    </style>
+
+    <!-- LOADING DIALOG -->
+    <oobe-loading-dialog id="arcTosLoadingDialog" for-step="loading"
         role="dialog"
         aria-label$="[[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]"
-        title-key="arcTermsOfServiceScreenHeading"
-        subtitle-key="arcTermsOfServiceScreenDescription" no-lazy>
-      <iron-icon src="chrome://oobe/playstore.svg" slot="oobe-icon">
+        text-key="arcTermsOfServiceLoading">
+    </oobe-loading-dialog>
+
+    <!-- ERROR DIALOG -->
+    <oobe-adaptive-dialog id="arcTosErrorDialog" for-step="error"
+        role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]">
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'arcTermsOfServiceErrorTitle')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'arcTermsOfServiceErrorMessage')]]
+      </p>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img class="oobe-illustration" srcset="images/1x/error.svg 1x,
+                                               images/2x/error.svg 2x">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="arcTosRetryButton" class="focus-on-show"
+            inverse on-click="onRetry_"
+            text-key="arcTermsOfServiceRetryButton"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <!-- As this dialog have pre-loading logic that require access to elements,
+         dialog is marked as no-lazy. -->
+    <oobe-adaptive-dialog id="arcTosDialog" for-step="loaded"
+        role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]"
+        no-lazy>
+      <iron-icon src="chrome://oobe/playstore.svg" slot="icon">
       </iron-icon>
-      <div id="arcTosContainer" slot="footer" class="flex layout vertical">
-        <div id="arcTosViewContainer" class="arc-tos-content flex">
-          <webview id="arcTosView" allowTransparency
-              class="oobe-tos-webview"
-              on-contentload="onTermsViewContentLoad_"></webview>
-        </div>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'arcTermsOfServiceScreenDescription')]]
+      </p>
+      <div id="arcTosContainer" slot="content" class="flex layout vertical">
+        <webview id="arcTosView" allowTransparency
+            role="document" class="flex oobe-tos-webview"
+            on-contentload="onTermsViewContentLoad_">
+        </webview>
         <div id="arcPolicyLink" class="arc-tos-content"
             on-click="onPolicyLinkClick_">
           <a class="oobe-local-link" is="action-link">
@@ -113,24 +195,13 @@
             </cr-checkbox>
           </div>
         </div>
-        <div class="arc-tos-loading flex layout center-justified vertical">
-          <throbber-notice text-key="arcTermsOfServiceLoading">
-          </throbber-notice>
-        </div>
-        <div class="arc-tos-error">
-          <p>[[i18nDynamic(locale, 'arcTermsOfServiceError')]]</p>
-        </div>
       </div>
       <div slot="back-navigation">
         <oobe-back-button id="arcTosBackButton" hidden="[[!demoMode]]"
             on-click="onBack_"></oobe-back-button>
       </div>
       <div slot="bottom-buttons">
-        <oobe-text-button id="arcTosRetryButton"
-            inverse on-click="onRetry_"
-            disabled="[[arcTosButtonsDisabled]]"
-            text-key="arcTermsOfServiceRetryButton"></oobe-text-button>
-        <oobe-text-button id="arcTosNextButton"
+        <oobe-text-button id="arcTosNextButton" class="focus-on-show"
             inverse on-click="onNext_"
             disabled="[[arcTosButtonsDisabled]]"
             hidden="[[showFullDialog]]"
@@ -141,7 +212,7 @@
             hidden="[[!showFullDialog]]"
             text-key="[[acceptTextKey]]"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
     <oobe-modal-dialog id="arcMetricsPopup" on-close="onOverlayClosed_"
         title-key="arcLearnMoreStatisticsTitle">
       <div slot="content">
@@ -187,7 +258,8 @@
     <oobe-modal-dialog id="arcTosOverlayPrivacyPolicy"
         on-close="onOverlayClosed_">
       <div slot="content" id = "arcTosOverlayWebviewContainer">
-        <webview id="arcTosOverlayWebview" hidden="[[overlayLoading_]]"
+        <webview id="arcTosOverlayWebview"
+            hidden="[[overlayLoading_]]" class="flex oobe-tos-webview"
             on-contentload="onAcrTosOverlayContentLoad_">
         </webview>
         <throbber-notice class="flex layout center-justified vertical"

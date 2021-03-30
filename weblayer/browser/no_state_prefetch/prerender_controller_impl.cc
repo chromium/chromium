@@ -5,12 +5,12 @@
 #include "weblayer/browser/no_state_prefetch/prerender_controller_impl.h"
 
 #include "build/build_config.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
@@ -36,17 +36,17 @@ void PrerenderControllerImpl::Prerender(
 #endif
 
 void PrerenderControllerImpl::Prerender(const GURL& url) {
-  auto* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(browser_context_);
-  DCHECK(prerender_manager);
+  auto* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(browser_context_);
+  DCHECK(no_state_prefetch_manager);
 
   // The referrer parameter results in a header being set that lets the server
   // serving the URL being prerendered see where the request originated. It's
   // an optional header, it's okay to skip setting it here.
   // SessionStorageNamespace isn't necessary for NoStatePrefetch, so it's okay
   // to pass in a nullptr.
-  // PrerenderManager uses default bounds  if the one provided is empty.
-  prerender_manager->AddPrerenderFromExternalRequest(
+  // NoStatePrefetchManager uses default bounds  if the one provided is empty.
+  no_state_prefetch_manager->AddPrerenderFromExternalRequest(
       url, content::Referrer(), /* session_storage_namespace= */ nullptr,
       /* bounds= */ gfx::Rect());
 }

@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/external_constants.h"
-#include "chrome/updater/external_constants_impl.h"
 
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants_override.h"
+#include "chrome/updater/updater_branding.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -19,10 +20,16 @@ class DefaultExternalConstants : public ExternalConstants {
 
   // Overrides of ExternalConstants:
   std::vector<GURL> UpdateURL() const override {
-    return std::vector<GURL>{GURL(kUpdaterJSONDefaultUrl)};
+    return std::vector<GURL>{GURL(UPDATE_CHECK_URL)};
   }
 
   bool UseCUP() const override { return true; }
+
+  double InitialDelay() const override { return kInitialDelay; }
+
+  int ServerKeepAliveSeconds() const override {
+    return kServerKeepAliveSeconds;
+  }
 };
 
 }  // namespace
@@ -34,12 +41,15 @@ ExternalConstants::ExternalConstants(
 ExternalConstants::~ExternalConstants() = default;
 
 std::unique_ptr<ExternalConstants> CreateExternalConstants() {
-  return std::make_unique<DevOverrideProvider>(
-      std::make_unique<DefaultExternalConstants>());
+  std::unique_ptr<ExternalConstants> overrider =
+      ExternalConstantsOverrider::FromDefaultJSONFile(
+          std::make_unique<DefaultExternalConstants>());
+  return overrider ? std::move(overrider)
+                   : std::make_unique<DefaultExternalConstants>();
 }
 
-DevOverrideProvider::DevOverrideProvider(
-    std::unique_ptr<ExternalConstants> next_provider)
-    : ExternalConstants(std::move(next_provider)) {}
+std::unique_ptr<ExternalConstants> CreateDefaultExternalConstantsForTesting() {
+  return std::make_unique<DefaultExternalConstants>();
+}
 
 }  // namespace updater

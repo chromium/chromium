@@ -495,7 +495,6 @@ config("ubsan_security_flags") {
       "-fsanitize=shift",
       "-fsanitize=signed-integer-overflow",
       "-fsanitize=vla-bound",
-      "-fsanitize=vptr",
       "-fsanitize-blacklist=$ubsan_security_blacklist_path",
     ]
   }

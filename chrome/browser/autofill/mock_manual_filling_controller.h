@@ -17,8 +17,9 @@ class MockManualFillingController
   ~MockManualFillingController() override;
 
   MOCK_METHOD1(RefreshSuggestions, void(const autofill::AccessorySheetData&));
-  MOCK_METHOD1(NotifyFocusedInputChanged,
-               void(autofill::mojom::FocusedFieldType));
+  MOCK_METHOD2(NotifyFocusedInputChanged,
+               void(autofill::FieldRendererId,
+                    autofill::mojom::FocusedFieldType));
   MOCK_METHOD2(UpdateSourceAvailability,
                void(ManualFillingController::FillingSource, bool));
   MOCK_METHOD0(Hide, void());

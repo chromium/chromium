@@ -149,7 +149,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   PhysicalRect ComputeStickyConstrainingRect() const;
   void UpdateStickyPositionConstraints() const;
   PhysicalOffset StickyPositionOffset() const;
-  bool IsSlowRepaintConstrainedObject() const;
   virtual LayoutBlock* StickyContainer() const;
 
   PhysicalOffset OffsetForInFlowPosition() const;
@@ -512,10 +511,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const = 0;
 
-  const LayoutObject* PushMappingToContainer(
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&) const override;
-
   void ContentChanged(ContentChangeType);
 
   // Returns true if the background is painted opaque in the given rect.
@@ -542,8 +537,15 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   bool BackgroundTransfersToView(
       const ComputedStyle* document_element_style = nullptr) const;
 
+  // Same as AbsoluteQuads, but in the local border box coordinates of this
+  // object.
+  void LocalQuads(Vector<FloatQuad>& quads) const;
+
   void AbsoluteQuads(Vector<FloatQuad>& quads,
                      MapCoordinatesFlags mode = 0) const override;
+
+  // Returns the bounodiong box of all quads returned by LocalQuads.
+  FloatRect LocalBoundingBoxFloatRect() const;
 
   virtual LayoutUnit OverrideContainingBlockContentWidth() const {
     NOT_DESTROYED();
@@ -583,6 +585,8 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // LayoutBlockFlow.
   virtual void AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
                                     MapCoordinatesFlags mode = 0) const;
+  // Same as AbsoluteQuadsForSelf, but in the local border box coordinates.
+  virtual void LocalQuadsForSelf(Vector<FloatQuad>& quads) const;
 
   void WillBeDestroyed() override;
 
@@ -671,6 +675,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                               bool full_remove_insert = false);
 
  private:
+  void QuadsInternal(Vector<FloatQuad>& quads,
+                     MapCoordinatesFlags mode,
+                     bool map_to_absolute) const;
+
   void CreateLayerAfterStyleChange();
 
   LayoutUnit ComputedCSSPadding(const Length&) const;

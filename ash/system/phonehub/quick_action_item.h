@@ -40,7 +40,7 @@ class ASH_EXPORT QuickActionItem : public views::View {
   QuickActionItem operator=(QuickActionItem&) = delete;
 
   // Set the text of sub-label shown below the label.
-  void SetSubLabel(const base::string16& sub_label);
+  void SetSubLabel(const std::u16string& sub_label);
 
   // Set the color of sub-label shown below the label.
   void SetSubLabelColor(SkColor color);
@@ -49,7 +49,7 @@ class ASH_EXPORT QuickActionItem : public views::View {
   void SetIcon(bool is_on);
 
   // Set the tooltip text of the icon button.
-  void SetIconTooltip(const base::string16& text);
+  void SetIconTooltip(const std::u16string& text);
 
   // Change the toggled state. If toggled, the background color of the circle
   // will change.
@@ -57,7 +57,7 @@ class ASH_EXPORT QuickActionItem : public views::View {
   bool IsToggled() const;
 
   // Get the title/label text of the item.
-  const base::string16& GetItemLabel() const;
+  const std::u16string& GetItemLabel() const;
 
   // Set the item to be enabled or disabled. When disabled, the button cannot be
   // clicked and the labels are greyed out.
